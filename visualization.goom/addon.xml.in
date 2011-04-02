@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="visualization.goom"
+  version="20.1.1"
+  name="Goom"
+  provider-name="Team Kodi">
+  <requires>@ADDON_DEPENDS@</requires>
+  <extension
+    point="xbmc.player.musicviz"
+    library_@PLATFORM@="@LIBRARY_FILENAME@"/>
+  <extension point="xbmc.addon.metadata">
+    <platform>@PLATFORM@</platform>
+    <license>GPL-2.0-or-later</license>
+    <source>https://github.com/xbmc/visualization.goom</source>
+    <assets>
+      <icon>resources/icon.png</icon>
+      <screenshot>resources/screenshot-01.jpg</screenshot>
+      <screenshot>resources/screenshot-02.jpg</screenshot>
+      <screenshot>resources/screenshot-03.jpg</screenshot>
+      <screenshot>resources/screenshot-04.jpg</screenshot>
+      <screenshot>resources/screenshot-05.jpg</screenshot>
+    </assets>
+    <summary lang="da_DK">Goom++ Visualisering</summary>
+    <summary lang="de_DE">Goom++ Visualisierung</summary>
+    <summary lang="en_GB">Goom++ Visualization</summary>
+    <description lang="da_DK">Goom++ visualiseringen understøtter effekter som tentakler, flash, stjerner, fyrværkeri, bølger, sløring og glød og indeholder et stort antal vilde hypnotiske effekter, der danser, hvirvler og popper med musikken.</description>
+    <description lang="de_DE">Die Goom++-Visualisierung unterstützt Effekte wie Zoomen, Tentakel, Sterne, Feuerwerk, Wellen, Rohre und IFS Tänzer, und enthält eine große Anzahl von trippigen hypnotischen Effekten, die mit der Musik tanzen, wirbeln und poppen.</description>
+    <description lang="en_GB">The Goom++ visualization supports effects like Zooms, Tentacles, Stars, Fireworks, Waves, Tubes, and IFS Dancers, and includes a large number of trippy hypnotic effects that dance, swirl and pop with the music.</description>
+  </extension>
+</addon>
