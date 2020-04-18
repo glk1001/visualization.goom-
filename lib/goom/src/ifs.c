@@ -39,6 +39,7 @@
 
 #include "goom.h"
 #include "goom_config.h"
+#include "mathtools.h"
 
 #ifdef HAVE_MMX
 #include "mmx.h"

@@ -10,6 +10,7 @@
 #include "goom_tools.h"
 #include "goom_plugin_info.h"
 #include "drawmethods.h"
+#include "mathtools.h"
 
 static inline unsigned char lighten (unsigned char value, float power)
 {

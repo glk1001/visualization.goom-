@@ -2,6 +2,7 @@
 #include "goom_plugin_info.h"
 #include "goomsl.h"
 #include "goom_config.h"
+#include "mathtools.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

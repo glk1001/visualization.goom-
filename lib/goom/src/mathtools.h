@@ -22,6 +22,10 @@
 #define F2I(dbl,i) i=(int)dbl;
 /*#endif*/
 
+#ifndef M_PI
+  #define M_PI   3.14159265358979323846
+#endif
+
 #if 0
 #define SINCOS(f,s,c) \
   __asm__ __volatile__ ("fsincos" : "=t" (c), "=u" (s) : "0" (f))
