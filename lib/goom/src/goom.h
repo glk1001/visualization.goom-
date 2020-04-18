@@ -10,7 +10,7 @@
 
 #define NB_FX 10
 
-PluginInfo *goom_init (guint32 resx, guint32 resy);
+PluginInfo *goom_init (guint32 resx, guint32 resy, int seed);
 void goom_set_resolution (PluginInfo *goomInfo, guint32 resx, guint32 resy);
 
 /*

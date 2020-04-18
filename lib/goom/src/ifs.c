@@ -302,7 +302,7 @@ init_ifs (PluginInfo *goomInfo, IfsData *data)
 	Fractal->Count = 0;
 	Fractal->Lx = (Fractal->Width - 1) / 2;
 	Fractal->Ly = (Fractal->Height - 1) / 2;
-	Fractal->Col = rand () % (width * height);	/* modif by JeKo */
+	Fractal->Col = pcg32_rand() % (width * height);	/* modif by JeKo */
 
 	Random_Simis (goomInfo, Fractal, Fractal->Components, 5 * MAX_SIMI);
 }

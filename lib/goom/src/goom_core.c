@@ -55,7 +55,7 @@ static void init_buffers(PluginInfo *goomInfo, int buffsize)
 /**************************
 *         INIT           *
 **************************/
-PluginInfo *goom_init (guint32 resx, guint32 resy)
+PluginInfo* goom_init(guint32 resx, guint32 resy, int seed)
 {
     PluginInfo *goomInfo = (PluginInfo*)malloc(sizeof(PluginInfo));
     
@@ -87,7 +87,12 @@ PluginInfo *goom_init (guint32 resx, guint32 resy)
     goomInfo->screen.size = resx * resy;
     
     init_buffers(goomInfo, goomInfo->screen.size);
-    goomInfo->gRandom = goom_random_init((uintptr_t)goomInfo->pixel);
+    if (seed == 0) {
+      seed = goomInfo->pixel;
+    } else if (seed > 0) {
+      pcg32_init(seed);
+    }
+    goomInfo->gRandom = goom_random_init();
     
     goomInfo->cycle = 0;
     
@@ -390,7 +395,7 @@ guint32 *goom_update (PluginInfo *goomInfo,
                     goomInfo->update.lockvar = 50;
                     newvit = STOP_SPEED + 1 - ((float)3.5f * log10(goomInfo->sound.speedvar * 60 + 1));
                     /* retablir le zoom avant.. */
-                    if ((goomInfo->update.zoomFilterData.reverse) && (!(goomInfo->cycle % 13)) && (rand () % 5 == 0)) {
+                    if ((goomInfo->update.zoomFilterData.reverse) && (!(goomInfo->cycle % 13)) && (pcg32_rand () % 5 == 0)) {
                         goomInfo->update.zoomFilterData.reverse = 0;
                         goomInfo->update.zoomFilterData.vitesse = STOP_SPEED - 2;
                         goomInfo->update.lockvar = 75;
