@@ -335,6 +335,8 @@ VisualFX convolve_create(void) {
   vfx.init = convolve_init;
   vfx.free = convolve_free;
   vfx.apply = convolve_apply;
+  vfx.save = NULL;
+  vfx.restore = NULL;
   vfx.fx_data = 0;
   return vfx;
 }

@@ -60,6 +60,7 @@ typedef struct _FS_STAR {
 } Star;
 
 typedef struct _FS_DATA{
+    PluginParam enabled_bp;
 
 	int fx_mode;
 	int nbStars;
@@ -115,7 +116,7 @@ static void fs_init(VisualFX *_this, PluginInfo *info) {
 
 	data->nbStars_p = secure_f_feedback ("Number of Particules (% of Max)");
 
-	data->params = plugin_parameters ("Particule System", 7);
+    data->params = plugin_parameters("Particule System", 8);
 	data->params.params[0] = &data->fx_mode_p;
 	data->params.params[1] = &data->nbStars_limit_p;
 	data->params.params[2] = 0;
@@ -123,6 +124,9 @@ static void fs_init(VisualFX *_this, PluginInfo *info) {
 	data->params.params[4] = &data->max_age_p;
 	data->params.params[5] = 0;
 	data->params.params[6] = &data->nbStars_p;
+
+    data->enabled_bp = secure_b_param("Flying Stars", 1);
+    data->params.params[7] = &data->enabled_bp;
 
 	_this->params = &data->params;
 	_this->fx_data = (void*)data;
@@ -311,6 +315,8 @@ VisualFX flying_star_create(void) {
   vfx.init = fs_init;
   vfx.free = fs_free;
   vfx.apply = fs_apply;
+  vfx.save = NULL;
+  vfx.restore = NULL;
   vfx.fx_data = 0;
   return vfx;
 }

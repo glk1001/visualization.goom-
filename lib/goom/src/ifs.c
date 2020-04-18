@@ -48,6 +48,7 @@
 #include "goom_graphic.h"
 #include "ifs.h"
 #include "goom_tools.h"
+#include "goom_testing.h"
 
 typedef struct _ifsPoint
 {
@@ -138,6 +139,9 @@ struct Fractal_Struct
 };
 
 typedef struct _IFS_DATA {
+  PluginParam enabled_bp;
+  PluginParameters params;
+
 	FRACTAL *Root;
 	FRACTAL *Cur_F;
 
@@ -490,265 +494,308 @@ static void release_ifs (IfsData *data)
 }
 
 #define RAND() goom_random(goomInfo->gRandom)
-
-static void ifs_update (PluginInfo *goomInfo, Pixel * data, Pixel * back, int increment, IfsData *fx_data)
-{
-	static int couleur = 0xc0c0c0c0;
-	static int v[4] = { 2, 4, 3, 2 };
-	static int col[4] = { 2, 4, 3, 2 };
-
 #define MOD_MER 0
 #define MOD_FEU 1
 #define MOD_MERVER 2
-	static int mode = MOD_MERVER;
-	static int justChanged = 0;
-	static int cycle = 0;
-	int     cycle10;
 
-	int     nbpt;
-	IFSPoint *points;
-	int     i;
+static struct {
+  int justChanged;
+  int couleur;
+  int v[4];
+  int col[4];
+  int mode;
+  int cycle;
+} ifs_update_data = {
+    0,
+    0xc0c0c0c0,
+    { 2, 4, 3, 2 },
+    { 2, 4, 3, 2 },
+    MOD_MERVER,
+    0
+};
 
-	int     couleursl = couleur;
-	int width = goomInfo->screen.width;
-	int height = goomInfo->screen.height;
+static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int increment, IfsData *fx_data)
+{
+  GOOM_LOG_DEBUG("increment = %d", increment);
 
-	cycle++;
-	if (cycle >= 80)
-		cycle = 0;
+  int couleursl = ifs_update_data.couleur;
+  int width = goomInfo->screen.width;
+  int height = goomInfo->screen.height;
 
-	if (cycle < 40)
-		cycle10 = cycle / 10;
-	else
-		cycle10 = 7 - cycle / 10;
+  ifs_update_data.cycle++;
+  if (ifs_update_data.cycle >= 80) {
+    ifs_update_data.cycle = 0;
+  }
 
-	{
-		unsigned char *tmp = (unsigned char *) &couleursl;
+  int cycle10;
+  if (ifs_update_data.cycle < 40) {
+    cycle10 = ifs_update_data.cycle / 10;
+  } else {
+    cycle10 = 7 - ifs_update_data.cycle / 10;
+  }
 
-		for (i = 0; i < 4; i++) {
-			*tmp = (*tmp) >> cycle10;
-			tmp++;
-		}
-	}
+  {
+    unsigned char *tmp = (unsigned char*) &couleursl;
 
-	points = draw_ifs (goomInfo, &nbpt, fx_data);
-	nbpt--;
+    for (int i = 0; i < 4; i++) {
+      *tmp = (*tmp) >> cycle10;
+      tmp++;
+    }
+  }
 
-#ifdef HAVE_MMX
-	movd_m2r (couleursl, mm1);
-	punpckldq_r2r (mm1, mm1);
-	for (i = 0; i < nbpt; i += increment) {
-		int     x = points[i].x;
-		int     y = points[i].y;
+  int nbpt;
+  IFSPoint *points = draw_ifs(goomInfo, &nbpt, fx_data);
+  nbpt--;
+  GOOM_LOG_DEBUG("nbpt = %d", nbpt);
 
-		if ((x < width) && (y < height) && (x > 0) && (y > 0)) {
-			int     pos = x + (y * width);
-			movd_m2r (back[pos], mm0);
-			paddusb_r2r (mm1, mm0);
-			movd_r2m (mm0, data[pos]);
-		}
-	}
-	emms();/*__asm__ __volatile__ ("emms");*/
-#else
-	for (i = 0; i < nbpt; i += increment) {
-		int     x = (int) points[i].x & 0x7fffffff;
-		int     y = (int) points[i].y & 0x7fffffff;
+  for (int i = 0; i < nbpt; i += increment) {
+    int x = (int) points[i].x & 0x7fffffff;
+    int y = (int) points[i].y & 0x7fffffff;
 
-		if ((x < width) && (y < height)) {
-			int     pos = x + (int) (y * width);
-			int     tra = 0, i = 0;
-			unsigned char *bra = (unsigned char *) &back[pos];
-			unsigned char *dra = (unsigned char *) &data[pos];
-			unsigned char *cra = (unsigned char *) &couleursl;
+    if ((x < width) && (y < height)) {
+      int pos = x + (int) (y * width);
+      int tra = 0, i = 0;
+      unsigned char *bra = (unsigned char*) &back[pos];
+      unsigned char *dra = (unsigned char*) &data[pos];
+      unsigned char *cra = (unsigned char*) &couleursl;
 
-			for (; i < 4; i++) {
-				tra = *cra;
-				tra += *bra;
-				if (tra > 255)
-					tra = 255;
-				*dra = tra;
-				++dra;
-				++cra;
-				++bra;
-			}
-		}
-	}
-#endif /*MMX*/
-		justChanged--;
+      for (; i < 4; i++) {
+        tra = *cra;
+        tra += *bra;
+        if (tra > 255)
+          tra = 255;
+        *dra = tra;
+        ++dra;
+        ++cra;
+        ++bra;
+      }
+    }
+  }
 
-	col[ALPHA] = couleur >> (ALPHA * 8) & 0xff;
-	col[BLEU] = couleur >> (BLEU * 8) & 0xff;
-	col[VERT] = couleur >> (VERT * 8) & 0xff;
-	col[ROUGE] = couleur >> (ROUGE * 8) & 0xff;
+  ifs_update_data.justChanged--;
+  GOOM_LOG_DEBUG("ifs_update_data.justChanged = %d", ifs_update_data.justChanged);
 
-	if (mode == MOD_MER) {
-		col[BLEU] += v[BLEU];
-		if (col[BLEU] > 255) {
-			col[BLEU] = 255;
-			v[BLEU] = -(RAND() % 4) - 1;
-		}
-		if (col[BLEU] < 32) {
-			col[BLEU] = 32;
-			v[BLEU] = (RAND() % 4) + 1;
-		}
+  ifs_update_data.col[ALPHA] = ifs_update_data.couleur >> (ALPHA * 8) & 0xff;
+  ifs_update_data.col[BLEU] = ifs_update_data.couleur >> (BLEU * 8) & 0xff;
+  ifs_update_data.col[VERT] = ifs_update_data.couleur >> (VERT * 8) & 0xff;
+  ifs_update_data.col[ROUGE] = ifs_update_data.couleur >> (ROUGE * 8) & 0xff;
 
-		col[VERT] += v[VERT];
-		if (col[VERT] > 200) {
-			col[VERT] = 200;
-			v[VERT] = -(RAND() % 3) - 2;
-		}
-		if (col[VERT] > col[BLEU]) {
-			col[VERT] = col[BLEU];
-			v[VERT] = v[BLEU];
-		}
-		if (col[VERT] < 32) {
-			col[VERT] = 32;
-			v[VERT] = (RAND() % 3) + 2;
-		}
+  GOOM_LOG_DEBUG("ifs_update_data.col[ALPHA] = %d", ifs_update_data.col[ALPHA]);
+  GOOM_LOG_DEBUG("ifs_update_data.col[BLEU] = %d", ifs_update_data.col[BLEU]);
+  GOOM_LOG_DEBUG("ifs_update_data.col[VERT] = %d", ifs_update_data.col[VERT]);
+  GOOM_LOG_DEBUG("ifs_update_data.col[ROUGE] = %d", ifs_update_data.col[ROUGE]);
 
-		col[ROUGE] += v[ROUGE];
-		if (col[ROUGE] > 64) {
-			col[ROUGE] = 64;
-			v[ROUGE] = -(RAND () % 4) - 1;
-		}
-		if (col[ROUGE] < 0) {
-			col[ROUGE] = 0;
-			v[ROUGE] = (RAND () % 4) + 1;
-		}
+  GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
+  GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
+  GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
+  GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
 
-		col[ALPHA] += v[ALPHA];
-		if (col[ALPHA] > 0) {
-			col[ALPHA] = 0;
-			v[ALPHA] = -(RAND () % 4) - 1;
-		}
-		if (col[ALPHA] < 0) {
-			col[ALPHA] = 0;
-			v[ALPHA] = (RAND () % 4) + 1;
-		}
+  GOOM_LOG_DEBUG("ifs_update_data.mode = %d", ifs_update_data.mode);
 
-		if (((col[VERT] > 32) && (col[ROUGE] < col[VERT] + 40)
-				 && (col[VERT] < col[ROUGE] + 20) && (col[BLEU] < 64)
-				 && (RAND () % 20 == 0)) && (justChanged < 0)) {
-			mode = RAND () % 3 ? MOD_FEU : MOD_MERVER;
-			justChanged = 250;
-		}
-	}
-	else if (mode == MOD_MERVER) {
-		col[BLEU] += v[BLEU];
-		if (col[BLEU] > 128) {
-			col[BLEU] = 128;
-			v[BLEU] = -(RAND () % 4) - 1;
-		}
-		if (col[BLEU] < 16) {
-			col[BLEU] = 16;
-			v[BLEU] = (RAND () % 4) + 1;
-		}
+  if (ifs_update_data.mode == MOD_MER) {
+    ifs_update_data.col[BLEU] += ifs_update_data.v[BLEU];
+    if (ifs_update_data.col[BLEU] > 255) {
+      ifs_update_data.col[BLEU] = 255;
+      ifs_update_data.v[BLEU] = -(RAND() % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
+    }
+    if (ifs_update_data.col[BLEU] < 32) {
+      ifs_update_data.col[BLEU] = 32;
+      ifs_update_data.v[BLEU] = (RAND() % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
+    }
 
-		col[VERT] += v[VERT];
-		if (col[VERT] > 200) {
-			col[VERT] = 200;
-			v[VERT] = -(RAND () % 3) - 2;
-		}
-		if (col[VERT] > col[ALPHA]) {
-			col[VERT] = col[ALPHA];
-			v[VERT] = v[ALPHA];
-		}
-		if (col[VERT] < 32) {
-			col[VERT] = 32;
-			v[VERT] = (RAND () % 3) + 2;
-		}
+    ifs_update_data.col[VERT] += ifs_update_data.v[VERT];
+    if (ifs_update_data.col[VERT] > 200) {
+      ifs_update_data.col[VERT] = 200;
+      ifs_update_data.v[VERT] = -(RAND() % 3) - 2;
+      GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
+    }
+    if (ifs_update_data.col[VERT] > ifs_update_data.col[BLEU]) {
+      ifs_update_data.col[VERT] = ifs_update_data.col[BLEU];
+      ifs_update_data.v[VERT] = ifs_update_data.v[BLEU];
+    }
+    if (ifs_update_data.col[VERT] < 32) {
+      ifs_update_data.col[VERT] = 32;
+      ifs_update_data.v[VERT] = (RAND() % 3) + 2;
+      GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
+    }
 
-		col[ROUGE] += v[ROUGE];
-		if (col[ROUGE] > 128) {
-			col[ROUGE] = 128;
-			v[ROUGE] = -(RAND () % 4) - 1;
-		}
-		if (col[ROUGE] < 0) {
-			col[ROUGE] = 0;
-			v[ROUGE] = (RAND () % 4) + 1;
-		}
+    ifs_update_data.col[ROUGE] += ifs_update_data.v[ROUGE];
+    if (ifs_update_data.col[ROUGE] > 64) {
+      ifs_update_data.col[ROUGE] = 64;
+      ifs_update_data.v[ROUGE] = -(RAND () % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
+    }
+    if (ifs_update_data.col[ROUGE] < 0) {
+      ifs_update_data.col[ROUGE] = 0;
+      ifs_update_data.v[ROUGE] = (RAND () % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
+    }
 
-		col[ALPHA] += v[ALPHA];
-		if (col[ALPHA] > 255) {
-			col[ALPHA] = 255;
-			v[ALPHA] = -(RAND () % 4) - 1;
-		}
-		if (col[ALPHA] < 0) {
-			col[ALPHA] = 0;
-			v[ALPHA] = (RAND () % 4) + 1;
-		}
+    ifs_update_data.col[ALPHA] += ifs_update_data.v[ALPHA];
+    if (ifs_update_data.col[ALPHA] > 0) {
+      ifs_update_data.col[ALPHA] = 0;
+      ifs_update_data.v[ALPHA] = -(RAND () % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
+    }
+    if (ifs_update_data.col[ALPHA] < 0) {
+      ifs_update_data.col[ALPHA] = 0;
+      ifs_update_data.v[ALPHA] = (RAND () % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
+    }
 
-		if (((col[VERT] > 32) && (col[ROUGE] < col[VERT] + 40)
-				 && (col[VERT] < col[ROUGE] + 20) && (col[BLEU] < 64)
-				 && (RAND () % 20 == 0)) && (justChanged < 0)) {
-			mode = RAND () % 3 ? MOD_FEU : MOD_MER;
-			justChanged = 250;
-		}
-	}
-	else if (mode == MOD_FEU) {
+    if (((ifs_update_data.col[VERT] > 32) && (ifs_update_data.col[ROUGE] < ifs_update_data.col[VERT] + 40)
+        && (ifs_update_data.col[VERT] < ifs_update_data.col[ROUGE] + 20) && (ifs_update_data.col[BLEU] < 64)
+        && (RAND () % 20 == 0)) && (ifs_update_data.justChanged < 0)) {
+      ifs_update_data.mode = RAND () % 3 ? MOD_FEU : MOD_MERVER;
+      GOOM_LOG_DEBUG("ifs_update_data.mode = %d", ifs_update_data.mode);
+      ifs_update_data.justChanged = 250;
+    }
+  } else if (ifs_update_data.mode == MOD_MERVER) {
+    ifs_update_data.col[BLEU] += ifs_update_data.v[BLEU];
+    if (ifs_update_data.col[BLEU] > 128) {
+      ifs_update_data.col[BLEU] = 128;
+      ifs_update_data.v[BLEU] = -(RAND () % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
+    }
+    if (ifs_update_data.col[BLEU] < 16) {
+      ifs_update_data.col[BLEU] = 16;
+      ifs_update_data.v[BLEU] = (RAND () % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
+    }
 
-		col[BLEU] += v[BLEU];
-		if (col[BLEU] > 64) {
-			col[BLEU] = 64;
-			v[BLEU] = -(RAND () % 4) - 1;
-		}
-		if (col[BLEU] < 0) {
-			col[BLEU] = 0;
-			v[BLEU] = (RAND () % 4) + 1;
-		}
+    ifs_update_data.col[VERT] += ifs_update_data.v[VERT];
+    if (ifs_update_data.col[VERT] > 200) {
+      ifs_update_data.col[VERT] = 200;
+      ifs_update_data.v[VERT] = -(RAND () % 3) - 2;
+      GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
+    }
+    if (ifs_update_data.col[VERT] > ifs_update_data.col[ALPHA]) {
+      ifs_update_data.col[VERT] = ifs_update_data.col[ALPHA];
+      ifs_update_data.v[VERT] = ifs_update_data.v[ALPHA];
+    }
+    if (ifs_update_data.col[VERT] < 32) {
+      ifs_update_data.col[VERT] = 32;
+      ifs_update_data.v[VERT] = (RAND () % 3) + 2;
+      GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
+    }
 
-		col[VERT] += v[VERT];
-		if (col[VERT] > 200) {
-			col[VERT] = 200;
-			v[VERT] = -(RAND () % 3) - 2;
-		}
-		if (col[VERT] > col[ROUGE] + 20) {
-			col[VERT] = col[ROUGE] + 20;
-			v[VERT] = -(RAND () % 3) - 2;
-			v[ROUGE] = (RAND () % 4) + 1;
-			v[BLEU] = (RAND () % 4) + 1;
-		}
-		if (col[VERT] < 0) {
-			col[VERT] = 0;
-			v[VERT] = (RAND () % 3) + 2;
-		}
+    ifs_update_data.col[ROUGE] += ifs_update_data.v[ROUGE];
+    if (ifs_update_data.col[ROUGE] > 128) {
+      ifs_update_data.col[ROUGE] = 128;
+      ifs_update_data.v[ROUGE] = -(RAND () % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
+    }
+    if (ifs_update_data.col[ROUGE] < 0) {
+      ifs_update_data.col[ROUGE] = 0;
+      ifs_update_data.v[ROUGE] = (RAND () % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
+    }
 
-		col[ROUGE] += v[ROUGE];
-		if (col[ROUGE] > 255) {
-			col[ROUGE] = 255;
-			v[ROUGE] = -(RAND () % 4) - 1;
-		}
-		if (col[ROUGE] > col[VERT] + 40) {
-			col[ROUGE] = col[VERT] + 40;
-			v[ROUGE] = -(RAND () % 4) - 1;
-		}
-		if (col[ROUGE] < 0) {
-			col[ROUGE] = 0;
-			v[ROUGE] = (RAND () % 4) + 1;
-		}
+    ifs_update_data.col[ALPHA] += ifs_update_data.v[ALPHA];
+    if (ifs_update_data.col[ALPHA] > 255) {
+      ifs_update_data.col[ALPHA] = 255;
+      ifs_update_data.v[ALPHA] = -(RAND () % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
+    }
+    if (ifs_update_data.col[ALPHA] < 0) {
+      ifs_update_data.col[ALPHA] = 0;
+      ifs_update_data.v[ALPHA] = (RAND () % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
+    }
 
-		col[ALPHA] += v[ALPHA];
-		if (col[ALPHA] > 0) {
-			col[ALPHA] = 0;
-			v[ALPHA] = -(RAND () % 4) - 1;
-		}
-		if (col[ALPHA] < 0) {
-			col[ALPHA] = 0;
-			v[ALPHA] = (RAND () % 4) + 1;
-		}
+    if (((ifs_update_data.col[VERT] > 32) && (ifs_update_data.col[ROUGE] < ifs_update_data.col[VERT] + 40)
+        && (ifs_update_data.col[VERT] < ifs_update_data.col[ROUGE] + 20) && (ifs_update_data.col[BLEU] < 64)
+        && (RAND () % 20 == 0)) && (ifs_update_data.justChanged < 0)) {
+      ifs_update_data.mode = RAND () % 3 ? MOD_FEU : MOD_MER;
+      GOOM_LOG_DEBUG("ifs_update_data.mode = %d", ifs_update_data.mode);
+      ifs_update_data.justChanged = 250;
+    }
+  } else if (ifs_update_data.mode == MOD_FEU) {
+    ifs_update_data.col[BLEU] += ifs_update_data.v[BLEU];
+    if (ifs_update_data.col[BLEU] > 64) {
+      ifs_update_data.col[BLEU] = 64;
+      ifs_update_data.v[BLEU] = -(RAND () % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
+    }
+    if (ifs_update_data.col[BLEU] < 0) {
+      ifs_update_data.col[BLEU] = 0;
+      ifs_update_data.v[BLEU] = (RAND () % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
+    }
 
-		if (((col[ROUGE] < 64) && (col[VERT] > 32) && (col[VERT] < col[BLEU])
-				 && (col[BLEU] > 32)
-				 && (RAND () % 20 == 0)) && (justChanged < 0)) {
-			mode = RAND () % 2 ? MOD_MER : MOD_MERVER;
-			justChanged = 250;
-		}
-	}
+    ifs_update_data.col[VERT] += ifs_update_data.v[VERT];
+    if (ifs_update_data.col[VERT] > 200) {
+      ifs_update_data.col[VERT] = 200;
+      ifs_update_data.v[VERT] = -(RAND () % 3) - 2;
+      GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
+    }
+    if (ifs_update_data.col[VERT] > ifs_update_data.col[ROUGE] + 20) {
+      ifs_update_data.col[VERT] = ifs_update_data.col[ROUGE] + 20;
+      ifs_update_data.v[VERT] = -(RAND () % 3) - 2;
+      ifs_update_data.v[ROUGE] = (RAND () % 4) + 1;
+      ifs_update_data.v[BLEU] = (RAND () % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
+    }
+    if (ifs_update_data.col[VERT] < 0) {
+      ifs_update_data.col[VERT] = 0;
+      ifs_update_data.v[VERT] = (RAND () % 3) + 2;
+      GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
+    }
 
-	couleur = (col[ALPHA] << (ALPHA * 8))
-		| (col[BLEU] << (BLEU * 8))
-		| (col[VERT] << (VERT * 8))
-		| (col[ROUGE] << (ROUGE * 8));
+    ifs_update_data.col[ROUGE] += ifs_update_data.v[ROUGE];
+    if (ifs_update_data.col[ROUGE] > 255) {
+      ifs_update_data.col[ROUGE] = 255;
+      ifs_update_data.v[ROUGE] = -(RAND () % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
+    }
+    if (ifs_update_data.col[ROUGE] > ifs_update_data.col[VERT] + 40) {
+      ifs_update_data.col[ROUGE] = ifs_update_data.col[VERT] + 40;
+      ifs_update_data.v[ROUGE] = -(RAND () % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
+    }
+    if (ifs_update_data.col[ROUGE] < 0) {
+      ifs_update_data.col[ROUGE] = 0;
+      ifs_update_data.v[ROUGE] = (RAND () % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
+    }
+
+    ifs_update_data.col[ALPHA] += ifs_update_data.v[ALPHA];
+    if (ifs_update_data.col[ALPHA] > 0) {
+      ifs_update_data.col[ALPHA] = 0;
+      ifs_update_data.v[ALPHA] = -(RAND () % 4) - 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
+    }
+    if (ifs_update_data.col[ALPHA] < 0) {
+      ifs_update_data.col[ALPHA] = 0;
+      ifs_update_data.v[ALPHA] = (RAND () % 4) + 1;
+      GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
+    }
+
+    if (((ifs_update_data.col[ROUGE] < 64) && (ifs_update_data.col[VERT] > 32)
+        && (ifs_update_data.col[VERT] < ifs_update_data.col[BLEU]) && (ifs_update_data.col[BLEU] > 32)
+        && (RAND () % 20 == 0)) && (ifs_update_data.justChanged < 0)) {
+      ifs_update_data.mode = RAND () % 2 ? MOD_MER : MOD_MERVER;
+      GOOM_LOG_DEBUG("ifs_update_data.mode = %d", ifs_update_data.mode);
+      ifs_update_data.justChanged = 250;
+    }
+  }
+
+  ifs_update_data.couleur = (ifs_update_data.col[ALPHA] << (ALPHA * 8)) | (ifs_update_data.col[BLEU] << (BLEU * 8))
+      | (ifs_update_data.col[VERT] << (VERT * 8)) | (ifs_update_data.col[ROUGE] << (ROUGE * 8));
+
+  GOOM_LOG_DEBUG("ifs_update_data.col[ALPHA] = %d", ifs_update_data.col[ALPHA]);
+  GOOM_LOG_DEBUG("ifs_update_data.col[BLEU] = %d", ifs_update_data.col[BLEU]);
+  GOOM_LOG_DEBUG("ifs_update_data.col[VERT] = %d", ifs_update_data.col[VERT]);
+  GOOM_LOG_DEBUG("ifs_update_data.col[ROUGE] = %d", ifs_update_data.col[ROUGE]);
+
+  GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
+  GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
+  GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
+  GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
+
+  GOOM_LOG_DEBUG("ifs_update_data.mode = %d", ifs_update_data.mode);
 }
 
 /** VISUAL_FX WRAPPER FOR IFS */
@@ -760,16 +807,152 @@ static void ifs_vfx_apply(VisualFX *_this, Pixel *src, Pixel *dest, PluginInfo *
 		data->initalized = 1;
 		init_ifs(goomInfo, data);
 	}
+    if (!BVAL(data->enabled_bp)) {
+        return;
+    }
 	ifs_update (goomInfo, dest, src, goomInfo->update.ifs_incr, data);
+
 	/*TODO: trouver meilleur soluce pour increment (mettre le code de gestion de l'ifs dans ce fichier: ifs_vfx_apply) */
 }
 
+static const char *vfxname = "Ifs";
+
+static void ifs_vfx_save(VisualFX *_this, const PluginInfo *info, const char *file)
+{
+  FILE *f = fopen(file, "w");
+
+  save_int_setting(f, vfxname, "ifs_update_data.justChanged", ifs_update_data.justChanged);
+  save_int_setting(f, vfxname, "ifs_update_data.couleur", ifs_update_data.couleur);
+  save_int_setting(f, vfxname, "ifs_update_data.v_0", ifs_update_data.v[0]);
+  save_int_setting(f, vfxname, "ifs_update_data.v_1", ifs_update_data.v[1]);
+  save_int_setting(f, vfxname, "ifs_update_data.v_2", ifs_update_data.v[2]);
+  save_int_setting(f, vfxname, "ifs_update_data.v_3", ifs_update_data.v[3]);
+  save_int_setting(f, vfxname, "ifs_update_data.col_0", ifs_update_data.col[0]);
+  save_int_setting(f, vfxname, "ifs_update_data.col_1", ifs_update_data.col[1]);
+  save_int_setting(f, vfxname, "ifs_update_data.col_2", ifs_update_data.col[2]);
+  save_int_setting(f, vfxname, "ifs_update_data.col_3", ifs_update_data.col[3]);
+  save_int_setting(f, vfxname, "ifs_update_data.mode", ifs_update_data.mode);
+  save_int_setting(f, vfxname, "ifs_update_data.cycle", ifs_update_data.cycle);
+
+  IfsData *data = (IfsData*) _this->fx_data;
+  save_int_setting(f, vfxname, "data.Cur_Pt", data->Cur_Pt);
+  save_int_setting(f, vfxname, "data.initalized", data->initalized);
+
+  FRACTAL *Fractal = data->Root;
+  save_int_setting(f, vfxname, "Fractal.Nb_Simi", Fractal->Nb_Simi);
+  save_int_setting(f, vfxname, "Fractal.Depth", Fractal->Depth);
+  save_int_setting(f, vfxname, "Fractal.Col", Fractal->Col);
+  save_int_setting(f, vfxname, "Fractal.Count", Fractal->Count);
+  save_int_setting(f, vfxname, "Fractal.Speed", Fractal->Speed);
+  save_int_setting(f, vfxname, "Fractal.Width", Fractal->Width);
+  save_int_setting(f, vfxname, "Fractal.Height", Fractal->Height);
+  save_int_setting(f, vfxname, "Fractal.Lx", Fractal->Lx);
+  save_int_setting(f, vfxname, "Fractal.Ly", Fractal->Ly);
+  save_float_setting(f, vfxname, "Fractal.r_mean", Fractal->r_mean);
+  save_float_setting(f, vfxname, "Fractal.dr_mean", Fractal->dr_mean);
+  save_float_setting(f, vfxname, "Fractal.dr2_mean", Fractal->dr2_mean);
+  save_int_setting(f, vfxname, "Fractal.Cur_Pt", Fractal->Cur_Pt);
+  save_int_setting(f, vfxname, "Fractal.Max_Pt", Fractal->Max_Pt);
+
+  for (int i = 0; i < Fractal->Nb_Simi; i++) {
+    const SIMI *simi = &(Fractal->Components[i]);
+    save_indexed_float_setting(f, vfxname, "simi.c_x", i, simi->c_x);
+    save_indexed_float_setting(f, vfxname, "simi.c_y", i, simi->c_y);
+    save_indexed_float_setting(f, vfxname, "simi.r", i, simi->r);
+    save_indexed_float_setting(f, vfxname, "simi.r2", i, simi->r2);
+    save_indexed_float_setting(f, vfxname, "simi.A", i, simi->A);
+    save_indexed_float_setting(f, vfxname, "simi.A2", i, simi->A2);
+    save_indexed_int_setting(f, vfxname, "simi.Ct", i, simi->Ct);
+    save_indexed_int_setting(f, vfxname, "simi.St", i, simi->St);
+    save_indexed_int_setting(f, vfxname, "simi.Ct2", i, simi->Ct2);
+    save_indexed_int_setting(f, vfxname, "simi.St2", i, simi->St2);
+    save_indexed_int_setting(f, vfxname, "simi.Cx", i, simi->Cx);
+    save_indexed_int_setting(f, vfxname, "simi.Cy", i, simi->Cy);
+    save_indexed_int_setting(f, vfxname, "simi.R", i, simi->R);
+    save_indexed_int_setting(f, vfxname, "simi.R2", i, simi->R2);
+  }
+
+  fclose(f);
+}
+
+static void ifs_vfx_restore(VisualFX *_this, PluginInfo *info, const char *file)
+{
+  FILE *f = fopen(file, "r");
+  if (f == NULL) {
+    exit(EXIT_FAILURE);
+  }
+
+  ifs_update_data.justChanged = get_int_setting(f, vfxname, "ifs_update_data.justChanged");
+  ifs_update_data.couleur = get_int_setting(f, vfxname, "ifs_update_data.couleur");
+  ifs_update_data.v[0] = get_int_setting(f, vfxname, "ifs_update_data.v_0");
+  ifs_update_data.v[1] = get_int_setting(f, vfxname, "ifs_update_data.v_1");
+  ifs_update_data.v[2] = get_int_setting(f, vfxname, "ifs_update_data.v_2");
+  ifs_update_data.v[3] = get_int_setting(f, vfxname, "ifs_update_data.v_3");
+  ifs_update_data.col[0] = get_int_setting(f, vfxname, "ifs_update_data.col_0");
+  ifs_update_data.col[1] = get_int_setting(f, vfxname, "ifs_update_data.col_1");
+  ifs_update_data.col[2] = get_int_setting(f, vfxname, "ifs_update_data.col_2");
+  ifs_update_data.col[3] = get_int_setting(f, vfxname, "ifs_update_data.col_3");
+  ifs_update_data.mode = get_int_setting(f, vfxname, "ifs_update_data.mode");
+  ifs_update_data.cycle = get_int_setting(f, vfxname, "ifs_update_data.cycle");
+
+  IfsData *data = (IfsData*) _this->fx_data;
+  data->Cur_Pt = get_int_setting(f, vfxname, "data.Cur_Pt");
+  data->initalized = get_int_setting(f, vfxname, "data.initalized");
+  data->initalized = 1;
+
+  FRACTAL *Fractal = data->Root;
+  Fractal->Nb_Simi = get_int_setting(f, vfxname, "Fractal.Nb_Simi");
+  Fractal->Depth = get_int_setting(f, vfxname, "Fractal.Depth");
+  Fractal->Col = get_int_setting(f, vfxname, "Fractal.Col");
+  Fractal->Count = get_int_setting(f, vfxname, "Fractal.Count");
+  Fractal->Speed = get_int_setting(f, vfxname, "Fractal.Speed");
+  Fractal->Width = get_int_setting(f, vfxname, "Fractal.Width");
+  Fractal->Height = get_int_setting(f, vfxname, "Fractal.Height");
+  Fractal->Lx = get_int_setting(f, vfxname, "Fractal.Lx");
+  Fractal->Ly = get_int_setting(f, vfxname, "Fractal.Ly");
+  Fractal->r_mean = get_float_setting(f, vfxname, "Fractal.r_mean");
+  Fractal->dr_mean = get_float_setting(f, vfxname, "Fractal.dr_mean");
+  Fractal->dr2_mean = get_float_setting(f, vfxname, "Fractal.dr2_mean");
+  Fractal->Cur_Pt = get_int_setting(f, vfxname, "Fractal.Cur_Pt");
+  Fractal->Max_Pt = get_int_setting(f, vfxname, "Fractal.Max_Pt");
+
+  for (int i = 0; i < Fractal->Nb_Simi; i++) {
+    SIMI *simi = &(Fractal->Components[i]);
+    simi->c_x = get_indexed_float_setting(f, vfxname, "simi.c_x", i);
+    simi->c_y = get_indexed_float_setting(f, vfxname, "simi.c_y", i);
+    simi->r = get_indexed_float_setting(f, vfxname, "simi.r", i);
+    simi->r2 = get_indexed_float_setting(f, vfxname, "simi.r2", i);
+    simi->A = get_indexed_float_setting(f, vfxname, "simi.A", i);
+    simi->A2 = get_indexed_float_setting(f, vfxname, "simi.A2", i);
+    simi->Ct = get_indexed_int_setting(f, vfxname, "simi.Ct", i);
+    simi->St = get_indexed_int_setting(f, vfxname, "simi.St", i);
+    simi->Ct2 = get_indexed_int_setting(f, vfxname, "simi.Ct2", i);
+    simi->St2 = get_indexed_int_setting(f, vfxname, "simi.St2", i);
+    simi->Cx = get_indexed_int_setting(f, vfxname, "simi.Cx", i);
+    simi->Cy = get_indexed_int_setting(f, vfxname, "simi.Cy", i);
+    simi->R = get_indexed_int_setting(f, vfxname, "simi.R", i);
+    simi->R2 = get_indexed_int_setting(f, vfxname, "simi.R2", i);
+  }
+
+  fclose(f);
+
+//    ifs_vfx_save(_this, info, "/tmp/vfx_save_after_restore.txt");
+}
 static void ifs_vfx_init(VisualFX *_this, PluginInfo *info) {
 
 	IfsData *data = (IfsData*)malloc(sizeof(IfsData));
+
+    data->enabled_bp = secure_b_param("Enabled", 1);
+    data->params = plugin_parameters("Ifs", 1);
+    data->params.params[0] = &data->enabled_bp;
+
 	data->Root = (FRACTAL*)NULL;
 	data->initalized = 0;
 	_this->fx_data = data;
+    _this->params = &data->params;
+
+    init_ifs(info, data);
+    data->initalized = 1;
 }
 
 static void ifs_vfx_free(VisualFX *_this) {
@@ -783,5 +966,7 @@ VisualFX ifs_visualfx_create(void) {
 	vfx.init = ifs_vfx_init;
 	vfx.free = ifs_vfx_free;
 	vfx.apply = ifs_vfx_apply;
+  vfx.save = ifs_vfx_save;
+  vfx.restore = ifs_vfx_restore;
 	return vfx;
 }

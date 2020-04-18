@@ -107,6 +107,8 @@ VisualFX tentacle_fx_create(void) {
 	fx.init = tentacle_fx_init;
 	fx.apply = tentacle_fx_apply;
 	fx.free = tentacle_fx_free;
+  fx.save = NULL;
+  fx.restore = NULL;
 	return fx;
 }
 

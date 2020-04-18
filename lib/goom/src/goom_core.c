@@ -62,45 +62,38 @@ PluginInfo* goom_init(guint32 resx, guint32 resy, int seed)
 
     PluginInfo *goomInfo = (PluginInfo*)malloc(sizeof(PluginInfo));
     
-#ifdef VERBOSE
-    printf ("GOOM: init (%d, %d);\n", resx, resy);
-#endif
-    
-    plugin_info_init(goomInfo,4);
-    
+    plugin_info_init(goomInfo, 5);
+
     goomInfo->star_fx = flying_star_create();
-    goomInfo->star_fx.init(&goomInfo->star_fx, goomInfo);
-    
-    goomInfo->zoomFilter_fx = zoomFilterVisualFXWrapper_create ();
-    goomInfo->zoomFilter_fx.init(&goomInfo->zoomFilter_fx, goomInfo);
-    
+    goomInfo->zoomFilter_fx = zoomFilterVisualFXWrapper_create();
     goomInfo->tentacles_fx = tentacle_fx_create();
-    goomInfo->tentacles_fx.init(&goomInfo->tentacles_fx, goomInfo);
-    
     goomInfo->convolve_fx = convolve_create();
-    goomInfo->convolve_fx.init(&goomInfo->convolve_fx, goomInfo);
-    
-    plugin_info_add_visual (goomInfo, 0, &goomInfo->zoomFilter_fx);
-    plugin_info_add_visual (goomInfo, 1, &goomInfo->tentacles_fx);
-    plugin_info_add_visual (goomInfo, 2, &goomInfo->star_fx);
-    plugin_info_add_visual (goomInfo, 3, &goomInfo->convolve_fx);
-    
+    goomInfo->ifs_fx = ifs_visualfx_create();
+
     goomInfo->screen.width = resx;
     goomInfo->screen.height = resy;
     goomInfo->screen.size = resx * resy;
-    
-    init_buffers(goomInfo, goomInfo->screen.size);
-    if (seed == 0) {
+
+   init_buffers(goomInfo, goomInfo->screen.size);
+   if (seed == 0) {
       seed = goomInfo->pixel;
     } else if (seed > 0) {
       pcg32_init(seed);
     }
     goomInfo->gRandom = goom_random_init();
+
+    goomInfo->star_fx.init(&goomInfo->star_fx, goomInfo);
+    goomInfo->zoomFilter_fx.init(&goomInfo->zoomFilter_fx, goomInfo);
+    goomInfo->tentacles_fx.init(&goomInfo->tentacles_fx, goomInfo);
+    goomInfo->convolve_fx.init(&goomInfo->convolve_fx, goomInfo);
+    goomInfo->ifs_fx.init(&goomInfo->ifs_fx, goomInfo);
+    plugin_info_add_visual(goomInfo, 0, &goomInfo->zoomFilter_fx);
+    plugin_info_add_visual(goomInfo, 1, &goomInfo->tentacles_fx);
+    plugin_info_add_visual(goomInfo, 2, &goomInfo->star_fx);
+    plugin_info_add_visual(goomInfo, 3, &goomInfo->convolve_fx);
+    plugin_info_add_visual(goomInfo, 4, &goomInfo->ifs_fx);
     
     goomInfo->cycle = 0;
-    
-    goomInfo->ifs_fx = ifs_visualfx_create();
-    goomInfo->ifs_fx.init(&goomInfo->ifs_fx, goomInfo);
     
     goomInfo->gmline1 = goom_lines_init (goomInfo, resx, goomInfo->screen.height,
                                          GML_HLINE, goomInfo->screen.height, GML_BLACK,
@@ -166,7 +159,11 @@ guint32 *goom_update (PluginInfo *goomInfo,
     /* test if the config has changed, update it if so */
     pointWidth = (goomInfo->screen.width * 2) / 5;
     pointHeight = ((goomInfo->screen.height) * 2) / 5;
-    
+
+    GOOM_LOG_DEBUG("goomInfo->sound.timeSinceLastGoom = %d", goomInfo->sound.timeSinceLastGoom);
+    GOOM_LOG_DEBUG("pcg32_get_last_state = %ld", pcg32_get_last_state());
+    GOOM_LOG_DEBUG("goomInfo->gRandom->pos = %d", goomInfo->gRandom->pos);
+
     /* ! etude du signal ... */
     evaluate_sound (data, &(goomInfo->sound));
     
@@ -191,10 +188,15 @@ guint32 *goom_update (PluginInfo *goomInfo,
             goomInfo->update.ifs_incr = 1;
     }
     
-    if (goomInfo->update.ifs_incr > 0)
+    GOOM_LOG_DEBUG("goomInfo->update.ifs_incr = %d", goomInfo->update.ifs_incr);
+    if (goomInfo->update.ifs_incr > 0) {
+        GOOM_LOG_DEBUG("goomInfo->update.ifs_incr = %d > 0", goomInfo->update.ifs_incr);
         goomInfo->ifs_fx.apply(&goomInfo->ifs_fx, goomInfo->p2, goomInfo->p1, goomInfo);
+    }		
     
+    GOOM_LOG_DEBUG("goomInfo->curGState->drawPoints = %d", goomInfo->curGState->drawPoints);
     if (goomInfo->curGState->drawPoints) {
+        GOOM_LOG_DEBUG("goomInfo->curGState->drawPoints = %d is true", goomInfo->curGState->drawPoints);
         const int speedvarMult80Plus15 = goomInfo->sound.speedvar*80;
         const int speedvarMult50Plus1 = goomInfo->sound.speedvar*50 + 1;
 
@@ -248,6 +250,7 @@ guint32 *goom_update (PluginInfo *goomInfo,
             pointFilter(goomInfo, goomInfo->p1, WHITE,  white_t1,  white_t2,  white_t3,  white_t4,  white_cycle);
         }
     }
+    GOOM_LOG_DEBUG("goomInfo->sound.timeSinceLastGoom = %d", goomInfo->sound.timeSinceLastGoom);
     
     /* par défaut pas de changement de zoom */
     pzfd = NULL;
@@ -255,11 +258,9 @@ guint32 *goom_update (PluginInfo *goomInfo,
     /* 
         * Test forceMode
      */
-#ifdef VERBOSE
     if (forceMode != 0) {
-        printf ("forcemode = %d\n", forceMode);
+      GOOM_LOG_DEBUG("forcemode = %d\n", forceMode);
     }
-#endif
     
     
     /* diminuer de 1 le temps de lockage */
@@ -269,12 +270,21 @@ guint32 *goom_update (PluginInfo *goomInfo,
         goomInfo->update.lockvar = 0;
     
     /* on verifie qu'il ne se pas un truc interressant avec le son. */
+    GOOM_LOG_DEBUG("goomInfo->sound.timeSinceLastGoom = %d, forceMode = %d, goomInfo->update.cyclesSinceLastChange = %d",
+        goomInfo->sound.timeSinceLastGoom, forceMode, goomInfo->update.cyclesSinceLastChange);
     if ((goomInfo->sound.timeSinceLastGoom == 0)
         || (forceMode > 0)
         || (goomInfo->update.cyclesSinceLastChange > TIME_BTW_CHG)) {
         
+        GOOM_LOG_DEBUG(
+          "goomInfo->sound.timeSinceLastGoom = %d, forceMode = %d, goomInfo->update.cyclesSinceLastChange = %d",
+          goomInfo->sound.timeSinceLastGoom, forceMode, goomInfo->update.cyclesSinceLastChange);
+
         /* changement eventuel de mode */
-        if (goom_irand(goomInfo->gRandom,16) == 0)
+        const int rand16 = goom_irand(goomInfo->gRandom, 16);
+        GOOM_LOG_DEBUG("goom_irand(goomInfo->gRandom,16) = %d", rand16);
+        if (rand16 == 0) {
+            GOOM_LOG_DEBUG("goom_irand(goomInfo->gRandom,16) = 0");
             switch (goom_irand(goomInfo->gRandom,34)) {
                 case 0:
                 case 10:
@@ -285,9 +295,10 @@ guint32 *goom_update (PluginInfo *goomInfo,
                     goomInfo->update.zoomFilterData.mode = WAVE_MODE;
                     goomInfo->update.zoomFilterData.reverse = 0;
                     goomInfo->update.zoomFilterData.waveEffect = (goom_irand(goomInfo->gRandom,3) == 0);
-                    if (goom_irand(goomInfo->gRandom,2))
+                    if (goom_irand(goomInfo->gRandom,2)) {
                         goomInfo->update.zoomFilterData.vitesse = (goomInfo->update.zoomFilterData.vitesse + 127) >> 1;
-                        break;
+                    }
+                    break;
                 case 1:
                 case 11:
                     goomInfo->update.zoomFilterData.mode = CRYSTAL_BALL_MODE;
@@ -351,13 +362,19 @@ guint32 *goom_update (PluginInfo *goomInfo,
                     goomInfo->update.zoomFilterData.waveEffect = 0;
                     goomInfo->update.zoomFilterData.hypercosEffect = 0;
             }
+		}
     }
+    GOOM_LOG_DEBUG("goomInfo->sound.timeSinceLastGoom = %d", goomInfo->sound.timeSinceLastGoom);
         
         /* tout ceci ne sera fait qu'en cas de non-blocage */
+        GOOM_LOG_DEBUG("goomInfo->update.lockvar = %d", goomInfo->update.lockvar);
         if (goomInfo->update.lockvar == 0) {
+            GOOM_LOG_DEBUG("goomInfo->update.lockvar = 0");
             /* reperage de goom (acceleration forte de l'acceleration du volume) */
             /* -> coup de boost de la vitesse si besoin.. */
+            GOOM_LOG_DEBUG("goomInfo->sound.timeSinceLastGoom = %d", goomInfo->sound.timeSinceLastGoom);
             if (goomInfo->sound.timeSinceLastGoom == 0) {
+                GOOM_LOG_DEBUG("goomInfo->sound.timeSinceLastGoom = 0");
                 
                 int i;
                 goomInfo->update.goomvar++;
@@ -371,8 +388,10 @@ guint32 *goom_update (PluginInfo *goomInfo,
                 
                 for (i=0;i<goomInfo->statesNumber;i++)
                     if ((goomInfo->update.stateSelectionRnd >= goomInfo->states[i].rangemin)
-                        && (goomInfo->update.stateSelectionRnd <= goomInfo->states[i].rangemax))
+                        && (goomInfo->update.stateSelectionRnd <= goomInfo->states[i].rangemax)) {
                         goomInfo->curGState = &(goomInfo->states[i]);
+                        goomInfo->curGStateIndex = i;
+					}	
                 
                 if ((goomInfo->curGState->drawIFS) && (goomInfo->update.ifs_incr<=0)) {
                     goomInfo->update.recay_ifs = 5;

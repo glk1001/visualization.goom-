@@ -25,6 +25,7 @@
 #include "goom_tools.h"
 #include "goom_plugin_info.h"
 #include "goom_fx.h"
+#include "goom_testing.h"
 #include "v3d.h"
 
 /* TODO : MOVE THIS AWAY !!! */
@@ -506,7 +507,58 @@ static void generateTheWaterFXHorizontalDirectionBuffer(PluginInfo *goomInfo, Zo
     }
 }
 
+static void InitBuffers(PluginInfo *goomInfo, Uint resx, Uint resy)
+{
+  ZoomFilterFXWrapperData *data = (ZoomFilterFXWrapperData*) goomInfo->zoomFilter_fx.fx_data;
 
+  if ((data->prevX != resx) || (data->prevY != resy)) {
+    data->prevX = resx;
+    data->prevY = resy;
+
+    if (data->brutS) {
+      free(data->freebrutS);
+    }
+    data->brutS = 0;
+    if (data->brutD) {
+      free(data->freebrutD);
+    }
+    data->brutD = 0;
+    if (data->brutT) {
+      free(data->freebrutT);
+    }
+    data->brutT = 0;
+
+    data->middleX = resx / 2;
+    data->middleY = resy / 2;
+    data->mustInitBuffers = 1;
+    if (data->firedec) {
+      free(data->firedec);
+    }
+    data->firedec = 0;
+  }
+
+  data->mustInitBuffers = 0;
+  data->freebrutS = (signed int*) calloc(resx * resy * 2 + 128, sizeof(unsigned int));
+  data->brutS = (gint32*) ((1 + ((uintptr_t) (data->freebrutS)) / 128) * 128);
+
+  data->freebrutD = (signed int*) calloc(resx * resy * 2 + 128, sizeof(unsigned int));
+  data->brutD = (gint32*) ((1 + ((uintptr_t) (data->freebrutD)) / 128) * 128);
+
+  data->freebrutT = (signed int*) calloc(resx * resy * 2 + 128, sizeof(unsigned int));
+  data->brutT = (gint32*) ((1 + ((uintptr_t) (data->freebrutT)) / 128) * 128);
+
+  data->buffratio = 0;
+
+  data->firedec = (int*) malloc(data->prevY * sizeof(int));
+  generateTheWaterFXHorizontalDirectionBuffer(goomInfo, data);
+
+  data->interlace_start = 0;
+  makeZoomBufferStripe(data, resy);
+
+  /* Copy the data from temp to dest and source */
+  memcpy(data->brutS, data->brutT, resx * resy * 2 * sizeof(int));
+  memcpy(data->brutD, data->brutT, resx * resy * 2 * sizeof(int));
+}
 
 /**
 * Main work for the dynamic displacement map.
@@ -521,33 +573,25 @@ static void generateTheWaterFXHorizontalDirectionBuffer(PluginInfo *goomInfo, Zo
  *  So that is why you have this name, for the nostalgy of the first days of goom
  *  when it was just a tiny program writen in Turbo Pascal on my i486...
  */
-void zoomFilterFastRGB (PluginInfo *goomInfo, Pixel * pix1, Pixel * pix2, ZoomFilterData * zf, Uint resx, Uint resy, int switchIncr, float switchMult)
+void zoomFilterFastRGB(PluginInfo *goomInfo, Pixel *pix1, Pixel *pix2, ZoomFilterData *zf, Uint resx, Uint resy,
+    int switchIncr, float switchMult)
 {
-    Uint x, y;
-    
-    ZoomFilterFXWrapperData *data = (ZoomFilterFXWrapperData*)goomInfo->zoomFilter_fx.fx_data;
-    
-    if (!BVAL(data->enabled_bp)) return;
-    
-    /** changement de taille **/
-    if ((data->prevX != resx) || (data->prevY != resy)) {
-        data->prevX = resx;
-        data->prevY = resy;
-        
-        if (data->brutS) free (data->freebrutS);
-        data->brutS = 0;
-        if (data->brutD) free (data->freebrutD);
-        data->brutD = 0;
-        if (data->brutT) free (data->freebrutT);
-        data->brutT = 0;
-        
-        data->middleX = resx / 2;
-        data->middleY = resy / 2;
-        data->mustInitBuffers = 1;
-        if (data->firedec) free (data->firedec);
-        data->firedec = 0;
-    }
-    
+  GOOM_LOG_DEBUG("resx = %d, resy = %d, switchIncr = %d, switchMult = %d", resx, resy, switchIncr, switchMult);
+
+  Uint x, y;
+
+  ZoomFilterFXWrapperData *data = (ZoomFilterFXWrapperData*) goomInfo->zoomFilter_fx.fx_data;
+
+  if (!BVAL(data->enabled_bp))
+    return;
+
+  /** changement de taille **/
+  GOOM_LOG_DEBUG("data->prevX = %d, data->prevY = %d", data->prevX, data->prevY);
+  if (data->mustInitBuffers) {
+    GOOM_LOG_DEBUG("Calling InitBuffers");
+    InitBuffers(goomInfo, resx, resy);
+  }
+
     if (data->interlace_start != -2)
         zf = NULL;
     
@@ -567,33 +611,8 @@ void zoomFilterFastRGB (PluginInfo *goomInfo, Pixel * pix1, Pixel * pix2, ZoomFi
         data->interlace_start = 0;
     }
     
-    
-    if (data->mustInitBuffers) {
-        
-        data->mustInitBuffers = 0;
-        data->freebrutS = (signed int *) calloc (resx * resy * 2 + 128, sizeof(unsigned int));
-        data->brutS = (gint32 *) ((1 + ((uintptr_t) (data->freebrutS)) / 128) * 128);
-        
-        data->freebrutD = (signed int *) calloc (resx * resy * 2 + 128, sizeof(unsigned int));
-        data->brutD = (gint32 *) ((1 + ((uintptr_t) (data->freebrutD)) / 128) * 128);
-        
-        data->freebrutT = (signed int *) calloc (resx * resy * 2 + 128, sizeof(unsigned int));
-        data->brutT = (gint32 *) ((1 + ((uintptr_t) (data->freebrutT)) / 128) * 128);
-        
-        data->buffratio = 0;
-        
-        data->firedec = (int *) malloc (data->prevY * sizeof (int));
-        generateTheWaterFXHorizontalDirectionBuffer(goomInfo, data);
-        
-        data->interlace_start = 0;
-        makeZoomBufferStripe(data,resy);
-        
-        /* Copy the data from temp to dest and source */
-        memcpy(data->brutS,data->brutT,resx * resy * 2 * sizeof(int));
-        memcpy(data->brutD,data->brutT,resx * resy * 2 * sizeof(int));
-    }
-    
     /* generation du buffer de trans */
+    GOOM_LOG_DEBUG("data->interlace_start = %d", data->interlace_start);
     if (data->interlace_start == -1) {
         
         /* sauvegarde de l'etat actuel dans la nouvelle source
@@ -610,6 +629,7 @@ void zoomFilterFastRGB (PluginInfo *goomInfo, Pixel * pix1, Pixel * pix2, ZoomFi
         data->buffratio = 0;
     }
     
+    GOOM_LOG_DEBUG("data->interlace_start = %d", data->interlace_start);
     if (data->interlace_start == -1) {
         signed int * tmp;
         tmp = data->brutD;
@@ -621,6 +641,7 @@ void zoomFilterFastRGB (PluginInfo *goomInfo, Pixel * pix1, Pixel * pix2, ZoomFi
         data->interlace_start = -2;
     }
     
+    GOOM_LOG_DEBUG("data->interlace_start = %d", data->interlace_start);
     if (data->interlace_start>=0)
     {
         /* creation de la nouvelle destination */
@@ -683,7 +704,73 @@ static void generatePrecalCoef (int precalCoef[16][16])
 }
 
 /* VisualFX Wrapper */
+static const char *vfxname = "ZoomFilter";
 
+static void zoomFilterSave(VisualFX *_this, const PluginInfo *info, const char *file)
+{
+  FILE *f = fopen(file, "w");
+
+  ZoomFilterFXWrapperData *data = (ZoomFilterFXWrapperData*) _this->fx_data;
+
+  save_int_setting(f, vfxname, "data->zoom_width", data->zoom_width);
+  save_int_setting(f, vfxname, "data->prevX", data->prevX);
+  save_int_setting(f, vfxname, "data->prevY", data->prevY);
+  save_float_setting(f, vfxname, "data->general_speed", data->general_speed);
+  save_int_setting(f, vfxname, "data->reverse", data->reverse);
+  save_int_setting(f, vfxname, "data->theMode", (int )(data->theMode));
+  save_int_setting(f, vfxname, "data->waveEffect", data->waveEffect);
+  save_int_setting(f, vfxname, "data->hypercosEffect", data->hypercosEffect);
+  save_int_setting(f, vfxname, "data->vPlaneEffect", data->vPlaneEffect);
+  save_int_setting(f, vfxname, "data->hPlaneEffect", data->hPlaneEffect);
+  save_int_setting(f, vfxname, "data->noisify", (int )(data->noisify));
+  save_int_setting(f, vfxname, "data->middleX", data->middleX);
+  save_int_setting(f, vfxname, "data->middleY", data->middleY);
+
+  save_int_setting(f, vfxname, "data->mustInitBuffers", data->mustInitBuffers);
+  save_int_setting(f, vfxname, "data->interlace_start", data->interlace_start);
+
+  save_int_setting(f, vfxname, "data->buffratio", data->buffratio);
+//    int precalCoef[BUFFPOINTNB][BUFFPOINTNB];
+
+  save_int_setting(f, vfxname, "data->wave", data->wave);
+  save_int_setting(f, vfxname, "data->wavesp", data->wavesp);
+
+  fclose(f);
+}
+
+static void zoomFilterRestore(VisualFX *_this, PluginInfo *info, const char *file)
+{
+  FILE *f = fopen(file, "r");
+  if (f == NULL) {
+    exit(EXIT_FAILURE);
+  }
+
+  ZoomFilterFXWrapperData *data = (ZoomFilterFXWrapperData*) _this->fx_data;
+
+  data->zoom_width = get_int_setting(f, vfxname, "data->zoom_width");
+  data->prevX = get_int_setting(f, vfxname, "data->prevX");
+  data->prevY = get_int_setting(f, vfxname, "data->prevY");
+  data->general_speed = get_float_setting(f, vfxname, "data->general_speed");
+  data->reverse = get_int_setting(f, vfxname, "data->reverse");
+  data->theMode = get_int_setting(f, vfxname, "data->theMode");
+  data->waveEffect = get_int_setting(f, vfxname, "data->waveEffect");
+  data->hypercosEffect = get_int_setting(f, vfxname, "data->hypercosEffect");
+  data->vPlaneEffect = get_int_setting(f, vfxname, "data->vPlaneEffect");
+  data->hPlaneEffect = get_int_setting(f, vfxname, "data->hPlaneEffect");
+  data->noisify = get_int_setting(f, vfxname, "data->noisify");
+  data->middleX = get_int_setting(f, vfxname, "data->middleX");
+  data->middleY = get_int_setting(f, vfxname, "data->middleY");
+
+  data->mustInitBuffers = get_int_setting(f, vfxname, "data->mustInitBuffers");
+  data->interlace_start = get_int_setting(f, vfxname, "data->interlace_start");
+
+  data->buffratio = get_int_setting(f, vfxname, "data->buffratio");
+
+  data->wave = get_int_setting(f, vfxname, "data->wave");
+  data->wavesp = get_int_setting(f, vfxname, "data->wavesp");
+
+  fclose(f);
+}
 static void zoomFilterVisualFXWrapper_init (struct _VISUAL_FX *_this, PluginInfo *info)
 {
     ZoomFilterFXWrapperData *data = (ZoomFilterFXWrapperData*)malloc(sizeof(ZoomFilterFXWrapperData));
@@ -719,7 +806,7 @@ static void zoomFilterVisualFXWrapper_init (struct _VISUAL_FX *_this, PluginInfo
     
     data->enabled_bp = secure_b_param("Enabled", 1);
     
-    data->params = plugin_parameters ("Zoom Filter", 1);
+    data->params = plugin_parameters("ZoomFilter", 1);
     data->params.params[0] = &data->enabled_bp;
     
     _this->params = &data->params;
@@ -727,6 +814,8 @@ static void zoomFilterVisualFXWrapper_init (struct _VISUAL_FX *_this, PluginInfo
     
     /** modif d'optim by Jeko : precalcul des 4 coefs resultant des 2 pos */
     generatePrecalCoef(data->precalCoef);
+
+    InitBuffers(info, info->screen.width, info->screen.height);
 }
 
 static void zoomFilterVisualFXWrapper_free (struct _VISUAL_FX *_this)
@@ -750,6 +839,8 @@ VisualFX zoomFilterVisualFXWrapper_create(void)
     fx.init = zoomFilterVisualFXWrapper_init;
     fx.free = zoomFilterVisualFXWrapper_free;
     fx.apply = zoomFilterVisualFXWrapper_apply;
+    fx.save = zoomFilterSave;
+    fx.restore = zoomFilterRestore;
     return fx;
 }
 

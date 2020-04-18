@@ -24,7 +24,7 @@ typedef struct {
 	int rangemax;
 } GoomState;
 
-#define STATES_MAX_NB 128
+#define STATES_MAX_NB 8
 
 /**
  * Gives informations about the sound.
@@ -113,6 +113,7 @@ struct _PLUGIN_INFO {
 	int statesRangeMax;
 
 	GoomState *curGState;
+	int curGStateIndex;
 
 	/** effet de ligne.. */
 	GMLine *gmline1;
@@ -126,7 +127,7 @@ struct _PLUGIN_INFO {
 	/** goom_update internals.
 	 * I took all static variables from goom_update and put them here.. for the moment.
 	 */
-	struct {
+	struct GoomUpdate {
 		int lockvar;               /* pour empecher de nouveaux changements */
 		int goomvar;               /* boucle des gooms */
 		int loopvar;               /* mouvement des points */
@@ -145,7 +146,7 @@ struct _PLUGIN_INFO {
 		int stateSelectionBlocker;
 		int previousZoomSpeed;
 		int timeOfTitleDisplay;
-                char titleText[1024];
+        char titleText[1024];
 		ZoomFilterData zoomFilterData;                
 	} update;
 

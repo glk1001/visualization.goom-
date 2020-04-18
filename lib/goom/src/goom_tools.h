@@ -1,6 +1,7 @@
 #ifndef _GOOMTOOLS_H
 #define _GOOMTOOLS_H
 #include <inttypes.h>
+#include "goom_logging.h"
 
 /**
  * Random number generator wrapper for faster random number.
@@ -35,12 +36,15 @@ void goom_random_free(GoomRandom *grandom);
 inline static int goom_random(GoomRandom *grandom)
 {
   grandom->pos++; /* works because pos is an unsigned short */
-  return grandom->array[grandom->pos];
+  const int val = grandom->array[grandom->pos];
+  GOOM_LOG_DEBUG("%u, %d", grandom->pos, val);
+  return val;
 }
 
 inline static int goom_irand(GoomRandom *grandom, int i)
 {
   grandom->pos++; /* works because pos is an unsigned short */
+  GOOM_LOG_DEBUG("%u, %d", grandom->pos, grandom->array[grandom->pos]);
   return grandom->array[grandom->pos] % i;
 }
 
