@@ -16,6 +16,7 @@
 #include "goom.h"
 #include "goom_plugin_info.h"
 #include "goom_tools.h"
+#include "goom_logging.h"
 #include "goom_filters.h"
 #include "lines.h"
 #include "ifs.h"
@@ -57,6 +58,8 @@ static void init_buffers(PluginInfo *goomInfo, int buffsize)
 **************************/
 PluginInfo* goom_init(guint32 resx, guint32 resy, int seed)
 {
+    GOOM_LOG_DEBUG("Initialize goom: resx = %d, resy = %d, seed = %d.", resx, resy, seed);
+
     PluginInfo *goomInfo = (PluginInfo*)malloc(sizeof(PluginInfo));
     
 #ifdef VERBOSE

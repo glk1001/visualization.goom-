@@ -19,6 +19,7 @@ set(GOOM_SOURCES src/goomsl_yacc.c
                  src/gfontlib.c
                  src/gfontrle.c
                  src/goom_core.c
+                 src/goom_logging.c
                  src/goom_testing.c
                  src/graphic.c
                  src/ifs.c
@@ -41,6 +42,7 @@ set(GOOM_HEADERS src/goom.h
                  src/goom_config_param.h
                  src/goom_visual_fx.h
                  src/goom_filters.h
+                 src/goom_logging.h
                  src/goom_testing.h
                  src/goom_tools.h
                  src/goomsl.h
