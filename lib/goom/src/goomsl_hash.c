@@ -1,13 +1,14 @@
 #include "goomsl_hash.h"
-#include <string.h>
-#include <stdlib.h>
 
-static GoomHashEntry* entry_new(const char *key, HashValue value)
+#include <stdlib.h>
+#include <string.h>
+
+static GoomHashEntry* entry_new(const char* key, HashValue value)
 {
   const int len = strlen(key);
-  GoomHashEntry *entry = (GoomHashEntry*) malloc(sizeof(GoomHashEntry));
+  GoomHashEntry* entry = (GoomHashEntry*)malloc(sizeof(GoomHashEntry));
 
-  entry->key = (char*) malloc(len + 1);
+  entry->key = (char*)malloc(len + 1);
   memcpy(entry->key, key, len + 1);
   entry->value = value;
   entry->lower = NULL;
@@ -16,7 +17,7 @@ static GoomHashEntry* entry_new(const char *key, HashValue value)
   return entry;
 }
 
-static void entry_free(GoomHashEntry *entry)
+static void entry_free(GoomHashEntry* entry)
 {
   if (entry != NULL) {
     entry_free(entry->lower);
@@ -26,7 +27,7 @@ static void entry_free(GoomHashEntry *entry)
   }
 }
 
-static void entry_put(GoomHashEntry *entry, const char *key, HashValue value)
+static void entry_put(GoomHashEntry* entry, const char* key, HashValue value)
 {
   const int cmp = strcmp(key, entry->key);
   if (cmp == 0) {
@@ -46,7 +47,7 @@ static void entry_put(GoomHashEntry *entry, const char *key, HashValue value)
   }
 }
 
-static HashValue* entry_get(GoomHashEntry *entry, const char *key)
+static HashValue* entry_get(GoomHashEntry* entry, const char* key)
 {
   if (entry == NULL)
     return NULL;
@@ -62,19 +63,19 @@ static HashValue* entry_get(GoomHashEntry *entry, const char *key)
 
 GoomHash* goom_hash_new()
 {
-  GoomHash *_this = (GoomHash*) malloc(sizeof(GoomHash));
+  GoomHash* _this = (GoomHash*)malloc(sizeof(GoomHash));
   _this->root = NULL;
   _this->number_of_puts = 0;
   return _this;
 }
 
-void goom_hash_free(GoomHash *_this)
+void goom_hash_free(GoomHash* _this)
 {
   entry_free(_this->root);
   free(_this);
 }
 
-void goom_hash_put(GoomHash *_this, const char *key, HashValue value)
+void goom_hash_put(GoomHash* _this, const char* key, HashValue value)
 {
   _this->number_of_puts += 1;
   if (_this->root == NULL) {
@@ -84,7 +85,7 @@ void goom_hash_put(GoomHash *_this, const char *key, HashValue value)
   }
 }
 
-HashValue* goom_hash_get(GoomHash *_this, const char *key)
+HashValue* goom_hash_get(GoomHash* _this, const char* key)
 {
   if (_this == NULL) {
     return NULL;
@@ -92,21 +93,21 @@ HashValue* goom_hash_get(GoomHash *_this, const char *key)
   return entry_get(_this->root, key);
 }
 
-void goom_hash_put_int(GoomHash *_this, const char *key, int i)
+void goom_hash_put_int(GoomHash* _this, const char* key, int i)
 {
   HashValue value;
   value.i = i;
   goom_hash_put(_this, key, value);
 }
 
-void goom_hash_put_float(GoomHash *_this, const char *key, float f)
+void goom_hash_put_float(GoomHash* _this, const char* key, float f)
 {
   HashValue value;
   value.f = f;
   goom_hash_put(_this, key, value);
 }
 
-void goom_hash_put_ptr(GoomHash *_this, const char *key, void *ptr)
+void goom_hash_put_ptr(GoomHash* _this, const char* key, void* ptr)
 {
   HashValue value;
   value.ptr = ptr;
@@ -114,7 +115,7 @@ void goom_hash_put_ptr(GoomHash *_this, const char *key, void *ptr)
 }
 
 /* FOR EACH */
-static void _goom_hash_for_each(GoomHash *_this, GoomHashEntry *entry, GH_Func func)
+static void _goom_hash_for_each(GoomHash* _this, GoomHashEntry* entry, GH_Func func)
 {
   if (entry == NULL) {
     return;
@@ -124,12 +125,12 @@ static void _goom_hash_for_each(GoomHash *_this, GoomHashEntry *entry, GH_Func f
   _goom_hash_for_each(_this, entry->upper, func);
 }
 
-void goom_hash_for_each(GoomHash *_this, GH_Func func)
+void goom_hash_for_each(GoomHash* _this, GH_Func func)
 {
   _goom_hash_for_each(_this, _this->root, func);
 }
 
-int goom_hash_number_of_puts(GoomHash *_this)
+int goom_hash_number_of_puts(GoomHash* _this)
 {
   return _this->number_of_puts;
 }

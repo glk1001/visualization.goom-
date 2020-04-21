@@ -1,24 +1,26 @@
 #include "gfontlib.h"
-#include "goom_config.h"
-#include "gfontrle.h"
-#include <string.h>
-#include <stdlib.h>
 
-static Pixel ***font_chars;
-static int *font_width;
-static int *font_height;
-static Pixel ***small_font_chars;
-static int *small_font_width;
-static int *small_font_height;
+#include "gfontrle.h"
+#include "goom_config.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+static Pixel*** font_chars;
+static int* font_width;
+static int* font_height;
+static Pixel*** small_font_chars;
+static int* small_font_width;
+static int* small_font_height;
 
 void gfont_load(void)
 {
-  unsigned char *gfont;
+  unsigned char* gfont;
   unsigned int i = 0;
   unsigned int j = 0;
   unsigned int nba = 0;
   unsigned int current = 32;
-  int *font_pos;
+  int* font_pos;
 
   /* decompress le rle */
   gfont = malloc(the_font.width * the_font.height * the_font.bytes_per_pixel);
@@ -76,7 +78,8 @@ void gfont_load(void)
         g = gfont[(y + 2) * (the_font.width * 4) + (x * 4 + font_pos[i] * 4 + 1)];
         b = gfont[(y + 2) * (the_font.width * 4) + (x * 4 + font_pos[i] * 4 + 2)];
         a = gfont[(y + 2) * (the_font.width * 4) + (x * 4 + font_pos[i] * 4 + 3)];
-        font_chars[i][y][x].val = (r << (ROUGE * 8)) | (g << (VERT * 8)) | (b << (BLEU * 8)) | (a << (ALPHA * 8));
+        font_chars[i][y][x].val =
+            (r << (ROUGE * 8)) | (g << (VERT * 8)) | (b << (BLEU * 8)) | (a << (ALPHA * 8));
       }
     }
     for (y = 0; y < font_height[i] / 2; y++) {
@@ -99,9 +102,10 @@ void gfont_load(void)
         g4 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 5)];
         b4 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 6)];
         a4 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 7)];
-        small_font_chars[i][y][x].val = (((r1 + r2 + r3 + r4) >> 2) << (ROUGE * 8))
-            | (((g1 + g2 + g3 + g4) >> 2) << (VERT * 8)) | (((b1 + b2 + b3 + b4) >> 2) << (BLEU * 8))
-            | (((a1 + a2 + a3 + a4) >> 2) << (ALPHA * 8));
+        small_font_chars[i][y][x].val = (((r1 + r2 + r3 + r4) >> 2) << (ROUGE * 8)) |
+                                        (((g1 + g2 + g3 + g4) >> 2) << (VERT * 8)) |
+                                        (((b1 + b2 + b3 + b4) >> 2) << (BLEU * 8)) |
+                                        (((a1 + a2 + a3 + a4) >> 2) << (ALPHA * 8));
       }
     }
   }
@@ -127,14 +131,15 @@ void gfont_load(void)
   free(font_pos);
 }
 
-void goom_draw_text(Pixel *buf, int resolx, int resoly, int x, int y, const char *str, float charspace, int center)
+void goom_draw_text(Pixel* buf, int resolx, int resoly, int x, int y, const char* str,
+                    float charspace, int center)
 {
-  float fx = (float) x;
+  float fx = (float)x;
   int fin = 0;
 
-  Pixel ***cur_font_chars;
-  int *cur_font_width;
-  int *cur_font_height;
+  Pixel*** cur_font_chars;
+  int* cur_font_width;
+  int* cur_font_height;
 
   if (resolx > 320) {
     /* printf("use big\n"); */
@@ -153,7 +158,7 @@ void goom_draw_text(Pixel *buf, int resolx, int resoly, int x, int y, const char
   }
 
   if (center) {
-    unsigned char *tmp = (unsigned char*) str;
+    unsigned char* tmp = (unsigned char*)str;
     float lg = -charspace;
 
     while (*tmp != '\0') {
@@ -166,7 +171,7 @@ void goom_draw_text(Pixel *buf, int resolx, int resoly, int x, int y, const char
   while (!fin) {
     unsigned char c = *str;
 
-    x = (int) fx;
+    x = (int)fx;
 
     if (c == '\0') {
       fin = 1;
@@ -189,7 +194,7 @@ void goom_draw_text(Pixel *buf, int resolx, int resoly, int x, int y, const char
         return;
       }
 
-      if (xmax >= (int) resolx) {
+      if (xmax >= (int)resolx) {
         xmax = resolx - 1;
       }
 
@@ -197,8 +202,8 @@ void goom_draw_text(Pixel *buf, int resolx, int resoly, int x, int y, const char
         yy = 0;
       }
 
-      if (yy <= (int) resoly - 1) {
-        if (ymax >= (int) resoly - 1) {
+      if (yy <= (int)resoly - 1) {
+        if (ymax >= (int)resoly - 1) {
           ymax = resoly - 1;
         }
 
@@ -214,12 +219,18 @@ void goom_draw_text(Pixel *buf, int resolx, int resoly, int x, int y, const char
                 Pixel back = buf[yy * resolx + xx];
                 unsigned int a1 = color.channels.a;
                 unsigned int a2 = 255 - a1;
-                buf[yy * resolx + xx].channels.r = (unsigned char) ((((unsigned int) color.channels.r * a1)
-                    + ((unsigned int) back.channels.r * a2)) >> 8);
-                buf[yy * resolx + xx].channels.g = (unsigned char) ((((unsigned int) color.channels.g * a1)
-                    + ((unsigned int) back.channels.g * a2)) >> 8);
-                buf[yy * resolx + xx].channels.b = (unsigned char) ((((unsigned int) color.channels.b * a1)
-                    + ((unsigned int) back.channels.b * a2)) >> 8);
+                buf[yy * resolx + xx].channels.r =
+                    (unsigned char)((((unsigned int)color.channels.r * a1) +
+                                     ((unsigned int)back.channels.r * a2)) >>
+                                    8);
+                buf[yy * resolx + xx].channels.g =
+                    (unsigned char)((((unsigned int)color.channels.g * a1) +
+                                     ((unsigned int)back.channels.g * a2)) >>
+                                    8);
+                buf[yy * resolx + xx].channels.b =
+                    (unsigned char)((((unsigned int)color.channels.b * a1) +
+                                     ((unsigned int)back.channels.b * a2)) >>
+                                    8);
               }
             }
           }

@@ -1,6 +1,6 @@
 #include "v3d.h"
 
-void v3d_to_v2d(v3d *v3, int nbvertex, int width, int height, float distance, v2d *v2)
+void v3d_to_v2d(v3d* v3, int nbvertex, int width, int height, float distance, v2d* v2)
 {
   for (int i = 0; i < nbvertex; ++i) {
     if (v3[i].z > 2) {

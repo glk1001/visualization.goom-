@@ -15,14 +15,14 @@
 #include "goom_typedefs.h"
 
 struct _VISUAL_FX {
-  void (*init) (struct _VISUAL_FX *_this, PluginInfo *info);
-  void (*free) (struct _VISUAL_FX *_this);
-  void (*apply) (struct _VISUAL_FX *_this, Pixel *src, Pixel *dest, PluginInfo *info);
-  void (*save) (struct _VISUAL_FX *_this, const PluginInfo *info, const char* file);
-  void (*restore) (struct _VISUAL_FX *_this, PluginInfo *info, const char* file);
-  void *fx_data;
+  void (*init)(struct _VISUAL_FX* _this, PluginInfo* info);
+  void (*free)(struct _VISUAL_FX* _this);
+  void (*apply)(struct _VISUAL_FX* _this, Pixel* src, Pixel* dest, PluginInfo* info);
+  void (*save)(struct _VISUAL_FX* _this, const PluginInfo* info, const char* file);
+  void (*restore)(struct _VISUAL_FX* _this, PluginInfo* info, const char* file);
+  void* fx_data;
 
-  PluginParameters *params;
+  PluginParameters* params;
 };
 
 #endif

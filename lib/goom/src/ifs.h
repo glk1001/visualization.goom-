@@ -23,5 +23,4 @@ void ifs_update (PluginInfo *goomInfo, Pixel * buffer, Pixel * back, int width, 
 void release_ifs (void);
 */
 
-
 #endif

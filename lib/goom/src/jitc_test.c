@@ -1,9 +1,10 @@
 #include "jitc_x86.h"
+
 #include <stdio.h>
 
-int main(int c, char **v)
+int main(int c, char** v)
 {
-  JitcX86Env *jitc = jitc_x86_env_new(0xffff);
+  JitcX86Env* jitc = jitc_x86_env_new(0xffff);
   JitcFunc func = jitc_prepare_func(jitc);
 
   jitc_add(jitc, "mov edx, $d", 0xffffffff);
@@ -17,7 +18,7 @@ int main(int c, char **v)
   jitc_add(jitc, "idiv ecx");
   jitc_add(jitc, "imul $d[ecx]", 2);
   jitc_add(jitc, "imul ecx, [ecx]");
-  jitc_add(jitc, "mov ecx,  $d", (char*) (&i) - 12);
+  jitc_add(jitc, "mov ecx,  $d", (char*)(&i) - 12);
   jitc_add(jitc, "dec $d[ecx]", 2);
   jitc_add(jitc, "add ecx, $d", 12);
   jitc_add(jitc, "dec [ecx]");

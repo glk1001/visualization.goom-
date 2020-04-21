@@ -1,13 +1,14 @@
 #include "tentacle3d.h"
-#include "v3d.h"
-#include "surf3d.h"
+
 #include "goom.h"
-#include "goom_tools.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
+#include "goom_tools.h"
+#include "surf3d.h"
+#include "v3d.h"
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #define D 256.0f
 
@@ -26,11 +27,11 @@ typedef struct _TENTACLE_FX_DATA {
   PluginParameters params;
 
   float cycle;
-  grid3d *grille[nbgrid];
-  float *vals;
+  grid3d* grille[nbgrid];
+  float* vals;
 
 #define NB_TENTACLE_COLORS 100
-#define NUM_COLORS_IN_GROUP (NB_TENTACLE_COLORS/5)
+#define NUM_COLORS_IN_GROUP (NB_TENTACLE_COLORS / 5)
   int colors[NB_TENTACLE_COLORS];
 
   int col;
@@ -47,20 +48,21 @@ typedef struct _TENTACLE_FX_DATA {
   int lock;
 } TentacleFXData;
 
-static void tentacle_new(TentacleFXData *data);
-static void tentacle_update(PluginInfo *goomInfo, Pixel *buf, Pixel *back, int W, int H,
-gint16 data[NUM_AUDIO_SAMPLES][AUDIO_SAMPLE_LEN], float, int drawit, TentacleFXData *fx_data);
-static void tentacle_free(TentacleFXData *data);
-static void init_colors(uint32_t *colors);
+static void tentacle_new(TentacleFXData* data);
+static void tentacle_update(PluginInfo* goomInfo, Pixel* buf, Pixel* back, int W, int H,
+                            gint16 data[NUM_AUDIO_SAMPLES][AUDIO_SAMPLE_LEN], float, int drawit,
+                            TentacleFXData* fx_data);
+static void tentacle_free(TentacleFXData* data);
+static void init_colors(uint32_t* colors);
 
 /* 
  * VisualFX wrapper for the tentacles
  */
 
-static void tentacle_fx_init(VisualFX *_this, PluginInfo *info)
+static void tentacle_fx_init(VisualFX* _this, PluginInfo* info)
 {
 
-  TentacleFXData *data = (TentacleFXData*) malloc(sizeof(TentacleFXData));
+  TentacleFXData* data = (TentacleFXData*)malloc(sizeof(TentacleFXData));
 
   data->enabled_bp = secure_b_param("Enabled", 1);
   data->params = plugin_parameters("3D Tentacles", 1);
@@ -83,21 +85,22 @@ static void tentacle_fx_init(VisualFX *_this, PluginInfo *info)
   tentacle_new(data);
 
   _this->params = &data->params;
-  _this->fx_data = (void*) data;
+  _this->fx_data = (void*)data;
 }
 
-static void tentacle_fx_apply(VisualFX *_this, Pixel *src, Pixel *dest, PluginInfo *goomInfo)
+static void tentacle_fx_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* goomInfo)
 {
-  TentacleFXData *data = (TentacleFXData*) _this->fx_data;
+  TentacleFXData* data = (TentacleFXData*)_this->fx_data;
   if (BVAL(data->enabled_bp)) {
-    tentacle_update(goomInfo, dest, src, goomInfo->screen.width, goomInfo->screen.height, goomInfo->sound.samples,
-        (float) goomInfo->sound.accelvar, goomInfo->curGState->drawTentacle, data);
+    tentacle_update(goomInfo, dest, src, goomInfo->screen.width, goomInfo->screen.height,
+                    goomInfo->sound.samples, (float)goomInfo->sound.accelvar,
+                    goomInfo->curGState->drawTentacle, data);
   }
 }
 
-static void tentacle_fx_free(VisualFX *_this)
+static void tentacle_fx_free(VisualFX* _this)
 {
-  TentacleFXData *data = (TentacleFXData*) _this->fx_data;
+  TentacleFXData* data = (TentacleFXData*)_this->fx_data;
   free(data->params.params);
   tentacle_free(data);
   free(_this->fx_data);
@@ -116,11 +119,11 @@ VisualFX tentacle_fx_create(void)
 
 /* ----- */
 
-static void tentacle_free(TentacleFXData *data)
+static void tentacle_free(TentacleFXData* data)
 {
   /* TODO : un vrai FREE GRID!! */
   for (int tmp = 0; tmp < nbgrid; tmp++) {
-    grid3d *g = data->grille[tmp];
+    grid3d* g = data->grille[tmp];
     free(g->surf.vertex);
     free(g->surf.svertex);
     free(g);
@@ -134,10 +137,10 @@ static inline int get_rand_in_range(int n1, int n2)
   return n1 + pcg32_rand() % range_len;
 }
 
-static void tentacle_new(TentacleFXData *data)
+static void tentacle_new(TentacleFXData* data)
 {
-  v3d center = { 0, 0, 0 };
-  data->vals = (float*) malloc((num_x + 20) * sizeof(float));
+  v3d center = {0, 0, 0};
+  data->vals = (float*)malloc((num_x + 20) * sizeof(float));
 
   /* Start at bottom of grid, going up by 'y_increment' */
   float y = -0.5 * (nbgrid * y_increment);
@@ -148,7 +151,8 @@ static void tentacle_new(TentacleFXData *data)
     center.y = y + get_rand_in_range(-y_inc_mod / 2, y_inc_mod / 2);
     center.z = z;
 
-    data->grille[tmp] = grid3d_new(x, num_x + get_rand_in_range(-4, 4), z, num_z + get_rand_in_range(-6, 6), center);
+    data->grille[tmp] = grid3d_new(x, num_x + get_rand_in_range(-4, 4), z,
+                                   num_z + get_rand_in_range(-6, 6), center);
 
     y += y_increment;
   }
@@ -157,10 +161,10 @@ static void tentacle_new(TentacleFXData *data)
 static inline unsigned char lighten(unsigned char value, float power)
 {
   int val = value;
-  float t = (float) val * log10(power) / 2.0;
+  float t = (float)val * log10(power) / 2.0;
 
   if (t > 0) {
-    val = (int) t; /* (32.0f * log (t)); */
+    val = (int)t; /* (32.0f * log (t)); */
     if (val > 255)
       val = 255;
     if (val < 0)
@@ -171,7 +175,7 @@ static inline unsigned char lighten(unsigned char value, float power)
   }
 }
 
-static void init_colors(uint32_t *colors)
+static void init_colors(uint32_t* colors)
 {
   for (int i = 0; i < NB_TENTACLE_COLORS; i++) {
     const uint8_t red = get_rand_in_range(20, 90);
@@ -181,9 +185,9 @@ static void init_colors(uint32_t *colors)
   }
 }
 
-static void lightencolor(uint32_t *col, float power)
+static void lightencolor(uint32_t* col, float power)
 {
-  uint8_t *color = (uint8_t*) col;
+  uint8_t* color = (uint8_t*)col;
 
   *color = lighten(*color, power);
   color++;
@@ -195,7 +199,7 @@ static void lightencolor(uint32_t *col, float power)
 }
 
 /* retourne x>>s , en testant le signe de x */
-#define ShiftRight(_x,_s) ((_x<0) ? -(-_x>>_s) : (_x>>_s))
+#define ShiftRight(_x, _s) ((_x < 0) ? -(-_x >> _s) : (_x >> _s))
 
 static int evolvecolor(unsigned int src, unsigned int dest, unsigned int mask, unsigned int incr)
 {
@@ -213,14 +217,15 @@ static int evolvecolor(unsigned int src, unsigned int dest, unsigned int mask, u
   return (src & mask) | color;
 }
 
-static void pretty_move(PluginInfo *goomInfo, float cycle, float *dist, float *dist2, float *rotangle,
-    TentacleFXData *fx_data)
+static void pretty_move(PluginInfo* goomInfo, float cycle, float* dist, float* dist2,
+                        float* rotangle, TentacleFXData* fx_data)
 {
   /* many magic numbers here... I don't really like that. */
   if (fx_data->happens) {
     fx_data->happens -= 1;
   } else if (fx_data->lock == 0) {
-    fx_data->happens = goom_irand(goomInfo->gRandom, 200) ? 0 : 100 + goom_irand(goomInfo->gRandom, 60);
+    fx_data->happens =
+        goom_irand(goomInfo->gRandom, 200) ? 0 : 100 + goom_irand(goomInfo->gRandom, 60);
     fx_data->lock = fx_data->happens * 3 / 2;
   } else {
     fx_data->lock--;
@@ -238,7 +243,8 @@ static void pretty_move(PluginInfo *goomInfo, float cycle, float *dist, float *d
   if (!fx_data->happens) {
     tmp = M_PI * sin(cycle) / 32 + 3 * M_PI / 2;
   } else {
-    fx_data->rotation = goom_irand(goomInfo->gRandom, 500) ? fx_data->rotation : goom_irand(goomInfo->gRandom, 2);
+    fx_data->rotation =
+        goom_irand(goomInfo->gRandom, 500) ? fx_data->rotation : goom_irand(goomInfo->gRandom, 2);
     if (fx_data->rotation) {
       cycle *= 2.0f * M_PI;
     } else {
@@ -265,10 +271,10 @@ static void pretty_move(PluginInfo *goomInfo, float cycle, float *dist, float *d
 
 static inline uint32_t color_multiply(uint32_t col1, uint32_t col2)
 {
-  uint8_t *color1 = (uint8_t*) &col1;
-  uint8_t *color2 = (uint8_t*) &col2;
+  uint8_t* color1 = (uint8_t*)&col1;
+  uint8_t* color2 = (uint8_t*)&col2;
   uint32_t col;
-  uint8_t *color = (uint8_t*) &col;
+  uint8_t* color = (uint8_t*)&col;
 
   *color = (*color1) * (*color2) / 256;
   color++;
@@ -287,8 +293,9 @@ static inline uint32_t color_multiply(uint32_t col1, uint32_t col2)
   return col;
 }
 
-static void tentacle_update(PluginInfo *goomInfo, Pixel *buf, Pixel *back, int W, int H,
-gint16 data[NUM_AUDIO_SAMPLES][AUDIO_SAMPLE_LEN], float rapport, int drawit, TentacleFXData *fx_data)
+static void tentacle_update(PluginInfo* goomInfo, Pixel* buf, Pixel* back, int W, int H,
+                            gint16 data[NUM_AUDIO_SAMPLES][AUDIO_SAMPLE_LEN], float rapport,
+                            int drawit, TentacleFXData* fx_data)
 {
   float dist, dist2, rotangle;
 
@@ -307,7 +314,8 @@ gint16 data[NUM_AUDIO_SAMPLES][AUDIO_SAMPLE_LEN], float rapport, int drawit, Ten
     fx_data->col = evolvecolor(fx_data->col, fx_data->colors[fx_data->dstcol], 0xff, 0x01);
     fx_data->col = evolvecolor(fx_data->col, fx_data->colors[fx_data->dstcol], 0xff00, 0x0100);
     fx_data->col = evolvecolor(fx_data->col, fx_data->colors[fx_data->dstcol], 0xff0000, 0x010000);
-    fx_data->col = evolvecolor(fx_data->col, fx_data->colors[fx_data->dstcol], 0xff000000, 0x01000000);
+    fx_data->col =
+        evolvecolor(fx_data->col, fx_data->colors[fx_data->dstcol], 0xff000000, 0x01000000);
     uint32_t color = fx_data->col;
     uint32_t colorlow = fx_data->col;
 
@@ -323,7 +331,9 @@ gint16 data[NUM_AUDIO_SAMPLES][AUDIO_SAMPLE_LEN], float rapport, int drawit, Ten
 
     for (int tmp = 0; tmp < nbgrid; tmp++) {
       for (int tmp2 = 0; tmp2 < num_x; tmp2++) {
-        const float val = (float) (ShiftRight(data[0][goom_irand(goomInfo->gRandom,AUDIO_SAMPLE_LEN-1)], 10)) * rapport;
+        const float val =
+            (float)(ShiftRight(data[0][goom_irand(goomInfo->gRandom, AUDIO_SAMPLE_LEN - 1)], 10)) *
+            rapport;
         fx_data->vals[tmp2] = val;
       }
 
@@ -345,7 +355,8 @@ gint16 data[NUM_AUDIO_SAMPLES][AUDIO_SAMPLE_LEN], float rapport, int drawit, Ten
         num_colors_in_row = 0;
       }
       num_colors_in_row++;
-      grid3d_draw(goomInfo, fx_data->grille[tmp], tentacle_color, tentacle_colorlow, dist, buf, back, W, H);
+      grid3d_draw(goomInfo, fx_data->grille[tmp], tentacle_color, tentacle_colorlow, dist, buf,
+                  back, W, H);
     }
   } else {
     fx_data->lig = 1.05f;

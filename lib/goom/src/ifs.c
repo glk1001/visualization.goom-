@@ -34,16 +34,17 @@
 /* #ifdef STANDALONE */
 
 #include "ifs.h"
+
 #include "goom.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_tools.h"
 #include "goom_testing.h"
+#include "goom_tools.h"
 #include "mathtools.h"
 
 #include <math.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct _ifsPoint {
   gint32 x, y;
@@ -58,18 +59,19 @@ typedef struct _ifsPoint {
 
 #define ifs_opts xlockmore_opts
 
-#define DEFAULTS "*delay: 20000 \n" \
-"*ncolors: 100 \n"
+#define DEFAULTS                                                                                   \
+  "*delay: 20000 \n"                                                                               \
+  "*ncolors: 100 \n"
 
 #define SMOOTH_COLORS
 
-#define LRAND()  ((long) (goom_random(goomInfo->gRandom) & 0x7fffffff))
-#define NRAND(n) ((int) (LRAND() % (n)))
+#define LRAND() ((long)(goom_random(goomInfo->gRandom) & 0x7fffffff))
+#define NRAND(n) ((int)(LRAND() % (n)))
 
 #if RAND_MAX < 0x10000
-#  define MAXRAND (((float)(RAND_MAX<16)+((float)RAND_MAX)+1.0f)/127.0f)
+  #define MAXRAND (((float)(RAND_MAX < 16) + ((float)RAND_MAX) + 1.0f) / 127.0f)
 #else
-#  define MAXRAND (2147483648.0/127.0)           /* unsigned 1<<31 / 127.0 (cf goom_tools) as a float */
+  #define MAXRAND (2147483648.0 / 127.0) /* unsigned 1<<31 / 127.0 (cf goom_tools) as a float */
 #endif
 
 /*****************************************************/
@@ -81,13 +83,13 @@ typedef int F_PT;
 /*****************************************************/
 
 #define FIX 12
-#define UNIT   ( 1<<FIX )
-#define MAX_SIMI  6
+#define UNIT (1 << FIX)
+#define MAX_SIMI 6
 
-#define MAX_DEPTH_2  10
-#define MAX_DEPTH_3  6
-#define MAX_DEPTH_4  4
-#define MAX_DEPTH_5  2
+#define MAX_DEPTH_2 10
+#define MAX_DEPTH_3 6
+#define MAX_DEPTH_4 4
+#define MAX_DEPTH_5 2
 
 /* PREVIOUS VALUE 
 #define MAX_SIMI  6
@@ -99,7 +101,7 @@ typedef int F_PT;
 #define MAX_DEPTH_5  3
 */
 
-#define DBL_To_F_PT(x)  (F_PT)( (DBL)(UNIT)*(x) )
+#define DBL_To_F_PT(x) (F_PT)((DBL)(UNIT) * (x))
 
 typedef struct Similitude_Struct SIMI;
 typedef struct Fractal_Struct FRACTAL;
@@ -128,20 +130,20 @@ typedef struct _IFS_DATA {
   PluginParam enabled_bp;
   PluginParameters params;
 
-  FRACTAL *Root;
-  FRACTAL *Cur_F;
+  FRACTAL* Root;
+  FRACTAL* Cur_F;
 
   /* Used by the Trace recursive method */
-  IFSPoint *Buf;
+  IFSPoint* Buf;
   int Cur_Pt;
   int initalized;
 } IfsData;
 
 /*****************************************************/
 
-static DBL Gauss_Rand(PluginInfo *goomInfo, DBL c, DBL S, DBL A_mult_1_minus_exp_neg_S)
+static DBL Gauss_Rand(PluginInfo* goomInfo, DBL c, DBL S, DBL A_mult_1_minus_exp_neg_S)
 {
-  DBL y = (DBL) LRAND() / MAXRAND;
+  DBL y = (DBL)LRAND() / MAXRAND;
   y = A_mult_1_minus_exp_neg_S * (1.0 - exp(-y * y * S));
   if (NRAND(2)) {
     return (c + y);
@@ -149,9 +151,9 @@ static DBL Gauss_Rand(PluginInfo *goomInfo, DBL c, DBL S, DBL A_mult_1_minus_exp
   return (c - y);
 }
 
-static DBL Half_Gauss_Rand(PluginInfo *goomInfo, DBL c, DBL S, DBL A_mult_1_minus_exp_neg_S)
+static DBL Half_Gauss_Rand(PluginInfo* goomInfo, DBL c, DBL S, DBL A_mult_1_minus_exp_neg_S)
 {
-  DBL y = (DBL) LRAND() / MAXRAND;
+  DBL y = (DBL)LRAND() / MAXRAND;
   y = A_mult_1_minus_exp_neg_S * (1.0 - exp(-y * y * S));
   return (c + y);
 }
@@ -161,7 +163,7 @@ static DBL get_1_minus_exp_neg_S(DBL S)
   return 1.0 - exp(-S);
 }
 
-static void Random_Simis(PluginInfo *goomInfo, FRACTAL *F, SIMI *Cur, int i)
+static void Random_Simis(PluginInfo* goomInfo, FRACTAL* F, SIMI* Cur, int i)
 {
   static DBL c_AS_factor;
   static DBL r_1_minus_exp_neg_S;
@@ -200,26 +202,26 @@ static void Random_Simis(PluginInfo *goomInfo, FRACTAL *F, SIMI *Cur, int i)
   }
 }
 
-static void free_ifs_buffers(FRACTAL *Fractal)
+static void free_ifs_buffers(FRACTAL* Fractal)
 {
   if (Fractal->Buffer1 != NULL) {
-    (void) free((void*) Fractal->Buffer1);
-    Fractal->Buffer1 = (IFSPoint*) NULL;
+    (void)free((void*)Fractal->Buffer1);
+    Fractal->Buffer1 = (IFSPoint*)NULL;
   }
   if (Fractal->Buffer2 != NULL) {
-    (void) free((void*) Fractal->Buffer2);
-    Fractal->Buffer2 = (IFSPoint*) NULL;
+    (void)free((void*)Fractal->Buffer2);
+    Fractal->Buffer2 = (IFSPoint*)NULL;
   }
 }
 
-static void free_ifs(FRACTAL *Fractal)
+static void free_ifs(FRACTAL* Fractal)
 {
   free_ifs_buffers(Fractal);
 }
 
 /***************************************************************/
 
-static void init_ifs(PluginInfo *goomInfo, IfsData *data)
+static void init_ifs(PluginInfo* goomInfo, IfsData* data)
 {
   int width = goomInfo->screen.width;
   int height = goomInfo->screen.height;
@@ -227,46 +229,46 @@ static void init_ifs(PluginInfo *goomInfo, IfsData *data)
   data->enabled_bp = secure_b_param("Enabled", 1);
 
   if (data->Root == NULL) {
-    data->Root = (FRACTAL*) malloc(sizeof(FRACTAL));
+    data->Root = (FRACTAL*)malloc(sizeof(FRACTAL));
     if (data->Root == NULL)
       return;
-    data->Root->Buffer1 = (IFSPoint*) NULL;
-    data->Root->Buffer2 = (IFSPoint*) NULL;
+    data->Root->Buffer1 = (IFSPoint*)NULL;
+    data->Root->Buffer2 = (IFSPoint*)NULL;
   }
-  FRACTAL *Fractal = data->Root;
+  FRACTAL* Fractal = data->Root;
 
   free_ifs_buffers(Fractal);
 
-  int i = (NRAND(4)) + 2;/* Number of centers */
+  int i = (NRAND(4)) + 2; /* Number of centers */
   switch (i) {
-  case 3:
-    Fractal->Depth = MAX_DEPTH_3;
-    Fractal->r_mean = .6;
-    Fractal->dr_mean = .4;
-    Fractal->dr2_mean = .3;
-    break;
+    case 3:
+      Fractal->Depth = MAX_DEPTH_3;
+      Fractal->r_mean = .6;
+      Fractal->dr_mean = .4;
+      Fractal->dr2_mean = .3;
+      break;
 
-  case 4:
-    Fractal->Depth = MAX_DEPTH_4;
-    Fractal->r_mean = .5;
-    Fractal->dr_mean = .4;
-    Fractal->dr2_mean = .3;
-    break;
+    case 4:
+      Fractal->Depth = MAX_DEPTH_4;
+      Fractal->r_mean = .5;
+      Fractal->dr_mean = .4;
+      Fractal->dr2_mean = .3;
+      break;
 
-  case 5:
-    Fractal->Depth = MAX_DEPTH_5;
-    Fractal->r_mean = .5;
-    Fractal->dr_mean = .4;
-    Fractal->dr2_mean = .3;
-    break;
+    case 5:
+      Fractal->Depth = MAX_DEPTH_5;
+      Fractal->r_mean = .5;
+      Fractal->dr_mean = .4;
+      Fractal->dr2_mean = .3;
+      break;
 
-  default:
-  case 2:
-    Fractal->Depth = MAX_DEPTH_2;
-    Fractal->r_mean = .7;
-    Fractal->dr_mean = .3;
-    Fractal->dr2_mean = .4;
-    break;
+    default:
+    case 2:
+      Fractal->Depth = MAX_DEPTH_2;
+      Fractal->r_mean = .7;
+      Fractal->dr_mean = .3;
+      Fractal->dr2_mean = .4;
+      break;
   }
 
   Fractal->Nb_Simi = i;
@@ -275,67 +277,70 @@ static void init_ifs(PluginInfo *goomInfo, IfsData *data)
     Fractal->Max_Pt *= Fractal->Nb_Simi;
   }
 
-  if ((Fractal->Buffer1 = (IFSPoint*) calloc(Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
+  if ((Fractal->Buffer1 = (IFSPoint*)calloc(Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
     free_ifs(Fractal);
     return;
   }
-  if ((Fractal->Buffer2 = (IFSPoint*) calloc(Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
+  if ((Fractal->Buffer2 = (IFSPoint*)calloc(Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
     free_ifs(Fractal);
     return;
   }
 
   Fractal->Speed = 6;
-  Fractal->Width = width;/* modif by JeKo */
-  Fractal->Height = height;/* modif by JeKo */
+  Fractal->Width = width;   /* modif by JeKo */
+  Fractal->Height = height; /* modif by JeKo */
   Fractal->Cur_Pt = 0;
   Fractal->Count = 0;
   Fractal->Lx = (Fractal->Width - 1) / 2;
   Fractal->Ly = (Fractal->Height - 1) / 2;
-  Fractal->Col = pcg32_rand() % (width * height);/* modif by JeKo */
+  Fractal->Col = pcg32_rand() % (width * height); /* modif by JeKo */
 
   Random_Simis(goomInfo, Fractal, Fractal->Components, 5 * MAX_SIMI);
 
   for (int i = 0; i < 5 * MAX_SIMI; i++) {
-      SIMI cur = Fractal->Components[i];
-      GOOM_LOG_DEBUG("simi[%d]: c_x = %f, c_y = %f, r = %f, r2 = %f, A = %f, A2 = %f.",
-          i, cur.c_x, cur.c_y, cur.r, cur.r2, cur.A, cur.A2);
+    SIMI cur = Fractal->Components[i];
+    GOOM_LOG_DEBUG(
+	    "simi[%d]: c_x = %f, c_y = %f, r = %f, r2 = %f, A = %f, A2 = %f.",
+        i, cur.c_x, cur.c_y, cur.r, cur.r2, cur.A, cur.A2);
   }
 }
 
 /***************************************************************/
 
-static inline void Transform(SIMI *Simi, F_PT xo, F_PT yo, F_PT *x, F_PT *y)
+static inline void Transform(SIMI* Simi, F_PT xo, F_PT yo, F_PT* x, F_PT* y)
 {
   F_PT xx, yy;
 
   xo = xo - Simi->Cx;
-  xo = (xo * Simi->R) >> FIX;/* / UNIT; */
+  xo = (xo * Simi->R) >> FIX; /* / UNIT; */
   yo = yo - Simi->Cy;
-  yo = (yo * Simi->R) >> FIX;/* / UNIT; */
+  yo = (yo * Simi->R) >> FIX; /* / UNIT; */
 
   xx = xo - Simi->Cx;
-  xx = (xx * Simi->R2) >> FIX;/* / UNIT; */
+  xx = (xx * Simi->R2) >> FIX; /* / UNIT; */
   yy = -yo - Simi->Cy;
-  yy = (yy * Simi->R2) >> FIX;/* / UNIT; */
+  yy = (yy * Simi->R2) >> FIX; /* / UNIT; */
 
-  *x = ((xo * Simi->Ct - yo * Simi->St + xx * Simi->Ct2 - yy * Simi->St2) >> FIX/* / UNIT */) + Simi->Cx;
-  *y = ((xo * Simi->St + yo * Simi->Ct + xx * Simi->St2 + yy * Simi->Ct2) >> FIX/* / UNIT */) + Simi->Cy;
+  *x = ((xo * Simi->Ct - yo * Simi->St + xx * Simi->Ct2 - yy * Simi->St2) >> FIX /* / UNIT */) +
+       Simi->Cx;
+  *y = ((xo * Simi->St + yo * Simi->Ct + xx * Simi->St2 + yy * Simi->Ct2) >> FIX /* / UNIT */) +
+       Simi->Cy;
 }
 
 /***************************************************************/
 
-static void Trace(FRACTAL *F, F_PT xo, F_PT yo, IfsData *data)
+static void Trace(FRACTAL* F, F_PT xo, F_PT yo, IfsData* data)
 {
   F_PT x, y, i;
-  SIMI *Cur;
+  SIMI* Cur;
 
   Cur = data->Cur_F->Components;
-//	GOOM_LOG_DEBUG("data->Cur_F->Nb_Simi = %d, xo = %d, yo = %d", data->Cur_F->Nb_Simi, xo, yo);
+  //	GOOM_LOG_DEBUG("data->Cur_F->Nb_Simi = %d, xo = %d, yo = %d", data->Cur_F->Nb_Simi, xo, yo);
   for (i = data->Cur_F->Nb_Simi; i; --i, Cur++) {
     Transform(Cur, xo, yo, &x, &y);
 
-    data->Buf->x = F->Lx + ((x * F->Lx) >> (FIX + 1)/* /(UNIT*2) */);
-    data->Buf->y = F->Ly - ((y * F->Ly) >> (FIX + 1)/* /(UNIT*2) */);
+    data->Buf->x = F->Lx + ((x * F->Lx) >> (FIX + 1) /* /(UNIT*2) */);
+    data->Buf->y = F->Ly - ((y * F->Ly) >> (FIX + 1) /* /(UNIT*2) */);
     data->Buf++;
 
     data->Cur_Pt++;
@@ -348,9 +353,9 @@ static void Trace(FRACTAL *F, F_PT xo, F_PT yo, IfsData *data)
   }
 }
 
-static void Draw_Fractal(IfsData *data)
+static void Draw_Fractal(IfsData* data)
 {
-  FRACTAL *F = data->Root;
+  FRACTAL* F = data->Root;
   int i, j;
   F_PT x, y, xo, yo;
   SIMI *Cur, *Simi;
@@ -391,12 +396,12 @@ static void Draw_Fractal(IfsData *data)
   F->Buffer2 = data->Buf;
 }
 
-static IFSPoint* draw_ifs(PluginInfo *goomInfo, int *nbpt, IfsData *data)
+static IFSPoint* draw_ifs(PluginInfo* goomInfo, int* nbpt, IfsData* data)
 {
   int i;
   DBL u, uu, v, vv, u0, u1, u2, u3;
   SIMI *S, *S1, *S2, *S3, *S4;
-  FRACTAL *F;
+  FRACTAL* F;
 
   if (data->Root == NULL) {
     return NULL;
@@ -406,7 +411,7 @@ static IFSPoint* draw_ifs(PluginInfo *goomInfo, int *nbpt, IfsData *data)
     return NULL;
   }
 
-  u = (DBL) (F->Count) * (DBL) (F->Speed) / 1000.0;
+  u = (DBL)(F->Count) * (DBL)(F->Speed) / 1000.0;
   uu = u * u;
   v = 1.0 - u;
   vv = v * v;
@@ -466,12 +471,12 @@ static IFSPoint* draw_ifs(PluginInfo *goomInfo, int *nbpt, IfsData *data)
 
 /***************************************************************/
 
-static void release_ifs(IfsData *data)
+static void release_ifs(IfsData* data)
 {
   if (data->Root != NULL) {
     free_ifs(data->Root);
-    (void) free((void*) data->Root);
-    data->Root = (FRACTAL*) NULL;
+    (void)free((void*)data->Root);
+    data->Root = (FRACTAL*)NULL;
   }
 }
 
@@ -487,16 +492,10 @@ static struct {
   int col[4];
   int mode;
   int cycle;
-} ifs_update_data = {
-    0,
-    0xc0c0c0c0,
-    { 2, 4, 3, 2 },
-    { 2, 4, 3, 2 },
-    MOD_MERVER,
-    0
-};
+} ifs_update_data = {0, 0xc0c0c0c0, {2, 4, 3, 2}, {2, 4, 3, 2}, MOD_MERVER, 0};
 
-static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int increment, IfsData *fx_data)
+static void ifs_update(PluginInfo* goomInfo, Pixel* data, Pixel* back, int increment,
+                       IfsData* fx_data)
 {
   GOOM_LOG_DEBUG("increment = %d", increment);
 
@@ -517,7 +516,7 @@ static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int incre
   }
 
   {
-    unsigned char *tmp = (unsigned char*) &couleursl;
+    unsigned char* tmp = (unsigned char*)&couleursl;
 
     for (int i = 0; i < 4; i++) {
       *tmp = (*tmp) >> cycle10;
@@ -526,20 +525,20 @@ static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int incre
   }
 
   int nbpt;
-  IFSPoint *points = draw_ifs(goomInfo, &nbpt, fx_data);
+  IFSPoint* points = draw_ifs(goomInfo, &nbpt, fx_data);
   nbpt--;
   GOOM_LOG_DEBUG("nbpt = %d", nbpt);
 
   for (int i = 0; i < nbpt; i += increment) {
-    int x = (int) points[i].x & 0x7fffffff;
-    int y = (int) points[i].y & 0x7fffffff;
+    int x = (int)points[i].x & 0x7fffffff;
+    int y = (int)points[i].y & 0x7fffffff;
 
     if ((x < width) && (y < height)) {
-      int pos = x + (int) (y * width);
+      int pos = x + (int)(y * width);
       int tra = 0, i = 0;
-      unsigned char *bra = (unsigned char*) &back[pos];
-      unsigned char *dra = (unsigned char*) &data[pos];
-      unsigned char *cra = (unsigned char*) &couleursl;
+      unsigned char* bra = (unsigned char*)&back[pos];
+      unsigned char* dra = (unsigned char*)&data[pos];
+      unsigned char* cra = (unsigned char*)&couleursl;
 
       for (; i < 4; i++) {
         tra = *cra;
@@ -606,31 +605,33 @@ static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int incre
     ifs_update_data.col[ROUGE] += ifs_update_data.v[ROUGE];
     if (ifs_update_data.col[ROUGE] > 64) {
       ifs_update_data.col[ROUGE] = 64;
-      ifs_update_data.v[ROUGE] = -(RAND () % 4) - 1;
+      ifs_update_data.v[ROUGE] = -(RAND() % 4) - 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
     }
     if (ifs_update_data.col[ROUGE] < 0) {
       ifs_update_data.col[ROUGE] = 0;
-      ifs_update_data.v[ROUGE] = (RAND () % 4) + 1;
+      ifs_update_data.v[ROUGE] = (RAND() % 4) + 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
     }
 
     ifs_update_data.col[ALPHA] += ifs_update_data.v[ALPHA];
     if (ifs_update_data.col[ALPHA] > 0) {
       ifs_update_data.col[ALPHA] = 0;
-      ifs_update_data.v[ALPHA] = -(RAND () % 4) - 1;
+      ifs_update_data.v[ALPHA] = -(RAND() % 4) - 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
     }
     if (ifs_update_data.col[ALPHA] < 0) {
       ifs_update_data.col[ALPHA] = 0;
-      ifs_update_data.v[ALPHA] = (RAND () % 4) + 1;
+      ifs_update_data.v[ALPHA] = (RAND() % 4) + 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
     }
 
-    if (((ifs_update_data.col[VERT] > 32) && (ifs_update_data.col[ROUGE] < ifs_update_data.col[VERT] + 40)
-        && (ifs_update_data.col[VERT] < ifs_update_data.col[ROUGE] + 20) && (ifs_update_data.col[BLEU] < 64)
-        && (RAND () % 20 == 0)) && (ifs_update_data.justChanged < 0)) {
-      ifs_update_data.mode = RAND () % 3 ? MOD_FEU : MOD_MERVER;
+    if (((ifs_update_data.col[VERT] > 32) &&
+         (ifs_update_data.col[ROUGE] < ifs_update_data.col[VERT] + 40) &&
+         (ifs_update_data.col[VERT] < ifs_update_data.col[ROUGE] + 20) &&
+         (ifs_update_data.col[BLEU] < 64) && (RAND() % 20 == 0)) &&
+        (ifs_update_data.justChanged < 0)) {
+      ifs_update_data.mode = RAND() % 3 ? MOD_FEU : MOD_MERVER;
       GOOM_LOG_DEBUG("ifs_update_data.mode = %d", ifs_update_data.mode);
       ifs_update_data.justChanged = 250;
     }
@@ -638,19 +639,19 @@ static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int incre
     ifs_update_data.col[BLEU] += ifs_update_data.v[BLEU];
     if (ifs_update_data.col[BLEU] > 128) {
       ifs_update_data.col[BLEU] = 128;
-      ifs_update_data.v[BLEU] = -(RAND () % 4) - 1;
+      ifs_update_data.v[BLEU] = -(RAND() % 4) - 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
     }
     if (ifs_update_data.col[BLEU] < 16) {
       ifs_update_data.col[BLEU] = 16;
-      ifs_update_data.v[BLEU] = (RAND () % 4) + 1;
+      ifs_update_data.v[BLEU] = (RAND() % 4) + 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
     }
 
     ifs_update_data.col[VERT] += ifs_update_data.v[VERT];
     if (ifs_update_data.col[VERT] > 200) {
       ifs_update_data.col[VERT] = 200;
-      ifs_update_data.v[VERT] = -(RAND () % 3) - 2;
+      ifs_update_data.v[VERT] = -(RAND() % 3) - 2;
       GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
     }
     if (ifs_update_data.col[VERT] > ifs_update_data.col[ALPHA]) {
@@ -659,38 +660,40 @@ static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int incre
     }
     if (ifs_update_data.col[VERT] < 32) {
       ifs_update_data.col[VERT] = 32;
-      ifs_update_data.v[VERT] = (RAND () % 3) + 2;
+      ifs_update_data.v[VERT] = (RAND() % 3) + 2;
       GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
     }
 
     ifs_update_data.col[ROUGE] += ifs_update_data.v[ROUGE];
     if (ifs_update_data.col[ROUGE] > 128) {
       ifs_update_data.col[ROUGE] = 128;
-      ifs_update_data.v[ROUGE] = -(RAND () % 4) - 1;
+      ifs_update_data.v[ROUGE] = -(RAND() % 4) - 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
     }
     if (ifs_update_data.col[ROUGE] < 0) {
       ifs_update_data.col[ROUGE] = 0;
-      ifs_update_data.v[ROUGE] = (RAND () % 4) + 1;
+      ifs_update_data.v[ROUGE] = (RAND() % 4) + 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
     }
 
     ifs_update_data.col[ALPHA] += ifs_update_data.v[ALPHA];
     if (ifs_update_data.col[ALPHA] > 255) {
       ifs_update_data.col[ALPHA] = 255;
-      ifs_update_data.v[ALPHA] = -(RAND () % 4) - 1;
+      ifs_update_data.v[ALPHA] = -(RAND() % 4) - 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
     }
     if (ifs_update_data.col[ALPHA] < 0) {
       ifs_update_data.col[ALPHA] = 0;
-      ifs_update_data.v[ALPHA] = (RAND () % 4) + 1;
+      ifs_update_data.v[ALPHA] = (RAND() % 4) + 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
     }
 
-    if (((ifs_update_data.col[VERT] > 32) && (ifs_update_data.col[ROUGE] < ifs_update_data.col[VERT] + 40)
-        && (ifs_update_data.col[VERT] < ifs_update_data.col[ROUGE] + 20) && (ifs_update_data.col[BLEU] < 64)
-        && (RAND () % 20 == 0)) && (ifs_update_data.justChanged < 0)) {
-      ifs_update_data.mode = RAND () % 3 ? MOD_FEU : MOD_MER;
+    if (((ifs_update_data.col[VERT] > 32) &&
+         (ifs_update_data.col[ROUGE] < ifs_update_data.col[VERT] + 40) &&
+         (ifs_update_data.col[VERT] < ifs_update_data.col[ROUGE] + 20) &&
+         (ifs_update_data.col[BLEU] < 64) && (RAND() % 20 == 0)) &&
+        (ifs_update_data.justChanged < 0)) {
+      ifs_update_data.mode = RAND() % 3 ? MOD_FEU : MOD_MER;
       GOOM_LOG_DEBUG("ifs_update_data.mode = %d", ifs_update_data.mode);
       ifs_update_data.justChanged = 250;
     }
@@ -698,74 +701,76 @@ static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int incre
     ifs_update_data.col[BLEU] += ifs_update_data.v[BLEU];
     if (ifs_update_data.col[BLEU] > 64) {
       ifs_update_data.col[BLEU] = 64;
-      ifs_update_data.v[BLEU] = -(RAND () % 4) - 1;
+      ifs_update_data.v[BLEU] = -(RAND() % 4) - 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
     }
     if (ifs_update_data.col[BLEU] < 0) {
       ifs_update_data.col[BLEU] = 0;
-      ifs_update_data.v[BLEU] = (RAND () % 4) + 1;
+      ifs_update_data.v[BLEU] = (RAND() % 4) + 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[BLEU] = %d", ifs_update_data.v[BLEU]);
     }
 
     ifs_update_data.col[VERT] += ifs_update_data.v[VERT];
     if (ifs_update_data.col[VERT] > 200) {
       ifs_update_data.col[VERT] = 200;
-      ifs_update_data.v[VERT] = -(RAND () % 3) - 2;
+      ifs_update_data.v[VERT] = -(RAND() % 3) - 2;
       GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
     }
     if (ifs_update_data.col[VERT] > ifs_update_data.col[ROUGE] + 20) {
       ifs_update_data.col[VERT] = ifs_update_data.col[ROUGE] + 20;
-      ifs_update_data.v[VERT] = -(RAND () % 3) - 2;
-      ifs_update_data.v[ROUGE] = (RAND () % 4) + 1;
-      ifs_update_data.v[BLEU] = (RAND () % 4) + 1;
+      ifs_update_data.v[VERT] = -(RAND() % 3) - 2;
+      ifs_update_data.v[ROUGE] = (RAND() % 4) + 1;
+      ifs_update_data.v[BLEU] = (RAND() % 4) + 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
     }
     if (ifs_update_data.col[VERT] < 0) {
       ifs_update_data.col[VERT] = 0;
-      ifs_update_data.v[VERT] = (RAND () % 3) + 2;
+      ifs_update_data.v[VERT] = (RAND() % 3) + 2;
       GOOM_LOG_DEBUG("ifs_update_data.v[VERT] = %d", ifs_update_data.v[VERT]);
     }
 
     ifs_update_data.col[ROUGE] += ifs_update_data.v[ROUGE];
     if (ifs_update_data.col[ROUGE] > 255) {
       ifs_update_data.col[ROUGE] = 255;
-      ifs_update_data.v[ROUGE] = -(RAND () % 4) - 1;
+      ifs_update_data.v[ROUGE] = -(RAND() % 4) - 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
     }
     if (ifs_update_data.col[ROUGE] > ifs_update_data.col[VERT] + 40) {
       ifs_update_data.col[ROUGE] = ifs_update_data.col[VERT] + 40;
-      ifs_update_data.v[ROUGE] = -(RAND () % 4) - 1;
+      ifs_update_data.v[ROUGE] = -(RAND() % 4) - 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
     }
     if (ifs_update_data.col[ROUGE] < 0) {
       ifs_update_data.col[ROUGE] = 0;
-      ifs_update_data.v[ROUGE] = (RAND () % 4) + 1;
+      ifs_update_data.v[ROUGE] = (RAND() % 4) + 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ROUGE] = %d", ifs_update_data.v[ROUGE]);
     }
 
     ifs_update_data.col[ALPHA] += ifs_update_data.v[ALPHA];
     if (ifs_update_data.col[ALPHA] > 0) {
       ifs_update_data.col[ALPHA] = 0;
-      ifs_update_data.v[ALPHA] = -(RAND () % 4) - 1;
+      ifs_update_data.v[ALPHA] = -(RAND() % 4) - 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
     }
     if (ifs_update_data.col[ALPHA] < 0) {
       ifs_update_data.col[ALPHA] = 0;
-      ifs_update_data.v[ALPHA] = (RAND () % 4) + 1;
+      ifs_update_data.v[ALPHA] = (RAND() % 4) + 1;
       GOOM_LOG_DEBUG("ifs_update_data.v[ALPHA] = %d", ifs_update_data.v[ALPHA]);
     }
 
-    if (((ifs_update_data.col[ROUGE] < 64) && (ifs_update_data.col[VERT] > 32)
-        && (ifs_update_data.col[VERT] < ifs_update_data.col[BLEU]) && (ifs_update_data.col[BLEU] > 32)
-        && (RAND () % 20 == 0)) && (ifs_update_data.justChanged < 0)) {
-      ifs_update_data.mode = RAND () % 2 ? MOD_MER : MOD_MERVER;
+    if (((ifs_update_data.col[ROUGE] < 64) && (ifs_update_data.col[VERT] > 32) &&
+         (ifs_update_data.col[VERT] < ifs_update_data.col[BLEU]) &&
+         (ifs_update_data.col[BLEU] > 32) && (RAND() % 20 == 0)) &&
+        (ifs_update_data.justChanged < 0)) {
+      ifs_update_data.mode = RAND() % 2 ? MOD_MER : MOD_MERVER;
       GOOM_LOG_DEBUG("ifs_update_data.mode = %d", ifs_update_data.mode);
       ifs_update_data.justChanged = 250;
     }
   }
 
-  ifs_update_data.couleur = (ifs_update_data.col[ALPHA] << (ALPHA * 8)) | (ifs_update_data.col[BLEU] << (BLEU * 8))
-      | (ifs_update_data.col[VERT] << (VERT * 8)) | (ifs_update_data.col[ROUGE] << (ROUGE * 8));
+  ifs_update_data.couleur =
+      (ifs_update_data.col[ALPHA] << (ALPHA * 8)) | (ifs_update_data.col[BLEU] << (BLEU * 8)) |
+      (ifs_update_data.col[VERT] << (VERT * 8)) | (ifs_update_data.col[ROUGE] << (ROUGE * 8));
 
   GOOM_LOG_DEBUG("ifs_update_data.col[ALPHA] = %d", ifs_update_data.col[ALPHA]);
   GOOM_LOG_DEBUG("ifs_update_data.col[BLEU] = %d", ifs_update_data.col[BLEU]);
@@ -782,9 +787,9 @@ static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int incre
 
 /** VISUAL_FX WRAPPER FOR IFS */
 
-static void ifs_vfx_apply(VisualFX *_this, Pixel *src, Pixel *dest, PluginInfo *goomInfo)
+static void ifs_vfx_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* goomInfo)
 {
-  IfsData *data = (IfsData*) _this->fx_data;
+  IfsData* data = (IfsData*)_this->fx_data;
   if (!data->initalized) {
     data->initalized = 1;
     init_ifs(goomInfo, data);
@@ -797,11 +802,11 @@ static void ifs_vfx_apply(VisualFX *_this, Pixel *src, Pixel *dest, PluginInfo *
   /*TODO: trouver meilleur soluce pour increment (mettre le code de gestion de l'ifs dans ce fichier: ifs_vfx_apply) */
 }
 
-static const char *vfxname = "Ifs";
+static const char* vfxname = "Ifs";
 
-static void ifs_vfx_save(VisualFX *_this, const PluginInfo *info, const char *file)
+static void ifs_vfx_save(VisualFX* _this, const PluginInfo* info, const char* file)
 {
-  FILE *f = fopen(file, "w");
+  FILE* f = fopen(file, "w");
 
   save_int_setting(f, vfxname, "ifs_update_data.justChanged", ifs_update_data.justChanged);
   save_int_setting(f, vfxname, "ifs_update_data.couleur", ifs_update_data.couleur);
@@ -816,11 +821,11 @@ static void ifs_vfx_save(VisualFX *_this, const PluginInfo *info, const char *fi
   save_int_setting(f, vfxname, "ifs_update_data.mode", ifs_update_data.mode);
   save_int_setting(f, vfxname, "ifs_update_data.cycle", ifs_update_data.cycle);
 
-  IfsData *data = (IfsData*) _this->fx_data;
+  IfsData* data = (IfsData*)_this->fx_data;
   save_int_setting(f, vfxname, "data.Cur_Pt", data->Cur_Pt);
   save_int_setting(f, vfxname, "data.initalized", data->initalized);
 
-  FRACTAL *Fractal = data->Root;
+  FRACTAL* Fractal = data->Root;
   save_int_setting(f, vfxname, "Fractal.Nb_Simi", Fractal->Nb_Simi);
   save_int_setting(f, vfxname, "Fractal.Depth", Fractal->Depth);
   save_int_setting(f, vfxname, "Fractal.Col", Fractal->Col);
@@ -857,9 +862,9 @@ static void ifs_vfx_save(VisualFX *_this, const PluginInfo *info, const char *fi
   fclose(f);
 }
 
-static void ifs_vfx_restore(VisualFX *_this, PluginInfo *info, const char *file)
+static void ifs_vfx_restore(VisualFX* _this, PluginInfo* info, const char* file)
 {
-  FILE *f = fopen(file, "r");
+  FILE* f = fopen(file, "r");
   if (f == NULL) {
     exit(EXIT_FAILURE);
   }
@@ -877,12 +882,12 @@ static void ifs_vfx_restore(VisualFX *_this, PluginInfo *info, const char *file)
   ifs_update_data.mode = get_int_setting(f, vfxname, "ifs_update_data.mode");
   ifs_update_data.cycle = get_int_setting(f, vfxname, "ifs_update_data.cycle");
 
-  IfsData *data = (IfsData*) _this->fx_data;
+  IfsData* data = (IfsData*)_this->fx_data;
   data->Cur_Pt = get_int_setting(f, vfxname, "data.Cur_Pt");
   data->initalized = get_int_setting(f, vfxname, "data.initalized");
   data->initalized = 1;
 
-  FRACTAL *Fractal = data->Root;
+  FRACTAL* Fractal = data->Root;
   Fractal->Nb_Simi = get_int_setting(f, vfxname, "Fractal.Nb_Simi");
   Fractal->Depth = get_int_setting(f, vfxname, "Fractal.Depth");
   Fractal->Col = get_int_setting(f, vfxname, "Fractal.Col");
@@ -918,18 +923,18 @@ static void ifs_vfx_restore(VisualFX *_this, PluginInfo *info, const char *file)
 
   fclose(f);
 
-//    ifs_vfx_save(_this, info, "/tmp/vfx_save_after_restore.txt");
+  //    ifs_vfx_save(_this, info, "/tmp/vfx_save_after_restore.txt");
 }
 
-static void ifs_vfx_init(VisualFX *_this, PluginInfo *info)
+static void ifs_vfx_init(VisualFX* _this, PluginInfo* info)
 {
-  IfsData *data = (IfsData*) malloc(sizeof(IfsData));
+  IfsData* data = (IfsData*)malloc(sizeof(IfsData));
 
   data->enabled_bp = secure_b_param("Enabled", 1);
   data->params = plugin_parameters("Ifs", 1);
   data->params.params[0] = &data->enabled_bp;
 
-  data->Root = (FRACTAL*) NULL;
+  data->Root = (FRACTAL*)NULL;
   data->initalized = 0;
 
   _this->fx_data = data;
@@ -939,9 +944,9 @@ static void ifs_vfx_init(VisualFX *_this, PluginInfo *info)
   data->initalized = 1;
 }
 
-static void ifs_vfx_free(VisualFX *_this)
+static void ifs_vfx_free(VisualFX* _this)
 {
-  IfsData *data = (IfsData*) _this->fx_data;
+  IfsData* data = (IfsData*)_this->fx_data;
   release_ifs(data);
   free(data);
 }

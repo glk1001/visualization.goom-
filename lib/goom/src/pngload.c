@@ -1,12 +1,12 @@
 #include <png.h>
 
-int loadpng(char *file_name, int *w, int *h, unsigned int ***buf)
+int loadpng(char* file_name, int* w, int* h, unsigned int*** buf)
 {
-  FILE *fp;
+  FILE* fp;
   png_uint_32 width, height;
   int bit_depth,
 
-  color_type, interlace_type, compression_type, filter_type;
+      color_type, interlace_type, compression_type, filter_type;
   int rowbytes;
 
   png_structp png_ptr;
@@ -14,18 +14,18 @@ int loadpng(char *file_name, int *w, int *h, unsigned int ***buf)
   png_infop end_info;
 
   int x, y;
-  unsigned int **row_pointers;
+  unsigned int** row_pointers;
 
   /* OUVERTURE DU FICHIER */
   fp = fopen(file_name, "rb");
 
   if (!fp) {
-// fprintf (stderr, "Couldn't open file\n");
+    // fprintf (stderr, "Couldn't open file\n");
     return 1;
   }
 
   /* CREATION DES STRUCTURES */
-  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, (png_voidp) NULL, NULL, NULL);
+  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, (png_voidp)NULL, NULL, NULL);
   if (!png_ptr) {
     fprintf(stderr, "Memory error\n");
     return 1;
@@ -33,14 +33,14 @@ int loadpng(char *file_name, int *w, int *h, unsigned int ***buf)
 
   info_ptr = png_create_info_struct(png_ptr);
   if (!info_ptr) {
-    png_destroy_read_struct(&png_ptr, (png_infopp) NULL, (png_infopp) NULL);
+    png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
     fprintf(stderr, "Read error 1\n");
     return 1;
   }
 
   end_info = png_create_info_struct(png_ptr);
   if (!end_info) {
-    png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
+    png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
     fprintf(stderr, "Read error 2\n");
     return 1;
   }
@@ -58,8 +58,8 @@ int loadpng(char *file_name, int *w, int *h, unsigned int ***buf)
 
   png_read_info(png_ptr, info_ptr);
 
-  png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, &compression_type,
-      &filter_type);
+  png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type,
+               &compression_type, &filter_type);
   /*
    printf ("taille : %dx%d\n",width,height);
    printf ("depth  : %d\n",bit_depth);
@@ -82,9 +82,9 @@ int loadpng(char *file_name, int *w, int *h, unsigned int ***buf)
    break;
    }
    */
-// printf ("PNG_COLOR_MASK_ALPHA   : %x\n", PNG_COLOR_MASK_ALPHA);
-// printf ("PNG_COLOR_MASK_COLOR   : %x\n", PNG_COLOR_MASK_COLOR);
-// printf ("PNG_COLOR_MASK_PALETTE : %x\n", PNG_COLOR_MASK_PALETTE);
+  // printf ("PNG_COLOR_MASK_ALPHA   : %x\n", PNG_COLOR_MASK_ALPHA);
+  // printf ("PNG_COLOR_MASK_COLOR   : %x\n", PNG_COLOR_MASK_COLOR);
+  // printf ("PNG_COLOR_MASK_PALETTE : %x\n", PNG_COLOR_MASK_PALETTE);
   if (color_type == PNG_COLOR_TYPE_PALETTE && bit_depth <= 8)
     png_set_palette_to_rgb(png_ptr);
 
@@ -98,34 +98,34 @@ int loadpng(char *file_name, int *w, int *h, unsigned int ***buf)
 
   png_read_update_info(png_ptr, info_ptr);
 
-//      printf ("channels : %d\n", png_get_channels (png_ptr, info_ptr));
+  //      printf ("channels : %d\n", png_get_channels (png_ptr, info_ptr));
   rowbytes = png_get_rowbytes(png_ptr, info_ptr);
-//      printf ("rowbytes : %d\n", rowbytes);
+  //      printf ("rowbytes : %d\n", rowbytes);
 
-  row_pointers = (unsigned int**) malloc(height * sizeof(unsigned int*));
+  row_pointers = (unsigned int**)malloc(height * sizeof(unsigned int*));
 
   for (y = 0; y < height; y++) {
-    row_pointers[y] = (unsigned int*) malloc(4 * width);
+    row_pointers[y] = (unsigned int*)malloc(4 * width);
   }
-  png_read_image(png_ptr, (png_bytepp) row_pointers);
+  png_read_image(png_ptr, (png_bytepp)row_pointers);
 
-// for (y=0;y<height;y++) {
-//              for (x=0;x<width;x++) {
-//                      if (row_pointers[y][x] & 0xf000)
-// printf ("%x ",(((unsigned int**)row_pointers)[y][x])&0xf);
-// else
-//                              printf (" ");
-// }
-// printf ("\n");
-// }
+  // for (y=0;y<height;y++) {
+  //              for (x=0;x<width;x++) {
+  //                      if (row_pointers[y][x] & 0xf000)
+  // printf ("%x ",(((unsigned int**)row_pointers)[y][x])&0xf);
+  // else
+  //                              printf (" ");
+  // }
+  // printf ("\n");
+  // }
 
   png_read_end(png_ptr, end_info);
   png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 
-  (*buf) = (unsigned int**) malloc(height * sizeof(void*));
+  (*buf) = (unsigned int**)malloc(height * sizeof(void*));
 
   for (y = 0; y < height; y++) {
-    (*buf)[y] = (unsigned int*) malloc(width * 4);
+    (*buf)[y] = (unsigned int*)malloc(width * 4);
     for (x = 0; x < width; x++) {
       (*buf)[y][x] = row_pointers[y][x];
     }

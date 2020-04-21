@@ -1,7 +1,9 @@
 #include "surf3d.h"
+
 #include "goom_plugin_info.h"
-#include <stdlib.h>
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 grid3d* grid3d_new(const int x_width, const int num_x, const int z_depth, const int num_z, const v3d center)
@@ -40,9 +42,10 @@ grid3d* grid3d_new(const int x_width, const int num_x, const int z_depth, const 
   return g;
 }
 
-void grid3d_draw(PluginInfo *plug, grid3d *g, int color, int colorlow, int dist, Pixel *buf, Pixel *back, int W, int H)
+void grid3d_draw(PluginInfo* plug, grid3d* g, int color, int colorlow, int dist, Pixel* buf,
+                 Pixel* back, int W, int H)
 {
-  v2d *v2_array = malloc(g->surf.nbvertex * sizeof(v2d));
+  v2d* v2_array = malloc(g->surf.nbvertex * sizeof(v2d));
   v3d_to_v2d(g->surf.svertex, g->surf.nbvertex, W, H, dist, v2_array);
 
   for (int x = 0; x < g->defx; x++) {
@@ -61,7 +64,7 @@ void grid3d_draw(PluginInfo *plug, grid3d *g, int color, int colorlow, int dist,
   free(v2_array);
 }
 
-void surf3d_rotate(surf3d *s, float angle)
+void surf3d_rotate(surf3d* s, float angle)
 {
   float cosa;
   float sina;
@@ -72,16 +75,16 @@ void surf3d_rotate(surf3d *s, float angle)
   }
 }
 
-void surf3d_translate(surf3d *s)
+void surf3d_translate(surf3d* s)
 {
   for (int i = 0; i < s->nbvertex; i++) {
     TRANSLATE_V3D(s->center, s->svertex[i]);
   }
 }
 
-void grid3d_update(grid3d *g, float angle, float *vals, float dist)
+void grid3d_update(grid3d* g, float angle, float* vals, float dist)
 {
-  surf3d *s = &(g->surf);
+  surf3d* s = &(g->surf);
   v3d cam = s->center;
   cam.z += dist;
 

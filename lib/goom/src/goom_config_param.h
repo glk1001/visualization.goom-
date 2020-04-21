@@ -31,21 +31,20 @@ struct FloatVal {
   float step;
 };
 struct StrVal {
-  char *value;
+  char* value;
 };
 struct ListVal {
-  char *value;
+  char* value;
   int nbChoices;
-  char **choices;
+  char** choices;
 };
 struct BoolVal {
   int value;
 };
 
-
 typedef struct _PARAM {
-  char *name;
-  char *desc;
+  char* name;
+  char* desc;
   char rw;
   ParamType type;
   union {
@@ -55,14 +54,14 @@ typedef struct _PARAM {
     struct ListVal slist;
     struct BoolVal bval;
   } param;
-  
+
   /* used by the core to inform the GUI of a change */
-  void (*change_listener)(struct _PARAM *_this);
+  void (*change_listener)(struct _PARAM* _this);
 
   /* used by the GUI to inform the core of a change */
-  void (*changed)(struct _PARAM *_this);
-  
-  void *user_data; /* can be used by the GUI */
+  void (*changed)(struct _PARAM* _this);
+
+  void* user_data; /* can be used by the GUI */
 } PluginParam;
 
 #define IVAL(p) ((p).param.ival.value)
@@ -81,25 +80,25 @@ typedef struct _PARAM {
 
 PluginParam goom_secure_param(void);
 
-PluginParam goom_secure_f_param(char *name);
-PluginParam goom_secure_i_param(char *name);
-PluginParam goom_secure_b_param(char *name, int value);
-PluginParam goom_secure_s_param(char *name);
+PluginParam goom_secure_f_param(char* name);
+PluginParam goom_secure_i_param(char* name);
+PluginParam goom_secure_b_param(char* name, int value);
+PluginParam goom_secure_s_param(char* name);
 
-PluginParam goom_secure_f_feedback(char *name);
-PluginParam goom_secure_i_feedback(char *name);
+PluginParam goom_secure_f_feedback(char* name);
+PluginParam goom_secure_i_feedback(char* name);
 
-void goom_set_str_param_value(PluginParam *p, const char *str);
-void goom_set_list_param_value(PluginParam *p, const char *str);
-    
+void goom_set_str_param_value(PluginParam* p, const char* str);
+void goom_set_list_param_value(PluginParam* p, const char* str);
+
 typedef struct _PARAMETERS {
-  char *name;
-  char *desc;
+  char* name;
+  char* desc;
   int nbParams;
-  PluginParam **params;
+  PluginParam** params;
 } PluginParameters;
 
-PluginParameters goom_plugin_parameters(const char *name, int nb);
+PluginParameters goom_plugin_parameters(const char* name, int nb);
 
 #define secure_param goom_secure_param
 #define secure_f_param goom_secure_f_param

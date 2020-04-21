@@ -1,8 +1,9 @@
 #include "goom_logging.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 
-void (*goom_logger)(int lvl, int line_num, const char *func_name, const char *msg) = NULL;
+void (*goom_logger)(int lvl, int line_num, const char* func_name, const char* msg) = NULL;
 
 #ifndef NO_GOOM_LOGGING
 static int log_level = GOOM_LOG_LVL_DEBUG;
@@ -18,7 +19,7 @@ void goom_log_set_level(int lvl)
   log_level = lvl;
 }
 
-void goom_log(int lvl, int line_num, const char *func_name, const char *fmt, ...)
+void goom_log(int lvl, int line_num, const char* func_name, const char* fmt, ...)
 {
   if (!goom_logger) {
     return;
