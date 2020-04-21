@@ -8,7 +8,6 @@
 #include "goom_tools.h"
 #include "goom_typedefs.h"
 #include "goom_visual_fx.h"
-#include "goomsl.h"
 
 typedef struct {
   char drawIFS;
@@ -159,10 +158,6 @@ struct _PLUGIN_INFO {
   } methods;
 
   GoomRandom* gRandom;
-
-  GoomSL* scanner;
-  GoomSL* main_scanner;
-  const char* main_script_str;
 };
 
 void plugin_info_init(PluginInfo* p, int nbVisual);

@@ -2,9 +2,9 @@
 #define _GOOM_H
 
 #ifdef __cplusplus
-//    #if __cplusplus < 201703L
-//        #error "Too low C++ standard"
-//    #endif
+    #if __cplusplus < 201703L
+        #error "Too low C++ standard"
+    #endif
 #else
   #if __STDC_VERSION__ < 201112L
     #error "Too low C standard"
@@ -13,7 +13,6 @@
 
 #include "goom_config.h"
 #include "goom_plugin_info.h"
-#include "goomsl.h"
 
 #define NB_FX 10
 

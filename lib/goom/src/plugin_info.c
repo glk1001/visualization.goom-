@@ -1,4 +1,3 @@
-#include "default_scripts.h"
 #include "drawmethods.h"
 #include "goom.h"
 #include "goom_fx.h"
@@ -103,10 +102,6 @@ void plugin_info_init(PluginInfo* pp, int nbVisuals)
   pp->update.zoomFilterData = zfd;
 
   setOptimizedMethods(pp);
-
-  pp->scanner = gsl_new();
-  pp->main_scanner = gsl_new();
-  pp->main_script_str = GOOM_MAIN_SCRIPT;
 
   for (int i = 0; i < 0xffff; i++) {
     pp->sintable[i] =

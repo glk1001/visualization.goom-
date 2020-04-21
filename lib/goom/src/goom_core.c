@@ -14,7 +14,6 @@
 #include "goom_logging.h"
 #include "goom_plugin_info.h"
 #include "goom_tools.h"
-#include "goomsl.h"
 #include "ifs.h"
 #include "lines.h"
 #include "sound_tester.h"
@@ -873,8 +872,6 @@ void goom_close(PluginInfo* goomInfo)
 
   // Release PluginInfo
   free(goomInfo->visuals);
-  gsl_free(goomInfo->scanner);
-  gsl_free(goomInfo->main_scanner);
 
   free(goomInfo);
 }

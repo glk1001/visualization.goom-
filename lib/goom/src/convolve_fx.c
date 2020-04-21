@@ -1,8 +1,6 @@
 #include "goom_config.h"
 #include "goom_fx.h"
 #include "goom_plugin_info.h"
-#include "goomsl.h"
-
 #include "mathtools.h"
 
 #include <math.h>
@@ -19,8 +17,6 @@ typedef struct _CONV_DATA {
   PluginParam factor_adj_p;
   PluginParam factor_p;
   PluginParameters params;
-
-  GoomSL* script;
 
   /* rotozoom */
   int theta;
@@ -92,8 +88,8 @@ static void convolve_free(VisualFX* _this)
   free(data);
 }
 
-static void create_output_with_brightness(VisualFX *_this, Pixel *src, Pixel *dest,
-                                         PluginInfo *info, int iff)
+static void create_output_with_brightness(VisualFX* _this, Pixel* src, Pixel* dest,
+                                          PluginInfo* info, unsigned int iff)
 {
   int i = 0; //info->screen.height * info->screen.width - 1;
   for (int y = 0 ; y < info->screen.height; y++) {

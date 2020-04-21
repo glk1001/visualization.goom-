@@ -4,10 +4,10 @@
 #include <stdio.h>
 
 #define GOOM_VER_NAME        "Goom Library"
-#define GOOM_VER_DESCRIPTION "Reformatted with clang-format"  
+#define GOOM_VER_DESCRIPTION "Removed goomsl"  
 #define GOOM_VER_MAJOR       1
 #define GOOM_VER_MINOR       0
-#define GOOM_VER_REVISION    11
+#define GOOM_VER_REVISION    12
 
 #define GOOM_FULL_VERSION_STR GOOMVER_NAME " " \
                               GOOM_VER_MAJOR "." GOOM_VER_MINOR "." GOOM_VER_REVISION ", " \
