@@ -1,6 +1,8 @@
 #ifndef GRAPHIC_H
 #define GRAPHIC_H
 
+#include "goom_config.h"
+
 typedef unsigned int Uint;
 
 typedef struct

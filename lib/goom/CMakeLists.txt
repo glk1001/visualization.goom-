@@ -25,15 +25,13 @@ set(GOOM_SOURCES src/goomsl_yacc.c
                  src/ifs.c
                  src/lines.c
                  src/mathtools.c
-                 src/mmx.c
                  src/sound_tester.c
                  src/surf3d.c
                  src/tentacle3d.c
                  src/plugin_info.c
                  src/v3d.c
                  src/drawmethods.c
-                 src/cpu_info.c
-                 src/xmmx.c)
+)
 
 set(GOOM_HEADERS src/goom.h
                  src/goom_plugin_info.h
@@ -51,8 +49,7 @@ set(GOOM_HEADERS src/goom.h
                  src/goom_tools.h
                  src/goom_config.h
                  src/tentacle3d.h
-                 src/mmx.h
-                 src/xmmx.h)
+)		 
 
 add_library(goom STATIC ${GOOM_SOURCES} ${GOOM_HEADERS})
 set_property(TARGET goom PROPERTY POSITION_INDEPENDENT_CODE ON)

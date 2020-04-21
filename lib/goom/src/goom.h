@@ -1,8 +1,15 @@
 #ifndef _GOOM_H
 #define _GOOM_H
 
-#define NUM_AUDIO_SAMPLES 2
-#define AUDIO_SAMPLE_LEN  512
+#ifdef __cplusplus
+//    #if __cplusplus < 201703L
+//        #error "Too low C++ standard"
+//    #endif
+#else
+    #if __STDC_VERSION__ < 201112L
+        #error "Too low C standard"
+    #endif
+#endif    
 
 #include "goom_config.h"
 #include "goom_plugin_info.h"

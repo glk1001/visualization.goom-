@@ -17,14 +17,17 @@
 
 #define DRAWMETHOD DRAWMETHOD_PLUS(*p,*p,col)
 
-void draw_line (Pixel *data, int x1, int y1, int x2, int y2, int col, int screenx, int screeny)
+void draw_line(Pixel *data, int x1, int y1, int x2, int y2, int col, int screenx, int screeny)
 {
-  int     x, y, dx, dy, yy, xx;
-  Pixel    *p;
+  int x, y, dx, dy, yy, xx;
+  Pixel *p;
 
-  if ((y1 < 0) || (y2 < 0) || (x1 < 0) || (x2 < 0) || (y1 >= screeny) || (y2 >= screeny) || (x1 >= screenx) || (x2 >= screenx)) return;
-        
-  /* clip to top edge 
+  if ((y1 < 0) || (y2 < 0) || (x1 < 0) || (x2 < 0) || (y1 >= screeny) || (y2 >= screeny) || (x1 >= screenx)
+      || (x2 >= screenx)) {
+    return;
+  }
+
+/* clip to top edge
      if ((y1 < 0) && (y2 < 0))
      return;
 	
@@ -71,13 +74,11 @@ void draw_line (Pixel *data, int x1, int y1, int x2, int y2, int col, int screen
      x2 = screenx - 1;
      }
   */
-  
+
   dx = x2 - x1;
   dy = y2 - y1;
   if (x1 > x2) {
-    int     tmp;
-
-    tmp = x1;
+    int tmp = x1;
     x1 = x2;
     x2 = tmp;
     tmp = y1;
@@ -87,20 +88,21 @@ void draw_line (Pixel *data, int x1, int y1, int x2, int y2, int col, int screen
     dy = y2 - y1;
   }
 
-  /* vertical line */
+/* vertical line */
   if (dx == 0) {
     if (y1 < y2) {
       p = &(data[(screenx * y1) + x1]);
       for (y = y1; y <= y2; y++) {
-	DRAWMETHOD;
-	p += screenx;
+        DRAWMETHOD
+        ;
+        p += screenx;
       }
-    }
-    else {
+    } else {
       p = &(data[(screenx * y2) + x1]);
       for (y = y2; y <= y1; y++) {
-	DRAWMETHOD;
-	p += screenx;
+        DRAWMETHOD
+        ;
+        p += screenx;
       }
     }
     return;
@@ -110,16 +112,17 @@ void draw_line (Pixel *data, int x1, int y1, int x2, int y2, int col, int screen
     if (x1 < x2) {
       p = &(data[(screenx * y1) + x1]);
       for (x = x1; x <= x2; x++) {
-	DRAWMETHOD;
-	p++;
+        DRAWMETHOD
+        ;
+        p++;
       }
       return;
-    }
-    else {
+    } else {
       p = &(data[(screenx * y1) + x2]);
       for (x = x2; x <= x1; x++) {
-	DRAWMETHOD;
-	p++;
+        DRAWMETHOD
+        ;
+        p++;
       }
       return;
     }
@@ -134,14 +137,15 @@ void draw_line (Pixel *data, int x1, int y1, int x2, int y2, int col, int screen
       dx = ((dx << 16) / dy);
       x = x1 << 16;
       for (y = y1; y <= y2; y++) {
-	xx = x >> 16;
-	p = &(data[(screenx * y) + xx]);
-	DRAWMETHOD;
-	if (xx < (screenx - 1)) {
-	  p++;
-	  /* DRAWMETHOD; */
-	}
-	x += dx;
+        xx = x >> 16;
+        p = &(data[(screenx * y) + xx]);
+        DRAWMETHOD
+        ;
+        if (xx < (screenx - 1)) {
+          p++;
+          /* DRAWMETHOD; */
+        }
+        x += dx;
       }
       return;
     }
@@ -150,14 +154,15 @@ void draw_line (Pixel *data, int x1, int y1, int x2, int y2, int col, int screen
       dy = ((dy << 16) / dx);
       y = y1 << 16;
       for (x = x1; x <= x2; x++) {
-	yy = y >> 16;
-	p = &(data[(screenx * yy) + x]);
-	DRAWMETHOD;
-	if (yy < (screeny - 1)) {
-	  p += screeny;
-	  /* DRAWMETHOD; */
-	}
-	y += dy;
+        yy = y >> 16;
+        p = &(data[(screenx * yy) + x]);
+        DRAWMETHOD
+        ;
+        if (yy < (screeny - 1)) {
+          p += screeny;
+          /* DRAWMETHOD; */
+        }
+        y += dy;
       }
     }
   }
@@ -171,14 +176,15 @@ void draw_line (Pixel *data, int x1, int y1, int x2, int y2, int col, int screen
       dx = ((dx << 16) / -dy);
       x = (x1 + 1) << 16;
       for (y = y1; y >= y2; y--) {
-	xx = x >> 16;
-	p = &(data[(screenx * y) + xx]);
-	DRAWMETHOD;
-	if (xx < (screenx - 1)) {
-	  p--;
-	  /* DRAWMETHOD; */
-	}
-	x += dx;
+        xx = x >> 16;
+        p = &(data[(screenx * y) + xx]);
+        DRAWMETHOD
+        ;
+        if (xx < (screenx - 1)) {
+          p--;
+          /* DRAWMETHOD; */
+        }
+        x += dx;
       }
       return;
     }
@@ -187,14 +193,15 @@ void draw_line (Pixel *data, int x1, int y1, int x2, int y2, int col, int screen
       dy = ((dy << 16) / dx);
       y = y1 << 16;
       for (x = x1; x <= x2; x++) {
-	yy = y >> 16;
-	p = &(data[(screenx * yy) + x]);
-	DRAWMETHOD;
-	if (yy < (screeny - 1)) {
-	  p += screeny;
-	  /* DRAWMETHOD; */
-	}
-	y += dy;
+        yy = y >> 16;
+        p = &(data[(screenx * yy) + x]);
+        DRAWMETHOD
+        ;
+        if (yy < (screeny - 1)) {
+          p += screeny;
+          /* DRAWMETHOD; */
+        }
+        y += dy;
       }
       return;
     }

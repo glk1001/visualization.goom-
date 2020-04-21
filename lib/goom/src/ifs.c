@@ -33,29 +33,21 @@
 
 /* #ifdef STANDALONE */
 
+#include "ifs.h"
+#include "goom.h"
+#include "goom_config.h"
+#include "goom_graphic.h"
+#include "goom_tools.h"
+#include "goom_testing.h"
+#include "mathtools.h"
+
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "goom.h"
-#include "goom_config.h"
-#include "mathtools.h"
-
-#ifdef HAVE_MMX
-#include "mmx.h"
-#endif
-
-#include "goom_graphic.h"
-#include "ifs.h"
-#include "goom_tools.h"
-#include "goom_testing.h"
-
-typedef struct _ifsPoint
-{
-	gint32  x, y;
-}
-IFSPoint;
-
+typedef struct _ifsPoint {
+  gint32 x, y;
+} IFSPoint;
 
 #define MODE_ifs
 
@@ -71,20 +63,19 @@ IFSPoint;
 
 #define SMOOTH_COLORS
 
-#define LRAND()            ((long) (goom_random(goomInfo->gRandom) & 0x7fffffff))
-#define NRAND(n)           ((int) (LRAND() % (n)))
+#define LRAND()  ((long) (goom_random(goomInfo->gRandom) & 0x7fffffff))
+#define NRAND(n) ((int) (LRAND() % (n)))
 
 #if RAND_MAX < 0x10000
-#define MAXRAND (((float)(RAND_MAX<16)+((float)RAND_MAX)+1.0f)/127.0f)
+#  define MAXRAND (((float)(RAND_MAX<16)+((float)RAND_MAX)+1.0f)/127.0f)
 #else
-#define MAXRAND            (2147483648.0/127.0)           /* unsigned 1<<31 / 127.0 (cf goom_tools) as a float */
+#  define MAXRAND (2147483648.0/127.0)           /* unsigned 1<<31 / 127.0 (cf goom_tools) as a float */
 #endif
 
 /*****************************************************/
 
 typedef float DBL;
 typedef int F_PT;
-
 /* typedef float               F_PT; */
 
 /*****************************************************/
@@ -113,203 +104,196 @@ typedef int F_PT;
 typedef struct Similitude_Struct SIMI;
 typedef struct Fractal_Struct FRACTAL;
 
-struct Similitude_Struct
-{
-
-	DBL     c_x, c_y;
-	DBL     r, r2, A, A2;
-	F_PT    Ct, St, Ct2, St2;
-	F_PT    Cx, Cy;
-	F_PT    R, R2;
+struct Similitude_Struct {
+  DBL c_x, c_y;
+  DBL r, r2, A, A2;
+  F_PT Ct, St, Ct2, St2;
+  F_PT Cx, Cy;
+  F_PT R, R2;
 };
 
+struct Fractal_Struct {
+  int Nb_Simi;
+  SIMI Components[5 * MAX_SIMI];
+  int Depth, Col;
+  int Count, Speed;
+  int Width, Height, Lx, Ly;
+  DBL r_mean, dr_mean, dr2_mean;
+  int Cur_Pt, Max_Pt;
 
-struct Fractal_Struct
-{
-
-	int     Nb_Simi;
-	SIMI    Components[5 * MAX_SIMI];
-	int     Depth, Col;
-	int     Count, Speed;
-	int     Width, Height, Lx, Ly;
-	DBL     r_mean, dr_mean, dr2_mean;
-	int     Cur_Pt, Max_Pt;
-
-	IFSPoint *Buffer1, *Buffer2;
+  IFSPoint *Buffer1, *Buffer2;
 };
 
 typedef struct _IFS_DATA {
   PluginParam enabled_bp;
   PluginParameters params;
 
-	FRACTAL *Root;
-	FRACTAL *Cur_F;
+  FRACTAL *Root;
+  FRACTAL *Cur_F;
 
-	/* Used by the Trace recursive method */
-	IFSPoint *Buf;
-	int Cur_Pt;
-	int initalized;
+  /* Used by the Trace recursive method */
+  IFSPoint *Buf;
+  int Cur_Pt;
+  int initalized;
 } IfsData;
-
 
 /*****************************************************/
 
-static  DBL
-Gauss_Rand (PluginInfo *goomInfo, DBL c, DBL S, DBL A_mult_1_minus_exp_neg_S)
+static DBL Gauss_Rand(PluginInfo *goomInfo, DBL c, DBL S, DBL A_mult_1_minus_exp_neg_S)
 {
-	DBL     y;
-
-	y = (DBL) LRAND () / MAXRAND;
-	y = A_mult_1_minus_exp_neg_S * (1.0 - exp (-y * y * S));
-	if (NRAND (2))
-		return (c + y);
-	return (c - y);
+  DBL y = (DBL) LRAND() / MAXRAND;
+  y = A_mult_1_minus_exp_neg_S * (1.0 - exp(-y * y * S));
+  if (NRAND(2)) {
+    return (c + y);
+  }
+  return (c - y);
 }
 
-static  DBL
-Half_Gauss_Rand (PluginInfo *goomInfo, DBL c, DBL S, DBL A_mult_1_minus_exp_neg_S)
+static DBL Half_Gauss_Rand(PluginInfo *goomInfo, DBL c, DBL S, DBL A_mult_1_minus_exp_neg_S)
 {
-	DBL     y;
-
-	y = (DBL) LRAND () / MAXRAND;
-	y = A_mult_1_minus_exp_neg_S * (1.0 - exp (-y * y * S));
-	return (c + y);
+  DBL y = (DBL) LRAND() / MAXRAND;
+  y = A_mult_1_minus_exp_neg_S * (1.0 - exp(-y * y * S));
+  return (c + y);
 }
 
-static DBL get_1_minus_exp_neg_S(DBL S) {
-	return 1.0 - exp(-S); 
+static DBL get_1_minus_exp_neg_S(DBL S)
+{
+  return 1.0 - exp(-S);
 }
 
-static void
-Random_Simis (PluginInfo *goomInfo, FRACTAL * F, SIMI * Cur, int i)
+static void Random_Simis(PluginInfo *goomInfo, FRACTAL *F, SIMI *Cur, int i)
 {
-	static DBL c_AS_factor;
+  static DBL c_AS_factor;
   static DBL r_1_minus_exp_neg_S;
   static DBL r2_1_minus_exp_neg_S;
-	static DBL A_AS_factor;
-	static DBL A2_AS_factor;
+  static DBL A_AS_factor;
+  static DBL A2_AS_factor;
 
-	static int doneInit = 0;
-	if (!doneInit) {
-		c_AS_factor = 0.8 * get_1_minus_exp_neg_S(4.0);
-		r_1_minus_exp_neg_S = get_1_minus_exp_neg_S(3.0);
-		r2_1_minus_exp_neg_S = get_1_minus_exp_neg_S(2.0);
-		A_AS_factor = 360.0 * get_1_minus_exp_neg_S(4.0);
-		A2_AS_factor = A_AS_factor;
-		doneInit = 1;
-	}
-  const DBL r_AS_factor = F->dr_mean*r_1_minus_exp_neg_S;
-	const DBL r2_AS_factor = F->dr2_mean*r2_1_minus_exp_neg_S;
+  static int doneInit = 0;
+  if (!doneInit) {
+    c_AS_factor = 0.8 * get_1_minus_exp_neg_S(4.0);
+    r_1_minus_exp_neg_S = get_1_minus_exp_neg_S(3.0);
+    r2_1_minus_exp_neg_S = get_1_minus_exp_neg_S(2.0);
+    A_AS_factor = 360.0 * get_1_minus_exp_neg_S(4.0);
+    A2_AS_factor = A_AS_factor;
+    doneInit = 1;
+  }
+  const DBL r_AS_factor = F->dr_mean * r_1_minus_exp_neg_S;
+  const DBL r2_AS_factor = F->dr2_mean * r2_1_minus_exp_neg_S;
 
-	while (i--) {
-		Cur->c_x = Gauss_Rand (goomInfo, 0.0, 4.0, c_AS_factor);
-		Cur->c_y = Gauss_Rand (goomInfo, 0.0, 4.0, c_AS_factor);
-		Cur->r = Gauss_Rand (goomInfo, F->r_mean, 3.0, r_AS_factor);
-		Cur->r2 = Half_Gauss_Rand (goomInfo, 0.0, 2.0, r2_AS_factor);
-		Cur->A = Gauss_Rand (goomInfo, 0.0, 4.0, A_AS_factor) * (M_PI / 180.0);
-		Cur->A2 = Gauss_Rand (goomInfo, 0.0, 4.0, A2_AS_factor) * (M_PI / 180.0);
-		Cur++;
-	}
+  while (i--) {
+    Cur->c_x = Gauss_Rand(goomInfo, 0.0, 4.0, c_AS_factor);
+    Cur->c_y = Gauss_Rand(goomInfo, 0.0, 4.0, c_AS_factor);
+    Cur->r = Gauss_Rand(goomInfo, F->r_mean, 3.0, r_AS_factor);
+    Cur->r2 = Half_Gauss_Rand(goomInfo, 0.0, 2.0, r2_AS_factor);
+    Cur->A = Gauss_Rand(goomInfo, 0.0, 4.0, A_AS_factor) * (M_PI / 180.0);
+    Cur->A2 = Gauss_Rand(goomInfo, 0.0, 4.0, A2_AS_factor) * (M_PI / 180.0);
+    Cur->Ct = 0;
+    Cur->St = 0;
+    Cur->Ct2 = 0;
+    Cur->St2 = 0;
+    Cur->Cx = 0;
+    Cur->Cy = 0;
+    Cur->R = 0;
+    Cur->R2 = 0;
+    Cur++;
+  }
 }
 
-static void
-free_ifs_buffers (FRACTAL * Fractal)
+static void free_ifs_buffers(FRACTAL *Fractal)
 {
-	if (Fractal->Buffer1 != NULL) {
-		(void) free ((void *) Fractal->Buffer1);
-		Fractal->Buffer1 = (IFSPoint *) NULL;
-	}
-	if (Fractal->Buffer2 != NULL) {
-		(void) free ((void *) Fractal->Buffer2);
-		Fractal->Buffer2 = (IFSPoint *) NULL;
-	}
+  if (Fractal->Buffer1 != NULL) {
+    (void) free((void*) Fractal->Buffer1);
+    Fractal->Buffer1 = (IFSPoint*) NULL;
+  }
+  if (Fractal->Buffer2 != NULL) {
+    (void) free((void*) Fractal->Buffer2);
+    Fractal->Buffer2 = (IFSPoint*) NULL;
+  }
 }
 
-
-static void
-free_ifs (FRACTAL * Fractal)
+static void free_ifs(FRACTAL *Fractal)
 {
-	free_ifs_buffers (Fractal);
+  free_ifs_buffers(Fractal);
 }
 
 /***************************************************************/
 
-static void
-init_ifs (PluginInfo *goomInfo, IfsData *data)
+static void init_ifs(PluginInfo *goomInfo, IfsData *data)
 {
-	int     i;
-	FRACTAL *Fractal;
-	int width = goomInfo->screen.width;
-	int height = goomInfo->screen.height;
+  int width = goomInfo->screen.width;
+  int height = goomInfo->screen.height;
 
-	if (data->Root == NULL) {
-		data->Root = (FRACTAL *) malloc (sizeof (FRACTAL));
-		if (data->Root == NULL)
-			return;
-		data->Root->Buffer1 = (IFSPoint *) NULL;
-		data->Root->Buffer2 = (IFSPoint *) NULL;
-	}
-	Fractal = data->Root;
+  data->enabled_bp = secure_b_param("Enabled", 1);
 
-	free_ifs_buffers (Fractal);
+  if (data->Root == NULL) {
+    data->Root = (FRACTAL*) malloc(sizeof(FRACTAL));
+    if (data->Root == NULL)
+      return;
+    data->Root->Buffer1 = (IFSPoint*) NULL;
+    data->Root->Buffer2 = (IFSPoint*) NULL;
+  }
+  FRACTAL *Fractal = data->Root;
 
-	i = (NRAND (4)) + 2;					/* Number of centers */
-	switch (i) {
-		case 3:
-			Fractal->Depth = MAX_DEPTH_3;
-			Fractal->r_mean = .6;
-			Fractal->dr_mean = .4;
-			Fractal->dr2_mean = .3;
-			break;
+  free_ifs_buffers(Fractal);
 
-		case 4:
-			Fractal->Depth = MAX_DEPTH_4;
-			Fractal->r_mean = .5;
-			Fractal->dr_mean = .4;
-			Fractal->dr2_mean = .3;
-			break;
+  int i = (NRAND(4)) + 2;/* Number of centers */
+  switch (i) {
+  case 3:
+    Fractal->Depth = MAX_DEPTH_3;
+    Fractal->r_mean = .6;
+    Fractal->dr_mean = .4;
+    Fractal->dr2_mean = .3;
+    break;
 
-		case 5:
-			Fractal->Depth = MAX_DEPTH_5;
-			Fractal->r_mean = .5;
-			Fractal->dr_mean = .4;
-			Fractal->dr2_mean = .3;
-			break;
+  case 4:
+    Fractal->Depth = MAX_DEPTH_4;
+    Fractal->r_mean = .5;
+    Fractal->dr_mean = .4;
+    Fractal->dr2_mean = .3;
+    break;
 
-		default:
-		case 2:
-			Fractal->Depth = MAX_DEPTH_2;
-			Fractal->r_mean = .7;
-			Fractal->dr_mean = .3;
-			Fractal->dr2_mean = .4;
-			break;
-	}
-	Fractal->Nb_Simi = i;
-	Fractal->Max_Pt = Fractal->Nb_Simi - 1;
-	for (i = 0; i <= Fractal->Depth + 2; ++i)
-		Fractal->Max_Pt *= Fractal->Nb_Simi;
+  case 5:
+    Fractal->Depth = MAX_DEPTH_5;
+    Fractal->r_mean = .5;
+    Fractal->dr_mean = .4;
+    Fractal->dr2_mean = .3;
+    break;
 
-	if ((Fractal->Buffer1 = (IFSPoint *) calloc (Fractal->Max_Pt,
-						     sizeof (IFSPoint))) == NULL) {
-		free_ifs (Fractal);
-		return;
-	}
-	if ((Fractal->Buffer2 = (IFSPoint *) calloc (Fractal->Max_Pt,
-						     sizeof (IFSPoint))) == NULL) {
-		free_ifs (Fractal);
-		return;
-	}
+  default:
+  case 2:
+    Fractal->Depth = MAX_DEPTH_2;
+    Fractal->r_mean = .7;
+    Fractal->dr_mean = .3;
+    Fractal->dr2_mean = .4;
+    break;
+  }
 
-	Fractal->Speed = 6;
-	Fractal->Width = width;				/* modif by JeKo */
-	Fractal->Height = height;			/* modif by JeKo */
-	Fractal->Cur_Pt = 0;
-	Fractal->Count = 0;
-	Fractal->Lx = (Fractal->Width - 1) / 2;
-	Fractal->Ly = (Fractal->Height - 1) / 2;
-	Fractal->Col = pcg32_rand() % (width * height);	/* modif by JeKo */
+  Fractal->Nb_Simi = i;
+  Fractal->Max_Pt = Fractal->Nb_Simi - 1;
+  for (i = 0; i <= Fractal->Depth + 2; ++i) {
+    Fractal->Max_Pt *= Fractal->Nb_Simi;
+  }
 
-	Random_Simis (goomInfo, Fractal, Fractal->Components, 5 * MAX_SIMI);
+  if ((Fractal->Buffer1 = (IFSPoint*) calloc(Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
+    free_ifs(Fractal);
+    return;
+  }
+  if ((Fractal->Buffer2 = (IFSPoint*) calloc(Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
+    free_ifs(Fractal);
+    return;
+  }
+
+  Fractal->Speed = 6;
+  Fractal->Width = width;/* modif by JeKo */
+  Fractal->Height = height;/* modif by JeKo */
+  Fractal->Cur_Pt = 0;
+  Fractal->Count = 0;
+  Fractal->Lx = (Fractal->Width - 1) / 2;
+  Fractal->Ly = (Fractal->Height - 1) / 2;
+  Fractal->Col = pcg32_rand() % (width * height);/* modif by JeKo */
+
+  Random_Simis(goomInfo, Fractal, Fractal->Components, 5 * MAX_SIMI);
 
   for (int i = 0; i < 5 * MAX_SIMI; i++) {
       SIMI cur = Fractal->Components[i];
@@ -320,183 +304,175 @@ init_ifs (PluginInfo *goomInfo, IfsData *data)
 
 /***************************************************************/
 
-static inline void
-Transform (SIMI * Simi, F_PT xo, F_PT yo, F_PT * x, F_PT * y)
+static inline void Transform(SIMI *Simi, F_PT xo, F_PT yo, F_PT *x, F_PT *y)
 {
-	F_PT    xx, yy;
+  F_PT xx, yy;
 
-	xo = xo - Simi->Cx;
-	xo = (xo * Simi->R) >> FIX; /* / UNIT; */
-	yo = yo - Simi->Cy;
-	yo = (yo * Simi->R) >> FIX; /* / UNIT; */
+  xo = xo - Simi->Cx;
+  xo = (xo * Simi->R) >> FIX;/* / UNIT; */
+  yo = yo - Simi->Cy;
+  yo = (yo * Simi->R) >> FIX;/* / UNIT; */
 
-	xx = xo - Simi->Cx;
-	xx = (xx * Simi->R2) >> FIX; /* / UNIT; */
-	yy = -yo - Simi->Cy;
-	yy = (yy * Simi->R2) >> FIX; /* / UNIT; */
+  xx = xo - Simi->Cx;
+  xx = (xx * Simi->R2) >> FIX;/* / UNIT; */
+  yy = -yo - Simi->Cy;
+  yy = (yy * Simi->R2) >> FIX;/* / UNIT; */
 
-	*x =
-	  ((xo * Simi->Ct - yo * Simi->St + xx * Simi->Ct2 - yy * Simi->St2)
-	   >> FIX /* / UNIT */ ) + Simi->Cx;
-	*y =
-	  ((xo * Simi->St + yo * Simi->Ct + xx * Simi->St2 + yy * Simi->Ct2)
-	   >> FIX /* / UNIT */ ) + Simi->Cy;
+  *x = ((xo * Simi->Ct - yo * Simi->St + xx * Simi->Ct2 - yy * Simi->St2) >> FIX/* / UNIT */) + Simi->Cx;
+  *y = ((xo * Simi->St + yo * Simi->Ct + xx * Simi->St2 + yy * Simi->Ct2) >> FIX/* / UNIT */) + Simi->Cy;
 }
 
 /***************************************************************/
 
-static void
-Trace (FRACTAL * F, F_PT xo, F_PT yo, IfsData *data)
+static void Trace(FRACTAL *F, F_PT xo, F_PT yo, IfsData *data)
 {
-	F_PT    x, y, i;
-	SIMI   *Cur;
+  F_PT x, y, i;
+  SIMI *Cur;
 
-	Cur = data->Cur_F->Components;
-	for (i = data->Cur_F->Nb_Simi; i; --i, Cur++) {
-		Transform (Cur, xo, yo, &x, &y);
+  Cur = data->Cur_F->Components;
+//	GOOM_LOG_DEBUG("data->Cur_F->Nb_Simi = %d, xo = %d, yo = %d", data->Cur_F->Nb_Simi, xo, yo);
+  for (i = data->Cur_F->Nb_Simi; i; --i, Cur++) {
+    Transform(Cur, xo, yo, &x, &y);
 
-		data->Buf->x = F->Lx + ((x * F->Lx) >> (FIX+1) /* /(UNIT*2) */ );
-		data->Buf->y = F->Ly - ((y * F->Ly) >> (FIX+1) /* /(UNIT*2) */ );
-		data->Buf++;
+    data->Buf->x = F->Lx + ((x * F->Lx) >> (FIX + 1)/* /(UNIT*2) */);
+    data->Buf->y = F->Ly - ((y * F->Ly) >> (FIX + 1)/* /(UNIT*2) */);
+    data->Buf++;
 
-		data->Cur_Pt++;
+    data->Cur_Pt++;
 
-		if (F->Depth && ((x - xo) >> 4) && ((y - yo) >> 4)) {
-			F->Depth--;
-			Trace (F, x, y, data);
-			F->Depth++;
-		}
-	}
+    if (F->Depth && ((x - xo) >> 4) && ((y - yo) >> 4)) {
+      F->Depth--;
+      Trace(F, x, y, data);
+      F->Depth++;
+    }
+  }
 }
 
-static void
-Draw_Fractal (IfsData *data)
+static void Draw_Fractal(IfsData *data)
 {
-	FRACTAL *F = data->Root;
-	int     i, j;
-	F_PT    x, y, xo, yo;
-	SIMI   *Cur, *Simi;
+  FRACTAL *F = data->Root;
+  int i, j;
+  F_PT x, y, xo, yo;
+  SIMI *Cur, *Simi;
 
-	for (Cur = F->Components, i = F->Nb_Simi; i; --i, Cur++) {
-		Cur->Cx = DBL_To_F_PT (Cur->c_x);
-		Cur->Cy = DBL_To_F_PT (Cur->c_y);
+  for (Cur = F->Components, i = F->Nb_Simi; i; --i, Cur++) {
+    Cur->Cx = DBL_To_F_PT(Cur->c_x);
+    Cur->Cy = DBL_To_F_PT(Cur->c_y);
 
-		Cur->Ct = DBL_To_F_PT (cos (Cur->A));
-		Cur->St = DBL_To_F_PT (sin (Cur->A));
-		Cur->Ct2 = DBL_To_F_PT (cos (Cur->A2));
-		Cur->St2 = DBL_To_F_PT (sin (Cur->A2));
+    Cur->Ct = DBL_To_F_PT(cos(Cur->A));
+    Cur->St = DBL_To_F_PT(sin(Cur->A));
+    Cur->Ct2 = DBL_To_F_PT(cos(Cur->A2));
+    Cur->St2 = DBL_To_F_PT(sin(Cur->A2));
 
-		Cur->R = DBL_To_F_PT (Cur->r);
-		Cur->R2 = DBL_To_F_PT (Cur->r2);
-	}
+    Cur->R = DBL_To_F_PT(Cur->r);
+    Cur->R2 = DBL_To_F_PT(Cur->r2);
+  }
 
+  data->Cur_Pt = 0;
+  data->Cur_F = F;
+  data->Buf = F->Buffer2;
+  for (Cur = F->Components, i = F->Nb_Simi; i; --i, Cur++) {
+    xo = Cur->Cx;
+    yo = Cur->Cy;
+    GOOM_LOG_DEBUG("F->Nb_Simi = %d, xo = %d, yo = %d", F->Nb_Simi, xo, yo);
+    for (Simi = F->Components, j = F->Nb_Simi; j; --j, Simi++) {
+      if (Simi == Cur) {
+        continue;
+      }
+      Transform(Simi, xo, yo, &x, &y);
+      Trace(F, x, y, data);
+    }
+  }
 
-	data->Cur_Pt = 0;
-	data->Cur_F = F;
-	data->Buf = F->Buffer2;
-	for (Cur = F->Components, i = F->Nb_Simi; i; --i, Cur++) {
-		xo = Cur->Cx;
-		yo = Cur->Cy;
-        GOOM_LOG_DEBUG("F->Nb_Simi = %d, xo = %d, yo = %d", F->Nb_Simi, xo, yo);
-		for (Simi = F->Components, j = F->Nb_Simi; j; --j, Simi++) {
-			if (Simi == Cur)
-				continue;
-			Transform (Simi, xo, yo, &x, &y);
-			Trace (F, x, y, data);
-		}
-	}
-
-	/* Erase previous */
-
-	F->Cur_Pt = data->Cur_Pt;
-	data->Buf = F->Buffer1;
-	F->Buffer1 = F->Buffer2;
-	F->Buffer2 = data->Buf;
+  /* Erase previous */
+  F->Cur_Pt = data->Cur_Pt;
+  data->Buf = F->Buffer1;
+  F->Buffer1 = F->Buffer2;
+  F->Buffer2 = data->Buf;
 }
 
-
-static IFSPoint *
-draw_ifs (PluginInfo *goomInfo, int *nbpt, IfsData *data)
+static IFSPoint* draw_ifs(PluginInfo *goomInfo, int *nbpt, IfsData *data)
 {
-	int     i;
-	DBL     u, uu, v, vv, u0, u1, u2, u3;
-	SIMI   *S, *S1, *S2, *S3, *S4;
-	FRACTAL *F;
+  int i;
+  DBL u, uu, v, vv, u0, u1, u2, u3;
+  SIMI *S, *S1, *S2, *S3, *S4;
+  FRACTAL *F;
 
-	if (data->Root == NULL)
-		return NULL;
-	F = data->Root;
-	if (F->Buffer1 == NULL)
-		return NULL;
+  if (data->Root == NULL) {
+    return NULL;
+  }
+  F = data->Root;
+  if (F->Buffer1 == NULL) {
+    return NULL;
+  }
 
-	u = (DBL) (F->Count) * (DBL) (F->Speed) / 1000.0;
-	uu = u * u;
-	v = 1.0 - u;
-	vv = v * v;
-	u0 = vv * v;
-	u1 = 3.0 * vv * u;
-	u2 = 3.0 * v * uu;
-	u3 = u * uu;
+  u = (DBL) (F->Count) * (DBL) (F->Speed) / 1000.0;
+  uu = u * u;
+  v = 1.0 - u;
+  vv = v * v;
+  u0 = vv * v;
+  u1 = 3.0 * vv * u;
+  u2 = 3.0 * v * uu;
+  u3 = u * uu;
 
-	S = F->Components;
-	S1 = S + F->Nb_Simi;
-	S2 = S1 + F->Nb_Simi;
-	S3 = S2 + F->Nb_Simi;
-	S4 = S3 + F->Nb_Simi;
+  S = F->Components;
+  S1 = S + F->Nb_Simi;
+  S2 = S1 + F->Nb_Simi;
+  S3 = S2 + F->Nb_Simi;
+  S4 = S3 + F->Nb_Simi;
 
-	for (i = F->Nb_Simi; i; --i, S++, S1++, S2++, S3++, S4++) {
-		S->c_x = u0 * S1->c_x + u1 * S2->c_x + u2 * S3->c_x + u3 * S4->c_x;
-		S->c_y = u0 * S1->c_y + u1 * S2->c_y + u2 * S3->c_y + u3 * S4->c_y;
-		S->r = u0 * S1->r + u1 * S2->r + u2 * S3->r + u3 * S4->r;
-		S->r2 = u0 * S1->r2 + u1 * S2->r2 + u2 * S3->r2 + u3 * S4->r2;
-		S->A = u0 * S1->A + u1 * S2->A + u2 * S3->A + u3 * S4->A;
-		S->A2 = u0 * S1->A2 + u1 * S2->A2 + u2 * S3->A2 + u3 * S4->A2;
-	}
+  for (i = F->Nb_Simi; i; --i, S++, S1++, S2++, S3++, S4++) {
+    S->c_x = u0 * S1->c_x + u1 * S2->c_x + u2 * S3->c_x + u3 * S4->c_x;
+    S->c_y = u0 * S1->c_y + u1 * S2->c_y + u2 * S3->c_y + u3 * S4->c_y;
+    S->r = u0 * S1->r + u1 * S2->r + u2 * S3->r + u3 * S4->r;
+    S->r2 = u0 * S1->r2 + u1 * S2->r2 + u2 * S3->r2 + u3 * S4->r2;
+    S->A = u0 * S1->A + u1 * S2->A + u2 * S3->A + u3 * S4->A;
+    S->A2 = u0 * S1->A2 + u1 * S2->A2 + u2 * S3->A2 + u3 * S4->A2;
+  }
 
-	Draw_Fractal (data);
+  Draw_Fractal(data);
 
-	if (F->Count >= 1000 / F->Speed) {
-		S = F->Components;
-		S1 = S + F->Nb_Simi;
-		S2 = S1 + F->Nb_Simi;
-		S3 = S2 + F->Nb_Simi;
-		S4 = S3 + F->Nb_Simi;
+  if (F->Count >= 1000 / F->Speed) {
+    S = F->Components;
+    S1 = S + F->Nb_Simi;
+    S2 = S1 + F->Nb_Simi;
+    S3 = S2 + F->Nb_Simi;
+    S4 = S3 + F->Nb_Simi;
 
-		for (i = F->Nb_Simi; i; --i, S++, S1++, S2++, S3++, S4++) {
-			S2->c_x = 2.0 * S4->c_x - S3->c_x;
-			S2->c_y = 2.0 * S4->c_y - S3->c_y;
-			S2->r = 2.0 * S4->r - S3->r;
-			S2->r2 = 2.0 * S4->r2 - S3->r2;
-			S2->A = 2.0 * S4->A - S3->A;
-			S2->A2 = 2.0 * S4->A2 - S3->A2;
+    for (i = F->Nb_Simi; i; --i, S++, S1++, S2++, S3++, S4++) {
+      S2->c_x = 2.0 * S4->c_x - S3->c_x;
+      S2->c_y = 2.0 * S4->c_y - S3->c_y;
+      S2->r = 2.0 * S4->r - S3->r;
+      S2->r2 = 2.0 * S4->r2 - S3->r2;
+      S2->A = 2.0 * S4->A - S3->A;
+      S2->A2 = 2.0 * S4->A2 - S3->A2;
 
-			*S1 = *S4;
-		}
-		Random_Simis (goomInfo, F, F->Components + 3 * F->Nb_Simi, F->Nb_Simi);
+      *S1 = *S4;
+    }
 
-		Random_Simis (goomInfo, F, F->Components + 4 * F->Nb_Simi, F->Nb_Simi);
+    Random_Simis(goomInfo, F, F->Components + 3 * F->Nb_Simi, F->Nb_Simi);
+    Random_Simis(goomInfo, F, F->Components + 4 * F->Nb_Simi, F->Nb_Simi);
 
-		F->Count = 0;
-	}
-	else
-		F->Count++;
+    F->Count = 0;
+  } else {
+    F->Count++;
+  }
 
-	F->Col++;
+  F->Col++;
 
-	(*nbpt) = data->Cur_Pt;
-	return F->Buffer2;
+  (*nbpt) = data->Cur_Pt;
+  return F->Buffer2;
 }
-
 
 /***************************************************************/
 
-static void release_ifs (IfsData *data)
+static void release_ifs(IfsData *data)
 {
-	if (data->Root != NULL) {
-		free_ifs (data->Root);
-		(void) free ((void *) data->Root);
-		data->Root = (FRACTAL *) NULL;
-	}
+  if (data->Root != NULL) {
+    free_ifs(data->Root);
+    (void) free((void*) data->Root);
+    data->Root = (FRACTAL*) NULL;
+  }
 }
 
 #define RAND() goom_random(goomInfo->gRandom)
@@ -806,19 +782,19 @@ static void ifs_update(PluginInfo *goomInfo, Pixel *data, Pixel *back, int incre
 
 /** VISUAL_FX WRAPPER FOR IFS */
 
-static void ifs_vfx_apply(VisualFX *_this, Pixel *src, Pixel *dest, PluginInfo *goomInfo) {
+static void ifs_vfx_apply(VisualFX *_this, Pixel *src, Pixel *dest, PluginInfo *goomInfo)
+{
+  IfsData *data = (IfsData*) _this->fx_data;
+  if (!data->initalized) {
+    data->initalized = 1;
+    init_ifs(goomInfo, data);
+  }
+  if (!BVAL(data->enabled_bp)) {
+    return;
+  }
+  ifs_update(goomInfo, dest, src, goomInfo->update.ifs_incr, data);
 
-	IfsData *data = (IfsData*)_this->fx_data;
-	if (!data->initalized) {
-		data->initalized = 1;
-		init_ifs(goomInfo, data);
-	}
-    if (!BVAL(data->enabled_bp)) {
-        return;
-    }
-	ifs_update (goomInfo, dest, src, goomInfo->update.ifs_incr, data);
-
-	/*TODO: trouver meilleur soluce pour increment (mettre le code de gestion de l'ifs dans ce fichier: ifs_vfx_apply) */
+  /*TODO: trouver meilleur soluce pour increment (mettre le code de gestion de l'ifs dans ce fichier: ifs_vfx_apply) */
 }
 
 static const char *vfxname = "Ifs";
@@ -944,35 +920,39 @@ static void ifs_vfx_restore(VisualFX *_this, PluginInfo *info, const char *file)
 
 //    ifs_vfx_save(_this, info, "/tmp/vfx_save_after_restore.txt");
 }
-static void ifs_vfx_init(VisualFX *_this, PluginInfo *info) {
 
-	IfsData *data = (IfsData*)malloc(sizeof(IfsData));
+static void ifs_vfx_init(VisualFX *_this, PluginInfo *info)
+{
+  IfsData *data = (IfsData*) malloc(sizeof(IfsData));
 
-    data->enabled_bp = secure_b_param("Enabled", 1);
-    data->params = plugin_parameters("Ifs", 1);
-    data->params.params[0] = &data->enabled_bp;
+  data->enabled_bp = secure_b_param("Enabled", 1);
+  data->params = plugin_parameters("Ifs", 1);
+  data->params.params[0] = &data->enabled_bp;
 
-	data->Root = (FRACTAL*)NULL;
-	data->initalized = 0;
-	_this->fx_data = data;
-    _this->params = &data->params;
+  data->Root = (FRACTAL*) NULL;
+  data->initalized = 0;
 
-    init_ifs(info, data);
-    data->initalized = 1;
+  _this->fx_data = data;
+  _this->params = &data->params;
+
+  init_ifs(info, data);
+  data->initalized = 1;
 }
 
-static void ifs_vfx_free(VisualFX *_this) {
-	IfsData *data = (IfsData*)_this->fx_data;
-	release_ifs(data);
-	free(data);
+static void ifs_vfx_free(VisualFX *_this)
+{
+  IfsData *data = (IfsData*) _this->fx_data;
+  release_ifs(data);
+  free(data);
 }
 
-VisualFX ifs_visualfx_create(void) {
-	VisualFX vfx;
-	vfx.init = ifs_vfx_init;
-	vfx.free = ifs_vfx_free;
-	vfx.apply = ifs_vfx_apply;
+VisualFX ifs_visualfx_create(void)
+{
+  VisualFX vfx;
+  vfx.init = ifs_vfx_init;
+  vfx.free = ifs_vfx_free;
+  vfx.apply = ifs_vfx_apply;
   vfx.save = ifs_vfx_save;
   vfx.restore = ifs_vfx_restore;
-	return vfx;
+  return vfx;
 }

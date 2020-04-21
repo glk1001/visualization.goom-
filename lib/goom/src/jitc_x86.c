@@ -477,7 +477,6 @@ JitcFunc jitc_prepare_func(JitcX86Env *jitc) {
 }
 
 void jitc_validate_func(JitcX86Env *jitc) {
-
 #ifdef DISPLAY_GENCODE
     printf("\n------------------------------------------\n");
     printf("-- Function Outro                       --\n");
@@ -494,7 +493,6 @@ void jitc_validate_func(JitcX86Env *jitc) {
 }
 
 void jitc_add_used_label(JitcX86Env *jitc, char *label, int where) {
-
     strncpy(jitc->usedLabel[jitc->nbUsedLabel].label, label, JITC_LABEL_SIZE);
     jitc->usedLabel[jitc->nbUsedLabel].address = where;
     jitc->nbUsedLabel++;
@@ -511,7 +509,6 @@ void jitc_add_known_label(JitcX86Env *jitc, char *label, int where) {
 }
 
 void jitc_resolve_labels(JitcX86Env *jitc) {
-
     int i,j;
     for (i=jitc->nbUsedLabel;i-->0;) {
 

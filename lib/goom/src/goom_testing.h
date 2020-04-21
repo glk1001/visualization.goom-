@@ -4,10 +4,10 @@
 #include <stdio.h>
 
 #define GOOM_VER_NAME        "Goom Library"
-#define GOOM_VER_DESCRIPTION "Clarified surf3d - Part 2"  
+#define GOOM_VER_DESCRIPTION "Reformatted and removed mmx"  
 #define GOOM_VER_MAJOR       1
 #define GOOM_VER_MINOR       0
-#define GOOM_VER_REVISION    9
+#define GOOM_VER_REVISION    10
 
 #define GOOM_FULL_VERSION_STR GOOMVER_NAME " " \
                               GOOM_VER_MAJOR "." GOOM_VER_MINOR "." GOOM_VER_REVISION ", " \

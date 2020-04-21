@@ -43,7 +43,7 @@ inline static int goom_random(GoomRandom *grandom)
 
 inline static int goom_irand(GoomRandom *grandom, int i)
 {
-  grandom->pos++; /* works because pos is an unsigned short */
+  grandom->pos++;
   GOOM_LOG_DEBUG("%u, %d", grandom->pos, grandom->array[grandom->pos]);
   return grandom->array[grandom->pos] % i;
 }
