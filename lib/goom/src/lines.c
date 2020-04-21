@@ -2,6 +2,7 @@
 
 #include "drawmethods.h"
 #include "goom.h"
+#include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "goom_tools.h"
 #include "mathtools.h"

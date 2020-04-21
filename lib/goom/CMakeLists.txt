@@ -5,7 +5,9 @@ if(WIN32)
  add_definitions(-D_WIN32PC)
 endif()
 
-set(GOOM_SOURCES src/goom_tools.c
+add_library(${PROJECT_NAME} STATIC
+                 src/goom_testing.c
+                 src/goom_tools.c
                  src/config_param.c
                  src/convolve_fx.c
                  src/filters.c
@@ -14,7 +16,6 @@ set(GOOM_SOURCES src/goom_tools.c
                  src/gfontrle.c
                  src/goom_core.c
                  src/goom_logging.c
-                 src/goom_testing.c
                  src/graphic.c
                  src/ifs.c
                  src/lines.c
@@ -26,21 +27,29 @@ set(GOOM_SOURCES src/goom_tools.c
                  src/v3d.c
                  src/drawmethods.c
 )
+		 
+add_library(libs::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-set(GOOM_HEADERS src/goom.h
-                 src/goom_plugin_info.h
-                 src/goom_typedefs.h
-                 src/goom_graphic.h
-                 src/goom_config_param.h
-                 src/goom_visual_fx.h
-                 src/goom_filters.h
-                 src/goom_logging.h
-                 src/goom_testing.h
-                 src/goom_tools.h
-                 src/goom_config.h
-                 src/tentacle3d.h
-)		 
+target_include_directories(${PROJECT_NAME}
+	PUBLIC
+		$<INSTALL_INTERFACE:include>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-add_library(goom STATIC ${GOOM_SOURCES} ${GOOM_HEADERS})
+message(STATUS "Goom compile features = \"${COMMON_C_COMPILE_FEATURES}\".")
+target_compile_features(${PROJECT_NAME}
+	PRIVATE
+		${COMMON_C_COMPILE_FEATURES} 
+)
+
+message(STATUS "Goom C warnings = \"${COMMON_C_WARNINGS}\".")
+target_compile_options(${PROJECT_NAME}
+    PRIVATE 
+		  ${COMMON_C_WARNINGS}
+)
+
 set_property(TARGET goom PROPERTY POSITION_INDEPENDENT_CODE ON)
 set_property(TARGET goom PROPERTY C_STANDARD 11)
+

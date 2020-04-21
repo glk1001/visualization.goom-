@@ -47,7 +47,7 @@ void plugin_info_init(PluginInfo* pp, int nbVisuals)
 
   p.nbParams = 0;
   p.nbVisuals = nbVisuals;
-  p.visuals = (VisualFX**)malloc(sizeof(VisualFX*) * nbVisuals);
+  p.visuals = (VisualFX**)malloc(sizeof(VisualFX*) * (size_t)nbVisuals);
 
   *pp = p;
   pp->sound.params.params[0] = &pp->sound.biggoom_speed_limit_p;
@@ -98,7 +98,7 @@ void plugin_info_init(PluginInfo* pp, int nbVisuals)
 
   pp->update_message.affiche = 0;
 
-  ZoomFilterData zfd = {127, 8, 16, 1, 1, 0, NORMAL_MODE, 0, 0, 0, 0, 0};
+  ZoomFilterData zfd = {127, 8, 16, 1, 1, 0, NORMAL_MODE, 0, 0, 0, 0};
   pp->update.zoomFilterData = zfd;
 
   setOptimizedMethods(pp);
@@ -123,7 +123,7 @@ void plugin_info_add_visual(PluginInfo* p, int i, VisualFX* visual)
         p->nbParams++;
       }
     }
-    p->params = (PluginParameters*)malloc(sizeof(PluginParameters) * p->nbParams);
+    p->params = (PluginParameters*)malloc(sizeof(PluginParameters) * (size_t)p->nbParams);
     i = p->nbVisuals;
     p->nbParams = 1;
     p->params[0] = p->sound.params;

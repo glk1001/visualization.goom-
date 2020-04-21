@@ -1,6 +1,7 @@
 #include "sound_tester.h"
 
 #include "goom.h"
+#include "goom_config.h"
 
 #include <stdlib.h>
 #include <string.h>

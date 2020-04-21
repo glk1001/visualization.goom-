@@ -32,7 +32,7 @@ typedef struct _TENTACLE_FX_DATA {
 
 #define NB_TENTACLE_COLORS 100
 #define NUM_COLORS_IN_GROUP (NB_TENTACLE_COLORS / 5)
-  int colors[NB_TENTACLE_COLORS];
+  uint32_t colors[NB_TENTACLE_COLORS];
 
   int col;
   int dstcol;
@@ -58,6 +58,9 @@ static void init_colors(uint32_t* colors);
 /* 
  * VisualFX wrapper for the tentacles
  */
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void tentacle_fx_init(VisualFX* _this, PluginInfo* info)
 {
@@ -87,6 +90,8 @@ static void tentacle_fx_init(VisualFX* _this, PluginInfo* info)
   _this->params = &data->params;
   _this->fx_data = (void*)data;
 }
+
+#pragma GCC diagnostic pop
 
 static void tentacle_fx_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* goomInfo)
 {
@@ -133,8 +138,8 @@ static void tentacle_free(TentacleFXData* data)
 
 static inline int get_rand_in_range(int n1, int n2)
 {
-  const int range_len = n2 - n1 + 1;
-  return n1 + pcg32_rand() % range_len;
+  const uint32_t range_len = (uint32_t)(n2 - n1 + 1);
+  return n1 + (int)(pcg32_rand() % range_len);
 }
 
 static void tentacle_new(TentacleFXData* data)
@@ -181,7 +186,7 @@ static void init_colors(uint32_t* colors)
     const uint8_t red = get_rand_in_range(20, 90);
     const uint8_t green = get_rand_in_range(20, 90);
     const uint8_t blue = get_rand_in_range(20, 90);
-    colors[i] = (red << (ROUGE * 8)) | (green << (VERT * 8)) | (blue << (BLEU * 8));
+    colors[i] = (uint32_t)((red << (ROUGE * 8)) | (green << (VERT * 8)) | (blue << (BLEU * 8)));
   }
 }
 
@@ -201,9 +206,9 @@ static void lightencolor(uint32_t* col, float power)
 /* retourne x>>s , en testant le signe de x */
 #define ShiftRight(_x, _s) ((_x < 0) ? -(-_x >> _s) : (_x >> _s))
 
-static int evolvecolor(unsigned int src, unsigned int dest, unsigned int mask, unsigned int incr)
+static int evolvecolor(uint32_t src, uint32_t dest, unsigned int mask, unsigned int incr)
 {
-  const int color = src & (~mask);
+  const uint32_t color = src & (~mask);
   src &= mask;
   dest &= mask;
 
@@ -214,7 +219,7 @@ static int evolvecolor(unsigned int src, unsigned int dest, unsigned int mask, u
   if (src > dest) {
     src -= incr;
   }
-  return (src & mask) | color;
+  return (int)((src & mask) | color);
 }
 
 static void pretty_move(PluginInfo* goomInfo, float cycle, float* dist, float* dist2,
@@ -225,7 +230,7 @@ static void pretty_move(PluginInfo* goomInfo, float cycle, float* dist, float* d
     fx_data->happens -= 1;
   } else if (fx_data->lock == 0) {
     fx_data->happens =
-        goom_irand(goomInfo->gRandom, 200) ? 0 : 100 + goom_irand(goomInfo->gRandom, 60);
+        goom_irand(goomInfo->gRandom, 200) ? 0 : (int)(100 + goom_irand(goomInfo->gRandom, 60));
     fx_data->lock = fx_data->happens * 3 / 2;
   } else {
     fx_data->lock--;
@@ -243,8 +248,8 @@ static void pretty_move(PluginInfo* goomInfo, float cycle, float* dist, float* d
   if (!fx_data->happens) {
     tmp = M_PI * sin(cycle) / 32 + 3 * M_PI / 2;
   } else {
-    fx_data->rotation =
-        goom_irand(goomInfo->gRandom, 500) ? fx_data->rotation : goom_irand(goomInfo->gRandom, 2);
+    fx_data->rotation = goom_irand(goomInfo->gRandom, 500) ? fx_data->rotation
+                                                           : (int)goom_irand(goomInfo->gRandom, 2);
     if (fx_data->rotation) {
       cycle *= 2.0f * M_PI;
     } else {
@@ -253,13 +258,13 @@ static void pretty_move(PluginInfo* goomInfo, float cycle, float* dist, float* d
     tmp = cycle - (M_PI * 2.0) * floor(cycle / (M_PI * 2.0));
   }
 
-  if (abs(tmp - fx_data->rot) > abs(tmp - (fx_data->rot + 2.0 * M_PI))) {
+  if (fabs(tmp - fx_data->rot) > fabs(tmp - (fx_data->rot + 2.0 * M_PI))) {
     fx_data->rot = (tmp + 15.0f * (fx_data->rot + 2 * M_PI)) / 16.0f;
     if (fx_data->rot > 2.0 * M_PI) {
       fx_data->rot -= 2.0 * M_PI;
     }
     *rotangle = fx_data->rot;
-  } else if (abs(tmp - fx_data->rot) > abs(tmp - (fx_data->rot - 2.0 * M_PI))) {
+  } else if (fabs(tmp - fx_data->rot) > fabs(tmp - (fx_data->rot - 2.0 * M_PI))) {
     fx_data->rot = (tmp + 15.0f * (fx_data->rot - 2.0 * M_PI)) / 16.0f;
     if (fx_data->rot < 0.0f)
       fx_data->rot += 2.0 * M_PI;
@@ -309,15 +314,18 @@ static void tentacle_update(PluginInfo* goomInfo, Pixel* buf, Pixel* back, int W
       fx_data->ligs = -fx_data->ligs;
 
     if ((fx_data->lig < 6.3f) && (goom_irand(goomInfo->gRandom, 30) == 0))
-      fx_data->dstcol = goom_irand(goomInfo->gRandom, NB_TENTACLE_COLORS);
+      fx_data->dstcol = (int)goom_irand(goomInfo->gRandom, NB_TENTACLE_COLORS);
 
-    fx_data->col = evolvecolor(fx_data->col, fx_data->colors[fx_data->dstcol], 0xff, 0x01);
-    fx_data->col = evolvecolor(fx_data->col, fx_data->colors[fx_data->dstcol], 0xff00, 0x0100);
-    fx_data->col = evolvecolor(fx_data->col, fx_data->colors[fx_data->dstcol], 0xff0000, 0x010000);
     fx_data->col =
-        evolvecolor(fx_data->col, fx_data->colors[fx_data->dstcol], 0xff000000, 0x01000000);
-    uint32_t color = fx_data->col;
-    uint32_t colorlow = fx_data->col;
+        evolvecolor((uint32_t)fx_data->col, (uint32_t)fx_data->colors[fx_data->dstcol], 0xff, 0x01);
+    fx_data->col = evolvecolor((uint32_t)fx_data->col, (uint32_t)fx_data->colors[fx_data->dstcol],
+                               0xff00, 0x0100);
+    fx_data->col = evolvecolor((uint32_t)fx_data->col, (uint32_t)fx_data->colors[fx_data->dstcol],
+                               0xff0000, 0x010000);
+    fx_data->col = evolvecolor((uint32_t)fx_data->col, (uint32_t)fx_data->colors[fx_data->dstcol],
+                               0xff000000, 0x01000000);
+    uint32_t color = (uint32_t)fx_data->col;
+    uint32_t colorlow = (uint32_t)fx_data->col;
 
     lightencolor(&color, fx_data->lig * 2.0f + 2.0f);
     lightencolor(&colorlow, (fx_data->lig / 3.0f) + 0.67f);
@@ -341,8 +349,8 @@ static void tentacle_update(PluginInfo* goomInfo, Pixel* buf, Pixel* back, int W
     }
     fx_data->cycle += 0.01f;
 
-    int tentacle_color = fx_data->colors[0] * color;
-    int tentacle_colorlow = fx_data->colors[0] * colorlow;
+    uint32_t tentacle_color = (uint32_t)fx_data->colors[0] * color;
+    uint32_t tentacle_colorlow = (uint32_t)fx_data->colors[0] * colorlow;
     int color_num = 0;
     int num_colors_in_row = 0;
     for (int tmp = 0; tmp < nbgrid; tmp++) {
@@ -355,8 +363,8 @@ static void tentacle_update(PluginInfo* goomInfo, Pixel* buf, Pixel* back, int W
         num_colors_in_row = 0;
       }
       num_colors_in_row++;
-      grid3d_draw(goomInfo, fx_data->grille[tmp], tentacle_color, tentacle_colorlow, dist, buf,
-                  back, W, H);
+      grid3d_draw(goomInfo, fx_data->grille[tmp], (int)tentacle_color, (int)tentacle_colorlow, dist,
+                  buf, back, W, H);
     }
   } else {
     fx_data->lig = 1.05f;

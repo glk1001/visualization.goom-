@@ -20,7 +20,7 @@
 
 #define DRAWMETHOD DRAWMETHOD_PLUS(*p, *p, col)
 
-void draw_line(Pixel* data, int x1, int y1, int x2, int y2, int col, int screenx, int screeny)
+void draw_line(Pixel* data, int x1, int y1, int x2, int y2, uint32_t col, int screenx, int screeny)
 {
   int x, y, dx, dy, yy, xx;
   Pixel* p;

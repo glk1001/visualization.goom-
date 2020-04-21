@@ -15,9 +15,14 @@
 
 /* TODO: Ajouter goom_ devant ces fonctions */
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void empty_fct(PluginParam* dummy)
 {
 }
+
+#pragma GCC diagnostic pop
 
 PluginParam goom_secure_param()
 {
@@ -86,7 +91,7 @@ PluginParam goom_secure_i_feedback(char* name)
   return p;
 }
 
-PluginParameters goom_plugin_parameters(const char* name, int nb)
+PluginParameters goom_plugin_parameters(const char* name, unsigned int nb)
 {
   PluginParameters p;
   p.name = (char*)name;
@@ -100,7 +105,7 @@ PluginParameters goom_plugin_parameters(const char* name, int nb)
 
 void goom_set_str_param_value(PluginParam* p, const char* str)
 {
-  int len = strlen(str);
+  const unsigned int len = strlen(str);
   if (SVAL(*p))
     SVAL(*p) = (char*)realloc(SVAL(*p), len + 1);
   else
@@ -110,7 +115,7 @@ void goom_set_str_param_value(PluginParam* p, const char* str)
 
 void goom_set_list_param_value(PluginParam* p, const char* str)
 {
-  int len = strlen(str);
+  const unsigned int len = strlen(str);
   GOOM_LOG_DEBUG("%s: %d", str, len);
 
   if (LVAL(*p)) {

@@ -277,11 +277,11 @@ static void init_ifs(PluginInfo* goomInfo, IfsData* data)
     Fractal->Max_Pt *= Fractal->Nb_Simi;
   }
 
-  if ((Fractal->Buffer1 = (IFSPoint*)calloc(Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
+  if ((Fractal->Buffer1 = (IFSPoint*)calloc((size_t)Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
     free_ifs(Fractal);
     return;
   }
-  if ((Fractal->Buffer2 = (IFSPoint*)calloc(Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
+  if ((Fractal->Buffer2 = (IFSPoint*)calloc((size_t)Fractal->Max_Pt, sizeof(IFSPoint))) == NULL) {
     free_ifs(Fractal);
     return;
   }
@@ -293,15 +293,14 @@ static void init_ifs(PluginInfo* goomInfo, IfsData* data)
   Fractal->Count = 0;
   Fractal->Lx = (Fractal->Width - 1) / 2;
   Fractal->Ly = (Fractal->Height - 1) / 2;
-  Fractal->Col = pcg32_rand() % (width * height); /* modif by JeKo */
+  Fractal->Col = (int)pcg32_rand() % (width * height); /* modif by JeKo */
 
   Random_Simis(goomInfo, Fractal, Fractal->Components, 5 * MAX_SIMI);
 
   for (int i = 0; i < 5 * MAX_SIMI; i++) {
     SIMI cur = Fractal->Components[i];
-    GOOM_LOG_DEBUG(
-	    "simi[%d]: c_x = %f, c_y = %f, r = %f, r2 = %f, A = %f, A2 = %f.",
-        i, cur.c_x, cur.c_y, cur.r, cur.r2, cur.A, cur.A2);
+    GOOM_LOG_DEBUG("simi[%d]: c_x = %f, c_y = %f, r = %f, r2 = %f, A = %f, A2 = %f.", i, cur.c_x,
+                   cur.c_y, cur.r, cur.r2, cur.A, cur.A2);
   }
 }
 
@@ -480,7 +479,7 @@ static void release_ifs(IfsData* data)
   }
 }
 
-#define RAND() goom_random(goomInfo->gRandom)
+#define RAND() (int)goom_random(goomInfo->gRandom)
 #define MOD_MER 0
 #define MOD_FEU 1
 #define MOD_MERVER 2
@@ -492,7 +491,7 @@ static struct {
   int col[4];
   int mode;
   int cycle;
-} ifs_update_data = {0, 0xc0c0c0c0, {2, 4, 3, 2}, {2, 4, 3, 2}, MOD_MERVER, 0};
+} ifs_update_data = {0, (int)0xc0c0c0c0, {2, 4, 3, 2}, {2, 4, 3, 2}, MOD_MERVER, 0};
 
 static void ifs_update(PluginInfo* goomInfo, Pixel* data, Pixel* back, int increment,
                        IfsData* fx_data)
@@ -802,7 +801,10 @@ static void ifs_vfx_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* 
   /*TODO: trouver meilleur soluce pour increment (mettre le code de gestion de l'ifs dans ce fichier: ifs_vfx_apply) */
 }
 
-static const char* vfxname = "Ifs";
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
+static const char* const vfxname = "Ifs";
 
 static void ifs_vfx_save(VisualFX* _this, const PluginInfo* info, const char* file)
 {
@@ -842,7 +844,7 @@ static void ifs_vfx_save(VisualFX* _this, const PluginInfo* info, const char* fi
   save_int_setting(f, vfxname, "Fractal.Max_Pt", Fractal->Max_Pt);
 
   for (int i = 0; i < Fractal->Nb_Simi; i++) {
-    const SIMI *simi = &(Fractal->Components[i]);
+    const SIMI* simi = &(Fractal->Components[i]);
     save_indexed_float_setting(f, vfxname, "simi.c_x", i, simi->c_x);
     save_indexed_float_setting(f, vfxname, "simi.c_y", i, simi->c_y);
     save_indexed_float_setting(f, vfxname, "simi.r", i, simi->r);
@@ -861,6 +863,11 @@ static void ifs_vfx_save(VisualFX* _this, const PluginInfo* info, const char* fi
 
   fclose(f);
 }
+
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void ifs_vfx_restore(VisualFX* _this, PluginInfo* info, const char* file)
 {
@@ -904,7 +911,7 @@ static void ifs_vfx_restore(VisualFX* _this, PluginInfo* info, const char* file)
   Fractal->Max_Pt = get_int_setting(f, vfxname, "Fractal.Max_Pt");
 
   for (int i = 0; i < Fractal->Nb_Simi; i++) {
-    SIMI *simi = &(Fractal->Components[i]);
+    SIMI* simi = &(Fractal->Components[i]);
     simi->c_x = get_indexed_float_setting(f, vfxname, "simi.c_x", i);
     simi->c_y = get_indexed_float_setting(f, vfxname, "simi.c_y", i);
     simi->r = get_indexed_float_setting(f, vfxname, "simi.r", i);
@@ -925,6 +932,8 @@ static void ifs_vfx_restore(VisualFX* _this, PluginInfo* info, const char* file)
 
   //    ifs_vfx_save(_this, info, "/tmp/vfx_save_after_restore.txt");
 }
+
+#pragma GCC diagnostic pop
 
 static void ifs_vfx_init(VisualFX* _this, PluginInfo* info)
 {

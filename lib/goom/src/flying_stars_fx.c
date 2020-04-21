@@ -48,9 +48,9 @@ typedef struct _FS_DATA {
   PluginParam enabled_bp;
 
   int fx_mode;
-  int nbStars;
+  unsigned int nbStars;
 
-  int maxStars;
+  unsigned int maxStars;
   Star* stars;
 
   float min_age;
@@ -64,6 +64,9 @@ typedef struct _FS_DATA {
 
   PluginParameters params;
 } FSData;
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void fs_init(VisualFX* _this, PluginInfo* info)
 {
@@ -90,7 +93,7 @@ static void fs_init(VisualFX* _this, PluginInfo* info)
   data->nbStars_limit_p = secure_i_param("Max Number of Particules");
   IVAL(data->nbStars_limit_p) = 512;
   IMIN(data->nbStars_limit_p) = 0;
-  IMAX(data->nbStars_limit_p) = data->maxStars;
+  IMAX(data->nbStars_limit_p) = (int)data->maxStars;
   ISTEP(data->nbStars_limit_p) = 64;
 
   data->fx_mode_p = secure_i_param("FX Mode");
@@ -117,6 +120,8 @@ static void fs_init(VisualFX* _this, PluginInfo* info)
   _this->fx_data = (void*)data;
 }
 
+#pragma GCC diagnostic pop
+
 static void fs_free(VisualFX* _this)
 {
   FSData* data = (FSData*)_this->fx_data;
@@ -131,9 +136,7 @@ static void fs_free(VisualFX* _this)
 static void addABomb(FSData* fs, int mx, int my, float radius, float vage, float gravity,
                      PluginInfo* info)
 {
-  int i = fs->nbStars;
-  float ro;
-  int theta;
+  const unsigned int i = fs->nbStars;
 
   if (fs->nbStars >= fs->maxStars) {
     return;
@@ -143,9 +146,9 @@ static void addABomb(FSData* fs, int mx, int my, float radius, float vage, float
   fs->stars[i].x = mx;
   fs->stars[i].y = my;
 
-  ro = radius * (float)goom_irand(info->gRandom, 100) / 100.0f;
+  float ro = radius * (float)goom_irand(info->gRandom, 100) / 100.0f;
   ro *= (float)goom_irand(info->gRandom, 100) / 100.0f + 1.0f;
-  theta = goom_irand(info->gRandom, 256);
+  const unsigned int theta = goom_irand(info->gRandom, 256);
 
   fs->stars[i].vx = ro * cos256[theta];
   fs->stars[i].vy = -0.2f + ro * sin256[theta];
@@ -178,34 +181,36 @@ static void updateStar(Star* s)
 static void fs_sound_event_occured(VisualFX* _this, PluginInfo* info)
 {
   FSData* data = (FSData*)_this->fx_data;
-  int i;
 
   int max = (int)((1.0f + info->sound.goomPower) * goom_irand(info->gRandom, 150)) + 100;
   float radius =
       (1.0f + info->sound.goomPower) * (float)(goom_irand(info->gRandom, 150) + 50) / 300;
-  int mx;
+  float vage;
+  float gravity = 0.02f;
+  unsigned int mx;
   int my;
-  float vage, gravity = 0.02f;
 
   switch (data->fx_mode) {
     case FIREWORKS_FX: {
-      double dx, dy;
+      double dx;
+      double dy;
       do {
-        mx = goom_irand(info->gRandom, info->screen.width);
-        my = goom_irand(info->gRandom, info->screen.height);
-        dx = (mx - info->screen.width / 2);
+        mx = goom_irand(info->gRandom, (uint32_t)info->screen.width);
+        my = (int)goom_irand(info->gRandom, (uint32_t)info->screen.height);
+        dx = ((int)mx - info->screen.width / 2);
         dy = (my - info->screen.height / 2);
       } while (dx * dx + dy * dy < (info->screen.height / 2) * (info->screen.height / 2));
       vage = data->max_age * (1.0f - info->sound.goomPower);
     } break;
     case RAIN_FX:
-      mx = goom_irand(info->gRandom, info->screen.width);
-      if (mx > info->screen.width / 2) {
-        mx = info->screen.width;
+      mx = goom_irand(info->gRandom, (uint32_t)info->screen.width);
+      if (mx > (uint32_t)info->screen.width / 2) {
+        mx = (uint32_t)info->screen.width;
       } else {
         mx = 0;
       }
-      my = -(info->screen.height / 3) - goom_irand(info->gRandom, info->screen.width / 3);
+      my = -(info->screen.height / 3) -
+           (int)goom_irand(info->gRandom, (uint32_t)info->screen.width / 3);
       radius *= 1.5;
       vage = 0.002f;
       break;
@@ -213,7 +218,7 @@ static void fs_sound_event_occured(VisualFX* _this, PluginInfo* info)
       my = info->screen.height + 2;
       vage = 0.001f;
       radius += 1.0f;
-      mx = info->screen.width / 2;
+      mx = (uint32_t)info->screen.width / 2;
       gravity = 0.04f;
       break;
     default:
@@ -221,25 +226,26 @@ static void fs_sound_event_occured(VisualFX* _this, PluginInfo* info)
       /* my = i R A N D (info->screen.height); vage = 0.01f; */
   }
 
-  radius *= info->screen.height / 200.0f; /* why 200 ? because the FX was developped on 320x200 */
+  radius *= info->screen.height / 200.0f; /* why 200 ? because the FX was developed on 320x200 */
   max *= info->screen.height / 200.0f;
 
   if (info->sound.timeSinceLastBigGoom < 1) {
     radius *= 1.5;
     max *= 2;
   }
-  for (i = 0; i < max; ++i) {
-    addABomb(data, mx, my, radius, vage, gravity, info);
+  for (int i = 0; i < max; ++i) {
+    addABomb(data, (int)mx, my, radius, vage, gravity, info);
   }
 }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 /**
  * Main methode of the FX.
  */
 static void fs_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* info)
 {
-  int i;
-  int col;
   FSData* data = (FSData*)_this->fx_data;
 
   if (!BVAL(data->enabled_bp)) {
@@ -251,20 +257,20 @@ static void fs_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* info)
   data->max_age = 1.0f - (float)IVAL(data->max_age_p) / 100.0f;
   FVAL(data->nbStars_p) = (float)data->nbStars / (float)data->maxStars;
   data->nbStars_p.change_listener(&data->nbStars_p);
-  data->maxStars = IVAL(data->nbStars_limit_p);
+  data->maxStars = (unsigned int)IVAL(data->nbStars_limit_p);
   data->fx_mode = IVAL(data->fx_mode_p);
 
   /* look for events */
   if (info->sound.timeSinceLastGoom < 1) {
     fs_sound_event_occured(_this, info);
     if (goom_irand(info->gRandom, 20) == 1) {
-      IVAL(data->fx_mode_p) = goom_irand(info->gRandom, (LAST_FX * 3));
+      IVAL(data->fx_mode_p) = (int)goom_irand(info->gRandom, (LAST_FX * 3));
       data->fx_mode_p.change_listener(&data->fx_mode_p);
     }
   }
 
   /* update particules */
-  for (i = 0; i < data->nbStars; ++i) {
+  for (unsigned i = 0; i < data->nbStars; ++i) {
     updateStar(&data->stars[i]);
 
     /* dead particule */
@@ -273,7 +279,7 @@ static void fs_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* info)
     }
 
     /* choose the color of the particule */
-    col = colval[(int)data->stars[i].age];
+    const uint32_t col = (uint32_t)colval[(int)data->stars[i].age];
 
     /* draws the particule */
     info->methods.draw_line(dest, (int)data->stars[i].x, (int)data->stars[i].y,
@@ -287,7 +293,7 @@ static void fs_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* info)
   }
 
   /* look for dead particules */
-  for (i = 0; i < data->nbStars;) {
+  for (unsigned i = 0; i < data->nbStars;) {
     if ((data->stars[i].x > info->screen.width + 64) ||
         ((data->stars[i].vy >= 0) &&
          (data->stars[i].y - 16 * data->stars[i].vy > info->screen.height)) ||
@@ -299,6 +305,8 @@ static void fs_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* info)
     }
   }
 }
+
+#pragma GCC diagnostic pop
 
 VisualFX flying_star_create(void)
 {

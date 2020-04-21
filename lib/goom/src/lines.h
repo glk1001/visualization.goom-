@@ -20,7 +20,6 @@ struct _GMUNITPOINTER {
 
 /* tableau de points */
 struct _GMLINE {
-
   GMUnitPointer* points;
   GMUnitPointer* points2;
   int IDdest;

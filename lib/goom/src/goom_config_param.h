@@ -94,11 +94,11 @@ void goom_set_list_param_value(PluginParam* p, const char* str);
 typedef struct _PARAMETERS {
   char* name;
   char* desc;
-  int nbParams;
+  unsigned int nbParams;
   PluginParam** params;
 } PluginParameters;
 
-PluginParameters goom_plugin_parameters(const char* name, int nb);
+PluginParameters goom_plugin_parameters(const char* name, unsigned int nb);
 
 #define secure_param goom_secure_param
 #define secure_f_param goom_secure_f_param

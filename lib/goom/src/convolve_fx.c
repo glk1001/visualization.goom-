@@ -92,7 +92,7 @@ static void create_output_with_brightness(VisualFX* _this, Pixel* src, Pixel* de
                                           PluginInfo* info, unsigned int iff)
 {
   int i = 0; //info->screen.height * info->screen.width - 1;
-  for (int y = 0 ; y < info->screen.height; y++) {
+  for (int y = 0; y < info->screen.height; y++) {
     for (int x = 0; x < info->screen.width; x++) {
       const unsigned int f0 = (src[i].cop[0] * iff) >> 8;
       const unsigned int f1 = (src[i].cop[1] * iff) >> 8;
@@ -153,7 +153,7 @@ static void convolve_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo*
   }
 
   if ((ff > 0.98f) && (ff < 1.02f)) {
-    memcpy(dest, src, info->screen.size * sizeof(Pixel));
+    memcpy(dest, src, (size_t)info->screen.size * sizeof(Pixel));
   } else {
     create_output_with_brightness(_this, src, dest, info, iff);
   }

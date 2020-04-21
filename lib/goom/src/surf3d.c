@@ -45,7 +45,7 @@ grid3d* grid3d_new(const int x_width, const int num_x, const int z_depth, const 
 void grid3d_draw(PluginInfo* plug, grid3d* g, int color, int colorlow, int dist, Pixel* buf,
                  Pixel* back, int W, int H)
 {
-  v2d* v2_array = malloc(g->surf.nbvertex * sizeof(v2d));
+  v2d* v2_array = malloc((size_t)g->surf.nbvertex * sizeof(v2d));
   v3d_to_v2d(g->surf.svertex, g->surf.nbvertex, W, H, dist, v2_array);
 
   for (int x = 0; x < g->defx; x++) {
@@ -54,8 +54,8 @@ void grid3d_draw(PluginInfo* plug, grid3d* g, int color, int colorlow, int dist,
     for (int z = 1; z < g->defz; z++) {
       const v2d v2 = v2_array[z * g->defx + x];
       if (((v2.x != -666) || (v2.y != -666)) && ((v2x.x != -666) || (v2x.y != -666))) {
-        plug->methods.draw_line(buf, v2x.x, v2x.y, v2.x, v2.y, colorlow, W, H);
-        plug->methods.draw_line(back, v2x.x, v2x.y, v2.x, v2.y, color, W, H);
+        plug->methods.draw_line(buf, v2x.x, v2x.y, v2.x, v2.y, (uint32_t)colorlow, W, H);
+        plug->methods.draw_line(back, v2x.x, v2x.y, v2.x, v2.y, (uint32_t)color, W, H);
       }
       v2x = v2;
     }

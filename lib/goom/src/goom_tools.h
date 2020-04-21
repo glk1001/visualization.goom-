@@ -27,22 +27,22 @@ void pcg32_set_state(uint64_t s);
 #define GOOM_NB_RAND 0x10000
 
 typedef struct _GOOM_RANDOM {
-  int array[GOOM_NB_RAND];
+  uint32_t array[GOOM_NB_RAND];
   unsigned short pos;
 } GoomRandom;
 
 GoomRandom* goom_random_init();
 void goom_random_free(GoomRandom* grandom);
 
-inline static int goom_random(GoomRandom* grandom)
+inline static uint32_t goom_random(GoomRandom* grandom)
 {
   grandom->pos++; /* works because pos is an unsigned short */
-  const int val = grandom->array[grandom->pos];
+  const uint32_t val = grandom->array[grandom->pos];
   GOOM_LOG_DEBUG("%u, %d", grandom->pos, val);
   return val;
 }
 
-inline static int goom_irand(GoomRandom* grandom, int i)
+inline static uint32_t goom_irand(GoomRandom* grandom, uint32_t i)
 {
   grandom->pos++;
   GOOM_LOG_DEBUG("%u, %d", grandom->pos, grandom->array[grandom->pos]);

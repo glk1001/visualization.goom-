@@ -9,6 +9,7 @@
 
 #include "gfontlib.h"
 #include "goom.h"
+#include "goom_config.h"
 #include "goom_filters.h"
 #include "goom_fx.h"
 #include "goom_logging.h"
@@ -24,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #define STOP_SPEED 128
 /* TODO: put that as variable in PluginInfo */
@@ -34,7 +36,7 @@ static void choose_a_goom_line(PluginInfo* goomInfo, float* param1, float* param
 
 static void update_message(PluginInfo* goomInfo, const char* message);
 
-static void init_buffers(PluginInfo* goomInfo, int buffsize)
+static void init_buffers(PluginInfo* goomInfo, size_t buffsize)
 {
   goomInfo->pixel = (guint32*)malloc(buffsize * sizeof(guint32) + 128);
   bzero(goomInfo->pixel, buffsize * sizeof(guint32) + 128);
@@ -66,15 +68,15 @@ PluginInfo* goom_init(guint32 resx, guint32 resy, int seed)
   goomInfo->convolve_fx = convolve_create();
   goomInfo->ifs_fx = ifs_visualfx_create();
 
-  goomInfo->screen.width = resx;
-  goomInfo->screen.height = resy;
-  goomInfo->screen.size = resx * resy;
+  goomInfo->screen.width = (int)resx;
+  goomInfo->screen.height = (int)resy;
+  goomInfo->screen.size = (int)(resx * resy);
 
-  init_buffers(goomInfo, goomInfo->screen.size);
+  init_buffers(goomInfo, (size_t)goomInfo->screen.size);
   if (seed == 0) {
-    seed = goomInfo->pixel;
+    seed = (uint64_t)goomInfo->pixel;
   } else if (seed > 0) {
-    pcg32_init(seed);
+    pcg32_init((uint64_t)seed);
   }
   goomInfo->gRandom = goom_random_init();
 
@@ -91,12 +93,12 @@ PluginInfo* goom_init(guint32 resx, guint32 resy, int seed)
 
   goomInfo->cycle = 0;
 
-  goomInfo->gmline1 =
-      goom_lines_init(goomInfo, resx, goomInfo->screen.height, GML_HLINE, goomInfo->screen.height,
-                      GML_BLACK, GML_CIRCLE, 0.4f * (float)goomInfo->screen.height, GML_VERT);
+  goomInfo->gmline1 = goom_lines_init(goomInfo, (int)resx, goomInfo->screen.height, GML_HLINE,
+                                      goomInfo->screen.height, GML_BLACK, GML_CIRCLE,
+                                      0.4f * (float)goomInfo->screen.height, GML_VERT);
   goomInfo->gmline2 =
-      goom_lines_init(goomInfo, resx, goomInfo->screen.height, GML_HLINE, 0, GML_BLACK, GML_CIRCLE,
-                      0.2f * (float)goomInfo->screen.height, GML_RED);
+      goom_lines_init(goomInfo, (int)resx, goomInfo->screen.height, GML_HLINE, 0, GML_BLACK,
+                      GML_CIRCLE, 0.2f * (float)goomInfo->screen.height, GML_RED);
 
   gfont_load();
 
@@ -111,18 +113,18 @@ void goom_set_resolution(PluginInfo* goomInfo, guint32 resx, guint32 resy)
   free(goomInfo->back);
   free(goomInfo->conv);
 
-  goomInfo->screen.width = resx;
-  goomInfo->screen.height = resy;
-  goomInfo->screen.size = resx * resy;
+  goomInfo->screen.width = (int)resx;
+  goomInfo->screen.height = (int)resy;
+  goomInfo->screen.size = (int)(resx * resy);
 
-  init_buffers(goomInfo, goomInfo->screen.size);
+  init_buffers(goomInfo, (size_t)goomInfo->screen.size);
 
   /* init_ifs (goomInfo, resx, goomInfo->screen.height); */
   goomInfo->ifs_fx.free(&goomInfo->ifs_fx);
   goomInfo->ifs_fx.init(&goomInfo->ifs_fx, goomInfo);
 
-  goom_lines_set_res(goomInfo->gmline1, resx, goomInfo->screen.height);
-  goom_lines_set_res(goomInfo->gmline2, resx, goomInfo->screen.height);
+  goom_lines_set_res(goomInfo->gmline1, (int)resx, goomInfo->screen.height);
+  goom_lines_set_res(goomInfo->gmline2, (int)resx, goomInfo->screen.height);
 }
 
 int goom_set_screenbuffer(PluginInfo* goomInfo, void* buffer)
@@ -140,18 +142,15 @@ int goom_set_screenbuffer(PluginInfo* goomInfo, void* buffer)
 guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][AUDIO_SAMPLE_LEN],
                      int forceMode, float fps, const char* songTitle, const char* message)
 {
+  unsigned int i;
   Pixel* return_val;
-  guint32 pointWidth;
-  guint32 pointHeight;
-  int i;
-  float largfactor; /* elargissement de l'intervalle d'évolution des points */
   Pixel* tmp;
-
+  float largfactor; /* elargissement de l'intervalle d'évolution des points */
   ZoomFilterData* pzfd;
 
   /* test if the config has changed, update it if so */
-  pointWidth = (goomInfo->screen.width * 2) / 5;
-  pointHeight = ((goomInfo->screen.height) * 2) / 5;
+  const guint32 pointWidth = (guint32)(goomInfo->screen.width * 2) / 5;
+  const guint32 pointHeight = (guint32)((goomInfo->screen.height) * 2) / 5;
 
   GOOM_LOG_DEBUG("goomInfo->sound.timeSinceLastGoom = %d", goomInfo->sound.timeSinceLastGoom);
   GOOM_LOG_DEBUG("pcg32_get_last_state = %ld", pcg32_get_last_state());
@@ -194,8 +193,8 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
   GOOM_LOG_DEBUG("goomInfo->curGState->drawPoints = %d", goomInfo->curGState->drawPoints);
   if (goomInfo->curGState->drawPoints) {
     GOOM_LOG_DEBUG("goomInfo->curGState->drawPoints = %d is true", goomInfo->curGState->drawPoints);
-    const int speedvarMult80Plus15 = goomInfo->sound.speedvar * 80 + 15;
-    const int speedvarMult50Plus1 = goomInfo->sound.speedvar * 50 + 1;
+    const unsigned int speedvarMult80Plus15 = goomInfo->sound.speedvar * 80 + 15;
+    const unsigned int speedvarMult50Plus1 = goomInfo->sound.speedvar * 50 + 1;
     GOOM_LOG_DEBUG("speedvarMult80Plus15 = %d", speedvarMult80Plus15);
     GOOM_LOG_DEBUG("speedvarMult50Plus1 = %d", speedvarMult50Plus1);
 
@@ -216,15 +215,15 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
 
     GOOM_LOG_DEBUG("goomInfo->update.loopvar = %d", goomInfo->update.loopvar);
     for (i = 1; i * 15 <= speedvarMult80Plus15; i++) {
-      goomInfo->update.loopvar += speedvarMult50Plus1;
+      goomInfo->update.loopvar += (int)speedvarMult50Plus1;
       GOOM_LOG_DEBUG("goomInfo->update.loopvar = %d", goomInfo->update.loopvar);
 
-      const Uint loopvar_div_i = goomInfo->update.loopvar / i;
+      const Uint loopvar_div_i = (Uint)goomInfo->update.loopvar / i;
       const float i_mult_10 = 10.0f * i;
 
       const float yellow_t3 = i * 152.0f;
       const float yellow_t4 = 128.0f;
-      const Uint yellow_cycle = goomInfo->update.loopvar + i * 2032;
+      const Uint yellow_cycle = (Uint)goomInfo->update.loopvar + i * 2032;
       const float orange_t1 = pointWidthDiv2MultLarge / i + i_mult_10;
       const float orange_t2 = pointHeightDiv2MultLarge / i + i_mult_10;
       const float orange_t3 = 96.0f;
@@ -242,7 +241,7 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
       const float white_t2 = (pointHeightMultLarge + i_mult_10) / i;
       const float white_t3 = 66.0f;
       const float white_t4 = 74.0f;
-      const Uint white_cycle = goomInfo->update.loopvar + i * 500;
+      const Uint white_cycle = (Uint)goomInfo->update.loopvar + i * 500;
 
       pointFilter(goomInfo, goomInfo->p1, YELLOW, yellow_t1, yellow_t2, yellow_t3, yellow_t4,
                   yellow_cycle);
@@ -288,14 +287,14 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
                    goomInfo->update.cyclesSinceLastChange);
 
     /* changement eventuel de mode */
-    const int rand16 = goom_irand(goomInfo->gRandom, 16);
+    const unsigned int rand16 = goom_irand(goomInfo->gRandom, 16);
     GOOM_LOG_DEBUG("goom_irand(goomInfo->gRandom,16) = %d", rand16);
     if (rand16 == 0) {
       GOOM_LOG_DEBUG("goom_irand(goomInfo->gRandom,16) = 0");
       switch (goom_irand(goomInfo->gRandom, 34)) {
         case 0:
         case 10:
-          goomInfo->update.zoomFilterData.hypercosEffect = goom_irand(goomInfo->gRandom, 2);
+          goomInfo->update.zoomFilterData.hypercosEffect = (int)goom_irand(goomInfo->gRandom, 2);
         case 13:
         case 20:
         case 21:
@@ -346,7 +345,7 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
         case 17:
           goomInfo->update.zoomFilterData.mode = CRYSTAL_BALL_MODE;
           goomInfo->update.zoomFilterData.waveEffect = (goom_irand(goomInfo->gRandom, 4) == 0);
-          goomInfo->update.zoomFilterData.hypercosEffect = goom_irand(goomInfo->gRandom, 2);
+          goomInfo->update.zoomFilterData.hypercosEffect = (int)goom_irand(goomInfo->gRandom, 2);
           break;
         case 8:
         case 18:
@@ -389,7 +388,7 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
       /* SELECTION OF THE GOOM STATE */
       if ((!goomInfo->update.stateSelectionBlocker) && (goom_irand(goomInfo->gRandom, 3))) {
         goomInfo->update.stateSelectionRnd =
-            goom_irand(goomInfo->gRandom, goomInfo->statesRangeMax);
+            (int)goom_irand(goomInfo->gRandom, (Uint)goomInfo->statesRangeMax);
         goomInfo->update.stateSelectionBlocker = 3;
       } else if (goomInfo->update.stateSelectionBlocker)
         goomInfo->update.stateSelectionBlocker--;
@@ -450,70 +449,72 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
           case 0:
           case 3:
           case 6:
-            goomInfo->update.zoomFilterData.middleY = goomInfo->screen.height - 1;
-            goomInfo->update.zoomFilterData.middleX = goomInfo->screen.width / 2;
+            goomInfo->update.zoomFilterData.middleY = (Uint)goomInfo->screen.height - 1;
+            goomInfo->update.zoomFilterData.middleX = (Uint)goomInfo->screen.width / 2;
             break;
           case 1:
           case 4:
-            goomInfo->update.zoomFilterData.middleX = goomInfo->screen.width - 1;
+            goomInfo->update.zoomFilterData.middleX = (Uint)goomInfo->screen.width - 1;
             break;
           case 2:
           case 5:
             goomInfo->update.zoomFilterData.middleX = 1;
             break;
           default:
-            goomInfo->update.zoomFilterData.middleY = goomInfo->screen.height / 2;
-            goomInfo->update.zoomFilterData.middleX = goomInfo->screen.width / 2;
+            goomInfo->update.zoomFilterData.middleY = (Uint)goomInfo->screen.height / 2;
+            goomInfo->update.zoomFilterData.middleX = (Uint)goomInfo->screen.width / 2;
         }
 
         if ((goomInfo->update.zoomFilterData.mode == WATER_MODE) ||
             (goomInfo->update.zoomFilterData.mode == YONLY_MODE) ||
             (goomInfo->update.zoomFilterData.mode == AMULETTE_MODE)) {
-          goomInfo->update.zoomFilterData.middleX = goomInfo->screen.width / 2;
-          goomInfo->update.zoomFilterData.middleY = goomInfo->screen.height / 2;
+          goomInfo->update.zoomFilterData.middleX = (Uint)goomInfo->screen.width / 2;
+          goomInfo->update.zoomFilterData.middleY = (Uint)goomInfo->screen.height / 2;
         }
 
         switch (vtmp = (goom_irand(goomInfo->gRandom, 15))) {
           case 0:
             goomInfo->update.zoomFilterData.vPlaneEffect =
-                goom_irand(goomInfo->gRandom, 3) - goom_irand(goomInfo->gRandom, 3);
+                (int)(goom_irand(goomInfo->gRandom, 3) - goom_irand(goomInfo->gRandom, 3));
             goomInfo->update.zoomFilterData.hPlaneEffect =
-                goom_irand(goomInfo->gRandom, 3) - goom_irand(goomInfo->gRandom, 3);
+                (int)(goom_irand(goomInfo->gRandom, 3) - goom_irand(goomInfo->gRandom, 3));
             break;
           case 3:
             goomInfo->update.zoomFilterData.vPlaneEffect = 0;
             goomInfo->update.zoomFilterData.hPlaneEffect =
-                goom_irand(goomInfo->gRandom, 8) - goom_irand(goomInfo->gRandom, 8);
+                (int)(goom_irand(goomInfo->gRandom, 8) - goom_irand(goomInfo->gRandom, 8));
             break;
           case 4:
           case 5:
           case 6:
           case 7:
             goomInfo->update.zoomFilterData.vPlaneEffect =
-                goom_irand(goomInfo->gRandom, 5) - goom_irand(goomInfo->gRandom, 5);
+                (int)(goom_irand(goomInfo->gRandom, 5) - goom_irand(goomInfo->gRandom, 5));
             goomInfo->update.zoomFilterData.hPlaneEffect =
                 -goomInfo->update.zoomFilterData.vPlaneEffect;
             break;
           case 8:
-            goomInfo->update.zoomFilterData.hPlaneEffect = 5 + goom_irand(goomInfo->gRandom, 8);
+            goomInfo->update.zoomFilterData.hPlaneEffect =
+                (int)(5 + goom_irand(goomInfo->gRandom, 8));
             goomInfo->update.zoomFilterData.vPlaneEffect =
                 -goomInfo->update.zoomFilterData.hPlaneEffect;
             break;
           case 9:
-            goomInfo->update.zoomFilterData.vPlaneEffect = 5 + goom_irand(goomInfo->gRandom, 8);
+            goomInfo->update.zoomFilterData.vPlaneEffect =
+                (int)(5 + goom_irand(goomInfo->gRandom, 8));
             goomInfo->update.zoomFilterData.hPlaneEffect =
                 -goomInfo->update.zoomFilterData.hPlaneEffect;
             break;
           case 13:
             goomInfo->update.zoomFilterData.hPlaneEffect = 0;
             goomInfo->update.zoomFilterData.vPlaneEffect =
-                goom_irand(goomInfo->gRandom, 10) - goom_irand(goomInfo->gRandom, 10);
+                (int)(goom_irand(goomInfo->gRandom, 10) - goom_irand(goomInfo->gRandom, 10));
             break;
           case 14:
             goomInfo->update.zoomFilterData.hPlaneEffect =
-                goom_irand(goomInfo->gRandom, 10) - goom_irand(goomInfo->gRandom, 10);
+                (int)(goom_irand(goomInfo->gRandom, 10) - goom_irand(goomInfo->gRandom, 10));
             goomInfo->update.zoomFilterData.vPlaneEffect =
-                goom_irand(goomInfo->gRandom, 10) - goom_irand(goomInfo->gRandom, 10);
+                (int)(goom_irand(goomInfo->gRandom, 10) - goom_irand(goomInfo->gRandom, 10));
             break;
           default:
             if (vtmp < 10) {
@@ -525,7 +526,7 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
         if (goom_irand(goomInfo->gRandom, 5) != 0) {
           goomInfo->update.zoomFilterData.noisify = 0;
         } else {
-          goomInfo->update.zoomFilterData.noisify = goom_irand(goomInfo->gRandom, 2) + 1;
+          goomInfo->update.zoomFilterData.noisify = (int)(goom_irand(goomInfo->gRandom, 2) + 1);
           goomInfo->update.lockvar *= 2;
         }
 
@@ -536,7 +537,7 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
         }
 
         if ((goomInfo->update.zoomFilterData.middleX == 1) ||
-            (goomInfo->update.zoomFilterData.middleX == (signed int)goomInfo->screen.width - 1)) {
+            (goomInfo->update.zoomFilterData.middleX == (unsigned int)goomInfo->screen.width - 1)) {
           goomInfo->update.zoomFilterData.vPlaneEffect = 0;
           if (goom_irand(goomInfo->gRandom, 2)) {
             goomInfo->update.zoomFilterData.hPlaneEffect = 0;
@@ -553,12 +554,13 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
                (goomInfo->update.zoomFilterData.vitesse < STOP_SPEED - 6) &&
                (goomInfo->cycle % 3 == 0)) ||
               (goom_irand(goomInfo->gRandom, 40) == 0)) {
-            goomInfo->update.zoomFilterData.vitesse =
-                STOP_SPEED - goom_irand(goomInfo->gRandom, 2) + goom_irand(goomInfo->gRandom, 2);
+            goomInfo->update.zoomFilterData.vitesse = STOP_SPEED -
+                                                      (int)goom_irand(goomInfo->gRandom, 2) +
+                                                      (int)goom_irand(goomInfo->gRandom, 2);
             goomInfo->update.zoomFilterData.reverse = !goomInfo->update.zoomFilterData.reverse;
           } else {
             goomInfo->update.zoomFilterData.vitesse =
-                (newvit + goomInfo->update.zoomFilterData.vitesse * 7) / 8;
+                ((int)newvit + goomInfo->update.zoomFilterData.vitesse * 7) / 8;
           }
           goomInfo->update.lockvar += 50;
         }
@@ -570,7 +572,7 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
       }
     }
     /* mode mega-lent */
-    const int rand700 = goom_irand(goomInfo->gRandom, 700);
+    const unsigned int rand700 = goom_irand(goomInfo->gRandom, 700);
     GOOM_LOG_DEBUG("rand700 = %d", rand700);
     if (rand700 == 0) {
       GOOM_LOG_DEBUG("rand700 = 0");
@@ -679,8 +681,8 @@ guint32* goom_update(PluginInfo* goomInfo, const gint16 data[NUM_AUDIO_SAMPLES][
   }
 
   /* Zoom here ! */
-  zoomFilterFastRGB(goomInfo, goomInfo->p1, goomInfo->p2, pzfd, goomInfo->screen.width,
-                    goomInfo->screen.height, goomInfo->update.switchIncr,
+  zoomFilterFastRGB(goomInfo, goomInfo->p1, goomInfo->p2, pzfd, (Uint)goomInfo->screen.width,
+                    (Uint)goomInfo->screen.height, goomInfo->update.switchIncr,
                     goomInfo->update.switchMult);
 
   /* Affichage tentacule
@@ -880,7 +882,7 @@ void goom_close(PluginInfo* goomInfo)
 static void choose_a_goom_line(PluginInfo* goomInfo, float* param1, float* param2, int* couleur,
                                int* mode, float* amplitude, int far)
 {
-  *mode = goom_irand(goomInfo->gRandom, 3);
+  *mode = (int)goom_irand(goomInfo->gRandom, 3);
   *amplitude = 1.0f;
   switch (*mode) {
     case GML_CIRCLE:
@@ -919,7 +921,7 @@ static void choose_a_goom_line(PluginInfo* goomInfo, float* param1, float* param
       break;
   }
 
-  *couleur = goom_irand(goomInfo->gRandom, 6);
+  *couleur = (int)goom_irand(goomInfo->gRandom, 6);
 }
 
 #define ECART_VARIATION 1.5
@@ -947,7 +949,7 @@ static void update_message(PluginInfo* goomInfo, const char* message)
   }
   if (goomInfo->update_message.affiche) {
     int i = 0;
-    char* msg = malloc(goomInfo->update_message.longueur + 1);
+    char* msg = malloc((size_t)goomInfo->update_message.longueur + 1);
     char* ptr = msg;
     int pos;
     float ecart;

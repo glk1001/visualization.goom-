@@ -15,15 +15,10 @@ static int* small_font_height;
 
 void gfont_load(void)
 {
-  unsigned char* gfont;
+  /* decompress le rle */
+  unsigned char* gfont = malloc(the_font.width * the_font.height * the_font.bytes_per_pixel);
   unsigned int i = 0;
   unsigned int j = 0;
-  unsigned int nba = 0;
-  unsigned int current = 32;
-  int* font_pos;
-
-  /* decompress le rle */
-  gfont = malloc(the_font.width * the_font.height * the_font.bytes_per_pixel);
   while (i < the_font.rle_size) {
     unsigned char c = the_font.rle_pixel[i++];
     if (c == 0) {
@@ -43,9 +38,11 @@ void gfont_load(void)
   small_font_width = calloc(256, sizeof(int));
   font_chars = calloc(256, sizeof(int**));
   small_font_chars = calloc(256, sizeof(int**));
-  font_pos = calloc(256, sizeof(int));
+  int* font_pos = calloc(256, sizeof(int));
 
-  for (i = 0; i < the_font.width; i++) {
+  unsigned int nba = 0;
+  unsigned int current = 32;
+  for (int i = 0; i < (int)the_font.width; i++) {
     unsigned char a = gfont[i * 4 + 3];
     if (a) {
       nba++;
@@ -56,7 +53,7 @@ void gfont_load(void)
       font_width[current] = i - font_pos[current];
       small_font_width[current] = font_width[current] / 2;
       font_pos[++current] = i;
-      font_height[current] = the_font.height - 2;
+      font_height[current] = (int)the_font.height - 2;
       small_font_height[current] = font_height[current] / 2;
     }
   }
@@ -65,43 +62,42 @@ void gfont_load(void)
   small_font_height[current] = 0;
 
   /* charger les lettres et convertir au format de la machine */
-  for (i = 33; i < current; i++) {
-    int x;
-    int y;
-    font_chars[i] = malloc(font_height[i] * sizeof(int*));
-    small_font_chars[i] = malloc(font_height[i] * sizeof(int*) / 2);
-    for (y = 0; y < font_height[i]; y++) {
-      font_chars[i][y] = malloc(font_width[i] * sizeof(int));
-      for (x = 0; x < font_width[i]; x++) {
+  for (int i = 33; i < (int)current; i++) {
+    const unsigned int fpos = (unsigned int)font_pos[i];
+    font_chars[i] = malloc((size_t)font_height[i] * sizeof(int*));
+    small_font_chars[i] = malloc((size_t)font_height[i] * sizeof(int*) / 2);
+    for (unsigned int y = 0; y < (unsigned int)font_height[i]; y++) {
+      font_chars[i][y] = malloc((size_t)font_width[i] * sizeof(int));
+      for (unsigned int x = 0; x < (unsigned int)font_width[i]; x++) {
         unsigned int r, g, b, a;
-        r = gfont[(y + 2) * (the_font.width * 4) + (x * 4 + font_pos[i] * 4)];
-        g = gfont[(y + 2) * (the_font.width * 4) + (x * 4 + font_pos[i] * 4 + 1)];
-        b = gfont[(y + 2) * (the_font.width * 4) + (x * 4 + font_pos[i] * 4 + 2)];
-        a = gfont[(y + 2) * (the_font.width * 4) + (x * 4 + font_pos[i] * 4 + 3)];
+        r = (unsigned int)gfont[(y + 2) * (the_font.width * 4) + (x * 4 + fpos * 4)];
+        g = (unsigned int)gfont[(y + 2) * (the_font.width * 4) + (x * 4 + fpos * 4 + 1)];
+        b = (unsigned int)gfont[(y + 2) * (the_font.width * 4) + (x * 4 + fpos * 4 + 2)];
+        a = (unsigned int)gfont[(y + 2) * (the_font.width * 4) + (x * 4 + fpos * 4 + 3)];
         font_chars[i][y][x].val =
             (r << (ROUGE * 8)) | (g << (VERT * 8)) | (b << (BLEU * 8)) | (a << (ALPHA * 8));
       }
     }
-    for (y = 0; y < font_height[i] / 2; y++) {
-      small_font_chars[i][y] = malloc(font_width[i] * sizeof(int) / 2);
-      for (x = 0; x < font_width[i] / 2; x++) {
+    for (unsigned int y = 0; y < (unsigned int)font_height[i] / 2; y++) {
+      small_font_chars[i][y] = malloc((size_t)font_width[i] * sizeof(int) / 2);
+      for (unsigned int x = 0; x < (unsigned int)font_width[i] / 2; x++) {
         unsigned int r1, g1, b1, a1, r2, g2, b2, a2, r3, g3, b3, a3, r4, g4, b4, a4;
-        r1 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4)];
-        g1 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 1)];
-        b1 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 2)];
-        a1 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 3)];
-        r2 = gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 4)];
-        g2 = gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 5)];
-        b2 = gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 6)];
-        a2 = gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 7)];
-        r3 = gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4)];
-        g3 = gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 1)];
-        b3 = gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 2)];
-        a3 = gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 3)];
-        r4 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 4)];
-        g4 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 5)];
-        b4 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 6)];
-        a4 = gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + font_pos[i] * 4 + 7)];
+        r1 = (unsigned int)gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + fpos * 4)];
+        g1 = (unsigned int)gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + fpos * 4 + 1)];
+        b1 = (unsigned int)gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + fpos * 4 + 2)];
+        a1 = (unsigned int)gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + fpos * 4 + 3)];
+        r2 = (unsigned int)gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + fpos * 4 + 4)];
+        g2 = (unsigned int)gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + fpos * 4 + 5)];
+        b2 = (unsigned int)gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + fpos * 4 + 6)];
+        a2 = (unsigned int)gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + fpos * 4 + 7)];
+        r3 = (unsigned int)gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + fpos * 4)];
+        g3 = (unsigned int)gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + fpos * 4 + 1)];
+        b3 = (unsigned int)gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + fpos * 4 + 2)];
+        a3 = (unsigned int)gfont[(2 * y + 3) * (the_font.width * 4) + (x * 8 + fpos * 4 + 3)];
+        r4 = (unsigned int)gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + fpos * 4 + 4)];
+        g4 = (unsigned int)gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + fpos * 4 + 5)];
+        b4 = (unsigned int)gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + fpos * 4 + 6)];
+        a4 = (unsigned int)gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + fpos * 4 + 7)];
         small_font_chars[i][y][x].val = (((r1 + r2 + r3 + r4) >> 2) << (ROUGE * 8)) |
                                         (((g1 + g2 + g3 + g4) >> 2) << (VERT * 8)) |
                                         (((b1 + b2 + b3 + b4) >> 2) << (BLEU * 8)) |
@@ -111,7 +107,7 @@ void gfont_load(void)
   }
 
   /* definir les lettres restantes */
-  for (i = 0; i < 256; i++) {
+  for (int i = 0; i < 256; i++) {
     if (font_chars[i] == 0) {
       font_chars[i] = font_chars[42];
       small_font_chars[i] = small_font_chars[42];
@@ -123,7 +119,7 @@ void gfont_load(void)
     }
   }
 
-  font_width[32] = (the_font.height / 2) - 1;
+  font_width[32] = ((int)the_font.height / 2) - 1;
   small_font_width[32] = font_width[32] / 2;
   font_chars[32] = 0;
   small_font_chars[32] = 0;
@@ -169,7 +165,7 @@ void goom_draw_text(Pixel* buf, int resolx, int resoly, int x, int y, const char
   }
 
   while (!fin) {
-    unsigned char c = *str;
+    unsigned char c = (unsigned char)(*str);
 
     x = (int)fx;
 

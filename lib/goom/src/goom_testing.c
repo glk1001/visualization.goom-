@@ -1,3 +1,5 @@
+#define _GNU_SOURCE 1
+
 #include "goom_testing.h"
 
 #include <stdio.h>
@@ -6,14 +8,14 @@
 
 void getVersionAtRuntime(int* verMajor, int* verMinor, int* verRevision)
 {
-    *verMajor = GOOM_VER_MAJOR;
-    *verMinor = GOOM_VER_MINOR;
-    *verRevision = GOOM_VER_REVISION;
+  *verMajor = GOOM_VER_MAJOR;
+  *verMinor = GOOM_VER_MINOR;
+  *verRevision = GOOM_VER_REVISION;
 }
 
 const char* getVersionDescriptionAtRuntime()
 {
-    return GOOM_VER_DESCRIPTION;
+  return GOOM_VER_DESCRIPTION;
 }
 
 static void read_line(char** line, FILE* f)

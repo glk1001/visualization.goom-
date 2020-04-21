@@ -19,10 +19,6 @@ extern const Color ORANGE;
 extern const Color VIOLET;
 
 #ifdef COLOR_BGRA
-
-  #define R_CHANNEL 0xFF000000
-  #define G_CHANNEL 0x00FF0000
-  #define B_CHANNEL 0x0000FF00
   #define A_CHANNEL 0x000000FF
   #define R_OFFSET 24
   #define G_OFFSET 16
@@ -41,11 +37,7 @@ typedef union _PIXEL {
 } Pixel;
 
 #else
-
   #define A_CHANNEL 0xFF000000
-  #define R_CHANNEL 0x00FF0000
-  #define G_CHANNEL 0x0000FF00
-  #define B_CHANNEL 0x000000FF
   #define A_OFFSET 24
   #define R_OFFSET 16
   #define G_OFFSET 8

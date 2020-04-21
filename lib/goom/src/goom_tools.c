@@ -31,7 +31,7 @@ void goom_random_update_array(GoomRandom* grandom, int numberOfValuesToChange)
 
 static uint64_t seed = 0;
 static uint64_t state = 0x4d595df4d0f33173; // Or something seed-dependent
-static uint64_t last_state = -1;
+static uint64_t last_state = 0;
 static const uint64_t multiplier = 6364136223846793005u;
 static const uint64_t increment = 1442695040888963407u; // Or an arbitrary odd constant
 

@@ -151,10 +151,10 @@ struct _PLUGIN_INFO {
   } update_message;
 
   struct {
-    void (*draw_line)(Pixel* data, int x1, int y1, int x2, int y2, int col, int screenx,
+    void (*draw_line)(Pixel* data, int x1, int y1, int x2, int y2, uint32_t col, int screenx,
                       int screeny);
-    void (*zoom_filter)(int sizeX, int sizeY, Pixel* src, Pixel* dest, int* brutS, int* brutD,
-                        int buffratio, int precalCoef[16][16]);
+    void (*zoom_filter)(unsigned int sizeX, unsigned int sizeY, Pixel* src, Pixel* dest, int* brutS,
+                        int* brutD, int buffratio, int precalCoef[16][16]);
   } methods;
 
   GoomRandom* gRandom;
