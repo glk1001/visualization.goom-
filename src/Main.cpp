@@ -330,8 +330,8 @@ void CVisualizationGoom::Process()
     unsigned read = m_buffer.read(floatAudioData, m_audioBufferLen);
     if (read != m_audioBufferLen)
     {
-      kodi::Log(ADDON_LOG_WARNING, "Process: Read audio data %u != %d = expected audio data length - skipping this.", read, m_audioBufferLen);
-      SkippedAudioData();
+      kodi::Log(ADDON_LOG_WARNING, "Process: Num read audio length %u != %d = expected audio data length - skipping this.", read, m_audioBufferLen);
+      AudioDataIncorrectReadLength();
       continue;
     }
     lk.unlock();

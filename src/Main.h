@@ -69,13 +69,20 @@ public:
   bool OnEnabled() override;
 
 protected:  
+  const static size_t g_num_audio_buffers_in_circular_buffer = 16;
+  const PluginInfo* goomPluginInfo() const { return m_goom; };
+  PluginInfo* goomPluginInfo() { return m_goom; };
+  int AudioBufferLen() const { return m_audioBufferLen; };
+  int TexWidth() const { return m_tex_width; };
+  int TexHeight() const { return m_tex_height; };
+  int GoomBufferLen() const { return m_goomBufferLen; };
+  const std::string& CurrentSongName() const { return m_currentSongName; };
+  int NumChannels() const { return m_channels; };
   virtual void NoActiveBufferAvailable() {}
   virtual void AudioDataQueueTooBig() {}
   virtual void SkippedAudioData() {}
-  virtual void UpdateGoomBuffer(
-    const char* title, const float floatAudioData[], uint32_t* pixels);
-  int m_goomBufferLen;
-  int m_audioBufferLen;
+  virtual void AudioDataIncorrectReadLength() {}
+  virtual void UpdateGoomBuffer(const char* title, const float floatAudioData[], uint32_t* pixels);
 
 private:
   void Process();
@@ -87,6 +94,8 @@ private:
   int m_tex_width = GOOM_TEXTURE_WIDTH;
   int m_tex_height = GOOM_TEXTURE_HEIGHT;
   size_t m_goomBufferSize;
+  int m_goomBufferLen;
+  int m_audioBufferLen;
 
   int m_window_width;
   int m_window_height;
@@ -125,7 +134,8 @@ private:
   PluginInfo* m_goom = nullptr;
 
   // Audio buffer storage
-  const static size_t g_circular_buffer_size = 16*NUM_AUDIO_SAMPLES*AUDIO_SAMPLE_LEN;
+  const static size_t g_circular_buffer_size = 
+    g_num_audio_buffers_in_circular_buffer*NUM_AUDIO_SAMPLES*AUDIO_SAMPLE_LEN;
   circular_buffer<float> m_buffer = g_circular_buffer_size;
 
   // Goom process thread handles
@@ -136,7 +146,9 @@ private:
 
   // Screen frames storage, m_activeQueue for next view and m_storedQueue to
   // use on next goom round become active again.
+protected:
   const static size_t g_maxActiveQueueLength = 20;
+private:  
   std::queue<std::shared_ptr<uint32_t>> m_activeQueue;
   std::queue<std::shared_ptr<uint32_t>> m_storedQueue;
 
