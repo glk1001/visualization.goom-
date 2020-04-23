@@ -502,4 +502,7 @@ bool CVisualizationGoom::InitGLObjects()
   return true;
 }
 
-ADDONCREATOR(CVisualizationGoom) // Don't touch this!
+
+#ifndef DO_TESTING
+  ADDONCREATOR(CVisualizationGoom) // Don't touch this!
+#endif

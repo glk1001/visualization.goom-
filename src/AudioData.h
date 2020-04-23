@@ -2,11 +2,17 @@
 #define AUDIO_DATA_HPP
 
 #include <stdint.h>
+#ifndef DO_TESTING
 extern "C" {
   #include "goom.h"
   #include "goom_config.h"
 }
-
+#else
+extern "C" {
+  #include "goom/goom.h"
+  #include "goom/goom_config.h"
+}
+#endif
 
 static inline int16_t FloatToInt16(float f)
 {

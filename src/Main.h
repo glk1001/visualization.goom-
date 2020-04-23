@@ -1,3 +1,6 @@
+#ifndef MAIN_H
+#define MAIN_H
+
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      Copyright (C) 2016-2020 Team Kodi
@@ -141,3 +144,4 @@ private:
   bool m_started = false;
 };
 
+#endif

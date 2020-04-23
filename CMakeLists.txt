@@ -1,7 +1,12 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.13)
 project(visualization.goom)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(COMMON_C_WARNINGS -Wall -Wextra -Wsign-conversion)
 
 find_package(Kodi REQUIRED)
 find_package(glm REQUIRED)
@@ -31,6 +36,9 @@ set(GOOM_SOURCES src/Main.cpp)
 set(GOOM_HEADERS src/CircularBuffer.h
                  src/AudioData.h
                  src/Main.h)
+
+set (TESTING ON)
+include(../visualization.goom.testing/goom_testing)
 
 list(APPEND DEPLIBS goom)
 
