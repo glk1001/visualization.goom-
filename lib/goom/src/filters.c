@@ -576,7 +576,7 @@ static void InitBuffers(PluginInfo *goomInfo, Uint resx, Uint resy)
 void zoomFilterFastRGB(PluginInfo *goomInfo, Pixel *pix1, Pixel *pix2, ZoomFilterData *zf, Uint resx, Uint resy,
     int switchIncr, float switchMult)
 {
-  GOOM_LOG_DEBUG("resx = %d, resy = %d, switchIncr = %d, switchMult = %d", resx, resy, switchIncr, switchMult);
+  GOOM_LOG_DEBUG("resx = %d, resy = %d, switchIncr = %d, switchMult = %f", resx, resy, switchIncr, switchMult);
 
   Uint x, y;
 

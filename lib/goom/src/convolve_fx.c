@@ -8,18 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#define CONV_MOTIF_W 32
-//#define CONV_MOTIF_WMASK 0x1f
-
-#define CONV_MOTIF_W 128
-#define CONV_MOTIF_WMASK 0x7f
-
-typedef char Motif[CONV_MOTIF_W][CONV_MOTIF_W];
-
-#include "motif_blank.h"
-#include "motif_goom1.h"
-#include "motif_goom2.h"
-
 #define NB_THETA 512
 
 #define MAX 2.0f
@@ -39,9 +27,6 @@ typedef struct _CONV_DATA{
   int   h_cos[NB_THETA];
   int   h_height;
   float visibility;
-  Motif conv_motif;
-  int   inverse_motif;
-  
 } ConvData;
 
 /* init rotozoom tables */
@@ -66,15 +51,9 @@ static void compute_tables(VisualFX *_this, PluginInfo *info)
   }
 }
 
-static void set_motif(ConvData *data, Motif motif)
+static void convolve_init(VisualFX* _this, PluginInfo* info)
 {
-  int i,j;
-  for (i=0;i<CONV_MOTIF_W;++i) for (j=0;j<CONV_MOTIF_W;++j)
-    data->conv_motif[i][j] = motif[CONV_MOTIF_W-i-1][CONV_MOTIF_W-j-1];
-}
-
-static void convolve_init(VisualFX *_this, PluginInfo *info) {
-  ConvData *data;
+  ConvData* data;
   data = (ConvData*)malloc(sizeof(ConvData));
   _this->fx_data = (void*)data;
 
@@ -102,8 +81,6 @@ static void convolve_init(VisualFX *_this, PluginInfo *info) {
   data->theta = 0;
   data->ftheta = 0.0;
   data->visibility = 1.0;
-  set_motif(data, CONV_MOTIF_BLANK);
-  data->inverse_motif = 0;
 
   _this->params = &data->params;
 }
@@ -117,139 +94,23 @@ static void convolve_free(VisualFX *_this) {
 static void create_output_with_brightness(VisualFX *_this, Pixel *src, Pixel *dest,
                                          PluginInfo *info, int iff)
 {
-  ConvData *data = (ConvData*)_this->fx_data;
-  
-  int x,y;
-  int i = 0;//info->screen.height * info->screen.width - 1;
-
-  const int c = data->h_cos [data->theta];
-  const int s = data->h_sin [data->theta];
-
-  const int xi = -(info->screen.width/2) * c;
-  const int yi =  (info->screen.width/2) * s;
-
-  const int xj = -(info->screen.height/2) * s;
-  const int yj = -(info->screen.height/2) * c;
-
-  int xprime = xj;
-  int yprime = yj;
-
-  int ifftab[16];
-  if (data->inverse_motif) {
-    int i;
-    for (i=0;i<16;++i)
-      ifftab[i] = (double)iff * (1.0 + data->visibility * (15.0 - i) / 15.0);
-  }
-  else {
-    int i;
-    for (i=0;i<16;++i)
-      ifftab[i] = (double)iff / (1.0 + data->visibility * (15.0 - i) / 15.0);
-  }
-
-  for (y=info->screen.height;y--;) {
-    int xtex,ytex;
-
-    xtex = xprime + xi + CONV_MOTIF_W * 0x10000 / 2;
-    xprime += s;
-
-    ytex = yprime + yi + CONV_MOTIF_W * 0x10000 / 2;
-    yprime += c;
-
-#ifdef HAVE_MMX
-    __asm__ __volatile__
-      ("\n\t pxor  %%mm7,  %%mm7"  /* mm7 = 0   */
-       "\n\t movd %[xtex],  %%mm2"
-       "\n\t movd %[ytex],  %%mm3"
-       "\n\t punpckldq %%mm3, %%mm2" /* mm2 = [ ytex | xtex ] */
-       "\n\t movd %[c],     %%mm4"
-       "\n\t movd %[s],     %%mm6"
-       "\n\t pxor  %%mm5,   %%mm5"
-       "\n\t psubd %%mm6,   %%mm5"
-       "\n\t punpckldq %%mm5, %%mm4" /* mm4 = [ -s | c ]      */
-       "\n\t movd %[motif], %%mm6"   /* mm6 = motif           */
-
-       ::[xtex]"g"(xtex) ,[ytex]"g"(ytex)
-        , [c]"g"(c), [s]"g"(s)
-        , [motif] "g"(&data->conv_motif[0][0]));
-    
-    for (x=info->screen.width;x--;)
-    {
-      __asm__ __volatile__
-        (
-         "\n\t movd  %[src], %%mm0"  /* mm0 = src */
-         "\n\t paddd %%mm4, %%mm2"   /* [ ytex | xtex ] += [ -s | s ] */
-         "\n\t movd  %%esi, %%mm5"   /* save esi into mm5 */
-         "\n\t movq  %%mm2, %%mm3"
-         "\n\t psrld  $16,  %%mm3"   /* mm3 = [ (ytex>>16) | (xtex>>16) ] */
-         "\n\t movd  %%mm3, %%eax"   /* eax = xtex' */
-
-         "\n\t psrlq $25,   %%mm3"
-         "\n\t movd  %%mm3, %%ecx"   /* ecx = ytex' << 7 */
-
-         "\n\t andl  $127, %%eax"
-         "\n\t andl  $16256, %%ecx"
-         
-         "\n\t addl  %%ecx, %%eax"
-         "\n\t movd  %%mm6, %%esi"   /* esi = motif */
-         "\n\t xorl  %%ecx, %%ecx"
-         "\n\t movb  (%%eax,%%esi), %%cl"
-
-         "\n\t movl  %[ifftab], %%eax"
-         "\n\t movd  %%mm5, %%esi"    /* restore esi from mm5 */
-         "\n\t movd  (%%eax,%%ecx,4), %%mm1" /* mm1 = [0|0|0|iff2] */
-
-         "\n\t punpcklwd %%mm1, %%mm1"
-         "\n\t punpcklbw %%mm7, %%mm0"
-         "\n\t punpckldq %%mm1, %%mm1"
-         "\n\t psrlw     $1,    %%mm0"
-         "\n\t psrlw     $2,    %%mm1"
-         "\n\t pmullw    %%mm1, %%mm0"
-         "\n\t psrlw     $5,    %%mm0"
-         "\n\t packuswb  %%mm7, %%mm0"
-         "\n\t movd      %%mm0, %[dest]"
-         : [dest] "=g" (dest[i].val)
-         : [src]   "g"  (src[i].val)
-         , [ifftab]"g"(&ifftab[0])
-         : "eax","ecx");
-
-      i++;
-    }
-#else
-    for (x=info->screen.width;x--;) {
-
-      int iff2;
-      unsigned int f0,f1,f2,f3;
-      
-      xtex += c;
-      ytex -= s;
-      
-      iff2 = ifftab[data->conv_motif[(ytex >>16) & CONV_MOTIF_WMASK][(xtex >> 16) & CONV_MOTIF_WMASK]];
-
-#define sat(a) ((a)>0xFF?0xFF:(a))
-      f0 = src[i].val;
-      f1 = ((f0 >> R_OFFSET) & 0xFF) * iff2 >> 8;
-      f2 = ((f0 >> G_OFFSET) & 0xFF) * iff2 >> 8;
-      f3 = ((f0 >> B_OFFSET) & 0xFF) * iff2 >> 8;
-      dest[i].val = (sat(f1) << R_OFFSET) | (sat(f2) << G_OFFSET) | (sat(f3) << B_OFFSET);
-/*
-      f0 = (src[i].cop[0] * iff2) >> 8;
-      f1 = (src[i].cop[1] * iff2) >> 8;
-      f2 = (src[i].cop[2] * iff2) >> 8;
-      f3 = (src[i].cop[3] * iff2) >> 8;
+  int i = 0; //info->screen.height * info->screen.width - 1;
+  for (int y = 0 ; y < info->screen.height; y++) {
+    for (int x = 0; x < info->screen.width; x++) {
+      const unsigned int f0 = (src[i].cop[0] * iff) >> 8;
+      const unsigned int f1 = (src[i].cop[1] * iff) >> 8;
+      const unsigned int f2 = (src[i].cop[2] * iff) >> 8;
+      const unsigned int f3 = (src[i].cop[3] * iff) >> 8;
 
       dest[i].cop[0] = (f0 & 0xffffff00) ? 0xff : (unsigned char)f0;
       dest[i].cop[1] = (f1 & 0xffffff00) ? 0xff : (unsigned char)f1;
       dest[i].cop[2] = (f2 & 0xffffff00) ? 0xff : (unsigned char)f2;
       dest[i].cop[3] = (f3 & 0xffffff00) ? 0xff : (unsigned char)f3;
-*/
+
       i++;
     }
-#endif 
   }
-#ifdef HAVE_MMX
-  __asm__ __volatile__ ("\n\t emms");
-#endif
-    
+
   compute_tables(_this, info);
 }
 

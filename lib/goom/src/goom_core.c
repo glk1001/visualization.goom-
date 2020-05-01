@@ -197,8 +197,10 @@ guint32 *goom_update (PluginInfo *goomInfo,
     GOOM_LOG_DEBUG("goomInfo->curGState->drawPoints = %d", goomInfo->curGState->drawPoints);
     if (goomInfo->curGState->drawPoints) {
         GOOM_LOG_DEBUG("goomInfo->curGState->drawPoints = %d is true", goomInfo->curGState->drawPoints);
-        const int speedvarMult80Plus15 = goomInfo->sound.speedvar*80;
+        const int speedvarMult80Plus15 = goomInfo->sound.speedvar*80 + 15;
         const int speedvarMult50Plus1 = goomInfo->sound.speedvar*50 + 1;
+        GOOM_LOG_DEBUG("speedvarMult80Plus15 = %d", speedvarMult80Plus15);
+        GOOM_LOG_DEBUG("speedvarMult50Plus1 = %d", speedvarMult50Plus1);
 
         const float pointWidthDiv2 = pointWidth / 2;
         const float pointHeightDiv2 = pointHeight / 2;
@@ -215,8 +217,10 @@ guint32 *goom_update (PluginInfo *goomInfo,
         const float pointWidthMultLarge = pointWidth * largfactor;
         const float pointHeightMultLarge = pointHeight * largfactor;
 
+        GOOM_LOG_DEBUG("goomInfo->update.loopvar = %d", goomInfo->update.loopvar);
         for (i = 1; i * 15 <= speedvarMult80Plus15; i++) {
             goomInfo->update.loopvar += speedvarMult50Plus1;
+            GOOM_LOG_DEBUG("goomInfo->update.loopvar = %d", goomInfo->update.loopvar);
 
             const Uint loopvar_div_i = goomInfo->update.loopvar / i;
             const float i_mult_10 = 10.0f * i;
@@ -525,8 +529,12 @@ guint32 *goom_update (PluginInfo *goomInfo,
                             goomInfo->update.zoomFilterData.hPlaneEffect = 0;
                     }
                     
+                    GOOM_LOG_DEBUG("newvit = %d, goomInfo->update.zoomFilterData.vitesse = %d", newvit,
+                        goomInfo->update.zoomFilterData.vitesse);
                     if ((signed int)newvit < goomInfo->update.zoomFilterData.vitesse)	/* on accelere */
                     {
+                        GOOM_LOG_DEBUG("newvit = %d < %d = goomInfo->update.zoomFilterData.vitesse", newvit,
+                            goomInfo->update.zoomFilterData.vitesse);
                         pzfd = &goomInfo->update.zoomFilterData;
                         if (((newvit < STOP_SPEED - 7) &&
                              (goomInfo->update.zoomFilterData.vitesse < STOP_SPEED - 6) &&
@@ -548,10 +556,10 @@ guint32 *goom_update (PluginInfo *goomInfo,
                 }
             }
             /* mode mega-lent */
-            if (goom_irand(goomInfo->gRandom,700) == 0) {
-                /* 
-                * printf ("coup du sort...\n") ;
-                 */
+            const int rand700 = goom_irand(goomInfo->gRandom, 700);
+            GOOM_LOG_DEBUG("rand700 = %d", rand700);
+            if (rand700 == 0) {
+                GOOM_LOG_DEBUG("rand700 = 0");
                 pzfd = &goomInfo->update.zoomFilterData;
                 goomInfo->update.zoomFilterData.vitesse = STOP_SPEED - 1;
                 goomInfo->update.zoomFilterData.pertedec = 8;
@@ -562,13 +570,16 @@ guint32 *goom_update (PluginInfo *goomInfo,
                 goomInfo->update.switchMult = 1.0f;
             }
         }
-        
+        GOOM_LOG_DEBUG("goomInfo->sound.timeSinceLastGoom = %d", goomInfo->sound.timeSinceLastGoom);
         /*
          * gros frein si la musique est calme
          */
+        GOOM_LOG_DEBUG("goomInfo->sound.speedvar = %f, goomInfo->update.zoomFilterData.vitesse = %d, goomInfo->cycle = %d",
+            goomInfo->sound.speedvar, goomInfo->update.zoomFilterData.vitesse, goomInfo->cycle);
         if ((goomInfo->sound.speedvar < 0.01f)
             && (goomInfo->update.zoomFilterData.vitesse < STOP_SPEED - 4)
             && (goomInfo->cycle % 16 == 0)) {
+            GOOM_LOG_DEBUG("goomInfo->sound.speedvar = %f", goomInfo->sound.speedvar);
             pzfd = &goomInfo->update.zoomFilterData;
             goomInfo->update.zoomFilterData.vitesse += 3;
             goomInfo->update.zoomFilterData.pertedec = 8;
@@ -579,7 +590,11 @@ guint32 *goom_update (PluginInfo *goomInfo,
         /*
          * baisser regulierement la vitesse...
          */
+        GOOM_LOG_DEBUG("goomInfo->update.zoomFilterData.vitesse = %d, goomInfo->cycle = %d",
+            goomInfo->update.zoomFilterData.vitesse, goomInfo->cycle);
         if ((goomInfo->cycle % 73 == 0) && (goomInfo->update.zoomFilterData.vitesse < STOP_SPEED - 5)) {
+            GOOM_LOG_DEBUG("goomInfo->cycle%%73 = 0 && dgoomInfo->update.zoomFilterData.vitesse = %d < %d - 5, ",
+                goomInfo->cycle, goomInfo->update.zoomFilterData.vitesse, STOP_SPEED);
             pzfd = &goomInfo->update.zoomFilterData;
             goomInfo->update.zoomFilterData.vitesse++;
         }
@@ -587,7 +602,11 @@ guint32 *goom_update (PluginInfo *goomInfo,
         /*
          * arreter de decrémenter au bout d'un certain temps
          */
+        GOOM_LOG_DEBUG("goomInfo->cycle = %d, goomInfo->update.zoomFilterData.pertedec = %d", goomInfo->cycle,
+            goomInfo->update.zoomFilterData.pertedec);
         if ((goomInfo->cycle % 101 == 0) && (goomInfo->update.zoomFilterData.pertedec == 7)) {
+            GOOM_LOG_DEBUG("goomInfo->cycle%%101 = 0 && dgoomInfo->update.zoomFilterData.pertedec = 7, ", goomInfo->cycle,
+                goomInfo->update.zoomFilterData.vitesse);
             pzfd = &goomInfo->update.zoomFilterData;
             goomInfo->update.zoomFilterData.pertedec = 8;
             goomInfo->update.zoomFilterData.sqrtperte = 16;
@@ -596,7 +615,9 @@ guint32 *goom_update (PluginInfo *goomInfo,
         /*
          * Permet de forcer un effet.
          */
+        GOOM_LOG_DEBUG("forceMode = %d", forceMode);
         if ((forceMode > 0) && (forceMode <= NB_FX)) {
+            GOOM_LOG_DEBUG("forceMode = %d <= NB_FX = %d.", forceMode, NB_FX);
             pzfd = &goomInfo->update.zoomFilterData;
             pzfd->mode = forceMode - 1;
         }
@@ -609,6 +630,7 @@ guint32 *goom_update (PluginInfo *goomInfo,
          * Changement d'effet de zoom !
          */
         if (pzfd != NULL) {
+            GOOM_LOG_DEBUG("pzfd != NULL");
             int        dif;
             
             goomInfo->update.cyclesSinceLastChange = 0;
@@ -632,7 +654,11 @@ guint32 *goom_update (PluginInfo *goomInfo,
             }
         }
         else {
+            GOOM_LOG_DEBUG("pzfd = NULL");
+            GOOM_LOG_DEBUG("goomInfo->update.cyclesSinceLastChange = %d", goomInfo->update.cyclesSinceLastChange);
             if (goomInfo->update.cyclesSinceLastChange > TIME_BTW_CHG) {
+                GOOM_LOG_DEBUG("goomInfo->update.cyclesSinceLastChange = %d > %d = TIME_BTW_CHG",
+                    goomInfo->update.cyclesSinceLastChange, TIME_BTW_CHG);
                 pzfd = &goomInfo->update.zoomFilterData;
                 goomInfo->update.cyclesSinceLastChange = 0;
             }
@@ -640,11 +666,9 @@ guint32 *goom_update (PluginInfo *goomInfo,
                 goomInfo->update.cyclesSinceLastChange++;
         }
         
-#ifdef VERBOSE
         if (pzfd) {
-            printf ("GOOM: pzfd->mode = %d\n", pzfd->mode);
+            GOOM_LOG_DEBUG("pzfd->mode = %d\n", pzfd->mode);
         }
-#endif
         
         /* Zoom here ! */
         zoomFilterFastRGB (goomInfo, goomInfo->p1, goomInfo->p2, pzfd, goomInfo->screen.width, goomInfo->screen.height,
@@ -653,7 +677,7 @@ guint32 *goom_update (PluginInfo *goomInfo,
         /*
          * Affichage tentacule
          */
-        
+        GOOM_LOG_DEBUG("Before goomInfo->tentacles_fx.apply, goomInfo->star_fx.apply");
         goomInfo->tentacles_fx.apply(&goomInfo->tentacles_fx, goomInfo->p1, goomInfo->p2, goomInfo);
         goomInfo->star_fx.apply (&goomInfo->star_fx,goomInfo->p2,goomInfo->p1,goomInfo);
         
@@ -703,10 +727,14 @@ guint32 *goom_update (PluginInfo *goomInfo,
         /*
          * arret demande
          */
+        GOOM_LOG_DEBUG("goomInfo->update.stop_lines = %d, goomInfo->curGState->drawScope = %d", goomInfo->update.stop_lines,
+            goomInfo->curGState->drawScope);
         if ((goomInfo->update.stop_lines & 0xf000)||(!goomInfo->curGState->drawScope)) {
             float   param1, param2, amplitude;
             int     couleur;
             int     mode;
+            GOOM_LOG_DEBUG("goomInfo->update.stop_lines = %d, goomInfo->curGState->drawScope = %d", goomInfo->update.stop_lines,
+                goomInfo->curGState->drawScope);
             
             choose_a_goom_line (goomInfo, &param1, &param2, &couleur, &mode, &amplitude,1);
             couleur = GML_BLACK;
@@ -749,6 +777,8 @@ guint32 *goom_update (PluginInfo *goomInfo,
                         couleur2=couleur1 = GML_BLACK;
                 }
                 
+                GOOM_LOG_DEBUG("goomInfo->update.lineMode = %d == %d = goomInfo->update.drawLinesDuration",
+                    goomInfo->update.lineMode, goomInfo->update.drawLinesDuration);
                 goom_lines_switch_to (goomInfo->gmline1, mode, param1, amplitude, couleur1);
                 goom_lines_switch_to (goomInfo->gmline2, mode, param2, amplitude, couleur2);
             }
@@ -757,7 +787,11 @@ guint32 *goom_update (PluginInfo *goomInfo,
         /*
          * si on est dans un goom : afficher les lignes...
          */
+        GOOM_LOG_DEBUG("goomInfo->update.lineMode = %d != 0 || goomInfo->sound.timeSinceLastGoom = %d < 5>",
+            goomInfo->update.lineMode, goomInfo->sound.timeSinceLastGoom);
         if ((goomInfo->update.lineMode != 0) || (goomInfo->sound.timeSinceLastGoom < 5)) {
+            GOOM_LOG_DEBUG("goomInfo->update.lineMode = %d != 0 || goomInfo->sound.timeSinceLastGoom = %d < 5>",
+                goomInfo->update.lineMode, goomInfo->sound.timeSinceLastGoom);
             goomInfo->gmline2->power = goomInfo->gmline1->power;
             
             goom_lines_draw (goomInfo, goomInfo->gmline1, data[0], goomInfo->p2);
@@ -769,6 +803,7 @@ guint32 *goom_update (PluginInfo *goomInfo,
                 int     couleur1,couleur2;
                 int     mode;
                 
+                GOOM_LOG_DEBUG("goomInfo->cycle %% 121 etc.: goomInfo->cycle = %d, rand1_3 = ??", goomInfo->cycle);
                 choose_a_goom_line (goomInfo, &param1, &param2, &couleur1,
                                     &mode, &amplitude, goomInfo->update.stop_lines);
                 couleur2 = 5-couleur1;
@@ -783,6 +818,7 @@ guint32 *goom_update (PluginInfo *goomInfo,
             }
         }
         
+        GOOM_LOG_DEBUG("About to return.");
         return_val = goomInfo->p1;
         tmp = goomInfo->p1;
         goomInfo->p1 = goomInfo->p2;

@@ -184,8 +184,8 @@ static void
 Random_Simis (PluginInfo *goomInfo, FRACTAL * F, SIMI * Cur, int i)
 {
 	static DBL c_AS_factor;
-    static DBL r_1_minus_exp_neg_S;
-    static DBL r2_1_minus_exp_neg_S;
+  static DBL r_1_minus_exp_neg_S;
+  static DBL r2_1_minus_exp_neg_S;
 	static DBL A_AS_factor;
 	static DBL A2_AS_factor;
 
@@ -198,7 +198,7 @@ Random_Simis (PluginInfo *goomInfo, FRACTAL * F, SIMI * Cur, int i)
 		A2_AS_factor = A_AS_factor;
 		doneInit = 1;
 	}
-    const DBL r_AS_factor = F->dr_mean*r_1_minus_exp_neg_S;
+  const DBL r_AS_factor = F->dr_mean*r_1_minus_exp_neg_S;
 	const DBL r2_AS_factor = F->dr2_mean*r2_1_minus_exp_neg_S;
 
 	while (i--) {
@@ -310,8 +310,13 @@ init_ifs (PluginInfo *goomInfo, IfsData *data)
 	Fractal->Col = pcg32_rand() % (width * height);	/* modif by JeKo */
 
 	Random_Simis (goomInfo, Fractal, Fractal->Components, 5 * MAX_SIMI);
-}
 
+  for (int i = 0; i < 5 * MAX_SIMI; i++) {
+      SIMI cur = Fractal->Components[i];
+      GOOM_LOG_DEBUG("simi[%d]: c_x = %f, c_y = %f, r = %f, r2 = %f, A = %f, A2 = %f.",
+          i, cur.c_x, cur.c_y, cur.r, cur.r2, cur.A, cur.A2);
+  }
+}
 
 /***************************************************************/
 
@@ -392,6 +397,7 @@ Draw_Fractal (IfsData *data)
 	for (Cur = F->Components, i = F->Nb_Simi; i; --i, Cur++) {
 		xo = Cur->Cx;
 		yo = Cur->Cy;
+        GOOM_LOG_DEBUG("F->Nb_Simi = %d, xo = %d, yo = %d", F->Nb_Simi, xo, yo);
 		for (Simi = F->Components, j = F->Nb_Simi; j; --j, Simi++) {
 			if (Simi == Cur)
 				continue;
