@@ -29,34 +29,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* TODO : MOVE THIS AWAY !!! */
-/* jeko: j'ai essayer de le virer, mais si on veut les laisser inline c'est un peu lourdo... */
-static inline void setPixelRGB(PluginInfo* goomInfo, Pixel* buffer, Uint x, Uint y, Color c)
-{
-  Pixel i;
-  i.channels.b = c.b;
-  i.channels.g = c.v;
-  i.channels.r = c.r;
 
-  *(buffer + (x + (y * (Uint)goomInfo->screen.width))) = i;
-}
-
-static inline void setPixelRGB_(Pixel* buffer, Uint x, Color c)
+static inline void setPixelRGB(Pixel* buffer, Uint x, Color c)
 {
   buffer[x].channels.r = c.r;
   buffer[x].channels.g = c.v;
   buffer[x].channels.b = c.b;
 }
 
-static inline void getPixelRGB(PluginInfo* goomInfo, Pixel* buffer, Uint x, Uint y, Color* c)
-{
-  Pixel i = *(buffer + (x + (y * (Uint)goomInfo->screen.width)));
-  c->b = i.channels.b;
-  c->v = i.channels.g;
-  c->r = i.channels.r;
-}
-
-static inline void getPixelRGB_(Pixel* buffer, Uint x, Color* c)
+static inline void getPixelRGB(Pixel* buffer, Uint x, Color* c)
 {
   Pixel i = *(buffer + x);
   c->b = i.channels.b;
@@ -437,10 +418,10 @@ static void c_zoom(Pixel* expix1, Pixel* expix2, unsigned int prevX, unsigned in
       coeffs = (unsigned int)precalCoef[px & PERTEMASK][py & PERTEMASK];
     }
     Color col1, col2, col3, col4;
-    getPixelRGB_(expix1, pos, &col1);
-    getPixelRGB_(expix1, pos + 1, &col2);
-    getPixelRGB_(expix1, pos + bufwidth, &col3);
-    getPixelRGB_(expix1, pos + bufwidth + 1, &col4);
+    getPixelRGB(expix1, pos, &col1);
+    getPixelRGB(expix1, pos + 1, &col2);
+    getPixelRGB(expix1, pos + bufwidth, &col3);
+    getPixelRGB(expix1, pos + bufwidth + 1, &col4);
 
     unsigned int c1 = coeffs;
     const unsigned int c2 = (c1 >> 8) & 0xFF;
@@ -466,7 +447,7 @@ static void c_zoom(Pixel* expix1, Pixel* expix2, unsigned int prevX, unsigned in
     }
     couleur.b >>= 8;
 
-    setPixelRGB_(expix2, (Uint)(myPos >> 1), couleur);
+    setPixelRGB(expix2, (Uint)(myPos >> 1), couleur);
   }
 }
 
@@ -883,22 +864,4 @@ VisualFX zoomFilterVisualFXWrapper_create(void)
   fx.save = zoomFilterSave;
   fx.restore = zoomFilterRestore;
   return fx;
-}
-
-/* TODO : MOVE THIS AWAY */
-
-void pointFilter(PluginInfo* goomInfo, Pixel* pix1, Color c, float t1, float t2, float t3, float t4,
-                 Uint cycle)
-{
-  const Uint x = (Uint)((int)(goomInfo->screen.width / 2) + (int)(t1 * cos((float)cycle / t3)));
-  const Uint y = (Uint)((int)(goomInfo->screen.height / 2) + (int)(t2 * sin((float)cycle / t4)));
-
-  if ((x > 1) && (y > 1) && (x < (Uint)goomInfo->screen.width - 2) &&
-      (y < (Uint)goomInfo->screen.height - 2)) {
-    setPixelRGB(goomInfo, pix1, x + 1, y, c);
-    setPixelRGB(goomInfo, pix1, x, y + 1, c);
-    setPixelRGB(goomInfo, pix1, x + 1, y + 1, WHITE);
-    setPixelRGB(goomInfo, pix1, x + 2, y + 1, c);
-    setPixelRGB(goomInfo, pix1, x + 1, y + 2, c);
-  }
 }

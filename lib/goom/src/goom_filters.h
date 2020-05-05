@@ -1,5 +1,5 @@
-#ifndef FILTERS_H
-#define FILTERS_H
+#ifndef GOOM_FILTERS_H
+#define GOOM_FILTERS_H
 
 #include "goom_config.h"
 #include "goom_graphic.h"
@@ -35,9 +35,6 @@ struct _ZOOM_FILTER_DATA {
 #define HYPERCOS2_MODE 7
 #define YONLY_MODE 8
 #define SPEEDWAY_MODE 9
-
-void pointFilter(PluginInfo* goomInfo, Pixel* pix1, Color c, float t1, float t2, float t3, float t4,
-                 guint32 cycle);
 
 /* filtre de zoom :
  * le contenu de pix1 est copie dans pix2.
