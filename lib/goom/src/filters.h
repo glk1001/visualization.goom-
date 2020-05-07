@@ -1,12 +1,10 @@
-#ifndef GOOM_FILTERS_H
-#define GOOM_FILTERS_H
+#ifndef _FILTERS_H
+#define _FILTERS_H
 
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_typedefs.h"
 #include "goom_visual_fx.h"
-
-VisualFX zoomFilterVisualFXWrapper_create(void);
 
 struct _ZOOM_FILTER_DATA {
   int vitesse; /* 128 = vitesse nule... * * 256 = en arriere
@@ -35,6 +33,8 @@ struct _ZOOM_FILTER_DATA {
 #define HYPERCOS2_MODE 7
 #define YONLY_MODE 8
 #define SPEEDWAY_MODE 9
+
+VisualFX zoomFilterVisualFXWrapper_create(void);
 
 /* filtre de zoom :
  * le contenu de pix1 est copie dans pix2.

@@ -1,24 +1,23 @@
 #include "drawmethods.h"
 
-#define DRAWMETHOD_PLUS(_out, _backbuf, _col)                                                      \
-  {                                                                                                \
-    int tra = 0, i = 0;                                                                            \
-    unsigned char* bra = (unsigned char*)&(_backbuf);                                              \
-    unsigned char* dra = (unsigned char*)&(_out);                                                  \
-    unsigned char* cra = (unsigned char*)&(_col);                                                  \
-    for (; i < 4; i++) {                                                                           \
-      tra = *cra;                                                                                  \
-      tra += *bra;                                                                                 \
-      if (tra > 255)                                                                               \
-        tra = 255;                                                                                 \
-      *dra = tra;                                                                                  \
-      ++dra;                                                                                       \
-      ++cra;                                                                                       \
-      ++bra;                                                                                       \
-    }                                                                                              \
-  }
-
-#define DRAWMETHOD DRAWMETHOD_PLUS(*p, *p, col)
+static inline void draw_pixel(Pixel* out, Pixel* backbuf, uint32_t col)
+{
+  int tra = 0;
+  unsigned char* bra = (unsigned char*)backbuf;
+  unsigned char* dra = (unsigned char*)out;
+  unsigned char* cra = (unsigned char*)&col;
+  for (int i=0; i < 4; i++) {
+    tra = *cra;
+    tra += *bra;
+    if (tra > 255) {
+      tra = 255;
+    }
+    *dra = tra;
+    ++dra;
+    ++cra;
+    ++bra;
+  }                                                                                              \
+}
 
 void draw_line(Pixel* data, int x1, int y1, int x2, int y2, uint32_t col, int screenx, int screeny)
 {
@@ -96,13 +95,13 @@ void draw_line(Pixel* data, int x1, int y1, int x2, int y2, uint32_t col, int sc
     if (y1 < y2) {
       p = &(data[(screenx * y1) + x1]);
       for (y = y1; y <= y2; y++) {
-        DRAWMETHOD;
+        draw_pixel(p, p, col);
         p += screenx;
       }
     } else {
       p = &(data[(screenx * y2) + x1]);
       for (y = y2; y <= y1; y++) {
-        DRAWMETHOD;
+        draw_pixel(p, p, col);
         p += screenx;
       }
     }
@@ -113,14 +112,14 @@ void draw_line(Pixel* data, int x1, int y1, int x2, int y2, uint32_t col, int sc
     if (x1 < x2) {
       p = &(data[(screenx * y1) + x1]);
       for (x = x1; x <= x2; x++) {
-        DRAWMETHOD;
+        draw_pixel(p, p, col);
         p++;
       }
       return;
     } else {
       p = &(data[(screenx * y1) + x2]);
       for (x = x2; x <= x1; x++) {
-        DRAWMETHOD;
+        draw_pixel(p, p, col);
         p++;
       }
       return;
@@ -138,7 +137,7 @@ void draw_line(Pixel* data, int x1, int y1, int x2, int y2, uint32_t col, int sc
       for (y = y1; y <= y2; y++) {
         xx = x >> 16;
         p = &(data[(screenx * y) + xx]);
-        DRAWMETHOD;
+        draw_pixel(p, p, col);
         if (xx < (screenx - 1)) {
           p++;
           /* DRAWMETHOD; */
@@ -154,7 +153,7 @@ void draw_line(Pixel* data, int x1, int y1, int x2, int y2, uint32_t col, int sc
       for (x = x1; x <= x2; x++) {
         yy = y >> 16;
         p = &(data[(screenx * yy) + x]);
-        DRAWMETHOD;
+        draw_pixel(p, p, col);
         if (yy < (screeny - 1)) {
           p += screeny;
           /* DRAWMETHOD; */
@@ -175,7 +174,7 @@ void draw_line(Pixel* data, int x1, int y1, int x2, int y2, uint32_t col, int sc
       for (y = y1; y >= y2; y--) {
         xx = x >> 16;
         p = &(data[(screenx * y) + xx]);
-        DRAWMETHOD;
+        draw_pixel(p, p, col);
         if (xx < (screenx - 1)) {
           p--;
           /* DRAWMETHOD; */
@@ -191,7 +190,7 @@ void draw_line(Pixel* data, int x1, int y1, int x2, int y2, uint32_t col, int sc
       for (x = x1; x <= x2; x++) {
         yy = y >> 16;
         p = &(data[(screenx * yy) + x]);
-        DRAWMETHOD;
+        draw_pixel(p, p, col);
         if (yy < (screeny - 1)) {
           p += screeny;
           /* DRAWMETHOD; */

@@ -7,10 +7,10 @@
  * (c)2000-2003, by iOS-software.
  */
 
+#include "filters.h"
 #include "gfontlib.h"
 #include "goom.h"
 #include "goom_config.h"
-#include "goom_filters.h"
 #include "goom_fx.h"
 #include "goom_logging.h"
 #include "goom_plugin_info.h"

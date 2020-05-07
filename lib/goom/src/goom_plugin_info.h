@@ -1,9 +1,9 @@
-#ifndef _PLUGIN_INFO_H
-#define _PLUGIN_INFO_H
+#ifndef _GOOM_PLUGIN_INFO_H
+#define _GOOM_PLUGIN_INFO_H
 
+#include "filters.h"
 #include "goom_config.h"
 #include "goom_config_param.h"
-#include "goom_filters.h"
 #include "goom_graphic.h"
 #include "goom_tools.h"
 #include "goom_typedefs.h"

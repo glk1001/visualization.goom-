@@ -14,8 +14,8 @@
 
 /* #define _DEBUG_PIXEL */
 
+#include "filters.h"
 #include "goom_config.h"
-#include "goom_filters.h"
 #include "goom_fx.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"

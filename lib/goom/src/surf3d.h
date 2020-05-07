@@ -30,7 +30,6 @@ grid3d* grid3d_new(const int x_width, const int num_x, const int z_depth, const 
 void grid3d_update(grid3d* s, float angle, float* vals, float dist);
 
 /* low level */
-void surf3d_draw(surf3d* s, int color, int dist, int* buf, int* back, int W, int H);
 void grid3d_draw(PluginInfo* plug, grid3d* g, int color, int colorlow, int dist, Pixel* buf,
                  Pixel* back, int W, int H);
 void surf3d_rotate(surf3d* s, float angle);
