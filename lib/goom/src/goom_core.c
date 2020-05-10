@@ -408,7 +408,7 @@ guint32 *goom_update (PluginInfo *goomInfo,
                 if (!goomInfo->curGState->drawScope)
                     goomInfo->update.stop_lines = 0xf000 & 5;
                 
-                if (!goomInfo->curGState->drawScope) {
+                if (!goomInfo->curGState->farScope) {
                     goomInfo->update.stop_lines = 0;			
                     goomInfo->update.lineMode = goomInfo->update.drawLinesDuration;
                 }
