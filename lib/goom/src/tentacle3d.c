@@ -7,6 +7,7 @@
 #include "surf3d.h"
 #include "v3d.h"
 
+#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
 

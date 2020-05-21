@@ -1,10 +1,54 @@
 #include "surf3d.h"
 
 #include "goom_plugin_info.h"
+#include "mathtools.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+
+/*
+ * projete le vertex 3D sur le plan d'affichage
+ * retourne (0,0) si le point ne doit pas etre affiche.
+ *
+ * bonne valeur pour distance : 256
+ */
+
+static void v3d_to_v2d(const v3d* v3, int nbvertex, int width, int height, float distance, v2d* v2)
+{
+  for (int i = 0; i < nbvertex; ++i) {
+    if (v3[i].z > 2) {
+      const int Xp = (int)(distance * v3[i].x / v3[i].z);
+      const int Yp = (int)(distance * v3[i].y / v3[i].z);
+      v2[i].x = Xp + (width >> 1);
+      v2[i].y = -Yp + (height >> 1);
+    } else {
+      v2[i].x = v2[i].y = -666;
+    }
+  }
+}
+
+/*
+ * rotation selon Y du v3d vi d'angle a (cosa=cos(a), sina=sin(a))
+ * centerz = centre de rotation en z
+ */
+static inline void Y_ROTATE_V3D(const v3d* vi, v3d* vf, const float sina, const float cosa)                                                           \
+{
+  vf->x = vi->x * cosa - vi->z * sina;
+  vf->z = vi->x * sina + vi->z * cosa;
+  vf->y = vi->y;
+}
+
+/*
+ * translation
+ */
+static inline void TRANSLATE_V3D(const v3d* vsrc, v3d* vdest)
+{
+  vdest->x += vsrc->x;
+  vdest->y += vsrc->y;
+  vdest->z += vsrc->z;
+}
 
 grid3d* grid3d_new(const int x_width, const int num_x, const int z_depth, const int num_z, const v3d center)
 {
@@ -16,9 +60,7 @@ grid3d* grid3d_new(const int x_width, const int num_x, const int z_depth, const 
   s->svertex = (v3d*)malloc((size_t)(s->nbvertex) * sizeof(v3d));
 
   g->defx = num_x;
-  g->sizex = x_width;
   g->defz = num_z;
-  g->sizez = z_depth;
   g->mode = 0;
 
   const float x_step = x_width / (float)(num_x-1);
@@ -64,24 +106,6 @@ void grid3d_draw(PluginInfo* plug, grid3d* g, int color, int colorlow, int dist,
   free(v2_array);
 }
 
-void surf3d_rotate(surf3d* s, float angle)
-{
-  float cosa;
-  float sina;
-  SINCOS(angle, sina, cosa);
-
-  for (int i = 0; i < s->nbvertex; i++) {
-    Y_ROTATE_V3D(s->vertex[i], s->svertex[i], cosa, sina);
-  }
-}
-
-void surf3d_translate(surf3d* s)
-{
-  for (int i = 0; i < s->nbvertex; i++) {
-    TRANSLATE_V3D(s->center, s->svertex[i]);
-  }
-}
-
 void grid3d_update(grid3d* g, float angle, float* vals, float dist)
 {
   surf3d* s = &(g->surf);
@@ -107,7 +131,7 @@ void grid3d_update(grid3d* g, float angle, float* vals, float dist)
   }
 
   for (int i = 0; i < s->nbvertex; i++) {
-    Y_ROTATE_V3D(s->vertex[i], s->svertex[i], cosa, sina);
-    TRANSLATE_V3D(cam, s->svertex[i]);
+    Y_ROTATE_V3D(&s->vertex[i], &s->svertex[i], cosa, sina);
+    TRANSLATE_V3D(&cam, &s->svertex[i]);
   }
 }

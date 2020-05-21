@@ -24,7 +24,6 @@ add_library(${PROJECT_NAME} STATIC
                  src/surf3d.c
                  src/tentacle3d.c
                  src/plugin_info.c
-                 src/v3d.c
                  src/drawmethods.c
 )
 		 

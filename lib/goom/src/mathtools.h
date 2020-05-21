@@ -14,8 +14,6 @@
   #define iman_ 0
 #endif /* BigEndian_ */
 
-#define F2I(dbl, i) i = (int)dbl;
-
 #ifndef M_PI
   #define M_PI 3.14159265358979323846
 #endif

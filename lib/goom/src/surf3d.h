@@ -15,11 +15,8 @@ typedef struct {
 
 typedef struct {
   surf3d surf;
-
   int defx;
-  int sizex;
   int defz;
-  int sizez;
   int mode;
 } grid3d;
 
@@ -32,7 +29,5 @@ void grid3d_update(grid3d* s, float angle, float* vals, float dist);
 /* low level */
 void grid3d_draw(PluginInfo* plug, grid3d* g, int color, int colorlow, int dist, Pixel* buf,
                  Pixel* back, int W, int H);
-void surf3d_rotate(surf3d* s, float angle);
-void surf3d_translate(surf3d* s);
 
 #endif
