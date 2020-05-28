@@ -346,7 +346,9 @@ static void tentacle_update(PluginInfo* goomInfo, Pixel* buf, Pixel* back, int W
         fx_data->vals[tmp2] = val;
       }
 
-      grid3d_update(fx_data->grille[tmp], rotangle, fx_data->vals, dist2);
+      // Note: Following did not originally have '0.5*M_PI -' but with 'grid3d_update'
+      //   bug-fix this is the counter-fix.
+      grid3d_update(fx_data->grille[tmp], 0.5*M_PI - rotangle, fx_data->vals, dist2);
     }
     fx_data->cycle += 0.01f;
 

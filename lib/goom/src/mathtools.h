@@ -18,12 +18,6 @@
   #define M_PI 3.14159265358979323846
 #endif
 
-#define SINCOS(f, s, c)                                                                            \
-  {                                                                                                \
-    s = sin(f);                                                                                    \
-    c = cos(f);                                                                                    \
-  }
-
 extern const float sin256[256];
 extern const float cos256[256];
 

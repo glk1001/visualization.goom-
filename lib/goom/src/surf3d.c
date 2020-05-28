@@ -109,14 +109,6 @@ void grid3d_draw(PluginInfo* plug, grid3d* g, int color, int colorlow, int dist,
 void grid3d_update(grid3d* g, float angle, float* vals, float dist)
 {
   surf3d* s = &(g->surf);
-  v3d cam = s->center;
-  cam.z += dist;
-
-  float cosa;
-  float sina;
-  SINCOS((angle / 4.3f), sina, cosa);
-  cam.y += sina * 2.0f;
-  SINCOS(angle, sina, cosa);
 
   if (g->mode == 0) {
     if (vals)
@@ -130,8 +122,16 @@ void grid3d_update(grid3d* g, float angle, float* vals, float dist)
     }
   }
 
+  v3d cam = s->center;
+  cam.z += dist;
+  // Need this after surf3d bug-fix.
+  // '0.5*M_PI - angle' gets passed in as workaround but we need 'angle'.
+  cam.y += 2.0 * sin(-(angle - 0.5*M_PI) / 4.3f);
+
+  const float cosa = cos(angle);
+  const float sina = sin(angle);
   for (int i = 0; i < s->nbvertex; i++) {
-    Y_ROTATE_V3D(&s->vertex[i], &s->svertex[i], cosa, sina);
+    Y_ROTATE_V3D(&s->vertex[i], &s->svertex[i], sina, cosa);
     TRANSLATE_V3D(&cam, &s->svertex[i]);
   }
 }
