@@ -19,16 +19,23 @@ grid3d* grid3d_new(const int x_width, const int num_x, const int z_depth, const 
   g->sizez = z_depth;
   g->mode = 0;
 
-  int y = num_z;
-  while (y) {
-    --y;
-    int x = num_x;
-    while (x) {
-      --x;
-      s->vertex[x+num_x*y].x = (float)(x-num_x/2)*x_width/num_x;
-      s->vertex[x+num_x*y].y = 0;
-      s->vertex[x+num_x*y].z = (float)(y-num_z/2)*z_depth/num_z;
+  const float x_step = x_width / (float)(num_x-1);
+  const float z_step = z_depth / (float)(num_z-1);
+  const float x_start = x_width / 2.0;
+  const float z_start = z_depth / 2.0;
+
+  float z = z_start;
+  for (int nz=num_z-1; nz >= 0; nz--) {
+    const int nx_start = num_x * nz;
+    float x = x_start;
+    for (int nx=num_x-1; nx >= 0; nx--) {
+      const int nv = nx + nx_start;
+      s->vertex[nv].x = x;
+      s->vertex[nv].y = 0.0;
+      s->vertex[nv].z = z;
+      x -= x_step;
     }
+    z -= z_step;
   }
   return g;
 }
