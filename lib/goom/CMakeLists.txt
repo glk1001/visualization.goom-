@@ -5,7 +5,7 @@ if(WIN32)
  add_definitions(-D_WIN32PC)
 endif()
 
-add_library(${PROJECT_NAME} STATIC
+set (SRCE_FILES
                  src/goom_testing.c
                  src/goom_tools.c
                  src/config_param.c
@@ -26,7 +26,11 @@ add_library(${PROJECT_NAME} STATIC
                  src/plugin_info.c
                  src/drawmethods.c
 )
-		 
+
+add_library(${PROJECT_NAME} STATIC
+                 ${SRCE_FILES}
+)
+
 add_library(libs::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME}
@@ -50,5 +54,7 @@ target_compile_options(${PROJECT_NAME}
 )
 
 set_property(TARGET goom PROPERTY POSITION_INDEPENDENT_CODE ON)
-set_property(TARGET goom PROPERTY C_STANDARD 11)
-
+#set_property(TARGET goom PROPERTY C_STANDARD 11)
+set_property(TARGET goom PROPERTY CXX_STANDARD 20)
+#set_property(TARGET goom PROPERTY LANGUAGE CXX)
+set_source_files_properties(${SRCE_FILES} PROPERTIES LANGUAGE CXX )

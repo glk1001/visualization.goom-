@@ -26,10 +26,8 @@
 
 #include "CircularBuffer.h"
 
-extern "C" {
 #include "goom.h"
 #include "goom_config.h"
-}
 
 #include <kodi/addon-instance/Visualization.h>
 #include <kodi/gui/gl/Shader.h>

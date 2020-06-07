@@ -16,7 +16,7 @@ static int* small_font_height;
 void gfont_load(void)
 {
   /* decompress le rle */
-  unsigned char* gfont = malloc(the_font.width * the_font.height * the_font.bytes_per_pixel);
+  unsigned char* gfont = (unsigned char*)malloc(the_font.width * the_font.height * the_font.bytes_per_pixel);
   unsigned int i = 0;
   unsigned int j = 0;
   while (i < the_font.rle_size) {
@@ -32,13 +32,13 @@ void gfont_load(void)
   }
 
   /* determiner les positions de chaque lettre. */
-  font_height = calloc(256, sizeof(int));
-  small_font_height = calloc(256, sizeof(int));
-  font_width = calloc(256, sizeof(int));
-  small_font_width = calloc(256, sizeof(int));
-  font_chars = calloc(256, sizeof(int**));
-  small_font_chars = calloc(256, sizeof(int**));
-  int* font_pos = calloc(256, sizeof(int));
+  font_height = (int* )calloc(256, sizeof(int));
+  small_font_height = (int* )calloc(256, sizeof(int));
+  font_width = (int* )calloc(256, sizeof(int));
+  small_font_width = (int* )calloc(256, sizeof(int));
+  font_chars = (Pixel*** )calloc(256, sizeof(int**));
+  small_font_chars = (Pixel*** )calloc(256, sizeof(int**));
+  int* font_pos = (int* )calloc(256, sizeof(int));
 
   unsigned int nba = 0;
   unsigned int current = 32;
@@ -64,10 +64,10 @@ void gfont_load(void)
   /* charger les lettres et convertir au format de la machine */
   for (int i = 33; i < (int)current; i++) {
     const unsigned int fpos = (unsigned int)font_pos[i];
-    font_chars[i] = malloc((size_t)font_height[i] * sizeof(int*));
-    small_font_chars[i] = malloc((size_t)font_height[i] * sizeof(int*) / 2);
+    font_chars[i] = (Pixel **)malloc((size_t)font_height[i] * sizeof(int*));
+    small_font_chars[i] = (Pixel **)malloc((size_t)font_height[i] * sizeof(int*) / 2);
     for (unsigned int y = 0; y < (unsigned int)font_height[i]; y++) {
-      font_chars[i][y] = malloc((size_t)font_width[i] * sizeof(int));
+      font_chars[i][y] = (Pixel *)malloc((size_t)font_width[i] * sizeof(int));
       for (unsigned int x = 0; x < (unsigned int)font_width[i]; x++) {
         unsigned int r, g, b, a;
         r = (unsigned int)gfont[(y + 2) * (the_font.width * 4) + (x * 4 + fpos * 4)];
@@ -79,7 +79,7 @@ void gfont_load(void)
       }
     }
     for (unsigned int y = 0; y < (unsigned int)font_height[i] / 2; y++) {
-      small_font_chars[i][y] = malloc((size_t)font_width[i] * sizeof(int) / 2);
+      small_font_chars[i][y] = (Pixel *)malloc((size_t)font_width[i] * sizeof(int) / 2);
       for (unsigned int x = 0; x < (unsigned int)font_width[i] / 2; x++) {
         unsigned int r1, g1, b1, a1, r2, g2, b2, a2, r3, g3, b3, a3, r4, g4, b4, a4;
         r1 = (unsigned int)gfont[2 * (y + 1) * (the_font.width * 4) + (x * 8 + fpos * 4)];

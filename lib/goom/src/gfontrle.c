@@ -1,12 +1,8 @@
+#include "gfontrle.h"
+
 /* RGBA C-Source image dump (with zRLE compression) */
 
-const struct {
-  unsigned int width;
-  unsigned int height;
-  unsigned int bytes_per_pixel;
-  unsigned int rle_size;
-  unsigned char rle_pixel[49725];
-} the_font = {
+const TheFont the_font = {
     1277,
     21,
     4,

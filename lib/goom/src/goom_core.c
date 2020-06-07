@@ -389,7 +389,7 @@ static void update_message(PluginInfo* goomInfo, const char* message)
   }
   if (goomInfo->update_message.affiche) {
     int i = 0;
-    char* msg = malloc((size_t)goomInfo->update_message.longueur + 1);
+    char* msg = (char*)malloc((size_t)goomInfo->update_message.longueur + 1);
     char* ptr = msg;
     int pos;
     float ecart;

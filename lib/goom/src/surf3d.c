@@ -87,7 +87,7 @@ grid3d* grid3d_new(const int x_width, const int num_x, const int z_depth, const 
 void grid3d_draw(PluginInfo* plug, grid3d* g, int color, int colorlow, int dist, Pixel* buf,
                  Pixel* back, int W, int H)
 {
-  v2d* v2_array = malloc((size_t)g->surf.nbvertex * sizeof(v2d));
+  v2d* v2_array = (v2d*)malloc((size_t)g->surf.nbvertex * sizeof(v2d));
   v3d_to_v2d(g->surf.svertex, g->surf.nbvertex, W, H, dist, v2_array);
 
   for (int x = 0; x < g->defx; x++) {
