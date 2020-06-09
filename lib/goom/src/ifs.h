@@ -12,15 +12,4 @@
 
 VisualFX ifs_visualfx_create(void);
 
-/* init ifs for a (width)x(height) output. * /
-void init_ifs (PluginInfo *goomInfo, int width, int height);
-
-/ * draw an ifs on the buffer (which size is width * height)
-   increment means that we draw 1/increment of the ifs's points * /
-void ifs_update (PluginInfo *goomInfo, Pixel * buffer, Pixel * back, int width, int height, int increment);
-
-/ * free all ifs's data. * /
-void release_ifs (void);
-*/
-
 #endif

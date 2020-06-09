@@ -50,21 +50,6 @@ typedef struct _ifsPoint {
   gint32 x, y;
 } IFSPoint;
 
-#define MODE_ifs
-
-#define PROGCLASS "IFS"
-
-#define HACK_INIT init_ifs
-#define HACK_DRAW draw_ifs
-
-#define ifs_opts xlockmore_opts
-
-#define DEFAULTS                                                                                   \
-  "*delay: 20000 \n"                                                                               \
-  "*ncolors: 100 \n"
-
-#define SMOOTH_COLORS
-
 #define LRAND() ((long)(goom_random(goomInfo->gRandom) & 0x7fffffff))
 #define NRAND(n) ((int)(LRAND() % (n)))
 
@@ -82,26 +67,20 @@ typedef int F_PT;
 
 /*****************************************************/
 
-#define FIX 12
-#define UNIT (1 << FIX)
+static const int FIX = 12;
+static const int unit = 1 << FIX;
+#define DBL_To_F_PT(x) (F_PT)((DBL)(unit) * (x))
+// Following inline is different to above #define???!!
+//static inline F_PT DBL_To_F_PT(const DBL x) { return (F_PT)((DBL)unit * x); }
+static inline F_PT div_by_unit(const F_PT x) { return x >> FIX; }
+static inline F_PT div_by_2units(const F_PT x) { return x >> (FIX+1); }
+
 #define MAX_SIMI 6
 
 #define MAX_DEPTH_2 10
 #define MAX_DEPTH_3 6
 #define MAX_DEPTH_4 4
 #define MAX_DEPTH_5 2
-
-/* PREVIOUS VALUE 
-#define MAX_SIMI  6
-
- * settings for a PC 120Mhz... *
-#define MAX_DEPTH_2  10
-#define MAX_DEPTH_3  6
-#define MAX_DEPTH_4  4
-#define MAX_DEPTH_5  3
-*/
-
-#define DBL_To_F_PT(x) (F_PT)((DBL)(UNIT) * (x))
 
 typedef struct Similitude_Struct SIMI;
 typedef struct Fractal_Struct FRACTAL;
@@ -223,8 +202,8 @@ static void free_ifs(FRACTAL* Fractal)
 
 static void init_ifs(PluginInfo* goomInfo, IfsData* data)
 {
-  int width = goomInfo->screen.width;
-  int height = goomInfo->screen.height;
+  const int width = goomInfo->screen.width;
+  const int height = goomInfo->screen.height;
 
   data->enabled_bp = secure_b_param("Enabled", 1);
 
@@ -239,8 +218,8 @@ static void init_ifs(PluginInfo* goomInfo, IfsData* data)
 
   free_ifs_buffers(Fractal);
 
-  int i = (NRAND(4)) + 2; /* Number of centers */
-  switch (i) {
+  const int num_centres = (NRAND(4)) + 2; /* Number of centers */
+  switch (num_centres) {
     case 3:
       Fractal->Depth = MAX_DEPTH_3;
       Fractal->r_mean = .6;
@@ -271,9 +250,9 @@ static void init_ifs(PluginInfo* goomInfo, IfsData* data)
       break;
   }
 
-  Fractal->Nb_Simi = i;
+  Fractal->Nb_Simi = num_centres;
   Fractal->Max_Pt = Fractal->Nb_Simi - 1;
-  for (i = 0; i <= Fractal->Depth + 2; ++i) {
+  for (int i = 0; i <= Fractal->Depth + 2; i++) {
     Fractal->Max_Pt *= Fractal->Nb_Simi;
   }
 
@@ -308,38 +287,32 @@ static void init_ifs(PluginInfo* goomInfo, IfsData* data)
 
 static inline void Transform(SIMI* Simi, F_PT xo, F_PT yo, F_PT* x, F_PT* y)
 {
-  F_PT xx, yy;
-
   xo = xo - Simi->Cx;
-  xo = (xo * Simi->R) >> FIX; /* / UNIT; */
+  xo = div_by_unit(xo * Simi->R);
   yo = yo - Simi->Cy;
-  yo = (yo * Simi->R) >> FIX; /* / UNIT; */
+  yo = div_by_unit(yo * Simi->R);
 
-  xx = xo - Simi->Cx;
-  xx = (xx * Simi->R2) >> FIX; /* / UNIT; */
-  yy = -yo - Simi->Cy;
-  yy = (yy * Simi->R2) >> FIX; /* / UNIT; */
+  F_PT xx = xo - Simi->Cx;
+  xx = div_by_unit(xx * Simi->R2);
+  F_PT yy = -yo - Simi->Cy;
+  yy = div_by_unit(yy * Simi->R2);
 
-  *x = ((xo * Simi->Ct - yo * Simi->St + xx * Simi->Ct2 - yy * Simi->St2) >> FIX /* / UNIT */) +
-       Simi->Cx;
-  *y = ((xo * Simi->St + yo * Simi->Ct + xx * Simi->St2 + yy * Simi->Ct2) >> FIX /* / UNIT */) +
-       Simi->Cy;
+  *x = div_by_unit(xo * Simi->Ct - yo * Simi->St + xx * Simi->Ct2 - yy * Simi->St2) + Simi->Cx;
+  *y = div_by_unit(xo * Simi->St + yo * Simi->Ct + xx * Simi->St2 + yy * Simi->Ct2) + Simi->Cy;
 }
 
 /***************************************************************/
 
 static void Trace(FRACTAL* F, F_PT xo, F_PT yo, IfsData* data)
 {
-  F_PT x, y, i;
-  SIMI* Cur;
-
-  Cur = data->Cur_F->Components;
+  SIMI* Cur = data->Cur_F->Components;
   //	GOOM_LOG_DEBUG("data->Cur_F->Nb_Simi = %d, xo = %d, yo = %d", data->Cur_F->Nb_Simi, xo, yo);
-  for (i = data->Cur_F->Nb_Simi; i; --i, Cur++) {
+  for (int i = data->Cur_F->Nb_Simi; i; --i, Cur++) {
+    F_PT x, y;
     Transform(Cur, xo, yo, &x, &y);
 
-    data->Buf->x = F->Lx + ((x * F->Lx) >> (FIX + 1) /* /(UNIT*2) */);
-    data->Buf->y = F->Ly - ((y * F->Ly) >> (FIX + 1) /* /(UNIT*2) */);
+    data->Buf->x = F->Lx + div_by_2units(x * F->Lx);
+    data->Buf->y = F->Ly - div_by_2units(y * F->Ly);
     data->Buf++;
 
     data->Cur_Pt++;
@@ -355,10 +328,8 @@ static void Trace(FRACTAL* F, F_PT xo, F_PT yo, IfsData* data)
 static void Draw_Fractal(IfsData* data)
 {
   FRACTAL* F = data->Root;
-  int i, j;
-  F_PT x, y, xo, yo;
-  SIMI *Cur, *Simi;
-
+  int i;
+  SIMI* Cur;
   for (Cur = F->Components, i = F->Nb_Simi; i; --i, Cur++) {
     Cur->Cx = DBL_To_F_PT(Cur->c_x);
     Cur->Cy = DBL_To_F_PT(Cur->c_y);
@@ -375,14 +346,18 @@ static void Draw_Fractal(IfsData* data)
   data->Cur_Pt = 0;
   data->Cur_F = F;
   data->Buf = F->Buffer2;
+  int j;
   for (Cur = F->Components, i = F->Nb_Simi; i; --i, Cur++) {
-    xo = Cur->Cx;
-    yo = Cur->Cy;
+    const F_PT xo = Cur->Cx;
+    const F_PT yo = Cur->Cy;
     GOOM_LOG_DEBUG("F->Nb_Simi = %d, xo = %d, yo = %d", F->Nb_Simi, xo, yo);
+    SIMI* Simi;
     for (Simi = F->Components, j = F->Nb_Simi; j; --j, Simi++) {
       if (Simi == Cur) {
         continue;
       }
+      F_PT x;
+      F_PT y;
       Transform(Simi, xo, yo, &x, &y);
       Trace(F, x, y, data);
     }
@@ -397,35 +372,30 @@ static void Draw_Fractal(IfsData* data)
 
 static IFSPoint* draw_ifs(PluginInfo* goomInfo, int* nbpt, IfsData* data)
 {
-  int i;
-  DBL u, uu, v, vv, u0, u1, u2, u3;
-  SIMI *S, *S1, *S2, *S3, *S4;
-  FRACTAL* F;
-
   if (data->Root == NULL) {
     return NULL;
   }
-  F = data->Root;
+  FRACTAL* F = data->Root;
   if (F->Buffer1 == NULL) {
     return NULL;
   }
 
-  u = (DBL)(F->Count) * (DBL)(F->Speed) / 1000.0;
-  uu = u * u;
-  v = 1.0 - u;
-  vv = v * v;
-  u0 = vv * v;
-  u1 = 3.0 * vv * u;
-  u2 = 3.0 * v * uu;
-  u3 = u * uu;
+  const DBL u = (DBL)(F->Count) * (DBL)(F->Speed) / 1000.0;
+  const DBL uu = u * u;
+  const DBL v = 1.0 - u;
+  const DBL vv = v * v;
+  const DBL u0 = vv * v;
+  const DBL u1 = 3.0 * vv * u;
+  const DBL u2 = 3.0 * v * uu;
+  const DBL u3 = u * uu;
 
-  S = F->Components;
-  S1 = S + F->Nb_Simi;
-  S2 = S1 + F->Nb_Simi;
-  S3 = S2 + F->Nb_Simi;
-  S4 = S3 + F->Nb_Simi;
+  SIMI* S = F->Components;
+  SIMI* S1 = S + F->Nb_Simi;
+  SIMI* S2 = S1 + F->Nb_Simi;
+  SIMI* S3 = S2 + F->Nb_Simi;
+  SIMI* S4 = S3 + F->Nb_Simi;
 
-  for (i = F->Nb_Simi; i; --i, S++, S1++, S2++, S3++, S4++) {
+  for (int i = F->Nb_Simi; i; --i, S++, S1++, S2++, S3++, S4++) {
     S->c_x = u0 * S1->c_x + u1 * S2->c_x + u2 * S3->c_x + u3 * S4->c_x;
     S->c_y = u0 * S1->c_y + u1 * S2->c_y + u2 * S3->c_y + u3 * S4->c_y;
     S->r = u0 * S1->r + u1 * S2->r + u2 * S3->r + u3 * S4->r;
@@ -443,7 +413,7 @@ static IFSPoint* draw_ifs(PluginInfo* goomInfo, int* nbpt, IfsData* data)
     S3 = S2 + F->Nb_Simi;
     S4 = S3 + F->Nb_Simi;
 
-    for (i = F->Nb_Simi; i; --i, S++, S1++, S2++, S3++, S4++) {
+    for (int i = F->Nb_Simi; i; --i, S++, S1++, S2++, S3++, S4++) {
       S2->c_x = 2.0 * S4->c_x - S3->c_x;
       S2->c_y = 2.0 * S4->c_y - S3->c_y;
       S2->r = 2.0 * S4->r - S3->r;
@@ -463,8 +433,8 @@ static IFSPoint* draw_ifs(PluginInfo* goomInfo, int* nbpt, IfsData* data)
   }
 
   F->Col++;
-
   (*nbpt) = data->Cur_Pt;
+
   return F->Buffer2;
 }
 
@@ -498,9 +468,9 @@ static void ifs_update(PluginInfo* goomInfo, Pixel* data, Pixel* back, int incre
 {
   GOOM_LOG_DEBUG("increment = %d", increment);
 
-  int couleursl = ifs_update_data.couleur;
-  int width = goomInfo->screen.width;
-  int height = goomInfo->screen.height;
+  const int couleursl = ifs_update_data.couleur;
+  const int width = goomInfo->screen.width;
+  const int height = goomInfo->screen.height;
 
   ifs_update_data.cycle++;
   if (ifs_update_data.cycle >= 80) {
@@ -529,11 +499,11 @@ static void ifs_update(PluginInfo* goomInfo, Pixel* data, Pixel* back, int incre
   GOOM_LOG_DEBUG("nbpt = %d", nbpt);
 
   for (int i = 0; i < nbpt; i += increment) {
-    int x = (int)points[i].x & 0x7fffffff;
-    int y = (int)points[i].y & 0x7fffffff;
+    const int x = (int)points[i].x & 0x7fffffff;
+    const int y = (int)points[i].y & 0x7fffffff;
 
     if ((x < width) && (y < height)) {
-      int pos = x + (int)(y * width);
+      const int pos = x + (int)(y * width);
       int tra = 0, i = 0;
       unsigned char* bra = (unsigned char*)&back[pos];
       unsigned char* dra = (unsigned char*)&data[pos];
@@ -804,7 +774,7 @@ static void ifs_vfx_apply(VisualFX* _this, Pixel* src, Pixel* dest, PluginInfo* 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static const char* const vfxname = "Ifs";
+static const char *const vfxname = "Ifs";
 
 static void ifs_vfx_save(VisualFX* _this, const PluginInfo* info, const char* file)
 {
