@@ -4,33 +4,33 @@
 #include <stdio.h>
 #include <string.h>
 
-grid3d *grid3d_new (int sizex, int defx, int sizez, int defz, v3d center) {
-	int x = defx;
-	int y = defz;
-	grid3d *g = malloc (sizeof(grid3d));
-	surf3d *s = &(g->surf);
-	s->nbvertex = x*y;
-	s->vertex = malloc (x*y*sizeof(v3d));
-	s->svertex = malloc (x*y*sizeof(v3d));
-	s->center = center;
+grid3d* grid3d_new(const int x_width, const int num_x, const int z_depth, const int num_z, const v3d center)
+{
+  grid3d* g = (grid3d*)malloc(sizeof(grid3d));
+  surf3d* s = &(g->surf);
+  s->nbvertex = num_x * num_z;
+  s->center = center;
+  s->vertex = (v3d*)malloc((size_t)(s->nbvertex) * sizeof(v3d));
+  s->svertex = (v3d*)malloc((size_t)(s->nbvertex) * sizeof(v3d));
 
-	g->defx=defx;
-	g->sizex=sizex;
-	g->defz=defz;
-	g->sizez=sizez;
-	g->mode=0;
+  g->defx = num_x;
+  g->sizex = x_width;
+  g->defz = num_z;
+  g->sizez = z_depth;
+  g->mode = 0;
 
-	while (y) {
-		--y;
-		x = defx;
-		while (x) {
-			--x;
-			s->vertex[x+defx*y].x = (float)(x-defx/2)*sizex/defx;
-			s->vertex[x+defx*y].y = 0;
-			s->vertex[x+defx*y].z = (float)(y-defz/2)*sizez/defz;
-		}
-	}
-	return g;
+  int y = num_z;
+  while (y) {
+    --y;
+    int x = num_x;
+    while (x) {
+      --x;
+      s->vertex[x+num_x*y].x = (float)(x-num_x/2)*x_width/num_x;
+      s->vertex[x+num_x*y].y = 0;
+      s->vertex[x+num_x*y].z = (float)(y-num_z/2)*z_depth/num_z;
+    }
+  }
+  return g;
 }
 
 void grid3d_draw (PluginInfo *plug, grid3d *g, int color, int colorlow,

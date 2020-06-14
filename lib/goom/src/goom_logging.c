@@ -5,7 +5,7 @@
 void (*goom_logger)(int lvl, int line_num, const char *func_name, const char *msg) = NULL;
 
 #ifndef NO_GOOM_LOGGING
-static int log_level = GOOM_LOG_LVL_INFO;
+static int log_level = GOOM_LOG_LVL_DEBUG;
 
 int goom_log_get_level()
 {
