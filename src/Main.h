@@ -27,19 +27,9 @@
 #include <string>
 #include <thread>
 
-#ifdef LEIA
-namespace kodi
-{
-namespace addon
-{
-using VisualizationTrack = VisTrack;
-}
-} // namespace kodi
-#endif
-
-class ATTR_DLL_LOCAL CVisualizationGoom : public kodi::addon::CAddonBase,
-                                          public kodi::addon::CInstanceVisualization,
-                                          private kodi::gui::gl::CShaderProgram
+class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,
+                                            public kodi::addon::CInstanceVisualization,
+                                            private kodi::gui::gl::CShaderProgram
 {
 public:
   CVisualizationGoom();
@@ -49,19 +39,19 @@ public:
   auto operator=(const CVisualizationGoom&) -> CVisualizationGoom = delete;
   auto operator=(CVisualizationGoom&&) -> CVisualizationGoom = delete;
 
-  auto Start(int channels, 
+  [[nodiscard]] auto Start(int channels,
              int samplesPerSec,
              int bitsPerSample,
              const std::string& songName) -> bool override;
   void Stop() override;
-  auto IsDirty() -> bool override;
+  [[nodiscard]] auto IsDirty() -> bool override;
   void Render() override;
   void AudioData(const float* audioData, size_t audioDataLength) override;
-  auto UpdateTrack(const kodi::addon::VisualizationTrack& track) -> bool override;
+  [[nodiscard]] auto UpdateTrack(const kodi::addon::VisualizationTrack& track) -> bool override;
 
   // kodi::gui::gl::CShaderProgram
   void OnCompiledAndLinked() override;
-  auto OnEnabled() -> bool override;
+  [[nodiscard]] auto OnEnabled() -> bool override;
 
 protected:
   const static size_t NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER = 16;
@@ -83,9 +73,9 @@ protected:
 
 private:
   void Process();
-  auto InitGlObjects() -> bool;
+  [[nodiscard]] auto InitGlObjects() -> bool;
   void InitQuadData();
-  auto GetNextActivePixels() -> std::shared_ptr<GOOM::PixelBuffer>;
+  [[nodiscard]] auto GetNextActivePixels() -> std::shared_ptr<GOOM::PixelBuffer>;
   void PushUsedPixels(const std::shared_ptr<GOOM::PixelBuffer>& pixels);
 
   const int m_texWidth;
@@ -104,7 +94,7 @@ private:
   std::string m_lastSongName{};
   bool m_titleChange = false;
   bool m_showTitleAlways = false;
-  auto GetTitle() -> std::string;
+  [[nodiscard]] auto GetTitle() -> std::string;
 
   GLint m_componentsPerVertex{};
   GLint m_componentsPerTexel{};
