@@ -49,8 +49,8 @@ public:
                                    float brightness,
                                    bool lowGamma,
                                    float tMix,
-                                   float x,
-                                   float y) -> Pixel;
+                                   float tX,
+                                   float tY) const -> Pixel;
 
 private:
   std::shared_ptr<UTILS::RandomColorMaps> m_colorMaps{};
@@ -73,7 +73,7 @@ private:
   static constexpr float INITIAL_T_AWAY_FROM_BASE_COLOR = 0.0F;
   float m_tAwayFromBaseColor = INITIAL_T_AWAY_FROM_BASE_COLOR; // in [0, 1]
   static auto GetNextColorMode() -> IfsDancersFx::ColorMode;
-  [[nodiscard]] auto GetNextMixerMapColor(float t, float x, float y) const -> Pixel;
+  [[nodiscard]] auto GetNextMixerMapColor(float t, float tX, float tY) const -> Pixel;
 
   static constexpr float MAIN_GAMMA = 10.0F;
   static constexpr float MAIN_GAMMA_THRESHOLD = 0.01F;
