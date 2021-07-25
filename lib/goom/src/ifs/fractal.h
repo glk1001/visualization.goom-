@@ -2,6 +2,7 @@
 #define VISUALIZATION_GOOM_FRACTAL_H
 
 #include "goom_graphic.h"
+#include "goomutils/t_values.h"
 #include "ifs_types.h"
 
 #include <cstdint>
@@ -48,7 +49,7 @@ public:
   void SetColor(const Pixel& val) { m_color = val; }
   [[nodiscard]] auto GetCount() const -> uint32_t { return m_count; }
   void SetCount(const uint32_t val) { m_count = val; }
-  [[nodiscard]] auto GetSimiColor() const -> const Pixel;
+  [[nodiscard]] auto GetSimiColor() const -> Pixel;
   [[nodiscard]] auto GetSimiColorMap() const -> const UTILS::IColorMap*;
   [[nodiscard]] auto GetSimiCurrentPointBitmap() const -> const UTILS::ImageBitmap*;
   [[nodiscard]] auto GetSimiOverExposeBitmaps() const -> bool;
@@ -126,13 +127,18 @@ private:
   uint32_t m_numSimi = 0;
   uint32_t m_depth = 0;
   uint32_t m_count = 0;
-  static constexpr uint32_t INITIAL_SPEED = 6;
-  uint32_t m_speed = INITIAL_SPEED;
-  uint32_t m_maxCountTimesSpeed = MAX_MAX_COUNT_TIMES_SPEED;
+
   Dbl m_r1Mean = 0.0;
   Dbl m_r2Mean = 0.0;
   Dbl m_dr1Mean = 0.0;
   Dbl m_dr2Mean = 0.0;
+
+  static constexpr uint32_t INITIAL_SPEED = 6;
+  uint32_t m_prevSpeed;
+  uint32_t m_speed;
+  static constexpr uint32_t NUM_SPEED_TRANSITION_STEPS = 50;
+  UTILS::TValue m_speedTransitionT;
+  uint32_t m_maxCountTimesSpeed = MAX_MAX_COUNT_TIMES_SPEED;
 
   FractalHits m_hits1;
   FractalHits m_hits2;
@@ -157,16 +163,6 @@ private:
   [[nodiscard]] static constexpr auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
 #endif
 };
-
-inline auto Fractal::GetSpeed() const -> uint32_t
-{
-  return m_speed;
-}
-
-inline void Fractal::SetSpeed(const uint32_t val)
-{
-  m_speed = val;
-}
 
 inline auto Fractal::GetMaxHitCount() const -> uint32_t
 {

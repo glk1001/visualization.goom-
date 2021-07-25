@@ -7,6 +7,7 @@
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/random_colormaps.h"
+#include "goomutils/t_values.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -28,6 +29,7 @@ using UTILS::m_pi;
 using UTILS::ProbabilityOfMInN;
 using UTILS::RandomColorMaps;
 using UTILS::SmallImageBitmaps;
+using UTILS::TValue;
 using UTILS::Weights;
 
 struct CentreType
@@ -77,7 +79,7 @@ struct Similitude
   bool overExposeBitmaps = true;
 };
 
-auto IfsPoint::GetSimiColor() const -> const Pixel
+auto IfsPoint::GetSimiColor() const -> Pixel
 {
   return m_simi->color;
 }
@@ -106,11 +108,16 @@ Fractal::Fractal(const uint32_t screenWidth,
     m_stats{s},
     m_lx{(screenWidth - 1) / 2},
     m_ly{(screenHeight - 1) / 2},
+    m_prevSpeed{INITIAL_SPEED},
+    m_speed{INITIAL_SPEED},
+    m_speedTransitionT{TValue::StepType::SINGLE_CYCLE, NUM_SPEED_TRANSITION_STEPS},
     m_hits1{screenWidth, screenHeight},
     m_hits2{screenWidth, screenHeight},
     m_prevHits{&m_hits1},
     m_curHits{&m_hits2}
 {
+  m_speedTransitionT.Reset(TValue::MAX_T_VALUE);
+
   Init();
   Reset();
 }
@@ -138,6 +145,22 @@ void Fractal::Init()
   {
     RandomSimis(i * MAX_SIMI, MAX_SIMI);
   }
+}
+
+auto Fractal::GetSpeed() const -> uint32_t
+{
+  if (m_speedTransitionT.IsStopped())
+  {
+    return m_speed;
+  }
+  return stdnew::lerp(m_prevSpeed, m_speed, m_speedTransitionT());
+}
+
+void Fractal::SetSpeed(const uint32_t val)
+{
+  m_prevSpeed = GetSpeed();
+  m_speed = val;
+  m_speedTransitionT.Reset();
 }
 
 void Fractal::Reset()
@@ -179,7 +202,9 @@ void Fractal::ResetCurrentIfsFunc()
 
 auto Fractal::GetNextIfsPoints() -> const std::vector<IfsPoint>&
 {
-  const Dbl u = static_cast<Dbl>(m_count * m_speed) / static_cast<Dbl>(m_maxCountTimesSpeed);
+  m_speedTransitionT.Increment();
+
+  const Dbl u = static_cast<Dbl>(m_count * GetSpeed()) / static_cast<Dbl>(m_maxCountTimesSpeed);
   const Dbl uSq = u * u;
   const Dbl v = 1.0F - u;
   const Dbl vSq = v * v;
@@ -211,7 +236,7 @@ auto Fractal::GetNextIfsPoints() -> const std::vector<IfsPoint>&
   const std::vector<IfsPoint>& curBuffer = m_curHits->GetBuffer();
   std::swap(m_prevHits, m_curHits);
 
-  if (m_count < m_maxCountTimesSpeed / m_speed)
+  if (m_count < m_maxCountTimesSpeed / GetSpeed())
   {
     m_count++;
   }
@@ -332,7 +357,7 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
       constexpr uint32_t MAX_RES = 5;
       const uint32_t res = GetRandInRange(MIN_RES, MAX_RES);
       (*m_components)[i].overExposeBitmaps = ProbabilityOfMInN(9, 10);
-      if (ProbabilityOfMInN(7, 10))
+      if (ProbabilityOfMInN(6, 10))
       {
         (*m_components)[i].currentPointBitmap =
             &m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
@@ -426,7 +451,10 @@ void FractalHits::Reset()
   {
     // Optimization makes sense here:
     // std::fill(xHit.begin(), xHit.end(), HitInfo{0, Pixel::BLACK});
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
     (void)std::memset(xHit.data(), 0, xHit.size() * sizeof(HitInfo));
+#pragma GCC diagnostic pop
   }
 }
 
