@@ -41,7 +41,7 @@ const Weights<ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
     { ZoomFilterMode::HYPERCOS_MODE1,         4 },
     { ZoomFilterMode::HYPERCOS_MODE2,         3 },
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,5 },
-    { ZoomFilterMode::NORMAL_MODE,            600000000 },
+    { ZoomFilterMode::NORMAL_MODE,            6 },
     { ZoomFilterMode::SCRUNCH_MODE,           6 },
     { ZoomFilterMode::SPEEDWAY_MODE,          6 },
     { ZoomFilterMode::WAVE_MODE0,             4 },

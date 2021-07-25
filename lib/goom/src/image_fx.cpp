@@ -86,7 +86,9 @@ private:
   static constexpr float T_STEP = 0.01F;
   void ResetCentres();
   void UpdateCentres();
-  GammaCorrection m_gammaCorrect{2.0F, 0.01F};
+  static constexpr float GAMMA = 2.0F;
+  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+  GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
 };
 
 ImageFx::ImageFx(const IGoomDraw* const draw,

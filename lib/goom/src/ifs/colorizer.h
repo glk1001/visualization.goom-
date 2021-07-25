@@ -47,7 +47,6 @@ public:
   [[nodiscard]] auto GetMixedColor(const Pixel& baseColor,
                                    uint32_t hitCount,
                                    float brightness,
-                                   bool lowGamma,
                                    float tMix,
                                    float tX,
                                    float tY) const -> Pixel;
@@ -75,13 +74,9 @@ private:
   static auto GetNextColorMode() -> IfsDancersFx::ColorMode;
   [[nodiscard]] auto GetNextMixerMapColor(float t, float tX, float tY) const -> Pixel;
 
-  static constexpr float MAIN_GAMMA = 10.0F;
-  static constexpr float MAIN_GAMMA_THRESHOLD = 0.01F;
-  const UTILS::GammaCorrection m_mainGammaCorrect{MAIN_GAMMA, MAIN_GAMMA_THRESHOLD};
-
-  static constexpr float LOW_GAMMA = 4.0F;
-  static constexpr float LOW_GAMMA_THRESHOLD = 0.01F;
-  const UTILS::GammaCorrection m_lowGammaCorrect{LOW_GAMMA, LOW_GAMMA_THRESHOLD};
+  static constexpr float GAMMA = 1.5F;
+  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+  const UTILS::GammaCorrection m_mainGammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
 };
 
 inline auto Colorizer::GetColorMaps() const -> const UTILS::RandomColorMaps&

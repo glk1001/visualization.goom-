@@ -96,7 +96,9 @@ private:
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   const IColorMap* m_currentColorMap{};
   std::string m_resourcesDirectory{};
-  GammaCorrection m_gammaCorrect{4.2F, 0.1F};
+  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
+  GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   float m_currentBrightness = 1.0F;
 
   mutable LineStats m_stats{};
@@ -379,7 +381,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   if (m_lineLerpFactor >= 1.0F)
   {
     m_srcLineType = m_destLineType;
-    m_currentBrightness = GetRandInRange(2.0F, 3.0F);
+    m_currentBrightness = GetRandInRange(1.0F, 2.0F);
   }
 
   assert(m_srcLineType != LineType::circle || m_lineLerpFactor < 1.0F ||

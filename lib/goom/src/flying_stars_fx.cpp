@@ -745,9 +745,9 @@ auto FlyingStarsFx::FlyingStarsImpl::GetMixedColors(const Star& star,
                                                     const float brightness)
     -> std::tuple<Pixel, Pixel>
 {
-  constexpr float STAR_GAMMA = 4.2F;
-  constexpr float STAR_GAMMA_THRESHOLD = 0.1F;
-  static GammaCorrection s_gammaCorrect{STAR_GAMMA, STAR_GAMMA_THRESHOLD};
+  constexpr float GAMMA = 1.0 / 2.0F;
+  constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
+  static GammaCorrection s_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
 
   Pixel color;
   Pixel lowColor;

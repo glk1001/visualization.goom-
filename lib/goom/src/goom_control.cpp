@@ -503,7 +503,7 @@ void GoomControl::GoomControlImpl::SetFontFile(const std::string& filename)
 
   m_text.SetFontFile(filename);
   m_text.SetFontSize(FONT_SIZE);
-  m_text.SetOutlineWidth(2);
+  m_text.SetOutlineWidth(4);
   m_text.SetAlignment(TextDraw::TextAlignment::LEFT);
 }
 
@@ -1962,7 +1962,7 @@ void GoomControl::GoomControlImpl::DrawText(const std::string& str,
                                             const int yPos,
                                             const float spacing)
 {
-  const float t = static_cast<float>(m_goomData.timeOfTitleDisplay) /
+  const float t = 2.0F * static_cast<float>(m_goomData.timeOfTitleDisplay) /
                   static_cast<float>(GoomData::MAX_TITLE_DISPLAY_TIME);
   const float brightness = t;
 
@@ -1974,9 +1974,9 @@ void GoomControl::GoomControlImpl::DrawText(const std::string& str,
   //  const ColorMap& colorMap2 = colorMaps.getColorMap(colordata::ColorMapName::Blues);
   const Pixel fontColor = m_textColorMap->GetColor(t);
   const Pixel outlineFontColor = m_textOutlineColorMap->GetColor(1.0F - t);
-  constexpr float TEXT_GAMMA = 4.2F;
-  constexpr float TEXT_GAMMA_THRESHOLD = 0.01F;
-  static GammaCorrection s_gammaCorrect{TEXT_GAMMA, TEXT_GAMMA_THRESHOLD};
+  constexpr float TEXT_GAMMA = 1.0 / 2.0F;
+  constexpr float TEXT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+  static GammaCorrection s_gammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};
   const auto getFontColor = [&]([[maybe_unused]] const size_t textIndexOfChar,
                                 [[maybe_unused]] const int32_t x, [[maybe_unused]] const int32_t y,
                                 [[maybe_unused]] const int32_t width,

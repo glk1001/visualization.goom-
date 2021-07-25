@@ -351,8 +351,10 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
   }
 
   const Pixel segmentColor = GetColor(nodeNum);
-  const Pixel mixedColor = IColorMap::GetColorMix(color, segmentColor, t);
-  const Pixel mixedLowColor = IColorMap::GetColorMix(lowColor, segmentColor, t);
+  const Pixel mixedColor =
+      m_gammaCorrect.GetCorrection(1.0F, IColorMap::GetColorMix(color, segmentColor, t));
+  const Pixel mixedLowColor =
+      m_gammaCorrect.GetCorrection(1.0F, IColorMap::GetColorMix(lowColor, segmentColor, t));
 
   if (std::abs(GetHead().x) < 10)
   {
@@ -383,16 +385,8 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
 #endif
   const Pixel mixedColorPixel = mixedColor;
   const Pixel mixedLowColorPixel = mixedLowColor;
-  //constexpr float gamma = 4.2;
-  //const float brightnessWithGamma = std::pow(brightness, 1.0F / gamma);
-  const float brightnessWithGamma = brightness;
-  //  const float brightnessWithGamma =
-  //      std::max(0.4F, std::pow(brightness * getLuma(color), 1.0F / gamma));
-  //  const float brightnessWithGammaLow =
-  //      std::max(0.4F, std::pow(brightness * getLuma(lowColor), 1.0F / gamma));
-  return std::make_tuple(
-      GetBrighterColor(brightnessWithGamma, mixedColorPixel, m_allowOverexposed),
-      GetBrighterColor(brightnessWithGamma, mixedLowColorPixel, m_allowOverexposed));
+  return std::make_tuple(GetBrighterColor(brightness, mixedColorPixel, m_allowOverexposed),
+                         GetBrighterColor(brightness, mixedLowColorPixel, m_allowOverexposed));
 }
 
 auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>

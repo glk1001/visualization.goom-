@@ -118,10 +118,10 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
           static_cast<float>(point.GetX()) / static_cast<float>(m_draw->GetScreenWidth());
       const float fy =
           static_cast<float>(point.GetY()) / static_cast<float>(m_draw->GetScreenHeight());
-      point.SetColor(m_colorizer->GetMixedColor(
-          IColorMap::GetColorMix(point.GetSimiColor(), GetColorAverage(neighbours),
-                                 m_neighbourMixFactor),
-          point.GetCount(), BRIGHTNESS, true, logAlpha, fx, fy));
+      point.SetColor(m_colorizer->GetMixedColor(IColorMap::GetColorMix(point.GetSimiColor(),
+                                                                       GetColorAverage(neighbours),
+                                                                       m_neighbourMixFactor),
+                                                point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
       break;
     }
     case BlurrerColorMode::SMOOTH_NO_NEIGHBOURS:
@@ -136,7 +136,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
       point.SetColor(m_colorizer->GetMixedColor(
           IColorMap::GetColorMix(point.GetSimiColorMap()->GetColor(t), GetColorAverage(neighbours),
                                  m_neighbourMixFactor),
-          point.GetCount(), BRIGHTNESS, true, logAlpha, fx, fy));
+          point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
       break;
     }
   }

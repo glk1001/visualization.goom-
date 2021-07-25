@@ -136,7 +136,7 @@ private:
   static constexpr uint32_t INITIAL_SPEED = 6;
   uint32_t m_prevSpeed;
   uint32_t m_speed;
-  static constexpr uint32_t NUM_SPEED_TRANSITION_STEPS = 50;
+  static constexpr uint32_t NUM_SPEED_TRANSITION_STEPS = 500;
   UTILS::TValue m_speedTransitionT;
   uint32_t m_maxCountTimesSpeed = MAX_MAX_COUNT_TIMES_SPEED;
 

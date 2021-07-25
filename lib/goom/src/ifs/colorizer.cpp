@@ -108,7 +108,6 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
 auto Colorizer::GetMixedColor(const Pixel& baseColor,
                               const uint32_t hitCount,
                               const float brightness,
-                              const bool lowGamma,
                               const float tMix,
                               const float tX,
                               const float tY) const -> Pixel
@@ -183,8 +182,7 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
     mixColor = IColorMap::GetColorMix(baseColor, mixColor, tBaseMix);
   }
 
-  return lowGamma ? m_lowGammaCorrect.GetCorrection(brightness * logAlpha, mixColor)
-                  : m_mainGammaCorrect.GetCorrection(brightness * logAlpha, mixColor);
+  return m_mainGammaCorrect.GetCorrection(brightness * logAlpha, mixColor);
 }
 
 #if __cplusplus <= 201402L

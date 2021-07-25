@@ -148,14 +148,10 @@ private:
 
   IfsStats m_stats{};
 
-  static constexpr float LOW_DENSITY_GAMMA = 10.0F;
-  static constexpr float LOW_DENSITY_GAMMA_THRESHOLD = 0.01F;
-  const GammaCorrection m_lowDensityGammaCorrect{LOW_DENSITY_GAMMA, LOW_DENSITY_GAMMA_THRESHOLD};
-
   // TODO Move to simi
   TValue m_tMix{TValue::StepType::CONTINUOUS_REVERSIBLE, 0.01F};
   static constexpr float POINT_BRIGHTNESS = 2.0F;
-  static constexpr float BITMAP_BRIGHTNESS = 0.05F;
+  static constexpr float BITMAP_BRIGHTNESS = 1.0F;
   void ChangeColorMaps();
   void DrawNextIfsPoints();
   void DrawPoint(const IfsPoint& point, float t, float tMix) const;
@@ -549,14 +545,14 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
   //  const float t = static_cast<float>(m_cycle) / static_cast<float>(m_cycleLength);
   if (point.GetSimiCurrentPointBitmap() == nullptr)
   {
-    const Pixel mixedColor = m_colorizer.GetMixedColor(baseColor, point.GetCount(),
-                                                       POINT_BRIGHTNESS, false, tMix, tX, tY);
+    const Pixel mixedColor =
+        m_colorizer.GetMixedColor(baseColor, point.GetCount(), POINT_BRIGHTNESS, tMix, tX, tY);
     m_draw->DrawPixels(pX, pY, {mixedColor, mixedColor});
   }
   else
   {
-    const Pixel mixedColor = m_colorizer.GetMixedColor(baseColor, point.GetCount(),
-                                                       BITMAP_BRIGHTNESS, false, tMix, tX, tY);
+    const Pixel mixedColor =
+        m_colorizer.GetMixedColor(baseColor, point.GetCount(), BITMAP_BRIGHTNESS, tMix, tX, tY);
     const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                               [[maybe_unused]] const Pixel& b) -> Pixel { return mixedColor; };
     const PixelBuffer& bitmap{*point.GetSimiCurrentPointBitmap()};

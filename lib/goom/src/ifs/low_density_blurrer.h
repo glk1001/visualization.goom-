@@ -58,9 +58,9 @@ private:
   BlurrerColorMode m_colorMode{};
   Pixel m_singleColor{};
 
-  static constexpr float BLUR_GAMMA = 5.0F;
-  static constexpr float BLUR_GAMMA_THRESHOLD = 0.01F;
-  const UTILS::GammaCorrection m_blurGammaCorrect{BLUR_GAMMA, BLUR_GAMMA_THRESHOLD};
+  static constexpr float GAMMA = 2.0F;
+  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+  const UTILS::GammaCorrection m_blurGammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   void SetPointColor(IfsPoint& point,
                      float t,
                      float logMaxLowDensityCount,

@@ -69,7 +69,7 @@ public:
   [[nodiscard]] auto GetCorrection(float brightness, const Pixel& color) const -> Pixel;
 
 private:
-  float m_gammaReciprocal;
+  float m_gamma;
   float m_threshold;
   bool m_allowOverexposure;
 };
@@ -396,7 +396,7 @@ inline auto GetLuma(const Pixel& color) -> uint32_t
 inline GammaCorrection::GammaCorrection(const float gamma,
                                         const float thresh,
                                         bool allowOverexposure)
-  : m_gammaReciprocal(1.0F / gamma), m_threshold(thresh), m_allowOverexposure{allowOverexposure}
+  : m_gamma(gamma), m_threshold(thresh), m_allowOverexposure{allowOverexposure}
 {
 }
 
@@ -412,26 +412,17 @@ inline void GammaCorrection::SetThreshold(const float val)
 
 inline auto GammaCorrection::GetGamma() const -> float
 {
-  return 1.0F / m_gammaReciprocal;
+  return m_gamma;
 }
 
 inline void GammaCorrection::SetGamma(const float val)
 {
-  m_gammaReciprocal = 1.0F / val;
+  m_gamma = val;
 }
 
 inline auto GammaCorrection::GetAllowOverExposure() const -> bool
 {
   return m_allowOverexposure;
-}
-
-inline auto GammaCorrection::GetCorrection(float brightness, const Pixel& color) const -> Pixel
-{
-  if (brightness < m_threshold)
-  {
-    return GetBrighterColor(brightness, color, m_allowOverexposure);
-  }
-  return GetBrighterColor(std::pow(brightness, m_gammaReciprocal), color, m_allowOverexposure);
 }
 
 #if __cplusplus <= 201402L

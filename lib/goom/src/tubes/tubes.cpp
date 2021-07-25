@@ -382,7 +382,9 @@ private:
   const RandomColorMaps* const m_randomInnerColorMaps;
   float m_brightnessFactor;
 
-  GammaCorrection m_gammaCorrect{5.0F, 0.01F};
+  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+  GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
   std::vector<ShapeColors> m_oldShapeColors;

@@ -40,7 +40,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
-    /*.weight = */100000000,
+    /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
       { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },

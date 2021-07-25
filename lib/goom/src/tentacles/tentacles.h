@@ -3,6 +3,7 @@
 
 #include "goom_graphic.h"
 #include "goomutils/colormaps.h"
+#include "goomutils/colorutils.h"
 #include "goomutils/mathutils.h"
 
 #include <functional>
@@ -202,6 +203,9 @@ private:
   size_t m_numHeadNodes{};
   bool m_reverseColorMix = false;
   bool m_allowOverexposed = true;
+  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+  const UTILS::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
 };
 
 class Tentacles3D
