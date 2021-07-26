@@ -433,9 +433,13 @@ void FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents()
     SoundEventOccurred();
     if (ProbabilityOfMInN(1, 20))
     {
-      // Give a slight weight towards noFx mode by using numFX + 2.
-      const uint32_t newVal = GetNRand(NUM_FX + 2);
-      m_fxMode = newVal >= NUM_FX ? StarModes::NO_FX : static_cast<StarModes>(newVal);
+      static const Weights<StarModes> s_starModes{{
+          {StarModes::NO_FX, 11},
+          {StarModes::FIREWORKS, 9},
+          {StarModes::FOUNTAIN, 7},
+          {StarModes::RAIN, 8},
+      }};
+      m_fxMode = s_starModes.GetRandomWeighted();
       ChangeColorMode();
       ChangeDrawMode();
     }
@@ -1034,24 +1038,24 @@ void FlyingStarsFx::FlyingStarsImpl::AddABomb(const V2dInt& pos,
   m_stats.AddBomb();
 
   m_stars.emplace_back(Star{});
-  const size_t i = m_stars.size() - 1;
+  Star& star = m_stars[m_stars.size() - 1];
 
-  m_stars[i].pos = pos.ToFlt();
+  star.pos = pos.ToFlt();
 
   const float bombRadius = radius * GetRandInRange(0.01F, 2.0F);
-  const float bombAngle = GetBombAngle(m_stars[i]);
+  const float bombAngle = GetBombAngle(star);
 
   constexpr float RADIUS_OFFSET = -0.2F;
-  m_stars[i].velocity.x = bombRadius * std::cos(bombAngle);
-  m_stars[i].velocity.y = RADIUS_OFFSET + bombRadius * std::sin(bombAngle);
+  star.velocity.x = bombRadius * std::cos(bombAngle);
+  star.velocity.y = RADIUS_OFFSET + bombRadius * std::sin(bombAngle);
 
-  m_stars[i].acceleration.x = sideWind;
-  m_stars[i].acceleration.y = gravity;
+  star.acceleration.x = sideWind;
+  star.acceleration.y = gravity;
 
-  m_stars[i].age = GetRandInRange(m_minAge, 0.5F * m_maxAge);
-  m_stars[i].vage = std::max(m_minAge, vage);
+  star.age = GetRandInRange(m_minAge, 0.5F * m_maxAge);
+  star.vage = std::max(m_minAge, vage);
 
-  UpdateStarColorMaps(bombAngle, m_stars[i]);
+  UpdateStarColorMaps(bombAngle, star);
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetBombAngle(const Star& star) const -> float
@@ -1075,8 +1079,8 @@ auto FlyingStarsFx::FlyingStarsImpl::GetBombAngle(const Star& star) const -> flo
       break;
     }
     case StarModes::FOUNTAIN:
-      minAngle = 1.0F * m_pi / 6.0F;
-      maxAngle = m_pi - m_pi / 6.0F;
+      minAngle = m_pi + 0.1F;
+      maxAngle = m_two_pi - 0.1F;
       break;
     default:
       throw std::logic_error("Unknown StarModes enum.");
