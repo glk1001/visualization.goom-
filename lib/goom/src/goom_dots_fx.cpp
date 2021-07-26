@@ -86,9 +86,10 @@ private:
 
   uint32_t m_loopVar = 0; // mouvement des points
 
-  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr float GAMMA = 1.0F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 
   void Update();
 
@@ -408,7 +409,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
 
   const auto xMid = x0 + static_cast<int32_t>(radius);
   const auto yMid = y0 + static_cast<int32_t>(radius);
-  constexpr float BRIGHTNESS = 2.0F;
+  constexpr float BRIGHTNESS = 3.0F;
   const auto getColor1 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                              const Pixel& b) -> Pixel {
     // const Pixel newColor = x == xMid && y == yMid ? m_middleColor : color;
@@ -416,8 +417,8 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     {
       return Pixel::BLACK;
     }
-    return m_gammaCorrect.GetCorrection(BRIGHTNESS,
-                                        GetColorMultiply(b, color, m_draw->GetAllowOverexposed()));
+    return GetGammaCorrection(BRIGHTNESS,
+                              GetColorMultiply(b, color, m_draw->GetAllowOverexposed()));
   };
   const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                              [[maybe_unused]] const Pixel& b) -> Pixel {
@@ -425,7 +426,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     {
       return Pixel::BLACK;
     }
-    return m_gammaCorrect.GetCorrection(BRIGHTNESS, color);
+    return GetGammaCorrection(BRIGHTNESS, color);
   };
 
   if (m_thereIsOneBuffer || m_useSingleBufferOnly)
@@ -436,6 +437,17 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   {
     m_draw->Bitmap(xMid, yMid, GetImageBitmap(diameter), {getColor1, getColor2});
   }
+}
+
+inline auto GoomDotsFx::GoomDotsFxImpl::GetGammaCorrection(const float brightness,
+                                                           const Pixel& color) const -> Pixel
+{
+  // if constexpr (GAMMA == 1.0F)
+  if (GAMMA == 1.0F)
+  {
+    return GetBrighterColor(brightness, color, true);
+  }
+  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 } // namespace GOOM

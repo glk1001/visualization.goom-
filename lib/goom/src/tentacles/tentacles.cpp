@@ -351,10 +351,9 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
   }
 
   const Pixel segmentColor = GetColor(nodeNum);
-  const Pixel mixedColor =
-      m_gammaCorrect.GetCorrection(1.0F, IColorMap::GetColorMix(color, segmentColor, t));
+  const Pixel mixedColor = GetGammaCorrection(1.0F, IColorMap::GetColorMix(color, segmentColor, t));
   const Pixel mixedLowColor =
-      m_gammaCorrect.GetCorrection(1.0F, IColorMap::GetColorMix(lowColor, segmentColor, t));
+      GetGammaCorrection(1.0F, IColorMap::GetColorMix(lowColor, segmentColor, t));
 
   if (std::abs(GetHead().x) < 10)
   {
@@ -364,6 +363,17 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
   }
 
   return std::make_tuple(mixedColor, mixedLowColor);
+}
+
+inline auto Tentacle3D::GetGammaCorrection(const float brightness, const Pixel& color) const
+    -> Pixel
+{
+  // if constexpr (GAMMA == 1.0F)
+  if (GAMMA == 1.0F)
+  {
+    return GetBrighterColor(brightness, color, true);
+  }
+  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 auto Tentacle3D::GetMixedColors(const size_t nodeNum,

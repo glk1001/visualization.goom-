@@ -16,6 +16,7 @@ namespace GOOM::IFS
 {
 #endif
 
+using UTILS::GetBrighterColor;
 using UTILS::GetRandInRange;
 using UTILS::GetSlightlyDivergingStandardMaps;
 using UTILS::IColorMap;
@@ -182,7 +183,17 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
     mixColor = IColorMap::GetColorMix(baseColor, mixColor, tBaseMix);
   }
 
-  return m_mainGammaCorrect.GetCorrection(brightness * logAlpha, mixColor);
+  return GetGammaCorrection(brightness * logAlpha, mixColor);
+}
+
+inline auto Colorizer::GetGammaCorrection(const float brightness, const Pixel& color) const -> Pixel
+{
+  // if constexpr (GAMMA == 1.0F)
+  if (GAMMA == 1.0F)
+  {
+    return GetBrighterColor(brightness, color, true);
+  }
+  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 #if __cplusplus <= 201402L

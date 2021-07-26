@@ -30,6 +30,7 @@ namespace GOOM::TUBES
 #endif
 
 using UTILS::GammaCorrection;
+using UTILS::GetBrighterColor;
 using UTILS::GetLightenedColor;
 using UTILS::GetRandInRange;
 using UTILS::IColorMap;
@@ -103,7 +104,7 @@ static const Weights<LowColorTypes> S_LOW_COLOR_TYPES{{
 constexpr uint32_t MIN_LOW_COLOR_TYPE_TIME = 100;
 constexpr uint32_t MAX_LOW_COLOR_TYPE_TIME = 1000;
 
-constexpr float OUTER_CIRCLE_BRIGHTNESS = 0.1F;
+constexpr float OUTER_CIRCLE_BRIGHTNESS = 0.6F;
 constexpr float LIGHTER_COLOR_POWER = 10.0F;
 
 class ShapeColorizer;
@@ -382,9 +383,10 @@ private:
   const RandomColorMaps* const m_randomInnerColorMaps;
   float m_brightnessFactor;
 
-  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr float GAMMA = 1.0F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
   std::vector<ShapeColors> m_oldShapeColors;
@@ -1136,13 +1138,24 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
                              m_outerCircleLowColorMap->GetColor(m_outerCircleT()), m_oldT());
 
   return {
-      m_gammaCorrect.GetCorrection(brightness, color),
-      m_gammaCorrect.GetCorrection(brightness, lowColor),
-      m_gammaCorrect.GetCorrection(brightness, innerColor),
-      m_gammaCorrect.GetCorrection(brightness, innerLowColor),
-      m_gammaCorrect.GetCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleColor),
-      m_gammaCorrect.GetCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleLowColor),
+      GetGammaCorrection(brightness, color),
+      GetGammaCorrection(brightness, lowColor),
+      GetGammaCorrection(brightness, innerColor),
+      GetGammaCorrection(brightness, innerLowColor),
+      GetGammaCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleColor),
+      GetGammaCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleLowColor),
   };
+}
+
+inline auto ShapeColorizer::GetGammaCorrection(const float brightness, const Pixel& color) const
+    -> Pixel
+{
+  // if constexpr (GAMMA == 1.0F)
+  if (GAMMA == 1.0F)
+  {
+    return GetBrighterColor(brightness, color, true);
+  }
+  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 inline auto ShapeColorizer::GetBrightness(const V2dInt& pos) const -> float

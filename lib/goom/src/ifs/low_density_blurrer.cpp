@@ -20,6 +20,7 @@ namespace GOOM::IFS
 {
 #endif
 
+using UTILS::GetBrighterColor;
 using UTILS::GetColorAverage;
 using UTILS::IColorMap;
 
@@ -141,9 +142,19 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
     }
   }
 
-  point.SetColor(m_blurGammaCorrect.GetCorrection(BRIGHTNESS * logAlpha, point.GetColor()));
+  point.SetColor(GetGammaCorrection(BRIGHTNESS * logAlpha, point.GetColor()));
 }
 
+inline auto LowDensityBlurrer::GetGammaCorrection(const float brightness, const Pixel& color) const
+    -> Pixel
+{
+  // if constexpr (GAMMA == 1.0F)
+  if (GAMMA == 1.0F)
+  {
+    return GetBrighterColor(brightness, color, true);
+  }
+  return m_gammaCorrect.GetCorrection(brightness, color);
+}
 
 #if __cplusplus <= 201402L
 } // namespace IFS

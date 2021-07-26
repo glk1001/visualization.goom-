@@ -107,6 +107,11 @@ private:
   auto GetNextLowColorMapName() const -> ColorMapName;
   auto GetNextAngleColorMapName() const -> ColorMapName;
 
+  static constexpr float GAMMA = 1.0F / 1.0F;
+  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
+  GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
+
   static constexpr float MIN_SATURATION = 0.5F;
   static constexpr float MAX_SATURATION = 1.0F;
   static constexpr float MIN_LIGHTNESS = 0.5F;
@@ -514,7 +519,8 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
                  0.5 * (1.0 + std::cos(flipSpeed * star.velocity.y * static_cast<float>(j))) *
                  star.velocity.y * static_cast<float>(j));
 
-    const float brightness = ageBrightness * static_cast<float>(j) / static_cast<float>(numParts);
+    const float brightness =
+        2.7F * ageBrightness * static_cast<float>(j) / static_cast<float>(numParts);
 #if __cplusplus <= 201402L
     const auto mixedColors = GetMixedColors(star, tAge, brightness);
     const auto mixedColor = std::get<0>(mixedColors);
@@ -745,10 +751,6 @@ auto FlyingStarsFx::FlyingStarsImpl::GetMixedColors(const Star& star,
                                                     const float brightness)
     -> std::tuple<Pixel, Pixel>
 {
-  constexpr float GAMMA = 1.0 / 2.0F;
-  constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
-  static GammaCorrection s_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-
   Pixel color;
   Pixel lowColor;
   Pixel dominantColor;
@@ -806,16 +808,26 @@ auto FlyingStarsFx::FlyingStarsImpl::GetMixedColors(const Star& star,
   constexpr float MAX_MIX = 0.8F;
   const float tMix = stdnew::lerp(MIN_MIX, MAX_MIX, t);
   const Pixel mixedColor =
-      s_gammaCorrect.GetCorrection(brightness, IColorMap::GetColorMix(color, dominantColor, tMix));
+      GetGammaCorrection(brightness, IColorMap::GetColorMix(color, dominantColor, tMix));
   const Pixel mixedLowColor =
       GetLightenedColor(IColorMap::GetColorMix(lowColor, dominantLowColor, tMix), 10.0F);
   const Pixel remixedLowColor =
       m_colorMode == ColorMode::SIMILAR_LOW_COLORS
           ? mixedLowColor
-          : s_gammaCorrect.GetCorrection(brightness,
-                                         IColorMap::GetColorMix(mixedColor, mixedLowColor, 0.4F));
+          : GetGammaCorrection(brightness, IColorMap::GetColorMix(mixedColor, mixedLowColor, 0.4F));
 
   return std::make_tuple(mixedColor, remixedLowColor);
+}
+
+inline auto FlyingStarsFx::FlyingStarsImpl::GetGammaCorrection(const float brightness,
+                                                               const Pixel& color) const -> Pixel
+{
+  // if constexpr (GAMMA == 1.0F)
+  if (GAMMA == 1.0F)
+  {
+    return GetBrighterColor(brightness, color, true);
+  }
+  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 /**

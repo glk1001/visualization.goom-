@@ -203,9 +203,10 @@ private:
   size_t m_numHeadNodes{};
   bool m_reverseColorMix = false;
   bool m_allowOverexposed = true;
-  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr float GAMMA = 1.0F / 1.5F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   const UTILS::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
 class Tentacles3D

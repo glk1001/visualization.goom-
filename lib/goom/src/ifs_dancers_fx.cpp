@@ -69,7 +69,6 @@ using IFS::Colorizer;
 using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
-using UTILS::GammaCorrection;
 using UTILS::GetRandInRange;
 using UTILS::ProbabilityOfMInN;
 using UTILS::RandomColorMaps;

@@ -89,6 +89,7 @@ private:
   static constexpr float GAMMA = 2.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  //auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
 ImageFx::ImageFx(const IGoomDraw* const draw,

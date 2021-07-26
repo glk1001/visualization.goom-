@@ -76,7 +76,8 @@ private:
 
   static constexpr float GAMMA = 1.5F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  const UTILS::GammaCorrection m_mainGammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  const UTILS::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
 inline auto Colorizer::GetColorMaps() const -> const UTILS::RandomColorMaps&

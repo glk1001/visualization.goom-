@@ -96,9 +96,10 @@ private:
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   const IColorMap* m_currentColorMap{};
   std::string m_resourcesDirectory{};
-  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr float GAMMA = 1.0F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
   float m_currentBrightness = 1.0F;
 
   mutable LineStats m_stats{};
@@ -381,7 +382,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   if (m_lineLerpFactor >= 1.0F)
   {
     m_srcLineType = m_destLineType;
-    m_currentBrightness = GetRandInRange(1.0F, 2.0F);
+    m_currentBrightness = GetRandInRange(2.0F, 3.0F);
   }
 
   assert(m_srcLineType != LineType::circle || m_lineLerpFactor < 1.0F ||
@@ -692,8 +693,19 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
   const float tData = normalizedDataVal / static_cast<float>(m_maxNormalizedPeak);
   const float brightness = m_currentBrightness * tData;
   const Pixel modColor =
-      m_gammaCorrect.GetCorrection(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
+      GetGammaCorrection(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
   return {nextPointData, modColor};
+}
+
+inline auto LinesFx::LinesImpl::GetGammaCorrection(const float brightness, const Pixel& color) const
+    -> Pixel
+{
+  // if constexpr (GAMMA == 1.0F)
+  if (GAMMA == 1.0F)
+  {
+    return GetBrighterColor(brightness, color, true);
+  }
+  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float t) const -> Pixel
