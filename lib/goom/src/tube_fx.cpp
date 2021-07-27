@@ -47,9 +47,9 @@ struct TubeSettings
   PathParams circlePathParams;
 };
 constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{{
-    {true, false, 3.0F, 150.0F, {10.0F, +0.5F, +0.5F}},
-    {false, false, 0.2F, 130.0F, {50.0F, -0.75F, -1.0F}},
-    {false, false, 0.2F, 130.0F, {40.0F, +1.0F, +0.75F}},
+    {true, false, 3.4F, 150.0F, {10.0F, +0.5F, +0.5F}},
+    {false, false, 0.19F, 130.0F, {50.0F, -0.75F, -1.0F}},
+    {false, false, 0.18F, 130.0F, {40.0F, +1.0F, +0.75F}},
 }};
 constexpr PathParams COMMON_CIRCLE_PATH_PARMS{10.0F, +3.0F, +3.0F};
 

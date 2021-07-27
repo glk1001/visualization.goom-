@@ -104,7 +104,7 @@ static const Weights<LowColorTypes> S_LOW_COLOR_TYPES{{
 constexpr uint32_t MIN_LOW_COLOR_TYPE_TIME = 100;
 constexpr uint32_t MAX_LOW_COLOR_TYPE_TIME = 1000;
 
-constexpr float OUTER_CIRCLE_BRIGHTNESS = 0.6F;
+constexpr float OUTER_CIRCLE_BRIGHTNESS = 0.4F;
 constexpr float LIGHTER_COLOR_POWER = 10.0F;
 
 class ShapeColorizer;
@@ -383,7 +383,7 @@ private:
   const RandomColorMaps* const m_randomInnerColorMaps;
   float m_brightnessFactor;
 
-  static constexpr float GAMMA = 1.0F / 1.0F;
+  static constexpr float GAMMA = 1.5F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
