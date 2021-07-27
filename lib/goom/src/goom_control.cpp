@@ -132,30 +132,30 @@ struct GoomVisualFx
                         IGoomDraw* draw,
                         const std::shared_ptr<const PluginInfo>& goomInfo) noexcept;
 
-  std::shared_ptr<ConvolveFx> convolve_fx{};
-  std::shared_ptr<ZoomFilterFx> zoomFilter_fx{};
-  std::shared_ptr<FlyingStarsFx> star_fx{};
-  std::shared_ptr<GoomDotsFx> goomDots_fx{};
-  std::shared_ptr<IfsDancersFx> ifs_fx{};
-  std::shared_ptr<TentaclesFx> tentacles_fx{};
-  std::shared_ptr<ImageFx> image_fx{};
-  std::shared_ptr<TubeFx> tube_fx{};
+  std::shared_ptr<ConvolveFx> convolve_fx;
+  std::shared_ptr<ZoomFilterFx> zoomFilter_fx;
+  std::shared_ptr<FlyingStarsFx> star_fx;
+  std::shared_ptr<GoomDotsFx> goomDots_fx;
+  std::shared_ptr<IfsDancersFx> ifs_fx;
+  std::shared_ptr<TentaclesFx> tentacles_fx;
+  std::shared_ptr<ImageFx> image_fx;
+  std::shared_ptr<TubeFx> tube_fx;
 
-  std::vector<std::shared_ptr<IVisualFx>> list{};
-  std::map<GoomDrawable, std::shared_ptr<IVisualFx>> map{};
+  std::vector<std::shared_ptr<IVisualFx>> list;
+  std::map<GoomDrawable, std::shared_ptr<IVisualFx>> map;
 };
 
 GoomVisualFx::GoomVisualFx(Parallel& p,
                            IGoomDraw* const draw,
                            const std::shared_ptr<const PluginInfo>& goomInfo) noexcept
-  : convolve_fx{new ConvolveFx{p, goomInfo}},
-    zoomFilter_fx{new ZoomFilterFx{p, goomInfo}},
-    star_fx{new FlyingStarsFx{draw, goomInfo}},
-    goomDots_fx{new GoomDotsFx{draw, goomInfo}},
-    ifs_fx{new IfsDancersFx{draw, goomInfo}},
-    tentacles_fx{new TentaclesFx{draw, goomInfo}},
-    image_fx{new ImageFx{draw, goomInfo}},
-    tube_fx{new TubeFx{draw, goomInfo}},
+  : convolve_fx{std::make_shared<ConvolveFx>(p, goomInfo)},
+    zoomFilter_fx{std::make_shared<ZoomFilterFx>(p, goomInfo)},
+    star_fx{std::make_shared<FlyingStarsFx>(draw, goomInfo)},
+    goomDots_fx{std::make_shared<GoomDotsFx>(draw, goomInfo)},
+    ifs_fx{std::make_shared<IfsDancersFx>(draw, goomInfo)},
+    tentacles_fx{std::make_shared<TentaclesFx>(draw, goomInfo)},
+    image_fx{std::make_shared<ImageFx>(draw, goomInfo)},
+    tube_fx{std::make_shared<TubeFx>(draw, goomInfo)},
     // clang-format off
     list{
       convolve_fx,
@@ -195,10 +195,6 @@ struct GoomData
   uint32_t stateSelectionBlocker = 0;
   int32_t previousZoomSpeed = Vitesse::DEFAULT_VITESSE + 1;
 
-  static constexpr int MAX_TITLE_DISPLAY_TIME = 200;
-  static constexpr int TIME_TO_SPACE_TITLE_DISPLAY = 100;
-  static constexpr int TIME_TO_FADE_TITLE_DISPLAY = 50;
-  int32_t timeOfTitleDisplay = 0;
   std::string title{};
 };
 
@@ -236,8 +232,6 @@ public:
 private:
   Parallel m_parallel;
   GoomDrawBuffer m_multiBufferdraw;
-  GoomDrawBuffer m_textDraw;
-  TextDraw m_text;
   const std::shared_ptr<WritablePluginInfo> m_goomInfo;
   GoomImageBuffers m_imageBuffers;
   GoomVisualFx m_visualFx;
@@ -250,10 +244,8 @@ private:
   uint32_t m_cycle = 0;
   FilterControl m_filterControl;
   std::unordered_set<GoomDrawable> m_curGDrawables{};
-  GoomMessage m_messageData{};
   GoomData m_goomData;
-  const IColorMap* m_textColorMap{};
-  const IColorMap* m_textOutlineColorMap{};
+  GoomMessage m_messageData{};
   std::unique_ptr<TextDraw> m_updateMessageText{};
 
   std::string m_resourcesDirectory{};
@@ -270,8 +262,8 @@ private:
   // Line Fx
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
-  LinesFx m_gmline1;
-  LinesFx m_gmline2;
+  LinesFx m_goomLine1;
+  LinesFx m_goomLine2;
 
   void ChangeColorMaps();
 
@@ -365,13 +357,42 @@ private:
                       float* amplitude,
                       int farVal);
 
-  static constexpr float TEXT_GAMMA = 1.0F / 1.0F;
-  static constexpr float TEXT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  GammaCorrection m_textGammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};
-  auto GetTextGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
-  void UpdateMessage(const std::string& message);
-  void DrawText(const std::string& str, int xPos, int yPos, float spacing);
   void DisplayText(const std::string& songTitle, const std::string& message, float fps);
+  void UpdateMessage(const std::string& message);
+
+  class GoomTextDisplayer
+  {
+  public:
+    GoomTextDisplayer(int32_t xStart, int32_t yStart, TextDraw* textDraw);
+
+    auto IsInitialPhase() const -> bool;
+    auto IsMiddlePhase() const -> bool;
+    auto IsFinalPhase() const -> bool;
+    auto IsFinished() const -> bool;
+
+    void Draw(const std::string& text);
+
+  private:
+    static constexpr int MAX_TEXT_DISPLAY_TIME = 200;
+    static constexpr int TIME_TO_START_MIDDLE_PHASE = 100;
+    static constexpr int TIME_TO_START_FINAL_PHASE = 50;
+    int32_t m_xPos;
+    int32_t m_yPos;
+    int32_t m_timeLeftOfTitleDisplay;
+    TextDraw* const m_textDraw;
+    const IColorMap* m_textColorMap;
+    const IColorMap* m_textOutlineColorMap;
+    void DrawText(const std::string& str);
+    auto GetCharSpacing() const -> float;
+    auto GetXIncrement() const -> float;
+    static constexpr float TEXT_GAMMA = 1.0F / 1.0F;
+    static constexpr float TEXT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+    GammaCorrection m_textGammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};
+    auto GetTextGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
+  };
+  std::unique_ptr<GoomTextDisplayer> m_goomTextDisplayer{};
+  GoomDrawBuffer m_goomTextOutput;
+  TextDraw m_textDraw;
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
   void DisplayStateText();
 #endif
@@ -437,8 +458,6 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
                                               std::string resourcesDirectory)
   : m_parallel{-1}, // max cores - 1
     m_multiBufferdraw{screenWidth, screenHeight},
-    m_textDraw{screenWidth, screenHeight},
-    m_text{&m_textDraw},
     m_goomInfo{new WritablePluginInfo{screenWidth, screenHeight}},
     m_imageBuffers{screenWidth, screenHeight},
     m_visualFx{m_parallel, &m_multiBufferdraw,
@@ -449,24 +468,26 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_goomData{},
     m_resourcesDirectory{std::move(resourcesDirectory)},
     m_smallBitmaps{m_resourcesDirectory},
-    m_gmline1{&m_multiBufferdraw,
-              std::const_pointer_cast<const PluginInfo>(
-                  std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
-              LinesFx::LineType::hline,
-              static_cast<float>(screenHeight),
-              BLACK_LINE,
-              LinesFx::LineType::circle,
-              INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 * static_cast<float>(screenHeight),
-              GREEN_LINE},
-    m_gmline2{&m_multiBufferdraw,
-              std::const_pointer_cast<const PluginInfo>(
-                  std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
-              LinesFx::LineType::hline,
-              0,
-              BLACK_LINE,
-              LinesFx::LineType::circle,
-              INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 * static_cast<float>(screenHeight),
-              RED_LINE}
+    m_goomLine1{&m_multiBufferdraw,
+                std::const_pointer_cast<const PluginInfo>(
+                    std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
+                LinesFx::LineType::hline,
+                static_cast<float>(screenHeight),
+                BLACK_LINE,
+                LinesFx::LineType::circle,
+                INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 * static_cast<float>(screenHeight),
+                GREEN_LINE},
+    m_goomLine2{&m_multiBufferdraw,
+                std::const_pointer_cast<const PluginInfo>(
+                    std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
+                LinesFx::LineType::hline,
+                0,
+                BLACK_LINE,
+                LinesFx::LineType::circle,
+                INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 * static_cast<float>(screenHeight),
+                RED_LINE},
+    m_goomTextOutput{screenWidth, screenHeight},
+    m_textDraw{&m_goomTextOutput}
 {
   LogDebug("Initialize goom: screenWidth = {}, screenHeight = {}.", screenWidth, screenHeight);
 
@@ -506,10 +527,10 @@ void GoomControl::GoomControlImpl::SetFontFile(const std::string& filename)
 {
   m_stats.SetFontFileUsed(filename);
 
-  m_text.SetFontFile(filename);
-  m_text.SetFontSize(FONT_SIZE);
-  m_text.SetOutlineWidth(4);
-  m_text.SetAlignment(TextDraw::TextAlignment::LEFT);
+  m_textDraw.SetFontFile(filename);
+  m_textDraw.SetFontSize(FONT_SIZE);
+  m_textDraw.SetOutlineWidth(4);
+  m_textDraw.SetAlignment(TextDraw::TextAlignment::LEFT);
 }
 
 auto GoomControl::GoomControlImpl::GetScreenWidth() const -> uint32_t
@@ -549,12 +570,12 @@ void GoomControl::GoomControlImpl::Start()
   m_stats.SetSeedStartValue(GetRandSeed());
 
   // TODO MAKE line a visual FX
-  m_gmline1.SetResourcesDirectory(m_resourcesDirectory);
-  m_gmline1.SetSmallImageBitmaps(m_smallBitmaps);
-  m_gmline1.Start();
-  m_gmline2.SetResourcesDirectory(m_resourcesDirectory);
-  m_gmline2.SetSmallImageBitmaps(m_smallBitmaps);
-  m_gmline2.Start();
+  m_goomLine1.SetResourcesDirectory(m_resourcesDirectory);
+  m_goomLine1.SetSmallImageBitmaps(m_smallBitmaps);
+  m_goomLine1.Start();
+  m_goomLine2.SetResourcesDirectory(m_resourcesDirectory);
+  m_goomLine2.SetSmallImageBitmaps(m_smallBitmaps);
+  m_goomLine2.Start();
 
   m_visualFx.goomDots_fx->SetSmallImageBitmaps(m_smallBitmaps);
   m_visualFx.ifs_fx->SetSmallImageBitmaps(m_smallBitmaps);
@@ -745,10 +766,10 @@ void GoomControl::GoomControlImpl::ChangeColorMaps()
         m_visualFx.ifs_fx->SetWeightedColorMaps(colorMatch.getColorMaps());
         break;
       case GoomEffect::LINES1:
-        m_gmline1.SetWeightedColorMaps(colorMatch.getColorMaps());
+        m_goomLine1.SetWeightedColorMaps(colorMatch.getColorMaps());
         break;
       case GoomEffect::LINES2:
-        m_gmline2.SetWeightedColorMaps(GetAllStandardMaps());
+        m_goomLine2.SetWeightedColorMaps(GetAllStandardMaps());
         break;
       case GoomEffect::STARS:
         m_visualFx.star_fx->SetWeightedColorMaps(colorMatch.getColorMaps());
@@ -790,8 +811,8 @@ void GoomControl::GoomControlImpl::Finish()
 
   m_goomInfo->GetSoundInfo().Log(logStatsValueFunc);
 
-  m_gmline1.Log(logStatsValueFunc);
-  m_gmline2.Log(logStatsValueFunc);
+  m_goomLine1.Log(logStatsValueFunc);
+  m_goomLine2.Log(logStatsValueFunc);
 
   for (auto& v : m_visualFx.list)
   {
@@ -1609,7 +1630,7 @@ void GoomControl::GoomControlImpl::StopLinesIfRequested()
 
 void GoomControl::GoomControlImpl::StopLinesRequest()
 {
-  if (!m_gmline1.CanResetDestLine() || !m_gmline2.CanResetDestLine())
+  if (!m_goomLine1.CanResetDestLine() || !m_goomLine2.CanResetDestLine())
   {
     return;
   }
@@ -1624,8 +1645,8 @@ void GoomControl::GoomControlImpl::StopLinesRequest()
   ChooseGoomLine(&param1, &param2, &couleur, &mode, &amplitude, 1);
   couleur = GetBlackLineColor();
 
-  m_gmline1.ResetDestLine(mode, param1, amplitude, couleur);
-  m_gmline2.ResetDestLine(mode, param2, amplitude, couleur);
+  m_goomLine1.ResetDestLine(mode, param1, amplitude, couleur);
+  m_goomLine2.ResetDestLine(mode, param2, amplitude, couleur);
   m_stats.DoSwitchLines();
   m_goomData.stopLines &= 0x0fff;
 }
@@ -1693,7 +1714,7 @@ void GoomControl::GoomControlImpl::ChooseGoomLine(float* param1,
   }
 
   m_stats.DoChangeLineColor();
-  *couleur = m_gmline1.GetRandomLineColor();
+  *couleur = m_goomLine1.GetRandomLineColor();
 }
 
 /* arret aleatore.. changement de mode de ligne..
@@ -1729,8 +1750,8 @@ void GoomControl::GoomControlImpl::StopRandomLineChangeMode()
     {
       m_goomData.lineMode = m_goomData.drawLinesDuration;
     }
-    else if (m_goomData.lineMode == m_goomData.drawLinesDuration && m_gmline1.CanResetDestLine() &&
-             m_gmline2.CanResetDestLine())
+    else if (m_goomData.lineMode == m_goomData.drawLinesDuration &&
+             m_goomLine1.CanResetDestLine() && m_goomLine2.CanResetDestLine())
     {
       m_goomData.lineMode--;
 
@@ -1741,7 +1762,7 @@ void GoomControl::GoomControlImpl::StopRandomLineChangeMode()
       LinesFx::LineType mode;
       ChooseGoomLine(&param1, &param2, &color1, &mode, &amplitude, m_goomData.stopLines);
 
-      Pixel color2 = m_gmline2.GetRandomLineColor();
+      Pixel color2 = m_goomLine2.GetRandomLineColor();
       if (m_goomData.stopLines)
       {
         m_goomData.stopLines--;
@@ -1753,8 +1774,8 @@ void GoomControl::GoomControlImpl::StopRandomLineChangeMode()
 
       LogDebug("goomData.lineMode = {} == {} = goomData.drawLinesDuration", m_goomData.lineMode,
                m_goomData.drawLinesDuration);
-      m_gmline1.ResetDestLine(mode, param1, amplitude, color1);
-      m_gmline2.ResetDestLine(mode, param2, amplitude, color2);
+      m_goomLine1.ResetDestLine(mode, param1, amplitude, color1);
+      m_goomLine2.ResetDestLine(mode, param2, amplitude, color2);
       m_stats.DoSwitchLines();
     }
   }
@@ -1775,12 +1796,12 @@ void GoomControl::GoomControlImpl::DisplayLines(const AudioSamples& soundData)
 
   m_stats.DoLines();
 
-  m_gmline2.SetPower(m_gmline1.GetPower());
+  m_goomLine2.SetPower(m_goomLine1.GetPower());
 
   const std::vector<int16_t>& audioSample = soundData.GetSample(0);
   const AudioSamples::MaxMinValues& soundMinMax = soundData.GetSampleMinMax(0);
-  m_gmline1.DrawLines(audioSample, soundMinMax);
-  m_gmline2.DrawLines(audioSample, soundMinMax);
+  m_goomLine1.DrawLines(audioSample, soundMinMax);
+  m_goomLine2.DrawLines(audioSample, soundMinMax);
   //  gmline2.drawLines(soundData.GetSample(1));
 
   constexpr uint32_t CHANGE_GOOM_LINE_CYCLES = 121;
@@ -1788,7 +1809,7 @@ void GoomControl::GoomControlImpl::DisplayLines(const AudioSamples& soundData)
   if (((m_cycle % CHANGE_GOOM_LINE_CYCLES) == 9) &&
       m_goomEvent.Happens(GoomEvent::CHANGE_GOOM_LINE) &&
       ((m_goomData.lineMode == 0) || (m_goomData.lineMode == m_goomData.drawLinesDuration)) &&
-      m_gmline1.CanResetDestLine() && m_gmline2.CanResetDestLine())
+      m_goomLine1.CanResetDestLine() && m_goomLine2.CanResetDestLine())
   {
     LogDebug("cycle % 121 etc.: goomInfo->cycle = {}, rand1_3 = ?", m_cycle);
     float param1 = 0.0;
@@ -1798,7 +1819,7 @@ void GoomControl::GoomControlImpl::DisplayLines(const AudioSamples& soundData)
     LinesFx::LineType mode;
     ChooseGoomLine(&param1, &param2, &color1, &mode, &amplitude, m_goomData.stopLines);
 
-    Pixel color2 = m_gmline2.GetRandomLineColor();
+    Pixel color2 = m_goomLine2.GetRandomLineColor();
     if (m_goomData.stopLines)
     {
       m_goomData.stopLines--;
@@ -1807,8 +1828,8 @@ void GoomControl::GoomControlImpl::DisplayLines(const AudioSamples& soundData)
         color2 = color1 = GetBlackLineColor();
       }
     }
-    m_gmline1.ResetDestLine(mode, param1, amplitude, color1);
-    m_gmline2.ResetDestLine(mode, param2, amplitude, color2);
+    m_goomLine1.ResetDestLine(mode, param1, amplitude, color1);
+    m_goomLine2.ResetDestLine(mode, param2, amplitude, color2);
   }
 }
 
@@ -1918,83 +1939,110 @@ void GoomControl::GoomControlImpl::DisplayText(const std::string& songTitle,
                                                const std::string& message,
                                                const float fps)
 {
-  UpdateMessage(message);
+  std::string msg{message};
 
   if (fps > 0.0)
   {
     const std::string text = std20::format("{.0f} fps", fps);
-    m_textDraw.SetBuffers({&m_imageBuffers.GetOutputBuff()});
-    DrawText(text, 10, 24, 0.0);
+    msg.insert(0, text + "\n");
   }
+
+  UpdateMessage(msg);
 
   if (!songTitle.empty())
   {
     m_stats.SetSongTitle(songTitle);
     m_goomData.title = songTitle;
-    m_goomData.timeOfTitleDisplay = GoomData::MAX_TITLE_DISPLAY_TIME;
-  }
 
-  if (m_goomData.timeOfTitleDisplay > 0)
-  {
-    if (m_goomData.timeOfTitleDisplay == GoomData::MAX_TITLE_DISPLAY_TIME)
-    {
-      m_textColorMap = &(RandomColorMaps{}.GetRandomColorMap(
-          UTILS::ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM));
-      m_textOutlineColorMap = &(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::PASTEL));
-    }
     const auto xPos = static_cast<int>(0.085F * static_cast<float>(GetScreenWidth()));
     const auto yPos = static_cast<int>(0.300F * static_cast<float>(GetScreenHeight()));
-    const auto timeGone =
-        static_cast<float>(GoomData::TIME_TO_SPACE_TITLE_DISPLAY - m_goomData.timeOfTitleDisplay);
-    const float spacing = std::max(0.0F, 0.056F * timeGone);
-    const int xExtra = static_cast<int>(
-        std::max(0.0F, 3.0F * timeGone / static_cast<float>(m_goomData.timeOfTitleDisplay)));
 
-    m_textDraw.SetBuffers({&m_imageBuffers.GetOutputBuff()});
-    DrawText(m_goomData.title, xPos + xExtra, yPos, spacing);
+    m_goomTextDisplayer = std::make_unique<GoomTextDisplayer>(xPos, yPos, &m_textDraw);
+  }
 
-    m_goomData.timeOfTitleDisplay--;
-
-    if (m_goomData.timeOfTitleDisplay < GoomData::TIME_TO_FADE_TITLE_DISPLAY)
+  if (m_goomTextDisplayer != nullptr && !m_goomTextDisplayer->IsFinished())
+  {
+    if (m_goomTextDisplayer->IsFinalPhase())
     {
-      m_textColorMap =
-          &(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::DIVERGING_BLACK));
-      m_textOutlineColorMap = &(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::PASTEL));
-      m_textDraw.SetBuffers({&m_imageBuffers.GetP1()});
-      DrawText(m_goomData.title, xPos, yPos, spacing);
+      m_goomTextOutput.SetBuffers({&m_imageBuffers.GetP1()});
     }
+    else
+    {
+      m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
+    }
+    m_goomTextDisplayer->Draw(m_goomData.title);
   }
 }
 
-void GoomControl::GoomControlImpl::DrawText(const std::string& str,
-                                            const int xPos,
-                                            const int yPos,
-                                            const float spacing)
+inline GoomControl::GoomControlImpl::GoomTextDisplayer::GoomTextDisplayer(const int32_t xStart,
+                                                                          const int32_t yStart,
+                                                                          TextDraw* const textDraw)
+  : m_xPos{xStart},
+    m_yPos{yStart},
+    m_timeLeftOfTitleDisplay{MAX_TEXT_DISPLAY_TIME},
+    m_textDraw{textDraw},
+    m_textColorMap{&(RandomColorMaps{}.GetRandomColorMap(
+        UTILS::ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM))},
+    m_textOutlineColorMap{&(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::PASTEL))}
 {
-  const float t = static_cast<float>(m_goomData.timeOfTitleDisplay) /
-                  static_cast<float>(GoomData::MAX_TITLE_DISPLAY_TIME);
+}
 
-  const Pixel fontColor = m_goomData.timeOfTitleDisplay > GoomData::TIME_TO_SPACE_TITLE_DISPLAY
-                              ? m_textColorMap->GetColor(0.5F)
-                              : m_textColorMap->GetColor(t);
-  const float tMix =
-      m_goomData.timeOfTitleDisplay > GoomData::TIME_TO_SPACE_TITLE_DISPLAY
-          ? 0.05F
-          : 0.5F * (2.0F - static_cast<float>(m_goomData.timeOfTitleDisplay) /
-                               static_cast<float>(GoomData::TIME_TO_SPACE_TITLE_DISPLAY));
-  const float brightness =
-      m_goomData.timeOfTitleDisplay > GoomData::TIME_TO_FADE_TITLE_DISPLAY
-          ? 1.1F
-          : 2.5F * 0.5F *
-                (2.0F - static_cast<float>(m_goomData.timeOfTitleDisplay) /
-                            static_cast<float>(GoomData::TIME_TO_FADE_TITLE_DISPLAY));
+inline auto GoomControl::GoomControlImpl::GoomTextDisplayer::IsInitialPhase() const -> bool
+{
+  return m_timeLeftOfTitleDisplay > TIME_TO_START_MIDDLE_PHASE;
+}
+
+inline auto GoomControl::GoomControlImpl::GoomTextDisplayer::IsMiddlePhase() const -> bool
+{
+  return TIME_TO_START_MIDDLE_PHASE >= m_timeLeftOfTitleDisplay &&
+         m_timeLeftOfTitleDisplay > TIME_TO_START_FINAL_PHASE;
+}
+
+inline auto GoomControl::GoomControlImpl::GoomTextDisplayer::IsFinalPhase() const -> bool
+{
+  return m_timeLeftOfTitleDisplay <= TIME_TO_START_FINAL_PHASE;
+}
+
+inline auto GoomControl::GoomControlImpl::GoomTextDisplayer::IsFinished() const -> bool
+{
+  return m_timeLeftOfTitleDisplay <= 0;
+}
+
+inline void GoomControl::GoomControlImpl::GoomTextDisplayer::Draw(const std::string& text)
+{
+  m_timeLeftOfTitleDisplay--;
+
+  if (m_timeLeftOfTitleDisplay == TIME_TO_START_FINAL_PHASE)
+  {
+    m_textColorMap = &(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::DIVERGING_BLACK));
+    m_textOutlineColorMap = &(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::PASTEL));
+  }
+
+  m_xPos += static_cast<int32_t>(std::round(GetXIncrement()));
+
+  DrawText(text);
+}
+
+void GoomControl::GoomControlImpl::GoomTextDisplayer::DrawText(const std::string& str)
+{
+  const float t =
+      static_cast<float>(m_timeLeftOfTitleDisplay) / static_cast<float>(MAX_TEXT_DISPLAY_TIME);
+
+  const Pixel fontColor = m_textColorMap->GetColor(t);
+  const float tMix = IsInitialPhase()
+                         ? 0.05F
+                         : 0.5F * (2.0F - static_cast<float>(m_timeLeftOfTitleDisplay) /
+                                              static_cast<float>(TIME_TO_START_MIDDLE_PHASE));
+  const float brightness = !IsFinalPhase()
+                               ? 1.0F
+                               : 2.5F * 0.5F *
+                                     (2.0F - static_cast<float>(m_timeLeftOfTitleDisplay) /
+                                                 static_cast<float>(TIME_TO_START_FINAL_PHASE));
 
   const Pixel outlineFontColor =
-      m_goomData.timeOfTitleDisplay > GoomData::TIME_TO_SPACE_TITLE_DISPLAY
-          ? Pixel::WHITE
-          : m_textOutlineColorMap->GetColor(t);
+      IsInitialPhase() ? Pixel::WHITE : m_textOutlineColorMap->GetColor(t);
   const IColorMap& charColorMap =
-      m_goomData.timeOfTitleDisplay > GoomData::TIME_TO_SPACE_TITLE_DISPLAY
+      IsInitialPhase() || IsMiddlePhase()
           ? RandomColorMaps{}.GetRandomColorMap()
           : RandomColorMaps{}.GetRandomColorMap(ColorMapGroup::DIVERGING_BLACK);
   const auto lastTextIndex = static_cast<float>(str.size() - 1);
@@ -2013,17 +2061,43 @@ void GoomControl::GoomControlImpl::DrawText(const std::string& str,
         return GetTextGammaCorrection(brightness, outlineFontColor);
       };
 
-  //  CALL UP TO PREPARE ONCE ONLY
-  m_text.SetText(str);
-  m_text.SetFontColorFunc(getFontColor);
-  m_text.SetOutlineFontColorFunc(getOutlineFontColor);
-  m_text.SetCharSpacing(spacing);
-  m_text.Prepare();
-  m_text.Draw(xPos, yPos);
+  const float spacing = GetCharSpacing();
+
+  m_textDraw->SetText(str);
+  m_textDraw->SetFontColorFunc(getFontColor);
+  m_textDraw->SetOutlineFontColorFunc(getOutlineFontColor);
+  m_textDraw->SetCharSpacing(spacing);
+  m_textDraw->Prepare();
+  m_textDraw->Draw(m_xPos, m_yPos);
 }
 
-inline auto GoomControl::GoomControlImpl::GetTextGammaCorrection(const float brightness,
-                                                                 const Pixel& color) const -> Pixel
+auto GoomControl::GoomControlImpl::GoomTextDisplayer::GetCharSpacing() const -> float
+{
+  if (IsInitialPhase())
+  {
+    return 0.0F;
+  }
+
+  const auto timeGone = static_cast<float>(TIME_TO_START_MIDDLE_PHASE - m_timeLeftOfTitleDisplay);
+  return 0.056F * timeGone;
+}
+
+auto GoomControl::GoomControlImpl::GoomTextDisplayer::GetXIncrement() const -> float
+{
+  if (IsInitialPhase())
+  {
+    return 0.0F;
+  }
+  if (IsMiddlePhase())
+  {
+    return 1.0F;
+  }
+
+  return 2.0F;
+}
+
+inline auto GoomControl::GoomControlImpl::GoomTextDisplayer::GetTextGammaCorrection(
+    const float brightness, const Pixel& color) const -> Pixel
 {
   // if constexpr (TEXT_GAMMA == 1.0F)
   if (TEXT_GAMMA == 1.0F)
@@ -2062,8 +2136,8 @@ void GoomControl::GoomControlImpl::UpdateMessage(const std::string& message)
           []([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] float x,
              [[maybe_unused]] float y, [[maybe_unused]] float width,
              [[maybe_unused]] float height) { return Pixel{0xfafafafaU}; };
-      m_updateMessageText = std::make_unique<TextDraw>(&m_textDraw);
-      m_updateMessageText->SetFontFile(m_text.GetFontFile());
+      m_updateMessageText = std::make_unique<TextDraw>(&m_goomTextOutput);
+      m_updateMessageText->SetFontFile(m_textDraw.GetFontFile());
       m_updateMessageText->SetFontSize(MSG_FONT_SIZE);
       m_updateMessageText->SetOutlineWidth(1);
       m_updateMessageText->SetAlignment(TextDraw::TextAlignment::LEFT);
@@ -2077,7 +2151,7 @@ void GoomControl::GoomControlImpl::UpdateMessage(const std::string& message)
                                          (m_messageData.numberOfLinesInMessage - i) * LINE_HEIGHT);
       m_updateMessageText->SetText(msgLines[i]);
       m_updateMessageText->Prepare();
-      m_textDraw.SetBuffers({&m_imageBuffers.GetOutputBuff()});
+      m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
       m_updateMessageText->Draw(50, yPos);
     }
     m_messageData.affiche--;
