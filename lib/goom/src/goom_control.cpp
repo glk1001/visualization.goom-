@@ -376,12 +376,13 @@ private:
     static constexpr int MAX_TEXT_DISPLAY_TIME = 200;
     static constexpr int TIME_TO_START_MIDDLE_PHASE = 100;
     static constexpr int TIME_TO_START_FINAL_PHASE = 50;
-    int32_t m_xPos;
-    int32_t m_yPos;
+    float m_xPos;
+    float m_yPos;
     int32_t m_timeLeftOfTitleDisplay;
     TextDraw* const m_textDraw;
     const IColorMap* m_textColorMap;
     const IColorMap* m_textOutlineColorMap;
+    const IColorMap* m_charColorMap;
     void DrawText(const std::string& str);
     auto GetCharSpacing() const -> float;
     auto GetXIncrement() const -> float;
@@ -1977,13 +1978,14 @@ void GoomControl::GoomControlImpl::DisplayText(const std::string& songTitle,
 inline GoomControl::GoomControlImpl::GoomTextDisplayer::GoomTextDisplayer(const int32_t xStart,
                                                                           const int32_t yStart,
                                                                           TextDraw* const textDraw)
-  : m_xPos{xStart},
-    m_yPos{yStart},
+  : m_xPos{static_cast<float>(xStart)},
+    m_yPos{static_cast<float>(yStart)},
     m_timeLeftOfTitleDisplay{MAX_TEXT_DISPLAY_TIME},
     m_textDraw{textDraw},
     m_textColorMap{&(RandomColorMaps{}.GetRandomColorMap(
         UTILS::ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM))},
-    m_textOutlineColorMap{&(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::PASTEL))}
+    m_textOutlineColorMap{&(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::PASTEL))},
+    m_charColorMap{m_textColorMap}
 {
 }
 
@@ -2014,11 +2016,20 @@ inline void GoomControl::GoomControlImpl::GoomTextDisplayer::Draw(const std::str
 
   if (m_timeLeftOfTitleDisplay == TIME_TO_START_FINAL_PHASE)
   {
-    m_textColorMap = &(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::DIVERGING_BLACK));
-    m_textOutlineColorMap = &(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::PASTEL));
+    //    m_textColorMap = &(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::DIVERGING_BLACK));
+    m_textColorMap = &(RandomColorMaps{}.GetRandomColorMap());
+    m_textOutlineColorMap = &(RandomColorMaps{}.GetRandomColorMap());
+    m_charColorMap = &(RandomColorMaps{}.GetRandomColorMap(ColorMapGroup::DIVERGING_BLACK));
+  }
+  if (m_timeLeftOfTitleDisplay < TIME_TO_START_FINAL_PHASE)
+  {
+    m_textDraw->SetFontSize(static_cast<int32_t>(
+        std::round(std::min(20.0F, static_cast<float>(TIME_TO_START_FINAL_PHASE) /
+                                  static_cast<float>(m_timeLeftOfTitleDisplay)) *
+                                  static_cast<float>(FONT_SIZE))));
   }
 
-  m_xPos += static_cast<int32_t>(std::round(GetXIncrement()));
+  m_xPos += GetXIncrement();
 
   DrawText(text);
 }
@@ -2041,25 +2052,46 @@ void GoomControl::GoomControlImpl::GoomTextDisplayer::DrawText(const std::string
 
   const Pixel outlineFontColor =
       IsInitialPhase() ? Pixel::WHITE : m_textOutlineColorMap->GetColor(t);
-  const IColorMap& charColorMap =
-      IsInitialPhase() || IsMiddlePhase()
-          ? RandomColorMaps{}.GetRandomColorMap()
-          : RandomColorMaps{}.GetRandomColorMap(ColorMapGroup::DIVERGING_BLACK);
-  const auto lastTextIndex = static_cast<float>(str.size() - 1);
+  const float tCharStep = 1.0F / static_cast<float>(str.length());
+  float tFontChar = 0.0F;
+  int32_t xPrev = 10000;
   const auto getFontColor = [&]([[maybe_unused]] const size_t textIndexOfChar,
                                 [[maybe_unused]] const int32_t x, [[maybe_unused]] const int32_t y,
                                 [[maybe_unused]] const int32_t width,
                                 [[maybe_unused]] const int32_t height) {
-    const float tChar = 1.0F - static_cast<float>(textIndexOfChar) / lastTextIndex;
-    const Pixel charColor = charColorMap.GetColor(tChar);
+//    LogInfo("textIndexOfChar = {}, x = {}, y = {}, xPrev = {}, tChar = {}", textIndexOfChar, x, y, xPrev, tChar);
+  const Pixel charColor = m_charColorMap->GetColor(tFontChar);
+    if (x < xPrev)
+    {
+      tFontChar += tCharStep;
+      if (tFontChar > 1.0F)
+      {
+        tFontChar = 0.0F;
+      }
+    }
+    xPrev = x;
     return GetTextGammaCorrection(brightness, IColorMap::GetColorMix(fontColor, charColor, tMix));
   };
+
+  xPrev = 10000;
+  float tOutlineFontChar = 0.0F;
   const auto getOutlineFontColor =
       [&]([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] const int32_t x,
           [[maybe_unused]] const int32_t y, [[maybe_unused]] const int32_t width,
           [[maybe_unused]] const int32_t height) {
-        return GetTextGammaCorrection(brightness, outlineFontColor);
-      };
+      if (x < xPrev)
+      {
+        tOutlineFontChar += tCharStep;
+        if (tOutlineFontChar > 1.0F)
+        {
+          tOutlineFontChar = 0.0F;
+        }
+      }
+      xPrev = x;
+      const Pixel charColor = m_textOutlineColorMap->GetColor(tOutlineFontChar);
+      return GetTextGammaCorrection(brightness,
+                                    IColorMap::GetColorMix(outlineFontColor, charColor, tMix));
+  };
 
   const float spacing = GetCharSpacing();
 
@@ -2068,7 +2100,8 @@ void GoomControl::GoomControlImpl::GoomTextDisplayer::DrawText(const std::string
   m_textDraw->SetOutlineFontColorFunc(getOutlineFontColor);
   m_textDraw->SetCharSpacing(spacing);
   m_textDraw->Prepare();
-  m_textDraw->Draw(m_xPos, m_yPos);
+  m_textDraw->Draw(static_cast<int32_t>(std::round(m_xPos)),
+                   static_cast<int32_t>(std::round(m_yPos)));
 }
 
 auto GoomControl::GoomControlImpl::GoomTextDisplayer::GetCharSpacing() const -> float
@@ -2086,14 +2119,14 @@ auto GoomControl::GoomControlImpl::GoomTextDisplayer::GetXIncrement() const -> f
 {
   if (IsInitialPhase())
   {
-    return 0.0F;
+    return 0.1F;
   }
   if (IsMiddlePhase())
   {
     return 1.0F;
   }
 
-  return 2.0F;
+  return 10.0F;
 }
 
 inline auto GoomControl::GoomControlImpl::GoomTextDisplayer::GetTextGammaCorrection(
