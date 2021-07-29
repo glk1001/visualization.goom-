@@ -177,8 +177,8 @@ private:
   int32_t m_fontSize = DEFAULT_FONT_SIZE;
   uint32_t m_horizontalResolution = 90;
   uint32_t m_verticalResolution = 90;
-  float m_outlineWidth = 3.0;
-  float m_charSpacing = 0.0;
+  float m_outlineWidth = 3.0F;
+  float m_charSpacing = 0.0F;
   std::string m_fontFilename{};
   std::vector<unsigned char> m_fontBuffer{};
   std::string m_theText{};
@@ -242,7 +242,8 @@ private:
 };
 #endif
 
-TextDraw::TextDraw(const IGoomDraw* const draw) noexcept : m_textDrawImpl{new TextDrawImpl{draw}}
+TextDraw::TextDraw(const IGoomDraw* const draw) noexcept
+  : m_textDrawImpl{std::make_unique<TextDrawImpl>(draw)}
 {
 }
 
