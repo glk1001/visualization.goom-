@@ -53,6 +53,12 @@ namespace GOOM::UTILS
 [[nodiscard]] auto GetRgbColorChannelLerp(int32_t c1, int32_t c2, int32_t intT) -> uint32_t;
 [[nodiscard]] auto GetRgbColorLerp(const Pixel& colA, const Pixel& colB, float t) -> Pixel;
 
+constexpr float INCREASED_CHROMA_FACTOR = 2.0F;
+constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
+[[nodiscard]] auto GetAlteredChroma(float lchYFactor, const Pixel& color) -> Pixel;
+[[nodiscard]] auto GetIncreasedChroma(const Pixel& color) -> Pixel;
+[[nodiscard]] auto GetDecreasedChroma(const Pixel& color) -> Pixel;
+
 [[nodiscard]] auto GetLuma(const Pixel& color) -> uint32_t;
 
 class GammaCorrection
@@ -391,6 +397,16 @@ inline auto GetLuma(const Pixel& color) -> uint32_t
   const uint32_t g = color.G();
   const uint32_t b = color.B();
   return (r + r + b + g + g + g) >> 3;
+}
+
+inline auto GetIncreasedChroma(const Pixel& color) -> Pixel
+{
+  return GetAlteredChroma(INCREASED_CHROMA_FACTOR, color);
+}
+
+inline auto GetDecreasedChroma(const Pixel& color) -> Pixel
+{
+  return GetAlteredChroma(DECREASED_CHROMA_FACTOR, color);
 }
 
 inline GammaCorrection::GammaCorrection(const float gamma,

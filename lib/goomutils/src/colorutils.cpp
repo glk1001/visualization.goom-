@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <vivid/vivid.h>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -60,6 +61,15 @@ auto GammaCorrection::GetCorrection(const float brightness, const Pixel& color) 
       /*.b = */ static_cast<uint8_t>((newB & 0xffffff00) ? 0xff : newB),
       /*.a = */ static_cast<uint8_t>((newA & 0xffffff00) ? 0xff : newA),
   }};
+}
+
+auto GetAlteredChroma(const float lchYFactor, const Pixel& color) -> Pixel
+{
+  const auto srgb = static_cast<vivid::srgb_t>(vivid::rgb::fromRgb32(color.Rgba()));
+  vivid::lch_t lch = vivid::lch::fromSrgb(srgb);
+  constexpr float MAX_LCH_Y = 140.0F;
+  lch.y = std::min(lch.y * lchYFactor, MAX_LCH_Y);
+  return Pixel{vivid::rgb32::fromRgb(vivid::srgb::fromLch(lch))};
 }
 
 inline auto Lighten(const uint8_t value, const float power) -> uint8_t
