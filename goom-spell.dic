@@ -1,8 +1,12 @@
 animera
 autre
 bleublanc
+coeff
+coeffs
 commencer
 construit
+coord
+coords
 couleur
 dest
 displ
@@ -16,7 +20,10 @@ l'on
 lerp
 ligne
 mets
+noisify
 srce
+stdnew
 stocke
 stockera
 terme
+vitesse
