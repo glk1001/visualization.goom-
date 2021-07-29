@@ -59,8 +59,8 @@ using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
 using UTILS::Weights;
 
-constexpr float MIN_MAX_NORMALIZED_PEAK = 50.0F;
-constexpr float MAX_MAX_NORMALIZED_PEAK = 150.0F;
+constexpr float MIN_MAX_NORMALIZED_PEAK = 100.0F;
+constexpr float MAX_MAX_NORMALIZED_PEAK = 200.0F;
 
 class LinesFx::LinesImpl
 {
