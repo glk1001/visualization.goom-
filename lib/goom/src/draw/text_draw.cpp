@@ -4,7 +4,7 @@
 #include "goom_graphic.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/logging_control.h"
-#undef NO_LOGGING
+//#undef NO_LOGGING
 #include "goomutils/logging.h"
 
 #include <codecvt>
@@ -348,6 +348,7 @@ inline auto TextDraw::TextDrawImpl::GetFontFile() const -> const std::string&
 void TextDraw::TextDrawImpl::SetFontFile(const std::string& filename)
 {
   m_fontFilename = filename;
+  LogInfo("Setting font file '{}'.", m_fontFilename);
 
   std::ifstream fontFile(m_fontFilename, std::ios::binary);
   if (!fontFile)
@@ -386,6 +387,7 @@ void TextDraw::TextDrawImpl::SetFontSize(const int32_t val)
   }
 
   m_fontSize = val;
+  LogInfo("Setting font size {}.", m_fontSize);
   if (m_face)
   {
     SetFaceFontSize();
@@ -418,6 +420,7 @@ void TextDraw::TextDrawImpl::SetText(const std::string& str)
   }
 
   m_theText = str;
+  LogInfo("Setting font text '{}'.", m_theText);
 }
 
 void TextDraw::TextDrawImpl::SetFontColorFunc(const FontColorFunc& f)
@@ -475,6 +478,8 @@ void TextDraw::TextDrawImpl::Prepare()
   m_textBoundingRect.xmax = xMax;
   m_textBoundingRect.ymin = yMin;
   m_textBoundingRect.ymax = yMax;
+  LogInfo("Font bounding rectangle: {}, {}, {}, {}.", m_textBoundingRect.xmin,
+          m_textBoundingRect.xmax, m_textBoundingRect.ymin, m_textBoundingRect.ymax);
 }
 
 auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int

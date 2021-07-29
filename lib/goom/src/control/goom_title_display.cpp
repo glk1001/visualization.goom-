@@ -2,6 +2,7 @@
 
 #include "../draw/text_draw.h"
 #include "goom_config.h"
+#include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
@@ -24,10 +25,46 @@ namespace GOOM::CONTROL
 using DRAW::TextDraw;
 using UTILS::ColorMapGroup;
 using UTILS::GetBrighterColor;
+using UTILS::GetRandInRange;
 using UTILS::IColorMap;
 using UTILS::RandomColorMaps;
 
-constexpr uint32_t FONT_SIZE = 35;
+constexpr float FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT = 0.05F;
+constexpr int32_t OUTLINE_FONT_WIDTH = 4;
+
+// To normalize: turn on logging in TextDraw, get width of prepared text for a
+// sample text for each font, then normalize with 'verdana' as 1.0.
+//
+//@formatter:off
+// clang-format off
+const std::vector<GoomTitleDisplay::FontInfo> GoomTitleDisplay::s_fontInfo = {
+    {"AeroviasBrasilNF.ttf", 1.34F},
+    {"AlexBrush-Regular.ttf", 1.25F},
+    {"AvenueX-Regular.otf", 1.01F},
+    {"CelticHand.ttf", 0.99F},
+    {"CheapSign.ttf", 1.26F},
+    {"EatAtJoes.ttf", 0.90F},
+    {"GreatVibes-Regular.ttf", 1.29F},
+    {"KellsFLF.ttf", 1.23F},
+    {"Rubik-Regular.ttf", 1.1F},
+    {"verdana.ttf", 1.0F},
+};
+//@formatter:on
+// clang-format on
+
+auto GoomTitleDisplay::GetSelectedFontPath() const -> std::string
+{
+  return m_fontDirectory + PATH_SEP + s_fontInfo.at(m_fontInfoIndex).fontFilename;
+}
+
+auto GoomTitleDisplay::GetSelectedFontSize() const -> int32_t
+{
+  const FontInfo& fontInfo = s_fontInfo.at(m_fontInfoIndex);
+  const auto maxFontSize =
+      static_cast<int32_t>(FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT *
+                           static_cast<float>(m_screenHeight) * fontInfo.fontSizeNormalizeFactor);
+  return maxFontSize;
+}
 
 GoomTitleDisplay::GoomTitleDisplay(const int32_t xStart,
                                    const int32_t yStart,
@@ -36,15 +73,17 @@ GoomTitleDisplay::GoomTitleDisplay(const int32_t xStart,
   : m_xPos{static_cast<float>(xStart)},
     m_yPos{static_cast<float>(yStart)},
     m_textDraw{std::make_unique<TextDraw>(draw)},
+    m_screenHeight{draw->GetScreenHeight()},
     m_fontDirectory{fontDirectory},
+    m_fontInfoIndex{GetRandInRange(0U, static_cast<uint32_t>(s_fontInfo.size()))},
     m_textColorMap{&(RandomColorMaps{}.GetRandomColorMap(
         UTILS::ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM))},
     m_textOutlineColorMap{&(RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::PASTEL))},
     m_charColorMap{m_textColorMap}
 {
-  m_textDraw->SetFontFile(m_fontDirectory + PATH_SEP + "verdana.ttf");
-  m_textDraw->SetFontSize(FONT_SIZE);
-  m_textDraw->SetOutlineWidth(4);
+  m_textDraw->SetFontFile(GetSelectedFontPath());
+  m_textDraw->SetFontSize(GetSelectedFontSize());
+  m_textDraw->SetOutlineWidth(OUTLINE_FONT_WIDTH);
   m_textDraw->SetAlignment(TextDraw::TextAlignment::LEFT);
 }
 
@@ -64,9 +103,9 @@ void GoomTitleDisplay::Draw(const std::string& title)
   if (m_timeLeftOfTitleDisplay < TIME_TO_START_FINAL_PHASE)
   {
     m_textDraw->SetFontSize(static_cast<int32_t>(
-        std::round(std::min(20.0F, static_cast<float>(TIME_TO_START_FINAL_PHASE) /
+        std::round(std::min(15.0F, static_cast<float>(TIME_TO_START_FINAL_PHASE) /
                                        static_cast<float>(m_timeLeftOfTitleDisplay)) *
-                   static_cast<float>(FONT_SIZE))));
+                   static_cast<float>(GetSelectedFontSize()))));
   }
 
   m_xPos += GetXIncrement();

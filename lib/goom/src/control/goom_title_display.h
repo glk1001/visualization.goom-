@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace GOOM
 {
@@ -55,7 +56,17 @@ private:
   float m_yPos;
   int32_t m_timeLeftOfTitleDisplay = MAX_TEXT_DISPLAY_TIME;
   const std::unique_ptr<DRAW::TextDraw> m_textDraw;
+  const uint32_t m_screenHeight;
   const std::string m_fontDirectory;
+  struct FontInfo
+  {
+    std::string fontFilename;
+    float fontSizeNormalizeFactor;
+  };
+  static const std::vector<FontInfo> s_fontInfo;
+  const size_t m_fontInfoIndex;
+  [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
+  [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;
   const UTILS::IColorMap* m_textColorMap;
   const UTILS::IColorMap* m_textOutlineColorMap;
   const UTILS::IColorMap* m_charColorMap;
