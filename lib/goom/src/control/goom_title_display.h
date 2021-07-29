@@ -50,6 +50,7 @@ private:
   static constexpr int MAX_TEXT_DISPLAY_TIME = 200;
   static constexpr int TIME_TO_START_MIDDLE_PHASE = 100;
   static constexpr int TIME_TO_START_FINAL_PHASE = 50;
+  static constexpr int32_t TIME_TO_START_FINAL_FADE = 15;
   float m_xPos;
   float m_yPos;
   int32_t m_timeLeftOfTitleDisplay = MAX_TEXT_DISPLAY_TIME;
@@ -62,6 +63,7 @@ private:
   auto GetCharSpacing() const -> float;
   auto GetXIncrement() const -> float;
   auto GetYIncrement() const -> float;
+  auto GetBrightness() const -> float;
   static constexpr float TEXT_GAMMA = 1.0F / 1.0F;
   static constexpr float TEXT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   UTILS::GammaCorrection m_textGammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};

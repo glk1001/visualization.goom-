@@ -75,6 +75,24 @@ void GoomTitleDisplay::Draw(const std::string& title)
   DrawText(title);
 }
 
+inline auto GoomTitleDisplay::GetBrightness() const -> float
+{
+  if (IsInitialPhase() || IsMiddlePhase())
+  {
+    return 1.0F;
+  }
+
+  if (m_timeLeftOfTitleDisplay > TIME_TO_START_FINAL_FADE)
+  {
+    return 2.5F * 0.5F *
+           (2.0F - static_cast<float>(m_timeLeftOfTitleDisplay) /
+                       static_cast<float>(TIME_TO_START_FINAL_PHASE));
+  }
+
+  return static_cast<float>(m_timeLeftOfTitleDisplay) /
+  static_cast<float>(TIME_TO_START_FINAL_FADE);
+}
+
 void GoomTitleDisplay::DrawText(const std::string& str)
 {
   const float t =
