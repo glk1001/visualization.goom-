@@ -17,16 +17,16 @@ namespace GOOM::DRAW
 {
 #endif
 
-class GoomDrawBuffer : public IGoomDraw
+class GoomDrawToBuffer : public IGoomDraw
 {
 public:
-  GoomDrawBuffer() noexcept = delete;
-  GoomDrawBuffer(uint32_t screenWidth, uint32_t screenHeight);
-  GoomDrawBuffer(const GoomDrawBuffer&) noexcept = delete;
-  GoomDrawBuffer(GoomDrawBuffer&&) noexcept = delete;
-  ~GoomDrawBuffer() noexcept override;
-  auto operator=(const GoomDrawBuffer&) -> GoomDrawBuffer& = delete;
-  auto operator=(GoomDrawBuffer&&) -> GoomDrawBuffer& = delete;
+  GoomDrawToBuffer() noexcept = delete;
+  GoomDrawToBuffer(uint32_t screenWidth, uint32_t screenHeight);
+  GoomDrawToBuffer(const GoomDrawToBuffer&) noexcept = delete;
+  GoomDrawToBuffer(GoomDrawToBuffer&&) noexcept = delete;
+  ~GoomDrawToBuffer() noexcept override;
+  auto operator=(const GoomDrawToBuffer&) -> GoomDrawToBuffer& = delete;
+  auto operator=(GoomDrawToBuffer&&) -> GoomDrawToBuffer& = delete;
 
   void SetBuffers(const std::vector<PixelBuffer*>& buffs);
 
@@ -43,7 +43,7 @@ private:
                          bool allowOverexposed);
 };
 
-inline void GoomDrawBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
+inline void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
 {
   m_multipleBuffers = buffs;
 }

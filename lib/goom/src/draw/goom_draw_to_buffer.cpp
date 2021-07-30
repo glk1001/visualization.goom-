@@ -1,4 +1,4 @@
-#include "goom_draw_buffer.h"
+#include "goom_draw_to_buffer.h"
 
 #include "draw_methods.h"
 #include "goom_graphic.h"
@@ -21,7 +21,7 @@ namespace GOOM::DRAW
 using UTILS::GetBrighterColorInt;
 using UTILS::GetColorAdd;
 
-GoomDrawBuffer::GoomDrawBuffer(const uint32_t screenWidth, const uint32_t screenHeight)
+GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t screenHeight)
   : IGoomDraw{screenWidth, screenHeight,
               [&](int32_t x,
                   int32_t y,
@@ -33,18 +33,18 @@ GoomDrawBuffer::GoomDrawBuffer(const uint32_t screenWidth, const uint32_t screen
 {
 }
 
-GoomDrawBuffer::~GoomDrawBuffer() noexcept = default;
+GoomDrawToBuffer::~GoomDrawToBuffer() noexcept = default;
 
-auto GoomDrawBuffer::GetPixel(const int32_t x, const int32_t y) const -> Pixel
+auto GoomDrawToBuffer::GetPixel(const int32_t x, const int32_t y) const -> Pixel
 {
   assert(!m_multipleBuffers.empty());
   assert(m_multipleBuffers[0] != nullptr);
   return (*m_multipleBuffers[0])(static_cast<size_t>(x), static_cast<size_t>(y));
 }
 
-void GoomDrawBuffer::DrawPixelsUnblended(const int32_t x,
-                                         const int32_t y,
-                                         const std::vector<Pixel>& colors) const
+void GoomDrawToBuffer::DrawPixelsUnblended(const int32_t x,
+                                           const int32_t y,
+                                           const std::vector<Pixel>& colors) const
 {
   for (size_t i = 0; i < m_multipleBuffers.size(); i++)
   {
@@ -52,12 +52,12 @@ void GoomDrawBuffer::DrawPixelsUnblended(const int32_t x,
   }
 }
 
-void GoomDrawBuffer::DrawPixels(const std::vector<PixelBuffer*>& buffs,
-                                const int32_t x,
-                                const int32_t y,
-                                const std::vector<Pixel>& colors,
-                                const uint32_t intBuffIntensity,
-                                const bool allowOverexposed)
+void GoomDrawToBuffer::DrawPixels(const std::vector<PixelBuffer*>& buffs,
+                                  const int32_t x,
+                                  const int32_t y,
+                                  const std::vector<Pixel>& colors,
+                                  const uint32_t intBuffIntensity,
+                                  const bool allowOverexposed)
 {
   for (size_t i = 0; i < colors.size(); i++)
   {

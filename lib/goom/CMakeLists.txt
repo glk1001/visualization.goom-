@@ -24,7 +24,8 @@ add_library(goom
         src/control/goom_states.cpp
         src/control/goom_title_display.cpp
         src/convolve_fx.cpp
-        src/draw/goom_draw_buffer.cpp
+        src/draw/goom_draw_to_buffer.cpp
+        src/draw/goom_draw_to_container.cpp
         src/draw/text_draw.cpp
         src/draw_methods.cpp
         src/filters/filter_buffers.cpp

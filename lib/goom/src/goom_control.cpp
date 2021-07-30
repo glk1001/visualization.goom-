@@ -20,7 +20,7 @@
 #include "control/goom_states.h"
 #include "control/goom_title_display.h"
 #include "convolve_fx.h"
-#include "draw/goom_draw_buffer.h"
+#include "draw/goom_draw_to_buffer.h"
 #include "draw/text_draw.h"
 #include "filter_data.h"
 #include "filters.h"
@@ -81,7 +81,7 @@ using CONTROL::GoomImageBuffers;
 using CONTROL::GoomLock;
 using CONTROL::GoomStates;
 using CONTROL::GoomTitleDisplay;
-using DRAW::GoomDrawBuffer;
+using DRAW::GoomDrawToBuffer;
 using DRAW::TextDraw;
 using FILTERS::FilterControl;
 using FILTERS::FilterZoomVector;
@@ -225,7 +225,7 @@ public:
 
 private:
   Parallel m_parallel{-1}; // max cores - 1
-  GoomDrawBuffer m_multiBufferDraw;
+  GoomDrawToBuffer m_multiBufferDraw;
   const std::shared_ptr<WritablePluginInfo> m_goomInfo;
   GoomImageBuffers m_imageBuffers;
   GoomVisualFx m_visualFx;
@@ -353,7 +353,7 @@ private:
   void UpdateMessages(const std::string& messages);
 
   std::unique_ptr<GoomTitleDisplay> m_goomTitleDisplay{};
-  GoomDrawBuffer m_goomTextOutput;
+  GoomDrawToBuffer m_goomTextOutput;
   std::unique_ptr<TextDraw> m_updateMessagesDisplay{};
   std::string m_updateMessagesFontFile{};
   auto GetFontDirectory() const;

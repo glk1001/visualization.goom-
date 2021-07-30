@@ -1,5 +1,6 @@
 #include "tube_fx.h"
 
+#include "draw/goom_draw_to_container.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -25,6 +26,7 @@
 namespace GOOM
 {
 
+using DRAW::GoomDrawToContainer;
 using TUBES::PathParams;
 using TUBES::Tube;
 using UTILS::GetRandInRange;
@@ -123,6 +125,7 @@ public:
 
 private:
   const IGoomDraw* const m_draw;
+  GoomDrawToContainer m_drawToContainer;
   std::shared_ptr<const PluginInfo> m_goomInfo{};
   std::string m_resourcesDirectory{};
   const SmallImageBitmaps* m_smallBitmaps{};
@@ -153,8 +156,9 @@ private:
   void InitTubes();
   void InitPaths();
   void ResetTubes();
-  void Update();
+  void DoUpdates();
   void DrawShapes();
+  void DrawPreviousShapes();
   void UpdateColorMaps();
   void UpdateSpeeds();
   void ChangeSpeedForLowerVolumes(Tube& tube);
@@ -250,7 +254,8 @@ void TubeFx::ApplyMultiple()
 TubeFx::TubeFxImpl::TubeFxImpl(const IGoomDraw* const draw,
                                const std::shared_ptr<const PluginInfo>& info) noexcept
   : m_draw{draw},
-    m_goomInfo(info),
+    m_drawToContainer{draw->GetScreenWidth(), draw->GetScreenHeight()},
+    m_goomInfo{info},
     m_middlePos{0, 0},
     m_allStayInCentreTimer{1},
     m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME},
@@ -388,12 +393,12 @@ void TubeFx::TubeFxImpl::ResetTubes()
 
 void TubeFx::TubeFxImpl::ApplyMultiple()
 {
-  Update();
-
+  DoUpdates();
+  DrawPreviousShapes();
   DrawShapes();
 }
 
-void TubeFx::TubeFxImpl::Update()
+void TubeFx::TubeFxImpl::DoUpdates()
 {
   m_updateNum++;
 
@@ -482,6 +487,16 @@ void TubeFx::TubeFxImpl::DrawShapes()
   }
 
   IncrementAllJoinCentreT();
+}
+
+void TubeFx::TubeFxImpl::DrawPreviousShapes()
+{
+  for (const auto& coords : m_drawToContainer.GetChangedCoords())
+  {
+    const Pixel color = m_drawToContainer.GetPixel(coords.x, coords.y);
+    m_draw->DrawPixels(coords.x, coords.y, {color, color});
+  }
+  m_drawToContainer.ClearChangedCoords();
 }
 
 auto TubeFx::TubeFxImpl::GetTransformedCentrePoint(const uint32_t tubeId,
@@ -597,6 +612,7 @@ void TubeFx::TubeFxImpl::DrawLine(const int x1,
                                   const uint8_t thickness)
 {
   m_draw->Line(x1, y1, x2, y2, colors, thickness);
+  m_drawToContainer.Line(x1, y1, x2, y2, colors, thickness);
 }
 
 void TubeFx::TubeFxImpl::DrawCircle(const int x,
@@ -606,6 +622,7 @@ void TubeFx::TubeFxImpl::DrawCircle(const int x,
                                     [[maybe_unused]] const uint8_t thickness)
 {
   m_draw->Circle(x, y, radius, colors);
+  m_drawToContainer.Circle(x, y, radius, colors);
 }
 
 void TubeFx::TubeFxImpl::DrawImage(const int x,
@@ -620,6 +637,7 @@ void TubeFx::TubeFxImpl::DrawImage(const int x,
   const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                              [[maybe_unused]] const Pixel& b) -> Pixel { return colors[1]; };
   m_draw->Bitmap(x, y, imageBitmap, {getColor1, getColor2}, m_allowOverexposed);
+  m_drawToContainer.Bitmap(x, y, imageBitmap, {getColor1, getColor2}, m_allowOverexposed);
 }
 
 } // namespace GOOM
