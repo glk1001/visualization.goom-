@@ -29,6 +29,7 @@ namespace GOOM
 using DRAW::GoomDrawToContainer;
 using TUBES::PathParams;
 using TUBES::Tube;
+using UTILS::GetBrighterColor;
 using UTILS::GetRandInRange;
 using UTILS::ImageBitmap;
 using UTILS::ProbabilityOf;
@@ -491,12 +492,18 @@ void TubeFx::TubeFxImpl::DrawShapes()
 
 void TubeFx::TubeFxImpl::DrawPreviousShapes()
 {
-  for (const auto& coords : m_drawToContainer.GetChangedCoords())
+    for (const auto& coords : m_drawToContainer.GetChangedCoords())
+    {
+      const std::vector<Pixel>& colors = m_drawToContainer.GetPixels(coords.x, coords.y);
+      const int32_t x = coords.x + GetRandInRange(-10, 11);
+      const int32_t y = coords.y + GetRandInRange(-10, 11);
+      m_draw->DrawPixels(x, y,
+                         {GetBrighterColor(0.1F, colors[0], m_allowOverexposed), Pixel::BLACK});
+    }
+  if (m_updateNum % 5 == 0)
   {
-    const Pixel color = m_drawToContainer.GetPixel(coords.x, coords.y);
-    m_draw->DrawPixels(coords.x, coords.y, {color, color});
+    m_drawToContainer.ClearChangedCoords();
   }
-  m_drawToContainer.ClearChangedCoords();
 }
 
 auto TubeFx::TubeFxImpl::GetTransformedCentrePoint(const uint32_t tubeId,

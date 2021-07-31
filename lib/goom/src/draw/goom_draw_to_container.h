@@ -31,6 +31,8 @@ public:
   auto GetPixel(int32_t x, int32_t y) const -> Pixel override;
   void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) const override;
 
+  auto GetPixels(int32_t x, int32_t y) const -> const std::vector<Pixel>&;
+
   struct Coords
   {
     int32_t x;

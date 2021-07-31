@@ -44,6 +44,11 @@ auto GoomDrawToContainer::GetPixel(const int32_t x, const int32_t y) const -> Pi
   return m_coordList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x))[0];
 }
 
+auto GoomDrawToContainer::GetPixels(int32_t x, int32_t y) const -> const std::vector<Pixel>&
+{
+  return m_coordList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
+}
+
 void GoomDrawToContainer::DrawPixelsUnblended(
     [[maybe_unused]] const int32_t x,
     [[maybe_unused]] const int32_t y,
