@@ -229,16 +229,20 @@ private:
   const std::shared_ptr<WritablePluginInfo> m_goomInfo;
   GoomImageBuffers m_imageBuffers;
   GoomVisualFx m_visualFx;
-  GoomControlStats m_stats{};
   FilterZoomVector m_zoomVector{};
   GoomStates m_states{};
   GoomEvents m_goomEvent{};
+  uint32_t m_updateNum = 0;
   uint32_t m_timeInState = 0;
   uint32_t m_timeWithFilter = 0;
   uint32_t m_cycle = 0;
   FilterControl m_filterControl;
   std::unordered_set<GoomDrawable> m_curGDrawables{};
   GoomData m_goomData{};
+
+  GoomControlStats m_stats{};
+  static constexpr uint32_t MIN_UPDATES_TO_LOG = 6;
+  void LogStats();
 
   std::string m_resourcesDirectory{};
   const SmallImageBitmaps m_smallBitmaps;
@@ -512,6 +516,8 @@ void GoomControl::GoomControlImpl::Start()
     throw std::logic_error("Cannot start Goom - resource directory not set.");
   }
 
+  m_updateNum = 0;
+
   ChangeColorMaps();
 
   m_updateMessagesFontFile = GetFontDirectory() + "verdana.ttf";
@@ -756,6 +762,16 @@ void GoomControl::GoomControlImpl::Finish()
     v->Finish();
   }
 
+  if (m_updateNum >= MIN_UPDATES_TO_LOG)
+  {
+    LogStats();
+  }
+
+  m_updateNum = 0;
+}
+
+void GoomControl::GoomControlImpl::LogStats()
+{
   m_stats.SetStateLastValue(m_states.GetCurrentStateIndex());
   m_stats.SetSeedLastValue(GetRandSeed());
   m_stats.SetNumThreadsUsedValue(m_parallel.GetNumThreadsUsed());
@@ -782,12 +798,11 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
                                           const std::string& songTitle,
                                           const std::string& message)
 {
-  // LogInfo("Begin");
-
   //  CALLGRIND_START_INSTRUMENTATION;
 
   m_stats.UpdateChange(m_states.GetCurrentStateIndex(), m_filterControl.GetFilterSettings().mode);
 
+  m_updateNum++;
   m_timeInState++;
   m_timeWithFilter++;
   m_convolveAllowOverexposed.Increment();
@@ -832,8 +847,6 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
 
   //  CALLGRIND_STOP_INSTRUMENTATION;
   //  CALLGRIND_DUMP_STATS;
-
-  // LogInfo("End");
 }
 
 void GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData) const

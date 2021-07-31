@@ -10,11 +10,13 @@ construit
 coord
 coords
 couleur
+deinit
 dest
 displ
 effet
 flatline
 goom
+goom's
 horitontale
 hypercos
 Joes
@@ -25,9 +27,12 @@ lerp
 ligne
 mets
 noisify
+pbos
+spdx
 srce
 stdnew
 stocke
 stockera
 terme
+texel
 vitesse

@@ -57,9 +57,12 @@ protected:
   [[nodiscard]] auto GetGoomControl() const -> const GOOM::GoomControl& { return *m_goomControl; };
   [[nodiscard]] auto GetGoomControl() -> GOOM::GoomControl& { return *m_goomControl; };
   [[nodiscard]] auto AudioBufferLen() const -> size_t { return m_audioBufferLen; };
-  [[nodiscard]] auto TexWidth() const -> int { return m_texWidth; };
-  [[nodiscard]] auto TexHeight() const -> int { return m_texHeight; };
-  [[nodiscard]] auto GoomBufferLen() const -> int { return m_goomBufferLen; };
+  [[nodiscard]] auto TexWidth() const -> int32_t { return m_texWidth; };
+  [[nodiscard]] auto TexHeight() const -> int32_t { return m_texHeight; };
+  [[nodiscard]] auto GoomBufferLen() const -> int32_t
+  {
+    return static_cast<int32_t>(m_goomBufferLen);
+  };
   [[nodiscard]] auto CurrentSongName() const -> const std::string& { return m_currentSongName; };
   [[nodiscard]] auto NumChannels() const -> size_t { return m_channels; };
   virtual void NoActiveBufferAvailable() {}
@@ -71,6 +74,10 @@ protected:
                                 std::shared_ptr<GOOM::PixelBuffer>& pixels);
 
 private:
+  [[nodiscard]] auto InitGoomController() -> bool;
+  void DeinitGoomController();
+  void StartGoomProcessBuffersThread();
+  void StopGoomProcessBuffersThread();
   void Process();
   [[nodiscard]] auto InitGlObjects() -> bool;
   void InitQuadData();
@@ -82,6 +89,8 @@ private:
   const size_t m_goomBufferLen;
   const size_t m_goomBufferSize;
   size_t m_audioBufferLen{};
+  uint32_t m_audioBuffNum = 0;
+  static constexpr uint32_t MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6;
 
   const int m_windowWidth;
   const int m_windowHeight;
@@ -103,13 +112,13 @@ private:
 
 #ifdef HAS_GL
   bool m_usePixelBufferObjects =
-      false; // 'true' is supposed to give better performance but it's not obvious.
+      false; // 'true' is supposed to give better performance, but it's not obvious.
   // And when 'true', there may be issues with screen refreshes when changing windows in Kodi.
 #endif
   GLuint m_textureId = 0;
-  const static int g_numPbos = 3;
-  GLuint m_pboIds[g_numPbos]{};
-  unsigned char* m_pboGoomBuffer[g_numPbos]{};
+  const static int G_NUM_PBOS = 3;
+  GLuint m_pboIds[G_NUM_PBOS]{};
+  unsigned char* m_pboGoomBuffer[G_NUM_PBOS]{};
   int m_currentPboIndex{};
   glm::mat4 m_projModelMatrix{};
   GLuint m_vaoObject = 0;
@@ -127,7 +136,7 @@ private:
   CircularBuffer<float> m_buffer{CIRCULAR_BUFFER_SIZE};
 
   // Goom process thread handles
-  bool m_threadExit = false;
+  bool m_workerThreadExit = false;
   std::thread m_workerThread{};
   std::mutex m_mutex{};
   std::condition_variable m_wait{};
