@@ -154,7 +154,9 @@ public:
   void SetAlignment(TextAlignment a);
   [[nodiscard]] auto GetFontFile() const -> const std::string&;
   void SetFontFile(const std::string& filename);
+  auto GetFontSize() const -> int32_t;
   void SetFontSize(int32_t val);
+  auto GetLineSpacing() const -> int32_t;
   void SetOutlineWidth(float val);
   void SetCharSpacing(float val);
   void SetText(const std::string& str);
@@ -264,9 +266,19 @@ void TextDraw::SetFontFile(const std::string& filename)
   m_textDrawImpl->SetFontFile(filename);
 }
 
+auto TextDraw::GetFontSize() const -> int32_t
+{
+  return m_textDrawImpl->GetFontSize();
+}
+
 void TextDraw::SetFontSize(const int32_t val)
 {
   m_textDrawImpl->SetFontSize(val);
+}
+
+auto TextDraw::GetLineSpacing() const -> int32_t
+{
+  return m_textDrawImpl->GetLineSpacing();
 }
 
 void TextDraw::SetOutlineWidth(const float val)
@@ -379,6 +391,11 @@ void TextDraw::TextDrawImpl::SetFaceFontSize()
   }
 }
 
+auto TextDraw::TextDrawImpl::GetFontSize() const -> int32_t
+{
+  return m_fontSize;
+}
+
 void TextDraw::TextDrawImpl::SetFontSize(const int32_t val)
 {
   if (val <= 0)
@@ -392,6 +409,11 @@ void TextDraw::TextDrawImpl::SetFontSize(const int32_t val)
   {
     SetFaceFontSize();
   }
+}
+
+inline auto TextDraw::TextDrawImpl::GetLineSpacing() const -> int32_t
+{
+  return m_face->height / 64;
 }
 
 void TextDraw::TextDrawImpl::SetOutlineWidth(const float val)

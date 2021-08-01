@@ -70,11 +70,11 @@ private:
   const UTILS::IColorMap* m_textColorMap;
   const UTILS::IColorMap* m_textOutlineColorMap;
   const UTILS::IColorMap* m_charColorMap;
-  void DrawText(const std::string& str);
+  void DrawText(const std::string& text);
+  static auto GetTextLines(const std::string& text) -> std::vector<std::string>;
   auto GetCharSpacing() const -> float;
   auto GetXIncrement() const -> float;
   auto GetYIncrement() const -> float;
-  auto GetBrightness() const -> float;
   static constexpr float TEXT_GAMMA = 1.0F / 1.0F;
   static constexpr float TEXT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   UTILS::GammaCorrection m_textGammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};
