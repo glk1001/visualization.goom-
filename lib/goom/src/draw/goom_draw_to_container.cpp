@@ -4,6 +4,7 @@
 #include "goomutils/colorutils.h"
 
 #undef NDEBUG
+#include <cassert>
 #include <cstdint>
 #include <vector>
 
@@ -64,9 +65,10 @@ void GoomDrawToContainer::DrawPixels(const int32_t x,
                                      const bool allowOverexposed)
 {
   Colors& coordColors = m_coordList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
-  for (size_t i = 0; i < coordColors.size(); i++)
+  assert(colors.size() <= coordColors.size());
+  for (size_t i = 0; i < colors.size(); i++)
   {
-    coordColors[i] = GetBrighterColorInt(intBuffIntensity, colors[i], allowOverexposed);
+    coordColors.at(i) = GetBrighterColorInt(intBuffIntensity, colors[i], allowOverexposed);
   }
   m_changedCoordsList.emplace_back(Coords{x, y}); // TODO could be duplicates
 }
