@@ -323,47 +323,49 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetMixedColor(const NeighborhoodCoeffA
                                                         const NeighborhoodPixelArray& colors) const
     -> Pixel
 {
-  if (coeffs.intVal == 0)
+  if (coeffs.isZero)
   {
     return Pixel::BLACK;
   }
 
-  uint32_t newR = 0;
-  uint32_t newG = 0;
-  uint32_t newB = 0;
+  uint32_t multR = 0;
+  uint32_t multG = 0;
+  uint32_t multB = 0;
   for (size_t i = 0; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; i++)
   {
-    const auto coeff = static_cast<uint32_t>(coeffs.c[i]);
+    const uint32_t& coeff = coeffs.c[i];
     const auto& color = colors[i];
-    newR += static_cast<uint32_t>(color.R()) * coeff;
-    newG += static_cast<uint32_t>(color.G()) * coeff;
-    newB += static_cast<uint32_t>(color.B()) * coeff;
+    multR += static_cast<uint32_t>(color.R()) * coeff;
+    multG += static_cast<uint32_t>(color.G()) * coeff;
+    multB += static_cast<uint32_t>(color.B()) * coeff;
   }
-  newR >>= 8;
-  newG >>= 8;
-  newB >>= 8;
+  uint32_t newR = multR >> 8;
+  uint32_t newG = multG >> 8;
+  uint32_t newB = multB >> 8;
 
+  constexpr uint32_t MAX_COL = channel_limits<uint32_t>::max();
+  constexpr uint8_t MAX_ALPHA = 0xFF;
   if (m_buffSettings.allowOverexposed)
   {
-    return Pixel{{/*.r = */ static_cast<uint8_t>((newR & 0xffffff00) ? 0xff : newR),
-                  /*.g = */ static_cast<uint8_t>((newG & 0xffffff00) ? 0xff : newG),
-                  /*.b = */ static_cast<uint8_t>((newB & 0xffffff00) ? 0xff : newB),
-                  /*.a = */ 0xff}};
+    return Pixel{{/*.r = */ static_cast<uint8_t>(std::min(MAX_COL, newR)),
+                  /*.g = */ static_cast<uint8_t>(std::min(MAX_COL, newG)),
+                  /*.b = */ static_cast<uint8_t>(std::min(MAX_COL, newB)),
+                  /*.a = */ MAX_ALPHA}};
   }
 
   const uint32_t maxVal = std::max({newR, newG, newB});
   if (maxVal > channel_limits<uint32_t>::max())
   {
     // scale all channels back
-    newR = (newR << 8) / maxVal;
-    newG = (newG << 8) / maxVal;
-    newB = (newB << 8) / maxVal;
+    newR = multR / maxVal;
+    newG = multG / maxVal;
+    newB = multB / maxVal;
   }
 
   return Pixel{{/*.r = */ static_cast<uint8_t>(newR),
                 /*.g = */ static_cast<uint8_t>(newG),
                 /*.b = */ static_cast<uint8_t>(newB),
-                /*.a = */ 0xff}};
+                /*.a = */ MAX_ALPHA}};
 }
 
 void ZoomFilterFx::ZoomFilterImpl::SetInitialFilterSettings(const ZoomFilterData& filterSettings)

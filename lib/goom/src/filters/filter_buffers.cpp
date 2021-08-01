@@ -74,7 +74,8 @@ auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() -> Fi
 
       if (coeffH == 0 && coeffV == 0)
       {
-        precalculatedCoeffs[coeffH][coeffV].intVal = MAX_COLOR_VAL;
+        precalculatedCoeffs[coeffH][coeffV] = {{channel_limits<uint32_t>::max(), 0U, 0U, 0U},
+                                               false};
       }
       else
       {
@@ -123,12 +124,8 @@ auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() -> Fi
         i3 = 20;
         i4 = 16;
 **/
-        precalculatedCoeffs[coeffH][coeffV].c = {
-            static_cast<uint8_t>(i1),
-            static_cast<uint8_t>(i2),
-            static_cast<uint8_t>(i3),
-            static_cast<uint8_t>(i4),
-        };
+        precalculatedCoeffs[coeffH][coeffV] = {{i1, i2, i3, i4},
+                                               i1 == 0 && i2 == 0 && i3 == 0 && i4 == 0};
       }
     }
   }
@@ -136,41 +133,26 @@ auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() -> Fi
   return precalculatedCoeffs;
 }
 
-constexpr int32_t DIM_FILTER_COEFFS = ZoomFilterBuffers::DIM_FILTER_COEFFS;
-// For optimising multiplication, division, and mod by DIM_FILTER_COEFFS.
-constexpr int32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
-constexpr int32_t DIM_FILTER_COEFFS_MOD_MASK = 0xF;
-constexpr int32_t MAX_TRAN_DIFF_FACTOR = 0xFFFF;
-
-constexpr float MIN_SCREEN_COORD_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
-
-[[nodiscard]] inline auto TranToCoeffIndexCoord(const uint32_t tranCoord)
+inline auto ZoomFilterBuffers::TranToCoeffIndexCoord(const uint32_t tranCoord)
 {
   return tranCoord & DIM_FILTER_COEFFS_MOD_MASK;
 }
 
-[[nodiscard]] inline auto TranToScreenPoint(const V2dInt& tranPoint) -> V2dInt
+inline auto ZoomFilterBuffers::TranToScreenPoint(const V2dInt& tranPoint) -> V2dInt
 {
   return {tranPoint.x >> DIM_FILTER_COEFFS_DIV_SHIFT, tranPoint.y >> DIM_FILTER_COEFFS_DIV_SHIFT};
 }
 
-[[nodiscard]] inline auto ScreenToTranPoint(const V2dInt& screenPoint) -> V2dInt
+inline auto ZoomFilterBuffers::ScreenToTranPoint(const V2dInt& screenPoint) -> V2dInt
 {
   return {screenPoint.x << DIM_FILTER_COEFFS_DIV_SHIFT,
           screenPoint.y << DIM_FILTER_COEFFS_DIV_SHIFT};
 }
 
-[[nodiscard]] inline auto ScreenToTranCoord(const float screenCoord) -> uint32_t
+inline auto ZoomFilterBuffers::ScreenToTranCoord(const float screenCoord) -> uint32_t
 {
   // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
   return static_cast<uint32_t>(std::lround(screenCoord * static_cast<float>(DIM_FILTER_COEFFS)));
-}
-
-[[nodiscard]] inline auto GetTranBuffLerp(const int32_t srceBuffVal,
-                                          const int32_t destBuffVal,
-                                          const int32_t t) -> int32_t
-{
-  return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);
 }
 
 ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p, const std::shared_ptr<const PluginInfo>& goomInfo)
@@ -233,19 +215,6 @@ inline auto ZoomFilterBuffers::NormalizedToTranPoint(const NormalizedCoords& nor
 void ZoomFilterBuffers::Start()
 {
   InitTranBuffer();
-}
-
-auto ZoomFilterBuffers::GetZoomBufferSrceDestLerp(const size_t buffPos) const -> V2dInt
-{
-  return {GetTranBuffLerp(m_tranXSrce[buffPos], m_tranXDest[buffPos], m_tranLerpFactor),
-          GetTranBuffLerp(m_tranYSrce[buffPos], m_tranYDest[buffPos], m_tranLerpFactor)};
-}
-
-auto ZoomFilterBuffers::IsTranPointClipped(const V2dInt& tranPoint) const -> bool
-{
-  return (tranPoint.x < 0 || tranPoint.y < 0 ||
-          static_cast<uint32_t>(tranPoint.x) >= GetMaxTranX() ||
-          static_cast<uint32_t>(tranPoint.y) >= GetMaxTranY());
 }
 
 auto ZoomFilterBuffers::GetSourceInfo(const V2dInt& tranPoint) const

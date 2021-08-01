@@ -31,10 +31,10 @@ class ZoomFilterBuffers
 public:
   static constexpr int32_t DIM_FILTER_COEFFS = 16;
   static constexpr size_t NUM_NEIGHBOR_COEFFS = 4;
-  using NeighborhoodCoeffArray = union
+  using NeighborhoodCoeffArray = struct
   {
-    std::array<uint8_t, NUM_NEIGHBOR_COEFFS> c;
-    uint32_t intVal = 0;
+    std::array<uint32_t, NUM_NEIGHBOR_COEFFS> c;
+    bool isZero;
   };
   using FilterCoeff2dArray =
       std::array<std::array<NeighborhoodCoeffArray, DIM_FILTER_COEFFS>, DIM_FILTER_COEFFS>;
@@ -120,6 +120,19 @@ private:
   void DoNextTranBufferStripe(uint32_t tranBuffStripeHeight);
   void GenerateWaterFxHorizontalBuffer();
   [[nodiscard]] static auto GetTranPoint(const NormalizedCoords& normalized) -> V2dInt;
+  [[nodiscard]] static auto GetTranBuffLerp(int32_t srceBuffVal, int32_t destBuffVal, int32_t t)
+      -> int32_t;
+
+  // For optimising multiplication, division, and mod by DIM_FILTER_COEFFS.
+  static constexpr int32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
+  static constexpr int32_t DIM_FILTER_COEFFS_MOD_MASK = 0xF;
+  static constexpr int32_t MAX_TRAN_DIFF_FACTOR = 0xFFFF;
+  static constexpr float MIN_SCREEN_COORD_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
+
+  [[nodiscard]] static auto TranToCoeffIndexCoord(uint32_t tranCoord);
+  [[nodiscard]] static auto TranToScreenPoint(const V2dInt& tranPoint) -> V2dInt;
+  [[nodiscard]] static auto ScreenToTranPoint(const V2dInt& screenPoint) -> V2dInt;
+  [[nodiscard]] static auto ScreenToTranCoord(float screenCoord) -> uint32_t;
 };
 
 inline auto ZoomFilterBuffers::GetBuffMidPoint() const -> V2dInt
@@ -155,6 +168,26 @@ inline auto ZoomFilterBuffers::GetMaxTranY() const -> uint32_t
 inline auto ZoomFilterBuffers::GetTranBuffYLineStart() const -> uint32_t
 {
   return m_tranBuffYLineStart;
+}
+
+inline auto ZoomFilterBuffers::IsTranPointClipped(const V2dInt& tranPoint) const -> bool
+{
+  return tranPoint.x < 0 || tranPoint.y < 0 ||
+         static_cast<uint32_t>(tranPoint.x) >= GetMaxTranX() ||
+         static_cast<uint32_t>(tranPoint.y) >= GetMaxTranY();
+}
+
+inline auto ZoomFilterBuffers::GetZoomBufferSrceDestLerp(const size_t buffPos) const -> V2dInt
+{
+  return {GetTranBuffLerp(m_tranXSrce[buffPos], m_tranXDest[buffPos], m_tranLerpFactor),
+          GetTranBuffLerp(m_tranYSrce[buffPos], m_tranYDest[buffPos], m_tranLerpFactor)};
+}
+
+inline auto ZoomFilterBuffers::GetTranBuffLerp(const int32_t srceBuffVal,
+                                               const int32_t destBuffVal,
+                                               const int32_t t) -> int32_t
+{
+  return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);
 }
 
 } // namespace FILTERS
