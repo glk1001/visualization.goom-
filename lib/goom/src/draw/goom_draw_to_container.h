@@ -5,6 +5,7 @@
 #include "goom_graphic.h"
 
 #include <cstdint>
+#include <deque>
 #include <vector>
 
 #if __cplusplus <= 201402L
@@ -38,11 +39,12 @@ public:
     int32_t x;
     int32_t y;
   };
-  [[nodiscard]] auto GetChangedCoords() const -> const std::vector<Coords>&;
+  [[nodiscard]] auto GetChangedCoords() const -> const std::deque<Coords>&;
+  [[nodiscard]] auto GetChangedCoords() -> std::deque<Coords>&;
   void ClearChangedCoords();
 
 private:
-  std::vector<Coords> m_changedCoordsList{};
+  std::deque<Coords> m_changedCoordsList{};
   using Colors = std::vector<Pixel>;
   std::vector<std::vector<Colors>> m_coordList{};
   void DrawPixels(int32_t x,
@@ -52,14 +54,19 @@ private:
                   bool allowOverexposed);
 };
 
-inline auto GoomDrawToContainer::GetChangedCoords() const -> const std::vector<Coords>&
+inline auto GoomDrawToContainer::GetChangedCoords() const -> const std::deque<Coords>&
+{
+  return m_changedCoordsList;
+}
+
+inline auto GoomDrawToContainer::GetChangedCoords() -> std::deque<Coords>&
 {
   return m_changedCoordsList;
 }
 
 inline void GoomDrawToContainer::ClearChangedCoords()
 {
-  m_changedCoordsList.clear();
+  m_changedCoordsList.pop_back();
 }
 
 #if __cplusplus <= 201402L

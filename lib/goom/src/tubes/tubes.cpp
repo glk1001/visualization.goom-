@@ -4,7 +4,7 @@
 #include "goomutils/colorutils.h"
 #include "goomutils/logging_control.h"
 
-#undef NO_LOGGING
+//#undef NO_LOGGING
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging.h"
@@ -152,7 +152,7 @@ public:
   void IncreaseCentreSpeed();
   void DecreaseCentreSpeed();
 
-  void SetOscillatingCirclePaths(bool val);
+  void SetAllowOscillatingCirclePaths(bool val);
   void SetCirclePathParams(const PathParams& params);
   [[nodiscard]] auto GetCircleSpeed() const -> float;
   void SetCircleSpeed(float val);
@@ -289,9 +289,9 @@ void Tube::DecreaseCentreSpeed()
   m_impl->DecreaseCentreSpeed();
 }
 
-void Tube::SetOscillatingCirclePaths(const bool val)
+void Tube::SetAllowOscillatingCirclePaths(const bool val)
 {
-  m_impl->SetOscillatingCirclePaths(val);
+  m_impl->SetAllowOscillatingCirclePaths(val);
 }
 
 void Tube::SetCirclePathParams(const PathParams& params)
@@ -442,10 +442,9 @@ private:
                                                   const ShapeColors& colors2,
                                                   float mixT) -> Pixel;
   bool m_useIncreasedChroma = true;
+  static constexpr float CUTOFF_BRIGHTNESS = 0.005F;
+  const BrightnessAttenuation m_brightnessAttenuation;
   [[nodiscard]] auto GetFinalColor(const Pixel& oldColor, const Pixel& color) const -> Pixel;
-  const uint32_t m_maxRSquared;
-  [[nodiscard]] auto GetBrightness(const V2dInt& pos) const -> float;
-  [[nodiscard]] auto GetDistFromCentreFactor(const V2dInt& pos) const -> float;
 };
 
 class ShapePath
@@ -481,7 +480,7 @@ private:
   PathParams m_pathParams{};
   bool m_allowOscillatingPath;
   [[nodiscard]] auto GetPointAtT(const V2dInt& p0, const V2dInt& p1, float t) const -> V2dInt;
-  [[nodiscard]] auto GetTransformedPointAtT(const V2dFlt& point, float t) const -> V2dInt;
+  [[nodiscard]] auto GetOscillatingPointAtT(const V2dFlt& point, float t) const -> V2dFlt;
 };
 
 class ParametricPath
@@ -672,7 +671,7 @@ void Tube::TubeImpl::DecreaseCentreSpeed()
   m_centrePath->SetStepSize(newSpeed);
 }
 
-void Tube::TubeImpl::SetOscillatingCirclePaths(const bool val)
+void Tube::TubeImpl::SetAllowOscillatingCirclePaths(const bool val)
 {
   for (auto& shape : m_shapes)
   {
@@ -874,7 +873,7 @@ ShapeColorizer::ShapeColorizer(const uint32_t screenWidth,
     m_oldShapeColors(numShapes),
     m_circleColorMaps(numCircles),
     m_oldCircleColors(numCircles),
-    m_maxRSquared{2 * Sq(std::min(screenWidth, screenHeight) / 2)}
+    m_brightnessAttenuation{screenWidth, screenHeight, CUTOFF_BRIGHTNESS}
 {
   InitColorMaps();
   ResetColorMaps();
@@ -979,7 +978,9 @@ auto ShapeColorizer::GetColors(const LowColorTypes lowColorType,
                                const uint32_t circleNum,
                                const V2dInt& pos) -> ShapeColors
 {
-  const float brightness = m_brightnessFactor * GetBrightness(pos);
+  constexpr float MIN_BRIGHTNESS = 0.75F;
+  const float brightness =
+      m_brightnessFactor * m_brightnessAttenuation.GetPositionBrightness(pos, MIN_BRIGHTNESS);
 
   switch (m_colorMapMixMode)
   {
@@ -1168,16 +1169,25 @@ inline auto ShapeColorizer::GetGammaCorrection(const float brightness, const Pix
   return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
-inline auto ShapeColorizer::GetBrightness(const V2dInt& pos) const -> float
+BrightnessAttenuation::BrightnessAttenuation(const uint32_t screenWidth,
+                                             const uint32_t screenHeight,
+                                             const float cutoffBrightness)
+  : m_cutoffBrightness{cutoffBrightness},
+    m_maxRSquared{2 * Sq(std::min(screenWidth, screenHeight) / 2)}
+
 {
-  const float distFromCentre = GetDistFromCentreFactor(pos);
-  constexpr float DIST_SQ_CUTOFF = 0.02F;
-  constexpr float CUTOFF_BRIGHTNESS = 0.005F;
-  constexpr float MIN_BRIGHTNESS = 0.75F;
-  return distFromCentre < DIST_SQ_CUTOFF ? CUTOFF_BRIGHTNESS : MIN_BRIGHTNESS + distFromCentre;
 }
 
-inline auto ShapeColorizer::GetDistFromCentreFactor(const V2dInt& pos) const -> float
+auto BrightnessAttenuation::GetPositionBrightness(const V2dInt& pos,
+                                                  const float minBrightnessPastCutoff) const
+    -> float
+{
+  const float distFromCentre = GetDistFromCentreFactor(pos);
+  return distFromCentre < DIST_SQ_CUTOFF ? m_cutoffBrightness
+                                         : minBrightnessPastCutoff + distFromCentre;
+}
+
+inline auto BrightnessAttenuation::GetDistFromCentreFactor(const V2dInt& pos) const -> float
 {
   return static_cast<float>(Sq(pos.x) + Sq(pos.y)) / static_cast<float>(m_maxRSquared);
 }
@@ -1255,17 +1265,18 @@ inline auto ShapePath::GetPointAtT(const V2dInt& p0, const V2dInt& p1, const flo
             static_cast<int32_t>(std::round(linearPoint.y))};
   }
 
-  const V2dInt point = GetTransformedPointAtT(linearPoint, t);
-  return {static_cast<int32_t>(std::round(point.x)), static_cast<int32_t>(std::round(point.y))};
+  const V2dFlt finalPoint = GetOscillatingPointAtT(linearPoint, t);
+  return {static_cast<int32_t>(std::round(finalPoint.x)),
+          static_cast<int32_t>(std::round(finalPoint.y))};
 }
 
-inline auto ShapePath::GetTransformedPointAtT(const V2dFlt& point, const float t) const -> V2dInt
+inline auto ShapePath::GetOscillatingPointAtT(const V2dFlt& point, const float t) const -> V2dFlt
 {
   return {
-      static_cast<int32_t>(std::round(point.x + m_pathParams.amplitude *
-                                                    std::cos(m_pathParams.xFreq * t * m_two_pi))),
-      static_cast<int32_t>(std::round(point.y + m_pathParams.amplitude *
-                                                    std::sin(m_pathParams.yFreq * t * m_two_pi))),
+      point.x + m_pathParams.oscillatingAmplitude *
+                    std::cos(m_pathParams.xOscillatingFreq * t * m_two_pi),
+      point.y + m_pathParams.oscillatingAmplitude *
+                    std::sin(m_pathParams.yOscillatingFreq * t * m_two_pi),
   };
 }
 

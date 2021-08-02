@@ -8,7 +8,7 @@
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging_control.h"
-#undef NO_LOGGING
+//#undef NO_LOGGING
 #include "goomutils/logging.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/random_colormaps.h"
@@ -27,10 +27,12 @@ namespace GOOM
 {
 
 using DRAW::GoomDrawToContainer;
+using TUBES::BrightnessAttenuation;
 using TUBES::PathParams;
 using TUBES::Tube;
 using UTILS::GetBrighterColor;
 using UTILS::GetRandInRange;
+using UTILS::IColorMap;
 using UTILS::ImageBitmap;
 using UTILS::ProbabilityOf;
 using UTILS::RandomColorMaps;
@@ -59,9 +61,9 @@ constexpr PathParams COMMON_CIRCLE_PATH_PARMS{10.0F, +3.0F, +3.0F};
 auto lerp(const PathParams& p0, const PathParams& p1, const float t) -> PathParams
 {
   return {
-      stdnew::lerp(p0.amplitude, p1.amplitude, t),
-      stdnew::lerp(p0.xFreq, p1.xFreq, t),
-      stdnew::lerp(p0.yFreq, p1.yFreq, t),
+      stdnew::lerp(p0.oscillatingAmplitude, p1.oscillatingAmplitude, t),
+      stdnew::lerp(p0.xOscillatingFreq, p1.xOscillatingFreq, t),
+      stdnew::lerp(p0.yOscillatingFreq, p1.yOscillatingFreq, t),
   };
 }
 
@@ -95,6 +97,7 @@ constexpr float PROB_INCREASE_SPEED = 1.0F / 2.0F;
 constexpr float PROB_RANDOM_INCREASE_SPEED = 1.0F / 20.0F;
 constexpr float PROB_NORMAL_SPEED = 1.0F / 20.0F;
 constexpr float PROB_NO_SHAPE_JITTER = 0.8F;
+constexpr float PROB_PREV_SHAPES_JITTER = 0.5F;
 constexpr float PROB_OSCILLATING_SHAPE_PATH = 1.0F;
 constexpr float PROB_MOVE_AWAY_FROM_CENTRE = 0.3F;
 
@@ -130,13 +133,21 @@ private:
   std::shared_ptr<const PluginInfo> m_goomInfo{};
   std::string m_resourcesDirectory{};
   const SmallImageBitmaps* m_smallBitmaps{};
-  uint64_t m_updateNum{};
+  uint64_t m_updateNum = 0;
+  uint32_t m_updateNumSinceResume = 0;
   TubeStats m_stats{};
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
   bool m_allowOverexposed = false;
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath = ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
+  const IColorMap* m_prevShapesColorMap{};
+  TValue m_prevShapesColorT{TValue::StepType::CONTINUOUS_REVERSIBLE, 0.01F};
+  static constexpr float PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
+  const BrightnessAttenuation m_prevShapesBrightnessAttenuation;
+  bool m_prevShapesJitter = false;
+  static constexpr int32_t PREV_SHAPES_JITTER_AMOUNT = 2;
+  static constexpr uint32_t NUM_UPDATES_OF_PREV_SHAPES = 5;
 
   std::vector<Tube> m_tubes{};
   static constexpr float ALL_JOIN_CENTRE_STEP = 0.001F;
@@ -160,6 +171,7 @@ private:
   void DoUpdates();
   void DrawShapes();
   void DrawPreviousShapes();
+  void UpdatePreviousShapesSettings();
   void UpdateColorMaps();
   void UpdateSpeeds();
   void ChangeSpeedForLowerVolumes(Tube& tube);
@@ -179,7 +191,7 @@ private:
 };
 
 TubeFx::TubeFx(const IGoomDraw* const draw, const std::shared_ptr<const PluginInfo>& info) noexcept
-  : m_fxImpl{new TubeFxImpl{draw, info}}
+  : m_fxImpl{std::make_unique<TubeFxImpl>(draw, info)}
 {
 }
 
@@ -257,6 +269,8 @@ TubeFx::TubeFxImpl::TubeFxImpl(const IGoomDraw* const draw,
   : m_draw{draw},
     m_drawToContainer{draw->GetScreenWidth(), draw->GetScreenHeight()},
     m_goomInfo{info},
+    m_prevShapesBrightnessAttenuation{draw->GetScreenWidth(), draw->GetScreenHeight(),
+                                      PREV_SHAPES_CUTOFF_BRIGHTNESS},
     m_middlePos{0, 0},
     m_allStayInCentreTimer{1},
     m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME},
@@ -271,12 +285,15 @@ TubeFx::TubeFxImpl::~TubeFxImpl() noexcept = default;
 void TubeFx::TubeFxImpl::Start()
 {
   m_updateNum = 0;
+  m_updateNumSinceResume = 0;
 
   InitTubes();
 }
 
 void TubeFx::TubeFxImpl::Resume()
 {
+  m_updateNumSinceResume = 0;
+
   m_oscillatingShapePath = ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
   m_allowMovingAwayFromCentre = ProbabilityOf(PROB_MOVE_AWAY_FROM_CENTRE);
 
@@ -314,6 +331,7 @@ inline void TubeFx::TubeFxImpl::SetWeightedColorMaps(
     const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
+  m_prevShapesColorMap = &m_colorMaps->GetRandomColorMap();
 }
 
 inline void TubeFx::TubeFxImpl::SetWeightedLowColorMaps(
@@ -382,12 +400,14 @@ void TubeFx::TubeFxImpl::InitPaths()
 
 void TubeFx::TubeFxImpl::ResetTubes()
 {
+  m_drawToContainer.GetChangedCoords().clear();
+
   for (size_t i = 0; i < m_tubes.size(); i++)
   {
     m_tubes[i].ResetPaths();
     if (!TUBE_SETTINGS.at(i).noOscillating)
     {
-      m_tubes[i].SetOscillatingCirclePaths(m_oscillatingShapePath);
+      m_tubes[i].SetAllowOscillatingCirclePaths(m_oscillatingShapePath);
     }
   }
 }
@@ -395,6 +415,7 @@ void TubeFx::TubeFxImpl::ResetTubes()
 void TubeFx::TubeFxImpl::ApplyMultiple()
 {
   DoUpdates();
+
   DrawPreviousShapes();
   DrawShapes();
 }
@@ -402,11 +423,13 @@ void TubeFx::TubeFxImpl::ApplyMultiple()
 void TubeFx::TubeFxImpl::DoUpdates()
 {
   m_updateNum++;
+  m_updateNumSinceResume++;
 
   m_colorMapTimer.Increment();
   m_changedSpeedTimer.Increment();
   m_jitterTimer.Increment();
 
+  UpdatePreviousShapesSettings();
   UpdateColorMaps();
   UpdateSpeeds();
 }
@@ -419,6 +442,8 @@ void TubeFx::TubeFxImpl::UpdateColorMaps()
   {
     return;
   }
+
+  m_prevShapesColorMap = &m_colorMaps->GetRandomColorMap();
 
   for (auto& tube : m_tubes)
   {
@@ -467,6 +492,8 @@ void TubeFx::TubeFxImpl::UpdateSpeeds()
 
 void TubeFx::TubeFxImpl::DrawShapes()
 {
+  const size_t prevShapesSize = m_drawToContainer.GetChangedCoords().size();
+
   for (auto& tube : m_tubes)
   {
     if (!tube.IsActive())
@@ -487,23 +514,51 @@ void TubeFx::TubeFxImpl::DrawShapes()
     }
   }
 
+  if (m_updateNumSinceResume >= NUM_UPDATES_OF_PREV_SHAPES)
+  {
+    m_drawToContainer.GetChangedCoords().resize(prevShapesSize);
+  }
+
   IncrementAllJoinCentreT();
 }
 
 void TubeFx::TubeFxImpl::DrawPreviousShapes()
 {
-    for (const auto& coords : m_drawToContainer.GetChangedCoords())
-    {
-      const std::vector<Pixel>& colors = m_drawToContainer.GetPixels(coords.x, coords.y);
-      const int32_t x = coords.x + GetRandInRange(-10, 11);
-      const int32_t y = coords.y + GetRandInRange(-10, 11);
-      m_draw->DrawPixels(x, y,
-                         {GetBrighterColor(0.1F, colors[0], m_allowOverexposed), Pixel::BLACK});
-    }
-  if (m_updateNum % 5 == 0)
+  if (m_updateNumSinceResume < NUM_UPDATES_OF_PREV_SHAPES)
   {
-    m_drawToContainer.ClearChangedCoords();
+    return;
   }
+
+  constexpr float TINT_MIX_T = 0.3F;
+  const Pixel tintColor = m_prevShapesColorMap->GetColor(m_prevShapesColorT());
+
+  for (const auto& coords : m_drawToContainer.GetChangedCoords())
+  {
+    const std::vector<Pixel>& colors = m_drawToContainer.GetPixels(coords.x, coords.y);
+    //const int32_t x = coords.x;
+    //const int32_t y = coords.y;
+    const int32_t jitterAmount =
+        !m_prevShapesJitter
+            ? 0
+            : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
+    const int32_t x = coords.x + jitterAmount;
+    const int32_t y = coords.y + jitterAmount;
+    constexpr float MIN_BRIGHTNESS = 0.1F;
+    constexpr float BRIGHTNESS_FACTOR = 0.2F;
+    const float brightness =
+        BRIGHTNESS_FACTOR *
+        m_prevShapesBrightnessAttenuation.GetPositionBrightness({x, y}, MIN_BRIGHTNESS);
+    const Pixel color0 = GetBrighterColor(
+        brightness, IColorMap::GetColorMix(colors[0], tintColor, TINT_MIX_T), m_allowOverexposed);
+    m_draw->DrawPixels(x, y, {color0, Pixel::BLACK});
+  }
+
+  m_prevShapesColorT.Increment();
+}
+
+void TubeFx::TubeFxImpl::UpdatePreviousShapesSettings()
+{
+  m_prevShapesJitter = ProbabilityOf(PROB_PREV_SHAPES_JITTER);
 }
 
 auto TubeFx::TubeFxImpl::GetTransformedCentrePoint(const uint32_t tubeId,

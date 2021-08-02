@@ -39,9 +39,22 @@ struct ShapeColors
 };
 struct PathParams
 {
-  float amplitude = 1.0;
-  float xFreq = 1.0;
-  float yFreq = 1.0;
+  float oscillatingAmplitude = 1.0;
+  float xOscillatingFreq = 1.0;
+  float yOscillatingFreq = 1.0;
+};
+
+class BrightnessAttenuation
+{
+public:
+  static constexpr float DIST_SQ_CUTOFF = 0.10F;
+  BrightnessAttenuation(uint32_t screenWidth, uint32_t screenHeight, float cutoffBrightness);
+  auto GetPositionBrightness(const V2dInt& pos, float minBrightnessPastCutoff) const -> float;
+
+private:
+  const float m_cutoffBrightness;
+  const uint32_t m_maxRSquared;
+  auto GetDistFromCentreFactor(const V2dInt& pos) const -> float;
 };
 
 class Tube
@@ -101,7 +114,7 @@ public:
   void IncreaseCentreSpeed();
   void DecreaseCentreSpeed();
 
-  void SetOscillatingCirclePaths(bool val);
+  void SetAllowOscillatingCirclePaths(bool val);
   void SetCirclePathParams(const PathParams& params);
   [[nodiscard]] auto GetCircleSpeed() const -> float;
   static const float NORMAL_CIRCLE_SPEED;

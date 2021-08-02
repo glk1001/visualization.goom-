@@ -70,7 +70,7 @@ void GoomDrawToContainer::DrawPixels(const int32_t x,
   {
     coordColors.at(i) = GetBrighterColorInt(intBuffIntensity, colors[i], allowOverexposed);
   }
-  m_changedCoordsList.emplace_back(Coords{x, y}); // TODO could be duplicates
+  m_changedCoordsList.emplace_front(Coords{x, y}); // TODO could be duplicates
 }
 
 #if __cplusplus <= 201402L
