@@ -223,7 +223,7 @@ Tube::Tube(const uint32_t tubeId,
 {
 }
 
-Tube::Tube(Tube&& other) noexcept : m_impl{other.m_impl.release()}
+Tube::Tube(Tube&& other) noexcept : m_impl{std::move(other.m_impl)}
 {
 }
 

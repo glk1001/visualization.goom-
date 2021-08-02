@@ -113,7 +113,7 @@ public:
 
 private:
   class TubeImpl;
-  std::unique_ptr<TubeImpl> m_impl;
+  const std::shared_ptr<TubeImpl> m_impl;
 };
 
 } // namespace TUBES
