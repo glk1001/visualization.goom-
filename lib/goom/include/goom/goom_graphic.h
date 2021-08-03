@@ -49,6 +49,7 @@ constexpr uint8_t MAX_COLOR_VAL = channel_limits<uint8_t>::max();
 
 class Pixel
 {
+public:
 #ifdef COLOR_BGRA
   struct Channels
   {
@@ -67,7 +68,6 @@ class Pixel
   };
 #endif /* COLOR_BGRA */
 
-public:
   Pixel();
   explicit Pixel(const Channels& c);
   explicit Pixel(uint32_t val);
@@ -292,14 +292,14 @@ inline void PixelBuffer::CopyTo(uint32_t* intBuff, const uint32_t length) const
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) const -> const Pixel&
 {
-  //return m_buff.at(y * m_width + x);
-  return m_buff[y * m_width + x];
+  return m_buff.at(y * m_width + x);
+  //return m_buff[y * m_width + x];
 }
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) -> Pixel&
 {
-  //return m_buff.at(y * m_width + x);
-  return m_buff[y * m_width + x];
+  return m_buff.at(y * m_width + x);
+  //return m_buff[y * m_width + x];
 }
 
 inline auto PixelBuffer::GetRowIter(const size_t y)

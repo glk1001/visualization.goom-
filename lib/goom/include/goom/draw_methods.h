@@ -99,6 +99,11 @@ inline void DrawMethods::DrawPixels(const int32_t x,
                                     const std::vector<Pixel>& newColors,
                                     const bool allowOverexposed) const
 {
+  if (x < 0 || y < 0 || static_cast<uint32_t>(x) >= m_screenWidth ||
+      static_cast<uint32_t>(y) >= m_screenHeight)
+  {
+    return;
+  }
   m_drawPixelFunc(x, y, newColors, allowOverexposed);
 }
 

@@ -15,6 +15,7 @@ find_package(Threads)
 add_executable(goomtests
     src/test_main.cpp
     src/test_colorutils.cpp
+    src/test_draw.cpp
     src/test_goomrand.cpp
     src/test_mathutils.cpp
     src/test_parallel_utils.cpp
@@ -32,7 +33,8 @@ target_link_libraries(goomtests
 target_include_directories(goomtests
     PRIVATE 
         ${LIBS_DIR}/catch2/include
-        ${LIBS_DIR}/goom/include/goom  
+        ${LIBS_DIR}/goom/src
+        ${LIBS_DIR}/goom/include/goom
         ${LIBS_DIR}/goomutils/include/goomutils
 )  
 target_include_directories(goomtests

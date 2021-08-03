@@ -2,6 +2,9 @@
 
 #include "goom_graphic.h"
 #include "goomutils/colorutils.h"
+#include "goomutils/logging_control.h"
+//#undef NO_LOGGING
+#include "goomutils/logging.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -19,35 +22,41 @@ namespace GOOM::DRAW
 #endif
 
 using UTILS::GetBrighterColorInt;
+using UTILS::Logging;
 
 GoomDrawToContainer::GoomDrawToContainer(const uint32_t screenWidth, const uint32_t screenHeight)
   : IGoomDraw{screenWidth, screenHeight,
-              [&](int32_t x,
-                  int32_t y,
+              [&](const int32_t x,
+                  const int32_t y,
                   const std::vector<Pixel>& newColors,
                   const bool allowOverexposed) {
-                DrawPixels(x, y, newColors, GetIntBuffIntensity(), allowOverexposed);
+                SavePixels(x, y, newColors, GetIntBuffIntensity(), allowOverexposed);
               }},
-    m_coordList(screenHeight)
+    m_xyPixelList(screenHeight)
 {
-  const std::vector<Pixel> blackColors{Pixel::BLACK, Pixel::BLACK};
-  for (auto& xCoordInfoList : m_coordList)
+  for (auto& xPixelList : m_xyPixelList)
   {
-    xCoordInfoList.resize(screenWidth);
-    std::fill(xCoordInfoList.begin(), xCoordInfoList.end(), blackColors);
+    xPixelList.resize(screenWidth);
   }
 }
 
 GoomDrawToContainer::~GoomDrawToContainer() noexcept = default;
 
-auto GoomDrawToContainer::GetPixel(const int32_t x, const int32_t y) const -> Pixel
+void GoomDrawToContainer::ClearAll()
 {
-  return m_coordList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x))[0];
+  m_orderedXYPixelList.clear();
+
+  const ColorsList emptyColorsList{};
+  for (auto& xPixelList : m_xyPixelList)
+  {
+    std::fill(xPixelList.begin(), xPixelList.end(), emptyColorsList);
+  }
 }
 
-auto GoomDrawToContainer::GetPixels(int32_t x, int32_t y) const -> const std::vector<Pixel>&
+inline auto GoomDrawToContainer::GetWriteableColorsList(const int32_t x, const int32_t y)
+    -> ColorsList&
 {
-  return m_coordList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
+  return m_xyPixelList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
 }
 
 void GoomDrawToContainer::DrawPixelsUnblended(
@@ -58,19 +67,53 @@ void GoomDrawToContainer::DrawPixelsUnblended(
   throw std::logic_error("GoomDrawToContainer::DrawPixelsUnblended not implemented.");
 }
 
-void GoomDrawToContainer::DrawPixels(const int32_t x,
+void GoomDrawToContainer::SavePixels(const int32_t x,
                                      const int32_t y,
                                      const std::vector<Pixel>& colors,
                                      const uint32_t intBuffIntensity,
                                      const bool allowOverexposed)
 {
-  Colors& coordColors = m_coordList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
-  assert(colors.size() <= coordColors.size());
-  for (size_t i = 0; i < colors.size(); i++)
+  Colors newColors(colors.size());
+  for (size_t i = 0; i < newColors.size(); i++)
   {
-    coordColors.at(i) = GetBrighterColorInt(intBuffIntensity, colors[i], allowOverexposed);
+    newColors[i] = GetBrighterColorInt(intBuffIntensity, colors[i], allowOverexposed);
   }
-  m_changedCoordsList.emplace_front(Coords{x, y}); // TODO could be duplicates
+
+  ColorsList& colorsList = GetWriteableColorsList(x, y);
+  colorsList.emplace_back(newColors);
+  if (colorsList.size() == 1)
+  {
+    m_orderedXYPixelList.emplace_back(Coords{x, y});
+  }
+}
+
+void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t n)
+{
+  assert(n <= m_orderedXYPixelList.size());
+
+  const auto eraseFrom = m_orderedXYPixelList.begin();
+  const auto eraseTo =
+      m_orderedXYPixelList.begin() + static_cast<std::ptrdiff_t>(m_orderedXYPixelList.size() - n);
+
+  for (auto coords = eraseFrom; coords != eraseTo; ++coords)
+  {
+    GetWriteableColorsList(coords->x, coords->y).clear();
+  }
+
+  m_orderedXYPixelList.erase(eraseFrom, eraseTo);
+  m_orderedXYPixelList.resize(n);
+}
+
+void GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& f) const
+{
+  // Start with the newest coords added.
+  std::for_each(m_orderedXYPixelList.rbegin(), m_orderedXYPixelList.rend(),
+                [&](const auto& coords) {
+                  const int32_t x = coords.x;
+                  const int32_t y = coords.y;
+                  const ColorsList& colorsList = GetColorsList(x, y);
+                  f(x, y, colorsList);
+                });
 }
 
 #if __cplusplus <= 201402L

@@ -34,6 +34,7 @@ using UTILS::GetBrighterColor;
 using UTILS::GetRandInRange;
 using UTILS::IColorMap;
 using UTILS::ImageBitmap;
+using UTILS::Logging;
 using UTILS::ProbabilityOf;
 using UTILS::RandomColorMaps;
 using UTILS::SMALL_FLOAT;
@@ -147,7 +148,7 @@ private:
   const BrightnessAttenuation m_prevShapesBrightnessAttenuation;
   bool m_prevShapesJitter = false;
   static constexpr int32_t PREV_SHAPES_JITTER_AMOUNT = 2;
-  static constexpr uint32_t NUM_UPDATES_OF_PREV_SHAPES = 5;
+  static constexpr uint32_t NUM_UPDATES_OF_PREV_SHAPES = 4;
 
   std::vector<Tube> m_tubes{};
   static constexpr float ALL_JOIN_CENTRE_STEP = 0.001F;
@@ -400,11 +401,11 @@ void TubeFx::TubeFxImpl::InitPaths()
 
 void TubeFx::TubeFxImpl::ResetTubes()
 {
-  m_drawToContainer.GetChangedCoords().clear();
+  //  m_drawToContainer.ClearAll();
 
   for (size_t i = 0; i < m_tubes.size(); i++)
   {
-    m_tubes[i].ResetPaths();
+    //    m_tubes[i].ResetPaths();
     if (!TUBE_SETTINGS.at(i).noOscillating)
     {
       m_tubes[i].SetAllowOscillatingCirclePaths(m_oscillatingShapePath);
@@ -492,7 +493,7 @@ void TubeFx::TubeFxImpl::UpdateSpeeds()
 
 void TubeFx::TubeFxImpl::DrawShapes()
 {
-  const size_t prevShapesSize = m_drawToContainer.GetChangedCoords().size();
+  const size_t prevShapesSize = m_drawToContainer.GetNumChangedCoords();
 
   for (auto& tube : m_tubes)
   {
@@ -516,7 +517,7 @@ void TubeFx::TubeFxImpl::DrawShapes()
 
   if (m_updateNumSinceResume >= NUM_UPDATES_OF_PREV_SHAPES)
   {
-    m_drawToContainer.GetChangedCoords().resize(prevShapesSize);
+    m_drawToContainer.ResizeChangedCoordsKeepingNewest(prevShapesSize);
   }
 
   IncrementAllJoinCentreT();
@@ -531,27 +532,26 @@ void TubeFx::TubeFxImpl::DrawPreviousShapes()
 
   constexpr float TINT_MIX_T = 0.3F;
   const Pixel tintColor = m_prevShapesColorMap->GetColor(m_prevShapesColorT());
+  using ColorsList = GoomDrawToContainer::ColorsList;
 
-  for (const auto& coords : m_drawToContainer.GetChangedCoords())
-  {
-    const std::vector<Pixel>& colors = m_drawToContainer.GetPixels(coords.x, coords.y);
-    //const int32_t x = coords.x;
-    //const int32_t y = coords.y;
+  m_drawToContainer.IterateChangedCoordsNewToOld([&](const int32_t x, const int32_t y,
+                                                     const ColorsList& colorsList) {
     const int32_t jitterAmount =
         !m_prevShapesJitter
             ? 0
             : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
-    const int32_t x = coords.x + jitterAmount;
-    const int32_t y = coords.y + jitterAmount;
+    const int32_t newX = x + jitterAmount;
+    const int32_t newY = y + jitterAmount;
     constexpr float MIN_BRIGHTNESS = 0.1F;
-    constexpr float BRIGHTNESS_FACTOR = 0.2F;
+    constexpr float BRIGHTNESS_FACTOR = 0.4F;
     const float brightness =
         BRIGHTNESS_FACTOR *
-        m_prevShapesBrightnessAttenuation.GetPositionBrightness({x, y}, MIN_BRIGHTNESS);
-    const Pixel color0 = GetBrighterColor(
+        m_prevShapesBrightnessAttenuation.GetPositionBrightness({newX, newY}, MIN_BRIGHTNESS);
+    const std::vector<Pixel>& colors = colorsList.back();
+    const Pixel newColor0 = GetBrighterColor(
         brightness, IColorMap::GetColorMix(colors[0], tintColor, TINT_MIX_T), m_allowOverexposed);
-    m_draw->DrawPixels(x, y, {color0, Pixel::BLACK});
-  }
+    m_draw->DrawPixels(newX, newY, {newColor0, Pixel::BLACK});
+  });
 
   m_prevShapesColorT.Increment();
 }

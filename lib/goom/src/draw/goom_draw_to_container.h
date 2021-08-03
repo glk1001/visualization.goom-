@@ -5,7 +5,7 @@
 #include "goom_graphic.h"
 
 #include <cstdint>
-#include <deque>
+#include <map>
 #include <vector>
 
 #if __cplusplus <= 201402L
@@ -39,34 +39,63 @@ public:
     int32_t x;
     int32_t y;
   };
-  [[nodiscard]] auto GetChangedCoords() const -> const std::deque<Coords>&;
-  [[nodiscard]] auto GetChangedCoords() -> std::deque<Coords>&;
-  void ClearChangedCoords();
+  using Colors = std::vector<Pixel>;
+  using ColorsList = std::vector<Colors>;
+  [[nodiscard]] auto GetNumChangedCoords() const -> size_t;
+  [[nodiscard]] auto GetChangedCoordsList() const -> const std::vector<Coords>&;
+  // IMPORTANT: The above is ordered from oldest to newest.
+  [[nodiscard]] auto GetColorsList(int32_t x, int32_t y) const -> const ColorsList&;
+
+  using CoordsFunc = std::function<void(int32_t x, int32_t y, const ColorsList& colorsList)>;
+  void IterateChangedCoordsNewToOld(const CoordsFunc& f) const;
+
+  void ResizeChangedCoordsKeepingNewest(size_t n);
+  void ClearAll();
 
 private:
-  std::deque<Coords> m_changedCoordsList{};
-  using Colors = std::vector<Pixel>;
-  std::vector<std::vector<Colors>> m_coordList{};
-  void DrawPixels(int32_t x,
+  std::vector<std::vector<ColorsList>> m_xyPixelList{};
+  std::vector<Coords> m_orderedXYPixelList{};
+  [[nodiscard]] auto GetWriteableColorsList(int32_t x, int32_t y) -> ColorsList&;
+  [[nodiscard]] auto GetLastDrawnColors(int32_t x, int32_t y) const -> const std::vector<Pixel>&;
+  void SavePixels(int32_t x,
                   int32_t y,
                   const std::vector<Pixel>& colors,
                   uint32_t intBuffIntensity,
                   bool allowOverexposed);
 };
 
-inline auto GoomDrawToContainer::GetChangedCoords() const -> const std::deque<Coords>&
+inline auto GoomDrawToContainer::GetPixel(const int32_t x, const int32_t y) const -> Pixel
 {
-  return m_changedCoordsList;
+  return GetLastDrawnColors(x, y)[0];
 }
 
-inline auto GoomDrawToContainer::GetChangedCoords() -> std::deque<Coords>&
+inline auto GoomDrawToContainer::GetPixels(const int32_t x, const int32_t y) const
+    -> const std::vector<Pixel>&
 {
-  return m_changedCoordsList;
+  return GetLastDrawnColors(x, y);
 }
 
-inline void GoomDrawToContainer::ClearChangedCoords()
+inline auto GoomDrawToContainer::GetLastDrawnColors(const int32_t x, const int32_t y) const
+    -> const std::vector<Pixel>&
 {
-  m_changedCoordsList.pop_back();
+  const ColorsList& colorsList = GetColorsList(x, y);
+  return colorsList[colorsList.size() - 1];
+}
+
+inline auto GoomDrawToContainer::GetColorsList(const int32_t x, const int32_t y) const
+    -> const ColorsList&
+{
+  return m_xyPixelList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
+}
+
+inline auto GoomDrawToContainer::GetNumChangedCoords() const -> size_t
+{
+  return m_orderedXYPixelList.size();
+}
+
+inline auto GoomDrawToContainer::GetChangedCoordsList() const -> const std::vector<Coords>&
+{
+  return m_orderedXYPixelList;
 }
 
 #if __cplusplus <= 201402L

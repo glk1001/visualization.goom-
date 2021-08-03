@@ -275,7 +275,7 @@ inline auto GetColorSubtract(const Pixel& color1, const Pixel& color2) -> Pixel
 
 inline auto GetBrighterChannelColor(const uint32_t brightness, const uint8_t channelVal) -> uint32_t
 {
-  return (brightness * static_cast<uint32_t>(channelVal)) >> 8;
+  return ((brightness + 1) * static_cast<uint32_t>(channelVal)) >> 8;
 }
 
 inline auto GetBrighterColorInt(const uint32_t brightness,

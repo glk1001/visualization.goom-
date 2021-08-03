@@ -6,6 +6,7 @@
 #include "goom_graphic.h"
 #include "goomutils/parallel_utils.h"
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -115,7 +116,7 @@ inline auto IGoomDraw::GetBuffIntensity() const -> float
 inline void IGoomDraw::SetBuffIntensity(const float val)
 {
   m_buffIntensity = val;
-  m_intBuffIntensity = static_cast<uint32_t>(channel_limits<float>::max() * m_buffIntensity);
+  m_intBuffIntensity = static_cast<uint32_t>(std::round(channel_limits<float>::max() * m_buffIntensity));
 }
 
 inline auto IGoomDraw::GetIntBuffIntensity() const -> uint32_t
