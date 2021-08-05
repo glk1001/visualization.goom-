@@ -1,6 +1,7 @@
 #include "tube_fx.h"
 
 #include "draw/goom_draw_to_container.h"
+#include "draw/goom_draw_to_many.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -27,6 +28,7 @@ namespace GOOM
 {
 
 using DRAW::GoomDrawToContainer;
+using DRAW::GoomDrawToMany;
 using TUBES::BrightnessAttenuation;
 using TUBES::PathParams;
 using TUBES::Tube;
@@ -131,6 +133,7 @@ public:
 private:
   const IGoomDraw* const m_draw;
   GoomDrawToContainer m_drawToContainer;
+  const DRAW::GoomDrawToMany m_drawToMany;
   std::shared_ptr<const PluginInfo> m_goomInfo{};
   std::string m_resourcesDirectory{};
   const SmallImageBitmaps* m_smallBitmaps{};
@@ -269,6 +272,7 @@ TubeFx::TubeFxImpl::TubeFxImpl(const IGoomDraw* const draw,
                                const std::shared_ptr<const PluginInfo>& info) noexcept
   : m_draw{draw},
     m_drawToContainer{draw->GetScreenWidth(), draw->GetScreenHeight()},
+    m_drawToMany{draw->GetScreenWidth(), draw->GetScreenHeight(), {draw, &m_drawToContainer}},
     m_goomInfo{info},
     m_prevShapesBrightnessAttenuation{draw->GetScreenWidth(), draw->GetScreenHeight(),
                                       PREV_SHAPES_CUTOFF_BRIGHTNESS},
@@ -673,8 +677,7 @@ void TubeFx::TubeFxImpl::DrawLine(const int x1,
                                   const std::vector<Pixel>& colors,
                                   const uint8_t thickness)
 {
-  m_draw->Line(x1, y1, x2, y2, colors, thickness);
-  m_drawToContainer.Line(x1, y1, x2, y2, colors, thickness);
+  m_drawToMany.Line(x1, y1, x2, y2, colors, thickness);
 }
 
 void TubeFx::TubeFxImpl::DrawCircle(const int x,
@@ -683,8 +686,7 @@ void TubeFx::TubeFxImpl::DrawCircle(const int x,
                                     const std::vector<Pixel>& colors,
                                     [[maybe_unused]] const uint8_t thickness)
 {
-  m_draw->Circle(x, y, radius, colors);
-  m_drawToContainer.Circle(x, y, radius, colors);
+  m_drawToMany.Circle(x, y, radius, colors);
 }
 
 void TubeFx::TubeFxImpl::DrawImage(const int x,
@@ -698,8 +700,7 @@ void TubeFx::TubeFxImpl::DrawImage(const int x,
                              [[maybe_unused]] const Pixel& b) -> Pixel { return colors[0]; };
   const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                              [[maybe_unused]] const Pixel& b) -> Pixel { return colors[1]; };
-  m_draw->Bitmap(x, y, imageBitmap, {getColor1, getColor2}, m_allowOverexposed);
-  m_drawToContainer.Bitmap(x, y, imageBitmap, {getColor1, getColor2}, m_allowOverexposed);
+  m_drawToMany.Bitmap(x, y, imageBitmap, {getColor1, getColor2}, m_allowOverexposed);
 }
 
 } // namespace GOOM

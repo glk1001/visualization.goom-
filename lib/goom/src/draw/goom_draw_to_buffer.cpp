@@ -1,7 +1,7 @@
 #include "goom_draw_to_buffer.h"
 
-#include "draw_methods.h"
 #include "goom_graphic.h"
+#include "goomutils/colorutils.h"
 
 #undef NDEBUG
 #include <cassert>
