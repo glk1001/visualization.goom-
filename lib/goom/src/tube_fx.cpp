@@ -149,6 +149,7 @@ private:
   TValue m_prevShapesColorT{TValue::StepType::CONTINUOUS_REVERSIBLE, 0.01F};
   static constexpr float PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
   const BrightnessAttenuation m_prevShapesBrightnessAttenuation;
+  [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
   bool m_prevShapesJitter = false;
   static constexpr int32_t PREV_SHAPES_JITTER_AMOUNT = 2;
   static constexpr uint32_t NUM_UPDATES_OF_PREV_SHAPES = 4;
@@ -533,10 +534,16 @@ void TubeFx::TubeFxImpl::DrawPreviousShapes()
   {
     return;
   }
+  if (m_drawToContainer.GetNumChangedCoords() == 0)
+  {
+    return;
+  }
+
+  using ColorsList = GoomDrawToContainer::ColorsList;
 
   constexpr float TINT_MIX_T = 0.3F;
   const Pixel tintColor = m_prevShapesColorMap->GetColor(m_prevShapesColorT());
-  using ColorsList = GoomDrawToContainer::ColorsList;
+  const float brightnessAttenuation = GetApproxBrightnessAttenuation();
 
   m_drawToContainer.IterateChangedCoordsNewToOld([&](const int32_t x, const int32_t y,
                                                      const ColorsList& colorsList) {
@@ -546,11 +553,8 @@ void TubeFx::TubeFxImpl::DrawPreviousShapes()
             : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
     const int32_t newX = x + jitterAmount;
     const int32_t newY = y + jitterAmount;
-    constexpr float MIN_BRIGHTNESS = 0.1F;
     constexpr float BRIGHTNESS_FACTOR = 0.4F;
-    const float brightness =
-        BRIGHTNESS_FACTOR *
-        m_prevShapesBrightnessAttenuation.GetPositionBrightness({newX, newY}, MIN_BRIGHTNESS);
+    const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
     const std::vector<Pixel>& colors = colorsList.back();
     const Pixel newColor0 = GetBrighterColor(
         brightness, IColorMap::GetColorMix(colors[0], tintColor, TINT_MIX_T), m_allowOverexposed);
@@ -558,6 +562,14 @@ void TubeFx::TubeFxImpl::DrawPreviousShapes()
   });
 
   m_prevShapesColorT.Increment();
+}
+
+auto TubeFx::TubeFxImpl::GetApproxBrightnessAttenuation() const -> float
+{
+  constexpr float MIN_BRIGHTNESS = 0.1F;
+  const GoomDrawToContainer::Coords& firstCoords = m_drawToContainer.GetChangedCoordsList().front();
+  return m_prevShapesBrightnessAttenuation.GetPositionBrightness({firstCoords.x, firstCoords.y},
+                                                                 MIN_BRIGHTNESS);
 }
 
 void TubeFx::TubeFxImpl::UpdatePreviousShapesSettings()
