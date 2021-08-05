@@ -2,11 +2,10 @@
 
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
-#include "goomutils/logging_control.h"
-
-//#undef NO_LOGGING
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
+#include "goomutils/logging_control.h"
+//#undef NO_LOGGING
 #include "goomutils/logging.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/random_colormaps.h"
@@ -113,6 +112,13 @@ class ShapeColorizer;
 class ShapePath;
 class ParametricPath;
 
+struct Shape
+{
+  uint32_t shapeNum{};
+  std::unique_ptr<ShapePath> path{};
+  uint8_t lineThickness{1};
+};
+
 class Tube::TubeImpl
 {
 public:
@@ -164,13 +170,6 @@ public:
   void UpdateTimers();
 
 private:
-  struct Shape
-  {
-    uint32_t shapeNum{};
-    std::unique_ptr<ShapePath> path{};
-    uint8_t lineThickness{1};
-  };
-
   const uint32_t m_tubeId;
   DrawFuncs m_drawFuncs;
   const uint32_t m_screenWidth;
@@ -375,9 +374,9 @@ public:
   void ResetColorMaps();
   void RotateShapeColorMaps();
   [[nodiscard]] auto GetColors(LowColorTypes lowColorType,
-                               uint32_t shapeNum,
                                uint32_t circleNum,
-                               const V2dInt& pos) -> ShapeColors;
+                               const Shape& shape,
+                               const V2dInt& shapeCentrePos) -> ShapeColors;
   void UpdateAllTValues();
 
 private:
@@ -422,6 +421,7 @@ private:
 
   uint32_t m_stripeWidth = MIN_STRIPE_WIDTH;
   [[nodiscard]] auto GetShapeNumToUse(uint32_t shapeNum) const -> uint32_t;
+  [[nodiscard]] auto GetBrightness(const Shape& shape, const V2dInt& shapeCentrePos) const -> float;
 
   [[nodiscard]] auto GetShapeColors(uint32_t shapeNum, float brightness) -> ShapeColors;
   [[nodiscard]] auto GetCircleColors(uint32_t circleNum, float brightness) -> ShapeColors;
@@ -472,6 +472,7 @@ public:
   void IncrementT();
 
 private:
+  static constexpr uint32_t DELAY_TIME_AT_SHAPE_CHANGE = 50;
   const V2dInt m_startPos;
   const V2dInt m_finishPos;
   TValue m_t;
@@ -799,7 +800,7 @@ void Tube::TubeImpl::DrawShape(const Shape& shape, const V2dInt& centreOffset) c
   const V2dInt shapeCentrePos = shape.path->GetNextPoint() + jitterOffset + centreOffset;
 
   const ShapeColors allColors = m_colorizer->GetColors(
-      m_currentLowColorType, shape.shapeNum, m_circleGroupTimer.GetCurrentCount(), shapeCentrePos);
+      m_currentLowColorType, m_circleGroupTimer.GetCurrentCount(), shape, shapeCentrePos);
 
   if (m_noBoundaryShapeTimer.Finished())
   {
@@ -973,21 +974,34 @@ void ShapeColorizer::UpdateAllTValues()
   m_mixT.Increment();
 }
 
-auto ShapeColorizer::GetColors(const LowColorTypes lowColorType,
-                               const uint32_t shapeNum,
-                               const uint32_t circleNum,
-                               const V2dInt& pos) -> ShapeColors
+auto ShapeColorizer::GetBrightness(const Shape& shape, const V2dInt& shapeCentrePos) const -> float
 {
   constexpr float MIN_BRIGHTNESS = 0.75F;
-  const float brightness =
-      m_brightnessFactor * m_brightnessAttenuation.GetPositionBrightness(pos, MIN_BRIGHTNESS);
+  const float brightness = m_brightnessFactor * m_brightnessAttenuation.GetPositionBrightness(
+                                                    shapeCentrePos, MIN_BRIGHTNESS);
+
+  constexpr float SMALL_T = 0.25F;
+  if (shape.path->GetT() < SMALL_T)
+  {
+    constexpr float SMALL_T_BRIGHTNESS = 0.7F;
+    return SMALL_T_BRIGHTNESS * brightness;
+  }
+  return brightness;
+}
+
+auto ShapeColorizer::GetColors(const LowColorTypes lowColorType,
+                               const uint32_t circleNum,
+                               const Shape& shape,
+                               const V2dInt& shapeCentrePos) -> ShapeColors
+{
+  const float brightness = GetBrightness(shape, shapeCentrePos);
 
   switch (m_colorMapMixMode)
   {
     case ColorMapMixMode::STRIPED_SHAPES_ONLY:
     case ColorMapMixMode::SHAPES_ONLY:
     {
-      const ShapeColors colors = GetShapeColors(GetShapeNumToUse(shapeNum), brightness);
+      const ShapeColors colors = GetShapeColors(GetShapeNumToUse(shape.shapeNum), brightness);
       return {
           colors.color,
           GetLowColor(lowColorType, colors),
@@ -1012,7 +1026,7 @@ auto ShapeColorizer::GetColors(const LowColorTypes lowColorType,
     case ColorMapMixMode::STRIPED_SHAPES_AND_CIRCLES:
     case ColorMapMixMode::SHAPES_AND_CIRCLES:
     {
-      const ShapeColors shapeColors = GetShapeColors(GetShapeNumToUse(shapeNum), brightness);
+      const ShapeColors shapeColors = GetShapeColors(GetShapeNumToUse(shape.shapeNum), brightness);
       const ShapeColors circleColors = GetCircleColors(circleNum, brightness);
 
       return {
@@ -1201,7 +1215,7 @@ inline ShapePath::ShapePath(const V2dInt& startPos,
     m_finishPos{finishPos},
     m_t{reversible ? TValue::StepType::CONTINUOUS_REVERSIBLE
                    : TValue::StepType::CONTINUOUS_REPEATABLE,
-        step},
+        step, DELAY_TIME_AT_SHAPE_CHANGE},
     m_currentStartPos{m_startPos},
     m_currentFinishPos{m_finishPos},
     m_allowOscillatingPath{allowOscillatingPath}

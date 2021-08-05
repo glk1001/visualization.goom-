@@ -25,8 +25,8 @@ public:
     CONTINUOUS_REVERSIBLE,
     SINGLE_CYCLE,
   };
-  explicit TValue(StepType stepType, float stepSize) noexcept;
-  explicit TValue(StepType stepType, uint32_t numSteps) noexcept;
+  explicit TValue(StepType stepType, float stepSize, uint32_t delayTimeAtChanges = 0) noexcept;
+  explicit TValue(StepType stepType, uint32_t numSteps, uint32_t delayTimeAtChanges = 0) noexcept;
 
   static constexpr float MAX_T_VALUE = 1.0F + SMALL_FLOAT;
 
@@ -45,15 +45,29 @@ private:
   float m_stepSize;
   float m_currentStep;
   float m_t{};
+  const uint32_t m_delayTimeAtChanges;
+  bool m_startedDelay = false;
+  uint32_t m_delayAtChangeCount = 0;
+  void HandleBoundary(float boundaryValue, float continueValue, float stepSign);
 };
 
-inline TValue::TValue(TValue::StepType stepType, const float stepSize) noexcept
-  : m_stepType{stepType}, m_stepSize{stepSize}, m_currentStep{m_stepSize}
+inline TValue::TValue(TValue::StepType stepType,
+                      const float stepSize,
+                      const uint32_t delayTimeAtChanges) noexcept
+  : m_stepType{stepType},
+    m_stepSize{stepSize},
+    m_currentStep{m_stepSize},
+    m_delayTimeAtChanges{delayTimeAtChanges}
 {
 }
 
-inline TValue::TValue(TValue::StepType stepType, const uint32_t numSteps) noexcept
-  : m_stepType{stepType}, m_stepSize{1.0F / static_cast<float>(numSteps)}, m_currentStep{m_stepSize}
+inline TValue::TValue(TValue::StepType stepType,
+                      const uint32_t numSteps,
+                      const uint32_t delayTimeAtChanges) noexcept
+  : m_stepType{stepType},
+    m_stepSize{1.0F / static_cast<float>(numSteps)},
+    m_currentStep{m_stepSize},
+    m_delayTimeAtChanges{delayTimeAtChanges}
 {
 }
 
