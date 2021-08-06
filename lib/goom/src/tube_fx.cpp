@@ -176,6 +176,7 @@ private:
   void DoUpdates();
   void DrawShapes();
   void DrawPreviousShapes();
+  [[nodiscard]] static auto GetClipped(int32_t val, uint32_t maxVal) -> int32_t;
   void UpdatePreviousShapesSettings();
   void UpdateColorMaps();
   void UpdateSpeeds();
@@ -551,8 +552,8 @@ void TubeFx::TubeFxImpl::DrawPreviousShapes()
 
   m_drawToContainer.IterateChangedCoordsNewToOld([&](const int32_t x, const int32_t y,
                                                      const ColorsList& colorsList) {
-    const int32_t newX = x + jitterAmount;
-    const int32_t newY = y + jitterAmount;
+    const int32_t newX = GetClipped(x + jitterAmount, m_draw->GetScreenWidth() - 1);
+    const int32_t newY = GetClipped(y + jitterAmount, m_draw->GetScreenHeight() - 1);
     constexpr float BRIGHTNESS_FACTOR = 0.4F;
     const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
     const std::vector<Pixel>& colors = colorsList.back();
@@ -562,6 +563,19 @@ void TubeFx::TubeFxImpl::DrawPreviousShapes()
   });
 
   m_prevShapesColorT.Increment();
+}
+
+inline auto TubeFx::TubeFxImpl::GetClipped(int32_t val, uint32_t maxVal) -> int32_t
+{
+  if (val < 0)
+  {
+    return 0;
+  }
+  if (val > static_cast<int32_t>(maxVal))
+  {
+    return static_cast<int32_t>(maxVal);
+  }
+  return val;
 }
 
 auto TubeFx::TubeFxImpl::GetApproxBrightnessAttenuation() const -> float

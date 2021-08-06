@@ -1,6 +1,8 @@
 #ifndef VISUALIZATION_GOOM_GOOM_GRAPHIC_H
 #define VISUALIZATION_GOOM_GOOM_GRAPHIC_H
 
+#define GOOM_DEBUG
+
 #include "goom_config.h"
 
 #include <algorithm>
@@ -292,14 +294,20 @@ inline void PixelBuffer::CopyTo(uint32_t* intBuff, const uint32_t length) const
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) const -> const Pixel&
 {
+#ifdef GOOM_DEBUG
   return m_buff.at(y * m_width + x);
-  //return m_buff[y * m_width + x];
+#else
+  return m_buff[y * m_width + x];
+#endif
 }
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) -> Pixel&
 {
+#ifdef GOOM_DEBUG
   return m_buff.at(y * m_width + x);
-  //return m_buff[y * m_width + x];
+#else
+  return m_buff[y * m_width + x];
+#endif
 }
 
 inline auto PixelBuffer::GetRowIter(const size_t y)

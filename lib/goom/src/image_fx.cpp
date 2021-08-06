@@ -8,7 +8,7 @@
 #include "goomutils/colorutils.h"
 #include "goomutils/graphics/image_bitmaps.h"
 #include "goomutils/logging_control.h"
-#undef NO_LOGGING
+//#undef NO_LOGGING
 #include "goomutils/goomrand.h"
 #include "goomutils/logging.h"
 #include "goomutils/mathutils.h"

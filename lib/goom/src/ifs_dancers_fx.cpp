@@ -40,7 +40,8 @@
 #include "goom_stats.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
-// #undef NO_LOGGING
+#include "goomutils/logging_control.h"
+//#undef NO_LOGGING
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging.h"
 #include "goomutils/random_colormaps.h"

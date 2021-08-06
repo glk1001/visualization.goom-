@@ -4,6 +4,10 @@
 #include "goom_graphic.h"
 #include "goomutils/colorutils.h"
 
+#ifdef GOOM_DEBUG
+#undef NDEBUG
+#endif
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -99,11 +103,12 @@ inline void DrawMethods::DrawPixels(const int32_t x,
                                     const std::vector<Pixel>& newColors,
                                     const bool allowOverexposed) const
 {
-  if (x < 0 || y < 0 || static_cast<uint32_t>(x) >= m_screenWidth ||
-      static_cast<uint32_t>(y) >= m_screenHeight)
-  {
-    return;
-  }
+#ifdef GOOM_DEBUG
+  assert(x >= 0);
+  assert(y >= 0);
+  assert(static_cast<uint32_t>(x) < m_screenWidth);
+  assert(static_cast<uint32_t>(y) < m_screenHeight);
+#endif
   m_drawPixelFunc(x, y, newColors, allowOverexposed);
 }
 
