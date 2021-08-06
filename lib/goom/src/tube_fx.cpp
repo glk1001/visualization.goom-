@@ -545,12 +545,12 @@ void TubeFx::TubeFxImpl::DrawPreviousShapes()
   const Pixel tintColor = m_prevShapesColorMap->GetColor(m_prevShapesColorT());
   const float brightnessAttenuation = GetApproxBrightnessAttenuation();
 
+  const int32_t jitterAmount = !m_prevShapesJitter ? 0
+                                                   : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT,
+                                                                    PREV_SHAPES_JITTER_AMOUNT + 1);
+
   m_drawToContainer.IterateChangedCoordsNewToOld([&](const int32_t x, const int32_t y,
                                                      const ColorsList& colorsList) {
-    const int32_t jitterAmount =
-        !m_prevShapesJitter
-            ? 0
-            : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
     const int32_t newX = x + jitterAmount;
     const int32_t newY = y + jitterAmount;
     constexpr float BRIGHTNESS_FACTOR = 0.4F;
