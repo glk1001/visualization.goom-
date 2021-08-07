@@ -339,12 +339,22 @@ inline void TubeFx::TubeFxImpl::SetWeightedColorMaps(
 {
   m_colorMaps = weightedMaps;
   m_prevShapesColorMap = &m_colorMaps->GetRandomColorMap();
+
+  for (auto& tube : m_tubes)
+  {
+    tube.SetColorMaps(m_colorMaps.get());
+  }
 }
 
 inline void TubeFx::TubeFxImpl::SetWeightedLowColorMaps(
     const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
 {
   m_lowColorMaps = weightedMaps;
+
+  for (auto& tube : m_tubes)
+  {
+    tube.SetLowColorMaps(m_lowColorMaps.get());
+  }
 }
 
 void TubeFx::TubeFxImpl::Log(const GoomStats::LogStatsValueFunc& logVal) const

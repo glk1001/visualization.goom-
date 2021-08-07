@@ -14,6 +14,8 @@
 #include "v2d.h"
 
 #include <algorithm>
+#undef NDEBUG
+#include <cassert>
 #include <cstdint>
 #include <memory>
 #include <random>
@@ -35,6 +37,7 @@ using UTILS::GetIncreasedChroma;
 using UTILS::GetLightenedColor;
 using UTILS::GetRandInRange;
 using UTILS::IColorMap;
+using UTILS::Logging;
 using UTILS::m_pi;
 using UTILS::m_third_pi;
 using UTILS::m_two_pi;
@@ -127,8 +130,8 @@ public:
            const DrawFuncs& drawFuncs,
            uint32_t screenWidth,
            uint32_t screenHeight,
-           const UTILS::RandomColorMaps* colorMaps,
-           const UTILS::RandomColorMaps* lowColorMaps,
+           const RandomColorMaps* colorMaps,
+           const RandomColorMaps* lowColorMaps,
            float radiusEdgeOffset,
            float brightnessFactor) noexcept;
   ~TubeImpl() noexcept;
@@ -139,6 +142,9 @@ public:
 
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
+
+  void SetColorMaps(const RandomColorMaps* colorMaps);
+  void SetLowColorMaps(const RandomColorMaps* lowColorMaps);
 
   void ResetPaths();
   void ResetColorMaps();
@@ -227,6 +233,16 @@ Tube::Tube(Tube&& other) noexcept : m_impl{std::move(other.m_impl)}
 }
 
 Tube::~Tube() noexcept = default;
+
+void Tube::SetColorMaps(const RandomColorMaps* const colorMaps)
+{
+  m_impl->SetColorMaps(colorMaps);
+}
+
+void Tube::SetLowColorMaps(const RandomColorMaps* const lowColorMaps)
+{
+  m_impl->SetLowColorMaps(lowColorMaps);
+}
 
 void Tube::ResetPaths()
 {
@@ -371,6 +387,9 @@ public:
   auto GetBrightnessFactor() const -> float;
   void SetBrightnessFactor(float val);
 
+  void SetColorMaps(const RandomColorMaps* colorMaps);
+  void SetLowColorMaps(const RandomColorMaps* lowColorMaps);
+
   void ResetColorMaps();
   void RotateShapeColorMaps();
   [[nodiscard]] auto GetColors(LowColorTypes lowColorType,
@@ -380,8 +399,8 @@ public:
   void UpdateAllTValues();
 
 private:
-  const RandomColorMaps* const m_randomColorMaps;
-  const RandomColorMaps* const m_randomInnerColorMaps;
+  const RandomColorMaps* m_randomColorMaps;
+  const RandomColorMaps* m_randomInnerColorMaps;
   float m_brightnessFactor;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
@@ -574,6 +593,16 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
     angle += angleStep;
     shapeNum++;
   }
+}
+
+void Tube::TubeImpl::SetColorMaps(const RandomColorMaps* const colorMaps)
+{
+  m_colorizer->SetColorMaps(colorMaps);
+}
+
+void Tube::TubeImpl::SetLowColorMaps(const RandomColorMaps* const lowColorMaps)
+{
+  m_colorizer->SetLowColorMaps(lowColorMaps);
 }
 
 void Tube::TubeImpl::ResetPaths()
@@ -902,6 +931,16 @@ void ShapeColorizer::InitColorMaps()
   }
 }
 
+void ShapeColorizer::SetColorMaps(const RandomColorMaps* const colorMaps)
+{
+  m_randomColorMaps = colorMaps;
+}
+
+void ShapeColorizer::SetLowColorMaps(const RandomColorMaps* const lowColorMaps)
+{
+  m_randomInnerColorMaps = lowColorMaps;
+}
+
 void ShapeColorizer::ResetColorMaps()
 {
   ResetColorMixMode();
@@ -929,6 +968,8 @@ void ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* colorMaps,
                                         std::vector<ShapeColors>* oldColors,
                                         TValue* t)
 {
+  assert(colorMaps->size() == oldColors->size());
+
   m_outerCircleColorMap = &m_randomInnerColorMaps->GetRandomColorMap();
   m_outerCircleLowColorMap = &m_randomInnerColorMaps->GetRandomColorMap();
 

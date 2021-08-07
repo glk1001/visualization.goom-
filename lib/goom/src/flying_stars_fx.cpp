@@ -8,9 +8,9 @@
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/image_bitmaps.h"
-//#include "goomutils/logging_control.h"
+#include "goomutils/logging_control.h"
 //#undef NO_LOGGING
-//#include "goomutils/logging.h"
+#include "goomutils/logging.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/random_colormaps.h"
@@ -689,7 +689,7 @@ void FlyingStarsFx::FlyingStarsImpl::UpdateAngleColorMapNames()
 {
   for (size_t i = 0; i < NUM_SEGMENTS; ++i)
   {
-    m_angleColorMapName[i] = GetNextAngleColorMapName();
+    m_angleColorMapName.at(i) = GetNextAngleColorMapName();
   }
 }
 
@@ -697,28 +697,28 @@ auto FlyingStarsFx::FlyingStarsImpl::GetDominantColorMapPtr(const float angle) c
     -> std::shared_ptr<const IColorMap>
 {
   return std::const_pointer_cast<const IColorMap>(
-      m_colorMaps->GetColorMapPtr(m_angleColorMapName[GetSegmentNum(angle)]));
+      m_colorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetDominantLowColorMapPtr(const float angle) const
     -> std::shared_ptr<const IColorMap>
 {
   return std::const_pointer_cast<const IColorMap>(
-      m_colorMaps->GetColorMapPtr(m_angleColorMapName[GetSegmentNum(angle)]));
+      m_colorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetCurrentColorMapPtr(const float angle) const
     -> std::shared_ptr<const IColorMap>
 {
   return std::const_pointer_cast<const IColorMap>(
-      m_colorMaps->GetColorMapPtr(m_angleColorMapName[GetSegmentNum(angle)]));
+      m_colorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetCurrentLowColorMapPtr(const float angle) const
     -> std::shared_ptr<const IColorMap>
 {
   return std::const_pointer_cast<const IColorMap>(
-      m_colorMaps->GetColorMapPtr(m_angleColorMapName[GetSegmentNum(angle)]));
+      m_colorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetSegmentNum(const float angle) -> size_t

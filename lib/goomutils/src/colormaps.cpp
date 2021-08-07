@@ -6,6 +6,9 @@
 #include "colorutils.h"
 #include "enumutils.h"
 #include "goom/goom_graphic.h"
+#include "goomutils/logging_control.h"
+//#undef NO_LOGGING
+#include "goomutils/logging.h"
 
 #include <algorithm>
 #undef NDEBUG

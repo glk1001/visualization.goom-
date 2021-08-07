@@ -94,6 +94,9 @@ public:
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
 
+  void SetColorMaps(const UTILS::RandomColorMaps* colorMaps);
+  void SetLowColorMaps(const UTILS::RandomColorMaps* lowColorMaps);
+
   void ResetPaths();
   void ResetColorMaps();
   void RotateShapeColorMaps();
