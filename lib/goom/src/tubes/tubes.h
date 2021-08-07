@@ -37,6 +37,7 @@ struct ShapeColors
   Pixel outerCircleColor{};
   Pixel outerCircleLowColor{};
 };
+
 struct PathParams
 {
   float oscillatingAmplitude = 1.0;
@@ -94,8 +95,8 @@ public:
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
 
-  void SetColorMaps(const UTILS::RandomColorMaps* colorMaps);
-  void SetLowColorMaps(const UTILS::RandomColorMaps* lowColorMaps);
+  void SetWeightedColorMaps(const UTILS::RandomColorMaps* colorMaps);
+  void SetWeightedLowColorMaps(const UTILS::RandomColorMaps* lowColorMaps);
 
   void ResetPaths();
   void ResetColorMaps();

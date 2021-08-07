@@ -29,7 +29,7 @@ Colorizer::Colorizer() noexcept
   SetWeightedColorMaps(GetSlightlyDivergingStandardMaps());
 }
 
-inline void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
 

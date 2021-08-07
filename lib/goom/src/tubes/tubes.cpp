@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <memory>
 #include <random>
+#include <utility>
 #include <vector>
 
 #if __cplusplus <= 201402L
@@ -80,11 +81,6 @@ constexpr float MAX_CIRCLE_SPEED = 0.008F;
 constexpr float MIN_CENTRE_SPEED = 0.0005F;
 constexpr float NML_CENTRE_SPEED = 0.005F;
 constexpr float MAX_CENTRE_SPEED = 0.05F;
-/**
-constexpr float MIN_CENTRE_SPEED = 0.00005F;
-constexpr float NML_CENTRE_SPEED = 0.0005F;
-constexpr float MAX_CENTRE_SPEED = 0.005F;
- **/
 
 static const Weights<ColorMapMixMode> S_COLOR_MAP_MIX_MODES{{
     {ColorMapMixMode::SHAPES_ONLY, 20},
@@ -127,7 +123,7 @@ class Tube::TubeImpl
 public:
   TubeImpl() noexcept = delete;
   TubeImpl(uint32_t tubeId,
-           const DrawFuncs& drawFuncs,
+           DrawFuncs  drawFuncs,
            uint32_t screenWidth,
            uint32_t screenHeight,
            const RandomColorMaps* colorMaps,
@@ -143,8 +139,8 @@ public:
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
 
-  void SetColorMaps(const RandomColorMaps* colorMaps);
-  void SetLowColorMaps(const RandomColorMaps* lowColorMaps);
+  void SetWeightedColorMaps(const RandomColorMaps* colorMaps);
+  void SetWeightedLowColorMaps(const RandomColorMaps* lowColorMaps);
 
   void ResetPaths();
   void ResetColorMaps();
@@ -177,25 +173,25 @@ public:
 
 private:
   const uint32_t m_tubeId;
-  DrawFuncs m_drawFuncs;
+  const DrawFuncs m_drawFuncs;
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  std::unique_ptr<ShapeColorizer> m_colorizer;
+  const std::unique_ptr<ShapeColorizer> m_colorizer;
   bool m_active = true;
   std::vector<Shape> m_shapes{};
   int32_t m_maxJitterOffset{};
   std::unique_ptr<ParametricPath> m_centrePath{};
   TransformCentreFunc m_getTransformedCentre{};
 
-  UTILS::Timer m_circleGroupTimer{GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP)};
-  UTILS::Timer m_interiorShapeTimer{MAX_INTERIOR_SHAPES_TIME};
-  UTILS::Timer m_noBoundaryShapeTimer{MAX_NO_BOUNDARY_SHAPES_TIME};
+  Timer m_circleGroupTimer{GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP)};
+  Timer m_interiorShapeTimer{MAX_INTERIOR_SHAPES_TIME};
+  Timer m_noBoundaryShapeTimer{MAX_NO_BOUNDARY_SHAPES_TIME};
   float m_hexLen = MIN_HEX_SIZE;
   auto GetHexLen() const -> float;
   uint32_t m_interiorShapeSize;
   static auto GetInteriorShapeSize(float hexLen) -> uint32_t;
 
-  UTILS::Timer m_lowColorTypeTimer{MAX_LOW_COLOR_TYPE_TIME};
+  Timer m_lowColorTypeTimer{MAX_LOW_COLOR_TYPE_TIME};
   LowColorTypes m_currentLowColorType = LowColorTypes::TRUE_LOW_COLOR;
 
   void InitShapes(float radiusEdgeOffset);
@@ -228,20 +224,20 @@ Tube::Tube(const uint32_t tubeId,
 {
 }
 
-Tube::Tube(Tube&& other) noexcept : m_impl{std::move(other.m_impl)}
+Tube::Tube(Tube&& other) noexcept : m_impl{other.m_impl}
 {
 }
 
 Tube::~Tube() noexcept = default;
 
-void Tube::SetColorMaps(const RandomColorMaps* const colorMaps)
+void Tube::SetWeightedColorMaps(const RandomColorMaps* const colorMaps)
 {
-  m_impl->SetColorMaps(colorMaps);
+  m_impl->SetWeightedColorMaps(colorMaps);
 }
 
-void Tube::SetLowColorMaps(const RandomColorMaps* const lowColorMaps)
+void Tube::SetWeightedLowColorMaps(const RandomColorMaps* const lowColorMaps)
 {
-  m_impl->SetLowColorMaps(lowColorMaps);
+  m_impl->SetWeightedLowColorMaps(lowColorMaps);
 }
 
 void Tube::ResetPaths()
@@ -387,8 +383,8 @@ public:
   auto GetBrightnessFactor() const -> float;
   void SetBrightnessFactor(float val);
 
-  void SetColorMaps(const RandomColorMaps* colorMaps);
-  void SetLowColorMaps(const RandomColorMaps* lowColorMaps);
+  void SetWeightedColorMaps(const RandomColorMaps* colorMaps);
+  void SetWeightedLowColorMaps(const RandomColorMaps* lowColorMaps);
 
   void ResetColorMaps();
   void RotateShapeColorMaps();
@@ -532,7 +528,7 @@ auto ParametricPath::GetNextPoint() const -> V2dInt
 }
 
 Tube::TubeImpl::TubeImpl(const uint32_t tubeId,
-                         const DrawFuncs& drawFuncs,
+                         DrawFuncs  drawFuncs,
                          const uint32_t screenWidth,
                          const uint32_t screenHeight,
                          const RandomColorMaps* const colorMaps,
@@ -540,7 +536,7 @@ Tube::TubeImpl::TubeImpl(const uint32_t tubeId,
                          const float radiusEdgeOffset,
                          float brightnessFactor) noexcept
   : m_tubeId{tubeId},
-    m_drawFuncs{drawFuncs},
+    m_drawFuncs{std::move(drawFuncs)},
     m_screenWidth{screenWidth},
     m_screenHeight{screenHeight},
     m_colorizer{std::make_unique<ShapeColorizer>(screenWidth,
@@ -595,14 +591,14 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
   }
 }
 
-void Tube::TubeImpl::SetColorMaps(const RandomColorMaps* const colorMaps)
+void Tube::TubeImpl::SetWeightedColorMaps(const RandomColorMaps* const colorMaps)
 {
-  m_colorizer->SetColorMaps(colorMaps);
+  m_colorizer->SetWeightedColorMaps(colorMaps);
 }
 
-void Tube::TubeImpl::SetLowColorMaps(const RandomColorMaps* const lowColorMaps)
+void Tube::TubeImpl::SetWeightedLowColorMaps(const RandomColorMaps* const lowColorMaps)
 {
-  m_colorizer->SetLowColorMaps(lowColorMaps);
+  m_colorizer->SetWeightedLowColorMaps(lowColorMaps);
 }
 
 void Tube::TubeImpl::ResetPaths()
@@ -931,12 +927,12 @@ void ShapeColorizer::InitColorMaps()
   }
 }
 
-void ShapeColorizer::SetColorMaps(const RandomColorMaps* const colorMaps)
+void ShapeColorizer::SetWeightedColorMaps(const RandomColorMaps* colorMaps)
 {
   m_randomColorMaps = colorMaps;
 }
 
-void ShapeColorizer::SetLowColorMaps(const RandomColorMaps* const lowColorMaps)
+void ShapeColorizer::SetWeightedLowColorMaps(const RandomColorMaps* lowColorMaps)
 {
   m_randomInnerColorMaps = lowColorMaps;
 }

@@ -342,7 +342,7 @@ inline void TubeFx::TubeFxImpl::SetWeightedColorMaps(
 
   for (auto& tube : m_tubes)
   {
-    tube.SetColorMaps(m_colorMaps.get());
+    tube.SetWeightedColorMaps(m_colorMaps.get());
   }
 }
 
@@ -353,7 +353,7 @@ inline void TubeFx::TubeFxImpl::SetWeightedLowColorMaps(
 
   for (auto& tube : m_tubes)
   {
-    tube.SetLowColorMaps(m_lowColorMaps.get());
+    tube.SetWeightedLowColorMaps(m_lowColorMaps.get());
   }
 }
 
