@@ -61,8 +61,10 @@ constexpr bool OSCILLATING_SHAPE_PATHS = true;
 // TODO: Probability and random should be higher up???????
 constexpr float PROB_INTERIOR_SHAPE = 45.0F / 50.0F;
 constexpr uint32_t MAX_INTERIOR_SHAPES_TIME = 500;
-constexpr float PROB_NO_BOUNDARY_SHAPES = 1.0F / 5.0F;
+constexpr float PROB_NO_BOUNDARY_SHAPES = 10.0F / 50.0F;
 constexpr uint32_t MAX_NO_BOUNDARY_SHAPES_TIME = 1;
+constexpr float PROB_HEX_DOT_SHAPE = 1.0F / 50.0F;
+constexpr uint32_t MAX_HEX_DOT_SHAPES_TIME = 100;
 
 constexpr uint32_t MIN_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 6;
 constexpr uint32_t MAX_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 3;
@@ -186,6 +188,7 @@ private:
   Timer m_circleGroupTimer{GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP)};
   Timer m_interiorShapeTimer{MAX_INTERIOR_SHAPES_TIME};
   Timer m_noBoundaryShapeTimer{MAX_NO_BOUNDARY_SHAPES_TIME};
+  Timer m_hexDotShapeTimer{MAX_HEX_DOT_SHAPES_TIME, true};
   float m_hexLen = MIN_HEX_SIZE;
   auto GetHexLen() const -> float;
   uint32_t m_interiorShapeSize;
@@ -198,8 +201,9 @@ private:
   void DrawShape(const Shape& shape, const V2dInt& centreOffset) const;
   void DrawInteriorShape(const V2dInt& shapeCentrePos, const ShapeColors& allColors) const;
   void DrawHexOutline(const V2dInt& hexCentre,
-                      const std::vector<Pixel>& lineColors,
+                      const ShapeColors& allColors,
                       uint8_t lineThickness) const;
+  void DrawOuterCircle(const V2dInt& shapeCentrePos, const ShapeColors& allColors) const;
 };
 
 const float Tube::NORMAL_CENTRE_SPEED = NML_CENTRE_SPEED;
@@ -800,6 +804,12 @@ void Tube::TubeImpl::UpdateTimers()
     m_noBoundaryShapeTimer.ResetToZero();
   }
 
+  m_hexDotShapeTimer.Increment();
+  if (m_hexDotShapeTimer.Finished() && ProbabilityOf(PROB_HEX_DOT_SHAPE))
+  {
+    m_hexDotShapeTimer.ResetToZero();
+  }
+
   m_lowColorTypeTimer.Increment();
   if (m_lowColorTypeTimer.Finished())
   {
@@ -829,26 +839,30 @@ void Tube::TubeImpl::DrawShape(const Shape& shape, const V2dInt& centreOffset) c
 
   if (m_noBoundaryShapeTimer.Finished())
   {
-    const std::vector<Pixel> lineColors{allColors.color, allColors.lowColor};
-    DrawHexOutline(shapeCentrePos, lineColors, shape.lineThickness);
+    DrawHexOutline(shapeCentrePos, allColors, shape.lineThickness);
   }
 
   constexpr float MIN_HEX_LEN_FOR_INTERIOR = 2.0;
   if (!m_interiorShapeTimer.Finished() && m_hexLen > MIN_HEX_LEN_FOR_INTERIOR + SMALL_FLOAT)
   {
     DrawInteriorShape(shapeCentrePos, allColors);
+    DrawOuterCircle(shapeCentrePos, allColors);
   }
 
   shape.path->IncrementT();
 }
 
 void Tube::TubeImpl::DrawHexOutline(const V2dInt& hexCentre,
-                                    const std::vector<Pixel>& lineColors,
+                                    const ShapeColors& allColors,
                                     const uint8_t lineThickness) const
 {
   constexpr uint32_t NUM_HEX_SIDES = 6;
   constexpr float ANGLE_STEP = GOOM::UTILS::m_third_pi;
   constexpr float START_ANGLE = 2.0 * ANGLE_STEP;
+  const std::vector<Pixel> lineColors{allColors.color, allColors.lowColor};
+  const std::vector<Pixel> outerCircleColors{allColors.outerCircleColor,
+                                             allColors.outerCircleLowColor};
+  const bool drawHexDot = !m_hexDotShapeTimer.Finished();
 
   // Start hex shape to right of centre position.
   auto x0 = static_cast<int32_t>(std::round(static_cast<float>(hexCentre.x) + m_hexLen));
@@ -861,6 +875,12 @@ void Tube::TubeImpl::DrawHexOutline(const V2dInt& hexCentre,
     const int32_t y1 = y0 + static_cast<int32_t>(std::round(m_hexLen * std::sin(angle)));
 
     m_drawFuncs.drawLine(x0, y0, x1, y1, lineColors, lineThickness);
+    if (drawHexDot)
+    {
+      constexpr uint32_t HEX_DOT_SIZE = 3;
+      m_drawFuncs.drawSmallImage(x1, y1, SmallImageBitmaps::ImageNames::SPHERE, HEX_DOT_SIZE,
+                                 outerCircleColors);
+    }
 
     angle += ANGLE_STEP;
     x0 = x1;
@@ -874,7 +894,11 @@ inline void Tube::TubeImpl::DrawInteriorShape(const V2dInt& shapeCentrePos,
   const std::vector<Pixel> colors{allColors.innerColor, allColors.innerLowColor};
   m_drawFuncs.drawSmallImage(shapeCentrePos.x, shapeCentrePos.y,
                              SmallImageBitmaps::ImageNames::SPHERE, m_interiorShapeSize, colors);
+}
 
+inline void Tube::TubeImpl::DrawOuterCircle(const V2dInt& shapeCentrePos,
+                                            const ShapeColors& allColors) const
+{
   constexpr float OUTER_CIRCLE_RADIUS_FACTOR = 1.5;
   const auto outerCircleRadius =
       static_cast<int32_t>(std::round(OUTER_CIRCLE_RADIUS_FACTOR * m_hexLen));

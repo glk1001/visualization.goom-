@@ -18,8 +18,8 @@ namespace GOOM::UTILS
 class Timer
 {
 public:
-  Timer() noexcept = default;
-  explicit Timer(uint32_t numCount) noexcept;
+  Timer() noexcept = delete;
+  explicit Timer(uint32_t numCount, bool setToFinished = false) noexcept;
 
   auto GetTimeLimit() const -> uint32_t;
   void SetTimeLimit(uint32_t val);
@@ -31,11 +31,12 @@ public:
   auto GetCurrentCount() const -> uint32_t;
 
 private:
-  uint32_t m_numCount{};
-  uint32_t m_count{};
+  uint32_t m_numCount;
+  uint32_t m_count;
 };
 
-inline Timer::Timer(const uint32_t numCount) noexcept : m_numCount{numCount}
+inline Timer::Timer(const uint32_t numCount, const bool setToFinished) noexcept
+  : m_numCount{numCount}, m_count(setToFinished ? m_numCount : 0)
 {
 }
 
