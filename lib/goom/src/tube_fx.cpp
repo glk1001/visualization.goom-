@@ -102,7 +102,7 @@ constexpr float PROB_INCREASE_SPEED = 1.0F / 2.0F;
 constexpr float PROB_RANDOM_INCREASE_SPEED = 1.0F / 20.0F;
 constexpr float PROB_NORMAL_SPEED = 1.0F / 20.0F;
 constexpr float PROB_NO_SHAPE_JITTER = 0.8F;
-constexpr float PROB_PREV_SHAPES_JITTER = 0.4F;
+constexpr float PROB_PREV_SHAPES_JITTER = 0.0F;
 constexpr float PROB_OSCILLATING_SHAPE_PATH = 1.0F;
 constexpr float PROB_MOVE_AWAY_FROM_CENTRE = 0.3F;
 
@@ -674,7 +674,7 @@ void TubeFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
             : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
     const int32_t newX = GetClipped(x + jitterAmount, m_draw->GetScreenWidth() - 1);
     const int32_t newY = GetClipped(y + jitterAmount, m_draw->GetScreenHeight() - 1);
-    constexpr float BRIGHTNESS_FACTOR = 0.4F;
+    constexpr float BRIGHTNESS_FACTOR = 0.8F;
     const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
     const std::vector<Pixel>& colors = colorsList.back();
     const Pixel newColor0 = GetBrighterColor(
