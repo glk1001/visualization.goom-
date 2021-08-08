@@ -59,6 +59,8 @@ constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{{
     {false, false, 0.19F, 130.0F, {50.0F, -0.75F, -1.0F}},
     {false, false, 0.18F, 130.0F, {40.0F, +1.0F, +0.75F}},
 }};
+constexpr size_t MAIN_TUBE_INDEX = 0;
+constexpr size_t SECONDARY_TUBES_START_INDEX = 1;
 constexpr PathParams COMMON_CIRCLE_PATH_PARMS{10.0F, +3.0F, +3.0F};
 
 auto lerp(const PathParams& p0, const PathParams& p1, const float t) -> PathParams
@@ -100,7 +102,7 @@ constexpr float PROB_INCREASE_SPEED = 1.0F / 2.0F;
 constexpr float PROB_RANDOM_INCREASE_SPEED = 1.0F / 20.0F;
 constexpr float PROB_NORMAL_SPEED = 1.0F / 20.0F;
 constexpr float PROB_NO_SHAPE_JITTER = 0.8F;
-constexpr float PROB_PREV_SHAPES_JITTER = 0.5F;
+constexpr float PROB_PREV_SHAPES_JITTER = 0.4F;
 constexpr float PROB_OSCILLATING_SHAPE_PATH = 1.0F;
 constexpr float PROB_MOVE_AWAY_FROM_CENTRE = 0.3F;
 
@@ -138,13 +140,13 @@ private:
   std::string m_resourcesDirectory{};
   const SmallImageBitmaps* m_smallBitmaps{};
   uint64_t m_updateNum = 0;
-  uint32_t m_updateNumSinceResume = 0;
   TubeStats m_stats{};
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
   bool m_allowOverexposed = false;
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath = ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
+  uint32_t m_numCapturedPrevShapesGroups = 0;
   const IColorMap* m_prevShapesColorMap{};
   TValue m_prevShapesColorT{TValue::StepType::CONTINUOUS_REVERSIBLE, 0.01F};
   static constexpr float PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
@@ -152,7 +154,7 @@ private:
   [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
   bool m_prevShapesJitter = false;
   static constexpr int32_t PREV_SHAPES_JITTER_AMOUNT = 2;
-  static constexpr uint32_t NUM_UPDATES_OF_PREV_SHAPES = 4;
+  static constexpr uint32_t MIN_CAPTURED_PREV_SHAPES_GROUPS = 4;
 
   std::vector<Tube> m_tubes{};
   static constexpr float ALL_JOIN_CENTRE_STEP = 0.001F;
@@ -175,7 +177,10 @@ private:
   void ResetTubes();
   void DoUpdates();
   void DrawShapes();
+  void AdjustTubePaths();
+  void DrawTubeCircles();
   void DrawPreviousShapes();
+  void DrawCapturedPreviousShapesGroups();
   [[nodiscard]] static auto GetClipped(int32_t val, uint32_t maxVal) -> int32_t;
   void UpdatePreviousShapesSettings();
   void UpdateColorMaps();
@@ -184,16 +189,28 @@ private:
   void ChangeSpeedForHigherVolumes(Tube& tube);
   void ChangeJitterOffsets(Tube& tube);
 
-  void DrawLine(
+  void DrawLineToOne(
       int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors, uint8_t thickness);
-  void DrawCircle(int x, int y, int radius, const std::vector<Pixel>& colors, uint8_t thickness);
-  void DrawImage(int x,
-                 int y,
-                 SmallImageBitmaps::ImageNames imageName,
-                 uint32_t size,
-                 const std::vector<Pixel>& colors);
+  void DrawCircleToOne(
+      int x, int y, int radius, const std::vector<Pixel>& colors, uint8_t thickness);
+  void DrawImageToOne(int x,
+                      int y,
+                      SmallImageBitmaps::ImageNames imageName,
+                      uint32_t size,
+                      const std::vector<Pixel>& colors);
+  void DrawLineToMany(
+      int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors, uint8_t thickness);
+  void DrawCircleToMany(
+      int x, int y, int radius, const std::vector<Pixel>& colors, uint8_t thickness);
+  void DrawImageToMany(int x,
+                       int y,
+                       SmallImageBitmaps::ImageNames imageName,
+                       uint32_t size,
+                       const std::vector<Pixel>& colors);
   [[nodiscard]] auto GetImageBitmap(SmallImageBitmaps::ImageNames imageName, size_t size)
       -> const ImageBitmap&;
+  static auto GetSimpleColorFuncs(const std::vector<Pixel>& colors)
+      -> std::vector<IGoomDraw::GetBitmapColorFunc>;
 };
 
 TubeFx::TubeFx(const IGoomDraw* const draw, const std::shared_ptr<const PluginInfo>& info) noexcept
@@ -292,14 +309,14 @@ TubeFx::TubeFxImpl::~TubeFxImpl() noexcept = default;
 void TubeFx::TubeFxImpl::Start()
 {
   m_updateNum = 0;
-  m_updateNumSinceResume = 0;
+  m_numCapturedPrevShapesGroups = 0;
 
   InitTubes();
 }
 
 void TubeFx::TubeFxImpl::Resume()
 {
-  m_updateNumSinceResume = 0;
+  m_numCapturedPrevShapesGroups = 0;
 
   m_oscillatingShapePath = ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
   m_allowMovingAwayFromCentre = ProbabilityOf(PROB_MOVE_AWAY_FROM_CENTRE);
@@ -367,19 +384,32 @@ void TubeFx::TubeFxImpl::InitTubes()
   assert(m_colorMaps != nullptr);
   assert(m_lowColorMaps != nullptr);
 
-  Tube::DrawFuncs drawFuncs{
+  const Tube::DrawFuncs drawToOneFuncs{
       [&](int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors,
-          const uint8_t thickness) { DrawLine(x1, y1, x2, y2, colors, thickness); },
+          const uint8_t thickness) { DrawLineToOne(x1, y1, x2, y2, colors, thickness); },
       [&](int x, int y, int radius, const std::vector<Pixel>& colors, const uint8_t thickness) {
-        DrawCircle(x, y, radius, colors, thickness);
+        DrawCircleToOne(x, y, radius, colors, thickness);
       },
       [&](int x, int y, SmallImageBitmaps::ImageNames imageName, const uint32_t size,
-          const std::vector<Pixel>& colors) { DrawImage(x, y, imageName, size, colors); },
+          const std::vector<Pixel>& colors) { DrawImageToOne(x, y, imageName, size, colors); },
+  };
+  const Tube::DrawFuncs drawToManyFuncs{
+      [&](int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors,
+          const uint8_t thickness) { DrawLineToMany(x1, y1, x2, y2, colors, thickness); },
+      [&](int x, int y, int radius, const std::vector<Pixel>& colors, const uint8_t thickness) {
+        DrawCircleToMany(x, y, radius, colors, thickness);
+      },
+      [&](int x, int y, SmallImageBitmaps::ImageNames imageName, const uint32_t size,
+          const std::vector<Pixel>& colors) { DrawImageToMany(x, y, imageName, size, colors); },
   };
 
-  for (uint32_t i = 0; i < NUM_TUBES; i++)
+  m_tubes.emplace_back(MAIN_TUBE_INDEX, drawToManyFuncs, m_draw->GetScreenWidth(),
+                       m_draw->GetScreenHeight(), m_colorMaps.get(), m_lowColorMaps.get(),
+                       TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
+                       TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor);
+  for (uint32_t i = SECONDARY_TUBES_START_INDEX; i < NUM_TUBES; i++)
   {
-    m_tubes.emplace_back(i, drawFuncs, m_draw->GetScreenWidth(), m_draw->GetScreenHeight(),
+    m_tubes.emplace_back(i, drawToOneFuncs, m_draw->GetScreenWidth(), m_draw->GetScreenHeight(),
                          m_colorMaps.get(), m_lowColorMaps.get(),
                          TUBE_SETTINGS.at(i).radiusEdgeOffset,
                          TUBE_SETTINGS.at(i).brightnessFactor);
@@ -393,6 +423,74 @@ void TubeFx::TubeFxImpl::InitTubes()
   }
 
   InitPaths();
+}
+
+void TubeFx::TubeFxImpl::DrawLineToOne(const int x1,
+                                       const int y1,
+                                       const int x2,
+                                       const int y2,
+                                       const std::vector<Pixel>& colors,
+                                       const uint8_t thickness)
+{
+  m_draw->Line(x1, y1, x2, y2, colors, thickness);
+}
+
+void TubeFx::TubeFxImpl::DrawLineToMany(const int x1,
+                                        const int y1,
+                                        const int x2,
+                                        const int y2,
+                                        const std::vector<Pixel>& colors,
+                                        const uint8_t thickness)
+{
+  m_drawToMany.Line(x1, y1, x2, y2, colors, thickness);
+}
+
+void TubeFx::TubeFxImpl::DrawCircleToOne(const int x,
+                                         const int y,
+                                         const int radius,
+                                         const std::vector<Pixel>& colors,
+                                         [[maybe_unused]] const uint8_t thickness)
+{
+  m_draw->Circle(x, y, radius, colors);
+}
+
+void TubeFx::TubeFxImpl::DrawCircleToMany(const int x,
+                                          const int y,
+                                          const int radius,
+                                          const std::vector<Pixel>& colors,
+                                          [[maybe_unused]] const uint8_t thickness)
+{
+  m_drawToMany.Circle(x, y, radius, colors);
+}
+
+void TubeFx::TubeFxImpl::DrawImageToOne(const int x,
+                                        const int y,
+                                        const SmallImageBitmaps::ImageNames imageName,
+                                        const uint32_t size,
+                                        const std::vector<Pixel>& colors)
+{
+  m_draw->Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors),
+                 m_allowOverexposed);
+}
+
+void TubeFx::TubeFxImpl::DrawImageToMany(const int x,
+                                         const int y,
+                                         const SmallImageBitmaps::ImageNames imageName,
+                                         const uint32_t size,
+                                         const std::vector<Pixel>& colors)
+{
+  m_drawToMany.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors),
+                      m_allowOverexposed);
+}
+
+inline auto TubeFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& colors)
+    -> std::vector<IGoomDraw::GetBitmapColorFunc>
+{
+  const auto getColor1 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
+                             [[maybe_unused]] const Pixel& b) -> Pixel { return colors[0]; };
+  const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
+                             [[maybe_unused]] const Pixel& b) -> Pixel { return colors[1]; };
+  return {getColor1, getColor2};
 }
 
 void TubeFx::TubeFxImpl::InitPaths()
@@ -440,7 +538,6 @@ void TubeFx::TubeFxImpl::ApplyMultiple()
 void TubeFx::TubeFxImpl::DoUpdates()
 {
   m_updateNum++;
-  m_updateNumSinceResume++;
 
   m_colorMapTimer.Increment();
   m_changedSpeedTimer.Increment();
@@ -511,6 +608,30 @@ void TubeFx::TubeFxImpl::DrawShapes()
 {
   const size_t prevShapesSize = m_drawToContainer.GetNumChangedCoords();
 
+  DrawTubeCircles();
+  AdjustTubePaths();
+
+  m_numCapturedPrevShapesGroups++;
+  if (m_numCapturedPrevShapesGroups >= MIN_CAPTURED_PREV_SHAPES_GROUPS)
+  {
+    m_drawToContainer.ResizeChangedCoordsKeepingNewest(prevShapesSize);
+  }
+
+  IncrementAllJoinCentreT();
+}
+
+void TubeFx::TubeFxImpl::DrawPreviousShapes()
+{
+  if (m_drawToContainer.GetNumChangedCoords() == 0)
+  {
+    return;
+  }
+
+  DrawCapturedPreviousShapesGroups();
+}
+
+void TubeFx::TubeFxImpl::DrawTubeCircles()
+{
   for (auto& tube : m_tubes)
   {
     if (!tube.IsActive())
@@ -521,47 +642,36 @@ void TubeFx::TubeFxImpl::DrawShapes()
     tube.DrawCircleOfShapes();
     //    tube.RotateShapeColorMaps();
   }
-
-  if (m_allowMovingAwayFromCentre)
-  {
-    for (size_t i = 0; i < NUM_TUBES; i++)
-    {
-      m_tubes[i].SetCirclePathParams(
-          lerp(TUBE_SETTINGS.at(i).circlePathParams, COMMON_CIRCLE_PATH_PARMS, m_allJoinCentreT()));
-    }
-  }
-
-  if (m_updateNumSinceResume >= NUM_UPDATES_OF_PREV_SHAPES)
-  {
-    m_drawToContainer.ResizeChangedCoordsKeepingNewest(prevShapesSize);
-  }
-
-  IncrementAllJoinCentreT();
 }
 
-void TubeFx::TubeFxImpl::DrawPreviousShapes()
+void TubeFx::TubeFxImpl::AdjustTubePaths()
 {
-  if (m_updateNumSinceResume < NUM_UPDATES_OF_PREV_SHAPES)
-  {
-    return;
-  }
-  if (m_drawToContainer.GetNumChangedCoords() == 0)
+  if (!m_allowMovingAwayFromCentre)
   {
     return;
   }
 
+  for (size_t i = 0; i < NUM_TUBES; i++)
+  {
+    m_tubes[i].SetCirclePathParams(
+        lerp(TUBE_SETTINGS.at(i).circlePathParams, COMMON_CIRCLE_PATH_PARMS, m_allJoinCentreT()));
+  }
+}
+
+void TubeFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
+{
   using ColorsList = GoomDrawToContainer::ColorsList;
 
   constexpr float TINT_MIX_T = 0.3F;
   const Pixel tintColor = m_prevShapesColorMap->GetColor(m_prevShapesColorT());
   const float brightnessAttenuation = GetApproxBrightnessAttenuation();
 
-  const int32_t jitterAmount = !m_prevShapesJitter ? 0
-                                                   : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT,
-                                                                    PREV_SHAPES_JITTER_AMOUNT + 1);
-
   m_drawToContainer.IterateChangedCoordsNewToOld([&](const int32_t x, const int32_t y,
                                                      const ColorsList& colorsList) {
+    const int32_t jitterAmount =
+        !m_prevShapesJitter
+            ? 0
+            : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
     const int32_t newX = GetClipped(x + jitterAmount, m_draw->GetScreenWidth() - 1);
     const int32_t newY = GetClipped(y + jitterAmount, m_draw->GetScreenHeight() - 1);
     constexpr float BRIGHTNESS_FACTOR = 0.4F;
@@ -704,39 +814,6 @@ void TubeFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube)
     m_shapeJitterT.Increment();
     m_jitterTimer.SetTimeLimit(GetRandInRange(MIN_JITTER_TIME, MAX_JITTER_TIME + 1));
   }
-}
-
-void TubeFx::TubeFxImpl::DrawLine(const int x1,
-                                  const int y1,
-                                  const int x2,
-                                  const int y2,
-                                  const std::vector<Pixel>& colors,
-                                  const uint8_t thickness)
-{
-  m_drawToMany.Line(x1, y1, x2, y2, colors, thickness);
-}
-
-void TubeFx::TubeFxImpl::DrawCircle(const int x,
-                                    const int y,
-                                    const int radius,
-                                    const std::vector<Pixel>& colors,
-                                    [[maybe_unused]] const uint8_t thickness)
-{
-  m_drawToMany.Circle(x, y, radius, colors);
-}
-
-void TubeFx::TubeFxImpl::DrawImage(const int x,
-                                   const int y,
-                                   const SmallImageBitmaps::ImageNames imageName,
-                                   const uint32_t size,
-                                   const std::vector<Pixel>& colors)
-{
-  const ImageBitmap& imageBitmap = GetImageBitmap(imageName, size);
-  const auto getColor1 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& b) -> Pixel { return colors[0]; };
-  const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& b) -> Pixel { return colors[1]; };
-  m_drawToMany.Bitmap(x, y, imageBitmap, {getColor1, getColor2}, m_allowOverexposed);
 }
 
 } // namespace GOOM
