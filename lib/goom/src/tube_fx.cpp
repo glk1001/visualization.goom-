@@ -33,6 +33,7 @@ using TUBES::BrightnessAttenuation;
 using TUBES::PathParams;
 using TUBES::Tube;
 using UTILS::GetBrighterColor;
+using UTILS::GetColorAverage;
 using UTILS::GetRandInRange;
 using UTILS::IColorMap;
 using UTILS::ImageBitmap;
@@ -148,7 +149,6 @@ private:
   bool m_oscillatingShapePath = ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
   uint32_t m_numCapturedPrevShapesGroups = 0;
   const IColorMap* m_prevShapesColorMap{};
-  TValue m_prevShapesColorT{TValue::StepType::CONTINUOUS_REVERSIBLE, 0.01F};
   static constexpr float PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
   const BrightnessAttenuation m_prevShapesBrightnessAttenuation;
   [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
@@ -181,6 +181,8 @@ private:
   void DrawTubeCircles();
   void DrawPreviousShapes();
   void DrawCapturedPreviousShapesGroups();
+  [[nodiscard]] static auto GetAverageColor(const GoomDrawToContainer::ColorsList& colorsList)
+      -> Pixel;
   [[nodiscard]] static auto GetClipped(int32_t val, uint32_t maxVal) -> int32_t;
   void UpdatePreviousShapesSettings();
   void UpdateColorMaps();
@@ -442,6 +444,7 @@ void TubeFx::TubeFxImpl::DrawLineToMany(const int x1,
                                         const std::vector<Pixel>& colors,
                                         const uint8_t thickness)
 {
+  //m_drawToContainer.Line(x1, y1, x2, y2, colors, thickness);
   m_drawToMany.Line(x1, y1, x2, y2, colors, thickness);
 }
 
@@ -460,6 +463,7 @@ void TubeFx::TubeFxImpl::DrawCircleToMany(const int x,
                                           const std::vector<Pixel>& colors,
                                           [[maybe_unused]] const uint8_t thickness)
 {
+  //m_drawToContainer.Circle(x, y, radius, colors);
   m_drawToMany.Circle(x, y, radius, colors);
 }
 
@@ -479,6 +483,8 @@ void TubeFx::TubeFxImpl::DrawImageToMany(const int x,
                                          const uint32_t size,
                                          const std::vector<Pixel>& colors)
 {
+  //m_drawToContainer.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors),
+  //                         m_allowOverexposed);
   m_drawToMany.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors),
                       m_allowOverexposed);
 }
@@ -660,29 +666,42 @@ void TubeFx::TubeFxImpl::AdjustTubePaths()
 
 void TubeFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
 {
+  const float brightnessAttenuation = GetApproxBrightnessAttenuation();
   using ColorsList = GoomDrawToContainer::ColorsList;
 
-  constexpr float TINT_MIX_T = 0.3F;
-  const Pixel tintColor = m_prevShapesColorMap->GetColor(m_prevShapesColorT());
-  const float brightnessAttenuation = GetApproxBrightnessAttenuation();
+  m_drawToContainer.IterateChangedCoordsNewToOld(
+      [&](const int32_t x, const int32_t y, const ColorsList& colorsList) {
+        const int32_t jitterAmount =
+            !m_prevShapesJitter
+                ? 0
+                : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
+        const int32_t newX = GetClipped(x + jitterAmount, m_draw->GetScreenWidth() - 1);
+        const int32_t newY = GetClipped(y + jitterAmount, m_draw->GetScreenHeight() - 1);
 
-  m_drawToContainer.IterateChangedCoordsNewToOld([&](const int32_t x, const int32_t y,
-                                                     const ColorsList& colorsList) {
-    const int32_t jitterAmount =
-        !m_prevShapesJitter
-            ? 0
-            : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
-    const int32_t newX = GetClipped(x + jitterAmount, m_draw->GetScreenWidth() - 1);
-    const int32_t newY = GetClipped(y + jitterAmount, m_draw->GetScreenHeight() - 1);
-    constexpr float BRIGHTNESS_FACTOR = 0.8F;
-    const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
-    const std::vector<Pixel>& colors = colorsList.back();
-    const Pixel newColor0 = GetBrighterColor(
-        brightness, IColorMap::GetColorMix(colors[0], tintColor, TINT_MIX_T), m_allowOverexposed);
-    m_draw->DrawPixels(newX, newY, {newColor0, Pixel::BLACK});
-  });
+        const Pixel avColor = GetAverageColor(colorsList);
+        constexpr float BRIGHTNESS_FACTOR = 0.1F;
+        const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
+        const Pixel newColor0 = GetBrighterColor(brightness, avColor, m_allowOverexposed);
 
-  m_prevShapesColorT.Increment();
+        // IMPORTANT - Best results come from putting color in second buffer.
+        m_draw->DrawPixels(newX, newY, {Pixel::BLACK, newColor0});
+      });
+}
+
+inline auto TubeFx::TubeFxImpl::GetAverageColor(const GoomDrawToContainer::ColorsList& colorsList)
+    -> Pixel
+{
+  if (colorsList.size() == 1)
+  {
+    return colorsList[0][0];
+  }
+
+  std::vector<Pixel> allColors{};
+  for (const auto& col : colorsList)
+  {
+    allColors.emplace_back(col[0]);
+  }
+  return GetColorAverage(allColors);
 }
 
 inline auto TubeFx::TubeFxImpl::GetClipped(int32_t val, uint32_t maxVal) -> int32_t

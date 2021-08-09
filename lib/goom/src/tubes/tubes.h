@@ -98,7 +98,6 @@ public:
   void SetWeightedColorMaps(const UTILS::RandomColorMaps* colorMaps);
   void SetWeightedLowColorMaps(const UTILS::RandomColorMaps* lowColorMaps);
 
-  void ResetPaths();
   void ResetColorMaps();
   void RotateShapeColorMaps();
 

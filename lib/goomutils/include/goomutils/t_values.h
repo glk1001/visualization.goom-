@@ -19,23 +19,35 @@ namespace GOOM::UTILS
 class TValue
 {
 public:
+  static constexpr float MAX_T_VALUE = 1.0F + SMALL_FLOAT;
+  struct DelayPoint
+  {
+    float t0;
+    uint32_t delayTime;
+  };
   enum class StepType
   {
     CONTINUOUS_REPEATABLE,
     CONTINUOUS_REVERSIBLE,
     SINGLE_CYCLE,
   };
-  explicit TValue(StepType stepType, float stepSize, uint32_t delayTimeAtChanges = 0) noexcept;
-  explicit TValue(StepType stepType, uint32_t numSteps, uint32_t delayTimeAtChanges = 0) noexcept;
 
-  static constexpr float MAX_T_VALUE = 1.0F + SMALL_FLOAT;
+  TValue(StepType stepType, float stepSize) noexcept;
+  TValue(StepType stepType, float stepSize, const std::vector<DelayPoint>& delayPoints) noexcept;
+  TValue(StepType stepType, uint32_t numSteps) noexcept;
+  TValue(StepType stepType, uint32_t numSteps, const std::vector<DelayPoint>& delayPoints) noexcept;
+  TValue(const TValue&) noexcept = delete;
+  TValue(TValue&&) noexcept = delete;
+  ~TValue() noexcept = default;
+  auto operator=(const TValue&) -> TValue& = delete;
+  auto operator=(TValue&&) -> TValue& = delete;
 
-  auto GetStepType() const -> StepType;
-  auto GetStepSize() const -> float;
+  [[nodiscard]] auto GetStepType() const -> StepType;
+  [[nodiscard]] auto GetStepSize() const -> float;
   void SetStepSize(float val);
 
   auto operator()() const -> float;
-  auto GetCurrentStep() const -> float;
+  [[nodiscard]] auto GetCurrentStep() const -> float;
   void Increment();
   auto IsStopped() const -> bool;
   void Reset(float t = 0.0);
@@ -44,32 +56,19 @@ private:
   const StepType m_stepType;
   float m_stepSize;
   float m_currentStep;
-  float m_t{};
-  const uint32_t m_delayTimeAtChanges;
+  float m_t = 0.0F;
+  const std::vector<DelayPoint> m_delayPoints;
+  std::vector<DelayPoint> m_currentDelayPoints;
   bool m_startedDelay = false;
-  uint32_t m_delayAtChangeCount = 0;
-  void HandleBoundary(float boundaryValue, float continueValue, float stepSign);
+  uint32_t m_delayPointCount = 0;
+  [[nodiscard]] auto IsTimeDelayed() -> bool;
+  [[nodiscard]] auto WeAreStartingDelayPoint() -> bool;
+  void ValidateDelayPoints();
+  void SingleCycleIncrement();
+  void ContinuousRepeatableIncrement();
+  void ContinuousReversibleIncrement();
+  void HandleBoundary(float continueValue, float stepSign);
 };
-
-inline TValue::TValue(TValue::StepType stepType,
-                      const float stepSize,
-                      const uint32_t delayTimeAtChanges) noexcept
-  : m_stepType{stepType},
-    m_stepSize{stepSize},
-    m_currentStep{m_stepSize},
-    m_delayTimeAtChanges{delayTimeAtChanges}
-{
-}
-
-inline TValue::TValue(TValue::StepType stepType,
-                      const uint32_t numSteps,
-                      const uint32_t delayTimeAtChanges) noexcept
-  : m_stepType{stepType},
-    m_stepSize{1.0F / static_cast<float>(numSteps)},
-    m_currentStep{m_stepSize},
-    m_delayTimeAtChanges{delayTimeAtChanges}
-{
-}
 
 inline auto TValue::GetStepType() const -> StepType
 {

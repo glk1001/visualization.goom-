@@ -269,7 +269,7 @@ private:
   void ChangeZoomEffect();
   void ApplyZoom();
   void UpdateBuffers();
-  void ResetDrawBuffers();
+  void RotateDrawBuffers();
   [[nodiscard]] auto GetCurrentBuffers() const -> std::vector<PixelBuffer*>;
   void ResetDrawBuffSettings(const FXBuffSettings& settings);
 
@@ -457,7 +457,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
 {
   LogDebug("Initialize goom: screenWidth = {}, screenHeight = {}.", screenWidth, screenHeight);
 
-  ResetDrawBuffers();
+  RotateDrawBuffers();
 }
 
 GoomControl::GoomControlImpl::~GoomControlImpl() noexcept = default;
@@ -886,8 +886,7 @@ void GoomControl::GoomControlImpl::UpdateBuffers()
   // affichage et swappage des buffers...
   m_visualFx.convolve_fx->Convolve(m_imageBuffers.GetP1(), m_imageBuffers.GetOutputBuff());
 
-  m_imageBuffers.RotateBuffers();
-  ResetDrawBuffers();
+  RotateDrawBuffers();
 
   if (m_convolveAllowOverexposed.Finished())
   {
@@ -903,8 +902,9 @@ void GoomControl::GoomControlImpl::UpdateBuffers()
   }
 }
 
-inline void GoomControl::GoomControlImpl::ResetDrawBuffers()
+inline void GoomControl::GoomControlImpl::RotateDrawBuffers()
 {
+  m_imageBuffers.RotateBuffers();
   m_multiBufferDraw.SetBuffers(this->GetCurrentBuffers());
 }
 

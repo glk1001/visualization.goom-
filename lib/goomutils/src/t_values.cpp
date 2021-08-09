@@ -18,11 +18,57 @@ namespace GOOM::UTILS
 {
 #endif
 
-void TValue::SetStepSize(const float val)
+TValue::TValue(TValue::StepType stepType, const float stepSize) noexcept
+  : m_stepType{stepType},
+    m_stepSize{stepSize},
+    m_currentStep{m_stepSize},
+    m_delayPoints{},
+    m_currentDelayPoints{m_delayPoints}
 {
-  assert(val >= 0.0F);
-  m_stepSize = val;
-  m_currentStep = m_currentStep < 0.0 ? -m_stepSize : +m_stepSize;
+}
+
+TValue::TValue(TValue::StepType stepType,
+               const float stepSize,
+               const std::vector<DelayPoint>& delayPoints) noexcept
+  : m_stepType{stepType}, m_stepSize{stepSize}, m_currentStep{m_stepSize},
+    m_delayPoints{delayPoints},
+    m_currentDelayPoints{m_delayPoints}
+{
+  ValidateDelayPoints();
+}
+
+TValue::TValue(TValue::StepType stepType, const uint32_t numSteps) noexcept
+  : m_stepType{stepType},
+    m_stepSize{1.0F / static_cast<float>(numSteps)},
+    m_currentStep{m_stepSize},
+    m_delayPoints{},
+    m_currentDelayPoints{m_delayPoints}
+{
+}
+
+TValue::TValue(TValue::StepType stepType,
+               const uint32_t numSteps,
+               const std::vector<DelayPoint>& delayPoints) noexcept
+  : m_stepType{stepType},
+    m_stepSize{1.0F / static_cast<float>(numSteps)},
+    m_currentStep{m_stepSize},
+    m_delayPoints{delayPoints},
+    m_currentDelayPoints{m_delayPoints}
+{
+  ValidateDelayPoints();
+}
+
+void TValue::ValidateDelayPoints()
+{
+  float prevT0 = -1.0F;
+  for (const auto& delayPoint : m_delayPoints)
+  {
+    assert(prevT0 < delayPoint.t0);
+    assert(0.0F <= delayPoint.t0);
+    assert(delayPoint.t0 <= 1.0F);
+
+    prevT0 = delayPoint.t0;
+  }
 }
 
 void TValue::Increment()
@@ -30,74 +76,129 @@ void TValue::Increment()
   switch (m_stepType)
   {
     case StepType::SINGLE_CYCLE:
-      if (m_t > 1.0 + SMALL_FLOAT)
-      {
-        return;
-      }
-      m_t += m_currentStep;
+      SingleCycleIncrement();
       break;
     case StepType::CONTINUOUS_REPEATABLE:
-      m_t += m_currentStep;
-      if (m_t > 1.0F + SMALL_FLOAT)
-      {
-        HandleBoundary(1.0F + SMALL_FLOAT, 0.0F, +1.0F);
-        return;
-      }
+      ContinuousRepeatableIncrement();
       break;
     case StepType::CONTINUOUS_REVERSIBLE:
-      m_t += m_currentStep;
-      if (m_t > 1.0F + SMALL_FLOAT)
-      {
-        HandleBoundary(1.0F + SMALL_FLOAT, 1.0F, -1.0F);
-      }
-      else if (m_t < 0.0F - SMALL_FLOAT)
-      {
-        HandleBoundary(0.0 - SMALL_FLOAT, 0.0F, +1.0F);
-      }
+      ContinuousReversibleIncrement();
       break;
   }
 }
 
-void TValue::HandleBoundary(const float boundaryValue,
-                            const float continueValue,
-                            const float stepSign)
+inline void TValue::SingleCycleIncrement()
 {
-//  constexpr float DELAY_TIME_VARIANCE_AS_FRACTION = 0.1F;
-
-  if (!m_startedDelay && m_delayTimeAtChanges > 0)
+  if (m_t > 1.0 + SMALL_FLOAT)
   {
-    m_startedDelay = true;
-    m_delayAtChangeCount = m_delayTimeAtChanges;
-    /**
-    const auto minDelayTime = static_cast<uint32_t>((1.0F - DELAY_TIME_VARIANCE_AS_FRACTION) *
-                                                    static_cast<float>(m_delayTimeAtChanges));
-    const auto maxDelayTime = static_cast<uint32_t>((1.0F + DELAY_TIME_VARIANCE_AS_FRACTION) *
-                                                    static_cast<float>(m_delayTimeAtChanges));
-    m_delayAtChangeCount = GetRandInRange(minDelayTime, maxDelayTime + 1);
-     **/
+    return;
   }
+  m_t += m_currentStep;
+}
 
-  if (m_delayAtChangeCount > 0)
+inline void TValue::ContinuousRepeatableIncrement()
+{
+  m_t += m_currentStep;
+
+  if (IsTimeDelayed())
   {
-    m_delayAtChangeCount--;
-    m_t = boundaryValue;
     return;
   }
 
+  if (m_t > 1.0F + SMALL_FLOAT)
+  {
+    HandleBoundary(0.0F, +1.0F);
+  }
+}
+
+inline void TValue::ContinuousReversibleIncrement()
+{
+  m_t += m_currentStep;
+
+  if (IsTimeDelayed())
+  {
+    return;
+  }
+
+  if (m_t > 1.0F + SMALL_FLOAT)
+  {
+    HandleBoundary(1.0F, -1.0F);
+  }
+  else if (m_t < 0.0F - SMALL_FLOAT)
+  {
+    HandleBoundary(0.0F, +1.0F);
+  }
+}
+
+inline auto TValue::IsTimeDelayed() -> bool
+{
+  if (!m_startedDelay && WeAreStartingDelayPoint())
+  {
+    m_startedDelay = true;
+  }
+
+  if (m_delayPointCount > 0)
+  {
+    m_delayPointCount--;
+    if (m_delayPointCount > 0)
+    {
+      m_t -= m_currentStep;
+    }
+    else
+    {
+      m_startedDelay = false;
+    }
+    return true;
+  }
+
+  return false;
+}
+
+inline auto TValue::WeAreStartingDelayPoint() -> bool
+{
+  for (const auto& delayZone : m_currentDelayPoints)
+  {
+    if ((m_currentStep < 0.0F && m_t <= delayZone.t0 + SMALL_FLOAT) || (m_currentStep > 0.0F && m_t >= delayZone.t0 - SMALL_FLOAT))
+    {
+      m_delayPointCount = delayZone.delayTime;
+      m_currentDelayPoints.erase(m_currentDelayPoints.begin());
+      return true;
+    }
+  }
+  return false;
+}
+
+void TValue::SetStepSize(const float val)
+{
+  assert(val >= 0.0F);
+
+  const float oldCurrentStep = m_currentStep;
+
+  m_stepSize = val;
+  m_currentStep = m_currentStep < 0.0 ? -m_stepSize : +m_stepSize;
+
+  if ((oldCurrentStep < 0.0F && m_currentStep > 0.0F) || (oldCurrentStep > 0.0F && m_currentStep < 0.0F))
+  {
+    m_currentDelayPoints = m_delayPoints;
+  }
+}
+
+void TValue::HandleBoundary(const float continueValue, const float stepSign)
+{
   m_t = continueValue;
 
   if (stepSign < 0.0F)
   {
     m_currentStep = -m_stepSize;
-    assert(m_currentStep <= 0.0F);
+    assert(m_currentStep < 0.0F);
   }
   else
   {
     m_currentStep = +m_stepSize;
-    assert(m_currentStep >= 0.0F);
+    assert(m_currentStep > 0.0F);
   }
 
-  m_startedDelay = false;
+  m_currentDelayPoints = m_delayPoints;
 }
 
 #if __cplusplus <= 201402L
