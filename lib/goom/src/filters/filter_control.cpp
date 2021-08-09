@@ -175,10 +175,19 @@ void FilterControl::Start()
   }
 }
 
+// clang-format off
+//@formatter:off
 const std::vector<std::string> FilterControl::IMAGE_FILENAMES{
-    "pattern1.jpg", "pattern2.jpg",       "pattern3.jpg",        "pattern4.jpg",
-    "pattern5.jpg", "chameleon-tail.jpg", "mountain_sunset.png",
+    "pattern1.jpg",
+    "pattern2.jpg",
+    "pattern3.jpg",
+    "pattern4.jpg",
+    "pattern5.jpg",
+    "chameleon-tail.jpg",
+    "mountain_sunset.png",
 };
+// clang-format on
+//@formatter:on
 
 inline auto FilterControl::GetImageFilename(const std::string& imageFilename) const -> std::string
 {

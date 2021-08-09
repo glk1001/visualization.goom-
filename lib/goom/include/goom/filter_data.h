@@ -156,7 +156,7 @@ struct ZoomFilterData
   static constexpr float MAX_CRYSTAL_BALL0_AMPLITUDE = 2.0F;
   static constexpr float MAX_CRYSTAL_BALL1_AMPLITUDE = 15.0F;
   float crystalBallAmplitude = DEFAULT_CRYSTAL_BALL_AMPLITUDE;
-  static constexpr float DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET = 0.3F;
+  static constexpr float DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET = 0.5F;
   static constexpr float MIN_CRYSTAL_BALL0_SQ_DIST_OFFSET = 0.1F;
   static constexpr float MIN_CRYSTAL_BALL1_SQ_DIST_OFFSET = 0.01F;
   static constexpr float MAX_CRYSTAL_BALL0_SQ_DIST_OFFSET = 1.0F;
