@@ -79,27 +79,33 @@ auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
                                               const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  return GetSpeedCoefficient(sqDistFromZero, coords) * coords;
+  const V2dFlt speedCoeffs = GetSpeedCoefficient(sqDistFromZero, coords);
+  return {speedCoeffs.x * coords.GetX(), speedCoeffs.y * coords.GetY()};
 }
 
 auto ZoomVectorEffects::GetSpeedCoefficient(const float sqDistFromZero,
-                                            const NormalizedCoords& coords) const -> float
+                                            const NormalizedCoords& coords) const -> V2dFlt
 {
-  float speedCoeff = (1.0F + m_filterSettings->vitesse.GetRelativeSpeed()) /
+  const float speedCoeff = (1.0F + m_filterSettings->vitesse.GetRelativeSpeed()) /
                      ZoomFilterData::SPEED_COEFF_DENOMINATOR;
+  V2dFlt speedCoeffs{speedCoeff, speedCoeff};
 
   switch (m_filterSettings->mode)
   {
     case ZoomFilterMode::AMULET_MODE:
     {
-      speedCoeff += m_filterSettings->amuletAmplitude * sqDistFromZero;
+      speedCoeffs.x += m_filterSettings->amuletAmplitude * sqDistFromZero;
+      speedCoeffs.y = speedCoeffs.x;
+//?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
       break;
     }
     case ZoomFilterMode::CRYSTAL_BALL_MODE0:
     case ZoomFilterMode::CRYSTAL_BALL_MODE1:
     {
-      speedCoeff -= m_filterSettings->crystalBallAmplitude *
+      speedCoeffs.x -= m_filterSettings->crystalBallAmplitude *
                     (sqDistFromZero - m_filterSettings->crystalBallSqDistOffset);
+      speedCoeffs.y = speedCoeffs.x;
+      //speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
       break;
     }
     case ZoomFilterMode::HYPERCOS_MODE0:
@@ -112,25 +118,33 @@ auto ZoomVectorEffects::GetSpeedCoefficient(const float sqDistFromZero,
     }
     case ZoomFilterMode::SCRUNCH_MODE:
     {
-      speedCoeff += m_filterSettings->scrunchAmplitude * sqDistFromZero;
+      speedCoeffs.x += m_filterSettings->scrunchAmplitude * sqDistFromZero;
+      speedCoeffs.y = speedCoeffs.x;
+//?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
       break;
     }
     case ZoomFilterMode::SPEEDWAY_MODE:
     {
       constexpr float SQ_DIST_FACTOR = 0.01F;
-      speedCoeff *=
+      speedCoeffs.x *=
           m_filterSettings->speedwayAmplitude * (coords.GetY() + SQ_DIST_FACTOR * sqDistFromZero);
+//      speedCoeffs.y = speedCoeffs.x;
+      speedCoeffs.y = -10.0F * speedCoeffs.x;
       break;
     }
     case ZoomFilterMode::WAVE_MODE0:
     case ZoomFilterMode::WAVE_MODE1:
     {
-      speedCoeff += GetWaveEffectSpeedCoeff(sqDistFromZero);
+      speedCoeffs.x += GetWaveEffectSpeedCoeff(sqDistFromZero);
+      speedCoeffs.y = speedCoeffs.x;
+//?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
       break;
     }
     case ZoomFilterMode::Y_ONLY_MODE:
     {
-      speedCoeff *= GetYOnlySpeedCoeff(coords);
+      speedCoeffs.x *= GetYOnlySpeedCoeff(coords);
+      speedCoeffs.y = speedCoeffs.x;
+//?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
       break;
     }
       /* Amulet 2 */
@@ -140,7 +154,7 @@ auto ZoomVectorEffects::GetSpeedCoefficient(const float sqDistFromZero,
       throw std::logic_error(std20::format("Switch: unhandled case '{}'.", m_filterSettings->mode));
   }
 
-  return GetClampedSpeedCoeff(speedCoeff);
+  return {GetClampedSpeedCoeff(speedCoeffs.x), GetClampedSpeedCoeff(speedCoeffs.y)};
 }
 
 auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) const -> float

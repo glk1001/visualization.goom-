@@ -47,7 +47,7 @@ private:
   auto GetSpeedCoeffVelocity(float sqDistFromZero, const NormalizedCoords& coords) const
       -> NormalizedCoords;
   auto GetImageDisplacementVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
-  auto GetSpeedCoefficient(float sqDistFromZero, const NormalizedCoords& coords) const -> float;
+  auto GetSpeedCoefficient(float sqDistFromZero, const NormalizedCoords& coords) const -> V2dFlt;
   auto GetWaveEffectSpeedCoeff(float sqDistFromZero) const -> float;
   auto GetYOnlySpeedCoeff(const NormalizedCoords& coords) const -> float;
   auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
