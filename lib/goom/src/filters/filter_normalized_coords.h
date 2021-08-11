@@ -26,6 +26,7 @@ public:
   static auto GetMinNormalizedCoordVal() -> float;
 
   explicit NormalizedCoords(const V2dInt& screenCoords) noexcept;
+  explicit NormalizedCoords(const V2dFlt& normalized) noexcept;
   NormalizedCoords(float xNormalized, float yNormalized) noexcept;
   NormalizedCoords(const NormalizedCoords& other) noexcept;
   NormalizedCoords(NormalizedCoords&& other) noexcept;
@@ -41,6 +42,7 @@ public:
 
   [[nodiscard]] auto GetX() const -> float;
   [[nodiscard]] auto GetY() const -> float;
+  [[nodiscard]] auto ToFlt() const -> V2dFlt;
   void SetX(float xNormalized);
   void SetY(float yNormalized);
 
@@ -104,6 +106,11 @@ inline NormalizedCoords::NormalizedCoords(const V2dInt& screenCoords) noexcept
 {
 }
 
+inline NormalizedCoords::NormalizedCoords(const V2dFlt& normalized) noexcept
+  : m_normalizedCoords{normalized}
+{
+}
+
 inline NormalizedCoords::NormalizedCoords(const float xNormalized, const float yNormalized) noexcept
   : m_normalizedCoords{xNormalized, yNormalized}
 {
@@ -130,6 +137,11 @@ inline auto NormalizedCoords::GetX() const -> float
 inline auto NormalizedCoords::GetY() const -> float
 {
   return m_normalizedCoords.y;
+}
+
+inline auto NormalizedCoords::ToFlt() const -> V2dFlt
+{
+  return {GetX(), GetY()};
 }
 
 inline void NormalizedCoords::SetX(const float xNormalized)

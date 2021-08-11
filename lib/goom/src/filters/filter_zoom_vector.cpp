@@ -28,17 +28,6 @@ FilterZoomVector::FilterZoomVector() noexcept
 
 FilterZoomVector::~FilterZoomVector() noexcept = default;
 
-auto FilterZoomVector::GetFilterStats() const -> FilterStats*
-{
-  return m_stats;
-}
-
-void FilterZoomVector::SetFilterStats(FilterStats& stats)
-{
-  m_stats = &stats;
-  m_zoomVectorEffects->SetFilterStats(stats);
-}
-
 auto FilterZoomVector::GetFilterSettings() const -> const ZoomFilterData*
 {
   return m_filterSettings;
@@ -66,35 +55,49 @@ auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> Nor
 
   NormalizedCoords velocity = m_zoomVectorEffects->GetStandardVelocity(sqDistFromZero, coords);
 
-  // The Effects add-ons...
+  GetZoomEffectsAdjustedVelocity(sqDistFromZero, coords, velocity);
+
+  return coords - m_zoomVectorEffects->GetCleanedVelocity(velocity);
+}
+
+void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero,
+                                                      const NormalizedCoords& coords,
+                                                      NormalizedCoords& velocity) const
+{
   if (std::fabs(m_filterSettings->rotateSpeed) > SMALL_FLOAT)
   {
     velocity = m_zoomVectorEffects->GetRotatedVelocity(velocity);
   }
+
   if (m_filterSettings->tanEffect)
   {
     velocity = m_zoomVectorEffects->GetTanEffectVelocity(sqDistFromZero, velocity);
   }
+
   if (m_filterSettings->noisify)
   {
     UpdateDoZoomVectorNoisifyStats();
     velocity += m_zoomVectorEffects->GetNoiseVelocity();
   }
+
   if (m_filterSettings->hypercosEffect != ZoomFilterData::HypercosEffect::NONE)
   {
     UpdateDoZoomVectorHypercosEffectStats();
     velocity += m_zoomVectorEffects->GetHypercosVelocity(coords);
   }
+
   if (m_filterSettings->hPlaneEffect != 0)
   {
     UpdateDoZoomVectorHPlaneEffectStats();
     velocity.SetX(velocity.GetX() + m_zoomVectorEffects->GetHPlaneEffectVelocity(coords));
   }
+
   if (m_filterSettings->vPlaneEffect != 0)
   {
     UpdateDoZoomVectorVPlaneEffectStats();
     velocity.SetY(velocity.GetY() + m_zoomVectorEffects->GetVPlaneEffectVelocity(coords));
   }
+
   /* TODO : Water Mode */
   //    if (data->waveEffect)
 
@@ -103,8 +106,17 @@ auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> Nor
     if (ProbabilityOfMInN(1, 2))
       velocity = {-2.0F * xNormalized + velocity.x, -2.0F * yNormalized + velocity.y};
   **/
+}
 
-  return coords - m_zoomVectorEffects->GetCleanedVelocity(velocity);
+auto FilterZoomVector::GetFilterStats() const -> FilterStats*
+{
+  return m_stats;
+}
+
+void FilterZoomVector::SetFilterStats(FilterStats& stats)
+{
+  m_stats = &stats;
+  m_zoomVectorEffects->SetFilterStats(stats);
 }
 
 inline void FilterZoomVector::UpdateDoZoomVectorNoisifyStats() const

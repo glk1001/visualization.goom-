@@ -36,6 +36,9 @@ public:
   auto GetZoomFactor() const -> float;
   void SetZoomFactor(float value);
 
+  auto GetAmplitude() const -> float;
+  void SetAmplitude(float value);
+
   auto GetDisplacementVector(const V2dFlt& normalizedPoint) const -> V2dFlt;
 
 private:
@@ -45,8 +48,9 @@ private:
   const int32_t m_yMax;
   const float m_ratioNormalizedXCoordToImageCoord;
   const float m_ratioNormalizedYCoordToImageCoord;
-  float m_zoomFactor = 1.0;
-  static constexpr float INITIAL_CUTOFF = 0.5;
+  float m_zoomFactor = 1.0F;
+  float m_amplitude = 1.0F;
+  static constexpr float INITIAL_CUTOFF = 0.5F;
   float m_xColorCutoff = INITIAL_CUTOFF;
   float m_yColorCutoff = INITIAL_CUTOFF;
   auto NormalizedToImagePoint(const V2dFlt& normalizedPoint) const -> V2dInt;
@@ -85,6 +89,20 @@ inline void ImageDisplacement::SetZoomFactor(const float value)
     throw std::logic_error("Negative zoom factor.");
   }
   m_zoomFactor = value;
+}
+
+inline auto ImageDisplacement::GetAmplitude() const -> float
+{
+  return m_amplitude;
+}
+
+inline void ImageDisplacement::SetAmplitude(const float value)
+{
+  if (value <= 0.0)
+  {
+    throw std::logic_error("Negative amplitude.");
+  }
+  m_amplitude = value;
 }
 
 } // namespace FILTERS

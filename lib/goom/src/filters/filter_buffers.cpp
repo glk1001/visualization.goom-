@@ -340,7 +340,7 @@ void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeig
     const uint32_t tranPosStart = yOffset * m_screenWidth;
 
     NormalizedCoords normalizedCentredPoint =
-        NormalizedCoords{{0, static_cast<int32_t>(yOffset)}} - normalizedMidPt;
+        NormalizedCoords{V2dInt{0, static_cast<int32_t>(yOffset)}} - normalizedMidPt;
 
     for (uint32_t x = 0; x < m_screenWidth; x++)
     {

@@ -42,8 +42,8 @@ auto ImageDisplacement::GetDisplacementVector(const V2dFlt& normalizedPoint) con
   const Pixel color =
       (*m_imageBuffer)(static_cast<size_t>(imagePoint.x), static_cast<size_t>(imagePoint.y));
 
-  const float x = color.RFlt() - m_xColorCutoff;
-  const float y = color.GFlt() - m_yColorCutoff;
+  const float x = m_amplitude * (color.RFlt() - m_xColorCutoff);
+  const float y = m_amplitude * (color.GFlt() - m_yColorCutoff);
   //const float y = (ProbabilityOfMInN(1, 2) ? color.GFlt() : color.BFlt()) - 0.5F;
 
   return {x, y};

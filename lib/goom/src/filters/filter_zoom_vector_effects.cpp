@@ -36,18 +36,17 @@ void ZoomVectorEffects::SetFilterStats(FilterStats& stats)
 
 auto ZoomVectorEffects::GetCleanedVelocity(const NormalizedCoords& velocity) -> NormalizedCoords
 {
-  NormalizedCoords newVelocity = velocity;
-  if (std::fabs(velocity.GetX()) < NormalizedCoords::GetMinNormalizedCoordVal())
+  return {GetMinVelocityVal(velocity.GetX()), GetMinVelocityVal(velocity.GetY())};
+}
+
+inline auto ZoomVectorEffects::GetMinVelocityVal(const float velocityVal) -> float
+{
+  if (std::fabs(velocityVal) < NormalizedCoords::GetMinNormalizedCoordVal())
   {
-    newVelocity.SetX(newVelocity.GetX() < 0.0F ? -NormalizedCoords::GetMinNormalizedCoordVal()
-                                               : NormalizedCoords::GetMinNormalizedCoordVal());
+    return velocityVal < 0.0F ? -NormalizedCoords::GetMinNormalizedCoordVal()
+                              : NormalizedCoords::GetMinNormalizedCoordVal();
   }
-  if (std::fabs(newVelocity.GetY()) < NormalizedCoords::GetMinNormalizedCoordVal())
-  {
-    newVelocity.SetY(newVelocity.GetY() < 0.0F ? -NormalizedCoords::GetMinNormalizedCoordVal()
-                                               : NormalizedCoords::GetMinNormalizedCoordVal());
-  }
-  return newVelocity;
+  return velocityVal;
 }
 
 auto ZoomVectorEffects::GetStandardVelocity(const float sqDistFromZero,
@@ -61,7 +60,7 @@ auto ZoomVectorEffects::GetStandardVelocity(const float sqDistFromZero,
   return velocity;
 }
 
-auto ZoomVectorEffects::GetImageDisplacementVelocity(const NormalizedCoords& coords) const
+inline auto ZoomVectorEffects::GetImageDisplacementVelocity(const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
   if (m_filterSettings->imageDisplacement == nullptr)
@@ -69,95 +68,76 @@ auto ZoomVectorEffects::GetImageDisplacementVelocity(const NormalizedCoords& coo
     throw std::logic_error("No image displacement map setup.");
   }
 
-  const V2dFlt displacement =
-      m_filterSettings->imageDisplacement->GetDisplacementVector({coords.GetX(), coords.GetY()});
-  return m_filterSettings->imageDisplacementAmplitude *
-         NormalizedCoords{displacement.x, displacement.y};
+  return NormalizedCoords{
+      m_filterSettings->imageDisplacement->GetDisplacementVector(coords.ToFlt())};
 }
 
-auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
-                                              const NormalizedCoords& coords) const
+inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
+                                                     const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  const V2dFlt speedCoeffs = GetSpeedCoefficient(sqDistFromZero, coords);
+  const V2dFlt speedCoeffs = GetSpeedCoefficients(sqDistFromZero, coords);
   return {speedCoeffs.x * coords.GetX(), speedCoeffs.y * coords.GetY()};
 }
 
-auto ZoomVectorEffects::GetSpeedCoefficient(const float sqDistFromZero,
-                                            const NormalizedCoords& coords) const -> V2dFlt
+auto ZoomVectorEffects::GetSpeedCoefficients(float sqDistFromZero,
+                                             const NormalizedCoords& coords) const -> V2dFlt
 {
-  const float speedCoeff = (1.0F + m_filterSettings->vitesse.GetRelativeSpeed()) /
-                     ZoomFilterData::SPEED_COEFF_DENOMINATOR;
-  V2dFlt speedCoeffs{speedCoeff, speedCoeff};
-
   switch (m_filterSettings->mode)
   {
     case ZoomFilterMode::AMULET_MODE:
-    {
-      speedCoeffs.x += m_filterSettings->amuletAmplitude * sqDistFromZero;
-      speedCoeffs.y = speedCoeffs.x;
-//?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
-      break;
-    }
+      return GetAmuletSpeedCoefficients(sqDistFromZero);
+
     case ZoomFilterMode::CRYSTAL_BALL_MODE0:
     case ZoomFilterMode::CRYSTAL_BALL_MODE1:
-    {
-      speedCoeffs.x -= m_filterSettings->crystalBallAmplitude *
-                    (sqDistFromZero - m_filterSettings->crystalBallSqDistOffset);
-      speedCoeffs.y = speedCoeffs.x;
-      //speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
-      break;
-    }
+      return GetCrystalBallSpeedCoefficients(sqDistFromZero);
+
+    case ZoomFilterMode::SCRUNCH_MODE:
+      return GetScrunchSpeedCoefficients(sqDistFromZero);
+
+    case ZoomFilterMode::SPEEDWAY_MODE:
+      return GetSpeedwaySpeedCoefficients(coords, sqDistFromZero);
+
+    case ZoomFilterMode::WAVE_MODE0:
+    case ZoomFilterMode::WAVE_MODE1:
+      return GetWaveSpeedCoefficients(sqDistFromZero);
+
+    case ZoomFilterMode::Y_ONLY_MODE:
+      return GetYOnlySpeedCoefficients(coords, sqDistFromZero);
+
     case ZoomFilterMode::HYPERCOS_MODE0:
     case ZoomFilterMode::HYPERCOS_MODE1:
     case ZoomFilterMode::HYPERCOS_MODE2:
     case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
     case ZoomFilterMode::NORMAL_MODE:
-    {
-      break;
-    }
-    case ZoomFilterMode::SCRUNCH_MODE:
-    {
-      speedCoeffs.x += m_filterSettings->scrunchAmplitude * sqDistFromZero;
-      speedCoeffs.y = speedCoeffs.x;
-//?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
-      break;
-    }
-    case ZoomFilterMode::SPEEDWAY_MODE:
-    {
-      constexpr float SQ_DIST_FACTOR = 0.01F;
-      speedCoeffs.x *=
-          m_filterSettings->speedwayAmplitude * (coords.GetY() + SQ_DIST_FACTOR * sqDistFromZero);
-//      speedCoeffs.y = speedCoeffs.x;
-      speedCoeffs.y = -10.0F * speedCoeffs.x;
-      break;
-    }
-    case ZoomFilterMode::WAVE_MODE0:
-    case ZoomFilterMode::WAVE_MODE1:
-    {
-      speedCoeffs.x += GetWaveEffectSpeedCoeff(sqDistFromZero);
-      speedCoeffs.y = speedCoeffs.x;
-//?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
-      break;
-    }
-    case ZoomFilterMode::Y_ONLY_MODE:
-    {
-      speedCoeffs.x *= GetYOnlySpeedCoeff(coords);
-      speedCoeffs.y = speedCoeffs.x;
-//?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
-      break;
-    }
-      /* Amulet 2 */
-      // vx = X * tan(dist);
-      // vy = Y * tan(dist);
+      return GetDefaultSpeedCoefficients();
+
+    // Amulet 2
+    // vx = X * tan(dist);
+    // vy = Y * tan(dist);
     default:
       throw std::logic_error(std20::format("Switch: unhandled case '{}'.", m_filterSettings->mode));
   }
+}
 
+inline auto ZoomVectorEffects::GetBaseSpeedCoefficients() const -> V2dFlt
+{
+  const float speedCoeff = (1.0F + m_filterSettings->vitesse.GetRelativeSpeed()) /
+                           ZoomFilterData::SPEED_COEFF_DENOMINATOR;
+  return {speedCoeff, speedCoeff};
+}
+
+inline auto ZoomVectorEffects::GetDefaultSpeedCoefficients() const -> V2dFlt
+{
+  return GetClampedSpeedCoeffs(GetBaseSpeedCoefficients());
+}
+
+inline auto ZoomVectorEffects::GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt
+{
   return {GetClampedSpeedCoeff(speedCoeffs.x), GetClampedSpeedCoeff(speedCoeffs.y)};
 }
 
-auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) const -> float
+inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) const -> float
 {
   if (speedCoeff < ZoomFilterData::MIN_SPEED_COEFF)
   {
@@ -172,7 +152,70 @@ auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) const -> fl
   return speedCoeff;
 }
 
-auto ZoomVectorEffects::GetWaveEffectSpeedCoeff(const float sqDistFromZero) const -> float
+inline auto ZoomVectorEffects::GetAmuletSpeedCoefficients(const float sqDistFromZero) const
+    -> V2dFlt
+{
+  V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
+
+  speedCoeffs.x += m_filterSettings->amuletAmplitude * sqDistFromZero;
+  speedCoeffs.y = speedCoeffs.x;
+  //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
+
+  return GetClampedSpeedCoeffs(speedCoeffs);
+}
+
+inline auto ZoomVectorEffects::GetCrystalBallSpeedCoefficients(const float sqDistFromZero) const
+    -> V2dFlt
+{
+  V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
+
+  speedCoeffs.x -= m_filterSettings->crystalBallAmplitude *
+                   (sqDistFromZero - m_filterSettings->crystalBallSqDistOffset);
+  speedCoeffs.y = speedCoeffs.x;
+  //speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
+
+  return GetClampedSpeedCoeffs(speedCoeffs);
+}
+
+inline auto ZoomVectorEffects::GetScrunchSpeedCoefficients(const float sqDistFromZero) const
+    -> V2dFlt
+{
+  V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
+
+  speedCoeffs.x += m_filterSettings->scrunchAmplitude * sqDistFromZero;
+  speedCoeffs.y = speedCoeffs.x;
+  //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
+
+  return GetClampedSpeedCoeffs(speedCoeffs);
+}
+
+inline auto ZoomVectorEffects::GetSpeedwaySpeedCoefficients(const NormalizedCoords& coords,
+                                                            const float sqDistFromZero) const
+    -> V2dFlt
+{
+  V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
+
+  constexpr float SQ_DIST_FACTOR = 0.01F;
+  speedCoeffs.x *=
+      m_filterSettings->speedwayAmplitude * (coords.GetY() + SQ_DIST_FACTOR * sqDistFromZero);
+  //      speedCoeffs.y = speedCoeffs.x;
+  speedCoeffs.y = -10.0F * speedCoeffs.x;
+
+  return GetClampedSpeedCoeffs(speedCoeffs);
+}
+
+inline auto ZoomVectorEffects::GetWaveSpeedCoefficients(const float sqDistFromZero) const -> V2dFlt
+{
+  V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
+
+  speedCoeffs.x += GetWaveEffectSpeedAdd(sqDistFromZero);
+  speedCoeffs.y = speedCoeffs.x;
+  //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
+
+  return GetClampedSpeedCoeffs(speedCoeffs);
+}
+
+auto ZoomVectorEffects::GetWaveEffectSpeedAdd(const float sqDistFromZero) const -> float
 {
   const float angle = m_filterSettings->waveFreqFactor * sqDistFromZero;
   float periodicPart;
@@ -193,7 +236,19 @@ auto ZoomVectorEffects::GetWaveEffectSpeedCoeff(const float sqDistFromZero) cons
   return m_filterSettings->waveAmplitude * periodicPart;
 }
 
-auto ZoomVectorEffects::GetYOnlySpeedCoeff(const NormalizedCoords& coords) const -> float
+inline auto ZoomVectorEffects::GetYOnlySpeedCoefficients(
+    const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const -> V2dFlt
+{
+  V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
+
+  speedCoeffs.x *= GetYOnlySpeedMultiplier(coords);
+  speedCoeffs.y = speedCoeffs.x;
+  //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
+
+  return GetClampedSpeedCoeffs(speedCoeffs);
+}
+
+auto ZoomVectorEffects::GetYOnlySpeedMultiplier(const NormalizedCoords& coords) const -> float
 {
   switch (m_filterSettings->yOnlyEffect)
   {

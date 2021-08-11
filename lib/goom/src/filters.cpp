@@ -343,13 +343,13 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetMixedColor(const NeighborhoodCoeffA
   uint32_t newG = multG >> 8;
   uint32_t newB = multB >> 8;
 
-  constexpr uint32_t MAX_COL = channel_limits<uint32_t>::max();
+  constexpr uint32_t MAX_CHANNEL_COLOR = channel_limits<uint32_t>::max();
   constexpr uint8_t MAX_ALPHA = 0xFF;
   if (m_buffSettings.allowOverexposed)
   {
-    return Pixel{{/*.r = */ static_cast<uint8_t>(std::min(MAX_COL, newR)),
-                  /*.g = */ static_cast<uint8_t>(std::min(MAX_COL, newG)),
-                  /*.b = */ static_cast<uint8_t>(std::min(MAX_COL, newB)),
+    return Pixel{{/*.r = */ static_cast<uint8_t>(std::min(MAX_CHANNEL_COLOR, newR)),
+                  /*.g = */ static_cast<uint8_t>(std::min(MAX_CHANNEL_COLOR, newG)),
+                  /*.b = */ static_cast<uint8_t>(std::min(MAX_CHANNEL_COLOR, newB)),
                   /*.a = */ MAX_ALPHA}};
   }
 
@@ -476,6 +476,8 @@ void ZoomFilterFx::ZoomFilterImpl::RestartTranBuffer()
 
   if (m_currentFilterSettings.imageDisplacement != nullptr)
   {
+    m_currentFilterSettings.imageDisplacement->SetAmplitude(
+        m_currentFilterSettings.imageDisplacementAmplitude);
     m_currentFilterSettings.imageDisplacement->SetXyColorCutoffs(
         m_currentFilterSettings.imageDisplacementXColorCutoff,
         m_currentFilterSettings.imageDisplacementXColorCutoff);

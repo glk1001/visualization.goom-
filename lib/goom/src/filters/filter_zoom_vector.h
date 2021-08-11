@@ -44,6 +44,10 @@ private:
   std::unique_ptr<ZoomVectorEffects> m_zoomVectorEffects;
   mutable FilterStats* m_stats{};
 
+  void GetZoomEffectsAdjustedVelocity(const float sqDistFromZero,
+                                      const NormalizedCoords& coords,
+                                      NormalizedCoords& velocity) const;
+
   void UpdateDoZoomVectorNoisifyStats() const;
   void UpdateDoZoomVectorHypercosEffectStats() const;
   void UpdateDoZoomVectorHPlaneEffectStats() const;

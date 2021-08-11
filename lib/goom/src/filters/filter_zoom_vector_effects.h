@@ -44,13 +44,26 @@ private:
   mutable FilterStats* m_stats{};
   float m_maxSpeedCoeff;
 
+  static auto GetMinVelocityVal(float velocityVal) -> float;
+
   auto GetSpeedCoeffVelocity(float sqDistFromZero, const NormalizedCoords& coords) const
       -> NormalizedCoords;
   auto GetImageDisplacementVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
-  auto GetSpeedCoefficient(float sqDistFromZero, const NormalizedCoords& coords) const -> V2dFlt;
-  auto GetWaveEffectSpeedCoeff(float sqDistFromZero) const -> float;
-  auto GetYOnlySpeedCoeff(const NormalizedCoords& coords) const -> float;
-  auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
+  auto GetSpeedCoefficients(float sqDistFromZero, const NormalizedCoords& coords) const -> V2dFlt;
+  auto GetBaseSpeedCoefficients() const -> V2dFlt;
+  auto GetDefaultSpeedCoefficients() const -> V2dFlt;
+  auto GetAmuletSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  auto GetCrystalBallSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  auto GetScrunchSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  auto GetSpeedwaySpeedCoefficients(const NormalizedCoords& coords, float sqDistFromZero) const
+      -> V2dFlt;
+  auto GetWaveSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  auto GetYOnlySpeedCoefficients(const NormalizedCoords& coords, float sqDistFromZero) const
+      -> V2dFlt;
+  auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;
+  auto GetClampedSpeedCoeff(const float speedCoeff) const -> float;
+  auto GetWaveEffectSpeedAdd(float sqDistFromZero) const -> float;
+  auto GetYOnlySpeedMultiplier(const NormalizedCoords& coords) const -> float;
 
   void UpdateDoZoomVectorSpeedCoeffBelowMinStats() const;
   void UpdateDoZoomVectorSpeedCoeffAboveMaxStats() const;
