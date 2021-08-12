@@ -30,6 +30,7 @@ public:
 
   auto GetFilterStats() const -> FilterStats* override;
   void SetFilterStats(FilterStats& stats) override;
+  virtual void UpdateLastStats() override;
 
   auto GetFilterSettings() const -> const ZoomFilterData* override;
   void SetFilterSettings(const ZoomFilterData& filterSettings) override;

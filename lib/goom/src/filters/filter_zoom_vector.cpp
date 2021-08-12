@@ -28,6 +28,11 @@ FilterZoomVector::FilterZoomVector() noexcept
 
 FilterZoomVector::~FilterZoomVector() noexcept = default;
 
+void FilterZoomVector::UpdateLastStats()
+{
+  m_zoomVectorEffects->UpdateLastStats();
+}
+
 auto FilterZoomVector::GetFilterSettings() const -> const ZoomFilterData*
 {
   return m_filterSettings;
@@ -80,7 +85,7 @@ void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero
     velocity += m_zoomVectorEffects->GetNoiseVelocity();
   }
 
-  if (m_filterSettings->hypercosEffect != ZoomFilterData::HypercosEffect::NONE)
+  if (m_filterSettings->hypercosOverlay != HypercosOverlay::NONE)
   {
     UpdateDoZoomVectorHypercosEffectStats();
     velocity += m_zoomVectorEffects->GetHypercosVelocity(coords);
@@ -129,7 +134,7 @@ inline void FilterZoomVector::UpdateDoZoomVectorHypercosEffectStats() const
   {
     return;
   }
-  m_stats->DoZoomVectorHypercosEffect();
+  m_stats->DoZoomVectorHypercosOverlay();
 }
 
 inline void FilterZoomVector::UpdateDoZoomVectorHPlaneEffectStats() const

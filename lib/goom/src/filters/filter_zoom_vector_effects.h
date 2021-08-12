@@ -4,6 +4,8 @@
 #include "filter_data.h"
 #include "filter_normalized_coords.h"
 
+#include <memory>
+
 #if __cplusplus <= 201402L
 namespace GOOM
 {
@@ -17,13 +19,28 @@ namespace GOOM::FILTERS
 {
 #endif
 
+class Amulet;
+class CrystalBall;
+class Hypercos;
+class Scrunch;
+class Speedway;
+class Wave;
+class YOnly;
+
 class ZoomVectorEffects
 {
 public:
   ZoomVectorEffects() noexcept;
+  ZoomVectorEffects(const ZoomVectorEffects&) noexcept = delete;
+  ZoomVectorEffects(ZoomVectorEffects&&) noexcept = delete;
+  ~ZoomVectorEffects() noexcept;
+
+  auto operator=(const ZoomVectorEffects&) -> ZoomVectorEffects& = delete;
+  auto operator=(ZoomVectorEffects&&) -> ZoomVectorEffects& = delete;
 
   void SetFilterSettings(const ZoomFilterData& filterSettings);
   void SetFilterStats(FilterStats& stats);
+  void UpdateLastStats();
 
   [[nodiscard]] auto GetMaxSpeedCoeff() const -> float;
   void SetMaxSpeedCoeff(float val);
@@ -46,6 +63,16 @@ private:
   mutable FilterStats* m_stats{};
   float m_maxSpeedCoeff = ZoomFilterData::DEFAULT_MAX_SPEED_COEFF;
 
+  const std::unique_ptr<Amulet> m_amulet;
+  const std::unique_ptr<CrystalBall> m_crystalBall;
+  const std::unique_ptr<Hypercos> m_hypercos;
+  const std::unique_ptr<Scrunch> m_scrunch;
+  const std::unique_ptr<Speedway> m_speedway;
+  const std::unique_ptr<Wave> m_wave;
+  const std::unique_ptr<YOnly> m_yOnly;
+
+  void SetHypercosOverlaySettings();
+
   [[nodiscard]] static auto GetMinVelocityVal(float velocityVal) -> float;
 
   [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
@@ -56,24 +83,16 @@ private:
   [[nodiscard]] auto GetXYSpeedCoefficients(float sqDistFromZero,
                                             const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetBaseSpeedCoefficients() const -> V2dFlt;
-  [[nodiscard]] auto GetDefaultSpeedCoefficients() const -> V2dFlt;
   [[nodiscard]] auto GetAmuletSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
   [[nodiscard]] auto GetCrystalBallSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
   [[nodiscard]] auto GetScrunchSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
   [[nodiscard]] auto GetSpeedwaySpeedCoefficients(float sqDistFromZero,
                                                   const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetWaveSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
-  [[nodiscard]] auto GetYOnlySpeedCoefficients(const NormalizedCoords& coords,
-                                               float sqDistFromZero) const -> V2dFlt;
+  [[nodiscard]] auto GetYOnlySpeedCoefficients(float sqDistFromZero,
+                                               const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;
-  [[nodiscard]] auto GetClampedSpeedCoeff(const float speedCoeff) const -> float;
-  [[nodiscard]] auto GetWaveEffectSpeedAdd(float sqDistFromZero,
-                                           ZoomFilterData::WaveEffect waveEffect) const -> float;
-  [[nodiscard]] auto GetWaveEffectPeriodicPart(float sqDistFromZero,
-                                               ZoomFilterData::WaveEffect waveEffect) const
-      -> float;
-  [[nodiscard]] auto GetYOnlySpeedMultiplier(ZoomFilterData::YOnlyEffect yOnlyEffect,
-                                             const NormalizedCoords& coords) const -> float;
+  [[nodiscard]] auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
 
   void UpdateDoZoomVectorSpeedCoeffBelowMinStats() const;
   void UpdateDoZoomVectorSpeedCoeffAboveMaxStats() const;

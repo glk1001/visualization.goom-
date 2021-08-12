@@ -71,31 +71,21 @@ private:
   void SetAmuletModeSettings();
   void SetCrystalBall0ModeSettings();
   void SetCrystalBall1ModeSettings();
-  void SetHypercos0ModeSettings();
-  void SetHypercos1ModeSettings();
-  void SetHypercos2ModeSettings();
+  void SetHypercosMode0Settings();
+  void SetHypercosMode1Settings();
+  void SetHypercosMode2Settings();
+  void SetHypercosMode3Settings();
   void SetImageDisplacementModeSettings();
   void SetNormalModeSettings();
   void SetScrunchModeSettings();
   void SetSpeedwayModeSettings();
   void SetWaterModeSettings();
-  void SetWaveMode0Settings();
-  void SetWaveMode1Settings();
+  void SetWaveModeSettings();
   void SetYOnlyModeSettings();
-
-  struct MinMaxValues
-  {
-    float minVal;
-    float maxVal;
-  };
 
   void SetMiddlePoints();
   void SetPlaneEffects();
   void SetRotate(float probability);
-  void SetHypercosEffect(const MinMaxValues& minMaxFreq, const MinMaxValues& minMaxAmp);
-  void SetWaveModeSettings(const MinMaxValues& minMaxFreq, const MinMaxValues& minMaxAmp);
-  void SetWaveEffect(const MinMaxValues& minMaxFreq, const MinMaxValues& minMaxAmp);
-  [[nodiscard]] static auto GetRandomHypercosEffect() -> ZoomFilterData::HypercosEffect;
 };
 
 inline auto FilterControl::GetResourcesDirectory() const -> const std::string&

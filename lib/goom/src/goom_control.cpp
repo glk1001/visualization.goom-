@@ -1862,40 +1862,9 @@ void GoomControl::GoomControlImpl::DisplayStateText()
       std20::format("blockyWavy: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().blockyWavy);
 
   message +=
-      std20::format("waveEffectType: {}\n",
-                    EnumToString(m_visualFx.zoomFilter_fx->GetFilterSettings().waveEffectType));
-  message += std20::format("waveFreqFactor: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().waveFreqFactor);
-  message += std20::format("waveAmplitude: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().waveAmplitude);
-
-  message += std20::format("amuletAmplitude: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().amuletAmplitude);
-  message += std20::format("crystalBallAmplitude: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().crystalBallAmplitude);
-  message += std20::format("scrunchAmplitude: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().scrunchAmplitude);
-  message += std20::format("speedwayAmplitude: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().speedwayAmplitude);
-
-  message +=
-      std20::format("hypercosEffect: {}\n",
-                    EnumToString(m_visualFx.zoomFilter_fx->GetFilterSettings().hypercosEffect));
-  message += std20::format("hypercosFreqX: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().hypercosFreqX);
-  message += std20::format("hypercosFreqY: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().hypercosFreqY);
-  message += std20::format("hypercosAmplitudeX: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().hypercosAmplitudeX);
-  message += std20::format("hypercosAmplitudeY: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().hypercosAmplitudeY);
-
-  message +=
       std20::format("updatesSinceLastChange: {}\n", m_goomData.updatesSinceLastZoomEffectsChange);
   //  message += std20::format("GetGeneralSpeed: {}\n", m_visualFx.zoomFilter_fx->GetGeneralSpeed());
   //  message += std20::format("pertedec: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().pertedec);
-  //  message +=
-  //    std20::format("waveEffect: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().waveEffect);
   //  message += std20::format("lineMode: {}\n", m_goomData.lineMode);
   //  message += std20::format("lockTime: {}\n", GetLockTime());
   //  message += std20::format("stopLines: {}\n", m_goomData.stopLines);

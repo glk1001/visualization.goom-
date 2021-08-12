@@ -29,9 +29,16 @@ add_library(goom
         src/draw/goom_draw_to_many.cpp
         src/draw/text_draw.cpp
         src/draw_methods.cpp
+        src/filters/filter_amulet.cpp
         src/filters/filter_buffers.cpp
         src/filters/filter_control.cpp
+        src/filters/filter_crystal_ball.cpp
+        src/filters/filter_hypercos.cpp
         src/filters/filter_normalized_coords.cpp
+        src/filters/filter_scrunch.cpp
+        src/filters/filter_speedway.cpp
+        src/filters/filter_wave.cpp
+        src/filters/filter_y_only.cpp
         src/filters/filter_zoom_vector.cpp
         src/filters/filter_zoom_vector_effects.cpp
         src/filters/image_displacement.cpp

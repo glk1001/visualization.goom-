@@ -22,6 +22,7 @@ enum class ZoomFilterMode
   HYPERCOS_MODE0,
   HYPERCOS_MODE1,
   HYPERCOS_MODE2,
+  HYPERCOS_MODE3,
   IMAGE_DISPLACEMENT_MODE,
   NORMAL_MODE,
   SCRUNCH_MODE,
@@ -31,6 +32,15 @@ enum class ZoomFilterMode
   WAVE_MODE1,
   Y_ONLY_MODE,
   _NUM // unused and must be last
+};
+
+enum class HypercosOverlay
+{
+  NONE,
+  MODE0,
+  MODE1,
+  MODE2,
+  MODE3,
 };
 
 // 128 = vitesse nule...
@@ -95,6 +105,9 @@ inline auto Vitesse::GetRelativeSpeed() const -> float
 struct ZoomFilterData
 {
   ZoomFilterMode mode = ZoomFilterMode::NORMAL_MODE;
+
+  HypercosOverlay hypercosOverlay = HypercosOverlay::NONE;
+
   Vitesse vitesse{};
 #if __cplusplus <= 201402L
   static const uint8_t pertedec; // NEVER SEEMS TO CHANGE
@@ -116,10 +129,6 @@ struct ZoomFilterData
   static constexpr float MIN_SPEED_COEFF = -4.01F;
   static constexpr float MAX_MAX_SPEED_COEFF = +4.01F;
   static constexpr float DEFAULT_MAX_SPEED_COEFF = +2.01F;
-
-  //* @since April 2002
-  // TODO - Not used yet
-  bool waveEffect = false; // applique une "surcouche" de wave effect
 
   // Noise:
   bool noisify = false; // ajoute un bruit a la transformation
@@ -143,69 +152,6 @@ struct ZoomFilterData
   static constexpr float MAX_V_PLANE_EFFECT_AMPLITUDE = 0.0035F;
   float vPlaneEffectAmplitude = DEFAULT_V_PLANE_EFFECT_AMPLITUDE;
 
-  // Amulet:
-  static constexpr float DEFAULT_AMULET_AMPLITUDE = 3.5F;
-  static constexpr float MIN_AMULET_AMPLITUDE = 2.0F;
-  static constexpr float MAX_AMULET_AMPLITUDE = 5.0F;
-  float xAmuletAmplitude = DEFAULT_AMULET_AMPLITUDE;
-  float yAmuletAmplitude = DEFAULT_AMULET_AMPLITUDE;
-
-  // Crystal ball:
-  static constexpr float DEFAULT_CRYSTAL_BALL_AMPLITUDE = 0.1F;
-  static constexpr float MIN_CRYSTAL_BALL0_AMPLITUDE = 0.05F;
-  static constexpr float MAX_CRYSTAL_BALL0_AMPLITUDE = 2.0F;
-  static constexpr float MIN_CRYSTAL_BALL1_AMPLITUDE = 0.01F;
-  static constexpr float MAX_CRYSTAL_BALL1_AMPLITUDE = 15.0F;
-  float xCrystalBallAmplitude = DEFAULT_CRYSTAL_BALL_AMPLITUDE;
-  float yCrystalBallAmplitude = DEFAULT_CRYSTAL_BALL_AMPLITUDE;
-  static constexpr float MIN_CRYSTAL_BALL0_SQ_DIST_MULT = 0.5F;
-  static constexpr float MAX_CRYSTAL_BALL0_SQ_DIST_MULT = 2.5F;
-  static constexpr float MIN_CRYSTAL_BALL1_SQ_DIST_MULT = 0.1F;
-  static constexpr float MAX_CRYSTAL_BALL1_SQ_DIST_MULT = 3.5F;
-  float xCrystalBallSqDistMult = 1.0F;
-  float yCrystalBallSqDistMult = 1.0F;
-  static constexpr float DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET = 0.5F;
-  static constexpr float MIN_CRYSTAL_BALL0_SQ_DIST_OFFSET = 0.1F;
-  static constexpr float MAX_CRYSTAL_BALL0_SQ_DIST_OFFSET = 1.0F;
-  static constexpr float MIN_CRYSTAL_BALL1_SQ_DIST_OFFSET = 0.01F;
-  static constexpr float MAX_CRYSTAL_BALL1_SQ_DIST_OFFSET = 1.5F;
-  float xCrystalBallSqDistOffset = DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET;
-  float yCrystalBallSqDistOffset = DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET;
-
-  // Hypercos:
-  enum class HypercosEffect
-  {
-    NONE,
-    SIN_CURL_SWIRL,
-    COS_CURL_SWIRL,
-    SIN_COS_CURL_SWIRL,
-    COS_SIN_CURL_SWIRL,
-    SIN_TAN_CURL_SWIRL,
-    COS_TAN_CURL_SWIRL,
-    SIN_RECTANGULAR,
-    COS_RECTANGULAR,
-    _NUM // unused and must be last
-  };
-
-  // applique une surcouche de hypercos effect
-  // applies an overlay of hypercos effect
-  HypercosEffect hypercosEffect = HypercosEffect::NONE;
-  bool hypercosReverse = false;
-
-  static constexpr float DEFAULT_HYPERCOS_FREQ = 10.0F;
-  static constexpr float MIN_HYPERCOS_FREQ = 5.0F;
-  static constexpr float MAX_HYPERCOS_FREQ = 100.0F;
-  // Tried 1000 for hypercos_freq but effect was too fine and annoying.
-  static constexpr float BIG_MAX_HYPERCOS_FREQ = 500.0F;
-  float hypercosFreqX = DEFAULT_HYPERCOS_FREQ;
-  float hypercosFreqY = DEFAULT_HYPERCOS_FREQ;
-
-  static constexpr float DEFAULT_HYPERCOS_AMPLITUDE = 1.0F / 120.0F;
-  static constexpr float MIN_HYPERCOS_AMPLITUDE = 0.1F * DEFAULT_HYPERCOS_AMPLITUDE;
-  static constexpr float MAX_HYPERCOS_AMPLITUDE = 1.1F * DEFAULT_HYPERCOS_AMPLITUDE;
-  float hypercosAmplitudeX = DEFAULT_HYPERCOS_AMPLITUDE;
-  float hypercosAmplitudeY = DEFAULT_HYPERCOS_AMPLITUDE;
-
   // Image Displacement:
   static constexpr float DEFAULT_IMAGE_DISPL_AMPLITUDE = 0.0250F;
   static constexpr float MIN_IMAGE_DISPL_AMPLITUDE = 0.0025F;
@@ -221,83 +167,6 @@ struct ZoomFilterData
   static constexpr float MAX_IMAGE_DISPL_ZOOM_FACTOR = 10.0F;
   static constexpr float DEFAULT_IMAGE_DISPL_ZOOM_FACTOR = 5.0F;
   float imageDisplacementZoomFactor = DEFAULT_IMAGE_DISPL_ZOOM_FACTOR;
-
-  // Wave:
-  enum class WaveEffect
-  {
-    WAVE_SIN_EFFECT,
-    WAVE_COS_EFFECT,
-    WAVE_SIN_COS_EFFECT,
-    _NUM // unused and must be last
-  };
-  static constexpr WaveEffect DEFAULT_WAVE_EFFECT_TYPE = WaveEffect::WAVE_SIN_EFFECT;
-  WaveEffect xWaveEffectType = DEFAULT_WAVE_EFFECT_TYPE;
-  WaveEffect yWaveEffectType = DEFAULT_WAVE_EFFECT_TYPE;
-
-  static constexpr float DEFAULT_WAVE_FREQ_FACTOR = 20.0F;
-  static constexpr float MIN_WAVE_FREQ_FACTOR = 1.0F;
-  static constexpr float MAX_WAVE_FREQ_FACTOR = 50.0F;
-  float waveFreqFactor = DEFAULT_WAVE_FREQ_FACTOR;
-
-  static constexpr float DEFAULT_WAVE_AMPLITUDE = 0.01F;
-  static constexpr float MIN_WAVE_AMPLITUDE = 0.001F;
-  static constexpr float MAX_WAVE_AMPLITUDE = 0.25F;
-  float waveAmplitude = DEFAULT_WAVE_AMPLITUDE;
-
-  // These give weird but interesting wave results
-  static constexpr float SMALL_MIN_WAVE_FREQ_FACTOR = 0.001F;
-  static constexpr float SMALL_MAX_WAVE_FREQ_FACTOR = 0.1F;
-  static constexpr float BIG_MIN_WAVE_AMPLITUDE = 1.0F;
-  static constexpr float BIG_MAX_WAVE_AMPLITUDE = 50.0F;
-
-  // Scrunch:
-  static constexpr float DEFAULT_SCRUNCH_AMPLITUDE = 0.1F;
-  static constexpr float MIN_X_SCRUNCH_AMPLITUDE = 0.05F;
-  static constexpr float MAX_X_SCRUNCH_AMPLITUDE = 0.2F;
-  static constexpr float MIN_Y_SCRUNCH_AMPLITUDE = 0.5F;
-  static constexpr float MAX_Y_SCRUNCH_AMPLITUDE = 2.0F;
-  float xScrunchAmplitude = DEFAULT_SCRUNCH_AMPLITUDE;
-  float yScrunchAmplitude = 1.0F;
-
-  // Speedway:
-  static constexpr float DEFAULT_X_SPEEDWAY_AMPLITUDE = 4.0F;
-  static constexpr float DEFAULT_Y_SPEEDWAY_AMPLITUDE = 1.0F;
-  static constexpr float MIN_X_SPEEDWAY_AMPLITUDE = 1.0F;
-  static constexpr float MAX_X_SPEEDWAY_AMPLITUDE = 8.0F;
-  static constexpr float MIN_Y_SPEEDWAY_AMPLITUDE = -15.0F;
-  static constexpr float MAX_Y_SPEEDWAY_AMPLITUDE = +5.0F;
-  float xSpeedwayAmplitude = DEFAULT_X_SPEEDWAY_AMPLITUDE;
-  float ySpeedwayAmplitude = DEFAULT_Y_SPEEDWAY_AMPLITUDE;
-
-  // Y Only
-  enum class YOnlyEffect
-  {
-    NONE,
-    XSIN_YSIN,
-    XSIN_YCOS,
-    XCOS_YSIN,
-    XCOS_YCOS,
-    _NUM // unused and must be last
-  };
-
-  YOnlyEffect yOnlyXEffect = YOnlyEffect::XSIN_YSIN;
-  YOnlyEffect yOnlyYEffect = YOnlyEffect::NONE;
-
-  static constexpr float DEFAULT_Y_ONLY_X_FREQ_FACTOR = 1.0F;
-  static constexpr float MIN_Y_ONLY_X_FREQ_FACTOR = -10.0F;
-  static constexpr float MAX_Y_ONLY_X_FREQ_FACTOR = +10.0F;
-  float yOnlyXFreqFactor = DEFAULT_Y_ONLY_X_FREQ_FACTOR;
-
-  static constexpr float DEFAULT_Y_ONLY_FREQ_FACTOR = 10.0F;
-  static constexpr float MIN_Y_ONLY_FREQ_FACTOR = -10.0F;
-  static constexpr float MAX_Y_ONLY_FREQ_FACTOR = +10.0F;
-  float yOnlyFreqFactor = DEFAULT_Y_ONLY_FREQ_FACTOR;
-
-  static constexpr float DEFAULT_Y_ONLY_AMPLITUDE = 10.0F;
-  static constexpr float MIN_Y_ONLY_AMPLITUDE = 0.1F;
-  static constexpr float MAX_Y_ONLY_AMPLITUDE = 20.0F;
-  float yOnlyXAmplitude = DEFAULT_Y_ONLY_AMPLITUDE;
-  float yOnlyYAmplitude = DEFAULT_Y_ONLY_AMPLITUDE;
 };
 
 } // namespace GOOM

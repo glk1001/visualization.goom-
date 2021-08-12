@@ -1,7 +1,14 @@
 #ifndef VISUALIZATION_GOOM_STATS_FILTER_STATS_H
 #define VISUALIZATION_GOOM_STATS_FILTER_STATS_H
 
+#include "../filters/filter_amulet.h"
 #include "../filters/filter_buffers.h"
+#include "../filters/filter_crystal_ball.h"
+#include "../filters/filter_hypercos.h"
+#include "../filters/filter_scrunch.h"
+#include "../filters/filter_speedway.h"
+#include "../filters/filter_wave.h"
+#include "../filters/filter_y_only.h"
 #include "filter_data.h"
 #include "goom/goom_config.h"
 #include "goom/goom_stats.h"
@@ -23,6 +30,13 @@ public:
 
   void SetLastZoomFilterSettings(const ZoomFilterData& filterSettings);
   void SetLastJustChangedFilterSettings(bool val);
+  void SetLastAmuletParams(const FILTERS::Amulet::Params& params);
+  void SetLastCrystalBallParams(const FILTERS::CrystalBall::Params& params);
+  void SetLastHypercosParams(const FILTERS::Hypercos::Params& params);
+  void SetLastScrunchParams(const FILTERS::Scrunch::Params& params);
+  void SetLastSpeedwayParams(const FILTERS::Speedway::Params& params);
+  void SetLastWaveParams(const FILTERS::Wave::Params& params);
+  void SetLastYOnlyParams(const FILTERS::YOnly::Params& params);
   void SetLastGeneralSpeed(float val);
   void SetLastPrevX(uint32_t val);
   void SetLastPrevY(uint32_t val);
@@ -46,7 +60,7 @@ public:
   void DoTranPointClipped();
   void DoZoomVectorNoisify();
   void DoZoomVectorNoiseFactor();
-  void DoZoomVectorHypercosEffect();
+  void DoZoomVectorHypercosOverlay();
   void DoZoomVectorHPlaneEffect();
   void DoZoomVectorVPlaneEffect();
   void DoZoomVectorTanEffect();
@@ -84,6 +98,13 @@ private:
   uint32_t m_lastTranBuffYLineStart = +1000000;
   int32_t m_lastTranDiffFactor = -1000;
   const ZoomFilterData* m_lastZoomFilterSettings{};
+  FILTERS::Amulet::Params m_lastAmuletParams{};
+  FILTERS::CrystalBall::Params m_lastCrystalBallParams{};
+  FILTERS::Hypercos::Params m_lastHypercosParams{};
+  FILTERS::Scrunch::Params m_lastScrunchParams{};
+  FILTERS::Speedway::Params m_lastSpeedwayParams{};
+  FILTERS::Wave::Params m_lastWaveParams{};
+  FILTERS::YOnly::Params m_lastYOnlyParams{};
 
   uint32_t m_numChangeFilterSettings = 0;
   uint64_t m_numZoomFilterFastRgb = 0;
@@ -98,7 +119,7 @@ private:
   uint64_t m_numZoomVectors = 0;
   uint64_t m_numZoomVectorNoisify = 0;
   uint64_t m_numZoomVectorChangeNoiseFactor = 0;
-  uint64_t m_numZoomVectorHypercosEffect = 0;
+  uint64_t m_numZoomVectorHypercosOverlay = 0;
   uint64_t m_numZoomVectorHPlaneEffect = 0;
   uint64_t m_numZoomVectorVPlaneEffect = 0;
   uint64_t m_numCZoom = 0;

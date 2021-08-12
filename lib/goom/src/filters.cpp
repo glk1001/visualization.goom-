@@ -240,6 +240,8 @@ ZoomFilterFx::ZoomFilterImpl::~ZoomFilterImpl() noexcept = default;
 
 void ZoomFilterFx::ZoomFilterImpl::Log(const GoomStats::LogStatsValueFunc& l) const
 {
+  m_zoomVector->UpdateLastStats();
+
   m_stats.SetLastZoomFilterSettings(m_currentFilterSettings);
   m_stats.SetLastJustChangedFilterSettings(m_pendingFilterSettings);
   m_stats.SetLastGeneralSpeed(m_currentFilterSettings.vitesse.GetRelativeSpeed());
@@ -687,25 +689,6 @@ void ZoomFilterFx::ZoomFilterImpl::LogState(const std::string& name) const
   LogInfo("m_currentFilterSettings.tanEffect = {}", m_currentFilterSettings.tanEffect);
   LogInfo("m_currentFilterSettings.rotateSpeed = {}", m_currentFilterSettings.rotateSpeed);
   LogInfo("m_currentFilterSettings.blockyWavy = {}", m_currentFilterSettings.blockyWavy);
-  LogInfo("m_currentFilterSettings.waveEffectType = {}", m_currentFilterSettings.waveEffectType);
-  LogInfo("m_currentFilterSettings.waveFreqFactor = {}", m_currentFilterSettings.waveFreqFactor);
-  LogInfo("m_currentFilterSettings.waveAmplitude = {}", m_currentFilterSettings.waveAmplitude);
-  LogInfo("m_currentFilterSettings.amuletAmplitude = {}", m_currentFilterSettings.amuletAmplitude);
-  LogInfo("m_currentFilterSettings.crystalBallAmplitude = {}",
-          m_currentFilterSettings.crystalBallAmplitude);
-  LogInfo("m_currentFilterSettings.scrunchAmplitude = {}",
-          m_currentFilterSettings.scrunchAmplitude);
-  LogInfo("m_currentFilterSettings.speedwayAmplitude = {}",
-          m_currentFilterSettings.speedwayAmplitude);
-  LogInfo("m_currentFilterSettings.hypercosEffect = {}", m_currentFilterSettings.hypercosEffect);
-  LogInfo("m_currentFilterSettings.hypercosFreqX = {}", m_currentFilterSettings.hypercosFreqX);
-  LogInfo("m_currentFilterSettings.hypercosFreqY = {}", m_currentFilterSettings.hypercosFreqY);
-  LogInfo("m_currentFilterSettings.hypercosAmplitudeX = {}",
-          m_currentFilterSettings.hypercosAmplitudeX);
-  LogInfo("m_currentFilterSettings.hypercosAmplitudeY = {}",
-          m_currentFilterSettings.hypercosAmplitudeY);
-  LogInfo("m_currentFilterSettings.hypercosReverse = {}", m_currentFilterSettings.hypercosReverse);
-  LogInfo("m_currentFilterSettings.waveEffect = {}", m_currentFilterSettings.waveEffect);
 
   LogInfo("=================================");
 }

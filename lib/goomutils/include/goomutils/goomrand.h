@@ -10,6 +10,7 @@
 #include <istream>
 #include <ostream>
 #include <stdexcept>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -39,14 +40,23 @@ inline auto GetRandSignFlt() -> float;
 
 // Return random positive integer in the range n0 <= n < n1.
 auto GetRandInRange(uint32_t n0, uint32_t n1) -> uint32_t;
-// Return random integer in the range 0 <= n < nmax.
-auto GetNRand(uint32_t nmax) -> uint32_t;
+// Return random integer in the range 0 <= n < n1.
+auto GetNRand(uint32_t n1) -> uint32_t;
 // Return random integer in the range 0 <= n < randMax.
 auto GetRand() -> uint32_t;
 // Return random integer in the range n0 <= n < n1.
 auto GetRandInRange(int32_t n0, int32_t n1) -> int32_t;
 // Return random float in the range x0 <= n <= x1.
 auto GetRandInRange(float x0, float x1) -> float;
+template<typename T>
+struct NumberRange
+{
+  T min;
+  T max;
+};
+template<typename T>
+auto GetRandInRange(const NumberRange<T>& numberRange) -> T;
+
 template<class RandomIt>
 void Shuffle(RandomIt first, RandomIt last);
 // Return prob(m/n)
@@ -85,14 +95,24 @@ inline auto GetRandSignFlt() -> float
   return GetRandInRange(0U, 100U) < 50 ? -1.0F : +1.0F;
 }
 
-inline auto GetNRand(const uint32_t nmax) -> uint32_t
+inline auto GetNRand(const uint32_t n1) -> uint32_t
 {
-  return GetRandInRange(0U, nmax);
+  return GetRandInRange(0U, n1);
 }
 
 inline auto GetRand() -> uint32_t
 {
   return GetRandInRange(0U, g_randMax);
+}
+
+template<typename T>
+inline auto GetRandInRange(const NumberRange<T>& numberRange) -> T
+{
+  if (std::is_integral<T>())
+  {
+    return GetRandInRange(numberRange.min, numberRange.max + 1);
+  }
+  return GetRandInRange(numberRange.min, numberRange.max);
 }
 
 template<class RandomIt>

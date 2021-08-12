@@ -26,6 +26,7 @@ public:
 
   virtual auto GetFilterStats() const -> FilterStats* = 0;
   virtual void SetFilterStats(FilterStats& stats) = 0;
+  virtual void UpdateLastStats() = 0;
 
   virtual auto GetFilterSettings() const -> const ZoomFilterData* = 0;
   virtual void SetFilterSettings(const ZoomFilterData& filterSettings) = 0;
