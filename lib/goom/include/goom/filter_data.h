@@ -147,21 +147,30 @@ struct ZoomFilterData
   static constexpr float DEFAULT_AMULET_AMPLITUDE = 3.5F;
   static constexpr float MIN_AMULET_AMPLITUDE = 2.0F;
   static constexpr float MAX_AMULET_AMPLITUDE = 5.0F;
-  float amuletAmplitude = DEFAULT_AMULET_AMPLITUDE;
+  float xAmuletAmplitude = DEFAULT_AMULET_AMPLITUDE;
+  float yAmuletAmplitude = DEFAULT_AMULET_AMPLITUDE;
 
   // Crystal ball:
   static constexpr float DEFAULT_CRYSTAL_BALL_AMPLITUDE = 0.1F;
   static constexpr float MIN_CRYSTAL_BALL0_AMPLITUDE = 0.05F;
-  static constexpr float MIN_CRYSTAL_BALL1_AMPLITUDE = 0.01F;
   static constexpr float MAX_CRYSTAL_BALL0_AMPLITUDE = 2.0F;
+  static constexpr float MIN_CRYSTAL_BALL1_AMPLITUDE = 0.01F;
   static constexpr float MAX_CRYSTAL_BALL1_AMPLITUDE = 15.0F;
-  float crystalBallAmplitude = DEFAULT_CRYSTAL_BALL_AMPLITUDE;
+  float xCrystalBallAmplitude = DEFAULT_CRYSTAL_BALL_AMPLITUDE;
+  float yCrystalBallAmplitude = DEFAULT_CRYSTAL_BALL_AMPLITUDE;
+  static constexpr float MIN_CRYSTAL_BALL0_SQ_DIST_MULT = 0.5F;
+  static constexpr float MAX_CRYSTAL_BALL0_SQ_DIST_MULT = 2.5F;
+  static constexpr float MIN_CRYSTAL_BALL1_SQ_DIST_MULT = 0.1F;
+  static constexpr float MAX_CRYSTAL_BALL1_SQ_DIST_MULT = 3.5F;
+  float xCrystalBallSqDistMult = 1.0F;
+  float yCrystalBallSqDistMult = 1.0F;
   static constexpr float DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET = 0.5F;
   static constexpr float MIN_CRYSTAL_BALL0_SQ_DIST_OFFSET = 0.1F;
-  static constexpr float MIN_CRYSTAL_BALL1_SQ_DIST_OFFSET = 0.01F;
   static constexpr float MAX_CRYSTAL_BALL0_SQ_DIST_OFFSET = 1.0F;
+  static constexpr float MIN_CRYSTAL_BALL1_SQ_DIST_OFFSET = 0.01F;
   static constexpr float MAX_CRYSTAL_BALL1_SQ_DIST_OFFSET = 1.5F;
-  float crystalBallSqDistOffset = DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET;
+  float xCrystalBallSqDistOffset = DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET;
+  float yCrystalBallSqDistOffset = DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET;
 
   // Hypercos:
   enum class HypercosEffect
@@ -222,7 +231,8 @@ struct ZoomFilterData
     _NUM // unused and must be last
   };
   static constexpr WaveEffect DEFAULT_WAVE_EFFECT_TYPE = WaveEffect::WAVE_SIN_EFFECT;
-  WaveEffect waveEffectType = DEFAULT_WAVE_EFFECT_TYPE;
+  WaveEffect xWaveEffectType = DEFAULT_WAVE_EFFECT_TYPE;
+  WaveEffect yWaveEffectType = DEFAULT_WAVE_EFFECT_TYPE;
 
   static constexpr float DEFAULT_WAVE_FREQ_FACTOR = 20.0F;
   static constexpr float MIN_WAVE_FREQ_FACTOR = 1.0F;
@@ -242,15 +252,22 @@ struct ZoomFilterData
 
   // Scrunch:
   static constexpr float DEFAULT_SCRUNCH_AMPLITUDE = 0.1F;
-  static constexpr float MIN_SCRUNCH_AMPLITUDE = 0.05F;
-  static constexpr float MAX_SCRUNCH_AMPLITUDE = 0.2F;
-  float scrunchAmplitude = DEFAULT_SCRUNCH_AMPLITUDE;
+  static constexpr float MIN_X_SCRUNCH_AMPLITUDE = 0.05F;
+  static constexpr float MAX_X_SCRUNCH_AMPLITUDE = 0.2F;
+  static constexpr float MIN_Y_SCRUNCH_AMPLITUDE = 0.5F;
+  static constexpr float MAX_Y_SCRUNCH_AMPLITUDE = 2.0F;
+  float xScrunchAmplitude = DEFAULT_SCRUNCH_AMPLITUDE;
+  float yScrunchAmplitude = 1.0F;
 
   // Speedway:
-  static constexpr float DEFAULT_SPEEDWAY_AMPLITUDE = 4.0F;
-  static constexpr float MIN_SPEEDWAY_AMPLITUDE = 1.0F;
-  static constexpr float MAX_SPEEDWAY_AMPLITUDE = 8.0F;
-  float speedwayAmplitude = DEFAULT_SPEEDWAY_AMPLITUDE;
+  static constexpr float DEFAULT_X_SPEEDWAY_AMPLITUDE = 4.0F;
+  static constexpr float DEFAULT_Y_SPEEDWAY_AMPLITUDE = 1.0F;
+  static constexpr float MIN_X_SPEEDWAY_AMPLITUDE = 1.0F;
+  static constexpr float MAX_X_SPEEDWAY_AMPLITUDE = 8.0F;
+  static constexpr float MIN_Y_SPEEDWAY_AMPLITUDE = -15.0F;
+  static constexpr float MAX_Y_SPEEDWAY_AMPLITUDE = +5.0F;
+  float xSpeedwayAmplitude = DEFAULT_X_SPEEDWAY_AMPLITUDE;
+  float ySpeedwayAmplitude = DEFAULT_Y_SPEEDWAY_AMPLITUDE;
 
   // Y Only
   enum class YOnlyEffect
@@ -263,7 +280,8 @@ struct ZoomFilterData
     _NUM // unused and must be last
   };
 
-  YOnlyEffect yOnlyEffect = YOnlyEffect::XSIN_YSIN;
+  YOnlyEffect yOnlyXEffect = YOnlyEffect::XSIN_YSIN;
+  YOnlyEffect yOnlyYEffect = YOnlyEffect::NONE;
 
   static constexpr float DEFAULT_Y_ONLY_X_FREQ_FACTOR = 1.0F;
   static constexpr float MIN_Y_ONLY_X_FREQ_FACTOR = -10.0F;
@@ -278,7 +296,8 @@ struct ZoomFilterData
   static constexpr float DEFAULT_Y_ONLY_AMPLITUDE = 10.0F;
   static constexpr float MIN_Y_ONLY_AMPLITUDE = 0.1F;
   static constexpr float MAX_Y_ONLY_AMPLITUDE = 20.0F;
-  float yOnlyAmplitude = DEFAULT_Y_ONLY_AMPLITUDE;
+  float yOnlyXAmplitude = DEFAULT_Y_ONLY_AMPLITUDE;
+  float yOnlyYAmplitude = DEFAULT_Y_ONLY_AMPLITUDE;
 };
 
 } // namespace GOOM

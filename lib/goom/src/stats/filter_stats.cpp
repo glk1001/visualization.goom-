@@ -108,12 +108,22 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
     logVal(MODULE, "lastZoomFilterData->middleX", m_lastZoomFilterSettings->middleX);
     logVal(MODULE, "lastZoomFilterData->middleY", m_lastZoomFilterSettings->middleY);
 
-    logVal(MODULE, "lastZoomFilterData->amuletteAmplitude",
-           m_lastZoomFilterSettings->amuletAmplitude);
-    logVal(MODULE, "lastZoomFilterData->crystalBallAmplitude",
-           m_lastZoomFilterSettings->crystalBallAmplitude);
-    logVal(MODULE, "lastZoomFilterData->crystalBallSqDistOffset",
-           m_lastZoomFilterSettings->crystalBallSqDistOffset);
+    logVal(MODULE, "lastZoomFilterData->xAmuletAmplitude",
+           m_lastZoomFilterSettings->xAmuletAmplitude);
+    logVal(MODULE, "lastZoomFilterData->yAmuletAmplitude",
+           m_lastZoomFilterSettings->yAmuletAmplitude);
+    logVal(MODULE, "lastZoomFilterData->xCrystalBallAmplitude",
+           m_lastZoomFilterSettings->xCrystalBallAmplitude);
+    logVal(MODULE, "lastZoomFilterData->yCrystalBallAmplitude",
+           m_lastZoomFilterSettings->yCrystalBallAmplitude);
+    logVal(MODULE, "lastZoomFilterData->xCrystalBallSqDistMult",
+           m_lastZoomFilterSettings->xCrystalBallSqDistMult);
+    logVal(MODULE, "lastZoomFilterData->yCrystalBallSqDistMult",
+           m_lastZoomFilterSettings->yCrystalBallSqDistMult);
+    logVal(MODULE, "lastZoomFilterData->xCrystalBallSqDistOffset",
+           m_lastZoomFilterSettings->xCrystalBallSqDistOffset);
+    logVal(MODULE, "lastZoomFilterData->yCrystalBallSqDistOffset",
+           m_lastZoomFilterSettings->yCrystalBallSqDistOffset);
     logVal(MODULE, "lastZoomFilterData->hPlaneEffect", m_lastZoomFilterSettings->hPlaneEffect);
     logVal(MODULE, "lastZoomFilterData->vPlaneEffect", m_lastZoomFilterSettings->vPlaneEffect);
     logVal(MODULE, "lastZoomFilterData->hPlaneEffectAmplitude",
@@ -145,17 +155,28 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
            m_lastZoomFilterSettings->imageDisplacementXColorCutoff);
     logVal(MODULE, "lastZoomFilterData->imageDisplacementYColorCutoff",
            m_lastZoomFilterSettings->imageDisplacementYColorCutoff);
-    logVal(MODULE, "lastZoomFilterData->scrunchAmplitude",
-           m_lastZoomFilterSettings->scrunchAmplitude);
-    logVal(MODULE, "lastZoomFilterData->speedwayAmplitude",
-           m_lastZoomFilterSettings->speedwayAmplitude);
-    logVal(MODULE, "lastZoomFilterData->waveEffectType",
-           EnumToString(m_lastZoomFilterSettings->waveEffectType));
+    logVal(MODULE, "lastZoomFilterData->xScrunchAmplitude",
+           m_lastZoomFilterSettings->xScrunchAmplitude);
+    logVal(MODULE, "lastZoomFilterData->yScrunchAmplitude",
+           m_lastZoomFilterSettings->yScrunchAmplitude);
+    logVal(MODULE, "lastZoomFilterData->xSpeedwayAmplitude",
+           m_lastZoomFilterSettings->xSpeedwayAmplitude);
+    logVal(MODULE, "lastZoomFilterData->ySpeedwayAmplitude",
+           m_lastZoomFilterSettings->ySpeedwayAmplitude);
+    logVal(MODULE, "lastZoomFilterData->xWaveEffectType",
+           EnumToString(m_lastZoomFilterSettings->xWaveEffectType));
+    logVal(MODULE, "lastZoomFilterData->yWaveEffectType",
+           EnumToString(m_lastZoomFilterSettings->yWaveEffectType));
     logVal(MODULE, "lastZoomFilterData->waveFreqFactor", m_lastZoomFilterSettings->waveFreqFactor);
     logVal(MODULE, "lastZoomFilterData->waveAmplitude", m_lastZoomFilterSettings->waveAmplitude);
-    logVal(MODULE, "lastZoomFilterData->yOnlyEffect",
-           EnumToString(m_lastZoomFilterSettings->yOnlyEffect));
-    logVal(MODULE, "lastZoomFilterData->yOnlyAmplitude", m_lastZoomFilterSettings->yOnlyAmplitude);
+    logVal(MODULE, "lastZoomFilterData->yOnlyXEffect",
+           EnumToString(m_lastZoomFilterSettings->yOnlyXEffect));
+    logVal(MODULE, "lastZoomFilterData->yOnlyYEffect",
+           EnumToString(m_lastZoomFilterSettings->yOnlyYEffect));
+    logVal(MODULE, "lastZoomFilterData->yOnlyXAmplitude",
+           m_lastZoomFilterSettings->yOnlyXAmplitude);
+    logVal(MODULE, "lastZoomFilterData->yOnlyYAmplitude",
+           m_lastZoomFilterSettings->yOnlyYAmplitude);
     logVal(MODULE, "lastZoomFilterData->yOnlyFreqFactor",
            m_lastZoomFilterSettings->yOnlyFreqFactor);
     logVal(MODULE, "lastZoomFilterData->yOnlyXFreqFactor",

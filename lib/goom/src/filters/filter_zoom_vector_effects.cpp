@@ -19,10 +19,7 @@ using UTILS::GetRandInRange;
 using UTILS::m_half_pi;
 using UTILS::SMALL_FLOAT;
 
-ZoomVectorEffects::ZoomVectorEffects() noexcept
-  : m_maxSpeedCoeff{ZoomFilterData::DEFAULT_MAX_SPEED_COEFF}
-{
-}
+ZoomVectorEffects::ZoomVectorEffects() noexcept = default;
 
 void ZoomVectorEffects::SetFilterSettings(const ZoomFilterData& filterSettings)
 {
@@ -76,12 +73,12 @@ inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
                                                      const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  const V2dFlt speedCoeffs = GetSpeedCoefficients(sqDistFromZero, coords);
+  const V2dFlt speedCoeffs = GetXYSpeedCoefficients(sqDistFromZero, coords);
   return {speedCoeffs.x * coords.GetX(), speedCoeffs.y * coords.GetY()};
 }
 
-auto ZoomVectorEffects::GetSpeedCoefficients(float sqDistFromZero,
-                                             const NormalizedCoords& coords) const -> V2dFlt
+auto ZoomVectorEffects::GetXYSpeedCoefficients(float sqDistFromZero,
+                                               const NormalizedCoords& coords) const -> V2dFlt
 {
   switch (m_filterSettings->mode)
   {
@@ -96,7 +93,7 @@ auto ZoomVectorEffects::GetSpeedCoefficients(float sqDistFromZero,
       return GetScrunchSpeedCoefficients(sqDistFromZero);
 
     case ZoomFilterMode::SPEEDWAY_MODE:
-      return GetSpeedwaySpeedCoefficients(coords, sqDistFromZero);
+      return GetSpeedwaySpeedCoefficients(sqDistFromZero, coords);
 
     case ZoomFilterMode::WAVE_MODE0:
     case ZoomFilterMode::WAVE_MODE1:
@@ -157,8 +154,8 @@ inline auto ZoomVectorEffects::GetAmuletSpeedCoefficients(const float sqDistFrom
 {
   V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
 
-  speedCoeffs.x += m_filterSettings->amuletAmplitude * sqDistFromZero;
-  speedCoeffs.y = speedCoeffs.x;
+  speedCoeffs.x += m_filterSettings->xAmuletAmplitude * sqDistFromZero;
+  speedCoeffs.y += m_filterSettings->yAmuletAmplitude * sqDistFromZero;
   //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
 
   return GetClampedSpeedCoeffs(speedCoeffs);
@@ -169,10 +166,12 @@ inline auto ZoomVectorEffects::GetCrystalBallSpeedCoefficients(const float sqDis
 {
   V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
 
-  speedCoeffs.x -= m_filterSettings->crystalBallAmplitude *
-                   (sqDistFromZero - m_filterSettings->crystalBallSqDistOffset);
-  speedCoeffs.y = speedCoeffs.x;
-  //speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
+  speedCoeffs.x -= m_filterSettings->xCrystalBallAmplitude *
+                   (m_filterSettings->xCrystalBallSqDistMult * sqDistFromZero -
+                    m_filterSettings->xCrystalBallSqDistOffset);
+  speedCoeffs.y -= m_filterSettings->yCrystalBallAmplitude *
+                   (m_filterSettings->yCrystalBallSqDistMult * sqDistFromZero -
+                    m_filterSettings->yCrystalBallSqDistOffset);
 
   return GetClampedSpeedCoeffs(speedCoeffs);
 }
@@ -182,24 +181,22 @@ inline auto ZoomVectorEffects::GetScrunchSpeedCoefficients(const float sqDistFro
 {
   V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
 
-  speedCoeffs.x += m_filterSettings->scrunchAmplitude * sqDistFromZero;
-  speedCoeffs.y = speedCoeffs.x;
-  //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
+  speedCoeffs.x += m_filterSettings->xScrunchAmplitude * sqDistFromZero;
+  speedCoeffs.y = m_filterSettings->yScrunchAmplitude * speedCoeffs.x;
 
   return GetClampedSpeedCoeffs(speedCoeffs);
 }
 
-inline auto ZoomVectorEffects::GetSpeedwaySpeedCoefficients(const NormalizedCoords& coords,
-                                                            const float sqDistFromZero) const
+inline auto ZoomVectorEffects::GetSpeedwaySpeedCoefficients(const float sqDistFromZero,
+                                                            const NormalizedCoords& coords) const
     -> V2dFlt
 {
   V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
 
   constexpr float SQ_DIST_FACTOR = 0.01F;
-  speedCoeffs.x *=
-      m_filterSettings->speedwayAmplitude * (coords.GetY() + SQ_DIST_FACTOR * sqDistFromZero);
-  //      speedCoeffs.y = speedCoeffs.x;
-  speedCoeffs.y = -10.0F * speedCoeffs.x;
+  const float yAdd = SQ_DIST_FACTOR * sqDistFromZero;
+  speedCoeffs.x *= m_filterSettings->xSpeedwayAmplitude * (coords.GetY() + yAdd);
+  speedCoeffs.y = m_filterSettings->ySpeedwayAmplitude * speedCoeffs.x;
 
   return GetClampedSpeedCoeffs(speedCoeffs);
 }
@@ -208,32 +205,34 @@ inline auto ZoomVectorEffects::GetWaveSpeedCoefficients(const float sqDistFromZe
 {
   V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
 
-  speedCoeffs.x += GetWaveEffectSpeedAdd(sqDistFromZero);
-  speedCoeffs.y = speedCoeffs.x;
-  //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
+  speedCoeffs.x += GetWaveEffectSpeedAdd(sqDistFromZero, m_filterSettings->xWaveEffectType);
+  speedCoeffs.y += GetWaveEffectSpeedAdd(sqDistFromZero, m_filterSettings->yWaveEffectType);
 
   return GetClampedSpeedCoeffs(speedCoeffs);
 }
 
-auto ZoomVectorEffects::GetWaveEffectSpeedAdd(const float sqDistFromZero) const -> float
+inline auto ZoomVectorEffects::GetWaveEffectSpeedAdd(
+    const float sqDistFromZero, const ZoomFilterData::WaveEffect waveEffect) const -> float
+{
+  return m_filterSettings->waveAmplitude * GetWaveEffectPeriodicPart(sqDistFromZero, waveEffect);
+}
+
+inline auto ZoomVectorEffects::GetWaveEffectPeriodicPart(
+    const float sqDistFromZero, const ZoomFilterData::WaveEffect waveEffect) const -> float
 {
   const float angle = m_filterSettings->waveFreqFactor * sqDistFromZero;
-  float periodicPart;
-  switch (m_filterSettings->waveEffectType)
+
+  switch (waveEffect)
   {
     case ZoomFilterData::WaveEffect::WAVE_SIN_EFFECT:
-      periodicPart = std::sin(angle);
-      break;
+      return std::sin(angle);
     case ZoomFilterData::WaveEffect::WAVE_COS_EFFECT:
-      periodicPart = std::cos(angle);
-      break;
+      return std::cos(angle);
     case ZoomFilterData::WaveEffect::WAVE_SIN_COS_EFFECT:
-      periodicPart = std::sin(angle) + std::cos(angle);
-      break;
+      return std::sin(angle) + std::cos(angle);
     default:
       throw std::logic_error("Unknown WaveEffect enum");
   }
-  return m_filterSettings->waveAmplitude * periodicPart;
 }
 
 inline auto ZoomVectorEffects::GetYOnlySpeedCoefficients(
@@ -241,36 +240,41 @@ inline auto ZoomVectorEffects::GetYOnlySpeedCoefficients(
 {
   V2dFlt speedCoeffs = GetBaseSpeedCoefficients();
 
-  speedCoeffs.x *= GetYOnlySpeedMultiplier(coords);
-  speedCoeffs.y = speedCoeffs.x;
-  //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
+  speedCoeffs.x *= m_filterSettings->yOnlyXAmplitude *
+                   GetYOnlySpeedMultiplier(m_filterSettings->yOnlyXEffect, coords);
+  if (m_filterSettings->yOnlyYEffect == ZoomFilterData::YOnlyEffect::NONE)
+  {
+    speedCoeffs.y = speedCoeffs.x;
+  }
+  else
+  {
+    speedCoeffs.y *= m_filterSettings->yOnlyYAmplitude *
+                     GetYOnlySpeedMultiplier(m_filterSettings->yOnlyYEffect, coords);
+  }
 
   return GetClampedSpeedCoeffs(speedCoeffs);
 }
 
-auto ZoomVectorEffects::GetYOnlySpeedMultiplier(const NormalizedCoords& coords) const -> float
+auto ZoomVectorEffects::GetYOnlySpeedMultiplier(ZoomFilterData::YOnlyEffect yOnlyEffect,
+                                                const NormalizedCoords& coords) const -> float
 {
-  switch (m_filterSettings->yOnlyEffect)
+  switch (yOnlyEffect)
   {
     case ZoomFilterData::YOnlyEffect::XSIN_YSIN:
-      return m_filterSettings->yOnlyAmplitude *
-             std::sin(m_filterSettings->yOnlyXFreqFactor * coords.GetX()) *
+      return std::sin(m_filterSettings->yOnlyXFreqFactor * coords.GetX()) *
              std::sin(m_filterSettings->yOnlyFreqFactor * coords.GetY());
     case ZoomFilterData::YOnlyEffect::XSIN_YCOS:
-      return m_filterSettings->yOnlyAmplitude *
-             std::sin(m_filterSettings->yOnlyXFreqFactor * coords.GetX()) *
+      return std::sin(m_filterSettings->yOnlyXFreqFactor * coords.GetX()) *
              std::cos(m_filterSettings->yOnlyFreqFactor * coords.GetY());
     case ZoomFilterData::YOnlyEffect::XCOS_YSIN:
-      return m_filterSettings->yOnlyAmplitude *
-             std::cos(m_filterSettings->yOnlyXFreqFactor * coords.GetX()) *
+      return std::cos(m_filterSettings->yOnlyXFreqFactor * coords.GetX()) *
              std::sin(m_filterSettings->yOnlyFreqFactor * coords.GetY());
     case ZoomFilterData::YOnlyEffect::XCOS_YCOS:
-      return m_filterSettings->yOnlyAmplitude *
-             std::cos(m_filterSettings->yOnlyXFreqFactor * coords.GetX()) *
+      return std::cos(m_filterSettings->yOnlyXFreqFactor * coords.GetX()) *
              std::cos(m_filterSettings->yOnlyFreqFactor * coords.GetY());
     default:
       throw std::logic_error(
-          std20::format("Switch: unhandled case '{}'.", m_filterSettings->yOnlyEffect));
+          std20::format("Switch: unhandled case '{}'.", yOnlyEffect));
   }
 }
 

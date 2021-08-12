@@ -65,10 +65,15 @@ public:
   enum class FilterEventTypes
   {
     ROTATE = 0,
+    AMULET_XY_AMPLITUDES_EQUAL,
     CRYSTAL_BALL_IN_MIDDLE,
+    CRYSTAL_BALL_XY_AMPLITUDES_EQUAL,
+    CRYSTAL_BALL_XY_SQ_DIST_MULT_EQUAL,
+    CRYSTAL_BALL_XY_SQ_DIST_OFFSET_EQUAL,
     WAVE_IN_MIDDLE,
     HYPERCOS_EFFECT,
     WAVE_EFFECT,
+    WAVE_XY_EFFECTS_EQUAL,
     ALLOW_STRANGE_WAVE_VALUES,
     CHANGE_SPEED,
     REVERSE_SPEED,
@@ -76,6 +81,7 @@ public:
     HYPERCOS_FREQ_EQUAL,
     HYPERCOS_AMP_EQUAL,
     Y_ONLY_FREQ_EQUAL,
+    Y_ONLY_STRICT,
     DISPL_CUTOFF_EQUAL,
     ZERO_H_PLANE_EFFECT,
     PLANE_AMP_EQUAL,
@@ -128,10 +134,18 @@ private:
 const std::array<FilterControl::FilterEvents::Event, FilterControl::FilterEvents::NUM_FILTER_EVENT_TYPES>
     FilterControl::FilterEvents::WEIGHTED_EVENTS{{
    {/*.event = */ FilterEventTypes::ROTATE,                    /*.m = */  8, /*.outOf = */ 16},
+   {/*.event = */ FilterEventTypes::AMULET_XY_AMPLITUDES_EQUAL,/*.m = */ 10, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::CRYSTAL_BALL_IN_MIDDLE,    /*.m = */ 14, /*.outOf = */ 16},
+   {/*.event = */ FilterEventTypes::CRYSTAL_BALL_XY_AMPLITUDES_EQUAL,
+                                                                    /*.m = */ 10, /*.outOf = */ 16},
+   {/*.event = */ FilterEventTypes::CRYSTAL_BALL_XY_SQ_DIST_MULT_EQUAL,
+                                                                    /*.m = */ 10, /*.outOf = */ 16},
+   {/*.event = */ FilterEventTypes::CRYSTAL_BALL_XY_SQ_DIST_OFFSET_EQUAL,
+                                                                    /*.m = */ 10, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::WAVE_IN_MIDDLE,            /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::HYPERCOS_EFFECT,           /*.m = */  1, /*.outOf = */ 50},
    {/*.event = */ FilterEventTypes::WAVE_EFFECT,               /*.m = */ 12, /*.outOf = */ 16},
+   {/*.event = */ FilterEventTypes::WAVE_XY_EFFECTS_EQUAL,     /*.m = */ 12, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::ALLOW_STRANGE_WAVE_VALUES, /*.m = */ 10, /*.outOf = */ 50},
    {/*.event = */ FilterEventTypes::CHANGE_SPEED,              /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::REVERSE_SPEED,             /*.m = */  8, /*.outOf = */ 16},
@@ -139,6 +153,7 @@ const std::array<FilterControl::FilterEvents::Event, FilterControl::FilterEvents
    {/*.event = */ FilterEventTypes::HYPERCOS_FREQ_EQUAL,       /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::HYPERCOS_AMP_EQUAL,        /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::Y_ONLY_FREQ_EQUAL,         /*.m = */  8, /*.outOf = */ 16},
+   {/*.event = */ FilterEventTypes::Y_ONLY_STRICT,             /*.m = */ 12, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::DISPL_CUTOFF_EQUAL,        /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::ZERO_H_PLANE_EFFECT,       /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::PLANE_AMP_EQUAL,           /*.m = */ 12, /*.outOf = */ 16},
@@ -310,15 +325,23 @@ void FilterControl::SetDefaultSettings()
   m_filterData.vPlaneEffect = 0;
   m_filterData.vPlaneEffectAmplitude = ZoomFilterData::DEFAULT_V_PLANE_EFFECT_AMPLITUDE;
 
-  m_filterData.amuletAmplitude = ZoomFilterData::DEFAULT_AMULET_AMPLITUDE;
-  m_filterData.crystalBallAmplitude = ZoomFilterData::DEFAULT_CRYSTAL_BALL_AMPLITUDE;
-  m_filterData.crystalBallSqDistOffset = ZoomFilterData::DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET;
+  m_filterData.xAmuletAmplitude = ZoomFilterData::DEFAULT_AMULET_AMPLITUDE;
+  m_filterData.yAmuletAmplitude = ZoomFilterData::DEFAULT_AMULET_AMPLITUDE;
+  m_filterData.xCrystalBallAmplitude = ZoomFilterData::DEFAULT_CRYSTAL_BALL_AMPLITUDE;
+  m_filterData.yCrystalBallAmplitude = ZoomFilterData::DEFAULT_CRYSTAL_BALL_AMPLITUDE;
+  m_filterData.xCrystalBallSqDistMult = 1.0F;
+  m_filterData.yCrystalBallSqDistMult = 1.0F;
+  m_filterData.xCrystalBallSqDistOffset = ZoomFilterData::DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET;
+  m_filterData.yCrystalBallSqDistOffset = ZoomFilterData::DEFAULT_CRYSTAL_BALL_SQ_DIST_OFFSET;
   m_filterData.imageDisplacementAmplitude = ZoomFilterData::DEFAULT_IMAGE_DISPL_AMPLITUDE;
   m_filterData.imageDisplacement = nullptr;
-  m_filterData.scrunchAmplitude = ZoomFilterData::DEFAULT_SCRUNCH_AMPLITUDE;
-  m_filterData.speedwayAmplitude = ZoomFilterData::DEFAULT_SPEEDWAY_AMPLITUDE;
+  m_filterData.xScrunchAmplitude = ZoomFilterData::DEFAULT_SCRUNCH_AMPLITUDE;
+  m_filterData.yScrunchAmplitude = 1.0F;
+  m_filterData.xSpeedwayAmplitude = ZoomFilterData::DEFAULT_X_SPEEDWAY_AMPLITUDE;
+  m_filterData.ySpeedwayAmplitude = ZoomFilterData::DEFAULT_Y_SPEEDWAY_AMPLITUDE;
 
-  m_filterData.waveEffectType = ZoomFilterData::DEFAULT_WAVE_EFFECT_TYPE;
+  m_filterData.xWaveEffectType = ZoomFilterData::DEFAULT_WAVE_EFFECT_TYPE;
+  m_filterData.yWaveEffectType = ZoomFilterData::DEFAULT_WAVE_EFFECT_TYPE;
   m_filterData.waveFreqFactor = ZoomFilterData::DEFAULT_WAVE_FREQ_FACTOR;
   m_filterData.waveAmplitude = ZoomFilterData::DEFAULT_WAVE_AMPLITUDE;
 
@@ -332,12 +355,17 @@ void FilterControl::SetDefaultSettings()
 
 void FilterControl::SetAmuletModeSettings()
 {
+  using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
+
   SetRotate(PROB_HIGH);
 
-  m_filterData.amuletAmplitude =
+  m_filterData.xAmuletAmplitude =
       GetRandInRange(ZoomFilterData::MIN_AMULET_AMPLITUDE, ZoomFilterData::MAX_AMULET_AMPLITUDE);
+  m_filterData.yAmuletAmplitude = m_filterEvents->Happens(EventTypes::AMULET_XY_AMPLITUDES_EQUAL)
+                                      ? m_filterData.xAmuletAmplitude
+                                      : GetRandInRange(ZoomFilterData::MIN_AMULET_AMPLITUDE,
+                                                       ZoomFilterData::MAX_AMULET_AMPLITUDE);
 
-  using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
   if (m_filterEvents->Happens(EventTypes::HYPERCOS_EFFECT))
   {
     SetHypercos2ModeSettings();
@@ -346,32 +374,75 @@ void FilterControl::SetAmuletModeSettings()
 
 void FilterControl::SetCrystalBall0ModeSettings()
 {
+  using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
+
   SetRotate(PROB_LOW);
 
-  m_filterData.crystalBallAmplitude = GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL0_AMPLITUDE,
-                                                     ZoomFilterData::MAX_CRYSTAL_BALL0_AMPLITUDE);
-  m_filterData.crystalBallSqDistOffset =
+  m_filterData.xCrystalBallAmplitude = GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL0_AMPLITUDE,
+                                                      ZoomFilterData::MAX_CRYSTAL_BALL0_AMPLITUDE);
+  m_filterData.yCrystalBallAmplitude =
+      m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_XY_AMPLITUDES_EQUAL)
+          ? m_filterData.xCrystalBallAmplitude
+          : GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL0_AMPLITUDE,
+                           ZoomFilterData::MAX_CRYSTAL_BALL0_AMPLITUDE);
+
+  m_filterData.xCrystalBallSqDistMult =
+      GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL0_SQ_DIST_MULT,
+                     ZoomFilterData::MAX_CRYSTAL_BALL0_SQ_DIST_MULT);
+  m_filterData.yCrystalBallSqDistMult =
+      m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_XY_SQ_DIST_MULT_EQUAL)
+          ? m_filterData.xCrystalBallSqDistMult
+          : GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL0_SQ_DIST_MULT,
+                           ZoomFilterData::MAX_CRYSTAL_BALL0_SQ_DIST_MULT);
+
+  m_filterData.xCrystalBallSqDistOffset =
       GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL0_SQ_DIST_OFFSET,
                      ZoomFilterData::MAX_CRYSTAL_BALL0_SQ_DIST_OFFSET);
+  m_filterData.yCrystalBallSqDistOffset =
+      m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_XY_SQ_DIST_OFFSET_EQUAL)
+          ? m_filterData.xCrystalBallSqDistOffset
+          : GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL0_SQ_DIST_OFFSET,
+                           ZoomFilterData::MAX_CRYSTAL_BALL0_SQ_DIST_OFFSET);
 
-  using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
   if (m_filterEvents->Happens(EventTypes::HYPERCOS_EFFECT))
   {
     SetHypercos1ModeSettings();
   }
 }
 
+// TODO - Fix duplication
 void FilterControl::SetCrystalBall1ModeSettings()
 {
+  using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
+
   SetRotate(PROB_HALF);
 
-  m_filterData.crystalBallAmplitude = GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL1_AMPLITUDE,
-                                                     ZoomFilterData::MAX_CRYSTAL_BALL1_AMPLITUDE);
-  m_filterData.crystalBallSqDistOffset =
+  m_filterData.xCrystalBallAmplitude = GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL1_AMPLITUDE,
+                                                      ZoomFilterData::MAX_CRYSTAL_BALL1_AMPLITUDE);
+  m_filterData.yCrystalBallAmplitude =
+      m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_XY_AMPLITUDES_EQUAL)
+          ? m_filterData.xCrystalBallAmplitude
+          : GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL1_AMPLITUDE,
+                           ZoomFilterData::MAX_CRYSTAL_BALL1_AMPLITUDE);
+
+  m_filterData.xCrystalBallSqDistMult =
+      GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL1_SQ_DIST_MULT,
+                     ZoomFilterData::MAX_CRYSTAL_BALL1_SQ_DIST_MULT);
+  m_filterData.yCrystalBallSqDistMult =
+      m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_XY_SQ_DIST_MULT_EQUAL)
+          ? m_filterData.xCrystalBallSqDistMult
+          : GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL1_SQ_DIST_MULT,
+                           ZoomFilterData::MAX_CRYSTAL_BALL1_SQ_DIST_MULT);
+
+  m_filterData.xCrystalBallSqDistOffset =
       GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL1_SQ_DIST_OFFSET,
                      ZoomFilterData::MAX_CRYSTAL_BALL1_SQ_DIST_OFFSET);
+  m_filterData.yCrystalBallSqDistOffset =
+      m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_XY_SQ_DIST_OFFSET_EQUAL)
+          ? m_filterData.xCrystalBallSqDistOffset
+          : GetRandInRange(ZoomFilterData::MIN_CRYSTAL_BALL1_SQ_DIST_OFFSET,
+                           ZoomFilterData::MAX_CRYSTAL_BALL1_SQ_DIST_OFFSET);
 
-  using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
   if (m_filterEvents->Happens(EventTypes::HYPERCOS_EFFECT))
   {
     SetHypercos2ModeSettings();
@@ -446,8 +517,10 @@ void FilterControl::SetScrunchModeSettings()
 {
   SetRotate(PROB_HALF);
 
-  m_filterData.scrunchAmplitude =
-      GetRandInRange(ZoomFilterData::MIN_SCRUNCH_AMPLITUDE, ZoomFilterData::MAX_SCRUNCH_AMPLITUDE);
+  m_filterData.xScrunchAmplitude = GetRandInRange(ZoomFilterData::MIN_X_SCRUNCH_AMPLITUDE,
+                                                  ZoomFilterData::MAX_X_SCRUNCH_AMPLITUDE);
+  m_filterData.yScrunchAmplitude = GetRandInRange(ZoomFilterData::MIN_Y_SCRUNCH_AMPLITUDE,
+                                                  ZoomFilterData::MAX_Y_SCRUNCH_AMPLITUDE);
 
   using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
   if (m_filterEvents->Happens(EventTypes::HYPERCOS_EFFECT))
@@ -460,8 +533,10 @@ void FilterControl::SetSpeedwayModeSettings()
 {
   SetRotate(PROB_LOW);
 
-  m_filterData.speedwayAmplitude = GetRandInRange(ZoomFilterData::MIN_SPEEDWAY_AMPLITUDE,
-                                                  ZoomFilterData::MAX_SPEEDWAY_AMPLITUDE);
+  m_filterData.xSpeedwayAmplitude = GetRandInRange(ZoomFilterData::MIN_X_SPEEDWAY_AMPLITUDE,
+                                                   ZoomFilterData::MAX_X_SPEEDWAY_AMPLITUDE);
+  m_filterData.ySpeedwayAmplitude = GetRandInRange(ZoomFilterData::MIN_Y_SPEEDWAY_AMPLITUDE,
+                                                   ZoomFilterData::MAX_Y_SPEEDWAY_AMPLITUDE);
 
   using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
   if (m_filterEvents->Happens(EventTypes::HYPERCOS_EFFECT))
@@ -515,8 +590,12 @@ void FilterControl::SetWaveModeSettings(const MinMaxValues& minMaxFreq,
                                     2);
   }
 
-  m_filterData.waveEffectType =
+  m_filterData.xWaveEffectType =
       static_cast<ZoomFilterData::WaveEffect>(GetRandInRange(0U, NUM<ZoomFilterData::WaveEffect>));
+  m_filterData.yWaveEffectType = m_filterEvents->Happens(EventTypes::WAVE_XY_EFFECTS_EQUAL)
+                                     ? m_filterData.xWaveEffectType
+                                     : static_cast<ZoomFilterData::WaveEffect>(
+                                           GetRandInRange(0U, NUM<ZoomFilterData::WaveEffect>));
 
   SetWaveEffect(minMaxFreq, minMaxAmp);
 
@@ -538,9 +617,15 @@ void FilterControl::SetYOnlyModeSettings()
 
   SetRotate(PROB_HALF);
 
-  m_filterData.yOnlyEffect = static_cast<ZoomFilterData::YOnlyEffect>(
+  m_filterData.yOnlyXEffect = static_cast<ZoomFilterData::YOnlyEffect>(
       GetRandInRange(static_cast<uint32_t>(ZoomFilterData::YOnlyEffect::NONE) + 1,
                      NUM<ZoomFilterData::YOnlyEffect>));
+  m_filterData.yOnlyYEffect =
+      m_filterEvents->Happens(EventTypes::Y_ONLY_STRICT)
+          ? ZoomFilterData::YOnlyEffect::NONE
+          : static_cast<ZoomFilterData::YOnlyEffect>(
+                GetRandInRange(static_cast<uint32_t>(ZoomFilterData::YOnlyEffect::NONE) + 1,
+                               NUM<ZoomFilterData::YOnlyEffect>));
 
   m_filterData.yOnlyFreqFactor = GetRandInRange(ZoomFilterData::MIN_Y_ONLY_FREQ_FACTOR,
                                                 ZoomFilterData::MAX_Y_ONLY_FREQ_FACTOR);
@@ -548,10 +633,11 @@ void FilterControl::SetYOnlyModeSettings()
                                       ? m_filterData.yOnlyFreqFactor
                                       : GetRandInRange(ZoomFilterData::MIN_Y_ONLY_X_FREQ_FACTOR,
                                                        ZoomFilterData::MAX_Y_ONLY_X_FREQ_FACTOR);
-  m_filterData.yOnlyAmplitude =
+  m_filterData.yOnlyXAmplitude =
+      GetRandInRange(ZoomFilterData::MIN_Y_ONLY_AMPLITUDE, ZoomFilterData::MAX_Y_ONLY_AMPLITUDE);
+  m_filterData.yOnlyYAmplitude =
       GetRandInRange(ZoomFilterData::MIN_Y_ONLY_AMPLITUDE, ZoomFilterData::MAX_Y_ONLY_AMPLITUDE);
 
-  using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
   if (m_filterEvents->Happens(EventTypes::HYPERCOS_EFFECT))
   {
     SetHypercos1ModeSettings();

@@ -26,6 +26,7 @@ l'on
 lerp
 ligne
 mets
+mult
 noisify
 pbos
 spdx
@@ -36,4 +37,5 @@ stockera
 terme
 texel
 unblended
+uncentered
 vitesse

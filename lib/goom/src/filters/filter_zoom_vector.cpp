@@ -108,11 +108,6 @@ void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero
   **/
 }
 
-auto FilterZoomVector::GetFilterStats() const -> FilterStats*
-{
-  return m_stats;
-}
-
 void FilterZoomVector::SetFilterStats(FilterStats& stats)
 {
   m_stats = &stats;

@@ -1,6 +1,7 @@
 #ifndef VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
 #define VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
 
+#include "filter_data.h"
 #include "filter_normalized_coords.h"
 
 #if __cplusplus <= 201402L
@@ -8,7 +9,6 @@ namespace GOOM
 {
 
 class FilterStats;
-struct ZoomFilterData;
 
 namespace FILTERS
 {
@@ -25,45 +25,55 @@ public:
   void SetFilterSettings(const ZoomFilterData& filterSettings);
   void SetFilterStats(FilterStats& stats);
 
-  auto GetMaxSpeedCoeff() const -> float;
+  [[nodiscard]] auto GetMaxSpeedCoeff() const -> float;
   void SetMaxSpeedCoeff(float val);
 
-  auto GetStandardVelocity(float sqDistFromZero, const NormalizedCoords& coords) const
+  [[nodiscard]] auto GetStandardVelocity(float sqDistFromZero, const NormalizedCoords& coords) const
       -> NormalizedCoords;
-  static auto GetCleanedVelocity(const NormalizedCoords& velocity) -> NormalizedCoords;
-  auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
-  auto GetNoiseVelocity() const -> NormalizedCoords;
-  auto GetTanEffectVelocity(float sqDistFromZero, const NormalizedCoords& velocity) const
+  [[nodiscard]] static auto GetCleanedVelocity(const NormalizedCoords& velocity)
       -> NormalizedCoords;
-  auto GetHPlaneEffectVelocity(const NormalizedCoords& coords) const -> float;
-  auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
-  auto GetVPlaneEffectVelocity(const NormalizedCoords& coords) const -> float;
+  [[nodiscard]] auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
+  [[nodiscard]] auto GetNoiseVelocity() const -> NormalizedCoords;
+  [[nodiscard]] auto GetTanEffectVelocity(float sqDistFromZero,
+                                          const NormalizedCoords& velocity) const
+      -> NormalizedCoords;
+  [[nodiscard]] auto GetHPlaneEffectVelocity(const NormalizedCoords& coords) const -> float;
+  [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
+  [[nodiscard]] auto GetVPlaneEffectVelocity(const NormalizedCoords& coords) const -> float;
 
 private:
   const ZoomFilterData* m_filterSettings{};
   mutable FilterStats* m_stats{};
-  float m_maxSpeedCoeff;
+  float m_maxSpeedCoeff = ZoomFilterData::DEFAULT_MAX_SPEED_COEFF;
 
-  static auto GetMinVelocityVal(float velocityVal) -> float;
+  [[nodiscard]] static auto GetMinVelocityVal(float velocityVal) -> float;
 
-  auto GetSpeedCoeffVelocity(float sqDistFromZero, const NormalizedCoords& coords) const
+  [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
+                                           const NormalizedCoords& coords) const
       -> NormalizedCoords;
-  auto GetImageDisplacementVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
-  auto GetSpeedCoefficients(float sqDistFromZero, const NormalizedCoords& coords) const -> V2dFlt;
-  auto GetBaseSpeedCoefficients() const -> V2dFlt;
-  auto GetDefaultSpeedCoefficients() const -> V2dFlt;
-  auto GetAmuletSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
-  auto GetCrystalBallSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
-  auto GetScrunchSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
-  auto GetSpeedwaySpeedCoefficients(const NormalizedCoords& coords, float sqDistFromZero) const
-      -> V2dFlt;
-  auto GetWaveSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
-  auto GetYOnlySpeedCoefficients(const NormalizedCoords& coords, float sqDistFromZero) const
-      -> V2dFlt;
-  auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;
-  auto GetClampedSpeedCoeff(const float speedCoeff) const -> float;
-  auto GetWaveEffectSpeedAdd(float sqDistFromZero) const -> float;
-  auto GetYOnlySpeedMultiplier(const NormalizedCoords& coords) const -> float;
+  [[nodiscard]] auto GetImageDisplacementVelocity(const NormalizedCoords& coords) const
+      -> NormalizedCoords;
+  [[nodiscard]] auto GetXYSpeedCoefficients(float sqDistFromZero,
+                                            const NormalizedCoords& coords) const -> V2dFlt;
+  [[nodiscard]] auto GetBaseSpeedCoefficients() const -> V2dFlt;
+  [[nodiscard]] auto GetDefaultSpeedCoefficients() const -> V2dFlt;
+  [[nodiscard]] auto GetAmuletSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  [[nodiscard]] auto GetCrystalBallSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  [[nodiscard]] auto GetScrunchSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  [[nodiscard]] auto GetSpeedwaySpeedCoefficients(float sqDistFromZero,
+                                                  const NormalizedCoords& coords) const -> V2dFlt;
+  [[nodiscard]] auto GetWaveSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  [[nodiscard]] auto GetYOnlySpeedCoefficients(const NormalizedCoords& coords,
+                                               float sqDistFromZero) const -> V2dFlt;
+  [[nodiscard]] auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;
+  [[nodiscard]] auto GetClampedSpeedCoeff(const float speedCoeff) const -> float;
+  [[nodiscard]] auto GetWaveEffectSpeedAdd(float sqDistFromZero,
+                                           ZoomFilterData::WaveEffect waveEffect) const -> float;
+  [[nodiscard]] auto GetWaveEffectPeriodicPart(float sqDistFromZero,
+                                               ZoomFilterData::WaveEffect waveEffect) const
+      -> float;
+  [[nodiscard]] auto GetYOnlySpeedMultiplier(ZoomFilterData::YOnlyEffect yOnlyEffect,
+                                             const NormalizedCoords& coords) const -> float;
 
   void UpdateDoZoomVectorSpeedCoeffBelowMinStats() const;
   void UpdateDoZoomVectorSpeedCoeffAboveMaxStats() const;

@@ -44,7 +44,7 @@ private:
   std::unique_ptr<ZoomVectorEffects> m_zoomVectorEffects;
   mutable FilterStats* m_stats{};
 
-  void GetZoomEffectsAdjustedVelocity(const float sqDistFromZero,
+  void GetZoomEffectsAdjustedVelocity(float sqDistFromZero,
                                       const NormalizedCoords& coords,
                                       NormalizedCoords& velocity) const;
 
@@ -53,6 +53,11 @@ private:
   void UpdateDoZoomVectorHPlaneEffectStats() const;
   void UpdateDoZoomVectorVPlaneEffectStats() const;
 };
+
+inline auto FilterZoomVector::GetFilterStats() const -> FilterStats*
+{
+  return m_stats;
+}
 
 } // namespace FILTERS
 } // namespace GOOM
