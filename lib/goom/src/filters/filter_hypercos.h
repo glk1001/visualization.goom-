@@ -39,6 +39,8 @@ public:
     COS_TAN_CURL_SWIRL,
     SIN_RECTANGULAR,
     COS_RECTANGULAR,
+    SIN_OF_COS_SWIRL,
+    COS_OF_SIN_SWIRL,
     _NUM // unused and must be last
   };
 
@@ -60,6 +62,11 @@ private:
   Params m_params;
   void SetHypercosEffect(const UTILS::NumberRange<float>& freqRange,
                          const UTILS::NumberRange<float>& amplitudeRange);
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
+                                 HypercosEffect effect,
+                                 float xFreqToUse,
+                                 float yFreqToUse) const -> NormalizedCoords;
+  [[nodiscard]] auto GetFreqToUse(float freq) const -> float;
 };
 
 inline auto Hypercos::GetParams() const -> const Params&

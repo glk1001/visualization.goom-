@@ -3,6 +3,7 @@
 #include "filter_data.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
+#include "goomutils/mathutils.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -18,9 +19,11 @@ namespace GOOM::FILTERS
 #endif
 
 using UTILS::GetRandInRange;
+using UTILS::m_pi;
 using UTILS::NUM;
 using UTILS::NumberRange;
 using UTILS::ProbabilityOf;
+using UTILS::Weights;
 
 // Hypercos:
 // applique une surcouche de hypercos effect
@@ -44,7 +47,7 @@ constexpr NumberRange<float> BIG_AMPLITUDE_RANGE = {0.1F * X_DEFAULT_AMPLITUDE,
 constexpr float PROB_FREQ_EQUAL = 0.5F;
 constexpr float PROB_REVERSE = 0.5F;
 constexpr float PROB_AMPLITUDE_EQUAL = 0.5F;
-constexpr float PROB_BIG_AMPLITUDE_RANGE = 0.8F;
+constexpr float PROB_BIG_AMPLITUDE_RANGE = 0.2F;
 
 constexpr Hypercos::Params DEFAULT_PARAMS{DEFAULT_EFFECT, DEFAULT_REVERSE,     X_DEFAULT_FREQ,
                                           Y_DEFAULT_FREQ, X_DEFAULT_AMPLITUDE, Y_DEFAULT_AMPLITUDE};
@@ -91,8 +94,24 @@ void Hypercos::SetMode3RandomParams()
 void Hypercos::SetHypercosEffect(const UTILS::NumberRange<float>& freqRange,
                                  const UTILS::NumberRange<float>& amplitudeRange)
 {
-  m_params.effect = static_cast<HypercosEffect>(
-      GetRandInRange(static_cast<uint32_t>(HypercosEffect::NONE) + 1, NUM<HypercosEffect>));
+  // clang-format off
+  // @formatter:off
+  static const Weights<HypercosEffect> s_hypercosOverlayWeights{{
+      { HypercosEffect::NONE,                0 },
+      { HypercosEffect::SIN_CURL_SWIRL,     15 },
+      { HypercosEffect::COS_CURL_SWIRL,     15 },
+      { HypercosEffect::SIN_COS_CURL_SWIRL, 15 },
+      { HypercosEffect::COS_SIN_CURL_SWIRL, 15 },
+      { HypercosEffect::SIN_TAN_CURL_SWIRL,  5 },
+      { HypercosEffect::COS_TAN_CURL_SWIRL,  5 },
+      { HypercosEffect::SIN_RECTANGULAR,     5 },
+      { HypercosEffect::COS_RECTANGULAR,     5 },
+      { HypercosEffect::SIN_OF_COS_SWIRL,   15 },
+      { HypercosEffect::COS_OF_SIN_SWIRL,   15 },
+  }};
+  // @formatter:on
+  // clang-format on
+  m_params.effect = s_hypercosOverlayWeights.GetRandomWeighted();
 
   m_params.xFreq = GetRandInRange(freqRange);
   m_params.yFreq = ProbabilityOf(PROB_FREQ_EQUAL) ? m_params.xFreq : GetRandInRange(freqRange);
@@ -104,14 +123,45 @@ void Hypercos::SetHypercosEffect(const UTILS::NumberRange<float>& freqRange,
       ProbabilityOf(PROB_AMPLITUDE_EQUAL) ? m_params.xAmplitude : GetRandInRange(amplitudeRange);
 }
 
+inline auto Hypercos::GetFreqToUse(const float freq) const -> float
+{
+  return m_params.reverse ? -freq : +freq;
+}
+
 auto Hypercos::GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords
 {
-  const float xFreqToUse = m_params.reverse ? -m_params.xFreq : +m_params.xFreq;
-  const float yFreqToUse = m_params.reverse ? -m_params.yFreq : +m_params.yFreq;
+  //  if (std::fabs(std::sin(10.0F * coords.GetX())) < 0.5F && std::fabs(std::cos(10.0F * coords.GetY())) < 0.5F)
+  //  if (UTILS::Sq(coords.GetX() - 0.5F) + UTILS::Sq(coords.GetY() - 0.5F) < UTILS::Sq(0.2F) ||
+  //      UTILS::Sq(coords.GetX() + 0.5F) + UTILS::Sq(coords.GetY() + 0.5F) < UTILS::Sq(0.2F) ||
+  //      UTILS::Sq(coords.GetX() - 0.5F) + UTILS::Sq(coords.GetY() + 0.5F) < UTILS::Sq(0.2F) ||
+  //      UTILS::Sq(coords.GetX() + 0.5F) + UTILS::Sq(coords.GetY() - 0.5F) < UTILS::Sq(0.2F))
+  //  {
+  //    return {-0.05F, -0.05F};
+  //  }
 
+  const float xFreqToUse = GetFreqToUse(m_params.xFreq);
+  const float yFreqToUse = GetFreqToUse(m_params.yFreq);
+
+  //  if (UTILS::Sq(coords.GetX() - 0.5F) + UTILS::Sq(coords.GetY() - 0.5F) < UTILS::Sq(0.2F) ||
+  //    UTILS::Sq(coords.GetX() + 0.5F) + UTILS::Sq(coords.GetY() + 0.5F) < UTILS::Sq(0.2F) ||
+  //    UTILS::Sq(coords.GetX() - 0.5F) + UTILS::Sq(coords.GetY() + 0.5F) < UTILS::Sq(0.2F) ||
+  //    UTILS::Sq(coords.GetX() + 0.5F) + UTILS::Sq(coords.GetY() - 0.5F) < UTILS::Sq(0.2F))
+  //    {
+  //      return GetVelocity(coords, HypercosEffect::COS_TAN_CURL_SWIRL, xFreqToUse, yFreqToUse);
+  //    }
+
+  return GetVelocity(coords, m_params.effect, xFreqToUse, yFreqToUse);
+}
+
+auto Hypercos::GetVelocity(const NormalizedCoords& coords,
+                           const HypercosEffect effect,
+                           const float xFreqToUse,
+                           const float yFreqToUse) const -> NormalizedCoords
+{
   float xVal = 0.0;
   float yVal = 0.0;
-  switch (m_params.effect)
+
+  switch (effect)
   {
     case HypercosEffect::NONE:
       break;
@@ -146,6 +196,14 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords) const -> NormalizedCo
     case HypercosEffect::COS_TAN_CURL_SWIRL:
       xVal = std::cos(std::tan(yFreqToUse * coords.GetY()));
       yVal = std::sin(std::tan(xFreqToUse * coords.GetX()));
+      break;
+    case HypercosEffect::SIN_OF_COS_SWIRL:
+      xVal = std::sin(m_pi * std::cos(yFreqToUse * coords.GetY()));
+      yVal = std::cos(m_pi * std::sin(xFreqToUse * coords.GetX()));
+      break;
+    case HypercosEffect::COS_OF_SIN_SWIRL:
+      xVal = std::cos(m_pi * std::sin(yFreqToUse * coords.GetY()));
+      yVal = std::sin(m_pi * std::cos(xFreqToUse * coords.GetX()));
       break;
     default:
       throw std::logic_error("Unknown Hypercos effect value");
