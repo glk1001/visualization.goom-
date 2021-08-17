@@ -35,17 +35,17 @@ constexpr float PROB_LOW = 0.1F;
 // clang-format off
 const Weights<ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
     { ZoomFilterMode::AMULET_MODE,            4 },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE0,     4 },
+    { ZoomFilterMode::CRYSTAL_BALL_MODE0,     3 },
     { ZoomFilterMode::CRYSTAL_BALL_MODE1,     1 },
-    { ZoomFilterMode::HYPERCOS_MODE0,         5 },
-    { ZoomFilterMode::HYPERCOS_MODE1,         4 },
-    { ZoomFilterMode::HYPERCOS_MODE2,         30000000 },
+    { ZoomFilterMode::HYPERCOS_MODE0,         6 },
+    { ZoomFilterMode::HYPERCOS_MODE1,         5 },
+    { ZoomFilterMode::HYPERCOS_MODE2,         3 },
     { ZoomFilterMode::HYPERCOS_MODE3,         3 },
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,5 },
     { ZoomFilterMode::NORMAL_MODE,            6 },
     { ZoomFilterMode::SCRUNCH_MODE,           6 },
     { ZoomFilterMode::SPEEDWAY_MODE,          6 },
-    { ZoomFilterMode::WAVE_MODE0,             4 },
+    { ZoomFilterMode::WAVE_MODE0,             6 },
     { ZoomFilterMode::WAVE_MODE1,             4 },
     { ZoomFilterMode::WATER_MODE,             0 },
     { ZoomFilterMode::Y_ONLY_MODE,            4 },
@@ -57,9 +57,9 @@ class FilterControl::FilterEvents
 {
 public:
   FilterEvents() noexcept = default;
-  ~FilterEvents() = default;
   FilterEvents(const FilterEvents&) noexcept = delete;
   FilterEvents(FilterEvents&&) noexcept = delete;
+  ~FilterEvents() = default;
   auto operator=(const FilterEvents&) -> FilterEvents& = delete;
   auto operator=(FilterEvents&&) -> FilterEvents& = delete;
 
@@ -151,7 +151,7 @@ void FilterControl::Start()
   }
 
   m_imageDisplacements.resize(IMAGE_FILENAMES.size());
-  for (size_t i = 0; i < IMAGE_FILENAMES.size(); i++)
+  for (size_t i = 0; i < IMAGE_FILENAMES.size(); ++i)
   {
     m_imageDisplacements[i] =
         std::make_shared<ImageDisplacement>(GetImageFilename(IMAGE_FILENAMES[i]));
@@ -262,7 +262,7 @@ auto FilterControl::GetNewRandomMode() const -> ZoomFilterMode
     {
       return newMode;
     }
-    numTries++;
+    ++numTries;
     if (numTries >= MAX_TRIES)
     {
       break;
@@ -483,8 +483,8 @@ void FilterControl::SetMiddlePoints()
     return;
   }
 
-  if (m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE0 ||
-      m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE1)
+  if ((m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE0) ||
+      (m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE1))
   {
     if (m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_IN_MIDDLE))
     {
@@ -616,8 +616,8 @@ void FilterControl::SetPlaneEffects()
         ZoomFilterData::MIN_V_PLANE_EFFECT_AMPLITUDE, ZoomFilterData::MAX_V_PLANE_EFFECT_AMPLITUDE);
   }
 
-  if ((m_filterData.middleX == 1) ||
-      (m_filterData.middleX == m_goomInfo->GetScreenInfo().width - 1))
+  if ((1 == m_filterData.middleX) ||
+      (m_filterData.middleX == (m_goomInfo->GetScreenInfo().width - 1)))
   {
     m_filterData.vPlaneEffect = 0;
     if (m_filterEvents->Happens(EventTypes::ZERO_H_PLANE_EFFECT))
