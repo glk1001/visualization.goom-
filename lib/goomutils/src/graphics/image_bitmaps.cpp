@@ -54,11 +54,11 @@ void ImageBitmap::Load(std::string imageFilename)
   {
     for (size_t x = 0; x < GetWidth(); ++x)
     {
-      uint8_t r = *rgbPtr;
+      uint8_t b = *rgbPtr;
       rgbPtr++;
       uint8_t g = *rgbPtr;
       rgbPtr++;
-      uint8_t b = *rgbPtr;
+      uint8_t r = *rgbPtr;
       rgbPtr++;
       const uint8_t a = *rgbPtr;
       rgbPtr++;
