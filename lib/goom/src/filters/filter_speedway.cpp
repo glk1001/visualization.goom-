@@ -20,8 +20,8 @@ using UTILS::NumberRange;
 
 constexpr float X_DEFAULT_AMPLITUDE = 4.0F;
 constexpr float Y_DEFAULT_AMPLITUDE = 1.0F;
-constexpr NumberRange<float> X_AMPLITUDE_RANGE = {+01.0F, +8.0F};
-constexpr NumberRange<float> Y_AMPLITUDE_RANGE = {-15.0F, +5.0F};
+constexpr NumberRange<float> X_AMPLITUDE_RANGE = {+1.0F, +8.0F};
+constexpr NumberRange<float> Y_AMPLITUDE_RANGE = {-8.0F, +5.0F};
 
 Speedway::Speedway() noexcept : m_params{X_DEFAULT_AMPLITUDE, Y_DEFAULT_AMPLITUDE}
 {

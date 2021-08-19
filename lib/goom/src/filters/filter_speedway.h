@@ -18,8 +18,9 @@ class Speedway
 {
 public:
   Speedway() noexcept;
-  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs, float sqDistFromZero, const NormalizedCoords& coords) const
-      -> V2dFlt;
+  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+                                          float sqDistFromZero,
+                                          const NormalizedCoords& coords) const -> V2dFlt;
 
   void SetRandomParams();
 
@@ -38,7 +39,8 @@ private:
 };
 
 inline auto Speedway::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
-                                           const float sqDistFromZero, const NormalizedCoords& coords) const -> V2dFlt
+                                           const float sqDistFromZero,
+                                           const NormalizedCoords& coords) const -> V2dFlt
 {
   constexpr float SQ_DIST_FACTOR = 0.01F;
   const float yAdd = SQ_DIST_FACTOR * sqDistFromZero;
