@@ -23,6 +23,11 @@ using UTILS::ProbabilityOf;
 
 constexpr Wave::WaveEffect DEFAULT_WAVE_EFFECT = Wave::WaveEffect::WAVE_SIN_EFFECT;
 
+constexpr float DEFAULT_PERIODIC_FACTOR = 1.0F;
+constexpr float DEFAULT_SIN_COS_PERIODIC_FACTOR = 0.5F;
+constexpr NumberRange<float> PERIODIC_FACTOR_RANGE = {0.5F, 1.0F};
+constexpr NumberRange<float> SIN_COS_PERIODIC_FACTOR_RANGE = {0.1F, 0.9F};
+
 constexpr float DEFAULT_FREQ_FACTOR = 20.0F;
 constexpr NumberRange<float> FREQ_FACTOR_RANGE = {1.0F, 50.0F};
 
@@ -35,9 +40,11 @@ constexpr NumberRange<float> BIG_AMPLITUDE_RANGE = {1.0F, 50.0F};
 
 constexpr float PROB_ALLOW_STRANGE_WAVE_VALUES = 0.2F;
 constexpr float PROB_WAVE_XY_EFFECTS_EQUAL = 0.75F;
+constexpr float PROB_NO_PERIODIC_FACTOR = 0.2F;
 
 Wave::Wave() noexcept
-  : m_params{DEFAULT_WAVE_EFFECT, DEFAULT_WAVE_EFFECT, DEFAULT_FREQ_FACTOR, DEFAULT_AMPLITUDE}
+  : m_params{DEFAULT_WAVE_EFFECT, DEFAULT_WAVE_EFFECT, DEFAULT_FREQ_FACTOR, DEFAULT_AMPLITUDE,
+             DEFAULT_PERIODIC_FACTOR}
 {
 }
 
@@ -66,6 +73,18 @@ void Wave::SetWaveModeSettings(const NumberRange<float>& freqFactorRange,
                              ? m_params.xWaveEffect
                              : static_cast<WaveEffect>(GetRandInRange(0U, NUM<WaveEffect>));
 
+  if (ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
+  {
+    m_params.periodicFactor = m_params.xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
+                                  ? DEFAULT_SIN_COS_PERIODIC_FACTOR
+                                  : DEFAULT_PERIODIC_FACTOR;
+  }
+  else
+  {
+    m_params.periodicFactor = GetRandInRange(m_params.xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
+                                                 ? SIN_COS_PERIODIC_FACTOR_RANGE
+                                                 : PERIODIC_FACTOR_RANGE);
+  }
   m_params.freqFactor = GetRandInRange(freqFactorRange);
   m_params.amplitude = GetRandInRange(amplitudeRange);
 }

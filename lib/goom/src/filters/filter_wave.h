@@ -36,6 +36,7 @@ public:
     WaveEffect yWaveEffect;
     float freqFactor;
     float amplitude;
+    float periodicFactor;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -47,7 +48,9 @@ private:
   void SetWaveModeSettings(const UTILS::NumberRange<float>& freqFactorRange,
                            const UTILS::NumberRange<float>& amplitudeRange);
   [[nodiscard]] auto GetSpeedAdd(WaveEffect waveEffect, float angle) const -> float;
-  [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect, float angle) -> float;
+  [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
+                                            float angle,
+                                            float periodicFactor) -> float;
 };
 
 inline auto Wave::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
@@ -66,19 +69,21 @@ inline auto Wave::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 
 inline auto Wave::GetSpeedAdd(const WaveEffect waveEffect, const float angle) const -> float
 {
-  return m_params.amplitude * GetPeriodicPart(waveEffect, angle);
+  return m_params.amplitude * GetPeriodicPart(waveEffect, angle, m_params.periodicFactor);
 }
 
-inline auto Wave::GetPeriodicPart(const WaveEffect waveEffect, const float angle) -> float
+inline auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
+                                  const float angle,
+                                  const float periodicFactor) -> float
 {
   switch (waveEffect)
   {
     case WaveEffect::WAVE_SIN_EFFECT:
-      return std::sin(angle);
+      return periodicFactor * std::sin(angle);
     case WaveEffect::WAVE_COS_EFFECT:
-      return std::cos(angle);
+      return periodicFactor * std::cos(angle);
     case WaveEffect::WAVE_SIN_COS_EFFECT:
-      return std::sin(angle) + std::cos(angle);
+      return stdnew::lerp(std::sin(angle), std::cos(angle), periodicFactor);
     default:
       throw std::logic_error("Unknown WaveEffect enum");
   }
