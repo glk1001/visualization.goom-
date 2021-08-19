@@ -12,7 +12,9 @@
 #include "filter_data.h"
 #include "goom/goom_config.h"
 #include "goom/goom_stats.h"
+#include "goomutils/enumutils.h"
 
+#include <array>
 #include <chrono>
 #include <cstdint>
 #include <string>
@@ -50,7 +52,7 @@ public:
   void UpdateTranBufferEnd(ZoomFilterMode mode,
                            FILTERS::ZoomFilterBuffers::TranBufferState bufferState);
 
-  void DoChangeFilterSettings();
+  void DoChangeFilterSettings(const ZoomFilterData& filterSettings);
   void DoZoomFilterFastRgb();
   void DoCZoom();
   void DoResetTranBuffer();
@@ -91,6 +93,7 @@ private:
   FILTERS::ZoomFilterBuffers::TranBufferState m_bufferStateAtMaxTimeOfTranBuffersUpdate{
       FILTERS::ZoomFilterBuffers::TranBufferState::_NULL};
 
+  std::array<uint32_t, UTILS::NUM<ZoomFilterMode>> m_numUpdatesInMode{0};
   bool m_lastJustChangedFilterSettings = false;
   float m_lastGeneralSpeed = -1000.0;
   uint32_t m_lastPrevX = 0;

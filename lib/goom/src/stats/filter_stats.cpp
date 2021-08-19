@@ -35,6 +35,8 @@ void FilterStats::Reset()
   m_modeAtMaxTimeOfTranBuffersUpdate = ZoomFilterMode::_NULL;
   m_bufferStateAtMaxTimeOfTranBuffersUpdate = ZoomFilterBuffers::TranBufferState::_NULL;
 
+  std::fill(m_numUpdatesInMode.begin(), m_numUpdatesInMode.end(), 0);
+
   m_numChangeFilterSettings = 0;
   m_numZoomVectors = 0;
   m_numZoomVectorNoisify = 0;
@@ -169,6 +171,12 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
            static_cast<uint32_t>(m_lastZoomFilterSettings->tanEffect));
   }
 
+  for (size_t i = 0; i < m_numUpdatesInMode.size(); ++i)
+  {
+    const std::string modeStr = EnumToString(static_cast<ZoomFilterMode>(i));
+    logVal(MODULE, std20::format("num {} updates", modeStr), m_numUpdatesInMode[i]);
+  }
+
   logVal(MODULE, "numResetTranBuffer", m_numResetTranBuffer);
   logVal(MODULE, "numRestartTranBuffer", m_numRestartTranBuffer);
   logVal(MODULE, "numSwitchIncrNotZero", m_numSwitchIncrNotZero);
@@ -243,9 +251,10 @@ void FilterStats::UpdateTranBufferEnd(const ZoomFilterMode mode,
   m_totalTimeInTranBuffersUpdatesMs += timeInUpdateMs;
 }
 
-void FilterStats::DoChangeFilterSettings()
+void FilterStats::DoChangeFilterSettings(const ZoomFilterData& filterSettings)
 {
-  m_numChangeFilterSettings++;
+  ++m_numChangeFilterSettings;
+  ++m_numUpdatesInMode.at(static_cast<size_t>(filterSettings.mode));
 }
 
 void FilterStats::DoZoomVectorNoisify()
