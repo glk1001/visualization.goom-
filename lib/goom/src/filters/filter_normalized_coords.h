@@ -68,15 +68,15 @@ auto operator*(float scalar, const NormalizedCoords& c) -> NormalizedCoords;
 
 inline auto NormalizedCoords::NormalizedToScreenCoordsFlt(const V2dFlt& normalizedCoords) -> V2dFlt
 {
-  return {s_ratioNormalizedToScreenCoord * normalizedCoords.x,
-          s_ratioNormalizedToScreenCoord * normalizedCoords.y};
+  return {s_ratioNormalizedToScreenCoord * (normalizedCoords.x - MIN_NORMALIZED_COORD),
+          s_ratioNormalizedToScreenCoord * (normalizedCoords.y - MIN_NORMALIZED_COORD)};
 }
 
 inline auto NormalizedCoords::ScreenToNormalizedCoords(const V2dInt& screenCoords) -> V2dFlt
 {
   return {
-      s_ratioScreenToNormalizedCoord * static_cast<float>(screenCoords.x),
-      s_ratioScreenToNormalizedCoord * static_cast<float>(screenCoords.y),
+      MIN_NORMALIZED_COORD + s_ratioScreenToNormalizedCoord * static_cast<float>(screenCoords.x),
+      MIN_NORMALIZED_COORD + s_ratioScreenToNormalizedCoord * static_cast<float>(screenCoords.y),
   };
 }
 

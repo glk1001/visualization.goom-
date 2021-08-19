@@ -27,7 +27,8 @@ void NormalizedCoords::SetScreenDimensions(const uint32_t width,
 {
   assert(width > 1);
   assert(height > 1);
-  s_ratioScreenToNormalizedCoord = MAX_NORMALIZED_COORD / static_cast<float>(width - 1);
+  s_ratioScreenToNormalizedCoord =
+      (MAX_NORMALIZED_COORD - MIN_NORMALIZED_COORD) / static_cast<float>(width - 1);
   s_ratioNormalizedToScreenCoord = 1.0F / s_ratioScreenToNormalizedCoord;
   s_minNormalizedCoordVal = minScreenCoordVal * s_ratioScreenToNormalizedCoord;
 }
