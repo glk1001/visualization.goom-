@@ -374,7 +374,7 @@ void ZoomFilterFx::ZoomFilterImpl::SetInitialFilterSettings(const ZoomFilterData
 {
   assert(!started);
 
-  m_stats.DoChangeFilterSettings();
+  m_stats.DoChangeFilterSettings(filterSettings);
 
   m_currentFilterSettings = filterSettings;
   m_pendingFilterSettings = false;
@@ -384,7 +384,7 @@ void ZoomFilterFx::ZoomFilterImpl::ChangeFilterSettings(const ZoomFilterData& fi
 {
   assert(started);
 
-  m_stats.DoChangeFilterSettings();
+  m_stats.DoChangeFilterSettings(filterSettings);
 
   m_nextFilterSettings = filterSettings;
   m_pendingFilterSettings = true;

@@ -45,7 +45,7 @@ const Weights<ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
     { ZoomFilterMode::NORMAL_MODE,            6 },
     { ZoomFilterMode::SCRUNCH_MODE,           6 },
     { ZoomFilterMode::SPEEDWAY_MODE,          6 },
-    { ZoomFilterMode::WAVE_MODE0,             6 },
+    { ZoomFilterMode::WAVE_MODE0,             7 },
     { ZoomFilterMode::WAVE_MODE1,             4 },
     { ZoomFilterMode::WATER_MODE,             0 },
     { ZoomFilterMode::Y_ONLY_MODE,            4 },
@@ -187,7 +187,7 @@ void FilterControl::SetDefaultFilterSettings(const ZoomFilterMode mode)
 {
   m_hasChanged = true;
 
-  m_filterData.mode = mode;
+  m_filterData.SetMode(mode);
 
   SetDefaultSettings();
 }
@@ -196,7 +196,7 @@ void FilterControl::SetRandomFilterSettings(const ZoomFilterMode mode)
 {
   m_hasChanged = true;
 
-  m_filterData.mode = mode;
+  m_filterData.SetMode(mode);
 
   SetDefaultSettings();
 
