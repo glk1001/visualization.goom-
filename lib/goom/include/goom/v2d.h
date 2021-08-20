@@ -28,6 +28,7 @@ struct V2dFlt
   float y = 0.0;
   V2dFlt() noexcept = default;
   V2dFlt(float xx, float yy) noexcept;
+  [[nodiscard]] auto ToInt() const -> V2dInt;
   auto operator+=(const V2dFlt& v) -> V2dFlt&;
   auto operator+=(float scalar) -> V2dFlt&;
   auto operator-=(const V2dFlt& v) -> V2dFlt&;
@@ -65,6 +66,11 @@ inline auto operator-(const V2dInt& v1, const V2dInt& v2) -> V2dInt
 
 inline V2dFlt::V2dFlt(const float xx, const float yy) noexcept : x{xx}, y{yy}
 {
+}
+
+inline auto V2dFlt::ToInt() const -> V2dInt
+{
+  return {static_cast<int32_t>(std::round(x)), static_cast<int32_t>(std::round(y))};
 }
 
 inline auto V2dFlt::operator+=(const V2dFlt& v) -> V2dFlt&

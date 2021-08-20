@@ -58,6 +58,7 @@ private:
 
   [[nodiscard]] static auto NormalizedToScreenCoordsFlt(const V2dFlt& normalizedCoords) -> V2dFlt;
   [[nodiscard]] static auto ScreenToNormalizedCoords(const V2dInt& screenCoords) -> V2dFlt;
+  [[nodiscard]] static auto ScreenToNormalizedCoord(int32_t screenCoord) -> float;
 };
 
 auto operator+(const NormalizedCoords& c1, const NormalizedCoords& c2)
@@ -74,10 +75,12 @@ inline auto NormalizedCoords::NormalizedToScreenCoordsFlt(const V2dFlt& normaliz
 
 inline auto NormalizedCoords::ScreenToNormalizedCoords(const V2dInt& screenCoords) -> V2dFlt
 {
-  return {
-      MIN_NORMALIZED_COORD + s_ratioScreenToNormalizedCoord * static_cast<float>(screenCoords.x),
-      MIN_NORMALIZED_COORD + s_ratioScreenToNormalizedCoord * static_cast<float>(screenCoords.y),
-  };
+  return {ScreenToNormalizedCoord(screenCoords.x), ScreenToNormalizedCoord(screenCoords.y)};
+}
+
+inline auto NormalizedCoords::ScreenToNormalizedCoord(const int32_t screenCoord) -> float
+{
+  return MIN_NORMALIZED_COORD + s_ratioScreenToNormalizedCoord * static_cast<float>(screenCoord);
 }
 
 inline auto NormalizedCoords::GetMinNormalizedCoordVal() -> float

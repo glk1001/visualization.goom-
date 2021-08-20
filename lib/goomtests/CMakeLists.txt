@@ -17,7 +17,7 @@ add_executable(goomtests
     src/test_colorutils.cpp
     src/test_draw.cpp
     src/test_goomrand.cpp
-    src/test_mathutils.cpp
+    src/test_normalized_coords.cpp
     src/test_parallel_utils.cpp
     src/test_strutils.cpp
 )
