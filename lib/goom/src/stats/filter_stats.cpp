@@ -31,9 +31,9 @@ void FilterStats::Reset()
   m_maxTimeInTranBuffersUpdatesMs = 0;
   m_startTranBuffersUpdateTime = std::chrono::high_resolution_clock::now();
   m_modeAtMinTimeOfTranBuffersUpdate = ZoomFilterMode::_NULL;
-  m_bufferStateAtMinTimeOfTranBuffersUpdate = ZoomFilterBuffers::TranBufferState::_NULL;
+  m_bufferStateAtMinTimeOfTranBuffersUpdate = ZoomFilterBuffers::TranBuffersState::_NULL;
   m_modeAtMaxTimeOfTranBuffersUpdate = ZoomFilterMode::_NULL;
-  m_bufferStateAtMaxTimeOfTranBuffersUpdate = ZoomFilterBuffers::TranBufferState::_NULL;
+  m_bufferStateAtMaxTimeOfTranBuffersUpdate = ZoomFilterBuffers::TranBuffersState::_NULL;
 
   std::fill(m_numUpdatesInMode.begin(), m_numUpdatesInMode.end(), 0);
 
@@ -86,6 +86,10 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
   logVal(MODULE, "m_bufferStateAtMaxTimeOfTranBuffersUpdate",
          EnumToString(m_bufferStateAtMaxTimeOfTranBuffersUpdate));
 
+  if (m_lastZoomFilterSettings != nullptr)
+  {
+    logVal(MODULE, "lastZoomFilterData->mode", EnumToString(m_lastZoomFilterSettings->mode));
+  }
   logVal(MODULE, "lastJustChangedFilterSettings",
          static_cast<uint32_t>(m_lastJustChangedFilterSettings));
   logVal(MODULE, "lastGeneralSpeed", m_lastGeneralSpeed);
@@ -100,7 +104,6 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
   }
   else
   {
-    logVal(MODULE, "lastZoomFilterData->mode", EnumToString(m_lastZoomFilterSettings->mode));
     logVal(MODULE, "lastZoomFilterData->vitesse", m_lastZoomFilterSettings->vitesse.GetVitesse());
     logVal(MODULE, "lastZoomFilterData->reverseSpeed",
            static_cast<uint32_t>(m_lastZoomFilterSettings->vitesse.GetReverseVitesse()));
@@ -229,7 +232,7 @@ void FilterStats::UpdateTranBufferStart()
 }
 
 void FilterStats::UpdateTranBufferEnd(const ZoomFilterMode mode,
-                                      const ZoomFilterBuffers::TranBufferState bufferState)
+                                      const ZoomFilterBuffers::TranBuffersState bufferState)
 {
   const auto timeNow = std::chrono::high_resolution_clock::now();
 

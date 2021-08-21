@@ -50,7 +50,7 @@ public:
 
   void UpdateTranBufferStart();
   void UpdateTranBufferEnd(ZoomFilterMode mode,
-                           FILTERS::ZoomFilterBuffers::TranBufferState bufferState);
+                           FILTERS::ZoomFilterBuffers::TranBuffersState bufferState);
 
   void DoChangeFilterSettings(const ZoomFilterData& filterSettings);
   void DoZoomFilterFastRgb();
@@ -87,11 +87,11 @@ private:
   uint32_t m_maxTimeInTranBuffersUpdatesMs = 0;
   TimePoint m_startTranBuffersUpdateTime{};
   ZoomFilterMode m_modeAtMinTimeOfTranBuffersUpdate{ZoomFilterMode::_NULL};
-  FILTERS::ZoomFilterBuffers::TranBufferState m_bufferStateAtMinTimeOfTranBuffersUpdate{
-      FILTERS::ZoomFilterBuffers::TranBufferState::_NULL};
+  FILTERS::ZoomFilterBuffers::TranBuffersState m_bufferStateAtMinTimeOfTranBuffersUpdate{
+      FILTERS::ZoomFilterBuffers::TranBuffersState::_NULL};
   ZoomFilterMode m_modeAtMaxTimeOfTranBuffersUpdate{ZoomFilterMode::_NULL};
-  FILTERS::ZoomFilterBuffers::TranBufferState m_bufferStateAtMaxTimeOfTranBuffersUpdate{
-      FILTERS::ZoomFilterBuffers::TranBufferState::_NULL};
+  FILTERS::ZoomFilterBuffers::TranBuffersState m_bufferStateAtMaxTimeOfTranBuffersUpdate{
+      FILTERS::ZoomFilterBuffers::TranBuffersState::_NULL};
 
   std::array<uint32_t, UTILS::NUM<ZoomFilterMode>> m_numUpdatesInMode{0};
   bool m_lastJustChangedFilterSettings = false;

@@ -30,6 +30,7 @@ namespace GOOM::FILTERS
 
 using UTILS::GetNRand;
 using UTILS::GetRandInRange;
+using UTILS::Logging;
 using UTILS::Parallel;
 
 class ZoomFilterBuffers::FilterCoefficients
@@ -133,28 +134,6 @@ auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() -> Fi
   return precalculatedCoeffs;
 }
 
-inline auto ZoomFilterBuffers::TranToCoeffIndexCoord(const uint32_t tranCoord)
-{
-  return tranCoord & DIM_FILTER_COEFFS_MOD_MASK;
-}
-
-inline auto ZoomFilterBuffers::TranToScreenPoint(const V2dInt& tranPoint) -> V2dInt
-{
-  return {tranPoint.x >> DIM_FILTER_COEFFS_DIV_SHIFT, tranPoint.y >> DIM_FILTER_COEFFS_DIV_SHIFT};
-}
-
-inline auto ZoomFilterBuffers::ScreenToTranPoint(const V2dInt& screenPoint) -> V2dInt
-{
-  return {screenPoint.x << DIM_FILTER_COEFFS_DIV_SHIFT,
-          screenPoint.y << DIM_FILTER_COEFFS_DIV_SHIFT};
-}
-
-inline auto ZoomFilterBuffers::ScreenToTranCoord(const float screenCoord) -> uint32_t
-{
-  // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
-  return static_cast<uint32_t>(std::lround(screenCoord * static_cast<float>(DIM_FILTER_COEFFS)));
-}
-
 ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p, const std::shared_ptr<const PluginInfo>& goomInfo)
   : m_screenWidth{goomInfo->GetScreenInfo().width},
     m_screenHeight{goomInfo->GetScreenInfo().height},
@@ -177,7 +156,7 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p, const std::shared_ptr<const Pl
   assert(MAX_TRAN_DIFF_FACTOR ==
          static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS))) - 1);
 
-  NormalizedCoords::SetScreenDimensions(m_screenWidth, m_screenHeight, MIN_SCREEN_COORD_VAL);
+  NormalizedCoords::SetScreenDimensions(m_screenWidth, m_screenHeight, MIN_SCREEN_COORD_ABS_VAL);
 }
 
 ZoomFilterBuffers::~ZoomFilterBuffers() noexcept = default;
@@ -197,7 +176,7 @@ auto ZoomFilterBuffers::GetMaxTranLerpFactor() -> int32_t
   return MAX_TRAN_DIFF_FACTOR;
 }
 
-void ZoomFilterBuffers::SetTranLerpFactor(int32_t val)
+void ZoomFilterBuffers::SetTranLerpFactor(const int32_t val)
 {
   m_tranLerpFactor = val;
 }
@@ -212,34 +191,56 @@ inline auto ZoomFilterBuffers::NormalizedToTranPoint(const NormalizedCoords& nor
           static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.y)))};
 }
 
-void ZoomFilterBuffers::Start()
+inline auto ZoomFilterBuffers::TranCoordToCoeffIndex(const uint32_t tranCoord) -> uint32_t
 {
-  InitTranBuffer();
+  return tranCoord & DIM_FILTER_COEFFS_MOD_MASK;
 }
 
-auto ZoomFilterBuffers::GetSourceInfo(const V2dInt& tranPoint) const
+inline auto ZoomFilterBuffers::TranToScreenPoint(const V2dInt& tranPoint) -> V2dInt
+{
+  return {tranPoint.x >> DIM_FILTER_COEFFS_DIV_SHIFT, tranPoint.y >> DIM_FILTER_COEFFS_DIV_SHIFT};
+}
+
+inline auto ZoomFilterBuffers::ScreenToTranPoint(const V2dInt& screenPoint) -> V2dInt
+{
+  return {screenPoint.x << DIM_FILTER_COEFFS_DIV_SHIFT,
+          screenPoint.y << DIM_FILTER_COEFFS_DIV_SHIFT};
+}
+
+inline auto ZoomFilterBuffers::ScreenToTranCoord(const float screenCoord) -> uint32_t
+{
+  // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
+  return static_cast<uint32_t>(std::lround(screenCoord * static_cast<float>(DIM_FILTER_COEFFS)));
+}
+
+void ZoomFilterBuffers::Start()
+{
+  InitTranBuffers();
+}
+
+auto ZoomFilterBuffers::GetSourcePointInfo(const V2dInt& tranPoint) const
     -> std::tuple<V2dInt, NeighborhoodCoeffArray>
 {
   const V2dInt srcePoint = TranToScreenPoint(tranPoint);
-  const size_t xIndex = TranToCoeffIndexCoord(static_cast<uint32_t>(tranPoint.x));
-  const size_t yIndex = TranToCoeffIndexCoord(static_cast<uint32_t>(tranPoint.y));
+  const size_t xIndex = TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
+  const size_t yIndex = TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
   return std::make_tuple(srcePoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex]);
 }
 
-void ZoomFilterBuffers::SettingsChanged()
+void ZoomFilterBuffers::FilterSettingsChanged()
 {
-  m_settingsChanged = true;
+  m_filterSettingsHaveChanged = true;
 }
 
 void ZoomFilterBuffers::UpdateTranBuffer()
 {
-  if (m_tranBufferState == TranBufferState::RESET_TRAN_BUFFER)
+  if (m_tranBufferState == TranBuffersState::RESET_TRAN_BUFFERS)
   {
-    ResetTranBuffer();
+    ResetTranBuffers();
   }
-  else if (m_tranBufferState == TranBufferState::RESTART_TRAN_BUFFER)
+  else if (m_tranBufferState == TranBuffersState::RESTART_TRAN_BUFFERS)
   {
-    RestartTranBuffer();
+    RestartTranBuffers();
   }
   else
   {
@@ -249,36 +250,74 @@ void ZoomFilterBuffers::UpdateTranBuffer()
   }
 }
 
-void ZoomFilterBuffers::InitTranBuffer()
+void ZoomFilterBuffers::InitTranBuffers()
 {
   GenerateWaterFxHorizontalBuffer();
   DoNextTranBufferStripe(m_screenHeight);
 
-  // Identity source tran buffer
+  SetSrceTranToIdentity();
+  CopyTempTranToDestTran();
+
+  m_tranBuffYLineStart = 0;
+  m_tranBufferState = TranBuffersState::RESTART_TRAN_BUFFERS;
+}
+
+void ZoomFilterBuffers::SetSrceTranToIdentity()
+{
   size_t i = 0;
   for (int32_t y = 0; y < static_cast<int32_t>(m_screenHeight); y++)
   {
     for (int32_t x = 0; x < static_cast<int32_t>(m_screenWidth); x++)
     {
-      const V2dInt tranSrcePoint = ScreenToTranPoint({x, y});
-      m_tranXSrce[i] = tranSrcePoint.x;
-      m_tranYSrce[i] = tranSrcePoint.y;
+      const V2dInt tranPoint = ScreenToTranPoint({x, y});
+      m_tranXSrce[i] = tranPoint.x;
+      m_tranYSrce[i] = tranPoint.y;
       i++;
     }
   }
-
-  // Copy temp tran to dest tran.
-  std::copy(m_tranXTemp.begin(), m_tranXTemp.end(), m_tranXDest.begin());
-  std::copy(m_tranYTemp.begin(), m_tranYTemp.end(), m_tranYDest.begin());
-
-  m_tranBuffYLineStart = 0;
-  m_tranBufferState = TranBufferState::RESTART_TRAN_BUFFER;
 }
 
-void ZoomFilterBuffers::ResetTranBuffer()
+inline void ZoomFilterBuffers::CopyTempTranToDestTran()
 {
-  // generation du buffer de transform
+  std::copy(m_tranXTemp.begin(), m_tranXTemp.end(), m_tranXDest.begin());
+  std::copy(m_tranYTemp.begin(), m_tranYTemp.end(), m_tranYDest.begin());
+}
 
+inline void ZoomFilterBuffers::CopyAllDestTranToSrceTran()
+{
+  std::copy(m_tranXDest.begin(), m_tranXDest.end(), m_tranXSrce.begin());
+  std::copy(m_tranYDest.begin(), m_tranYDest.end(), m_tranYSrce.begin());
+}
+
+void ZoomFilterBuffers::CopyRemainingDestTranToSrceTran()
+{
+  for (size_t i = 0; i < m_bufferSize; i++)
+  {
+    const V2dInt tranPoint = GetZoomBufferSrceDestLerp(i);
+    m_tranXSrce[i] = tranPoint.x;
+    m_tranYSrce[i] = tranPoint.y;
+  }
+}
+
+inline void ZoomFilterBuffers::SetUpNextDestTran()
+{
+  std::swap(m_tranXDest, m_tranXTemp);
+  std::swap(m_tranYDest, m_tranYTemp);
+}
+
+// generation du buffer de transform
+void ZoomFilterBuffers::ResetTranBuffers()
+{
+  SaveCurrentDestStateToSrceTran();
+  SetUpNextDestTran();
+
+  m_tranLerpFactor = 0;
+  m_tranBuffYLineStart = 0;
+  m_tranBufferState = TranBuffersState::RESTART_TRAN_BUFFERS;
+}
+
+void ZoomFilterBuffers::SaveCurrentDestStateToSrceTran()
+{
   // sauvegarde de l'etat actuel dans la nouvelle source
   // Save the current state in the source buffs.
   if (m_tranLerpFactor == 0)
@@ -287,38 +326,24 @@ void ZoomFilterBuffers::ResetTranBuffer()
   }
   else if (m_tranLerpFactor == MAX_TRAN_DIFF_FACTOR)
   {
-    std::copy(m_tranXDest.begin(), m_tranXDest.end(), m_tranXSrce.begin());
-    std::copy(m_tranYDest.begin(), m_tranYDest.end(), m_tranYSrce.begin());
+    CopyAllDestTranToSrceTran();
   }
   else
   {
-    for (size_t i = 0; i < m_bufferSize; i++)
-    {
-      const V2dInt tranSrcePoint = GetZoomBufferSrceDestLerp(i);
-      m_tranXSrce[i] = tranSrcePoint.x;
-      m_tranYSrce[i] = tranSrcePoint.y;
-    }
+    CopyRemainingDestTranToSrceTran();
   }
-
-  // Set up the next dest buffs from the last buffer stripes.
-  std::swap(m_tranXDest, m_tranXTemp);
-  std::swap(m_tranYDest, m_tranYTemp);
-
-  m_tranLerpFactor = 0;
-  m_tranBuffYLineStart = 0;
-  m_tranBufferState = TranBufferState::RESTART_TRAN_BUFFER;
 }
 
-void ZoomFilterBuffers::RestartTranBuffer()
+void ZoomFilterBuffers::RestartTranBuffers()
 {
-  if (!m_settingsChanged)
+  if (!m_filterSettingsHaveChanged)
   {
     return;
   }
 
-  m_settingsChanged = false;
+  m_filterSettingsHaveChanged = false;
   m_tranBuffYLineStart = 0;
-  m_tranBufferState = TranBufferState::TRAN_BUFFER_READY;
+  m_tranBufferState = TranBuffersState::TRAN_BUFFERS_READY;
 }
 
 /*
@@ -330,7 +355,7 @@ void ZoomFilterBuffers::RestartTranBuffer()
  */
 void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeight)
 {
-  assert(m_tranBufferState == TranBufferState::TRAN_BUFFER_READY);
+  assert(m_tranBufferState == TranBuffersState::TRAN_BUFFERS_READY);
 
   const NormalizedCoords normalizedMidPt{m_buffMidPoint}; //TODO optimize
 
@@ -364,7 +389,7 @@ void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeig
   m_tranBuffYLineStart += tranBuffStripeHeight;
   if (tranBuffYLineEnd >= m_screenHeight)
   {
-    m_tranBufferState = TranBufferState::RESET_TRAN_BUFFER;
+    m_tranBufferState = TranBuffersState::RESET_TRAN_BUFFERS;
     m_tranBuffYLineStart = 0;
   }
 }

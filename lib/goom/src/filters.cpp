@@ -335,7 +335,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetMixedColor(const NeighborhoodCoeffA
   uint32_t multB = 0;
   for (size_t i = 0; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; i++)
   {
-    const uint32_t& coeff = coeffs.c[i];
+    const uint32_t& coeff = coeffs.val[i];
     const auto& color = colors[i];
     multR += static_cast<uint32_t>(color.R()) * coeff;
     multG += static_cast<uint32_t>(color.G()) * coeff;
@@ -443,12 +443,12 @@ void ZoomFilterFx::ZoomFilterImpl::UpdateTranBuffer()
 
   m_filterBuffers.UpdateTranBuffer();
 
-  if (m_filterBuffers.GetTranBufferState() == ZoomFilterBuffers::TranBufferState::RESET_TRAN_BUFFER)
+  if (m_filterBuffers.GetTranBufferState() == ZoomFilterBuffers::TranBuffersState::RESET_TRAN_BUFFERS)
   {
     m_stats.DoResetTranBuffer();
   }
   else if (m_filterBuffers.GetTranBufferState() ==
-           ZoomFilterBuffers::TranBufferState::RESTART_TRAN_BUFFER)
+           ZoomFilterBuffers::TranBuffersState::RESTART_TRAN_BUFFERS)
   {
     RestartTranBuffer();
   }
@@ -474,7 +474,7 @@ void ZoomFilterFx::ZoomFilterImpl::RestartTranBuffer()
 
   m_filterBuffers.SetBuffMidPoint({static_cast<int32_t>(m_currentFilterSettings.middleX),
                                    static_cast<int32_t>(m_currentFilterSettings.middleY)});
-  m_filterBuffers.SettingsChanged();
+  m_filterBuffers.FilterSettingsChanged();
 
   if (m_currentFilterSettings.imageDisplacement != nullptr)
   {
@@ -625,7 +625,7 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
       else
       {
 #if __cplusplus <= 201402L
-        const auto srceInfo = m_filterBuffers.GetSourceInfo(tranPoint);
+        const auto srceInfo = m_filterBuffers.GetSourcePointInfo(tranPoint);
         const V2dInt srcePoint = std::get<0>(srceInfo);
         const auto coeffs = std::get<1>(srceInfo);
 #else
