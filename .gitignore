@@ -1,6 +1,5 @@
 # build artifacts
 build*
-clion-build*
 .idea*
 visualization.*/addon.xml
 

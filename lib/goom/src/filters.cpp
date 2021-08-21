@@ -104,6 +104,7 @@ private:
   bool started = false;
 
   ZoomFilterBuffers m_filterBuffers;
+  void UpdateFilterBuffersSettings();
   IZoomVector* m_zoomVector{};
 
   ZoomFilterData m_currentFilterSettings{};
@@ -397,6 +398,8 @@ void ZoomFilterFx::ZoomFilterImpl::Start()
   ChangeFilterSettings(m_currentFilterSettings);
   assert(m_zoomVector);
   m_zoomVector->SetFilterSettings(m_currentFilterSettings);
+
+  UpdateFilterBuffersSettings();
   m_filterBuffers.Start();
 }
 
@@ -472,9 +475,7 @@ void ZoomFilterFx::ZoomFilterImpl::RestartTranBuffer()
   m_zoomVector->SetFilterSettings(m_currentFilterSettings);
   m_zoomVector->SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * ZoomFilterData::MAX_MAX_SPEED_COEFF);
 
-  m_filterBuffers.SetBuffMidPoint({static_cast<int32_t>(m_currentFilterSettings.middleX),
-                                   static_cast<int32_t>(m_currentFilterSettings.middleY)});
-  m_filterBuffers.FilterSettingsChanged();
+  UpdateFilterBuffersSettings();
 
   if (m_currentFilterSettings.imageDisplacement != nullptr)
   {
@@ -486,6 +487,13 @@ void ZoomFilterFx::ZoomFilterImpl::RestartTranBuffer()
     m_currentFilterSettings.imageDisplacement->SetZoomFactor(
         m_currentFilterSettings.imageDisplacementZoomFactor);
   }
+}
+
+inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBuffersSettings()
+{
+  m_filterBuffers.SetBuffMidPoint({static_cast<int32_t>(m_currentFilterSettings.middleX),
+                                   static_cast<int32_t>(m_currentFilterSettings.middleY)});
+  m_filterBuffers.FilterSettingsChanged();
 }
 
 void ZoomFilterFx::ZoomFilterImpl::UpdateTranLerpFactor(const int32_t switchIncr,
