@@ -139,7 +139,7 @@ public:
   [[nodiscard]] auto GetHeight() const -> uint32_t;
 
   void Fill(const Pixel& c);
-  void CopyTo(PixelBuffer& buff, uint32_t length) const;
+  void CopyTo(PixelBuffer& buff) const;
   [[nodiscard]] auto GetIntBuff() const -> const uint32_t*;
 
   auto operator()(size_t x, size_t y) const -> const Pixel&;
@@ -158,7 +158,6 @@ private:
   Buffer m_buff{};
 
   [[nodiscard]] auto GetIntBuff() -> uint32_t*;
-  void CopyTo(uint32_t* intBuff, uint32_t length) const;
 };
 
 inline Pixel::Pixel() : m_color{/*.channels*/ {}}
@@ -281,15 +280,12 @@ inline auto PixelBuffer::GetIntBuff() -> uint32_t*
   return reinterpret_cast<uint32_t*>(m_buff.data());
 }
 
-inline void PixelBuffer::CopyTo(PixelBuffer& buff, const uint32_t length) const
+inline void PixelBuffer::CopyTo(PixelBuffer& buff) const
 {
-  CopyTo(buff.GetIntBuff(), length);
-}
-
-inline void PixelBuffer::CopyTo(uint32_t* intBuff, const uint32_t length) const
-{
+  // Get the last bit of speed here and use memmove.
+  // std::copy(m_buff.cbegin(), m_buff.cend(), buff.m_buff.begin());
   static_assert(sizeof(Pixel) == sizeof(uint32_t), "Invalid Pixel size.");
-  std::memcpy(intBuff, GetIntBuff(), length * sizeof(Pixel));
+  std::memmove(buff.GetIntBuff(), this->GetIntBuff(), buff.m_buff.size() * sizeof(Pixel));
 }
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) const -> const Pixel&

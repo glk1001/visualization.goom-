@@ -19,6 +19,7 @@ add_executable(goomtests
     src/test_goomrand.cpp
     src/test_normalized_coords.cpp
     src/test_parallel_utils.cpp
+    src/test_pixels.cpp
     src/test_strutils.cpp
 )
 

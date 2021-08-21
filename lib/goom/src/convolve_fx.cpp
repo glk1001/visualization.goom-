@@ -144,7 +144,7 @@ void ConvolveFx::ConvolveImpl::Convolve(const PixelBuffer& currentBuff, PixelBuf
   constexpr float TOLERANCE = 0.02F;
   if (std::fabs(1.0 - flash) < TOLERANCE)
   {
-    currentBuff.CopyTo(outputBuff, m_goomInfo->GetScreenInfo().size);
+    currentBuff.CopyTo(outputBuff);
   }
   else
   {
