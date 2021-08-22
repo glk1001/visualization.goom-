@@ -36,7 +36,7 @@ public:
   {
     if (m_count > 0)
     {
-      m_count--;
+      --m_count;
     }
   }
 
@@ -64,13 +64,13 @@ class TentacleDriver
 public:
   enum class ColorModes
   {
-    minimal,
-    oneGroupForAll,
-    multiGroups,
+    MINIMAL,
+    ONE_GROUP_FOR_ALL,
+    MULTI_GROUPS,
   };
 
   TentacleDriver() noexcept = delete;
-  explicit TentacleDriver(const IGoomDraw* draw) noexcept;
+  explicit TentacleDriver(const IGoomDraw& draw) noexcept;
   TentacleDriver(const TentacleDriver&) noexcept = delete;
   TentacleDriver(TentacleDriver&&) noexcept = delete;
   ~TentacleDriver() noexcept = default;
@@ -95,8 +95,8 @@ public:
   void MultiplyIterZeroYValWaveFreq(float val);
 
 private:
-  const IGoomDraw* const m_draw;
-  ColorModes m_colorMode = ColorModes::oneGroupForAll;
+  const IGoomDraw& m_draw;
+  ColorModes m_colorMode = ColorModes::ONE_GROUP_FOR_ALL;
   struct IterationParams
   {
     size_t numNodes = 200;
@@ -138,15 +138,18 @@ private:
               float distance2) const;
   [[nodiscard]] auto ProjectV3DOntoV2D(const std::vector<V3dFlt>& v3, float distance) const
       -> std::vector<V2dInt>;
-  static void RotateV3DAboutYAxis(float sinAngle, float cosAngle, const V3dFlt& src, V3dFlt& dest);
-  static void TranslateV3D(const V3dFlt& add, V3dFlt& inOut);
+  static void RotateV3DAboutYAxis(float sinAngle,
+                                  float cosAngle,
+                                  const V3dFlt& vSrc,
+                                  V3dFlt& vDest);
+  static void TranslateV3D(const V3dFlt& vAdd, V3dFlt& vInOut);
 };
 
 class TentacleColorMapColorizer : public ITentacleColorizer
 {
 public:
   TentacleColorMapColorizer() noexcept = delete;
-  explicit TentacleColorMapColorizer(UTILS::ColorMapGroup, size_t numNodes) noexcept;
+  explicit TentacleColorMapColorizer(UTILS::ColorMapGroup cmg, size_t numNodes) noexcept;
   TentacleColorMapColorizer(const TentacleColorMapColorizer&) noexcept = delete;
   TentacleColorMapColorizer(TentacleColorMapColorizer&&) noexcept = delete;
   ~TentacleColorMapColorizer() noexcept override = default;

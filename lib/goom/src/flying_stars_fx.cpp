@@ -3,18 +3,18 @@
 #include "goom_draw.h"
 #include "goom_plugin_info.h"
 #include "goom_stats.h"
-#include "goom_visual_fx.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/image_bitmaps.h"
 #include "goomutils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
+#include "goomutils/logging.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/random_colormaps.h"
 #include "goomutils/random_colormaps_manager.h"
+#include "goomutils/spimpl.h"
 #include "stats/stars_stats.h"
 #include "v2d.h"
 
@@ -67,17 +67,12 @@ struct Star
 class FlyingStarsFx::FlyingStarsImpl
 {
 public:
-  explicit FlyingStarsImpl(const IGoomDraw* draw,
-                           std::shared_ptr<const PluginInfo> goomInfo) noexcept;
-  ~FlyingStarsImpl() noexcept = default;
-  FlyingStarsImpl(const FlyingStarsImpl&) noexcept = delete;
-  FlyingStarsImpl(FlyingStarsImpl&&) noexcept = delete;
-  auto operator=(const FlyingStarsImpl&) -> FlyingStarsImpl& = delete;
-  auto operator=(FlyingStarsImpl&&) -> FlyingStarsImpl& = delete;
+  explicit FlyingStarsImpl(const IGoomDraw& draw,
+                           std::shared_ptr<const PluginInfo> goomInfo,
+                           const SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
-  void SetSmallImageBitmaps(const SmallImageBitmaps& smallBitmaps);
 
   void Start();
 
@@ -90,7 +85,7 @@ public:
   void Log(const GoomStats::LogStatsValueFunc& logVal) const;
 
 private:
-  const IGoomDraw* const m_draw;
+  const IGoomDraw& m_draw;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const int32_t m_halfWidth;
   const int32_t m_halfHeight;
@@ -103,14 +98,14 @@ private:
   uint32_t m_colorMapID{};
   uint32_t m_lowColorMapID{};
   bool m_megaColorMode = false;
-  auto GetNextColorMapName() const -> ColorMapName;
-  auto GetNextLowColorMapName() const -> ColorMapName;
-  auto GetNextAngleColorMapName() const -> ColorMapName;
+  [[nodiscard]] auto GetNextColorMapName() const -> ColorMapName;
+  [[nodiscard]] auto GetNextLowColorMapName() const -> ColorMapName;
+  [[nodiscard]] auto GetNextAngleColorMapName() const -> ColorMapName;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
+  [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 
   static constexpr float MIN_SATURATION = 0.5F;
   static constexpr float MAX_SATURATION = 1.0F;
@@ -166,10 +161,12 @@ private:
   std::array<COLOR_DATA::ColorMapName, NUM_SEGMENTS> m_angleColorMapName{};
   void UpdateAngleColorMapNames();
   static auto GetSegmentNum(float angle) -> size_t;
-  auto GetDominantColorMapPtr(float angle) const -> std::shared_ptr<const IColorMap>;
-  auto GetDominantLowColorMapPtr(float angle) const -> std::shared_ptr<const IColorMap>;
-  auto GetCurrentColorMapPtr(float angle) const -> std::shared_ptr<const IColorMap>;
-  auto GetCurrentLowColorMapPtr(float angle) const -> std::shared_ptr<const IColorMap>;
+  [[nodiscard]] auto GetDominantColorMapPtr(float angle) const -> std::shared_ptr<const IColorMap>;
+  [[nodiscard]] auto GetDominantLowColorMapPtr(float angle) const
+      -> std::shared_ptr<const IColorMap>;
+  [[nodiscard]] auto GetCurrentColorMapPtr(float angle) const -> std::shared_ptr<const IColorMap>;
+  [[nodiscard]] auto GetCurrentLowColorMapPtr(float angle) const
+      -> std::shared_ptr<const IColorMap>;
   void DrawStars();
   static void UpdateStar(Star& s);
   [[nodiscard]] auto IsStarDead(const Star& s) const -> bool;
@@ -182,8 +179,8 @@ private:
   };
   DrawMode m_drawMode = DrawMode::CIRCLES;
   void ChangeDrawMode();
-  const SmallImageBitmaps* m_smallBitmaps{};
-  auto GetImageBitmap(size_t size) -> const ImageBitmap&;
+  const SmallImageBitmaps& m_smallBitmaps;
+  [[nodiscard]] auto GetImageBitmap(size_t size) -> const ImageBitmap&;
   using DrawFunc = std::function<void(int32_t x1,
                                       int32_t y1,
                                       int32_t x2,
@@ -191,7 +188,7 @@ private:
                                       uint32_t size,
                                       const std::vector<Pixel>& colors)>;
   const std::map<DrawMode, const DrawFunc> m_drawFuncs{};
-  auto GetDrawFunc() const -> DrawFunc;
+  [[nodiscard]] auto GetDrawFunc() const -> DrawFunc;
   void DrawStar(const Star& star, float flipSpeed, const DrawFunc& drawFunc);
   void DrawParticleCircle(int32_t x1,
                           int32_t y1,
@@ -221,12 +218,12 @@ private:
     float vage = 0.0;
     float radius = 1.0F;
   };
-  auto GetStarParams(float defaultRadius, float heightRatio) -> StarModeParams;
-  auto GetFireworksStarParams(float defaultRadius) const -> StarModeParams;
-  auto GetRainStarParams(float defaultRadius) const -> StarModeParams;
-  auto GetFountainStarParams(float defaultRadius) const -> StarModeParams;
+  [[nodiscard]] auto GetStarParams(float defaultRadius, float heightRatio) -> StarModeParams;
+  [[nodiscard]] auto GetFireworksStarParams(float defaultRadius) const -> StarModeParams;
+  [[nodiscard]] auto GetRainStarParams(float defaultRadius) const -> StarModeParams;
+  [[nodiscard]] auto GetFountainStarParams(float defaultRadius) const -> StarModeParams;
   void AddStarBombs(const StarModeParams& starModeParams, size_t maxStarsInBomb);
-  auto GetMaxStarsInABomb(float heightRatio) const -> size_t;
+  [[nodiscard]] auto GetMaxStarsInABomb(float heightRatio) const -> size_t;
   void AddABomb(const V2dInt& pos, float radius, float vage, float gravity, float sideWind);
   [[nodiscard]] auto GetBombAngle(const Star& star) const -> float;
 
@@ -235,13 +232,12 @@ private:
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 };
 
-FlyingStarsFx::FlyingStarsFx(const IGoomDraw* const draw,
-                             const std::shared_ptr<const PluginInfo>& info) noexcept
-  : m_fxImpl{new FlyingStarsImpl{draw, info}}
+FlyingStarsFx::FlyingStarsFx(const IGoomDraw& draw,
+                             const std::shared_ptr<const PluginInfo>& goomInfo,
+                             const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<FlyingStarsImpl>(draw, goomInfo, smallBitmaps)}
 {
 }
-
-FlyingStarsFx::~FlyingStarsFx() noexcept = default;
 
 auto FlyingStarsFx::GetResourcesDirectory() const -> const std::string&
 {
@@ -251,11 +247,6 @@ auto FlyingStarsFx::GetResourcesDirectory() const -> const std::string&
 void FlyingStarsFx::SetResourcesDirectory(const std::string& dirName)
 {
   m_fxImpl->SetResourcesDirectory(dirName);
-}
-
-void FlyingStarsFx::SetSmallImageBitmaps(const SmallImageBitmaps& smallBitmaps)
-{
-  m_fxImpl->SetSmallImageBitmaps(smallBitmaps);
 }
 
 void FlyingStarsFx::SetWeightedColorMaps(const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
@@ -307,12 +298,14 @@ void FlyingStarsFx::ApplyMultiple()
   m_fxImpl->UpdateBuffers();
 }
 
-FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const IGoomDraw* const draw,
-                                                std::shared_ptr<const PluginInfo> info) noexcept
+FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const IGoomDraw& draw,
+                                                std::shared_ptr<const PluginInfo> info,
+                                                const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
     m_goomInfo{std::move(info)},
     m_halfWidth{static_cast<int32_t>(m_goomInfo->GetScreenInfo().width / 2)},
     m_halfHeight{static_cast<int32_t>(m_goomInfo->GetScreenInfo().height / 2)},
+    m_smallBitmaps{smallBitmaps},
     m_drawFuncs{
         {DrawMode::CIRCLES,
          [&](const int32_t x1,
@@ -355,16 +348,10 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetResourcesDirectory(const std::str
   m_resourcesDirectory = dirName;
 }
 
-inline void FlyingStarsFx::FlyingStarsImpl::SetSmallImageBitmaps(
-    const SmallImageBitmaps& smallBitmaps)
-{
-  m_smallBitmaps = &smallBitmaps;
-}
-
 inline auto FlyingStarsFx::FlyingStarsImpl::GetImageBitmap(const size_t size) -> const ImageBitmap&
 {
-  return m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
-                                        stdnew::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
+  return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
+                                       stdnew::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
 inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
@@ -397,10 +384,6 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedLowColorMaps(
 
 inline void FlyingStarsFx::FlyingStarsImpl::Start()
 {
-  if (m_smallBitmaps == nullptr)
-  {
-    throw std::logic_error("FlyingStarsFx: Starting without setting 'm_smallBitmaps'.");
-  }
 }
 
 void FlyingStarsFx::FlyingStarsImpl::Finish()
@@ -551,11 +534,11 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleCircle(const int32_t x1,
 {
   if (m_useSingleBufferOnly)
   {
-    m_draw->Circle(x1, y1, static_cast<int>(size), colors[0]);
+    m_draw.Circle(x1, y1, static_cast<int>(size), colors[0]);
   }
   else
   {
-    m_draw->Circle(x1, y1, static_cast<int>(size), colors);
+    m_draw.Circle(x1, y1, static_cast<int>(size), colors);
   }
 }
 
@@ -568,11 +551,11 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleLine(const int32_t x1,
 {
   if (m_useSingleBufferOnly)
   {
-    m_draw->Line(x1, y1, x2, y2, colors[0], static_cast<int>(size));
+    m_draw.Line(x1, y1, x2, y2, colors[0], static_cast<int>(size));
   }
   else
   {
-    m_draw->Line(x1, y1, x2, y2, colors, static_cast<int>(size));
+    m_draw.Line(x1, y1, x2, y2, colors, static_cast<int>(size));
   }
 }
 
@@ -585,23 +568,23 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const int32_t x1,
 {
   const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                             const Pixel& b) -> Pixel {
-    return GetColorMultiply(b, colors[0], m_draw->GetAllowOverexposed());
+    return GetColorMultiply(b, colors[0], m_draw.GetAllowOverexposed());
   };
   const auto getLowColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                                const Pixel& b) -> Pixel {
-    return GetColorMultiply(b, colors[1], m_draw->GetAllowOverexposed());
+    return GetColorMultiply(b, colors[1], m_draw.GetAllowOverexposed());
   };
 
   const ImageBitmap& bitmap = GetImageBitmap(size);
 
   if (m_useSingleBufferOnly)
   {
-    m_draw->Bitmap(x1, y1, bitmap, getColor);
+    m_draw.Bitmap(x1, y1, bitmap, getColor);
   }
   else
   {
     const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getColor, getLowColor};
-    m_draw->Bitmap(x1, y1, bitmap, getColors);
+    m_draw.Bitmap(x1, y1, bitmap, getColors);
   }
 }
 

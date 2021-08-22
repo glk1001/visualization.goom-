@@ -4,6 +4,7 @@
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_stats.h"
+#include "goomutils/spimpl.h"
 #include "sound_info.h"
 
 #include <cstddef>
@@ -34,29 +35,25 @@ class LinesFx
 public:
   enum class LineType
   {
-    circle = 0, // (param = radius)
-    hline, // (param = y)
-    vline, // (param = x)
-    _size // must be last - gives number of enums
+    CIRCLE = 0, // (param = radius)
+    H_LINE, // (param = y)
+    V_LINE, // (param = x)
+    _NUM // must be last - gives number of enums
   };
-  static constexpr size_t NUM_LINE_TYPES = static_cast<size_t>(LineType::_size);
+  static constexpr size_t NUM_LINE_TYPES = static_cast<size_t>(LineType::_NUM);
 
   LinesFx() noexcept = delete;
 
   // construit un effet de line (une ligne horitontale pour commencer)
-  LinesFx(const IGoomDraw* draw,
+  LinesFx(const IGoomDraw& draw,
           const std::shared_ptr<const PluginInfo>& goomInfo,
+          const UTILS::SmallImageBitmaps& smallBitmaps,
           LineType srceLineType,
           float srceParam,
           const Pixel& srceColor,
           LineType destLineType,
           float destParam,
           const Pixel& destColor) noexcept;
-  LinesFx(const LinesFx&) noexcept = delete;
-  LinesFx(LinesFx&&) noexcept = delete;
-  ~LinesFx() noexcept;
-  auto operator=(const LinesFx&) -> LinesFx& = delete;
-  auto operator=(LinesFx&&) -> LinesFx& = delete;
 
   [[nodiscard]] auto GetFxName() const -> std::string;
 
@@ -64,7 +61,6 @@ public:
   void SetResourcesDirectory(const std::string& dirName);
 
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
-  void SetSmallImageBitmaps(const UTILS::SmallImageBitmaps& smallBitmaps);
 
   void Start();
   auto GetRandomLineColor() const -> Pixel;
@@ -88,7 +84,7 @@ public:
 private:
   bool m_enabled = true;
   class LinesImpl;
-  const std::unique_ptr<LinesImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<LinesImpl> m_fxImpl;
 };
 
 } // namespace GOOM

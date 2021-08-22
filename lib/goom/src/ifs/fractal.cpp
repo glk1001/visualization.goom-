@@ -102,8 +102,10 @@ auto IfsPoint::GetSimiOverExposeBitmaps() const -> bool
 Fractal::Fractal(const uint32_t screenWidth,
                  const uint32_t screenHeight,
                  const RandomColorMaps& cm,
+                 const SmallImageBitmaps& smallBitmaps,
                  IfsStats* const s)
   : m_components{std::make_unique<std::vector<Similitude>>(NUM_SIMI_GROUPS * MAX_SIMI)},
+    m_smallBitmaps{smallBitmaps},
     m_colorMaps{&cm},
     m_stats{s},
     m_lx{(screenWidth - 1) / 2},
@@ -324,7 +326,7 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
   const Dbl r2Factor = m_dr2Mean * r2_1_minus_exp_neg_S;
 
   const ColorMapGroup colorMapGroup = m_colorMaps->GetRandomGroup();
-  const bool useBitmaps = m_smallBitmaps != nullptr && ProbabilityOfMInN(7, 10);
+  const bool useBitmaps = ProbabilityOfMInN(7, 10);
 
   for (size_t i = start; i < start + num; i++)
   {
@@ -360,12 +362,12 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
       if (ProbabilityOfMInN(6, 10))
       {
         (*m_components)[i].currentPointBitmap =
-            &m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
+            &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
       }
       else
       {
         (*m_components)[i].currentPointBitmap =
-            &m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE, res);
+            &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE, res);
       }
     }
   }

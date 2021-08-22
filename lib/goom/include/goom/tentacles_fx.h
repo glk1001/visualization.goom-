@@ -3,6 +3,7 @@
 
 #include "goom_stats.h"
 #include "goom_visual_fx.h"
+#include "goomutils/spimpl.h"
 
 #include <memory>
 #include <string>
@@ -22,12 +23,8 @@ class TentaclesFx : public IVisualFx
 {
 public:
   TentaclesFx() noexcept = delete;
-  explicit TentaclesFx(const IGoomDraw* draw, const std::shared_ptr<const PluginInfo>&) noexcept;
-  TentaclesFx(const TentaclesFx&) noexcept = delete;
-  TentaclesFx(TentaclesFx&&) noexcept = delete;
-  ~TentaclesFx() noexcept override;
-  auto operator=(const TentaclesFx&) -> TentaclesFx& = delete;
-  auto operator=(TentaclesFx&&) -> TentaclesFx& = delete;
+  explicit TentaclesFx(const IGoomDraw& draw,
+                       const std::shared_ptr<const PluginInfo>& goomInfo) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
@@ -45,13 +42,13 @@ public:
   void ApplyNoDraw();
   void ApplyMultiple();
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const override;
+  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const override;
   void Finish() override;
 
 private:
   bool m_enabled = true;
   class TentaclesImpl;
-  const std::unique_ptr<TentaclesImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<TentaclesImpl> m_fxImpl;
 };
 
 } // namespace GOOM

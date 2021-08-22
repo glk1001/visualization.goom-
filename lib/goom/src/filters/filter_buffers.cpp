@@ -33,113 +33,15 @@ using UTILS::GetRandInRange;
 using UTILS::Logging;
 using UTILS::Parallel;
 
-class ZoomFilterBuffers::FilterCoefficients
-{
-public:
-  FilterCoefficients() noexcept;
-  virtual ~FilterCoefficients() noexcept = default;
-  FilterCoefficients(const FilterCoefficients&) noexcept = delete;
-  FilterCoefficients(FilterCoefficients&&) noexcept = delete;
-  auto operator=(const FilterCoefficients&) -> FilterCoefficients& = delete;
-  auto operator=(FilterCoefficients&&) -> FilterCoefficients& = delete;
-
-  [[nodiscard]] auto GetCoeffs() const -> const FilterCoeff2dArray&;
-
-private:
-  // modif d'optim by Jeko : precalcul des 4 coeffs resultant des 2 pos
-  const FilterCoeff2dArray m_precalculatedCoeffs{GetPrecalculatedCoefficients()};
-  [[nodiscard]] static auto GetPrecalculatedCoefficients() -> FilterCoeff2dArray;
-};
-
-// TODO Old Clang and MSVC won't allow the following '= default'
-//ZoomFilterBuffers::FilterCoefficients::FilterCoefficients() noexcept = default;
-ZoomFilterBuffers::FilterCoefficients::FilterCoefficients() noexcept
-{
-}
-
-inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const -> const FilterCoeff2dArray&
-{
-  return m_precalculatedCoeffs;
-}
-
-auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() -> FilterCoeff2dArray
-{
-  FilterCoeff2dArray precalculatedCoeffs{};
-
-  for (uint32_t coeffH = 0; coeffH < DIM_FILTER_COEFFS; coeffH++)
-  {
-    for (uint32_t coeffV = 0; coeffV < DIM_FILTER_COEFFS; coeffV++)
-    {
-      const uint32_t diffCoeffH = DIM_FILTER_COEFFS - coeffH;
-      const uint32_t diffCoeffV = DIM_FILTER_COEFFS - coeffV;
-
-      if (coeffH == 0 && coeffV == 0)
-      {
-        precalculatedCoeffs[coeffH][coeffV] = {{channel_limits<uint32_t>::max(), 0U, 0U, 0U},
-                                               false};
-      }
-      else
-      {
-        uint32_t i1 = diffCoeffH * diffCoeffV;
-        uint32_t i2 = coeffH * diffCoeffV;
-        uint32_t i3 = diffCoeffH * coeffV;
-        uint32_t i4 = coeffH * coeffV;
-
-        // TODO: faire mieux...
-        if (i1)
-        {
-          i1--;
-        }
-        if (i2)
-        {
-          i2--;
-        }
-        if (i3)
-        {
-          i3--;
-        }
-        if (i4)
-        {
-          i4--;
-        }
-
-        /**
-        if (ProbabilityOfMInN(1, 100))
-        {
-          i1 += GetRandInRange(0U, 10U);
-        }
-        if (ProbabilityOfMInN(1, 100))
-        {
-          i2 += GetRandInRange(0U, 10U);
-        }
-        if (ProbabilityOfMInN(1, 100))
-        {
-          i3 += GetRandInRange(0U, 10U);
-        }
-        if (ProbabilityOfMInN(1, 100))
-        {
-          i4 += GetRandInRange(0U, 10U);
-        }
-        i1 = 16;
-        i2 =  20;
-        i3 = 20;
-        i4 = 16;
-**/
-        precalculatedCoeffs[coeffH][coeffV] = {{i1, i2, i3, i4},
-                                               i1 == 0 && i2 == 0 && i3 == 0 && i4 == 0};
-      }
-    }
-  }
-
-  return precalculatedCoeffs;
-}
-
-ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p, const std::shared_ptr<const PluginInfo>& goomInfo)
+ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
+                                     const std::shared_ptr<const PluginInfo>& goomInfo,
+                                     const ZoomPointFunc& zoomPointFunc)
   : m_screenWidth{goomInfo->GetScreenInfo().width},
     m_screenHeight{goomInfo->GetScreenInfo().height},
     m_bufferSize{goomInfo->GetScreenInfo().size},
     m_precalculatedCoeffs{std::make_unique<FilterCoefficients>()},
-    m_parallel{&p},
+    m_parallel{p},
+    m_getZoomPoint{zoomPointFunc},
     m_tranXSrce(m_bufferSize),
     m_tranYSrce(m_bufferSize),
     m_tranXDest(m_bufferSize),
@@ -159,16 +61,9 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p, const std::shared_ptr<const Pl
   NormalizedCoords::SetScreenDimensions(m_screenWidth, m_screenHeight, MIN_SCREEN_COORD_ABS_VAL);
 }
 
-ZoomFilterBuffers::~ZoomFilterBuffers() noexcept = default;
-
 auto ZoomFilterBuffers::GetZoomPointFunc() const -> ZoomPointFunc
 {
   return m_getZoomPoint;
-}
-
-void ZoomFilterBuffers::SetZoomPointFunc(const ZoomPointFunc& f)
-{
-  m_getZoomPoint = f;
 }
 
 auto ZoomFilterBuffers::GetMaxTranLerpFactor() -> int32_t
@@ -265,14 +160,14 @@ void ZoomFilterBuffers::InitTranBuffers()
 void ZoomFilterBuffers::SetSrceTranToIdentity()
 {
   size_t i = 0;
-  for (int32_t y = 0; y < static_cast<int32_t>(m_screenHeight); y++)
+  for (int32_t y = 0; y < static_cast<int32_t>(m_screenHeight); ++y)
   {
-    for (int32_t x = 0; x < static_cast<int32_t>(m_screenWidth); x++)
+    for (int32_t x = 0; x < static_cast<int32_t>(m_screenWidth); ++x)
     {
       const V2dInt tranPoint = ScreenToTranPoint({x, y});
       m_tranXSrce[i] = tranPoint.x;
       m_tranYSrce[i] = tranPoint.y;
-      i++;
+      ++i;
     }
   }
 }
@@ -291,7 +186,7 @@ inline void ZoomFilterBuffers::CopyAllDestTranToSrceTran()
 
 void ZoomFilterBuffers::CopyRemainingDestTranToSrceTran()
 {
-  for (size_t i = 0; i < m_bufferSize; i++)
+  for (size_t i = 0; i < m_bufferSize; ++i)
   {
     const V2dInt tranPoint = GetZoomBufferSrceDestLerp(i);
     m_tranXSrce[i] = tranPoint.x;
@@ -320,7 +215,7 @@ void ZoomFilterBuffers::SaveCurrentDestStateToSrceTran()
 {
   // sauvegarde de l'etat actuel dans la nouvelle source
   // Save the current state in the source buffs.
-  if (m_tranLerpFactor == 0)
+  if (0 == m_tranLerpFactor)
   {
     // Nothing to do: tran srce == tran dest.
   }
@@ -367,7 +262,7 @@ void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeig
     NormalizedCoords normalizedCentredPoint =
         NormalizedCoords{V2dInt{0, static_cast<int32_t>(yOffset)}} - normalizedMidPt;
 
-    for (uint32_t x = 0; x < m_screenWidth; x++)
+    for (uint32_t x = 0; x < m_screenWidth; ++x)
     {
       const NormalizedCoords normalizedZoomPoint = m_getZoomPoint(normalizedCentredPoint);
       const NormalizedCoords uncenteredZoomPoint = normalizedMidPt + normalizedZoomPoint;
@@ -384,7 +279,7 @@ void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeig
   const uint32_t tranBuffYLineEnd =
       std::min(m_screenHeight, m_tranBuffYLineStart + tranBuffStripeHeight);
 
-  m_parallel->ForLoop(tranBuffYLineEnd - m_tranBuffYLineStart, doStripeLine);
+  m_parallel.ForLoop(tranBuffYLineEnd - m_tranBuffYLineStart, doStripeLine);
 
   m_tranBuffYLineStart += tranBuffStripeHeight;
   if (tranBuffYLineEnd >= m_screenHeight)
@@ -433,7 +328,7 @@ void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
 
   for (size_t loopv = m_screenHeight; loopv != 0;)
   {
-    loopv--;
+    --loopv;
     m_firedec[loopv] = decc;
     decc += spdc / 10;
     spdc += GetRandInRange(-2, +3);
@@ -449,24 +344,24 @@ void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
 
     if (spdc > 30)
     {
-      spdc = spdc - static_cast<int32_t>(GetNRand(3)) + accel / 10;
+      spdc = (spdc - static_cast<int32_t>(GetNRand(3))) + (accel / 10);
     }
     if (spdc < -30)
     {
-      spdc = spdc + static_cast<int32_t>(GetNRand(3)) + accel / 10;
+      spdc = spdc + static_cast<int32_t>(GetNRand(3)) + (accel / 10);
     }
 
-    if (decc > 8 && spdc > 1)
+    if ((decc > 8) && (spdc > 1))
     {
       spdc -= GetRandInRange(-2, +1);
     }
-    if (decc < -8 && spdc < -1)
+    if ((decc < -8) && (spdc < -1))
     {
       spdc += static_cast<int32_t>(GetNRand(3)) + 2;
     }
-    if (decc > 8 || decc < -8)
+    if ((decc > 8) || (decc < -8))
     {
-      decc = decc * 8 / 9;
+      decc = (decc * 8) / 9;
     }
 
     accel += GetRandInRange(-1, +2);
@@ -479,6 +374,89 @@ void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
       accel += 2;
     }
   }
+}
+
+// TODO Old Clang and MSVC won't allow the following '= default'
+//ZoomFilterBuffers::FilterCoefficients::FilterCoefficients() noexcept = default;
+ZoomFilterBuffers::FilterCoefficients::FilterCoefficients() noexcept
+{
+}
+
+inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const -> const FilterCoeff2dArray&
+{
+  return m_precalculatedCoeffs;
+}
+
+auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() -> FilterCoeff2dArray
+{
+  FilterCoeff2dArray precalculatedCoeffs{};
+
+  for (uint32_t coeffH = 0; coeffH < DIM_FILTER_COEFFS; ++coeffH)
+  {
+    for (uint32_t coeffV = 0; coeffV < DIM_FILTER_COEFFS; ++coeffV)
+    {
+      const uint32_t diffCoeffH = DIM_FILTER_COEFFS - coeffH;
+      const uint32_t diffCoeffV = DIM_FILTER_COEFFS - coeffV;
+
+      if ((0 == coeffH) && (0 == coeffV))
+      {
+        precalculatedCoeffs[coeffH][coeffV] = {{channel_limits<uint32_t>::max(), 0U, 0U, 0U},
+                                               false};
+      }
+      else
+      {
+        uint32_t i1 = diffCoeffH * diffCoeffV;
+        uint32_t i2 = coeffH * diffCoeffV;
+        uint32_t i3 = diffCoeffH * coeffV;
+        uint32_t i4 = coeffH * coeffV;
+
+        // TODO: faire mieux...
+        if (i1)
+        {
+          --i1;
+        }
+        if (i2)
+        {
+          --i2;
+        }
+        if (i3)
+        {
+          --i3;
+        }
+        if (i4)
+        {
+          --i4;
+        }
+
+        /**
+        if (ProbabilityOfMInN(1, 100))
+        {
+          i1 += GetRandInRange(0U, 10U);
+        }
+        if (ProbabilityOfMInN(1, 100))
+        {
+          i2 += GetRandInRange(0U, 10U);
+        }
+        if (ProbabilityOfMInN(1, 100))
+        {
+          i3 += GetRandInRange(0U, 10U);
+        }
+        if (ProbabilityOfMInN(1, 100))
+        {
+          i4 += GetRandInRange(0U, 10U);
+        }
+        i1 = 16;
+        i2 =  20;
+        i3 = 20;
+        i4 = 16;
+**/
+        precalculatedCoeffs[coeffH][coeffV] = {{i1, i2, i3, i4},
+                                               (0 == i1) && (0 == i2) && (0 == i3) && (0 == i4)};
+      }
+    }
+  }
+
+  return precalculatedCoeffs;
 }
 
 #if __cplusplus <= 201402L

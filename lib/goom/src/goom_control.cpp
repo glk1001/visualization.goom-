@@ -85,6 +85,7 @@ using DRAW::GoomDrawToBuffer;
 using DRAW::TextDraw;
 using FILTERS::FilterControl;
 using FILTERS::FilterZoomVector;
+using FILTERS::IZoomVector;
 using UTILS::ColorMapGroup;
 using UTILS::GammaCorrection;
 using UTILS::GetAllSlimMaps;
@@ -125,8 +126,10 @@ struct GoomVisualFx
 {
   GoomVisualFx() noexcept = delete;
   explicit GoomVisualFx(Parallel& p,
-                        IGoomDraw* draw,
-                        const std::shared_ptr<const PluginInfo>& goomInfo) noexcept;
+                        const IGoomDraw& draw,
+                        const std::shared_ptr<const PluginInfo>& goomInfo,
+                        const SmallImageBitmaps& smallBitmaps,
+                        IZoomVector& zoomVector) noexcept;
 
   std::shared_ptr<ConvolveFx> convolve_fx;
   std::shared_ptr<ZoomFilterFx> zoomFilter_fx;
@@ -142,16 +145,18 @@ struct GoomVisualFx
 };
 
 GoomVisualFx::GoomVisualFx(Parallel& p,
-                           IGoomDraw* const draw,
-                           const std::shared_ptr<const PluginInfo>& goomInfo) noexcept
+                           const IGoomDraw& draw,
+                           const std::shared_ptr<const PluginInfo>& goomInfo,
+                           const SmallImageBitmaps& smallBitmaps,
+                           IZoomVector& zoomVector) noexcept
   : convolve_fx{std::make_shared<ConvolveFx>(p, goomInfo)},
-    zoomFilter_fx{std::make_shared<ZoomFilterFx>(p, goomInfo)},
-    star_fx{std::make_shared<FlyingStarsFx>(draw, goomInfo)},
-    goomDots_fx{std::make_shared<GoomDotsFx>(draw, goomInfo)},
-    ifs_fx{std::make_shared<IfsDancersFx>(draw, goomInfo)},
+    zoomFilter_fx{std::make_shared<ZoomFilterFx>(p, goomInfo, zoomVector)},
+    star_fx{std::make_shared<FlyingStarsFx>(draw, goomInfo, smallBitmaps)},
+    goomDots_fx{std::make_shared<GoomDotsFx>(draw, goomInfo, smallBitmaps)},
+    ifs_fx{std::make_shared<IfsDancersFx>(draw, goomInfo, smallBitmaps)},
     tentacles_fx{std::make_shared<TentaclesFx>(draw, goomInfo)},
-    image_fx{std::make_shared<ImageFx>(draw, goomInfo)},
-    tube_fx{std::make_shared<TubeFx>(draw, goomInfo)},
+    image_fx{std::make_shared<ImageFx>(&draw, goomInfo)},
+    tube_fx{std::make_shared<TubeFx>(draw, goomInfo, smallBitmaps)},
     // clang-format off
     list{
       convolve_fx,
@@ -228,24 +233,23 @@ private:
   GoomDrawToBuffer m_multiBufferDraw;
   const std::shared_ptr<WritablePluginInfo> m_goomInfo;
   GoomImageBuffers m_imageBuffers;
-  GoomVisualFx m_visualFx;
+  std::string m_resourcesDirectory{};
+  const SmallImageBitmaps m_smallBitmaps;
   FilterZoomVector m_zoomVector{};
+  FilterControl m_filterControl;
+  GoomVisualFx m_visualFx;
   GoomStates m_states{};
   GoomEvents m_goomEvent{};
   uint32_t m_updateNum = 0;
   uint32_t m_timeInState = 0;
   uint32_t m_timeWithFilter = 0;
   uint32_t m_cycle = 0;
-  FilterControl m_filterControl;
   std::unordered_set<GoomDrawable> m_curGDrawables{};
   GoomData m_goomData{};
 
   GoomControlStats m_stats{};
   static constexpr uint32_t MIN_UPDATES_TO_LOG = 6;
   void LogStats();
-
-  std::string m_resourcesDirectory{};
-  const SmallImageBitmaps m_smallBitmaps;
 
   bool m_singleBufferDots = true;
   static constexpr uint32_t MIN_NUM_OVEREXPOSED_UPDATES = 1000;
@@ -429,28 +433,31 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
   : m_multiBufferDraw{screenWidth, screenHeight},
     m_goomInfo{std::make_shared<WritablePluginInfo>(screenWidth, screenHeight)},
     m_imageBuffers{screenWidth, screenHeight},
-    m_visualFx{m_parallel, &m_multiBufferDraw,
-               std::const_pointer_cast<const PluginInfo>(
-                   std::dynamic_pointer_cast<PluginInfo>(m_goomInfo))},
-    m_filterControl{m_goomInfo},
     m_resourcesDirectory{std::move(resourcesDirectory)},
     m_smallBitmaps{m_resourcesDirectory},
-    m_goomLine1{&m_multiBufferDraw,
+    m_filterControl{m_goomInfo},
+    m_visualFx{m_parallel, m_multiBufferDraw,
+               std::const_pointer_cast<const PluginInfo>(
+                   std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
+               m_smallBitmaps, m_zoomVector},
+    m_goomLine1{m_multiBufferDraw,
                 std::const_pointer_cast<const PluginInfo>(
                     std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
-                LinesFx::LineType::hline,
+                m_smallBitmaps,
+                LinesFx::LineType::H_LINE,
                 static_cast<float>(screenHeight),
                 BLACK_LINE,
-                LinesFx::LineType::circle,
+                LinesFx::LineType::CIRCLE,
                 INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 * static_cast<float>(screenHeight),
                 GREEN_LINE},
-    m_goomLine2{&m_multiBufferDraw,
+    m_goomLine2{m_multiBufferDraw,
                 std::const_pointer_cast<const PluginInfo>(
                     std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
-                LinesFx::LineType::hline,
+                m_smallBitmaps,
+                LinesFx::LineType::H_LINE,
                 0,
                 BLACK_LINE,
-                LinesFx::LineType::circle,
+                LinesFx::LineType::CIRCLE,
                 INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 * static_cast<float>(screenHeight),
                 RED_LINE},
     m_goomTextOutput{screenWidth, screenHeight}
@@ -534,16 +541,9 @@ void GoomControl::GoomControlImpl::Start()
 
   // TODO MAKE line a visual FX
   m_goomLine1.SetResourcesDirectory(m_resourcesDirectory);
-  m_goomLine1.SetSmallImageBitmaps(m_smallBitmaps);
   m_goomLine1.Start();
   m_goomLine2.SetResourcesDirectory(m_resourcesDirectory);
-  m_goomLine2.SetSmallImageBitmaps(m_smallBitmaps);
   m_goomLine2.Start();
-
-  m_visualFx.goomDots_fx->SetSmallImageBitmaps(m_smallBitmaps);
-  m_visualFx.ifs_fx->SetSmallImageBitmaps(m_smallBitmaps);
-  m_visualFx.star_fx->SetSmallImageBitmaps(m_smallBitmaps);
-  m_visualFx.tube_fx->SetSmallImageBitmaps(m_smallBitmaps);
 
   m_filterControl.SetResourcesDirectory(m_resourcesDirectory);
   m_filterControl.Start();
@@ -553,7 +553,6 @@ void GoomControl::GoomControlImpl::Start()
 
   SetNextFilterMode();
   m_visualFx.zoomFilter_fx->SetInitialFilterSettings(m_filterControl.GetFilterSettings());
-  m_visualFx.zoomFilter_fx->SetZoomVector(m_zoomVector);
   m_stats.DoChangeFilterMode(m_filterControl.GetFilterSettings().mode);
 
   for (auto& v : m_visualFx.list)
@@ -1633,7 +1632,7 @@ void GoomControl::GoomControlImpl::ChooseGoomLine(float* param1,
 
   switch (*mode)
   {
-    case LinesFx::LineType::circle:
+    case LinesFx::LineType::CIRCLE:
       if (farVal)
       {
         *param1 = *param2 = 0.47F;
@@ -1655,7 +1654,7 @@ void GoomControl::GoomControlImpl::ChooseGoomLine(float* param1,
         *param1 = *param2 = static_cast<float>(GetScreenHeight()) * 0.35F;
       }
       break;
-    case LinesFx::LineType::hline:
+    case LinesFx::LineType::H_LINE:
       if (m_goomEvent.Happens(GoomEvent::CHANGE_H_LINE_PARAMS) || farVal)
       {
         *param1 = static_cast<float>(GetScreenHeight()) / 7.0F;
@@ -1667,7 +1666,7 @@ void GoomControl::GoomControlImpl::ChooseGoomLine(float* param1,
         *amplitude = 2.0F;
       }
       break;
-    case LinesFx::LineType::vline:
+    case LinesFx::LineType::V_LINE:
       if (m_goomEvent.Happens(GoomEvent::CHANGE_V_LINE_PARAMS) || farVal)
       {
         *param1 = static_cast<float>(GetScreenWidth()) / 7.0F;

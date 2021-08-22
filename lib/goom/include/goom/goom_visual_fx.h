@@ -28,7 +28,7 @@ public:
   virtual void Resume(){};
   virtual void Suspend(){};
 
-  virtual void Log(const GoomStats::LogStatsValueFunc& l) const = 0;
+  virtual void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const = 0;
   virtual void Finish() = 0;
 };
 

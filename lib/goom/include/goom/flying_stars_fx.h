@@ -3,6 +3,7 @@
 
 #include "goom_stats.h"
 #include "goom_visual_fx.h"
+#include "goomutils/spimpl.h"
 
 #include <memory>
 #include <string>
@@ -32,19 +33,14 @@ public:
   };
 
   FlyingStarsFx() noexcept = delete;
-  explicit FlyingStarsFx(const IGoomDraw* draw, const std::shared_ptr<const PluginInfo>&) noexcept;
-  FlyingStarsFx(const FlyingStarsFx&) noexcept = delete;
-  FlyingStarsFx(FlyingStarsFx&&) noexcept = delete;
-  ~FlyingStarsFx() noexcept override;
-  auto operator=(const FlyingStarsFx&) -> FlyingStarsFx& = delete;
-  auto operator=(FlyingStarsFx&&) -> FlyingStarsFx& = delete;
+  explicit FlyingStarsFx(const IGoomDraw& draw,
+                         const std::shared_ptr<const PluginInfo>& goomInfo,
+                         const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
   void SetResourcesDirectory(const std::string& dirName) override;
-
-  void SetSmallImageBitmaps(const UTILS::SmallImageBitmaps& smallBitmaps);
 
   void Start() override;
 
@@ -62,7 +58,7 @@ public:
 private:
   bool m_enabled = true;
   class FlyingStarsImpl;
-  const std::unique_ptr<FlyingStarsImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<FlyingStarsImpl> m_fxImpl;
 };
 
 } // namespace GOOM

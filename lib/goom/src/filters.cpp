@@ -22,7 +22,6 @@
 #include "filters/filter_normalized_coords.h"
 #include "filters/goom_zoom_vector.h"
 #include "filters/image_displacement.h"
-#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goom_stats.h"
@@ -33,6 +32,7 @@
 #include "goomutils/logging.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/parallel_utils.h"
+#include "goomutils/spimpl.h"
 #include "stats/filter_stats.h"
 #include "v2d.h"
 
@@ -45,7 +45,6 @@
 #include <goomutils/enumutils.h>
 #include <string>
 #include <tuple>
-#include <vector>
 
 namespace GOOM
 {
@@ -66,29 +65,27 @@ const uint8_t ZoomFilterData::pertedec = 8; // NEVER SEEMS TO CHANGE
 class ZoomFilterFx::ZoomFilterImpl
 {
 public:
-  ZoomFilterImpl(Parallel& p, const std::shared_ptr<const PluginInfo>& goomInfo);
-  ~ZoomFilterImpl() noexcept;
-  ZoomFilterImpl(const ZoomFilterImpl&) noexcept = delete;
-  ZoomFilterImpl(ZoomFilterImpl&&) noexcept = delete;
-  auto operator=(const ZoomFilterImpl&) -> ZoomFilterImpl& = delete;
-  auto operator=(ZoomFilterImpl&&) -> ZoomFilterImpl& = delete;
+  ZoomFilterImpl() noexcept = delete;
+  ZoomFilterImpl(Parallel& p,
+                 const std::shared_ptr<const PluginInfo>& goomInfo,
+                 IZoomVector& zoomVector) noexcept;
+  ~ZoomFilterImpl() noexcept = default;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
+
   void SetBuffSettings(const FXBuffSettings& settings);
+  [[nodiscard]] auto GetZoomVector() const -> IZoomVector&;
+
+  void Start();
+
+  [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterData&;
+  [[nodiscard]] auto GetFilterSettingsArePending() const -> bool;
+
+  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
 
   void SetInitialFilterSettings(const ZoomFilterData& filterSettings);
   void ChangeFilterSettings(const ZoomFilterData& filterSettings);
-
-  auto GetFilterSettings() const -> const ZoomFilterData&;
-  auto GetFilterSettingsArePending() const -> bool;
-
-  auto GetTranLerpFactor() const -> int32_t;
-
-  auto GetZoomVector() const -> IZoomVector&;
-  void SetZoomVector(IZoomVector& zoomVector);
-
-  void Start();
 
   void ZoomFilterFastRgb(const PixelBuffer& pix1,
                          PixelBuffer& pix2,
@@ -103,9 +100,9 @@ private:
   const uint32_t m_screenHeight;
   bool started = false;
 
+  IZoomVector& m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
   void UpdateFilterBuffersSettings();
-  IZoomVector* m_zoomVector{};
 
   ZoomFilterData m_currentFilterSettings{};
   ZoomFilterData m_nextFilterSettings{};
@@ -114,18 +111,18 @@ private:
   FXBuffSettings m_buffSettings{};
   std::string m_resourcesDirectory{};
 
-  Parallel* const m_parallel;
+  Parallel& m_parallel;
   uint64_t m_updateNum = 0;
   mutable FilterStats m_stats{};
 
   using NeighborhoodCoeffArray = ZoomFilterBuffers::NeighborhoodCoeffArray;
   using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
-  auto GetNewColor(const NeighborhoodCoeffArray& coeffs, const NeighborhoodPixelArray& pixels) const
-      -> Pixel;
-  auto GetMixedColor(const NeighborhoodCoeffArray& coeffs,
-                     const NeighborhoodPixelArray& colors) const -> Pixel;
-  auto GetBlockyMixedColor(const NeighborhoodCoeffArray& coeffs,
-                           const NeighborhoodPixelArray& colors) const -> Pixel;
+  [[nodiscard]] auto GetNewColor(const NeighborhoodCoeffArray& coeffs,
+                                 const NeighborhoodPixelArray& pixels) const -> Pixel;
+  [[nodiscard]] auto GetMixedColor(const NeighborhoodCoeffArray& coeffs,
+                                   const NeighborhoodPixelArray& colors) const -> Pixel;
+  [[nodiscard]] auto GetBlockyMixedColor(const NeighborhoodCoeffArray& coeffs,
+                                         const NeighborhoodPixelArray& colors) const -> Pixel;
 
   void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff, uint32_t& numDestClipped) const;
 
@@ -136,12 +133,12 @@ private:
   void LogState(const std::string& name) const;
 };
 
-ZoomFilterFx::ZoomFilterFx(Parallel& p, const std::shared_ptr<const PluginInfo>& info) noexcept
-  : m_fxImpl{std::make_unique<ZoomFilterImpl>(p, info)}
+ZoomFilterFx::ZoomFilterFx(Parallel& p,
+                           const std::shared_ptr<const PluginInfo>& info,
+                           IZoomVector& zoomVector) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<ZoomFilterImpl>(p, info, zoomVector)}
 {
 }
-
-ZoomFilterFx::~ZoomFilterFx() noexcept = default;
 
 auto ZoomFilterFx::GetResourcesDirectory() const -> const std::string&
 {
@@ -221,27 +218,25 @@ auto ZoomFilterFx::GetZoomVector() const -> IZoomVector&
   return m_fxImpl->GetZoomVector();
 }
 
-void ZoomFilterFx::SetZoomVector(IZoomVector& zoomVector)
-{
-  m_fxImpl->SetZoomVector(zoomVector);
-}
-
 ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(Parallel& p,
-                                             const std::shared_ptr<const PluginInfo>& goomInfo)
+                                             const std::shared_ptr<const PluginInfo>& goomInfo,
+                                             IZoomVector& zoomVector) noexcept
   : m_screenWidth{goomInfo->GetScreenInfo().width},
     m_screenHeight{goomInfo->GetScreenInfo().height},
-    m_filterBuffers{p, goomInfo},
-    m_parallel{&p}
+    m_zoomVector{zoomVector},
+    m_filterBuffers{p, goomInfo,
+                    [this](const NormalizedCoords& normalizedCoords) {
+                      return m_zoomVector.GetZoomPoint(normalizedCoords);
+                    }},
+    m_parallel{p}
 {
   m_currentFilterSettings.middleX = m_screenWidth / 2;
   m_currentFilterSettings.middleY = m_screenHeight / 2;
 }
 
-ZoomFilterFx::ZoomFilterImpl::~ZoomFilterImpl() noexcept = default;
-
 void ZoomFilterFx::ZoomFilterImpl::Log(const GoomStats::LogStatsValueFunc& l) const
 {
-  m_zoomVector->UpdateLastStats();
+  m_zoomVector.UpdateLastStats();
 
   m_stats.SetLastZoomFilterSettings(m_currentFilterSettings);
   m_stats.SetLastJustChangedFilterSettings(m_pendingFilterSettings);
@@ -286,16 +281,7 @@ auto ZoomFilterFx::ZoomFilterImpl::GetTranLerpFactor() const -> int32_t
 
 auto ZoomFilterFx::ZoomFilterImpl::GetZoomVector() const -> IZoomVector&
 {
-  return *m_zoomVector;
-}
-
-void ZoomFilterFx::ZoomFilterImpl::SetZoomVector(IZoomVector& zoomVector)
-{
-  m_zoomVector = &zoomVector;
-  m_zoomVector->SetFilterStats(m_stats);
-  m_filterBuffers.SetZoomPointFunc([this](const NormalizedCoords& normalizedCoords) {
-    return m_zoomVector->GetZoomPoint(normalizedCoords);
-  });
+  return m_zoomVector;
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::GetNewColor(const NeighborhoodCoeffArray& coeffs,
@@ -396,8 +382,9 @@ void ZoomFilterFx::ZoomFilterImpl::Start()
   started = true;
 
   ChangeFilterSettings(m_currentFilterSettings);
-  assert(m_zoomVector);
-  m_zoomVector->SetFilterSettings(m_currentFilterSettings);
+
+  m_zoomVector.SetFilterSettings(m_currentFilterSettings);
+  m_zoomVector.SetFilterStats(m_stats);
 
   UpdateFilterBuffersSettings();
   m_filterBuffers.Start();
@@ -472,8 +459,8 @@ void ZoomFilterFx::ZoomFilterImpl::RestartTranBuffer()
   m_pendingFilterSettings = false;
   m_currentFilterSettings = m_nextFilterSettings;
 
-  m_zoomVector->SetFilterSettings(m_currentFilterSettings);
-  m_zoomVector->SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * ZoomFilterData::MAX_MAX_SPEED_COEFF);
+  m_zoomVector.SetFilterSettings(m_currentFilterSettings);
+  m_zoomVector.SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * ZoomFilterData::MAX_MAX_SPEED_COEFF);
 
   UpdateFilterBuffersSettings();
 
@@ -662,7 +649,7 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
     }
   };
 
-  m_parallel->ForLoop(m_screenHeight, setDestPixelRow);
+  m_parallel.ForLoop(m_screenHeight, setDestPixelRow);
 }
 
 #ifdef NO_LOGGING

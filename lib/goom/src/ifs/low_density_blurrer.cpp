@@ -24,16 +24,16 @@ using UTILS::GetBrighterColor;
 using UTILS::GetColorAverage;
 using UTILS::IColorMap;
 
-LowDensityBlurrer::LowDensityBlurrer(const IGoomDraw* const draw,
+LowDensityBlurrer::LowDensityBlurrer(const IGoomDraw& draw,
                                      const uint32_t width,
-                                     const Colorizer* colorizer) noexcept
+                                     const Colorizer* const colorizer) noexcept
   : m_draw{draw}, m_width{width}, m_colorizer{colorizer}
 {
 }
 
 void LowDensityBlurrer::SetWidth(const uint32_t val)
 {
-  if (val != 3 && val != 5 && val != 7)
+  if ((val != 3) && (val != 5) && (val != 7))
   {
     throw std::logic_error(std20::format("Invalid blur width {}.", val));
   }
@@ -50,26 +50,26 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
   const float tStep = 1.0F / static_cast<float>(lowDensityPoints.size());
   for (auto& p : lowDensityPoints)
   {
-    if (p.GetX() < (m_width / 2) || p.GetY() < (m_width / 2) ||
-        p.GetX() >= m_draw->GetScreenWidth() - (m_width / 2) ||
-        p.GetY() >= m_draw->GetScreenHeight() - (m_width / 2))
+    if ((p.GetX() < (m_width / 2)) || (p.GetY() < (m_width / 2)) ||
+        (p.GetX() >= (m_draw.GetScreenWidth() - (m_width / 2))) ||
+        (p.GetY() >= (m_draw.GetScreenHeight() - (m_width / 2))))
     {
       p.SetCount(0); // just signal that no need to set buff
       continue;
     }
 
     size_t n = 0;
-    auto neighY = static_cast<int32_t>(p.GetY() - m_width / 2);
-    for (size_t i = 0; i < m_width; i++)
+    auto neighY = static_cast<int32_t>(p.GetY() - (m_width / 2));
+    for (size_t i = 0; i < m_width; ++i)
     {
-      auto neighX = static_cast<int32_t>(p.GetX() - m_width / 2);
-      for (size_t j = 0; j < m_width; j++)
+      auto neighX = static_cast<int32_t>(p.GetX() - (m_width / 2));
+      for (size_t j = 0; j < m_width; ++j)
       {
-        neighbours[n] = m_draw->GetPixel(neighX, neighY);
-        n++;
-        neighX++;
+        neighbours[n] = m_draw.GetPixel(neighX, neighY);
+        ++n;
+        ++neighX;
       }
-      neighY++;
+      ++neighY;
     }
 
     SetPointColor(p, t, logMaxLowDensityCount, neighbours);
@@ -79,13 +79,13 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
 
   for (const auto& p : lowDensityPoints)
   {
-    if (p.GetCount() == 0)
+    if (0 == p.GetCount())
     {
       continue;
     }
     const std::vector<Pixel> colors{p.GetColor(), p.GetColor()};
     // TODO bitmap here
-    m_draw->DrawPixels(static_cast<int32_t>(p.GetX()), static_cast<int32_t>(p.GetY()), colors);
+    m_draw.DrawPixels(static_cast<int32_t>(p.GetX()), static_cast<int32_t>(p.GetY()), colors);
     // ??? NOTE: We need to set raw (unblended) pixels here, otherwise we get unpleasant overexposure.
     //m_draw->DrawPixelsUnblended(static_cast<int32_t>(p.x), static_cast<int32_t>(p.y), colors);
   }
@@ -97,8 +97,8 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
                                       const std::vector<Pixel>& neighbours) const
 {
   const float logAlpha = point.GetCount() <= 1 ? 1.0F
-                                               : std::log(static_cast<float>(point.GetCount())) /
-                                                     logMaxLowDensityCount;
+                                               : (std::log(static_cast<float>(point.GetCount())) /
+                                                     logMaxLowDensityCount);
   constexpr float BRIGHTNESS = 0.5F;
 
   switch (m_colorMode)
@@ -116,9 +116,9 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
     case BlurrerColorMode::SIMI_WITH_NEIGHBOURS:
     {
       const float fx =
-          static_cast<float>(point.GetX()) / static_cast<float>(m_draw->GetScreenWidth());
+          static_cast<float>(point.GetX()) / static_cast<float>(m_draw.GetScreenWidth());
       const float fy =
-          static_cast<float>(point.GetY()) / static_cast<float>(m_draw->GetScreenHeight());
+          static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());
       point.SetColor(m_colorizer->GetMixedColor(IColorMap::GetColorMix(point.GetSimiColor(),
                                                                        GetColorAverage(neighbours),
                                                                        m_neighbourMixFactor),
@@ -131,9 +131,9 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
     case BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS:
     {
       const float fx =
-          static_cast<float>(point.GetX()) / static_cast<float>(m_draw->GetScreenWidth());
+          static_cast<float>(point.GetX()) / static_cast<float>(m_draw.GetScreenWidth());
       const float fy =
-          static_cast<float>(point.GetY()) / static_cast<float>(m_draw->GetScreenHeight());
+          static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());
       point.SetColor(m_colorizer->GetMixedColor(
           IColorMap::GetColorMix(point.GetSimiColorMap()->GetColor(t), GetColorAverage(neighbours),
                                  m_neighbourMixFactor),
@@ -149,7 +149,7 @@ inline auto LowDensityBlurrer::GetGammaCorrection(const float brightness, const 
     -> Pixel
 {
   // if constexpr (GAMMA == 1.0F)
-  if (GAMMA == 1.0F)
+  if (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color, true);
   }

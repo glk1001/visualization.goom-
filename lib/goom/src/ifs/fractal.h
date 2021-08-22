@@ -94,6 +94,7 @@ public:
   Fractal(uint32_t screenWidth,
           uint32_t screenHeight,
           const UTILS::RandomColorMaps& cm,
+          const UTILS::SmallImageBitmaps& smallBitmaps,
           IfsStats* s);
   ~Fractal() noexcept;
   Fractal(const Fractal&) noexcept = delete;
@@ -103,7 +104,6 @@ public:
 
   void Init();
   void Reset();
-  void SetSmallImageBitmaps(const UTILS::SmallImageBitmaps& smallBitmaps);
 
   [[nodiscard]] auto GetSpeed() const -> uint32_t;
   void SetSpeed(uint32_t val);
@@ -118,8 +118,8 @@ private:
   static constexpr uint32_t MAX_MAX_COUNT_TIMES_SPEED = 1500;
   std::unique_ptr<std::vector<Similitude>> m_components;
 
+  const UTILS::SmallImageBitmaps& m_smallBitmaps;
   const UTILS::RandomColorMaps* const m_colorMaps;
-  const UTILS::SmallImageBitmaps* m_smallBitmaps{};
   IfsStats* const m_stats;
 
   const uint32_t m_lx;
@@ -167,11 +167,6 @@ private:
 inline auto Fractal::GetMaxHitCount() const -> uint32_t
 {
   return m_curHits->GetMaxHitCount();
-}
-
-inline void Fractal::SetSmallImageBitmaps(const UTILS::SmallImageBitmaps& smallBitmaps)
-{
-  m_smallBitmaps = &smallBitmaps;
 }
 
 inline auto Fractal::GetLx() const -> Flt

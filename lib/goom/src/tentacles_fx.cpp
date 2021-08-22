@@ -12,6 +12,7 @@
 //#undef NO_LOGGING
 #include "goomutils/logging.h"
 #include "goomutils/random_colormaps.h"
+#include "goomutils/spimpl.h"
 #include "stats/tentacles_stats.h"
 #include "tentacles/tentacle_driver.h"
 
@@ -61,10 +62,10 @@ inline auto ChangeDominantColorEvent() -> bool
 class TentaclesFx::TentaclesImpl
 {
 public:
-  explicit TentaclesImpl(const IGoomDraw* draw, const std::shared_ptr<const PluginInfo>& goomInfo);
-  ~TentaclesImpl() noexcept = default;
+  explicit TentaclesImpl(const IGoomDraw& draw, const std::shared_ptr<const PluginInfo>& goomInfo);
   TentaclesImpl(const TentaclesImpl&) noexcept = delete;
   TentaclesImpl(TentaclesImpl&&) noexcept = delete;
+  ~TentaclesImpl() noexcept = default;
   auto operator=(const TentaclesImpl&) -> TentaclesImpl& = delete;
   auto operator=(TentaclesImpl&&) -> TentaclesImpl& = delete;
 
@@ -79,10 +80,10 @@ public:
   void Update();
   void UpdateWithNoDraw();
 
-  void LogStats(const GoomStats::LogStatsValueFunc& logVal);
+  void LogStats(const GoomStats::LogStatsValueFunc& logValueFunc) const;
 
 private:
-  const IGoomDraw* const m_draw;
+  const IGoomDraw& m_draw;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
@@ -161,13 +162,11 @@ private:
   void DoPrettyMoveWithoutDraw();
 };
 
-TentaclesFx::TentaclesFx(const IGoomDraw* const draw,
+TentaclesFx::TentaclesFx(const IGoomDraw& draw,
                          const std::shared_ptr<const PluginInfo>& info) noexcept
-  : m_fxImpl{std::make_unique<TentaclesImpl>(draw, info)}
+  : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(draw, info)}
 {
 }
-
-TentaclesFx::~TentaclesFx() noexcept = default;
 
 auto TentaclesFx::GetResourcesDirectory() const -> const std::string&
 {
@@ -206,9 +205,9 @@ void TentaclesFx::Finish()
 {
 }
 
-void TentaclesFx::Log(const GoomStats::LogStatsValueFunc& logVal) const
+void TentaclesFx::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
 {
-  m_fxImpl->LogStats(logVal);
+  m_fxImpl->LogStats(logValueFunc);
 }
 
 void TentaclesFx::ApplyMultiple()
@@ -236,9 +235,9 @@ auto TentaclesFx::GetFxName() const -> std::string
   return "Tentacles FX";
 }
 
-TentaclesFx::TentaclesImpl::TentaclesImpl(const IGoomDraw* const draw,
-                                          const std::shared_ptr<const PluginInfo>& info)
-  : m_draw{draw}, m_goomInfo{info}, m_rot{GetStableRotationOffset(0)}
+TentaclesFx::TentaclesImpl::TentaclesImpl(const IGoomDraw& draw,
+                                          const std::shared_ptr<const PluginInfo>& goomInfo)
+  : m_draw{draw}, m_goomInfo{goomInfo}, m_rot{GetStableRotationOffset(0)}
 {
 }
 
@@ -254,11 +253,11 @@ inline void TentaclesFx::TentaclesImpl::SetResourcesDirectory(const std::string&
 
 inline void TentaclesFx::TentaclesImpl::IncCounters()
 {
-  m_countSinceHighAccelLastMarked++;
-  m_countSinceColorChangeLastMarked++;
+  ++m_countSinceHighAccelLastMarked;
+  ++m_countSinceColorChangeLastMarked;
 }
 
-void TentaclesFx::TentaclesImpl::LogStats(const GoomStats::LogStatsValueFunc& logVal)
+void TentaclesFx::TentaclesImpl::LogStats(const GoomStats::LogStatsValueFunc& logValueFunc) const
 {
   assert(m_currentDriver);
 
@@ -283,7 +282,7 @@ void TentaclesFx::TentaclesImpl::LogStats(const GoomStats::LogStatsValueFunc& lo
   m_stats.SetLastPostPrettyMoveLock(m_postPrettyMoveLock);
   m_stats.SetLastPrettyLerpMixValue(m_prettyMoveLerpMix);
 
-  m_stats.Log(logVal);
+  m_stats.Log(logValueFunc);
 }
 
 inline void TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
@@ -332,7 +331,7 @@ colorGroupWeights.SetWeight(ColorMapGroup::misc, 30000);
 colorMaps.setWeights(colorGroupWeights);
 ***/
 
-  for (size_t i = 0; i < NUM_DRIVERS; i++)
+  for (size_t i = 0; i < NUM_DRIVERS; ++i)
   {
     (void)m_drivers.emplace_back(std::make_unique<TentacleDriver>(m_draw));
   }
@@ -344,7 +343,7 @@ colorMaps.setWeights(colorGroupWeights);
 
   const ColorMapGroup initialColorMapGroup = m_colorMaps->GetRandomGroup();
 
-  for (size_t i = 0; i < NUM_DRIVERS; i++)
+  for (size_t i = 0; i < NUM_DRIVERS; ++i)
   {
     m_drivers[i]->Init(initialColorMapGroup, m_layouts[i]);
     m_drivers[i]->StartIterating();
@@ -364,15 +363,15 @@ void TentaclesFx::TentaclesImpl::InitData()
 
   if (ProbabilityOfMInN(1, 500))
   {
-    m_currentDriver->SetColorMode(TentacleDriver::ColorModes::minimal);
+    m_currentDriver->SetColorMode(TentacleDriver::ColorModes::MINIMAL);
   }
   else if (ProbabilityOfMInN(1, 500))
   {
-    m_currentDriver->SetColorMode(TentacleDriver::ColorModes::multiGroups);
+    m_currentDriver->SetColorMode(TentacleDriver::ColorModes::MULTI_GROUPS);
   }
   else
   {
-    m_currentDriver->SetColorMode(TentacleDriver::ColorModes::oneGroupForAll);
+    m_currentDriver->SetColorMode(TentacleDriver::ColorModes::ONE_GROUP_FOR_ALL);
   }
   m_currentDriver->SetReverseColorMix(ProbabilityOfMInN(3, 10));
 
@@ -527,7 +526,7 @@ void TentaclesFx::TentaclesImpl::DoTentaclesUpdate()
   const float tentacleWaveFreq =
       m_goomInfo->GetSoundInfo().GetAcceleration() < 0.3F
           ? 1.25F
-          : 1.0F / (1.10F - m_goomInfo->GetSoundInfo().GetAcceleration());
+          : (1.0F / (1.10F - m_goomInfo->GetSoundInfo().GetAcceleration()));
   m_currentDriver->MultiplyIterZeroYValWaveFreq(tentacleWaveFreq);
 
   m_currentDriver->Update(m_half_pi - m_rot, m_distt, m_distt2, modColor, modLowColor);
@@ -546,7 +545,7 @@ inline auto TentaclesFx::TentaclesImpl::GetModColors() -> std::tuple<Pixel, Pixe
   // IMPORTANT. getEvolvedColor works just right - not sure why
   m_dominantColor = GetEvolvedColor(m_dominantColor);
 
-  const Pixel modColor = GetLightenedColor(m_dominantColor, m_lig * 2.0F + 2.0F);
+  const Pixel modColor = GetLightenedColor(m_dominantColor, (m_lig * 2.0F) + 2.0F);
   const Pixel modLowColor = GetLightenedColor(modColor, (m_lig / 2.0F) + 0.67F);
 
   return std::make_tuple(modColor, modLowColor);
@@ -574,7 +573,7 @@ void TentaclesFx::TentaclesImpl::PrettyMoveStart(const float acceleration, const
         static_cast<int>(GetRandInRange(PRETTY_MOVE_HAPPENING_MIN, PRETTY_MOVE_HAPPENING_MAX));
   }
   m_prettyMoveCheckStopMark = m_prettyMoveHappeningTimer / 4;
-  m_postPrettyMoveLock = 3 * m_prettyMoveHappeningTimer / 2;
+  m_postPrettyMoveLock = (3 * m_prettyMoveHappeningTimer) / 2;
 
   m_distt2Offset = (1.0F / (1.10F - acceleration)) * GetRandInRange(DISTT2_MIN, DISTT2_MAX);
   m_rotAtStartOfPrettyMove = m_rot;
@@ -607,14 +606,14 @@ void TentaclesFx::TentaclesImpl::IsPrettyMoveHappeningUpdate(const float acceler
   // Are we locked after prettyMove finished?
   if (m_postPrettyMoveLock != 0)
   {
-    m_postPrettyMoveLock--;
+    --m_postPrettyMoveLock;
     return;
   }
 
   // Are we locked after prettyMove start signal?
   if (m_prePrettyMoveLock != 0)
   {
-    m_prePrettyMoveLock--;
+    --m_prePrettyMoveLock;
     m_distt2Offset += m_distt2OffsetPreStep;
     return;
   }
@@ -646,7 +645,7 @@ inline auto TentaclesFx::TentaclesImpl::GetNextDriver() const -> TentacleDriver*
 
 inline auto TentaclesFx::TentaclesImpl::GetStableRotationOffset(const float cycleVal) -> float
 {
-  return (1.5F + std::sin(cycleVal) / 32.0F) * m_pi;
+  return (1.5F + (std::sin(cycleVal) / 32.0F)) * m_pi;
 }
 
 void TentaclesFx::TentaclesImpl::PrettyMove(const float acceleration)
@@ -663,7 +662,7 @@ void TentaclesFx::TentaclesImpl::PrettyMove(const float acceleration)
 
   // Bigger offset here means tentacles start further back behind screen.
   auto disttOffset = static_cast<float>(
-      stdnew::lerp(DISTT_MIN, DISTT_MAX, 0.5 * (1.0 - std::sin(m_cycle * 19.0 / 20.0))));
+      stdnew::lerp(DISTT_MIN, DISTT_MAX, 0.5 * (1.0 - std::sin(m_cycle * (19.0 / 20.0)))));
   if (m_isPrettyMoveHappening)
   {
     disttOffset *= 0.6F;
@@ -706,7 +705,7 @@ void TentaclesFx::TentaclesImpl::PrettyMove(const float acceleration)
       }
     }
 
-    if (!(0.0F <= rotOffset && rotOffset <= m_two_pi))
+    if (!((0.0F <= rotOffset) && (rotOffset <= m_two_pi)))
     {
       throw std::logic_error(std20::format(
           "rotOffset {:.3f} not in [0, 2pi]: currentCycle = {:.3f}", rotOffset, currentCycle));

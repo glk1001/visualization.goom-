@@ -3,6 +3,7 @@
 
 #include "goom_stats.h"
 #include "goom_visual_fx.h"
+#include "goomutils/spimpl.h"
 
 #include <memory>
 #include <string>
@@ -23,19 +24,14 @@ class GoomDotsFx : public IVisualFx
 {
 public:
   GoomDotsFx() noexcept = delete;
-  explicit GoomDotsFx(const IGoomDraw* draw, const std::shared_ptr<const PluginInfo>&) noexcept;
-  GoomDotsFx(const GoomDotsFx&) noexcept = delete;
-  GoomDotsFx(GoomDotsFx&&) noexcept = delete;
-  ~GoomDotsFx() noexcept override;
-  auto operator=(const GoomDotsFx&) -> GoomDotsFx& = delete;
-  auto operator=(GoomDotsFx&&) -> GoomDotsFx& = delete;
+  explicit GoomDotsFx(const IGoomDraw& draw,
+                      const std::shared_ptr<const PluginInfo>& goomInfo,
+                      const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
   void SetResourcesDirectory(const std::string& dirName) override;
-
-  void SetSmallImageBitmaps(const UTILS::SmallImageBitmaps& smallBitmaps);
 
   void Start() override;
 
@@ -54,7 +50,7 @@ public:
 private:
   bool m_enabled = true;
   class GoomDotsFxImpl;
-  const std::unique_ptr<GoomDotsFxImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<GoomDotsFxImpl> m_fxImpl;
 };
 
 } // namespace GOOM

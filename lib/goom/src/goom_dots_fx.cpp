@@ -14,6 +14,7 @@
 #include "goomutils/mathutils.h"
 #include "goomutils/random_colormaps.h"
 #include "goomutils/random_colormaps_manager.h"
+#include "goomutils/spimpl.h"
 
 #include <cmath>
 #include <cstdint>
@@ -35,17 +36,12 @@ inline auto ChangeDotColorsEvent() -> bool
 class GoomDotsFx::GoomDotsFxImpl
 {
 public:
-  explicit GoomDotsFxImpl(const IGoomDraw* draw,
-                          const std::shared_ptr<const PluginInfo>& info) noexcept;
-  ~GoomDotsFxImpl() noexcept = default;
-  GoomDotsFxImpl(const GoomDotsFxImpl&) noexcept = delete;
-  GoomDotsFxImpl(GoomDotsFxImpl&&) noexcept = delete;
-  auto operator=(const GoomDotsFxImpl&) -> GoomDotsFxImpl& = delete;
-  auto operator=(GoomDotsFxImpl&&) -> GoomDotsFxImpl& = delete;
+  explicit GoomDotsFxImpl(const IGoomDraw& draw,
+                          const std::shared_ptr<const PluginInfo>& goomInfo,
+                          const SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
-  void SetSmallImageBitmaps(const SmallImageBitmaps& smallBitmaps);
 
   void Start();
 
@@ -55,8 +51,9 @@ public:
   void ApplyMultiple();
 
 private:
-  const IGoomDraw* const m_draw;
+  const IGoomDraw& m_draw;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
+  const SmallImageBitmaps& m_smallBitmaps;
   const uint32_t m_pointWidth;
   const uint32_t m_pointHeight;
 
@@ -66,11 +63,10 @@ private:
   const float m_pointHeightDiv3;
 
   std::string m_resourcesDirectory{};
-  const SmallImageBitmaps* m_smallBitmaps{};
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
   uint32_t m_numFlowersInRow = 0;
-  auto GetImageBitmap(size_t size) -> const ImageBitmap&;
+  auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
 
   static constexpr size_t MIN_DOT_SIZE = 3;
   static constexpr size_t MAX_DOT_SIZE = 21;
@@ -101,13 +97,12 @@ private:
   void SetNextCurrentBitmapName();
 };
 
-GoomDotsFx::GoomDotsFx(const IGoomDraw* const draw,
-                       const std::shared_ptr<const PluginInfo>& info) noexcept
-  : m_fxImpl{new GoomDotsFxImpl{draw, info}}
+GoomDotsFx::GoomDotsFx(const IGoomDraw& draw,
+                       const std::shared_ptr<const PluginInfo>& goomInfo,
+                       const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<GoomDotsFxImpl>(draw, goomInfo, smallBitmaps)}
 {
 }
-
-GoomDotsFx::~GoomDotsFx() noexcept = default;
 
 auto GoomDotsFx::GetResourcesDirectory() const -> const std::string&
 {
@@ -117,11 +112,6 @@ auto GoomDotsFx::GetResourcesDirectory() const -> const std::string&
 void GoomDotsFx::SetResourcesDirectory(const std::string& dirName)
 {
   m_fxImpl->SetResourcesDirectory(dirName);
-}
-
-void GoomDotsFx::SetSmallImageBitmaps(const SmallImageBitmaps& smallBitmaps)
-{
-  m_fxImpl->SetSmallImageBitmaps(smallBitmaps);
 }
 
 void GoomDotsFx::SetWeightedColorMaps(const uint32_t dotNum,
@@ -175,10 +165,12 @@ void GoomDotsFx::ApplyMultiple()
 }
 
 
-GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const IGoomDraw* const draw,
-                                           const std::shared_ptr<const PluginInfo>& info) noexcept
+GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const IGoomDraw& draw,
+                                           const std::shared_ptr<const PluginInfo>& goomInfo,
+                                           const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
-    m_goomInfo(info),
+    m_goomInfo(goomInfo),
+    m_smallBitmaps{smallBitmaps},
     m_pointWidth{(m_goomInfo->GetScreenInfo().width * 2) / 5},
     m_pointHeight{(m_goomInfo->GetScreenInfo().height * 2) / 5},
     m_pointWidthDiv2{static_cast<float>(m_pointWidth) / 2.0F},
@@ -203,15 +195,11 @@ void GoomDotsFx::GoomDotsFxImpl::SetResourcesDirectory(const std::string& dirNam
   m_resourcesDirectory = dirName;
 }
 
-inline void GoomDotsFx::GoomDotsFxImpl::SetSmallImageBitmaps(const SmallImageBitmaps& smallBitmaps)
+inline auto GoomDotsFx::GoomDotsFxImpl::GetImageBitmap(const size_t size) const
+    -> const ImageBitmap&
 {
-  m_smallBitmaps = &smallBitmaps;
-}
-
-inline auto GoomDotsFx::GoomDotsFxImpl::GetImageBitmap(const size_t size) -> const ImageBitmap&
-{
-  return m_smallBitmaps->GetImageBitmap(m_currentBitmapName,
-                                        stdnew::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
+  return m_smallBitmaps.GetImageBitmap(m_currentBitmapName,
+                                       stdnew::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
 void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
@@ -253,18 +241,18 @@ void GoomDotsFx::GoomDotsFxImpl::ApplyMultiple()
 void GoomDotsFx::GoomDotsFxImpl::Update()
 {
   uint32_t radius = MIN_DOT_SIZE / 2;
-  if ((m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() == 0) || ChangeDotColorsEvent())
+  if ((0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
   {
     ChangeColors();
-    radius = GetRandInRange(radius, MAX_DOT_SIZE / 2 + 1);
+    radius = GetRandInRange(radius, (MAX_DOT_SIZE / 2) + 1);
     SetNextCurrentBitmapName();
   }
 
   const float largeFactor = GetLargeSoundFactor(m_goomInfo->GetSoundInfo());
   const auto speedvarMult80Plus15 =
-      static_cast<uint32_t>(m_goomInfo->GetSoundInfo().GetSpeed() * 80.0F + 15.0F);
+      static_cast<uint32_t>((m_goomInfo->GetSoundInfo().GetSpeed() * 80.0F) + 15.0F);
   const auto speedvarMult50Plus1 =
-      static_cast<uint32_t>(m_goomInfo->GetSoundInfo().GetSpeed() * 50.0F + 1.0F);
+      static_cast<uint32_t>((m_goomInfo->GetSoundInfo().GetSpeed() * 50.0F) + 1.0F);
 
   const float pointWidthDiv2MultLarge = m_pointWidthDiv2 * largeFactor;
   const float pointHeightDiv2MultLarge = m_pointHeightDiv2 * largeFactor;
@@ -273,9 +261,9 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   const float pointWidthMultLarge = static_cast<float>(m_pointWidth) * largeFactor;
   const float pointHeightMultLarge = static_cast<float>(m_pointHeight) * largeFactor;
 
-  const float color0T1 = (static_cast<float>(m_pointWidth) - 6.0F) * largeFactor + 5.0F;
-  const float color0T2 = (static_cast<float>(m_pointHeight) - 6.0F) * largeFactor + 5.0F;
-  const float color3T1 = m_pointHeightDiv3 * largeFactor + 20.0F;
+  const float color0T1 = ((static_cast<float>(m_pointWidth) - 6.0F) * largeFactor) + 5.0F;
+  const float color0T2 = ((static_cast<float>(m_pointHeight) - 6.0F) * largeFactor) + 5.0F;
+  const float color3T1 = (m_pointHeightDiv3 * largeFactor) + 20.0F;
   const float color3T2 = color3T1;
 
   const size_t speedvarMult80Plus15Div15 = speedvarMult80Plus15 / 15;
@@ -284,7 +272,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   const float t_step = (T_MAX - T_MIN) / static_cast<float>(speedvarMult80Plus15Div15);
 
   float t = T_MIN;
-  for (uint32_t i = 1; i <= speedvarMult80Plus15Div15; i++)
+  for (uint32_t i = 1; i <= speedvarMult80Plus15Div15; ++i)
   {
     m_loopVar += speedvarMult50Plus1;
 
@@ -294,18 +282,18 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     const Pixel colors0 = m_colorMapsManagers[0].GetColorMap(m_colorMapIds[0]).GetColor(t);
     const float color0T3 = static_cast<float>(i) * 152.0F;
     const float color0T4 = 128.0F;
-    const uint32_t color0Cycle = m_loopVar + i * 2032;
+    const uint32_t color0Cycle = m_loopVar + (i * 2032);
 
     const Pixel colors1 = m_colorMapsManagers[1].GetColorMap(m_colorMapIds[1]).GetColor(t);
-    const float color1T1 = pointWidthDiv2MultLarge / static_cast<float>(i) + iMult10;
-    const float color1T2 = pointHeightDiv2MultLarge / static_cast<float>(i) + iMult10;
+    const float color1T1 = (pointWidthDiv2MultLarge / static_cast<float>(i)) + iMult10;
+    const float color1T2 = (pointHeightDiv2MultLarge / static_cast<float>(i)) + iMult10;
     const float color1T3 = 96.0F;
     const float color1T4 = static_cast<float>(i) * 80.0F;
     const uint32_t color1Cycle = loopvarDivI;
 
     const Pixel colors2 = m_colorMapsManagers[2].GetColorMap(m_colorMapIds[2]).GetColor(t);
-    const float color2T1 = pointWidthDiv3MultLarge / static_cast<float>(i) + iMult10;
-    const float color2T2 = pointHeightDiv3MultLarge / static_cast<float>(i) + iMult10;
+    const float color2T1 = (pointWidthDiv3MultLarge / static_cast<float>(i)) + iMult10;
+    const float color2T2 = (pointHeightDiv3MultLarge / static_cast<float>(i)) + iMult10;
     const float color2T3 = static_cast<float>(i) + 122.0F;
     const float color2T4 = 134.0F;
     const uint32_t color2Cycle = loopvarDivI;
@@ -320,7 +308,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     const float color4T2 = (pointHeightMultLarge + iMult10) / static_cast<float>(i);
     const float color4T3 = 66.0F;
     const float color4T4 = 74.0F;
-    const uint32_t color4Cycle = m_loopVar + i * 500;
+    const uint32_t color4Cycle = m_loopVar + (i * 500);
 
     DotFilter(colors0, color0T1, color0T2, color0T3, color0T4, color0Cycle, radius);
     DotFilter(colors1, color1T1, color1T2, color1T3, color1T4, color1Cycle, radius);
@@ -336,7 +324,7 @@ void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
 {
   if (m_numFlowersInRow > 0)
   {
-    m_numFlowersInRow++;
+    ++m_numFlowersInRow;
     if (m_numFlowersInRow > MAX_FLOWERS_IN_ROW)
     {
       m_numFlowersInRow = 0;
@@ -374,7 +362,7 @@ void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
 
 auto GoomDotsFx::GoomDotsFxImpl::GetLargeSoundFactor(const SoundInfo& soundInfo) -> float
 {
-  float largeFactor = soundInfo.GetSpeed() / 150.0F + soundInfo.GetVolume() / 1.5F;
+  float largeFactor = (soundInfo.GetSpeed() / 150.0F) + (soundInfo.GetVolume() / 1.5F);
   if (largeFactor > 1.5F)
   {
     largeFactor = 1.5F;
@@ -392,10 +380,10 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
 {
   const auto xOffset = static_cast<uint32_t>(t1 * std::cos(static_cast<float>(cycle) / t3));
   const auto yOffset = static_cast<uint32_t>(t2 * std::sin(static_cast<float>(cycle) / t4));
-  const auto x0 = static_cast<int32_t>(m_goomInfo->GetScreenInfo().width / 2 + xOffset);
-  const auto y0 = static_cast<int32_t>(m_goomInfo->GetScreenInfo().height / 2 + yOffset);
+  const auto x0 = static_cast<int32_t>((m_goomInfo->GetScreenInfo().width / 2) + xOffset);
+  const auto y0 = static_cast<int32_t>((m_goomInfo->GetScreenInfo().height / 2) + yOffset);
 
-  const uint32_t diameter = 2 * radius + 1; // must be odd
+  const uint32_t diameter = (2 * radius) + 1; // must be odd
   const auto screenWidthLessDiameter =
       static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - diameter);
   const auto screenHeightLessDiameter =
@@ -413,16 +401,15 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   const auto getColor1 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                              const Pixel& b) -> Pixel {
     // const Pixel newColor = x == xMid && y == yMid ? m_middleColor : color;
-    if (b.A() == 0)
+    if (0 == b.A())
     {
       return Pixel::BLACK;
     }
-    return GetGammaCorrection(BRIGHTNESS,
-                              GetColorMultiply(b, color, m_draw->GetAllowOverexposed()));
+    return GetGammaCorrection(BRIGHTNESS, GetColorMultiply(b, color, m_draw.GetAllowOverexposed()));
   };
   const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                              [[maybe_unused]] const Pixel& b) -> Pixel {
-    if (b.A() == 0)
+    if (0 == b.A())
     {
       return Pixel::BLACK;
     }
@@ -431,11 +418,11 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
 
   if (m_thereIsOneBuffer || m_useSingleBufferOnly)
   {
-    m_draw->Bitmap(xMid, yMid, GetImageBitmap(diameter), getColor1);
+    m_draw.Bitmap(xMid, yMid, GetImageBitmap(diameter), getColor1);
   }
   else
   {
-    m_draw->Bitmap(xMid, yMid, GetImageBitmap(diameter), {getColor1, getColor2});
+    m_draw.Bitmap(xMid, yMid, GetImageBitmap(diameter), {getColor1, getColor2});
   }
 }
 
@@ -443,7 +430,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetGammaCorrection(const float brightnes
                                                            const Pixel& color) const -> Pixel
 {
   // if constexpr (GAMMA == 1.0F)
-  if (GAMMA == 1.0F)
+  if (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color, true);
   }

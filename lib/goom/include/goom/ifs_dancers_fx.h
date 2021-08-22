@@ -3,6 +3,7 @@
 
 #include "goom_stats.h"
 #include "goom_visual_fx.h"
+#include "goomutils/spimpl.h"
 
 #include <memory>
 #include <string>
@@ -37,19 +38,14 @@ public:
   };
 
   IfsDancersFx() noexcept = delete;
-  explicit IfsDancersFx(const IGoomDraw* draw, const std::shared_ptr<const PluginInfo>&) noexcept;
-  IfsDancersFx(const IfsDancersFx&) noexcept = delete;
-  IfsDancersFx(IfsDancersFx&&) noexcept = delete;
-  ~IfsDancersFx() noexcept override;
-  auto operator=(const IfsDancersFx&) -> IfsDancersFx& = delete;
-  auto operator=(IfsDancersFx&&) -> IfsDancersFx& = delete;
+  explicit IfsDancersFx(const IGoomDraw& draw,
+                        const std::shared_ptr<const PluginInfo>& goomInfo,
+                        const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
   void SetResourcesDirectory(const std::string& dirName) override;
-
-  void SetSmallImageBitmaps(const UTILS::SmallImageBitmaps& smallBitmaps);
 
   void Init();
 
@@ -71,13 +67,13 @@ public:
   void ApplyNoDraw();
   void ApplyMultiple();
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const override;
+  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const override;
   void Finish() override;
 
 private:
   bool m_enabled = true;
   class IfsDancersFxImpl;
-  const std::unique_ptr<IfsDancersFxImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<IfsDancersFxImpl> m_fxImpl;
 };
 
 } // namespace GOOM

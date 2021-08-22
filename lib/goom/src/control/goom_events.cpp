@@ -44,9 +44,9 @@ GoomEvents::GoomEvents() noexcept
       { /*.event = */GoomEvent::CHANGE_ZOOM_FILTER_ALLOW_OVEREXPOSED_TO_ON, /*.m = */8, /*.outOf = */ 10 },
     }},
     m_weightedLineEvents{{
-      { LinesFx::LineType::circle, 10 },
-      { LinesFx::LineType::hline,   2 },
-      { LinesFx::LineType::vline,   2 },
+      { LinesFx::LineType::CIRCLE, 10 },
+      { LinesFx::LineType::H_LINE,  2 },
+      { LinesFx::LineType::V_LINE,  2 },
     }},
     // clang-format on
     //@formatter:on

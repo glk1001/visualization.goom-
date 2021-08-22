@@ -3,6 +3,7 @@
 
 #include "goom_stats.h"
 #include "goom_visual_fx.h"
+#include "goomutils/spimpl.h"
 
 #include <memory>
 #include <string>
@@ -23,19 +24,14 @@ class TubeFx : public IVisualFx
 {
 public:
   TubeFx() noexcept = delete;
-  explicit TubeFx(const IGoomDraw* draw, const std::shared_ptr<const PluginInfo>&) noexcept;
-  TubeFx(const TubeFx&) noexcept = delete;
-  TubeFx(TubeFx&&) noexcept = delete;
-  ~TubeFx() noexcept override;
-  auto operator=(const TubeFx&) -> TubeFx& = delete;
-  auto operator=(TubeFx&&) -> TubeFx& = delete;
+  explicit TubeFx(const IGoomDraw& draw,
+                  const std::shared_ptr<const PluginInfo>& goomInfo,
+                  const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
   void SetResourcesDirectory(const std::string& dirName) override;
-
-  void SetSmallImageBitmaps(const UTILS::SmallImageBitmaps& smallBitmaps);
 
   void Start() override;
 
@@ -48,13 +44,13 @@ public:
   void ApplyNoDraw();
   void ApplyMultiple();
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const override;
+  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const override;
   void Finish() override;
 
 private:
   bool m_enabled = true;
   class TubeFxImpl;
-  const std::unique_ptr<TubeFxImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<TubeFxImpl> m_fxImpl;
 };
 
 } // namespace GOOM

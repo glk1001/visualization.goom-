@@ -3,6 +3,7 @@
 
 #include "goom_stats.h"
 #include "goom_visual_fx.h"
+#include "goomutils/spimpl.h"
 
 #include <cstdint>
 #include <memory>
@@ -30,12 +31,9 @@ class ZoomFilterFx : public IVisualFx
 {
 public:
   ZoomFilterFx() noexcept = delete;
-  ZoomFilterFx(UTILS::Parallel&, const std::shared_ptr<const PluginInfo>&) noexcept;
-  ZoomFilterFx(const ZoomFilterFx&) noexcept = delete;
-  ZoomFilterFx(ZoomFilterFx&&) noexcept = delete;
-  ~ZoomFilterFx() noexcept override;
-  auto operator=(const ZoomFilterFx&) -> ZoomFilterFx& = delete;
-  auto operator=(ZoomFilterFx&&) -> ZoomFilterFx& = delete;
+  ZoomFilterFx(UTILS::Parallel&,
+               const std::shared_ptr<const PluginInfo>&,
+               FILTERS::IZoomVector& zoomVector) noexcept;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
   void SetResourcesDirectory(const std::string& dirName) override;
@@ -44,7 +42,6 @@ public:
   void SetBuffSettings(const FXBuffSettings& settings);
 
   auto GetZoomVector() const -> FILTERS::IZoomVector&;
-  void SetZoomVector(FILTERS::IZoomVector& zoomVector);
 
   void Start() override;
 
@@ -68,7 +65,7 @@ public:
 private:
   bool m_enabled = true;
   class ZoomFilterImpl;
-  const std::unique_ptr<ZoomFilterImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<ZoomFilterImpl> m_fxImpl;
 };
 
 } // namespace GOOM

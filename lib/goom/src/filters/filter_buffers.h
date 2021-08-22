@@ -48,16 +48,13 @@ public:
     TRAN_BUFFERS_READY,
   };
 
-  ZoomFilterBuffers(UTILS::Parallel& p, const std::shared_ptr<const PluginInfo>& goomInfo);
-  ZoomFilterBuffers(const ZoomFilterBuffers&) noexcept = delete;
-  ZoomFilterBuffers(ZoomFilterBuffers&&) noexcept = delete;
-  ~ZoomFilterBuffers() noexcept;
-  auto operator=(const ZoomFilterBuffers&) -> ZoomFilterBuffers& = delete;
-  auto operator=(ZoomFilterBuffers&&) -> ZoomFilterBuffers& = delete;
-
   using ZoomPointFunc = std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords)>;
+
+  ZoomFilterBuffers(UTILS::Parallel& p,
+                    const std::shared_ptr<const PluginInfo>& goomInfo,
+                    const ZoomPointFunc& zoomPointFunc);
+
   [[nodiscard]] auto GetZoomPointFunc() const -> ZoomPointFunc;
-  void SetZoomPointFunc(const ZoomPointFunc& f);
 
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
   void SetTranLerpFactor(int32_t val);
@@ -83,7 +80,17 @@ private:
   const uint32_t m_screenHeight;
   const uint32_t m_bufferSize;
 
-  class FilterCoefficients;
+  class FilterCoefficients
+  {
+  public:
+    FilterCoefficients() noexcept;
+    [[nodiscard]] auto GetCoeffs() const -> const FilterCoeff2dArray&;
+
+  private:
+    // modif d'optim by Jeko : precalcul des 4 coeffs resultant des 2 pos
+    const FilterCoeff2dArray m_precalculatedCoeffs{GetPrecalculatedCoefficients()};
+    [[nodiscard]] static auto GetPrecalculatedCoefficients() -> FilterCoeff2dArray;
+  };
   const std::unique_ptr<const FilterCoefficients> m_precalculatedCoeffs;
 
   [[nodiscard]] auto GetMaxTranX() const -> uint32_t;
@@ -92,9 +99,8 @@ private:
   [[nodiscard]] static auto NormalizedToTranPoint(const NormalizedCoords& normalizedPoint)
       -> V2dInt;
 
-  UTILS::Parallel* const m_parallel;
-
-  ZoomPointFunc m_getZoomPoint{};
+  UTILS::Parallel& m_parallel;
+  const ZoomPointFunc m_getZoomPoint;
 
   V2dInt m_buffMidPoint{};
   bool m_filterSettingsHaveChanged = false;
@@ -179,9 +185,9 @@ inline auto ZoomFilterBuffers::GetTranBuffYLineStart() const -> uint32_t
 
 inline auto ZoomFilterBuffers::IsTranPointClipped(const V2dInt& tranPoint) const -> bool
 {
-  return tranPoint.x < 0 || tranPoint.y < 0 ||
-         static_cast<uint32_t>(tranPoint.x) >= GetMaxTranX() ||
-         static_cast<uint32_t>(tranPoint.y) >= GetMaxTranY();
+  return (tranPoint.x < 0) || (tranPoint.y < 0) ||
+         (static_cast<uint32_t>(tranPoint.x) >= GetMaxTranX()) ||
+         (static_cast<uint32_t>(tranPoint.y) >= GetMaxTranY());
 }
 
 inline auto ZoomFilterBuffers::GetZoomBufferSrceDestLerp(const size_t buffPos) const -> V2dInt

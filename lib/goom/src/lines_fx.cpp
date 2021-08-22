@@ -2,7 +2,7 @@
  *  Goom
  *  Copyright (c) 2000-2003 iOS-software. All rights reserved.
  *
- *	- converted to C++14 2021-02-01 (glk)
+ *  - converted to C++14 2021-02-01 (glk)
  */
 
 #include "lines_fx.h"
@@ -22,6 +22,7 @@
 #include "goomutils/logging.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/random_colormaps.h"
+#include "goomutils/spimpl.h"
 #include "sound_info.h"
 #include "stats/line_stats.h"
 #include "v2d.h"
@@ -68,8 +69,9 @@ public:
   ~LinesImpl() noexcept = default;
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
-  LinesImpl(const IGoomDraw* draw,
-            std::shared_ptr<const PluginInfo> goomInfo,
+  LinesImpl(const IGoomDraw& draw,
+            std::shared_ptr<const PluginInfo> info,
+            const SmallImageBitmaps& smallBitmaps,
             LineType srceLineType,
             float srceParam,
             const Pixel& srceColor,
@@ -84,7 +86,6 @@ public:
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
 
-  void SetSmallImageBitmaps(const SmallImageBitmaps& smallBitmaps);
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
 
   void Start();
@@ -108,8 +109,9 @@ public:
   void Finish();
 
 private:
-  const IGoomDraw* const m_draw;
+  const IGoomDraw& m_draw;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
+  const SmallImageBitmaps& m_smallBitmaps;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   const IColorMap* m_currentColorMap{};
   std::string m_resourcesDirectory{};
@@ -131,7 +133,7 @@ private:
   std::vector<LinePoint> m_srcePointsCopy{};
   LineType m_srcLineType;
   std::vector<LinePoint> m_destPoints{};
-  LineType m_destLineType = LineType::circle;
+  LineType m_destLineType = LineType::CIRCLE;
   static constexpr float LINE_LERP_FINISHED_VAL = 1.1F;
   static constexpr float LINE_LERP_INC = 1.0F / static_cast<float>(MIN_LINE_DURATION - 1);
   float m_lineLerpFactor = 0.0;
@@ -155,8 +157,7 @@ private:
   size_t m_currentDotSize = MIN_IMAGE_DOT_SIZE;
   bool m_beadedLook = false;
   [[nodiscard]] static auto GetNextDotSize(size_t maxSize) -> size_t;
-  const SmallImageBitmaps* m_smallBitmaps{};
-  [[nodiscard]] auto GetImageBitmap(size_t size) -> const ImageBitmap&;
+  [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
 
   // pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera
   Pixel m_color1{};
@@ -181,20 +182,26 @@ private:
   static void SmoothCircleJoin(std::vector<PointAndColor>& audioPoints);
 };
 
-LinesFx::LinesFx(const IGoomDraw* const draw,
+LinesFx::LinesFx(const IGoomDraw& draw,
                  const std::shared_ptr<const PluginInfo>& goomInfo,
+                 const SmallImageBitmaps& smallBitmaps,
                  const LineType srceLineType,
                  const float srceParam,
                  const Pixel& srceColor,
                  const LineType destLineType,
                  const float destParam,
                  const Pixel& destColor) noexcept
-  : m_fxImpl{std::make_unique<LinesImpl>(
-        draw, goomInfo, srceLineType, srceParam, srceColor, destLineType, destParam, destColor)}
+  : m_fxImpl{spimpl::make_unique_impl<LinesImpl>(draw,
+                                                 goomInfo,
+                                                 smallBitmaps,
+                                                 srceLineType,
+                                                 srceParam,
+                                                 srceColor,
+                                                 destLineType,
+                                                 destParam,
+                                                 destColor)}
 {
 }
-
-LinesFx::~LinesFx() noexcept = default;
 
 auto LinesFx::GetResourcesDirectory() const -> const std::string&
 {
@@ -209,11 +216,6 @@ void LinesFx::SetResourcesDirectory(const std::string& dirName)
 void LinesFx::SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
-}
-
-void LinesFx::SetSmallImageBitmaps(const SmallImageBitmaps& smallBitmaps)
-{
-  m_fxImpl->SetSmallImageBitmaps(smallBitmaps);
 }
 
 void LinesFx::Start()
@@ -265,8 +267,9 @@ void LinesFx::DrawLines(const std::vector<int16_t>& soundData,
   m_fxImpl->DrawLines(soundData, soundMinMax);
 }
 
-LinesFx::LinesImpl::LinesImpl(const IGoomDraw* const draw,
-                              std::shared_ptr<const PluginInfo> info,
+LinesFx::LinesImpl::LinesImpl(const IGoomDraw& draw,
+                              std::shared_ptr<const PluginInfo> goomInfo,
+                              const SmallImageBitmaps& smallBitmaps,
                               const LineType srceLineType,
                               const float srceParam,
                               const Pixel& srceColor,
@@ -274,7 +277,8 @@ LinesFx::LinesImpl::LinesImpl(const IGoomDraw* const draw,
                               const float destParam,
                               const Pixel& destColor)
   : m_draw{draw},
-    m_goomInfo{std::move(info)},
+    m_goomInfo{std::move(goomInfo)},
+    m_smallBitmaps{smallBitmaps},
     m_colorMaps{GetAllSlimMaps()},
     m_srcePoints(AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AUDIO_SAMPLE_LEN),
@@ -323,7 +327,7 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
 
   switch (lineType)
   {
-    case LineType::hline:
+    case LineType::H_LINE:
     {
       const float xStep = static_cast<float>(m_goomInfo->GetScreenInfo().width - 1) /
                           static_cast<float>(AUDIO_SAMPLE_LEN - 1);
@@ -338,7 +342,7 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
       }
       return;
     }
-    case LineType::vline:
+    case LineType::V_LINE:
     {
       const float yStep = static_cast<float>(m_goomInfo->GetScreenInfo().height - 1) /
                           static_cast<float>(AUDIO_SAMPLE_LEN - 1);
@@ -353,28 +357,28 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
       }
       return;
     }
-    case LineType::circle:
+    case LineType::CIRCLE:
     {
       const float cx = 0.5F * static_cast<float>(m_goomInfo->GetScreenInfo().width);
       const float cy = 0.5F * static_cast<float>(m_goomInfo->GetScreenInfo().height);
       // Make sure the circle joins at each end so use symmetry about x-axis.
-      static_assert(AUDIO_SAMPLE_LEN % 2 == 0, "AUDIO_SAMPLE_LEN must divide by 2");
-      const float angleStep = m_pi / (0.5F * static_cast<float>(AUDIO_SAMPLE_LEN) - 1.0F);
+      static_assert(0 == (AUDIO_SAMPLE_LEN % 2), "AUDIO_SAMPLE_LEN must divide by 2");
+      const float angleStep = m_pi / ((0.5F * static_cast<float>(AUDIO_SAMPLE_LEN)) - 1.0F);
       float angle = 0;
-      for (size_t i = 0; i < AUDIO_SAMPLE_LEN / 2; i++)
+      for (size_t i = 0; i < (AUDIO_SAMPLE_LEN / 2); ++i)
       {
         line[i].angle = angle;
-        line[i].x = cx + lineParam * std::cos(angle);
-        line[i].y = cy + lineParam * std::sin(angle);
+        line[i].x = cx + (lineParam * std::cos(angle));
+        line[i].y = cy + (lineParam * std::sin(angle));
         angle += angleStep;
       }
       size_t j = AUDIO_SAMPLE_LEN - 1;
-      for (size_t i = 0; i < AUDIO_SAMPLE_LEN / 2; i++)
+      for (size_t i = 0; i < (AUDIO_SAMPLE_LEN / 2); ++i)
       {
         line[j].angle = m_two_pi - line[i].angle;
         line[j].x = line[i].x;
-        line[j].y = 2.0F * cy - line[i].y;
-        j--;
+        line[j].y = (2.0F * cy) - line[i].y;
+        --j;
       }
 
       assert(floats_equal(line[0].x, line[line.size() - 1].x));
@@ -391,7 +395,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
 {
   m_lineLerpFactor += LINE_LERP_INC;
   const float t = std::min(1.0F, m_lineLerpFactor);
-  for (uint32_t i = 0; i < AUDIO_SAMPLE_LEN; i++)
+  for (uint32_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
   {
     m_srcePoints[i].x = stdnew::lerp(m_srcePointsCopy[i].x, m_destPoints[i].x, t);
     m_srcePoints[i].y = stdnew::lerp(m_srcePointsCopy[i].y, m_destPoints[i].y, t);
@@ -403,7 +407,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
     m_currentBrightness = GetRandInRange(2.0F, 3.0F);
   }
 
-  assert(m_srcLineType != LineType::circle || m_lineLerpFactor < 1.0F ||
+  assert(m_srcLineType != LineType::CIRCLE || m_lineLerpFactor < 1.0F ||
          (floats_equal(m_srcePoints[0].x, m_srcePoints[AUDIO_SAMPLE_LEN - 1].x) &&
           floats_equal(m_srcePoints[0].y, m_srcePoints[AUDIO_SAMPLE_LEN - 1].y)));
 
@@ -464,16 +468,10 @@ inline void LinesFx::LinesImpl::SetResourcesDirectory(const std::string& dirName
   m_resourcesDirectory = dirName;
 }
 
-inline void LinesFx::LinesImpl::SetSmallImageBitmaps(const SmallImageBitmaps& smallBitmaps)
+inline auto LinesFx::LinesImpl::GetImageBitmap(const size_t size) const -> const ImageBitmap&
 {
-  m_smallBitmaps = &smallBitmaps;
-}
-
-inline auto LinesFx::LinesImpl::GetImageBitmap(const size_t size) -> const ImageBitmap&
-{
-  return m_smallBitmaps->GetImageBitmap(
-      SmallImageBitmaps::ImageNames::CIRCLE,
-      stdnew::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
+  return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
+                                       stdnew::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
 }
 
 inline auto LinesFx::LinesImpl::GetPower() const -> float
@@ -546,17 +544,17 @@ auto LinesFx::LinesImpl::GetRandomLineColor() const -> Pixel
 auto SimpleMovingAverage(const std::vector<int16_t>& x, const uint32_t winLen) -> std::vector<float>
 {
   int32_t temp = 0;
-  for (size_t i = 0; i < winLen - 1; i++)
+  for (size_t i = 0; i < (winLen - 1); ++i)
   {
     temp += x[i];
   }
 
   std::vector<float> result{};
-  result.reserve(AUDIO_SAMPLE_LEN - winLen + 1);
-  for (size_t i = 0; i < AUDIO_SAMPLE_LEN - winLen + 1; i++)
+  result.reserve((AUDIO_SAMPLE_LEN - winLen) + 1);
+  for (size_t i = 0; i < ((AUDIO_SAMPLE_LEN - winLen) + 1); ++i)
   {
-    temp += x[winLen - 1 + i];
-    result.push_back(static_cast<float>(temp) / winLen);
+    temp += x[(winLen - 1) + i];
+    result.push_back(static_cast<float>(temp) / static_cast<float>(winLen));
     temp -= x[i];
   }
 
@@ -581,7 +579,7 @@ void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
 
   constexpr size_t LAST_POINT_INDEX = AUDIO_SAMPLE_LEN - 1;
 
-  assert(m_srcLineType != LineType::circle || m_lineLerpFactor < 1.0F ||
+  assert(m_srcLineType != LineType::CIRCLE || m_lineLerpFactor < 1.0F ||
          (floats_equal(m_srcePoints[0].x, m_srcePoints[LAST_POINT_INDEX].x) &&
           floats_equal(m_srcePoints[0].y, m_srcePoints[LAST_POINT_INDEX].y)));
 
@@ -597,8 +595,8 @@ void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
   {
     // No range - flatline audio
     const std::vector<Pixel> colors = {lineColor, lineColor};
-    m_draw->Line(static_cast<int>(pt0.x), static_cast<int>(pt0.y), static_cast<int>(ptN.x),
-                 static_cast<int>(pt0.y), colors, 1);
+    m_draw.Line(static_cast<int>(pt0.x), static_cast<int>(pt0.y), static_cast<int>(ptN.x),
+                static_cast<int>(pt0.y), colors, 1);
     MoveSrceLineCloserToDest();
     return;
   }
@@ -610,7 +608,7 @@ void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
   V2dInt point1 = audioPoints[0].point;
   V2dInt point2{};
 
-  for (size_t i = 1; i < audioPoints.size(); i++)
+  for (size_t i = 1; i < audioPoints.size(); ++i)
   {
     const PointAndColor& nextPointData = audioPoints[i];
 
@@ -618,7 +616,7 @@ void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
     const Pixel modColor = nextPointData.color;
     const std::vector<Pixel> colors = {lineColor, modColor};
 
-    m_draw->Line(point1.x, point1.y, point2.x, point2.y, colors, THICKNESS);
+    m_draw.Line(point1.x, point1.y, point2.x, point2.y, colors, THICKNESS);
     DrawDots(point2, colors);
 
     point1 = point2;
@@ -652,7 +650,7 @@ void LinesFx::LinesImpl::DrawDots(const V2dInt& pt, const std::vector<Pixel>& co
     };
     const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getModColor, getLineColor};
     const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
-    m_draw->Bitmap(pt.x, pt.y, bitmap, getColors, false);
+    m_draw.Bitmap(pt.x, pt.y, bitmap, getColors, false);
   }
 }
 
@@ -670,7 +668,7 @@ auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,
   std::vector<PointAndColor> audioPoints{};
   audioPoints.reserve(audioData.size());
 
-  for (size_t i = 0; i < audioData.size(); i++)
+  for (size_t i = 0; i < audioData.size(); ++i)
   {
     audioPoints.emplace_back(
         GetNextPointData(m_srcePoints[i], GetMainColor(lineColor, t), randColor, audioData[i]));
@@ -682,7 +680,7 @@ auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,
     t += currentTStep;
   }
 
-  if (m_srcLineType == LineType::circle && m_lineLerpFactor >= 1.0F)
+  if ((m_srcLineType == LineType::CIRCLE) && (m_lineLerpFactor >= 1.0F))
   {
     // It's a complete circle - lerp the last few points to nicely join back to start.
     SmoothCircleJoin(audioPoints);
@@ -700,14 +698,14 @@ void LinesFx::LinesImpl::SmoothCircleJoin(std::vector<PointAndColor>& audioPoint
 
   const size_t lastPointIndex = audioPoints.size() - 1;
   const V2dInt endDiff = audioPoints[0].point - audioPoints[lastPointIndex].point;
-  if (endDiff.x == 0 && endDiff.y == 0)
+  if ((0 == endDiff.x) && (0 == endDiff.y))
   {
     return;
   }
 
   V2dInt diff = endDiff;
   float t = 1.0F - T_STEP;
-  for (size_t i = lastPointIndex; i > audioPoints.size() - NUM_POINTS_TO_LERP; i--)
+  for (size_t i = lastPointIndex; i > (audioPoints.size() - NUM_POINTS_TO_LERP); --i)
   {
     audioPoints[i].point += diff;
 
@@ -731,9 +729,9 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
   const float sinAngle = std::sin(pt.angle);
   const float normalizedDataVal = GetNormalizedData(dataVal);
   assert(normalizedDataVal >= 0.0);
-  const V2dInt nextPointData{static_cast<int>(pt.x + m_amplitude * cosAngle * normalizedDataVal),
-                             static_cast<int>(pt.y + m_amplitude * sinAngle * normalizedDataVal)};
-  const float tData = normalizedDataVal / static_cast<float>(m_maxNormalizedPeak);
+  const V2dInt nextPointData{static_cast<int>(pt.x + (m_amplitude * cosAngle * normalizedDataVal)),
+                             static_cast<int>(pt.y + (m_amplitude * sinAngle * normalizedDataVal))};
+  const float tData = normalizedDataVal / m_maxNormalizedPeak;
   const float brightness = m_currentBrightness * tData;
   const Pixel modColor =
       GetGammaCorrection(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
@@ -744,7 +742,7 @@ inline auto LinesFx::LinesImpl::GetGammaCorrection(const float brightness, const
     -> Pixel
 {
   // if constexpr (GAMMA == 1.0F)
-  if (GAMMA == 1.0F)
+  if (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color, true);
   }
@@ -763,7 +761,7 @@ inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float
 
 inline auto LinesFx::LinesImpl::GetNormalizedData(const float data) const -> float
 {
-  return m_maxNormalizedPeak * (data - m_minAudioValue) / m_audioRange;
+  return (m_maxNormalizedPeak * (data - m_minAudioValue)) / m_audioRange;
 }
 
 inline auto LinesFx::LinesImpl::GetNextDotSize(const size_t maxSize) -> size_t
