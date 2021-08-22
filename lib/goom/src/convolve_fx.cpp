@@ -131,6 +131,9 @@ inline void ConvolveFx::ConvolveImpl::SetAllowOverexposed(const bool val)
 
 void ConvolveFx::ConvolveImpl::Convolve(const PixelBuffer& currentBuff, PixelBuffer& outputBuff)
 {
+  currentBuff.CopyTo(outputBuff);
+  return;
+
   const float flash = (m_factor * m_flashIntensity + m_screenBrightness) / 100.0F;
   const auto flashInt = static_cast<uint32_t>(std::round(flash * 256 + 0.0001F));
   constexpr float INCREASE_RATE = 1.3F;
