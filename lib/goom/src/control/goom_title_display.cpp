@@ -240,7 +240,7 @@ auto GoomTitleDisplay::GetXIncrement() const -> float
     return 1.0F;
   }
 
-  return 10.0F;
+  return 7.0F;
 }
 
 auto GoomTitleDisplay::GetYIncrement() const -> float
