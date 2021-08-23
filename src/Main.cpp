@@ -513,7 +513,7 @@ void CVisualizationGoom::UpdateGoomBuffer(const std::string& title,
                                           std::shared_ptr<PixelBuffer>& pixels)
 {
   const GOOM::AudioSamples audioData{m_channels, floatAudioData.data()};
-  m_goomControl->SetScreenBuffer(*pixels);
+  m_goomControl->SetScreenBuffer(pixels);
   m_goomControl->Update(audioData, 0.0F, title, "");
 }
 

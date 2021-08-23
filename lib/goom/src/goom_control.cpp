@@ -214,8 +214,7 @@ public:
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
 
-  [[nodiscard]] auto GetScreenBuffer() const -> PixelBuffer&;
-  void SetScreenBuffer(PixelBuffer& buff);
+  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& pixels);
 
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
@@ -400,7 +399,7 @@ void GoomControl::SetResourcesDirectory(const std::string& dirName)
   m_controller->SetResourcesDirectory(dirName);
 }
 
-void GoomControl::SetScreenBuffer(PixelBuffer& buffer)
+void GoomControl::SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer)
 {
   m_controller->SetScreenBuffer(buffer);
 }
@@ -491,12 +490,7 @@ inline auto GoomControl::GoomControlImpl::GetFontDirectory() const
   return m_resourcesDirectory + PATH_SEP + FONTS_DIR;
 }
 
-auto GoomControl::GoomControlImpl::GetScreenBuffer() const -> PixelBuffer&
-{
-  return m_imageBuffers.GetOutputBuff();
-}
-
-void GoomControl::GoomControlImpl::SetScreenBuffer(PixelBuffer& buffer)
+void GoomControl::GoomControlImpl::SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer)
 {
   m_imageBuffers.SetOutputBuff(buffer);
 }

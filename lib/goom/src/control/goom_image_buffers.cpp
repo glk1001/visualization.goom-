@@ -15,23 +15,20 @@ namespace GOOM::CONTROL
 {
 #endif
 
-
-GoomImageBuffers::GoomImageBuffers(const uint32_t width, const uint32_t height) noexcept
+auto GoomImageBuffers::GetBuffs(const uint32_t width, const uint32_t height)
+    -> std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS>
 {
-  SetResolution(width, height);
-}
-
-GoomImageBuffers::~GoomImageBuffers() noexcept = default;
-
-void GoomImageBuffers::SetResolution(const uint32_t width, const uint32_t height)
-{
-  for (auto& b : m_buffs)
+  std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS> buffs{};
+  for (auto& b : buffs)
   {
     b = std::make_unique<PixelBuffer>(width, height);
   }
+  return buffs;
+}
 
-  m_p1 = m_buffs[0].get();
-  m_p2 = m_buffs[1].get();
+GoomImageBuffers::GoomImageBuffers(const uint32_t width, const uint32_t height) noexcept
+  : m_buffs{GetBuffs(width, height)}, m_p1{*m_buffs[0]}, m_p2{*m_buffs[1]}
+{
 }
 
 void GoomImageBuffers::RotateBuffers()

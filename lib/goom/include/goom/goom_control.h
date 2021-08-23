@@ -32,7 +32,7 @@ public:
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
 
-  void SetScreenBuffer(PixelBuffer& buff);
+  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
   void Start();
 
   /*
