@@ -300,7 +300,7 @@ void TentaclesFx::TentaclesImpl::SetDriverRandomColorMaps()
 {
   for (auto& drv : m_drivers)
   {
-    drv->SetWeightedColorMaps(*m_colorMaps);
+    drv->SetWeightedColorMaps(m_colorMaps);
   }
 }
 

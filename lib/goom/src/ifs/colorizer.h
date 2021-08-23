@@ -26,11 +26,6 @@ class Colorizer
 {
 public:
   Colorizer() noexcept;
-  ~Colorizer() noexcept = default;
-  Colorizer(const Colorizer&) = delete;
-  Colorizer(const Colorizer&&) = delete;
-  auto operator=(const Colorizer&) -> Colorizer& = delete;
-  auto operator=(const Colorizer&&) -> Colorizer& = delete;
 
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
 

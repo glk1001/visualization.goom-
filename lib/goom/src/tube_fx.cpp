@@ -117,7 +117,6 @@ public:
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
-  void SetSmallImageBitmaps(const SmallImageBitmaps& smallBitmaps);
 
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
@@ -346,7 +345,7 @@ inline void TubeFx::TubeFxImpl::SetWeightedColorMaps(
 
   for (auto& tube : m_tubes)
   {
-    tube.SetWeightedColorMaps(m_colorMaps.get());
+    tube.SetWeightedColorMaps(m_colorMaps);
   }
 }
 
@@ -357,7 +356,7 @@ inline void TubeFx::TubeFxImpl::SetWeightedLowColorMaps(
 
   for (auto& tube : m_tubes)
   {
-    tube.SetWeightedLowColorMaps(m_lowColorMaps.get());
+    tube.SetWeightedLowColorMaps(m_lowColorMaps);
   }
 }
 
@@ -391,14 +390,13 @@ void TubeFx::TubeFxImpl::InitTubes()
   };
 
   m_tubes.emplace_back(MAIN_TUBE_INDEX, drawToManyFuncs, m_draw.GetScreenWidth(),
-                       m_draw.GetScreenHeight(), m_colorMaps.get(), m_lowColorMaps.get(),
+                       m_draw.GetScreenHeight(), m_colorMaps, m_lowColorMaps,
                        TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
                        TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor);
   for (uint32_t i = SECONDARY_TUBES_START_INDEX; i < NUM_TUBES; ++i)
   {
     m_tubes.emplace_back(i, drawToOneFuncs, m_draw.GetScreenWidth(), m_draw.GetScreenHeight(),
-                         m_colorMaps.get(), m_lowColorMaps.get(),
-                         TUBE_SETTINGS.at(i).radiusEdgeOffset,
+                         m_colorMaps, m_lowColorMaps, TUBE_SETTINGS.at(i).radiusEdgeOffset,
                          TUBE_SETTINGS.at(i).brightnessFactor);
   }
 

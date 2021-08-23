@@ -28,11 +28,6 @@ public:
   explicit NormalizedCoords(const V2dInt& screenCoords) noexcept;
   explicit NormalizedCoords(const V2dFlt& normalized) noexcept;
   NormalizedCoords(float xNormalized, float yNormalized) noexcept;
-  NormalizedCoords(const NormalizedCoords& other) noexcept;
-  NormalizedCoords(NormalizedCoords&& other) noexcept;
-  ~NormalizedCoords() noexcept = default;
-  auto operator=(const NormalizedCoords& other) -> NormalizedCoords&;
-  auto operator=(NormalizedCoords&& other) noexcept -> NormalizedCoords&;
 
   [[nodiscard]] auto GetScreenCoordsFlt() const -> V2dFlt;
 
@@ -80,7 +75,7 @@ inline auto NormalizedCoords::ScreenToNormalizedCoords(const V2dInt& screenCoord
 
 inline auto NormalizedCoords::ScreenToNormalizedCoord(const int32_t screenCoord) -> float
 {
-  return MIN_NORMALIZED_COORD + s_ratioScreenToNormalizedCoord * static_cast<float>(screenCoord);
+  return MIN_NORMALIZED_COORD + (s_ratioScreenToNormalizedCoord * static_cast<float>(screenCoord));
 }
 
 inline auto NormalizedCoords::GetMinNormalizedCoordVal() -> float
@@ -118,14 +113,6 @@ inline NormalizedCoords::NormalizedCoords(const float xNormalized, const float y
   : m_normalizedCoords{xNormalized, yNormalized}
 {
 }
-
-inline NormalizedCoords::NormalizedCoords(const NormalizedCoords& other) noexcept = default;
-
-inline NormalizedCoords::NormalizedCoords(NormalizedCoords&& other) noexcept = default;
-
-inline auto NormalizedCoords::operator=(const NormalizedCoords&) -> NormalizedCoords& = default;
-
-inline auto NormalizedCoords::operator=(NormalizedCoords&&) noexcept -> NormalizedCoords& = default;
 
 inline auto NormalizedCoords::GetScreenCoordsFlt() const -> V2dFlt
 {
@@ -169,7 +156,7 @@ inline auto NormalizedCoords::operator-=(const NormalizedCoords& other) -> Norma
   return *this;
 }
 
-inline auto NormalizedCoords::operator*=(float scalar) -> NormalizedCoords&
+inline auto NormalizedCoords::operator*=(const float scalar) -> NormalizedCoords&
 {
   m_normalizedCoords *= scalar;
   return *this;

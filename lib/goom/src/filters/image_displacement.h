@@ -1,6 +1,7 @@
 #ifndef VISUALIZATION_GOOM_IMAGE_DISPLACEMENT_H
 #define VISUALIZATION_GOOM_IMAGE_DISPLACEMENT_H
 
+#include "goomutils/graphics/image_bitmaps.h"
 #include "v2d.h"
 
 #include <memory>
@@ -9,12 +10,6 @@
 
 namespace GOOM
 {
-
-namespace UTILS
-{
-class ImageBitmap;
-} // namespace UTILS
-
 namespace FILTERS
 {
 
@@ -22,11 +17,6 @@ class ImageDisplacement
 {
 public:
   explicit ImageDisplacement(const std::string& imageFilename);
-  ImageDisplacement(const ImageDisplacement&) noexcept = delete;
-  ImageDisplacement(ImageDisplacement&&) noexcept = delete;
-  virtual ~ImageDisplacement() noexcept;
-  auto operator=(const ImageDisplacement&) -> ImageDisplacement& = delete;
-  auto operator=(ImageDisplacement&&) -> ImageDisplacement& = delete;
 
   auto GetImageFilename() const -> std::string;
   auto GetXColorCutoff() const -> float;
@@ -71,7 +61,7 @@ inline auto ImageDisplacement::GetYColorCutoff() const -> float
   return m_yColorCutoff;
 }
 
-inline void ImageDisplacement::SetXyColorCutoffs(float xColorCutoff, float yColorCutoff)
+inline void ImageDisplacement::SetXyColorCutoffs(const float xColorCutoff, const float yColorCutoff)
 {
   m_xColorCutoff = xColorCutoff;
   m_yColorCutoff = yColorCutoff;

@@ -24,11 +24,6 @@ public:
   GoomDrawToMany(uint32_t screenWidth,
                  uint32_t screenHeight,
                  const std::vector<const IGoomDraw*>& manyDraws);
-  GoomDrawToMany(const GoomDrawToMany&) noexcept = delete;
-  GoomDrawToMany(GoomDrawToMany&&) noexcept = delete;
-  ~GoomDrawToMany() noexcept override;
-  auto operator=(const GoomDrawToMany&) -> GoomDrawToMany& = delete;
-  auto operator=(GoomDrawToMany&&) -> GoomDrawToMany& = delete;
 
   auto GetPixel(int32_t x, int32_t y) const -> Pixel override;
   void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) const override;

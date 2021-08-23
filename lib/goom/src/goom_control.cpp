@@ -1890,7 +1890,7 @@ void GoomControl::GoomControlImpl::DisplayTitle(const std::string& songTitle,
     const auto yPos = static_cast<int>(0.300F * static_cast<float>(GetScreenHeight()));
 
     m_goomTitleDisplay =
-        std::make_unique<GoomTitleDisplay>(xPos, yPos, GetFontDirectory(), &m_goomTextOutput);
+        std::make_unique<GoomTitleDisplay>(xPos, yPos, GetFontDirectory(), m_goomTextOutput);
   }
 
   if (m_goomTitleDisplay != nullptr && !m_goomTitleDisplay->IsFinished())
@@ -1937,7 +1937,7 @@ void GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages)
         []([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] const float x,
            [[maybe_unused]] const float y, [[maybe_unused]] const float width,
            [[maybe_unused]] float height) { return Pixel{0xFAFAFAFAU}; };
-    m_updateMessagesDisplay = std::make_unique<TextDraw>(&m_goomTextOutput);
+    m_updateMessagesDisplay = std::make_unique<TextDraw>(m_goomTextOutput);
     m_updateMessagesDisplay->SetFontFile(m_updateMessagesFontFile);
     m_updateMessagesDisplay->SetFontSize(MSG_FONT_SIZE);
     m_updateMessagesDisplay->SetOutlineWidth(1);

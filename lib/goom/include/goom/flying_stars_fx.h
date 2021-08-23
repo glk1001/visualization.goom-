@@ -52,7 +52,7 @@ public:
 
   void ApplyMultiple();
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const override;
+  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const override;
   void Finish() override;
 
 private:

@@ -82,21 +82,16 @@ public:
        const DrawFuncs& drawFuncs,
        uint32_t screenWidth,
        uint32_t screenHeight,
-       const UTILS::RandomColorMaps* colorMaps,
-       const UTILS::RandomColorMaps* lowColorMaps,
+       std::shared_ptr<UTILS::RandomColorMaps> colorMaps,
+       std::shared_ptr<UTILS::RandomColorMaps> lowColorMaps,
        float radiusEdgeOffset,
        float brightnessFactor) noexcept;
-  Tube(const Tube&) noexcept = delete;
-  Tube(Tube&&) noexcept;
-  ~Tube() noexcept;
-  auto operator=(const Tube&) -> Tube& = delete;
-  auto operator=(Tube&&) -> Tube& = delete;
 
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
 
-  void SetWeightedColorMaps(const UTILS::RandomColorMaps* colorMaps);
-  void SetWeightedLowColorMaps(const UTILS::RandomColorMaps* lowColorMaps);
+  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> colorMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<UTILS::RandomColorMaps> lowColorMaps);
 
   void ResetColorMaps();
   void RotateShapeColorMaps();

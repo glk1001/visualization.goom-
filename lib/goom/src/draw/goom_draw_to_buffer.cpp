@@ -23,8 +23,8 @@ using UTILS::GetColorAdd;
 
 GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t screenHeight)
   : IGoomDraw{screenWidth, screenHeight,
-              [&](int32_t x,
-                  int32_t y,
+              [&](const int32_t x,
+                  const int32_t y,
                   const std::vector<Pixel>& newColors,
                   const bool allowOverexposed) {
                 DrawPixels(m_multipleBuffers, x, y, newColors, GetIntBuffIntensity(),
@@ -32,8 +32,6 @@ GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t sc
               }}
 {
 }
-
-GoomDrawToBuffer::~GoomDrawToBuffer() noexcept = default;
 
 auto GoomDrawToBuffer::GetPixel(const int32_t x, const int32_t y) const -> Pixel
 {
@@ -46,7 +44,7 @@ void GoomDrawToBuffer::DrawPixelsUnblended(const int32_t x,
                                            const int32_t y,
                                            const std::vector<Pixel>& colors) const
 {
-  for (size_t i = 0; i < m_multipleBuffers.size(); i++)
+  for (size_t i = 0; i < m_multipleBuffers.size(); ++i)
   {
     (*m_multipleBuffers[i])(static_cast<size_t>(x), static_cast<size_t>(y)) = colors[i];
   }
@@ -59,7 +57,7 @@ void GoomDrawToBuffer::DrawPixels(const std::vector<PixelBuffer*>& buffs,
                                   const uint32_t intBuffIntensity,
                                   const bool allowOverexposed)
 {
-  for (size_t i = 0; i < colors.size(); i++)
+  for (size_t i = 0; i < colors.size(); ++i)
   {
     const Pixel newColor = GetBrighterColorInt(intBuffIntensity, colors[i], allowOverexposed);
 

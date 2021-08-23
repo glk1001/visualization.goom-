@@ -76,9 +76,10 @@ TentacleDriver::TentacleDriver(const IGoomDraw& draw) noexcept : m_draw{draw}
   LogDebug("Constructed TentacleDriver.");
 }
 
-void TentacleDriver::SetWeightedColorMaps(const RandomColorMaps& weightedMaps)
+void TentacleDriver::SetWeightedColorMaps(
+    const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
 {
-  m_colorMaps = &weightedMaps;
+  m_colorMaps = weightedMaps;
 }
 
 auto TentacleDriver::GetNumTentacles() const -> size_t
@@ -556,8 +557,8 @@ inline void TentacleDriver::RotateV3DAboutYAxis(const float sinAngle,
 {
   const float vi_x = vSrc.x;
   const float vi_z = vSrc.z;
-  vDest.x = vi_x * cosAngle - (vi_z * sinAngle);
-  vDest.z = vi_x * sinAngle + (vi_z * cosAngle);
+  vDest.x = (vi_x * cosAngle) - (vi_z * sinAngle);
+  vDest.z = (vi_x * sinAngle) + (vi_z * cosAngle);
   vDest.y = vSrc.y;
 }
 

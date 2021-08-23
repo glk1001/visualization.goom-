@@ -32,36 +32,7 @@ namespace GOOM::IFS
 #endif
 
 struct Similitude;
-
-class IfsPoint
-{
-public:
-  IfsPoint() noexcept = default;
-  IfsPoint(const uint32_t x, const uint32_t y, const uint32_t count) noexcept
-    : m_x{x}, m_y{y}, m_count{count}
-  {
-  }
-  [[nodiscard]] auto GetX() const -> uint32_t { return m_x; }
-  [[nodiscard]] auto GetY() const -> uint32_t { return m_y; }
-  void SetX(const uint32_t val) { m_x = val; }
-  void SetY(const uint32_t val) { m_y = val; }
-  [[nodiscard]] auto GetColor() const -> Pixel { return m_color; }
-  void SetColor(const Pixel& val) { m_color = val; }
-  [[nodiscard]] auto GetCount() const -> uint32_t { return m_count; }
-  void SetCount(const uint32_t val) { m_count = val; }
-  [[nodiscard]] auto GetSimiColor() const -> Pixel;
-  [[nodiscard]] auto GetSimiColorMap() const -> const UTILS::IColorMap*;
-  [[nodiscard]] auto GetSimiCurrentPointBitmap() const -> const UTILS::ImageBitmap*;
-  [[nodiscard]] auto GetSimiOverExposeBitmaps() const -> bool;
-
-private:
-  uint32_t m_x = 0;
-  uint32_t m_y = 0;
-  uint32_t m_count = 0;
-  Pixel m_color = Pixel::BLACK;
-  const Similitude* m_simi{};
-  friend class FractalHits;
-};
+class IfsPoint;
 
 class FractalHits
 {
@@ -93,14 +64,9 @@ class Fractal
 public:
   Fractal(uint32_t screenWidth,
           uint32_t screenHeight,
-          const UTILS::RandomColorMaps& cm,
+          const UTILS::RandomColorMaps& randomColorMaps,
           const UTILS::SmallImageBitmaps& smallBitmaps,
-          IfsStats* s);
-  ~Fractal() noexcept;
-  Fractal(const Fractal&) noexcept = delete;
-  Fractal(const Fractal&&) noexcept = delete;
-  [[nodiscard]] auto operator=(const Fractal&) -> Fractal& = delete;
-  [[nodiscard]] auto operator=(const Fractal&&) -> Fractal& = delete;
+          IfsStats& s);
 
   void Init();
   void Reset();
@@ -119,8 +85,8 @@ private:
   std::unique_ptr<std::vector<Similitude>> m_components;
 
   const UTILS::SmallImageBitmaps& m_smallBitmaps;
-  const UTILS::RandomColorMaps* const m_colorMaps;
-  IfsStats* const m_stats;
+  const UTILS::RandomColorMaps& m_colorMaps;
+  IfsStats& m_stats;
 
   const uint32_t m_lx;
   const uint32_t m_ly;
@@ -142,8 +108,8 @@ private:
 
   FractalHits m_hits1;
   FractalHits m_hits2;
-  FractalHits* m_prevHits = nullptr;
-  FractalHits* m_curHits = nullptr;
+  std::reference_wrapper<FractalHits> m_prevHits;
+  std::reference_wrapper<FractalHits> m_curHits;
 
   [[nodiscard]] auto GetLx() const -> Flt;
   [[nodiscard]] auto GetLy() const -> Flt;
@@ -164,9 +130,61 @@ private:
 #endif
 };
 
+struct Similitude
+{
+  Dbl dbl_cx = 0;
+  Dbl dbl_cy = 0;
+  Dbl dbl_r1 = 0;
+  Dbl dbl_r2 = 0;
+  Dbl A1 = 0;
+  Dbl A2 = 0;
+  Flt cosA1 = 0;
+  Flt sinA1 = 0;
+  Flt cosA2 = 0;
+  Flt sinA2 = 0;
+  Flt cx = 0;
+  Flt cy = 0;
+  Flt r1 = 0;
+  Flt r2 = 0;
+  const UTILS::IColorMap* colorMap{};
+  Pixel color = Pixel::BLACK;
+  const UTILS::ImageBitmap* currentPointBitmap{};
+  bool overExposeBitmaps = true;
+};
+
+class IfsPoint
+{
+public:
+  IfsPoint() noexcept = default;
+  IfsPoint(const uint32_t x, const uint32_t y, const uint32_t count) noexcept
+    : m_x{x}, m_y{y}, m_count{count}
+  {
+  }
+  [[nodiscard]] auto GetX() const -> uint32_t { return m_x; }
+  [[nodiscard]] auto GetY() const -> uint32_t { return m_y; }
+  void SetX(const uint32_t val) { m_x = val; }
+  void SetY(const uint32_t val) { m_y = val; }
+  [[nodiscard]] auto GetColor() const -> Pixel { return m_color; }
+  void SetColor(const Pixel& val) { m_color = val; }
+  [[nodiscard]] auto GetCount() const -> uint32_t { return m_count; }
+  void SetCount(const uint32_t val) { m_count = val; }
+  [[nodiscard]] auto GetSimiColor() const -> Pixel;
+  [[nodiscard]] auto GetSimiColorMap() const -> const UTILS::IColorMap*;
+  [[nodiscard]] auto GetSimiCurrentPointBitmap() const -> const UTILS::ImageBitmap*;
+  [[nodiscard]] auto GetSimiOverExposeBitmaps() const -> bool;
+
+private:
+  uint32_t m_x = 0;
+  uint32_t m_y = 0;
+  uint32_t m_count = 0;
+  Pixel m_color = Pixel::BLACK;
+  const Similitude* m_simi{};
+  friend class FractalHits;
+};
+
 inline auto Fractal::GetMaxHitCount() const -> uint32_t
 {
-  return m_curHits->GetMaxHitCount();
+  return m_curHits.get().GetMaxHitCount();
 }
 
 inline auto Fractal::GetLx() const -> Flt

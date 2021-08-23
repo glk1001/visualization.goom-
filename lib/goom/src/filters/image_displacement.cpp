@@ -34,8 +34,6 @@ ImageDisplacement::ImageDisplacement(const std::string& imageFilename)
 {
 }
 
-ImageDisplacement::~ImageDisplacement() noexcept = default;
-
 auto ImageDisplacement::GetDisplacementVector(const V2dFlt& normalizedPoint) const -> V2dFlt
 {
   const V2dInt imagePoint = NormalizedToImagePoint(normalizedPoint);

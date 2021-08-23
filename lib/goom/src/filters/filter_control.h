@@ -2,6 +2,7 @@
 #define VISUALIZATION_GOOM_FILTER_CONTROL_H
 
 #include "filter_data.h"
+#include "goomutils/spimpl.h"
 
 #include <memory>
 #include <string>
@@ -21,11 +22,6 @@ class FilterControl
 {
 public:
   explicit FilterControl(const std::shared_ptr<const GOOM::PluginInfo>& goomInfo) noexcept;
-  FilterControl(const FilterControl&) noexcept = delete;
-  FilterControl(FilterControl&&) noexcept = delete;
-  virtual ~FilterControl() noexcept;
-  auto operator=(const FilterControl&) -> FilterControl& = delete;
-  auto operator=(FilterControl&&) -> FilterControl& = delete;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
@@ -57,7 +53,7 @@ private:
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   ZoomFilterData m_filterData{};
   class FilterEvents;
-  std::unique_ptr<FilterEvents> m_filterEvents;
+  spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
   bool m_hasChanged = false;
   std::string m_resourcesDirectory{};
   static const std::vector<std::string> IMAGE_FILENAMES;

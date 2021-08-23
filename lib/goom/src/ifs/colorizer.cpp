@@ -93,14 +93,14 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
       IColorMap::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),
                              m_colorMapsManager.GetColorMap(m_mixerMap2Id).GetColor(tY), t);
   //  const Pixel nextColor = m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(x);
-  if (m_countSinceColorMapChange == 0)
+  if (0 == m_countSinceColorMapChange)
   {
     return nextColor;
   }
 
   const float tTransition = static_cast<float>(m_countSinceColorMapChange) /
                             static_cast<float>(m_colorMapChangeCompleted);
-  m_countSinceColorMapChange--;
+  --m_countSinceColorMapChange;
   const Pixel prevNextColor =
       IColorMap::GetColorMix(m_prevMixerMap1->GetColor(tX), m_prevMixerMap2->GetColor(tY), t);
   return IColorMap::GetColorMix(nextColor, prevNextColor, tTransition);
@@ -114,7 +114,7 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
                               const float tY) const -> Pixel
 {
   const float logAlpha =
-      m_maxHitCount <= 1 ? 1.0F : std::log(static_cast<float>(hitCount)) / m_logMaxHitCount;
+      m_maxHitCount <= 1 ? 1.0F : (std::log(static_cast<float>(hitCount)) / m_logMaxHitCount);
 
   Pixel mixColor;
   float tBaseMix = 1.0F - m_tAwayFromBaseColor;
@@ -158,7 +158,7 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
       constexpr float INITIAL_FREQ = 20.0F;
       constexpr float T_MIX_FACTOR = 0.5F;
       constexpr float Z_STEP = 0.1F;
-      static float s_freq = INITIAL_FREQ;
+      static const float s_freq = INITIAL_FREQ;
       static float s_z = 0.0F;
 
       mixColor = GetNextMixerMapColor(T_MIX_FACTOR * (1.0F + std::sin(s_freq * s_z)), tX, tY);
@@ -189,7 +189,7 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
 inline auto Colorizer::GetGammaCorrection(const float brightness, const Pixel& color) const -> Pixel
 {
   // if constexpr (GAMMA == 1.0F)
-  if (GAMMA == 1.0F)
+  if (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color, true);
   }

@@ -38,7 +38,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
     m_sampleArrays(NUM_CHANNELS),
     m_minMaxSampleValues(NUM_CHANNELS)
 {
-  if (numSampleChannels == 0 || numSampleChannels > 2)
+  if ((0 == numSampleChannels) || (numSampleChannels > 2))
   {
     throw std::logic_error(
         std20::format("Invalid 'numSampleChannels == {}. Must be '1' or '2'.", numSampleChannels));
@@ -47,9 +47,9 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
   m_sampleArrays[0].resize(AUDIO_SAMPLE_LEN);
   m_sampleArrays[1].resize(AUDIO_SAMPLE_LEN);
 
-  if (NUM_CHANNELS == 1)
+  if (1 == NUM_CHANNELS)
   {
-    for (size_t i = 0; i < AUDIO_SAMPLE_LEN; i++)
+    for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
     {
       m_sampleArrays[0][i] = FloatToInt16(floatAudioData[i]);
       m_sampleArrays[1][i] = m_sampleArrays[0][i];
@@ -68,7 +68,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
   else
   {
     int fpos = 0;
-    for (size_t i = 0; i < AUDIO_SAMPLE_LEN; i++)
+    for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
     {
       m_sampleArrays[0][i] = FloatToInt16(floatAudioData[fpos]);
       if (m_sampleArrays[0][i] < m_minMaxSampleValues[0].minVal)
@@ -79,7 +79,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
       {
         m_minMaxSampleValues[0].maxVal = m_sampleArrays[0][i];
       }
-      fpos++;
+      ++fpos;
 
       m_sampleArrays[1][i] = FloatToInt16(floatAudioData[fpos]);
       if (m_sampleArrays[1][i] < m_minMaxSampleValues[1].minVal)
@@ -90,7 +90,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
       {
         m_minMaxSampleValues[1].maxVal = m_sampleArrays[1][i];
       }
-      fpos++;
+      ++fpos;
     }
   }
 }
@@ -129,13 +129,9 @@ SoundInfo::SoundInfo() noexcept
 {
 }
 
-SoundInfo::SoundInfo(const SoundInfo& s) noexcept = default;
-
-SoundInfo::~SoundInfo() noexcept = default;
-
 void SoundInfo::ProcessSample(const AudioSamples& samples)
 {
-  m_updateNum++;
+  ++m_updateNum;
 
   UpdateVolume(samples);
   assert(0.0 <= m_volume && m_volume <= 1.0);
@@ -159,10 +155,10 @@ void SoundInfo::UpdateVolume(const AudioSamples& samples)
   int16_t maxPosVar = 0;
   int16_t maxVar = std::numeric_limits<int16_t>::min();
   int16_t minVar = std::numeric_limits<int16_t>::max();
-  for (size_t n = 0; n < AudioSamples::NUM_CHANNELS; n++)
+  for (size_t n = 0; n < AudioSamples::NUM_CHANNELS; ++n)
   {
     const std::vector<int16_t>& soundData = samples.GetSample(n);
-    for (int16_t dataVal : soundData)
+    for (const int16_t dataVal : soundData)
     {
       if (maxPosVar < dataVal)
       {
@@ -212,15 +208,15 @@ void SoundInfo::UpdateAcceleration()
 
   if (m_speed < VERY_SLOW_SPEED)
   {
-    m_acceleration *= (1.0F - static_cast<float>(m_speed));
+    m_acceleration *= (1.0F - m_speed);
   }
   else if (m_speed < SLOW_SPEED)
   {
-    m_acceleration *= (0.9F - 0.5F * static_cast<float>(m_speed - VERY_SLOW_SPEED));
+    m_acceleration *= (0.9F - (0.5F * (m_speed - VERY_SLOW_SPEED)));
   }
   else
   {
-    m_acceleration *= (0.8F - 0.25F * static_cast<float>(m_speed - SLOW_SPEED));
+    m_acceleration *= (0.8F - (0.25F * (m_speed - SLOW_SPEED)));
   }
 
   // Adoucissement de l'acceleration
@@ -248,7 +244,7 @@ void SoundInfo::UpdateSpeed(const float prevAcceleration)
   }
 
   constexpr float LERP_SPEED_MIX = 0.75;
-  const float newSpeed = SPEED_MULTIPLIER * (0.5F * m_speed + 0.25F * diffAcceleration);
+  const float newSpeed = SPEED_MULTIPLIER * ((0.5F * m_speed) + (0.25F * diffAcceleration));
   m_speed = stdnew::lerp(newSpeed, m_speed, LERP_SPEED_MIX);
   m_speed = stdnew::clamp(m_speed, 0.0F, 1.0F);
 
@@ -259,7 +255,7 @@ void SoundInfo::UpdateLastGoom()
 {
   // Temps du goom
   // Goom time
-  m_timeSinceLastGoom++;
+  ++m_timeSinceLastGoom;
 
   if (m_acceleration > m_goomLimit)
   {
@@ -267,7 +263,7 @@ void SoundInfo::UpdateLastGoom()
     m_stats->DoGoom();
 
     // TODO: tester && (info->m_timeSinceLastGoom > 20)) {
-    m_totalGoomsInCurrentCycle++;
+    ++m_totalGoomsInCurrentCycle;
     m_goomPower = m_acceleration - m_goomLimit;
   }
   if (m_acceleration > m_maxAccelSinceLastReset)
@@ -277,10 +273,10 @@ void SoundInfo::UpdateLastGoom()
 
   // Toute les 2 secondes: vérifier si le taux de goom est correct et le modifier sinon.
   // Every 2 seconds: check if the goom rate is correct and modify it otherwise.
-  if (m_updateNum % CYCLE_TIME == 0)
+  if (0 == (m_updateNum % CYCLE_TIME))
   {
     UpdateGoomLimit();
-    assert(0.0 <= m_goomLimit && m_goomLimit <= 1.0);
+    assert((0.0 <= m_goomLimit) && (m_goomLimit <= 1.0));
 
     m_totalGoomsInCurrentCycle = 0;
     m_maxAccelSinceLastReset = 0.0F;
@@ -292,7 +288,7 @@ void SoundInfo::UpdateLastGoom()
 
 void SoundInfo::UpdateLastBigGoom()
 {
-  m_timeSinceLastBigGoom++;
+  ++m_timeSinceLastBigGoom;
 
   if ((m_speed > BIG_GOOM_SPEED_LIMIT) && (m_acceleration > m_bigGoomLimit) &&
       (m_timeSinceLastBigGoom > MAX_BIG_GOOM_DURATION))
@@ -333,14 +329,14 @@ void SoundInfo::UpdateGoomLimit()
     m_goomLimit *= 1.0F + TOTAL_GOOMS_BIG_INCREMENT;
     m_goomLimit += TOTAL_GOOMS_BIG_INCREMENT;
   }
-  else if (m_totalGoomsInCurrentCycle == 0)
+  else if (0 == m_totalGoomsInCurrentCycle)
   {
     m_goomLimit = m_maxAccelSinceLastReset - ACCEL_DECREMENT;
   }
 
   constexpr float TOO_BIG_LIMIT = 0.02F;
   constexpr float SMALL_DECREMENT = 0.01F;
-  if ((m_totalGoomsInCurrentCycle == 1) && (m_goomLimit > TOO_BIG_LIMIT))
+  if ((1 == m_totalGoomsInCurrentCycle) && (m_goomLimit > TOO_BIG_LIMIT))
   {
     m_goomLimit -= SMALL_DECREMENT;
   }

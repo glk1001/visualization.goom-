@@ -71,11 +71,6 @@ public:
 
   TentacleDriver() noexcept = delete;
   explicit TentacleDriver(const IGoomDraw& draw) noexcept;
-  TentacleDriver(const TentacleDriver&) noexcept = delete;
-  TentacleDriver(TentacleDriver&&) noexcept = delete;
-  ~TentacleDriver() noexcept = default;
-  auto operator=(const TentacleDriver&) -> TentacleDriver& = delete;
-  auto operator=(TentacleDriver&&) -> TentacleDriver& = delete;
 
   void Init(UTILS::ColorMapGroup initialColorMapGroup, const ITentacleLayout& l);
   [[nodiscard]] auto GetNumTentacles() const -> size_t;
@@ -83,7 +78,7 @@ public:
   [[nodiscard]] auto GetColorMode() const -> ColorModes;
   void SetColorMode(ColorModes m);
 
-  void SetWeightedColorMaps(const UTILS::RandomColorMaps& weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
 
   void StartIterating();
 
@@ -115,7 +110,7 @@ private:
 
   void UpdateTentaclesLayout(const ITentacleLayout& l);
 
-  const UTILS::RandomColorMaps* m_colorMaps{};
+  std::shared_ptr<UTILS::RandomColorMaps> m_colorMaps{};
   std::vector<std::shared_ptr<ITentacleColorizer>> m_colorizers{};
 
   size_t m_updateNum = 0;

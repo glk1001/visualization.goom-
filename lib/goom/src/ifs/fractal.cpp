@@ -57,28 +57,6 @@ static const Weights<size_t> CENTRE_WEIGHTS{{
 }};
 // clang-format on
 
-struct Similitude
-{
-  Dbl dbl_cx = 0;
-  Dbl dbl_cy = 0;
-  Dbl dbl_r1 = 0;
-  Dbl dbl_r2 = 0;
-  Dbl A1 = 0;
-  Dbl A2 = 0;
-  Flt cosA1 = 0;
-  Flt sinA1 = 0;
-  Flt cosA2 = 0;
-  Flt sinA2 = 0;
-  Flt cx = 0;
-  Flt cy = 0;
-  Flt r1 = 0;
-  Flt r2 = 0;
-  const UTILS::IColorMap* colorMap{};
-  Pixel color = Pixel::BLACK;
-  const UTILS::ImageBitmap* currentPointBitmap{};
-  bool overExposeBitmaps = true;
-};
-
 auto IfsPoint::GetSimiColor() const -> Pixel
 {
   return m_simi->color;
@@ -101,22 +79,22 @@ auto IfsPoint::GetSimiOverExposeBitmaps() const -> bool
 
 Fractal::Fractal(const uint32_t screenWidth,
                  const uint32_t screenHeight,
-                 const RandomColorMaps& cm,
+                 const RandomColorMaps& randomColorMaps,
                  const SmallImageBitmaps& smallBitmaps,
-                 IfsStats* const s)
+                 IfsStats& s)
   : m_components{std::make_unique<std::vector<Similitude>>(NUM_SIMI_GROUPS * MAX_SIMI)},
     m_smallBitmaps{smallBitmaps},
-    m_colorMaps{&cm},
+    m_colorMaps{randomColorMaps},
     m_stats{s},
-    m_lx{(screenWidth - 1) / 2},
-    m_ly{(screenHeight - 1) / 2},
+    m_lx{(screenWidth - 1U) / 2U},
+    m_ly{(screenHeight - 1U) / 2U},
     m_prevSpeed{INITIAL_SPEED},
     m_speed{INITIAL_SPEED},
     m_speedTransitionT{TValue::StepType::SINGLE_CYCLE, NUM_SPEED_TRANSITION_STEPS},
     m_hits1{screenWidth, screenHeight},
     m_hits2{screenWidth, screenHeight},
-    m_prevHits{&m_hits1},
-    m_curHits{&m_hits2}
+    m_prevHits{m_hits1},
+    m_curHits{m_hits2}
 {
   m_speedTransitionT.Reset(TValue::MAX_T_VALUE);
 
@@ -124,16 +102,14 @@ Fractal::Fractal(const uint32_t screenWidth,
   Reset();
 }
 
-Fractal::~Fractal() noexcept = default;
-
 void Fractal::Init()
 {
   assert(CENTRE_WEIGHTS.GetNumElements() == CENTRE_LIST.size());
 
-  m_prevHits->Reset();
-  m_curHits->Reset();
+  m_prevHits.get().Reset();
+  m_curHits.get().Reset();
 
-  const size_t numCentres = 2 + CENTRE_WEIGHTS.GetRandomWeighted();
+  const auto numCentres = static_cast<uint32_t>(2 + CENTRE_WEIGHTS.GetRandomWeighted());
 
   m_depth = CENTRE_LIST.at(numCentres - 2).depth;
   m_r1Mean = CENTRE_LIST[numCentres - 2].r1Mean;
@@ -143,7 +119,7 @@ void Fractal::Init()
 
   m_numSimi = numCentres;
 
-  for (size_t i = 0; i < NUM_SIMI_GROUPS; i++)
+  for (size_t i = 0; i < NUM_SIMI_GROUPS; ++i)
   {
     RandomSimis(i * MAX_SIMI, MAX_SIMI);
   }
@@ -179,26 +155,26 @@ void Fractal::ResetCurrentIfsFunc()
     m_curFunc = [&](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2,
                     const Flt y2) -> FltPoint {
       return {
-          DivByUnit(x1 * simi.sinA1 - y1 * simi.cosA1 + x2 * simi.sinA2 - y2 * simi.cosA2) +
+          DivByUnit((x1 * simi.sinA1) - (y1 * simi.cosA1) + (x2 * simi.sinA2) - (y2 * simi.cosA2)) +
               simi.cx,
-          DivByUnit(x1 * simi.cosA1 + y1 * simi.sinA1 + x2 * simi.cosA2 + y2 * simi.sinA2) +
+          DivByUnit((x1 * simi.cosA1) + (y1 * simi.sinA1) + (x2 * simi.cosA2) + (y2 * simi.sinA2)) +
               simi.cy,
       };
     };
-    m_stats->UpdateReverseIfsFunc();
+    m_stats.UpdateReverseIfsFunc();
   }
   else
   {
     m_curFunc = [&](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2,
                     const Flt y2) -> FltPoint {
       return {
-          DivByUnit(x1 * simi.cosA1 - y1 * simi.sinA1 + x2 * simi.cosA2 - y2 * simi.sinA2) +
+          DivByUnit((x1 * simi.cosA1) - (y1 * simi.sinA1) + (x2 * simi.cosA2) - (y2 * simi.sinA2)) +
               simi.cx,
-          DivByUnit(x1 * simi.sinA1 + y1 * simi.cosA1 + x2 * simi.sinA2 + y2 * simi.cosA2) +
+          DivByUnit((x1 * simi.sinA1) + (y1 * simi.cosA1) + (x2 * simi.sinA2) + (y2 * simi.cosA2)) +
               simi.cy,
       };
     };
-    m_stats->UpdateStdIfsFunc();
+    m_stats.UpdateStdIfsFunc();
   }
 }
 
@@ -221,26 +197,30 @@ auto Fractal::GetNextIfsPoints() -> const std::vector<IfsPoint>&
   Similitude* s2 = s1 + m_numSimi;
   Similitude* s3 = s2 + m_numSimi;
 
-  for (size_t i = 0; i < m_numSimi; i++)
+  for (size_t i = 0; i < m_numSimi; ++i)
   {
-    s[i].dbl_cx = u0 * s0[i].dbl_cx + u1 * s1[i].dbl_cx + u2 * s2[i].dbl_cx + u3 * s3[i].dbl_cx;
-    s[i].dbl_cy = u0 * s0[i].dbl_cy + u1 * s1[i].dbl_cy + u2 * s2[i].dbl_cy + u3 * s3[i].dbl_cy;
+    s[i].dbl_cx =
+        (u0 * s0[i].dbl_cx) + (u1 * s1[i].dbl_cx) + (u2 * s2[i].dbl_cx) + (u3 * s3[i].dbl_cx);
+    s[i].dbl_cy =
+        (u0 * s0[i].dbl_cy) + (u1 * s1[i].dbl_cy) + (u2 * s2[i].dbl_cy) + (u3 * s3[i].dbl_cy);
 
-    s[i].dbl_r1 = u0 * s0[i].dbl_r1 + u1 * s1[i].dbl_r1 + u2 * s2[i].dbl_r1 + u3 * s3[i].dbl_r1;
-    s[i].dbl_r2 = u0 * s0[i].dbl_r2 + u1 * s1[i].dbl_r2 + u2 * s2[i].dbl_r2 + u3 * s3[i].dbl_r2;
+    s[i].dbl_r1 =
+        (u0 * s0[i].dbl_r1) + (u1 * s1[i].dbl_r1) + (u2 * s2[i].dbl_r1) + (u3 * s3[i].dbl_r1);
+    s[i].dbl_r2 =
+        (u0 * s0[i].dbl_r2) + (u1 * s1[i].dbl_r2) + (u2 * s2[i].dbl_r2) + (u3 * s3[i].dbl_r2);
 
-    s[i].A1 = u0 * s0[i].A1 + u1 * s1[i].A1 + u2 * s2[i].A1 + u3 * s3[i].A1;
-    s[i].A2 = u0 * s0[i].A2 + u1 * s1[i].A2 + u2 * s2[i].A2 + u3 * s3[i].A2;
+    s[i].A1 = (u0 * s0[i].A1) + (u1 * s1[i].A1) + (u2 * s2[i].A1) + (u3 * s3[i].A1);
+    s[i].A2 = (u0 * s0[i].A2) + (u1 * s1[i].A2) + (u2 * s2[i].A2) + (u3 * s3[i].A2);
   }
 
-  m_curHits->Reset();
+  m_curHits.get().Reset();
   DrawFractal();
-  const std::vector<IfsPoint>& curBuffer = m_curHits->GetBuffer();
+  const std::vector<IfsPoint>& curBuffer = m_curHits.get().GetBuffer();
   std::swap(m_prevHits, m_curHits);
 
-  if (m_count < m_maxCountTimesSpeed / GetSpeed())
+  if (m_count < (m_maxCountTimesSpeed / GetSpeed()))
   {
-    m_count++;
+    ++m_count;
   }
   else
   {
@@ -250,16 +230,16 @@ auto Fractal::GetNextIfsPoints() -> const std::vector<IfsPoint>&
     s2 = s1 + m_numSimi;
     s3 = s2 + m_numSimi;
 
-    for (size_t i = 0; i < m_numSimi; i++)
+    for (size_t i = 0; i < m_numSimi; ++i)
     {
-      s1[i].dbl_cx = (2.0 * s3[i].dbl_cx) - s2[i].dbl_cx;
-      s1[i].dbl_cy = (2.0 * s3[i].dbl_cy) - s2[i].dbl_cy;
+      s1[i].dbl_cx = (2.0F * s3[i].dbl_cx) - s2[i].dbl_cx;
+      s1[i].dbl_cy = (2.0F * s3[i].dbl_cy) - s2[i].dbl_cy;
 
-      s1[i].dbl_r1 = (2.0 * s3[i].dbl_r1) - s2[i].dbl_r1;
-      s1[i].dbl_r2 = (2.0 * s3[i].dbl_r2) - s2[i].dbl_r2;
+      s1[i].dbl_r1 = (2.0F * s3[i].dbl_r1) - s2[i].dbl_r1;
+      s1[i].dbl_r2 = (2.0F * s3[i].dbl_r2) - s2[i].dbl_r2;
 
-      s1[i].A1 = (2.0 * s3[i].A1) - s2[i].A1;
-      s1[i].A2 = (2.0 * s3[i].A2) - s2[i].A2;
+      s1[i].A1 = (2.0F * s3[i].A1) - s2[i].A1;
+      s1[i].A2 = (2.0F * s3[i].A2) - s2[i].A2;
 
       s0[i] = s3[i];
     }
@@ -275,7 +255,7 @@ auto Fractal::GetNextIfsPoints() -> const std::vector<IfsPoint>&
 
 void Fractal::DrawFractal()
 {
-  for (size_t i = 0; i < m_numSimi; i++)
+  for (size_t i = 0; i < m_numSimi; ++i)
   {
     Similitude& simi = (*m_components)[i];
 
@@ -291,11 +271,11 @@ void Fractal::DrawFractal()
     simi.r2 = DblToFlt(simi.dbl_r2);
   }
 
-  for (size_t i = 0; i < m_numSimi; i++)
+  for (size_t i = 0; i < m_numSimi; ++i)
   {
     const FltPoint p0{(*m_components)[i].cx, (*m_components)[i].cy};
 
-    for (size_t j = 0; j < m_numSimi; j++)
+    for (size_t j = 0; j < m_numSimi; ++j)
     {
       if (i != j)
       {
@@ -325,17 +305,17 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
   const Dbl r1Factor = m_dr1Mean * r1_1_minus_exp_neg_S;
   const Dbl r2Factor = m_dr2Mean * r2_1_minus_exp_neg_S;
 
-  const ColorMapGroup colorMapGroup = m_colorMaps->GetRandomGroup();
+  const ColorMapGroup colorMapGroup = m_colorMaps.GetRandomGroup();
   const bool useBitmaps = ProbabilityOfMInN(7, 10);
 
-  for (size_t i = start; i < start + num; i++)
+  for (size_t i = start; i < start + num; ++i)
   {
     (*m_components)[i].dbl_cx = GaussRand(0.0, 4.0, c_factor);
     (*m_components)[i].dbl_cy = GaussRand(0.0, 4.0, c_factor);
     (*m_components)[i].dbl_r1 = GaussRand(m_r1Mean, 3.0, r1Factor);
     (*m_components)[i].dbl_r2 = HalfGaussRand(m_r2Mean, 2.0, r2Factor);
-    (*m_components)[i].A1 = GaussRand(0.0, 4.0, A1_factor) * (m_pi / 180.0);
-    (*m_components)[i].A2 = GaussRand(0.0, 4.0, A2_factor) * (m_pi / 180.0);
+    (*m_components)[i].A1 = GaussRand(0.0F, 4.0F, A1_factor) * (m_pi / 180.0F);
+    (*m_components)[i].A2 = GaussRand(0.0F, 4.0F, A2_factor) * (m_pi / 180.0F);
     (*m_components)[i].cosA1 = 0;
     (*m_components)[i].sinA1 = 0;
     (*m_components)[i].cosA2 = 0;
@@ -345,9 +325,9 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
     (*m_components)[i].r1 = 0;
     (*m_components)[i].r2 = 0;
 
-    (*m_components)[i].colorMap = &m_colorMaps->GetRandomColorMap(colorMapGroup);
+    (*m_components)[i].colorMap = &m_colorMaps.GetRandomColorMap(colorMapGroup);
     (*m_components)[i].color =
-        RandomColorMaps::GetRandomColor(m_colorMaps->GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
+        RandomColorMaps::GetRandomColor(m_colorMaps.GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
 
     if (!useBitmaps)
     {
@@ -386,7 +366,7 @@ auto Fractal::GaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_n
 {
   const Dbl x = GetRandInRange(0.0F, 1.0F);
   const Dbl y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
-  return ProbabilityOfMInN(1, 2) ? c + y : c - y;
+  return ProbabilityOfMInN(1, 2) ? (c + y) : (c - y);
 }
 
 auto Fractal::HalfGaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S) -> Dbl
@@ -398,17 +378,17 @@ auto Fractal::HalfGaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_e
 
 void Fractal::Trace(const uint32_t curDepth, const FltPoint& p0)
 {
-  for (size_t i = 0; i < m_numSimi; i++)
+  for (size_t i = 0; i < m_numSimi; ++i)
   {
     const FltPoint p = Transform((*m_components)[i], p0);
 
     UpdateHits((*m_components)[i], p);
 
-    if (!curDepth)
+    if (0 == curDepth)
     {
       continue;
     }
-    if (((p.x - p0.x) >> 4) == 0 || ((p.y - p0.y) >> 4) == 0)
+    if (0 == (((p.x - p0.x) >> 4)) || (0 == ((p.y - p0.y) >> 4)))
     {
       continue;
     }
@@ -432,11 +412,11 @@ inline void Fractal::UpdateHits(const Similitude& simi, const FltPoint& p)
 {
   const auto x = static_cast<uint32_t>(GetLx() + DivBy2Units(p.x * GetLx()));
   const auto y = static_cast<uint32_t>(GetLy() - DivBy2Units(p.y * GetLy()));
-  m_curHits->AddHit(x, y, simi);
+  m_curHits.get().AddHit(x, y, simi);
 }
 
-FractalHits::FractalHits(const uint32_t w, const uint32_t h) noexcept
-  : m_width{w}, m_height{h}, m_hitInfo(m_height)
+FractalHits::FractalHits(const uint32_t width, const uint32_t height) noexcept
+  : m_width{width}, m_height{height}, m_hitInfo(m_height)
 {
   for (auto& xHit : m_hitInfo)
   {
@@ -465,7 +445,7 @@ void FractalHits::AddHit(const uint32_t x, const uint32_t y, const Similitude& s
   const uint32_t ux = x & 0x7fffffffU;
   const uint32_t uy = y & 0x7fffffffU;
 
-  if (ux >= m_width || uy >= m_height)
+  if ((ux >= m_width) || (uy >= m_height))
   {
     return;
   }
@@ -474,14 +454,14 @@ void FractalHits::AddHit(const uint32_t x, const uint32_t y, const Similitude& s
 
   h.simi = &s;
   h.color = GetColorAverage(h.color, s.color);
-  h.count++;
+  ++h.count;
 
   if (h.count > m_maxHitCount)
   {
     m_maxHitCount = h.count;
   }
 
-  if (h.count == 1)
+  if (1 == h.count)
   {
     (void)m_hits.emplace_back(ux, uy, 1);
   }
@@ -491,7 +471,7 @@ auto FractalHits::GetBuffer() -> const std::vector<IfsPoint>&
 {
   m_buffer.resize(m_hits.size());
 
-  for (size_t i = 0; i < m_hits.size(); i++)
+  for (size_t i = 0; i < m_hits.size(); ++i)
   {
     IfsPoint pt = m_hits[i];
     pt.SetCount(m_hitInfo[pt.GetY()][pt.GetX()].count);

@@ -31,6 +31,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <stdexcept>
 #include <tuple>
@@ -66,11 +67,10 @@ constexpr float MAX_MAX_NORMALIZED_PEAK = 200.0F;
 class LinesFx::LinesImpl
 {
 public:
-  ~LinesImpl() noexcept = default;
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
   LinesImpl(const IGoomDraw& draw,
-            std::shared_ptr<const PluginInfo> info,
+            std::shared_ptr<const PluginInfo> goomInfo,
             const SmallImageBitmaps& smallBitmaps,
             LineType srceLineType,
             float srceParam,
@@ -78,10 +78,6 @@ public:
             LineType destLineType,
             float destParam,
             const Pixel& destColor);
-  LinesImpl(const LinesImpl&) noexcept = delete;
-  LinesImpl(LinesImpl&&) noexcept = delete;
-  auto operator=(const LinesImpl&) -> LinesImpl& = delete;
-  auto operator=(LinesImpl&&) -> LinesImpl& = delete;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
@@ -113,7 +109,7 @@ private:
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const SmallImageBitmaps& m_smallBitmaps;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
-  const IColorMap* m_currentColorMap{};
+  std::reference_wrapper<const IColorMap> m_currentColorMap;
   std::string m_resourcesDirectory{};
   static constexpr float GAMMA = 1.0F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
@@ -280,6 +276,7 @@ LinesFx::LinesImpl::LinesImpl(const IGoomDraw& draw,
     m_goomInfo{std::move(goomInfo)},
     m_smallBitmaps{smallBitmaps},
     m_colorMaps{GetAllSlimMaps()},
+    m_currentColorMap{GetRandomColorMap()},
     m_srcePoints(AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AUDIO_SAMPLE_LEN),
     m_srcLineType{srceLineType},
@@ -322,7 +319,7 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
                                             const float lineParam,
                                             std::vector<LinePoint>& line)
 {
-  m_currentColorMap = &GetRandomColorMap();
+  m_currentColorMap = GetRandomColorMap();
   m_useLineColor = ProbabilityOfMInN(10, 20);
 
   switch (lineType)
@@ -755,8 +752,7 @@ inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float
   {
     return lineColor;
   }
-  assert(m_currentColorMap);
-  return m_currentColorMap->GetColor(t);
+  return m_currentColorMap.get().GetColor(t);
 }
 
 inline auto LinesFx::LinesImpl::GetNormalizedData(const float data) const -> float

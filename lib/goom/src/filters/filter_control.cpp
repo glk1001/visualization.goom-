@@ -137,11 +137,9 @@ inline auto FilterControl::FilterEvents::Happens(const FilterEventTypes event) -
 }
 
 FilterControl::FilterControl(const std::shared_ptr<const PluginInfo>& goomInfo) noexcept
-  : m_goomInfo{goomInfo}, m_filterEvents{std::make_unique<FilterEvents>()}
+  : m_goomInfo{goomInfo}, m_filterEvents{spimpl::make_unique_impl<FilterEvents>()}
 {
 }
-
-FilterControl::~FilterControl() noexcept = default;
 
 void FilterControl::Start()
 {
@@ -483,25 +481,21 @@ void FilterControl::SetMiddlePoints()
     return;
   }
 
-  if ((m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE0) ||
-      (m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE1))
+  if (((m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE0) ||
+       (m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
+      m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_IN_MIDDLE))
   {
-    if (m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_IN_MIDDLE))
+    m_filterData.middleX = m_goomInfo->GetScreenInfo().width / 2;
+    m_filterData.middleY = m_goomInfo->GetScreenInfo().height / 2;
+    return;
+    }
+    if ((m_filterData.mode == ZoomFilterMode::WAVE_MODE1) &&
+        m_filterEvents->Happens(EventTypes::WAVE_IN_MIDDLE))
     {
       m_filterData.middleX = m_goomInfo->GetScreenInfo().width / 2;
       m_filterData.middleY = m_goomInfo->GetScreenInfo().height / 2;
       return;
     }
-  }
-  if (m_filterData.mode == ZoomFilterMode::WAVE_MODE1)
-  {
-    if (m_filterEvents->Happens(EventTypes::WAVE_IN_MIDDLE))
-    {
-      m_filterData.middleX = m_goomInfo->GetScreenInfo().width / 2;
-      m_filterData.middleY = m_goomInfo->GetScreenInfo().height / 2;
-      return;
-    }
-  }
 
   // clang-format off
   // @formatter:off
@@ -538,8 +532,8 @@ void FilterControl::SetMiddlePoints()
       m_filterData.middleY = m_goomInfo->GetScreenInfo().height / 4;
       break;
     case MiddlePointEvents::EVENT6:
-      m_filterData.middleX = 3 * m_goomInfo->GetScreenInfo().width / 4;
-      m_filterData.middleY = 3 * m_goomInfo->GetScreenInfo().height / 4;
+      m_filterData.middleX = (3 * m_goomInfo->GetScreenInfo().width) / 4;
+      m_filterData.middleY = (3 * m_goomInfo->GetScreenInfo().height) / 4;
       break;
     default:
       throw std::logic_error("Unknown MiddlePointEvents enum.");

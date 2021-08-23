@@ -50,13 +50,8 @@ class SoundInfo
 {
 public:
   SoundInfo() noexcept;
-  SoundInfo(const SoundInfo& s) noexcept;
-  SoundInfo(SoundInfo&&) noexcept = delete;
-  ~SoundInfo() noexcept;
-  auto operator=(const SoundInfo&) -> SoundInfo& = delete;
-  auto operator=(SoundInfo&&) -> SoundInfo& = delete;
 
-  void ProcessSample(const AudioSamples& s);
+  void ProcessSample(const AudioSamples& samples);
 
   // Note: a Goom is just a sound event...
   [[nodiscard]] auto GetTimeSinceLastGoom() const -> uint32_t; // >= 0

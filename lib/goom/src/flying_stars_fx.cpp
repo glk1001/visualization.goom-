@@ -49,7 +49,6 @@ enum class StarModes
   FOUNTAIN,
   _NUM // unused and must be last
 };
-constexpr size_t NUM_FX = NUM<StarModes>;
 
 struct Star
 {
@@ -180,7 +179,7 @@ private:
   DrawMode m_drawMode = DrawMode::CIRCLES;
   void ChangeDrawMode();
   const SmallImageBitmaps& m_smallBitmaps;
-  [[nodiscard]] auto GetImageBitmap(size_t size) -> const ImageBitmap&;
+  [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
   using DrawFunc = std::function<void(int32_t x1,
                                       int32_t y1,
                                       int32_t x2,
@@ -278,9 +277,9 @@ void FlyingStarsFx::Finish()
   m_fxImpl->Finish();
 }
 
-void FlyingStarsFx::Log(const GoomStats::LogStatsValueFunc& logVal) const
+void FlyingStarsFx::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
 {
-  m_fxImpl->Log(logVal);
+  m_fxImpl->Log(logValueFunc);
 }
 
 auto FlyingStarsFx::GetFxName() const -> std::string
@@ -299,10 +298,10 @@ void FlyingStarsFx::ApplyMultiple()
 }
 
 FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const IGoomDraw& draw,
-                                                std::shared_ptr<const PluginInfo> info,
+                                                std::shared_ptr<const PluginInfo> goomInfo,
                                                 const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
-    m_goomInfo{std::move(info)},
+    m_goomInfo{std::move(goomInfo)},
     m_halfWidth{static_cast<int32_t>(m_goomInfo->GetScreenInfo().width / 2)},
     m_halfHeight{static_cast<int32_t>(m_goomInfo->GetScreenInfo().height / 2)},
     m_smallBitmaps{smallBitmaps},
@@ -348,7 +347,8 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetResourcesDirectory(const std::str
   m_resourcesDirectory = dirName;
 }
 
-inline auto FlyingStarsFx::FlyingStarsImpl::GetImageBitmap(const size_t size) -> const ImageBitmap&
+inline auto FlyingStarsFx::FlyingStarsImpl::GetImageBitmap(const size_t size) const
+    -> const ImageBitmap&
 {
   return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
                                        stdnew::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
@@ -388,7 +388,7 @@ inline void FlyingStarsFx::FlyingStarsImpl::Start()
 
 void FlyingStarsFx::FlyingStarsImpl::Finish()
 {
-  m_stats.SetLastNumActive(m_stars.size());
+  m_stats.SetLastNumActive(static_cast<uint32_t>(m_stars.size()));
   m_stats.SetLastMaxStars(m_maxStars);
   m_stats.SetLastMaxStarAge(m_maxStarAge);
 }
@@ -400,7 +400,7 @@ void FlyingStarsFx::FlyingStarsImpl::Log(const GoomStats::LogStatsValueFunc& log
 
 void FlyingStarsFx::FlyingStarsImpl::UpdateBuffers()
 {
-  m_counter++;
+  ++m_counter;
 
   m_maxStars = GetRandInRange(MIN_NUM_STARS, MAX_NUM_STARS);
 
@@ -411,7 +411,7 @@ void FlyingStarsFx::FlyingStarsImpl::UpdateBuffers()
 
 void FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents()
 {
-  if (m_stars.empty() || m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() < 1)
+  if (m_stars.empty() || (m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() < 1))
   {
     SoundEventOccurred();
     if (ProbabilityOfMInN(1, 20))
@@ -486,16 +486,16 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
                                               const DrawFunc& drawFunc)
 {
   const float tAge = star.age / static_cast<float>(m_maxStarAge);
-  const float ageBrightness = 0.2F + 0.8F * Sq(0.5F - tAge) / 0.25F;
+  const float ageBrightness = 0.2F + ((0.8F * Sq(0.5F - tAge)) / 0.25F);
   const size_t numParts =
-      tAge > OLD_AGE ? 4 : 2 + static_cast<size_t>(std::lround((1.0F - tAge) * 2.0F));
+      tAge > OLD_AGE ? 4 : (2 + static_cast<size_t>(std::lround((1.0F - tAge) * 2.0F)));
 
   const auto x0 = static_cast<int32_t>(star.pos.x);
   const auto y0 = static_cast<int32_t>(star.pos.y);
 
   int32_t x1 = x0;
   int32_t y1 = y0;
-  for (size_t j = 1; j <= numParts; j++)
+  for (size_t j = 1; j <= numParts; ++j)
   {
     const int32_t x2 =
         x0 - static_cast<int32_t>(
@@ -507,7 +507,7 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
                  star.velocity.y * static_cast<float>(j));
 
     const float brightness =
-        2.7F * ageBrightness * static_cast<float>(j) / static_cast<float>(numParts);
+        (2.7F * ageBrightness * static_cast<float>(j)) / static_cast<float>(numParts);
 #if __cplusplus <= 201402L
     const auto mixedColors = GetMixedColors(star, tAge, brightness);
     const auto mixedColor = std::get<0>(mixedColors);
@@ -551,11 +551,11 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleLine(const int32_t x1,
 {
   if (m_useSingleBufferOnly)
   {
-    m_draw.Line(x1, y1, x2, y2, colors[0], static_cast<int>(size));
+    m_draw.Line(x1, y1, x2, y2, colors[0], static_cast<uint8_t>(size));
   }
   else
   {
-    m_draw.Line(x1, y1, x2, y2, colors, static_cast<int>(size));
+    m_draw.Line(x1, y1, x2, y2, colors, static_cast<uint8_t>(size));
   }
 }
 
@@ -852,7 +852,7 @@ void FlyingStarsFx::FlyingStarsImpl::SoundEventOccurred()
   constexpr float MIN_HEIGHT = 50.0F;
   const auto heightRatio = static_cast<float>(m_goomInfo->GetScreenInfo().height) / HEIGHT;
   const float defaultRadius = (1.0F + m_goomInfo->GetSoundInfo().GetGoomPower()) *
-                              GetRandInRange(MIN_HEIGHT, HEIGHT) / WIDTH;
+                              (GetRandInRange(MIN_HEIGHT, HEIGHT) / WIDTH);
 
   const StarModeParams starParams = GetStarParams(defaultRadius, heightRatio);
   const size_t maxStarsInBomb = GetMaxStarsInABomb(heightRatio);
@@ -873,9 +873,9 @@ void FlyingStarsFx::FlyingStarsImpl::UpdateWindAndGravity()
 
 auto FlyingStarsFx::FlyingStarsImpl::GetMaxStarsInABomb(const float heightRatio) const -> size_t
 {
-  auto maxStarsInBomb = static_cast<size_t>(
-      heightRatio *
-      (100.0F + (1.0F + m_goomInfo->GetSoundInfo().GetGoomPower()) * GetRandInRange(0.0F, 150.0F)));
+  const auto maxStarsInBomb = static_cast<size_t>(
+      heightRatio * (100.0F + ((m_goomInfo->GetSoundInfo().GetGoomPower() + 1.0F) *
+                               GetRandInRange(0.0F, 150.0F))));
 
   if (m_goomInfo->GetSoundInfo().GetTimeSinceLastBigGoom() < 1)
   {
@@ -902,7 +902,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetStarParams(const float defaultRadius,
       break;
     case StarModes::FOUNTAIN:
       m_stats.FountainFxChosen();
-      m_maxStarAge = static_cast<uint32_t>(static_cast<float>(m_maxStarAge) * 2.0F / 3.0F);
+      m_maxStarAge = static_cast<uint32_t>(static_cast<float>(m_maxStarAge) * (2.0F / 3.0F));
       starParams = GetFountainStarParams(defaultRadius);
       break;
     default:
@@ -912,7 +912,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetStarParams(const float defaultRadius,
   starParams.radius *= heightRatio;
   if (m_goomInfo->GetSoundInfo().GetTimeSinceLastBigGoom() < 1)
   {
-    starParams.radius *= 1.5;
+    starParams.radius *= 1.5F;
   }
 
   return starParams;
@@ -953,8 +953,8 @@ auto FlyingStarsFx::FlyingStarsImpl::GetRainStarParams(const float defaultRadius
   StarModeParams starParams;
 
   const auto x0 = static_cast<int32_t>(m_goomInfo->GetScreenInfo().width / 25);
-  starParams.pos.x = static_cast<int32_t>(
-      GetRandInRange(x0, static_cast<int32_t>(m_goomInfo->GetScreenInfo().width) - x0));
+  starParams.pos.x =
+      GetRandInRange(x0, static_cast<int32_t>(m_goomInfo->GetScreenInfo().width) - x0);
   starParams.pos.y = -GetRandInRange(3, 64);
 
   constexpr float RADIUS_FACTOR = 1.5F;
@@ -996,7 +996,7 @@ void FlyingStarsFx::FlyingStarsImpl::AddStarBombs(const StarModeParams& starMode
   const float sideWind = starModeParams.windFactor * GetRandInRange(m_minSideWind, m_maxSideWind);
   const float gravity = starModeParams.gravityFactor * GetRandInRange(m_minGravity, m_maxGravity);
 
-  for (size_t i = 0; i < maxStarsInBomb; i++)
+  for (size_t i = 0; i < maxStarsInBomb; ++i)
   {
     m_randomColorMapsManager.ChangeColorMapNow(m_colorMapID);
     m_randomColorMapsManager.ChangeColorMapNow(m_lowColorMapID);
@@ -1030,7 +1030,7 @@ void FlyingStarsFx::FlyingStarsImpl::AddABomb(const V2dInt& pos,
 
   constexpr float RADIUS_OFFSET = -0.2F;
   star.velocity.x = bombRadius * std::cos(bombAngle);
-  star.velocity.y = RADIUS_OFFSET + bombRadius * std::sin(bombAngle);
+  star.velocity.y = RADIUS_OFFSET + (bombRadius * std::sin(bombAngle));
 
   star.acceleration.x = sideWind;
   star.acceleration.y = gravity;

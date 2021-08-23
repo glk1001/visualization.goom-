@@ -40,8 +40,6 @@ GoomDrawToContainer::GoomDrawToContainer(const uint32_t screenWidth, const uint3
   }
 }
 
-GoomDrawToContainer::~GoomDrawToContainer() noexcept = default;
-
 void GoomDrawToContainer::ClearAll()
 {
   m_orderedXYPixelList.clear();
@@ -74,14 +72,14 @@ void GoomDrawToContainer::SavePixels(const int32_t x,
                                      const bool allowOverexposed)
 {
   Colors newColors(colors.size());
-  for (size_t i = 0; i < newColors.size(); i++)
+  for (size_t i = 0; i < newColors.size(); ++i)
   {
     newColors[i] = GetBrighterColorInt(intBuffIntensity, colors[i], allowOverexposed);
   }
 
   ColorsList& colorsList = GetWriteableColorsList(x, y);
   colorsList.emplace_back(newColors);
-  if (colorsList.size() == 1)
+  if (1 == colorsList.size())
   {
     m_orderedXYPixelList.emplace_back(Coords{x, y});
   }

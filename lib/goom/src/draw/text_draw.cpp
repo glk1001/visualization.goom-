@@ -6,6 +6,7 @@
 #include "goomutils/logging_control.h"
 //#undef NO_LOGGING
 #include "goomutils/logging.h"
+#include "goomutils/spimpl.h"
 
 #include <codecvt>
 #include <format>
@@ -144,7 +145,7 @@ inline auto TextDraw::TextDrawImpl::GetBearingY() const -> int32_t
 class TextDraw::TextDrawImpl
 {
 public:
-  explicit TextDrawImpl(const IGoomDraw* draw) noexcept;
+  explicit TextDrawImpl(const IGoomDraw& draw) noexcept;
   ~TextDrawImpl() noexcept;
   TextDrawImpl(const TextDrawImpl&) noexcept = delete;
   TextDrawImpl(TextDrawImpl&&) noexcept = delete;
@@ -173,7 +174,7 @@ public:
   void Draw(int32_t xPen, int32_t yPen, int32_t& xNext, int32_t& yNext);
 
 private:
-  const IGoomDraw* const m_draw;
+  const IGoomDraw& m_draw;
   FT_Library m_library{};
   static constexpr int32_t DEFAULT_FONT_SIZE = 100;
   int32_t m_fontSize = DEFAULT_FONT_SIZE;
@@ -199,13 +200,13 @@ private:
   struct Span;
   using SpanArray = std::vector<Span>;
 
-  struct RectImpl : public Rect
+  struct RectImpl : Rect
   {
     RectImpl() noexcept = default;
-    ~RectImpl() noexcept = default;
     RectImpl(int32_t left, int32_t top, int32_t right, int32_t bottom) noexcept;
     RectImpl(const RectImpl&) noexcept = default;
     RectImpl(RectImpl&&) noexcept = default;
+    ~RectImpl() noexcept = default;
     auto operator=(const RectImpl&) noexcept -> RectImpl = delete;
     auto operator=(RectImpl&&) noexcept -> RectImpl = delete;
 
@@ -244,14 +245,12 @@ private:
 };
 #endif
 
-TextDraw::TextDraw(const IGoomDraw* const draw) noexcept
-  : m_textDrawImpl{std::make_unique<TextDrawImpl>(draw)}
+TextDraw::TextDraw(const IGoomDraw& draw) noexcept
+  : m_textDrawImpl{spimpl::make_unique_impl<TextDrawImpl>(draw)}
 {
 }
 
-TextDraw::~TextDraw() noexcept = default;
-
-void TextDraw::SetAlignment(TextAlignment a)
+void TextDraw::SetAlignment(const TextAlignment a)
 {
   m_textDrawImpl->SetAlignment(a);
 }
@@ -337,7 +336,7 @@ void TextDraw::Draw(const int32_t xPen, const int32_t yPen, int32_t& xNext, int3
 }
 
 #ifndef NO_FREETYPE_INSTALLED
-TextDraw::TextDrawImpl::TextDrawImpl(const IGoomDraw* const draw) noexcept : m_draw{draw}
+TextDraw::TextDrawImpl::TextDrawImpl(const IGoomDraw& draw) noexcept : m_draw{draw}
 {
   (void)FT_Init_FreeType(&m_library);
 }
@@ -471,7 +470,7 @@ void TextDraw::TextDrawImpl::Prepare()
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   const std::u32string utf32Text = conv.from_bytes(m_theText);
 
-  for (size_t i = 0; i < utf32Text.size(); i++)
+  for (size_t i = 0; i < utf32Text.size(); ++i)
   {
     // Load the glyph we are looking for.
     const FT_UInt gIndex = FT_Get_Char_Index(m_face, static_cast<FT_ULong>(utf32Text[i]));
@@ -511,7 +510,7 @@ auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int
     case TextAlignment::LEFT:
       return xPen;
     case TextAlignment::CENTER:
-      return xPen - (GetPreparedTextBoundingRect().xmax - GetPreparedTextBoundingRect().xmin) / 2;
+      return xPen - ((GetPreparedTextBoundingRect().xmax - GetPreparedTextBoundingRect().xmin) / 2);
     case TextAlignment::RIGHT:
       return xPen - (GetPreparedTextBoundingRect().xmax - GetPreparedTextBoundingRect().xmin);
     default:
@@ -546,7 +545,7 @@ void TextDraw::TextDrawImpl::Draw(const int32_t xPen,
 
   for (auto& s : m_textSpans)
   {
-    WriteGlyph(s, xNext, static_cast<int>(m_draw->GetScreenHeight()) - yNext);
+    WriteGlyph(s, xNext, static_cast<int>(m_draw.GetScreenHeight()) - yNext);
     xNext += s.advance;
   }
 }
@@ -613,19 +612,19 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spans,
 {
   for (const auto& s : spans)
   {
-    const int32_t yPos = static_cast<int>(m_draw->GetScreenHeight()) - (yPen + s.y);
-    if (yPos < 0 || yPos >= static_cast<int>(m_draw->GetScreenHeight()))
+    const int32_t yPos = static_cast<int>(m_draw.GetScreenHeight()) - (yPen + s.y);
+    if ((yPos < 0) || (yPos >= static_cast<int>(m_draw.GetScreenHeight())))
     {
       continue;
     }
 
-    const int32_t xPos0 = xPen + s.x - rect.xmin;
+    const int32_t xPos0 = xPen + (s.x - rect.xmin);
     const int32_t xf0 = s.x - rect.xmin;
     const auto coverage = static_cast<uint8_t>(s.coverage);
     for (int32_t w = 0; w < s.width; ++w)
     {
       const int32_t xPos = xPos0 + w;
-      if (xPos < 0 || xPos >= static_cast<int>(m_draw->GetScreenWidth()))
+      if ((xPos < 0) || (xPos >= static_cast<int>(m_draw.GetScreenWidth())))
       {
         continue;
       }
@@ -634,9 +633,9 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spans,
                                    rect.Width(), rect.Height());
       const Pixel srceColor{
           {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}};
-      const Pixel destColor = m_draw->GetPixel(xPos, yPos);
+      const Pixel destColor = m_draw.GetPixel(xPos, yPos);
 
-      m_draw->DrawPixelsUnblended(xPos, yPos, {UTILS::GetColorBlend(srceColor, destColor)});
+      m_draw.DrawPixelsUnblended(xPos, yPos, {UTILS::GetColorBlend(srceColor, destColor)});
     }
   }
 }
@@ -666,7 +665,7 @@ void TextDraw::TextDrawImpl::RasterCallback(const int32_t y,
                                             const FT_Span* const spans,
                                             void* const user)
 {
-  auto* userSpans = static_cast<SpanArray*>(user);
+  auto* const userSpans = static_cast<SpanArray*>(user);
   for (int32_t i = 0; i < count; ++i)
   {
     userSpans->push_back(Span{spans[i].x, y, spans[i].len, spans[i].coverage});
@@ -690,7 +689,7 @@ auto TextDraw::TextDrawImpl::GetSpans(const size_t textIndexOfChar) const -> Spa
   const SpanArray stdSpans = GetStdSpans();
   const int32_t advance = ToStdPixelCoord(m_face->glyph->advance.x) +
                           static_cast<int>(m_charSpacing * static_cast<float>(m_fontSize));
-  FT_Glyph_Metrics metrics = m_face->glyph->metrics;
+  const FT_Glyph_Metrics metrics = m_face->glyph->metrics;
   if (stdSpans.empty())
   {
     return Spans{
@@ -749,7 +748,7 @@ auto TextDraw::TextDrawImpl::GetOutlineSpans() const -> SpanArray
   }
 
   // Render the outline spans to the span list
-  FT_Outline* outline = &reinterpret_cast<FT_OutlineGlyph>(glyph)->outline;
+  FT_Outline* const outline = &reinterpret_cast<FT_OutlineGlyph>(glyph)->outline;
   SpanArray outlineSpans{};
   RenderSpans(outline, &outlineSpans);
   if (outlineSpans.empty())
@@ -787,12 +786,12 @@ auto TextDraw::TextDrawImpl::GetBoundingRect(const SpanArray& stdSpans,
   for (const auto& s : stdSpans)
   {
     rect.Include(Vec2{s.x, s.y});
-    rect.Include(Vec2{s.x + s.width - 1, s.y});
+    rect.Include(Vec2{s.x + (s.width - 1), s.y});
   }
   for (const auto& s : outlineSpans)
   {
     rect.Include(Vec2{s.x, s.y});
-    rect.Include(Vec2{s.x + s.width - 1, s.y});
+    rect.Include(Vec2{s.x + (s.width - 1), s.y});
   }
 
   return rect;

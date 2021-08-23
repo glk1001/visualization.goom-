@@ -267,7 +267,7 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const IGoomDraw& draw,
                                         m_draw.GetScreenHeight(),
                                         m_colorizer.GetColorMaps(),
                                         smallBitmaps,
-                                        &m_stats)},
+                                        m_stats)},
     m_blurrer{m_draw, 3, &m_colorizer}
 {
 }

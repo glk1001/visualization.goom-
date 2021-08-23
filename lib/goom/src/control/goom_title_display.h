@@ -5,6 +5,7 @@
 #include "goomutils/colorutils.h"
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -30,15 +31,10 @@ class GoomTitleDisplay
 {
 public:
   GoomTitleDisplay() noexcept = delete;
-  ~GoomTitleDisplay() noexcept;
   GoomTitleDisplay(int32_t xStart,
                    int32_t yStart,
                    const std::string& fontDirectory,
-                   const IGoomDraw* draw);
-  GoomTitleDisplay(const GoomTitleDisplay&) noexcept = delete;
-  GoomTitleDisplay(GoomTitleDisplay&&) noexcept = delete;
-  auto operator=(const GoomTitleDisplay&) -> GoomTitleDisplay& = delete;
-  auto operator=(GoomTitleDisplay&&) -> GoomTitleDisplay& = delete;
+                   const IGoomDraw& draw);
 
   auto IsInitialPhase() const -> bool;
   auto IsMiddlePhase() const -> bool;
@@ -67,9 +63,9 @@ private:
   const size_t m_fontInfoIndex;
   [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
   [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;
-  const UTILS::IColorMap* m_textColorMap;
-  const UTILS::IColorMap* m_textOutlineColorMap;
-  const UTILS::IColorMap* m_charColorMap;
+  std::reference_wrapper<const UTILS::IColorMap> m_textColorMap;
+  std::reference_wrapper<const UTILS::IColorMap> m_textOutlineColorMap;
+  std::reference_wrapper<const UTILS::IColorMap> m_charColorMap;
   void DrawText(const std::string& text);
   static auto GetTextLines(const std::string& text) -> std::vector<std::string>;
   auto GetCharSpacing() const -> float;
@@ -88,8 +84,8 @@ inline auto GoomTitleDisplay::IsInitialPhase() const -> bool
 
 inline auto GoomTitleDisplay::IsMiddlePhase() const -> bool
 {
-  return TIME_TO_START_MIDDLE_PHASE >= m_timeLeftOfTitleDisplay &&
-         m_timeLeftOfTitleDisplay > TIME_TO_START_FINAL_PHASE;
+  return (TIME_TO_START_MIDDLE_PHASE >= m_timeLeftOfTitleDisplay) &&
+         (m_timeLeftOfTitleDisplay > TIME_TO_START_FINAL_PHASE);
 }
 
 inline auto GoomTitleDisplay::IsFinalPhase() const -> bool

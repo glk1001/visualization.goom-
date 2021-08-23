@@ -1,6 +1,8 @@
 #ifndef VISUALIZATION_GOOM_TEXT_DRAW_H
 #define VISUALIZATION_GOOM_TEXT_DRAW_H
 
+#include "goomutils/spimpl.h"
+
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -23,12 +25,7 @@ namespace GOOM::DRAW
 class TextDraw
 {
 public:
-  explicit TextDraw(const IGoomDraw* draw) noexcept;
-  TextDraw(const TextDraw&) noexcept = delete;
-  TextDraw(TextDraw&&) noexcept = delete;
-  ~TextDraw() noexcept;
-  auto operator=(const TextDraw&) noexcept -> TextDraw& = delete;
-  auto operator=(TextDraw&&) noexcept -> TextDraw& = delete;
+  explicit TextDraw(const IGoomDraw& draw) noexcept;
 
   enum class TextAlignment
   {
@@ -60,8 +57,8 @@ public:
     int32_t xmax{};
     int32_t ymin{};
     int32_t ymax{};
-    [[nodiscard]] auto Width() const -> int32_t { return xmax - xmin + 1; }
-    [[nodiscard]] auto Height() const -> int32_t { return ymax - ymin + 1; }
+    [[nodiscard]] auto Width() const -> int32_t { return (xmax - xmin) + 1; }
+    [[nodiscard]] auto Height() const -> int32_t { return (ymax - ymin) + 1; }
   };
   [[nodiscard]] auto GetPreparedTextBoundingRect() const -> Rect;
   [[nodiscard]] auto GetBearingX() const -> int;
@@ -72,7 +69,7 @@ public:
 
 private:
   class TextDrawImpl;
-  std::unique_ptr<TextDrawImpl> m_textDrawImpl;
+  spimpl::unique_impl_ptr<TextDrawImpl> m_textDrawImpl;
 };
 
 #if __cplusplus <= 201402L

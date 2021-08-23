@@ -18,6 +18,7 @@
 #undef NDEBUG
 #include <cassert>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <random>
 #include <utility>
@@ -127,24 +128,19 @@ class Tube::TubeImpl
 public:
   TubeImpl() noexcept = delete;
   TubeImpl(uint32_t tubeId,
-           DrawFuncs  drawFuncs,
+           DrawFuncs drawFuncs,
            uint32_t screenWidth,
            uint32_t screenHeight,
-           const RandomColorMaps* colorMaps,
-           const RandomColorMaps* lowColorMaps,
+           std::shared_ptr<RandomColorMaps> colorMaps,
+           std::shared_ptr<RandomColorMaps> lowColorMaps,
            float radiusEdgeOffset,
            float brightnessFactor) noexcept;
-  ~TubeImpl() noexcept;
-  TubeImpl(const TubeImpl&) noexcept = delete;
-  TubeImpl(TubeImpl&&) noexcept = delete;
-  auto operator=(const TubeImpl&) -> TubeImpl& = delete;
-  auto operator=(TubeImpl&&) -> TubeImpl& = delete;
 
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
 
-  void SetWeightedColorMaps(const RandomColorMaps* colorMaps);
-  void SetWeightedLowColorMaps(const RandomColorMaps* lowColorMaps);
+  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> colorMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> lowColorMaps);
 
   void ResetColorMaps();
   void RotateShapeColorMaps();
@@ -230,8 +226,8 @@ Tube::Tube(const uint32_t tubeId,
            const DrawFuncs& drawFuncs,
            const uint32_t screenWidth,
            const uint32_t screenHeight,
-           const RandomColorMaps* const colorMaps,
-           const RandomColorMaps* const lowColorMaps,
+           const std::shared_ptr<RandomColorMaps> colorMaps,
+           const std::shared_ptr<RandomColorMaps> lowColorMaps,
            const float radiusEdgeOffset,
            float brightnessFactor) noexcept
   : m_impl{std::make_unique<Tube::TubeImpl>(tubeId,
@@ -245,18 +241,12 @@ Tube::Tube(const uint32_t tubeId,
 {
 }
 
-Tube::Tube(Tube&& other) noexcept : m_impl{other.m_impl}
-{
-}
-
-Tube::~Tube() noexcept = default;
-
-void Tube::SetWeightedColorMaps(const RandomColorMaps* const colorMaps)
+void Tube::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> colorMaps)
 {
   m_impl->SetWeightedColorMaps(colorMaps);
 }
 
-void Tube::SetWeightedLowColorMaps(const RandomColorMaps* const lowColorMaps)
+void Tube::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> lowColorMaps)
 {
   m_impl->SetWeightedLowColorMaps(lowColorMaps);
 }
@@ -383,24 +373,19 @@ public:
   };
 
   ShapeColorizer() noexcept = delete;
-  ~ShapeColorizer() noexcept = default;
   ShapeColorizer(uint32_t screenWidth,
                  uint32_t screenHeight,
                  uint32_t numShapes,
                  uint32_t numCircles,
-                 const RandomColorMaps* colorMaps,
-                 const RandomColorMaps* innerColorMaps,
+                 std::shared_ptr<RandomColorMaps> colorMaps,
+                 std::shared_ptr<RandomColorMaps> innerColorMaps,
                  float brightnessFactor);
-  ShapeColorizer(const ShapeColorizer&) noexcept = delete;
-  ShapeColorizer(ShapeColorizer&&) = delete;
-  auto operator=(const ShapeColorizer&) -> ShapeColorizer& = delete;
-  auto operator=(ShapeColorizer&&) -> ShapeColorizer& = delete;
 
   auto GetBrightnessFactor() const -> float;
   void SetBrightnessFactor(float val);
 
-  void SetWeightedColorMaps(const RandomColorMaps* colorMaps);
-  void SetWeightedLowColorMaps(const RandomColorMaps* lowColorMaps);
+  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> colorMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> lowColorMaps);
 
   void ResetColorMaps();
   void RotateShapeColorMaps();
@@ -411,8 +396,8 @@ public:
   void UpdateAllTValues();
 
 private:
-  const RandomColorMaps* m_randomColorMaps;
-  const RandomColorMaps* m_randomInnerColorMaps;
+  std::shared_ptr<RandomColorMaps> m_randomColorMaps;
+  std::shared_ptr<RandomColorMaps> m_randomInnerColorMaps;
   float m_brightnessFactor;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
@@ -429,8 +414,8 @@ private:
   std::vector<ShapeColors> m_oldCircleColors;
   TValue m_circleColorsT{TValue::StepType::CONTINUOUS_REPEATABLE, MAX_NUM_CIRCLES_IN_GROUP};
 
-  const IColorMap* m_outerCircleColorMap{};
-  const IColorMap* m_outerCircleLowColorMap{};
+  std::reference_wrapper<const IColorMap> m_outerCircleColorMap;
+  std::reference_wrapper<const IColorMap> m_outerCircleLowColorMap;
   static constexpr uint32_t NUM_OUTER_CIRCLE_COLOR_STEPS = 100;
   TValue m_outerCircleT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_OUTER_CIRCLE_COLOR_STEPS};
 
@@ -521,7 +506,7 @@ class ParametricPath
 public:
   explicit ParametricPath() noexcept = default;
   [[nodiscard]] auto GetStepSize() const -> float { return m_t.GetStepSize(); }
-  void SetStepSize(float val) { m_t.SetStepSize(val); }
+  void SetStepSize(const float val) { m_t.SetStepSize(val); }
   [[nodiscard]] auto GetT() const -> float { return m_t(); }
   void SetT(const float val) { m_t.Reset(val); }
   [[nodiscard]] auto GetNextPoint() const -> V2dInt;
@@ -545,11 +530,11 @@ auto ParametricPath::GetNextPoint() const -> V2dInt
 }
 
 Tube::TubeImpl::TubeImpl(const uint32_t tubeId,
-                         DrawFuncs  drawFuncs,
+                         DrawFuncs drawFuncs,
                          const uint32_t screenWidth,
                          const uint32_t screenHeight,
-                         const RandomColorMaps* const colorMaps,
-                         const RandomColorMaps* const lowColorMaps,
+                         const std::shared_ptr<RandomColorMaps> colorMaps,
+                         const std::shared_ptr<RandomColorMaps> lowColorMaps,
                          const float radiusEdgeOffset,
                          float brightnessFactor) noexcept
   : m_tubeId{tubeId},
@@ -569,14 +554,12 @@ Tube::TubeImpl::TubeImpl(const uint32_t tubeId,
   InitShapes(radiusEdgeOffset);
 }
 
-Tube::TubeImpl::~TubeImpl() noexcept = default;
-
 void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
 {
   const V2dInt middlePos{static_cast<int32_t>(m_screenWidth / 2),
                          static_cast<int32_t>(m_screenHeight / 2)};
   const auto radius =
-      0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight)) - radiusEdgeOffset;
+      (0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight))) - radiusEdgeOffset;
   const float angleStep = m_two_pi / static_cast<float>(m_shapes.size());
 
   m_centrePath = std::make_unique<ParametricPath>();
@@ -602,16 +585,16 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
     //shape.lineThickness = GetRandInRange(1U, 4U);
 
     angle += angleStep;
-    shapeNum++;
+    ++shapeNum;
   }
 }
 
-void Tube::TubeImpl::SetWeightedColorMaps(const RandomColorMaps* const colorMaps)
+void Tube::TubeImpl::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> colorMaps)
 {
   m_colorizer->SetWeightedColorMaps(colorMaps);
 }
 
-void Tube::TubeImpl::SetWeightedLowColorMaps(const RandomColorMaps* const lowColorMaps)
+void Tube::TubeImpl::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> lowColorMaps)
 {
   m_colorizer->SetWeightedLowColorMaps(lowColorMaps);
 }
@@ -706,7 +689,7 @@ void Tube::TubeImpl::DecreaseCentreSpeed()
 
 void Tube::TubeImpl::SetAllowOscillatingCirclePaths(const bool val)
 {
-  for (auto& shape : m_shapes)
+  for (const auto& shape : m_shapes)
   {
     shape.path->SetAllowOscillatingPath(val);
   }
@@ -714,7 +697,7 @@ void Tube::TubeImpl::SetAllowOscillatingCirclePaths(const bool val)
 
 void Tube::TubeImpl::SetCirclePathParams(const PathParams& params)
 {
-  for (auto& shape : m_shapes)
+  for (const auto& shape : m_shapes)
   {
     shape.path->SetPathParams(params);
   }
@@ -837,7 +820,7 @@ void Tube::TubeImpl::DrawShape(const Shape& shape, const V2dInt& centreOffset) c
   }
 
   constexpr float MIN_HEX_LEN_FOR_INTERIOR = 2.0;
-  if (!m_interiorShapeTimer.Finished() && m_hexLen > MIN_HEX_LEN_FOR_INTERIOR + SMALL_FLOAT)
+  if ((!m_interiorShapeTimer.Finished()) && (m_hexLen > (MIN_HEX_LEN_FOR_INTERIOR + SMALL_FLOAT)))
   {
     DrawInteriorShape(shapeCentrePos, allColors);
     DrawOuterCircle(shapeCentrePos, allColors);
@@ -861,7 +844,7 @@ void Tube::TubeImpl::DrawHexOutline(const V2dInt& hexCentre,
   int32_t y0 = hexCentre.y;
   float angle = START_ANGLE;
 
-  for (uint32_t i = 0; i < NUM_HEX_SIDES; i++)
+  for (uint32_t i = 0; i < NUM_HEX_SIDES; ++i)
   {
     const int32_t x1 = x0 + static_cast<int32_t>(std::round(m_hexLen * std::cos(angle)));
     const int32_t y1 = y0 + static_cast<int32_t>(std::round(m_hexLen * std::sin(angle)));
@@ -905,8 +888,8 @@ ShapeColorizer::ShapeColorizer(const uint32_t screenWidth,
                                const uint32_t screenHeight,
                                const uint32_t numShapes,
                                const uint32_t numCircles,
-                               const RandomColorMaps* const colorMaps,
-                               const RandomColorMaps* const innerColorMaps,
+                               const std::shared_ptr<RandomColorMaps> colorMaps,
+                               const std::shared_ptr<RandomColorMaps> innerColorMaps,
                                const float brightnessFactor)
   : m_randomColorMaps{colorMaps},
     m_randomInnerColorMaps{innerColorMaps},
@@ -915,6 +898,8 @@ ShapeColorizer::ShapeColorizer(const uint32_t screenWidth,
     m_oldShapeColors(numShapes),
     m_circleColorMaps(numCircles),
     m_oldCircleColors(numCircles),
+    m_outerCircleColorMap{m_randomInnerColorMaps->GetRandomColorMap()},
+    m_outerCircleLowColorMap{m_randomInnerColorMaps->GetRandomColorMap()},
     m_brightnessAttenuation{screenWidth, screenHeight, CUTOFF_BRIGHTNESS}
 {
   InitColorMaps();
@@ -926,7 +911,7 @@ inline auto ShapeColorizer::GetBrightnessFactor() const -> float
   return m_brightnessFactor;
 }
 
-inline void ShapeColorizer::SetBrightnessFactor(float val)
+inline void ShapeColorizer::SetBrightnessFactor(const float val)
 {
   m_brightnessFactor = val;
 }
@@ -943,12 +928,12 @@ void ShapeColorizer::InitColorMaps()
   }
 }
 
-void ShapeColorizer::SetWeightedColorMaps(const RandomColorMaps* colorMaps)
+void ShapeColorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> colorMaps)
 {
   m_randomColorMaps = colorMaps;
 }
 
-void ShapeColorizer::SetWeightedLowColorMaps(const RandomColorMaps* lowColorMaps)
+void ShapeColorizer::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> lowColorMaps)
 {
   m_randomInnerColorMaps = lowColorMaps;
 }
@@ -976,16 +961,16 @@ void ShapeColorizer::RotateShapeColorMaps()
   std::rotate(begin(m_oldShapeColors), begin(m_oldShapeColors) + 1, end(m_oldShapeColors));
 }
 
-void ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* colorMaps,
-                                        std::vector<ShapeColors>* oldColors,
-                                        TValue* t)
+void ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const colorMaps,
+                                        std::vector<ShapeColors>* const oldColors,
+                                        TValue* const t)
 {
   assert(colorMaps->size() == oldColors->size());
 
-  m_outerCircleColorMap = &m_randomInnerColorMaps->GetRandomColorMap();
-  m_outerCircleLowColorMap = &m_randomInnerColorMaps->GetRandomColorMap();
+  m_outerCircleColorMap = m_randomInnerColorMaps->GetRandomColorMap();
+  m_outerCircleLowColorMap = m_randomInnerColorMaps->GetRandomColorMap();
 
-  for (size_t i = 0; i < colorMaps->size(); i++)
+  for (size_t i = 0; i < colorMaps->size(); ++i)
   {
     CopyColors((*colorMaps)[i], *t, &(*oldColors)[i]);
     ResetColorMaps(&(*colorMaps)[i]);
@@ -993,7 +978,7 @@ void ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* colorMaps,
   t->Reset(0.0);
 }
 
-void ShapeColorizer::ResetColorMaps(ShapeColorMaps* colorMaps) const
+void ShapeColorizer::ResetColorMaps(ShapeColorMaps* const colorMaps) const
 {
   colorMaps->colorMap = &m_randomColorMaps->GetRandomColorMap();
   colorMaps->lowColorMap = &m_randomColorMaps->GetRandomColorMap();
@@ -1003,14 +988,14 @@ void ShapeColorizer::ResetColorMaps(ShapeColorMaps* colorMaps) const
 
 void ShapeColorizer::CopyColors(const ShapeColorMaps& colorMaps,
                                 const TValue& t,
-                                ShapeColors* oldColors) const
+                                ShapeColors* const oldColors) const
 {
   oldColors->color = colorMaps.colorMap->GetColor(t());
   oldColors->lowColor = colorMaps.lowColorMap->GetColor(t());
   oldColors->innerColor = colorMaps.innerColorMap->GetColor(t());
   oldColors->innerLowColor = colorMaps.innerLowColorMap->GetColor(t());
-  oldColors->outerCircleColor = m_outerCircleColorMap->GetColor(t());
-  oldColors->outerCircleLowColor = m_outerCircleLowColorMap->GetColor(t());
+  oldColors->outerCircleColor = m_outerCircleColorMap.get().GetColor(t());
+  oldColors->outerCircleLowColor = m_outerCircleLowColorMap.get().GetColor(t());
 }
 
 inline void ShapeColorizer::ResetColorMixMode()
@@ -1183,9 +1168,9 @@ inline auto ShapeColorizer::GetInnerLowMixedColor(const LowColorTypes colorType,
 
 inline auto ShapeColorizer::GetShapeNumToUse(const uint32_t shapeNum) const -> uint32_t
 {
-  return m_colorMapMixMode == ColorMapMixMode::STRIPED_SHAPES_ONLY ||
-                 m_colorMapMixMode == ColorMapMixMode::STRIPED_SHAPES_AND_CIRCLES
-             ? shapeNum / m_stripeWidth
+  return (m_colorMapMixMode == ColorMapMixMode::STRIPED_SHAPES_ONLY) ||
+                 (m_colorMapMixMode == ColorMapMixMode::STRIPED_SHAPES_AND_CIRCLES)
+             ? (shapeNum / m_stripeWidth)
              : shapeNum;
 }
 
@@ -1215,10 +1200,11 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
       GetFinalColor(oldShapeColors.innerColor, shapeColorMaps.innerColorMap->GetColor(t()));
   const Pixel innerLowColor =
       GetFinalColor(oldShapeColors.innerLowColor, shapeColorMaps.innerLowColorMap->GetColor(t()));
-  const Pixel outerCircleColor = GetFinalColor(oldShapeColors.outerCircleColor,
-                                               m_outerCircleColorMap->GetColor(m_outerCircleT()));
-  const Pixel outerCircleLowColor = GetFinalColor(
-      oldShapeColors.outerCircleLowColor, m_outerCircleLowColorMap->GetColor(m_outerCircleT()));
+  const Pixel outerCircleColor = GetFinalColor(
+      oldShapeColors.outerCircleColor, m_outerCircleColorMap.get().GetColor(m_outerCircleT()));
+  const Pixel outerCircleLowColor =
+      GetFinalColor(oldShapeColors.outerCircleLowColor,
+                    m_outerCircleLowColorMap.get().GetColor(m_outerCircleT()));
 
   return {
       GetGammaCorrection(brightness, color),
@@ -1244,7 +1230,7 @@ inline auto ShapeColorizer::GetGammaCorrection(const float brightness, const Pix
     -> Pixel
 {
   // if constexpr (GAMMA == 1.0F)
-  if (GAMMA == 1.0F)
+  if (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color, true);
   }
@@ -1266,7 +1252,7 @@ auto BrightnessAttenuation::GetPositionBrightness(const V2dInt& pos,
 {
   const float distFromCentre = GetDistFromCentreFactor(pos);
   return distFromCentre < DIST_SQ_CUTOFF ? m_cutoffBrightness
-                                         : minBrightnessPastCutoff + distFromCentre;
+                                         : (minBrightnessPastCutoff + distFromCentre);
 }
 
 inline auto BrightnessAttenuation::GetDistFromCentreFactor(const V2dInt& pos) const -> float
@@ -1330,10 +1316,10 @@ inline auto ShapePath::GetPointAtT(const V2dInt& p0, const V2dInt& p1, const flo
 inline auto ShapePath::GetOscillatingPointAtT(const V2dFlt& point, const float t) const -> V2dFlt
 {
   return {
-      point.x + m_pathParams.oscillatingAmplitude *
-                    std::cos(m_pathParams.xOscillatingFreq * t * m_two_pi),
-      point.y + m_pathParams.oscillatingAmplitude *
-                    std::sin(m_pathParams.yOscillatingFreq * t * m_two_pi),
+      point.x + (m_pathParams.oscillatingAmplitude *
+                 std::cos(m_pathParams.xOscillatingFreq * t * m_two_pi)),
+      point.y + (m_pathParams.oscillatingAmplitude *
+                 std::sin(m_pathParams.yOscillatingFreq * t * m_two_pi)),
   };
 }
 
