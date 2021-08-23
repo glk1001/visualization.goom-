@@ -114,11 +114,6 @@ public:
   explicit TubeFxImpl(const IGoomDraw& draw,
                       const std::shared_ptr<const PluginInfo>& goomInfo,
                       const SmallImageBitmaps& smallBitmaps) noexcept;
-  TubeFxImpl(const TubeFxImpl&) noexcept = delete;
-  TubeFxImpl(TubeFxImpl&&) noexcept = delete;
-  ~TubeFxImpl() noexcept = default;
-  auto operator=(const TubeFxImpl&) -> TubeFxImpl& = delete;
-  auto operator=(TubeFxImpl&&) -> TubeFxImpl& = delete;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
@@ -150,7 +145,6 @@ private:
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath = ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
   uint32_t m_numCapturedPrevShapesGroups = 0;
-  const IColorMap* m_prevShapesColorMap{};
   static constexpr float PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
   const BrightnessAttenuation m_prevShapesBrightnessAttenuation;
   [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
@@ -349,7 +343,6 @@ inline void TubeFx::TubeFxImpl::SetWeightedColorMaps(
     const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
-  m_prevShapesColorMap = &m_colorMaps->GetRandomColorMap();
 
   for (auto& tube : m_tubes)
   {
@@ -554,8 +547,6 @@ void TubeFx::TubeFxImpl::UpdateColorMaps()
   {
     return;
   }
-
-  m_prevShapesColorMap = &m_colorMaps->GetRandomColorMap();
 
   for (auto& tube : m_tubes)
   {
