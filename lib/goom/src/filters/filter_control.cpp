@@ -35,8 +35,8 @@ constexpr float PROB_LOW = 0.1F;
 // clang-format off
 const Weights<ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
     { ZoomFilterMode::AMULET_MODE,            4 },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE0,     3 },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE1,     1 },
+    { ZoomFilterMode::CRYSTAL_BALL_MODE0,     4 },
+    { ZoomFilterMode::CRYSTAL_BALL_MODE1,     2 },
     { ZoomFilterMode::HYPERCOS_MODE0,         6 },
     { ZoomFilterMode::HYPERCOS_MODE1,         5 },
     { ZoomFilterMode::HYPERCOS_MODE2,         3 },
@@ -45,7 +45,7 @@ const Weights<ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
     { ZoomFilterMode::NORMAL_MODE,            6 },
     { ZoomFilterMode::SCRUNCH_MODE,           6 },
     { ZoomFilterMode::SPEEDWAY_MODE,          6 },
-    { ZoomFilterMode::WAVE_MODE0,             7 },
+    { ZoomFilterMode::WAVE_MODE0,             5 },
     { ZoomFilterMode::WAVE_MODE1,             4 },
     { ZoomFilterMode::WATER_MODE,             0 },
     { ZoomFilterMode::Y_ONLY_MODE,            4 },

@@ -38,7 +38,7 @@ constexpr NumberRange<float> AMPLITUDE_RANGE = {0.001F, 0.25F};
 constexpr NumberRange<float> SMALL_FREQ_FACTOR_RANGE = {0.001F, 0.1F};
 constexpr NumberRange<float> BIG_AMPLITUDE_RANGE = {1.0F, 50.0F};
 
-constexpr float PROB_ALLOW_STRANGE_WAVE_VALUES = 0.2F;
+constexpr float PROB_ALLOW_STRANGE_WAVE_VALUES = 0.1F;
 constexpr float PROB_WAVE_XY_EFFECTS_EQUAL = 0.75F;
 constexpr float PROB_NO_PERIODIC_FACTOR = 0.2F;
 
