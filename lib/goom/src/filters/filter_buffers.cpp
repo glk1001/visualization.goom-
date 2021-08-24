@@ -15,6 +15,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <tuple>
 #include <vector>
 
@@ -38,16 +39,10 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
                                      const ZoomPointFunc& zoomPointFunc)
   : m_screenWidth{goomInfo->GetScreenInfo().width},
     m_screenHeight{goomInfo->GetScreenInfo().height},
-    m_bufferSize{goomInfo->GetScreenInfo().size},
     m_precalculatedCoeffs{std::make_unique<FilterCoefficients>()},
     m_parallel{p},
     m_getZoomPoint{zoomPointFunc},
-    m_tranXSrce(m_bufferSize),
-    m_tranYSrce(m_bufferSize),
-    m_tranXDest(m_bufferSize),
-    m_tranYDest(m_bufferSize),
-    m_tranXTemp(m_bufferSize),
-    m_tranYTemp(m_bufferSize),
+    m_transformBuffers{std::make_unique<TransformBuffers>(m_screenWidth, m_screenHeight)},
     m_maxTranPoint{ScreenToTranPoint(
         {static_cast<int32_t>(m_screenWidth - 1), static_cast<int32_t>(m_screenHeight - 1)})},
     m_tranBuffStripeHeight{m_screenHeight / DIM_FILTER_COEFFS},
@@ -55,25 +50,10 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
 {
   assert(DIM_FILTER_COEFFS ==
          static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS_DIV_SHIFT))));
-  assert(MAX_TRAN_DIFF_FACTOR ==
+  assert(MAX_TRAN_LERP_VALUE ==
          static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS))) - 1);
 
   NormalizedCoords::SetScreenDimensions(m_screenWidth, m_screenHeight, MIN_SCREEN_COORD_ABS_VAL);
-}
-
-auto ZoomFilterBuffers::GetZoomPointFunc() const -> ZoomPointFunc
-{
-  return m_getZoomPoint;
-}
-
-auto ZoomFilterBuffers::GetMaxTranLerpFactor() -> int32_t
-{
-  return MAX_TRAN_DIFF_FACTOR;
-}
-
-void ZoomFilterBuffers::SetTranLerpFactor(const int32_t val)
-{
-  m_tranLerpFactor = val;
 }
 
 inline auto ZoomFilterBuffers::NormalizedToTranPoint(const NormalizedCoords& normalizedPoint)
@@ -114,12 +94,12 @@ void ZoomFilterBuffers::Start()
 }
 
 auto ZoomFilterBuffers::GetSourcePointInfo(const V2dInt& tranPoint) const
-    -> std::tuple<V2dInt, NeighborhoodCoeffArray>
+    -> std::pair<V2dInt, NeighborhoodCoeffArray>
 {
   const V2dInt srcePoint = TranToScreenPoint(tranPoint);
   const size_t xIndex = TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
   const size_t yIndex = TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
-  return std::make_tuple(srcePoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex]);
+  return std::make_pair(srcePoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex]);
 }
 
 void ZoomFilterBuffers::FilterSettingsChanged()
@@ -150,83 +130,22 @@ void ZoomFilterBuffers::InitTranBuffers()
   GenerateWaterFxHorizontalBuffer();
   DoNextTranBufferStripe(m_screenHeight);
 
-  SetSrceTranToIdentity();
-  CopyTempTranToDestTran();
+  m_transformBuffers->SetSrceTranToIdentity();
+  m_transformBuffers->CopyTempTranToDestTran();
 
   m_tranBuffYLineStart = 0;
   m_tranBufferState = TranBuffersState::RESTART_TRAN_BUFFERS;
-}
-
-void ZoomFilterBuffers::SetSrceTranToIdentity()
-{
-  size_t i = 0;
-  for (int32_t y = 0; y < static_cast<int32_t>(m_screenHeight); ++y)
-  {
-    for (int32_t x = 0; x < static_cast<int32_t>(m_screenWidth); ++x)
-    {
-      const V2dInt tranPoint = ScreenToTranPoint({x, y});
-      m_tranXSrce[i] = tranPoint.x;
-      m_tranYSrce[i] = tranPoint.y;
-      ++i;
-    }
-  }
-}
-
-inline void ZoomFilterBuffers::CopyTempTranToDestTran()
-{
-  std::copy(m_tranXTemp.begin(), m_tranXTemp.end(), m_tranXDest.begin());
-  std::copy(m_tranYTemp.begin(), m_tranYTemp.end(), m_tranYDest.begin());
-}
-
-inline void ZoomFilterBuffers::CopyAllDestTranToSrceTran()
-{
-  std::copy(m_tranXDest.begin(), m_tranXDest.end(), m_tranXSrce.begin());
-  std::copy(m_tranYDest.begin(), m_tranYDest.end(), m_tranYSrce.begin());
-}
-
-void ZoomFilterBuffers::CopyRemainingDestTranToSrceTran()
-{
-  for (size_t i = 0; i < m_bufferSize; ++i)
-  {
-    const V2dInt tranPoint = GetZoomBufferSrceDestLerp(i);
-    m_tranXSrce[i] = tranPoint.x;
-    m_tranYSrce[i] = tranPoint.y;
-  }
-}
-
-inline void ZoomFilterBuffers::SetUpNextDestTran()
-{
-  std::swap(m_tranXDest, m_tranXTemp);
-  std::swap(m_tranYDest, m_tranYTemp);
 }
 
 // generation du buffer de transform
 void ZoomFilterBuffers::ResetTranBuffers()
 {
-  SaveCurrentDestStateToSrceTran();
-  SetUpNextDestTran();
+  m_transformBuffers->SaveCurrentDestStateToSrceTran();
+  m_transformBuffers->SetUpNextDestTran();
 
-  m_tranLerpFactor = 0;
+  m_transformBuffers->SetTranLerpFactor(0);
   m_tranBuffYLineStart = 0;
   m_tranBufferState = TranBuffersState::RESTART_TRAN_BUFFERS;
-}
-
-void ZoomFilterBuffers::SaveCurrentDestStateToSrceTran()
-{
-  // sauvegarde de l'etat actuel dans la nouvelle source
-  // Save the current state in the source buffs.
-  if (0 == m_tranLerpFactor)
-  {
-    // Nothing to do: tran srce == tran dest.
-  }
-  else if (m_tranLerpFactor == MAX_TRAN_DIFF_FACTOR)
-  {
-    CopyAllDestTranToSrceTran();
-  }
-  else
-  {
-    CopyRemainingDestTranToSrceTran();
-  }
 }
 
 void ZoomFilterBuffers::RestartTranBuffers()
@@ -266,10 +185,9 @@ void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeig
     {
       const NormalizedCoords normalizedZoomPoint = m_getZoomPoint(normalizedCentredPoint);
       const NormalizedCoords uncenteredZoomPoint = normalizedMidPt + normalizedZoomPoint;
-      const V2dInt tranPoint = GetTranPoint(uncenteredZoomPoint);
-      const uint32_t tranPos = tranPosStart + x;
-      m_tranXTemp[tranPos] = tranPoint.x;
-      m_tranYTemp[tranPos] = tranPoint.y;
+
+      m_transformBuffers->SetTempTransformPoint(tranPosStart + x,
+                                                GetTranPoint(uncenteredZoomPoint));
 
       normalizedCentredPoint.IncX();
     }
@@ -374,6 +292,93 @@ void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
       accel += 2;
     }
   }
+}
+
+ZoomFilterBuffers::TransformBuffers::TransformBuffers(const uint32_t screenWidth,
+                                                      const uint32_t screenHeight) noexcept
+  : m_screenWidth{screenWidth},
+    m_screenHeight{screenHeight},
+    m_bufferSize{m_screenWidth * m_screenHeight},
+    m_tranXSrce(m_bufferSize),
+    m_tranYSrce(m_bufferSize),
+    m_tranXDest(m_bufferSize),
+    m_tranYDest(m_bufferSize),
+    m_tranXTemp(m_bufferSize),
+    m_tranYTemp(m_bufferSize)
+{
+}
+
+void ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity()
+{
+  size_t i = 0;
+  for (int32_t y = 0; y < static_cast<int32_t>(m_screenHeight); ++y)
+  {
+    for (int32_t x = 0; x < static_cast<int32_t>(m_screenWidth); ++x)
+    {
+      const V2dInt tranPoint = ScreenToTranPoint({x, y});
+      m_tranXSrce[i] = tranPoint.x;
+      m_tranYSrce[i] = tranPoint.y;
+      ++i;
+    }
+  }
+}
+
+inline void ZoomFilterBuffers::TransformBuffers::CopyTempTranToDestTran()
+{
+  std::copy(m_tranXTemp.begin(), m_tranXTemp.end(), m_tranXDest.begin());
+  std::copy(m_tranYTemp.begin(), m_tranYTemp.end(), m_tranYDest.begin());
+}
+
+inline void ZoomFilterBuffers::TransformBuffers::CopyAllDestTranToSrceTran()
+{
+  std::copy(m_tranXDest.begin(), m_tranXDest.end(), m_tranXSrce.begin());
+  std::copy(m_tranYDest.begin(), m_tranYDest.end(), m_tranYSrce.begin());
+}
+
+void ZoomFilterBuffers::TransformBuffers::CopyRemainingDestTranToSrceTran()
+{
+  for (size_t i = 0; i < m_bufferSize; ++i)
+  {
+    const V2dInt tranPoint = GetZoomBufferSrceDestLerp(i);
+    m_tranXSrce[i] = tranPoint.x;
+    m_tranYSrce[i] = tranPoint.y;
+  }
+}
+
+void ZoomFilterBuffers::TransformBuffers::SaveCurrentDestStateToSrceTran()
+{
+  // sauvegarde de l'etat actuel dans la nouvelle source
+  // Save the current state in the source buffs.
+  if (0 == GetTranLerpFactor())
+  {
+    // Nothing to do: tran srce == tran dest.
+  }
+  else if (GetTranLerpFactor() == MAX_TRAN_LERP_VALUE)
+  {
+    CopyAllDestTranToSrceTran();
+  }
+  else
+  {
+    CopyRemainingDestTranToSrceTran();
+  }
+}
+
+inline void ZoomFilterBuffers::TransformBuffers::SetUpNextDestTran()
+{
+  std::swap(m_tranXDest, m_tranXTemp);
+  std::swap(m_tranYDest, m_tranYTemp);
+}
+
+inline void ZoomFilterBuffers::TransformBuffers::SetTempTransformPoint(const uint32_t pos,
+                                                                       const V2dInt& transformPoint)
+{
+  m_tranXTemp[pos] = transformPoint.x;
+  m_tranYTemp[pos] = transformPoint.y;
+}
+
+inline void ZoomFilterBuffers::TransformBuffers::SetTranLerpFactor(const int32_t val)
+{
+  m_tranLerpFactor = val;
 }
 
 // TODO Old Clang and MSVC won't allow the following '= default'

@@ -492,17 +492,8 @@ void ZoomFilterFx::ZoomFilterImpl::UpdateTranLerpFactor(const int32_t switchIncr
   if (switchIncr != 0)
   {
     m_stats.DoSwitchIncrNotZero();
-
-    tranLerpFactor += switchIncr;
-
-    if (tranLerpFactor < 0)
-    {
-      tranLerpFactor = 0;
-    }
-    else if (tranLerpFactor > ZoomFilterBuffers::GetMaxTranLerpFactor())
-    {
-      tranLerpFactor = ZoomFilterBuffers::GetMaxTranLerpFactor();
-    }
+    tranLerpFactor =
+        stdnew::clamp(tranLerpFactor + switchIncr, 0, ZoomFilterBuffers::GetMaxTranLerpFactor());
   }
   LogInfo("after switchIncr = {} m_tranDiffFactor = {}", switchIncr, tranLerpFactor);
 
@@ -609,7 +600,7 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
 #endif
     for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
     {
-      const V2dInt tranPoint = m_filterBuffers.GetZoomBufferSrceDestLerp(destPos);
+      const V2dInt tranPoint = m_filterBuffers.GetZoomBufferTranPoint(destPos);
 
       if (m_filterBuffers.IsTranPointClipped(tranPoint))
       {
