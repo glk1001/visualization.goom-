@@ -56,7 +56,7 @@ public:
   void DoZoomFilterFastRgb();
   void DoCZoom();
   void DoResetTranBuffer();
-  void DoRestartTranBuffer();
+  void DoStartFreshTranBuffer();
   void DoSwitchIncrNotZero();
   void DoSwitchMultNotOne();
   void DoTranPointClipped();
@@ -111,7 +111,7 @@ private:
 
   uint32_t m_numChangeFilterSettings = 0;
   uint64_t m_numZoomFilterFastRgb = 0;
-  uint64_t m_numRestartTranBuffer = 0;
+  uint64_t m_numStartFreshTranBuffer = 0;
   uint64_t m_numResetTranBuffer = 0;
   uint64_t m_numSwitchIncrNotZero = 0;
   uint64_t m_numSwitchMultNotOne = 0;

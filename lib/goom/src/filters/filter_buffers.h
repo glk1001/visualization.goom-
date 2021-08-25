@@ -36,7 +36,7 @@ public:
   enum class TranBuffersState
   {
     _NULL = -1,
-    RESTART_TRAN_BUFFERS,
+    START_FRESH_TRAN_BUFFERS,
     RESET_TRAN_BUFFERS,
     TRAN_BUFFERS_READY,
   };
@@ -61,8 +61,8 @@ public:
   void Start();
 
   void FilterSettingsChanged();
-  void UpdateTranBuffer();
-  [[nodiscard]] auto GetTranBufferState() const -> TranBuffersState;
+  void UpdateTranBuffers();
+  [[nodiscard]] auto GetTranBuffersState() const -> TranBuffersState;
   [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos) const -> V2dInt;
   [[nodiscard]] auto IsTranPointClipped(const V2dInt& tranPoint) const -> bool;
 
@@ -98,12 +98,12 @@ private:
   const V2dInt m_maxTranPoint;
   const uint32_t m_tranBuffStripeHeight;
   uint32_t m_tranBuffYLineStart = 0;
-  TranBuffersState m_tranBufferState = TranBuffersState::TRAN_BUFFERS_READY;
+  TranBuffersState m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
 
   std::vector<int32_t> m_firedec{};
 
   void InitTranBuffers();
-  void RestartTranBuffers();
+  void StartFreshTranBuffers();
   void ResetTranBuffers();
   void DoNextTranBufferStripe(uint32_t tranBuffStripeHeight);
   void GenerateWaterFxHorizontalBuffer();
@@ -143,7 +143,7 @@ public:
 
   void SetSrceTranToIdentity();
   void CopyTempTranToDestTran();
-  void SaveCurrentDestStateToSrceTran();
+  void CopyDestTranToSrceTran();
   void SetUpNextDestTran();
 
   void SetTempTransformPoint(uint32_t pos, const V2dInt& transformPoint);
@@ -151,7 +151,7 @@ public:
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
   void SetTranLerpFactor(int32_t val);
 
-  [[nodiscard]] auto GetZoomBufferSrceDestLerp(size_t buffPos) const -> V2dInt;
+  [[nodiscard]] auto GetSrceDestLerpBufferPoint(const size_t buffPos) const -> V2dInt;
 
 private:
   const uint32_t m_screenWidth;
@@ -181,19 +181,14 @@ inline void ZoomFilterBuffers::SetBuffMidPoint(const V2dInt& val)
   m_buffMidPoint = val;
 }
 
-inline auto ZoomFilterBuffers::GetTranBufferState() const -> TranBuffersState
+inline auto ZoomFilterBuffers::GetTranBuffersState() const -> TranBuffersState
 {
-  return m_tranBufferState;
+  return m_tranBuffersState;
 }
 
 inline auto ZoomFilterBuffers::GetTranLerpFactor() const -> int32_t
 {
   return m_transformBuffers->GetTranLerpFactor();
-}
-
-inline auto ZoomFilterBuffers::TransformBuffers::GetTranLerpFactor() const -> int32_t
-{
-  return m_tranLerpFactor;
 }
 
 inline auto ZoomFilterBuffers::GetMaxTranLerpFactor() -> int32_t
@@ -228,12 +223,27 @@ inline auto ZoomFilterBuffers::IsTranPointClipped(const V2dInt& tranPoint) const
          (static_cast<uint32_t>(tranPoint.y) >= GetMaxTranY());
 }
 
-inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(size_t buffPos) const -> V2dInt
+inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos) const -> V2dInt
 {
-  return m_transformBuffers->GetZoomBufferSrceDestLerp(buffPos);
+  return m_transformBuffers->GetSrceDestLerpBufferPoint(buffPos);
 }
 
-inline auto ZoomFilterBuffers::TransformBuffers::GetZoomBufferSrceDestLerp(
+inline auto ZoomFilterBuffers::GetZoomPointFunc() const -> ZoomPointFunc
+{
+  return m_getZoomPoint;
+}
+
+inline auto ZoomFilterBuffers::TransformBuffers::GetTranLerpFactor() const -> int32_t
+{
+  return m_tranLerpFactor;
+}
+
+inline void ZoomFilterBuffers::TransformBuffers::SetTranLerpFactor(const int32_t val)
+{
+  m_tranLerpFactor = val;
+}
+
+inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(
     const size_t buffPos) const -> V2dInt
 {
   return {GetTranBuffLerpVal(m_tranXSrce[buffPos], m_tranXDest[buffPos], m_tranLerpFactor),
@@ -245,11 +255,6 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
                                                                     const int32_t t) -> int32_t
 {
   return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);
-}
-
-inline auto ZoomFilterBuffers::GetZoomPointFunc() const -> ZoomPointFunc
-{
-  return m_getZoomPoint;
 }
 
 } // namespace FILTERS

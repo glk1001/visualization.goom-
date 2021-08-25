@@ -46,7 +46,7 @@ void FilterStats::Reset()
   m_numZoomVectorVPlaneEffect = 0;
   m_numCZoom = 0;
   m_numZoomFilterFastRgb = 0;
-  m_numRestartTranBuffer = 0;
+  m_numStartFreshTranBuffer = 0;
   m_numResetTranBuffer = 0;
   m_numSwitchIncrNotZero = 0;
   m_numSwitchMultNotOne = 0;
@@ -109,7 +109,6 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
            static_cast<uint32_t>(m_lastZoomFilterSettings->vitesse.GetReverseVitesse()));
     logVal(MODULE, "lastZoomFilterData->relativeSpeed",
            m_lastZoomFilterSettings->vitesse.GetRelativeSpeed());
-    logVal(MODULE, "lastZoomFilterData->pertedec", static_cast<uint32_t>(ZoomFilterData::pertedec));
     logVal(MODULE, "lastZoomFilterData->middleX", m_lastZoomFilterSettings->middleX);
     logVal(MODULE, "lastZoomFilterData->middleY", m_lastZoomFilterSettings->middleY);
 
@@ -181,7 +180,7 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
   }
 
   logVal(MODULE, "numResetTranBuffer", m_numResetTranBuffer);
-  logVal(MODULE, "numRestartTranBuffer", m_numRestartTranBuffer);
+  logVal(MODULE, "numStartFreshTranBuffer", m_numStartFreshTranBuffer);
   logVal(MODULE, "numSwitchIncrNotZero", m_numSwitchIncrNotZero);
   logVal(MODULE, "numSwitchMultNotOne", m_numSwitchMultNotOne);
   logVal(MODULE, "numTranPointsClipped", m_numTranPointsClipped);
@@ -300,9 +299,9 @@ void FilterStats::DoResetTranBuffer()
   m_numResetTranBuffer++;
 }
 
-void FilterStats::DoRestartTranBuffer()
+void FilterStats::DoStartFreshTranBuffer()
 {
-  m_numRestartTranBuffer++;
+  m_numStartFreshTranBuffer++;
 }
 
 void FilterStats::DoSwitchMultNotOne()

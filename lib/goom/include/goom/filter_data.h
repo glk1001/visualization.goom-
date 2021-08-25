@@ -131,11 +131,6 @@ struct ZoomFilterData
   }
 
   Vitesse vitesse{};
-#if __cplusplus <= 201402L
-  static const uint8_t pertedec; // NEVER SEEMS TO CHANGE
-#else
-  static constexpr uint8_t pertedec = 8; // NEVER SEEMS TO CHANGE
-#endif
   static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
   static constexpr uint32_t DEFAULT_MIDDLE_Y = 1;
   uint32_t middleX = DEFAULT_MIDDLE_X;

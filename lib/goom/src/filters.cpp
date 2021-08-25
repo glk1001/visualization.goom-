@@ -8,7 +8,7 @@
  *  -ajout de zoomFilter()
  *  -copie de zoomFilter() en zoomFilterRGB(), gerant les 3 couleurs
  *  -optimisation de sinFilter (utilisant une table de sin)
- *	-asm
+ *  -asm
  *	-optimisation de la procedure de generation du buffer de transformation
  *		la vitesse est maintenant comprise dans [0..128] au lieu de [0..100]
  *
@@ -58,10 +58,6 @@ using UTILS::GetRandInRange;
 using UTILS::Logging;
 using UTILS::Parallel;
 
-#if __cplusplus <= 201402L
-const uint8_t ZoomFilterData::pertedec = 8; // NEVER SEEMS TO CHANGE
-#endif
-
 class ZoomFilterFx::ZoomFilterImpl
 {
 public:
@@ -69,7 +65,6 @@ public:
   ZoomFilterImpl(Parallel& p,
                  const std::shared_ptr<const PluginInfo>& goomInfo,
                  IZoomVector& zoomVector) noexcept;
-  ~ZoomFilterImpl() noexcept = default;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
@@ -98,7 +93,7 @@ public:
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  bool started = false;
+  bool m_started = false;
 
   IZoomVector& m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
@@ -128,15 +123,15 @@ private:
 
   void UpdateTranBuffer();
   void UpdateTranLerpFactor(int32_t switchIncr, float switchMult);
-  void RestartTranBuffer();
+  void StartFreshTranBuffer();
 
   void LogState(const std::string& name) const;
 };
 
 ZoomFilterFx::ZoomFilterFx(Parallel& p,
-                           const std::shared_ptr<const PluginInfo>& info,
+                           const std::shared_ptr<const PluginInfo>& goomInfo,
                            IZoomVector& zoomVector) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<ZoomFilterImpl>(p, info, zoomVector)}
+  : m_fxImpl{spimpl::make_unique_impl<ZoomFilterImpl>(p, goomInfo, zoomVector)}
 {
 }
 
@@ -164,9 +159,9 @@ void ZoomFilterFx::Finish()
 {
 }
 
-void ZoomFilterFx::Log(const GoomStats::LogStatsValueFunc& logVal) const
+void ZoomFilterFx::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
 {
-  m_fxImpl->Log(logVal);
+  m_fxImpl->Log(logValueFunc);
 }
 
 auto ZoomFilterFx::GetFxName() const -> std::string
@@ -290,11 +285,9 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetNewColor(const NeighborhoodCoeffArr
 {
   if (m_currentFilterSettings.blockyWavy)
   {
-    // m_stats.DoGetBlockyMixedColor();
     return GetBlockyMixedColor(coeffs, pixels);
   }
 
-  // m_stats.DoGetMixedColor();
   return GetMixedColor(coeffs, pixels);
 }
 
@@ -303,7 +296,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetBlockyMixedColor(
 {
   // Changing the color order gives a strange blocky, wavy look.
   // The order col4, col3, col2, col1 gave a black tear - no so good.
-  static_assert(ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS == 4, "NUM_NEIGHBOR_COEFFS must be 4.");
+  static_assert(4 == ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS, "NUM_NEIGHBOR_COEFFS must be 4.");
   const NeighborhoodPixelArray reorderedColors{colors[0], colors[2], colors[1], colors[3]};
   return GetMixedColor(coeffs, reorderedColors);
 }
@@ -320,7 +313,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetMixedColor(const NeighborhoodCoeffA
   uint32_t multR = 0;
   uint32_t multG = 0;
   uint32_t multB = 0;
-  for (size_t i = 0; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; i++)
+  for (size_t i = 0; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; ++i)
   {
     const uint32_t& coeff = coeffs.val[i];
     const auto& color = colors[i];
@@ -359,7 +352,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetMixedColor(const NeighborhoodCoeffA
 
 void ZoomFilterFx::ZoomFilterImpl::SetInitialFilterSettings(const ZoomFilterData& filterSettings)
 {
-  assert(!started);
+  assert(!m_started);
 
   m_stats.DoChangeFilterSettings(filterSettings);
 
@@ -369,7 +362,7 @@ void ZoomFilterFx::ZoomFilterImpl::SetInitialFilterSettings(const ZoomFilterData
 
 void ZoomFilterFx::ZoomFilterImpl::ChangeFilterSettings(const ZoomFilterData& filterSettings)
 {
-  assert(started);
+  assert(m_started);
 
   m_stats.DoChangeFilterSettings(filterSettings);
 
@@ -379,7 +372,7 @@ void ZoomFilterFx::ZoomFilterImpl::ChangeFilterSettings(const ZoomFilterData& fi
 
 void ZoomFilterFx::ZoomFilterImpl::Start()
 {
-  started = true;
+  m_started = true;
 
   ChangeFilterSettings(m_currentFilterSettings);
 
@@ -409,7 +402,7 @@ void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& pix1,
                                                      const float switchMult,
                                                      uint32_t& numClipped)
 {
-  m_updateNum++;
+  ++m_updateNum;
 
   LogInfo("Starting ZoomFilterFastRgb, update {}", m_updateNum);
   LogInfo("switchIncr = {}, switchMult = {}", switchIncr, switchMult);
@@ -431,22 +424,23 @@ void ZoomFilterFx::ZoomFilterImpl::UpdateTranBuffer()
 {
   m_stats.UpdateTranBufferStart();
 
-  m_filterBuffers.UpdateTranBuffer();
+  m_filterBuffers.UpdateTranBuffers();
 
-  if (m_filterBuffers.GetTranBufferState() == ZoomFilterBuffers::TranBuffersState::RESET_TRAN_BUFFERS)
+  if (m_filterBuffers.GetTranBuffersState() ==
+      ZoomFilterBuffers::TranBuffersState::RESET_TRAN_BUFFERS)
   {
     m_stats.DoResetTranBuffer();
   }
-  else if (m_filterBuffers.GetTranBufferState() ==
-           ZoomFilterBuffers::TranBuffersState::RESTART_TRAN_BUFFERS)
+  else if (m_filterBuffers.GetTranBuffersState() ==
+           ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS)
   {
-    RestartTranBuffer();
+    StartFreshTranBuffer();
   }
 
-  m_stats.UpdateTranBufferEnd(m_currentFilterSettings.mode, m_filterBuffers.GetTranBufferState());
+  m_stats.UpdateTranBufferEnd(m_currentFilterSettings.mode, m_filterBuffers.GetTranBuffersState());
 }
 
-void ZoomFilterFx::ZoomFilterImpl::RestartTranBuffer()
+void ZoomFilterFx::ZoomFilterImpl::StartFreshTranBuffer()
 {
   // Don't start making new stripes until filter settings change.
   if (!m_pendingFilterSettings)
@@ -454,7 +448,7 @@ void ZoomFilterFx::ZoomFilterImpl::RestartTranBuffer()
     return;
   }
 
-  m_stats.DoRestartTranBuffer();
+  m_stats.DoStartFreshTranBuffer();
 
   m_pendingFilterSettings = false;
   m_currentFilterSettings = m_nextFilterSettings;
@@ -606,7 +600,7 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
       {
         m_stats.DoTranPointClipped();
         *destRowBuff = Pixel::BLACK;
-        numDestClipped++;
+        ++numDestClipped;
       }
       else
       {
@@ -636,7 +630,7 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
         }
 #endif
       }
-      destPos++;
+      ++destPos;
     }
   };
 

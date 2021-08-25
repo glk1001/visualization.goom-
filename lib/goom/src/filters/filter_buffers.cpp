@@ -107,15 +107,15 @@ void ZoomFilterBuffers::FilterSettingsChanged()
   m_filterSettingsHaveChanged = true;
 }
 
-void ZoomFilterBuffers::UpdateTranBuffer()
+void ZoomFilterBuffers::UpdateTranBuffers()
 {
-  if (m_tranBufferState == TranBuffersState::RESET_TRAN_BUFFERS)
+  if (m_tranBuffersState == TranBuffersState::RESET_TRAN_BUFFERS)
   {
     ResetTranBuffers();
   }
-  else if (m_tranBufferState == TranBuffersState::RESTART_TRAN_BUFFERS)
+  else if (m_tranBuffersState == TranBuffersState::START_FRESH_TRAN_BUFFERS)
   {
-    RestartTranBuffers();
+    StartFreshTranBuffers();
   }
   else
   {
@@ -134,21 +134,21 @@ void ZoomFilterBuffers::InitTranBuffers()
   m_transformBuffers->CopyTempTranToDestTran();
 
   m_tranBuffYLineStart = 0;
-  m_tranBufferState = TranBuffersState::RESTART_TRAN_BUFFERS;
+  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
 // generation du buffer de transform
 void ZoomFilterBuffers::ResetTranBuffers()
 {
-  m_transformBuffers->SaveCurrentDestStateToSrceTran();
+  m_transformBuffers->CopyDestTranToSrceTran();
   m_transformBuffers->SetUpNextDestTran();
 
   m_transformBuffers->SetTranLerpFactor(0);
   m_tranBuffYLineStart = 0;
-  m_tranBufferState = TranBuffersState::RESTART_TRAN_BUFFERS;
+  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
-void ZoomFilterBuffers::RestartTranBuffers()
+void ZoomFilterBuffers::StartFreshTranBuffers()
 {
   if (!m_filterSettingsHaveChanged)
   {
@@ -157,7 +157,7 @@ void ZoomFilterBuffers::RestartTranBuffers()
 
   m_filterSettingsHaveChanged = false;
   m_tranBuffYLineStart = 0;
-  m_tranBufferState = TranBuffersState::TRAN_BUFFERS_READY;
+  m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
 }
 
 /*
@@ -169,7 +169,7 @@ void ZoomFilterBuffers::RestartTranBuffers()
  */
 void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeight)
 {
-  assert(m_tranBufferState == TranBuffersState::TRAN_BUFFERS_READY);
+  assert(m_tranBuffersState == TranBuffersState::TRAN_BUFFERS_READY);
 
   const NormalizedCoords normalizedMidPt{m_buffMidPoint}; //TODO optimize
 
@@ -202,7 +202,7 @@ void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeig
   m_tranBuffYLineStart += tranBuffStripeHeight;
   if (tranBuffYLineEnd >= m_screenHeight)
   {
-    m_tranBufferState = TranBuffersState::RESET_TRAN_BUFFERS;
+    m_tranBuffersState = TranBuffersState::RESET_TRAN_BUFFERS;
     m_tranBuffYLineStart = 0;
   }
 }
@@ -339,13 +339,13 @@ void ZoomFilterBuffers::TransformBuffers::CopyRemainingDestTranToSrceTran()
 {
   for (size_t i = 0; i < m_bufferSize; ++i)
   {
-    const V2dInt tranPoint = GetZoomBufferSrceDestLerp(i);
+    const V2dInt tranPoint = GetSrceDestLerpBufferPoint(i);
     m_tranXSrce[i] = tranPoint.x;
     m_tranYSrce[i] = tranPoint.y;
   }
 }
 
-void ZoomFilterBuffers::TransformBuffers::SaveCurrentDestStateToSrceTran()
+void ZoomFilterBuffers::TransformBuffers::CopyDestTranToSrceTran()
 {
   // sauvegarde de l'etat actuel dans la nouvelle source
   // Save the current state in the source buffs.
@@ -374,11 +374,6 @@ inline void ZoomFilterBuffers::TransformBuffers::SetTempTransformPoint(const uin
 {
   m_tranXTemp[pos] = transformPoint.x;
   m_tranYTemp[pos] = transformPoint.y;
-}
-
-inline void ZoomFilterBuffers::TransformBuffers::SetTranLerpFactor(const int32_t val)
-{
-  m_tranLerpFactor = val;
 }
 
 // TODO Old Clang and MSVC won't allow the following '= default'

@@ -31,8 +31,8 @@ class ZoomFilterFx : public IVisualFx
 {
 public:
   ZoomFilterFx() noexcept = delete;
-  ZoomFilterFx(UTILS::Parallel&,
-               const std::shared_ptr<const PluginInfo>&,
+  ZoomFilterFx(UTILS::Parallel& p,
+               const std::shared_ptr<const PluginInfo>& goomInfo,
                FILTERS::IZoomVector& zoomVector) noexcept;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
@@ -59,7 +59,7 @@ public:
                          float switchMult,
                          uint32_t& numClipped);
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const override;
+  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const override;
   void Finish() override;
 
 private:
