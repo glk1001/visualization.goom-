@@ -6,7 +6,7 @@
  *
  * (c)2000-2003, by iOS-software.
  *
- *	- converted to C++14 2021-02-01 (glk)
+ *  - converted to C++14 2021-02-01 (glk)
  *
  */
 
@@ -88,6 +88,7 @@ using FILTERS::FilterZoomVector;
 using FILTERS::IZoomVector;
 using UTILS::ColorMapGroup;
 using UTILS::GammaCorrection;
+using UTILS::GetAllMapsUnweighted;
 using UTILS::GetAllSlimMaps;
 using UTILS::GetAllStandardMaps;
 using UTILS::GetBlueStandardMaps;
@@ -203,18 +204,13 @@ class GoomControl::GoomControlImpl
 {
 public:
   GoomControlImpl(uint32_t screenWidth, uint32_t screenHeight, std::string resourcesDirectory);
-  ~GoomControlImpl() noexcept;
-  GoomControlImpl(const GoomControlImpl&) noexcept = delete;
-  GoomControlImpl(GoomControlImpl&&) noexcept = delete;
-  auto operator=(const GoomControlImpl&) noexcept -> GoomControlImpl& = delete;
-  auto operator=(GoomControlImpl&&) noexcept -> GoomControlImpl& = delete;
 
   void Swap(GoomControl::GoomControlImpl& other) noexcept = delete;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
 
-  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& pixels);
+  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
 
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
@@ -414,12 +410,12 @@ void GoomControl::Finish()
   m_controller->Finish();
 }
 
-void GoomControl::Update(const AudioSamples& soundData,
+void GoomControl::Update(const AudioSamples& s,
                          const float fps,
                          const std::string& songTitle,
                          const std::string& message)
 {
-  m_controller->Update(soundData, fps, songTitle, message);
+  m_controller->Update(s, fps, songTitle, message);
 }
 
 static const Pixel RED_LINE = GetRedLineColor();
@@ -465,8 +461,6 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
 
   RotateDrawBuffers();
 }
-
-GoomControl::GoomControlImpl::~GoomControlImpl() noexcept = default;
 
 auto GoomControl::GoomControlImpl::GetResourcesDirectory() const -> const std::string&
 {
@@ -582,7 +576,7 @@ struct GoomStateColorMatch
   std::function<std::shared_ptr<RandomColorMaps>()> getColorMaps;
 };
 using GoomStateColorMatchedSet = std::array<GoomStateColorMatch, NUM<GoomEffect>>;
-static const std::array<GoomStateColorMatchedSet, 7> GOOM_STATE_COLOR_MATCHED_SETS{{
+static const std::array<GoomStateColorMatchedSet, 8> GOOM_STATE_COLOR_MATCHED_SETS{{
     {{
         {GoomEffect::DOTS0, GetAllStandardMaps},
         {GoomEffect::DOTS1, GetAllStandardMaps},
@@ -688,9 +682,24 @@ static const std::array<GoomStateColorMatchedSet, 7> GOOM_STATE_COLOR_MATCHED_SE
         {GoomEffect::TUBE, GetSeasonsStandardMaps},
         {GoomEffect::TUBE_LOW, GetCitiesStandardMaps},
     }},
+    {{
+        {GoomEffect::DOTS0, GetRedStandardMaps},
+        {GoomEffect::DOTS1, GetBlueStandardMaps},
+        {GoomEffect::DOTS2, GetGreenStandardMaps},
+        {GoomEffect::DOTS3, GetYellowStandardMaps},
+        {GoomEffect::DOTS4, GetHeatStandardMaps},
+        {GoomEffect::LINES1, GetSlightlyDivergingStandardMaps},
+        {GoomEffect::LINES2, GetRedStandardMaps},
+        {GoomEffect::IFS, GetPastelStandardMaps},
+        {GoomEffect::STARS, GetPastelStandardMaps},
+        {GoomEffect::STARS_LOW, GetAllMapsUnweighted},
+        {GoomEffect::TENTACLES, GetGreenStandardMaps},
+        {GoomEffect::TUBE, GetAllMapsUnweighted},
+        {GoomEffect::TUBE_LOW, GetAllSlimMaps},
+    }},
 }};
 
-auto GetNextColorMatchedSet() -> const GoomStateColorMatchedSet&
+inline auto GetNextColorMatchedSet() -> const GoomStateColorMatchedSet&
 {
   return GOOM_STATE_COLOR_MATCHED_SETS[GetRandInRange(0U, GOOM_STATE_COLOR_MATCHED_SETS.size())];
 }
@@ -769,8 +778,8 @@ void GoomControl::GoomControlImpl::LogStats()
   m_stats.SetSeedLastValue(GetRandSeed());
   m_stats.SetNumThreadsUsedValue(m_parallel.GetNumThreadsUsed());
 
-  const auto log = [](const std::string& val) { LogInfo(val); };
-  const GoomStats statsLogger{log};
+  const auto logFunc = [](const std::string& val) { LogInfo(val); };
+  const GoomStats statsLogger{logFunc};
   const GoomStats::LogStatsValueFunc logStatsValueFunc = statsLogger.GetLogStatsValueFunc();
 
   m_stats.Log(logStatsValueFunc);
@@ -795,9 +804,9 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
 
   m_stats.UpdateChange(m_states.GetCurrentStateIndex(), m_filterControl.GetFilterSettings().mode);
 
-  m_updateNum++;
-  m_timeInState++;
-  m_timeWithFilter++;
+  ++m_updateNum;
+  ++m_timeInState;
+  ++m_timeWithFilter;
   m_convolveAllowOverexposed.Increment();
   m_convolveNotAllowOverexposed.Increment();
 
@@ -836,7 +845,7 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
 #endif
   DisplayTitle(songTitle, message, fps);
 
-  m_cycle++;
+  ++m_cycle;
 
   //  CALLGRIND_STOP_INSTRUMENTATION;
   //  CALLGRIND_DUMP_STATS;
@@ -922,7 +931,7 @@ inline void GoomControl::GoomControlImpl::UpdateLock()
   m_goomData.lock.Update();
 }
 
-inline void GoomControl::GoomControlImpl::SetLockTime(uint32_t val)
+inline void GoomControl::GoomControlImpl::SetLockTime(const uint32_t val)
 {
   m_stats.DoLockChange();
   m_goomData.lock.SetLockTime(val);
@@ -936,7 +945,7 @@ inline void GoomControl::GoomControlImpl::IncreaseLockTime(const uint32_t byAmou
 
 void GoomControl::GoomControlImpl::ChangeFilterModeIfMusicChanges()
 {
-  if ((m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() == 0) ||
+  if ((0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom()) ||
       (m_goomData.updatesSinceLastZoomEffectsChange > MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE))
   {
     LogDebug("Try to change the filter mode.");
@@ -972,7 +981,7 @@ void GoomControl::GoomControlImpl::ChangeState()
 
   if (m_goomData.stateSelectionBlocker)
   {
-    m_goomData.stateSelectionBlocker--;
+    --m_goomData.stateSelectionBlocker;
   }
   else if (m_goomEvent.Happens(GoomEvent::CHANGE_STATE))
   {
@@ -1055,7 +1064,7 @@ void GoomControl::GoomControlImpl::SetNextState()
   constexpr size_t MAX_TRIES = 10;
   const size_t oldStateIndex = m_states.GetCurrentStateIndex();
 
-  for (size_t numTry = 0; numTry < MAX_TRIES; numTry++)
+  for (size_t numTry = 0; numTry < MAX_TRIES; ++numTry)
   {
     m_states.DoRandomStateChange();
     // Pick a different state if possible
@@ -1073,7 +1082,7 @@ void GoomControl::GoomControlImpl::BigBreakIfMusicIsCalm()
 
   if ((m_goomInfo->GetSoundInfo().GetSpeed() < CALM_SPEED) &&
       (m_filterControl.GetVitesseSetting().GetVitesse() < (Vitesse::STOP_SPEED - 4)) &&
-      (m_cycle % CALM_CYCLES == 0))
+      (0 == (m_cycle % CALM_CYCLES)))
   {
     BigBreak();
   }
@@ -1104,7 +1113,7 @@ void GoomControl::GoomControlImpl::BigUpdate()
   // Coup de boost de la vitesse si besoin.
   // Goom tracking (strong acceleration of volume acceleration).
   // Speed boost if needed.
-  if (m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() == 0)
+  if (0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom())
   {
     BigNormalUpdate();
   }
@@ -1156,7 +1165,7 @@ void GoomControl::GoomControlImpl::ChangeMilieu()
 void GoomControl::GoomControlImpl::ChangeVitesse()
 {
   const auto goFasterVal = static_cast<int32_t>(
-      std::lround(3.5F * std::log10(1.0F + 500.0F * m_goomInfo->GetSoundInfo().GetSpeed())));
+      std::lround(3.5F * std::log10(1.0F + (500.0F * m_goomInfo->GetSoundInfo().GetSpeed()))));
   const int32_t newVitesse = Vitesse::STOP_SPEED - goFasterVal;
   const int32_t oldVitesse = m_filterControl.GetVitesseSetting().GetVitesse();
 
@@ -1175,7 +1184,7 @@ void GoomControl::GoomControlImpl::ChangeVitesse()
 
   // on accelere
   if (((newVitesse < FASTER_SPEED) && (oldVitesse < FAST_SPEED) &&
-       (m_cycle % VITESSE_CYCLES == 0)) ||
+       (0 == (m_cycle % VITESSE_CYCLES))) ||
       m_goomEvent.Happens(GoomEvent::FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE))
   {
     m_filterControl.GetVitesseSetting().SetVitesse(SLOW_SPEED);
@@ -1199,7 +1208,7 @@ void GoomControl::GoomControlImpl::ChangeSpeedReverse()
   constexpr int32_t SLOW_SPEED = Vitesse::STOP_SPEED - 2;
 
   if ((m_filterControl.GetVitesseSetting().GetReverseVitesse()) &&
-      (m_cycle % REVERSE_VITESSE_CYCLES != 0) &&
+      ((m_cycle % REVERSE_VITESSE_CYCLES) != 0) &&
       m_goomEvent.Happens(GoomEvent::FILTER_REVERSE_OFF_AND_STOP_SPEED))
   {
     m_stats.DoChangeReverseSpeedOff();
@@ -1331,7 +1340,7 @@ void GoomControl::GoomControlImpl::ChangeZoomEffect()
     }
     else
     {
-      m_goomData.updatesSinceLastZoomEffectsChange++;
+      ++m_goomData.updatesSinceLastZoomEffectsChange;
     }
   }
   else
@@ -1352,8 +1361,8 @@ void GoomControl::GoomControlImpl::ChangeZoomEffect()
     m_goomData.previousZoomSpeed = m_filterControl.GetVitesseSetting().GetVitesse();
     m_goomData.switchMult = 1.0F;
 
-    if (m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() == 0 &&
-        m_goomInfo->GetSoundInfo().GetTotalGoomsInCurrentCycle() < 2)
+    if ((0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom()) &&
+        (m_goomInfo->GetSoundInfo().GetTotalGoomsInCurrentCycle() < 2))
     {
       m_goomData.switchIncr = 0;
       m_goomData.switchMult = GoomData::SWITCH_MULT_AMOUNT;
@@ -1366,7 +1375,7 @@ void GoomControl::GoomControlImpl::ChangeZoomEffect()
 
 void GoomControl::GoomControlImpl::StopDecrementingAfterAWhile()
 {
-  if (m_cycle % 101 == 0)
+  if (0 == (m_cycle % 101))
   {
     StopDecrementing();
   }
@@ -1382,7 +1391,7 @@ void GoomControl::GoomControlImpl::RegularlyLowerTheSpeed()
   constexpr uint32_t LOWER_SPEED_CYCLES = 73;
   constexpr int32_t FAST_SPEED = Vitesse::STOP_SPEED - 5;
 
-  if ((m_cycle % LOWER_SPEED_CYCLES == 0) &&
+  if ((0 == (m_cycle % LOWER_SPEED_CYCLES)) &&
       (m_filterControl.GetVitesseSetting().GetVitesse() < FAST_SPEED))
   {
     m_stats.DoLowerVitesse();
@@ -1411,7 +1420,7 @@ void GoomControl::GoomControlImpl::ApplyZoom()
 
   m_stats.SetLastNumClipped(numClipped);
   constexpr uint32_t TOO_MANY_CLIPPED_DIVISOR = 100;
-  if (numClipped > m_goomInfo->GetScreenInfo().size / TOO_MANY_CLIPPED_DIVISOR)
+  if (numClipped > (m_goomInfo->GetScreenInfo().size / TOO_MANY_CLIPPED_DIVISOR))
   {
     m_stats.TooManyClipped();
     m_goomData.switchIncr = -m_goomData.switchIncr;
@@ -1585,7 +1594,7 @@ void GoomControl::GoomControlImpl::ApplyImageIfRequired()
 
 void GoomControl::GoomControlImpl::StopLinesIfRequested()
 {
-  if ((m_goomData.stopLines & 0xf000) || !m_states.IsCurrentlyDrawable(GoomDrawable::SCOPE))
+  if ((m_goomData.stopLines & 0xf000) || (!m_states.IsCurrentlyDrawable(GoomDrawable::SCOPE)))
   {
     StopLinesRequest();
   }
@@ -1593,7 +1602,7 @@ void GoomControl::GoomControlImpl::StopLinesIfRequested()
 
 void GoomControl::GoomControlImpl::StopLinesRequest()
 {
-  if (!m_goomLine1.CanResetDestLine() || !m_goomLine2.CanResetDestLine())
+  if ((!m_goomLine1.CanResetDestLine()) || (!m_goomLine2.CanResetDestLine()))
   {
     return;
   }
@@ -1614,11 +1623,11 @@ void GoomControl::GoomControlImpl::StopLinesRequest()
   m_goomData.stopLines &= 0x0fff;
 }
 
-void GoomControl::GoomControlImpl::ChooseGoomLine(float* param1,
-                                                  float* param2,
-                                                  Pixel* couleur,
-                                                  LinesFx::LineType* mode,
-                                                  float* amplitude,
+void GoomControl::GoomControlImpl::ChooseGoomLine(float* const param1,
+                                                  float* const param2,
+                                                  Pixel* const couleur,
+                                                  LinesFx::LineType* const mode,
+                                                  float* const amplitude,
                                                   const int farVal)
 {
   *amplitude = 1.0F;
@@ -1629,13 +1638,15 @@ void GoomControl::GoomControlImpl::ChooseGoomLine(float* param1,
     case LinesFx::LineType::CIRCLE:
       if (farVal)
       {
-        *param1 = *param2 = 0.47F;
+        *param1 = 0.47F;
+        *param2 = *param1;
         *amplitude = 0.8F;
         break;
       }
       if (m_goomEvent.Happens(GoomEvent::CHANGE_LINE_CIRCLE_AMPLITUDE))
       {
-        *param1 = *param2 = 0.0F;
+        *param1 = 0.0F;
+        *param2 = 0.0F;
         *amplitude = 3.0F;
       }
       else if (m_goomEvent.Happens(GoomEvent::CHANGE_LINE_CIRCLE_PARAMS))
@@ -1645,18 +1656,20 @@ void GoomControl::GoomControlImpl::ChooseGoomLine(float* param1,
       }
       else
       {
-        *param1 = *param2 = static_cast<float>(GetScreenHeight()) * 0.35F;
+        *param1 = static_cast<float>(GetScreenHeight()) * 0.35F;
+        *param2 = *param1;
       }
       break;
     case LinesFx::LineType::H_LINE:
       if (m_goomEvent.Happens(GoomEvent::CHANGE_H_LINE_PARAMS) || farVal)
       {
         *param1 = static_cast<float>(GetScreenHeight()) / 7.0F;
-        *param2 = 6.0F * static_cast<float>(GetScreenHeight()) / 7.0F;
+        *param2 = (6.0F * static_cast<float>(GetScreenHeight())) / 7.0F;
       }
       else
       {
-        *param1 = *param2 = static_cast<float>(GetScreenHeight()) / 2.0F;
+        *param1 = static_cast<float>(GetScreenHeight()) / 2.0F;
+        *param2 = *param1;
         *amplitude = 2.0F;
       }
       break;
@@ -1664,11 +1677,12 @@ void GoomControl::GoomControlImpl::ChooseGoomLine(float* param1,
       if (m_goomEvent.Happens(GoomEvent::CHANGE_V_LINE_PARAMS) || farVal)
       {
         *param1 = static_cast<float>(GetScreenWidth()) / 7.0F;
-        *param2 = 6.0F * static_cast<float>(GetScreenWidth()) / 7.0F;
+        *param2 = (6.0F * static_cast<float>(GetScreenWidth())) / 7.0F;
       }
       else
       {
-        *param1 = *param2 = static_cast<float>(GetScreenWidth()) / 2.0F;
+        *param1 = static_cast<float>(GetScreenWidth()) / 2.0F;
+        *param2 = *param1;
         *amplitude = 1.5F;
       }
       break;
@@ -1689,34 +1703,34 @@ void GoomControl::GoomControlImpl::StopRandomLineChangeMode()
 
   if (m_goomData.lineMode != m_goomData.drawLinesDuration)
   {
-    m_goomData.lineMode--;
-    if (m_goomData.lineMode == -1)
+    --m_goomData.lineMode;
+    if (-1 == m_goomData.lineMode)
     {
       m_goomData.lineMode = 0;
     }
   }
-  else if ((m_cycle % DEC_LINE_MODE_CYCLES == 0) &&
+  else if ((0 == (m_cycle % DEC_LINE_MODE_CYCLES)) &&
            m_goomEvent.Happens(GoomEvent::REDUCE_LINE_MODE) && m_goomData.lineMode)
   {
-    m_goomData.lineMode--;
+    --m_goomData.lineMode;
   }
 
-  if ((m_cycle % UPDATE_LINE_MODE_CYCLES == 0) &&
+  if ((0 == (m_cycle % UPDATE_LINE_MODE_CYCLES)) &&
       m_goomEvent.Happens(GoomEvent::UPDATE_LINE_MODE) &&
 #if __cplusplus <= 201402L
-      m_curGDrawables.find(GoomDrawable::SCOPE) != m_curGDrawables.end())
+      (m_curGDrawables.find(GoomDrawable::SCOPE) != m_curGDrawables.end()))
 #else
       m_curGDrawables.contains(GoomDrawable::SCOPE))
 #endif
   {
-    if (m_goomData.lineMode == 0)
+    if (0 == m_goomData.lineMode)
     {
       m_goomData.lineMode = m_goomData.drawLinesDuration;
     }
-    else if (m_goomData.lineMode == m_goomData.drawLinesDuration &&
+    else if ((m_goomData.lineMode == m_goomData.drawLinesDuration) &&
              m_goomLine1.CanResetDestLine() && m_goomLine2.CanResetDestLine())
     {
-      m_goomData.lineMode--;
+      --m_goomData.lineMode;
 
       float param1 = 0.0;
       float param2 = 0.0;
@@ -1728,10 +1742,11 @@ void GoomControl::GoomControlImpl::StopRandomLineChangeMode()
       Pixel color2 = m_goomLine2.GetRandomLineColor();
       if (m_goomData.stopLines)
       {
-        m_goomData.stopLines--;
+        --m_goomData.stopLines;
         if (m_goomEvent.Happens(GoomEvent::CHANGE_LINE_TO_BLACK))
         {
-          color2 = color1 = GetBlackLineColor();
+          color1 = GetBlackLineColor();
+          color2 = color1;
         }
       }
 
@@ -1769,9 +1784,9 @@ void GoomControl::GoomControlImpl::DisplayLines(const AudioSamples& soundData)
 
   constexpr uint32_t CHANGE_GOOM_LINE_CYCLES = 121;
 
-  if (((m_cycle % CHANGE_GOOM_LINE_CYCLES) == 9) &&
+  if ((9 == (m_cycle % CHANGE_GOOM_LINE_CYCLES)) &&
       m_goomEvent.Happens(GoomEvent::CHANGE_GOOM_LINE) &&
-      ((m_goomData.lineMode == 0) || (m_goomData.lineMode == m_goomData.drawLinesDuration)) &&
+      ((0 == m_goomData.lineMode) || (m_goomData.lineMode == m_goomData.drawLinesDuration)) &&
       m_goomLine1.CanResetDestLine() && m_goomLine2.CanResetDestLine())
   {
     LogDebug("cycle % 121 etc.: goomInfo->cycle = {}, rand1_3 = ?", m_cycle);
@@ -1785,10 +1800,11 @@ void GoomControl::GoomControlImpl::DisplayLines(const AudioSamples& soundData)
     Pixel color2 = m_goomLine2.GetRandomLineColor();
     if (m_goomData.stopLines)
     {
-      m_goomData.stopLines--;
+      --m_goomData.stopLines;
       if (m_goomEvent.Happens(GoomEvent::CHANGE_LINE_TO_BLACK))
       {
-        color2 = color1 = GetBlackLineColor();
+        color1 = GetBlackLineColor();
+        color2 = color1;
       }
     }
     m_goomLine1.ResetDestLine(mode, param1, amplitude, color1);
@@ -1893,7 +1909,7 @@ void GoomControl::GoomControlImpl::DisplayTitle(const std::string& songTitle,
         std::make_unique<GoomTitleDisplay>(xPos, yPos, GetFontDirectory(), m_goomTextOutput);
   }
 
-  if (m_goomTitleDisplay != nullptr && !m_goomTitleDisplay->IsFinished())
+  if ((m_goomTitleDisplay != nullptr) && (!m_goomTitleDisplay->IsFinished()))
   {
     if (m_goomTitleDisplay->IsFinalPhase())
     {
@@ -1925,7 +1941,7 @@ void GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages)
 
   const std::vector<std::string> msgLines = SplitString(messages, "\n");
   const size_t numberOfLinesInMessage = msgLines.size();
-  const size_t totalMessagesHeight = 20 + LINE_HEIGHT * numberOfLinesInMessage;
+  const size_t totalMessagesHeight = 20 + (LINE_HEIGHT * numberOfLinesInMessage);
 
   if (m_updateMessagesDisplay == nullptr)
   {
@@ -1936,7 +1952,7 @@ void GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages)
     const auto getOutlineFontColor =
         []([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] const float x,
            [[maybe_unused]] const float y, [[maybe_unused]] const float width,
-           [[maybe_unused]] float height) { return Pixel{0xFAFAFAFAU}; };
+           [[maybe_unused]] const float height) { return Pixel{0xFAFAFAFAU}; };
     m_updateMessagesDisplay = std::make_unique<TextDraw>(m_goomTextOutput);
     m_updateMessagesDisplay->SetFontFile(m_updateMessagesFontFile);
     m_updateMessagesDisplay->SetFontSize(MSG_FONT_SIZE);
@@ -1946,15 +1962,15 @@ void GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages)
     m_updateMessagesDisplay->SetOutlineFontColorFunc(getOutlineFontColor);
   }
 
-    for (size_t i = 0; i < msgLines.size(); i++)
-    {
-      const auto yPos = static_cast<int32_t>(Y_START + totalMessagesHeight -
-                                             (numberOfLinesInMessage - i) * LINE_HEIGHT);
-      m_updateMessagesDisplay->SetText(msgLines[i]);
-      m_updateMessagesDisplay->Prepare();
-      m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
-      m_updateMessagesDisplay->Draw(X_POS, yPos);
-    }
+  for (size_t i = 0; i < msgLines.size(); ++i)
+  {
+    const auto yPos = static_cast<int32_t>((Y_START + totalMessagesHeight) -
+                                           ((numberOfLinesInMessage - i) * LINE_HEIGHT));
+    m_updateMessagesDisplay->SetText(msgLines[i]);
+    m_updateMessagesDisplay->Prepare();
+    m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
+    m_updateMessagesDisplay->Draw(X_POS, yPos);
+  }
 }
 
 } // namespace GOOM
