@@ -15,6 +15,9 @@ struct V2dInt
 {
   int32_t x = 0;
   int32_t y = 0;
+  V2dInt() noexcept = default;
+  V2dInt(int32_t xx, int32_t yy) noexcept;
+  V2dInt(uint32_t xx, uint32_t yy) noexcept;
   [[nodiscard]] auto ToFlt() const -> V2dFlt;
   auto operator==(const V2dInt& v) const -> bool;
   auto operator+=(const V2dInt& v) -> V2dInt&;
@@ -42,6 +45,14 @@ struct V2dFlt
 [[nodiscard]] auto operator*(float a, const V2dFlt& v) -> V2dFlt;
 auto lerp(const V2dFlt& p0, const V2dFlt& p1, float t) -> V2dFlt;
 
+inline V2dInt::V2dInt(int32_t xx, int32_t yy) noexcept : x{xx}, y{yy}
+{
+}
+
+inline V2dInt::V2dInt(uint32_t xx, uint32_t yy) noexcept
+  : x{static_cast<int32_t>(xx)}, y{static_cast<int32_t>(yy)}
+{
+}
 
 inline auto V2dInt::ToFlt() const -> V2dFlt
 {

@@ -2,6 +2,7 @@
 #define VISUALIZATION_GOOM_FILTER_DATA_H
 
 #include "goomutils/mathutils.h"
+#include "v2d.h"
 
 #include <cstdint>
 
@@ -133,8 +134,7 @@ struct ZoomFilterData
   Vitesse vitesse{};
   static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
   static constexpr uint32_t DEFAULT_MIDDLE_Y = 1;
-  uint32_t middleX = DEFAULT_MIDDLE_X;
-  uint32_t middleY = DEFAULT_MIDDLE_Y; // milieu de l'effet
+  V2dInt midPoint = {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y}; // milieu de l'effet
   bool tanEffect = false;
   bool blockyWavy = false;
   static constexpr float MIN_ROTATE_SPEED = -0.5F;

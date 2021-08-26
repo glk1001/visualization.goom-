@@ -225,8 +225,7 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(Parallel& p,
                     }},
     m_parallel{p}
 {
-  m_currentFilterSettings.middleX = m_screenWidth / 2;
-  m_currentFilterSettings.middleY = m_screenHeight / 2;
+  m_currentFilterSettings.midPoint = {m_screenWidth / 2, m_screenHeight / 2};
 }
 
 void ZoomFilterFx::ZoomFilterImpl::Log(const GoomStats::LogStatsValueFunc& l) const
@@ -472,8 +471,7 @@ void ZoomFilterFx::ZoomFilterImpl::StartFreshTranBuffer()
 
 inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBuffersSettings()
 {
-  m_filterBuffers.SetBuffMidPoint({static_cast<int32_t>(m_currentFilterSettings.middleX),
-                                   static_cast<int32_t>(m_currentFilterSettings.middleY)});
+  m_filterBuffers.SetBuffMidPoint(m_currentFilterSettings.midPoint);
   m_filterBuffers.FilterSettingsChanged();
 }
 

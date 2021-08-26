@@ -10,8 +10,8 @@ using GOOM::FILTERS::NormalizedCoords;
 using GOOM::V2dInt;
 using GOOM::UTILS::floats_equal;
 
-constexpr size_t WIDTH = 1280;
-constexpr size_t HEIGHT = 720;
+constexpr uint32_t WIDTH = 1280;
+constexpr uint32_t HEIGHT = 720;
 static const float MIN_COORD_VAL =
     (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) /
     static_cast<float>(WIDTH - 1);
@@ -21,14 +21,6 @@ inline auto ConvertToScreen(const float normalizedValue) -> int32_t
   return static_cast<int32_t>(static_cast<float>(WIDTH - 1) *
       ((normalizedValue - NormalizedCoords::MIN_NORMALIZED_COORD) /
       (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD)));
-}
-
-inline auto ConvertToNormalized(const uint32_t screenValue) -> float
-{
-  return
-      NormalizedCoords::MIN_NORMALIZED_COORD +
-      (screenValue - NormalizedCoords::MIN_NORMALIZED_COORD) *
-          static_cast<float>(HEIGHT) / static_cast<float>(WIDTH);
 }
 
 TEST_CASE("Normalized Coords Values", "[CoordsValues]")
@@ -52,10 +44,13 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
 
   SECTION("Max coords")
   {
-    const NormalizedCoords coords{V2dInt{WIDTH - 1, HEIGHT - 1}};
+    const NormalizedCoords coords{V2dInt{WIDTH - 1U, HEIGHT - 1U}};
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), NormalizedCoords::MAX_NORMALIZED_COORD));
-    const float maxY = ConvertToNormalized(NormalizedCoords::MAX_NORMALIZED_COORD);
+    const float maxY =
+        NormalizedCoords::MIN_NORMALIZED_COORD +
+        (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) *
+            (static_cast<float>(HEIGHT) / static_cast<float>(WIDTH));
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
     UNSCOPED_INFO("maxY = " << maxY);
     REQUIRE(floats_equal(coords.GetY(), maxY, MIN_COORD_VAL));

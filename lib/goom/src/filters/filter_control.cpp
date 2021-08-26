@@ -272,9 +272,8 @@ auto FilterControl::GetNewRandomMode() const -> ZoomFilterMode
 
 void FilterControl::SetDefaultSettings()
 {
-  constexpr uint32_t DEFAULT_MID_X = 16;
-  m_filterData.middleX = DEFAULT_MID_X;
-  m_filterData.middleY = 1;
+  constexpr int32_t DEFAULT_MID_X = 16;
+  m_filterData.midPoint = {DEFAULT_MID_X, 1};
 
   m_filterData.vitesse.SetDefault();
 
@@ -471,13 +470,14 @@ void FilterControl::ChangeMilieu()
 void FilterControl::SetMiddlePoints()
 {
   using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
+  const V2dInt midScreenPoint{m_goomInfo->GetScreenInfo().width / 2,
+                              m_goomInfo->GetScreenInfo().height / 2};
 
   if ((m_filterData.mode == ZoomFilterMode::WATER_MODE) ||
       (m_filterData.mode == ZoomFilterMode::WAVE_MODE0) ||
       (m_filterData.mode == ZoomFilterMode::AMULET_MODE))
   {
-    m_filterData.middleX = m_goomInfo->GetScreenInfo().width / 2;
-    m_filterData.middleY = m_goomInfo->GetScreenInfo().height / 2;
+    m_filterData.midPoint = midScreenPoint;
     return;
   }
 
@@ -485,15 +485,13 @@ void FilterControl::SetMiddlePoints()
        (m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
       m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_IN_MIDDLE))
   {
-    m_filterData.middleX = m_goomInfo->GetScreenInfo().width / 2;
-    m_filterData.middleY = m_goomInfo->GetScreenInfo().height / 2;
+    m_filterData.midPoint = midScreenPoint;
     return;
     }
     if ((m_filterData.mode == ZoomFilterMode::WAVE_MODE1) &&
         m_filterEvents->Happens(EventTypes::WAVE_IN_MIDDLE))
     {
-      m_filterData.middleX = m_goomInfo->GetScreenInfo().width / 2;
-      m_filterData.middleY = m_goomInfo->GetScreenInfo().height / 2;
+      m_filterData.midPoint = midScreenPoint;
       return;
     }
 
@@ -514,26 +512,25 @@ void FilterControl::SetMiddlePoints()
   switch (s_middlePointWeights.GetRandomWeighted())
   {
     case MiddlePointEvents::EVENT1:
-      m_filterData.middleX = m_goomInfo->GetScreenInfo().width / 2;
-      m_filterData.middleY = m_goomInfo->GetScreenInfo().height - 1;
+      m_filterData.midPoint = {m_goomInfo->GetScreenInfo().width / 2,
+                               m_goomInfo->GetScreenInfo().height - 1};
       break;
     case MiddlePointEvents::EVENT2:
-      m_filterData.middleX = m_goomInfo->GetScreenInfo().width - 1;
+      m_filterData.midPoint.x = static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1);
       break;
     case MiddlePointEvents::EVENT3:
-      m_filterData.middleX = 1;
+      m_filterData.midPoint.x = 1;
       break;
     case MiddlePointEvents::EVENT4:
-      m_filterData.middleX = m_goomInfo->GetScreenInfo().width / 2;
-      m_filterData.middleY = m_goomInfo->GetScreenInfo().height / 2;
+      m_filterData.midPoint = midScreenPoint;
       break;
     case MiddlePointEvents::EVENT5:
-      m_filterData.middleX = m_goomInfo->GetScreenInfo().width / 4;
-      m_filterData.middleY = m_goomInfo->GetScreenInfo().height / 4;
+      m_filterData.midPoint = {m_goomInfo->GetScreenInfo().width / 4,
+                               m_goomInfo->GetScreenInfo().height / 4};
       break;
     case MiddlePointEvents::EVENT6:
-      m_filterData.middleX = (3 * m_goomInfo->GetScreenInfo().width) / 4;
-      m_filterData.middleY = (3 * m_goomInfo->GetScreenInfo().height) / 4;
+      m_filterData.midPoint = {(3 * m_goomInfo->GetScreenInfo().width) / 4,
+                               (3 * m_goomInfo->GetScreenInfo().height) / 4};
       break;
     default:
       throw std::logic_error("Unknown MiddlePointEvents enum.");
@@ -610,8 +607,8 @@ void FilterControl::SetPlaneEffects()
         ZoomFilterData::MIN_V_PLANE_EFFECT_AMPLITUDE, ZoomFilterData::MAX_V_PLANE_EFFECT_AMPLITUDE);
   }
 
-  if ((1 == m_filterData.middleX) ||
-      (m_filterData.middleX == (m_goomInfo->GetScreenInfo().width - 1)))
+  if ((1 == m_filterData.midPoint.x) ||
+      (m_filterData.midPoint.x == static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1)))
   {
     m_filterData.vPlaneEffect = 0;
     if (m_filterEvents->Happens(EventTypes::ZERO_H_PLANE_EFFECT))

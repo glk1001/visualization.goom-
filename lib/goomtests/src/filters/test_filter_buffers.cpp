@@ -25,10 +25,10 @@ constexpr size_t HEIGHT = 70;
 
 constexpr int32_t TEST_X = 10;
 constexpr int32_t TEST_Y = 50;
-constexpr V2dInt TEST_SRCE_POINT = {TEST_X, TEST_Y};
-constexpr V2dInt CONST_ZOOM_VECTOR_COORDS_1 = {16, 40};
-constexpr V2dInt CONST_ZOOM_VECTOR_COORDS_2 = {32, 52};
-constexpr V2dInt DUMMY_COORDS = {14, 38};
+const V2dInt TEST_SRCE_POINT = {TEST_X, TEST_Y};
+const V2dInt CONST_ZOOM_VECTOR_COORDS_1 = {16, 40};
+const V2dInt CONST_ZOOM_VECTOR_COORDS_2 = {32, 52};
+const V2dInt DUMMY_COORDS = {14, 38};
 
 constexpr auto TRAN_BUFF_POS = static_cast<size_t>(TEST_Y * WIDTH + TEST_X);
 
