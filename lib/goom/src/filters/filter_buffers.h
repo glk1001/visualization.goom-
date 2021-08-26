@@ -298,7 +298,7 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
                                                                     const int32_t destBuffVal,
                                                                     const int32_t t) -> int32_t
 {
-  return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);
+  return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) / CoordTransforms::MAX_TRAN_LERP_VALUE);
 }
 
 } // namespace FILTERS
