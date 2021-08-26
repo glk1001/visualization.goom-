@@ -13,14 +13,14 @@ endif()
 find_package(Threads)
 
 add_executable(goomtests
-    src/test_main.cpp
-    src/test_colorutils.cpp
-    src/test_draw.cpp
-    src/test_goomrand.cpp
-    src/test_normalized_coords.cpp
-    src/test_parallel_utils.cpp
-    src/test_pixels.cpp
-    src/test_strutils.cpp
+        src/test_main.cpp
+        src/test_pixels.cpp
+        src/draw/test_draw.cpp
+        src/filters/test_normalized_coords.cpp
+        src/utils/test_colorutils.cpp
+        src/utils/test_goomrand.cpp
+        src/utils/test_parallel_utils.cpp
+        src/utils/test_strutils.cpp
 )
 
 target_link_libraries(goomtests
