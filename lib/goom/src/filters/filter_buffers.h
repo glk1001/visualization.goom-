@@ -1,13 +1,16 @@
 #ifndef VISUALIZATION_GOOM_FILTER_BUFFERS_H
 #define VISUALIZATION_GOOM_FILTER_BUFFERS_H
 
+#include "filter_normalized_coords.h"
 #include "goom_graphic.h"
 #include "v2d.h"
 
+#include <cmath>
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace GOOM
@@ -24,14 +27,13 @@ class Parallel;
 namespace FILTERS
 {
 
-class NormalizedCoords;
-
 class ZoomFilterBuffers
 {
 public:
   static constexpr int32_t DIM_FILTER_COEFFS = 16;
   static constexpr size_t NUM_NEIGHBOR_COEFFS = 4;
   using NeighborhoodPixelArray = std::array<Pixel, NUM_NEIGHBOR_COEFFS>;
+  class CoordTransforms;
 
   enum class TranBuffersState
   {
@@ -61,6 +63,8 @@ public:
   void Start();
 
   void FilterSettingsChanged();
+  auto HaveFilterSettingsChanged() const -> bool;
+
   void UpdateTranBuffers();
   [[nodiscard]] auto GetTranBuffersState() const -> TranBuffersState;
   [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos) const -> V2dInt;
@@ -84,9 +88,6 @@ private:
   [[nodiscard]] auto GetMaxTranX() const -> uint32_t;
   [[nodiscard]] auto GetMaxTranY() const -> uint32_t;
 
-  [[nodiscard]] static auto NormalizedToTranPoint(const NormalizedCoords& normalizedPoint)
-      -> V2dInt;
-
   UTILS::Parallel& m_parallel;
   const ZoomPointFunc m_getZoomPoint;
   class TransformBuffers;
@@ -102,23 +103,31 @@ private:
 
   std::vector<int32_t> m_firedec{};
 
+  static constexpr float MIN_SCREEN_COORD_ABS_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
+
   void InitTranBuffers();
   void StartFreshTranBuffers();
   void ResetTranBuffers();
   void DoNextTranBufferStripe(uint32_t tranBuffStripeHeight);
   void GenerateWaterFxHorizontalBuffer();
   [[nodiscard]] static auto GetTranPoint(const NormalizedCoords& normalized) -> V2dInt;
+};
 
-  // For optimising multiplication, division, and mod by DIM_FILTER_COEFFS.
+class ZoomFilterBuffers::CoordTransforms
+{
+public:
+  // Use these consts for optimising multiplication, division, and mod, by DIM_FILTER_COEFFS.
+  static constexpr int32_t MAX_TRAN_LERP_VALUE = 0xFFFF;
   static constexpr int32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
   static constexpr int32_t DIM_FILTER_COEFFS_MOD_MASK = 0xF;
-  static constexpr int32_t MAX_TRAN_LERP_VALUE = 0xFFFF;
-  static constexpr float MIN_SCREEN_COORD_ABS_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
 
   [[nodiscard]] static auto TranCoordToCoeffIndex(uint32_t tranCoord) -> uint32_t;
   [[nodiscard]] static auto TranToScreenPoint(const V2dInt& tranPoint) -> V2dInt;
   [[nodiscard]] static auto ScreenToTranPoint(const V2dInt& screenPoint) -> V2dInt;
   [[nodiscard]] static auto ScreenToTranCoord(float screenCoord) -> uint32_t;
+
+  [[nodiscard]] static auto NormalizedToTranPoint(const NormalizedCoords& normalizedPoint)
+      -> V2dInt;
 };
 
 class ZoomFilterBuffers::FilterCoefficients
@@ -171,6 +180,41 @@ private:
       -> int32_t;
 };
 
+inline auto ZoomFilterBuffers::CoordTransforms::TranCoordToCoeffIndex(const uint32_t tranCoord)
+    -> uint32_t
+{
+  return tranCoord & DIM_FILTER_COEFFS_MOD_MASK;
+}
+
+inline auto ZoomFilterBuffers::CoordTransforms::TranToScreenPoint(const V2dInt& tranPoint) -> V2dInt
+{
+  return {tranPoint.x >> DIM_FILTER_COEFFS_DIV_SHIFT, tranPoint.y >> DIM_FILTER_COEFFS_DIV_SHIFT};
+}
+
+inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranPoint(const V2dInt& screenPoint)
+    -> V2dInt
+{
+  return {screenPoint.x << DIM_FILTER_COEFFS_DIV_SHIFT,
+          screenPoint.y << DIM_FILTER_COEFFS_DIV_SHIFT};
+}
+
+inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranCoord(const float screenCoord)
+    -> uint32_t
+{
+  // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
+  return static_cast<uint32_t>(std::lround(screenCoord * static_cast<float>(DIM_FILTER_COEFFS)));
+}
+
+inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
+    const NormalizedCoords& normalizedPoint) -> V2dInt
+{
+  const V2dFlt screenCoords = normalizedPoint.GetScreenCoordsFlt();
+
+  // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
+  return {static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.x))),
+          static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.y)))};
+}
+
 inline auto ZoomFilterBuffers::GetBuffMidPoint() const -> V2dInt
 {
   return m_buffMidPoint;
@@ -193,7 +237,7 @@ inline auto ZoomFilterBuffers::GetTranLerpFactor() const -> int32_t
 
 inline auto ZoomFilterBuffers::GetMaxTranLerpFactor() -> int32_t
 {
-  return MAX_TRAN_LERP_VALUE;
+  return CoordTransforms::MAX_TRAN_LERP_VALUE;
 }
 
 inline void ZoomFilterBuffers::SetTranLerpFactor(const int32_t val)

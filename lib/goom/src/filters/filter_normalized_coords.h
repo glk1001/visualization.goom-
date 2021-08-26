@@ -1,6 +1,7 @@
 #ifndef VISUALIZATION_GOOM_FILTER_NORMALIZED_COORDS_H
 #define VISUALIZATION_GOOM_FILTER_NORMALIZED_COORDS_H
 
+#include "goomutils/mathutils.h"
 #include "v2d.h"
 
 #include <cstdint>
@@ -44,6 +45,8 @@ public:
   auto operator+=(const NormalizedCoords& other) -> NormalizedCoords&;
   auto operator-=(const NormalizedCoords& other) -> NormalizedCoords&;
   auto operator*=(float scalar) -> NormalizedCoords&;
+
+  auto equals(const NormalizedCoords& other) const -> bool;
 
 private:
   static float s_ratioScreenToNormalizedCoord;
@@ -142,6 +145,11 @@ inline void NormalizedCoords::SetX(const float xNormalized)
 inline void NormalizedCoords::SetY(const float yNormalized)
 {
   m_normalizedCoords.y = yNormalized;
+}
+
+inline auto NormalizedCoords::equals(const NormalizedCoords& other) const -> bool
+{
+  return UTILS::floats_equal(GetX(), other.GetX()) && UTILS::floats_equal(GetY(), other.GetY());
 }
 
 inline auto NormalizedCoords::operator+=(const NormalizedCoords& other) -> NormalizedCoords&

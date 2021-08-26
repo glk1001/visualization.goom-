@@ -16,6 +16,7 @@ struct V2dInt
   int32_t x = 0;
   int32_t y = 0;
   [[nodiscard]] auto ToFlt() const -> V2dFlt;
+  auto operator==(const V2dInt& v) const -> bool;
   auto operator+=(const V2dInt& v) -> V2dInt&;
 };
 
@@ -45,6 +46,11 @@ auto lerp(const V2dFlt& p0, const V2dFlt& p1, float t) -> V2dFlt;
 inline auto V2dInt::ToFlt() const -> V2dFlt
 {
   return {static_cast<float>(x), static_cast<float>(y)};
+}
+
+inline auto V2dInt::operator==(const V2dInt& v) const -> bool
+{
+  return (x == v.x) && (y == v.y);
 }
 
 inline auto V2dInt::operator+=(const V2dInt& v) -> V2dInt&

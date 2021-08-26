@@ -16,6 +16,7 @@ add_executable(goomtests
         src/test_main.cpp
         src/test_pixels.cpp
         src/draw/test_draw.cpp
+        src/filters/test_filter_buffers.cpp
         src/filters/test_normalized_coords.cpp
         src/utils/test_colorutils.cpp
         src/utils/test_goomrand.cpp

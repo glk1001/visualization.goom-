@@ -16,7 +16,6 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
-#include <tuple>
 #include <vector>
 
 #if __cplusplus <= 201402L
@@ -43,49 +42,17 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
     m_parallel{p},
     m_getZoomPoint{zoomPointFunc},
     m_transformBuffers{std::make_unique<TransformBuffers>(m_screenWidth, m_screenHeight)},
-    m_maxTranPoint{ScreenToTranPoint(
+    m_maxTranPoint{CoordTransforms::ScreenToTranPoint(
         {static_cast<int32_t>(m_screenWidth - 1), static_cast<int32_t>(m_screenHeight - 1)})},
     m_tranBuffStripeHeight{m_screenHeight / DIM_FILTER_COEFFS},
     m_firedec(m_screenHeight)
 {
-  assert(DIM_FILTER_COEFFS ==
-         static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS_DIV_SHIFT))));
-  assert(MAX_TRAN_LERP_VALUE ==
+  assert(DIM_FILTER_COEFFS == static_cast<int32_t>(std::lround(
+                                  std::pow(2, CoordTransforms::DIM_FILTER_COEFFS_DIV_SHIFT))));
+  assert(CoordTransforms::MAX_TRAN_LERP_VALUE ==
          static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS))) - 1);
 
   NormalizedCoords::SetScreenDimensions(m_screenWidth, m_screenHeight, MIN_SCREEN_COORD_ABS_VAL);
-}
-
-inline auto ZoomFilterBuffers::NormalizedToTranPoint(const NormalizedCoords& normalizedPoint)
-    -> V2dInt
-{
-  const V2dFlt screenCoords = normalizedPoint.GetScreenCoordsFlt();
-
-  // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
-  return {static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.x))),
-          static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.y)))};
-}
-
-inline auto ZoomFilterBuffers::TranCoordToCoeffIndex(const uint32_t tranCoord) -> uint32_t
-{
-  return tranCoord & DIM_FILTER_COEFFS_MOD_MASK;
-}
-
-inline auto ZoomFilterBuffers::TranToScreenPoint(const V2dInt& tranPoint) -> V2dInt
-{
-  return {tranPoint.x >> DIM_FILTER_COEFFS_DIV_SHIFT, tranPoint.y >> DIM_FILTER_COEFFS_DIV_SHIFT};
-}
-
-inline auto ZoomFilterBuffers::ScreenToTranPoint(const V2dInt& screenPoint) -> V2dInt
-{
-  return {screenPoint.x << DIM_FILTER_COEFFS_DIV_SHIFT,
-          screenPoint.y << DIM_FILTER_COEFFS_DIV_SHIFT};
-}
-
-inline auto ZoomFilterBuffers::ScreenToTranCoord(const float screenCoord) -> uint32_t
-{
-  // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
-  return static_cast<uint32_t>(std::lround(screenCoord * static_cast<float>(DIM_FILTER_COEFFS)));
 }
 
 void ZoomFilterBuffers::Start()
@@ -96,10 +63,15 @@ void ZoomFilterBuffers::Start()
 auto ZoomFilterBuffers::GetSourcePointInfo(const V2dInt& tranPoint) const
     -> std::pair<V2dInt, NeighborhoodCoeffArray>
 {
-  const V2dInt srcePoint = TranToScreenPoint(tranPoint);
-  const size_t xIndex = TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
-  const size_t yIndex = TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
+  const V2dInt srcePoint = CoordTransforms::TranToScreenPoint(tranPoint);
+  const size_t xIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
+  const size_t yIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
   return std::make_pair(srcePoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex]);
+}
+
+auto ZoomFilterBuffers::HaveFilterSettingsChanged() const -> bool
+{
+  return m_filterSettingsHaveChanged;
 }
 
 void ZoomFilterBuffers::FilterSettingsChanged()
@@ -209,7 +181,7 @@ void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeig
 
 inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) -> V2dInt
 {
-  return NormalizedToTranPoint(normalized);
+  return CoordTransforms::NormalizedToTranPoint(normalized);
 
   /**
   int32_t tranX = NormalizedToTranPoint(xNormalised);
@@ -315,7 +287,7 @@ void ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity()
   {
     for (int32_t x = 0; x < static_cast<int32_t>(m_screenWidth); ++x)
     {
-      const V2dInt tranPoint = ScreenToTranPoint({x, y});
+      const V2dInt tranPoint = CoordTransforms::ScreenToTranPoint({x, y});
       m_tranXSrce[i] = tranPoint.x;
       m_tranYSrce[i] = tranPoint.y;
       ++i;
@@ -353,7 +325,7 @@ void ZoomFilterBuffers::TransformBuffers::CopyDestTranToSrceTran()
   {
     // Nothing to do: tran srce == tran dest.
   }
-  else if (GetTranLerpFactor() == MAX_TRAN_LERP_VALUE)
+  else if (GetTranLerpFactor() == CoordTransforms::MAX_TRAN_LERP_VALUE)
   {
     CopyAllDestTranToSrceTran();
   }

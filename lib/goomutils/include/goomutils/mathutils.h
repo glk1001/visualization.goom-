@@ -46,9 +46,14 @@ constexpr double lerp(const double __a, const double __b, const double __t) noex
 {
   return __lerp(__a, __b, __t);
 }
-inline uint32_t lerp(const uint32_t a, const uint32_t b, const float t) noexcept
+inline auto lerp(const uint32_t a, const uint32_t b, const float t) noexcept -> uint32_t
 {
   return static_cast<uint32_t>(
+      std::round(stdnew::lerp(static_cast<float>(a), static_cast<float>(b), t)));
+}
+inline auto lerp(const int32_t a, const int32_t b, const float t) noexcept -> int32_t
+{
+  return static_cast<int32_t>(
       std::round(stdnew::lerp(static_cast<float>(a), static_cast<float>(b), t)));
 }
 
