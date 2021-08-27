@@ -31,6 +31,7 @@ public:
   auto HaveSettingsChangedSinceMark() const -> bool;
   void ClearUnchangedMark();
 
+  [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterData&;
   [[nodiscard]] auto GetVitesseSetting() const -> const Vitesse&;
   [[nodiscard]] auto GetVitesseSetting() -> Vitesse&;
 
@@ -43,7 +44,6 @@ public:
 
   void ChangeMilieu();
 
-  [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterData&;
   void SetRandomFilterSettings();
   void SetRandomFilterSettings(ZoomFilterMode mode);
   void SetDefaultFilterSettings(ZoomFilterMode mode);
@@ -51,19 +51,21 @@ public:
 private:
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
+  const V2dInt m_midScreenPoint;
+  std::string m_resourcesDirectory{};
   ZoomFilterData m_filterData{};
   class FilterEvents;
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
-  bool m_hasChanged = false;
-  std::string m_resourcesDirectory{};
+
   static const std::vector<std::string> IMAGE_FILENAMES;
   [[nodiscard]] auto GetImageFilename(const std::string& imageFilename) const -> std::string;
   std::vector<std::shared_ptr<ImageDisplacement>> m_imageDisplacements{};
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
 
-  void SetDefaultSettings();
+  bool m_settingsHaveChanged = false;
 
+  void SetDefaultSettings();
   void SetAmuletModeSettings();
   void SetCrystalBall0ModeSettings();
   void SetCrystalBall1ModeSettings();
@@ -101,12 +103,12 @@ inline auto FilterControl::GetFilterSettings() const -> const ZoomFilterData&
 
 inline auto FilterControl::HaveSettingsChangedSinceMark() const -> bool
 {
-  return m_hasChanged;
+  return m_settingsHaveChanged;
 }
 
 inline void FilterControl::ClearUnchangedMark()
 {
-  m_hasChanged = false;
+  m_settingsHaveChanged = false;
 }
 
 inline auto FilterControl::GetVitesseSetting() const -> const Vitesse&
@@ -116,43 +118,43 @@ inline auto FilterControl::GetVitesseSetting() const -> const Vitesse&
 
 inline auto FilterControl::GetVitesseSetting() -> Vitesse&
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
   return m_filterData.vitesse;
 }
 
 inline void FilterControl::SetNoisifySetting(const bool value)
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
   m_filterData.noisify = value;
 }
 
 inline void FilterControl::SetNoiseFactorSetting(const float value)
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
   m_filterData.noiseFactor = value;
 }
 
 inline void FilterControl::SetBlockyWavySetting(const bool value)
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
   m_filterData.blockyWavy = value;
 }
 
 inline void FilterControl::SetRotateSetting(const float value)
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
   m_filterData.rotateSpeed = value;
 }
 
 inline void FilterControl::MultiplyRotateSetting(const float factor)
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
   m_filterData.rotateSpeed *= factor;
 }
 
 inline void FilterControl::ToggleRotateSetting()
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
   m_filterData.rotateSpeed = -m_filterData.rotateSpeed;
 }
 

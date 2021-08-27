@@ -137,7 +137,9 @@ inline auto FilterControl::FilterEvents::Happens(const FilterEventTypes event) -
 }
 
 FilterControl::FilterControl(const std::shared_ptr<const PluginInfo>& goomInfo) noexcept
-  : m_goomInfo{goomInfo}, m_filterEvents{spimpl::make_unique_impl<FilterEvents>()}
+  : m_goomInfo{goomInfo},
+    m_midScreenPoint{m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height / 2},
+    m_filterEvents{spimpl::make_unique_impl<FilterEvents>()}
 {
 }
 
@@ -183,7 +185,7 @@ void FilterControl::SetRandomFilterSettings()
 
 void FilterControl::SetDefaultFilterSettings(const ZoomFilterMode mode)
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
 
   m_filterData.SetMode(mode);
 
@@ -192,7 +194,7 @@ void FilterControl::SetDefaultFilterSettings(const ZoomFilterMode mode)
 
 void FilterControl::SetRandomFilterSettings(const ZoomFilterMode mode)
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
 
   m_filterData.SetMode(mode);
 
@@ -272,8 +274,7 @@ auto FilterControl::GetNewRandomMode() const -> ZoomFilterMode
 
 void FilterControl::SetDefaultSettings()
 {
-  constexpr int32_t DEFAULT_MID_X = 16;
-  m_filterData.midPoint = {DEFAULT_MID_X, 1};
+  m_filterData.zoomMidPoint = m_midScreenPoint;
 
   m_filterData.vitesse.SetDefault();
 
@@ -461,7 +462,7 @@ void FilterControl::SetRotate(const float probability)
 
 void FilterControl::ChangeMilieu()
 {
-  m_hasChanged = true;
+  m_settingsHaveChanged = true;
 
   SetMiddlePoints();
   SetPlaneEffects();
@@ -470,14 +471,12 @@ void FilterControl::ChangeMilieu()
 void FilterControl::SetMiddlePoints()
 {
   using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
-  const V2dInt midScreenPoint{m_goomInfo->GetScreenInfo().width / 2,
-                              m_goomInfo->GetScreenInfo().height / 2};
 
   if ((m_filterData.mode == ZoomFilterMode::WATER_MODE) ||
       (m_filterData.mode == ZoomFilterMode::WAVE_MODE0) ||
       (m_filterData.mode == ZoomFilterMode::AMULET_MODE))
   {
-    m_filterData.midPoint = midScreenPoint;
+    m_filterData.zoomMidPoint = m_midScreenPoint;
     return;
   }
 
@@ -485,13 +484,13 @@ void FilterControl::SetMiddlePoints()
        (m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
       m_filterEvents->Happens(EventTypes::CRYSTAL_BALL_IN_MIDDLE))
   {
-    m_filterData.midPoint = midScreenPoint;
+    m_filterData.zoomMidPoint = m_midScreenPoint;
     return;
     }
     if ((m_filterData.mode == ZoomFilterMode::WAVE_MODE1) &&
         m_filterEvents->Happens(EventTypes::WAVE_IN_MIDDLE))
     {
-      m_filterData.midPoint = midScreenPoint;
+      m_filterData.zoomMidPoint = m_midScreenPoint;
       return;
     }
 
@@ -512,25 +511,25 @@ void FilterControl::SetMiddlePoints()
   switch (s_middlePointWeights.GetRandomWeighted())
   {
     case MiddlePointEvents::EVENT1:
-      m_filterData.midPoint = {m_goomInfo->GetScreenInfo().width / 2,
-                               m_goomInfo->GetScreenInfo().height - 1};
+      m_filterData.zoomMidPoint = {m_goomInfo->GetScreenInfo().width / 2,
+                                   m_goomInfo->GetScreenInfo().height - 1};
       break;
     case MiddlePointEvents::EVENT2:
-      m_filterData.midPoint.x = static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1);
+      m_filterData.zoomMidPoint.x = static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1);
       break;
     case MiddlePointEvents::EVENT3:
-      m_filterData.midPoint.x = 1;
+      m_filterData.zoomMidPoint.x = 1;
       break;
     case MiddlePointEvents::EVENT4:
-      m_filterData.midPoint = midScreenPoint;
+      m_filterData.zoomMidPoint = m_midScreenPoint;
       break;
     case MiddlePointEvents::EVENT5:
-      m_filterData.midPoint = {m_goomInfo->GetScreenInfo().width / 4,
-                               m_goomInfo->GetScreenInfo().height / 4};
+      m_filterData.zoomMidPoint = {m_goomInfo->GetScreenInfo().width / 4,
+                                   m_goomInfo->GetScreenInfo().height / 4};
       break;
     case MiddlePointEvents::EVENT6:
-      m_filterData.midPoint = {(3 * m_goomInfo->GetScreenInfo().width) / 4,
-                               (3 * m_goomInfo->GetScreenInfo().height) / 4};
+      m_filterData.zoomMidPoint = {(3 * m_goomInfo->GetScreenInfo().width) / 4,
+                                   (3 * m_goomInfo->GetScreenInfo().height) / 4};
       break;
     default:
       throw std::logic_error("Unknown MiddlePointEvents enum.");
@@ -607,8 +606,8 @@ void FilterControl::SetPlaneEffects()
         ZoomFilterData::MIN_V_PLANE_EFFECT_AMPLITUDE, ZoomFilterData::MAX_V_PLANE_EFFECT_AMPLITUDE);
   }
 
-  if ((1 == m_filterData.midPoint.x) ||
-      (m_filterData.midPoint.x == static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1)))
+  if ((1 == m_filterData.zoomMidPoint.x) ||
+      (m_filterData.zoomMidPoint.x == static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1)))
   {
     m_filterData.vPlaneEffect = 0;
     if (m_filterEvents->Happens(EventTypes::ZERO_H_PLANE_EFFECT))

@@ -4,6 +4,7 @@ autre
 bleublanc
 blocky
 Brasil
+calc
 coeff
 coeffs
 commencer
@@ -25,6 +26,7 @@ Kells
 l'instant
 l'on
 lerp
+lerped
 ligne
 mets
 mult
@@ -39,4 +41,5 @@ terme
 texel
 unblended
 uncentered
+unlerped
 vitesse

@@ -88,7 +88,7 @@ public:
                          float switchMult,
                          uint32_t& numClipped);
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const;
+  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const;
 
 private:
   const uint32_t m_screenWidth;
@@ -98,6 +98,8 @@ private:
   IZoomVector& m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
   void UpdateFilterBuffersSettings();
+  void UpdateImageDisplacementSettings();
+  void UpdateZoomVectorSettings();
 
   ZoomFilterData m_currentFilterSettings{};
   ZoomFilterData m_nextFilterSettings{};
@@ -121,9 +123,9 @@ private:
 
   void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff, uint32_t& numDestClipped) const;
 
-  void UpdateTranBuffer();
+  void UpdateTranBuffers();
   void UpdateTranLerpFactor(int32_t switchIncr, float switchMult);
-  void StartFreshTranBuffer();
+  void StartFreshTranBuffers();
 
   void LogState(const std::string& name) const;
 };
@@ -222,13 +224,13 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(Parallel& p,
     m_filterBuffers{p, goomInfo,
                     [this](const NormalizedCoords& normalizedCoords) {
                       return m_zoomVector.GetZoomPoint(normalizedCoords);
-                    }},
+                    },
+                    m_stats},
     m_parallel{p}
 {
-  m_currentFilterSettings.midPoint = {m_screenWidth / 2, m_screenHeight / 2};
 }
 
-void ZoomFilterFx::ZoomFilterImpl::Log(const GoomStats::LogStatsValueFunc& l) const
+void ZoomFilterFx::ZoomFilterImpl::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
 {
   m_zoomVector.UpdateLastStats();
 
@@ -240,7 +242,7 @@ void ZoomFilterFx::ZoomFilterImpl::Log(const GoomStats::LogStatsValueFunc& l) co
   m_stats.SetLastTranBuffYLineStart(m_filterBuffers.GetTranBuffYLineStart());
   m_stats.SetLastTranDiffFactor(m_filterBuffers.GetTranLerpFactor());
 
-  m_stats.Log(l);
+  m_stats.Log(logValueFunc);
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::GetResourcesDirectory() const -> const std::string&
@@ -409,7 +411,7 @@ void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& pix1,
   m_stats.UpdateStart();
   m_stats.DoZoomFilterFastRgb();
 
-  UpdateTranBuffer();
+  UpdateTranBuffers();
   UpdateTranLerpFactor(switchIncr, switchMult);
 
   LogState("Before CZoom");
@@ -419,27 +421,22 @@ void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& pix1,
   m_stats.UpdateEnd();
 }
 
-void ZoomFilterFx::ZoomFilterImpl::UpdateTranBuffer()
+void ZoomFilterFx::ZoomFilterImpl::UpdateTranBuffers()
 {
-  m_stats.UpdateTranBufferStart();
+  m_stats.UpdateTranBuffersStart();
 
   m_filterBuffers.UpdateTranBuffers();
 
   if (m_filterBuffers.GetTranBuffersState() ==
-      ZoomFilterBuffers::TranBuffersState::RESET_TRAN_BUFFERS)
-  {
-    m_stats.DoResetTranBuffer();
-  }
-  else if (m_filterBuffers.GetTranBuffersState() ==
            ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS)
   {
-    StartFreshTranBuffer();
+    StartFreshTranBuffers();
   }
 
-  m_stats.UpdateTranBufferEnd(m_currentFilterSettings.mode, m_filterBuffers.GetTranBuffersState());
+  m_stats.UpdateTranBuffersEnd(m_currentFilterSettings.mode, m_filterBuffers.GetTranBuffersState());
 }
 
-void ZoomFilterFx::ZoomFilterImpl::StartFreshTranBuffer()
+void ZoomFilterFx::ZoomFilterImpl::StartFreshTranBuffers()
 {
   // Don't start making new stripes until filter settings change.
   if (!m_pendingFilterSettings)
@@ -447,16 +444,22 @@ void ZoomFilterFx::ZoomFilterImpl::StartFreshTranBuffer()
     return;
   }
 
-  m_stats.DoStartFreshTranBuffer();
-
   m_pendingFilterSettings = false;
   m_currentFilterSettings = m_nextFilterSettings;
 
+  UpdateZoomVectorSettings();
+  UpdateFilterBuffersSettings();
+  UpdateImageDisplacementSettings();
+}
+
+inline void ZoomFilterFx::ZoomFilterImpl::UpdateZoomVectorSettings()
+{
   m_zoomVector.SetFilterSettings(m_currentFilterSettings);
   m_zoomVector.SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * ZoomFilterData::MAX_MAX_SPEED_COEFF);
+}
 
-  UpdateFilterBuffersSettings();
-
+inline void ZoomFilterFx::ZoomFilterImpl::UpdateImageDisplacementSettings()
+{
   if (m_currentFilterSettings.imageDisplacement != nullptr)
   {
     m_currentFilterSettings.imageDisplacement->SetAmplitude(
@@ -471,7 +474,7 @@ void ZoomFilterFx::ZoomFilterImpl::StartFreshTranBuffer()
 
 inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBuffersSettings()
 {
-  m_filterBuffers.SetBuffMidPoint(m_currentFilterSettings.midPoint);
+  m_filterBuffers.SetBuffMidPoint(m_currentFilterSettings.zoomMidPoint);
   m_filterBuffers.FilterSettingsChanged();
 }
 

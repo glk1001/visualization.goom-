@@ -1,5 +1,6 @@
 #include "filter_buffers.h"
 
+#include "../stats/filter_stats.h"
 #include "filter_normalized_coords.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -35,9 +36,11 @@ using UTILS::Parallel;
 
 ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
                                      const std::shared_ptr<const PluginInfo>& goomInfo,
-                                     const ZoomPointFunc& zoomPointFunc)
+                                     const ZoomPointFunc& zoomPointFunc,
+                                     FilterStats& stats)
   : m_screenWidth{goomInfo->GetScreenInfo().width},
     m_screenHeight{goomInfo->GetScreenInfo().height},
+    m_stats{stats},
     m_precalculatedCoeffs{std::make_unique<FilterCoefficients>()},
     m_parallel{p},
     m_getZoomPoint{zoomPointFunc},
@@ -57,7 +60,7 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
 
 void ZoomFilterBuffers::Start()
 {
-  InitTranBuffers();
+  InitAllTranBuffers();
 }
 
 auto ZoomFilterBuffers::GetSourcePointInfo(const V2dInt& tranPoint) const
@@ -79,6 +82,19 @@ void ZoomFilterBuffers::FilterSettingsChanged()
   m_filterSettingsHaveChanged = true;
 }
 
+void ZoomFilterBuffers::InitAllTranBuffers()
+{
+  GenerateWaterFxHorizontalBuffer();
+
+  FillTempTranBuffers();
+
+  m_transformBuffers->SetSrceTranToIdentity();
+  m_transformBuffers->CopyTempTranToDestTran();
+
+  m_tranBuffYLineStart = 0;
+  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
+}
+
 void ZoomFilterBuffers::UpdateTranBuffers()
 {
   if (m_tranBuffersState == TranBuffersState::RESET_TRAN_BUFFERS)
@@ -93,25 +109,15 @@ void ZoomFilterBuffers::UpdateTranBuffers()
   {
     // Create a new destination stripe of 'm_tranBuffStripeHeight' height starting
     // at 'm_tranBuffYLineStart'.
-    DoNextTranBufferStripe(m_tranBuffStripeHeight);
+    DoNextTempTranBuffersStripe(m_tranBuffStripeHeight);
   }
-}
-
-void ZoomFilterBuffers::InitTranBuffers()
-{
-  GenerateWaterFxHorizontalBuffer();
-  DoNextTranBufferStripe(m_screenHeight);
-
-  m_transformBuffers->SetSrceTranToIdentity();
-  m_transformBuffers->CopyTempTranToDestTran();
-
-  m_tranBuffYLineStart = 0;
-  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
 // generation du buffer de transform
 void ZoomFilterBuffers::ResetTranBuffers()
 {
+  m_stats.DoResetTranBuffers();
+
   m_transformBuffers->CopyDestTranToSrceTran();
   m_transformBuffers->SetUpNextDestTran();
 
@@ -127,9 +133,16 @@ void ZoomFilterBuffers::StartFreshTranBuffers()
     return;
   }
 
+  m_stats.DoStartFreshTranBuffers();
+
   m_filterSettingsHaveChanged = false;
   m_tranBuffYLineStart = 0;
   m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
+}
+
+inline void ZoomFilterBuffers::FillTempTranBuffers()
+{
+  DoNextTempTranBuffersStripe(m_screenHeight);
 }
 
 /*
@@ -139,7 +152,7 @@ void ZoomFilterBuffers::StartFreshTranBuffers()
  * Translation (-data->middleX, -data->middleY)
  * Homothetie (Center : 0,0   Coeff : 2/data->screenWidth)
  */
-void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeight)
+void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStripeHeight)
 {
   assert(m_tranBuffersState == TranBuffersState::TRAN_BUFFERS_READY);
 
@@ -158,8 +171,8 @@ void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeig
       const NormalizedCoords normalizedZoomPoint = m_getZoomPoint(normalizedCentredPoint);
       const NormalizedCoords uncenteredZoomPoint = normalizedMidPt + normalizedZoomPoint;
 
-      m_transformBuffers->SetTempTransformPoint(tranPosStart + x,
-                                                GetTranPoint(uncenteredZoomPoint));
+      m_transformBuffers->SetTempBuffersTransformPoint(tranPosStart + x,
+                                                       GetTranPoint(uncenteredZoomPoint));
 
       normalizedCentredPoint.IncX();
     }
@@ -172,6 +185,7 @@ void ZoomFilterBuffers::DoNextTranBufferStripe(const uint32_t tranBuffStripeHeig
   m_parallel.ForLoop(tranBuffYLineEnd - m_tranBuffYLineStart, doStripeLine);
 
   m_tranBuffYLineStart += tranBuffStripeHeight;
+
   if (tranBuffYLineEnd >= m_screenHeight)
   {
     m_tranBuffersState = TranBuffersState::RESET_TRAN_BUFFERS;
@@ -307,7 +321,7 @@ inline void ZoomFilterBuffers::TransformBuffers::CopyAllDestTranToSrceTran()
   std::copy(m_tranYDest.begin(), m_tranYDest.end(), m_tranYSrce.begin());
 }
 
-void ZoomFilterBuffers::TransformBuffers::CopyRemainingDestTranToSrceTran()
+void ZoomFilterBuffers::TransformBuffers::CopyUnlerpedDestTranToSrceTran()
 {
   for (size_t i = 0; i < m_bufferSize; ++i)
   {
@@ -331,7 +345,7 @@ void ZoomFilterBuffers::TransformBuffers::CopyDestTranToSrceTran()
   }
   else
   {
-    CopyRemainingDestTranToSrceTran();
+    CopyUnlerpedDestTranToSrceTran();
   }
 }
 
@@ -341,8 +355,8 @@ inline void ZoomFilterBuffers::TransformBuffers::SetUpNextDestTran()
   std::swap(m_tranYDest, m_tranYTemp);
 }
 
-inline void ZoomFilterBuffers::TransformBuffers::SetTempTransformPoint(const uint32_t pos,
-                                                                       const V2dInt& transformPoint)
+inline void ZoomFilterBuffers::TransformBuffers::SetTempBuffersTransformPoint(
+    const uint32_t pos, const V2dInt& transformPoint)
 {
   m_tranXTemp[pos] = transformPoint.x;
   m_tranYTemp[pos] = transformPoint.y;

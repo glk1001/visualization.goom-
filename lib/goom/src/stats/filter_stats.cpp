@@ -46,8 +46,8 @@ void FilterStats::Reset()
   m_numZoomVectorVPlaneEffect = 0;
   m_numCZoom = 0;
   m_numZoomFilterFastRgb = 0;
-  m_numStartFreshTranBuffer = 0;
-  m_numResetTranBuffer = 0;
+  m_numStartFreshTranBuffers = 0;
+  m_numResetTranBuffers = 0;
   m_numSwitchIncrNotZero = 0;
   m_numSwitchMultNotOne = 0;
   m_numZoomVectorTanEffect = 0;
@@ -109,8 +109,8 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
            static_cast<uint32_t>(m_lastZoomFilterSettings->vitesse.GetReverseVitesse()));
     logVal(MODULE, "lastZoomFilterData->relativeSpeed",
            m_lastZoomFilterSettings->vitesse.GetRelativeSpeed());
-    logVal(MODULE, "lastZoomFilterData->midPoint.x", m_lastZoomFilterSettings->midPoint.x);
-    logVal(MODULE, "lastZoomFilterData->midPoint.y", m_lastZoomFilterSettings->midPoint.y);
+    logVal(MODULE, "lastZoomFilterData->zoomMidPoint.x", m_lastZoomFilterSettings->zoomMidPoint.x);
+    logVal(MODULE, "lastZoomFilterData->zoomMidPoint.y", m_lastZoomFilterSettings->zoomMidPoint.y);
 
     logVal(MODULE, "lastXAmuletAmplitude", m_lastAmuletParams.xAmplitude);
     logVal(MODULE, "lastYAmuletAmplitude", m_lastAmuletParams.yAmplitude);
@@ -179,8 +179,8 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
     logVal(MODULE, std20::format("num {} updates", modeStr), m_numUpdatesInMode[i]);
   }
 
-  logVal(MODULE, "numResetTranBuffer", m_numResetTranBuffer);
-  logVal(MODULE, "numStartFreshTranBuffer", m_numStartFreshTranBuffer);
+  logVal(MODULE, "numResetTranBuffers", m_numResetTranBuffers);
+  logVal(MODULE, "numStartFreshTranBuffers", m_numStartFreshTranBuffers);
   logVal(MODULE, "numSwitchIncrNotZero", m_numSwitchIncrNotZero);
   logVal(MODULE, "numSwitchMultNotOne", m_numSwitchMultNotOne);
   logVal(MODULE, "numTranPointsClipped", m_numTranPointsClipped);
@@ -224,14 +224,14 @@ void FilterStats::UpdateEnd()
   m_totalTimeInUpdatesMs += timeInUpdateMs;
 }
 
-void FilterStats::UpdateTranBufferStart()
+void FilterStats::UpdateTranBuffersStart()
 {
   m_startTranBuffersUpdateTime = std::chrono::high_resolution_clock::now();
   m_numTranBuffersUpdates++;
 }
 
-void FilterStats::UpdateTranBufferEnd(const ZoomFilterMode mode,
-                                      const ZoomFilterBuffers::TranBuffersState bufferState)
+void FilterStats::UpdateTranBuffersEnd(ZoomFilterMode mode,
+                                       FILTERS::ZoomFilterBuffers::TranBuffersState bufferState)
 {
   const auto timeNow = std::chrono::high_resolution_clock::now();
 
@@ -294,14 +294,14 @@ void FilterStats::DoZoomFilterFastRgb()
   m_numZoomFilterFastRgb++;
 }
 
-void FilterStats::DoResetTranBuffer()
+void FilterStats::DoResetTranBuffers()
 {
-  m_numResetTranBuffer++;
+  m_numResetTranBuffers++;
 }
 
-void FilterStats::DoStartFreshTranBuffer()
+void FilterStats::DoStartFreshTranBuffers()
 {
-  m_numStartFreshTranBuffer++;
+  m_numStartFreshTranBuffers++;
 }
 
 void FilterStats::DoSwitchMultNotOne()

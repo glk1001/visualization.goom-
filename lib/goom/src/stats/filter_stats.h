@@ -48,15 +48,15 @@ public:
   void UpdateStart();
   void UpdateEnd();
 
-  void UpdateTranBufferStart();
-  void UpdateTranBufferEnd(ZoomFilterMode mode,
-                           FILTERS::ZoomFilterBuffers::TranBuffersState bufferState);
+  void UpdateTranBuffersStart();
+  void UpdateTranBuffersEnd(ZoomFilterMode mode,
+                            FILTERS::ZoomFilterBuffers::TranBuffersState bufferState);
 
   void DoChangeFilterSettings(const ZoomFilterData& filterSettings);
   void DoZoomFilterFastRgb();
   void DoCZoom();
-  void DoResetTranBuffer();
-  void DoStartFreshTranBuffer();
+  void DoResetTranBuffers();
+  void DoStartFreshTranBuffers();
   void DoSwitchIncrNotZero();
   void DoSwitchMultNotOne();
   void DoTranPointClipped();
@@ -111,8 +111,8 @@ private:
 
   uint32_t m_numChangeFilterSettings = 0;
   uint64_t m_numZoomFilterFastRgb = 0;
-  uint64_t m_numStartFreshTranBuffer = 0;
-  uint64_t m_numResetTranBuffer = 0;
+  uint64_t m_numStartFreshTranBuffers = 0;
+  uint64_t m_numResetTranBuffers = 0;
   uint64_t m_numSwitchIncrNotZero = 0;
   uint64_t m_numSwitchMultNotOne = 0;
   uint64_t m_numZoomVectorTanEffect = 0;

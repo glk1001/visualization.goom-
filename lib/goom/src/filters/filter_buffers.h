@@ -16,6 +16,7 @@
 namespace GOOM
 {
 
+class FilterStats;
 class PluginInfo;
 class PixelBuffer;
 
@@ -47,7 +48,8 @@ public:
 
   ZoomFilterBuffers(UTILS::Parallel& p,
                     const std::shared_ptr<const PluginInfo>& goomInfo,
-                    const ZoomPointFunc& zoomPointFunc);
+                    const ZoomPointFunc& zoomPointFunc,
+                    FilterStats& stats);
 
   [[nodiscard]] auto GetZoomPointFunc() const -> ZoomPointFunc;
 
@@ -81,6 +83,7 @@ public:
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
+  FilterStats& m_stats;
 
   class FilterCoefficients;
   const std::unique_ptr<const FilterCoefficients> m_precalculatedCoeffs;
@@ -105,10 +108,11 @@ private:
 
   static constexpr float MIN_SCREEN_COORD_ABS_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
 
-  void InitTranBuffers();
+  void InitAllTranBuffers();
   void StartFreshTranBuffers();
   void ResetTranBuffers();
-  void DoNextTranBufferStripe(uint32_t tranBuffStripeHeight);
+  void FillTempTranBuffers();
+  void DoNextTempTranBuffersStripe(const uint32_t tranBuffStripeHeight);
   void GenerateWaterFxHorizontalBuffer();
   [[nodiscard]] static auto GetTranPoint(const NormalizedCoords& normalized) -> V2dInt;
 };
@@ -155,7 +159,7 @@ public:
   void CopyDestTranToSrceTran();
   void SetUpNextDestTran();
 
-  void SetTempTransformPoint(uint32_t pos, const V2dInt& transformPoint);
+  void SetTempBuffersTransformPoint(uint32_t pos, const V2dInt& transformPoint);
 
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
   void SetTranLerpFactor(int32_t val);
@@ -175,7 +179,7 @@ private:
   int32_t m_tranLerpFactor = 0;
 
   void CopyAllDestTranToSrceTran();
-  void CopyRemainingDestTranToSrceTran();
+  void CopyUnlerpedDestTranToSrceTran();
   [[nodiscard]] static auto GetTranBuffLerpVal(int32_t srceBuffVal, int32_t destBuffVal, int32_t t)
       -> int32_t;
 };
