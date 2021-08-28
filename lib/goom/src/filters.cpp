@@ -126,8 +126,6 @@ private:
   void UpdateTranBuffers();
   void UpdateTranLerpFactor(int32_t switchIncr, float switchMult);
   void StartFreshTranBuffers();
-
-  void LogState(const std::string& name) const;
 };
 
 ZoomFilterFx::ZoomFilterFx(Parallel& p,
@@ -187,11 +185,6 @@ void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& pix1,
                                      const float switchMult,
                                      uint32_t& numClipped)
 {
-  if (!m_enabled)
-  {
-    return;
-  }
-
   m_fxImpl->ZoomFilterFastRgb(pix1, pix2, switchIncr, switchMult, numClipped);
 }
 
@@ -405,18 +398,13 @@ void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& pix1,
 {
   ++m_updateNum;
 
-  LogInfo("Starting ZoomFilterFastRgb, update {}", m_updateNum);
-  LogInfo("switchIncr = {}, switchMult = {}", switchIncr, switchMult);
-
   m_stats.UpdateStart();
   m_stats.DoZoomFilterFastRgb();
 
   UpdateTranBuffers();
   UpdateTranLerpFactor(switchIncr, switchMult);
 
-  LogState("Before CZoom");
   CZoom(pix1, pix2, numClipped);
-  LogState("After CZoom");
 
   m_stats.UpdateEnd();
 }
@@ -483,14 +471,12 @@ void ZoomFilterFx::ZoomFilterImpl::UpdateTranLerpFactor(const int32_t switchIncr
 {
   int32_t tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
 
-  LogInfo("before switchIncr = {} tranLerpFactor = {}", switchIncr, tranLerpFactor);
   if (switchIncr != 0)
   {
     m_stats.DoSwitchIncrNotZero();
     tranLerpFactor =
         stdnew::clamp(tranLerpFactor + switchIncr, 0, ZoomFilterBuffers::GetMaxTranLerpFactor());
   }
-  LogInfo("after switchIncr = {} m_tranDiffFactor = {}", switchIncr, tranLerpFactor);
 
   if (!floats_equal(switchMult, 1.0F))
   {
@@ -500,80 +486,9 @@ void ZoomFilterFx::ZoomFilterImpl::UpdateTranLerpFactor(const int32_t switchIncr
         stdnew::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
                      static_cast<float>(tranLerpFactor), switchMult));
   }
-  LogInfo("after switchMult = {} m_tranDiffFactor = {}", switchMult, tranLerpFactor);
 
   m_filterBuffers.SetTranLerpFactor(tranLerpFactor);
 }
-
-#ifdef NO_PARALLEL
-// pure c version of the zoom filter
-void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
-                                         PixelBuffer& destBuff,
-                                         uint32_t& numDestClipped) const
-{
-  //  CALLGRIND_START_INSTRUMENTATION;
-
-  m_stats.DoCZoom();
-
-  numDestClipped = 0;
-
-  for (uint32_t destY = 0; destY < m_screenHeight; destY++)
-  {
-    uint32_t destPos = m_screenWidth * destY;
-#if __cplusplus <= 201402L
-    const auto destRowIter = destBuff.GetRowIter(destY);
-    const auto destRowBegin = std::get<0>(destRowIter);
-    const auto destRowEnd = std::get<1>(destRowIter);
-#else
-    const auto [destRowBegin, destRowEnd] = destBuff.GetRowIter(destY);
-#endif
-    for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
-    {
-      const uint32_t tranX = GetTranXBuffSrceDestLerp(destPos);
-      const uint32_t tranY = GetTranYBuffSrceDestLerp(destPos);
-
-      if ((tranX >= m_maxTranX) || (tranY >= m_maxTranY))
-      {
-        m_stats.DoTranPointClipped();
-        *destRowBuff = Pixel::BLACK;
-        numDestClipped++;
-      }
-      else
-      {
-#if __cplusplus <= 201402L
-        const auto srceInfo = GetSourceInfo(tranX, tranY);
-        const auto srceX = std::get<0>(srceInfo);
-        const auto srceY = std::get<1>(srceInfo);
-        const auto coeffs = std::get<2>(srceInfo);
-#else
-        const auto [srceX, srceY, coeffs] = GetSourceInfo(tranPx, tranPy);
-#endif
-        const NeighborhoodPixelArray pixelNeighbours = srceBuff.Get4RHBNeighbours(srceX, srceY);
-        *destRowBuff = GetNewColor(coeffs, pixelNeighbours);
-#ifndef NO_LOGGING
-        if (43 < m_filterNum && m_filterNum < 51 && (*destRowBuff).Rgba() > 0xFF000000)
-        {
-          logInfo("destPos == {}", destPos);
-          logInfo("srceX == {}", srceX);
-          logInfo("srceY == {}", srceY);
-          logInfo("tranX == {}", tranX);
-          logInfo("tranY == {}", tranY);
-          logInfo("coeffs[0] == {:x}", coeffs.c[0]);
-          logInfo("coeffs[1] == {:x}", coeffs.c[1]);
-          logInfo("coeffs[2] == {:x}", coeffs.c[2]);
-          logInfo("coeffs[3] == {:x}", coeffs.c[3]);
-          logInfo("(*destRowBuff).Rgba == {:x}", (*destRowBuff).Rgba());
-        }
-#endif
-      }
-      destPos++;
-    }
-  }
-
-  //  CALLGRIND_STOP_INSTRUMENTATION;
-  //  CALLGRIND_DUMP_STATS;
-}
-#endif
 
 void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
                                          PixelBuffer& destBuff,
@@ -615,21 +530,6 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
         const NeighborhoodPixelArray pixelNeighbours = srceBuff.Get4RHBNeighbours(
             static_cast<size_t>(srcePoint.x), static_cast<size_t>(srcePoint.y));
         *destRowBuff = GetNewColor(coeffs, pixelNeighbours);
-#ifndef NO_LOGGING
-        if (43 < m_updateNum && m_updateNum < 51 && (*destRowBuff).Rgba() > 0xFF000000)
-        {
-          LogInfo("destPos == {}", destPos);
-          LogInfo("srcePoint.x == {}", srcePoint.x);
-          LogInfo("srcePoint.y == {}", srcePoint.y);
-          LogInfo("tranPoint.x == {}", tranPoint.x);
-          LogInfo("tranPoint.y == {}", tranPoint.y);
-          LogInfo("coeffs[0] == {:x}", coeffs.c[0]);
-          LogInfo("coeffs[1] == {:x}", coeffs.c[1]);
-          LogInfo("coeffs[2] == {:x}", coeffs.c[2]);
-          LogInfo("coeffs[3] == {:x}", coeffs.c[3]);
-          LogInfo("(*destRowBuff).Rgba == {:x}", (*destRowBuff).Rgba());
-        }
-#endif
       }
       ++destPos;
     }
@@ -637,42 +537,5 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
 
   m_parallel.ForLoop(m_screenHeight, setDestPixelRow);
 }
-
-#ifdef NO_LOGGING
-void ZoomFilterFx::ZoomFilterImpl::LogState([[maybe_unused]] const std::string& name) const
-{
-}
-#else
-void ZoomFilterFx::ZoomFilterImpl::LogState(const std::string& name) const
-{
-  LogInfo("=================================");
-  LogInfo("Name: {}", name);
-
-  LogInfo("m_screenWidth = {}", m_screenWidth);
-  LogInfo("m_screenHeight = {}", m_screenHeight);
-  LogInfo("m_buffSettings.allowOverexposed = {}", m_buffSettings.allowOverexposed);
-  LogInfo("m_buffSettings.buffIntensity = {}", m_buffSettings.buffIntensity);
-  LogInfo("m_resourcesDirectory = {}", m_resourcesDirectory);
-  LogInfo("m_parallel->GetNumThreadsUsed() = {}", m_parallel->GetNumThreadsUsed());
-
-  LogInfo("m_currentFilterSettings.mode = {}", EnumToString(m_currentFilterSettings.mode));
-  LogInfo("m_currentFilterSettings.middleX = {}", m_currentFilterSettings.middleX);
-  LogInfo("m_currentFilterSettings.middleY = {}", m_currentFilterSettings.middleY);
-  LogInfo("m_currentFilterSettings.vitesse = {}", m_currentFilterSettings.vitesse.GetVitesse());
-  LogInfo("m_currentFilterSettings.hPlaneEffect = {}", m_currentFilterSettings.hPlaneEffect);
-  LogInfo("m_currentFilterSettings.hPlaneEffectAmplitude = {}",
-          m_currentFilterSettings.hPlaneEffectAmplitude);
-  LogInfo("m_currentFilterSettings.vPlaneEffect = {}", m_currentFilterSettings.vPlaneEffect);
-  LogInfo("m_currentFilterSettings.vPlaneEffectAmplitude = {}",
-          m_currentFilterSettings.vPlaneEffectAmplitude);
-  LogInfo("m_currentFilterSettings.noisify = {}", m_currentFilterSettings.noisify);
-  LogInfo("m_currentFilterSettings.noiseFactor = {}", m_currentFilterSettings.noiseFactor);
-  LogInfo("m_currentFilterSettings.tanEffect = {}", m_currentFilterSettings.tanEffect);
-  LogInfo("m_currentFilterSettings.rotateSpeed = {}", m_currentFilterSettings.rotateSpeed);
-  LogInfo("m_currentFilterSettings.blockyWavy = {}", m_currentFilterSettings.blockyWavy);
-
-  LogInfo("=================================");
-}
-#endif
 
 } // namespace GOOM

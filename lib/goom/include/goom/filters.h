@@ -63,7 +63,6 @@ public:
   void Finish() override;
 
 private:
-  bool m_enabled = true;
   class ZoomFilterImpl;
   spimpl::unique_impl_ptr<ZoomFilterImpl> m_fxImpl;
 };
