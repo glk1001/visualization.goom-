@@ -2,6 +2,7 @@
 #define VISUALIZATION_GOOM_GOOM_CONTROL_H
 
 #include "goom_config.h"
+#include "goomutils/spimpl.h"
 
 #include <cstdint>
 #include <istream>
@@ -23,11 +24,6 @@ public:
 
   GoomControl() noexcept = delete;
   GoomControl(uint32_t width, uint32_t height, const std::string& resourcesDirectory);
-  GoomControl(const GoomControl&) noexcept = delete;
-  GoomControl(GoomControl&&) noexcept = delete;
-  ~GoomControl() noexcept;
-  auto operator=(const GoomControl&) -> GoomControl& = delete;
-  auto operator=(GoomControl&&) -> GoomControl& = delete;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
   void SetResourcesDirectory(const std::string& dirName);
@@ -51,7 +47,7 @@ public:
 
 private:
   class GoomControlImpl;
-  const std::unique_ptr<GoomControlImpl> m_controller;
+  spimpl::unique_impl_ptr<GoomControlImpl> m_controller;
 };
 
 } // namespace GOOM

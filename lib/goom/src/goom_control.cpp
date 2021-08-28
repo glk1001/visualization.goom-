@@ -43,6 +43,7 @@
 #include "goomutils/logging.h"
 #include "goomutils/parallel_utils.h"
 #include "goomutils/random_colormaps.h"
+#include "goomutils/spimpl.h"
 #include "goomutils/strutils.h"
 #include "goomutils/timer.h"
 #include "ifs_dancers_fx.h"
@@ -379,11 +380,9 @@ void GoomControl::SetRandSeed(const uint64_t seed)
 GoomControl::GoomControl(const uint32_t width,
                          const uint32_t height,
                          const std::string& resourcesDirectory)
-  : m_controller{std::make_unique<GoomControlImpl>(width, height, resourcesDirectory)}
+  : m_controller{spimpl::make_unique_impl<GoomControlImpl>(width, height, resourcesDirectory)}
 {
 }
-
-GoomControl::~GoomControl() noexcept = default;
 
 auto GoomControl::GetResourcesDirectory() const -> const std::string&
 {
