@@ -59,7 +59,11 @@ inline auto ImageDisplacement::NormalizedToImagePoint(const V2dFlt& normalizedPo
   const auto y = static_cast<int32_t>(std::lround(
       m_ratioNormalizedYCoordToImageCoord * (yZoom - NormalizedCoords::MIN_NORMALIZED_COORD)));
 
-  constexpr int32_t FUZZ = 3;
+  constexpr int32_t FUZZ = 0;
+  if (0 == FUZZ)
+  {
+    return {stdnew::clamp(x, 0, m_xMax), stdnew::clamp(y, 0, m_yMax)};
+  }
   return {stdnew::clamp(GetRandInRange(x - FUZZ, x + FUZZ), 0, m_xMax),
           stdnew::clamp(GetRandInRange(y - FUZZ, y + FUZZ), 0, m_yMax)};
 }

@@ -57,10 +57,6 @@ private:
   class FilterEvents;
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
 
-  static const std::vector<std::string> IMAGE_FILENAMES;
-  [[nodiscard]] auto GetImageFilename(const std::string& imageFilename) const -> std::string;
-  std::vector<std::shared_ptr<ImageDisplacement>> m_imageDisplacements{};
-
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
 
   bool m_settingsHaveChanged = false;

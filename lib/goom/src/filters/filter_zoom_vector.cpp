@@ -21,8 +21,8 @@ using UTILS::GetRandInRange;
 using UTILS::SMALL_FLOAT;
 using UTILS::SqDistance;
 
-FilterZoomVector::FilterZoomVector() noexcept
-  : m_zoomVectorEffects{std::make_unique<ZoomVectorEffects>()}
+FilterZoomVector::FilterZoomVector(const std::string& resourcesDirectory) noexcept
+  : m_zoomVectorEffects{std::make_unique<ZoomVectorEffects>(resourcesDirectory)}
 {
 }
 
@@ -62,7 +62,7 @@ auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> Nor
 
   GetZoomEffectsAdjustedVelocity(sqDistFromZero, coords, velocity);
 
-  return coords - m_zoomVectorEffects->GetCleanedVelocity(velocity);
+  return coords - ZoomVectorEffects::GetCleanedVelocity(velocity);
 }
 
 void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero,
@@ -121,7 +121,7 @@ void FilterZoomVector::SetFilterStats(FilterStats& stats)
 
 inline void FilterZoomVector::UpdateDoZoomVectorNoisifyStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }
@@ -130,7 +130,7 @@ inline void FilterZoomVector::UpdateDoZoomVectorNoisifyStats() const
 
 inline void FilterZoomVector::UpdateDoZoomVectorHypercosEffectStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }
@@ -139,7 +139,7 @@ inline void FilterZoomVector::UpdateDoZoomVectorHypercosEffectStats() const
 
 inline void FilterZoomVector::UpdateDoZoomVectorHPlaneEffectStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }
@@ -148,7 +148,7 @@ inline void FilterZoomVector::UpdateDoZoomVectorHPlaneEffectStats() const
 
 inline void FilterZoomVector::UpdateDoZoomVectorVPlaneEffectStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }

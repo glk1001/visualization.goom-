@@ -9,7 +9,7 @@
  *  -copie de zoomFilter() en zoomFilterRGB(), gerant les 3 couleurs
  *  -optimisation de sinFilter (utilisant une table de sin)
  *  -asm
- *	-optimisation de la procedure de generation du buffer de transformation
+ *  -optimisation de la procedure de generation du buffer de transformation
  *		la vitesse est maintenant comprise dans [0..128] au lieu de [0..100]
  *
  *	- converted to C++14 2021-02-01 (glk)
@@ -21,14 +21,12 @@
 #include "filters/filter_buffers.h"
 #include "filters/filter_normalized_coords.h"
 #include "filters/goom_zoom_vector.h"
-#include "filters/image_displacement.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goom_stats.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/graphics/image_bitmaps.h"
 #include "goomutils/logging.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/parallel_utils.h"
@@ -98,7 +96,6 @@ private:
   IZoomVector& m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
   void UpdateFilterBuffersSettings();
-  void UpdateImageDisplacementSettings();
   void UpdateZoomVectorSettings();
 
   ZoomFilterData m_currentFilterSettings{};
@@ -437,27 +434,12 @@ void ZoomFilterFx::ZoomFilterImpl::StartFreshTranBuffers()
 
   UpdateZoomVectorSettings();
   UpdateFilterBuffersSettings();
-  UpdateImageDisplacementSettings();
 }
 
 inline void ZoomFilterFx::ZoomFilterImpl::UpdateZoomVectorSettings()
 {
   m_zoomVector.SetFilterSettings(m_currentFilterSettings);
   m_zoomVector.SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * ZoomFilterData::MAX_MAX_SPEED_COEFF);
-}
-
-inline void ZoomFilterFx::ZoomFilterImpl::UpdateImageDisplacementSettings()
-{
-  if (m_currentFilterSettings.imageDisplacement != nullptr)
-  {
-    m_currentFilterSettings.imageDisplacement->SetAmplitude(
-        m_currentFilterSettings.imageDisplacementAmplitude);
-    m_currentFilterSettings.imageDisplacement->SetXyColorCutoffs(
-        m_currentFilterSettings.imageDisplacementXColorCutoff,
-        m_currentFilterSettings.imageDisplacementXColorCutoff);
-    m_currentFilterSettings.imageDisplacement->SetZoomFactor(
-        m_currentFilterSettings.imageDisplacementZoomFactor);
-  }
 }
 
 inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBuffersSettings()

@@ -5,6 +5,7 @@
 #include "filter_crystal_ball.h"
 #include "filter_data.h"
 #include "filter_hypercos.h"
+#include "filter_image_displacements.h"
 #include "filter_normalized_coords.h"
 #include "filter_scrunch.h"
 #include "filter_speedway.h"
@@ -28,10 +29,11 @@ using UTILS::GetRandInRange;
 using UTILS::m_half_pi;
 using UTILS::SMALL_FLOAT;
 
-ZoomVectorEffects::ZoomVectorEffects() noexcept
+ZoomVectorEffects::ZoomVectorEffects(const std::string& resourcesDirectory) noexcept
   : m_amulet{std::make_unique<Amulet>()},
     m_crystalBall{std::make_unique<CrystalBall>()},
     m_hypercos{std::make_unique<Hypercos>()},
+    m_imageDisplacements{std::make_unique<ImageDisplacements>(resourcesDirectory)},
     m_scrunch{std::make_unique<Scrunch>()},
     m_speedway{std::make_unique<Speedway>()},
     m_wave{std::make_unique<Wave>()},
@@ -58,6 +60,9 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterData& filterSettings)
     case ZoomFilterMode::CRYSTAL_BALL_MODE1:
       m_crystalBall->SetMode1RandomParams();
       break;
+    case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
+      m_imageDisplacements->SetRandomParams();
+      break;
     case ZoomFilterMode::SCRUNCH_MODE:
       m_scrunch->SetRandomParams();
       break;
@@ -78,7 +83,6 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterData& filterSettings)
     case ZoomFilterMode::HYPERCOS_MODE2:
     case ZoomFilterMode::HYPERCOS_MODE3:
       // Hypercos modes already handled with 'SetHypercosOverlaySettings()' above
-    case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
     case ZoomFilterMode::NORMAL_MODE:
     case ZoomFilterMode::WATER_MODE:
       break;
@@ -119,6 +123,8 @@ void ZoomVectorEffects::UpdateLastStats()
   m_stats->SetLastAmuletParams(m_amulet->GetParams());
   m_stats->SetLastCrystalBallParams(m_crystalBall->GetParams());
   m_stats->SetLastHypercosParams(m_hypercos->GetParams());
+  m_stats->SetLastImageDisplacementsFilename(m_imageDisplacements->GetCurrentImageFilename());
+  m_stats->SetLastImageDisplacementsParams(m_imageDisplacements->GetParams());
   m_stats->SetLastScrunchParams(m_scrunch->GetParams());
   m_stats->SetLastSpeedwayParams(m_speedway->GetParams());
   m_stats->SetLastWaveParams(m_wave->GetParams());
@@ -154,13 +160,7 @@ auto ZoomVectorEffects::GetStandardVelocity(const float sqDistFromZero,
 inline auto ZoomVectorEffects::GetImageDisplacementVelocity(const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  if (m_filterSettings->imageDisplacement == nullptr)
-  {
-    throw std::logic_error("No image displacement map setup.");
-  }
-
-  return NormalizedCoords{
-      m_filterSettings->imageDisplacement->GetDisplacementVector(coords.ToFlt())};
+  return NormalizedCoords{m_imageDisplacements->GetDisplacementVector(coords.ToFlt())};
 }
 
 inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
@@ -171,7 +171,7 @@ inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
   return {speedCoeffs.x * coords.GetX(), speedCoeffs.y * coords.GetY()};
 }
 
-auto ZoomVectorEffects::GetXYSpeedCoefficients(float sqDistFromZero,
+auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero,
                                                const NormalizedCoords& coords) const -> V2dFlt
 {
   switch (m_filterSettings->mode)
@@ -306,7 +306,7 @@ auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
   UpdateDoZoomVectorNoiseFactorStats();
   //    const float xAmp = 1.0/getRandInRange(50.0f, 200.0f);
   //    const float yAmp = 1.0/getRandInRange(50.0f, 200.0f);
-  const float amp = 0.5F * m_filterSettings->noiseFactor /
+  const float amp = (0.5F * m_filterSettings->noiseFactor) /
                     GetRandInRange(ZoomFilterData::NOISE_MIN, ZoomFilterData::NOISE_MAX);
   return {GetRandInRange(-amp, +amp), GetRandInRange(-amp, +amp)};
 }
@@ -339,7 +339,7 @@ auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) con
 
 inline void ZoomVectorEffects::UpdateDoZoomVectorSpeedCoeffBelowMinStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }
@@ -348,7 +348,7 @@ inline void ZoomVectorEffects::UpdateDoZoomVectorSpeedCoeffBelowMinStats() const
 
 inline void ZoomVectorEffects::UpdateDoZoomVectorSpeedCoeffAboveMaxStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }
@@ -357,7 +357,7 @@ inline void ZoomVectorEffects::UpdateDoZoomVectorSpeedCoeffAboveMaxStats() const
 
 inline void ZoomVectorEffects::UpdateDoZoomVectorNoiseFactorStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }
@@ -366,7 +366,7 @@ inline void ZoomVectorEffects::UpdateDoZoomVectorNoiseFactorStats() const
 
 inline void ZoomVectorEffects::UpdateDoZoomVectorTanEffectStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }
@@ -375,7 +375,7 @@ inline void ZoomVectorEffects::UpdateDoZoomVectorTanEffectStats() const
 
 inline void ZoomVectorEffects::UpdateDoZoomVectorNegativeRotateStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }
@@ -384,7 +384,7 @@ inline void ZoomVectorEffects::UpdateDoZoomVectorNegativeRotateStats() const
 
 inline void ZoomVectorEffects::UpdateDoZoomVectorPositiveRotateStats() const
 {
-  if (m_stats == nullptr)
+  if (nullptr == m_stats)
   {
     return;
   }

@@ -5,11 +5,9 @@
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/image_bitmaps.h"
-#include "image_displacement.h"
 
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -57,11 +55,6 @@ class FilterControl::FilterEvents
 {
 public:
   FilterEvents() noexcept = default;
-  FilterEvents(const FilterEvents&) noexcept = delete;
-  FilterEvents(FilterEvents&&) noexcept = delete;
-  ~FilterEvents() = default;
-  auto operator=(const FilterEvents&) -> FilterEvents& = delete;
-  auto operator=(FilterEvents&&) -> FilterEvents& = delete;
 
   enum class FilterEventTypes
   {
@@ -71,7 +64,6 @@ public:
     HYPERCOS_EFFECT,
     CHANGE_SPEED,
     REVERSE_SPEED,
-    DISPL_CUTOFF_EQUAL,
     ZERO_H_PLANE_EFFECT,
     PLANE_AMP_EQUAL,
     _NUM // unused and must be last
@@ -122,7 +114,6 @@ const std::array<FilterControl::FilterEvents::Event, FilterControl::FilterEvents
    {/*.event = */ FilterEventTypes::HYPERCOS_EFFECT,           /*.m = */  1, /*.outOf = */ 50},
    {/*.event = */ FilterEventTypes::CHANGE_SPEED,              /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::REVERSE_SPEED,             /*.m = */  8, /*.outOf = */ 16},
-   {/*.event = */ FilterEventTypes::DISPL_CUTOFF_EQUAL,        /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::ZERO_H_PLANE_EFFECT,       /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::PLANE_AMP_EQUAL,           /*.m = */ 12, /*.outOf = */ 16},
 }};
@@ -149,33 +140,6 @@ void FilterControl::Start()
   {
     throw std::logic_error("FilterControl::Start: Resources directory is empty.");
   }
-
-  m_imageDisplacements.resize(IMAGE_FILENAMES.size());
-  for (size_t i = 0; i < IMAGE_FILENAMES.size(); ++i)
-  {
-    m_imageDisplacements[i] =
-        std::make_shared<ImageDisplacement>(GetImageFilename(IMAGE_FILENAMES[i]));
-  }
-}
-
-// clang-format off
-//@formatter:off
-const std::vector<std::string> FilterControl::IMAGE_FILENAMES{
-    "pattern1.jpg",
-    "pattern2.jpg",
-    "pattern3.jpg",
-    "pattern4.jpg",
-    "pattern5.jpg",
-    "chameleon-tail.jpg",
-    "mountain_sunset.png",
-};
-// clang-format on
-//@formatter:on
-
-inline auto FilterControl::GetImageFilename(const std::string& imageFilename) const -> std::string
-{
-  return m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + IMAGE_DISPLACEMENT_DIR +
-         PATH_SEP + imageFilename;
 }
 
 void FilterControl::SetRandomFilterSettings()
@@ -290,9 +254,6 @@ void FilterControl::SetDefaultSettings()
   m_filterData.vPlaneEffect = 0;
   m_filterData.vPlaneEffectAmplitude = ZoomFilterData::DEFAULT_V_PLANE_EFFECT_AMPLITUDE;
 
-  m_filterData.imageDisplacementAmplitude = ZoomFilterData::DEFAULT_IMAGE_DISPL_AMPLITUDE;
-  m_filterData.imageDisplacement = nullptr;
-
   m_filterData.hypercosOverlay = HypercosOverlay::NONE;
 }
 
@@ -364,24 +325,6 @@ void FilterControl::SetHypercosMode3Settings()
 void FilterControl::SetImageDisplacementModeSettings()
 {
   using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
-
-  m_filterData.imageDisplacement =
-      m_imageDisplacements[GetRandInRange(0U, static_cast<uint32_t>(m_imageDisplacements.size()))];
-
-  m_filterData.imageDisplacementAmplitude = GetRandInRange(
-      ZoomFilterData::MIN_IMAGE_DISPL_AMPLITUDE, ZoomFilterData::MAX_IMAGE_DISPL_AMPLITUDE);
-
-  m_filterData.imageDisplacementXColorCutoff = GetRandInRange(
-      ZoomFilterData::MIN_IMAGE_DISPL_COLOR_CUTOFF, ZoomFilterData::MAX_IMAGE_DISPL_COLOR_CUTOFF);
-  m_filterData.imageDisplacementYColorCutoff =
-      m_filterEvents->Happens(EventTypes::DISPL_CUTOFF_EQUAL)
-          ? m_filterData.imageDisplacementXColorCutoff
-          : GetRandInRange(ZoomFilterData::MIN_IMAGE_DISPL_COLOR_CUTOFF,
-                           ZoomFilterData::MAX_IMAGE_DISPL_COLOR_CUTOFF);
-
-  m_filterData.imageDisplacementZoomFactor = GetRandInRange(
-      ZoomFilterData::MIN_IMAGE_DISPL_ZOOM_FACTOR, ZoomFilterData::MAX_IMAGE_DISPL_ZOOM_FACTOR);
-
   if (m_filterEvents->Happens(EventTypes::HYPERCOS_EFFECT))
   {
     SetHypercosMode1Settings();

@@ -34,6 +34,7 @@ add_library(goom
         src/filters/filter_control.cpp
         src/filters/filter_crystal_ball.cpp
         src/filters/filter_hypercos.cpp
+        src/filters/filter_image_displacements.cpp
         src/filters/filter_normalized_coords.cpp
         src/filters/filter_scrunch.cpp
         src/filters/filter_speedway.cpp

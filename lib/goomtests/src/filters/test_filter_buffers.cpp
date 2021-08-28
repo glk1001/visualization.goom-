@@ -36,10 +36,13 @@ inline auto GetBuffPos(const int32_t x, const int32_t y) -> size_t
 
 static FilterStats s_filterStats{};
 
-class TestZoomVector : public GOOM::FILTERS::FilterZoomVector
+class TestZoomVector : public FilterZoomVector
 {
 public:
-  explicit TestZoomVector(const bool returnConst) noexcept : m_ReturnConst{returnConst} {}
+  explicit TestZoomVector(const bool returnConst) noexcept
+    : FilterZoomVector{""}, m_ReturnConst{returnConst}
+  {
+  }
 
   void SetFilterSettings(const ZoomFilterData& filterSettings) override;
 

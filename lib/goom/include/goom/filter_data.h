@@ -9,11 +9,6 @@
 namespace GOOM
 {
 
-namespace FILTERS
-{
-class ImageDisplacement;
-}
-
 enum class ZoomFilterMode
 {
   _NULL = -1,
@@ -168,22 +163,6 @@ struct ZoomFilterData
   static constexpr float MIN_V_PLANE_EFFECT_AMPLITUDE = 0.0015F;
   static constexpr float MAX_V_PLANE_EFFECT_AMPLITUDE = 0.0035F;
   float vPlaneEffectAmplitude = DEFAULT_V_PLANE_EFFECT_AMPLITUDE;
-
-  // Image Displacement:
-  static constexpr float DEFAULT_IMAGE_DISPL_AMPLITUDE = 0.0250F;
-  static constexpr float MIN_IMAGE_DISPL_AMPLITUDE = 0.0025F;
-  static constexpr float MAX_IMAGE_DISPL_AMPLITUDE = 0.1000F;
-  float imageDisplacementAmplitude = DEFAULT_IMAGE_DISPL_AMPLITUDE;
-  std::shared_ptr<FILTERS::ImageDisplacement> imageDisplacement{};
-  static constexpr float MIN_IMAGE_DISPL_COLOR_CUTOFF = 0.1F;
-  static constexpr float MAX_IMAGE_DISPL_COLOR_CUTOFF = 0.9F;
-  static constexpr float DEFAULT_IMAGE_DISPL_COLOR_CUTOFF = 0.5F;
-  float imageDisplacementXColorCutoff = DEFAULT_IMAGE_DISPL_COLOR_CUTOFF;
-  float imageDisplacementYColorCutoff = DEFAULT_IMAGE_DISPL_COLOR_CUTOFF;
-  static constexpr float MIN_IMAGE_DISPL_ZOOM_FACTOR = 1.00F;
-  static constexpr float MAX_IMAGE_DISPL_ZOOM_FACTOR = 10.0F;
-  static constexpr float DEFAULT_IMAGE_DISPL_ZOOM_FACTOR = 5.0F;
-  float imageDisplacementZoomFactor = DEFAULT_IMAGE_DISPL_ZOOM_FACTOR;
 };
 
 } // namespace GOOM

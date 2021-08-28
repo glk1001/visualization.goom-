@@ -231,7 +231,7 @@ private:
   GoomImageBuffers m_imageBuffers;
   std::string m_resourcesDirectory{};
   const SmallImageBitmaps m_smallBitmaps;
-  FilterZoomVector m_zoomVector{};
+  FilterZoomVector m_zoomVector;
   FilterControl m_filterControl;
   GoomVisualFx m_visualFx;
   GoomStates m_states{};
@@ -429,6 +429,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_imageBuffers{screenWidth, screenHeight},
     m_resourcesDirectory{std::move(resourcesDirectory)},
     m_smallBitmaps{m_resourcesDirectory},
+    m_zoomVector{m_resourcesDirectory},
     m_filterControl{m_goomInfo},
     m_visualFx{m_parallel, m_multiBufferDraw,
                std::const_pointer_cast<const PluginInfo>(

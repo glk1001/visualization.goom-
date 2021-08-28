@@ -22,6 +22,7 @@ namespace GOOM::FILTERS
 class Amulet;
 class CrystalBall;
 class Hypercos;
+class ImageDisplacements;
 class Scrunch;
 class Speedway;
 class Wave;
@@ -30,7 +31,7 @@ class YOnly;
 class ZoomVectorEffects
 {
 public:
-  ZoomVectorEffects() noexcept;
+  ZoomVectorEffects(const std::string& resourcesDirectory) noexcept;
   ZoomVectorEffects(const ZoomVectorEffects&) noexcept = delete;
   ZoomVectorEffects(ZoomVectorEffects&&) noexcept = delete;
   ~ZoomVectorEffects() noexcept;
@@ -66,6 +67,7 @@ private:
   const std::unique_ptr<Amulet> m_amulet;
   const std::unique_ptr<CrystalBall> m_crystalBall;
   const std::unique_ptr<Hypercos> m_hypercos;
+  const std::unique_ptr<ImageDisplacements> m_imageDisplacements;
   const std::unique_ptr<Scrunch> m_scrunch;
   const std::unique_ptr<Speedway> m_speedway;
   const std::unique_ptr<Wave> m_wave;

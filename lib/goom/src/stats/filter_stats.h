@@ -5,6 +5,7 @@
 #include "../filters/filter_buffers.h"
 #include "../filters/filter_crystal_ball.h"
 #include "../filters/filter_hypercos.h"
+#include "../filters/filter_image_displacements.h"
 #include "../filters/filter_scrunch.h"
 #include "../filters/filter_speedway.h"
 #include "../filters/filter_wave.h"
@@ -35,6 +36,8 @@ public:
   void SetLastAmuletParams(const FILTERS::Amulet::Params& params);
   void SetLastCrystalBallParams(const FILTERS::CrystalBall::Params& params);
   void SetLastHypercosParams(const FILTERS::Hypercos::Params& params);
+  void SetLastImageDisplacementsFilename(const std::string& imageFilename);
+  void SetLastImageDisplacementsParams(const FILTERS::ImageDisplacements::Params& params);
   void SetLastScrunchParams(const FILTERS::Scrunch::Params& params);
   void SetLastSpeedwayParams(const FILTERS::Speedway::Params& params);
   void SetLastWaveParams(const FILTERS::Wave::Params& params);
@@ -100,10 +103,12 @@ private:
   uint32_t m_lastPrevY = 0;
   uint32_t m_lastTranBuffYLineStart = +1000000;
   int32_t m_lastTranDiffFactor = -1000;
-  const ZoomFilterData* m_lastZoomFilterSettings{};
+  ZoomFilterData m_lastZoomFilterSettings{};
   FILTERS::Amulet::Params m_lastAmuletParams{};
   FILTERS::CrystalBall::Params m_lastCrystalBallParams{};
   FILTERS::Hypercos::Params m_lastHypercosParams{};
+  std::string m_lastImageDisplacementFilename{};
+  FILTERS::ImageDisplacements::Params m_lastImageDisplacementsParams{};
   FILTERS::Scrunch::Params m_lastScrunchParams{};
   FILTERS::Speedway::Params m_lastSpeedwayParams{};
   FILTERS::Wave::Params m_lastWaveParams{};

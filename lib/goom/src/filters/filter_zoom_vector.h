@@ -21,7 +21,7 @@ class ZoomVectorEffects;
 class FilterZoomVector : public IZoomVector
 {
 public:
-  FilterZoomVector() noexcept;
+  FilterZoomVector(const std::string& resourcesDirectory) noexcept;
   FilterZoomVector(const FilterZoomVector&) noexcept = delete;
   FilterZoomVector(FilterZoomVector&&) noexcept = delete;
   ~FilterZoomVector() noexcept override;
