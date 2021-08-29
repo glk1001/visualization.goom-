@@ -44,6 +44,11 @@ void FilterZoomVector::SetFilterSettings(const ZoomFilterData& filterSettings)
   m_zoomVectorEffects->SetFilterSettings(filterSettings);
 }
 
+void FilterZoomVector::SetRandomPlaneEffects(const V2dInt& zoomMidPoint, const uint32_t screenWidth)
+{
+  m_zoomVectorEffects->SetRandomPlaneEffects(zoomMidPoint, screenWidth);
+}
+
 auto FilterZoomVector::GetMaxSpeedCoeff() const -> float
 {
   return m_zoomVectorEffects->GetMaxSpeedCoeff();
@@ -91,16 +96,16 @@ void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero
     velocity += m_zoomVectorEffects->GetHypercosVelocity(coords);
   }
 
-  if (m_filterSettings->hPlaneEffect != 0)
+  if (m_zoomVectorEffects->IsHorizontalPlaneVelocityActive())
   {
     UpdateDoZoomVectorHPlaneEffectStats();
-    velocity.SetX(velocity.GetX() + m_zoomVectorEffects->GetHPlaneEffectVelocity(coords));
+    velocity.SetX(velocity.GetX() + m_zoomVectorEffects->GetHorizontalPlaneVelocity(coords));
   }
 
-  if (m_filterSettings->vPlaneEffect != 0)
+  if (m_zoomVectorEffects->IsVerticalPlaneVelocityActive())
   {
     UpdateDoZoomVectorVPlaneEffectStats();
-    velocity.SetY(velocity.GetY() + m_zoomVectorEffects->GetVPlaneEffectVelocity(coords));
+    velocity.SetY(velocity.GetY() + m_zoomVectorEffects->GetVerticalPlaneVelocity(coords));
   }
 
   /* TODO : Water Mode */

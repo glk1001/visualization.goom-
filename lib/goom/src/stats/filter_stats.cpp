@@ -111,12 +111,11 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
   logVal(MODULE, "lastYCrystalBallSqDistMult", m_lastCrystalBallParams.ySqDistMult);
   logVal(MODULE, "lastXCrystalBallSqDistOffset", m_lastCrystalBallParams.xSqDistOffset);
   logVal(MODULE, "lastYCrystalBallSqDistOffset", m_lastCrystalBallParams.ySqDistOffset);
-  logVal(MODULE, "lastZoomFilterData->hPlaneEffect", m_lastZoomFilterSettings.hPlaneEffect);
-  logVal(MODULE, "lastZoomFilterData->vPlaneEffect", m_lastZoomFilterSettings.vPlaneEffect);
-  logVal(MODULE, "lastZoomFilterData->hPlaneEffectAmplitude",
-         m_lastZoomFilterSettings.hPlaneEffectAmplitude);
-  logVal(MODULE, "lastZoomFilterData->vPlaneEffectAmplitude",
-         m_lastZoomFilterSettings.vPlaneEffectAmplitude);
+  logVal(MODULE, "lastHorizontalPlaneEffect", m_lastPlanesParams.horizontalEffect);
+  logVal(MODULE, "lastVerticalPlaneEffect", m_lastPlanesParams.verticalEffect);
+  logVal(MODULE, "lastHorizontalPlaneEffectAmplitude",
+         m_lastPlanesParams.horizontalEffectAmplitude);
+  logVal(MODULE, "lastVerticalPlaneEffectAmplitude", m_lastPlanesParams.verticalEffectAmplitude);
   logVal(MODULE, "lastHypercosEffect", EnumToString(m_lastHypercosParams.effect));
   logVal(MODULE, "lastHypercosReverse", static_cast<uint32_t>(m_lastHypercosParams.reverse));
   logVal(MODULE, "lastHypercosXFreq", m_lastHypercosParams.xFreq);
@@ -357,6 +356,11 @@ void FilterStats::SetLastImageDisplacementsFilename(const std::string& imageFile
 void FilterStats::SetLastImageDisplacementsParams(const FILTERS::ImageDisplacements::Params& params)
 {
   m_lastImageDisplacementsParams = params;
+}
+
+void FilterStats::SetLastPlanesParams(const FILTERS::Planes::Params& params)
+{
+  m_lastPlanesParams = params;
 }
 
 void FilterStats::SetLastScrunchParams(const FILTERS::Scrunch::Params& params)

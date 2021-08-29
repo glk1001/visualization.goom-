@@ -78,7 +78,6 @@ private:
   void SetYOnlyModeSettings();
 
   void SetMiddlePoints();
-  void SetPlaneEffects();
   void SetRotate(float probability);
 };
 

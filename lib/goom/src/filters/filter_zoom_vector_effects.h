@@ -3,6 +3,7 @@
 
 #include "filter_data.h"
 #include "filter_normalized_coords.h"
+#include "v2d.h"
 
 #include <memory>
 
@@ -23,6 +24,7 @@ class Amulet;
 class CrystalBall;
 class Hypercos;
 class ImageDisplacements;
+class Planes;
 class Scrunch;
 class Speedway;
 class Wave;
@@ -31,7 +33,7 @@ class YOnly;
 class ZoomVectorEffects
 {
 public:
-  ZoomVectorEffects(const std::string& resourcesDirectory) noexcept;
+  explicit ZoomVectorEffects(const std::string& resourcesDirectory) noexcept;
   ZoomVectorEffects(const ZoomVectorEffects&) noexcept = delete;
   ZoomVectorEffects(ZoomVectorEffects&&) noexcept = delete;
   ~ZoomVectorEffects() noexcept;
@@ -40,6 +42,8 @@ public:
   auto operator=(ZoomVectorEffects&&) -> ZoomVectorEffects& = delete;
 
   void SetFilterSettings(const ZoomFilterData& filterSettings);
+  void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth);
+
   void SetFilterStats(FilterStats& stats);
   void UpdateLastStats();
 
@@ -55,9 +59,13 @@ public:
   [[nodiscard]] auto GetTanEffectVelocity(float sqDistFromZero,
                                           const NormalizedCoords& velocity) const
       -> NormalizedCoords;
-  [[nodiscard]] auto GetHPlaneEffectVelocity(const NormalizedCoords& coords) const -> float;
   [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
-  [[nodiscard]] auto GetVPlaneEffectVelocity(const NormalizedCoords& coords) const -> float;
+
+  [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
+  [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;
+
+  [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
+  [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
 
 private:
   const ZoomFilterData* m_filterSettings{};
@@ -68,6 +76,7 @@ private:
   const std::unique_ptr<CrystalBall> m_crystalBall;
   const std::unique_ptr<Hypercos> m_hypercos;
   const std::unique_ptr<ImageDisplacements> m_imageDisplacements;
+  const std::unique_ptr<Planes> m_planes;
   const std::unique_ptr<Scrunch> m_scrunch;
   const std::unique_ptr<Speedway> m_speedway;
   const std::unique_ptr<Wave> m_wave;

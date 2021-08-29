@@ -1160,6 +1160,8 @@ void GoomControl::GoomControlImpl::ChangeMilieu()
 {
   m_stats.DoChangeMilieu();
   m_filterControl.ChangeMilieu();
+  m_zoomVector.SetRandomPlaneEffects(m_filterControl.GetFilterSettings().zoomMidPoint,
+                                     m_goomInfo->GetScreenInfo().width);
 }
 
 void GoomControl::GoomControlImpl::ChangeVitesse()

@@ -64,8 +64,6 @@ public:
     HYPERCOS_EFFECT,
     CHANGE_SPEED,
     REVERSE_SPEED,
-    ZERO_H_PLANE_EFFECT,
-    PLANE_AMP_EQUAL,
     _NUM // unused and must be last
   };
 
@@ -94,9 +92,6 @@ private:
      { .event = FilterEventTypes::HYPERCOS_EFFECT,            .m =  8, .outOf = 16 },
      { .event = FilterEventTypes::CHANGE_SPEED,               .m =  8, .outOf = 16 },
      { .event = FilterEventTypes::REVERSE_SPEED,              .m =  8, .outOf = 16 },
-     { .event = FilterEventTypes::DISPL_CUTOFF_EQUAL,         .m =  8, .outOf = 16 },
-     { .event = FilterEventTypes::ZERO_H_PLANE_EFFECT         .m =  8, .outOf = 16 },
-     { .event = FilterEventTypes::PLANE_AMP_EQUAL,            .m = 12, .outOf = 16 },
   }};
 #endif
   // clang-format on
@@ -114,8 +109,6 @@ const std::array<FilterControl::FilterEvents::Event, FilterControl::FilterEvents
    {/*.event = */ FilterEventTypes::HYPERCOS_EFFECT,           /*.m = */  1, /*.outOf = */ 50},
    {/*.event = */ FilterEventTypes::CHANGE_SPEED,              /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::REVERSE_SPEED,             /*.m = */  8, /*.outOf = */ 16},
-   {/*.event = */ FilterEventTypes::ZERO_H_PLANE_EFFECT,       /*.m = */  8, /*.outOf = */ 16},
-   {/*.event = */ FilterEventTypes::PLANE_AMP_EQUAL,           /*.m = */ 12, /*.outOf = */ 16},
 }};
 // clang-format on
 //@formatter:on
@@ -247,12 +240,6 @@ void FilterControl::SetDefaultSettings()
   m_filterData.noisify = false;
   m_filterData.noiseFactor = 1.0;
   m_filterData.blockyWavy = false;
-
-  m_filterData.hPlaneEffect = 0;
-  m_filterData.hPlaneEffectAmplitude = ZoomFilterData::DEFAULT_H_PLANE_EFFECT_AMPLITUDE;
-
-  m_filterData.vPlaneEffect = 0;
-  m_filterData.vPlaneEffectAmplitude = ZoomFilterData::DEFAULT_V_PLANE_EFFECT_AMPLITUDE;
 
   m_filterData.hypercosOverlay = HypercosOverlay::NONE;
 }
@@ -408,7 +395,6 @@ void FilterControl::ChangeMilieu()
   m_settingsHaveChanged = true;
 
   SetMiddlePoints();
-  SetPlaneEffects();
 }
 
 void FilterControl::SetMiddlePoints()
@@ -476,87 +462,6 @@ void FilterControl::SetMiddlePoints()
       break;
     default:
       throw std::logic_error("Unknown MiddlePointEvents enum.");
-  }
-}
-
-void FilterControl::SetPlaneEffects()
-{
-  using EventTypes = FilterControl::FilterEvents::FilterEventTypes;
-
-  // clang-format off
-  // @formatter:off
-  enum class PlaneEffectEvents { EVENT1, EVENT2, EVENT3, EVENT4, EVENT5, EVENT6, EVENT7, EVENT8 };
-  static const Weights<PlaneEffectEvents> s_planeEffectWeights{{
-     { PlaneEffectEvents::EVENT1,  1 },
-     { PlaneEffectEvents::EVENT2,  1 },
-     { PlaneEffectEvents::EVENT3,  4 },
-     { PlaneEffectEvents::EVENT4,  1 },
-     { PlaneEffectEvents::EVENT5,  1 },
-     { PlaneEffectEvents::EVENT6,  1 },
-     { PlaneEffectEvents::EVENT7,  1 },
-     { PlaneEffectEvents::EVENT8,  2 },
-  }};
-  // clang-format on
-  // @formatter:on
-
-  switch (s_planeEffectWeights.GetRandomWeighted())
-  {
-    case PlaneEffectEvents::EVENT1:
-      m_filterData.vPlaneEffect = GetRandInRange(-2, +3);
-      m_filterData.hPlaneEffect = GetRandInRange(-2, +3);
-      break;
-    case PlaneEffectEvents::EVENT2:
-      m_filterData.vPlaneEffect = 0;
-      m_filterData.hPlaneEffect = GetRandInRange(-7, +8);
-      break;
-    case PlaneEffectEvents::EVENT3:
-      m_filterData.vPlaneEffect = GetRandInRange(-5, +6);
-      m_filterData.hPlaneEffect = -m_filterData.vPlaneEffect + 1;
-      break;
-    case PlaneEffectEvents::EVENT4:
-      m_filterData.hPlaneEffect = static_cast<int>(GetRandInRange(5U, 13U));
-      m_filterData.vPlaneEffect = -m_filterData.hPlaneEffect + 1;
-      break;
-    case PlaneEffectEvents::EVENT5:
-      m_filterData.vPlaneEffect = static_cast<int>(GetRandInRange(5U, 13U));
-      m_filterData.hPlaneEffect = -m_filterData.hPlaneEffect + 1;
-      break;
-    case PlaneEffectEvents::EVENT6:
-      m_filterData.hPlaneEffect = 0;
-      m_filterData.vPlaneEffect = GetRandInRange(-9, +10);
-      break;
-    case PlaneEffectEvents::EVENT7:
-      m_filterData.hPlaneEffect = GetRandInRange(-9, +10);
-      m_filterData.vPlaneEffect = GetRandInRange(-9, +10);
-      break;
-    case PlaneEffectEvents::EVENT8:
-      m_filterData.vPlaneEffect = 0;
-      m_filterData.hPlaneEffect = 0;
-      break;
-    default:
-      throw std::logic_error("Unknown MiddlePointEvents enum.");
-  }
-
-  m_filterData.hPlaneEffectAmplitude = GetRandInRange(ZoomFilterData::MIN_H_PLANE_EFFECT_AMPLITUDE,
-                                                      ZoomFilterData::MAX_H_PLANE_EFFECT_AMPLITUDE);
-  if (m_filterEvents->Happens(FilterEvents::FilterEventTypes::PLANE_AMP_EQUAL))
-  {
-    m_filterData.vPlaneEffectAmplitude = m_filterData.hPlaneEffectAmplitude;
-  }
-  else
-  {
-    m_filterData.vPlaneEffectAmplitude = GetRandInRange(
-        ZoomFilterData::MIN_V_PLANE_EFFECT_AMPLITUDE, ZoomFilterData::MAX_V_PLANE_EFFECT_AMPLITUDE);
-  }
-
-  if ((1 == m_filterData.zoomMidPoint.x) ||
-      (m_filterData.zoomMidPoint.x == static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1)))
-  {
-    m_filterData.vPlaneEffect = 0;
-    if (m_filterEvents->Happens(EventTypes::ZERO_H_PLANE_EFFECT))
-    {
-      m_filterData.hPlaneEffect = 0;
-    }
   }
 }
 

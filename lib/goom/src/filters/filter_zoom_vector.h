@@ -30,10 +30,11 @@ public:
 
   auto GetFilterStats() const -> FilterStats* override;
   void SetFilterStats(FilterStats& stats) override;
-  virtual void UpdateLastStats() override;
+  void UpdateLastStats() override;
 
   auto GetFilterSettings() const -> const ZoomFilterData* override;
   void SetFilterSettings(const ZoomFilterData& filterSettings) override;
+  void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth) override;
 
   auto GetMaxSpeedCoeff() const -> float override;
   void SetMaxSpeedCoeff(float val) override;
@@ -51,6 +52,7 @@ private:
 
   void UpdateDoZoomVectorNoisifyStats() const;
   void UpdateDoZoomVectorHypercosEffectStats() const;
+  // TODO Fix stats
   void UpdateDoZoomVectorHPlaneEffectStats() const;
   void UpdateDoZoomVectorVPlaneEffectStats() const;
 };

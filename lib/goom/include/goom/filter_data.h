@@ -148,21 +148,6 @@ struct ZoomFilterData
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
   static constexpr float NOISE_MAX = 120.0F;
-
-  // H Plane:
-  // @since June 2001
-  int hPlaneEffect = 0; // deviation horitontale
-  static constexpr float DEFAULT_H_PLANE_EFFECT_AMPLITUDE = 0.0025F;
-  static constexpr float MIN_H_PLANE_EFFECT_AMPLITUDE = 0.0015F;
-  static constexpr float MAX_H_PLANE_EFFECT_AMPLITUDE = 0.0035F;
-  float hPlaneEffectAmplitude = DEFAULT_H_PLANE_EFFECT_AMPLITUDE;
-
-  // V Plane:
-  int vPlaneEffect = 0; // deviation verticale
-  static constexpr float DEFAULT_V_PLANE_EFFECT_AMPLITUDE = 0.0025F;
-  static constexpr float MIN_V_PLANE_EFFECT_AMPLITUDE = 0.0015F;
-  static constexpr float MAX_V_PLANE_EFFECT_AMPLITUDE = 0.0035F;
-  float vPlaneEffectAmplitude = DEFAULT_V_PLANE_EFFECT_AMPLITUDE;
 };
 
 } // namespace GOOM

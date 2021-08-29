@@ -7,6 +7,7 @@
 #include "filter_hypercos.h"
 #include "filter_image_displacements.h"
 #include "filter_normalized_coords.h"
+#include "filter_planes.h"
 #include "filter_scrunch.h"
 #include "filter_speedway.h"
 #include "filter_wave.h"
@@ -34,6 +35,7 @@ ZoomVectorEffects::ZoomVectorEffects(const std::string& resourcesDirectory) noex
     m_crystalBall{std::make_unique<CrystalBall>()},
     m_hypercos{std::make_unique<Hypercos>()},
     m_imageDisplacements{std::make_unique<ImageDisplacements>(resourcesDirectory)},
+    m_planes{std::make_unique<Planes>()},
     m_scrunch{std::make_unique<Scrunch>()},
     m_speedway{std::make_unique<Speedway>()},
     m_wave{std::make_unique<Wave>()},
@@ -91,6 +93,11 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterData& filterSettings)
   }
 }
 
+void ZoomVectorEffects::SetRandomPlaneEffects(const V2dInt& zoomMidPoint, const uint32_t screenWidth)
+{
+  m_planes->SetRandomParams(zoomMidPoint, screenWidth);
+}
+
 void ZoomVectorEffects::SetHypercosOverlaySettings()
 {
   switch (m_filterSettings->hypercosOverlay)
@@ -125,6 +132,7 @@ void ZoomVectorEffects::UpdateLastStats()
   m_stats->SetLastHypercosParams(m_hypercos->GetParams());
   m_stats->SetLastImageDisplacementsFilename(m_imageDisplacements->GetCurrentImageFilename());
   m_stats->SetLastImageDisplacementsParams(m_imageDisplacements->GetParams());
+  m_stats->SetLastPlanesParams(m_planes->GetParams());
   m_stats->SetLastScrunchParams(m_scrunch->GetParams());
   m_stats->SetLastSpeedwayParams(m_speedway->GetParams());
   m_stats->SetLastWaveParams(m_wave->GetParams());
@@ -282,18 +290,24 @@ auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords) cons
   return m_hypercos->GetVelocity(coords);
 }
 
-auto ZoomVectorEffects::GetHPlaneEffectVelocity(const NormalizedCoords& coords) const -> float
+auto ZoomVectorEffects::IsHorizontalPlaneVelocityActive() const -> bool
 {
-  // TODO - try xNormalized
-  return coords.GetY() * m_filterSettings->hPlaneEffectAmplitude *
-         static_cast<float>(m_filterSettings->hPlaneEffect);
+  return m_planes->IsHorizontalPlaneVelocityActive();
 }
 
-auto ZoomVectorEffects::GetVPlaneEffectVelocity(const NormalizedCoords& coords) const -> float
+auto ZoomVectorEffects::GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float
 {
-  // TODO - try yNormalized
-  return coords.GetX() * m_filterSettings->vPlaneEffectAmplitude *
-         static_cast<float>(m_filterSettings->vPlaneEffect);
+  return m_planes->GetHorizontalPlaneVelocity(coords);
+}
+
+auto ZoomVectorEffects::IsVerticalPlaneVelocityActive() const -> bool
+{
+  return m_planes->IsVerticalPlaneVelocityActive();
+}
+
+auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float
+{
+  return m_planes->GetVerticalPlaneVelocity(coords);
 }
 
 auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
