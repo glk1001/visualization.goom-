@@ -295,7 +295,12 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
                                                                     const int32_t destBuffVal,
                                                                     const int32_t t) -> int32_t
 {
-  return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) / CoordTransforms::MAX_TRAN_LERP_VALUE);
+  // IMPORTANT: Looking at this mathematically I can't see that the '-1' should be there.
+  //            But without it, slight static artifacts appear in the centre of the image.
+  //            Originally, Goom used '<< DIM_FILTER_COEFFS' instead of the division,
+  //            which was OK, but the '-1' is better.
+  return srceBuffVal +
+         (((t * (destBuffVal - srceBuffVal)) / CoordTransforms::MAX_TRAN_LERP_VALUE) - 1);
 }
 
 } // namespace FILTERS
