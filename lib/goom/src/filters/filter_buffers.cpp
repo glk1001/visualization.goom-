@@ -77,7 +77,7 @@ auto ZoomFilterBuffers::HaveFilterSettingsChanged() const -> bool
   return m_filterSettingsHaveChanged;
 }
 
-void ZoomFilterBuffers::FilterSettingsChanged()
+void ZoomFilterBuffers::NotifyFilterSettingsHaveChanged()
 {
   m_filterSettingsHaveChanged = true;
 }

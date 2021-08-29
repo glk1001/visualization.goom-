@@ -445,7 +445,7 @@ inline void ZoomFilterFx::ZoomFilterImpl::UpdateZoomVectorSettings()
 inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBuffersSettings()
 {
   m_filterBuffers.SetBuffMidPoint(m_currentFilterSettings.zoomMidPoint);
-  m_filterBuffers.FilterSettingsChanged();
+  m_filterBuffers.NotifyFilterSettingsHaveChanged();
 }
 
 void ZoomFilterFx::ZoomFilterImpl::UpdateTranLerpFactor(const int32_t switchIncr,

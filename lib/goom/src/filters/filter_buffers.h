@@ -51,8 +51,6 @@ public:
                     const ZoomPointFunc& zoomPointFunc,
                     FilterStats& stats);
 
-  [[nodiscard]] auto GetZoomPointFunc() const -> ZoomPointFunc;
-
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
   void SetTranLerpFactor(int32_t val);
   [[nodiscard]] static auto GetMaxTranLerpFactor() -> int32_t;
@@ -64,7 +62,7 @@ public:
 
   void Start();
 
-  void FilterSettingsChanged();
+  void NotifyFilterSettingsHaveChanged();
   auto HaveFilterSettingsChanged() const -> bool;
 
   void UpdateTranBuffers();
@@ -112,7 +110,7 @@ private:
   void StartFreshTranBuffers();
   void ResetTranBuffers();
   void FillTempTranBuffers();
-  void DoNextTempTranBuffersStripe(const uint32_t tranBuffStripeHeight);
+  void DoNextTempTranBuffersStripe(uint32_t tranBuffStripeHeight);
   void GenerateWaterFxHorizontalBuffer();
   [[nodiscard]] static auto GetTranPoint(const NormalizedCoords& normalized) -> V2dInt;
 };
@@ -274,11 +272,6 @@ inline auto ZoomFilterBuffers::IsTranPointClipped(const V2dInt& tranPoint) const
 inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos) const -> V2dInt
 {
   return m_transformBuffers->GetSrceDestLerpBufferPoint(buffPos);
-}
-
-inline auto ZoomFilterBuffers::GetZoomPointFunc() const -> ZoomPointFunc
-{
-  return m_getZoomPoint;
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetTranLerpFactor() const -> int32_t

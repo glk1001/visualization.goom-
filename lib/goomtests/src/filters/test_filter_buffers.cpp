@@ -320,7 +320,7 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
     constantZoomVector.SetConstCoords(CONST_ZOOM_VECTOR_COORDS_2);
     REQUIRE(CONST_ZOOM_VECTOR_COORDS_2 == constantZoomVector.GetConstCoords());
     REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS_2.equals(constantZoomVector.GetZoomPoint(DUMMY_NML_COORDS)));
-    filterBuffers.FilterSettingsChanged();
+    filterBuffers.NotifyFilterSettingsHaveChanged();
     REQUIRE(filterBuffers.HaveFilterSettingsChanged());
     filterBuffers.UpdateTranBuffers();
     REQUIRE(ZoomFilterBuffers::TranBuffersState::TRAN_BUFFERS_READY ==
