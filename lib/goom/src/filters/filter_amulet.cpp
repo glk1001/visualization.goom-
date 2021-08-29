@@ -19,10 +19,10 @@ using UTILS::GetRandInRange;
 using UTILS::NumberRange;
 using UTILS::ProbabilityOf;
 
-constexpr float DEFAULT_AMPLITUDE = 3.5F;
-constexpr NumberRange<float> AMPLITUDE_RANGE = {2.0F, 5.0F};
+constexpr float DEFAULT_AMPLITUDE = 2.0F;
+constexpr NumberRange<float> AMPLITUDE_RANGE = {0.1F, 5.01F};
 
-constexpr float PROB_XY_AMPLITUDES_EQUAL = 0.9F;
+constexpr float PROB_XY_AMPLITUDES_EQUAL = 0.5F;
 
 Amulet::Amulet() noexcept : m_params{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE}
 {

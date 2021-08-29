@@ -32,7 +32,7 @@ constexpr float PROB_LOW = 0.1F;
 //@formatter:off
 // clang-format off
 const Weights<ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
-    { ZoomFilterMode::AMULET_MODE,            4 },
+    { ZoomFilterMode::AMULET_MODE,            8 },
     { ZoomFilterMode::CRYSTAL_BALL_MODE0,     4 },
     { ZoomFilterMode::CRYSTAL_BALL_MODE1,     2 },
     { ZoomFilterMode::HYPERCOS_MODE0,         6 },
