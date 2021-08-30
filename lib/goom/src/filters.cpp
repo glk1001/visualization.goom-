@@ -10,17 +10,16 @@
  *  -optimisation de sinFilter (utilisant une table de sin)
  *  -asm
  *  -optimisation de la procedure de generation du buffer de transformation
- *		la vitesse est maintenant comprise dans [0..128] au lieu de [0..100]
+ *     la vitesse est maintenant comprise dans [0..128] au lieu de [0..100]
  *
- *	- converted to C++14 2021-02-01 (glk)
+ *  - converted to C++14 2021-02-01 (glk)
  */
 
 #include "filters.h"
 
 #include "filter_data.h"
-#include "filters/filter_buffers.h"
+#include "filters/filter_buffers_manager.h"
 #include "filters/filter_normalized_coords.h"
-#include "filters/goom_zoom_vector.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goom_stats.h"
@@ -32,7 +31,6 @@
 #include "goomutils/parallel_utils.h"
 #include "goomutils/spimpl.h"
 #include "stats/filter_stats.h"
-#include "v2d.h"
 
 //#include <valgrind/callgrind.h>
 
@@ -40,7 +38,6 @@
 #undef NDEBUG
 #include <cassert>
 #include <cstdint>
-#include <goomutils/enumutils.h>
 #include <string>
 #include <tuple>
 
@@ -49,8 +46,7 @@ namespace GOOM
 
 using FILTERS::IZoomVector;
 using FILTERS::NormalizedCoords;
-using FILTERS::ZoomFilterBuffers;
-using UTILS::EnumToString;
+using FILTERS::ZoomFilterBuffersManager;
 using UTILS::floats_equal;
 using UTILS::GetRandInRange;
 using UTILS::Logging;
@@ -68,14 +64,10 @@ public:
   void SetResourcesDirectory(const std::string& dirName);
 
   void SetBuffSettings(const FXBuffSettings& settings);
-  [[nodiscard]] auto GetZoomVector() const -> IZoomVector&;
 
   void Start();
 
   [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterData&;
-  [[nodiscard]] auto GetFilterSettingsArePending() const -> bool;
-
-  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
 
   void SetInitialFilterSettings(const ZoomFilterData& filterSettings);
   void ChangeFilterSettings(const ZoomFilterData& filterSettings);
@@ -83,8 +75,7 @@ public:
   void ZoomFilterFastRgb(const PixelBuffer& pix1,
                          PixelBuffer& pix2,
                          int32_t switchIncr,
-                         float switchMult,
-                         uint32_t& numClipped);
+                         float switchMult);
 
   void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const;
 
@@ -93,14 +84,8 @@ private:
   const uint32_t m_screenHeight;
   bool m_started = false;
 
-  IZoomVector& m_zoomVector;
-  ZoomFilterBuffers m_filterBuffers;
-  void UpdateFilterBuffersSettings();
-  void UpdateZoomVectorSettings();
-
+  ZoomFilterBuffersManager m_filterBuffersManager;
   ZoomFilterData m_currentFilterSettings{};
-  ZoomFilterData m_nextFilterSettings{};
-  bool m_pendingFilterSettings = false;
 
   FXBuffSettings m_buffSettings{};
   std::string m_resourcesDirectory{};
@@ -109,20 +94,20 @@ private:
   uint64_t m_updateNum = 0;
   mutable FilterStats m_stats{};
 
-  using NeighborhoodCoeffArray = ZoomFilterBuffers::NeighborhoodCoeffArray;
-  using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
-  [[nodiscard]] auto GetNewColor(const NeighborhoodCoeffArray& coeffs,
-                                 const NeighborhoodPixelArray& pixels) const -> Pixel;
+  using NeighborhoodCoeffArray = ZoomFilterBuffersManager::NeighborhoodCoeffArray;
+  using NeighborhoodPixelArray = ZoomFilterBuffersManager::NeighborhoodPixelArray;
+
+  [[nodiscard]] auto GetNewColor(const PixelBuffer& srceBuff,
+                                 const ZoomFilterBuffersManager::SourcePointInfo& sourceInfo) const
+      -> Pixel;
+  [[nodiscard]] auto GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
+                                      const NeighborhoodPixelArray& pixels) const -> Pixel;
   [[nodiscard]] auto GetMixedColor(const NeighborhoodCoeffArray& coeffs,
                                    const NeighborhoodPixelArray& colors) const -> Pixel;
   [[nodiscard]] auto GetBlockyMixedColor(const NeighborhoodCoeffArray& coeffs,
                                          const NeighborhoodPixelArray& colors) const -> Pixel;
 
-  void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff, uint32_t& numDestClipped) const;
-
-  void UpdateTranBuffers();
-  void UpdateTranLerpFactor(int32_t switchIncr, float switchMult);
-  void StartFreshTranBuffers();
+  void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const;
 };
 
 ZoomFilterFx::ZoomFilterFx(Parallel& p,
@@ -179,10 +164,9 @@ void ZoomFilterFx::ChangeFilterSettings(const ZoomFilterData& filterSettings)
 void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& pix1,
                                      PixelBuffer& pix2,
                                      const int switchIncr,
-                                     const float switchMult,
-                                     uint32_t& numClipped)
+                                     const float switchMult)
 {
-  m_fxImpl->ZoomFilterFastRgb(pix1, pix2, switchIncr, switchMult, numClipped);
+  m_fxImpl->ZoomFilterFastRgb(pix1, pix2, switchIncr, switchMult);
 }
 
 auto ZoomFilterFx::GetFilterSettings() const -> const ZoomFilterData&
@@ -190,47 +174,24 @@ auto ZoomFilterFx::GetFilterSettings() const -> const ZoomFilterData&
   return m_fxImpl->GetFilterSettings();
 }
 
-auto ZoomFilterFx::GetFilterSettingsArePending() const -> bool
-{
-  return m_fxImpl->GetFilterSettingsArePending();
-}
-
-auto ZoomFilterFx::GetTranLerpFactor() const -> int32_t
-{
-  return m_fxImpl->GetTranLerpFactor();
-}
-
-auto ZoomFilterFx::GetZoomVector() const -> IZoomVector&
-{
-  return m_fxImpl->GetZoomVector();
-}
-
 ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(Parallel& p,
                                              const std::shared_ptr<const PluginInfo>& goomInfo,
                                              IZoomVector& zoomVector) noexcept
   : m_screenWidth{goomInfo->GetScreenInfo().width},
     m_screenHeight{goomInfo->GetScreenInfo().height},
-    m_zoomVector{zoomVector},
-    m_filterBuffers{p, goomInfo,
-                    [this](const NormalizedCoords& normalizedCoords) {
-                      return m_zoomVector.GetZoomPoint(normalizedCoords);
-                    },
-                    m_stats},
+    m_filterBuffersManager{p, goomInfo, zoomVector, m_stats},
     m_parallel{p}
 {
 }
 
 void ZoomFilterFx::ZoomFilterImpl::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
 {
-  m_zoomVector.UpdateLastStats();
+  m_filterBuffersManager.UpdateLastStats();
 
   m_stats.SetLastZoomFilterSettings(m_currentFilterSettings);
-  m_stats.SetLastJustChangedFilterSettings(m_pendingFilterSettings);
   m_stats.SetLastGeneralSpeed(m_currentFilterSettings.vitesse.GetRelativeSpeed());
   m_stats.SetLastPrevX(m_screenWidth);
   m_stats.SetLastPrevY(m_screenHeight);
-  m_stats.SetLastTranBuffYLineStart(m_filterBuffers.GetTranBuffYLineStart());
-  m_stats.SetLastTranDiffFactor(m_filterBuffers.GetTranLerpFactor());
 
   m_stats.Log(logValueFunc);
 }
@@ -255,24 +216,23 @@ auto ZoomFilterFx::ZoomFilterImpl::GetFilterSettings() const -> const ZoomFilter
   return m_currentFilterSettings;
 }
 
-auto ZoomFilterFx::ZoomFilterImpl::GetFilterSettingsArePending() const -> bool
-{
-  return m_pendingFilterSettings;
-}
-
-auto ZoomFilterFx::ZoomFilterImpl::GetTranLerpFactor() const -> int32_t
-{
-  return m_filterBuffers.GetTranLerpFactor();
-}
-
-auto ZoomFilterFx::ZoomFilterImpl::GetZoomVector() const -> IZoomVector&
-{
-  return m_zoomVector;
-}
-
-inline auto ZoomFilterFx::ZoomFilterImpl::GetNewColor(const NeighborhoodCoeffArray& coeffs,
-                                                      const NeighborhoodPixelArray& pixels) const
+inline auto ZoomFilterFx::ZoomFilterImpl::GetNewColor(
+    const PixelBuffer& srceBuff, const ZoomFilterBuffersManager::SourcePointInfo& sourceInfo) const
     -> Pixel
+{
+  if (sourceInfo.isClipped)
+  {
+    m_stats.DoTranPointClipped();
+    return Pixel::BLACK;
+  }
+
+  const NeighborhoodPixelArray pixelNeighbours = srceBuff.Get4RHBNeighbours(
+      static_cast<size_t>(sourceInfo.screenPoint.x), static_cast<size_t>(sourceInfo.screenPoint.y));
+  return GetFilteredColor(sourceInfo.coeffs, pixelNeighbours);
+}
+
+inline auto ZoomFilterFx::ZoomFilterImpl::GetFilteredColor(
+    const NeighborhoodCoeffArray& coeffs, const NeighborhoodPixelArray& pixels) const -> Pixel
 {
   if (m_currentFilterSettings.blockyWavy)
   {
@@ -287,7 +247,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetBlockyMixedColor(
 {
   // Changing the color order gives a strange blocky, wavy look.
   // The order col4, col3, col2, col1 gave a black tear - no so good.
-  static_assert(4 == ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS, "NUM_NEIGHBOR_COEFFS must be 4.");
+  assert(4 == coeffs.val.size());
   const NeighborhoodPixelArray reorderedColors{colors[0], colors[2], colors[1], colors[3]};
   return GetMixedColor(coeffs, reorderedColors);
 }
@@ -304,7 +264,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetMixedColor(const NeighborhoodCoeffA
   uint32_t multR = 0;
   uint32_t multG = 0;
   uint32_t multB = 0;
-  for (size_t i = 0; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; ++i)
+  for (size_t i = 0; i < coeffs.val.size(); ++i)
   {
     const uint32_t& coeff = coeffs.val[i];
     const auto& color = colors[i];
@@ -341,6 +301,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetMixedColor(const NeighborhoodCoeffA
                 /*.a = */ MAX_ALPHA}};
 }
 
+// TODO Is this necessary?
 void ZoomFilterFx::ZoomFilterImpl::SetInitialFilterSettings(const ZoomFilterData& filterSettings)
 {
   assert(!m_started);
@@ -348,7 +309,6 @@ void ZoomFilterFx::ZoomFilterImpl::SetInitialFilterSettings(const ZoomFilterData
   m_stats.DoChangeFilterSettings(filterSettings);
 
   m_currentFilterSettings = filterSettings;
-  m_pendingFilterSettings = false;
 }
 
 void ZoomFilterFx::ZoomFilterImpl::ChangeFilterSettings(const ZoomFilterData& filterSettings)
@@ -357,21 +317,17 @@ void ZoomFilterFx::ZoomFilterImpl::ChangeFilterSettings(const ZoomFilterData& fi
 
   m_stats.DoChangeFilterSettings(filterSettings);
 
-  m_nextFilterSettings = filterSettings;
-  m_pendingFilterSettings = true;
+  m_currentFilterSettings = filterSettings;
+  m_filterBuffersManager.ChangeFilterSettings(filterSettings);
 }
 
 void ZoomFilterFx::ZoomFilterImpl::Start()
 {
   m_started = true;
 
+  m_filterBuffersManager.Start();
+
   ChangeFilterSettings(m_currentFilterSettings);
-
-  m_zoomVector.SetFilterSettings(m_currentFilterSettings);
-  m_zoomVector.SetFilterStats(m_stats);
-
-  UpdateFilterBuffersSettings();
-  m_filterBuffers.Start();
 }
 
 /**
@@ -390,95 +346,24 @@ void ZoomFilterFx::ZoomFilterImpl::Start()
 void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& pix1,
                                                      PixelBuffer& pix2,
                                                      const int32_t switchIncr,
-                                                     const float switchMult,
-                                                     uint32_t& numClipped)
+                                                     const float switchMult)
 {
   ++m_updateNum;
 
   m_stats.UpdateStart();
   m_stats.DoZoomFilterFastRgb();
 
-  UpdateTranBuffers();
-  UpdateTranLerpFactor(switchIncr, switchMult);
+  m_filterBuffersManager.UpdateTranBuffers();
+  m_filterBuffersManager.UpdateTranLerpFactor(switchIncr, switchMult);
 
-  CZoom(pix1, pix2, numClipped);
+  CZoom(pix1, pix2);
 
   m_stats.UpdateEnd();
 }
 
-void ZoomFilterFx::ZoomFilterImpl::UpdateTranBuffers()
-{
-  m_stats.UpdateTranBuffersStart();
-
-  m_filterBuffers.UpdateTranBuffers();
-
-  if (m_filterBuffers.GetTranBuffersState() ==
-           ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS)
-  {
-    StartFreshTranBuffers();
-  }
-
-  m_stats.UpdateTranBuffersEnd(m_currentFilterSettings.mode, m_filterBuffers.GetTranBuffersState());
-}
-
-void ZoomFilterFx::ZoomFilterImpl::StartFreshTranBuffers()
-{
-  // Don't start making new stripes until filter settings change.
-  if (!m_pendingFilterSettings)
-  {
-    return;
-  }
-
-  m_pendingFilterSettings = false;
-  m_currentFilterSettings = m_nextFilterSettings;
-
-  UpdateZoomVectorSettings();
-  UpdateFilterBuffersSettings();
-}
-
-inline void ZoomFilterFx::ZoomFilterImpl::UpdateZoomVectorSettings()
-{
-  m_zoomVector.SetFilterSettings(m_currentFilterSettings);
-  m_zoomVector.SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * ZoomFilterData::MAX_MAX_SPEED_COEFF);
-}
-
-inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBuffersSettings()
-{
-  m_filterBuffers.SetBuffMidPoint(m_currentFilterSettings.zoomMidPoint);
-  m_filterBuffers.NotifyFilterSettingsHaveChanged();
-}
-
-void ZoomFilterFx::ZoomFilterImpl::UpdateTranLerpFactor(const int32_t switchIncr,
-                                                        const float switchMult)
-{
-  int32_t tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
-
-  if (switchIncr != 0)
-  {
-    m_stats.DoSwitchIncrNotZero();
-    tranLerpFactor =
-        stdnew::clamp(tranLerpFactor + switchIncr, 0, ZoomFilterBuffers::GetMaxTranLerpFactor());
-  }
-
-  if (!floats_equal(switchMult, 1.0F))
-  {
-    m_stats.DoSwitchMultNotOne();
-
-    tranLerpFactor = static_cast<int32_t>(
-        stdnew::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
-                     static_cast<float>(tranLerpFactor), switchMult));
-  }
-
-  m_filterBuffers.SetTranLerpFactor(tranLerpFactor);
-}
-
-void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
-                                         PixelBuffer& destBuff,
-                                         uint32_t& numDestClipped) const
+void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const
 {
   m_stats.DoCZoom();
-
-  numDestClipped = 0;
 
   const auto setDestPixelRow = [&](const uint32_t destY)
   {
@@ -492,27 +377,10 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
 #endif
     for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
     {
-      const V2dInt tranPoint = m_filterBuffers.GetZoomBufferTranPoint(destPos);
+      const auto srceInfo = m_filterBuffersManager.GetSourcePointInfo(destPos);
 
-      if (m_filterBuffers.IsTranPointClipped(tranPoint))
-      {
-        m_stats.DoTranPointClipped();
-        *destRowBuff = Pixel::BLACK;
-        ++numDestClipped;
-      }
-      else
-      {
-#if __cplusplus <= 201402L
-        const auto srceInfo = m_filterBuffers.GetSourcePointInfo(tranPoint);
-        const V2dInt srcePoint = std::get<0>(srceInfo);
-        const auto coeffs = std::get<1>(srceInfo);
-#else
-        const auto [srcePoint, coeffs] = GetSourceInfo(tranPoint);
-#endif
-        const NeighborhoodPixelArray pixelNeighbours = srceBuff.Get4RHBNeighbours(
-            static_cast<size_t>(srcePoint.x), static_cast<size_t>(srcePoint.y));
-        *destRowBuff = GetNewColor(coeffs, pixelNeighbours);
-      }
+      *destRowBuff = GetNewColor(srceBuff, srceInfo);
+
       ++destPos;
     }
   };

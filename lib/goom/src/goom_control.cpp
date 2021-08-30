@@ -971,7 +971,7 @@ void GoomControl::GoomControlImpl::ChangeFilterMode()
 void GoomControl::GoomControlImpl::SetNextFilterMode()
 {
   m_filterControl.SetRandomFilterSettings();
-  m_filterControl.ChangeMilieu();
+  m_filterControl.SetMiddlePoints();
   m_curGDrawables = m_states.GetCurrentDrawables();
 }
 
@@ -1159,7 +1159,7 @@ void GoomControl::GoomControlImpl::MegaLentUpdate()
 void GoomControl::GoomControlImpl::ChangeMilieu()
 {
   m_stats.DoChangeMilieu();
-  m_filterControl.ChangeMilieu();
+  m_filterControl.SetMiddlePoints();
   m_zoomVector.SetRandomPlaneEffects(m_filterControl.GetFilterSettings().zoomMidPoint,
                                      m_goomInfo->GetScreenInfo().width);
 }
@@ -1415,19 +1415,8 @@ void GoomControl::GoomControlImpl::ApplyZoom()
     m_filterControl.ClearUnchangedMark();
   }
 
-  uint32_t numClipped = 0;
   m_visualFx.zoomFilter_fx->ZoomFilterFastRgb(m_imageBuffers.GetP1(), m_imageBuffers.GetP2(),
-                                              m_goomData.switchIncr, m_goomData.switchMult,
-                                              numClipped);
-
-  m_stats.SetLastNumClipped(numClipped);
-  constexpr uint32_t TOO_MANY_CLIPPED_DIVISOR = 100;
-  if (numClipped > (m_goomInfo->GetScreenInfo().size / TOO_MANY_CLIPPED_DIVISOR))
-  {
-    m_stats.TooManyClipped();
-    m_goomData.switchIncr = -m_goomData.switchIncr;
-    m_goomData.switchMult = 1.0F;
-  }
+                                              m_goomData.switchIncr, m_goomData.switchMult);
 
   if (m_filterControl.GetFilterSettings().noisify)
   {

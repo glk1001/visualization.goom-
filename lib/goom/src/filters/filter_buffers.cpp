@@ -63,13 +63,29 @@ void ZoomFilterBuffers::Start()
   InitAllTranBuffers();
 }
 
-auto ZoomFilterBuffers::GetSourcePointInfo(const V2dInt& tranPoint) const
-    -> std::pair<V2dInt, NeighborhoodCoeffArray>
+auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const -> SourcePointInfo
 {
-  const V2dInt srcePoint = CoordTransforms::TranToScreenPoint(tranPoint);
+  const V2dInt tranPoint = GetZoomBufferTranPoint(buffPos);
+  const bool isClipped = IsTranPointClipped(tranPoint);
+
+  const V2dInt srceScreenPoint = CoordTransforms::TranToScreenPoint(tranPoint);
   const size_t xIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
   const size_t yIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
-  return std::make_pair(srcePoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex]);
+
+  return SourcePointInfo{srceScreenPoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex],
+                         isClipped};
+}
+
+inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos) const -> V2dInt
+{
+  return m_transformBuffers->GetSrceDestLerpBufferPoint(buffPos);
+}
+
+inline auto ZoomFilterBuffers::IsTranPointClipped(const V2dInt& tranPoint) const -> bool
+{
+  return (tranPoint.x < 0) || (tranPoint.y < 0) ||
+         (static_cast<uint32_t>(tranPoint.x) >= GetMaxTranX()) ||
+         (static_cast<uint32_t>(tranPoint.y) >= GetMaxTranY());
 }
 
 auto ZoomFilterBuffers::HaveFilterSettingsChanged() const -> bool

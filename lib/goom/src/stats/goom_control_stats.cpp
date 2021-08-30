@@ -82,7 +82,6 @@ void GoomControlStats::Reset()
   m_numBlockyWavyOff = 0;
   m_numZoomFilterAllowOverexposedOff = 0;
   m_numZoomFilterAllowOverexposedOn = 0;
-  m_numTooManyClipped = 0;
 }
 
 void GoomControlStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
@@ -99,7 +98,6 @@ void GoomControlStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
   logVal(MODULE, "startingSeed", m_startingSeed);
   logVal(MODULE, "lastState", static_cast<uint64_t>(m_lastState));
   logVal(MODULE, "lastSeed", m_lastSeed);
-  logVal(MODULE, "lastNumClipped", m_lastNumClipped);
   logVal(MODULE, "lastFilterDuration", m_lastFilterDuration);
 
   logVal(MODULE, "numUpdates", m_numUpdates);
@@ -172,7 +170,6 @@ void GoomControlStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
   logVal(MODULE, "numBlockyWavyOn", m_numBlockyWavyOn);
   logVal(MODULE, "numZoomFilterAllowOverexposedOff", m_numZoomFilterAllowOverexposedOff);
   logVal(MODULE, "numZoomFilterAllowOverexposedOn", m_numZoomFilterAllowOverexposedOn);
-  logVal(MODULE, "numTooManyClipped", m_numTooManyClipped);
 
   logVal(MODULE, "numDoIFS", m_numDoIFS);
   logVal(MODULE, "numIfsRenew", m_numIfsRenew);
@@ -453,16 +450,6 @@ void GoomControlStats::DoZoomFilterAllowOverexposedOff()
 void GoomControlStats::DoZoomFilterAllowOverexposedOn()
 {
   m_numZoomFilterAllowOverexposedOn++;
-}
-
-void GoomControlStats::TooManyClipped()
-{
-  m_numTooManyClipped++;
-}
-
-void GoomControlStats::SetLastNumClipped(const uint32_t val)
-{
-  m_lastNumClipped = val;
 }
 
 } // namespace GOOM

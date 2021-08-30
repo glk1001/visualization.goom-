@@ -41,14 +41,9 @@ public:
   [[nodiscard]] auto GetFxName() const -> std::string override;
   void SetBuffSettings(const FXBuffSettings& settings);
 
-  auto GetZoomVector() const -> FILTERS::IZoomVector&;
-
   void Start() override;
 
   auto GetFilterSettings() const -> const ZoomFilterData&;
-  auto GetFilterSettingsArePending() const -> bool;
-
-  auto GetTranLerpFactor() const -> int32_t;
 
   void SetInitialFilterSettings(const ZoomFilterData& filterSettings);
   void ChangeFilterSettings(const ZoomFilterData& filterSettings);
@@ -56,8 +51,7 @@ public:
   void ZoomFilterFastRgb(const PixelBuffer& pix1,
                          PixelBuffer& pix2,
                          int switchIncr,
-                         float switchMult,
-                         uint32_t& numClipped);
+                         float switchMult);
 
   void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const override;
   void Finish() override;

@@ -34,7 +34,6 @@ public:
   void SetStateLastValue(size_t stateIndex);
   void SetSeedStartValue(uint64_t seed);
   void SetSeedLastValue(uint64_t seed);
-  void SetLastNumClipped(uint32_t val);
   void SetNumThreadsUsedValue(size_t numThreads);
   void UpdateChange(size_t currentState, ZoomFilterMode currentFilterMode);
   void DoStateChangeRequest();
@@ -75,7 +74,6 @@ public:
   void DoBlockyWavyOn();
   void DoZoomFilterAllowOverexposedOff();
   void DoZoomFilterAllowOverexposedOn();
-  void TooManyClipped();
 
 private:
   std::string m_songTitle{};
@@ -84,7 +82,6 @@ private:
   ZoomFilterMode m_startingFilterMode = ZoomFilterMode::_NUM;
   uint64_t m_startingSeed = 0;
   uint64_t m_lastSeed = 0;
-  uint32_t m_lastNumClipped = 0;
   size_t m_numThreadsUsed = 0;
 
   uint32_t m_numUpdates = 0;
@@ -144,7 +141,6 @@ private:
   uint32_t m_numBlockyWavyOn = 0;
   uint32_t m_numZoomFilterAllowOverexposedOff = 0;
   uint32_t m_numZoomFilterAllowOverexposedOn = 0;
-  uint32_t m_numTooManyClipped = 0;
 };
 
 } // namespace GOOM

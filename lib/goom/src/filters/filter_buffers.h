@@ -10,7 +10,6 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace GOOM
@@ -67,16 +66,19 @@ public:
 
   void UpdateTranBuffers();
   [[nodiscard]] auto GetTranBuffersState() const -> TranBuffersState;
-  [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos) const -> V2dInt;
-  [[nodiscard]] auto IsTranPointClipped(const V2dInt& tranPoint) const -> bool;
 
-  using NeighborhoodCoeffArray = struct
+  struct NeighborhoodCoeffArray
   {
     std::array<uint32_t, NUM_NEIGHBOR_COEFFS> val;
     bool isZero;
   };
-  [[nodiscard]] auto GetSourcePointInfo(const V2dInt& tranPoint) const
-      -> std::pair<V2dInt, NeighborhoodCoeffArray>;
+  struct SourcePointInfo
+  {
+    V2dInt screenPoint;
+    NeighborhoodCoeffArray coeffs;
+    bool isClipped;
+  };
+  [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo;
 
 private:
   const uint32_t m_screenWidth;
@@ -112,6 +114,8 @@ private:
   void FillTempTranBuffers();
   void DoNextTempTranBuffersStripe(uint32_t tranBuffStripeHeight);
   void GenerateWaterFxHorizontalBuffer();
+  [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos) const -> V2dInt;
+  [[nodiscard]] auto IsTranPointClipped(const V2dInt& tranPoint) const -> bool;
   [[nodiscard]] static auto GetTranPoint(const NormalizedCoords& normalized) -> V2dInt;
 };
 
@@ -262,18 +266,6 @@ inline auto ZoomFilterBuffers::GetTranBuffYLineStart() const -> uint32_t
   return m_tranBuffYLineStart;
 }
 
-inline auto ZoomFilterBuffers::IsTranPointClipped(const V2dInt& tranPoint) const -> bool
-{
-  return (tranPoint.x < 0) || (tranPoint.y < 0) ||
-         (static_cast<uint32_t>(tranPoint.x) >= GetMaxTranX()) ||
-         (static_cast<uint32_t>(tranPoint.y) >= GetMaxTranY());
-}
-
-inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos) const -> V2dInt
-{
-  return m_transformBuffers->GetSrceDestLerpBufferPoint(buffPos);
-}
-
 inline auto ZoomFilterBuffers::TransformBuffers::GetTranLerpFactor() const -> int32_t
 {
   return m_tranLerpFactor;
@@ -295,15 +287,16 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
                                                                     const int32_t destBuffVal,
                                                                     const int32_t t) -> int32_t
 {
-  // IMPORTANT: Looking at this mathematically I can't see that the '-1' should be there.
-  //            But without it, slight static artifacts appear in the centre of the image.
-  //            Originally, Goom used '<< DIM_FILTER_COEFFS' instead of the division,
-  //            which was OK, but the '-1' is better.
-  return srceBuffVal +
-         (((t * (destBuffVal - srceBuffVal)) / CoordTransforms::MAX_TRAN_LERP_VALUE) - 1);
+  // IMPORTANT: Looking at this mathematically I can't see that the '>> DIM_FILTER_COEFFS'
+  //            should be there. Surely it should be '/ MAX_TRAN_LERP_VALUE' with this, slight
+  //            static artifacts appear in the centre of the image. I also tried
+  //            '/ (MAX_TRAN_LERP_VALUE - 1)'  which was better with the artficats in
+  //            the centre but may have produced other artifacts.
+
+  return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);
 }
 
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif
+#endif // VISUALIZATION_GOOM_FILTER_BUFFERS_H

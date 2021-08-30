@@ -35,14 +35,13 @@ public:
   [[nodiscard]] auto GetVitesseSetting() const -> const Vitesse&;
   [[nodiscard]] auto GetVitesseSetting() -> Vitesse&;
 
+  void SetMiddlePoints();
   void SetNoisifySetting(bool value);
   void SetNoiseFactorSetting(float value);
   void SetBlockyWavySetting(bool value);
   void SetRotateSetting(float value);
   void MultiplyRotateSetting(float factor);
   void ToggleRotateSetting();
-
-  void ChangeMilieu();
 
   void SetRandomFilterSettings();
   void SetRandomFilterSettings(ZoomFilterMode mode);
@@ -77,7 +76,7 @@ private:
   void SetWaveModeSettings();
   void SetYOnlyModeSettings();
 
-  void SetMiddlePoints();
+  void SetRandomMiddlePoints();
   void SetRotate(float probability);
 };
 
