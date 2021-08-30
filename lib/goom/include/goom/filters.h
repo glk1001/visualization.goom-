@@ -14,7 +14,7 @@ namespace GOOM
 
 namespace FILTERS
 {
-class IZoomVector;
+class ZoomFilterBuffersManager;
 } // namespace FILTERS
 
 namespace UTILS
@@ -33,7 +33,7 @@ public:
   ZoomFilterFx() noexcept = delete;
   ZoomFilterFx(UTILS::Parallel& p,
                const std::shared_ptr<const PluginInfo>& goomInfo,
-               FILTERS::IZoomVector& zoomVector) noexcept;
+               FILTERS::ZoomFilterBuffersManager& filterBuffersManager) noexcept;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
   void SetResourcesDirectory(const std::string& dirName) override;
@@ -48,8 +48,8 @@ public:
   void SetInitialFilterSettings(const ZoomFilterData& filterSettings);
   void ChangeFilterSettings(const ZoomFilterData& filterSettings);
 
-  void ZoomFilterFastRgb(const PixelBuffer& pix1,
-                         PixelBuffer& pix2,
+  void ZoomFilterFastRgb(const PixelBuffer& srceBuff,
+                         PixelBuffer& destBuff,
                          int switchIncr,
                          float switchMult);
 

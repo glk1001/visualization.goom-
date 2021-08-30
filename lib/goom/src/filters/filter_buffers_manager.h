@@ -6,6 +6,7 @@
 #include "v2d.h"
 
 #include <cstdint>
+#include <memory>
 
 namespace GOOM
 {
@@ -30,8 +31,9 @@ public:
 
   ZoomFilterBuffersManager(UTILS::Parallel& p,
                            const std::shared_ptr<const PluginInfo>& goomInfo,
-                           IZoomVector& zoomVector,
-                           FilterStats& stats) noexcept;
+                           IZoomVector& zoomVector) noexcept;
+
+  void SetStats(std::shared_ptr<FilterStats> stats);
 
   void Start();
 
@@ -49,7 +51,7 @@ private:
   bool m_started = false;
   IZoomVector& m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
-  FilterStats& m_stats;
+  std::shared_ptr<FilterStats> m_stats{};
 
   ZoomFilterData m_currentFilterSettings{};
   ZoomFilterData m_nextFilterSettings{};

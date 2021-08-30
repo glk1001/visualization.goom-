@@ -42,6 +42,7 @@ add_library(goom
         src/filters/filter_speedway.cpp
         src/filters/filter_wave.cpp
         src/filters/filter_y_only.cpp
+        src/filters/filter_zoom_colors.h
         src/filters/filter_zoom_vector.cpp
         src/filters/filter_zoom_vector_effects.cpp
         src/filters/image_displacement.cpp

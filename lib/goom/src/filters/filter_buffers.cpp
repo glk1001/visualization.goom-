@@ -36,11 +36,9 @@ using UTILS::Parallel;
 
 ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
                                      const std::shared_ptr<const PluginInfo>& goomInfo,
-                                     const ZoomPointFunc& zoomPointFunc,
-                                     FilterStats& stats)
+                                     const ZoomPointFunc& zoomPointFunc)
   : m_screenWidth{goomInfo->GetScreenInfo().width},
     m_screenHeight{goomInfo->GetScreenInfo().height},
-    m_stats{stats},
     m_precalculatedCoeffs{std::make_unique<FilterCoefficients>()},
     m_parallel{p},
     m_getZoomPoint{zoomPointFunc},
@@ -60,6 +58,8 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
 
 void ZoomFilterBuffers::Start()
 {
+  assert(m_stats != nullptr);
+
   InitAllTranBuffers();
 }
 
@@ -132,7 +132,7 @@ void ZoomFilterBuffers::UpdateTranBuffers()
 // generation du buffer de transform
 void ZoomFilterBuffers::ResetTranBuffers()
 {
-  m_stats.DoResetTranBuffers();
+  m_stats->DoResetTranBuffers();
 
   m_transformBuffers->CopyDestTranToSrceTran();
   m_transformBuffers->SetUpNextDestTran();
@@ -149,7 +149,7 @@ void ZoomFilterBuffers::StartFreshTranBuffers()
     return;
   }
 
-  m_stats.DoStartFreshTranBuffers();
+  m_stats->DoStartFreshTranBuffers();
 
   m_filterSettingsHaveChanged = false;
   m_tranBuffYLineStart = 0;

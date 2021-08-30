@@ -12,7 +12,6 @@
 #include "filter_speedway.h"
 #include "filter_wave.h"
 #include "filter_y_only.h"
-#include "image_displacement.h"
 
 #include <memory>
 
@@ -223,7 +222,7 @@ auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero,
 inline auto ZoomVectorEffects::GetBaseSpeedCoefficients() const -> V2dFlt
 {
   const float speedCoeff = (1.0F + m_filterSettings->vitesse.GetRelativeSpeed()) /
-                           ZoomFilterData::SPEED_COEFF_DENOMINATOR;
+                           SPEED_COEFF_DENOMINATOR;
   return {speedCoeff, speedCoeff};
 }
 
@@ -234,10 +233,10 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) 
 
 inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) const -> float
 {
-  if (speedCoeff < ZoomFilterData::MIN_SPEED_COEFF)
+  if (speedCoeff < MIN_SPEED_COEFF)
   {
     UpdateDoZoomVectorSpeedCoeffBelowMinStats();
-    return ZoomFilterData::MIN_SPEED_COEFF;
+    return MIN_SPEED_COEFF;
   }
   if (speedCoeff > m_maxSpeedCoeff)
   {

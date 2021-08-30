@@ -47,8 +47,9 @@ public:
 
   ZoomFilterBuffers(UTILS::Parallel& p,
                     const std::shared_ptr<const PluginInfo>& goomInfo,
-                    const ZoomPointFunc& zoomPointFunc,
-                    FilterStats& stats);
+                    const ZoomPointFunc& zoomPointFunc);
+
+  void SetStats(std::shared_ptr<FilterStats> stats);
 
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
   void SetTranLerpFactor(int32_t val);
@@ -83,7 +84,7 @@ public:
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  FilterStats& m_stats;
+  std::shared_ptr<FilterStats> m_stats{};
 
   class FilterCoefficients;
   const std::unique_ptr<const FilterCoefficients> m_precalculatedCoeffs;
@@ -219,6 +220,11 @@ inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
   // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
   return {static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.x))),
           static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.y)))};
+}
+
+inline void ZoomFilterBuffers::SetStats(const std::shared_ptr<FilterStats> stats)
+{
+  m_stats = stats;
 }
 
 inline auto ZoomFilterBuffers::GetBuffMidPoint() const -> V2dInt

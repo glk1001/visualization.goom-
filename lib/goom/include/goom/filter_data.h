@@ -130,17 +130,14 @@ struct ZoomFilterData
   static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
   static constexpr uint32_t DEFAULT_MIDDLE_Y = 1;
   V2dInt zoomMidPoint = {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y}; // milieu de l'effet
+  
   bool tanEffect = false;
   bool blockyWavy = false;
+  
   static constexpr float MIN_ROTATE_SPEED = -0.5F;
   static constexpr float MAX_ROTATE_SPEED = +0.5F;
   static constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
   float rotateSpeed = DEFAULT_ROTATE_SPEED;
-
-  static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
-  static constexpr float MIN_SPEED_COEFF = -4.01F;
-  static constexpr float MAX_MAX_SPEED_COEFF = +4.01F;
-  static constexpr float DEFAULT_MAX_SPEED_COEFF = +2.01F;
 
   // Noise:
   bool noisify = false; // ajoute un bruit a la transformation

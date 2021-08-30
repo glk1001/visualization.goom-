@@ -24,6 +24,7 @@
 #include "draw/text_draw.h"
 #include "filter_data.h"
 #include "filters.h"
+#include "filters/filter_buffers_manager.h"
 #include "filters/filter_control.h"
 #include "filters/filter_zoom_vector.h"
 #include "flying_stars_fx.h"
@@ -87,6 +88,7 @@ using DRAW::TextDraw;
 using FILTERS::FilterControl;
 using FILTERS::FilterZoomVector;
 using FILTERS::IZoomVector;
+using FILTERS::ZoomFilterBuffersManager;
 using UTILS::ColorMapGroup;
 using UTILS::GammaCorrection;
 using UTILS::GetAllMapsUnweighted;
@@ -131,7 +133,7 @@ struct GoomVisualFx
                         const IGoomDraw& draw,
                         const std::shared_ptr<const PluginInfo>& goomInfo,
                         const SmallImageBitmaps& smallBitmaps,
-                        IZoomVector& zoomVector) noexcept;
+                        ZoomFilterBuffersManager& filterBuffersManager) noexcept;
 
   std::shared_ptr<ConvolveFx> convolve_fx;
   std::shared_ptr<ZoomFilterFx> zoomFilter_fx;
@@ -150,9 +152,9 @@ GoomVisualFx::GoomVisualFx(Parallel& p,
                            const IGoomDraw& draw,
                            const std::shared_ptr<const PluginInfo>& goomInfo,
                            const SmallImageBitmaps& smallBitmaps,
-                           IZoomVector& zoomVector) noexcept
+                           ZoomFilterBuffersManager& filterBuffersManager) noexcept
   : convolve_fx{std::make_shared<ConvolveFx>(p, goomInfo)},
-    zoomFilter_fx{std::make_shared<ZoomFilterFx>(p, goomInfo, zoomVector)},
+    zoomFilter_fx{std::make_shared<ZoomFilterFx>(p, goomInfo, filterBuffersManager)},
     star_fx{std::make_shared<FlyingStarsFx>(draw, goomInfo, smallBitmaps)},
     goomDots_fx{std::make_shared<GoomDotsFx>(draw, goomInfo, smallBitmaps)},
     ifs_fx{std::make_shared<IfsDancersFx>(draw, goomInfo, smallBitmaps)},
@@ -232,6 +234,7 @@ private:
   std::string m_resourcesDirectory{};
   const SmallImageBitmaps m_smallBitmaps;
   FilterZoomVector m_zoomVector;
+  ZoomFilterBuffersManager m_filterBuffersManager;
   FilterControl m_filterControl;
   GoomVisualFx m_visualFx;
   GoomStates m_states{};
@@ -430,11 +433,12 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_resourcesDirectory{std::move(resourcesDirectory)},
     m_smallBitmaps{m_resourcesDirectory},
     m_zoomVector{m_resourcesDirectory},
+    m_filterBuffersManager{m_parallel, m_goomInfo, m_zoomVector},
     m_filterControl{m_goomInfo},
     m_visualFx{m_parallel, m_multiBufferDraw,
                std::const_pointer_cast<const PluginInfo>(
                    std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
-               m_smallBitmaps, m_zoomVector},
+               m_smallBitmaps, m_filterBuffersManager},
     m_goomLine1{m_multiBufferDraw,
                 std::const_pointer_cast<const PluginInfo>(
                     std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),

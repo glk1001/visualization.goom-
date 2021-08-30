@@ -70,7 +70,11 @@ public:
 private:
   const ZoomFilterData* m_filterSettings{};
   mutable FilterStats* m_stats{};
-  float m_maxSpeedCoeff = ZoomFilterData::DEFAULT_MAX_SPEED_COEFF;
+
+  static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
+  static constexpr float MIN_SPEED_COEFF = -4.01F;
+  static constexpr float DEFAULT_MAX_SPEED_COEFF = +2.01F;
+  float m_maxSpeedCoeff = DEFAULT_MAX_SPEED_COEFF;
 
   const std::unique_ptr<Amulet> m_amulet;
   const std::unique_ptr<CrystalBall> m_crystalBall;

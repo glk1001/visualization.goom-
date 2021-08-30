@@ -34,7 +34,7 @@ inline auto GetBuffPos(const int32_t x, const int32_t y) -> size_t
   return (static_cast<size_t>(y) * WIDTH) + static_cast<size_t>(x);
 }
 
-static FilterStats s_filterStats{};
+static auto s_filterStats{std::make_shared<FilterStats>()};
 
 class TestZoomVector : public FilterZoomVector
 {
@@ -92,9 +92,9 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
   ZoomFilterBuffers filterBuffers{parallel, goomInfo,
                                   [&](const NormalizedCoords& normalizedCoords) {
                                     return identityZoomVector.GetZoomPoint(normalizedCoords);
-                                  },
-                                  s_filterStats};
+                                  }};
 
+  filterBuffers.SetStats(s_filterStats);
   filterBuffers.Start();
 
   const NormalizedCoords DUMMY_NML_COORDS{DUMMY_COORDS};
@@ -175,9 +175,9 @@ TEST_CASE("ZoomFilterBuffers Calculations", "[ZoomFilterBuffersCalcs]")
   ZoomFilterBuffers filterBuffers{parallel, goomInfo,
                                   [&](const NormalizedCoords& normalizedCoords) {
                                     return constantZoomVector.GetZoomPoint(normalizedCoords);
-                                  },
-                                  s_filterStats};
+                                  }};
 
+  filterBuffers.SetStats(s_filterStats);
   filterBuffers.Start();
 
   const NormalizedCoords DUMMY_NML_COORDS{DUMMY_COORDS};
@@ -277,9 +277,9 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
   ZoomFilterBuffers filterBuffers{parallel, goomInfo,
                                   [&](const NormalizedCoords& normalizedCoords) {
                                     return constantZoomVector.GetZoomPoint(normalizedCoords);
-                                  },
-                                  s_filterStats};
+                                  }};
 
+  filterBuffers.SetStats(s_filterStats);
   filterBuffers.Start();
 
   const NormalizedCoords DUMMY_NML_COORDS{DUMMY_COORDS};

@@ -36,29 +36,35 @@ using UTILS::GetRandInRange;
 using UTILS::Logging;
 using UTILS::Parallel;
 
+constexpr float MAX_MAX_SPEED_COEFF = +4.01F;
+
 ZoomFilterBuffersManager::ZoomFilterBuffersManager(
     Parallel& p,
     const std::shared_ptr<const PluginInfo>& goomInfo,
-    IZoomVector& zoomVector,
-    FilterStats& stats) noexcept
+    IZoomVector& zoomVector) noexcept
   : m_zoomVector{zoomVector},
-    m_filterBuffers{p, goomInfo,
-                    [this](const NormalizedCoords& normalizedCoords) {
+    m_filterBuffers{p, goomInfo, [this](const NormalizedCoords& normalizedCoords) {
                       return m_zoomVector.GetZoomPoint(normalizedCoords);
-                    },
-                    stats},
-    m_stats{stats}
+                    }}
 {
+}
+
+void ZoomFilterBuffersManager::SetStats(const std::shared_ptr<FilterStats> stats)
+{
+  m_stats = stats;
+  m_filterBuffers.SetStats(stats);
 }
 
 void ZoomFilterBuffersManager::Start()
 {
+  assert(m_stats != nullptr);
+
   m_started = true;
 
   ChangeFilterSettings(m_currentFilterSettings);
 
   m_zoomVector.SetFilterSettings(m_currentFilterSettings);
-  m_zoomVector.SetFilterStats(m_stats);
+  m_zoomVector.SetFilterStats(*m_stats);
 
   UpdateFilterBuffersSettings();
   m_filterBuffers.Start();
@@ -68,16 +74,16 @@ void ZoomFilterBuffersManager::UpdateLastStats() const
 {
   m_zoomVector.UpdateLastStats();
 
-  m_stats.SetLastJustChangedFilterSettings(m_pendingFilterSettings);
-  m_stats.SetLastTranBuffYLineStart(m_filterBuffers.GetTranBuffYLineStart());
-  m_stats.SetLastTranDiffFactor(m_filterBuffers.GetTranLerpFactor());
+  m_stats->SetLastJustChangedFilterSettings(m_pendingFilterSettings);
+  m_stats->SetLastTranBuffYLineStart(m_filterBuffers.GetTranBuffYLineStart());
+  m_stats->SetLastTranDiffFactor(m_filterBuffers.GetTranLerpFactor());
 }
 
 void ZoomFilterBuffersManager::ChangeFilterSettings(const ZoomFilterData& filterSettings)
 {
   assert(m_started);
 
-  m_stats.DoChangeFilterSettings(filterSettings);
+  m_stats->DoChangeFilterSettings(filterSettings);
 
   m_nextFilterSettings = filterSettings;
   m_pendingFilterSettings = true;
@@ -85,7 +91,7 @@ void ZoomFilterBuffersManager::ChangeFilterSettings(const ZoomFilterData& filter
 
 void ZoomFilterBuffersManager::UpdateTranBuffers()
 {
-  m_stats.UpdateTranBuffersStart();
+  m_stats->UpdateTranBuffersStart();
 
   m_filterBuffers.UpdateTranBuffers();
 
@@ -94,7 +100,8 @@ void ZoomFilterBuffersManager::UpdateTranBuffers()
     StartFreshTranBuffers();
   }
 
-  m_stats.UpdateTranBuffersEnd(m_currentFilterSettings.mode, m_filterBuffers.GetTranBuffersState());
+  m_stats->UpdateTranBuffersEnd(m_currentFilterSettings.mode,
+                                m_filterBuffers.GetTranBuffersState());
 }
 
 inline auto ZoomFilterBuffersManager::AreStartingFreshTranBuffers() const -> bool
@@ -121,7 +128,8 @@ void ZoomFilterBuffersManager::StartFreshTranBuffers()
 inline void ZoomFilterBuffersManager::UpdateZoomVectorSettings()
 {
   m_zoomVector.SetFilterSettings(m_currentFilterSettings);
-  m_zoomVector.SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * ZoomFilterData::MAX_MAX_SPEED_COEFF);
+  // TODO Random calc should not be here
+  m_zoomVector.SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF);
 }
 
 inline void ZoomFilterBuffersManager::UpdateFilterBuffersSettings()
@@ -137,14 +145,14 @@ void ZoomFilterBuffersManager::UpdateTranLerpFactor(const int32_t switchIncr,
 
   if (switchIncr != 0)
   {
-    m_stats.DoSwitchIncrNotZero();
+    m_stats->DoSwitchIncrNotZero();
     tranLerpFactor =
         stdnew::clamp(tranLerpFactor + switchIncr, 0, ZoomFilterBuffers::GetMaxTranLerpFactor());
   }
 
   if (!floats_equal(switchMult, 1.0F))
   {
-    m_stats.DoSwitchMultNotOne();
+    m_stats->DoSwitchMultNotOne();
 
     tranLerpFactor = static_cast<int32_t>(
         stdnew::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
