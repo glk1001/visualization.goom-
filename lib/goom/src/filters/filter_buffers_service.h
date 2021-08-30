@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_FILTER_BUFFERS_MANAGER_H
-#define VISUALIZATION_GOOM_FILTER_BUFFERS_MANAGER_H
+#ifndef VISUALIZATION_GOOM_FILTER_BUFFERS_SERVICE_H
+#define VISUALIZATION_GOOM_FILTER_BUFFERS_SERVICE_H
 
 #include "filter_buffers.h"
 #include "goom/filter_data.h"
@@ -23,13 +23,13 @@ namespace FILTERS
 
 class IZoomVector;
 
-class ZoomFilterBuffersManager
+class ZoomFilterBuffersService
 {
 public:
   using NeighborhoodCoeffArray = ZoomFilterBuffers::NeighborhoodCoeffArray;
   using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
 
-  ZoomFilterBuffersManager(UTILS::Parallel& p,
+  ZoomFilterBuffersService(UTILS::Parallel& p,
                            const std::shared_ptr<const PluginInfo>& goomInfo,
                            IZoomVector& zoomVector) noexcept;
 
@@ -58,7 +58,7 @@ private:
   void StartFreshTranBuffers();
 };
 
-inline auto ZoomFilterBuffersManager::GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo
+inline auto ZoomFilterBuffersService::GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo
 {
   return m_filterBuffers.GetSourcePointInfo(buffPos);
 }
@@ -66,4 +66,4 @@ inline auto ZoomFilterBuffersManager::GetSourcePointInfo(size_t buffPos) const -
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif // VISUALIZATION_GOOM_FILTER_BUFFERS_MANAGER_H
+#endif // VISUALIZATION_GOOM_FILTER_BUFFERS_SERVICE_H

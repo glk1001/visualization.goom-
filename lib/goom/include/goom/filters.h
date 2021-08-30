@@ -13,7 +13,7 @@ namespace GOOM
 
 namespace FILTERS
 {
-class ZoomFilterBuffersManager;
+class ZoomFilterBuffersService;
 } // namespace FILTERS
 
 namespace UTILS
@@ -32,7 +32,7 @@ public:
   ZoomFilterFx() noexcept = delete;
   ZoomFilterFx(UTILS::Parallel& p,
                const std::shared_ptr<const PluginInfo>& goomInfo,
-               FILTERS::ZoomFilterBuffersManager& filterBuffersManager) noexcept;
+               FILTERS::ZoomFilterBuffersService& filterBuffersService) noexcept;
 
   [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
   void SetResourcesDirectory(const std::string& dirName) override;

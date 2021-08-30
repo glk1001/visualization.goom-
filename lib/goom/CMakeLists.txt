@@ -31,7 +31,7 @@ add_library(goom
         src/draw_methods.cpp
         src/filters/filter_amulet.cpp
         src/filters/filter_buffers.cpp
-        src/filters/filter_buffers_manager.cpp
+        src/filters/filter_buffers_service.cpp
         src/filters/filter_control.cpp
         src/filters/filter_crystal_ball.cpp
         src/filters/filter_hypercos.cpp
