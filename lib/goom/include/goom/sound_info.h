@@ -2,17 +2,14 @@
 #define VISUALIZATION_GOOM_SOUND_INFO_H
 
 #include "goom_config.h"
-#include "goom_stats.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <memory>
 #include <vector>
 
 namespace GOOM
 {
-
-class SoundStats;
 
 class AudioSamples
 {
@@ -75,15 +72,11 @@ public:
   [[nodiscard]] auto GetAllTimesMaxVolume() const -> int16_t;
   [[nodiscard]] auto GetAllTimesMinVolume() const -> int16_t;
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const;
-
   // For debugging
   [[nodiscard]] auto GetGoomLimit() const -> float;
   [[nodiscard]] auto GetBigGoomLimit() const -> float;
 
 private:
-  std::shared_ptr<SoundStats> m_stats{};
-
   uint32_t m_updateNum;
   uint32_t m_totalGoomsInCurrentCycle;
   static constexpr uint32_t CYCLE_TIME = 64;

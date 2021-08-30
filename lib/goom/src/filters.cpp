@@ -23,7 +23,6 @@
 #include "filters/filter_zoom_colors.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goom_stats.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/logging_control.h"
 //#undef NO_LOGGING
@@ -31,7 +30,6 @@
 #include "goomutils/mathutils.h"
 #include "goomutils/parallel_utils.h"
 #include "goomutils/spimpl.h"
-#include "stats/filter_stats.h"
 
 //#include <valgrind/callgrind.h>
 
@@ -79,8 +77,6 @@ public:
                          int32_t switchIncr,
                          float switchMult);
 
-  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const;
-
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
@@ -92,8 +88,6 @@ private:
 
   ZoomFilterData m_currentFilterSettings{};
   std::string m_resourcesDirectory{};
-
-  mutable std::shared_ptr<FilterStats> m_stats{std::make_shared<FilterStats>()};
 
   Parallel& m_parallel;
   void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const;
@@ -128,11 +122,6 @@ void ZoomFilterFx::Start()
 
 void ZoomFilterFx::Finish()
 {
-}
-
-void ZoomFilterFx::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
-{
-  m_fxImpl->Log(logValueFunc);
 }
 
 auto ZoomFilterFx::GetFxName() const -> std::string
@@ -172,19 +161,6 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     m_filterBuffersManager{filterBuffersManager},
     m_parallel{p}
 {
-  m_filterBuffersManager.SetStats(m_stats);
-}
-
-void ZoomFilterFx::ZoomFilterImpl::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
-{
-  m_filterBuffersManager.UpdateLastStats();
-
-  m_stats->SetLastZoomFilterSettings(m_currentFilterSettings);
-  m_stats->SetLastGeneralSpeed(m_currentFilterSettings.vitesse.GetRelativeSpeed());
-  m_stats->SetLastPrevX(m_screenWidth);
-  m_stats->SetLastPrevY(m_screenHeight);
-
-  m_stats->Log(logValueFunc);
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::GetResourcesDirectory() const -> const std::string&
@@ -212,8 +188,6 @@ void ZoomFilterFx::ZoomFilterImpl::SetInitialFilterSettings(const ZoomFilterData
 {
   assert(!m_started);
 
-  m_stats->DoChangeFilterSettings(filterSettings);
-
   m_currentFilterSettings = filterSettings;
   m_filterColors.SetBlockWavy(filterSettings.blockyWavy);
 }
@@ -221,8 +195,6 @@ void ZoomFilterFx::ZoomFilterImpl::SetInitialFilterSettings(const ZoomFilterData
 void ZoomFilterFx::ZoomFilterImpl::ChangeFilterSettings(const ZoomFilterData& filterSettings)
 {
   assert(m_started);
-
-  m_stats->DoChangeFilterSettings(filterSettings);
 
   m_currentFilterSettings = filterSettings;
   m_filterBuffersManager.ChangeFilterSettings(filterSettings);
@@ -258,21 +230,14 @@ void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& srceBuff
 {
   ++m_updateNum;
 
-  m_stats->UpdateStart();
-  m_stats->DoZoomFilterFastRgb();
-
   m_filterBuffersManager.UpdateTranBuffers();
   m_filterBuffersManager.UpdateTranLerpFactor(switchIncr, switchMult);
 
   CZoom(srceBuff, destBuff);
-
-  m_stats->UpdateEnd();
 }
 
 void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const
 {
-  m_stats->DoCZoom();
-
   const auto setDestPixelRow = [&](const uint32_t destY)
   {
     uint32_t destPos = m_screenWidth * destY;

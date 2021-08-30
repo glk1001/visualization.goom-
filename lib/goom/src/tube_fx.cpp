@@ -5,7 +5,6 @@
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goom_stats.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging_control.h"
@@ -16,7 +15,6 @@
 #include "goomutils/spimpl.h"
 #include "goomutils/t_values.h"
 #include "goomutils/timer.h"
-#include "stats/tube_stats.h"
 #include "tubes/tubes.h"
 
 #undef NDEBUG
@@ -127,8 +125,6 @@ public:
 
   void ApplyMultiple();
 
-  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const;
-
 private:
   const IGoomDraw& m_draw;
   GoomDrawToContainer m_drawToContainer;
@@ -137,7 +133,6 @@ private:
   std::string m_resourcesDirectory{};
   const SmallImageBitmaps& m_smallBitmaps;
   uint64_t m_updateNum = 0;
-  TubeStats m_stats{};
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
   bool m_allowOverexposed = false;
@@ -256,11 +251,6 @@ void TubeFx::Suspend()
   m_fxImpl->Suspend();
 }
 
-void TubeFx::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
-{
-  m_fxImpl->Log(logValueFunc);
-}
-
 void TubeFx::Finish()
 {
 }
@@ -358,11 +348,6 @@ inline void TubeFx::TubeFxImpl::SetWeightedLowColorMaps(
   {
     tube.SetWeightedLowColorMaps(m_lowColorMaps);
   }
-}
-
-void TubeFx::TubeFxImpl::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
-{
-  m_stats.Log(logValueFunc);
 }
 
 void TubeFx::TubeFxImpl::InitTubes()
@@ -553,7 +538,6 @@ void TubeFx::TubeFxImpl::UpdateColorMaps()
       m_colorMapTimer.SetTimeLimit(GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1));
       tube.ResetColorMaps();
       tube.SetBrightnessFactor(GetRandInRange(MIN_BRIGHTNESS_FACTOR, MAX_BRIGHTNESS_FACTOR));
-      m_stats.ResetColorMaps();
     }
   }
 }
@@ -566,9 +550,6 @@ void TubeFx::TubeFxImpl::UpdateSpeeds()
     {
       continue;
     }
-
-    m_stats.UpdateCentreSpeed(tube.GetCentreSpeed());
-    m_stats.UpdateCircleSpeed(tube.GetCircleSpeed());
 
     if (m_jitterTimer.Finished())
     {
@@ -723,8 +704,6 @@ auto TubeFx::TubeFxImpl::GetTransformedCentrePoint(const uint32_t tubeId,
 
 void TubeFx::TubeFxImpl::IncrementAllJoinCentreT()
 {
-  m_stats.UpdateAllJoinInCentreSpeed(m_allJoinCentreT());
-
   m_allStayInCentreTimer.Increment();
   if (!m_allStayInCentreTimer.Finished())
   {
@@ -738,13 +717,11 @@ void TubeFx::TubeFxImpl::IncrementAllJoinCentreT()
 
   if (m_allJoinCentreT() >= (1.0F - SMALL_FLOAT))
   {
-    m_stats.AllJoinedInCentre();
     m_allStayInCentreTimer.SetTimeLimit(
         GetRandInRange(MIN_STAY_IN_CENTRE_TIME, MAX_STAY_IN_CENTRE_TIME + 1));
   }
   else if (m_allJoinCentreT() <= (0.0F + SMALL_FLOAT))
   {
-    m_stats.AllMaxFromCentre();
     m_allStayAwayFromCentreTimer.SetTimeLimit(
         GetRandInRange(MIN_STAY_AWAY_FROM_CENTRE_TIME, MAX_STAY_AWAY_FROM_CENTRE_TIME + 1));
   }
@@ -757,9 +734,7 @@ void TubeFx::TubeFxImpl::ChangeSpeedForLowerVolumes(Tube& tube)
   if (ProbabilityOf(PROB_DECREASE_SPEED))
   {
     tube.DecreaseCentreSpeed();
-    m_stats.DecreaseCentreSpeed();
     tube.DecreaseCircleSpeed();
-    m_stats.DecreaseCircleSpeed();
 
     m_changedSpeedTimer.SetTimeLimit(
         GetRandInRange(MIN_DECREASED_SPEED_TIME, MAX_DECREASED_SPEED_TIME + 1));
@@ -767,9 +742,7 @@ void TubeFx::TubeFxImpl::ChangeSpeedForLowerVolumes(Tube& tube)
   else if (ProbabilityOf(PROB_NORMAL_SPEED))
   {
     tube.SetCentreSpeed(Tube::NORMAL_CENTRE_SPEED);
-    m_stats.NormalCentreSpeed();
     tube.SetCircleSpeed(Tube::NORMAL_CIRCLE_SPEED);
-    m_stats.NormalCircleSpeed();
 
     m_changedSpeedTimer.SetTimeLimit(
         GetRandInRange(MIN_NORMAL_SPEED_TIME, MAX_NORMAL_SPEED_TIME + 1));
@@ -777,9 +750,7 @@ void TubeFx::TubeFxImpl::ChangeSpeedForLowerVolumes(Tube& tube)
   else if (ProbabilityOf(PROB_RANDOM_INCREASE_SPEED))
   {
     tube.IncreaseCentreSpeed();
-    m_stats.IncreaseCentreSpeed();
     tube.IncreaseCircleSpeed();
-    m_stats.IncreaseCircleSpeed();
 
     m_changedSpeedTimer.SetTimeLimit(
         GetRandInRange(MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));
@@ -791,9 +762,7 @@ void TubeFx::TubeFxImpl::ChangeSpeedForHigherVolumes(Tube& tube)
   if (ProbabilityOf(PROB_INCREASE_SPEED))
   {
     tube.IncreaseCentreSpeed();
-    m_stats.IncreaseCentreSpeed();
     tube.IncreaseCircleSpeed();
-    m_stats.IncreaseCircleSpeed();
 
     m_changedSpeedTimer.SetTimeLimit(
         GetRandInRange(MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));

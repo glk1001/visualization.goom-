@@ -58,7 +58,6 @@ inline auto ZoomFilterColors::GetNewColor(
 {
   if (sourceInfo.isClipped)
   {
-    //      m_stats.DoTranPointClipped();
     return Pixel::BLACK;
   }
 

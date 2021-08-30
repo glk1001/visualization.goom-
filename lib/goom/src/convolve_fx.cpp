@@ -2,7 +2,6 @@
 
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goom_stats.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/parallel_utils.h"
 
@@ -82,10 +81,6 @@ void ConvolveFx::Start()
 }
 
 void ConvolveFx::Finish()
-{
-}
-
-void ConvolveFx::Log([[maybe_unused]] const GoomStats::LogStatsValueFunc& l) const
 {
 }
 

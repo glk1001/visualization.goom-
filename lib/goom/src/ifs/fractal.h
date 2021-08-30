@@ -14,8 +14,6 @@
 namespace GOOM
 {
 
-class IfsStats;
-
 namespace UTILS
 {
 class IColorMap;
@@ -65,8 +63,7 @@ public:
   Fractal(uint32_t screenWidth,
           uint32_t screenHeight,
           const UTILS::RandomColorMaps& randomColorMaps,
-          const UTILS::SmallImageBitmaps& smallBitmaps,
-          IfsStats& s);
+          const UTILS::SmallImageBitmaps& smallBitmaps);
 
   void Init();
   void Reset();
@@ -86,7 +83,6 @@ private:
 
   const UTILS::SmallImageBitmaps& m_smallBitmaps;
   const UTILS::RandomColorMaps& m_colorMaps;
-  IfsStats& m_stats;
 
   const uint32_t m_lx;
   const uint32_t m_ly;

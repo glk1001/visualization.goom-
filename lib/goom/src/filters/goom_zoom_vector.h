@@ -6,7 +6,6 @@
 namespace GOOM
 {
 
-class FilterStats;
 struct ZoomFilterData;
 
 namespace FILTERS
@@ -23,10 +22,6 @@ public:
   virtual ~IZoomVector() noexcept = default;
   auto operator=(const IZoomVector&) -> IZoomVector& = delete;
   auto operator=(IZoomVector&&) -> IZoomVector& = delete;
-
-  virtual auto GetFilterStats() const -> FilterStats* = 0;
-  virtual void SetFilterStats(FilterStats& stats) = 0;
-  virtual void UpdateLastStats() = 0;
 
   virtual auto GetFilterSettings() const -> const ZoomFilterData* = 0;
   virtual void SetFilterSettings(const ZoomFilterData& filterSettings) = 0;

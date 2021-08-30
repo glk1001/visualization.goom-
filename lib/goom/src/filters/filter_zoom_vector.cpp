@@ -1,6 +1,5 @@
 #include "filter_zoom_vector.h"
 
-#include "../stats/filter_stats.h"
 #include "filter_data.h"
 #include "filter_normalized_coords.h"
 #include "filter_zoom_vector_effects.h"
@@ -27,11 +26,6 @@ FilterZoomVector::FilterZoomVector(const std::string& resourcesDirectory) noexce
 }
 
 FilterZoomVector::~FilterZoomVector() noexcept = default;
-
-void FilterZoomVector::UpdateLastStats()
-{
-  m_zoomVectorEffects->UpdateLastStats();
-}
 
 auto FilterZoomVector::GetFilterSettings() const -> const ZoomFilterData*
 {
@@ -86,25 +80,21 @@ void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero
 
   if (m_filterSettings->noisify)
   {
-    UpdateDoZoomVectorNoisifyStats();
     velocity += m_zoomVectorEffects->GetNoiseVelocity();
   }
 
   if (m_filterSettings->hypercosOverlay != HypercosOverlay::NONE)
   {
-    UpdateDoZoomVectorHypercosEffectStats();
     velocity += m_zoomVectorEffects->GetHypercosVelocity(coords);
   }
 
   if (m_zoomVectorEffects->IsHorizontalPlaneVelocityActive())
   {
-    UpdateDoZoomVectorHPlaneEffectStats();
     velocity.SetX(velocity.GetX() + m_zoomVectorEffects->GetHorizontalPlaneVelocity(coords));
   }
 
   if (m_zoomVectorEffects->IsVerticalPlaneVelocityActive())
   {
-    UpdateDoZoomVectorVPlaneEffectStats();
     velocity.SetY(velocity.GetY() + m_zoomVectorEffects->GetVerticalPlaneVelocity(coords));
   }
 
@@ -116,48 +106,6 @@ void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero
     if (ProbabilityOfMInN(1, 2))
       velocity = {-2.0F * xNormalized + velocity.x, -2.0F * yNormalized + velocity.y};
   **/
-}
-
-void FilterZoomVector::SetFilterStats(FilterStats& stats)
-{
-  m_stats = &stats;
-  m_zoomVectorEffects->SetFilterStats(stats);
-}
-
-inline void FilterZoomVector::UpdateDoZoomVectorNoisifyStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorNoisify();
-}
-
-inline void FilterZoomVector::UpdateDoZoomVectorHypercosEffectStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorHypercosOverlay();
-}
-
-inline void FilterZoomVector::UpdateDoZoomVectorHPlaneEffectStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorHPlaneEffect();
-}
-
-inline void FilterZoomVector::UpdateDoZoomVectorVPlaneEffectStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorVPlaneEffect();
 }
 
 #if __cplusplus <= 201402L

@@ -1,6 +1,5 @@
 #include "filter_zoom_vector_effects.h"
 
-#include "../stats/filter_stats.h"
 #include "filter_amulet.h"
 #include "filter_crystal_ball.h"
 #include "filter_data.h"
@@ -119,25 +118,6 @@ void ZoomVectorEffects::SetHypercosOverlaySettings()
   }
 }
 
-void ZoomVectorEffects::SetFilterStats(FilterStats& stats)
-{
-  m_stats = &stats;
-}
-
-void ZoomVectorEffects::UpdateLastStats()
-{
-  m_stats->SetLastAmuletParams(m_amulet->GetParams());
-  m_stats->SetLastCrystalBallParams(m_crystalBall->GetParams());
-  m_stats->SetLastHypercosParams(m_hypercos->GetParams());
-  m_stats->SetLastImageDisplacementsFilename(m_imageDisplacements->GetCurrentImageFilename());
-  m_stats->SetLastImageDisplacementsParams(m_imageDisplacements->GetParams());
-  m_stats->SetLastPlanesParams(m_planes->GetParams());
-  m_stats->SetLastScrunchParams(m_scrunch->GetParams());
-  m_stats->SetLastSpeedwayParams(m_speedway->GetParams());
-  m_stats->SetLastWaveParams(m_wave->GetParams());
-  m_stats->SetLastYOnlyParams(m_yOnly->GetParams());
-}
-
 auto ZoomVectorEffects::GetCleanedVelocity(const NormalizedCoords& velocity) -> NormalizedCoords
 {
   return {GetMinVelocityVal(velocity.GetX()), GetMinVelocityVal(velocity.GetY())};
@@ -235,12 +215,10 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) cons
 {
   if (speedCoeff < MIN_SPEED_COEFF)
   {
-    UpdateDoZoomVectorSpeedCoeffBelowMinStats();
     return MIN_SPEED_COEFF;
   }
   if (speedCoeff > m_maxSpeedCoeff)
   {
-    UpdateDoZoomVectorSpeedCoeffAboveMaxStats();
     return m_maxSpeedCoeff;
   }
   return speedCoeff;
@@ -316,7 +294,6 @@ auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
     return {0.0, 0.0};
   }
 
-  UpdateDoZoomVectorNoiseFactorStats();
   //    const float xAmp = 1.0/getRandInRange(50.0f, 200.0f);
   //    const float yAmp = 1.0/getRandInRange(50.0f, 200.0f);
   const float amp = (0.5F * m_filterSettings->noiseFactor) /
@@ -328,7 +305,6 @@ auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
                                              const NormalizedCoords& velocity) const
     -> NormalizedCoords
 {
-  UpdateDoZoomVectorTanEffectStats();
   const float tanArg =
       stdnew::clamp(std::fmod(sqDistFromZero, m_half_pi), -0.85F * m_half_pi, 0.85F * m_half_pi);
   const float tanSqDist = std::tan(tanArg);
@@ -340,68 +316,12 @@ auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) con
 {
   if (m_filterSettings->rotateSpeed < 0.0F)
   {
-    UpdateDoZoomVectorNegativeRotateStats();
     return {-m_filterSettings->rotateSpeed * (velocity.GetX() - velocity.GetY()),
             -m_filterSettings->rotateSpeed * (velocity.GetX() + velocity.GetY())};
   }
 
-  UpdateDoZoomVectorPositiveRotateStats();
   return {m_filterSettings->rotateSpeed * (velocity.GetY() + velocity.GetX()),
           m_filterSettings->rotateSpeed * (velocity.GetY() - velocity.GetX())};
-}
-
-inline void ZoomVectorEffects::UpdateDoZoomVectorSpeedCoeffBelowMinStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorSpeedCoeffBelowMin();
-}
-
-inline void ZoomVectorEffects::UpdateDoZoomVectorSpeedCoeffAboveMaxStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorSpeedCoeffAboveMax();
-}
-
-inline void ZoomVectorEffects::UpdateDoZoomVectorNoiseFactorStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorNoiseFactor();
-}
-
-inline void ZoomVectorEffects::UpdateDoZoomVectorTanEffectStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorTanEffect();
-}
-
-inline void ZoomVectorEffects::UpdateDoZoomVectorNegativeRotateStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorNegativeRotate();
-}
-
-inline void ZoomVectorEffects::UpdateDoZoomVectorPositiveRotateStats() const
-{
-  if (nullptr == m_stats)
-  {
-    return;
-  }
-  m_stats->DoZoomVectorPositiveRotate();
 }
 
 #if __cplusplus <= 201402L

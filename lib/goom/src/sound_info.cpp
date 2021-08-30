@@ -1,9 +1,7 @@
 #include "sound_info.h"
 
 #include "goom_config.h"
-#include "goom_stats.h"
 #include "goomutils/mathutils.h"
-#include "stats/sound_stats.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -111,8 +109,7 @@ auto AudioSamples::GetSampleMinMax(const size_t channelIndex) const -> const Max
 }
 
 SoundInfo::SoundInfo() noexcept
-  : m_stats{std::make_shared<SoundStats>()},
-    m_updateNum{0},
+  : m_updateNum{0},
     m_totalGoomsInCurrentCycle{0},
     m_timeSinceLastGoom{0},
     m_timeSinceLastBigGoom{0},
@@ -193,8 +190,6 @@ void SoundInfo::UpdateVolume(const AudioSamples& samples)
   {
     m_volume = static_cast<float>(maxPosVar) / static_cast<float>(m_allTimesPositiveMaxVolume);
   }
-
-  m_stats->DoUpdateVolume(m_volume);
 }
 
 void SoundInfo::UpdateAcceleration()
@@ -229,8 +224,6 @@ void SoundInfo::UpdateAcceleration()
   {
     m_acceleration *= ACCELERATION_MULTIPLIER;
   }
-
-  m_stats->DoUpdateAcceleration(m_acceleration);
 }
 
 void SoundInfo::UpdateSpeed(const float prevAcceleration)
@@ -247,8 +240,6 @@ void SoundInfo::UpdateSpeed(const float prevAcceleration)
   const float newSpeed = SPEED_MULTIPLIER * ((0.5F * m_speed) + (0.25F * diffAcceleration));
   m_speed = stdnew::lerp(newSpeed, m_speed, LERP_SPEED_MIX);
   m_speed = stdnew::clamp(m_speed, 0.0F, 1.0F);
-
-  m_stats->DoUpdateSpeed(m_speed);
 }
 
 void SoundInfo::UpdateLastGoom()
@@ -260,7 +251,6 @@ void SoundInfo::UpdateLastGoom()
   if (m_acceleration > m_goomLimit)
   {
     m_timeSinceLastGoom = 0;
-    m_stats->DoGoom();
 
     // TODO: tester && (info->m_timeSinceLastGoom > 20)) {
     ++m_totalGoomsInCurrentCycle;
@@ -294,7 +284,6 @@ void SoundInfo::UpdateLastBigGoom()
       (m_timeSinceLastBigGoom > MAX_BIG_GOOM_DURATION))
   {
     m_timeSinceLastBigGoom = 0;
-    m_stats->DoBigGoom();
   }
 }
 
@@ -344,13 +333,6 @@ void SoundInfo::UpdateGoomLimit()
   constexpr float MIN_LIMIT = 0.0F;
   constexpr float MAX_LIMIT = 1.0F;
   m_goomLimit = stdnew::clamp(m_goomLimit, MIN_LIMIT, MAX_LIMIT);
-}
-
-void SoundInfo::Log(const GoomStats::LogStatsValueFunc& l) const
-{
-  m_stats->LastGoomPower(GetGoomPower());
-
-  m_stats->Log(l);
 }
 
 } // namespace GOOM

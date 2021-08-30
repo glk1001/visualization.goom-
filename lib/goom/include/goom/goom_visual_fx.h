@@ -1,8 +1,6 @@
 #ifndef VISUALIZATION_GOOM_VISUAL_FX_H
 #define VISUALIZATION_GOOM_VISUAL_FX_H
 
-#include "goom_stats.h"
-
 #include <string>
 
 namespace GOOM
@@ -28,7 +26,6 @@ public:
   virtual void Resume(){};
   virtual void Suspend(){};
 
-  virtual void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const = 0;
   virtual void Finish() = 0;
 };
 

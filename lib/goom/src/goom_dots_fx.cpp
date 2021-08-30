@@ -3,7 +3,6 @@
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goom_stats.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/graphics/image_bitmaps.h"
@@ -130,10 +129,6 @@ void GoomDotsFx::Resume()
 }
 
 void GoomDotsFx::Suspend()
-{
-}
-
-void GoomDotsFx::Log([[maybe_unused]] const GoomStats::LogStatsValueFunc& l) const
 {
 }
 

@@ -1,6 +1,5 @@
 #include "filter_buffers_manager.h"
 
-#include "../stats/filter_stats.h"
 #include "filter_buffers.h"
 #include "filter_data.h"
 #include "filter_normalized_coords.h"
@@ -49,41 +48,21 @@ ZoomFilterBuffersManager::ZoomFilterBuffersManager(
 {
 }
 
-void ZoomFilterBuffersManager::SetStats(const std::shared_ptr<FilterStats> stats)
-{
-  m_stats = stats;
-  m_filterBuffers.SetStats(stats);
-}
-
 void ZoomFilterBuffersManager::Start()
 {
-  assert(m_stats != nullptr);
-
   m_started = true;
 
   ChangeFilterSettings(m_currentFilterSettings);
 
   m_zoomVector.SetFilterSettings(m_currentFilterSettings);
-  m_zoomVector.SetFilterStats(*m_stats);
 
   UpdateFilterBuffersSettings();
   m_filterBuffers.Start();
 }
 
-void ZoomFilterBuffersManager::UpdateLastStats() const
-{
-  m_zoomVector.UpdateLastStats();
-
-  m_stats->SetLastJustChangedFilterSettings(m_pendingFilterSettings);
-  m_stats->SetLastTranBuffYLineStart(m_filterBuffers.GetTranBuffYLineStart());
-  m_stats->SetLastTranDiffFactor(m_filterBuffers.GetTranLerpFactor());
-}
-
 void ZoomFilterBuffersManager::ChangeFilterSettings(const ZoomFilterData& filterSettings)
 {
   assert(m_started);
-
-  m_stats->DoChangeFilterSettings(filterSettings);
 
   m_nextFilterSettings = filterSettings;
   m_pendingFilterSettings = true;
@@ -91,17 +70,12 @@ void ZoomFilterBuffersManager::ChangeFilterSettings(const ZoomFilterData& filter
 
 void ZoomFilterBuffersManager::UpdateTranBuffers()
 {
-  m_stats->UpdateTranBuffersStart();
-
   m_filterBuffers.UpdateTranBuffers();
 
   if (AreStartingFreshTranBuffers())
   {
     StartFreshTranBuffers();
   }
-
-  m_stats->UpdateTranBuffersEnd(m_currentFilterSettings.mode,
-                                m_filterBuffers.GetTranBuffersState());
 }
 
 inline auto ZoomFilterBuffersManager::AreStartingFreshTranBuffers() const -> bool
@@ -145,15 +119,12 @@ void ZoomFilterBuffersManager::UpdateTranLerpFactor(const int32_t switchIncr,
 
   if (switchIncr != 0)
   {
-    m_stats->DoSwitchIncrNotZero();
     tranLerpFactor =
         stdnew::clamp(tranLerpFactor + switchIncr, 0, ZoomFilterBuffers::GetMaxTranLerpFactor());
   }
 
   if (!floats_equal(switchMult, 1.0F))
   {
-    m_stats->DoSwitchMultNotOne();
-
     tranLerpFactor = static_cast<int32_t>(
         stdnew::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
                      static_cast<float>(tranLerpFactor), switchMult));

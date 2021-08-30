@@ -3,7 +3,6 @@
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goom_stats.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/graphics/image_bitmaps.h"
@@ -113,10 +112,6 @@ void ImageFx::SetResourcesDirectory(const std::string& dirName)
 void ImageFx::Start()
 {
   m_fxImpl->Start();
-}
-
-void ImageFx::Log([[maybe_unused]] const GoomStats::LogStatsValueFunc& l) const
-{
 }
 
 void ImageFx::Finish()

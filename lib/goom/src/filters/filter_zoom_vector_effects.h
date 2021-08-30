@@ -11,8 +11,6 @@
 namespace GOOM
 {
 
-class FilterStats;
-
 namespace FILTERS
 {
 #else
@@ -44,9 +42,6 @@ public:
   void SetFilterSettings(const ZoomFilterData& filterSettings);
   void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth);
 
-  void SetFilterStats(FilterStats& stats);
-  void UpdateLastStats();
-
   [[nodiscard]] auto GetMaxSpeedCoeff() const -> float;
   void SetMaxSpeedCoeff(float val);
 
@@ -69,7 +64,6 @@ public:
 
 private:
   const ZoomFilterData* m_filterSettings{};
-  mutable FilterStats* m_stats{};
 
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
   static constexpr float MIN_SPEED_COEFF = -4.01F;
@@ -108,13 +102,6 @@ private:
                                                const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
-
-  void UpdateDoZoomVectorSpeedCoeffBelowMinStats() const;
-  void UpdateDoZoomVectorSpeedCoeffAboveMaxStats() const;
-  void UpdateDoZoomVectorNoiseFactorStats() const;
-  void UpdateDoZoomVectorTanEffectStats() const;
-  void UpdateDoZoomVectorNegativeRotateStats() const;
-  void UpdateDoZoomVectorPositiveRotateStats() const;
 };
 
 inline auto ZoomVectorEffects::GetMaxSpeedCoeff() const -> float

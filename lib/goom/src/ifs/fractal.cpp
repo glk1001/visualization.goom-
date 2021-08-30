@@ -1,6 +1,5 @@
 #include "fractal.h"
 
-#include "../stats/ifs_stats.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
@@ -80,12 +79,10 @@ auto IfsPoint::GetSimiOverExposeBitmaps() const -> bool
 Fractal::Fractal(const uint32_t screenWidth,
                  const uint32_t screenHeight,
                  const RandomColorMaps& randomColorMaps,
-                 const SmallImageBitmaps& smallBitmaps,
-                 IfsStats& s)
+                 const SmallImageBitmaps& smallBitmaps)
   : m_components{std::make_unique<std::vector<Similitude>>(NUM_SIMI_GROUPS * MAX_SIMI)},
     m_smallBitmaps{smallBitmaps},
     m_colorMaps{randomColorMaps},
-    m_stats{s},
     m_lx{(screenWidth - 1U) / 2U},
     m_ly{(screenHeight - 1U) / 2U},
     m_prevSpeed{INITIAL_SPEED},
@@ -161,7 +158,6 @@ void Fractal::ResetCurrentIfsFunc()
               simi.cy,
       };
     };
-    m_stats.UpdateReverseIfsFunc();
   }
   else
   {
@@ -174,7 +170,6 @@ void Fractal::ResetCurrentIfsFunc()
               simi.cy,
       };
     };
-    m_stats.UpdateStdIfsFunc();
   }
 }
 

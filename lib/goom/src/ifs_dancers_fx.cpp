@@ -37,7 +37,6 @@
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goom_stats.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/logging_control.h"
 //#undef NO_LOGGING
@@ -49,7 +48,6 @@
 #include "ifs/colorizer.h"
 #include "ifs/fractal.h"
 #include "ifs/low_density_blurrer.h"
-#include "stats/ifs_stats.h"
 
 #include <array>
 
@@ -117,7 +115,6 @@ public:
 
   void Start();
   void Finish();
-  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const;
 
 private:
   static constexpr int32_t MAX_COUNT_BEFORE_NEXT_UPDATE = 1000;
@@ -141,8 +138,6 @@ private:
   void UpdateCycle();
   void UpdateDecay();
   void UpdateDecayAndRecay();
-
-  IfsStats m_stats{};
 
   // TODO Move to simi
   TValue m_tMix{TValue::StepType::CONTINUOUS_REVERSIBLE, 0.01F};
@@ -208,11 +203,6 @@ void IfsDancersFx::Finish()
   m_fxImpl->Finish();
 }
 
-void IfsDancersFx::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
-{
-  m_fxImpl->Log(logValueFunc);
-}
-
 auto IfsDancersFx::GetFxName() const -> std::string
 {
   return "IFS FX";
@@ -266,16 +256,13 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const IGoomDraw& draw,
     m_fractal{std::make_unique<Fractal>(m_draw.GetScreenWidth(),
                                         m_draw.GetScreenHeight(),
                                         m_colorizer.GetColorMaps(),
-                                        smallBitmaps,
-                                        m_stats)},
+                                        smallBitmaps)},
     m_blurrer{m_draw, 3, &m_colorizer}
 {
 }
 
 void IfsDancersFx::IfsDancersFxImpl::Init()
 {
-  m_stats.UpdateInit();
-
   m_fractal->Init();
   UpdateLowDensityThreshold();
 }
@@ -313,18 +300,10 @@ inline void IfsDancersFx::IfsDancersFxImpl::Start()
 
 inline void IfsDancersFx::IfsDancersFxImpl::Finish()
 {
-  m_stats.SetlastIfsIncr(m_ifsIncr);
-}
-
-inline void IfsDancersFx::IfsDancersFxImpl::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
-{
-  m_stats.Log(logValueFunc);
 }
 
 void IfsDancersFx::IfsDancersFxImpl::Renew()
 {
-  m_stats.UpdateRenew();
-
   ChangeColorMaps();
   m_colorizer.ChangeColorMode();
 
@@ -352,8 +331,6 @@ void IfsDancersFx::IfsDancersFxImpl::ApplyNoDraw()
 
 void IfsDancersFx::IfsDancersFxImpl::UpdateIfs()
 {
-  m_stats.UpdateBegin();
-
   UpdateDecayAndRecay();
   if (GetIfsIncr() <= 0)
   {
@@ -363,8 +340,6 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateIfs()
   UpdateCycle();
 
   DrawNextIfsPoints();
-
-  m_stats.UpdateEnd();
 }
 
 void IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay()
@@ -388,8 +363,6 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay()
       m_ifsIncr = 1;
     }
   }
-
-  m_stats.UpdateIfsIncr(m_ifsIncr);
 }
 
 void IfsDancersFx::IfsDancersFxImpl::UpdateIncr()
@@ -398,7 +371,6 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateIncr()
   {
     m_recayIfs = 5;
     m_ifsIncr = 11;
-    m_stats.UpdateIfsIncr(m_ifsIncr);
     Renew();
   }
 }
@@ -431,17 +403,14 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateCycle()
 
   m_cycle = 0;
   m_cycleLength = GetRandInRange(MIN_CYCLE_LENGTH, MAX_CYCLE_LENGTH + 1);
-  m_stats.UpdateCycleChanges();
 
   if (ProbabilityOfMInN(15, 20))
   {
     m_lowDensityBlurThreshold = 0.99F;
-    m_stats.UpdateHighLowDensityBlurThreshold();
   }
   else
   {
     m_lowDensityBlurThreshold = 0.40F;
-    m_stats.UpdateLowLowDensityBlurThreshold();
   }
 
   m_fractal->Reset();

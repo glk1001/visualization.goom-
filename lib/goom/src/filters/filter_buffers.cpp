@@ -1,6 +1,5 @@
 #include "filter_buffers.h"
 
-#include "../stats/filter_stats.h"
 #include "filter_normalized_coords.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -58,8 +57,6 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
 
 void ZoomFilterBuffers::Start()
 {
-  assert(m_stats != nullptr);
-
   InitAllTranBuffers();
 }
 
@@ -132,8 +129,6 @@ void ZoomFilterBuffers::UpdateTranBuffers()
 // generation du buffer de transform
 void ZoomFilterBuffers::ResetTranBuffers()
 {
-  m_stats->DoResetTranBuffers();
-
   m_transformBuffers->CopyDestTranToSrceTran();
   m_transformBuffers->SetUpNextDestTran();
 
@@ -148,8 +143,6 @@ void ZoomFilterBuffers::StartFreshTranBuffers()
   {
     return;
   }
-
-  m_stats->DoStartFreshTranBuffers();
 
   m_filterSettingsHaveChanged = false;
   m_tranBuffYLineStart = 0;

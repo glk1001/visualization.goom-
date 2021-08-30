@@ -10,7 +10,6 @@
 namespace GOOM
 {
 
-class FilterStats;
 struct ZoomFilterData;
 
 namespace FILTERS
@@ -21,16 +20,12 @@ class ZoomVectorEffects;
 class FilterZoomVector : public IZoomVector
 {
 public:
-  FilterZoomVector(const std::string& resourcesDirectory) noexcept;
+  explicit FilterZoomVector(const std::string& resourcesDirectory) noexcept;
   FilterZoomVector(const FilterZoomVector&) noexcept = delete;
   FilterZoomVector(FilterZoomVector&&) noexcept = delete;
   ~FilterZoomVector() noexcept override;
   auto operator=(const FilterZoomVector&) -> FilterZoomVector& = delete;
   auto operator=(FilterZoomVector&&) -> FilterZoomVector& = delete;
-
-  auto GetFilterStats() const -> FilterStats* override;
-  void SetFilterStats(FilterStats& stats) override;
-  void UpdateLastStats() override;
 
   auto GetFilterSettings() const -> const ZoomFilterData* override;
   void SetFilterSettings(const ZoomFilterData& filterSettings) override;
@@ -44,23 +39,11 @@ public:
 private:
   const ZoomFilterData* m_filterSettings{};
   std::unique_ptr<ZoomVectorEffects> m_zoomVectorEffects;
-  mutable FilterStats* m_stats{};
 
   void GetZoomEffectsAdjustedVelocity(float sqDistFromZero,
                                       const NormalizedCoords& coords,
                                       NormalizedCoords& velocity) const;
-
-  void UpdateDoZoomVectorNoisifyStats() const;
-  void UpdateDoZoomVectorHypercosEffectStats() const;
-  // TODO Fix stats
-  void UpdateDoZoomVectorHPlaneEffectStats() const;
-  void UpdateDoZoomVectorVPlaneEffectStats() const;
 };
-
-inline auto FilterZoomVector::GetFilterStats() const -> FilterStats*
-{
-  return m_stats;
-}
 
 } // namespace FILTERS
 } // namespace GOOM

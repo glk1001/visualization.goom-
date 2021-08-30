@@ -2,7 +2,6 @@
 
 #include "goom_draw.h"
 #include "goom_plugin_info.h"
-#include "goom_stats.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
@@ -15,7 +14,6 @@
 #include "goomutils/random_colormaps.h"
 #include "goomutils/random_colormaps_manager.h"
 #include "goomutils/spimpl.h"
-#include "stats/stars_stats.h"
 #include "v2d.h"
 
 #undef NDEBUG
@@ -81,7 +79,6 @@ public:
   void UpdateBuffers();
 
   void Finish();
-  void Log(const GoomStats::LogStatsValueFunc& logVal) const;
 
 private:
   const IGoomDraw& m_draw;
@@ -149,7 +146,6 @@ private:
   float m_maxAge = 1.0F - (80.0F / 100.0F);
 
   bool m_useSingleBufferOnly = true;
-  StarsStats m_stats{};
 
   void CheckForStarEvents();
   void SoundEventOccurred();
@@ -277,11 +273,6 @@ void FlyingStarsFx::Finish()
   m_fxImpl->Finish();
 }
 
-void FlyingStarsFx::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
-{
-  m_fxImpl->Log(logValueFunc);
-}
-
 auto FlyingStarsFx::GetFxName() const -> std::string
 {
   return "Flying Stars FX";
@@ -388,14 +379,6 @@ inline void FlyingStarsFx::FlyingStarsImpl::Start()
 
 void FlyingStarsFx::FlyingStarsImpl::Finish()
 {
-  m_stats.SetLastNumActive(static_cast<uint32_t>(m_stars.size()));
-  m_stats.SetLastMaxStars(m_maxStars);
-  m_stats.SetLastMaxStarAge(m_maxStarAge);
-}
-
-void FlyingStarsFx::FlyingStarsImpl::Log(const GoomStats::LogStatsValueFunc& logVal) const
-{
-  m_stats.Log(logVal);
 }
 
 void FlyingStarsFx::FlyingStarsImpl::UpdateBuffers()
@@ -438,7 +421,6 @@ void FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents()
 
 void FlyingStarsFx::FlyingStarsImpl::DrawStars()
 {
-  m_stats.UpdateStars();
   const float flipSpeed = GetRandInRange(0.1F, 10.0F);
 
   for (auto& star : m_stars)
@@ -448,7 +430,6 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStars()
     // Is it a dead particle?
     if (star.age >= static_cast<float>(m_maxStarAge))
     {
-      m_stats.DeadStar();
       continue;
     }
 
@@ -595,10 +576,6 @@ void FlyingStarsFx::FlyingStarsImpl::RemoveDeadStars()
   m_stars.erase(std::remove_if(m_stars.begin(), m_stars.end(), isDead), m_stars.end());
 #else
   const size_t numRemoved = std::erase_if(m_stars, isDead);
-  if (numRemoved > 0)
-  {
-    m_stats.RemovedDeadStars(numRemoved);
-  }
 #endif
 }
 
@@ -832,11 +809,8 @@ void FlyingStarsFx::FlyingStarsImpl::UpdateStar(Star& s)
  */
 void FlyingStarsFx::FlyingStarsImpl::SoundEventOccurred()
 {
-  m_stats.SoundEventOccurred();
-
   if (m_fxMode == StarModes::NO_FX)
   {
-    m_stats.NoFxChosen();
     return;
   }
 
@@ -893,15 +867,12 @@ auto FlyingStarsFx::FlyingStarsImpl::GetStarParams(const float defaultRadius,
   switch (m_fxMode)
   {
     case StarModes::FIREWORKS:
-      m_stats.FireworksFxChosen();
       starParams = GetFireworksStarParams(defaultRadius);
       break;
     case StarModes::RAIN:
-      m_stats.RainFxChosen();
       starParams = GetRainStarParams(defaultRadius);
       break;
     case StarModes::FOUNTAIN:
-      m_stats.FountainFxChosen();
       m_maxStarAge = static_cast<uint32_t>(static_cast<float>(m_maxStarAge) * (2.0F / 3.0F));
       starParams = GetFountainStarParams(defaultRadius);
       break;
@@ -1015,10 +986,8 @@ void FlyingStarsFx::FlyingStarsImpl::AddABomb(const V2dInt& pos,
 {
   if (m_stars.size() >= m_maxStars)
   {
-    m_stats.AddBombButTooManyStars();
     return;
   }
-  m_stats.AddBomb();
 
   m_stars.emplace_back(Star{});
   Star& star = m_stars[m_stars.size() - 1];

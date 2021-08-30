@@ -52,7 +52,6 @@ add_library(goom
         src/goom_dots_fx.cpp
         src/goom_draw.cpp
         src/goom_graphic.cpp
-        src/goom_stats.cpp
         src/goom_visual_fx.cpp
         src/ifs/colorizer.cpp
         src/ifs/fractal.cpp
@@ -61,14 +60,6 @@ add_library(goom
         src/image_fx.cpp
         src/lines_fx.cpp
         src/sound_info.cpp
-        src/stats/filter_stats.cpp
-        src/stats/goom_control_stats.cpp
-        src/stats/ifs_stats.cpp
-        src/stats/line_stats.cpp
-        src/stats/sound_stats.cpp
-        src/stats/stars_stats.cpp
-        src/stats/tentacles_stats.cpp
-        src/stats/tube_stats.cpp
         src/tentacles/tentacle_driver.cpp
         src/tentacles/tentacles.cpp
         src/tentacles_fx.cpp

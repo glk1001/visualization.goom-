@@ -1,7 +1,6 @@
 #ifndef VISUALIZATION_GOOM_IMAGE_FX_H
 #define VISUALIZATION_GOOM_IMAGE_FX_H
 
-#include "goom_stats.h"
 #include "goom_visual_fx.h"
 
 #include <memory>
@@ -33,7 +32,6 @@ public:
 
   void ApplyMultiple();
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const override;
   void Finish() override;
 
 private:

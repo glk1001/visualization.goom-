@@ -33,8 +33,6 @@ public:
                            const std::shared_ptr<const PluginInfo>& goomInfo,
                            IZoomVector& zoomVector) noexcept;
 
-  void SetStats(std::shared_ptr<FilterStats> stats);
-
   void Start();
 
   void ChangeFilterSettings(const ZoomFilterData& filterSettings);
@@ -45,13 +43,10 @@ public:
   using SourcePointInfo = ZoomFilterBuffers::SourcePointInfo;
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo;
 
-  void UpdateLastStats() const;
-
 private:
   bool m_started = false;
   IZoomVector& m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
-  std::shared_ptr<FilterStats> m_stats{};
 
   ZoomFilterData m_currentFilterSettings{};
   ZoomFilterData m_nextFilterSettings{};

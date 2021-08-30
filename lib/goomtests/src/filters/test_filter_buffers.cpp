@@ -7,12 +7,10 @@
 #include "goom/v2d.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/parallel_utils.h"
-#include "stats/filter_stats.h"
 
 #include <cmath>
 #include <memory>
 
-using GOOM::FilterStats;
 using GOOM::PluginInfo;
 using GOOM::V2dInt;
 using GOOM::ZoomFilterData;
@@ -33,8 +31,6 @@ inline auto GetBuffPos(const int32_t x, const int32_t y) -> size_t
 {
   return (static_cast<size_t>(y) * WIDTH) + static_cast<size_t>(x);
 }
-
-static auto s_filterStats{std::make_shared<FilterStats>()};
 
 class TestZoomVector : public FilterZoomVector
 {
@@ -94,7 +90,6 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
                                     return identityZoomVector.GetZoomPoint(normalizedCoords);
                                   }};
 
-  filterBuffers.SetStats(s_filterStats);
   filterBuffers.Start();
 
   const NormalizedCoords DUMMY_NML_COORDS{DUMMY_COORDS};
@@ -177,7 +172,6 @@ TEST_CASE("ZoomFilterBuffers Calculations", "[ZoomFilterBuffersCalcs]")
                                     return constantZoomVector.GetZoomPoint(normalizedCoords);
                                   }};
 
-  filterBuffers.SetStats(s_filterStats);
   filterBuffers.Start();
 
   const NormalizedCoords DUMMY_NML_COORDS{DUMMY_COORDS};
@@ -279,7 +273,6 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
                                     return constantZoomVector.GetZoomPoint(normalizedCoords);
                                   }};
 
-  filterBuffers.SetStats(s_filterStats);
   filterBuffers.Start();
 
   const NormalizedCoords DUMMY_NML_COORDS{DUMMY_COORDS};

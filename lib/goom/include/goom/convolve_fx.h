@@ -1,7 +1,6 @@
 #ifndef VISUALIZATION_GOOM_CONVOLVE_FX_H
 #define VISUALIZATION_GOOM_CONVOLVE_FX_H
 
-#include "goom_stats.h"
 #include "goom_visual_fx.h"
 
 #include <memory>
@@ -40,8 +39,6 @@ public:
   void SetAllowOverexposed(bool val);
 
   void Start() override;
-
-  void Log(const GoomStats::LogStatsValueFunc& l) const override;
   void Finish() override;
 
 private:

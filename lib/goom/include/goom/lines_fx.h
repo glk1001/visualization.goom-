@@ -3,7 +3,6 @@
 
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_stats.h"
 #include "goomutils/spimpl.h"
 #include "sound_info.h"
 
@@ -78,7 +77,6 @@ public:
   void DrawLines(const std::vector<int16_t>& soundData,
                  const AudioSamples::MaxMinValues& soundMinMax);
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const;
   void Finish();
 
 private:

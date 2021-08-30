@@ -3,7 +3,6 @@
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goom_stats.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
@@ -13,7 +12,6 @@
 #include "goomutils/logging.h"
 #include "goomutils/random_colormaps.h"
 #include "goomutils/spimpl.h"
-#include "stats/tentacles_stats.h"
 #include "tentacles/tentacle_driver.h"
 
 #undef NDEBUG
@@ -79,8 +77,6 @@ public:
 
   void Update();
   void UpdateWithNoDraw();
-
-  void LogStats(const GoomStats::LogStatsValueFunc& logValueFunc) const;
 
 private:
   const IGoomDraw& m_draw;
@@ -156,7 +152,6 @@ private:
   void SetupDrivers();
   void SetDriverRandomColorMaps();
   void InitData();
-  mutable TentacleStats m_stats{};
   void DoTentaclesUpdate();
   void DoPrettyMoveBeforeDraw();
   void DoPrettyMoveWithoutDraw();
@@ -205,11 +200,6 @@ void TentaclesFx::Finish()
 {
 }
 
-void TentaclesFx::Log(const GoomStats::LogStatsValueFunc& logValueFunc) const
-{
-  m_fxImpl->LogStats(logValueFunc);
-}
-
 void TentaclesFx::ApplyMultiple()
 {
   if (!m_enabled)
@@ -255,34 +245,6 @@ inline void TentaclesFx::TentaclesImpl::IncCounters()
 {
   ++m_countSinceHighAccelLastMarked;
   ++m_countSinceColorChangeLastMarked;
-}
-
-void TentaclesFx::TentaclesImpl::LogStats(const GoomStats::LogStatsValueFunc& logValueFunc) const
-{
-  assert(m_currentDriver);
-
-  m_stats.SetLastNumTentacles(m_currentDriver->GetNumTentacles());
-  m_stats.SetLastUpdatingWithDraw(m_updatingWithDraw);
-  m_stats.SetLastCycle(m_cycle);
-  m_stats.SetLastCycleInc(m_cycleInc);
-  m_stats.SetLastLig(m_lig);
-  m_stats.SetLastLigs(m_ligs);
-  m_stats.SetLastDistt(m_distt);
-  m_stats.SetLastDistt2(m_distt2);
-  m_stats.SetLastDistt2Offset(m_distt2Offset);
-  m_stats.SetLastRot(m_rot);
-  m_stats.SetLastRotAtStartOfPrettyMove(m_rotAtStartOfPrettyMove);
-  m_stats.SetLastDoRotation(m_doRotation);
-  m_stats.SetLastIsPrettyMoveHappening(m_isPrettyMoveHappening);
-  m_stats.SetLastPrettyMoveHappeningTimer(m_prettyMoveHappeningTimer);
-  m_stats.SetLastPrettyMoveCheckStopMark(m_prettyMoveCheckStopMark);
-  m_stats.SetLastPrePrettyMoveLock(m_prePrettyMoveLock);
-  m_stats.SetLastDistt2OffsetPreStep(m_distt2OffsetPreStep);
-  m_stats.SetLastPrettyMoveReadyToStart(m_prettyMoveReadyToStart);
-  m_stats.SetLastPostPrettyMoveLock(m_postPrettyMoveLock);
-  m_stats.SetLastPrettyLerpMixValue(m_prettyMoveLerpMix);
-
-  m_stats.Log(logValueFunc);
 }
 
 inline void TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
@@ -348,7 +310,6 @@ colorMaps.setWeights(colorGroupWeights);
     m_drivers[i]->Init(initialColorMapGroup, m_layouts[i]);
     m_drivers[i]->StartIterating();
   }
-  m_stats.SetNumTentacleDrivers(m_drivers);
 
   SetDriverRandomColorMaps();
 
@@ -399,8 +360,6 @@ void TentaclesFx::TentaclesImpl::InitData()
 
 void TentaclesFx::TentaclesImpl::UpdateWithNoDraw()
 {
-  m_stats.UpdateWithNoDraw();
-
   if (!m_updatingWithDraw)
   {
     // already in tentacle no draw state
@@ -421,11 +380,9 @@ void TentaclesFx::TentaclesImpl::UpdateWithNoDraw()
 void TentaclesFx::TentaclesImpl::Update()
 {
   LogDebug("Starting Update.");
-  m_stats.UpdateStart();
 
   IncCounters();
 
-  m_stats.UpdateWithDraw();
   m_lig += m_ligs;
 
   if (!m_updatingWithDraw)
@@ -443,8 +400,6 @@ void TentaclesFx::TentaclesImpl::Update()
     DoPrettyMoveBeforeDraw();
     DoTentaclesUpdate();
   }
-
-  m_stats.UpdateEnd();
 }
 
 void TentaclesFx::TentaclesImpl::DoPrettyMoveWithoutDraw()
@@ -456,13 +411,11 @@ void TentaclesFx::TentaclesImpl::DoPrettyMoveWithoutDraw()
   }
 
   LogDebug("Starting pretty_move without draw.");
-  m_stats.UpdateWithPrettyMoveNoDraw();
   PrettyMove(m_goomInfo->GetSoundInfo().GetAcceleration());
 
   m_cycle += 10.0F * m_cycleInc;
   if (m_cycle > 1000.0F)
   {
-    m_stats.CycleReset();
     m_cycle = 0.0;
   }
 }
@@ -475,14 +428,12 @@ void TentaclesFx::TentaclesImpl::DoPrettyMoveBeforeDraw()
   }
 
   LogDebug("Starting pretty_move and draw.");
-  m_stats.UpdateWithPrettyMoveDraw();
   PrettyMove(m_goomInfo->GetSoundInfo().GetAcceleration());
   m_cycle += m_cycleInc;
 
   if (m_isPrettyMoveHappening || ChangeDominantColorMapEvent())
   {
     // IMPORTANT. Very delicate here - seems the right time to change maps.
-    m_stats.ChangeDominantColorMap();
     m_dominantColorMap = m_colorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL);
   }
 
@@ -505,11 +456,9 @@ void TentaclesFx::TentaclesImpl::DoTentaclesUpdate()
 
   if (m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() != 0)
   {
-    m_stats.LowToMediumAcceleration();
   }
   else
   {
-    m_stats.HighAcceleration();
     if (m_countSinceHighAccelLastMarked > 100)
     {
       m_countSinceHighAccelLastMarked = 0;
@@ -534,7 +483,6 @@ void TentaclesFx::TentaclesImpl::DoTentaclesUpdate()
 
 void TentaclesFx::TentaclesImpl::ChangeDominantColor()
 {
-  m_stats.ChangeDominantColor();
   assert(m_dominantColorMap);
   const Pixel newColor = RandomColorMaps::GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   m_dominantColor = IColorMap::GetColorMix(m_dominantColor, newColor, 0.7F);
@@ -561,8 +509,6 @@ void TentaclesFx::TentaclesImpl::PrettyMovePreStart()
 
 void TentaclesFx::TentaclesImpl::PrettyMoveStart(const float acceleration, const int32_t timerVal)
 {
-  m_stats.PrettyMoveHappens();
-
   if (timerVal != -1)
   {
     m_prettyMoveHappeningTimer = timerVal;
@@ -639,7 +585,6 @@ void TentaclesFx::TentaclesImpl::IsPrettyMoveHappeningUpdate(const float acceler
 inline auto TentaclesFx::TentaclesImpl::GetNextDriver() const -> TentacleDriver*
 {
   const size_t driverIndex = m_driverWeights.GetRandomWeighted();
-  m_stats.ChangeTentacleDriver(driverIndex);
   return m_drivers[driverIndex].get();
 }
 

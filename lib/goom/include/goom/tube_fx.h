@@ -1,7 +1,6 @@
 #ifndef VISUALIZATION_GOOM_TUBE_FX_H
 #define VISUALIZATION_GOOM_TUBE_FX_H
 
-#include "goom_stats.h"
 #include "goom_visual_fx.h"
 #include "goomutils/spimpl.h"
 
@@ -44,7 +43,6 @@ public:
   void ApplyNoDraw();
   void ApplyMultiple();
 
-  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const override;
   void Finish() override;
 
 private:

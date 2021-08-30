@@ -1,7 +1,6 @@
 #ifndef VISUALIZATION_GOOM_FLYING_STARS_FX_H
 #define VISUALIZATION_GOOM_FLYING_STARS_FX_H
 
-#include "goom_stats.h"
 #include "goom_visual_fx.h"
 #include "goomutils/spimpl.h"
 
@@ -52,7 +51,6 @@ public:
 
   void ApplyMultiple();
 
-  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const override;
   void Finish() override;
 
 private:

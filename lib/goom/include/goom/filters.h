@@ -1,7 +1,6 @@
 #ifndef VISUALIZATION_GOOM_FILTERS_H
 #define VISUALIZATION_GOOM_FILTERS_H
 
-#include "goom_stats.h"
 #include "goom_visual_fx.h"
 #include "goomutils/spimpl.h"
 
@@ -53,7 +52,6 @@ public:
                          int switchIncr,
                          float switchMult);
 
-  void Log(const GoomStats::LogStatsValueFunc& logValueFunc) const override;
   void Finish() override;
 
 private:

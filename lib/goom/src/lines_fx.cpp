@@ -11,7 +11,6 @@
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goom_stats.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
@@ -24,7 +23,6 @@
 #include "goomutils/random_colormaps.h"
 #include "goomutils/spimpl.h"
 #include "sound_info.h"
-#include "stats/line_stats.h"
 #include "v2d.h"
 
 #undef NDEBUG
@@ -101,7 +99,6 @@ public:
   void DrawLines(const std::vector<int16_t>& soundData,
                  const AudioSamples::MaxMinValues& soundMinMax);
 
-  void Log(const GoomStats::LogStatsValueFunc& l) const;
   void Finish();
 
 private:
@@ -116,8 +113,6 @@ private:
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
   float m_currentBrightness = 1.0F;
-
-  mutable LineStats m_stats{};
 
   struct LinePoint
   {
@@ -219,11 +214,6 @@ void LinesFx::Start()
   m_fxImpl->Start();
 }
 
-void LinesFx::Log(const GoomStats::LogStatsValueFunc& l) const
-{
-  m_fxImpl->Log(l);
-}
-
 void LinesFx::Finish()
 {
   m_fxImpl->Finish();
@@ -299,11 +289,6 @@ auto LinesFx::LinesImpl::GetRandomColorMap() const -> const IColorMap&
 
 void LinesFx::LinesImpl::Start()
 {
-}
-
-void LinesFx::LinesImpl::Log(const GoomStats::LogStatsValueFunc& l) const
-{
-  m_stats.Log(l);
 }
 
 void LinesFx::LinesImpl::SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
@@ -572,8 +557,6 @@ inline auto GetDataPoints(const std::vector<int16_t>& x) -> std::vector<float>
 void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
                                    const AudioSamples::MaxMinValues& soundMinMax)
 {
-  m_stats.UpdateStart();
-
   constexpr size_t LAST_POINT_INDEX = AUDIO_SAMPLE_LEN - 1;
 
   assert(m_srcLineType != LineType::CIRCLE || m_lineLerpFactor < 1.0F ||
@@ -623,8 +606,6 @@ void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
 
   constexpr size_t MAX_DOT_SIZE = 7;
   m_currentDotSize = GetNextDotSize(MAX_DOT_SIZE);
-
-  m_stats.UpdateEnd();
 }
 
 void LinesFx::LinesImpl::DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors)
