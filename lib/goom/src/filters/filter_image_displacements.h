@@ -1,10 +1,12 @@
 #ifndef VISUALIZATION_GOOM_FILTER_IMAGE_DISPLACEMENTS_H
 #define VISUALIZATION_GOOM_FILTER_IMAGE_DISPLACEMENTS_H
 
+#include "filter_speed_coefficients_effect.h"
 #include "goomutils/goomrand.h"
 #include "image_displacement.h"
 #include "v2d.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
@@ -19,16 +21,18 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class ImageDisplacements
+class ImageDisplacements : public SpeedCoefficientsEffect
 {
 public:
-  explicit ImageDisplacements(const std::string& resourcesDirectory) noexcept;
+  explicit ImageDisplacements(const std::string& resourcesDirectory);
 
-  auto GetDisplacementVector(const V2dFlt& normalizedPoint) const -> V2dFlt;
+  void SetRandomParams() override;
+
+  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+                                          float sqDistFromZero,
+                                          const NormalizedCoords& coords) const -> V2dFlt override;
 
   auto GetCurrentImageFilename() const -> std::string;
-
-  void SetRandomParams();
 
   struct Params
   {
@@ -64,9 +68,11 @@ inline auto ImageDisplacements::GetCurrentImageDisplacement() -> ImageDisplaceme
   return m_imageDisplacements[m_currentImageDisplacementIndex];
 }
 
-inline auto ImageDisplacements::GetDisplacementVector(const V2dFlt& normalizedPoint) const -> V2dFlt
+inline auto ImageDisplacements::GetSpeedCoefficients([[maybe_unused]] const V2dFlt& baseSpeedCoeffs,
+                                                     [[maybe_unused]] float sqDistFromZero,
+                                                     const NormalizedCoords& coords) const -> V2dFlt
 {
-  return GetCurrentImageDisplacement().GetDisplacementVector(normalizedPoint);
+  return GetCurrentImageDisplacement().GetDisplacementVector(coords.ToFlt());
 }
 
 inline auto ImageDisplacements::GetCurrentImageFilename() const -> std::string

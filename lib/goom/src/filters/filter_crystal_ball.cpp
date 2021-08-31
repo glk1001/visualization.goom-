@@ -41,10 +41,22 @@ constexpr float PROB_XY_AMPLITUDES_EQUAL = 0.99F;
 constexpr float PROB_XY_SQ_DIST_MULT_EQUAL = 0.99F;
 constexpr float PROB_XY_SQ_DIST_OFFSET_EQUAL = 0.99F;
 
-CrystalBall::CrystalBall() noexcept
-  : m_params{DEFAULT_AMPLITUDE,    DEFAULT_AMPLITUDE,      DEFAULT_SQ_DIST_MULT,
-             DEFAULT_SQ_DIST_MULT, DEFAULT_SQ_DIST_OFFSET, DEFAULT_SQ_DIST_OFFSET}
+CrystalBall::CrystalBall(const Modes mode) noexcept
+  : m_mode{mode}, m_params{DEFAULT_AMPLITUDE,    DEFAULT_AMPLITUDE,      DEFAULT_SQ_DIST_MULT,
+                           DEFAULT_SQ_DIST_MULT, DEFAULT_SQ_DIST_OFFSET, DEFAULT_SQ_DIST_OFFSET}
 {
+}
+
+void CrystalBall::SetRandomParams()
+{
+  if (m_mode == Modes::MODE0)
+  {
+    SetMode0RandomParams();
+  }
+  else
+  {
+    SetMode1RandomParams();
+  }
 }
 
 void CrystalBall::SetMode0RandomParams()

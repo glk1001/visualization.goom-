@@ -42,10 +42,23 @@ constexpr float PROB_ALLOW_STRANGE_WAVE_VALUES = 0.1F;
 constexpr float PROB_WAVE_XY_EFFECTS_EQUAL = 0.75F;
 constexpr float PROB_NO_PERIODIC_FACTOR = 0.2F;
 
-Wave::Wave() noexcept
-  : m_params{DEFAULT_WAVE_EFFECT, DEFAULT_WAVE_EFFECT, DEFAULT_FREQ_FACTOR, DEFAULT_AMPLITUDE,
+Wave::Wave(const Modes mode) noexcept
+  : m_mode{mode},
+    m_params{DEFAULT_WAVE_EFFECT, DEFAULT_WAVE_EFFECT, DEFAULT_FREQ_FACTOR, DEFAULT_AMPLITUDE,
              DEFAULT_PERIODIC_FACTOR}
 {
+}
+
+void Wave::SetRandomParams()
+{
+  if (m_mode == Modes::MODE0)
+  {
+    SetMode0RandomParams();
+  }
+  else
+  {
+    SetMode1RandomParams();
+  }
 }
 
 void Wave::SetMode0RandomParams()

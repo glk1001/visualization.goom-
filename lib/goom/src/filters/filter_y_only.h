@@ -15,15 +15,16 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class YOnly : public SpeedCoefficientEffects
+class YOnly : public SpeedCoefficientsEffect
 {
 public:
   YOnly() noexcept;
+
+  void SetRandomParams() override;
+
   [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
                                           const NormalizedCoords& coords) const -> V2dFlt override;
-
-  void SetRandomParams();
 
   enum class YOnlyEffect
   {

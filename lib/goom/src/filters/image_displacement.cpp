@@ -1,11 +1,16 @@
 #include "image_displacement.h"
 
 #include "filter_normalized_coords.h"
+#include "goom_graphic.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/image_bitmaps.h"
 #include "goomutils/mathutils.h"
+#include "v2d.h"
 
 #include <cmath>
+#include <cstdint>
+#include <memory>
+#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM

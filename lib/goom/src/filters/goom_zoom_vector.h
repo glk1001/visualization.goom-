@@ -23,11 +23,9 @@ public:
   auto operator=(const IZoomVector&) -> IZoomVector& = delete;
   auto operator=(IZoomVector&&) -> IZoomVector& = delete;
 
-  virtual auto GetFilterSettings() const -> const ZoomFilterData* = 0;
   virtual void SetFilterSettings(const ZoomFilterData& filterSettings) = 0;
   virtual void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth) = 0;
 
-  virtual auto GetMaxSpeedCoeff() const -> float = 0;
   virtual void SetMaxSpeedCoeff(float val) = 0;
 
   virtual auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords = 0;

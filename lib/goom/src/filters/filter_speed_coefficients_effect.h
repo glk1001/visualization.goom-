@@ -14,10 +14,12 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class SpeedCoefficientEffects
+class SpeedCoefficientsEffect
 {
 public:
-  virtual ~SpeedCoefficientEffects() noexcept = default;
+  virtual ~SpeedCoefficientsEffect() noexcept = default;
+
+  virtual void SetRandomParams() = 0;
 
   [[nodiscard]] virtual auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                                   float sqDistFromZero,

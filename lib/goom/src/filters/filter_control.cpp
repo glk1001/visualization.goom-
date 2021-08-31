@@ -4,10 +4,8 @@
 #include "goom/goom_plugin_info.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
-#include "goomutils/graphics/image_bitmaps.h"
 
 #include <stdexcept>
-#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM

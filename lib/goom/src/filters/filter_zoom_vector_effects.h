@@ -3,9 +3,13 @@
 
 #include "filter_data.h"
 #include "filter_normalized_coords.h"
+#include "filter_speed_coefficients_effect.h"
+#include "goomutils/mathutils.h"
 #include "v2d.h"
 
+#include <cmath>
 #include <memory>
+#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -18,15 +22,8 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Amulet;
-class CrystalBall;
 class Hypercos;
-class ImageDisplacements;
 class Planes;
-class Scrunch;
-class Speedway;
-class Wave;
-class YOnly;
 
 class ZoomVectorEffects
 {
@@ -42,18 +39,27 @@ public:
   void SetFilterSettings(const ZoomFilterData& filterSettings);
   void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth);
 
-  [[nodiscard]] auto GetMaxSpeedCoeff() const -> float;
   void SetMaxSpeedCoeff(float val);
 
-  [[nodiscard]] auto GetStandardVelocity(float sqDistFromZero, const NormalizedCoords& coords) const
+
+  [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
+                                           const NormalizedCoords& coords) const
       -> NormalizedCoords;
   [[nodiscard]] static auto GetCleanedVelocity(const NormalizedCoords& velocity)
       -> NormalizedCoords;
+
+  [[nodiscard]] auto IsRotateActive() const -> bool;
   [[nodiscard]] auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
+
+  [[nodiscard]] auto IsNoiseActive() const -> bool;
   [[nodiscard]] auto GetNoiseVelocity() const -> NormalizedCoords;
+
+  [[nodiscard]] auto IsTanEffectActive() const -> bool;
   [[nodiscard]] auto GetTanEffectVelocity(float sqDistFromZero,
                                           const NormalizedCoords& velocity) const
       -> NormalizedCoords;
+
+  [[nodiscard]] auto IsHypercosOverlayActive() const -> bool;
   [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
@@ -63,6 +69,7 @@ public:
   [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
 
 private:
+  const std::string m_resourcesDirectory;
   const ZoomFilterData* m_filterSettings{};
 
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
@@ -70,53 +77,91 @@ private:
   static constexpr float DEFAULT_MAX_SPEED_COEFF = +2.01F;
   float m_maxSpeedCoeff = DEFAULT_MAX_SPEED_COEFF;
 
-  const std::unique_ptr<Amulet> m_amulet;
-  const std::unique_ptr<CrystalBall> m_crystalBall;
+  std::unique_ptr<SpeedCoefficientsEffect> m_speedCoefficientsEffect{};
+  static auto MakeSpeedCoefficientsEffect(ZoomFilterMode mode,
+                                          const std::string& resourcesDirectory)
+      -> std::unique_ptr<SpeedCoefficientsEffect>;
   const std::unique_ptr<Hypercos> m_hypercos;
-  const std::unique_ptr<ImageDisplacements> m_imageDisplacements;
   const std::unique_ptr<Planes> m_planes;
-  const std::unique_ptr<Scrunch> m_scrunch;
-  const std::unique_ptr<Speedway> m_speedway;
-  const std::unique_ptr<Wave> m_wave;
-  const std::unique_ptr<YOnly> m_yOnly;
 
   void SetHypercosOverlaySettings();
 
   [[nodiscard]] static auto GetMinVelocityVal(float velocityVal) -> float;
 
-  [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
-                                           const NormalizedCoords& coords) const
-      -> NormalizedCoords;
-  [[nodiscard]] auto GetImageDisplacementVelocity(const NormalizedCoords& coords) const
-      -> NormalizedCoords;
   [[nodiscard]] auto GetXYSpeedCoefficients(float sqDistFromZero,
                                             const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetBaseSpeedCoefficients() const -> V2dFlt;
-  [[nodiscard]] auto GetAmuletSpeedCoefficients(float sqDistFromZero,
-                                                const NormalizedCoords& coords) const -> V2dFlt;
-  [[nodiscard]] auto GetCrystalBallSpeedCoefficients(float sqDistFromZero,
-                                                     const NormalizedCoords& coords) const
-      -> V2dFlt;
-  [[nodiscard]] auto GetScrunchSpeedCoefficients(float sqDistFromZero,
-                                                 const NormalizedCoords& coords) const -> V2dFlt;
-  [[nodiscard]] auto GetSpeedwaySpeedCoefficients(float sqDistFromZero,
-                                                  const NormalizedCoords& coords) const -> V2dFlt;
-  [[nodiscard]] auto GetWaveSpeedCoefficients(float sqDistFromZero,
-                                              const NormalizedCoords& coords) const -> V2dFlt;
-  [[nodiscard]] auto GetYOnlySpeedCoefficients(float sqDistFromZero,
-                                               const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
 };
 
-inline auto ZoomVectorEffects::GetMaxSpeedCoeff() const -> float
-{
-  return m_maxSpeedCoeff;
-}
-
 inline void ZoomVectorEffects::SetMaxSpeedCoeff(const float val)
 {
   m_maxSpeedCoeff = val;
+}
+
+inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
+                                                     const NormalizedCoords& coords) const
+    -> NormalizedCoords
+{
+  const V2dFlt speedCoeffs = GetClampedSpeedCoeffs(GetXYSpeedCoefficients(sqDistFromZero, coords));
+  return {speedCoeffs.x * coords.GetX(), speedCoeffs.y * coords.GetY()};
+}
+
+inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero,
+                                                      const NormalizedCoords& coords) const
+    -> V2dFlt
+{
+  return m_speedCoefficientsEffect->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero,
+                                                         coords);
+  // Amulet 2
+  // vx = X * tan(dist);
+  // vy = Y * tan(dist);
+}
+
+inline auto ZoomVectorEffects::GetBaseSpeedCoefficients() const -> V2dFlt
+{
+  const float speedCoeff =
+      (1.0F + m_filterSettings->vitesse.GetRelativeSpeed()) / SPEED_COEFF_DENOMINATOR;
+  return {speedCoeff, speedCoeff};
+}
+
+inline auto ZoomVectorEffects::GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt
+{
+  return {GetClampedSpeedCoeff(speedCoeffs.x), GetClampedSpeedCoeff(speedCoeffs.y)};
+}
+
+inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) const -> float
+{
+  if (speedCoeff < MIN_SPEED_COEFF)
+  {
+    return MIN_SPEED_COEFF;
+  }
+  if (speedCoeff > m_maxSpeedCoeff)
+  {
+    return m_maxSpeedCoeff;
+  }
+  return speedCoeff;
+}
+
+inline auto ZoomVectorEffects::IsRotateActive() const -> bool
+{
+  return std::fabs(m_filterSettings->rotateSpeed) > UTILS::SMALL_FLOAT;
+}
+
+inline auto ZoomVectorEffects::IsNoiseActive() const -> bool
+{
+  return m_filterSettings->noisify;
+}
+
+inline auto ZoomVectorEffects::IsTanEffectActive() const -> bool
+{
+  return m_filterSettings->tanEffect;
+}
+
+inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
+{
+  return m_filterSettings->hypercosOverlay != HypercosOverlay::NONE;
 }
 
 #if __cplusplus <= 201402L

@@ -16,16 +16,21 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class CrystalBall : public SpeedCoefficientEffects
+class CrystalBall : public SpeedCoefficientsEffect
 {
 public:
-  CrystalBall() noexcept;
+  enum class Modes
+  {
+    MODE0,
+    MODE1
+  };
+  explicit CrystalBall(Modes mode) noexcept;
+
+  void SetRandomParams() override;
+
   [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
                                           const NormalizedCoords& coords) const -> V2dFlt override;
-
-  void SetMode0RandomParams();
-  void SetMode1RandomParams();
 
   struct Params
   {
@@ -42,7 +47,10 @@ protected:
   void SetParams(const Params& params);
 
 private:
+  const Modes m_mode;
   Params m_params;
+  void SetMode0RandomParams();
+  void SetMode1RandomParams();
   void SetRandomParams(const UTILS::NumberRange<float>& xAmplitudeRange,
                        const UTILS::NumberRange<float>& yAmplitudeRange,
                        const UTILS::NumberRange<float>& xSqDistMultRange,

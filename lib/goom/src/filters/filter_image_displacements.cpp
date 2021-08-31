@@ -5,6 +5,8 @@
 
 #undef NDEBUG
 #include <cassert>
+#include <string>
+#include <vector>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -40,7 +42,7 @@ const std::vector<std::string> ImageDisplacements::IMAGE_FILENAMES{
 // clang-format on
 //@formatter:on
 
-ImageDisplacements::ImageDisplacements(const std::string& resourcesDirectory) noexcept
+ImageDisplacements::ImageDisplacements(const std::string& resourcesDirectory)
   : m_resourcesDirectory{resourcesDirectory}
 {
   if (m_resourcesDirectory.empty())

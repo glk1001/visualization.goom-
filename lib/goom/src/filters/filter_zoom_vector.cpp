@@ -3,8 +3,12 @@
 #include "filter_data.h"
 #include "filter_normalized_coords.h"
 #include "filter_zoom_vector_effects.h"
+#include "goomutils/mathutils.h"
+#include "v2d.h"
 
+#include <cstdint>
 #include <memory>
+#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -16,8 +20,6 @@ namespace GOOM::FILTERS
 {
 #endif
 
-using UTILS::GetRandInRange;
-using UTILS::SMALL_FLOAT;
 using UTILS::SqDistance;
 
 FilterZoomVector::FilterZoomVector(const std::string& resourcesDirectory) noexcept
@@ -25,27 +27,14 @@ FilterZoomVector::FilterZoomVector(const std::string& resourcesDirectory) noexce
 {
 }
 
-FilterZoomVector::~FilterZoomVector() noexcept = default;
-
-auto FilterZoomVector::GetFilterSettings() const -> const ZoomFilterData*
-{
-  return m_filterSettings;
-}
-
 void FilterZoomVector::SetFilterSettings(const ZoomFilterData& filterSettings)
 {
-  m_filterSettings = &filterSettings;
   m_zoomVectorEffects->SetFilterSettings(filterSettings);
 }
 
 void FilterZoomVector::SetRandomPlaneEffects(const V2dInt& zoomMidPoint, const uint32_t screenWidth)
 {
   m_zoomVectorEffects->SetRandomPlaneEffects(zoomMidPoint, screenWidth);
-}
-
-auto FilterZoomVector::GetMaxSpeedCoeff() const -> float
-{
-  return m_zoomVectorEffects->GetMaxSpeedCoeff();
 }
 
 void FilterZoomVector::SetMaxSpeedCoeff(const float val)
@@ -57,7 +46,7 @@ auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> Nor
 {
   const float sqDistFromZero = SqDistance(coords.GetX(), coords.GetY());
 
-  NormalizedCoords velocity = m_zoomVectorEffects->GetStandardVelocity(sqDistFromZero, coords);
+  NormalizedCoords velocity = m_zoomVectorEffects->GetSpeedCoeffVelocity(sqDistFromZero, coords);
 
   GetZoomEffectsAdjustedVelocity(sqDistFromZero, coords, velocity);
 
@@ -68,22 +57,22 @@ void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero
                                                       const NormalizedCoords& coords,
                                                       NormalizedCoords& velocity) const
 {
-  if (std::fabs(m_filterSettings->rotateSpeed) > SMALL_FLOAT)
+  if (m_zoomVectorEffects->IsRotateActive())
   {
     velocity = m_zoomVectorEffects->GetRotatedVelocity(velocity);
   }
 
-  if (m_filterSettings->tanEffect)
+  if (m_zoomVectorEffects->IsTanEffectActive())
   {
     velocity = m_zoomVectorEffects->GetTanEffectVelocity(sqDistFromZero, velocity);
   }
 
-  if (m_filterSettings->noisify)
+  if (m_zoomVectorEffects->IsNoiseActive())
   {
     velocity += m_zoomVectorEffects->GetNoiseVelocity();
   }
 
-  if (m_filterSettings->hypercosOverlay != HypercosOverlay::NONE)
+  if (m_zoomVectorEffects->IsHypercosOverlayActive())
   {
     velocity += m_zoomVectorEffects->GetHypercosVelocity(coords);
   }

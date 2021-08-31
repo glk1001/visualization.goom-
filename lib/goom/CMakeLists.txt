@@ -39,6 +39,7 @@ add_library(goom
         src/filters/filter_normalized_coords.cpp
         src/filters/filter_planes.cpp
         src/filters/filter_scrunch.cpp
+        src/filters/filter_simple_speed_coefficients_effect.h
         src/filters/filter_speed_coefficients_effect.h
         src/filters/filter_speedway.cpp
         src/filters/filter_wave.cpp

@@ -15,16 +15,21 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Wave : public SpeedCoefficientEffects
+class Wave : public SpeedCoefficientsEffect
 {
 public:
-  Wave() noexcept;
+  enum class Modes
+  {
+    MODE0,
+    MODE1
+  };
+  explicit Wave(Modes mode) noexcept;
+
+  void SetRandomParams() override;
+
   [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
                                           const NormalizedCoords& coords) const -> V2dFlt override;
-
-  void SetMode0RandomParams();
-  void SetMode1RandomParams();
 
   enum class WaveEffect
   {
@@ -47,7 +52,10 @@ protected:
   void SetParams(const Params& params);
 
 private:
+  const Modes m_mode;
   Params m_params;
+  void SetMode0RandomParams();
+  void SetMode1RandomParams();
   void SetWaveModeSettings(const UTILS::NumberRange<float>& freqFactorRange,
                            const UTILS::NumberRange<float>& amplitudeRange);
   [[nodiscard]] auto GetSpeedAdd(WaveEffect waveEffect, float angle) const -> float;

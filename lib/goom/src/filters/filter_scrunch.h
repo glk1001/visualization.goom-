@@ -15,15 +15,16 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Scrunch : public SpeedCoefficientEffects
+class Scrunch : public SpeedCoefficientsEffect
 {
 public:
   Scrunch() noexcept;
+
+  void SetRandomParams() override;
+
   [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
                                           const NormalizedCoords& coords) const -> V2dFlt override;
-
-  void SetRandomParams();
 
   struct Params
   {
