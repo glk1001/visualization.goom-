@@ -147,7 +147,10 @@ auto ZoomVectorEffects::GetStandardVelocity(const float sqDistFromZero,
 inline auto ZoomVectorEffects::GetImageDisplacementVelocity(const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  return NormalizedCoords{m_imageDisplacements->GetDisplacementVector(coords.ToFlt())};
+  const V2dFlt speedCoeffs =
+      GetClampedSpeedCoeffs(m_imageDisplacements->GetDisplacementVector(coords.ToFlt()));
+  return {speedCoeffs.x * coords.GetX(), speedCoeffs.y * coords.GetY()};
+  //  return NormalizedCoords{m_imageDisplacements->GetDisplacementVector(coords.ToFlt())};
 }
 
 inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
