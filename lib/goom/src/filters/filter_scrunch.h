@@ -1,6 +1,8 @@
 #ifndef VISUALIZATION_GOOM_FILTER_SCRUNCH_H
 #define VISUALIZATION_GOOM_FILTER_SCRUNCH_H
 
+#include "filter_normalized_coords.h"
+#include "filter_speed_coefficients_effect.h"
 #include "v2d.h"
 
 #if __cplusplus <= 201402L
@@ -13,12 +15,13 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Scrunch
+class Scrunch : public SpeedCoefficientEffects
 {
 public:
   Scrunch() noexcept;
-  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs, float sqDistFromZero) const
-      -> V2dFlt;
+  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+                                          float sqDistFromZero,
+                                          const NormalizedCoords& coords) const -> V2dFlt override;
 
   void SetRandomParams();
 
@@ -37,7 +40,9 @@ private:
 };
 
 inline auto Scrunch::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
-                                         const float sqDistFromZero) const -> V2dFlt
+                                          const float sqDistFromZero,
+                                          [[maybe_unused]] const NormalizedCoords& coords) const
+    -> V2dFlt
 {
   const float xSpeedCoeff = baseSpeedCoeffs.x + m_params.xAmplitude * sqDistFromZero;
   const float ySpeedCoeff = m_params.yAmplitude * xSpeedCoeff;

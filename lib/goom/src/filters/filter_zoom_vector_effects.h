@@ -92,12 +92,17 @@ private:
   [[nodiscard]] auto GetXYSpeedCoefficients(float sqDistFromZero,
                                             const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetBaseSpeedCoefficients() const -> V2dFlt;
-  [[nodiscard]] auto GetAmuletSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
-  [[nodiscard]] auto GetCrystalBallSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
-  [[nodiscard]] auto GetScrunchSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  [[nodiscard]] auto GetAmuletSpeedCoefficients(float sqDistFromZero,
+                                                const NormalizedCoords& coords) const -> V2dFlt;
+  [[nodiscard]] auto GetCrystalBallSpeedCoefficients(float sqDistFromZero,
+                                                     const NormalizedCoords& coords) const
+      -> V2dFlt;
+  [[nodiscard]] auto GetScrunchSpeedCoefficients(float sqDistFromZero,
+                                                 const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetSpeedwaySpeedCoefficients(float sqDistFromZero,
                                                   const NormalizedCoords& coords) const -> V2dFlt;
-  [[nodiscard]] auto GetWaveSpeedCoefficients(float sqDistFromZero) const -> V2dFlt;
+  [[nodiscard]] auto GetWaveSpeedCoefficients(float sqDistFromZero,
+                                              const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetYOnlySpeedCoefficients(float sqDistFromZero,
                                                const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;

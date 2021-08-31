@@ -2,6 +2,7 @@
 #define VISUALIZATION_GOOM_FILTER_SPEEDWAY_H
 
 #include "filter_normalized_coords.h"
+#include "filter_speed_coefficients_effect.h"
 #include "v2d.h"
 
 #if __cplusplus <= 201402L
@@ -14,7 +15,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Speedway
+class Speedway : public SpeedCoefficientEffects
 {
 public:
   Speedway() noexcept;

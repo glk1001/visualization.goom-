@@ -1,6 +1,8 @@
 #ifndef VISUALIZATION_GOOM_FILTER_AMULET_H
 #define VISUALIZATION_GOOM_FILTER_AMULET_H
 
+#include "filter_normalized_coords.h"
+#include "filter_speed_coefficients_effect.h"
 #include "v2d.h"
 
 #if __cplusplus <= 201402L
@@ -13,12 +15,13 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Amulet
+class Amulet : public SpeedCoefficientEffects
 {
 public:
   Amulet() noexcept;
-  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs, float sqDistFromZero) const
-      -> V2dFlt;
+  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+                                          float sqDistFromZero,
+                                          const NormalizedCoords& coords) const -> V2dFlt override;
 
   void SetRandomParams();
 
@@ -37,7 +40,9 @@ private:
 };
 
 inline auto Amulet::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
-                                         const float sqDistFromZero) const -> V2dFlt
+                                         const float sqDistFromZero,
+                                         [[maybe_unused]] const NormalizedCoords& coords) const
+    -> V2dFlt
 {
   return {baseSpeedCoeffs.x + (m_params.xAmplitude * sqDistFromZero),
           baseSpeedCoeffs.y + (m_params.yAmplitude * sqDistFromZero)};

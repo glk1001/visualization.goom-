@@ -164,21 +164,21 @@ auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero,
   switch (m_filterSettings->mode)
   {
     case ZoomFilterMode::AMULET_MODE:
-      return GetAmuletSpeedCoefficients(sqDistFromZero);
+      return GetAmuletSpeedCoefficients(sqDistFromZero, coords);
 
     case ZoomFilterMode::CRYSTAL_BALL_MODE0:
     case ZoomFilterMode::CRYSTAL_BALL_MODE1:
-      return GetCrystalBallSpeedCoefficients(sqDistFromZero);
+      return GetCrystalBallSpeedCoefficients(sqDistFromZero, coords);
 
     case ZoomFilterMode::SCRUNCH_MODE:
-      return GetScrunchSpeedCoefficients(sqDistFromZero);
+      return GetScrunchSpeedCoefficients(sqDistFromZero, coords);
 
     case ZoomFilterMode::SPEEDWAY_MODE:
       return GetSpeedwaySpeedCoefficients(sqDistFromZero, coords);
 
     case ZoomFilterMode::WAVE_MODE0:
     case ZoomFilterMode::WAVE_MODE1:
-      return GetWaveSpeedCoefficients(sqDistFromZero);
+      return GetWaveSpeedCoefficients(sqDistFromZero, coords);
 
     case ZoomFilterMode::Y_ONLY_MODE:
       return GetYOnlySpeedCoefficients(sqDistFromZero, coords);
@@ -224,22 +224,25 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) cons
   return speedCoeff;
 }
 
-inline auto ZoomVectorEffects::GetAmuletSpeedCoefficients(const float sqDistFromZero) const
+inline auto ZoomVectorEffects::GetAmuletSpeedCoefficients(const float sqDistFromZero,
+                                                          const NormalizedCoords& coords) const
     -> V2dFlt
 {
-  return m_amulet->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero);
+  return m_amulet->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero, coords);
 }
 
-inline auto ZoomVectorEffects::GetCrystalBallSpeedCoefficients(const float sqDistFromZero) const
+inline auto ZoomVectorEffects::GetCrystalBallSpeedCoefficients(const float sqDistFromZero,
+                                                               const NormalizedCoords& coords) const
     -> V2dFlt
 {
-  return m_crystalBall->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero);
+  return m_crystalBall->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero, coords);
 }
 
-inline auto ZoomVectorEffects::GetScrunchSpeedCoefficients(const float sqDistFromZero) const
+inline auto ZoomVectorEffects::GetScrunchSpeedCoefficients(const float sqDistFromZero,
+                                                           const NormalizedCoords& coords) const
     -> V2dFlt
 {
-  return m_scrunch->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero);
+  return m_scrunch->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero, coords);
 }
 
 inline auto ZoomVectorEffects::GetSpeedwaySpeedCoefficients(const float sqDistFromZero,
@@ -249,9 +252,11 @@ inline auto ZoomVectorEffects::GetSpeedwaySpeedCoefficients(const float sqDistFr
   return m_speedway->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero, coords);
 }
 
-inline auto ZoomVectorEffects::GetWaveSpeedCoefficients(const float sqDistFromZero) const -> V2dFlt
+inline auto ZoomVectorEffects::GetWaveSpeedCoefficients(const float sqDistFromZero,
+                                                        const NormalizedCoords& coords) const
+    -> V2dFlt
 {
-  return m_wave->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero);
+  return m_wave->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero, coords);
 }
 
 inline auto ZoomVectorEffects::GetYOnlySpeedCoefficients(const float sqDistFromZero,

@@ -1,6 +1,8 @@
 #ifndef VISUALIZATION_GOOM_FILTER_CRYSTAL_BALL_H
 #define VISUALIZATION_GOOM_FILTER_CRYSTAL_BALL_H
 
+#include "filter_normalized_coords.h"
+#include "filter_speed_coefficients_effect.h"
 #include "goomutils/goomrand.h"
 #include "v2d.h"
 
@@ -14,12 +16,13 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class CrystalBall
+class CrystalBall : public SpeedCoefficientEffects
 {
 public:
   CrystalBall() noexcept;
-  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs, float sqDistFromZero) const
-      -> V2dFlt;
+  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+                                          float sqDistFromZero,
+                                          const NormalizedCoords& coords) const -> V2dFlt override;
 
   void SetMode0RandomParams();
   void SetMode1RandomParams();
@@ -54,7 +57,9 @@ private:
 };
 
 inline auto CrystalBall::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
-                                              const float sqDistFromZero) const -> V2dFlt
+                                              const float sqDistFromZero,
+                                              [[maybe_unused]] const NormalizedCoords& coords) const
+    -> V2dFlt
 {
   return {GetSpeedCoefficient(baseSpeedCoeffs.x, sqDistFromZero, m_params.xAmplitude,
                               m_params.xSqDistMult, m_params.xSqDistOffset),
