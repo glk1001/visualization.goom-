@@ -98,9 +98,6 @@ public:
                             std::shared_ptr<const PluginInfo> goomInfo,
                             const SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
-
   void Init();
 
   void ApplyNoDraw();
@@ -126,7 +123,6 @@ private:
   const std::shared_ptr<const PluginInfo> m_goomInfo;
 
   Colorizer m_colorizer{};
-  std::string m_resourcesDirectory{};
 
   std::unique_ptr<Fractal> m_fractal{};
 
@@ -168,16 +164,6 @@ IfsDancersFx::IfsDancersFx(const IGoomDraw& draw,
 void IfsDancersFx::Init()
 {
   m_fxImpl->Init();
-}
-
-auto IfsDancersFx::GetResourcesDirectory() const -> const std::string&
-{
-  return m_fxImpl->GetResourcesDirectory();
-}
-
-void IfsDancersFx::SetResourcesDirectory(const std::string& dirName)
-{
-  m_fxImpl->SetResourcesDirectory(dirName);
 }
 
 void IfsDancersFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
@@ -265,16 +251,6 @@ void IfsDancersFx::IfsDancersFxImpl::Init()
 {
   m_fractal->Init();
   UpdateLowDensityThreshold();
-}
-
-inline auto IfsDancersFx::IfsDancersFxImpl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_resourcesDirectory;
-}
-
-inline void IfsDancersFx::IfsDancersFxImpl::SetResourcesDirectory(const std::string& dirName)
-{
-  m_resourcesDirectory = dirName;
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::GetColorMode() const -> IfsDancersFx::ColorMode

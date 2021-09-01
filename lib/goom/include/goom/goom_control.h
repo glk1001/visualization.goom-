@@ -25,9 +25,6 @@ public:
   GoomControl() noexcept = delete;
   GoomControl(uint32_t width, uint32_t height, const std::string& resourcesDirectory);
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
-
   void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
   void Start();
 

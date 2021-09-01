@@ -18,9 +18,6 @@ public:
 
   [[nodiscard]] virtual auto GetFxName() const -> std::string = 0;
 
-  [[nodiscard]] virtual auto GetResourcesDirectory() const -> const std::string& = 0;
-  virtual void SetResourcesDirectory(const std::string& dirName) = 0;
-
   virtual void Start() = 0;
 
   virtual void Resume(){};

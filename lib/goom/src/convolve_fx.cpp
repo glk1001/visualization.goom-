@@ -26,8 +26,6 @@ public:
   auto operator=(const ConvolveImpl&) -> ConvolveImpl& = delete;
   auto operator=(ConvolveImpl&&) -> ConvolveImpl& = delete;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
   void SetBuffSettings(const FXBuffSettings& settings);
   void SetAllowOverexposed(bool val);
 
@@ -41,7 +39,6 @@ private:
   float m_flashIntensity = 30;
   float m_factor = 0.5;
   FXBuffSettings m_buffSettings{FXBuffSettings::INITIAL_BUFF_INTENSITY, false};
-  std::string m_resourcesDirectory{};
 
   void CreateOutputWithBrightness(const PixelBuffer& srceBuff,
                                   PixelBuffer& destBuff,
@@ -54,16 +51,6 @@ ConvolveFx::ConvolveFx(Parallel& p, const std::shared_ptr<const PluginInfo>& inf
 }
 
 ConvolveFx::~ConvolveFx() noexcept = default;
-
-auto ConvolveFx::GetResourcesDirectory() const -> const std::string&
-{
-  return m_fxImpl->GetResourcesDirectory();
-}
-
-void ConvolveFx::SetResourcesDirectory(const std::string& dirName)
-{
-  m_fxImpl->SetResourcesDirectory(dirName);
-}
 
 void ConvolveFx::SetBuffSettings(const FXBuffSettings& settings)
 {
@@ -102,16 +89,6 @@ void ConvolveFx::Convolve(const PixelBuffer& currentBuff, PixelBuffer& outputBuf
 ConvolveFx::ConvolveImpl::ConvolveImpl(Parallel& p, std::shared_ptr<const PluginInfo> info) noexcept
   : m_parallel{&p}, m_goomInfo{std::move(info)}
 {
-}
-
-inline auto ConvolveFx::ConvolveImpl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_resourcesDirectory;
-}
-
-inline void ConvolveFx::ConvolveImpl::SetResourcesDirectory(const std::string& dirName)
-{
-  m_resourcesDirectory = dirName;
 }
 
 inline void ConvolveFx::ConvolveImpl::SetBuffSettings(const FXBuffSettings& settings)

@@ -47,7 +47,6 @@
 #include "goomutils/strutils.h"
 #include "goomutils/timer.h"
 #include "ifs_dancers_fx.h"
-#include "image_fx.h"
 #include "lines_fx.h"
 #include "tentacles_fx.h"
 #include "tube_fx.h"
@@ -139,7 +138,6 @@ struct GoomVisualFx
   std::shared_ptr<GoomDotsFx> goomDots_fx;
   std::shared_ptr<IfsDancersFx> ifs_fx;
   std::shared_ptr<TentaclesFx> tentacles_fx;
-  std::shared_ptr<ImageFx> image_fx;
   std::shared_ptr<TubeFx> tube_fx;
 
   std::vector<std::shared_ptr<IVisualFx>> list;
@@ -157,7 +155,6 @@ GoomVisualFx::GoomVisualFx(Parallel& p,
     goomDots_fx{std::make_shared<GoomDotsFx>(draw, goomInfo, smallBitmaps)},
     ifs_fx{std::make_shared<IfsDancersFx>(draw, goomInfo, smallBitmaps)},
     tentacles_fx{std::make_shared<TentaclesFx>(draw, goomInfo)},
-    image_fx{std::make_shared<ImageFx>(&draw, goomInfo)},
     tube_fx{std::make_shared<TubeFx>(draw, goomInfo, smallBitmaps)},
     // clang-format off
     list{
@@ -167,7 +164,6 @@ GoomVisualFx::GoomVisualFx(Parallel& p,
       ifs_fx,
       goomDots_fx,
       tentacles_fx,
-      image_fx,
       tube_fx,
     },
     map{
@@ -175,7 +171,6 @@ GoomVisualFx::GoomVisualFx(Parallel& p,
       {GoomDrawable::IFS, ifs_fx},
       {GoomDrawable::DOTS, goomDots_fx},
       {GoomDrawable::TENTACLES, tentacles_fx},
-      {GoomDrawable::IMAGE, image_fx},
       {GoomDrawable::TUBE, tube_fx},
     }
 // clang-format on
@@ -208,9 +203,6 @@ public:
 
   void Swap(GoomControl::GoomControlImpl& other) noexcept = delete;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
-
   void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
 
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
@@ -229,11 +221,10 @@ private:
   GoomDrawToBuffer m_multiBufferDraw;
   const std::shared_ptr<WritablePluginInfo> m_goomInfo;
   GoomImageBuffers m_imageBuffers;
-  std::string m_resourcesDirectory{};
-  const SmallImageBitmaps m_smallBitmaps;
-  FilterZoomVector m_zoomVector;
-  ZoomFilterBuffersService m_filterBuffersService;
+  const std::string m_resourcesDirectory;
   FilterControl m_filterControl;
+  const SmallImageBitmaps m_smallBitmaps;
+  ZoomFilterBuffersService m_filterBuffersService;
   GoomVisualFx m_visualFx;
   GoomStates m_states{};
   GoomEvents m_goomEvent{};
@@ -383,16 +374,6 @@ GoomControl::GoomControl(const uint32_t width,
 {
 }
 
-auto GoomControl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_controller->GetResourcesDirectory();
-}
-
-void GoomControl::SetResourcesDirectory(const std::string& dirName)
-{
-  m_controller->SetResourcesDirectory(dirName);
-}
-
 void GoomControl::SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer)
 {
   m_controller->SetScreenBuffer(buffer);
@@ -427,10 +408,9 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_goomInfo{std::make_shared<WritablePluginInfo>(screenWidth, screenHeight)},
     m_imageBuffers{screenWidth, screenHeight},
     m_resourcesDirectory{std::move(resourcesDirectory)},
+    m_filterControl{m_goomInfo, m_resourcesDirectory},
     m_smallBitmaps{m_resourcesDirectory},
-    m_zoomVector{m_resourcesDirectory},
-    m_filterBuffersService{m_parallel, m_goomInfo, m_zoomVector},
-    m_filterControl{m_goomInfo},
+    m_filterBuffersService{m_parallel, m_goomInfo, m_filterControl.GetZoomVectorObject()},
     m_visualFx{m_parallel, m_multiBufferDraw,
                std::const_pointer_cast<const PluginInfo>(
                    std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
@@ -460,23 +440,6 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
   LogDebug("Initialize goom: screenWidth = {}, screenHeight = {}.", screenWidth, screenHeight);
 
   RotateDrawBuffers();
-}
-
-auto GoomControl::GoomControlImpl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_resourcesDirectory;
-}
-
-void GoomControl::GoomControlImpl::SetResourcesDirectory(const std::string& dirName)
-{
-#if __cplusplus > 201402L
-  if (!std::filesystem::exists(dirName))
-  {
-    throw std::runtime_error(std20::format("Could not find directory \"{}\".", dirName));
-  }
-#endif
-
-  m_resourcesDirectory = dirName;
 }
 
 inline auto GoomControl::GoomControlImpl::GetFontDirectory() const
@@ -528,7 +491,6 @@ void GoomControl::GoomControlImpl::Start()
   m_goomLine2.SetResourcesDirectory(m_resourcesDirectory);
   m_goomLine2.Start();
 
-  m_filterControl.SetResourcesDirectory(m_resourcesDirectory);
   m_filterControl.Start();
 
   m_visualFx.convolve_fx->SetAllowOverexposed(true);
@@ -539,7 +501,6 @@ void GoomControl::GoomControlImpl::Start()
 
   for (auto& v : m_visualFx.list)
   {
-    v->SetResourcesDirectory(m_resourcesDirectory);
     v->Start();
   }
 
@@ -1099,11 +1060,12 @@ void GoomControl::GoomControlImpl::MegaLentUpdate()
   m_goomData.switchMult = 1.0F;
 }
 
+// TODO Put this in FilterControl
 void GoomControl::GoomControlImpl::ChangeMilieu()
 {
   m_filterControl.SetMiddlePoints();
-  m_zoomVector.SetRandomPlaneEffects(m_filterControl.GetFilterSettings().zoomMidPoint,
-                                     m_goomInfo->GetScreenInfo().width);
+  m_filterControl.GetZoomVectorObject().SetRandomPlaneEffects(
+      m_filterControl.GetFilterSettings().zoomMidPoint, m_goomInfo->GetScreenInfo().width);
 }
 
 void GoomControl::GoomControlImpl::ChangeVitesse()
@@ -1496,7 +1458,6 @@ void GoomControl::GoomControlImpl::ApplyImageIfRequired()
   }
 
   ResetDrawBuffSettings(m_states.GetCurrentBuffSettings(GoomDrawable::IMAGE));
-  m_visualFx.image_fx->ApplyMultiple();
 }
 
 void GoomControl::GoomControlImpl::StopLinesIfRequested()

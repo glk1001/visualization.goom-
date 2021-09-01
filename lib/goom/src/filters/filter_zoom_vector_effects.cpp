@@ -1,17 +1,9 @@
 #include "filter_zoom_vector_effects.h"
 
-#include "filter_amulet.h"
-#include "filter_crystal_ball.h"
 #include "filter_data.h"
 #include "filter_hypercos.h"
-#include "filter_image_displacements.h"
 #include "filter_normalized_coords.h"
 #include "filter_planes.h"
-#include "filter_scrunch.h"
-#include "filter_simple_speed_coefficients_effect.h"
-#include "filter_speedway.h"
-#include "filter_wave.h"
-#include "filter_y_only.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"
 #include "v2d.h"
@@ -43,40 +35,11 @@ ZoomVectorEffects::ZoomVectorEffects(const std::string& resourcesDirectory) noex
 
 ZoomVectorEffects::~ZoomVectorEffects() noexcept = default;
 
-auto ZoomVectorEffects::MakeSpeedCoefficientsEffect(const ZoomFilterMode mode,
-                                                    const std::string& resourcesDirectory)
-    -> std::unique_ptr<SpeedCoefficientsEffect>
+// TODO This may change filter buffers stripe when it shouldn't
+void ZoomVectorEffects::SetSpeedCoefficientsEffect(
+    const std::shared_ptr<const SpeedCoefficientsEffect> val)
 {
-  switch (mode)
-  {
-    case ZoomFilterMode::AMULET_MODE:
-      return std::make_unique<Amulet>();
-    case ZoomFilterMode::CRYSTAL_BALL_MODE0:
-      return std::make_unique<CrystalBall>(CrystalBall::Modes::MODE0);
-    case ZoomFilterMode::CRYSTAL_BALL_MODE1:
-      return std::make_unique<CrystalBall>(CrystalBall::Modes::MODE1);
-    case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
-      return std::make_unique<ImageDisplacements>(resourcesDirectory);
-    case ZoomFilterMode::SCRUNCH_MODE:
-      return std::make_unique<Scrunch>();
-    case ZoomFilterMode::SPEEDWAY_MODE:
-      return std::make_unique<Speedway>();
-    case ZoomFilterMode::WAVE_MODE0:
-      return std::make_unique<Wave>(Wave::Modes::MODE0);
-    case ZoomFilterMode::WAVE_MODE1:
-      return std::make_unique<Wave>(Wave::Modes::MODE1);
-    case ZoomFilterMode::Y_ONLY_MODE:
-      return std::make_unique<YOnly>();
-    case ZoomFilterMode::HYPERCOS_MODE0:
-    case ZoomFilterMode::HYPERCOS_MODE1:
-    case ZoomFilterMode::HYPERCOS_MODE2:
-    case ZoomFilterMode::HYPERCOS_MODE3:
-    case ZoomFilterMode::NORMAL_MODE:
-    case ZoomFilterMode::WATER_MODE:
-      return std::make_unique<SimpleSpeedCoefficientsEffect>();
-    default:
-      throw std::logic_error("ZoomVectorEffects::SetFilterSettings: Unknown ZoomFilterMode.");
-  }
+  m_speedCoefficientsEffect = val;
 }
 
 void ZoomVectorEffects::SetFilterSettings(const ZoomFilterData& filterSettings)
@@ -84,11 +47,6 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterData& filterSettings)
   m_filterSettings = &filterSettings;
 
   SetHypercosOverlaySettings();
-
-  m_speedCoefficientsEffect =
-      MakeSpeedCoefficientsEffect(filterSettings.mode, m_resourcesDirectory);
-
-  m_speedCoefficientsEffect->SetRandomParams();
 }
 
 void ZoomVectorEffects::SetRandomPlaneEffects(const V2dInt& zoomMidPoint,

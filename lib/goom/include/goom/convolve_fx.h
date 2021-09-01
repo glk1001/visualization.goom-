@@ -31,9 +31,6 @@ public:
 
   void Convolve(const PixelBuffer& currentBuff, PixelBuffer& outputBuff);
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
-  void SetResourcesDirectory(const std::string& dirName) override;
-
   [[nodiscard]] auto GetFxName() const -> std::string override;
   void SetBuffSettings(const FXBuffSettings& settings);
   void SetAllowOverexposed(bool val);

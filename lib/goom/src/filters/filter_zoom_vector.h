@@ -27,11 +27,12 @@ public:
 
   void SetFilterSettings(const ZoomFilterData& filterSettings) override;
   void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth) override;
+  void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val) override;
 
   auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords override;
 
 private:
-  std::unique_ptr<ZoomVectorEffects> m_zoomVectorEffects;
+  ZoomVectorEffects m_zoomVectorEffects;
 
   void GetZoomEffectsAdjustedVelocity(float sqDistFromZero,
                                       const NormalizedCoords& coords,

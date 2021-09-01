@@ -38,9 +38,6 @@ public:
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
-  void SetResourcesDirectory(const std::string& dirName) override;
-
   void Start() override;
 
   void Resume() override;

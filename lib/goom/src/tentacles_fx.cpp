@@ -67,9 +67,6 @@ public:
   auto operator=(const TentaclesImpl&) -> TentaclesImpl& = delete;
   auto operator=(TentaclesImpl&&) -> TentaclesImpl& = delete;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
-
   void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
 
   void Start();
@@ -86,7 +83,6 @@ private:
   Pixel m_dominantColor{};
   void ChangeDominantColor();
 
-  std::string m_resourcesDirectory{};
   bool m_updatingWithDraw = false;
   float m_cycle = 0.0F;
   static constexpr float CYCLE_INC_MIN = 0.01F;
@@ -163,16 +159,6 @@ TentaclesFx::TentaclesFx(const IGoomDraw& draw,
 {
 }
 
-auto TentaclesFx::GetResourcesDirectory() const -> const std::string&
-{
-  return m_fxImpl->GetResourcesDirectory();
-}
-
-void TentaclesFx::SetResourcesDirectory(const std::string& dirName)
-{
-  m_fxImpl->SetResourcesDirectory(dirName);
-}
-
 void TentaclesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
@@ -229,16 +215,6 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const IGoomDraw& draw,
                                           const std::shared_ptr<const PluginInfo>& goomInfo)
   : m_draw{draw}, m_goomInfo{goomInfo}, m_rot{GetStableRotationOffset(0)}
 {
-}
-
-inline auto TentaclesFx::TentaclesImpl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_resourcesDirectory;
-}
-
-inline void TentaclesFx::TentaclesImpl::SetResourcesDirectory(const std::string& dirName)
-{
-  m_resourcesDirectory = dirName;
 }
 
 inline void TentaclesFx::TentaclesImpl::IncCounters()

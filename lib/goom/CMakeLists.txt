@@ -59,7 +59,6 @@ add_library(goom
         src/ifs/fractal.cpp
         src/ifs/low_density_blurrer.cpp
         src/ifs_dancers_fx.cpp
-        src/image_fx.cpp
         src/lines_fx.cpp
         src/sound_info.cpp
         src/tentacles/tentacle_driver.cpp

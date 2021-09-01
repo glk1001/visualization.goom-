@@ -60,9 +60,6 @@ public:
                  const std::shared_ptr<const PluginInfo>& goomInfo,
                  ZoomFilterBuffersService& filterBuffersService) noexcept;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
-
   void SetBuffSettings(const FXBuffSettings& settings);
 
   void Start();
@@ -87,7 +84,6 @@ private:
   ZoomFilterColors m_filterColors{};
 
   ZoomFilterData m_currentFilterSettings{};
-  std::string m_resourcesDirectory{};
 
   Parallel& m_parallel;
   void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const;
@@ -98,16 +94,6 @@ ZoomFilterFx::ZoomFilterFx(Parallel& p,
                            FILTERS::ZoomFilterBuffersService& filterBuffersService) noexcept
   : m_fxImpl{spimpl::make_unique_impl<ZoomFilterImpl>(p, goomInfo, filterBuffersService)}
 {
-}
-
-auto ZoomFilterFx::GetResourcesDirectory() const -> const std::string&
-{
-  return m_fxImpl->GetResourcesDirectory();
-}
-
-void ZoomFilterFx::SetResourcesDirectory(const std::string& dirName)
-{
-  m_fxImpl->SetResourcesDirectory(dirName);
 }
 
 void ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings)
@@ -161,16 +147,6 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     m_filterBuffersService{filterBuffersService},
     m_parallel{p}
 {
-}
-
-inline auto ZoomFilterFx::ZoomFilterImpl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_resourcesDirectory;
-}
-
-inline void ZoomFilterFx::ZoomFilterImpl::SetResourcesDirectory(const std::string& dirName)
-{
-  m_resourcesDirectory = dirName;
 }
 
 inline void ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& settings)

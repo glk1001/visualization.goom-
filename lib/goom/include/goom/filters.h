@@ -34,9 +34,6 @@ public:
                const std::shared_ptr<const PluginInfo>& goomInfo,
                FILTERS::ZoomFilterBuffersService& filterBuffersService) noexcept;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
-  void SetResourcesDirectory(const std::string& dirName) override;
-
   [[nodiscard]] auto GetFxName() const -> std::string override;
   void SetBuffSettings(const FXBuffSettings& settings);
 

@@ -10,6 +10,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <vector>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -32,12 +33,12 @@ public:
   ZoomVectorEffects(const ZoomVectorEffects&) noexcept = delete;
   ZoomVectorEffects(ZoomVectorEffects&&) noexcept = delete;
   ~ZoomVectorEffects() noexcept;
-
   auto operator=(const ZoomVectorEffects&) -> ZoomVectorEffects& = delete;
   auto operator=(ZoomVectorEffects&&) -> ZoomVectorEffects& = delete;
 
   void SetFilterSettings(const ZoomFilterData& filterSettings);
   void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth);
+  void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val);
 
   void SetMaxSpeedCoeff(float val);
 
@@ -77,10 +78,7 @@ private:
   static constexpr float DEFAULT_MAX_SPEED_COEFF = +2.01F;
   float m_maxSpeedCoeff = DEFAULT_MAX_SPEED_COEFF;
 
-  std::unique_ptr<SpeedCoefficientsEffect> m_speedCoefficientsEffect{};
-  static auto MakeSpeedCoefficientsEffect(ZoomFilterMode mode,
-                                          const std::string& resourcesDirectory)
-      -> std::unique_ptr<SpeedCoefficientsEffect>;
+  std::shared_ptr<const SpeedCoefficientsEffect> m_speedCoefficientsEffect{};
   const std::unique_ptr<Hypercos> m_hypercos;
   const std::unique_ptr<Planes> m_planes;
 

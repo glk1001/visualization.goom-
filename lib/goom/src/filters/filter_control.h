@@ -2,6 +2,8 @@
 #define VISUALIZATION_GOOM_FILTER_CONTROL_H
 
 #include "filter_data.h"
+#include "filter_speed_coefficients_effect.h"
+#include "filter_zoom_vector.h"
 #include "goomutils/spimpl.h"
 
 #include <memory>
@@ -16,15 +18,16 @@ class PluginInfo;
 namespace FILTERS
 {
 
-class ImageDisplacement;
-
 class FilterControl
 {
 public:
-  explicit FilterControl(const std::shared_ptr<const GOOM::PluginInfo>& goomInfo) noexcept;
+  class FilterEvents;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
+  explicit FilterControl(const std::shared_ptr<const GOOM::PluginInfo>& goomInfo,
+                         const std::string& resourcesDirectory) noexcept;
+
+  auto GetZoomVectorObject() const -> const FilterZoomVector&;
+  auto GetZoomVectorObject() -> FilterZoomVector&;
 
   void Start();
 
@@ -51,14 +54,22 @@ private:
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const V2dInt m_midScreenPoint;
-  std::string m_resourcesDirectory{};
+  FilterZoomVector m_zoomVector;
   ZoomFilterData m_filterData{};
-  class FilterEvents;
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
 
   bool m_settingsHaveChanged = false;
+
+  std::vector<std::shared_ptr<SpeedCoefficientsEffect>> m_speedCoefficientsEffect;
+  [[nodiscard]] auto GetSpeedCoefficientsEffect(ZoomFilterMode mode)
+      -> std::shared_ptr<SpeedCoefficientsEffect>&;
+  [[nodiscard]] static auto MakeSpeedCoefficientsEffects(const std::string& resourcesDirectory)
+      -> std::vector<std::shared_ptr<SpeedCoefficientsEffect>>;
+  [[nodiscard]] static auto MakeSpeedCoefficientsEffect(ZoomFilterMode mode,
+                                                        const std::string& resourcesDirectory)
+      -> std::shared_ptr<SpeedCoefficientsEffect>;
 
   void SetDefaultSettings();
   void SetAmuletModeSettings();
@@ -73,22 +84,14 @@ private:
   void SetScrunchModeSettings();
   void SetSpeedwayModeSettings();
   void SetWaterModeSettings();
+  void SetWaveMode0Settings();
+  void SetWaveMode1Settings();
   void SetWaveModeSettings();
   void SetYOnlyModeSettings();
 
   void SetRandomMiddlePoints();
-  void SetRotate(float probability);
+  void SetRotate(float rotateProbability);
 };
-
-inline auto FilterControl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_resourcesDirectory;
-}
-
-inline void FilterControl::SetResourcesDirectory(const std::string& dirName)
-{
-  m_resourcesDirectory = dirName;
-}
 
 inline auto FilterControl::GetFilterSettings() const -> const ZoomFilterData&
 {

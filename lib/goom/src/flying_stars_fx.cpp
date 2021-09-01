@@ -68,9 +68,6 @@ public:
                            std::shared_ptr<const PluginInfo> goomInfo,
                            const SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
-
   void Start();
 
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
@@ -112,8 +109,6 @@ private:
   void ChangeColorMode();
   [[nodiscard]] auto GetMixedColors(const Star& s, float t, float brightness)
       -> std::tuple<Pixel, Pixel>;
-
-  std::string m_resourcesDirectory{};
 
   uint32_t m_counter = 0;
   static constexpr uint32_t MAX_COUNT = 100;
@@ -234,16 +229,6 @@ FlyingStarsFx::FlyingStarsFx(const IGoomDraw& draw,
 {
 }
 
-auto FlyingStarsFx::GetResourcesDirectory() const -> const std::string&
-{
-  return m_fxImpl->GetResourcesDirectory();
-}
-
-void FlyingStarsFx::SetResourcesDirectory(const std::string& dirName)
-{
-  m_fxImpl->SetResourcesDirectory(dirName);
-}
-
 void FlyingStarsFx::SetWeightedColorMaps(const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
@@ -326,16 +311,6 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const IGoomDraw& draw,
         }}
 {
   m_stars.reserve(MAX_NUM_STARS);
-}
-
-inline auto FlyingStarsFx::FlyingStarsImpl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_resourcesDirectory;
-}
-
-inline void FlyingStarsFx::FlyingStarsImpl::SetResourcesDirectory(const std::string& dirName)
-{
-  m_resourcesDirectory = dirName;
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetImageBitmap(const size_t size) const

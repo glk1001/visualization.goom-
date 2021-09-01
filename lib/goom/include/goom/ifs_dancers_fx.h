@@ -43,9 +43,6 @@ public:
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string& override;
-  void SetResourcesDirectory(const std::string& dirName) override;
-
   void Init();
 
   // If colorMode is not set or set to '_null', then returns

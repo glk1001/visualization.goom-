@@ -39,9 +39,6 @@ public:
                           const std::shared_ptr<const PluginInfo>& goomInfo,
                           const SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
-
   void Start();
 
   void SetWeightedColorMaps(uint32_t dotNum, std::shared_ptr<RandomColorMaps> weightedMaps);
@@ -61,7 +58,6 @@ private:
   const float m_pointWidthDiv3;
   const float m_pointHeightDiv3;
 
-  std::string m_resourcesDirectory{};
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
   uint32_t m_numFlowersInRow = 0;
@@ -101,16 +97,6 @@ GoomDotsFx::GoomDotsFx(const IGoomDraw& draw,
                        const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<GoomDotsFxImpl>(draw, goomInfo, smallBitmaps)}
 {
-}
-
-auto GoomDotsFx::GetResourcesDirectory() const -> const std::string&
-{
-  return m_fxImpl->GetResourcesDirectory();
-}
-
-void GoomDotsFx::SetResourcesDirectory(const std::string& dirName)
-{
-  m_fxImpl->SetResourcesDirectory(dirName);
 }
 
 void GoomDotsFx::SetWeightedColorMaps(const uint32_t dotNum,
@@ -178,16 +164,6 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const IGoomDraw& draw,
 void GoomDotsFx::GoomDotsFxImpl::Start()
 {
   ChangeColors();
-}
-
-auto GoomDotsFx::GoomDotsFxImpl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_resourcesDirectory;
-}
-
-void GoomDotsFx::GoomDotsFxImpl::SetResourcesDirectory(const std::string& dirName)
-{
-  m_resourcesDirectory = dirName;
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetImageBitmap(const size_t size) const
