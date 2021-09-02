@@ -132,7 +132,7 @@ auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
     -> NormalizedCoords
 {
   const float tanArg =
-      stdnew::clamp(std::fmod(sqDistFromZero, m_half_pi), -0.85F * m_half_pi, 0.85F * m_half_pi);
+      stdnew::clamp(std::fmod(sqDistFromZero, m_half_pi), -0.75F * m_half_pi, 0.75F * m_half_pi);
   const float tanSqDist = std::tan(tanArg);
   return {tanSqDist * velocity.GetX(), tanSqDist * velocity.GetY()};
 }

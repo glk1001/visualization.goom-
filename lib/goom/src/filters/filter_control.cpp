@@ -49,7 +49,7 @@ const Weights<ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
     { ZoomFilterMode::HYPERCOS_MODE2,          3 },
     { ZoomFilterMode::HYPERCOS_MODE3,          3 },
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 5 },
-    { ZoomFilterMode::NORMAL_MODE,             60000000 },
+    { ZoomFilterMode::NORMAL_MODE,             6 },
     { ZoomFilterMode::SCRUNCH_MODE,            6 },
     { ZoomFilterMode::SPEEDWAY_MODE,           6 },
     { ZoomFilterMode::WAVE_MODE0,              5 },
@@ -324,7 +324,7 @@ void FilterControl::SetDefaultSettings()
 
   m_filterData.vitesse.SetDefault();
 
-  m_filterData.tanEffect = ProbabilityOfMInN(10, 10);
+  m_filterData.tanEffect = ProbabilityOfMInN(1, 10);
   m_filterData.rotateSpeed = 0.0;
   m_filterData.noisify = false;
   m_filterData.noiseFactor = 1.0;
