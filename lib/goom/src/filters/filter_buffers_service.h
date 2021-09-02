@@ -34,7 +34,7 @@ public:
   void Start();
 
   void SetFilterSettings(const ZoomFilterData& filterSettings);
-  void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val);
+  void SetSpeedCoefficientsEffect(std::shared_ptr<SpeedCoefficientsEffect> val);
   void UpdatePlaneEffects();
 
   void UpdateTranBuffers();
@@ -50,7 +50,7 @@ private:
 
   ZoomFilterData m_currentFilterSettings{};
   ZoomFilterData m_nextFilterSettings{};
-  std::shared_ptr<const SpeedCoefficientsEffect> m_nextSpeedCoefficientsEffect{};
+  std::shared_ptr<SpeedCoefficientsEffect> m_nextSpeedCoefficientsEffect{};
   bool m_pendingPlaneEffects = false;
   bool m_pendingFilterSettings = false;
 

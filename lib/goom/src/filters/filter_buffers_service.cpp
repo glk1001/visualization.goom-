@@ -3,6 +3,7 @@
 #include "filter_buffers.h"
 #include "filter_data.h"
 #include "filter_normalized_coords.h"
+#include "filter_speed_coefficients_effect.h"
 #include "goom_plugin_info.h"
 #include "goom_zoom_vector.h"
 #include "goomutils/goomrand.h"
@@ -65,7 +66,7 @@ void ZoomFilterBuffersService::SetFilterSettings(const ZoomFilterData& filterSet
 }
 
 void ZoomFilterBuffersService::SetSpeedCoefficientsEffect(
-    const std::shared_ptr<const SpeedCoefficientsEffect> val)
+    const std::shared_ptr<SpeedCoefficientsEffect> val)
 {
   m_nextSpeedCoefficientsEffect = val;
   m_pendingFilterSettings = true;
@@ -80,6 +81,7 @@ void ZoomFilterBuffersService::UpdatePlaneEffects()
 inline void ZoomFilterBuffersService::UpdateFilterSettings()
 {
   m_zoomVector->SetFilterSettings(m_currentFilterSettings);
+  m_nextSpeedCoefficientsEffect->SetRandomParams();
   m_zoomVector->SetSpeedCoefficientsEffect(m_nextSpeedCoefficientsEffect);
   if (m_pendingPlaneEffects)
   {
