@@ -224,7 +224,7 @@ private:
   const std::string m_resourcesDirectory;
   FilterControl m_filterControl;
   const SmallImageBitmaps m_smallBitmaps;
-  ZoomFilterBuffersService m_filterBuffersService;
+  ZoomFilterBuffersService& m_filterBuffersService;
   GoomVisualFx m_visualFx;
   GoomStates m_states{};
   GoomEvents m_goomEvent{};
@@ -408,9 +408,9 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_goomInfo{std::make_shared<WritablePluginInfo>(screenWidth, screenHeight)},
     m_imageBuffers{screenWidth, screenHeight},
     m_resourcesDirectory{std::move(resourcesDirectory)},
-    m_filterControl{m_goomInfo, m_resourcesDirectory},
+    m_filterControl{m_parallel, m_goomInfo, m_resourcesDirectory},
     m_smallBitmaps{m_resourcesDirectory},
-    m_filterBuffersService{m_parallel, m_goomInfo, m_filterControl.GetZoomVectorObject()},
+    m_filterBuffersService{m_filterControl.GetZoomFilterBuffersService()},
     m_visualFx{m_parallel, m_multiBufferDraw,
                std::const_pointer_cast<const PluginInfo>(
                    std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
@@ -478,6 +478,8 @@ void GoomControl::GoomControlImpl::Start()
 
   ChangeColorMaps();
 
+  m_filterControl.Start();
+
   m_updateMessagesFontFile = GetFontDirectory() + "verdana.ttf";
 
   m_timeInState = 0;
@@ -490,8 +492,6 @@ void GoomControl::GoomControlImpl::Start()
   m_goomLine1.Start();
   m_goomLine2.SetResourcesDirectory(m_resourcesDirectory);
   m_goomLine2.Start();
-
-  m_filterControl.Start();
 
   m_visualFx.convolve_fx->SetAllowOverexposed(true);
   m_convolveAllowOverexposed.ResetToZero();
@@ -1060,12 +1060,9 @@ void GoomControl::GoomControlImpl::MegaLentUpdate()
   m_goomData.switchMult = 1.0F;
 }
 
-// TODO Put this in FilterControl
 void GoomControl::GoomControlImpl::ChangeMilieu()
 {
-  m_filterControl.SetMiddlePoints();
-  m_filterControl.GetZoomVectorObject().SetRandomPlaneEffects(
-      m_filterControl.GetFilterSettings().zoomMidPoint, m_goomInfo->GetScreenInfo().width);
+  m_filterControl.ChangeMilieu();
 }
 
 void GoomControl::GoomControlImpl::ChangeVitesse()

@@ -40,10 +40,11 @@ constexpr float MAX_MAX_SPEED_COEFF = +4.01F;
 ZoomFilterBuffersService::ZoomFilterBuffersService(
     Parallel& p,
     const std::shared_ptr<const PluginInfo>& goomInfo,
-    IZoomVector& zoomVector) noexcept
-  : m_zoomVector{zoomVector},
+    std::unique_ptr<IZoomVector> zoomVector) noexcept
+  : m_screenWidth{goomInfo->GetScreenInfo().width},
+    m_zoomVector{std::move(zoomVector)},
     m_filterBuffers{p, goomInfo, [this](const NormalizedCoords& normalizedCoords) {
-                      return m_zoomVector.GetZoomPoint(normalizedCoords);
+                      return m_zoomVector->GetZoomPoint(normalizedCoords);
                     }}
 {
 }
@@ -52,20 +53,47 @@ void ZoomFilterBuffersService::Start()
 {
   m_started = true;
 
-  ChangeFilterSettings(m_currentFilterSettings);
+  SetFilterSettings(m_currentFilterSettings);
+  UpdateFilterSettings();
 
-  m_zoomVector.SetFilterSettings(m_currentFilterSettings);
-
-  UpdateFilterBuffersSettings();
   m_filterBuffers.Start();
 }
 
-void ZoomFilterBuffersService::ChangeFilterSettings(const ZoomFilterData& filterSettings)
+void ZoomFilterBuffersService::SetFilterSettings(const ZoomFilterData& filterSettings)
 {
   assert(m_started);
 
   m_nextFilterSettings = filterSettings;
   m_pendingFilterSettings = true;
+}
+
+void ZoomFilterBuffersService::SetSpeedCoefficientsEffect(
+    const std::shared_ptr<const SpeedCoefficientsEffect> val)
+{
+  m_nextSpeedCoefficientsEffect = val;
+  m_pendingFilterSettings = true;
+}
+
+void ZoomFilterBuffersService::UpdatePlaneEffects()
+{
+  m_pendingPlaneEffects = true;
+  m_pendingFilterSettings = true;
+}
+
+inline void ZoomFilterBuffersService::UpdateFilterSettings()
+{
+  m_zoomVector->SetFilterSettings(m_currentFilterSettings);
+  m_zoomVector->SetSpeedCoefficientsEffect(m_nextSpeedCoefficientsEffect);
+  if (m_pendingPlaneEffects)
+  {
+    m_zoomVector->SetRandomPlaneEffects(m_currentFilterSettings.zoomMidPoint, m_screenWidth);
+    m_pendingPlaneEffects = false;
+  }
+  // TODO Random calc should not be here
+  m_zoomVector->SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF);
+
+  m_filterBuffers.SetBuffMidPoint(m_currentFilterSettings.zoomMidPoint);
+  m_filterBuffers.NotifyFilterSettingsHaveChanged();
 }
 
 void ZoomFilterBuffersService::UpdateTranBuffers()
@@ -92,24 +120,11 @@ void ZoomFilterBuffersService::StartFreshTranBuffers()
     return;
   }
 
-  m_pendingFilterSettings = false;
   m_currentFilterSettings = m_nextFilterSettings;
 
-  UpdateZoomVectorSettings();
-  UpdateFilterBuffersSettings();
-}
+  UpdateFilterSettings();
 
-inline void ZoomFilterBuffersService::UpdateZoomVectorSettings()
-{
-  m_zoomVector.SetFilterSettings(m_currentFilterSettings);
-  // TODO Random calc should not be here
-  m_zoomVector.SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF);
-}
-
-inline void ZoomFilterBuffersService::UpdateFilterBuffersSettings()
-{
-  m_filterBuffers.SetBuffMidPoint(m_currentFilterSettings.zoomMidPoint);
-  m_filterBuffers.NotifyFilterSettingsHaveChanged();
+  m_pendingFilterSettings = false;
 }
 
 void ZoomFilterBuffersService::UpdateTranLerpFactor(const int32_t switchIncr,

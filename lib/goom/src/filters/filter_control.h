@@ -1,6 +1,7 @@
 #ifndef VISUALIZATION_GOOM_FILTER_CONTROL_H
 #define VISUALIZATION_GOOM_FILTER_CONTROL_H
 
+#include "filter_buffers_service.h"
 #include "filter_data.h"
 #include "filter_speed_coefficients_effect.h"
 #include "filter_zoom_vector.h"
@@ -15,6 +16,11 @@ namespace GOOM
 
 class PluginInfo;
 
+namespace UTILS
+{
+class Parallel;
+}; // namespace UTILS
+
 namespace FILTERS
 {
 
@@ -23,11 +29,11 @@ class FilterControl
 public:
   class FilterEvents;
 
-  explicit FilterControl(const std::shared_ptr<const GOOM::PluginInfo>& goomInfo,
-                         const std::string& resourcesDirectory) noexcept;
+  FilterControl(UTILS::Parallel& p,
+                const std::shared_ptr<const GOOM::PluginInfo>& goomInfo,
+                const std::string& resourcesDirectory) noexcept;
 
-  auto GetZoomVectorObject() const -> const FilterZoomVector&;
-  auto GetZoomVectorObject() -> FilterZoomVector&;
+  auto GetZoomFilterBuffersService() -> ZoomFilterBuffersService&;
 
   void Start();
 
@@ -38,6 +44,7 @@ public:
   [[nodiscard]] auto GetVitesseSetting() const -> const Vitesse&;
   [[nodiscard]] auto GetVitesseSetting() -> Vitesse&;
 
+  void ChangeMilieu();
   void SetMiddlePoints();
   void SetNoisifySetting(bool value);
   void SetNoiseFactorSetting(float value);
@@ -54,7 +61,7 @@ private:
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const V2dInt m_midScreenPoint;
-  FilterZoomVector m_zoomVector;
+  ZoomFilterBuffersService m_zoomFilterBuffersService;
   ZoomFilterData m_filterData{};
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
 
@@ -72,6 +79,8 @@ private:
       -> std::shared_ptr<SpeedCoefficientsEffect>;
 
   void SetDefaultSettings();
+  void SetSpeedCoefficientsEffect();
+  void SetFilterModeSettings();
   void SetAmuletModeSettings();
   void SetCrystalBall0ModeSettings();
   void SetCrystalBall1ModeSettings();

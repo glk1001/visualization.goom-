@@ -1,6 +1,7 @@
 #include "filter_control.h"
 
 #include "filter_amulet.h"
+#include "filter_buffers_service.h"
 #include "filter_crystal_ball.h"
 #include "filter_hypercos.h"
 #include "filter_image_displacements.h"
@@ -9,6 +10,7 @@
 #include "filter_speedway.h"
 #include "filter_wave.h"
 #include "filter_y_only.h"
+#include "filter_zoom_vector.h"
 #include "goom/filter_data.h"
 #include "goom/goom_plugin_info.h"
 #include "goomutils/enumutils.h"
@@ -47,7 +49,7 @@ const Weights<ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
     { ZoomFilterMode::HYPERCOS_MODE2,          3 },
     { ZoomFilterMode::HYPERCOS_MODE3,          3 },
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 5 },
-    { ZoomFilterMode::NORMAL_MODE,             6 },
+    { ZoomFilterMode::NORMAL_MODE,             60000000 },
     { ZoomFilterMode::SCRUNCH_MODE,            6 },
     { ZoomFilterMode::SPEEDWAY_MODE,           6 },
     { ZoomFilterMode::WAVE_MODE0,              5 },
@@ -129,11 +131,13 @@ inline auto FilterControl::FilterEvents::Happens(const FilterEventTypes event) -
 
 using FilterEventTypes = FilterControl::FilterEvents::FilterEventTypes;
 
-FilterControl::FilterControl(const std::shared_ptr<const PluginInfo>& goomInfo,
+FilterControl::FilterControl(UTILS::Parallel& p,
+                             const std::shared_ptr<const PluginInfo>& goomInfo,
                              const std::string& resourcesDirectory) noexcept
   : m_goomInfo{goomInfo},
     m_midScreenPoint{m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height / 2},
-    m_zoomVector{resourcesDirectory},
+    m_zoomFilterBuffersService{p, m_goomInfo,
+                               std::make_unique<FilterZoomVector>(resourcesDirectory)},
     m_filterEvents{spimpl::make_unique_impl<FilterEvents>()},
     m_speedCoefficientsEffect{MakeSpeedCoefficientsEffects(resourcesDirectory)}
 {
@@ -195,18 +199,20 @@ auto FilterControl::MakeSpeedCoefficientsEffect(const ZoomFilterMode mode,
   }
 }
 
-auto FilterControl::GetZoomVectorObject() const -> const FilterZoomVector&
+auto FilterControl::GetZoomFilterBuffersService() -> ZoomFilterBuffersService&
 {
-  return m_zoomVector;
-}
-
-auto FilterControl::GetZoomVectorObject() -> FilterZoomVector&
-{
-  return m_zoomVector;
+  return m_zoomFilterBuffersService;
 }
 
 void FilterControl::Start()
 {
+  // Nothing to do yet.
+}
+
+void FilterControl::ChangeMilieu()
+{
+  SetMiddlePoints();
+  m_zoomFilterBuffersService.UpdatePlaneEffects();
 }
 
 void FilterControl::SetRandomFilterSettings()
@@ -231,6 +237,13 @@ void FilterControl::SetRandomFilterSettings(const ZoomFilterMode mode)
 
   SetDefaultSettings();
 
+  SetSpeedCoefficientsEffect();
+
+  SetFilterModeSettings();
+}
+
+void FilterControl::SetFilterModeSettings()
+{
   switch (m_filterData.mode)
   {
     case ZoomFilterMode::AMULET_MODE:
@@ -311,7 +324,7 @@ void FilterControl::SetDefaultSettings()
 
   m_filterData.vitesse.SetDefault();
 
-  m_filterData.tanEffect = ProbabilityOfMInN(1, 10);
+  m_filterData.tanEffect = ProbabilityOfMInN(10, 10);
   m_filterData.rotateSpeed = 0.0;
   m_filterData.noisify = false;
   m_filterData.noiseFactor = 1.0;
@@ -320,10 +333,14 @@ void FilterControl::SetDefaultSettings()
   m_filterData.hypercosOverlay = HypercosOverlay::NONE;
 }
 
+void FilterControl::SetSpeedCoefficientsEffect()
+{
+  m_zoomFilterBuffersService.SetSpeedCoefficientsEffect(
+      GetSpeedCoefficientsEffect(m_filterData.mode));
+}
+
 void FilterControl::SetAmuletModeSettings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(GetSpeedCoefficientsEffect(ZoomFilterMode::AMULET_MODE));
-
   SetRotate(PROB_HIGH);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
@@ -334,9 +351,6 @@ void FilterControl::SetAmuletModeSettings()
 
 void FilterControl::SetCrystalBall0ModeSettings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(ZoomFilterMode::CRYSTAL_BALL_MODE0));
-
   SetRotate(PROB_LOW);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
@@ -348,9 +362,6 @@ void FilterControl::SetCrystalBall0ModeSettings()
 // TODO - Fix duplication
 void FilterControl::SetCrystalBall1ModeSettings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(ZoomFilterMode::CRYSTAL_BALL_MODE1));
-
   SetRotate(PROB_HALF);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
@@ -361,9 +372,6 @@ void FilterControl::SetCrystalBall1ModeSettings()
 
 void FilterControl::SetHypercosMode0Settings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(ZoomFilterMode::HYPERCOS_MODE0));
-
   SetRotate(PROB_LOW);
 
   m_filterData.hypercosOverlay = HypercosOverlay::MODE0;
@@ -371,9 +379,6 @@ void FilterControl::SetHypercosMode0Settings()
 
 void FilterControl::SetHypercosMode1Settings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(ZoomFilterMode::HYPERCOS_MODE1));
-
   SetRotate(PROB_LOW);
 
   m_filterData.hypercosOverlay = HypercosOverlay::MODE1;
@@ -381,9 +386,6 @@ void FilterControl::SetHypercosMode1Settings()
 
 void FilterControl::SetHypercosMode2Settings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(ZoomFilterMode::HYPERCOS_MODE2));
-
   SetRotate(PROB_LOW);
 
   m_filterData.hypercosOverlay = HypercosOverlay::MODE2;
@@ -391,9 +393,6 @@ void FilterControl::SetHypercosMode2Settings()
 
 void FilterControl::SetHypercosMode3Settings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(ZoomFilterMode::HYPERCOS_MODE3));
-
   SetRotate(PROB_LOW);
 
   m_filterData.hypercosOverlay = HypercosOverlay::MODE3;
@@ -401,9 +400,6 @@ void FilterControl::SetHypercosMode3Settings()
 
 void FilterControl::SetImageDisplacementModeSettings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(ZoomFilterMode::IMAGE_DISPLACEMENT_MODE));
-
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
     SetHypercosMode1Settings();
@@ -412,13 +408,11 @@ void FilterControl::SetImageDisplacementModeSettings()
 
 void FilterControl::SetNormalModeSettings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(GetSpeedCoefficientsEffect(ZoomFilterMode::NORMAL_MODE));
+  // No extra settings required.
 }
 
 void FilterControl::SetScrunchModeSettings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(GetSpeedCoefficientsEffect(ZoomFilterMode::SCRUNCH_MODE));
-
   SetRotate(PROB_HALF);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
@@ -429,8 +423,6 @@ void FilterControl::SetScrunchModeSettings()
 
 void FilterControl::SetSpeedwayModeSettings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(GetSpeedCoefficientsEffect(ZoomFilterMode::SCRUNCH_MODE));
-
   SetRotate(PROB_LOW);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
@@ -441,17 +433,16 @@ void FilterControl::SetSpeedwayModeSettings()
 
 void FilterControl::SetWaterModeSettings()
 {
+  // Maybe one day
 }
 
 void FilterControl::SetWaveMode0Settings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(GetSpeedCoefficientsEffect(ZoomFilterMode::WAVE_MODE0));
   SetWaveModeSettings();
 }
 
 void FilterControl::SetWaveMode1Settings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(GetSpeedCoefficientsEffect(ZoomFilterMode::WAVE_MODE1));
   SetWaveModeSettings();
 }
 
@@ -475,8 +466,6 @@ void FilterControl::SetWaveModeSettings()
 
 void FilterControl::SetYOnlyModeSettings()
 {
-  m_zoomVector.SetSpeedCoefficientsEffect(GetSpeedCoefficientsEffect(ZoomFilterMode::Y_ONLY_MODE));
-
   SetRotate(PROB_HALF);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))

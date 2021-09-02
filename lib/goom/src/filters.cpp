@@ -173,7 +173,7 @@ void ZoomFilterFx::ZoomFilterImpl::ChangeFilterSettings(const ZoomFilterData& fi
   assert(m_started);
 
   m_currentFilterSettings = filterSettings;
-  m_filterBuffersService.ChangeFilterSettings(filterSettings);
+  m_filterBuffersService.SetFilterSettings(filterSettings);
   m_filterColors.SetBlockWavy(filterSettings.blockyWavy);
 }
 

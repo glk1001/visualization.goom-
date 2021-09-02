@@ -22,20 +22,20 @@ namespace FILTERS
 {
 
 class IZoomVector;
+class SpeedCoefficientsEffect;
 
 class ZoomFilterBuffersService
 {
 public:
-  using NeighborhoodCoeffArray = ZoomFilterBuffers::NeighborhoodCoeffArray;
-  using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
-
   ZoomFilterBuffersService(UTILS::Parallel& p,
                            const std::shared_ptr<const PluginInfo>& goomInfo,
-                           IZoomVector& zoomVector) noexcept;
+                           std::unique_ptr<IZoomVector> zoomVector) noexcept;
 
   void Start();
 
-  void ChangeFilterSettings(const ZoomFilterData& filterSettings);
+  void SetFilterSettings(const ZoomFilterData& filterSettings);
+  void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val);
+  void UpdatePlaneEffects();
 
   void UpdateTranBuffers();
   void UpdateTranLerpFactor(int32_t switchIncr, float switchMult);
@@ -45,20 +45,23 @@ public:
 
 private:
   bool m_started = false;
-  IZoomVector& m_zoomVector;
+  const uint32_t m_screenWidth;
+  std::unique_ptr<IZoomVector> m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
 
   ZoomFilterData m_currentFilterSettings{};
   ZoomFilterData m_nextFilterSettings{};
+  std::shared_ptr<const SpeedCoefficientsEffect> m_nextSpeedCoefficientsEffect{};
+  bool m_pendingPlaneEffects = false;
   bool m_pendingFilterSettings = false;
 
-  void UpdateFilterBuffersSettings();
-  void UpdateZoomVectorSettings();
+  void UpdateFilterSettings();
   auto AreStartingFreshTranBuffers() const -> bool;
   void StartFreshTranBuffers();
 };
 
-inline auto ZoomFilterBuffersService::GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo
+inline auto ZoomFilterBuffersService::GetSourcePointInfo(const size_t buffPos) const
+    -> SourcePointInfo
 {
   return m_filterBuffers.GetSourcePointInfo(buffPos);
 }
