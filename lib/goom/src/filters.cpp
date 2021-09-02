@@ -19,15 +19,12 @@
 
 #include "filter_data.h"
 #include "filters/filter_buffers_service.h"
-#include "filters/filter_normalized_coords.h"
 #include "filters/filter_zoom_colors.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goomutils/goomrand.h"
 #include "goomutils/logging_control.h"
 //#undef NO_LOGGING
 #include "goomutils/logging.h"
-#include "goomutils/mathutils.h"
 #include "goomutils/parallel_utils.h"
 #include "goomutils/spimpl.h"
 
@@ -44,11 +41,8 @@
 namespace GOOM
 {
 
-using FILTERS::NormalizedCoords;
 using FILTERS::ZoomFilterBuffersService;
 using FILTERS::ZoomFilterColors;
-using UTILS::floats_equal;
-using UTILS::GetRandInRange;
 using UTILS::Logging;
 using UTILS::Parallel;
 
@@ -64,10 +58,7 @@ public:
 
   void Start();
 
-  [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterData&;
-
-  void SetInitialFilterSettings(const ZoomFilterData& filterSettings);
-  void ChangeFilterSettings(const ZoomFilterData& filterSettings);
+  void UpdateFilterSettings(const ZoomFilterData& filterSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff,
                          PixelBuffer& destBuff,
@@ -77,13 +68,10 @@ public:
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  bool m_started = false;
   uint64_t m_updateNum = 0;
 
   ZoomFilterBuffersService& m_filterBuffersService;
   ZoomFilterColors m_filterColors{};
-
-  ZoomFilterData m_currentFilterSettings{};
 
   Parallel& m_parallel;
   void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const;
@@ -115,14 +103,9 @@ auto ZoomFilterFx::GetFxName() const -> std::string
   return "ZoomFilter FX";
 }
 
-void ZoomFilterFx::SetInitialFilterSettings(const ZoomFilterData& filterSettings)
+void ZoomFilterFx::UpdateFilterSettings(const ZoomFilterData& filterSettings)
 {
-  m_fxImpl->SetInitialFilterSettings(filterSettings);
-}
-
-void ZoomFilterFx::ChangeFilterSettings(const ZoomFilterData& filterSettings)
-{
-  m_fxImpl->ChangeFilterSettings(filterSettings);
+  m_fxImpl->UpdateFilterSettings(filterSettings);
 }
 
 void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
@@ -131,11 +114,6 @@ void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
                                      const float switchMult)
 {
   m_fxImpl->ZoomFilterFastRgb(srceBuff, destBuff, switchIncr, switchMult);
-}
-
-auto ZoomFilterFx::GetFilterSettings() const -> const ZoomFilterData&
-{
-  return m_fxImpl->GetFilterSettings();
 }
 
 ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
@@ -154,36 +132,16 @@ inline void ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& 
   m_filterColors.SetBuffSettings(settings);
 }
 
-auto ZoomFilterFx::ZoomFilterImpl::GetFilterSettings() const -> const ZoomFilterData&
+
+void ZoomFilterFx::ZoomFilterImpl::UpdateFilterSettings(const ZoomFilterData& filterSettings)
 {
-  return m_currentFilterSettings;
-}
-
-// TODO Is this necessary?
-void ZoomFilterFx::ZoomFilterImpl::SetInitialFilterSettings(const ZoomFilterData& filterSettings)
-{
-  assert(!m_started);
-
-  m_currentFilterSettings = filterSettings;
-  m_filterColors.SetBlockWavy(filterSettings.blockyWavy);
-}
-
-void ZoomFilterFx::ZoomFilterImpl::ChangeFilterSettings(const ZoomFilterData& filterSettings)
-{
-  assert(m_started);
-
-  m_currentFilterSettings = filterSettings;
   m_filterBuffersService.SetFilterSettings(filterSettings);
   m_filterColors.SetBlockWavy(filterSettings.blockyWavy);
 }
 
 void ZoomFilterFx::ZoomFilterImpl::Start()
 {
-  m_started = true;
-
   m_filterBuffersService.Start();
-
-  ChangeFilterSettings(m_currentFilterSettings);
 }
 
 /**

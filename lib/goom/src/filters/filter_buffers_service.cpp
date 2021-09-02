@@ -51,9 +51,8 @@ ZoomFilterBuffersService::ZoomFilterBuffersService(
 
 void ZoomFilterBuffersService::Start()
 {
-  m_started = true;
+  m_currentFilterSettings = m_nextFilterSettings;
 
-  SetFilterSettings(m_currentFilterSettings);
   UpdateFilterSettings();
 
   m_filterBuffers.Start();
@@ -61,8 +60,6 @@ void ZoomFilterBuffersService::Start()
 
 void ZoomFilterBuffersService::SetFilterSettings(const ZoomFilterData& filterSettings)
 {
-  assert(m_started);
-
   m_nextFilterSettings = filterSettings;
   m_pendingFilterSettings = true;
 }

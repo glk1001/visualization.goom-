@@ -24,10 +24,13 @@ using UTILS::Weights;
 // @since June 2001
 static constexpr float DEFAULT_HORIZONTAL_EFFECT_AMPLITUDE = 0.0025F;
 constexpr NumberRange<float> HORIZONTAL_EFFECT_AMPLITUDE_RANGE = {0.0015F, 0.0035F};
+// Spirally and interesting
+// constexpr NumberRange<float> HORIZONTAL_EFFECT_AMPLITUDE_RANGE = {0.0015F, 0.0351F};
 
 // V Plane:
 static constexpr float DEFAULT_VERTICAL_EFFECT_AMPLITUDE = 0.0025F;
 constexpr NumberRange<float> VERTICAL_EFFECT_AMPLITUDE_RANGE = {0.0015F, 0.0035F};
+// constexpr NumberRange<float> VERTICAL_EFFECT_AMPLITUDE_RANGE = {0.0015F, 0.0351F};
 
 constexpr float PROB_PLANE_AMPLITUDES_EQUAL = 12.0F / 16.0F;
 constexpr float PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.5F;

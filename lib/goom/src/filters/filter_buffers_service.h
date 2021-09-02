@@ -44,7 +44,6 @@ public:
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo;
 
 private:
-  bool m_started = false;
   const uint32_t m_screenWidth;
   std::unique_ptr<IZoomVector> m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;

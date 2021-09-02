@@ -39,10 +39,7 @@ public:
 
   void Start() override;
 
-  auto GetFilterSettings() const -> const ZoomFilterData&;
-
-  void SetInitialFilterSettings(const ZoomFilterData& filterSettings);
-  void ChangeFilterSettings(const ZoomFilterData& filterSettings);
+  void UpdateFilterSettings(const ZoomFilterData& filterSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff,
                          PixelBuffer& destBuff,

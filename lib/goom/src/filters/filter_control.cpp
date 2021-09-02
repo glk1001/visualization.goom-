@@ -206,7 +206,8 @@ auto FilterControl::GetZoomFilterBuffersService() -> ZoomFilterBuffersService&
 
 void FilterControl::Start()
 {
-  // Nothing to do yet.
+  SetRandomFilterSettings();
+  SetMiddlePoints();
 }
 
 void FilterControl::ChangeMilieu()

@@ -230,7 +230,6 @@ private:
   GoomEvents m_goomEvent{};
   uint32_t m_updateNum = 0;
   uint32_t m_timeInState = 0;
-  uint32_t m_timeWithFilter = 0;
   uint32_t m_cycle = 0;
   std::unordered_set<GoomDrawable> m_curGDrawables{};
   GoomData m_goomData{};
@@ -309,7 +308,6 @@ private:
   void ChangeFilterModeIfMusicChanges();
   [[nodiscard]] auto ChangeFilterModeEventHappens() -> bool;
   void ChangeFilterMode();
-  void SetNextFilterMode();
   void ChangeMilieu();
 
   // baisser regulierement la vitesse
@@ -475,19 +473,15 @@ void GoomControl::GoomControlImpl::Start()
   }
 
   m_updateNum = 0;
+  m_timeInState = 0;
 
   ChangeColorMaps();
 
-  m_filterControl.Start();
-
   m_updateMessagesFontFile = GetFontDirectory() + "verdana.ttf";
-
-  m_timeInState = 0;
-  m_timeWithFilter = 0;
-
   m_curGDrawables = m_states.GetCurrentDrawables();
 
   // TODO MAKE line a visual FX
+  // TODO Pass resource dir in constructor
   m_goomLine1.SetResourcesDirectory(m_resourcesDirectory);
   m_goomLine1.Start();
   m_goomLine2.SetResourcesDirectory(m_resourcesDirectory);
@@ -496,8 +490,8 @@ void GoomControl::GoomControlImpl::Start()
   m_visualFx.convolve_fx->SetAllowOverexposed(true);
   m_convolveAllowOverexposed.ResetToZero();
 
-  SetNextFilterMode();
-  m_visualFx.zoomFilter_fx->SetInitialFilterSettings(m_filterControl.GetFilterSettings());
+  m_filterControl.Start();
+  m_visualFx.zoomFilter_fx->UpdateFilterSettings(m_filterControl.GetFilterSettings());
 
   for (auto& v : m_visualFx.list)
   {
@@ -731,7 +725,6 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
 
   ++m_updateNum;
   ++m_timeInState;
-  ++m_timeWithFilter;
   m_convolveAllowOverexposed.Increment();
   m_convolveNotAllowOverexposed.Increment();
 
@@ -881,16 +874,11 @@ void GoomControl::GoomControlImpl::ChangeFilterModeIfMusicChanges()
 
 void GoomControl::GoomControlImpl::ChangeFilterMode()
 {
-  SetNextFilterMode();
-
-  DoIfsRenew();
-}
-
-void GoomControl::GoomControlImpl::SetNextFilterMode()
-{
   m_filterControl.SetRandomFilterSettings();
   m_filterControl.SetMiddlePoints();
   m_curGDrawables = m_states.GetCurrentDrawables();
+
+  DoIfsRenew();
 }
 
 void GoomControl::GoomControlImpl::ChangeState()
@@ -1288,12 +1276,7 @@ void GoomControl::GoomControlImpl::ApplyZoom()
 {
   if (m_filterControl.HaveSettingsChangedSinceMark())
   {
-    if (m_filterControl.GetFilterSettings().mode !=
-        m_visualFx.zoomFilter_fx->GetFilterSettings().mode)
-    {
-      m_timeWithFilter = 0;
-    }
-    m_visualFx.zoomFilter_fx->ChangeFilterSettings(m_filterControl.GetFilterSettings());
+    m_visualFx.zoomFilter_fx->UpdateFilterSettings(m_filterControl.GetFilterSettings());
     m_filterControl.ClearUnchangedMark();
   }
 
