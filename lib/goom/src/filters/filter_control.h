@@ -57,10 +57,35 @@ public:
   void ToggleRotateSetting();
 
   void SetRandomFilterSettings();
+
+private:
+  enum class ZoomFilterMode
+  {
+    _NULL = -1,
+    AMULET_MODE = 0,
+    CRYSTAL_BALL_MODE0,
+    CRYSTAL_BALL_MODE1,
+    HYPERCOS_MODE0,
+    HYPERCOS_MODE1,
+    HYPERCOS_MODE2,
+    HYPERCOS_MODE3,
+    IMAGE_DISPLACEMENT_MODE,
+    NORMAL_MODE,
+    SCRUNCH_MODE,
+    SPEEDWAY_MODE,
+    WATER_MODE,
+    WAVE_MODE0,
+    WAVE_MODE1,
+    Y_ONLY_MODE,
+    _NUM // unused and must be last
+  };
+
+  ZoomFilterMode m_zoomFilterMode = ZoomFilterMode::NORMAL_MODE;
+
+  auto GetHypercosOverlay() -> HypercosOverlay;
   void SetRandomFilterSettings(ZoomFilterMode mode);
   void SetDefaultFilterSettings(ZoomFilterMode mode);
 
-private:
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const V2dInt m_midScreenPoint;
@@ -148,7 +173,7 @@ inline void FilterControl::SetRandomFilterSettings()
 inline void FilterControl::SetDefaultFilterSettings(const ZoomFilterMode mode)
 {
   m_settingsHaveChanged = true;
-  m_filterData.SetMode(mode);
+  m_zoomFilterMode = mode;
   SetDefaultSettings();
 }
 

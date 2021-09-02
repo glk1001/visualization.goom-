@@ -41,7 +41,7 @@ constexpr float PROB_LOW = 0.1F;
 
 //@formatter:off
 // clang-format off
-const Weights<ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
+const Weights<FilterControl::ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
     { ZoomFilterMode::AMULET_MODE,             8 },
     { ZoomFilterMode::CRYSTAL_BALL_MODE0,      4 },
     { ZoomFilterMode::CRYSTAL_BALL_MODE1,      2 },
@@ -223,7 +223,7 @@ void FilterControl::UpdateFilterSettings()
   m_zoomFilterBuffersService.SetFilterSettings(m_filterData);
 
   m_zoomFilterBuffersService.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(m_filterData.mode));
+      GetSpeedCoefficientsEffect(m_zoomFilterMode));
 
   m_filterColors.SetBlockWavy(m_filterData.blockyWavy);
 
@@ -234,7 +234,7 @@ void FilterControl::SetRandomFilterSettings(const ZoomFilterMode mode)
 {
   m_settingsHaveChanged = true;
 
-  m_filterData.SetMode(mode);
+  m_zoomFilterMode = mode;
 
   SetDefaultSettings();
 
@@ -243,7 +243,7 @@ void FilterControl::SetRandomFilterSettings(const ZoomFilterMode mode)
 
 void FilterControl::SetFilterModeSettings()
 {
-  switch (m_filterData.mode)
+  switch (m_zoomFilterMode)
   {
     case ZoomFilterMode::AMULET_MODE:
       SetAmuletModeSettings();
@@ -303,7 +303,7 @@ auto FilterControl::GetNewRandomMode() const -> ZoomFilterMode
   while (true)
   {
     const auto newMode = WEIGHTED_FILTER_EVENTS.GetRandomWeighted();
-    if (newMode != m_filterData.mode)
+    if (newMode != m_zoomFilterMode)
     {
       return newMode;
     }
@@ -314,7 +314,7 @@ auto FilterControl::GetNewRandomMode() const -> ZoomFilterMode
     }
   }
 
-  return m_filterData.mode;
+  return m_zoomFilterMode;
 }
 
 void FilterControl::SetDefaultSettings()
@@ -329,7 +329,25 @@ void FilterControl::SetDefaultSettings()
   m_filterData.noiseFactor = 1.0;
   m_filterData.blockyWavy = false;
 
-  m_filterData.hypercosOverlay = HypercosOverlay::NONE;
+  m_filterData.hypercosOverlay = GetHypercosOverlay();
+}
+
+auto FilterControl::GetHypercosOverlay() -> HypercosOverlay
+{
+  switch (m_zoomFilterMode)
+  {
+    case ZoomFilterMode::HYPERCOS_MODE0:
+      return HypercosOverlay::MODE0;
+    case ZoomFilterMode::HYPERCOS_MODE1:
+      return HypercosOverlay::MODE1;
+    case ZoomFilterMode::HYPERCOS_MODE2:
+      return HypercosOverlay::MODE2;
+      break;
+    case ZoomFilterMode::HYPERCOS_MODE3:
+      return HypercosOverlay::MODE3;
+    default:
+      return HypercosOverlay::NONE;
+  }
 }
 
 void FilterControl::SetAmuletModeSettings()
@@ -482,22 +500,22 @@ void FilterControl::SetRotate(const float rotateProbability)
 
 void FilterControl::SetRandomMiddlePoints()
 {
-  if ((m_filterData.mode == ZoomFilterMode::WATER_MODE) ||
-      (m_filterData.mode == ZoomFilterMode::WAVE_MODE0) ||
-      (m_filterData.mode == ZoomFilterMode::AMULET_MODE))
+  if ((m_zoomFilterMode == ZoomFilterMode::WATER_MODE) ||
+      (m_zoomFilterMode == ZoomFilterMode::WAVE_MODE0) ||
+      (m_zoomFilterMode == ZoomFilterMode::AMULET_MODE))
   {
     m_filterData.zoomMidPoint = m_midScreenPoint;
     return;
   }
 
-  if (((m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE0) ||
-       (m_filterData.mode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
+  if (((m_zoomFilterMode == ZoomFilterMode::CRYSTAL_BALL_MODE0) ||
+       (m_zoomFilterMode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
       m_filterEvents->Happens(FilterEventTypes::CRYSTAL_BALL_IN_MIDDLE))
   {
     m_filterData.zoomMidPoint = m_midScreenPoint;
     return;
     }
-    if ((m_filterData.mode == ZoomFilterMode::WAVE_MODE1) &&
+    if ((m_zoomFilterMode == ZoomFilterMode::WAVE_MODE1) &&
         m_filterEvents->Happens(FilterEventTypes::WAVE_IN_MIDDLE))
     {
       m_filterData.zoomMidPoint = m_midScreenPoint;

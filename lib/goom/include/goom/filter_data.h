@@ -9,27 +9,6 @@
 namespace GOOM
 {
 
-enum class ZoomFilterMode
-{
-  _NULL = -1,
-  AMULET_MODE = 0,
-  CRYSTAL_BALL_MODE0,
-  CRYSTAL_BALL_MODE1,
-  HYPERCOS_MODE0,
-  HYPERCOS_MODE1,
-  HYPERCOS_MODE2,
-  HYPERCOS_MODE3,
-  IMAGE_DISPLACEMENT_MODE,
-  NORMAL_MODE,
-  SCRUNCH_MODE,
-  SPEEDWAY_MODE,
-  WATER_MODE,
-  WAVE_MODE0,
-  WAVE_MODE1,
-  Y_ONLY_MODE,
-  _NUM // unused and must be last
-};
-
 enum class HypercosOverlay
 {
   NONE,
@@ -101,30 +80,7 @@ inline auto Vitesse::GetRelativeSpeed() const -> float
 struct ZoomFilterData
 {
   //TODO - Have class with SetMode which handles hypercosOverlay
-  ZoomFilterMode mode = ZoomFilterMode::NORMAL_MODE;
   HypercosOverlay hypercosOverlay = HypercosOverlay::NONE;
-
-  void SetMode(const ZoomFilterMode zoomFilterMode)
-  {
-    mode = zoomFilterMode;
-    switch (mode)
-    {
-      case ZoomFilterMode::HYPERCOS_MODE0:
-        hypercosOverlay = HypercosOverlay::MODE0;
-        break;
-      case ZoomFilterMode::HYPERCOS_MODE1:
-        hypercosOverlay = HypercosOverlay::MODE1;
-        break;
-      case ZoomFilterMode::HYPERCOS_MODE2:
-        hypercosOverlay = HypercosOverlay::MODE2;
-        break;
-      case ZoomFilterMode::HYPERCOS_MODE3:
-        hypercosOverlay = HypercosOverlay::MODE3;
-        break;
-      default:
-        break;
-    }
-  }
 
   Vitesse vitesse{};
   static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
