@@ -10,6 +10,7 @@
 #include "filter_speedway.h"
 #include "filter_wave.h"
 #include "filter_y_only.h"
+#include "filter_zoom_colors.h"
 #include "filter_zoom_vector.h"
 #include "goom/filter_data.h"
 #include "goom/goom_plugin_info.h"
@@ -204,30 +205,29 @@ auto FilterControl::GetZoomFilterBuffersService() -> ZoomFilterBuffersService&
   return m_zoomFilterBuffersService;
 }
 
+auto FilterControl::GetZoomFilterColors() -> ZoomFilterColors&
+{
+  return m_filterColors;
+}
+
 void FilterControl::Start()
 {
   SetRandomFilterSettings();
   SetMiddlePoints();
+
+  UpdateFilterSettings();
 }
 
-void FilterControl::ChangeMilieu()
+void FilterControl::UpdateFilterSettings()
 {
-  SetMiddlePoints();
-  m_zoomFilterBuffersService.UpdatePlaneEffects();
-}
+  m_zoomFilterBuffersService.SetFilterSettings(m_filterData);
 
-void FilterControl::SetRandomFilterSettings()
-{
-  SetRandomFilterSettings(GetNewRandomMode());
-}
+  m_zoomFilterBuffersService.SetSpeedCoefficientsEffect(
+      GetSpeedCoefficientsEffect(m_filterData.mode));
 
-void FilterControl::SetDefaultFilterSettings(const ZoomFilterMode mode)
-{
-  m_settingsHaveChanged = true;
+  m_filterColors.SetBlockWavy(m_filterData.blockyWavy);
 
-  m_filterData.SetMode(mode);
-
-  SetDefaultSettings();
+  m_settingsHaveChanged = false;
 }
 
 void FilterControl::SetRandomFilterSettings(const ZoomFilterMode mode)
@@ -237,8 +237,6 @@ void FilterControl::SetRandomFilterSettings(const ZoomFilterMode mode)
   m_filterData.SetMode(mode);
 
   SetDefaultSettings();
-
-  SetSpeedCoefficientsEffect();
 
   SetFilterModeSettings();
 }
@@ -332,12 +330,6 @@ void FilterControl::SetDefaultSettings()
   m_filterData.blockyWavy = false;
 
   m_filterData.hypercosOverlay = HypercosOverlay::NONE;
-}
-
-void FilterControl::SetSpeedCoefficientsEffect()
-{
-  m_zoomFilterBuffersService.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(m_filterData.mode));
 }
 
 void FilterControl::SetAmuletModeSettings()
@@ -486,13 +478,6 @@ void FilterControl::SetRotate(const float rotateProbability)
 
   m_filterData.rotateSpeed = rotateProbability * GetRandInRange(ZoomFilterData::MIN_ROTATE_SPEED,
                                                                 ZoomFilterData::MAX_ROTATE_SPEED);
-}
-
-void FilterControl::SetMiddlePoints()
-{
-  m_settingsHaveChanged = true;
-
-  SetRandomMiddlePoints();
 }
 
 void FilterControl::SetRandomMiddlePoints()

@@ -17,7 +17,6 @@
 
 #include "filters.h"
 
-#include "filter_data.h"
 #include "filters/filter_buffers_service.h"
 #include "filters/filter_zoom_colors.h"
 #include "goom_graphic.h"
@@ -52,13 +51,12 @@ public:
   ZoomFilterImpl() noexcept = delete;
   ZoomFilterImpl(Parallel& p,
                  const std::shared_ptr<const PluginInfo>& goomInfo,
-                 ZoomFilterBuffersService& filterBuffersService) noexcept;
+                 ZoomFilterBuffersService& filterBuffersService,
+                 ZoomFilterColors& filterColors) noexcept;
 
   void SetBuffSettings(const FXBuffSettings& settings);
 
   void Start();
-
-  void UpdateFilterSettings(const ZoomFilterData& filterSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff,
                          PixelBuffer& destBuff,
@@ -71,7 +69,7 @@ private:
   uint64_t m_updateNum = 0;
 
   ZoomFilterBuffersService& m_filterBuffersService;
-  ZoomFilterColors m_filterColors{};
+  ZoomFilterColors& m_filterColors;
 
   Parallel& m_parallel;
   void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const;
@@ -79,8 +77,10 @@ private:
 
 ZoomFilterFx::ZoomFilterFx(Parallel& p,
                            const std::shared_ptr<const PluginInfo>& goomInfo,
-                           FILTERS::ZoomFilterBuffersService& filterBuffersService) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<ZoomFilterImpl>(p, goomInfo, filterBuffersService)}
+                           ZoomFilterBuffersService& filterBuffersService,
+                           ZoomFilterColors& filterColors) noexcept
+  : m_fxImpl{
+        spimpl::make_unique_impl<ZoomFilterImpl>(p, goomInfo, filterBuffersService, filterColors)}
 {
 }
 
@@ -96,16 +96,12 @@ void ZoomFilterFx::Start()
 
 void ZoomFilterFx::Finish()
 {
+  // No finish actions required
 }
 
 auto ZoomFilterFx::GetFxName() const -> std::string
 {
   return "ZoomFilter FX";
-}
-
-void ZoomFilterFx::UpdateFilterSettings(const ZoomFilterData& filterSettings)
-{
-  m_fxImpl->UpdateFilterSettings(filterSettings);
 }
 
 void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
@@ -116,13 +112,14 @@ void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
   m_fxImpl->ZoomFilterFastRgb(srceBuff, destBuff, switchIncr, switchMult);
 }
 
-ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
-    Parallel& p,
-    const std::shared_ptr<const PluginInfo>& goomInfo,
-    ZoomFilterBuffersService& filterBuffersService) noexcept
+ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(Parallel& p,
+                                             const std::shared_ptr<const PluginInfo>& goomInfo,
+                                             ZoomFilterBuffersService& filterBuffersService,
+                                             ZoomFilterColors& filterColors) noexcept
   : m_screenWidth{goomInfo->GetScreenInfo().width},
     m_screenHeight{goomInfo->GetScreenInfo().height},
     m_filterBuffersService{filterBuffersService},
+    m_filterColors{filterColors},
     m_parallel{p}
 {
 }
@@ -132,12 +129,6 @@ inline void ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& 
   m_filterColors.SetBuffSettings(settings);
 }
 
-
-void ZoomFilterFx::ZoomFilterImpl::UpdateFilterSettings(const ZoomFilterData& filterSettings)
-{
-  m_filterBuffersService.SetFilterSettings(filterSettings);
-  m_filterColors.SetBlockWavy(filterSettings.blockyWavy);
-}
 
 void ZoomFilterFx::ZoomFilterImpl::Start()
 {

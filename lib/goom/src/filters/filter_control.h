@@ -2,9 +2,10 @@
 #define VISUALIZATION_GOOM_FILTER_CONTROL_H
 
 #include "filter_buffers_service.h"
-#include "filter_data.h"
 #include "filter_speed_coefficients_effect.h"
+#include "filter_zoom_colors.h"
 #include "filter_zoom_vector.h"
+#include "goom/filter_data.h"
 #include "goomutils/spimpl.h"
 
 #include <memory>
@@ -34,20 +35,22 @@ public:
                 const std::string& resourcesDirectory) noexcept;
 
   auto GetZoomFilterBuffersService() -> ZoomFilterBuffersService&;
+  auto GetZoomFilterColors() -> ZoomFilterColors&;
 
   void Start();
 
-  auto HaveSettingsChangedSinceMark() const -> bool;
-  void ClearUnchangedMark();
+  void UpdateFilterSettings();
+  auto HaveSettingsChangedSinceLastUpdate() const -> bool;
 
   [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterData&;
-  [[nodiscard]] auto GetVitesseSetting() const -> const Vitesse&;
-  [[nodiscard]] auto GetVitesseSetting() -> Vitesse&;
+  [[nodiscard]] auto GetROVitesseSetting() -> const Vitesse&;
+  [[nodiscard]] auto GetRWVitesseSetting() -> Vitesse&;
 
   void ChangeMilieu();
   void SetMiddlePoints();
   void SetNoisifySetting(bool value);
   void SetNoiseFactorSetting(float value);
+  void ReduceNoiseFactor();
   void SetBlockyWavySetting(bool value);
   void SetRotateSetting(float value);
   void MultiplyRotateSetting(float factor);
@@ -62,6 +65,7 @@ private:
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const V2dInt m_midScreenPoint;
   ZoomFilterBuffersService m_zoomFilterBuffersService;
+  ZoomFilterColors m_filterColors{};
   ZoomFilterData m_filterData{};
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
 
@@ -79,7 +83,6 @@ private:
       -> std::shared_ptr<SpeedCoefficientsEffect>;
 
   void SetDefaultSettings();
-  void SetSpeedCoefficientsEffect();
   void SetFilterModeSettings();
   void SetAmuletModeSettings();
   void SetCrystalBall0ModeSettings();
@@ -107,25 +110,46 @@ inline auto FilterControl::GetFilterSettings() const -> const ZoomFilterData&
   return m_filterData;
 }
 
-inline auto FilterControl::HaveSettingsChangedSinceMark() const -> bool
+inline auto FilterControl::HaveSettingsChangedSinceLastUpdate() const -> bool
 {
   return m_settingsHaveChanged;
 }
 
-inline void FilterControl::ClearUnchangedMark()
-{
-  m_settingsHaveChanged = false;
-}
-
-inline auto FilterControl::GetVitesseSetting() const -> const Vitesse&
+inline auto FilterControl::GetROVitesseSetting() -> const Vitesse&
 {
   return m_filterData.vitesse;
 }
 
-inline auto FilterControl::GetVitesseSetting() -> Vitesse&
+inline auto FilterControl::GetRWVitesseSetting() -> Vitesse&
 {
   m_settingsHaveChanged = true;
   return m_filterData.vitesse;
+}
+
+inline void FilterControl::ChangeMilieu()
+{
+  m_settingsHaveChanged = true;
+  SetMiddlePoints();
+  m_zoomFilterBuffersService.UpdatePlaneEffects();
+}
+
+inline void FilterControl::SetMiddlePoints()
+{
+  m_settingsHaveChanged = true;
+  SetRandomMiddlePoints();
+}
+
+inline void FilterControl::SetRandomFilterSettings()
+{
+  m_settingsHaveChanged = true;
+  SetRandomFilterSettings(GetNewRandomMode());
+}
+
+inline void FilterControl::SetDefaultFilterSettings(const ZoomFilterMode mode)
+{
+  m_settingsHaveChanged = true;
+  m_filterData.SetMode(mode);
+  SetDefaultSettings();
 }
 
 inline void FilterControl::SetNoisifySetting(const bool value)
@@ -138,6 +162,17 @@ inline void FilterControl::SetNoiseFactorSetting(const float value)
 {
   m_settingsHaveChanged = true;
   m_filterData.noiseFactor = value;
+}
+
+inline void FilterControl::ReduceNoiseFactor()
+{
+  if (!GetFilterSettings().noisify)
+  {
+    return;
+  }
+  constexpr float REDUCING_FACTOR = 0.94F;
+  const float reducedNoiseFactor = m_filterData.noiseFactor * REDUCING_FACTOR;
+  SetNoiseFactorSetting(reducedNoiseFactor);
 }
 
 inline void FilterControl::SetBlockyWavySetting(const bool value)

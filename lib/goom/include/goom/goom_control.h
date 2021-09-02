@@ -5,9 +5,6 @@
 #include "goomutils/spimpl.h"
 
 #include <cstdint>
-#include <istream>
-#include <memory>
-#include <ostream>
 #include <string>
 
 namespace GOOM
