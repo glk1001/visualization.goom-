@@ -49,7 +49,10 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterSettings& filterSettin
 
 void ZoomVectorEffects::SetRandomPlaneEffects()
 {
-  m_planes->SetRandomParams(m_filterSettings->zoomMidPoint, m_screenWidth);
+  if (m_filterSettings->planeEffect)
+  {
+    m_planes->SetRandomParams(m_filterSettings->zoomMidPoint, m_screenWidth);
+  }
 }
 
 void ZoomVectorEffects::SetHypercosOverlaySettings()

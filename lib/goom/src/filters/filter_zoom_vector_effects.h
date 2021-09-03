@@ -40,7 +40,6 @@ public:
 
   void SetMaxSpeedCoeff(float val);
 
-
   [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
                                            const NormalizedCoords& coords) const
       -> NormalizedCoords;
@@ -84,7 +83,6 @@ private:
   void SetRandomPlaneEffects();
 
   [[nodiscard]] static auto GetMinVelocityVal(float velocityVal) -> float;
-
   [[nodiscard]] auto GetXYSpeedCoefficients(float sqDistFromZero,
                                             const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetBaseSpeedCoefficients() const -> V2dFlt;

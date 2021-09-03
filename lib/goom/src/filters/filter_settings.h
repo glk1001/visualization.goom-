@@ -68,6 +68,7 @@ struct ZoomFilterSettings
 
   bool tanEffect = false;
   bool blockyWavy = false;
+  bool planeEffect = false;
 
   static constexpr float MIN_ROTATE_SPEED = -0.5F;
   static constexpr float MAX_ROTATE_SPEED = +0.5F;

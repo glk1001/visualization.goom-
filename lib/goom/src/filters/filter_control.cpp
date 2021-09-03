@@ -317,6 +317,7 @@ void FilterControl::SetDefaultSettings()
   m_filterSettings.vitesse.SetDefault();
 
   m_filterSettings.tanEffect = ProbabilityOfMInN(1, 10);
+  m_filterSettings.planeEffect = ProbabilityOfMInN(8, 10);
   m_filterSettings.rotateSpeed = 0.0;
   m_filterSettings.noisify = false;
   m_filterSettings.noiseFactor = 1.0;
