@@ -1,10 +1,10 @@
-#ifndef VISUALIZATION_GOOM_FILTER_CONTROL_H
-#define VISUALIZATION_GOOM_FILTER_CONTROL_H
+#ifndef VISUALIZATION_GOOM_FILTER_SETTINGS_SERVICE_H
+#define VISUALIZATION_GOOM_FILTER_SETTINGS_SERVICE_H
 
 #include "filter_buffers_service.h"
+#include "filter_colors_service.h"
 #include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
-#include "filter_zoom_colors.h"
 #include "filter_zoom_vector.h"
 #include "goomutils/spimpl.h"
 
@@ -25,17 +25,17 @@ class Parallel;
 namespace FILTERS
 {
 
-class FilterControl
+class FilterSettingsService
 {
 public:
   class FilterEvents;
 
-  FilterControl(UTILS::Parallel& parallel,
-                const std::shared_ptr<const GOOM::PluginInfo>& goomInfo,
-                const std::string& resourcesDirectory) noexcept;
+  FilterSettingsService(UTILS::Parallel& parallel,
+                        const std::shared_ptr<const GOOM::PluginInfo>& goomInfo,
+                        const std::string& resourcesDirectory) noexcept;
 
-  auto GetZoomFilterBuffersService() -> std::unique_ptr<ZoomFilterBuffersService>;
-  auto GetZoomFilterColors() -> std::unique_ptr<ZoomFilterColors>;
+  auto GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>;
+  static auto GetFilterColorsService() -> std::unique_ptr<FilterColorsService>;
 
   void Start();
 
@@ -128,65 +128,70 @@ private:
   void SetRotate(float rotateProbability);
 };
 
-inline auto FilterControl::GetFilterSettings() const -> const ZoomFilterSettings&
+inline auto FilterSettingsService::GetFilterSettings() const -> const ZoomFilterSettings&
 {
   return m_filterSettings;
 }
 
-inline auto FilterControl::HaveSettingsChangedSinceLastUpdate() const -> bool
+inline auto FilterSettingsService::HaveSettingsChangedSinceLastUpdate() const -> bool
 {
   return m_settingsHaveChanged;
 }
 
-inline auto FilterControl::GetROVitesseSetting() -> const Vitesse&
+inline void FilterSettingsService::NotifyUpdatedFilterSettings()
+{
+  m_settingsHaveChanged = false;
+}
+
+inline auto FilterSettingsService::GetROVitesseSetting() -> const Vitesse&
 {
   return m_filterSettings.vitesse;
 }
 
-inline auto FilterControl::GetRWVitesseSetting() -> Vitesse&
+inline auto FilterSettingsService::GetRWVitesseSetting() -> Vitesse&
 {
   m_settingsHaveChanged = true;
   return m_filterSettings.vitesse;
 }
 
-inline void FilterControl::ChangeMilieu()
+inline void FilterSettingsService::ChangeMilieu()
 {
   m_settingsHaveChanged = true;
   SetMiddlePoints();
 }
 
-inline void FilterControl::SetMiddlePoints()
+inline void FilterSettingsService::SetMiddlePoints()
 {
   m_settingsHaveChanged = true;
   SetRandomMiddlePoints();
 }
 
-inline void FilterControl::SetRandomFilterSettings()
+inline void FilterSettingsService::SetRandomFilterSettings()
 {
   m_settingsHaveChanged = true;
   SetRandomFilterSettings(GetNewRandomMode());
 }
 
-inline void FilterControl::SetDefaultFilterSettings(const ZoomFilterMode mode)
+inline void FilterSettingsService::SetDefaultFilterSettings(const ZoomFilterMode mode)
 {
   m_settingsHaveChanged = true;
   m_zoomFilterMode = mode;
   SetDefaultSettings();
 }
 
-inline void FilterControl::SetNoisifySetting(const bool value)
+inline void FilterSettingsService::SetNoisifySetting(const bool value)
 {
   m_settingsHaveChanged = true;
   m_filterSettings.noisify = value;
 }
 
-inline void FilterControl::SetNoiseFactorSetting(const float value)
+inline void FilterSettingsService::SetNoiseFactorSetting(const float value)
 {
   m_settingsHaveChanged = true;
   m_filterSettings.noiseFactor = value;
 }
 
-inline void FilterControl::ReduceNoiseFactor()
+inline void FilterSettingsService::ReduceNoiseFactor()
 {
   if (!GetFilterSettings().noisify)
   {
@@ -197,25 +202,25 @@ inline void FilterControl::ReduceNoiseFactor()
   SetNoiseFactorSetting(reducedNoiseFactor);
 }
 
-inline void FilterControl::SetBlockyWavySetting(const bool value)
+inline void FilterSettingsService::SetBlockyWavySetting(const bool value)
 {
   m_settingsHaveChanged = true;
   m_filterSettings.blockyWavy = value;
 }
 
-inline void FilterControl::SetRotateSetting(const float value)
+inline void FilterSettingsService::SetRotateSetting(const float value)
 {
   m_settingsHaveChanged = true;
   m_filterSettings.rotateSpeed = value;
 }
 
-inline void FilterControl::MultiplyRotateSetting(const float factor)
+inline void FilterSettingsService::MultiplyRotateSetting(const float factor)
 {
   m_settingsHaveChanged = true;
   m_filterSettings.rotateSpeed *= factor;
 }
 
-inline void FilterControl::ToggleRotateSetting()
+inline void FilterSettingsService::ToggleRotateSetting()
 {
   m_settingsHaveChanged = true;
   m_filterSettings.rotateSpeed = -m_filterSettings.rotateSpeed;
@@ -224,4 +229,4 @@ inline void FilterControl::ToggleRotateSetting()
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_FILTER_CONTROL_H
+#endif //VISUALIZATION_GOOM_FILTER_SETTINGS_SERVICE_H

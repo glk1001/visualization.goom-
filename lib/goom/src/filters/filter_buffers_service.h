@@ -23,12 +23,12 @@ namespace FILTERS
 
 class IZoomVector;
 
-class ZoomFilterBuffersService
+class FilterBuffersService
 {
 public:
-  ZoomFilterBuffersService(UTILS::Parallel& parallel,
-                           const std::shared_ptr<const PluginInfo>& goomInfo,
-                           std::unique_ptr<IZoomVector> zoomVector) noexcept;
+  FilterBuffersService(UTILS::Parallel& parallel,
+                       const std::shared_ptr<const PluginInfo>& goomInfo,
+                       std::unique_ptr<IZoomVector> zoomVector) noexcept;
 
   void Start();
 
@@ -54,8 +54,7 @@ private:
   void StartFreshTranBuffers();
 };
 
-inline auto ZoomFilterBuffersService::GetSourcePointInfo(const size_t buffPos) const
-    -> SourcePointInfo
+inline auto FilterBuffersService::GetSourcePointInfo(const size_t buffPos) const -> SourcePointInfo
 {
   return m_filterBuffers.GetSourcePointInfo(buffPos);
 }

@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_FILTER_ZOOM_COLORS_H
-#define VISUALIZATION_GOOM_FILTER_ZOOM_COLORS_H
+#ifndef VISUALIZATION_GOOM_FILTER_COLORS_SERVICE_H
+#define VISUALIZATION_GOOM_FILTER_COLORS_SERVICE_H
 
 #include "filter_buffers.h"
 #include "goom_graphic.h"
@@ -15,13 +15,13 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class ZoomFilterColors
+class FilterColorsService
 {
 public:
-  ZoomFilterColors() noexcept = default;
+  FilterColorsService() noexcept = default;
 
   void SetBuffSettings(const FXBuffSettings& settings);
-  void SetBlockWavy(bool val);
+  void SetBlockyWavy(bool val);
 
   using NeighborhoodCoeffArray = ZoomFilterBuffers::NeighborhoodCoeffArray;
   using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
@@ -42,17 +42,17 @@ private:
                                          const NeighborhoodPixelArray& colors) const -> Pixel;
 };
 
-inline void ZoomFilterColors::SetBlockWavy(const bool val)
+inline void FilterColorsService::SetBlockyWavy(const bool val)
 {
   m_blockyWavy = val;
 }
 
-inline void ZoomFilterColors::SetBuffSettings(const FXBuffSettings& settings)
+inline void FilterColorsService::SetBuffSettings(const FXBuffSettings& settings)
 {
   m_buffSettings = settings;
 }
 
-inline auto ZoomFilterColors::GetNewColor(
+inline auto FilterColorsService::GetNewColor(
     const PixelBuffer& srceBuff, const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const
     -> Pixel
 {
@@ -66,8 +66,9 @@ inline auto ZoomFilterColors::GetNewColor(
   return GetFilteredColor(sourceInfo.coeffs, pixelNeighbours);
 }
 
-inline auto ZoomFilterColors::GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
-                                               const NeighborhoodPixelArray& pixels) const -> Pixel
+inline auto FilterColorsService::GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
+                                                  const NeighborhoodPixelArray& pixels) const
+    -> Pixel
 {
   if (m_blockyWavy)
   {
@@ -77,8 +78,8 @@ inline auto ZoomFilterColors::GetFilteredColor(const NeighborhoodCoeffArray& coe
   return GetMixedColor(coeffs, pixels);
 }
 
-inline auto ZoomFilterColors::GetBlockyMixedColor(const NeighborhoodCoeffArray& coeffs,
-                                                  const NeighborhoodPixelArray& colors) const
+inline auto FilterColorsService::GetBlockyMixedColor(const NeighborhoodCoeffArray& coeffs,
+                                                     const NeighborhoodPixelArray& colors) const
     -> Pixel
 {
   // Changing the color order gives a strange blocky, wavy look.
@@ -89,8 +90,8 @@ inline auto ZoomFilterColors::GetBlockyMixedColor(const NeighborhoodCoeffArray& 
   return GetMixedColor(coeffs, reorderedColors);
 }
 
-inline auto ZoomFilterColors::GetMixedColor(const NeighborhoodCoeffArray& coeffs,
-                                            const NeighborhoodPixelArray& colors) const -> Pixel
+inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coeffs,
+                                               const NeighborhoodPixelArray& colors) const -> Pixel
 {
   if (coeffs.isZero)
   {
@@ -144,4 +145,4 @@ inline auto ZoomFilterColors::GetMixedColor(const NeighborhoodCoeffArray& coeffs
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_FILTER_ZOOM_COLORS_H
+#endif //VISUALIZATION_GOOM_FILTER_COLORS_SERVICE_H

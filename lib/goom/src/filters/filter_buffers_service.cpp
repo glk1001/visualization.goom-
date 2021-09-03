@@ -37,7 +37,7 @@ using UTILS::Parallel;
 
 constexpr float MAX_MAX_SPEED_COEFF = +4.01F;
 
-ZoomFilterBuffersService::ZoomFilterBuffersService(
+FilterBuffersService::FilterBuffersService(
     Parallel& parallel,
     const std::shared_ptr<const PluginInfo>& goomInfo,
     std::unique_ptr<IZoomVector> zoomVector) noexcept
@@ -49,13 +49,13 @@ ZoomFilterBuffersService::ZoomFilterBuffersService(
 {
 }
 
-void ZoomFilterBuffersService::SetFilterSettings(const ZoomFilterSettings& filterSettings)
+void FilterBuffersService::SetFilterSettings(const ZoomFilterSettings& filterSettings)
 {
   m_nextFilterSettings = filterSettings;
   m_pendingFilterSettings = true;
 }
 
-void ZoomFilterBuffersService::Start()
+void FilterBuffersService::Start()
 {
   m_currentFilterSettings = m_nextFilterSettings;
   assert(m_currentFilterSettings.speedCoefficientsEffect != nullptr);
@@ -65,7 +65,7 @@ void ZoomFilterBuffersService::Start()
   m_filterBuffers.Start();
 }
 
-inline void ZoomFilterBuffersService::UpdateFilterSettings()
+inline void FilterBuffersService::UpdateFilterSettings()
 {
   m_zoomVector->SetFilterSettings(m_currentFilterSettings);
   // TODO Random calc should not be here. Move to vector effects
@@ -75,7 +75,7 @@ inline void ZoomFilterBuffersService::UpdateFilterSettings()
   m_filterBuffers.NotifyFilterSettingsHaveChanged();
 }
 
-void ZoomFilterBuffersService::UpdateTranBuffers()
+void FilterBuffersService::UpdateTranBuffers()
 {
   m_filterBuffers.UpdateTranBuffers();
 
@@ -85,13 +85,13 @@ void ZoomFilterBuffersService::UpdateTranBuffers()
   }
 }
 
-inline auto ZoomFilterBuffersService::AreStartingFreshTranBuffers() const -> bool
+inline auto FilterBuffersService::AreStartingFreshTranBuffers() const -> bool
 {
   return m_filterBuffers.GetTranBuffersState() ==
          ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
-void ZoomFilterBuffersService::StartFreshTranBuffers()
+void FilterBuffersService::StartFreshTranBuffers()
 {
   // Don't start making new stripes until filter settings change.
   if (!m_pendingFilterSettings)
@@ -106,8 +106,8 @@ void ZoomFilterBuffersService::StartFreshTranBuffers()
   m_pendingFilterSettings = false;
 }
 
-void ZoomFilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpIncrement,
-                                                    const float tranLerpToMaxSwitchMult)
+void FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpIncrement,
+                                                const float tranLerpToMaxSwitchMult)
 {
   int32_t tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
 

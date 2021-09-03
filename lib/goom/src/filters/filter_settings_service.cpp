@@ -1,7 +1,8 @@
-#include "filter_control.h"
+#include "filter_settings_service.h"
 
 #include "filter_amulet.h"
 #include "filter_buffers_service.h"
+#include "filter_colors_service.h"
 #include "filter_crystal_ball.h"
 #include "filter_hypercos.h"
 #include "filter_image_displacements.h"
@@ -11,7 +12,6 @@
 #include "filter_speedway.h"
 #include "filter_wave.h"
 #include "filter_y_only.h"
-#include "filter_zoom_colors.h"
 #include "filter_zoom_vector.h"
 #include "goom/goom_plugin_info.h"
 #include "goomutils/enumutils.h"
@@ -41,7 +41,7 @@ constexpr float PROB_LOW = 0.1F;
 
 //@formatter:off
 // clang-format off
-const Weights<FilterControl::ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVENTS{{
+const Weights<FilterSettingsService::ZoomFilterMode> FilterSettingsService::WEIGHTED_FILTER_EVENTS{{
     { ZoomFilterMode::AMULET_MODE,             8 },
     { ZoomFilterMode::CRYSTAL_BALL_MODE0,      4 },
     { ZoomFilterMode::CRYSTAL_BALL_MODE1,      2 },
@@ -61,7 +61,7 @@ const Weights<FilterControl::ZoomFilterMode> FilterControl::WEIGHTED_FILTER_EVEN
 //@formatter:on
 // clang-format on
 
-class FilterControl::FilterEvents
+class FilterSettingsService::FilterEvents
 {
 public:
   FilterEvents() noexcept = default;
@@ -111,8 +111,9 @@ private:
 #if __cplusplus <= 201402L
 //@formatter:off
 // clang-format off
-const std::array<FilterControl::FilterEvents::Event, FilterControl::FilterEvents::NUM_FILTER_EVENT_TYPES>
-    FilterControl::FilterEvents::WEIGHTED_EVENTS{{
+const std::array<FilterSettingsService::FilterEvents::Event,
+                 FilterSettingsService::FilterEvents::NUM_FILTER_EVENT_TYPES>
+    FilterSettingsService::FilterEvents::WEIGHTED_EVENTS{{
    {/*.event = */ FilterEventTypes::ROTATE,                    /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::CRYSTAL_BALL_IN_MIDDLE,    /*.m = */ 14, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::WAVE_IN_MIDDLE,            /*.m = */  8, /*.outOf = */ 16},
@@ -124,17 +125,17 @@ const std::array<FilterControl::FilterEvents::Event, FilterControl::FilterEvents
 //@formatter:on
 #endif
 
-inline auto FilterControl::FilterEvents::Happens(const FilterEventTypes event) -> bool
+inline auto FilterSettingsService::FilterEvents::Happens(const FilterEventTypes event) -> bool
 {
   const Event& weightedEvent = WEIGHTED_EVENTS[static_cast<size_t>(event)];
   return ProbabilityOfMInN(weightedEvent.m, weightedEvent.outOf);
 }
 
-using FilterEventTypes = FilterControl::FilterEvents::FilterEventTypes;
+using FilterEventTypes = FilterSettingsService::FilterEvents::FilterEventTypes;
 
-FilterControl::FilterControl(UTILS::Parallel& parallel,
-                             const std::shared_ptr<const PluginInfo>& goomInfo,
-                             const std::string& resourcesDirectory) noexcept
+FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
+                                             const std::shared_ptr<const PluginInfo>& goomInfo,
+                                             const std::string& resourcesDirectory) noexcept
   : m_parallel{parallel},
     m_goomInfo{goomInfo},
     m_midScreenPoint{m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height / 2},
@@ -144,7 +145,19 @@ FilterControl::FilterControl(UTILS::Parallel& parallel,
 {
 }
 
-auto FilterControl::MakeSpeedCoefficientsEffects(const std::string& resourcesDirectory)
+auto FilterSettingsService::GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>
+{
+  return std::make_unique<FilterBuffersService>(
+      m_parallel, m_goomInfo,
+      std::make_unique<FilterZoomVector>(m_goomInfo->GetScreenInfo().width, m_resourcesDirectory));
+}
+
+auto FilterSettingsService::GetFilterColorsService() -> std::unique_ptr<FilterColorsService>
+{
+  return std::make_unique<FilterColorsService>();
+}
+
+auto FilterSettingsService::MakeSpeedCoefficientsEffects(const std::string& resourcesDirectory)
     -> std::vector<std::shared_ptr<SpeedCoefficientsEffect>>
 {
   std::vector<std::shared_ptr<SpeedCoefficientsEffect>> effects{};
@@ -158,8 +171,8 @@ auto FilterControl::MakeSpeedCoefficientsEffects(const std::string& resourcesDir
   return effects;
 }
 
-auto FilterControl::MakeSpeedCoefficientsEffect(const ZoomFilterMode mode,
-                                                const std::string& resourcesDirectory)
+auto FilterSettingsService::MakeSpeedCoefficientsEffect(const ZoomFilterMode mode,
+                                                        const std::string& resourcesDirectory)
     -> std::shared_ptr<SpeedCoefficientsEffect>
 {
   switch (mode)
@@ -194,47 +207,7 @@ auto FilterControl::MakeSpeedCoefficientsEffect(const ZoomFilterMode mode,
   }
 }
 
-auto FilterControl::GetZoomFilterBuffersService() -> std::unique_ptr<ZoomFilterBuffersService>
-{
-  return std::make_unique<ZoomFilterBuffersService>(
-      m_parallel, m_goomInfo,
-      std::make_unique<FilterZoomVector>(m_goomInfo->GetScreenInfo().width, m_resourcesDirectory));
-}
-
-auto FilterControl::GetZoomFilterColors() -> std::unique_ptr<ZoomFilterColors>
-{
-  return std::make_unique<ZoomFilterColors>();
-}
-
-void FilterControl::Start()
-{
-  SetRandomFilterSettings();
-  SetMiddlePoints();
-  NotifyUpdatedFilterSettings();
-}
-
-void FilterControl::NotifyUpdatedFilterSettings()
-{
-  m_settingsHaveChanged = false;
-}
-
-inline auto FilterControl::GetSpeedCoefficientsEffect() -> std::shared_ptr<SpeedCoefficientsEffect>&
-{
-  return m_speedCoefficientsEffect[static_cast<size_t>(m_zoomFilterMode)];
-}
-
-void FilterControl::SetRandomFilterSettings(const ZoomFilterMode mode)
-{
-  m_settingsHaveChanged = true;
-
-  m_zoomFilterMode = mode;
-
-  SetDefaultSettings();
-
-  SetFilterModeSettings();
-}
-
-void FilterControl::SetFilterModeSettings()
+void FilterSettingsService::SetFilterModeSettings()
 {
   switch (m_zoomFilterMode)
   {
@@ -288,7 +261,7 @@ void FilterControl::SetFilterModeSettings()
   }
 }
 
-auto FilterControl::GetNewRandomMode() const -> ZoomFilterMode
+auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
 {
   uint32_t numTries = 0;
   constexpr uint32_t MAX_TRIES = 20;
@@ -310,7 +283,30 @@ auto FilterControl::GetNewRandomMode() const -> ZoomFilterMode
   return m_zoomFilterMode;
 }
 
-void FilterControl::SetDefaultSettings()
+void FilterSettingsService::Start()
+{
+  SetRandomFilterSettings();
+  SetMiddlePoints();
+}
+
+inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
+    -> std::shared_ptr<SpeedCoefficientsEffect>&
+{
+  return m_speedCoefficientsEffect[static_cast<size_t>(m_zoomFilterMode)];
+}
+
+void FilterSettingsService::SetRandomFilterSettings(const ZoomFilterMode mode)
+{
+  m_settingsHaveChanged = true;
+
+  m_zoomFilterMode = mode;
+
+  SetDefaultSettings();
+
+  SetFilterModeSettings();
+}
+
+void FilterSettingsService::SetDefaultSettings()
 {
   m_filterSettings.zoomMidPoint = m_midScreenPoint;
 
@@ -327,7 +323,7 @@ void FilterControl::SetDefaultSettings()
   m_filterSettings.speedCoefficientsEffect = GetSpeedCoefficientsEffect();
 }
 
-void FilterControl::SetAmuletModeSettings()
+inline void FilterSettingsService::SetAmuletModeSettings()
 {
   SetRotate(PROB_HIGH);
 
@@ -337,7 +333,7 @@ void FilterControl::SetAmuletModeSettings()
   }
 }
 
-void FilterControl::SetCrystalBall0ModeSettings()
+inline void FilterSettingsService::SetCrystalBall0ModeSettings()
 {
   SetRotate(PROB_LOW);
 
@@ -348,7 +344,7 @@ void FilterControl::SetCrystalBall0ModeSettings()
 }
 
 // TODO - Fix duplication
-void FilterControl::SetCrystalBall1ModeSettings()
+inline void FilterSettingsService::SetCrystalBall1ModeSettings()
 {
   SetRotate(PROB_HALF);
 
@@ -358,35 +354,35 @@ void FilterControl::SetCrystalBall1ModeSettings()
   }
 }
 
-void FilterControl::SetHypercosMode0Settings()
+inline void FilterSettingsService::SetHypercosMode0Settings()
 {
   SetRotate(PROB_LOW);
 
   m_filterSettings.hypercosOverlay = HypercosOverlay::MODE0;
 }
 
-void FilterControl::SetHypercosMode1Settings()
+inline void FilterSettingsService::SetHypercosMode1Settings()
 {
   SetRotate(PROB_LOW);
 
   m_filterSettings.hypercosOverlay = HypercosOverlay::MODE1;
 }
 
-void FilterControl::SetHypercosMode2Settings()
+inline void FilterSettingsService::SetHypercosMode2Settings()
 {
   SetRotate(PROB_LOW);
 
   m_filterSettings.hypercosOverlay = HypercosOverlay::MODE2;
 }
 
-void FilterControl::SetHypercosMode3Settings()
+inline void FilterSettingsService::SetHypercosMode3Settings()
 {
   SetRotate(PROB_LOW);
 
   m_filterSettings.hypercosOverlay = HypercosOverlay::MODE3;
 }
 
-void FilterControl::SetImageDisplacementModeSettings()
+inline void FilterSettingsService::SetImageDisplacementModeSettings()
 {
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
@@ -394,12 +390,12 @@ void FilterControl::SetImageDisplacementModeSettings()
   }
 }
 
-void FilterControl::SetNormalModeSettings()
+inline void FilterSettingsService::SetNormalModeSettings()
 {
   // No extra settings required.
 }
 
-void FilterControl::SetScrunchModeSettings()
+inline void FilterSettingsService::SetScrunchModeSettings()
 {
   SetRotate(PROB_HALF);
 
@@ -409,7 +405,7 @@ void FilterControl::SetScrunchModeSettings()
   }
 }
 
-void FilterControl::SetSpeedwayModeSettings()
+inline void FilterSettingsService::SetSpeedwayModeSettings()
 {
   SetRotate(PROB_LOW);
 
@@ -419,22 +415,22 @@ void FilterControl::SetSpeedwayModeSettings()
   }
 }
 
-void FilterControl::SetWaterModeSettings()
+inline void FilterSettingsService::SetWaterModeSettings()
 {
   // Maybe one day
 }
 
-void FilterControl::SetWaveMode0Settings()
+inline void FilterSettingsService::SetWaveMode0Settings()
 {
   SetWaveModeSettings();
 }
 
-void FilterControl::SetWaveMode1Settings()
+inline void FilterSettingsService::SetWaveMode1Settings()
 {
   SetWaveModeSettings();
 }
 
-void FilterControl::SetWaveModeSettings()
+void FilterSettingsService::SetWaveModeSettings()
 {
   SetRotate(PROB_HIGH);
 
@@ -453,7 +449,7 @@ void FilterControl::SetWaveModeSettings()
   }
 }
 
-void FilterControl::SetYOnlyModeSettings()
+inline void FilterSettingsService::SetYOnlyModeSettings()
 {
   SetRotate(PROB_HALF);
 
@@ -463,7 +459,7 @@ void FilterControl::SetYOnlyModeSettings()
   }
 }
 
-void FilterControl::SetRotate(const float rotateProbability)
+inline void FilterSettingsService::SetRotate(const float rotateProbability)
 {
   if (!ProbabilityOf(rotateProbability))
   {
@@ -477,7 +473,7 @@ void FilterControl::SetRotate(const float rotateProbability)
       GetRandInRange(ZoomFilterSettings::MIN_ROTATE_SPEED, ZoomFilterSettings::MAX_ROTATE_SPEED);
 }
 
-void FilterControl::SetRandomMiddlePoints()
+void FilterSettingsService::SetRandomMiddlePoints()
 {
   if ((m_zoomFilterMode == ZoomFilterMode::WATER_MODE) ||
       (m_zoomFilterMode == ZoomFilterMode::WAVE_MODE0) ||

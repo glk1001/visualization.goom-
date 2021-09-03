@@ -13,8 +13,8 @@ namespace GOOM
 
 namespace FILTERS
 {
-class ZoomFilterBuffersService;
-class ZoomFilterColors;
+class FilterBuffersService;
+class FilterColorsService;
 struct ZoomFilterSettings;
 } // namespace FILTERS
 
@@ -33,8 +33,8 @@ public:
   ZoomFilterFx() noexcept = delete;
   ZoomFilterFx(UTILS::Parallel& parallel,
                const std::shared_ptr<const PluginInfo>& goomInfo,
-               std::unique_ptr<FILTERS::ZoomFilterBuffersService> filterBuffersService,
-               std::unique_ptr<FILTERS::ZoomFilterColors> filterColors) noexcept;
+               std::unique_ptr<FILTERS::FilterBuffersService> filterBuffersService,
+               std::unique_ptr<FILTERS::FilterColorsService> filterColorsService) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
   void SetBuffSettings(const FXBuffSettings& settings);

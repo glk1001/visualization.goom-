@@ -32,19 +32,19 @@ add_library(goom
         src/filters/filter_amulet.cpp
         src/filters/filter_buffers.cpp
         src/filters/filter_buffers_service.cpp
-        src/filters/filter_control.cpp
+        src/filters/filter_colors_service.h
         src/filters/filter_crystal_ball.cpp
         src/filters/filter_hypercos.cpp
         src/filters/filter_image_displacements.cpp
         src/filters/filter_normalized_coords.cpp
         src/filters/filter_planes.cpp
         src/filters/filter_scrunch.cpp
+        src/filters/filter_settings_service.cpp
         src/filters/filter_simple_speed_coefficients_effect.h
         src/filters/filter_speed_coefficients_effect.h
         src/filters/filter_speedway.cpp
         src/filters/filter_wave.cpp
         src/filters/filter_y_only.cpp
-        src/filters/filter_zoom_colors.h
         src/filters/filter_zoom_vector.cpp
         src/filters/filter_zoom_vector_effects.cpp
         src/filters/image_displacement.cpp
