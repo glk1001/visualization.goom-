@@ -65,8 +65,8 @@ public:
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff,
                          PixelBuffer& destBuff,
-                         int32_t switchIncr,
-                         float switchMult);
+                         int32_t tranLerpIncrement,
+                         float tranLerpToMaxSwitchMult);
 
 private:
   const uint32_t m_screenWidth;
@@ -167,13 +167,13 @@ void ZoomFilterFx::ZoomFilterImpl::UpdateFilterSettings(const ZoomFilterSettings
  */
 void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
                                                      PixelBuffer& destBuff,
-                                                     const int32_t switchIncr,
-                                                     const float switchMult)
+                                                     const int32_t tranLerpIncrement,
+                                                     const float tranLerpToMaxSwitchMult)
 {
   ++m_updateNum;
 
   m_filterBuffersService->UpdateTranBuffers();
-  m_filterBuffersService->UpdateTranLerpFactor(switchIncr, switchMult);
+  m_filterBuffersService->UpdateTranLerpFactor(tranLerpIncrement, tranLerpToMaxSwitchMult);
 
   CZoom(srceBuff, destBuff);
 }

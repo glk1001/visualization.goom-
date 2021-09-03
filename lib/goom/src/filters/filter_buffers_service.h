@@ -35,7 +35,7 @@ public:
   void SetFilterSettings(const ZoomFilterSettings& filterSettings);
 
   void UpdateTranBuffers();
-  void UpdateTranLerpFactor(int32_t switchIncr, float switchMult);
+  void UpdateTranLerpFactor(int32_t tranLerpIncrement, float tranLerpToMaxSwitchMult);
 
   using SourcePointInfo = ZoomFilterBuffers::SourcePointInfo;
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo;

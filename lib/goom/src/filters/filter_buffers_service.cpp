@@ -106,22 +106,22 @@ void ZoomFilterBuffersService::StartFreshTranBuffers()
   m_pendingFilterSettings = false;
 }
 
-void ZoomFilterBuffersService::UpdateTranLerpFactor(const int32_t switchIncr,
-                                                    const float switchMult)
+void ZoomFilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpIncrement,
+                                                    const float tranLerpToMaxSwitchMult)
 {
   int32_t tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
 
-  if (switchIncr != 0)
+  if (tranLerpIncrement != 0)
   {
-    tranLerpFactor =
-        stdnew::clamp(tranLerpFactor + switchIncr, 0, ZoomFilterBuffers::GetMaxTranLerpFactor());
+    tranLerpFactor = stdnew::clamp(tranLerpFactor + tranLerpIncrement, 0,
+                                   ZoomFilterBuffers::GetMaxTranLerpFactor());
   }
 
-  if (!floats_equal(switchMult, 1.0F))
+  if (!floats_equal(tranLerpToMaxSwitchMult, 1.0F))
   {
     tranLerpFactor = static_cast<int32_t>(
         stdnew::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
-                     static_cast<float>(tranLerpFactor), switchMult));
+                     static_cast<float>(tranLerpFactor), tranLerpToMaxSwitchMult));
   }
 
   m_filterBuffers.SetTranLerpFactor(tranLerpFactor);

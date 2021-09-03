@@ -185,10 +185,10 @@ struct GoomData
   int32_t drawLinesDuration = LinesFx::MIN_LINE_DURATION;
   int32_t lineMode = LinesFx::MIN_LINE_DURATION; // l'effet lineaire a dessiner
 
-  static constexpr float SWITCH_MULT_AMOUNT = 29.0F / 30.0F;
-  float switchMult = SWITCH_MULT_AMOUNT;
-  static constexpr int SWITCH_INCR_AMOUNT = 0x7f;
-  int32_t switchIncr = SWITCH_INCR_AMOUNT;
+  static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
+  float tranLerpToMaxSwitchMult = DEFAULT_SWITCH_MULT;
+  static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
+  int32_t tranLerpIncrement = DEFAULT_TRAN_LERP_INCREMENT;
   uint32_t stateSelectionBlocker = 0;
   int32_t previousZoomSpeed = Vitesse::DEFAULT_VITESSE + 1;
 
@@ -1044,8 +1044,8 @@ void GoomControl::GoomControlImpl::MegaLentUpdate()
   IncreaseLockTime(MEGA_LENT_LOCK_TIME_INCREASE);
 
   m_filterControl.GetRWVitesseSetting().SetVitesse(Vitesse::STOP_SPEED - 1);
-  m_goomData.switchIncr = GoomData::SWITCH_INCR_AMOUNT;
-  m_goomData.switchMult = 1.0F;
+  m_goomData.tranLerpIncrement = GoomData::DEFAULT_TRAN_LERP_INCREMENT;
+  m_goomData.tranLerpToMaxSwitchMult = 1.0F;
 }
 
 void GoomControl::GoomControlImpl::ChangeMilieu()
@@ -1128,8 +1128,8 @@ void GoomControl::GoomControlImpl::ChangeSwitchValues()
 {
   if (GetLockTime() > CHANGE_SWITCH_VALUES_LOCK_TIME)
   {
-    m_goomData.switchIncr = GoomData::SWITCH_INCR_AMOUNT;
-    m_goomData.switchMult = 1.0F;
+    m_goomData.tranLerpIncrement = GoomData::DEFAULT_TRAN_LERP_INCREMENT;
+    m_goomData.tranLerpToMaxSwitchMult = 1.0F;
   }
 }
 
@@ -1220,7 +1220,7 @@ void GoomControl::GoomControlImpl::ChangeZoomEffect()
   else
   {
     m_goomData.updatesSinceLastZoomEffectsChange = 0;
-    m_goomData.switchIncr = GoomData::SWITCH_INCR_AMOUNT;
+    m_goomData.tranLerpIncrement = GoomData::DEFAULT_TRAN_LERP_INCREMENT;
 
     int32_t diff = m_filterControl.GetROVitesseSetting().GetVitesse() - m_goomData.previousZoomSpeed;
     if (diff < 0)
@@ -1230,16 +1230,16 @@ void GoomControl::GoomControlImpl::ChangeZoomEffect()
 
     if (diff > 2)
     {
-      m_goomData.switchIncr *= (diff + 2) / 2;
+      m_goomData.tranLerpIncrement *= (diff + 2) / 2;
     }
     m_goomData.previousZoomSpeed = m_filterControl.GetROVitesseSetting().GetVitesse();
-    m_goomData.switchMult = 1.0F;
+    m_goomData.tranLerpToMaxSwitchMult = 1.0F;
 
     if ((0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom()) &&
         (m_goomInfo->GetSoundInfo().GetTotalGoomsInCurrentCycle() < 2))
     {
-      m_goomData.switchIncr = 0;
-      m_goomData.switchMult = GoomData::SWITCH_MULT_AMOUNT;
+      m_goomData.tranLerpIncrement = 0;
+      m_goomData.tranLerpToMaxSwitchMult = GoomData::DEFAULT_SWITCH_MULT;
 
       ChangeRotation();
       DoIfsRenew();
@@ -1281,7 +1281,8 @@ void GoomControl::GoomControlImpl::ApplyZoom()
   }
 
   m_visualFx.zoomFilter_fx->ZoomFilterFastRgb(m_imageBuffers.GetP1(), m_imageBuffers.GetP2(),
-                                              m_goomData.switchIncr, m_goomData.switchMult);
+                                              m_goomData.tranLerpIncrement,
+                                              m_goomData.tranLerpToMaxSwitchMult);
 
   m_filterControl.ReduceNoiseFactor();
 }
@@ -1673,8 +1674,8 @@ void GoomControl::GoomControlImpl::DisplayStateText()
   message += std20::format("middleX: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().middleX);
   message += std20::format("middleY: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().middleY);
 
-  message += std20::format("switchIncr: {}\n", m_goomData.switchIncr);
-  message += std20::format("switchMult: {}\n", m_goomData.switchMult);
+  message += std20::format("tranLerpIncrement: {}\n", m_goomData.tranLerpIncrement);
+  message += std20::format("tranLerpToMaxSwitchMult: {}\n", m_goomData.tranLerpToMaxSwitchMult);
 
   message += std20::format("vitesse: {}\n",
                            m_visualFx.zoomFilter_fx->GetFilterSettings().vitesse.GetVitesse());
