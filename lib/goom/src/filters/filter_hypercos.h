@@ -1,8 +1,8 @@
 #ifndef VISUALIZATION_GOOM_FILTER_HYPERCOS_H
 #define VISUALIZATION_GOOM_FILTER_HYPERCOS_H
 
-#include "filter_data.h"
 #include "filter_normalized_coords.h"
+#include "filter_settings.h"
 #include "goomutils/goomrand.h"
 #include "v2d.h"
 

@@ -1,6 +1,6 @@
 #include "filter_hypercos.h"
 
-#include "filter_data.h"
+#include "filter_settings.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"

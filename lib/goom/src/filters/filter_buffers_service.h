@@ -2,7 +2,7 @@
 #define VISUALIZATION_GOOM_FILTER_BUFFERS_SERVICE_H
 
 #include "filter_buffers.h"
-#include "goom/filter_data.h"
+#include "filter_settings.h"
 #include "v2d.h"
 
 #include <cstdint>
@@ -33,7 +33,7 @@ public:
 
   void Start();
 
-  void SetFilterSettings(const ZoomFilterData& filterSettings);
+  void SetFilterSettings(const ZoomFilterSettings& filterSettings);
   void SetSpeedCoefficientsEffect(std::shared_ptr<SpeedCoefficientsEffect> val);
   void UpdatePlaneEffects();
 
@@ -48,8 +48,8 @@ private:
   std::unique_ptr<IZoomVector> m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
 
-  ZoomFilterData m_currentFilterSettings{};
-  ZoomFilterData m_nextFilterSettings{};
+  ZoomFilterSettings m_currentFilterSettings{};
+  ZoomFilterSettings m_nextFilterSettings{};
   std::shared_ptr<SpeedCoefficientsEffect> m_nextSpeedCoefficientsEffect{};
   bool m_pendingPlaneEffects = false;
   bool m_pendingFilterSettings = false;

@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_FILTER_DATA_H
-#define VISUALIZATION_GOOM_FILTER_DATA_H
+#ifndef VISUALIZATION_GOOM_FILTER_SETTINGS_H
+#define VISUALIZATION_GOOM_FILTER_SETTINGS_H
 
 #include "goomutils/mathutils.h"
 #include "v2d.h"
@@ -8,15 +8,6 @@
 
 namespace GOOM
 {
-
-enum class HypercosOverlay
-{
-  NONE,
-  MODE0,
-  MODE1,
-  MODE2,
-  MODE3,
-};
 
 // 128 = vitesse nule...
 // 256 = en arriere
@@ -50,6 +41,40 @@ private:
   bool m_reverseVitesse = true;
 };
 
+enum class HypercosOverlay
+{
+  NONE,
+  MODE0,
+  MODE1,
+  MODE2,
+  MODE3,
+};
+
+struct ZoomFilterSettings
+{
+  HypercosOverlay hypercosOverlay = HypercosOverlay::NONE;
+
+  Vitesse vitesse{};
+
+  static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
+  static constexpr uint32_t DEFAULT_MIDDLE_Y = 1;
+  V2dInt zoomMidPoint = {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y}; // milieu de l'effet
+
+  bool tanEffect = false;
+  bool blockyWavy = false;
+
+  static constexpr float MIN_ROTATE_SPEED = -0.5F;
+  static constexpr float MAX_ROTATE_SPEED = +0.5F;
+  static constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
+  float rotateSpeed = DEFAULT_ROTATE_SPEED;
+
+  bool noisify = false; // ajoute un bruit a la transformation
+  float noiseFactor = 1.0; // in range [0, 1]
+  // For noise amplitude, take the reciprocal of these.
+  static constexpr float NOISE_MIN = 40.0F;
+  static constexpr float NOISE_MAX = 120.0F;
+};
+
 inline void Vitesse::SetVitesse(const int32_t val)
 {
   m_vitesse = stdnew::clamp(val, FASTEST_SPEED, STOP_SPEED);
@@ -76,32 +101,6 @@ inline auto Vitesse::GetRelativeSpeed() const -> float
   const float speed = static_cast<float>(m_vitesse - MAX_VITESSE) / static_cast<float>(MAX_VITESSE);
   return m_reverseVitesse ? -speed : +speed;
 }
-
-struct ZoomFilterData
-{
-  //TODO - Have class with SetMode which handles hypercosOverlay
-  HypercosOverlay hypercosOverlay = HypercosOverlay::NONE;
-
-  Vitesse vitesse{};
-  static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
-  static constexpr uint32_t DEFAULT_MIDDLE_Y = 1;
-  V2dInt zoomMidPoint = {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y}; // milieu de l'effet
-  
-  bool tanEffect = false;
-  bool blockyWavy = false;
-  
-  static constexpr float MIN_ROTATE_SPEED = -0.5F;
-  static constexpr float MAX_ROTATE_SPEED = +0.5F;
-  static constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
-  float rotateSpeed = DEFAULT_ROTATE_SPEED;
-
-  // Noise:
-  bool noisify = false; // ajoute un bruit a la transformation
-  float noiseFactor = 1.0; // in range [0, 1]
-  // For noise amplitude, take the reciprocal of these.
-  static constexpr float NOISE_MIN = 40.0F;
-  static constexpr float NOISE_MAX = 120.0F;
-};
 
 } // namespace GOOM
 #endif

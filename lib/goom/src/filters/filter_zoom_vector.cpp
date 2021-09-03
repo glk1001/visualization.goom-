@@ -1,6 +1,5 @@
 #include "filter_zoom_vector.h"
 
-#include "filter_data.h"
 #include "filter_normalized_coords.h"
 #include "filter_zoom_vector_effects.h"
 #include "goomutils/mathutils.h"
@@ -27,7 +26,7 @@ FilterZoomVector::FilterZoomVector(const std::string& resourcesDirectory) noexce
 {
 }
 
-void FilterZoomVector::SetFilterSettings(const ZoomFilterData& filterSettings)
+void FilterZoomVector::SetFilterSettings(const ZoomFilterSettings& filterSettings)
 {
   m_zoomVectorEffects.SetFilterSettings(filterSettings);
 }

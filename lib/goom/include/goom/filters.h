@@ -24,7 +24,7 @@ class Parallel;
 struct FXBuffSettings;
 class PixelBuffer;
 class PluginInfo;
-struct ZoomFilterData;
+struct ZoomFilterSettings;
 
 class ZoomFilterFx : public IVisualFx
 {

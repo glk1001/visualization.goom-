@@ -2,10 +2,10 @@
 #define VISUALIZATION_GOOM_FILTER_CONTROL_H
 
 #include "filter_buffers_service.h"
+#include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "filter_zoom_colors.h"
 #include "filter_zoom_vector.h"
-#include "goom/filter_data.h"
 #include "goomutils/spimpl.h"
 
 #include <memory>
@@ -42,7 +42,7 @@ public:
   void UpdateFilterSettings();
   auto HaveSettingsChangedSinceLastUpdate() const -> bool;
 
-  [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterData&;
+  [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterSettings&;
   [[nodiscard]] auto GetROVitesseSetting() -> const Vitesse&;
   [[nodiscard]] auto GetRWVitesseSetting() -> Vitesse&;
 
@@ -91,7 +91,7 @@ private:
   const V2dInt m_midScreenPoint;
   ZoomFilterBuffersService m_zoomFilterBuffersService;
   ZoomFilterColors m_filterColors{};
-  ZoomFilterData m_filterData{};
+  ZoomFilterSettings m_filterSettings{};
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
@@ -130,9 +130,9 @@ private:
   void SetRotate(float rotateProbability);
 };
 
-inline auto FilterControl::GetFilterSettings() const -> const ZoomFilterData&
+inline auto FilterControl::GetFilterSettings() const -> const ZoomFilterSettings&
 {
-  return m_filterData;
+  return m_filterSettings;
 }
 
 inline auto FilterControl::HaveSettingsChangedSinceLastUpdate() const -> bool
@@ -142,13 +142,13 @@ inline auto FilterControl::HaveSettingsChangedSinceLastUpdate() const -> bool
 
 inline auto FilterControl::GetROVitesseSetting() -> const Vitesse&
 {
-  return m_filterData.vitesse;
+  return m_filterSettings.vitesse;
 }
 
 inline auto FilterControl::GetRWVitesseSetting() -> Vitesse&
 {
   m_settingsHaveChanged = true;
-  return m_filterData.vitesse;
+  return m_filterSettings.vitesse;
 }
 
 inline void FilterControl::ChangeMilieu()
@@ -180,13 +180,13 @@ inline void FilterControl::SetDefaultFilterSettings(const ZoomFilterMode mode)
 inline void FilterControl::SetNoisifySetting(const bool value)
 {
   m_settingsHaveChanged = true;
-  m_filterData.noisify = value;
+  m_filterSettings.noisify = value;
 }
 
 inline void FilterControl::SetNoiseFactorSetting(const float value)
 {
   m_settingsHaveChanged = true;
-  m_filterData.noiseFactor = value;
+  m_filterSettings.noiseFactor = value;
 }
 
 inline void FilterControl::ReduceNoiseFactor()
@@ -196,32 +196,32 @@ inline void FilterControl::ReduceNoiseFactor()
     return;
   }
   constexpr float REDUCING_FACTOR = 0.94F;
-  const float reducedNoiseFactor = m_filterData.noiseFactor * REDUCING_FACTOR;
+  const float reducedNoiseFactor = m_filterSettings.noiseFactor * REDUCING_FACTOR;
   SetNoiseFactorSetting(reducedNoiseFactor);
 }
 
 inline void FilterControl::SetBlockyWavySetting(const bool value)
 {
   m_settingsHaveChanged = true;
-  m_filterData.blockyWavy = value;
+  m_filterSettings.blockyWavy = value;
 }
 
 inline void FilterControl::SetRotateSetting(const float value)
 {
   m_settingsHaveChanged = true;
-  m_filterData.rotateSpeed = value;
+  m_filterSettings.rotateSpeed = value;
 }
 
 inline void FilterControl::MultiplyRotateSetting(const float factor)
 {
   m_settingsHaveChanged = true;
-  m_filterData.rotateSpeed *= factor;
+  m_filterSettings.rotateSpeed *= factor;
 }
 
 inline void FilterControl::ToggleRotateSetting()
 {
   m_settingsHaveChanged = true;
-  m_filterData.rotateSpeed = -m_filterData.rotateSpeed;
+  m_filterSettings.rotateSpeed = -m_filterSettings.rotateSpeed;
 }
 
 } // namespace FILTERS

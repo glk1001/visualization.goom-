@@ -1,8 +1,8 @@
 #include "filter_buffers_service.h"
 
 #include "filter_buffers.h"
-#include "filter_data.h"
 #include "filter_normalized_coords.h"
+#include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "goom_plugin_info.h"
 #include "goom_zoom_vector.h"
@@ -59,7 +59,7 @@ void ZoomFilterBuffersService::Start()
   m_filterBuffers.Start();
 }
 
-void ZoomFilterBuffersService::SetFilterSettings(const ZoomFilterData& filterSettings)
+void ZoomFilterBuffersService::SetFilterSettings(const ZoomFilterSettings& filterSettings)
 {
   m_nextFilterSettings = filterSettings;
   m_pendingFilterSettings = true;

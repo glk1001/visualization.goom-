@@ -6,13 +6,13 @@
 #include "filter_hypercos.h"
 #include "filter_image_displacements.h"
 #include "filter_scrunch.h"
+#include "filter_settings.h"
 #include "filter_simple_speed_coefficients_effect.h"
 #include "filter_speedway.h"
 #include "filter_wave.h"
 #include "filter_y_only.h"
 #include "filter_zoom_colors.h"
 #include "filter_zoom_vector.h"
-#include "goom/filter_data.h"
 #include "goom/goom_plugin_info.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
@@ -220,12 +220,12 @@ void FilterControl::Start()
 
 void FilterControl::UpdateFilterSettings()
 {
-  m_zoomFilterBuffersService.SetFilterSettings(m_filterData);
+  m_zoomFilterBuffersService.SetFilterSettings(m_filterSettings);
 
   m_zoomFilterBuffersService.SetSpeedCoefficientsEffect(
       GetSpeedCoefficientsEffect(m_zoomFilterMode));
 
-  m_filterColors.SetBlockWavy(m_filterData.blockyWavy);
+  m_filterColors.SetBlockWavy(m_filterSettings.blockyWavy);
 
   m_settingsHaveChanged = false;
 }
@@ -319,17 +319,17 @@ auto FilterControl::GetNewRandomMode() const -> ZoomFilterMode
 
 void FilterControl::SetDefaultSettings()
 {
-  m_filterData.zoomMidPoint = m_midScreenPoint;
+  m_filterSettings.zoomMidPoint = m_midScreenPoint;
 
-  m_filterData.vitesse.SetDefault();
+  m_filterSettings.vitesse.SetDefault();
 
-  m_filterData.tanEffect = ProbabilityOfMInN(1, 10);
-  m_filterData.rotateSpeed = 0.0;
-  m_filterData.noisify = false;
-  m_filterData.noiseFactor = 1.0;
-  m_filterData.blockyWavy = false;
+  m_filterSettings.tanEffect = ProbabilityOfMInN(1, 10);
+  m_filterSettings.rotateSpeed = 0.0;
+  m_filterSettings.noisify = false;
+  m_filterSettings.noiseFactor = 1.0;
+  m_filterSettings.blockyWavy = false;
 
-  m_filterData.hypercosOverlay = GetHypercosOverlay();
+  m_filterSettings.hypercosOverlay = GetHypercosOverlay();
 }
 
 auto FilterControl::GetHypercosOverlay() -> HypercosOverlay
@@ -385,28 +385,28 @@ void FilterControl::SetHypercosMode0Settings()
 {
   SetRotate(PROB_LOW);
 
-  m_filterData.hypercosOverlay = HypercosOverlay::MODE0;
+  m_filterSettings.hypercosOverlay = HypercosOverlay::MODE0;
 }
 
 void FilterControl::SetHypercosMode1Settings()
 {
   SetRotate(PROB_LOW);
 
-  m_filterData.hypercosOverlay = HypercosOverlay::MODE1;
+  m_filterSettings.hypercosOverlay = HypercosOverlay::MODE1;
 }
 
 void FilterControl::SetHypercosMode2Settings()
 {
   SetRotate(PROB_LOW);
 
-  m_filterData.hypercosOverlay = HypercosOverlay::MODE2;
+  m_filterSettings.hypercosOverlay = HypercosOverlay::MODE2;
 }
 
 void FilterControl::SetHypercosMode3Settings()
 {
   SetRotate(PROB_LOW);
 
-  m_filterData.hypercosOverlay = HypercosOverlay::MODE3;
+  m_filterSettings.hypercosOverlay = HypercosOverlay::MODE3;
 }
 
 void FilterControl::SetImageDisplacementModeSettings()
@@ -461,12 +461,13 @@ void FilterControl::SetWaveModeSettings()
 {
   SetRotate(PROB_HIGH);
 
-  m_filterData.vitesse.SetReverseVitesse(m_filterEvents->Happens(FilterEventTypes::REVERSE_SPEED));
+  m_filterSettings.vitesse.SetReverseVitesse(
+      m_filterEvents->Happens(FilterEventTypes::REVERSE_SPEED));
 
   if (m_filterEvents->Happens(FilterEventTypes::CHANGE_SPEED))
   {
-    m_filterData.vitesse.SetVitesse((m_filterData.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE) /
-                                    2);
+    m_filterSettings.vitesse.SetVitesse(
+        (m_filterSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE) / 2);
   }
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
@@ -494,8 +495,9 @@ void FilterControl::SetRotate(const float rotateProbability)
 
   m_settingsHaveChanged = true;
 
-  m_filterData.rotateSpeed = rotateProbability * GetRandInRange(ZoomFilterData::MIN_ROTATE_SPEED,
-                                                                ZoomFilterData::MAX_ROTATE_SPEED);
+  m_filterSettings.rotateSpeed =
+      rotateProbability *
+      GetRandInRange(ZoomFilterSettings::MIN_ROTATE_SPEED, ZoomFilterSettings::MAX_ROTATE_SPEED);
 }
 
 void FilterControl::SetRandomMiddlePoints()
@@ -504,7 +506,7 @@ void FilterControl::SetRandomMiddlePoints()
       (m_zoomFilterMode == ZoomFilterMode::WAVE_MODE0) ||
       (m_zoomFilterMode == ZoomFilterMode::AMULET_MODE))
   {
-    m_filterData.zoomMidPoint = m_midScreenPoint;
+    m_filterSettings.zoomMidPoint = m_midScreenPoint;
     return;
   }
 
@@ -512,13 +514,13 @@ void FilterControl::SetRandomMiddlePoints()
        (m_zoomFilterMode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
       m_filterEvents->Happens(FilterEventTypes::CRYSTAL_BALL_IN_MIDDLE))
   {
-    m_filterData.zoomMidPoint = m_midScreenPoint;
+    m_filterSettings.zoomMidPoint = m_midScreenPoint;
     return;
     }
     if ((m_zoomFilterMode == ZoomFilterMode::WAVE_MODE1) &&
         m_filterEvents->Happens(FilterEventTypes::WAVE_IN_MIDDLE))
     {
-      m_filterData.zoomMidPoint = m_midScreenPoint;
+      m_filterSettings.zoomMidPoint = m_midScreenPoint;
       return;
     }
 
@@ -539,25 +541,25 @@ void FilterControl::SetRandomMiddlePoints()
   switch (s_middlePointWeights.GetRandomWeighted())
   {
     case MiddlePointEvents::EVENT1:
-      m_filterData.zoomMidPoint = {m_goomInfo->GetScreenInfo().width / 2,
-                                   m_goomInfo->GetScreenInfo().height - 1};
+      m_filterSettings.zoomMidPoint = {m_goomInfo->GetScreenInfo().width / 2,
+                                       m_goomInfo->GetScreenInfo().height - 1};
       break;
     case MiddlePointEvents::EVENT2:
-      m_filterData.zoomMidPoint.x = static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1);
+      m_filterSettings.zoomMidPoint.x = static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1);
       break;
     case MiddlePointEvents::EVENT3:
-      m_filterData.zoomMidPoint.x = 1;
+      m_filterSettings.zoomMidPoint.x = 1;
       break;
     case MiddlePointEvents::EVENT4:
-      m_filterData.zoomMidPoint = m_midScreenPoint;
+      m_filterSettings.zoomMidPoint = m_midScreenPoint;
       break;
     case MiddlePointEvents::EVENT5:
-      m_filterData.zoomMidPoint = {m_goomInfo->GetScreenInfo().width / 4,
-                                   m_goomInfo->GetScreenInfo().height / 4};
+      m_filterSettings.zoomMidPoint = {m_goomInfo->GetScreenInfo().width / 4,
+                                       m_goomInfo->GetScreenInfo().height / 4};
       break;
     case MiddlePointEvents::EVENT6:
-      m_filterData.zoomMidPoint = {(3 * m_goomInfo->GetScreenInfo().width) / 4,
-                                   (3 * m_goomInfo->GetScreenInfo().height) / 4};
+      m_filterSettings.zoomMidPoint = {(3 * m_goomInfo->GetScreenInfo().width) / 4,
+                                       (3 * m_goomInfo->GetScreenInfo().height) / 4};
       break;
     default:
       throw std::logic_error("Unknown MiddlePointEvents enum.");

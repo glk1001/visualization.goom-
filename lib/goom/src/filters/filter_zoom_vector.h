@@ -13,7 +13,7 @@
 namespace GOOM
 {
 
-struct ZoomFilterData;
+struct ZoomFilterSettings;
 
 namespace FILTERS
 {
@@ -25,7 +25,7 @@ public:
 
   void SetMaxSpeedCoeff(float val) override;
 
-  void SetFilterSettings(const ZoomFilterData& filterSettings) override;
+  void SetFilterSettings(const ZoomFilterSettings& filterSettings) override;
   void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth) override;
   void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val) override;
 

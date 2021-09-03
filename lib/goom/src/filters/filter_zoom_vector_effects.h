@@ -1,8 +1,8 @@
 #ifndef VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
 #define VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
 
-#include "filter_data.h"
 #include "filter_normalized_coords.h"
+#include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "goomutils/mathutils.h"
 #include "v2d.h"
@@ -36,7 +36,7 @@ public:
   auto operator=(const ZoomVectorEffects&) -> ZoomVectorEffects& = delete;
   auto operator=(ZoomVectorEffects&&) -> ZoomVectorEffects& = delete;
 
-  void SetFilterSettings(const ZoomFilterData& filterSettings);
+  void SetFilterSettings(const ZoomFilterSettings& filterSettings);
   void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth);
   void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val);
 
@@ -71,7 +71,7 @@ public:
 
 private:
   const std::string m_resourcesDirectory;
-  const ZoomFilterData* m_filterSettings{};
+  const ZoomFilterSettings* m_filterSettings{};
 
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
   static constexpr float MIN_SPEED_COEFF = -4.01F;

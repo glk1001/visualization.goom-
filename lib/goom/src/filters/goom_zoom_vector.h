@@ -8,7 +8,7 @@
 namespace GOOM
 {
 
-struct ZoomFilterData;
+struct ZoomFilterSettings;
 
 namespace FILTERS
 {
@@ -28,7 +28,7 @@ public:
 
   virtual void SetMaxSpeedCoeff(float val) = 0;
 
-  virtual void SetFilterSettings(const ZoomFilterData& filterSettings) = 0;
+  virtual void SetFilterSettings(const ZoomFilterSettings& filterSettings) = 0;
   virtual void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth) = 0;
   virtual void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val) = 0;
 

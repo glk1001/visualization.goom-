@@ -1,9 +1,9 @@
 #include "filter_zoom_vector_effects.h"
 
-#include "filter_data.h"
 #include "filter_hypercos.h"
 #include "filter_normalized_coords.h"
 #include "filter_planes.h"
+#include "filter_settings.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"
 #include "v2d.h"
@@ -42,7 +42,7 @@ void ZoomVectorEffects::SetSpeedCoefficientsEffect(
   m_speedCoefficientsEffect = val;
 }
 
-void ZoomVectorEffects::SetFilterSettings(const ZoomFilterData& filterSettings)
+void ZoomVectorEffects::SetFilterSettings(const ZoomFilterSettings& filterSettings)
 {
   m_filterSettings = &filterSettings;
 
@@ -123,7 +123,7 @@ auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
   //    const float xAmp = 1.0/getRandInRange(50.0f, 200.0f);
   //    const float yAmp = 1.0/getRandInRange(50.0f, 200.0f);
   const float amp = (0.5F * m_filterSettings->noiseFactor) /
-                    GetRandInRange(ZoomFilterData::NOISE_MIN, ZoomFilterData::NOISE_MAX);
+                    GetRandInRange(ZoomFilterSettings::NOISE_MIN, ZoomFilterSettings::NOISE_MAX);
   return {GetRandInRange(-amp, +amp), GetRandInRange(-amp, +amp)};
 }
 

@@ -1,8 +1,8 @@
 #include "catch2/catch.hpp"
 #include "filters/filter_buffers.h"
 #include "filters/filter_normalized_coords.h"
+#include "filters/filter_settings.h"
 #include "filters/filter_zoom_vector.h"
-#include "goom/filter_data.h"
 #include "goom/goom_plugin_info.h"
 #include "goom/v2d.h"
 #include "goomutils/mathutils.h"
@@ -13,7 +13,7 @@
 
 using GOOM::PluginInfo;
 using GOOM::V2dInt;
-using GOOM::ZoomFilterData;
+using GOOM::ZoomFilterSettings;
 using GOOM::FILTERS::FilterZoomVector;
 using GOOM::FILTERS::NormalizedCoords;
 using GOOM::FILTERS::ZoomFilterBuffers;
@@ -40,7 +40,7 @@ public:
   {
   }
 
-  void SetFilterSettings(const ZoomFilterData& filterSettings) override;
+  void SetFilterSettings(const ZoomFilterSettings& filterSettings) override;
 
   [[nodiscard]] auto GetConstCoords() const -> const V2dInt& { return m_constCoords; }
   void SetConstCoords(const V2dInt& coords) { m_constCoords = coords; }
@@ -53,7 +53,7 @@ private:
   V2dInt m_constCoords = CONST_ZOOM_VECTOR_COORDS_1;
 };
 
-void TestZoomVector::SetFilterSettings(const ZoomFilterData& filterSettings)
+void TestZoomVector::SetFilterSettings(const ZoomFilterSettings& filterSettings)
 {
   FilterZoomVector::SetFilterSettings(filterSettings);
 }
