@@ -29,7 +29,7 @@ class Planes;
 class ZoomVectorEffects
 {
 public:
-  explicit ZoomVectorEffects(const std::string& resourcesDirectory) noexcept;
+  ZoomVectorEffects(uint32_t screenWidth, const std::string& resourcesDirectory) noexcept;
   ZoomVectorEffects(const ZoomVectorEffects&) noexcept = delete;
   ZoomVectorEffects(ZoomVectorEffects&&) noexcept = delete;
   ~ZoomVectorEffects() noexcept;
@@ -37,8 +37,6 @@ public:
   auto operator=(ZoomVectorEffects&&) -> ZoomVectorEffects& = delete;
 
   void SetFilterSettings(const ZoomFilterSettings& filterSettings);
-  void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth);
-  void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val);
 
   void SetMaxSpeedCoeff(float val);
 
@@ -70,6 +68,7 @@ public:
   [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
 
 private:
+  const uint32_t m_screenWidth;
   const std::string m_resourcesDirectory;
   const ZoomFilterSettings* m_filterSettings{};
 
@@ -78,11 +77,11 @@ private:
   static constexpr float DEFAULT_MAX_SPEED_COEFF = +2.01F;
   float m_maxSpeedCoeff = DEFAULT_MAX_SPEED_COEFF;
 
-  std::shared_ptr<const SpeedCoefficientsEffect> m_speedCoefficientsEffect{};
   const std::unique_ptr<Hypercos> m_hypercos;
   const std::unique_ptr<Planes> m_planes;
 
   void SetHypercosOverlaySettings();
+  void SetRandomPlaneEffects();
 
   [[nodiscard]] static auto GetMinVelocityVal(float velocityVal) -> float;
 
@@ -110,8 +109,8 @@ inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero
                                                       const NormalizedCoords& coords) const
     -> V2dFlt
 {
-  return m_speedCoefficientsEffect->GetSpeedCoefficients(GetBaseSpeedCoefficients(), sqDistFromZero,
-                                                         coords);
+  return m_filterSettings->speedCoefficientsEffect->GetSpeedCoefficients(GetBaseSpeedCoefficients(),
+                                                                         sqDistFromZero, coords);
   // Amulet 2
   // vx = X * tan(dist);
   // vy = Y * tan(dist);

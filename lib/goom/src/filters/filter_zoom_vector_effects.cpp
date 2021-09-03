@@ -26,8 +26,10 @@ namespace GOOM::FILTERS
 using UTILS::GetRandInRange;
 using UTILS::m_half_pi;
 
-ZoomVectorEffects::ZoomVectorEffects(const std::string& resourcesDirectory) noexcept
-  : m_resourcesDirectory{resourcesDirectory},
+ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
+                                     const std::string& resourcesDirectory) noexcept
+  : m_screenWidth{screenWidth},
+    m_resourcesDirectory{resourcesDirectory},
     m_hypercos{std::make_unique<Hypercos>()},
     m_planes{std::make_unique<Planes>()}
 {
@@ -35,24 +37,19 @@ ZoomVectorEffects::ZoomVectorEffects(const std::string& resourcesDirectory) noex
 
 ZoomVectorEffects::~ZoomVectorEffects() noexcept = default;
 
-// TODO This may change filter buffers stripe when it shouldn't
-void ZoomVectorEffects::SetSpeedCoefficientsEffect(
-    const std::shared_ptr<const SpeedCoefficientsEffect> val)
-{
-  m_speedCoefficientsEffect = val;
-}
-
 void ZoomVectorEffects::SetFilterSettings(const ZoomFilterSettings& filterSettings)
 {
   m_filterSettings = &filterSettings;
 
+  m_filterSettings->speedCoefficientsEffect->SetRandomParams();
+
   SetHypercosOverlaySettings();
+  SetRandomPlaneEffects();
 }
 
-void ZoomVectorEffects::SetRandomPlaneEffects(const V2dInt& zoomMidPoint,
-                                              const uint32_t screenWidth)
+void ZoomVectorEffects::SetRandomPlaneEffects()
 {
-  m_planes->SetRandomParams(zoomMidPoint, screenWidth);
+  m_planes->SetRandomParams(m_filterSettings->zoomMidPoint, m_screenWidth);
 }
 
 void ZoomVectorEffects::SetHypercosOverlaySettings()

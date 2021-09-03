@@ -21,13 +21,11 @@ namespace FILTERS
 class FilterZoomVector : public IZoomVector
 {
 public:
-  explicit FilterZoomVector(const std::string& resourcesDirectory) noexcept;
+  explicit FilterZoomVector(uint32_t screenWidth, const std::string& resourcesDirectory) noexcept;
 
   void SetMaxSpeedCoeff(float val) override;
 
   void SetFilterSettings(const ZoomFilterSettings& filterSettings) override;
-  void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth) override;
-  void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val) override;
 
   auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords override;
 

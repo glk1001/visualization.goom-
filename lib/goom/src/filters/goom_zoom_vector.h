@@ -8,13 +8,12 @@
 namespace GOOM
 {
 
-struct ZoomFilterSettings;
-
 namespace FILTERS
 {
 
 class NormalizedCoords;
 class SpeedCoefficientsEffect;
+struct ZoomFilterSettings;
 
 class IZoomVector
 {
@@ -29,8 +28,6 @@ public:
   virtual void SetMaxSpeedCoeff(float val) = 0;
 
   virtual void SetFilterSettings(const ZoomFilterSettings& filterSettings) = 0;
-  virtual void SetRandomPlaneEffects(const V2dInt& zoomMidPoint, uint32_t screenWidth) = 0;
-  virtual void SetSpeedCoefficientsEffect(std::shared_ptr<const SpeedCoefficientsEffect> val) = 0;
 
   virtual auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords = 0;
 };

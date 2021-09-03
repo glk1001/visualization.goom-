@@ -5,8 +5,11 @@
 #include "v2d.h"
 
 #include <cstdint>
+#include <memory>
 
 namespace GOOM
+{
+namespace FILTERS
 {
 
 // 128 = vitesse nule...
@@ -50,9 +53,12 @@ enum class HypercosOverlay
   MODE3,
 };
 
+class SpeedCoefficientsEffect;
+
 struct ZoomFilterSettings
 {
   HypercosOverlay hypercosOverlay = HypercosOverlay::NONE;
+  std::shared_ptr<SpeedCoefficientsEffect> speedCoefficientsEffect;
 
   Vitesse vitesse{};
 
@@ -102,5 +108,6 @@ inline auto Vitesse::GetRelativeSpeed() const -> float
   return m_reverseVitesse ? -speed : +speed;
 }
 
+} // namespace FILTERS
 } // namespace GOOM
 #endif

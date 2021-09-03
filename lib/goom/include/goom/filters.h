@@ -5,6 +5,7 @@
 #include "goomutils/spimpl.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace GOOM
@@ -14,6 +15,7 @@ namespace FILTERS
 {
 class ZoomFilterBuffersService;
 class ZoomFilterColors;
+struct ZoomFilterSettings;
 } // namespace FILTERS
 
 namespace UTILS
@@ -24,21 +26,22 @@ class Parallel;
 struct FXBuffSettings;
 class PixelBuffer;
 class PluginInfo;
-struct ZoomFilterSettings;
 
 class ZoomFilterFx : public IVisualFx
 {
 public:
   ZoomFilterFx() noexcept = delete;
-  ZoomFilterFx(UTILS::Parallel& p,
+  ZoomFilterFx(UTILS::Parallel& parallel,
                const std::shared_ptr<const PluginInfo>& goomInfo,
-               FILTERS::ZoomFilterBuffersService& filterBuffersService,
-               FILTERS::ZoomFilterColors& filterColors) noexcept;
+               std::unique_ptr<FILTERS::ZoomFilterBuffersService> filterBuffersService,
+               std::unique_ptr<FILTERS::ZoomFilterColors> filterColors) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
   void SetBuffSettings(const FXBuffSettings& settings);
 
   void Start() override;
+
+  void UpdateFilterSettings(const FILTERS::ZoomFilterSettings& filterSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff,
                          PixelBuffer& destBuff,

@@ -132,22 +132,16 @@ inline auto FilterControl::FilterEvents::Happens(const FilterEventTypes event) -
 
 using FilterEventTypes = FilterControl::FilterEvents::FilterEventTypes;
 
-FilterControl::FilterControl(UTILS::Parallel& p,
+FilterControl::FilterControl(UTILS::Parallel& parallel,
                              const std::shared_ptr<const PluginInfo>& goomInfo,
                              const std::string& resourcesDirectory) noexcept
-  : m_goomInfo{goomInfo},
+  : m_parallel{parallel},
+    m_goomInfo{goomInfo},
     m_midScreenPoint{m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height / 2},
-    m_zoomFilterBuffersService{p, m_goomInfo,
-                               std::make_unique<FilterZoomVector>(resourcesDirectory)},
+    m_resourcesDirectory{resourcesDirectory},
     m_filterEvents{spimpl::make_unique_impl<FilterEvents>()},
     m_speedCoefficientsEffect{MakeSpeedCoefficientsEffects(resourcesDirectory)}
 {
-}
-
-inline auto FilterControl::GetSpeedCoefficientsEffect(const ZoomFilterMode mode)
-    -> std::shared_ptr<SpeedCoefficientsEffect>&
-{
-  return m_speedCoefficientsEffect[static_cast<size_t>(mode)];
 }
 
 auto FilterControl::MakeSpeedCoefficientsEffects(const std::string& resourcesDirectory)
@@ -200,34 +194,33 @@ auto FilterControl::MakeSpeedCoefficientsEffect(const ZoomFilterMode mode,
   }
 }
 
-auto FilterControl::GetZoomFilterBuffersService() -> ZoomFilterBuffersService&
+auto FilterControl::GetZoomFilterBuffersService() -> std::unique_ptr<ZoomFilterBuffersService>
 {
-  return m_zoomFilterBuffersService;
+  return std::make_unique<ZoomFilterBuffersService>(
+      m_parallel, m_goomInfo,
+      std::make_unique<FilterZoomVector>(m_goomInfo->GetScreenInfo().width, m_resourcesDirectory));
 }
 
-auto FilterControl::GetZoomFilterColors() -> ZoomFilterColors&
+auto FilterControl::GetZoomFilterColors() -> std::unique_ptr<ZoomFilterColors>
 {
-  return m_filterColors;
+  return std::make_unique<ZoomFilterColors>();
 }
 
 void FilterControl::Start()
 {
   SetRandomFilterSettings();
   SetMiddlePoints();
-
-  UpdateFilterSettings();
+  NotifyUpdatedFilterSettings();
 }
 
-void FilterControl::UpdateFilterSettings()
+void FilterControl::NotifyUpdatedFilterSettings()
 {
-  m_zoomFilterBuffersService.SetFilterSettings(m_filterSettings);
-
-  m_zoomFilterBuffersService.SetSpeedCoefficientsEffect(
-      GetSpeedCoefficientsEffect(m_zoomFilterMode));
-
-  m_filterColors.SetBlockWavy(m_filterSettings.blockyWavy);
-
   m_settingsHaveChanged = false;
+}
+
+inline auto FilterControl::GetSpeedCoefficientsEffect() -> std::shared_ptr<SpeedCoefficientsEffect>&
+{
+  return m_speedCoefficientsEffect[static_cast<size_t>(m_zoomFilterMode)];
 }
 
 void FilterControl::SetRandomFilterSettings(const ZoomFilterMode mode)
@@ -329,25 +322,8 @@ void FilterControl::SetDefaultSettings()
   m_filterSettings.noiseFactor = 1.0;
   m_filterSettings.blockyWavy = false;
 
-  m_filterSettings.hypercosOverlay = GetHypercosOverlay();
-}
-
-auto FilterControl::GetHypercosOverlay() -> HypercosOverlay
-{
-  switch (m_zoomFilterMode)
-  {
-    case ZoomFilterMode::HYPERCOS_MODE0:
-      return HypercosOverlay::MODE0;
-    case ZoomFilterMode::HYPERCOS_MODE1:
-      return HypercosOverlay::MODE1;
-    case ZoomFilterMode::HYPERCOS_MODE2:
-      return HypercosOverlay::MODE2;
-      break;
-    case ZoomFilterMode::HYPERCOS_MODE3:
-      return HypercosOverlay::MODE3;
-    default:
-      return HypercosOverlay::NONE;
-  }
+  m_filterSettings.hypercosOverlay = HypercosOverlay::NONE;
+  m_filterSettings.speedCoefficientsEffect = GetSpeedCoefficientsEffect();
 }
 
 void FilterControl::SetAmuletModeSettings()

@@ -27,7 +27,6 @@ namespace GOOM::FILTERS
 {
 #endif
 
-
 using FILTERS::IZoomVector;
 using FILTERS::NormalizedCoords;
 using FILTERS::ZoomFilterBuffers;
@@ -39,24 +38,15 @@ using UTILS::Parallel;
 constexpr float MAX_MAX_SPEED_COEFF = +4.01F;
 
 ZoomFilterBuffersService::ZoomFilterBuffersService(
-    Parallel& p,
+    Parallel& parallel,
     const std::shared_ptr<const PluginInfo>& goomInfo,
     std::unique_ptr<IZoomVector> zoomVector) noexcept
   : m_screenWidth{goomInfo->GetScreenInfo().width},
     m_zoomVector{std::move(zoomVector)},
-    m_filterBuffers{p, goomInfo, [this](const NormalizedCoords& normalizedCoords) {
+    m_filterBuffers{parallel, goomInfo, [this](const NormalizedCoords& normalizedCoords) {
                       return m_zoomVector->GetZoomPoint(normalizedCoords);
                     }}
 {
-}
-
-void ZoomFilterBuffersService::Start()
-{
-  m_currentFilterSettings = m_nextFilterSettings;
-
-  UpdateFilterSettings();
-
-  m_filterBuffers.Start();
 }
 
 void ZoomFilterBuffersService::SetFilterSettings(const ZoomFilterSettings& filterSettings)
@@ -65,30 +55,20 @@ void ZoomFilterBuffersService::SetFilterSettings(const ZoomFilterSettings& filte
   m_pendingFilterSettings = true;
 }
 
-void ZoomFilterBuffersService::SetSpeedCoefficientsEffect(
-    const std::shared_ptr<SpeedCoefficientsEffect> val)
+void ZoomFilterBuffersService::Start()
 {
-  m_nextSpeedCoefficientsEffect = val;
-  m_pendingFilterSettings = true;
-}
+  m_currentFilterSettings = m_nextFilterSettings;
+  assert(m_currentFilterSettings.speedCoefficientsEffect != nullptr);
 
-void ZoomFilterBuffersService::UpdatePlaneEffects()
-{
-  m_pendingPlaneEffects = true;
-  m_pendingFilterSettings = true;
+  UpdateFilterSettings();
+
+  m_filterBuffers.Start();
 }
 
 inline void ZoomFilterBuffersService::UpdateFilterSettings()
 {
   m_zoomVector->SetFilterSettings(m_currentFilterSettings);
-  m_nextSpeedCoefficientsEffect->SetRandomParams();
-  m_zoomVector->SetSpeedCoefficientsEffect(m_nextSpeedCoefficientsEffect);
-  if (m_pendingPlaneEffects)
-  {
-    m_zoomVector->SetRandomPlaneEffects(m_currentFilterSettings.zoomMidPoint, m_screenWidth);
-    m_pendingPlaneEffects = false;
-  }
-  // TODO Random calc should not be here
+  // TODO Random calc should not be here. Move to vector effects
   m_zoomVector->SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF);
 
   m_filterBuffers.SetBuffMidPoint(m_currentFilterSettings.zoomMidPoint);

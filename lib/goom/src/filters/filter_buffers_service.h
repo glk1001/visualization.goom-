@@ -16,26 +16,23 @@ class PluginInfo;
 namespace UTILS
 {
 class Parallel;
-}; // namespace UTILS
+} // namespace UTILS
 
 namespace FILTERS
 {
 
 class IZoomVector;
-class SpeedCoefficientsEffect;
 
 class ZoomFilterBuffersService
 {
 public:
-  ZoomFilterBuffersService(UTILS::Parallel& p,
+  ZoomFilterBuffersService(UTILS::Parallel& parallel,
                            const std::shared_ptr<const PluginInfo>& goomInfo,
                            std::unique_ptr<IZoomVector> zoomVector) noexcept;
 
   void Start();
 
   void SetFilterSettings(const ZoomFilterSettings& filterSettings);
-  void SetSpeedCoefficientsEffect(std::shared_ptr<SpeedCoefficientsEffect> val);
-  void UpdatePlaneEffects();
 
   void UpdateTranBuffers();
   void UpdateTranLerpFactor(int32_t switchIncr, float switchMult);
@@ -50,8 +47,6 @@ private:
 
   ZoomFilterSettings m_currentFilterSettings{};
   ZoomFilterSettings m_nextFilterSettings{};
-  std::shared_ptr<SpeedCoefficientsEffect> m_nextSpeedCoefficientsEffect{};
-  bool m_pendingPlaneEffects = false;
   bool m_pendingFilterSettings = false;
 
   void UpdateFilterSettings();

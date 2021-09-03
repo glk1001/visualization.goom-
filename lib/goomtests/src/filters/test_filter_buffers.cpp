@@ -13,10 +13,10 @@
 
 using GOOM::PluginInfo;
 using GOOM::V2dInt;
-using GOOM::ZoomFilterSettings;
 using GOOM::FILTERS::FilterZoomVector;
 using GOOM::FILTERS::NormalizedCoords;
 using GOOM::FILTERS::ZoomFilterBuffers;
+using GOOM::FILTERS::ZoomFilterSettings;
 using GOOM::UTILS::floats_equal;
 using GOOM::UTILS::Parallel;
 
@@ -36,7 +36,7 @@ class TestZoomVector : public FilterZoomVector
 {
 public:
   explicit TestZoomVector(const bool returnConst) noexcept
-    : FilterZoomVector{""}, m_ReturnConst{returnConst}
+    : FilterZoomVector{WIDTH, ""}, m_ReturnConst{returnConst}
   {
   }
 

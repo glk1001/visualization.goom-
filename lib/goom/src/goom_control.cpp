@@ -83,14 +83,13 @@ using CONTROL::GoomTitleDisplay;
 using DRAW::GoomDrawToBuffer;
 using DRAW::TextDraw;
 using FILTERS::FilterControl;
+using FILTERS::Vitesse;
 using FILTERS::ZoomFilterBuffersService;
 using FILTERS::ZoomFilterColors;
-using UTILS::ColorMapGroup;
 using UTILS::GetAllMapsUnweighted;
 using UTILS::GetAllSlimMaps;
 using UTILS::GetAllStandardMaps;
 using UTILS::GetBlueStandardMaps;
-using UTILS::GetBrighterColor;
 using UTILS::GetCitiesStandardMaps;
 using UTILS::GetColdStandardMaps;
 using UTILS::GetGreenStandardMaps;
@@ -106,7 +105,6 @@ using UTILS::GetSeasonsStandardMaps;
 using UTILS::GetSlightlyDivergingSlimMaps;
 using UTILS::GetSlightlyDivergingStandardMaps;
 using UTILS::GetYellowStandardMaps;
-using UTILS::IColorMap;
 using UTILS::Logging;
 using UTILS::NUM;
 using UTILS::Parallel;
@@ -128,8 +126,8 @@ struct GoomVisualFx
                         const IGoomDraw& draw,
                         const std::shared_ptr<const PluginInfo>& goomInfo,
                         const SmallImageBitmaps& smallBitmaps,
-                        ZoomFilterBuffersService& filterBuffersService,
-                        ZoomFilterColors& filterColors) noexcept;
+                        std::unique_ptr<ZoomFilterBuffersService> filterBuffersService,
+                        std::unique_ptr<ZoomFilterColors> filterColors) noexcept;
 
   std::shared_ptr<ConvolveFx> convolve_fx;
   std::shared_ptr<ZoomFilterFx> zoomFilter_fx;
@@ -147,10 +145,11 @@ GoomVisualFx::GoomVisualFx(Parallel& p,
                            const IGoomDraw& draw,
                            const std::shared_ptr<const PluginInfo>& goomInfo,
                            const SmallImageBitmaps& smallBitmaps,
-                           ZoomFilterBuffersService& filterBuffersService,
-                           ZoomFilterColors& filterColors) noexcept
+                           std::unique_ptr<ZoomFilterBuffersService> filterBuffersService,
+                           std::unique_ptr<ZoomFilterColors> filterColors) noexcept
   : convolve_fx{std::make_shared<ConvolveFx>(p, goomInfo)},
-    zoomFilter_fx{std::make_shared<ZoomFilterFx>(p, goomInfo, filterBuffersService, filterColors)},
+    zoomFilter_fx{std::make_shared<ZoomFilterFx>(
+        p, goomInfo, std::move(filterBuffersService), std::move(filterColors))},
     star_fx{std::make_shared<FlyingStarsFx>(draw, goomInfo, smallBitmaps)},
     goomDots_fx{std::make_shared<GoomDotsFx>(draw, goomInfo, smallBitmaps)},
     ifs_fx{std::make_shared<IfsDancersFx>(draw, goomInfo, smallBitmaps)},
@@ -492,6 +491,7 @@ void GoomControl::GoomControlImpl::Start()
   m_convolveAllowOverexposed.ResetToZero();
 
   m_filterControl.Start();
+  m_visualFx.zoomFilter_fx->UpdateFilterSettings(m_filterControl.GetFilterSettings());
 
   for (auto& v : m_visualFx.list)
   {
@@ -1276,7 +1276,8 @@ void GoomControl::GoomControlImpl::ApplyZoom()
 {
   if (m_filterControl.HaveSettingsChangedSinceLastUpdate())
   {
-    m_filterControl.UpdateFilterSettings();
+    m_visualFx.zoomFilter_fx->UpdateFilterSettings(m_filterControl.GetFilterSettings());
+    m_filterControl.NotifyUpdatedFilterSettings();
   }
 
   m_visualFx.zoomFilter_fx->ZoomFilterFastRgb(m_imageBuffers.GetP1(), m_imageBuffers.GetP2(),

@@ -20,7 +20,7 @@ class PluginInfo;
 namespace UTILS
 {
 class Parallel;
-}; // namespace UTILS
+} // namespace UTILS
 
 namespace FILTERS
 {
@@ -30,16 +30,16 @@ class FilterControl
 public:
   class FilterEvents;
 
-  FilterControl(UTILS::Parallel& p,
+  FilterControl(UTILS::Parallel& parallel,
                 const std::shared_ptr<const GOOM::PluginInfo>& goomInfo,
                 const std::string& resourcesDirectory) noexcept;
 
-  auto GetZoomFilterBuffersService() -> ZoomFilterBuffersService&;
-  auto GetZoomFilterColors() -> ZoomFilterColors&;
+  auto GetZoomFilterBuffersService() -> std::unique_ptr<ZoomFilterBuffersService>;
+  auto GetZoomFilterColors() -> std::unique_ptr<ZoomFilterColors>;
 
   void Start();
 
-  void UpdateFilterSettings();
+  void NotifyUpdatedFilterSettings();
   auto HaveSettingsChangedSinceLastUpdate() const -> bool;
 
   [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterSettings&;
@@ -82,15 +82,14 @@ private:
 
   ZoomFilterMode m_zoomFilterMode = ZoomFilterMode::NORMAL_MODE;
 
-  auto GetHypercosOverlay() -> HypercosOverlay;
   void SetRandomFilterSettings(ZoomFilterMode mode);
   void SetDefaultFilterSettings(ZoomFilterMode mode);
 
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
+  UTILS::Parallel& m_parallel;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const V2dInt m_midScreenPoint;
-  ZoomFilterBuffersService m_zoomFilterBuffersService;
-  ZoomFilterColors m_filterColors{};
+  const std::string m_resourcesDirectory;
   ZoomFilterSettings m_filterSettings{};
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
 
@@ -99,8 +98,7 @@ private:
   bool m_settingsHaveChanged = false;
 
   std::vector<std::shared_ptr<SpeedCoefficientsEffect>> m_speedCoefficientsEffect;
-  [[nodiscard]] auto GetSpeedCoefficientsEffect(ZoomFilterMode mode)
-      -> std::shared_ptr<SpeedCoefficientsEffect>&;
+  [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<SpeedCoefficientsEffect>&;
   [[nodiscard]] static auto MakeSpeedCoefficientsEffects(const std::string& resourcesDirectory)
       -> std::vector<std::shared_ptr<SpeedCoefficientsEffect>>;
   [[nodiscard]] static auto MakeSpeedCoefficientsEffect(ZoomFilterMode mode,
@@ -155,7 +153,6 @@ inline void FilterControl::ChangeMilieu()
 {
   m_settingsHaveChanged = true;
   SetMiddlePoints();
-  m_zoomFilterBuffersService.UpdatePlaneEffects();
 }
 
 inline void FilterControl::SetMiddlePoints()

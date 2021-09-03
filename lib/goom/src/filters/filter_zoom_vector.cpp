@@ -21,25 +21,15 @@ namespace GOOM::FILTERS
 
 using UTILS::SqDistance;
 
-FilterZoomVector::FilterZoomVector(const std::string& resourcesDirectory) noexcept
-  : m_zoomVectorEffects{resourcesDirectory}
+FilterZoomVector::FilterZoomVector(const uint32_t screenWidth,
+                                   const std::string& resourcesDirectory) noexcept
+  : m_zoomVectorEffects{screenWidth, resourcesDirectory}
 {
 }
 
 void FilterZoomVector::SetFilterSettings(const ZoomFilterSettings& filterSettings)
 {
   m_zoomVectorEffects.SetFilterSettings(filterSettings);
-}
-
-void FilterZoomVector::SetRandomPlaneEffects(const V2dInt& zoomMidPoint, const uint32_t screenWidth)
-{
-  m_zoomVectorEffects.SetRandomPlaneEffects(zoomMidPoint, screenWidth);
-}
-
-void FilterZoomVector::SetSpeedCoefficientsEffect(
-    const std::shared_ptr<const SpeedCoefficientsEffect> val)
-{
-  m_zoomVectorEffects.SetSpeedCoefficientsEffect(val);
 }
 
 void FilterZoomVector::SetMaxSpeedCoeff(const float val)
