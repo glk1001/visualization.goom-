@@ -45,8 +45,8 @@ public:
   auto HaveSettingsChangedSinceLastUpdate() const -> bool;
   auto HasFilterModeChangedSinceLastUpdate() const -> bool;
 
-  [[nodiscard]] auto GetCurrentFilterMode() const -> std::string;
-  [[nodiscard]] auto GetPreviousFilterMode() const -> std::string;
+  [[nodiscard]] auto GetCurrentFilterMode() const -> const std::string&;
+  [[nodiscard]] auto GetPreviousFilterMode() const -> const std::string&;
 
   [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterSettings&;
   [[nodiscard]] auto GetROVitesseSetting() const -> const Vitesse&;
@@ -96,31 +96,31 @@ private:
   ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_previousFilterMode = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
-  [[nodiscard]] static auto GetFilterModeString(ZoomFilterMode filterMode) -> std::string;
 
   void SetRandomFilterSettings(ZoomFilterMode mode);
   void SetDefaultFilterSettings(ZoomFilterMode mode);
 
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
-  static const std::map<ZoomFilterMode, float> ROTATE_PROBABILITIES;
   UTILS::Parallel& m_parallel;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const V2dInt m_midScreenPoint;
   const std::string m_resourcesDirectory;
   ZoomFilterSettings m_filterSettings{};
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
-
-  [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
+  struct ZoomFilterModeInfo
+  {
+    std::string name{};
+    float rotateProbability{};
+    std::shared_ptr<SpeedCoefficientsEffect> speedCoefficientsEffect{};
+  };
+  std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
+  [[nodiscard]] static auto GetFilterModeData(const std::string& resourcesDirectory)
+      -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
 
   bool m_settingsHaveChanged = false;
 
-  std::vector<std::shared_ptr<SpeedCoefficientsEffect>> m_speedCoefficientsEffect;
+  [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<SpeedCoefficientsEffect>&;
-  [[nodiscard]] static auto MakeSpeedCoefficientsEffects(const std::string& resourcesDirectory)
-      -> std::vector<std::shared_ptr<SpeedCoefficientsEffect>>;
-  [[nodiscard]] static auto MakeSpeedCoefficientsEffect(ZoomFilterMode mode,
-                                                        const std::string& resourcesDirectory)
-      -> std::shared_ptr<SpeedCoefficientsEffect>;
 
   void SetDefaultSettings();
   void SetFilterModeSettings();

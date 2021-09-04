@@ -38,6 +38,7 @@ using UTILS::Weights;
 constexpr float PROB_HIGH = 0.9F;
 constexpr float PROB_HALF = 0.5F;
 constexpr float PROB_LOW = 0.1F;
+constexpr float PROB_ZERO = 0.0F;
 
 //@formatter:off
 // clang-format off
@@ -59,23 +60,26 @@ const Weights<FilterSettingsService::ZoomFilterMode> FilterSettingsService::WEIG
     { ZoomFilterMode::Y_ONLY_MODE,             4 },
 }};
 
-const std::map<FilterSettingsService::ZoomFilterMode, float> FilterSettingsService::ROTATE_PROBABILITIES{{
-    { ZoomFilterMode::AMULET_MODE,             8 },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE0,      4 },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE1,      2 },
-    { ZoomFilterMode::HYPERCOS_MODE0,          6 },
-    { ZoomFilterMode::HYPERCOS_MODE1,          5 },
-    { ZoomFilterMode::HYPERCOS_MODE2,          3 },
-    { ZoomFilterMode::HYPERCOS_MODE3,          3 },
-    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 5 },
-    { ZoomFilterMode::NORMAL_MODE,             6 },
-    { ZoomFilterMode::SCRUNCH_MODE,            6 },
-    { ZoomFilterMode::SPEEDWAY_MODE,           6 },
-    { ZoomFilterMode::WAVE_MODE0,              5 },
-    { ZoomFilterMode::WAVE_MODE1,              4 },
-    { ZoomFilterMode::WATER_MODE,              0 },
-    { ZoomFilterMode::Y_ONLY_MODE,             4 },
-}};
+auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirectory) -> std::map<ZoomFilterMode, ZoomFilterModeInfo>
+{
+  return {
+    { ZoomFilterMode::AMULET_MODE,             {"Amulet",              PROB_HIGH, std::make_shared<Amulet>()}},
+    { ZoomFilterMode::CRYSTAL_BALL_MODE0,      {"Crystal Ball Mode 0", PROB_LOW,  std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0)}},
+    { ZoomFilterMode::CRYSTAL_BALL_MODE1,      {"Crystal Ball Mode 1", PROB_HALF, std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1)}},
+    { ZoomFilterMode::HYPERCOS_MODE0,          {"Hypercos Mode 0",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::HYPERCOS_MODE1,          {"Hypercos Mode 1",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::HYPERCOS_MODE2,          {"Hypercos Mode 2",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::HYPERCOS_MODE3,          {"Hypercos Mode 3",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, {"Image Displacement",  PROB_ZERO, std::make_shared<ImageDisplacements>(resourcesDirectory)}},
+    { ZoomFilterMode::NORMAL_MODE,             {"Normal",              PROB_ZERO, std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::SCRUNCH_MODE,            {"Scrunch",             PROB_HALF, std::make_shared<Scrunch>()}},
+    { ZoomFilterMode::SPEEDWAY_MODE,           {"Speedway",            PROB_LOW,  std::make_shared<Speedway>()}},
+    { ZoomFilterMode::WAVE_MODE0,              {"Wave Mode 0",         PROB_HIGH, std::make_shared<Wave>(Wave::Modes::MODE0) }},
+    { ZoomFilterMode::WAVE_MODE1,              {"Wave Mode 1",         PROB_HIGH, std::make_shared<Wave>(Wave::Modes::MODE1)}},
+    { ZoomFilterMode::WATER_MODE,              {"Water",               PROB_ZERO, std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::Y_ONLY_MODE,             {"Y Only",              PROB_HALF, std::make_shared<YOnly>()}},
+  };
+}
 //@formatter:on
 // clang-format on
 
@@ -159,7 +163,7 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
     m_midScreenPoint{m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height / 2},
     m_resourcesDirectory{resourcesDirectory},
     m_filterEvents{spimpl::make_unique_impl<FilterEvents>()},
-    m_speedCoefficientsEffect{MakeSpeedCoefficientsEffects(resourcesDirectory)}
+    m_filterModeData{GetFilterModeData(m_resourcesDirectory)}
 {
 }
 
@@ -175,103 +179,14 @@ auto FilterSettingsService::GetFilterColorsService() -> std::unique_ptr<FilterCo
   return std::make_unique<FilterColorsService>();
 }
 
-auto FilterSettingsService::MakeSpeedCoefficientsEffects(const std::string& resourcesDirectory)
-    -> std::vector<std::shared_ptr<SpeedCoefficientsEffect>>
+auto FilterSettingsService::GetCurrentFilterMode() const -> const std::string&
 {
-  std::vector<std::shared_ptr<SpeedCoefficientsEffect>> effects{};
-
-  for (size_t mode = 0; mode < NUM<ZoomFilterMode>; ++mode)
-  {
-    effects.emplace_back(
-        MakeSpeedCoefficientsEffect(static_cast<ZoomFilterMode>(mode), resourcesDirectory));
-  }
-
-  return effects;
+  return m_filterModeData.at(m_filterMode).name;
 }
 
-auto FilterSettingsService::MakeSpeedCoefficientsEffect(const ZoomFilterMode mode,
-                                                        const std::string& resourcesDirectory)
-    -> std::shared_ptr<SpeedCoefficientsEffect>
+auto FilterSettingsService::GetPreviousFilterMode() const -> const std::string&
 {
-  switch (mode)
-  {
-    case ZoomFilterMode::AMULET_MODE:
-      return std::make_shared<Amulet>();
-    case ZoomFilterMode::CRYSTAL_BALL_MODE0:
-      return std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0);
-    case ZoomFilterMode::CRYSTAL_BALL_MODE1:
-      return std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1);
-    case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
-      return std::make_shared<ImageDisplacements>(resourcesDirectory);
-    case ZoomFilterMode::SCRUNCH_MODE:
-      return std::make_shared<Scrunch>();
-    case ZoomFilterMode::SPEEDWAY_MODE:
-      return std::make_shared<Speedway>();
-    case ZoomFilterMode::WAVE_MODE0:
-      return std::make_shared<Wave>(Wave::Modes::MODE0);
-    case ZoomFilterMode::WAVE_MODE1:
-      return std::make_shared<Wave>(Wave::Modes::MODE1);
-    case ZoomFilterMode::Y_ONLY_MODE:
-      return std::make_shared<YOnly>();
-    case ZoomFilterMode::HYPERCOS_MODE0:
-    case ZoomFilterMode::HYPERCOS_MODE1:
-    case ZoomFilterMode::HYPERCOS_MODE2:
-    case ZoomFilterMode::HYPERCOS_MODE3:
-    case ZoomFilterMode::NORMAL_MODE:
-    case ZoomFilterMode::WATER_MODE:
-      return std::make_shared<SimpleSpeedCoefficientsEffect>();
-    default:
-      throw std::logic_error("ZoomVectorEffects::SetFilterSettings: Unknown ZoomFilterMode.");
-  }
-}
-
-auto FilterSettingsService::GetCurrentFilterMode() const -> std::string
-{
-  return GetFilterModeString(m_filterMode);
-}
-
-auto FilterSettingsService::GetPreviousFilterMode() const -> std::string
-{
-  return GetFilterModeString(m_previousFilterMode);
-}
-
-auto FilterSettingsService::GetFilterModeString(ZoomFilterMode filterMode) -> std::string
-{
-  switch (filterMode)
-  {
-    case ZoomFilterMode::AMULET_MODE:
-      return "Amulet";
-    case ZoomFilterMode::CRYSTAL_BALL_MODE0:
-      return "Crystal Ball Mode 0";
-    case ZoomFilterMode::CRYSTAL_BALL_MODE1:
-      return "Crystal Ball Mode 1";
-    case ZoomFilterMode::HYPERCOS_MODE0:
-      return "Hypercos Mode 0";
-    case ZoomFilterMode::HYPERCOS_MODE1:
-      return "Hypercos Mode 1";
-    case ZoomFilterMode::HYPERCOS_MODE2:
-      return "Hypercos Mode 2";
-    case ZoomFilterMode::HYPERCOS_MODE3:
-      return "Hypercos Mode 3";
-    case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
-      return "Image Displacement";
-    case ZoomFilterMode::NORMAL_MODE:
-      return "Normal";
-    case ZoomFilterMode::SCRUNCH_MODE:
-      return "Scrunch";
-    case ZoomFilterMode::SPEEDWAY_MODE:
-      return "Speedway";
-    case ZoomFilterMode::WATER_MODE:
-      return "Water";
-    case ZoomFilterMode::WAVE_MODE0:
-      return "Wave Mode 0";
-    case ZoomFilterMode::WAVE_MODE1:
-      return "Wave Mode 1";
-    case ZoomFilterMode::Y_ONLY_MODE:
-      return "Y Only";
-    default:
-      return "Unknown";
-  }
+  return m_filterModeData.at(m_previousFilterMode).name;
 }
 
 void FilterSettingsService::SetFilterModeSettings()
@@ -359,7 +274,7 @@ void FilterSettingsService::Start()
 inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
     -> std::shared_ptr<SpeedCoefficientsEffect>&
 {
-  return m_speedCoefficientsEffect[static_cast<size_t>(m_filterMode)];
+  return m_filterModeData.at(m_filterMode).speedCoefficientsEffect;
 }
 
 void FilterSettingsService::SetRandomFilterSettings(const ZoomFilterMode mode)
@@ -393,7 +308,7 @@ void FilterSettingsService::SetDefaultSettings()
 
 inline void FilterSettingsService::SetAmuletModeSettings()
 {
-  SetRotate(PROB_HIGH);
+  SetRotate(m_filterModeData[ZoomFilterMode::AMULET_MODE].rotateProbability);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
@@ -403,7 +318,7 @@ inline void FilterSettingsService::SetAmuletModeSettings()
 
 inline void FilterSettingsService::SetCrystalBall0ModeSettings()
 {
-  SetRotate(PROB_LOW);
+  SetRotate(m_filterModeData[ZoomFilterMode::CRYSTAL_BALL_MODE0].rotateProbability);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
@@ -414,7 +329,7 @@ inline void FilterSettingsService::SetCrystalBall0ModeSettings()
 // TODO - Fix duplication
 inline void FilterSettingsService::SetCrystalBall1ModeSettings()
 {
-  SetRotate(PROB_HALF);
+  SetRotate(m_filterModeData[ZoomFilterMode::CRYSTAL_BALL_MODE1].rotateProbability);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
@@ -424,34 +339,36 @@ inline void FilterSettingsService::SetCrystalBall1ModeSettings()
 
 inline void FilterSettingsService::SetHypercosMode0Settings()
 {
-  SetRotate(PROB_LOW);
+  SetRotate(m_filterModeData[ZoomFilterMode::HYPERCOS_MODE0].rotateProbability);
 
   m_filterSettings.hypercosOverlay = HypercosOverlay::MODE0;
 }
 
 inline void FilterSettingsService::SetHypercosMode1Settings()
 {
-  SetRotate(PROB_LOW);
+  SetRotate(m_filterModeData[ZoomFilterMode::HYPERCOS_MODE1].rotateProbability);
 
   m_filterSettings.hypercosOverlay = HypercosOverlay::MODE1;
 }
 
 inline void FilterSettingsService::SetHypercosMode2Settings()
 {
-  SetRotate(PROB_LOW);
+  SetRotate(m_filterModeData[ZoomFilterMode::HYPERCOS_MODE2].rotateProbability);
 
   m_filterSettings.hypercosOverlay = HypercosOverlay::MODE2;
 }
 
 inline void FilterSettingsService::SetHypercosMode3Settings()
 {
-  SetRotate(PROB_LOW);
+  SetRotate(m_filterModeData[ZoomFilterMode::HYPERCOS_MODE3].rotateProbability);
 
   m_filterSettings.hypercosOverlay = HypercosOverlay::MODE3;
 }
 
 inline void FilterSettingsService::SetImageDisplacementModeSettings()
 {
+  SetRotate(m_filterModeData[ZoomFilterMode::IMAGE_DISPLACEMENT_MODE].rotateProbability);
+
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
     SetHypercosMode1Settings();
@@ -460,12 +377,12 @@ inline void FilterSettingsService::SetImageDisplacementModeSettings()
 
 inline void FilterSettingsService::SetNormalModeSettings()
 {
-  // No extra settings required.
+  SetRotate(m_filterModeData[ZoomFilterMode::NORMAL_MODE].rotateProbability);
 }
 
 inline void FilterSettingsService::SetScrunchModeSettings()
 {
-  SetRotate(PROB_HALF);
+  SetRotate(m_filterModeData[ZoomFilterMode::SCRUNCH_MODE].rotateProbability);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
@@ -475,7 +392,7 @@ inline void FilterSettingsService::SetScrunchModeSettings()
 
 inline void FilterSettingsService::SetSpeedwayModeSettings()
 {
-  SetRotate(PROB_LOW);
+  SetRotate(m_filterModeData[ZoomFilterMode::SPEEDWAY_MODE].rotateProbability);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
@@ -485,23 +402,23 @@ inline void FilterSettingsService::SetSpeedwayModeSettings()
 
 inline void FilterSettingsService::SetWaterModeSettings()
 {
-  // Maybe one day
+  SetRotate(m_filterModeData[ZoomFilterMode::WATER_MODE].rotateProbability);
 }
 
 inline void FilterSettingsService::SetWaveMode0Settings()
 {
+  SetRotate(m_filterModeData[ZoomFilterMode::WAVE_MODE0].rotateProbability);
   SetWaveModeSettings();
 }
 
 inline void FilterSettingsService::SetWaveMode1Settings()
 {
+  SetRotate(m_filterModeData[ZoomFilterMode::WAVE_MODE1].rotateProbability);
   SetWaveModeSettings();
 }
 
 void FilterSettingsService::SetWaveModeSettings()
 {
-  SetRotate(PROB_HIGH);
-
   m_filterSettings.vitesse.SetReverseVitesse(
       m_filterEvents->Happens(FilterEventTypes::REVERSE_SPEED));
 
@@ -519,7 +436,7 @@ void FilterSettingsService::SetWaveModeSettings()
 
 inline void FilterSettingsService::SetYOnlyModeSettings()
 {
-  SetRotate(PROB_HALF);
+  SetRotate(m_filterModeData[ZoomFilterMode::Y_ONLY_MODE].rotateProbability);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
