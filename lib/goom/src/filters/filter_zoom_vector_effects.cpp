@@ -6,7 +6,6 @@
 #include "filter_settings.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"
-#include "v2d.h"
 
 #include <cmath>
 #include <cstdint>
@@ -122,8 +121,7 @@ auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
 {
   //    const float xAmp = 1.0/getRandInRange(50.0f, 200.0f);
   //    const float yAmp = 1.0/getRandInRange(50.0f, 200.0f);
-  const float amp = (0.5F * m_filterSettings->noiseFactor) /
-                    GetRandInRange(ZoomFilterSettings::NOISE_MIN, ZoomFilterSettings::NOISE_MAX);
+  const float amp = (0.5F * m_filterSettings->noiseFactor) / GetRandInRange(NOISE_MIN, NOISE_MAX);
   return {GetRandInRange(-amp, +amp), GetRandInRange(-amp, +amp)};
 }
 

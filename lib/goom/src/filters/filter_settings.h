@@ -57,35 +57,25 @@ class SpeedCoefficientsEffect;
 
 struct ZoomFilterSettings
 {
-  HypercosOverlay hypercosOverlay = HypercosOverlay::NONE;
+  HypercosOverlay hypercosOverlay;
   std::shared_ptr<SpeedCoefficientsEffect> speedCoefficientsEffect;
 
-  Vitesse vitesse{};
+  Vitesse vitesse;
 
-  static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
-  static constexpr uint32_t DEFAULT_MIDDLE_Y = 1;
-  V2dInt zoomMidPoint = {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y}; // milieu de l'effet
+  V2dInt zoomMidPoint; // milieu de l'effet
 
-  bool tanEffect = false;
-  bool blockyWavy = false;
-  bool planeEffect = false;
+  bool tanEffect;
+  bool blockyWavy;
+  bool planeEffect;
 
-  static constexpr float MIN_ROTATE_SPEED = -0.5F;
-  static constexpr float MAX_ROTATE_SPEED = +0.5F;
-  static constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
-  float rotateSpeed = DEFAULT_ROTATE_SPEED;
+  float rotateSpeed;
 
-  bool noisify = false; // ajoute un bruit a la transformation
-  float noiseFactor = 1.0; // in range [0, 1]
-  // For noise amplitude, take the reciprocal of these.
-  static constexpr float NOISE_MIN = 40.0F;
-  static constexpr float NOISE_MAX = 120.0F;
+  bool noisify; // ajoute un bruit a la transformation
+  float noiseFactor; // in range [0, 1]
 
-//TODO enclose in separate struct
-  static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
-  int32_t tranLerpIncrement = DEFAULT_TRAN_LERP_INCREMENT;
-  static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
-  float tranLerpToMaxSwitchMult = DEFAULT_SWITCH_MULT;
+  //TODO enclose in separate struct
+  int32_t tranLerpIncrement;
+  float tranLerpToMaxSwitchMult;
 };
 
 inline void Vitesse::SetVitesse(const int32_t val)

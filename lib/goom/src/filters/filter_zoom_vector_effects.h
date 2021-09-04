@@ -71,6 +71,10 @@ private:
   const std::string m_resourcesDirectory;
   const ZoomFilterSettings* m_filterSettings{};
 
+  // For noise amplitude, take the reciprocal of these.
+  static constexpr float NOISE_MIN = 40.0F;
+  static constexpr float NOISE_MAX = 120.0F;
+
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
   static constexpr float MIN_SPEED_COEFF = -4.01F;
   static constexpr float DEFAULT_MAX_SPEED_COEFF = +2.01F;

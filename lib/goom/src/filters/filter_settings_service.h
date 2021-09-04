@@ -105,8 +105,8 @@ private:
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const V2dInt m_midScreenPoint;
   const std::string m_resourcesDirectory;
-  ZoomFilterSettings m_filterSettings{};
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
+
   struct ZoomFilterModeInfo
   {
     std::string name{};
@@ -116,6 +116,15 @@ private:
   std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
   [[nodiscard]] static auto GetFilterModeData(const std::string& resourcesDirectory)
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
+
+  static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
+  static constexpr uint32_t DEFAULT_MIDDLE_Y = 1;
+  static constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
+  static constexpr float MIN_ROTATE_SPEED = -0.5F;
+  static constexpr float MAX_ROTATE_SPEED = +0.5F;
+  static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
+  static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
+  ZoomFilterSettings m_filterSettings;
 
   bool m_settingsHaveChanged = false;
 
@@ -282,7 +291,7 @@ inline void FilterSettingsService::SetTranLerpIncrement(const int32_t value)
 
 inline void FilterSettingsService::SetDefaultTranLerpIncrement()
 {
-  SetTranLerpIncrement(ZoomFilterSettings::DEFAULT_TRAN_LERP_INCREMENT);
+  SetTranLerpIncrement(DEFAULT_TRAN_LERP_INCREMENT);
 }
 
 inline void FilterSettingsService::MultiplyTranLerpIncrement(const int32_t factor)
@@ -307,7 +316,7 @@ inline void FilterSettingsService::SetTranLerpToMaxSwitchMult(const float value)
 
 inline void FilterSettingsService::SetDefaultTranLerpToMaxSwitchMult()
 {
-  SetTranLerpToMaxSwitchMult(ZoomFilterSettings::DEFAULT_SWITCH_MULT);
+  SetTranLerpToMaxSwitchMult(DEFAULT_SWITCH_MULT);
 }
 
 } // namespace FILTERS

@@ -163,7 +163,19 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
     m_midScreenPoint{m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height / 2},
     m_resourcesDirectory{resourcesDirectory},
     m_filterEvents{spimpl::make_unique_impl<FilterEvents>()},
-    m_filterModeData{GetFilterModeData(m_resourcesDirectory)}
+    m_filterModeData{GetFilterModeData(m_resourcesDirectory)},
+    m_filterSettings{HypercosOverlay::NONE,
+                     nullptr,
+                     Vitesse{},
+                     {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y},
+                     false,
+                     false,
+                     false,
+                     DEFAULT_ROTATE_SPEED,
+                     false,
+                     1.0F,
+                     DEFAULT_TRAN_LERP_INCREMENT,
+                     DEFAULT_SWITCH_MULT}
 {
 }
 
@@ -454,8 +466,7 @@ inline void FilterSettingsService::SetRotate(const float rotateProbability)
   m_settingsHaveChanged = true;
 
   m_filterSettings.rotateSpeed =
-      rotateProbability *
-      GetRandInRange(ZoomFilterSettings::MIN_ROTATE_SPEED, ZoomFilterSettings::MAX_ROTATE_SPEED);
+      rotateProbability * GetRandInRange(MIN_ROTATE_SPEED, MAX_ROTATE_SPEED);
 }
 
 void FilterSettingsService::SetRandomMiddlePoints()
