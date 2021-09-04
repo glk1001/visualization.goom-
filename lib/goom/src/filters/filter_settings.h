@@ -80,6 +80,12 @@ struct ZoomFilterSettings
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
   static constexpr float NOISE_MAX = 120.0F;
+
+//TODO enclose in separate struct
+  static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
+  int32_t tranLerpIncrement = DEFAULT_TRAN_LERP_INCREMENT;
+  static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
+  float tranLerpToMaxSwitchMult = DEFAULT_SWITCH_MULT;
 };
 
 inline void Vitesse::SetVitesse(const int32_t val)

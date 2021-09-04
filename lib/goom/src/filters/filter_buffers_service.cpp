@@ -51,6 +51,8 @@ FilterBuffersService::FilterBuffersService(
 
 void FilterBuffersService::SetFilterSettings(const ZoomFilterSettings& filterSettings)
 {
+  UpdateTranLerpFactor(filterSettings.tranLerpIncrement, filterSettings.tranLerpToMaxSwitchMult);
+
   m_nextFilterSettings = filterSettings;
   m_pendingFilterSettings = true;
 }

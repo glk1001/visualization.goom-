@@ -183,10 +183,6 @@ struct GoomData
   int32_t drawLinesDuration = LinesFx::MIN_LINE_DURATION;
   int32_t lineMode = LinesFx::MIN_LINE_DURATION; // l'effet lineaire a dessiner
 
-  static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
-  float tranLerpToMaxSwitchMult = DEFAULT_SWITCH_MULT;
-  static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
-  int32_t tranLerpIncrement = DEFAULT_TRAN_LERP_INCREMENT;
   uint32_t stateSelectionBlocker = 0;
   int32_t previousZoomSpeed = Vitesse::DEFAULT_VITESSE + 1;
 
@@ -1042,8 +1038,8 @@ void GoomControl::GoomControlImpl::MegaLentUpdate()
   IncreaseLockTime(MEGA_LENT_LOCK_TIME_INCREASE);
 
   m_filterSettingsService.GetRWVitesseSetting().SetVitesse(Vitesse::STOP_SPEED - 1);
-  m_goomData.tranLerpIncrement = GoomData::DEFAULT_TRAN_LERP_INCREMENT;
-  m_goomData.tranLerpToMaxSwitchMult = 1.0F;
+  m_filterSettingsService.SetDefaultTranLerpIncrement();
+  m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
 }
 
 void GoomControl::GoomControlImpl::ChangeMilieu()
@@ -1127,8 +1123,8 @@ void GoomControl::GoomControlImpl::ChangeSwitchValues()
 {
   if (GetLockTime() > CHANGE_SWITCH_VALUES_LOCK_TIME)
   {
-    m_goomData.tranLerpIncrement = GoomData::DEFAULT_TRAN_LERP_INCREMENT;
-    m_goomData.tranLerpToMaxSwitchMult = 1.0F;
+    m_filterSettingsService.SetDefaultTranLerpIncrement();
+    m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
   }
 }
 
@@ -1219,7 +1215,7 @@ void GoomControl::GoomControlImpl::ChangeZoomEffect()
   else
   {
     m_goomData.updatesSinceLastZoomEffectsChange = 0;
-    m_goomData.tranLerpIncrement = GoomData::DEFAULT_TRAN_LERP_INCREMENT;
+    m_filterSettingsService.SetDefaultTranLerpIncrement();
 
     int32_t diff =
         m_filterSettingsService.GetROVitesseSetting().GetVitesse() - m_goomData.previousZoomSpeed;
@@ -1230,16 +1226,16 @@ void GoomControl::GoomControlImpl::ChangeZoomEffect()
 
     if (diff > 2)
     {
-      m_goomData.tranLerpIncrement *= (diff + 2) / 2;
+      m_filterSettingsService.MultiplyTranLerpIncrement((diff + 2) / 2);
     }
     m_goomData.previousZoomSpeed = m_filterSettingsService.GetROVitesseSetting().GetVitesse();
-    m_goomData.tranLerpToMaxSwitchMult = 1.0F;
+    m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
 
     if ((0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom()) &&
         (m_goomInfo->GetSoundInfo().GetTotalGoomsInCurrentCycle() < 2))
     {
-      m_goomData.tranLerpIncrement = 0;
-      m_goomData.tranLerpToMaxSwitchMult = GoomData::DEFAULT_SWITCH_MULT;
+      m_filterSettingsService.SetTranLerpIncrement(0);
+      m_filterSettingsService.SetDefaultTranLerpToMaxSwitchMult();
 
       ChangeRotation();
       DoIfsRenew();
@@ -1276,9 +1272,7 @@ void GoomControl::GoomControlImpl::ApplyZoom()
 {
   UpdateFilterSettings();
 
-  m_visualFx.zoomFilter_fx->ZoomFilterFastRgb(m_imageBuffers.GetP1(), m_imageBuffers.GetP2(),
-                                              m_goomData.tranLerpIncrement,
-                                              m_goomData.tranLerpToMaxSwitchMult);
+  m_visualFx.zoomFilter_fx->ZoomFilterFastRgb(m_imageBuffers.GetP1(), m_imageBuffers.GetP2());
 
   m_filterSettingsService.ReduceNoiseFactor();
 }

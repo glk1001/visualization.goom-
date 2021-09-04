@@ -58,6 +58,13 @@ public:
 
   void SetRandomFilterSettings();
 
+  void SetTranLerpIncrement(int32_t value);
+  void SetDefaultTranLerpIncrement();
+  void MultiplyTranLerpIncrement(int32_t factor);
+
+  void SetTranLerpToMaxSwitchMult(float value);
+  void SetDefaultTranLerpToMaxSwitchMult();
+
 private:
   enum class ZoomFilterMode
   {
@@ -224,6 +231,36 @@ inline void FilterSettingsService::ToggleRotateSetting()
 {
   m_settingsHaveChanged = true;
   m_filterSettings.rotateSpeed = -m_filterSettings.rotateSpeed;
+}
+
+inline void FilterSettingsService::SetTranLerpIncrement(const int32_t value)
+{
+  m_settingsHaveChanged = true;
+  m_filterSettings.tranLerpIncrement = value;
+}
+
+inline void FilterSettingsService::SetDefaultTranLerpIncrement()
+{
+  m_settingsHaveChanged = true;
+  m_filterSettings.tranLerpIncrement = ZoomFilterSettings::DEFAULT_TRAN_LERP_INCREMENT;
+}
+
+inline void FilterSettingsService::MultiplyTranLerpIncrement(const int32_t factor)
+{
+  m_settingsHaveChanged = true;
+  m_filterSettings.tranLerpIncrement *= factor;
+}
+
+inline void FilterSettingsService::SetTranLerpToMaxSwitchMult(const float value)
+{
+  m_settingsHaveChanged = true;
+  m_filterSettings.tranLerpToMaxSwitchMult = value;
+}
+
+inline void FilterSettingsService::SetDefaultTranLerpToMaxSwitchMult()
+{
+  m_settingsHaveChanged = true;
+  m_filterSettings.tranLerpToMaxSwitchMult = ZoomFilterSettings::DEFAULT_SWITCH_MULT;
 }
 
 } // namespace FILTERS

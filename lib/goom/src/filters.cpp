@@ -63,10 +63,7 @@ public:
 
   void UpdateFilterSettings(const ZoomFilterSettings& filterSettings);
 
-  void ZoomFilterFastRgb(const PixelBuffer& srceBuff,
-                         PixelBuffer& destBuff,
-                         int32_t tranLerpIncrement,
-                         float tranLerpToMaxSwitchMult);
+  void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
 private:
   const uint32_t m_screenWidth;
@@ -115,12 +112,9 @@ void ZoomFilterFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings
   m_fxImpl->UpdateFilterSettings(filterSettings);
 }
 
-void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
-                                     PixelBuffer& destBuff,
-                                     const int switchIncr,
-                                     const float switchMult)
+void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
 {
-  m_fxImpl->ZoomFilterFastRgb(srceBuff, destBuff, switchIncr, switchMult);
+  m_fxImpl->ZoomFilterFastRgb(srceBuff, destBuff);
 }
 
 ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
@@ -166,14 +160,11 @@ void ZoomFilterFx::ZoomFilterImpl::Start()
  *  when it was just a tiny program writen in Turbo Pascal on my i486...
  */
 void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
-                                                     PixelBuffer& destBuff,
-                                                     const int32_t tranLerpIncrement,
-                                                     const float tranLerpToMaxSwitchMult)
+                                                     PixelBuffer& destBuff)
 {
   ++m_updateNum;
 
   m_filterBuffersService->UpdateTranBuffers();
-  m_filterBuffersService->UpdateTranLerpFactor(tranLerpIncrement, tranLerpToMaxSwitchMult);
 
   CZoom(srceBuff, destBuff);
 }

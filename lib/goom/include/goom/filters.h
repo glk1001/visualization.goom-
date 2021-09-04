@@ -43,10 +43,7 @@ public:
 
   void UpdateFilterSettings(const FILTERS::ZoomFilterSettings& filterSettings);
 
-  void ZoomFilterFastRgb(const PixelBuffer& srceBuff,
-                         PixelBuffer& destBuff,
-                         int switchIncr,
-                         float switchMult);
+  void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
   void Finish() override;
 
