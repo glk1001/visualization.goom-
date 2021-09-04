@@ -9,6 +9,7 @@
 #include "goomutils/mathutils.h"
 #include "goomutils/spimpl.h"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -101,6 +102,7 @@ private:
   void SetDefaultFilterSettings(ZoomFilterMode mode);
 
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
+  static const std::map<ZoomFilterMode, float> ROTATE_PROBABILITIES;
   UTILS::Parallel& m_parallel;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
   const V2dInt m_midScreenPoint;

@@ -58,6 +58,24 @@ const Weights<FilterSettingsService::ZoomFilterMode> FilterSettingsService::WEIG
     { ZoomFilterMode::WATER_MODE,              0 },
     { ZoomFilterMode::Y_ONLY_MODE,             4 },
 }};
+
+const std::map<FilterSettingsService::ZoomFilterMode, float> FilterSettingsService::ROTATE_PROBABILITIES{{
+    { ZoomFilterMode::AMULET_MODE,             8 },
+    { ZoomFilterMode::CRYSTAL_BALL_MODE0,      4 },
+    { ZoomFilterMode::CRYSTAL_BALL_MODE1,      2 },
+    { ZoomFilterMode::HYPERCOS_MODE0,          6 },
+    { ZoomFilterMode::HYPERCOS_MODE1,          5 },
+    { ZoomFilterMode::HYPERCOS_MODE2,          3 },
+    { ZoomFilterMode::HYPERCOS_MODE3,          3 },
+    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 5 },
+    { ZoomFilterMode::NORMAL_MODE,             6 },
+    { ZoomFilterMode::SCRUNCH_MODE,            6 },
+    { ZoomFilterMode::SPEEDWAY_MODE,           6 },
+    { ZoomFilterMode::WAVE_MODE0,              5 },
+    { ZoomFilterMode::WAVE_MODE1,              4 },
+    { ZoomFilterMode::WATER_MODE,              0 },
+    { ZoomFilterMode::Y_ONLY_MODE,             4 },
+}};
 //@formatter:on
 // clang-format on
 
