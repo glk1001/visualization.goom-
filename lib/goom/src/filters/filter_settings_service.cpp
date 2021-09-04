@@ -207,9 +207,58 @@ auto FilterSettingsService::MakeSpeedCoefficientsEffect(const ZoomFilterMode mod
   }
 }
 
+auto FilterSettingsService::GetCurrentFilterMode() const -> std::string
+{
+  return GetFilterModeString(m_filterMode);
+}
+
+auto FilterSettingsService::GetPreviousFilterMode() const -> std::string
+{
+  return GetFilterModeString(m_previousFilterMode);
+}
+
+auto FilterSettingsService::GetFilterModeString(ZoomFilterMode filterMode) -> std::string
+{
+  switch (filterMode)
+  {
+    case ZoomFilterMode::AMULET_MODE:
+      return "Amulet";
+    case ZoomFilterMode::CRYSTAL_BALL_MODE0:
+      return "Crystal Ball Mode 0";
+    case ZoomFilterMode::CRYSTAL_BALL_MODE1:
+      return "Crystal Ball Mode 1";
+    case ZoomFilterMode::HYPERCOS_MODE0:
+      return "Hypercos Mode 0";
+    case ZoomFilterMode::HYPERCOS_MODE1:
+      return "Hypercos Mode 1";
+    case ZoomFilterMode::HYPERCOS_MODE2:
+      return "Hypercos Mode 2";
+    case ZoomFilterMode::HYPERCOS_MODE3:
+      return "Hypercos Mode 3";
+    case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
+      return "Image Displacement";
+    case ZoomFilterMode::NORMAL_MODE:
+      return "Normal";
+    case ZoomFilterMode::SCRUNCH_MODE:
+      return "Scrunch";
+    case ZoomFilterMode::SPEEDWAY_MODE:
+      return "Speedway";
+    case ZoomFilterMode::WATER_MODE:
+      return "Water";
+    case ZoomFilterMode::WAVE_MODE0:
+      return "Wave Mode 0";
+    case ZoomFilterMode::WAVE_MODE1:
+      return "Wave Mode 1";
+    case ZoomFilterMode::Y_ONLY_MODE:
+      return "Y Only";
+    default:
+      return "Unknown";
+  }
+}
+
 void FilterSettingsService::SetFilterModeSettings()
 {
-  switch (m_zoomFilterMode)
+  switch (m_filterMode)
   {
     case ZoomFilterMode::AMULET_MODE:
       SetAmuletModeSettings();
@@ -269,7 +318,7 @@ auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
   while (true)
   {
     const auto newMode = WEIGHTED_FILTER_EVENTS.GetRandomWeighted();
-    if (newMode != m_zoomFilterMode)
+    if (newMode != m_filterMode)
     {
       return newMode;
     }
@@ -280,7 +329,7 @@ auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
     }
   }
 
-  return m_zoomFilterMode;
+  return m_filterMode;
 }
 
 void FilterSettingsService::Start()
@@ -292,14 +341,15 @@ void FilterSettingsService::Start()
 inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
     -> std::shared_ptr<SpeedCoefficientsEffect>&
 {
-  return m_speedCoefficientsEffect[static_cast<size_t>(m_zoomFilterMode)];
+  return m_speedCoefficientsEffect[static_cast<size_t>(m_filterMode)];
 }
 
 void FilterSettingsService::SetRandomFilterSettings(const ZoomFilterMode mode)
 {
   m_settingsHaveChanged = true;
 
-  m_zoomFilterMode = mode;
+  m_previousFilterMode = m_filterMode;
+  m_filterMode = mode;
 
   SetDefaultSettings();
 
@@ -475,22 +525,21 @@ inline void FilterSettingsService::SetRotate(const float rotateProbability)
 
 void FilterSettingsService::SetRandomMiddlePoints()
 {
-  if ((m_zoomFilterMode == ZoomFilterMode::WATER_MODE) ||
-      (m_zoomFilterMode == ZoomFilterMode::WAVE_MODE0) ||
-      (m_zoomFilterMode == ZoomFilterMode::AMULET_MODE))
+  if ((m_filterMode == ZoomFilterMode::WATER_MODE) ||
+      (m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::AMULET_MODE))
   {
     m_filterSettings.zoomMidPoint = m_midScreenPoint;
     return;
   }
 
-  if (((m_zoomFilterMode == ZoomFilterMode::CRYSTAL_BALL_MODE0) ||
-       (m_zoomFilterMode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
+  if (((m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE0) ||
+       (m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
       m_filterEvents->Happens(FilterEventTypes::CRYSTAL_BALL_IN_MIDDLE))
   {
     m_filterSettings.zoomMidPoint = m_midScreenPoint;
     return;
     }
-    if ((m_zoomFilterMode == ZoomFilterMode::WAVE_MODE1) &&
+    if ((m_filterMode == ZoomFilterMode::WAVE_MODE1) &&
         m_filterEvents->Happens(FilterEventTypes::WAVE_IN_MIDDLE))
     {
       m_filterSettings.zoomMidPoint = m_midScreenPoint;

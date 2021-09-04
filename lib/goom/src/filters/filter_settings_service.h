@@ -6,6 +6,7 @@
 #include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "filter_zoom_vector.h"
+#include "goomutils/mathutils.h"
 #include "goomutils/spimpl.h"
 
 #include <memory>
@@ -41,9 +42,13 @@ public:
 
   void NotifyUpdatedFilterSettings();
   auto HaveSettingsChangedSinceLastUpdate() const -> bool;
+  auto HasFilterModeChangedSinceLastUpdate() const -> bool;
+
+  [[nodiscard]] auto GetCurrentFilterMode() const -> std::string;
+  [[nodiscard]] auto GetPreviousFilterMode() const -> std::string;
 
   [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterSettings&;
-  [[nodiscard]] auto GetROVitesseSetting() -> const Vitesse&;
+  [[nodiscard]] auto GetROVitesseSetting() const -> const Vitesse&;
   [[nodiscard]] auto GetRWVitesseSetting() -> Vitesse&;
 
   void ChangeMilieu();
@@ -87,7 +92,10 @@ private:
     _NUM // unused and must be last
   };
 
-  ZoomFilterMode m_zoomFilterMode = ZoomFilterMode::NORMAL_MODE;
+  ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
+  ZoomFilterMode m_previousFilterMode = ZoomFilterMode::NORMAL_MODE;
+  ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
+  [[nodiscard]] static auto GetFilterModeString(ZoomFilterMode filterMode) -> std::string;
 
   void SetRandomFilterSettings(ZoomFilterMode mode);
   void SetDefaultFilterSettings(ZoomFilterMode mode);
@@ -145,12 +153,18 @@ inline auto FilterSettingsService::HaveSettingsChangedSinceLastUpdate() const ->
   return m_settingsHaveChanged;
 }
 
+inline auto FilterSettingsService::HasFilterModeChangedSinceLastUpdate() const -> bool
+{
+  return m_filterModeAtLastUpdate != m_filterMode;
+}
+
 inline void FilterSettingsService::NotifyUpdatedFilterSettings()
 {
   m_settingsHaveChanged = false;
+  m_filterModeAtLastUpdate = m_filterMode;
 }
 
-inline auto FilterSettingsService::GetROVitesseSetting() -> const Vitesse&
+inline auto FilterSettingsService::GetROVitesseSetting() const -> const Vitesse&
 {
   return m_filterSettings.vitesse;
 }
@@ -182,18 +196,27 @@ inline void FilterSettingsService::SetRandomFilterSettings()
 inline void FilterSettingsService::SetDefaultFilterSettings(const ZoomFilterMode mode)
 {
   m_settingsHaveChanged = true;
-  m_zoomFilterMode = mode;
+  m_previousFilterMode = m_filterMode;
+  m_filterMode = mode;
   SetDefaultSettings();
 }
 
 inline void FilterSettingsService::SetNoisifySetting(const bool value)
 {
+  if (m_filterSettings.noisify == value)
+  {
+    return;
+  }
   m_settingsHaveChanged = true;
   m_filterSettings.noisify = value;
 }
 
 inline void FilterSettingsService::SetNoiseFactorSetting(const float value)
 {
+  if (UTILS::floats_equal(m_filterSettings.noiseFactor, value))
+  {
+    return;
+  }
   m_settingsHaveChanged = true;
   m_filterSettings.noiseFactor = value;
 }
@@ -211,18 +234,30 @@ inline void FilterSettingsService::ReduceNoiseFactor()
 
 inline void FilterSettingsService::SetBlockyWavySetting(const bool value)
 {
+  if (m_filterSettings.blockyWavy == value)
+  {
+    return;
+  }
   m_settingsHaveChanged = true;
   m_filterSettings.blockyWavy = value;
 }
 
 inline void FilterSettingsService::SetRotateSetting(const float value)
 {
+  if (UTILS::floats_equal(m_filterSettings.rotateSpeed, value))
+  {
+    return;
+  }
   m_settingsHaveChanged = true;
   m_filterSettings.rotateSpeed = value;
 }
 
 inline void FilterSettingsService::MultiplyRotateSetting(const float factor)
 {
+  if (UTILS::floats_equal(m_filterSettings.rotateSpeed, 1.0F))
+  {
+    return;
+  }
   m_settingsHaveChanged = true;
   m_filterSettings.rotateSpeed *= factor;
 }
@@ -235,32 +270,42 @@ inline void FilterSettingsService::ToggleRotateSetting()
 
 inline void FilterSettingsService::SetTranLerpIncrement(const int32_t value)
 {
+  if (m_filterSettings.tranLerpIncrement == value)
+  {
+    return;
+  }
   m_settingsHaveChanged = true;
   m_filterSettings.tranLerpIncrement = value;
 }
 
 inline void FilterSettingsService::SetDefaultTranLerpIncrement()
 {
-  m_settingsHaveChanged = true;
-  m_filterSettings.tranLerpIncrement = ZoomFilterSettings::DEFAULT_TRAN_LERP_INCREMENT;
+  SetTranLerpIncrement(ZoomFilterSettings::DEFAULT_TRAN_LERP_INCREMENT);
 }
 
 inline void FilterSettingsService::MultiplyTranLerpIncrement(const int32_t factor)
 {
+  if (1 == factor)
+  {
+    return;
+  }
   m_settingsHaveChanged = true;
   m_filterSettings.tranLerpIncrement *= factor;
 }
 
 inline void FilterSettingsService::SetTranLerpToMaxSwitchMult(const float value)
 {
+  if (UTILS::floats_equal(m_filterSettings.tranLerpToMaxSwitchMult, value))
+  {
+    return;
+  }
   m_settingsHaveChanged = true;
   m_filterSettings.tranLerpToMaxSwitchMult = value;
 }
 
 inline void FilterSettingsService::SetDefaultTranLerpToMaxSwitchMult()
 {
-  m_settingsHaveChanged = true;
-  m_filterSettings.tranLerpToMaxSwitchMult = ZoomFilterSettings::DEFAULT_SWITCH_MULT;
+  SetTranLerpToMaxSwitchMult(ZoomFilterSettings::DEFAULT_SWITCH_MULT);
 }
 
 } // namespace FILTERS

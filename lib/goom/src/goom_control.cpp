@@ -67,7 +67,7 @@
 #endif
 #include <vector>
 
-//#define SHOW_STATE_TEXT_ON_SCREEN
+#define SHOW_STATE_TEXT_ON_SCREEN
 
 namespace GOOM
 {
@@ -120,12 +120,12 @@ using GoomEvent = GoomEvents::GoomEvent;
 struct GoomVisualFx
 {
   GoomVisualFx() noexcept = delete;
-  explicit GoomVisualFx(Parallel& parallel,
-                        const IGoomDraw& draw,
-                        const std::shared_ptr<const PluginInfo>& goomInfo,
-                        const SmallImageBitmaps& smallBitmaps,
-                        std::unique_ptr<FilterBuffersService> filterBuffersService,
-                        std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
+  GoomVisualFx(Parallel& parallel,
+               const IGoomDraw& draw,
+               const std::shared_ptr<const PluginInfo>& goomInfo,
+               const SmallImageBitmaps& smallBitmaps,
+               std::unique_ptr<FilterBuffersService> filterBuffersService,
+               std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
 
   std::shared_ptr<ConvolveFx> convolve_fx;
   std::shared_ptr<ZoomFilterFx> zoomFilter_fx;
@@ -242,8 +242,8 @@ private:
   LinesFx m_goomLine1;
   LinesFx m_goomLine2;
 
+  void UpdateTimers();
   void ChangeColorMaps();
-
   void ProcessAudio(const AudioSamples& soundData) const;
 
   // Changement d'effet de zoom !
@@ -295,6 +295,11 @@ private:
   void ChangeSpeedReverse();
   void ChangeVitesse();
   void ChangeStopSpeeds();
+
+  static constexpr uint32_t NUM_BLOCKY_WAVY_UPDATES = 100;
+  Timer m_blockyWavyTimer{NUM_BLOCKY_WAVY_UPDATES};
+  static constexpr uint32_t NUM_NOISE_UPDATES = 100;
+  Timer m_noiseTimer{NUM_NOISE_UPDATES};
 
   // on verifie qu'il ne se pas un truc interressant avec le son.
   void ChangeFilterModeIfMusicChanges();
@@ -471,7 +476,7 @@ void GoomControl::GoomControlImpl::Start()
 
   ChangeColorMaps();
 
-  m_updateMessagesFontFile = GetFontDirectory() + "verdana.ttf";
+  m_updateMessagesFontFile = GetFontDirectory() + PATH_SEP + "verdana.ttf";
   m_curGDrawables = m_states.GetCurrentDrawables();
 
   // TODO MAKE line a visual FX
@@ -718,9 +723,8 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
   //  CALLGRIND_START_INSTRUMENTATION;
 
   ++m_updateNum;
-  ++m_timeInState;
-  m_convolveAllowOverexposed.Increment();
-  m_convolveNotAllowOverexposed.Increment();
+
+  UpdateTimers();
 
   // Elargissement de l'intervalle d'évolution des points!
   // Calcul du deplacement des petits points ...
@@ -761,6 +765,17 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
 
   //  CALLGRIND_STOP_INSTRUMENTATION;
   //  CALLGRIND_DUMP_STATS;
+}
+
+void GoomControl::GoomControlImpl::UpdateTimers()
+{
+  ++m_timeInState;
+
+  m_convolveAllowOverexposed.Increment();
+  m_convolveNotAllowOverexposed.Increment();
+
+  m_blockyWavyTimer.Increment();
+  m_noiseTimer.Increment();
 }
 
 void GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData) const
@@ -1130,6 +1145,11 @@ void GoomControl::GoomControlImpl::ChangeSwitchValues()
 
 void GoomControl::GoomControlImpl::ChangeNoise()
 {
+  if (!m_noiseTimer.Finished())
+  {
+    return;
+  }
+
   if (m_goomEvent.Happens(GoomEvent::TURN_OFF_NOISE))
   {
     m_filterSettingsService.SetNoisifySetting(false);
@@ -1138,6 +1158,7 @@ void GoomControl::GoomControlImpl::ChangeNoise()
   {
     m_filterSettingsService.SetNoisifySetting(true);
     m_filterSettingsService.SetNoiseFactorSetting(1.0);
+    m_noiseTimer.ResetToZero();
   }
 }
 
@@ -1165,14 +1186,15 @@ void GoomControl::GoomControlImpl::ChangeRotation()
 
 void GoomControl::GoomControlImpl::ChangeBlockyWavy()
 {
-  if (!m_goomEvent.Happens(GoomEvent::CHANGE_BLOCKY_WAVY_TO_ON))
+  if (!m_blockyWavyTimer.Finished())
   {
-    m_filterSettingsService.SetBlockyWavySetting(false);
+    return;
   }
-  else
-  {
-    m_filterSettingsService.SetBlockyWavySetting(true);
-  }
+
+  m_filterSettingsService.SetBlockyWavySetting(
+      m_goomEvent.Happens(GoomEvent::CHANGE_BLOCKY_WAVY_TO_ON));
+
+  m_blockyWavyTimer.ResetToZero();
 }
 
 void GoomControl::GoomControlImpl::ChangeAllowOverexposed()
@@ -1198,7 +1220,7 @@ void GoomControl::GoomControlImpl::ChangeZoomEffect()
   ChangeBlockyWavy();
   ChangeAllowOverexposed();
 
-  if (!m_filterSettingsService.HaveSettingsChangedSinceLastUpdate())
+  if (!m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
   {
     if (m_goomData.updatesSinceLastZoomEffectsChange > MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE)
     {
@@ -1651,55 +1673,47 @@ void GoomControl::GoomControlImpl::DisplayStateText()
   std::string message = "";
 
   message += std20::format("State: {}\n", m_states.GetCurrentStateIndex());
-  message += std20::format("Filter: {}\n",
-                           EnumToString(m_visualFx.zoomFilter_fx->GetFilterSettings().mode));
-  message += std20::format("Filter Settings Pending: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettingsArePending());
+  message += std20::format("Filter Mode: {}\n", m_filterSettingsService.GetCurrentFilterMode());
+  message +=
+      std20::format("Previous Filter Mode: {}\n", m_filterSettingsService.GetPreviousFilterMode());
 
-  message += std20::format("middleX: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().middleX);
-  message += std20::format("middleY: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().middleY);
+  message +=
+      std20::format("middleX: {}\n", m_filterSettingsService.GetFilterSettings().zoomMidPoint.x);
+  message +=
+      std20::format("middleY: {}\n", m_filterSettingsService.GetFilterSettings().zoomMidPoint.y);
 
-  message += std20::format("tranLerpIncrement: {}\n", m_goomData.tranLerpIncrement);
-  message += std20::format("tranLerpToMaxSwitchMult: {}\n", m_goomData.tranLerpToMaxSwitchMult);
+  message += std20::format("tranLerpIncrement: {}\n",
+                           m_filterSettingsService.GetFilterSettings().tranLerpIncrement);
+  message += std20::format("tranLerpToMaxSwitchMult: {}\n",
+                           m_filterSettingsService.GetFilterSettings().tranLerpToMaxSwitchMult);
 
   message += std20::format("vitesse: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().vitesse.GetVitesse());
+                           m_filterSettingsService.GetFilterSettings().vitesse.GetVitesse());
   message += std20::format("previousZoomSpeed: {}\n", m_goomData.previousZoomSpeed);
-  message += std20::format(
-      "reverse: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().vitesse.GetReverseVitesse());
-  message +=
-      std20::format("relative speed: {}\n",
-                    m_visualFx.zoomFilter_fx->GetFilterSettings().vitesse.GetRelativeSpeed());
-
-  message += std20::format("hPlaneEffect: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().hPlaneEffect);
-  message += std20::format("hPlaneEffectAmplitude: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().hPlaneEffectAmplitude);
-  message += std20::format("vPlaneEffect: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().vPlaneEffect);
-  message += std20::format("vPlaneEffectAmplitude: {}\n",
-                           m_visualFx.zoomFilter_fx->GetFilterSettings().vPlaneEffectAmplitude);
-  message +=
-      std20::format("rotateSpeed: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().rotateSpeed);
-  message +=
-      std20::format("tanEffect: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().tanEffect);
-
-  message += std20::format("noisify: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().noisify);
-  message +=
-      std20::format("noiseFactor: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().noiseFactor);
+  message += std20::format("reverse: {}\n",
+                           m_filterSettingsService.GetFilterSettings().vitesse.GetReverseVitesse());
+  message += std20::format("relative speed: {}\n",
+                           m_filterSettingsService.GetFilterSettings().vitesse.GetRelativeSpeed());
 
   message +=
-      std20::format("blockyWavy: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().blockyWavy);
+      std20::format("rotateSpeed: {}\n", m_filterSettingsService.GetFilterSettings().rotateSpeed);
+
+  message +=
+      std20::format("hPlaneEffect: {}\n", m_filterSettingsService.GetFilterSettings().planeEffect);
+  message +=
+      std20::format("tanEffect: {}\n", m_filterSettingsService.GetFilterSettings().tanEffect);
+
+  message += std20::format("noisify: {}\n", m_filterSettingsService.GetFilterSettings().noisify);
+  message +=
+      std20::format("noiseFactor: {}\n", m_filterSettingsService.GetFilterSettings().noiseFactor);
+
+  message +=
+      std20::format("blockyWavy: {}\n", m_filterSettingsService.GetFilterSettings().blockyWavy);
 
   message +=
       std20::format("updatesSinceLastChange: {}\n", m_goomData.updatesSinceLastZoomEffectsChange);
-  //  message += std20::format("GetGeneralSpeed: {}\n", m_visualFx.zoomFilter_fx->GetGeneralSpeed());
-  //  message += std20::format("pertedec: {}\n", m_visualFx.zoomFilter_fx->GetFilterSettings().pertedec);
-  //  message += std20::format("lineMode: {}\n", m_goomData.lineMode);
-  //  message += std20::format("lockTime: {}\n", GetLockTime());
-  //  message += std20::format("stopLines: {}\n", m_goomData.stopLines);
 
-  UpdateMessage(message);
+  UpdateMessages(message);
 }
 
 #endif
