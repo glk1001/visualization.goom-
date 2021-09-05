@@ -3,11 +3,8 @@
 #include "filter_normalized_coords.h"
 #include "filter_zoom_vector_effects.h"
 #include "goomutils/mathutils.h"
-#include "v2d.h"
 
 #include <cstdint>
-#include <memory>
-#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -21,9 +18,8 @@ namespace GOOM::FILTERS
 
 using UTILS::SqDistance;
 
-FilterZoomVector::FilterZoomVector(const uint32_t screenWidth,
-                                   const std::string& resourcesDirectory) noexcept
-  : m_zoomVectorEffects{screenWidth, resourcesDirectory}
+FilterZoomVector::FilterZoomVector(const uint32_t screenWidth) noexcept
+  : m_zoomVectorEffects{screenWidth}
 {
 }
 

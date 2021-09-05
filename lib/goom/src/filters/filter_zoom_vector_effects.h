@@ -1,7 +1,9 @@
 #ifndef VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
 #define VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
 
+#include "filter_hypercos.h"
 #include "filter_normalized_coords.h"
+#include "filter_planes.h"
 #include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "goomutils/mathutils.h"
@@ -23,18 +25,13 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Hypercos;
-class Planes;
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++" // Allow the const 'ZoomFilterEffectsSettings*' pointer
 class ZoomVectorEffects
 {
+#pragma GCC diagnostic pop
 public:
-  ZoomVectorEffects(uint32_t screenWidth, const std::string& resourcesDirectory) noexcept;
-  ZoomVectorEffects(const ZoomVectorEffects&) noexcept = delete;
-  ZoomVectorEffects(ZoomVectorEffects&&) noexcept = delete;
-  ~ZoomVectorEffects() noexcept;
-  auto operator=(const ZoomVectorEffects&) -> ZoomVectorEffects& = delete;
-  auto operator=(ZoomVectorEffects&&) -> ZoomVectorEffects& = delete;
+  ZoomVectorEffects(uint32_t screenWidth) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
@@ -68,7 +65,6 @@ public:
 
 private:
   const uint32_t m_screenWidth;
-  const std::string m_resourcesDirectory;
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
 
   // For noise amplitude, take the reciprocal of these.

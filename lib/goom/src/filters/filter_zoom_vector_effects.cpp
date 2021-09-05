@@ -25,16 +25,12 @@ namespace GOOM::FILTERS
 using UTILS::GetRandInRange;
 using UTILS::m_half_pi;
 
-ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
-                                     const std::string& resourcesDirectory) noexcept
+ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth) noexcept
   : m_screenWidth{screenWidth},
-    m_resourcesDirectory{resourcesDirectory},
     m_hypercos{std::make_unique<Hypercos>()},
     m_planes{std::make_unique<Planes>()}
 {
 }
-
-ZoomVectorEffects::~ZoomVectorEffects() noexcept = default;
 
 void ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
 {

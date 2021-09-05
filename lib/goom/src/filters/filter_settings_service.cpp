@@ -4,7 +4,6 @@
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
 #include "filter_crystal_ball.h"
-#include "filter_hypercos.h"
 #include "filter_image_displacements.h"
 #include "filter_scrunch.h"
 #include "filter_settings.h"
@@ -182,7 +181,7 @@ auto FilterSettingsService::GetFilterBuffersService() -> std::unique_ptr<FilterB
 {
   return std::make_unique<FilterBuffersService>(
       m_parallel, m_goomInfo,
-      std::make_unique<FilterZoomVector>(m_goomInfo->GetScreenInfo().width, m_resourcesDirectory));
+      std::make_unique<FilterZoomVector>(m_goomInfo->GetScreenInfo().width));
 }
 
 auto FilterSettingsService::GetFilterColorsService() -> std::unique_ptr<FilterColorsService>

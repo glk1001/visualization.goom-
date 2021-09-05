@@ -36,7 +36,7 @@ class TestZoomVector : public FilterZoomVector
 {
 public:
   explicit TestZoomVector(const bool returnConst) noexcept
-    : FilterZoomVector{WIDTH, ""}, m_ReturnConst{returnConst}
+    : FilterZoomVector{WIDTH}, m_ReturnConst{returnConst}
   {
   }
 
