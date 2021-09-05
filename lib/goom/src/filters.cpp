@@ -44,7 +44,8 @@ namespace GOOM
 
 using FILTERS::FilterBuffersService;
 using FILTERS::FilterColorsService;
-using FILTERS::ZoomFilterSettings;
+using FILTERS::ZoomFilterBufferSettings;
+using FILTERS::ZoomFilterEffectsSettings;
 using UTILS::Logging;
 using UTILS::Parallel;
 
@@ -61,7 +62,8 @@ public:
 
   void Start();
 
-  void UpdateFilterSettings(const ZoomFilterSettings& filterSettings);
+  void UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
+  void UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
@@ -107,9 +109,15 @@ auto ZoomFilterFx::GetFxName() const -> std::string
   return "ZoomFilter FX";
 }
 
-void ZoomFilterFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings)
+void ZoomFilterFx::UpdateFilterEffectsSettings(
+    const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
-  m_fxImpl->UpdateFilterSettings(filterSettings);
+  m_fxImpl->UpdateFilterEffectsSettings(filterEffectsSettings);
+}
+
+void ZoomFilterFx::UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings)
+{
+  m_fxImpl->UpdateFilterBufferSettings(filterBufferSettings);
 }
 
 void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
@@ -135,10 +143,17 @@ inline void ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& 
   m_filterColorsService->SetBuffSettings(settings);
 }
 
-void ZoomFilterFx::ZoomFilterImpl::UpdateFilterSettings(const ZoomFilterSettings& filterSettings)
+void ZoomFilterFx::ZoomFilterImpl::UpdateFilterEffectsSettings(
+    const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
-  m_filterBuffersService->SetFilterSettings(filterSettings);
-  m_filterColorsService->SetBlockyWavy(filterSettings.blockyWavy);
+  m_filterBuffersService->SetFilterEffectsSettings(filterEffectsSettings);
+  m_filterColorsService->SetBlockyWavy(filterEffectsSettings.blockyWavy);
+}
+
+void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
+    const ZoomFilterBufferSettings& filterBufferSettings)
+{
+  m_filterBuffersService->SetFilterBufferSettings(filterBufferSettings);
 }
 
 void ZoomFilterFx::ZoomFilterImpl::Start()

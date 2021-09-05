@@ -53,9 +53,15 @@ enum class HypercosOverlay
   MODE3,
 };
 
+struct ZoomFilterBufferSettings
+{
+  int32_t tranLerpIncrement;
+  float tranLerpToMaxSwitchMult;
+};
+
 class SpeedCoefficientsEffect;
 
-struct ZoomFilterSettings
+struct ZoomFilterEffectsSettings
 {
   HypercosOverlay hypercosOverlay;
   std::shared_ptr<SpeedCoefficientsEffect> speedCoefficientsEffect;
@@ -72,10 +78,12 @@ struct ZoomFilterSettings
 
   bool noisify; // ajoute un bruit a la transformation
   float noiseFactor; // in range [0, 1]
+};
 
-  //TODO enclose in separate struct
-  int32_t tranLerpIncrement;
-  float tranLerpToMaxSwitchMult;
+struct ZoomFilterSettings
+{
+  ZoomFilterEffectsSettings filterEffectsSettings{};
+  ZoomFilterBufferSettings filterBufferSettings{};
 };
 
 inline void Vitesse::SetVitesse(const int32_t val)

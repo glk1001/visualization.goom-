@@ -16,7 +16,7 @@ using GOOM::V2dInt;
 using GOOM::FILTERS::FilterZoomVector;
 using GOOM::FILTERS::NormalizedCoords;
 using GOOM::FILTERS::ZoomFilterBuffers;
-using GOOM::FILTERS::ZoomFilterSettings;
+using GOOM::FILTERS::ZoomFilterEffectsSettings;
 using GOOM::UTILS::floats_equal;
 using GOOM::UTILS::Parallel;
 
@@ -40,7 +40,7 @@ public:
   {
   }
 
-  void SetFilterSettings(const ZoomFilterSettings& filterSettings) override;
+  void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) override;
 
   [[nodiscard]] auto GetConstCoords() const -> const V2dInt& { return m_constCoords; }
   void SetConstCoords(const V2dInt& coords) { m_constCoords = coords; }
@@ -53,9 +53,9 @@ private:
   V2dInt m_constCoords = CONST_ZOOM_VECTOR_COORDS_1;
 };
 
-void TestZoomVector::SetFilterSettings(const ZoomFilterSettings& filterSettings)
+void TestZoomVector::SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
-  FilterZoomVector::SetFilterSettings(filterSettings);
+  FilterZoomVector::SetFilterSettings(filterEffectsSettings);
 }
 
 auto TestZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords

@@ -41,8 +41,8 @@ public:
 
   void Start();
 
-  void NotifyUpdatedFilterSettings();
-  auto HaveSettingsChangedSinceLastUpdate() const -> bool;
+  void NotifyUpdatedFilterEffectsSettings();
+  auto HaveEffectsSettingsChangedSinceLastUpdate() const -> bool;
   auto HasFilterModeChangedSinceLastUpdate() const -> bool;
 
   [[nodiscard]] auto GetCurrentFilterMode() const -> const std::string&;
@@ -126,7 +126,7 @@ private:
   static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
   ZoomFilterSettings m_filterSettings;
 
-  bool m_settingsHaveChanged = false;
+  bool m_filterEffectsSettingsHaveChanged = false;
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<SpeedCoefficientsEffect>&;
@@ -159,9 +159,9 @@ inline auto FilterSettingsService::GetFilterSettings() const -> const ZoomFilter
   return m_filterSettings;
 }
 
-inline auto FilterSettingsService::HaveSettingsChangedSinceLastUpdate() const -> bool
+inline auto FilterSettingsService::HaveEffectsSettingsChangedSinceLastUpdate() const -> bool
 {
-  return m_settingsHaveChanged;
+  return m_filterEffectsSettingsHaveChanged;
 }
 
 inline auto FilterSettingsService::HasFilterModeChangedSinceLastUpdate() const -> bool
@@ -169,44 +169,44 @@ inline auto FilterSettingsService::HasFilterModeChangedSinceLastUpdate() const -
   return m_filterModeAtLastUpdate != m_filterMode;
 }
 
-inline void FilterSettingsService::NotifyUpdatedFilterSettings()
+inline void FilterSettingsService::NotifyUpdatedFilterEffectsSettings()
 {
-  m_settingsHaveChanged = false;
+  m_filterEffectsSettingsHaveChanged = false;
   m_filterModeAtLastUpdate = m_filterMode;
 }
 
 inline auto FilterSettingsService::GetROVitesseSetting() const -> const Vitesse&
 {
-  return m_filterSettings.vitesse;
+  return m_filterSettings.filterEffectsSettings.vitesse;
 }
 
 inline auto FilterSettingsService::GetRWVitesseSetting() -> Vitesse&
 {
-  m_settingsHaveChanged = true;
-  return m_filterSettings.vitesse;
+  m_filterEffectsSettingsHaveChanged = true;
+  return m_filterSettings.filterEffectsSettings.vitesse;
 }
 
 inline void FilterSettingsService::ChangeMilieu()
 {
-  m_settingsHaveChanged = true;
+  m_filterEffectsSettingsHaveChanged = true;
   SetMiddlePoints();
 }
 
 inline void FilterSettingsService::SetMiddlePoints()
 {
-  m_settingsHaveChanged = true;
+  m_filterEffectsSettingsHaveChanged = true;
   SetRandomMiddlePoints();
 }
 
 inline void FilterSettingsService::SetRandomFilterSettings()
 {
-  m_settingsHaveChanged = true;
+  m_filterEffectsSettingsHaveChanged = true;
   SetRandomFilterSettings(GetNewRandomMode());
 }
 
 inline void FilterSettingsService::SetDefaultFilterSettings(const ZoomFilterMode mode)
 {
-  m_settingsHaveChanged = true;
+  m_filterEffectsSettingsHaveChanged = true;
   m_previousFilterMode = m_filterMode;
   m_filterMode = mode;
   SetDefaultSettings();
@@ -214,79 +214,76 @@ inline void FilterSettingsService::SetDefaultFilterSettings(const ZoomFilterMode
 
 inline void FilterSettingsService::SetNoisifySetting(const bool value)
 {
-  if (m_filterSettings.noisify == value)
+  if (m_filterSettings.filterEffectsSettings.noisify == value)
   {
     return;
   }
-  m_settingsHaveChanged = true;
-  m_filterSettings.noisify = value;
+  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.noisify = value;
 }
 
 inline void FilterSettingsService::SetNoiseFactorSetting(const float value)
 {
-  if (UTILS::floats_equal(m_filterSettings.noiseFactor, value))
+  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.noiseFactor, value))
   {
     return;
   }
-  m_settingsHaveChanged = true;
-  m_filterSettings.noiseFactor = value;
+  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.noiseFactor = value;
 }
 
 inline void FilterSettingsService::ReduceNoiseFactor()
 {
-  if (!GetFilterSettings().noisify)
+  if (!GetFilterSettings().filterEffectsSettings.noisify)
   {
     return;
   }
   constexpr float REDUCING_FACTOR = 0.94F;
-  const float reducedNoiseFactor = m_filterSettings.noiseFactor * REDUCING_FACTOR;
+  const float reducedNoiseFactor =
+      m_filterSettings.filterEffectsSettings.noiseFactor * REDUCING_FACTOR;
   SetNoiseFactorSetting(reducedNoiseFactor);
 }
 
 inline void FilterSettingsService::SetBlockyWavySetting(const bool value)
 {
-  if (m_filterSettings.blockyWavy == value)
+  if (m_filterSettings.filterEffectsSettings.blockyWavy == value)
   {
     return;
   }
-  m_settingsHaveChanged = true;
-  m_filterSettings.blockyWavy = value;
+  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.blockyWavy = value;
 }
 
 inline void FilterSettingsService::SetRotateSetting(const float value)
 {
-  if (UTILS::floats_equal(m_filterSettings.rotateSpeed, value))
+  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.rotateSpeed, value))
   {
     return;
   }
-  m_settingsHaveChanged = true;
-  m_filterSettings.rotateSpeed = value;
+  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.rotateSpeed = value;
 }
 
 inline void FilterSettingsService::MultiplyRotateSetting(const float factor)
 {
-  if (UTILS::floats_equal(m_filterSettings.rotateSpeed, 1.0F))
+  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.rotateSpeed, 1.0F))
   {
     return;
   }
-  m_settingsHaveChanged = true;
-  m_filterSettings.rotateSpeed *= factor;
+  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.rotateSpeed *= factor;
 }
 
 inline void FilterSettingsService::ToggleRotateSetting()
 {
-  m_settingsHaveChanged = true;
-  m_filterSettings.rotateSpeed = -m_filterSettings.rotateSpeed;
+  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.rotateSpeed =
+      -m_filterSettings.filterEffectsSettings.rotateSpeed;
 }
 
 inline void FilterSettingsService::SetTranLerpIncrement(const int32_t value)
 {
-  if (m_filterSettings.tranLerpIncrement == value)
-  {
-    return;
-  }
-  m_settingsHaveChanged = true;
-  m_filterSettings.tranLerpIncrement = value;
+  m_filterSettings.filterBufferSettings.tranLerpIncrement = value;
 }
 
 inline void FilterSettingsService::SetDefaultTranLerpIncrement()
@@ -296,22 +293,12 @@ inline void FilterSettingsService::SetDefaultTranLerpIncrement()
 
 inline void FilterSettingsService::MultiplyTranLerpIncrement(const int32_t factor)
 {
-  if (1 == factor)
-  {
-    return;
-  }
-  m_settingsHaveChanged = true;
-  m_filterSettings.tranLerpIncrement *= factor;
+  m_filterSettings.filterBufferSettings.tranLerpIncrement *= factor;
 }
 
 inline void FilterSettingsService::SetTranLerpToMaxSwitchMult(const float value)
 {
-  if (UTILS::floats_equal(m_filterSettings.tranLerpToMaxSwitchMult, value))
-  {
-    return;
-  }
-  m_settingsHaveChanged = true;
-  m_filterSettings.tranLerpToMaxSwitchMult = value;
+  m_filterSettings.filterBufferSettings.tranLerpToMaxSwitchMult = value;
 }
 
 inline void FilterSettingsService::SetDefaultTranLerpToMaxSwitchMult()

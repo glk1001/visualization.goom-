@@ -13,7 +13,7 @@
 namespace GOOM
 {
 
-struct ZoomFilterSettings;
+struct ZoomFilterEffectsSettings;
 
 namespace FILTERS
 {
@@ -25,7 +25,7 @@ public:
 
   void SetMaxSpeedCoeff(float val) override;
 
-  void SetFilterSettings(const ZoomFilterSettings& filterSettings) override;
+  void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) override;
 
   auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords override;
 

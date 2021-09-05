@@ -25,8 +25,8 @@
 #include "filters.h"
 #include "filters/filter_buffers_service.h"
 #include "filters/filter_colors_service.h"
+#include "filters/filter_settings.h"
 #include "filters/filter_settings_service.h"
-#include "filters/filter_zoom_vector.h"
 #include "flying_stars_fx.h"
 #include "goom_config.h"
 #include "goom_dots_fx.h"
@@ -1301,11 +1301,15 @@ void GoomControl::GoomControlImpl::ApplyZoom()
 
 inline void GoomControl::GoomControlImpl::UpdateFilterSettings()
 {
-  if (m_filterSettingsService.HaveSettingsChangedSinceLastUpdate())
+  if (m_filterSettingsService.HaveEffectsSettingsChangedSinceLastUpdate())
   {
-    m_visualFx.zoomFilter_fx->UpdateFilterSettings(m_filterSettingsService.GetFilterSettings());
-    m_filterSettingsService.NotifyUpdatedFilterSettings();
+    m_visualFx.zoomFilter_fx->UpdateFilterEffectsSettings(
+        m_filterSettingsService.GetFilterSettings().filterEffectsSettings);
+    m_filterSettingsService.NotifyUpdatedFilterEffectsSettings();
   }
+
+  m_visualFx.zoomFilter_fx->UpdateFilterBufferSettings(
+      m_filterSettingsService.GetFilterSettings().filterBufferSettings);
 }
 
 void GoomControl::GoomControlImpl::ApplyDotsIfRequired()
@@ -1672,43 +1676,38 @@ void GoomControl::GoomControlImpl::DisplayStateText()
 {
   std::string message = "";
 
+  const FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings =
+      m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
+  const FILTERS::ZoomFilterBufferSettings& filterBufferSettings =
+      m_filterSettingsService.GetFilterSettings().filterBufferSettings;
+
   message += std20::format("State: {}\n", m_states.GetCurrentStateIndex());
   message += std20::format("Filter Mode: {}\n", m_filterSettingsService.GetCurrentFilterMode());
   message +=
       std20::format("Previous Filter Mode: {}\n", m_filterSettingsService.GetPreviousFilterMode());
 
-  message +=
-      std20::format("middleX: {}\n", m_filterSettingsService.GetFilterSettings().zoomMidPoint.x);
-  message +=
-      std20::format("middleY: {}\n", m_filterSettingsService.GetFilterSettings().zoomMidPoint.y);
+  message += std20::format("middleX: {}\n", filterEffectsSettings.zoomMidPoint.x);
+  message += std20::format("middleY: {}\n", filterEffectsSettings.zoomMidPoint.y);
 
-  message += std20::format("tranLerpIncrement: {}\n",
-                           m_filterSettingsService.GetFilterSettings().tranLerpIncrement);
-  message += std20::format("tranLerpToMaxSwitchMult: {}\n",
-                           m_filterSettingsService.GetFilterSettings().tranLerpToMaxSwitchMult);
+  message += std20::format("tranLerpIncrement: {}\n", filterBufferSettings.tranLerpIncrement);
+  message +=
+      std20::format("tranLerpToMaxSwitchMult: {}\n", filterBufferSettings.tranLerpToMaxSwitchMult);
 
-  message += std20::format("vitesse: {}\n",
-                           m_filterSettingsService.GetFilterSettings().vitesse.GetVitesse());
+  message += std20::format("vitesse: {}\n", filterEffectsSettings.vitesse.GetVitesse());
   message += std20::format("previousZoomSpeed: {}\n", m_goomData.previousZoomSpeed);
-  message += std20::format("reverse: {}\n",
-                           m_filterSettingsService.GetFilterSettings().vitesse.GetReverseVitesse());
-  message += std20::format("relative speed: {}\n",
-                           m_filterSettingsService.GetFilterSettings().vitesse.GetRelativeSpeed());
+  message += std20::format("reverse: {}\n", filterEffectsSettings.vitesse.GetReverseVitesse());
+  message +=
+      std20::format("relative speed: {}\n", filterEffectsSettings.vitesse.GetRelativeSpeed());
 
-  message +=
-      std20::format("rotateSpeed: {}\n", m_filterSettingsService.GetFilterSettings().rotateSpeed);
+  message += std20::format("rotateSpeed: {}\n", filterEffectsSettings.rotateSpeed);
 
-  message +=
-      std20::format("hPlaneEffect: {}\n", m_filterSettingsService.GetFilterSettings().planeEffect);
-  message +=
-      std20::format("tanEffect: {}\n", m_filterSettingsService.GetFilterSettings().tanEffect);
+  message += std20::format("hPlaneEffect: {}\n", filterEffectsSettings.planeEffect);
+  message += std20::format("tanEffect: {}\n", filterEffectsSettings.tanEffect);
 
-  message += std20::format("noisify: {}\n", m_filterSettingsService.GetFilterSettings().noisify);
-  message +=
-      std20::format("noiseFactor: {}\n", m_filterSettingsService.GetFilterSettings().noiseFactor);
+  message += std20::format("noisify: {}\n", filterEffectsSettings.noisify);
+  message += std20::format("noiseFactor: {}\n", filterEffectsSettings.noiseFactor);
 
-  message +=
-      std20::format("blockyWavy: {}\n", m_filterSettingsService.GetFilterSettings().blockyWavy);
+  message += std20::format("blockyWavy: {}\n", filterEffectsSettings.blockyWavy);
 
   message +=
       std20::format("updatesSinceLastChange: {}\n", m_goomData.updatesSinceLastZoomEffectsChange);

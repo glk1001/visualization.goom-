@@ -27,9 +27,9 @@ FilterZoomVector::FilterZoomVector(const uint32_t screenWidth,
 {
 }
 
-void FilterZoomVector::SetFilterSettings(const ZoomFilterSettings& filterSettings)
+void FilterZoomVector::SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
-  m_zoomVectorEffects.SetFilterSettings(filterSettings);
+  m_zoomVectorEffects.SetFilterSettings(filterEffectsSettings);
 }
 
 void FilterZoomVector::SetMaxSpeedCoeff(const float val)

@@ -32,7 +32,8 @@ public:
 
   void Start();
 
-  void SetFilterSettings(const ZoomFilterSettings& filterSettings);
+  void SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
+  void SetFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
   void UpdateTranBuffers();
   void UpdateTranLerpFactor(int32_t tranLerpIncrement, float tranLerpToMaxSwitchMult);
@@ -45,11 +46,11 @@ private:
   std::unique_ptr<IZoomVector> m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
 
-  ZoomFilterSettings m_currentFilterSettings{};
-  ZoomFilterSettings m_nextFilterSettings{};
-  bool m_pendingFilterSettings = false;
+  ZoomFilterEffectsSettings m_currentFilterEffectsSettings{};
+  ZoomFilterEffectsSettings m_nextFilterEffectsSettings{};
+  bool m_pendingFilterEffectsSettings = false;
 
-  void UpdateFilterSettings();
+  void UpdateFilterEffectsSettings();
   auto AreStartingFreshTranBuffers() const -> bool;
   void StartFreshTranBuffers();
 };

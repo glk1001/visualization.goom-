@@ -36,7 +36,7 @@ public:
   auto operator=(const ZoomVectorEffects&) -> ZoomVectorEffects& = delete;
   auto operator=(ZoomVectorEffects&&) -> ZoomVectorEffects& = delete;
 
-  void SetFilterSettings(const ZoomFilterSettings& filterSettings);
+  void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
   void SetMaxSpeedCoeff(float val);
 
@@ -69,7 +69,7 @@ public:
 private:
   const uint32_t m_screenWidth;
   const std::string m_resourcesDirectory;
-  const ZoomFilterSettings* m_filterSettings{};
+  const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
 
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
@@ -111,8 +111,8 @@ inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero
                                                       const NormalizedCoords& coords) const
     -> V2dFlt
 {
-  return m_filterSettings->speedCoefficientsEffect->GetSpeedCoefficients(GetBaseSpeedCoefficients(),
-                                                                         sqDistFromZero, coords);
+  return m_filterEffectsSettings->speedCoefficientsEffect->GetSpeedCoefficients(
+      GetBaseSpeedCoefficients(), sqDistFromZero, coords);
   // Amulet 2
   // vx = X * tan(dist);
   // vy = Y * tan(dist);
@@ -121,7 +121,7 @@ inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero
 inline auto ZoomVectorEffects::GetBaseSpeedCoefficients() const -> V2dFlt
 {
   const float speedCoeff =
-      (1.0F + m_filterSettings->vitesse.GetRelativeSpeed()) / SPEED_COEFF_DENOMINATOR;
+      (1.0F + m_filterEffectsSettings->vitesse.GetRelativeSpeed()) / SPEED_COEFF_DENOMINATOR;
   return {speedCoeff, speedCoeff};
 }
 
@@ -145,22 +145,22 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) cons
 
 inline auto ZoomVectorEffects::IsRotateActive() const -> bool
 {
-  return std::fabs(m_filterSettings->rotateSpeed) > UTILS::SMALL_FLOAT;
+  return std::fabs(m_filterEffectsSettings->rotateSpeed) > UTILS::SMALL_FLOAT;
 }
 
 inline auto ZoomVectorEffects::IsNoiseActive() const -> bool
 {
-  return m_filterSettings->noisify;
+  return m_filterEffectsSettings->noisify;
 }
 
 inline auto ZoomVectorEffects::IsTanEffectActive() const -> bool
 {
-  return m_filterSettings->tanEffect;
+  return m_filterEffectsSettings->tanEffect;
 }
 
 inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
 {
-  return m_filterSettings->hypercosOverlay != HypercosOverlay::NONE;
+  return m_filterEffectsSettings->hypercosOverlay != HypercosOverlay::NONE;
 }
 
 #if __cplusplus <= 201402L

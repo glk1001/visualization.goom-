@@ -36,11 +36,11 @@ ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
 
 ZoomVectorEffects::~ZoomVectorEffects() noexcept = default;
 
-void ZoomVectorEffects::SetFilterSettings(const ZoomFilterSettings& filterSettings)
+void ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
-  m_filterSettings = &filterSettings;
+  m_filterEffectsSettings = &filterEffectsSettings;
 
-  m_filterSettings->speedCoefficientsEffect->SetRandomParams();
+  m_filterEffectsSettings->speedCoefficientsEffect->SetRandomParams();
 
   SetHypercosOverlaySettings();
   SetRandomPlaneEffects();
@@ -48,15 +48,15 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterSettings& filterSettin
 
 void ZoomVectorEffects::SetRandomPlaneEffects()
 {
-  if (m_filterSettings->planeEffect)
+  if (m_filterEffectsSettings->planeEffect)
   {
-    m_planes->SetRandomParams(m_filterSettings->zoomMidPoint, m_screenWidth);
+    m_planes->SetRandomParams(m_filterEffectsSettings->zoomMidPoint, m_screenWidth);
   }
 }
 
 void ZoomVectorEffects::SetHypercosOverlaySettings()
 {
-  switch (m_filterSettings->hypercosOverlay)
+  switch (m_filterEffectsSettings->hypercosOverlay)
   {
     case HypercosOverlay::NONE:
       m_hypercos->SetDefaultParams();
@@ -121,7 +121,8 @@ auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
 {
   //    const float xAmp = 1.0/getRandInRange(50.0f, 200.0f);
   //    const float yAmp = 1.0/getRandInRange(50.0f, 200.0f);
-  const float amp = (0.5F * m_filterSettings->noiseFactor) / GetRandInRange(NOISE_MIN, NOISE_MAX);
+  const float amp =
+      (0.5F * m_filterEffectsSettings->noiseFactor) / GetRandInRange(NOISE_MIN, NOISE_MAX);
   return {GetRandInRange(-amp, +amp), GetRandInRange(-amp, +amp)};
 }
 
@@ -138,14 +139,14 @@ auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
 auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) const
     -> NormalizedCoords
 {
-  if (m_filterSettings->rotateSpeed < 0.0F)
+  if (m_filterEffectsSettings->rotateSpeed < 0.0F)
   {
-    return {-m_filterSettings->rotateSpeed * (velocity.GetX() - velocity.GetY()),
-            -m_filterSettings->rotateSpeed * (velocity.GetX() + velocity.GetY())};
+    return {-m_filterEffectsSettings->rotateSpeed * (velocity.GetX() - velocity.GetY()),
+            -m_filterEffectsSettings->rotateSpeed * (velocity.GetX() + velocity.GetY())};
   }
 
-  return {m_filterSettings->rotateSpeed * (velocity.GetY() + velocity.GetX()),
-          m_filterSettings->rotateSpeed * (velocity.GetY() - velocity.GetX())};
+  return {m_filterEffectsSettings->rotateSpeed * (velocity.GetY() + velocity.GetX()),
+          m_filterEffectsSettings->rotateSpeed * (velocity.GetY() - velocity.GetX())};
 }
 
 #if __cplusplus <= 201402L

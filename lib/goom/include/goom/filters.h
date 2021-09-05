@@ -15,7 +15,8 @@ namespace FILTERS
 {
 class FilterBuffersService;
 class FilterColorsService;
-struct ZoomFilterSettings;
+struct ZoomFilterBufferSettings;
+struct ZoomFilterEffectsSettings;
 } // namespace FILTERS
 
 namespace UTILS
@@ -41,7 +42,8 @@ public:
 
   void Start() override;
 
-  void UpdateFilterSettings(const FILTERS::ZoomFilterSettings& filterSettings);
+  void UpdateFilterBufferSettings(const FILTERS::ZoomFilterBufferSettings& filterBufferSettings);
+  void UpdateFilterEffectsSettings(const FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 

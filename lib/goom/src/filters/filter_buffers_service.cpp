@@ -49,31 +49,36 @@ FilterBuffersService::FilterBuffersService(
 {
 }
 
-void FilterBuffersService::SetFilterSettings(const ZoomFilterSettings& filterSettings)
+void FilterBuffersService::SetFilterBufferSettings(
+    const ZoomFilterBufferSettings& filterBufferSettings)
 {
-  UpdateTranLerpFactor(filterSettings.tranLerpIncrement, filterSettings.tranLerpToMaxSwitchMult);
+  UpdateTranLerpFactor(filterBufferSettings.tranLerpIncrement,
+                       filterBufferSettings.tranLerpToMaxSwitchMult);
+}
 
-  m_nextFilterSettings = filterSettings;
-  m_pendingFilterSettings = true;
+void FilterBuffersService::SetFilterEffectsSettings(const ZoomFilterEffectsSettings& filterSettings)
+{
+  m_nextFilterEffectsSettings = filterSettings;
+  m_pendingFilterEffectsSettings = true;
 }
 
 void FilterBuffersService::Start()
 {
-  m_currentFilterSettings = m_nextFilterSettings;
-  assert(m_currentFilterSettings.speedCoefficientsEffect != nullptr);
+  m_currentFilterEffectsSettings = m_nextFilterEffectsSettings;
+  assert(m_currentFilterEffectsSettings.speedCoefficientsEffect != nullptr);
 
-  UpdateFilterSettings();
+  UpdateFilterEffectsSettings();
 
   m_filterBuffers.Start();
 }
 
-inline void FilterBuffersService::UpdateFilterSettings()
+inline void FilterBuffersService::UpdateFilterEffectsSettings()
 {
-  m_zoomVector->SetFilterSettings(m_currentFilterSettings);
+  m_zoomVector->SetFilterSettings(m_currentFilterEffectsSettings);
   // TODO Random calc should not be here. Move to vector effects
   m_zoomVector->SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF);
 
-  m_filterBuffers.SetBuffMidPoint(m_currentFilterSettings.zoomMidPoint);
+  m_filterBuffers.SetBuffMidPoint(m_currentFilterEffectsSettings.zoomMidPoint);
   m_filterBuffers.NotifyFilterSettingsHaveChanged();
 }
 
@@ -96,20 +101,20 @@ inline auto FilterBuffersService::AreStartingFreshTranBuffers() const -> bool
 void FilterBuffersService::StartFreshTranBuffers()
 {
   // Don't start making new stripes until filter settings change.
-  if (!m_pendingFilterSettings)
+  if (!m_pendingFilterEffectsSettings)
   {
     return;
   }
 
-  m_currentFilterSettings = m_nextFilterSettings;
+  m_currentFilterEffectsSettings = m_nextFilterEffectsSettings;
 
-  UpdateFilterSettings();
+  UpdateFilterEffectsSettings();
 
-  m_pendingFilterSettings = false;
+  m_pendingFilterEffectsSettings = false;
 }
 
-void FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpIncrement,
-                                                const float tranLerpToMaxSwitchMult)
+inline void FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpIncrement,
+                                                       const float tranLerpToMaxSwitchMult)
 {
   int32_t tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
 

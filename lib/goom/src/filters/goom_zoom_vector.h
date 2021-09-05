@@ -13,7 +13,7 @@ namespace FILTERS
 
 class NormalizedCoords;
 class SpeedCoefficientsEffect;
-struct ZoomFilterSettings;
+struct ZoomFilterEffectsSettings;
 
 class IZoomVector
 {
@@ -27,7 +27,7 @@ public:
 
   virtual void SetMaxSpeedCoeff(float val) = 0;
 
-  virtual void SetFilterSettings(const ZoomFilterSettings& filterSettings) = 0;
+  virtual void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) = 0;
 
   virtual auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords = 0;
 };
