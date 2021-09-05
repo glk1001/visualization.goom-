@@ -30,11 +30,8 @@ ImageDisplacement::ImageDisplacement(const std::string& imageFilename)
     m_imageFilename{imageFilename},
     m_xMax{static_cast<int32_t>(m_imageBuffer->GetWidth() - 1)},
     m_yMax{static_cast<int32_t>(m_imageBuffer->GetHeight() - 1)},
-    m_ratioNormalizedXCoordToImageCoord{
-        static_cast<float>(m_xMax) /
-        (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD)},
-    m_ratioNormalizedYCoordToImageCoord{
-        static_cast<float>(m_yMax) /
+    m_ratioNormalizedCoordToImageCoord{
+        static_cast<float>(std::min(m_xMax, m_yMax)) /
         (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD)}
 {
 }
@@ -67,9 +64,9 @@ inline auto ImageDisplacement::NormalizedToImagePoint(const V2dFlt& normalizedPo
   const float yZoom = m_zoomFactor * normalizedPoint.y;
 
   const auto x = static_cast<int32_t>(std::lround(
-      m_ratioNormalizedXCoordToImageCoord * (xZoom - NormalizedCoords::MIN_NORMALIZED_COORD)));
+      m_ratioNormalizedCoordToImageCoord * (xZoom - NormalizedCoords::MIN_NORMALIZED_COORD)));
   const auto y = static_cast<int32_t>(std::lround(
-      m_ratioNormalizedYCoordToImageCoord * (yZoom - NormalizedCoords::MIN_NORMALIZED_COORD)));
+      m_ratioNormalizedCoordToImageCoord * (yZoom - NormalizedCoords::MIN_NORMALIZED_COORD)));
 
   constexpr int32_t FUZZ = 0;
   if (0 == FUZZ)
