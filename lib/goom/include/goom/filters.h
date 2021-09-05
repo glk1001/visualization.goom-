@@ -42,6 +42,8 @@ public:
 
   void Start() override;
 
+  auto GetTranLerpFactor() const -> int32_t;
+
   void UpdateFilterBufferSettings(const FILTERS::ZoomFilterBufferSettings& filterBufferSettings);
   void UpdateFilterEffectsSettings(const FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings);
 

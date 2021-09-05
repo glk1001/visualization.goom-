@@ -62,6 +62,8 @@ public:
 
   void Start();
 
+  auto GetTranLerpFactor() const -> int32_t;
+
   void UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
   void UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
@@ -109,6 +111,11 @@ auto ZoomFilterFx::GetFxName() const -> std::string
   return "ZoomFilter FX";
 }
 
+auto ZoomFilterFx::GetTranLerpFactor() const -> int32_t
+{
+  return m_fxImpl->GetTranLerpFactor();
+}
+
 void ZoomFilterFx::UpdateFilterEffectsSettings(
     const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
@@ -143,20 +150,25 @@ inline void ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& 
   m_filterColorsService->SetBuffSettings(settings);
 }
 
-void ZoomFilterFx::ZoomFilterImpl::UpdateFilterEffectsSettings(
+inline auto ZoomFilterFx::ZoomFilterImpl::GetTranLerpFactor() const -> int32_t
+{
+  return m_filterBuffersService->GetTranLerpFactor();
+}
+
+inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterEffectsSettings(
     const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
   m_filterBuffersService->SetFilterEffectsSettings(filterEffectsSettings);
   m_filterColorsService->SetBlockyWavy(filterEffectsSettings.blockyWavy);
 }
 
-void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
+inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
     const ZoomFilterBufferSettings& filterBufferSettings)
 {
   m_filterBuffersService->SetFilterBufferSettings(filterBufferSettings);
 }
 
-void ZoomFilterFx::ZoomFilterImpl::Start()
+inline void ZoomFilterFx::ZoomFilterImpl::Start()
 {
   m_filterBuffersService->Start();
 }
@@ -174,8 +186,8 @@ void ZoomFilterFx::ZoomFilterImpl::Start()
  *  So that is why you have this name, for the nostalgy of the first days of goom
  *  when it was just a tiny program writen in Turbo Pascal on my i486...
  */
-void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
-                                                     PixelBuffer& destBuff)
+inline void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
+                                                            PixelBuffer& destBuff)
 {
   ++m_updateNum;
 

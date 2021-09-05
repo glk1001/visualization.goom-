@@ -35,6 +35,8 @@ public:
   void SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
   void SetFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
+  auto GetTranLerpFactor() const -> int32_t;
+
   void UpdateTranBuffers();
   void UpdateTranLerpFactor(int32_t tranLerpIncrement, float tranLerpToMaxSwitchMult);
 
@@ -58,6 +60,11 @@ private:
 inline auto FilterBuffersService::GetSourcePointInfo(const size_t buffPos) const -> SourcePointInfo
 {
   return m_filterBuffers.GetSourcePointInfo(buffPos);
+}
+
+inline auto FilterBuffersService::GetTranLerpFactor() const -> int32_t
+{
+  return m_filterBuffers.GetTranLerpFactor();
 }
 
 } // namespace FILTERS
