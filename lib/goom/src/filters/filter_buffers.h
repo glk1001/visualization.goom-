@@ -285,9 +285,9 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
                                                                     const int32_t t) -> int32_t
 {
   // IMPORTANT: Looking at this mathematically I can't see that the '>> DIM_FILTER_COEFFS'
-  //            should be there. Surely it should be '/ MAX_TRAN_LERP_VALUE' with this, slight
-  //            static artifacts appear in the centre of the image. I also tried
-  //            '/ (MAX_TRAN_LERP_VALUE - 1)'  which was better with the artficats in
+  //            should be there. Surely it should be '/ MAX_TRAN_LERP_VALUE' - but with this,
+  //            slight static artifacts appear in the centre of the image. I also tried
+  //            '/ (MAX_TRAN_LERP_VALUE - 1)'  which was better with the artifacts in
   //            the centre but may have produced other artifacts.
 
   return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);

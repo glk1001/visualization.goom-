@@ -64,7 +64,7 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
 {
   return {
     { ZoomFilterMode::AMULET_MODE,             {"Amulet",              PROB_HIGH, std::make_shared<Amulet>()}},
-    { ZoomFilterMode::CRYSTAL_BALL_MODE0,      {"Crystal Ball Mode 0", PROB_LOW,  std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0)}},
+    { ZoomFilterMode::CRYSTAL_BALL_MODE0,      {"Crystal Ball Mode 0", PROB_HIGH,  std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0)}},
     { ZoomFilterMode::CRYSTAL_BALL_MODE1,      {"Crystal Ball Mode 1", PROB_HALF, std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1)}},
     { ZoomFilterMode::HYPERCOS_MODE0,          {"Hypercos Mode 0",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
     { ZoomFilterMode::HYPERCOS_MODE1,          {"Hypercos Mode 1",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},

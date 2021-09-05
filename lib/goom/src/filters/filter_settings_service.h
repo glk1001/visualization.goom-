@@ -56,7 +56,6 @@ public:
   void SetMiddlePoints();
   void SetNoisifySetting(bool value);
   void SetNoiseFactorSetting(float value);
-  void ReduceNoiseFactor();
   void SetBlockyWavySetting(bool value);
   void SetRotateSetting(float value);
   void MultiplyRotateSetting(float factor);
@@ -230,18 +229,6 @@ inline void FilterSettingsService::SetNoiseFactorSetting(const float value)
   }
   m_filterEffectsSettingsHaveChanged = true;
   m_filterSettings.filterEffectsSettings.noiseFactor = value;
-}
-
-inline void FilterSettingsService::ReduceNoiseFactor()
-{
-  if (!GetFilterSettings().filterEffectsSettings.noisify)
-  {
-    return;
-  }
-  constexpr float REDUCING_FACTOR = 0.94F;
-  const float reducedNoiseFactor =
-      m_filterSettings.filterEffectsSettings.noiseFactor * REDUCING_FACTOR;
-  SetNoiseFactorSetting(reducedNoiseFactor);
 }
 
 inline void FilterSettingsService::SetBlockyWavySetting(const bool value)

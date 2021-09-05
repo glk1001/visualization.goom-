@@ -1157,7 +1157,7 @@ void GoomControl::GoomControlImpl::ChangeNoise()
   else
   {
     m_filterSettingsService.SetNoisifySetting(true);
-    m_filterSettingsService.SetNoiseFactorSetting(1.0);
+    m_filterSettingsService.SetNoiseFactorSetting(GetRandInRange(0.1F, 1.0F));
     m_noiseTimer.ResetToZero();
   }
 }
@@ -1295,8 +1295,6 @@ void GoomControl::GoomControlImpl::ApplyZoom()
   UpdateFilterSettings();
 
   m_visualFx.zoomFilter_fx->ZoomFilterFastRgb(m_imageBuffers.GetP1(), m_imageBuffers.GetP2());
-
-  m_filterSettingsService.ReduceNoiseFactor();
 }
 
 inline void GoomControl::GoomControlImpl::UpdateFilterSettings()
