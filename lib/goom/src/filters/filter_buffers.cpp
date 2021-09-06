@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
+#include <numeric>
 #include <vector>
 
 #if __cplusplus <= 201402L
@@ -390,68 +391,54 @@ auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() -> Fi
   {
     for (uint32_t coeffV = 0; coeffV < DIM_FILTER_COEFFS; ++coeffV)
     {
-      const uint32_t diffCoeffH = DIM_FILTER_COEFFS - coeffH;
-      const uint32_t diffCoeffV = DIM_FILTER_COEFFS - coeffV;
-
-      if ((0 == coeffH) && (0 == coeffV))
-      {
-        precalculatedCoeffs[coeffH][coeffV] = {{channel_limits<uint32_t>::max(), 0U, 0U, 0U},
-                                               false};
-      }
-      else
-      {
-        uint32_t i1 = diffCoeffH * diffCoeffV;
-        uint32_t i2 = coeffH * diffCoeffV;
-        uint32_t i3 = diffCoeffH * coeffV;
-        uint32_t i4 = coeffH * coeffV;
-
-        // TODO: faire mieux...
-        if (i1)
-        {
-          --i1;
-        }
-        if (i2)
-        {
-          --i2;
-        }
-        if (i3)
-        {
-          --i3;
-        }
-        if (i4)
-        {
-          --i4;
-        }
-
-        /**
-        if (ProbabilityOfMInN(1, 100))
-        {
-          i1 += GetRandInRange(0U, 10U);
-        }
-        if (ProbabilityOfMInN(1, 100))
-        {
-          i2 += GetRandInRange(0U, 10U);
-        }
-        if (ProbabilityOfMInN(1, 100))
-        {
-          i3 += GetRandInRange(0U, 10U);
-        }
-        if (ProbabilityOfMInN(1, 100))
-        {
-          i4 += GetRandInRange(0U, 10U);
-        }
-        i1 = 16;
-        i2 =  20;
-        i3 = 20;
-        i4 = 16;
-**/
-        precalculatedCoeffs[coeffH][coeffV] = {{i1, i2, i3, i4},
-                                               (0 == i1) && (0 == i2) && (0 == i3) && (0 == i4)};
-      }
+      precalculatedCoeffs[coeffH][coeffV] = GetNeighborhoodCoeffArray(coeffH, coeffV);
     }
   }
 
   return precalculatedCoeffs;
+}
+
+auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(const uint32_t coeffH,
+                                                                      const uint32_t coeffV)
+    -> NeighborhoodCoeffArray
+{
+  const uint32_t diffCoeffH = DIM_FILTER_COEFFS - coeffH;
+  const uint32_t diffCoeffV = DIM_FILTER_COEFFS - coeffV;
+
+  // clang-format off
+  std::array<uint32_t, NUM_NEIGHBOR_COEFFS> coeffs = {
+      diffCoeffH * diffCoeffV,
+      coeffH * diffCoeffV,
+      diffCoeffH * coeffV,
+      coeffH * coeffV
+  };
+  // clang-format on
+
+  // We want to decrement just one coefficient so that the sum of
+  // coefficients equals 255. We'll choose the max coefficient.
+  const uint32_t maxCoeff = *std::max_element(cbegin(coeffs), cend(coeffs));
+  bool allZero = false;
+  if (maxCoeff == 0)
+  {
+    allZero = true;
+  }
+  else
+  {
+    for (auto& c : coeffs)
+    {
+      if (maxCoeff == c)
+      {
+        --c;
+        break;
+      }
+    }
+  }
+
+  LogInfo("{:2}, {:2}:  {:3}, {:3}, {:3}, {:3} - sum: {:3}", coeffH, coeffV, coeffs[0], coeffs[1],
+          coeffs[2], coeffs[3], std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
+  assert(channel_limits<uint32_t>::max() == std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
+
+  return {coeffs, allZero};
 }
 
 #if __cplusplus <= 201402L

@@ -10,6 +10,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstring>
+#include <format>
 #include <tuple>
 #include <vector>
 
@@ -90,6 +91,8 @@ public:
 
   [[nodiscard]] auto Rgba() const -> uint32_t;
   void SetRgba(uint32_t v);
+
+  [[nodiscard]] auto toString() const -> std::string;
 
   static const Pixel BLACK;
   static const Pixel WHITE;
@@ -243,6 +246,11 @@ inline void Pixel::SetRgba(const uint32_t v)
   m_color.intVal = v;
 }
 
+inline auto Pixel::toString() const -> std::string
+{
+  return std20::format("({}, {}, {}, {})", R(), G(), B(), A());
+}
+
 inline PixelBuffer::PixelBuffer(const uint32_t w, const uint32_t h) noexcept
   : m_width{w}, m_height{h}, m_buff(m_width * m_height)
 {
@@ -333,23 +341,28 @@ inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
 
   const size_t xPos = y * m_width + x;
 
+  const Pixel& colorAtXPos = m_buff[xPos];
+
   if (x >= m_width - 1 && y >= m_height - 1)
   {
-    return {m_buff[xPos], Pixel::BLACK, Pixel::BLACK, Pixel::BLACK};
+    // The pixel at bottom right corner - no actual RHB neighbours.
+    return {colorAtXPos, colorAtXPos, colorAtXPos, colorAtXPos};
   }
 
   if (x >= m_width - 1)
   {
-    return {m_buff[xPos], Pixel::BLACK, m_buff[xPos + m_width], Pixel::BLACK};
+    // Two vertical pixels at bottom right corner - one actual RHB neighbour.
+    return {colorAtXPos, colorAtXPos, m_buff[xPos + m_width], m_buff[xPos + m_width]};
   }
 
   if (y >= m_height - 1)
   {
-    return {m_buff[xPos], m_buff[xPos + 1], Pixel::BLACK, Pixel::BLACK};
+    // Two horizontal pixels at bottom right corner - one actual RHB neighbour.
+    return {colorAtXPos, m_buff[xPos + 1], colorAtXPos, m_buff[xPos + 1]};
   }
 
   return {
-      m_buff[xPos],
+      colorAtXPos,
       m_buff[xPos + 1],
       m_buff[xPos + m_width],
       m_buff[xPos + m_width + 1],

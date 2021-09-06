@@ -146,6 +146,8 @@ private:
   // modif d'optim by Jeko : precalcul des 4 coeffs resultant des 2 pos
   const FilterCoeff2dArray m_precalculatedCoeffs{GetPrecalculatedCoefficients()};
   [[nodiscard]] static auto GetPrecalculatedCoefficients() -> FilterCoeff2dArray;
+  [[nodiscard]] static auto GetNeighborhoodCoeffArray(uint32_t coeffH, uint32_t coeffV)
+      -> NeighborhoodCoeffArray;
 };
 
 class ZoomFilterBuffers::TransformBuffers
