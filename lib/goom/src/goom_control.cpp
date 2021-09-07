@@ -67,7 +67,7 @@
 #endif
 #include <vector>
 
-//#define SHOW_STATE_TEXT_ON_SCREEN
+#define SHOW_STATE_TEXT_ON_SCREEN
 
 namespace GOOM
 {
@@ -300,6 +300,8 @@ private:
   Timer m_blockyWavyTimer{NUM_BLOCKY_WAVY_UPDATES};
   static constexpr uint32_t NUM_NOISE_UPDATES = 100;
   Timer m_noiseTimer{NUM_NOISE_UPDATES};
+  static constexpr uint32_t NUM_ALLOW_OVEREXPOSED_UPDATES = 100;
+  Timer m_allowOverexposedTimer{NUM_ALLOW_OVEREXPOSED_UPDATES};
 
   // on verifie qu'il ne se pas un truc interressant avec le son.
   void ChangeFilterModeIfMusicChanges();
@@ -776,6 +778,7 @@ void GoomControl::GoomControlImpl::UpdateTimers()
 
   m_blockyWavyTimer.Increment();
   m_noiseTimer.Increment();
+  m_allowOverexposedTimer.Increment();
 }
 
 void GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData) const
@@ -1199,18 +1202,17 @@ void GoomControl::GoomControlImpl::ChangeBlockyWavy()
 
 void GoomControl::GoomControlImpl::ChangeAllowOverexposed()
 {
-  constexpr float HALF_INTENSITY = 0.5F;
+  if (!m_allowOverexposedTimer.Finished())
+  {
+    return;
+  }
 
-  if (!m_goomEvent.Happens(GoomEvent::CHANGE_ZOOM_FILTER_ALLOW_OVEREXPOSED_TO_ON))
-  {
-    m_visualFx.zoomFilter_fx->SetBuffSettings(
-        {/*.buffIntensity = */ HALF_INTENSITY, /*.allowOverexposed = */ false});
-  }
-  else
-  {
-    m_visualFx.zoomFilter_fx->SetBuffSettings(
-        {/*.buffIntensity = */ HALF_INTENSITY, /*.allowOverexposed = */ true});
-  }
+  m_visualFx.zoomFilter_fx->SetBuffSettings(
+      {/*.buffIntensity = */ FXBuffSettings::INITIAL_BUFF_INTENSITY,
+       /*.allowOverexposed = */ m_goomEvent.Happens(
+           GoomEvent::CHANGE_ZOOM_FILTER_ALLOW_OVEREXPOSED_TO_ON)});
+
+  m_allowOverexposedTimer.ResetToZero();
 }
 
 /* Changement d'effet de zoom !

@@ -92,12 +92,12 @@ public:
   [[nodiscard]] auto Rgba() const -> uint32_t;
   void SetRgba(uint32_t v);
 
-  [[nodiscard]] auto toString() const -> std::string;
+  [[nodiscard]] auto ToString() const -> std::string;
 
   static const Pixel BLACK;
   static const Pixel WHITE;
 
-  auto operator==(const Pixel& p) const -> bool;
+  friend auto operator==(const Pixel& p1, const Pixel& p2) -> bool;
 
 private:
   union Color
@@ -130,11 +130,11 @@ class PixelBuffer
 public:
   PixelBuffer() noexcept = default;
   PixelBuffer(uint32_t width, uint32_t height) noexcept;
-  virtual ~PixelBuffer() noexcept = default;
   PixelBuffer(const PixelBuffer&) noexcept = delete;
   PixelBuffer(PixelBuffer&&) noexcept = delete;
   auto operator=(const PixelBuffer&) -> PixelBuffer& = delete;
   auto operator=(PixelBuffer&&) -> PixelBuffer& = delete;
+  virtual ~PixelBuffer() noexcept = default;
 
   void Resize(size_t width, size_t height);
 
@@ -153,11 +153,14 @@ public:
   [[nodiscard]] auto GetRowIter(size_t y) -> std::tuple<iterator, iterator>;
   [[nodiscard]] auto GetRowIter(size_t y) const -> std::tuple<const_iterator, const_iterator>;
 
-  [[nodiscard]] auto Get4RHBNeighbours(size_t x, size_t y) const -> std::array<Pixel, 4>;
+  static constexpr size_t NUM_NBRS = 4;
+  [[nodiscard]] auto Get4RHBNeighbours(size_t x, size_t y) const -> std::array<Pixel, NUM_NBRS>;
 
 private:
   uint32_t m_width{};
   uint32_t m_height{};
+  uint32_t m_xMax{};
+  uint32_t m_yMax{};
   Buffer m_buff{};
 
   [[nodiscard]] auto GetIntBuff() -> uint32_t*;
@@ -171,14 +174,14 @@ inline Pixel::Pixel(const Channels& c) : m_color{/*.channels*/ {c}}
 {
 }
 
-inline Pixel::Pixel(const uint32_t v)
+inline Pixel::Pixel(const uint32_t val)
 {
-  m_color.intVal = v;
+  m_color.intVal = val;
 }
 
-inline auto Pixel::operator==(const Pixel& p) const -> bool
+inline auto operator==(const Pixel& p1, const Pixel& p2) -> bool
 {
-  return Rgba() == p.Rgba();
+  return p1.Rgba() == p2.Rgba();
 }
 
 inline auto Pixel::R() const -> uint8_t
@@ -246,20 +249,26 @@ inline void Pixel::SetRgba(const uint32_t v)
   m_color.intVal = v;
 }
 
-inline auto Pixel::toString() const -> std::string
+inline auto Pixel::ToString() const -> std::string
 {
   return std20::format("({}, {}, {}, {})", R(), G(), B(), A());
 }
 
-inline PixelBuffer::PixelBuffer(const uint32_t w, const uint32_t h) noexcept
-  : m_width{w}, m_height{h}, m_buff(m_width * m_height)
+inline PixelBuffer::PixelBuffer(const uint32_t width, const uint32_t height) noexcept
+  : m_width{width},
+    m_height{height},
+    m_xMax{m_width - 1},
+    m_yMax{m_height - 1},
+    m_buff(m_width * m_height)
 {
 }
 
 inline void PixelBuffer::Resize(const size_t width, const size_t height)
 {
-  m_width = width;
-  m_height = height;
+  m_width = static_cast<uint32_t>(width);
+  m_height = static_cast<uint32_t>(height);
+  m_xMax = m_width - 1;
+  m_yMax = m_height - 1;
   m_buff.resize(m_width * m_height);
 }
 
@@ -299,18 +308,18 @@ inline void PixelBuffer::CopyTo(PixelBuffer& buff) const
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) const -> const Pixel&
 {
 #ifdef GOOM_DEBUG
-  return m_buff.at(y * m_width + x);
+  return m_buff.at((y * m_width) + x);
 #else
-  return m_buff[y * m_width + x];
+  return m_buff[(y * m_width) + x];
 #endif
 }
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) -> Pixel&
 {
 #ifdef GOOM_DEBUG
-  return m_buff.at(y * m_width + x);
+  return m_buff.at((y * m_width) + x);
 #else
-  return m_buff[y * m_width + x];
+  return m_buff[(y * m_width) + x];
 #endif
 }
 
@@ -331,38 +340,29 @@ inline auto PixelBuffer::GetRowIter(const size_t y) const
 }
 
 inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
-    -> std::array<Pixel, 4>
+    -> std::array<Pixel, NUM_NBRS>
 {
   assert(x < m_width && y < m_height);
-  //if (x >= m_width || y >= m_height)
-  //{
-  //  return {Pixel::BLACK, Pixel::BLACK, Pixel::BLACK, Pixel::BLACK};
-  //}
 
-  const size_t xPos = y * m_width + x;
+  const size_t xPos = (y * m_width) + x;
 
-  const Pixel& colorAtXPos = m_buff[xPos];
-
-  if (x >= m_width - 1 && y >= m_height - 1)
+  if ((x >= m_xMax) && (y >= m_yMax))
   {
-    // The pixel at bottom right corner - no actual RHB neighbours.
-    return {colorAtXPos, colorAtXPos, colorAtXPos, colorAtXPos};
+    return {m_buff[xPos], Pixel::BLACK, Pixel::BLACK, Pixel::BLACK};
   }
 
-  if (x >= m_width - 1)
+  if (x >= m_xMax)
   {
-    // Two vertical pixels at bottom right corner - one actual RHB neighbour.
-    return {colorAtXPos, colorAtXPos, m_buff[xPos + m_width], m_buff[xPos + m_width]};
+    return {m_buff[xPos], Pixel::BLACK, m_buff[xPos + m_width], Pixel::BLACK};
   }
 
-  if (y >= m_height - 1)
+  if (y >= m_yMax)
   {
-    // Two horizontal pixels at bottom right corner - one actual RHB neighbour.
-    return {colorAtXPos, m_buff[xPos + 1], colorAtXPos, m_buff[xPos + 1]};
+    return {m_buff[xPos], m_buff[xPos + 1], Pixel::BLACK, Pixel::BLACK};
   }
 
   return {
-      colorAtXPos,
+      m_buff[xPos],
       m_buff[xPos + 1],
       m_buff[xPos + m_width],
       m_buff[xPos + m_width + 1],
