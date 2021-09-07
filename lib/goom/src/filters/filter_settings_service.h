@@ -84,7 +84,8 @@ private:
     IMAGE_DISPLACEMENT_MODE,
     NORMAL_MODE,
     SCRUNCH_MODE,
-    SPEEDWAY_MODE,
+    SPEEDWAY_MODE0,
+    SPEEDWAY_MODE1,
     WATER_MODE,
     WAVE_MODE0,
     WAVE_MODE1,
@@ -133,8 +134,8 @@ private:
   void SetDefaultSettings();
   void SetFilterModeSettings();
   void SetAmuletModeSettings();
-  void SetCrystalBall0ModeSettings();
-  void SetCrystalBall1ModeSettings();
+  void SetCrystalBallMode0Settings();
+  void SetCrystalBallMode1Settings();
   void SetHypercosMode0Settings();
   void SetHypercosMode1Settings();
   void SetHypercosMode2Settings();
@@ -142,7 +143,8 @@ private:
   void SetImageDisplacementModeSettings();
   void SetNormalModeSettings();
   void SetScrunchModeSettings();
-  void SetSpeedwayModeSettings();
+  void SetSpeedwayMode0Settings();
+  void SetSpeedwayMode1Settings();
   void SetWaterModeSettings();
   void SetWaveMode0Settings();
   void SetWaveMode1Settings();

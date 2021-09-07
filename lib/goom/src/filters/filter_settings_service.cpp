@@ -52,7 +52,8 @@ const Weights<FilterSettingsService::ZoomFilterMode> FilterSettingsService::WEIG
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 5 },
     { ZoomFilterMode::NORMAL_MODE,             6 },
     { ZoomFilterMode::SCRUNCH_MODE,            6 },
-    { ZoomFilterMode::SPEEDWAY_MODE,           6 },
+    { ZoomFilterMode::SPEEDWAY_MODE0,          3 },
+    { ZoomFilterMode::SPEEDWAY_MODE1,          3 },
     { ZoomFilterMode::WAVE_MODE0,              5 },
     { ZoomFilterMode::WAVE_MODE1,              4 },
     { ZoomFilterMode::WATER_MODE,              0 },
@@ -72,7 +73,8 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, {"Image Displacement",  PROB_ZERO, std::make_shared<ImageDisplacements>(resourcesDirectory)}},
     { ZoomFilterMode::NORMAL_MODE,             {"Normal",              PROB_ZERO, std::make_shared<SimpleSpeedCoefficientsEffect>()}},
     { ZoomFilterMode::SCRUNCH_MODE,            {"Scrunch",             PROB_HALF, std::make_shared<Scrunch>()}},
-    { ZoomFilterMode::SPEEDWAY_MODE,           {"Speedway",            PROB_LOW,  std::make_shared<Speedway>()}},
+    { ZoomFilterMode::SPEEDWAY_MODE0,          {"Speedway Mode 0",     PROB_LOW,  std::make_shared<Speedway>(Speedway::Modes::MODE0)}},
+    { ZoomFilterMode::SPEEDWAY_MODE1,          {"Speedway Mode 1",     PROB_LOW,  std::make_shared<Speedway>(Speedway::Modes::MODE1)}},
     { ZoomFilterMode::WAVE_MODE0,              {"Wave Mode 0",         PROB_HIGH, std::make_shared<Wave>(Wave::Modes::MODE0) }},
     { ZoomFilterMode::WAVE_MODE1,              {"Wave Mode 1",         PROB_HIGH, std::make_shared<Wave>(Wave::Modes::MODE1)}},
     { ZoomFilterMode::WATER_MODE,              {"Water",               PROB_ZERO, std::make_shared<SimpleSpeedCoefficientsEffect>()}},
@@ -207,10 +209,10 @@ void FilterSettingsService::SetFilterModeSettings()
       SetAmuletModeSettings();
       break;
     case ZoomFilterMode::CRYSTAL_BALL_MODE0:
-      SetCrystalBall0ModeSettings();
+      SetCrystalBallMode0Settings();
       break;
     case ZoomFilterMode::CRYSTAL_BALL_MODE1:
-      SetCrystalBall1ModeSettings();
+      SetCrystalBallMode1Settings();
       break;
     case ZoomFilterMode::HYPERCOS_MODE0:
       SetHypercosMode0Settings();
@@ -233,8 +235,11 @@ void FilterSettingsService::SetFilterModeSettings()
     case ZoomFilterMode::SCRUNCH_MODE:
       SetScrunchModeSettings();
       break;
-    case ZoomFilterMode::SPEEDWAY_MODE:
-      SetSpeedwayModeSettings();
+    case ZoomFilterMode::SPEEDWAY_MODE0:
+      SetSpeedwayMode0Settings();
+      break;
+    case ZoomFilterMode::SPEEDWAY_MODE1:
+      SetSpeedwayMode1Settings();
       break;
     case ZoomFilterMode::WATER_MODE:
       SetWaterModeSettings();
@@ -326,7 +331,7 @@ inline void FilterSettingsService::SetAmuletModeSettings()
   }
 }
 
-inline void FilterSettingsService::SetCrystalBall0ModeSettings()
+inline void FilterSettingsService::SetCrystalBallMode0Settings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::CRYSTAL_BALL_MODE0].rotateProbability);
 
@@ -337,7 +342,7 @@ inline void FilterSettingsService::SetCrystalBall0ModeSettings()
 }
 
 // TODO - Fix duplication
-inline void FilterSettingsService::SetCrystalBall1ModeSettings()
+inline void FilterSettingsService::SetCrystalBallMode1Settings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::CRYSTAL_BALL_MODE1].rotateProbability);
 
@@ -400,9 +405,19 @@ inline void FilterSettingsService::SetScrunchModeSettings()
   }
 }
 
-inline void FilterSettingsService::SetSpeedwayModeSettings()
+inline void FilterSettingsService::SetSpeedwayMode0Settings()
 {
-  SetRotate(m_filterModeData[ZoomFilterMode::SPEEDWAY_MODE].rotateProbability);
+  SetRotate(m_filterModeData[ZoomFilterMode::SPEEDWAY_MODE0].rotateProbability);
+
+  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
+  {
+    SetHypercosMode0Settings();
+  }
+}
+
+inline void FilterSettingsService::SetSpeedwayMode1Settings()
+{
+  SetRotate(m_filterModeData[ZoomFilterMode::SPEEDWAY_MODE1].rotateProbability);
 
   if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
   {
