@@ -215,6 +215,11 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords,
   return {m_params.xAmplitude * xVal, m_params.yAmplitude * yVal};
 }
 
+auto Hypercos::GetNameValueParams() const -> std::vector<std::pair<std::string, std::string>>
+{
+  return std::vector<std::pair<std::string, std::string>>();
+}
+
 #if __cplusplus <= 201402L
 } // namespace FILTERS
 } // namespace GOOM

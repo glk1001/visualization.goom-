@@ -72,6 +72,15 @@ void ZoomVectorEffects::SetHypercosOverlaySettings()
   }
 }
 
+auto ZoomVectorEffects::GetHypercosNameValueParams() const -> std::vector<std::pair<std::string, std::string>>
+{
+  std::vector<std::pair<std::string, std::string>> params {
+    {"hypercos mode", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->hypercosOverlay))},
+  };
+
+  return params;
+}
+
 auto ZoomVectorEffects::GetCleanedVelocity(const NormalizedCoords& velocity) -> NormalizedCoords
 {
   return {GetMinVelocityVal(velocity.GetX()), GetMinVelocityVal(velocity.GetY())};
@@ -143,6 +152,13 @@ auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) con
 
   return {m_filterEffectsSettings->rotateSpeed * (velocity.GetY() + velocity.GetX()),
           m_filterEffectsSettings->rotateSpeed * (velocity.GetY() - velocity.GetX())};
+}
+
+auto ZoomVectorEffects::GetSpeedCoefficientsEffectNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return m_filterEffectsSettings->speedCoefficientsEffect
+      ->GetSpeedCoefficientsEffectNameValueParams();
 }
 
 #if __cplusplus <= 201402L

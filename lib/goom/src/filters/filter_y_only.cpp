@@ -62,6 +62,12 @@ void YOnly::SetRandomParams()
       ProbabilityOf(PROB_AMPLITUDE_EQUAL) ? m_params.xAmplitude : GetRandInRange(Y_AMPLITUDE_RANGE);
 }
 
+auto YOnly::GetSpeedCoefficientsEffectNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return std::vector<std::pair<std::string, std::string>>();
+}
+
 #if __cplusplus <= 201402L
 } // namespace FILTERS
 } // namespace GOOM

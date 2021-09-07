@@ -12,6 +12,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #if __cplusplus <= 201402L
@@ -31,7 +32,7 @@ class ZoomVectorEffects
 {
 #pragma GCC diagnostic pop
 public:
-  ZoomVectorEffects(uint32_t screenWidth) noexcept;
+  explicit ZoomVectorEffects(uint32_t screenWidth) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
@@ -40,6 +41,9 @@ public:
   [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
                                            const NormalizedCoords& coords) const
       -> NormalizedCoords;
+  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
+      -> std::vector<std::pair<std::string, std::string>>;
+
   [[nodiscard]] static auto GetCleanedVelocity(const NormalizedCoords& velocity)
       -> NormalizedCoords;
 
@@ -56,6 +60,7 @@ public:
 
   [[nodiscard]] auto IsHypercosOverlayActive() const -> bool;
   [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
+  [[nodiscard]] auto GetHypercosNameValueParams() const -> std::vector<std::pair<std::string, std::string>>;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;

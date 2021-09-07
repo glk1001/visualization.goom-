@@ -6,6 +6,10 @@
 #include "goomutils/goomrand.h"
 #include "v2d.h"
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #if __cplusplus <= 201402L
 namespace GOOM
 {
@@ -20,7 +24,10 @@ class Hypercos
 {
 public:
   Hypercos() noexcept;
+
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
+
+  [[nodiscard]] auto GetNameValueParams() const -> std::vector<std::pair<std::string, std::string>>;
 
   void SetDefaultParams();
   void SetMode0RandomParams();

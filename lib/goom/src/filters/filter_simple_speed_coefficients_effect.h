@@ -5,6 +5,10 @@
 #include "filter_speed_coefficients_effect.h"
 #include "v2d.h"
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #if __cplusplus <= 201402L
 namespace GOOM
 {
@@ -25,6 +29,9 @@ public:
   [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
                                           const NormalizedCoords& coords) const -> V2dFlt override;
+
+  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
+      -> std::vector<std::pair<std::string, std::string>> override;
 };
 
 inline auto SimpleSpeedCoefficientsEffect::GetSpeedCoefficients(
@@ -38,6 +45,12 @@ inline auto SimpleSpeedCoefficientsEffect::GetSpeedCoefficients(
 inline void SimpleSpeedCoefficientsEffect::SetRandomParams()
 {
   // do nothing
+}
+
+inline auto SimpleSpeedCoefficientsEffect::GetSpeedCoefficientsEffectNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return std::vector<std::pair<std::string, std::string>>();
 }
 
 #if __cplusplus <= 201402L

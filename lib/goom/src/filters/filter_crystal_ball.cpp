@@ -95,6 +95,12 @@ void CrystalBall::SetRandomParams(const NumberRange<float>& xAmplitudeRange,
                                : GetRandInRange(ySqDistOffsetRange);
 }
 
+auto CrystalBall::GetSpeedCoefficientsEffectNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return std::vector<std::pair<std::string, std::string>>();
+}
+
 #if __cplusplus <= 201402L
 } // namespace FILTERS
 } // namespace GOOM

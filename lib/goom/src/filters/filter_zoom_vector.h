@@ -26,7 +26,9 @@ public:
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) override;
 
-  auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords override;
+  [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords override;
+
+  [[nodiscard]] auto GetHypercosNameValueParams() const -> std::vector<std::pair<std::string, std::string>>;
 
 private:
   ZoomVectorEffects m_zoomVectorEffects;
@@ -35,6 +37,11 @@ private:
                                       const NormalizedCoords& coords,
                                       NormalizedCoords& velocity) const;
 };
+
+inline auto FilterZoomVector::GetHypercosNameValueParams() const -> std::vector<std::pair<std::string, std::string>>
+{
+  return m_zoomVectorEffects.GetHypercosNameValueParams();
+}
 
 } // namespace FILTERS
 } // namespace GOOM

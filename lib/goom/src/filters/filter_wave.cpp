@@ -102,6 +102,12 @@ void Wave::SetWaveModeSettings(const NumberRange<float>& freqFactorRange,
   m_params.amplitude = GetRandInRange(amplitudeRange);
 }
 
+auto Wave::GetSpeedCoefficientsEffectNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return std::vector<std::pair<std::string, std::string>>();
+}
+
 #if __cplusplus <= 201402L
 } // namespace FILTERS
 } // namespace GOOM

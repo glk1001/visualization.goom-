@@ -4,6 +4,10 @@
 #include "filter_normalized_coords.h"
 #include "v2d.h"
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #if __cplusplus <= 201402L
 namespace GOOM
 {
@@ -24,6 +28,8 @@ public:
 
   [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
+
+  [[nodiscard]] auto GetNameValueParams() const -> std::vector<std::pair<std::string, std::string>>;
 
   void SetRandomParams(const V2dInt& zoomMidPoint, uint32_t screenWidth);
 

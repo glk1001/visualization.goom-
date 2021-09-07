@@ -35,6 +35,12 @@ void Amulet::SetRandomParams()
                                                                 : GetRandInRange(AMPLITUDE_RANGE);
 }
 
+auto Amulet::GetSpeedCoefficientsEffectNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return std::vector<std::pair<std::string, std::string>>();
+}
+
 #if __cplusplus <= 201402L
 } // namespace FILTERS
 } // namespace GOOM

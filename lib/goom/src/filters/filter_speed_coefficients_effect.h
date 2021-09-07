@@ -4,6 +4,10 @@
 #include "filter_normalized_coords.h"
 #include "v2d.h"
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #if __cplusplus <= 201402L
 namespace GOOM
 {
@@ -25,6 +29,9 @@ public:
                                                   float sqDistFromZero,
                                                   const NormalizedCoords& coords) const
       -> V2dFlt = 0;
+
+  [[nodiscard]] virtual auto GetSpeedCoefficientsEffectNameValueParams() const
+      -> std::vector<std::pair<std::string, std::string>> = 0;
 };
 
 #if __cplusplus <= 201402L

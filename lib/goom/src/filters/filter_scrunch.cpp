@@ -33,6 +33,12 @@ void Scrunch::SetRandomParams()
   m_params.yAmplitude = GetRandInRange(Y_AMPLITUDE_RANGE);
 }
 
+auto Scrunch::GetSpeedCoefficientsEffectNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return std::vector<std::pair<std::string, std::string>>();
+}
+
 #if __cplusplus <= 201402L
 } // namespace FILTERS
 } // namespace GOOM

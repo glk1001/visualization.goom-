@@ -6,6 +6,10 @@
 #include "goomutils/goomrand.h"
 #include "v2d.h"
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #if __cplusplus <= 201402L
 namespace GOOM
 {
@@ -31,6 +35,9 @@ public:
   [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
                                           const NormalizedCoords& coords) const -> V2dFlt override;
+
+  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
+      -> std::vector<std::pair<std::string, std::string>> override;
 
   struct Params
   {
