@@ -71,6 +71,9 @@ public:
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+      -> std::vector<std::pair<std::string, std::string>>;
+
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
@@ -96,6 +99,12 @@ ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
 void ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings)
 {
   m_fxImpl->SetBuffSettings(settings);
+}
+
+auto ZoomFilterFx::GetNameValueParams(const std::string& paramGroup) const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return m_fxImpl->GetNameValueParams(paramGroup);
 }
 
 void ZoomFilterFx::Start()
@@ -179,6 +188,12 @@ inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
     const ZoomFilterBufferSettings& filterBufferSettings)
 {
   m_filterBuffersService->SetFilterBufferSettings(filterBufferSettings);
+}
+
+auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams(const std::string& paramGroup) const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return m_filterBuffersService->GetNameValueParams(paramGroup);
 }
 
 inline void ZoomFilterFx::ZoomFilterImpl::Start()

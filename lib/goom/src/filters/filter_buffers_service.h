@@ -43,6 +43,9 @@ public:
   using SourcePointInfo = ZoomFilterBuffers::SourcePointInfo;
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo;
 
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+      -> std::vector<std::pair<std::string, std::string>>;
+
 private:
   const uint32_t m_screenWidth;
   std::unique_ptr<IZoomVector> m_zoomVector;

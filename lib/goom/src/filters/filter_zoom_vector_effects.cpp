@@ -122,6 +122,16 @@ auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords)
   return m_planes->GetVerticalPlaneVelocity(coords);
 }
 
+auto ZoomVectorEffects::GetPlaneNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  std::vector<std::pair<std::string, std::string>> params{
+      {"plane effect", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->planeEffect))},
+  };
+
+  return params;
+}
+
 auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
 {
   //    const float xAmp = 1.0/getRandInRange(50.0f, 200.0f);
@@ -129,6 +139,16 @@ auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
   const float amp =
       (0.5F * m_filterEffectsSettings->noiseFactor) / GetRandInRange(NOISE_MIN, NOISE_MAX);
   return {GetRandInRange(-amp, +amp), GetRandInRange(-amp, +amp)};
+}
+
+auto ZoomVectorEffects::GetNoiseNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  std::vector<std::pair<std::string, std::string>> params{
+      {"noise", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->noisify))},
+  };
+
+  return params;
 }
 
 auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
@@ -139,6 +159,16 @@ auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
       stdnew::clamp(std::fmod(sqDistFromZero, m_half_pi), -0.75F * m_half_pi, 0.75F * m_half_pi);
   const float tanSqDist = std::tan(tanArg);
   return {tanSqDist * velocity.GetX(), tanSqDist * velocity.GetY()};
+}
+
+auto ZoomVectorEffects::GetTanEffectNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  std::vector<std::pair<std::string, std::string>> params{
+      {"tan effect", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->tanEffect))},
+  };
+
+  return params;
 }
 
 auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) const
@@ -152,6 +182,16 @@ auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) con
 
   return {m_filterEffectsSettings->rotateSpeed * (velocity.GetY() + velocity.GetX()),
           m_filterEffectsSettings->rotateSpeed * (velocity.GetY() - velocity.GetX())};
+}
+
+auto ZoomVectorEffects::GetRotateNameValueParams() const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  std::vector<std::pair<std::string, std::string>> params{
+      {"rotate speed", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->rotateSpeed))},
+  };
+
+  return params;
 }
 
 auto ZoomVectorEffects::GetSpeedCoefficientsEffectNameValueParams() const

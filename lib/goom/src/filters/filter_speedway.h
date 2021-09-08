@@ -27,7 +27,7 @@ public:
     MODE0,
     MODE1,
   };
-  Speedway(Modes mode) noexcept;
+  explicit Speedway(Modes mode) noexcept;
 
   void SetRandomParams() override;
 
@@ -90,8 +90,6 @@ inline auto Speedway::GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                                 const float sqDistFromZero,
                                                 const NormalizedCoords& coords) const -> V2dFlt
 {
-  constexpr float SQ_DIST_FACTOR = 0.01F;
-
   float xAdd = -1.0F;
 
   if (UTILS::ProbabilityOf(0.0F))

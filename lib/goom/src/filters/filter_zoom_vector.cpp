@@ -33,6 +33,12 @@ void FilterZoomVector::SetMaxSpeedCoeff(const float val)
   m_zoomVectorEffects.SetMaxSpeedCoeff(val);
 }
 
+auto FilterZoomVector::GetNameValueParams(const std::string& paramGroup) const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return std::vector<std::pair<std::string, std::string>>{};
+}
+
 auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords
 {
   const float sqDistFromZero = SqDistance(coords.GetX(), coords.GetY());

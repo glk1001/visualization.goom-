@@ -35,28 +35,32 @@ public:
   explicit ZoomVectorEffects(uint32_t screenWidth) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
-
   void SetMaxSpeedCoeff(float val);
 
   [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
                                            const NormalizedCoords& coords) const
       -> NormalizedCoords;
+  [[nodiscard]] static auto GetCleanedVelocity(const NormalizedCoords& velocity)
+      -> NormalizedCoords;
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
       -> std::vector<std::pair<std::string, std::string>>;
 
-  [[nodiscard]] static auto GetCleanedVelocity(const NormalizedCoords& velocity)
-      -> NormalizedCoords;
-
   [[nodiscard]] auto IsRotateActive() const -> bool;
   [[nodiscard]] auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
+  [[nodiscard]] auto GetRotateNameValueParams() const
+      -> std::vector<std::pair<std::string, std::string>>;
 
   [[nodiscard]] auto IsNoiseActive() const -> bool;
   [[nodiscard]] auto GetNoiseVelocity() const -> NormalizedCoords;
+  [[nodiscard]] auto GetNoiseNameValueParams() const
+      -> std::vector<std::pair<std::string, std::string>>;
 
   [[nodiscard]] auto IsTanEffectActive() const -> bool;
   [[nodiscard]] auto GetTanEffectVelocity(float sqDistFromZero,
                                           const NormalizedCoords& velocity) const
       -> NormalizedCoords;
+  [[nodiscard]] auto GetTanEffectNameValueParams() const
+      -> std::vector<std::pair<std::string, std::string>>;
 
   [[nodiscard]] auto IsHypercosOverlayActive() const -> bool;
   [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
@@ -64,9 +68,10 @@ public:
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;
-
   [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
+  [[nodiscard]] auto GetPlaneNameValueParams() const
+      -> std::vector<std::pair<std::string, std::string>>;
 
 private:
   const uint32_t m_screenWidth;

@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <tuple>
+#include <vector>
 
 namespace GOOM
 {
@@ -52,6 +54,9 @@ public:
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
   void Finish() override;
+
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+      -> std::vector<std::pair<std::string, std::string>>;
 
 private:
   class ZoomFilterImpl;

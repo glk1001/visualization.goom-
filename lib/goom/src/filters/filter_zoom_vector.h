@@ -22,13 +22,13 @@ class FilterZoomVector : public IZoomVector
 public:
   explicit FilterZoomVector(uint32_t screenWidth) noexcept;
 
-  void SetMaxSpeedCoeff(float val) override;
-
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) override;
+  void SetMaxSpeedCoeff(float val) override;
 
   [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords override;
 
-  [[nodiscard]] auto GetHypercosNameValueParams() const -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+      -> std::vector<std::pair<std::string, std::string>> override;
 
 private:
   ZoomVectorEffects m_zoomVectorEffects;
@@ -37,11 +37,6 @@ private:
                                       const NormalizedCoords& coords,
                                       NormalizedCoords& velocity) const;
 };
-
-inline auto FilterZoomVector::GetHypercosNameValueParams() const -> std::vector<std::pair<std::string, std::string>>
-{
-  return m_zoomVectorEffects.GetHypercosNameValueParams();
-}
 
 } // namespace FILTERS
 } // namespace GOOM

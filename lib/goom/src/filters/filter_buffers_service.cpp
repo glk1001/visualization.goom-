@@ -62,6 +62,12 @@ void FilterBuffersService::SetFilterEffectsSettings(const ZoomFilterEffectsSetti
   m_pendingFilterEffectsSettings = true;
 }
 
+auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) const
+    -> std::vector<std::pair<std::string, std::string>>
+{
+  return m_zoomVector->GetNameValueParams(paramGroup);
+}
+
 void FilterBuffersService::Start()
 {
   m_currentFilterEffectsSettings = m_nextFilterEffectsSettings;
