@@ -19,7 +19,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class SimpleSpeedCoefficientsEffect : public SpeedCoefficientsEffect
+class SimpleSpeedCoefficientsEffect : public ISpeedCoefficientsEffect
 {
 public:
   SimpleSpeedCoefficientsEffect() noexcept = default;

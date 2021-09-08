@@ -18,10 +18,15 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class SpeedCoefficientsEffect
+class ISpeedCoefficientsEffect
 {
 public:
-  virtual ~SpeedCoefficientsEffect() noexcept = default;
+  ISpeedCoefficientsEffect() noexcept = default;
+  ISpeedCoefficientsEffect(const ISpeedCoefficientsEffect&) noexcept = default;
+  ISpeedCoefficientsEffect(ISpeedCoefficientsEffect&&) noexcept = default;
+  virtual ~ISpeedCoefficientsEffect() noexcept = default;
+  auto operator=(const ISpeedCoefficientsEffect&) -> ISpeedCoefficientsEffect& = default;
+  auto operator=(ISpeedCoefficientsEffect&&) -> ISpeedCoefficientsEffect& = default;
 
   virtual void SetRandomParams() = 0;
 

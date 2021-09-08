@@ -47,7 +47,6 @@ public:
       -> std::vector<std::pair<std::string, std::string>>;
 
 private:
-  const uint32_t m_screenWidth;
   std::unique_ptr<IZoomVector> m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
 

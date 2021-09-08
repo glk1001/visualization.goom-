@@ -22,7 +22,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class ImageDisplacements : public SpeedCoefficientsEffect
+class ImageDisplacements : public ISpeedCoefficientsEffect
 {
 public:
   explicit ImageDisplacements(const std::string& resourcesDirectory);

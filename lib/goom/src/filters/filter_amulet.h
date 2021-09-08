@@ -19,7 +19,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Amulet : public SpeedCoefficientsEffect
+class Amulet : public ISpeedCoefficientsEffect
 {
 public:
   Amulet() noexcept;

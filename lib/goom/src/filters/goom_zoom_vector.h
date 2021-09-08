@@ -15,7 +15,7 @@ namespace FILTERS
 {
 
 class NormalizedCoords;
-class SpeedCoefficientsEffect;
+class ISpeedCoefficientsEffect;
 struct ZoomFilterEffectsSettings;
 
 class IZoomVector

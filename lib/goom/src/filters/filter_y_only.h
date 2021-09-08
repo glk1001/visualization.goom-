@@ -19,7 +19,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class YOnly : public SpeedCoefficientsEffect
+class YOnly : public ISpeedCoefficientsEffect
 {
 public:
   YOnly() noexcept;

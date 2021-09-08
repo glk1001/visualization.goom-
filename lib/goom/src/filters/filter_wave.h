@@ -19,7 +19,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Wave : public SpeedCoefficientsEffect
+class Wave : public ISpeedCoefficientsEffect
 {
 public:
   enum class Modes

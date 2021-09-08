@@ -66,12 +66,12 @@ struct ZoomFilterColorSettings
   Pixel clippedColor;
 };
 
-class SpeedCoefficientsEffect;
+class ISpeedCoefficientsEffect;
 
 struct ZoomFilterEffectsSettings
 {
   HypercosOverlay hypercosOverlay;
-  std::shared_ptr<SpeedCoefficientsEffect> speedCoefficientsEffect;
+  std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect;
 
   Vitesse vitesse;
 

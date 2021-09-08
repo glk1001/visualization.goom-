@@ -20,7 +20,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class CrystalBall : public SpeedCoefficientsEffect
+class CrystalBall : public ISpeedCoefficientsEffect
 {
 public:
   enum class Modes

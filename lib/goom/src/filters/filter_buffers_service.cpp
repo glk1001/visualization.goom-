@@ -37,12 +37,10 @@ using UTILS::Parallel;
 
 constexpr float MAX_MAX_SPEED_COEFF = +4.01F;
 
-FilterBuffersService::FilterBuffersService(
-    Parallel& parallel,
-    const std::shared_ptr<const PluginInfo>& goomInfo,
-    std::unique_ptr<IZoomVector> zoomVector) noexcept
-  : m_screenWidth{goomInfo->GetScreenInfo().width},
-    m_zoomVector{std::move(zoomVector)},
+FilterBuffersService::FilterBuffersService(Parallel& parallel,
+                                           const std::shared_ptr<const PluginInfo>& goomInfo,
+                                           std::unique_ptr<IZoomVector> zoomVector) noexcept
+  : m_zoomVector{std::move(zoomVector)},
     m_filterBuffers{parallel, goomInfo, [this](const NormalizedCoords& normalizedCoords) {
                       return m_zoomVector->GetZoomPoint(normalizedCoords);
                     }}

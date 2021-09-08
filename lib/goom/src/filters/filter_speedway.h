@@ -19,7 +19,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Speedway : public SpeedCoefficientsEffect
+class Speedway : public ISpeedCoefficientsEffect
 {
 public:
   enum class Modes
@@ -33,7 +33,7 @@ public:
 
   [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
-                                          const NormalizedCoords& coords) const -> V2dFlt;
+                                          const NormalizedCoords& coords) const -> V2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
       -> std::vector<std::pair<std::string, std::string>> override;

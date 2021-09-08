@@ -19,7 +19,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
-class Scrunch : public SpeedCoefficientsEffect
+class Scrunch : public ISpeedCoefficientsEffect
 {
 public:
   Scrunch() noexcept;

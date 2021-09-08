@@ -12,8 +12,6 @@
 namespace GOOM
 {
 
-struct ZoomFilterEffectsSettings;
-
 namespace FILTERS
 {
 

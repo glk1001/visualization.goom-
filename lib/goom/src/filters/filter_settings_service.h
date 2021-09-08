@@ -112,7 +112,7 @@ private:
   {
     std::string name{};
     float rotateProbability{};
-    std::shared_ptr<SpeedCoefficientsEffect> speedCoefficientsEffect{};
+    std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
   };
   std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
   [[nodiscard]] static auto GetFilterModeData(const std::string& resourcesDirectory)
@@ -130,7 +130,7 @@ private:
   bool m_filterEffectsSettingsHaveChanged = false;
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
-  [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<SpeedCoefficientsEffect>&;
+  [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
 
   void SetDefaultSettings();
   void SetFilterModeSettings();

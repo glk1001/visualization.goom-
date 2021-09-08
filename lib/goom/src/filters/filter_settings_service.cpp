@@ -287,7 +287,7 @@ void FilterSettingsService::Start()
 }
 
 inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
-    -> std::shared_ptr<SpeedCoefficientsEffect>&
+    -> std::shared_ptr<ISpeedCoefficientsEffect>&
 {
   return m_filterModeData.at(m_filterMode).speedCoefficientsEffect;
 }
