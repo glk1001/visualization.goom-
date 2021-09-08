@@ -33,6 +33,7 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goom_visual_fx.h"
+#include "goomutils/colormaps.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/logging_control.h"
@@ -43,6 +44,7 @@
 #include "goomutils/random_colormaps.h"
 #include "goomutils/spimpl.h"
 #include "goomutils/strutils.h"
+#include "goomutils/t_values.h"
 #include "goomutils/timer.h"
 #include "ifs_dancers_fx.h"
 #include "lines_fx.h"
@@ -65,9 +67,10 @@
 #if __cplusplus > 201402L
 #include <variant>
 #endif
+#include <goomutils/colormaps.h>
 #include <vector>
 
-#define SHOW_STATE_TEXT_ON_SCREEN
+//#define SHOW_STATE_TEXT_ON_SCREEN
 
 namespace GOOM
 {
@@ -84,6 +87,7 @@ using FILTERS::FilterBuffersService;
 using FILTERS::FilterColorsService;
 using FILTERS::FilterSettingsService;
 using FILTERS::Vitesse;
+using UTILS::ColorMapGroup;
 using UTILS::GetAllMapsUnweighted;
 using UTILS::GetAllSlimMaps;
 using UTILS::GetAllStandardMaps;
@@ -103,6 +107,7 @@ using UTILS::GetSeasonsStandardMaps;
 using UTILS::GetSlightlyDivergingSlimMaps;
 using UTILS::GetSlightlyDivergingStandardMaps;
 using UTILS::GetYellowStandardMaps;
+using UTILS::IColorMap;
 using UTILS::Logging;
 using UTILS::NUM;
 using UTILS::Parallel;
@@ -111,6 +116,7 @@ using UTILS::RandomColorMaps;
 using UTILS::SmallImageBitmaps;
 using UTILS::SplitString;
 using UTILS::Timer;
+using UTILS::TValue;
 
 // TODO: put that as variable in PluginInfo
 constexpr int32_t MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
@@ -289,6 +295,7 @@ private:
 
   void ChangeAllowOverexposed();
   void ChangeBlockyWavy();
+  void ChangeClippedColor();
   void ChangeNoise();
   void ChangeRotation();
   void ChangeSwitchValues();
@@ -302,6 +309,10 @@ private:
   Timer m_noiseTimer{NUM_NOISE_UPDATES};
   static constexpr uint32_t NUM_ALLOW_OVEREXPOSED_UPDATES = 100;
   Timer m_allowOverexposedTimer{NUM_ALLOW_OVEREXPOSED_UPDATES};
+
+  std::reference_wrapper<const IColorMap> m_clippedColorMap{
+      RandomColorMaps().GetRandomColorMap(ColorMapGroup::DIVERGING_BLACK)};
+  TValue m_clippedT{TValue::StepType::CONTINUOUS_REVERSIBLE, 1000U};
 
   // on verifie qu'il ne se pas un truc interressant avec le son.
   void ChangeFilterModeIfMusicChanges();
@@ -656,6 +667,8 @@ inline auto GetNextColorMatchedSet() -> const GoomStateColorMatchedSet&
 
 void GoomControl::GoomControlImpl::ChangeColorMaps()
 {
+  m_clippedColorMap = RandomColorMaps().GetRandomColorMap(ColorMapGroup::DIVERGING_BLACK);
+
   const GoomStateColorMatchedSet& colorMatchedSet = GetNextColorMatchedSet();
 
   for (const auto& colorMatch : colorMatchedSet)
@@ -1000,14 +1013,14 @@ void GoomControl::GoomControlImpl::BigBreakIfMusicIsCalm()
   }
 }
 
-void GoomControl::GoomControlImpl::BigBreak()
+inline void GoomControl::GoomControlImpl::BigBreak()
 {
   m_filterSettingsService.GetRWVitesseSetting().GoSlowerBy(3);
 
   ChangeColorMaps();
 }
 
-void GoomControl::GoomControlImpl::BigUpdateIfNotLocked()
+inline void GoomControl::GoomControlImpl::BigUpdateIfNotLocked()
 {
   if (!IsLocked())
   {
@@ -1060,7 +1073,7 @@ void GoomControl::GoomControlImpl::MegaLentUpdate()
   m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
 }
 
-void GoomControl::GoomControlImpl::ChangeMilieu()
+inline void GoomControl::GoomControlImpl::ChangeMilieu()
 {
   m_filterSettingsService.ChangeMilieu();
 }
@@ -1200,6 +1213,13 @@ void GoomControl::GoomControlImpl::ChangeBlockyWavy()
   m_blockyWavyTimer.ResetToZero();
 }
 
+inline void GoomControl::GoomControlImpl::ChangeClippedColor()
+{
+  m_filterSettingsService.SetClippedColor(
+      UTILS::GetBrighterColor(0.1F, m_clippedColorMap.get().GetColor(m_clippedT()), true));
+  m_clippedT.Increment();
+}
+
 void GoomControl::GoomControlImpl::ChangeAllowOverexposed()
 {
   if (!m_allowOverexposedTimer.Finished())
@@ -1220,6 +1240,7 @@ void GoomControl::GoomControlImpl::ChangeAllowOverexposed()
 void GoomControl::GoomControlImpl::ChangeZoomEffect()
 {
   ChangeBlockyWavy();
+  ChangeClippedColor();
   ChangeAllowOverexposed();
 
   if (!m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
@@ -1310,6 +1331,11 @@ inline void GoomControl::GoomControlImpl::UpdateFilterSettings()
 
   m_visualFx.zoomFilter_fx->UpdateFilterBufferSettings(
       m_filterSettingsService.GetFilterSettings().filterBufferSettings);
+
+  ChangeClippedColor();
+
+  m_visualFx.zoomFilter_fx->UpdateFilterColorSettings(
+      m_filterSettingsService.GetFilterSettings().filterColorSettings);
 }
 
 void GoomControl::GoomControlImpl::ApplyDotsIfRequired()

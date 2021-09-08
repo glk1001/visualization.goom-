@@ -171,11 +171,11 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                       {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y},
                       false,
                       false,
-                      false,
                       DEFAULT_ROTATE_SPEED,
                       false,
                       1.0F},
-                     {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT}}
+                     {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
+                     {false, Pixel::BLACK}}
 {
 }
 
@@ -315,7 +315,9 @@ void FilterSettingsService::SetDefaultSettings()
   m_filterSettings.filterEffectsSettings.rotateSpeed = 0.0;
   m_filterSettings.filterEffectsSettings.noisify = false;
   m_filterSettings.filterEffectsSettings.noiseFactor = 1.0;
-  m_filterSettings.filterEffectsSettings.blockyWavy = false;
+
+  m_filterSettings.filterColorSettings.blockyWavy = false;
+  m_filterSettings.filterColorSettings.clippedColor = Pixel::BLACK;
 
   m_filterSettings.filterEffectsSettings.hypercosOverlay = HypercosOverlay::NONE;
   m_filterSettings.filterEffectsSettings.speedCoefficientsEffect = GetSpeedCoefficientsEffect();

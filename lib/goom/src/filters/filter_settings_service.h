@@ -17,6 +17,7 @@
 namespace GOOM
 {
 
+class Pixel;
 class PluginInfo;
 
 namespace UTILS
@@ -60,6 +61,7 @@ public:
   void SetRotateSetting(float value);
   void MultiplyRotateSetting(float factor);
   void ToggleRotateSetting();
+  void SetClippedColor(const Pixel& color);
 
   void SetRandomFilterSettings();
 
@@ -73,7 +75,6 @@ public:
 private:
   enum class ZoomFilterMode
   {
-    _NULL = -1,
     AMULET_MODE = 0,
     CRYSTAL_BALL_MODE0,
     CRYSTAL_BALL_MODE1,
@@ -235,12 +236,12 @@ inline void FilterSettingsService::SetNoiseFactorSetting(const float value)
 
 inline void FilterSettingsService::SetBlockyWavySetting(const bool value)
 {
-  if (m_filterSettings.filterEffectsSettings.blockyWavy == value)
-  {
-    return;
-  }
-  m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.blockyWavy = value;
+  m_filterSettings.filterColorSettings.blockyWavy = value;
+}
+
+inline void FilterSettingsService::SetClippedColor(const Pixel& color)
+{
+  m_filterSettings.filterColorSettings.clippedColor = color;
 }
 
 inline void FilterSettingsService::SetRotateSetting(const float value)

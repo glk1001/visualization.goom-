@@ -1,6 +1,7 @@
 #ifndef VISUALIZATION_GOOM_FILTER_SETTINGS_H
 #define VISUALIZATION_GOOM_FILTER_SETTINGS_H
 
+#include "goom/goom_graphic.h"
 #include "goomutils/mathutils.h"
 #include "v2d.h"
 
@@ -59,6 +60,12 @@ struct ZoomFilterBufferSettings
   float tranLerpToMaxSwitchMult;
 };
 
+struct ZoomFilterColorSettings
+{
+  bool blockyWavy;
+  Pixel clippedColor;
+};
+
 class SpeedCoefficientsEffect;
 
 struct ZoomFilterEffectsSettings
@@ -71,7 +78,6 @@ struct ZoomFilterEffectsSettings
   V2dInt zoomMidPoint; // milieu de l'effet
 
   bool tanEffect;
-  bool blockyWavy;
   bool planeEffect;
 
   float rotateSpeed;
@@ -84,6 +90,7 @@ struct ZoomFilterSettings
 {
   ZoomFilterEffectsSettings filterEffectsSettings{};
   ZoomFilterBufferSettings filterBufferSettings{};
+  ZoomFilterColorSettings filterColorSettings{};
 };
 
 inline void Vitesse::SetVitesse(const int32_t val)
@@ -104,7 +111,7 @@ inline void Vitesse::GoSlowerBy(const int32_t val)
 
 inline void Vitesse::GoFasterBy(const int32_t val)
 {
-  SetVitesse(m_vitesse - 30 * val);
+  SetVitesse(m_vitesse - (30 * val));
 }
 
 inline auto Vitesse::GetRelativeSpeed() const -> float

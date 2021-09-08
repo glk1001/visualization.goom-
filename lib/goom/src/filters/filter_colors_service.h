@@ -22,6 +22,7 @@ public:
 
   void SetBuffSettings(const FXBuffSettings& settings);
   void SetBlockyWavy(bool val);
+  void SetClippedColor(const Pixel& color);
 
   using NeighborhoodCoeffArray = ZoomFilterBuffers::NeighborhoodCoeffArray;
   using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
@@ -32,6 +33,7 @@ public:
 
 private:
   bool m_blockyWavy = false;
+  Pixel m_clippedColor = Pixel::BLACK;
   FXBuffSettings m_buffSettings{};
 
   [[nodiscard]] auto GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
@@ -47,6 +49,11 @@ inline void FilterColorsService::SetBlockyWavy(const bool val)
   m_blockyWavy = val;
 }
 
+inline void FilterColorsService::SetClippedColor(const Pixel& color)
+{
+  m_clippedColor = color;
+}
+
 inline void FilterColorsService::SetBuffSettings(const FXBuffSettings& settings)
 {
   m_buffSettings = settings;
@@ -58,7 +65,7 @@ inline auto FilterColorsService::GetNewColor(
 {
   if (sourceInfo.isClipped)
   {
-    return Pixel::BLACK;
+    return m_clippedColor;
   }
 
   const NeighborhoodPixelArray pixelNeighbours = srceBuff.Get4RHBNeighbours(

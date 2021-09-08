@@ -17,6 +17,7 @@ class FilterBuffersService;
 class FilterColorsService;
 struct ZoomFilterBufferSettings;
 struct ZoomFilterEffectsSettings;
+struct ZoomFilterColorSettings;
 } // namespace FILTERS
 
 namespace UTILS
@@ -44,8 +45,9 @@ public:
 
   auto GetTranLerpFactor() const -> int32_t;
 
-  void UpdateFilterBufferSettings(const FILTERS::ZoomFilterBufferSettings& filterBufferSettings);
   void UpdateFilterEffectsSettings(const FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings);
+  void UpdateFilterBufferSettings(const FILTERS::ZoomFilterBufferSettings& filterBufferSettings);
+  void UpdateFilterColorSettings(const FILTERS::ZoomFilterColorSettings& filterColorSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 

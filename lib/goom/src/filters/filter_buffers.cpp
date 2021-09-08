@@ -418,7 +418,7 @@ auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(const uint
   // coefficients equals 255. We'll choose the max coefficient.
   const uint32_t maxCoeff = *std::max_element(cbegin(coeffs), cend(coeffs));
   bool allZero = false;
-  if (maxCoeff == 0)
+  if (0 == maxCoeff)
   {
     allZero = true;
   }

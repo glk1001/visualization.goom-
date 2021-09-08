@@ -45,6 +45,7 @@ namespace GOOM
 using FILTERS::FilterBuffersService;
 using FILTERS::FilterColorsService;
 using FILTERS::ZoomFilterBufferSettings;
+using FILTERS::ZoomFilterColorSettings;
 using FILTERS::ZoomFilterEffectsSettings;
 using UTILS::Logging;
 using UTILS::Parallel;
@@ -66,6 +67,7 @@ public:
 
   void UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
   void UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
+  void UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
@@ -116,15 +118,20 @@ auto ZoomFilterFx::GetTranLerpFactor() const -> int32_t
   return m_fxImpl->GetTranLerpFactor();
 }
 
+void ZoomFilterFx::UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings)
+{
+  m_fxImpl->UpdateFilterBufferSettings(filterBufferSettings);
+}
+
 void ZoomFilterFx::UpdateFilterEffectsSettings(
     const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
   m_fxImpl->UpdateFilterEffectsSettings(filterEffectsSettings);
 }
 
-void ZoomFilterFx::UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings)
+void ZoomFilterFx::UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings)
 {
-  m_fxImpl->UpdateFilterBufferSettings(filterBufferSettings);
+  m_fxImpl->UpdateFilterColorSettings(filterColorSettings);
 }
 
 void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
@@ -159,7 +166,13 @@ inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterEffectsSettings(
     const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
   m_filterBuffersService->SetFilterEffectsSettings(filterEffectsSettings);
-  m_filterColorsService->SetBlockyWavy(filterEffectsSettings.blockyWavy);
+}
+
+inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterColorSettings(
+    const ZoomFilterColorSettings& filterColorSettings)
+{
+  m_filterColorsService->SetBlockyWavy(filterColorSettings.blockyWavy);
+  m_filterColorsService->SetClippedColor(filterColorSettings.clippedColor);
 }
 
 inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
