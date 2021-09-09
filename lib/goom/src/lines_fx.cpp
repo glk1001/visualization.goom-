@@ -167,7 +167,6 @@ private:
                                       const Pixel& randColor,
                                       float dataVal) const -> PointAndColor;
   [[nodiscard]] auto GetMainColor(const Pixel& lineColor, float t) const -> Pixel;
-  [[nodiscard]] auto GetNormalizedData(float data) const -> float;
   void MoveSrceLineCloserToDest();
   void DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors);
   static void SmoothCircleJoin(std::vector<PointAndColor>& audioPoints);
@@ -703,16 +702,23 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
                                           const float dataVal) const -> PointAndColor
 {
   assert(m_goomInfo->GetSoundInfo().GetAllTimesMinVolume() <= dataVal);
+  assert(m_minAudioValue <= dataVal);
+  assert(dataVal <= m_minAudioValue + m_audioRange);
+
+  const float tData = (dataVal - m_minAudioValue) / m_audioRange;
+  assert(0.0F <= tData && tData <= 1.0F);
+
   const float cosAngle = std::cos(pt.angle);
   const float sinAngle = std::sin(pt.angle);
-  const float normalizedDataVal = GetNormalizedData(dataVal);
+  const float normalizedDataVal = m_maxNormalizedPeak * tData;
   assert(normalizedDataVal >= 0.0);
   const V2dInt nextPointData{static_cast<int>(pt.x + (m_amplitude * cosAngle * normalizedDataVal)),
                              static_cast<int>(pt.y + (m_amplitude * sinAngle * normalizedDataVal))};
-  const float tData = normalizedDataVal / m_maxNormalizedPeak;
+
   const float brightness = m_currentBrightness * tData;
   const Pixel modColor =
       GetGammaCorrection(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
+
   return {nextPointData, modColor};
 }
 
@@ -734,11 +740,6 @@ inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float
     return lineColor;
   }
   return m_currentColorMap.get().GetColor(t);
-}
-
-inline auto LinesFx::LinesImpl::GetNormalizedData(const float data) const -> float
-{
-  return (m_maxNormalizedPeak * (data - m_minAudioValue)) / m_audioRange;
 }
 
 inline auto LinesFx::LinesImpl::GetNextDotSize(const size_t maxSize) -> size_t

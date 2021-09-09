@@ -56,7 +56,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
         m_minMaxSampleValues[0].minVal = m_sampleArrays[0][i];
         m_minMaxSampleValues[1].minVal = m_minMaxSampleValues[0].minVal;
       }
-      else if (m_sampleArrays[0][i] > m_minMaxSampleValues[0].maxVal)
+      if (m_sampleArrays[0][i] > m_minMaxSampleValues[0].maxVal)
       {
         m_minMaxSampleValues[0].maxVal = m_sampleArrays[0][i];
         m_minMaxSampleValues[1].maxVal = m_minMaxSampleValues[0].maxVal;
@@ -73,7 +73,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
       {
         m_minMaxSampleValues[0].minVal = m_sampleArrays[0][i];
       }
-      else if (m_sampleArrays[0][i] > m_minMaxSampleValues[0].maxVal)
+      if (m_sampleArrays[0][i] > m_minMaxSampleValues[0].maxVal)
       {
         m_minMaxSampleValues[0].maxVal = m_sampleArrays[0][i];
       }
@@ -84,7 +84,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
       {
         m_minMaxSampleValues[1].minVal = m_sampleArrays[1][i];
       }
-      else if (m_sampleArrays[1][i] > m_minMaxSampleValues[1].maxVal)
+      if (m_sampleArrays[1][i] > m_minMaxSampleValues[1].maxVal)
       {
         m_minMaxSampleValues[1].maxVal = m_sampleArrays[1][i];
       }
