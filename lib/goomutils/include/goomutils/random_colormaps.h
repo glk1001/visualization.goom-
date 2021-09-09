@@ -26,9 +26,9 @@ class RandomColorMaps : public ColorMaps
 {
 public:
   RandomColorMaps() noexcept;
-  ~RandomColorMaps() noexcept override;
   RandomColorMaps(const RandomColorMaps&) noexcept = delete;
   RandomColorMaps(RandomColorMaps&&) noexcept = delete;
+  ~RandomColorMaps() noexcept override;
   auto operator=(const RandomColorMaps&) -> RandomColorMaps& = delete;
   auto operator=(RandomColorMaps&&) -> RandomColorMaps& = delete;
 
@@ -121,11 +121,6 @@ class WeightedColorMaps : public RandomColorMaps
 public:
   WeightedColorMaps();
   explicit WeightedColorMaps(const Weights<ColorMapGroup>&);
-  ~WeightedColorMaps() noexcept override = default;
-  WeightedColorMaps(const WeightedColorMaps&) noexcept = delete;
-  WeightedColorMaps(WeightedColorMaps&&) noexcept = delete;
-  auto operator=(const WeightedColorMaps&) -> WeightedColorMaps& = delete;
-  auto operator=(WeightedColorMaps&&) -> WeightedColorMaps& = delete;
 
   [[nodiscard]] auto GetWeights() const -> const Weights<ColorMapGroup>&;
   void SetWeights(const Weights<ColorMapGroup>&);

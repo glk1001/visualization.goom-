@@ -36,11 +36,6 @@ public:
   TValue(StepType stepType, float stepSize, const std::vector<DelayPoint>& delayPoints) noexcept;
   TValue(StepType stepType, uint32_t numSteps) noexcept;
   TValue(StepType stepType, uint32_t numSteps, const std::vector<DelayPoint>& delayPoints) noexcept;
-  TValue(const TValue&) noexcept = delete;
-  TValue(TValue&&) noexcept = delete;
-  ~TValue() noexcept = default;
-  auto operator=(const TValue&) -> TValue& = delete;
-  auto operator=(TValue&&) -> TValue& = delete;
 
   [[nodiscard]] auto GetStepType() const -> StepType;
   [[nodiscard]] auto GetStepSize() const -> float;

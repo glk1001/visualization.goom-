@@ -25,11 +25,6 @@ public:
   // numPoolThreads > 0:  use this number of threads in the pool
   // numPoolThreads <= 0: use (max cores - numPoolThreads) in the pool
   explicit Parallel(int32_t numPoolThreads = 0) noexcept;
-  ~Parallel() noexcept = default;
-  Parallel(const Parallel&) = delete;
-  Parallel(Parallel&&) = delete;
-  auto operator=(const Parallel&) -> Parallel& = delete;
-  auto operator=(Parallel&&) -> Parallel& = delete;
 
   auto GetNumThreadsUsed() const -> size_t;
   auto GetThreadIds() const -> std::vector<std::thread::id>;

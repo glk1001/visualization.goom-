@@ -35,11 +35,10 @@ public:
   explicit ThreadPool(size_t numWorkers) noexcept;
   ThreadPool(const ThreadPool&) = delete;
   ThreadPool(ThreadPool&&) noexcept = delete;
-  auto operator=(const ThreadPool&) -> ThreadPool& = delete;
-  auto operator=(ThreadPool&&) noexcept -> ThreadPool& = delete;
-
   // The destructor blocks until all outstanding work is complete.
   ~ThreadPool() noexcept;
+  auto operator=(const ThreadPool&) -> ThreadPool& = delete;
+  auto operator=(ThreadPool&&) noexcept -> ThreadPool& = delete;
 
   //   Given a callable 'func' that returns a value of type 'RetT', this
   //   function returns a std::future<RetT> that can be used to access

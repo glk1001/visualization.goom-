@@ -22,9 +22,9 @@ class IColorMap
 {
 public:
   IColorMap() noexcept = default;
-  virtual ~IColorMap() noexcept = default;
   IColorMap(const IColorMap&) noexcept = delete;
   IColorMap(IColorMap&&) noexcept = delete;
+  virtual ~IColorMap() noexcept = default;
   auto operator=(const IColorMap&) -> IColorMap& = delete;
   auto operator=(IColorMap&&) -> IColorMap& = delete;
 
@@ -44,9 +44,9 @@ class ColorMapWrapper : public IColorMap
 public:
   ColorMapWrapper() noexcept = delete;
   explicit ColorMapWrapper(std::shared_ptr<const IColorMap> cm) noexcept;
-  ~ColorMapWrapper() noexcept override = default;
   ColorMapWrapper(const ColorMapWrapper&) noexcept = delete;
   ColorMapWrapper(ColorMapWrapper&&) noexcept = delete;
+  ~ColorMapWrapper() noexcept override = default;
   auto operator=(const ColorMapWrapper&) -> ColorMapWrapper& = delete;
   auto operator=(ColorMapWrapper&&) -> ColorMapWrapper& = delete;
 
@@ -108,11 +108,11 @@ class ColorMaps
 {
 public:
   ColorMaps() noexcept;
-  virtual ~ColorMaps() noexcept;
   ColorMaps(const ColorMaps&) noexcept = delete;
   ColorMaps(ColorMaps&&) noexcept = delete;
   auto operator=(const ColorMaps&) -> ColorMaps& = delete;
   auto operator=(ColorMaps&&) -> ColorMaps& = delete;
+  virtual ~ColorMaps() noexcept;
 
   [[nodiscard]] auto GetNumColorMapNames() const -> size_t;
   using ColorMapNames = std::vector<COLOR_DATA::ColorMapName>;
