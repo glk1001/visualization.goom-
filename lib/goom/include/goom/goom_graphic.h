@@ -1,12 +1,15 @@
 #ifndef VISUALIZATION_GOOM_GOOM_GRAPHIC_H
 #define VISUALIZATION_GOOM_GOOM_GRAPHIC_H
 
+#ifndef GOOM_DEBUG
 #define GOOM_DEBUG
+#endif
 
 #include "goom_config.h"
 
 #include <algorithm>
 #include <array>
+//#undef NDEBUG
 #include <cassert>
 #include <cstdint>
 #include <cstring>
@@ -155,6 +158,14 @@ public:
 
   static constexpr size_t NUM_NBRS = 4;
   [[nodiscard]] auto Get4RHBNeighbours(size_t x, size_t y) const -> std::array<Pixel, NUM_NBRS>;
+
+#ifdef GOOM_DEBUG
+  class RangeError : public std::logic_error
+  {
+  public:
+    explicit RangeError(const std::string& msg) : std::logic_error{msg} {}
+  };
+#endif
 
 private:
   uint32_t m_width{};
@@ -342,24 +353,20 @@ inline auto PixelBuffer::GetRowIter(const size_t y) const
 inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
     -> std::array<Pixel, NUM_NBRS>
 {
-  assert(x < m_width && y < m_height);
-
-  const size_t xPos = (y * m_width) + x;
-
-  if ((x >= m_xMax) && (y >= m_yMax))
-  {
-    return {m_buff[xPos], Pixel::BLACK, Pixel::BLACK, Pixel::BLACK};
-  }
-
+#ifdef GOOM_DEBUG
   if (x >= m_xMax)
   {
-    return {m_buff[xPos], Pixel::BLACK, m_buff[xPos + m_width], Pixel::BLACK};
+    throw RangeError{
+        std20::format("Get4RHBNeighbours range error: x = {}, m_xMax = {}", x, m_xMax)};
   }
-
   if (y >= m_yMax)
   {
-    return {m_buff[xPos], m_buff[xPos + 1], Pixel::BLACK, Pixel::BLACK};
+    throw RangeError{
+        std20::format("Get4RHBNeighbours range error: x = {}, m_xMax = {}", y, m_yMax)};
   }
+#endif
+
+  const size_t xPos = (y * m_width) + x;
 
   return {
       m_buff[xPos],

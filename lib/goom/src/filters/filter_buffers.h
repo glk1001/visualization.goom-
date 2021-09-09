@@ -36,7 +36,6 @@ public:
 
   enum class TranBuffersState
   {
-    _NULL = -1,
     START_FRESH_TRAN_BUFFERS,
     RESET_TRAN_BUFFERS,
     TRAN_BUFFERS_READY,
@@ -90,14 +89,14 @@ private:
 
   UTILS::Parallel& m_parallel;
   const ZoomPointFunc m_getZoomPoint;
+  const V2dInt m_maxTranPoint;
+  const uint32_t m_tranBuffStripeHeight;
   class TransformBuffers;
   std::unique_ptr<TransformBuffers> m_transformBuffers;
 
   V2dInt m_buffMidPoint{};
   bool m_filterSettingsHaveChanged = false;
 
-  const V2dInt m_maxTranPoint;
-  const uint32_t m_tranBuffStripeHeight;
   uint32_t m_tranBuffYLineStart = 0;
   TranBuffersState m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
 
@@ -111,8 +110,7 @@ private:
   void FillTempTranBuffers();
   void DoNextTempTranBuffersStripe(uint32_t tranBuffStripeHeight);
   void GenerateWaterFxHorizontalBuffer();
-  [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos) const -> V2dInt;
-  [[nodiscard]] auto IsTranPointClipped(const V2dInt& tranPoint) const -> bool;
+  [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos, bool& isClipped) const -> V2dInt;
   [[nodiscard]] static auto GetTranPoint(const NormalizedCoords& normalized) -> V2dInt;
 };
 
@@ -153,7 +151,9 @@ private:
 class ZoomFilterBuffers::TransformBuffers
 {
 public:
-  TransformBuffers(uint32_t screenWidth, uint32_t screenHeight) noexcept;
+  TransformBuffers(uint32_t screenWidth,
+                   uint32_t screenHeight,
+                   const V2dInt& maxTranPoint) noexcept;
 
   void SetSrceTranToIdentity();
   void CopyTempTranToDestTran();
@@ -165,12 +165,14 @@ public:
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
   void SetTranLerpFactor(int32_t val);
 
-  [[nodiscard]] auto GetSrceDestLerpBufferPoint(const size_t buffPos) const -> V2dInt;
+  [[nodiscard]] auto GetSrceDestLerpBufferPoint(const size_t buffPos, bool& isClipped) const
+      -> V2dInt;
 
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
   const uint32_t m_bufferSize;
+  const V2dInt m_maxTranPointMinus1;
   std::vector<int32_t> m_tranXSrce{};
   std::vector<int32_t> m_tranYSrce{};
   std::vector<int32_t> m_tranXDest{};
@@ -181,8 +183,12 @@ private:
 
   void CopyAllDestTranToSrceTran();
   void CopyUnlerpedDestTranToSrceTran();
+  [[nodiscard]] auto GetSrceDestLerpBufferPoint(const size_t buffPos) const -> V2dInt;
   [[nodiscard]] static auto GetTranBuffLerpVal(int32_t srceBuffVal, int32_t destBuffVal, int32_t t)
       -> int32_t;
+  [[nodiscard]] static auto GetClippedBufferValue(const int32_t unClippedValue,
+                                                  const int32_t maxValue,
+                                                  bool& isClipped) -> int32_t;
 };
 
 inline auto ZoomFilterBuffers::CoordTransforms::TranCoordToCoeffIndex(const uint32_t tranCoord)
@@ -278,8 +284,40 @@ inline void ZoomFilterBuffers::TransformBuffers::SetTranLerpFactor(const int32_t
 inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(
     const size_t buffPos) const -> V2dInt
 {
-  return {GetTranBuffLerpVal(m_tranXSrce[buffPos], m_tranXDest[buffPos], m_tranLerpFactor),
-          GetTranBuffLerpVal(m_tranYSrce[buffPos], m_tranYDest[buffPos], m_tranLerpFactor)};
+  bool isClipped = false;
+  return GetSrceDestLerpBufferPoint(buffPos, isClipped);
+}
+
+inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(const size_t buffPos,
+                                                                            bool& isClipped) const
+    -> V2dInt
+{
+  const int32_t x = GetClippedBufferValue(
+      GetTranBuffLerpVal(m_tranXSrce[buffPos], m_tranXDest[buffPos], m_tranLerpFactor),
+      m_maxTranPointMinus1.x, isClipped);
+  const int32_t y = GetClippedBufferValue(
+      GetTranBuffLerpVal(m_tranYSrce[buffPos], m_tranYDest[buffPos], m_tranLerpFactor),
+      m_maxTranPointMinus1.y, isClipped);
+
+  return {x, y};
+}
+
+inline auto ZoomFilterBuffers::TransformBuffers::GetClippedBufferValue(const int32_t unClippedValue,
+                                                                       const int32_t maxValue,
+                                                                       bool& isClipped) -> int32_t
+{
+  if (unClippedValue < 0)
+  {
+    isClipped = true;
+    return 0;
+  }
+  if (unClippedValue > maxValue)
+  {
+    isClipped = true;
+    return maxValue;
+  }
+
+  return unClippedValue;
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_t srceBuffVal,

@@ -63,10 +63,10 @@ inline auto FilterColorsService::GetNewColor(
     const PixelBuffer& srceBuff, const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const
     -> Pixel
 {
-  if (sourceInfo.isClipped)
-  {
-    return m_clippedColor;
-  }
+  //  if (sourceInfo.isClipped)
+  //  {
+  //    return m_clippedColor;
+  //  }
 
   const NeighborhoodPixelArray pixelNeighbours = srceBuff.Get4RHBNeighbours(
       static_cast<size_t>(sourceInfo.screenPoint.x), static_cast<size_t>(sourceInfo.screenPoint.y));

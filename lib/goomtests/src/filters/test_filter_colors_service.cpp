@@ -1,10 +1,8 @@
 #include "catch2/catch.hpp"
 #include "filters/filter_buffers.h"
 #include "filters/filter_colors_service.h"
-#include "filters/filter_settings.h"
 #include "goom/goom_graphic.h"
 #include "goom/v2d.h"
-#include "goomutils/mathutils.h"
 
 #include <array>
 #include <numeric>
@@ -73,74 +71,6 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
     const uint32_t expectedB =
         (coeffs.val[0] * B1 + coeffs.val[1] * B2 + coeffs.val[2] * B3 + coeffs.val[3] * B4) /
         (MAX_CHAN + 1);
-
-    const Pixel expectedColor = GetColor(expectedR, expectedG, expectedB);
-    const Pixel newColor = filterColorsService.GetNewColor(pixelBuffer, sourcePointInfo);
-
-    UNSCOPED_INFO("expectedColor = " << expectedColor.ToString());
-    UNSCOPED_INFO("newColor = " << newColor.ToString());
-    REQUIRE(expectedColor == newColor);
-  }
-
-  SECTION("Correct corner color")
-  {
-    constexpr size_t X = WIDTH - 1;
-    constexpr size_t Y = HEIGHT - 1;
-
-    const ZoomFilterBuffers::SourcePointInfo sourcePointInfo = {
-        {static_cast<int32_t>(X), static_cast<int32_t>(Y)}, coeffs, false};
-
-    pixelBuffer(X, Y) = GetColor(R1, G1, B1);
-
-    const uint32_t expectedR = (coeffs.val[0] * R1) / (MAX_CHAN + 1);
-    const uint32_t expectedG = (coeffs.val[0] * G1) / (MAX_CHAN + 1);
-    const uint32_t expectedB = (coeffs.val[0] * B1) / (MAX_CHAN + 1);
-
-    const Pixel expectedColor = GetColor(expectedR, expectedG, expectedB);
-    const Pixel newColor = filterColorsService.GetNewColor(pixelBuffer, sourcePointInfo);
-
-    UNSCOPED_INFO("expectedColor = " << expectedColor.ToString());
-    UNSCOPED_INFO("newColor = " << newColor.ToString());
-    REQUIRE(expectedColor == newColor);
-  }
-
-  SECTION("Correct side color")
-  {
-    constexpr size_t X = WIDTH - 1;
-    constexpr size_t Y = 5;
-
-    const ZoomFilterBuffers::SourcePointInfo sourcePointInfo = {
-        {static_cast<int32_t>(X), static_cast<int32_t>(Y)}, coeffs, false};
-
-    pixelBuffer(X, Y) = GetColor(R1, G1, B1);
-    pixelBuffer(X, Y + 1) = GetColor(R2, G2, B2);
-
-    const uint32_t expectedR = (coeffs.val[0] * R1 + coeffs.val[2] * R2) / (MAX_CHAN + 1);
-    const uint32_t expectedG = (coeffs.val[0] * G1 + coeffs.val[2] * G2) / (MAX_CHAN + 1);
-    const uint32_t expectedB = (coeffs.val[0] * B1 + coeffs.val[2] * B2) / (MAX_CHAN + 1);
-
-    const Pixel expectedColor = GetColor(expectedR, expectedG, expectedB);
-    const Pixel newColor = filterColorsService.GetNewColor(pixelBuffer, sourcePointInfo);
-
-    UNSCOPED_INFO("expectedColor = " << expectedColor.ToString());
-    UNSCOPED_INFO("newColor = " << newColor.ToString());
-    REQUIRE(expectedColor == newColor);
-  }
-
-  SECTION("Correct bottom color")
-  {
-    constexpr size_t X = 5;
-    constexpr size_t Y = HEIGHT - 1;
-
-    const ZoomFilterBuffers::SourcePointInfo sourcePointInfo = {
-        {static_cast<int32_t>(X), static_cast<int32_t>(Y)}, coeffs, false};
-
-    pixelBuffer(X, Y) = GetColor(R1, G1, B1);
-    pixelBuffer(X + 1, Y) = GetColor(R2, G2, B2);
-
-    const uint32_t expectedR = (coeffs.val[0] * R1 + coeffs.val[1] * R2) / (MAX_CHAN + 1);
-    const uint32_t expectedG = (coeffs.val[0] * G1 + coeffs.val[1] * G2) / (MAX_CHAN + 1);
-    const uint32_t expectedB = (coeffs.val[0] * B1 + coeffs.val[1] * B2) / (MAX_CHAN + 1);
 
     const Pixel expectedColor = GetColor(expectedR, expectedG, expectedB);
     const Pixel newColor = filterColorsService.GetNewColor(pixelBuffer, sourcePointInfo);

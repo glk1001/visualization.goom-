@@ -1,3 +1,5 @@
+#define GOOM_DEBUG
+
 #include "catch2/catch.hpp"
 #include "goom/goom_graphic.h"
 #include "goom/v2d.h"
@@ -13,8 +15,9 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::V2dInt;
 using GOOM::UTILS::floats_equal;
-//using namespace std::chrono;
 using namespace std::chrono_literals;
+using std::chrono::high_resolution_clock;
+using std::chrono::microseconds;
 
 constexpr size_t WIDTH = 1280;
 constexpr size_t HEIGHT = 720;
@@ -79,14 +82,13 @@ TEST_CASE("PixelBuffers", "[PixelBuffers]")
     std::fill(intSrceBuff->begin(), intSrceBuff->end(), intTestPixel);
     auto intDestBuff = std::make_unique<std::vector<uint32_t>>(WIDTH * HEIGHT);
 
-    auto startTime = std::chrono::high_resolution_clock::now();
+    auto startTime = high_resolution_clock::now();
     for (size_t i = 0; i < NUM_LOOPS; ++i)
     {
       std::memmove(intDestBuff->data(), intSrceBuff->data(), WIDTH * HEIGHT * sizeof(uint32_t));
     }
-    auto finishTime = std::chrono::high_resolution_clock::now();
-    const auto durationMemmove =
-        std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime);
+    auto finishTime = high_resolution_clock::now();
+    const auto durationMemmove = std::chrono::duration_cast<microseconds>(finishTime - startTime);
 
     REQUIRE(std::count(intSrceBuff->cbegin(), intSrceBuff->cend(), intTestPixel) ==
     std::count(intDestBuff->cbegin(), intDestBuff->cend(), intTestPixel));
@@ -95,14 +97,13 @@ TEST_CASE("PixelBuffers", "[PixelBuffers]")
     srceBuffer->Fill(testPixel);
     auto destBuffer = std::make_unique<PixelBuffer>(WIDTH, HEIGHT);
 
-    startTime = std::chrono::high_resolution_clock::now();
+    startTime = high_resolution_clock::now();
     for (size_t i = 0; i < NUM_LOOPS; ++i)
     {
       srceBuffer->CopyTo(*destBuffer);
     }
-    finishTime = std::chrono::high_resolution_clock::now();
-    const auto durationCopyTo =
-        std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime);
+    finishTime = high_resolution_clock::now();
+    const auto durationCopyTo = std::chrono::duration_cast<microseconds>(finishTime - startTime);
 
     REQUIRE(GetPixelCount(*srceBuffer, testPixel) == GetPixelCount(*destBuffer, testPixel));
 
@@ -135,6 +136,15 @@ TEST_CASE("PixelBuffers", "[PixelBuffers]")
     REQUIRE(testPixel2 == pixel4RHBNeighbours[1]);
     REQUIRE(testPixel3 == pixel4RHBNeighbours[2]);
     REQUIRE(testPixel4 == pixel4RHBNeighbours[3]);
+  }
+
+  SECTION("PixelBuffer Get4RHBNeighbours Range Error")
+  {
+    PixelBuffer buffer{WIDTH, HEIGHT};
+
+    REQUIRE_THROWS_AS(buffer.Get4RHBNeighbours(WIDTH - 1, HEIGHT - 1), PixelBuffer::RangeError);
+    REQUIRE_THROWS_AS(buffer.Get4RHBNeighbours(WIDTH - 1, 40), PixelBuffer::RangeError);
+    REQUIRE_THROWS_AS(buffer.Get4RHBNeighbours(10, HEIGHT - 1), PixelBuffer::RangeError);
   }
 
   SECTION("PixelBuffer RowIter")

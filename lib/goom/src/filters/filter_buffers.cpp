@@ -42,10 +42,11 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
     m_precalculatedCoeffs{std::make_unique<FilterCoefficients>()},
     m_parallel{p},
     m_getZoomPoint{zoomPointFunc},
-    m_transformBuffers{std::make_unique<TransformBuffers>(m_screenWidth, m_screenHeight)},
     m_maxTranPoint{CoordTransforms::ScreenToTranPoint(
         {static_cast<int32_t>(m_screenWidth - 1), static_cast<int32_t>(m_screenHeight - 1)})},
     m_tranBuffStripeHeight{m_screenHeight / DIM_FILTER_COEFFS},
+    m_transformBuffers{
+        std::make_unique<TransformBuffers>(m_screenWidth, m_screenHeight, m_maxTranPoint)},
     m_firedec(m_screenHeight)
 {
   assert(DIM_FILTER_COEFFS == static_cast<int32_t>(std::lround(
@@ -63,8 +64,8 @@ void ZoomFilterBuffers::Start()
 
 auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const -> SourcePointInfo
 {
-  const V2dInt tranPoint = GetZoomBufferTranPoint(buffPos);
-  const bool isClipped = IsTranPointClipped(tranPoint);
+  bool isClipped = false;
+  const V2dInt tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
 
   const V2dInt srceScreenPoint = CoordTransforms::TranToScreenPoint(tranPoint);
   const size_t xIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
@@ -74,16 +75,10 @@ auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const -> Source
                          isClipped};
 }
 
-inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos) const -> V2dInt
+inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos, bool& isClipped) const
+    -> V2dInt
 {
-  return m_transformBuffers->GetSrceDestLerpBufferPoint(buffPos);
-}
-
-inline auto ZoomFilterBuffers::IsTranPointClipped(const V2dInt& tranPoint) const -> bool
-{
-  return (tranPoint.x < 0) || (tranPoint.y < 0) ||
-         (static_cast<uint32_t>(tranPoint.x) >= GetMaxTranX()) ||
-         (static_cast<uint32_t>(tranPoint.y) >= GetMaxTranY());
+  return m_transformBuffers->GetSrceDestLerpBufferPoint(buffPos, isClipped);
 }
 
 auto ZoomFilterBuffers::HaveFilterSettingsChanged() const -> bool
@@ -291,10 +286,12 @@ void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
 }
 
 ZoomFilterBuffers::TransformBuffers::TransformBuffers(const uint32_t screenWidth,
-                                                      const uint32_t screenHeight) noexcept
+                                                      const uint32_t screenHeight,
+                                                      const V2dInt& maxTranPoint) noexcept
   : m_screenWidth{screenWidth},
     m_screenHeight{screenHeight},
     m_bufferSize{m_screenWidth * m_screenHeight},
+    m_maxTranPointMinus1{maxTranPoint - V2dInt{1, 1}},
     m_tranXSrce(m_bufferSize),
     m_tranYSrce(m_bufferSize),
     m_tranXDest(m_bufferSize),
