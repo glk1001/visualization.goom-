@@ -16,6 +16,8 @@ namespace GOOM::FILTERS
 {
 #endif
 
+using UTILS::GetFullParamGroup;
+using UTILS::GetPair;
 using UTILS::GetRandInRange;
 using UTILS::NameValuePairs;
 using UTILS::NumberRange;
@@ -118,9 +120,15 @@ void Planes::SetRandomParams(const V2dInt& zoomMidPoint, const uint32_t screenWi
   }
 }
 
-auto Planes::GetNameValueParams() const -> NameValuePairs
+auto Planes::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
-  return NameValuePairs();
+  const std::string fullParamGroup = GetFullParamGroup({paramGroup, "planes"});
+  return {
+      GetPair(fullParamGroup, "horizontalEffect", m_params.horizontalEffect),
+      GetPair(fullParamGroup, "horizontalEffectAmplitude", m_params.horizontalEffectAmplitude),
+      GetPair(fullParamGroup, "verticalEffect", m_params.verticalEffect),
+      GetPair(fullParamGroup, "verticalEffectAmplitude", m_params.verticalEffectAmplitude),
+  };
 }
 
 #if __cplusplus <= 201402L

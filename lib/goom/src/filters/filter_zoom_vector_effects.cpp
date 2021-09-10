@@ -23,8 +23,11 @@ namespace GOOM::FILTERS
 {
 #endif
 
+using UTILS::GetFullParamGroup;
+using UTILS::GetPair;
 using UTILS::GetRandInRange;
 using UTILS::m_half_pi;
+using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth) noexcept
@@ -32,6 +35,20 @@ ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth) noexcept
     m_hypercos{std::make_unique<Hypercos>()},
     m_planes{std::make_unique<Planes>()}
 {
+}
+
+auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> NameValuePairs
+{
+  NameValuePairs nameValuePairs{};
+
+  MoveNameValuePairs(GetSpeedCoefficientsEffectNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetRotateNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetNoiseNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetTanEffectNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetHypercosNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetPlaneNameValueParams(), nameValuePairs);
+
+  return nameValuePairs;
 }
 
 void ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
@@ -76,12 +93,7 @@ void ZoomVectorEffects::SetHypercosOverlaySettings()
 
 auto ZoomVectorEffects::GetHypercosNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs params{
-      {"hypercos mode",
-       std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->hypercosOverlay))},
-  };
-
-  return params;
+  return m_hypercos->GetNameValueParams(PARAM_GROUP);
 }
 
 auto ZoomVectorEffects::GetCleanedVelocity(const NormalizedCoords& velocity) -> NormalizedCoords
@@ -127,11 +139,7 @@ auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords)
 
 auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs params{
-      {"plane effect", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->planeEffect))},
-  };
-
-  return params;
+  return m_planes->GetNameValueParams(PARAM_GROUP);
 }
 
 auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
@@ -145,11 +153,10 @@ auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
 
 auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs params{
-      {"noise", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->noisify))},
+  return {
+      GetPair(PARAM_GROUP, "noise", m_filterEffectsSettings->noisify),
+      GetPair(PARAM_GROUP, "noiseFactor", m_filterEffectsSettings->noiseFactor),
   };
-
-  return params;
 }
 
 auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
@@ -164,11 +171,9 @@ auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
 
 auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs params{
-      {"tan effect", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->tanEffect))},
+  return {
+      GetPair(PARAM_GROUP, "tanEffect", m_filterEffectsSettings->tanEffect),
   };
-
-  return params;
 }
 
 auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) const
@@ -186,11 +191,9 @@ auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) con
 
 auto ZoomVectorEffects::GetRotateNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs params{
-      {"rotate speed", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->rotateSpeed))},
+  return {
+      GetPair(PARAM_GROUP, "rotate speed", m_filterEffectsSettings->rotateSpeed),
   };
-
-  return params;
 }
 
 auto ZoomVectorEffects::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs

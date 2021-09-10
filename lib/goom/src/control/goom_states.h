@@ -4,6 +4,7 @@
 #include "goom_graphic.h"
 #include "goomutils/goomrand.h"
 
+#include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -41,6 +42,7 @@ public:
 
   [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawable drawable) const -> bool;
   [[nodiscard]] auto GetCurrentStateIndex() const -> size_t;
+  [[nodiscard]] auto GetCurrentStateName() const -> std::string;
   [[nodiscard]] auto GetCurrentDrawables() const -> DrawablesState;
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawable theFx) const -> FXBuffSettings;
 
@@ -55,6 +57,7 @@ private:
   using DrawableInfoArray = std::vector<DrawableInfo>;
   struct State
   {
+    std::string name;
     uint32_t weight;
     bool normaliseBuffIntensity;
     DrawableInfoArray drawables;
@@ -80,6 +83,11 @@ inline auto GoomStates::IsCurrentlyDrawable(const GoomDrawable drawable) const -
 inline auto GoomStates::GetCurrentStateIndex() const -> size_t
 {
   return m_currentStateIndex;
+}
+
+inline auto GoomStates::GetCurrentStateName() const -> std::string
+{
+  return STATES[m_currentStateIndex].name;
 }
 
 #if __cplusplus <= 201402L

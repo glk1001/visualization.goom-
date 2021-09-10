@@ -7,6 +7,8 @@
 #include "goomutils/name_value_pairs.h"
 #include "v2d.h"
 
+#include <string>
+
 #if __cplusplus <= 201402L
 namespace GOOM
 {
@@ -24,7 +26,8 @@ public:
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 
-  [[nodiscard]] auto GetNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+      -> UTILS::NameValuePairs;
 
   void SetDefaultParams();
   void SetMode0RandomParams();

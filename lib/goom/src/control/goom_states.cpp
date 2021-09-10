@@ -19,6 +19,7 @@ namespace GOOM::CONTROL
 // clang-format off
 GoomStates::WeightedStatesArray GoomStates::STATES{{
   {
+    /*.name = */ "Image Tester",
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -26,6 +27,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Lines Tester",
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -33,13 +35,15 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Tentacles Tester",
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::TENTACLES,     /*.buffSettings = */{ /*.buffIntensity = */0.8, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.8, /*.allowOverexposed = */true  } },
     }},
   },
   {
+    /*.name = */ "IFS Tester",
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -47,6 +51,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+   /*.name = */ "Tube Tester",
    /*.weight = */1,
    /*.normaliseBuffIntensity = */false,
    /*.drawables */{{
@@ -54,13 +59,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
-    /*.weight = */1,
-    /*.normaliseBuffIntensity = */false,
-    /*.drawables */{{
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-    }},
-  },
-  {
+    /*.name = */ "Dots Tester",
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -68,6 +67,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Stars Tester",
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -75,6 +75,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
   }},
  },
   {
+    /*.name = */ "Ifs and Dots",
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -83,6 +84,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Ifs and Stars",
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -91,14 +93,16 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Ifs and Tubes",
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
       { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TUBE,    /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */false } },
     }},
   },
   {
+    /*.name = */ "Tentacles, Dots, Tubes",
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -108,6 +112,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Tentacles and Lines",
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -118,6 +123,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "IFS, Dots, Stars",
     /*.weight = */100,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -127,6 +133,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "IFS, Tentacles, Stars",
     /*.weight = */20,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -136,6 +143,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "IFS, Lines, Stars",
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -147,15 +155,17 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "IFS, Tentacles, Tubes",
     /*.weight = */70,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
       { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::TUBE,    /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.4, /*.allowOverexposed = */false } },
     }},
   },
   {
+    /*.name = */ "IFS and Tentacles",
     /*.weight = */70,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -164,6 +174,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "D, Te, S, L",
     /*.weight = */40,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -176,6 +187,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "D, Te, L, Tu",
     /*.weight = */40,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -184,29 +196,32 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
       { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TUBE,    /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.4, /*.allowOverexposed = */false } },
     }},
   },
   {
+    /*.name = */ "D, Te, S, Tu",
     /*.weight = */100,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
       { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.6, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.4, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::TUBE,    /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
     }},
   },
   {
+    /*.name = */ "D, Te, Tu",
     /*.weight = */70,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
       { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.6, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TUBE,    /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
     }},
   },
   {
+    /*.name = */ "Te, S, L, Im",
     /*.weight = */100,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -218,6 +233,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Stars and Lines",
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -228,6 +244,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Dots and Stars",
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -237,6 +254,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Dots and Lines",
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -247,6 +265,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "D, L, Tu",
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
@@ -254,7 +273,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
       { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TUBE,    /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */true  } },
     }},
  },
 }};

@@ -1798,7 +1798,7 @@ void GoomControl::GoomControlImpl::DisplayStateText()
   const FILTERS::ZoomFilterBufferSettings& filterBufferSettings =
       m_filterSettingsService.GetFilterSettings().filterBufferSettings;
 
-  message += std20::format("State: {}\n", m_states.GetCurrentStateIndex());
+  message += std20::format("State: {}\n", m_states.GetCurrentStateName());
   message += std20::format("Filter Mode: {}\n", m_filterSettingsService.GetCurrentFilterMode());
   message +=
       std20::format("Previous Filter Mode: {}\n", m_filterSettingsService.GetPreviousFilterMode());
@@ -1817,18 +1817,9 @@ void GoomControl::GoomControlImpl::DisplayStateText()
   message +=
       std20::format("relative speed: {}\n", filterEffectsSettings.vitesse.GetRelativeSpeed());
 
-  message += std20::format("rotateSpeed: {}\n", filterEffectsSettings.rotateSpeed);
-
-  message += std20::format("hPlaneEffect: {}\n", filterEffectsSettings.planeEffect);
-  message += std20::format("tanEffect: {}\n", filterEffectsSettings.tanEffect);
-
-  message += std20::format("noisify: {}\n", filterEffectsSettings.noisify);
-  message += std20::format("noiseFactor: {}\n", filterEffectsSettings.noiseFactor);
-
   message += GetNameValuesString(m_visualFx.zoomFilter_fx->GetNameValueParams("colors")) + "\n";
   message +=
-      GetNameValuesString(m_visualFx.zoomFilter_fx->GetNameValueParams("SpeedCoefficientsEffect")) +
-      "\n";
+      GetNameValuesString(m_visualFx.zoomFilter_fx->GetNameValueParams("ZoomEffects")) + "\n";
 
   message +=
       std20::format("updatesSinceLastChange: {}\n", m_goomData.updatesSinceLastZoomEffectsChange);

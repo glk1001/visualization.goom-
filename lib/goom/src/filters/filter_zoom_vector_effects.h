@@ -40,31 +40,28 @@ public:
       -> NormalizedCoords;
   [[nodiscard]] static auto GetCleanedVelocity(const NormalizedCoords& velocity)
       -> NormalizedCoords;
-  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsRotateActive() const -> bool;
   [[nodiscard]] auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
-  [[nodiscard]] auto GetRotateNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsNoiseActive() const -> bool;
   [[nodiscard]] auto GetNoiseVelocity() const -> NormalizedCoords;
-  [[nodiscard]] auto GetNoiseNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsTanEffectActive() const -> bool;
   [[nodiscard]] auto GetTanEffectVelocity(float sqDistFromZero,
                                           const NormalizedCoords& velocity) const
       -> NormalizedCoords;
-  [[nodiscard]] auto GetTanEffectNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsHypercosOverlayActive() const -> bool;
   [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
-  [[nodiscard]] auto GetHypercosNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;
   [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
-  [[nodiscard]] auto GetPlaneNameValueParams() const -> UTILS::NameValuePairs;
+
+  static constexpr const char* PARAM_GROUP = "Zoom Effects";
+  [[nodiscard]] auto GetZoomEffectsNameValueParams() const -> UTILS::NameValuePairs;
 
 private:
   const uint32_t m_screenWidth;
@@ -91,6 +88,13 @@ private:
   [[nodiscard]] auto GetBaseSpeedCoefficients() const -> V2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
+
+  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetRotateNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNoiseNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetTanEffectNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetHypercosNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetPlaneNameValueParams() const -> UTILS::NameValuePairs;
 };
 
 inline void ZoomVectorEffects::SetMaxSpeedCoeff(const float val)

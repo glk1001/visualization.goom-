@@ -22,6 +22,34 @@ namespace GOOM::UTILS
 using NameValuePair = std::pair<std::string, std::string>;
 using NameValuePairs = std::vector<NameValuePair>;
 
+inline void MoveNameValuePairs(NameValuePairs&& nameValues, NameValuePairs& dest)
+{
+  std::move(cbegin(nameValues), cend(nameValues), std::back_inserter(dest));
+}
+
+[[nodiscard]] inline auto GetParamGroupPrefix(const std::string& paramGroup) -> std::string
+{
+  return paramGroup + "::";
+}
+
+[[nodiscard]] inline auto GetFullParamGroup(const std::vector<std::string>& paramGroups)
+    -> std::string
+{
+  std::string fullParamGroup{};
+  for (auto str = cbegin(paramGroups); str != cend(paramGroups); ++str)
+  {
+    if (str != cend(paramGroups) - 1)
+    {
+      fullParamGroup += GetParamGroupPrefix(*str);
+    }
+    else
+    {
+      fullParamGroup += *str;
+    }
+  }
+  return fullParamGroup;
+}
+
 [[nodiscard]] inline auto GetNameValueString(const NameValuePair& pair) -> std::string
 {
   return pair.first + ": " + pair.second;

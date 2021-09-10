@@ -38,9 +38,9 @@ void FilterZoomVector::SetMaxSpeedCoeff(const float val)
 
 auto FilterZoomVector::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
-  if ("SpeedCoefficientsEffect" == paramGroup)
+  if ("ZoomEffects" == paramGroup)
   {
-    return m_zoomVectorEffects.GetSpeedCoefficientsEffectNameValueParams();
+    return m_zoomVectorEffects.GetZoomEffectsNameValueParams();
   }
   return NameValuePairs{};
 }

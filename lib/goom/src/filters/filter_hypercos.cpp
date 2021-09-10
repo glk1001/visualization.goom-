@@ -1,6 +1,5 @@
 #include "filter_hypercos.h"
 
-#include "filter_settings.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"
@@ -19,6 +18,8 @@ namespace GOOM::FILTERS
 {
 #endif
 
+using UTILS::GetFullParamGroup;
+using UTILS::GetPair;
 using UTILS::GetRandInRange;
 using UTILS::m_pi;
 using UTILS::NameValuePairs;
@@ -217,9 +218,17 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords,
   return {m_params.xAmplitude * xVal, m_params.yAmplitude * yVal};
 }
 
-auto Hypercos::GetNameValueParams() const -> NameValuePairs
+auto Hypercos::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
-  return NameValuePairs();
+  const std::string fullParamGroup = GetFullParamGroup({paramGroup, "hypercos"});
+  return {
+      GetPair(fullParamGroup, "mode", static_cast<uint32_t>(m_params.effect)),
+      GetPair(fullParamGroup, "reverse", m_params.reverse),
+      GetPair(fullParamGroup, "xFreq", m_params.xFreq),
+      GetPair(fullParamGroup, "yFreq", m_params.yFreq),
+      GetPair(fullParamGroup, "xAmplitude", m_params.xAmplitude),
+      GetPair(fullParamGroup, "yAmplitude", m_params.yAmplitude),
+  };
 }
 
 #if __cplusplus <= 201402L

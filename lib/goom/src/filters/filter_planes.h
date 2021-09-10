@@ -5,6 +5,8 @@
 #include "goomutils/name_value_pairs.h"
 #include "v2d.h"
 
+#include <string>
+
 #if __cplusplus <= 201402L
 namespace GOOM
 {
@@ -26,7 +28,8 @@ public:
   [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
 
-  [[nodiscard]] auto GetNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+      -> UTILS::NameValuePairs;
 
   void SetRandomParams(const V2dInt& zoomMidPoint, uint32_t screenWidth);
 
