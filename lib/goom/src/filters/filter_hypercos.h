@@ -4,11 +4,8 @@
 #include "filter_normalized_coords.h"
 #include "filter_settings.h"
 #include "goomutils/goomrand.h"
+#include "goomutils/name_value_pairs.h"
 #include "v2d.h"
-
-#include <string>
-#include <tuple>
-#include <vector>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -27,7 +24,7 @@ public:
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 
-  [[nodiscard]] auto GetNameValueParams() const -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetNameValueParams() const -> UTILS::NameValuePairs;
 
   void SetDefaultParams();
   void SetMode0RandomParams();

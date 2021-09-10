@@ -4,10 +4,12 @@
 #include "filter_normalized_coords.h"
 #include "filter_zoom_vector_effects.h"
 #include "goom_zoom_vector.h"
+#include "goomutils/name_value_pairs.h"
 #include "v2d.h"
 
 #include <cstdint>
 #include <memory>
+#include <string>
 
 namespace GOOM
 {
@@ -26,7 +28,7 @@ public:
   [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords override;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> std::vector<std::pair<std::string, std::string>> override;
+      -> UTILS::NameValuePairs override;
 
 private:
   ZoomVectorEffects m_zoomVectorEffects;

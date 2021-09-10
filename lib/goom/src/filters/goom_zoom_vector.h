@@ -1,12 +1,10 @@
 #ifndef VISUALIZATION_GOOM_GOOM_ZOOM_VECTOR_H
 #define VISUALIZATION_GOOM_GOOM_ZOOM_VECTOR_H
 
+#include "goomutils/name_value_pairs.h"
 #include "v2d.h"
 
-#include <memory>
 #include <string>
-#include <tuple>
-#include <vector>
 
 namespace GOOM
 {
@@ -15,7 +13,6 @@ namespace FILTERS
 {
 
 class NormalizedCoords;
-class ISpeedCoefficientsEffect;
 struct ZoomFilterEffectsSettings;
 
 class IZoomVector
@@ -34,7 +31,7 @@ public:
   virtual auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords = 0;
 
   [[nodiscard]] virtual auto GetNameValueParams(const std::string& paramGroup) const
-      -> std::vector<std::pair<std::string, std::string>> = 0;
+      -> UTILS::NameValuePairs = 0;
 };
 
 } // namespace FILTERS

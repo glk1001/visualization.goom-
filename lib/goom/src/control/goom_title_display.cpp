@@ -33,7 +33,7 @@ using UTILS::GetRandInRange;
 using UTILS::IColorMap;
 using UTILS::Logging;
 using UTILS::RandomColorMaps;
-using UTILS::SplitString;
+using UTILS::StringSplit;
 
 constexpr float FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT = 0.05F;
 constexpr int32_t OUTLINE_FONT_WIDTH = 4;
@@ -196,7 +196,7 @@ auto GoomTitleDisplay::GetTextLines(const std::string& text) -> std::vector<std:
     return {text};
   }
 
-  const std::vector<std::string> words = SplitString(text, " ");
+  const std::vector<std::string> words = StringSplit(text, " ");
   std::vector<std::string> textLines{};
   std::string str{};
 

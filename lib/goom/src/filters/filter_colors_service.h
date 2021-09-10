@@ -3,7 +3,10 @@
 
 #include "filter_buffers.h"
 #include "goom_graphic.h"
+#include "goomutils/name_value_pairs.h"
 #include "v2d.h"
+
+#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -30,6 +33,9 @@ public:
   [[nodiscard]] auto GetNewColor(const PixelBuffer& srceBuff,
                                  const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const
       -> Pixel;
+
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+      -> UTILS::NameValuePairs;
 
 private:
   bool m_blockyWavy = false;

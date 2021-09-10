@@ -2,11 +2,8 @@
 #define VISUALIZATION_GOOM_FILTER_PLANES_H
 
 #include "filter_normalized_coords.h"
+#include "goomutils/name_value_pairs.h"
 #include "v2d.h"
-
-#include <string>
-#include <tuple>
-#include <vector>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -29,7 +26,7 @@ public:
   [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
 
-  [[nodiscard]] auto GetNameValueParams() const -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetNameValueParams() const -> UTILS::NameValuePairs;
 
   void SetRandomParams(const V2dInt& zoomMidPoint, uint32_t screenWidth);
 

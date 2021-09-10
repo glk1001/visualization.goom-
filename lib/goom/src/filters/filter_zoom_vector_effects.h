@@ -7,13 +7,11 @@
 #include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "goomutils/mathutils.h"
+#include "goomutils/name_value_pairs.h"
 #include "v2d.h"
 
 #include <cmath>
 #include <memory>
-#include <string>
-#include <tuple>
-#include <vector>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -42,36 +40,31 @@ public:
       -> NormalizedCoords;
   [[nodiscard]] static auto GetCleanedVelocity(const NormalizedCoords& velocity)
       -> NormalizedCoords;
-  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
-      -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsRotateActive() const -> bool;
   [[nodiscard]] auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
-  [[nodiscard]] auto GetRotateNameValueParams() const
-      -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetRotateNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsNoiseActive() const -> bool;
   [[nodiscard]] auto GetNoiseVelocity() const -> NormalizedCoords;
-  [[nodiscard]] auto GetNoiseNameValueParams() const
-      -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetNoiseNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsTanEffectActive() const -> bool;
   [[nodiscard]] auto GetTanEffectVelocity(float sqDistFromZero,
                                           const NormalizedCoords& velocity) const
       -> NormalizedCoords;
-  [[nodiscard]] auto GetTanEffectNameValueParams() const
-      -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetTanEffectNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsHypercosOverlayActive() const -> bool;
   [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
-  [[nodiscard]] auto GetHypercosNameValueParams() const -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetHypercosNameValueParams() const -> UTILS::NameValuePairs;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;
   [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
-  [[nodiscard]] auto GetPlaneNameValueParams() const
-      -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetPlaneNameValueParams() const -> UTILS::NameValuePairs;
 
 private:
   const uint32_t m_screenWidth;

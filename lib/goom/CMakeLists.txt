@@ -32,7 +32,7 @@ add_library(goom
         src/filters/filter_amulet.cpp
         src/filters/filter_buffers.cpp
         src/filters/filter_buffers_service.cpp
-        src/filters/filter_colors_service.h
+        src/filters/filter_colors_service.cpp
         src/filters/filter_crystal_ball.cpp
         src/filters/filter_hypercos.cpp
         src/filters/filter_image_displacements.cpp

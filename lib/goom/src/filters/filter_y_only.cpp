@@ -2,6 +2,7 @@
 
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
+#include "goomutils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -17,6 +18,7 @@ namespace GOOM::FILTERS
 #endif
 
 using UTILS::GetRandInRange;
+using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::NumberRange;
 using UTILS::ProbabilityOf;
@@ -62,10 +64,9 @@ void YOnly::SetRandomParams()
       ProbabilityOf(PROB_AMPLITUDE_EQUAL) ? m_params.xAmplitude : GetRandInRange(Y_AMPLITUDE_RANGE);
 }
 
-auto YOnly::GetSpeedCoefficientsEffectNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto YOnly::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  return std::vector<std::pair<std::string, std::string>>();
+  return NameValuePairs();
 }
 
 #if __cplusplus <= 201402L

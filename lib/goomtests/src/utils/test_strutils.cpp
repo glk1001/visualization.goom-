@@ -7,11 +7,19 @@
 
 using namespace GOOM::UTILS;
 
-TEST_CASE("SplitString", "[SplitString]")
+TEST_CASE("StringJoin", "[StringJoin]")
+{
+  REQUIRE("" == StringJoin({""}, ", "));
+  REQUIRE("word1" == StringJoin({"word1"}, ", "));
+  REQUIRE("word1, word2, word3" == StringJoin({"word1", "word2", "word3"}, ", "));
+  REQUIRE("word1, word2, word3," == StringJoin({"word1", "word2", "word3,"}, ", "));
+}
+
+TEST_CASE("StringSplit", "[StringSplit]")
 {
   const std::string testString1 = "line1: word1, word2\nline2: word3, word4\n";
 
-  const std::vector<std::string> test1 = SplitString(testString1, ",");
+  const std::vector<std::string> test1 = StringSplit(testString1, ",");
   UNSCOPED_INFO("testString1 = \"" << testString1 + "\"");
   for (const auto& s : test1)
   {
@@ -22,13 +30,13 @@ TEST_CASE("SplitString", "[SplitString]")
   REQUIRE(test1[1] == " word2\nline2: word3");
   REQUIRE(test1[2] == " word4\n");
 
-  const std::vector<std::string> test2 = SplitString(testString1, "\n");
+  const std::vector<std::string> test2 = StringSplit(testString1, "\n");
   REQUIRE(test2.size() == 2);
   REQUIRE(test2[0] == "line1: word1, word2");
   REQUIRE(test2[1] == "line2: word3, word4");
 
   const std::string testString2 = "word1; word2; word3; word4";
-  const std::vector<std::string> test3 = SplitString(testString2, "; ");
+  const std::vector<std::string> test3 = StringSplit(testString2, "; ");
   REQUIRE(test3.size() == 4);
   REQUIRE(test3[0] == "word1");
   REQUIRE(test3[1] == "word2");
@@ -36,7 +44,7 @@ TEST_CASE("SplitString", "[SplitString]")
   REQUIRE(test3[3] == "word4");
 
   const std::string testString3 = "word1 \nword2\nword3 \nword4 ";
-  const std::vector<std::string> test4 = SplitString(testString3, "\n");
+  const std::vector<std::string> test4 = StringSplit(testString3, "\n");
   REQUIRE(test4.size() == 4);
   REQUIRE(test4[0] == "word1 ");
   REQUIRE(test4[1] == "word2");

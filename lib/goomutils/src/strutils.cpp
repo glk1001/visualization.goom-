@@ -16,7 +16,28 @@ namespace GOOM::UTILS
 {
 #endif
 
-auto SplitString(const std::string& str, const std::string& delim) -> std::vector<std::string>
+auto bool_to_string(const bool value) -> std::string
+{
+  return value ? "true" : "false";
+}
+
+auto StringJoin(const std::vector<std::string>& strings, const std::string& delim) -> std::string
+{
+  std::string joinedStr = "";
+
+  for (auto str = cbegin(strings); str != cend(strings); ++str)
+  {
+    joinedStr += *str;
+    if (str != cend(strings) - 1)
+    {
+      joinedStr += delim;
+    }
+  }
+
+  return joinedStr;
+}
+
+auto StringSplit(const std::string& str, const std::string& delim) -> std::vector<std::string>
 {
 #if __cplusplus <= 201402L
   std::vector<std::string> vec;

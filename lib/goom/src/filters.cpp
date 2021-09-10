@@ -26,6 +26,7 @@
 #include "goomutils/logging_control.h"
 //#undef NO_LOGGING
 #include "goomutils/logging.h"
+#include "goomutils/name_value_pairs.h"
 #include "goomutils/parallel_utils.h"
 #include "goomutils/spimpl.h"
 
@@ -37,7 +38,6 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <tuple>
 
 namespace GOOM
 {
@@ -48,6 +48,7 @@ using FILTERS::ZoomFilterBufferSettings;
 using FILTERS::ZoomFilterColorSettings;
 using FILTERS::ZoomFilterEffectsSettings;
 using UTILS::Logging;
+using UTILS::NameValuePairs;
 using UTILS::Parallel;
 
 class ZoomFilterFx::ZoomFilterImpl
@@ -71,8 +72,7 @@ public:
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> std::vector<std::pair<std::string, std::string>>;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 
 private:
   const uint32_t m_screenWidth;
@@ -101,8 +101,7 @@ void ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings)
   m_fxImpl->SetBuffSettings(settings);
 }
 
-auto ZoomFilterFx::GetNameValueParams(const std::string& paramGroup) const
-    -> std::vector<std::pair<std::string, std::string>>
+auto ZoomFilterFx::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
   return m_fxImpl->GetNameValueParams(paramGroup);
 }
@@ -191,8 +190,12 @@ inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
 }
 
 auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams(const std::string& paramGroup) const
-    -> std::vector<std::pair<std::string, std::string>>
+    -> NameValuePairs
 {
+  if ("colors" == paramGroup)
+  {
+    return m_filterColorsService->GetNameValueParams(paramGroup);
+  }
   return m_filterBuffersService->GetNameValueParams(paramGroup);
 }
 

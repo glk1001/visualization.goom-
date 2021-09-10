@@ -40,6 +40,7 @@
 #undef NO_LOGGING
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging.h"
+#include "goomutils/name_value_pairs.h"
 #include "goomutils/parallel_utils.h"
 #include "goomutils/random_colormaps.h"
 #include "goomutils/spimpl.h"
@@ -70,7 +71,7 @@
 #include <goomutils/colormaps.h>
 #include <vector>
 
-//#define SHOW_STATE_TEXT_ON_SCREEN
+#define SHOW_STATE_TEXT_ON_SCREEN
 
 namespace GOOM
 {
@@ -98,6 +99,7 @@ using UTILS::GetGreenStandardMaps;
 using UTILS::GetHeatStandardMaps;
 using UTILS::GetMostlySequentialSlimMaps;
 using UTILS::GetMostlySequentialStandardMaps;
+using UTILS::GetNameValuesString;
 using UTILS::GetOrangeStandardMaps;
 using UTILS::GetPastelStandardMaps;
 using UTILS::GetPurpleStandardMaps;
@@ -114,7 +116,7 @@ using UTILS::Parallel;
 using UTILS::ProbabilityOfMInN;
 using UTILS::RandomColorMaps;
 using UTILS::SmallImageBitmaps;
-using UTILS::SplitString;
+using UTILS::StringSplit;
 using UTILS::Timer;
 using UTILS::TValue;
 
@@ -1696,54 +1698,6 @@ void GoomControl::GoomControlImpl::DisplayLinesIfInAGoom(const AudioSamples& sou
   }
 }
 
-#ifdef SHOW_STATE_TEXT_ON_SCREEN
-
-void GoomControl::GoomControlImpl::DisplayStateText()
-{
-  std::string message = "";
-
-  const FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings =
-      m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
-  const FILTERS::ZoomFilterBufferSettings& filterBufferSettings =
-      m_filterSettingsService.GetFilterSettings().filterBufferSettings;
-
-  message += std20::format("State: {}\n", m_states.GetCurrentStateIndex());
-  message += std20::format("Filter Mode: {}\n", m_filterSettingsService.GetCurrentFilterMode());
-  message +=
-      std20::format("Previous Filter Mode: {}\n", m_filterSettingsService.GetPreviousFilterMode());
-
-  message += std20::format("middleX: {}\n", filterEffectsSettings.zoomMidPoint.x);
-  message += std20::format("middleY: {}\n", filterEffectsSettings.zoomMidPoint.y);
-
-  message += std20::format("tranLerpFactor: {}\n", m_visualFx.zoomFilter_fx->GetTranLerpFactor());
-  message += std20::format("tranLerpIncrement: {}\n", filterBufferSettings.tranLerpIncrement);
-  message +=
-      std20::format("tranLerpToMaxSwitchMult: {}\n", filterBufferSettings.tranLerpToMaxSwitchMult);
-
-  message += std20::format("vitesse: {}\n", filterEffectsSettings.vitesse.GetVitesse());
-  message += std20::format("previousZoomSpeed: {}\n", m_goomData.previousZoomSpeed);
-  message += std20::format("reverse: {}\n", filterEffectsSettings.vitesse.GetReverseVitesse());
-  message +=
-      std20::format("relative speed: {}\n", filterEffectsSettings.vitesse.GetRelativeSpeed());
-
-  message += std20::format("rotateSpeed: {}\n", filterEffectsSettings.rotateSpeed);
-
-  message += std20::format("hPlaneEffect: {}\n", filterEffectsSettings.planeEffect);
-  message += std20::format("tanEffect: {}\n", filterEffectsSettings.tanEffect);
-
-  message += std20::format("noisify: {}\n", filterEffectsSettings.noisify);
-  message += std20::format("noiseFactor: {}\n", filterEffectsSettings.noiseFactor);
-
-  message += std20::format("blockyWavy: {}\n", filterEffectsSettings.blockyWavy);
-
-  message +=
-      std20::format("updatesSinceLastChange: {}\n", m_goomData.updatesSinceLastZoomEffectsChange);
-
-  UpdateMessages(message);
-}
-
-#endif
-
 void GoomControl::GoomControlImpl::DisplayTitle(const std::string& songTitle,
                                                 const std::string& message,
                                                 const float fps)
@@ -1799,7 +1753,7 @@ void GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages)
   constexpr int32_t X_POS = 50;
   constexpr int32_t Y_START = 50;
 
-  const std::vector<std::string> msgLines = SplitString(messages, "\n");
+  const std::vector<std::string> msgLines = StringSplit(messages, "\n");
   const size_t numberOfLinesInMessage = msgLines.size();
   const size_t totalMessagesHeight = 20 + (LINE_HEIGHT * numberOfLinesInMessage);
 
@@ -1832,5 +1786,56 @@ void GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages)
     m_updateMessagesDisplay->Draw(X_POS, yPos);
   }
 }
+
+#ifdef SHOW_STATE_TEXT_ON_SCREEN
+
+void GoomControl::GoomControlImpl::DisplayStateText()
+{
+  std::string message = "";
+
+  const FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings =
+      m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
+  const FILTERS::ZoomFilterBufferSettings& filterBufferSettings =
+      m_filterSettingsService.GetFilterSettings().filterBufferSettings;
+
+  message += std20::format("State: {}\n", m_states.GetCurrentStateIndex());
+  message += std20::format("Filter Mode: {}\n", m_filterSettingsService.GetCurrentFilterMode());
+  message +=
+      std20::format("Previous Filter Mode: {}\n", m_filterSettingsService.GetPreviousFilterMode());
+
+  message += std20::format("middleX: {}\n", filterEffectsSettings.zoomMidPoint.x);
+  message += std20::format("middleY: {}\n", filterEffectsSettings.zoomMidPoint.y);
+
+  message += std20::format("tranLerpFactor: {}\n", m_visualFx.zoomFilter_fx->GetTranLerpFactor());
+  message += std20::format("tranLerpIncrement: {}\n", filterBufferSettings.tranLerpIncrement);
+  message +=
+      std20::format("tranLerpToMaxSwitchMult: {}\n", filterBufferSettings.tranLerpToMaxSwitchMult);
+
+  message += std20::format("vitesse: {}\n", filterEffectsSettings.vitesse.GetVitesse());
+  message += std20::format("previousZoomSpeed: {}\n", m_goomData.previousZoomSpeed);
+  message += std20::format("reverse: {}\n", filterEffectsSettings.vitesse.GetReverseVitesse());
+  message +=
+      std20::format("relative speed: {}\n", filterEffectsSettings.vitesse.GetRelativeSpeed());
+
+  message += std20::format("rotateSpeed: {}\n", filterEffectsSettings.rotateSpeed);
+
+  message += std20::format("hPlaneEffect: {}\n", filterEffectsSettings.planeEffect);
+  message += std20::format("tanEffect: {}\n", filterEffectsSettings.tanEffect);
+
+  message += std20::format("noisify: {}\n", filterEffectsSettings.noisify);
+  message += std20::format("noiseFactor: {}\n", filterEffectsSettings.noiseFactor);
+
+  message += GetNameValuesString(m_visualFx.zoomFilter_fx->GetNameValueParams("colors")) + "\n";
+  message +=
+      GetNameValuesString(m_visualFx.zoomFilter_fx->GetNameValueParams("SpeedCoefficientsEffect")) +
+      "\n";
+
+  message +=
+      std20::format("updatesSinceLastChange: {}\n", m_goomData.updatesSinceLastZoomEffectsChange);
+
+  UpdateMessages(message);
+}
+
+#endif
 
 } // namespace GOOM

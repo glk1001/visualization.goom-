@@ -1,6 +1,7 @@
 #include "filter_crystal_ball.h"
 
 #include "goomutils/goomrand.h"
+#include "goomutils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -16,6 +17,7 @@ namespace GOOM::FILTERS
 #endif
 
 using UTILS::GetRandInRange;
+using UTILS::NameValuePairs;
 using UTILS::NumberRange;
 using UTILS::ProbabilityOf;
 
@@ -95,10 +97,9 @@ void CrystalBall::SetRandomParams(const NumberRange<float>& xAmplitudeRange,
                                : GetRandInRange(ySqDistOffsetRange);
 }
 
-auto CrystalBall::GetSpeedCoefficientsEffectNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto CrystalBall::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  return std::vector<std::pair<std::string, std::string>>();
+  return NameValuePairs();
 }
 
 #if __cplusplus <= 201402L

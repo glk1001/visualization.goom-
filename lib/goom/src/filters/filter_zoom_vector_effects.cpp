@@ -6,6 +6,7 @@
 #include "filter_settings.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"
+#include "goomutils/name_value_pairs.h"
 
 #include <cmath>
 #include <cstdint>
@@ -24,6 +25,7 @@ namespace GOOM::FILTERS
 
 using UTILS::GetRandInRange;
 using UTILS::m_half_pi;
+using UTILS::NameValuePairs;
 
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth) noexcept
   : m_screenWidth{screenWidth},
@@ -72,10 +74,11 @@ void ZoomVectorEffects::SetHypercosOverlaySettings()
   }
 }
 
-auto ZoomVectorEffects::GetHypercosNameValueParams() const -> std::vector<std::pair<std::string, std::string>>
+auto ZoomVectorEffects::GetHypercosNameValueParams() const -> NameValuePairs
 {
-  std::vector<std::pair<std::string, std::string>> params {
-    {"hypercos mode", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->hypercosOverlay))},
+  NameValuePairs params{
+      {"hypercos mode",
+       std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->hypercosOverlay))},
   };
 
   return params;
@@ -122,10 +125,9 @@ auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords)
   return m_planes->GetVerticalPlaneVelocity(coords);
 }
 
-auto ZoomVectorEffects::GetPlaneNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
 {
-  std::vector<std::pair<std::string, std::string>> params{
+  NameValuePairs params{
       {"plane effect", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->planeEffect))},
   };
 
@@ -141,10 +143,9 @@ auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
   return {GetRandInRange(-amp, +amp), GetRandInRange(-amp, +amp)};
 }
 
-auto ZoomVectorEffects::GetNoiseNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 {
-  std::vector<std::pair<std::string, std::string>> params{
+  NameValuePairs params{
       {"noise", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->noisify))},
   };
 
@@ -161,10 +162,9 @@ auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
   return {tanSqDist * velocity.GetX(), tanSqDist * velocity.GetY()};
 }
 
-auto ZoomVectorEffects::GetTanEffectNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValuePairs
 {
-  std::vector<std::pair<std::string, std::string>> params{
+  NameValuePairs params{
       {"tan effect", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->tanEffect))},
   };
 
@@ -184,18 +184,16 @@ auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) con
           m_filterEffectsSettings->rotateSpeed * (velocity.GetY() - velocity.GetX())};
 }
 
-auto ZoomVectorEffects::GetRotateNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto ZoomVectorEffects::GetRotateNameValueParams() const -> NameValuePairs
 {
-  std::vector<std::pair<std::string, std::string>> params{
+  NameValuePairs params{
       {"rotate speed", std::to_string(static_cast<uint32_t>(m_filterEffectsSettings->rotateSpeed))},
   };
 
   return params;
 }
 
-auto ZoomVectorEffects::GetSpeedCoefficientsEffectNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto ZoomVectorEffects::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
   return m_filterEffectsSettings->speedCoefficientsEffect
       ->GetSpeedCoefficientsEffectNameValueParams();

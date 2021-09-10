@@ -49,7 +49,7 @@ const Weights<FilterSettingsService::ZoomFilterMode> FilterSettingsService::WEIG
     { ZoomFilterMode::HYPERCOS_MODE1,          5 },
     { ZoomFilterMode::HYPERCOS_MODE2,          3 },
     { ZoomFilterMode::HYPERCOS_MODE3,          3 },
-    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 5 },
+    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 500000000 },
     { ZoomFilterMode::NORMAL_MODE,             6 },
     { ZoomFilterMode::SCRUNCH_MODE,            6 },
     { ZoomFilterMode::SPEEDWAY_MODE0,          3 },

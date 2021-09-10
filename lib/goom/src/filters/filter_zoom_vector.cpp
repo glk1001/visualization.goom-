@@ -3,8 +3,10 @@
 #include "filter_normalized_coords.h"
 #include "filter_zoom_vector_effects.h"
 #include "goomutils/mathutils.h"
+#include "goomutils/name_value_pairs.h"
 
 #include <cstdint>
+#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -16,6 +18,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
+using UTILS::NameValuePairs;
 using UTILS::SqDistance;
 
 FilterZoomVector::FilterZoomVector(const uint32_t screenWidth) noexcept
@@ -33,10 +36,13 @@ void FilterZoomVector::SetMaxSpeedCoeff(const float val)
   m_zoomVectorEffects.SetMaxSpeedCoeff(val);
 }
 
-auto FilterZoomVector::GetNameValueParams(const std::string& paramGroup) const
-    -> std::vector<std::pair<std::string, std::string>>
+auto FilterZoomVector::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
-  return std::vector<std::pair<std::string, std::string>>{};
+  if ("SpeedCoefficientsEffect" == paramGroup)
+  {
+    return m_zoomVectorEffects.GetSpeedCoefficientsEffectNameValueParams();
+  }
+  return NameValuePairs{};
 }
 
 auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords

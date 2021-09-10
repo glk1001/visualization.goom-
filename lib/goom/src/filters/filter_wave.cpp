@@ -2,6 +2,7 @@
 
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
+#include "goomutils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -17,6 +18,7 @@ namespace GOOM::FILTERS
 #endif
 
 using UTILS::GetRandInRange;
+using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::NumberRange;
 using UTILS::ProbabilityOf;
@@ -102,10 +104,9 @@ void Wave::SetWaveModeSettings(const NumberRange<float>& freqFactorRange,
   m_params.amplitude = GetRandInRange(amplitudeRange);
 }
 
-auto Wave::GetSpeedCoefficientsEffectNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto Wave::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  return std::vector<std::pair<std::string, std::string>>();
+  return NameValuePairs();
 }
 
 #if __cplusplus <= 201402L

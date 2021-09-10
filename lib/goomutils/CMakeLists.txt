@@ -12,6 +12,7 @@ endif()
 
 add_library(goomutils
     STATIC
+        include/goomutils/name_value_pairs.h
         src/color_data_maps.cpp
         src/colormaps.cpp
         src/colorutils.cpp

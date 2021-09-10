@@ -3,6 +3,7 @@
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
+#include "goomutils/name_value_pairs.h"
 #include "v2d.h"
 
 #include <cstdint>
@@ -44,7 +45,7 @@ public:
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> std::vector<std::pair<std::string, std::string>>;
+      -> UTILS::NameValuePairs;
 
 private:
   std::unique_ptr<IZoomVector> m_zoomVector;

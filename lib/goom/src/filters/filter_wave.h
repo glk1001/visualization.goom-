@@ -3,11 +3,8 @@
 
 #include "filter_normalized_coords.h"
 #include "filter_speed_coefficients_effect.h"
+#include "goomutils/name_value_pairs.h"
 #include "v2d.h"
-
-#include <string>
-#include <tuple>
-#include <vector>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -36,7 +33,7 @@ public:
                                           const NormalizedCoords& coords) const -> V2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
-      -> std::vector<std::pair<std::string, std::string>> override;
+      -> UTILS::NameValuePairs override;
 
   enum class WaveEffect
   {

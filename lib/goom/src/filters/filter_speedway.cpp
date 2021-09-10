@@ -1,6 +1,7 @@
 #include "filter_speedway.h"
 
 #include "goomutils/goomrand.h"
+#include "goomutils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -16,6 +17,7 @@ namespace GOOM::FILTERS
 #endif
 
 using UTILS::GetRandInRange;
+using UTILS::NameValuePairs;
 using UTILS::NumberRange;
 
 constexpr float X_DEFAULT_AMPLITUDE = 4.0F;
@@ -51,10 +53,9 @@ void Speedway::SetMode1RandomParams()
   m_params.yAmplitude = GetRandInRange(Y_AMPLITUDE_RANGE);
 }
 
-auto Speedway::GetSpeedCoefficientsEffectNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto Speedway::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  return std::vector<std::pair<std::string, std::string>>();
+  return NameValuePairs();
 }
 
 #if __cplusplus <= 201402L

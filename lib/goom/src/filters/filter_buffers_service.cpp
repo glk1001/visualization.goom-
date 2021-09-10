@@ -11,6 +11,7 @@
 //#undef NO_LOGGING
 #include "goomutils/logging.h"
 #include "goomutils/mathutils.h"
+#include "goomutils/name_value_pairs.h"
 #include "goomutils/parallel_utils.h"
 #undef NDEBUG
 #include <cassert>
@@ -33,6 +34,7 @@ using FILTERS::ZoomFilterBuffers;
 using UTILS::floats_equal;
 using UTILS::GetRandInRange;
 using UTILS::Logging;
+using UTILS::NameValuePairs;
 using UTILS::Parallel;
 
 constexpr float MAX_MAX_SPEED_COEFF = +4.01F;
@@ -60,8 +62,7 @@ void FilterBuffersService::SetFilterEffectsSettings(const ZoomFilterEffectsSetti
   m_pendingFilterEffectsSettings = true;
 }
 
-auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) const
-    -> std::vector<std::pair<std::string, std::string>>
+auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
   return m_zoomVector->GetNameValueParams(paramGroup);
 }

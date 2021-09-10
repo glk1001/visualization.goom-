@@ -4,6 +4,7 @@
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"
+#include "goomutils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -20,6 +21,7 @@ namespace GOOM::FILTERS
 
 using UTILS::GetRandInRange;
 using UTILS::m_pi;
+using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::NumberRange;
 using UTILS::ProbabilityOf;
@@ -215,9 +217,9 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords,
   return {m_params.xAmplitude * xVal, m_params.yAmplitude * yVal};
 }
 
-auto Hypercos::GetNameValueParams() const -> std::vector<std::pair<std::string, std::string>>
+auto Hypercos::GetNameValueParams() const -> NameValuePairs
 {
-  return std::vector<std::pair<std::string, std::string>>();
+  return NameValuePairs();
 }
 
 #if __cplusplus <= 201402L

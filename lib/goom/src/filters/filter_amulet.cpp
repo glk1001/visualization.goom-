@@ -1,6 +1,7 @@
 #include "filter_amulet.h"
 
 #include "goomutils/goomrand.h"
+#include "goomutils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -16,6 +17,7 @@ namespace GOOM::FILTERS
 #endif
 
 using UTILS::GetRandInRange;
+using UTILS::NameValuePairs;
 using UTILS::NumberRange;
 using UTILS::ProbabilityOf;
 
@@ -35,10 +37,9 @@ void Amulet::SetRandomParams()
                                                                 : GetRandInRange(AMPLITUDE_RANGE);
 }
 
-auto Amulet::GetSpeedCoefficientsEffectNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto Amulet::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  return std::vector<std::pair<std::string, std::string>>();
+  return NameValuePairs();
 }
 
 #if __cplusplus <= 201402L

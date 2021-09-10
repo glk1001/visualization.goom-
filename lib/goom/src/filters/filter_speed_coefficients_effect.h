@@ -2,11 +2,8 @@
 #define VISUALIZATION_GOOM_FILTER_SPEED_COEFFICIENTS_EFFECT_H
 
 #include "filter_normalized_coords.h"
+#include "goomutils/name_value_pairs.h"
 #include "v2d.h"
-
-#include <string>
-#include <tuple>
-#include <vector>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -36,7 +33,7 @@ public:
       -> V2dFlt = 0;
 
   [[nodiscard]] virtual auto GetSpeedCoefficientsEffectNameValueParams() const
-      -> std::vector<std::pair<std::string, std::string>> = 0;
+      -> UTILS::NameValuePairs = 0;
 };
 
 #if __cplusplus <= 201402L

@@ -2,13 +2,12 @@
 #define VISUALIZATION_GOOM_FILTERS_H
 
 #include "goom_visual_fx.h"
+#include "goomutils/name_value_pairs.h"
 #include "goomutils/spimpl.h"
 
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <tuple>
-#include <vector>
 
 namespace GOOM
 {
@@ -56,7 +55,7 @@ public:
   void Finish() override;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> std::vector<std::pair<std::string, std::string>>;
+      -> UTILS::NameValuePairs;
 
 private:
   class ZoomFilterImpl;
