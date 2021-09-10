@@ -112,6 +112,7 @@ private:
   {
     std::string name{};
     float rotateProbability{};
+    float hypercosProbability{};
     std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
   };
   std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;

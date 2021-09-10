@@ -63,22 +63,38 @@ const Weights<FilterSettingsService::ZoomFilterMode> FilterSettingsService::WEIG
 auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirectory) -> std::map<ZoomFilterMode, ZoomFilterModeInfo>
 {
   return {
-    { ZoomFilterMode::AMULET_MODE,             {"Amulet",              PROB_HIGH, std::make_shared<Amulet>()}},
-    { ZoomFilterMode::CRYSTAL_BALL_MODE0,      {"Crystal Ball Mode 0", PROB_HIGH,  std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0)}},
-    { ZoomFilterMode::CRYSTAL_BALL_MODE1,      {"Crystal Ball Mode 1", PROB_HALF, std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1)}},
-    { ZoomFilterMode::HYPERCOS_MODE0,          {"Hypercos Mode 0",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
-    { ZoomFilterMode::HYPERCOS_MODE1,          {"Hypercos Mode 1",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
-    { ZoomFilterMode::HYPERCOS_MODE2,          {"Hypercos Mode 2",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
-    { ZoomFilterMode::HYPERCOS_MODE3,          {"Hypercos Mode 3",     PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
-    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, {"Image Displacement",  PROB_ZERO, std::make_shared<ImageDisplacements>(resourcesDirectory)}},
-    { ZoomFilterMode::NORMAL_MODE,             {"Normal",              PROB_ZERO, std::make_shared<SimpleSpeedCoefficientsEffect>()}},
-    { ZoomFilterMode::SCRUNCH_MODE,            {"Scrunch",             PROB_HALF, std::make_shared<Scrunch>()}},
-    { ZoomFilterMode::SPEEDWAY_MODE0,          {"Speedway Mode 0",     PROB_LOW,  std::make_shared<Speedway>(Speedway::Modes::MODE0)}},
-    { ZoomFilterMode::SPEEDWAY_MODE1,          {"Speedway Mode 1",     PROB_LOW,  std::make_shared<Speedway>(Speedway::Modes::MODE1)}},
-    { ZoomFilterMode::WAVE_MODE0,              {"Wave Mode 0",         PROB_HIGH, std::make_shared<Wave>(Wave::Modes::MODE0) }},
-    { ZoomFilterMode::WAVE_MODE1,              {"Wave Mode 1",         PROB_HIGH, std::make_shared<Wave>(Wave::Modes::MODE1)}},
-    { ZoomFilterMode::WATER_MODE,              {"Water",               PROB_ZERO, std::make_shared<SimpleSpeedCoefficientsEffect>()}},
-    { ZoomFilterMode::Y_ONLY_MODE,             {"Y Only",              PROB_HALF, std::make_shared<YOnly>()}},
+    { ZoomFilterMode::AMULET_MODE,
+      {"Amulet",              PROB_HIGH, PROB_LOW,  std::make_shared<Amulet>()}},
+    { ZoomFilterMode::CRYSTAL_BALL_MODE0,
+      {"Crystal Ball Mode 0", PROB_HIGH, PROB_HIGH, std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0)}},
+    { ZoomFilterMode::CRYSTAL_BALL_MODE1,
+      {"Crystal Ball Mode 1", PROB_HALF, PROB_HIGH, std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1)}},
+    { ZoomFilterMode::HYPERCOS_MODE0,
+      {"Hypercos Mode 0",     PROB_LOW,  PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::HYPERCOS_MODE1,
+      {"Hypercos Mode 1",     PROB_LOW,  PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::HYPERCOS_MODE2,
+      {"Hypercos Mode 2",     PROB_LOW,  PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::HYPERCOS_MODE3,
+      {"Hypercos Mode 3",     PROB_LOW,  PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,
+      {"Image Displacement",  PROB_ZERO, PROB_LOW,  std::make_shared<ImageDisplacements>(resourcesDirectory)}},
+    { ZoomFilterMode::NORMAL_MODE,
+      {"Normal",              PROB_ZERO, PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::SCRUNCH_MODE,
+      {"Scrunch",             PROB_HALF, PROB_LOW,  std::make_shared<Scrunch>()}},
+    { ZoomFilterMode::SPEEDWAY_MODE0,
+      {"Speedway Mode 0",     PROB_LOW,  PROB_LOW,  std::make_shared<Speedway>(Speedway::Modes::MODE0)}},
+    { ZoomFilterMode::SPEEDWAY_MODE1,
+      {"Speedway Mode 1",     PROB_LOW,  PROB_LOW,  std::make_shared<Speedway>(Speedway::Modes::MODE1)}},
+    { ZoomFilterMode::WAVE_MODE0,
+      {"Wave Mode 0",         PROB_HIGH, PROB_LOW,  std::make_shared<Wave>(Wave::Modes::MODE0) }},
+    { ZoomFilterMode::WAVE_MODE1,
+      {"Wave Mode 1",         PROB_HIGH, PROB_LOW,  std::make_shared<Wave>(Wave::Modes::MODE1)}},
+    { ZoomFilterMode::WATER_MODE,
+      {"Water",               PROB_ZERO, PROB_LOW,  std::make_shared<SimpleSpeedCoefficientsEffect>()}},
+    { ZoomFilterMode::Y_ONLY_MODE,
+      {"Y Only",              PROB_HALF, PROB_LOW,  std::make_shared<YOnly>()}},
   };
 }
 //@formatter:on
@@ -94,7 +110,6 @@ public:
     ROTATE = 0,
     CRYSTAL_BALL_IN_MIDDLE,
     WAVE_IN_MIDDLE,
-    HYPERCOS_EFFECT,
     CHANGE_SPEED,
     REVERSE_SPEED,
     _NUM // unused and must be last
@@ -140,7 +155,6 @@ const std::array<FilterSettingsService::FilterEvents::Event,
    {/*.event = */ FilterEventTypes::ROTATE,                    /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::CRYSTAL_BALL_IN_MIDDLE,    /*.m = */ 14, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::WAVE_IN_MIDDLE,            /*.m = */  8, /*.outOf = */ 16},
-   {/*.event = */ FilterEventTypes::HYPERCOS_EFFECT,           /*.m = */  1, /*.outOf = */ 50},
    {/*.event = */ FilterEventTypes::CHANGE_SPEED,              /*.m = */  8, /*.outOf = */ 16},
    {/*.event = */ FilterEventTypes::REVERSE_SPEED,             /*.m = */  8, /*.outOf = */ 16},
 }};
@@ -327,7 +341,7 @@ inline void FilterSettingsService::SetAmuletModeSettings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::AMULET_MODE].rotateProbability);
 
-  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::AMULET_MODE].hypercosProbability))
   {
     SetHypercosMode2Settings();
   }
@@ -337,7 +351,7 @@ inline void FilterSettingsService::SetCrystalBallMode0Settings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::CRYSTAL_BALL_MODE0].rotateProbability);
 
-  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::CRYSTAL_BALL_MODE0].hypercosProbability))
   {
     SetHypercosMode1Settings();
   }
@@ -348,7 +362,7 @@ inline void FilterSettingsService::SetCrystalBallMode1Settings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::CRYSTAL_BALL_MODE1].rotateProbability);
 
-  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::CRYSTAL_BALL_MODE1].hypercosProbability))
   {
     SetHypercosMode2Settings();
   }
@@ -386,7 +400,7 @@ inline void FilterSettingsService::SetImageDisplacementModeSettings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::IMAGE_DISPLACEMENT_MODE].rotateProbability);
 
-  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::IMAGE_DISPLACEMENT_MODE].hypercosProbability))
   {
     SetHypercosMode1Settings();
   }
@@ -395,13 +409,18 @@ inline void FilterSettingsService::SetImageDisplacementModeSettings()
 inline void FilterSettingsService::SetNormalModeSettings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::NORMAL_MODE].rotateProbability);
+
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::NORMAL_MODE].hypercosProbability))
+  {
+    SetHypercosMode1Settings();
+  }
 }
 
 inline void FilterSettingsService::SetScrunchModeSettings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::SCRUNCH_MODE].rotateProbability);
 
-  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::SCRUNCH_MODE].hypercosProbability))
   {
     SetHypercosMode1Settings();
   }
@@ -411,7 +430,7 @@ inline void FilterSettingsService::SetSpeedwayMode0Settings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::SPEEDWAY_MODE0].rotateProbability);
 
-  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::SPEEDWAY_MODE0].hypercosProbability))
   {
     SetHypercosMode0Settings();
   }
@@ -421,7 +440,7 @@ inline void FilterSettingsService::SetSpeedwayMode1Settings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::SPEEDWAY_MODE1].rotateProbability);
 
-  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::SPEEDWAY_MODE1].hypercosProbability))
   {
     SetHypercosMode0Settings();
   }
@@ -436,12 +455,22 @@ inline void FilterSettingsService::SetWaveMode0Settings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::WAVE_MODE0].rotateProbability);
   SetWaveModeSettings();
+
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::WAVE_MODE0].hypercosProbability))
+  {
+    SetHypercosMode1Settings();
+  }
 }
 
 inline void FilterSettingsService::SetWaveMode1Settings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::WAVE_MODE1].rotateProbability);
   SetWaveModeSettings();
+
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::WAVE_MODE1].hypercosProbability))
+  {
+    SetHypercosMode1Settings();
+  }
 }
 
 void FilterSettingsService::SetWaveModeSettings()
@@ -455,18 +484,13 @@ void FilterSettingsService::SetWaveModeSettings()
         (m_filterSettings.filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE) /
         2);
   }
-
-  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
-  {
-    SetHypercosMode1Settings();
-  }
 }
 
 inline void FilterSettingsService::SetYOnlyModeSettings()
 {
   SetRotate(m_filterModeData[ZoomFilterMode::Y_ONLY_MODE].rotateProbability);
 
-  if (m_filterEvents->Happens(FilterEventTypes::HYPERCOS_EFFECT))
+  if (ProbabilityOf(m_filterModeData[ZoomFilterMode::Y_ONLY_MODE].hypercosProbability))
   {
     SetHypercosMode1Settings();
   }
