@@ -3,13 +3,13 @@
 
 #include "filter_speed_coefficients_effect.h"
 #include "goomutils/goomrand.h"
+#include "goomutils/name_value_pairs.h"
 #include "image_displacement.h"
 #include "v2d.h"
 
 #include <cstddef>
 #include <memory>
 #include <string>
-#include <tuple>
 #include <vector>
 
 #if __cplusplus <= 201402L
@@ -34,7 +34,7 @@ public:
                                           const NormalizedCoords& coords) const -> V2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
-      -> std::vector<std::pair<std::string, std::string>> override;
+      -> UTILS::NameValuePairs override;
 
   auto GetCurrentImageFilename() const -> std::string;
 

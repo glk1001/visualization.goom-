@@ -2,6 +2,7 @@
 
 #include "goom/goom_config.h"
 #include "goomutils/goomrand.h"
+#include "goomutils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -18,13 +19,15 @@ namespace GOOM::FILTERS
 {
 #endif
 
+using UTILS::GetPair;
 using UTILS::GetRandInRange;
+using UTILS::NameValuePairs;
 using UTILS::NumberRange;
 using UTILS::ProbabilityOf;
 
 constexpr NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.1000F};
 constexpr NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};
-constexpr NumberRange<float> ZOOM_FACTOR_RANGE = {1.00F, 10.0F};
+constexpr NumberRange<float> ZOOM_FACTOR_RANGE = {0.10F, 1.0F};
 
 constexpr float PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
@@ -99,10 +102,16 @@ void ImageDisplacements::SetRandomParams()
   });
 }
 
-auto ImageDisplacements::GetSpeedCoefficientsEffectNameValueParams() const
-    -> std::vector<std::pair<std::string, std::string>>
+auto ImageDisplacements::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  return std::vector<std::pair<std::string, std::string>>();
+  constexpr const char* PARAM_GROUP = "Image";
+  return {
+      GetPair(PARAM_GROUP, "filename", IMAGE_FILENAMES[m_currentImageDisplacementIndex]),
+      GetPair(PARAM_GROUP, "zoom factor", GetCurrentImageDisplacement().GetZoomFactor()),
+      GetPair(PARAM_GROUP, "amplitude", GetCurrentImageDisplacement().GetAmplitude()),
+      GetPair(PARAM_GROUP, "x cutoff", GetCurrentImageDisplacement().GetXColorCutoff()),
+      GetPair(PARAM_GROUP, "y cutoff", GetCurrentImageDisplacement().GetYColorCutoff()),
+  };
 }
 
 #if __cplusplus <= 201402L
