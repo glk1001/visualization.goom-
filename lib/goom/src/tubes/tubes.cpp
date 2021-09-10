@@ -1022,7 +1022,7 @@ auto ShapeColorizer::GetBrightness(const Shape& shape, const V2dInt& shapeCentre
   constexpr float SMALL_T = 0.25F;
   if (shape.path->GetT() < SMALL_T)
   {
-    constexpr float SMALL_T_BRIGHTNESS = 0.7F;
+    constexpr float SMALL_T_BRIGHTNESS = 0.50F;
     return SMALL_T_BRIGHTNESS * brightness;
   }
   return brightness;
