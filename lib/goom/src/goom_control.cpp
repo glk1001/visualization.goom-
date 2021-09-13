@@ -71,7 +71,7 @@
 #include <goomutils/colormaps.h>
 #include <vector>
 
-#define SHOW_STATE_TEXT_ON_SCREEN
+//#define SHOW_STATE_TEXT_ON_SCREEN
 
 namespace GOOM
 {
@@ -1803,23 +1803,23 @@ void GoomControl::GoomControlImpl::DisplayStateText()
   message +=
       std20::format("Previous Filter Mode: {}\n", m_filterSettingsService.GetPreviousFilterMode());
 
-  message += std20::format("middleX: {}\n", filterEffectsSettings.zoomMidPoint.x);
-  message += std20::format("middleY: {}\n", filterEffectsSettings.zoomMidPoint.y);
-
   message += std20::format("tranLerpFactor: {}\n", m_visualFx.zoomFilter_fx->GetTranLerpFactor());
   message += std20::format("tranLerpIncrement: {}\n", filterBufferSettings.tranLerpIncrement);
   message +=
       std20::format("tranLerpToMaxSwitchMult: {}\n", filterBufferSettings.tranLerpToMaxSwitchMult);
+
+  message += GetNameValuesString(m_visualFx.zoomFilter_fx->GetNameValueParams("colors")) + "\n";
+  message +=
+      GetNameValuesString(m_visualFx.zoomFilter_fx->GetNameValueParams("ZoomEffects")) + "\n";
+
+  message += std20::format("middleX: {}\n", filterEffectsSettings.zoomMidPoint.x);
+  message += std20::format("middleY: {}\n", filterEffectsSettings.zoomMidPoint.y);
 
   message += std20::format("vitesse: {}\n", filterEffectsSettings.vitesse.GetVitesse());
   message += std20::format("previousZoomSpeed: {}\n", m_goomData.previousZoomSpeed);
   message += std20::format("reverse: {}\n", filterEffectsSettings.vitesse.GetReverseVitesse());
   message +=
       std20::format("relative speed: {}\n", filterEffectsSettings.vitesse.GetRelativeSpeed());
-
-  message += GetNameValuesString(m_visualFx.zoomFilter_fx->GetNameValueParams("colors")) + "\n";
-  message +=
-      GetNameValuesString(m_visualFx.zoomFilter_fx->GetNameValueParams("ZoomEffects")) + "\n";
 
   message +=
       std20::format("updatesSinceLastChange: {}\n", m_goomData.updatesSinceLastZoomEffectsChange);

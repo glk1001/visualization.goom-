@@ -41,14 +41,20 @@ auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{};
 
-  MoveNameValuePairs(GetSpeedCoefficientsEffectNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetRotateNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetNoiseNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetTanEffectNameValueParams(), nameValuePairs);
-  MoveNameValuePairs(GetHypercosNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetPlaneNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetHypercosNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetSpeedCoefficientsEffectNameValueParams(), nameValuePairs);
 
   return nameValuePairs;
+}
+
+inline auto ZoomVectorEffects::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+{
+  return m_filterEffectsSettings->speedCoefficientsEffect
+      ->GetSpeedCoefficientsEffectNameValueParams();
 }
 
 void ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
@@ -61,7 +67,7 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filte
   SetRandomPlaneEffects();
 }
 
-void ZoomVectorEffects::SetRandomPlaneEffects()
+inline void ZoomVectorEffects::SetRandomPlaneEffects()
 {
   if (m_filterEffectsSettings->planeEffect)
   {
@@ -91,11 +97,6 @@ void ZoomVectorEffects::SetHypercosOverlaySettings()
   }
 }
 
-auto ZoomVectorEffects::GetHypercosNameValueParams() const -> NameValuePairs
-{
-  return m_hypercos->GetNameValueParams(PARAM_GROUP);
-}
-
 auto ZoomVectorEffects::GetCleanedVelocity(const NormalizedCoords& velocity) -> NormalizedCoords
 {
   return {GetMinVelocityVal(velocity.GetX()), GetMinVelocityVal(velocity.GetY())};
@@ -115,6 +116,11 @@ auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords) cons
     -> NormalizedCoords
 {
   return m_hypercos->GetVelocity(coords);
+}
+
+inline auto ZoomVectorEffects::GetHypercosNameValueParams() const -> NameValuePairs
+{
+  return m_hypercos->GetNameValueParams(PARAM_GROUP);
 }
 
 auto ZoomVectorEffects::IsHorizontalPlaneVelocityActive() const -> bool
@@ -137,7 +143,7 @@ auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords)
   return m_planes->GetVerticalPlaneVelocity(coords);
 }
 
-auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
+inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
 {
   return m_planes->GetNameValueParams(PARAM_GROUP);
 }
@@ -151,7 +157,7 @@ auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
   return {GetRandInRange(-amp, +amp), GetRandInRange(-amp, +amp)};
 }
 
-auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
+inline auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 {
   return {
       GetPair(PARAM_GROUP, "noise", m_filterEffectsSettings->noisify),
@@ -169,7 +175,7 @@ auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
   return {tanSqDist * velocity.GetX(), tanSqDist * velocity.GetY()};
 }
 
-auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValuePairs
+inline auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValuePairs
 {
   return {
       GetPair(PARAM_GROUP, "tanEffect", m_filterEffectsSettings->tanEffect),
@@ -189,17 +195,11 @@ auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) con
           m_filterEffectsSettings->rotateSpeed * (velocity.GetY() - velocity.GetX())};
 }
 
-auto ZoomVectorEffects::GetRotateNameValueParams() const -> NameValuePairs
+inline auto ZoomVectorEffects::GetRotateNameValueParams() const -> NameValuePairs
 {
   return {
       GetPair(PARAM_GROUP, "rotate speed", m_filterEffectsSettings->rotateSpeed),
   };
-}
-
-auto ZoomVectorEffects::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
-{
-  return m_filterEffectsSettings->speedCoefficientsEffect
-      ->GetSpeedCoefficientsEffectNameValueParams();
 }
 
 #if __cplusplus <= 201402L
