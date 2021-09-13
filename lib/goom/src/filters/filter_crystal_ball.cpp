@@ -24,24 +24,24 @@ using UTILS::ProbabilityOf;
 constexpr float DEFAULT_AMPLITUDE = 0.1F;
 constexpr NumberRange<float> X_AMPLITUDE_RANGE_MODE0 = {0.001F, 0.501F};
 constexpr NumberRange<float> Y_AMPLITUDE_RANGE_MODE0 = {0.001F, 0.501F};
-constexpr NumberRange<float> X_AMPLITUDE_RANGE_MODE1 = {1.000F, 3.001F};
-constexpr NumberRange<float> Y_AMPLITUDE_RANGE_MODE1 = {1.000F, 3.001F};
+constexpr NumberRange<float> X_AMPLITUDE_RANGE_MODE1 = {0.500F, 1.001F};
+constexpr NumberRange<float> Y_AMPLITUDE_RANGE_MODE1 = {0.500F, 1.001F};
 
 constexpr float DEFAULT_SQ_DIST_MULT = 0.025F;
 constexpr NumberRange<float> X_SQ_DIST_MULT_RANGE_MODE0 = {0.001F, 0.051F};
 constexpr NumberRange<float> Y_SQ_DIST_MULT_RANGE_MODE0 = {0.001F, 0.051F};
-constexpr NumberRange<float> X_SQ_DIST_MULT_RANGE_MODE1 = {0.500F, 1.201F};
-constexpr NumberRange<float> Y_SQ_DIST_MULT_RANGE_MODE1 = {0.500F, 1.201F};
+constexpr NumberRange<float> X_SQ_DIST_MULT_RANGE_MODE1 = {0.050F, 0.101F};
+constexpr NumberRange<float> Y_SQ_DIST_MULT_RANGE_MODE1 = {0.050F, 0.101F};
 
 constexpr float DEFAULT_SQ_DIST_OFFSET = 0.05F;
 constexpr NumberRange<float> X_SQ_DIST_OFFSET_RANGE_MODE0 = {0.001F, 0.11F};
 constexpr NumberRange<float> Y_SQ_DIST_OFFSET_RANGE_MODE0 = {0.001F, 0.11F};
-constexpr NumberRange<float> X_SQ_DIST_OFFSET_RANGE_MODE1 = {1.000F, 1.201F};
-constexpr NumberRange<float> Y_SQ_DIST_OFFSET_RANGE_MODE1 = {1.000F, 1.201F};
+constexpr NumberRange<float> X_SQ_DIST_OFFSET_RANGE_MODE1 = {0.100F, 1.01F};
+constexpr NumberRange<float> Y_SQ_DIST_OFFSET_RANGE_MODE1 = {0.100F, 1.01F};
 
-constexpr float PROB_XY_AMPLITUDES_EQUAL = 0.99F;
-constexpr float PROB_XY_SQ_DIST_MULT_EQUAL = 0.99F;
-constexpr float PROB_XY_SQ_DIST_OFFSET_EQUAL = 0.99F;
+constexpr float PROB_XY_AMPLITUDES_EQUAL = 1.00F;
+constexpr float PROB_XY_SQ_DIST_MULT_EQUAL = 1.00F;
+constexpr float PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 
 CrystalBall::CrystalBall(const Modes mode) noexcept
   : m_mode{mode}, m_params{DEFAULT_AMPLITUDE,    DEFAULT_AMPLITUDE,      DEFAULT_SQ_DIST_MULT,

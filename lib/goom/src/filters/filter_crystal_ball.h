@@ -61,7 +61,7 @@ private:
                        const UTILS::NumberRange<float>& ySqDistMultRange,
                        const UTILS::NumberRange<float>& xSqDistOffsetRange,
                        const UTILS::NumberRange<float>& ySqDistOffsetRange);
-  [[nodiscard]] static auto GetSpeedCoefficient(float baseCoordVal,
+  [[nodiscard]] static auto GetSpeedCoefficient(float baseSpeedCoeff,
                                                 float sqDistFromZero,
                                                 float amplitude,
                                                 float sqDistMult,
@@ -79,13 +79,13 @@ inline auto CrystalBall::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                               m_params.ySqDistMult, m_params.ySqDistOffset)};
 }
 
-inline auto CrystalBall::GetSpeedCoefficient(const float baseCoordVal,
+inline auto CrystalBall::GetSpeedCoefficient(const float baseSpeedCoeff,
                                              const float sqDistFromZero,
                                              const float amplitude,
                                              const float sqDistMult,
                                              const float sqDistOffset) -> float
 {
-  return baseCoordVal - (amplitude * ((sqDistMult * sqDistFromZero) - sqDistOffset));
+  return baseSpeedCoeff - (amplitude * ((sqDistMult * sqDistFromZero) - sqDistOffset));
 }
 
 inline auto CrystalBall::GetParams() const -> const Params&
