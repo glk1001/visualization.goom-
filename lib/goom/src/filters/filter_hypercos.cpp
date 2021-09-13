@@ -31,6 +31,7 @@ using UTILS::Weights;
 // Hypercos:
 // applique une surcouche de hypercos effect
 // applies an overlay of hypercos effect
+constexpr HypercosOverlay DEFAULT_OVERLAY = HypercosOverlay::NONE;
 constexpr Hypercos::HypercosEffect DEFAULT_EFFECT = Hypercos::HypercosEffect::NONE;
 constexpr bool DEFAULT_REVERSE = false;
 
@@ -52,8 +53,9 @@ constexpr float PROB_REVERSE = 0.5F;
 constexpr float PROB_AMPLITUDE_EQUAL = 0.5F;
 constexpr float PROB_BIG_AMPLITUDE_RANGE = 0.2F;
 
-constexpr Hypercos::Params DEFAULT_PARAMS{DEFAULT_EFFECT, DEFAULT_REVERSE,     X_DEFAULT_FREQ,
-                                          Y_DEFAULT_FREQ, X_DEFAULT_AMPLITUDE, Y_DEFAULT_AMPLITUDE};
+constexpr Hypercos::Params DEFAULT_PARAMS{DEFAULT_OVERLAY,    DEFAULT_EFFECT, DEFAULT_REVERSE,
+                                          X_DEFAULT_FREQ,     Y_DEFAULT_FREQ, X_DEFAULT_AMPLITUDE,
+                                          Y_DEFAULT_AMPLITUDE};
 
 Hypercos::Hypercos() noexcept : m_params{DEFAULT_PARAMS}
 {
@@ -66,18 +68,24 @@ void Hypercos::SetDefaultParams()
 
 void Hypercos::SetMode0RandomParams()
 {
+  m_params.overlay = HypercosOverlay::MODE0;
+
   const float hypercosMax = stdnew::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.15F);
   SetHypercosEffect({FREQ_RANGE.min, hypercosMax}, AMPLITUDE_RANGE);
 }
 
 void Hypercos::SetMode1RandomParams()
 {
+  m_params.overlay = HypercosOverlay::MODE1;
+
   const float hypercosMin = stdnew::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.20F);
   SetHypercosEffect({hypercosMin, FREQ_RANGE.max}, AMPLITUDE_RANGE);
 }
 
 void Hypercos::SetMode2RandomParams()
 {
+  m_params.overlay = HypercosOverlay::MODE2;
+
   const NumberRange<float> amplitudeRange =
       ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
@@ -88,6 +96,8 @@ void Hypercos::SetMode2RandomParams()
 
 void Hypercos::SetMode3RandomParams()
 {
+  m_params.overlay = HypercosOverlay::MODE3;
+
   const NumberRange<float> amplitudeRange =
       ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
@@ -222,7 +232,8 @@ auto Hypercos::GetNameValueParams(const std::string& paramGroup) const -> NameVa
 {
   const std::string fullParamGroup = GetFullParamGroup({paramGroup, "hypercos"});
   return {
-      GetPair(fullParamGroup, "mode", static_cast<uint32_t>(m_params.effect)),
+      GetPair(fullParamGroup, "overlay", static_cast<uint32_t>(m_params.overlay)),
+      GetPair(fullParamGroup, "effect", static_cast<uint32_t>(m_params.effect)),
       GetPair(fullParamGroup, "reverse", m_params.reverse),
       GetPair(fullParamGroup, "xFreq", m_params.xFreq),
       GetPair(fullParamGroup, "yFreq", m_params.yFreq),

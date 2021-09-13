@@ -53,6 +53,7 @@ public:
 
   struct Params
   {
+    HypercosOverlay overlay;
     HypercosEffect effect;
     bool reverse;
     float xFreq;

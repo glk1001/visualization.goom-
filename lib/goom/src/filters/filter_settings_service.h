@@ -6,6 +6,7 @@
 #include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "filter_zoom_vector.h"
+#include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/spimpl.h"
 
@@ -110,10 +111,10 @@ private:
 
   struct ZoomFilterModeInfo
   {
-    std::string name{};
-    float rotateProbability{};
-    float hypercosProbability{};
+    const std::string name;
     std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
+    const float rotateProbability;
+    UTILS::Weights<HypercosOverlay> hypercosWeights;
   };
   std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
   [[nodiscard]] static auto GetFilterModeData(const std::string& resourcesDirectory)
@@ -126,6 +127,8 @@ private:
   static constexpr float MAX_ROTATE_SPEED = +0.5F;
   static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
   static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
+  static constexpr float DEFAULT_MAX_SPEED_COEFF = 2.01F;
+  static constexpr float MAX_MAX_SPEED_COEFF = 4.01F;
   ZoomFilterSettings m_filterSettings;
 
   bool m_filterEffectsSettingsHaveChanged = false;
@@ -135,26 +138,11 @@ private:
 
   void SetDefaultSettings();
   void SetFilterModeSettings();
-  void SetAmuletModeSettings();
-  void SetCrystalBallMode0Settings();
-  void SetCrystalBallMode1Settings();
-  void SetHypercosMode0Settings();
-  void SetHypercosMode1Settings();
-  void SetHypercosMode2Settings();
-  void SetHypercosMode3Settings();
-  void SetImageDisplacementModeSettings();
-  void SetNormalModeSettings();
-  void SetScrunchModeSettings();
-  void SetSpeedwayMode0Settings();
-  void SetSpeedwayMode1Settings();
-  void SetWaterModeSettings();
-  void SetWaveMode0Settings();
-  void SetWaveMode1Settings();
   void SetWaveModeSettings();
-  void SetYOnlyModeSettings();
 
   void SetRandomMiddlePoints();
   void SetRotate(float rotateProbability);
+  void SetMaxSpeedCoeff();
 };
 
 inline auto FilterSettingsService::GetFilterSettings() const -> const ZoomFilterSettings&
@@ -192,6 +180,7 @@ inline auto FilterSettingsService::GetRWVitesseSetting() -> Vitesse&
 inline void FilterSettingsService::ChangeMilieu()
 {
   m_filterEffectsSettingsHaveChanged = true;
+  SetMaxSpeedCoeff();
   SetMiddlePoints();
 }
 
