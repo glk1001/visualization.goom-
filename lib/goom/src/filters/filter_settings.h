@@ -75,6 +75,8 @@ struct ZoomFilterEffectsSettings
 
   Vitesse vitesse;
 
+  float maxSpeedCoeff;
+
   V2dInt zoomMidPoint; // milieu de l'effet
 
   bool tanEffect;

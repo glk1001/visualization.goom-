@@ -23,7 +23,6 @@ public:
   explicit FilterZoomVector(uint32_t screenWidth) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) override;
-  void SetMaxSpeedCoeff(float val) override;
 
   [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords override;
 

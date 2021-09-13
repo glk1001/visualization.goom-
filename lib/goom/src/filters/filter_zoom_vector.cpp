@@ -31,11 +31,6 @@ void FilterZoomVector::SetFilterSettings(const ZoomFilterEffectsSettings& filter
   m_zoomVectorEffects.SetFilterSettings(filterEffectsSettings);
 }
 
-void FilterZoomVector::SetMaxSpeedCoeff(const float val)
-{
-  m_zoomVectorEffects.SetMaxSpeedCoeff(val);
-}
-
 auto FilterZoomVector::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
   if ("ZoomEffects" == paramGroup)

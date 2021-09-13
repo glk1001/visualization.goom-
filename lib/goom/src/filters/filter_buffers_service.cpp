@@ -37,8 +37,6 @@ using UTILS::Logging;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 
-constexpr float MAX_MAX_SPEED_COEFF = +4.01F;
-
 FilterBuffersService::FilterBuffersService(Parallel& parallel,
                                            const std::shared_ptr<const PluginInfo>& goomInfo,
                                            std::unique_ptr<IZoomVector> zoomVector) noexcept
@@ -80,8 +78,6 @@ void FilterBuffersService::Start()
 inline void FilterBuffersService::UpdateFilterEffectsSettings()
 {
   m_zoomVector->SetFilterSettings(m_currentFilterEffectsSettings);
-  // TODO Random calc should not be here. Move to vector effects
-  m_zoomVector->SetMaxSpeedCoeff(GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF);
 
   m_filterBuffers.SetBuffMidPoint(m_currentFilterEffectsSettings.zoomMidPoint);
   m_filterBuffers.NotifyFilterSettingsHaveChanged();

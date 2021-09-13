@@ -33,7 +33,6 @@ public:
   explicit ZoomVectorEffects(uint32_t screenWidth) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
-  void SetMaxSpeedCoeff(float val);
 
   [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
                                            const NormalizedCoords& coords) const
@@ -73,8 +72,6 @@ private:
 
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
   static constexpr float MIN_SPEED_COEFF = -4.01F;
-  static constexpr float DEFAULT_MAX_SPEED_COEFF = +2.01F;
-  float m_maxSpeedCoeff = DEFAULT_MAX_SPEED_COEFF;
 
   const std::unique_ptr<Hypercos> m_hypercos;
   const std::unique_ptr<Planes> m_planes;
@@ -96,11 +93,6 @@ private:
   [[nodiscard]] auto GetHypercosNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetPlaneNameValueParams() const -> UTILS::NameValuePairs;
 };
-
-inline void ZoomVectorEffects::SetMaxSpeedCoeff(const float val)
-{
-  m_maxSpeedCoeff = val;
-}
 
 inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
                                                      const NormalizedCoords& coords) const
@@ -139,9 +131,9 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) cons
   {
     return MIN_SPEED_COEFF;
   }
-  if (speedCoeff > m_maxSpeedCoeff)
+  if (speedCoeff > m_filterEffectsSettings->maxSpeedCoeff)
   {
-    return m_maxSpeedCoeff;
+    return m_filterEffectsSettings->maxSpeedCoeff;
   }
   return speedCoeff;
 }
