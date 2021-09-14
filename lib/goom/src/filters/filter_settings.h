@@ -82,7 +82,8 @@ struct ZoomFilterEffectsSettings
   bool tanEffect;
   bool planeEffect;
 
-  float rotateSpeed;
+  float xRotateSpeed;
+  float yRotateSpeed;
 
   bool noisify; // ajoute un bruit a la transformation
   float noiseFactor; // in range [0, 1]

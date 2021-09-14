@@ -140,7 +140,8 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) cons
 
 inline auto ZoomVectorEffects::IsRotateActive() const -> bool
 {
-  return std::fabs(m_filterEffectsSettings->rotateSpeed) > UTILS::SMALL_FLOAT;
+  return (std::fabs(m_filterEffectsSettings->xRotateSpeed) > UTILS::SMALL_FLOAT)
+    || (std::fabs(m_filterEffectsSettings->yRotateSpeed) > UTILS::SMALL_FLOAT);
 }
 
 inline auto ZoomVectorEffects::IsNoiseActive() const -> bool

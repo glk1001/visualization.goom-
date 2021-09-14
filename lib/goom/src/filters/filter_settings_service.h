@@ -125,6 +125,7 @@ private:
   static constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
   static constexpr float MIN_ROTATE_SPEED = -0.5F;
   static constexpr float MAX_ROTATE_SPEED = +0.5F;
+  static constexpr float PROB_EQUAL_XY_ROTATATION = 0.8F;
   static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
   static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
   static constexpr float DEFAULT_MAX_SPEED_COEFF = 2.01F;
@@ -234,31 +235,39 @@ inline void FilterSettingsService::SetClippedColor(const Pixel& color)
   m_filterSettings.filterColorSettings.clippedColor = color;
 }
 
+// TODO SetRotateToZero
 inline void FilterSettingsService::SetRotateSetting(const float value)
 {
-  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.rotateSpeed, value))
+  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.xRotateSpeed, value) &&
+      UTILS::floats_equal(m_filterSettings.filterEffectsSettings.yRotateSpeed, value))
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotateSpeed = value;
+  m_filterSettings.filterEffectsSettings.xRotateSpeed = value;
+  m_filterSettings.filterEffectsSettings.yRotateSpeed = value;
 }
 
 inline void FilterSettingsService::MultiplyRotateSetting(const float factor)
 {
-  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.rotateSpeed, 1.0F))
+  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.xRotateSpeed, 0.0F) &&
+      UTILS::floats_equal(m_filterSettings.filterEffectsSettings.yRotateSpeed, 0.0F))
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotateSpeed *= factor;
+  m_filterSettings.filterEffectsSettings.xRotateSpeed *= factor;
+  m_filterSettings.filterEffectsSettings.yRotateSpeed *= factor;
 }
 
 inline void FilterSettingsService::ToggleRotateSetting()
 {
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotateSpeed =
-      -m_filterSettings.filterEffectsSettings.rotateSpeed;
+
+  m_filterSettings.filterEffectsSettings.xRotateSpeed =
+      -m_filterSettings.filterEffectsSettings.xRotateSpeed;
+  m_filterSettings.filterEffectsSettings.yRotateSpeed =
+      -m_filterSettings.filterEffectsSettings.yRotateSpeed;
 }
 
 inline void FilterSettingsService::SetTranLerpIncrement(const int32_t value)

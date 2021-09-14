@@ -185,20 +185,21 @@ inline auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValueP
 auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) const
     -> NormalizedCoords
 {
-  if (m_filterEffectsSettings->rotateSpeed < 0.0F)
+  if (m_filterEffectsSettings->xRotateSpeed < 0.0F)
   {
-    return {-m_filterEffectsSettings->rotateSpeed * (velocity.GetX() - velocity.GetY()),
-            -m_filterEffectsSettings->rotateSpeed * (velocity.GetX() + velocity.GetY())};
+    return {-m_filterEffectsSettings->xRotateSpeed * (velocity.GetX() - velocity.GetY()),
+            -m_filterEffectsSettings->yRotateSpeed * (velocity.GetX() + velocity.GetY())};
   }
 
-  return {m_filterEffectsSettings->rotateSpeed * (velocity.GetY() + velocity.GetX()),
-          m_filterEffectsSettings->rotateSpeed * (velocity.GetY() - velocity.GetX())};
+  return {m_filterEffectsSettings->xRotateSpeed * (velocity.GetY() + velocity.GetX()),
+          m_filterEffectsSettings->yRotateSpeed * (velocity.GetY() - velocity.GetX())};
 }
 
 inline auto ZoomVectorEffects::GetRotateNameValueParams() const -> NameValuePairs
 {
   return {
-      GetPair(PARAM_GROUP, "rotate speed", m_filterEffectsSettings->rotateSpeed),
+      GetPair(PARAM_GROUP, "x rotate speed", m_filterEffectsSettings->xRotateSpeed),
+      GetPair(PARAM_GROUP, "y rotate speed", m_filterEffectsSettings->yRotateSpeed),
   };
 }
 

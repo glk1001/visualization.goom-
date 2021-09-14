@@ -254,6 +254,7 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                       false,
                       false,
                       DEFAULT_ROTATE_SPEED,
+                      DEFAULT_ROTATE_SPEED,
                       false,
                       1.0F},
                      {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
@@ -350,9 +351,10 @@ void FilterSettingsService::SetDefaultSettings()
 
   m_filterSettings.filterEffectsSettings.tanEffect = ProbabilityOfMInN(1, 10);
   m_filterSettings.filterEffectsSettings.planeEffect = ProbabilityOfMInN(8, 10);
-  m_filterSettings.filterEffectsSettings.rotateSpeed = 0.0;
+  m_filterSettings.filterEffectsSettings.xRotateSpeed = 0.0F;
+  m_filterSettings.filterEffectsSettings.yRotateSpeed = 0.0F;
   m_filterSettings.filterEffectsSettings.noisify = false;
-  m_filterSettings.filterEffectsSettings.noiseFactor = 1.0;
+  m_filterSettings.filterEffectsSettings.noiseFactor = 1.0F;
 
   m_filterSettings.filterColorSettings.blockyWavy = false;
   m_filterSettings.filterColorSettings.clippedColor = Pixel::BLACK;
@@ -383,8 +385,19 @@ inline void FilterSettingsService::SetRotate(const float rotateProbability)
 
   m_filterEffectsSettingsHaveChanged = true;
 
-  m_filterSettings.filterEffectsSettings.rotateSpeed =
+  m_filterSettings.filterEffectsSettings.xRotateSpeed =
       rotateProbability * GetRandInRange(MIN_ROTATE_SPEED, MAX_ROTATE_SPEED);
+
+  if (ProbabilityOf(PROB_EQUAL_XY_ROTATATION))
+  {
+    m_filterSettings.filterEffectsSettings.yRotateSpeed =
+        m_filterSettings.filterEffectsSettings.xRotateSpeed;
+  }
+  else
+  {
+    m_filterSettings.filterEffectsSettings.yRotateSpeed =
+        rotateProbability * GetRandInRange(MIN_ROTATE_SPEED, MAX_ROTATE_SPEED);
+  }
 }
 
 void FilterSettingsService::SetMaxSpeedCoeff()
