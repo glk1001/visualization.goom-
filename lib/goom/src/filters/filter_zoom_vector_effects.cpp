@@ -182,25 +182,9 @@ inline auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValueP
   };
 }
 
-auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) const
-    -> NormalizedCoords
-{
-  if (m_filterEffectsSettings->xRotateSpeed < 0.0F)
-  {
-    return {-m_filterEffectsSettings->xRotateSpeed * (velocity.GetX() - velocity.GetY()),
-            -m_filterEffectsSettings->yRotateSpeed * (velocity.GetX() + velocity.GetY())};
-  }
-
-  return {m_filterEffectsSettings->xRotateSpeed * (velocity.GetY() + velocity.GetX()),
-          m_filterEffectsSettings->yRotateSpeed * (velocity.GetY() - velocity.GetX())};
-}
-
 inline auto ZoomVectorEffects::GetRotateNameValueParams() const -> NameValuePairs
 {
-  return {
-      GetPair(PARAM_GROUP, "x rotate speed", m_filterEffectsSettings->xRotateSpeed),
-      GetPair(PARAM_GROUP, "y rotate speed", m_filterEffectsSettings->yRotateSpeed),
-  };
+  return m_filterEffectsSettings->rotation->GetNameValueParams(PARAM_GROUP);
 }
 
 #if __cplusplus <= 201402L

@@ -67,11 +67,13 @@ struct ZoomFilterColorSettings
 };
 
 class ISpeedCoefficientsEffect;
+class Rotation;
 
 struct ZoomFilterEffectsSettings
 {
   HypercosOverlay hypercosOverlay;
   std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect;
+  std::shared_ptr<Rotation> rotation;
 
   Vitesse vitesse;
 
@@ -81,9 +83,6 @@ struct ZoomFilterEffectsSettings
 
   bool tanEffect;
   bool planeEffect;
-
-  float xRotateSpeed;
-  float yRotateSpeed;
 
   bool noisify; // ajoute un bruit a la transformation
   float noiseFactor; // in range [0, 1]

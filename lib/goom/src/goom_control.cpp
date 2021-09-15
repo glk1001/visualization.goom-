@@ -1184,7 +1184,7 @@ void GoomControl::GoomControlImpl::ChangeRotation()
 {
   if (m_goomEvent.Happens(GoomEvent::FILTER_STOP_ROTATION))
   {
-    m_filterSettingsService.SetRotateSetting(0.0F);
+    m_filterSettingsService.SetRotateToZero();
   }
   else if (m_goomEvent.Happens(GoomEvent::FILTER_DECREASE_ROTATION))
   {

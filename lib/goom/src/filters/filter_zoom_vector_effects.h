@@ -4,6 +4,7 @@
 #include "filter_hypercos.h"
 #include "filter_normalized_coords.h"
 #include "filter_planes.h"
+#include "filter_rotation.h"
 #include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "goomutils/mathutils.h"
@@ -140,8 +141,13 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) cons
 
 inline auto ZoomVectorEffects::IsRotateActive() const -> bool
 {
-  return (std::fabs(m_filterEffectsSettings->xRotateSpeed) > UTILS::SMALL_FLOAT)
-    || (std::fabs(m_filterEffectsSettings->yRotateSpeed) > UTILS::SMALL_FLOAT);
+  return m_filterEffectsSettings->rotation->IsActive();
+}
+
+inline auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) const
+    -> NormalizedCoords
+{
+  return m_filterEffectsSettings->rotation->GetVelocity(velocity);
 }
 
 inline auto ZoomVectorEffects::IsNoiseActive() const -> bool

@@ -248,13 +248,12 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
     m_filterModeData{GetFilterModeData(m_resourcesDirectory)},
     m_filterSettings{{HypercosOverlay::NONE,
                       nullptr,
+                      nullptr,
                       Vitesse{},
                       DEFAULT_MAX_SPEED_COEFF,
                       {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y},
                       false,
                       false,
-                      DEFAULT_ROTATE_SPEED,
-                      DEFAULT_ROTATE_SPEED,
                       false,
                       1.0F},
                      {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
@@ -291,7 +290,7 @@ inline void FilterSettingsService::SetFilterModeSettings()
   m_filterSettings.filterEffectsSettings.hypercosOverlay =
       modeInfo.hypercosWeights.GetRandomWeighted();
 
-  if ((m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::WAVE_MODE0))
+  if ((m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::WAVE_MODE1))
   {
     SetWaveModeSettings();
   }
@@ -331,6 +330,11 @@ inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
   return m_filterModeData.at(m_filterMode).speedCoefficientsEffect;
 }
 
+inline auto FilterSettingsService::GetRotation() -> std::shared_ptr<Rotation>
+{
+  return std::make_shared<Rotation>();
+}
+
 void FilterSettingsService::SetRandomFilterSettings(const ZoomFilterMode mode)
 {
   m_filterEffectsSettingsHaveChanged = true;
@@ -351,8 +355,6 @@ void FilterSettingsService::SetDefaultSettings()
 
   m_filterSettings.filterEffectsSettings.tanEffect = ProbabilityOfMInN(1, 10);
   m_filterSettings.filterEffectsSettings.planeEffect = ProbabilityOfMInN(8, 10);
-  m_filterSettings.filterEffectsSettings.xRotateSpeed = 0.0F;
-  m_filterSettings.filterEffectsSettings.yRotateSpeed = 0.0F;
   m_filterSettings.filterEffectsSettings.noisify = false;
   m_filterSettings.filterEffectsSettings.noiseFactor = 1.0F;
 
@@ -361,6 +363,7 @@ void FilterSettingsService::SetDefaultSettings()
 
   m_filterSettings.filterEffectsSettings.hypercosOverlay = HypercosOverlay::NONE;
   m_filterSettings.filterEffectsSettings.speedCoefficientsEffect = GetSpeedCoefficientsEffect();
+  m_filterSettings.filterEffectsSettings.rotation = GetRotation();
 }
 
 void FilterSettingsService::SetWaveModeSettings()
@@ -385,19 +388,8 @@ inline void FilterSettingsService::SetRotate(const float rotateProbability)
 
   m_filterEffectsSettingsHaveChanged = true;
 
-  m_filterSettings.filterEffectsSettings.xRotateSpeed =
-      rotateProbability * GetRandInRange(MIN_ROTATE_SPEED, MAX_ROTATE_SPEED);
-
-  if (ProbabilityOf(PROB_EQUAL_XY_ROTATATION))
-  {
-    m_filterSettings.filterEffectsSettings.yRotateSpeed =
-        m_filterSettings.filterEffectsSettings.xRotateSpeed;
-  }
-  else
-  {
-    m_filterSettings.filterEffectsSettings.yRotateSpeed =
-        rotateProbability * GetRandInRange(MIN_ROTATE_SPEED, MAX_ROTATE_SPEED);
-  }
+  m_filterSettings.filterEffectsSettings.rotation->SetRandomParams();
+  m_filterSettings.filterEffectsSettings.rotation->Multiply(rotateProbability);
 }
 
 void FilterSettingsService::SetMaxSpeedCoeff()

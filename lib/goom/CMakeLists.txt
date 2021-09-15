@@ -38,6 +38,7 @@ add_library(goom
         src/filters/filter_image_displacements.cpp
         src/filters/filter_normalized_coords.cpp
         src/filters/filter_planes.cpp
+        src/filters/filter_rotation.cpp
         src/filters/filter_scrunch.cpp
         src/filters/filter_settings_service.cpp
         src/filters/filter_simple_speed_coefficients_effect.h

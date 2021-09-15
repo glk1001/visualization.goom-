@@ -3,6 +3,7 @@
 
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
+#include "filter_rotation.h"
 #include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "filter_zoom_vector.h"
@@ -59,7 +60,7 @@ public:
   void SetNoisifySetting(bool value);
   void SetNoiseFactorSetting(float value);
   void SetBlockyWavySetting(bool value);
-  void SetRotateSetting(float value);
+  void SetRotateToZero();
   void MultiplyRotateSetting(float factor);
   void ToggleRotateSetting();
   void SetClippedColor(const Pixel& color);
@@ -122,10 +123,6 @@ private:
 
   static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
   static constexpr uint32_t DEFAULT_MIDDLE_Y = 1;
-  static constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
-  static constexpr float MIN_ROTATE_SPEED = -0.5F;
-  static constexpr float MAX_ROTATE_SPEED = +0.5F;
-  static constexpr float PROB_EQUAL_XY_ROTATATION = 0.8F;
   static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
   static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
   static constexpr float DEFAULT_MAX_SPEED_COEFF = 2.01F;
@@ -136,6 +133,7 @@ private:
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
+  [[nodiscard]] auto GetRotation() -> std::shared_ptr<Rotation>;
 
   void SetDefaultSettings();
   void SetFilterModeSettings();
@@ -235,39 +233,35 @@ inline void FilterSettingsService::SetClippedColor(const Pixel& color)
   m_filterSettings.filterColorSettings.clippedColor = color;
 }
 
-// TODO SetRotateToZero
-inline void FilterSettingsService::SetRotateSetting(const float value)
+inline void FilterSettingsService::SetRotateToZero()
 {
-  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.xRotateSpeed, value) &&
-      UTILS::floats_equal(m_filterSettings.filterEffectsSettings.yRotateSpeed, value))
+  if (!m_filterSettings.filterEffectsSettings.rotation->IsActive())
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.xRotateSpeed = value;
-  m_filterSettings.filterEffectsSettings.yRotateSpeed = value;
+  m_filterSettings.filterEffectsSettings.rotation->SetZero();
 }
 
 inline void FilterSettingsService::MultiplyRotateSetting(const float factor)
 {
-  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.xRotateSpeed, 0.0F) &&
-      UTILS::floats_equal(m_filterSettings.filterEffectsSettings.yRotateSpeed, 0.0F))
+  if (!m_filterSettings.filterEffectsSettings.rotation->IsActive())
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.xRotateSpeed *= factor;
-  m_filterSettings.filterEffectsSettings.yRotateSpeed *= factor;
+  m_filterSettings.filterEffectsSettings.rotation->Multiply(factor);
 }
 
 inline void FilterSettingsService::ToggleRotateSetting()
 {
-  m_filterEffectsSettingsHaveChanged = true;
+  if (!m_filterSettings.filterEffectsSettings.rotation->IsActive())
+  {
+    return;
+  }
 
-  m_filterSettings.filterEffectsSettings.xRotateSpeed =
-      -m_filterSettings.filterEffectsSettings.xRotateSpeed;
-  m_filterSettings.filterEffectsSettings.yRotateSpeed =
-      -m_filterSettings.filterEffectsSettings.yRotateSpeed;
+  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.rotation->Toggle();
 }
 
 inline void FilterSettingsService::SetTranLerpIncrement(const int32_t value)
