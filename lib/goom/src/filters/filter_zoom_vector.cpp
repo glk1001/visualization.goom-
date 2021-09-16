@@ -43,55 +43,58 @@ auto FilterZoomVector::GetNameValueParams(const std::string& paramGroup) const -
 
 auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords
 {
-  const NormalizedCoords dispCoords = m_zoomVectorEffects.GetCoordsDisplacement(coords);
-  NormalizedCoords velocity{V2dFlt{}};
-  const float sqDistFromZero = SqDistance(dispCoords.GetX(), dispCoords.GetY());
-  GetZoomEffectsAdjustedVelocity(sqDistFromZero, dispCoords, velocity);
-  return dispCoords - ZoomVectorEffects::GetCleanedVelocity(velocity);
 
-  /**
-  const float sqDistFromZero = SqDistance(dispCoords.GetX(), dispCoords.GetY());
+  const float sqDistFromZero = SqDistance(coords.GetX(), coords.GetY());
 
-  NormalizedCoords velocity = m_zoomVectorEffects.GetSpeedCoeffVelocity(sqDistFromZero, dispCoords);
+  const NormalizedCoords baseVelocity =
+      m_zoomVectorEffects.GetSpeedCoeffVelocity(sqDistFromZero, coords);
+  const NormalizedCoords adjustedVelocity =
+      GetZoomEffectsAdjustedVelocity(sqDistFromZero, coords, baseVelocity);
+  const NormalizedCoords cleanedVelocity = ZoomVectorEffects::GetCleanedVelocity(adjustedVelocity);
 
-  GetZoomEffectsAdjustedVelocity(sqDistFromZero, dispCoords, velocity);
-
-  return dispCoords - ZoomVectorEffects::GetCleanedVelocity(velocity);
-   **/
+  return coords - cleanedVelocity;
 }
 
-void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero,
+auto FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero,
                                                       const NormalizedCoords& coords,
-                                                      NormalizedCoords& velocity) const
+                                                      const NormalizedCoords& velocity) const
+    -> NormalizedCoords
 {
+  NormalizedCoords newVelocity = velocity;
+
+  if (m_zoomVectorEffects.IsImageVelocityActive())
+  {
+    newVelocity += m_zoomVectorEffects.GetImageVelocity(coords);
+  }
+
   if (m_zoomVectorEffects.IsRotateActive())
   {
-    velocity = m_zoomVectorEffects.GetRotatedVelocity(velocity);
+    newVelocity = m_zoomVectorEffects.GetRotatedVelocity(newVelocity);
   }
 
   if (m_zoomVectorEffects.IsTanEffectActive())
   {
-    velocity = m_zoomVectorEffects.GetTanEffectVelocity(sqDistFromZero, velocity);
+    newVelocity = m_zoomVectorEffects.GetTanEffectVelocity(sqDistFromZero, newVelocity);
   }
 
   if (m_zoomVectorEffects.IsNoiseActive())
   {
-    velocity += m_zoomVectorEffects.GetNoiseVelocity();
+    newVelocity += m_zoomVectorEffects.GetNoiseVelocity();
   }
 
   if (m_zoomVectorEffects.IsHypercosOverlayActive())
   {
-    velocity += m_zoomVectorEffects.GetHypercosVelocity(coords);
+    newVelocity += m_zoomVectorEffects.GetHypercosVelocity(coords);
   }
 
   if (m_zoomVectorEffects.IsHorizontalPlaneVelocityActive())
   {
-    velocity.SetX(velocity.GetX() + m_zoomVectorEffects.GetHorizontalPlaneVelocity(coords));
+    newVelocity.SetX(newVelocity.GetX() + m_zoomVectorEffects.GetHorizontalPlaneVelocity(coords));
   }
 
   if (m_zoomVectorEffects.IsVerticalPlaneVelocityActive())
   {
-    velocity.SetY(velocity.GetY() + m_zoomVectorEffects.GetVerticalPlaneVelocity(coords));
+    newVelocity.SetY(newVelocity.GetY() + m_zoomVectorEffects.GetVerticalPlaneVelocity(coords));
   }
 
   /* TODO : Water Mode */
@@ -102,6 +105,8 @@ void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero
     if (ProbabilityOfMInN(1, 2))
       velocity = {-2.0F * xNormalized + velocity.x, -2.0F * yNormalized + velocity.y};
   **/
+
+  return newVelocity;
 }
 
 #if __cplusplus <= 201402L

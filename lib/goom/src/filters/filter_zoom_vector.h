@@ -32,9 +32,10 @@ public:
 private:
   ZoomVectorEffects m_zoomVectorEffects;
 
-  void GetZoomEffectsAdjustedVelocity(float sqDistFromZero,
-                                      const NormalizedCoords& coords,
-                                      NormalizedCoords& velocity) const;
+  [[nodiscard]] auto GetZoomEffectsAdjustedVelocity(float sqDistFromZero,
+                                                    const NormalizedCoords& coords,
+                                                    const NormalizedCoords& velocity) const
+      -> NormalizedCoords;
 };
 
 } // namespace FILTERS

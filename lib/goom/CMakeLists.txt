@@ -35,7 +35,8 @@ add_library(goom
         src/filters/filter_colors_service.cpp
         src/filters/filter_crystal_ball.cpp
         src/filters/filter_hypercos.cpp
-        src/filters/filter_image_displacements.cpp
+        src/filters/filter_image_speed_coeffs.cpp
+        src/filters/filter_image_velocity.cpp
         src/filters/filter_normalized_coords.cpp
         src/filters/filter_planes.cpp
         src/filters/filter_rotation.cpp
@@ -49,6 +50,7 @@ add_library(goom
         src/filters/filter_zoom_vector.cpp
         src/filters/filter_zoom_vector_effects.cpp
         src/filters/image_displacement.cpp
+        src/filters/image_displacement_list.cpp
         src/filters.cpp
         src/flying_stars_fx.cpp
         src/goom_control.cpp

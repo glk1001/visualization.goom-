@@ -81,6 +81,7 @@ struct ZoomFilterEffectsSettings
 
   V2dInt zoomMidPoint; // milieu de l'effet
 
+  bool imageVelocityEffect;
   bool tanEffect;
   bool planeEffect;
 

@@ -2,7 +2,7 @@
 #define VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
 
 #include "filter_hypercos.h"
-#include "filter_image_displacements.h"
+#include "filter_image_velocity.h"
 #include "filter_normalized_coords.h"
 #include "filter_planes.h"
 #include "filter_rotation.h"
@@ -37,14 +37,14 @@ public:
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
-  [[nodiscard]] auto GetCoordsDisplacement(const NormalizedCoords& coords) const
-      -> NormalizedCoords;
-
   [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
                                            const NormalizedCoords& coords) const
       -> NormalizedCoords;
   [[nodiscard]] static auto GetCleanedVelocity(const NormalizedCoords& velocity)
       -> NormalizedCoords;
+
+  [[nodiscard]] auto IsImageVelocityActive() const -> bool;
+  [[nodiscard]] auto GetImageVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 
   [[nodiscard]] auto IsRotateActive() const -> bool;
   [[nodiscard]] auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
@@ -72,7 +72,7 @@ private:
   const uint32_t m_screenWidth;
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
 
-  ImageDisplacements m_imageDisplacements;
+  ImageVelocity m_imageVelocity;
 
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
@@ -84,6 +84,7 @@ private:
   const std::unique_ptr<Hypercos> m_hypercos;
   const std::unique_ptr<Planes> m_planes;
 
+  void SetRandomImageVelocityEffects();
   void SetHypercosOverlaySettings();
   void SetRandomPlaneEffects();
 
@@ -95,6 +96,7 @@ private:
   [[nodiscard]] auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetImageVelocityNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetRotateNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetNoiseNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetTanEffectNameValueParams() const -> UTILS::NameValuePairs;
@@ -144,6 +146,17 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) cons
     return m_filterEffectsSettings->maxSpeedCoeff;
   }
   return speedCoeff;
+}
+
+inline auto ZoomVectorEffects::IsImageVelocityActive() const -> bool
+{
+  return m_filterEffectsSettings->imageVelocityEffect;
+}
+
+inline auto ZoomVectorEffects::GetImageVelocity(const NormalizedCoords& coords) const
+    -> NormalizedCoords
+{
+  return NormalizedCoords{m_imageVelocity.GetVelocity(coords)};
 }
 
 inline auto ZoomVectorEffects::IsRotateActive() const -> bool

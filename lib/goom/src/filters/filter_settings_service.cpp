@@ -4,7 +4,7 @@
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
 #include "filter_crystal_ball.h"
-#include "filter_image_displacements.h"
+#include "filter_image_speed_coeffs.h"
 #include "filter_scrunch.h"
 #include "filter_settings.h"
 #include "filter_simple_speed_coefficients_effect.h"
@@ -109,7 +109,7 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
       }
     },
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,
-      {"Image Displacement",  std::make_shared<ImageDisplacements>(resourcesDirectory),
+      {"Image Displacement",  std::make_shared<ImageSpeedCoefficients>(resourcesDirectory),
         /*.rotateProbability = */PROB_ZERO,
         Weights<Hyp>{{{Hyp::NONE, 100}, {Hyp::MODE0, 1}, {Hyp::MODE1, 5}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}}}
       }
@@ -255,6 +255,7 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                       false,
                       false,
                       false,
+                      false,
                       1.0F},
                      {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
                      {false, Pixel::BLACK}}
@@ -353,6 +354,7 @@ void FilterSettingsService::SetDefaultSettings()
 
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
+  m_filterSettings.filterEffectsSettings.imageVelocityEffect = ProbabilityOfMInN(1, 10);
   m_filterSettings.filterEffectsSettings.tanEffect = ProbabilityOfMInN(1, 10);
   m_filterSettings.filterEffectsSettings.planeEffect = ProbabilityOfMInN(8, 10);
   m_filterSettings.filterEffectsSettings.noisify = false;
