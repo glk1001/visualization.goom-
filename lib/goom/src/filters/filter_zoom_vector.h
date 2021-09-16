@@ -20,7 +20,7 @@ namespace FILTERS
 class FilterZoomVector : public IZoomVector
 {
 public:
-  explicit FilterZoomVector(uint32_t screenWidth) noexcept;
+  explicit FilterZoomVector(uint32_t screenWidth, const std::string& resourcesDirectory) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) override;
 

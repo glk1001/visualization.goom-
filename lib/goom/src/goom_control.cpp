@@ -71,7 +71,7 @@
 #include <goomutils/colormaps.h>
 #include <vector>
 
-//#define SHOW_STATE_TEXT_ON_SCREEN
+#define SHOW_STATE_TEXT_ON_SCREEN
 
 namespace GOOM
 {

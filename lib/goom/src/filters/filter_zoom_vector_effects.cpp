@@ -30,11 +30,19 @@ using UTILS::m_half_pi;
 using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 
-ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth) noexcept
+ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
+                                     const std::string& resourcesDirectory) noexcept
   : m_screenWidth{screenWidth},
+    m_imageDisplacements{resourcesDirectory},
     m_hypercos{std::make_unique<Hypercos>()},
     m_planes{std::make_unique<Planes>()}
 {
+}
+
+auto ZoomVectorEffects::GetCoordsDisplacement(const NormalizedCoords& coords) const
+    -> NormalizedCoords
+{
+  return NormalizedCoords{m_imageDisplacements.GetSpeedCoefficients(V2dFlt{}, 0.0F, coords)};
 }
 
 auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> NameValuePairs
@@ -63,6 +71,7 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filte
 
   m_filterEffectsSettings->speedCoefficientsEffect->SetRandomParams();
 
+  m_imageDisplacements.SetRandomParams();
   SetHypercosOverlaySettings();
   SetRandomPlaneEffects();
 }

@@ -2,6 +2,7 @@
 #define VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
 
 #include "filter_hypercos.h"
+#include "filter_image_displacements.h"
 #include "filter_normalized_coords.h"
 #include "filter_planes.h"
 #include "filter_rotation.h"
@@ -13,6 +14,7 @@
 
 #include <cmath>
 #include <memory>
+#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -31,9 +33,12 @@ class ZoomVectorEffects
 {
 #pragma GCC diagnostic pop
 public:
-  explicit ZoomVectorEffects(uint32_t screenWidth) noexcept;
+  explicit ZoomVectorEffects(uint32_t screenWidth, const std::string& resourcesDirectory) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
+
+  [[nodiscard]] auto GetCoordsDisplacement(const NormalizedCoords& coords) const
+      -> NormalizedCoords;
 
   [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
                                            const NormalizedCoords& coords) const
@@ -66,6 +71,8 @@ public:
 private:
   const uint32_t m_screenWidth;
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
+
+  ImageDisplacements m_imageDisplacements;
 
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;

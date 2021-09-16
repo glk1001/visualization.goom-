@@ -24,6 +24,7 @@ using GOOM::UTILS::Parallel;
 
 constexpr size_t WIDTH = 120;
 constexpr size_t HEIGHT = 70;
+constexpr const char* RESOURCES_DIRECTORY = "";
 
 const V2dInt MID_PT = {static_cast<int32_t>(WIDTH) / 2, static_cast<int32_t>(HEIGHT) / 2};
 const V2dInt CONST_ZOOM_VECTOR_COORDS_1 = {16, 40};
@@ -39,7 +40,7 @@ class TestZoomVector : public FilterZoomVector
 {
 public:
   explicit TestZoomVector(const bool returnConst) noexcept
-    : FilterZoomVector{WIDTH}, m_ReturnConst{returnConst}
+    : FilterZoomVector{WIDTH, RESOURCES_DIRECTORY}, m_ReturnConst{returnConst}
   {
   }
 

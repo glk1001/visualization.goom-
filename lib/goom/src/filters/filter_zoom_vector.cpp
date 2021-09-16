@@ -21,8 +21,9 @@ namespace GOOM::FILTERS
 using UTILS::NameValuePairs;
 using UTILS::SqDistance;
 
-FilterZoomVector::FilterZoomVector(const uint32_t screenWidth) noexcept
-  : m_zoomVectorEffects{screenWidth}
+FilterZoomVector::FilterZoomVector(const uint32_t screenWidth,
+                                   const std::string& resourcesDirectory) noexcept
+  : m_zoomVectorEffects{screenWidth, resourcesDirectory}
 {
 }
 
@@ -42,13 +43,21 @@ auto FilterZoomVector::GetNameValueParams(const std::string& paramGroup) const -
 
 auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords
 {
-  const float sqDistFromZero = SqDistance(coords.GetX(), coords.GetY());
+  const NormalizedCoords dispCoords = m_zoomVectorEffects.GetCoordsDisplacement(coords);
+  NormalizedCoords velocity{V2dFlt{}};
+  const float sqDistFromZero = SqDistance(dispCoords.GetX(), dispCoords.GetY());
+  GetZoomEffectsAdjustedVelocity(sqDistFromZero, dispCoords, velocity);
+  return dispCoords - ZoomVectorEffects::GetCleanedVelocity(velocity);
 
-  NormalizedCoords velocity = m_zoomVectorEffects.GetSpeedCoeffVelocity(sqDistFromZero, coords);
+  /**
+  const float sqDistFromZero = SqDistance(dispCoords.GetX(), dispCoords.GetY());
 
-  GetZoomEffectsAdjustedVelocity(sqDistFromZero, coords, velocity);
+  NormalizedCoords velocity = m_zoomVectorEffects.GetSpeedCoeffVelocity(sqDistFromZero, dispCoords);
 
-  return coords - ZoomVectorEffects::GetCleanedVelocity(velocity);
+  GetZoomEffectsAdjustedVelocity(sqDistFromZero, dispCoords, velocity);
+
+  return dispCoords - ZoomVectorEffects::GetCleanedVelocity(velocity);
+   **/
 }
 
 void FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero,

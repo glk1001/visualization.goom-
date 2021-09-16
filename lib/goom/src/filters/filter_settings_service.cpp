@@ -265,7 +265,7 @@ auto FilterSettingsService::GetFilterBuffersService() -> std::unique_ptr<FilterB
 {
   return std::make_unique<FilterBuffersService>(
       m_parallel, m_goomInfo,
-      std::make_unique<FilterZoomVector>(m_goomInfo->GetScreenInfo().width));
+      std::make_unique<FilterZoomVector>(m_goomInfo->GetScreenInfo().width, m_resourcesDirectory));
 }
 
 auto FilterSettingsService::GetFilterColorsService() -> std::unique_ptr<FilterColorsService>
