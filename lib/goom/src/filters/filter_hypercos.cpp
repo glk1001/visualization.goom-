@@ -231,6 +231,12 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords,
 auto Hypercos::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
   const std::string fullParamGroup = GetFullParamGroup({paramGroup, "hypercos"});
+
+  if (m_params.overlay == HypercosOverlay::NONE)
+  {
+    return {GetPair(fullParamGroup, "overlay", std::string{"None"})};
+  }
+
   return {
       GetPair(fullParamGroup, "overlay", static_cast<uint32_t>(m_params.overlay)),
       GetPair(fullParamGroup, "effect", static_cast<uint32_t>(m_params.effect)),

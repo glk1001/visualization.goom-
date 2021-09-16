@@ -8,6 +8,7 @@
 #include "filter_rotation.h"
 #include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
+#include "filter_tan_effect.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/name_value_pairs.h"
 #include "v2d.h"
@@ -83,10 +84,12 @@ private:
 
   const std::unique_ptr<Hypercos> m_hypercos;
   const std::unique_ptr<Planes> m_planes;
+  const std::unique_ptr<TanEffect> m_tanEffect;
 
   void SetRandomImageVelocityEffects();
   void SetHypercosOverlaySettings();
   void SetRandomPlaneEffects();
+  void SetRandomTanEffects();
 
   [[nodiscard]] static auto GetMinVelocityVal(float velocityVal) -> float;
   [[nodiscard]] auto GetXYSpeedCoefficients(float sqDistFromZero,
@@ -175,14 +178,56 @@ inline auto ZoomVectorEffects::IsNoiseActive() const -> bool
   return m_filterEffectsSettings->noisify;
 }
 
+inline auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
+{
+  const float amp =
+      (0.5F * m_filterEffectsSettings->noiseFactor) / UTILS::GetRandInRange(NOISE_MIN, NOISE_MAX);
+  return {UTILS::GetRandInRange(-amp, +amp), UTILS::GetRandInRange(-amp, +amp)};
+}
+
 inline auto ZoomVectorEffects::IsTanEffectActive() const -> bool
 {
   return m_filterEffectsSettings->tanEffect;
 }
 
+inline auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
+                                                    const NormalizedCoords& velocity) const
+    -> NormalizedCoords
+{
+  return m_tanEffect->GetVelocity(sqDistFromZero, velocity);
+}
+
 inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
 {
   return m_filterEffectsSettings->hypercosOverlay != HypercosOverlay::NONE;
+}
+
+inline auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords) const
+    -> NormalizedCoords
+{
+  return m_hypercos->GetVelocity(coords);
+}
+
+inline auto ZoomVectorEffects::IsHorizontalPlaneVelocityActive() const -> bool
+{
+  return m_planes->IsHorizontalPlaneVelocityActive();
+}
+
+inline auto ZoomVectorEffects::GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const
+    -> float
+{
+  return m_planes->GetHorizontalPlaneVelocity(coords);
+}
+
+inline auto ZoomVectorEffects::IsVerticalPlaneVelocityActive() const -> bool
+{
+  return m_planes->IsVerticalPlaneVelocityActive();
+}
+
+inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords) const
+    -> float
+{
+  return m_planes->GetVerticalPlaneVelocity(coords);
 }
 
 #if __cplusplus <= 201402L

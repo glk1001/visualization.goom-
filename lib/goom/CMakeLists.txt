@@ -45,6 +45,7 @@ add_library(goom
         src/filters/filter_simple_speed_coefficients_effect.h
         src/filters/filter_speed_coefficients_effect.h
         src/filters/filter_speedway.cpp
+        src/filters/filter_tan_effect.cpp
         src/filters/filter_wave.cpp
         src/filters/filter_y_only.cpp
         src/filters/filter_zoom_vector.cpp

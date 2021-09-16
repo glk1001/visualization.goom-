@@ -4,6 +4,7 @@
 #include "filter_normalized_coords.h"
 #include "filter_planes.h"
 #include "filter_settings.h"
+#include "filter_tan_effect.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/name_value_pairs.h"
@@ -35,7 +36,8 @@ ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
   : m_screenWidth{screenWidth},
     m_imageVelocity{resourcesDirectory},
     m_hypercos{std::make_unique<Hypercos>()},
-    m_planes{std::make_unique<Planes>()}
+    m_planes{std::make_unique<Planes>()},
+    m_tanEffect{std::make_unique<TanEffect>()}
 {
 }
 
@@ -48,6 +50,7 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filte
   SetRandomImageVelocityEffects();
   SetHypercosOverlaySettings();
   SetRandomPlaneEffects();
+  SetRandomTanEffects();
 }
 
 inline void ZoomVectorEffects::SetRandomImageVelocityEffects()
@@ -63,6 +66,14 @@ inline void ZoomVectorEffects::SetRandomPlaneEffects()
   if (m_filterEffectsSettings->planeEffect)
   {
     m_planes->SetRandomParams(m_filterEffectsSettings->zoomMidPoint, m_screenWidth);
+  }
+}
+
+inline void ZoomVectorEffects::SetRandomTanEffects()
+{
+  if (m_filterEffectsSettings->tanEffect)
+  {
+    m_tanEffect->SetRandomParams();
   }
 }
 
@@ -103,60 +114,6 @@ inline auto ZoomVectorEffects::GetMinVelocityVal(const float velocityVal) -> flo
   return velocityVal;
 }
 
-auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords) const
-    -> NormalizedCoords
-{
-  return m_hypercos->GetVelocity(coords);
-}
-
-auto ZoomVectorEffects::IsHorizontalPlaneVelocityActive() const -> bool
-{
-  return m_planes->IsHorizontalPlaneVelocityActive();
-}
-
-auto ZoomVectorEffects::GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float
-{
-  return m_planes->GetHorizontalPlaneVelocity(coords);
-}
-
-auto ZoomVectorEffects::IsVerticalPlaneVelocityActive() const -> bool
-{
-  return m_planes->IsVerticalPlaneVelocityActive();
-}
-
-auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float
-{
-  return m_planes->GetVerticalPlaneVelocity(coords);
-}
-
-inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
-{
-  NameValuePairs nameValuePairs{
-      GetPair(PARAM_GROUP, "planeEffect", m_filterEffectsSettings->planeEffect)};
-  if (m_filterEffectsSettings->planeEffect)
-  {
-    MoveNameValuePairs(m_planes->GetNameValueParams(PARAM_GROUP), nameValuePairs);
-  }
-  return nameValuePairs;
-}
-
-auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
-{
-  const float amp =
-      (0.5F * m_filterEffectsSettings->noiseFactor) / GetRandInRange(NOISE_MIN, NOISE_MAX);
-  return {GetRandInRange(-amp, +amp), GetRandInRange(-amp, +amp)};
-}
-
-auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
-                                             const NormalizedCoords& velocity) const
-    -> NormalizedCoords
-{
-  const float tanArg =
-      stdnew::clamp(std::fmod(sqDistFromZero, m_half_pi), -0.75F * m_half_pi, 0.75F * m_half_pi);
-  const float tanSqDist = std::tan(tanArg);
-  return {tanSqDist * velocity.GetX(), tanSqDist * velocity.GetY()};
-}
-
 auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{};
@@ -183,6 +140,17 @@ inline auto ZoomVectorEffects::GetHypercosNameValueParams() const -> NameValuePa
   return m_hypercos->GetNameValueParams(PARAM_GROUP);
 }
 
+inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
+{
+  NameValuePairs nameValuePairs{
+      GetPair(PARAM_GROUP, "planeEffect", m_filterEffectsSettings->planeEffect)};
+  if (m_filterEffectsSettings->planeEffect)
+  {
+    MoveNameValuePairs(m_planes->GetNameValueParams(PARAM_GROUP), nameValuePairs);
+  }
+  return nameValuePairs;
+}
+
 inline auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 {
   if (m_filterEffectsSettings->noisify)
@@ -197,9 +165,13 @@ inline auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 
 inline auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValuePairs
 {
-  return {
-      GetPair(PARAM_GROUP, "tanEffect", m_filterEffectsSettings->tanEffect),
-  };
+  NameValuePairs nameValuePairs{
+      GetPair(PARAM_GROUP, "tanEffect", m_filterEffectsSettings->tanEffect)};
+  if (m_filterEffectsSettings->tanEffect)
+  {
+    MoveNameValuePairs(m_tanEffect->GetNameValueParams(PARAM_GROUP), nameValuePairs);
+  }
+  return nameValuePairs;
 }
 
 inline auto ZoomVectorEffects::GetImageVelocityNameValueParams() const -> NameValuePairs
