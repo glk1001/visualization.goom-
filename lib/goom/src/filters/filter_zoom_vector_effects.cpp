@@ -153,7 +153,7 @@ inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
 
 inline auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 {
-  if (m_filterEffectsSettings->noisify)
+  if (!m_filterEffectsSettings->noisify)
   {
     return {GetPair(PARAM_GROUP, "noise", m_filterEffectsSettings->noisify)};
   }

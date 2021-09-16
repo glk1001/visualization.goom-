@@ -16,6 +16,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
+using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::GetRandInRange;
 using UTILS::NameValuePairs;
@@ -44,10 +45,11 @@ void TanEffect::SetRandomParams()
 
 auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
+  const std::string fullParamGroup = GetFullParamGroup({paramGroup, "tan effect"});
   return {
-      GetPair(paramGroup, "x amplitude", m_params.xAmplitude),
-      GetPair(paramGroup, "y amplitude", m_params.yAmplitude),
-      GetPair(paramGroup, "limiting factor", m_params.limitingFactor),
+      GetPair(fullParamGroup, "x amplitude", m_params.xAmplitude),
+      GetPair(fullParamGroup, "y amplitude", m_params.yAmplitude),
+      GetPair(fullParamGroup, "limiting factor", m_params.limitingFactor),
   };
 }
 

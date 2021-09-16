@@ -5,6 +5,7 @@
 
 #undef NDEBUG
 #include <cassert>
+#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -16,6 +17,7 @@ namespace GOOM::FILTERS
 {
 #endif
 
+using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::GetRandInRange;
 using UTILS::NameValuePairs;
@@ -72,13 +74,19 @@ void Rotation::SetRandomParams()
 
 auto Rotation::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
+  if (!IsActive())
+  {
+    return {GetPair(paramGroup, "rotation", std::string{"None"})};
+  }
+
+  const std::string fullParamGroup = GetFullParamGroup({paramGroup, "rotate"});
   return {
-      GetPair(paramGroup, "x rotate speed", m_params.xRotateSpeed),
-      GetPair(paramGroup, "y rotate speed", m_params.yRotateSpeed),
-      GetPair(paramGroup, "xx factor", m_params.xxFactor),
-      GetPair(paramGroup, "xy factor", m_params.xyFactor),
-      GetPair(paramGroup, "yx factor", m_params.yxFactor),
-      GetPair(paramGroup, "yy factor", m_params.yyFactor),
+      GetPair(fullParamGroup, "x speed", m_params.xRotateSpeed),
+      GetPair(fullParamGroup, "y speed", m_params.yRotateSpeed),
+      GetPair(fullParamGroup, "xx factor", m_params.xxFactor),
+      GetPair(fullParamGroup, "xy factor", m_params.xyFactor),
+      GetPair(fullParamGroup, "yx factor", m_params.yxFactor),
+      GetPair(fullParamGroup, "yy factor", m_params.yyFactor),
   };
 }
 
