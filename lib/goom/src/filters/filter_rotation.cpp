@@ -31,7 +31,8 @@ constexpr float PROB_EQUAL_XY_ROTATION = 0.8F;
 constexpr float DEFAULT_FACTOR = 1.0F;
 constexpr NumberRange<float> FACTOR_RANGE = {0.3F, 1.0F};
 constexpr float PROB_NO_FACTORS = 0.5F;
-constexpr float PROB_EQUAL_FACTORS = 0.8F;
+constexpr float PROB_EQUAL_XY_FACTORS = 0.8F;
+constexpr float PROB_BALANCED_FACTORS = 0.98F;
 
 
 Rotation::Rotation() noexcept
@@ -54,21 +55,25 @@ void Rotation::SetRandomParams()
     m_params.yxFactor = 1.0F;
     m_params.yyFactor = 1.0F;
   }
+  else if (ProbabilityOf(PROB_BALANCED_FACTORS))
+  {
+    m_params.xxFactor = GetRandInRange(FACTOR_RANGE);
+    m_params.xyFactor = 1.0F - m_params.xxFactor;
+    m_params.yxFactor = GetRandInRange(FACTOR_RANGE);
+    m_params.yyFactor = 1.0F - m_params.yxFactor;
+  }
   else
   {
     m_params.xxFactor = GetRandInRange(FACTOR_RANGE);
     m_params.xyFactor = GetRandInRange(FACTOR_RANGE);
+    m_params.yxFactor = GetRandInRange(FACTOR_RANGE);
+    m_params.yyFactor = GetRandInRange(FACTOR_RANGE);
+  }
 
-    if (ProbabilityOf(PROB_EQUAL_FACTORS))
-    {
-      m_params.yxFactor = m_params.xxFactor;
-      m_params.yyFactor = m_params.xyFactor;
-    }
-    else
-    {
-      m_params.yxFactor = GetRandInRange(FACTOR_RANGE);
-      m_params.yyFactor = GetRandInRange(FACTOR_RANGE);
-    }
+  if (ProbabilityOf(PROB_EQUAL_XY_FACTORS))
+  {
+    m_params.yxFactor = m_params.xxFactor;
+    m_params.yyFactor = m_params.xyFactor;
   }
 }
 
