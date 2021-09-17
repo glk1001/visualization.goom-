@@ -133,7 +133,7 @@ private:
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
-  [[nodiscard]] auto GetRotation() -> std::shared_ptr<Rotation>;
+  [[nodiscard]] static auto GetRotation() -> std::shared_ptr<Rotation>;
 
   void SetDefaultSettings();
   void SetFilterModeSettings();

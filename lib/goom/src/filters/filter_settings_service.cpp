@@ -65,101 +65,151 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
 {
   using Hyp = HypercosOverlay;
 
+  const auto amuletRotateProb     = PROB_HIGH;
+  const auto crysBall0RotateProb  = PROB_HIGH;
+  const auto crysBall1RotateProb  = PROB_HIGH;
+  const auto hypercos0RotateProb  = PROB_LOW;
+  const auto hypercos1RotateProb  = PROB_LOW;
+  const auto hypercos2RotateProb  = PROB_LOW;
+  const auto hypercos3RotateProb  = PROB_LOW;
+  const auto imageDisplRotateProb = PROB_ZERO;
+  const auto normalRotateProb     = PROB_ZERO;
+  const auto scrunchRotateProb    = PROB_HALF;
+  const auto speedway0RotateProb  = PROB_LOW;
+  const auto speedway1RotateProb  = PROB_LOW;
+  const auto waterRotateProb      = PROB_ZERO;
+  const auto wave0RotateProb      = PROB_LOW;
+  const auto wave1RotateProb      = PROB_HALF;
+  const auto yOnlyRotateProb      = PROB_HALF;
+
+  const auto amuletWeights     = Weights<Hyp>{{{Hyp::NONE, 20}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto crysBall0Weights  = Weights<Hyp>{{{Hyp::NONE,  5}, {Hyp::MODE0, 10}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto crysBall1Weights  = Weights<Hyp>{{{Hyp::NONE,  5}, {Hyp::MODE0,  1}, {Hyp::MODE1, 99}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto hypercos0Weights  = Weights<Hyp>{{{Hyp::NONE,  0}, {Hyp::MODE0,  1}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0}}};
+  const auto hypercos1Weights  = Weights<Hyp>{{{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  1}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0}}};
+  const auto hypercos2Weights  = Weights<Hyp>{{{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0}}};
+  const auto hypercos3Weights  = Weights<Hyp>{{{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  1}}};
+  const auto imageDisplWeights = Weights<Hyp>{{{Hyp::NONE, 99}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto normalWeights     = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto scrunchWeights    = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto speedway0Weights  = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto speedway1Weights  = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto waterWeights      = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto wave0Weights      = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto wave1Weights      = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto yOnlyWeights      = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+
   return {
-    { ZoomFilterMode::AMULET_MODE,
-      {"Amulet", std::make_shared<Amulet>(),
-        /*.rotateProbability = */PROB_HIGH,
-        Weights<Hyp>{{ {Hyp::NONE, 20}, {Hyp::MODE0, 1}, {Hyp::MODE1, 5}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1} }}
+    { ZoomFilterMode::AMULET_MODE, {
+        "Amulet",
+        std::make_shared<Amulet>(),
+        amuletRotateProb,
+        amuletWeights
       }
     },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE0,
-      {"Crystal Ball Mode 0", std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0),
-        /*.rotateProbability = */PROB_HIGH,
-        Weights<Hyp>{{ {Hyp::NONE, 5}, {Hyp::MODE0, 10}, {Hyp::MODE1, 1}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1} }}
+    { ZoomFilterMode::CRYSTAL_BALL_MODE0, {
+        "Crystal Ball Mode 0", 
+        std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0),
+        crysBall0RotateProb,
+        crysBall0Weights
       }
     },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE1,
-      {"Crystal Ball Mode 1", std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1),
-        /*.rotateProbability = */PROB_HIGH,
-        Weights<Hyp>{{ {Hyp::NONE, 5}, {Hyp::MODE0, 1}, {Hyp::MODE1, 100}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1} }}
+    { ZoomFilterMode::CRYSTAL_BALL_MODE1, {
+        "Crystal Ball Mode 1", 
+        std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1),
+        crysBall1RotateProb,
+        crysBall1Weights
       }
     },
-    { ZoomFilterMode::HYPERCOS_MODE0,
-      {"Hypercos Mode 0",  std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        /*.rotateProbability = */PROB_LOW,
-        Weights<Hyp>{{ {Hyp::NONE, 0}, {Hyp::MODE0, 1}, {Hyp::MODE1, 0}, {Hyp::MODE2, 0}, {Hyp::MODE3, 0} }}
+    { ZoomFilterMode::HYPERCOS_MODE0, {
+        "Hypercos Mode 0",  
+        std::make_shared<SimpleSpeedCoefficientsEffect>(),
+        hypercos0RotateProb, 
+        hypercos0Weights
       }
     },
-    { ZoomFilterMode::HYPERCOS_MODE1,
-      {"Hypercos Mode 1",  std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        /*.rotateProbability = */PROB_LOW,
-        Weights<Hyp>{{{Hyp::NONE, 0}, {Hyp::MODE0, 0}, {Hyp::MODE1, 1}, {Hyp::MODE2, 0}, {Hyp::MODE3, 0}}}
+    { ZoomFilterMode::HYPERCOS_MODE1, {
+        "Hypercos Mode 1",  
+        std::make_shared<SimpleSpeedCoefficientsEffect>(),
+        hypercos1RotateProb, 
+        hypercos1Weights
       }
     },
-    { ZoomFilterMode::HYPERCOS_MODE2,
-      {"Hypercos Mode 2",  std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        /*.rotateProbability = */PROB_LOW,
-        Weights<Hyp>{{{Hyp::NONE, 0}, {Hyp::MODE0, 0}, {Hyp::MODE1, 0}, {Hyp::MODE2, 1}, {Hyp::MODE3, 0}}}
+    { ZoomFilterMode::HYPERCOS_MODE2, {
+        "Hypercos Mode 2",  
+        std::make_shared<SimpleSpeedCoefficientsEffect>(),
+        hypercos2RotateProb, 
+        hypercos2Weights
       }
     },
-    { ZoomFilterMode::HYPERCOS_MODE3,
-      {"Hypercos Mode 3",  std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        /*.rotateProbability = */PROB_LOW,
-        Weights<Hyp>{{{Hyp::NONE, 0}, {Hyp::MODE0, 0}, {Hyp::MODE1, 0}, {Hyp::MODE2, 0}, {Hyp::MODE3, 1}}}
+    { ZoomFilterMode::HYPERCOS_MODE3, {
+        "Hypercos Mode 3",  
+        std::make_shared<SimpleSpeedCoefficientsEffect>(),
+        hypercos3RotateProb, 
+        hypercos3Weights
       }
     },
-    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,
-      {"Image Displacement",  std::make_shared<ImageSpeedCoefficients>(resourcesDirectory),
-        /*.rotateProbability = */PROB_ZERO,
-        Weights<Hyp>{{{Hyp::NONE, 100}, {Hyp::MODE0, 1}, {Hyp::MODE1, 5}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}}}
+    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, {
+        "Image Displacement",  
+        std::make_shared<ImageSpeedCoefficients>(resourcesDirectory),
+        imageDisplRotateProb, 
+        imageDisplWeights
       }
     },
-    { ZoomFilterMode::NORMAL_MODE,
-      {"Normal",  std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        /*.rotateProbability = */PROB_ZERO,
-        Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0, 5}, {Hyp::MODE1, 1}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}}}
+    { ZoomFilterMode::NORMAL_MODE, {
+        "Normal",  
+        std::make_shared<SimpleSpeedCoefficientsEffect>(),
+        normalRotateProb, 
+        normalWeights
       }
     },
-    { ZoomFilterMode::SCRUNCH_MODE,
-      {"Scrunch",  std::make_shared<Scrunch>(),
-        /*.rotateProbability = */PROB_HALF,
-        Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0, 1}, {Hyp::MODE1, 5}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}}}
+    { ZoomFilterMode::SCRUNCH_MODE, {
+        "Scrunch",  
+        std::make_shared<Scrunch>(),
+        scrunchRotateProb, 
+        scrunchWeights
       }
     },
-    { ZoomFilterMode::SPEEDWAY_MODE0,
-      {"Speedway Mode 0",  std::make_shared<Speedway>(Speedway::Modes::MODE0),
-        /*.rotateProbability = */PROB_LOW,
-        Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0, 5}, {Hyp::MODE1, 1}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}}}
+    { ZoomFilterMode::SPEEDWAY_MODE0, {
+        "Speedway Mode 0",  
+        std::make_shared<Speedway>(Speedway::Modes::MODE0),
+        speedway0RotateProb, 
+        speedway0Weights
       }
     },
-    { ZoomFilterMode::SPEEDWAY_MODE1,
-      {"Speedway Mode 1",  std::make_shared<Speedway>(Speedway::Modes::MODE1),
-        /*.rotateProbability = */PROB_LOW,
-        Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0, 5}, {Hyp::MODE1, 1}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}}}
+    { ZoomFilterMode::SPEEDWAY_MODE1, {
+        "Speedway Mode 1",  
+        std::make_shared<Speedway>(Speedway::Modes::MODE1),
+        speedway1RotateProb, 
+        speedway1Weights
       }
     },
-    { ZoomFilterMode::WAVE_MODE0,
-      {"Wave Mode 0",  std::make_shared<Wave>(Wave::Modes::MODE0),
-        /*.rotateProbability = */PROB_HIGH,
-        Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0, 5}, {Hyp::MODE1, 1}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}} }
+    { ZoomFilterMode::WATER_MODE, {
+        "Water",  
+        std::make_shared<SimpleSpeedCoefficientsEffect>(),
+        waterRotateProb, 
+        waterWeights
       }
     },
-    { ZoomFilterMode::WAVE_MODE1,
-      {"Wave Mode 1",  std::make_shared<Wave>(Wave::Modes::MODE1),
-        /*.rotateProbability = */PROB_HIGH,
-        Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0, 1}, {Hyp::MODE1, 5}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}}}
+    { ZoomFilterMode::WAVE_MODE0, {
+        "Wave Mode 0",  
+        std::make_shared<Wave>(Wave::Modes::MODE0),
+        wave0RotateProb, 
+        wave0Weights
       }
     },
-    { ZoomFilterMode::WATER_MODE,
-      {"Water",  std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        /*.rotateProbability = */PROB_ZERO,
-        Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0, 1}, {Hyp::MODE1, 1}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}}}
+    { ZoomFilterMode::WAVE_MODE1, {
+        "Wave Mode 1",  
+        std::make_shared<Wave>(Wave::Modes::MODE1),
+        wave1RotateProb, 
+        wave1Weights
       }
     },
-    { ZoomFilterMode::Y_ONLY_MODE,
-      {"Y Only",  std::make_shared<YOnly>(),
-        /*.rotateProbability = */PROB_HALF,
-        Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0, 1}, {Hyp::MODE1, 5}, {Hyp::MODE2, 1}, {Hyp::MODE3, 1}}}
+    { ZoomFilterMode::Y_ONLY_MODE, {
+        "Y Only",  
+        std::make_shared<YOnly>(),
+        yOnlyRotateProb, 
+        yOnlyWeights
       }
     },
   };
@@ -231,7 +281,7 @@ const std::array<FilterSettingsService::FilterEvents::Event,
 
 inline auto FilterSettingsService::FilterEvents::Happens(const FilterEventTypes event) -> bool
 {
-  const Event& weightedEvent = WEIGHTED_EVENTS[static_cast<size_t>(event)];
+  const Event& weightedEvent = WEIGHTED_EVENTS.at(static_cast<size_t>(event));
   return ProbabilityOfMInN(weightedEvent.m, weightedEvent.outOf);
 }
 
