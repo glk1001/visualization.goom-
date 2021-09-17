@@ -296,17 +296,16 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
     m_resourcesDirectory{resourcesDirectory},
     m_filterEvents{spimpl::make_unique_impl<FilterEvents>()},
     m_filterModeData{GetFilterModeData(m_resourcesDirectory)},
-    m_filterSettings{{HypercosOverlay::NONE,
-                      nullptr,
-                      nullptr,
-                      Vitesse{},
+    m_filterSettings{{Vitesse{},
+                      HypercosOverlay::NONE,
                       DEFAULT_MAX_SPEED_COEFF,
+                      nullptr,
+                      nullptr,
                       {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y},
                       false,
                       false,
                       false,
-                      false,
-                      1.0F},
+                      false},
                      {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
                      {false, Pixel::BLACK}}
 {
@@ -407,8 +406,7 @@ void FilterSettingsService::SetDefaultSettings()
   m_filterSettings.filterEffectsSettings.imageVelocityEffect = ProbabilityOfMInN(1, 10);
   m_filterSettings.filterEffectsSettings.tanEffect = ProbabilityOfMInN(1, 10);
   m_filterSettings.filterEffectsSettings.planeEffect = ProbabilityOfMInN(8, 10);
-  m_filterSettings.filterEffectsSettings.noisify = false;
-  m_filterSettings.filterEffectsSettings.noiseFactor = 1.0F;
+  m_filterSettings.filterEffectsSettings.noiseEffect = false;
 
   m_filterSettings.filterColorSettings.blockyWavy = false;
   m_filterSettings.filterColorSettings.clippedColor = Pixel::BLACK;

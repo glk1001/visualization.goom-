@@ -57,8 +57,7 @@ public:
 
   void ChangeMilieu();
   void SetMiddlePoints();
-  void SetNoisifySetting(bool value);
-  void SetNoiseFactorSetting(float value);
+  void SetNoise(bool value);
   void SetBlockyWavySetting(bool value);
   void SetRotateToZero();
   void MultiplyRotateSetting(float factor);
@@ -203,24 +202,14 @@ inline void FilterSettingsService::SetDefaultFilterSettings(const ZoomFilterMode
   SetDefaultSettings();
 }
 
-inline void FilterSettingsService::SetNoisifySetting(const bool value)
+inline void FilterSettingsService::SetNoise(const bool value)
 {
-  if (m_filterSettings.filterEffectsSettings.noisify == value)
+  if (m_filterSettings.filterEffectsSettings.noiseEffect == value)
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.noisify = value;
-}
-
-inline void FilterSettingsService::SetNoiseFactorSetting(const float value)
-{
-  if (UTILS::floats_equal(m_filterSettings.filterEffectsSettings.noiseFactor, value))
-  {
-    return;
-  }
-  m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.noiseFactor = value;
+  m_filterSettings.filterEffectsSettings.noiseEffect = value;
 }
 
 inline void FilterSettingsService::SetBlockyWavySetting(const bool value)

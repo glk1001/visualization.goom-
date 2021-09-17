@@ -3,18 +3,16 @@
 
 #include "filter_hypercos.h"
 #include "filter_image_velocity.h"
+#include "filter_noise.h"
 #include "filter_normalized_coords.h"
 #include "filter_planes.h"
 #include "filter_rotation.h"
 #include "filter_settings.h"
 #include "filter_speed_coefficients_effect.h"
 #include "filter_tan_effect.h"
-#include "goomutils/mathutils.h"
 #include "goomutils/name_value_pairs.h"
 #include "v2d.h"
 
-#include <cmath>
-#include <memory>
 #include <string>
 
 #if __cplusplus <= 201402L
@@ -74,20 +72,17 @@ private:
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
 
   ImageVelocity m_imageVelocity;
-
-  // For noise amplitude, take the reciprocal of these.
-  static constexpr float NOISE_MIN = 40.0F;
-  static constexpr float NOISE_MAX = 120.0F;
+  Noise m_noise{};
+  Hypercos m_hypercos{};
+  Planes m_planes{};
+  TanEffect m_tanEffect{};
 
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
   static constexpr float MIN_SPEED_COEFF = -4.01F;
 
-  const std::unique_ptr<Hypercos> m_hypercos;
-  const std::unique_ptr<Planes> m_planes;
-  const std::unique_ptr<TanEffect> m_tanEffect;
-
+  void SetNoiseSettings();
   void SetRandomImageVelocityEffects();
-  void SetHypercosOverlaySettings();
+  void SetRandomHypercosOverlayEffects();
   void SetRandomPlaneEffects();
   void SetRandomTanEffects();
 
@@ -98,7 +93,7 @@ private:
   [[nodiscard]] auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
 
-  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetSpeedCoefficientsNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetImageVelocityNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetRotateNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetNoiseNameValueParams() const -> UTILS::NameValuePairs;
@@ -175,14 +170,12 @@ inline auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& veloci
 
 inline auto ZoomVectorEffects::IsNoiseActive() const -> bool
 {
-  return m_filterEffectsSettings->noisify;
+  return m_filterEffectsSettings->noiseEffect;
 }
 
 inline auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
 {
-  const float amp =
-      (0.5F * m_filterEffectsSettings->noiseFactor) / UTILS::GetRandInRange(NOISE_MIN, NOISE_MAX);
-  return {UTILS::GetRandInRange(-amp, +amp), UTILS::GetRandInRange(-amp, +amp)};
+  return m_noise.GetVelocity();
 }
 
 inline auto ZoomVectorEffects::IsTanEffectActive() const -> bool
@@ -194,7 +187,7 @@ inline auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
                                                     const NormalizedCoords& velocity) const
     -> NormalizedCoords
 {
-  return m_tanEffect->GetVelocity(sqDistFromZero, velocity);
+  return m_tanEffect.GetVelocity(sqDistFromZero, velocity);
 }
 
 inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
@@ -205,29 +198,29 @@ inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
 inline auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  return m_hypercos->GetVelocity(coords);
+  return m_hypercos.GetVelocity(coords);
 }
 
 inline auto ZoomVectorEffects::IsHorizontalPlaneVelocityActive() const -> bool
 {
-  return m_planes->IsHorizontalPlaneVelocityActive();
+  return m_planes.IsHorizontalPlaneVelocityActive();
 }
 
 inline auto ZoomVectorEffects::GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const
     -> float
 {
-  return m_planes->GetHorizontalPlaneVelocity(coords);
+  return m_planes.GetHorizontalPlaneVelocity(coords);
 }
 
 inline auto ZoomVectorEffects::IsVerticalPlaneVelocityActive() const -> bool
 {
-  return m_planes->IsVerticalPlaneVelocityActive();
+  return m_planes.IsVerticalPlaneVelocityActive();
 }
 
 inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords) const
     -> float
 {
-  return m_planes->GetVerticalPlaneVelocity(coords);
+  return m_planes.GetVerticalPlaneVelocity(coords);
 }
 
 #if __cplusplus <= 201402L

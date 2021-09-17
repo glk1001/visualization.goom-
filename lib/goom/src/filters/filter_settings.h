@@ -71,22 +71,19 @@ class Rotation;
 
 struct ZoomFilterEffectsSettings
 {
-  HypercosOverlay hypercosOverlay;
-  std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect;
-  std::shared_ptr<Rotation> rotation;
-
   Vitesse vitesse;
+  HypercosOverlay hypercosOverlay;
 
   float maxSpeedCoeff;
+  std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect;
+  std::shared_ptr<Rotation> rotation;
 
   V2dInt zoomMidPoint; // milieu de l'effet
 
   bool imageVelocityEffect;
   bool tanEffect;
   bool planeEffect;
-
-  bool noisify; // ajoute un bruit a la transformation
-  float noiseFactor; // in range [0, 1]
+  bool noiseEffect; // ajoute un bruit a la transformation
 };
 
 struct ZoomFilterSettings

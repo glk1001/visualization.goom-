@@ -37,6 +37,7 @@ add_library(goom
         src/filters/filter_hypercos.cpp
         src/filters/filter_image_speed_coeffs.cpp
         src/filters/filter_image_velocity.cpp
+        src/filters/filter_noise.cpp
         src/filters/filter_normalized_coords.cpp
         src/filters/filter_planes.cpp
         src/filters/filter_rotation.cpp

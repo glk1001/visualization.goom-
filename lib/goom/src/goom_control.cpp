@@ -68,7 +68,6 @@
 #if __cplusplus > 201402L
 #include <variant>
 #endif
-#include <goomutils/colormaps.h>
 #include <vector>
 
 //#define SHOW_STATE_TEXT_ON_SCREEN
@@ -1170,12 +1169,11 @@ void GoomControl::GoomControlImpl::ChangeNoise()
 
   if (m_goomEvent.Happens(GoomEvent::TURN_OFF_NOISE))
   {
-    m_filterSettingsService.SetNoisifySetting(false);
+    m_filterSettingsService.SetNoise(false);
   }
   else
   {
-    m_filterSettingsService.SetNoisifySetting(true);
-    m_filterSettingsService.SetNoiseFactorSetting(GetRandInRange(0.1F, 1.0F));
+    m_filterSettingsService.SetNoise(true);
     m_noiseTimer.ResetToZero();
   }
 }

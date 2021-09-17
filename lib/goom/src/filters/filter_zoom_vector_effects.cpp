@@ -1,17 +1,10 @@
 #include "filter_zoom_vector_effects.h"
 
-#include "filter_hypercos.h"
 #include "filter_normalized_coords.h"
-#include "filter_planes.h"
 #include "filter_settings.h"
-#include "filter_tan_effect.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/mathutils.h"
 #include "goomutils/name_value_pairs.h"
 
-#include <cmath>
 #include <cstdint>
-#include <memory>
 #include <string>
 
 #if __cplusplus <= 201402L
@@ -24,20 +17,13 @@ namespace GOOM::FILTERS
 {
 #endif
 
-using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::GetRandInRange;
-using UTILS::m_half_pi;
 using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const std::string& resourcesDirectory) noexcept
-  : m_screenWidth{screenWidth},
-    m_imageVelocity{resourcesDirectory},
-    m_hypercos{std::make_unique<Hypercos>()},
-    m_planes{std::make_unique<Planes>()},
-    m_tanEffect{std::make_unique<TanEffect>()}
+  : m_screenWidth{screenWidth}, m_imageVelocity{resourcesDirectory}
 {
 }
 
@@ -47,10 +33,19 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filte
 
   m_filterEffectsSettings->speedCoefficientsEffect->SetRandomParams();
 
+  SetNoiseSettings();
   SetRandomImageVelocityEffects();
-  SetHypercosOverlaySettings();
+  SetRandomHypercosOverlayEffects();
   SetRandomPlaneEffects();
   SetRandomTanEffects();
+}
+
+inline void ZoomVectorEffects::SetNoiseSettings()
+{
+  if (m_filterEffectsSettings->noiseEffect)
+  {
+    m_noise.SetRandomParams();
+  }
 }
 
 inline void ZoomVectorEffects::SetRandomImageVelocityEffects()
@@ -65,7 +60,7 @@ inline void ZoomVectorEffects::SetRandomPlaneEffects()
 {
   if (m_filterEffectsSettings->planeEffect)
   {
-    m_planes->SetRandomParams(m_filterEffectsSettings->zoomMidPoint, m_screenWidth);
+    m_planes.SetRandomParams(m_filterEffectsSettings->zoomMidPoint, m_screenWidth);
   }
 }
 
@@ -73,28 +68,28 @@ inline void ZoomVectorEffects::SetRandomTanEffects()
 {
   if (m_filterEffectsSettings->tanEffect)
   {
-    m_tanEffect->SetRandomParams();
+    m_tanEffect.SetRandomParams();
   }
 }
 
-void ZoomVectorEffects::SetHypercosOverlaySettings()
+void ZoomVectorEffects::SetRandomHypercosOverlayEffects()
 {
   switch (m_filterEffectsSettings->hypercosOverlay)
   {
     case HypercosOverlay::NONE:
-      m_hypercos->SetDefaultParams();
+      m_hypercos.SetDefaultParams();
       break;
     case HypercosOverlay::MODE0:
-      m_hypercos->SetMode0RandomParams();
+      m_hypercos.SetMode0RandomParams();
       break;
     case HypercosOverlay::MODE1:
-      m_hypercos->SetMode1RandomParams();
+      m_hypercos.SetMode1RandomParams();
       break;
     case HypercosOverlay::MODE2:
-      m_hypercos->SetMode2RandomParams();
+      m_hypercos.SetMode2RandomParams();
       break;
     case HypercosOverlay::MODE3:
-      m_hypercos->SetMode3RandomParams();
+      m_hypercos.SetMode3RandomParams();
       break;
   }
 }
@@ -124,12 +119,12 @@ auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> NameValuePairs
   MoveNameValuePairs(GetImageVelocityNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetPlaneNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetHypercosNameValueParams(), nameValuePairs);
-  MoveNameValuePairs(GetSpeedCoefficientsEffectNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetSpeedCoefficientsNameValueParams(), nameValuePairs);
 
   return nameValuePairs;
 }
 
-inline auto ZoomVectorEffects::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+inline auto ZoomVectorEffects::GetSpeedCoefficientsNameValueParams() const -> NameValuePairs
 {
   return m_filterEffectsSettings->speedCoefficientsEffect
       ->GetSpeedCoefficientsEffectNameValueParams();
@@ -137,7 +132,7 @@ inline auto ZoomVectorEffects::GetSpeedCoefficientsEffectNameValueParams() const
 
 inline auto ZoomVectorEffects::GetHypercosNameValueParams() const -> NameValuePairs
 {
-  return m_hypercos->GetNameValueParams(PARAM_GROUP);
+  return m_hypercos.GetNameValueParams(PARAM_GROUP);
 }
 
 inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
@@ -146,21 +141,20 @@ inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
       GetPair(PARAM_GROUP, "planeEffect", m_filterEffectsSettings->planeEffect)};
   if (m_filterEffectsSettings->planeEffect)
   {
-    MoveNameValuePairs(m_planes->GetNameValueParams(PARAM_GROUP), nameValuePairs);
+    MoveNameValuePairs(m_planes.GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
   return nameValuePairs;
 }
 
 inline auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 {
-  if (!m_filterEffectsSettings->noisify)
+  NameValuePairs nameValuePairs{
+      GetPair(PARAM_GROUP, "noise", m_filterEffectsSettings->noiseEffect)};
+  if (m_filterEffectsSettings->noiseEffect)
   {
-    return {GetPair(PARAM_GROUP, "noise", m_filterEffectsSettings->noisify)};
+    MoveNameValuePairs(m_noise.GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
-  return {
-      GetPair(PARAM_GROUP, "noise", m_filterEffectsSettings->noisify),
-      GetPair(PARAM_GROUP, "noiseFactor", m_filterEffectsSettings->noiseFactor),
-  };
+  return nameValuePairs;
 }
 
 inline auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValuePairs
@@ -169,7 +163,7 @@ inline auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValueP
       GetPair(PARAM_GROUP, "tanEffect", m_filterEffectsSettings->tanEffect)};
   if (m_filterEffectsSettings->tanEffect)
   {
-    MoveNameValuePairs(m_tanEffect->GetNameValueParams(PARAM_GROUP), nameValuePairs);
+    MoveNameValuePairs(m_tanEffect.GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
   return nameValuePairs;
 }
