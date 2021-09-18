@@ -292,7 +292,7 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                                              const std::string& resourcesDirectory) noexcept
   : m_parallel{parallel},
     m_goomInfo{goomInfo},
-    m_midScreenPoint{m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height / 2},
+    m_screenMidPoint{m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height / 2},
     m_resourcesDirectory{resourcesDirectory},
     m_filterEvents{spimpl::make_unique_impl<FilterEvents>()},
     m_filterModeData{GetFilterModeData(m_resourcesDirectory)},
@@ -301,7 +301,7 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                       DEFAULT_MAX_SPEED_COEFF,
                       nullptr,
                       nullptr,
-                      {DEFAULT_MIDDLE_X, DEFAULT_MIDDLE_Y},
+                      {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
                       false,
                       false,
                       false,
@@ -358,7 +358,6 @@ auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
 void FilterSettingsService::Start()
 {
   SetRandomFilterSettings();
-  SetZoomMiddlePoint();
 }
 
 inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
@@ -376,12 +375,13 @@ void FilterSettingsService::SetRandomSettingsForNewFilterMode()
 {
   SetDefaultSettings();
   SetRandomEffects();
+  SetRandomZoomMidPoint();
   SetFilterModeSettings();
 }
 
 void FilterSettingsService::SetDefaultSettings()
 {
-  m_filterSettings.filterEffectsSettings.zoomMidPoint = m_midScreenPoint;
+  m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
 
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
@@ -450,12 +450,12 @@ void FilterSettingsService::SetMaxSpeedCoeff()
       GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF;
 }
 
-void FilterSettingsService::SetRandomZoomMiddlePoint()
+void FilterSettingsService::SetRandomZoomMidPoint()
 {
   if ((m_filterMode == ZoomFilterMode::WATER_MODE) ||
       (m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::AMULET_MODE))
   {
-    m_filterSettings.filterEffectsSettings.zoomMidPoint = m_midScreenPoint;
+    m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
     return;
   }
 
@@ -463,58 +463,58 @@ void FilterSettingsService::SetRandomZoomMiddlePoint()
        (m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
       m_filterEvents->Happens(FilterEventTypes::CRYSTAL_BALL_IN_MIDDLE))
   {
-    m_filterSettings.filterEffectsSettings.zoomMidPoint = m_midScreenPoint;
+    m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
     return;
     }
     if ((m_filterMode == ZoomFilterMode::WAVE_MODE1) &&
         m_filterEvents->Happens(FilterEventTypes::WAVE_IN_MIDDLE))
     {
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = m_midScreenPoint;
+      m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
       return;
     }
 
   // clang-format off
   // @formatter:off
-  enum class MiddlePointEvents { EVENT1, EVENT2, EVENT3, EVENT4, EVENT5, EVENT6 };
-  static const Weights<MiddlePointEvents> s_middlePointWeights{{
-     { MiddlePointEvents::EVENT1,  3 },
-     { MiddlePointEvents::EVENT2,  2 },
-     { MiddlePointEvents::EVENT3,  2 },
-     { MiddlePointEvents::EVENT4, 18 },
-     { MiddlePointEvents::EVENT5, 10 },
-     { MiddlePointEvents::EVENT6, 10 },
+  enum class ZoomMidPointEvents { EVENT1, EVENT2, EVENT3, EVENT4, EVENT5, EVENT6 };
+  static const Weights<ZoomMidPointEvents> s_zoomMidPointWeights{{
+     { ZoomMidPointEvents::EVENT1,  3 },
+     { ZoomMidPointEvents::EVENT2,  2 },
+     { ZoomMidPointEvents::EVENT3,  2 },
+     { ZoomMidPointEvents::EVENT4, 18 },
+     { ZoomMidPointEvents::EVENT5, 10 },
+     { ZoomMidPointEvents::EVENT6, 10 },
   }};
   // @formatter:on
-  // clang-format on
+    // clang-format on
 
-  switch (s_middlePointWeights.GetRandomWeighted())
-  {
-    case MiddlePointEvents::EVENT1:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = {
-          m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height - 1};
-      break;
-    case MiddlePointEvents::EVENT2:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint.x =
-          static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1);
-      break;
-    case MiddlePointEvents::EVENT3:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint.x = 1;
-      break;
-    case MiddlePointEvents::EVENT4:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = m_midScreenPoint;
-      break;
-    case MiddlePointEvents::EVENT5:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = {
-          m_goomInfo->GetScreenInfo().width / 4, m_goomInfo->GetScreenInfo().height / 4};
-      break;
-    case MiddlePointEvents::EVENT6:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = {
-          (3 * m_goomInfo->GetScreenInfo().width) / 4,
-          (3 * m_goomInfo->GetScreenInfo().height) / 4};
-      break;
-    default:
-      throw std::logic_error("Unknown MiddlePointEvents enum.");
-  }
+    switch (s_zoomMidPointWeights.GetRandomWeighted())
+    {
+      case ZoomMidPointEvents::EVENT1:
+        m_filterSettings.filterEffectsSettings.zoomMidPoint = {
+            m_goomInfo->GetScreenInfo().width / 2, m_goomInfo->GetScreenInfo().height - 1};
+        break;
+      case ZoomMidPointEvents::EVENT2:
+        m_filterSettings.filterEffectsSettings.zoomMidPoint.x =
+            static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - 1);
+        break;
+      case ZoomMidPointEvents::EVENT3:
+        m_filterSettings.filterEffectsSettings.zoomMidPoint.x = 1;
+        break;
+      case ZoomMidPointEvents::EVENT4:
+        m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
+        break;
+      case ZoomMidPointEvents::EVENT5:
+        m_filterSettings.filterEffectsSettings.zoomMidPoint = {
+            m_goomInfo->GetScreenInfo().width / 4, m_goomInfo->GetScreenInfo().height / 4};
+        break;
+      case ZoomMidPointEvents::EVENT6:
+        m_filterSettings.filterEffectsSettings.zoomMidPoint = {
+            (3 * m_goomInfo->GetScreenInfo().width) / 4,
+            (3 * m_goomInfo->GetScreenInfo().height) / 4};
+        break;
+      default:
+        throw std::logic_error("Unknown ZoomMidPointEvents enum.");
+    }
 }
 
 #if __cplusplus <= 201402L

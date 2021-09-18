@@ -19,11 +19,13 @@ endif()
 
 add_library(goom
     STATIC
+        src/control/goom_all_visual_fx.cpp
+        src/control/goom_all_visual_fx_color_maps.cpp
         src/control/goom_events.cpp
         src/control/goom_image_buffers.cpp
+        src/control/goom_message_displayer.cpp
         src/control/goom_states.cpp
-        src/control/goom_title_display.cpp
-        src/convolve_fx.cpp
+        src/control/goom_title_displayer.cpp
         src/draw/goom_draw_to_buffer.cpp
         src/draw/goom_draw_to_container.cpp
         src/draw/goom_draw_to_many.cpp

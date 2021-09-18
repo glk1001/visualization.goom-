@@ -77,9 +77,6 @@ public:
             float destParam,
             const Pixel& destColor);
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
-
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
 
   void Start();
@@ -191,16 +188,6 @@ LinesFx::LinesFx(const IGoomDraw& draw,
                                                  destParam,
                                                  destColor)}
 {
-}
-
-auto LinesFx::GetResourcesDirectory() const -> const std::string&
-{
-  return m_fxImpl->GetResourcesDirectory();
-}
-
-void LinesFx::SetResourcesDirectory(const std::string& dirName)
-{
-  m_fxImpl->SetResourcesDirectory(dirName);
 }
 
 void LinesFx::SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
@@ -439,16 +426,6 @@ void LinesFx::LinesImpl::ResetDestLine(const LineType newLineType,
   m_srcePointsCopy = m_srcePoints;
 }
 
-inline auto LinesFx::LinesImpl::GetResourcesDirectory() const -> const std::string&
-{
-  return m_resourcesDirectory;
-}
-
-inline void LinesFx::LinesImpl::SetResourcesDirectory(const std::string& dirName)
-{
-  m_resourcesDirectory = dirName;
-}
-
 inline auto LinesFx::LinesImpl::GetImageBitmap(const size_t size) const -> const ImageBitmap&
 {
   return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
@@ -518,7 +495,6 @@ auto LinesFx::LinesImpl::GetRandomLineColor() const -> Pixel
   {
     return GetColor(static_cast<int>(GetNRand(6)));
   }
-  assert(m_colorMaps);
   return RandomColorMaps::GetRandomColor(GetRandomColorMap(), 0.0F, 1.0F);
 }
 

@@ -55,9 +55,6 @@ public:
 
   [[nodiscard]] auto GetFxName() const -> std::string;
 
-  [[nodiscard]] auto GetResourcesDirectory() const -> const std::string&;
-  void SetResourcesDirectory(const std::string& dirName);
-
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
 
   void Start();

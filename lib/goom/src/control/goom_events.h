@@ -57,7 +57,7 @@ public:
     _NUM // unused and must be last
   };
 
-  auto Happens(GoomEvent event) -> bool;
+  auto Happens(GoomEvent event) const -> bool;
   auto GetRandomLineTypeEvent() const -> LinesFx::LineType;
 
 private:

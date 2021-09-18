@@ -40,7 +40,6 @@ public:
 
   GoomStates();
 
-  [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawable drawable) const -> bool;
   [[nodiscard]] auto GetCurrentStateIndex() const -> size_t;
   [[nodiscard]] auto GetCurrentStateName() const -> std::string;
   [[nodiscard]] auto GetCurrentDrawables() const -> DrawablesState;
@@ -70,15 +69,6 @@ private:
   const UTILS::Weights<uint16_t> m_weightedStates;
   size_t m_currentStateIndex = 0;
 };
-
-inline auto GoomStates::IsCurrentlyDrawable(const GoomDrawable drawable) const -> bool
-{
-#if __cplusplus <= 201402L
-  return GetCurrentDrawables().find(drawable) != GetCurrentDrawables().end();
-#else
-  return GetCurrentDrawables().contains(drawable);
-#endif
-}
 
 inline auto GoomStates::GetCurrentStateIndex() const -> size_t
 {

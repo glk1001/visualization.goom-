@@ -1,4 +1,4 @@
-#include "goom_title_display.h"
+#include "goom_title_displayer.h"
 
 #include "../draw/text_draw.h"
 #include "goom_config.h"
@@ -43,7 +43,7 @@ constexpr int32_t OUTLINE_FONT_WIDTH = 4;
 //
 //@formatter:off
 // clang-format off
-const std::vector<GoomTitleDisplay::FontInfo> GoomTitleDisplay::s_fontInfo = {
+const std::vector<GoomTitleDisplayer::FontInfo> GoomTitleDisplayer::s_fontInfo = {
     {"AeroviasBrasilNF.ttf", 1.34F},
     {"AlexBrush-Regular.ttf", 1.25F},
     {"AvenueX-Regular.otf", 1.01F},
@@ -58,12 +58,12 @@ const std::vector<GoomTitleDisplay::FontInfo> GoomTitleDisplay::s_fontInfo = {
 //@formatter:on
 // clang-format on
 
-auto GoomTitleDisplay::GetSelectedFontPath() const -> std::string
+auto GoomTitleDisplayer::GetSelectedFontPath() const -> std::string
 {
   return m_fontDirectory + PATH_SEP + s_fontInfo.at(m_fontInfoIndex).fontFilename;
 }
 
-auto GoomTitleDisplay::GetSelectedFontSize() const -> int32_t
+auto GoomTitleDisplayer::GetSelectedFontSize() const -> int32_t
 {
   const FontInfo& fontInfo = s_fontInfo.at(m_fontInfoIndex);
   const auto maxFontSize =
@@ -72,13 +72,8 @@ auto GoomTitleDisplay::GetSelectedFontSize() const -> int32_t
   return maxFontSize;
 }
 
-GoomTitleDisplay::GoomTitleDisplay(const int32_t xStart,
-                                   const int32_t yStart,
-                                   const std::string& fontDirectory,
-                                   const IGoomDraw& draw)
-  : m_xPos{static_cast<float>(xStart)},
-    m_yPos{static_cast<float>(yStart)},
-    m_textDraw{std::make_unique<TextDraw>(draw)},
+GoomTitleDisplayer::GoomTitleDisplayer(const IGoomDraw& draw, const std::string& fontDirectory)
+  : m_textDraw{std::make_unique<TextDraw>(draw)},
     m_screenHeight{draw.GetScreenHeight()},
     m_fontDirectory{fontDirectory},
     m_fontInfoIndex{GetRandInRange(0U, static_cast<uint32_t>(s_fontInfo.size()))},
@@ -93,7 +88,7 @@ GoomTitleDisplay::GoomTitleDisplay(const int32_t xStart,
   m_textDraw->SetAlignment(TextDraw::TextAlignment::LEFT);
 }
 
-void GoomTitleDisplay::Draw(const std::string& title)
+void GoomTitleDisplayer::Draw(const std::string& title)
 {
   --m_timeLeftOfTitleDisplay;
 
@@ -117,7 +112,7 @@ void GoomTitleDisplay::Draw(const std::string& title)
   DrawText(title);
 }
 
-void GoomTitleDisplay::DrawText(const std::string& text)
+void GoomTitleDisplayer::DrawText(const std::string& text)
 {
   const float t =
       static_cast<float>(m_timeLeftOfTitleDisplay) / static_cast<float>(MAX_TEXT_DISPLAY_TIME);
@@ -187,7 +182,7 @@ void GoomTitleDisplay::DrawText(const std::string& text)
   }
 }
 
-auto GoomTitleDisplay::GetTextLines(const std::string& text) -> std::vector<std::string>
+auto GoomTitleDisplayer::GetTextLines(const std::string& text) -> std::vector<std::string>
 {
   constexpr size_t MAX_LINE_LENGTH = 40;
   const size_t textLen = text.length();
@@ -218,7 +213,7 @@ auto GoomTitleDisplay::GetTextLines(const std::string& text) -> std::vector<std:
   return textLines;
 }
 
-auto GoomTitleDisplay::GetCharSpacing() const -> float
+auto GoomTitleDisplayer::GetCharSpacing() const -> float
 {
   if (IsInitialPhase())
   {
@@ -229,7 +224,7 @@ auto GoomTitleDisplay::GetCharSpacing() const -> float
   return 0.056F * timeGone;
 }
 
-auto GoomTitleDisplay::GetXIncrement() const -> float
+auto GoomTitleDisplayer::GetXIncrement() const -> float
 {
   if (IsInitialPhase())
   {
@@ -243,7 +238,7 @@ auto GoomTitleDisplay::GetXIncrement() const -> float
   return 7.0F;
 }
 
-auto GoomTitleDisplay::GetYIncrement() const -> float
+auto GoomTitleDisplayer::GetYIncrement() const -> float
 {
   if (IsInitialPhase())
   {
@@ -257,8 +252,8 @@ auto GoomTitleDisplay::GetYIncrement() const -> float
   return 8.0F;
 }
 
-inline auto GoomTitleDisplay::GetTextGammaCorrection(const float brightness,
-                                                     const Pixel& color) const -> Pixel
+inline auto GoomTitleDisplayer::GetTextGammaCorrection(const float brightness,
+                                                       const Pixel& color) const -> Pixel
 {
   // if constexpr (TEXT_GAMMA == 1.0F)
   if (1.0F == TEXT_GAMMA)

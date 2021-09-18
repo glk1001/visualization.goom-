@@ -56,7 +56,6 @@ public:
   [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
 
   void ChangeMilieu();
-  void SetZoomMiddlePoint();
   void SetNoise(bool value);
   void SetBlockyWavy(bool value);
   void SetRotateToZero();
@@ -105,7 +104,7 @@ private:
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
   UTILS::Parallel& m_parallel;
   const std::shared_ptr<const PluginInfo> m_goomInfo;
-  const V2dInt m_midScreenPoint;
+  const V2dInt m_screenMidPoint;
   const std::string m_resourcesDirectory;
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
 
@@ -120,8 +119,8 @@ private:
   [[nodiscard]] static auto GetFilterModeData(const std::string& resourcesDirectory)
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
 
-  static constexpr uint32_t DEFAULT_MIDDLE_X = 16;
-  static constexpr uint32_t DEFAULT_MIDDLE_Y = 1;
+  static constexpr uint32_t DEFAULT_ZOOM_MID_X = 16;
+  static constexpr uint32_t DEFAULT_ZOOM_MID_Y = 1;
   static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
   static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
   static constexpr float DEFAULT_MAX_SPEED_COEFF = 2.01F;
@@ -139,7 +138,7 @@ private:
   void SetFilterModeSettings();
   void SetWaveModeSettings();
 
-  void SetRandomZoomMiddlePoint();
+  void SetRandomZoomMidPoint();
   void SetRotate(float rotateProbability);
   void SetMaxSpeedCoeff();
 };
@@ -180,13 +179,7 @@ inline void FilterSettingsService::ChangeMilieu()
 {
   m_filterEffectsSettingsHaveChanged = true;
   SetMaxSpeedCoeff();
-  SetZoomMiddlePoint();
-}
-
-inline void FilterSettingsService::SetZoomMiddlePoint()
-{
-  m_filterEffectsSettingsHaveChanged = true;
-  SetRandomZoomMiddlePoint();
+  SetRandomZoomMidPoint();
 }
 
 inline void FilterSettingsService::SetRandomFilterSettings()

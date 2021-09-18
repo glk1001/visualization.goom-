@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_GOOM_TITLE_DISPLAY_H
-#define VISUALIZATION_GOOM_GOOM_TITLE_DISPLAY_H
+#ifndef VISUALIZATION_GOOM_GOOM_TITLE_DISPLAYER_H
+#define VISUALIZATION_GOOM_GOOM_TITLE_DISPLAYER_H
 
 #include "goom_graphic.h"
 #include "goomutils/colorutils.h"
@@ -27,19 +27,18 @@ class IColorMap;
 namespace CONTROL
 {
 
-class GoomTitleDisplay
+class GoomTitleDisplayer
 {
 public:
-  GoomTitleDisplay() noexcept = delete;
-  GoomTitleDisplay(int32_t xStart,
-                   int32_t yStart,
-                   const std::string& fontDirectory,
-                   const IGoomDraw& draw);
+  GoomTitleDisplayer() noexcept = delete;
+  GoomTitleDisplayer(const IGoomDraw& draw, const std::string& fontDirectory);
 
-  auto IsInitialPhase() const -> bool;
-  auto IsMiddlePhase() const -> bool;
-  auto IsFinalPhase() const -> bool;
-  auto IsFinished() const -> bool;
+  void SetInitialPosition(int32_t xStart, int32_t yStart);
+
+  [[nodiscard]] auto IsInitialPhase() const -> bool;
+  [[nodiscard]] auto IsMiddlePhase() const -> bool;
+  [[nodiscard]] auto IsFinalPhase() const -> bool;
+  [[nodiscard]] auto IsFinished() const -> bool;
 
   void Draw(const std::string& title);
 
@@ -48,8 +47,8 @@ private:
   static constexpr int TIME_TO_START_MIDDLE_PHASE = 100;
   static constexpr int TIME_TO_START_FINAL_PHASE = 50;
   static constexpr int32_t TIME_TO_START_FINAL_FADE = 15;
-  float m_xPos;
-  float m_yPos;
+  float m_xPos = 0.0F;
+  float m_yPos = 0.0F;
   int32_t m_timeLeftOfTitleDisplay = MAX_TEXT_DISPLAY_TIME;
   const std::unique_ptr<DRAW::TextDraw> m_textDraw;
   const uint32_t m_screenHeight;
@@ -67,33 +66,39 @@ private:
   std::reference_wrapper<const UTILS::IColorMap> m_textOutlineColorMap;
   std::reference_wrapper<const UTILS::IColorMap> m_charColorMap;
   void DrawText(const std::string& text);
-  static auto GetTextLines(const std::string& text) -> std::vector<std::string>;
-  auto GetCharSpacing() const -> float;
-  auto GetXIncrement() const -> float;
-  auto GetYIncrement() const -> float;
+  [[nodiscard]] static auto GetTextLines(const std::string& text) -> std::vector<std::string>;
+  [[nodiscard]] auto GetCharSpacing() const -> float;
+  [[nodiscard]] auto GetXIncrement() const -> float;
+  [[nodiscard]] auto GetYIncrement() const -> float;
   static constexpr float TEXT_GAMMA = 1.0F / 1.0F;
   static constexpr float TEXT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   UTILS::GammaCorrection m_textGammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};
-  auto GetTextGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
+  [[nodiscard]] auto GetTextGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
-inline auto GoomTitleDisplay::IsInitialPhase() const -> bool
+inline void GoomTitleDisplayer::SetInitialPosition(const int32_t xStart, const int32_t yStart)
+{
+  m_xPos = static_cast<float>(xStart);
+  m_yPos = static_cast<float>(yStart);
+}
+
+inline auto GoomTitleDisplayer::IsInitialPhase() const -> bool
 {
   return m_timeLeftOfTitleDisplay > TIME_TO_START_MIDDLE_PHASE;
 }
 
-inline auto GoomTitleDisplay::IsMiddlePhase() const -> bool
+inline auto GoomTitleDisplayer::IsMiddlePhase() const -> bool
 {
   return (TIME_TO_START_MIDDLE_PHASE >= m_timeLeftOfTitleDisplay) &&
          (m_timeLeftOfTitleDisplay > TIME_TO_START_FINAL_PHASE);
 }
 
-inline auto GoomTitleDisplay::IsFinalPhase() const -> bool
+inline auto GoomTitleDisplayer::IsFinalPhase() const -> bool
 {
   return m_timeLeftOfTitleDisplay <= TIME_TO_START_FINAL_PHASE;
 }
 
-inline auto GoomTitleDisplay::IsFinished() const -> bool
+inline auto GoomTitleDisplayer::IsFinished() const -> bool
 {
   return m_timeLeftOfTitleDisplay <= 0;
 }
@@ -101,4 +106,4 @@ inline auto GoomTitleDisplay::IsFinished() const -> bool
 } // namespace CONTROL
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_GOOM_TITLE_DISPLAY_H
+#endif //VISUALIZATION_GOOM_GOOM_TITLE_DISPLAYER_H

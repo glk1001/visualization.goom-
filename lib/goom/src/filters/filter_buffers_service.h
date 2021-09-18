@@ -3,6 +3,7 @@
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
+#include "goom_zoom_vector.h"
 #include "goomutils/name_value_pairs.h"
 #include "v2d.h"
 
@@ -21,8 +22,6 @@ class Parallel;
 
 namespace FILTERS
 {
-
-class IZoomVector;
 
 class FilterBuffersService
 {
