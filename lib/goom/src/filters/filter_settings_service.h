@@ -52,16 +52,16 @@ public:
   [[nodiscard]] auto GetPreviousFilterMode() const -> const std::string&;
 
   [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterSettings&;
-  [[nodiscard]] auto GetROVitesseSetting() const -> const Vitesse&;
-  [[nodiscard]] auto GetRWVitesseSetting() -> Vitesse&;
+  [[nodiscard]] auto GetROVitesse() const -> const Vitesse&;
+  [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
 
   void ChangeMilieu();
-  void SetMiddlePoints();
+  void SetZoomMiddlePoint();
   void SetNoise(bool value);
-  void SetBlockyWavySetting(bool value);
+  void SetBlockyWavy(bool value);
   void SetRotateToZero();
-  void MultiplyRotateSetting(float factor);
-  void ToggleRotateSetting();
+  void MultiplyRotate(float factor);
+  void ToggleRotate();
   void SetClippedColor(const Pixel& color);
 
   void SetRandomFilterSettings();
@@ -71,7 +71,7 @@ public:
   void MultiplyTranLerpIncrement(int32_t factor);
 
   void SetTranLerpToMaxSwitchMult(float value);
-  void SetDefaultTranLerpToMaxSwitchMult();
+  void SetTranLerpToMaxDefaultSwitchMult();
 
 private:
   enum class ZoomFilterMode
@@ -99,7 +99,7 @@ private:
   ZoomFilterMode m_previousFilterMode = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
 
-  void SetRandomFilterSettings(ZoomFilterMode mode);
+  void SetRandomSettingsForNewFilterMode();
   void SetDefaultFilterSettings(ZoomFilterMode mode);
 
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
@@ -135,10 +135,11 @@ private:
   [[nodiscard]] static auto GetRotation() -> std::shared_ptr<Rotation>;
 
   void SetDefaultSettings();
+  void SetRandomEffects();
   void SetFilterModeSettings();
   void SetWaveModeSettings();
 
-  void SetRandomMiddlePoints();
+  void SetRandomZoomMiddlePoint();
   void SetRotate(float rotateProbability);
   void SetMaxSpeedCoeff();
 };
@@ -164,12 +165,12 @@ inline void FilterSettingsService::NotifyUpdatedFilterEffectsSettings()
   m_filterModeAtLastUpdate = m_filterMode;
 }
 
-inline auto FilterSettingsService::GetROVitesseSetting() const -> const Vitesse&
+inline auto FilterSettingsService::GetROVitesse() const -> const Vitesse&
 {
   return m_filterSettings.filterEffectsSettings.vitesse;
 }
 
-inline auto FilterSettingsService::GetRWVitesseSetting() -> Vitesse&
+inline auto FilterSettingsService::GetRWVitesse() -> Vitesse&
 {
   m_filterEffectsSettingsHaveChanged = true;
   return m_filterSettings.filterEffectsSettings.vitesse;
@@ -179,19 +180,23 @@ inline void FilterSettingsService::ChangeMilieu()
 {
   m_filterEffectsSettingsHaveChanged = true;
   SetMaxSpeedCoeff();
-  SetMiddlePoints();
+  SetZoomMiddlePoint();
 }
 
-inline void FilterSettingsService::SetMiddlePoints()
+inline void FilterSettingsService::SetZoomMiddlePoint()
 {
   m_filterEffectsSettingsHaveChanged = true;
-  SetRandomMiddlePoints();
+  SetRandomZoomMiddlePoint();
 }
 
 inline void FilterSettingsService::SetRandomFilterSettings()
 {
   m_filterEffectsSettingsHaveChanged = true;
-  SetRandomFilterSettings(GetNewRandomMode());
+
+  m_previousFilterMode = m_filterMode;
+  m_filterMode = GetNewRandomMode();
+
+  SetRandomSettingsForNewFilterMode();
 }
 
 inline void FilterSettingsService::SetDefaultFilterSettings(const ZoomFilterMode mode)
@@ -212,7 +217,7 @@ inline void FilterSettingsService::SetNoise(const bool value)
   m_filterSettings.filterEffectsSettings.noiseEffect = value;
 }
 
-inline void FilterSettingsService::SetBlockyWavySetting(const bool value)
+inline void FilterSettingsService::SetBlockyWavy(const bool value)
 {
   m_filterSettings.filterColorSettings.blockyWavy = value;
 }
@@ -232,7 +237,7 @@ inline void FilterSettingsService::SetRotateToZero()
   m_filterSettings.filterEffectsSettings.rotation->SetZero();
 }
 
-inline void FilterSettingsService::MultiplyRotateSetting(const float factor)
+inline void FilterSettingsService::MultiplyRotate(const float factor)
 {
   if (!m_filterSettings.filterEffectsSettings.rotation->IsActive())
   {
@@ -242,7 +247,7 @@ inline void FilterSettingsService::MultiplyRotateSetting(const float factor)
   m_filterSettings.filterEffectsSettings.rotation->Multiply(factor);
 }
 
-inline void FilterSettingsService::ToggleRotateSetting()
+inline void FilterSettingsService::ToggleRotate()
 {
   if (!m_filterSettings.filterEffectsSettings.rotation->IsActive())
   {
@@ -273,7 +278,7 @@ inline void FilterSettingsService::SetTranLerpToMaxSwitchMult(const float value)
   m_filterSettings.filterBufferSettings.tranLerpToMaxSwitchMult = value;
 }
 
-inline void FilterSettingsService::SetDefaultTranLerpToMaxSwitchMult()
+inline void FilterSettingsService::SetTranLerpToMaxDefaultSwitchMult()
 {
   SetTranLerpToMaxSwitchMult(DEFAULT_SWITCH_MULT);
 }

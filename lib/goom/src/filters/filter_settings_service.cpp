@@ -333,19 +333,6 @@ auto FilterSettingsService::GetPreviousFilterMode() const -> const std::string&
   return m_filterModeData.at(m_previousFilterMode).name;
 }
 
-inline void FilterSettingsService::SetFilterModeSettings()
-{
-  const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
-  SetRotate(modeInfo.rotateProbability);
-  m_filterSettings.filterEffectsSettings.hypercosOverlay =
-      modeInfo.hypercosWeights.GetRandomWeighted();
-
-  if ((m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::WAVE_MODE1))
-  {
-    SetWaveModeSettings();
-  }
-}
-
 auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
 {
   uint32_t numTries = 0;
@@ -371,7 +358,7 @@ auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
 void FilterSettingsService::Start()
 {
   SetRandomFilterSettings();
-  SetMiddlePoints();
+  SetZoomMiddlePoint();
 }
 
 inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
@@ -385,15 +372,10 @@ inline auto FilterSettingsService::GetRotation() -> std::shared_ptr<Rotation>
   return std::make_shared<Rotation>();
 }
 
-void FilterSettingsService::SetRandomFilterSettings(const ZoomFilterMode mode)
+void FilterSettingsService::SetRandomSettingsForNewFilterMode()
 {
-  m_filterEffectsSettingsHaveChanged = true;
-
-  m_previousFilterMode = m_filterMode;
-  m_filterMode = mode;
-
   SetDefaultSettings();
-
+  SetRandomEffects();
   SetFilterModeSettings();
 }
 
@@ -403,17 +385,37 @@ void FilterSettingsService::SetDefaultSettings()
 
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
-  m_filterSettings.filterEffectsSettings.imageVelocityEffect = ProbabilityOfMInN(1, 10);
-  m_filterSettings.filterEffectsSettings.tanEffect = ProbabilityOfMInN(1, 10);
-  m_filterSettings.filterEffectsSettings.planeEffect = ProbabilityOfMInN(8, 10);
+  m_filterSettings.filterEffectsSettings.hypercosOverlay = HypercosOverlay::NONE;
+  m_filterSettings.filterEffectsSettings.imageVelocityEffect = false;
+  m_filterSettings.filterEffectsSettings.tanEffect = false;
+  m_filterSettings.filterEffectsSettings.planeEffect = false;
   m_filterSettings.filterEffectsSettings.noiseEffect = false;
 
   m_filterSettings.filterColorSettings.blockyWavy = false;
   m_filterSettings.filterColorSettings.clippedColor = Pixel::BLACK;
+}
 
-  m_filterSettings.filterEffectsSettings.hypercosOverlay = HypercosOverlay::NONE;
+void FilterSettingsService::SetRandomEffects()
+{
+  m_filterSettings.filterEffectsSettings.imageVelocityEffect = ProbabilityOfMInN(1, 10);
+  m_filterSettings.filterEffectsSettings.tanEffect = ProbabilityOfMInN(1, 10);
+  m_filterSettings.filterEffectsSettings.planeEffect = ProbabilityOfMInN(8, 10);
+}
+
+inline void FilterSettingsService::SetFilterModeSettings()
+{
   m_filterSettings.filterEffectsSettings.speedCoefficientsEffect = GetSpeedCoefficientsEffect();
   m_filterSettings.filterEffectsSettings.rotation = GetRotation();
+
+  const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
+  SetRotate(modeInfo.rotateProbability);
+  m_filterSettings.filterEffectsSettings.hypercosOverlay =
+      modeInfo.hypercosWeights.GetRandomWeighted();
+
+  if ((m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::WAVE_MODE1))
+  {
+    SetWaveModeSettings();
+  }
 }
 
 void FilterSettingsService::SetWaveModeSettings()
@@ -448,7 +450,7 @@ void FilterSettingsService::SetMaxSpeedCoeff()
       GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF;
 }
 
-void FilterSettingsService::SetRandomMiddlePoints()
+void FilterSettingsService::SetRandomZoomMiddlePoint()
 {
   if ((m_filterMode == ZoomFilterMode::WATER_MODE) ||
       (m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::AMULET_MODE))
