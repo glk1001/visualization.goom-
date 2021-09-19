@@ -39,10 +39,8 @@ public:
   {
     float xRotateSpeed;
     float yRotateSpeed;
-    float xxFactor;
-    float xyFactor;
-    float yxFactor;
-    float yyFactor;
+    float sinAngle;
+    float cosAngle;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -55,18 +53,19 @@ private:
 
 inline auto Rotation::GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords
 {
+  float xRotateSpeed = m_params.xRotateSpeed;
+  float yRotateSpeed = m_params.yRotateSpeed;
+  float sinAngle = m_params.sinAngle;
+  float cosAngle = m_params.cosAngle;
   if (m_params.xRotateSpeed < 0.0F)
   {
-    return {-m_params.xRotateSpeed *
-                ((m_params.xxFactor * velocity.GetX()) - (m_params.xyFactor * velocity.GetY())),
-            -m_params.yRotateSpeed *
-                ((m_params.yxFactor * velocity.GetX()) + (m_params.yyFactor * velocity.GetY()))};
+    xRotateSpeed = -xRotateSpeed;
+    yRotateSpeed = -yRotateSpeed;
+    sinAngle = -sinAngle;
   }
 
-  return {m_params.xRotateSpeed *
-              ((m_params.xyFactor * velocity.GetY()) - (m_params.xxFactor * velocity.GetX())),
-          m_params.yRotateSpeed *
-              ((m_params.yyFactor * velocity.GetY()) + (m_params.yxFactor * velocity.GetX()))};
+  return {xRotateSpeed * ((cosAngle * velocity.GetX()) - (sinAngle * velocity.GetY())),
+          yRotateSpeed * ((sinAngle * velocity.GetX()) + (cosAngle * velocity.GetY()))};
 }
 
 inline void Rotation::SetZero()
