@@ -28,13 +28,13 @@ constexpr YOnly::YOnlyEffect Y_DEFAULT_EFFECT = YOnly::YOnlyEffect::NONE;
 
 constexpr float X_DEFAULT_FREQ_FACTOR = 1.0F;
 constexpr float Y_DEFAULT_FREQ_FACTOR = 10.0F;
-constexpr NumberRange<float> X_FREQ_FACTOR_RANGE = {-10.0F, +10.0F};
-constexpr NumberRange<float> Y_FREQ_FACTOR_RANGE = {-10.0F, +10.0F};
+constexpr NumberRange<float> X_FREQ_FACTOR_RANGE = {-50.0F, +50.01F};
+constexpr NumberRange<float> Y_FREQ_FACTOR_RANGE = {-50.0F, +50.01F};
 
 constexpr float X_DEFAULT_AMPLITUDE = 10.0F;
 constexpr float Y_DEFAULT_AMPLITUDE = 10.0F;
-constexpr NumberRange<float> X_AMPLITUDE_RANGE = {0.10F, 20.0F};
-constexpr NumberRange<float> Y_AMPLITUDE_RANGE = {0.10F, 20.0F};
+constexpr NumberRange<float> X_AMPLITUDE_RANGE = {0.010F, 1.011F};
+constexpr NumberRange<float> Y_AMPLITUDE_RANGE = {0.010F, 1.011F};
 
 constexpr float PROB_Y_ONLY_STRICT = 0.9F;
 constexpr float PROB_FREQ_EQUAL = 0.9F;

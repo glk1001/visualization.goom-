@@ -162,8 +162,9 @@ private:
   Timer m_blockyWavyTimer{NUM_BLOCKY_WAVY_UPDATES};
   static constexpr uint32_t NUM_NOISE_UPDATES = 100;
   Timer m_noiseTimer{NUM_NOISE_UPDATES};
-  static constexpr uint32_t NUM_ALLOW_OVEREXPOSED_UPDATES = 100;
-  Timer m_allowOverexposedTimer{NUM_ALLOW_OVEREXPOSED_UPDATES};
+  static constexpr uint32_t NUM_ALLOW_OVEREXPOSED_ON_UPDATES = 500;
+  static constexpr uint32_t NUM_ALLOW_OVEREXPOSED_OFF_UPDATES = 100;
+  Timer m_allowOverexposedTimer{NUM_ALLOW_OVEREXPOSED_ON_UPDATES};
   void UpdateTimers();
 
   // on verifie qu'il ne se pas un truc interressant avec le son.
@@ -725,7 +726,8 @@ inline void GoomControl::GoomControlImpl::ChangeAllowOverexposed()
 
   m_visualFx.SetZoomFilterAllowOverexposed(allowOverexposed);
 
-  m_allowOverexposedTimer.ResetToZero();
+  m_allowOverexposedTimer.SetTimeLimit(allowOverexposed ? NUM_ALLOW_OVEREXPOSED_ON_UPDATES
+                                                        : NUM_ALLOW_OVEREXPOSED_OFF_UPDATES);
 }
 
 inline void GoomControl::GoomControlImpl::ChangeRotation()
