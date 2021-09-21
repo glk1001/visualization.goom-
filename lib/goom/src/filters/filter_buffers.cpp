@@ -35,10 +35,10 @@ using UTILS::Logging;
 using UTILS::Parallel;
 
 ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
-                                     const std::shared_ptr<const PluginInfo>& goomInfo,
+                                     const PluginInfo& goomInfo,
                                      const ZoomPointFunc& zoomPointFunc)
-  : m_screenWidth{goomInfo->GetScreenInfo().width},
-    m_screenHeight{goomInfo->GetScreenInfo().height},
+  : m_screenWidth{goomInfo.GetScreenInfo().width},
+    m_screenHeight{goomInfo.GetScreenInfo().height},
     m_precalculatedCoeffs{std::make_unique<FilterCoefficients>()},
     m_parallel{p},
     m_getZoomPoint{zoomPointFunc},

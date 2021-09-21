@@ -38,7 +38,7 @@ using UTILS::NameValuePairs;
 using UTILS::Parallel;
 
 FilterBuffersService::FilterBuffersService(Parallel& parallel,
-                                           const std::shared_ptr<const PluginInfo>& goomInfo,
+                                           const PluginInfo& goomInfo,
                                            std::unique_ptr<IZoomVector> zoomVector) noexcept
   : m_zoomVector{std::move(zoomVector)},
     m_filterBuffers{parallel, goomInfo, [this](const NormalizedCoords& normalizedCoords) {

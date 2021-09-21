@@ -35,7 +35,7 @@ class ZoomFilterFx : public IVisualFx
 public:
   ZoomFilterFx() noexcept = delete;
   ZoomFilterFx(UTILS::Parallel& parallel,
-               const std::shared_ptr<const PluginInfo>& goomInfo,
+               const PluginInfo& goomInfo,
                std::unique_ptr<FILTERS::FilterBuffersService> filterBuffersService,
                std::unique_ptr<FILTERS::FilterColorsService> filterColorsService) noexcept;
 

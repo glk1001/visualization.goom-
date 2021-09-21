@@ -7,8 +7,7 @@
 #include "sound_info.h"
 
 #include <cstddef>
-#include <istream>
-#include <ostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -44,7 +43,7 @@ public:
 
   // construit un effet de line (une ligne horitontale pour commencer)
   LinesFx(const IGoomDraw& draw,
-          const std::shared_ptr<const PluginInfo>& goomInfo,
+          const PluginInfo& goomInfo,
           const UTILS::SmallImageBitmaps& smallBitmaps,
           LineType srceLineType,
           float srceParam,
@@ -76,7 +75,6 @@ public:
   void Finish();
 
 private:
-  bool m_enabled = true;
   class LinesImpl;
   spimpl::unique_impl_ptr<LinesImpl> m_fxImpl;
 };

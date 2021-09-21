@@ -5,10 +5,7 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_plugin_info.h"
 #include "goom/v2d.h"
-#include "goomutils/mathutils.h"
 #include "goomutils/parallel_utils.h"
-
-#include <memory>
 
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
@@ -27,7 +24,7 @@ constexpr const char* RESOURCES_DIRECTORY = "";
 TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
 {
   Parallel parallel{-1};
-  auto goomInfo{std::make_shared<PluginInfo>(WIDTH, HEIGHT)};
+  const PluginInfo goomInfo{WIDTH, HEIGHT};
   FilterSettingsService filterSettingsService{parallel, goomInfo, RESOURCES_DIRECTORY};
   ZoomFilterFx zoomFilter_fx{parallel, goomInfo,
                              std::move(filterSettingsService.GetFilterBuffersService()),

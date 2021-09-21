@@ -36,7 +36,7 @@ public:
   class FilterEvents;
 
   FilterSettingsService(UTILS::Parallel& parallel,
-                        const std::shared_ptr<const GOOM::PluginInfo>& goomInfo,
+                        const GOOM::PluginInfo& goomInfo,
                         const std::string& resourcesDirectory) noexcept;
 
   auto GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>;
@@ -103,7 +103,7 @@ private:
 
   static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
   UTILS::Parallel& m_parallel;
-  const std::shared_ptr<const PluginInfo> m_goomInfo;
+  const PluginInfo& m_goomInfo;
   const V2dInt m_screenMidPoint;
   const std::string m_resourcesDirectory;
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;

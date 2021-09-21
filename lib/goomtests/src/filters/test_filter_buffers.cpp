@@ -11,7 +11,6 @@
 #include "goomutils/parallel_utils.h"
 
 #include <cmath>
-#include <memory>
 
 using GOOM::PluginInfo;
 using GOOM::V2dInt;
@@ -87,7 +86,7 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
   static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
 
   Parallel parallel{-1};
-  auto goomInfo{std::make_shared<PluginInfo>(WIDTH, HEIGHT)};
+  const PluginInfo goomInfo{WIDTH, HEIGHT};
   TestZoomVector identityZoomVector{false};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo,
                                   [&](const NormalizedCoords& normalizedCoords) {
@@ -167,7 +166,7 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
 TEST_CASE("ZoomFilterBuffers Calculations", "[ZoomFilterBuffersCalcs]")
 {
   Parallel parallel{-1};
-  auto goomInfo{std::make_shared<PluginInfo>(WIDTH, HEIGHT)};
+  const PluginInfo goomInfo{WIDTH, HEIGHT};
   TestZoomVector constantZoomVector{true};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo,
                                   [&](const NormalizedCoords& normalizedCoords) {
@@ -277,7 +276,7 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
   static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
 
   Parallel parallel{0};
-  auto goomInfo{std::make_shared<PluginInfo>(WIDTH, HEIGHT)};
+  const PluginInfo goomInfo{WIDTH, HEIGHT};
   TestZoomVector constantZoomVector{true};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo,
                                   [&](const NormalizedCoords& normalizedCoords) {
@@ -384,7 +383,7 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
 TEST_CASE("ZoomFilterBuffers Clipping", "[ZoomFilterBuffersClipping]")
 {
   Parallel parallel{-1};
-  auto goomInfo{std::make_shared<PluginInfo>(WIDTH, HEIGHT)};
+  const PluginInfo goomInfo{WIDTH, HEIGHT};
   TestZoomVector constantZoomVector{true};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo,
                                   [&](const NormalizedCoords& normalizedCoords) {

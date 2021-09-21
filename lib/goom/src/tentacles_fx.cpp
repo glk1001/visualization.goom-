@@ -60,7 +60,7 @@ inline auto ChangeDominantColorEvent() -> bool
 class TentaclesFx::TentaclesImpl
 {
 public:
-  explicit TentaclesImpl(const IGoomDraw& draw, const std::shared_ptr<const PluginInfo>& goomInfo);
+  TentaclesImpl(const IGoomDraw& draw, const PluginInfo& goomInfo);
   TentaclesImpl(const TentaclesImpl&) noexcept = delete;
   TentaclesImpl(TentaclesImpl&&) noexcept = delete;
   ~TentaclesImpl() noexcept = default;
@@ -77,7 +77,7 @@ public:
 
 private:
   const IGoomDraw& m_draw;
-  const std::shared_ptr<const PluginInfo> m_goomInfo;
+  const PluginInfo& m_goomInfo;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
   Pixel m_dominantColor{};
@@ -153,8 +153,7 @@ private:
   void DoPrettyMoveWithoutDraw();
 };
 
-TentaclesFx::TentaclesFx(const IGoomDraw& draw,
-                         const std::shared_ptr<const PluginInfo>& info) noexcept
+TentaclesFx::TentaclesFx(const IGoomDraw& draw, const PluginInfo& info) noexcept
   : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(draw, info)}
 {
 }
@@ -188,21 +187,11 @@ void TentaclesFx::Finish()
 
 void TentaclesFx::ApplyMultiple()
 {
-  if (!m_enabled)
-  {
-    return;
-  }
-
   m_fxImpl->Update();
 }
 
 void TentaclesFx::ApplyNoDraw()
 {
-  if (!m_enabled)
-  {
-    return;
-  }
-
   m_fxImpl->UpdateWithNoDraw();
 }
 
@@ -211,8 +200,7 @@ auto TentaclesFx::GetFxName() const -> std::string
   return "Tentacles FX";
 }
 
-TentaclesFx::TentaclesImpl::TentaclesImpl(const IGoomDraw& draw,
-                                          const std::shared_ptr<const PluginInfo>& goomInfo)
+TentaclesFx::TentaclesImpl::TentaclesImpl(const IGoomDraw& draw, const PluginInfo& goomInfo)
   : m_draw{draw}, m_goomInfo{goomInfo}, m_rot{GetStableRotationOffset(0)}
 {
 }
@@ -387,7 +375,7 @@ void TentaclesFx::TentaclesImpl::DoPrettyMoveWithoutDraw()
   }
 
   LogDebug("Starting pretty_move without draw.");
-  PrettyMove(m_goomInfo->GetSoundInfo().GetAcceleration());
+  PrettyMove(m_goomInfo.GetSoundInfo().GetAcceleration());
 
   m_cycle += 10.0F * m_cycleInc;
   if (m_cycle > 1000.0F)
@@ -404,7 +392,7 @@ void TentaclesFx::TentaclesImpl::DoPrettyMoveBeforeDraw()
   }
 
   LogDebug("Starting pretty_move and draw.");
-  PrettyMove(m_goomInfo->GetSoundInfo().GetAcceleration());
+  PrettyMove(m_goomInfo.GetSoundInfo().GetAcceleration());
   m_cycle += m_cycleInc;
 
   if (m_isPrettyMoveHappening || ChangeDominantColorMapEvent())
@@ -430,7 +418,7 @@ void TentaclesFx::TentaclesImpl::DoTentaclesUpdate()
   const auto [modColor, modLowColor] = GetModColors();
 #endif
 
-  if (m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() != 0)
+  if (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() != 0)
   {
   }
   else
@@ -449,9 +437,9 @@ void TentaclesFx::TentaclesImpl::DoTentaclesUpdate()
   // Higher sound acceleration increases tentacle wave frequency.
   assert(m_currentDriver);
   const float tentacleWaveFreq =
-      m_goomInfo->GetSoundInfo().GetAcceleration() < 0.3F
+      m_goomInfo.GetSoundInfo().GetAcceleration() < 0.3F
           ? 1.25F
-          : (1.0F / (1.10F - m_goomInfo->GetSoundInfo().GetAcceleration()));
+          : (1.0F / (1.10F - m_goomInfo.GetSoundInfo().GetAcceleration()));
   m_currentDriver->MultiplyIterZeroYValWaveFreq(tentacleWaveFreq);
 
   m_currentDriver->Update(m_half_pi - m_rot, m_distt, m_distt2, modColor, modLowColor);

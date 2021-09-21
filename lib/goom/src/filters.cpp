@@ -56,7 +56,7 @@ class ZoomFilterFx::ZoomFilterImpl
 public:
   ZoomFilterImpl() noexcept = delete;
   ZoomFilterImpl(Parallel& parallel,
-                 const std::shared_ptr<const PluginInfo>& goomInfo,
+                 const PluginInfo& goomInfo,
                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
 
@@ -88,7 +88,7 @@ private:
 };
 
 ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
-                           const std::shared_ptr<const PluginInfo>& goomInfo,
+                           const PluginInfo& goomInfo,
                            std::unique_ptr<FilterBuffersService> filterBuffersService,
                            std::unique_ptr<FilterColorsService> filterColorsService) noexcept
   : m_fxImpl{spimpl::make_unique_impl<ZoomFilterImpl>(
@@ -149,11 +149,11 @@ void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& d
 
 ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     Parallel& parallel,
-    const std::shared_ptr<const PluginInfo>& goomInfo,
+    const PluginInfo& goomInfo,
     std::unique_ptr<FilterBuffersService> filterBuffersService,
     std::unique_ptr<FilterColorsService> filterColorsService) noexcept
-  : m_screenWidth{goomInfo->GetScreenInfo().width},
-    m_screenHeight{goomInfo->GetScreenInfo().height},
+  : m_screenWidth{goomInfo.GetScreenInfo().width},
+    m_screenHeight{goomInfo.GetScreenInfo().height},
     m_parallel{parallel},
     m_filterBuffersService{std::move(filterBuffersService)},
     m_filterColorsService{std::move(filterColorsService)}

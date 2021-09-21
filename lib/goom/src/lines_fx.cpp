@@ -68,7 +68,7 @@ public:
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
   LinesImpl(const IGoomDraw& draw,
-            std::shared_ptr<const PluginInfo> goomInfo,
+            const PluginInfo& goomInfo,
             const SmallImageBitmaps& smallBitmaps,
             LineType srceLineType,
             float srceParam,
@@ -100,7 +100,7 @@ public:
 
 private:
   const IGoomDraw& m_draw;
-  const std::shared_ptr<const PluginInfo> m_goomInfo;
+  const PluginInfo& m_goomInfo;
   const SmallImageBitmaps& m_smallBitmaps;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::reference_wrapper<const IColorMap> m_currentColorMap;
@@ -170,7 +170,7 @@ private:
 };
 
 LinesFx::LinesFx(const IGoomDraw& draw,
-                 const std::shared_ptr<const PluginInfo>& goomInfo,
+                 const PluginInfo& goomInfo,
                  const SmallImageBitmaps& smallBitmaps,
                  const LineType srceLineType,
                  const float srceParam,
@@ -240,7 +240,7 @@ void LinesFx::DrawLines(const std::vector<int16_t>& soundData,
 }
 
 LinesFx::LinesImpl::LinesImpl(const IGoomDraw& draw,
-                              std::shared_ptr<const PluginInfo> goomInfo,
+                              const PluginInfo& goomInfo,
                               const SmallImageBitmaps& smallBitmaps,
                               const LineType srceLineType,
                               const float srceParam,
@@ -249,7 +249,7 @@ LinesFx::LinesImpl::LinesImpl(const IGoomDraw& draw,
                               const float destParam,
                               const Pixel& destColor)
   : m_draw{draw},
-    m_goomInfo{std::move(goomInfo)},
+    m_goomInfo{goomInfo},
     m_smallBitmaps{smallBitmaps},
     m_colorMaps{GetAllSlimMaps()},
     m_currentColorMap{GetRandomColorMap()},
@@ -297,7 +297,7 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
   {
     case LineType::H_LINE:
     {
-      const float xStep = static_cast<float>(m_goomInfo->GetScreenInfo().width - 1) /
+      const float xStep = static_cast<float>(m_goomInfo.GetScreenInfo().width - 1) /
                           static_cast<float>(AUDIO_SAMPLE_LEN - 1);
       float x = 0;
       for (auto& pt : line)
@@ -312,7 +312,7 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
     }
     case LineType::V_LINE:
     {
-      const float yStep = static_cast<float>(m_goomInfo->GetScreenInfo().height - 1) /
+      const float yStep = static_cast<float>(m_goomInfo.GetScreenInfo().height - 1) /
                           static_cast<float>(AUDIO_SAMPLE_LEN - 1);
       float y = 0;
       for (auto& pt : line)
@@ -327,8 +327,8 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
     }
     case LineType::CIRCLE:
     {
-      const float cx = 0.5F * static_cast<float>(m_goomInfo->GetScreenInfo().width);
-      const float cy = 0.5F * static_cast<float>(m_goomInfo->GetScreenInfo().height);
+      const float cx = 0.5F * static_cast<float>(m_goomInfo.GetScreenInfo().width);
+      const float cy = 0.5F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
       // Make sure the circle joins at each end so use symmetry about x-axis.
       static_assert(0 == (AUDIO_SAMPLE_LEN % 2), "AUDIO_SAMPLE_LEN must divide by 2");
       const float angleStep = m_pi / ((0.5F * static_cast<float>(AUDIO_SAMPLE_LEN)) - 1.0F);
@@ -677,7 +677,7 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
                                           const Pixel& randColor,
                                           const float dataVal) const -> PointAndColor
 {
-  assert(m_goomInfo->GetSoundInfo().GetAllTimesMinVolume() <= dataVal);
+  assert(m_goomInfo.GetSoundInfo().GetAllTimesMinVolume() <= dataVal);
   assert(m_minAudioValue <= dataVal);
   assert(dataVal <= m_minAudioValue + m_audioRange);
 

@@ -102,7 +102,7 @@ public:
 
 private:
   Parallel m_parallel{-1}; // max cores - 1
-  const std::shared_ptr<WritablePluginInfo> m_goomInfo;
+  WritablePluginInfo m_goomInfo;
   GoomDrawToBuffer m_multiBufferDraw;
   GoomImageBuffers m_imageBuffers;
   const std::string m_resourcesDirectory;
@@ -123,7 +123,7 @@ private:
   static constexpr uint32_t CHANGE_SWITCH_VALUES_LOCK_TIME = 150;
   GoomLock m_lock{}; // pour empecher de nouveaux changements
 
-  void ProcessAudio(const AudioSamples& soundData) const;
+  void ProcessAudio(const AudioSamples& soundData);
 
   // Changement d'effet de zoom !
   static constexpr int32_t MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
@@ -258,7 +258,7 @@ void GoomControl::Update(const AudioSamples& s,
 GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
                                               const uint32_t screenHeight,
                                               std::string resourcesDirectory)
-  : m_goomInfo{std::make_shared<WritablePluginInfo>(screenWidth, screenHeight)},
+  : m_goomInfo{screenWidth, screenHeight},
     m_multiBufferDraw{screenWidth, screenHeight},
     m_imageBuffers{screenWidth, screenHeight},
     m_resourcesDirectory{std::move(resourcesDirectory)},
@@ -266,8 +266,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_smallBitmaps{m_resourcesDirectory},
     m_visualFx{m_parallel,
                m_multiBufferDraw,
-               std::const_pointer_cast<const PluginInfo>(
-                   std::dynamic_pointer_cast<PluginInfo>(m_goomInfo)),
+               m_goomInfo,
                m_smallBitmaps,
                m_filterSettingsService.GetFilterBuffersService(),
                FilterSettingsService::GetFilterColorsService()},
@@ -296,12 +295,12 @@ inline void GoomControl::GoomControlImpl::SetScreenBuffer(
 
 inline auto GoomControl::GoomControlImpl::GetScreenWidth() const -> uint32_t
 {
-  return m_goomInfo->GetScreenInfo().width;
+  return m_goomInfo.GetScreenInfo().width;
 }
 
 inline auto GoomControl::GoomControlImpl::GetScreenHeight() const -> uint32_t
 {
-  return m_goomInfo->GetScreenInfo().height;
+  return m_goomInfo.GetScreenInfo().height;
 }
 
 inline auto GoomControl::GoomControlImpl::ChangeFilterModeEventHappens() const -> bool
@@ -384,10 +383,10 @@ inline void GoomControl::GoomControlImpl::UpdateTimers()
   m_allowOverexposedTimer.Increment();
 }
 
-inline void GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData) const
+inline void GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData)
 {
   /* ! etude du signal ... */
-  m_goomInfo->ProcessSoundSample(soundData);
+  m_goomInfo.ProcessSoundSample(soundData);
 }
 
 inline void GoomControl::GoomControlImpl::ApplyCurrentStateToSingleBuffer()
@@ -427,7 +426,7 @@ inline auto GoomControl::GoomControlImpl::GetCurrentBuffers() const -> std::vect
 
 inline void GoomControl::GoomControlImpl::ChangeFilterModeIfMusicChanges()
 {
-  if (((0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom()) ||
+  if (((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) ||
        (m_updatesSinceLastZoomEffectsChange > MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE)) &&
       ChangeFilterModeEventHappens())
   {
@@ -478,7 +477,7 @@ inline void GoomControl::GoomControlImpl::BigBreakIfMusicIsCalm()
   constexpr float CALM_SPEED = 0.01F;
   constexpr uint32_t CALM_CYCLES = 16;
 
-  if ((m_goomInfo->GetSoundInfo().GetSpeed() < CALM_SPEED) &&
+  if ((m_goomInfo.GetSoundInfo().GetSpeed() < CALM_SPEED) &&
       (m_filterSettingsService.GetROVitesse().GetVitesse() < (Vitesse::STOP_SPEED - 4)) &&
       (0 == (m_updateNum % CALM_CYCLES)))
   {
@@ -507,7 +506,7 @@ inline void GoomControl::GoomControlImpl::BigUpdate()
   // Coup de boost de la vitesse si besoin.
   // Goom tracking (strong acceleration of volume acceleration).
   // Speed boost if needed.
-  if (0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom())
+  if (0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom())
   {
     BigNormalUpdate();
   }
@@ -554,7 +553,7 @@ inline void GoomControl::GoomControlImpl::ChangeMilieu()
 void GoomControl::GoomControlImpl::ChangeVitesse()
 {
   const auto goFasterVal = static_cast<int32_t>(
-      std::lround(3.5F * std::log10(1.0F + (500.0F * m_goomInfo->GetSoundInfo().GetSpeed()))));
+      std::lround(3.5F * std::log10(1.0F + (500.0F * m_goomInfo.GetSoundInfo().GetSpeed()))));
   const int32_t newVitesse = Vitesse::STOP_SPEED - goFasterVal;
   const int32_t oldVitesse = m_filterSettingsService.GetROVitesse().GetVitesse();
 
@@ -688,8 +687,8 @@ void GoomControl::GoomControlImpl::ChangeZoomEffects()
     m_previousZoomSpeed = m_filterSettingsService.GetROVitesse().GetVitesse();
     m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
 
-    if ((0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom()) &&
-        (m_goomInfo->GetSoundInfo().GetTotalGoomsInCurrentCycle() < 2))
+    if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
+        (m_goomInfo.GetSoundInfo().GetTotalGoomsInCurrentCycle() < 2))
     {
       m_filterSettingsService.SetTranLerpIncrement(0);
       m_filterSettingsService.SetTranLerpToMaxDefaultSwitchMult();
@@ -952,7 +951,7 @@ inline void GoomControl::GoomControlImpl::DisplayLinesIfInAGoom(const AudioSampl
   constexpr uint32_t DISPLAY_LINES_GOOM_NUM = 5;
 
   if ((m_lineMode != 0) ||
-      (m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM))
+      (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM))
   {
     DisplayLines(soundData);
   }

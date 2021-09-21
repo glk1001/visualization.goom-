@@ -34,9 +34,9 @@ inline auto ChangeDotColorsEvent() -> bool
 class GoomDotsFx::GoomDotsFxImpl
 {
 public:
-  explicit GoomDotsFxImpl(const IGoomDraw& draw,
-                          const std::shared_ptr<const PluginInfo>& goomInfo,
-                          const SmallImageBitmaps& smallBitmaps) noexcept;
+  GoomDotsFxImpl(const IGoomDraw& draw,
+                 const PluginInfo& goomInfo,
+                 const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void Start();
 
@@ -47,7 +47,7 @@ public:
 
 private:
   const IGoomDraw& m_draw;
-  const std::shared_ptr<const PluginInfo> m_goomInfo;
+  const PluginInfo& m_goomInfo;
   const SmallImageBitmaps& m_smallBitmaps;
   const uint32_t m_pointWidth;
   const uint32_t m_pointHeight;
@@ -92,7 +92,7 @@ private:
 };
 
 GoomDotsFx::GoomDotsFx(const IGoomDraw& draw,
-                       const std::shared_ptr<const PluginInfo>& goomInfo,
+                       const PluginInfo& goomInfo,
                        const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<GoomDotsFxImpl>(draw, goomInfo, smallBitmaps)}
 {
@@ -128,31 +128,23 @@ auto GoomDotsFx::GetFxName() const -> std::string
 
 void GoomDotsFx::ApplySingle()
 {
-  if (!m_enabled)
-  {
-    return;
-  }
   m_fxImpl->ApplySingle();
 }
 
 void GoomDotsFx::ApplyMultiple()
 {
-  if (!m_enabled)
-  {
-    return;
-  }
   m_fxImpl->ApplyMultiple();
 }
 
 
 GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const IGoomDraw& draw,
-                                           const std::shared_ptr<const PluginInfo>& goomInfo,
+                                           const PluginInfo& goomInfo,
                                            const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
-    m_goomInfo(goomInfo),
+    m_goomInfo{goomInfo},
     m_smallBitmaps{smallBitmaps},
-    m_pointWidth{(m_goomInfo->GetScreenInfo().width * 2) / 5},
-    m_pointHeight{(m_goomInfo->GetScreenInfo().height * 2) / 5},
+    m_pointWidth{(m_goomInfo.GetScreenInfo().width * 2) / 5},
+    m_pointHeight{(m_goomInfo.GetScreenInfo().height * 2) / 5},
     m_pointWidthDiv2{static_cast<float>(m_pointWidth) / 2.0F},
     m_pointHeightDiv2{static_cast<float>(m_pointHeight) / 2.0F},
     m_pointWidthDiv3{static_cast<float>(m_pointWidth) / 3.0F},
@@ -211,18 +203,18 @@ void GoomDotsFx::GoomDotsFxImpl::ApplyMultiple()
 void GoomDotsFx::GoomDotsFxImpl::Update()
 {
   uint32_t radius = MIN_DOT_SIZE / 2;
-  if ((0 == m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
+  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
   {
     ChangeColors();
     radius = GetRandInRange(radius, (MAX_DOT_SIZE / 2) + 1);
     SetNextCurrentBitmapName();
   }
 
-  const float largeFactor = GetLargeSoundFactor(m_goomInfo->GetSoundInfo());
+  const float largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
   const auto speedvarMult80Plus15 =
-      static_cast<uint32_t>((m_goomInfo->GetSoundInfo().GetSpeed() * 80.0F) + 15.0F);
+      static_cast<uint32_t>((m_goomInfo.GetSoundInfo().GetSpeed() * 80.0F) + 15.0F);
   const auto speedvarMult50Plus1 =
-      static_cast<uint32_t>((m_goomInfo->GetSoundInfo().GetSpeed() * 50.0F) + 1.0F);
+      static_cast<uint32_t>((m_goomInfo.GetSoundInfo().GetSpeed() * 50.0F) + 1.0F);
 
   const float pointWidthDiv2MultLarge = m_pointWidthDiv2 * largeFactor;
   const float pointHeightDiv2MultLarge = m_pointHeightDiv2 * largeFactor;
@@ -350,14 +342,14 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
 {
   const auto xOffset = static_cast<uint32_t>(t1 * std::cos(static_cast<float>(cycle) / t3));
   const auto yOffset = static_cast<uint32_t>(t2 * std::sin(static_cast<float>(cycle) / t4));
-  const auto x0 = static_cast<int32_t>((m_goomInfo->GetScreenInfo().width / 2) + xOffset);
-  const auto y0 = static_cast<int32_t>((m_goomInfo->GetScreenInfo().height / 2) + yOffset);
+  const auto x0 = static_cast<int32_t>((m_goomInfo.GetScreenInfo().width / 2) + xOffset);
+  const auto y0 = static_cast<int32_t>((m_goomInfo.GetScreenInfo().height / 2) + yOffset);
 
   const uint32_t diameter = (2 * radius) + 1; // must be odd
   const auto screenWidthLessDiameter =
-      static_cast<int32_t>(m_goomInfo->GetScreenInfo().width - diameter);
+      static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - diameter);
   const auto screenHeightLessDiameter =
-      static_cast<int32_t>(m_goomInfo->GetScreenInfo().height - diameter);
+      static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - diameter);
 
   if ((x0 < static_cast<int32_t>(diameter)) || (y0 < static_cast<int32_t>(diameter)) ||
       (x0 >= screenWidthLessDiameter) || (y0 >= screenHeightLessDiameter))

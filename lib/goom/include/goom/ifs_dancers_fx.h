@@ -4,6 +4,7 @@
 #include "goom_visual_fx.h"
 #include "goomutils/spimpl.h"
 
+#include <memory>
 #include <string>
 
 namespace GOOM
@@ -37,7 +38,7 @@ public:
 
   IfsDancersFx() noexcept = delete;
   explicit IfsDancersFx(const IGoomDraw& draw,
-                        const std::shared_ptr<const PluginInfo>& goomInfo,
+                        const PluginInfo& goomInfo,
                         const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
@@ -65,7 +66,6 @@ public:
   void Finish() override;
 
 private:
-  bool m_enabled = true;
   class IfsDancersFxImpl;
   spimpl::unique_impl_ptr<IfsDancersFxImpl> m_fxImpl;
 };

@@ -5,6 +5,7 @@
 #include "goom_graphic.h"
 #include "v2d.h"
 
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -44,7 +45,7 @@ public:
   using ZoomPointFunc = std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords)>;
 
   ZoomFilterBuffers(UTILS::Parallel& p,
-                    const std::shared_ptr<const PluginInfo>& goomInfo,
+                    const PluginInfo& goomInfo,
                     const ZoomPointFunc& zoomPointFunc);
 
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;

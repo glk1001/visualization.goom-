@@ -38,7 +38,7 @@ static const Pixel BLACK_LINE = GetBlackLineColor();
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  const IGoomDraw& draw,
-                                 const std::shared_ptr<const PluginInfo>& goomInfo,
+                                 const PluginInfo& goomInfo,
                                  const SmallImageBitmaps& smallBitmaps,
                                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept
@@ -53,11 +53,11 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                           goomInfo,
                                           smallBitmaps,
                                           LinesFx::LineType::H_LINE,
-                                          static_cast<float>(goomInfo->GetScreenInfo().height),
+                                          static_cast<float>(goomInfo.GetScreenInfo().height),
                                           BLACK_LINE,
                                           LinesFx::LineType::CIRCLE,
                                           INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
-                                              static_cast<float>(goomInfo->GetScreenInfo().height),
+                                              static_cast<float>(goomInfo.GetScreenInfo().height),
                                           GREEN_LINE)},
     m_goomLine2{std::make_shared<LinesFx>(draw,
                                           goomInfo,
@@ -67,7 +67,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                           BLACK_LINE,
                                           LinesFx::LineType::CIRCLE,
                                           INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
-                                              static_cast<float>(goomInfo->GetScreenInfo().height),
+                                              static_cast<float>(goomInfo.GetScreenInfo().height),
                                           RED_LINE)},
     // clang-format off
     m_list {

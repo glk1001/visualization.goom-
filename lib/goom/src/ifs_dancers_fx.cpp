@@ -94,9 +94,9 @@ static const Weights<BlurrerColorMode> BLURRER_COLOR_MODE_WEIGHTS{{
 class IfsDancersFx::IfsDancersFxImpl
 {
 public:
-  explicit IfsDancersFxImpl(const IGoomDraw& draw,
-                            std::shared_ptr<const PluginInfo> goomInfo,
-                            const SmallImageBitmaps& smallBitmaps) noexcept;
+  IfsDancersFxImpl(const IGoomDraw& draw,
+                   const PluginInfo& goomInfo,
+                   const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void Init();
 
@@ -120,7 +120,7 @@ private:
   int32_t m_cycleLength = MIN_CYCLE_LENGTH;
 
   const IGoomDraw& m_draw;
-  const std::shared_ptr<const PluginInfo> m_goomInfo;
+  const PluginInfo& m_goomInfo;
 
   Colorizer m_colorizer{};
 
@@ -155,7 +155,7 @@ private:
 };
 
 IfsDancersFx::IfsDancersFx(const IGoomDraw& draw,
-                           const std::shared_ptr<const PluginInfo>& goomInfo,
+                           const PluginInfo& goomInfo,
                            const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<IfsDancersFxImpl>(draw, goomInfo, smallBitmaps)}
 {
@@ -196,21 +196,11 @@ auto IfsDancersFx::GetFxName() const -> std::string
 
 void IfsDancersFx::ApplyNoDraw()
 {
-  if (!m_enabled)
-  {
-    return;
-  }
-
   m_fxImpl->ApplyNoDraw();
 }
 
 void IfsDancersFx::ApplyMultiple()
 {
-  if (!m_enabled)
-  {
-    return;
-  }
-
   m_fxImpl->UpdateIfs();
 }
 
@@ -235,10 +225,10 @@ void IfsDancersFx::Renew()
 }
 
 IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const IGoomDraw& draw,
-                                                 std::shared_ptr<const PluginInfo> goomInfo,
+                                                 const PluginInfo& goomInfo,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
-    m_goomInfo{std::move(goomInfo)},
+    m_goomInfo{goomInfo},
     m_fractal{std::make_unique<Fractal>(m_draw.GetScreenWidth(),
                                         m_draw.GetScreenHeight(),
                                         m_colorizer.GetColorMaps(),
@@ -287,7 +277,7 @@ void IfsDancersFx::IfsDancersFxImpl::Renew()
   constexpr float MAX_SPEED_AMP = 5.1F;
   constexpr float MAX_SPEED_WEIGHT = 10.0F;
   const float speedAmp = std::min(GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
-  const float accelFactor = 1.0F / (1.2F - m_goomInfo->GetSoundInfo().GetAcceleration());
+  const float accelFactor = 1.0F / (1.2F - m_goomInfo.GetSoundInfo().GetAcceleration());
 
   m_fractal->SetSpeed(std::max(1U, static_cast<uint32_t>(speedAmp * accelFactor)));
 }
@@ -418,7 +408,7 @@ void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
 
     const uint32_t x = points[i].GetX();
     const uint32_t y = points[i].GetY();
-    if ((x >= m_goomInfo->GetScreenInfo().width) || (y >= m_goomInfo->GetScreenInfo().height))
+    if ((x >= m_goomInfo.GetScreenInfo().width) || (y >= m_goomInfo.GetScreenInfo().height))
     {
       continue;
     }

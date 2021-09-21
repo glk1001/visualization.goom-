@@ -4,6 +4,7 @@
 #include "goom_visual_fx.h"
 #include "goomutils/spimpl.h"
 
+#include <memory>
 #include <string>
 
 namespace GOOM
@@ -23,7 +24,7 @@ class GoomDotsFx : public IVisualFx
 public:
   GoomDotsFx() noexcept = delete;
   explicit GoomDotsFx(const IGoomDraw& draw,
-                      const std::shared_ptr<const PluginInfo>& goomInfo,
+                      const PluginInfo& goomInfo,
                       const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
@@ -42,7 +43,6 @@ public:
   void Finish() override;
 
 private:
-  bool m_enabled = true;
   class GoomDotsFxImpl;
   spimpl::unique_impl_ptr<GoomDotsFxImpl> m_fxImpl;
 };

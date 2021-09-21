@@ -64,9 +64,9 @@ struct Star
 class FlyingStarsFx::FlyingStarsImpl
 {
 public:
-  explicit FlyingStarsImpl(const IGoomDraw& draw,
-                           std::shared_ptr<const PluginInfo> goomInfo,
-                           const SmallImageBitmaps& smallBitmaps) noexcept;
+  FlyingStarsImpl(const IGoomDraw& draw,
+                  const PluginInfo& goomInfo,
+                  const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void Start();
 
@@ -79,7 +79,7 @@ public:
 
 private:
   const IGoomDraw& m_draw;
-  const std::shared_ptr<const PluginInfo> m_goomInfo;
+  const PluginInfo& m_goomInfo;
   const int32_t m_halfWidth;
   const int32_t m_halfHeight;
 
@@ -223,7 +223,7 @@ private:
 };
 
 FlyingStarsFx::FlyingStarsFx(const IGoomDraw& draw,
-                             const std::shared_ptr<const PluginInfo>& goomInfo,
+                             const PluginInfo& goomInfo,
                              const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<FlyingStarsImpl>(draw, goomInfo, smallBitmaps)}
 {
@@ -265,21 +265,16 @@ auto FlyingStarsFx::GetFxName() const -> std::string
 
 void FlyingStarsFx::ApplyMultiple()
 {
-  if (!m_enabled)
-  {
-    return;
-  }
-
   m_fxImpl->UpdateBuffers();
 }
 
 FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const IGoomDraw& draw,
-                                                std::shared_ptr<const PluginInfo> goomInfo,
+                                                const PluginInfo& goomInfo,
                                                 const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
-    m_goomInfo{std::move(goomInfo)},
-    m_halfWidth{static_cast<int32_t>(m_goomInfo->GetScreenInfo().width / 2)},
-    m_halfHeight{static_cast<int32_t>(m_goomInfo->GetScreenInfo().height / 2)},
+    m_goomInfo{goomInfo},
+    m_halfWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width / 2)},
+    m_halfHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height / 2)},
     m_smallBitmaps{smallBitmaps},
     m_drawFuncs{
         {DrawMode::CIRCLES,
@@ -369,7 +364,7 @@ void FlyingStarsFx::FlyingStarsImpl::UpdateBuffers()
 
 void FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents()
 {
-  if (m_stars.empty() || (m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() < 1))
+  if (m_stars.empty() || (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() < 1))
   {
     SoundEventOccurred();
     if (ProbabilityOfMInN(1, 20))
@@ -559,9 +554,9 @@ inline auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& s) const -> b
   constexpr int32_t DEAD_MARGIN = 64;
 
   return (s.pos.x < -DEAD_MARGIN) ||
-         (s.pos.x > static_cast<float>(m_goomInfo->GetScreenInfo().width + DEAD_MARGIN)) ||
+         (s.pos.x > static_cast<float>(m_goomInfo.GetScreenInfo().width + DEAD_MARGIN)) ||
          (s.pos.y < -DEAD_MARGIN) ||
-         (s.pos.y > static_cast<float>(m_goomInfo->GetScreenInfo().height + DEAD_MARGIN)) ||
+         (s.pos.y > static_cast<float>(m_goomInfo.GetScreenInfo().height + DEAD_MARGIN)) ||
          (s.age >= static_cast<float>(this->m_maxStarAge));
 }
 
@@ -799,8 +794,8 @@ void FlyingStarsFx::FlyingStarsImpl::SoundEventOccurred()
   constexpr float WIDTH = 320.0F;
   constexpr float HEIGHT = 200.0F;
   constexpr float MIN_HEIGHT = 50.0F;
-  const auto heightRatio = static_cast<float>(m_goomInfo->GetScreenInfo().height) / HEIGHT;
-  const float defaultRadius = (1.0F + m_goomInfo->GetSoundInfo().GetGoomPower()) *
+  const auto heightRatio = static_cast<float>(m_goomInfo.GetScreenInfo().height) / HEIGHT;
+  const float defaultRadius = (1.0F + m_goomInfo.GetSoundInfo().GetGoomPower()) *
                               (GetRandInRange(MIN_HEIGHT, HEIGHT) / WIDTH);
 
   const StarModeParams starParams = GetStarParams(defaultRadius, heightRatio);
@@ -823,10 +818,10 @@ void FlyingStarsFx::FlyingStarsImpl::UpdateWindAndGravity()
 auto FlyingStarsFx::FlyingStarsImpl::GetMaxStarsInABomb(const float heightRatio) const -> size_t
 {
   const auto maxStarsInBomb = static_cast<size_t>(
-      heightRatio * (100.0F + ((m_goomInfo->GetSoundInfo().GetGoomPower() + 1.0F) *
+      heightRatio * (100.0F + ((m_goomInfo.GetSoundInfo().GetGoomPower() + 1.0F) *
                                GetRandInRange(0.0F, 150.0F))));
 
-  if (m_goomInfo->GetSoundInfo().GetTimeSinceLastBigGoom() < 1)
+  if (m_goomInfo.GetSoundInfo().GetTimeSinceLastBigGoom() < 1)
   {
     return 2 * maxStarsInBomb;
   }
@@ -856,7 +851,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetStarParams(const float defaultRadius,
   }
 
   starParams.radius *= heightRatio;
-  if (m_goomInfo->GetSoundInfo().GetTimeSinceLastBigGoom() < 1)
+  if (m_goomInfo.GetSoundInfo().GetTimeSinceLastBigGoom() < 1)
   {
     starParams.radius *= 1.5F;
   }
@@ -872,8 +867,8 @@ auto FlyingStarsFx::FlyingStarsImpl::GetFireworksStarParams(const float defaultR
   const auto rsq = static_cast<double>(m_halfHeight * m_halfHeight);
   while (true)
   {
-    starParams.pos.x = static_cast<int32_t>(GetNRand(m_goomInfo->GetScreenInfo().width));
-    starParams.pos.y = static_cast<int32_t>(GetNRand(m_goomInfo->GetScreenInfo().height));
+    starParams.pos.x = static_cast<int32_t>(GetNRand(m_goomInfo.GetScreenInfo().width));
+    starParams.pos.y = static_cast<int32_t>(GetNRand(m_goomInfo.GetScreenInfo().height));
     const double sqDist = SqDistance(static_cast<float>(starParams.pos.x - m_halfWidth),
                                      static_cast<float>(starParams.pos.y - m_halfHeight));
     if (sqDist < rsq)
@@ -886,7 +881,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetFireworksStarParams(const float defaultR
   constexpr float INITIAL_WIND_FACTOR = 0.1F;
   constexpr float INITIAL_GRAVITY_FACTOR = 0.4F;
   starParams.radius = RADIUS_FACTOR * defaultRadius;
-  starParams.vage = m_maxAge * (1.0F - m_goomInfo->GetSoundInfo().GetGoomPower());
+  starParams.vage = m_maxAge * (1.0F - m_goomInfo.GetSoundInfo().GetGoomPower());
   starParams.windFactor = INITIAL_WIND_FACTOR;
   starParams.gravityFactor = INITIAL_GRAVITY_FACTOR;
 
@@ -898,9 +893,9 @@ auto FlyingStarsFx::FlyingStarsImpl::GetRainStarParams(const float defaultRadius
 {
   StarModeParams starParams;
 
-  const auto x0 = static_cast<int32_t>(m_goomInfo->GetScreenInfo().width / 25);
+  const auto x0 = static_cast<int32_t>(m_goomInfo.GetScreenInfo().width / 25);
   starParams.pos.x =
-      GetRandInRange(x0, static_cast<int32_t>(m_goomInfo->GetScreenInfo().width) - x0);
+      GetRandInRange(x0, static_cast<int32_t>(m_goomInfo.GetScreenInfo().width) - x0);
   starParams.pos.y = -GetRandInRange(3, 64);
 
   constexpr float RADIUS_FACTOR = 1.5F;
@@ -923,7 +918,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetFountainStarParams(const float defaultRa
   const int32_t x0 = m_halfWidth / 5;
   starParams.pos.x = GetRandInRange(m_halfWidth - x0, m_halfWidth + x0);
   starParams.pos.y =
-      static_cast<int32_t>(m_goomInfo->GetScreenInfo().height + GetRandInRange(3U, 64U));
+      static_cast<int32_t>(m_goomInfo.GetScreenInfo().height + GetRandInRange(3U, 64U));
 
   constexpr float INITIAL_VAGE = 0.001F;
   constexpr float INITIAL_WIND_FACTOR = 1.0F;
@@ -1000,7 +995,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetBombAngle(const Star& star) const -> flo
     {
       constexpr float MIN_RAIN_ANGLE = 0.1F;
       constexpr float MAX_RAIN_ANGLE = m_pi - 0.1F;
-      const float xFactor = star.pos.x / static_cast<float>(m_goomInfo->GetScreenInfo().width - 1);
+      const float xFactor = star.pos.x / static_cast<float>(m_goomInfo.GetScreenInfo().width - 1);
       minAngle = stdnew::lerp(MIN_RAIN_ANGLE, m_half_pi - 0.1F, 1.0F - xFactor);
       maxAngle = stdnew::lerp(m_half_pi + 0.1F, MAX_RAIN_ANGLE, xFactor);
       break;

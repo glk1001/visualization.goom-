@@ -43,7 +43,7 @@ public:
   GoomAllVisualFx() noexcept = delete;
   GoomAllVisualFx(UTILS::Parallel& parallel,
                   const IGoomDraw& draw,
-                  const std::shared_ptr<const PluginInfo>& goomInfo,
+                  const PluginInfo& goomInfo,
                   const UTILS::SmallImageBitmaps& smallBitmaps,
                   std::unique_ptr<FILTERS::FilterBuffersService> filterBuffersService,
                   std::unique_ptr<FILTERS::FilterColorsService> filterColorsService) noexcept;

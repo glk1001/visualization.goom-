@@ -109,9 +109,9 @@ constexpr float PROB_MOVE_AWAY_FROM_CENTRE = 0.3F;
 class TubeFx::TubeFxImpl
 {
 public:
-  explicit TubeFxImpl(const IGoomDraw& draw,
-                      const std::shared_ptr<const PluginInfo>& goomInfo,
-                      const SmallImageBitmaps& smallBitmaps) noexcept;
+  TubeFxImpl(const IGoomDraw& draw,
+             const PluginInfo& goomInfo,
+             const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
@@ -126,7 +126,7 @@ private:
   const IGoomDraw& m_draw;
   GoomDrawToContainer m_drawToContainer;
   const DRAW::GoomDrawToMany m_drawToMany;
-  std::shared_ptr<const PluginInfo> m_goomInfo{};
+  const PluginInfo& m_goomInfo;
   const SmallImageBitmaps& m_smallBitmaps;
   uint64_t m_updateNum = 0;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
@@ -202,7 +202,7 @@ private:
 };
 
 TubeFx::TubeFx(const IGoomDraw& draw,
-               const std::shared_ptr<const PluginInfo>& goomInfo,
+               const PluginInfo& goomInfo,
                const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(draw, goomInfo, smallBitmaps)}
 {
@@ -248,15 +248,11 @@ auto TubeFx::GetFxName() const -> std::string
 
 void TubeFx::ApplyMultiple()
 {
-  if (!m_enabled)
-  {
-    return;
-  }
   m_fxImpl->ApplyMultiple();
 }
 
 TubeFx::TubeFxImpl::TubeFxImpl(const IGoomDraw& draw,
-                               const std::shared_ptr<const PluginInfo>& goomInfo,
+                               const PluginInfo& goomInfo,
                                const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
     m_drawToContainer{draw.GetScreenWidth(), draw.GetScreenHeight()},
@@ -502,7 +498,7 @@ void TubeFx::TubeFxImpl::UpdateColorMaps()
 {
   m_allowOverexposed = ProbabilityOf(PROB_ALLOW_OVEREXPOSED);
 
-  if (m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() >= 1)
+  if (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() >= 1)
   {
     return;
   }
@@ -536,7 +532,7 @@ void TubeFx::TubeFxImpl::UpdateSpeeds()
     {
       ChangeJitterOffsets(tube);
 
-      if (m_goomInfo->GetSoundInfo().GetTimeSinceLastGoom() >= 1)
+      if (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() >= 1)
       {
         ChangeSpeedForLowerVolumes(tube);
       }
