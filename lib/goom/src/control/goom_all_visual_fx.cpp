@@ -2,11 +2,11 @@
 
 #include "../filters/filter_buffers_service.h"
 #include "../filters/filter_colors_service.h"
-#include "../filters/filter_settings.h"
 #include "flying_stars_fx.h"
 #include "goom_dots_fx.h"
 #include "goom_plugin_info.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
+#include "goomutils/name_value_pairs.h"
 #include "goomutils/parallel_utils.h"
 #include "ifs_dancers_fx.h"
 #include "sound_info.h"
@@ -29,6 +29,7 @@ using CONTROL::GoomDrawable;
 using FILTERS::FilterBuffersService;
 using FILTERS::FilterColorsService;
 using FILTERS::ZoomFilterSettings;
+using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::SmallImageBitmaps;
 
@@ -283,6 +284,11 @@ void GoomAllVisualFx::ApplyStarsToBothBuffersIfRequired()
 inline void GoomAllVisualFx::ResetDrawBuffSettings(const FXBuffSettings& settings)
 {
   m_resetDrawBuffSettings(settings);
+}
+
+auto GoomAllVisualFx::GetZoomFilterFxNameValueParams() const -> NameValuePairs
+{
+  return m_zoomFilter_fx->GetNameValueParams();
 }
 
 #if __cplusplus <= 201402L

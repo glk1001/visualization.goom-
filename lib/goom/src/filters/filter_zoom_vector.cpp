@@ -32,13 +32,10 @@ void FilterZoomVector::SetFilterSettings(const ZoomFilterEffectsSettings& filter
   m_zoomVectorEffects.SetFilterSettings(filterEffectsSettings);
 }
 
-auto FilterZoomVector::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
+auto FilterZoomVector::GetNameValueParams([[maybe_unused]] const std::string& paramGroup) const
+    -> NameValuePairs
 {
-  if ("ZoomEffects" == paramGroup)
-  {
-    return m_zoomVectorEffects.GetZoomEffectsNameValueParams();
-  }
-  return NameValuePairs{};
+  return m_zoomVectorEffects.GetZoomEffectsNameValueParams();
 }
 
 auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords

@@ -47,7 +47,9 @@ using FILTERS::FilterColorsService;
 using FILTERS::ZoomFilterBufferSettings;
 using FILTERS::ZoomFilterColorSettings;
 using FILTERS::ZoomFilterEffectsSettings;
+using UTILS::GetPair;
 using UTILS::Logging;
+using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 
@@ -72,7 +74,7 @@ public:
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams() const -> NameValuePairs;
 
 private:
   const uint32_t m_screenWidth;
@@ -101,9 +103,9 @@ void ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings)
   m_fxImpl->SetBuffSettings(settings);
 }
 
-auto ZoomFilterFx::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
+auto ZoomFilterFx::GetNameValueParams() const -> NameValuePairs
 {
-  return m_fxImpl->GetNameValueParams(paramGroup);
+  return m_fxImpl->GetNameValueParams();
 }
 
 void ZoomFilterFx::Start()
@@ -189,14 +191,16 @@ inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
   m_filterBuffersService->SetFilterBufferSettings(filterBufferSettings);
 }
 
-auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams(const std::string& paramGroup) const
-    -> NameValuePairs
+auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams() const -> NameValuePairs
 {
-  if ("colors" == paramGroup)
-  {
-    return m_filterColorsService->GetNameValueParams(paramGroup);
-  }
-  return m_filterBuffersService->GetNameValueParams(paramGroup);
+  constexpr const char* PARAM_GROUP = "ZoomFilterFx";
+
+  NameValuePairs nameValuePairs{GetPair(PARAM_GROUP, "tranLerpFactor", GetTranLerpFactor())};
+
+  MoveNameValuePairs(m_filterColorsService->GetNameValueParams(PARAM_GROUP), nameValuePairs);
+  MoveNameValuePairs(m_filterBuffersService->GetNameValueParams(PARAM_GROUP), nameValuePairs);
+
+  return nameValuePairs;
 }
 
 inline void ZoomFilterFx::ZoomFilterImpl::Start()

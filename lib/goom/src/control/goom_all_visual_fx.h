@@ -88,6 +88,8 @@ public:
 
   void DoIfsRenew();
 
+  [[nodiscard]] auto GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs;
+
 private:
   const std::shared_ptr<ZoomFilterFx> m_zoomFilter_fx;
   const std::shared_ptr<FlyingStarsFx> m_star_fx;

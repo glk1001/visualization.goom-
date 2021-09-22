@@ -54,8 +54,7 @@ public:
 
   void Finish() override;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams() const -> UTILS::NameValuePairs;
 
 private:
   class ZoomFilterImpl;
