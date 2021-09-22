@@ -12,6 +12,8 @@
 #include "goomutils/timer.h"
 #include "v2d.h"
 
+//#undef NDEBUG
+#include <cassert>
 #include <string>
 
 #if __cplusplus <= 201402L

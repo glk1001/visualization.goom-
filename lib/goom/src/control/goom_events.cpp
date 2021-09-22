@@ -40,7 +40,7 @@ GoomEvents::GoomEvents() noexcept
       { /*.event = */GoomEvent::FILTER_DECREASE_ROTATION,                   /*.m =*/35, /*.outOf = */ 40 },
       { /*.event = */GoomEvent::FILTER_STOP_ROTATION,                       /*.m =*/10, /*.outOf = */ 40 },
       { /*.event = */GoomEvent::IFS_RENEW,                                  /*.m = */2, /*.outOf = */  3 },
-      { /*.event = */GoomEvent::CHANGE_BLOCKY_WAVY_TO_ON,                   /*.m = */5, /*.outOf = */ 20 },
+      { /*.event = */GoomEvent::CHANGE_BLOCKY_WAVY_TO_ON,                   /*.m = */9, /*.outOf = */ 20 },
       { /*.event = */GoomEvent::CHANGE_ZOOM_FILTER_ALLOW_OVEREXPOSED_TO_ON, /*.m =*/19, /*.outOf = */ 20 },
     }},
     m_weightedLineEvents{{
