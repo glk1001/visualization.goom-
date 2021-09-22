@@ -24,6 +24,7 @@ add_library(goom
         src/control/goom_events.cpp
         src/control/goom_image_buffers.cpp
         src/control/goom_message_displayer.cpp
+        src/control/goom_music_lines_reactor.cpp
         src/control/goom_music_settings_reactor.cpp
         src/control/goom_states.cpp
         src/control/goom_title_displayer.cpp

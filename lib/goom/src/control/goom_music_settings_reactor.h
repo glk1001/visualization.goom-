@@ -1,11 +1,11 @@
 #ifndef VISUALIZATION_GOOM_MUSIC_SETTINGS_REACTOR_H
 #define VISUALIZATION_GOOM_MUSIC_SETTINGS_REACTOR_H
 
-#include "../filters/filter_settings.h"
 #include "../filters/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
 #include "goom_events.h"
 #include "goom_lock.h"
+#include "goom_music_lines_reactor.h"
 #include "goom_plugin_info.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/name_value_pairs.h"
@@ -26,11 +26,10 @@ class GoomMusicSettingsReactor
 public:
   GoomMusicSettingsReactor(const PluginInfo& goomInfo,
                            GoomAllVisualFx& visualFx,
-                           FILTERS::FilterSettingsService& filterSettingsService);
+                           FILTERS::FilterSettingsService& filterSettingsService) noexcept;
 
   void Start();
   void NewCycle();
-  void UpdateTimers();
 
   void ChangeZoomEffects();
   void ChangeFilterModeIfMusicChanges();
@@ -53,9 +52,10 @@ private:
   const PluginInfo& m_goomInfo;
   GoomAllVisualFx& m_visualFx;
   FILTERS::FilterSettingsService& m_filterSettingsService;
+  GoomMusicLinesReactor m_musicLinesReactor;
 
   using GoomEvent = GoomEvents::GoomEvent;
-  GoomEvents m_goomEvent{};
+  GoomEvents m_goomEvents{};
 
   static constexpr uint32_t NORMAL_UPDATE_LOCK_TIME = 50;
   static constexpr uint32_t REVERSE_SPEED_AND_STOP_SPEED_LOCK_TIME = 75;
@@ -90,6 +90,8 @@ private:
   void ChangeVitesse();
   void ChangeStopSpeeds();
 
+  void UpdateTimers();
+
   static constexpr uint32_t NUM_ALLOW_OVEREXPOSED_ON_UPDATES = 500;
   static constexpr uint32_t NUM_ALLOW_OVEREXPOSED_OFF_UPDATES = 100;
   UTILS::Timer m_allowOverexposedTimer{NUM_ALLOW_OVEREXPOSED_ON_UPDATES};
@@ -102,27 +104,14 @@ private:
   static constexpr uint32_t NUM_NOISE_UPDATES = 100;
   UTILS::Timer m_noiseTimer{NUM_NOISE_UPDATES};
   void ChangeNoise();
-
-  // duree de la transition entre afficher les lignes ou pas
-  int32_t m_stopLines = 0;
-  int32_t m_drawLinesDuration = LinesFx::MIN_LINE_DURATION;
-  int32_t m_lineMode = LinesFx::MIN_LINE_DURATION; // l'effet lineaire a dessiner
-  using GoomLineSettings = GoomAllVisualFx::GoomLineSettings;
-  [[nodiscard]] auto GetGoomLineResetSettings(int farVal) const -> GoomLineSettings;
-  [[nodiscard]] auto GetGoomLineStopSettings() const -> GoomLineSettings;
-  void ResetLineModes();
-  // arret demande
-  void StopLinesIfRequested();
-  // arret aleatore.. changement de mode de ligne..
-  void StopRandomLineChangeMode();
-  void ResetGoomLines();
-  void StopGoomLines();
 };
 
 inline void GoomMusicSettingsReactor::Start()
 {
   m_updateNum = 0;
   m_timeInState = 0;
+
+  m_musicLinesReactor.Start();
 
   DoChangeState();
 }
@@ -133,6 +122,8 @@ inline void GoomMusicSettingsReactor::NewCycle()
   ++m_timeInState;
   m_lock.Update();
   UpdateTimers();
+
+  m_musicLinesReactor.NewCycle();
 }
 
 inline void GoomMusicSettingsReactor::UpdateTimers()
@@ -144,16 +135,12 @@ inline void GoomMusicSettingsReactor::UpdateTimers()
 
 inline auto GoomMusicSettingsReactor::CanDisplayLines() const -> bool
 {
-  constexpr uint32_t DISPLAY_LINES_GOOM_NUM = 5;
-
-  return ((m_lineMode != 0) ||
-          (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
+  return m_musicLinesReactor.CanDisplayLines();
 }
 
 inline void GoomMusicSettingsReactor::UpdateLineModes()
 {
-  StopLinesIfRequested();
-  StopRandomLineChangeMode();
+  m_musicLinesReactor.UpdateLineModes();
 }
 
 inline void GoomMusicSettingsReactor::BigBreakIfMusicIsCalm()
@@ -182,7 +169,7 @@ inline void GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges()
 {
   if (((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) ||
        (m_updatesSinceLastZoomEffectsChange > MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE)) &&
-      m_goomEvent.Happens(GoomEvent::CHANGE_FILTER_MODE))
+      m_goomEvents.Happens(GoomEvent::CHANGE_FILTER_MODE))
   {
     ChangeFilterMode();
   }
@@ -207,7 +194,7 @@ inline void GoomMusicSettingsReactor::ChangeAllowOverexposed()
   }
 
   const bool allowOverexposed =
-      m_goomEvent.Happens(GoomEvent::CHANGE_ZOOM_FILTER_ALLOW_OVEREXPOSED_TO_ON);
+      m_goomEvents.Happens(GoomEvent::CHANGE_ZOOM_FILTER_ALLOW_OVEREXPOSED_TO_ON);
 
   m_visualFx.SetZoomFilterAllowOverexposed(allowOverexposed);
   m_allowOverexposedTimer.SetTimeLimit(allowOverexposed ? NUM_ALLOW_OVEREXPOSED_ON_UPDATES
@@ -221,7 +208,7 @@ inline void GoomMusicSettingsReactor::ChangeBlockyWavy()
     return;
   }
 
-  const bool blockyWavy = m_goomEvent.Happens(GoomEvent::CHANGE_BLOCKY_WAVY_TO_ON);
+  const bool blockyWavy = m_goomEvents.Happens(GoomEvent::CHANGE_BLOCKY_WAVY_TO_ON);
 
   m_filterSettingsService.SetBlockyWavy(blockyWavy);
   m_blockyWavyTimer.ResetToZero();
@@ -234,7 +221,7 @@ inline void GoomMusicSettingsReactor::ChangeNoise()
     return;
   }
 
-  const bool noiseOn = !m_goomEvent.Happens(GoomEvent::TURN_OFF_NOISE);
+  const bool noiseOn = !m_goomEvents.Happens(GoomEvent::TURN_OFF_NOISE);
 
   m_filterSettingsService.SetNoise(noiseOn);
   m_noiseTimer.ResetToZero();
@@ -242,21 +229,21 @@ inline void GoomMusicSettingsReactor::ChangeNoise()
 
 inline void GoomMusicSettingsReactor::ChangeRotation()
 {
-  if (m_goomEvent.Happens(GoomEvent::FILTER_STOP_ROTATION))
+  if (m_goomEvents.Happens(GoomEvent::FILTER_STOP_ROTATION))
   {
     m_filterSettingsService.SetRotateToZero();
   }
-  else if (m_goomEvent.Happens(GoomEvent::FILTER_DECREASE_ROTATION))
+  else if (m_goomEvents.Happens(GoomEvent::FILTER_DECREASE_ROTATION))
   {
     constexpr float ROTATE_SLOWER_FACTOR = 0.9F;
     m_filterSettingsService.MultiplyRotate(ROTATE_SLOWER_FACTOR);
   }
-  else if (m_goomEvent.Happens(GoomEvent::FILTER_INCREASE_ROTATION))
+  else if (m_goomEvents.Happens(GoomEvent::FILTER_INCREASE_ROTATION))
   {
     constexpr float ROTATE_FASTER_FACTOR = 1.1F;
     m_filterSettingsService.MultiplyRotate(ROTATE_FASTER_FACTOR);
   }
-  else if (m_goomEvent.Happens(GoomEvent::FILTER_TOGGLE_ROTATION))
+  else if (m_goomEvents.Happens(GoomEvent::FILTER_TOGGLE_ROTATION))
   {
     m_filterSettingsService.ToggleRotate();
   }
@@ -296,7 +283,7 @@ inline void GoomMusicSettingsReactor::BigUpdate()
   }
 
   // mode mega-lent
-  if (m_goomEvent.Happens(GoomEvent::CHANGE_TO_MEGA_LENT_MODE))
+  if (m_goomEvents.Happens(GoomEvent::CHANGE_TO_MEGA_LENT_MODE))
   {
     MegaLentUpdate();
   }
@@ -340,13 +327,13 @@ inline void GoomMusicSettingsReactor::ChangeSpeedReverse()
 
   if ((m_filterSettingsService.GetROVitesse().GetReverseVitesse()) &&
       ((m_updateNum % REVERSE_VITESSE_CYCLES) != 0) &&
-      m_goomEvent.Happens(GoomEvent::FILTER_REVERSE_OFF_AND_STOP_SPEED))
+      m_goomEvents.Happens(GoomEvent::FILTER_REVERSE_OFF_AND_STOP_SPEED))
   {
     m_filterSettingsService.GetRWVitesse().SetReverseVitesse(false);
     m_filterSettingsService.GetRWVitesse().SetVitesse(SLOW_SPEED);
     m_lock.SetLockTime(REVERSE_SPEED_AND_STOP_SPEED_LOCK_TIME);
   }
-  if (m_goomEvent.Happens(GoomEvent::FILTER_REVERSE_ON))
+  if (m_goomEvents.Happens(GoomEvent::FILTER_REVERSE_ON))
   {
     m_filterSettingsService.GetRWVitesse().SetReverseVitesse(true);
     m_lock.SetLockTime(REVERSE_SPEED_LOCK_TIME);
@@ -355,12 +342,12 @@ inline void GoomMusicSettingsReactor::ChangeSpeedReverse()
 
 inline void GoomMusicSettingsReactor::ChangeStopSpeeds()
 {
-  if (m_goomEvent.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED_MINUS1))
+  if (m_goomEvents.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED_MINUS1))
   {
     constexpr int32_t SLOW_SPEED = FILTERS::Vitesse::STOP_SPEED - 1;
     m_filterSettingsService.GetRWVitesse().SetVitesse(SLOW_SPEED);
   }
-  else if (m_goomEvent.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED))
+  else if (m_goomEvents.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED))
   {
     m_filterSettingsService.GetRWVitesse().SetVitesse(FILTERS::Vitesse::STOP_SPEED);
   }
@@ -381,7 +368,7 @@ inline void GoomMusicSettingsReactor::ChangeState()
   {
     --m_stateSelectionBlocker;
   }
-  else if (m_goomEvent.Happens(GoomEvent::CHANGE_STATE))
+  else if (m_goomEvents.Happens(GoomEvent::CHANGE_STATE))
   {
     m_stateSelectionBlocker = MAX_NUM_STATE_SELECTIONS_BLOCKED;
     DoChangeState();
@@ -398,85 +385,17 @@ inline void GoomMusicSettingsReactor::DoChangeState()
 
   m_timeInState = 0;
 
-  if (m_goomEvent.Happens(GoomEvent::IFS_RENEW))
+  if (m_goomEvents.Happens(GoomEvent::IFS_RENEW))
   {
     m_visualFx.DoIfsRenew();
   }
 
-  ResetLineModes();
+  m_musicLinesReactor.ResetLineModes();
 }
 
 inline void GoomMusicSettingsReactor::ChangeGoomLines()
 {
-  if (!m_visualFx.CanResetDestGoomLines())
-  {
-    return;
-  }
-
-  constexpr uint32_t CHANGE_GOOM_LINE_CYCLES = 121;
-  constexpr uint32_t GOOM_CYCLE_MOD_CHANGE = 9;
-
-  if ((GOOM_CYCLE_MOD_CHANGE == (m_updateNum % CHANGE_GOOM_LINE_CYCLES)) &&
-      m_goomEvent.Happens(GoomEvent::CHANGE_GOOM_LINE) &&
-      ((0 == m_lineMode) || (m_lineMode == m_drawLinesDuration)))
-  {
-    ResetGoomLines();
-  }
-}
-
-inline void GoomMusicSettingsReactor::ResetLineModes()
-{
-  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawable::SCOPE))
-  {
-    constexpr int32_t SCOPE_RESET = 0xF000 & 5;
-    m_stopLines = SCOPE_RESET;
-  }
-  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawable::FAR_SCOPE))
-  {
-    m_stopLines = 0;
-    m_lineMode = m_drawLinesDuration;
-  }
-}
-
-inline void GoomMusicSettingsReactor::StopLinesIfRequested()
-{
-  constexpr int32_t LARGE_STOP_LINE = 0xF000;
-  if (((m_stopLines & LARGE_STOP_LINE) != 0) ||
-      (!m_visualFx.IsCurrentlyDrawable(GoomDrawable::SCOPE)))
-  {
-    StopGoomLines();
-  }
-}
-
-inline void GoomMusicSettingsReactor::StopGoomLines()
-{
-  if (!m_visualFx.CanResetDestGoomLines())
-  {
-    return;
-  }
-
-  m_visualFx.ResetDestGoomLines(GetGoomLineStopSettings());
-
-  constexpr int32_t STOP_MASK = 0x0FFF;
-  m_stopLines &= STOP_MASK;
-}
-
-inline void GoomMusicSettingsReactor::ResetGoomLines()
-{
-  m_visualFx.ResetDestGoomLines(GetGoomLineResetSettings(m_stopLines));
-
-  if (m_stopLines)
-  {
-    --m_stopLines;
-  }
-}
-
-inline auto GoomMusicSettingsReactor::GetGoomLineStopSettings() const -> GoomLineSettings
-{
-  GoomLineSettings lineSettings = GetGoomLineResetSettings(1);
-  lineSettings.line1Color = GetBlackLineColor();
-  lineSettings.line2Color = lineSettings.line1Color;
-  return lineSettings;
+  m_musicLinesReactor.ChangeGoomLines();
 }
 
 } // namespace CONTROL
