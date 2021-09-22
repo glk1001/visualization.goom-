@@ -149,8 +149,8 @@ inline void GoomMusicLinesReactor::ResetGoomLines()
 inline auto GoomMusicLinesReactor::GetGoomLineStopSettings() const -> GoomLineSettings
 {
   GoomLineSettings lineSettings = GetGoomLineResetSettings(1);
-  lineSettings.line1Color = GetBlackLineColor();
-  lineSettings.line2Color = lineSettings.line1Color;
+  lineSettings.line1.color = GetBlackLineColor();
+  lineSettings.line2.color = lineSettings.line1.color;
   return lineSettings;
 }
 
