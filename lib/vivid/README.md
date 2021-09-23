@@ -17,7 +17,7 @@ using namespace vivid;
 Color c1( "indianred" );
 Color c2( { 0.f, 0.4f, 0.5f }, Color::Space::Hsl );
 
-auto interp = lerpLch( c1, c2, 0.5f );   //  perceptual interpolation in L*C*h(ab)
+auto interp = lerpOklab( c1, c2, 0.5f );   //  perceptual interpolation in Oklab
 std::string hex = interp.hex();
 
 //  quick access to popular colormaps for data visualization
@@ -31,7 +31,7 @@ fout << html::bg( "#abc123" ) << "styled background color" << html::close;
 
 ##  Content
 
-<!-- TOC depthFrom:2 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
+<!-- TOC depthfrom:2 depthto:2 withlinks:true updateonsave:true orderedlist:false -->
 
 - [Content](#content)
 - [Motivation](#motivation)
@@ -42,6 +42,7 @@ fout << html::bg( "#abc123" ) << "styled background color" << html::close;
 - [Interpolation](#interpolation)
 - [Color Maps](#color-maps)
 - [Encodings](#encodings)
+- [Image Processing](#image-processing)
 - [Attributions](#attributions)
 
 <!-- /TOC -->
@@ -58,17 +59,19 @@ Things we create should be beautiful. Be it a console log message or a real-time
 
 ```bash
 git clone git@github.com:gurki/vivid.git
-git submodule update --init
 ```
 
-This repository comes with support for both `qmake` (_vivid.pri_) and `cmake` projects.
-You can try it out by simply opening up `examples/qmake/vivid.pro` in `Qt Creator`, or running
+This repository comes with support for both `cmake` and `qmake`[^1] projects.
+You can try it out by simply opening the project in e.g. `VSCode`, `Qt Creator`, or running
 
 ```bash
 mkdir build && cd build
 cmake .. && make
 ./examples/cmake/vivid_example
 ```
+
+
+[\^1] c.f. _vivid.pri_. Note that submodules have been deprecated with v3.0.0. You need to manually add `nlohmann_json` and `glm` to `dependencies/`.
 
 
 ## Dependencies
@@ -112,6 +115,8 @@ lossy.hex();    //  #afafd7
 
 ### Strong Typing
 
+    Note: You can use this library as high- or low-level as you like!
+
 Under the hood, `vivid` uses _inheritance-based strong typing_. This means, that the compiler will give you a heads-up if e.g. you're trying to convert from the wrong color. This also enables `Colors` to be implicitly initialized from the native spaces.
 
 ```cpp
@@ -140,7 +145,7 @@ auto xyz = static_cast<xyz_t>( src );   //  init from external source
 
 The base type _col_t_ aliases directly to _glm::vec<3, float>_ (c.f. _include/vivid/types.h_). This allows effective and efficient use of colors, providing all of `glm`'s vector goodness right out of the box.
 
-<details><summary>Click to expand example</summary><p>
+<details><summary><i>Click to expand code</i></summary><p>
 
 ```cpp
 //  some uses of _glm_ in _vivid_
@@ -170,8 +175,9 @@ Under the hood, `vivid` uses an extensive set of strongly-typed conversions betw
     hsv ← rgb
     index ← name, rgb8
     lab ← lch, xyz
+    oklab ← lrgb 
     lch ← lab
-    lrgb ← srgb
+    lrgb ← srgb, oklab
     name ← index
     rgb ← hsl, hsv, rgb8
     rgb32 ← hex, rgb
@@ -179,14 +185,52 @@ Under the hood, `vivid` uses an extensive set of strongly-typed conversions betw
     srgb ← index, lrgb, xyz
     xyz ← adobe, lab, srgb
 
+### Gamma Correction
+When someone talks about `RGB` colors, it's not clear at all what he's actually refering to. `RGB` simply encodes red, green and blue components with values in a certain range. How those values are to be interpreted is a whole different story. What working space is the color in? Maybe it's linearized? Does it use gamma correction? If so, what sort?
+
+If you have no idea what I'm talking about, don't worry - I didn't either a couple weeks ago :). There is a great article from John Novak on this topic [^1], where he goes into the caveats of gamma correction and its implications. Give it a read, it gives some fascinating insights!
+
+    The `vivid::Color` class assumes a `sRGB` working space.
+
+`vivid` provides the `rgb_t` type as a general, working space agnostic `RGB` container, that interfaces directly with 8-bit, 32-bit, `HSV` and `HSL` conversions, as all of those are independent of the underlying representation. If you want to use this library e.g. to do image processing, consider using the low-level API and the strongly typed `srgb_t` and linearized `lrgb_t` classes. Note that there are much more performant libraries out there for these kinds of tasks. But hey, I actually found it pretty fun to experiment a little with `vivid` on image data, and `std::execution` makes it a breeze.
+
+<details><summary><i>Click to expand code</i></summary><p>
+
+```cpp
+//  gamma correction on image data
+static const float gamma = 2.2f;
+
+auto image = QImage( "image.jpg" ).convertToFormat( QImage::Format_ARGB32 );
+auto dataPtr = reinterpret_cast<uint32_t*>( image.bits() );
+
+const auto pixelOperation = []( uint32_t& argb ) {
+    const auto srgb = srgb_t( rgb::fromRgb32( argb ) );                     //  get srgb color value
+    const auto corrRgb = rgb::gamma( lrgb::fromSrgb( srgb ), 1.f / gamma ); //  linearize and apply gamma correction
+    return rgb32::fromRgb( srgb::fromLrgb( corrRgb ) );                     //  convert back to srgb
+};
+
+std::transform(
+    std::execution::par_unseq,
+    dataPtr, dataPtr + image.width() * image.height(), dataPtr,
+    pixelOperation
+);
+
+image.save( "image_high-gamma.jpg" );
+```
+
+</p></details>
+
+
+Original [^2]              |  Gamma Corrected (γ = 2.2)
+:-------------------------:|:-------------------------:
+![original](docs/images/processing/image.jpg) |  ![gamma-corrected](docs/images/processing/image_high-gamma.jpg)
+
 
 ### Working Spaces
 
-    Note: You can use this library as high- or low-level as you like!
+As seen above, any red-green-blue-triplet can represent colors in different `RGB` working spaces. `vivid` currently supports `Linear RGB`, `sRGB` and `Adobe RGB`. You can also implement your own conversions as demonstrated in the following example.
 
-<details><summary>Click to expand section</summary><p>
-
-The `Color` class assumes a default `sRGB` working space. Specifically, the conversion between `RGB` and `XYZ` applies `sRGB` compounding and inverse compounding. You can however extend this freely and work with custom color spaces using the low-level API. If you have no idea what I just said, don't worry - I didn't either a couple weeks ago :).
+<details><summary><i>Click to expand example</i></summary><p>
 
 ```cpp
 //  manual wide-gamut rgb to xyz conversion
@@ -209,9 +253,12 @@ auto xyz50 = xyz_t( wg_to_xyz * linear );
 auto xyz65 = chromaticAdaptation( xyz50, profiles::xy_d50, profiles::xy_d65 );
 ```
 
-Note that `vivid` uses the _D65_ white point and _2° Standard Observer_, which is why we apply chromatic adaptation in the example above. This let's us subsequently use e.g. `srgb::fromXyz( xyz65 )`.
-
 </p></details>
+
+Note that `vivid` by default utilizes the _D65_ white point and _2° Standard Observer_, which is why we apply chromatic adaptation in the example above. This let's us subsequently use e.g. `srgb::fromXyz(xyz65)`.
+
+[^1] http://blog.johnnovak.net/2016/09/21/what-every-coder-should-know-about-gamma/ <br>
+[^2] Firewatch Background _© Michael Gustavsson_
 
 
 ## Interpolation
@@ -225,21 +272,23 @@ for ( auto& pixel : image ) {
 }
 ```
 
-Color interpolation is an interesting topic. What should the color halfway in-between <span style="color:rgb(178, 76, 76)">red</span> and <span style="color:rgb(25, 153, 102)">green</span> look like? There is a great article introducing this topic by Grego Aisch [^1]. In order to do a perceptually linear transition from one color to another, we can't simply linearly interpolate two `RGB`-vectors. Rather, we move to a more suitable color space, interpolate there, and then move back again. Namely, we use the `CIE L*C*h(ab)` space, or `LCH`, which matches the human visual system rather well. There are more suitable color spaces nowadays to do so, but `LCH` has a nice balance between complexity (code and computation) and outcome.
+Color interpolation is an interesting topic. What should the color halfway in-between <span style="color:rgb(178, 76, 76)">red</span> and <span style="color:rgb(25, 153, 102)">green</span> look like? There is a great article introducing this topic by Grego Aisch [^1]. In order to do a perceptually linear transition from one color to another, we can't simply linearly interpolate two `RGB`-vectors. Rather, we move to a more suitable color space, interpolate there, and then move back again. Namely, we use the Björn Ottosson's `Oklab` space [^2], which matches the human visual system rather well. There are more suitable color spaces nowadays to do so, but `Oklab` has a nice balance between complexity (code and computation) and outcome.
 
 Compare the following table to get an idea of interpolating in different color spaces.
 
 Color Space   | Linear Interpolation
 --------------|-------------------------------------------------------------------
-RGB           | ![lerp-rgb](docs/images/interpolations/lerpRgb.png)
+sRGB          | ![lerp-rgb](docs/images/interpolations/lerpRgb.png)
+Linear RGB    | ![lerp-linear-rgb](docs/images/interpolations/lerpLinearRgb.png)
+Oklab         | ![lerp-oklab](docs/images/interpolations/lerpOklab.png)
 LCH           | ![lerp-lch](docs/images/interpolations/lerpLch.png)
 HSV           | ![lerp-hsv](docs/images/interpolations/lerpHsv.png)
 HSL (Clamped) | ![lerp-hsl-clamped](docs/images/interpolations/lerpHslClamped.png)
 
-`vivid` provides color interpolations in the four main spaces `RGB`, `HSL`, `HSV`, `LCH`. They can be accessed directly via e.g. `lch_t::lerp( const lch_t&, const lch_t&, const float )`, or more conveniently via e.g. `lerpLch( const Color&, const Color&, const float )`.
+`vivid` provides color interpolations in the five main spaces `RGB`, `HSL`, `HSV`, `LCH`, `Oklab` and additionally `Linear RGB`. They can be accessed directly via e.g. `lerp( const oklab_t&, const oklab_t&, const float )`, or more conveniently via e.g. `lerpLch( const Color&, const Color&, const float )`.
 
-[\^1] [Grego Aisch (2011) - How To Avoid Equidistant HSV Colors](https://www.vis4.net/blog/2011/12/avoid-equidistant-hsv-colors/)
-
+[\^1] [Grego Aisch (2011) - How To Avoid Equidistant HSV Colors](https://www.vis4.net/blog/2011/12/avoid-equidistant-hsv-colors/)<br>
+[\^2] [Björn Ottosson (2020) - A perceptual color space for image processing](https://bottosson.github.io/posts/oklab/)
 
 ## Color Maps
 
@@ -258,12 +307,13 @@ Inferno     | ![inferno](docs/images/colormaps/inferno.png)
 Magma       | ![magma](docs/images/colormaps/magma.png)
 Plasma      | ![plasma](docs/images/colormaps/plasma.png)
 Viridis     | ![viridis](docs/images/colormaps/viridis.png)
+Turbo       | ![vivid](docs/images/colormaps/turbo.png)
 Vivid       | ![vivid](docs/images/colormaps/vivid.png)
-Rainbow     | ![vivid](docs/images/colormaps/rainbow.png)
+Rainbow     | ![rainbow](docs/images/colormaps/rainbow.png)
 Hsl         | ![hsl](docs/images/colormaps/hsl.png)
 Hsl Pastel  | ![hsl-pastel](docs/images/colormaps/hsl-pastel.png)
-Blue-Yellow | ![vivid](docs/images/colormaps/blue-yellow.png)
-Cool-Warm   | ![vivid](docs/images/colormaps/cool-warm.png)
+Blue-Yellow | ![blue-yellow](docs/images/colormaps/blue-yellow.png)
+Cool-Warm   | ![cool-warm](docs/images/colormaps/cool-warm.png)
 
 [\^2] [Stefan & Nathaniel - MPL Colormaps](http://bids.github.io/colormap/) <br>
 [\^3] [SciVisColor](https://sciviscolor.org/)
@@ -277,7 +327,7 @@ Cool-Warm   | ![vivid](docs/images/colormaps/cool-warm.png)
 
 You can colorize console messages using the `ansi::fg()` and `ansi::bg()` helpers, or using one of the pre-defined constants, e.g. `ansi::white`. There's also a hand-picked set of the most useful™ and some of my favorite colors in there for you! You can take a look via `ansi::printColorPresets()`. Note, that for all of those your console must support `8-bit` colors, which however almost all modern consoles do.
 
-<details><summary>Click to expand example</summary><p>
+<details><summary><i>Click to expand code</i></summary><p>
 
 ```cpp
 std::cout << ansi::fg( 228 )  << "and tada, colorized font ";
@@ -286,9 +336,9 @@ std::cout << ansi::reset;  //  resets all formatting, i.e. white font, no backgo
 ansi::printColorPresets();
 ```
 
-![colorpresets](docs/images/console/color-output.png)
-
 </p></details>
+
+![colorpresets](docs/images/console/color-output.png)
 
 To get an overview of all available xterm colors and associated codes or quickly check if your console has 8-bit color support, you can call `ansi::printColorTable()` (shoutout to Gawin [^4] for the layout idea).
 
@@ -321,6 +371,51 @@ fout << html::fg( col ) << "colorized html text!" << html::close;
 ```
 
 [^4] [Gawin's xterm color demo](https://github.com/gawin/bash-colors-256)
+
+
+## Image Processing
+
+While `vivid` is not designed for performance, it can very well be used for some fun experiments!
+
+<details><summary><i>Click to expand code</i></summary><p>
+
+```cpp
+
+const auto pixelOperation = []( uint32_t& argb )
+{
+    const auto srgb = srgb_t( rgb::fromRgb32( argb ) ); //  get srgb color value
+
+    //  gamma correction
+    const auto corrRgb = rgb::gamma( lrgb::fromSrgb( srgb ), 1.f / gamma ); //  [1] linearize and apply gamma correction
+    return rgb32::fromRgb( srgb::fromLrgb( corrRgb ) );                     //  convert back to srgb
+
+    //  mad science adjustments in LCh
+    auto lch = lch::fromSrgb( srgb );
+    lch.x += rand() % 100 * ( 50.f / 100.f ) - 25.f;    //  [2] luminance noise
+    lch.x = std::abs( lch.x - 50.f ) + 50.f;            //  [3] luminance triangle
+    lch.y = lch.y / 2.f;                                //  [4] chroma decrease
+    lch.y = std::min( lch.y * 2.f, 140.f );             //  [5] chroma increase
+    lch.z = std::fmodf( lch.z + 40.f, 360.f );          //  [6] hue shift
+    lch.z = 180.f;                                      //  [7] hue fix
+
+    return rgb32::fromRgb( srgb::fromLch( lch ) );   //  convert back to srgb
+};
+```
+
+</p></details>
+
+Here are the results for above operations.
+
+|||
+:-------------------------:|:-------------------------:
+**Original** | [1] **Gamma Corrected** (γ = 2.2)
+![](docs/images/processing/image.jpg) | ![](docs/images/processing/image_high-gamma.jpg)
+[2] **Luminance Noise** | [3] **Luminance Triangle**
+![](docs/images/processing/image_luminance-noise.jpg) | ![](docs/images/processing/image_luminance-triangle.jpg)
+[4] **Chroma Decrease** | [5] **Chroma Increase**  
+![](docs/images/processing/image_chroma-decrease.jpg) | ![](docs/images/processing/image_chroma-increase.jpg)  
+[6] **Hue Shift** | [7] **Hue Fix**
+![](docs/images/processing/image_hue-shift.jpg) | ![](docs/images/processing/image_hue-fix.jpg)  
 
 
 ## Attributions

@@ -1,8 +1,7 @@
-cmake_minimum_required( VERSION 3.12 )
+cmake_minimum_required( VERSION 3.14 FATAL_ERROR )
 
-project(
-    vivid
-    VERSION 1.1.2
+project( vivid
+    VERSION 2.2.2
     DESCRIPTION "A simple-to-use cpp color library"
     HOMEPAGE_URL "https://github.com/gurki/vivid"
     LANGUAGES CXX
@@ -11,7 +10,7 @@ project(
 #find_package( glm REQUIRED )
 #message(STATUS "glm included")
 
-add_library( vivid STATIC
+add_library( ${PROJECT_NAME} STATIC
     src/adobe.cpp
     src/color.cpp
     src/colormap.cpp
@@ -24,6 +23,7 @@ add_library( vivid STATIC
     src/lch.cpp
     src/lrgb.cpp
     src/name.cpp
+    src/oklab.cpp
     src/rgb.cpp
     src/rgb32.cpp
     src/rgb8.cpp
@@ -57,7 +57,7 @@ target_compile_features( vivid
         cxx_inline_namespaces
 )
 
-target_include_directories( vivid
+target_include_directories( ${PROJECT_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
@@ -67,7 +67,7 @@ target_include_directories( vivid
         SYSTEM ${GLM_INCLUDE_DIR}/..
 )
 
-set_target_properties( vivid
+set_target_properties( ${PROJECT_NAME}
     PROPERTIES
         CXX_STANDARD ${CPP_STANDARD}
         POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
@@ -76,7 +76,7 @@ set_target_properties( vivid
 # Disable examples and tests for now - Android and Apple builds failing.
 if(OFF)
     message(STATUS "Building Vivid examples and tests.")
-    add_subdirectory(examples/cmake)
+    add_subdirectory(examples)
     add_subdirectory(tests)
 endif()
 

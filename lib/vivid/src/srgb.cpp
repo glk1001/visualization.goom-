@@ -56,6 +56,11 @@ srgb_t fromName( const std::string& name ) {
 #endif
 
 
+////////////////////////////////////////////////////////////////////////////////
+srgb_t fromOklab( const oklab_t& oklab ) {
+    return srgb::fromLrgb( lrgb::fromOklab( oklab ) );
+}
+
 
 #if __cplusplus <= 201402L
 } // namespace srgb

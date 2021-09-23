@@ -3,6 +3,9 @@
 #include "vivid/types.h"
 
 #include <glm/mat3x3.hpp>
+#if __cplusplus > 201402L
+#include <optional>
+#endif
 #include <string>
 
 namespace vivid {
@@ -40,6 +43,7 @@ namespace srgb {
     srgb_t fromLch( const lch_t& );
     srgb_t fromAdobe( const adobe_t& );
     srgb_t fromIndex( const uint8_t );
+    srgb_t fromOklab( const oklab_t& );
     srgb_t fromName( const std::string& );  //  fails silently, returning black
 }
 
@@ -47,6 +51,7 @@ namespace srgb {
 namespace lrgb {
     lrgb_t fromSrgb( const srgb_t& );
     lrgb_t fromRgb( const rgb_t&, const float gamma );
+    lrgb_t fromOklab( const oklab_t& );
 }
 
 
@@ -112,6 +117,12 @@ namespace xyz {
     xyz_t fromSrgb( const srgb_t& );
     xyz_t fromLch( const lch_t& );  //  (-)
     xyz_t fromAdobe( const adobe_t& );
+}
+
+
+namespace oklab {
+    oklab_t fromSrgb( const srgb_t& );
+    oklab_t fromLrgb( const lrgb_t& );
 }
 
 

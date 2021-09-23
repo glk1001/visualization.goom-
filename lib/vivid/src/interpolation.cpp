@@ -66,7 +66,7 @@ lch_t lerp( const lch_t& lch1, const lch_t& lch2, const float t )
     if ( delta.z > 180.f ) {
         delta.z -= 360.f;
     } else if ( delta.z < - 180.f ) {
-        delta.z += 380.f;
+        delta.z += 360.f;
     }
 
     auto interp = lch1 + t * delta;
@@ -74,6 +74,12 @@ lch_t lerp( const lch_t& lch1, const lch_t& lch2, const float t )
     //  project back to [0; 360]
     interp.z = std::fmod( interp.z + 360.f, 360.f );
     return static_cast<lch_t>( interp );
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+oklab_t lerp( const oklab_t& col1, const oklab_t& col2, const float t ) {
+    return static_cast<oklab_t>( col1 + t * ( col2 - col1 ) );
 }
 
 
@@ -90,6 +96,7 @@ Color lerp( const Color& col1, const Color& col2, const float t )
         case Color::Space::Hsl: return Color( lerp( col1.hsl_, col2.hsl_, t ), Color::Space::Hsl );
         case Color::Space::Hsv: return Color( lerp( col1.hsv_, col2.hsv_, t ), Color::Space::Hsv );
         case Color::Space::Lch: return Color( lerp( col1.lch_, col2.lch_, t ), Color::Space::Lch );
+        case Color::Space::Oklab: return Color( lerp( col1.oklab_, col2.oklab_, t ), Color::Space::Oklab );
         default: return {};
     }
 }
@@ -116,6 +123,19 @@ Color lerpHsl( const Color& col1, const Color& col2, const float t ) {
 ////////////////////////////////////////////////////////////////////////////////
 Color lerpLch( const Color& col1, const Color& col2, const float t ) {
     return lerp( col1.lch(), col2.lch(), t ).rgb().saturated();
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+Color lerpOklab( const Color& col1, const Color& col2, const float t ) {
+    return lerp( col1.oklab(), col2.oklab(), t ).rgb().saturated();
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+Color lerpLinearRgb( const Color& col1, const Color& col2, const float t ) {
+    const lrgb_t lrgb = lerp( col1.linearRgb(), col2.linearRgb(), t );
+    return srgb::fromLrgb( lrgb );
 }
 
 
