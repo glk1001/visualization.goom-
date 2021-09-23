@@ -43,6 +43,8 @@ private:
   uint32_t m_updateNum = 0;
 
   // duree de la transition entre afficher les lignes ou pas
+  const float m_screenWidth;
+  const float m_screenHeight;
   int32_t m_stopLines = 0;
   int32_t m_drawLinesDuration = LinesFx::MIN_LINE_DURATION;
   int32_t m_lineMode = LinesFx::MIN_LINE_DURATION; // l'effet lineaire a dessiner
@@ -55,6 +57,11 @@ private:
   void StopRandomLineChangeMode();
   void ResetGoomLines();
   void StopGoomLines();
+  [[nodiscard]] auto GetResetCircleLineSettings(int32_t farVal) const -> GoomLineSettings;
+  [[nodiscard]] auto GetResetHorizontalLineSettings(int32_t farVal) const -> GoomLineSettings;
+  [[nodiscard]] auto GetResetVerticalLineSettings(int32_t farVal) const -> GoomLineSettings;
+  [[nodiscard]] auto GetResetLineColors(int32_t farVal) const -> GoomLineSettings::Colors;
+  [[nodiscard]] static auto GetSameLineColors(const Pixel& color) -> GoomLineSettings::Colors;
 };
 
 inline void GoomMusicLinesReactor::Start()
@@ -149,9 +156,13 @@ inline void GoomMusicLinesReactor::ResetGoomLines()
 inline auto GoomMusicLinesReactor::GetGoomLineStopSettings() const -> GoomLineSettings
 {
   GoomLineSettings lineSettings = GetGoomLineResetSettings(1);
-  lineSettings.colors.line1 = GetBlackLineColor();
-  lineSettings.colors.line2 = lineSettings.colors.line1;
+  lineSettings.colors = GetSameLineColors(GetBlackLineColor());
   return lineSettings;
+}
+
+inline auto GoomMusicLinesReactor::GetSameLineColors(const Pixel& color) -> GoomLineSettings::Colors
+{
+  return {color, color};
 }
 
 } // namespace CONTROL

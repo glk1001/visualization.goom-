@@ -19,91 +19,149 @@ using UTILS::NameValuePairs;
 GoomMusicLinesReactor::GoomMusicLinesReactor(const PluginInfo& goomInfo,
                                              GoomAllVisualFx& visualFx,
                                              const GoomEvents& goomEvents) noexcept
-  : m_goomInfo{goomInfo}, m_visualFx{visualFx}, m_goomEvents{goomEvents}
+  : m_goomInfo{goomInfo},
+    m_visualFx{visualFx},
+    m_goomEvents{goomEvents},
+    m_screenWidth{static_cast<float>(m_goomInfo.GetScreenInfo().width)},
+    m_screenHeight{static_cast<float>(m_goomInfo.GetScreenInfo().height)}
 {
 }
 
 auto GoomMusicLinesReactor::GetGoomLineResetSettings(const int farVal) const -> GoomLineSettings
 {
-  GoomLineSettings lineSettings;
-
-  lineSettings.mode = m_goomEvents.GetRandomLineTypeEvent();
-
-  switch (lineSettings.mode)
+  switch (m_goomEvents.GetRandomLineTypeEvent())
   {
     case LinesFx::LineType::CIRCLE:
-      if (farVal)
-      {
-        lineSettings.params.line1 = 0.47F;
-        lineSettings.params.line2 = lineSettings.params.line1;
-        lineSettings.amplitude = 0.8F;
-        break;
-      }
-      if (m_goomEvents.Happens(GoomEvent::CHANGE_LINE_CIRCLE_AMPLITUDE))
-      {
-        lineSettings.params.line1 = 0.0F;
-        lineSettings.params.line2 = 0.0F;
-        lineSettings.amplitude = 3.0F;
-      }
-      else if (m_goomEvents.Happens(GoomEvent::CHANGE_LINE_CIRCLE_PARAMS))
-      {
-        lineSettings.params.line1 = 0.40F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
-        lineSettings.params.line2 = 0.22F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
-        lineSettings.amplitude = 1.0F;
-      }
-      else
-      {
-        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().height) * 0.35F;
-        lineSettings.params.line2 = lineSettings.params.line1;
-        lineSettings.amplitude = 1.0F;
-      }
-      break;
+      return GetResetCircleLineSettings(farVal);
     case LinesFx::LineType::H_LINE:
-      if (m_goomEvents.Happens(GoomEvent::CHANGE_H_LINE_PARAMS) || (farVal != 0))
-      {
-        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().height) / 7.0F;
-        lineSettings.params.line2 =
-            (6.0F * static_cast<float>(m_goomInfo.GetScreenInfo().height)) / 7.0F;
-        lineSettings.amplitude = 1.0F;
-      }
-      else
-      {
-        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().height) / 2.0F;
-        lineSettings.params.line2 = lineSettings.params.line1;
-        lineSettings.amplitude = 2.0F;
-      }
-      break;
+      return GetResetHorizontalLineSettings(farVal);
     case LinesFx::LineType::V_LINE:
-      if (m_goomEvents.Happens(GoomEvent::CHANGE_V_LINE_PARAMS) || (farVal != 0))
-      {
-        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().width) / 7.0F;
-        lineSettings.params.line2 =
-            (6.0F * static_cast<float>(m_goomInfo.GetScreenInfo().width)) / 7.0F;
-        lineSettings.amplitude = 1.0F;
-      }
-      else
-      {
-        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().width) / 2.0F;
-        lineSettings.params.line2 = lineSettings.params.line1;
-        lineSettings.amplitude = 1.5F;
-      }
-      break;
+      return GetResetVerticalLineSettings(farVal);
     default:
       throw std::logic_error("Unknown LineTypes enum.");
   }
+}
 
-  if ((farVal != 0) && m_goomEvents.Happens(GoomEvent::CHANGE_LINE_TO_BLACK))
+auto GoomMusicLinesReactor::GetResetCircleLineSettings(const int32_t farVal) const
+    -> GoomLineSettings
+{
+  GoomLineSettings lineSettings;
+
+  lineSettings.mode = LinesFx::LineType::CIRCLE;
+  lineSettings.colors = GetResetLineColors(farVal);
+
+  constexpr float NEW_FAR_VAL_PARAM1 = 0.47F;
+  constexpr float NEW_FAR_VAL_PARAM2 = 0.47F;
+
+  constexpr float NEW_NON_FAR_VAL_PARAM1_FACTOR = 0.40F;
+  constexpr float NEW_NON_FAR_VAL_PARAM2_FACTOR = 0.22F;
+  constexpr float DEFAULT_NON_FAR_VAL_PARAM1_FACTOR = 0.35F;
+
+  constexpr float NEW_FAR_VAL_AMPLITUDE = 0.8F;
+  constexpr float NEW_NON_FAR_VAL_AMPLITUDE = 3.0F;
+  constexpr float DEFAULT_AMPLITUDE = 1.0F;
+
+  if (farVal)
   {
-    lineSettings.colors.line1 = GetBlackLineColor();
-    lineSettings.colors.line2 = lineSettings.colors.line1;
+    lineSettings.params.line1 = NEW_FAR_VAL_PARAM1;
+    lineSettings.params.line2 = NEW_FAR_VAL_PARAM2;
+    lineSettings.amplitude = NEW_FAR_VAL_AMPLITUDE;
+  }
+  else if (m_goomEvents.Happens(GoomEvent::CHANGE_LINE_CIRCLE_AMPLITUDE))
+  {
+    lineSettings.params.line1 = 0.0F;
+    lineSettings.params.line2 = 0.0F;
+    lineSettings.amplitude = NEW_NON_FAR_VAL_AMPLITUDE;
+  }
+  else if (m_goomEvents.Happens(GoomEvent::CHANGE_LINE_CIRCLE_PARAMS))
+  {
+    lineSettings.params.line1 = NEW_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
+    lineSettings.params.line2 = NEW_NON_FAR_VAL_PARAM2_FACTOR * m_screenHeight;
+    lineSettings.amplitude = DEFAULT_AMPLITUDE;
   }
   else
   {
-    lineSettings.colors.line1 = m_visualFx.GetGoomLine1RandomColor();
-    lineSettings.colors.line2 = m_visualFx.GetGoomLine2RandomColor();
+    lineSettings.params.line1 = DEFAULT_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
+    lineSettings.params.line2 = lineSettings.params.line1;
+    lineSettings.amplitude = DEFAULT_AMPLITUDE;
   }
 
   return lineSettings;
+}
+
+auto GoomMusicLinesReactor::GetResetHorizontalLineSettings(const int32_t farVal) const
+    -> GoomLineSettings
+{
+  GoomLineSettings lineSettings;
+
+  lineSettings.mode = LinesFx::LineType::H_LINE;
+  lineSettings.colors = GetResetLineColors(farVal);
+
+  constexpr float NEW_PARAM1_FACTOR = 1.0F / 7.0F;
+  constexpr float NEW_PARAM2_FACTOR = 6.0F / 7.0F;
+  constexpr float DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
+  constexpr float DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
+
+  constexpr float NEW_AMPLITUDE = 1.0F;
+  constexpr float DEFAULT_AMPLITUDE = 2.0F;
+
+  if (m_goomEvents.Happens(GoomEvent::CHANGE_H_LINE_PARAMS) || (farVal != 0))
+  {
+    lineSettings.params.line1 = NEW_PARAM1_FACTOR * m_screenHeight;
+    lineSettings.params.line2 = NEW_PARAM2_FACTOR * m_screenHeight;
+    lineSettings.amplitude = NEW_AMPLITUDE;
+  }
+  else
+  {
+    lineSettings.params.line1 = DEFAULT_PARAM1_FACTOR * m_screenHeight;
+    lineSettings.params.line2 = DEFAULT_PARAM2_FACTOR * m_screenHeight;
+    lineSettings.amplitude = DEFAULT_AMPLITUDE;
+  }
+
+  return lineSettings;
+}
+
+auto GoomMusicLinesReactor::GetResetVerticalLineSettings(const int32_t farVal) const
+    -> GoomLineSettings
+{
+  GoomLineSettings lineSettings;
+
+  lineSettings.mode = LinesFx::LineType::V_LINE;
+  lineSettings.colors = GetResetLineColors(farVal);
+
+  constexpr float NEW_PARAM1_FACTOR = 1.0F / 7.0F;
+  constexpr float NEW_PARAM2_FACTOR = 6.0F / 7.0F;
+  constexpr float DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
+  constexpr float DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
+
+  constexpr float NEW_AMPLITUDE = 1.0F;
+  constexpr float DEFAULT_AMPLITUDE = 1.5F;
+
+  if (m_goomEvents.Happens(GoomEvent::CHANGE_V_LINE_PARAMS) || (farVal != 0))
+  {
+    lineSettings.params.line1 = NEW_PARAM1_FACTOR * m_screenWidth;
+    lineSettings.params.line2 = NEW_PARAM2_FACTOR * m_screenWidth;
+    lineSettings.amplitude = NEW_AMPLITUDE;
+  }
+  else
+  {
+    lineSettings.params.line1 = DEFAULT_PARAM1_FACTOR * m_screenWidth;
+    lineSettings.params.line2 = DEFAULT_PARAM2_FACTOR * m_screenWidth;
+    lineSettings.amplitude = DEFAULT_AMPLITUDE;
+  }
+
+  return lineSettings;
+}
+
+auto GoomMusicLinesReactor::GetResetLineColors(const int32_t farVal) const
+    -> GoomLineSettings::Colors
+{
+  if ((farVal != 0) && m_goomEvents.Happens(GoomEvent::CHANGE_LINE_TO_BLACK))
+  {
+    return GetSameLineColors(GetBlackLineColor());
+  }
+
+  return {m_visualFx.GetGoomLine1RandomColor(), m_visualFx.GetGoomLine2RandomColor()};
 }
 
 /* arret aleatore.. changement de mode de ligne..
