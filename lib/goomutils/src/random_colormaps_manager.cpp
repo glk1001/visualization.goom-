@@ -17,10 +17,6 @@ namespace GOOM::UTILS
 {
 #endif
 
-RandomColorMapsManager::RandomColorMapsManager() noexcept = default;
-
-RandomColorMapsManager::~RandomColorMapsManager() noexcept = default;
-
 void RandomColorMapsManager::IncCounter()
 {
 }
@@ -35,20 +31,21 @@ auto RandomColorMapsManager::AddColorMapInfo(const RandomColorMapsManager::Color
   m_infoList.emplace_back(info);
   m_colorMaps.emplace_back(info.colorMaps->GetRandomColorMapPtr(info.types));
 
-  return m_infoList.size() - 1;
+  return static_cast<uint32_t>(m_infoList.size() - 1);
 }
 
-auto RandomColorMapsManager::GetColorMap(uint32_t id) const -> const IColorMap&
+auto RandomColorMapsManager::GetColorMap(const size_t id) const -> const IColorMap&
 {
   return *m_colorMaps.at(id);
 }
 
-auto RandomColorMapsManager::GetColorMapPtr(uint32_t id) const -> std::shared_ptr<const IColorMap>
+auto RandomColorMapsManager::GetColorMapPtr(const size_t id) const
+    -> std::shared_ptr<const IColorMap>
 {
   return std::const_pointer_cast<const IColorMap>(m_colorMaps.at(id));
 }
 
-auto RandomColorMapsManager::GetColorMapInfo(uint32_t id) const
+auto RandomColorMapsManager::GetColorMapInfo(const size_t id) const
     -> const RandomColorMapsManager::ColorMapInfo&
 {
   if (id >= m_infoList.size())
@@ -59,7 +56,7 @@ auto RandomColorMapsManager::GetColorMapInfo(uint32_t id) const
   return m_infoList[id];
 }
 
-void RandomColorMapsManager::UpdateColorMapInfo(uint32_t id,
+void RandomColorMapsManager::UpdateColorMapInfo(const size_t id,
                                                 const RandomColorMapsManager::ColorMapInfo& info)
 {
   if (id >= m_infoList.size())
@@ -86,7 +83,7 @@ void RandomColorMapsManager::UpdateAllColorMapNames(const COLOR_DATA::ColorMapNa
   }
 }
 
-void RandomColorMapsManager::UpdateColorMapName(uint32_t id,
+void RandomColorMapsManager::UpdateColorMapName(const size_t id,
                                                 const COLOR_DATA::ColorMapName colorMapName)
 {
   if (id >= m_infoList.size())
@@ -98,7 +95,7 @@ void RandomColorMapsManager::UpdateColorMapName(uint32_t id,
 }
 
 void RandomColorMapsManager::UpdateColorMapTypes(
-    const uint32_t id, const std::set<RandomColorMaps::ColorMapTypes>& types)
+    const size_t id, const std::set<RandomColorMaps::ColorMapTypes>& types)
 {
   if (id >= m_infoList.size())
   {
@@ -117,7 +114,7 @@ void RandomColorMapsManager::UpdateAllColorMapTypes(
   }
 }
 
-void RandomColorMapsManager::ChangeColorMapNow(const uint32_t id)
+void RandomColorMapsManager::ChangeColorMapNow(const size_t id)
 {
   if (id >= m_infoList.size())
   {
@@ -135,24 +132,24 @@ void RandomColorMapsManager::ChangeAllColorMapsNow()
   }
 }
 
-inline void RandomColorMapsManager::DoUpdateColorMap(const uint32_t id, const ColorMapInfo& info)
+inline void RandomColorMapsManager::DoUpdateColorMap(const size_t id, const ColorMapInfo& info)
 {
   m_infoList[id] = info;
 }
 
-inline void RandomColorMapsManager::DoUpdateColorMapName(uint32_t id,
-                                                         COLOR_DATA::ColorMapName colorMapName)
+inline void RandomColorMapsManager::DoUpdateColorMapName(
+    const size_t id, const COLOR_DATA::ColorMapName colorMapName)
 {
   m_infoList[id].colorMapName = colorMapName;
 }
 
 inline void RandomColorMapsManager::DoUpdateColorMapTypes(
-    const uint32_t id, const std::set<RandomColorMaps::ColorMapTypes>& types)
+    const size_t id, const std::set<RandomColorMaps::ColorMapTypes>& types)
 {
   m_infoList[id].types = types;
 }
 
-inline void RandomColorMapsManager::DoChangeColorMap(uint32_t id)
+inline void RandomColorMapsManager::DoChangeColorMap(const size_t id)
 {
   const ColorMapInfo& info = m_infoList[id];
   if (info.colorMapName == COLOR_DATA::ColorMapName::_NULL)

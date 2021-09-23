@@ -32,9 +32,9 @@ public:
   };
 
   FlyingStarsFx() noexcept = delete;
-  explicit FlyingStarsFx(const IGoomDraw& draw,
-                         const PluginInfo& goomInfo,
-                         const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+  FlyingStarsFx(const IGoomDraw& draw,
+                const PluginInfo& goomInfo,
+                const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

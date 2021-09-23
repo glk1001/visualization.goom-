@@ -20,10 +20,10 @@ namespace GOOM::UTILS
 class RandomColorMapsManager
 {
 public:
-  RandomColorMapsManager() noexcept;
-  virtual ~RandomColorMapsManager() noexcept;
+  RandomColorMapsManager() noexcept = default;
   RandomColorMapsManager(const RandomColorMapsManager&) noexcept = delete;
   RandomColorMapsManager(RandomColorMapsManager&&) noexcept = delete;
+  ~RandomColorMapsManager() noexcept = default;
   auto operator=(const RandomColorMapsManager&) -> RandomColorMapsManager& = delete;
   auto operator=(RandomColorMapsManager&&) -> RandomColorMapsManager& = delete;
 
@@ -35,35 +35,34 @@ public:
     std::shared_ptr<const RandomColorMaps> colorMaps{};
     COLOR_DATA::ColorMapName colorMapName{COLOR_DATA::ColorMapName::_NULL};
     std::set<RandomColorMaps::ColorMapTypes> types{};
-    // uint32_t countForNextChange{};
   };
 
-  [[nodiscard]] auto GetColorMapInfo(uint32_t id) const -> const ColorMapInfo&;
+  [[nodiscard]] auto GetColorMapInfo(size_t id) const -> const ColorMapInfo&;
   [[nodiscard]] auto AddColorMapInfo(const ColorMapInfo& info) -> uint32_t;
 
   void UpdateAllColorMapInfo(const ColorMapInfo& info);
-  void UpdateColorMapInfo(uint32_t id, const ColorMapInfo& info);
+  void UpdateColorMapInfo(size_t id, const ColorMapInfo& info);
 
   void UpdateAllColorMapNames(COLOR_DATA::ColorMapName colorMapName);
-  void UpdateColorMapName(uint32_t id, COLOR_DATA::ColorMapName colorMapName);
+  void UpdateColorMapName(size_t id, COLOR_DATA::ColorMapName colorMapName);
 
   void UpdateAllColorMapTypes(const std::set<RandomColorMaps::ColorMapTypes>& types);
-  void UpdateColorMapTypes(uint32_t id, const std::set<RandomColorMaps::ColorMapTypes>& types);
+  void UpdateColorMapTypes(size_t id, const std::set<RandomColorMaps::ColorMapTypes>& types);
 
   void ChangeAllColorMapsNow();
-  void ChangeColorMapNow(uint32_t id);
+  void ChangeColorMapNow(size_t id);
 
-  [[nodiscard]] auto GetColorMap(uint32_t id) const -> const IColorMap&;
-  [[nodiscard]] auto GetColorMapPtr(uint32_t id) const -> std::shared_ptr<const IColorMap>;
+  [[nodiscard]] auto GetColorMap(size_t id) const -> const IColorMap&;
+  [[nodiscard]] auto GetColorMapPtr(size_t id) const -> std::shared_ptr<const IColorMap>;
 
 private:
   std::vector<ColorMapInfo> m_infoList{};
   std::vector<std::shared_ptr<const IColorMap>> m_colorMaps{};
 
-  void DoUpdateColorMap(uint32_t id, const ColorMapInfo& info);
-  void DoUpdateColorMapName(uint32_t id, COLOR_DATA::ColorMapName colorMapName);
-  void DoUpdateColorMapTypes(uint32_t id, const std::set<RandomColorMaps::ColorMapTypes>& types);
-  void DoChangeColorMap(uint32_t id);
+  void DoUpdateColorMap(size_t id, const ColorMapInfo& info);
+  void DoUpdateColorMapName(size_t id, COLOR_DATA::ColorMapName colorMapName);
+  void DoUpdateColorMapTypes(size_t id, const std::set<RandomColorMaps::ColorMapTypes>& types);
+  void DoChangeColorMap(size_t id);
 };
 
 #if __cplusplus <= 201402L

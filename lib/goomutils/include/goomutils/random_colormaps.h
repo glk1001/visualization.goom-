@@ -25,10 +25,10 @@ namespace GOOM::UTILS
 class RandomColorMaps : public ColorMaps
 {
 public:
-  RandomColorMaps() noexcept;
+  RandomColorMaps() noexcept = default;
   RandomColorMaps(const RandomColorMaps&) noexcept = delete;
   RandomColorMaps(RandomColorMaps&&) noexcept = delete;
-  ~RandomColorMaps() noexcept override;
+  ~RandomColorMaps() noexcept override = default;
   auto operator=(const RandomColorMaps&) -> RandomColorMaps& = delete;
   auto operator=(RandomColorMaps&&) -> RandomColorMaps& = delete;
 
@@ -120,7 +120,7 @@ class WeightedColorMaps : public RandomColorMaps
 {
 public:
   WeightedColorMaps();
-  explicit WeightedColorMaps(const Weights<ColorMapGroup>&);
+  explicit WeightedColorMaps(const Weights<ColorMapGroup>& weights);
 
   [[nodiscard]] auto GetWeights() const -> const Weights<ColorMapGroup>&;
   void SetWeights(const Weights<ColorMapGroup>&);

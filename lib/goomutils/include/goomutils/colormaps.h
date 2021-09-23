@@ -4,7 +4,9 @@
 #include "color_data/colormap_enums.h"
 #include "enumutils.h"
 #include "goom/goom_graphic.h"
+#include "goomutils/spimpl.h"
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -23,7 +25,7 @@ class IColorMap
 public:
   IColorMap() noexcept = default;
   IColorMap(const IColorMap&) noexcept = delete;
-  IColorMap(IColorMap&&) noexcept = delete;
+  IColorMap(IColorMap&&) noexcept = default;
   virtual ~IColorMap() noexcept = default;
   auto operator=(const IColorMap&) -> IColorMap& = delete;
   auto operator=(IColorMap&&) -> IColorMap& = delete;
@@ -58,7 +60,7 @@ protected:
   [[nodiscard]] auto GetColorMap() const -> std::shared_ptr<const IColorMap> { return m_colorMap; }
 
 private:
-  std::shared_ptr<const IColorMap> m_colorMap;
+  const std::shared_ptr<const IColorMap> m_colorMap;
 };
 
 enum class ColorMapGroup : int
@@ -98,6 +100,13 @@ enum class ColorMapGroup : int
 
 //constexpr size_t to_int(const ColorMapGroup i) { return static_cast<size_t>(i); }
 template<class T>
+constexpr const T& at(const std::array<T, NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
+{
+  return arr.at(static_cast<size_t>(idx));
+  //  return arr[static_cast<size_t>(idx)];
+}
+
+template<class T>
 constexpr T& at(std::array<T, NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
 {
   return arr.at(static_cast<size_t>(idx));
@@ -110,11 +119,11 @@ public:
   ColorMaps() noexcept;
   ColorMaps(const ColorMaps&) noexcept = delete;
   ColorMaps(ColorMaps&&) noexcept = delete;
+  virtual ~ColorMaps() noexcept = default;
   auto operator=(const ColorMaps&) -> ColorMaps& = delete;
   auto operator=(ColorMaps&&) -> ColorMaps& = delete;
-  virtual ~ColorMaps() noexcept;
 
-  [[nodiscard]] auto GetNumColorMapNames() const -> size_t;
+  [[nodiscard]] auto GetNumColorMapNames() const -> uint32_t;
   using ColorMapNames = std::vector<COLOR_DATA::ColorMapName>;
   [[nodiscard]] auto GetColorMapNames(ColorMapGroup cmg) const -> const ColorMapNames&;
 
@@ -139,11 +148,11 @@ public:
                                           float lightness) const
       -> std::shared_ptr<const IColorMap>;
 
-  [[nodiscard]] auto GetNumGroups() const -> size_t;
+  [[nodiscard]] auto GetNumGroups() const -> uint32_t;
 
 private:
   class ColorMapsImpl;
-  std::unique_ptr<ColorMapsImpl> m_colorMapsImpl;
+  spimpl::unique_impl_ptr<ColorMapsImpl> m_colorMapsImpl;
 };
 
 inline ColorMapWrapper::ColorMapWrapper(std::shared_ptr<const IColorMap> cm) noexcept
@@ -161,7 +170,7 @@ inline auto ColorMapWrapper::GetMapName() const -> COLOR_DATA::ColorMapName
   return m_colorMap->GetMapName();
 }
 
-inline auto ColorMapWrapper::GetColor(float t) const -> Pixel
+inline auto ColorMapWrapper::GetColor(const float t) const -> Pixel
 {
   return m_colorMap->GetColor(t);
 }

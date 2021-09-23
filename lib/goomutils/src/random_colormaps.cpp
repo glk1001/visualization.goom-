@@ -41,10 +41,6 @@ const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::ALL{
     ColorMapTypes::SHADES,
 };
 
-RandomColorMaps::RandomColorMaps() noexcept = default;
-
-RandomColorMaps::~RandomColorMaps() noexcept = default;
-
 auto RandomColorMaps::GetRandomColorMapName() const -> COLOR_DATA::ColorMapName
 {
   return static_cast<ColorMapName>(GetRandInRange(0U, GetNumColorMapNames()));
@@ -280,8 +276,8 @@ WeightedColorMaps::WeightedColorMaps() : RandomColorMaps{}
 {
 }
 
-WeightedColorMaps::WeightedColorMaps(const Weights<ColorMapGroup>& w)
-  : RandomColorMaps{}, m_weights{w}, m_weightsActive{true}
+WeightedColorMaps::WeightedColorMaps(const Weights<ColorMapGroup>& weights)
+  : RandomColorMaps{}, m_weights{weights}, m_weightsActive{true}
 {
 }
 
