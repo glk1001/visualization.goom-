@@ -27,7 +27,6 @@ auto GoomMusicLinesReactor::GetGoomLineResetSettings(const int farVal) const -> 
 {
   GoomLineSettings lineSettings;
 
-  lineSettings.amplitude = 1.0F;
   lineSettings.mode = m_goomEvents.GetRandomLineTypeEvent();
 
   switch (lineSettings.mode)
@@ -35,53 +34,57 @@ auto GoomMusicLinesReactor::GetGoomLineResetSettings(const int farVal) const -> 
     case LinesFx::LineType::CIRCLE:
       if (farVal)
       {
-        lineSettings.line1.param = 0.47F;
-        lineSettings.line2.param = lineSettings.line1.param;
+        lineSettings.params.line1 = 0.47F;
+        lineSettings.params.line2 = lineSettings.params.line1;
         lineSettings.amplitude = 0.8F;
         break;
       }
       if (m_goomEvents.Happens(GoomEvent::CHANGE_LINE_CIRCLE_AMPLITUDE))
       {
-        lineSettings.line1.param = 0.0F;
-        lineSettings.line2.param = 0.0F;
+        lineSettings.params.line1 = 0.0F;
+        lineSettings.params.line2 = 0.0F;
         lineSettings.amplitude = 3.0F;
       }
       else if (m_goomEvents.Happens(GoomEvent::CHANGE_LINE_CIRCLE_PARAMS))
       {
-        lineSettings.line1.param = 0.40F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
-        lineSettings.line2.param = 0.22F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
+        lineSettings.params.line1 = 0.40F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
+        lineSettings.params.line2 = 0.22F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
+        lineSettings.amplitude = 1.0F;
       }
       else
       {
-        lineSettings.line1.param = static_cast<float>(m_goomInfo.GetScreenInfo().height) * 0.35F;
-        lineSettings.line2.param = lineSettings.line1.param;
+        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().height) * 0.35F;
+        lineSettings.params.line2 = lineSettings.params.line1;
+        lineSettings.amplitude = 1.0F;
       }
       break;
     case LinesFx::LineType::H_LINE:
       if (m_goomEvents.Happens(GoomEvent::CHANGE_H_LINE_PARAMS) || (farVal != 0))
       {
-        lineSettings.line1.param = static_cast<float>(m_goomInfo.GetScreenInfo().height) / 7.0F;
-        lineSettings.line2.param =
+        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().height) / 7.0F;
+        lineSettings.params.line2 =
             (6.0F * static_cast<float>(m_goomInfo.GetScreenInfo().height)) / 7.0F;
+        lineSettings.amplitude = 1.0F;
       }
       else
       {
-        lineSettings.line1.param = static_cast<float>(m_goomInfo.GetScreenInfo().height) / 2.0F;
-        lineSettings.line2.param = lineSettings.line1.param;
+        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().height) / 2.0F;
+        lineSettings.params.line2 = lineSettings.params.line1;
         lineSettings.amplitude = 2.0F;
       }
       break;
     case LinesFx::LineType::V_LINE:
       if (m_goomEvents.Happens(GoomEvent::CHANGE_V_LINE_PARAMS) || (farVal != 0))
       {
-        lineSettings.line1.param = static_cast<float>(m_goomInfo.GetScreenInfo().width) / 7.0F;
-        lineSettings.line2.param =
+        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().width) / 7.0F;
+        lineSettings.params.line2 =
             (6.0F * static_cast<float>(m_goomInfo.GetScreenInfo().width)) / 7.0F;
+        lineSettings.amplitude = 1.0F;
       }
       else
       {
-        lineSettings.line1.param = static_cast<float>(m_goomInfo.GetScreenInfo().width) / 2.0F;
-        lineSettings.line2.param = lineSettings.line1.param;
+        lineSettings.params.line1 = static_cast<float>(m_goomInfo.GetScreenInfo().width) / 2.0F;
+        lineSettings.params.line2 = lineSettings.params.line1;
         lineSettings.amplitude = 1.5F;
       }
       break;
@@ -91,13 +94,13 @@ auto GoomMusicLinesReactor::GetGoomLineResetSettings(const int farVal) const -> 
 
   if ((farVal != 0) && m_goomEvents.Happens(GoomEvent::CHANGE_LINE_TO_BLACK))
   {
-    lineSettings.line1.color = GetBlackLineColor();
-    lineSettings.line2.color = lineSettings.line1.color;
+    lineSettings.colors.line1 = GetBlackLineColor();
+    lineSettings.colors.line2 = lineSettings.colors.line1;
   }
   else
   {
-    lineSettings.line1.color = m_visualFx.GetGoomLine1RandomColor();
-    lineSettings.line2.color = m_visualFx.GetGoomLine2RandomColor();
+    lineSettings.colors.line1 = m_visualFx.GetGoomLine1RandomColor();
+    lineSettings.colors.line2 = m_visualFx.GetGoomLine2RandomColor();
   }
 
   return lineSettings;

@@ -75,15 +75,20 @@ public:
   [[nodiscard]] auto CanResetDestGoomLines() const -> bool;
   struct GoomLineSettings
   {
+    struct Params
+    {
+      float line1{};
+      float line2{};
+    };
+    struct Colors
+    {
+      Pixel line1{};
+      Pixel line2{};
+    };
     LinesFx::LineType mode{};
     float amplitude{};
-    struct IndividualLine
-    {
-      float param{};
-      Pixel color{};
-    };
-    IndividualLine line1{};
-    IndividualLine line2{};
+    Params params{};
+    Colors colors{};
   };
   void ResetDestGoomLines(const GoomLineSettings& lineSettings);
   [[nodiscard]] auto GetGoomLine1RandomColor() const -> Pixel;
@@ -195,10 +200,10 @@ inline auto GoomAllVisualFx::CanResetDestGoomLines() const -> bool
 
 inline void GoomAllVisualFx::ResetDestGoomLines(const GoomLineSettings& lineSettings)
 {
-  m_goomLine1->ResetDestLine(lineSettings.mode, lineSettings.line1.param, lineSettings.amplitude,
-                             lineSettings.line1.color);
-  m_goomLine2->ResetDestLine(lineSettings.mode, lineSettings.line2.param, lineSettings.amplitude,
-                             lineSettings.line2.color);
+  m_goomLine1->ResetDestLine(lineSettings.mode, lineSettings.params.line1, lineSettings.amplitude,
+                             lineSettings.colors.line1);
+  m_goomLine2->ResetDestLine(lineSettings.mode, lineSettings.params.line2, lineSettings.amplitude,
+                             lineSettings.colors.line2);
 }
 
 inline auto GoomAllVisualFx::GetGoomLine1RandomColor() const -> Pixel
