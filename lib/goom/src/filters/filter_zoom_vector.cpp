@@ -1,9 +1,9 @@
 #include "filter_zoom_vector.h"
 
-#include "filter_normalized_coords.h"
 #include "filter_zoom_vector_effects.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/name_value_pairs.h"
+#include "normalized_coords.h"
 
 #include <cstdint>
 #include <string>

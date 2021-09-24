@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_FILTER_SETTINGS_H
-#define VISUALIZATION_GOOM_FILTER_SETTINGS_H
+#ifndef VISUALIZATION_GOOM_LIB_FILTERS_FILTER_SETTINGS_H
+#define VISUALIZATION_GOOM_LIB_FILTERS_FILTER_SETTINGS_H
 
 #include "goom/goom_graphic.h"
 #include "goomutils/mathutils.h"
@@ -122,4 +122,5 @@ inline auto Vitesse::GetRelativeSpeed() const -> float
 
 } // namespace FILTERS
 } // namespace GOOM
-#endif
+
+#endif //VISUALIZATION_GOOM_LIB_FILTERS_FILTER_SETTINGS_H

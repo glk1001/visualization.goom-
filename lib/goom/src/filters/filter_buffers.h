@@ -1,8 +1,8 @@
-#ifndef VISUALIZATION_GOOM_FILTER_BUFFERS_H
-#define VISUALIZATION_GOOM_FILTER_BUFFERS_H
+#ifndef VISUALIZATION_GOOM_LIB_GOOM_FILTERS_FILTER_BUFFERS_H
+#define VISUALIZATION_GOOM_LIB_GOOM_FILTERS_FILTER_BUFFERS_H
 
-#include "filter_normalized_coords.h"
 #include "goom_graphic.h"
+#include "normalized_coords.h"
 #include "v2d.h"
 
 #include <array>
@@ -337,4 +337,4 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif // VISUALIZATION_GOOM_FILTER_BUFFERS_H
+#endif //VISUALIZATION_GOOM_LIB_GOOM_FILTERS_FILTER_BUFFERS_H

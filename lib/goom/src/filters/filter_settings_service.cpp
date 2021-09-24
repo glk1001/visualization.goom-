@@ -1,20 +1,20 @@
 #include "filter_settings_service.h"
 
-#include "filter_amulet.h"
+#include "amulet.h"
+#include "crystal_ball.h"
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
-#include "filter_crystal_ball.h"
-#include "filter_image_speed_coeffs.h"
-#include "filter_scrunch.h"
 #include "filter_settings.h"
-#include "filter_simple_speed_coefficients_effect.h"
-#include "filter_speedway.h"
-#include "filter_wave.h"
-#include "filter_y_only.h"
 #include "filter_zoom_vector.h"
 #include "goom/goom_plugin_info.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
+#include "image_speed_coeffs.h"
+#include "scrunch.h"
+#include "simple_speed_coefficients_effect.h"
+#include "speedway.h"
+#include "wave.h"
+#include "y_only.h"
 
 #include <stdexcept>
 

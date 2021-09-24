@@ -1,16 +1,16 @@
-#ifndef VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
-#define VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
+#ifndef VISUALIZATION_GOOM_LIB_FILTERS_FILTER_ZOOM_VECTOR_EFFECTS_H
+#define VISUALIZATION_GOOM_LIB_FILTERS_FILTER_ZOOM_VECTOR_EFFECTS_H
 
-#include "filter_hypercos.h"
-#include "filter_image_velocity.h"
-#include "filter_noise.h"
-#include "filter_normalized_coords.h"
-#include "filter_planes.h"
-#include "filter_rotation.h"
 #include "filter_settings.h"
-#include "filter_speed_coefficients_effect.h"
-#include "filter_tan_effect.h"
 #include "goomutils/name_value_pairs.h"
+#include "hypercos.h"
+#include "image_velocity.h"
+#include "noise.h"
+#include "normalized_coords.h"
+#include "planes.h"
+#include "rotation.h"
+#include "speed_coefficients_effect.h"
+#include "tan_effect.h"
 #include "v2d.h"
 
 #include <string>
@@ -230,4 +230,4 @@ inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& 
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_EFFECTS_H
+#endif //VISUALIZATION_GOOM_LIB_FILTERS_FILTER_ZOOM_VECTOR_EFFECTS_H

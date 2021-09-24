@@ -33,31 +33,30 @@ add_library(goom
         src/draw/goom_draw_to_many.cpp
         src/draw/text_draw.cpp
         src/draw_methods.cpp
-        src/filters/filter_amulet.cpp
+        src/filters/amulet.cpp
+        src/filters/crystal_ball.cpp
         src/filters/filter_buffers.cpp
         src/filters/filter_buffers_service.cpp
         src/filters/filter_colors_service.cpp
-        src/filters/filter_crystal_ball.cpp
-        src/filters/filter_hypercos.cpp
-        src/filters/filter_image_speed_coeffs.cpp
-        src/filters/filter_image_velocity.cpp
-        src/filters/filter_noise.cpp
-        src/filters/filter_normalized_coords.cpp
-        src/filters/filter_planes.cpp
-        src/filters/filter_rotation.cpp
-        src/filters/filter_scrunch.cpp
         src/filters/filter_settings_service.cpp
-        src/filters/filter_simple_speed_coefficients_effect.h
-        src/filters/filter_speed_coefficients_effect.h
-        src/filters/filter_speedway.cpp
-        src/filters/filter_tan_effect.cpp
-        src/filters/filter_wave.cpp
-        src/filters/filter_y_only.cpp
         src/filters/filter_zoom_vector.cpp
         src/filters/filter_zoom_vector_effects.cpp
+        src/filters/hypercos.cpp
         src/filters/image_displacement.cpp
         src/filters/image_displacement_list.cpp
-        src/filters.cpp
+        src/filters/image_speed_coeffs.cpp
+        src/filters/image_velocity.cpp
+        src/filters/noise.cpp
+        src/filters/normalized_coords.cpp
+        src/filters/planes.cpp
+        src/filters/rotation.cpp
+        src/filters/scrunch.cpp
+        src/filters/simple_speed_coefficients_effect.h
+        src/filters/speed_coefficients_effect.h
+        src/filters/speedway.cpp
+        src/filters/tan_effect.cpp
+        src/filters/wave.cpp
+        src/filters/y_only.cpp
         src/flying_stars_fx.cpp
         src/goom_control.cpp
         src/goom_dots_fx.cpp
@@ -75,7 +74,8 @@ add_library(goom
         src/tentacles_fx.cpp
         src/tube_fx.cpp
         src/tubes/tubes.cpp
-)
+        src/zoom_filter_fx.cpp
+        )
 
 #set_source_files_properties(src/flying_stars_fx.cpp PROPERTIES COMPILE_FLAGS -fsanitize=address)
 

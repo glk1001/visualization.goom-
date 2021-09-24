@@ -1,6 +1,5 @@
 #include "catch2/catch.hpp"
-
-#include "filters/filter_normalized_coords.h"
+#include "filters/normalized_coords.h"
 #include "goom/v2d.h"
 #include "goomutils/mathutils.h"
 

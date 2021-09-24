@@ -26,9 +26,9 @@
 #include "filters/filter_settings_service.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging_control.h"
 #undef NO_LOGGING
-#include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging.h"
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 #include "goomutils/name_value_pairs.h"

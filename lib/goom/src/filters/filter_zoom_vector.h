@@ -1,11 +1,11 @@
-#ifndef VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_H
-#define VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_H
+#ifndef VISUALIZATION_GOOM_LIB_FILTERS_FILTER_ZOOM_VECTOR_H
+#define VISUALIZATION_GOOM_LIB_FILTERS_FILTER_ZOOM_VECTOR_H
 
-#include "filter_normalized_coords.h"
 #include "filter_zoom_vector_effects.h"
-#include "goom_zoom_vector.h"
 #include "goomutils/name_value_pairs.h"
+#include "normalized_coords.h"
 #include "v2d.h"
+#include "zoom_vector.h"
 
 #include <cstdint>
 #include <memory>
@@ -41,4 +41,4 @@ private:
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_FILTER_ZOOM_VECTOR_H
+#endif //VISUALIZATION_GOOM_LIB_FILTERS_FILTER_ZOOM_VECTOR_H

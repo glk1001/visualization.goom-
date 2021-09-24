@@ -1,15 +1,15 @@
-#ifndef VISUALIZATION_GOOM_FILTER_SETTINGS_SERVICE_H
-#define VISUALIZATION_GOOM_FILTER_SETTINGS_SERVICE_H
+#ifndef VISUALIZATION_GOOM_LIB_FILTERS_FILTER_SETTINGS_SERVICE_H
+#define VISUALIZATION_GOOM_LIB_FILTERS_FILTER_SETTINGS_SERVICE_H
 
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
-#include "filter_rotation.h"
 #include "filter_settings.h"
-#include "filter_speed_coefficients_effect.h"
 #include "filter_zoom_vector.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/spimpl.h"
+#include "rotation.h"
+#include "speed_coefficients_effect.h"
 
 #include <map>
 #include <memory>
@@ -279,4 +279,4 @@ inline void FilterSettingsService::SetTranLerpToMaxDefaultSwitchMult()
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_FILTER_SETTINGS_SERVICE_H
+#endif //VISUALIZATION_GOOM_LIB_FILTERS_FILTER_SETTINGS_SERVICE_H

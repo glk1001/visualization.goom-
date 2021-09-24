@@ -1,11 +1,11 @@
-#ifndef VISUALIZATION_GOOM_FILTER_BUFFERS_SERVICE_H
-#define VISUALIZATION_GOOM_FILTER_BUFFERS_SERVICE_H
+#ifndef VISUALIZATION_GOOM_LIB_GOOM_FILTERS_FILTER_BUFFERS_SERVICE_H
+#define VISUALIZATION_GOOM_LIB_GOOM_FILTERS_FILTER_BUFFERS_SERVICE_H
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
-#include "goom_zoom_vector.h"
 #include "goomutils/name_value_pairs.h"
 #include "v2d.h"
+#include "zoom_vector.h"
 
 #include <cstdint>
 #include <memory>
@@ -72,4 +72,4 @@ inline auto FilterBuffersService::GetTranLerpFactor() const -> int32_t
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif // VISUALIZATION_GOOM_FILTER_BUFFERS_SERVICE_H
+#endif //VISUALIZATION_GOOM_LIB_GOOM_FILTERS_FILTER_BUFFERS_SERVICE_H
