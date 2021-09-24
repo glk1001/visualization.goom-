@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_COLORMAPS_H
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_COLORMAPS_H
+#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_COLOR_MAPS_H
+#define VISUALIZATION_GOOM_LIB_GOOMUTILS_COLOR_MAPS_H
 
 #include "color_data/colormap_enums.h"
 #include "enumutils.h"
@@ -182,4 +182,5 @@ inline auto ColorMapWrapper::GetColor(const float t) const -> Pixel
 #else
 } // namespace GOOM::UTILS
 #endif
-#endif
+
+#endif // VISUALIZATION_GOOM_LIB_GOOMUTILS_COLOR_MAPS_H

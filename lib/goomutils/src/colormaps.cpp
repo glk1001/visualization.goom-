@@ -15,7 +15,6 @@
 #undef NDEBUG
 #include <cassert>
 #include <format>
-#include <utility>
 #include <vector>
 #include <vivid/vivid.h>
 
@@ -337,16 +336,14 @@ auto ColorMaps::ColorMapsImpl::GetPreBuiltColorMaps() -> const std::vector<Prebu
 
 auto ColorMaps::ColorMapsImpl::MakePrebuiltColorMaps() -> std::vector<PrebuiltColorMap>
 {
-  static_assert(NUM<ColorMapName> == COLOR_DATA::allMaps.size(), "Invalid allMaps size.");
+  static_assert(NUM<ColorMapName> == COLOR_DATA::ALL_MAPS.size(), "Invalid allMaps size.");
 
   std::vector<PrebuiltColorMap> preBuiltColorMaps{};
-  preBuiltColorMaps.reserve(COLOR_DATA::allMaps.size());
+  preBuiltColorMaps.reserve(COLOR_DATA::ALL_MAPS.size());
 
-  for (const auto& maps : COLOR_DATA::allMaps)
+  for (const auto& map : COLOR_DATA::ALL_MAPS)
   {
-    const ColorMapName name = maps.first;
-    const std::vector<vivid::srgb_t>& vividArray = maps.second;
-    (void)preBuiltColorMaps.emplace_back(name, vividArray);
+    (void)preBuiltColorMaps.emplace_back(map.colorMapName, *map.vividArray);
   }
 
   return preBuiltColorMaps;
@@ -367,11 +364,11 @@ auto ColorMaps::ColorMapsImpl::GetAllColorMapNames() -> const std::vector<ColorM
 auto ColorMaps::ColorMapsImpl::MakeAllColorMapNames() -> std::vector<ColorMapName>
 {
   std::vector<ColorMapName> allColorMapNames{};
-  allColorMapNames.reserve(COLOR_DATA::allMaps.size());
+  allColorMapNames.reserve(COLOR_DATA::ALL_MAPS.size());
 
-  for (const auto& maps : COLOR_DATA::allMaps)
+  for (const auto& map : COLOR_DATA::ALL_MAPS)
   {
-    allColorMapNames.emplace_back(maps.first);
+    allColorMapNames.emplace_back(map.colorMapName);
   }
 
   return allColorMapNames;
@@ -391,37 +388,37 @@ auto ColorMaps::ColorMapsImpl::MakeColorGroupNames() -> ColorGroupNamesArray
   at(groups, ColorMapGroup::ALL) = &GetAllColorMapNames();
 
   at(groups, ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL) =
-      &COLOR_DATA::perc_unif_sequentialMaps;
-  at(groups, ColorMapGroup::SEQUENTIAL) = &COLOR_DATA::sequentialMaps;
-  at(groups, ColorMapGroup::SEQUENTIAL2) = &COLOR_DATA::sequential2Maps;
-  at(groups, ColorMapGroup::CYCLIC) = &COLOR_DATA::cyclicMaps;
-  at(groups, ColorMapGroup::DIVERGING) = &COLOR_DATA::divergingMaps;
-  at(groups, ColorMapGroup::DIVERGING_BLACK) = &COLOR_DATA::diverging_blackMaps;
-  at(groups, ColorMapGroup::QUALITATIVE) = &COLOR_DATA::qualitativeMaps;
-  at(groups, ColorMapGroup::MISC) = &COLOR_DATA::miscMaps;
+      &COLOR_DATA::PERC_UNIF_SEQUENTIAL_MAPS;
+  at(groups, ColorMapGroup::SEQUENTIAL) = &COLOR_DATA::SEQUENTIAL_MAPS;
+  at(groups, ColorMapGroup::SEQUENTIAL2) = &COLOR_DATA::SEQUENTIAL2_MAPS;
+  at(groups, ColorMapGroup::CYCLIC) = &COLOR_DATA::CYCLIC_MAPS;
+  at(groups, ColorMapGroup::DIVERGING) = &COLOR_DATA::DIVERGING_MAPS;
+  at(groups, ColorMapGroup::DIVERGING_BLACK) = &COLOR_DATA::DIVERGING_BLACK_MAPS;
+  at(groups, ColorMapGroup::QUALITATIVE) = &COLOR_DATA::QUALITATIVE_MAPS;
+  at(groups, ColorMapGroup::MISC) = &COLOR_DATA::MISC_MAPS;
 
   at(groups, ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM) =
-      &COLOR_DATA::perc_unif_sequential_slimMaps;
-  at(groups, ColorMapGroup::SEQUENTIAL_SLIM) = &COLOR_DATA::sequential_slimMaps;
-  at(groups, ColorMapGroup::SEQUENTIAL2_SLIM) = &COLOR_DATA::sequential2_slimMaps;
-  at(groups, ColorMapGroup::CYCLIC_SLIM) = &COLOR_DATA::cyclic_slimMaps;
-  at(groups, ColorMapGroup::DIVERGING_SLIM) = &COLOR_DATA::diverging_slimMaps;
-  at(groups, ColorMapGroup::DIVERGING_BLACK_SLIM) = &COLOR_DATA::diverging_black_slimMaps;
-  at(groups, ColorMapGroup::QUALITATIVE_SLIM) = &COLOR_DATA::qualitative_slimMaps;
-  at(groups, ColorMapGroup::MISC_SLIM) = &COLOR_DATA::misc_slimMaps;
+      &COLOR_DATA::PERC_UNIF_SEQUENTIAL_SLIM_MAPS;
+  at(groups, ColorMapGroup::SEQUENTIAL_SLIM) = &COLOR_DATA::SEQUENTIAL_SLIM_MAPS;
+  at(groups, ColorMapGroup::SEQUENTIAL2_SLIM) = &COLOR_DATA::SEQUENTIAL2_SLIM_MAPS;
+  at(groups, ColorMapGroup::CYCLIC_SLIM) = &COLOR_DATA::CYCLIC_SLIM_MAPS;
+  at(groups, ColorMapGroup::DIVERGING_SLIM) = &COLOR_DATA::DIVERGING_SLIM_MAPS;
+  at(groups, ColorMapGroup::DIVERGING_BLACK_SLIM) = &COLOR_DATA::DIVERGING_BLACK_SLIM_MAPS;
+  at(groups, ColorMapGroup::QUALITATIVE_SLIM) = &COLOR_DATA::QUALITATIVE_SLIM_MAPS;
+  at(groups, ColorMapGroup::MISC_SLIM) = &COLOR_DATA::MISC_SLIM_MAPS;
 
-  at(groups, ColorMapGroup::WES_ANDERSON) = &COLOR_DATA::wesAndersonMaps;
-  at(groups, ColorMapGroup::BLUES) = &COLOR_DATA::blueMaps;
-  at(groups, ColorMapGroup::REDS) = &COLOR_DATA::redMaps;
-  at(groups, ColorMapGroup::GREENS) = &COLOR_DATA::greenMaps;
-  at(groups, ColorMapGroup::YELLOWS) = &COLOR_DATA::yellowMaps;
-  at(groups, ColorMapGroup::ORANGES) = &COLOR_DATA::orangeMaps;
-  at(groups, ColorMapGroup::PURPLES) = &COLOR_DATA::purpleMaps;
-  at(groups, ColorMapGroup::CITIES) = &COLOR_DATA::cityMaps;
-  at(groups, ColorMapGroup::SEASONS) = &COLOR_DATA::seasonMaps;
-  at(groups, ColorMapGroup::HEAT) = &COLOR_DATA::heatMaps;
-  at(groups, ColorMapGroup::COLD) = &COLOR_DATA::coldMaps;
-  at(groups, ColorMapGroup::PASTEL) = &COLOR_DATA::pastelMaps;
+  at(groups, ColorMapGroup::WES_ANDERSON) = &COLOR_DATA::WES_ANDERSON_MAPS;
+  at(groups, ColorMapGroup::BLUES) = &COLOR_DATA::BLUE_MAPS;
+  at(groups, ColorMapGroup::REDS) = &COLOR_DATA::RED_MAPS;
+  at(groups, ColorMapGroup::GREENS) = &COLOR_DATA::GREEN_MAPS;
+  at(groups, ColorMapGroup::YELLOWS) = &COLOR_DATA::YELLOW_MAPS;
+  at(groups, ColorMapGroup::ORANGES) = &COLOR_DATA::ORANGE_MAPS;
+  at(groups, ColorMapGroup::PURPLES) = &COLOR_DATA::PURPLE_MAPS;
+  at(groups, ColorMapGroup::CITIES) = &COLOR_DATA::CITY_MAPS;
+  at(groups, ColorMapGroup::SEASONS) = &COLOR_DATA::SEASON_MAPS;
+  at(groups, ColorMapGroup::HEAT) = &COLOR_DATA::HEAT_MAPS;
+  at(groups, ColorMapGroup::COLD) = &COLOR_DATA::COLD_MAPS;
+  at(groups, ColorMapGroup::PASTEL) = &COLOR_DATA::PASTEL_MAPS;
 
   assert(std::all_of(groups.cbegin(), groups.cend(), [](const auto& g) { return g != nullptr; }));
 

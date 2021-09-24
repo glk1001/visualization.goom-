@@ -1,41 +1,41 @@
-#ifndef VISUALIZATION_GOOM_EXTRA_COLOR_GROUPS_H
-#define VISUALIZATION_GOOM_EXTRA_COLOR_GROUPS_H
+#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_COLOR_DATA_EXTRA_COLOR_GROUPS_H
+#define VISUALIZATION_GOOM_LIB_GOOMUTILS_COLOR_DATA_EXTRA_COLOR_GROUPS_H
 
 #include "color_data/colormap_enums.h"
 
 #include <vector>
 
-#if __cplusplus > 201402L
-namespace GOOM::UTILS::COLOR_DATA
-{
-#else
+#if __cplusplus <= 201402L
 namespace GOOM
 {
 namespace UTILS
 {
 namespace COLOR_DATA
 {
+#else
+namespace GOOM::UTILS::COLOR_DATA
+{
 #endif
 
-extern const std::vector<ColorMapName> wesAndersonMaps;
-extern const std::vector<ColorMapName> blueMaps;
-extern const std::vector<ColorMapName> redMaps;
-extern const std::vector<ColorMapName> greenMaps;
-extern const std::vector<ColorMapName> yellowMaps;
-extern const std::vector<ColorMapName> orangeMaps;
-extern const std::vector<ColorMapName> purpleMaps;
-extern const std::vector<ColorMapName> cityMaps;
-extern const std::vector<ColorMapName> seasonMaps;
-extern const std::vector<ColorMapName> heatMaps;
-extern const std::vector<ColorMapName> coldMaps;
-extern const std::vector<ColorMapName> pastelMaps;
+extern const std::vector<ColorMapName> WES_ANDERSON_MAPS;
+extern const std::vector<ColorMapName> BLUE_MAPS;
+extern const std::vector<ColorMapName> RED_MAPS;
+extern const std::vector<ColorMapName> GREEN_MAPS;
+extern const std::vector<ColorMapName> YELLOW_MAPS;
+extern const std::vector<ColorMapName> ORANGE_MAPS;
+extern const std::vector<ColorMapName> PURPLE_MAPS;
+extern const std::vector<ColorMapName> CITY_MAPS;
+extern const std::vector<ColorMapName> SEASON_MAPS;
+extern const std::vector<ColorMapName> HEAT_MAPS;
+extern const std::vector<ColorMapName> COLD_MAPS;
+extern const std::vector<ColorMapName> PASTEL_MAPS;
 
-#if __cplusplus > 201402L
-} // namespace GOOM::UTILS::COLOR_DATA
-#else
+#if __cplusplus <= 201402L
 } // namespace COLOR_DATA
 } // namespace UTILS
 } // namespace GOOM
+#else
+} // namespace GOOM::UTILS::COLOR_DATA
 #endif
 
-#endif //VISUALIZATION_GOOM_EXTRA_COLOR_GROUPS_H
+#endif //VISUALIZATION_GOOM_LIB_GOOMUTILS_COLOR_DATA_EXTRA_COLOR_GROUPS_H
