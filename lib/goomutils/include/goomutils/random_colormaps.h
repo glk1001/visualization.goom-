@@ -123,7 +123,7 @@ public:
   explicit WeightedColorMaps(const Weights<ColorMapGroup>& weights);
 
   [[nodiscard]] auto GetWeights() const -> const Weights<ColorMapGroup>&;
-  void SetWeights(const Weights<ColorMapGroup>&);
+  void SetWeights(const Weights<ColorMapGroup>& weights);
 
   [[nodiscard]] auto AreWeightsActive() const -> bool;
   void SetWeightsActive(bool value);

@@ -78,7 +78,7 @@ inline void Timer::Increment()
     return;
   }
 
-  m_count++;
+  ++m_count;
 }
 
 #if __cplusplus <= 201402L

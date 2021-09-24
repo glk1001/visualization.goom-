@@ -18,7 +18,7 @@ namespace GOOM::UTILS
 {
 #endif
 
-TValue::TValue(TValue::StepType stepType, const float stepSize) noexcept
+TValue::TValue(const TValue::StepType stepType, const float stepSize) noexcept
   : m_stepType{stepType},
     m_stepSize{stepSize},
     m_currentStep{m_stepSize},
@@ -27,17 +27,19 @@ TValue::TValue(TValue::StepType stepType, const float stepSize) noexcept
 {
 }
 
-TValue::TValue(TValue::StepType stepType,
+TValue::TValue(const TValue::StepType stepType,
                const float stepSize,
                const std::vector<DelayPoint>& delayPoints) noexcept
-  : m_stepType{stepType}, m_stepSize{stepSize}, m_currentStep{m_stepSize},
+  : m_stepType{stepType},
+    m_stepSize{stepSize},
+    m_currentStep{m_stepSize},
     m_delayPoints{delayPoints},
     m_currentDelayPoints{m_delayPoints}
 {
   ValidateDelayPoints();
 }
 
-TValue::TValue(TValue::StepType stepType, const uint32_t numSteps) noexcept
+TValue::TValue(const TValue::StepType stepType, const uint32_t numSteps) noexcept
   : m_stepType{stepType},
     m_stepSize{1.0F / static_cast<float>(numSteps)},
     m_currentStep{m_stepSize},
@@ -46,7 +48,7 @@ TValue::TValue(TValue::StepType stepType, const uint32_t numSteps) noexcept
 {
 }
 
-TValue::TValue(TValue::StepType stepType,
+TValue::TValue(const TValue::StepType stepType,
                const uint32_t numSteps,
                const std::vector<DelayPoint>& delayPoints) noexcept
   : m_stepType{stepType},
@@ -89,7 +91,7 @@ void TValue::Increment()
 
 inline void TValue::SingleCycleIncrement()
 {
-  if (m_t > 1.0 + SMALL_FLOAT)
+  if (m_t > (1.0 + SMALL_FLOAT))
   {
     return;
   }
@@ -105,7 +107,7 @@ inline void TValue::ContinuousRepeatableIncrement()
     return;
   }
 
-  if (m_t > 1.0F + SMALL_FLOAT)
+  if (m_t > (1.0F + SMALL_FLOAT))
   {
     HandleBoundary(0.0F, +1.0F);
   }
@@ -120,11 +122,11 @@ inline void TValue::ContinuousReversibleIncrement()
     return;
   }
 
-  if (m_t > 1.0F + SMALL_FLOAT)
+  if (m_t > (1.0F + SMALL_FLOAT))
   {
     HandleBoundary(1.0F, -1.0F);
   }
-  else if (m_t < 0.0F - SMALL_FLOAT)
+  else if (m_t < (0.0F - SMALL_FLOAT))
   {
     HandleBoundary(0.0F, +1.0F);
   }
@@ -132,14 +134,14 @@ inline void TValue::ContinuousReversibleIncrement()
 
 inline auto TValue::IsTimeDelayed() -> bool
 {
-  if (!m_startedDelay && WeAreStartingDelayPoint())
+  if ((!m_startedDelay) && WeAreStartingDelayPoint())
   {
     m_startedDelay = true;
   }
 
   if (m_delayPointCount > 0)
   {
-    m_delayPointCount--;
+    --m_delayPointCount;
     if (m_delayPointCount > 0)
     {
       m_t -= m_currentStep;
@@ -158,7 +160,8 @@ inline auto TValue::WeAreStartingDelayPoint() -> bool
 {
   for (const auto& delayZone : m_currentDelayPoints)
   {
-    if ((m_currentStep < 0.0F && m_t <= delayZone.t0 + SMALL_FLOAT) || (m_currentStep > 0.0F && m_t >= delayZone.t0 - SMALL_FLOAT))
+    if (((m_currentStep < 0.0F) && (m_t <= (delayZone.t0 + SMALL_FLOAT))) ||
+        ((m_currentStep > 0.0F) && (m_t >= (delayZone.t0 - SMALL_FLOAT))))
     {
       m_delayPointCount = delayZone.delayTime;
       m_currentDelayPoints.erase(m_currentDelayPoints.begin());
@@ -177,7 +180,8 @@ void TValue::SetStepSize(const float val)
   m_stepSize = val;
   m_currentStep = m_currentStep < 0.0 ? -m_stepSize : +m_stepSize;
 
-  if ((oldCurrentStep < 0.0F && m_currentStep > 0.0F) || (oldCurrentStep > 0.0F && m_currentStep < 0.0F))
+  if (((oldCurrentStep < 0.0F) && (m_currentStep > 0.0F)) ||
+      ((oldCurrentStep > 0.0F) && (m_currentStep < 0.0F)))
   {
     m_currentDelayPoints = m_delayPoints;
   }

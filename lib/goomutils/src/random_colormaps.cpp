@@ -50,7 +50,7 @@ auto RandomColorMaps::GetRandomColorMapName(const ColorMapGroup cmg) const
     -> COLOR_DATA::ColorMapName
 {
   const ColorMapNames& colorMapNames = GetColorMapNames(cmg);
-  return colorMapNames[GetRandInRange(0U, colorMapNames.size())];
+  return colorMapNames[GetRandInRange(0U, static_cast<uint32_t>(colorMapNames.size()))];
 }
 
 auto RandomColorMaps::GetRandomColorMap() const -> const IColorMap&
@@ -286,9 +286,9 @@ auto WeightedColorMaps::GetWeights() const -> const Weights<ColorMapGroup>&
   return m_weights;
 }
 
-void WeightedColorMaps::SetWeights(const Weights<ColorMapGroup>& w)
+void WeightedColorMaps::SetWeights(const Weights<ColorMapGroup>& weights)
 {
-  m_weights = w;
+  m_weights = weights;
 }
 
 auto WeightedColorMaps::AreWeightsActive() const -> bool
@@ -321,84 +321,96 @@ auto GetAllMapsUnweighted() -> std::shared_ptr<RandomColorMaps>
 auto GetAllStandardMaps() -> std::shared_ptr<RandomColorMaps>
 {
   return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
+      // clang-format off
       {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 1},
-      {ColorMapGroup::SEQUENTIAL, 1},
-      {ColorMapGroup::SEQUENTIAL2, 1},
-      {ColorMapGroup::CYCLIC, 1},
-      {ColorMapGroup::DIVERGING, 1},
-      {ColorMapGroup::DIVERGING_BLACK, 1},
-      {ColorMapGroup::QUALITATIVE, 1},
-      {ColorMapGroup::MISC, 1},
+      {ColorMapGroup::SEQUENTIAL,                      1},
+      {ColorMapGroup::SEQUENTIAL2,                     1},
+      {ColorMapGroup::CYCLIC,                          1},
+      {ColorMapGroup::DIVERGING,                       1},
+      {ColorMapGroup::DIVERGING_BLACK,                 1},
+      {ColorMapGroup::QUALITATIVE,                     1},
+      {ColorMapGroup::MISC,                            1},
+      // clang-format on
   }});
 }
 
 auto GetAllSlimMaps() -> std::shared_ptr<RandomColorMaps>
 {
   return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
+      // clang-format off
       {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 1},
-      {ColorMapGroup::SEQUENTIAL_SLIM, 1},
-      {ColorMapGroup::SEQUENTIAL2_SLIM, 1},
-      {ColorMapGroup::CYCLIC_SLIM, 1},
-      {ColorMapGroup::DIVERGING_SLIM, 1},
-      {ColorMapGroup::DIVERGING_BLACK_SLIM, 1},
-      {ColorMapGroup::QUALITATIVE_SLIM, 1},
-      {ColorMapGroup::MISC_SLIM, 1},
+      {ColorMapGroup::SEQUENTIAL_SLIM,                      1},
+      {ColorMapGroup::SEQUENTIAL2_SLIM,                     1},
+      {ColorMapGroup::CYCLIC_SLIM,                          1},
+      {ColorMapGroup::DIVERGING_SLIM,                       1},
+      {ColorMapGroup::DIVERGING_BLACK_SLIM,                 1},
+      {ColorMapGroup::QUALITATIVE_SLIM,                     1},
+      {ColorMapGroup::MISC_SLIM,                            1},
+      // clang-format on
   }});
 }
 
 auto GetMostlySequentialStandardMaps() -> std::shared_ptr<RandomColorMaps>
 {
   return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
+      // clang-format off
       {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 1},
-      {ColorMapGroup::SEQUENTIAL, 1},
-      {ColorMapGroup::SEQUENTIAL2, 1},
-      {ColorMapGroup::CYCLIC, 0},
-      {ColorMapGroup::DIVERGING, 0},
-      {ColorMapGroup::DIVERGING_BLACK, 0},
-      {ColorMapGroup::QUALITATIVE, 1},
-      {ColorMapGroup::MISC, 1},
+      {ColorMapGroup::SEQUENTIAL,                      1},
+      {ColorMapGroup::SEQUENTIAL2,                     1},
+      {ColorMapGroup::CYCLIC,                          0},
+      {ColorMapGroup::DIVERGING,                       0},
+      {ColorMapGroup::DIVERGING_BLACK,                 0},
+      {ColorMapGroup::QUALITATIVE,                     1},
+      {ColorMapGroup::MISC,                            1},
+      // clang-format on
   }});
 }
 
 auto GetMostlySequentialSlimMaps() -> std::shared_ptr<RandomColorMaps>
 {
   return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
+      // clang-format off
       {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 1},
-      {ColorMapGroup::SEQUENTIAL_SLIM, 1},
-      {ColorMapGroup::SEQUENTIAL2_SLIM, 1},
-      {ColorMapGroup::CYCLIC_SLIM, 0},
-      {ColorMapGroup::DIVERGING_SLIM, 0},
-      {ColorMapGroup::DIVERGING_BLACK_SLIM, 0},
-      {ColorMapGroup::QUALITATIVE_SLIM, 1},
-      {ColorMapGroup::MISC_SLIM, 1},
+      {ColorMapGroup::SEQUENTIAL_SLIM,                      1},
+      {ColorMapGroup::SEQUENTIAL2_SLIM,                     1},
+      {ColorMapGroup::CYCLIC_SLIM,                          0},
+      {ColorMapGroup::DIVERGING_SLIM,                       0},
+      {ColorMapGroup::DIVERGING_BLACK_SLIM,                 0},
+      {ColorMapGroup::QUALITATIVE_SLIM,                     1},
+      {ColorMapGroup::MISC_SLIM,                            1},
+      // clang-format on
   }});
 }
 
 auto GetSlightlyDivergingStandardMaps() -> std::shared_ptr<RandomColorMaps>
 {
   return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
+      // clang-format off
       {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 10},
-      {ColorMapGroup::SEQUENTIAL, 10},
-      {ColorMapGroup::SEQUENTIAL2, 10},
-      {ColorMapGroup::CYCLIC, 10},
-      {ColorMapGroup::DIVERGING, 20},
-      {ColorMapGroup::DIVERGING_BLACK, 1},
-      {ColorMapGroup::QUALITATIVE, 10},
-      {ColorMapGroup::MISC, 20},
+      {ColorMapGroup::SEQUENTIAL,                      10},
+      {ColorMapGroup::SEQUENTIAL2,                     10},
+      {ColorMapGroup::CYCLIC,                          10},
+      {ColorMapGroup::DIVERGING,                       20},
+      {ColorMapGroup::DIVERGING_BLACK,                  1},
+      {ColorMapGroup::QUALITATIVE,                     10},
+      {ColorMapGroup::MISC,                            20},
+      // clang-format on
   }});
 }
 
 auto GetSlightlyDivergingSlimMaps() -> std::shared_ptr<RandomColorMaps>
 {
   return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
+      // clang-format off
       {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 10},
-      {ColorMapGroup::SEQUENTIAL_SLIM, 10},
-      {ColorMapGroup::SEQUENTIAL2_SLIM, 10},
-      {ColorMapGroup::CYCLIC_SLIM, 10},
-      {ColorMapGroup::DIVERGING_SLIM, 20},
-      {ColorMapGroup::DIVERGING_BLACK_SLIM, 1},
-      {ColorMapGroup::QUALITATIVE_SLIM, 10},
-      {ColorMapGroup::MISC_SLIM, 20},
+      {ColorMapGroup::SEQUENTIAL_SLIM,                      10},
+      {ColorMapGroup::SEQUENTIAL2_SLIM,                     10},
+      {ColorMapGroup::CYCLIC_SLIM,                          10},
+      {ColorMapGroup::DIVERGING_SLIM,                       20},
+      {ColorMapGroup::DIVERGING_BLACK_SLIM,                  1},
+      {ColorMapGroup::QUALITATIVE_SLIM,                     10},
+      {ColorMapGroup::MISC_SLIM,                            20},
+      // clang-format on
   }});
 }
 

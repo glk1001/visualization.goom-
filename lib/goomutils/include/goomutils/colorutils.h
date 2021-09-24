@@ -157,11 +157,11 @@ inline auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
   const auto bgndA = static_cast<int>(bgnd.A());
 
   const auto newR =
-      static_cast<uint32_t>(bgndR + (fgndA * (fgndR - bgndR)) / channel_limits<int32_t>::max());
+      static_cast<uint32_t>(bgndR + ((fgndA * (fgndR - bgndR)) / channel_limits<int32_t>::max()));
   const auto newG =
-      static_cast<uint32_t>(bgndG + (fgndA * (fgndG - bgndG)) / channel_limits<int32_t>::max());
+      static_cast<uint32_t>(bgndG + ((fgndA * (fgndG - bgndG)) / channel_limits<int32_t>::max()));
   const auto newB =
-      static_cast<uint32_t>(bgndB + (fgndA * (fgndB - bgndB)) / channel_limits<int32_t>::max());
+      static_cast<uint32_t>(bgndB + ((fgndA * (fgndB - bgndB)) / channel_limits<int32_t>::max()));
   const auto newA = std::min(channel_limits<int32_t>::max(), fgndA + bgndA);
 
   return Pixel{{
@@ -172,7 +172,8 @@ inline auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
   }};
 }
 
-inline auto GetColorMultiply(const Pixel& srce, const Pixel& dest, bool allowOverexposed) -> Pixel
+inline auto GetColorMultiply(const Pixel& srce, const Pixel& dest, const bool allowOverexposed)
+    -> Pixel
 {
   uint32_t newR = ColorChannelMultiply(srce.R(), dest.R());
   uint32_t newG = ColorChannelMultiply(srce.G(), dest.G());
@@ -192,14 +193,15 @@ inline auto GetColorMultiply(const Pixel& srce, const Pixel& dest, bool allowOve
   }
 
   return Pixel{{
-      /*.r = */ static_cast<uint8_t>((newR & 0xffffff00) ? 0xff : newR),
-      /*.g = */ static_cast<uint8_t>((newG & 0xffffff00) ? 0xff : newG),
-      /*.b = */ static_cast<uint8_t>((newB & 0xffffff00) ? 0xff : newB),
-      /*.a = */ static_cast<uint8_t>((newA & 0xffffff00) ? 0xff : newA),
+      /*.r = */ static_cast<uint8_t>((newR & 0xffffff00U) ? 0xffU : newR),
+      /*.g = */ static_cast<uint8_t>((newG & 0xffffff00U) ? 0xffU : newG),
+      /*.b = */ static_cast<uint8_t>((newB & 0xffffff00U) ? 0xffU : newB),
+      /*.a = */ static_cast<uint8_t>((newA & 0xffffff00U) ? 0xffU : newA),
   }};
 }
 
-inline auto GetColorAdd(const Pixel& color1, const Pixel& color2, bool allowOverexposed) -> Pixel
+inline auto GetColorAdd(const Pixel& color1, const Pixel& color2, const bool allowOverexposed)
+    -> Pixel
 {
   uint32_t newR = ColorChannelAdd(color1.R(), color2.R());
   uint32_t newG = ColorChannelAdd(color1.G(), color2.G());
@@ -219,10 +221,10 @@ inline auto GetColorAdd(const Pixel& color1, const Pixel& color2, bool allowOver
   }
 
   return Pixel{{
-      /*.r = */ static_cast<uint8_t>((newR & 0xffffff00) ? 0xff : newR),
-      /*.g = */ static_cast<uint8_t>((newG & 0xffffff00) ? 0xff : newG),
-      /*.b = */ static_cast<uint8_t>((newB & 0xffffff00) ? 0xff : newB),
-      /*.a = */ static_cast<uint8_t>((newA & 0xffffff00) ? 0xff : newA),
+      /*.r = */ static_cast<uint8_t>((newR & 0xffffff00U) ? 0xffU : newR),
+      /*.g = */ static_cast<uint8_t>((newG & 0xffffff00U) ? 0xffU : newG),
+      /*.b = */ static_cast<uint8_t>((newB & 0xffffff00U) ? 0xffU : newB),
+      /*.a = */ static_cast<uint8_t>((newA & 0xffffff00U) ? 0xffU : newA),
   }};
 }
 
@@ -232,9 +234,9 @@ inline auto GetColorAddBlend(const Pixel& fgnd,
                              const bool useBgndAlpha) -> Pixel
 {
   const uint32_t alpha = useBgndAlpha ? bgnd.A() : fgnd.A();
-  uint32_t newR = ColorChannelAddBlend(alpha, fgnd.R(), bgnd.R());
-  uint32_t newG = ColorChannelAddBlend(alpha, fgnd.G(), bgnd.G());
-  uint32_t newB = ColorChannelAddBlend(alpha, fgnd.B(), bgnd.B());
+  uint32_t newR = ColorChannelAddBlend(static_cast<uint8_t>(alpha), fgnd.R(), bgnd.R());
+  uint32_t newG = ColorChannelAddBlend(static_cast<uint8_t>(alpha), fgnd.G(), bgnd.G());
+  uint32_t newB = ColorChannelAddBlend(static_cast<uint8_t>(alpha), fgnd.B(), bgnd.B());
   const uint32_t newA = fgnd.A();
 
   if (!allowOverexposed)
@@ -250,10 +252,10 @@ inline auto GetColorAddBlend(const Pixel& fgnd,
   }
 
   return Pixel{{
-      /*.r = */ static_cast<uint8_t>((newR & 0xffffff00) ? 0xff : newR),
-      /*.g = */ static_cast<uint8_t>((newG & 0xffffff00) ? 0xff : newG),
-      /*.b = */ static_cast<uint8_t>((newB & 0xffffff00) ? 0xff : newB),
-      /*.a = */ static_cast<uint8_t>((newA & 0xffffff00) ? 0xff : newA),
+      /*.r = */ static_cast<uint8_t>((newR & 0xffffff00U) ? 0xffU : newR),
+      /*.g = */ static_cast<uint8_t>((newG & 0xffffff00U) ? 0xffU : newG),
+      /*.b = */ static_cast<uint8_t>((newB & 0xffffff00U) ? 0xffU : newB),
+      /*.a = */ static_cast<uint8_t>((newA & 0xffffff00U) ? 0xffU : newA),
   }};
 }
 
@@ -280,7 +282,7 @@ inline auto GetBrighterChannelColor(const uint32_t brightness, const uint8_t cha
 
 inline auto GetBrighterColorInt(const uint32_t brightness,
                                 const Pixel& color,
-                                bool allowOverexposed) -> Pixel
+                                const bool allowOverexposed) -> Pixel
 {
   uint32_t newR = GetBrighterChannelColor(brightness, color.R());
   uint32_t newG = GetBrighterChannelColor(brightness, color.G());
@@ -300,24 +302,25 @@ inline auto GetBrighterColorInt(const uint32_t brightness,
   }
 
   return Pixel{{
-      /*.r = */ static_cast<uint8_t>((newR & 0xffffff00) ? 0xff : newR),
-      /*.g = */ static_cast<uint8_t>((newG & 0xffffff00) ? 0xff : newG),
-      /*.b = */ static_cast<uint8_t>((newB & 0xffffff00) ? 0xff : newB),
-      /*.a = */ static_cast<uint8_t>((newA & 0xffffff00) ? 0xff : newA),
+      /*.r = */ static_cast<uint8_t>((newR & 0xffffff00U) ? 0xffU : newR),
+      /*.g = */ static_cast<uint8_t>((newG & 0xffffff00U) ? 0xffU : newG),
+      /*.b = */ static_cast<uint8_t>((newB & 0xffffff00U) ? 0xffU : newB),
+      /*.a = */ static_cast<uint8_t>((newA & 0xffffff00U) ? 0xffU : newA),
   }};
 }
 
 
-inline auto GetBrighterColor(const float brightness, const Pixel& color, bool allowOverexposed)
-    -> Pixel
+inline auto GetBrighterColor(const float brightness,
+                             const Pixel& color,
+                             const bool allowOverexposed) -> Pixel
 {
   assert(brightness >= 0.0F && brightness <= 3.0F);
-  const auto br = static_cast<uint32_t>(std::round(brightness * 256.0F + 0.0001F));
+  const auto br = static_cast<uint32_t>(std::round((brightness * 256.0F) + 0.0001F));
   return GetBrighterColorInt(br, color, allowOverexposed);
 }
 
 
-inline auto GetRightShiftedChannels(const Pixel& color, int value) -> Pixel
+inline auto GetRightShiftedChannels(const Pixel& color, const int value) -> Pixel
 {
   Pixel p = color;
 
@@ -328,10 +331,11 @@ inline auto GetRightShiftedChannels(const Pixel& color, int value) -> Pixel
   return p;
 }
 
-inline auto GetRgbColorChannelLerp(int32_t c1, int32_t c2, int32_t intT) -> uint32_t
+inline auto GetRgbColorChannelLerp(const int32_t c1, const int32_t c2, const int32_t intT)
+    -> uint32_t
 {
   constexpr auto MAX_COL_VAL_32 = static_cast<int32_t>(MAX_COLOR_VAL);
-  return static_cast<uint32_t>((MAX_COL_VAL_32 * c1 + intT * (c2 - c1)) / MAX_COL_VAL_32);
+  return static_cast<uint32_t>(((MAX_COL_VAL_32 * c1) + (intT * (c2 - c1))) / MAX_COL_VAL_32);
 }
 
 inline auto GetRgbColorLerp(const Pixel& colA, const Pixel& colB, float t) -> Pixel
@@ -410,9 +414,9 @@ inline auto GetDecreasedChroma(const Pixel& color) -> Pixel
 }
 
 inline GammaCorrection::GammaCorrection(const float gamma,
-                                        const float thresh,
-                                        bool allowOverexposure)
-  : m_gamma(gamma), m_threshold(thresh), m_allowOverexposure{allowOverexposure}
+                                        const float threshold,
+                                        const bool allowOverexposure)
+  : m_gamma(gamma), m_threshold(threshold), m_allowOverexposure{allowOverexposure}
 {
 }
 

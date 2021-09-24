@@ -28,7 +28,7 @@ auto StringJoin(const std::vector<std::string>& strings, const std::string& deli
   for (auto str = cbegin(strings); str != cend(strings); ++str)
   {
     joinedStr += *str;
-    if (str != cend(strings) - 1)
+    if (str != (cend(strings) - 1))
     {
       joinedStr += delim;
     }

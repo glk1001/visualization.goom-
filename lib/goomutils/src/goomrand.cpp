@@ -11,7 +11,6 @@
 
 #undef NDEBUG
 
-#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <ostream>
@@ -49,7 +48,7 @@ auto GetRandSeed() -> uint64_t
   return randSeed;
 }
 
-void SetRandSeed(uint64_t seed)
+void SetRandSeed(const uint64_t seed)
 {
   randSeed = seed;
   xoshiroEng = GetRandSeed();
@@ -57,7 +56,7 @@ void SetRandSeed(uint64_t seed)
 
 inline auto RandXoshiroFunc(const uint32_t n0, const uint32_t n1) -> uint32_t
 {
-  const uint32_t x = xoshiroEng();
+  const auto x = static_cast<uint32_t>(xoshiroEng());
   const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32;
   return n0 + static_cast<uint32_t>(m);
 }
@@ -66,15 +65,15 @@ inline auto RandSplitmixFunc(const uint32_t n0, const uint32_t n1) -> uint32_t
 {
   // thread_local splitmix32 eng { GetRandSeed() };
   thread_local splitmix64 s_eng{GetRandSeed()};
-  const uint32_t x = s_eng();
+  const auto x = static_cast<uint32_t>(s_eng());
   const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32;
   return n0 + static_cast<uint32_t>(m);
 }
 
 void SaveRandState(std::ostream& f)
 {
-  f << randSeed << std::endl;
-  f << xoshiroEng << std::endl;
+  f << randSeed << "\n";
+  f << xoshiroEng << "\n";
 }
 
 void RestoreRandState(std::istream& f)

@@ -72,8 +72,8 @@ public:
 
   void ClearWeights(size_t value);
   [[nodiscard]] auto GetNumElements() const -> size_t;
-  void SetWeight(E e, size_t value);
-  auto GetWeight(E e) const -> size_t;
+  void SetWeight(E enumClass, size_t value);
+  auto GetWeight(E enumClass) const -> size_t;
 
   [[nodiscard]] auto GetSumOfWeights() const -> size_t { return m_sumOfWeights; }
 
@@ -82,7 +82,7 @@ public:
 private:
   std::vector<std::pair<E, size_t>> m_weights{};
   size_t m_sumOfWeights{};
-  static auto GetSumOfWeights(const std::vector<std::pair<E, size_t>>& w) -> size_t;
+  static auto GetSumOfWeights(const std::vector<std::pair<E, size_t>>& weights) -> size_t;
 };
 
 inline auto GetRandSignInt() -> int
@@ -123,15 +123,15 @@ inline void Shuffle(RandomIt first, RandomIt last)
 
 inline auto ProbabilityOfMInN(const uint32_t m, const uint32_t n) -> bool
 {
-  if (m == 1)
+  if (1 == m)
   {
-    return GetNRand(n) == 0;
+    return 0 == GetNRand(n);
   }
-  if (m == n - 1)
+  if (m == (n - 1))
   {
     return GetNRand(n) > 0;
   }
-  return GetRandInRange(0.0F, 1.0F) <= static_cast<float>(m) / static_cast<float>(n);
+  return GetRandInRange(0.0F, 1.0F) <= (static_cast<float>(m) / static_cast<float>(n));
 }
 
 inline auto ProbabilityOf(const float p) -> bool
