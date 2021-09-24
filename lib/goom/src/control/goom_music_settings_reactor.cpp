@@ -20,9 +20,11 @@ using UTILS::NameValuePairs;
 GoomMusicSettingsReactor::GoomMusicSettingsReactor(
     const PluginInfo& goomInfo,
     GoomAllVisualFx& visualFx,
+    const GoomEvents& goomEvents,
     FilterSettingsService& filterSettingsService) noexcept
   : m_goomInfo{goomInfo},
     m_visualFx{visualFx},
+    m_goomEvents{goomEvents},
     m_filterSettingsService{filterSettingsService},
     m_musicLinesReactor{m_goomInfo, m_visualFx, m_goomEvents}
 {

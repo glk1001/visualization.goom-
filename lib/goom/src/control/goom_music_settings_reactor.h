@@ -26,6 +26,7 @@ class GoomMusicSettingsReactor
 public:
   GoomMusicSettingsReactor(const PluginInfo& goomInfo,
                            GoomAllVisualFx& visualFx,
+                           const GoomEvents& goomEvents,
                            FILTERS::FilterSettingsService& filterSettingsService) noexcept;
 
   void Start();
@@ -51,11 +52,10 @@ public:
 private:
   const PluginInfo& m_goomInfo;
   GoomAllVisualFx& m_visualFx;
+  using GoomEvent = GoomEvents::GoomEvent;
+  const GoomEvents& m_goomEvents;
   FILTERS::FilterSettingsService& m_filterSettingsService;
   GoomMusicLinesReactor m_musicLinesReactor;
-
-  using GoomEvent = GoomEvents::GoomEvent;
-  GoomEvents m_goomEvents{};
 
   static constexpr uint32_t NORMAL_UPDATE_LOCK_TIME = 50;
   static constexpr uint32_t REVERSE_SPEED_AND_STOP_SPEED_LOCK_TIME = 75;

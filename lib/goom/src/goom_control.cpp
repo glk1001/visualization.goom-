@@ -15,6 +15,7 @@
 #include "goom_control.h"
 
 #include "control/goom_all_visual_fx.h"
+#include "control/goom_events.h"
 #include "control/goom_image_buffers.h"
 #include "control/goom_message_displayer.h"
 #include "control/goom_music_settings_reactor.h"
@@ -54,6 +55,7 @@ namespace GOOM
 
 using CONTROL::GoomAllVisualFx;
 using CONTROL::GoomDrawable;
+using CONTROL::GoomEvents;
 using CONTROL::GoomImageBuffers;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
@@ -98,6 +100,7 @@ private:
   FilterSettingsService m_filterSettingsService;
   const SmallImageBitmaps m_smallBitmaps;
   GoomAllVisualFx m_visualFx;
+  GoomEvents m_goomEvents{};
 
   GoomMusicSettingsReactor m_musicSettingsReactor;
 
@@ -185,7 +188,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
                m_smallBitmaps,
                m_filterSettingsService.GetFilterBuffersService(),
                FilterSettingsService::GetFilterColorsService()},
-    m_musicSettingsReactor{m_goomInfo, m_visualFx, m_filterSettingsService},
+    m_musicSettingsReactor{m_goomInfo, m_visualFx, m_goomEvents, m_filterSettingsService},
     m_goomTextOutput{screenWidth, screenHeight},
     m_goomTitleDisplayer{m_goomTextOutput, GetFontDirectory()},
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile()}
