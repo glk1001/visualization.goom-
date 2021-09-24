@@ -11,12 +11,19 @@
 #include <functional>
 #include <vector>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace DRAW
+{
+#else
+namespace GOOM::DRAW
+{
+#endif
 
 DrawMethods::DrawMethods(const uint32_t screenWidth,
                          const uint32_t screenHeight,
-                         const DrawPixelFunc& f)
+                         const IGoomDraw::DrawPixelFunc& f)
   : m_screenWidth{screenWidth}, m_screenHeight{screenHeight}, m_drawPixelFunc{f}
 {
 }
@@ -48,19 +55,19 @@ void DrawMethods::DrawBresenhamCircle(const int32_t x0,
 
   drawCircle8(x0, y0, x, y);
 
-  int d = 3 - 2 * radius;
+  int d = 3 - (2 * radius);
   while (y >= x)
   {
-    x++;
+    ++x;
 
     if (d > 0)
     {
-      y--;
-      d = d + 4 * (x - y) + 10;
+      --y;
+      d += (4 * (x - y)) + 10;
     }
     else
     {
-      d = d + 4 * x + 6;
+      d += (4 * x) + 6;
     }
     drawCircle8(x0, y0, x, y);
   }
@@ -72,16 +79,18 @@ void DrawMethods::DrawCircle(const int32_t x0,
                              const std::vector<Pixel>& colors) const
 {
   auto plotter = [&](const int x1, const int y1, const int x2, const int y2) -> void {
-    if (static_cast<uint32_t>(x1) >= m_screenWidth || static_cast<uint32_t>(y1) >= m_screenHeight)
+    if ((static_cast<uint32_t>(x1) >= m_screenWidth) ||
+        (static_cast<uint32_t>(y1) >= m_screenHeight))
     {
       return;
     }
-    if (static_cast<uint32_t>(x2) >= m_screenWidth || static_cast<uint32_t>(y2) >= m_screenHeight)
+    if ((static_cast<uint32_t>(x2) >= m_screenWidth) ||
+        (static_cast<uint32_t>(y2) >= m_screenHeight))
     {
       return;
     }
     DrawPixels(x1, y1, colors);
-    if (x1 == x2 && y1 == y2)
+    if ((x1 == x2) && (y1 == y2))
     {
       return;
     }
@@ -97,7 +106,7 @@ void DrawMethods::DrawHorizontalLine(const int x1,
                                      const std::vector<Pixel>& colors) const
 {
   const int xEnd = x1 == x2 ? x1 : x2;
-  for (int x = x1; x <= xEnd; x++)
+  for (int x = x1; x <= xEnd; ++x)
   {
     DrawPixels(x, y, colors);
   }
@@ -139,7 +148,7 @@ void DrawMethods::DrawLine(const int32_t x1,
                            const std::vector<Pixel>& colors,
                            const uint8_t thickness) const
 {
-  if (thickness == 1)
+  if (1 == thickness)
   {
     DrawWuLine(x1, y1, x2, y2, colors);
   }
@@ -162,7 +171,7 @@ void DrawMethods::DrawWuLine(
 
   std::vector<Pixel> tempColors = colors;
   auto plot = [&](const int x, const int y, const float brightness) -> void {
-    if (static_cast<uint32_t>(x) >= m_screenWidth || static_cast<uint32_t>(y) >= m_screenHeight)
+    if ((static_cast<uint32_t>(x) >= m_screenWidth) || (static_cast<uint32_t>(y) >= m_screenHeight))
     {
       return;
     }
@@ -177,7 +186,7 @@ void DrawMethods::DrawWuLine(
     }
     else
     {
-      for (size_t i = 0; i < colors.size(); i++)
+      for (size_t i = 0; i < colors.size(); ++i)
       {
         tempColors[i] = UTILS::GetBrighterColor(brightness, colors[i], m_allowOverexposed);
       }
@@ -195,7 +204,7 @@ void DrawMethods::DrawWuLine(
 void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot)
 {
   const auto ipart = [](const float x) -> int { return static_cast<int>(std::floor(x)); };
-  const auto round = [](const float x) -> float { return std::round(x); };
+  const auto fround = [](const float x) -> float { return std::round(x); };
   const auto fpart = [](const float x) -> float { return x - std::floor(x); };
   const auto rfpart = [=](const float x) -> float { return 1 - fpart(x); };
 
@@ -213,13 +222,13 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
 
   const float dx = x1 - x0; // because of above swap, must be >= 0
   const float dy = y1 - y0;
-  const float gradient = (dx < 0.001) ? 1 : dy / dx;
+  const float gradient = (dx < 0.001) ? 1 : (dy / dx);
 
   int xpx11;
   float intery;
   {
-    const float xend = round(x0);
-    const float yend = y0 + gradient * (xend - x0);
+    const float xend = fround(x0);
+    const float yend = y0 + (gradient * (xend - x0));
     const float xgap = rfpart(x0 + 0.5F);
     xpx11 = static_cast<int>(xend);
     const int ypx11 = ipart(yend);
@@ -238,8 +247,8 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
 
   int xpx12;
   {
-    const float xend = round(x1);
-    const float yend = y1 + gradient * (xend - x1);
+    const float xend = fround(x1);
+    const float yend = y1 + (gradient * (xend - x1));
     const float xgap = rfpart(x1 + 0.5F);
     xpx12 = static_cast<int>(xend);
     const int ypx12 = ipart(yend);
@@ -257,7 +266,7 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
 
   if (steep)
   {
-    for (int x = xpx11 + 1; x < xpx12; x++)
+    for (int x = xpx11 + 1; x < xpx12; ++x)
     {
       plot(ipart(intery), x, rfpart(intery));
       plot(ipart(intery) + 1, x, fpart(intery));
@@ -266,7 +275,7 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
   }
   else
   {
-    for (int x = xpx11 + 1; x < xpx12; x++)
+    for (int x = xpx11 + 1; x < xpx12; ++x)
     {
       plot(x, ipart(intery), rfpart(intery));
       plot(x, ipart(intery) + 1, fpart(intery));
@@ -298,8 +307,8 @@ constexpr int LINE_OVERLAP_MINOR = 2;
 
 void DrawMethods::DrawLineOverlap(int x0,
                                   int y0,
-                                  int x1,
-                                  int y1,
+                                  const int x1,
+                                  const int y1,
                                   const std::vector<Pixel>& colors,
                                   const float brightness,
                                   const uint8_t overlap) const
@@ -313,7 +322,7 @@ void DrawMethods::DrawLineOverlap(int x0,
 
   std::vector<Pixel> tempColors = colors;
   auto plot = [&](const int x, const int y) -> void {
-    if (static_cast<uint32_t>(x) >= m_screenWidth || static_cast<uint32_t>(y) >= m_screenHeight)
+    if ((static_cast<uint32_t>(x) >= m_screenWidth) || (static_cast<uint32_t>(y) >= m_screenHeight))
     {
       return;
     }
@@ -324,7 +333,7 @@ void DrawMethods::DrawLineOverlap(int x0,
     }
     else
     {
-      for (size_t i = 0; i < colors.size(); i++)
+      for (size_t i = 0; i < colors.size(); ++i)
       {
         tempColors[i] = UTILS::GetBrighterColor(brightness, colors[i], m_allowOverexposed);
       }
@@ -367,8 +376,8 @@ void DrawMethods::DrawLineOverlap(int x0,
       stepY = +1;
     }
 
-    const int16_t deltaXTimes2 = deltaX << 1;
-    const int16_t deltaYTimes2 = deltaY << 1;
+    const auto deltaXTimes2 = static_cast<int16_t>(deltaX << 1);
+    const auto deltaYTimes2 = static_cast<int16_t>(deltaY << 1);
 
     // Draw start pixel.
     plot(x0, y0);
@@ -455,7 +464,7 @@ void DrawMethods::DrawThickLine(int x0,
     DrawLineOverlap(x0, y0, x1, y1, colors, 1.0, 0);
   }
 
-  const float brightness = 0.8F * 2.0F / static_cast<float>(thickness);
+  const float brightness = (0.8F * 2.0F) / static_cast<float>(thickness);
 
   /**
     * For coordinate system with 0.0 top left
@@ -526,8 +535,8 @@ void DrawMethods::DrawThickLine(int x0,
      * on change in minor rectangular direction.
      */
     // adjust draw start point
-    error = deltaYTimes2 - deltaX;
-    for (int i = drawStartAdjustCount; i > 0; i--)
+    error = static_cast<int16_t>(deltaYTimes2) - deltaX;
+    for (int i = drawStartAdjustCount; i > 0; --i)
     {
       // change X (main direction here)
       x0 -= stepX;
@@ -544,8 +553,8 @@ void DrawMethods::DrawThickLine(int x0,
     //draw start line
     DrawLineOverlap(x0, y0, x1, y1, colors, brightness, 1);
     // draw 'thickness' number of lines
-    error = deltaYTimes2 - deltaX;
-    for (int i = thickness; i > 1; i--)
+    error = static_cast<int16_t>(deltaYTimes2) - deltaX;
+    for (int i = thickness; i > 1; --i)
     {
       // change X (main direction here)
       x0 += stepX;
@@ -593,8 +602,8 @@ void DrawMethods::DrawThickLine(int x0,
       stepY = -stepY;
     }
     // adjust draw start point
-    error = deltaXTimes2 - deltaY;
-    for (int i = drawStartAdjustCount; i > 0; i--)
+    error = static_cast<int16_t>(deltaXTimes2) - deltaY;
+    for (int i = drawStartAdjustCount; i > 0; --i)
     {
       y0 -= stepY;
       y1 -= stepY;
@@ -609,8 +618,8 @@ void DrawMethods::DrawThickLine(int x0,
     // draw start line
     DrawLineOverlap(x0, y0, x1, y1, colors, brightness, 0);
     // draw 'thickness' number of lines
-    error = deltaXTimes2 - deltaY;
-    for (int i = thickness; i > 1; i--)
+    error = static_cast<int16_t>(deltaXTimes2) - deltaY;
+    for (int i = thickness; i > 1; --i)
     {
       y0 += stepY;
       y1 += stepY;
@@ -628,4 +637,9 @@ void DrawMethods::DrawThickLine(int x0,
   }
 }
 
+#if __cplusplus <= 201402L
+} // namespace DRAW
 } // namespace GOOM
+#else
+} // namespace GOOM::DRAW
+#endif

@@ -28,11 +28,11 @@ add_library(goom
         src/control/goom_music_settings_reactor.cpp
         src/control/goom_states.cpp
         src/control/goom_title_displayer.cpp
+        src/draw/draw_methods.cpp
         src/draw/goom_draw_to_buffer.cpp
         src/draw/goom_draw_to_container.cpp
         src/draw/goom_draw_to_many.cpp
         src/draw/text_draw.cpp
-        src/draw_methods.cpp
         src/filters/amulet.cpp
         src/filters/crystal_ball.cpp
         src/filters/filter_buffers.cpp

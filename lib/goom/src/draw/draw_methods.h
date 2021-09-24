@@ -1,6 +1,7 @@
-#ifndef VISUALIZATION_GOOM_DRAW_METHODS_H
-#define VISUALIZATION_GOOM_DRAW_METHODS_H
+#ifndef VISUALIZATION_GOOM_LIB_GOOM_DRAW_DRAW_METHODS_H
+#define VISUALIZATION_GOOM_LIB_GOOM_DRAW_DRAW_METHODS_H
 
+#include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goomutils/colorutils.h"
 
@@ -13,16 +14,20 @@
 #include <functional>
 #include <vector>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace DRAW
+{
+#else
+namespace GOOM::DRAW
+{
+#endif
 
 class DrawMethods
 {
 public:
-  using DrawPixelFunc = std::function<void(
-      int32_t x, int32_t y, const std::vector<Pixel>& newColors, bool allowOverexposed)>;
-
-  DrawMethods(uint32_t screenWidth, uint32_t screenHeight, const DrawPixelFunc& f);
+  DrawMethods(uint32_t screenWidth, uint32_t screenHeight, const IGoomDraw::DrawPixelFunc& f);
 
   [[nodiscard]] auto GetAllowOverexposed() const -> bool;
   void SetAllowOverexposed(bool val);
@@ -52,7 +57,7 @@ public:
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  const DrawPixelFunc m_drawPixelFunc;
+  const IGoomDraw::DrawPixelFunc m_drawPixelFunc;
   bool m_allowOverexposed = true;
 
   using PlotCirclePointsFunc = std::function<void(int32_t x1, int32_t y1, int32_t x2, int32_t y2)>;
@@ -112,6 +117,11 @@ inline void DrawMethods::DrawPixels(const int32_t x,
   m_drawPixelFunc(x, y, newColors, allowOverexposed);
 }
 
+#if __cplusplus <= 201402L
+} // namespace DRAW
 } // namespace GOOM
-
+#else
+} // namespace GOOM::DRAW
 #endif
+
+#endif //VISUALIZATION_GOOM_LIB_GOOM_DRAW_DRAW_METHODS_H
