@@ -1,5 +1,6 @@
 #include "tentacles_fx.h"
 
+#include "../tentacles/tentacle_driver.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -7,12 +8,11 @@
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/logging_control.h"
-#include "goomutils/mathutils.h"
 //#undef NO_LOGGING
 #include "goomutils/logging.h"
+#include "goomutils/mathutils.h"
 #include "goomutils/random_colormaps.h"
 #include "goomutils/spimpl.h"
-#include "tentacles/tentacle_driver.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -24,8 +24,15 @@
 #include <tuple>
 #include <vector>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
+#else
+namespace GOOM::VISUAL_FX
+{
+#endif
 
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
@@ -629,4 +636,9 @@ void TentaclesFx::TentaclesImpl::PrettyMove(const float acceleration)
            doRotation);
 }
 
+#if __cplusplus <= 201402L
+} // namespace VISUAL_FX
 } // namespace GOOM
+#else
+} // namespace GOOM::VISUAL_FX
+#endif

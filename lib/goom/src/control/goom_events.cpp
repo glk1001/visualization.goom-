@@ -13,6 +13,7 @@ namespace GOOM::CONTROL
 #endif
 
 using UTILS::ProbabilityOfMInN;
+using VISUAL_FX::LinesFx;
 
 GoomEvents::GoomEvents() noexcept
   : //@formatter:off

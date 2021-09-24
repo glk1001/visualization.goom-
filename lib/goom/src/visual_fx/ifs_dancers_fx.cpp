@@ -34,20 +34,20 @@
 
 #include "ifs_dancers_fx.h"
 
+#include "../ifs/colorizer.h"
+#include "../ifs/fractal.h"
+#include "../ifs/low_density_blurrer.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/goomrand.h"
+#include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging.h"
 #include "goomutils/random_colormaps.h"
 #include "goomutils/spimpl.h"
 #include "goomutils/t_values.h"
-#include "ifs/colorizer.h"
-#include "ifs/fractal.h"
-#include "ifs/low_density_blurrer.h"
 
 #include <array>
 
@@ -60,8 +60,15 @@
 #include <utility>
 #include <vector>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
+#else
+namespace GOOM::VISUAL_FX
+{
+#endif
 
 using IFS::BlurrerColorMode;
 using IFS::Colorizer;
@@ -533,4 +540,9 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold()
   m_blurrer.SetWidth(blurWidth);
 }
 
+#if __cplusplus <= 201402L
+} // namespace VISUAL_FX
 } // namespace GOOM
+#else
+} // namespace GOOM::VISUAL_FX
+#endif

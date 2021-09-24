@@ -20,8 +20,15 @@
 #include <memory>
 #include <string>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
+#else
+namespace GOOM::VISUAL_FX
+{
+#endif
 
 using namespace GOOM::UTILS;
 using COLOR_DATA::ColorMapName;
@@ -399,4 +406,9 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetGammaCorrection(const float brightnes
   return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
+#if __cplusplus <= 201402L
+} // namespace VISUAL_FX
 } // namespace GOOM
+#else
+} // namespace GOOM::VISUAL_FX
+#endif

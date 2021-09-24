@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_TENTACLES_FX_H
-#define VISUALIZATION_GOOM_TENTACLES_FX_H
+#ifndef VISUALIZATION_GOOM_VISUAL_FX_TENTACLES_FX_H
+#define VISUALIZATION_GOOM_VISUAL_FX_TENTACLES_FX_H
 
 #include "goom_visual_fx.h"
 #include "goomutils/spimpl.h"
@@ -17,6 +17,9 @@ namespace UTILS
 {
 class RandomColorMaps;
 } // namespace UTILS
+
+namespace VISUAL_FX
+{
 
 class TentaclesFx : public IVisualFx
 {
@@ -44,5 +47,7 @@ private:
   spimpl::unique_impl_ptr<TentaclesImpl> m_fxImpl;
 };
 
+} // namespace VISUAL_FX
 } // namespace GOOM
-#endif
+
+#endif //VISUALIZATION_GOOM_VISUAL_FX_TENTACLES_FX_H

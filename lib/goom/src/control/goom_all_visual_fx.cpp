@@ -2,16 +2,16 @@
 
 #include "../filters/filter_buffers_service.h"
 #include "../filters/filter_colors_service.h"
-#include "flying_stars_fx.h"
-#include "goom_dots_fx.h"
+#include "../visual_fx/flying_stars_fx.h"
+#include "../visual_fx/goom_dots_fx.h"
+#include "../visual_fx/ifs_dancers_fx.h"
+#include "../visual_fx/tentacles_fx.h"
+#include "../visual_fx/tube_fx.h"
 #include "goom_plugin_info.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/name_value_pairs.h"
 #include "goomutils/parallel_utils.h"
-#include "ifs_dancers_fx.h"
 #include "sound_info.h"
-#include "tentacles_fx.h"
-#include "tube_fx.h"
 
 #include <memory>
 
@@ -32,10 +32,17 @@ using FILTERS::ZoomFilterSettings;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::SmallImageBitmaps;
+using VISUAL_FX::FlyingStarsFx;
+using VISUAL_FX::GoomDotsFx;
+using VISUAL_FX::IfsDancersFx;
+using VISUAL_FX::LinesFx;
+using VISUAL_FX::TentaclesFx;
+using VISUAL_FX::TubeFx;
+using VISUAL_FX::ZoomFilterFx;
 
-static const Pixel RED_LINE = GetRedLineColor();
-static const Pixel GREEN_LINE = GetGreenLineColor();
-static const Pixel BLACK_LINE = GetBlackLineColor();
+static const Pixel RED_LINE = LinesFx::GetRedLineColor();
+static const Pixel GREEN_LINE = LinesFx::GetGreenLineColor();
+static const Pixel BLACK_LINE = LinesFx::GetBlackLineColor();
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  const IGoomDraw& draw,

@@ -2,7 +2,6 @@
 #define VISUALIZATION_GOOM_TENTACLE_DRIVER_H
 
 #include "goom_graphic.h"
-#include "goom_visual_fx.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/random_colormaps.h"

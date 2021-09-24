@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_ZOOM_FILTER_FX_H
-#define VISUALIZATION_GOOM_ZOOM_FILTER_FX_H
+#ifndef VISUALIZATION_GOOM_VISUAL_FX_ZOOM_FILTER_FX_H
+#define VISUALIZATION_GOOM_VISUAL_FX_ZOOM_FILTER_FX_H
 
 #include "goom_visual_fx.h"
 #include "goomutils/name_value_pairs.h"
@@ -29,6 +29,9 @@ class Parallel;
 struct FXBuffSettings;
 class PixelBuffer;
 class PluginInfo;
+
+namespace VISUAL_FX
+{
 
 class ZoomFilterFx : public IVisualFx
 {
@@ -61,6 +64,7 @@ private:
   spimpl::unique_impl_ptr<ZoomFilterImpl> m_fxImpl;
 };
 
+} // namespace VISUAL_FX
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_ZOOM_FILTER_FX_H
+#endif //VISUALIZATION_GOOM_VISUAL_FX_ZOOM_FILTER_FX_H

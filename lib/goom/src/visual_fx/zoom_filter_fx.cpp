@@ -17,10 +17,8 @@
 
 #include "zoom_filter_fx.h"
 
-#include "filters/filter_buffers_service.h"
-#include "filters/filter_colors_service.h"
-#include "filters/filter_settings.h"
-#include "filters/zoom_vector.h"
+#include "../filters/filter_buffers_service.h"
+#include "../filters/filter_colors_service.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/logging_control.h"
@@ -30,8 +28,6 @@
 #include "goomutils/parallel_utils.h"
 #include "goomutils/spimpl.h"
 
-//#include <valgrind/callgrind.h>
-
 #include <array>
 #undef NDEBUG
 #include <cassert>
@@ -39,8 +35,15 @@
 #include <memory>
 #include <string>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
+#else
+namespace GOOM::VISUAL_FX
+{
+#endif
 
 using FILTERS::FilterBuffersService;
 using FILTERS::FilterColorsService;
@@ -256,4 +259,9 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffe
   m_parallel.ForLoop(m_screenHeight, setDestPixelRow);
 }
 
+#if __cplusplus <= 201402L
+} // namespace VISUAL_FX
 } // namespace GOOM
+#else
+} // namespace GOOM::VISUAL_FX
+#endif

@@ -23,6 +23,7 @@ using UTILS::IColorMap;
 using UTILS::RandomColorMaps;
 using UTILS::Weights;
 using UTILS::COLOR_DATA::ColorMapName;
+using VISUAL_FX::IfsDancersFx;
 
 Colorizer::Colorizer() noexcept
 {

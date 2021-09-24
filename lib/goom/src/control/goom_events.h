@@ -1,7 +1,7 @@
 #ifndef VISUALIZATION_GOOM_GOOM_EVENTS_H
 #define VISUALIZATION_GOOM_GOOM_EVENTS_H
 
-#include "goom/lines_fx.h"
+#include "../visual_fx/lines_fx.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
 
@@ -58,7 +58,7 @@ public:
   };
 
   auto Happens(GoomEvent event) const -> bool;
-  auto GetRandomLineTypeEvent() const -> LinesFx::LineType;
+  auto GetRandomLineTypeEvent() const -> VISUAL_FX::LinesFx::LineType;
 
 private:
   static constexpr size_t NUM_GOOM_EVENTS = UTILS::NUM<GoomEvent>;
@@ -70,12 +70,13 @@ private:
     uint32_t outOf;
   };
   const std::array<WeightedEvent, NUM_GOOM_EVENTS> m_weightedEvents;
-  const std::array<std::pair<LinesFx::LineType, size_t>, LinesFx::NUM_LINE_TYPES>
+  const std::array<std::pair<VISUAL_FX::LinesFx::LineType, size_t>,
+                   VISUAL_FX::LinesFx::NUM_LINE_TYPES>
       m_weightedLineEvents;
-  const UTILS::Weights<LinesFx::LineType> m_lineTypeWeights;
+  const UTILS::Weights<VISUAL_FX::LinesFx::LineType> m_lineTypeWeights;
 };
 
-inline auto GoomEvents::GetRandomLineTypeEvent() const -> LinesFx::LineType
+inline auto GoomEvents::GetRandomLineTypeEvent() const -> VISUAL_FX::LinesFx::LineType
 {
   return m_lineTypeWeights.GetRandomWeighted();
 }

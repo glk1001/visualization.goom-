@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_LINES_FX_H
-#define VISUALIZATION_GOOM_LINES_FX_H
+#ifndef VISUALIZATION_GOOM_VISUAL_FX_LINES_FX_H
+#define VISUALIZATION_GOOM_VISUAL_FX_LINES_FX_H
 
 #include "goom_config.h"
 #include "goom_graphic.h"
@@ -23,9 +23,8 @@ class RandomColorMaps;
 class SmallImageBitmaps;
 } // namespace UTILS
 
-auto GetBlackLineColor() -> Pixel;
-auto GetGreenLineColor() -> Pixel;
-auto GetRedLineColor() -> Pixel;
+namespace VISUAL_FX
+{
 
 class LinesFx
 {
@@ -74,10 +73,16 @@ public:
 
   void Finish();
 
+  [[nodiscard]] static auto GetBlackLineColor() -> Pixel;
+  [[nodiscard]] static auto GetGreenLineColor() -> Pixel;
+  [[nodiscard]] static auto GetRedLineColor() -> Pixel;
+
 private:
   class LinesImpl;
   spimpl::unique_impl_ptr<LinesImpl> m_fxImpl;
 };
 
+} // namespace VISUAL_FX
 } // namespace GOOM
-#endif
+
+#endif //VISUALIZATION_GOOM_VISUAL_FX_LINES_FX_H

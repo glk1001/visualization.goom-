@@ -1,9 +1,9 @@
 #ifndef VISUALIZATION_GOOM_GOOM_ALL_VISUAL_FX_H
 #define VISUALIZATION_GOOM_GOOM_ALL_VISUAL_FX_H
 
+#include "../visual_fx/lines_fx.h"
+#include "../visual_fx/zoom_filter_fx.h"
 #include "goom_states.h"
-#include "lines_fx.h"
-#include "zoom_filter_fx.h"
 
 #include <functional>
 #include <map>
@@ -16,6 +16,22 @@ class AudioSamples;
 class IGoomDraw;
 class PluginInfo;
 class PixelBuffer;
+
+namespace UTILS
+{
+class Parallel;
+class SmallImageBitmaps;
+} // namespace UTILS
+
+namespace FILTERS
+{
+class FilterBuffersService;
+class FilterColorsService;
+struct ZoomFilterSettings;
+} // namespace FILTERS
+
+namespace VISUAL_FX
+{
 class IVisualFx;
 class FlyingStarsFx;
 class GoomDotsFx;
@@ -23,17 +39,8 @@ class IfsDancersFx;
 class TentaclesFx;
 class TubeFx;
 class ZoomFilterFx;
-namespace UTILS
-{
-class Parallel;
-class SmallImageBitmaps;
-} // namespace UTILS
-namespace FILTERS
-{
-class FilterBuffersService;
-class FilterColorsService;
-struct ZoomFilterSettings;
-} // namespace FILTERS
+} // namespace VISUAL_FX
+
 namespace CONTROL
 {
 
@@ -85,7 +92,7 @@ public:
       Pixel line1{};
       Pixel line2{};
     };
-    LinesFx::LineType mode{};
+    VISUAL_FX::LinesFx::LineType mode{};
     float amplitude{};
     Params params{};
     Colors colors{};
@@ -99,17 +106,17 @@ public:
   [[nodiscard]] auto GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs;
 
 private:
-  const std::shared_ptr<ZoomFilterFx> m_zoomFilter_fx;
-  const std::shared_ptr<FlyingStarsFx> m_star_fx;
-  const std::shared_ptr<GoomDotsFx> m_goomDots_fx;
-  const std::shared_ptr<IfsDancersFx> m_ifs_fx;
-  const std::shared_ptr<TentaclesFx> m_tentacles_fx;
-  const std::shared_ptr<TubeFx> m_tube_fx;
-  const std::shared_ptr<LinesFx> m_goomLine1;
-  const std::shared_ptr<LinesFx> m_goomLine2;
+  const std::shared_ptr<VISUAL_FX::ZoomFilterFx> m_zoomFilter_fx;
+  const std::shared_ptr<VISUAL_FX::FlyingStarsFx> m_star_fx;
+  const std::shared_ptr<VISUAL_FX::GoomDotsFx> m_goomDots_fx;
+  const std::shared_ptr<VISUAL_FX::IfsDancersFx> m_ifs_fx;
+  const std::shared_ptr<VISUAL_FX::TentaclesFx> m_tentacles_fx;
+  const std::shared_ptr<VISUAL_FX::TubeFx> m_tube_fx;
+  const std::shared_ptr<VISUAL_FX::LinesFx> m_goomLine1;
+  const std::shared_ptr<VISUAL_FX::LinesFx> m_goomLine2;
 
-  const std::vector<std::shared_ptr<IVisualFx>> m_list;
-  const std::map<GoomDrawable, std::shared_ptr<IVisualFx>> m_drawablesMap;
+  const std::vector<std::shared_ptr<VISUAL_FX::IVisualFx>> m_list;
+  const std::map<GoomDrawable, std::shared_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
 
   GoomStates m_state{};
   std::unordered_set<GoomDrawable> m_currentGoomDrawables{};

@@ -15,6 +15,7 @@ namespace GOOM::CONTROL
 
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
+using VISUAL_FX::LinesFx;
 
 GoomMusicLinesReactor::GoomMusicLinesReactor(const PluginInfo& goomInfo,
                                              GoomAllVisualFx& visualFx,
@@ -158,7 +159,7 @@ auto GoomMusicLinesReactor::GetResetLineColors(const int32_t farVal) const
 {
   if ((farVal != 0) && m_goomEvents.Happens(GoomEvent::CHANGE_LINE_TO_BLACK))
   {
-    return GetSameLineColors(GetBlackLineColor());
+    return GetSameLineColors(LinesFx::GetBlackLineColor());
   }
 
   return {m_visualFx.GetGoomLine1RandomColor(), m_visualFx.GetGoomLine2RandomColor()};

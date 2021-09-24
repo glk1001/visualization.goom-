@@ -32,12 +32,17 @@
 #include <functional>
 #include <memory>
 #include <stdexcept>
-#include <tuple>
-#include <utility>
 #include <vector>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
+#else
+namespace GOOM::VISUAL_FX
+{
+#endif
 
 using UTILS::floats_equal;
 using UTILS::GammaCorrection;
@@ -97,6 +102,10 @@ public:
                  const AudioSamples::MaxMinValues& soundMinMax);
 
   void Finish();
+
+  [[nodiscard]] static auto GetBlackLineColor() -> Pixel;
+  [[nodiscard]] static auto GetGreenLineColor() -> Pixel;
+  [[nodiscard]] static auto GetRedLineColor() -> Pixel;
 
 private:
   const IGoomDraw& m_draw;
@@ -203,6 +212,21 @@ void LinesFx::Start()
 void LinesFx::Finish()
 {
   m_fxImpl->Finish();
+}
+
+auto LinesFx::GetBlackLineColor() -> Pixel
+{
+  return LinesFx::LinesImpl::GetBlackLineColor();
+}
+
+auto LinesFx::GetGreenLineColor() -> Pixel
+{
+  return LinesFx::LinesImpl::GetGreenLineColor();
+}
+
+auto LinesFx::GetRedLineColor() -> Pixel
+{
+  return LinesFx::LinesImpl::GetRedLineColor();
 }
 
 auto LinesFx::GetRandomLineColor() const -> Pixel
@@ -474,17 +498,17 @@ inline auto GetColor(const int mode) -> Pixel
   }
 }
 
-auto GetBlackLineColor() -> Pixel
+inline auto LinesFx::LinesImpl::GetBlackLineColor() -> Pixel
 {
   return GetColor(GML_BLACK);
 }
 
-auto GetGreenLineColor() -> Pixel
+inline auto LinesFx::LinesImpl::GetGreenLineColor() -> Pixel
 {
   return GetColor(GML_VERT);
 }
 
-auto GetRedLineColor() -> Pixel
+inline auto LinesFx::LinesImpl::GetRedLineColor() -> Pixel
 {
   return GetColor(GML_RED);
 }
@@ -746,4 +770,9 @@ inline auto LinesFx::LinesImpl::GetNextDotSize(const size_t maxSize) -> size_t
   return s_dotSizes.GetRandomWeighted();
 }
 
+#if __cplusplus <= 201402L
+} // namespace VISUAL_FX
 } // namespace GOOM
+#else
+} // namespace GOOM::VISUAL_FX
+#endif

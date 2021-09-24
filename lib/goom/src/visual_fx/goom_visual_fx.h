@@ -1,10 +1,17 @@
-#ifndef VISUALIZATION_GOOM_VISUAL_FX_H
-#define VISUALIZATION_GOOM_VISUAL_FX_H
+#ifndef VISUALIZATION_GOOM_LIB_VISUAL_FX_VISUAL_FX_H
+#define VISUALIZATION_GOOM_LIB_VISUAL_FX_VISUAL_FX_H
 
 #include <string>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
+#else
+namespace GOOM::VISUAL_FX
+{
+#endif
 
 class IVisualFx
 {
@@ -26,5 +33,11 @@ public:
   virtual void Finish() = 0;
 };
 
+#if __cplusplus <= 201402L
+} // namespace VISUAL_FX
 } // namespace GOOM
+#else
+} // namespace GOOM::VISUAL_FX
 #endif
+
+#endif //VISUALIZATION_GOOM_LIB_VISUAL_FX_VISUAL_FX_H

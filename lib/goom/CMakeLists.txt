@@ -57,24 +57,24 @@ add_library(goom
         src/filters/tan_effect.cpp
         src/filters/wave.cpp
         src/filters/y_only.cpp
-        src/flying_stars_fx.cpp
         src/goom_control.cpp
-        src/goom_dots_fx.cpp
         src/goom_draw.cpp
         src/goom_graphic.cpp
-        src/goom_visual_fx.cpp
         src/ifs/colorizer.cpp
         src/ifs/fractal.cpp
         src/ifs/low_density_blurrer.cpp
-        src/ifs_dancers_fx.cpp
-        src/lines_fx.cpp
         src/sound_info.cpp
         src/tentacles/tentacle_driver.cpp
         src/tentacles/tentacles.cpp
-        src/tentacles_fx.cpp
-        src/tube_fx.cpp
         src/tubes/tubes.cpp
-        src/zoom_filter_fx.cpp
+        src/visual_fx/flying_stars_fx.cpp
+        src/visual_fx/goom_dots_fx.cpp
+        src/visual_fx/ifs_dancers_fx.cpp
+        src/visual_fx/goom_visual_fx.h
+        src/visual_fx/lines_fx.cpp
+        src/visual_fx/tentacles_fx.cpp
+        src/visual_fx/tube_fx.cpp
+        src/visual_fx/zoom_filter_fx.cpp
         )
 
 #set_source_files_properties(src/flying_stars_fx.cpp PROPERTIES COMPILE_FLAGS -fsanitize=address)

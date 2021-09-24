@@ -1,12 +1,12 @@
 #ifndef VISUALIZATION_GOOM_COLORIZER_H
 #define VISUALIZATION_GOOM_COLORIZER_H
 
+#include "../visual_fx/ifs_dancers_fx.h"
 #include "goom_graphic.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/random_colormaps.h"
 #include "goomutils/random_colormaps_manager.h"
-#include "ifs_dancers_fx.h"
 
 #include <cmath>
 #include <cstdint>
@@ -31,8 +31,8 @@ public:
 
   auto GetColorMaps() const -> const UTILS::RandomColorMaps&;
 
-  auto GetColorMode() const -> IfsDancersFx::ColorMode;
-  void SetForcedColorMode(IfsDancersFx::ColorMode val);
+  auto GetColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMode;
+  void SetForcedColorMode(VISUAL_FX::IfsDancersFx::ColorMode val);
   void ChangeColorMode();
 
   void ChangeColorMaps();
@@ -58,15 +58,15 @@ private:
   static constexpr uint32_t MAX_COLOR_MAP_CHANGE_COMPLETED = 1000;
   uint32_t m_colorMapChangeCompleted = MIN_COLOR_MAP_CHANGE_COMPLETED;
 
-  IfsDancersFx::ColorMode m_colorMode = IfsDancersFx::ColorMode::MAP_COLORS;
-  IfsDancersFx::ColorMode m_forcedColorMode = IfsDancersFx::ColorMode::_NULL;
+  VISUAL_FX::IfsDancersFx::ColorMode m_colorMode = VISUAL_FX::IfsDancersFx::ColorMode::MAP_COLORS;
+  VISUAL_FX::IfsDancersFx::ColorMode m_forcedColorMode = VISUAL_FX::IfsDancersFx::ColorMode::_NULL;
   uint32_t m_maxHitCount = 0;
   float m_logMaxHitCount = 0.0;
   static constexpr float MIN_T_AWAY_FROM_BASE_COLOR = 0.0F;
   static constexpr float MAX_T_AWAY_FROM_BASE_COLOR = 0.4F;
   static constexpr float INITIAL_T_AWAY_FROM_BASE_COLOR = 0.0F;
   float m_tAwayFromBaseColor = INITIAL_T_AWAY_FROM_BASE_COLOR; // in [0, 1]
-  static auto GetNextColorMode() -> IfsDancersFx::ColorMode;
+  static auto GetNextColorMode() -> VISUAL_FX::IfsDancersFx::ColorMode;
   [[nodiscard]] auto GetNextMixerMapColor(float t, float tX, float tY) const -> Pixel;
 
   static constexpr float GAMMA = 1.5F;
@@ -80,12 +80,12 @@ inline auto Colorizer::GetColorMaps() const -> const UTILS::RandomColorMaps&
   return *m_colorMaps;
 }
 
-inline auto Colorizer::GetColorMode() const -> IfsDancersFx::ColorMode
+inline auto Colorizer::GetColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMode
 {
   return m_colorMode;
 }
 
-inline void Colorizer::SetForcedColorMode(const IfsDancersFx::ColorMode val)
+inline void Colorizer::SetForcedColorMode(const VISUAL_FX::IfsDancersFx::ColorMode val)
 {
   m_forcedColorMode = val;
 }

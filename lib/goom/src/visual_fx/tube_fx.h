@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_FLYING_STARS_FX_H
-#define VISUALIZATION_GOOM_FLYING_STARS_FX_H
+#ifndef VISUALIZATION_GOOM_VISUAL_FX_TUBE_FX_H
+#define VISUALIZATION_GOOM_VISUAL_FX_TUBE_FX_H
 
 #include "goom_visual_fx.h"
 #include "goomutils/spimpl.h"
@@ -19,22 +19,16 @@ class RandomColorMaps;
 class SmallImageBitmaps;
 } // namespace UTILS
 
-class FlyingStarsFx : public IVisualFx
+namespace VISUAL_FX
+{
+
+class TubeFx : public IVisualFx
 {
 public:
-  enum class ColorMode
-  {
-    _NULL = -1,
-    MIX_COLORS,
-    REVERSE_MIX_COLORS,
-    SIMILAR_LOW_COLORS,
-    SINE_MIX_COLORS,
-  };
-
-  FlyingStarsFx() noexcept = delete;
-  FlyingStarsFx(const IGoomDraw& draw,
-                const PluginInfo& goomInfo,
-                const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+  TubeFx() noexcept = delete;
+  TubeFx(const IGoomDraw& draw,
+         const PluginInfo& goomInfo,
+         const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
@@ -46,14 +40,17 @@ public:
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
 
+  void ApplyNoDraw();
   void ApplyMultiple();
 
   void Finish() override;
 
 private:
-  class FlyingStarsImpl;
-  spimpl::unique_impl_ptr<FlyingStarsImpl> m_fxImpl;
+  class TubeFxImpl;
+  spimpl::unique_impl_ptr<TubeFxImpl> m_fxImpl;
 };
 
+} // namespace VISUAL_FX
 } // namespace GOOM
-#endif
+
+#endif //VISUALIZATION_GOOM_VISUAL_FX_TUBE_FX_H

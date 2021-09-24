@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_IFS_DANCERS_FX_H
-#define VISUALIZATION_GOOM_IFS_DANCERS_FX_H
+#ifndef VISUALIZATION_GOOM_VISUAL_FX_IFS_DANCERS_FX_H
+#define VISUALIZATION_GOOM_VISUAL_FX_IFS_DANCERS_FX_H
 
 #include "goom_visual_fx.h"
 #include "goomutils/spimpl.h"
@@ -18,6 +18,9 @@ namespace UTILS
 class RandomColorMaps;
 class SmallImageBitmaps;
 } // namespace UTILS
+
+namespace VISUAL_FX
+{
 
 class IfsDancersFx : public IVisualFx
 {
@@ -70,5 +73,7 @@ private:
   spimpl::unique_impl_ptr<IfsDancersFxImpl> m_fxImpl;
 };
 
+} // namespace VISUAL_FX
 } // namespace GOOM
-#endif
+
+#endif //VISUALIZATION_GOOM_VISUAL_FX_IFS_DANCERS_FX_H

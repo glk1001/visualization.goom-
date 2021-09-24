@@ -1,10 +1,12 @@
 #include "tube_fx.h"
 
-#include "draw/goom_draw_to_container.h"
-#include "draw/goom_draw_to_many.h"
+#include "../draw/goom_draw_to_container.h"
+#include "../draw/goom_draw_to_many.h"
+#include "../tubes/tubes.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging_control.h"
@@ -15,7 +17,6 @@
 #include "goomutils/spimpl.h"
 #include "goomutils/t_values.h"
 #include "goomutils/timer.h"
-#include "tubes/tubes.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -23,8 +24,15 @@
 #include <memory>
 #include <vector>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
+#else
+namespace GOOM::VISUAL_FX
+{
+#endif
 
 using DRAW::GoomDrawToContainer;
 using DRAW::GoomDrawToMany;
@@ -757,4 +765,9 @@ void TubeFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube)
   }
 }
 
+#if __cplusplus <= 201402L
+} // namespace VISUAL_FX
 } // namespace GOOM
+#else
+} // namespace GOOM::VISUAL_FX
+#endif

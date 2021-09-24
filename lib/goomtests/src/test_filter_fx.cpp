@@ -4,17 +4,17 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_plugin_info.h"
 #include "goom/v2d.h"
-#include "goom/zoom_filter_fx.h"
 #include "goomutils/parallel_utils.h"
+#include "visual_fx/zoom_filter_fx.h"
 
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::PluginInfo;
 using GOOM::V2dInt;
-using GOOM::ZoomFilterFx;
 using GOOM::FILTERS::FilterSettingsService;
 using GOOM::FILTERS::ZoomFilterBufferSettings;
 using GOOM::UTILS::Parallel;
+using GOOM::VISUAL_FX::ZoomFilterFx;
 
 constexpr size_t WIDTH = 120;
 constexpr size_t HEIGHT = 70;

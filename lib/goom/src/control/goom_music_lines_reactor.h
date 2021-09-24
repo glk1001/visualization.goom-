@@ -46,8 +46,8 @@ private:
   const float m_screenWidth;
   const float m_screenHeight;
   int32_t m_stopLines = 0;
-  int32_t m_drawLinesDuration = LinesFx::MIN_LINE_DURATION;
-  int32_t m_lineMode = LinesFx::MIN_LINE_DURATION; // l'effet lineaire a dessiner
+  int32_t m_drawLinesDuration = VISUAL_FX::LinesFx::MIN_LINE_DURATION;
+  int32_t m_lineMode = VISUAL_FX::LinesFx::MIN_LINE_DURATION; // l'effet lineaire a dessiner
   using GoomLineSettings = GoomAllVisualFx::GoomLineSettings;
   [[nodiscard]] auto GetGoomLineResetSettings(int farVal) const -> GoomLineSettings;
   [[nodiscard]] auto GetGoomLineStopSettings() const -> GoomLineSettings;
@@ -156,7 +156,7 @@ inline void GoomMusicLinesReactor::ResetGoomLines()
 inline auto GoomMusicLinesReactor::GetGoomLineStopSettings() const -> GoomLineSettings
 {
   GoomLineSettings lineSettings = GetGoomLineResetSettings(1);
-  lineSettings.colors = GetSameLineColors(GetBlackLineColor());
+  lineSettings.colors = GetSameLineColors(VISUAL_FX::LinesFx::GetBlackLineColor());
   return lineSettings;
 }
 

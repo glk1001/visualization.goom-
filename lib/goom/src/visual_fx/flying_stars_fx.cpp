@@ -27,10 +27,34 @@
 #include <utility>
 #include <vector>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
+#else
+namespace GOOM::VISUAL_FX
+{
+#endif
 
-using namespace GOOM::UTILS;
+using UTILS::GammaCorrection;
+using UTILS::GetBrighterColor;
+using UTILS::GetColorMultiply;
+using UTILS::GetLightenedColor;
+using UTILS::GetNRand;
+using UTILS::GetRandInRange;
+using UTILS::IColorMap;
+using UTILS::ImageBitmap;
+using UTILS::m_half_pi;
+using UTILS::m_pi;
+using UTILS::m_two_pi;
+using UTILS::ProbabilityOfMInN;
+using UTILS::RandomColorMaps;
+using UTILS::RandomColorMapsManager;
+using UTILS::SmallImageBitmaps;
+using UTILS::Sq;
+using UTILS::SqDistance;
+using UTILS::Weights;
 using UTILS::COLOR_DATA::ColorMapName;
 
 constexpr uint32_t MIN_STAR_AGE = 15;
@@ -148,7 +172,7 @@ private:
   void ChangeColorMaps();
   void UpdateStarColorMaps(float angle, Star& star);
   static constexpr size_t NUM_SEGMENTS = 20;
-  std::array<COLOR_DATA::ColorMapName, NUM_SEGMENTS> m_angleColorMapName{};
+  std::array<ColorMapName, NUM_SEGMENTS> m_angleColorMapName{};
   void UpdateAngleColorMapNames();
   static auto GetSegmentNum(float angle) -> size_t;
   [[nodiscard]] auto GetDominantColorMapPtr(float angle) const -> std::shared_ptr<const IColorMap>;
@@ -1011,4 +1035,9 @@ auto FlyingStarsFx::FlyingStarsImpl::GetBombAngle(const Star& star) const -> flo
   return GetRandInRange(minAngle, maxAngle);
 }
 
+#if __cplusplus <= 201402L
+} // namespace VISUAL_FX
 } // namespace GOOM
+#else
+} // namespace GOOM::VISUAL_FX
+#endif
