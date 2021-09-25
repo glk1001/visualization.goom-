@@ -6,7 +6,7 @@
 #include "filter_colors_service.h"
 #include "filter_settings.h"
 #include "filter_zoom_vector.h"
-#include "goom/goom_plugin_info.h"
+#include "goom_plugin_info.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
 #include "image_speed_coeffs.h"

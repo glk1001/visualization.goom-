@@ -1,9 +1,9 @@
 #ifndef VISUALIZATION_GOOM_GOOM_ALL_VISUAL_FX_H
 #define VISUALIZATION_GOOM_GOOM_ALL_VISUAL_FX_H
 
-#include "../visual_fx/lines_fx.h"
-#include "../visual_fx/zoom_filter_fx.h"
 #include "goom_states.h"
+#include "visual_fx/lines_fx.h"
+#include "visual_fx/zoom_filter_fx.h"
 
 #include <functional>
 #include <map>

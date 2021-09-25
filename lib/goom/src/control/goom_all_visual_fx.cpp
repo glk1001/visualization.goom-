@@ -1,17 +1,17 @@
 #include "goom_all_visual_fx.h"
 
-#include "../filters/filter_buffers_service.h"
-#include "../filters/filter_colors_service.h"
-#include "../visual_fx/flying_stars_fx.h"
-#include "../visual_fx/goom_dots_fx.h"
-#include "../visual_fx/ifs_dancers_fx.h"
-#include "../visual_fx/tentacles_fx.h"
-#include "../visual_fx/tube_fx.h"
+#include "filters/filter_buffers_service.h"
+#include "filters/filter_colors_service.h"
 #include "goom_plugin_info.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/name_value_pairs.h"
 #include "goomutils/parallel_utils.h"
 #include "sound_info.h"
+#include "visual_fx/flying_stars_fx.h"
+#include "visual_fx/goom_dots_fx.h"
+#include "visual_fx/ifs_dancers_fx.h"
+#include "visual_fx/tentacles_fx.h"
+#include "visual_fx/tube_fx.h"
 
 #include <memory>
 

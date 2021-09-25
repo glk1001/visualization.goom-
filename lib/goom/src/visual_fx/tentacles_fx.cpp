@@ -1,13 +1,13 @@
 #include "tentacles_fx.h"
 
-#include "../draw/goom_draw.h"
-#include "../tentacles/tentacle_driver.h"
+#include "draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/logging_control.h"
+#include "tentacles/tentacle_driver.h"
 //#undef NO_LOGGING
 #include "goomutils/logging.h"
 #include "goomutils/mathutils.h"

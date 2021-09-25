@@ -34,15 +34,15 @@
 
 #include "ifs_dancers_fx.h"
 
-#include "../draw/goom_draw.h"
-#include "../ifs/colorizer.h"
-#include "../ifs/fractal.h"
-#include "../ifs/low_density_blurrer.h"
+#include "draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/goomrand.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging_control.h"
+#include "ifs/colorizer.h"
+#include "ifs/fractal.h"
+#include "ifs/low_density_blurrer.h"
 //#undef NO_LOGGING
 #include "goomutils/logging.h"
 #include "goomutils/random_colormaps.h"

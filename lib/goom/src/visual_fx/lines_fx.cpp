@@ -7,7 +7,7 @@
 
 #include "lines_fx.h"
 
-#include "../draw/goom_draw.h"
+#include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"

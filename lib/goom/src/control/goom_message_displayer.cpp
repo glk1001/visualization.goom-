@@ -1,6 +1,6 @@
 #include "goom_message_displayer.h"
 
-#include "../draw/goom_draw.h"
+#include "draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "goomutils/strutils.h"
 

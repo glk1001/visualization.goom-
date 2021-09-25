@@ -17,8 +17,8 @@
 
 #include "zoom_filter_fx.h"
 
-#include "../filters/filter_buffers_service.h"
-#include "../filters/filter_colors_service.h"
+#include "filters/filter_buffers_service.h"
+#include "filters/filter_colors_service.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/logging_control.h"

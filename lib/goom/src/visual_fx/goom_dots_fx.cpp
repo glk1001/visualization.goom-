@@ -1,6 +1,6 @@
 #include "goom_dots_fx.h"
 
-#include "../draw/goom_draw.h"
+#include "draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/colormaps.h"

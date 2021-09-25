@@ -85,6 +85,7 @@ target_include_directories(goom
         ${LIBS_DIR}/goomutils/include
     PRIVATE
         ${LIBS_DIR}/goom/include/goom
+        ${LIBS_DIR}/goom/src
 )
 
 target_include_directories(goom

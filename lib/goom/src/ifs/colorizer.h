@@ -1,12 +1,12 @@
 #ifndef VISUALIZATION_GOOM_COLORIZER_H
 #define VISUALIZATION_GOOM_COLORIZER_H
 
-#include "../visual_fx/ifs_dancers_fx.h"
 #include "goom_graphic.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/random_colormaps.h"
 #include "goomutils/random_colormaps_manager.h"
+#include "visual_fx/ifs_dancers_fx.h"
 
 #include <cmath>
 #include <cstdint>

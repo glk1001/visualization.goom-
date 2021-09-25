@@ -1,12 +1,11 @@
-#include "../visual_fx/flying_stars_fx.h"
-#include "../visual_fx/goom_dots_fx.h"
-#include "../visual_fx/ifs_dancers_fx.h"
-#include "../visual_fx/lines_fx.h"
-#include "../visual_fx/tentacles_fx.h"
-#include "../visual_fx/tube_fx.h"
 #include "goom_all_visual_fx.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/random_colormaps.h"
+#include "visual_fx/flying_stars_fx.h"
+#include "visual_fx/goom_dots_fx.h"
+#include "visual_fx/ifs_dancers_fx.h"
+#include "visual_fx/tentacles_fx.h"
+#include "visual_fx/tube_fx.h"
 
 #include <functional>
 #include <memory>

@@ -1,9 +1,9 @@
 #ifndef VISUALIZATION_GOOM_GOOM_EVENTS_H
 #define VISUALIZATION_GOOM_GOOM_EVENTS_H
 
-#include "../visual_fx/lines_fx.h"
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
+#include "visual_fx/lines_fx.h"
 
 #include <array>
 #include <cstdint>

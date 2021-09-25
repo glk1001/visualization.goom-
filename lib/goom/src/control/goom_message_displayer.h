@@ -1,7 +1,7 @@
 #ifndef VISUALIZATION_GOOM_GOOM_MESSAGE_DISPLAYER_H
 #define VISUALIZATION_GOOM_GOOM_MESSAGE_DISPLAYER_H
 
-#include "../draw/text_draw.h"
+#include "draw/text_draw.h"
 
 #include <string>
 

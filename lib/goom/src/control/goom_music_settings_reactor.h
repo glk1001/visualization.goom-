@@ -1,7 +1,7 @@
 #ifndef VISUALIZATION_GOOM_MUSIC_SETTINGS_REACTOR_H
 #define VISUALIZATION_GOOM_MUSIC_SETTINGS_REACTOR_H
 
-#include "../filters/filter_settings_service.h"
+#include "filters/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
 #include "goom_events.h"
 #include "goom_lock.h"

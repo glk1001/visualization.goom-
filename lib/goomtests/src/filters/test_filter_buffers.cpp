@@ -5,8 +5,8 @@
 #include "filters/filter_settings.h"
 #include "filters/filter_zoom_vector.h"
 #include "filters/normalized_coords.h"
-#include "goom/goom_plugin_info.h"
 #include "goom/v2d.h"
+#include "goom_plugin_info.h"
 #include "goomutils/mathutils.h"
 #include "goomutils/parallel_utils.h"
 
