@@ -29,44 +29,44 @@ add_library(goom
         src/control/goom_states.cpp
         src/control/goom_title_displayer.cpp
         src/draw/draw_methods.cpp
+        src/draw/goom_draw.cpp
         src/draw/goom_draw_to_buffer.cpp
         src/draw/goom_draw_to_container.cpp
         src/draw/goom_draw_to_many.cpp
         src/draw/text_draw.cpp
-        src/filters/amulet.cpp
-        src/filters/crystal_ball.cpp
-        src/filters/filter_buffers.cpp
-        src/filters/filter_buffers_service.cpp
-        src/filters/filter_colors_service.cpp
-        src/filters/filter_settings_service.cpp
-        src/filters/filter_zoom_vector.cpp
-        src/filters/filter_zoom_vector_effects.cpp
-        src/filters/hypercos.cpp
-        src/filters/image_displacement.cpp
-        src/filters/image_displacement_list.cpp
-        src/filters/image_speed_coeffs.cpp
-        src/filters/image_velocity.cpp
-        src/filters/noise.cpp
-        src/filters/normalized_coords.cpp
-        src/filters/planes.cpp
-        src/filters/rotation.cpp
-        src/filters/scrunch.cpp
-        src/filters/simple_speed_coefficients_effect.h
-        src/filters/speed_coefficients_effect.h
-        src/filters/speedway.cpp
-        src/filters/tan_effect.cpp
-        src/filters/wave.cpp
-        src/filters/y_only.cpp
+        src/visual_fx/filters/amulet.cpp
+        src/visual_fx/filters/crystal_ball.cpp
+        src/visual_fx/filters/filter_buffers.cpp
+        src/visual_fx/filters/filter_buffers_service.cpp
+        src/visual_fx/filters/filter_colors_service.cpp
+        src/visual_fx/filters/filter_settings_service.cpp
+        src/visual_fx/filters/filter_zoom_vector.cpp
+        src/visual_fx/filters/filter_zoom_vector_effects.cpp
+        src/visual_fx/filters/hypercos.cpp
+        src/visual_fx/filters/image_displacement.cpp
+        src/visual_fx/filters/image_displacement_list.cpp
+        src/visual_fx/filters/image_speed_coeffs.cpp
+        src/visual_fx/filters/image_velocity.cpp
+        src/visual_fx/filters/noise.cpp
+        src/visual_fx/filters/normalized_coords.cpp
+        src/visual_fx/filters/planes.cpp
+        src/visual_fx/filters/rotation.cpp
+        src/visual_fx/filters/scrunch.cpp
+        src/visual_fx/filters/simple_speed_coefficients_effect.h
+        src/visual_fx/filters/speed_coefficients_effect.h
+        src/visual_fx/filters/speedway.cpp
+        src/visual_fx/filters/tan_effect.cpp
+        src/visual_fx/filters/wave.cpp
+        src/visual_fx/filters/y_only.cpp
         src/goom_control.cpp
-        src/draw/goom_draw.cpp
         src/goom_graphic.cpp
-        src/ifs/colorizer.cpp
-        src/ifs/fractal.cpp
-        src/ifs/low_density_blurrer.cpp
+        src/visual_fx/ifs/colorizer.cpp
+        src/visual_fx/ifs/fractal.cpp
+        src/visual_fx/ifs/low_density_blurrer.cpp
         src/sound_info.cpp
-        src/tentacles/tentacle_driver.cpp
-        src/tentacles/tentacles.cpp
-        src/tubes/tubes.cpp
+        src/visual_fx/tentacles/tentacle_driver.cpp
+        src/visual_fx/tentacles/tentacles.cpp
+        src/visual_fx/tubes/tubes.cpp
         src/visual_fx/flying_stars_fx.cpp
         src/visual_fx/goom_dots_fx.cpp
         src/visual_fx/ifs_dancers_fx.cpp

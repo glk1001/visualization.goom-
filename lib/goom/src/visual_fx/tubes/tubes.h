@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_GOOM_TUBES_H
-#define VISUALIZATION_GOOM_GOOM_TUBES_H
+#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_TUBES_TUBES_H
+#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_TUBES_TUBES_H
 
 #include "goom_graphic.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
@@ -130,4 +130,4 @@ private:
 } // namespace TUBES
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_TUBES_H
+#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_TUBES_TUBES_H

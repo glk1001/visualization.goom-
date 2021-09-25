@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_FILTERS_AMULET_H
-#define VISUALIZATION_GOOM_LIB_GOOM_FILTERS_AMULET_H
+#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_AMULET_H
+#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_AMULET_H
 
 #include "goomutils/name_value_pairs.h"
 #include "normalized_coords.h"
@@ -71,4 +71,4 @@ inline void Amulet::SetParams(const Params& params)
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_FILTERS_AMULET_H
+#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_AMULET_H

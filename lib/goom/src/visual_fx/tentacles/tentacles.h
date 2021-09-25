@@ -1,5 +1,5 @@
-#ifndef VISUALIZATION_GOOM_TENTACLES_H
-#define VISUALIZATION_GOOM_TENTACLES_H
+#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_TENTACLES_H
+#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_TENTACLES_H
 
 #include "goom_graphic.h"
 #include "goomutils/colormaps.h"
@@ -337,4 +337,4 @@ inline auto Tentacles3D::Iter::operator*() const -> Tentacle3D&
 } // namespace GOOM::TENTACLES
 #endif
 
-#endif
+#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_TENTACLES_H
