@@ -23,7 +23,7 @@ namespace GOOM::DRAW
 
 DrawMethods::DrawMethods(const uint32_t screenWidth,
                          const uint32_t screenHeight,
-                         const IGoomDraw::DrawPixelFunc& f)
+                         const DrawPixelFunc& f)
   : m_screenWidth{screenWidth}, m_screenHeight{screenHeight}, m_drawPixelFunc{f}
 {
 }

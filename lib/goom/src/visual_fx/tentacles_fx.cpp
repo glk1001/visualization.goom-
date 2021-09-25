@@ -1,7 +1,7 @@
 #include "tentacles_fx.h"
 
+#include "../draw/goom_draw.h"
 #include "../tentacles/tentacle_driver.h"
-#include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/colormaps.h"
@@ -34,6 +34,7 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using DRAW::IGoomDraw;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
 using namespace GOOM::UTILS;

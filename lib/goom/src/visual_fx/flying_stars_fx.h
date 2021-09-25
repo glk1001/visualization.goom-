@@ -9,7 +9,6 @@
 
 namespace GOOM
 {
-class IGoomDraw;
 class PluginInfo;
 
 namespace UTILS
@@ -17,6 +16,11 @@ namespace UTILS
 class RandomColorMaps;
 class SmallImageBitmaps;
 } // namespace UTILS
+
+namespace DRAW
+{
+class IGoomDraw;
+} // namespace DRAW
 
 namespace VISUAL_FX
 {
@@ -34,7 +38,7 @@ public:
   };
 
   FlyingStarsFx() noexcept = delete;
-  FlyingStarsFx(const IGoomDraw& draw,
+  FlyingStarsFx(const DRAW::IGoomDraw& draw,
                 const PluginInfo& goomInfo,
                 const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 

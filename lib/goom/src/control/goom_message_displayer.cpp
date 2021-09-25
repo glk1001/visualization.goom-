@@ -1,6 +1,6 @@
 #include "goom_message_displayer.h"
 
-#include "goom_draw.h"
+#include "../draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "goomutils/strutils.h"
 
@@ -17,6 +17,7 @@ namespace GOOM::CONTROL
 #endif
 
 using DRAW::TextDraw;
+using DRAW::IGoomDraw;
 using UTILS::StringSplit;
 
 GoomMessageDisplayer::GoomMessageDisplayer(IGoomDraw& textOutput,

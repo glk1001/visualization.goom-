@@ -1,6 +1,6 @@
 #include "tentacle_driver.h"
 
-#include "goom_draw.h"
+#include "../draw/goom_draw.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
 #include "goomutils/goomrand.h"
@@ -35,6 +35,7 @@ namespace GOOM::TENTACLES
 {
 #endif
 
+using DRAW::IGoomDraw;
 using UTILS::ColorMapGroup;
 using UTILS::GetIntColor;
 using UTILS::GetRandInRange;

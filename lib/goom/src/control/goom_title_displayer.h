@@ -13,10 +13,9 @@
 namespace GOOM
 {
 
-class IGoomDraw;
-
 namespace DRAW
 {
+class IGoomDraw;
 class TextDraw;
 }
 namespace UTILS
@@ -31,7 +30,7 @@ class GoomTitleDisplayer
 {
 public:
   GoomTitleDisplayer() noexcept = delete;
-  GoomTitleDisplayer(const IGoomDraw& draw, const std::string& fontDirectory);
+  GoomTitleDisplayer(const DRAW::IGoomDraw& draw, const std::string& fontDirectory);
 
   void SetInitialPosition(int32_t xStart, int32_t yStart);
 

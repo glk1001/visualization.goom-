@@ -7,7 +7,11 @@
 
 namespace GOOM
 {
+
+namespace DRAW
+{
 class IGoomDraw;
+} // namespace DRAW
 
 namespace CONTROL
 {
@@ -15,7 +19,7 @@ namespace CONTROL
 class GoomMessageDisplayer
 {
 public:
-  GoomMessageDisplayer(IGoomDraw& textOutput, const std::string& updateMessagesFontFile);
+  GoomMessageDisplayer(DRAW::IGoomDraw& textOutput, const std::string& updateMessagesFontFile);
 
   void UpdateMessages(const std::string& messages);
 

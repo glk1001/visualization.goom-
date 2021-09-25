@@ -26,6 +26,7 @@ namespace GOOM::CONTROL
 #endif
 
 using CONTROL::GoomDrawable;
+using DRAW::IGoomDraw;
 using FILTERS::FilterBuffersService;
 using FILTERS::FilterColorsService;
 using FILTERS::ZoomFilterSettings;

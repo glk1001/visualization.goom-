@@ -34,10 +34,10 @@
 
 #include "ifs_dancers_fx.h"
 
+#include "../draw/goom_draw.h"
 #include "../ifs/colorizer.h"
 #include "../ifs/fractal.h"
 #include "../ifs/low_density_blurrer.h"
-#include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/goomrand.h"
@@ -70,6 +70,7 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using DRAW::IGoomDraw;
 using IFS::BlurrerColorMode;
 using IFS::Colorizer;
 using IFS::Fractal;

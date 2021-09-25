@@ -1,8 +1,8 @@
 #include "goom_title_displayer.h"
 
+#include "../draw/goom_draw.h"
 #include "../draw/text_draw.h"
 #include "goom_config.h"
-#include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
@@ -26,6 +26,7 @@ namespace GOOM::CONTROL
 {
 #endif
 
+using DRAW::IGoomDraw;
 using DRAW::TextDraw;
 using UTILS::ColorMapGroup;
 using UTILS::GetBrighterColor;

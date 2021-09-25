@@ -1,34 +1,33 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_GOOM_DRAW_H
-#define VISUALIZATION_GOOM_LIB_GOOM_GOOM_DRAW_H
+#ifndef VISUALIZATION_GOOM_LIB_GOOM_DRAW_GOOM_DRAW_H
+#define VISUALIZATION_GOOM_LIB_GOOM_DRAW_GOOM_DRAW_H
 
-#include "goom_config.h"
+#include "draw_methods.h"
 #include "goom_graphic.h"
 #include "goomutils/parallel_utils.h"
 
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <vector>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
 namespace DRAW
 {
-class DrawMethods;
-} // namespace DRAW
+#else
+namespace GOOM::DRAW
+{
+#endif
 
 class IGoomDraw
 {
 public:
-  using DrawPixelFunc = std::function<void(
-      int32_t x, int32_t y, const std::vector<Pixel>& newColors, bool allowOverexposed)>;
-
   IGoomDraw() noexcept = delete;
   IGoomDraw(uint32_t screenWidth, uint32_t screenHeight, const DrawPixelFunc& drawPixelFunc);
   IGoomDraw(const IGoomDraw&) noexcept = delete;
   IGoomDraw(IGoomDraw&&) noexcept = delete;
-  virtual ~IGoomDraw() noexcept;
+  virtual ~IGoomDraw() noexcept = default;
   auto operator=(const IGoomDraw&) -> IGoomDraw& = delete;
   auto operator=(IGoomDraw&&) -> IGoomDraw& = delete;
 
@@ -85,7 +84,7 @@ protected:
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  std::unique_ptr<DRAW::DrawMethods> m_drawMethods;
+  DrawMethods m_drawMethods;
   bool m_allowOverexposed = true;
   float m_buffIntensity = 0.5;
   uint32_t m_intBuffIntensity;
@@ -105,6 +104,12 @@ inline auto IGoomDraw::GetScreenHeight() const -> uint32_t
 inline auto IGoomDraw::GetAllowOverexposed() const -> bool
 {
   return m_allowOverexposed;
+}
+
+inline void IGoomDraw::SetAllowOverexposed(const bool val)
+{
+  m_allowOverexposed = val;
+  m_drawMethods.SetAllowOverexposed(val);
 }
 
 inline auto IGoomDraw::GetBuffIntensity() const -> float
@@ -137,6 +142,14 @@ inline void IGoomDraw::Circle(const int x0,
   Circle(x0, y0, radius, std::vector<Pixel>{color});
 }
 
+inline void IGoomDraw::Circle(const int x0,
+                       const int y0,
+                       const int radius,
+                       const std::vector<Pixel>& colors) const
+{
+  m_drawMethods.DrawCircle(x0, y0, radius, colors);
+}
+
 inline void IGoomDraw::Line(const int x1,
                             const int y1,
                             const int x2,
@@ -145,6 +158,16 @@ inline void IGoomDraw::Line(const int x1,
                             const uint8_t thickness) const
 {
   Line(x1, y1, x2, y2, std::vector<Pixel>{color}, thickness);
+}
+
+inline void IGoomDraw::Line(const int x1,
+                     const int y1,
+                     const int x2,
+                     const int y2,
+                     const std::vector<Pixel>& colors,
+                     const uint8_t thickness) const
+{
+  m_drawMethods.DrawLine(x1, y1, x2, y2, colors, thickness);
 }
 
 inline void IGoomDraw::Bitmap(const int xCentre,
@@ -179,6 +202,19 @@ inline void IGoomDraw::DrawPixels(const int32_t x,
   DrawPixels(x, y, colors, GetAllowOverexposed());
 }
 
-} // namespace GOOM
+inline void IGoomDraw::DrawPixels(const int32_t x,
+                           const int32_t y,
+                           const std::vector<Pixel>& colors,
+                           const bool allowOverexposed) const
+{
+  m_drawMethods.DrawPixels(x, y, colors, allowOverexposed);
+}
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_GOOM_DRAW_H
+#if __cplusplus <= 201402L
+} // namespace DRAW
+} // namespace GOOM
+#else
+} // namespace GOOM::DRAW
+#endif
+
+#endif //VISUALIZATION_GOOM_LIB_GOOM_DRAW_GOOM_DRAW_H

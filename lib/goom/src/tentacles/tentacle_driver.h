@@ -16,7 +16,10 @@
 namespace GOOM
 {
 
+namespace DRAW
+{
 class IGoomDraw;
+} // namespace DRAW
 
 namespace TENTACLES
 {
@@ -69,7 +72,7 @@ public:
   };
 
   TentacleDriver() noexcept = delete;
-  explicit TentacleDriver(const IGoomDraw& draw) noexcept;
+  explicit TentacleDriver(const DRAW::IGoomDraw& draw) noexcept;
 
   void Init(UTILS::ColorMapGroup initialColorMapGroup, const ITentacleLayout& l);
   [[nodiscard]] auto GetNumTentacles() const -> size_t;
@@ -89,7 +92,7 @@ public:
   void MultiplyIterZeroYValWaveFreq(float val);
 
 private:
-  const IGoomDraw& m_draw;
+  const DRAW::IGoomDraw& m_draw;
   ColorModes m_colorMode = ColorModes::ONE_GROUP_FOR_ALL;
   struct IterationParams
   {

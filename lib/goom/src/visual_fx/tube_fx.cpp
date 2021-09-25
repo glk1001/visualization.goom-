@@ -1,9 +1,9 @@
 #include "tube_fx.h"
 
+#include "../draw/goom_draw.h"
 #include "../draw/goom_draw_to_container.h"
 #include "../draw/goom_draw_to_many.h"
 #include "../tubes/tubes.h"
-#include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/colorutils.h"
@@ -36,6 +36,7 @@ namespace GOOM::VISUAL_FX
 
 using DRAW::GoomDrawToContainer;
 using DRAW::GoomDrawToMany;
+using DRAW::IGoomDraw;
 using TUBES::BrightnessAttenuation;
 using TUBES::PathParams;
 using TUBES::Tube;

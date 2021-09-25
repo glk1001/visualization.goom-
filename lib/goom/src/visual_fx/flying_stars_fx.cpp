@@ -1,6 +1,6 @@
 #include "flying_stars_fx.h"
 
-#include "goom_draw.h"
+#include "../draw/goom_draw.h"
 #include "goom_plugin_info.h"
 #include "goomutils/colormaps.h"
 #include "goomutils/colorutils.h"
@@ -37,6 +37,7 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using DRAW::IGoomDraw;
 using UTILS::GammaCorrection;
 using UTILS::GetBrighterColor;
 using UTILS::GetColorMultiply;

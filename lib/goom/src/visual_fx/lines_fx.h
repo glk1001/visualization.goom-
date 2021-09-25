@@ -14,7 +14,6 @@
 namespace GOOM
 {
 
-class IGoomDraw;
 class PluginInfo;
 
 namespace UTILS
@@ -22,6 +21,11 @@ namespace UTILS
 class RandomColorMaps;
 class SmallImageBitmaps;
 } // namespace UTILS
+
+namespace DRAW
+{
+class IGoomDraw;
+} // namespace DRAW
 
 namespace VISUAL_FX
 {
@@ -41,7 +45,7 @@ public:
   LinesFx() noexcept = delete;
 
   // construit un effet de line (une ligne horitontale pour commencer)
-  LinesFx(const IGoomDraw& draw,
+  LinesFx(const DRAW::IGoomDraw& draw,
           const PluginInfo& goomInfo,
           const UTILS::SmallImageBitmaps& smallBitmaps,
           LineType srceLineType,

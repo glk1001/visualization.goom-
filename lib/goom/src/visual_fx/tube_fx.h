@@ -10,7 +10,6 @@
 namespace GOOM
 {
 
-class IGoomDraw;
 class PluginInfo;
 
 namespace UTILS
@@ -19,6 +18,11 @@ class RandomColorMaps;
 class SmallImageBitmaps;
 } // namespace UTILS
 
+namespace DRAW
+{
+class IGoomDraw;
+} // namespace DRAW
+
 namespace VISUAL_FX
 {
 
@@ -26,7 +30,7 @@ class TubeFx : public IVisualFx
 {
 public:
   TubeFx() noexcept = delete;
-  TubeFx(const IGoomDraw& draw,
+  TubeFx(const DRAW::IGoomDraw& draw,
          const PluginInfo& goomInfo,
          const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 

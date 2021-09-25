@@ -13,7 +13,6 @@
 namespace GOOM
 {
 class AudioSamples;
-class IGoomDraw;
 class PluginInfo;
 class PixelBuffer;
 
@@ -22,6 +21,11 @@ namespace UTILS
 class Parallel;
 class SmallImageBitmaps;
 } // namespace UTILS
+
+namespace DRAW
+{
+class IGoomDraw;
+} // namespace DRAW
 
 namespace FILTERS
 {
@@ -49,7 +53,7 @@ class GoomAllVisualFx
 public:
   GoomAllVisualFx() noexcept = delete;
   GoomAllVisualFx(UTILS::Parallel& parallel,
-                  const IGoomDraw& draw,
+                  const DRAW::IGoomDraw& draw,
                   const PluginInfo& goomInfo,
                   const UTILS::SmallImageBitmaps& smallBitmaps,
                   std::unique_ptr<FILTERS::FilterBuffersService> filterBuffersService,

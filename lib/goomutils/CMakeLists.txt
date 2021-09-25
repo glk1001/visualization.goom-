@@ -18,7 +18,6 @@ add_library(goomutils
         src/colorutils.cpp
         src/extra_color_groups.cpp
         src/goomrand.cpp
-        src/graphics/honeycomb.cpp
         src/graphics/image_bitmaps.cpp
         src/graphics/small_image_bitmaps.cpp
         src/logging.cpp
@@ -28,8 +27,7 @@ add_library(goomutils
         src/strutils.cpp
         src/t_values.cpp
         src/thread_pool.cpp
-        src/graphics/turtle.cpp
-)
+        )
 
 #set_source_files_properties(src/colormaps.cpp PROPERTIES COMPILE_FLAGS -fsanitize=address)
 

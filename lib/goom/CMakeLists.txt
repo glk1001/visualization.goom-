@@ -58,7 +58,7 @@ add_library(goom
         src/filters/wave.cpp
         src/filters/y_only.cpp
         src/goom_control.cpp
-        src/goom_draw.cpp
+        src/draw/goom_draw.cpp
         src/goom_graphic.cpp
         src/ifs/colorizer.cpp
         src/ifs/fractal.cpp

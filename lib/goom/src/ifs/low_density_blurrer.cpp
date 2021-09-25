@@ -1,8 +1,8 @@
 #include "low_density_blurrer.h"
 
+#include "../draw/goom_draw.h"
 #include "colorizer.h"
 #include "fractal.h"
-#include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goomutils/colormaps.h"
 
@@ -20,6 +20,7 @@ namespace GOOM::IFS
 {
 #endif
 
+using DRAW::IGoomDraw;
 using UTILS::GetBrighterColor;
 using UTILS::GetColorAverage;
 using UTILS::IColorMap;

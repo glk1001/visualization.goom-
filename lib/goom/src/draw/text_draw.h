@@ -12,7 +12,6 @@
 namespace GOOM
 {
 
-class IGoomDraw;
 class Pixel;
 
 namespace DRAW
@@ -21,6 +20,8 @@ namespace DRAW
 namespace GOOM::DRAW
 {
 #endif
+
+class IGoomDraw;
 
 class TextDraw
 {

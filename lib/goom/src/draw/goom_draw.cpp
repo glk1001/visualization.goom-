@@ -1,12 +1,18 @@
 #include "goom_draw.h"
 
-#include "draw/draw_methods.h"
+#include "draw_methods.h"
 
 #include <cstdint>
-#include <memory>
 
+#if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace DRAW
+{
+#else
+namespace GOOM::DRAW
+{
+#endif
 
 using DRAW::DrawMethods;
 
@@ -15,45 +21,11 @@ IGoomDraw::IGoomDraw(const uint32_t screenWidth,
                      const DrawPixelFunc& drawPixelFunc)
   : m_screenWidth{screenWidth},
     m_screenHeight{screenHeight},
-    m_drawMethods{std::make_unique<DrawMethods>(m_screenWidth, m_screenHeight, drawPixelFunc)},
+    m_drawMethods{m_screenWidth, m_screenHeight, drawPixelFunc},
     m_intBuffIntensity{},
     m_parallel{-1} // max cores - 1
 {
   SetBuffIntensity(m_buffIntensity);
-}
-
-IGoomDraw::~IGoomDraw() noexcept = default;
-
-void IGoomDraw::SetAllowOverexposed(const bool val)
-{
-  m_allowOverexposed = val;
-  m_drawMethods->SetAllowOverexposed(val);
-}
-
-void IGoomDraw::Circle(const int x0,
-                       const int y0,
-                       const int radius,
-                       const std::vector<Pixel>& colors) const
-{
-  m_drawMethods->DrawCircle(x0, y0, radius, colors);
-}
-
-void IGoomDraw::Line(const int x1,
-                     const int y1,
-                     const int x2,
-                     const int y2,
-                     const std::vector<Pixel>& colors,
-                     const uint8_t thickness) const
-{
-  m_drawMethods->DrawLine(x1, y1, x2, y2, colors, thickness);
-}
-
-void IGoomDraw::DrawPixels(const int32_t x,
-                           const int32_t y,
-                           const std::vector<Pixel>& colors,
-                           const bool allowOverexposed) const
-{
-  m_drawMethods->DrawPixels(x, y, colors, allowOverexposed);
 }
 
 void IGoomDraw::Bitmap(const int xCentre,
@@ -127,4 +99,9 @@ void IGoomDraw::Bitmap(const int xCentre,
   }
 }
 
+#if __cplusplus <= 201402L
+} // namespace DRAW
 } // namespace GOOM
+#else
+} // namespace GOOM::DRAW
+#endif
