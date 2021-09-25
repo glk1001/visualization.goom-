@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_PARALLEL_UTILS_H
-#define VISUALIZATION_GOOM_PARALLEL_UTILS_H
+#pragma once
 
 #include "thread_pool.h"
 
@@ -107,5 +106,4 @@ void Parallel::ForLoop(uint32_t numIters, const Callable loopFunc)
 } // namespace GOOM
 #else
 } // namespace GOOM::UTILS
-#endif
 #endif

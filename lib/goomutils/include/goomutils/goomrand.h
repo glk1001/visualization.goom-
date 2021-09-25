@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_GOOMRAND_H_
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_GOOMRAND_H_
+#pragma once
 
 #include "xoshiro.hpp"
 
@@ -262,5 +261,4 @@ auto Weights<E>::GetRandomWeighted() const -> E
 } // namespace GOOM
 #else
 } // namespace GOOM::UTILS
-#endif
 #endif

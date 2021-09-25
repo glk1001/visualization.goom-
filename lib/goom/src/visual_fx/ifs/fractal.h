@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_FRACTAL_H
-#define VISUALIZATION_GOOM_FRACTAL_H
+#pragma once
 
 #include "goom_graphic.h"
 #include "goomutils/t_values.h"
@@ -205,4 +204,3 @@ inline auto FractalHits::GetMaxHitCount() const -> uint32_t
 } // namespace GOOM::IFS
 #endif
 
-#endif //VISUALIZATION_GOOM_FRACTAL_H

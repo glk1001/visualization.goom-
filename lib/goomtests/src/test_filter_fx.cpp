@@ -1,10 +1,10 @@
 #include "catch2/catch.hpp"
-#include "filters/filter_settings.h"
-#include "filters/filter_settings_service.h"
 #include "goom/goom_graphic.h"
 #include "goom/v2d.h"
 #include "goom_plugin_info.h"
 #include "goomutils/parallel_utils.h"
+#include "visual_fx/filters/filter_settings.h"
+#include "visual_fx/filters/filter_settings_service.h"
 #include "visual_fx/zoom_filter_fx.h"
 
 using GOOM::Pixel;

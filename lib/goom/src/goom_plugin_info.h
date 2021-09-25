@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_PLUGIN_INFO_H
-#define VISUALIZATION_GOOM_GOOM_PLUGIN_INFO_H
+#pragma once
 
 #include "goom_config.h"
 #include "sound_info.h"
@@ -77,4 +76,3 @@ inline void WritablePluginInfo::ProcessSoundSample(const AudioSamples& soundData
 }
 
 } // namespace GOOM
-#endif

@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_COLORUTILS_H_
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_COLORUTILS_H_
+#pragma once
 
 #include "goom/goom_graphic.h"
 #include "mathutils.h"
@@ -452,4 +451,3 @@ inline auto GammaCorrection::GetAllowOverExposure() const -> bool
 } // namespace GOOM::UTILS
 #endif
 
-#endif

@@ -1,7 +1,7 @@
 #include "catch2/catch.hpp"
-#include "filters/normalized_coords.h"
 #include "goom/v2d.h"
 #include "goomutils/mathutils.h"
+#include "visual_fx/filters/normalized_coords.h"
 
 #include <cmath>
 

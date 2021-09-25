@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_SETTINGS_SERVICE_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_SETTINGS_SERVICE_H
+#pragma once
 
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
@@ -279,4 +278,3 @@ inline void FilterSettingsService::SetTranLerpToMaxDefaultSwitchMult()
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_SETTINGS_SERVICE_H

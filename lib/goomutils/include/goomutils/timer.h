@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_TIMER_H
-#define VISUALIZATION_GOOM_TIMER_H
+#pragma once
 
 #include "goom/v2d.h"
 
@@ -87,4 +86,3 @@ inline void Timer::Increment()
 #else
 } // namespace GOOM::UTILS
 #endif
-#endif //VISUALIZATION_GOOM_TIMER_H

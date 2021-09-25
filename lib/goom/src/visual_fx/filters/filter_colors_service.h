@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_COLORS_SERVICE_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_COLORS_SERVICE_H
+#pragma once
 
 #include "filter_buffers.h"
 #include "goom_graphic.h"
@@ -196,4 +195,3 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_COLORS_SERVICE_H

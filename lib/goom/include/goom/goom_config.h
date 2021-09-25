@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_CONFIG_H
-#define VISUALIZATION_GOOM_GOOM_CONFIG_H
+#pragma once
 
 namespace GOOM
 {
@@ -24,4 +23,3 @@ constexpr auto IMAGE_DISPLACEMENT_DIR = "displacements";
 #endif
 
 } // namespace GOOM
-#endif

@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_ALL_VISUAL_FX_H
-#define VISUALIZATION_GOOM_GOOM_ALL_VISUAL_FX_H
+#pragma once
 
 #include "goom_states.h"
 #include "visual_fx/lines_fx.h"
@@ -230,4 +229,3 @@ inline auto GoomAllVisualFx::GetGoomLine2RandomColor() const -> Pixel
 } // namespace CONTROL
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_GOOM_ALL_VISUAL_FX_H

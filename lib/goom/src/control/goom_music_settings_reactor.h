@@ -1,7 +1,5 @@
-#ifndef VISUALIZATION_GOOM_MUSIC_SETTINGS_REACTOR_H
-#define VISUALIZATION_GOOM_MUSIC_SETTINGS_REACTOR_H
+#pragma once
 
-#include "filters/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
 #include "goom_events.h"
 #include "goom_lock.h"
@@ -10,6 +8,7 @@
 #include "goomutils/goomrand.h"
 #include "goomutils/name_value_pairs.h"
 #include "goomutils/timer.h"
+#include "visual_fx/filters/filter_settings_service.h"
 
 #include <cstdint>
 
@@ -401,4 +400,3 @@ inline void GoomMusicSettingsReactor::ChangeGoomLines()
 } // namespace CONTROL
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_MUSIC_SETTINGS_REACTOR_H

@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_ENUMUTILS_H_
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_ENUMUTILS_H_
+#pragma once
 
 #if __cplusplus > 201402L
 #include "color_data/colormap_enums.h"
@@ -70,5 +69,4 @@ auto StringToEnum(const std::string& eStr) -> E
 } // namespace GOOM
 #else
 } // namespace GOOM::UTILS
-#endif
 #endif

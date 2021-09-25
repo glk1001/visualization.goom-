@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_FILTERS_Y_ONLY_H
-#define VISUALIZATION_GOOM_LIB_FILTERS_Y_ONLY_H
+#pragma once
 
 #include "goomutils/name_value_pairs.h"
 #include "normalized_coords.h"
@@ -113,4 +112,3 @@ inline void YOnly::SetParams(const Params& params)
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_FILTERS_Y_ONLY_H

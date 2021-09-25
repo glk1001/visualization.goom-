@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_CRYSTAL_BALL_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_CRYSTAL_BALL_H
+#pragma once
 
 #include "goomutils/goomrand.h"
 #include "goomutils/name_value_pairs.h"
@@ -105,4 +104,3 @@ inline void CrystalBall::SetParams(const Params& params)
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_CRYSTAL_BALL_H

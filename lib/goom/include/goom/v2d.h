@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_V2D_H
-#define VISUALIZATION_GOOM_V2D_H
+#pragma once
 
 #include "goomutils/mathutils.h"
 
@@ -152,4 +151,3 @@ inline auto lerp(const V2dFlt& p0, const V2dFlt& p1, float t) -> V2dFlt
 }
 
 } // namespace GOOM
-#endif

@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_SOUND_INFO_H
-#define VISUALIZATION_GOOM_SOUND_INFO_H
+#pragma once
 
 #include "goom_config.h"
 
@@ -164,4 +163,3 @@ inline auto SoundInfo::GetBigGoomLimit() const -> float
 }
 
 } // namespace GOOM
-#endif

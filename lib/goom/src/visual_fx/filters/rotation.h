@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_FILTERS_ROTATION_H
-#define VISUALIZATION_GOOM_LIB_FILTERS_ROTATION_H
+#pragma once
 
 #include "goomutils/mathutils.h"
 #include "goomutils/name_value_pairs.h"
@@ -109,4 +108,3 @@ inline void Rotation::SetParams(const Params& params)
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_FILTERS_ROTATION_H

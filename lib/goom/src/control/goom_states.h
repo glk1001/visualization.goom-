@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_STATES_H
-#define VISUALIZATION_GOOM_GOOM_STATES_H
+#pragma once
 
 #include "goom_graphic.h"
 #include "goomutils/goomrand.h"
@@ -87,4 +86,3 @@ inline auto GoomStates::GetCurrentStateName() const -> std::string
 } // namespace GOOM::CONTROL
 #endif
 
-#endif //VISUALIZATION_GOOM_GOOM_STATES_H

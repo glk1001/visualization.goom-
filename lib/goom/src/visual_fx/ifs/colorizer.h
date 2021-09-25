@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_COLORIZER_H
-#define VISUALIZATION_GOOM_COLORIZER_H
+#pragma once
 
 #include "goom_graphic.h"
 #include "goomutils/colormaps.h"
@@ -103,4 +102,3 @@ inline void Colorizer::SetMaxHitCount(const uint32_t val)
 } // namespace GOOM::IFS
 #endif
 
-#endif //VISUALIZATION_GOOM_COLORIZER_H

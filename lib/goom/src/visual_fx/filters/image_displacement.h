@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_IMAGE_DISPLACEMENT_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_IMAGE_DISPLACEMENT_H
+#pragma once
 
 #include "goomutils/graphics/image_bitmaps.h"
 #include "v2d.h"
@@ -97,4 +96,3 @@ inline void ImageDisplacement::SetAmplitude(const float value)
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_IMAGE_DISPLACEMENT_H

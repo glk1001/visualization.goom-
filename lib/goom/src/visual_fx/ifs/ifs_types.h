@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_IFS_TYPES_H
-#define VISUALIZATION_GOOM_IFS_TYPES_H
+#pragma once
 
 #include <cstdint>
 
@@ -47,4 +46,3 @@ inline auto DivBy2Units(const Flt x) -> Flt
 } // namespace GOOM::IFS
 #endif
 
-#endif //VISUALIZATION_GOOM_IFS_TYPES_H

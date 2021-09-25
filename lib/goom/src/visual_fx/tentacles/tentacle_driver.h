@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_TENTACLES_TENTACLE_DRIVER_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_TENTACLES_TENTACLE_DRIVER_H
+#pragma once
 
 #include "goom_graphic.h"
 #include "goomutils/colormaps.h"
@@ -192,4 +191,3 @@ private:
 } // namespace GOOM::TENTACLES
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_TENTACLES_TENTACLE_DRIVER_H

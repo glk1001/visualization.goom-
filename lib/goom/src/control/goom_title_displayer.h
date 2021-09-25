@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_TITLE_DISPLAYER_H
-#define VISUALIZATION_GOOM_GOOM_TITLE_DISPLAYER_H
+#pragma once
 
 #include "goom_graphic.h"
 #include "goomutils/colorutils.h"
@@ -105,4 +104,3 @@ inline auto GoomTitleDisplayer::IsFinished() const -> bool
 } // namespace CONTROL
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_GOOM_TITLE_DISPLAYER_H

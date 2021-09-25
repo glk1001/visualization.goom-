@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_FILTERS_IMAGE_SPEED_COEFFS_H
-#define VISUALIZATION_GOOM_LIB_FILTERS_IMAGE_SPEED_COEFFS_H
+#pragma once
 
 #include "goomutils/name_value_pairs.h"
 #include "image_displacement_list.h"
@@ -53,4 +52,3 @@ inline auto ImageSpeedCoefficients::GetSpeedCoefficients(
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_FILTERS_IMAGE_SPEED_COEFFS_H

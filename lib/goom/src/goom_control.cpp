@@ -21,13 +21,11 @@
 #include "control/goom_music_settings_reactor.h"
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
-#include "filters/filter_buffers_service.h"
-#include "filters/filter_colors_service.h"
-#include "filters/filter_settings_service.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goomutils/graphics/small_image_bitmaps.h"
 #include "goomutils/logging_control.h"
+#include "visual_fx/filters/filter_settings_service.h"
 #undef NO_LOGGING
 #include "goomutils/logging.h"
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
@@ -45,9 +43,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#if __cplusplus > 201402L
-#include <variant>
-#endif
 #include <vector>
 
 namespace GOOM
@@ -61,8 +56,6 @@ using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToBuffer;
-using FILTERS::FilterBuffersService;
-using FILTERS::FilterColorsService;
 using FILTERS::FilterSettingsService;
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 using UTILS::GetNameValuesString;

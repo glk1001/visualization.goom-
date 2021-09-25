@@ -1,5 +1,4 @@
-#ifndef _GOOM_TESTING_H
-#define _GOOM_TESTING_H
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -33,4 +32,3 @@ inline auto GetVersionInfo() -> VersionInfoInt
 }
 
 } // namespace GOOM
-#endif

@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_FILTERS_IMAGE_VELOCITY_H
-#define VISUALIZATION_GOOM_LIB_FILTERS_IMAGE_VELOCITY_H
+#pragma once
 
 #include "goomutils/name_value_pairs.h"
 #include "image_displacement_list.h"
@@ -47,4 +46,3 @@ inline auto ImageVelocity::GetVelocity(const NormalizedCoords& coords) const -> 
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_FILTERS_IMAGE_VELOCITY_H

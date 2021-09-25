@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_RANDOM_COLORMAPS_MANAGER_H
-#define VISUALIZATION_GOOM_RANDOM_COLORMAPS_MANAGER_H
+#pragma once
 
 #include "colormaps.h"
 #include "random_colormaps.h"
@@ -70,5 +69,4 @@ private:
 } // namespace GOOM
 #else
 } // namespace GOOM::UTILS
-#endif
 #endif

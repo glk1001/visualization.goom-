@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_MESSAGE_DISPLAYER_H
-#define VISUALIZATION_GOOM_GOOM_MESSAGE_DISPLAYER_H
+#pragma once
 
 #include "draw/text_draw.h"
 
@@ -31,4 +30,3 @@ private:
 } // namespace CONTROL
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_GOOM_MESSAGE_DISPLAYER_H

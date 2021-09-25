@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_DRAW_GOOM_DRAW_TO_BUFFER_H
-#define VISUALIZATION_GOOM_LIB_GOOM_DRAW_GOOM_DRAW_TO_BUFFER_H
+#pragma once
 
 #include "goom_draw.h"
 #include "goom_graphic.h"
@@ -50,4 +49,3 @@ inline void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
 } // namespace GOOM::DRAW
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_DRAW_GOOM_DRAW_TO_BUFFER_H

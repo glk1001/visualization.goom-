@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_COLOR_DATA_EXTRA_COLOR_GROUPS_H
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_COLOR_DATA_EXTRA_COLOR_GROUPS_H
+#pragma once
 
 #include "color_data/colormap_enums.h"
 
@@ -38,4 +37,3 @@ extern const std::vector<ColorMapName> PASTEL_MAPS;
 } // namespace GOOM::UTILS::COLOR_DATA
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOMUTILS_COLOR_DATA_EXTRA_COLOR_GROUPS_H

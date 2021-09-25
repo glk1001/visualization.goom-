@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_LOW_DENSITY_BLURRER_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_LOW_DENSITY_BLURRER_H
+#pragma once
 
 #include "goom_graphic.h"
 #include "goomutils/colorutils.h"
@@ -103,4 +102,3 @@ inline void LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFac
 } // namespace GOOM::IFS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_LOW_DENSITY_BLURRER_H

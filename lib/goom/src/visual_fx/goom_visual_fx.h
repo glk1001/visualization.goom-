@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_VISUAL_FX_VISUAL_FX_H
-#define VISUALIZATION_GOOM_LIB_VISUAL_FX_VISUAL_FX_H
+#pragma once
 
 #include <string>
 
@@ -40,4 +39,3 @@ public:
 } // namespace GOOM::VISUAL_FX
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_VISUAL_FX_VISUAL_FX_H

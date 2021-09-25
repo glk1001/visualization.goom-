@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_MATHUTILS_H_
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_MATHUTILS_H_
+#pragma once
 
 #include "goomrand.h"
 
@@ -394,4 +393,3 @@ inline auto RangeMapper::operator()(const double r0, const double r1, const doub
 } // namespace GOOM::UTILS
 #endif
 
-#endif

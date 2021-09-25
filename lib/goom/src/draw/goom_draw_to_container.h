@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOMDRAWBUFFER_H
-#define VISUALIZATION_GOOM_GOOMDRAWBUFFER_H
+#pragma once
 
 #include "goom_draw.h"
 #include "goom_graphic.h"
@@ -100,4 +99,3 @@ inline auto GoomDrawToContainer::GetChangedCoordsList() const -> const std::vect
 } // namespace GOOM::DRAW
 #endif
 
-#endif //VISUALIZATION_GOOM_GOOMDRAWBUFFER_H

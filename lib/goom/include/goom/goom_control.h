@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_CONTROL_H
-#define VISUALIZATION_GOOM_GOOM_CONTROL_H
+#pragma once
 
 #include "goom_config.h"
 #include "goomutils/spimpl.h"
@@ -45,4 +44,3 @@ private:
 };
 
 } // namespace GOOM
-#endif

@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_STRUTILS_H_
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_STRUTILS_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -27,5 +26,4 @@ namespace GOOM::UTILS
 } // namespace GOOM
 #else
 } // namespace GOOM::UTILS
-#endif
 #endif

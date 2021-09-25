@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_ZOOM_VECTOR_EFFECTS_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_ZOOM_VECTOR_EFFECTS_H
+#pragma once
 
 #include "filter_settings.h"
 #include "goomutils/name_value_pairs.h"
@@ -230,4 +229,3 @@ inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& 
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_ZOOM_VECTOR_EFFECTS_H

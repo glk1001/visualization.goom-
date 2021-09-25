@@ -1,5 +1,4 @@
-#ifndef XOSHIRO_HPP_INCLUDED
-#define XOSHIRO_HPP_INCLUDED 1
+#pragma once
 
 /*
  * A C++ implementation of a family of Xoshiro generators.
@@ -383,4 +382,3 @@ using xoshiro32starstar8yyy =
 
 using xoshiro32starstar8 = xoshiro32starstar8xxx;
 
-#endif // XOSHIRO_HPP_INCLUDED

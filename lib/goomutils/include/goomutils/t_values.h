@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_T_VALUES_H
-#define VISUALIZATION_GOOM_T_VALUES_H
+#pragma once
 
 #include "mathutils.h"
 
@@ -106,4 +105,3 @@ inline void TValue::Reset(const float t)
 #else
 } // namespace GOOM::UTILS
 #endif
-#endif //VISUALIZATION_GOOM_T_VALUES_H

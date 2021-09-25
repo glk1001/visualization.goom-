@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_TEXT_DRAW_H
-#define VISUALIZATION_GOOM_TEXT_DRAW_H
+#pragma once
 
 #include "goomutils/spimpl.h"
 
@@ -80,4 +79,3 @@ private:
 } // namespace GOOM::DRAW
 #endif
 
-#endif

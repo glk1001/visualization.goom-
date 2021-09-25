@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_MUSIC_LINES_REACTOR_H
-#define VISUALIZATION_GOOM_MUSIC_LINES_REACTOR_H
+#pragma once
 
 #include "goom_all_visual_fx.h"
 #include "goom_events.h"
@@ -168,4 +167,3 @@ inline auto GoomMusicLinesReactor::GetSameLineColors(const Pixel& color) -> Goom
 } // namespace CONTROL
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_MUSIC_LINES_REACTOR_H

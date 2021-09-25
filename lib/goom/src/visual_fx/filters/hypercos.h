@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_HYPERCOS_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_HYPERCOS_H
+#pragma once
 
 #include "filter_settings.h"
 #include "goomutils/goomrand.h"
@@ -94,4 +93,3 @@ inline void Hypercos::SetParams(const Params& params)
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_HYPERCOS_H

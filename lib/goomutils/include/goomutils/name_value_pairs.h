@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_NAME_VALUE_PAIRS_H_
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_NAME_VALUE_PAIRS_H_
+#pragma once
 
 #include "goom_graphic.h"
 #include "strutils.h"
@@ -110,4 +109,3 @@ inline auto to_string(const Pixel& value) -> std::string
 #else
 } // namespace GOOM::UTILS
 #endif
-#endif // VISUALIZATION_GOOM_LIB_GOOMUTILS_NAME_VALUE_PAIRS_H_

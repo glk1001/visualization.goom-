@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_GRAPHIC_H
-#define VISUALIZATION_GOOM_GOOM_GRAPHIC_H
+#pragma once
 
 #ifndef GOOM_DEBUG
 #define GOOM_DEBUG
@@ -377,4 +376,3 @@ inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
 }
 
 } // namespace GOOM
-#endif

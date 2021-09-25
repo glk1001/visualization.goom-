@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_LOCK_H
-#define VISUALIZATION_GOOM_GOOM_LOCK_H
+#pragma once
 
 #include <cstdint>
 
@@ -70,4 +69,3 @@ inline void GoomLock::IncreaseLockTime(const uint32_t byAmount)
 } // namespace GOOM::CONTROL
 #endif
 
-#endif //VISUALIZATION_GOOM_GOOM_LOCK_H

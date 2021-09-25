@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_DRAW_GOOM_DRAW_H
-#define VISUALIZATION_GOOM_LIB_GOOM_DRAW_GOOM_DRAW_H
+#pragma once
 
 #include "draw_methods.h"
 #include "goom_graphic.h"
@@ -217,4 +216,3 @@ inline void IGoomDraw::DrawPixels(const int32_t x,
 } // namespace GOOM::DRAW
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_DRAW_GOOM_DRAW_H

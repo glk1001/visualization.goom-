@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_FILTERS_TAN_EFFECT_H
-#define VISUALIZATION_GOOM_LIB_FILTERS_TAN_EFFECT_H
+#pragma once
 
 #include "goomutils/mathutils.h"
 #include "goomutils/name_value_pairs.h"
@@ -73,4 +72,3 @@ inline void TanEffect::SetParams(const Params& params)
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_FILTERS_TAN_EFFECT_H

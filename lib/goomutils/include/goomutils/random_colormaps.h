@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_RANDOM_COLORMAP_H
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_RANDOM_COLORMAP_H
+#pragma once
 
 #include "goom/goom_graphic.h"
 #include "goomutils/color_data/colormap_enums.h"
@@ -159,5 +158,4 @@ auto GetPastelStandardMaps() -> std::shared_ptr<RandomColorMaps>;
 } // namespace GOOM
 #else
 } // namespace GOOM::UTILS
-#endif
 #endif

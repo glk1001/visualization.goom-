@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_VISUAL_FX_LINES_FX_H
-#define VISUALIZATION_GOOM_VISUAL_FX_LINES_FX_H
+#pragma once
 
 #include "goom_config.h"
 #include "goom_graphic.h"
@@ -89,4 +88,3 @@ private:
 } // namespace VISUAL_FX
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_VISUAL_FX_LINES_FX_H

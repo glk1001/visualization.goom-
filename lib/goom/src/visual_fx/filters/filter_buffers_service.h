@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_BUFFERS_SERVICE_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_BUFFERS_SERVICE_H
+#pragma once
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
@@ -72,4 +71,3 @@ inline auto FilterBuffersService::GetTranLerpFactor() const -> int32_t
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_BUFFERS_SERVICE_H

@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOMUTILS_IMAGE_BITMAPS_H
-#define VISUALIZATION_GOOM_LIB_GOOMUTILS_IMAGE_BITMAPS_H
+#pragma once
 
 #include "goom/goom_graphic.h"
 
@@ -39,5 +38,4 @@ inline ImageBitmap::ImageBitmap(std::string imageFilename) : PixelBuffer{}
 } // namespace GOOM
 #else
 } // namespace GOOM::UTILS
-#endif
 #endif

@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_VISUAL_FX_FLYING_STARS_FX_H
-#define VISUALIZATION_GOOM_VISUAL_FX_FLYING_STARS_FX_H
+#pragma once
 
 #include "goom_visual_fx.h"
 #include "goomutils/spimpl.h"
@@ -64,4 +63,3 @@ private:
 } // namespace VISUAL_FX
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_VISUAL_FX_FLYING_STARS_FX_H

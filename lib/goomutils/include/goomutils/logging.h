@@ -1,5 +1,4 @@
-#ifndef LIB_GOOMUTILS_INCLUDE_GOOMUTILS_LOGGING_H_
-#define LIB_GOOMUTILS_INCLUDE_GOOMUTILS_LOGGING_H_
+#pragma once
 
 #include <format>
 #include <fstream>
@@ -179,5 +178,4 @@ inline void Logging::VLog(LogLevel lvl,
 } // namespace GOOM
 #else
 } // namespace GOOM::UTILS
-#endif
 #endif

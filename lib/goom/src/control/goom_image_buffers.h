@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_IMAGE_BUFFERS_H
-#define VISUALIZATION_GOOM_GOOM_IMAGE_BUFFERS_H
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -50,4 +49,3 @@ private:
 } // namespace GOOM::CONTROL
 #endif
 
-#endif //VISUALIZATION_GOOM_GOOM_IMAGE_BUFFERS_H

@@ -1,22 +1,12 @@
-#ifndef VVISUALIZATION_GOOM_LIB_FILTERS_NOISE_H
-#define VISUALIZATION_GOOM_LIB_FILTERS_NOISE_H
+#pragma once
 
-#include "goomutils/goomrand.h"
-#include "goomutils/name_value_pairs.h"
 #include "normalized_coords.h"
-#include "v2d.h"
+#include "point2d.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/name_value_pairs.h"
 
-#include <cmath>
-
-#if __cplusplus <= 201402L
-namespace GOOM
+namespace GOOM::VISUAL_FX::FILTERS
 {
-namespace FILTERS
-{
-#else
-namespace GOOM::FILTERS
-{
-#endif
 
 class Noise
 {

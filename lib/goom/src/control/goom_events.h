@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOM_EVENTS_H
-#define VISUALIZATION_GOOM_GOOM_EVENTS_H
+#pragma once
 
 #include "goomutils/enumutils.h"
 #include "goomutils/goomrand.h"
@@ -88,4 +87,3 @@ inline auto GoomEvents::GetRandomLineTypeEvent() const -> VISUAL_FX::LinesFx::Li
 } // namespace GOOM::CONTROL
 #endif
 
-#endif //VISUALIZATION_GOOM_GOOM_EVENTS_H

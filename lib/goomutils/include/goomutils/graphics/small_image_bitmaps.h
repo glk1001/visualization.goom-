@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_SMALL_IMAGE_BITMAPS_H
-#define VISUALIZATION_GOOM_SMALL_IMAGE_BITMAPS_H
+#pragma once
 
 #include "goomutils/enumutils.h"
 #include "goomutils/graphics/image_bitmaps.h"
@@ -56,4 +55,3 @@ private:
 #else
 } // namespace GOOM::UTILS
 #endif
-#endif //VISUALIZATION_GOOM_SMALL_IMAGE_BITMAPS_H

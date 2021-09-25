@@ -1,5 +1,4 @@
-#ifndef LIB_GOOMUTILS_INCLUDE_GOOMUTILS_LOGGING_CONTROL_H_
-#define LIB_GOOMUTILS_INCLUDE_GOOMUTILS_LOGGING_CONTROL_H_
+#pragma once
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -20,5 +19,4 @@ namespace GOOM::UTILS
 } // namespace GOOM
 #else
 } // namespace GOOM::UTILS
-#endif
 #endif

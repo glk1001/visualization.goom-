@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_SETTINGS_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_SETTINGS_H
+#pragma once
 
 #include "goom/goom_graphic.h"
 #include "goomutils/mathutils.h"
@@ -123,4 +122,3 @@ inline auto Vitesse::GetRelativeSpeed() const -> float
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_SETTINGS_H

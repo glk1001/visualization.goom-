@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_GOOMDRAWTOMANY_H
-#define VISUALIZATION_GOOM_GOOMDRAWTOMANY_H
+#pragma once
 
 #include "goom_draw.h"
 #include "goom_graphic.h"
@@ -44,4 +43,3 @@ private:
 } // namespace GOOM::DRAW
 #endif
 
-#endif //VISUALIZATION_GOOM_GOOMDRAWBUFFER_H

@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_FILTERS_NORMALIZED_COORDS_H
-#define VISUALIZATION_GOOM_LIB_FILTERS_NORMALIZED_COORDS_H
+#pragma once
 
 #include "goomutils/mathutils.h"
 #include "v2d.h"
@@ -195,4 +194,3 @@ inline auto operator*(const float scalar, const NormalizedCoords& c) -> Normaliz
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_FILTERS_NORMALIZED_COORDS_H

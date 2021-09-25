@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_FILTERS_ZOOM_VECTOR_H
-#define VISUALIZATION_GOOM_LIB_FILTERS_ZOOM_VECTOR_H
+#pragma once
 
 #include "goomutils/name_value_pairs.h"
 #include "v2d.h"
@@ -36,4 +35,3 @@ public:
 } // namespace FILTERS
 } // namespace GOOM
 
-#endif //VISUALIZATION_GOOM_LIB_FILTERS_ZOOM_VECTOR_H

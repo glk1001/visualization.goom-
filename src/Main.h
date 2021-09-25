@@ -1,5 +1,4 @@
-#ifndef MAIN_H
-#define MAIN_H
+#pragma once
 
 /*
  *  Copyright (C) 2005-2022 Team Kodi (https://kodi.tv)
@@ -153,5 +152,3 @@ private:
   // Start flag to know init was OK
   bool m_started = false;
 };
-
-#endif

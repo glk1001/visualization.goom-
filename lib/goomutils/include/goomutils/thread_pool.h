@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_THREAD_POOL_H
-#define VISUALIZATION_GOOM_THREAD_POOL_H
+#pragma once
 
 #include <condition_variable>
 #include <functional>
@@ -175,4 +174,3 @@ auto ThreadPool::ScheduleAndGetFuture(FuncT&& func, ArgsT&&... args)
 } // namespace GOOM::UTILS
 #endif
 
-#endif

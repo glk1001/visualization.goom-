@@ -1,5 +1,4 @@
-#ifndef VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_IMAGE_DISPLACEMENT_LIST_H
-#define VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_IMAGE_DISPLACEMENT_LIST_H
+#pragma once
 
 #include "goomutils/name_value_pairs.h"
 #include "image_displacement.h"
@@ -65,4 +64,3 @@ inline auto ImageDisplacementList::GetCurrentImageDisplacement() -> ImageDisplac
 } // namespace GOOM::FILTERS
 #endif
 
-#endif //VISUALIZATION_GOOM_LIB_GOOM_VISUAL_FX_FILTERS_FILTER_IMAGE_DISPLACEMENT_LIST_H
