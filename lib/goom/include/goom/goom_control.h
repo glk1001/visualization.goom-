@@ -1,6 +1,5 @@
 #pragma once
 
-#include "goom_config.h"
 #include "goomutils/spimpl.h"
 
 #include <cstdint>
