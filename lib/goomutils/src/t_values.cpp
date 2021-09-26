@@ -18,10 +18,13 @@ namespace GOOM::UTILS
 {
 #endif
 
-TValue::TValue(const TValue::StepType stepType, const float stepSize) noexcept
+TValue::TValue(const TValue::StepType stepType,
+               const float stepSize,
+               const float startingT) noexcept
   : m_stepType{stepType},
     m_stepSize{stepSize},
     m_currentStep{m_stepSize},
+    m_t{startingT},
     m_delayPoints{},
     m_currentDelayPoints{m_delayPoints}
 {
@@ -29,20 +32,25 @@ TValue::TValue(const TValue::StepType stepType, const float stepSize) noexcept
 
 TValue::TValue(const TValue::StepType stepType,
                const float stepSize,
-               const std::vector<DelayPoint>& delayPoints) noexcept
+               const std::vector<DelayPoint>& delayPoints,
+               const float startingT) noexcept
   : m_stepType{stepType},
     m_stepSize{stepSize},
     m_currentStep{m_stepSize},
+    m_t{startingT},
     m_delayPoints{delayPoints},
     m_currentDelayPoints{m_delayPoints}
 {
   ValidateDelayPoints();
 }
 
-TValue::TValue(const TValue::StepType stepType, const uint32_t numSteps) noexcept
+TValue::TValue(const TValue::StepType stepType,
+               const uint32_t numSteps,
+               const float startingT) noexcept
   : m_stepType{stepType},
     m_stepSize{1.0F / static_cast<float>(numSteps)},
     m_currentStep{m_stepSize},
+    m_t{startingT},
     m_delayPoints{},
     m_currentDelayPoints{m_delayPoints}
 {
@@ -50,10 +58,12 @@ TValue::TValue(const TValue::StepType stepType, const uint32_t numSteps) noexcep
 
 TValue::TValue(const TValue::StepType stepType,
                const uint32_t numSteps,
-               const std::vector<DelayPoint>& delayPoints) noexcept
+               const std::vector<DelayPoint>& delayPoints,
+               const float startingT) noexcept
   : m_stepType{stepType},
     m_stepSize{1.0F / static_cast<float>(numSteps)},
     m_currentStep{m_stepSize},
+    m_t{startingT},
     m_delayPoints{delayPoints},
     m_currentDelayPoints{m_delayPoints}
 {

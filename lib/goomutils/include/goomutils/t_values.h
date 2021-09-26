@@ -31,10 +31,16 @@ public:
     SINGLE_CYCLE,
   };
 
-  TValue(StepType stepType, float stepSize) noexcept;
-  TValue(StepType stepType, float stepSize, const std::vector<DelayPoint>& delayPoints) noexcept;
-  TValue(StepType stepType, uint32_t numSteps) noexcept;
-  TValue(StepType stepType, uint32_t numSteps, const std::vector<DelayPoint>& delayPoints) noexcept;
+  TValue(StepType stepType, float stepSize, float startingT = 0.0F) noexcept;
+  TValue(StepType stepType,
+         float stepSize,
+         const std::vector<DelayPoint>& delayPoints,
+         float startingT = 0.0F) noexcept;
+  TValue(StepType stepType, uint32_t numSteps, float startingT = 0.0F) noexcept;
+  TValue(StepType stepType,
+         uint32_t numSteps,
+         const std::vector<DelayPoint>& delayPoints,
+         float startingT = 0.0F) noexcept;
 
   [[nodiscard]] auto GetStepType() const -> StepType;
   [[nodiscard]] auto GetStepSize() const -> float;
@@ -50,7 +56,7 @@ private:
   const StepType m_stepType;
   float m_stepSize;
   float m_currentStep;
-  float m_t = 0.0F;
+  float m_t;
   const std::vector<DelayPoint> m_delayPoints;
   std::vector<DelayPoint> m_currentDelayPoints;
   bool m_startedDelay = false;

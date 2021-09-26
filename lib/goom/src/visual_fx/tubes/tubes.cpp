@@ -613,7 +613,7 @@ void Tube::TubeImpl::ResetColorMaps()
    **/
 }
 
-void Tube::TubeImpl::RotateShapeColorMaps()
+inline void Tube::TubeImpl::RotateShapeColorMaps()
 {
   m_colorizer->RotateShapeColorMaps();
 }
@@ -673,21 +673,21 @@ inline void Tube::TubeImpl::SetCentreSpeed(const float val)
   m_centrePath->SetStepSize(val);
 }
 
-void Tube::TubeImpl::IncreaseCentreSpeed()
+inline void Tube::TubeImpl::IncreaseCentreSpeed()
 {
   const float factor = GetRandInRange(1.01F, 10.0F);
   const float newSpeed = std::min(MAX_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
 
-void Tube::TubeImpl::DecreaseCentreSpeed()
+inline void Tube::TubeImpl::DecreaseCentreSpeed()
 {
   const float factor = GetRandInRange(0.1F, 0.99F);
   const float newSpeed = std::min(MIN_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
 
-void Tube::TubeImpl::SetAllowOscillatingCirclePaths(const bool val)
+inline void Tube::TubeImpl::SetAllowOscillatingCirclePaths(const bool val)
 {
   for (const auto& shape : m_shapes)
   {
@@ -695,7 +695,7 @@ void Tube::TubeImpl::SetAllowOscillatingCirclePaths(const bool val)
   }
 }
 
-void Tube::TubeImpl::SetCirclePathParams(const PathParams& params)
+inline void Tube::TubeImpl::SetCirclePathParams(const PathParams& params)
 {
   for (const auto& shape : m_shapes)
   {
@@ -713,7 +713,7 @@ inline void Tube::TubeImpl::SetCircleSpeed(const float val)
   m_shapeT.SetStepSize(val);
 }
 
-void Tube::TubeImpl::IncreaseCircleSpeed()
+inline void Tube::TubeImpl::IncreaseCircleSpeed()
 {
   constexpr float MIN_INCREASE_SPEED_FACTOR = 1.01F;
   constexpr float MAX_INCREASE_SPEED_FACTOR = 10.0F;
@@ -723,7 +723,7 @@ void Tube::TubeImpl::IncreaseCircleSpeed()
   m_shapeT.SetStepSize(newSpeed);
 }
 
-void Tube::TubeImpl::DecreaseCircleSpeed()
+inline void Tube::TubeImpl::DecreaseCircleSpeed()
 {
   constexpr float MIN_DECREASE_SPEED_FACTOR = 0.1F;
   constexpr float MAX_DECREASE_SPEED_FACTOR = 0.99F;
@@ -738,10 +738,10 @@ void Tube::TubeImpl::DrawShapes()
   m_hexLen = GetHexLen();
   m_interiorShapeSize = GetInteriorShapeSize(m_hexLen);
 
-  const V2dInt centrePoint = m_getTransformedCentre(m_tubeId, m_centrePath->GetNextPoint());
+  const V2dInt centreOffset = m_getTransformedCentre(m_tubeId, m_centrePath->GetNextPoint());
   for (const auto& shape : m_shapes)
   {
-    DrawShape(shape, centrePoint);
+    DrawShape(shape, centreOffset);
   }
 
   UpdateTValues();
@@ -754,14 +754,14 @@ inline auto Tube::TubeImpl::GetHexLen() const -> float
   return stdnew::lerp(MIN_HEX_SIZE, MAX_HEX_SIZE, hexSizeT);
 }
 
-void Tube::TubeImpl::UpdateTValues()
+inline void Tube::TubeImpl::UpdateTValues()
 {
   m_shapeT.Increment();
   m_centrePath->Increment();
   m_colorizer->UpdateAllTValues();
 }
 
-void Tube::TubeImpl::UpdateTimers()
+inline void Tube::TubeImpl::UpdateTimers()
 {
   m_circleGroupTimer.Increment();
   if (m_circleGroupTimer.Finished())

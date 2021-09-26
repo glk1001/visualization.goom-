@@ -43,6 +43,8 @@ public:
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
 
+  void SetZoomMidPoint(const V2dInt& zoomMidPoint) override;
+
   void ApplyNoDraw();
   void ApplyMultiple();
 

@@ -130,6 +130,7 @@ private:
 
   void SuspendFx();
   void ResumeFx();
+  void SetZoomMidPoint(const V2dInt& zoomMidPoint);
 
   void ApplyDotsIfRequired();
   void ApplyDotsToBothBuffersIfRequired();

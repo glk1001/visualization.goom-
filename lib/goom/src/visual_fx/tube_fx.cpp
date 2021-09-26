@@ -114,6 +114,7 @@ constexpr float PROB_NO_SHAPE_JITTER = 0.8F;
 constexpr float PROB_PREV_SHAPES_JITTER = 0.0F;
 constexpr float PROB_OSCILLATING_SHAPE_PATH = 1.0F;
 constexpr float PROB_MOVE_AWAY_FROM_CENTRE = 0.3F;
+constexpr float PROB_FOLLOW_ZOOM_MID_POINT = 0.3F;
 
 class TubeFx::TubeFxImpl
 {
@@ -124,6 +125,8 @@ public:
 
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
+
+  void SetZoomMidPoint(const V2dInt& zoomMidPoint);
 
   void Start();
   void Resume();
@@ -154,7 +157,12 @@ private:
   std::vector<Tube> m_tubes{};
   static constexpr float ALL_JOIN_CENTRE_STEP = 0.001F;
   TValue m_allJoinCentreT{TValue::StepType::CONTINUOUS_REVERSIBLE, ALL_JOIN_CENTRE_STEP};
-  const V2dInt m_middlePos;
+  const V2dInt m_screenMidPoint;
+  V2dInt m_targetMiddlePos{0, 0};
+  V2dInt m_previousMiddlePos{0, 0};
+  static constexpr uint32_t MIDDLE_POS_NUM_STEPS = 100;
+  TValue m_middlePosT{TValue::StepType::SINGLE_CYCLE, MIDDLE_POS_NUM_STEPS, TValue::MAX_T_VALUE};
+  [[nodiscard]] auto GetMiddlePos() const -> V2dInt;
   Timer m_allStayInCentreTimer;
   Timer m_allStayAwayFromCentreTimer;
   void IncrementAllJoinCentreT();
@@ -231,6 +239,11 @@ void TubeFx::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weig
   m_fxImpl->SetWeightedLowColorMaps(weightedMaps);
 }
 
+void TubeFx::SetZoomMidPoint(const V2dInt& zoomMidPoint)
+{
+  m_fxImpl->SetZoomMidPoint(zoomMidPoint);
+}
+
 void TubeFx::Start()
 {
   m_fxImpl->Start();
@@ -270,7 +283,7 @@ TubeFx::TubeFxImpl::TubeFxImpl(const IGoomDraw& draw,
     m_smallBitmaps{smallBitmaps},
     m_prevShapesBrightnessAttenuation{draw.GetScreenWidth(), draw.GetScreenHeight(),
                                       PREV_SHAPES_CUTOFF_BRIGHTNESS},
-    m_middlePos{0, 0},
+    m_screenMidPoint{m_draw.GetScreenWidth() / 2, m_draw.GetScreenHeight() / 2},
     m_allStayInCentreTimer{1},
     m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME},
     m_colorMapTimer{GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)},
@@ -331,6 +344,26 @@ inline void TubeFx::TubeFxImpl::SetWeightedLowColorMaps(
   }
 }
 
+inline void TubeFx::TubeFxImpl::SetZoomMidPoint(const V2dInt& zoomMidPoint)
+{
+  m_previousMiddlePos = GetMiddlePos();
+  m_middlePosT.Reset();
+
+  if (ProbabilityOf(PROB_FOLLOW_ZOOM_MID_POINT))
+  {
+    m_targetMiddlePos = zoomMidPoint - m_screenMidPoint;
+  }
+  else
+  {
+    m_targetMiddlePos = {0, 0};
+  }
+}
+
+inline auto TubeFx::TubeFxImpl::GetMiddlePos() const -> V2dInt
+{
+  return lerp(m_previousMiddlePos, m_targetMiddlePos, m_middlePosT());
+}
+
 void TubeFx::TubeFxImpl::InitTubes()
 {
   assert(m_colorMaps != nullptr);
@@ -376,61 +409,61 @@ void TubeFx::TubeFxImpl::InitTubes()
   InitPaths();
 }
 
-void TubeFx::TubeFxImpl::DrawLineToOne(const int x1,
-                                       const int y1,
-                                       const int x2,
-                                       const int y2,
-                                       const std::vector<Pixel>& colors,
-                                       const uint8_t thickness)
+inline void TubeFx::TubeFxImpl::DrawLineToOne(const int x1,
+                                              const int y1,
+                                              const int x2,
+                                              const int y2,
+                                              const std::vector<Pixel>& colors,
+                                              const uint8_t thickness)
 {
   m_draw.Line(x1, y1, x2, y2, colors, thickness);
 }
 
-void TubeFx::TubeFxImpl::DrawLineToMany(const int x1,
-                                        const int y1,
-                                        const int x2,
-                                        const int y2,
-                                        const std::vector<Pixel>& colors,
-                                        const uint8_t thickness)
+inline void TubeFx::TubeFxImpl::DrawLineToMany(const int x1,
+                                               const int y1,
+                                               const int x2,
+                                               const int y2,
+                                               const std::vector<Pixel>& colors,
+                                               const uint8_t thickness)
 {
   //m_drawToContainer.Line(x1, y1, x2, y2, colors, thickness);
   m_drawToMany.Line(x1, y1, x2, y2, colors, thickness);
 }
 
-void TubeFx::TubeFxImpl::DrawCircleToOne(const int x,
-                                         const int y,
-                                         const int radius,
-                                         const std::vector<Pixel>& colors,
-                                         [[maybe_unused]] const uint8_t thickness)
+inline void TubeFx::TubeFxImpl::DrawCircleToOne(const int x,
+                                                const int y,
+                                                const int radius,
+                                                const std::vector<Pixel>& colors,
+                                                [[maybe_unused]] const uint8_t thickness)
 {
   m_draw.Circle(x, y, radius, colors);
 }
 
-void TubeFx::TubeFxImpl::DrawCircleToMany(const int x,
-                                          const int y,
-                                          const int radius,
-                                          const std::vector<Pixel>& colors,
-                                          [[maybe_unused]] const uint8_t thickness)
+inline void TubeFx::TubeFxImpl::DrawCircleToMany(const int x,
+                                                 const int y,
+                                                 const int radius,
+                                                 const std::vector<Pixel>& colors,
+                                                 [[maybe_unused]] const uint8_t thickness)
 {
   //m_drawToContainer.Circle(x, y, radius, colors);
   m_drawToMany.Circle(x, y, radius, colors);
 }
 
-void TubeFx::TubeFxImpl::DrawImageToOne(const int x,
-                                        const int y,
-                                        const SmallImageBitmaps::ImageNames imageName,
-                                        const uint32_t size,
-                                        const std::vector<Pixel>& colors)
+inline void TubeFx::TubeFxImpl::DrawImageToOne(const int x,
+                                               const int y,
+                                               const SmallImageBitmaps::ImageNames imageName,
+                                               const uint32_t size,
+                                               const std::vector<Pixel>& colors)
 {
   m_draw.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors),
                 m_allowOverexposed);
 }
 
-void TubeFx::TubeFxImpl::DrawImageToMany(const int x,
-                                         const int y,
-                                         const SmallImageBitmaps::ImageNames imageName,
-                                         const uint32_t size,
-                                         const std::vector<Pixel>& colors)
+inline void TubeFx::TubeFxImpl::DrawImageToMany(const int x,
+                                                const int y,
+                                                const SmallImageBitmaps::ImageNames imageName,
+                                                const uint32_t size,
+                                                const std::vector<Pixel>& colors)
 {
   //m_drawToContainer.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors),
   //                         m_allowOverexposed);
@@ -497,6 +530,7 @@ void TubeFx::TubeFxImpl::DoUpdates()
   m_colorMapTimer.Increment();
   m_changedSpeedTimer.Increment();
   m_jitterTimer.Increment();
+  m_middlePosT.Increment();
 
   UpdatePreviousShapesSettings();
   UpdateColorMaps();
@@ -678,9 +712,9 @@ auto TubeFx::TubeFxImpl::GetTransformedCentrePoint(const uint32_t tubeId,
 {
   if ((!m_allowMovingAwayFromCentre) || TUBE_SETTINGS.at(tubeId).noMoveFromCentre)
   {
-    return m_middlePos;
+    return GetMiddlePos();
   }
-  return lerp(centre, m_middlePos, m_allJoinCentreT());
+  return lerp(centre, GetMiddlePos(), m_allJoinCentreT());
 }
 
 void TubeFx::TubeFxImpl::IncrementAllJoinCentreT()

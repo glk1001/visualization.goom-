@@ -42,6 +42,7 @@ CheckOptions:
   - { key: readability-identifier-naming.GlobalConstantCase,                value: UPPER_CASE }
   - { key: readability-identifier-naming.GlobalConstantPrefix,              value: '' }
   - { key: readability-identifier-naming.GlobalFunctionCase,                value: CamelCase }
+  - { key: readability-identifier-length.MinimumVariableNameLength,         value: 1 } 
   - { key: readability-identifier-naming.LocalConstantCase,                 value: camelCase }
   - { key: readability-identifier-naming.MacroDefinitionCase,               value: UPPER_CASE }
   - { key: readability-identifier-naming.MethodCase,                        value: CamelCase }

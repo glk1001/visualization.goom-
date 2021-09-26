@@ -5,6 +5,7 @@
 #include "goomutils/name_value_pairs.h"
 #include "goomutils/parallel_utils.h"
 #include "sound_info.h"
+#include "v2d.h"
 #include "visual_fx/filters/filter_buffers_service.h"
 #include "visual_fx/filters/filter_colors_service.h"
 #include "visual_fx/flying_stars_fx.h"
@@ -156,6 +157,18 @@ void GoomAllVisualFx::RefreshAll()
   }
 }
 
+void GoomAllVisualFx::SetZoomMidPoint(const V2dInt& zoomMidPoint)
+{
+  for (const auto& drawable : m_currentGoomDrawables)
+  {
+    if (!CanDraw(drawable))
+    {
+      continue;
+    }
+    m_drawablesMap.at(drawable)->SetZoomMidPoint(zoomMidPoint);
+  }
+}
+
 void GoomAllVisualFx::SetNextState()
 {
   SuspendFx();
@@ -202,6 +215,8 @@ void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSetti
 
   m_zoomFilter_fx->UpdateFilterBufferSettings(filterSettings.filterBufferSettings);
   m_zoomFilter_fx->UpdateFilterColorSettings(filterSettings.filterColorSettings);
+
+  SetZoomMidPoint(filterSettings.filterEffectsSettings.zoomMidPoint);
 }
 
 void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)

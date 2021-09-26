@@ -5,6 +5,8 @@
 #if __cplusplus <= 201402L
 namespace GOOM
 {
+class V2dInt;
+
 namespace VISUAL_FX
 {
 #else
@@ -31,6 +33,7 @@ public:
 
   virtual void Refresh(){};
   virtual void PostStateUpdate([[maybe_unused]] const bool wasActiveInPreviousState){};
+  virtual void SetZoomMidPoint([[maybe_unused]] const V2dInt& zoomMidPoint){};
 
   virtual void Finish() = 0;
 };
