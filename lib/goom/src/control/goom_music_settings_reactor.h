@@ -177,7 +177,7 @@ inline void GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges()
 inline void GoomMusicSettingsReactor::ChangeFilterMode()
 {
   m_filterSettingsService.SetRandomFilterSettings();
-  m_visualFx.DoIfsRenew();
+  m_visualFx.RefreshAll();
 }
 
 inline void GoomMusicSettingsReactor::ChangeMilieu()
@@ -383,11 +383,6 @@ inline void GoomMusicSettingsReactor::DoChangeState()
   m_visualFx.PostStateUpdate(oldGDrawables);
 
   m_timeInState = 0;
-
-  if (m_goomEvents.Happens(GoomEvent::IFS_RENEW))
-  {
-    m_visualFx.DoIfsRenew();
-  }
 
   m_musicLinesReactor.ResetLineModes();
 }

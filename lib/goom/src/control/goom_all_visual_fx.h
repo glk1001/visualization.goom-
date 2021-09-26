@@ -72,6 +72,7 @@ public:
   void SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& f);
 
   void ChangeColorMaps();
+  void RefreshAll();
 
   void ApplyCurrentStateToSingleBuffer();
   void ApplyCurrentStateToMultipleBuffers();
@@ -103,8 +104,6 @@ public:
   void ResetDestGoomLines(const GoomLineSettings& lineSettings);
   [[nodiscard]] auto GetGoomLine1RandomColor() const -> Pixel;
   [[nodiscard]] auto GetGoomLine2RandomColor() const -> Pixel;
-
-  void DoIfsRenew();
 
   [[nodiscard]] auto GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs;
 

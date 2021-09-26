@@ -144,6 +144,18 @@ void GoomAllVisualFx::ResumeFx()
   }
 }
 
+void GoomAllVisualFx::RefreshAll()
+{
+  for (const auto& drawable : m_currentGoomDrawables)
+  {
+    if (!CanDraw(drawable))
+    {
+      continue;
+    }
+    m_drawablesMap.at(drawable)->Refresh();
+  }
+}
+
 void GoomAllVisualFx::SetNextState()
 {
   SuspendFx();
@@ -168,17 +180,15 @@ void GoomAllVisualFx::SetNextState()
 
 void GoomAllVisualFx::PostStateUpdate(const std::unordered_set<GoomDrawable>& oldGoomDrawables)
 {
-  if (IsCurrentlyDrawable(GoomDrawable::IFS))
+  for (const auto& drawable : m_currentGoomDrawables)
   {
-#if __cplusplus <= 201402L
-    if (oldGoomDrawables.find(GoomDrawable::IFS) == oldGoomDrawables.end())
-#else
-    if (!oldGDrawables.contains(GoomDrawable::IFS))
-#endif
+    if ((!IsCurrentlyDrawable(drawable)) || (!CanDraw(drawable)))
     {
-      m_ifs_fx->Init();
+      continue;
     }
-    m_ifs_fx->UpdateIncr();
+    const bool wasActiveInPreviousState =
+        oldGoomDrawables.find(GoomDrawable::IFS) != oldGoomDrawables.end();
+    m_drawablesMap.at(drawable)->PostStateUpdate(wasActiveInPreviousState);
   }
 }
 
@@ -204,7 +214,7 @@ void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
   const AudioSamples::MaxMinValues& soundMinMax = soundData.GetSampleMinMax(0);
   m_goomLine1->DrawLines(audioSample, soundMinMax);
   m_goomLine2->DrawLines(audioSample, soundMinMax);
-  //  gmline2.drawLines(soundData.GetSample(1));
+  //  m_goomLine2.drawLines(soundData.GetSample(1));
 }
 
 void GoomAllVisualFx::ApplyDotsIfRequired()
@@ -247,11 +257,6 @@ void GoomAllVisualFx::ApplyIfsToBothBuffersIfRequired()
 
   ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::IFS));
   m_ifs_fx->ApplyMultiple();
-}
-
-void GoomAllVisualFx::DoIfsRenew()
-{
-  m_ifs_fx->Renew();
 }
 
 void GoomAllVisualFx::ApplyTentaclesToBothBuffersIfRequired()

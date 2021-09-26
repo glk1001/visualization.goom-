@@ -29,6 +29,9 @@ public:
   virtual void Resume(){};
   virtual void Suspend(){};
 
+  virtual void Refresh(){};
+  virtual void PostStateUpdate([[maybe_unused]] const bool wasActiveInPreviousState){};
+
   virtual void Finish() = 0;
 };
 

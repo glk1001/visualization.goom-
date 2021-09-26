@@ -70,7 +70,7 @@ constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{{
 }};
 constexpr size_t MAIN_TUBE_INDEX = 0;
 constexpr size_t SECONDARY_TUBES_START_INDEX = 1;
-constexpr PathParams COMMON_CIRCLE_PATH_PARMS{10.0F, +3.0F, +3.0F};
+constexpr PathParams COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
 
 auto lerp(const PathParams& p0, const PathParams& p1, const float t) -> PathParams
 {
@@ -603,7 +603,7 @@ void TubeFx::TubeFxImpl::AdjustTubePaths()
   for (size_t i = 0; i < NUM_TUBES; ++i)
   {
     m_tubes[i].SetCirclePathParams(
-        lerp(TUBE_SETTINGS.at(i).circlePathParams, COMMON_CIRCLE_PATH_PARMS, m_allJoinCentreT()));
+        lerp(TUBE_SETTINGS.at(i).circlePathParams, COMMON_CIRCLE_PATH_PARAMS, m_allJoinCentreT()));
   }
 }
 

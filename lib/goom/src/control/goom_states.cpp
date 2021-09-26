@@ -44,7 +44,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
   },
   {
     /*.name = */ "IFS Tester",
-    /*.weight = */1,
+    /*.weight = */1000000000,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
       { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },

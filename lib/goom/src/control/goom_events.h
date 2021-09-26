@@ -21,9 +21,9 @@ class GoomEvents
 {
 public:
   GoomEvents() noexcept;
-  ~GoomEvents() = default;
   GoomEvents(const GoomEvents&) noexcept = delete;
   GoomEvents(GoomEvents&&) noexcept = delete;
+  ~GoomEvents() = default;
   auto operator=(const GoomEvents&) -> GoomEvents& = delete;
   auto operator=(GoomEvents&&) -> GoomEvents& = delete;
 
@@ -50,7 +50,6 @@ public:
     FILTER_INCREASE_ROTATION,
     FILTER_DECREASE_ROTATION,
     FILTER_STOP_ROTATION,
-    IFS_RENEW,
     CHANGE_BLOCKY_WAVY_TO_ON,
     CHANGE_ZOOM_FILTER_ALLOW_OVEREXPOSED_TO_ON,
     _NUM // unused and must be last

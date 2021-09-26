@@ -49,15 +49,10 @@ public:
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
-  void Init();
-
   // If colorMode is not set or set to '_null', then returns
   // random weighted color mode.
   [[nodiscard]] auto GetColorMode() const -> ColorMode;
   void SetColorMode(ColorMode c);
-
-  void Renew();
-  void UpdateIncr();
 
   void Start() override;
 
@@ -65,6 +60,8 @@ public:
   void Suspend() override;
 
   void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
+  void Refresh() override;
+  void PostStateUpdate(bool wasActiveInPreviousState) override;
 
   void ApplyNoDraw();
   void ApplyMultiple();

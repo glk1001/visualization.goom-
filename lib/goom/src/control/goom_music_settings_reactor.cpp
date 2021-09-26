@@ -42,7 +42,7 @@ void GoomMusicSettingsReactor::ChangeZoomEffects()
       m_updatesSinceLastZoomEffectsChange = 0;
 
       ChangeRotation();
-      m_visualFx.DoIfsRenew();
+      m_visualFx.RefreshAll();
     }
     else
     {
@@ -76,7 +76,7 @@ void GoomMusicSettingsReactor::ChangeZoomEffects()
       m_filterSettingsService.SetTranLerpToMaxDefaultSwitchMult();
 
       ChangeRotation();
-      m_visualFx.DoIfsRenew();
+      m_visualFx.RefreshAll();
     }
   }
 }
