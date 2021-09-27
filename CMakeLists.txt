@@ -18,11 +18,11 @@ set(WARNINGS_AS_ERRORS OFF)
 set(CMAKE_INSTALL_MESSAGE LAZY)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
-include(lib-goom/cmake/StandardProjectSettings.cmake)
-include(lib-goom/cmake/PreventInSourceBuilds.cmake)
-include(lib-goom/cmake/Cache.cmake)
-include(lib-goom/cmake/CompilerWarnings.cmake)
-include(lib-goom/cmake/StaticAnalyzers.cmake)
+include(cmake/StandardProjectSettings.cmake)
+include(cmake/PreventInSourceBuilds.cmake)
+include(cmake/Cache.cmake)
+include(cmake/CompilerWarnings.cmake)
+include(cmake/StaticAnalyzers.cmake)
 
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -64,8 +64,8 @@ else()
 endif ()
 
 
-set(LIBS_DIR ${CMAKE_SOURCE_DIR}/lib-goom/lib)
-set(GOOM_LIBS_DIR ${CMAKE_SOURCE_DIR}/lib-goom/src)
+set(LIBS_DIR ${CMAKE_SOURCE_DIR}/dependencies/goom-libs/lib)
+set(GOOM_LIBS_DIR ${CMAKE_SOURCE_DIR}/dependencies/goom-libs/src)
 
 message(STATUS "CMAKE_CXX_COMPILER_ID = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
@@ -97,9 +97,9 @@ set(GOOM_HEADERS src/CircularBuffer.h
                  src/Main.h)
 
 list(APPEND DEPLIBS 
-     ${CMAKE_SOURCE_DIR}/build-lib-goom/lib/libgoom.a 
-     ${CMAKE_SOURCE_DIR}/build-lib-goom/lib/libgoomutils.a
-     ${CMAKE_SOURCE_DIR}/build-lib-goom/lib/libvivid.a)
+     ${CMAKE_SOURCE_DIR}/build-goom-libs/lib/libgoom.a 
+     ${CMAKE_SOURCE_DIR}/build-goom-libs/lib/libgoomutils.a
+     ${CMAKE_SOURCE_DIR}/build-goom-libs/lib/libvivid.a)
 
 set(CMAKE_CXX_STANDARD ${CPP_STANDARD})
 get_project_warnings(PROJECT_WARNINGS)

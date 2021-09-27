@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(visualization.goom.lib)
 
+set(CMAKE_SCRIPTS ${CMAKE_SOURCE_DIR}/../../cmake)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -18,8 +19,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-include(cmake/StandardProjectSettings.cmake)
-include(cmake/PreventInSourceBuilds.cmake)
+include(${CMAKE_SCRIPTS}/StandardProjectSettings.cmake)
+include(${CMAKE_SCRIPTS}/PreventInSourceBuilds.cmake)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
   option(ENABLE_BUILD_WITH_TIME_TRACE "Enable -ftime-trace to generate time tracing .json files on clang" OFF)
@@ -29,20 +30,20 @@ if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
 endif()
 
 # enable cache system
-include(cmake/Cache.cmake)
+include(${CMAKE_SCRIPTS}/Cache.cmake)
 
 # Add linker configuration
-include(cmake/Linker.cmake)
+include(${CMAKE_SCRIPTS}/Linker.cmake)
 configure_linker(project_options)
 
 # standard compiler warnings
-include(cmake/CompilerWarnings.cmake)
+include(${CMAKE_SCRIPTS}/CompilerWarnings.cmake)
 
 # sanitizer options if supported by compiler
-include(cmake/Sanitizers.cmake)
+include(${CMAKE_SCRIPTS}/Sanitizers.cmake)
 
 # allow for static analysis options
-include(cmake/StaticAnalyzers.cmake)
+include(${CMAKE_SCRIPTS}/StaticAnalyzers.cmake)
 
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
