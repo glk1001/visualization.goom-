@@ -121,55 +121,7 @@ void GoomAllVisualFx::Finish()
   m_goomLine2->Finish();
 }
 
-void GoomAllVisualFx::SuspendFx()
-{
-  for (const auto& drawable : m_currentGoomDrawables)
-  {
-    if (!CanDraw(drawable))
-    {
-      continue;
-    }
-    m_drawablesMap.at(drawable)->Suspend();
-  }
-}
-
-void GoomAllVisualFx::ResumeFx()
-{
-  for (const auto& drawable : m_currentGoomDrawables)
-  {
-    if (!CanDraw(drawable))
-    {
-      continue;
-    }
-    m_drawablesMap.at(drawable)->Resume();
-  }
-}
-
-void GoomAllVisualFx::RefreshAll()
-{
-  for (const auto& drawable : m_currentGoomDrawables)
-  {
-    if (!CanDraw(drawable))
-    {
-      continue;
-    }
-    m_drawablesMap.at(drawable)->Refresh();
-  }
-}
-
-void GoomAllVisualFx::SetZoomMidPoint(const V2dInt& zoomMidPoint)
-{
-  for (const auto& drawable : m_currentGoomDrawables)
-  {
-    if (!CanDraw(drawable))
-    {
-      continue;
-    }
-    m_drawablesMap.at(drawable)->SetZoomMidPoint(zoomMidPoint);
-  }
-}
-
-void GoomAllVisualFx::SetNextState()
+void GoomAllVisualFx::ChangeState()
 {
   SuspendFx();
 
@@ -193,15 +145,63 @@ void GoomAllVisualFx::SetNextState()
 
 void GoomAllVisualFx::PostStateUpdate(const std::unordered_set<GoomDrawable>& oldGoomDrawables)
 {
-  for (const auto& drawable : m_currentGoomDrawables)
+  for (const auto& currentlyDrawable : m_currentGoomDrawables)
   {
-    if ((!IsCurrentlyDrawable(drawable)) || (!CanDraw(drawable)))
+    if (!CanDraw(currentlyDrawable))
     {
       continue;
     }
     const bool wasActiveInPreviousState =
         oldGoomDrawables.find(GoomDrawable::IFS) != oldGoomDrawables.end();
-    m_drawablesMap.at(drawable)->PostStateUpdate(wasActiveInPreviousState);
+    m_drawablesMap.at(currentlyDrawable)->PostStateUpdate(wasActiveInPreviousState);
+  }
+}
+
+void GoomAllVisualFx::SuspendFx()
+{
+  for (const auto& currentlyDrawable : m_currentGoomDrawables)
+  {
+    if (!CanDraw(currentlyDrawable))
+    {
+      continue;
+    }
+    m_drawablesMap.at(currentlyDrawable)->Suspend();
+  }
+}
+
+void GoomAllVisualFx::ResumeFx()
+{
+  for (const auto& currentlyDrawable : m_currentGoomDrawables)
+  {
+    if (!CanDraw(currentlyDrawable))
+    {
+      continue;
+    }
+    m_drawablesMap.at(currentlyDrawable)->Resume();
+  }
+}
+
+void GoomAllVisualFx::RefreshAll()
+{
+  for (const auto& currentlyDrawable : m_currentGoomDrawables)
+  {
+    if (!CanDraw(currentlyDrawable))
+    {
+      continue;
+    }
+    m_drawablesMap.at(currentlyDrawable)->Refresh();
+  }
+}
+
+void GoomAllVisualFx::SetZoomMidPoint(const V2dInt& zoomMidPoint)
+{
+  for (const auto& currentlyDrawable : m_currentGoomDrawables)
+  {
+    if (!CanDraw(currentlyDrawable))
+    {
+      continue;
+    }
+    m_drawablesMap.at(currentlyDrawable)->SetZoomMidPoint(zoomMidPoint);
   }
 }
 

@@ -62,9 +62,7 @@ public:
   void Finish();
 
   void SetNextState();
-  void PostStateUpdate(const std::unordered_set<GoomDrawable>& oldGoomDrawables);
   [[nodiscard]] auto GetCurrentStateName() const -> std::string;
-  [[nodiscard]] auto GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawable>;
   [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawable goomDrawable) const -> bool;
 
   void SetSingleBufferDots(bool value);
@@ -122,6 +120,9 @@ private:
 
   GoomStates m_state{};
   std::unordered_set<GoomDrawable> m_currentGoomDrawables{};
+  void ChangeState();
+  void PostStateUpdate(const std::unordered_set<GoomDrawable>& oldGoomDrawables);
+  [[nodiscard]] auto GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawable>;
   [[nodiscard]] auto CanDraw(GoomDrawable goomDrawable) const -> bool;
 
   bool m_singleBufferDots = true;
@@ -142,6 +143,14 @@ private:
   ResetDrawBuffSettingsFunc m_resetDrawBuffSettings{};
   void ResetDrawBuffSettings(const FXBuffSettings& settings);
 };
+
+inline void GoomAllVisualFx::SetNextState()
+{
+  const auto oldGDrawables = GetCurrentGoomDrawables();
+  ChangeState();
+  ChangeColorMaps();
+  PostStateUpdate(oldGDrawables);
+}
 
 inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
 {

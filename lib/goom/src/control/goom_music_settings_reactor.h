@@ -363,24 +363,24 @@ inline void GoomMusicSettingsReactor::ChangeTranBufferSwitchValues()
 
 inline void GoomMusicSettingsReactor::ChangeState()
 {
-  if (m_stateSelectionBlocker)
+  if (m_stateSelectionBlocker > 0)
   {
     --m_stateSelectionBlocker;
+    return;
   }
-  else if (m_goomEvents.Happens(GoomEvent::CHANGE_STATE))
+  if (!m_goomEvents.Happens(GoomEvent::CHANGE_STATE))
   {
-    m_stateSelectionBlocker = MAX_NUM_STATE_SELECTIONS_BLOCKED;
-    DoChangeState();
+    return;
   }
+
+  DoChangeState();
+
+  m_stateSelectionBlocker = MAX_NUM_STATE_SELECTIONS_BLOCKED;
 }
 
 inline void GoomMusicSettingsReactor::DoChangeState()
 {
-  const auto oldGDrawables = m_visualFx.GetCurrentGoomDrawables();
-
   m_visualFx.SetNextState();
-  m_visualFx.ChangeColorMaps();
-  m_visualFx.PostStateUpdate(oldGDrawables);
 
   m_timeInState = 0;
 
