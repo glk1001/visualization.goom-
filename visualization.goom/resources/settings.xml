@@ -20,7 +20,7 @@
           </constraints>
           <control type="spinner" format="string" />
         </setting>
-        <setting id="use_pixel_buffer_objects" type="boolean" label="30007" help="30008">
+        <setting id="use_pixel_buffer_objects" type="boolean" label="30009" help="30010">
           <default>false</default>
           <dependencies>
             <dependency type="visible">
