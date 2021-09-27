@@ -267,7 +267,7 @@ colorMaps.setWeights(colorGroupWeights);
 
   for (size_t i = 0; i < NUM_DRIVERS; ++i)
   {
-    (void)m_drivers.emplace_back(std::make_unique<TentacleDriver>(m_draw));
+    m_drivers.emplace_back(std::make_unique<TentacleDriver>(m_draw));
   }
 
   if (NUM_DRIVERS != m_driverWeights.GetNumElements())
@@ -579,7 +579,7 @@ void TentaclesFx::TentaclesImpl::PrettyMove(const float acceleration)
 
   // Bigger offset here means tentacles start further back behind screen.
   auto disttOffset = static_cast<float>(
-      stdnew::lerp(DISTT_MIN, DISTT_MAX, 0.5 * (1.0 - std::sin(m_cycle * (19.0 / 20.0)))));
+      stdnew::lerp(DISTT_MIN, DISTT_MAX, 0.5 * (1.0 - std::sin(static_cast<double>(m_cycle) * (19.0 / 20.0)))));
   if (m_isPrettyMoveHappening)
   {
     disttOffset *= 0.6F;
@@ -607,7 +607,7 @@ void TentaclesFx::TentaclesImpl::PrettyMove(const float acceleration)
       currentCycle *= -m_pi;
     }
     rotOffset = std::fmod(currentCycle, m_two_pi);
-    if (rotOffset < 0.0)
+    if (rotOffset < 0.0F)
     {
       rotOffset += m_two_pi;
     }

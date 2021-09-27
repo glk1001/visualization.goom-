@@ -72,7 +72,7 @@ inline auto ImageDisplacement::GetZoomFactor() const -> float
 
 inline void ImageDisplacement::SetZoomFactor(const float value)
 {
-  if (value <= 0.0)
+  if (value <= 0.0F)
   {
     throw std::logic_error("Negative zoom factor.");
   }
@@ -86,7 +86,7 @@ inline auto ImageDisplacement::GetAmplitude() const -> float
 
 inline void ImageDisplacement::SetAmplitude(const float value)
 {
-  if (value <= 0.0)
+  if (value <= 0.0F)
   {
     throw std::logic_error("Negative amplitude.");
   }

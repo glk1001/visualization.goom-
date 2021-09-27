@@ -25,7 +25,7 @@ void ImageBitmap::Load(std::string imageFilename)
   int width{};
   int height{};
   int bpp{};
-  const uint8_t* rgbImage{};
+  uint8_t* rgbImage{};
   try
   {
     rgbImage = stbi_load(m_filename.c_str(), &width, &height, &bpp, 4);
@@ -74,7 +74,7 @@ void ImageBitmap::Load(std::string imageFilename)
     }
   }
 
-  stbi_image_free((void*)(rgbImage));
+  stbi_image_free(rgbImage);
 }
 
 #if __cplusplus <= 201402L

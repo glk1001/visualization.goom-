@@ -22,7 +22,7 @@ using UTILS::GetRandInRange;
 using UTILS::NameValuePairs;
 using UTILS::NumberRange;
 
-constexpr float DEFAULT_NOISE_FACTOR = 0.01;
+constexpr float DEFAULT_NOISE_FACTOR = 0.01F;
 constexpr NumberRange<float> NOISE_FACTOR_RANGE = {0.05F, 0.5F};
 
 Noise::Noise() noexcept : m_params{DEFAULT_NOISE_FACTOR}

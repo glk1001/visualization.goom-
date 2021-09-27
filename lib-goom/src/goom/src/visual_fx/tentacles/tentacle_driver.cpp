@@ -189,12 +189,12 @@ auto TentacleDriver::CreateNewTentacle2D(size_t id, const IterationParams& p)
   const float tentacleLen = std::max(1.0F, GetRandInRange(0.99F, 1.01F) * p.length);
   assert(tentacleLen >= 1);
   const double tent2d_xmax = TENT2D_XMIN + static_cast<double>(tentacleLen);
-  assert(tent2d_xmax >= 1.0F);
+  assert(tent2d_xmax >= 1.0);
 
   std::unique_ptr<Tentacle2D> tentacle{std::make_unique<Tentacle2D>(
       id, p.numNodes,
       //  size_t(static_cast<float>(params.numNodes) * getRandInRange(0.9f, 1.1f))
-      TENT2D_XMIN, tent2d_xmax, TENT2D_YMIN, TENT2D_YMAX, p.prevYWeight, 1.0 - p.prevYWeight)};
+      TENT2D_XMIN, tent2d_xmax, TENT2D_YMIN, TENT2D_YMAX, p.prevYWeight, 1.0F - p.prevYWeight)};
   LogDebug("Created new tentacle2D {}.", id);
 
   LogDebug("tentacle {:3}:"
@@ -431,7 +431,7 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
   {
     angleAboutY -= 0.05F * m_pi;
   }
-  else if ((0.0 <= tentacle.GetHead().x) && (tentacle.GetHead().x < 10.0))
+  else if ((0.0F <= tentacle.GetHead().x) && (tentacle.GetHead().x < 10.0F))
   {
     angleAboutY += 0.05F * m_pi;
   }
@@ -462,7 +462,7 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
   GetMixedColorsFunc getMixedColors = [&](const size_t nodeNum) {
     return tentacle.GetMixedColors(nodeNum, dominantColor, dominantLowColor, brightnessCut);
   };
-  if (distance2 > 30.0)
+  if (distance2 > 30.0F)
   {
     const float randBrightness = GetRandInRange(0.1F, 0.2F);
     const float brightness = std::max(randBrightness, 30.0F / distance2) * brightnessCut;
@@ -603,7 +603,7 @@ auto TentacleColorMapColorizer::GetColor(const size_t nodeNum) const -> Pixel
   Pixel nextColor = m_colorMap->GetColor(t);
 
   // Keep going with the smooth transition until tmix runs out.
-  if (m_tTransition > 0.0)
+  if (m_tTransition > 0.0F)
   {
     nextColor = IColorMap::GetColorMix(nextColor, m_prevColorMap->GetColor(t), m_tTransition);
     m_tTransition -= TRANSITION_STEP;

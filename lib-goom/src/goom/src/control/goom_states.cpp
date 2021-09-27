@@ -23,7 +23,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.8, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.8F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -31,7 +31,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.8, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.8F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -39,7 +39,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.8, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.8F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -47,7 +47,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -55,7 +55,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
    /*.weight = */1,
    /*.normaliseBuffIntensity = */false,
    /*.drawables */{{
-      { /*.fx = */GoomDrawable::TUBE,    /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */false  } },
+      { /*.fx = */GoomDrawable::TUBE,    /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */false  } },
     }},
   },
   {
@@ -63,7 +63,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */1.0, /*.allowOverexposed = */false  } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */1.0F, /*.allowOverexposed = */false  } },
     }},
   },
   {
@@ -71,7 +71,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */false } },
   }},
  },
   {
@@ -79,8 +79,8 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.1, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.1F, /*.allowOverexposed = */false } },
     }},
   },
   {
@@ -88,8 +88,8 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */false } },
     }},
   },
   {
@@ -97,8 +97,8 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */false } },
     }},
   },
   {
@@ -106,9 +106,9 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.6, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.6F, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true } },
     }},
   },
   {
@@ -116,10 +116,10 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -127,9 +127,9 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */100,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.6, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.6F, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */false } },
     }},
   },
   {
@@ -137,9 +137,9 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */20,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */false } },
     }},
   },
   {
@@ -147,11 +147,11 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.4, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.4F, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -159,9 +159,9 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */70,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.4, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.4F, /*.allowOverexposed = */false } },
     }},
   },
   {
@@ -169,8 +169,8 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */70,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true } },
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true } },
+      { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true } },
     }},
   },
   {
@@ -178,12 +178,12 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */40,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -191,12 +191,12 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */40,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.2, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.4, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.4F, /*.allowOverexposed = */false } },
     }},
   },
   {
@@ -204,10 +204,10 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */100,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.4, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.4F, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */false } },
     }},
   },
   {
@@ -215,9 +215,9 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */70,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */false } },
     }},
   },
   {
@@ -225,11 +225,11 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */100,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.4, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.4F, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -237,10 +237,10 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.4, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.4F, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -248,9 +248,9 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.7, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */false } },
-      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */false } },
+      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -258,10 +258,10 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
     }},
   },
   {
@@ -269,11 +269,11 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.weight = */60,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
-      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5, /*.allowOverexposed = */true  } },
-      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.3, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */true  } },
     }},
  },
 }};
@@ -327,7 +327,7 @@ void GoomStates::NormaliseStates()
     {
       totalBuffIntensity += drawableInfo.buffSettings.buffIntensity;
     }
-    if (totalBuffIntensity <= 1.0)
+    if (totalBuffIntensity <= 1.0F)
     {
       continue;
     }

@@ -475,11 +475,11 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
   {
     const int32_t x2 =
         x0 - static_cast<int32_t>(
-                 0.5 * (1.0 + std::sin(flipSpeed * star.velocity.x * static_cast<float>(j))) *
+                 0.5F * (1.0F + std::sin(flipSpeed * star.velocity.x * static_cast<float>(j))) *
                  star.velocity.x * static_cast<float>(j));
     const int32_t y2 =
         y0 - static_cast<int32_t>(
-                 0.5 * (1.0 + std::cos(flipSpeed * star.velocity.y * static_cast<float>(j))) *
+                 0.5F * (1.0F + std::cos(flipSpeed * star.velocity.y * static_cast<float>(j))) *
                  star.velocity.y * static_cast<float>(j));
 
     const float brightness =

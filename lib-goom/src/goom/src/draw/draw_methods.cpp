@@ -222,7 +222,7 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
 
   const float dx = x1 - x0; // because of above swap, must be >= 0
   const float dy = y1 - y0;
-  const float gradient = (dx < 0.001) ? 1 : (dy / dx);
+  const float gradient = (dx < 0.001F) ? 1 : (dy / dx);
 
   int xpx11;
   float intery;
@@ -327,7 +327,7 @@ void DrawMethods::DrawLineOverlap(int x0,
       return;
     }
     constexpr float TOLERANCE = 0.001F;
-    if (brightness >= (1.0 - TOLERANCE))
+    if (brightness >= (1.0F - TOLERANCE))
     {
       DrawPixels(x, y, colors);
     }
@@ -546,9 +546,9 @@ void DrawMethods::DrawThickLine(int x0,
         // change Y
         y0 -= stepY;
         y1 -= stepY;
-        error -= deltaXTimes2;
+        error -= static_cast<int16_t>(deltaXTimes2);
       }
-      error += deltaYTimes2;
+      error += static_cast<int16_t>(deltaYTimes2);
     }
     //draw start line
     DrawLineOverlap(x0, y0, x1, y1, colors, brightness, 1);
@@ -565,7 +565,7 @@ void DrawMethods::DrawThickLine(int x0,
         // change Y
         y0 += stepY;
         y1 += stepY;
-        error -= deltaXTimes2;
+        error -= static_cast<int16_t>(deltaXTimes2);
         /*
          * Change minor direction reverse to line (main) direction because of choosing
          * the right (counter)clockwise draw vector. Use LINE_OVERLAP_MAJOR to fill all pixels.
@@ -585,7 +585,7 @@ void DrawMethods::DrawThickLine(int x0,
          */
         overlap = LINE_OVERLAP_MAJOR;
       }
-      error += deltaYTimes2;
+      error += static_cast<int16_t>(deltaYTimes2);
       DrawLineOverlap(x0, y0, x1, y1, colors, brightness, overlap);
     }
   }
@@ -611,9 +611,9 @@ void DrawMethods::DrawThickLine(int x0,
       {
         x0 -= stepX;
         x1 -= stepX;
-        error -= deltaYTimes2;
+        error -= static_cast<int16_t>(deltaYTimes2);
       }
-      error += deltaXTimes2;
+      error += static_cast<int16_t>(deltaXTimes2);
     }
     // draw start line
     DrawLineOverlap(x0, y0, x1, y1, colors, brightness, 0);
@@ -628,10 +628,10 @@ void DrawMethods::DrawThickLine(int x0,
       {
         x0 += stepX;
         x1 += stepX;
-        error -= deltaYTimes2;
+        error -= static_cast<int16_t>(deltaYTimes2);
         overlap = LINE_OVERLAP_MAJOR;
       }
-      error += deltaXTimes2;
+      error += static_cast<int16_t>(deltaXTimes2);
       DrawLineOverlap(x0, y0, x1, y1, colors, brightness, overlap);
     }
   }

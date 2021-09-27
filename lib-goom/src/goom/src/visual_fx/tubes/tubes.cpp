@@ -833,7 +833,7 @@ void Tube::TubeImpl::DrawHexOutline(const V2dInt& hexCentre,
 {
   constexpr uint32_t NUM_HEX_SIDES = 6;
   constexpr float ANGLE_STEP = GOOM::UTILS::m_third_pi;
-  constexpr float START_ANGLE = 2.0 * ANGLE_STEP;
+  constexpr float START_ANGLE = 2.0F * ANGLE_STEP;
   const std::vector<Pixel> lineColors{allColors.color, allColors.lowColor};
   const std::vector<Pixel> outerCircleColors{allColors.outerCircleColor,
                                              allColors.outerCircleLowColor};

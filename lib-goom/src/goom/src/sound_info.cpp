@@ -131,14 +131,14 @@ void SoundInfo::ProcessSample(const AudioSamples& samples)
   ++m_updateNum;
 
   UpdateVolume(samples);
-  assert(0.0 <= m_volume && m_volume <= 1.0);
+  assert(0.0F <= m_volume && m_volume <= 1.0F);
 
   const float prevAcceleration = m_acceleration;
   UpdateAcceleration();
-  assert(0.0 <= m_acceleration && m_acceleration <= 1.0);
+  assert(0.0F <= m_acceleration && m_acceleration <= 1.0F);
 
   UpdateSpeed(prevAcceleration);
-  assert(0.0 <= m_speed && m_speed <= 1.0);
+  assert(0.0F <= m_speed && m_speed <= 1.0F);
 
   // Detection des nouveaux gooms
   // Detection of new gooms
@@ -266,7 +266,7 @@ void SoundInfo::UpdateLastGoom()
   if (0 == (m_updateNum % CYCLE_TIME))
   {
     UpdateGoomLimit();
-    assert((0.0 <= m_goomLimit) && (m_goomLimit <= 1.0));
+    assert((0.0F <= m_goomLimit) && (m_goomLimit <= 1.0F));
 
     m_totalGoomsInCurrentCycle = 0;
     m_maxAccelSinceLastReset = 0.0F;

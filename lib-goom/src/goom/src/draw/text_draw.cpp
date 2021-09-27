@@ -417,7 +417,7 @@ inline auto TextDraw::TextDrawImpl::GetLineSpacing() const -> int32_t
 
 void TextDraw::TextDrawImpl::SetOutlineWidth(const float val)
 {
-  if (val <= 0.0)
+  if (val <= 0.0F)
   {
     throw std::logic_error(std20::format("Outline width <= 0: {}.", val));
   }
@@ -426,7 +426,7 @@ void TextDraw::TextDrawImpl::SetOutlineWidth(const float val)
 
 void TextDraw::TextDrawImpl::SetCharSpacing(const float val)
 {
-  if (val < 0.0)
+  if (val < 0.0F)
   {
     throw std::logic_error(std20::format("Char spacing < 0: {}.", val));
   }
@@ -488,7 +488,7 @@ void TextDraw::TextDrawImpl::Prepare()
     }
 
     const Spans spans = GetSpans(i);
-    (void)m_textSpans.emplace_back(spans);
+    m_textSpans.emplace_back(spans);
 
     xMax += spans.advance;
     yMin = std::min(yMin, spans.rect.ymin);
@@ -656,7 +656,7 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spans,
 /*constexpr*/ inline auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const float stdPixelCoord)
     -> int32_t
 {
-  return static_cast<int>(std::lround(stdPixelCoord * 64.0));
+  return static_cast<int>(std::lround(stdPixelCoord * 64.0F));
 }
 
 // Each time the renderer calls us back we just push another span entry on our list.
@@ -687,7 +687,7 @@ void TextDraw::TextDrawImpl::RenderSpans(FT_Outline* const outline, SpanArray* c
 auto TextDraw::TextDrawImpl::GetSpans(const size_t textIndexOfChar) const -> Spans
 {
   const SpanArray stdSpans = GetStdSpans();
-  const int32_t advance = ToStdPixelCoord(m_face->glyph->advance.x) +
+  const int32_t advance = ToStdPixelCoord(static_cast<int32_t>(m_face->glyph->advance.x)) +
                           static_cast<int>(m_charSpacing * static_cast<float>(m_fontSize));
   const FT_Glyph_Metrics metrics = m_face->glyph->metrics;
   if (stdSpans.empty())
@@ -698,8 +698,8 @@ auto TextDraw::TextDrawImpl::GetSpans(const size_t textIndexOfChar) const -> Spa
         /*.textIndexOfChar = */ textIndexOfChar,
         /*.rect = */ RectImpl{},
         /*.advance = */ advance,
-        /*.bearingX = */ ToStdPixelCoord(metrics.horiBearingX),
-        /*.bearingY = */ ToStdPixelCoord(metrics.horiBearingY),
+        /*.bearingX = */ ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingX)),
+        /*.bearingY = */ ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingY)),
     };
   }
 
@@ -710,8 +710,8 @@ auto TextDraw::TextDrawImpl::GetSpans(const size_t textIndexOfChar) const -> Spa
       /*.textIndexOfChar = */ textIndexOfChar,
       /*.rect = */ GetBoundingRect(stdSpans, outlineSpans),
       /*.advance = */ advance,
-      /*.bearingX = */ ToStdPixelCoord(metrics.horiBearingX),
-      /*.bearingY = */ ToStdPixelCoord(metrics.horiBearingY),
+      /*.bearingX = */ ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingX)),
+      /*.bearingY = */ ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingY)),
   };
 }
 

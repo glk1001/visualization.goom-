@@ -343,7 +343,7 @@ auto ColorMaps::ColorMapsImpl::MakePrebuiltColorMaps() -> std::vector<PrebuiltCo
 
   for (const auto& map : COLOR_DATA::ALL_MAPS)
   {
-    (void)preBuiltColorMaps.emplace_back(map.colorMapName, *map.vividArray);
+    preBuiltColorMaps.emplace_back(map.colorMapName, *map.vividArray);
   }
 
   return preBuiltColorMaps;
@@ -351,7 +351,7 @@ auto ColorMaps::ColorMapsImpl::MakePrebuiltColorMaps() -> std::vector<PrebuiltCo
 
 inline auto ColorMaps::ColorMapsImpl::GetNumGroups() -> uint32_t
 {
-  return GetColorGroupNames().size();
+  return static_cast<uint32_t>(GetColorGroupNames().size());
 }
 
 auto ColorMaps::ColorMapsImpl::GetAllColorMapNames() -> const std::vector<ColorMapName>&

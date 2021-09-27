@@ -259,9 +259,9 @@ auto Tentacle2D::CreateLinearDampingFunc(const double xMin, const double xMax)
   constexpr float Y_SCALE = 30.0;
 
   std::vector<std::tuple<double, double, DampingFuncPtr>> pieces{};
-  (void)pieces.emplace_back(std::make_tuple(
+  pieces.emplace_back(std::make_tuple(
       xMin, 0.1 * xMax, DampingFuncPtr{std::make_unique<FlatDampingFunction>(0.1)}));
-  (void)pieces.emplace_back(std::make_tuple(
+  pieces.emplace_back(std::make_tuple(
       0.1 * xMax, 10 * xMax,
       DampingFuncPtr{std::make_unique<LinearDampingFunction>(0.1 * xMax, 0.1, xMax, Y_SCALE)}));
 
@@ -409,8 +409,8 @@ auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
 
   std::vector<V3dFlt> vec3d(n);
   const float x0 = m_head.x;
-  const auto y0 = static_cast<float>(m_head.y - yvec2D[0]);
-  const auto z0 = static_cast<float>(m_head.z - xvec2D[0]);
+  const float y0 = m_head.y - static_cast<float>(yvec2D[0]);
+  const float z0 = m_head.z - static_cast<float>(xvec2D[0]);
   float xStep = 0.0;
   if (std::abs(x0) < 10.0F)
   {
@@ -421,8 +421,8 @@ auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
   for (size_t i = 0; i < n; i++)
   {
     vec3d[i].x = x;
-    vec3d[i].z = static_cast<float>(z0 + xvec2D[i]);
-    vec3d[i].y = static_cast<float>(y0 + yvec2D[i]);
+    vec3d[i].z = z0 + static_cast<float>(xvec2D[i]);
+    vec3d[i].y = y0 + static_cast<float>(yvec2D[i]);
 
     x -= xStep;
   }
@@ -432,7 +432,7 @@ auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
 
 void Tentacles3D::AddTentacle(Tentacle3D&& t)
 {
-  (void)m_tentacles.emplace_back(std::move(t));
+  m_tentacles.emplace_back(std::move(t));
 }
 
 void Tentacles3D::ColorMapsChanged()

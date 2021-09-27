@@ -237,7 +237,7 @@ auto Weights<E>::GetRandomWeighted() const -> E
     throw std::logic_error("The are no weights set.");
   }
 
-  uint32_t randVal = GetRandInRange(0U, m_sumOfWeights);
+  size_t randVal = GetRandInRange(0U, static_cast<uint32_t>(m_sumOfWeights));
 #if __cplusplus <= 201402L
   for (const auto& wgt : m_weights)
   {

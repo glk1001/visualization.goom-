@@ -323,9 +323,9 @@ inline auto GetRightShiftedChannels(const Pixel& color, const int value) -> Pixe
 {
   Pixel p = color;
 
-  p.SetR(p.R() >> value);
-  p.SetG(p.G() >> value);
-  p.SetB(p.B() >> value);
+  p.SetR(static_cast<uint8_t>(p.R() >> value));
+  p.SetG(static_cast<uint8_t>(p.G() >> value));
+  p.SetB(static_cast<uint8_t>(p.B() >> value));
 
   return p;
 }

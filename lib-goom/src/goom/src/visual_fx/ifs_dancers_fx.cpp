@@ -461,7 +461,7 @@ void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
 
     if (points[i].GetCount() <= m_lowDensityCount)
     {
-      (void)lowDensityPoints.emplace_back(points[i]);
+      lowDensityPoints.emplace_back(points[i]);
       if (maxLowDensityCount < points[i].GetCount())
       {
         maxLowDensityCount = points[i].GetCount();

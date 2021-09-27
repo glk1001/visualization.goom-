@@ -75,7 +75,7 @@ auto GetAlteredChroma(const float lchYFactor, const Pixel& color) -> Pixel
 inline auto Lighten(const uint8_t value, const float power) -> uint8_t
 {
   const auto t = (static_cast<float>(value) * std::log10(power)) / 2.0F;
-  if (t <= 0.0)
+  if (t <= 0.0F)
   {
     return 0;
   }
@@ -126,7 +126,7 @@ auto GetEvolvedColor(const Pixel& baseColor) -> Pixel
   newColor = EvolvedColor(newColor, baseColor, 0xff0000U, 0x010000U);
   newColor = EvolvedColor(newColor, baseColor, 0xff000000U, 0x01000000U);
 
-  newColor = GetLightenedColor(newColor, (10.0 * 2.0F) + 2.0F);
+  newColor = GetLightenedColor(newColor, (10.0F * 2.0F) + 2.0F);
 
   return newColor;
 }

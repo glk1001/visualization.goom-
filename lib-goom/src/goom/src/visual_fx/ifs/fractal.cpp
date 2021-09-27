@@ -458,7 +458,7 @@ void FractalHits::AddHit(const uint32_t x, const uint32_t y, const Similitude& s
 
   if (1 == h.count)
   {
-    (void)m_hits.emplace_back(ux, uy, 1);
+    m_hits.emplace_back(ux, uy, 1);
   }
 }
 

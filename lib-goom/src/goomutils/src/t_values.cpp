@@ -101,7 +101,7 @@ void TValue::Increment()
 
 inline void TValue::SingleCycleIncrement()
 {
-  if (m_t > (1.0 + SMALL_FLOAT))
+  if (m_t > (1.0F + SMALL_FLOAT))
   {
     return;
   }
@@ -188,7 +188,7 @@ void TValue::SetStepSize(const float val)
   const float oldCurrentStep = m_currentStep;
 
   m_stepSize = val;
-  m_currentStep = m_currentStep < 0.0 ? -m_stepSize : +m_stepSize;
+  m_currentStep = m_currentStep < 0.0F ? -m_stepSize : +m_stepSize;
 
   if (((oldCurrentStep < 0.0F) && (m_currentStep > 0.0F)) ||
       ((oldCurrentStep > 0.0F) && (m_currentStep < 0.0F)))

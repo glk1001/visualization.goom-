@@ -363,7 +363,7 @@ void GoomControl::GoomControlImpl::DisplayTitle(const std::string& songTitle,
 {
   std::string msg{message};
 
-  if (fps > 0.0)
+  if (fps > 0.0F)
   {
     const std::string text = std20::format("{.0f} fps", fps);
     msg.insert(0, text + "\n");

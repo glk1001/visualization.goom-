@@ -221,8 +221,8 @@ TEST_CASE("float min max get random", "[fltMinMaxGetRandom]")
 #else
   const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
 #endif
-  REQUIRE(std::fabs(min1 - nMin1) < 0.0001);
-  REQUIRE(std::fabs(max1 - nMax1) < 0.0001);
+  REQUIRE(std::fabs(min1 - nMin1) < 0.0001F);
+  REQUIRE(std::fabs(max1 - nMax1) < 0.0001F);
 
   constexpr float nMin2 = -1;
   constexpr float nMax2 = 0;
@@ -233,8 +233,8 @@ TEST_CASE("float min max get random", "[fltMinMaxGetRandom]")
 #else
   const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
 #endif
-  REQUIRE(std::fabs(min2 - nMin2) < 0.0001);
-  REQUIRE(std::fabs(max2 - nMax2) < 0.0001);
+  REQUIRE(std::fabs(min2 - nMin2) < 0.0001F);
+  REQUIRE(std::fabs(max2 - nMax2) < 0.0001F);
 
   constexpr float nMin3 = -10;
   constexpr float nMax3 = +10;
@@ -245,8 +245,8 @@ TEST_CASE("float min max get random", "[fltMinMaxGetRandom]")
 #else
   const auto [min3, max3] = GetMinMax(numLoop, nMin3, nMax3);
 #endif
-  REQUIRE(std::fabs(min3 - nMin3) < 0.0001);
-  REQUIRE(std::fabs(max3 - nMax3) < 0.0001);
+  REQUIRE(std::fabs(min3 - nMin3) < 0.0001F);
+  REQUIRE(std::fabs(max3 - nMax3) < 0.0001F);
 
   REQUIRE_NOTHROW(GetRandInRange(5.0F, 6.0F));
   REQUIRE_NOTHROW(GetRandInRange(-6.0F, -5.0F));
@@ -289,7 +289,7 @@ TEST_CASE("weighted events", "[weightedEvents]")
     const double eventFrac =
         static_cast<double>(WEIGHTED_EVENTS.GetWeight(static_cast<Events>(i))) /
         static_cast<double>(sumOfWeights);
-    REQUIRE(floats_equal(countFrac, eventFrac, 0.001F));
+    REQUIRE(floats_equal(static_cast<float>(countFrac), static_cast<float>(eventFrac), 0.001F));
     UNSCOPED_INFO(std20::format("i = {}, countFrac = {}, eventFrac = {}", i, countFrac, eventFrac));
   }
 }

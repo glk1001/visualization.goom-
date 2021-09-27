@@ -568,7 +568,7 @@ void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
   const Pixel lineColor = GetLightenedColor(m_color1, m_power);
 
   m_audioRange = static_cast<float>(soundMinMax.maxVal - soundMinMax.minVal);
-  assert(m_audioRange >= 0.0);
+  assert(m_audioRange >= 0.0F);
   m_minAudioValue = static_cast<float>(soundMinMax.minVal);
 
   if (m_audioRange < SMALL_FLOAT)
@@ -712,7 +712,7 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
   const float cosAngle = std::cos(pt.angle);
   const float sinAngle = std::sin(pt.angle);
   const float normalizedDataVal = m_maxNormalizedPeak * tData;
-  assert(normalizedDataVal >= 0.0);
+  assert(normalizedDataVal >= 0.0F);
   const V2dInt nextPointData{static_cast<int>(pt.x + (m_amplitude * cosAngle * normalizedDataVal)),
                              static_cast<int>(pt.y + (m_amplitude * sinAngle * normalizedDataVal))};
 

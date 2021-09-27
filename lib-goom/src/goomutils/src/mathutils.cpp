@@ -154,7 +154,7 @@ SineWaveMultiplier::SineWaveMultiplier(const float freq,
 
 auto SineWaveMultiplier::GetNext() -> float
 {
-  const float val = m_rangeMapper(m_lower, m_upper, std::sin(m_frequency * m_x));
+  const auto val = static_cast<float>(m_rangeMapper(m_lower, m_upper, std::sin(m_frequency * m_x)));
   //logInfo("lower = {}, upper = {}, sin({}) = {}.", lower, upper, x, val);
   m_x += m_piStepFrac * m_pi;
   return val;

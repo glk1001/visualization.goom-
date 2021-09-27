@@ -34,13 +34,13 @@ TEST_CASE("Test Parallel Utils", "[ParallelFor]")
   };
 
   auto parallel = std::make_unique<Parallel>(-1);
-  auto numThreadsUsed = static_cast<uint32_t>(std::thread::hardware_concurrency() - 1);
+  uint32_t numThreadsUsed = std::thread::hardware_concurrency() - 1;
   threadsUsed.clear();
   parallel->ForLoop(ARRAY_LEN, assignF);
   checkResults(*parallel, numThreadsUsed);
 
   parallel = std::make_unique<Parallel>(-2);
-  numThreadsUsed = static_cast<uint32_t>(std::thread::hardware_concurrency() - 2);
+  numThreadsUsed = std::thread::hardware_concurrency() - 2;
   threadsUsed.clear();
   parallel->ForLoop(ARRAY_LEN, assignF);
   checkResults(*parallel, numThreadsUsed);
