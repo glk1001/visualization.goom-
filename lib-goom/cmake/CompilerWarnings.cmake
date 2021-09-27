@@ -2,7 +2,7 @@
 #
 # https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 
-function(set_project_warnings project_name)
+function(get_project_warnings compiler_warnings)
   option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 
   set(MSVC_WARNINGS
@@ -73,6 +73,17 @@ function(set_project_warnings project_name)
   else()
     message(AUTHOR_WARNING "No compiler warnings set for '${CMAKE_CXX_COMPILER_ID}' compiler.")
   endif()
+
+  SET(${compiler_warnings} ${PROJECT_WARNINGS} PARENT_SCOPE)
+
+endfunction()
+
+
+function(set_project_warnings project_name)
+  option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
+
+  SET(PROJECT_WARNINGS "")
+  get_project_warnings(PROJECT_WARNINGS)
 
   target_compile_options(${project_name} PRIVATE ${PROJECT_WARNINGS})
 
