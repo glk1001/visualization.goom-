@@ -59,9 +59,12 @@ function(enable_sanitizers project_name)
        "${LIST_OF_SANITIZERS}"
        STREQUAL
        "")
-      target_compile_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS})
-      target_link_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS})
+      target_compile_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS} -fsanitize-recover=address)
+      target_link_options(${project_name} INTERFACE -fsanitize=${LIST_OF_SANITIZERS} -fsanitize-recover=address)
+      message(STATUS "Added sanitizers \"${LIST_OF_SANITIZERS}\", for \"${project_name}\".")
     endif()
+  else()  
+    message(STATUS "Not using sanitizers for \"${project_name}\".")
   endif()
 
 endfunction()

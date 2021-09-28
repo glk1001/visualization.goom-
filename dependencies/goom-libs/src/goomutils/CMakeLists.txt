@@ -46,6 +46,7 @@ target_include_directories(goomutils
 )
 
 set_project_warnings(goomutils)
+enable_sanitizers(goomutils)
 
 set_target_properties(goomutils
     PROPERTIES

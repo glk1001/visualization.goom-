@@ -88,6 +88,7 @@ target_include_directories(goom
 )
 
 set_project_warnings(goom)
+enable_sanitizers(goom)
 
 set_target_properties(goom
     PROPERTIES
