@@ -1,7 +1,7 @@
 #pragma once
 
 #include "goom_graphic.h"
-#include "goomutils/goomrand.h"
+#include "utils/goomrand.h"
 
 #include <string>
 #include <unordered_set>

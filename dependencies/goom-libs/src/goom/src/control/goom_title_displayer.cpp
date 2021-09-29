@@ -1,16 +1,16 @@
 #include "goom_title_displayer.h"
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "draw/text_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/logging_control.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/strutils.h"
+#include "color/random_colormaps.h"
+#include "utils/logging.h"
+#include "utils/strutils.h"
 
 #include <cstdint>
 #include <memory>
@@ -26,14 +26,14 @@ namespace GOOM::CONTROL
 {
 #endif
 
+using COLOR::ColorMapGroup;
+using COLOR::GetBrighterColor;
+using COLOR::IColorMap;
+using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::TextDraw;
-using UTILS::ColorMapGroup;
-using UTILS::GetBrighterColor;
 using UTILS::GetRandInRange;
-using UTILS::IColorMap;
 using UTILS::Logging;
-using UTILS::RandomColorMaps;
 using UTILS::StringSplit;
 
 constexpr float FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT = 0.05F;
@@ -79,8 +79,8 @@ GoomTitleDisplayer::GoomTitleDisplayer(const IGoomDraw& draw, const std::string&
     m_fontDirectory{fontDirectory},
     m_fontInfoIndex{GetRandInRange(0U, static_cast<uint32_t>(s_fontInfo.size()))},
     m_textColorMap{RandomColorMaps{}.GetRandomColorMap(
-        UTILS::ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM)},
-    m_textOutlineColorMap{RandomColorMaps{}.GetRandomColorMap(UTILS::ColorMapGroup::PASTEL)},
+        COLOR::ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM)},
+    m_textOutlineColorMap{RandomColorMaps{}.GetRandomColorMap(COLOR::ColorMapGroup::PASTEL)},
     m_charColorMap{m_textColorMap}
 {
   m_textDraw->SetFontFile(GetSelectedFontPath());

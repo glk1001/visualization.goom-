@@ -2,7 +2,7 @@
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
-#include "goomutils/name_value_pairs.h"
+#include "utils/name_value_pairs.h"
 #include "v2d.h"
 #include "zoom_vector.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goomutils/name_value_pairs.h"
 #include "image_displacement.h"
+#include "utils/name_value_pairs.h"
 
 #include <cstddef>
 #include <string>

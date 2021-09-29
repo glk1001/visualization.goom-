@@ -1,8 +1,8 @@
 #include "image_displacement_list.h"
 
 #include "goom/goom_config.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/name_value_pairs.h"
+#include "utils/goomrand.h"
+#include "utils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>

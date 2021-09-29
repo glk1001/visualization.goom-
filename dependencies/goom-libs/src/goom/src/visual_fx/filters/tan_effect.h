@@ -1,8 +1,8 @@
 #pragma once
 
-#include "goomutils/mathutils.h"
-#include "goomutils/name_value_pairs.h"
 #include "normalized_coords.h"
+#include "utils/mathutils.h"
+#include "utils/name_value_pairs.h"
 #include "v2d.h"
 
 #include <cmath>

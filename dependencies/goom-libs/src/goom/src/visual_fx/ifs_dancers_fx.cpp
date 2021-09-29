@@ -37,17 +37,17 @@
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/logging_control.h"
 #include "ifs/colorizer.h"
 #include "ifs/fractal.h"
 #include "ifs/low_density_blurrer.h"
+#include "utils/goomrand.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/spimpl.h"
-#include "goomutils/t_values.h"
+#include "color/random_colormaps.h"
+#include "utils/logging.h"
+#include "utils/spimpl.h"
+#include "utils/t_values.h"
 
 #include <array>
 
@@ -69,6 +69,7 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using IFS::BlurrerColorMode;
 using IFS::Colorizer;
@@ -77,7 +78,6 @@ using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
 using UTILS::GetRandInRange;
 using UTILS::ProbabilityOfMInN;
-using UTILS::RandomColorMaps;
 using UTILS::SmallImageBitmaps;
 using UTILS::TValue;
 using UTILS::Weights;

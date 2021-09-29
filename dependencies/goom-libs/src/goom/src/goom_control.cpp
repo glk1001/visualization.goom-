@@ -23,16 +23,16 @@
 #include "draw/goom_draw_to_buffer.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/logging_control.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/logging_control.h"
 #include "visual_fx/filters/filter_settings_service.h"
 #undef NO_LOGGING
-#include "goomutils/logging.h"
+#include "utils/logging.h"
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
-#include "goomutils/name_value_pairs.h"
+#include "utils/name_value_pairs.h"
 #endif
-#include "goomutils/parallel_utils.h"
-#include "goomutils/spimpl.h"
+#include "utils/parallel_utils.h"
+#include "utils/spimpl.h"
 
 #include <cstdint>
 #if __cplusplus > 201402L

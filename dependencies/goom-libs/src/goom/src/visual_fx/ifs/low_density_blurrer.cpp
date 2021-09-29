@@ -1,10 +1,10 @@
 #include "low_density_blurrer.h"
 
+#include "color/colormaps.h"
 #include "colorizer.h"
 #include "draw/goom_draw.h"
 #include "fractal.h"
 #include "goom_graphic.h"
-#include "goomutils/colormaps.h"
 
 #include <cmath>
 #include <cstdint>
@@ -21,9 +21,9 @@ namespace GOOM::IFS
 #endif
 
 using DRAW::IGoomDraw;
-using UTILS::GetBrighterColor;
-using UTILS::GetColorAverage;
-using UTILS::IColorMap;
+using COLOR::GetBrighterColor;
+using COLOR::GetColorAverage;
+using COLOR::IColorMap;
 
 LowDensityBlurrer::LowDensityBlurrer(const IGoomDraw& draw,
                                      const uint32_t width,

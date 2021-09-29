@@ -1,10 +1,10 @@
 #include "goom_all_visual_fx.h"
 
 #include "goom_plugin_info.h"
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/name_value_pairs.h"
-#include "goomutils/parallel_utils.h"
 #include "sound_info.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/name_value_pairs.h"
+#include "utils/parallel_utils.h"
 #include "v2d.h"
 #include "visual_fx/filters/filter_buffers_service.h"
 #include "visual_fx/filters/filter_colors_service.h"

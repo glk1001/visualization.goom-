@@ -2,7 +2,7 @@
 
 #include "filters/filter_settings.h"
 #include "goom/goom_stats.h"
-#include "goomutils/enumutils.h"
+#include "utils/enumutils.h"
 
 #include <array>
 #include <chrono>

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "color/colormaps.h"
+#include "color/random_colormaps.h"
 #include "goom_graphic.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/random_colormaps.h"
 #include "tentacles.h"
+#include "utils/mathutils.h"
 #include "v2d.h"
 
 #include <cstdint>
@@ -73,13 +73,13 @@ public:
   TentacleDriver() noexcept = delete;
   explicit TentacleDriver(const DRAW::IGoomDraw& draw) noexcept;
 
-  void Init(UTILS::ColorMapGroup initialColorMapGroup, const ITentacleLayout& l);
+  void Init(COLOR::ColorMapGroup initialColorMapGroup, const ITentacleLayout& l);
   [[nodiscard]] auto GetNumTentacles() const -> size_t;
 
   [[nodiscard]] auto GetColorMode() const -> ColorModes;
   void SetColorMode(ColorModes m);
 
-  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
   void StartIterating();
 
@@ -111,7 +111,7 @@ private:
 
   void UpdateTentaclesLayout(const ITentacleLayout& l);
 
-  std::shared_ptr<UTILS::RandomColorMaps> m_colorMaps{};
+  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
   std::vector<std::shared_ptr<ITentacleColorizer>> m_colorizers{};
 
   size_t m_updateNum = 0;
@@ -119,7 +119,7 @@ private:
   size_t m_numTentacles = 0;
   std::vector<IterationParams> m_tentacleParams{};
   static const size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES;
-  [[nodiscard]] auto GetNextColorMapGroups() const -> std::vector<UTILS::ColorMapGroup>;
+  [[nodiscard]] auto GetNextColorMapGroups() const -> std::vector<COLOR::ColorMapGroup>;
 
   static auto CreateNewTentacle2D(size_t id, const IterationParams& p)
       -> std::unique_ptr<Tentacle2D>;
@@ -145,24 +145,24 @@ class TentacleColorMapColorizer : public ITentacleColorizer
 {
 public:
   TentacleColorMapColorizer() noexcept = delete;
-  explicit TentacleColorMapColorizer(UTILS::ColorMapGroup cmg, size_t numNodes) noexcept;
+  explicit TentacleColorMapColorizer(COLOR::ColorMapGroup cmg, size_t numNodes) noexcept;
   TentacleColorMapColorizer(const TentacleColorMapColorizer&) noexcept = delete;
   TentacleColorMapColorizer(TentacleColorMapColorizer&&) noexcept = delete;
   ~TentacleColorMapColorizer() noexcept override = default;
   auto operator=(const TentacleColorMapColorizer&) -> TentacleColorMapColorizer& = delete;
   auto operator=(TentacleColorMapColorizer&&) -> TentacleColorMapColorizer& = delete;
 
-  auto GetColorMapGroup() const -> UTILS::ColorMapGroup override;
-  void SetColorMapGroup(UTILS::ColorMapGroup c) override;
+  auto GetColorMapGroup() const -> COLOR::ColorMapGroup override;
+  void SetColorMapGroup(COLOR::ColorMapGroup c) override;
   void ChangeColorMap() override;
   auto GetColor(size_t nodeNum) const -> Pixel override;
 
 private:
   size_t m_numNodes = 0;
-  UTILS::ColorMapGroup m_currentColorMapGroup{};
-  const UTILS::RandomColorMaps m_colorMaps{};
-  std::shared_ptr<const UTILS::IColorMap> m_colorMap{};
-  std::shared_ptr<const UTILS::IColorMap> m_prevColorMap{};
+  COLOR::ColorMapGroup m_currentColorMapGroup{};
+  const COLOR::RandomColorMaps m_colorMaps{};
+  std::shared_ptr<const COLOR::IColorMap> m_colorMap{};
+  std::shared_ptr<const COLOR::IColorMap> m_prevColorMap{};
   static constexpr uint32_t MAX_COUNT_SINCE_COLORMAP_CHANGE = 100;
   static constexpr float TRANSITION_STEP =
       1.0F / static_cast<float>(MAX_COUNT_SINCE_COLORMAP_CHANGE);

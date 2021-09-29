@@ -12,6 +12,21 @@ endif()
 
 add_library(goom
     STATIC
+        src/color/color_data/color_data_maps.cpp
+        src/color/color_data/extra_color_groups.cpp
+        src/color/colormaps.cpp
+        src/color/colorutils.cpp
+        src/color/random_colormaps.cpp
+        src/color/random_colormaps_manager.cpp
+        src/utils/goomrand.cpp
+        src/utils/graphics/image_bitmaps.cpp
+        src/utils/graphics/small_image_bitmaps.cpp
+        src/utils/logging.cpp
+        src/utils/mathutils.cpp
+        src/utils/name_value_pairs.h
+        src/utils/strutils.cpp
+        src/utils/t_values.cpp
+        src/utils/thread_pool.cpp
         src/control/goom_all_visual_fx.cpp
         src/control/goom_all_visual_fx_color_maps.cpp
         src/control/goom_events.cpp
@@ -73,7 +88,7 @@ add_library(goom
 target_include_directories(goom
     PUBLIC
         ${GOOM_ROOT_DIR}/goom/include
-        ${GOOM_ROOT_DIR}/goomutils/include
+        ${GOOM_ROOT_DIR}/utils/include
     PRIVATE
         ${GOOM_ROOT_DIR}/goom/include/goom
         ${GOOM_ROOT_DIR}/goom/src

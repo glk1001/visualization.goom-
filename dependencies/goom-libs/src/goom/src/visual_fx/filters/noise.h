@@ -1,6 +1,9 @@
-#pragma once
+#ifndef VISUALIZATION_GOOM_LIB_FILTERS_NOISE_H
+#define VISUALIZATION_GOOM_LIB_FILTERS_NOISE_H
 
 #include "normalized_coords.h"
+#include "utils/goomrand.h"
+#include "utils/name_value_pairs.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"

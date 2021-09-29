@@ -1,10 +1,10 @@
 #include "image_displacement.h"
 
 #include "goom_graphic.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/graphics/image_bitmaps.h"
-#include "goomutils/mathutils.h"
 #include "normalized_coords.h"
+#include "utils/goomrand.h"
+#include "utils/graphics/image_bitmaps.h"
+#include "utils/mathutils.h"
 #include "v2d.h"
 
 #include <cmath>

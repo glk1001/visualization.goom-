@@ -1,7 +1,7 @@
 #pragma once
 
+#include "color/colorutils.h"
 #include "goom_graphic.h"
-#include "goomutils/colorutils.h"
 
 #ifdef GOOM_DEBUG
 #undef NDEBUG

@@ -1,7 +1,7 @@
 #include "goom_draw_to_buffer.h"
 
+#include "color/colorutils.h"
 #include "goom_graphic.h"
-#include "goomutils/colorutils.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -18,8 +18,8 @@ namespace GOOM::DRAW
 {
 #endif
 
-using UTILS::GetBrighterColorInt;
-using UTILS::GetColorAdd;
+using COLOR::GetBrighterColorInt;
+using COLOR::GetColorAdd;
 
 GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t screenHeight)
   : IGoomDraw{screenWidth, screenHeight,

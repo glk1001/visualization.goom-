@@ -2,7 +2,7 @@
 
 #include "draw_methods.h"
 #include "goom_graphic.h"
-#include "goomutils/parallel_utils.h"
+#include "utils/parallel_utils.h"
 
 #include <cmath>
 #include <cstddef>

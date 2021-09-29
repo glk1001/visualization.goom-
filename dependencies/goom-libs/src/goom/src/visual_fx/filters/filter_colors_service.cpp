@@ -1,6 +1,6 @@
 #include "filter_colors_service.h"
 
-#include "goomutils/name_value_pairs.h"
+#include "utils/name_value_pairs.h"
 
 #include <string>
 

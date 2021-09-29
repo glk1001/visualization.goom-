@@ -1,7 +1,7 @@
 #include "goom_music_lines_reactor.h"
 
 #include "goom_events.h"
-#include "goomutils/name_value_pairs.h"
+#include "utils/name_value_pairs.h"
 
 #if __cplusplus <= 201402L
 namespace GOOM

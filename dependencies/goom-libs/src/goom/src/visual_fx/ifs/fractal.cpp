@@ -1,12 +1,12 @@
 #include "fractal.h"
 
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/t_values.h"
+#include "color/colormaps.h"
+#include "color/colorutils.h"
+#include "color/random_colormaps.h"
+#include "utils/goomrand.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/mathutils.h"
+#include "utils/t_values.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -21,12 +21,12 @@ namespace GOOM::IFS
 {
 #endif
 
-using UTILS::ColorMapGroup;
-using UTILS::GetColorAverage;
+using COLOR::ColorMapGroup;
+using COLOR::GetColorAverage;
+using COLOR::RandomColorMaps;
 using UTILS::GetRandInRange;
 using UTILS::m_pi;
 using UTILS::ProbabilityOfMInN;
-using UTILS::RandomColorMaps;
 using UTILS::SmallImageBitmaps;
 using UTILS::TValue;
 using UTILS::Weights;
@@ -61,7 +61,7 @@ auto IfsPoint::GetSimiColor() const -> Pixel
   return m_simi->color;
 }
 
-auto IfsPoint::GetSimiColorMap() const -> const UTILS::IColorMap*
+auto IfsPoint::GetSimiColorMap() const -> const COLOR::IColorMap*
 {
   return m_simi->colorMap;
 }

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "goom_graphic.h"
-#include "goomutils/t_values.h"
 #include "ifs_types.h"
+#include "utils/t_values.h"
 
 #include <cstdint>
 #include <functional>
@@ -13,11 +13,17 @@
 namespace GOOM
 {
 
-namespace UTILS
+namespace COLOR
 {
 class IColorMap;
 class ImageBitmap;
 class RandomColorMaps;
+class SmallImageBitmaps;
+} // namespace COLOR
+
+namespace UTILS
+{
+class ImageBitmap;
 class SmallImageBitmaps;
 } // namespace UTILS
 
@@ -61,7 +67,7 @@ class Fractal
 public:
   Fractal(uint32_t screenWidth,
           uint32_t screenHeight,
-          const UTILS::RandomColorMaps& randomColorMaps,
+          const COLOR::RandomColorMaps& randomColorMaps,
           const UTILS::SmallImageBitmaps& smallBitmaps);
 
   void Init();
@@ -81,7 +87,7 @@ private:
   std::unique_ptr<std::vector<Similitude>> m_components;
 
   const UTILS::SmallImageBitmaps& m_smallBitmaps;
-  const UTILS::RandomColorMaps& m_colorMaps;
+  const COLOR::RandomColorMaps& m_colorMaps;
 
   const uint32_t m_lx;
   const uint32_t m_ly;
@@ -141,7 +147,7 @@ struct Similitude
   Flt cy = 0;
   Flt r1 = 0;
   Flt r2 = 0;
-  const UTILS::IColorMap* colorMap{};
+  const COLOR::IColorMap* colorMap{};
   Pixel color = Pixel::BLACK;
   const UTILS::ImageBitmap* currentPointBitmap{};
   bool overExposeBitmaps = true;
@@ -164,7 +170,7 @@ public:
   [[nodiscard]] auto GetCount() const -> uint32_t { return m_count; }
   void SetCount(const uint32_t val) { m_count = val; }
   [[nodiscard]] auto GetSimiColor() const -> Pixel;
-  [[nodiscard]] auto GetSimiColorMap() const -> const UTILS::IColorMap*;
+  [[nodiscard]] auto GetSimiColorMap() const -> const COLOR::IColorMap*;
   [[nodiscard]] auto GetSimiCurrentPointBitmap() const -> const UTILS::ImageBitmap*;
   [[nodiscard]] auto GetSimiOverExposeBitmaps() const -> bool;
 

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "color/colorutils.h"
 #include "goom_graphic.h"
-#include "goomutils/colorutils.h"
 
 #include <cstdint>
 #include <vector>
@@ -62,7 +62,7 @@ private:
 
   static constexpr float GAMMA = 2.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  const UTILS::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
   void SetPointColor(IfsPoint& point,
                      float t,

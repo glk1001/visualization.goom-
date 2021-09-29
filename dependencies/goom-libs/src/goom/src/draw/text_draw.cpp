@@ -1,12 +1,12 @@
 #include "text_draw.h"
 
+#include "color/colorutils.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/logging_control.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/spimpl.h"
+#include "utils/logging.h"
+#include "utils/spimpl.h"
 
 #include <codecvt>
 #include <format>
@@ -29,6 +29,7 @@ namespace GOOM::DRAW
 {
 #endif
 
+using COLOR::GetColorBlend;
 using UTILS::Logging;
 
 #ifdef NO_FREETYPE_INSTALLED
@@ -635,7 +636,7 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spans,
           {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}};
       const Pixel destColor = m_draw.GetPixel(xPos, yPos);
 
-      m_draw.DrawPixelsUnblended(xPos, yPos, {UTILS::GetColorBlend(srceColor, destColor)});
+      m_draw.DrawPixelsUnblended(xPos, yPos, {GetColorBlend(srceColor, destColor)});
     }
   }
 }

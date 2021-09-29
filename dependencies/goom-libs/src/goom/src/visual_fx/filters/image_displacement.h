@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goomutils/graphics/image_bitmaps.h"
+#include "utils/graphics/image_bitmaps.h"
 #include "v2d.h"
 
 #include <memory>

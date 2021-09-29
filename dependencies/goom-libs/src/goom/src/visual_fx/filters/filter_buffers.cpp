@@ -2,12 +2,12 @@
 
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/logging_control.h"
 #include "normalized_coords.h"
+#include "utils/goomrand.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/parallel_utils.h"
+#include "utils/logging.h"
+#include "utils/parallel_utils.h"
 #include "v2d.h"
 
 #include <array>

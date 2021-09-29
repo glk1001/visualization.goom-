@@ -1,6 +1,6 @@
 #include "goom_events.h"
 
-#include "goomutils/goomrand.h"
+#include "utils/goomrand.h"
 
 #if __cplusplus <= 201402L
 namespace GOOM

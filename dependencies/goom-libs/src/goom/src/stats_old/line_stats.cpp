@@ -1,7 +1,7 @@
 #include "line_stats.h"
 
 #include "goom/goom_config.h"
-#include "goomutils/enumutils.h"
+#include "utils/enumutils.h"
 
 #include <chrono>
 #include <cmath>

@@ -85,7 +85,6 @@ message(STATUS "C++ warnings = \"${CMAKE_COMMON_CXX_WARNINGS}\".")
 
 
 include_directories(${GOOM_LIBS_DIR}/goom/include
-                    ${GOOM_LIBS_DIR}/goomutils/include
                     SYSTEM ${GOOM_LIBS_DIR}/vivid/include
                     SYSTEM ${LIBS_DIR}/fmt/include
                     # Need this '..' hack here. Not nice!
@@ -98,7 +97,6 @@ set(GOOM_HEADERS src/CircularBuffer.h
 
 list(APPEND DEPLIBS 
      ${CMAKE_SOURCE_DIR}/build-goom-libs/lib/libgoom.a 
-     ${CMAKE_SOURCE_DIR}/build-goom-libs/lib/libgoomutils.a
      ${CMAKE_SOURCE_DIR}/build-goom-libs/lib/libvivid.a)
 
 set(CMAKE_CXX_STANDARD ${CPP_STANDARD})

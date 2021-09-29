@@ -1,8 +1,8 @@
 #include "colorizer.h"
 
-#include "goomutils/colormaps.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/random_colormaps.h"
+#include "color/colormaps.h"
+#include "color/random_colormaps.h"
+#include "utils/goomrand.h"
 
 #include <cmath>
 
@@ -16,13 +16,13 @@ namespace GOOM::IFS
 {
 #endif
 
-using UTILS::GetBrighterColor;
+using COLOR::COLOR_DATA::ColorMapName;
+using COLOR::GetBrighterColor;
+using COLOR::GetSlightlyDivergingStandardMaps;
+using COLOR::IColorMap;
+using COLOR::RandomColorMaps;
 using UTILS::GetRandInRange;
-using UTILS::GetSlightlyDivergingStandardMaps;
-using UTILS::IColorMap;
-using UTILS::RandomColorMaps;
 using UTILS::Weights;
-using UTILS::COLOR_DATA::ColorMapName;
 using VISUAL_FX::IfsDancersFx;
 
 Colorizer::Colorizer() noexcept

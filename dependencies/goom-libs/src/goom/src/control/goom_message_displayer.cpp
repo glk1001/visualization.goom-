@@ -2,7 +2,7 @@
 
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
-#include "goomutils/strutils.h"
+#include "utils/strutils.h"
 
 #include <vector>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "goom_visual_fx.h"
-#include "goomutils/spimpl.h"
+#include "utils/spimpl.h"
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@ namespace GOOM
 
 class PluginInfo;
 
-namespace UTILS
+namespace COLOR
 {
 class RandomColorMaps;
 } // namespace UTILS
@@ -38,7 +38,7 @@ public:
   void Resume() override;
   void Suspend() override;
 
-  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
   void ApplyNoDraw();
   void ApplyMultiple();

@@ -1,7 +1,7 @@
 #include "draw_methods.h"
 
+#include "color/colorutils.h"
 #include "goom_graphic.h"
-#include "goomutils/colorutils.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -20,6 +20,8 @@ namespace DRAW
 namespace GOOM::DRAW
 {
 #endif
+
+using COLOR::GetBrighterColor;
 
 DrawMethods::DrawMethods(const uint32_t screenWidth,
                          const uint32_t screenHeight,
@@ -188,7 +190,7 @@ void DrawMethods::DrawWuLine(
     {
       for (size_t i = 0; i < colors.size(); ++i)
       {
-        tempColors[i] = UTILS::GetBrighterColor(brightness, colors[i], m_allowOverexposed);
+        tempColors[i] = GetBrighterColor(brightness, colors[i], m_allowOverexposed);
       }
       DrawPixels(x, y, tempColors);
     }
@@ -335,7 +337,7 @@ void DrawMethods::DrawLineOverlap(int x0,
     {
       for (size_t i = 0; i < colors.size(); ++i)
       {
-        tempColors[i] = UTILS::GetBrighterColor(brightness, colors[i], m_allowOverexposed);
+        tempColors[i] = GetBrighterColor(brightness, colors[i], m_allowOverexposed);
       }
       DrawPixels(x, y, tempColors);
     }

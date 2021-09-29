@@ -1,22 +1,22 @@
 #include "tube_fx.h"
 
+#include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
 #include "draw/goom_draw_to_many.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/logging_control.h"
 #include "tubes/tubes.h"
+#include "utils/goomrand.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/spimpl.h"
-#include "goomutils/t_values.h"
-#include "goomutils/timer.h"
+#include "color/random_colormaps.h"
+#include "utils/logging.h"
+#include "utils/mathutils.h"
+#include "utils/spimpl.h"
+#include "utils/t_values.h"
+#include "utils/timer.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -34,20 +34,20 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using COLOR::GetBrighterColor;
+using COLOR::GetColorAverage;
+using COLOR::IColorMap;
+using COLOR::RandomColorMaps;
 using DRAW::GoomDrawToContainer;
 using DRAW::GoomDrawToMany;
 using DRAW::IGoomDraw;
 using TUBES::BrightnessAttenuation;
 using TUBES::PathParams;
 using TUBES::Tube;
-using UTILS::GetBrighterColor;
-using UTILS::GetColorAverage;
 using UTILS::GetRandInRange;
-using UTILS::IColorMap;
 using UTILS::ImageBitmap;
 using UTILS::Logging;
 using UTILS::ProbabilityOf;
-using UTILS::RandomColorMaps;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
 using UTILS::Timer;
@@ -123,8 +123,8 @@ public:
              const PluginInfo& goomInfo,
              const SmallImageBitmaps& smallBitmaps) noexcept;
 
-  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
 
   void SetZoomMidPoint(const V2dInt& zoomMidPoint);
 
@@ -323,7 +323,7 @@ inline auto TubeFx::TubeFxImpl::GetImageBitmap(const SmallImageBitmaps::ImageNam
 }
 
 inline void TubeFx::TubeFxImpl::SetWeightedColorMaps(
-    const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
+    const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
 
@@ -334,7 +334,7 @@ inline void TubeFx::TubeFxImpl::SetWeightedColorMaps(
 }
 
 inline void TubeFx::TubeFxImpl::SetWeightedLowColorMaps(
-    const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
+    const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_lowColorMaps = weightedMaps;
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "filter_settings.h"
-#include "goomutils/name_value_pairs.h"
 #include "hypercos.h"
 #include "image_velocity.h"
 #include "noise.h"
@@ -10,6 +9,7 @@
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
 #include "tan_effect.h"
+#include "utils/name_value_pairs.h"
 #include "v2d.h"
 
 #include <string>

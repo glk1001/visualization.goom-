@@ -3,8 +3,8 @@
 #include "../filters/image_displacement.h"
 #include "filters/filter_settings.h"
 #include "goom/goom_stats.h"
-#include "goomutils/enumutils.h"
-#include "goomutils/graphics/image_bitmaps.h"
+#include "utils/enumutils.h"
+#include "utils/graphics/image_bitmaps.h"
 
 #include <chrono>
 #include <cmath>

@@ -1,7 +1,7 @@
 #include "sound_info.h"
 
 #include "goom_config.h"
-#include "goomutils/mathutils.h"
+#include "utils/mathutils.h"
 
 #undef NDEBUG
 #include <cassert>

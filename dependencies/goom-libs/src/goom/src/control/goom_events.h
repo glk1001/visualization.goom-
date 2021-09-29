@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goomutils/enumutils.h"
-#include "goomutils/goomrand.h"
+#include "utils/enumutils.h"
+#include "utils/goomrand.h"
 #include "visual_fx/lines_fx.h"
 
 #include <array>

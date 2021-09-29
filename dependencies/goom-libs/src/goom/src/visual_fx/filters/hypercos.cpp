@@ -1,9 +1,9 @@
 #include "hypercos.h"
 
-#include "goomutils/enumutils.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/name_value_pairs.h"
+#include "utils/enumutils.h"
+#include "utils/goomrand.h"
+#include "utils/mathutils.h"
+#include "utils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>

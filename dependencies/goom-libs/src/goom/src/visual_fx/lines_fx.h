@@ -2,8 +2,8 @@
 
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goomutils/spimpl.h"
 #include "sound_info.h"
+#include "utils/spimpl.h"
 
 #include <cstddef>
 #include <memory>
@@ -15,9 +15,13 @@ namespace GOOM
 
 class PluginInfo;
 
-namespace UTILS
+namespace COLOR
 {
 class RandomColorMaps;
+} // namespace COLOR
+
+namespace UTILS
+{
 class SmallImageBitmaps;
 } // namespace UTILS
 
@@ -56,7 +60,7 @@ public:
 
   [[nodiscard]] auto GetFxName() const -> std::string;
 
-  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
   void Start();
   auto GetRandomLineColor() const -> Pixel;

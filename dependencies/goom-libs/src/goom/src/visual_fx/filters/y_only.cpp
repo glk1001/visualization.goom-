@@ -1,8 +1,8 @@
 #include "y_only.h"
 
-#include "goomutils/enumutils.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/name_value_pairs.h"
+#include "utils/enumutils.h"
+#include "utils/goomrand.h"
+#include "utils/name_value_pairs.h"
 
 #undef NDEBUG
 #include <cassert>

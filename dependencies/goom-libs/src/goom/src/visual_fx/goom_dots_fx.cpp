@@ -1,19 +1,19 @@
 #include "goom_dots_fx.h"
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/graphics/image_bitmaps.h"
-#include "goomutils/logging_control.h"
+#include "utils/graphics/image_bitmaps.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/logging.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/random_colormaps_manager.h"
-#include "goomutils/spimpl.h"
+#include "color/random_colormaps.h"
+#include "color/random_colormaps_manager.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/logging.h"
+#include "utils/mathutils.h"
+#include "utils/spimpl.h"
 
 #include <cmath>
 #include <cstdint>
@@ -31,8 +31,18 @@ namespace GOOM::VISUAL_FX
 #endif
 
 using DRAW::IGoomDraw;
-using namespace GOOM::UTILS;
-using COLOR_DATA::ColorMapName;
+using COLOR::COLOR_DATA::ColorMapName;
+using COLOR::ColorMapGroup;
+using COLOR::GetColorMultiply;
+using COLOR::GetBrighterColor;
+using COLOR::GammaCorrection;
+using COLOR::RandomColorMaps;
+using COLOR::RandomColorMapsManager;
+using UTILS::GetRandInRange;
+using UTILS::ImageBitmap;
+using UTILS::ProbabilityOfMInN;
+using UTILS::SmallImageBitmaps;
+using UTILS::Weights;
 
 inline auto ChangeDotColorsEvent() -> bool
 {

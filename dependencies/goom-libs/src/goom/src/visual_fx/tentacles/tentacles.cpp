@@ -1,12 +1,12 @@
 #include "tentacles.h"
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
 #include "goom_graphic.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/logging_control.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/mathutils.h"
+#include "utils/logging.h"
+#include "utils/mathutils.h"
 
 #include <cmath>
 #include <format>
@@ -26,11 +26,11 @@ namespace GOOM::TENTACLES
 {
 #endif
 
+using COLOR::GetBrighterColor;
+using COLOR::GetIncreasedChroma;
+using COLOR::IColorMap;
 using UTILS::ExpDampingFunction;
 using UTILS::FlatDampingFunction;
-using UTILS::GetBrighterColor;
-using UTILS::GetIncreasedChroma;
-using UTILS::IColorMap;
 using UTILS::LinearDampingFunction;
 using UTILS::PiecewiseDampingFunction;
 using UTILS::ProbabilityOfMInN;
@@ -158,10 +158,10 @@ void Tentacle2D::Iterate()
 {
   m_iterNum++;
 
-  m_yVec[0] = GetFirstY();
+  m_yVec[0] = static_cast<double>(GetFirstY());
   for (size_t i = 1; i < m_numNodes; i++)
   {
-    m_yVec[i] = GetNextY(i);
+    m_yVec[i] = static_cast<double>(GetNextY(i));
   }
 
   UpdateDampedVals(m_yVec);

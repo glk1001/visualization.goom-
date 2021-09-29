@@ -1,14 +1,14 @@
 #pragma once
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
+#include "color/random_colormaps.h"
 #include "filter_buffers.h"
 #include "goom_graphic.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/name_value_pairs.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/t_values.h"
-#include "goomutils/timer.h"
+#include "utils/mathutils.h"
+#include "utils/name_value_pairs.h"
+#include "utils/t_values.h"
+#include "utils/timer.h"
 #include "v2d.h"
 
 //#undef NDEBUG
@@ -47,8 +47,8 @@ public:
 private:
   bool m_blockyWavy = false;
   Pixel m_clippedColor = Pixel::BLACK;
-  std::reference_wrapper<const UTILS::IColorMap> m_clippedColorMap{
-      UTILS::RandomColorMaps().GetRandomColorMap(UTILS::ColorMapGroup::DIVERGING_BLACK)};
+  std::reference_wrapper<const COLOR::IColorMap> m_clippedColorMap{
+      COLOR::RandomColorMaps().GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK)};
   UTILS::TValue m_clippedT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, 1000U};
   static constexpr uint32_t MAX_NUM_COLOR_UPDATES = 10000;
   UTILS::Timer m_clippedMap{MAX_NUM_COLOR_UPDATES};
@@ -75,7 +75,7 @@ inline void FilterColorsService::SetClippedColor(const Pixel& color)
   if (m_clippedMap.Finished())
   {
     m_clippedColorMap =
-        UTILS::RandomColorMaps().GetRandomColorMap(UTILS::ColorMapGroup::DIVERGING_BLACK);
+        COLOR::RandomColorMaps().GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);
     m_clippedMap.ResetToZero();
   }
 }

@@ -1,18 +1,18 @@
 #include "tentacles_fx.h"
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/logging_control.h"
 #include "tentacles/tentacle_driver.h"
+#include "utils/goomrand.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/spimpl.h"
+#include "color/random_colormaps.h"
+#include "utils/logging.h"
+#include "utils/mathutils.h"
+#include "utils/spimpl.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -34,10 +34,20 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using COLOR::ColorMapGroup;
+using COLOR::GetEvolvedColor;
+using COLOR::GetLightenedColor;
+using COLOR::IColorMap;
+using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
-using namespace GOOM::UTILS;
+using UTILS::GetRandInRange;
+using UTILS::m_half_pi;
+using UTILS::m_pi;
+using UTILS::m_two_pi;
+using UTILS::ProbabilityOfMInN;
+using UTILS::Weights;
 
 inline auto StartPrettyMoveEvent() -> bool
 {

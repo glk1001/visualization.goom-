@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goomutils/spimpl.h"
+#include "utils/spimpl.h"
 
 #include <cstdint>
 #include <functional>

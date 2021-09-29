@@ -2,8 +2,8 @@
 
 #include "goom/goom_stats.h"
 #include "goom/goom_version.h"
-#include "goomutils/enumutils.h"
-#include "goomutils/logging.h"
+#include "utils/enumutils.h"
+#include "utils/logging.h"
 
 #include <array>
 #include <chrono>

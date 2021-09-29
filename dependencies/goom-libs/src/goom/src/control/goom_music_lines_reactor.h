@@ -3,7 +3,7 @@
 #include "goom_all_visual_fx.h"
 #include "goom_events.h"
 #include "goom_plugin_info.h"
-#include "goomutils/name_value_pairs.h"
+#include "utils/name_value_pairs.h"
 
 #include <cstdint>
 

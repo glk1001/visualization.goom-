@@ -1,6 +1,6 @@
+#include "color/random_colormaps.h"
 #include "goom_all_visual_fx.h"
-#include "goomutils/enumutils.h"
-#include "goomutils/random_colormaps.h"
+#include "utils/enumutils.h"
 #include "visual_fx/flying_stars_fx.h"
 #include "visual_fx/goom_dots_fx.h"
 #include "visual_fx/ifs_dancers_fx.h"
@@ -20,27 +20,27 @@ namespace GOOM::CONTROL
 {
 #endif
 
-using UTILS::GetAllMapsUnweighted;
-using UTILS::GetAllSlimMaps;
-using UTILS::GetAllStandardMaps;
-using UTILS::GetBlueStandardMaps;
-using UTILS::GetCitiesStandardMaps;
-using UTILS::GetColdStandardMaps;
-using UTILS::GetGreenStandardMaps;
-using UTILS::GetHeatStandardMaps;
-using UTILS::GetMostlySequentialSlimMaps;
-using UTILS::GetMostlySequentialStandardMaps;
-using UTILS::GetOrangeStandardMaps;
-using UTILS::GetPastelStandardMaps;
-using UTILS::GetPurpleStandardMaps;
+using COLOR::GetAllMapsUnweighted;
+using COLOR::GetAllSlimMaps;
+using COLOR::GetAllStandardMaps;
+using COLOR::GetBlueStandardMaps;
+using COLOR::GetCitiesStandardMaps;
+using COLOR::GetColdStandardMaps;
+using COLOR::GetGreenStandardMaps;
+using COLOR::GetHeatStandardMaps;
+using COLOR::GetMostlySequentialSlimMaps;
+using COLOR::GetMostlySequentialStandardMaps;
+using COLOR::GetOrangeStandardMaps;
+using COLOR::GetPastelStandardMaps;
+using COLOR::GetPurpleStandardMaps;
+using COLOR::GetRedStandardMaps;
+using COLOR::GetSeasonsStandardMaps;
+using COLOR::GetSlightlyDivergingSlimMaps;
+using COLOR::GetSlightlyDivergingStandardMaps;
+using COLOR::GetYellowStandardMaps;
+using COLOR::RandomColorMaps;
 using UTILS::GetRandInRange;
-using UTILS::GetRedStandardMaps;
-using UTILS::GetSeasonsStandardMaps;
-using UTILS::GetSlightlyDivergingSlimMaps;
-using UTILS::GetSlightlyDivergingStandardMaps;
-using UTILS::GetYellowStandardMaps;
 using UTILS::NUM;
-using UTILS::RandomColorMaps;
 
 enum class GoomEffect
 {

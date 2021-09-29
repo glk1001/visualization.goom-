@@ -7,22 +7,22 @@
 
 #include "lines_fx.h"
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/graphics/image_bitmaps.h"
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/logging_control.h"
+#include "utils/goomrand.h"
+#include "utils/graphics/image_bitmaps.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/spimpl.h"
+#include "color/random_colormaps.h"
 #include "sound_info.h"
+#include "utils/logging.h"
+#include "utils/mathutils.h"
+#include "utils/spimpl.h"
 #include "v2d.h"
 
 #undef NDEBUG
@@ -44,23 +44,23 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using COLOR::GammaCorrection;
+using COLOR::GetAllSlimMaps;
+using COLOR::GetBrighterColor;
+using COLOR::GetColorMultiply;
+using COLOR::GetIntColor;
+using COLOR::GetLightenedColor;
+using COLOR::IColorMap;
+using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
-using UTILS::floats_equal;
-using UTILS::GammaCorrection;
-using UTILS::GetAllSlimMaps;
-using UTILS::GetBrighterColor;
-using UTILS::GetColorMultiply;
-using UTILS::GetIntColor;
-using UTILS::GetLightenedColor;
 using UTILS::GetNRand;
 using UTILS::GetRandInRange;
-using UTILS::IColorMap;
+using UTILS::floats_equal;
 using UTILS::ImageBitmap;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::m_two_pi;
 using UTILS::ProbabilityOfMInN;
-using UTILS::RandomColorMaps;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
 using UTILS::Weights;
@@ -83,7 +83,7 @@ public:
             float destParam,
             const Pixel& destColor);
 
-  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
 
   void Start();
 
@@ -200,7 +200,7 @@ LinesFx::LinesFx(const IGoomDraw& draw,
 {
 }
 
-void LinesFx::SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
+void LinesFx::SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
 }
@@ -302,7 +302,7 @@ void LinesFx::LinesImpl::Start()
 {
 }
 
-void LinesFx::LinesImpl::SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
+void LinesFx::LinesImpl::SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
 }

@@ -1,9 +1,9 @@
 #pragma once
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
 #include "goom_graphic.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/mathutils.h"
+#include "utils/mathutils.h"
 
 #include <functional>
 #include <memory>
@@ -30,8 +30,8 @@ public:
   auto operator=(const ITentacleColorizer&) noexcept -> ITentacleColorizer& = delete;
   auto operator=(ITentacleColorizer&&) noexcept -> ITentacleColorizer& = delete;
 
-  [[nodiscard]] virtual auto GetColorMapGroup() const -> UTILS::ColorMapGroup = 0;
-  virtual void SetColorMapGroup(UTILS::ColorMapGroup) = 0;
+  [[nodiscard]] virtual auto GetColorMapGroup() const -> COLOR::ColorMapGroup = 0;
+  virtual void SetColorMapGroup(COLOR::ColorMapGroup) = 0;
   virtual void ChangeColorMap() = 0;
   [[nodiscard]] virtual auto GetColor(size_t nodeNum) const -> Pixel = 0;
 };
@@ -199,7 +199,7 @@ private:
   bool m_allowOverexposed = true;
   static constexpr float GAMMA = 1.0F / 1.5F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  const UTILS::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
   bool m_useIncreasedChroma = true;
   auto GetFinalMixedColor(const Pixel& color, const Pixel& segmentColor, float t) const -> Pixel;

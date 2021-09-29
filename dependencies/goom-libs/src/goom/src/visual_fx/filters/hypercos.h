@@ -1,9 +1,9 @@
 #pragma once
 
 #include "filter_settings.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/name_value_pairs.h"
 #include "normalized_coords.h"
+#include "utils/goomrand.h"
+#include "utils/name_value_pairs.h"
 #include "v2d.h"
 
 #include <string>

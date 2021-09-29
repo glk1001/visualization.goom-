@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goomutils/mathutils.h"
+#include "utils/mathutils.h"
 #include "v2d.h"
 
 #include <cstdint>

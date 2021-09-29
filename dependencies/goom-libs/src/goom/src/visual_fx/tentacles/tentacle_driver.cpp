@@ -1,15 +1,15 @@
 #include "tentacle_driver.h"
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
 #include "draw/goom_draw.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/logging_control.h"
+#include "utils/goomrand.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/random_colormaps.h"
+#include "color/random_colormaps.h"
 #include "tentacles.h"
+#include "utils/logging.h"
+#include "utils/mathutils.h"
 #include "v2d.h"
 
 #undef NDEBUG
@@ -36,14 +36,14 @@ namespace GOOM::TENTACLES
 #endif
 
 using DRAW::IGoomDraw;
-using UTILS::ColorMapGroup;
-using UTILS::GetIntColor;
+using COLOR::ColorMapGroup;
+using COLOR::GetIntColor;
+using COLOR::IColorMap;
+using COLOR::RandomColorMaps;
 using UTILS::GetRandInRange;
-using UTILS::IColorMap;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::ProbabilityOfMInN;
-using UTILS::RandomColorMaps;
 using UTILS::Shuffle;
 
 inline auto ChangeCurrentColorMapEvent() -> bool
@@ -78,7 +78,7 @@ TentacleDriver::TentacleDriver(const IGoomDraw& draw) noexcept : m_draw{draw}
 }
 
 void TentacleDriver::SetWeightedColorMaps(
-    const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
+    const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
 }
@@ -378,8 +378,8 @@ void TentacleDriver::Update(const float angle,
     Tentacle2D& tentacle2D = tentacle.Get2DTentacle();
 
     const float iterZeroYVal = m_tentacleParams[i].iterZeroYValWave.GetNext();
-    tentacle2D.SetIterZeroLerpFactor(ITER_ZERO_LERP_FACTOR);
-    tentacle2D.SetIterZeroYVal(iterZeroYVal);
+    tentacle2D.SetIterZeroLerpFactor(static_cast<double>(ITER_ZERO_LERP_FACTOR));
+    tentacle2D.SetIterZeroYVal(static_cast<double>(iterZeroYVal));
 
     LogDebug("Starting Iterate {} for tentacle {}.", tentacle2D.GetIterNum() + 1,
              tentacle2D.GetID());

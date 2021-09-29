@@ -1,8 +1,8 @@
 #pragma once
 
 #include "goom_graphic.h"
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/timer.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/timer.h"
 
 #include <functional>
 #include <memory>
@@ -10,10 +10,10 @@
 namespace GOOM
 {
 
-namespace UTILS
+namespace COLOR
 {
 class RandomColorMaps;
-} // namespace UTILS
+} // namespace COLOR
 
 namespace TUBES
 {
@@ -81,16 +81,16 @@ public:
        const DrawFuncs& drawFuncs,
        uint32_t screenWidth,
        uint32_t screenHeight,
-       std::shared_ptr<UTILS::RandomColorMaps> colorMaps,
-       std::shared_ptr<UTILS::RandomColorMaps> lowColorMaps,
+       std::shared_ptr<COLOR::RandomColorMaps> colorMaps,
+       std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps,
        float radiusEdgeOffset,
        float brightnessFactor) noexcept;
 
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
 
-  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> colorMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<UTILS::RandomColorMaps> lowColorMaps);
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> colorMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps);
 
   void ResetColorMaps();
   void RotateShapeColorMaps();

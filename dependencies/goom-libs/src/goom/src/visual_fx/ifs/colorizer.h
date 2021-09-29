@@ -1,10 +1,10 @@
 #pragma once
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
+#include "color/random_colormaps.h"
+#include "color/random_colormaps_manager.h"
 #include "goom_graphic.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/random_colormaps_manager.h"
 #include "visual_fx/ifs_dancers_fx.h"
 
 #include <cmath>
@@ -26,9 +26,9 @@ class Colorizer
 public:
   Colorizer() noexcept;
 
-  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
-  auto GetColorMaps() const -> const UTILS::RandomColorMaps&;
+  auto GetColorMaps() const -> const COLOR::RandomColorMaps&;
 
   auto GetColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMode;
   void SetForcedColorMode(VISUAL_FX::IfsDancersFx::ColorMode val);
@@ -46,12 +46,12 @@ public:
                                    float tY) const -> Pixel;
 
 private:
-  std::shared_ptr<UTILS::RandomColorMaps> m_colorMaps{};
-  UTILS::RandomColorMapsManager m_colorMapsManager{};
+  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
+  COLOR::RandomColorMapsManager m_colorMapsManager{};
   uint32_t m_mixerMap1Id{};
-  std::shared_ptr<const UTILS::IColorMap> m_prevMixerMap1{};
+  std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap1{};
   uint32_t m_mixerMap2Id{};
-  std::shared_ptr<const UTILS::IColorMap> m_prevMixerMap2{};
+  std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap2{};
   mutable uint32_t m_countSinceColorMapChange = 0;
   static constexpr uint32_t MIN_COLOR_MAP_CHANGE_COMPLETED = 500;
   static constexpr uint32_t MAX_COLOR_MAP_CHANGE_COMPLETED = 1000;
@@ -70,11 +70,11 @@ private:
 
   static constexpr float GAMMA = 1.5F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  const UTILS::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
-inline auto Colorizer::GetColorMaps() const -> const UTILS::RandomColorMaps&
+inline auto Colorizer::GetColorMaps() const -> const COLOR::RandomColorMaps&
 {
   return *m_colorMaps;
 }

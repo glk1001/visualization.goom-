@@ -1,16 +1,16 @@
 #include "tubes.h"
 
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/logging_control.h"
+#include "color/colormaps.h"
+#include "color/colorutils.h"
+#include "utils/goomrand.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/t_values.h"
-#include "goomutils/timer.h"
+#include "color/random_colormaps.h"
+#include "utils/logging.h"
+#include "utils/mathutils.h"
+#include "utils/t_values.h"
+#include "utils/timer.h"
 #include "v2d.h"
 
 #include <algorithm>
@@ -34,18 +34,18 @@ namespace GOOM::TUBES
 {
 #endif
 
-using UTILS::GammaCorrection;
-using UTILS::GetBrighterColor;
-using UTILS::GetIncreasedChroma;
-using UTILS::GetLightenedColor;
+using COLOR::GammaCorrection;
+using COLOR::GetBrighterColor;
+using COLOR::GetIncreasedChroma;
+using COLOR::GetLightenedColor;
+using COLOR::IColorMap;
+using COLOR::RandomColorMaps;
 using UTILS::GetRandInRange;
-using UTILS::IColorMap;
 using UTILS::Logging;
 using UTILS::m_pi;
 using UTILS::m_third_pi;
 using UTILS::m_two_pi;
 using UTILS::ProbabilityOf;
-using UTILS::RandomColorMaps;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
 using UTILS::Sq;

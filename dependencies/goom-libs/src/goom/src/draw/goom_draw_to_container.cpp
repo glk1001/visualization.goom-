@@ -1,10 +1,10 @@
 #include "goom_draw_to_container.h"
 
+#include "color/colorutils.h"
 #include "goom_graphic.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/logging_control.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
+#include "utils/logging.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -21,7 +21,7 @@ namespace GOOM::DRAW
 {
 #endif
 
-using UTILS::GetBrighterColorInt;
+using COLOR::GetBrighterColorInt;
 using UTILS::Logging;
 
 GoomDrawToContainer::GoomDrawToContainer(const uint32_t screenWidth, const uint32_t screenHeight)

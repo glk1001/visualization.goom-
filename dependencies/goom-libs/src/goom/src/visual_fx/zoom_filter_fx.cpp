@@ -21,12 +21,12 @@
 #include "filters/filter_colors_service.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "goomutils/logging_control.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/logging.h"
-#include "goomutils/name_value_pairs.h"
-#include "goomutils/parallel_utils.h"
-#include "goomutils/spimpl.h"
+#include "utils/logging.h"
+#include "utils/name_value_pairs.h"
+#include "utils/parallel_utils.h"
+#include "utils/spimpl.h"
 
 #include <array>
 #undef NDEBUG

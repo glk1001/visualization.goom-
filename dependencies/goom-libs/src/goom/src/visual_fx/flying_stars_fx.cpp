@@ -1,19 +1,19 @@
 #include "flying_stars_fx.h"
 
+#include "color/colormaps.h"
+#include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "goom_plugin_info.h"
-#include "goomutils/colormaps.h"
-#include "goomutils/colorutils.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/graphics/image_bitmaps.h"
-#include "goomutils/logging_control.h"
+#include "utils/goomrand.h"
+#include "utils/graphics/image_bitmaps.h"
+#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "goomutils/graphics/small_image_bitmaps.h"
-#include "goomutils/logging.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/random_colormaps.h"
-#include "goomutils/random_colormaps_manager.h"
-#include "goomutils/spimpl.h"
+#include "color/random_colormaps.h"
+#include "color/random_colormaps_manager.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/logging.h"
+#include "utils/mathutils.h"
+#include "utils/spimpl.h"
 #include "v2d.h"
 
 #undef NDEBUG
@@ -37,26 +37,26 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using COLOR::COLOR_DATA::ColorMapName;
+using COLOR::GammaCorrection;
+using COLOR::GetBrighterColor;
+using COLOR::GetColorMultiply;
+using COLOR::GetLightenedColor;
+using COLOR::IColorMap;
+using COLOR::RandomColorMaps;
+using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
-using UTILS::GammaCorrection;
-using UTILS::GetBrighterColor;
-using UTILS::GetColorMultiply;
-using UTILS::GetLightenedColor;
 using UTILS::GetNRand;
 using UTILS::GetRandInRange;
-using UTILS::IColorMap;
 using UTILS::ImageBitmap;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::m_two_pi;
 using UTILS::ProbabilityOfMInN;
-using UTILS::RandomColorMaps;
-using UTILS::RandomColorMapsManager;
 using UTILS::SmallImageBitmaps;
 using UTILS::Sq;
 using UTILS::SqDistance;
 using UTILS::Weights;
-using UTILS::COLOR_DATA::ColorMapName;
 
 constexpr uint32_t MIN_STAR_AGE = 15;
 constexpr uint32_t MAX_STAR_EXTRA_AGE = 50;
@@ -95,8 +95,8 @@ public:
 
   void Start();
 
-  void SetWeightedColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<UTILS::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
 
   void UpdateBuffers();
 
@@ -254,13 +254,13 @@ FlyingStarsFx::FlyingStarsFx(const IGoomDraw& draw,
 {
 }
 
-void FlyingStarsFx::SetWeightedColorMaps(const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
+void FlyingStarsFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
 }
 
 void FlyingStarsFx::SetWeightedLowColorMaps(
-    const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
+    const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -341,7 +341,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetImageBitmap(const size_t size) co
 }
 
 inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
-    const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
+    const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
 
@@ -355,7 +355,7 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
 }
 
 inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedLowColorMaps(
-    const std::shared_ptr<UTILS::RandomColorMaps> weightedMaps)
+    const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_lowColorMaps = weightedMaps;
 

@@ -4,11 +4,11 @@
 #include "filter_colors_service.h"
 #include "filter_settings.h"
 #include "filter_zoom_vector.h"
-#include "goomutils/goomrand.h"
-#include "goomutils/mathutils.h"
-#include "goomutils/spimpl.h"
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
+#include "utils/goomrand.h"
+#include "utils/mathutils.h"
+#include "utils/spimpl.h"
 
 #include <map>
 #include <memory>

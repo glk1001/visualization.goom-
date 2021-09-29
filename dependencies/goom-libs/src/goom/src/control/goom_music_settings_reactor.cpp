@@ -1,6 +1,6 @@
 #include "goom_music_settings_reactor.h"
 
-#include "goomutils/name_value_pairs.h"
+#include "utils/name_value_pairs.h"
 
 #if __cplusplus <= 201402L
 namespace GOOM

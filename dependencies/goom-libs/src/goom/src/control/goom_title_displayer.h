@@ -1,7 +1,7 @@
 #pragma once
 
+#include "color/colorutils.h"
 #include "goom_graphic.h"
-#include "goomutils/colorutils.h"
 
 #include <cstdint>
 #include <functional>
@@ -17,7 +17,7 @@ namespace DRAW
 class IGoomDraw;
 class TextDraw;
 }
-namespace UTILS
+namespace COLOR
 {
 class IColorMap;
 }
@@ -60,9 +60,9 @@ private:
   const size_t m_fontInfoIndex;
   [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
   [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;
-  std::reference_wrapper<const UTILS::IColorMap> m_textColorMap;
-  std::reference_wrapper<const UTILS::IColorMap> m_textOutlineColorMap;
-  std::reference_wrapper<const UTILS::IColorMap> m_charColorMap;
+  std::reference_wrapper<const COLOR::IColorMap> m_textColorMap;
+  std::reference_wrapper<const COLOR::IColorMap> m_textOutlineColorMap;
+  std::reference_wrapper<const COLOR::IColorMap> m_charColorMap;
   void DrawText(const std::string& text);
   [[nodiscard]] static auto GetTextLines(const std::string& text) -> std::vector<std::string>;
   [[nodiscard]] auto GetCharSpacing() const -> float;
@@ -70,7 +70,7 @@ private:
   [[nodiscard]] auto GetYIncrement() const -> float;
   static constexpr float TEXT_GAMMA = 1.0F / 1.0F;
   static constexpr float TEXT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  UTILS::GammaCorrection m_textGammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};
+  COLOR::GammaCorrection m_textGammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};
   [[nodiscard]] auto GetTextGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
