@@ -1,5 +1,5 @@
 add_subdirectory(goom)
 add_subdirectory(vivid)
 
-message(STATUS "Building GoomTests.")
-add_subdirectory(goomtests)
+message(STATUS "Building Tests.")
+add_subdirectory(tests)

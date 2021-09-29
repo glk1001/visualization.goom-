@@ -14,16 +14,16 @@ find_package(Threads)
 
 add_executable(goomtests
         src/test_main.cpp
+        src/test_pixels.cpp
+        src/color/test_colorutils.cpp
         src/draw/test_draw.cpp
         src/filters/test_filter_buffers.cpp
         src/filters/test_filter_colors_service.cpp
         src/filters/test_normalized_coords.cpp
-        src/test_pixels.cpp
-        src/test_filter_fx.cpp
-        src/utils/test_colorutils.cpp
         src/utils/test_goomrand.cpp
         src/utils/test_parallel_utils.cpp
         src/utils/test_strutils.cpp
+        src/visual_fx/test_filter_fx.cpp
 )
 
 target_link_libraries(goomtests
