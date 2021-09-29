@@ -19,14 +19,14 @@
 
 #include "filters/filter_buffers_service.h"
 #include "filters/filter_colors_service.h"
+#include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "utils/logging.h"
+#include "goom/logging.h"
+#include "goom/spimpl.h"
 #include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
-#include "utils/spimpl.h"
 
 #include <array>
 #undef NDEBUG

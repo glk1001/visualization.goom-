@@ -4,12 +4,12 @@
 #include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "draw/text_draw.h"
+#include "goom/logging_control.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
-#include "utils/logging.h"
+#include "goom/logging.h"
 #include "utils/strutils.h"
 
 #include <cstdint>

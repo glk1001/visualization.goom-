@@ -21,18 +21,18 @@
 #include "control/goom_music_settings_reactor.h"
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
+#include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/logging_control.h"
 #include "visual_fx/filters/filter_settings_service.h"
 #undef NO_LOGGING
-#include "utils/logging.h"
+#include "goom/logging.h"
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 #include "utils/name_value_pairs.h"
 #endif
+#include "goom/spimpl.h"
 #include "utils/parallel_utils.h"
-#include "utils/spimpl.h"
 
 #include <cstdint>
 #if __cplusplus > 201402L

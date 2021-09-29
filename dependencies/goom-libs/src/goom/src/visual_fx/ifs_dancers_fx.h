@@ -1,7 +1,7 @@
 #pragma once
 
+#include "goom/spimpl.h"
 #include "goom_visual_fx.h"
-#include "utils/spimpl.h"
 
 #include <memory>
 #include <string>

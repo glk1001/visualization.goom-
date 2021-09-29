@@ -2,12 +2,12 @@
 
 #include "color/colormaps.h"
 #include "color/colorutils.h"
+#include "goom/logging_control.h"
 #include "utils/goomrand.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
-#include "utils/logging.h"
+#include "goom/logging.h"
 #include "utils/mathutils.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"

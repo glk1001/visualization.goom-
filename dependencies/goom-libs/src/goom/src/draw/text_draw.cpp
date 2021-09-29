@@ -1,12 +1,12 @@
 #include "text_draw.h"
 
 #include "color/colorutils.h"
+#include "goom/logging_control.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "utils/logging.h"
-#include "utils/spimpl.h"
+#include "goom/logging.h"
+#include "goom/spimpl.h"
 
 #include <codecvt>
 #include <format>

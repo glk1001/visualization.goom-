@@ -1,9 +1,9 @@
 #pragma once
 
+#include "goom/spimpl.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "sound_info.h"
-#include "utils/spimpl.h"
 
 #include <cstddef>
 #include <memory>

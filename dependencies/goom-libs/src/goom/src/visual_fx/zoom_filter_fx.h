@@ -1,8 +1,8 @@
 #pragma once
 
+#include "goom/spimpl.h"
 #include "goom_visual_fx.h"
 #include "utils/name_value_pairs.h"
-#include "utils/spimpl.h"
 
 #include <cstdint>
 #include <memory>

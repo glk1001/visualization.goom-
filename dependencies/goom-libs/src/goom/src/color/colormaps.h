@@ -2,8 +2,8 @@
 
 #include "color_data/colormap_enums.h"
 #include "goom/goom_graphic.h"
+#include "goom/spimpl.h"
 #include "utils/enumutils.h"
-#include "utils/spimpl.h"
 
 #include <cstdint>
 #include <memory>

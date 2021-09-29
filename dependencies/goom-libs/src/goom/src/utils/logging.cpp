@@ -1,4 +1,4 @@
-#include "utils/logging.h"
+#include "goom/logging.h"
 
 #include <functional>
 #include <memory>

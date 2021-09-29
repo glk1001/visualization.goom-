@@ -1,8 +1,8 @@
 #include "t_values.h"
 
-#include "utils/logging_control.h"
+#include "goom/logging_control.h"
 //#undef NO_LOGGING
-#include "utils/logging.h"
+#include "goom/logging.h"
 #include "mathutils.h"
 
 #undef NDEBUG

@@ -1,12 +1,12 @@
 #include "filter_buffers.h"
 
+#include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "utils/goomrand.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "utils/logging.h"
+#include "goom/logging.h"
 #include "utils/parallel_utils.h"
 #include "v2d.h"
 

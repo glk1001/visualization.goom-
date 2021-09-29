@@ -3,12 +3,12 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "draw/goom_draw.h"
+#include "goom/logging_control.h"
 #include "utils/goomrand.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
+#include "goom/logging.h"
 #include "tentacles.h"
-#include "utils/logging.h"
 #include "utils/mathutils.h"
 #include "v2d.h"
 

@@ -10,9 +10,9 @@
 
 #include "goom/goom_graphic.h"
 #include "goom/sound_info.h"
-#include "goomutils/logging_control.h"
+#include "goom/logging_control.h"
 #undef NO_LOGGING
-#include "goomutils/logging.h"
+#include "goom/logging.h"
 
 #include <cstddef>
 #include <memory>

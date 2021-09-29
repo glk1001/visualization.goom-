@@ -3,7 +3,7 @@
 
 #undef NO_LOGGING
 #include "catch2/catch.hpp"
-#include "utils/logging.h"
+#include "goom/logging.h"
 
 #include <iostream>
 #include <ostream>

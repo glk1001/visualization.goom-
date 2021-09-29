@@ -35,6 +35,7 @@
 #include "ifs_dancers_fx.h"
 
 #include "draw/goom_draw.h"
+#include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "ifs/colorizer.h"
@@ -42,11 +43,10 @@
 #include "ifs/low_density_blurrer.h"
 #include "utils/goomrand.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
-#include "utils/logging.h"
-#include "utils/spimpl.h"
+#include "goom/logging.h"
+#include "goom/spimpl.h"
 #include "utils/t_values.h"
 
 #include <array>

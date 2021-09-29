@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/spimpl.h"
+#include "spimpl.h"
 
 #include <cstdint>
 #include <string>

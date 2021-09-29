@@ -1,10 +1,10 @@
 #include "small_image_bitmaps.h"
 
 #include "goom/goom_config.h"
+#include "goom/logging_control.h"
 #include "utils/enumutils.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "utils/logging.h"
+#include "goom/logging.h"
 #include "utils/mathutils.h"
 
 #include <array>

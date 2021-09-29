@@ -3,17 +3,17 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "draw/goom_draw.h"
+#include "goom/logging_control.h"
 #include "goom_plugin_info.h"
 #include "utils/goomrand.h"
 #include "utils/graphics/image_bitmaps.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
+#include "goom/logging.h"
+#include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/logging.h"
 #include "utils/mathutils.h"
-#include "utils/spimpl.h"
 #include "v2d.h"
 
 #undef NDEBUG

@@ -5,11 +5,11 @@
 #include "color_data/extra_color_groups.h"
 #include "colorutils.h"
 #include "goom/goom_graphic.h"
+#include "goom/logging_control.h"
 #include "utils/enumutils.h"
-#include "utils/logging_control.h"
 //#undef NO_LOGGING
-#include "utils/logging.h"
-#include "utils/spimpl.h"
+#include "goom/logging.h"
+#include "goom/spimpl.h"
 
 #include <algorithm>
 #undef NDEBUG
