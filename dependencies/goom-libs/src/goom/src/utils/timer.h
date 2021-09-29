@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goom/v2d.h"
+#include "v2d.h"
 
 #include <cstdint>
 

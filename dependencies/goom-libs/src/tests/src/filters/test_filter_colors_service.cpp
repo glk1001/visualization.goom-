@@ -1,6 +1,6 @@
 #include "catch2/catch.hpp"
 #include "goom/goom_graphic.h"
-#include "goom/v2d.h"
+#include "v2d.h"
 #include "visual_fx/filters/filter_buffers.h"
 #include "visual_fx/filters/filter_colors_service.h"
 

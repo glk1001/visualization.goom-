@@ -2,8 +2,8 @@
 
 #include "catch2/catch.hpp"
 #include "goom/goom_graphic.h"
-#include "goom/v2d.h"
 #include "utils/mathutils.h"
+#include "v2d.h"
 
 #include <chrono>
 #include <cstdint>
