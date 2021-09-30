@@ -1,7 +1,7 @@
 #pragma once
 
 #if __cplusplus > 201402L
-#include "color_data/colormap_enums.h"
+#include "color/color_data/colormap_enums.h"
 
 #include <magic_enum.hpp>
 #include <stdexcept>
@@ -17,10 +17,10 @@ constexpr uint32_t NUM = static_cast<size_t>(E::_NUM);
 }
 
 template<>
-struct magic_enum::customize::enum_range<GOOM::UTILS::COLOR_DATA::ColorMapName>
+struct magic_enum::customize::enum_range<GOOM::COLOR::COLOR_DATA::ColorMapName>
 {
   inline static constexpr int min = -1;
-  inline static constexpr int max = GOOM::UTILS::NUM<GOOM::UTILS::COLOR_DATA::ColorMapName>;
+  inline static constexpr int max = GOOM::UTILS::NUM<GOOM::COLOR::COLOR_DATA::ColorMapName>;
   static_assert(max > min, "magic_enum::customize::enum_range requires max > min.");
 };
 #endif
