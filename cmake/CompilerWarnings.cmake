@@ -87,7 +87,4 @@ function(set_project_warnings project_name)
 
   target_compile_options(${project_name} PRIVATE ${PROJECT_WARNINGS})
 
-  get_target_property(set_compile_options ${project_name} COMPILE_OPTIONS)
-  message(STATUS "\"${project_name}\" target compile options are: ${set_compile_options}")
-
 endfunction()

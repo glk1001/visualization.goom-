@@ -1,5 +1,10 @@
 add_subdirectory(goom)
 add_subdirectory(vivid)
 
-message(STATUS "Building Tests.")
-add_subdirectory(tests)
+if(NOT ENABLE_TESTING)
+  message(STATUS "NOT Building Tests")
+else()
+  enable_testing()
+  message(STATUS "Building Tests")
+  add_subdirectory(tests)
+endif()

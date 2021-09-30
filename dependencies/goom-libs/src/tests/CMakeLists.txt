@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.12)
 
 project(GoomTests LANGUAGES CXX)
 
-##set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
-#set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fsanitize=address")
-
 if(WIN32)
     add_definitions(-D_WIN32PC)
 endif()
@@ -30,30 +26,38 @@ target_link_libraries(goomtests
     PRIVATE
         goom
         vivid
+        Catch2::Catch2
         ${CMAKE_THREAD_LIBS_INIT}
 )
 
 target_include_directories(goomtests
     PRIVATE 
-        ${LIBS_DIR}/catch2/include
         ${GOOM_ROOT_DIR}/goom/include
         ${GOOM_ROOT_DIR}/goom/include/goom
         ${GOOM_ROOT_DIR}/goom/src
 )  
 target_include_directories(goomtests
     SYSTEM PRIVATE 
-        ${LIBS_DIR}/fmt/include
-        ${LIBS_DIR}/magic_enum/include
+        ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
+        ${THIRD_PARTY_INCLUDE_DIR}/magic_enum/include
 )
 
 set_project_warnings(goomtests)
+enable_sanitizers(goomtests)
+configure_linker(goomtests)
 
 set_target_properties(goomtests
     PROPERTIES
         CXX_STANDARD ${CPP_STANDARD}
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/bin
 )
 
 catch_discover_tests(goomtests)
 
+get_target_property(goomtests_compile_options  goomtests COMPILE_OPTIONS)
+get_target_property(goomtests_compile_features goomtests COMPILE_FEATURES)
+get_target_property(goomtests_link_options     goomtests LINK_OPTIONS)
+
 message(STATUS "Goom Tests C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Goom Tests C++ compile features = \"${goomtests_compile_features}\".")
+message(STATUS "Goom Tests C++ compile options = \"${goomtests_compile_options}\".")
+message(STATUS "Goom Tests C++ link options = \"${goomtests_link_options}\".")

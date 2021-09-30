@@ -83,7 +83,7 @@ add_library(goom
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tube_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp
-        )
+)
 
 target_include_directories(goom
     PUBLIC
@@ -97,8 +97,8 @@ target_include_directories(goom
 target_include_directories(goom
     SYSTEM PRIVATE
         ${GOOM_ROOT_DIR}/vivid/include
-        ${LIBS_DIR}/fmt/include
-        ${LIBS_DIR}/magic_enum/include
+        ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
+        ${THIRD_PARTY_INCLUDE_DIR}/magic_enum/include
         ${FREETYPE_INCLUDE_DIRS}
 )
 
@@ -111,4 +111,9 @@ set_target_properties(goom
         POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
 )
 
+get_target_property(goom_compile_options  goom COMPILE_OPTIONS)
+get_target_property(goom_compile_features goom COMPILE_FEATURES)
+
 message(STATUS "Goom C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Goom C++ compile features = \"${goom_compile_features}\".")
+message(STATUS "Goom C++ compile options = \"${goom_compile_options}\".")

@@ -67,6 +67,8 @@ target_include_directories( ${PROJECT_NAME}
         SYSTEM ${GLM_INCLUDE_DIR}/..
 )
 
+enable_sanitizers(${PROJECT_NAME})
+
 set_target_properties( ${PROJECT_NAME}
     PROPERTIES
         CXX_STANDARD ${CPP_STANDARD}
@@ -80,5 +82,9 @@ if(OFF)
     add_subdirectory(tests)
 endif()
 
+get_target_property(vivid_compile_options  vivid COMPILE_OPTIONS)
+get_target_property(vivid_compile_features vivid COMPILE_FEATURES)
+
 message(STATUS "Vivid C++ standard = \"${CPP_STANDARD}\".")
-message(STATUS "Vivid C++ warnings = \"${CMAKE_COMMON_CXX_WARNINGS}\".")
+message(STATUS "Vivid C++ compile features = \"${vivid_compile_features}\".")
+message(STATUS "Vivid C++ compile options = \"${vivid_compile_options}\".")

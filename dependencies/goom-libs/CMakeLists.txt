@@ -2,10 +2,13 @@ cmake_minimum_required(VERSION 3.12)
 
 project(visualization.goom.lib)
 
-set(CMAKE_SCRIPTS ${CMAKE_SOURCE_DIR}/../../cmake)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+if(NOT DEFINED GOOM_BUILD_ARTIFACTS_DIR)
+  set(GOOM_BUILD_ARTIFACTS_DIR "${CMAKE_BINARY_DIR}")
+endif()
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${GOOM_BUILD_ARTIFACTS_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${GOOM_BUILD_ARTIFACTS_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GOOM_BUILD_ARTIFACTS_DIR}/bin)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   # Kodi Windows build uses Visual Studio 2017 which calls C++17 attributes errors instead of warnings.
@@ -19,9 +22,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-include(${CMAKE_SCRIPTS}/StandardProjectSettings.cmake)
-include(${CMAKE_SCRIPTS}/PreventInSourceBuilds.cmake)
-
 if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
   option(ENABLE_BUILD_WITH_TIME_TRACE "Enable -ftime-trace to generate time tracing .json files on clang" OFF)
   if(ENABLE_BUILD_WITH_TIME_TRACE)
@@ -29,21 +29,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
   endif()
 endif()
 
-# enable cache system
-include(${CMAKE_SCRIPTS}/Cache.cmake)
-
-# Add linker configuration
-include(${CMAKE_SCRIPTS}/Linker.cmake)
-configure_linker(project_options)
-
-# standard compiler warnings
-include(${CMAKE_SCRIPTS}/CompilerWarnings.cmake)
-
-# sanitizer options if supported by compiler
-include(${CMAKE_SCRIPTS}/Sanitizers.cmake)
-
-# allow for static analysis options
-include(${CMAKE_SCRIPTS}/StaticAnalyzers.cmake)
+include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
+include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
+include(${CMAKE_SCRIPTS_PATH}/Cache.cmake)
+include(${CMAKE_SCRIPTS_PATH}/Linker.cmake)
+include(${CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
+include(${CMAKE_SCRIPTS_PATH}/Sanitizers.cmake)
+include(${CMAKE_SCRIPTS_PATH}/StaticAnalyzers.cmake)
 
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
@@ -72,22 +64,25 @@ endif ()
 
 find_package(Catch2 REQUIRED)
 
-set(LIBS_DIR ${CMAKE_SOURCE_DIR}/lib)
+set(THIRD_PARTY_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/lib)
 set(GOOM_ROOT_DIR ${CMAKE_SOURCE_DIR}/src)
 
 
 message(STATUS "CMAKE_CXX_COMPILER_ID = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
+message(STATUS "CMAKE_BUILD_TYPE = \"${CMAKE_BUILD_TYPE}\".")
 message(STATUS "CMAKE_MODULE_PATH = \"${CMAKE_MODULE_PATH}\".")
+message(STATUS "CMAKE_SCRIPTS_PATH = \"${CMAKE_SCRIPTS_PATH}\".")
+message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY = \"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\".")
+message(STATUS "Goom-libs C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Goom-libs C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
+message(STATUS "Goom-libs C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")
 message(STATUS "GOOM_ROOT_DIR = \"${GOOM_ROOT_DIR}\".")
-message(STATUS "LIBS_DIR = \"${LIBS_DIR}\".")
+message(STATUS "THIRD_PARTY_INCLUDE_DIR = \"${THIRD_PARTY_INCLUDE_DIR}\".")
 message(STATUS "FREETYPE_INCLUDE_DIRS = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "CMAKE_ARCHIVE_OUTPUT_DIRECTORY = \"${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}\".")
 message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY = \"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\".")
 message(STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY = \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\".")
-message(STATUS "Main C++ standard = \"${CPP_STANDARD}\".")
-message(STATUS "C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
-message(STATUS "C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")
 
 
 include(CTest)

@@ -1,4 +1,4 @@
-# visualization.goom addon for Kodi
+# Visualization.goom addon for Kodi
 
 This is a [Kodi](http://kodi.tv) visualization addon.
 
