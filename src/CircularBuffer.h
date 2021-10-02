@@ -83,15 +83,17 @@ public:
 
   [[nodiscard]] auto TestSilence() const -> bool
   {
-    T* begin = (T*)&m_buffer[0];
+    T* begin = static_cast<T*>(&m_buffer[0]);
     T first = *begin;
     *begin = SILENCE_THRESHOLD * 2;
     T* p = begin + m_size;
-    while ((unsigned)(*--p + SILENCE_THRESHOLD) <= (unsigned)SILENCE_THRESHOLD * 2)
+    while (static_cast<u_int32_t>((*--p + SILENCE_THRESHOLD) <=
+                                  static_cast<u_int32_t>(SILENCE_THRESHOLD) * 2))
     {
     }
     *begin = first;
-    return p == begin && ((unsigned)(first + SILENCE_THRESHOLD) <= (unsigned)SILENCE_THRESHOLD * 2);
+    return p == begin && (static_cast<u_int32_t>(first + SILENCE_THRESHOLD) <=
+                          static_cast<u_int32_t>(SILENCE_THRESHOLD) * 2);
   }
 
 private:

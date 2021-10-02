@@ -27,20 +27,20 @@
 
 class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,
                                             public kodi::addon::CInstanceVisualization,
-                                            private kodi::gui::gl::CShaderProgram
+                                            kodi::gui::gl::CShaderProgram
 {
 public:
   CVisualizationGoom();
-  ~CVisualizationGoom() override;
   CVisualizationGoom(const CVisualizationGoom&) noexcept = delete;
   CVisualizationGoom(CVisualizationGoom&&) noexcept = delete;
+  ~CVisualizationGoom() override;
   auto operator=(const CVisualizationGoom&) -> CVisualizationGoom = delete;
   auto operator=(CVisualizationGoom&&) -> CVisualizationGoom = delete;
 
-  [[nodiscard]] auto Start(int channels,
-             int samplesPerSec,
-             int bitsPerSample,
-             const std::string& songName) -> bool override;
+  [[nodiscard]] auto Start(int numChannels,
+                           int samplesPerSec,
+                           int bitsPerSample,
+                           const std::string& songName) -> bool override;
   void Stop() override;
   [[nodiscard]] auto IsDirty() -> bool override;
   void Render() override;
@@ -63,7 +63,7 @@ protected:
     return static_cast<int32_t>(m_goomBufferLen);
   };
   [[nodiscard]] auto CurrentSongName() const -> const std::string& { return m_currentSongName; };
-  [[nodiscard]] auto NumChannels() const -> size_t { return m_channels; };
+  [[nodiscard]] auto NumChannels() const -> size_t { return m_numChannels; };
   virtual void NoActiveBufferAvailable() {}
   virtual void AudioDataQueueTooBig() {}
   virtual void SkippedAudioData() {}
@@ -88,7 +88,7 @@ private:
   const size_t m_goomBufferLen;
   const size_t m_goomBufferSize;
   size_t m_audioBufferLen{};
-  uint32_t m_audioBuffNum = 0;
+  uint32_t m_audioBufferNum = 0;
   static constexpr uint32_t MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6;
 
   const int m_windowWidth;
@@ -96,7 +96,7 @@ private:
   const int m_windowXPos;
   const int m_windowYPos;
 
-  size_t m_channels{};
+  size_t m_numChannels{};
   std::string m_currentSongName{};
   std::string m_lastSongName{};
   bool m_titleChange = false;

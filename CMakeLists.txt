@@ -44,8 +44,6 @@ endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-cmake_policy(SET CMP0077 NEW)
-set(WARNINGS_AS_ERRORS OFF)
 
 set(CMAKE_INSTALL_MESSAGE LAZY)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
@@ -101,7 +99,8 @@ include_directories(${GOOM_INCLUDE_DIRS}
                     SYSTEM ${GOOM_SYS_INC_DIRS}
                     # Need this '..' hack here. Not nice!
                     SYSTEM ${GLM_INCLUDE_DIR}/..
-                    SYSTEM ${KODI_INCLUDE_DIR})
+                    SYSTEM ${KODI_INCLUDE_DIR}/..
+)
 
 set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp)
 set(${GOOM_ADDON_PREFIX}_HEADERS src/CircularBuffer.h src/Main.h)
@@ -136,3 +135,4 @@ message(STATUS "GOOM_SYS_INC_DIRS = \"${GOOM_SYS_INC_DIRS}\".")
 message(STATUS "GOOM_BIN_LIBS = \"${GOOM_BIN_LIBS}\".")
 message(STATUS "GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "KODI_INCLUDE_DIR = \"${KODI_INCLUDE_DIR}\".")
+  
