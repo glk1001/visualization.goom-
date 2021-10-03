@@ -42,6 +42,9 @@ add_library(goom
         src/draw/goom_draw_to_container.cpp
         src/draw/goom_draw_to_many.cpp
         src/draw/text_draw.cpp
+        src/goom_control.cpp
+        src/goom_graphic.cpp
+        src/sound_info.cpp
         src/visual_fx/filters/amulet.cpp
         src/visual_fx/filters/crystal_ball.cpp
         src/visual_fx/filters/filter_buffers.cpp
@@ -66,12 +69,9 @@ add_library(goom
         src/visual_fx/filters/tan_effect.cpp
         src/visual_fx/filters/wave.cpp
         src/visual_fx/filters/y_only.cpp
-        src/goom_control.cpp
-        src/goom_graphic.cpp
         src/visual_fx/ifs/colorizer.cpp
         src/visual_fx/ifs/fractal.cpp
         src/visual_fx/ifs/low_density_blurrer.cpp
-        src/sound_info.cpp
         src/visual_fx/tentacles/tentacle_driver.cpp
         src/visual_fx/tentacles/tentacles.cpp
         src/visual_fx/tubes/tubes.cpp

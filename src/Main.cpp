@@ -18,6 +18,7 @@
 #include <memory>
 #include <stdexcept>
 
+using GOOM::AudioSamples;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
@@ -92,7 +93,7 @@ auto CVisualizationGoom::Start(const int numChannels,
     LogInfo("CVisualizationGoom: Texture width = {} and height = {}.", m_texWidth, m_texHeight);
 
     m_numChannels = static_cast<size_t>(numChannels);
-    m_audioBufferLen = m_numChannels * AUDIO_SAMPLE_LEN;
+    m_audioBufferLen = m_numChannels * AudioSamples::AUDIO_SAMPLE_LEN;
     m_audioBufferNum = 0;
     m_currentSongName = songName;
     m_titleChange = true;

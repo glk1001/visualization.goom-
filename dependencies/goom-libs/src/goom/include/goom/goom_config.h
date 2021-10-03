@@ -13,9 +13,6 @@ constexpr auto FONTS_DIR = "fonts";
 constexpr auto IMAGES_DIR = "images";
 constexpr auto IMAGE_DISPLACEMENT_DIR = "displacements";
 
-#define NUM_AUDIO_SAMPLES 2
-#define AUDIO_SAMPLE_LEN 512
-
 #ifdef WORDS_BIGENDIAN
 #define COLOR_ARGB
 #else

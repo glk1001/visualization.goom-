@@ -33,8 +33,8 @@ inline auto FloatToInt16(const float f) -> int16_t
 AudioSamples::AudioSamples(const size_t numSampleChannels,
                            const float floatAudioData[NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN])
   : m_numDistinctChannels{numSampleChannels},
-    m_sampleArrays(NUM_CHANNELS),
-    m_minMaxSampleValues(NUM_CHANNELS)
+    m_sampleArrays(NUM_AUDIO_SAMPLES),
+    m_minMaxSampleValues(NUM_AUDIO_SAMPLES)
 {
   if ((0 == numSampleChannels) || (numSampleChannels > 2))
   {
@@ -45,7 +45,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
   m_sampleArrays[0].resize(AUDIO_SAMPLE_LEN);
   m_sampleArrays[1].resize(AUDIO_SAMPLE_LEN);
 
-  if (1 == NUM_CHANNELS)
+  if (1 == NUM_AUDIO_SAMPLES)
   {
     for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
     {
@@ -152,7 +152,7 @@ void SoundInfo::UpdateVolume(const AudioSamples& samples)
   int16_t maxPosVar = 0;
   int16_t maxVar = std::numeric_limits<int16_t>::min();
   int16_t minVar = std::numeric_limits<int16_t>::max();
-  for (size_t n = 0; n < AudioSamples::NUM_CHANNELS; ++n)
+  for (size_t n = 0; n < AudioSamples::NUM_AUDIO_SAMPLES; ++n)
   {
     const std::vector<int16_t>& soundData = samples.GetSample(n);
     for (const int16_t dataVal : soundData)

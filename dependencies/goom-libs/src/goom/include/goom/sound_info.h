@@ -13,7 +13,8 @@ namespace GOOM
 class AudioSamples
 {
 public:
-  static constexpr size_t NUM_CHANNELS = 2;
+  static constexpr size_t NUM_AUDIO_SAMPLES = 2;
+  static constexpr size_t AUDIO_SAMPLE_LEN = 512;
 
   // AudioSample object: numSampleChannels = 1 or 2.
   //   If numSampleChannels = 1, then the first  AUDIO_SAMPLE_LEN values of 'floatAudioData'

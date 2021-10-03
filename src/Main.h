@@ -14,6 +14,7 @@
 #include "goom/goom_config.h"
 #include "goom/goom_control.h"
 #include "goom/goom_graphic.h"
+#include "goom/sound_info.h"
 
 #include <condition_variable>
 #include <functional>
@@ -130,8 +131,9 @@ private:
   std::unique_ptr<GOOM::GoomControl> m_goomControl = nullptr;
 
   // Audio buffer storage
-  static const size_t CIRCULAR_BUFFER_SIZE =
-      NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER * NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN;
+  static const size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
+                                             GOOM::AudioSamples::NUM_AUDIO_SAMPLES *
+                                             GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
   CircularBuffer<float> m_buffer{CIRCULAR_BUFFER_SIZE};
 
   // Goom process thread handles
