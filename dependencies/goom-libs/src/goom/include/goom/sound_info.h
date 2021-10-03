@@ -23,7 +23,7 @@ public:
   //   one after the other. So 'floatAudioData[0]' is channel 0, 'floatAudioData[1]' is
   //   channel 1, 'floatAudioData[2]' is channel 0, 'floatAudioData[3]' is channel 1, etc.
   AudioSamples(size_t numSampleChannels,
-               const float floatAudioData[NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN]);
+               const std::vector<float>& floatAudioData);
 
   [[nodiscard]] auto GetNumDistinctChannels() const -> size_t { return m_numDistinctChannels; }
 

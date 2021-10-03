@@ -31,16 +31,13 @@ inline auto FloatToInt16(const float f) -> int16_t
 }
 
 AudioSamples::AudioSamples(const size_t numSampleChannels,
-                           const float floatAudioData[NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN])
+                           const std::vector<float>& floatAudioData)
   : m_numDistinctChannels{numSampleChannels},
     m_sampleArrays(NUM_AUDIO_SAMPLES),
     m_minMaxSampleValues(NUM_AUDIO_SAMPLES)
 {
-  if ((0 == numSampleChannels) || (numSampleChannels > 2))
-  {
-    throw std::logic_error(
-        std20::format("Invalid 'numSampleChannels == {}. Must be '1' or '2'.", numSampleChannels));
-  }
+  assert((0 < numSampleChannels) && (numSampleChannels <= 2));
+  assert((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == floatAudioData.size());
 
   m_sampleArrays[0].resize(AUDIO_SAMPLE_LEN);
   m_sampleArrays[1].resize(AUDIO_SAMPLE_LEN);
@@ -65,7 +62,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
   }
   else
   {
-    int fpos = 0;
+    size_t fpos = 0;
     for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
     {
       m_sampleArrays[0][i] = FloatToInt16(floatAudioData[fpos]);

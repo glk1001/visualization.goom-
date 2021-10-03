@@ -53,7 +53,7 @@ public:
   [[nodiscard]] auto OnEnabled() -> bool override;
 
 protected:
-  const static size_t NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER = 16;
+  static constexpr size_t NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER = 16;
   [[nodiscard]] auto GetGoomControl() const -> const GOOM::GoomControl& { return *m_goomControl; };
   [[nodiscard]] auto GetGoomControl() -> GOOM::GoomControl& { return *m_goomControl; };
   [[nodiscard]] auto AudioBufferLen() const -> size_t { return m_audioBufferLen; };
@@ -131,10 +131,12 @@ private:
   std::unique_ptr<GOOM::GoomControl> m_goomControl = nullptr;
 
   // Audio buffer storage
-  static const size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
-                                             GOOM::AudioSamples::NUM_AUDIO_SAMPLES *
-                                             GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
-  CircularBuffer<float> m_buffer{CIRCULAR_BUFFER_SIZE};
+  //static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
+  //                                               GOOM::AudioSamples::NUM_AUDIO_SAMPLES *
+  //                                               GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
+  //CircularBuffer<float> m_buffer(CIRCULAR_BUFFER_SIZE);
+  static const size_t CIRCULAR_BUFFER_SIZE;
+  CircularBuffer<float> m_buffer;
 
   // Goom process thread handles
   bool m_workerThreadExit = false;

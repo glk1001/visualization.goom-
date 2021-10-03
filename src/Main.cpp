@@ -31,6 +31,8 @@ constexpr std::array<int, MAX_QUALITY + 1> HEIGHTS_BY_QUALITY{
     256, 360, 720, 900, 1080,
 };
 
+const size_t CVisualizationGoom::CIRCULAR_BUFFER_SIZE = GOOM::AudioSamples::NUM_AUDIO_SAMPLES * GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
+
 CVisualizationGoom::CVisualizationGoom()
   : m_texWidth{WIDTHS_BY_QUALITY.at(
         static_cast<size_t>(std::min(MAX_QUALITY, kodi::GetSettingInt("quality"))))},
@@ -41,7 +43,8 @@ CVisualizationGoom::CVisualizationGoom()
     m_windowWidth{Width()},
     m_windowHeight{Height()},
     m_windowXPos{X()},
-    m_windowYPos{Y()}
+    m_windowYPos{Y()},
+    m_buffer{static_cast<uint32_t>(CIRCULAR_BUFFER_SIZE)}
 {
 #ifdef HAS_GL
   m_usePixelBufferObjects = kodi::GetSettingBoolean("use_pixel_buffer_objects");
@@ -513,7 +516,7 @@ void CVisualizationGoom::UpdateGoomBuffer(const std::string& title,
                                           const std::vector<float>& floatAudioData,
                                           std::shared_ptr<PixelBuffer>& pixels)
 {
-  const GOOM::AudioSamples audioData{m_numChannels, floatAudioData.data()};
+  const GOOM::AudioSamples audioData{m_numChannels, floatAudioData};
   m_goomControl->SetScreenBuffer(pixels);
   m_goomControl->Update(audioData, 0.0F, title, "");
 }
