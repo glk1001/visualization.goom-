@@ -3,6 +3,7 @@
 #include "goom_config.h"
 #include "utils/mathutils.h"
 
+#include <algorithm>
 #undef NDEBUG
 #include <cassert>
 #include <cstddef>
@@ -15,49 +16,40 @@
 namespace GOOM
 {
 
-inline auto FloatToInt16(const float f) -> int16_t
+const size_t AudioSamples::NUM_AUDIO_SAMPLES = 2;
+const size_t AudioSamples::AUDIO_SAMPLE_LEN = 512;
+
+inline auto AudioSamples::FloatToInt16(const float fVal) -> int16_t
 {
-  if (f >= 1.0F)
+  if (fVal >= 1.0F)
   {
     return std::numeric_limits<int16_t>::max();
   }
 
-  if (f < -1.0F)
+  if (fVal < -1.0F)
   {
     return -std::numeric_limits<int16_t>::max();
   }
 
-  return static_cast<int16_t>(f * static_cast<float>(std::numeric_limits<int16_t>::max()));
+  return static_cast<int16_t>(fVal * static_cast<float>(std::numeric_limits<int16_t>::max()));
 }
 
-AudioSamples::AudioSamples(const size_t numSampleChannels,
-                           const std::vector<float>& floatAudioData)
-  : m_numDistinctChannels{numSampleChannels},
-    m_sampleArrays(NUM_AUDIO_SAMPLES),
-    m_minMaxSampleValues(NUM_AUDIO_SAMPLES)
+auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
+    -> std::vector<SampleArray>
 {
-  assert((0 < numSampleChannels) && (numSampleChannels <= 2));
   assert((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == floatAudioData.size());
 
-  m_sampleArrays[0].resize(AUDIO_SAMPLE_LEN);
-  m_sampleArrays[1].resize(AUDIO_SAMPLE_LEN);
+  std::vector<SampleArray> sampleArrays(NUM_AUDIO_SAMPLES);
+
+  sampleArrays[0].resize(AUDIO_SAMPLE_LEN);
+  sampleArrays[1].resize(AUDIO_SAMPLE_LEN);
 
   if (1 == NUM_AUDIO_SAMPLES)
   {
     for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
     {
-      m_sampleArrays[0][i] = FloatToInt16(floatAudioData[i]);
-      m_sampleArrays[1][i] = m_sampleArrays[0][i];
-      if (m_sampleArrays[0][i] < m_minMaxSampleValues[0].minVal)
-      {
-        m_minMaxSampleValues[0].minVal = m_sampleArrays[0][i];
-        m_minMaxSampleValues[1].minVal = m_minMaxSampleValues[0].minVal;
-      }
-      if (m_sampleArrays[0][i] > m_minMaxSampleValues[0].maxVal)
-      {
-        m_minMaxSampleValues[0].maxVal = m_sampleArrays[0][i];
-        m_minMaxSampleValues[1].maxVal = m_minMaxSampleValues[0].maxVal;
-      }
+      sampleArrays[0][i] = FloatToInt16(floatAudioData[i]);
+      sampleArrays[1][i] = sampleArrays[0][i];
     }
   }
   else
@@ -65,62 +57,39 @@ AudioSamples::AudioSamples(const size_t numSampleChannels,
     size_t fpos = 0;
     for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
     {
-      m_sampleArrays[0][i] = FloatToInt16(floatAudioData[fpos]);
-      if (m_sampleArrays[0][i] < m_minMaxSampleValues[0].minVal)
-      {
-        m_minMaxSampleValues[0].minVal = m_sampleArrays[0][i];
-      }
-      if (m_sampleArrays[0][i] > m_minMaxSampleValues[0].maxVal)
-      {
-        m_minMaxSampleValues[0].maxVal = m_sampleArrays[0][i];
-      }
+      sampleArrays[0][i] = FloatToInt16(floatAudioData[fpos]);
       ++fpos;
 
-      m_sampleArrays[1][i] = FloatToInt16(floatAudioData[fpos]);
-      if (m_sampleArrays[1][i] < m_minMaxSampleValues[1].minVal)
-      {
-        m_minMaxSampleValues[1].minVal = m_sampleArrays[1][i];
-      }
-      if (m_sampleArrays[1][i] > m_minMaxSampleValues[1].maxVal)
-      {
-        m_minMaxSampleValues[1].maxVal = m_sampleArrays[1][i];
-      }
+      sampleArrays[1][i] = FloatToInt16(floatAudioData[fpos]);
       ++fpos;
     }
   }
+
+  return sampleArrays;
 }
 
-auto AudioSamples::GetSample(const size_t channelIndex) const -> const std::vector<int16_t>&
+inline auto AudioSamples::GetMaxMinSampleValues(const std::vector<SampleArray>& sampleArrays)
+    -> std::vector<MaxMinValues>
 {
-  return m_sampleArrays.at(channelIndex);
+  std::vector<MaxMinValues> minMaxSampleValues(NUM_AUDIO_SAMPLES);
+
+  for (size_t i = 0; i < minMaxSampleValues.size(); ++i)
+  {
+    const auto sampleArrayBegin = cbegin(sampleArrays.at(i));
+    const auto sampleArrayEnd = cend(sampleArrays.at(i));
+    minMaxSampleValues[i].minVal = *std::min_element(sampleArrayBegin, sampleArrayEnd);
+    minMaxSampleValues[i].maxVal = *std::max_element(sampleArrayBegin, sampleArrayEnd);
+  }
+
+  return minMaxSampleValues;
 }
 
-auto AudioSamples::GetSample(const size_t channelIndex) -> std::vector<int16_t>&
+AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<float>& floatAudioData)
+  : m_numDistinctChannels{numSampleChannels},
+    m_sampleArrays{GetSampleArrays(floatAudioData)},
+    m_minMaxSampleValues{GetMaxMinSampleValues(m_sampleArrays)}
 {
-  return m_sampleArrays.at(channelIndex);
-}
-
-auto AudioSamples::GetSampleMinMax(const size_t channelIndex) const -> const MaxMinValues&
-{
-  return m_minMaxSampleValues.at(channelIndex);
-}
-
-SoundInfo::SoundInfo() noexcept
-  : m_updateNum{0},
-    m_totalGoomsInCurrentCycle{0},
-    m_timeSinceLastGoom{0},
-    m_timeSinceLastBigGoom{0},
-    m_goomLimit{1.0},
-    m_bigGoomLimit{1.0},
-    m_goomPower{0.0},
-    m_volume{0.0},
-    m_acceleration{0.0},
-    m_speed{0.0},
-    m_allTimesMaxVolume{std::numeric_limits<int16_t>::min()},
-    m_allTimesMinVolume{std::numeric_limits<int16_t>::max()},
-    m_allTimesPositiveMaxVolume{0},
-    m_maxAccelSinceLastReset{0.0}
-{
+  assert((0 < numSampleChannels) && (numSampleChannels <= 2));
 }
 
 void SoundInfo::ProcessSample(const AudioSamples& samples)
@@ -149,9 +118,9 @@ void SoundInfo::UpdateVolume(const AudioSamples& samples)
   int16_t maxPosVar = 0;
   int16_t maxVar = std::numeric_limits<int16_t>::min();
   int16_t minVar = std::numeric_limits<int16_t>::max();
-  for (size_t n = 0; n < AudioSamples::NUM_AUDIO_SAMPLES; ++n)
+  for (size_t i = 0; i < AudioSamples::NUM_AUDIO_SAMPLES; ++i)
   {
-    const std::vector<int16_t>& soundData = samples.GetSample(n);
+    const std::vector<int16_t>& soundData = samples.GetSample(i);
     for (const int16_t dataVal : soundData)
     {
       if (maxPosVar < dataVal)

@@ -355,7 +355,8 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
       const float cx = 0.5F * static_cast<float>(m_goomInfo.GetScreenInfo().width);
       const float cy = 0.5F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
       // Make sure the circle joins at each end so use symmetry about x-axis.
-      static_assert(0 == (AudioSamples::AUDIO_SAMPLE_LEN % 2), "AUDIO_SAMPLE_LEN must divide by 2");
+      //static_assert(0 == (AudioSamples::AUDIO_SAMPLE_LEN % 2), "AUDIO_SAMPLE_LEN must divide by 2");
+      assert(0 == (AudioSamples::AUDIO_SAMPLE_LEN % 2));
       const float angleStep =
           m_pi / ((0.5F * static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN)) - 1.0F);
       float angle = 0;
@@ -558,7 +559,8 @@ inline auto GetDataPoints(const std::vector<int16_t>& x) -> std::vector<float>
 void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
                                    const AudioSamples::MaxMinValues& soundMinMax)
 {
-  constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
+  //constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
+  const size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
 
   assert(m_srcLineType != LineType::CIRCLE || m_lineLerpFactor < 1.0F ||
          (floats_equal(m_srcePoints[0].x, m_srcePoints[LAST_POINT_INDEX].x) &&
@@ -639,7 +641,8 @@ auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,
 {
   const Pixel randColor = GetRandomLineColor();
 
-  constexpr float T_STEP = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
+  //constexpr float T_STEP = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
+  const float T_STEP = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
   constexpr float HALFWAY_T = 0.5F;
   float currentTStep = T_STEP;
   float t = 0.0;

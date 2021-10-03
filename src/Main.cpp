@@ -31,7 +31,9 @@ constexpr std::array<int, MAX_QUALITY + 1> HEIGHTS_BY_QUALITY{
     256, 360, 720, 900, 1080,
 };
 
-const size_t CVisualizationGoom::CIRCULAR_BUFFER_SIZE = GOOM::AudioSamples::NUM_AUDIO_SAMPLES * GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
+const size_t CVisualizationGoom::CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
+                                                        GOOM::AudioSamples::NUM_AUDIO_SAMPLES *
+                                                        GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
 
 CVisualizationGoom::CVisualizationGoom()
   : m_texWidth{WIDTHS_BY_QUALITY.at(
