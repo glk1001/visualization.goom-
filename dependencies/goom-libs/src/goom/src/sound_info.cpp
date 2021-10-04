@@ -1,6 +1,5 @@
 #include "sound_info.h"
 
-#include "goom_config.h"
 #include "utils/mathutils.h"
 
 #include <algorithm>
@@ -8,9 +7,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <format>
 #include <limits>
-#include <stdexcept>
 #include <vector>
 
 namespace GOOM
@@ -96,15 +93,16 @@ void SoundInfo::ProcessSample(const AudioSamples& samples)
 {
   ++m_updateNum;
 
+  const float prevVolume = m_volume;
   UpdateVolume(samples);
   assert(0.0F <= m_volume && m_volume <= 1.0F);
 
-  const float prevAcceleration = m_acceleration;
-  UpdateAcceleration();
-  assert(0.0F <= m_acceleration && m_acceleration <= 1.0F);
-
-  UpdateSpeed(prevAcceleration);
+  const float prevSpeed = m_speed;
+  UpdateSpeed(prevVolume);
   assert(0.0F <= m_speed && m_speed <= 1.0F);
+
+  UpdateAcceleration(prevSpeed);
+  assert(0.0F <= m_acceleration && m_acceleration <= 1.0F);
 
   // Detection des nouveaux gooms
   // Detection of new gooms
@@ -158,54 +156,14 @@ void SoundInfo::UpdateVolume(const AudioSamples& samples)
   }
 }
 
-void SoundInfo::UpdateAcceleration()
+void SoundInfo::UpdateSpeed(const float prevVolume)
 {
-  // Transformations sur la vitesse du son
-  // Speed of sound transformations
-  m_acceleration = m_volume;
-
-  constexpr float VERY_SLOW_SPEED = 0.1F;
-  constexpr float SLOW_SPEED = 0.3F;
-
-  if (m_speed < VERY_SLOW_SPEED)
-  {
-    m_acceleration *= (1.0F - m_speed);
-  }
-  else if (m_speed < SLOW_SPEED)
-  {
-    m_acceleration *= (0.9F - (0.5F * (m_speed - VERY_SLOW_SPEED)));
-  }
-  else
-  {
-    m_acceleration *= (0.8F - (0.25F * (m_speed - SLOW_SPEED)));
-  }
-
-  // Adoucissement de l'acceleration
-  // Smooth acceleration
-  if (m_acceleration < 0.0F)
-  {
-    m_acceleration = 0.0F;
-  }
-  else
-  {
-    m_acceleration *= ACCELERATION_MULTIPLIER;
-  }
+  m_speed = 0.5F * (1.0F + (m_volume - prevVolume));
 }
 
-void SoundInfo::UpdateSpeed(const float prevAcceleration)
+void SoundInfo::UpdateAcceleration(const float prevSpeed)
 {
-  // Mise a jour de la vitesse
-  // Speed update
-  float diffAcceleration = m_acceleration - prevAcceleration;
-  if (diffAcceleration < 0.0F)
-  {
-    diffAcceleration = -diffAcceleration;
-  }
-
-  constexpr float LERP_SPEED_MIX = 0.75;
-  const float newSpeed = SPEED_MULTIPLIER * ((0.5F * m_speed) + (0.25F * diffAcceleration));
-  m_speed = stdnew::lerp(newSpeed, m_speed, LERP_SPEED_MIX);
-  m_speed = stdnew::clamp(m_speed, 0.0F, 1.0F);
+  m_acceleration = 0.5F * (1.0F + (m_speed - prevSpeed));
 }
 
 void SoundInfo::UpdateLastGoom()
@@ -217,14 +175,13 @@ void SoundInfo::UpdateLastGoom()
   if (m_acceleration > m_goomLimit)
   {
     m_timeSinceLastGoom = 0;
-
-    // TODO: tester && (info->m_timeSinceLastGoom > 20)) {
     ++m_totalGoomsInCurrentCycle;
     m_goomPower = m_acceleration - m_goomLimit;
   }
-  if (m_acceleration > m_maxAccelSinceLastReset)
+
+  if (m_acceleration > m_maxAccelerationSinceLastReset)
   {
-    m_maxAccelSinceLastReset = m_acceleration;
+    m_maxAccelerationSinceLastReset = m_acceleration;
   }
 
   // Toute les 2 secondes: vérifier si le taux de goom est correct et le modifier sinon.
@@ -232,22 +189,23 @@ void SoundInfo::UpdateLastGoom()
   if (0 == (m_updateNum % CYCLE_TIME))
   {
     UpdateGoomLimit();
-    assert((0.0F <= m_goomLimit) && (m_goomLimit <= 1.0F));
+    assert((GOOM_LIMIT_MIN <= m_goomLimit) && (m_goomLimit <= GOOM_LIMIT_MAX));
 
     m_totalGoomsInCurrentCycle = 0;
-    m_maxAccelSinceLastReset = 0.0F;
-    m_bigGoomLimit = m_goomLimit * BIG_GOOM_FACTOR;
+    m_maxAccelerationSinceLastReset = 0.0F;
+    m_bigGoomLimit = BIG_GOOM_FACTOR * m_goomLimit;
   }
-
-  // m_bigGoomLimit == m_goomLimit*9/8+7 ?
 }
 
 void SoundInfo::UpdateLastBigGoom()
 {
   ++m_timeSinceLastBigGoom;
+  if (m_timeSinceLastBigGoom <= MAX_BIG_GOOM_DURATION)
+  {
+    return;
+  }
 
-  if ((m_speed > BIG_GOOM_SPEED_LIMIT) && (m_acceleration > m_bigGoomLimit) &&
-      (m_timeSinceLastBigGoom > MAX_BIG_GOOM_DURATION))
+  if ((m_speed > BIG_GOOM_SPEED_LIMIT) && (m_acceleration > m_bigGoomLimit))
   {
     m_timeSinceLastBigGoom = 0;
   }
@@ -256,49 +214,47 @@ void SoundInfo::UpdateLastBigGoom()
 void SoundInfo::UpdateGoomLimit()
 {
   constexpr float VERY_SLOW_SPEED = 0.01F;
-  constexpr float VERY_SLOW_SPEED_FACTOR = 0.91F;
+  constexpr float GOOM_LIMIT_SLOW_SPEED_FACTOR = 0.91F;
   if (m_speed < VERY_SLOW_SPEED)
   {
-    m_goomLimit *= VERY_SLOW_SPEED_FACTOR;
+    m_goomLimit *= GOOM_LIMIT_SLOW_SPEED_FACTOR;
   }
 
-  constexpr uint32_t TOTAL_GOOMS_SHORT_CYCLE = 4;
-  constexpr float TOTAL_GOOMS_SHORT_INCREMENT = 0.02F;
-  constexpr uint32_t TOTAL_GOOMS_MEDIUM_CYCLE = 7;
-  constexpr float TOTAL_GOOMS_MEDIUM_INCREMENT = 0.03F;
-  constexpr uint32_t TOTAL_GOOMS_BIG_CYCLE = 16;
-  constexpr float TOTAL_GOOMS_BIG_INCREMENT = 0.04F;
-  constexpr float ACCEL_DECREMENT = 0.02F;
+  constexpr uint32_t NUM_GOOMS_IN_SHORT_CYCLE = 4;
+  constexpr float GOOM_LIMIT_SHORT_CYCLE_INCREMENT = 0.02F;
+  constexpr uint32_t NUM_GOOMS_IN_MEDIUM_CYCLE = 7;
+  constexpr float GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT = 0.03F;
+  constexpr uint32_t NUM_GOOMS_IN_LONG_CYCLE = 16;
+  constexpr float GOOM_LIMIT_LONG_CYCLE_INCREMENT = 0.04F;
+  constexpr float GOOM_LIMIT_ACCELERATION_DECREMENT = 0.02F;
 
-  if (m_totalGoomsInCurrentCycle > TOTAL_GOOMS_SHORT_CYCLE)
+  if (m_totalGoomsInCurrentCycle > NUM_GOOMS_IN_SHORT_CYCLE)
   {
-    m_goomLimit += TOTAL_GOOMS_SHORT_INCREMENT;
+    m_goomLimit += GOOM_LIMIT_SHORT_CYCLE_INCREMENT;
   }
-  else if (m_totalGoomsInCurrentCycle > TOTAL_GOOMS_MEDIUM_CYCLE)
+  else if (m_totalGoomsInCurrentCycle > NUM_GOOMS_IN_MEDIUM_CYCLE)
   {
-    m_goomLimit *= 1.0F + TOTAL_GOOMS_MEDIUM_INCREMENT;
-    m_goomLimit += TOTAL_GOOMS_MEDIUM_INCREMENT;
+    m_goomLimit *= 1.0F + GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT;
+    m_goomLimit += GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT;
   }
-  else if (m_totalGoomsInCurrentCycle > TOTAL_GOOMS_BIG_CYCLE)
+  else if (m_totalGoomsInCurrentCycle > NUM_GOOMS_IN_LONG_CYCLE)
   {
-    m_goomLimit *= 1.0F + TOTAL_GOOMS_BIG_INCREMENT;
-    m_goomLimit += TOTAL_GOOMS_BIG_INCREMENT;
+    m_goomLimit *= 1.0F + GOOM_LIMIT_LONG_CYCLE_INCREMENT;
+    m_goomLimit += GOOM_LIMIT_LONG_CYCLE_INCREMENT;
   }
   else if (0 == m_totalGoomsInCurrentCycle)
   {
-    m_goomLimit = m_maxAccelSinceLastReset - ACCEL_DECREMENT;
+    m_goomLimit = m_maxAccelerationSinceLastReset - GOOM_LIMIT_ACCELERATION_DECREMENT;
   }
 
-  constexpr float TOO_BIG_LIMIT = 0.02F;
-  constexpr float SMALL_DECREMENT = 0.01F;
-  if ((1 == m_totalGoomsInCurrentCycle) && (m_goomLimit > TOO_BIG_LIMIT))
+  constexpr float GOOM_LIMIT_TOO_BIG = 0.02F;
+  constexpr float GOOM_LIMIT_TOO_BIG_DECREMENT = 0.01F;
+  if ((1 == m_totalGoomsInCurrentCycle) && (m_goomLimit > GOOM_LIMIT_TOO_BIG))
   {
-    m_goomLimit -= SMALL_DECREMENT;
+    m_goomLimit -= GOOM_LIMIT_TOO_BIG_DECREMENT;
   }
 
-  constexpr float MIN_LIMIT = 0.0F;
-  constexpr float MAX_LIMIT = 1.0F;
-  m_goomLimit = stdnew::clamp(m_goomLimit, MIN_LIMIT, MAX_LIMIT);
+  m_goomLimit = stdnew::clamp(m_goomLimit, GOOM_LIMIT_MIN, GOOM_LIMIT_MAX);
 }
 
 } // namespace GOOM

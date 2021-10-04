@@ -173,14 +173,12 @@ TEST_CASE("Test SoundInfo Volume", "[SoundInfoVolume]")
   REQUIRE(soundInfo.GetAllTimesMaxVolume() == INT_NEW_MAX_VOL);
   REQUIRE(soundInfo.GetAllTimesMinVolume() == EXPECTED_X_MIN0);
 
-    // Fourth update - negative sound values should give zero volume
-    constexpr float NEGATIVE_VOL = 0.0F;
-    //constexpr auto INT_NEGATIVE_VOL =
-    //    static_cast<int16_t>(NEGATIVE_VOL * static_cast<float>(std::numeric_limits<int16_t>::max()));
-    std::fill(begin(audioData), end(audioData), NEGATIVE_VOL);
-    audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
-    soundInfo.ProcessSample(*audioSamples);
-    REQUIRE(floats_equal(soundInfo.GetVolume(), 0.0F));
-    REQUIRE(soundInfo.GetAllTimesMaxVolume() == INT_NEW_MAX_VOL);
-    REQUIRE(soundInfo.GetAllTimesMinVolume() == EXPECTED_X_MIN0);
+  // Fourth update - negative sound values should give zero volume
+  constexpr float NEGATIVE_VOL = 0.0F;
+  std::fill(begin(audioData), end(audioData), NEGATIVE_VOL);
+  audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
+  soundInfo.ProcessSample(*audioSamples);
+  REQUIRE(floats_equal(soundInfo.GetVolume(), 0.0F));
+  REQUIRE(soundInfo.GetAllTimesMaxVolume() == INT_NEW_MAX_VOL);
+  REQUIRE(soundInfo.GetAllTimesMinVolume() == EXPECTED_X_MIN0);
 }

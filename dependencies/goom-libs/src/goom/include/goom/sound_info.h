@@ -90,14 +90,16 @@ private:
   uint32_t m_timeSinceLastGoom = 0;
   static constexpr uint32_t MAX_BIG_GOOM_DURATION = 100;
   uint32_t m_timeSinceLastBigGoom = 0;
-  static constexpr float BIG_GOOM_SPEED_LIMIT = 0.10F;
-  static constexpr float BIG_GOOM_FACTOR = 1.01F;
-  float m_goomLimit = 1.0F; // auto-updated limit of goom_detection
-  float m_bigGoomLimit = 1.0F;
   float m_goomPower = 0.0F;
 
-  static constexpr float ACCELERATION_MULTIPLIER = 0.95F;
-  static constexpr float SPEED_MULTIPLIER = 0.99F;
+  static constexpr float GOOM_LIMIT_MIN = 0.0F;
+  static constexpr float GOOM_LIMIT_MAX = 1.0F;
+  float m_goomLimit = 1.0F; // auto-updated limit of goom_detection
+
+  static constexpr float BIG_GOOM_SPEED_LIMIT = 0.10F;
+  static constexpr float BIG_GOOM_FACTOR = 1.01F;
+  float m_bigGoomLimit = 1.0F;
+
   float m_volume = 0.0F;
   float m_acceleration = 0.0F;
   float m_speed = 0.0F;
@@ -105,11 +107,11 @@ private:
   int16_t m_allTimesMaxVolume = std::numeric_limits<int16_t>::min();
   int16_t m_allTimesMinVolume = std::numeric_limits<int16_t>::max();
   int16_t m_allTimesPositiveMaxVolume = 0;
-  float m_maxAccelSinceLastReset = 0.0F;
+  float m_maxAccelerationSinceLastReset = 0.0F;
 
   void UpdateVolume(const AudioSamples& samples);
-  void UpdateSpeed(float prevAcceleration);
-  void UpdateAcceleration();
+  void UpdateSpeed(float prevVolume);
+  void UpdateAcceleration(float prevSpeed);
   void UpdateLastGoom();
   void UpdateLastBigGoom();
   void UpdateGoomLimit();
