@@ -225,7 +225,7 @@ void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
 
   m_goomLine2->SetPower(m_goomLine1->GetPower());
 
-  const std::vector<int16_t>& audioSample = soundData.GetSample(0);
+  const std::vector<float>& audioSample = soundData.GetSample(0);
   const AudioSamples::MaxMinValues& soundMinMax = soundData.GetSampleMinMax(0);
   m_goomLine1->DrawLines(audioSample, soundMinMax);
   m_goomLine2->DrawLines(audioSample, soundMinMax);

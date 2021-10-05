@@ -144,7 +144,7 @@ inline void GoomMusicSettingsReactor::UpdateLineModes()
 
 inline void GoomMusicSettingsReactor::BigBreakIfMusicIsCalm()
 {
-  constexpr float CALM_SPEED = 0.01F;
+  constexpr float CALM_SPEED = 0.05F;
   constexpr uint32_t CALM_CYCLES = 16;
   constexpr int32_t CALM_VITESSE = FILTERS::Vitesse::STOP_SPEED - 4;
 

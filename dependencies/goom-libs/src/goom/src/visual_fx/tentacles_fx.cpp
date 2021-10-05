@@ -51,7 +51,7 @@ using UTILS::Weights;
 
 inline auto StartPrettyMoveEvent() -> bool
 {
-  return ProbabilityOfMInN(1, 400);
+  return ProbabilityOfMInN(0, 400);
 }
 
 inline auto ChangeRotationEvent() -> bool

@@ -75,7 +75,7 @@ public:
                      float newAmplitude,
                      const Pixel& newColor);
 
-  void DrawLines(const std::vector<int16_t>& soundData,
+  void DrawLines(const AudioSamples::SampleArray& soundData,
                  const AudioSamples::MaxMinValues& soundMinMax);
 
   void Finish();

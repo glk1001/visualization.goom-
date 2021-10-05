@@ -99,7 +99,7 @@ public:
                      float newAmplitude,
                      const Pixel& newColor);
 
-  void DrawLines(const std::vector<int16_t>& soundData,
+  void DrawLines(const AudioSamples::SampleArray& soundData,
                  const AudioSamples::MaxMinValues& soundMinMax);
 
   void Finish();
@@ -258,7 +258,7 @@ void LinesFx::ResetDestLine(const LineType newLineType,
   m_fxImpl->ResetDestLine(newLineType, newParam, newAmplitude, newColor);
 }
 
-void LinesFx::DrawLines(const std::vector<int16_t>& soundData,
+void LinesFx::DrawLines(const AudioSamples::SampleArray& soundData,
                         const AudioSamples::MaxMinValues& soundMinMax)
 {
   m_fxImpl->DrawLines(soundData, soundMinMax);
@@ -545,18 +545,7 @@ auto SimpleMovingAverage(const std::vector<int16_t>& x, const uint32_t winLen) -
   return result;
 }
 
-inline auto GetDataPoints(const std::vector<int16_t>& x) -> std::vector<float>
-{
-  return std::vector<float>{x.data(), x.data() + AudioSamples::AUDIO_SAMPLE_LEN};
-  if (ProbabilityOfMInN(9999, 10000))
-  {
-    return std::vector<float>{x.data(), x.data() + AudioSamples::AUDIO_SAMPLE_LEN};
-  }
-
-  return SimpleMovingAverage(x, 3);
-}
-
-void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
+void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
                                    const AudioSamples::MaxMinValues& soundMinMax)
 {
   //constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
@@ -570,7 +559,7 @@ void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
   const LinePoint& ptN = m_srcePoints[LAST_POINT_INDEX];
   const Pixel lineColor = GetLightenedColor(m_color1, m_power);
 
-  m_audioRange = static_cast<float>(soundMinMax.maxVal - soundMinMax.minVal);
+  m_audioRange = soundMinMax.maxVal - soundMinMax.minVal;
   assert(m_audioRange >= 0.0F);
   m_minAudioValue = static_cast<float>(soundMinMax.minVal);
 
@@ -585,8 +574,7 @@ void LinesFx::LinesImpl::DrawLines(const std::vector<int16_t>& soundData,
   }
 
   constexpr uint8_t THICKNESS = 1;
-  const std::vector<float> data = GetDataPoints(soundData);
-  const std::vector<PointAndColor> audioPoints = GetAudioPoints(lineColor, data);
+  const std::vector<PointAndColor> audioPoints = GetAudioPoints(lineColor, soundData);
 
   V2dInt point1 = audioPoints[0].point;
   V2dInt point2{};
@@ -706,9 +694,9 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
                                           const Pixel& randColor,
                                           const float dataVal) const -> PointAndColor
 {
-  assert(m_goomInfo.GetSoundInfo().GetAllTimesMinVolume() <= dataVal);
-  assert(m_minAudioValue <= dataVal);
-  assert(dataVal <= m_minAudioValue + m_audioRange);
+  assert(m_goomInfo.GetSoundInfo().GetAllTimesMinVolume() <= (dataVal + SMALL_FLOAT));
+  assert(m_minAudioValue <= (dataVal + SMALL_FLOAT));
+  assert(dataVal <= (m_minAudioValue + m_audioRange + SMALL_FLOAT));
 
   const float tData = (dataVal - m_minAudioValue) / m_audioRange;
   assert(0.0F <= tData && tData <= 1.0F);

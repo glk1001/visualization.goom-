@@ -43,10 +43,10 @@ constexpr float X_MAX0 = +0.1F;
 constexpr float X_MIN1 = +0.2F;
 constexpr float X_MAX1 = +0.9F;
 
-constexpr auto EXPECTED_X_MIN0 = static_cast<int16_t>(X_MIN0 * static_cast<float>(std::numeric_limits<int16_t>::max()));
-constexpr auto EXPECTED_X_MAX0 = static_cast<int16_t>(X_MAX0 * static_cast<float>(std::numeric_limits<int16_t>::max()));
-constexpr auto EXPECTED_X_MIN1 = static_cast<int16_t>(X_MIN1 * static_cast<float>(std::numeric_limits<int16_t>::max()));
-constexpr auto EXPECTED_X_MAX1 = static_cast<int16_t>(X_MAX1 * static_cast<float>(std::numeric_limits<int16_t>::max()));
+constexpr auto EXPECTED_X_MIN0 = X_MIN0;
+constexpr auto EXPECTED_X_MAX0 = X_MAX0;
+constexpr auto EXPECTED_X_MIN1 = X_MIN1;
+constexpr auto EXPECTED_X_MAX1 = X_MAX1;
 
 TEST_CASE("Test AudioSamples MinMax", "[AudioSamplesMinMax]")
 {
@@ -63,25 +63,25 @@ TEST_CASE("Test AudioSamples MinMax", "[AudioSamplesMinMax]")
   UNSCOPED_INFO("EXPECTED_X_MIN0 = " << EXPECTED_X_MIN0);
   UNSCOPED_INFO("get_minimum0 = " << *std::min_element(begin(audioSamples.GetSample(0)), end(audioSamples.GetSample(0))));
   UNSCOPED_INFO("expected get_minimum = " << *std::min_element(begin(audioData), end(audioData)));
-  REQUIRE(audioSamples.GetSampleMinMax(0).minVal == EXPECTED_X_MIN0);
+  REQUIRE(floats_equal(audioSamples.GetSampleMinMax(0).minVal, AudioSamples::GetPositiveValue(EXPECTED_X_MIN0)));
 
   UNSCOPED_INFO("X_MAX0 = " << X_MAX0);
   UNSCOPED_INFO("EXPECTED_X_MAX0 = " << EXPECTED_X_MAX0);
   UNSCOPED_INFO("get_maximum0 = " << *std::max_element(begin(audioSamples.GetSample(0)), end(audioSamples.GetSample(0))));
   UNSCOPED_INFO("expected get_maximum = " << *std::max_element(begin(audioData), end(audioData)));
-  REQUIRE(audioSamples.GetSampleMinMax(0).maxVal == EXPECTED_X_MAX0);
+  REQUIRE(floats_equal(audioSamples.GetSampleMinMax(0).maxVal, AudioSamples::GetPositiveValue(EXPECTED_X_MAX0)));
 
   UNSCOPED_INFO("X_MIN1 = " << X_MIN1);
   UNSCOPED_INFO("EXPECTED_X_MIN1 = " << EXPECTED_X_MIN1);
   UNSCOPED_INFO("get_minimum1 = " << *std::min_element(begin(audioSamples.GetSample(1)), end(audioSamples.GetSample(1))));
   UNSCOPED_INFO("expected get_minimum = " << *std::min_element(begin(audioData), end(audioData)));
-  REQUIRE(audioSamples.GetSampleMinMax(1).minVal == EXPECTED_X_MIN1);
+  REQUIRE(floats_equal(audioSamples.GetSampleMinMax(1).minVal, AudioSamples::GetPositiveValue(EXPECTED_X_MIN1)));
 
   UNSCOPED_INFO("X_MAX1 = " << X_MAX1);
   UNSCOPED_INFO("EXPECTED_X_MAX1 = " << EXPECTED_X_MAX1);
   UNSCOPED_INFO("get_maximum1 = " << *std::max_element(begin(audioSamples.GetSample(1)), end(audioSamples.GetSample(1))));
   UNSCOPED_INFO("expected get_maximum = " << *std::max_element(begin(audioData), end(audioData)));
-  REQUIRE(audioSamples.GetSampleMinMax(1).maxVal == EXPECTED_X_MAX1);
+  REQUIRE(floats_equal(audioSamples.GetSampleMinMax(1).maxVal, AudioSamples::GetPositiveValue(EXPECTED_X_MAX1)));
 }
 
 TEST_CASE("Test AudioSamples Arrays", "[AudioSamplesArrays]")
@@ -93,25 +93,25 @@ TEST_CASE("Test AudioSamples Arrays", "[AudioSamplesArrays]")
   REQUIRE(floats_equal(audioData.at(0), X_MIN0));
 
   UNSCOPED_INFO("EXPECTED_X_MIN0 = " << EXPECTED_X_MIN0);
-  REQUIRE(audioSamples.GetSample(0).at(0) == EXPECTED_X_MIN0);
+  REQUIRE(floats_equal(audioSamples.GetSample(0).at(0), AudioSamples::GetPositiveValue(EXPECTED_X_MIN0)));
 
   UNSCOPED_INFO("X_MAX0 = " << X_MAX0);
   REQUIRE(floats_equal(audioData.at(audioData.size() - 2), X_MAX0));
 
   UNSCOPED_INFO("EXPECTED_X_MAX0 = " << EXPECTED_X_MAX0);
-  REQUIRE(audioSamples.GetSample(0).at(AudioSamples::AUDIO_SAMPLE_LEN - 1) == EXPECTED_X_MAX0);
+  REQUIRE(floats_equal(audioSamples.GetSample(0).at(AudioSamples::AUDIO_SAMPLE_LEN - 1), AudioSamples::GetPositiveValue(EXPECTED_X_MAX0)));
 
   UNSCOPED_INFO("X_MIN1 = " << X_MIN1);
   REQUIRE(floats_equal(audioData.at(1), X_MIN1));
 
   UNSCOPED_INFO("EXPECTED_X_MIN1 = " << EXPECTED_X_MIN1);
-  REQUIRE(audioSamples.GetSample(1).at(0) == EXPECTED_X_MIN1);
+  REQUIRE(floats_equal(audioSamples.GetSample(1).at(0), AudioSamples::GetPositiveValue(EXPECTED_X_MIN1)));
 
   UNSCOPED_INFO("X_MAX1 = " << X_MAX1);
   REQUIRE(floats_equal(audioData.at(audioData.size() - 1), X_MAX1));
 
   UNSCOPED_INFO("EXPECTED_X_MAX1 = " << EXPECTED_X_MAX1);
-  REQUIRE(audioSamples.GetSample(1).at(AudioSamples::AUDIO_SAMPLE_LEN - 1) == EXPECTED_X_MAX1);
+  REQUIRE(floats_equal(audioSamples.GetSample(1).at(AudioSamples::AUDIO_SAMPLE_LEN - 1), AudioSamples::GetPositiveValue(EXPECTED_X_MAX1)));
 }
 
 TEST_CASE("Test SoundInfo ProcessSample Defaults", "[SoundInfoProcessSampleDefaults]")
@@ -123,8 +123,7 @@ TEST_CASE("Test SoundInfo ProcessSample Defaults", "[SoundInfoProcessSampleDefau
 
   soundInfo.ProcessSample(audioSamples);
 
-  // Default values first time through.
-  REQUIRE(floats_equal(soundInfo.GetVolume(), 1.0F));
+  REQUIRE(floats_equal(soundInfo.GetVolume(), AudioSamples::GetPositiveValue(X_MAX1)));
   REQUIRE(soundInfo.GetTimeSinceLastGoom() == 1);
   REQUIRE(soundInfo.GetTimeSinceLastBigGoom() == 1);
   REQUIRE(soundInfo.GetTotalGoomsInCurrentCycle() == 0);
@@ -138,47 +137,43 @@ TEST_CASE("Test SoundInfo Volume", "[SoundInfoVolume]")
   auto audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
 
   // First update - defaults
-  constexpr int16_t ALL_TIMES_MAX = EXPECTED_X_MAX1;
+  constexpr float ALL_TIMES_MAX = AudioSamples::GetPositiveValue(EXPECTED_X_MAX1);
+  constexpr float ALL_TIMES_MIN = AudioSamples::GetPositiveValue(EXPECTED_X_MIN0);
   soundInfo.ProcessSample(*audioSamples);
-  REQUIRE(floats_equal(soundInfo.GetVolume(), 1.0F));
-  REQUIRE(soundInfo.GetAllTimesMaxVolume() == ALL_TIMES_MAX);
-  REQUIRE(soundInfo.GetAllTimesMinVolume() == EXPECTED_X_MIN0);
+  UNSCOPED_INFO("ALL_TIMES_MAX = " << ALL_TIMES_MAX);
+  UNSCOPED_INFO("soundInfo.GetVolume() = " << soundInfo.GetVolume());
+  REQUIRE(floats_equal(soundInfo.GetVolume(), ALL_TIMES_MAX));
+  REQUIRE(floats_equal(soundInfo.GetAllTimesMaxVolume(), ALL_TIMES_MAX));
+  REQUIRE(floats_equal(soundInfo.GetAllTimesMinVolume(), ALL_TIMES_MIN));
 
   // Second update - flat line, new volume
   constexpr float FLAT_VOL = 0.1F;
-  constexpr auto MAX_FLAT_VOL =
-      static_cast<int16_t>(FLAT_VOL * static_cast<float>(std::numeric_limits<int16_t>::max()));
-  constexpr float EXPECTED_NEW_VOLUME =
-      static_cast<float>(MAX_FLAT_VOL) / static_cast<float>(ALL_TIMES_MAX);
+  constexpr float EXPECTED_NEW_VOLUME = AudioSamples::GetPositiveValue(FLAT_VOL);
   UNSCOPED_INFO("EXPECTED_NEW_VOLUME = " << EXPECTED_NEW_VOLUME);
-  UNSCOPED_INFO("FLAT_VOL / X_MAX1 = " << (FLAT_VOL / X_MAX1));
-  REQUIRE(floats_equal(EXPECTED_NEW_VOLUME, (FLAT_VOL / X_MAX1), 0.001F));
 
   std::fill(begin(audioData), end(audioData), FLAT_VOL);
   audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
   soundInfo.ProcessSample(*audioSamples);
-  REQUIRE(soundInfo.GetAllTimesMaxVolume() == ALL_TIMES_MAX);
-  REQUIRE(soundInfo.GetAllTimesMinVolume() == EXPECTED_X_MIN0);
   UNSCOPED_INFO("soundInfo.GetVolume() = " << soundInfo.GetVolume());
   REQUIRE(floats_equal(soundInfo.GetVolume(), EXPECTED_NEW_VOLUME));
+  REQUIRE(floats_equal(soundInfo.GetAllTimesMaxVolume(), ALL_TIMES_MAX));
+  REQUIRE(floats_equal(soundInfo.GetAllTimesMinVolume(), ALL_TIMES_MIN));
 
   // Third update - new max volume
   constexpr float NEW_MAX_VOL = X_MAX1 + 0.02F;
-  constexpr auto INT_NEW_MAX_VOL =
-      static_cast<int16_t>(NEW_MAX_VOL * static_cast<float>(std::numeric_limits<int16_t>::max()));
   audioData.at(10) = NEW_MAX_VOL;
   audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
   soundInfo.ProcessSample(*audioSamples);
-  REQUIRE(floats_equal(soundInfo.GetVolume(), 1.0F));
-  REQUIRE(soundInfo.GetAllTimesMaxVolume() == INT_NEW_MAX_VOL);
-  REQUIRE(soundInfo.GetAllTimesMinVolume() == EXPECTED_X_MIN0);
+  REQUIRE(floats_equal(soundInfo.GetVolume(), AudioSamples::GetPositiveValue(NEW_MAX_VOL)));
+  REQUIRE(floats_equal(soundInfo.GetAllTimesMaxVolume(), AudioSamples::GetPositiveValue(NEW_MAX_VOL)));
+  REQUIRE(floats_equal(soundInfo.GetAllTimesMinVolume(), ALL_TIMES_MIN));
 
-  // Fourth update - negative sound values should give zero volume
-  constexpr float NEGATIVE_VOL = 0.0F;
+  // Fourth update - negative sound values
+  constexpr float NEGATIVE_VOL = -0.2F;
   std::fill(begin(audioData), end(audioData), NEGATIVE_VOL);
   audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
   soundInfo.ProcessSample(*audioSamples);
-  REQUIRE(floats_equal(soundInfo.GetVolume(), 0.0F));
-  REQUIRE(soundInfo.GetAllTimesMaxVolume() == INT_NEW_MAX_VOL);
-  REQUIRE(soundInfo.GetAllTimesMinVolume() == EXPECTED_X_MIN0);
+  REQUIRE(floats_equal(soundInfo.GetVolume(), AudioSamples::GetPositiveValue(NEGATIVE_VOL)));
+  REQUIRE(floats_equal(soundInfo.GetAllTimesMaxVolume(), AudioSamples::GetPositiveValue(NEW_MAX_VOL)));
+  REQUIRE(floats_equal(soundInfo.GetAllTimesMinVolume(), ALL_TIMES_MIN));
 }

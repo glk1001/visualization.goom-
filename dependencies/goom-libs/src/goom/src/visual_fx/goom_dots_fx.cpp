@@ -81,7 +81,7 @@ private:
   auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
 
   static constexpr size_t MIN_DOT_SIZE = 3;
-  static constexpr size_t MAX_DOT_SIZE = 21;
+  static constexpr size_t MAX_DOT_SIZE = 17;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
   std::array<std::shared_ptr<RandomColorMaps>, NUM_DOT_TYPES> m_colorMaps{};
@@ -228,11 +228,11 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     SetNextCurrentBitmapName();
   }
 
+  const float speedFactor = 0.2F * m_goomInfo.GetSoundInfo().GetSpeed();
+
   const float largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
-  const auto speedvarMult80Plus15 =
-      static_cast<uint32_t>((m_goomInfo.GetSoundInfo().GetSpeed() * 80.0F) + 15.0F);
-  const auto speedvarMult50Plus1 =
-      static_cast<uint32_t>((m_goomInfo.GetSoundInfo().GetSpeed() * 50.0F) + 1.0F);
+  const auto speedvarMult80Plus15 = static_cast<uint32_t>((speedFactor * 80.0F) + 15.0F);
+  const auto speedvarMult50Plus1 = static_cast<uint32_t>((speedFactor * 50.0F) + 1.0F);
 
   const float pointWidthDiv2MultLarge = m_pointWidthDiv2 * largeFactor;
   const float pointHeightDiv2MultLarge = m_pointHeightDiv2 * largeFactor;
@@ -342,12 +342,8 @@ void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
 
 auto GoomDotsFx::GoomDotsFxImpl::GetLargeSoundFactor(const SoundInfo& soundInfo) -> float
 {
-  float largeFactor = (soundInfo.GetSpeed() / 150.0F) + (soundInfo.GetVolume() / 1.5F);
-  if (largeFactor > 1.5F)
-  {
-    largeFactor = 1.5F;
-  }
-  return largeFactor;
+  constexpr float MAX_LARGE_FACTOR = 1.4F;
+  return (soundInfo.GetSpeed() / 750.0F) + (soundInfo.GetVolume() / MAX_LARGE_FACTOR);
 }
 
 void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,

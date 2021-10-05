@@ -2,6 +2,7 @@
 
 #include "goom_config.h"
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -18,6 +19,7 @@ public:
   //static constexpr size_t AUDIO_SAMPLE_LEN = 512;
   static const size_t NUM_AUDIO_SAMPLES;
   static const size_t AUDIO_SAMPLE_LEN;
+  static constexpr auto GetPositiveValue(float audioValue) -> float;
 
   // AudioSample object: numSampleChannels = 1 or 2.
   //   If numSampleChannels = 1, then the first  AUDIO_SAMPLE_LEN values of 'floatAudioData'
@@ -32,22 +34,21 @@ public:
 
   struct MaxMinValues
   {
-    int16_t minVal;
-    int16_t maxVal;
+    float minVal;
+    float maxVal;
   };
-  [[nodiscard]] auto GetSample(size_t channelIndex) const -> const std::vector<int16_t>&;
+  using SampleArray = std::vector<float>;
+  [[nodiscard]] auto GetSample(size_t channelIndex) const -> const SampleArray&;
   [[nodiscard]] auto GetSampleMinMax(size_t channelIndex) const -> const MaxMinValues&;
 
 private:
   const size_t m_numDistinctChannels;
-  using SampleArray = std::vector<int16_t>;
   const std::vector<SampleArray> m_sampleArrays;
   const std::vector<MaxMinValues> m_minMaxSampleValues;
   [[nodiscard]] static auto GetSampleArrays(const std::vector<float>& floatAudioData)
       -> std::vector<SampleArray>;
   [[nodiscard]] static auto GetMaxMinSampleValues(const std::vector<SampleArray>& sampleArrays)
       -> std::vector<MaxMinValues>;
-  [[nodiscard]] static auto FloatToInt16(float fVal) -> int16_t;
 };
 
 class SoundInfo
@@ -76,8 +77,8 @@ public:
   // Acceleration of the sound [0..1]
   [[nodiscard]] auto GetAcceleration() const -> float;
 
-  [[nodiscard]] auto GetAllTimesMaxVolume() const -> int16_t;
-  [[nodiscard]] auto GetAllTimesMinVolume() const -> int16_t;
+  [[nodiscard]] auto GetAllTimesMaxVolume() const -> float;
+  [[nodiscard]] auto GetAllTimesMinVolume() const -> float;
 
   // For debugging
   [[nodiscard]] auto GetGoomLimit() const -> float;
@@ -102,11 +103,11 @@ private:
 
   float m_volume = 0.0F;
   float m_acceleration = 0.0F;
+  float m_fifthOfAcceleration = 0.0F;
   float m_speed = 0.0F;
 
-  int16_t m_allTimesMaxVolume = std::numeric_limits<int16_t>::min();
-  int16_t m_allTimesMinVolume = std::numeric_limits<int16_t>::max();
-  int16_t m_allTimesPositiveMaxVolume = 0;
+  float m_allTimesMaxVolume = std::numeric_limits<float>::min();
+  float m_allTimesMinVolume = std::numeric_limits<float>::max();
   float m_maxAccelerationSinceLastReset = 0.0F;
 
   void UpdateVolume(const AudioSamples& samples);
@@ -117,12 +118,20 @@ private:
   void UpdateGoomLimit();
 };
 
+constexpr auto AudioSamples::GetPositiveValue(float audioValue) -> float
+{
+  assert(-1.0F <= audioValue);
+  assert(audioValue <= 1.0F);
+
+  return 0.5F * (1.0F + audioValue);
+}
+
 inline auto AudioSamples::GetNumDistinctChannels() const -> size_t
 {
   return m_numDistinctChannels;
 }
 
-inline auto AudioSamples::GetSample(const size_t channelIndex) const -> const std::vector<int16_t>&
+inline auto AudioSamples::GetSample(const size_t channelIndex) const -> const SampleArray&
 {
   return m_sampleArrays.at(channelIndex);
 }
@@ -162,12 +171,12 @@ inline auto SoundInfo::GetAcceleration() const -> float
   return m_acceleration;
 }
 
-inline auto SoundInfo::GetAllTimesMaxVolume() const -> int16_t
+inline auto SoundInfo::GetAllTimesMaxVolume() const -> float
 {
   return m_allTimesMaxVolume;
 }
 
-inline auto SoundInfo::GetAllTimesMinVolume() const -> int16_t
+inline auto SoundInfo::GetAllTimesMinVolume() const -> float
 {
   return m_allTimesMinVolume;
 }

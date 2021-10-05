@@ -1,9 +1,9 @@
+#undef NDEBUG
 #include "sound_info.h"
 
 #include "utils/mathutils.h"
 
 #include <algorithm>
-#undef NDEBUG
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -15,21 +15,6 @@ namespace GOOM
 
 const size_t AudioSamples::NUM_AUDIO_SAMPLES = 2;
 const size_t AudioSamples::AUDIO_SAMPLE_LEN = 512;
-
-inline auto AudioSamples::FloatToInt16(const float fVal) -> int16_t
-{
-  if (fVal >= 1.0F)
-  {
-    return std::numeric_limits<int16_t>::max();
-  }
-
-  if (fVal < -1.0F)
-  {
-    return -std::numeric_limits<int16_t>::max();
-  }
-
-  return static_cast<int16_t>(fVal * static_cast<float>(std::numeric_limits<int16_t>::max()));
-}
 
 auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
     -> std::vector<SampleArray>
@@ -45,7 +30,7 @@ auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
   {
     for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
     {
-      sampleArrays[0][i] = FloatToInt16(floatAudioData[i]);
+      sampleArrays[0][i] = GetPositiveValue(floatAudioData[i]);
       sampleArrays[1][i] = sampleArrays[0][i];
     }
   }
@@ -54,10 +39,10 @@ auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
     size_t fpos = 0;
     for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
     {
-      sampleArrays[0][i] = FloatToInt16(floatAudioData[fpos]);
+      sampleArrays[0][i] = GetPositiveValue(floatAudioData[fpos]);
       ++fpos;
 
-      sampleArrays[1][i] = FloatToInt16(floatAudioData[fpos]);
+      sampleArrays[1][i] = GetPositiveValue(floatAudioData[fpos]);
       ++fpos;
     }
   }
@@ -113,18 +98,15 @@ void SoundInfo::ProcessSample(const AudioSamples& samples)
 void SoundInfo::UpdateVolume(const AudioSamples& samples)
 {
   // Find the min/max of volumes
-  int16_t maxPosVar = 0;
-  int16_t maxVar = std::numeric_limits<int16_t>::min();
-  int16_t minVar = std::numeric_limits<int16_t>::max();
+  float maxVar = std::numeric_limits<float>::min();
+  float minVar = std::numeric_limits<float>::max();
+
   for (size_t i = 0; i < AudioSamples::NUM_AUDIO_SAMPLES; ++i)
   {
-    const std::vector<int16_t>& soundData = samples.GetSample(i);
-    for (const int16_t dataVal : soundData)
+    const AudioSamples::SampleArray& soundData = samples.GetSample(i);
+
+    for (const float dataVal : soundData)
     {
-      if (maxPosVar < dataVal)
-      {
-        maxPosVar = dataVal;
-      }
       if (maxVar < dataVal)
       {
         maxVar = dataVal;
@@ -136,10 +118,6 @@ void SoundInfo::UpdateVolume(const AudioSamples& samples)
     }
   }
 
-  if (maxPosVar > m_allTimesPositiveMaxVolume)
-  {
-    m_allTimesPositiveMaxVolume = maxPosVar;
-  }
   if (maxVar > m_allTimesMaxVolume)
   {
     m_allTimesMaxVolume = maxVar;
@@ -149,21 +127,18 @@ void SoundInfo::UpdateVolume(const AudioSamples& samples)
     m_allTimesMinVolume = minVar;
   }
 
-  // Volume sonore - TODO: why only positive volumes?
-  if (m_allTimesPositiveMaxVolume > 0)
-  {
-    m_volume = static_cast<float>(maxPosVar) / static_cast<float>(m_allTimesPositiveMaxVolume);
-  }
+  m_volume = maxVar;
 }
 
 void SoundInfo::UpdateSpeed(const float prevVolume)
 {
-  m_speed = 0.5F * (1.0F + (m_volume - prevVolume));
+  m_speed = AudioSamples::GetPositiveValue(m_volume - prevVolume);
 }
 
 void SoundInfo::UpdateAcceleration(const float prevSpeed)
 {
-  m_acceleration = 0.5F * (1.0F + (m_speed - prevSpeed));
+  m_acceleration = AudioSamples::GetPositiveValue(m_speed - prevSpeed);
+  m_fifthOfAcceleration = 0.2F * m_acceleration;
 }
 
 void SoundInfo::UpdateLastGoom()
@@ -172,11 +147,11 @@ void SoundInfo::UpdateLastGoom()
   // Goom time
   ++m_timeSinceLastGoom;
 
-  if (m_acceleration > m_goomLimit)
+  if (m_fifthOfAcceleration > m_goomLimit)
   {
     m_timeSinceLastGoom = 0;
     ++m_totalGoomsInCurrentCycle;
-    m_goomPower = m_acceleration - m_goomLimit;
+    m_goomPower = m_fifthOfAcceleration - m_goomLimit;
   }
 
   if (m_acceleration > m_maxAccelerationSinceLastReset)
@@ -205,7 +180,7 @@ void SoundInfo::UpdateLastBigGoom()
     return;
   }
 
-  if ((m_speed > BIG_GOOM_SPEED_LIMIT) && (m_acceleration > m_bigGoomLimit))
+  if ((m_speed > BIG_GOOM_SPEED_LIMIT) && (m_fifthOfAcceleration > m_bigGoomLimit))
   {
     m_timeSinceLastBigGoom = 0;
   }
