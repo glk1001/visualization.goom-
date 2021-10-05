@@ -103,7 +103,6 @@ private:
 
   float m_volume = 0.0F;
   float m_acceleration = 0.0F;
-  float m_fifthOfAcceleration = 0.0F;
   float m_speed = 0.0F;
 
   float m_allTimesMaxVolume = std::numeric_limits<float>::min();

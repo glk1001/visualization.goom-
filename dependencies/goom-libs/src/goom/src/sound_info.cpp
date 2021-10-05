@@ -138,7 +138,6 @@ void SoundInfo::UpdateSpeed(const float prevVolume)
 void SoundInfo::UpdateAcceleration(const float prevSpeed)
 {
   m_acceleration = AudioSamples::GetPositiveValue(m_speed - prevSpeed);
-  m_fifthOfAcceleration = 0.2F * m_acceleration;
 }
 
 void SoundInfo::UpdateLastGoom()
@@ -147,11 +146,11 @@ void SoundInfo::UpdateLastGoom()
   // Goom time
   ++m_timeSinceLastGoom;
 
-  if (m_fifthOfAcceleration > m_goomLimit)
+  if (m_acceleration > m_goomLimit)
   {
     m_timeSinceLastGoom = 0;
     ++m_totalGoomsInCurrentCycle;
-    m_goomPower = m_fifthOfAcceleration - m_goomLimit;
+    m_goomPower = m_acceleration - m_goomLimit;
   }
 
   if (m_acceleration > m_maxAccelerationSinceLastReset)
@@ -180,7 +179,7 @@ void SoundInfo::UpdateLastBigGoom()
     return;
   }
 
-  if ((m_speed > BIG_GOOM_SPEED_LIMIT) && (m_fifthOfAcceleration > m_bigGoomLimit))
+  if ((m_speed > BIG_GOOM_SPEED_LIMIT) && (m_acceleration > m_bigGoomLimit))
   {
     m_timeSinceLastBigGoom = 0;
   }
