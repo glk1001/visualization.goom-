@@ -228,7 +228,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     SetNextCurrentBitmapName();
   }
 
-  const float speedFactor = 0.2F * m_goomInfo.GetSoundInfo().GetSpeed();
+  const float speedFactor = 0.25F * m_goomInfo.GetSoundInfo().GetSpeed();
 
   const float largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
   const auto speedvarMult80Plus15 = static_cast<uint32_t>((speedFactor * 80.0F) + 15.0F);
@@ -342,8 +342,8 @@ void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
 
 auto GoomDotsFx::GoomDotsFxImpl::GetLargeSoundFactor(const SoundInfo& soundInfo) -> float
 {
-  constexpr float MAX_LARGE_FACTOR = 1.4F;
-  return (soundInfo.GetSpeed() / 750.0F) + (soundInfo.GetVolume() / MAX_LARGE_FACTOR);
+  constexpr float MAX_LARGE_FACTOR = 1.45F;
+  return (soundInfo.GetSpeed() / 400.0F) + (soundInfo.GetVolume() / MAX_LARGE_FACTOR);
 }
 
 void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
