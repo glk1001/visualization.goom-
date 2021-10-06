@@ -26,26 +26,18 @@ auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
   sampleArrays[0].resize(AUDIO_SAMPLE_LEN);
   sampleArrays[1].resize(AUDIO_SAMPLE_LEN);
 
-  if (1 == NUM_AUDIO_SAMPLES)
-  {
-    for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
-    {
-      sampleArrays[0][i] = GetPositiveValue(floatAudioData[i]);
-      sampleArrays[1][i] = sampleArrays[0][i];
-    }
-  }
-  else
-  {
     size_t fpos = 0;
     for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
     {
       sampleArrays[0][i] = GetPositiveValue(floatAudioData[fpos]);
-      ++fpos;
+      if (NUM_AUDIO_SAMPLES != 1)
+      {
+        ++fpos;
+      }
 
       sampleArrays[1][i] = GetPositiveValue(floatAudioData[fpos]);
       ++fpos;
     }
-  }
 
   return sampleArrays;
 }
@@ -69,7 +61,10 @@ inline auto AudioSamples::GetMaxMinSampleValues(const std::vector<SampleArray>& 
 AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<float>& floatAudioData)
   : m_numDistinctChannels{numSampleChannels},
     m_sampleArrays{GetSampleArrays(floatAudioData)},
-    m_minMaxSampleValues{GetMaxMinSampleValues(m_sampleArrays)}
+    m_minMaxSampleValues{GetMaxMinSampleValues(m_sampleArrays)},
+    m_overallMinMaxSampleValues{
+        std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
+        std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)}
 {
   assert((0 < numSampleChannels) && (numSampleChannels <= 2));
 }
@@ -95,47 +90,26 @@ void SoundInfo::ProcessSample(const AudioSamples& samples)
   UpdateLastGoom();
 }
 
-void SoundInfo::UpdateVolume(const AudioSamples& samples)
+inline void SoundInfo::UpdateVolume(const AudioSamples& samples)
 {
-  // Find the min/max of volumes
-  float maxVar = std::numeric_limits<float>::min();
-  float minVar = std::numeric_limits<float>::max();
+  m_volume = samples.GetSampleOverallMinMax().maxVal;
 
-  for (size_t i = 0; i < AudioSamples::NUM_AUDIO_SAMPLES; ++i)
+  if (m_volume > m_allTimesMaxVolume)
   {
-    const AudioSamples::SampleArray& soundData = samples.GetSample(i);
-
-    for (const float dataVal : soundData)
-    {
-      if (maxVar < dataVal)
-      {
-        maxVar = dataVal;
-      }
-      if (minVar > dataVal)
-      {
-        minVar = dataVal;
-      }
-    }
+    m_allTimesMaxVolume = m_volume;
   }
-
-  if (maxVar > m_allTimesMaxVolume)
+  if (samples.GetSampleOverallMinMax().minVal < m_allTimesMinVolume)
   {
-    m_allTimesMaxVolume = maxVar;
+    m_allTimesMinVolume = samples.GetSampleOverallMinMax().minVal;
   }
-  if (minVar < m_allTimesMinVolume)
-  {
-    m_allTimesMinVolume = minVar;
-  }
-
-  m_volume = maxVar;
 }
 
-void SoundInfo::UpdateSpeed(const float prevVolume)
+inline void SoundInfo::UpdateSpeed(const float prevVolume)
 {
   m_speed = AudioSamples::GetPositiveValue(m_volume - prevVolume);
 }
 
-void SoundInfo::UpdateAcceleration(const float prevSpeed)
+inline void SoundInfo::UpdateAcceleration(const float prevSpeed)
 {
   m_acceleration = AudioSamples::GetPositiveValue(m_speed - prevSpeed);
 }

@@ -40,11 +40,13 @@ public:
   using SampleArray = std::vector<float>;
   [[nodiscard]] auto GetSample(size_t channelIndex) const -> const SampleArray&;
   [[nodiscard]] auto GetSampleMinMax(size_t channelIndex) const -> const MaxMinValues&;
+  [[nodiscard]] auto GetSampleOverallMinMax() const -> const MaxMinValues&;
 
 private:
   const size_t m_numDistinctChannels;
   const std::vector<SampleArray> m_sampleArrays;
   const std::vector<MaxMinValues> m_minMaxSampleValues;
+  const MaxMinValues m_overallMinMaxSampleValues;
   [[nodiscard]] static auto GetSampleArrays(const std::vector<float>& floatAudioData)
       -> std::vector<SampleArray>;
   [[nodiscard]] static auto GetMaxMinSampleValues(const std::vector<SampleArray>& sampleArrays)
@@ -138,6 +140,11 @@ inline auto AudioSamples::GetSample(const size_t channelIndex) const -> const Sa
 inline auto AudioSamples::GetSampleMinMax(const size_t channelIndex) const -> const MaxMinValues&
 {
   return m_minMaxSampleValues.at(channelIndex);
+}
+
+inline auto AudioSamples::GetSampleOverallMinMax() const -> const MaxMinValues&
+{
+  return m_overallMinMaxSampleValues;
 }
 
 inline auto SoundInfo::GetTotalGoomsInCurrentCycle() const -> uint32_t
