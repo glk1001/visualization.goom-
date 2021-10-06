@@ -130,25 +130,26 @@ private:
   std::vector<LinePoint> m_srcePoints{};
   std::vector<LinePoint> m_srcePointsCopy{};
   LineType m_srcLineType;
+  const float m_srceParam;
   std::vector<LinePoint> m_destPoints{};
   LineType m_destLineType = LineType::CIRCLE;
+  float m_destParam;
   static constexpr float LINE_LERP_FINISHED_VAL = 1.1F;
   static constexpr float LINE_LERP_INC = 1.0F / static_cast<float>(MIN_LINE_DURATION - 1);
-  float m_lineLerpFactor = 0.0;
+  float m_lineLerpFactor = 0.0F;
   bool m_useLineColor = true;
   void GenerateLinePoints(LineType lineType, float lineParam, std::vector<LinePoint>& line);
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
 
-  float m_power = 0;
-  float m_powerIncrement = 0;
+  float m_power = 0.0F;
+  float m_powerIncrement = 0.0F;
   // This factor gives height to the audio samples lines. This value seems pleasing.
   float m_maxNormalizedPeak = MIN_MAX_NORMALIZED_PEAK;
 
-  float m_param = 0;
-  float m_newAmplitude = 1;
-  float m_amplitude = 1;
-  float m_audioRange{};
-  float m_minAudioValue{};
+  float m_newAmplitude = 1.0F;
+  float m_amplitude = 1.0F;
+  float m_audioRange = 0.0F;
+  float m_minAudioValue = 0.0F;
   static constexpr size_t MIN_IMAGE_DOT_SIZE = 3;
   static constexpr size_t MAX_IMAGE_DOT_SIZE = 15;
   static_assert(MAX_IMAGE_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
@@ -158,8 +159,8 @@ private:
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
 
   // pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera
-  Pixel m_color1{};
-  Pixel m_color2{};
+  Pixel m_srceColor{};
+  Pixel m_destColor{};
 
   struct PointAndColor
   {
@@ -281,15 +282,13 @@ LinesFx::LinesImpl::LinesImpl(const IGoomDraw& draw,
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcLineType{srceLineType},
+    m_srceParam{srceParam},
     m_destPoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_destLineType{destLineType},
-    m_param{destParam},
-    m_color1{srceColor},
-    m_color2{destColor}
+    m_destParam{destParam},
+    m_srceColor{srceColor},
+    m_destColor{destColor}
 {
-  GenerateLinePoints(m_srcLineType, srceParam, m_srcePoints);
-  m_srcePointsCopy = m_srcePoints;
-  ResetDestLine(m_destLineType, destParam, 1.0, destColor);
 }
 
 auto LinesFx::LinesImpl::GetRandomColorMap() const -> const IColorMap&
@@ -300,6 +299,9 @@ auto LinesFx::LinesImpl::GetRandomColorMap() const -> const IColorMap&
 
 void LinesFx::LinesImpl::Start()
 {
+  GenerateLinePoints(m_srcLineType, m_srceParam, m_srcePoints);
+  m_srcePointsCopy = m_srcePoints;
+  ResetDestLine(m_destLineType, m_destParam, 1.0F, m_destColor);
 }
 
 void LinesFx::LinesImpl::SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps)
@@ -407,7 +409,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
           floats_equal(m_srcePoints[0].y, m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].y)));
 
   constexpr float COLOR_MIX_AMOUNT = 1.0F / 64.0F;
-  m_color1 = IColorMap::GetColorMix(m_color1, m_color2, COLOR_MIX_AMOUNT);
+  m_srceColor = IColorMap::GetColorMix(m_srceColor, m_destColor, COLOR_MIX_AMOUNT);
 
   constexpr float MIN_POW_INC = 0.03F;
   constexpr float MAX_POW_INC = 0.10F;
@@ -439,12 +441,12 @@ void LinesFx::LinesImpl::ResetDestLine(const LineType newLineType,
                                        const float newAmplitude,
                                        const Pixel& newColor)
 {
-  GenerateLinePoints(newLineType, m_param, m_destPoints);
+  GenerateLinePoints(newLineType, m_destParam, m_destPoints);
 
   m_destLineType = newLineType;
-  m_param = newParam;
+  m_destParam = newParam;
   m_newAmplitude = newAmplitude;
-  m_color2 = newColor;
+  m_destColor = newColor;
   m_lineLerpFactor = 0.0;
   m_currentBrightness = GetRandInRange(1.0F, 1.9F);
   m_beadedLook = ProbabilityOfMInN(3, 20);
@@ -557,7 +559,7 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
 
   const LinePoint& pt0 = m_srcePoints[0];
   const LinePoint& ptN = m_srcePoints[LAST_POINT_INDEX];
-  const Pixel lineColor = GetLightenedColor(m_color1, m_power);
+  const Pixel lineColor = GetLightenedColor(m_srceColor, m_power);
 
   m_audioRange = soundMinMax.maxVal - soundMinMax.minVal;
   assert(m_audioRange >= 0.0F);
