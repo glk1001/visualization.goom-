@@ -200,7 +200,6 @@ void SoundInfo::UpdateGoomLimit()
   constexpr float GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT = 0.03F;
   constexpr uint32_t NUM_GOOMS_IN_LONG_CYCLE = 16;
   constexpr float GOOM_LIMIT_LONG_CYCLE_INCREMENT = 0.04F;
-  constexpr float GOOM_LIMIT_ACCELERATION_DECREMENT = 0.02F;
 
   if (m_totalGoomsInCurrentCycle > NUM_GOOMS_IN_SHORT_CYCLE)
   {
@@ -218,6 +217,7 @@ void SoundInfo::UpdateGoomLimit()
   }
   else if (0 == m_totalGoomsInCurrentCycle)
   {
+    constexpr float GOOM_LIMIT_ACCELERATION_DECREMENT = 0.02F;
     m_goomLimit = m_maxAccelerationSinceLastReset - GOOM_LIMIT_ACCELERATION_DECREMENT;
   }
 
