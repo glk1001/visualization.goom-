@@ -189,8 +189,8 @@ auto Fractal::GetNextIfsPoints() -> const std::vector<IfsPoint>&
   Similitude* s = m_components->data();
   Similitude* s0 = s + m_numSimi;
   Similitude* s1 = s0 + m_numSimi;
-  Similitude* s2 = s1 + m_numSimi;
-  Similitude* s3 = s2 + m_numSimi;
+  const Similitude* s2 = s1 + m_numSimi;
+  const Similitude* s3 = s2 + m_numSimi;
 
   for (size_t i = 0; i < m_numSimi; ++i)
   {
@@ -303,7 +303,7 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
   const ColorMapGroup colorMapGroup = m_colorMaps.GetRandomGroup();
   const bool useBitmaps = ProbabilityOfMInN(7, 10);
 
-  for (size_t i = start; i < start + num; ++i)
+  for (size_t i = start; i < (start + num); ++i)
   {
     (*m_components)[i].dbl_cx = GaussRand(0.0, 4.0, c_factor);
     (*m_components)[i].dbl_cy = GaussRand(0.0, 4.0, c_factor);
@@ -383,7 +383,7 @@ void Fractal::Trace(const uint32_t curDepth, const FltPoint& p0)
     {
       continue;
     }
-    if (0 == (((p.x - p0.x) >> 4)) || (0 == ((p.y - p0.y) >> 4)))
+    if ((0 == ((p.x - p0.x) >> 4)) || (0 == ((p.y - p0.y) >> 4)))
     {
       continue;
     }

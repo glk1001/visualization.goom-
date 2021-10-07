@@ -512,7 +512,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
     const Pixel mixedColor =
         m_colorizer.GetMixedColor(baseColor, point.GetCount(), BITMAP_BRIGHTNESS, tMix, tX, tY);
     const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                              [[maybe_unused]] const Pixel& b) -> Pixel { return mixedColor; };
+                              [[maybe_unused]] const Pixel& b) { return mixedColor; };
     const PixelBuffer& bitmap{*point.GetSimiCurrentPointBitmap()};
     m_draw.Bitmap(pX, pY, bitmap, {getColor, getColor}, point.GetSimiOverExposeBitmaps());
   }

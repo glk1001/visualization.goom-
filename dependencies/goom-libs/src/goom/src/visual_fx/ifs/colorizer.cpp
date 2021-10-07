@@ -54,7 +54,7 @@ void Colorizer::ChangeColorMode()
   }
 }
 
-auto Colorizer::GetNextColorMode() -> IfsDancersFx::ColorMode
+inline auto Colorizer::GetNextColorMode() -> IfsDancersFx::ColorMode
 {
   // clang-format off
   static const Weights<IfsDancersFx::ColorMode> s_colorModeWeights{{
@@ -86,7 +86,56 @@ void Colorizer::ChangeColorMaps()
   m_countSinceColorMapChange = m_colorMapChangeCompleted;
 }
 
-auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const -> Pixel
+auto Colorizer::GetMixedColor(const Pixel& baseColor,
+                              const uint32_t hitCount,
+                              const float brightness,
+                              const float tMix,
+                              const float tX,
+                              const float tY) const -> Pixel
+{
+  const float logAlpha =
+      m_maxHitCount <= 1 ? 1.0F : (std::log(static_cast<float>(hitCount)) / m_logMaxHitCount);
+
+  Pixel mixColor;
+  float tBaseMix{};
+
+  switch (m_colorMode)
+  {
+    case IfsDancersFx::ColorMode::MAP_COLORS:
+    case IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE:
+      mixColor = GetNextMixerMapColor(brightness * logAlpha, tX, tY);
+      tBaseMix = GetMapColorsTBaseMix();
+      break;
+
+    case IfsDancersFx::ColorMode::MIX_COLORS:
+    case IfsDancersFx::ColorMode::REVERSE_MIX_COLORS:
+    case IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE:
+      mixColor = GetNextMixerMapColor(tMix, tX, tY);
+      tBaseMix = 1.0F - m_tAwayFromBaseColor;
+      break;
+
+    case IfsDancersFx::ColorMode::SINGLE_COLORS:
+      mixColor = baseColor;
+      tBaseMix = 1.0F - m_tAwayFromBaseColor;
+      break;
+
+    case IfsDancersFx::ColorMode::SINE_MIX_COLORS:
+    case IfsDancersFx::ColorMode::SINE_MAP_COLORS:
+      mixColor = GetSineMixColor(tX, tY);
+      tBaseMix = 1.0F - m_tAwayFromBaseColor;
+      break;
+
+    default:
+      throw std::logic_error("Unknown ColorMode");
+  }
+
+  mixColor = GetFinalMixedColor(mixColor, baseColor, tBaseMix);
+
+  return GetGammaCorrection(brightness * logAlpha, mixColor);
+}
+
+inline auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const
+    -> Pixel
 {
   //  const float angle = y == 0.0F ? m_half_pi : std::atan2(y, x);
   //  const Pixel nextColor = mixerMap1->GetColor((m_pi + angle) / m_two_pi);
@@ -107,84 +156,44 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
   return IColorMap::GetColorMix(nextColor, prevNextColor, tTransition);
 }
 
-auto Colorizer::GetMixedColor(const Pixel& baseColor,
-                              const uint32_t hitCount,
-                              const float brightness,
-                              const float tMix,
-                              const float tX,
-                              const float tY) const -> Pixel
+inline auto Colorizer::GetMapColorsTBaseMix() const -> float
 {
-  const float logAlpha =
-      m_maxHitCount <= 1 ? 1.0F : (std::log(static_cast<float>(hitCount)) / m_logMaxHitCount);
-
-  Pixel mixColor;
-  float tBaseMix = 1.0F - m_tAwayFromBaseColor;
-
-  switch (m_colorMode)
+  if (m_colorMode == IfsDancersFx::ColorMode::MAP_COLORS)
   {
-    case IfsDancersFx::ColorMode::MAP_COLORS:
-    case IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE:
-    {
-      mixColor = GetNextMixerMapColor(brightness * logAlpha, tX, tY);
-      if (m_colorMode == IfsDancersFx::ColorMode::MAP_COLORS)
-      {
-        tBaseMix = 1.0F - m_tAwayFromBaseColor;
-      }
-      else
-      {
-        constexpr float MIN_T_BASE_MIX = 0.3F;
-        constexpr float MAX_T_BASE_MIX = 0.5F;
-        tBaseMix = GetRandInRange(MIN_T_BASE_MIX, MAX_T_BASE_MIX);
-      }
-      break;
-    }
-
-    case IfsDancersFx::ColorMode::MIX_COLORS:
-    case IfsDancersFx::ColorMode::REVERSE_MIX_COLORS:
-    case IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE:
-    {
-      mixColor = GetNextMixerMapColor(tMix, tX, tY);
-      break;
-    }
-
-    case IfsDancersFx::ColorMode::SINGLE_COLORS:
-    {
-      mixColor = baseColor;
-      break;
-    }
-
-    case IfsDancersFx::ColorMode::SINE_MIX_COLORS:
-    case IfsDancersFx::ColorMode::SINE_MAP_COLORS:
-    {
-      constexpr float INITIAL_FREQ = 20.0F;
-      constexpr float T_MIX_FACTOR = 0.5F;
-      constexpr float Z_STEP = 0.1F;
-      static const float s_freq = INITIAL_FREQ;
-      static float s_z = 0.0F;
-
-      mixColor = GetNextMixerMapColor(T_MIX_FACTOR * (1.0F + std::sin(s_freq * s_z)), tX, tY);
-      s_z += Z_STEP;
-      if (m_colorMode == IfsDancersFx::ColorMode::SINE_MAP_COLORS)
-      {
-        tBaseMix = 1.0F - m_tAwayFromBaseColor;
-      }
-      break;
-    }
-
-    default:
-      throw std::logic_error("Unknown ColorMode");
+    return 1.0F - m_tAwayFromBaseColor;
   }
 
+  constexpr float MIN_T_BASE_MIX = 0.3F;
+  constexpr float MAX_T_BASE_MIX = 0.5F;
+  return GetRandInRange(MIN_T_BASE_MIX, MAX_T_BASE_MIX);
+}
+
+inline auto Colorizer::GetSineMixColor(const float tX, const float tY) const -> Pixel
+{
+  constexpr float INITIAL_FREQ = 20.0F;
+  constexpr float T_MIX_FACTOR = 0.5F;
+  constexpr float Z_STEP = 0.1F;
+  static const float s_freq = INITIAL_FREQ;
+  static float s_z = 0.0F;
+
+  const Pixel mixColor =
+      GetNextMixerMapColor(T_MIX_FACTOR * (1.0F + std::sin(s_freq * s_z)), tX, tY);
+
+  s_z += Z_STEP;
+
+  return mixColor;
+}
+
+inline auto Colorizer::GetFinalMixedColor(const Pixel& baseColor,
+                                          const Pixel& mixColor,
+                                          const float tBaseMix) const -> Pixel
+{
   if (m_colorMode == IfsDancersFx::ColorMode::REVERSE_MIX_COLORS)
   {
-    mixColor = IColorMap::GetColorMix(mixColor, baseColor, tBaseMix);
-  }
-  else
-  {
-    mixColor = IColorMap::GetColorMix(baseColor, mixColor, tBaseMix);
+    return IColorMap::GetColorMix(mixColor, baseColor, tBaseMix);
   }
 
-  return GetGammaCorrection(brightness * logAlpha, mixColor);
+  return IColorMap::GetColorMix(baseColor, mixColor, tBaseMix);
 }
 
 inline auto Colorizer::GetGammaCorrection(const float brightness, const Pixel& color) const -> Pixel
