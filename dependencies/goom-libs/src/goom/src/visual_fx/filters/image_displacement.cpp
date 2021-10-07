@@ -39,7 +39,11 @@ ImageDisplacement::ImageDisplacement(const std::string& imageFilename)
 auto ImageDisplacement::GetDisplacementVector(const V2dFlt& normalizedPoint) const -> V2dFlt
 {
   const V2dInt imagePoint = NormalizedToImagePoint(normalizedPoint);
-  if (imagePoint.x < 0 || imagePoint.x > m_xMax || imagePoint.y < 0 || imagePoint.y > m_yMax)
+  if ((imagePoint.x < 0) || (imagePoint.x > m_xMax))
+  {
+    return {0.0F, 0.0F};
+  }
+  if ((imagePoint.y < 0) || (imagePoint.y > m_yMax))
   {
     return {0.0F, 0.0F};
   }

@@ -22,7 +22,7 @@ using UTILS::NameValuePairs;
 using UTILS::NumberRange;
 using UTILS::ProbabilityOf;
 
-constexpr NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.1000F};
+constexpr NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.01000F};
 constexpr NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};
 constexpr NumberRange<float> ZOOM_FACTOR_RANGE = {0.10F, 1.0F};
 
