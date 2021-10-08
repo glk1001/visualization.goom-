@@ -10,9 +10,15 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${GOOM_BUILD_ARTIFACTS_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${GOOM_BUILD_ARTIFACTS_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GOOM_BUILD_ARTIFACTS_DIR}/bin)
 
+option(FORCE_CPP_17 "Force C++17" OFF) 
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   # Kodi Windows build uses Visual Studio 2017 which calls C++17 attributes errors instead of warnings.
   # Force C++17 to get it to build properly.
+  set(FORCE_CPP_17 ON)
+endif()  
+
+if(FORCE_CPP_17)
   set(CPP_STANDARD 17)
 else()
   set(CPP_STANDARD 14)

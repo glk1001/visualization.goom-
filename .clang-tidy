@@ -14,13 +14,18 @@ Checks: >
   concurrency-*,
   cppcoreguidelines-*,
   google-*,
+  hicpp-*,
   llvm-*,
   misc-*,
+  mpi-*
   modernize-*,
+  openmp-*,
   performance-*,
   portability-*,
   readability-*,
+  zircon-*,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -hicpp-no-array-decay,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: '*'
