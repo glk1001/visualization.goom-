@@ -23,16 +23,16 @@
 #include "draw/goom_draw_to_buffer.h"
 #include "goom/logging_control.h"
 #include "goom_graphic.h"
-#include "goom_plugin_info.h"
-#include "utils/graphics/small_image_bitmaps.h"
-#include "visual_fx/filters/filter_settings_service.h"
 #undef NO_LOGGING
 #include "goom/logging.h"
+#include "goom/spimpl.h"
+#include "goom_plugin_info.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/parallel_utils.h"
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 #include "utils/name_value_pairs.h"
 #endif
-#include "goom/spimpl.h"
-#include "utils/parallel_utils.h"
+#include "visual_fx/filters/filter_settings_service.h"
 
 #include <cstdint>
 #if __cplusplus > 201402L
@@ -68,8 +68,6 @@ class GoomControl::GoomControlImpl
 {
 public:
   GoomControlImpl(uint32_t screenWidth, uint32_t screenHeight, std::string resourcesDirectory);
-
-  void Swap(GoomControl::GoomControlImpl& other) noexcept = delete;
 
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;

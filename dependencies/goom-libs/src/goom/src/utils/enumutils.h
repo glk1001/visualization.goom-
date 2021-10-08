@@ -8,12 +8,16 @@
 #endif
 #include <cstdint>
 #include <string>
+#include <type_traits>
 
 #if __cplusplus > 201402L
 namespace GOOM::UTILS
 {
 template<class E>
 constexpr uint32_t NUM = static_cast<size_t>(E::_NUM);
+
+template<typename E>
+constexpr auto ToUType(E e) noexcept;
 }
 
 template<>
@@ -39,6 +43,12 @@ namespace GOOM::UTILS
 template<class E>
 constexpr uint32_t NUM = static_cast<size_t>(E::_NUM);
 #endif
+
+template<typename E>
+constexpr auto ToUType(E e) noexcept
+{
+  return static_cast<std::underlying_type_t<E>>(e);
+}
 
 template<class E>
 auto EnumToString(const E e) -> std::string

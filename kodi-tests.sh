@@ -13,7 +13,7 @@ fi
 
 declare -r TEST_DIR=${BUILD_DIR}/visualization.goom-prefix/src/visualization.goom-build/goom_libs-prefix/src/goom_libs-build
 
-ctest --test-dir "${TEST_DIR}"
+ctest --verbose --test-dir "${TEST_DIR}"
 if [[ $? == 0 ]]; then
   exit 0
 fi
@@ -21,4 +21,4 @@ fi
 
 declare -r RERUN_OPTS="--rerun-failed --output-on-failure"
 
-ctest ${RERUN_OPTS} --test-dir "${TEST_DIR}"
+ctest ${RERUN_OPTS} --verbose --test-dir "${TEST_DIR}"
