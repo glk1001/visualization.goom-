@@ -19,7 +19,7 @@ public:
   //static constexpr size_t AUDIO_SAMPLE_LEN = 512;
   static const size_t NUM_AUDIO_SAMPLES;
   static const size_t AUDIO_SAMPLE_LEN;
-  static constexpr auto GetPositiveValue(float audioValue) -> float;
+  [[nodiscard]] static constexpr auto GetPositiveValue(float audioValue) -> float;
 
   // AudioSample object: numSampleChannels = 1 or 2.
   //   If numSampleChannels = 1, then the first  AUDIO_SAMPLE_LEN values of 'floatAudioData'
@@ -117,9 +117,11 @@ private:
   void UpdateLastGoom();
   void UpdateLastBigGoom();
   void UpdateGoomLimit();
+  void CheckGoomRate();
+  void CheckSettledGoomLimits();
 };
 
-constexpr auto AudioSamples::GetPositiveValue(float audioValue) -> float
+constexpr auto AudioSamples::GetPositiveValue(const float audioValue) -> float
 {
   assert(-1.0F <= audioValue);
   assert(audioValue <= 1.0F);
