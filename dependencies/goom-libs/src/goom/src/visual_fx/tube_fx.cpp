@@ -668,17 +668,16 @@ void TubeFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
 inline auto TubeFx::TubeFxImpl::GetAverageColor(const GoomDrawToContainer::ColorsList& colorsList)
     -> Pixel
 {
-  if (1 == colorsList.size())
+  if (1 == colorsList.count)
   {
-    return colorsList[0][0];
+    return colorsList.colorsArray[colorsList.count -1];
+  }
+  if (0 == colorsList.count)
+  {
+    return Pixel::BLACK;
   }
 
-  std::vector<Pixel> allColors{};
-  for (const auto& col : colorsList)
-  {
-    allColors.emplace_back(col[0]);
-  }
-  return GetColorAverage(allColors);
+  return GetColorAverage(colorsList.count, colorsList.colorsArray);
 }
 
 inline auto TubeFx::TubeFxImpl::GetClipped(const int32_t val, const uint32_t maxVal) -> int32_t

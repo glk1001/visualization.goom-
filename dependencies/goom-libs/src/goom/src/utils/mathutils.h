@@ -16,7 +16,7 @@
 
 namespace stdnew
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
 template<typename _Fp>
 constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept
 {

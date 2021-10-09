@@ -44,10 +44,12 @@ void GoomDrawToContainer::ClearAll()
 {
   m_orderedXYPixelList.clear();
 
-  const ColorsList emptyColorsList{};
   for (auto& xPixelList : m_xyPixelList)
   {
-    std::fill(xPixelList.begin(), xPixelList.end(), emptyColorsList);
+    for (auto& colorsList : xPixelList)
+    {
+      colorsList.count = 0;
+    }
   }
 }
 
@@ -71,15 +73,19 @@ void GoomDrawToContainer::SavePixels(const int32_t x,
                                      const uint32_t intBuffIntensity,
                                      const bool allowOverexposed)
 {
-  Colors newColors(colors.size());
-  for (size_t i = 0; i < newColors.size(); ++i)
+  ColorsList& colorsList = GetWriteableColorsList(x, y);
+
+  if (colorsList.count == colorsList.colorsArray.size())
   {
-    newColors[i] = GetBrighterColorInt(intBuffIntensity, colors[i], allowOverexposed);
+    return;
   }
 
-  ColorsList& colorsList = GetWriteableColorsList(x, y);
-  colorsList.emplace_back(newColors);
-  if (1 == colorsList.size())
+  // NOTE: Just save the first pixel in 'colors'. May need to improve this.
+  const Pixel newColor = GetBrighterColorInt(intBuffIntensity, colors[0], allowOverexposed);
+
+  colorsList.colorsArray[colorsList.count] = newColor;
+  colorsList.count++;
+  if (1 == colorsList.count)
   {
     m_orderedXYPixelList.emplace_back(Coords{x, y});
   }
@@ -95,7 +101,7 @@ void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t n)
 
   for (auto coords = eraseFrom; coords != eraseTo; ++coords)
   {
-    GetWriteableColorsList(coords->x, coords->y).clear();
+    GetWriteableColorsList(coords->x, coords->y).count = 0;
   }
 
   m_orderedXYPixelList.erase(eraseFrom, eraseTo);

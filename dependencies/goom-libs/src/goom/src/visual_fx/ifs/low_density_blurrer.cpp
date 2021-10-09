@@ -108,8 +108,8 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
       point.SetColor(m_singleColor);
       break;
     case BlurrerColorMode::SINGLE_WITH_NEIGHBOURS:
-      point.SetColor(
-          IColorMap::GetColorMix(m_singleColor, GetColorAverage(neighbours), m_neighbourMixFactor));
+      point.SetColor(IColorMap::GetColorMix(
+          m_singleColor, GetColorAverage(neighbours.size(), neighbours), m_neighbourMixFactor));
       break;
     case BlurrerColorMode::SIMI_NO_NEIGHBOURS:
       point.SetColor(point.GetSimiColor());
@@ -120,10 +120,11 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
           static_cast<float>(point.GetX()) / static_cast<float>(m_draw.GetScreenWidth());
       const float fy =
           static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());
-      point.SetColor(m_colorizer->GetMixedColor(IColorMap::GetColorMix(point.GetSimiColor(),
-                                                                       GetColorAverage(neighbours),
-                                                                       m_neighbourMixFactor),
-                                                point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
+      point.SetColor(m_colorizer->GetMixedColor(
+          IColorMap::GetColorMix(point.GetSimiColor(),
+                                 GetColorAverage(neighbours.size(), neighbours),
+                                 m_neighbourMixFactor),
+          point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
       break;
     }
     case BlurrerColorMode::SMOOTH_NO_NEIGHBOURS:
@@ -136,7 +137,8 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
       const float fy =
           static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());
       point.SetColor(m_colorizer->GetMixedColor(
-          IColorMap::GetColorMix(point.GetSimiColorMap()->GetColor(t), GetColorAverage(neighbours),
+          IColorMap::GetColorMix(point.GetSimiColorMap()->GetColor(t),
+                                 GetColorAverage(neighbours.size(), neighbours),
                                  m_neighbourMixFactor),
           point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
       break;

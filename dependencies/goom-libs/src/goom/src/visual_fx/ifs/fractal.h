@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#if __cplusplus <= 201402L
 namespace GOOM
 {
 
@@ -29,10 +28,6 @@ class SmallImageBitmaps;
 
 namespace IFS
 {
-#else
-namespace GOOM::IFS
-{
-#endif
 
 struct Similitude;
 class IfsPoint;
@@ -203,10 +198,5 @@ inline auto FractalHits::GetMaxHitCount() const -> uint32_t
   return m_maxHitCount;
 }
 
-#if __cplusplus <= 201402L
 } // namespace IFS
 } // namespace GOOM
-#else
-} // namespace GOOM::IFS
-#endif
-

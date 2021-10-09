@@ -29,7 +29,7 @@ TEST_CASE("Color channels are added", "[color-channel-add]")
 
 TEST_CASE("Colors are added", "[color-add]")
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   const Pixel c1{{100, 50, 20}};
   const Pixel c2{{120, 250, 70}};
 #else
@@ -58,7 +58,7 @@ TEST_CASE("Color channels are brightened", "[color-channel-bright]")
 
 TEST_CASE("Colors are brightened", "[color-bright]")
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   const Pixel c{{100, 50, 20}};
 #else
   const Pixel c{{.r = 100, .g = 50, .b = 20}};
@@ -82,7 +82,7 @@ TEST_CASE("Colors are brightened", "[color-bright]")
 
 TEST_CASE("Half intensity color", "[color-half-intensity]")
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   const Pixel c{{100, 50, 20}};
 #else
   const Pixel c{{.r = 100, .g = 50, .b = 20}};
@@ -96,7 +96,7 @@ TEST_CASE("Half intensity color", "[color-half-intensity]")
 
 TEST_CASE("Lighten", "[color-lighten]")
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   const Pixel c{{100, 0, 0}};
 #else
   const Pixel c{{.r = 100, .g = 0, .b = 0}};
@@ -110,7 +110,7 @@ TEST_CASE("Lighten", "[color-lighten]")
 
 TEST_CASE("Lightened color", "[color-half-lightened]")
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   const Pixel c{{100, 50, 20}};
 #else
   const Pixel c{{.r = 100, .g = 50, .b = 20}};
@@ -165,7 +165,7 @@ TEST_CASE("Lightened color", "[color-half-lightened]")
 
 TEST_CASE("Evolved color", "[color-evolve]")
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   const Pixel c{{100, 50, 20}};
 #else
   const Pixel c{{.r = 100, .g = 50, .b = 20}};

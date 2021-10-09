@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <vector>
 
-#if __cplusplus <= 201402L
 namespace GOOM
 {
 
@@ -17,10 +16,6 @@ class IGoomDraw;
 
 namespace IFS
 {
-#else
-namespace GOOM::IFS
-{
-#endif
 
 class IfsPoint;
 class Colorizer;
@@ -95,10 +90,5 @@ inline void LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFac
   m_neighbourMixFactor = neighbourMixFactor;
 }
 
-#if __cplusplus <= 201402L
 } // namespace IFS
 } // namespace GOOM
-#else
-} // namespace GOOM::IFS
-#endif
-

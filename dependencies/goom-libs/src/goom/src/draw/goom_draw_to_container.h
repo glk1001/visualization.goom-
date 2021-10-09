@@ -3,6 +3,7 @@
 #include "goom_draw.h"
 #include "goom_graphic.h"
 
+#include <array>
 #include <cstdint>
 #include <map>
 #include <vector>
@@ -26,15 +27,20 @@ public:
   auto GetPixel(int32_t x, int32_t y) const -> Pixel override;
   void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) const override;
 
-  auto GetPixels(int32_t x, int32_t y) const -> const std::vector<Pixel>&;
+  auto GetPixels(int32_t x, int32_t y) const -> std::vector<Pixel>;
 
   struct Coords
   {
     int32_t x;
     int32_t y;
   };
-  using Colors = std::vector<Pixel>;
-  using ColorsList = std::vector<Colors>;
+  static constexpr size_t MAX_NUM_COLORS_LIST = 3;
+  using ColorsArray = std::array<Pixel, MAX_NUM_COLORS_LIST>;
+  struct ColorsList
+  {
+    uint8_t count = 0;
+    ColorsArray colorsArray{};
+  };
   [[nodiscard]] auto GetNumChangedCoords() const -> size_t;
   [[nodiscard]] auto GetChangedCoordsList() const -> const std::vector<Coords>&;
   // IMPORTANT: The above is ordered from oldest to newest.
@@ -50,7 +56,8 @@ private:
   std::vector<std::vector<ColorsList>> m_xyPixelList{};
   std::vector<Coords> m_orderedXYPixelList{};
   [[nodiscard]] auto GetWriteableColorsList(int32_t x, int32_t y) -> ColorsList&;
-  [[nodiscard]] auto GetLastDrawnColors(int32_t x, int32_t y) const -> const std::vector<Pixel>&;
+  [[nodiscard]] auto GetLastDrawnColor(int32_t x, int32_t y) const -> Pixel;
+  [[nodiscard]] auto GetLastDrawnColors(int32_t x, int32_t y) const -> std::vector<Pixel>;
   void SavePixels(int32_t x,
                   int32_t y,
                   const std::vector<Pixel>& colors,
@@ -60,20 +67,29 @@ private:
 
 inline auto GoomDrawToContainer::GetPixel(const int32_t x, const int32_t y) const -> Pixel
 {
-  return GetLastDrawnColors(x, y)[0];
+  return GetLastDrawnColor(x, y);
 }
 
 inline auto GoomDrawToContainer::GetPixels(const int32_t x, const int32_t y) const
-    -> const std::vector<Pixel>&
+    -> std::vector<Pixel>
 {
   return GetLastDrawnColors(x, y);
 }
 
-inline auto GoomDrawToContainer::GetLastDrawnColors(const int32_t x, const int32_t y) const
-    -> const std::vector<Pixel>&
+inline auto GoomDrawToContainer::GetLastDrawnColor(const int32_t x, const int32_t y) const -> Pixel
 {
   const ColorsList& colorsList = GetColorsList(x, y);
-  return colorsList[colorsList.size() - 1];
+  if (colorsList.count == 0)
+  {
+    return Pixel::BLACK;
+  }
+  return colorsList.colorsArray[colorsList.count - 1];
+}
+
+inline auto GoomDrawToContainer::GetLastDrawnColors(const int32_t x, const int32_t y) const
+    -> std::vector<Pixel>
+{
+  return {GetLastDrawnColor(x, y), Pixel::BLACK};
 }
 
 inline auto GoomDrawToContainer::GetColorsList(const int32_t x, const int32_t y) const

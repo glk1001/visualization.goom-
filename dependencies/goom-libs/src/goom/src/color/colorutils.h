@@ -20,8 +20,10 @@ namespace GOOM::COLOR
 
 [[nodiscard]] auto GetIntColor(uint8_t r, uint8_t g, uint8_t b) -> Pixel;
 
-[[nodiscard]] auto GetColorAverage(const std::vector<Pixel>& colors) -> Pixel;
 [[nodiscard]] auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel;
+template<typename T>
+[[nodiscard]] auto GetColorAverage(size_t num, const T& colors) -> Pixel;
+
 [[nodiscard]] auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel;
 [[nodiscard]] auto GetColorMultiply(const Pixel& srce, const Pixel& dest, bool allowOverexposed)
     -> Pixel;
@@ -106,26 +108,29 @@ inline auto ColorChannelSubtract(const uint8_t c1, const uint8_t c2) -> uint32_t
   return static_cast<uint32_t>(c1) - static_cast<uint32_t>(c2);
 }
 
-inline auto GetColorAverage(const std::vector<Pixel>& colors) -> Pixel
+template<typename T>
+inline auto GetColorAverage(const size_t num, const T& colors) -> Pixel
 {
+  assert(num > 0);
+
   uint32_t newR = 0;
   uint32_t newG = 0;
   uint32_t newB = 0;
   uint32_t newA = 0;
 
-  for (const auto& c : colors)
+  for (size_t i = 0; i < num; ++i)
   {
-    newR += static_cast<uint32_t>(c.R());
-    newG += static_cast<uint32_t>(c.G());
-    newB += static_cast<uint32_t>(c.B());
-    newA += static_cast<uint32_t>(c.A());
+    newR += static_cast<uint32_t>(colors[i].R());
+    newG += static_cast<uint32_t>(colors[i].G());
+    newB += static_cast<uint32_t>(colors[i].B());
+    newA += static_cast<uint32_t>(colors[i].A());
   }
 
   return Pixel{{
-      /*.r = */ static_cast<uint8_t>(newR / colors.size()),
-      /*.g = */ static_cast<uint8_t>(newG / colors.size()),
-      /*.b = */ static_cast<uint8_t>(newB / colors.size()),
-      /*.a = */ static_cast<uint8_t>(newA / colors.size()),
+      /*.r = */ static_cast<uint8_t>(newR / num),
+      /*.g = */ static_cast<uint8_t>(newG / num),
+      /*.b = */ static_cast<uint8_t>(newB / num),
+      /*.a = */ static_cast<uint8_t>(newA / num),
   }};
 }
 

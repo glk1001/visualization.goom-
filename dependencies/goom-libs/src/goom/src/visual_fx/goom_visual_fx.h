@@ -2,17 +2,12 @@
 
 #include <string>
 
-#if __cplusplus <= 201402L
 namespace GOOM
 {
-class V2dInt;
+struct V2dInt;
 
 namespace VISUAL_FX
 {
-#else
-namespace GOOM::VISUAL_FX
-{
-#endif
 
 class IVisualFx
 {
@@ -38,10 +33,5 @@ public:
   virtual void Finish() = 0;
 };
 
-#if __cplusplus <= 201402L
 } // namespace VISUAL_FX
 } // namespace GOOM
-#else
-} // namespace GOOM::VISUAL_FX
-#endif
-
