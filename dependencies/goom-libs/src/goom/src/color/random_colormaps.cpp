@@ -494,6 +494,13 @@ auto GetPastelStandardMaps() -> std::shared_ptr<RandomColorMaps>
   }});
 }
 
+auto GetDivergingBlackStandardMaps() -> std::shared_ptr<RandomColorMaps>
+{
+  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
+      {ColorMapGroup::DIVERGING_BLACK, 1},
+  }});
+}
+
 #if __cplusplus <= 201402L
 } // namespace COLOR
 } // namespace GOOM

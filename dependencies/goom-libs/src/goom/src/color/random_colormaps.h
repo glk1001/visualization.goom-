@@ -152,6 +152,7 @@ auto GetSeasonsStandardMaps() -> std::shared_ptr<RandomColorMaps>;
 auto GetHeatStandardMaps() -> std::shared_ptr<RandomColorMaps>;
 auto GetColdStandardMaps() -> std::shared_ptr<RandomColorMaps>;
 auto GetPastelStandardMaps() -> std::shared_ptr<RandomColorMaps>;
+auto GetDivergingBlackStandardMaps() -> std::shared_ptr<RandomColorMaps>;
 
 #if __cplusplus <= 201402L
 } // namespace COLOR

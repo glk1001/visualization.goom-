@@ -30,6 +30,7 @@ using COLOR::GetAllStandardMaps;
 using COLOR::GetBlueStandardMaps;
 using COLOR::GetCitiesStandardMaps;
 using COLOR::GetColdStandardMaps;
+using COLOR::GetDivergingBlackStandardMaps;
 using COLOR::GetGreenStandardMaps;
 using COLOR::GetHeatStandardMaps;
 using COLOR::GetMostlySequentialSlimMaps;
@@ -110,11 +111,6 @@ namespace
   ColorMatchedMap matchedMap;
   matchedMap.fill(func);
   return matchedMap;
-}
-
-[[nodiscard]] auto GetCompletelyRandomColorMatchedMap() noexcept -> ColorMatchedMap
-{
-  return GetConstColorMatchedMap(GetAllStandardMaps);
 }
 
 [[nodiscard]] auto GetColorMatchedMap1() noexcept -> ColorMatchedMap
@@ -285,7 +281,7 @@ namespace
   return matchedMap;
 }
 
-constexpr size_t NUM_COLOR_MATCHED_SETS = 15;
+constexpr size_t NUM_COLOR_MATCHED_SETS = 18;
 using ColorMatchedSets = std::array<ColorMatchedMap, NUM_COLOR_MATCHED_SETS>;
 
 [[nodiscard]] inline auto GetColorMatchedSets() noexcept -> const ColorMatchedSets&
@@ -297,7 +293,10 @@ using ColorMatchedSets = std::array<ColorMatchedMap, NUM_COLOR_MATCHED_SETS>;
       {GetConstColorMatchedMap(GetYellowStandardMaps)},
       {GetConstColorMatchedMap(GetOrangeStandardMaps)},
       {GetConstColorMatchedMap(GetPurpleStandardMaps)},
-      {GetCompletelyRandomColorMatchedMap()},
+      {GetConstColorMatchedMap(GetAllStandardMaps)},
+      {GetConstColorMatchedMap(GetHeatStandardMaps)},
+      {GetConstColorMatchedMap(GetColdStandardMaps)},
+      {GetConstColorMatchedMap(GetDivergingBlackStandardMaps)},
       {GetColorMatchedMap1()},
       {GetColorMatchedMap2()},
       {GetColorMatchedMap3()},
