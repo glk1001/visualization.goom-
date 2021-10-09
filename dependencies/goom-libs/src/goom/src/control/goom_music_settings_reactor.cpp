@@ -83,8 +83,10 @@ void GoomMusicSettingsReactor::ChangeZoomEffects()
 
 void GoomMusicSettingsReactor::ChangeVitesse()
 {
+  // SPEED_FACTOR is delicate. Too small and zooms don't happen often enough.
+  constexpr float SPEED_FACTOR = 500.0F;
   const auto goFasterVal = static_cast<int32_t>(
-      std::lround(3.5F * std::log10(1.0F + (100.0F * m_goomInfo.GetSoundInfo().GetSpeed()))));
+      std::lround(3.5F * std::log10(1.0F + (SPEED_FACTOR * m_goomInfo.GetSoundInfo().GetSpeed()))));
   const int32_t newVitesse = Vitesse::STOP_SPEED - goFasterVal;
   const int32_t oldVitesse = m_filterSettingsService.GetROVitesse().GetVitesse();
 
