@@ -163,7 +163,7 @@ namespace
   matchedMap.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedMap.at(ToUType(GoomEffect::DOTS2)) = GetOrangeStandardMaps;
   matchedMap.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedMap.at(ToUType(GoomEffect::DOTS4)) = GetPastelStandardMaps;
+  matchedMap.at(ToUType(GoomEffect::DOTS4)) = GetGreenStandardMaps;
   matchedMap.at(ToUType(GoomEffect::LINES1)) = GetAllSlimMaps;
   matchedMap.at(ToUType(GoomEffect::LINES2)) = GetBlueStandardMaps;
   matchedMap.at(ToUType(GoomEffect::IFS)) = GetColdStandardMaps;
@@ -264,11 +264,11 @@ namespace
 {
   ColorMatchedMap matchedMap;
 
-  matchedMap.at(ToUType(GoomEffect::DOTS0)) = GetPastelStandardMaps;
-  matchedMap.at(ToUType(GoomEffect::DOTS1)) = GetPastelStandardMaps;
-  matchedMap.at(ToUType(GoomEffect::DOTS2)) = GetPastelStandardMaps;
-  matchedMap.at(ToUType(GoomEffect::DOTS3)) = GetPastelStandardMaps;
-  matchedMap.at(ToUType(GoomEffect::DOTS4)) = GetPastelStandardMaps;
+  matchedMap.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
+  matchedMap.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
+  matchedMap.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
+  matchedMap.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
+  matchedMap.at(ToUType(GoomEffect::DOTS4)) = GetHeatStandardMaps;
   matchedMap.at(ToUType(GoomEffect::LINES1)) = GetAllStandardMaps;
   matchedMap.at(ToUType(GoomEffect::LINES2)) = GetAllStandardMaps;
   matchedMap.at(ToUType(GoomEffect::IFS)) = GetRedStandardMaps;

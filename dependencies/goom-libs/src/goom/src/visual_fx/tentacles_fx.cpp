@@ -171,8 +171,8 @@ private:
   void DoPrettyMoveWithoutDraw();
 };
 
-TentaclesFx::TentaclesFx(const IGoomDraw& draw, const PluginInfo& info) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(draw, info)}
+TentaclesFx::TentaclesFx(const IGoomDraw& draw, const PluginInfo& goomInfo) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(draw, goomInfo)}
 {
 }
 
@@ -193,14 +193,17 @@ void TentaclesFx::Start()
 
 void TentaclesFx::Resume()
 {
+  // nothing to do
 }
 
 void TentaclesFx::Suspend()
 {
+  // nothing to do
 }
 
 void TentaclesFx::Finish()
 {
+  // nothing to do
 }
 
 void TentaclesFx::ApplyMultiple()
@@ -588,8 +591,8 @@ void TentaclesFx::TentaclesImpl::PrettyMove(const float acceleration)
   m_distt2 = stdnew::lerp(m_distt2, m_distt2Offset, m_prettyMoveLerpMix);
 
   // Bigger offset here means tentacles start further back behind screen.
-  auto disttOffset = static_cast<float>(
-      stdnew::lerp(DISTT_MIN, DISTT_MAX, 0.5 * (1.0 - std::sin(static_cast<double>(m_cycle) * (19.0 / 20.0)))));
+  auto disttOffset = static_cast<float>(stdnew::lerp(
+      DISTT_MIN, DISTT_MAX, 0.5 * (1.0 - std::sin(static_cast<double>(m_cycle) * (19.0 / 20.0)))));
   if (m_isPrettyMoveHappening)
   {
     disttOffset *= 0.6F;

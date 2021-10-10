@@ -279,7 +279,7 @@ void TentacleDriver::SetReverseColorMix(const bool val)
 
 void TentacleDriver::UpdateIterTimers()
 {
-  for (auto* t : m_iterTimers)
+  for (auto* const t : m_iterTimers)
   {
     t->Next();
   }
@@ -655,7 +655,7 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
       logLastPoint(i, radius, angle);
 #endif
       angle += angleStep;
-    };
+    }
   };
 
   const float angleLeftStart = +m_half_pi;
