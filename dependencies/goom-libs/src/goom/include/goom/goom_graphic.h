@@ -111,8 +111,7 @@ private:
 };
 
 #if __cplusplus > 201402L
-inline const Pixel Pixel::BLACK{/*.channels*/ {/*.r = */ 0, /*.g = */ 0, /*.b = */ 0,
-                                               /*.a = */ MAX_COLOR_VAL}};
+inline const Pixel Pixel::BLACK{/*.channels*/ {/*.r = */ 0, /*.g = */ 0, /*.b = */ 0, /*.a = */ 0}};
 
 inline const Pixel Pixel::WHITE{/*.channels*/ {/*.r = */ MAX_COLOR_VAL, /*.g = */ MAX_COLOR_VAL,
                                                /*.b = */ MAX_COLOR_VAL, /*.a = */ MAX_COLOR_VAL}};
