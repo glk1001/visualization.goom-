@@ -358,7 +358,7 @@ void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
 inline auto GoomDotsFx::GoomDotsFxImpl::GetLargeSoundFactor(const SoundInfo& soundInfo) -> float
 {
   constexpr float MAX_LARGE_FACTOR = 1.45F;
-  return (soundInfo.GetSpeed() / 400.0F) + (soundInfo.GetVolume() / MAX_LARGE_FACTOR);
+  return (soundInfo.GetSpeed() / 750.0F) + (soundInfo.GetVolume() / MAX_LARGE_FACTOR);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPosition(const float xOffsetAmp,
