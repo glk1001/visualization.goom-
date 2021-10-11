@@ -39,6 +39,7 @@ class IVisualFx;
 class FlyingStarsFx;
 class GoomDotsFx;
 class IfsDancersFx;
+class ImageFx;
 class TentaclesFx;
 class TubeFx;
 class ZoomFilterFx;
@@ -55,6 +56,7 @@ public:
                   const DRAW::IGoomDraw& draw,
                   const PluginInfo& goomInfo,
                   const UTILS::SmallImageBitmaps& smallBitmaps,
+                  const std::string& resourcesDirectory,
                   std::unique_ptr<FILTERS::FilterBuffersService> filterBuffersService,
                   std::unique_ptr<FILTERS::FilterColorsService> filterColorsService) noexcept;
 
@@ -110,6 +112,7 @@ private:
   const std::shared_ptr<VISUAL_FX::FlyingStarsFx> m_star_fx;
   const std::shared_ptr<VISUAL_FX::GoomDotsFx> m_goomDots_fx;
   const std::shared_ptr<VISUAL_FX::IfsDancersFx> m_ifs_fx;
+  const std::shared_ptr<VISUAL_FX::ImageFx> m_image_fx;
   const std::shared_ptr<VISUAL_FX::TentaclesFx> m_tentacles_fx;
   const std::shared_ptr<VISUAL_FX::TubeFx> m_tube_fx;
   const std::shared_ptr<VISUAL_FX::LinesFx> m_goomLine1;
@@ -136,6 +139,7 @@ private:
   void ApplyDotsIfRequired();
   void ApplyDotsToBothBuffersIfRequired();
   void ApplyIfsToBothBuffersIfRequired();
+  void ApplyImageToBothBuffersIfRequired();
   void ApplyTentaclesToBothBuffersIfRequired();
   void ApplyStarsToBothBuffersIfRequired();
   void ApplyTubeToBothBuffersIfRequired();
@@ -185,7 +189,7 @@ inline auto GoomAllVisualFx::CanDraw(const GoomDrawable goomDrawable) const -> b
 
 inline auto GoomAllVisualFx::IsCurrentlyDrawable(const GoomDrawable goomDrawable) const -> bool
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   return m_currentGoomDrawables.find(goomDrawable) != m_currentGoomDrawables.end();
 #else
   return m_currentGoomDrawables.contains(goomDrawable);
@@ -207,6 +211,7 @@ inline void GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers()
 {
   ApplyDotsToBothBuffersIfRequired();
   ApplyIfsToBothBuffersIfRequired();
+  ApplyImageToBothBuffersIfRequired();
   ApplyTentaclesToBothBuffersIfRequired();
   ApplyStarsToBothBuffersIfRequired();
   ApplyTubeToBothBuffersIfRequired();

@@ -51,6 +51,14 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     }},
   },
   {
+    /*.name = */ "Image Tester",
+    /*.weight = */100000000,
+    /*.normaliseBuffIntensity = */false,
+    /*.drawables */{{
+      { /*.fx = */GoomDrawable::IMAGE,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+    }},
+  },
+  {
    /*.name = */ "Tube Tester",
    /*.weight = */1,
    /*.normaliseBuffIntensity = */false,

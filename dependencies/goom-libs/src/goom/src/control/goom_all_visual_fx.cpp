@@ -11,6 +11,7 @@
 #include "visual_fx/flying_stars_fx.h"
 #include "visual_fx/goom_dots_fx.h"
 #include "visual_fx/ifs_dancers_fx.h"
+#include "visual_fx/image_fx.h"
 #include "visual_fx/tentacles_fx.h"
 #include "visual_fx/tube_fx.h"
 
@@ -37,6 +38,7 @@ using UTILS::SmallImageBitmaps;
 using VISUAL_FX::FlyingStarsFx;
 using VISUAL_FX::GoomDotsFx;
 using VISUAL_FX::IfsDancersFx;
+using VISUAL_FX::ImageFx;
 using VISUAL_FX::LinesFx;
 using VISUAL_FX::TentaclesFx;
 using VISUAL_FX::TubeFx;
@@ -50,6 +52,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  const IGoomDraw& draw,
                                  const PluginInfo& goomInfo,
                                  const SmallImageBitmaps& smallBitmaps,
+                                 const std::string& resourcesDirectory,
                                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept
   : m_zoomFilter_fx{std::make_shared<ZoomFilterFx>(
@@ -57,6 +60,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
     m_star_fx{std::make_shared<FlyingStarsFx>(draw, goomInfo, smallBitmaps)},
     m_goomDots_fx{std::make_shared<GoomDotsFx>(draw, goomInfo, smallBitmaps)},
     m_ifs_fx{std::make_shared<IfsDancersFx>(draw, goomInfo, smallBitmaps)},
+    m_image_fx{std::make_shared<ImageFx>(draw, goomInfo, resourcesDirectory)},
     m_tentacles_fx{std::make_shared<TentaclesFx>(draw, goomInfo)},
     m_tube_fx{std::make_shared<TubeFx>(draw, goomInfo, smallBitmaps)},
     m_goomLine1{std::make_shared<LinesFx>(draw,
@@ -84,6 +88,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
       m_zoomFilter_fx,
       m_star_fx,
       m_ifs_fx,
+      m_image_fx,
       m_goomDots_fx,
       m_tentacles_fx,
       m_tube_fx,
@@ -91,6 +96,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
     m_drawablesMap {
       {GoomDrawable::STARS, m_star_fx},
       {GoomDrawable::IFS, m_ifs_fx},
+      {GoomDrawable::IMAGE, m_image_fx},
       {GoomDrawable::DOTS, m_goomDots_fx},
       {GoomDrawable::TENTACLES, m_tentacles_fx},
       {GoomDrawable::TUBE, m_tube_fx},
@@ -269,6 +275,17 @@ void GoomAllVisualFx::ApplyIfsToBothBuffersIfRequired()
 
   ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::IFS));
   m_ifs_fx->ApplyMultiple();
+}
+
+void GoomAllVisualFx::ApplyImageToBothBuffersIfRequired()
+{
+  if (!IsCurrentlyDrawable(GoomDrawable::IMAGE))
+  {
+    return;
+  }
+
+  ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::IMAGE));
+  m_image_fx->ApplyMultiple();
 }
 
 void GoomAllVisualFx::ApplyTentaclesToBothBuffersIfRequired()

@@ -77,13 +77,14 @@ add_library(goom
         src/visual_fx/tubes/tubes.cpp
         src/visual_fx/flying_stars_fx.cpp
         src/visual_fx/goom_dots_fx.cpp
-        src/visual_fx/ifs_dancers_fx.cpp
         src/visual_fx/goom_visual_fx.h
+        src/visual_fx/ifs_dancers_fx.cpp
+        src/visual_fx/image_fx.cpp
         src/visual_fx/lines_fx.cpp
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tube_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp
-)
+        src/visual_fx/image_fx.h src/visual_fx/image_fx.cpp)
 
 target_include_directories(goom
     PUBLIC
