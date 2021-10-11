@@ -52,7 +52,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
   },
   {
     /*.name = */ "Image Tester",
-    /*.weight = */100000000,
+    /*.weight = */10000000,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
       { /*.fx = */GoomDrawable::IMAGE,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
@@ -81,7 +81,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.drawables */{{
       { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */false } },
   }},
- },
+  },
   {
     /*.name = */ "Ifs and Dots",
     /*.weight = */200,
@@ -90,8 +90,17 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
       { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.1F, /*.allowOverexposed = */false } },
     }},
-  },
-  {
+   },
+   {
+     /*.name = */ "Ifs and Image",
+     /*.weight = */200,
+     /*.normaliseBuffIntensity = */false,
+     /*.drawables */{{
+       { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+       { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true } },
+    }},
+   },
+   {
     /*.name = */ "Ifs and Stars",
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
@@ -99,8 +108,17 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
       { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */false } },
     }},
-  },
-  {
+   },
+   {
+    /*.name = */ "Image and Stars",
+    /*.weight = */200,
+    /*.normaliseBuffIntensity = */false,
+    /*.drawables */{{
+      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */false } },
+    }},
+   },
+   {
     /*.name = */ "Ifs and Tubes",
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
@@ -108,8 +126,17 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
       { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */false } },
     }},
-  },
-  {
+   },
+   {
+    /*.name = */ "Image and Tubes",
+    /*.weight = */200,
+    /*.normaliseBuffIntensity = */false,
+    /*.drawables */{{
+      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */false } },
+    }},
+   },
+   {
     /*.name = */ "Tentacles, Dots, Tubes",
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
@@ -118,8 +145,8 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
       { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.6F, /*.allowOverexposed = */false } },
       { /*.fx = */GoomDrawable::TUBE,      /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true } },
     }},
-  },
-  {
+   },
+   {
     /*.name = */ "Tentacles and Lines",
     /*.weight = */200,
     /*.normaliseBuffIntensity = */false,
@@ -129,8 +156,19 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
       { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
       { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
     }},
-  },
-  {
+   },
+   {
+    /*.name = */ "Image and Lines",
+    /*.weight = */200,
+    /*.normaliseBuffIntensity = */false,
+    /*.drawables */{{
+      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.4F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::LINES,     /*.buffSettings = */{ /*.buffIntensity = */0.4F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::SCOPE,     /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+      { /*.fx = */GoomDrawable::FAR_SCOPE, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true  } },
+    }},
+   },
+   {
     /*.name = */ "IFS, Dots, Stars",
     /*.weight = */100,
     /*.normaliseBuffIntensity = */false,
@@ -139,8 +177,8 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
       { /*.fx = */GoomDrawable::DOTS,      /*.buffSettings = */{ /*.buffIntensity = */0.6F, /*.allowOverexposed = */false } },
       { /*.fx = */GoomDrawable::STARS,     /*.buffSettings = */{ /*.buffIntensity = */0.3F, /*.allowOverexposed = */false } },
     }},
-  },
-  {
+   },
+   {
     /*.name = */ "IFS, Tentacles, Stars",
     /*.weight = */20,
     /*.normaliseBuffIntensity = */false,
@@ -178,6 +216,15 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
       { /*.fx = */GoomDrawable::IFS,       /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true } },
+      { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true } },
+    }},
+  },
+  {
+    /*.name = */ "Image and Tentacles",
+    /*.weight = */70,
+    /*.normaliseBuffIntensity = */false,
+    /*.drawables */{{
+      { /*.fx = */GoomDrawable::IMAGE,     /*.buffSettings = */{ /*.buffIntensity = */0.2F, /*.allowOverexposed = */true } },
       { /*.fx = */GoomDrawable::TENTACLES, /*.buffSettings = */{ /*.buffIntensity = */0.5F, /*.allowOverexposed = */true } },
     }},
   },
