@@ -110,12 +110,12 @@ inline void TValue::SingleCycleIncrement()
 
 inline void TValue::ContinuousRepeatableIncrement()
 {
-  m_t += m_currentStep;
-
   if (IsTimeDelayed())
   {
     return;
   }
+
+  m_t += m_currentStep;
 
   if (m_t > (1.0F + SMALL_FLOAT))
   {
@@ -125,20 +125,22 @@ inline void TValue::ContinuousRepeatableIncrement()
 
 inline void TValue::ContinuousReversibleIncrement()
 {
-  m_t += m_currentStep;
-
   if (IsTimeDelayed())
   {
     return;
   }
 
+  m_t += m_currentStep;
+
   if (m_t > (1.0F + SMALL_FLOAT))
   {
     HandleBoundary(1.0F, -1.0F);
+    m_t += m_currentStep;
   }
   else if (m_t < (0.0F - SMALL_FLOAT))
   {
     HandleBoundary(0.0F, +1.0F);
+    m_t += m_currentStep;
   }
 }
 
@@ -152,11 +154,7 @@ inline auto TValue::IsTimeDelayed() -> bool
   if (m_delayPointCount > 0)
   {
     --m_delayPointCount;
-    if (m_delayPointCount > 0)
-    {
-      m_t -= m_currentStep;
-    }
-    else
+    if (0 == m_delayPointCount)
     {
       m_startedDelay = false;
     }

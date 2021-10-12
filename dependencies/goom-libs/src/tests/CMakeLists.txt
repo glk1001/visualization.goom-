@@ -20,6 +20,7 @@ add_executable(goomtests
         src/utils/test_goomrand.cpp
         src/utils/test_parallel_utils.cpp
         src/utils/test_strutils.cpp
+        src/utils/test_t_values.cpp
         src/visual_fx/test_filter_fx.cpp
 )
 

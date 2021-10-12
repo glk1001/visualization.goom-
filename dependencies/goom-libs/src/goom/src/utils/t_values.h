@@ -49,7 +49,7 @@ public:
   auto operator()() const -> float;
   [[nodiscard]] auto GetCurrentStep() const -> float;
   void Increment();
-  auto IsStopped() const -> bool;
+  [[nodiscard]] auto IsStopped() const -> bool;
   void Reset(float t = 0.0);
 
 private:

@@ -1,78 +1,178 @@
 #include "catch2/catch.hpp"
-#include "utils/enumutils.h"
-#include "utils/strutils.h"
+#include "utils/mathutils.h"
+#include "utils/t_values.h"
 
 #include <string>
 #include <vector>
 
 using namespace GOOM::UTILS;
 
-TEST_CASE("StringJoin", "[StringJoin]")
+TEST_CASE("TValue SINGLE_CYCLE")
 {
-  REQUIRE("" == StringJoin({""}, ", "));
-  REQUIRE("word1" == StringJoin({"word1"}, ", "));
-  REQUIRE("word1, word2, word3" == StringJoin({"word1", "word2", "word3"}, ", "));
-  REQUIRE("word1, word2, word3," == StringJoin({"word1", "word2", "word3,"}, ", "));
-}
+  constexpr uint32_t NUM_STEPS = 10;
+  TValue tValue{TValue::StepType::SINGLE_CYCLE, NUM_STEPS};
+  REQUIRE(tValue() == Approx(0.0F));
 
-TEST_CASE("StringSplit", "[StringSplit]")
-{
-  const std::string testString1 = "line1: word1, word2\nline2: word3, word4\n";
+  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
-  const std::vector<std::string> test1 = StringSplit(testString1, ",");
-  UNSCOPED_INFO("testString1 = \"" << testString1 + "\"");
-  for (const auto& s : test1)
+  tValue.Increment();
+  REQUIRE(tValue() == Approx(STEP_SIZE));
+
+  while (!tValue.IsStopped())
   {
-    UNSCOPED_INFO("s = " << s);
+    tValue.Increment();
   }
-  REQUIRE(test1.size() == 3);
-  REQUIRE(test1[0] == "line1: word1");
-  REQUIRE(test1[1] == " word2\nline2: word3");
-  REQUIRE(test1[2] == " word4\n");
-
-  const std::vector<std::string> test2 = StringSplit(testString1, "\n");
-  REQUIRE(test2.size() == 2);
-  REQUIRE(test2[0] == "line1: word1, word2");
-  REQUIRE(test2[1] == "line2: word3, word4");
-
-  const std::string testString2 = "word1; word2; word3; word4";
-  const std::vector<std::string> test3 = StringSplit(testString2, "; ");
-  REQUIRE(test3.size() == 4);
-  REQUIRE(test3[0] == "word1");
-  REQUIRE(test3[1] == "word2");
-  REQUIRE(test3[2] == "word3");
-  REQUIRE(test3[3] == "word4");
-
-  const std::string testString3 = "word1 \nword2\nword3 \nword4 ";
-  const std::vector<std::string> test4 = StringSplit(testString3, "\n");
-  REQUIRE(test4.size() == 4);
-  REQUIRE(test4[0] == "word1 ");
-  REQUIRE(test4[1] == "word2");
-  REQUIRE(test4[2] == "word3 ");
-  REQUIRE(test4[3] == "word4 ");
+  REQUIRE(tValue() > 1.0F);
 }
 
-TEST_CASE("EnumToString", "[EnumToString]")
+TEST_CASE("TValue CONTINUOUS_REPEATABLE")
 {
-#if __cplusplus > 201402L
-  enum class EnumTester
+  constexpr uint32_t NUM_STEPS = 10;
+  TValue tValue{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS};
+  REQUIRE(tValue() == Approx(0.0F));
+
+  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
+
+  // One step
+  tValue.Increment();
+  REQUIRE(tValue() == Approx(STEP_SIZE));
+
+  // Step till 1.0
+  for (size_t i = 1; i < NUM_STEPS; ++i)
   {
-    _NULL = -1,
-    TEST1,
-    TEST2,
-    TEST3,
-    _NUM
+    tValue.Increment();
+  }
+  REQUIRE(tValue() == Approx(1.0F));
+
+  // Go back to start
+  tValue.Increment();
+  REQUIRE(tValue() == Approx(0.0F));
+}
+
+TEST_CASE("TValue CONTINUOUS_REVERSIBLE")
+{
+  constexpr uint32_t NUM_STEPS = 10;
+  TValue tValue{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
+  REQUIRE(tValue() == Approx(0.0F));
+
+  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
+
+  // One step
+  tValue.Increment();
+  REQUIRE(tValue() == Approx(STEP_SIZE));
+
+  // Step till 1.0
+  for (size_t i = 1; i < NUM_STEPS; ++i)
+  {
+    tValue.Increment();
+  }
+  REQUIRE(tValue() == Approx(1.0F));
+
+  // Back down
+  tValue.Increment();
+  REQUIRE(tValue() == Approx(1.0F - STEP_SIZE));
+
+  // Keep going down
+  for (size_t i = 1; i < NUM_STEPS; ++i)
+  {
+    tValue.Increment();
+  }
+  REQUIRE(tValue() == Approx(0.0F).margin(SMALL_FLOAT));
+
+  // Back up
+  tValue.Increment();
+  REQUIRE(tValue() == Approx(STEP_SIZE));
+}
+
+TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
+{
+  constexpr uint32_t NUM_STEPS = 10;
+  constexpr uint32_t T_DELAY_TIME = 5;
+  TValue tValue{
+      TValue::StepType::CONTINUOUS_REPEATABLE,
+      NUM_STEPS,
+      {
+          {0.0F, T_DELAY_TIME},
+          {1.0F, T_DELAY_TIME}
+      }
   };
+  REQUIRE(tValue() == Approx(0.0F));
 
-  EnumTester test = EnumTester::_NULL;
-  REQUIRE(EnumToString(test) == "_NULL");
-  test = EnumTester::TEST1;
-  REQUIRE(EnumToString(test) == "TEST1");
-  test = EnumTester::TEST2;
-  REQUIRE(EnumToString(test) == "TEST2");
-  test = EnumTester::_NUM;
-  REQUIRE(EnumToString(test) == "_NUM");
+  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
-  REQUIRE(EnumToString(EnumTester::TEST3) == "TEST3");
-#endif
+  // Should be delayed here
+  for (size_t i = 0; i < T_DELAY_TIME; ++i)
+  {
+    tValue.Increment();
+    REQUIRE(tValue() == Approx(0.0F));
+  }
+
+  // Normal incrementing
+  float val = 0.0F;
+  for (size_t i = 0; i < NUM_STEPS; ++i)
+  {
+    tValue.Increment();
+    val += STEP_SIZE;
+    REQUIRE(tValue() == Approx(val));
+  }
+
+  // Should be delayed here
+  for (size_t i = 0; i < T_DELAY_TIME; ++i)
+  {
+    tValue.Increment();
+    REQUIRE(tValue() == Approx(1.0F));
+  }
+
+  // Back to the start
+  tValue.Increment();
+  REQUIRE(tValue() == Approx(0.0F));
+}
+
+TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
+{
+  constexpr uint32_t NUM_STEPS = 10;
+  constexpr uint32_t T_DELAY_TIME = 5;
+  TValue tValue{
+      TValue::StepType::CONTINUOUS_REVERSIBLE,
+      NUM_STEPS,
+      {
+          {0.0F, T_DELAY_TIME},
+          {1.0F, T_DELAY_TIME}
+      }
+  };
+  REQUIRE(tValue() == Approx(0.0F));
+
+  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
+
+  // Should be delayed here
+  for (size_t i = 0; i < T_DELAY_TIME; ++i)
+  {
+    tValue.Increment();
+    REQUIRE(tValue() == Approx(0.0F));
+  }
+
+  // Normal incrementing
+  float val = 0.0F;
+  for (size_t i = 0; i < NUM_STEPS; ++i)
+  {
+    tValue.Increment();
+    val += STEP_SIZE;
+    REQUIRE(tValue() == Approx(val));
+  }
+
+  // Should be delayed here
+  for (size_t i = 0; i < T_DELAY_TIME; ++i)
+  {
+    tValue.Increment();
+    REQUIRE(tValue() == Approx(1.0F));
+  }
+
+  // Back down
+  tValue.Increment();
+  REQUIRE(tValue() == Approx(1.0F - STEP_SIZE));
 }
