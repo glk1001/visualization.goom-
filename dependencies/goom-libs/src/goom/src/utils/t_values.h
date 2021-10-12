@@ -48,6 +48,7 @@ public:
   void SetStepSize(float val);
 
   auto operator()() const -> float;
+  [[nodiscard]] auto IsDelayed() const -> bool;
   [[nodiscard]] auto GetCurrentStep() const -> float;
   void Increment();
   [[nodiscard]] auto IsStopped() const -> bool;
@@ -87,6 +88,11 @@ inline auto TValue::GetStepSize() const -> float
 inline auto TValue::operator()() const -> float
 {
   return m_t;
+}
+
+inline auto TValue::IsDelayed() const -> bool
+{
+  return m_delayPointCount > 0;
 }
 
 inline auto TValue::GetCurrentStep() const -> float

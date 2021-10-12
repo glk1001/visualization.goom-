@@ -52,7 +52,7 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
   },
   {
     /*.name = */ "Image Tester",
-    /*.weight = */10000000,
+    /*.weight = */1,
     /*.normaliseBuffIntensity = */false,
     /*.drawables */{{
       { /*.fx = */GoomDrawable::IMAGE,       /*.buffSettings = */{ /*.buffIntensity = */0.7F, /*.allowOverexposed = */true  } },

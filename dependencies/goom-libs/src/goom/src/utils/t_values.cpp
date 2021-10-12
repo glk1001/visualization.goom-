@@ -110,7 +110,7 @@ inline void TValue::SingleCycleIncrement()
 
 inline void TValue::ContinuousRepeatableIncrement()
 {
-  if (IsTimeDelayed())
+  if (IsInDelayZone())
   {
     return;
   }
@@ -125,7 +125,7 @@ inline void TValue::ContinuousRepeatableIncrement()
 
 inline void TValue::ContinuousReversibleIncrement()
 {
-  if (IsTimeDelayed())
+  if (IsInDelayZone())
   {
     return;
   }
@@ -154,7 +154,7 @@ inline void TValue::CheckContinuousReversibleBoundary()
   }
 }
 
-inline auto TValue::IsTimeDelayed() -> bool
+inline auto TValue::IsInDelayZone() -> bool
 {
   if (m_justFinishedDelay)
   {
