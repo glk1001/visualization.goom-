@@ -90,7 +90,7 @@ void Logging::AddHandler(const std::string& name, const HandlerFunc& f)
   {
     const auto& hname = std::get<0>(handlerInfo);
 #else
-  for (const auto& [hname, handlr] : handlers)
+  for (const auto& [hname, handlr] : m_handlers)
   {
 #endif
     if (hname == name)

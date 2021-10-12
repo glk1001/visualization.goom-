@@ -247,7 +247,7 @@ private:
 
   //@formatter:off
   // clang-format off
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   static const std::array<Event, NUM_FILTER_EVENT_TYPES> WEIGHTED_EVENTS;
 #else
   static constexpr std::array<Event, NUM_FILTER_EVENT_TYPES> WEIGHTED_EVENTS{{
@@ -263,7 +263,7 @@ private:
   //@formatter:on
 };
 
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
 //@formatter:off
 // clang-format off
 const std::array<FilterSettingsService::FilterEvents::Event,

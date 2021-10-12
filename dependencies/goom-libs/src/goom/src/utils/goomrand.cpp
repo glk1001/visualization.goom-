@@ -6,6 +6,7 @@
 #if __cplusplus <= 201402L
 #include "mathutils.h"
 #endif
+#include "mathutils.h"
 #include "splitmix.hpp"
 #include "xoshiro.hpp"
 

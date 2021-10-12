@@ -1,6 +1,6 @@
 #include "strutils.h"
 
-#if __cplusplus > 201402L
+#if __cplusplus > 201703L
 #include <ranges>
 #endif
 #include <string>
@@ -39,7 +39,7 @@ auto StringJoin(const std::vector<std::string>& strings, const std::string& deli
 
 auto StringSplit(const std::string& str, const std::string& delim) -> std::vector<std::string>
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   std::vector<std::string> vec;
   std::string token;
   std::string s = str;
@@ -56,7 +56,7 @@ auto StringSplit(const std::string& str, const std::string& delim) -> std::vecto
   }
   return vec;
 #else
-  auto parts = str | std::views::split(delim);
+  auto parts = str | std::ranges::views::split(delim);
   std::vector<std::string> vec;
   for (auto part : parts)
   {

@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#if __cplusplus <= 201402L
 namespace GOOM
 {
 
@@ -22,10 +21,6 @@ class IGoomDraw;
 
 namespace TENTACLES
 {
-#else
-namespace GOOM::TENTACLES
-{
-#endif
 
 class IterTimer
 {
@@ -184,10 +179,5 @@ private:
   std::vector<V3dFlt> m_points{};
 };
 
-#if __cplusplus <= 201402L
 } // namespace TENTACLES
 } // namespace GOOM
-#else
-} // namespace GOOM::TENTACLES
-#endif
-

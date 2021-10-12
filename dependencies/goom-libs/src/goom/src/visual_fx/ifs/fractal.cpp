@@ -283,7 +283,7 @@ void Fractal::DrawFractal()
 
 void Fractal::RandomSimis(const size_t start, const size_t num)
 {
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   static const Dbl c_factor = 0.8F * Get_1_minus_exp_neg_S(4.0);
   static const Dbl r1_1_minus_exp_neg_S = Get_1_minus_exp_neg_S(3.0);
   static const Dbl r2_1_minus_exp_neg_S = Get_1_minus_exp_neg_S(2.0);

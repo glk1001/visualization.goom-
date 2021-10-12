@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#if __cplusplus <= 201402L
 namespace GOOM
 {
 
@@ -15,10 +14,6 @@ class Pixel;
 
 namespace DRAW
 {
-#else
-namespace GOOM::DRAW
-{
-#endif
 
 class IGoomDraw;
 
@@ -72,10 +67,5 @@ private:
   spimpl::unique_impl_ptr<TextDrawImpl> m_textDrawImpl;
 };
 
-#if __cplusplus <= 201402L
 } // namespace DRAW
 } // namespace GOOM
-#else
-} // namespace GOOM::DRAW
-#endif
-

@@ -587,7 +587,7 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const int32_t x1,
 inline void FlyingStarsFx::FlyingStarsImpl::RemoveDeadStars()
 {
   const auto isDead = [&](const Star& s) { return IsStarDead(s); };
-#if __cplusplus <= 201402L
+#if __cplusplus <= 201703L
   m_stars.erase(std::remove_if(m_stars.begin(), m_stars.end(), isDead), m_stars.end());
 #else
   const size_t numRemoved = std::erase_if(m_stars, isDead);

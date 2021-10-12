@@ -5,7 +5,6 @@
 #include <functional>
 #include <memory>
 
-#if __cplusplus <= 201402L
 namespace GOOM
 {
 
@@ -13,10 +12,6 @@ class PixelBuffer;
 
 namespace CONTROL
 {
-#else
-namespace GOOM::CONTROL
-{
-#endif
 
 class GoomImageBuffers
 {
@@ -42,10 +37,5 @@ private:
       -> std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS>;
 };
 
-#if __cplusplus <= 201402L
 } // namespace CONTROL
 } // namespace GOOM
-#else
-} // namespace GOOM::CONTROL
-#endif
-
