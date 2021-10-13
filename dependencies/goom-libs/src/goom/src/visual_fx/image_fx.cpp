@@ -13,6 +13,7 @@
 #include "logging.h"
 #include "utils/goomrand.h"
 #include "utils/mathutils.h"
+#include "utils/parallel_utils.h"
 #include "utils/t_values.h"
 #include "v2d.h"
 
@@ -45,6 +46,7 @@ using UTILS::GetRandInRange;
 using UTILS::ImageBitmap;
 using UTILS::Logging;
 using UTILS::m_two_pi;
+using UTILS::Parallel;
 using UTILS::TValue;
 
 constexpr int32_t CHUNK_WIDTH = 4;
@@ -154,7 +156,8 @@ auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& image, const PluginIn
 class ImageFx::ImageFxImpl
 {
 public:
-  explicit ImageFxImpl(const DRAW::IGoomDraw& draw,
+  explicit ImageFxImpl(Parallel& parallel,
+                       const DRAW::IGoomDraw& draw,
                        const PluginInfo& goomInfo,
                        const std::string& resourcesDirectory) noexcept;
 
@@ -162,6 +165,7 @@ public:
   void ApplyMultiple();
 
 private:
+  Parallel& m_parallel;
   const IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const std::string m_resourcesDirectory;
@@ -173,7 +177,7 @@ private:
   std::vector<std::unique_ptr<ChunkedImage>> m_images{};
   ChunkedImage* m_currentImage{};
   static constexpr uint32_t NUM_STEPS = 300;
-  static constexpr uint32_t T_DELAY_TIME = 150;
+  static constexpr uint32_t T_DELAY_TIME = 30;
   TValue m_inOutT{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS, {{1.0F, T_DELAY_TIME}}};
   V2dInt m_floatingStartPosition{};
   TValue m_floatingT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
@@ -191,10 +195,11 @@ private:
   void InitImage();
 };
 
-ImageFx::ImageFx(const IGoomDraw& draw,
+ImageFx::ImageFx(Parallel& parallel,
+                 const IGoomDraw& draw,
                  const PluginInfo& goomInfo,
                  const std::string& resourcesDirectory) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<ImageFxImpl>(draw, goomInfo, resourcesDirectory)}
+  : m_fxImpl{spimpl::make_unique_impl<ImageFxImpl>(parallel, draw, goomInfo, resourcesDirectory)}
 {
 }
 
@@ -218,10 +223,12 @@ void ImageFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
-ImageFx::ImageFxImpl::ImageFxImpl(const IGoomDraw& draw,
+ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
+                                  const IGoomDraw& draw,
                                   const PluginInfo& goomInfo,
                                   const std::string& resourcesDirectory) noexcept
-  : m_draw{draw},
+  : m_parallel{parallel},
+    m_draw{draw},
     m_goomInfo(goomInfo),
     m_resourcesDirectory{resourcesDirectory},
     m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
@@ -291,8 +298,7 @@ void ImageFx::ImageFxImpl::ApplyMultiple()
 
   const float brightness = 0.1F + (0.1F * m_inOutT());
 
-  for (size_t i = 0; i < m_currentImage->GetNumChunks(); ++i)
-  {
+  const auto drawChunk = [&](const size_t i) {
     const V2dInt nextStartPosition = GetNextChunkStartPosition(i);
     const ChunkedImage::ImageChunk& imageChunk = m_currentImage->GetImageChunk(i);
     const V2dInt nextChunkPosition = GetNextChunkPosition(nextStartPosition, imageChunk);
@@ -301,7 +307,9 @@ void ImageFx::ImageFxImpl::ApplyMultiple()
                                         static_cast<float>(nextChunkPosition.y)) /
                       m_maxRadius);
     DrawChunk(nextChunkPosition, posAdjustedBrightness, imageChunk.pixels);
-  }
+  };
+
+  m_parallel.ForLoop(m_currentImage->GetNumChunks(), drawChunk);
 
   m_floatingT.Increment();
   if (m_floatingT() <= 0.0F)

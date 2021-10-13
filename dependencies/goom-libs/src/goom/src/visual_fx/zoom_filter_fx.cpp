@@ -236,9 +236,9 @@ inline void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& s
 
 void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const
 {
-  const auto setDestPixelRow = [&](const uint32_t destY)
+  const auto setDestPixelRow = [&](const size_t destY)
   {
-    uint32_t destPos = m_screenWidth * destY;
+    uint32_t destPos = m_screenWidth * static_cast<uint32_t>(destY);
 #if __cplusplus <= 201402L
     const auto destRowIter = destBuff.GetRowIter(destY);
     const auto destRowBegin = std::get<0>(destRowIter);

@@ -15,6 +15,11 @@ namespace DRAW
 class IGoomDraw;
 } // namespace DRAW
 
+namespace UTILS
+{
+class Parallel;
+} // namespace UTILS
+
 namespace VISUAL_FX
 {
 
@@ -22,9 +27,10 @@ class ImageFx : public IVisualFx
 {
 public:
   ImageFx() noexcept;
-  explicit ImageFx(const DRAW::IGoomDraw& draw,
-                   const PluginInfo& goomInfo,
-                   const std::string& resourcesDirectory) noexcept;
+  ImageFx(UTILS::Parallel& parallel,
+          const DRAW::IGoomDraw& draw,
+          const PluginInfo& goomInfo,
+          const std::string& resourcesDirectory) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

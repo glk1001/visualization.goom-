@@ -29,7 +29,7 @@ public:
   auto GetThreadIds() const -> std::vector<std::thread::id>;
 
   template<typename Callable>
-  void ForLoop(uint32_t numIters, Callable loopFunc);
+  void ForLoop(size_t numIters, Callable loopFunc);
 
 private:
   ThreadPool m_threadPool;
@@ -56,46 +56,45 @@ inline auto Parallel::GetThreadIds() const -> std::vector<std::thread::id>
 }
 
 template<typename Callable>
-void Parallel::ForLoop(uint32_t numIters, const Callable loopFunc)
+void Parallel::ForLoop(const size_t numIters, const Callable loopFunc)
 {
-  if (numIters == 0)
+  if (0 == numIters)
   {
     throw std::logic_error("ForLoop: numIters == 0.");
   }
 
-  const uint32_t numThreads =
-      std::min(numIters, static_cast<uint32_t>(m_threadPool.GetNumWorkers()));
+  const size_t numThreads = std::min(numIters, m_threadPool.GetNumWorkers());
 
-  if (numThreads == 1)
+  if (1 == numThreads)
   {
-    for (uint32_t i = 0; i < numIters; i++)
+    for (size_t i = 0; i < numIters; ++i)
     {
       loopFunc(i);
     }
     return;
   }
 
-  const uint32_t chunkSize = numIters / numThreads; // >= 1
-  const uint32_t numLeftoverIters = numIters - numThreads * chunkSize;
+  const size_t chunkSize = numIters / numThreads; // >= 1
+  const size_t numLeftoverIters = numIters - (numThreads * chunkSize);
 
   const auto loopContents = [&](const uint32_t threadIndex) {
-    const uint32_t inclusiveStartIndex = threadIndex * chunkSize;
-    const uint32_t exclusiveEndIndex =
-        inclusiveStartIndex + chunkSize + (threadIndex < numThreads - 1 ? 0 : numLeftoverIters);
+    const size_t inclusiveStartIndex = threadIndex * chunkSize;
+    const size_t exclusiveEndIndex =
+        inclusiveStartIndex + chunkSize + (threadIndex < (numThreads - 1) ? 0 : numLeftoverIters);
 
-    for (uint32_t k = inclusiveStartIndex; k < exclusiveEndIndex; k++)
+    for (size_t k = inclusiveStartIndex; k < exclusiveEndIndex; ++k)
     {
       loopFunc(k);
     }
   };
 
   std::vector<std::future<void>> futures{};
-  for (uint32_t j = 0; j < numThreads; j++)
+  for (uint32_t j = 0; j < numThreads; ++j)
   {
     futures.emplace_back(m_threadPool.ScheduleAndGetFuture(loopContents, j));
   }
 
-  for (auto& f : futures)
+  for (const auto& f : futures)
   {
     f.wait();
   }
