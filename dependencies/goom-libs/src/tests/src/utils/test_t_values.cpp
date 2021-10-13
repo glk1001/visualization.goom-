@@ -11,11 +11,14 @@ TEST_CASE("TValue SINGLE_CYCLE")
 {
   constexpr uint32_t NUM_STEPS = 10;
   TValue tValue{TValue::StepType::SINGLE_CYCLE, NUM_STEPS};
-  REQUIRE(tValue() == Approx(0.0F));
 
   constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
+  // Zero steps
+  REQUIRE(tValue() == Approx(0.0F));
+
+  // One step
   tValue.Increment();
   REQUIRE(tValue() == Approx(STEP_SIZE));
 
@@ -23,17 +26,19 @@ TEST_CASE("TValue SINGLE_CYCLE")
   {
     tValue.Increment();
   }
-  REQUIRE(tValue() > 1.0F);
+  REQUIRE(tValue() >= 1.0F);
 }
 
 TEST_CASE("TValue CONTINUOUS_REPEATABLE")
 {
   constexpr uint32_t NUM_STEPS = 10;
   TValue tValue{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS};
-  REQUIRE(tValue() == Approx(0.0F));
 
   constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
+
+  // Zero steps
+  REQUIRE(tValue() == Approx(0.0F));
 
   // One step
   tValue.Increment();
@@ -46,7 +51,7 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE")
   }
   REQUIRE(tValue() == Approx(1.0F));
 
-  // Go back to start
+  // Should go back to start
   tValue.Increment();
   REQUIRE(tValue() == Approx(0.0F));
 }
@@ -55,10 +60,12 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE")
 {
   constexpr uint32_t NUM_STEPS = 10;
   TValue tValue{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
-  REQUIRE(tValue() == Approx(0.0F));
 
   constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
+
+  // Zero steps
+  REQUIRE(tValue() == Approx(0.0F));
 
   // One step
   tValue.Increment();
@@ -96,16 +103,18 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
                 {{0.0F, T_DELAY_TIME}, {0.5F, T_DELAY_TIME}, {1.0F, T_DELAY_TIME}}};
   REQUIRE((NUM_STEPS % 2) == 0);
   REQUIRE((T_DELAY_TIME % 2) == 0);
-  REQUIRE(tValue() == Approx(0.0F));
 
   constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
+  // Zero steps
+  REQUIRE(tValue() == Approx(0.0F));
+
   // Should be delayed here
   tValue.Increment();
-  REQUIRE(tValue.IsDelayed());
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.0F));
   }
@@ -120,15 +129,15 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
 
   // Should be delayed here
   tValue.Increment();
-  REQUIRE(tValue.IsDelayed());
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.5F));
   }
   REQUIRE(!tValue.IsDelayed());
 
-  // Normal incrementing
+  // Normal incrementing up
   float val = 0.5F;
   for (size_t i = 0; i < NUM_STEPS / 2; ++i)
   {
@@ -140,9 +149,9 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
 
   // Should be delayed here
   tValue.Increment();
-  REQUIRE(tValue.IsDelayed());
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(1.0F));
   }
@@ -170,9 +179,9 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
 
   // Should be delayed here
   tValue.Increment();
-  REQUIRE(tValue.IsDelayed());
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.0F));
   }
@@ -187,9 +196,9 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
 
   // Should be delayed here
   tValue.Increment();
-  REQUIRE(tValue.IsDelayed());
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.5F));
   }
@@ -206,9 +215,9 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
 
   // Should be delayed here
   tValue.Increment();
-  REQUIRE(tValue.IsDelayed());
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(1.0F));
   }
@@ -228,24 +237,40 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
 
   // Should be delayed here
   tValue.Increment();
-  REQUIRE(tValue.IsDelayed());
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.5F));
   }
   REQUIRE(!tValue.IsDelayed());
 
-  // Normal incrementing
+  // Normal incrementing - going down
   val = 0.5F;
   for (size_t i = 0; i < NUM_STEPS / 2; ++i)
   {
     tValue.Increment();
     val -= STEP_SIZE;
-    REQUIRE(tValue() == Approx(val));
+    REQUIRE(tValue() == Approx(val).margin(SMALL_FLOAT));
   }
-  tValue.Increment();
-  REQUIRE(tValue() == Approx(0.0F));
+  REQUIRE(tValue() == Approx(0.0F).margin(SMALL_FLOAT));
+  REQUIRE(tValue.GetCurrentStep() < 0.0F);
 
+  // Should be delayed here
+  tValue.Increment();
+  REQUIRE(tValue() == Approx(0.0F).margin(SMALL_FLOAT));
+  REQUIRE(tValue.GetCurrentStep() < 0.0F);
+
+  for (size_t i = 1; i < T_DELAY_TIME; ++i)
+  {
+    REQUIRE(tValue.IsDelayed());
+    tValue.Increment();
+    REQUIRE(tValue() == Approx(0.0F).margin(SMALL_FLOAT));
+  }
+  REQUIRE(!tValue.IsDelayed());
+
+  // Normal incrementing - going back up
+  tValue.Increment();
   REQUIRE(tValue.GetCurrentStep() > 0.0F);
+  REQUIRE(tValue() == Approx(STEP_SIZE));
 }

@@ -18,7 +18,8 @@ namespace GOOM::UTILS
 class TValue
 {
 public:
-  static constexpr float MAX_T_VALUE = 1.0F + SMALL_FLOAT;
+  static constexpr float T_EPSILON = 1.0e-07F;
+  static constexpr float MAX_T_VALUE = 1.0F + T_EPSILON;
   struct DelayPoint
   {
     float t0;
@@ -60,13 +61,16 @@ private:
   const std::vector<DelayPoint> m_delayPoints;
   std::vector<DelayPoint> m_currentDelayPoints;
   bool m_startedDelay = false;
+  bool m_justFinishedDelay = false;
   uint32_t m_delayPointCount = 0;
-  [[nodiscard]] auto IsTimeDelayed() -> bool;
+  [[nodiscard]] auto IsInDelayZone() -> bool;
+  [[nodiscard]] auto IsInThisDelayZone(const DelayPoint& delayPoint) const -> bool;
   [[nodiscard]] auto WeAreStartingDelayPoint() -> bool;
   void ValidateDelayPoints();
   void SingleCycleIncrement();
   void ContinuousRepeatableIncrement();
   void ContinuousReversibleIncrement();
+  void CheckContinuousReversibleBoundary();
   void HandleBoundary(float continueValue, float stepSign);
 };
 
@@ -103,6 +107,14 @@ inline void TValue::Reset(const float t)
 {
   m_t = t;
   m_currentStep = m_stepSize;
+  m_startedDelay = false;
+  m_justFinishedDelay = false;
+}
+
+inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const -> bool
+{
+  return ((delayPoint.t0 - m_stepSize + T_EPSILON) < m_t)
+         && (m_t < (delayPoint.t0 + m_stepSize - T_EPSILON));
 }
 
 #if __cplusplus <= 201402L

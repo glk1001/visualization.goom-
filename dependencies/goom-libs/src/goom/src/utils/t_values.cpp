@@ -101,7 +101,7 @@ void TValue::Increment()
 
 inline void TValue::SingleCycleIncrement()
 {
-  if (m_t > (1.0F + SMALL_FLOAT))
+  if (m_t > (1.0F + T_EPSILON))
   {
     return;
   }
@@ -117,7 +117,7 @@ inline void TValue::ContinuousRepeatableIncrement()
 
   m_t += m_currentStep;
 
-  if (m_t > (1.0F + SMALL_FLOAT))
+  if (m_t > (1.0F + T_EPSILON))
   {
     HandleBoundary(0.0F, +1.0F);
   }
@@ -132,12 +132,22 @@ inline void TValue::ContinuousReversibleIncrement()
 
   m_t += m_currentStep;
 
-  if (m_t > (1.0F + SMALL_FLOAT))
+  if ((m_t <= 0.0F) || (m_t >= 1.0F))
+  {
+    m_currentDelayPoints = m_delayPoints;
+  }
+
+  CheckContinuousReversibleBoundary();
+}
+
+inline void TValue::CheckContinuousReversibleBoundary()
+{
+  if (m_t > (1.0F + T_EPSILON))
   {
     HandleBoundary(1.0F, -1.0F);
     m_t += m_currentStep;
   }
-  else if (m_t < (0.0F - SMALL_FLOAT))
+  else if (m_t < (0.0F - T_EPSILON))
   {
     HandleBoundary(0.0F, +1.0F);
     m_t += m_currentStep;
@@ -146,6 +156,12 @@ inline void TValue::ContinuousReversibleIncrement()
 
 inline auto TValue::IsTimeDelayed() -> bool
 {
+  if (m_justFinishedDelay)
+  {
+    m_justFinishedDelay = false;
+    return false;
+  }
+
   if ((!m_startedDelay) && WeAreStartingDelayPoint())
   {
     m_startedDelay = true;
@@ -157,6 +173,7 @@ inline auto TValue::IsTimeDelayed() -> bool
     if (0 == m_delayPointCount)
     {
       m_startedDelay = false;
+      m_justFinishedDelay = true;
     }
     return true;
   }
@@ -168,8 +185,7 @@ inline auto TValue::WeAreStartingDelayPoint() -> bool
 {
   for (const auto& delayZone : m_currentDelayPoints)
   {
-    if (((m_currentStep < 0.0F) && (m_t <= (delayZone.t0 + SMALL_FLOAT))) ||
-        ((m_currentStep > 0.0F) && (m_t >= (delayZone.t0 - SMALL_FLOAT))))
+    if (IsInThisDelayZone(delayZone))
     {
       m_delayPointCount = delayZone.delayTime;
       m_currentDelayPoints.erase(m_currentDelayPoints.begin());
@@ -195,7 +211,7 @@ void TValue::SetStepSize(const float val)
   }
 }
 
-void TValue::HandleBoundary(const float continueValue, const float stepSign)
+inline void TValue::HandleBoundary(const float continueValue, const float stepSign)
 {
   m_t = continueValue;
 
