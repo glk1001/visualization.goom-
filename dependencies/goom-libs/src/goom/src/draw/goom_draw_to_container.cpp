@@ -111,13 +111,17 @@ void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t n)
 void GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& f) const
 {
   // Start with the newest coords added.
-  std::for_each(m_orderedXYPixelList.rbegin(), m_orderedXYPixelList.rend(),
-                [&](const auto& coords) {
-                  const int32_t x = coords.x;
-                  const int32_t y = coords.y;
-                  const ColorsList& colorsList = GetColorsList(x, y);
-                  f(x, y, colorsList);
-                });
+  const size_t numCoords = m_orderedXYPixelList.size() - 1;
+
+  const auto runFunc = [&](const size_t i) {
+    const auto& coords = m_orderedXYPixelList[numCoords - i];
+    const int32_t x = coords.x;
+    const int32_t y = coords.y;
+    const ColorsList& colorsList = GetColorsList(x, y);
+    f(x, y, colorsList);
+  };
+
+  GetParallel().ForLoop(m_orderedXYPixelList.size(), runFunc);
 }
 
 #if __cplusplus <= 201402L

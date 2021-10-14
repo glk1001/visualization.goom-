@@ -18,6 +18,7 @@ class RandomColorMaps;
 
 namespace UTILS
 {
+class Parallel;
 class SmallImageBitmaps;
 } // namespace UTILS
 
@@ -33,7 +34,8 @@ class TubeFx : public IVisualFx
 {
 public:
   TubeFx() noexcept = delete;
-  TubeFx(const DRAW::IGoomDraw& draw,
+  TubeFx(UTILS::Parallel& parallel,
+         const DRAW::IGoomDraw& draw,
          const PluginInfo& goomInfo,
          const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 

@@ -15,6 +15,7 @@
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "utils/mathutils.h"
+#include "utils/parallel_utils.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -47,6 +48,7 @@ using TUBES::Tube;
 using UTILS::GetRandInRange;
 using UTILS::ImageBitmap;
 using UTILS::Logging;
+using UTILS::Parallel;
 using UTILS::ProbabilityOf;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
@@ -119,7 +121,8 @@ constexpr float PROB_FOLLOW_ZOOM_MID_POINT = 0.3F;
 class TubeFx::TubeFxImpl
 {
 public:
-  TubeFxImpl(const IGoomDraw& draw,
+  TubeFxImpl(Parallel& parallel,
+             const IGoomDraw& draw,
              const PluginInfo& goomInfo,
              const SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -135,6 +138,7 @@ public:
   void ApplyMultiple();
 
 private:
+  Parallel& m_parallel;
   const IGoomDraw& m_draw;
   GoomDrawToContainer m_drawToContainer;
   const DRAW::GoomDrawToMany m_drawToMany;
@@ -218,10 +222,11 @@ private:
       -> std::vector<IGoomDraw::GetBitmapColorFunc>;
 };
 
-TubeFx::TubeFx(const IGoomDraw& draw,
+TubeFx::TubeFx(Parallel& parallel,
+               const IGoomDraw& draw,
                const PluginInfo& goomInfo,
                const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(draw, goomInfo, smallBitmaps)}
+  : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(parallel, draw, goomInfo, smallBitmaps)}
 {
 }
 
@@ -273,10 +278,12 @@ void TubeFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
-TubeFx::TubeFxImpl::TubeFxImpl(const IGoomDraw& draw,
+TubeFx::TubeFxImpl::TubeFxImpl(Parallel& parallel,
+                               const IGoomDraw& draw,
                                const PluginInfo& goomInfo,
                                const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{draw},
+  : m_parallel{parallel},
+    m_draw{draw},
     m_drawToContainer{draw.GetScreenWidth(), draw.GetScreenHeight()},
     m_drawToMany{draw.GetScreenWidth(), draw.GetScreenHeight(), {&draw, &m_drawToContainer}},
     m_goomInfo{goomInfo},
@@ -615,16 +622,16 @@ void TubeFx::TubeFxImpl::DrawPreviousShapes()
 
 void TubeFx::TubeFxImpl::DrawTubeCircles()
 {
-  for (auto& tube : m_tubes)
-  {
-    if (!tube.IsActive())
+  const auto drawTubeCircles = [&](const size_t i) {
+    if (!m_tubes[i].IsActive())
     {
-      continue;
+      return;
     }
-
-    tube.DrawCircleOfShapes();
+    m_tubes[i].DrawCircleOfShapes();
     //    tube.RotateShapeColorMaps();
-  }
+  };
+
+  m_parallel.ForLoop(m_tubes.size(), drawTubeCircles);
 }
 
 void TubeFx::TubeFxImpl::AdjustTubePaths()
