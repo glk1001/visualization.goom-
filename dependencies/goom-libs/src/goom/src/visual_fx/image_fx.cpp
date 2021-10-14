@@ -366,6 +366,13 @@ inline void ImageFx::ImageFxImpl::DrawChunks()
   };
 
   m_parallel.ForLoop(m_currentImage->GetNumChunks(), drawChunk);
+
+  /*** 3 times slower
+  for (size_t i = 0; i < m_currentImage->GetNumChunks(); ++i)
+  {
+    drawChunk(i);
+  }
+   **/
 }
 
 inline void ImageFx::ImageFxImpl::UpdateFloatingStartPositions()
@@ -434,6 +441,7 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
                                                  const float brightness) const -> std::vector<Pixel>
 {
   const Pixel mixedColor = IColorMap::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutT());
+  //  const Pixel mixedColor = GetMappedColor(pixelColor);
   const Pixel color0 = GetBrighterColor(brightness, mixedColor, false);
   const Pixel color1 = GetBrighterColor(0.5F * brightness, pixelColor, false);
   return {color0, color1};
