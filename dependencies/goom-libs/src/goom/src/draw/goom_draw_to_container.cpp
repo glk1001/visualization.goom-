@@ -108,17 +108,17 @@ void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t n)
   m_orderedXYPixelList.resize(n);
 }
 
-void GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& f) const
+void GoomDrawToContainer::IterateChangedCoords(const CoordsFunc& func) const
 {
   // Start with the newest coords added.
-  const size_t numCoords = m_orderedXYPixelList.size() - 1;
+  const size_t maxIndex = m_orderedXYPixelList.size() - 1;
 
   const auto runFunc = [&](const size_t i) {
-    const auto& coords = m_orderedXYPixelList[numCoords - i];
+    const auto& coords = m_orderedXYPixelList[maxIndex - i];
     const int32_t x = coords.x;
     const int32_t y = coords.y;
     const ColorsList& colorsList = GetColorsList(x, y);
-    f(x, y, colorsList);
+    func(x, y, colorsList);
   };
 
   GetParallel().ForLoop(m_orderedXYPixelList.size(), runFunc);

@@ -47,7 +47,8 @@ public:
   [[nodiscard]] auto GetColorsList(int32_t x, int32_t y) const -> const ColorsList&;
 
   using CoordsFunc = std::function<void(int32_t x, int32_t y, const ColorsList& colorsList)>;
-  void IterateChangedCoordsNewToOld(const CoordsFunc& f) const;
+  // NOTE: 'func' must be thread-safe.
+  void IterateChangedCoords(const CoordsFunc& func) const;
 
   void ResizeChangedCoordsKeepingNewest(size_t n);
   void ClearAll();
