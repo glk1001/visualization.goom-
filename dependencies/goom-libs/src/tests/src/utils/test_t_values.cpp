@@ -114,6 +114,11 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
   tValue.Increment();
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    if (i == (T_DELAY_TIME - 1))
+    {
+      REQUIRE(tValue.DelayJustFinishing());
+    }
+
     REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.0F));
@@ -131,6 +136,11 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
   tValue.Increment();
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    if (i == (T_DELAY_TIME - 1))
+    {
+      REQUIRE(tValue.DelayJustFinishing());
+    }
+
     REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.5F));
@@ -151,6 +161,11 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
   tValue.Increment();
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    if (i == (T_DELAY_TIME - 1))
+    {
+      REQUIRE(tValue.DelayJustFinishing());
+    }
+
     REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(1.0F));
@@ -181,6 +196,11 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
   tValue.Increment();
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    if (i == (T_DELAY_TIME - 1))
+    {
+      REQUIRE(tValue.DelayJustFinishing());
+    }
+
     REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.0F));
@@ -198,6 +218,11 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
   tValue.Increment();
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    if (i == (T_DELAY_TIME - 1))
+    {
+      REQUIRE(tValue.DelayJustFinishing());
+    }
+
     REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.5F));
@@ -217,6 +242,11 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
   tValue.Increment();
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    if (i == (T_DELAY_TIME - 1))
+    {
+      REQUIRE(tValue.DelayJustFinishing());
+    }
+
     REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(1.0F));
@@ -239,6 +269,11 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
   tValue.Increment();
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    if (i == (T_DELAY_TIME - 1))
+    {
+      REQUIRE(tValue.DelayJustFinishing());
+    }
+
     REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.5F));
@@ -263,6 +298,11 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
 
   for (size_t i = 1; i < T_DELAY_TIME; ++i)
   {
+    if (i == (T_DELAY_TIME - 1))
+    {
+      REQUIRE(tValue.DelayJustFinishing());
+    }
+
     REQUIRE(tValue.IsDelayed());
     tValue.Increment();
     REQUIRE(tValue() == Approx(0.0F).margin(SMALL_FLOAT));
