@@ -653,7 +653,7 @@ void TubeFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
   const float brightnessAttenuation = GetApproxBrightnessAttenuation();
   using ColorsList = GoomDrawToContainer::ColorsList;
 
-  m_drawToContainer.IterateChangedCoords(
+  m_drawToContainer.IterateChangedCoordsNewToOld(
       [&](const int32_t x, const int32_t y, const ColorsList& colorsList) {
         const int32_t jitterAmount =
             !m_prevShapesJitter

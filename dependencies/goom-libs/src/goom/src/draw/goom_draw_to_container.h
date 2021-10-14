@@ -48,7 +48,7 @@ public:
 
   using CoordsFunc = std::function<void(int32_t x, int32_t y, const ColorsList& colorsList)>;
   // NOTE: 'func' must be thread-safe.
-  void IterateChangedCoords(const CoordsFunc& func) const;
+  void IterateChangedCoordsNewToOld(const CoordsFunc& func) const;
 
   void ResizeChangedCoordsKeepingNewest(size_t n);
   void ClearAll();

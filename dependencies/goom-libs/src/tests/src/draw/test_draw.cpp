@@ -2,7 +2,6 @@
 #include "draw/goom_draw_to_container.h"
 #include "goom_graphic.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <format>
 #include <vector>
@@ -25,11 +24,6 @@ struct PixelInfo
 void CheckPixels(const std::vector<PixelInfo>& changedPixels,
                  const std::vector<PixelInfo>& expectedPixels)
 {
-  // Reverse sort the changed pixels to make them easy to check.
-  std::vector<PixelInfo> sortedPixels = changedPixels;
-  std::sort(begin(sortedPixels), end(sortedPixels),
-            [](const PixelInfo& p1, const PixelInfo& p2) { return p1.x > p2.x; });
-
   // '1' is old, 'expectedPixels.size() - 1' is new.
   for (size_t i = 0; i < expectedPixels.size(); i++)
   {
@@ -37,7 +31,7 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
     const int32_t y = expectedPixels[i].y;
     const std::vector<Pixel>& colors = expectedPixels[i].colors;
 
-    const PixelInfo coords = sortedPixels[i];
+    const PixelInfo coords = changedPixels[i];
 
     INFO(
         std20::format("i = {}, coords = ({}, {}), (x, y) = ({}, {})", i, coords.x, coords.y, x, y));
@@ -59,13 +53,11 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
   INFO(std20::format("draw.GetNumChangedCoords() = {}", draw.GetNumChangedCoords()));
   REQUIRE(draw.GetNumChangedCoords() == expectedPixels.size());
 
-  std::mutex emplace_mutex{};
   std::vector<PixelInfo> changedPixels{};
   const auto emplaceCoords = [&](const int32_t x, const int32_t y, const ColorsList& colorsList) {
-    std::lock_guard<std::mutex> guard(emplace_mutex);
     changedPixels.emplace_back(PixelInfo{x, y, {colorsList.colorsArray[0], Pixel::BLACK}});
   };
-  draw.IterateChangedCoords(emplaceCoords);
+  draw.IterateChangedCoordsNewToOld(emplaceCoords);
   REQUIRE(changedPixels.size() == expectedPixels.size());
 
   CheckPixels(changedPixels, expectedPixels);
