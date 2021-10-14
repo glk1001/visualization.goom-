@@ -37,7 +37,9 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using COLOR::IColorMap;
 using COLOR::GammaCorrection;
+using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
 using COLOR::GetLightenedColor;
 using COLOR::RandomColorMaps;
@@ -118,8 +120,8 @@ auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap, const Pl
   ImageAsChunks imageAsChunks{};
 
   const V2dInt centre{goomInfo.GetScreenInfo().width / 2, goomInfo.GetScreenInfo().height / 2};
-  const int32_t x0 = centre.x - static_cast<int32_t>(imageBitmap.GetWidth());
-  const int32_t y0 = centre.y - static_cast<int32_t>(imageBitmap.GetHeight());
+  const int32_t x0 = centre.x - static_cast<int32_t>(imageBitmap.GetWidth() / 2);
+  const int32_t y0 = centre.y - static_cast<int32_t>(imageBitmap.GetHeight() / 2);
 
   assert(x0 >= 0);
   assert(y0 >= 0);
@@ -173,6 +175,8 @@ public:
               const PluginInfo& goomInfo,
               const std::string& resourcesDirectory) noexcept;
 
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+
   void Start();
   void ApplyMultiple();
 
@@ -185,7 +189,9 @@ private:
   const int32_t m_availableHeight;
   const float m_maxDiameterSq;
   uint64_t m_updateNum = 0;
-  RandomColorMaps m_colorMaps{};
+  std::shared_ptr<RandomColorMaps> m_colorMaps;
+  std::reference_wrapper<const IColorMap> m_currentColorMap;
+  [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
   std::vector<std::unique_ptr<ChunkedImage>> m_images{};
   ChunkedImage* m_currentImage{};
   static constexpr uint32_t NUM_STEPS = 300;
@@ -203,6 +209,7 @@ private:
       -> V2dInt;
   [[nodiscard]] auto GetPixelColors(const Pixel& pixelColor, float brightness) const
       -> std::vector<Pixel>;
+  [[nodiscard]] auto GetMappedColor(const Pixel& pixelColor) const -> Pixel;
 
   void UpdateImageStartPositions();
   void ResetCurrentImage();
@@ -223,6 +230,11 @@ ImageFx::ImageFx(Parallel& parallel,
                  const std::string& resourcesDirectory) noexcept
   : m_fxImpl{spimpl::make_unique_impl<ImageFxImpl>(parallel, draw, goomInfo, resourcesDirectory)}
 {
+}
+
+void ImageFx::SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps)
+{
+  m_fxImpl->SetWeightedColorMaps(weightedMaps);
 }
 
 void ImageFx::Start()
@@ -255,8 +267,21 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
     m_resourcesDirectory{resourcesDirectory},
     m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
     m_availableHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)},
-    m_maxDiameterSq{UTILS::Sq(static_cast<float>(std::min(m_availableWidth, m_availableHeight)))}
+    m_maxDiameterSq{UTILS::Sq(static_cast<float>(std::min(m_availableWidth, m_availableHeight)))},
+    m_colorMaps{GetAllSlimMaps()},
+    m_currentColorMap{GetRandomColorMap()}
 {
+}
+
+auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
+{
+  assert(m_colorMaps);
+  return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
+}
+
+void ImageFx::ImageFxImpl::SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps)
+{
+  m_colorMaps = weightedMaps;
 }
 
 void ImageFx::ImageFxImpl::Start()
@@ -327,7 +352,7 @@ void ImageFx::ImageFxImpl::ApplyMultiple()
 
 inline void ImageFx::ImageFxImpl::DrawChunks()
 {
-  const float brightness = 0.1F + (0.1F * m_inOutT());
+  const float brightness = 0.07F + (0.07F * m_inOutT());
 
   const auto drawChunk = [&](const size_t i) {
     const V2dInt nextStartPosition = GetNextChunkStartPosition(i);
@@ -362,6 +387,9 @@ inline void ImageFx::ImageFxImpl::UpdateImageStartPositions()
   {
     ResetCurrentImage();
     ResetStartPositions();
+    SetNewFloatingStartPosition();
+    m_floatingT.Reset();
+    m_currentColorMap = GetRandomColorMap();
   }
 }
 
@@ -405,9 +433,16 @@ void ImageFx::ImageFxImpl::DrawChunk(const V2dInt& pos,
 inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
                                                  const float brightness) const -> std::vector<Pixel>
 {
-  const Pixel color0 = GetBrighterColor(brightness, pixelColor, false);
+  const Pixel mixedColor = IColorMap::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutT());
+  const Pixel color0 = GetBrighterColor(brightness, mixedColor, false);
   const Pixel color1 = GetLightenedColor(color0, 10);
   return {color0, color1};
+}
+
+inline auto ImageFx::ImageFxImpl::GetMappedColor(const Pixel& pixelColor) const -> Pixel
+{
+  const float t = (pixelColor.RFlt() + pixelColor.GFlt() + pixelColor.BFlt()) / 3.0F;
+  return m_currentColorMap.get().GetColor(t);
 }
 
 #if __cplusplus <= 201402L

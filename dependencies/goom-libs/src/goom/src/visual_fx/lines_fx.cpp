@@ -112,7 +112,7 @@ private:
   const IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const SmallImageBitmaps& m_smallBitmaps;
-  std::shared_ptr<RandomColorMaps> m_colorMaps{};
+  std::shared_ptr<RandomColorMaps> m_colorMaps;
   std::reference_wrapper<const IColorMap> m_currentColorMap;
   std::string m_resourcesDirectory{};
   static constexpr float GAMMA = 1.0F / 1.0F;

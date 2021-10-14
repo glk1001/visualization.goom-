@@ -10,6 +10,11 @@ namespace GOOM
 {
 class PluginInfo;
 
+namespace COLOR
+{
+class RandomColorMaps;
+} // namespace COLOR
+
 namespace DRAW
 {
 class IGoomDraw;
@@ -33,6 +38,8 @@ public:
           const std::string& resourcesDirectory) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
+
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
   void Start() override;
 
