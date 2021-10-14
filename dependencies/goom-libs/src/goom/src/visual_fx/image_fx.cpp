@@ -267,7 +267,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
     m_resourcesDirectory{resourcesDirectory},
     m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
     m_availableHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)},
-    m_maxDiameterSq{UTILS::Sq(static_cast<float>(std::min(m_availableWidth, m_availableHeight)))},
+    m_maxDiameterSq{2.0F * UTILS::Sq(static_cast<float>(std::min(m_availableWidth, m_availableHeight)))},
     m_colorMaps{GetAllSlimMaps()},
     m_currentColorMap{GetRandomColorMap()}
 {
@@ -435,7 +435,7 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
 {
   const Pixel mixedColor = IColorMap::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutT());
   const Pixel color0 = GetBrighterColor(brightness, mixedColor, false);
-  const Pixel color1 = GetLightenedColor(color0, 10);
+  const Pixel color1 = GetBrighterColor(0.5F * brightness, pixelColor, false);
   return {color0, color1};
 }
 
