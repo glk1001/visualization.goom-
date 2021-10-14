@@ -15,7 +15,6 @@
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "utils/mathutils.h"
-#include "utils/parallel_utils.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -37,7 +36,6 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
-using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::GoomDrawToContainer;
 using DRAW::GoomDrawToMany;
@@ -48,7 +46,6 @@ using TUBES::Tube;
 using UTILS::GetRandInRange;
 using UTILS::ImageBitmap;
 using UTILS::Logging;
-using UTILS::Parallel;
 using UTILS::ProbabilityOf;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
@@ -121,8 +118,7 @@ constexpr float PROB_FOLLOW_ZOOM_MID_POINT = 0.3F;
 class TubeFx::TubeFxImpl
 {
 public:
-  TubeFxImpl(Parallel& parallel,
-             const IGoomDraw& draw,
+  TubeFxImpl(const IGoomDraw& draw,
              const PluginInfo& goomInfo,
              const SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -138,7 +134,6 @@ public:
   void ApplyMultiple();
 
 private:
-  Parallel& m_parallel;
   const IGoomDraw& m_draw;
   GoomDrawToContainer m_drawToContainer;
   const DRAW::GoomDrawToMany m_drawToMany;
@@ -222,11 +217,10 @@ private:
       -> std::vector<IGoomDraw::GetBitmapColorFunc>;
 };
 
-TubeFx::TubeFx(Parallel& parallel,
-               const IGoomDraw& draw,
+TubeFx::TubeFx(const IGoomDraw& draw,
                const PluginInfo& goomInfo,
                const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(parallel, draw, goomInfo, smallBitmaps)}
+  : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(draw, goomInfo, smallBitmaps)}
 {
 }
 
@@ -278,12 +272,10 @@ void TubeFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
-TubeFx::TubeFxImpl::TubeFxImpl(Parallel& parallel,
-                               const IGoomDraw& draw,
+TubeFx::TubeFxImpl::TubeFxImpl(const IGoomDraw& draw,
                                const PluginInfo& goomInfo,
                                const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_parallel{parallel},
-    m_draw{draw},
+  : m_draw{draw},
     m_drawToContainer{draw.GetScreenWidth(), draw.GetScreenHeight()},
     m_drawToMany{draw.GetScreenWidth(), draw.GetScreenHeight(), {&draw, &m_drawToContainer}},
     m_goomInfo{goomInfo},
@@ -631,7 +623,10 @@ void TubeFx::TubeFxImpl::DrawTubeCircles()
     //    tube.RotateShapeColorMaps();
   };
 
-  m_parallel.ForLoop(m_tubes.size(), drawTubeCircles);
+  for (size_t i = 0; i < m_tubes.size(); ++i)
+  {
+    drawTubeCircles(i);
+  }
 }
 
 void TubeFx::TubeFxImpl::AdjustTubePaths()
@@ -677,7 +672,7 @@ inline auto TubeFx::TubeFxImpl::GetAverageColor(const GoomDrawToContainer::Color
 {
   if (1 == colorsList.count)
   {
-    return colorsList.colorsArray[colorsList.count -1];
+    return colorsList.colorsArray[0];
   }
   if (0 == colorsList.count)
   {
