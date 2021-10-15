@@ -57,7 +57,6 @@ private:
   {
     std::string name;
     uint32_t weight;
-    bool normaliseBuffIntensity;
     DrawableInfoArray drawables;
   };
   using WeightedStatesArray = std::vector<State>;
@@ -85,4 +84,3 @@ inline auto GoomStates::GetCurrentStateName() const -> std::string
 #else
 } // namespace GOOM::CONTROL
 #endif
-
