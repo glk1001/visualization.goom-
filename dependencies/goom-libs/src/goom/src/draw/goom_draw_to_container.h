@@ -25,7 +25,7 @@ public:
   GoomDrawToContainer(uint32_t screenWidth, uint32_t screenHeight);
 
   auto GetPixel(int32_t x, int32_t y) const -> Pixel override;
-  void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) const override;
+  void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) override;
 
   auto GetPixels(int32_t x, int32_t y) const -> std::vector<Pixel>;
 
@@ -50,7 +50,7 @@ public:
   // NOTE: 'func' must be thread-safe.
   void IterateChangedCoordsNewToOld(const CoordsFunc& func) const;
 
-  void ResizeChangedCoordsKeepingNewest(size_t n);
+  void ResizeChangedCoordsKeepingNewest(size_t numToKeep);
   void ClearAll();
 
 private:
@@ -115,4 +115,3 @@ inline auto GoomDrawToContainer::GetChangedCoordsList() const -> const std::vect
 #else
 } // namespace GOOM::DRAW
 #endif
-

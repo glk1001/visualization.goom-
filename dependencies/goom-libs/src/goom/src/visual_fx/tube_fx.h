@@ -33,7 +33,7 @@ class TubeFx : public IVisualFx
 {
 public:
   TubeFx() noexcept = delete;
-  TubeFx(const DRAW::IGoomDraw& draw,
+  TubeFx(DRAW::IGoomDraw& draw,
          const PluginInfo& goomInfo,
          const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -61,4 +61,3 @@ private:
 
 } // namespace VISUAL_FX
 } // namespace GOOM
-

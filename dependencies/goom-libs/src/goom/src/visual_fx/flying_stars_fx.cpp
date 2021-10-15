@@ -89,7 +89,7 @@ struct Star
 class FlyingStarsFx::FlyingStarsImpl
 {
 public:
-  FlyingStarsImpl(const IGoomDraw& draw,
+  FlyingStarsImpl(IGoomDraw& draw,
                   const PluginInfo& goomInfo,
                   const SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -103,7 +103,7 @@ public:
   void Finish();
 
 private:
-  const IGoomDraw& m_draw;
+  IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const int32_t m_halfWidth;
   const int32_t m_halfHeight;
@@ -266,7 +266,7 @@ private:
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 };
 
-FlyingStarsFx::FlyingStarsFx(const IGoomDraw& draw,
+FlyingStarsFx::FlyingStarsFx(IGoomDraw& draw,
                              const PluginInfo& goomInfo,
                              const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<FlyingStarsImpl>(draw, goomInfo, smallBitmaps)}
@@ -314,7 +314,7 @@ void FlyingStarsFx::ApplyMultiple()
   m_fxImpl->UpdateBuffers();
 }
 
-FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const IGoomDraw& draw,
+FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(IGoomDraw& draw,
                                                 const PluginInfo& goomInfo,
                                                 const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},

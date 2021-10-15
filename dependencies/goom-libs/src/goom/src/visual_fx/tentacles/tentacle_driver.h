@@ -66,7 +66,7 @@ public:
   };
 
   TentacleDriver() noexcept = delete;
-  explicit TentacleDriver(const DRAW::IGoomDraw& draw) noexcept;
+  explicit TentacleDriver(DRAW::IGoomDraw& draw) noexcept;
 
   void Init(COLOR::ColorMapGroup initialColorMapGroup, const ITentacleLayout& l);
   [[nodiscard]] auto GetNumTentacles() const -> size_t;
@@ -86,7 +86,7 @@ public:
   void MultiplyIterZeroYValWaveFreq(float val);
 
 private:
-  const DRAW::IGoomDraw& m_draw;
+  DRAW::IGoomDraw& m_draw;
   ColorModes m_colorMode = ColorModes::ONE_GROUP_FOR_ALL;
   struct IterationParams
   {

@@ -25,7 +25,7 @@ using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
 using COLOR::IColorMap;
 
-LowDensityBlurrer::LowDensityBlurrer(const IGoomDraw& draw,
+LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
                                      const uint32_t width,
                                      const Colorizer* const colorizer) noexcept
   : m_draw{draw}, m_width{width}, m_colorizer{colorizer}

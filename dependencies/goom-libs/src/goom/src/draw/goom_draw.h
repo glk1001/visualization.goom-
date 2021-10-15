@@ -39,42 +39,36 @@ public:
   [[nodiscard]] auto GetBuffIntensity() const -> float;
   void SetBuffIntensity(float val);
 
-  void Circle(int x0, int y0, int radius, const Pixel& color) const;
-  void Circle(int x0, int y0, int radius, const std::vector<Pixel>& colors) const;
+  void Circle(int x0, int y0, int radius, const Pixel& color);
+  void Circle(int x0, int y0, int radius, const std::vector<Pixel>& colors);
 
-  void Line(int x1, int y1, int x2, int y2, const Pixel& color, uint8_t thickness) const;
-  void Line(
-      int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors, uint8_t thickness) const;
+  void Line(int x1, int y1, int x2, int y2, const Pixel& color, uint8_t thickness);
+  void Line(int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors, uint8_t thickness);
 
-  using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& b)>;
+  using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& imageColor)>;
   void Bitmap(int xCentre,
               int yCentre,
               const PixelBuffer& bitmap,
-              const GetBitmapColorFunc& getColor) const;
+              const GetBitmapColorFunc& getColor);
   void Bitmap(int xCentre,
               int yCentre,
               const PixelBuffer& bitmap,
               const GetBitmapColorFunc& getColor,
-              bool allowOverexposed) const;
+              bool allowOverexposed);
   void Bitmap(int xCentre,
               int yCentre,
               const PixelBuffer& bitmap,
-              const std::vector<GetBitmapColorFunc>& getColors) const;
+              const std::vector<GetBitmapColorFunc>& getColors);
   void Bitmap(int xCentre,
               int yCentre,
               const PixelBuffer& bitmap,
               const std::vector<GetBitmapColorFunc>& getColors,
-              bool allowOverexposed) const;
+              bool allowOverexposed);
 
   [[nodiscard]] virtual auto GetPixel(int32_t x, int32_t y) const -> Pixel = 0;
-  void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& colors) const;
-  void DrawPixels(int32_t x,
-                  int32_t y,
-                  const std::vector<Pixel>& colors,
-                  bool allowOverexposed) const;
-  virtual void DrawPixelsUnblended(int32_t x,
-                                   int32_t y,
-                                   const std::vector<Pixel>& colors) const = 0;
+  void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& colors);
+  void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& colors, bool allowOverexposed);
+  virtual void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) = 0;
 
 protected:
   [[nodiscard]] auto GetIntBuffIntensity() const -> uint32_t;
@@ -85,7 +79,7 @@ private:
   const uint32_t m_screenHeight;
   DrawMethods m_drawMethods;
   bool m_allowOverexposed = true;
-  float m_buffIntensity = 0.5;
+  float m_buffIntensity = 0.5F;
   uint32_t m_intBuffIntensity;
   mutable GOOM::UTILS::Parallel m_parallel;
 };
@@ -133,18 +127,15 @@ inline auto IGoomDraw::GetParallel() const -> GOOM::UTILS::Parallel&
   return m_parallel;
 }
 
-inline void IGoomDraw::Circle(const int x0,
-                              const int y0,
-                              const int radius,
-                              const Pixel& color) const
+inline void IGoomDraw::Circle(const int x0, const int y0, const int radius, const Pixel& color)
 {
   Circle(x0, y0, radius, std::vector<Pixel>{color});
 }
 
 inline void IGoomDraw::Circle(const int x0,
-                       const int y0,
-                       const int radius,
-                       const std::vector<Pixel>& colors) const
+                              const int y0,
+                              const int radius,
+                              const std::vector<Pixel>& colors)
 {
   m_drawMethods.DrawCircle(x0, y0, radius, colors);
 }
@@ -154,17 +145,17 @@ inline void IGoomDraw::Line(const int x1,
                             const int x2,
                             const int y2,
                             const Pixel& color,
-                            const uint8_t thickness) const
+                            const uint8_t thickness)
 {
   Line(x1, y1, x2, y2, std::vector<Pixel>{color}, thickness);
 }
 
 inline void IGoomDraw::Line(const int x1,
-                     const int y1,
-                     const int x2,
-                     const int y2,
-                     const std::vector<Pixel>& colors,
-                     const uint8_t thickness) const
+                            const int y1,
+                            const int x2,
+                            const int y2,
+                            const std::vector<Pixel>& colors,
+                            const uint8_t thickness)
 {
   m_drawMethods.DrawLine(x1, y1, x2, y2, colors, thickness);
 }
@@ -172,7 +163,7 @@ inline void IGoomDraw::Line(const int x1,
 inline void IGoomDraw::Bitmap(const int xCentre,
                               const int yCentre,
                               const PixelBuffer& bitmap,
-                              const GetBitmapColorFunc& getColor) const
+                              const GetBitmapColorFunc& getColor)
 {
   Bitmap(xCentre, yCentre, bitmap, getColor, GetAllowOverexposed());
 }
@@ -181,7 +172,7 @@ inline void IGoomDraw::Bitmap(const int xCentre,
                               const int yCentre,
                               const PixelBuffer& bitmap,
                               const GetBitmapColorFunc& getColor,
-                              const bool allowOverexposed) const
+                              const bool allowOverexposed)
 {
   Bitmap(xCentre, yCentre, bitmap, std::vector<GetBitmapColorFunc>{getColor}, allowOverexposed);
 }
@@ -189,22 +180,22 @@ inline void IGoomDraw::Bitmap(const int xCentre,
 inline void IGoomDraw::Bitmap(const int xCentre,
                               const int yCentre,
                               const PixelBuffer& bitmap,
-                              const std::vector<GetBitmapColorFunc>& getColors) const
+                              const std::vector<GetBitmapColorFunc>& getColors)
 {
   Bitmap(xCentre, yCentre, bitmap, getColors, GetAllowOverexposed());
 }
 
 inline void IGoomDraw::DrawPixels(const int32_t x,
                                   const int32_t y,
-                                  const std::vector<Pixel>& colors) const
+                                  const std::vector<Pixel>& colors)
 {
   DrawPixels(x, y, colors, GetAllowOverexposed());
 }
 
 inline void IGoomDraw::DrawPixels(const int32_t x,
-                           const int32_t y,
-                           const std::vector<Pixel>& colors,
-                           const bool allowOverexposed) const
+                                  const int32_t y,
+                                  const std::vector<Pixel>& colors,
+                                  const bool allowOverexposed)
 {
   m_drawMethods.DrawPixels(x, y, colors, allowOverexposed);
 }
@@ -215,4 +206,3 @@ inline void IGoomDraw::DrawPixels(const int32_t x,
 #else
 } // namespace GOOM::DRAW
 #endif
-

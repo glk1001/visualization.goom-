@@ -171,7 +171,7 @@ class ImageFx::ImageFxImpl
 {
 public:
   ImageFxImpl(Parallel& parallel,
-              const DRAW::IGoomDraw& draw,
+              DRAW::IGoomDraw& draw,
               const PluginInfo& goomInfo,
               const std::string& resourcesDirectory) noexcept;
 
@@ -182,7 +182,7 @@ public:
 
 private:
   Parallel& m_parallel;
-  const IGoomDraw& m_draw;
+  IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const std::string m_resourcesDirectory;
   const int32_t m_availableWidth;
@@ -225,7 +225,7 @@ private:
 };
 
 ImageFx::ImageFx(Parallel& parallel,
-                 const IGoomDraw& draw,
+                 IGoomDraw& draw,
                  const PluginInfo& goomInfo,
                  const std::string& resourcesDirectory) noexcept
   : m_fxImpl{spimpl::make_unique_impl<ImageFxImpl>(parallel, draw, goomInfo, resourcesDirectory)}
@@ -258,7 +258,7 @@ void ImageFx::ApplyMultiple()
 }
 
 ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
-                                  const IGoomDraw& draw,
+                                  IGoomDraw& draw,
                                   const PluginInfo& goomInfo,
                                   const std::string& resourcesDirectory) noexcept
   : m_parallel{parallel},

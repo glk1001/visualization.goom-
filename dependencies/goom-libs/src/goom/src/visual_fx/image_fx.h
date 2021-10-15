@@ -31,9 +31,8 @@ namespace VISUAL_FX
 class ImageFx : public IVisualFx
 {
 public:
-  ImageFx() noexcept;
   ImageFx(UTILS::Parallel& parallel,
-          const DRAW::IGoomDraw& draw,
+          DRAW::IGoomDraw& draw,
           const PluginInfo& goomInfo,
           const std::string& resourcesDirectory) noexcept;
 

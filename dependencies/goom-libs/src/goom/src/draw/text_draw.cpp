@@ -17,7 +17,6 @@
 #include FT_STROKER_H
 #endif
 #include <locale>
-#include <numeric>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -146,14 +145,14 @@ inline auto TextDraw::TextDrawImpl::GetBearingY() const -> int32_t
 class TextDraw::TextDrawImpl
 {
 public:
-  explicit TextDrawImpl(const IGoomDraw& draw) noexcept;
-  ~TextDrawImpl() noexcept;
+  explicit TextDrawImpl(IGoomDraw& draw) noexcept;
   TextDrawImpl(const TextDrawImpl&) noexcept = delete;
   TextDrawImpl(TextDrawImpl&&) noexcept = delete;
+  ~TextDrawImpl() noexcept;
   auto operator=(const TextDrawImpl&) -> TextDrawImpl& = delete;
   auto operator=(TextDrawImpl&&) -> TextDrawImpl& = delete;
 
-  void SetAlignment(TextAlignment a);
+  void SetAlignment(TextAlignment alignment);
   [[nodiscard]] auto GetFontFile() const -> const std::string&;
   void SetFontFile(const std::string& filename);
   auto GetFontSize() const -> int32_t;
@@ -163,8 +162,8 @@ public:
   void SetCharSpacing(float val);
   void SetText(const std::string& str);
 
-  void SetFontColorFunc(const FontColorFunc& f);
-  void SetOutlineFontColorFunc(const FontColorFunc& f);
+  void SetFontColorFunc(const FontColorFunc& func);
+  void SetOutlineFontColorFunc(const FontColorFunc& func);
 
   void Prepare();
   [[nodiscard]] auto GetPreparedTextBoundingRect() const -> Rect;
@@ -175,7 +174,7 @@ public:
   void Draw(int32_t xPen, int32_t yPen, int32_t& xNext, int32_t& yNext);
 
 private:
-  const IGoomDraw& m_draw;
+  IGoomDraw& m_draw;
   FT_Library m_library{};
   static constexpr int32_t DEFAULT_FONT_SIZE = 100;
   int32_t m_fontSize = DEFAULT_FONT_SIZE;
@@ -236,9 +235,9 @@ private:
 
   [[nodiscard]] auto GetStartXPen(int32_t xPen) const -> int;
   [[nodiscard]] static auto GetStartYPen(int32_t yPen) -> int;
-  void WriteGlyph(const Spans& s, int32_t xPen, int32_t yPen) const;
-  void WriteSpansToImage(const SpanArray& s,
-                         const RectImpl& r,
+  void WriteGlyph(const Spans& spans, int32_t xPen, int32_t yPen) const;
+  void WriteSpansToImage(const SpanArray& spanArray,
+                         const RectImpl& rect,
                          int32_t xPen,
                          int32_t yPen,
                          size_t textIndexOfChar,
@@ -246,14 +245,14 @@ private:
 };
 #endif
 
-TextDraw::TextDraw(const IGoomDraw& draw) noexcept
+TextDraw::TextDraw(IGoomDraw& draw) noexcept
   : m_textDrawImpl{spimpl::make_unique_impl<TextDrawImpl>(draw)}
 {
 }
 
-void TextDraw::SetAlignment(const TextAlignment a)
+void TextDraw::SetAlignment(const TextAlignment alignment)
 {
-  m_textDrawImpl->SetAlignment(a);
+  m_textDrawImpl->SetAlignment(alignment);
 }
 
 auto TextDraw::GetFontFile() const -> const std::string&
@@ -296,14 +295,14 @@ void TextDraw::SetText(const std::string& str)
   m_textDrawImpl->SetText(str);
 }
 
-void TextDraw::SetFontColorFunc(const FontColorFunc& f)
+void TextDraw::SetFontColorFunc(const FontColorFunc& func)
 {
-  m_textDrawImpl->SetFontColorFunc(f);
+  m_textDrawImpl->SetFontColorFunc(func);
 }
 
-void TextDraw::SetOutlineFontColorFunc(const FontColorFunc& f)
+void TextDraw::SetOutlineFontColorFunc(const FontColorFunc& func)
 {
-  m_textDrawImpl->SetOutlineFontColorFunc(f);
+  m_textDrawImpl->SetOutlineFontColorFunc(func);
 }
 
 void TextDraw::Prepare()
@@ -337,7 +336,7 @@ void TextDraw::Draw(const int32_t xPen, const int32_t yPen, int32_t& xNext, int3
 }
 
 #ifndef NO_FREETYPE_INSTALLED
-TextDraw::TextDrawImpl::TextDrawImpl(const IGoomDraw& draw) noexcept : m_draw{draw}
+TextDraw::TextDrawImpl::TextDrawImpl(IGoomDraw& draw) noexcept : m_draw{draw}
 {
   (void)FT_Init_FreeType(&m_library);
 }
@@ -347,9 +346,9 @@ TextDraw::TextDrawImpl::~TextDrawImpl() noexcept
   (void)FT_Done_FreeType(m_library);
 }
 
-inline void TextDraw::TextDrawImpl::SetAlignment(const TextAlignment a)
+inline void TextDraw::TextDrawImpl::SetAlignment(const TextAlignment alignment)
 {
-  m_textAlignment = a;
+  m_textAlignment = alignment;
 }
 
 inline auto TextDraw::TextDrawImpl::GetFontFile() const -> const std::string&
@@ -445,14 +444,14 @@ void TextDraw::TextDrawImpl::SetText(const std::string& str)
   LogInfo("Setting font text '{}'.", m_theText);
 }
 
-void TextDraw::TextDrawImpl::SetFontColorFunc(const FontColorFunc& f)
+void TextDraw::TextDrawImpl::SetFontColorFunc(const FontColorFunc& func)
 {
-  m_getFontColor = f;
+  m_getFontColor = func;
 }
 
-void TextDraw::TextDrawImpl::SetOutlineFontColorFunc(const FontColorFunc& f)
+void TextDraw::TextDrawImpl::SetOutlineFontColorFunc(const FontColorFunc& func)
 {
-  m_getOutlineFontColor = f;
+  m_getOutlineFontColor = func;
 }
 
 void TextDraw::TextDrawImpl::Prepare()
@@ -604,14 +603,14 @@ void TextDraw::TextDrawImpl::WriteGlyph(const Spans& spans,
   WriteSpansToImage(spans.stdSpans, spans.rect, xPen, yPen, spans.textIndexOfChar, m_getFontColor);
 }
 
-void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spans,
+void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
                                                const RectImpl& rect,
                                                const int32_t xPen,
                                                const int32_t yPen,
                                                const size_t textIndexOfChar,
                                                const FontColorFunc& getColor) const
 {
-  for (const auto& s : spans)
+  for (const auto& s : spanArray)
   {
     const int32_t yPos = static_cast<int>(m_draw.GetScreenHeight()) - (yPen + s.y);
     if ((yPos < 0) || (yPos >= static_cast<int>(m_draw.GetScreenHeight())))

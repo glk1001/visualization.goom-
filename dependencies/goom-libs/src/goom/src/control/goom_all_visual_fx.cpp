@@ -49,7 +49,7 @@ static const Pixel GREEN_LINE = LinesFx::GetGreenLineColor();
 static const Pixel BLACK_LINE = LinesFx::GetBlackLineColor();
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
-                                 const IGoomDraw& draw,
+                                 IGoomDraw& draw,
                                  const PluginInfo& goomInfo,
                                  const SmallImageBitmaps& smallBitmaps,
                                  const std::string& resourcesDirectory,

@@ -29,7 +29,7 @@ class GoomTitleDisplayer
 {
 public:
   GoomTitleDisplayer() noexcept = delete;
-  GoomTitleDisplayer(const DRAW::IGoomDraw& draw, const std::string& fontDirectory);
+  GoomTitleDisplayer(DRAW::IGoomDraw& draw, const std::string& fontDirectory);
 
   void SetInitialPosition(int32_t xStart, int32_t yStart);
 
@@ -103,4 +103,3 @@ inline auto GoomTitleDisplayer::IsFinished() const -> bool
 
 } // namespace CONTROL
 } // namespace GOOM
-

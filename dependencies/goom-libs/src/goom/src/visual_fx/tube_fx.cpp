@@ -118,7 +118,7 @@ constexpr float PROB_FOLLOW_ZOOM_MID_POINT = 0.3F;
 class TubeFx::TubeFxImpl
 {
 public:
-  TubeFxImpl(const IGoomDraw& draw,
+  TubeFxImpl(IGoomDraw& draw,
              const PluginInfo& goomInfo,
              const SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -134,9 +134,9 @@ public:
   void ApplyMultiple();
 
 private:
-  const IGoomDraw& m_draw;
+  IGoomDraw& m_draw;
   GoomDrawToContainer m_drawToContainer;
-  const DRAW::GoomDrawToMany m_drawToMany;
+  GoomDrawToMany m_drawToMany;
   const PluginInfo& m_goomInfo;
   const SmallImageBitmaps& m_smallBitmaps;
   uint64_t m_updateNum = 0;
@@ -217,7 +217,7 @@ private:
       -> std::vector<IGoomDraw::GetBitmapColorFunc>;
 };
 
-TubeFx::TubeFx(const IGoomDraw& draw,
+TubeFx::TubeFx(IGoomDraw& draw,
                const PluginInfo& goomInfo,
                const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(draw, goomInfo, smallBitmaps)}
@@ -272,7 +272,7 @@ void TubeFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
-TubeFx::TubeFxImpl::TubeFxImpl(const IGoomDraw& draw,
+TubeFx::TubeFxImpl::TubeFxImpl(IGoomDraw& draw,
                                const PluginInfo& goomInfo,
                                const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},

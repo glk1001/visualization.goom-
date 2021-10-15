@@ -41,7 +41,7 @@ public:
   };
 
   FlyingStarsFx() noexcept = delete;
-  FlyingStarsFx(const DRAW::IGoomDraw& draw,
+  FlyingStarsFx(DRAW::IGoomDraw& draw,
                 const PluginInfo& goomInfo,
                 const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -66,4 +66,3 @@ private:
 
 } // namespace VISUAL_FX
 } // namespace GOOM
-

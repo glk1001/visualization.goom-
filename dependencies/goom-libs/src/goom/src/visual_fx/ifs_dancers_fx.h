@@ -47,7 +47,7 @@ public:
   };
 
   IfsDancersFx() noexcept = delete;
-  explicit IfsDancersFx(const DRAW::IGoomDraw& draw,
+  explicit IfsDancersFx(DRAW::IGoomDraw& draw,
                         const PluginInfo& goomInfo,
                         const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -79,4 +79,3 @@ private:
 
 } // namespace VISUAL_FX
 } // namespace GOOM
-

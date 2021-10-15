@@ -59,10 +59,9 @@ inline auto GoomDrawToContainer::GetWriteableColorsList(const int32_t x, const i
   return m_xyPixelList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
 }
 
-void GoomDrawToContainer::DrawPixelsUnblended(
-    [[maybe_unused]] const int32_t x,
-    [[maybe_unused]] const int32_t y,
-    [[maybe_unused]] const std::vector<Pixel>& colors) const
+void GoomDrawToContainer::DrawPixelsUnblended([[maybe_unused]] const int32_t x,
+                                              [[maybe_unused]] const int32_t y,
+                                              [[maybe_unused]] const std::vector<Pixel>& colors)
 {
   throw std::logic_error("GoomDrawToContainer::DrawPixelsUnblended not implemented.");
 }
@@ -91,13 +90,13 @@ void GoomDrawToContainer::SavePixels(const int32_t x,
   }
 }
 
-void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t n)
+void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKeep)
 {
-  assert(n <= m_orderedXYPixelList.size());
+  assert(numToKeep <= m_orderedXYPixelList.size());
 
   const auto eraseFrom = m_orderedXYPixelList.begin();
-  const auto eraseTo =
-      m_orderedXYPixelList.begin() + static_cast<std::ptrdiff_t>(m_orderedXYPixelList.size() - n);
+  const auto eraseTo = m_orderedXYPixelList.begin() +
+                       static_cast<std::ptrdiff_t>(m_orderedXYPixelList.size() - numToKeep);
 
   for (auto coords = eraseFrom; coords != eraseTo; ++coords)
   {
@@ -105,7 +104,7 @@ void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t n)
   }
 
   m_orderedXYPixelList.erase(eraseFrom, eraseTo);
-  m_orderedXYPixelList.resize(n);
+  m_orderedXYPixelList.resize(numToKeep);
 }
 
 void GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& func) const

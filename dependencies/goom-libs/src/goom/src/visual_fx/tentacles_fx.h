@@ -28,7 +28,7 @@ class TentaclesFx : public IVisualFx
 {
 public:
   TentaclesFx() noexcept = delete;
-  TentaclesFx(const DRAW::IGoomDraw& draw, const PluginInfo& goomInfo) noexcept;
+  TentaclesFx(DRAW::IGoomDraw& draw, const PluginInfo& goomInfo) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
@@ -52,4 +52,3 @@ private:
 
 } // namespace VISUAL_FX
 } // namespace GOOM
-

@@ -25,7 +25,7 @@ public:
   void SetBuffers(const std::vector<PixelBuffer*>& buffs);
 
   auto GetPixel(int32_t x, int32_t y) const -> Pixel override;
-  void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) const override;
+  void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) override;
 
 private:
   std::vector<PixelBuffer*> m_multipleBuffers{};
@@ -48,4 +48,3 @@ inline void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
 #else
 } // namespace GOOM::DRAW
 #endif
-

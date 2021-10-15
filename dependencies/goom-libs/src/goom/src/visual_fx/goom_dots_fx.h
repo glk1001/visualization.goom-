@@ -33,7 +33,7 @@ class GoomDotsFx : public IVisualFx
 {
 public:
   GoomDotsFx() noexcept = delete;
-  GoomDotsFx(const DRAW::IGoomDraw& draw,
+  GoomDotsFx(DRAW::IGoomDraw& draw,
              const PluginInfo& goomInfo,
              const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -59,4 +59,3 @@ private:
 
 } // namespace VISUAL_FX
 } // namespace GOOM
-

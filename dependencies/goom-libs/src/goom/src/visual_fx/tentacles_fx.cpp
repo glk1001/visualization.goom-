@@ -78,7 +78,7 @@ inline auto ChangeDominantColorEvent() -> bool
 class TentaclesFx::TentaclesImpl
 {
 public:
-  TentaclesImpl(const IGoomDraw& draw, const PluginInfo& goomInfo);
+  TentaclesImpl(IGoomDraw& draw, const PluginInfo& goomInfo);
   TentaclesImpl(const TentaclesImpl&) noexcept = delete;
   TentaclesImpl(TentaclesImpl&&) noexcept = delete;
   ~TentaclesImpl() noexcept = default;
@@ -94,7 +94,7 @@ public:
   void UpdateWithNoDraw();
 
 private:
-  const IGoomDraw& m_draw;
+  IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
@@ -171,7 +171,7 @@ private:
   void DoPrettyMoveWithoutDraw();
 };
 
-TentaclesFx::TentaclesFx(const IGoomDraw& draw, const PluginInfo& goomInfo) noexcept
+TentaclesFx::TentaclesFx(IGoomDraw& draw, const PluginInfo& goomInfo) noexcept
   : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(draw, goomInfo)}
 {
 }
@@ -221,7 +221,7 @@ auto TentaclesFx::GetFxName() const -> std::string
   return "Tentacles FX";
 }
 
-TentaclesFx::TentaclesImpl::TentaclesImpl(const IGoomDraw& draw, const PluginInfo& goomInfo)
+TentaclesFx::TentaclesImpl::TentaclesImpl(IGoomDraw& draw, const PluginInfo& goomInfo)
   : m_draw{draw}, m_goomInfo{goomInfo}, m_rot{GetStableRotationOffset(0)}
 {
 }

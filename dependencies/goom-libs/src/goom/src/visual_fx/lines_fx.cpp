@@ -73,7 +73,7 @@ class LinesFx::LinesImpl
 public:
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
-  LinesImpl(const IGoomDraw& draw,
+  LinesImpl(IGoomDraw& draw,
             const PluginInfo& goomInfo,
             const SmallImageBitmaps& smallBitmaps,
             LineType srceLineType,
@@ -109,7 +109,7 @@ public:
   [[nodiscard]] static auto GetRedLineColor() -> Pixel;
 
 private:
-  const IGoomDraw& m_draw;
+  IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const SmallImageBitmaps& m_smallBitmaps;
   std::shared_ptr<RandomColorMaps> m_colorMaps;
@@ -180,7 +180,7 @@ private:
   static void SmoothCircleJoin(std::vector<PointAndColor>& audioPoints);
 };
 
-LinesFx::LinesFx(const IGoomDraw& draw,
+LinesFx::LinesFx(IGoomDraw& draw,
                  const PluginInfo& goomInfo,
                  const SmallImageBitmaps& smallBitmaps,
                  const LineType srceLineType,
@@ -265,7 +265,7 @@ void LinesFx::DrawLines(const AudioSamples::SampleArray& soundData,
   m_fxImpl->DrawLines(soundData, soundMinMax);
 }
 
-LinesFx::LinesImpl::LinesImpl(const IGoomDraw& draw,
+LinesFx::LinesImpl::LinesImpl(IGoomDraw& draw,
                               const PluginInfo& goomInfo,
                               const SmallImageBitmaps& smallBitmaps,
                               const LineType srceLineType,

@@ -106,7 +106,7 @@ static const Weights<BlurrerColorMode> BLURRER_COLOR_MODE_WEIGHTS{{
 class IfsDancersFx::IfsDancersFxImpl
 {
 public:
-  IfsDancersFxImpl(const IGoomDraw& draw,
+  IfsDancersFxImpl(IGoomDraw& draw,
                    const PluginInfo& goomInfo,
                    const SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -129,7 +129,7 @@ private:
   static constexpr int32_t MAX_CYCLE_LENGTH = 2000;
   int32_t m_cycleLength = MIN_CYCLE_LENGTH;
 
-  const IGoomDraw& m_draw;
+  IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
 
   Colorizer m_colorizer{};
@@ -169,7 +169,7 @@ private:
   void SetLowDensityColors(const std::vector<IfsPoint>& points, uint32_t maxLowDensityCount) const;
 };
 
-IfsDancersFx::IfsDancersFx(const IGoomDraw& draw,
+IfsDancersFx::IfsDancersFx(IGoomDraw& draw,
                            const PluginInfo& goomInfo,
                            const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<IfsDancersFxImpl>(draw, goomInfo, smallBitmaps)}
@@ -236,7 +236,7 @@ void IfsDancersFx::Refresh()
   m_fxImpl->Refresh();
 }
 
-IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const IGoomDraw& draw,
+IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(IGoomDraw& draw,
                                                  const PluginInfo& goomInfo,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},

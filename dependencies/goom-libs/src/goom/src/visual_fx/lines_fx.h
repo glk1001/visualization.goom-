@@ -48,7 +48,7 @@ public:
   LinesFx() noexcept = delete;
 
   // construit un effet de line (une ligne horitontale pour commencer)
-  LinesFx(const DRAW::IGoomDraw& draw,
+  LinesFx(DRAW::IGoomDraw& draw,
           const PluginInfo& goomInfo,
           const UTILS::SmallImageBitmaps& smallBitmaps,
           LineType srceLineType,
@@ -91,4 +91,3 @@ private:
 
 } // namespace VISUAL_FX
 } // namespace GOOM
-

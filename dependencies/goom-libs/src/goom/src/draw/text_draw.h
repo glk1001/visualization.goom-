@@ -20,7 +20,7 @@ class IGoomDraw;
 class TextDraw
 {
 public:
-  explicit TextDraw(const IGoomDraw& draw) noexcept;
+  explicit TextDraw(IGoomDraw& draw) noexcept;
 
   enum class TextAlignment
   {
@@ -28,7 +28,7 @@ public:
     CENTER,
     RIGHT
   };
-  void SetAlignment(TextAlignment a);
+  void SetAlignment(TextAlignment alignment);
 
   auto GetFontSize() const -> int32_t;
   void SetFontSize(int32_t val);
@@ -41,8 +41,8 @@ public:
 
   using FontColorFunc = std::function<Pixel(
       size_t textIndexOfChar, int32_t x, int32_t y, int32_t width, int32_t height)>;
-  void SetFontColorFunc(const FontColorFunc& f);
-  void SetOutlineFontColorFunc(const FontColorFunc& f);
+  void SetFontColorFunc(const FontColorFunc& func);
+  void SetOutlineFontColorFunc(const FontColorFunc& func);
 
   void Prepare();
 

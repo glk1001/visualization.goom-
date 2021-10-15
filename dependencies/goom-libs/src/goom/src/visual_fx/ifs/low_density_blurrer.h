@@ -34,7 +34,7 @@ class LowDensityBlurrer
 {
 public:
   LowDensityBlurrer() noexcept = delete;
-  LowDensityBlurrer(const DRAW::IGoomDraw& draw, uint32_t width, const Colorizer* colorizer) noexcept;
+  LowDensityBlurrer(DRAW::IGoomDraw& draw, uint32_t width, const Colorizer* colorizer) noexcept;
 
   [[nodiscard]] auto GetWidth() const -> uint32_t;
   void SetWidth(uint32_t val);
@@ -48,7 +48,7 @@ public:
   void DoBlur(std::vector<IfsPoint>& lowDensityPoints, uint32_t maxLowDensityCount) const;
 
 private:
-  const DRAW::IGoomDraw& m_draw;
+  DRAW::IGoomDraw& m_draw;
   uint32_t m_width;
   const Colorizer* const m_colorizer{};
   float m_neighbourMixFactor = 1.0;

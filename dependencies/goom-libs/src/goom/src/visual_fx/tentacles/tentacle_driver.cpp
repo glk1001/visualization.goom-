@@ -53,7 +53,7 @@ inline auto ChangeCurrentColorMapEvent() -> bool
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
-TentacleDriver::TentacleDriver(const IGoomDraw& draw) noexcept : m_draw{draw}
+TentacleDriver::TentacleDriver(IGoomDraw& draw) noexcept : m_draw{draw}
 {
   const IterParamsGroup iter1 = {
       {100, 0.600F, 1.0F, {1.5F, -10.0f, +10.0F, m_pi}, 100.0F},

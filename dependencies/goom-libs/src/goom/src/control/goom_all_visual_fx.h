@@ -53,7 +53,7 @@ class GoomAllVisualFx
 public:
   GoomAllVisualFx() noexcept = delete;
   GoomAllVisualFx(UTILS::Parallel& parallel,
-                  const DRAW::IGoomDraw& draw,
+                  DRAW::IGoomDraw& draw,
                   const PluginInfo& goomInfo,
                   const UTILS::SmallImageBitmaps& smallBitmaps,
                   const std::string& resourcesDirectory,
@@ -242,4 +242,3 @@ inline auto GoomAllVisualFx::GetGoomLine2RandomColor() const -> Pixel
 
 } // namespace CONTROL
 } // namespace GOOM
-

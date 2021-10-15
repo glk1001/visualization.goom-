@@ -32,7 +32,7 @@ void IGoomDraw::Bitmap(const int xCentre,
                        const int yCentre,
                        const PixelBuffer& bitmap,
                        const std::vector<GetBitmapColorFunc>& getColors,
-                       const bool allowOverexposed) const
+                       const bool allowOverexposed)
 {
   const auto bitmapWidth = static_cast<int>(bitmap.GetWidth());
   const auto bitmapHeight = static_cast<int>(bitmap.GetHeight());
@@ -86,7 +86,7 @@ void IGoomDraw::Bitmap(const int xCentre,
     }
   };
 
-  if (bitmapWidth > 199)
+  if (bitmapWidth > 10)
   {
     GetParallel().ForLoop(actualBitmapHeight, setDestPixelRow);
   }

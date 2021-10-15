@@ -42,7 +42,7 @@ auto GoomDrawToBuffer::GetPixel(const int32_t x, const int32_t y) const -> Pixel
 
 void GoomDrawToBuffer::DrawPixelsUnblended(const int32_t x,
                                            const int32_t y,
-                                           const std::vector<Pixel>& colors) const
+                                           const std::vector<Pixel>& colors)
 {
   for (size_t i = 0; i < m_multipleBuffers.size(); ++i)
   {
@@ -61,8 +61,8 @@ void GoomDrawToBuffer::DrawPixels(const std::vector<PixelBuffer*>& buffs,
   {
     const Pixel newColor = GetBrighterColorInt(intBuffIntensity, colors[i], allowOverexposed);
 
-    Pixel& p = (*buffs[i])(static_cast<size_t>(x), static_cast<size_t>(y));
-    p = GetColorAdd(p, newColor, allowOverexposed);
+    Pixel& pixel = (*buffs[i])(static_cast<size_t>(x), static_cast<size_t>(y));
+    pixel = GetColorAdd(pixel, newColor, allowOverexposed);
 
     /***
       ATTEMPT AT BLENDING - WON'T WORK THOUGH - BECAUSE OF MULTIPLE BUFFERS??

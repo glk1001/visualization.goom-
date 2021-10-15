@@ -19,7 +19,7 @@ namespace GOOM::DRAW
 
 GoomDrawToMany::GoomDrawToMany(const uint32_t screenWidth,
                                const uint32_t screenHeight,
-                               const std::vector<const IGoomDraw*>& manyDraws)
+                               const std::vector<IGoomDraw*>& manyDraws)
   : IGoomDraw{screenWidth, screenHeight,
               [&](const int32_t x,
                   const int32_t y,
@@ -40,21 +40,21 @@ auto GoomDrawToMany::GetPixel(const int32_t x, const int32_t y) const -> Pixel
 
 void GoomDrawToMany::DrawPixelsUnblended(const int32_t x,
                                          const int32_t y,
-                                         const std::vector<Pixel>& colors) const
+                                         const std::vector<Pixel>& colors)
 {
-  for (const auto* const draw : m_manyDraws)
+  for (auto* const draw : m_manyDraws)
   {
     draw->DrawPixelsUnblended(x, y, colors);
   }
 }
 
-void GoomDrawToMany::DrawPixels(const std::vector<const IGoomDraw*>& manyDraws,
+void GoomDrawToMany::DrawPixels(const std::vector<IGoomDraw*>& manyDraws,
                                 const int32_t x,
                                 const int32_t y,
                                 const std::vector<Pixel>& colors,
                                 const bool allowOverexposed)
 {
-  for (const auto* const draw : manyDraws)
+  for (auto* const draw : manyDraws)
   {
     draw->DrawPixels(x, y, colors, allowOverexposed);
   }

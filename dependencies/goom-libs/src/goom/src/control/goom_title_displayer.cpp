@@ -73,7 +73,7 @@ auto GoomTitleDisplayer::GetSelectedFontSize() const -> int32_t
   return maxFontSize;
 }
 
-GoomTitleDisplayer::GoomTitleDisplayer(const IGoomDraw& draw, const std::string& fontDirectory)
+GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw, const std::string& fontDirectory)
   : m_textDraw{std::make_unique<TextDraw>(draw)},
     m_screenHeight{draw.GetScreenHeight()},
     m_fontDirectory{fontDirectory},

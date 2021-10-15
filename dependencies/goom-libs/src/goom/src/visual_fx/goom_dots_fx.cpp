@@ -53,7 +53,7 @@ inline auto ChangeDotColorsEvent() -> bool
 class GoomDotsFx::GoomDotsFxImpl
 {
 public:
-  GoomDotsFxImpl(const IGoomDraw& draw,
+  GoomDotsFxImpl(IGoomDraw& draw,
                  const PluginInfo& goomInfo,
                  const SmallImageBitmaps& smallBitmaps) noexcept;
 
@@ -65,7 +65,7 @@ public:
   void ApplyMultiple();
 
 private:
-  const IGoomDraw& m_draw;
+  IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const SmallImageBitmaps& m_smallBitmaps;
   const V2dInt m_screenMidPoint;
@@ -114,7 +114,7 @@ private:
   void SetNextCurrentBitmapName();
 };
 
-GoomDotsFx::GoomDotsFx(const IGoomDraw& draw,
+GoomDotsFx::GoomDotsFx(IGoomDraw& draw,
                        const PluginInfo& goomInfo,
                        const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<GoomDotsFxImpl>(draw, goomInfo, smallBitmaps)}
@@ -160,7 +160,7 @@ void GoomDotsFx::ApplyMultiple()
 }
 
 
-GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const IGoomDraw& draw,
+GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(IGoomDraw& draw,
                                            const PluginInfo& goomInfo,
                                            const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
