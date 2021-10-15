@@ -70,7 +70,7 @@ public:
 
   [[nodiscard]] auto GetMinSaturation() const -> float;
   [[nodiscard]] auto GetMaxSaturation() const -> float;
-  void SetSaturationLimts(float minSaturation, float maxSaturation);
+  void SetSaturationLimits(float minSaturation, float maxSaturation);
   [[nodiscard]] auto GetMaxLightness() const -> float;
   [[nodiscard]] auto GetMinLightness() const -> float;
   void SetLightnessLimits(float minLightness, float maxLightness);

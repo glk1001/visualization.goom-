@@ -32,8 +32,8 @@ auto ExpIncreasingFunction::operator()(const double x) -> double
 
 LogIncreasingFunction::LogIncreasingFunction(const double amp,
                                              const double xm,
-                                             const double xStrt) noexcept
-  : IIncreasingFunction(xm, 10000000000), m_amplitude(amp), m_xmin(xm), m_xStart(xStrt)
+                                             const double xStart) noexcept
+  : IIncreasingFunction(xm, 10000000000), m_amplitude(amp), m_xmin(xm), m_xStart(xStart)
 {
 }
 
@@ -45,8 +45,8 @@ double LogIncreasingFunction::operator()(const double x)
 
 LogDampingFunction::LogDampingFunction(const double amp,
                                        const double xm,
-                                       const double xStrt) noexcept
-  : m_amplitude(amp), m_xmin(xm), m_xStart(xStrt)
+                                       const double xStart) noexcept
+  : m_amplitude(amp), m_xmin(xm), m_xStart(xStart)
 {
 }
 
@@ -58,7 +58,7 @@ double LogDampingFunction::operator()(const double x)
 ExpDampingFunction::ExpDampingFunction(const double amp,
                                        const double xToStartRise,
                                        const double yAtStartToRise,
-                                       const double xmax,
+                                       const double xMax,
                                        const double yAtXMax)
   : m_amplitude(amp)
 {
@@ -82,8 +82,8 @@ ExpDampingFunction::ExpDampingFunction(const double amp,
   const double y1 = yAtXMax / m_amplitude - 1.0;
   const double log_y0 = std::log(y0);
   const double log_y1 = std::log(y1);
-  m_b = (xToStartRise * log_y1 - xmax * log_y0) / (log_y1 - log_y0);
-  m_k = log_y1 / (xmax - m_b);
+  m_b = (xToStartRise * log_y1 - xMax * log_y0) / (log_y1 - log_y0);
+  m_k = log_y1 / (xMax - m_b);
 }
 
 auto ExpDampingFunction::operator()(const double x) -> double

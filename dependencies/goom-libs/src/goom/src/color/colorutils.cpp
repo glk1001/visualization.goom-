@@ -102,19 +102,19 @@ inline auto EvolvedColor(const Pixel& src,
                          const uint32_t incr) -> Pixel
 {
   const auto color = static_cast<int32_t>(src.Rgba() & (~mask));
-  uint32_t isrc = src.Rgba() & mask;
-  const uint32_t idest = dest.Rgba() & mask;
+  uint32_t iSrc = src.Rgba() & mask;
+  const uint32_t iDest = dest.Rgba() & mask;
 
-  if ((isrc != mask) && (isrc < idest))
+  if ((iSrc != mask) && (iSrc < iDest))
   {
-    isrc += incr;
+    iSrc += incr;
   }
-  if (isrc > idest)
+  if (iSrc > iDest)
   {
-    isrc -= incr;
+    iSrc -= incr;
   }
 
-  return Pixel{(isrc & mask) | static_cast<uint32_t>(color)};
+  return Pixel{(iSrc & mask) | static_cast<uint32_t>(color)};
 }
 
 auto GetEvolvedColor(const Pixel& baseColor) -> Pixel

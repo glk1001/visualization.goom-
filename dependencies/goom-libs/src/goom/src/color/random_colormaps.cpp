@@ -225,7 +225,7 @@ auto RandomColorMaps::GetMaxSaturation() const -> float
   return m_maxSaturation;
 }
 
-void RandomColorMaps::SetSaturationLimts(const float minSaturation, const float maxSaturation)
+void RandomColorMaps::SetSaturationLimits(const float minSaturation, const float maxSaturation)
 {
   if (minSaturation < MIN_SATURATION)
   {

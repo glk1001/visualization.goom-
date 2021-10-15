@@ -372,7 +372,7 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
   m_colorMapID = m_randomColorMapsManager.AddColorMapInfo(
       {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL});
 
-  m_colorMaps->SetSaturationLimts(MIN_SATURATION, MAX_SATURATION);
+  m_colorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
   m_colorMaps->SetLightnessLimits(MIN_LIGHTNESS, MAX_LIGHTNESS);
 }
 
@@ -386,7 +386,7 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedLowColorMaps(
   m_lowColorMapID = m_randomColorMapsManager.AddColorMapInfo(
       {m_lowColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL});
 
-  m_lowColorMaps->SetSaturationLimts(MIN_SATURATION, MAX_SATURATION);
+  m_lowColorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
   m_lowColorMaps->SetLightnessLimits(MIN_LIGHTNESS, MAX_LIGHTNESS);
 }
 

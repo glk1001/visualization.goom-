@@ -236,7 +236,7 @@ class ExpDampingFunction : public IDampingFunction
 public:
   ExpDampingFunction() noexcept = default;
   ExpDampingFunction(
-      double amplitude, double xToStartRise, double yAtStartToRise, double xmax, double yAtXMax);
+      double amplitude, double xToStartRise, double yAtStartToRise, double xMax, double yAtXMax);
   auto operator()(double x) -> double override;
   [[nodiscard]] auto KVal() const -> double { return m_k; }
   [[nodiscard]] auto BVal() const -> double { return m_b; }
@@ -392,4 +392,3 @@ inline auto RangeMapper::operator()(const double r0, const double r1, const doub
 #else
 } // namespace GOOM::UTILS
 #endif
-
