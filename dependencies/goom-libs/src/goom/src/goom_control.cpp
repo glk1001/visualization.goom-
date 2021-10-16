@@ -49,7 +49,7 @@ namespace GOOM
 {
 
 using CONTROL::GoomAllVisualFx;
-using CONTROL::GoomDrawable;
+using CONTROL::GoomDrawables;
 using CONTROL::GoomEvents;
 using CONTROL::GoomImageBuffers;
 using CONTROL::GoomMessageDisplayer;
@@ -158,12 +158,12 @@ void GoomControl::Finish()
   m_controller->Finish();
 }
 
-void GoomControl::Update(const AudioSamples& s,
+void GoomControl::Update(const AudioSamples& audioSamples,
                          const float fps,
                          const std::string& songTitle,
                          const std::string& message)
 {
-  m_controller->Update(s, fps, songTitle, message);
+  m_controller->Update(audioSamples, fps, songTitle, message);
 }
 
 GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
@@ -347,7 +347,7 @@ inline void GoomControl::GoomControlImpl::DisplayLinesIfInAGoom(const AudioSampl
   {
     return;
   }
-  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawable::LINES))
+  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawables::LINES))
   {
     return;
   }

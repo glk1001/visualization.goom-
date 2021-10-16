@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_random_states.h"
+#include "goom_states.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
 
@@ -65,7 +66,7 @@ public:
 
   void SetNextState();
   [[nodiscard]] auto GetCurrentStateName() const -> std::string;
-  [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawable goomDrawable) const -> bool;
+  [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;
 
   void SetSingleBufferDots(bool value);
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
@@ -119,14 +120,15 @@ private:
   const std::shared_ptr<VISUAL_FX::LinesFx> m_goomLine2;
 
   const std::vector<std::shared_ptr<VISUAL_FX::IVisualFx>> m_list;
-  const std::map<GoomDrawable, std::shared_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
+  const std::map<GoomDrawables, std::shared_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
 
   GoomRandomStates m_state{};
-  std::unordered_set<GoomDrawable> m_currentGoomDrawables{};
+  std::unordered_set<GoomDrawables> m_currentGoomDrawables{};
   void ChangeState();
-  void PostStateUpdate(const std::unordered_set<GoomDrawable>& oldGoomDrawables);
-  [[nodiscard]] auto GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawable>;
-  [[nodiscard]] auto CanDraw(GoomDrawable goomDrawable) const -> bool;
+  void PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables);
+  [[nodiscard]] auto GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawables>;
+  [[nodiscard]] auto CanDraw(GoomDrawables goomDrawable) const -> bool;
+  [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
 
   bool m_singleBufferDots = true;
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
@@ -174,20 +176,20 @@ inline void GoomAllVisualFx::SetResetDrawBuffSettingsFunc(const ResetDrawBuffSet
 
 inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string
 {
-  return m_state.GetCurrentStateName();
+  return GoomStateInfo::GetStateInfo(m_state.GetCurrentState()).name;
 }
 
-inline auto GoomAllVisualFx::GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawable>
+inline auto GoomAllVisualFx::GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawables>
 {
   return m_currentGoomDrawables;
 }
 
-inline auto GoomAllVisualFx::CanDraw(const GoomDrawable goomDrawable) const -> bool
+inline auto GoomAllVisualFx::CanDraw(const GoomDrawables goomDrawable) const -> bool
 {
   return m_drawablesMap.find(goomDrawable) != m_drawablesMap.end();
 }
 
-inline auto GoomAllVisualFx::IsCurrentlyDrawable(const GoomDrawable goomDrawable) const -> bool
+inline auto GoomAllVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawable) const -> bool
 {
 #if __cplusplus <= 201703L
   return m_currentGoomDrawables.find(goomDrawable) != m_currentGoomDrawables.end();

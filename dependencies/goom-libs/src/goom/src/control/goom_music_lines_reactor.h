@@ -107,12 +107,12 @@ inline void GoomMusicLinesReactor::ChangeGoomLines()
 
 inline void GoomMusicLinesReactor::ResetLineModes()
 {
-  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawable::SCOPE))
+  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawables::SCOPE))
   {
     constexpr int32_t SCOPE_RESET = 0xF000 & 5;
     m_stopLines = SCOPE_RESET;
   }
-  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawable::FAR_SCOPE))
+  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawables::FAR_SCOPE))
   {
     m_stopLines = 0;
     m_lineMode = m_drawLinesDuration;
@@ -123,7 +123,7 @@ inline void GoomMusicLinesReactor::StopLinesIfRequested()
 {
   constexpr int32_t LARGE_STOP_LINE = 0xF000;
   if (((m_stopLines & LARGE_STOP_LINE) != 0) ||
-      (!m_visualFx.IsCurrentlyDrawable(GoomDrawable::SCOPE)))
+      (!m_visualFx.IsCurrentlyDrawable(GoomDrawables::SCOPE)))
   {
     StopGoomLines();
   }
@@ -166,4 +166,3 @@ inline auto GoomMusicLinesReactor::GetSameLineColors(const Pixel& color) -> Goom
 
 } // namespace CONTROL
 } // namespace GOOM
-

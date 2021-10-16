@@ -30,7 +30,7 @@ public:
    *      - empty if it is not the start of the song
    *      - only have a value at the start of the song
    */
-  void Update(const AudioSamples& s,
+  void Update(const AudioSamples& audioSamples,
               float fps,
               const std::string& songTitle,
               const std::string& message);

@@ -27,7 +27,7 @@ namespace GOOM::CONTROL
 {
 #endif
 
-using CONTROL::GoomDrawable;
+using CONTROL::GoomDrawables;
 using DRAW::IGoomDraw;
 using FILTERS::FilterBuffersService;
 using FILTERS::FilterColorsService;
@@ -94,15 +94,20 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
       m_tube_fx,
     },
     m_drawablesMap {
-      {GoomDrawable::STARS, m_star_fx},
-      {GoomDrawable::IFS, m_ifs_fx},
-      {GoomDrawable::IMAGE, m_image_fx},
-      {GoomDrawable::DOTS, m_goomDots_fx},
-      {GoomDrawable::TENTACLES, m_tentacles_fx},
-      {GoomDrawable::TUBE, m_tube_fx},
+      {GoomDrawables::STARS, m_star_fx},
+      {GoomDrawables::IFS, m_ifs_fx},
+      {GoomDrawables::IMAGE, m_image_fx},
+      {GoomDrawables::DOTS, m_goomDots_fx},
+      {GoomDrawables::TENTACLES, m_tentacles_fx},
+      {GoomDrawables::TUBE, m_tube_fx},
     }
 // clang-format on
 {
+}
+
+inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const -> FXBuffSettings
+{
+  return GoomStateInfo::GetBuffSettings(m_state.GetCurrentState(), fx);
 }
 
 void GoomAllVisualFx::Start()
@@ -132,13 +137,13 @@ void GoomAllVisualFx::ChangeState()
   SuspendFx();
 
   constexpr size_t MAX_TRIES = 10;
-  const size_t oldStateIndex = m_state.GetCurrentStateIndex();
+  const GoomStates oldState = m_state.GetCurrentState();
 
   for (size_t numTry = 0; numTry < MAX_TRIES; ++numTry)
   {
     m_state.DoRandomStateChange();
     // Pick a different state if possible
-    if (oldStateIndex != m_state.GetCurrentStateIndex())
+    if (oldState != m_state.GetCurrentState())
     {
       break;
     }
@@ -149,7 +154,7 @@ void GoomAllVisualFx::ChangeState()
   ResumeFx();
 }
 
-void GoomAllVisualFx::PostStateUpdate(const std::unordered_set<GoomDrawable>& oldGoomDrawables)
+void GoomAllVisualFx::PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables)
 {
   for (const auto& currentlyDrawable : m_currentGoomDrawables)
   {
@@ -158,7 +163,7 @@ void GoomAllVisualFx::PostStateUpdate(const std::unordered_set<GoomDrawable>& ol
       continue;
     }
     const bool wasActiveInPreviousState =
-        oldGoomDrawables.find(GoomDrawable::IFS) != oldGoomDrawables.end();
+        oldGoomDrawables.find(GoomDrawables::IFS) != oldGoomDrawables.end();
     m_drawablesMap.at(currentlyDrawable)->PostStateUpdate(wasActiveInPreviousState);
   }
 }
@@ -227,7 +232,7 @@ void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSetti
 
 void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
 {
-  assert(IsCurrentlyDrawable(GoomDrawable::LINES));
+  assert(IsCurrentlyDrawable(GoomDrawables::LINES));
 
   m_goomLine2->SetPower(m_goomLine1->GetPower());
 
@@ -237,7 +242,7 @@ void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
 
 void GoomAllVisualFx::ApplyDotsIfRequired()
 {
-  if (!IsCurrentlyDrawable(GoomDrawable::DOTS))
+  if (!IsCurrentlyDrawable(GoomDrawables::DOTS))
   {
     return;
   }
@@ -246,13 +251,13 @@ void GoomAllVisualFx::ApplyDotsIfRequired()
     return;
   }
 
-  ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::DOTS));
+  ResetDrawBuffSettings(GetCurrentBuffSettings(GoomDrawables::DOTS));
   m_goomDots_fx->ApplySingle();
 }
 
 void GoomAllVisualFx::ApplyDotsToBothBuffersIfRequired()
 {
-  if (!IsCurrentlyDrawable(GoomDrawable::DOTS))
+  if (!IsCurrentlyDrawable(GoomDrawables::DOTS))
   {
     return;
   }
@@ -261,65 +266,65 @@ void GoomAllVisualFx::ApplyDotsToBothBuffersIfRequired()
     return;
   }
 
-  ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::DOTS));
+  ResetDrawBuffSettings(GetCurrentBuffSettings(GoomDrawables::DOTS));
   m_goomDots_fx->ApplyMultiple();
 }
 
 void GoomAllVisualFx::ApplyIfsToBothBuffersIfRequired()
 {
-  if (!IsCurrentlyDrawable(GoomDrawable::IFS))
+  if (!IsCurrentlyDrawable(GoomDrawables::IFS))
   {
     m_ifs_fx->ApplyNoDraw();
     return;
   }
 
-  ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::IFS));
+  ResetDrawBuffSettings(GetCurrentBuffSettings(GoomDrawables::IFS));
   m_ifs_fx->ApplyMultiple();
 }
 
 void GoomAllVisualFx::ApplyImageToBothBuffersIfRequired()
 {
-  if (!IsCurrentlyDrawable(GoomDrawable::IMAGE))
+  if (!IsCurrentlyDrawable(GoomDrawables::IMAGE))
   {
     return;
   }
 
-  ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::IMAGE));
+  ResetDrawBuffSettings(GetCurrentBuffSettings(GoomDrawables::IMAGE));
   m_image_fx->ApplyMultiple();
 }
 
 void GoomAllVisualFx::ApplyTentaclesToBothBuffersIfRequired()
 {
-  if (!IsCurrentlyDrawable(GoomDrawable::TENTACLES))
+  if (!IsCurrentlyDrawable(GoomDrawables::TENTACLES))
   {
     m_tentacles_fx->ApplyNoDraw();
     return;
   }
 
-  ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::TENTACLES));
+  ResetDrawBuffSettings(GetCurrentBuffSettings(GoomDrawables::TENTACLES));
   m_tentacles_fx->ApplyMultiple();
 }
 
 void GoomAllVisualFx::ApplyTubeToBothBuffersIfRequired()
 {
-  if (!IsCurrentlyDrawable(GoomDrawable::TUBE))
+  if (!IsCurrentlyDrawable(GoomDrawables::TUBE))
   {
     m_tube_fx->ApplyNoDraw();
     return;
   }
 
-  ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::TUBE));
+  ResetDrawBuffSettings(GetCurrentBuffSettings(GoomDrawables::TUBE));
   m_tube_fx->ApplyMultiple();
 }
 
 void GoomAllVisualFx::ApplyStarsToBothBuffersIfRequired()
 {
-  if (!IsCurrentlyDrawable(GoomDrawable::STARS))
+  if (!IsCurrentlyDrawable(GoomDrawables::STARS))
   {
     return;
   }
 
-  ResetDrawBuffSettings(m_state.GetCurrentBuffSettings(GoomDrawable::STARS));
+  ResetDrawBuffSettings(GetCurrentBuffSettings(GoomDrawables::STARS));
   m_star_fx->ApplyMultiple();
 }
 
