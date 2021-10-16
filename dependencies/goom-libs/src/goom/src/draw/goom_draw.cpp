@@ -86,7 +86,7 @@ void IGoomDraw::Bitmap(const int xCentre,
     }
   };
 
-  if (bitmapWidth > 10)
+  if (bitmapWidth > 199)
   {
     GetParallel().ForLoop(actualBitmapHeight, setDestPixelRow);
   }

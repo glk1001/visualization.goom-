@@ -83,7 +83,7 @@ void GoomDrawToContainer::SavePixels(const int32_t x,
   const Pixel newColor = GetBrighterColorInt(intBuffIntensity, colors[0], allowOverexposed);
 
   colorsList.colorsArray[colorsList.count] = newColor;
-  colorsList.count++;
+  ++colorsList.count;
   if (1 == colorsList.count)
   {
     m_orderedXYPixelList.emplace_back(Coords{x, y});

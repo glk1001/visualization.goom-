@@ -226,6 +226,7 @@ TubeFx::TubeFx(IGoomDraw& draw,
 
 void TubeFx::ApplyNoDraw()
 {
+  // Not needed.
 }
 
 void TubeFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
@@ -260,6 +261,7 @@ void TubeFx::Suspend()
 
 void TubeFx::Finish()
 {
+  // Not needed.
 }
 
 auto TubeFx::GetFxName() const -> std::string
@@ -311,6 +313,7 @@ void TubeFx::TubeFxImpl::Resume()
 
 void TubeFx::TubeFxImpl::Suspend()
 {
+  // Not needed.
 }
 
 inline auto TubeFx::TubeFxImpl::GetImageBitmap(const SmallImageBitmaps::ImageNames imageName,
@@ -474,9 +477,9 @@ inline auto TubeFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& co
     -> std::vector<IGoomDraw::GetBitmapColorFunc>
 {
   const auto getColor1 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& b) -> Pixel { return colors[0]; };
+                             [[maybe_unused]] const Pixel& b) { return colors[0]; };
   const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& b) -> Pixel { return colors[1]; };
+                             [[maybe_unused]] const Pixel& b) { return colors[1]; };
   return {getColor1, getColor2};
 }
 

@@ -33,6 +33,7 @@ public:
 
 private:
   ThreadPool m_threadPool;
+  bool m_forLoopInUse = false;
 };
 
 inline Parallel::Parallel(const int32_t numPoolThreads) noexcept
@@ -62,6 +63,11 @@ void Parallel::ForLoop(const size_t numIters, const Callable loopFunc)
   {
     throw std::logic_error("ForLoop: numIters == 0.");
   }
+  if (m_forLoopInUse)
+  {
+    throw std::logic_error("ForLoop: already in use.");
+  }
+  m_forLoopInUse = true;
 
   const size_t numThreads = std::min(numIters, m_threadPool.GetNumWorkers());
 
@@ -71,6 +77,7 @@ void Parallel::ForLoop(const size_t numIters, const Callable loopFunc)
     {
       loopFunc(i);
     }
+    m_forLoopInUse = false;
     return;
   }
 
@@ -94,10 +101,12 @@ void Parallel::ForLoop(const size_t numIters, const Callable loopFunc)
     futures.emplace_back(m_threadPool.ScheduleAndGetFuture(loopContents, j));
   }
 
-  for (const auto& f : futures)
+  for (const auto& future : futures)
   {
-    f.wait();
+    future.wait();
   }
+
+  m_forLoopInUse = false;
 }
 
 #if __cplusplus <= 201402L
