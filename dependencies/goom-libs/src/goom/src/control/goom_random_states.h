@@ -32,12 +32,12 @@ enum class GoomDrawable
   _NUM // unused and must be last
 };
 
-class GoomStates
+class GoomRandomStates
 {
 public:
   using DrawablesState = std::unordered_set<GoomDrawable>;
 
-  GoomStates();
+  GoomRandomStates();
 
   [[nodiscard]] auto GetCurrentStateIndex() const -> size_t;
   [[nodiscard]] auto GetCurrentStateName() const -> std::string;
@@ -59,6 +59,11 @@ private:
     uint32_t weight;
     DrawableInfoArray drawables;
   };
+  struct WeightedState
+  {
+    uint32_t weight;
+    State state;
+  };
   using WeightedStatesArray = std::vector<State>;
   static WeightedStatesArray STATES;
   static void NormaliseStates();
@@ -68,12 +73,12 @@ private:
   size_t m_currentStateIndex = 0;
 };
 
-inline auto GoomStates::GetCurrentStateIndex() const -> size_t
+inline auto GoomRandomStates::GetCurrentStateIndex() const -> size_t
 {
   return m_currentStateIndex;
 }
 
-inline auto GoomStates::GetCurrentStateName() const -> std::string
+inline auto GoomRandomStates::GetCurrentStateName() const -> std::string
 {
   return STATES[m_currentStateIndex].name;
 }

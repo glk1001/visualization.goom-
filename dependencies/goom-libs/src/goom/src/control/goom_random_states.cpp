@@ -1,4 +1,4 @@
-#include "goom_states.h"
+#include "goom_random_states.h"
 
 #include "goom_graphic.h"
 
@@ -17,7 +17,7 @@ namespace GOOM::CONTROL
 
 //@formatter:off
 // clang-format off
-GoomStates::WeightedStatesArray GoomStates::STATES{{
+GoomRandomStates::WeightedStatesArray GoomRandomStates::STATES{{
   {
     /*.name = */ "Image Tester",
     /*.weight = */1,
@@ -303,15 +303,15 @@ GoomStates::WeightedStatesArray GoomStates::STATES{{
 // clang-format on
 //@formatter:on
 
-GoomStates::GoomStates() : m_weightedStates{GetWeightedStates(STATES)}
+GoomRandomStates::GoomRandomStates() : m_weightedStates{GetWeightedStates(STATES)}
 {
   NormaliseStates();
   DoRandomStateChange();
 }
 
-auto GoomStates::GetCurrentDrawables() const -> GoomStates::DrawablesState
+auto GoomRandomStates::GetCurrentDrawables() const -> GoomRandomStates::DrawablesState
 {
-  GoomStates::DrawablesState currentDrawables{};
+  GoomRandomStates::DrawablesState currentDrawables{};
   for (const auto drawable : STATES[m_currentStateIndex].drawables)
   {
     currentDrawables.insert(drawable.fx);
@@ -319,7 +319,7 @@ auto GoomStates::GetCurrentDrawables() const -> GoomStates::DrawablesState
   return currentDrawables;
 }
 
-auto GoomStates::GetCurrentBuffSettings(const GoomDrawable theFx) const -> FXBuffSettings
+auto GoomRandomStates::GetCurrentBuffSettings(const GoomDrawable theFx) const -> FXBuffSettings
 {
   for (const auto& drawable : STATES[m_currentStateIndex].drawables)
   {
@@ -331,12 +331,12 @@ auto GoomStates::GetCurrentBuffSettings(const GoomDrawable theFx) const -> FXBuf
   return FXBuffSettings{};
 }
 
-void GoomStates::DoRandomStateChange()
+void GoomRandomStates::DoRandomStateChange()
 {
   m_currentStateIndex = static_cast<size_t>(m_weightedStates.GetRandomWeighted());
 }
 
-void GoomStates::NormaliseStates()
+void GoomRandomStates::NormaliseStates()
 {
   for (auto& state : STATES)
   {
@@ -357,7 +357,7 @@ void GoomStates::NormaliseStates()
   }
 }
 
-auto GoomStates::GetWeightedStates(const GoomStates::WeightedStatesArray& theStates)
+auto GoomRandomStates::GetWeightedStates(const GoomRandomStates::WeightedStatesArray& theStates)
     -> std::vector<std::pair<uint16_t, size_t>>
 {
   std::vector<std::pair<uint16_t, size_t>> weightedVals(theStates.size());

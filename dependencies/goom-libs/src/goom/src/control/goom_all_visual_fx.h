@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goom_states.h"
+#include "goom_random_states.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
 
@@ -121,7 +121,7 @@ private:
   const std::vector<std::shared_ptr<VISUAL_FX::IVisualFx>> m_list;
   const std::map<GoomDrawable, std::shared_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
 
-  GoomStates m_state{};
+  GoomRandomStates m_state{};
   std::unordered_set<GoomDrawable> m_currentGoomDrawables{};
   void ChangeState();
   void PostStateUpdate(const std::unordered_set<GoomDrawable>& oldGoomDrawables);
