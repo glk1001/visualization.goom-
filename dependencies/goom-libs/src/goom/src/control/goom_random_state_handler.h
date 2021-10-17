@@ -1,11 +1,9 @@
 #pragma once
 
 #include "goom_graphic.h"
+#include "goom_state_handler.h"
 #include "goom_states.h"
 #include "utils/goomrand.h"
-
-#include <string>
-#include <unordered_set>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -17,24 +15,21 @@ namespace GOOM::CONTROL
 {
 #endif
 
-class GoomRandomStates
+class GoomRandomStateHandler : public IGoomStateHandler
 {
 public:
-  using DrawablesState = std::unordered_set<GoomDrawables>;
+  GoomRandomStateHandler();
 
-  GoomRandomStates();
+  void ChangeToNextState() override;
 
-  [[nodiscard]] auto GetCurrentState() const -> GoomStates;
-  [[nodiscard]] auto GetCurrentDrawables() const -> GoomRandomStates::DrawablesState;
-
-  void DoRandomStateChange();
+  [[nodiscard]] auto GetCurrentState() const -> GoomStates override;
 
 private:
   static const UTILS::Weights<GoomStates> WEIGHTED_STATES;
   GoomStates m_currentState{};
 };
 
-inline auto GoomRandomStates::GetCurrentState() const -> GoomStates
+inline auto GoomRandomStateHandler::GetCurrentState() const -> GoomStates
 {
   return m_currentState;
 }

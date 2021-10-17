@@ -19,6 +19,7 @@
 #include "control/goom_image_buffers.h"
 #include "control/goom_message_displayer.h"
 #include "control/goom_music_settings_reactor.h"
+#include "control/goom_random_state_handler.h"
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
 #include "goom/logging_control.h"
@@ -49,11 +50,11 @@ namespace GOOM
 {
 
 using CONTROL::GoomAllVisualFx;
-using CONTROL::GoomDrawables;
 using CONTROL::GoomEvents;
 using CONTROL::GoomImageBuffers;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
+using CONTROL::GoomRandomStateHandler;
 using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToBuffer;
 using FILTERS::FilterSettingsService;
@@ -91,6 +92,7 @@ private:
   const SmallImageBitmaps m_smallBitmaps;
   GoomAllVisualFx m_visualFx;
   GoomEvents m_goomEvents{};
+  GoomRandomStateHandler m_stateHandler{};
 
   GoomMusicSettingsReactor m_musicSettingsReactor;
 
@@ -180,6 +182,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
                m_goomInfo,
                m_smallBitmaps,
                m_resourcesDirectory,
+               m_stateHandler,
                m_filterSettingsService.GetFilterBuffersService(),
                FilterSettingsService::GetFilterColorsService()},
     m_musicSettingsReactor{m_goomInfo, m_visualFx, m_goomEvents, m_filterSettingsService},
@@ -347,7 +350,7 @@ inline void GoomControl::GoomControlImpl::DisplayLinesIfInAGoom(const AudioSampl
   {
     return;
   }
-  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawables::LINES))
+  if (!m_visualFx.CanDisplayLines())
   {
     return;
   }

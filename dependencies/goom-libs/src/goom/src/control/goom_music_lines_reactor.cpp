@@ -188,7 +188,7 @@ void GoomMusicLinesReactor::StopRandomLineChangeMode()
 
   if ((0 == (m_updateNum % UPDATE_LINE_MODE_CYCLES)) &&
       m_goomEvents.Happens(GoomEvent::UPDATE_LINE_MODE) &&
-      m_visualFx.IsCurrentlyDrawable(GoomDrawables::SCOPE))
+      m_visualFx.IsScopeDrawable())
   {
     if (0 == m_lineMode)
     {

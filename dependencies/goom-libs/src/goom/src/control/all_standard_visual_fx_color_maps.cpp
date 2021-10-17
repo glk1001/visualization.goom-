@@ -1,6 +1,7 @@
+//TODO split out into color map file
+#include "all_standard_visual_fx.h"
 #include "color/random_colormaps.h"
 #include "goom/logging_control.h"
-#include "goom_all_visual_fx.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
 #include "utils/enumutils.h"
@@ -8,6 +9,7 @@
 #include "visual_fx/goom_dots_fx.h"
 #include "visual_fx/ifs_dancers_fx.h"
 #include "visual_fx/image_fx.h"
+#include "visual_fx/lines_fx.h"
 #include "visual_fx/tentacles_fx.h"
 #include "visual_fx/tube_fx.h"
 
@@ -81,7 +83,7 @@ using ColorMatchedMap = std::array<ColorMapFunc, NUM<GoomEffect>>;
 
 } // namespace
 
-void GoomAllVisualFx::ChangeColorMaps()
+void AllStandardVisualFx::ChangeColorMaps()
 {
   const ColorMatchedMap& colorMatchedMap = GetNextColorMatchedMap();
 
@@ -95,9 +97,6 @@ void GoomAllVisualFx::ChangeColorMaps()
 
   m_image_fx->SetWeightedColorMaps(GetColorMap(colorMatchedMap, GoomEffect::IMAGE));
 
-  m_goomLine1->SetWeightedColorMaps(GetColorMap(colorMatchedMap, GoomEffect::LINES1));
-  m_goomLine2->SetWeightedColorMaps(GetColorMap(colorMatchedMap, GoomEffect::LINES2));
-
   m_star_fx->SetWeightedColorMaps(GetColorMap(colorMatchedMap, GoomEffect::STARS));
   m_star_fx->SetWeightedLowColorMaps(GetColorMap(colorMatchedMap, GoomEffect::STARS_LOW));
 
@@ -105,6 +104,15 @@ void GoomAllVisualFx::ChangeColorMaps()
 
   m_tube_fx->SetWeightedColorMaps(GetColorMap(colorMatchedMap, GoomEffect::TUBE));
   m_tube_fx->SetWeightedLowColorMaps(GetColorMap(colorMatchedMap, GoomEffect::TUBE_LOW));
+}
+
+void AllStandardVisualFx::ChangeLineColorMaps(VISUAL_FX::LinesFx& goomLine1,
+                                              VISUAL_FX::LinesFx& goomLine2)
+{
+  const ColorMatchedMap& colorMatchedMap = GetNextColorMatchedMap();
+
+  goomLine1.SetWeightedColorMaps(GetColorMap(colorMatchedMap, GoomEffect::LINES1));
+  goomLine2.SetWeightedColorMaps(GetColorMap(colorMatchedMap, GoomEffect::LINES2));
 }
 
 namespace

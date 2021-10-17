@@ -18,23 +18,16 @@ add_library(goom
         src/color/colorutils.cpp
         src/color/random_colormaps.cpp
         src/color/random_colormaps_manager.cpp
-        src/utils/goomrand.cpp
-        src/utils/graphics/image_bitmaps.cpp
-        src/utils/graphics/small_image_bitmaps.cpp
-        src/utils/logging.cpp
-        src/utils/mathutils.cpp
-        src/utils/name_value_pairs.h
-        src/utils/strutils.cpp
-        src/utils/t_values.cpp
-        src/utils/thread_pool.cpp
+        src/control/all_standard_visual_fx.cpp
+        src/control/all_standard_visual_fx_color_maps.cpp
         src/control/goom_all_visual_fx.cpp
-        src/control/goom_all_visual_fx_color_maps.cpp
         src/control/goom_events.cpp
         src/control/goom_image_buffers.cpp
         src/control/goom_message_displayer.cpp
         src/control/goom_music_lines_reactor.cpp
         src/control/goom_music_settings_reactor.cpp
-        src/control/goom_random_states.cpp
+        src/control/goom_random_state_handler.cpp
+        src/control/goom_state_handler.cpp
         src/control/goom_states.cpp
         src/control/goom_title_displayer.cpp
         src/draw/draw_methods.cpp
@@ -46,6 +39,15 @@ add_library(goom
         src/goom_control.cpp
         src/goom_graphic.cpp
         src/sound_info.cpp
+        src/utils/goomrand.cpp
+        src/utils/graphics/image_bitmaps.cpp
+        src/utils/graphics/small_image_bitmaps.cpp
+        src/utils/logging.cpp
+        src/utils/mathutils.cpp
+        src/utils/name_value_pairs.h
+        src/utils/strutils.cpp
+        src/utils/t_values.cpp
+        src/utils/thread_pool.cpp
         src/visual_fx/filters/amulet.cpp
         src/visual_fx/filters/crystal_ball.cpp
         src/visual_fx/filters/filter_buffers.cpp
@@ -85,7 +87,7 @@ add_library(goom
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tube_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp
-        src/visual_fx/image_fx.h src/visual_fx/image_fx.cpp)
+        src/visual_fx/image_fx.h src/visual_fx/image_fx.cpp src/control/all_standard_visual_fx.h)
 
 target_include_directories(goom
     PUBLIC

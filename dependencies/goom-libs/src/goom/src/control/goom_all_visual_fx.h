@@ -1,7 +1,9 @@
 #pragma once
 
-#include "goom_random_states.h"
+#include "goom_random_state_handler.h"
+#include "goom_state_handler.h"
 #include "goom_states.h"
+#include "goom/spimpl.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
 
@@ -34,20 +36,9 @@ class FilterColorsService;
 struct ZoomFilterSettings;
 } // namespace FILTERS
 
-namespace VISUAL_FX
-{
-class IVisualFx;
-class FlyingStarsFx;
-class GoomDotsFx;
-class IfsDancersFx;
-class ImageFx;
-class TentaclesFx;
-class TubeFx;
-class ZoomFilterFx;
-} // namespace VISUAL_FX
-
 namespace CONTROL
 {
+class AllStandardVisualFx;
 
 class GoomAllVisualFx
 {
@@ -58,6 +49,7 @@ public:
                   const PluginInfo& goomInfo,
                   const UTILS::SmallImageBitmaps& smallBitmaps,
                   const std::string& resourcesDirectory,
+                  IGoomStateHandler& goomStateHandler,
                   std::unique_ptr<FILTERS::FilterBuffersService> filterBuffersService,
                   std::unique_ptr<FILTERS::FilterColorsService> filterColorsService) noexcept;
 
@@ -66,14 +58,14 @@ public:
 
   void SetNextState();
   [[nodiscard]] auto GetCurrentStateName() const -> std::string;
-  [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;
 
   void SetSingleBufferDots(bool value);
+
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
-  void SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& f);
+  void SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func);
 
   void ChangeColorMaps();
-  void RefreshAll();
+  void RefreshAllFx();
 
   void ApplyCurrentStateToSingleBuffer();
   void ApplyCurrentStateToMultipleBuffers();
@@ -83,6 +75,9 @@ public:
                             bool updateFilterEffects);
   void ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
+  [[nodiscard]] auto CanDisplayLines() const -> bool;
+  [[nodiscard]] auto IsScopeDrawable() const -> bool;
+  [[nodiscard]] auto IsFarScopeDrawable() const -> bool;
   void DisplayGoomLines(const AudioSamples& soundData);
   [[nodiscard]] auto CanResetDestGoomLines() const -> bool;
   struct GoomLineSettings
@@ -109,45 +104,23 @@ public:
   [[nodiscard]] auto GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs;
 
 private:
-  const std::shared_ptr<VISUAL_FX::ZoomFilterFx> m_zoomFilter_fx;
-  const std::shared_ptr<VISUAL_FX::FlyingStarsFx> m_star_fx;
-  const std::shared_ptr<VISUAL_FX::GoomDotsFx> m_goomDots_fx;
-  const std::shared_ptr<VISUAL_FX::IfsDancersFx> m_ifs_fx;
-  const std::shared_ptr<VISUAL_FX::ImageFx> m_image_fx;
-  const std::shared_ptr<VISUAL_FX::TentaclesFx> m_tentacles_fx;
-  const std::shared_ptr<VISUAL_FX::TubeFx> m_tube_fx;
-  const std::shared_ptr<VISUAL_FX::LinesFx> m_goomLine1;
-  const std::shared_ptr<VISUAL_FX::LinesFx> m_goomLine2;
+  spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
+  //TODO make unique
+  const std::unique_ptr<VISUAL_FX::ZoomFilterFx> m_zoomFilter_fx;
+  const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine1;
+  const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine2;
 
-  const std::vector<std::shared_ptr<VISUAL_FX::IVisualFx>> m_list;
-  const std::map<GoomDrawables, std::shared_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
-
-  GoomRandomStates m_state{};
-  std::unordered_set<GoomDrawables> m_currentGoomDrawables{};
+  IGoomStateHandler& m_goomStateHandler;
   void ChangeState();
   void PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables);
   [[nodiscard]] auto GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawables>;
-  [[nodiscard]] auto CanDraw(GoomDrawables goomDrawable) const -> bool;
-  [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
-
-  bool m_singleBufferDots = true;
-  static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
-  static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
-
-  void SuspendFx();
-  void ResumeFx();
-  void SetZoomMidPoint(const V2dInt& zoomMidPoint);
-
-  void ApplyDotsIfRequired();
-  void ApplyDotsToBothBuffersIfRequired();
-  void ApplyIfsToBothBuffersIfRequired();
-  void ApplyImageToBothBuffersIfRequired();
-  void ApplyTentaclesToBothBuffersIfRequired();
-  void ApplyStarsToBothBuffersIfRequired();
-  void ApplyTubeToBothBuffersIfRequired();
 
   ResetDrawBuffSettingsFunc m_resetDrawBuffSettings{};
-  void ResetDrawBuffSettings(const FXBuffSettings& settings);
+  void ResetCurrentDrawBuffSettings(GoomDrawables fx);
+  [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
+
+  static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
+  static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
 };
 
 inline void GoomAllVisualFx::SetNextState()
@@ -156,6 +129,11 @@ inline void GoomAllVisualFx::SetNextState()
   ChangeState();
   ChangeColorMaps();
   PostStateUpdate(oldGDrawables);
+}
+
+inline void GoomAllVisualFx::SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func)
+{
+  m_resetDrawBuffSettings = func;
 }
 
 inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
@@ -169,54 +147,9 @@ inline void GoomAllVisualFx::SetZoomFilterAllowOverexposed(const bool allowOvere
                                     /*.allowOverexposed = */ allowOverexposed});
 }
 
-inline void GoomAllVisualFx::SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& f)
-{
-  m_resetDrawBuffSettings = f;
-}
-
 inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string
 {
-  return GoomStateInfo::GetStateInfo(m_state.GetCurrentState()).name;
-}
-
-inline auto GoomAllVisualFx::GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawables>
-{
-  return m_currentGoomDrawables;
-}
-
-inline auto GoomAllVisualFx::CanDraw(const GoomDrawables goomDrawable) const -> bool
-{
-  return m_drawablesMap.find(goomDrawable) != m_drawablesMap.end();
-}
-
-inline auto GoomAllVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawable) const -> bool
-{
-#if __cplusplus <= 201703L
-  return m_currentGoomDrawables.find(goomDrawable) != m_currentGoomDrawables.end();
-#else
-  return m_currentGoomDrawables.contains(goomDrawable);
-#endif
-}
-
-inline void GoomAllVisualFx::SetSingleBufferDots(const bool value)
-{
-  m_singleBufferDots = value;
-}
-
-inline void GoomAllVisualFx::ApplyCurrentStateToSingleBuffer()
-{
-  // applyIfsIfRequired();
-  ApplyDotsIfRequired();
-}
-
-inline void GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers()
-{
-  ApplyDotsToBothBuffersIfRequired();
-  ApplyIfsToBothBuffersIfRequired();
-  ApplyImageToBothBuffersIfRequired();
-  ApplyTentaclesToBothBuffersIfRequired();
-  ApplyStarsToBothBuffersIfRequired();
-  ApplyTubeToBothBuffersIfRequired();
+  return GoomStateInfo::GetStateInfo(m_goomStateHandler.GetCurrentState()).name;
 }
 
 inline auto GoomAllVisualFx::CanResetDestGoomLines() const -> bool

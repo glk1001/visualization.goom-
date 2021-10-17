@@ -107,12 +107,12 @@ inline void GoomMusicLinesReactor::ChangeGoomLines()
 
 inline void GoomMusicLinesReactor::ResetLineModes()
 {
-  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawables::SCOPE))
+  if (!m_visualFx.IsScopeDrawable())
   {
     constexpr int32_t SCOPE_RESET = 0xF000 & 5;
     m_stopLines = SCOPE_RESET;
   }
-  if (!m_visualFx.IsCurrentlyDrawable(GoomDrawables::FAR_SCOPE))
+  if (!m_visualFx.IsFarScopeDrawable())
   {
     m_stopLines = 0;
     m_lineMode = m_drawLinesDuration;
@@ -122,8 +122,7 @@ inline void GoomMusicLinesReactor::ResetLineModes()
 inline void GoomMusicLinesReactor::StopLinesIfRequested()
 {
   constexpr int32_t LARGE_STOP_LINE = 0xF000;
-  if (((m_stopLines & LARGE_STOP_LINE) != 0) ||
-      (!m_visualFx.IsCurrentlyDrawable(GoomDrawables::SCOPE)))
+  if (((m_stopLines & LARGE_STOP_LINE) != 0) || (!m_visualFx.IsScopeDrawable()))
   {
     StopGoomLines();
   }

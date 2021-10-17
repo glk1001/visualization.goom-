@@ -1,4 +1,4 @@
-#include "goom_random_states.h"
+#include "goom_random_state_handler.h"
 
 #include "utils/enumutils.h"
 
@@ -18,7 +18,7 @@ namespace GOOM::CONTROL
 using UTILS::NUM;
 using UTILS::Weights;
 
-const Weights<GoomStates> GoomRandomStates::WEIGHTED_STATES{{
+const Weights<GoomStates> GoomRandomStateHandler::WEIGHTED_STATES{{
     {GoomStates::DOTS_IFS, 200},
     {GoomStates::DOTS_IFS_STARS, 100},
     {GoomStates::DOTS_IMAGE_STARS, 50},
@@ -58,24 +58,14 @@ const Weights<GoomStates> GoomRandomStates::WEIGHTED_STATES{{
     {GoomStates::TUBES_ONLY, 1},
 }};
 
-GoomRandomStates::GoomRandomStates()
+GoomRandomStateHandler::GoomRandomStateHandler()
 {
  assert(WEIGHTED_STATES.GetNumElements() == NUM<GoomStates>);
 }
 
-void GoomRandomStates::DoRandomStateChange()
+void GoomRandomStateHandler::ChangeToNextState()
 {
   m_currentState = WEIGHTED_STATES.GetRandomWeighted();
-}
-
-auto GoomRandomStates::GetCurrentDrawables() const -> GoomRandomStates::DrawablesState
-{
-  GoomRandomStates::DrawablesState currentDrawables{};
-  for (const auto drawableInfo : GoomStateInfo::GetStateInfo(m_currentState).drawablesInfo)
-  {
-    currentDrawables.insert(drawableInfo.fx);
-  }
-  return currentDrawables;
 }
 
 #if __cplusplus <= 201402L

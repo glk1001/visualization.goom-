@@ -177,7 +177,7 @@ inline void GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges()
 inline void GoomMusicSettingsReactor::ChangeFilterMode()
 {
   m_filterSettingsService.SetRandomFilterSettings();
-  m_visualFx.RefreshAll();
+  m_visualFx.RefreshAllFx();
 }
 
 inline void GoomMusicSettingsReactor::ChangeMilieu()
