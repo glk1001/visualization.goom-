@@ -216,7 +216,7 @@ void GoomControl::GoomControlImpl::Start()
 
   m_visualFx.SetResetDrawBuffSettingsFunc(
       [this](const FXBuffSettings& settings) { ResetDrawBuffSettings(settings); });
-  m_visualFx.ChangeColorMaps();
+  m_visualFx.ChangeAllFxColorMaps();
   m_visualFx.Start();
 
   m_musicSettingsReactor.Start();

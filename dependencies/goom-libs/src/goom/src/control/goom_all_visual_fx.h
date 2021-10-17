@@ -1,11 +1,11 @@
 #pragma once
 
-#include "goom_random_state_handler.h"
+#include "goom/spimpl.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
-#include "goom/spimpl.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
+#include "visual_fx_color_maps.h"
 
 #include <functional>
 #include <map>
@@ -64,7 +64,7 @@ public:
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
   void SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func);
 
-  void ChangeColorMaps();
+  void ChangeAllFxColorMaps();
   void RefreshAllFx();
 
   void ApplyCurrentStateToSingleBuffer();
@@ -105,7 +105,6 @@ public:
 
 private:
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
-  //TODO make unique
   const std::unique_ptr<VISUAL_FX::ZoomFilterFx> m_zoomFilter_fx;
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine1;
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine2;
@@ -113,27 +112,39 @@ private:
   IGoomStateHandler& m_goomStateHandler;
   void ChangeState();
   void PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables);
-  [[nodiscard]] auto GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawables>;
+  std::unordered_set<GoomDrawables> m_currentGoomDrawables{};
+  [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;
 
   ResetDrawBuffSettingsFunc m_resetDrawBuffSettings{};
   void ResetCurrentDrawBuffSettings(GoomDrawables fx);
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
 
+  VisualFxColorMaps m_visualFxColorMaps{};
+
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
+  void ChangeLineColorMaps();
 };
 
 inline void GoomAllVisualFx::SetNextState()
 {
-  const auto oldGDrawables = GetCurrentGoomDrawables();
   ChangeState();
-  ChangeColorMaps();
-  PostStateUpdate(oldGDrawables);
+  ChangeAllFxColorMaps();
+  PostStateUpdate(m_currentGoomDrawables);
 }
 
 inline void GoomAllVisualFx::SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func)
 {
   m_resetDrawBuffSettings = func;
+}
+
+inline auto GoomAllVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawable) const -> bool
+{
+#if __cplusplus <= 201703L
+  return m_currentGoomDrawables.find(goomDrawable) != m_currentGoomDrawables.end();
+#else
+  return m_currentGoomDrawables.contains(goomDrawable);
+#endif
 }
 
 inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
@@ -150,6 +161,21 @@ inline void GoomAllVisualFx::SetZoomFilterAllowOverexposed(const bool allowOvere
 inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string
 {
   return GoomStateInfo::GetStateInfo(m_goomStateHandler.GetCurrentState()).name;
+}
+
+inline auto GoomAllVisualFx::CanDisplayLines() const -> bool
+{
+  return IsCurrentlyDrawable(GoomDrawables::LINES);
+}
+
+inline auto GoomAllVisualFx::IsScopeDrawable() const -> bool
+{
+  return IsCurrentlyDrawable(GoomDrawables::SCOPE);
+}
+
+inline auto GoomAllVisualFx::IsFarScopeDrawable() const -> bool
+{
+  return IsCurrentlyDrawable(GoomDrawables::FAR_SCOPE);
 }
 
 inline auto GoomAllVisualFx::CanResetDestGoomLines() const -> bool

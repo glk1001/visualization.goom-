@@ -2,6 +2,7 @@
 
 #include "goom_states.h"
 #include "v2d.h"
+#include "visual_fx_color_maps.h"
 
 #include <functional>
 #include <map>
@@ -52,10 +53,8 @@ public:
 
   [[nodiscard]] auto GetCurrentGoomDrawables() const -> const GoomDrawablesSet&;
   void SetCurrentGoomDrawables(const GoomDrawablesSet& goomDrawablesSet);
-  [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;
 
   void ChangeColorMaps();
-  void ChangeLineColorMaps(VISUAL_FX::LinesFx& goomLine1, VISUAL_FX::LinesFx& goomLine2);
 
   using ResetCurrentDrawBuffSettingsFunc = std::function<void(GoomDrawables fx)>;
   void SetResetDrawBuffSettingsFunc(const ResetCurrentDrawBuffSettingsFunc& func);
@@ -86,8 +85,10 @@ private:
 
   const std::vector<std::shared_ptr<VISUAL_FX::IVisualFx>> m_list;
   const std::map<GoomDrawables, std::shared_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
+  VisualFxColorMaps m_visualFxColorMaps{};
 
   GoomDrawablesSet m_currentGoomDrawables{};
+  [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;
   ResetCurrentDrawBuffSettingsFunc m_resetCurrentDrawBuffSettingsFunc{};
   void ResetDrawBuffSettings(GoomDrawables fx);
 
@@ -115,15 +116,6 @@ inline void AllStandardVisualFx::SetCurrentGoomDrawables(const GoomDrawablesSet&
 inline auto AllStandardVisualFx::CanDraw(const GoomDrawables goomDrawable) const -> bool
 {
   return m_drawablesMap.find(goomDrawable) != m_drawablesMap.end();
-}
-
-inline auto AllStandardVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawable) const -> bool
-{
-#if __cplusplus <= 201703L
-  return m_currentGoomDrawables.find(goomDrawable) != m_currentGoomDrawables.end();
-#else
-  return m_currentGoomDrawables.contains(goomDrawable);
-#endif
 }
 
 inline void AllStandardVisualFx::SetResetDrawBuffSettingsFunc(

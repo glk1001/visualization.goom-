@@ -226,9 +226,9 @@ auto IfsDancersFx::GetColorMode() const -> IfsDancersFx::ColorMode
   return m_fxImpl->GetColorMode();
 }
 
-void IfsDancersFx::SetColorMode(const ColorMode c)
+void IfsDancersFx::SetColorMode(const ColorMode colorMode)
 {
-  m_fxImpl->SetColorMode(c);
+  m_fxImpl->SetColorMode(colorMode);
 }
 
 void IfsDancersFx::Refresh()

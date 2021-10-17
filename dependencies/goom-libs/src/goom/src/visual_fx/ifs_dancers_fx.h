@@ -56,7 +56,7 @@ public:
   // If colorMode is not set or set to '_null', then returns
   // random weighted color mode.
   [[nodiscard]] auto GetColorMode() const -> ColorMode;
-  void SetColorMode(ColorMode c);
+  void SetColorMode(ColorMode colorMode);
 
   void Start() override;
 

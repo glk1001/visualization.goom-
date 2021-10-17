@@ -19,7 +19,6 @@ add_library(goom
         src/color/random_colormaps.cpp
         src/color/random_colormaps_manager.cpp
         src/control/all_standard_visual_fx.cpp
-        src/control/all_standard_visual_fx_color_maps.cpp
         src/control/goom_all_visual_fx.cpp
         src/control/goom_events.cpp
         src/control/goom_image_buffers.cpp
@@ -30,6 +29,7 @@ add_library(goom
         src/control/goom_state_handler.cpp
         src/control/goom_states.cpp
         src/control/goom_title_displayer.cpp
+        src/control/visual_fx_color_maps.cpp
         src/draw/draw_methods.cpp
         src/draw/goom_draw.cpp
         src/draw/goom_draw_to_buffer.cpp

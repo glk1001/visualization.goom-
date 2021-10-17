@@ -3,11 +3,10 @@
 #include "all_standard_visual_fx.h"
 #include "goom_plugin_info.h"
 #include "sound_info.h"
-#include "utils/graphics/small_image_bitmaps.h"
 #include "utils/name_value_pairs.h"
-#include "utils/parallel_utils.h"
 #include "visual_fx/filters/filter_buffers_service.h"
 #include "visual_fx/filters/filter_colors_service.h"
+#include "visual_fx_color_maps.h"
 
 #include <memory>
 
@@ -68,9 +67,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                           INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
                                               static_cast<float>(goomInfo.GetScreenInfo().height),
                                           RED_LINE)},
-    // clang-format off
     m_goomStateHandler{goomStateHandler}
-// clang-format on
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc(
       [&](const GoomDrawables fx) { ResetCurrentDrawBuffSettings(fx); });
@@ -113,34 +110,15 @@ void GoomAllVisualFx::ChangeState()
     }
   }
 
-  m_allStandardVisualFx->SetCurrentGoomDrawables(m_goomStateHandler.GetCurrentDrawables());
+  m_currentGoomDrawables = m_goomStateHandler.GetCurrentDrawables();
+  m_allStandardVisualFx->SetCurrentGoomDrawables(m_currentGoomDrawables);
 
   m_allStandardVisualFx->ResumeFx();
-}
-
-auto GoomAllVisualFx::GetCurrentGoomDrawables() const -> std::unordered_set<GoomDrawables>
-{
-  return m_allStandardVisualFx->GetCurrentGoomDrawables();
 }
 
 void GoomAllVisualFx::SetSingleBufferDots(const bool value)
 {
   m_allStandardVisualFx->SetSingleBufferDots(value);
-}
-
-auto GoomAllVisualFx::CanDisplayLines() const -> bool
-{
-  return m_allStandardVisualFx->IsCurrentlyDrawable(GoomDrawables::LINES);
-}
-
-auto GoomAllVisualFx::IsScopeDrawable() const -> bool
-{
-  return m_allStandardVisualFx->IsCurrentlyDrawable(GoomDrawables::SCOPE);
-}
-
-auto GoomAllVisualFx::IsFarScopeDrawable() const -> bool
-{
-  return m_allStandardVisualFx->IsCurrentlyDrawable(GoomDrawables::FAR_SCOPE);
 }
 
 void GoomAllVisualFx::PostStateUpdate(
@@ -164,10 +142,10 @@ inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) cons
   return GoomStateInfo::GetBuffSettings(m_goomStateHandler.GetCurrentState(), fx);
 }
 
-void GoomAllVisualFx::ChangeColorMaps()
+void GoomAllVisualFx::ChangeAllFxColorMaps()
 {
   m_allStandardVisualFx->ChangeColorMaps();
-  m_allStandardVisualFx->ChangeLineColorMaps(*m_goomLine1, *m_goomLine2);
+  ChangeLineColorMaps();
 }
 
 void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings,
@@ -202,6 +180,14 @@ void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
 
   m_goomLine1->DrawLines(soundData.GetSample(0), soundData.GetSampleMinMax(0));
   m_goomLine2->DrawLines(soundData.GetSample(1), soundData.GetSampleMinMax(1));
+}
+
+void GoomAllVisualFx::ChangeLineColorMaps()
+{
+  m_visualFxColorMaps.SetNextColorMapSet();
+
+  m_goomLine1->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::LINES1));
+  m_goomLine2->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::LINES2));
 }
 
 auto GoomAllVisualFx::GetZoomFilterFxNameValueParams() const -> NameValuePairs

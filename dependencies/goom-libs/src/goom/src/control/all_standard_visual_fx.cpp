@@ -10,6 +10,7 @@
 #include "visual_fx/image_fx.h"
 #include "visual_fx/tentacles_fx.h"
 #include "visual_fx/tube_fx.h"
+#include "visual_fx_color_maps.h"
 
 #include <memory>
 
@@ -54,6 +55,15 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
         {GoomDrawables::TENTACLES, m_tentacles_fx}, {GoomDrawables::TUBE, m_tube_fx},
     }
 {
+}
+
+inline auto AllStandardVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawable) const -> bool
+{
+#if __cplusplus <= 201703L
+  return m_currentGoomDrawables.find(goomDrawable) != m_currentGoomDrawables.end();
+#else
+  return m_currentGoomDrawables.contains(goomDrawable);
+#endif
 }
 
 void AllStandardVisualFx::Start()
@@ -220,6 +230,29 @@ void AllStandardVisualFx::ApplyStarsToBothBuffersIfRequired()
 
   ResetDrawBuffSettings(GoomDrawables::STARS);
   m_star_fx->ApplyMultiple();
+}
+
+void AllStandardVisualFx::ChangeColorMaps()
+{
+  m_visualFxColorMaps.SetNextColorMapSet();
+
+  m_goomDots_fx->SetWeightedColorMaps(0, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS0));
+  m_goomDots_fx->SetWeightedColorMaps(1, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS1));
+  m_goomDots_fx->SetWeightedColorMaps(2, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS2));
+  m_goomDots_fx->SetWeightedColorMaps(3, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS3));
+  m_goomDots_fx->SetWeightedColorMaps(4, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS4));
+
+  m_ifs_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::IFS));
+
+  m_image_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::IMAGE));
+
+  m_star_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS));
+  m_star_fx->SetWeightedLowColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS_LOW));
+
+  m_tentacles_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TENTACLES));
+
+  m_tube_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TUBE));
+  m_tube_fx->SetWeightedLowColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TUBE_LOW));
 }
 
 #if __cplusplus <= 201402L

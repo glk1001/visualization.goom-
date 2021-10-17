@@ -161,7 +161,7 @@ inline void GoomMusicSettingsReactor::BigBreak()
   constexpr int32_t SLOWER_BY = 3;
   m_filterSettingsService.GetRWVitesse().GoSlowerBy(SLOWER_BY);
 
-  m_visualFx.ChangeColorMaps();
+  m_visualFx.ChangeAllFxColorMaps();
 }
 
 inline void GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges()
