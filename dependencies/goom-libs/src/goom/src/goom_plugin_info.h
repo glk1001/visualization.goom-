@@ -21,7 +21,7 @@ public:
 
   PluginInfo() noexcept = delete;
   PluginInfo(uint32_t width, uint32_t height) noexcept;
-  PluginInfo(const PluginInfo& p) noexcept = default;
+  PluginInfo(const PluginInfo& p) noexcept = delete;
   PluginInfo(PluginInfo&&) noexcept = delete;
   virtual ~PluginInfo() noexcept = default;
   auto operator=(const PluginInfo&) -> PluginInfo& = delete;
