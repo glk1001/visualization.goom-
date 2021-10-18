@@ -80,20 +80,6 @@ TEST_CASE("Colors are brightened", "[color-bright]")
   REQUIRE(cb.B() == 0);
 }
 
-TEST_CASE("Half intensity color", "[color-half-intensity]")
-{
-#if __cplusplus <= 201703L
-  const Pixel c{{100, 50, 20}};
-#else
-  const Pixel c{{.r = 100, .g = 50, .b = 20}};
-#endif
-  const Pixel ch = GetHalfIntensityColor(c);
-
-  REQUIRE(ch.R() == 50);
-  REQUIRE(ch.G() == 25);
-  REQUIRE(ch.B() == 10);
-}
-
 TEST_CASE("Lighten", "[color-lighten]")
 {
 #if __cplusplus <= 201703L

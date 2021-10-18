@@ -11,10 +11,16 @@
 #include <vector>
 
 using GOOM::channel_limits;
+using GOOM::GetPixelScaledByMax;
+using GOOM::MAX_ALPHA;
+using GOOM::MAX_COLOR_VAL;
+using GOOM::MultiplyChannelColorByScalar;
+using GOOM::MultiplyColorChannels;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::PixelChannelType;
-using GOOM::V2dInt;
+using GOOM::PixelIntType;
+using GOOM::ScaleChannelColorAfterIntegerMultiply;
 using GOOM::UTILS::floats_equal;
 using namespace std::chrono_literals;
 using std::chrono::high_resolution_clock;
@@ -26,7 +32,7 @@ constexpr PixelChannelType TEST_R = 200;
 constexpr PixelChannelType TEST_G = 100;
 constexpr PixelChannelType TEST_B = 50;
 
-TEST_CASE("Pixels", "[Pixels]")
+TEST_CASE("Pixels")
 {
   SECTION("Pixel RGB")
   {
@@ -35,6 +41,30 @@ TEST_CASE("Pixels", "[Pixels]")
     REQUIRE(floats_equal(static_cast<float>(TEST_G) / channel_limits<float>::max(), pixel.GFlt()));
     REQUIRE(floats_equal(static_cast<float>(TEST_B) / channel_limits<float>::max(), pixel.BFlt()));
   }
+  SECTION("Pixel uint32_t RGB")
+  {
+    constexpr uint32_t RED = 299;
+    constexpr uint32_t GREEN = 200;
+    constexpr uint32_t BLUE = 399;
+    constexpr uint32_t ALPHA = 256;
+    const Pixel pixel{RED, GREEN, BLUE, ALPHA};
+    REQUIRE(pixel.R() == MAX_COLOR_VAL);
+    REQUIRE(pixel.G() == GREEN);
+    REQUIRE(pixel.B() == MAX_COLOR_VAL);
+    REQUIRE(pixel.A() == 255);
+  }
+  SECTION("Pixel Set")
+  {
+    Pixel pixel{{TEST_R, TEST_G, TEST_B}};
+    pixel.SetA(1);
+    REQUIRE(1 == pixel.A());
+    pixel.SetR(10);
+    REQUIRE(10 == pixel.R());
+    pixel.SetG(20);
+    REQUIRE(20 == pixel.G());
+    pixel.SetB(30);
+    REQUIRE(30 == pixel.B());
+  }
   SECTION("Pixel ==")
   {
     const Pixel pixel1{{TEST_R, TEST_G, TEST_B}};
@@ -42,6 +72,48 @@ TEST_CASE("Pixels", "[Pixels]")
     const Pixel pixel3{{TEST_R + 1, TEST_G, TEST_B}};
     REQUIRE(pixel1 == pixel2);
     REQUIRE(!(pixel1 == pixel3));
+    const Pixel pixelBlack{{0, 0, 0, 0}};
+    REQUIRE(pixelBlack == Pixel::BLACK);
+    const Pixel pixelWhite{{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA}};
+    REQUIRE(pixelWhite == Pixel::WHITE);
+  }
+  SECTION("Pixel Scale")
+  {
+    const Pixel pixel{{TEST_R, TEST_G, TEST_B}};
+    const uint32_t rChannel = pixel.R();
+    const uint32_t gChannel = pixel.G();
+    const uint32_t rgProduct = rChannel * gChannel;
+    REQUIRE(ScaleChannelColorAfterIntegerMultiply(rgProduct) == rgProduct / MAX_COLOR_VAL);
+  }
+  SECTION("Pixel Multiply Scalar")
+  {
+    const Pixel pixel{{TEST_R, TEST_G, TEST_B}};
+    const uint32_t rChannel = pixel.R();
+    constexpr uint32_t SCALAR = 32;
+    REQUIRE(MultiplyChannelColorByScalar(SCALAR, pixel.R()) ==
+            ((SCALAR + 1) * rChannel) / MAX_COLOR_VAL);
+  }
+  SECTION("Pixel Multiply Channels")
+  {
+    const Pixel pixel{{TEST_R, TEST_G, TEST_B}};
+    const uint32_t rChannel = pixel.R();
+    const uint32_t gChannel = pixel.G();
+    const uint32_t rgProduct = rChannel * gChannel;
+    REQUIRE(MultiplyColorChannels(pixel.R(), pixel.G()) == rgProduct / MAX_COLOR_VAL);
+  }
+  SECTION("Pixel Scaled by Max")
+  {
+    constexpr uint32_t RED = 100;
+    constexpr uint32_t GREEN = 300;
+    constexpr uint32_t BLUE = 200;
+    constexpr uint32_t ALPHA = 100;
+    constexpr uint32_t MAX_CHANNEL = GREEN;
+    const Pixel scaledByMaxPixel = GetPixelScaledByMax(RED, GREEN, BLUE, ALPHA);
+    const Pixel expectedPixel{{(MAX_COLOR_VAL * RED) / MAX_CHANNEL, MAX_COLOR_VAL,
+                               (MAX_COLOR_VAL * BLUE) / MAX_CHANNEL, ALPHA}};
+    UNSCOPED_INFO("scaledByMaxPixel " << scaledByMaxPixel.ToString());
+    UNSCOPED_INFO("expectedPixel " << expectedPixel.ToString());
+    REQUIRE(scaledByMaxPixel == expectedPixel);
   }
 }
 
@@ -61,7 +133,7 @@ auto GetPixelCount(const PixelBuffer& buffer, const Pixel& pixel) -> uint32_t
   return count;
 }
 
-TEST_CASE("PixelBuffers", "[PixelBuffers]")
+TEST_CASE("PixelBuffers")
 {
   SECTION("PixelBuffer copy")
   {
@@ -78,15 +150,15 @@ TEST_CASE("PixelBuffers", "[PixelBuffers]")
     constexpr size_t NUM_LOOPS = 100;
     const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
 
-    auto intSrceBuff = std::make_unique<std::vector<uint32_t>>(WIDTH * HEIGHT);
-    const uint32_t intTestPixel = testPixel.Rgba();
+    auto intSrceBuff = std::make_unique<std::vector<PixelIntType>>(WIDTH * HEIGHT);
+    const PixelIntType intTestPixel = testPixel.Rgba();
     std::fill(intSrceBuff->begin(), intSrceBuff->end(), intTestPixel);
-    auto intDestBuff = std::make_unique<std::vector<uint32_t>>(WIDTH * HEIGHT);
+    auto intDestBuff = std::make_unique<std::vector<PixelIntType>>(WIDTH * HEIGHT);
 
     auto startTime = high_resolution_clock::now();
     for (size_t i = 0; i < NUM_LOOPS; ++i)
     {
-      std::memmove(intDestBuff->data(), intSrceBuff->data(), WIDTH * HEIGHT * sizeof(uint32_t));
+      std::memmove(intDestBuff->data(), intSrceBuff->data(), WIDTH * HEIGHT * sizeof(PixelIntType));
     }
     auto finishTime = high_resolution_clock::now();
     const auto durationMemmove = std::chrono::duration_cast<microseconds>(finishTime - startTime);

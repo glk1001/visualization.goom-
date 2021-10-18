@@ -5,7 +5,6 @@
 #include "../utils/mathutils.h"
 #endif
 
-#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <vivid/vivid.h>
@@ -21,12 +20,6 @@ namespace GOOM::COLOR
 #endif
 
 static_assert(sizeof(Pixel) == sizeof(PixelIntType), "Invalid Pixel size.");
-
-auto GetIntColor(const PixelChannelType r, const PixelChannelType g, const PixelChannelType b)
-    -> Pixel
-{
-  return Pixel{{/*.r = */ r, /*.g = */ g, /*.b = */ b, /*.a = */ 0xff}};
-}
 
 auto GammaCorrection::GetCorrection(const float brightness, const Pixel& color) const -> Pixel
 {
@@ -46,31 +39,20 @@ auto GammaCorrection::GetCorrection(const float brightness, const Pixel& color) 
 
   if (!m_allowOverexposure)
   {
-    const uint32_t maxVal = std::max({newR, newG, newB});
-    if (maxVal > channel_limits<uint32_t>::max())
-    {
-      // scale all channels back
-      newR = (newR << 8) / maxVal;
-      newG = (newG << 8) / maxVal;
-      newB = (newB << 8) / maxVal;
-    }
+    return GetPixelScaledByMax(newR, newG, newB, newA);
   }
 
-  return Pixel{{
-      /*.r = */ static_cast<PixelChannelType>((newR & 0xffffff00U) ? 0xffU : newR),
-      /*.g = */ static_cast<PixelChannelType>((newG & 0xffffff00U) ? 0xffU : newG),
-      /*.b = */ static_cast<PixelChannelType>((newB & 0xffffff00U) ? 0xffU : newB),
-      /*.a = */ static_cast<PixelChannelType>((newA & 0xffffff00U) ? 0xffU : newA),
-  }};
+  return Pixel{newR, newG, newB, newA};
 }
 
 auto GetAlteredChroma(const float lchYFactor, const Pixel& color) -> Pixel
 {
-  const auto srgb = static_cast<vivid::srgb_t>(vivid::rgb::fromRgb32(color.Rgba()));
-  vivid::lch_t lch = vivid::lch::fromSrgb(srgb);
+  const vivid::col8_t rgb8 = {color.R(), color.G(), color.B()};
+  vivid::lch_t lch = vivid::lch::fromSrgb(vivid::rgb::fromRgb8(rgb8));
   constexpr float MAX_LCH_Y = 140.0F;
   lch.y = std::min(lch.y * lchYFactor, MAX_LCH_Y);
-  return Pixel{vivid::rgb32::fromRgb(vivid::srgb::fromLch(lch))};
+  const vivid::col8_t newRgb8 = vivid::rgb8::fromRgb(vivid::srgb::fromLch(lch));
+  return Pixel{{newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}};
 }
 
 inline auto Lighten(const PixelChannelType value, const float power) -> PixelChannelType
@@ -102,30 +84,51 @@ inline auto EvolvedColor(const Pixel& src,
                          const uint32_t mask,
                          const uint32_t incr) -> Pixel
 {
-  const auto color = static_cast<int32_t>(src.Rgba() & (~mask));
-  uint32_t iSrc = src.Rgba() & mask;
-  const uint32_t iDest = dest.Rgba() & mask;
-
-  if ((iSrc != mask) && (iSrc < iDest))
+  struct RGBChannels
   {
-    iSrc += incr;
-  }
-  if (iSrc > iDest)
+    uint8_t r = 0;
+    uint8_t g = 0;
+    uint8_t b = 0;
+    uint8_t a = 0;
+  };
+  union RGBColor
   {
-    iSrc -= incr;
+    RGBChannels channels{};
+    uint32_t intVal;
+  };
+
+  const RGBColor srcColor{{src.R(), src.G(), src.B(), src.A()}};
+  uint32_t iMaskedSrc = srcColor.intVal & mask;
+
+  const RGBColor destColor{{dest.R(), dest.G(), dest.B(), dest.A()}};
+  const uint32_t iMaskedDest = destColor.intVal & mask;
+
+  if ((iMaskedSrc != mask) && (iMaskedSrc < iMaskedDest))
+  {
+    iMaskedSrc += incr;
+  }
+  if (iMaskedSrc > iMaskedDest)
+  {
+    iMaskedSrc -= incr;
   }
 
-  return Pixel{(iSrc & mask) | static_cast<uint32_t>(color)};
+  const auto color = static_cast<int32_t>(srcColor.intVal & (~mask));
+
+  RGBColor finalColor;
+  finalColor.intVal = (iMaskedSrc & mask) | static_cast<uint32_t>(color);
+
+  return Pixel{
+      {finalColor.channels.r, finalColor.channels.g, finalColor.channels.b, finalColor.channels.a}};
 }
 
 auto GetEvolvedColor(const Pixel& baseColor) -> Pixel
 {
   Pixel newColor = baseColor;
 
-  newColor = EvolvedColor(newColor, baseColor, 0xffU, 0x01U);
-  newColor = EvolvedColor(newColor, baseColor, 0xff00U, 0x0100U);
-  newColor = EvolvedColor(newColor, baseColor, 0xff0000U, 0x010000U);
-  newColor = EvolvedColor(newColor, baseColor, 0xff000000U, 0x01000000U);
+  newColor = EvolvedColor(newColor, baseColor, 0xFFU, 0x01U);
+  newColor = EvolvedColor(newColor, baseColor, 0xFF00U, 0x0100U);
+  newColor = EvolvedColor(newColor, baseColor, 0xFF0000U, 0x010000U);
+  newColor = EvolvedColor(newColor, baseColor, 0xFF000000U, 0x01000000U);
 
   newColor = GetLightenedColor(newColor, (10.0F * 2.0F) + 2.0F);
 

@@ -426,7 +426,7 @@ void FractalHits::Reset()
   m_hits.resize(0);
   for (auto& xHit : m_hitInfo)
   {
-    std::fill(xHit.begin(), xHit.end(), HitInfo{0, Pixel{0U}});
+    std::fill(xHit.begin(), xHit.end(), HitInfo{0, Pixel::BLACK});
   }
 }
 

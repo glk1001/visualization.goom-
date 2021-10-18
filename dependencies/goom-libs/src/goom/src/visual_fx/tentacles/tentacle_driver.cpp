@@ -37,7 +37,6 @@ namespace GOOM::TENTACLES
 
 using DRAW::IGoomDraw;
 using COLOR::ColorMapGroup;
-using COLOR::GetIntColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using UTILS::GetRandInRange;
@@ -142,7 +141,7 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
     LogDebug("Created tentacle2D {}.", i);
 
     // To hide the annoying flapping tentacle head, make near the head very dark.
-    const Pixel headColor = GetIntColor(5, 5, 5);
+    const Pixel headColor = Pixel{5, 5, 5, MAX_ALPHA};
     const Pixel headLowColor = headColor;
     Tentacle3D tentacle{std::move(tentacle2D),
                         m_colorizers[m_colorizers.size() - 1],
@@ -381,16 +380,7 @@ void TentacleDriver::Update(const float angle,
     tentacle2D.SetIterZeroLerpFactor(static_cast<double>(ITER_ZERO_LERP_FACTOR));
     tentacle2D.SetIterZeroYVal(static_cast<double>(iterZeroYVal));
 
-    LogDebug("Starting Iterate {} for tentacle {}.", tentacle2D.GetIterNum() + 1,
-             tentacle2D.GetID());
     tentacle2D.Iterate();
-
-    LogDebug("Update num = {}, tentacle = {}, doing plot with angle = {}, "
-             "distance = {}, distance2 = {}, color = {:x} and lowColor = {:x}.",
-             m_updateNum, tentacle2D.GetID(), angle, distance, distance2, color.Rgba(),
-             lowColor.Rgba());
-    LogDebug("tentacle head = ({:.2f}, {:.2f}, {:.2f}).", tentacle.GetHead().x,
-             tentacle.GetHead().y, tentacle.GetHead().z);
 
     Plot3D(tentacle, color, lowColor, angle, distance, distance2);
   }
@@ -502,11 +492,6 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
       const auto [color, lowColor] = getMixedColors(nodeNum);
 #endif
       const std::vector<Pixel> colors{color, lowColor};
-
-      LogDebug("draw_line {}: dominantColor = {:#x}, dominantLowColor = {:#x}.", nodeNum,
-               dominantColor.Rgba(), dominantLowColor.Rgba());
-      LogDebug("draw_line {}: color = {:#x}, lowColor = {:#x}, brightnessCut = {:.2f}.", nodeNum,
-               color.Rgba(), lowColor.Rgba(), brightnessCut);
 
       constexpr uint8_t THICKNESS = 1;
       m_draw.Line(ix0, iy0, ix1, iy1, colors, THICKNESS);

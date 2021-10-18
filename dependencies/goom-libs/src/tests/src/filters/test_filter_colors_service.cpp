@@ -7,6 +7,7 @@
 #include <numeric>
 
 using GOOM::channel_limits;
+using GOOM::MAX_ALPHA;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::PixelChannelType;
@@ -16,12 +17,9 @@ using GOOM::FILTERS::ZoomFilterBuffers;
 constexpr size_t WIDTH = 120;
 constexpr size_t HEIGHT = 70;
 
-constexpr PixelChannelType ALPHA = channel_limits<PixelChannelType>::max();
-
 inline auto GetColor(const uint32_t red, const uint32_t green, const uint32_t blue) -> GOOM::Pixel
 {
-  return Pixel{{static_cast<PixelChannelType>(red), static_cast<PixelChannelType>(green),
-                static_cast<PixelChannelType>(blue), ALPHA}};
+  return Pixel{red, green, blue, MAX_ALPHA};
 }
 
 TEST_CASE("FilterColorsService", "[FilterColorsService]")

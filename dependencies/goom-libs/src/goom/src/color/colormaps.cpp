@@ -123,12 +123,14 @@ TintedColorMap::TintedColorMap(const std::shared_ptr<const IColorMap>& cm,
 auto TintedColorMap::GetColor(const float t) const -> Pixel
 {
   const Pixel color = GetColorMap()->GetColor(t);
+  const vivid::col8_t rgb8 = {color.R(), color.G(), color.B()};
 
-  vivid::hsv_t hsv{vivid::rgb::fromRgb32(color.Rgba())};
+  vivid::hsv_t hsv{vivid::rgb::fromRgb8(rgb8)};
   hsv[1] = m_saturation;
   hsv[2] = m_lightness;
 
-  return Pixel{vivid::Color{hsv}.rgb32()};
+  const vivid::col8_t newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
+  return Pixel{{newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}};
 }
 
 class PrebuiltColorMap : public IColorMap
@@ -433,28 +435,8 @@ inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName, vivid::Col
 
 inline auto PrebuiltColorMap::GetColor(const float t) const -> Pixel
 {
-  return Pixel{vivid::Color{m_cmap.at(t)}.rgb32()};
-
-  /**
-  // Optimise for RGB
-  if (m_cmap.empty()) {
-    return Pixel::BLACK;
-  }
-
-  const size_t numStops = m_cmap.numStops();
-  t = stdnew::clamp(t, 0.0F, 1.0F);
-  const float stopIndexFlt = t * static_cast<float>(numStops);
-  const auto stopIndex = static_cast<size_t>(stopIndexFlt);
-
-  if (stopIndex + 1 == numStops) {
-    return Pixel{vivid::Color{m_cmap.stops().back()}.rgb32()};
-  }
-
-  const float u = stopIndexFlt - static_cast<float>(stopIndex);
-  const Pixel color1 = Pixel{vivid::Color{m_cmap.stops()[stopIndex]}.rgb32()};
-  const Pixel color2 = Pixel{vivid::Color{m_cmap.stops()[stopIndex + 1]}.rgb32()};
-  return GetRgbColorLerp(color1, color2, u);
-**/
+  const vivid::col8_t rgb8 = vivid::rgb8::fromRgb(m_cmap.at(t));
+  return Pixel{{rgb8.r, rgb8.g, rgb8.b, MAX_ALPHA}};
 }
 
 inline auto PrebuiltColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, const float t)

@@ -48,7 +48,6 @@ using COLOR::GammaCorrection;
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
 using COLOR::GetColorMultiply;
-using COLOR::GetIntColor;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
@@ -485,19 +484,19 @@ inline auto GetColor(const int mode) -> Pixel
   switch (mode)
   {
     case GML_RED:
-      return GetIntColor(230, 120, 18);
+      return Pixel{230, 120, 18, MAX_ALPHA};
     case GML_ORANGE_J:
-      return GetIntColor(120, 252, 18);
+      return Pixel{120, 252, 18, MAX_ALPHA};
     case GML_ORANGE_V:
-      return GetIntColor(160, 236, 40);
+      return Pixel{160, 236, 40, MAX_ALPHA};
     case GML_BLEUBLANC:
-      return GetIntColor(40, 220, 140);
+      return Pixel{40, 220, 140, MAX_ALPHA};
     case GML_VERT:
-      return GetIntColor(200, 80, 18);
+      return Pixel{200, 80, 18, MAX_ALPHA};
     case GML_BLEU:
-      return GetIntColor(250, 30, 80);
+      return Pixel{250, 30, 80, MAX_ALPHA};
     case GML_BLACK:
-      return GetIntColor(16, 16, 16);
+      return Pixel{16, 16, 16, MAX_ALPHA};
     default:
       throw std::logic_error("Unknown line color.");
   }

@@ -54,11 +54,48 @@ using PixelChannelType = uint8_t;
 using PixelIntType = uint32_t;
 
 constexpr PixelChannelType MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
+constexpr PixelChannelType MAX_ALPHA = MAX_COLOR_VAL;
 
 // TODO - maybe should be template: Pixel<uint8_t>, Pixel<uint16_t>
 class Pixel
 {
 public:
+  struct RGB
+  {
+    PixelChannelType red = 0;
+    PixelChannelType green = 0;
+    PixelChannelType blue = 0;
+    PixelChannelType alpha = MAX_ALPHA;
+  };
+
+  Pixel();
+  Pixel(const RGB& color);
+  Pixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha);
+
+  [[nodiscard]] auto R() const -> PixelChannelType;
+  [[nodiscard]] auto G() const -> PixelChannelType;
+  [[nodiscard]] auto B() const -> PixelChannelType;
+  [[nodiscard]] auto A() const -> PixelChannelType;
+
+  void SetR(PixelChannelType val);
+  void SetG(PixelChannelType val);
+  void SetB(PixelChannelType val);
+  void SetA(PixelChannelType val);
+
+  [[nodiscard]] auto RFlt() const -> float;
+  [[nodiscard]] auto GFlt() const -> float;
+  [[nodiscard]] auto BFlt() const -> float;
+
+  [[nodiscard]] auto Rgba() const -> PixelIntType;
+
+  [[nodiscard]] auto ToString() const -> std::string;
+
+  static const Pixel BLACK;
+  static const Pixel WHITE;
+
+  friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) -> bool;
+
+private:
 #ifdef COLOR_BGRA
   struct Channels
   {
@@ -77,35 +114,6 @@ public:
   };
 #endif /* COLOR_BGRA */
 
-  Pixel();
-  explicit Pixel(const Channels& channels);
-  explicit Pixel(PixelIntType val);
-
-  [[nodiscard]] auto R() const -> PixelChannelType;
-  [[nodiscard]] auto G() const -> PixelChannelType;
-  [[nodiscard]] auto B() const -> PixelChannelType;
-  [[nodiscard]] auto A() const -> PixelChannelType;
-
-  void SetR(PixelChannelType val);
-  void SetG(PixelChannelType val);
-  void SetB(PixelChannelType val);
-  void SetA(PixelChannelType val);
-
-  [[nodiscard]] auto RFlt() const -> float;
-  [[nodiscard]] auto GFlt() const -> float;
-  [[nodiscard]] auto BFlt() const -> float;
-
-  [[nodiscard]] auto Rgba() const -> PixelIntType;
-  void SetRgba(PixelIntType val);
-
-  [[nodiscard]] auto ToString() const -> std::string;
-
-  static const Pixel BLACK;
-  static const Pixel WHITE;
-
-  friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) -> bool;
-
-private:
   union Color
   {
     Channels channels{};
@@ -114,11 +122,18 @@ private:
   Color m_color{};
 };
 
-#if __cplusplus > 201402L
-inline const Pixel Pixel::BLACK{/*.channels*/ {/*.r = */ 0, /*.g = */ 0, /*.b = */ 0, /*.a = */ 0}};
+[[nodiscard]] auto GetPixelScaledByMax(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha)
+    -> Pixel;
+[[nodiscard]] auto MultiplyColorChannels(PixelChannelType ch1, PixelChannelType ch2) -> uint32_t;
+[[nodiscard]] auto MultiplyChannelColorByScalar(uint32_t scalar, PixelChannelType channelVal)
+    -> uint32_t;
+[[nodiscard]] auto ScaleChannelColorAfterIntegerMultiply(uint32_t channelVal) -> uint32_t;
 
-inline const Pixel Pixel::WHITE{/*.channels*/ {/*.r = */ MAX_COLOR_VAL, /*.g = */ MAX_COLOR_VAL,
-                                               /*.b = */ MAX_COLOR_VAL, /*.a = */ MAX_COLOR_VAL}};
+#if __cplusplus > 201402L
+inline const Pixel Pixel::BLACK{{/*.red = */ 0, /*.green = */ 0, /*.blue = */ 0, /*.alpha = */ 0}};
+
+inline const Pixel Pixel::WHITE{{/*.red = */ MAX_COLOR_VAL, /*.green = */ MAX_COLOR_VAL,
+                                 /*.blue = */ MAX_COLOR_VAL, /*.alpha = */ MAX_COLOR_VAL}};
 #endif
 
 struct FXBuffSettings
@@ -181,18 +196,61 @@ inline Pixel::Pixel() : m_color{/*.channels*/ {}}
 {
 }
 
-inline Pixel::Pixel(const Channels& channels) : m_color{/*.channels*/ {channels}}
+inline Pixel::Pixel(const RGB& color)
+  : m_color{{/*.r = */ color.red,
+             /*.g = */ color.green,
+             /*.b = */ color.blue,
+             /*.a = */ color.alpha}}
 {
 }
 
-inline Pixel::Pixel(const PixelIntType val)
+inline Pixel::Pixel(const uint32_t red,
+                    const uint32_t green,
+                    const uint32_t blue,
+                    const uint32_t alpha)
+  : m_color{
+        {/*.r = */ static_cast<PixelChannelType>(std::min(channel_limits<uint32_t>::max(), red)),
+         /*.g = */ static_cast<PixelChannelType>(std::min(channel_limits<uint32_t>::max(), green)),
+         /*.b = */ static_cast<PixelChannelType>(std::min(channel_limits<uint32_t>::max(), blue)),
+         /*.a = */ static_cast<PixelChannelType>(std::min(channel_limits<uint32_t>::max(), alpha))}}
 {
-  m_color.intVal = val;
+}
+
+inline auto GetPixelScaledByMax(uint32_t red, uint32_t green, uint32_t blue, const uint32_t alpha)
+    -> Pixel
+{
+  const uint32_t maxVal = std::max({red, green, blue});
+  if (maxVal > channel_limits<uint32_t>::max())
+  {
+    // scale all channels back
+    red = (red << 8) / maxVal;
+    green = (green << 8) / maxVal;
+    blue = (blue << 8) / maxVal;
+  }
+  return {red, green, blue, alpha};
+}
+
+inline auto ScaleChannelColorAfterIntegerMultiply(const uint32_t channelVal) -> uint32_t
+{
+  return channelVal >> 8;
+}
+
+inline auto MultiplyColorChannels(const PixelChannelType ch1, const PixelChannelType ch2)
+    -> uint32_t
+{
+  return ScaleChannelColorAfterIntegerMultiply(static_cast<uint32_t>(ch1) *
+                                               static_cast<uint32_t>(ch2));
+}
+
+inline auto MultiplyChannelColorByScalar(const uint32_t scalar, const PixelChannelType channelVal)
+    -> uint32_t
+{
+  return ScaleChannelColorAfterIntegerMultiply((scalar + 1) * static_cast<uint32_t>(channelVal));
 }
 
 inline auto operator==(const Pixel& pixel1, const Pixel& pixel2) -> bool
 {
-  return pixel1.Rgba() == pixel2.Rgba();
+  return pixel1.m_color.intVal == pixel2.m_color.intVal;
 }
 
 inline auto Pixel::R() const -> PixelChannelType
@@ -253,11 +311,6 @@ inline auto Pixel::BFlt() const -> float
 inline auto Pixel::Rgba() const -> PixelIntType
 {
   return m_color.intVal;
-}
-
-inline void Pixel::SetRgba(const PixelIntType val)
-{
-  m_color.intVal = val;
 }
 
 inline auto Pixel::ToString() const -> std::string

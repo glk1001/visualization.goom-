@@ -154,38 +154,21 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
   for (size_t i = 0; i < coeffs.val.size(); ++i)
   {
     const uint32_t& coeff = coeffs.val[i];
-    const auto& color = colors[i];
+    const Pixel& color = colors[i];
     multR += static_cast<uint32_t>(color.R()) * coeff;
     multG += static_cast<uint32_t>(color.G()) * coeff;
     multB += static_cast<uint32_t>(color.B()) * coeff;
   }
-  uint32_t newR = multR >> 8;
-  uint32_t newG = multG >> 8;
-  uint32_t newB = multB >> 8;
+  uint32_t newR = ScaleChannelColorAfterIntegerMultiply(multR);
+  uint32_t newG = ScaleChannelColorAfterIntegerMultiply(multG);
+  uint32_t newB = ScaleChannelColorAfterIntegerMultiply(multB);
 
-  constexpr uint32_t MAX_CHANNEL_COLOR = channel_limits<uint32_t>::max();
-  constexpr auto MAX_ALPHA = channel_limits<PixelChannelType>::max();
-  if (m_buffSettings.allowOverexposed)
+  if (!m_buffSettings.allowOverexposed)
   {
-    return Pixel{{/*.r = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_COLOR, newR)),
-                  /*.g = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_COLOR, newG)),
-                  /*.b = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_COLOR, newB)),
-                  /*.a = */ MAX_ALPHA}};
+    return GetPixelScaledByMax(newR, newG, newB, MAX_ALPHA);
   }
 
-  const uint32_t maxVal = std::max({newR, newG, newB});
-  if (maxVal > channel_limits<uint32_t>::max())
-  {
-    // scale all channels back
-    newR = multR / maxVal;
-    newG = multG / maxVal;
-    newB = multB / maxVal;
-  }
-
-  return Pixel{{/*.r = */ static_cast<PixelChannelType>(newR),
-                /*.g = */ static_cast<PixelChannelType>(newG),
-                /*.b = */ static_cast<PixelChannelType>(newB),
-                /*.a = */ MAX_ALPHA}};
+  return Pixel{newR, newG, newB, MAX_ALPHA};
 }
 
 #if __cplusplus <= 201402L
