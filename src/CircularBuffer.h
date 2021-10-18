@@ -8,6 +8,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstddef>
 #include <vector>
 
 constexpr int SILENCE_THRESHOLD = 8;
@@ -16,12 +17,12 @@ template<typename T>
 class CircularBuffer
 {
 public:
-  explicit CircularBuffer(unsigned p_size) : m_size{p_size} { m_buffer.resize(p_size); }
+  explicit CircularBuffer(const size_t size) : m_size{size}, m_buffer(size) {}
 
-  [[nodiscard]] auto DataAvailable() -> unsigned { return m_used; }
-  [[nodiscard]] auto FreeSpace() -> unsigned { return m_size - m_used; }
+  [[nodiscard]] auto DataAvailable() const -> size_t { return m_used; }
+  [[nodiscard]] auto FreeSpace() const -> size_t { return m_size - m_used; }
 
-  [[nodiscard]] auto Write(const T* src, unsigned count) -> bool
+  auto Write(const T* srce, size_t count) -> bool
   {
     if (count > FreeSpace())
     {
@@ -29,26 +30,26 @@ public:
     }
     while (count)
     {
-      unsigned delta = m_size - m_writePtr;
+      size_t delta = m_size - m_writePtr;
       if (delta > count)
       {
         delta = count;
       }
-      std::copy(src, src + delta, m_buffer.begin() + m_writePtr);
+      std::copy(srce, srce + delta, begin(m_buffer) + static_cast<std::ptrdiff_t>(m_writePtr));
       m_used += delta;
       m_writePtr = (m_writePtr + delta) % m_size;
-      src += delta;
+      srce += delta;
       count -= delta;
     }
     return true;
   }
 
-  [[nodiscard]] auto Read(T* dst, unsigned count) -> unsigned
+  [[nodiscard]] auto Read(T* dest, size_t count) -> size_t
   {
-    unsigned done = 0;
+    size_t done = 0;
     for (;;)
     {
-      unsigned delta = m_size - m_readptr;
+      size_t delta = m_size - m_readPtr;
       if (delta > m_used)
       {
         delta = m_used;
@@ -57,49 +58,43 @@ public:
       {
         delta = count;
       }
-      if (!delta)
+      if (0 == delta)
       {
         break;
       }
 
-      std::copy(m_buffer.begin() + m_readptr, m_buffer.begin() + m_readptr + delta, dst);
-      dst += delta;
+      std::copy(cbegin(m_buffer) + static_cast<std::ptrdiff_t>(m_readPtr),
+                cbegin(m_buffer) + static_cast<std::ptrdiff_t>(m_readPtr + delta), dest);
+
+      dest += delta;
       done += delta;
-      m_readptr = (m_readptr + delta) % m_size;
+      m_readPtr = (m_readPtr + delta) % m_size;
       count -= delta;
       m_used -= delta;
     }
     return done;
   }
 
-  void Reset() { m_readptr = m_writePtr = m_used = 0; }
-
-  void Resize(unsigned p_size)
-  {
-    m_size = p_size;
-    m_buffer.resize(p_size);
-    Reset();
-  }
-
+  // TODO Make this a unit test
   [[nodiscard]] auto TestSilence() const -> bool
   {
-    T* begin = static_cast<T*>(&m_buffer[0]);
+    auto* begin = static_cast<T*>(&m_buffer[0]);
     T first = *begin;
     *begin = SILENCE_THRESHOLD * 2;
-    T* p = begin + m_size;
-    while (static_cast<u_int32_t>((*--p + SILENCE_THRESHOLD) <=
-                                  static_cast<u_int32_t>(SILENCE_THRESHOLD) * 2))
+    T* ptr = begin + m_size;
+    while (static_cast<u_int32_t>((*--ptr + SILENCE_THRESHOLD) <=
+                                  (static_cast<u_int32_t>(SILENCE_THRESHOLD) * 2)))
     {
     }
     *begin = first;
-    return p == begin && (static_cast<u_int32_t>(first + SILENCE_THRESHOLD) <=
-                          static_cast<u_int32_t>(SILENCE_THRESHOLD) * 2);
+    return (ptr == begin) && (static_cast<u_int32_t>(first + SILENCE_THRESHOLD) <=
+                              (static_cast<u_int32_t>(SILENCE_THRESHOLD) * 2));
   }
 
 private:
-  std::vector<T> m_buffer{};
-  unsigned m_readptr = 0;
-  unsigned m_writePtr = 0;
-  unsigned m_used = 0;
-  unsigned m_size;
+  const size_t m_size;
+  std::vector<T> m_buffer;
+  size_t m_readPtr = 0;
+  size_t m_writePtr = 0;
+  size_t m_used = 0;
 };

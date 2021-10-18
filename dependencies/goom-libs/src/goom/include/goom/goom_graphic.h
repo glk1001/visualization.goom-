@@ -163,6 +163,7 @@ public:
 
   void Fill(const Pixel& pixel);
   void CopyTo(PixelBuffer& pixelBuffer) const;
+  [[nodiscard]] static auto GetIntBufferSize(uint32_t width, uint32_t height) -> size_t;
   [[nodiscard]] auto GetIntBuff() const -> const PixelIntType*;
 
   auto operator()(size_t x, size_t y) const -> const Pixel&;
@@ -349,6 +350,11 @@ inline auto PixelBuffer::GetHeight() const -> uint32_t
 inline void PixelBuffer::Fill(const Pixel& pixel)
 {
   std::fill(m_buff.begin(), m_buff.end(), pixel);
+}
+
+inline auto PixelBuffer::GetIntBufferSize(const uint32_t width, const uint32_t height) -> size_t
+{
+  return static_cast<size_t>(width * height) * sizeof(Pixel);
 }
 
 inline auto PixelBuffer::GetIntBuff() const -> const PixelIntType*

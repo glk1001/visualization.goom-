@@ -8,15 +8,15 @@
  *  See LICENSE.md for more information.
  */
 
-#define __STDC_LIMIT_MACROS
-
 #include "CircularBuffer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_control.h"
 #include "goom/goom_graphic.h"
 #include "goom/sound_info.h"
 
+#include <array>
 #include <condition_variable>
+#include <cstdint>
 #include <functional>
 #include <glm/gtc/type_ptr.hpp>
 #include <kodi/addon-instance/Visualization.h>
@@ -25,18 +25,19 @@
 #include <queue>
 #include <string>
 #include <thread>
+#include <vector>
 
 class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,
                                             public kodi::addon::CInstanceVisualization,
-                                            kodi::gui::gl::CShaderProgram
+                                            public kodi::gui::gl::CShaderProgram
 {
 public:
   CVisualizationGoom();
   CVisualizationGoom(const CVisualizationGoom&) noexcept = delete;
   CVisualizationGoom(CVisualizationGoom&&) noexcept = delete;
   ~CVisualizationGoom() override;
-  auto operator=(const CVisualizationGoom&) -> CVisualizationGoom = delete;
-  auto operator=(CVisualizationGoom&&) -> CVisualizationGoom = delete;
+  auto operator=(const CVisualizationGoom&) -> CVisualizationGoom& = delete;
+  auto operator=(CVisualizationGoom&&) -> CVisualizationGoom& = delete;
 
   [[nodiscard]] auto Start(int numChannels,
                            int samplesPerSec,
@@ -57,12 +58,9 @@ protected:
   [[nodiscard]] auto GetGoomControl() const -> const GOOM::GoomControl& { return *m_goomControl; };
   [[nodiscard]] auto GetGoomControl() -> GOOM::GoomControl& { return *m_goomControl; };
   [[nodiscard]] auto AudioBufferLen() const -> size_t { return m_audioBufferLen; };
-  [[nodiscard]] auto TexWidth() const -> int32_t { return m_texWidth; };
-  [[nodiscard]] auto TexHeight() const -> int32_t { return m_texHeight; };
-  [[nodiscard]] auto GoomBufferLen() const -> int32_t
-  {
-    return static_cast<int32_t>(m_goomBufferLen);
-  };
+  [[nodiscard]] auto TexWidth() const -> uint32_t { return m_textureWidth; };
+  [[nodiscard]] auto TexHeight() const -> uint32_t { return m_textureHeight; };
+  [[nodiscard]] auto GoomBufferLen() const -> size_t { return m_goomBufferLen; };
   [[nodiscard]] auto CurrentSongName() const -> const std::string& { return m_currentSongName; };
   [[nodiscard]] auto NumChannels() const -> size_t { return m_numChannels; };
   virtual void NoActiveBufferAvailable() {}
@@ -74,52 +72,43 @@ protected:
                                 std::shared_ptr<GOOM::PixelBuffer>& pixels);
 
 private:
-  [[nodiscard]] auto InitGoomController() -> bool;
-  void DeinitGoomController();
-  void StartGoomProcessBuffersThread();
-  void StopGoomProcessBuffersThread();
-  void Process();
-  [[nodiscard]] auto InitGlObjects() -> bool;
-  void InitQuadData();
-  [[nodiscard]] auto GetNextActivePixels() -> std::shared_ptr<GOOM::PixelBuffer>;
-  void PushUsedPixels(const std::shared_ptr<GOOM::PixelBuffer>& pixels);
-
-  const int m_texWidth;
-  const int m_texHeight;
-  const size_t m_goomBufferLen;
-  const size_t m_goomBufferSize;
-  size_t m_audioBufferLen{};
-  uint32_t m_audioBufferNum = 0;
-  static constexpr uint32_t MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6;
-
   const int m_windowWidth;
   const int m_windowHeight;
   const int m_windowXPos;
   const int m_windowYPos;
 
+  const uint32_t m_textureWidth;
+  const uint32_t m_textureHeight;
+  const size_t m_goomBufferLen;
+  const size_t m_goomBufferSize;
+
   size_t m_numChannels{};
+  size_t m_audioBufferLen = 0;
+  uint32_t m_audioBufferNum = 0;
+  static constexpr uint32_t MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6;
+
   std::string m_currentSongName{};
   std::string m_lastSongName{};
   bool m_titleChange = false;
   bool m_showTitleAlways = false;
   [[nodiscard]] auto GetTitle() -> std::string;
 
-  GLint m_componentsPerVertex{};
-  GLint m_componentsPerTexel{};
-  int m_numVertices{};
-  int m_numElements{};
-  GLfloat* m_quadData{};
+  GLint m_componentsPerVertex = 2;
+  GLint m_componentsPerTexel = 2;
+  int m_numVertices = 2 * 3; // 2 triangles
+  const std::vector<GLfloat> m_quadData;
+  [[nodiscard]] static auto GetGlQuadData(int width, int height, int xPos, int yPos)
+      -> std::vector<GLfloat>;
 
-#ifdef HAS_GL
-  bool m_usePixelBufferObjects =
-      false; // 'true' is supposed to give better performance, but it's not obvious.
+  const bool m_usePixelBufferObjects;
+  // Note: 'true' is supposed to give better performance, but it's not obvious.
   // And when 'true', there may be issues with screen refreshes when changing windows in Kodi.
-#endif
+
   GLuint m_textureId = 0;
-  const static int G_NUM_PBOS = 3;
-  GLuint m_pboIds[G_NUM_PBOS]{};
-  unsigned char* m_pboGoomBuffer[G_NUM_PBOS]{};
-  int m_currentPboIndex{};
+  static const int G_NUM_PBOS = 3;
+  std::array<GLuint, G_NUM_PBOS> m_pboIds{};
+  std::array<uint8_t*, G_NUM_PBOS> m_pboGoomBuffer{};
+  size_t m_currentPboIndex = 0;
   glm::mat4 m_projModelMatrix{};
   GLuint m_vaoObject = 0;
   GLuint m_vertexVBO = 0;
@@ -128,7 +117,7 @@ private:
   GLint m_aCoordLoc = -1;
 
   // Goom's data itself
-  std::unique_ptr<GOOM::GoomControl> m_goomControl = nullptr;
+  std::unique_ptr<GOOM::GoomControl> m_goomControl{};
 
   // Audio buffer storage
   //static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
@@ -136,7 +125,7 @@ private:
   //                                               GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
   //CircularBuffer<float> m_buffer(CIRCULAR_BUFFER_SIZE);
   static const size_t CIRCULAR_BUFFER_SIZE;
-  CircularBuffer<float> m_buffer;
+  CircularBuffer<float> m_audioBuffer{static_cast<uint32_t>(CIRCULAR_BUFFER_SIZE)};
 
   // Goom process thread handles
   bool m_workerThreadExit = false;
@@ -150,8 +139,28 @@ protected:
   static constexpr size_t MAX_ACTIVE_QUEUE_LENGTH = 20;
 
 private:
+  void SetNumChannels(int numChannels);
+  void SetSongTitle(const std::string& songTitle);
+  void StartLogging() const;
+  [[nodiscard]] auto InitGoomController() -> bool;
+  void DeinitGoomController();
+  void StartGoomProcessBuffersThread();
+  void StopGoomProcessBuffersThread();
+  void Process();
+  [[nodiscard]] auto GetNextActivePixels() -> std::shared_ptr<GOOM::PixelBuffer>;
+  void PushUsedPixels(const std::shared_ptr<GOOM::PixelBuffer>& pixels);
+
+  [[nodiscard]] auto InitGl() -> bool;
+  void DeinitGl();
+  [[nodiscard]] auto InitGlObjects() -> bool;
+  void SetupGlVertexAttributes();
+  [[nodiscard]] auto CreateGlTexture() -> bool;
+  [[nodiscard]] auto SetupGlPixelBufferObjects() -> bool;
+  void RenderGlPixelBuffer(const GOOM::PixelBuffer& pixelBuffer);
+
   std::queue<std::shared_ptr<GOOM::PixelBuffer>> m_activeQueue{};
   std::queue<std::shared_ptr<GOOM::PixelBuffer>> m_storedQueue{};
+  void StartActiveQueue();
 
   // Start flag to know init was OK
   bool m_started = false;
