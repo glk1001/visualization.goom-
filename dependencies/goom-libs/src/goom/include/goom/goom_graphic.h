@@ -50,62 +50,66 @@ struct channel_limits<float>
   static constexpr auto max() noexcept -> float { return channel_limits<uint8_t>::max(); }
 };
 
-constexpr uint8_t MAX_COLOR_VAL = channel_limits<uint8_t>::max();
+using PixelChannelType = uint8_t;
+using PixelIntType = uint32_t;
 
+constexpr PixelChannelType MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
+
+// TODO - maybe should be template: Pixel<uint8_t>, Pixel<uint16_t>
 class Pixel
 {
 public:
 #ifdef COLOR_BGRA
   struct Channels
   {
-    uint8_t r = 0;
-    uint8_t g = 0;
-    uint8_t b = 0;
-    uint8_t a = 0;
+    PixelChannelType r = 0;
+    PixelChannelType g = 0;
+    PixelChannelType b = 0;
+    PixelChannelType a = 0;
   };
 #else
   struct Channels
   {
-    uint8_t a = 0;
-    uint8_t r = 0;
-    uint8_t g = 0;
-    uint8_t b = 0;
+    PixelChannelType a = 0;
+    PixelChannelType r = 0;
+    PixelChannelType g = 0;
+    PixelChannelType b = 0;
   };
 #endif /* COLOR_BGRA */
 
   Pixel();
-  explicit Pixel(const Channels& c);
-  explicit Pixel(uint32_t val);
+  explicit Pixel(const Channels& channels);
+  explicit Pixel(PixelIntType val);
 
-  [[nodiscard]] auto R() const -> uint8_t;
-  [[nodiscard]] auto G() const -> uint8_t;
-  [[nodiscard]] auto B() const -> uint8_t;
-  [[nodiscard]] auto A() const -> uint8_t;
+  [[nodiscard]] auto R() const -> PixelChannelType;
+  [[nodiscard]] auto G() const -> PixelChannelType;
+  [[nodiscard]] auto B() const -> PixelChannelType;
+  [[nodiscard]] auto A() const -> PixelChannelType;
 
-  void SetR(uint8_t c);
-  void SetG(uint8_t c);
-  void SetB(uint8_t c);
-  void SetA(uint8_t c);
+  void SetR(PixelChannelType val);
+  void SetG(PixelChannelType val);
+  void SetB(PixelChannelType val);
+  void SetA(PixelChannelType val);
 
   [[nodiscard]] auto RFlt() const -> float;
   [[nodiscard]] auto GFlt() const -> float;
   [[nodiscard]] auto BFlt() const -> float;
 
-  [[nodiscard]] auto Rgba() const -> uint32_t;
-  void SetRgba(uint32_t v);
+  [[nodiscard]] auto Rgba() const -> PixelIntType;
+  void SetRgba(PixelIntType val);
 
   [[nodiscard]] auto ToString() const -> std::string;
 
   static const Pixel BLACK;
   static const Pixel WHITE;
 
-  friend auto operator==(const Pixel& p1, const Pixel& p2) -> bool;
+  friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) -> bool;
 
 private:
   union Color
   {
     Channels channels{};
-    uint32_t intVal;
+    PixelIntType intVal;
   };
   Color m_color{};
 };
@@ -142,9 +146,9 @@ public:
   [[nodiscard]] auto GetWidth() const -> uint32_t;
   [[nodiscard]] auto GetHeight() const -> uint32_t;
 
-  void Fill(const Pixel& c);
-  void CopyTo(PixelBuffer& buff) const;
-  [[nodiscard]] auto GetIntBuff() const -> const uint32_t*;
+  void Fill(const Pixel& pixel);
+  void CopyTo(PixelBuffer& pixelBuffer) const;
+  [[nodiscard]] auto GetIntBuff() const -> const PixelIntType*;
 
   auto operator()(size_t x, size_t y) const -> const Pixel&;
   auto operator()(size_t x, size_t y) -> Pixel&;
@@ -171,66 +175,64 @@ private:
   uint32_t m_xMax{};
   uint32_t m_yMax{};
   Buffer m_buff{};
-
-  [[nodiscard]] auto GetIntBuff() -> uint32_t*;
 };
 
 inline Pixel::Pixel() : m_color{/*.channels*/ {}}
 {
 }
 
-inline Pixel::Pixel(const Channels& c) : m_color{/*.channels*/ {c}}
+inline Pixel::Pixel(const Channels& channels) : m_color{/*.channels*/ {channels}}
 {
 }
 
-inline Pixel::Pixel(const uint32_t val)
+inline Pixel::Pixel(const PixelIntType val)
 {
   m_color.intVal = val;
 }
 
-inline auto operator==(const Pixel& p1, const Pixel& p2) -> bool
+inline auto operator==(const Pixel& pixel1, const Pixel& pixel2) -> bool
 {
-  return p1.Rgba() == p2.Rgba();
+  return pixel1.Rgba() == pixel2.Rgba();
 }
 
-inline auto Pixel::R() const -> uint8_t
+inline auto Pixel::R() const -> PixelChannelType
 {
   return m_color.channels.r;
 }
 
-inline void Pixel::SetR(const uint8_t c)
+inline void Pixel::SetR(const PixelChannelType val)
 {
-  m_color.channels.r = c;
+  m_color.channels.r = val;
 }
 
-inline auto Pixel::G() const -> uint8_t
+inline auto Pixel::G() const -> PixelChannelType
 {
   return m_color.channels.g;
 }
 
-inline void Pixel::SetG(const uint8_t c)
+inline void Pixel::SetG(const PixelChannelType val)
 {
-  m_color.channels.g = c;
+  m_color.channels.g = val;
 }
 
-inline auto Pixel::B() const -> uint8_t
+inline auto Pixel::B() const -> PixelChannelType
 {
   return m_color.channels.b;
 }
 
-inline void Pixel::SetB(const uint8_t c)
+inline void Pixel::SetB(const PixelChannelType val)
 {
-  m_color.channels.b = c;
+  m_color.channels.b = val;
 }
 
-inline auto Pixel::A() const -> uint8_t
+inline auto Pixel::A() const -> PixelChannelType
 {
   return m_color.channels.a;
 }
 
-inline void Pixel::SetA(const uint8_t c)
+inline void Pixel::SetA(const PixelChannelType val)
 {
-  m_color.channels.a = c;
+  m_color.channels.a = val;
 }
 
 inline auto Pixel::RFlt() const -> float
@@ -248,14 +250,14 @@ inline auto Pixel::BFlt() const -> float
   return static_cast<float>(B()) / channel_limits<float>::max();
 }
 
-inline auto Pixel::Rgba() const -> uint32_t
+inline auto Pixel::Rgba() const -> PixelIntType
 {
   return m_color.intVal;
 }
 
-inline void Pixel::SetRgba(const uint32_t v)
+inline void Pixel::SetRgba(const PixelIntType val)
 {
-  m_color.intVal = v;
+  m_color.intVal = val;
 }
 
 inline auto Pixel::ToString() const -> std::string
@@ -268,7 +270,7 @@ inline PixelBuffer::PixelBuffer(const uint32_t width, const uint32_t height) noe
     m_height{height},
     m_xMax{m_width - 1},
     m_yMax{m_height - 1},
-    m_buff(m_width * m_height)
+    m_buff(static_cast<size_t>(m_width) * static_cast<size_t>(m_height))
 {
 }
 
@@ -278,7 +280,7 @@ inline void PixelBuffer::Resize(const size_t width, const size_t height)
   m_height = static_cast<uint32_t>(height);
   m_xMax = m_width - 1;
   m_yMax = m_height - 1;
-  m_buff.resize(m_width * m_height);
+  m_buff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
 }
 
 inline auto PixelBuffer::GetWidth() const -> uint32_t
@@ -291,27 +293,19 @@ inline auto PixelBuffer::GetHeight() const -> uint32_t
   return m_height;
 }
 
-inline void PixelBuffer::Fill(const Pixel& c)
+inline void PixelBuffer::Fill(const Pixel& pixel)
 {
-  std::fill(m_buff.begin(), m_buff.end(), c);
+  std::fill(m_buff.begin(), m_buff.end(), pixel);
 }
 
-inline auto PixelBuffer::GetIntBuff() const -> const uint32_t*
+inline auto PixelBuffer::GetIntBuff() const -> const PixelIntType*
 {
-  return reinterpret_cast<const uint32_t*>(m_buff.data());
+  return reinterpret_cast<const PixelIntType*>(m_buff.data());
 }
 
-inline auto PixelBuffer::GetIntBuff() -> uint32_t*
+inline void PixelBuffer::CopyTo(PixelBuffer& pixelBuffer) const
 {
-  return reinterpret_cast<uint32_t*>(m_buff.data());
-}
-
-inline void PixelBuffer::CopyTo(PixelBuffer& buff) const
-{
-  // Get the last bit of speed here and use memmove.
-  // std::copy(m_buff.cbegin(), m_buff.cend(), buff.m_buff.begin());
-  static_assert(sizeof(Pixel) == sizeof(uint32_t), "Invalid Pixel size.");
-  std::memmove(buff.GetIntBuff(), this->GetIntBuff(), buff.m_buff.size() * sizeof(Pixel));
+  std::copy(cbegin(m_buff), cend(m_buff), begin(pixelBuffer.m_buff));
 }
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) const -> const Pixel&

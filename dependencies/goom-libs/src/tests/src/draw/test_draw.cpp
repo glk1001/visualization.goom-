@@ -7,6 +7,7 @@
 #include <vector>
 
 using GOOM::Pixel;
+using GOOM::PixelChannelType;
 using GOOM::DRAW::GoomDrawToContainer;
 using ColorsList = GoomDrawToContainer::ColorsList;
 
@@ -71,8 +72,8 @@ auto FillDrawContainer(GoomDrawToContainer* draw, const size_t numChanged) -> st
   {
     const auto x = static_cast<int32_t>(i);
     const auto y = static_cast<int32_t>(i);
-    const auto c0 = static_cast<uint8_t>(i);
-    const auto c1 = static_cast<uint8_t>(i + 1);
+    const auto c0 = static_cast<PixelChannelType>(i);
+    const auto c1 = static_cast<PixelChannelType>(i + 1);
     const Pixel color0{{c0, c0, c0, 255U}};
     const Pixel color1{{c1, c1, c1, 0U}};
     const std::vector<Pixel> colors{color0, color1};

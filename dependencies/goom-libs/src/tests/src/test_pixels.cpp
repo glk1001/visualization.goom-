@@ -13,6 +13,7 @@
 using GOOM::channel_limits;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
+using GOOM::PixelChannelType;
 using GOOM::V2dInt;
 using GOOM::UTILS::floats_equal;
 using namespace std::chrono_literals;
@@ -21,9 +22,9 @@ using std::chrono::microseconds;
 
 constexpr size_t WIDTH = 1280;
 constexpr size_t HEIGHT = 720;
-constexpr uint8_t TEST_R = 200;
-constexpr uint8_t TEST_G = 100;
-constexpr uint8_t TEST_B = 50;
+constexpr PixelChannelType TEST_R = 200;
+constexpr PixelChannelType TEST_G = 100;
+constexpr PixelChannelType TEST_B = 50;
 
 TEST_CASE("Pixels", "[Pixels]")
 {

@@ -1,6 +1,5 @@
 #include "catch2/catch.hpp"
 #include "goom/goom_graphic.h"
-#include "v2d.h"
 #include "visual_fx/filters/filter_buffers.h"
 #include "visual_fx/filters/filter_colors_service.h"
 
@@ -10,18 +9,19 @@
 using GOOM::channel_limits;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
-using GOOM::V2dInt;
+using GOOM::PixelChannelType;
 using GOOM::FILTERS::FilterColorsService;
 using GOOM::FILTERS::ZoomFilterBuffers;
 
 constexpr size_t WIDTH = 120;
 constexpr size_t HEIGHT = 70;
 
-constexpr uint8_t A = 255;
+constexpr PixelChannelType ALPHA = channel_limits<PixelChannelType>::max();
 
-inline auto GetColor(const uint32_t R, const uint32_t G, const uint32_t B) -> GOOM::Pixel
+inline auto GetColor(const uint32_t red, const uint32_t green, const uint32_t blue) -> GOOM::Pixel
 {
-  return Pixel{{static_cast<uint8_t>(R), static_cast<uint8_t>(G), static_cast<uint8_t>(B), A}};
+  return Pixel{{static_cast<PixelChannelType>(red), static_cast<PixelChannelType>(green),
+                static_cast<PixelChannelType>(blue), ALPHA}};
 }
 
 TEST_CASE("FilterColorsService", "[FilterColorsService]")

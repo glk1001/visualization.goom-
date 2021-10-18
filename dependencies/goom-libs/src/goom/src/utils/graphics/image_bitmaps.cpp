@@ -54,23 +54,24 @@ void ImageBitmap::Load(std::string imageFilename)
   {
     for (size_t x = 0; x < GetWidth(); ++x)
     {
-      uint8_t b = *rgbPtr;
+      PixelChannelType blue = *rgbPtr;
       rgbPtr++;
-      uint8_t g = *rgbPtr;
+      PixelChannelType green = *rgbPtr;
       rgbPtr++;
-      uint8_t r = *rgbPtr;
+      PixelChannelType red = *rgbPtr;
       rgbPtr++;
-      const uint8_t a = *rgbPtr;
+      const PixelChannelType alpha = *rgbPtr;
       rgbPtr++;
 
-      if (a == 0)
+      if (alpha == 0)
       {
-        r = 0;
-        g = 0;
-        b = 0;
+        red = 0;
+        green = 0;
+        blue = 0;
       }
 
-      (*this)(x, y) = Pixel{/*.channels*/ {/*.r = */ r, /*.g = */ g, /*.b = */ b, /*.a = */ a}};
+      (*this)(x, y) =
+          Pixel{/*.channels*/ {/*.r = */ red, /*.g = */ green, /*.b = */ blue, /*.a = */ alpha}};
     }
   }
 

@@ -20,9 +20,10 @@ namespace GOOM::COLOR
 {
 #endif
 
-static_assert(sizeof(Pixel) == sizeof(uint32_t), "Invalid Pixel size.");
+static_assert(sizeof(Pixel) == sizeof(PixelIntType), "Invalid Pixel size.");
 
-auto GetIntColor(const uint8_t r, const uint8_t g, const uint8_t b) -> Pixel
+auto GetIntColor(const PixelChannelType r, const PixelChannelType g, const PixelChannelType b)
+    -> Pixel
 {
   return Pixel{{/*.r = */ r, /*.g = */ g, /*.b = */ b, /*.a = */ 0xff}};
 }
@@ -56,10 +57,10 @@ auto GammaCorrection::GetCorrection(const float brightness, const Pixel& color) 
   }
 
   return Pixel{{
-      /*.r = */ static_cast<uint8_t>((newR & 0xffffff00U) ? 0xffU : newR),
-      /*.g = */ static_cast<uint8_t>((newG & 0xffffff00U) ? 0xffU : newG),
-      /*.b = */ static_cast<uint8_t>((newB & 0xffffff00U) ? 0xffU : newB),
-      /*.a = */ static_cast<uint8_t>((newA & 0xffffff00U) ? 0xffU : newA),
+      /*.r = */ static_cast<PixelChannelType>((newR & 0xffffff00U) ? 0xffU : newR),
+      /*.g = */ static_cast<PixelChannelType>((newG & 0xffffff00U) ? 0xffU : newG),
+      /*.b = */ static_cast<PixelChannelType>((newB & 0xffffff00U) ? 0xffU : newB),
+      /*.a = */ static_cast<PixelChannelType>((newA & 0xffffff00U) ? 0xffU : newA),
   }};
 }
 
@@ -72,7 +73,7 @@ auto GetAlteredChroma(const float lchYFactor, const Pixel& color) -> Pixel
   return Pixel{vivid::rgb32::fromRgb(vivid::srgb::fromLch(lch))};
 }
 
-inline auto Lighten(const uint8_t value, const float power) -> uint8_t
+inline auto Lighten(const PixelChannelType value, const float power) -> PixelChannelType
 {
   const auto t = (static_cast<float>(value) * std::log10(power)) / 2.0F;
   if (t <= 0.0F)
@@ -81,7 +82,7 @@ inline auto Lighten(const uint8_t value, const float power) -> uint8_t
   }
 
   // (32.0f * log (t));
-  return static_cast<uint8_t>(
+  return static_cast<PixelChannelType>(
       stdnew::clamp(static_cast<int>(t), channel_limits<int>::min(), channel_limits<int>::max()));
 }
 
