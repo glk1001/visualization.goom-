@@ -62,13 +62,13 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
 
     const uint32_t expectedR =
         (coeffs.val[0] * R1 + coeffs.val[1] * R2 + coeffs.val[2] * R3 + coeffs.val[3] * R4) /
-        (MAX_CHAN + 1);
+        MAX_CHAN;
     const uint32_t expectedG =
         (coeffs.val[0] * G1 + coeffs.val[1] * G2 + coeffs.val[2] * G3 + coeffs.val[3] * G4) /
-        (MAX_CHAN + 1);
+        MAX_CHAN;
     const uint32_t expectedB =
         (coeffs.val[0] * B1 + coeffs.val[1] * B2 + coeffs.val[2] * B3 + coeffs.val[3] * B4) /
-        (MAX_CHAN + 1);
+        MAX_CHAN;
 
     const Pixel expectedColor = GetColor(expectedR, expectedG, expectedB);
     const Pixel newColor = filterColorsService.GetNewColor(pixelBuffer, sourcePointInfo);

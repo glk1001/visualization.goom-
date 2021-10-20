@@ -91,7 +91,7 @@ TEST_CASE("Pixels")
     const uint32_t rChannel = pixel.R();
     constexpr uint32_t SCALAR = 32;
     REQUIRE(MultiplyChannelColorByScalar(SCALAR, pixel.R()) ==
-            ((SCALAR + 1) * rChannel) / MAX_COLOR_VAL);
+            ((SCALAR * rChannel) / MAX_COLOR_VAL));
   }
   SECTION("Pixel Multiply Channels")
   {
