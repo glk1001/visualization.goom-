@@ -152,6 +152,7 @@ private:
 
   [[nodiscard]] auto InitGl() -> bool;
   void DeinitGl();
+  [[nodiscard]] auto InitGlShaders() -> bool;
   [[nodiscard]] auto InitGlObjects() -> bool;
   void SetupGlVertexAttributes();
   [[nodiscard]] auto CreateGlTexture() -> bool;

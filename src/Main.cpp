@@ -23,6 +23,10 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 
+constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA;
+constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
+constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE;
+
 constexpr int MAX_QUALITY = 4;
 constexpr std::array<uint32_t, MAX_QUALITY + 1> WIDTHS_BY_QUALITY{
     512, 640, 1280, 1600, 1920,
@@ -413,16 +417,9 @@ inline void CVisualizationGoom::UpdateGoomBuffer(const std::string& title,
 
 auto CVisualizationGoom::InitGl() -> bool
 {
-  if (!LoadShaderFiles(kodi::GetAddonPath("resources/shaders/" GL_TYPE_STRING "/vert.glsl"),
-                       kodi::GetAddonPath("resources/shaders/" GL_TYPE_STRING "/frag.glsl")))
+  if (!InitGlShaders())
   {
-    LogError("CVisualizationGoom: Failed to load GL shaders.");
-    return false;
-  }
-
-  if (!CompileAndLink())
-  {
-    LogError("CVisualizationGoom: Failed to compile GL shaders.");
+    LogError("CVisualizationGoom: Failed to initialize GL shaders.");
     return false;
   }
 
@@ -473,6 +470,75 @@ auto CVisualizationGoom::GetGlQuadData(const int width,
       0.0, 0.0,
   };
   // clang-format on
+}
+
+auto CVisualizationGoom::InitGlShaders() -> bool
+{
+#ifdef HAS_GL
+  // clang-format off
+  constexpr const GLchar* VERTEX_SHADER =
+    "#version 150\n"
+    "\n"
+    "uniform mat4 u_projModelMat;\n"
+    "in vec2 in_position;\n"
+    "in vec2 in_tex_coord;\n"
+    "smooth out vec2 vs_tex_coord;\n"
+    "\n"
+    "void main()\n"
+    "{\n"
+    "  gl_Position = u_projModelMat * vec4(in_position.x, in_position.y, 0.0, 1.0);\n"
+    "\n"
+    "  vs_tex_coord = in_tex_coord;\n"
+    "}\n";
+
+  constexpr const GLchar* FRAGMENT_SHADER =
+    "#version 150\n"
+    "\n"
+    "uniform sampler2D tex;\n"
+    "smooth in vec2 vs_tex_coord;\n"
+    "out vec4 color;\n"
+    "\n"
+    "void main()\n"
+    "{\n"
+    "  color = vec4(texture(tex, vs_tex_coord).rgb, 1.0);\n"
+    "}\n";
+
+#else
+  constexpr const GLchar* VERTEX_SHADER =
+    "#version 100\n"
+    "\n"
+    "uniform mat4 u_projModelMat;\n"
+    "attribute vec2 in_position;\n"
+    "attribute vec2 in_tex_coord;\n"
+    "varying vec2 vs_tex_coord;\n"
+    "\n"
+    "void main()\n"
+    "{\n"
+    "  gl_Position = u_projModelMat * vec4(in_position, 0.0, 1.0);\n"
+    "  vs_tex_coord = in_tex_coord;\n"
+    "}\n";
+
+  constexpr const GLchar* FRAGMENT_SHADER =
+    "#version 100\n"
+    "\n"
+    "precision mediump float;\n"
+    "uniform sampler2D tex;\n"
+    "varying vec2 vs_tex_coord;\n"
+    "\n"
+    "void main()\n"
+    "{\n"
+    "  gl_FragColor = vec4(texture2D(tex, vs_tex_coord).rgb, 1.0);\n"
+    "}\n";
+  // clang-format on
+#endif
+
+  if (!CompileAndLink(VERTEX_SHADER, "", FRAGMENT_SHADER, ""))
+  {
+    LogError("CVisualizationGoom: Failed to compile GL shaders.");
+    return false;
+  }
+
+  return true;
 }
 
 void CVisualizationGoom::OnCompiledAndLinked()
@@ -540,9 +606,12 @@ auto CVisualizationGoom::CreateGlTexture() -> bool
 #ifdef HAS_GL
   glGenerateMipmap(GL_TEXTURE_2D);
 #endif
-  // TODO Have a 'using' to handle different texture buffer sizes.
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(m_textureWidth),
-               static_cast<GLsizei>(m_textureHeight), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+  constexpr GLint LEVEL = 0;
+  constexpr GLint BORDER = 0;
+  constexpr void* NULL_DATA = nullptr;
+  glTexImage2D(GL_TEXTURE_2D, LEVEL, TEXTURE_SIZED_INTERNAL_FORMAT,
+               static_cast<GLsizei>(m_textureWidth), static_cast<GLsizei>(m_textureHeight), BORDER,
+               TEXTURE_FORMAT, TEXTURE_DATA_TYPE, NULL_DATA);
   glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef HAS_GL
@@ -666,8 +735,14 @@ inline void CVisualizationGoom::RenderGlPixelBuffer(const PixelBuffer& pixelBuff
 
     // Bind to current PBO and send pixels to texture object.
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(m_currentPboIndex));
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<GLsizei>(m_textureWidth),
-                    static_cast<GLsizei>(m_textureHeight), GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+
+    constexpr GLint LEVEL = 0;
+    constexpr GLint X_OFFSET = 0;
+    constexpr GLint Y_OFFSET = 0;
+    constexpr void* NULL_PIXELS = nullptr;
+    glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
+                    static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
+                    NULL_PIXELS);
 
     // Bind to next PBO and update data directly on the mapped buffer.
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(nextPboIndex));
@@ -679,8 +754,11 @@ inline void CVisualizationGoom::RenderGlPixelBuffer(const PixelBuffer& pixelBuff
   else
 #endif
   {
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<GLsizei>(m_textureWidth),
-                    static_cast<GLsizei>(m_textureHeight), GL_RGBA, GL_UNSIGNED_BYTE,
+    constexpr GLint LEVEL = 0;
+    constexpr GLint X_OFFSET = 0;
+    constexpr GLint Y_OFFSET = 0;
+    glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
+                    static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
                     pixelBuffer.GetIntBuff());
   }
 }
