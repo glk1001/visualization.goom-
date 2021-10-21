@@ -19,8 +19,6 @@ namespace GOOM::COLOR
 {
 #endif
 
-static_assert(sizeof(Pixel) == sizeof(PixelIntType), "Invalid Pixel size.");
-
 auto GammaCorrection::GetCorrection(const float brightness, const Pixel& color) const -> Pixel
 {
   if (brightness < m_threshold)
@@ -81,27 +79,27 @@ auto GetLightenedColor(const Pixel& oldColor, const float power) -> Pixel
 
 inline auto EvolvedColor(const Pixel& src,
                          const Pixel& dest,
-                         const uint32_t mask,
-                         const uint32_t incr) -> Pixel
+                         const PixelIntType mask,
+                         const PixelIntType incr) -> Pixel
 {
   struct RGBChannels
   {
-    uint8_t r = 0;
-    uint8_t g = 0;
-    uint8_t b = 0;
-    uint8_t a = 0;
+    PixelChannelType r = 0;
+    PixelChannelType g = 0;
+    PixelChannelType b = 0;
+    PixelChannelType a = 0;
   };
   union RGBColor
   {
     RGBChannels channels{};
-    uint32_t intVal;
+    PixelIntType intVal;
   };
 
   const RGBColor srcColor{{src.R(), src.G(), src.B(), src.A()}};
-  uint32_t iMaskedSrc = srcColor.intVal & mask;
+  PixelIntType iMaskedSrc = srcColor.intVal & mask;
 
   const RGBColor destColor{{dest.R(), dest.G(), dest.B(), dest.A()}};
-  const uint32_t iMaskedDest = destColor.intVal & mask;
+  const PixelIntType iMaskedDest = destColor.intVal & mask;
 
   if ((iMaskedSrc != mask) && (iMaskedSrc < iMaskedDest))
   {

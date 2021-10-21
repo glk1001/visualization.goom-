@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstring>
 #include <format>
+#include <limits>
 #include <tuple>
 #include <vector>
 
@@ -29,7 +30,13 @@ template<>
 struct channel_limits<uint8_t>
 {
   static constexpr auto min() noexcept -> uint8_t { return 0; }
-  static constexpr auto max() noexcept -> uint8_t { return 255; }
+  static constexpr auto max() noexcept -> uint8_t { return std::numeric_limits<uint8_t>::max(); }
+};
+template<>
+struct channel_limits<uint16_t>
+{
+  static constexpr auto min() noexcept -> uint16_t { return channel_limits<uint8_t>::min(); }
+  static constexpr auto max() noexcept -> uint16_t { return channel_limits<uint8_t>::max(); }
 };
 template<>
 struct channel_limits<uint32_t>
@@ -56,6 +63,10 @@ using PixelIntType = uint32_t;
 constexpr PixelChannelType MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
 constexpr PixelChannelType MAX_ALPHA = MAX_COLOR_VAL;
 
+constexpr uint32_t MAX_CHANNEL_VALUE_HDR = 255;
+static_assert(MAX_CHANNEL_VALUE_HDR <= static_cast<uint32_t>(MAX_COLOR_VAL),
+              "Invalid MAX_CHANNEL_VALUE_HDR");
+
 // TODO - maybe should be template: Pixel<uint8_t>, Pixel<uint16_t>
 class Pixel
 {
@@ -69,7 +80,7 @@ public:
   };
 
   Pixel();
-  Pixel(const RGB& color);
+  explicit Pixel(const RGB& color);
   Pixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha);
 
   [[nodiscard]] auto R() const -> PixelChannelType;
@@ -135,7 +146,7 @@ private:
 inline const Pixel Pixel::BLACK{{/*.red = */ 0, /*.green = */ 0, /*.blue = */ 0, /*.alpha = */ 0}};
 
 inline const Pixel Pixel::WHITE{{/*.red = */ MAX_COLOR_VAL, /*.green = */ MAX_COLOR_VAL,
-                                 /*.blue = */ MAX_COLOR_VAL, /*.alpha = */ MAX_COLOR_VAL}};
+                                 /*.blue = */ MAX_COLOR_VAL, /*.alpha = */ MAX_ALPHA}};
 #endif
 
 struct FXBuffSettings
@@ -195,6 +206,8 @@ private:
   Buffer m_buff{};
 };
 
+static_assert(sizeof(Pixel) == sizeof(PixelIntType), "Invalid Pixel size.");
+
 inline Pixel::Pixel() : m_color{/*.channels*/ {}}
 {
 }
@@ -211,11 +224,13 @@ inline Pixel::Pixel(const uint32_t red,
                     const uint32_t green,
                     const uint32_t blue,
                     const uint32_t alpha)
-  : m_color{
-        {/*.r = */ static_cast<PixelChannelType>(std::min(channel_limits<uint32_t>::max(), red)),
-         /*.g = */ static_cast<PixelChannelType>(std::min(channel_limits<uint32_t>::max(), green)),
-         /*.b = */ static_cast<PixelChannelType>(std::min(channel_limits<uint32_t>::max(), blue)),
-         /*.a = */ static_cast<PixelChannelType>(std::min(channel_limits<uint32_t>::max(), alpha))}}
+  : m_color{{/*.r = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, red)),
+             /*.g = */
+             static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, green)),
+             /*.b = */
+             static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, blue)),
+             /*.a = */
+             static_cast<PixelChannelType>(std::min(static_cast<uint32_t>(MAX_ALPHA), alpha))}}
 {
 }
 
