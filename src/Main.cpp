@@ -23,9 +23,9 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 
-constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA;
 constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
-constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE;
+constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16; // GL_RGBA;
+    constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_SHORT; //GL_UNSIGNED_BYTE;
 
 constexpr int MAX_QUALITY = 4;
 constexpr std::array<uint32_t, MAX_QUALITY + 1> WIDTHS_BY_QUALITY{
