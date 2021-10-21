@@ -20,7 +20,6 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::PixelChannelType;
 using GOOM::PixelIntType;
-using GOOM::ScaleChannelColorAfterIntegerMultiply;
 using GOOM::UTILS::floats_equal;
 using namespace std::chrono_literals;
 using std::chrono::high_resolution_clock;
@@ -76,14 +75,6 @@ TEST_CASE("Pixels")
     REQUIRE(pixelBlack == Pixel::BLACK);
     const Pixel pixelWhite{{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA}};
     REQUIRE(pixelWhite == Pixel::WHITE);
-  }
-  SECTION("Pixel Scale")
-  {
-    const Pixel pixel{{TEST_R, TEST_G, TEST_B}};
-    const uint32_t rChannel = pixel.R();
-    const uint32_t gChannel = pixel.G();
-    const uint32_t rgProduct = rChannel * gChannel;
-    REQUIRE(ScaleChannelColorAfterIntegerMultiply(rgProduct) == rgProduct / MAX_COLOR_VAL);
   }
   SECTION("Pixel Multiply Scalar")
   {

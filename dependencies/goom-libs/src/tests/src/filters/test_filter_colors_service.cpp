@@ -40,10 +40,10 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
   constexpr uint32_t G4 = 200;
   constexpr uint32_t B4 = 60;
 
-  constexpr uint32_t MAX_CHAN = channel_limits<uint32_t>::max();
+  constexpr uint32_t MAX_SUM_COEFF = channel_limits<uint32_t>::max() + 1;
 
-  const ZoomFilterBuffers::NeighborhoodCoeffArray coeffs = {{50, 60, 70, 75}, false};
-  REQUIRE(MAX_CHAN == std::accumulate(cbegin(coeffs.val), cend(coeffs.val), 0U));
+  const ZoomFilterBuffers::NeighborhoodCoeffArray coeffs = {{50, 60, 70, 76}, false};
+  REQUIRE(MAX_SUM_COEFF == std::accumulate(cbegin(coeffs.val), cend(coeffs.val), 0U));
   REQUIRE(4 == coeffs.val.size());
   // GCC Won't link with this:  REQUIRE(PixelBuffer::NUM_NBRS == coeffs.val.size());
 
@@ -62,13 +62,13 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
 
     const uint32_t expectedR =
         (coeffs.val[0] * R1 + coeffs.val[1] * R2 + coeffs.val[2] * R3 + coeffs.val[3] * R4) /
-        MAX_CHAN;
+        MAX_SUM_COEFF;
     const uint32_t expectedG =
         (coeffs.val[0] * G1 + coeffs.val[1] * G2 + coeffs.val[2] * G3 + coeffs.val[3] * G4) /
-        MAX_CHAN;
+        MAX_SUM_COEFF;
     const uint32_t expectedB =
         (coeffs.val[0] * B1 + coeffs.val[1] * B2 + coeffs.val[2] * B3 + coeffs.val[3] * B4) /
-        MAX_CHAN;
+        MAX_SUM_COEFF;
 
     const Pixel expectedColor = GetColor(expectedR, expectedG, expectedB);
     const Pixel newColor = filterColorsService.GetNewColor(pixelBuffer, sourcePointInfo);

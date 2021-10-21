@@ -159,9 +159,10 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
     multG += static_cast<uint32_t>(color.G()) * coeff;
     multB += static_cast<uint32_t>(color.B()) * coeff;
   }
-  uint32_t newR = ScaleChannelColorAfterIntegerMultiply(multR);
-  uint32_t newG = ScaleChannelColorAfterIntegerMultiply(multG);
-  uint32_t newB = ScaleChannelColorAfterIntegerMultiply(multB);
+  constexpr uint32_t MAX_SUM_COEFFS = channel_limits<uint32_t>::max() + 1;
+  uint32_t newR = multR / MAX_SUM_COEFFS;
+  uint32_t newG = multG / MAX_SUM_COEFFS;
+  uint32_t newB = multB / MAX_SUM_COEFFS;
 
   if (!m_buffSettings.allowOverexposed)
   {

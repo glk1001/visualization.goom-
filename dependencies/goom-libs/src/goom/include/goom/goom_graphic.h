@@ -57,13 +57,13 @@ struct channel_limits<float>
   static constexpr auto max() noexcept -> float { return channel_limits<uint8_t>::max(); }
 };
 
-using PixelChannelType = uint16_t;
-using PixelIntType = uint64_t;
+using PixelChannelType = uint8_t;
+using PixelIntType = uint32_t;
 
 constexpr PixelChannelType MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
 constexpr PixelChannelType MAX_ALPHA = MAX_COLOR_VAL;
 
-constexpr uint32_t MAX_CHANNEL_VALUE_HDR = 512;
+constexpr uint32_t MAX_CHANNEL_VALUE_HDR = 255;
 static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::max(),
               "Invalid MAX_CHANNEL_VALUE_HDR");
 
@@ -138,9 +138,6 @@ private:
 [[nodiscard]] auto MultiplyColorChannels(PixelChannelType ch1, PixelChannelType ch2) -> uint32_t;
 [[nodiscard]] auto MultiplyChannelColorByScalar(uint32_t scalar, PixelChannelType channelVal)
     -> uint32_t;
-[[nodiscard]] auto DivideChannelColorByScalar(const uint32_t scalar, const uint32_t channelVal)
-    -> uint32_t;
-[[nodiscard]] auto ScaleChannelColorAfterIntegerMultiply(uint32_t channelVal) -> uint32_t;
 
 #if __cplusplus > 201402L
 inline const Pixel Pixel::BLACK{{/*.red = */ 0, /*.green = */ 0, /*.blue = */ 0, /*.alpha = */ 0}};
@@ -242,9 +239,9 @@ inline auto GetPixelScaledByMax(uint32_t red, uint32_t green, uint32_t blue, con
   if (maxVal > channel_limits<uint32_t>::max())
   {
     // scale all channels back
-    red = DivideChannelColorByScalar(maxVal, red);
-    green = DivideChannelColorByScalar(maxVal, green);
-    blue = DivideChannelColorByScalar(maxVal, blue);
+    red = (red * channel_limits<uint32_t>::max()) / maxVal;
+    green = (green * channel_limits<uint32_t>::max()) / maxVal;
+    blue = (blue * channel_limits<uint32_t>::max()) / maxVal;
   }
 
   return {red, green, blue, alpha};
@@ -253,25 +250,14 @@ inline auto GetPixelScaledByMax(uint32_t red, uint32_t green, uint32_t blue, con
 inline auto MultiplyColorChannels(const PixelChannelType ch1, const PixelChannelType ch2)
     -> uint32_t
 {
-  return ScaleChannelColorAfterIntegerMultiply(static_cast<uint32_t>(ch1) *
-                                               static_cast<uint32_t>(ch2));
+  return (static_cast<uint32_t>(ch1) * static_cast<uint32_t>(ch2)) /
+         channel_limits<uint32_t>::max();
 }
 
 inline auto MultiplyChannelColorByScalar(const uint32_t scalar, const PixelChannelType channelVal)
     -> uint32_t
 {
-  return ScaleChannelColorAfterIntegerMultiply((scalar + 1) * static_cast<uint32_t>(channelVal));
-}
-
-inline auto DivideChannelColorByScalar(const uint32_t scalar, const uint32_t channelVal) -> uint32_t
-{
-  return (channelVal * channel_limits<uint32_t>::max()) / scalar;
-  ;
-}
-
-inline auto ScaleChannelColorAfterIntegerMultiply(const uint32_t channelVal) -> uint32_t
-{
-  return channelVal / channel_limits<uint32_t>::max();
+  return (scalar * static_cast<uint32_t>(channelVal)) / channel_limits<uint32_t>::max();
 }
 
 inline auto operator==(const Pixel& pixel1, const Pixel& pixel2) -> bool
