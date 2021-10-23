@@ -141,7 +141,7 @@ protected:
 private:
   void SetNumChannels(int numChannels);
   void SetSongTitle(const std::string& songTitle);
-  void StartLogging() const;
+  static void StartLogging() ;
   [[nodiscard]] auto InitGoomController() -> bool;
   void DeinitGoomController();
   void StartGoomProcessBuffersThread();

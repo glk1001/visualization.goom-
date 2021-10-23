@@ -24,8 +24,10 @@ using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 
 constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
-constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA; // GL_RGBA16;
-constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE; // GL_UNSIGNED_SHORT;
+constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA;
+//constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
+constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE;
+//constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_SHORT;
 
 constexpr int MAX_QUALITY = 4;
 constexpr std::array<uint32_t, MAX_QUALITY + 1> WIDTHS_BY_QUALITY{
@@ -127,11 +129,11 @@ void CVisualizationGoom::SetSongTitle(const std::string& songTitle)
   m_titleChange = true;
 }
 
-void CVisualizationGoom::StartLogging() const
+void CVisualizationGoom::StartLogging()
 {
-  static const auto s_fKodiLog = [](const Logging::LogLevel lvl, const std::string& s) {
+  static const auto s_fKodiLog = [](const Logging::LogLevel lvl, const std::string& msg) {
     const auto kodiLvl = static_cast<AddonLog>(static_cast<size_t>(lvl));
-    kodi::Log(kodiLvl, s.c_str());
+    kodi::Log(kodiLvl, msg.c_str());
   };
   AddLogHandler("kodi-logger", s_fKodiLog);
   SetLogFile("/tmp/kodi_goom.log");
