@@ -57,13 +57,13 @@ struct channel_limits<float>
   static constexpr auto max() noexcept -> float { return channel_limits<uint8_t>::max(); }
 };
 
-using PixelChannelType = uint8_t;
-using PixelIntType = uint32_t;
+using PixelChannelType = uint16_t;
+using PixelIntType = uint64_t;
+constexpr uint32_t MAX_CHANNEL_VALUE_HDR = 1024;
 
 constexpr PixelChannelType MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
 constexpr PixelChannelType MAX_ALPHA = MAX_COLOR_VAL;
 
-constexpr uint32_t MAX_CHANNEL_VALUE_HDR = 255;
 static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::max(),
               "Invalid MAX_CHANNEL_VALUE_HDR");
 

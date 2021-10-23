@@ -142,7 +142,7 @@ private:
   void UpdateFloatingStartPositions();
   void SetNewFloatingStartPosition();
 
-  static constexpr float GAMMA = 2.0F;
+  static constexpr float GAMMA = 1.0F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   //auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
@@ -274,7 +274,7 @@ void ImageFx::ImageFxImpl::ApplyMultiple()
 
 inline void ImageFx::ImageFxImpl::DrawChunks()
 {
-  const float brightness = 0.07F + (0.07F * m_inOutT());
+  const float brightness = 0.10F + (0.20F * m_inOutT());
 
   const auto drawChunk = [&](const size_t i) {
     const V2dInt nextStartPosition = GetNextChunkStartPosition(i);

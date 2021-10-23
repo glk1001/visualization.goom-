@@ -24,10 +24,10 @@ using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 
 constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
-constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA;
-//constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
-constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE;
-//constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_SHORT;
+//constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA;
+constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
+//constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE;
+constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_SHORT;
 
 constexpr int MAX_QUALITY = 4;
 constexpr std::array<uint32_t, MAX_QUALITY + 1> WIDTHS_BY_QUALITY{
@@ -479,30 +479,43 @@ auto CVisualizationGoom::InitGlShaders() -> bool
 #ifdef HAS_GL
   // clang-format off
   constexpr const GLchar* VERTEX_SHADER =
-    "#version 150\n"
+    "#version 330 core\n"
+    "out vec2 texCoords;\n"
     "\n"
     "uniform mat4 u_projModelMat;\n"
     "in vec2 in_position;\n"
-    "in vec2 in_tex_coord;\n"
-    "smooth out vec2 vs_tex_coord;\n"
+    "in vec2 in_texCoords;\n"
     "\n"
     "void main()\n"
     "{\n"
-    "  gl_Position = u_projModelMat * vec4(in_position.x, in_position.y, 0.0, 1.0);\n"
-    "\n"
-    "  vs_tex_coord = in_tex_coord;\n"
+    "  gl_Position = u_projModelMat * vec4(in_position, 0.0, 1.0);\n"
+    "  texCoords = in_texCoords;\n"
     "}\n";
 
   constexpr const GLchar* FRAGMENT_SHADER =
-    "#version 150\n"
-    "\n"
-    "uniform sampler2D tex;\n"
-    "smooth in vec2 vs_tex_coord;\n"
-    "out vec4 color;\n"
-    "\n"
+    "#version 330 core\n"
+    "out vec4 fragColor;"
+    " "
+    "uniform sampler2D texBuffer;"
+    "in vec2 texCoords;"
+    " "
     "void main()\n"
     "{\n"
-    "  color = vec4(texture(tex, vs_tex_coord).rgb, 1.0);\n"
+    "  vec3 hdrColor = texture(texBuffer, texCoords).rgb;\n"
+    "\n"
+    "  // reinhard tone mapping\n"
+    "  vec3 mapped = hdrColor / (hdrColor + vec3(1.0));\n"
+    "\n"
+    "  // exposure tone mapping\n"
+    "//  const float exposure = 2.0;\n"
+    "//  vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);\n"
+    "\n"
+    "  // gamma correction\n"
+    "  const float A = 11.0;\n"
+    "  const float gamma = 2.2;\n"
+    "  mapped = A * pow(mapped, vec3(1.0 / gamma));\n"
+    "\n"
+    "  fragColor = vec4(mapped, 1.0);\n"
     "}\n";
 
 #else
@@ -547,7 +560,7 @@ void CVisualizationGoom::OnCompiledAndLinked()
 {
   m_uProjModelMatLoc = glGetUniformLocation(ProgramHandle(), "u_projModelMat");
   m_aPositionLoc = glGetAttribLocation(ProgramHandle(), "in_position");
-  m_aCoordLoc = glGetAttribLocation(ProgramHandle(), "in_tex_coord");
+  m_aCoordLoc = glGetAttribLocation(ProgramHandle(), "in_texCoords");
 }
 
 auto CVisualizationGoom::OnEnabled() -> bool
