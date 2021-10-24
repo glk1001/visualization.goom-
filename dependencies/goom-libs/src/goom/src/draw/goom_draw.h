@@ -9,15 +9,16 @@
 #include <cstdint>
 #include <vector>
 
-#if __cplusplus <= 201402L
 namespace GOOM
 {
+
+namespace UTILS
+{
+class ImageBitmap;
+} // namespace UTILS
+
 namespace DRAW
 {
-#else
-namespace GOOM::DRAW
-{
-#endif
 
 class IGoomDraw
 {
@@ -48,20 +49,20 @@ public:
   using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& imageColor)>;
   void Bitmap(int xCentre,
               int yCentre,
-              const PixelBuffer& bitmap,
+              const UTILS::ImageBitmap& bitmap,
               const GetBitmapColorFunc& getColor);
   void Bitmap(int xCentre,
               int yCentre,
-              const PixelBuffer& bitmap,
+              const UTILS::ImageBitmap& bitmap,
               const GetBitmapColorFunc& getColor,
               bool allowOverexposed);
   void Bitmap(int xCentre,
               int yCentre,
-              const PixelBuffer& bitmap,
+              const UTILS::ImageBitmap& bitmap,
               const std::vector<GetBitmapColorFunc>& getColors);
   void Bitmap(int xCentre,
               int yCentre,
-              const PixelBuffer& bitmap,
+              const UTILS::ImageBitmap& bitmap,
               const std::vector<GetBitmapColorFunc>& getColors,
               bool allowOverexposed);
 
@@ -162,7 +163,7 @@ inline void IGoomDraw::Line(const int x1,
 
 inline void IGoomDraw::Bitmap(const int xCentre,
                               const int yCentre,
-                              const PixelBuffer& bitmap,
+                              const UTILS::ImageBitmap& bitmap,
                               const GetBitmapColorFunc& getColor)
 {
   Bitmap(xCentre, yCentre, bitmap, getColor, GetAllowOverexposed());
@@ -170,7 +171,7 @@ inline void IGoomDraw::Bitmap(const int xCentre,
 
 inline void IGoomDraw::Bitmap(const int xCentre,
                               const int yCentre,
-                              const PixelBuffer& bitmap,
+                              const UTILS::ImageBitmap& bitmap,
                               const GetBitmapColorFunc& getColor,
                               const bool allowOverexposed)
 {
@@ -179,7 +180,7 @@ inline void IGoomDraw::Bitmap(const int xCentre,
 
 inline void IGoomDraw::Bitmap(const int xCentre,
                               const int yCentre,
-                              const PixelBuffer& bitmap,
+                              const UTILS::ImageBitmap& bitmap,
                               const std::vector<GetBitmapColorFunc>& getColors)
 {
   Bitmap(xCentre, yCentre, bitmap, getColors, GetAllowOverexposed());
@@ -200,9 +201,5 @@ inline void IGoomDraw::DrawPixels(const int32_t x,
   m_drawMethods.DrawPixels(x, y, colors, allowOverexposed);
 }
 
-#if __cplusplus <= 201402L
 } // namespace DRAW
 } // namespace GOOM
-#else
-} // namespace GOOM::DRAW
-#endif

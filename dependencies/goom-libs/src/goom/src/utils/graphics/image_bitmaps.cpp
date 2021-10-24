@@ -18,6 +18,18 @@ namespace GOOM::UTILS
 {
 #endif
 
+void ImageBitmap::Resize(const size_t width, const size_t height)
+{
+  m_width = static_cast<uint32_t>(width);
+  m_height = static_cast<uint32_t>(height);
+  m_buff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
+}
+
+inline void ImageBitmap::SetPixel(const size_t x, const size_t y, const RGB& pixel)
+{
+  m_buff.at((y * m_width) + x) = pixel;
+}
+
 void ImageBitmap::Load(std::string imageFilename)
 {
   m_filename = std::move(imageFilename);
@@ -54,13 +66,13 @@ void ImageBitmap::Load(std::string imageFilename)
   {
     for (size_t x = 0; x < GetWidth(); ++x)
     {
-      PixelChannelType blue = *rgbPtr;
+      uint8_t blue = *rgbPtr;
       rgbPtr++;
-      PixelChannelType green = *rgbPtr;
+      uint8_t green = *rgbPtr;
       rgbPtr++;
-      PixelChannelType red = *rgbPtr;
+      uint8_t red = *rgbPtr;
       rgbPtr++;
-      const PixelChannelType alpha = *rgbPtr;
+      const uint8_t alpha = *rgbPtr;
       rgbPtr++;
 
       if (alpha == 0)
@@ -70,8 +82,7 @@ void ImageBitmap::Load(std::string imageFilename)
         blue = 0;
       }
 
-      (*this)(x, y) =
-          Pixel{/*.channels*/ {/*.r = */ red, /*.g = */ green, /*.b = */ blue, /*.a = */ alpha}};
+      SetPixel(x, y, RGB{/*.r = */ red, /*.g = */ green, /*.b = */ blue, /*.a = */ alpha});
     }
   }
 

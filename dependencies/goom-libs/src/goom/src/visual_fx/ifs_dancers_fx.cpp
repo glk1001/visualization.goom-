@@ -77,6 +77,7 @@ using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
 using UTILS::GetRandInRange;
+using UTILS::ImageBitmap;
 using UTILS::ProbabilityOfMInN;
 using UTILS::SmallImageBitmaps;
 using UTILS::TValue;
@@ -513,7 +514,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
         m_colorizer.GetMixedColor(baseColor, point.GetCount(), BITMAP_BRIGHTNESS, tMix, tX, tY);
     const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                               [[maybe_unused]] const Pixel& b) { return mixedColor; };
-    const PixelBuffer& bitmap{*point.GetSimiCurrentPointBitmap()};
+    const ImageBitmap& bitmap{*point.GetSimiCurrentPointBitmap()};
     m_draw.Bitmap(pX, pY, bitmap, {getColor, getColor}, point.GetSimiOverExposeBitmaps());
   }
 }
