@@ -476,78 +476,17 @@ auto CVisualizationGoom::GetGlQuadData(const int width,
 
 auto CVisualizationGoom::InitGlShaders() -> bool
 {
-#ifdef HAS_GL
-  // clang-format off
-  constexpr const GLchar* VERTEX_SHADER =
-    "#version 330 core\n"
-    "out vec2 texCoords;\n"
-    "\n"
-    "uniform mat4 u_projModelMat;\n"
-    "in vec2 in_position;\n"
-    "in vec2 in_texCoords;\n"
-    "\n"
-    "void main()\n"
-    "{\n"
-    "  gl_Position = u_projModelMat * vec4(in_position, 0.0, 1.0);\n"
-    "  texCoords = in_texCoords;\n"
-    "}\n";
+  const std::string shaderSubdir = "resources/shaders/" GL_TYPE_STRING;
+  const std::string vertexShaderFile = kodi::GetAddonPath(shaderSubdir + "/vertex.glsl");
+  const std::string fragmentShaderFile = kodi::GetAddonPath(shaderSubdir + "/fragment.glsl");
 
-  constexpr const GLchar* FRAGMENT_SHADER =
-    "#version 330 core\n"
-    "out vec4 fragColor;"
-    " "
-    "uniform sampler2D texBuffer;"
-    "in vec2 texCoords;"
-    " "
-    "void main()\n"
-    "{\n"
-    "  vec3 hdrColor = texture(texBuffer, texCoords).rgb;\n"
-    "\n"
-    "  // reinhard tone mapping\n"
-    "  vec3 mapped = hdrColor / (hdrColor + vec3(1.0));\n"
-    "\n"
-    "  // exposure tone mapping\n"
-    "//  const float exposure = 2.0;\n"
-    "//  vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);\n"
-    "\n"
-    "  // gamma correction\n"
-    "  const float A = 11.0;\n"
-    "  const float gamma = 2.2;\n"
-    "  mapped = A * pow(mapped, vec3(1.0 / gamma));\n"
-    "\n"
-    "  fragColor = vec4(mapped, 1.0);\n"
-    "}\n";
+  if (!LoadShaderFiles(vertexShaderFile, fragmentShaderFile))
+  {
+    LogError("CVisualizationGoom: Failed to load GL shaders.");
+    return false;
+  }
 
-#else
-  constexpr const GLchar* VERTEX_SHADER =
-    "#version 100\n"
-    "\n"
-    "uniform mat4 u_projModelMat;\n"
-    "attribute vec2 in_position;\n"
-    "attribute vec2 in_tex_coord;\n"
-    "varying vec2 vs_tex_coord;\n"
-    "\n"
-    "void main()\n"
-    "{\n"
-    "  gl_Position = u_projModelMat * vec4(in_position, 0.0, 1.0);\n"
-    "  vs_tex_coord = in_tex_coord;\n"
-    "}\n";
-
-  constexpr const GLchar* FRAGMENT_SHADER =
-    "#version 100\n"
-    "\n"
-    "precision mediump float;\n"
-    "uniform sampler2D tex;\n"
-    "varying vec2 vs_tex_coord;\n"
-    "\n"
-    "void main()\n"
-    "{\n"
-    "  gl_FragColor = vec4(texture2D(tex, vs_tex_coord).rgb, 1.0);\n"
-    "}\n";
-  // clang-format on
-#endif
-
-  if (!CompileAndLink(VERTEX_SHADER, "", FRAGMENT_SHADER, ""))
+  if (!CompileAndLink())
   {
     LogError("CVisualizationGoom: Failed to compile GL shaders.");
     return false;
