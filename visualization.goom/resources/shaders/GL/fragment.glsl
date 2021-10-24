@@ -214,24 +214,32 @@ void main()
 {
   vec3 hdrColor = texture(texBuffer, texCoords).rgb;
 
+  // Gamma correction
+  float A = 1.0;
+  const float gamma = 2.2;
+
   // Tone mapping
   //vec3 mapped = hdrColor;
+  //A = 10.0;
+
   //vec3 mapped = reinhard(hdrColor);
   //vec3 mapped = reinhard2(hdrColor);
   //vec3 mapped = tonemapFilmic(hdrColor); // Doesn't seem to show anything
   //vec3 mapped = aces(hdrColor);
-  vec3 mapped = lottes(hdrColor);
+  //vec3 mapped = lottes(hdrColor);
   //vec3 mapped = uchimura(hdrColor);
-  //vec3 mapped = uncharted2Tonemap(hdrColor);
+
+  vec3 mapped = uncharted2Tonemap(hdrColor);
+  A = 15.0;
+
   //vec3 mapped = unreal(hdrColor); // needs lower 'A' value
 
+  
   // Exposure tone mapping
   //const float exposure = 2.0;\n"
   //vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);\n"
 
-  // Gamma correction
-  const float A = 30.0;
-  const float gamma = 2.2;
+  
   mapped = A * pow(mapped, vec3(1.0 / gamma));
 
   fragColor = vec4(mapped, 1.0);

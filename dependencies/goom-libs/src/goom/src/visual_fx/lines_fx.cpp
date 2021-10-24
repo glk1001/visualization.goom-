@@ -400,7 +400,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   if (m_lineLerpFactor >= 1.0F)
   {
     m_srcLineType = m_destLineType;
-    m_currentBrightness = GetRandInRange(2.0F, 3.0F);
+    m_currentBrightness = GetRandInRange(2.0F, 3.5F);
   }
 
   assert(m_srcLineType != LineType::CIRCLE || m_lineLerpFactor < 1.0F ||
@@ -447,7 +447,7 @@ void LinesFx::LinesImpl::ResetDestLine(const LineType newLineType,
   m_newAmplitude = newAmplitude;
   m_destColor = newColor;
   m_lineLerpFactor = 0.0;
-  m_currentBrightness = GetRandInRange(1.0F, 1.9F);
+  m_currentBrightness = GetRandInRange(1.0F, 2.5F);
   m_beadedLook = ProbabilityOfMInN(3, 20);
   m_maxNormalizedPeak = GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
 

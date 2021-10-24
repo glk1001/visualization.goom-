@@ -235,8 +235,9 @@ inline auto GetPixelScaledByMax(uint32_t red, uint32_t green, uint32_t blue, con
     -> Pixel
 {
   const uint32_t maxVal = std::max({red, green, blue});
+  constexpr uint32_t MAX_CHAN_EXPOSURE = 512;
 
-  if (maxVal > channel_limits<uint32_t>::max())
+  if (maxVal > MAX_CHAN_EXPOSURE)
   {
     // scale all channels back
     red = (red * channel_limits<uint32_t>::max()) / maxVal;

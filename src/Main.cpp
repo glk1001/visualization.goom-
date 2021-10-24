@@ -23,7 +23,10 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 
-constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
+// TODO Figure out correct format here 
+//      - GL_BGRA looks good but why?
+//constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
+constexpr GLenum TEXTURE_FORMAT = GL_BGRA;
 //constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA;
 constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
 //constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE;
