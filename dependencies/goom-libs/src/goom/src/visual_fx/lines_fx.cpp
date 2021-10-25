@@ -612,15 +612,15 @@ void LinesFx::LinesImpl::DrawDots(const V2dInt& pt, const std::vector<Pixel>& co
   {
     const auto getModColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                                  const Pixel& b) -> Pixel {
-      return GetColorMultiply(b, colors[0], false);
+      return GetColorMultiply(b, colors[0], true);
     };
     const auto getLineColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                                   const Pixel& b) -> Pixel {
-      return GetColorMultiply(b, colors[1], false);
+      return GetColorMultiply(b, colors[1], true);
     };
     const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getModColor, getLineColor};
     const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
-    m_draw.Bitmap(pt.x, pt.y, bitmap, getColors, false);
+    m_draw.Bitmap(pt.x, pt.y, bitmap, getColors, true);
   }
 }
 

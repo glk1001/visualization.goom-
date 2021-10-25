@@ -274,7 +274,7 @@ void ImageFx::ImageFxImpl::ApplyMultiple()
 
 inline void ImageFx::ImageFxImpl::DrawChunks()
 {
-  const float brightness = 0.08F + (0.15F * m_inOutT());
+  const float brightness = 0.05F + 0.05F * (4.0F * Sq(m_inOutT() - 0.5F));
 
   const auto drawChunk = [&](const size_t i) {
     const V2dInt nextStartPosition = GetNextChunkStartPosition(i);
@@ -351,7 +351,7 @@ void ImageFx::ImageFxImpl::DrawChunk(const V2dInt& pos,
     for (size_t xPixel = 0; xPixel < CHUNK_WIDTH; ++xPixel)
     {
       const std::vector<Pixel> pixelColors = GetPixelColors(pixelRow[xPixel], brightness);
-      m_draw.DrawPixels(x, y, pixelColors, false);
+      m_draw.DrawPixels(x, y, pixelColors, true);
 
       ++x;
     }

@@ -104,7 +104,7 @@ constexpr uint32_t MIN_STAY_AWAY_FROM_CENTRE_TIME = 100;
 constexpr uint32_t MAX_STAY_AWAY_FROM_CENTRE_TIME = 100;
 
 constexpr float PROB_RESET_COLOR_MAPS = 1.0F / 3.0F;
-constexpr float PROB_ALLOW_OVEREXPOSED = 1.0F / 1000.0F;
+constexpr float PROB_ALLOW_OVEREXPOSED = 1.0F;
 constexpr float PROB_DECREASE_SPEED = 1.0F / 5.0F;
 constexpr float PROB_INCREASE_SPEED = 1.0F / 2.0F;
 constexpr float PROB_RANDOM_INCREASE_SPEED = 1.0F / 20.0F;
@@ -142,7 +142,7 @@ private:
   uint64_t m_updateNum = 0;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
-  bool m_allowOverexposed = false;
+  bool m_allowOverexposed = true;
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath = ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
   uint32_t m_numCapturedPrevShapesGroups = 0;

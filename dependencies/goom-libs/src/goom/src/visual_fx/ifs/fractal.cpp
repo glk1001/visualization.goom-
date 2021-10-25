@@ -333,7 +333,7 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
       constexpr uint32_t MIN_RES = 3;
       constexpr uint32_t MAX_RES = 5;
       const uint32_t res = GetRandInRange(MIN_RES, MAX_RES);
-      (*m_components)[i].overExposeBitmaps = ProbabilityOfMInN(9, 10);
+      (*m_components)[i].overExposeBitmaps = ProbabilityOfMInN(10, 10);
       if (ProbabilityOfMInN(6, 10))
       {
         (*m_components)[i].currentPointBitmap =
