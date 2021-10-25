@@ -27,11 +27,23 @@ msgstr ""
 #settings labels
 
 msgctxt "#30000"
-msgid "Show titles always"
+msgid "Show title"
 msgstr ""
 
 msgctxt "#30001"
-msgid "If set, the title will be displayed continuously, otherwise it will only be shown briefly on change."
+msgid "When to show the music title."
+msgstr ""
+
+msgctxt "#30011"
+msgid "At Start"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Always"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Never"
 msgstr ""
 
 msgctxt "#30002"

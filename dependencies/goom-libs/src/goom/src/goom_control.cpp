@@ -73,7 +73,9 @@ public:
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
 
+  void SetShowTitle(ShowTitleType value);
   void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
+
   void Start();
   void Finish();
 
@@ -93,7 +95,7 @@ private:
   GoomAllVisualFx m_visualFx;
   GoomEvents m_goomEvents{};
   GoomRandomStateHandler m_stateHandler{};
-
+  ShowTitleType m_showTitle = ShowTitleType::AT_START;
   GoomMusicSettingsReactor m_musicSettingsReactor;
 
   void ProcessAudio(const AudioSamples& soundData);
@@ -119,7 +121,9 @@ private:
   GoomTitleDisplayer m_goomTitleDisplayer;
   GoomMessageDisplayer m_messageDisplayer;
   auto GetFontDirectory() const -> std::string;
+  void InitTitleDisplay(const std::string& songTitle);
   void DisplayTitle(const std::string& songTitle, const std::string& message, float fps);
+  void DisplayCurrentTitle();
   void UpdateMessages(const std::string& messages);
   auto GetMessagesFontFile() const -> std::string;
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
@@ -143,6 +147,11 @@ GoomControl::GoomControl(const uint32_t width,
                          const std::string& resourcesDirectory)
   : m_controller{spimpl::make_unique_impl<GoomControlImpl>(width, height, resourcesDirectory)}
 {
+}
+
+void GoomControl::SetShowTitle(ShowTitleType value)
+{
+  m_controller->SetShowTitle(value);
 }
 
 void GoomControl::SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer)
@@ -201,6 +210,11 @@ inline auto GoomControl::GoomControlImpl::GetScreenWidth() const -> uint32_t
 inline auto GoomControl::GoomControlImpl::GetScreenHeight() const -> uint32_t
 {
   return m_goomInfo.GetScreenInfo().height;
+}
+
+inline void GoomControl::GoomControlImpl::SetShowTitle(const ShowTitleType value)
+{
+  m_showTitle = value;
 }
 
 inline void GoomControl::GoomControlImpl::SetScreenBuffer(
@@ -373,33 +387,62 @@ void GoomControl::GoomControlImpl::DisplayTitle(const std::string& songTitle,
 
   UpdateMessages(msg);
 
+  if (m_showTitle == ShowTitleType::NEVER)
+  {
+    return;
+  }
+
   if (!songTitle.empty())
   {
-    m_currentSongTitle = songTitle;
-
-    const auto xPos = static_cast<int>(0.085F * static_cast<float>(GetScreenWidth()));
-    const auto yPos = static_cast<int>(0.300F * static_cast<float>(GetScreenHeight()));
-    m_goomTitleDisplayer.SetInitialPosition(xPos, yPos);
+    InitTitleDisplay(songTitle);
   }
-
-  if ((!m_currentSongTitle.empty()) && (!m_goomTitleDisplayer.IsFinished()))
+  if (!m_currentSongTitle.empty())
   {
-    if (m_goomTitleDisplayer.IsFinalPhase())
-    {
-      m_goomTextOutput.SetBuffers({&m_imageBuffers.GetP1()});
-    }
-    else
-    {
-      m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
-    }
-    m_goomTitleDisplayer.Draw(m_currentSongTitle);
+    DisplayCurrentTitle();
   }
+}
+
+void GoomControl::GoomControlImpl::InitTitleDisplay(const std::string& songTitle)
+{
+  m_currentSongTitle = songTitle;
+
+  const float xPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.050F : 0.085F;
+  const float yPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.130F : 0.300F;
+  const auto xPos = static_cast<int>(xPosFraction * static_cast<float>(GetScreenWidth()));
+  const auto yPos = static_cast<int>(yPosFraction * static_cast<float>(GetScreenHeight()));
+
+  m_goomTitleDisplayer.SetInitialPosition(xPos, yPos);
+}
+
+inline void GoomControl::GoomControlImpl::DisplayCurrentTitle()
+{
+  if (m_showTitle == ShowTitleType::ALWAYS)
+  {
+    m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
+    m_goomTitleDisplayer.DrawStaticText(m_currentSongTitle);
+    return;
+  }
+
+  if (m_goomTitleDisplayer.IsFinished())
+  {
+    return;
+  }
+
+  if (m_goomTitleDisplayer.IsFinalPhase())
+  {
+    m_goomTextOutput.SetBuffers({&m_imageBuffers.GetP1()});
+  }
+  else
+  {
+    m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
+  }
+  m_goomTitleDisplayer.DrawMovingText(m_currentSongTitle);
 }
 
 /*
  * Met a jour l'affichage du message defilant
  */
-void GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages)
+inline void GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages)
 {
   if (messages.empty())
   {

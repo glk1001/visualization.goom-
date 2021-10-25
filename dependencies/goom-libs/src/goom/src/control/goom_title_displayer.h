@@ -38,7 +38,8 @@ public:
   [[nodiscard]] auto IsFinalPhase() const -> bool;
   [[nodiscard]] auto IsFinished() const -> bool;
 
-  void Draw(const std::string& title);
+  void DrawMovingText(const std::string& title);
+  void DrawStaticText(const std::string& title);
 
 private:
   static constexpr int MAX_TEXT_DISPLAY_TIME = 200;
@@ -73,6 +74,11 @@ private:
   COLOR::GammaCorrection m_textGammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};
   [[nodiscard]] auto GetTextGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
+
+inline void GoomTitleDisplayer::DrawStaticText(const std::string& title)
+{
+  DrawText(title);
+}
 
 inline void GoomTitleDisplayer::SetInitialPosition(const int32_t xStart, const int32_t yStart)
 {

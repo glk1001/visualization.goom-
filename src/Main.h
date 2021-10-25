@@ -89,8 +89,8 @@ private:
 
   std::string m_currentSongName{};
   std::string m_lastSongName{};
+  const GOOM::GoomControl::ShowTitleType m_showTitle;
   bool m_titleChange = false;
-  bool m_showTitleAlways = false;
   [[nodiscard]] auto GetTitle() -> std::string;
 
   GLint m_componentsPerVertex = 2;

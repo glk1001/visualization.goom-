@@ -19,6 +19,7 @@
 #include <stdexcept>
 
 using GOOM::AudioSamples;
+using GOOM::GoomControl;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
@@ -55,6 +56,7 @@ CVisualizationGoom::CVisualizationGoom()
         static_cast<size_t>(std::min(MAX_QUALITY, kodi::GetSettingInt("quality"))))},
     m_goomBufferLen{static_cast<size_t>(m_textureWidth * m_textureHeight)},
     m_goomBufferSize{PixelBuffer::GetIntBufferSize(m_textureWidth, m_textureHeight)},
+    m_showTitle{static_cast<GoomControl::ShowTitleType>(kodi::GetSettingInt("show_title"))},
     m_quadData{GetGlQuadData(m_windowWidth, m_windowHeight, m_windowXPos, m_windowYPos)},
     m_usePixelBufferObjects{kodi::GetSettingBoolean("use_pixel_buffer_objects")}
 {
@@ -200,6 +202,8 @@ auto CVisualizationGoom::InitGoomController() -> bool
     return false;
   }
 
+  m_goomControl->SetShowTitle(m_showTitle);
+
   // goom will use same random sequence if following is uncommented
   // goom::GoomControl::setRandSeed(1);
   m_goomControl->Start();
@@ -301,8 +305,6 @@ auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& trac
     m_titleChange = true;
   }
 
-  m_showTitleAlways = kodi::GetSettingBoolean("show_title_always");
-
   return true;
 }
 
@@ -403,7 +405,7 @@ void CVisualizationGoom::Process()
 
 inline auto CVisualizationGoom::GetTitle() -> std::string
 {
-  if ((!m_titleChange) && (!m_showTitleAlways))
+  if (!m_titleChange)
   {
     return "";
   }

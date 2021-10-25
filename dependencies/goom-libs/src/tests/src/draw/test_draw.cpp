@@ -95,7 +95,7 @@ auto FillDrawContainer(GoomDrawToContainer* draw, const size_t numChanged) -> st
   return pixelsNewToOld;
 }
 
-TEST_CASE("Test Draw to Container", "[GoomDrawToContainer]")
+TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
 {
   GoomDrawToContainer draw{WIDTH, HEIGHT};
 
@@ -128,7 +128,7 @@ TEST_CASE("Test Draw to Container", "[GoomDrawToContainer]")
   CheckContainer(draw, pixelsNewToOld);
 }
 
-TEST_CASE("Test Draw to Container with Duplicates", "[GoomDrawToContainerDuplicates]")
+TEST_CASE("Test DrawMovingText to Container with Duplicates", "[GoomDrawToContainerDuplicates]")
 {
   GoomDrawToContainer draw{WIDTH, HEIGHT};
 
@@ -158,7 +158,7 @@ TEST_CASE("Test Draw to Container with Duplicates", "[GoomDrawToContainerDuplica
   REQUIRE(0 == draw.GetColorsList(oldest.x, oldest.y).count);
 }
 
-TEST_CASE("Test Draw ClearAll", "[GoomDrawToContainerClearAll]")
+TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
 {
   GoomDrawToContainer draw{WIDTH, HEIGHT};
 

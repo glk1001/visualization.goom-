@@ -89,7 +89,7 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw, const std::string& fontD
   m_textDraw->SetAlignment(TextDraw::TextAlignment::LEFT);
 }
 
-void GoomTitleDisplayer::Draw(const std::string& title)
+void GoomTitleDisplayer::DrawMovingText(const std::string& title)
 {
   --m_timeLeftOfTitleDisplay;
 
@@ -119,11 +119,11 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
       static_cast<float>(m_timeLeftOfTitleDisplay) / static_cast<float>(MAX_TEXT_DISPLAY_TIME);
 
   const float tMix = IsInitialPhase()
-                         ? 0.05F
-                         : (0.5F * (2.0F - (static_cast<float>(m_timeLeftOfTitleDisplay) /
+                         ? 0.10F
+                         : (1.0F * (2.0F - (static_cast<float>(m_timeLeftOfTitleDisplay) /
                                             static_cast<float>(TIME_TO_START_MIDDLE_PHASE))));
   const float brightness = !IsFinalPhase()
-                               ? 1.0F
+                               ? 1.5F
                                : (2.5F * 0.5F *
                                   (2.0F - (static_cast<float>(m_timeLeftOfTitleDisplay) /
                                            static_cast<float>(TIME_TO_START_FINAL_PHASE))));

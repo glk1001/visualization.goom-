@@ -32,8 +32,20 @@ msgid "Show title"
 msgstr "Titel immer anzeigen"
 
 msgctxt "#30001"
-msgid "If set, the title will be displayed continuously, otherwise it will only be shown briefly on change."
-msgstr "Wenn aktiviert, wird der Titel fortlaufend angezeigt. Andernfalls wird er nur bei Änderung kurz angezeigt."
+msgid "When to show the music title."
+msgstr "Wenn festgelegt, wird der Titel fortlaufend angezeigt, andernfalls wird er bei Änderung nur kurz angezeigt."
+
+msgctxt "#30011"
+msgid "At Start"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Always"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Never"
+msgstr ""
 
 msgctxt "#30002"
 msgid "Render quality"
