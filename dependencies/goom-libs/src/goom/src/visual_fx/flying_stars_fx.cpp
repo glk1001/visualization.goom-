@@ -420,7 +420,7 @@ void FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents()
     {
       // clang-format off
       static const Weights<StarModes> s_starModes{{
-          {StarModes::NO_FX,      7},
+          {StarModes::NO_FX,     11},
           {StarModes::FIREWORKS, 10},
           {StarModes::FOUNTAIN,   7},
           {StarModes::RAIN,       7},
