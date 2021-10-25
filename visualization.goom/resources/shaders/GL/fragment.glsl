@@ -224,13 +224,22 @@ void main()
 
   //vec3 mapped = reinhard(hdrColor);
   //vec3 mapped = reinhard2(hdrColor);
-  //vec3 mapped = tonemapFilmic(hdrColor); // Doesn't seem to show anything
-  //vec3 mapped = aces(hdrColor);
-  //vec3 mapped = lottes(hdrColor);
-  //vec3 mapped = uchimura(hdrColor);
+  //A = 10.0;
 
-  vec3 mapped = uncharted2Tonemap(hdrColor);
-  A = 15.0;
+  //vec3 mapped = tonemapFilmic(hdrColor); // Doesn't seem to show anything
+  //A = 10.0;
+
+  vec3 mapped = aces(hdrColor);
+  A = 10.0;
+
+  //vec3 mapped = lottes(hdrColor);
+  //A = 10.0;
+
+  //vec3 mapped = uchimura(hdrColor);
+  //A = 10.0;
+
+  //vec3 mapped = uncharted2Tonemap(hdrColor);
+  //A = 10.0;
 
   //vec3 mapped = unreal(hdrColor); // needs lower 'A' value
 
