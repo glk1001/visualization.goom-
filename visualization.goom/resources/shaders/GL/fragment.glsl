@@ -237,6 +237,7 @@ vec3 xyz_to_rgb(vec3 xyz) {
 }
 **/
 
+/***/
 vec3 xyz_to_rgb(vec3 color) 
 {
   float var_X = color.r / 100.0; //X from 0.0 to  95.047 (Observer = 2.0 degrees, Illuminant = D65);
@@ -321,6 +322,7 @@ vec3 rgb_to_xyz(vec3 color)
   
   return vec3(X, Y, Z);
 }
+/***/
 
 vec3 lab_to_lch(vec3 color) 
 {
@@ -475,6 +477,7 @@ void main()
 {
   //vec3 hdrColor = hueShift(texture(texBuffer, texCoords).rgb, 0.5);
   
+  // 'Chromatic Increase' - https://github.com/gurki/vivid
   vec3 lch = rgb_to_lch(texture(texBuffer, texCoords).rgb);
   lch.y = min(lch.y * 2.f, 140.0);
   vec3 hdrColor = lch_to_rgb(lch);
@@ -513,7 +516,7 @@ void main()
   //const float exposure = 30.0;
   //vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
   vec3 mapped = vec3(1.0) - exp(-hdrColor * u_texExposure);
-  A = 5.0;
+  A = 3.0;
   
   //mapped = A * mapped;
   mapped = A * pow(mapped, vec3(1.0 / gamma));
