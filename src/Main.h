@@ -115,6 +115,7 @@ private:
   GLint m_uProjModelMatLoc = -1;
   GLint m_aPositionLoc = -1;
   GLint m_aCoordLoc = -1;
+  GLint m_uTexExposureLoc = -1;
 
   // Goom's data itself
   std::unique_ptr<GOOM::GoomControl> m_goomControl{};

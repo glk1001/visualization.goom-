@@ -503,6 +503,7 @@ auto CVisualizationGoom::InitGlShaders() -> bool
 void CVisualizationGoom::OnCompiledAndLinked()
 {
   m_uProjModelMatLoc = glGetUniformLocation(ProgramHandle(), "u_projModelMat");
+  m_uTexExposureLoc = glGetUniformLocation(ProgramHandle(), "u_texExposure");
   m_aPositionLoc = glGetAttribLocation(ProgramHandle(), "in_position");
   m_aCoordLoc = glGetAttribLocation(ProgramHandle(), "in_texCoords");
 }
@@ -666,6 +667,8 @@ void CVisualizationGoom::Render()
     }
 
     EnableShader();
+    // TODO - experimental: start to use dynamic exposure
+    glUniform1f(m_uTexExposureLoc, 5.0F);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
     DisableShader();
 
