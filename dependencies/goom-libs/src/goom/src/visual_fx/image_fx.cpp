@@ -274,7 +274,7 @@ void ImageFx::ImageFxImpl::ApplyMultiple()
 
 inline void ImageFx::ImageFxImpl::DrawChunks()
 {
-  const float brightness = 0.05F + 0.05F * (4.0F * Sq(m_inOutT() - 0.5F));
+  const float brightness = 0.05F + (0.05F * m_inOutT());
 
   const auto drawChunk = [&](const size_t i) {
     const V2dInt nextStartPosition = GetNextChunkStartPosition(i);

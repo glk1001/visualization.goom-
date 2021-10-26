@@ -25,10 +25,6 @@ void GoomStateInfo::NormaliseStates(StateInfoArray& stateInfoArray)
     {
       totalBuffIntensity += drawableInfo.buffSettings.buffIntensity;
     }
-    if (totalBuffIntensity <= 1.0F)
-    {
-      continue;
-    }
 
     for (auto& drawableInfo : state.drawablesInfo)
     {
