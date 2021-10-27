@@ -37,11 +37,11 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
-using COLOR::IColorMap;
 using COLOR::GammaCorrection;
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
 using COLOR::GetLightenedColor;
+using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using UTILS::GetRandInRange;
@@ -50,6 +50,7 @@ using UTILS::Logging;
 using UTILS::m_two_pi;
 using UTILS::Parallel;
 using UTILS::ProbabilityOf;
+using UTILS::Shuffle;
 using UTILS::Sq;
 using UTILS::TValue;
 
@@ -220,20 +221,33 @@ void ImageFx::ImageFxImpl::Start()
 
 void ImageFx::ImageFxImpl::InitImage()
 {
-  static const std::array<std::string, 7> s_imageFilenames{
+  using ImageFilenameArray = std::array<std::string, 13>;
+  // clang-format off
+  static const ImageFilenameArray s_imageFilenames{
+      "blossoms.jpg",
+      "bokeh.jpg",
+      "butterfly.jpg",
       "chameleon-tail.jpg",
+      "galaxy.jpg",
       "mountain_sunset.png",
+      "night-tree.jpg",
       "pattern1.jpg",
       "pattern2.jpg",
       "pattern3.jpg",
       "pattern4.jpg",
       "pattern5.jpg",
+      "pretty-flowers.jpg",
   };
+  // clang-format on
+  ImageFilenameArray randFilenames = s_imageFilenames;
+  Shuffle(begin(randFilenames), end(randFilenames));
+
   const std::string imageDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + "image_fx";
-  for (const auto& imageFilename : s_imageFilenames)
+  constexpr size_t MAX_IMAGES = 5;
+  for (size_t i = 0; i < MAX_IMAGES; ++i)
   {
     m_images.emplace_back(std::make_unique<ChunkedImage>(
-        std::make_shared<ImageBitmap>(imageDir + PATH_SEP + imageFilename), m_goomInfo));
+        std::make_shared<ImageBitmap>(imageDir + PATH_SEP + randFilenames[i]), m_goomInfo));
   }
 }
 
@@ -245,15 +259,22 @@ inline void ImageFx::ImageFxImpl::ResetCurrentImage()
 inline void ImageFx::ImageFxImpl::ResetStartPositions()
 {
   const V2dInt centre{m_availableWidth / 2, m_availableHeight / 2};
-  const auto maxRadius = 0.5F * static_cast<float>(std::min(m_availableWidth, m_availableHeight));
+  const auto maxRadius = GetRandInRange(0.7F, 1.0F) * 0.5F *
+                         static_cast<float>(std::min(m_availableWidth, m_availableHeight));
 
+  float radiusTheta = 0.0F;
+  const float radiusThetaStep = m_two_pi / static_cast<float>(m_currentImage->GetNumChunks());
   for (size_t i = 0; i < m_currentImage->GetNumChunks(); ++i)
   {
-    const float radius = GetRandInRange(10.0F, maxRadius);
+    constexpr float SMALL_OFFSET = 0.4F;
+    const float maxRadiusAdj = (1.0F - SMALL_OFFSET * (1.0F + std::sin(radiusTheta))) * maxRadius;
+    const float radius = GetRandInRange(10.0F, maxRadiusAdj);
     const float theta = GetRandInRange(0.0F, m_two_pi);
     const V2dInt startPos = centre + V2dInt{static_cast<int32_t>((std::cos(theta) * radius)),
                                             static_cast<int32_t>((std::sin(theta) * radius))};
     m_currentImage->SetStartPosition(i, startPos);
+
+    radiusTheta += radiusThetaStep;
   }
 }
 
