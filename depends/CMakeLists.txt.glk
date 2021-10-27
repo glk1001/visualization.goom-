@@ -1,4 +1,0 @@
-set(CMAKE_INCLUDE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
-set(GOOM_ROOT_DIR ${PROJECT_SOURCE_DIR}/../dependencies/goom-libs)
-set(THIRD_PARTY_INCLUDE_DIR ${GOOM_ROOT_DIR}/lib)
-set(GOOM_BUILD_ARTIFACTS_DIR ${BUILD_DIR}/goom-libs-artifacts)

@@ -5,7 +5,7 @@ project(visualization.goom)
 set(ENABLE_TESTING ON)                  
 
 set(GOOM_LIBS_TARGET_NAME "goom_libs")
-set(GOOM_ROOT_DIR ${PROJECT_SOURCE_DIR}/dependencies/goom-libs)
+set(GOOM_ROOT_DIR ${PROJECT_SOURCE_DIR}/depends/goom-libs)
 set(GOOM_BUILD_ARTIFACTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/goom-libs-artifacts)
 set(GOOM_INCLUDE_DIRS "${GOOM_ROOT_DIR}/src/goom/include")
 set(GOOM_SYS_INC_DIRS "${GOOM_ROOT_DIR}/src/vivid/include"
