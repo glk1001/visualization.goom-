@@ -110,10 +110,10 @@ inline auto EvolvedColor(const Pixel& src,
     iMaskedSrc -= incr;
   }
 
-  const auto color = static_cast<int32_t>(srcColor.intVal & (~mask));
+  const PixelIntType color = srcColor.intVal & (~mask);
 
   RGBColor finalColor;
-  finalColor.intVal = (iMaskedSrc & mask) | static_cast<uint32_t>(color);
+  finalColor.intVal = (iMaskedSrc & mask) | static_cast<PixelIntType>(color);
 
   return Pixel{
       {finalColor.channels.r, finalColor.channels.g, finalColor.channels.b, finalColor.channels.a}};

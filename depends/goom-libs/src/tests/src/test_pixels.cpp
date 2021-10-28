@@ -14,6 +14,7 @@ using GOOM::channel_limits;
 using GOOM::GetPixelScaledByMax;
 using GOOM::MAX_ALPHA;
 using GOOM::MAX_COLOR_VAL;
+using GOOM::MAX_CHANNEL_VALUE_HDR;
 using GOOM::MultiplyChannelColorByScalar;
 using GOOM::MultiplyColorChannels;
 using GOOM::Pixel;
@@ -44,12 +45,12 @@ TEST_CASE("Pixels")
   {
     constexpr uint32_t RED = 299;
     constexpr uint32_t GREEN = 200;
-    constexpr uint32_t BLUE = 399;
+    constexpr uint32_t BLUE = MAX_CHANNEL_VALUE_HDR + 10;
     constexpr uint32_t ALPHA = 256;
     const Pixel pixel{RED, GREEN, BLUE, ALPHA};
-    REQUIRE(pixel.R() == MAX_COLOR_VAL);
+    REQUIRE(pixel.R() == RED);
     REQUIRE(pixel.G() == GREEN);
-    REQUIRE(pixel.B() == MAX_COLOR_VAL);
+    REQUIRE(pixel.B() == MAX_CHANNEL_VALUE_HDR);
     REQUIRE(pixel.A() == 255);
   }
   SECTION("Pixel Set")
@@ -100,8 +101,8 @@ TEST_CASE("Pixels")
     constexpr uint32_t ALPHA = 100;
     constexpr uint32_t MAX_CHANNEL = GREEN;
     const Pixel scaledByMaxPixel = GetPixelScaledByMax(RED, GREEN, BLUE, ALPHA);
-    const Pixel expectedPixel{{(MAX_COLOR_VAL * RED) / MAX_CHANNEL, MAX_COLOR_VAL,
-                               (MAX_COLOR_VAL * BLUE) / MAX_CHANNEL, ALPHA}};
+    const Pixel expectedPixel{{(GREEN * RED) / MAX_CHANNEL, GREEN,
+                               (GREEN * BLUE) / MAX_CHANNEL, ALPHA}};
     UNSCOPED_INFO("scaledByMaxPixel " << scaledByMaxPixel.ToString());
     UNSCOPED_INFO("expectedPixel " << expectedPixel.ToString());
     REQUIRE(scaledByMaxPixel == expectedPixel);

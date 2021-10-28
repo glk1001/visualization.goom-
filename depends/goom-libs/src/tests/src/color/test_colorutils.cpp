@@ -39,13 +39,13 @@ TEST_CASE("Colors are added", "[color-add]")
   const Pixel c3 = GetColorAdd(c1, c2, true);
 
   REQUIRE(static_cast<uint32_t>(c3.R()) == 220);
-  REQUIRE(static_cast<uint32_t>(c3.G()) == 255);
+  REQUIRE(static_cast<uint32_t>(c3.G()) == 300);
   REQUIRE(static_cast<uint32_t>(c3.B()) == 90);
 
   const Pixel c4 = GetColorAdd(c1, c2, false);
-  REQUIRE(static_cast<uint32_t>(c4.R()) == 220 * 255 / 300);
-  REQUIRE(static_cast<uint32_t>(c4.G()) == 255);
-  REQUIRE(static_cast<uint32_t>(c4.B()) == 90 * 255 / 300);
+  REQUIRE(static_cast<uint32_t>(c4.R()) == 220 );
+  REQUIRE(static_cast<uint32_t>(c4.G()) == 300);
+  REQUIRE(static_cast<uint32_t>(c4.B()) == 90);
 }
 
 TEST_CASE("Color channels are brightened", "[color-channel-bright]")
