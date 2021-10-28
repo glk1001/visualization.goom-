@@ -147,7 +147,7 @@ private:
   static constexpr size_t NUM_DRIVERS = 4;
   std::vector<std::unique_ptr<TentacleDriver>> m_drivers{};
   TentacleDriver* m_currentDriver = nullptr;
-  auto GetNextDriver() const -> TentacleDriver*;
+  [[nodiscard]] auto GetNextDriver() const -> TentacleDriver*;
   // clang-format off
   const Weights<size_t> m_driverWeights{{
       {0,  5},
@@ -323,7 +323,7 @@ void TentaclesFx::TentaclesImpl::InitData()
 
   m_currentDriver->FreshStart();
 
-  m_distt = stdnew::lerp(DISTT_MIN, DISTT_MAX, 0.3);
+  m_distt = static_cast<float>(stdnew::lerp(DISTT_MIN, DISTT_MAX, 0.3));
   m_distt2 = DISTT2_MIN;
   m_distt2Offset = 0;
   m_rot = GetStableRotationOffset(0);
@@ -364,8 +364,6 @@ void TentaclesFx::TentaclesImpl::UpdateWithNoDraw()
 
 void TentaclesFx::TentaclesImpl::Update()
 {
-  LogDebug("Starting Update.");
-
   IncCounters();
 
   m_lig += m_ligs;
@@ -395,7 +393,6 @@ void TentaclesFx::TentaclesImpl::DoPrettyMoveWithoutDraw()
     m_ligs = -m_ligs;
   }
 
-  LogDebug("Starting pretty_move without draw.");
   PrettyMove(m_goomInfo.GetSoundInfo().GetAcceleration());
 
   m_cycle += 10.0F * m_cycleInc;
@@ -412,7 +409,6 @@ void TentaclesFx::TentaclesImpl::DoPrettyMoveBeforeDraw()
     m_ligs = -m_ligs;
   }
 
-  LogDebug("Starting pretty_move and draw.");
   PrettyMove(m_goomInfo.GetSoundInfo().GetAcceleration());
   m_cycle += m_cycleInc;
 
@@ -643,11 +639,6 @@ void TentaclesFx::TentaclesImpl::PrettyMove(const float acceleration)
   }
 
   m_rot = stdnew::clamp(stdnew::lerp(m_rot, rotOffset, m_prettyMoveLerpMix), 0.0F, m_two_pi);
-
-  LogDebug("happening = {}, lock = {}, rot = {:.03f}, rotOffset = {:.03f}, "
-           "lerpMix = {:.03f}, cycle = {:.03f}, doRotation = {}",
-           prettyMoveHappeningTimer, postPrettyMoveLock, rot, rotOffset, prettyMoveLerpMix, cycle,
-           doRotation);
 }
 
 #if __cplusplus <= 201402L

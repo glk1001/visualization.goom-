@@ -1,7 +1,6 @@
 #include "tentacle_driver.h"
 
 #include "color/colormaps.h"
-#include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "goom/logging_control.h"
 #include "utils/goomrand.h"
@@ -72,24 +71,11 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw) noexcept : m_draw{draw}
       iter2,
       iter3,
   };
-
-  LogDebug("Constructed TentacleDriver.");
 }
 
-void TentacleDriver::SetWeightedColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps)
+void TentacleDriver::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedMaps)
 {
   m_colorMaps = weightedMaps;
-}
-
-auto TentacleDriver::GetNumTentacles() const -> size_t
-{
-  return m_numTentacles;
-}
-
-auto TentacleDriver::GetColorMode() const -> TentacleDriver::ColorModes
-{
-  return m_colorMode;
 }
 
 void TentacleDriver::SetColorMode(const ColorModes m)
@@ -97,16 +83,13 @@ void TentacleDriver::SetColorMode(const ColorModes m)
   m_colorMode = m;
 }
 
-constexpr double TENT2D_XMIN = 0.0;
-constexpr double TENT2D_YMIN = 0.065736;
-constexpr double TENT2D_YMAX = 10000.0;
+constexpr double TENT2D_X_MIN = 0.0;
+constexpr double TENT2D_Y_MIN = 0.065736;
+constexpr double TENT2D_Y_MAX = 10000.0;
 
 void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITentacleLayout& l)
 {
-  LogDebug("Starting driver Init.");
-
   m_numTentacles = l.GetNumPoints();
-  LogDebug("numTentacles = {}.", m_numTentacles);
 
   m_tentacleParams.resize(m_numTentacles);
 
@@ -114,7 +97,6 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
 
   const size_t numInParamGroup = m_numTentacles / m_iterParamsGroups.size();
   const float tStep = 1.0F / static_cast<float>(numInParamGroup - 1);
-  LogDebug("numInTentacleGroup = {}, tStep = {:.2f}.", numInParamGroup, tStep);
 
   size_t paramsIndex = 0;
   float t = 0.0;
@@ -138,7 +120,6 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
     m_colorizers.emplace_back(colorizer);
 
     std::unique_ptr<Tentacle2D> tentacle2D{CreateNewTentacle2D(i, params)};
-    LogDebug("Created tentacle2D {}.", i);
 
     // To hide the annoying flapping tentacle head, make near the head very dark.
     const Pixel headColor = Pixel{5, 5, 5, MAX_ALPHA};
@@ -151,8 +132,6 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
                         Tentacle2D::MIN_NUM_NODES};
 
     m_tentacles.AddTentacle(std::move(tentacle));
-
-    LogDebug("Added tentacle {}.", i);
   }
 
   UpdateTentaclesLayout(l);
@@ -183,24 +162,14 @@ auto TentacleDriver::IterParamsGroup::GetNext(const float t) const
 auto TentacleDriver::CreateNewTentacle2D(size_t id, const IterationParams& p)
     -> std::unique_ptr<Tentacle2D>
 {
-  LogDebug("Creating new tentacle2D {}...", id);
-
   const float tentacleLen = std::max(1.0F, GetRandInRange(0.99F, 1.01F) * p.length);
   assert(tentacleLen >= 1);
-  const double tent2d_xmax = TENT2D_XMIN + static_cast<double>(tentacleLen);
-  assert(tent2d_xmax >= 1.0);
+  const double tent2d_xMax = TENT2D_X_MIN + static_cast<double>(tentacleLen);
+  assert(tent2d_xMax >= 1.0);
 
-  std::unique_ptr<Tentacle2D> tentacle{std::make_unique<Tentacle2D>(
-      id, p.numNodes,
-      //  size_t(static_cast<float>(params.numNodes) * getRandInRange(0.9f, 1.1f))
-      TENT2D_XMIN, tent2d_xmax, TENT2D_YMIN, TENT2D_YMAX, p.prevYWeight, 1.0F - p.prevYWeight)};
-  LogDebug("Created new tentacle2D {}.", id);
-
-  LogDebug("tentacle {:3}:"
-           " tentacleLen = {:4}, tent2d_xmin = {:7.2f}, tent2d_xmax = {:5.2f},"
-           " prevYWeight = {:5.2f}, curYWeight = {:5.2f}, numNodes = {:5}",
-           id, tentacleLen, tent2d_xmin, tent2d_xmax, tentacle->GetPrevYWeight(),
-           tentacle->GetCurrentYWeight(), tentacle->GetNumNodes());
+  std::unique_ptr<Tentacle2D> tentacle{
+      std::make_unique<Tentacle2D>(id, p.numNodes, TENT2D_X_MIN, tent2d_xMax, TENT2D_Y_MIN,
+                                   TENT2D_Y_MAX, p.prevYWeight, 1.0F - p.prevYWeight)};
 
   tentacle->SetDoDamping(true);
 
@@ -217,7 +186,6 @@ void TentacleDriver::StartIterating()
 
 void TentacleDriver::UpdateTentaclesLayout(const ITentacleLayout& l)
 {
-  LogDebug("Updating tentacles layout. numTentacles = {}.", m_numTentacles);
   assert(l.GetNumPoints() == m_numTentacles);
 
   std::vector<size_t> sortedLongestFirst(m_numTentacles);
@@ -232,13 +200,6 @@ void TentacleDriver::UpdateTentaclesLayout(const ITentacleLayout& l)
 
   for (size_t i = 0; i < m_numTentacles; ++i)
   {
-    LogDebug("{} {} tentacle[{}].len = {:.2}.", i, sortedLongestFirst.at(i),
-             sortedLongestFirst.at(i),
-             m_tentacles[sortedLongestFirst.at(i)].Get2DTentacle().GetLength());
-  }
-
-  for (size_t i = 0; i < m_numTentacles; ++i)
-  {
     m_tentacles[sortedLongestFirst.at(i)].SetHead(l.GetPoints().at(i));
   }
 
@@ -249,10 +210,10 @@ void TentacleDriver::UpdateTentaclesLayout(const ITentacleLayout& l)
     if (std::fabs(head.x) < 10.0F)
     {
       Tentacle2D& tentacle2D = tentacle.Get2DTentacle();
-      const double xmin = tentacle2D.GetXMin();
-      const double xmax = tentacle2D.GetXMax();
-      const double newXmax = xmin + (1.0 * (xmax - xmin));
-      tentacle2D.SetXDimensions(xmin, newXmax);
+      const double xMin = tentacle2D.GetXMin();
+      const double xMax = tentacle2D.GetXMax();
+      const double newXMax = xMin + (1.0 * (xMax - xMin));
+      tentacle2D.SetXDimensions(xMin, newXMax);
       tentacle.SetNumHeadNodes(
           std::max(6 * Tentacle2D::MIN_NUM_NODES, tentacle.Get2DTentacle().GetNumNodes() / 2));
     }
@@ -364,7 +325,6 @@ void TentacleDriver::Update(const float angle,
                             const Pixel& lowColor)
 {
   ++m_updateNum;
-  LogInfo("Doing Update {}.", m_updateNum);
 
   UpdateIterTimers();
   CheckForTimerEvents();
@@ -414,34 +374,33 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
   V3dFlt cam = {0.0F, 0.0F, -3.0F}; // TODO ????????????????????????????????
   cam.z += distance2;
   cam.y += 2.0F * std::sin(-(angle - m_half_pi) / 4.3F);
-  LogDebug("cam = ({:.2f}, {:.2f}, {:.2f}).", cam.x, cam.y, cam.z);
 
+  constexpr float HEAD_CUTOFF = 10.0F;
+  constexpr float ANGLE_ADJ_FRACTION = 0.05F;
   float angleAboutY = angle;
-  if ((-10.0F < tentacle.GetHead().x) && (tentacle.GetHead().x < 0.0F))
+  if ((-HEAD_CUTOFF < tentacle.GetHead().x) && (tentacle.GetHead().x < 0.0F))
   {
-    angleAboutY -= 0.05F * m_pi;
+    angleAboutY -= ANGLE_ADJ_FRACTION * m_pi;
   }
-  else if ((0.0F <= tentacle.GetHead().x) && (tentacle.GetHead().x < 10.0F))
+  else if ((0.0F <= tentacle.GetHead().x) && (tentacle.GetHead().x < HEAD_CUTOFF))
   {
-    angleAboutY += 0.05F * m_pi;
+    angleAboutY += ANGLE_ADJ_FRACTION * m_pi;
   }
 
-  const float sina = std::sin(m_pi - angleAboutY);
-  const float cosa = std::cos(m_pi - angleAboutY);
-  LogDebug("angle = {:.2f}, angleAboutY = {:.2f}, sina = {:.2}, cosa = {:.2},"
-           " distance = {:.2f}, distance2 = {:.2f}.",
-           angle, angleAboutY, sina, cosa, distance, distance2);
+  const float sinCamAngle = std::sin(m_pi - angleAboutY);
+  const float cosCamAngle = std::cos(m_pi - angleAboutY);
 
   std::vector<V3dFlt> v3{vertices};
   for (size_t i = 0; i < n; ++i)
   {
-    LogDebug("v3[{}]  = ({:.2f}, {:.2f}, {:.2f}).", i, v3[i].x, v3[i].y, v3[i].z);
-    RotateV3DAboutYAxis(sina, cosa, v3[i], v3[i]);
+    RotateV3DAboutYAxis(sinCamAngle, cosCamAngle, v3[i], v3[i]);
     TranslateV3D(cam, v3[i]);
-    LogDebug("v3[{}]+ = ({:.2f}, {:.2f}, {:.2f}).", i, v3[i].x, v3[i].y, v3[i].z);
   }
 
   const std::vector<V2dInt> v2 = ProjectV3DOntoV2D(v3, distance);
+
+  constexpr float BRIGHTNESS = 2.0F;
+  constexpr float BRIGHTNESS_DISTANCE_CUTOFF = 30.F;
 
   const float brightnessCut = GetBrightnessCut(tentacle, distance2);
 
@@ -450,12 +409,17 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
   // tentacles look less bright and white and more colors show through.
   using GetMixedColorsFunc = std::function<std::tuple<Pixel, Pixel>(const size_t nodeNum)>;
   GetMixedColorsFunc getMixedColors = [&](const size_t nodeNum) {
-    return tentacle.GetMixedColors(nodeNum, dominantColor, dominantLowColor, brightnessCut);
+    return tentacle.GetMixedColors(nodeNum, dominantColor, dominantLowColor,
+                                   brightnessCut * BRIGHTNESS);
   };
-  if (distance2 > 30.0F)
+  if (distance2 > BRIGHTNESS_DISTANCE_CUTOFF)
   {
-    const float randBrightness = GetRandInRange(0.1F, 0.2F);
-    const float brightness = std::max(randBrightness, 30.0F / distance2) * brightnessCut;
+    constexpr float FAR_AWAY_DISTANCE = 50.0F;
+    constexpr float MIN_RAND_BRIGHTNESS = 0.1F;
+    constexpr float MAX_RAND_BRIGHTNESS = 0.3F;
+    const float randBrightness = GetRandInRange(MIN_RAND_BRIGHTNESS, MAX_RAND_BRIGHTNESS);
+    const float brightness =
+        brightnessCut * std::max(randBrightness, FAR_AWAY_DISTANCE / distance2);
     getMixedColors = [&, brightness](const size_t nodeNum) {
       return tentacle.GetMixedColors(nodeNum, dominantColor, dominantLowColor, brightness);
     };
@@ -519,17 +483,11 @@ auto TentacleDriver::ProjectV3DOntoV2D(const std::vector<V3dFlt>& v3, const floa
       const auto Yp = static_cast<int32_t>((xSpread * distance * v3[i].y) / v3[i].z);
       v2[i].x = Xp + static_cast<int32_t>(m_draw.GetScreenWidth() >> 1);
       v2[i].y = -Yp + static_cast<int32_t>(m_draw.GetScreenHeight() >> 1);
-      LogDebug("project_v3d_to_v2d i: {:3}: v3[].x = {:.2f}, v3[].y = {:.2f}, v2[].z = {:.2f}, Xp "
-               "= {}, Yp = {}, v2[].x = {}, v2[].y = {}.",
-               i, v3[i].x, v3[i].y, v3[i].z, Xp, Yp, v2[i].x, v2[i].y);
     }
     else
     {
       v2[i].x = COORD_IGNORE_VAL;
       v2[i].y = COORD_IGNORE_VAL;
-      LogDebug("project_v3d_to_v2d i: {:3}: v3[i].x = {:.2f}, v3[i].y = {:.2f}, v2[i].z = {:.2f}, "
-               "v2[i].x = {}, v2[i].y = {}.",
-               i, v3[i].x, v3[i].y, v3[i].z, v2[i].x, v2[i].y);
     }
   }
 
@@ -587,7 +545,7 @@ auto TentacleColorMapColorizer::GetColor(const size_t nodeNum) const -> Pixel
   const float t = static_cast<float>(nodeNum) / static_cast<float>(m_numNodes);
   Pixel nextColor = m_colorMap->GetColor(t);
 
-  // Keep going with the smooth transition until tmix runs out.
+  // Keep going with the smooth transition until 'm_tTransition' runs out.
   if (m_tTransition > 0.0F)
   {
     nextColor = IColorMap::GetColorMix(nextColor, m_prevColorMap->GetColor(t), m_tTransition);
@@ -647,26 +605,17 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
   const float angleLeftFinish = 1.5F * m_pi;
   const float angleRightStart = -m_half_pi;
   const float angleRightFinish = +m_half_pi;
-  LogDebug("Setup: angleLeftStart = {:.2f}, angleLeftFinish = {:.2f},"
-           " angleRightStart = {:.2f}, angleRightFinish = {:.2f}",
-           angleLeftStart, angleLeftFinish, angleRightStart, angleRightFinish);
 
   const float angleOffsetStart = 0.035F * m_pi;
   const float angleOffsetFinish = 0.035F * m_pi;
   const float offsetStep =
       (angleOffsetStart - angleOffsetFinish) / static_cast<float>(numCircles - 1);
   const float radiusStep = (radiusMax - radiusMin) / static_cast<float>(numCircles - 1);
-  LogDebug("Setup: numCircles = {}, radiusStep = {:.2f}, radiusMin = {:.2f}, radiusMax = {:.2f},"
-           " offsetStep = {:.2f}, angleOffsetStart = {:.2f}, angleOffsetFinish = {:.2f}",
-           numCircles, radiusStep, radiusMin, radiusMax, offsetStep, angleOffsetStart,
-           angleOffsetFinish);
 
   float r = radiusMax;
   float angleOffset = angleOffsetStart;
   for (const auto numSample : numCircleSamples)
   {
-    LogDebug("Circle with {} samples: r = {:.2f}", numSample, r);
-
     getSamplePoints(r, numSample / 2, angleLeftStart + angleOffset, angleLeftFinish - angleOffset);
     getSamplePoints(r, numSample / 2, angleRightStart + angleOffset,
                     angleRightFinish - angleOffset);

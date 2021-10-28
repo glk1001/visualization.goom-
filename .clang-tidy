@@ -48,7 +48,7 @@ CheckOptions:
   - { key: readability-identifier-naming.GlobalConstantPrefix,              value: '' }
   - { key: readability-identifier-naming.GlobalFunctionCase,                value: CamelCase }
   - { key: readability-identifier-length.MinimumVariableNameLength,         value: 3 } 
-  - { key: readability-identifier-length.IgnoredVariableNames,              value: 't|x.*|y.*|i.*|j.*|k.*' } 
+  - { key: readability-identifier-length.IgnoredVariableNames,              value: 't|x.*|y.*|u.*|v.*|i.*|j.*|k.*' } 
   - { key: readability-identifier-length.MinimumParameterNameLength,        value: 3 } 
   - { key: readability-identifier-length.IgnoredParameterNames,             value: 't|x.*|y.*|i' }
   - { key: readability-identifier-length.MinimumLoopCounterNameLength,      value: 3 } 

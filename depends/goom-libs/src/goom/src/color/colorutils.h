@@ -199,7 +199,7 @@ inline auto GetBrighterColor(const float brightness,
                              const Pixel& color,
                              const bool allowOverexposed) -> Pixel
 {
-  assert(brightness >= 0.0F && brightness <= 3.0F);
+  assert(brightness >= 0.0F && brightness <= 50.0F);
   const auto intBrightness = static_cast<uint32_t>(std::round((brightness * 256.0F) + 0.0001F));
   return GetBrighterColorInt(intBrightness, color, allowOverexposed);
 }

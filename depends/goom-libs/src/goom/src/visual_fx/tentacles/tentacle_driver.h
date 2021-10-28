@@ -69,12 +69,10 @@ public:
   explicit TentacleDriver(DRAW::IGoomDraw& draw) noexcept;
 
   void Init(COLOR::ColorMapGroup initialColorMapGroup, const ITentacleLayout& l);
-  [[nodiscard]] auto GetNumTentacles() const -> size_t;
 
-  [[nodiscard]] auto GetColorMode() const -> ColorModes;
   void SetColorMode(ColorModes m);
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);
 
   void StartIterating();
 
