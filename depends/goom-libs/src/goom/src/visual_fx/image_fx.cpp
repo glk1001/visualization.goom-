@@ -123,7 +123,7 @@ private:
   TValue m_inOutT{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS, {{1.0F, T_DELAY_TIME}}};
   float m_inOutTSq = 0.0F;
   V2dInt m_floatingStartPosition{};
-  TValue m_floatingT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
+  TValue m_floatingT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS, 1.0F};
   void InitImage();
 
   void DrawChunks();
@@ -280,8 +280,8 @@ inline void ImageFx::ImageFxImpl::ResetStartPositions()
 
 inline void ImageFx::ImageFxImpl::SetNewFloatingStartPosition()
 {
-  m_floatingStartPosition = V2dInt{GetRandInRange(CHUNK_WIDTH, m_availableWidth),
-                                   GetRandInRange(CHUNK_HEIGHT, m_availableHeight)};
+  m_floatingStartPosition = V2dInt{GetRandInRange(20, m_availableWidth - 20),
+                                   GetRandInRange(20, m_availableHeight - 20)};
 }
 
 void ImageFx::ImageFxImpl::ApplyMultiple()
