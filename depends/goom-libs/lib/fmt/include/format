@@ -3,7 +3,7 @@
 
 #define FMT_HEADER_ONLY 1
 
-#include "fmt_private/format.h"
+#include "fmt/format.h"
 
 namespace std20 = ::fmt;
 
