@@ -23,6 +23,7 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
@@ -52,6 +53,7 @@ using UTILS::Parallel;
 using UTILS::ProbabilityOf;
 using UTILS::Shuffle;
 using UTILS::Sq;
+using UTILS::SqDistance;
 using UTILS::TValue;
 
 constexpr int32_t CHUNK_WIDTH = 4;
@@ -109,6 +111,8 @@ private:
   const std::string m_resourcesDirectory;
   const int32_t m_availableWidth;
   const int32_t m_availableHeight;
+  const V2dInt m_screenCentre;
+  const float m_maxRadius;
   const float m_maxDiameterSq;
 
   std::shared_ptr<RandomColorMaps> m_colorMaps;
@@ -142,6 +146,7 @@ private:
 
   void UpdateFloatingStartPositions();
   void SetNewFloatingStartPosition();
+  [[nodiscard]] auto GetChunkFloatingStartPosition(size_t i) const -> V2dInt;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
@@ -192,7 +197,9 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
     m_resourcesDirectory{resourcesDirectory},
     m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
     m_availableHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)},
-    m_maxDiameterSq{2.0F * UTILS::Sq(static_cast<float>(std::min(m_availableWidth, m_availableHeight)))},
+    m_screenCentre{m_availableWidth / 2, m_availableHeight / 2},
+    m_maxRadius{0.5F * static_cast<float>(std::min(m_availableWidth, m_availableHeight))},
+    m_maxDiameterSq{2.0F * Sq(m_maxRadius)},
     m_colorMaps{GetAllSlimMaps()},
     m_currentColorMap{GetRandomColorMap()}
 {
@@ -207,7 +214,7 @@ auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
 void ImageFx::ImageFxImpl::SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
-  m_pixelColorIsDominant = ProbabilityOf(0.2F);
+  m_pixelColorIsDominant = ProbabilityOf(0.0F);
 }
 
 void ImageFx::ImageFxImpl::Start()
@@ -239,15 +246,18 @@ void ImageFx::ImageFxImpl::InitImage()
       "pretty-flowers.jpg",
   };
   // clang-format on
-  ImageFilenameArray randFilenames = s_imageFilenames;
-  Shuffle(begin(randFilenames), end(randFilenames));
+  std::array<size_t, s_imageFilenames.size()> randImageIndexes{};
+  std::iota(randImageIndexes.begin(), randImageIndexes.end(), 0);
+  Shuffle(begin(randImageIndexes), end(randImageIndexes));
 
   const std::string imageDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + "image_fx";
   constexpr size_t MAX_IMAGES = 5;
   for (size_t i = 0; i < MAX_IMAGES; ++i)
   {
-    m_images.emplace_back(std::make_unique<ChunkedImage>(
-        std::make_shared<ImageBitmap>(imageDir + PATH_SEP + randFilenames[i]), m_goomInfo));
+    const std::string imageFilename =
+        imageDir + PATH_SEP + s_imageFilenames.at(randImageIndexes.at(i));
+    m_images.emplace_back(
+        std::make_unique<ChunkedImage>(std::make_shared<ImageBitmap>(imageFilename), m_goomInfo));
   }
 }
 
@@ -258,30 +268,50 @@ inline void ImageFx::ImageFxImpl::ResetCurrentImage()
 
 inline void ImageFx::ImageFxImpl::ResetStartPositions()
 {
-  const V2dInt centre{m_availableWidth / 2, m_availableHeight / 2};
-  const auto maxRadius = GetRandInRange(0.7F, 1.0F) * 0.5F *
-                         static_cast<float>(std::min(m_availableWidth, m_availableHeight));
+  const auto randMaxRadius = GetRandInRange(0.7F, 1.0F) * m_maxRadius;
 
   float radiusTheta = 0.0F;
   const float radiusThetaStep = m_two_pi / static_cast<float>(m_currentImage->GetNumChunks());
   for (size_t i = 0; i < m_currentImage->GetNumChunks(); ++i)
   {
     constexpr float SMALL_OFFSET = 0.4F;
-    const float maxRadiusAdj = (1.0F - SMALL_OFFSET * (1.0F + std::sin(radiusTheta))) * maxRadius;
+    const float maxRadiusAdj =
+        (1.0F - SMALL_OFFSET * (1.0F + std::sin(radiusTheta))) * randMaxRadius;
     const float radius = GetRandInRange(10.0F, maxRadiusAdj);
     const float theta = GetRandInRange(0.0F, m_two_pi);
-    const V2dInt startPos = centre + V2dInt{static_cast<int32_t>((std::cos(theta) * radius)),
-                                            static_cast<int32_t>((std::sin(theta) * radius))};
+    const V2dInt startPos =
+        m_screenCentre + V2dInt{static_cast<int32_t>((std::cos(theta) * radius)),
+                                static_cast<int32_t>((std::sin(theta) * radius))};
     m_currentImage->SetStartPosition(i, startPos);
 
     radiusTheta += radiusThetaStep;
   }
 }
 
+inline auto ImageFx::ImageFxImpl::GetChunkFloatingStartPosition(const size_t i) const -> V2dInt
+{
+  constexpr float MARGIN = 20.0F;
+  constexpr float MIN_RADIUS_FACTOR = 0.025F;
+  constexpr float MAX_RADIUS_FACTOR = 0.5F;
+  const auto aRadius =
+      GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) * static_cast<float>(m_availableWidth) -
+      MARGIN;
+  const auto bRadius =
+      GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) * static_cast<float>(m_availableHeight) -
+      MARGIN;
+  const float theta =
+      m_two_pi * static_cast<float>(i) / static_cast<float>(m_currentImage->GetNumChunks());
+  const V2dInt floatingStartPosition =
+      m_screenCentre + V2dInt{static_cast<int32_t>((std::cos(theta) * aRadius)),
+                              static_cast<int32_t>((std::sin(theta) * bRadius))};
+  return floatingStartPosition;
+}
+
 inline void ImageFx::ImageFxImpl::SetNewFloatingStartPosition()
 {
-  m_floatingStartPosition = V2dInt{GetRandInRange(20, m_availableWidth - 20),
-                                   GetRandInRange(20, m_availableHeight - 20)};
+  m_floatingStartPosition =
+      m_screenCentre - V2dInt{GetRandInRange(CHUNK_WIDTH, m_availableWidth),
+                              GetRandInRange(CHUNK_HEIGHT, m_availableHeight)};
 }
 
 void ImageFx::ImageFxImpl::ApplyMultiple()
@@ -295,15 +325,15 @@ void ImageFx::ImageFxImpl::ApplyMultiple()
 
 inline void ImageFx::ImageFxImpl::DrawChunks()
 {
-  const float brightness = 0.05F + (0.05F * m_inOutT());
+  const float brightness = 0.02F + (0.03F * m_inOutT());
 
   const auto drawChunk = [&](const size_t i) {
     const V2dInt nextStartPosition = GetNextChunkStartPosition(i);
     const ChunkedImage::ImageChunk& imageChunk = m_currentImage->GetImageChunk(i);
     const V2dInt nextChunkPosition = GetNextChunkPosition(nextStartPosition, imageChunk);
     const float posAdjustedBrightness =
-        brightness * (UTILS::SqDistance(static_cast<float>(nextChunkPosition.x),
-                                        static_cast<float>(nextChunkPosition.y)) /
+        brightness * (SqDistance(static_cast<float>(nextChunkPosition.x),
+                                 static_cast<float>(nextChunkPosition.y)) /
                       m_maxDiameterSq);
     DrawChunk(nextChunkPosition, posAdjustedBrightness, imageChunk.pixels);
   };
@@ -339,7 +369,7 @@ inline void ImageFx::ImageFxImpl::UpdateImageStartPositions()
     ResetCurrentImage();
     ResetStartPositions();
     SetNewFloatingStartPosition();
-    m_floatingT.Reset();
+    m_floatingT.Reset(1.0F);
     m_currentColorMap = GetRandomColorMap();
   }
 }
@@ -347,7 +377,8 @@ inline void ImageFx::ImageFxImpl::UpdateImageStartPositions()
 inline V2dInt ImageFx::ImageFxImpl::GetNextChunkStartPosition(const size_t i) const
 {
   const V2dInt startPos =
-      lerp(m_currentImage->GetStartPosition(i), m_floatingStartPosition, m_floatingT());
+      lerp(m_currentImage->GetStartPosition(i),
+           m_floatingStartPosition + GetChunkFloatingStartPosition(i), m_floatingT());
   return startPos;
 }
 
@@ -371,6 +402,14 @@ void ImageFx::ImageFxImpl::DrawChunk(const V2dInt& pos,
 
     for (size_t xPixel = 0; xPixel < CHUNK_WIDTH; ++xPixel)
     {
+      if (x < 0 || x > m_availableWidth)
+      {
+        continue;
+      }
+      if (y < 0 || y > m_availableHeight)
+      {
+        continue;
+      }
       const std::vector<Pixel> pixelColors = GetPixelColors(pixelRow[xPixel], brightness);
       m_draw.DrawPixels(x, y, pixelColors, true);
 
@@ -386,7 +425,7 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
 {
   const Pixel mixedColor = IColorMap::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutTSq);
   const Pixel color0 = GetBrighterColor(brightness, mixedColor, false);
-  const Pixel color1 = GetBrighterColor(0.33F * brightness, pixelColor, false);
+  const Pixel color1 = GetBrighterColor(0.5F * brightness, pixelColor, false);
 
   if (m_pixelColorIsDominant)
   {
