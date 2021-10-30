@@ -475,12 +475,15 @@ in vec2 texCoords;
 
 void main()
 {
-  //vec3 hdrColor = hueShift(texture(texBuffer, texCoords).rgb, 0.5);
-  
+   vec3 hdrColor = texture(texBuffer, texCoords).rgb;
+
+  // Pre Tone Map Color effects
+
   // 'Chromatic Increase' - https://github.com/gurki/vivid
-  vec3 lch = rgb_to_lch(texture(texBuffer, texCoords).rgb);
+  vec3 lch = rgb_to_lch(hdrColor);
   lch.y = min(lch.y * 2.f, 140.0);
-  vec3 hdrColor = lch_to_rgb(lch);
+  hdrColor = lch_to_rgb(lch);
+
 
   // Gamma correction
   float A = 1.0;
@@ -517,7 +520,17 @@ void main()
   //vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
   vec3 mapped = vec3(1.0) - exp(-hdrColor * u_texExposure);
   A = 3.0;
-  
+
+
+  // Color effects
+  // hue shift doesn't seem to be working???
+  mapped = hueShift(mapped, 1.5);
+
+  const float contrast = 1.1;
+  const float maxChan = -0.1;
+  mapped = max(0.5 + contrast * (mapped - 0.5), maxChan);
+
+
   //mapped = A * mapped;
   mapped = A * pow(mapped, vec3(1.0 / gamma));
 
