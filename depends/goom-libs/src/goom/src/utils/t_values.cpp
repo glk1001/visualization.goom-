@@ -211,6 +211,14 @@ void TValue::SetStepSize(const float val)
   }
 }
 
+void TValue::SetNumSteps(const uint32_t val)
+{
+  assert(val != 0U);
+
+  SetStepSize(1.0F / static_cast<float>(val));
+}
+
+
 inline void TValue::HandleBoundary(const float continueValue, const float stepSign)
 {
   m_t = continueValue;

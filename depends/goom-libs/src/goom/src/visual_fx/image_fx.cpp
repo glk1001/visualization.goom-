@@ -193,7 +193,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
                                   const std::string& resourcesDirectory) noexcept
   : m_parallel{parallel},
     m_draw{draw},
-    m_goomInfo(goomInfo),
+    m_goomInfo{goomInfo},
     m_resourcesDirectory{resourcesDirectory},
     m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
     m_availableHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)},

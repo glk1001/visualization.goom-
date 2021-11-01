@@ -10,6 +10,7 @@ namespace GOOM
 
 class AudioSamples;
 class PixelBuffer;
+struct GoomShaderEffects;
 
 class GoomControl
 {
@@ -28,8 +29,6 @@ public:
   };
   void SetShowTitle(ShowTitleType value);
   
-  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
-  
   void Start();
 
   /*
@@ -39,10 +38,13 @@ public:
    *      - empty if it is not the start of the song
    *      - only have a value at the start of the song
    */
+  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
   void Update(const AudioSamples& audioSamples,
               float fps,
               const std::string& songTitle,
               const std::string& message);
+
+  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
   void Finish();
 

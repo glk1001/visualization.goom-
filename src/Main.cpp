@@ -14,6 +14,8 @@
 #include "goom/logging.h"
 #include "goom/sound_info.h"
 
+#undef NDEBUG
+#include <cassert>
 #include <cstddef>
 #include <memory>
 #include <stdexcept>
@@ -150,9 +152,16 @@ void CVisualizationGoom::StartLogging()
 void CVisualizationGoom::StartActiveQueue()
 {
   // Make one initial frame in black
-  const auto initialBuffer{std::make_shared<PixelBuffer>(m_textureWidth, m_textureHeight)};
-  initialBuffer->Fill(Pixel::BLACK);
-  m_activeQueue.push(initialBuffer);
+  PixelBufferData initialBufferData{MakePixelBufferData()};
+  initialBufferData.pixelBuffer->Fill(Pixel::BLACK);
+  m_activeQueue.push(initialBufferData);
+}
+
+inline auto CVisualizationGoom::MakePixelBufferData() const -> PixelBufferData
+{
+  PixelBufferData pixelBufferData;
+  pixelBufferData.pixelBuffer = std::make_shared<PixelBuffer>(m_textureWidth, m_textureHeight);
+  return pixelBufferData;
 }
 
 //-- Stop ---------------------------------------------------------------------
@@ -308,9 +317,9 @@ auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& trac
   return true;
 }
 
-inline auto CVisualizationGoom::GetNextActivePixels() -> std::shared_ptr<PixelBuffer>
+inline auto CVisualizationGoom::GetNextActivePixelBufferData() -> PixelBufferData
 {
-  std::shared_ptr<PixelBuffer> pixels{};
+  PixelBufferData pixelBufferData{};
 
   const std::lock_guard<std::mutex> lk(m_mutex);
   if (m_activeQueue.empty())
@@ -319,17 +328,17 @@ inline auto CVisualizationGoom::GetNextActivePixels() -> std::shared_ptr<PixelBu
   }
   else
   {
-    pixels = m_activeQueue.front();
+    pixelBufferData = m_activeQueue.front();
     m_activeQueue.pop();
   }
 
-  return pixels;
+  return pixelBufferData;
 }
 
-inline void CVisualizationGoom::PushUsedPixels(const std::shared_ptr<PixelBuffer>& pixels)
+inline void CVisualizationGoom::PushUsedPixels(const PixelBufferData& pixelBufferData)
 {
   const std::lock_guard<std::mutex> lk(m_mutex);
-  m_storedQueue.push(pixels);
+  m_storedQueue.push(pixelBufferData);
 }
 
 void CVisualizationGoom::Process()
@@ -376,24 +385,24 @@ void CVisualizationGoom::Process()
       }
       lk.unlock();
 
-      std::shared_ptr<PixelBuffer> pixels;
+      PixelBufferData pixelBufferData;
       lk.lock();
       if (m_storedQueue.empty())
       {
-        pixels = std::make_shared<PixelBuffer>(m_textureWidth, m_textureHeight);
+        pixelBufferData = MakePixelBufferData();
       }
       else
       {
-        pixels = m_storedQueue.front();
+        pixelBufferData = m_storedQueue.front();
         m_storedQueue.pop();
       }
       lk.unlock();
 
-      UpdateGoomBuffer(GetTitle(), floatAudioData, pixels);
+      UpdateGoomBuffer(GetTitle(), floatAudioData, pixelBufferData);
       ++buffNum;
 
       lk.lock();
-      m_activeQueue.push(pixels);
+      m_activeQueue.push(pixelBufferData);
       lk.unlock();
     }
   }
@@ -415,11 +424,12 @@ inline auto CVisualizationGoom::GetTitle() -> std::string
 
 inline void CVisualizationGoom::UpdateGoomBuffer(const std::string& title,
                                                  const std::vector<float>& floatAudioData,
-                                                 std::shared_ptr<PixelBuffer>& pixels)
+                                                 PixelBufferData& pixelBufferData)
 {
   const GOOM::AudioSamples audioData{m_numChannels, floatAudioData};
-  m_goomControl->SetScreenBuffer(pixels);
+  m_goomControl->SetScreenBuffer(pixelBufferData.pixelBuffer);
   m_goomControl->Update(audioData, 0.0F, title, "");
+  pixelBufferData.goomShaderEffects = m_goomControl->GetLastShaderEffects();
 }
 
 auto CVisualizationGoom::InitGl() -> bool
@@ -504,6 +514,8 @@ void CVisualizationGoom::OnCompiledAndLinked()
 {
   m_uProjModelMatLoc = glGetUniformLocation(ProgramHandle(), "u_projModelMat");
   m_uTexExposureLoc = glGetUniformLocation(ProgramHandle(), "u_texExposure");
+  m_uTexBrightnessLoc = glGetUniformLocation(ProgramHandle(), "u_texBrightness");
+  m_uTexContrastLoc = glGetUniformLocation(ProgramHandle(), "u_texContrast");
   m_aPositionLoc = glGetAttribLocation(ProgramHandle(), "in_position");
   m_aCoordLoc = glGetAttribLocation(ProgramHandle(), "in_texCoords");
 }
@@ -659,16 +671,18 @@ void CVisualizationGoom::Render()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
 
-    const std::shared_ptr<PixelBuffer> pixels = GetNextActivePixels();
-    if (pixels != nullptr)
+    const PixelBufferData pixelBufferData = GetNextActivePixelBufferData();
+    if (pixelBufferData.pixelBuffer != nullptr)
     {
-      RenderGlPixelBuffer(*pixels);
-      PushUsedPixels(pixels);
+      RenderGlPixelBuffer(*pixelBufferData.pixelBuffer);
+      PushUsedPixels(pixelBufferData);
     }
 
     EnableShader();
-    // TODO - experimental: start to use dynamic exposure
-    glUniform1f(m_uTexExposureLoc, 5.0F);
+    if (pixelBufferData.pixelBuffer != nullptr)
+    {
+      SetGlShaderValues(pixelBufferData.goomShaderEffects);
+    }
     glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
     DisableShader();
 
@@ -687,7 +701,7 @@ void CVisualizationGoom::Render()
   }
 }
 
-inline void CVisualizationGoom::RenderGlPixelBuffer(const PixelBuffer& pixelBuffer)
+inline void CVisualizationGoom::RenderGlPixelBuffer(const GOOM::PixelBuffer& pixelBuffer)
 {
 #ifdef HAS_GL
   if (m_usePixelBufferObjects)
@@ -722,6 +736,23 @@ inline void CVisualizationGoom::RenderGlPixelBuffer(const PixelBuffer& pixelBuff
     glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
                     static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
                     pixelBuffer.GetIntBuff());
+  }
+}
+
+inline void CVisualizationGoom::SetGlShaderValues(
+    const GOOM::GoomShaderEffects& goomShaderEffects) const
+{
+  if (goomShaderEffects.exposure > 0.0F)
+  {
+    glUniform1f(m_uTexExposureLoc, goomShaderEffects.exposure);
+  }
+  if (goomShaderEffects.brightness > 0.0F)
+  {
+    glUniform1f(m_uTexBrightnessLoc, goomShaderEffects.brightness);
+  }
+  if (goomShaderEffects.contrast > 0.0F)
+  {
+    glUniform1f(m_uTexContrastLoc, goomShaderEffects.contrast);
   }
 }
 

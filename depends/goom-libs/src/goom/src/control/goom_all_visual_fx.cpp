@@ -116,6 +116,11 @@ void GoomAllVisualFx::ChangeState()
   m_allStandardVisualFx->ResumeFx();
 }
 
+auto GoomAllVisualFx::GetLastShaderEffects() const -> const GoomShaderEffects&
+{
+  return m_allStandardVisualFx->GetLastShaderEffects();
+}
+
 void GoomAllVisualFx::SetSingleBufferDots(const bool value)
 {
   m_allStandardVisualFx->SetSingleBufferDots(value);

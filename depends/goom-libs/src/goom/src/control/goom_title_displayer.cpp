@@ -123,7 +123,7 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
                          : (1.0F * (2.0F - (static_cast<float>(m_timeLeftOfTitleDisplay) /
                                             static_cast<float>(TIME_TO_START_MIDDLE_PHASE))));
   const float brightness = !IsFinalPhase()
-                               ? 1.5F
+                               ? 2.5F
                                : (2.5F * 0.5F *
                                   (2.0F - (static_cast<float>(m_timeLeftOfTitleDisplay) /
                                            static_cast<float>(TIME_TO_START_FINAL_PHASE))));

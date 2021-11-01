@@ -59,6 +59,8 @@ public:
   void SetNextState();
   [[nodiscard]] auto GetCurrentStateName() const -> std::string;
 
+  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
+
   void SetSingleBufferDots(bool value);
 
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;

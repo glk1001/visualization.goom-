@@ -67,9 +67,10 @@ protected:
   virtual void AudioDataQueueTooBig() {}
   virtual void SkippedAudioData() {}
   virtual void AudioDataIncorrectReadLength() {}
+  struct PixelBufferData;
   virtual void UpdateGoomBuffer(const std::string& title,
                                 const std::vector<float>& floatAudioData,
-                                std::shared_ptr<GOOM::PixelBuffer>& pixels);
+                                PixelBufferData& pixelBufferData);
 
 private:
   const int m_windowWidth;
@@ -116,6 +117,8 @@ private:
   GLint m_aPositionLoc = -1;
   GLint m_aCoordLoc = -1;
   GLint m_uTexExposureLoc = -1;
+  GLint m_uTexBrightnessLoc = -1;
+  GLint m_uTexContrastLoc = -1;
 
   // Goom's data itself
   std::unique_ptr<GOOM::GoomControl> m_goomControl{};
@@ -138,6 +141,11 @@ private:
   // use on next goom round become active again.
 protected:
   static constexpr size_t MAX_ACTIVE_QUEUE_LENGTH = 20;
+  struct PixelBufferData
+  {
+    std::shared_ptr<GOOM::PixelBuffer> pixelBuffer;
+    GOOM::GoomShaderEffects goomShaderEffects;
+  };
 
 private:
   void SetNumChannels(int numChannels);
@@ -148,8 +156,8 @@ private:
   void StartGoomProcessBuffersThread();
   void StopGoomProcessBuffersThread();
   void Process();
-  [[nodiscard]] auto GetNextActivePixels() -> std::shared_ptr<GOOM::PixelBuffer>;
-  void PushUsedPixels(const std::shared_ptr<GOOM::PixelBuffer>& pixels);
+  [[nodiscard]] auto GetNextActivePixelBufferData() -> PixelBufferData;
+  void PushUsedPixels(const PixelBufferData& pixelBufferData);
 
   [[nodiscard]] auto InitGl() -> bool;
   void DeinitGl();
@@ -159,9 +167,11 @@ private:
   [[nodiscard]] auto CreateGlTexture() -> bool;
   [[nodiscard]] auto SetupGlPixelBufferObjects() -> bool;
   void RenderGlPixelBuffer(const GOOM::PixelBuffer& pixelBuffer);
+  void SetGlShaderValues(const GOOM::GoomShaderEffects& goomShaderEffects) const;
 
-  std::queue<std::shared_ptr<GOOM::PixelBuffer>> m_activeQueue{};
-  std::queue<std::shared_ptr<GOOM::PixelBuffer>> m_storedQueue{};
+  [[nodiscard]] auto MakePixelBufferData() const -> PixelBufferData;
+  std::queue<PixelBufferData> m_activeQueue{};
+  std::queue<PixelBufferData> m_storedQueue{};
   void StartActiveQueue();
 
   // Start flag to know init was OK

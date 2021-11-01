@@ -74,15 +74,18 @@ public:
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
 
   void SetShowTitle(ShowTitleType value);
-  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
 
   void Start();
   void Finish();
+
+  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
 
   void Update(const AudioSamples& soundData,
               float fps,
               const std::string& songTitle,
               const std::string& message);
+
+  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
 private:
   Parallel m_parallel{-1}; // max cores - 1
@@ -154,11 +157,6 @@ void GoomControl::SetShowTitle(ShowTitleType value)
   m_controller->SetShowTitle(value);
 }
 
-void GoomControl::SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer)
-{
-  m_controller->SetScreenBuffer(buffer);
-}
-
 void GoomControl::Start()
 {
   m_controller->Start();
@@ -167,6 +165,16 @@ void GoomControl::Start()
 void GoomControl::Finish()
 {
   m_controller->Finish();
+}
+
+void GoomControl::SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer)
+{
+  m_controller->SetScreenBuffer(buffer);
+}
+
+auto GoomControl::GetLastShaderEffects() const -> const GoomShaderEffects&
+{
+  return m_controller->GetLastShaderEffects();
 }
 
 void GoomControl::Update(const AudioSamples& audioSamples,
@@ -221,6 +229,11 @@ inline void GoomControl::GoomControlImpl::SetScreenBuffer(
     const std::shared_ptr<PixelBuffer>& buffer)
 {
   m_imageBuffers.SetOutputBuff(buffer);
+}
+
+inline auto GoomControl::GoomControlImpl::GetLastShaderEffects() const -> const GoomShaderEffects&
+{
+  return m_visualFx.GetLastShaderEffects();
 }
 
 void GoomControl::GoomControlImpl::Start()

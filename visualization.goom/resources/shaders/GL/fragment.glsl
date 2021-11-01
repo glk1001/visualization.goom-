@@ -471,6 +471,8 @@ out vec4 fragColor;
 
 uniform sampler2D texBuffer;
 uniform float u_texExposure;
+uniform float u_texBrightness;
+uniform float u_texContrast;
 in vec2 texCoords;
 
 void main()
@@ -518,18 +520,21 @@ void main()
   // Exposure tone mapping
   //const float exposure = 30.0;
   //vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
-  vec3 mapped = vec3(1.0) - exp(-hdrColor * u_texExposure);
+  const float exposureMultiplier = 1.0;
+  vec3 mapped = vec3(1.0) - exp(-hdrColor * exposureMultiplier * u_texExposure);
   A = 3.0;
 
 
   // Color effects
   // hue shift doesn't seem to be working???
-  mapped = hueShift(mapped, 1.5);
+//  mapped = hueShift(mapped, 1.5);
 
-  const float contrast = 1.1;
-  const float maxChan = -0.1;
-  mapped = max(0.5 + contrast * (mapped - 0.5), maxChan);
+  // const float contrast = 1.0;
+  const float maxChan = -0.0;
+  mapped = max(0.5 + u_texContrast * (mapped - 0.5), maxChan);
 
+  const float brightnessMultiplier = 2.0;
+  mapped = brightnessMultiplier * u_texBrightness * mapped;
 
   //mapped = A * mapped;
   mapped = A * pow(mapped, vec3(1.0 / gamma));
