@@ -473,6 +473,7 @@ uniform sampler2D texBuffer;
 uniform float u_texExposure;
 uniform float u_texBrightness;
 uniform float u_texContrast;
+uniform float u_texContrastMinChan;
 in vec2 texCoords;
 
 void main()
@@ -530,8 +531,7 @@ void main()
 //  mapped = hueShift(mapped, 1.5);
 
   // const float contrast = 1.0;
-  const float maxChan = -0.0;
-  mapped = max(0.5 + u_texContrast * (mapped - 0.5), maxChan);
+  mapped = max((u_texContrast * (mapped - 0.5)) + 0.5, u_texContrastMinChan);
 
   const float brightnessMultiplier = 2.0;
   mapped = brightnessMultiplier * u_texBrightness * mapped;

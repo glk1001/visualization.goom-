@@ -56,7 +56,6 @@ private:
   float m_targetExposure = INITIAL_EXPOSURE;
   void UpdateExposure();
 
-
   static constexpr uint32_t NUM_HIGH_BRIGHTNESS_STEPS = 100;
   TValue m_highBrightnessT{TValue::StepType::SINGLE_CYCLE, NUM_HIGH_BRIGHTNESS_STEPS, 1.0F};
   void UpdateHighBrightness();
@@ -70,6 +69,7 @@ private:
                          {{1.0F, HIGH_CONTRAST_DELAY_TIME}}};
   Timer m_highContrastTimer{TOTAL_HIGH_CONTRAST_STEPS, true};
   static constexpr float INITIAL_CONTRAST = 1.0F;
+  float m_contrastMinChannelValue = 0.0F;
   void UpdateHighContrast();
 
   GoomShaderEffects m_goomShaderEffects{INITIAL_EXPOSURE, INITIAL_BRIGHTNESS, INITIAL_CONTRAST};
@@ -148,18 +148,21 @@ inline void ShaderFx::ShaderFxImpl::UpdateHighContrast()
   m_highContrastT.Increment();
   m_highContrastTimer.Increment();
 
-  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) && ProbabilityOf(0.5F) &&
+  constexpr float PROB_CONTRAST = 0.5F;
+  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) && ProbabilityOf(PROB_CONTRAST) &&
       m_highContrastTimer.Finished())
   {
     m_highContrastT.Reset();
     m_highContrastTimer.ResetToZero();
+    constexpr float CONTRAST_MIN_CHAN = -0.1F;
+    constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.95F;
+    m_contrastMinChannelValue =
+        ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
   }
 
-  if (!m_highContrastTimer.Finished())
-  {
-    m_goomShaderEffects.contrast =
-        stdnew::lerp(m_goomShaderEffects.contrast, 1.01F, m_highContrastT());
-  }
+  constexpr float CONTRAST = 1.01F;
+  m_goomShaderEffects.contrast = stdnew::lerp(1.0F, CONTRAST, m_highContrastT());
+  m_goomShaderEffects.contrastMinChannelValue = m_contrastMinChannelValue;
 }
 
 inline void ShaderFx::ShaderFxImpl::UpdateExposure()
@@ -167,8 +170,8 @@ inline void ShaderFx::ShaderFxImpl::UpdateExposure()
   if (0 == (m_updateNum % NUM_UPDATES_BETWEEN_EXPOSURE_CHECKS))
   {
     const float avLuminance = GetAverageLuminanceOfSpotSamples();
-    constexpr float MIN_EXPOSURE = 1.0F;
-    constexpr float MAX_EXPOSURE = 10.0F;
+    constexpr float MIN_EXPOSURE = 0.1F;
+    constexpr float MAX_EXPOSURE = 100.0F;
     m_targetExposure = stdnew::clamp(1.0F / avLuminance, MIN_EXPOSURE, MAX_EXPOSURE);
     m_exposureChangeT.Reset();
 
@@ -193,9 +196,9 @@ inline void ShaderFx::ShaderFxImpl::UpdateExposure()
 auto ShaderFx::ShaderFxImpl::GetAverageLuminanceOfSpotSamples() const -> float
 {
   float totalLogLuminance = 0.0F;
-  constexpr size_t NUM_SAMPLES = 10;
+  constexpr size_t NUM_SAMPLES_TO_DO = 10;
   size_t numNonZeroSamples = 0;
-  for (size_t i = 0; i < NUM_SAMPLES; ++i)
+  for (size_t i = 0; i < NUM_SAMPLES_TO_DO; ++i)
   {
     const int32_t x = GetRandInRange(m_exposureSampleWidthRange);
     const int32_t y = GetRandInRange(m_exposureSampleHeightRange);

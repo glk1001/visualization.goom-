@@ -516,6 +516,7 @@ void CVisualizationGoom::OnCompiledAndLinked()
   m_uTexExposureLoc = glGetUniformLocation(ProgramHandle(), "u_texExposure");
   m_uTexBrightnessLoc = glGetUniformLocation(ProgramHandle(), "u_texBrightness");
   m_uTexContrastLoc = glGetUniformLocation(ProgramHandle(), "u_texContrast");
+  m_uTexContrastMinChannelValueLoc = glGetUniformLocation(ProgramHandle(), "u_texContrastMinChan");
   m_aPositionLoc = glGetAttribLocation(ProgramHandle(), "in_position");
   m_aCoordLoc = glGetAttribLocation(ProgramHandle(), "in_texCoords");
 }
@@ -753,6 +754,7 @@ inline void CVisualizationGoom::SetGlShaderValues(
   if (goomShaderEffects.contrast > 0.0F)
   {
     glUniform1f(m_uTexContrastLoc, goomShaderEffects.contrast);
+    glUniform1f(m_uTexContrastMinChannelValueLoc, goomShaderEffects.contrastMinChannelValue);
   }
 }
 
