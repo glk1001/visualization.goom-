@@ -1,5 +1,8 @@
 #version 330 core
 
+#define EXPOSURE_TONE_MAP 1
+#define UCHIMURA_TONE_MAP 2
+
 // == TONE MAPPING =======================================
 // Reinhard
 vec3 reinhard(vec3 x) {
@@ -478,20 +481,23 @@ in vec2 texCoords;
 
 void main()
 {
-   vec3 hdrColor = texture(texBuffer, texCoords).rgb;
+  //const int toneMapType = EXPOSURE_TONE_MAP;
+  const int toneMapType = UCHIMURA_TONE_MAP;
+
+  // Brightness factor after gamma correction
+  float A = 1.0;
+
+  vec3 hdrColor = texture(texBuffer, texCoords).rgb;
+  
 
   // Pre Tone Map Color effects
 
   // 'Chromatic Increase' - https://github.com/gurki/vivid
   vec3 lch = rgb_to_lch(hdrColor);
   lch.y = min(lch.y * 2.f, 140.0);
-  hdrColor = lch_to_rgb(lch);
+  vec3 mapped = lch_to_rgb(lch);
 
-
-  // Gamma correction
-  float A = 1.0;
-  const float gamma = 2.2;
-
+  
   // Tone mapping
   //vec3 mapped = 65.0*hdrColor;
   //A = 1.0;
@@ -509,26 +515,31 @@ void main()
   //vec3 mapped = lottes(hdrColor);
   //A = 10.0;
 
-  //vec3 mapped = uchimura(hdrColor);
-  //A = 10.0;
-
   //vec3 mapped = uncharted2Tonemap(hdrColor);
   //A = 10.0;
 
   //vec3 mapped = unreal(hdrColor); // needs lower 'A' value
 
-  
-  // Exposure tone mapping
-  //const float exposure = 30.0;
-  //vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
-  const float exposureMultiplier = 1.0;
-  vec3 mapped = vec3(1.0) - exp(-hdrColor * exposureMultiplier * u_texExposure);
-  A = 3.0;
-
+  if (toneMapType == UCHIMURA_TONE_MAP)
+  {
+    // Uchimura tone mapping
+    const float exposureMultiplier = 1.5;
+    mapped = uchimura(exposureMultiplier * u_texExposure * mapped);
+    A = 5.0;
+  }
+  else if (toneMapType == EXPOSURE_TONE_MAP)
+  {
+    // Exposure tone mapping
+    //const float exposure = 30.0;
+    //mapped = vec3(1.0) - exp(-hdrColor * exposure);
+    const float exposureMultiplier = 1.0;
+    mapped = vec3(1.0) - exp(-hdrColor * exposureMultiplier * u_texExposure);
+    A = 3.0;
+  }
 
   // Color effects
   // hue shift doesn't seem to be working???
-//  mapped = hueShift(mapped, 1.5);
+  // mapped = hueShift(mapped, 1.5);
 
   // const float contrast = 1.0;
   mapped = max((u_texContrast * (mapped - 0.5)) + 0.5, u_texContrastMinChan);
@@ -536,7 +547,7 @@ void main()
   const float brightnessMultiplier = 2.0;
   mapped = brightnessMultiplier * u_texBrightness * mapped;
 
-  //mapped = A * mapped;
+  const float gamma = 2.2;
   mapped = A * pow(mapped, vec3(1.0 / gamma));
 
   fragColor = vec4(mapped, 1.0);

@@ -513,12 +513,12 @@ auto CVisualizationGoom::InitGlShaders() -> bool
 void CVisualizationGoom::OnCompiledAndLinked()
 {
   m_uProjModelMatLoc = glGetUniformLocation(ProgramHandle(), "u_projModelMat");
+  m_aPositionLoc = glGetAttribLocation(ProgramHandle(), "in_position");
+  m_aCoordLoc = glGetAttribLocation(ProgramHandle(), "in_texCoords");
   m_uTexExposureLoc = glGetUniformLocation(ProgramHandle(), "u_texExposure");
   m_uTexBrightnessLoc = glGetUniformLocation(ProgramHandle(), "u_texBrightness");
   m_uTexContrastLoc = glGetUniformLocation(ProgramHandle(), "u_texContrast");
   m_uTexContrastMinChannelValueLoc = glGetUniformLocation(ProgramHandle(), "u_texContrastMinChan");
-  m_aPositionLoc = glGetAttribLocation(ProgramHandle(), "in_position");
-  m_aCoordLoc = glGetAttribLocation(ProgramHandle(), "in_texCoords");
 }
 
 auto CVisualizationGoom::OnEnabled() -> bool
