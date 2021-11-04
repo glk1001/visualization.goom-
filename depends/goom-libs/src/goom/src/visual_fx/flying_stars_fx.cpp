@@ -3,10 +3,11 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "draw/goom_draw.h"
+#include "fx_helpers.h"
 #include "goom/logging_control.h"
 #include "goom_plugin_info.h"
-#include "utils/randutils.h"
 #include "utils/graphics/image_bitmaps.h"
+#include "utils/randutils.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
@@ -89,9 +90,7 @@ struct Star
 class FlyingStarsFx::FlyingStarsImpl
 {
 public:
-  FlyingStarsImpl(IGoomDraw& draw,
-                  const PluginInfo& goomInfo,
-                  const SmallImageBitmaps& smallBitmaps) noexcept;
+  FlyingStarsImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void Start();
 
@@ -266,10 +265,9 @@ private:
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 };
 
-FlyingStarsFx::FlyingStarsFx(IGoomDraw& draw,
-                             const PluginInfo& goomInfo,
+FlyingStarsFx::FlyingStarsFx(const FxHelpers& fxHelpers,
                              const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<FlyingStarsImpl>(draw, goomInfo, smallBitmaps)}
+  : m_fxImpl{spimpl::make_unique_impl<FlyingStarsImpl>(fxHelpers, smallBitmaps)}
 {
 }
 
@@ -314,11 +312,10 @@ void FlyingStarsFx::ApplyMultiple()
   m_fxImpl->UpdateBuffers();
 }
 
-FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(IGoomDraw& draw,
-                                                const PluginInfo& goomInfo,
+FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelpers& fxHelpers,
                                                 const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{draw},
-    m_goomInfo{goomInfo},
+  : m_draw{fxHelpers.GetDraw()},
+    m_goomInfo{fxHelpers.GetGoomInfo()},
     m_halfWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width / 2)},
     m_halfHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height / 2)},
     m_xMax{static_cast<float>(m_goomInfo.GetScreenInfo().width - 1)},

@@ -24,10 +24,10 @@ class Parallel;
 class SmallImageBitmaps;
 } // namespace UTILS
 
-namespace DRAW
+namespace VISUAL_FX
 {
-class IGoomDraw;
-} // namespace DRAW
+class FxHelpers;
+} // namespace VISUAL_FX
 
 namespace FILTERS
 {
@@ -45,8 +45,7 @@ class GoomAllVisualFx
 public:
   GoomAllVisualFx() noexcept = delete;
   GoomAllVisualFx(UTILS::Parallel& parallel,
-                  DRAW::IGoomDraw& draw,
-                  const PluginInfo& goomInfo,
+                  const VISUAL_FX::FxHelpers& fxHelpers,
                   const UTILS::SmallImageBitmaps& smallBitmaps,
                   const std::string& resourcesDirectory,
                   IGoomStateHandler& goomStateHandler,

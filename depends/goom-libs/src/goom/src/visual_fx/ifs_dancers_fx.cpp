@@ -35,14 +35,15 @@
 #include "ifs_dancers_fx.h"
 
 #include "draw/goom_draw.h"
+#include "fx_helpers.h"
 #include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "ifs/colorizer.h"
 #include "ifs/fractal.h"
 #include "ifs/low_density_blurrer.h"
-#include "utils/randutils.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "utils/randutils.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
@@ -107,9 +108,7 @@ static const Weights<BlurrerColorMode> BLURRER_COLOR_MODE_WEIGHTS{{
 class IfsDancersFx::IfsDancersFxImpl
 {
 public:
-  IfsDancersFxImpl(IGoomDraw& draw,
-                   const PluginInfo& goomInfo,
-                   const SmallImageBitmaps& smallBitmaps) noexcept;
+  IfsDancersFxImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void ApplyNoDraw();
   void UpdateIfs();
@@ -170,10 +169,9 @@ private:
   void SetLowDensityColors(const std::vector<IfsPoint>& points, uint32_t maxLowDensityCount) const;
 };
 
-IfsDancersFx::IfsDancersFx(IGoomDraw& draw,
-                           const PluginInfo& goomInfo,
+IfsDancersFx::IfsDancersFx(const FxHelpers& fxHelpers,
                            const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<IfsDancersFxImpl>(draw, goomInfo, smallBitmaps)}
+  : m_fxImpl{spimpl::make_unique_impl<IfsDancersFxImpl>(fxHelpers, smallBitmaps)}
 {
 }
 
@@ -237,11 +235,10 @@ void IfsDancersFx::Refresh()
   m_fxImpl->Refresh();
 }
 
-IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(IGoomDraw& draw,
-                                                 const PluginInfo& goomInfo,
+IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelpers& fxHelpers,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{draw},
-    m_goomInfo{goomInfo},
+  : m_draw{fxHelpers.GetDraw()},
+    m_goomInfo{fxHelpers.GetGoomInfo()},
     m_fractal{std::make_unique<Fractal>(m_draw.GetScreenWidth(),
                                         m_draw.GetScreenHeight(),
                                         m_colorizer.GetColorMaps(),

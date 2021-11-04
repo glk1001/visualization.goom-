@@ -11,7 +11,6 @@
 
 namespace GOOM
 {
-class PluginInfo;
 
 namespace UTILS
 {
@@ -19,14 +18,10 @@ class Parallel;
 class SmallImageBitmaps;
 } // namespace UTILS
 
-namespace DRAW
-{
-class IGoomDraw;
-} // namespace DRAW
-
 namespace VISUAL_FX
 {
 class IVisualFx;
+class FxHelpers;
 class FlyingStarsFx;
 class GoomDotsFx;
 class IfsDancersFx;
@@ -47,8 +42,7 @@ public:
   using GoomDrawablesSet = std::unordered_set<GoomDrawables>;
 
   AllStandardVisualFx(UTILS::Parallel& parallel,
-                      DRAW::IGoomDraw& draw,
-                      const PluginInfo& goomInfo,
+                      const VISUAL_FX::FxHelpers& fxHelpers,
                       const UTILS::SmallImageBitmaps& smallBitmaps,
                       const std::string& resourcesDirectory) noexcept;
 

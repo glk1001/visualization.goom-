@@ -34,6 +34,7 @@
 #include "utils/name_value_pairs.h"
 #endif
 #include "visual_fx/filters/filter_settings_service.h"
+#include "visual_fx/fx_helpers.h"
 
 #include <cstdint>
 #if __cplusplus > 201402L
@@ -64,6 +65,7 @@ using UTILS::GetNameValuesString;
 using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::SmallImageBitmaps;
+using VISUAL_FX::FxHelpers;
 
 class GoomControl::GoomControlImpl
 {
@@ -195,8 +197,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_filterSettingsService{m_parallel, m_goomInfo, m_resourcesDirectory},
     m_smallBitmaps{m_resourcesDirectory},
     m_visualFx{m_parallel,
-               m_multiBufferDraw,
-               m_goomInfo,
+               FxHelpers{m_multiBufferDraw, m_goomInfo},
                m_smallBitmaps,
                m_resourcesDirectory,
                m_stateHandler,

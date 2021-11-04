@@ -9,26 +9,20 @@
 namespace GOOM
 {
 
-class PluginInfo;
-
 namespace COLOR
 {
 class RandomColorMaps;
 } // namespace UTILS
 
-namespace DRAW
-{
-class IGoomDraw;
-} // namespace DRAW
-
 namespace VISUAL_FX
 {
+class FxHelpers;
 
 class TentaclesFx : public IVisualFx
 {
 public:
   TentaclesFx() noexcept = delete;
-  TentaclesFx(DRAW::IGoomDraw& draw, const PluginInfo& goomInfo) noexcept;
+  TentaclesFx(const FxHelpers& fxHelpers) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

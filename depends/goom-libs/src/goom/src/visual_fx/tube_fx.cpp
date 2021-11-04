@@ -4,12 +4,13 @@
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
 #include "draw/goom_draw_to_many.h"
+#include "fx_helpers.h"
 #include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "tubes/tubes.h"
-#include "utils/randutils.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "utils/randutils.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
@@ -118,9 +119,7 @@ constexpr float PROB_FOLLOW_ZOOM_MID_POINT = 0.3F;
 class TubeFx::TubeFxImpl
 {
 public:
-  TubeFxImpl(IGoomDraw& draw,
-             const PluginInfo& goomInfo,
-             const SmallImageBitmaps& smallBitmaps) noexcept;
+  TubeFxImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
@@ -217,10 +216,8 @@ private:
       -> std::vector<IGoomDraw::GetBitmapColorFunc>;
 };
 
-TubeFx::TubeFx(IGoomDraw& draw,
-               const PluginInfo& goomInfo,
-               const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(draw, goomInfo, smallBitmaps)}
+TubeFx::TubeFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(fxHelpers, smallBitmaps)}
 {
 }
 
@@ -274,15 +271,14 @@ void TubeFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
-TubeFx::TubeFxImpl::TubeFxImpl(IGoomDraw& draw,
-                               const PluginInfo& goomInfo,
+TubeFx::TubeFxImpl::TubeFxImpl(const FxHelpers& fxHelpers,
                                const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{draw},
-    m_drawToContainer{draw.GetScreenWidth(), draw.GetScreenHeight()},
-    m_drawToMany{draw.GetScreenWidth(), draw.GetScreenHeight(), {&draw, &m_drawToContainer}},
-    m_goomInfo{goomInfo},
+  : m_draw{fxHelpers.GetDraw()},
+    m_drawToContainer{m_draw.GetScreenWidth(), m_draw.GetScreenHeight()},
+    m_drawToMany{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(), {&m_draw, &m_drawToContainer}},
+    m_goomInfo{fxHelpers.GetGoomInfo()},
     m_smallBitmaps{smallBitmaps},
-    m_prevShapesBrightnessAttenuation{draw.GetScreenWidth(), draw.GetScreenHeight(),
+    m_prevShapesBrightnessAttenuation{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(),
                                       PREV_SHAPES_CUTOFF_BRIGHTNESS},
     m_screenMidPoint{m_draw.GetScreenWidth() / 2, m_draw.GetScreenHeight() / 2},
     m_allStayInCentreTimer{1},

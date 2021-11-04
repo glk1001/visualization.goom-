@@ -8,7 +8,6 @@
 
 namespace GOOM
 {
-class PluginInfo;
 
 namespace COLOR
 {
@@ -20,13 +19,9 @@ namespace UTILS
 class SmallImageBitmaps;
 } // namespace UTILS
 
-namespace DRAW
-{
-class IGoomDraw;
-} // namespace DRAW
-
 namespace VISUAL_FX
 {
+class FxHelpers;
 
 class FlyingStarsFx : public IVisualFx
 {
@@ -41,9 +36,7 @@ public:
   };
 
   FlyingStarsFx() noexcept = delete;
-  FlyingStarsFx(DRAW::IGoomDraw& draw,
-                const PluginInfo& goomInfo,
-                const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+  FlyingStarsFx(const FxHelpers& fxHelpers, const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

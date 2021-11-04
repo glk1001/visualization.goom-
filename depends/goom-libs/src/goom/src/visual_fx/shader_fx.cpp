@@ -1,6 +1,7 @@
 #include "shader_fx.h"
 
 #include "draw/goom_draw.h"
+#include "fx_helpers.h"
 #include "goom_plugin_info.h"
 #include "logging_control.h"
 //#undef NO_LOGGING
@@ -36,7 +37,7 @@ using UTILS::TValue;
 class ShaderFx::ShaderFxImpl
 {
 public:
-  ShaderFxImpl(DRAW::IGoomDraw& draw, const PluginInfo& goomInfo) noexcept;
+  ShaderFxImpl(const FxHelpers& fxHelpers) noexcept;
 
   void Start();
   void ApplyMultiple();
@@ -78,8 +79,8 @@ private:
   [[nodiscard]] auto GetAverageLuminanceOfSpotSamples() const -> float;
 };
 
-ShaderFx::ShaderFx(IGoomDraw& draw, const PluginInfo& goomInfo) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<ShaderFxImpl>(draw, goomInfo)}
+ShaderFx::ShaderFx(const FxHelpers& fxHelpers) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<ShaderFxImpl>(fxHelpers)}
 {
 }
 
@@ -108,13 +109,15 @@ auto ShaderFx::GetLastShaderEffects() const -> const GoomShaderEffects&
   return m_fxImpl->GetLastShaderEffects();
 }
 
-ShaderFx::ShaderFxImpl::ShaderFxImpl(IGoomDraw& draw, const PluginInfo& goomInfo) noexcept
-  : m_draw{draw},
-    m_goomInfo{goomInfo},
-    m_exposureSampleWidthRange{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width / 3),
-                 static_cast<int32_t>(1 + ((2 * m_goomInfo.GetScreenInfo().width) / 3))},
-    m_exposureSampleHeightRange{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height / 3),
-                  static_cast<int32_t>(1 + ((2 * m_goomInfo.GetScreenInfo().height) / 3))}
+ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelpers& fxHelpers) noexcept
+  : m_draw{fxHelpers.GetDraw()},
+    m_goomInfo{fxHelpers.GetGoomInfo()},
+    m_exposureSampleWidthRange{
+        static_cast<int32_t>(m_goomInfo.GetScreenInfo().width / 3),
+        static_cast<int32_t>(1 + ((2 * m_goomInfo.GetScreenInfo().width) / 3))},
+    m_exposureSampleHeightRange{
+        static_cast<int32_t>(m_goomInfo.GetScreenInfo().height / 3),
+        static_cast<int32_t>(1 + ((2 * m_goomInfo.GetScreenInfo().height) / 3))}
 {
 }
 

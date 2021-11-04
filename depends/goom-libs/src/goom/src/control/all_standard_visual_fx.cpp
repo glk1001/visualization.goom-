@@ -5,6 +5,7 @@
 #include "utils/parallel_utils.h"
 #include "v2d.h"
 #include "visual_fx/flying_stars_fx.h"
+#include "visual_fx/fx_helpers.h"
 #include "visual_fx/goom_dots_fx.h"
 #include "visual_fx/ifs_dancers_fx.h"
 #include "visual_fx/image_fx.h"
@@ -30,6 +31,7 @@ using DRAW::IGoomDraw;
 using UTILS::Parallel;
 using UTILS::SmallImageBitmaps;
 using VISUAL_FX::FlyingStarsFx;
+using VISUAL_FX::FxHelpers;
 using VISUAL_FX::GoomDotsFx;
 using VISUAL_FX::IfsDancersFx;
 using VISUAL_FX::ImageFx;
@@ -38,17 +40,16 @@ using VISUAL_FX::TentaclesFx;
 using VISUAL_FX::TubeFx;
 
 AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
-                                         IGoomDraw& draw,
-                                         const PluginInfo& goomInfo,
+                                         const FxHelpers& fxHelpers,
                                          const SmallImageBitmaps& smallBitmaps,
                                          const std::string& resourcesDirectory) noexcept
-  : m_goomDots_fx{std::make_shared<GoomDotsFx>(draw, goomInfo, smallBitmaps)},
-    m_ifs_fx{std::make_shared<IfsDancersFx>(draw, goomInfo, smallBitmaps)},
-    m_image_fx{std::make_shared<ImageFx>(parallel, draw, goomInfo, resourcesDirectory)},
-    m_shader_fx{std::make_shared<ShaderFx>(draw, goomInfo)},
-    m_star_fx{std::make_shared<FlyingStarsFx>(draw, goomInfo, smallBitmaps)},
-    m_tentacles_fx{std::make_shared<TentaclesFx>(draw, goomInfo)},
-    m_tube_fx{std::make_shared<TubeFx>(draw, goomInfo, smallBitmaps)},
+  : m_goomDots_fx{std::make_shared<GoomDotsFx>(fxHelpers, smallBitmaps)},
+    m_ifs_fx{std::make_shared<IfsDancersFx>(fxHelpers, smallBitmaps)},
+    m_image_fx{std::make_shared<ImageFx>(parallel, fxHelpers, resourcesDirectory)},
+    m_shader_fx{std::make_shared<ShaderFx>(fxHelpers)},
+    m_star_fx{std::make_shared<FlyingStarsFx>(fxHelpers, smallBitmaps)},
+    m_tentacles_fx{std::make_shared<TentaclesFx>(fxHelpers)},
+    m_tube_fx{std::make_shared<TubeFx>(fxHelpers, smallBitmaps)},
     m_list{
         m_star_fx, m_ifs_fx, m_image_fx, m_goomDots_fx, m_tentacles_fx, m_tube_fx,
     },

@@ -9,8 +9,6 @@
 namespace GOOM
 {
 
-class PluginInfo;
-
 namespace COLOR
 {
 class RandomColorMaps;
@@ -21,13 +19,9 @@ namespace UTILS
 class SmallImageBitmaps;
 } // namespace UTILS
 
-namespace DRAW
-{
-class IGoomDraw;
-} // namespace DRAW
-
 namespace VISUAL_FX
 {
+class FxHelpers;
 
 class IfsDancersFx : public IVisualFx
 {
@@ -47,8 +41,7 @@ public:
   };
 
   IfsDancersFx() noexcept = delete;
-  explicit IfsDancersFx(DRAW::IGoomDraw& draw,
-                        const PluginInfo& goomInfo,
+  explicit IfsDancersFx(const FxHelpers& fxHelpers,
                         const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;

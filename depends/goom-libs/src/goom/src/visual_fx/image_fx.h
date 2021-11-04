@@ -8,17 +8,11 @@
 
 namespace GOOM
 {
-class PluginInfo;
 
 namespace COLOR
 {
 class RandomColorMaps;
 } // namespace COLOR
-
-namespace DRAW
-{
-class IGoomDraw;
-} // namespace DRAW
 
 namespace UTILS
 {
@@ -27,13 +21,13 @@ class Parallel;
 
 namespace VISUAL_FX
 {
+class FxHelpers;
 
 class ImageFx : public IVisualFx
 {
 public:
   ImageFx(UTILS::Parallel& parallel,
-          DRAW::IGoomDraw& draw,
-          const PluginInfo& goomInfo,
+          const FxHelpers& fxHelpers,
           const std::string& resourcesDirectory) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;

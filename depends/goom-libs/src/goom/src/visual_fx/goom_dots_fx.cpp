@@ -3,6 +3,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "draw/goom_draw.h"
+#include "fx_helpers.h"
 #include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -53,9 +54,7 @@ inline auto ChangeDotColorsEvent() -> bool
 class GoomDotsFx::GoomDotsFxImpl
 {
 public:
-  GoomDotsFxImpl(IGoomDraw& draw,
-                 const PluginInfo& goomInfo,
-                 const SmallImageBitmaps& smallBitmaps) noexcept;
+  GoomDotsFxImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void Start();
 
@@ -114,10 +113,8 @@ private:
   void SetNextCurrentBitmapName();
 };
 
-GoomDotsFx::GoomDotsFx(IGoomDraw& draw,
-                       const PluginInfo& goomInfo,
-                       const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<GoomDotsFxImpl>(draw, goomInfo, smallBitmaps)}
+GoomDotsFx::GoomDotsFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<GoomDotsFxImpl>(fxHelpers, smallBitmaps)}
 {
 }
 
@@ -160,11 +157,10 @@ void GoomDotsFx::ApplyMultiple()
 }
 
 
-GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(IGoomDraw& draw,
-                                           const PluginInfo& goomInfo,
+GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelpers& fxHelpers,
                                            const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{draw},
-    m_goomInfo{goomInfo},
+  : m_draw{fxHelpers.GetDraw()},
+    m_goomInfo{fxHelpers.GetGoomInfo()},
     m_smallBitmaps{smallBitmaps},
     m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
     m_pointWidth{(m_goomInfo.GetScreenInfo().width * 2) / 5},

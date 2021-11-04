@@ -11,6 +11,7 @@
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
+#include "fx_helpers.h"
 #include "goom/logging_control.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
@@ -72,8 +73,7 @@ class LinesFx::LinesImpl
 public:
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
-  LinesImpl(IGoomDraw& draw,
-            const PluginInfo& goomInfo,
+  LinesImpl(const FxHelpers& fxHelpers,
             const SmallImageBitmaps& smallBitmaps,
             LineType srceLineType,
             float srceParam,
@@ -179,8 +179,7 @@ private:
   static void SmoothCircleJoin(std::vector<PointAndColor>& audioPoints);
 };
 
-LinesFx::LinesFx(IGoomDraw& draw,
-                 const PluginInfo& goomInfo,
+LinesFx::LinesFx(const FxHelpers& fxHelpers,
                  const SmallImageBitmaps& smallBitmaps,
                  const LineType srceLineType,
                  const float srceParam,
@@ -188,8 +187,7 @@ LinesFx::LinesFx(IGoomDraw& draw,
                  const LineType destLineType,
                  const float destParam,
                  const Pixel& destColor) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<LinesImpl>(draw,
-                                                 goomInfo,
+  : m_fxImpl{spimpl::make_unique_impl<LinesImpl>(fxHelpers,
                                                  smallBitmaps,
                                                  srceLineType,
                                                  srceParam,
@@ -264,8 +262,7 @@ void LinesFx::DrawLines(const AudioSamples::SampleArray& soundData,
   m_fxImpl->DrawLines(soundData, soundMinMax);
 }
 
-LinesFx::LinesImpl::LinesImpl(IGoomDraw& draw,
-                              const PluginInfo& goomInfo,
+LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
                               const SmallImageBitmaps& smallBitmaps,
                               const LineType srceLineType,
                               const float srceParam,
@@ -273,8 +270,8 @@ LinesFx::LinesImpl::LinesImpl(IGoomDraw& draw,
                               const LineType destLineType,
                               const float destParam,
                               const Pixel& destColor)
-  : m_draw{draw},
-    m_goomInfo{goomInfo},
+  : m_draw{fxHelpers.GetDraw()},
+    m_goomInfo{fxHelpers.GetGoomInfo()},
     m_smallBitmaps{smallBitmaps},
     m_colorMaps{GetAllSlimMaps()},
     m_currentColorMap{GetRandomColorMap()},

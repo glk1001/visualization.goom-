@@ -8,21 +8,16 @@
 
 namespace GOOM
 {
-class PluginInfo;
 struct GoomShaderEffects;
-
-namespace DRAW
-{
-class IGoomDraw;
-} // namespace DRAW
 
 namespace VISUAL_FX
 {
+class FxHelpers;
 
 class ShaderFx : public IVisualFx
 {
 public:
-  ShaderFx(DRAW::IGoomDraw& draw, const PluginInfo& goomInfo) noexcept;
+  ShaderFx(const FxHelpers& fxHelpers) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
