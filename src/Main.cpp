@@ -514,7 +514,7 @@ void CVisualizationGoom::OnCompiledAndLinked()
 {
   m_uProjModelMatLoc = glGetUniformLocation(ProgramHandle(), "u_projModelMat");
   m_aPositionLoc = glGetAttribLocation(ProgramHandle(), "in_position");
-  m_aCoordLoc = glGetAttribLocation(ProgramHandle(), "in_texCoords");
+  m_aTexCoordsLoc = glGetAttribLocation(ProgramHandle(), "in_texCoords");
   m_uTexExposureLoc = glGetUniformLocation(ProgramHandle(), "u_texExposure");
   m_uTexBrightnessLoc = glGetUniformLocation(ProgramHandle(), "u_texBrightness");
   m_uTexContrastLoc = glGetUniformLocation(ProgramHandle(), "u_texContrast");
@@ -547,11 +547,11 @@ void CVisualizationGoom::SetupGlVertexAttributes()
   glGenBuffers(1, &m_vertexVBO);
   glBindBuffer(GL_ARRAY_BUFFER, m_vertexVBO);
   glEnableVertexAttribArray(static_cast<GLuint>(m_aPositionLoc));
-  glEnableVertexAttribArray(static_cast<GLuint>(m_aCoordLoc));
+  glEnableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
   glVertexAttribPointer(static_cast<GLuint>(m_aPositionLoc), m_componentsPerVertex, GL_FLOAT,
                         GL_FALSE, 0, nullptr);
   glVertexAttribPointer(
-      static_cast<GLuint>(m_aCoordLoc), m_componentsPerTexel, GL_FLOAT, GL_FALSE, 0,
+      static_cast<GLuint>(m_aTexCoordsLoc), m_componentsPerTexel, GL_FLOAT, GL_FALSE, 0,
       reinterpret_cast<GLvoid*>(
           (static_cast<size_t>(m_numVertices * m_componentsPerVertex) * sizeof(GLfloat))));
   glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(m_quadData.size() * sizeof(GLfloat)),
@@ -662,9 +662,9 @@ void CVisualizationGoom::Render()
 #else
     glVertexAttribPointer(m_aPositionLoc, 2, GL_FLOAT, GL_FALSE, 0, m_quadData.data());
     glEnableVertexAttribArray(m_aPositionLoc);
-    glVertexAttribPointer(m_aCoordLoc, 2, GL_FLOAT, GL_FALSE, 0,
+    glVertexAttribPointer(m_aTexCoordsLoc, 2, GL_FLOAT, GL_FALSE, 0,
                           m_quadData + m_numVertices * m_componentsPerVertex);
-    glEnableVertexAttribArray(m_aCoordLoc);
+    glEnableVertexAttribArray(m_aTexCoordsLoc);
 #endif
 
     // Setup texture.
@@ -693,7 +693,7 @@ void CVisualizationGoom::Render()
     glBindVertexArray(0);
 #else
     glDisableVertexAttribArray(m_aPositionLoc);
-    glDisableVertexAttribArray(m_aCoordLoc);
+    glDisableVertexAttribArray(m_aTexCoordsLoc);
 #endif
   }
   catch (const std::exception& e)

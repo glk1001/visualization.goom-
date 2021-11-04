@@ -120,7 +120,7 @@ vec3 uchimura(vec3 x) {
   const float a = 1.0;  // contrast
   const float m = 0.22; // linear section start
   const float l = 0.4;  // linear section length
-  const float c = 1.33; // black
+  const float c = 1.03; // black
   const float b = 0.0;  // pedestal
 
   return uchimura(x, P, a, m, l, c, b);
@@ -151,7 +151,7 @@ float uchimura(float x) {
   const float a = 1.0;  // contrast
   const float m = 0.22; // linear section start
   const float l = 0.4;  // linear section length
-  const float c = 1.33; // black
+  const float c = 1.03; // black
   const float b = 0.0;  // pedestal
 
   return uchimura(x, P, a, m, l, c, b);
@@ -488,6 +488,30 @@ void main()
   float A = 1.0;
 
   vec3 hdrColor = texture(texBuffer, texCoords).rgb;
+
+/**
+  if (hdrColor.r < 125.0/65535.0 && hdrColor.g < 125.0/65535.0 && hdrColor.b < 125.0/65535.0)
+    hdrColor.rgb = vec3(0.5, 0.5, 0.5);
+  else if (hdrColor.r < 255.0/65535.0 && hdrColor.g < 255.0/65535.0 && hdrColor.b < 255.0/65535.0)
+    hdrColor.rgb = vec3(1.0, 0.0, 0.0);
+  else if (hdrColor.r < 512.0/65535.0 && hdrColor.g < 512.0/65535.0 && hdrColor.b < 512.0/65535.0)
+    hdrColor.rgb = vec3(0.0, 0.0, 1.0);
+  else if (hdrColor.r < 1024.0/65535.0 && hdrColor.g < 1024.0/65535.0 && hdrColor.b < 1024.0/65535.0)
+    hdrColor.rgb = vec3(0.0, 1.0, 0.0);
+  else if (hdrColor.r < 1.0 && hdrColor.g < 1.0 && hdrColor.b < 1.0)
+    hdrColor.rgb = vec3(0.0, 1.0, 1.0);
+  else
+    hdrColor.rgb = vec3(1.0, 1.0, 1.0);
+**/    
+/**
+  if (hdrColor.r > 20.0*1024.0/65535.0 && hdrColor.g > 20.0*1024.0/65535.0 && hdrColor.b > 20.0*1024.0/65535.0)
+    hdrColor.rgb = vec3(1.0, 0.0, 0.0);
+  else
+    hdrColor.rgb = vec3(0.5, 0.5, 0.5);
+  fragColor = vec4(hdrColor, 1.0);
+  return;  
+**/  
+
   
 
   // Pre Tone Map Color effects
@@ -523,7 +547,7 @@ void main()
   if (toneMapType == UCHIMURA_TONE_MAP)
   {
     // Uchimura tone mapping
-    const float exposureMultiplier = 1.5;
+    const float exposureMultiplier = 2.0;
     mapped = uchimura(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
@@ -541,10 +565,11 @@ void main()
   // hue shift doesn't seem to be working???
   // mapped = hueShift(mapped, 1.5);
 
-  // const float contrast = 1.0;
+  //const float contrast = 1.0;
+  //mapped = max((contrast * (mapped - 0.5)) + 0.5, -0.0);
   mapped = max((u_texContrast * (mapped - 0.5)) + 0.5, u_texContrastMinChan);
 
-  const float brightnessMultiplier = 2.0;
+  const float brightnessMultiplier = 1.0;
   mapped = brightnessMultiplier * u_texBrightness * mapped;
 
   const float gamma = 2.2;

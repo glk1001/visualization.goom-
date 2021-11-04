@@ -115,7 +115,7 @@ private:
   GLuint m_vertexVBO = 0;
   GLint m_uProjModelMatLoc = -1;
   GLint m_aPositionLoc = -1;
-  GLint m_aCoordLoc = -1;
+  GLint m_aTexCoordsLoc = -1;
   GLint m_uTexExposureLoc = -1;
   GLint m_uTexBrightnessLoc = -1;
   GLint m_uTexContrastLoc = -1;

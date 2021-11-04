@@ -812,7 +812,8 @@ void Tube::TubeImpl::DrawShape(const Shape& shape, const V2dInt& centreOffset) c
   const V2dInt shapeCentrePos = shape.path->GetNextPoint() + jitterOffset + centreOffset;
 
   const ShapeColors allColors = m_colorizer->GetColors(
-      m_currentLowColorType, m_circleGroupTimer.GetCurrentCount(), shape, shapeCentrePos);
+      m_currentLowColorType, static_cast<uint32_t>(m_circleGroupTimer.GetCurrentCount()), shape,
+      shapeCentrePos);
 
   if (m_noBoundaryShapeTimer.Finished())
   {
