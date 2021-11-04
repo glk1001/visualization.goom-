@@ -41,7 +41,7 @@
 #include "ifs/colorizer.h"
 #include "ifs/fractal.h"
 #include "ifs/low_density_blurrer.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"

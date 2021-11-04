@@ -4,7 +4,7 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
 #include "utils/parallel_utils.h"

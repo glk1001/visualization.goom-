@@ -12,7 +12,7 @@
 #include "simple_speed_coefficients_effect.h"
 #include "speedway.h"
 #include "utils/enumutils.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "wave.h"
 #include "y_only.h"
 

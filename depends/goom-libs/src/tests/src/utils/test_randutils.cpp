@@ -1,6 +1,6 @@
 #include "catch2/catch.hpp"
 #include "utils/enumutils.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/mathutils.h"
 
 #include <cstdint>

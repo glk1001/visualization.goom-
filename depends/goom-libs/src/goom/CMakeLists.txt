@@ -47,12 +47,12 @@ add_library(goom
         src/goom_control.cpp
         src/goom_graphic.cpp
         src/sound_info.cpp
-        src/utils/goomrand.cpp
         src/utils/graphics/image_bitmaps.cpp
         src/utils/graphics/small_image_bitmaps.cpp
         src/utils/logging.cpp
         src/utils/mathutils.cpp
         src/utils/name_value_pairs.h
+        src/utils/randutils.cpp
         src/utils/strutils.cpp
         src/utils/t_values.cpp
         src/utils/thread_pool.cpp
@@ -87,6 +87,7 @@ add_library(goom
         src/visual_fx/tentacles/tentacles.cpp
         src/visual_fx/tubes/tubes.cpp
         src/visual_fx/flying_stars_fx.cpp
+        src/visual_fx/fx_helpers.h
         src/visual_fx/goom_dots_fx.cpp
         src/visual_fx/goom_visual_fx.h
         src/visual_fx/ifs_dancers_fx.cpp

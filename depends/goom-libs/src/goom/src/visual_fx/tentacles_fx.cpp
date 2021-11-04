@@ -7,7 +7,7 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "tentacles/tentacle_driver.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"

@@ -2,7 +2,7 @@
 
 #include "goom_graphic.h"
 #include "normalized_coords.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/mathutils.h"
 #include "v2d.h"

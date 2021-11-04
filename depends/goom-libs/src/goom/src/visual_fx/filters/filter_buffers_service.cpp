@@ -6,7 +6,7 @@
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "zoom_vector.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"

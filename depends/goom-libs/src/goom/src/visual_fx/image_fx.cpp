@@ -11,7 +11,7 @@
 #include "color/random_colormaps.h"
 #include "goom/spimpl.h"
 #include "logging.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/mathutils.h"
 #include "utils/parallel_utils.h"
 #include "utils/t_values.h"

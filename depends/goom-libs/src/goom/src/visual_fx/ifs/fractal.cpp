@@ -3,7 +3,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/mathutils.h"
 #include "utils/t_values.h"

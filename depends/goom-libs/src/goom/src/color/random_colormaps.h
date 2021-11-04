@@ -3,7 +3,7 @@
 #include "color/color_data/colormap_enums.h"
 #include "color/colormaps.h"
 #include "goom/goom_graphic.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 
 #include <array>
 #include <memory>

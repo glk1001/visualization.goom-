@@ -5,7 +5,7 @@
 #include "draw/goom_draw.h"
 #include "goom/logging_control.h"
 #include "goom_plugin_info.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/graphics/image_bitmaps.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"

@@ -1,6 +1,6 @@
 #include "image_speed_coeffs.h"
 
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/name_value_pairs.h"
 
 #undef NDEBUG

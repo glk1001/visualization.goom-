@@ -3,7 +3,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "goom/logging_control.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"

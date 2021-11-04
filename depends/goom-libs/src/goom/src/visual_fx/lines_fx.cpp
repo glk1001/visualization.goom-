@@ -19,7 +19,7 @@
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "sound_info.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/mathutils.h"

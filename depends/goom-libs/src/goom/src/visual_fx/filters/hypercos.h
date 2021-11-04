@@ -2,7 +2,7 @@
 
 #include "filter_settings.h"
 #include "normalized_coords.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
 

@@ -4,7 +4,6 @@
 #include "normalized_coords.h"
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 
 #if __cplusplus <= 201402L
 namespace GOOM

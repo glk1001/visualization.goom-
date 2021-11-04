@@ -5,7 +5,7 @@
 #include "goom_lock.h"
 #include "goom_music_lines_reactor.h"
 #include "goom_plugin_info.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/name_value_pairs.h"
 #include "utils/timer.h"
 #include "visual_fx/filters/filter_settings_service.h"

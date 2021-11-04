@@ -6,7 +6,7 @@
 //#undef NO_LOGGING
 #include "goom/spimpl.h"
 #include "logging.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 #include "v2d.h"

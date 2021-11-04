@@ -1,6 +1,6 @@
 #include "rotation.h"
 
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
 

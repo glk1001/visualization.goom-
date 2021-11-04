@@ -8,7 +8,7 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "tubes/tubes.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"

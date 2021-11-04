@@ -3,7 +3,7 @@
 #include "goom_graphic.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 
 #if __cplusplus <= 201402L
 namespace GOOM

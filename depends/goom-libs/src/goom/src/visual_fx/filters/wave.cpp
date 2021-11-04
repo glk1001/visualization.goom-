@@ -1,7 +1,7 @@
 #include "wave.h"
 
 #include "utils/enumutils.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/name_value_pairs.h"
 
 #undef NDEBUG

@@ -2,7 +2,7 @@
 
 #include "color/colormaps.h"
 #include "color/random_colormaps.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 
 #include <cmath>
 

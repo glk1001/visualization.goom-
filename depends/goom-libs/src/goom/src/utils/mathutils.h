@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goomrand.h"
+#include "randutils.h"
 
 #include <array>
 #include <cmath>

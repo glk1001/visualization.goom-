@@ -1,4 +1,4 @@
-#include "goomrand.h"
+#include "randutils.h"
 
 #include "logging_control.h"
 //#undef NO_LOGGING

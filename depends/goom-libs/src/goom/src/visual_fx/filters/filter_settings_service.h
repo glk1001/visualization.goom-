@@ -7,7 +7,7 @@
 #include "goom/spimpl.h"
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
-#include "utils/goomrand.h"
+#include "utils/randutils.h"
 #include "utils/mathutils.h"
 
 #include <map>
