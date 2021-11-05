@@ -32,7 +32,6 @@ public:
 
   void SetBuffSettings(const FXBuffSettings& settings);
   void SetBlockyWavy(bool val);
-  void SetClippedColor(const Pixel& color);
 
   using NeighborhoodCoeffArray = ZoomFilterBuffers::NeighborhoodCoeffArray;
   using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
@@ -46,12 +45,6 @@ public:
 
 private:
   bool m_blockyWavy = false;
-  Pixel m_clippedColor = Pixel::BLACK;
-  std::reference_wrapper<const COLOR::IColorMap> m_clippedColorMap{
-      COLOR::RandomColorMaps().GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK)};
-  UTILS::TValue m_clippedT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, 1000U};
-  static constexpr uint32_t MAX_NUM_COLOR_UPDATES = 10000;
-  UTILS::Timer m_clippedMap{MAX_NUM_COLOR_UPDATES};
   FXBuffSettings m_buffSettings{};
 
   [[nodiscard]] auto GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
@@ -67,19 +60,6 @@ inline void FilterColorsService::SetBlockyWavy(const bool val)
   m_blockyWavy = val;
 }
 
-inline void FilterColorsService::SetClippedColor(const Pixel& color)
-{
-  m_clippedColor = color;
-  m_clippedT.Increment();
-  m_clippedMap.Increment();
-  if (m_clippedMap.Finished())
-  {
-    m_clippedColorMap =
-        COLOR::RandomColorMaps().GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);
-    m_clippedMap.ResetToZero();
-  }
-}
-
 inline void FilterColorsService::SetBuffSettings(const FXBuffSettings& settings)
 {
   m_buffSettings = settings;
@@ -89,31 +69,10 @@ inline auto FilterColorsService::GetNewColor(
     const PixelBuffer& srceBuff, const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const
     -> Pixel
 {
-  /**
-  if (sourceInfo.isClipped)
-  {
-    return m_clippedColor;
-  }
-   **/
-
   const NeighborhoodPixelArray pixelNeighbours = srceBuff.Get4RHBNeighbours(
       static_cast<size_t>(sourceInfo.screenPoint.x), static_cast<size_t>(sourceInfo.screenPoint.y));
 
-  const Pixel filteredColor = GetFilteredColor(sourceInfo.coeffs, pixelNeighbours);
-
-  /**
-  if (sourceInfo.isClipped)
-  {
-    const float xT = static_cast<float>(sourceInfo.screenPoint.x)/static_cast<float>(srceBuff.GetWidth());
-    const float yT = static_cast<float>(sourceInfo.screenPoint.y)/static_cast<float>(srceBuff.GetHeight());
-    const Pixel xyColorMix = UTILS::IColorMap::GetColorMix(m_clippedColorMap.get().GetColor(xT), m_clippedColorMap.get().GetColor(yT), m_clippedT());
-    const Pixel clippedColorMix = UTILS::IColorMap::GetColorMix(m_clippedColor, xyColorMix, 0.7F);
-    const Pixel filteredColorMix = UTILS::IColorMap::GetColorMix(filteredColor, clippedColorMix, 0.7F);
-    return UTILS::GetBrighterColor(0.3F, filteredColorMix, true);
-  }
-   **/
-
-  return filteredColor;
+  return GetFilteredColor(sourceInfo.coeffs, pixelNeighbours);
 }
 
 inline auto FilterColorsService::GetFilteredColor(const NeighborhoodCoeffArray& coeffs,

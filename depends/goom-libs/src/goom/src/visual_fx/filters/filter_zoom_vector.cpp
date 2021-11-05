@@ -18,12 +18,14 @@ namespace GOOM::FILTERS
 {
 #endif
 
+using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 using UTILS::SqDistance;
 
 FilterZoomVector::FilterZoomVector(const uint32_t screenWidth,
-                                   const std::string& resourcesDirectory) noexcept
-  : m_zoomVectorEffects{screenWidth, resourcesDirectory}
+                                   const std::string& resourcesDirectory,
+                                   IGoomRand& goomRand) noexcept
+  : m_zoomVectorEffects{screenWidth, resourcesDirectory, goomRand}
 {
 }
 

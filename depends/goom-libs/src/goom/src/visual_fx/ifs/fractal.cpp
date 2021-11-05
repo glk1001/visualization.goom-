@@ -3,7 +3,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/mathutils.h"
 #include "utils/t_values.h"
@@ -24,37 +24,11 @@ namespace GOOM::IFS
 using COLOR::ColorMapGroup;
 using COLOR::GetColorAverage;
 using COLOR::RandomColorMaps;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::m_pi;
-using UTILS::ProbabilityOfMInN;
 using UTILS::SmallImageBitmaps;
 using UTILS::TValue;
 using UTILS::Weights;
-
-struct CentreType
-{
-  uint32_t depth;
-  Dbl r1Mean;
-  Dbl r2Mean;
-  Dbl dr1Mean;
-  Dbl dr2Mean;
-};
-
-// clang-format off
-static const std::vector<CentreType> CENTRE_LIST = {
-  { /*.depth = */10, /*.r1Mean = */0.7F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.3F, /*.dr2Mean = */0.4F },
-  { /*.depth = */ 6, /*.r1Mean = */0.6F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.4F, /*.dr2Mean = */0.3F },
-  { /*.depth = */ 4, /*.r1Mean = */0.5F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.4F, /*.dr2Mean = */0.3F },
-  { /*.depth = */ 2, /*.r1Mean = */0.4F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.5F, /*.dr2Mean = */0.3F },
-};
-
-static const Weights<size_t> CENTRE_WEIGHTS{{
-  {0, 10},
-  {1,  5},
-  {2,  3},
-  {3,  1},
-}};
-// clang-format on
 
 auto IfsPoint::GetSimiColor() const -> Pixel
 {
@@ -78,9 +52,11 @@ auto IfsPoint::GetSimiOverExposeBitmaps() const -> bool
 
 Fractal::Fractal(const uint32_t screenWidth,
                  const uint32_t screenHeight,
+                 IGoomRand& goomRand,
                  const RandomColorMaps& randomColorMaps,
                  const SmallImageBitmaps& smallBitmaps)
   : m_components{std::make_unique<std::vector<Similitude>>(NUM_SIMI_GROUPS * MAX_SIMI)},
+    m_goomRand{goomRand},
     m_smallBitmaps{smallBitmaps},
     m_colorMaps{randomColorMaps},
     m_lx{(screenWidth - 1U) / 2U},
@@ -91,8 +67,27 @@ Fractal::Fractal(const uint32_t screenWidth,
     m_hits1{screenWidth, screenHeight},
     m_hits2{screenWidth, screenHeight},
     m_prevHits{m_hits1},
-    m_curHits{m_hits2}
+    m_curHits{m_hits2},
+    // clang-format off
+    m_centreList {
+        { /*.depth = */10, /*.r1Mean = */0.7F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.3F, /*.dr2Mean = */0.4F },
+        { /*.depth = */ 6, /*.r1Mean = */0.6F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.4F, /*.dr2Mean = */0.3F },
+        { /*.depth = */ 4, /*.r1Mean = */0.5F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.4F, /*.dr2Mean = */0.3F },
+        { /*.depth = */ 2, /*.r1Mean = */0.4F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.5F, /*.dr2Mean = */0.3F },
+    },
+    m_centreWeights{
+        m_goomRand,
+        {
+            {0, 10},
+            {1,  5},
+            {2,  3},
+            {3,  1},
+        }
+    }
+// clang-format on
 {
+  assert(m_centreWeights.GetNumElements() == m_centreList.size());
+
   m_speedTransitionT.Reset(TValue::MAX_T_VALUE);
 
   Init();
@@ -101,18 +96,16 @@ Fractal::Fractal(const uint32_t screenWidth,
 
 void Fractal::Init()
 {
-  assert(CENTRE_WEIGHTS.GetNumElements() == CENTRE_LIST.size());
-
   m_prevHits.get().Reset();
   m_curHits.get().Reset();
 
-  const auto numCentres = static_cast<uint32_t>(2 + CENTRE_WEIGHTS.GetRandomWeighted());
+  const auto numCentres = static_cast<uint32_t>(2 + m_centreWeights.GetRandomWeighted());
 
-  m_depth = CENTRE_LIST.at(numCentres - 2).depth;
-  m_r1Mean = CENTRE_LIST[numCentres - 2].r1Mean;
-  m_r2Mean = CENTRE_LIST[numCentres - 2].r2Mean;
-  m_dr1Mean = CENTRE_LIST[numCentres - 2].dr1Mean;
-  m_dr2Mean = CENTRE_LIST[numCentres - 2].dr2Mean;
+  m_depth = m_centreList.at(numCentres - 2).depth;
+  m_r1Mean = m_centreList[numCentres - 2].r1Mean;
+  m_r2Mean = m_centreList[numCentres - 2].r2Mean;
+  m_dr1Mean = m_centreList[numCentres - 2].dr1Mean;
+  m_dr2Mean = m_centreList[numCentres - 2].dr2Mean;
 
   m_numSimi = numCentres;
 
@@ -140,14 +133,15 @@ void Fractal::SetSpeed(const uint32_t val)
 
 void Fractal::Reset()
 {
-  m_maxCountTimesSpeed = GetRandInRange(MIN_MAX_COUNT_TIMES_SPEED, MAX_MAX_COUNT_TIMES_SPEED + 1U);
+  m_maxCountTimesSpeed =
+      m_goomRand.GetRandInRange(MIN_MAX_COUNT_TIMES_SPEED, MAX_MAX_COUNT_TIMES_SPEED + 1U);
 
   ResetCurrentIfsFunc();
 }
 
 void Fractal::ResetCurrentIfsFunc()
 {
-  if (ProbabilityOfMInN(3, 10))
+  if (m_goomRand.ProbabilityOfMInN(3, 10))
   {
     m_curFunc = [&](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2,
                     const Flt y2) -> FltPoint {
@@ -301,7 +295,7 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
   const Dbl r2Factor = m_dr2Mean * r2_1_minus_exp_neg_S;
 
   const ColorMapGroup colorMapGroup = m_colorMaps.GetRandomGroup();
-  const bool useBitmaps = ProbabilityOfMInN(7, 10);
+  const bool useBitmaps = m_goomRand.ProbabilityOfMInN(7, 10);
 
   for (size_t i = start; i < (start + num); ++i)
   {
@@ -321,8 +315,8 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
     (*m_components)[i].r2 = 0;
 
     (*m_components)[i].colorMap = &m_colorMaps.GetRandomColorMap(colorMapGroup);
-    (*m_components)[i].color =
-        RandomColorMaps::GetRandomColor(m_colorMaps.GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
+    (*m_components)[i].color = RandomColorMaps{m_goomRand}.GetRandomColor(
+        m_colorMaps.GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
 
     if (!useBitmaps)
     {
@@ -332,9 +326,9 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
     {
       constexpr uint32_t MIN_RES = 3;
       constexpr uint32_t MAX_RES = 5;
-      const uint32_t res = GetRandInRange(MIN_RES, MAX_RES);
-      (*m_components)[i].overExposeBitmaps = ProbabilityOfMInN(10, 10);
-      if (ProbabilityOfMInN(6, 10))
+      const uint32_t res = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
+      (*m_components)[i].overExposeBitmaps = m_goomRand.ProbabilityOfMInN(10, 10);
+      if (m_goomRand.ProbabilityOfMInN(6, 10))
       {
         (*m_components)[i].currentPointBitmap =
             &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
@@ -359,14 +353,14 @@ constexpr auto Fractal::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
 
 auto Fractal::GaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S) -> Dbl
 {
-  const Dbl x = GetRandInRange(0.0F, 1.0F);
+  const Dbl x = m_goomRand.GetRandInRange(0.0F, 1.0F);
   const Dbl y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
-  return ProbabilityOfMInN(1, 2) ? (c + y) : (c - y);
+  return m_goomRand.ProbabilityOfMInN(1, 2) ? (c + y) : (c - y);
 }
 
 auto Fractal::HalfGaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S) -> Dbl
 {
-  const Dbl x = GetRandInRange(0.0F, 1.0F);
+  const Dbl x = m_goomRand.GetRandInRange(0.0F, 1.0F);
   const Dbl y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
   return c + y;
 }

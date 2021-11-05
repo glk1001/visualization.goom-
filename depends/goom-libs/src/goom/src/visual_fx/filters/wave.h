@@ -2,6 +2,7 @@
 
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"
+#include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
 
@@ -23,7 +24,7 @@ public:
     MODE0,
     MODE1
   };
-  explicit Wave(Modes mode) noexcept;
+  Wave(Modes mode, UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -56,11 +57,12 @@ protected:
 
 private:
   const Modes m_mode;
+  UTILS::IGoomRand& m_goomRand;
   Params m_params;
   void SetMode0RandomParams();
   void SetMode1RandomParams();
-  void SetWaveModeSettings(const UTILS::NumberRange<float>& freqFactorRange,
-                           const UTILS::NumberRange<float>& amplitudeRange);
+  void SetWaveModeSettings(const UTILS::IGoomRand::NumberRange<float>& freqFactorRange,
+                           const UTILS::IGoomRand::NumberRange<float>& amplitudeRange);
   [[nodiscard]] auto GetSpeedAdd(WaveEffect waveEffect, float angle) const -> float;
   [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
                                             float angle,

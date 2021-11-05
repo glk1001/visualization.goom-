@@ -5,6 +5,7 @@
 //#undef NO_LOGGING
 #include "goom/logging.h"
 #include "utils/enumutils.h"
+#include "utils/goom_rand_base.h"
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -35,18 +36,18 @@ using COLOR::GetSeasonsStandardMaps;
 using COLOR::GetSlightlyDivergingSlimMaps;
 using COLOR::GetSlightlyDivergingStandardMaps;
 using COLOR::GetYellowStandardMaps;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::Logging;
 using UTILS::ToUType;
 
-VisualFxColorMaps::VisualFxColorMaps() noexcept
-  : m_currentColorMatchedMap{&GetNextColorMatchedSet()}
+VisualFxColorMaps::VisualFxColorMaps(IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand}, m_currentColorMatchedMap{&GetNextColorMatchedSet()}
 {
 }
 
-auto VisualFxColorMaps::GetNextColorMatchedSet() -> const ColorMatchedSet&
+auto VisualFxColorMaps::GetNextColorMatchedSet() const -> const ColorMatchedSet&
 {
-  return GetColorMatchedSets()[GetRandInRange(0U, NUM_COLOR_MATCHED_SETS)];
+  return GetColorMatchedSets()[m_goomRand.GetRandInRange(0U, NUM_COLOR_MATCHED_SETS)];
 }
 
 inline auto VisualFxColorMaps::GetColorMatchedSets() -> const ColorMatchedSets&

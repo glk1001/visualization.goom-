@@ -1,7 +1,6 @@
 #include "image_displacement_list.h"
 
 #include "goom/goom_config.h"
-#include "utils/randutils.h"
 #include "utils/name_value_pairs.h"
 
 #undef NDEBUG
@@ -20,7 +19,7 @@ namespace GOOM::FILTERS
 #endif
 
 using UTILS::GetPair;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 
 // clang-format off
@@ -37,8 +36,9 @@ const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
 // clang-format on
 //@formatter:on
 
-ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirectory)
-  : m_resourcesDirectory{resourcesDirectory}
+ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirectory,
+                                             IGoomRand& goomRand)
+  : m_resourcesDirectory{resourcesDirectory}, m_goomRand{goomRand}
 {
   if (m_resourcesDirectory.empty())
   {
@@ -47,14 +47,14 @@ ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirecto
 
   for (const auto& imageFilename : IMAGE_FILENAMES)
   {
-    m_imageDisplacements.emplace_back(GetImageFilename(imageFilename));
+    m_imageDisplacements.emplace_back(GetImageFilename(imageFilename), m_goomRand);
   }
 }
 
 void ImageDisplacementList::SetRandomImageDisplacement()
 {
   m_currentImageDisplacementIndex =
-      GetRandInRange(0U, static_cast<uint32_t>(m_imageDisplacements.size()));
+      m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(m_imageDisplacements.size()));
 }
 
 auto ImageDisplacementList::GetImageFilename(const std::string& imageFilename) const -> std::string

@@ -3,7 +3,6 @@
 #include "color/colormaps.h"
 #include "draw/goom_draw.h"
 #include "goom/logging_control.h"
-#include "utils/randutils.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
@@ -34,43 +33,41 @@ namespace GOOM::TENTACLES
 {
 #endif
 
-using DRAW::IGoomDraw;
 using COLOR::ColorMapGroup;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
-using UTILS::GetRandInRange;
+using DRAW::IGoomDraw;
+using UTILS::IGoomRand;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
-using UTILS::ProbabilityOfMInN;
-using UTILS::Shuffle;
-
-inline auto ChangeCurrentColorMapEvent() -> bool
-{
-  return ProbabilityOfMInN(3, 5);
-}
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
-TentacleDriver::TentacleDriver(IGoomDraw& draw) noexcept : m_draw{draw}
+TentacleDriver::TentacleDriver(IGoomDraw& draw, IGoomRand& goomRand) noexcept
+  : m_draw{draw},
+    m_goomRand{goomRand},
+    m_iterParamsGroups{{
+                           m_goomRand,
+                           {100, 0.600F, 1.0F, {1.5F, -10.0f, +10.0F, m_pi}, 100.0F},
+                           {125, 0.700F, 2.0F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0F},
+                       },
+                       {
+                           m_goomRand,
+                           {125, 0.700F, 0.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 100.0},
+                           {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 105.0},
+                       },
+                       {
+                           m_goomRand,
+                           {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 100.0},
+                           {200, 0.900F, 2.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0},
+                       }},
+    m_tentacles{m_goomRand}
 {
-  const IterParamsGroup iter1 = {
-      {100, 0.600F, 1.0F, {1.5F, -10.0f, +10.0F, m_pi}, 100.0F},
-      {125, 0.700F, 2.0F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0F},
-  };
-  const IterParamsGroup iter2 = {
-      {125, 0.700F, 0.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 100.0},
-      {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 105.0},
-  };
-  const IterParamsGroup iter3 = {
-      {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 100.0},
-      {200, 0.900F, 2.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0},
-  };
+}
 
-  m_iterParamsGroups = {
-      iter1,
-      iter2,
-      iter3,
-  };
+inline auto TentacleDriver::ChangeCurrentColorMapEvent() const -> bool
+{
+  return m_goomRand.ProbabilityOfMInN(3, 5);
 }
 
 void TentacleDriver::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedMaps)
@@ -116,7 +113,8 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
     m_tentacleParams[i] = params;
 
     std::shared_ptr<TentacleColorMapColorizer> colorizer{
-        std::make_shared<TentacleColorMapColorizer>(initialColorMapGroup, params.numNodes)};
+        std::make_shared<TentacleColorMapColorizer>(initialColorMapGroup, params.numNodes,
+                                                    m_goomRand)};
     m_colorizers.emplace_back(colorizer);
 
     std::unique_ptr<Tentacle2D> tentacle2D{CreateNewTentacle2D(i, params)};
@@ -129,7 +127,8 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
                         headColor,
                         headLowColor,
                         INITIAL_HEAD_POS,
-                        Tentacle2D::MIN_NUM_NODES};
+                        Tentacle2D::MIN_NUM_NODES,
+                        m_goomRand};
 
     m_tentacles.AddTentacle(std::move(tentacle));
   }
@@ -143,33 +142,34 @@ auto TentacleDriver::IterParamsGroup::GetNext(const float t) const
     -> TentacleDriver::IterationParams
 {
   const float prevYWeight =
-      GetRandInRange(0.9F, 1.1F) * stdnew::lerp(first.prevYWeight, last.prevYWeight, t);
+      goomRand.GetRandInRange(0.9F, 1.1F) * stdnew::lerp(first.prevYWeight, last.prevYWeight, t);
   IterationParams params{};
-  params.length = GetRandInRange(1.0F, 1.1F * stdnew::lerp(first.length, last.length, t));
+  params.length = goomRand.GetRandInRange(1.0F, 1.1F * stdnew::lerp(first.length, last.length, t));
   assert(params.length >= 1.0F);
   params.numNodes = static_cast<size_t>(
-      GetRandInRange(0.9F, 1.1F) *
+      goomRand.GetRandInRange(0.9F, 1.1F) *
       stdnew::lerp(static_cast<float>(first.numNodes), static_cast<float>(last.numNodes), t));
   assert(params.numNodes >= 10);
   params.prevYWeight = prevYWeight;
   params.iterZeroYValWave = first.iterZeroYValWave;
   params.iterZeroYValWaveFreq =
-      GetRandInRange(0.9F, 1.1F) *
+      goomRand.GetRandInRange(0.9F, 1.1F) *
       stdnew::lerp(first.iterZeroYValWaveFreq, last.iterZeroYValWaveFreq, t);
   return params;
 }
 
-auto TentacleDriver::CreateNewTentacle2D(size_t id, const IterationParams& p)
+auto TentacleDriver::CreateNewTentacle2D(size_t id, const IterationParams& iterationParams)
     -> std::unique_ptr<Tentacle2D>
 {
-  const float tentacleLen = std::max(1.0F, GetRandInRange(0.99F, 1.01F) * p.length);
+  const float tentacleLen =
+      std::max(1.0F, m_goomRand.GetRandInRange(0.99F, 1.01F) * iterationParams.length);
   assert(tentacleLen >= 1);
   const double tent2d_xMax = TENT2D_X_MIN + static_cast<double>(tentacleLen);
   assert(tent2d_xMax >= 1.0);
 
-  std::unique_ptr<Tentacle2D> tentacle{
-      std::make_unique<Tentacle2D>(id, p.numNodes, TENT2D_X_MIN, tent2d_xMax, TENT2D_Y_MIN,
-                                   TENT2D_Y_MAX, p.prevYWeight, 1.0F - p.prevYWeight)};
+  std::unique_ptr<Tentacle2D> tentacle{std::make_unique<Tentacle2D>(
+      id, iterationParams.numNodes, TENT2D_X_MIN, tent2d_xMax, TENT2D_Y_MIN, TENT2D_Y_MAX,
+      iterationParams.prevYWeight, 1.0F - iterationParams.prevYWeight)};
 
   tentacle->SetDoDamping(true);
 
@@ -184,9 +184,9 @@ void TentacleDriver::StartIterating()
   }
 }
 
-void TentacleDriver::UpdateTentaclesLayout(const ITentacleLayout& l)
+void TentacleDriver::UpdateTentaclesLayout(const ITentacleLayout& layout)
 {
-  assert(l.GetNumPoints() == m_numTentacles);
+  assert(layout.GetNumPoints() == m_numTentacles);
 
   std::vector<size_t> sortedLongestFirst(m_numTentacles);
   std::iota(sortedLongestFirst.begin(), sortedLongestFirst.end(), 0);
@@ -200,7 +200,7 @@ void TentacleDriver::UpdateTentaclesLayout(const ITentacleLayout& l)
 
   for (size_t i = 0; i < m_numTentacles; ++i)
   {
-    m_tentacles[sortedLongestFirst.at(i)].SetHead(l.GetPoints().at(i));
+    m_tentacles[sortedLongestFirst.at(i)].SetHead(layout.GetPoints().at(i));
   }
 
   // To help with perspective, any tentacles near vertical centre will be shortened.
@@ -249,9 +249,9 @@ auto TentacleDriver::GetNextColorMapGroups() const -> std::vector<ColorMapGroup>
 {
   const size_t numDifferentGroups =
       ((m_colorMode == ColorModes::MINIMAL) || (m_colorMode == ColorModes::ONE_GROUP_FOR_ALL) ||
-       ProbabilityOfMInN(99, 100))
+       m_goomRand.ProbabilityOfMInN(99, 100))
           ? 1
-          : GetRandInRange(1U, std::min(5U, static_cast<uint32_t>(m_colorizers.size())));
+          : m_goomRand.GetRandInRange(1U, std::min(5U, static_cast<uint32_t>(m_colorizers.size())));
   std::vector<ColorMapGroup> groups(numDifferentGroups);
   for (size_t i = 0; i < numDifferentGroups; ++i)
   {
@@ -270,9 +270,9 @@ auto TentacleDriver::GetNextColorMapGroups() const -> std::vector<ColorMapGroup>
     }
   }
 
-  if (ProbabilityOfMInN(1, 2))
+  if (m_goomRand.ProbabilityOfMInN(1, 2))
   {
-    Shuffle(nextColorMapGroups.begin(), nextColorMapGroups.end());
+    m_goomRand.Shuffle(begin(nextColorMapGroups), end(nextColorMapGroups));
   }
 
   return nextColorMapGroups;
@@ -417,7 +417,8 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
     constexpr float FAR_AWAY_DISTANCE = 50.0F;
     constexpr float MIN_RAND_BRIGHTNESS = 0.1F;
     constexpr float MAX_RAND_BRIGHTNESS = 0.3F;
-    const float randBrightness = GetRandInRange(MIN_RAND_BRIGHTNESS, MAX_RAND_BRIGHTNESS);
+    const float randBrightness =
+        m_goomRand.GetRandInRange(MIN_RAND_BRIGHTNESS, MAX_RAND_BRIGHTNESS);
     const float brightness =
         brightnessCut * std::max(randBrightness, FAR_AWAY_DISTANCE / distance2);
     getMixedColors = [&, brightness](const size_t nodeNum) {
@@ -514,9 +515,11 @@ inline void TentacleDriver::TranslateV3D(const V3dFlt& vAdd, V3dFlt& vInOut)
 }
 
 TentacleColorMapColorizer::TentacleColorMapColorizer(const ColorMapGroup cmg,
-                                                     const size_t numNodes) noexcept
+                                                     const size_t numNodes,
+                                                     IGoomRand& goomRand) noexcept
   : m_numNodes{numNodes},
     m_currentColorMapGroup{cmg},
+    m_colorMaps{goomRand},
     m_colorMap{m_colorMaps.GetRandomColorMapPtr(m_currentColorMapGroup, RandomColorMaps::ALL)},
     m_prevColorMap{m_colorMap}
 {

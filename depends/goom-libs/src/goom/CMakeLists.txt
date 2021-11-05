@@ -47,6 +47,8 @@ add_library(goom
         src/goom_control.cpp
         src/goom_graphic.cpp
         src/sound_info.cpp
+        src/utils/goom_rand.h
+        src/utils/goom_rand_base.h
         src/utils/graphics/image_bitmaps.cpp
         src/utils/graphics/small_image_bitmaps.cpp
         src/utils/logging.cpp
@@ -96,8 +98,7 @@ add_library(goom
         src/visual_fx/shader_fx.cpp
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tube_fx.cpp
-        src/visual_fx/zoom_filter_fx.cpp
-        src/visual_fx/image_fx.h src/visual_fx/image_fx.cpp src/control/all_standard_visual_fx.h)
+        src/visual_fx/zoom_filter_fx.cpp)
 
 target_include_directories(goom
     PUBLIC

@@ -22,8 +22,14 @@ using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
-                                     const std::string& resourcesDirectory) noexcept
-  : m_screenWidth{screenWidth}, m_imageVelocity{resourcesDirectory}
+                                     const std::string& resourcesDirectory,
+                                     UTILS::IGoomRand& goomRand) noexcept
+  : m_screenWidth{screenWidth},
+    m_imageVelocity{resourcesDirectory, goomRand},
+    m_noise{goomRand},
+    m_hypercos{goomRand},
+    m_planes{goomRand},
+    m_tanEffect{goomRand}
 {
 }
 

@@ -1,8 +1,7 @@
-#ifndef VISUALIZATION_GOOM_LIB_FILTERS_NOISE_H
-#define VISUALIZATION_GOOM_LIB_FILTERS_NOISE_H
+#pragma once
 
 #include "normalized_coords.h"
-#include "utils/mathutils.h"
+#include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
 #if __cplusplus <= 201402L
@@ -18,7 +17,7 @@ namespace GOOM::FILTERS
 class Noise
 {
 public:
-  Noise() noexcept;
+  explicit Noise(UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams();
 
@@ -37,6 +36,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
   static constexpr float NOISE_MAX = 120.0F;
@@ -45,8 +45,8 @@ private:
 
 inline auto Noise::GetVelocity() const -> NormalizedCoords
 {
-  const float amp = m_params.noiseFactor / UTILS::GetRandInRange(NOISE_MIN, NOISE_MAX);
-  return {UTILS::GetRandInRange(-amp, +amp), UTILS::GetRandInRange(-amp, +amp)};
+  const float amp = m_params.noiseFactor / m_goomRand.GetRandInRange(NOISE_MIN, NOISE_MAX);
+  return {m_goomRand.GetRandInRange(-amp, +amp), m_goomRand.GetRandInRange(-amp, +amp)};
 }
 
 inline auto Noise::GetParams() const -> const Params&
@@ -65,5 +65,3 @@ inline void Noise::SetParams(const Params& params)
 #else
 } // namespace GOOM::FILTERS
 #endif
-
-#endif //VISUALIZATION_GOOM_LIB_FILTERS_NOISE_H

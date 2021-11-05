@@ -120,7 +120,7 @@ private:
   void ResetCurrentDrawBuffSettings(GoomDrawables fx);
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
 
-  VisualFxColorMaps m_visualFxColorMaps{};
+  VisualFxColorMaps m_visualFxColorMaps;
 
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;

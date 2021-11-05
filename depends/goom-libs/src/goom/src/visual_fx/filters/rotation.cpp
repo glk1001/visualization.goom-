@@ -1,6 +1,5 @@
 #include "rotation.h"
 
-#include "utils/randutils.h"
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
 
@@ -21,31 +20,30 @@ namespace GOOM::FILTERS
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::m_pi;
 using UTILS::NameValuePairs;
-using UTILS::NumberRange;
-using UTILS::ProbabilityOf;
 
 constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
-constexpr NumberRange<float> ROTATE_SPEED_RANGE = {-0.5F, +0.5F};
+constexpr IGoomRand::NumberRange<float> ROTATE_SPEED_RANGE = {-0.5F, +0.5F};
 constexpr float PROB_EQUAL_XY_ROTATE_SPEEDS = 0.8F;
 
 constexpr float DEFAULT_ROTATE_ANGLE = m_pi / 4.0F;
-constexpr NumberRange<float> ANGLE_RANGE = {(1.0F / 8.0F) * m_pi, (3.0F / 8.0F) * m_pi};
+constexpr IGoomRand::NumberRange<float> ANGLE_RANGE = {(1.0F / 8.0F) * m_pi, (3.0F / 8.0F) * m_pi};
 
-Rotation::Rotation() noexcept
-  : m_params{DEFAULT_ROTATE_SPEED, DEFAULT_ROTATE_SPEED, std::sin(DEFAULT_ROTATE_ANGLE),
+Rotation::Rotation(IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand},
+    m_params{DEFAULT_ROTATE_SPEED, DEFAULT_ROTATE_SPEED, std::sin(DEFAULT_ROTATE_ANGLE),
              std::cos(DEFAULT_ROTATE_ANGLE)}
 {
 }
 
 void Rotation::SetRandomParams()
 {
-  m_params.xRotateSpeed = GetRandInRange(ROTATE_SPEED_RANGE);
-  m_params.yRotateSpeed = ProbabilityOf(PROB_EQUAL_XY_ROTATE_SPEEDS)
+  m_params.xRotateSpeed = m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
+  m_params.yRotateSpeed = m_goomRand.ProbabilityOf(PROB_EQUAL_XY_ROTATE_SPEEDS)
                               ? m_params.xRotateSpeed
-                              : GetRandInRange(ROTATE_SPEED_RANGE);
+                              : m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
 
   if ((m_params.xRotateSpeed < 0.0F) && (m_params.yRotateSpeed > 0.0F))
   {
@@ -56,7 +54,7 @@ void Rotation::SetRandomParams()
     m_params.yRotateSpeed = -m_params.yRotateSpeed;
   }
 
-  const float angle = GetRandInRange(ANGLE_RANGE);
+  const float angle = m_goomRand.GetRandInRange(ANGLE_RANGE);
   m_params.sinAngle = std::sin(angle);
   m_params.cosAngle = std::cos(angle);
 }

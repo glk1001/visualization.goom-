@@ -1,6 +1,7 @@
 #pragma once
 
 #include "normalized_coords.h"
+#include "utils/goom_rand_base.h"
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
@@ -20,7 +21,7 @@ namespace GOOM::FILTERS
 class TanEffect
 {
 public:
-  TanEffect() noexcept;
+  explicit TanEffect(UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams();
 
@@ -42,6 +43,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   Params m_params;
 };
 

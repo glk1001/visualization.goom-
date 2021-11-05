@@ -1,6 +1,7 @@
 #include "catch2/catch.hpp"
 #include "goom/goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "utils/goom_rand.h"
 #include "utils/parallel_utils.h"
 #include "v2d.h"
 #include "visual_fx/filters/filter_settings.h"
@@ -13,6 +14,7 @@ using GOOM::PluginInfo;
 using GOOM::V2dInt;
 using GOOM::FILTERS::FilterSettingsService;
 using GOOM::FILTERS::ZoomFilterBufferSettings;
+using GOOM::UTILS::GoomRand;
 using GOOM::UTILS::Parallel;
 using GOOM::VISUAL_FX::ZoomFilterFx;
 
@@ -25,10 +27,10 @@ TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
 {
   Parallel parallel{-1};
   const PluginInfo goomInfo{WIDTH, HEIGHT};
-  FilterSettingsService filterSettingsService{parallel, goomInfo, RESOURCES_DIRECTORY};
-  ZoomFilterFx zoomFilter_fx{parallel, goomInfo,
-                             std::move(filterSettingsService.GetFilterBuffersService()),
-                             std::move(filterSettingsService.GetFilterColorsService())};
+  GoomRand goomRand{};
+  FilterSettingsService filterSettingsService{parallel, goomInfo, goomRand, RESOURCES_DIRECTORY};
+  ZoomFilterFx zoomFilter_fx{parallel, goomInfo, filterSettingsService.GetFilterBuffersService(),
+                             filterSettingsService.GetFilterColorsService()};
 
   SECTION("Correct initial lerp factor") { REQUIRE(0 == zoomFilter_fx.GetTranLerpFactor()); }
   SECTION("Correct lerp factor after an increment")

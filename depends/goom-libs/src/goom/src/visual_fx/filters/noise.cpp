@@ -1,6 +1,5 @@
 #include "noise.h"
 
-#include "utils/randutils.h"
 #include "utils/name_value_pairs.h"
 
 #undef NDEBUG
@@ -18,20 +17,19 @@ namespace GOOM::FILTERS
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
-using UTILS::NumberRange;
 
 constexpr float DEFAULT_NOISE_FACTOR = 0.01F;
-constexpr NumberRange<float> NOISE_FACTOR_RANGE = {0.05F, 0.5F};
+constexpr IGoomRand::NumberRange<float> NOISE_FACTOR_RANGE = {0.05F, 0.5F};
 
-Noise::Noise() noexcept : m_params{DEFAULT_NOISE_FACTOR}
+Noise::Noise(IGoomRand& goomRand) noexcept : m_goomRand{goomRand}, m_params{DEFAULT_NOISE_FACTOR}
 {
 }
 
 void Noise::SetRandomParams()
 {
-  m_params.noiseFactor = GetRandInRange(NOISE_FACTOR_RANGE);
+  m_params.noiseFactor = m_goomRand.GetRandInRange(NOISE_FACTOR_RANGE);
 }
 
 auto Noise::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs

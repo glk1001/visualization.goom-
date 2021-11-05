@@ -1,6 +1,5 @@
 #include "image_velocity.h"
 
-#include "utils/randutils.h"
 #include "utils/name_value_pairs.h"
 
 #undef NDEBUG
@@ -18,19 +17,17 @@ namespace GOOM::FILTERS
 #endif
 
 using UTILS::GetFullParamGroup;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
-using UTILS::NumberRange;
-using UTILS::ProbabilityOf;
 
-constexpr NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.0100F};
-constexpr NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};
-constexpr NumberRange<float> ZOOM_FACTOR_RANGE = {0.9F, 1.0F};
+constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.0100F};
+constexpr IGoomRand::NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};
+constexpr IGoomRand::NumberRange<float> ZOOM_FACTOR_RANGE = {0.9F, 1.0F};
 
 constexpr float PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
-ImageVelocity::ImageVelocity(const std::string& resourcesDirectory)
-  : m_imageDisplacementList{resourcesDirectory}
+ImageVelocity::ImageVelocity(const std::string& resourcesDirectory, IGoomRand& goomRand)
+  : m_goomRand{goomRand}, m_imageDisplacementList{resourcesDirectory, m_goomRand}
 {
   if (!resourcesDirectory.empty())
   {
@@ -42,14 +39,15 @@ void ImageVelocity::SetRandomParams()
 {
   m_imageDisplacementList.SetRandomImageDisplacement();
 
-  const float xColorCutoff = GetRandInRange(COLOR_CUTOFF_RANGE);
+  const float xColorCutoff = m_goomRand.GetRandInRange(COLOR_CUTOFF_RANGE);
 
   m_imageDisplacementList.SetParams({
-      GetRandInRange(AMPLITUDE_RANGE),
+      m_goomRand.GetRandInRange(AMPLITUDE_RANGE),
       xColorCutoff,
-      ProbabilityOf(PROB_XY_COLOR_CUTOFFS_EQUAL) ? xColorCutoff
-                                                 : GetRandInRange(COLOR_CUTOFF_RANGE),
-      GetRandInRange(ZOOM_FACTOR_RANGE),
+      m_goomRand.ProbabilityOf(PROB_XY_COLOR_CUTOFFS_EQUAL)
+          ? xColorCutoff
+          : m_goomRand.GetRandInRange(COLOR_CUTOFF_RANGE),
+      m_goomRand.GetRandInRange(ZOOM_FACTOR_RANGE),
   });
 }
 

@@ -2,7 +2,6 @@
 
 #include "goom_graphic.h"
 #include "normalized_coords.h"
-#include "utils/randutils.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/mathutils.h"
 #include "v2d.h"
@@ -10,7 +9,6 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
-#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -22,12 +20,13 @@ namespace GOOM::FILTERS
 {
 #endif
 
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
 
-ImageDisplacement::ImageDisplacement(const std::string& imageFilename)
+ImageDisplacement::ImageDisplacement(const std::string& imageFilename, IGoomRand& goomRand)
   : m_imageBuffer(std::make_unique<ImageBitmap>(imageFilename)),
     m_imageFilename{imageFilename},
+    m_goomRand{goomRand},
     m_xMax{static_cast<int32_t>(m_imageBuffer->GetWidth() - 1)},
     m_yMax{static_cast<int32_t>(m_imageBuffer->GetHeight() - 1)},
     m_ratioNormalizedCoordToImageCoord{
@@ -77,8 +76,8 @@ inline auto ImageDisplacement::NormalizedToImagePoint(const V2dFlt& normalizedPo
   {
     return {x, y};
   }
-  return {stdnew::clamp(GetRandInRange(x - FUZZ, x + FUZZ), 0, m_xMax),
-          stdnew::clamp(GetRandInRange(y - FUZZ, y + FUZZ), 0, m_yMax)};
+  return {stdnew::clamp(m_goomRand.GetRandInRange(x - FUZZ, x + FUZZ), 0, m_xMax),
+          stdnew::clamp(m_goomRand.GetRandInRange(y - FUZZ, y + FUZZ), 0, m_yMax)};
 }
 
 #if __cplusplus <= 201402L

@@ -46,7 +46,7 @@ public:
 
   void Start() override;
 
-  auto GetTranLerpFactor() const -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
 
   void UpdateFilterEffectsSettings(const FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings);
   void UpdateFilterBufferSettings(const FILTERS::ZoomFilterBufferSettings& filterBufferSettings);

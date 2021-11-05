@@ -21,7 +21,6 @@ auto FilterColorsService::GetNameValueParams(const std::string& paramGroup) cons
 {
   return {
       GetPair(paramGroup, "blockyWavy", m_blockyWavy),
-      GetPair(paramGroup, "clippedColor", m_clippedColor),
       GetPair(paramGroup, "buffIntensity", m_buffSettings.buffIntensity),
       GetPair(paramGroup, "allowOverexposed", m_buffSettings.allowOverexposed),
   };

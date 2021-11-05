@@ -2,7 +2,7 @@
 
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
 
@@ -24,7 +24,7 @@ public:
     MODE0,
     MODE1
   };
-  explicit CrystalBall(Modes mode) noexcept;
+  explicit CrystalBall(Modes mode, UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -51,15 +51,16 @@ protected:
 
 private:
   const Modes m_mode;
+  UTILS::IGoomRand& m_goomRand;
   Params m_params;
   void SetMode0RandomParams();
   void SetMode1RandomParams();
-  void SetRandomParams(const UTILS::NumberRange<float>& xAmplitudeRange,
-                       const UTILS::NumberRange<float>& yAmplitudeRange,
-                       const UTILS::NumberRange<float>& xSqDistMultRange,
-                       const UTILS::NumberRange<float>& ySqDistMultRange,
-                       const UTILS::NumberRange<float>& xSqDistOffsetRange,
-                       const UTILS::NumberRange<float>& ySqDistOffsetRange);
+  void SetRandomParams(const UTILS::IGoomRand::NumberRange<float>& xAmplitudeRange,
+                       const UTILS::IGoomRand::NumberRange<float>& yAmplitudeRange,
+                       const UTILS::IGoomRand::NumberRange<float>& xSqDistMultRange,
+                       const UTILS::IGoomRand::NumberRange<float>& ySqDistMultRange,
+                       const UTILS::IGoomRand::NumberRange<float>& xSqDistOffsetRange,
+                       const UTILS::IGoomRand::NumberRange<float>& ySqDistOffsetRange);
   [[nodiscard]] static auto GetSpeedCoefficient(float baseSpeedCoeff,
                                                 float sqDistFromZero,
                                                 float amplitude,

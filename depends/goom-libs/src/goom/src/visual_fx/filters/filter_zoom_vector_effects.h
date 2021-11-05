@@ -14,16 +14,16 @@
 
 #include <string>
 
-#if __cplusplus <= 201402L
 namespace GOOM
 {
 
+namespace UTILS
+{
+class IGoomRand;
+} // namespace UTILS
+
 namespace FILTERS
 {
-#else
-namespace GOOM::FILTERS
-{
-#endif
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++" // Allow the const 'ZoomFilterEffectsSettings*' pointer
@@ -31,7 +31,9 @@ class ZoomVectorEffects
 {
 #pragma GCC diagnostic pop
 public:
-  explicit ZoomVectorEffects(uint32_t screenWidth, const std::string& resourcesDirectory) noexcept;
+  ZoomVectorEffects(uint32_t screenWidth,
+                    const std::string& resourcesDirectory,
+                    UTILS::IGoomRand& goomRand) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
@@ -71,10 +73,10 @@ private:
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
 
   ImageVelocity m_imageVelocity;
-  Noise m_noise{};
-  Hypercos m_hypercos{};
-  Planes m_planes{};
-  TanEffect m_tanEffect{};
+  Noise m_noise;
+  Hypercos m_hypercos;
+  Planes m_planes;
+  TanEffect m_tanEffect;
 
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
   static constexpr float MIN_SPEED_COEFF = -4.01F;
@@ -222,10 +224,5 @@ inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& 
   return m_planes.GetVerticalPlaneVelocity(coords);
 }
 
-#if __cplusplus <= 201402L
 } // namespace FILTERS
 } // namespace GOOM
-#else
-} // namespace GOOM::FILTERS
-#endif
-

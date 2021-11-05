@@ -25,7 +25,7 @@
  * Revision History:
  * 01-Feb-2021: converted to C++14, lots of color changes (glk)
  * 13-Dec-2003: Added some goom specific stuffs (to make ifs a VisualFX).
- * 11-Apr-2002: jeko@ios-software.com: Make ifs.c system-indendant. (ifs.h added)
+ * 11-Apr-2002: jeko@ios-software.com: Make ifs.c system-indendent. (ifs.h added)
  * 01-Nov-2000: Allocation checks
  * 10-May-1997: jwz@jwz.org: turned into a standalone program.
  *              Made it render into an off-screen bitmap and then copy
@@ -42,8 +42,8 @@
 #include "ifs/colorizer.h"
 #include "ifs/fractal.h"
 #include "ifs/low_density_blurrer.h"
+#include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/randutils.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
@@ -77,33 +77,11 @@ using IFS::Colorizer;
 using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
-using UTILS::ProbabilityOfMInN;
 using UTILS::SmallImageBitmaps;
 using UTILS::TValue;
 using UTILS::Weights;
-
-inline auto MegaChangeColorMapEvent() -> bool
-{
-  return ProbabilityOfMInN(5, 10);
-}
-
-inline auto IfsRenewEvent() -> bool
-{
-  return ProbabilityOfMInN(2, 3);
-}
-
-// clang-format off
-static const Weights<BlurrerColorMode> BLURRER_COLOR_MODE_WEIGHTS{{
-  {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS,1000},
-  {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,     1},
-  {BlurrerColorMode::SIMI_WITH_NEIGHBOURS,     1},
-  {BlurrerColorMode::SIMI_NO_NEIGHBOURS,       5},
-  {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS,   1},
-  {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,     5},
-}};
-// clang-format on
 
 class IfsDancersFx::IfsDancersFxImpl
 {
@@ -124,15 +102,15 @@ public:
   void Finish();
 
 private:
-  static constexpr int32_t MAX_COUNT_BEFORE_NEXT_UPDATE = 1000;
   static constexpr int32_t MIN_CYCLE_LENGTH = 1000;
   static constexpr int32_t MAX_CYCLE_LENGTH = 2000;
   int32_t m_cycleLength = MIN_CYCLE_LENGTH;
 
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
+  IGoomRand& m_goomRand;
 
-  Colorizer m_colorizer{};
+  Colorizer m_colorizer;
 
   std::unique_ptr<Fractal> m_fractal{};
 
@@ -167,6 +145,10 @@ private:
                                           const std::vector<IfsPoint>& lowDensityPoints) const
       -> bool;
   void SetLowDensityColors(const std::vector<IfsPoint>& points, uint32_t maxLowDensityCount) const;
+
+  [[nodiscard]] auto MegaChangeColorMapEvent() -> bool;
+  [[nodiscard]] auto IfsRenewEvent() -> bool;
+  const Weights<BlurrerColorMode> m_blurrerColorModeWeights;
 };
 
 IfsDancersFx::IfsDancersFx(const FxHelpers& fxHelpers,
@@ -239,12 +221,37 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelpers& fxHelpers,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
+    m_goomRand{fxHelpers.GetGoomRand()},
+    m_colorizer{m_goomRand},
     m_fractal{std::make_unique<Fractal>(m_draw.GetScreenWidth(),
                                         m_draw.GetScreenHeight(),
+                                        m_goomRand,
                                         m_colorizer.GetColorMaps(),
                                         smallBitmaps)},
-    m_blurrer{m_draw, 3, &m_colorizer}
+    m_blurrer{m_draw, 3, &m_colorizer},
+    // clang-format off
+    m_blurrerColorModeWeights{
+        m_goomRand,
+        {
+            {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, 1000},
+            {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,      1},
+            {BlurrerColorMode::SIMI_WITH_NEIGHBOURS,      1},
+            {BlurrerColorMode::SIMI_NO_NEIGHBOURS,        5},
+            {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS,    1},
+            {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,      5},
+        }}
+// clang-format on
 {
+}
+
+inline auto IfsDancersFx::IfsDancersFxImpl::MegaChangeColorMapEvent() -> bool
+{
+  return m_goomRand.ProbabilityOfMInN(5, 10);
+}
+
+inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() -> bool
+{
+  return m_goomRand.ProbabilityOfMInN(2, 3);
 }
 
 void IfsDancersFx::IfsDancersFxImpl::Init()
@@ -311,7 +318,8 @@ inline void IfsDancersFx::IfsDancersFxImpl::ChangeSpeed()
   constexpr float MIN_SPEED_AMP = 1.1F;
   constexpr float MAX_SPEED_AMP = 5.1F;
   constexpr float MAX_SPEED_WEIGHT = 10.0F;
-  const float speedAmp = std::min(GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
+  const float speedAmp =
+      std::min(m_goomRand.GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
   const float accelFactor = 1.0F / (1.1F - m_goomInfo.GetSoundInfo().GetAcceleration());
 
   m_fractal->SetSpeed(std::max(1U, static_cast<uint32_t>(speedAmp * accelFactor)));
@@ -320,7 +328,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::ChangeSpeed()
 inline void IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps()
 {
   m_colorizer.ChangeColorMaps();
-  m_blurrer.SetColorMode(BLURRER_COLOR_MODE_WEIGHTS.GetRandomWeighted());
+  m_blurrer.SetColorMode(m_blurrerColorModeWeights.GetRandomWeighted());
   m_blurrer.SetSingleColor(m_colorizer.GetColorMaps().GetRandomColorMap().GetColor(0.5F));
 }
 
@@ -403,9 +411,9 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateCycle()
   }
 
   m_cycle = 0;
-  m_cycleLength = GetRandInRange(MIN_CYCLE_LENGTH, MAX_CYCLE_LENGTH + 1);
+  m_cycleLength = m_goomRand.GetRandInRange(MIN_CYCLE_LENGTH, MAX_CYCLE_LENGTH + 1);
 
-  if (ProbabilityOfMInN(15, 20))
+  if (m_goomRand.ProbabilityOfMInN(15, 20))
   {
     m_lowDensityBlurThreshold = 0.99F;
   }
@@ -474,13 +482,13 @@ void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
   else
   {
     // Enough dense points to make blurring worthwhile.
-    if (ProbabilityOfMInN(4, 5))
+    if (m_goomRand.ProbabilityOfMInN(4, 5))
     {
       m_blurrer.SetNeighbourMixFactor(0.98F);
     }
     else
     {
-      m_blurrer.SetNeighbourMixFactor(GetRandInRange(0.90F, 1.0F));
+      m_blurrer.SetNeighbourMixFactor(m_goomRand.GetRandInRange(0.90F, 1.0F));
     }
     m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
   }
@@ -548,7 +556,7 @@ void IfsDancersFx::IfsDancersFxImpl::SetLowDensityColors(const std::vector<IfsPo
 
 void IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold()
 {
-  m_lowDensityCount = GetRandInRange(MIN_DENSITY_COUNT, MAX_DENSITY_COUNT);
+  m_lowDensityCount = m_goomRand.GetRandInRange(MIN_DENSITY_COUNT, MAX_DENSITY_COUNT);
 
   uint32_t blurWidth;
   constexpr uint32_t NUM_WIDTHS = 3;

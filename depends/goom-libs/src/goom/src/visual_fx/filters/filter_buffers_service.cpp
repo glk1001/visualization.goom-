@@ -6,7 +6,6 @@
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"
-#include "utils/randutils.h"
 #include "zoom_vector.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
@@ -32,7 +31,6 @@ using FILTERS::IZoomVector;
 using FILTERS::NormalizedCoords;
 using FILTERS::ZoomFilterBuffers;
 using UTILS::floats_equal;
-using UTILS::GetRandInRange;
 using UTILS::Logging;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;

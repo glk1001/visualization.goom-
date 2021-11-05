@@ -57,7 +57,8 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
         {GoomDrawables::STARS, m_star_fx},          {GoomDrawables::IFS, m_ifs_fx},
         {GoomDrawables::IMAGE, m_image_fx},         {GoomDrawables::DOTS, m_goomDots_fx},
         {GoomDrawables::TENTACLES, m_tentacles_fx}, {GoomDrawables::TUBE, m_tube_fx},
-    }
+    },
+    m_visualFxColorMaps{fxHelpers.GetGoomRand()}
 {
 }
 

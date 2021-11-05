@@ -14,6 +14,11 @@ namespace COLOR
 class RandomColorMaps;
 } // namespace COLOR
 
+namespace UTILS
+{
+class IGoomRand;
+} // namespace UTILS
+
 namespace CONTROL
 {
 
@@ -39,7 +44,7 @@ enum class GoomEffect
 class VisualFxColorMaps
 {
 public:
-  VisualFxColorMaps() noexcept;
+  explicit VisualFxColorMaps(UTILS::IGoomRand& goomRand) noexcept;
 
   void SetNextColorMapSet();
 
@@ -47,11 +52,14 @@ public:
       -> std::shared_ptr<COLOR::RandomColorMaps>;
 
 private:
-  using ColorMapFunc = std::function<std::shared_ptr<COLOR::RandomColorMaps>()>;
+  UTILS::IGoomRand& m_goomRand;
+
+  using ColorMapFunc =
+      std::function<std::shared_ptr<COLOR::RandomColorMaps>(UTILS::IGoomRand& goomRand)>;
   using ColorMatchedSet = std::array<ColorMapFunc, UTILS::NUM<GoomEffect>>;
   const ColorMatchedSet* m_currentColorMatchedMap{};
 
-  [[nodiscard]] static auto GetNextColorMatchedSet() -> const ColorMatchedSet&;
+  [[nodiscard]] auto GetNextColorMatchedSet() const -> const ColorMatchedSet&;
 
   static constexpr size_t NUM_COLOR_MATCHED_SETS = 18;
   using ColorMatchedSets = std::array<ColorMatchedSet, NUM_COLOR_MATCHED_SETS>;
@@ -77,7 +85,7 @@ inline void VisualFxColorMaps::SetNextColorMapSet()
 inline auto VisualFxColorMaps::GetColorMap(GoomEffect goomEffect) const
     -> std::shared_ptr<COLOR::RandomColorMaps>
 {
-  return (*m_currentColorMatchedMap)[static_cast<size_t>(goomEffect)]();
+  return (*m_currentColorMatchedMap)[static_cast<size_t>(goomEffect)](m_goomRand);
 }
 
 } // namespace CONTROL

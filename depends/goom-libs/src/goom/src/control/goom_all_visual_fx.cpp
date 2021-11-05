@@ -69,7 +69,8 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
         INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
             static_cast<float>(fxHelpers.GetGoomInfo().GetScreenInfo().height),
         RED_LINE)},
-    m_goomStateHandler{goomStateHandler}
+    m_goomStateHandler{goomStateHandler},
+    m_visualFxColorMaps{fxHelpers.GetGoomRand()}
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc(
       [&](const GoomDrawables fx) { ResetCurrentDrawBuffSettings(fx); });

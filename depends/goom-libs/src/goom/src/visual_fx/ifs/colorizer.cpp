@@ -2,7 +2,6 @@
 
 #include "color/colormaps.h"
 #include "color/random_colormaps.h"
-#include "utils/randutils.h"
 
 #include <cmath>
 
@@ -16,18 +15,34 @@ namespace GOOM::IFS
 {
 #endif
 
-using COLOR::COLOR_DATA::ColorMapName;
 using COLOR::GetBrighterColor;
 using COLOR::GetSlightlyDivergingStandardMaps;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
-using UTILS::GetRandInRange;
+using COLOR::COLOR_DATA::ColorMapName;
+using UTILS::IGoomRand;
 using UTILS::Weights;
 using VISUAL_FX::IfsDancersFx;
 
-Colorizer::Colorizer() noexcept
+Colorizer::Colorizer(IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand},
+    // clang-format off
+    m_colorModeWeights{
+        m_goomRand,
+        {
+            { IfsDancersFx::ColorMode::MAP_COLORS,            15 },
+            { IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE, 20 },
+            { IfsDancersFx::ColorMode::MIX_COLORS,            15 },
+            { IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE, 20 },
+            { IfsDancersFx::ColorMode::REVERSE_MIX_COLORS,    15 },
+            { IfsDancersFx::ColorMode::SINGLE_COLORS,         10 },
+            { IfsDancersFx::ColorMode::SINE_MIX_COLORS,       10 },
+            { IfsDancersFx::ColorMode::SINE_MAP_COLORS,       10 },
+        }
+    }
+// clang-format on
 {
-  SetWeightedColorMaps(GetSlightlyDivergingStandardMaps());
+  SetWeightedColorMaps(GetSlightlyDivergingStandardMaps(m_goomRand));
 }
 
 void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
@@ -54,22 +69,9 @@ void Colorizer::ChangeColorMode()
   }
 }
 
-inline auto Colorizer::GetNextColorMode() -> IfsDancersFx::ColorMode
+inline auto Colorizer::GetNextColorMode() const -> IfsDancersFx::ColorMode
 {
-  // clang-format off
-  static const Weights<IfsDancersFx::ColorMode> s_colorModeWeights{{
-    { IfsDancersFx::ColorMode::MAP_COLORS,            15 },
-    { IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE, 20 },
-    { IfsDancersFx::ColorMode::MIX_COLORS,            15 },
-    { IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE, 20 },
-    { IfsDancersFx::ColorMode::REVERSE_MIX_COLORS,    15 },
-    { IfsDancersFx::ColorMode::SINGLE_COLORS,         10 },
-    { IfsDancersFx::ColorMode::SINE_MIX_COLORS,       10 },
-    { IfsDancersFx::ColorMode::SINE_MAP_COLORS,       10 },
-    }};
-  // clang-format on
-
-  return s_colorModeWeights.GetRandomWeighted();
+  return m_colorModeWeights.GetRandomWeighted();
 }
 
 void Colorizer::ChangeColorMaps()
@@ -81,8 +83,9 @@ void Colorizer::ChangeColorMaps()
   //  logInfo("prevMixerMap = {}", enumToString(prevMixerMap->GetMapName()));
   //  logInfo("mixerMap = {}", enumToString(mixerMap->GetMapName()));
   m_colorMapChangeCompleted =
-      GetRandInRange(MIN_COLOR_MAP_CHANGE_COMPLETED, MAX_COLOR_MAP_CHANGE_COMPLETED);
-  m_tAwayFromBaseColor = GetRandInRange(MIN_T_AWAY_FROM_BASE_COLOR, MAX_T_AWAY_FROM_BASE_COLOR);
+      m_goomRand.GetRandInRange(MIN_COLOR_MAP_CHANGE_COMPLETED, MAX_COLOR_MAP_CHANGE_COMPLETED);
+  m_tAwayFromBaseColor =
+      m_goomRand.GetRandInRange(MIN_T_AWAY_FROM_BASE_COLOR, MAX_T_AWAY_FROM_BASE_COLOR);
   m_countSinceColorMapChange = m_colorMapChangeCompleted;
 }
 
@@ -165,7 +168,7 @@ inline auto Colorizer::GetMapColorsTBaseMix() const -> float
 
   constexpr float MIN_T_BASE_MIX = 0.3F;
   constexpr float MAX_T_BASE_MIX = 0.5F;
-  return GetRandInRange(MIN_T_BASE_MIX, MAX_T_BASE_MIX);
+  return m_goomRand.GetRandInRange(MIN_T_BASE_MIX, MAX_T_BASE_MIX);
 }
 
 inline auto Colorizer::GetSineMixColor(const float tX, const float tY) const -> Pixel

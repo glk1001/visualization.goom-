@@ -1,7 +1,6 @@
 #include "hypercos.h"
 
 #include "utils/enumutils.h"
-#include "utils/randutils.h"
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
 
@@ -20,12 +19,10 @@ namespace GOOM::FILTERS
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::m_pi;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
-using UTILS::NumberRange;
-using UTILS::ProbabilityOf;
 using UTILS::Weights;
 
 // Hypercos:
@@ -37,16 +34,16 @@ constexpr bool DEFAULT_REVERSE = false;
 
 constexpr float X_DEFAULT_FREQ = 10.0F;
 constexpr float Y_DEFAULT_FREQ = 10.0F;
-constexpr NumberRange<float> FREQ_RANGE = {5.0F, 100.0F};
-constexpr NumberRange<float> BIG_FREQ_RANGE = {5.0F, 500.0F};
-constexpr NumberRange<float> VERY_BIG_FREQ_RANGE = {30000.0F, 50000.0F};
+constexpr IGoomRand::NumberRange<float> FREQ_RANGE = {5.0F, 100.0F};
+constexpr IGoomRand::NumberRange<float> BIG_FREQ_RANGE = {5.0F, 500.0F};
+constexpr IGoomRand::NumberRange<float> VERY_BIG_FREQ_RANGE = {30000.0F, 50000.0F};
 
 constexpr float X_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
 constexpr float Y_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
-constexpr NumberRange<float> AMPLITUDE_RANGE = {0.1F * X_DEFAULT_AMPLITUDE,
-                                                1.1F * X_DEFAULT_AMPLITUDE};
-constexpr NumberRange<float> BIG_AMPLITUDE_RANGE = {0.1F * X_DEFAULT_AMPLITUDE,
-                                                    10.1F * X_DEFAULT_AMPLITUDE};
+constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.1F * X_DEFAULT_AMPLITUDE,
+                                                           1.1F * X_DEFAULT_AMPLITUDE};
+constexpr IGoomRand::NumberRange<float> BIG_AMPLITUDE_RANGE = {0.1F * X_DEFAULT_AMPLITUDE,
+                                                               10.1F * X_DEFAULT_AMPLITUDE};
 
 constexpr float PROB_FREQ_EQUAL = 0.5F;
 constexpr float PROB_REVERSE = 0.5F;
@@ -57,7 +54,27 @@ constexpr Hypercos::Params DEFAULT_PARAMS{DEFAULT_OVERLAY,    DEFAULT_EFFECT, DE
                                           X_DEFAULT_FREQ,     Y_DEFAULT_FREQ, X_DEFAULT_AMPLITUDE,
                                           Y_DEFAULT_AMPLITUDE};
 
-Hypercos::Hypercos() noexcept : m_params{DEFAULT_PARAMS}
+Hypercos::Hypercos(IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand},
+    m_params{DEFAULT_PARAMS},
+    // clang-format off
+    m_hypercosOverlayWeights{
+        m_goomRand,
+        {
+            { HypercosEffect::NONE,                0 },
+            { HypercosEffect::SIN_CURL_SWIRL,     15 },
+            { HypercosEffect::COS_CURL_SWIRL,     15 },
+            { HypercosEffect::SIN_COS_CURL_SWIRL, 15 },
+            { HypercosEffect::COS_SIN_CURL_SWIRL, 15 },
+            { HypercosEffect::SIN_TAN_CURL_SWIRL,  5 },
+            { HypercosEffect::COS_TAN_CURL_SWIRL,  5 },
+            { HypercosEffect::SIN_RECTANGULAR,     5 },
+            { HypercosEffect::COS_RECTANGULAR,     5 },
+            { HypercosEffect::SIN_OF_COS_SWIRL,   15 },
+            { HypercosEffect::COS_OF_SIN_SWIRL,   15 },
+        }
+    }
+// clang-format on
 {
 }
 
@@ -86,8 +103,8 @@ void Hypercos::SetMode2RandomParams()
 {
   m_params.overlay = HypercosOverlay::MODE2;
 
-  const NumberRange<float> amplitudeRange =
-      ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
+  const IGoomRand::NumberRange<float> amplitudeRange =
+      m_goomRand.ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
   const float hypercosMin = stdnew::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.50F);
 
@@ -98,42 +115,27 @@ void Hypercos::SetMode3RandomParams()
 {
   m_params.overlay = HypercosOverlay::MODE3;
 
-  const NumberRange<float> amplitudeRange =
-      ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
+  const IGoomRand::NumberRange<float> amplitudeRange =
+      m_goomRand.ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
   SetHypercosEffect(VERY_BIG_FREQ_RANGE, amplitudeRange);
 }
 
-void Hypercos::SetHypercosEffect(const UTILS::NumberRange<float>& freqRange,
-                                 const UTILS::NumberRange<float>& amplitudeRange)
+void Hypercos::SetHypercosEffect(const IGoomRand::NumberRange<float>& freqRange,
+                                 const IGoomRand::NumberRange<float>& amplitudeRange)
 {
-  // clang-format off
-  // @formatter:off
-  static const Weights<HypercosEffect> s_hypercosOverlayWeights{{
-      { HypercosEffect::NONE,                0 },
-      { HypercosEffect::SIN_CURL_SWIRL,     15 },
-      { HypercosEffect::COS_CURL_SWIRL,     15 },
-      { HypercosEffect::SIN_COS_CURL_SWIRL, 15 },
-      { HypercosEffect::COS_SIN_CURL_SWIRL, 15 },
-      { HypercosEffect::SIN_TAN_CURL_SWIRL,  5 },
-      { HypercosEffect::COS_TAN_CURL_SWIRL,  5 },
-      { HypercosEffect::SIN_RECTANGULAR,     5 },
-      { HypercosEffect::COS_RECTANGULAR,     5 },
-      { HypercosEffect::SIN_OF_COS_SWIRL,   15 },
-      { HypercosEffect::COS_OF_SIN_SWIRL,   15 },
-  }};
-  // @formatter:on
-  // clang-format on
-  m_params.effect = s_hypercosOverlayWeights.GetRandomWeighted();
+  m_params.effect = m_hypercosOverlayWeights.GetRandomWeighted();
 
-  m_params.xFreq = GetRandInRange(freqRange);
-  m_params.yFreq = ProbabilityOf(PROB_FREQ_EQUAL) ? m_params.xFreq : GetRandInRange(freqRange);
+  m_params.xFreq = m_goomRand.GetRandInRange(freqRange);
+  m_params.yFreq = m_goomRand.ProbabilityOf(PROB_FREQ_EQUAL) ? m_params.xFreq
+                                                             : m_goomRand.GetRandInRange(freqRange);
 
-  m_params.reverse = ProbabilityOf(PROB_REVERSE);
+  m_params.reverse = m_goomRand.ProbabilityOf(PROB_REVERSE);
 
-  m_params.xAmplitude = GetRandInRange(amplitudeRange);
-  m_params.yAmplitude =
-      ProbabilityOf(PROB_AMPLITUDE_EQUAL) ? m_params.xAmplitude : GetRandInRange(amplitudeRange);
+  m_params.xAmplitude = m_goomRand.GetRandInRange(amplitudeRange);
+  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
+                            ? m_params.xAmplitude
+                            : m_goomRand.GetRandInRange(amplitudeRange);
 }
 
 inline auto Hypercos::GetFreqToUse(const float freq) const -> float

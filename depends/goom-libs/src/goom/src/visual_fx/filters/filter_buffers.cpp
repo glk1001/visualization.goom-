@@ -4,7 +4,6 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
-#include "utils/randutils.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
 #include "utils/parallel_utils.h"
@@ -29,18 +28,16 @@ namespace GOOM::FILTERS
 {
 #endif
 
-using UTILS::GetNRand;
-using UTILS::GetRandInRange;
 using UTILS::Logging;
 using UTILS::Parallel;
 
-ZoomFilterBuffers::ZoomFilterBuffers(Parallel& p,
+ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
                                      const PluginInfo& goomInfo,
                                      const ZoomPointFunc& zoomPointFunc)
   : m_screenWidth{goomInfo.GetScreenInfo().width},
     m_screenHeight{goomInfo.GetScreenInfo().height},
     m_precalculatedCoeffs{std::make_unique<FilterCoefficients>()},
-    m_parallel{p},
+    m_parallel{parallel},
     m_getZoomPoint{zoomPointFunc},
     m_maxTranPoint{CoordTransforms::ScreenToTranPoint(
         {static_cast<int32_t>(m_screenWidth - 1), static_cast<int32_t>(m_screenHeight - 1)})},
@@ -233,16 +230,17 @@ inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) 
 
 void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
 {
-  int32_t decc = GetRandInRange(-4, +4);
-  int32_t spdc = GetRandInRange(-4, +4);
-  int32_t accel = GetRandInRange(-4, +4);
+  /*****************
+  int32_t decc = m_goomRand.GetRandInRange(-4, +4);
+  int32_t spdc = m_goomRand.GetRandInRange(-4, +4);
+  int32_t accel = m_goomRand.GetRandInRange(-4, +4);
 
   for (size_t loopv = m_screenHeight; loopv != 0;)
   {
     --loopv;
     m_firedec[loopv] = decc;
     decc += spdc / 10;
-    spdc += GetRandInRange(-2, +3);
+    spdc += m_goomRand.GetRandInRange(-2, +3);
 
     if (decc > 4)
     {
@@ -255,27 +253,27 @@ void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
 
     if (spdc > 30)
     {
-      spdc = (spdc - static_cast<int32_t>(GetNRand(3))) + (accel / 10);
+      spdc = (spdc - static_cast<int32_t>(m_goomRand.GetNRand(3))) + (accel / 10);
     }
     if (spdc < -30)
     {
-      spdc = spdc + static_cast<int32_t>(GetNRand(3)) + (accel / 10);
+      spdc = spdc + static_cast<int32_t>(m_goomRand.GetNRand(3)) + (accel / 10);
     }
 
     if ((decc > 8) && (spdc > 1))
     {
-      spdc -= GetRandInRange(-2, +1);
+      spdc -= m_goomRand.GetRandInRange(-2, +1);
     }
     if ((decc < -8) && (spdc < -1))
     {
-      spdc += static_cast<int32_t>(GetNRand(3)) + 2;
+      spdc += static_cast<int32_t>(m_goomRand.GetNRand(3)) + 2;
     }
     if ((decc > 8) || (decc < -8))
     {
       decc = (decc * 8) / 9;
     }
 
-    accel += GetRandInRange(-1, +2);
+    accel += m_goomRand.GetRandInRange(-1, +2);
     if (accel > 20)
     {
       accel -= 2;
@@ -285,6 +283,7 @@ void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
       accel += 2;
     }
   }
+  *************************/
 }
 
 ZoomFilterBuffers::TransformBuffers::TransformBuffers(const uint32_t screenWidth,

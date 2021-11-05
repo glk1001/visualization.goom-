@@ -2,6 +2,7 @@
 
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"
+#include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
 
@@ -23,7 +24,7 @@ public:
     MODE0,
     MODE1,
   };
-  explicit Speedway(Modes mode) noexcept;
+  Speedway(Modes mode, UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -46,6 +47,7 @@ protected:
 
 private:
   const Modes m_mode;
+  UTILS::IGoomRand& m_goomRand;
   Params m_params;
   void SetMode0RandomParams();
   void SetMode1RandomParams();
@@ -88,12 +90,12 @@ inline auto Speedway::GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 {
   float xAdd = -1.0F;
 
-  if (UTILS::ProbabilityOf(0.0F))
+  if (m_goomRand.ProbabilityOf(0.0F))
   {
-    xAdd = UTILS::ProbabilityOf(0.5F) ? UTILS::GetRandInRange(-1.9F, -0.5F)
-                                      : UTILS::GetRandInRange(+0.5F, +1.9F);
+    xAdd = m_goomRand.ProbabilityOf(0.5F) ? m_goomRand.GetRandInRange(-1.9F, -0.5F)
+                                          : m_goomRand.GetRandInRange(+0.5F, +1.9F);
   }
-  else if (UTILS::ProbabilityOf(0.0F))
+  else if (m_goomRand.ProbabilityOf(0.0F))
   {
     xAdd = +1.0F;
   }

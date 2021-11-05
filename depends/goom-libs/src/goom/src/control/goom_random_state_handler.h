@@ -3,7 +3,7 @@
 #include "goom_graphic.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -18,14 +18,14 @@ namespace GOOM::CONTROL
 class GoomRandomStateHandler : public IGoomStateHandler
 {
 public:
-  GoomRandomStateHandler();
+  explicit GoomRandomStateHandler(UTILS::IGoomRand& goomRand);
 
   void ChangeToNextState() override;
 
   [[nodiscard]] auto GetCurrentState() const -> GoomStates override;
 
 private:
-  static const UTILS::Weights<GoomStates> WEIGHTED_STATES;
+  const UTILS::Weights<GoomStates> m_weightedStates;
   GoomStates m_currentState{};
 };
 

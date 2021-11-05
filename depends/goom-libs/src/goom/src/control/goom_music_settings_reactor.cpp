@@ -15,14 +15,17 @@ namespace GOOM::CONTROL
 using FILTERS::FilterSettingsService;
 using FILTERS::Vitesse;
 using UTILS::GetPair;
+using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 
 GoomMusicSettingsReactor::GoomMusicSettingsReactor(
     const PluginInfo& goomInfo,
+    IGoomRand& goomRand,
     GoomAllVisualFx& visualFx,
     const GoomEvents& goomEvents,
     FilterSettingsService& filterSettingsService) noexcept
   : m_goomInfo{goomInfo},
+    m_goomRand{goomRand},
     m_visualFx{visualFx},
     m_goomEvents{goomEvents},
     m_filterSettingsService{filterSettingsService},

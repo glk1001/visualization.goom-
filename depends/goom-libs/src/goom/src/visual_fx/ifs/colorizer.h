@@ -5,6 +5,7 @@
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
 #include "goom_graphic.h"
+#include "utils/goom_rand_base.h"
 #include "visual_fx/ifs_dancers_fx.h"
 
 #include <cmath>
@@ -24,7 +25,7 @@ namespace GOOM::IFS
 class Colorizer
 {
 public:
-  Colorizer() noexcept;
+  explicit Colorizer(UTILS::IGoomRand& goomRand) noexcept;
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
@@ -46,6 +47,7 @@ public:
                                    float tY) const -> Pixel;
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   uint32_t m_mixerMap1Id{};
@@ -65,7 +67,8 @@ private:
   static constexpr float MAX_T_AWAY_FROM_BASE_COLOR = 0.4F;
   static constexpr float INITIAL_T_AWAY_FROM_BASE_COLOR = 0.0F;
   float m_tAwayFromBaseColor = INITIAL_T_AWAY_FROM_BASE_COLOR; // in [0, 1]
-  static auto GetNextColorMode() -> VISUAL_FX::IfsDancersFx::ColorMode;
+  const UTILS::Weights<VISUAL_FX::IfsDancersFx::ColorMode> m_colorModeWeights;
+  auto GetNextColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMode;
   [[nodiscard]] auto GetNextMixerMapColor(float t, float tX, float tY) const -> Pixel;
   [[nodiscard]] auto GetSineMixColor(float tX, float tY) const -> Pixel;
   [[nodiscard]] auto GetMapColorsTBaseMix() const -> float;

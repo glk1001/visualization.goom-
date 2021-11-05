@@ -7,7 +7,6 @@
 #include "goom/spimpl.h"
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
-#include "utils/randutils.h"
 #include "utils/mathutils.h"
 
 #include <map>
@@ -23,6 +22,7 @@ class PluginInfo;
 
 namespace UTILS
 {
+class IGoomRand;
 class Parallel;
 } // namespace UTILS
 
@@ -36,16 +36,17 @@ public:
 
   FilterSettingsService(UTILS::Parallel& parallel,
                         const GOOM::PluginInfo& goomInfo,
+                        UTILS::IGoomRand& goomRand,
                         const std::string& resourcesDirectory) noexcept;
 
-  auto GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>;
-  static auto GetFilterColorsService() -> std::unique_ptr<FilterColorsService>;
+  [[nodiscard]] auto GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>;
+  [[nodiscard]] auto GetFilterColorsService() const -> std::unique_ptr<FilterColorsService>;
 
   void Start();
 
   void NotifyUpdatedFilterEffectsSettings();
-  auto HaveEffectsSettingsChangedSinceLastUpdate() const -> bool;
-  auto HasFilterModeChangedSinceLastUpdate() const -> bool;
+  [[nodiscard]] auto HaveEffectsSettingsChangedSinceLastUpdate() const -> bool;
+  [[nodiscard]] auto HasFilterModeChangedSinceLastUpdate() const -> bool;
 
   [[nodiscard]] auto GetCurrentFilterMode() const -> const std::string&;
   [[nodiscard]] auto GetPreviousFilterMode() const -> const std::string&;
@@ -60,7 +61,6 @@ public:
   void SetRotateToZero();
   void MultiplyRotate(float factor);
   void ToggleRotate();
-  void SetClippedColor(const Pixel& color);
 
   void SetRandomFilterSettings();
 
@@ -98,14 +98,14 @@ private:
   ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
 
   void SetRandomSettingsForNewFilterMode();
-  void SetDefaultFilterSettings(ZoomFilterMode mode);
 
-  static const UTILS::Weights<ZoomFilterMode> WEIGHTED_FILTER_EVENTS;
   UTILS::Parallel& m_parallel;
   const PluginInfo& m_goomInfo;
+  UTILS::IGoomRand& m_goomRand;
   const V2dInt m_screenMidPoint;
   const std::string m_resourcesDirectory;
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
+  const UTILS::Weights<ZoomFilterMode> m_weightedFilterEvents;
 
   struct ZoomFilterModeInfo
   {
@@ -115,7 +115,7 @@ private:
     UTILS::Weights<HypercosOverlay> hypercosWeights;
   };
   std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
-  [[nodiscard]] static auto GetFilterModeData(const std::string& resourcesDirectory)
+  [[nodiscard]] auto GetFilterModeData(const std::string& resourcesDirectory) const
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
 
   static constexpr uint32_t DEFAULT_ZOOM_MID_X = 16;
@@ -130,13 +130,23 @@ private:
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
-  [[nodiscard]] static auto GetRotation() -> std::shared_ptr<Rotation>;
+  [[nodiscard]] auto GetRotation() const -> std::shared_ptr<Rotation>;
 
   void SetDefaultSettings();
   void SetRandomEffects();
   void SetFilterModeSettings();
   void SetWaveModeSettings();
 
+  enum class ZoomMidPointEvents
+  {
+    EVENT1,
+    EVENT2,
+    EVENT3,
+    EVENT4,
+    EVENT5,
+    EVENT6
+  };
+  const UTILS::Weights<ZoomMidPointEvents> m_zoomMidPointWeights;
   void SetRandomZoomMidPoint();
   void SetRotate(float rotateProbability);
   void SetMaxSpeedCoeff();
@@ -191,14 +201,6 @@ inline void FilterSettingsService::SetRandomFilterSettings()
   SetRandomSettingsForNewFilterMode();
 }
 
-inline void FilterSettingsService::SetDefaultFilterSettings(const ZoomFilterMode mode)
-{
-  m_filterEffectsSettingsHaveChanged = true;
-  m_previousFilterMode = m_filterMode;
-  m_filterMode = mode;
-  SetDefaultSettings();
-}
-
 inline void FilterSettingsService::SetNoise(const bool value)
 {
   if (m_filterSettings.filterEffectsSettings.noiseEffect == value)
@@ -212,11 +214,6 @@ inline void FilterSettingsService::SetNoise(const bool value)
 inline void FilterSettingsService::SetBlockyWavy(const bool value)
 {
   m_filterSettings.filterColorSettings.blockyWavy = value;
-}
-
-inline void FilterSettingsService::SetClippedColor(const Pixel& color)
-{
-  m_filterSettings.filterColorSettings.clippedColor = color;
 }
 
 inline void FilterSettingsService::SetRotateToZero()

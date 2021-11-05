@@ -1,6 +1,7 @@
 #pragma once
 
 #include "normalized_coords.h"
+#include "utils/goom_rand_base.h"
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
 
@@ -20,7 +21,7 @@ namespace GOOM::FILTERS
 class Rotation
 {
 public:
-  Rotation() noexcept;
+  explicit Rotation(UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams();
 
@@ -47,6 +48,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   Params m_params;
 };
 

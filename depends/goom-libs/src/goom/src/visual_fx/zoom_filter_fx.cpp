@@ -69,7 +69,7 @@ public:
 
   void Start();
 
-  auto GetTranLerpFactor() const -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
 
   void UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
   void UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
@@ -185,7 +185,6 @@ inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterColorSettings(
     const ZoomFilterColorSettings& filterColorSettings)
 {
   m_filterColorsService->SetBlockyWavy(filterColorSettings.blockyWavy);
-  m_filterColorsService->SetClippedColor(filterColorSettings.clippedColor);
 }
 
 inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(

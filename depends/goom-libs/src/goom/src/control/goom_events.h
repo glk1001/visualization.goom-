@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utils/enumutils.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 #include "visual_fx/lines_fx.h"
 
 #include <array>
@@ -20,7 +20,7 @@ namespace GOOM::CONTROL
 class GoomEvents
 {
 public:
-  GoomEvents() noexcept;
+  explicit GoomEvents(UTILS::IGoomRand& goomRand) noexcept;
   GoomEvents(const GoomEvents&) noexcept = delete;
   GoomEvents(GoomEvents&&) noexcept = delete;
   ~GoomEvents() = default;
@@ -55,10 +55,11 @@ public:
     _NUM // unused and must be last
   };
 
-  auto Happens(GoomEvent event) const -> bool;
-  auto GetRandomLineTypeEvent() const -> VISUAL_FX::LinesFx::LineType;
+  [[nodiscard]] auto Happens(GoomEvent event) const -> bool;
+  [[nodiscard]] auto GetRandomLineTypeEvent() const -> VISUAL_FX::LinesFx::LineType;
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   static constexpr size_t NUM_GOOM_EVENTS = UTILS::NUM<GoomEvent>;
   struct WeightedEvent
   {
@@ -68,9 +69,6 @@ private:
     uint32_t outOf;
   };
   const std::array<WeightedEvent, NUM_GOOM_EVENTS> m_weightedEvents;
-  const std::array<std::pair<VISUAL_FX::LinesFx::LineType, size_t>,
-                   VISUAL_FX::LinesFx::NUM_LINE_TYPES>
-      m_weightedLineEvents;
   const UTILS::Weights<VISUAL_FX::LinesFx::LineType> m_lineTypeWeights;
 };
 

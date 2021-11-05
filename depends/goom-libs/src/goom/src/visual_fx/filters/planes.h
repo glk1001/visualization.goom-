@@ -1,6 +1,7 @@
 #pragma once
 
 #include "normalized_coords.h"
+#include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
 
@@ -19,7 +20,7 @@ namespace GOOM::FILTERS
 class Planes
 {
 public:
-  Planes() noexcept;
+  explicit Planes(UTILS::IGoomRand& goomRand) noexcept;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;
@@ -45,7 +46,20 @@ protected:
   void SetParams(const Params& params);
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   Params m_params;
+  enum class PlaneEffectEvents
+  {
+    EVENT1,
+    EVENT2,
+    EVENT3,
+    EVENT4,
+    EVENT5,
+    EVENT6,
+    EVENT7,
+    EVENT8
+  };
+  const UTILS::Weights<PlaneEffectEvents> m_planeEffectWeights;
 };
 
 inline auto Planes::IsHorizontalPlaneVelocityActive() const -> bool

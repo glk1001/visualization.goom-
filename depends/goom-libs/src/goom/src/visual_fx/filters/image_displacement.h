@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "v2d.h"
 
@@ -15,7 +16,7 @@ namespace FILTERS
 class ImageDisplacement
 {
 public:
-  explicit ImageDisplacement(const std::string& imageFilename);
+  explicit ImageDisplacement(const std::string& imageFilename, UTILS::IGoomRand& goomRand);
 
   auto GetImageFilename() const -> std::string;
   auto GetXColorCutoff() const -> float;
@@ -31,8 +32,9 @@ public:
   auto GetDisplacementVector(const V2dFlt& normalizedPoint) const -> V2dFlt;
 
 private:
-  std::unique_ptr<UTILS::ImageBitmap> m_imageBuffer{};
+  std::unique_ptr<UTILS::ImageBitmap> m_imageBuffer;
   const std::string m_imageFilename;
+  UTILS::IGoomRand& m_goomRand;
   const int32_t m_xMax;
   const int32_t m_yMax;
   const float m_ratioNormalizedCoordToImageCoord;

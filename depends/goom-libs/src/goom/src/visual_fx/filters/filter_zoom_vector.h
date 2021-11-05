@@ -13,13 +13,20 @@
 namespace GOOM
 {
 
+namespace UTILS
+{
+class IGoomRand;
+} // namespace UTILS
+
 namespace FILTERS
 {
 
 class FilterZoomVector : public IZoomVector
 {
 public:
-  explicit FilterZoomVector(uint32_t screenWidth, const std::string& resourcesDirectory) noexcept;
+  FilterZoomVector(uint32_t screenWidth,
+                   const std::string& resourcesDirectory,
+                   UTILS::IGoomRand& goomRand) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) override;
 

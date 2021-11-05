@@ -2,14 +2,15 @@
 
 #include "color/colormaps.h"
 #include "color/colorutils.h"
+#include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
 #include "draw/text_draw.h"
 #include "goom/logging_control.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 //#undef NO_LOGGING
-#include "color/random_colormaps.h"
 #include "goom/logging.h"
+#include "utils/goom_rand_base.h"
 #include "utils/strutils.h"
 
 #include <cstdint>
@@ -32,7 +33,7 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::TextDraw;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::Logging;
 using UTILS::StringSplit;
 
@@ -73,14 +74,18 @@ auto GoomTitleDisplayer::GetSelectedFontSize() const -> int32_t
   return maxFontSize;
 }
 
-GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw, const std::string& fontDirectory)
-  : m_textDraw{std::make_unique<TextDraw>(draw)},
+GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
+                                       IGoomRand& goomRand,
+                                       const std::string& fontDirectory)
+  : m_goomRand{goomRand},
+    m_textDraw{std::make_unique<TextDraw>(draw)},
     m_screenHeight{draw.GetScreenHeight()},
     m_fontDirectory{fontDirectory},
-    m_fontInfoIndex{GetRandInRange(0U, static_cast<uint32_t>(s_fontInfo.size()))},
-    m_textColorMap{RandomColorMaps{}.GetRandomColorMap(
+    m_fontInfoIndex{m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(s_fontInfo.size()))},
+    m_textColorMap{RandomColorMaps{m_goomRand}.GetRandomColorMap(
         COLOR::ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM)},
-    m_textOutlineColorMap{RandomColorMaps{}.GetRandomColorMap(COLOR::ColorMapGroup::PASTEL)},
+    m_textOutlineColorMap{
+        RandomColorMaps{m_goomRand}.GetRandomColorMap(COLOR::ColorMapGroup::PASTEL)},
     m_charColorMap{m_textColorMap}
 {
   m_textDraw->SetFontFile(GetSelectedFontPath());
@@ -95,9 +100,10 @@ void GoomTitleDisplayer::DrawMovingText(const std::string& title)
 
   if (m_timeLeftOfTitleDisplay == TIME_TO_START_FINAL_PHASE)
   {
-    m_textColorMap = RandomColorMaps{}.GetRandomColorMap();
-    m_textOutlineColorMap = RandomColorMaps{}.GetRandomColorMap();
-    m_charColorMap = RandomColorMaps{}.GetRandomColorMap(ColorMapGroup::DIVERGING_BLACK);
+    const RandomColorMaps randomColorMaps{m_goomRand};
+    m_textColorMap = randomColorMaps.GetRandomColorMap();
+    m_textOutlineColorMap = randomColorMaps.GetRandomColorMap();
+    m_charColorMap = randomColorMaps.GetRandomColorMap(ColorMapGroup::DIVERGING_BLACK);
   }
   else if (m_timeLeftOfTitleDisplay < TIME_TO_START_FINAL_PHASE)
   {

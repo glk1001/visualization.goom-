@@ -9,8 +9,8 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "tubes/tubes.h"
+#include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/randutils.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
@@ -44,10 +44,9 @@ using DRAW::IGoomDraw;
 using TUBES::BrightnessAttenuation;
 using TUBES::PathParams;
 using TUBES::Tube;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
 using UTILS::Logging;
-using UTILS::ProbabilityOf;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
 using UTILS::Timer;
@@ -137,13 +136,14 @@ private:
   GoomDrawToContainer m_drawToContainer;
   GoomDrawToMany m_drawToMany;
   const PluginInfo& m_goomInfo;
+  IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
   uint64_t m_updateNum = 0;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
   bool m_allowOverexposed = true;
   bool m_allowMovingAwayFromCentre = false;
-  bool m_oscillatingShapePath = ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
+  bool m_oscillatingShapePath;
   uint32_t m_numCapturedPrevShapesGroups = 0;
   static constexpr float PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
   const BrightnessAttenuation m_prevShapesBrightnessAttenuation;
@@ -277,13 +277,15 @@ TubeFx::TubeFxImpl::TubeFxImpl(const FxHelpers& fxHelpers,
     m_drawToContainer{m_draw.GetScreenWidth(), m_draw.GetScreenHeight()},
     m_drawToMany{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(), {&m_draw, &m_drawToContainer}},
     m_goomInfo{fxHelpers.GetGoomInfo()},
+    m_goomRand{fxHelpers.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
+    m_oscillatingShapePath{m_goomRand.ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)},
     m_prevShapesBrightnessAttenuation{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(),
                                       PREV_SHAPES_CUTOFF_BRIGHTNESS},
     m_screenMidPoint{m_draw.GetScreenWidth() / 2, m_draw.GetScreenHeight() / 2},
     m_allStayInCentreTimer{1},
     m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME},
-    m_colorMapTimer{GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)},
+    m_colorMapTimer{m_goomRand.GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)},
     m_changedSpeedTimer{1},
     m_jitterTimer{1}
 {
@@ -301,8 +303,8 @@ void TubeFx::TubeFxImpl::Resume()
 {
   m_numCapturedPrevShapesGroups = 0;
 
-  m_oscillatingShapePath = ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
-  m_allowMovingAwayFromCentre = ProbabilityOf(PROB_MOVE_AWAY_FROM_CENTRE);
+  m_oscillatingShapePath = m_goomRand.ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH);
+  m_allowMovingAwayFromCentre = m_goomRand.ProbabilityOf(PROB_MOVE_AWAY_FROM_CENTRE);
 
   ResetTubes();
 }
@@ -347,7 +349,7 @@ inline void TubeFx::TubeFxImpl::SetZoomMidPoint(const V2dInt& zoomMidPoint)
   m_previousMiddlePos = GetMiddlePos();
   m_middlePosT.Reset();
 
-  if (ProbabilityOf(PROB_FOLLOW_ZOOM_MID_POINT))
+  if (m_goomRand.ProbabilityOf(PROB_FOLLOW_ZOOM_MID_POINT))
   {
     m_targetMiddlePos = zoomMidPoint - m_screenMidPoint;
   }
@@ -387,13 +389,14 @@ void TubeFx::TubeFxImpl::InitTubes()
   };
 
   m_tubes.emplace_back(MAIN_TUBE_INDEX, drawToManyFuncs, m_draw.GetScreenWidth(),
-                       m_draw.GetScreenHeight(), m_colorMaps, m_lowColorMaps,
+                       m_draw.GetScreenHeight(), m_goomRand, m_colorMaps, m_lowColorMaps,
                        TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
                        TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor);
   for (uint32_t i = SECONDARY_TUBES_START_INDEX; i < NUM_TUBES; ++i)
   {
     m_tubes.emplace_back(i, drawToOneFuncs, m_draw.GetScreenWidth(), m_draw.GetScreenHeight(),
-                         m_colorMaps, m_lowColorMaps, TUBE_SETTINGS.at(i).radiusEdgeOffset,
+                         m_goomRand, m_colorMaps, m_lowColorMaps,
+                         TUBE_SETTINGS.at(i).radiusEdgeOffset,
                          TUBE_SETTINGS.at(i).brightnessFactor);
   }
 
@@ -537,7 +540,7 @@ void TubeFx::TubeFxImpl::DoUpdates()
 
 void TubeFx::TubeFxImpl::UpdateColorMaps()
 {
-  m_allowOverexposed = ProbabilityOf(PROB_ALLOW_OVEREXPOSED);
+  m_allowOverexposed = m_goomRand.ProbabilityOf(PROB_ALLOW_OVEREXPOSED);
 
   if (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() >= 1)
   {
@@ -546,11 +549,13 @@ void TubeFx::TubeFxImpl::UpdateColorMaps()
 
   for (auto& tube : m_tubes)
   {
-    if (m_colorMapTimer.Finished() && ProbabilityOf(PROB_RESET_COLOR_MAPS))
+    if (m_colorMapTimer.Finished() && m_goomRand.ProbabilityOf(PROB_RESET_COLOR_MAPS))
     {
-      m_colorMapTimer.SetTimeLimit(GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1));
+      m_colorMapTimer.SetTimeLimit(
+          m_goomRand.GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1));
       tube.ResetColorMaps();
-      tube.SetBrightnessFactor(GetRandInRange(MIN_BRIGHTNESS_FACTOR, MAX_BRIGHTNESS_FACTOR));
+      tube.SetBrightnessFactor(
+          m_goomRand.GetRandInRange(MIN_BRIGHTNESS_FACTOR, MAX_BRIGHTNESS_FACTOR));
     }
   }
 }
@@ -647,23 +652,23 @@ void TubeFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
   const float brightnessAttenuation = GetApproxBrightnessAttenuation();
   using ColorsList = GoomDrawToContainer::ColorsList;
 
-  m_drawToContainer.IterateChangedCoordsNewToOld(
-      [&](const int32_t x, const int32_t y, const ColorsList& colorsList) {
-        const int32_t jitterAmount =
-            !m_prevShapesJitter
-                ? 0
-                : GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
-        const int32_t newX = GetClipped(x + jitterAmount, m_draw.GetScreenWidth() - 1);
-        const int32_t newY = GetClipped(y + jitterAmount, m_draw.GetScreenHeight() - 1);
+  m_drawToContainer.IterateChangedCoordsNewToOld([&](const int32_t x, const int32_t y,
+                                                     const ColorsList& colorsList) {
+    const int32_t jitterAmount =
+        !m_prevShapesJitter
+            ? 0
+            : m_goomRand.GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
+    const int32_t newX = GetClipped(x + jitterAmount, m_draw.GetScreenWidth() - 1);
+    const int32_t newY = GetClipped(y + jitterAmount, m_draw.GetScreenHeight() - 1);
 
-        const Pixel avColor = GetAverageColor(colorsList);
-        constexpr float BRIGHTNESS_FACTOR = 0.1F;
-        const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
-        const Pixel newColor0 = GetBrighterColor(brightness, avColor, m_allowOverexposed);
+    const Pixel avColor = GetAverageColor(colorsList);
+    constexpr float BRIGHTNESS_FACTOR = 0.1F;
+    const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
+    const Pixel newColor0 = GetBrighterColor(brightness, avColor, m_allowOverexposed);
 
-        // IMPORTANT - Best results come from putting color in second buffer.
-        m_draw.DrawPixels(newX, newY, {Pixel::BLACK, newColor0});
-      });
+    // IMPORTANT - Best results come from putting color in second buffer.
+    m_draw.DrawPixels(newX, newY, {Pixel::BLACK, newColor0});
+  });
 }
 
 inline auto TubeFx::TubeFxImpl::GetAverageColor(const GoomDrawToContainer::ColorsList& colorsList)
@@ -704,7 +709,7 @@ auto TubeFx::TubeFxImpl::GetApproxBrightnessAttenuation() const -> float
 
 void TubeFx::TubeFxImpl::UpdatePreviousShapesSettings()
 {
-  m_prevShapesJitter = ProbabilityOf(PROB_PREV_SHAPES_JITTER);
+  m_prevShapesJitter = m_goomRand.ProbabilityOf(PROB_PREV_SHAPES_JITTER);
 }
 
 auto TubeFx::TubeFxImpl::GetTransformedCentrePoint(const uint32_t tubeId,
@@ -733,12 +738,12 @@ void TubeFx::TubeFxImpl::IncrementAllJoinCentreT()
   if (m_allJoinCentreT() >= (1.0F - SMALL_FLOAT))
   {
     m_allStayInCentreTimer.SetTimeLimit(
-        GetRandInRange(MIN_STAY_IN_CENTRE_TIME, MAX_STAY_IN_CENTRE_TIME + 1));
+        m_goomRand.GetRandInRange(MIN_STAY_IN_CENTRE_TIME, MAX_STAY_IN_CENTRE_TIME + 1));
   }
   else if (m_allJoinCentreT() <= (0.0F + SMALL_FLOAT))
   {
-    m_allStayAwayFromCentreTimer.SetTimeLimit(
-        GetRandInRange(MIN_STAY_AWAY_FROM_CENTRE_TIME, MAX_STAY_AWAY_FROM_CENTRE_TIME + 1));
+    m_allStayAwayFromCentreTimer.SetTimeLimit(m_goomRand.GetRandInRange(
+        MIN_STAY_AWAY_FROM_CENTRE_TIME, MAX_STAY_AWAY_FROM_CENTRE_TIME + 1));
   }
 
   m_allJoinCentreT.Increment();
@@ -746,47 +751,47 @@ void TubeFx::TubeFxImpl::IncrementAllJoinCentreT()
 
 void TubeFx::TubeFxImpl::ChangeSpeedForLowerVolumes(Tube& tube)
 {
-  if (ProbabilityOf(PROB_DECREASE_SPEED))
+  if (m_goomRand.ProbabilityOf(PROB_DECREASE_SPEED))
   {
     tube.DecreaseCentreSpeed();
     tube.DecreaseCircleSpeed();
 
     m_changedSpeedTimer.SetTimeLimit(
-        GetRandInRange(MIN_DECREASED_SPEED_TIME, MAX_DECREASED_SPEED_TIME + 1));
+        m_goomRand.GetRandInRange(MIN_DECREASED_SPEED_TIME, MAX_DECREASED_SPEED_TIME + 1));
   }
-  else if (ProbabilityOf(PROB_NORMAL_SPEED))
+  else if (m_goomRand.ProbabilityOf(PROB_NORMAL_SPEED))
   {
     tube.SetCentreSpeed(Tube::NORMAL_CENTRE_SPEED);
     tube.SetCircleSpeed(Tube::NORMAL_CIRCLE_SPEED);
 
     m_changedSpeedTimer.SetTimeLimit(
-        GetRandInRange(MIN_NORMAL_SPEED_TIME, MAX_NORMAL_SPEED_TIME + 1));
+        m_goomRand.GetRandInRange(MIN_NORMAL_SPEED_TIME, MAX_NORMAL_SPEED_TIME + 1));
   }
-  else if (ProbabilityOf(PROB_RANDOM_INCREASE_SPEED))
+  else if (m_goomRand.ProbabilityOf(PROB_RANDOM_INCREASE_SPEED))
   {
     tube.IncreaseCentreSpeed();
     tube.IncreaseCircleSpeed();
 
     m_changedSpeedTimer.SetTimeLimit(
-        GetRandInRange(MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));
+        m_goomRand.GetRandInRange(MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));
   }
 }
 
 void TubeFx::TubeFxImpl::ChangeSpeedForHigherVolumes(Tube& tube)
 {
-  if (ProbabilityOf(PROB_INCREASE_SPEED))
+  if (m_goomRand.ProbabilityOf(PROB_INCREASE_SPEED))
   {
     tube.IncreaseCentreSpeed();
     tube.IncreaseCircleSpeed();
 
     m_changedSpeedTimer.SetTimeLimit(
-        GetRandInRange(MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));
+        m_goomRand.GetRandInRange(MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));
   }
 }
 
 void TubeFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube)
 {
-  if (ProbabilityOf(PROB_NO_SHAPE_JITTER))
+  if (m_goomRand.ProbabilityOf(PROB_NO_SHAPE_JITTER))
   {
     tube.SetMaxJitterOffset(0);
   }
@@ -796,7 +801,7 @@ void TubeFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube)
         stdnew::lerp(MIN_SHAPE_JITTER_OFFSET, MAX_SHAPE_JITTER_OFFSET, m_shapeJitterT())));
     tube.SetMaxJitterOffset(maxJitter);
     m_shapeJitterT.Increment();
-    m_jitterTimer.SetTimeLimit(GetRandInRange(MIN_JITTER_TIME, MAX_JITTER_TIME + 1));
+    m_jitterTimer.SetTimeLimit(m_goomRand.GetRandInRange(MIN_JITTER_TIME, MAX_JITTER_TIME + 1));
   }
 }
 

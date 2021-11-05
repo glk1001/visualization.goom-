@@ -16,11 +16,17 @@ namespace DRAW
 {
 class IGoomDraw;
 class TextDraw;
-}
+} // namespace DRAW
+
 namespace COLOR
 {
 class IColorMap;
-}
+} // namespace COLOR
+
+namespace UTILS
+{
+class IGoomRand;
+} // namespace UTILS
 
 namespace CONTROL
 {
@@ -29,7 +35,9 @@ class GoomTitleDisplayer
 {
 public:
   GoomTitleDisplayer() noexcept = delete;
-  GoomTitleDisplayer(DRAW::IGoomDraw& draw, const std::string& fontDirectory);
+  GoomTitleDisplayer(DRAW::IGoomDraw& draw,
+                     UTILS::IGoomRand& goomRand,
+                     const std::string& fontDirectory);
 
   void SetInitialPosition(int32_t xStart, int32_t yStart);
 
@@ -42,6 +50,7 @@ public:
   void DrawStaticText(const std::string& title);
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   static constexpr int MAX_TEXT_DISPLAY_TIME = 200;
   static constexpr int TIME_TO_START_MIDDLE_PHASE = 100;
   static constexpr int TIME_TO_START_FINAL_PHASE = 50;

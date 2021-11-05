@@ -2,7 +2,7 @@
 
 #include "filter_settings.h"
 #include "normalized_coords.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
 
@@ -21,7 +21,7 @@ namespace GOOM::FILTERS
 class Hypercos
 {
 public:
-  Hypercos() noexcept;
+  explicit Hypercos(UTILS::IGoomRand& goomRand) noexcept;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 
@@ -66,9 +66,11 @@ protected:
   void SetParams(const Params& params);
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   Params m_params;
-  void SetHypercosEffect(const UTILS::NumberRange<float>& freqRange,
-                         const UTILS::NumberRange<float>& amplitudeRange);
+  const UTILS::Weights<HypercosEffect> m_hypercosOverlayWeights;
+  void SetHypercosEffect(const UTILS::IGoomRand::NumberRange<float>& freqRange,
+                         const UTILS::IGoomRand::NumberRange<float>& amplitudeRange);
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
                                  HypercosEffect effect,
                                  float xFreqToUse,

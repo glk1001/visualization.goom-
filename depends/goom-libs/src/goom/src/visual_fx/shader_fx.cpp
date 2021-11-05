@@ -7,7 +7,7 @@
 //#undef NO_LOGGING
 #include "goom/spimpl.h"
 #include "logging.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 #include "v2d.h"
@@ -27,10 +27,8 @@ namespace GOOM::VISUAL_FX
 #endif
 
 using DRAW::IGoomDraw;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::Logging;
-using UTILS::NumberRange;
-using UTILS::ProbabilityOf;
 using UTILS::Timer;
 using UTILS::TValue;
 
@@ -46,10 +44,11 @@ public:
 private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
+  IGoomRand& m_goomRand;
   uint64_t m_updateNum{};
 
-  const NumberRange<int32_t> m_exposureSampleWidthRange;
-  const NumberRange<int32_t> m_exposureSampleHeightRange;
+  const IGoomRand::NumberRange<int32_t> m_exposureSampleWidthRange;
+  const IGoomRand::NumberRange<int32_t> m_exposureSampleHeightRange;
   static constexpr uint32_t NUM_UPDATES_BETWEEN_EXPOSURE_CHECKS = 5;
   TValue m_exposureChangeT{TValue::StepType::SINGLE_CYCLE, NUM_UPDATES_BETWEEN_EXPOSURE_CHECKS};
   static constexpr float INITIAL_BRIGHTNESS = 2.0F;
@@ -112,6 +111,7 @@ auto ShaderFx::GetLastShaderEffects() const -> const GoomShaderEffects&
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelpers& fxHelpers) noexcept
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
+    m_goomRand{fxHelpers.GetGoomRand()},
     m_exposureSampleWidthRange{
         static_cast<int32_t>(m_goomInfo.GetScreenInfo().width / 3),
         static_cast<int32_t>(1 + ((2 * m_goomInfo.GetScreenInfo().width) / 3))},
@@ -139,7 +139,7 @@ inline void ShaderFx::ShaderFxImpl::UpdateHighBrightness()
 {
   m_highBrightnessT.Increment();
 
-  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastBigGoom()) && ProbabilityOf(0.0F))
+  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastBigGoom()) && m_goomRand.ProbabilityOf(0.0F))
   {
     m_highBrightnessT.Reset();
   }
@@ -173,14 +173,15 @@ inline void ShaderFx::ShaderFxImpl::UpdateHighContrast()
   }
 
   constexpr float PROB_CONTRAST = 0.5F;
-  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) && ProbabilityOf(PROB_CONTRAST))
+  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
+      m_goomRand.ProbabilityOf(PROB_CONTRAST))
   {
     m_highContrastT.Reset();
     m_highContrastOnTimer.ResetToZero();
     constexpr float CONTRAST_MIN_CHAN = -0.1F;
     constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.9F;
     m_contrastMinChannelValue =
-        ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
+        m_goomRand.ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
   }
 }
 
@@ -219,8 +220,8 @@ auto ShaderFx::ShaderFxImpl::GetAverageLuminanceOfSpotSamples() const -> float
   size_t numNonZeroSamples = 0;
   for (size_t i = 0; i < NUM_SAMPLES_TO_DO; ++i)
   {
-    const int32_t x = GetRandInRange(m_exposureSampleWidthRange);
-    const int32_t y = GetRandInRange(m_exposureSampleHeightRange);
+    const int32_t x = m_goomRand.GetRandInRange(m_exposureSampleWidthRange);
+    const int32_t y = m_goomRand.GetRandInRange(m_exposureSampleHeightRange);
     const Pixel pixel = m_draw.GetPixel(x, y);
     const float luma = GetLuma(pixel);
     if (luma > 0.0F)

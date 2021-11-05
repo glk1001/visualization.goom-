@@ -8,7 +8,7 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "tentacles/tentacle_driver.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
@@ -43,43 +43,16 @@ using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::m_two_pi;
-using UTILS::ProbabilityOfMInN;
 using UTILS::Weights;
-
-inline auto StartPrettyMoveEvent() -> bool
-{
-  return ProbabilityOfMInN(0, 400);
-}
-
-inline auto ChangeRotationEvent() -> bool
-{
-  return ProbabilityOfMInN(1, 100);
-}
-
-inline auto TurnRotationOnEvent() -> bool
-{
-  return ProbabilityOfMInN(1, 2);
-}
-
-inline auto ChangeDominantColorMapEvent() -> bool
-{
-  return ProbabilityOfMInN(1, 50);
-}
-
-// IMPORTANT. Very delicate here - 1 in 30 seems just right
-inline auto ChangeDominantColorEvent() -> bool
-{
-  return ProbabilityOfMInN(1, 30);
-}
 
 class TentaclesFx::TentaclesImpl
 {
 public:
-  TentaclesImpl(const FxHelpers& fxHelpers);
+  explicit TentaclesImpl(const FxHelpers& fxHelpers);
   TentaclesImpl(const TentaclesImpl&) noexcept = delete;
   TentaclesImpl(TentaclesImpl&&) noexcept = delete;
   ~TentaclesImpl() noexcept = default;
@@ -97,10 +70,14 @@ public:
 private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
+  IGoomRand& m_goomRand;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
   Pixel m_dominantColor{};
   void ChangeDominantColor();
+
+  const Weights<size_t> m_driverWeights;
+  const std::vector<CirclesTentacleLayout> m_layouts;
 
   bool m_updatingWithDraw = false;
   float m_cycle = 0.0F;
@@ -149,20 +126,6 @@ private:
   std::vector<std::unique_ptr<TentacleDriver>> m_drivers{};
   TentacleDriver* m_currentDriver = nullptr;
   [[nodiscard]] auto GetNextDriver() const -> TentacleDriver*;
-  // clang-format off
-  const Weights<size_t> m_driverWeights{{
-      {0,  5},
-      {1, 15},
-      {2, 15},
-      {3,  5},
-  }};
-  const std::vector<CirclesTentacleLayout> m_layouts{
-      {10,  80, {16, 12,  8,  6, 4}, 0},
-      {10,  80, {20, 16, 12,  6, 4}, 0},
-      {10, 100, {30, 20, 14,  6, 4}, 0},
-      {10, 110, {36, 26, 20, 12, 6}, 0},
-  };
-  // clang-format on
 
   void SetupDrivers();
   void SetDriverRandomColorMaps();
@@ -170,6 +133,12 @@ private:
   void DoTentaclesUpdate();
   void DoPrettyMoveBeforeDraw();
   void DoPrettyMoveWithoutDraw();
+
+  [[nodiscard]] auto StartPrettyMoveEvent() -> bool;
+  [[nodiscard]] auto ChangeRotationEvent() -> bool;
+  [[nodiscard]] auto TurnRotationOnEvent() -> bool;
+  [[nodiscard]] auto ChangeDominantColorMapEvent() -> bool;
+  [[nodiscard]] auto ChangeDominantColorEvent() -> bool;
 };
 
 TentaclesFx::TentaclesFx(const FxHelpers& fxHelpers) noexcept
@@ -225,8 +194,51 @@ auto TentaclesFx::GetFxName() const -> std::string
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers)
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
+    m_goomRand{fxHelpers.GetGoomRand()},
+    // clang-format off
+    m_driverWeights{
+      m_goomRand,
+      {
+          {0,  5},
+          {1, 15},
+          {2, 15},
+          {3,  5},
+      }},
+    m_layouts{
+        {10,  80, {16, 12,  8,  6, 4}, 0},
+        {10,  80, {20, 16, 12,  6, 4}, 0},
+        {10, 100, {30, 20, 14,  6, 4}, 0},
+        {10, 110, {36, 26, 20, 12, 6}, 0},
+    },
+    // clang-format on
     m_rot{GetStableRotationOffset(0)}
 {
+}
+
+inline auto TentaclesFx::TentaclesImpl::StartPrettyMoveEvent() -> bool
+{
+  return m_goomRand.ProbabilityOfMInN(0, 400);
+}
+
+inline auto TentaclesFx::TentaclesImpl::ChangeRotationEvent() -> bool
+{
+  return m_goomRand.ProbabilityOfMInN(1, 100);
+}
+
+inline auto TentaclesFx::TentaclesImpl::TurnRotationOnEvent() -> bool
+{
+  return m_goomRand.ProbabilityOfMInN(1, 2);
+}
+
+inline auto TentaclesFx::TentaclesImpl::ChangeDominantColorMapEvent() -> bool
+{
+  return m_goomRand.ProbabilityOfMInN(1, 50);
+}
+
+// IMPORTANT. Very delicate here - 1 in 30 seems just right
+inline auto TentaclesFx::TentaclesImpl::ChangeDominantColorEvent() -> bool
+{
+  return m_goomRand.ProbabilityOfMInN(1, 30);
 }
 
 inline void TentaclesFx::TentaclesImpl::IncCounters()
@@ -241,7 +253,7 @@ inline void TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
   m_colorMaps = weightedMaps;
 
   m_dominantColorMap = m_colorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL);
-  m_dominantColor = RandomColorMaps::GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
+  m_dominantColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
 
   SetDriverRandomColorMaps();
 }
@@ -283,7 +295,7 @@ colorMaps.setWeights(colorGroupWeights);
 
   for (size_t i = 0; i < NUM_DRIVERS; ++i)
   {
-    m_drivers.emplace_back(std::make_unique<TentacleDriver>(m_draw));
+    m_drivers.emplace_back(std::make_unique<TentacleDriver>(m_draw, m_goomRand));
   }
 
   if (NUM_DRIVERS != m_driverWeights.GetNumElements())
@@ -310,11 +322,11 @@ void TentaclesFx::TentaclesImpl::InitData()
 {
   assert(m_currentDriver);
 
-  if (ProbabilityOfMInN(1, 500))
+  if (m_goomRand.ProbabilityOfMInN(1, 500))
   {
     m_currentDriver->SetColorMode(TentacleDriver::ColorModes::MINIMAL);
   }
-  else if (ProbabilityOfMInN(1, 500))
+  else if (m_goomRand.ProbabilityOfMInN(1, 500))
   {
     m_currentDriver->SetColorMode(TentacleDriver::ColorModes::MULTI_GROUPS);
   }
@@ -322,7 +334,7 @@ void TentaclesFx::TentaclesImpl::InitData()
   {
     m_currentDriver->SetColorMode(TentacleDriver::ColorModes::ONE_GROUP_FOR_ALL);
   }
-  m_currentDriver->SetReverseColorMix(ProbabilityOfMInN(3, 10));
+  m_currentDriver->SetReverseColorMix(m_goomRand.ProbabilityOfMInN(3, 10));
 
   m_currentDriver->FreshStart();
 
@@ -334,7 +346,7 @@ void TentaclesFx::TentaclesImpl::InitData()
   m_prePrettyMoveLock = 0;
   m_postPrettyMoveLock = 0;
   m_prettyMoveReadyToStart = false;
-  if (ProbabilityOfMInN(1, 5))
+  if (m_goomRand.ProbabilityOfMInN(1, 5))
   {
     m_isPrettyMoveHappening = false;
     m_prettyMoveHappeningTimer = 0;
@@ -468,7 +480,8 @@ void TentaclesFx::TentaclesImpl::DoTentaclesUpdate()
 void TentaclesFx::TentaclesImpl::ChangeDominantColor()
 {
   assert(m_dominantColorMap);
-  const Pixel newColor = RandomColorMaps::GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
+  const Pixel newColor =
+      RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   m_dominantColor = IColorMap::GetColorMix(m_dominantColor, newColor, 0.7F);
 }
 
@@ -485,7 +498,8 @@ inline auto TentaclesFx::TentaclesImpl::GetModColors() -> std::tuple<Pixel, Pixe
 
 void TentaclesFx::TentaclesImpl::PrettyMovePreStart()
 {
-  m_prePrettyMoveLock = GetRandInRange(MIN_PRE_PRETTY_MOVE_LOCK, MAX_PRE_PRETTY_MOVE_LOCK);
+  m_prePrettyMoveLock =
+      m_goomRand.GetRandInRange(MIN_PRE_PRETTY_MOVE_LOCK, MAX_PRE_PRETTY_MOVE_LOCK);
   m_distt2OffsetPreStep =
       stdnew::lerp(DISTT2_MIN, DISTT2_MAX, 0.2F) / static_cast<float>(m_prePrettyMoveLock);
   m_distt2Offset = 0;
@@ -499,15 +513,16 @@ void TentaclesFx::TentaclesImpl::PrettyMoveStart(const float acceleration, const
   }
   else
   {
-    m_prettyMoveHappeningTimer =
-        static_cast<int>(GetRandInRange(PRETTY_MOVE_HAPPENING_MIN, PRETTY_MOVE_HAPPENING_MAX));
+    m_prettyMoveHappeningTimer = static_cast<int>(
+        m_goomRand.GetRandInRange(PRETTY_MOVE_HAPPENING_MIN, PRETTY_MOVE_HAPPENING_MAX));
   }
   m_prettyMoveCheckStopMark = m_prettyMoveHappeningTimer / 4;
   m_postPrettyMoveLock = (3 * m_prettyMoveHappeningTimer) / 2;
 
-  m_distt2Offset = (1.0F / (1.10F - acceleration)) * GetRandInRange(DISTT2_MIN, DISTT2_MAX);
+  m_distt2Offset =
+      (1.0F / (1.10F - acceleration)) * m_goomRand.GetRandInRange(DISTT2_MIN, DISTT2_MAX);
   m_rotAtStartOfPrettyMove = m_rot;
-  m_cycleInc = GetRandInRange(CYCLE_INC_MIN, CYCLE_INC_MAX);
+  m_cycleInc = m_goomRand.GetRandInRange(CYCLE_INC_MIN, CYCLE_INC_MAX);
 }
 
 void TentaclesFx::TentaclesImpl::PrettyMoveFinish()

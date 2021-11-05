@@ -31,9 +31,9 @@ using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
 using UTILS::ExpDampingFunction;
 using UTILS::FlatDampingFunction;
+using UTILS::IGoomRand;
 using UTILS::LinearDampingFunction;
 using UTILS::PiecewiseDampingFunction;
-using UTILS::ProbabilityOfMInN;
 
 #if __cplusplus <= 201402L
 const size_t Tentacle2D::MIN_NUM_NODES = 10;
@@ -86,7 +86,7 @@ void Tentacle2D::ValidateXDimensions() const
 {
   if (m_xMax <= m_xMin)
   {
-    throw std::logic_error(std20::format("xmax must be > xmin, not ({}, {}).", m_xMin, m_xMax));
+    throw std::logic_error(std20::format("xMax must be > xMin, not ({}, {}).", m_xMin, m_xMax));
   }
 }
 
@@ -94,7 +94,7 @@ void Tentacle2D::ValidateYDimensions() const
 {
   if (m_yMax <= m_yMin)
   {
-    throw std::logic_error(std20::format("ymax must be > ymin, not ({}, {}).", m_yMin, m_yMax));
+    throw std::logic_error(std20::format("yMax must be > yMin, not ({}, {}).", m_yMin, m_yMax));
   }
 }
 
@@ -164,10 +164,10 @@ void Tentacle2D::Iterate()
     m_yVec[i] = static_cast<double>(GetNextY(i));
   }
 
-  UpdateDampedVals(m_yVec);
+  UpdateDampedValues(m_yVec);
 }
 
-void Tentacle2D::UpdateDampedVals(const std::vector<double>& yVals)
+void Tentacle2D::UpdateDampedValues(const std::vector<double>& yValues)
 {
   constexpr size_t NUM_SMOOTH_NODES = std::min(size_t(10), MIN_NUM_NODES);
   const auto tSmooth = [](const double t) { return t * (2.0 - t); };
@@ -178,13 +178,13 @@ void Tentacle2D::UpdateDampedVals(const std::vector<double>& yVals)
   for (size_t i = 1; i < NUM_SMOOTH_NODES; i++)
   {
     const double t = tSmooth(tNext);
-    m_dampedYVec[i] = stdnew::lerp(m_dampedYVec[i - 1], GetDampedVal(i, yVals[i]), t);
+    m_dampedYVec[i] = stdnew::lerp(m_dampedYVec[i - 1], GetDampedVal(i, yValues[i]), t);
     tNext += tStep;
   }
 
   for (size_t i = NUM_SMOOTH_NODES; i < m_numNodes; i++)
   {
-    m_dampedYVec[i] = GetDampedVal(i, yVals[i]);
+    m_dampedYVec[i] = GetDampedVal(i, yValues[i]);
   }
 }
 
@@ -215,12 +215,12 @@ auto Tentacle2D::GetDampedXAndYVectors() const -> const Tentacle2D::XAndYVectors
   if (m_xVec.size() < 2)
   {
     throw std::runtime_error(
-        std20::format("GetDampedXAndYVectors: xvec.size() must be >= 2, not {}.", m_xVec.size()));
+        std20::format("GetDampedXAndYVectors: xVec.size() must be >= 2, not {}.", m_xVec.size()));
   }
   if (m_dampedYVec.size() < 2)
   {
     throw std::runtime_error(std20::format(
-        "GetDampedXAndYVectors: yvec.size() must be >= 2, not {}.", m_dampedYVec.size()));
+        "GetDampedXAndYVectors: yVec.size() must be >= 2, not {}.", m_dampedYVec.size()));
   }
   if (std::get<0>(m_vecs).size() < 2)
   {
@@ -272,8 +272,10 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> t,
                        const Pixel& headCol,
                        const Pixel& headLowColor,
                        const V3dFlt& h,
-                       const size_t numHdNodes) noexcept
-  : m_tentacle{std::move(t)},
+                       const size_t numHdNodes,
+                       IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand},
+    m_tentacle{std::move(t)},
     m_headColor{headCol},
     m_headLowColor{headLowColor},
     m_head{h},
@@ -286,8 +288,10 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> t,
                        const Pixel& headCol,
                        const Pixel& headLowColor,
                        const V3dFlt& h,
-                       const size_t numHdNodes) noexcept
-  : m_tentacle{std::move(t)},
+                       const size_t numHdNodes,
+                       IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand},
+    m_tentacle{std::move(t)},
     m_colorizer{std::move(col)},
     m_headColor{headCol},
     m_headLowColor{headLowColor},
@@ -297,7 +301,8 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> t,
 }
 
 Tentacle3D::Tentacle3D(Tentacle3D&& o) noexcept
-  : m_tentacle{std::move(o.m_tentacle)},
+  : m_goomRand{o.m_goomRand},
+    m_tentacle{std::move(o.m_tentacle)},
     m_colorizer{std::move(o.m_colorizer)},
     m_headColor{o.m_headColor},
     m_headLowColor{o.m_headLowColor},
@@ -347,7 +352,7 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
 
 void Tentacle3D::ColorMapsChanged()
 {
-  m_useIncreasedChroma = ProbabilityOfMInN(7, 10);
+  m_useIncreasedChroma = m_goomRand.ProbabilityOfMInN(7, 10);
 }
 
 inline auto Tentacle3D::GetFinalMixedColor(const Pixel& color,
@@ -399,18 +404,18 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
 auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
 {
 #if __cplusplus <= 201402L
-  const auto xyvecs = m_tentacle->GetDampedXAndYVectors();
-  const auto& xvec2D = std::get<0>(xyvecs);
-  const auto& yvec2D = std::get<1>(xyvecs);
+  const auto xYVecs = m_tentacle->GetDampedXAndYVectors();
+  const auto& xVec2D = std::get<0>(xYVecs);
+  const auto& yVec2D = std::get<1>(xYVecs);
 #else
-  const auto [xvec2D, yvec2D] = m_tentacle->GetDampedXAndYVectors();
+  const auto [xVec2D, yVec2D] = m_tentacle->GetDampedXAndYVectors();
 #endif
-  const size_t n = xvec2D.size();
+  const size_t n = xVec2D.size();
 
   std::vector<V3dFlt> vec3d(n);
   const float x0 = m_head.x;
-  const float y0 = m_head.y - static_cast<float>(yvec2D[0]);
-  const float z0 = m_head.z - static_cast<float>(xvec2D[0]);
+  const float y0 = m_head.y - static_cast<float>(yVec2D[0]);
+  const float z0 = m_head.z - static_cast<float>(xVec2D[0]);
   float xStep = 0.0;
   if (std::abs(x0) < 10.0F)
   {
@@ -421,8 +426,8 @@ auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
   for (size_t i = 0; i < n; i++)
   {
     vec3d[i].x = x;
-    vec3d[i].z = z0 + static_cast<float>(xvec2D[i]);
-    vec3d[i].y = y0 + static_cast<float>(yvec2D[i]);
+    vec3d[i].z = z0 + static_cast<float>(xVec2D[i]);
+    vec3d[i].y = y0 + static_cast<float>(yVec2D[i]);
 
     x -= xStep;
   }

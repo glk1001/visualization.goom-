@@ -15,6 +15,11 @@ namespace COLOR
 class RandomColorMaps;
 } // namespace COLOR
 
+namespace UTILS
+{
+class IGoomRand;
+} // namespace UTILS
+
 namespace TUBES
 {
 
@@ -81,6 +86,7 @@ public:
        const DrawFuncs& drawFuncs,
        uint32_t screenWidth,
        uint32_t screenHeight,
+       UTILS::IGoomRand& goomRand,
        std::shared_ptr<COLOR::RandomColorMaps> colorMaps,
        std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps,
        float radiusEdgeOffset,

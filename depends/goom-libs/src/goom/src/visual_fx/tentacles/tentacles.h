@@ -3,6 +3,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "goom_graphic.h"
+#include "utils/goom_rand_base.h"
 #include "utils/mathutils.h"
 
 #include <functional>
@@ -118,7 +119,7 @@ private:
   auto GetNextY(size_t nodeNum) -> float;
   auto GetDamping(double x) const -> double;
   [[nodiscard]] auto GetDampedVal(size_t nodeNum, double val) const -> double;
-  void UpdateDampedVals(const std::vector<double>& yVals);
+  void UpdateDampedValues(const std::vector<double>& yValues);
   [[nodiscard]] auto Damp(size_t nodeNum) const -> double;
   void ValidateSettings() const;
   void ValidateXDimensions() const;
@@ -149,13 +150,15 @@ public:
              const Pixel& headColor,
              const Pixel& headLowColor,
              const V3dFlt& head,
-             size_t numHeadNodes) noexcept;
+             size_t numHeadNodes,
+             UTILS::IGoomRand& goomRand) noexcept;
   Tentacle3D(std::unique_ptr<Tentacle2D>,
              std::shared_ptr<const ITentacleColorizer>,
              const Pixel& headColor,
              const Pixel& headLowColor,
              const V3dFlt& head,
-             size_t numHeadNodes) noexcept;
+             size_t numHeadNodes,
+             UTILS::IGoomRand& goomRand) noexcept;
   Tentacle3D(const Tentacle3D&) noexcept = delete;
   Tentacle3D(Tentacle3D&&) noexcept;
   ~Tentacle3D() noexcept = default;
@@ -189,8 +192,9 @@ public:
   [[nodiscard]] auto GetVertices() const -> std::vector<V3dFlt>;
 
 private:
-  std::unique_ptr<Tentacle2D> m_tentacle{};
-  std::shared_ptr<const ITentacleColorizer> m_colorizer{};
+  UTILS::IGoomRand& m_goomRand;
+  std::unique_ptr<Tentacle2D> m_tentacle;
+  std::shared_ptr<const ITentacleColorizer> m_colorizer;
   Pixel m_headColor{};
   Pixel m_headLowColor{};
   V3dFlt m_head{};
@@ -226,7 +230,7 @@ private:
   };
 
 public:
-  Tentacles3D() noexcept {}; // = default; (clang fix)
+  explicit Tentacles3D(UTILS::IGoomRand& goomRand) noexcept : m_goomRand{goomRand} {}
 
   void AddTentacle(Tentacle3D&& t);
 
@@ -243,6 +247,7 @@ public:
   void SetAllowOverexposed(bool val);
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   std::vector<Tentacle3D> m_tentacles{};
 };
 

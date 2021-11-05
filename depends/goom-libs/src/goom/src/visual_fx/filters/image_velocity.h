@@ -2,6 +2,7 @@
 
 #include "image_displacement_list.h"
 #include "normalized_coords.h"
+#include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
 
@@ -20,7 +21,7 @@ namespace GOOM::FILTERS
 class ImageVelocity
 {
 public:
-  explicit ImageVelocity(const std::string& resourcesDirectory);
+  ImageVelocity(const std::string& resourcesDirectory, UTILS::IGoomRand& goomRand);
 
   void SetRandomParams();
 
@@ -30,6 +31,7 @@ public:
       -> UTILS::NameValuePairs;
 
 private:
+  UTILS::IGoomRand& m_goomRand;
   ImageDisplacementList m_imageDisplacementList;
 };
 

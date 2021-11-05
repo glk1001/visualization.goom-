@@ -14,8 +14,10 @@ construit
 coord
 coords
 couleur
+crys
 deinit
 delim
+denom
 dest
 displ
 displayer
@@ -42,6 +44,7 @@ mult
 NBRS
 noisify
 pbos
+simi
 spdx
 srce
 stdnew

@@ -12,7 +12,7 @@
 #include "simple_speed_coefficients_effect.h"
 #include "speedway.h"
 #include "utils/enumutils.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 #include "wave.h"
 #include "y_only.h"
 
@@ -28,10 +28,8 @@ namespace GOOM::FILTERS
 {
 #endif
 
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::NUM;
-using UTILS::ProbabilityOf;
-using UTILS::ProbabilityOfMInN;
 using UTILS::Weights;
 
 constexpr float PROB_HIGH = 0.9F;
@@ -39,28 +37,8 @@ constexpr float PROB_HALF = 0.5F;
 constexpr float PROB_LOW = 0.1F;
 constexpr float PROB_ZERO = 0.0F;
 
-//@formatter:off
 // clang-format off
-const Weights<FilterSettingsService::ZoomFilterMode> FilterSettingsService::WEIGHTED_FILTER_EVENTS{{
-    { ZoomFilterMode::AMULET_MODE,             8 },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE0,      4 },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE1,      2 },
-    { ZoomFilterMode::HYPERCOS_MODE0,          6 },
-    { ZoomFilterMode::HYPERCOS_MODE1,          5 },
-    { ZoomFilterMode::HYPERCOS_MODE2,          3 },
-    { ZoomFilterMode::HYPERCOS_MODE3,          3 },
-    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 5 },
-    { ZoomFilterMode::NORMAL_MODE,             6 },
-    { ZoomFilterMode::SCRUNCH_MODE,            6 },
-    { ZoomFilterMode::SPEEDWAY_MODE0,          3 },
-    { ZoomFilterMode::SPEEDWAY_MODE1,          3 },
-    { ZoomFilterMode::WAVE_MODE0,              5 },
-    { ZoomFilterMode::WAVE_MODE1,              4 },
-    { ZoomFilterMode::WATER_MODE,              0 },
-    { ZoomFilterMode::Y_ONLY_MODE,             4 },
-}};
-
-auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirectory)
+auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirectory) const
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>
 {
   using Hyp = HypercosOverlay;
@@ -82,41 +60,41 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
   const auto wave1RotateProb      = PROB_HALF;
   const auto yOnlyRotateProb      = PROB_HALF;
 
-  const auto amuletWeights     = Weights<Hyp>{{{Hyp::NONE, 20}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto crysBall0Weights  = Weights<Hyp>{{{Hyp::NONE,  5}, {Hyp::MODE0, 10}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto crysBall1Weights  = Weights<Hyp>{{{Hyp::NONE,  5}, {Hyp::MODE0,  1}, {Hyp::MODE1, 99}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto hypercos0Weights  = Weights<Hyp>{{{Hyp::NONE,  0}, {Hyp::MODE0,  1}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0}}};
-  const auto hypercos1Weights  = Weights<Hyp>{{{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  1}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0}}};
-  const auto hypercos2Weights  = Weights<Hyp>{{{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0}}};
-  const auto hypercos3Weights  = Weights<Hyp>{{{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  1}}};
-  const auto imageDisplWeights = Weights<Hyp>{{{Hyp::NONE, 99}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto normalWeights     = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto scrunchWeights    = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto speedway0Weights  = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto speedway1Weights  = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto waterWeights      = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto wave0Weights      = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto wave1Weights      = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto yOnlyWeights      = Weights<Hyp>{{{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto amuletWeights     = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 20}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto crysBall0Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  5}, {Hyp::MODE0, 10}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto crysBall1Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  5}, {Hyp::MODE0,  1}, {Hyp::MODE1, 99}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto hypercos0Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  0}, {Hyp::MODE0,  1}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0}}};
+  const auto hypercos1Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  1}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0}}};
+  const auto hypercos2Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0}}};
+  const auto hypercos3Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  1}}};
+  const auto imageDisplWeights = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 99}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto normalWeights     = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto scrunchWeights    = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto speedway0Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto speedway1Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto waterWeights      = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto wave0Weights      = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto wave1Weights      = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto yOnlyWeights      = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
 
   return {
     { ZoomFilterMode::AMULET_MODE, {
         "Amulet",
-        std::make_shared<Amulet>(),
+        std::make_shared<Amulet>(m_goomRand),
         amuletRotateProb,
         amuletWeights
       }
     },
     { ZoomFilterMode::CRYSTAL_BALL_MODE0, {
         "Crystal Ball Mode 0", 
-        std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0),
+        std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0, m_goomRand),
         crysBall0RotateProb,
         crysBall0Weights
       }
     },
     { ZoomFilterMode::CRYSTAL_BALL_MODE1, {
         "Crystal Ball Mode 1", 
-        std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1),
+        std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1, m_goomRand),
         crysBall1RotateProb,
         crysBall1Weights
       }
@@ -151,7 +129,7 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
     },
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, {
         "Image Displacement",  
-        std::make_shared<ImageSpeedCoefficients>(resourcesDirectory),
+        std::make_shared<ImageSpeedCoefficients>(resourcesDirectory, m_goomRand),
         imageDisplRotateProb, 
         imageDisplWeights
       }
@@ -165,21 +143,21 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
     },
     { ZoomFilterMode::SCRUNCH_MODE, {
         "Scrunch",  
-        std::make_shared<Scrunch>(),
+        std::make_shared<Scrunch>(m_goomRand),
         scrunchRotateProb, 
         scrunchWeights
       }
     },
     { ZoomFilterMode::SPEEDWAY_MODE0, {
         "Speedway Mode 0",  
-        std::make_shared<Speedway>(Speedway::Modes::MODE0),
+        std::make_shared<Speedway>(Speedway::Modes::MODE0, m_goomRand),
         speedway0RotateProb, 
         speedway0Weights
       }
     },
     { ZoomFilterMode::SPEEDWAY_MODE1, {
         "Speedway Mode 1",  
-        std::make_shared<Speedway>(Speedway::Modes::MODE1),
+        std::make_shared<Speedway>(Speedway::Modes::MODE1, m_goomRand),
         speedway1RotateProb, 
         speedway1Weights
       }
@@ -193,34 +171,33 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
     },
     { ZoomFilterMode::WAVE_MODE0, {
         "Wave Mode 0",  
-        std::make_shared<Wave>(Wave::Modes::MODE0),
+        std::make_shared<Wave>(Wave::Modes::MODE0, m_goomRand),
         wave0RotateProb, 
         wave0Weights
       }
     },
     { ZoomFilterMode::WAVE_MODE1, {
         "Wave Mode 1",  
-        std::make_shared<Wave>(Wave::Modes::MODE1),
+        std::make_shared<Wave>(Wave::Modes::MODE1, m_goomRand),
         wave1RotateProb, 
         wave1Weights
       }
     },
     { ZoomFilterMode::Y_ONLY_MODE, {
         "Y Only",  
-        std::make_shared<YOnly>(),
+        std::make_shared<YOnly>(m_goomRand),
         yOnlyRotateProb, 
         yOnlyWeights
       }
     },
   };
 }
-//@formatter:on
 // clang-format on
 
 class FilterSettingsService::FilterEvents
 {
 public:
-  FilterEvents() noexcept = default;
+  explicit FilterEvents(IGoomRand& goomRand) noexcept;
 
   enum class FilterEventTypes
   {
@@ -240,9 +217,10 @@ public:
     uint32_t outOf;
   };
 
-  static auto Happens(FilterEventTypes event) -> bool;
+  [[nodiscard]] auto Happens(FilterEventTypes event) const -> bool;
 
 private:
+  IGoomRand& m_goomRand;
   static constexpr size_t NUM_FILTER_EVENT_TYPES = NUM<FilterEventTypes>;
 
   //@formatter:off
@@ -264,37 +242,61 @@ private:
 };
 
 #if __cplusplus <= 201703L
-//@formatter:off
 // clang-format off
 const std::array<FilterSettingsService::FilterEvents::Event,
                  FilterSettingsService::FilterEvents::NUM_FILTER_EVENT_TYPES>
-    FilterSettingsService::FilterEvents::WEIGHTED_EVENTS{{
-   {/*.event = */ FilterEventTypes::ROTATE,                    /*.m = */  8, /*.outOf = */ 16},
-   {/*.event = */ FilterEventTypes::CRYSTAL_BALL_IN_MIDDLE,    /*.m = */ 14, /*.outOf = */ 16},
-   {/*.event = */ FilterEventTypes::WAVE_IN_MIDDLE,            /*.m = */  8, /*.outOf = */ 16},
-   {/*.event = */ FilterEventTypes::CHANGE_SPEED,              /*.m = */  8, /*.outOf = */ 16},
-   {/*.event = */ FilterEventTypes::REVERSE_SPEED,             /*.m = */  8, /*.outOf = */ 16},
-}};
+  FilterSettingsService::FilterEvents::WEIGHTED_EVENTS{{
+      {/*.event = */ FilterEventTypes::ROTATE,                    /*.m = */  8, /*.outOf = */ 16},
+      {/*.event = */ FilterEventTypes::CRYSTAL_BALL_IN_MIDDLE,    /*.m = */ 14, /*.outOf = */ 16},
+      {/*.event = */ FilterEventTypes::WAVE_IN_MIDDLE,            /*.m = */  8, /*.outOf = */ 16},
+      {/*.event = */ FilterEventTypes::CHANGE_SPEED,              /*.m = */  8, /*.outOf = */ 16},
+      {/*.event = */ FilterEventTypes::REVERSE_SPEED,             /*.m = */  8, /*.outOf = */ 16},
+  }};
 // clang-format on
-//@formatter:on
 #endif
 
-inline auto FilterSettingsService::FilterEvents::Happens(const FilterEventTypes event) -> bool
+inline FilterSettingsService::FilterEvents::FilterEvents(IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand}
+{
+}
+
+inline auto FilterSettingsService::FilterEvents::Happens(const FilterEventTypes event) const -> bool
 {
   const Event& weightedEvent = WEIGHTED_EVENTS.at(static_cast<size_t>(event));
-  return ProbabilityOfMInN(weightedEvent.m, weightedEvent.outOf);
+  return m_goomRand.ProbabilityOfMInN(weightedEvent.m, weightedEvent.outOf);
 }
 
 using FilterEventTypes = FilterSettingsService::FilterEvents::FilterEventTypes;
 
 FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                                              const PluginInfo& goomInfo,
+                                             IGoomRand& goomRand,
                                              const std::string& resourcesDirectory) noexcept
   : m_parallel{parallel},
     m_goomInfo{goomInfo},
+    m_goomRand{goomRand},
     m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
     m_resourcesDirectory{resourcesDirectory},
-    m_filterEvents{spimpl::make_unique_impl<FilterEvents>()},
+    m_filterEvents{spimpl::make_unique_impl<FilterEvents>(m_goomRand)},
+    m_weightedFilterEvents{goomRand,
+                           {
+                               {ZoomFilterMode::AMULET_MODE, 8},
+                               {ZoomFilterMode::CRYSTAL_BALL_MODE0, 4},
+                               {ZoomFilterMode::CRYSTAL_BALL_MODE1, 2},
+                               {ZoomFilterMode::HYPERCOS_MODE0, 6},
+                               {ZoomFilterMode::HYPERCOS_MODE1, 5},
+                               {ZoomFilterMode::HYPERCOS_MODE2, 3},
+                               {ZoomFilterMode::HYPERCOS_MODE3, 3},
+                               {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 5},
+                               {ZoomFilterMode::NORMAL_MODE, 6},
+                               {ZoomFilterMode::SCRUNCH_MODE, 6},
+                               {ZoomFilterMode::SPEEDWAY_MODE0, 3},
+                               {ZoomFilterMode::SPEEDWAY_MODE1, 3},
+                               {ZoomFilterMode::WAVE_MODE0, 5},
+                               {ZoomFilterMode::WAVE_MODE1, 4},
+                               {ZoomFilterMode::WATER_MODE, 0},
+                               {ZoomFilterMode::Y_ONLY_MODE, 4},
+                           }},
     m_filterModeData{GetFilterModeData(m_resourcesDirectory)},
     m_filterSettings{{Vitesse{},
                       HypercosOverlay::NONE,
@@ -307,7 +309,16 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                       false,
                       false},
                      {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
-                     {false, Pixel::BLACK}}
+                     {false, Pixel::BLACK}},
+    m_zoomMidPointWeights{m_goomRand,
+                          {
+                              {ZoomMidPointEvents::EVENT1, 3},
+                              {ZoomMidPointEvents::EVENT2, 2},
+                              {ZoomMidPointEvents::EVENT3, 2},
+                              {ZoomMidPointEvents::EVENT4, 18},
+                              {ZoomMidPointEvents::EVENT5, 10},
+                              {ZoomMidPointEvents::EVENT6, 10},
+                          }}
 {
 }
 
@@ -315,10 +326,11 @@ auto FilterSettingsService::GetFilterBuffersService() -> std::unique_ptr<FilterB
 {
   return std::make_unique<FilterBuffersService>(
       m_parallel, m_goomInfo,
-      std::make_unique<FilterZoomVector>(m_goomInfo.GetScreenInfo().width, m_resourcesDirectory));
+      std::make_unique<FilterZoomVector>(m_goomInfo.GetScreenInfo().width, m_resourcesDirectory,
+                                         m_goomRand));
 }
 
-auto FilterSettingsService::GetFilterColorsService() -> std::unique_ptr<FilterColorsService>
+auto FilterSettingsService::GetFilterColorsService() const -> std::unique_ptr<FilterColorsService>
 {
   return std::make_unique<FilterColorsService>();
 }
@@ -340,7 +352,7 @@ auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
 
   while (true)
   {
-    const auto newMode = WEIGHTED_FILTER_EVENTS.GetRandomWeighted();
+    const auto newMode = m_weightedFilterEvents.GetRandomWeighted();
     if (newMode != m_filterMode)
     {
       return newMode;
@@ -366,9 +378,9 @@ inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
   return m_filterModeData.at(m_filterMode).speedCoefficientsEffect;
 }
 
-inline auto FilterSettingsService::GetRotation() -> std::shared_ptr<Rotation>
+inline auto FilterSettingsService::GetRotation() const -> std::shared_ptr<Rotation>
 {
-  return std::make_shared<Rotation>();
+  return std::make_shared<Rotation>(m_goomRand);
 }
 
 void FilterSettingsService::SetRandomSettingsForNewFilterMode()
@@ -397,9 +409,9 @@ void FilterSettingsService::SetDefaultSettings()
 
 void FilterSettingsService::SetRandomEffects()
 {
-  m_filterSettings.filterEffectsSettings.imageVelocityEffect = ProbabilityOfMInN(1, 10);
-  m_filterSettings.filterEffectsSettings.tanEffect = ProbabilityOfMInN(1, 10);
-  m_filterSettings.filterEffectsSettings.planeEffect = ProbabilityOfMInN(8, 10);
+  m_filterSettings.filterEffectsSettings.imageVelocityEffect = m_goomRand.ProbabilityOfMInN(1, 10);
+  m_filterSettings.filterEffectsSettings.tanEffect = m_goomRand.ProbabilityOfMInN(1, 10);
+  m_filterSettings.filterEffectsSettings.planeEffect = m_goomRand.ProbabilityOfMInN(8, 10);
 }
 
 inline void FilterSettingsService::SetFilterModeSettings()
@@ -433,7 +445,7 @@ void FilterSettingsService::SetWaveModeSettings()
 
 inline void FilterSettingsService::SetRotate(const float rotateProbability)
 {
-  if (!ProbabilityOf(rotateProbability))
+  if (!m_goomRand.ProbabilityOf(rotateProbability))
   {
     return;
   }
@@ -447,7 +459,7 @@ inline void FilterSettingsService::SetRotate(const float rotateProbability)
 void FilterSettingsService::SetMaxSpeedCoeff()
 {
   m_filterSettings.filterEffectsSettings.maxSpeedCoeff =
-      GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF;
+      m_goomRand.GetRandInRange(0.5F, 1.0F) * MAX_MAX_SPEED_COEFF;
 }
 
 void FilterSettingsService::SetRandomZoomMidPoint()
@@ -473,21 +485,7 @@ void FilterSettingsService::SetRandomZoomMidPoint()
       return;
     }
 
-  // clang-format off
-  // @formatter:off
-  enum class ZoomMidPointEvents { EVENT1, EVENT2, EVENT3, EVENT4, EVENT5, EVENT6 };
-  static const Weights<ZoomMidPointEvents> s_zoomMidPointWeights{{
-     { ZoomMidPointEvents::EVENT1,  3 },
-     { ZoomMidPointEvents::EVENT2,  2 },
-     { ZoomMidPointEvents::EVENT3,  2 },
-     { ZoomMidPointEvents::EVENT4, 18 },
-     { ZoomMidPointEvents::EVENT5, 10 },
-     { ZoomMidPointEvents::EVENT6, 10 },
-  }};
-  // @formatter:on
-    // clang-format on
-
-    switch (s_zoomMidPointWeights.GetRandomWeighted())
+    switch (m_zoomMidPointWeights.GetRandomWeighted())
     {
       case ZoomMidPointEvents::EVENT1:
         m_filterSettings.filterEffectsSettings.zoomMidPoint = {

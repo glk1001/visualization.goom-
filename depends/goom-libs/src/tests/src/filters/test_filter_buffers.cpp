@@ -2,6 +2,7 @@
 
 #include "catch2/catch.hpp"
 #include "goom_plugin_info.h"
+#include "utils/goom_rand.h"
 #include "utils/mathutils.h"
 #include "utils/parallel_utils.h"
 #include "v2d.h"
@@ -19,11 +20,13 @@ using GOOM::FILTERS::NormalizedCoords;
 using GOOM::FILTERS::ZoomFilterBuffers;
 using GOOM::FILTERS::ZoomFilterEffectsSettings;
 using GOOM::UTILS::floats_equal;
+using GOOM::UTILS::GoomRand;
 using GOOM::UTILS::Parallel;
 
 constexpr size_t WIDTH = 120;
 constexpr size_t HEIGHT = 70;
 constexpr const char* RESOURCES_DIRECTORY = "";
+GoomRand goomRand{};
 
 const V2dInt MID_PT = {static_cast<int32_t>(WIDTH) / 2, static_cast<int32_t>(HEIGHT) / 2};
 const V2dInt CONST_ZOOM_VECTOR_COORDS_1 = {16, 40};
@@ -39,7 +42,7 @@ class TestZoomVector : public FilterZoomVector
 {
 public:
   explicit TestZoomVector(const bool returnConst) noexcept
-    : FilterZoomVector{WIDTH, RESOURCES_DIRECTORY}, m_ReturnConst{returnConst}
+    : FilterZoomVector{WIDTH, RESOURCES_DIRECTORY, goomRand}, m_ReturnConst{returnConst}
   {
   }
 
@@ -163,7 +166,7 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
   }
 }
 
-TEST_CASE("ZoomFilterBuffers Calculations", "[ZoomFilterBuffersCalcs]")
+TEST_CASE("ZoomFilterBuffers Calculations")
 {
   Parallel parallel{-1};
   const PluginInfo goomInfo{WIDTH, HEIGHT};
@@ -417,7 +420,7 @@ TEST_CASE("ZoomFilterBuffers Clipping", "[ZoomFilterBuffersClipping]")
     const NormalizedCoords normalizedMidPt{filterBuffers.GetBuffMidPoint()};
     const V2dInt expectedTranPoint = CoordTransforms::NormalizedToTranPoint(
         normalizedMidPt + NormalizedCoords{CONST_ZOOM_VECTOR_COORDS_1});
-    // Because mid point is zero, the trans point is negative and therefore clipped.
+    // Because mid-point is zero, the trans point is negative and therefore clipped.
     REQUIRE(expectedTranPoint.x < 0);
     REQUIRE(expectedTranPoint.y < 0);
 

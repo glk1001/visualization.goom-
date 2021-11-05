@@ -1,6 +1,5 @@
 #include "tan_effect.h"
 
-#include "utils/randutils.h"
 #include "utils/name_value_pairs.h"
 
 #undef NDEBUG
@@ -18,29 +17,28 @@ namespace GOOM::FILTERS
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
-using UTILS::NumberRange;
-using UTILS::ProbabilityOf;
 
 constexpr float DEFAULT_AMPLITUDE = 1.0F;
-constexpr NumberRange<float> AMPLITUDE_RANGE = {0.10F, 1.11F};
+constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.10F, 1.11F};
 constexpr float PROB_XY_AMPLITUDES_EQUAL = 0.90F;
 
 constexpr float DEFAULT_LIMITING_FACTOR = 0.75F;
-constexpr NumberRange<float> LIMITING_FACTOR_RANGE = {0.10F, 0.85F};
+constexpr IGoomRand::NumberRange<float> LIMITING_FACTOR_RANGE = {0.10F, 0.85F};
 
-TanEffect::TanEffect() noexcept
-  : m_params{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE, DEFAULT_LIMITING_FACTOR}
+TanEffect::TanEffect(IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand}, m_params{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE, DEFAULT_LIMITING_FACTOR}
 {
 }
 
 void TanEffect::SetRandomParams()
 {
-  m_params.xAmplitude = GetRandInRange(AMPLITUDE_RANGE);
-  m_params.yAmplitude = ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL) ? m_params.xAmplitude
-                                                                : GetRandInRange(AMPLITUDE_RANGE);
-  m_params.limitingFactor = GetRandInRange(LIMITING_FACTOR_RANGE);
+  m_params.xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+                            ? m_params.xAmplitude
+                            : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+  m_params.limitingFactor = m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE);
 }
 
 auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs

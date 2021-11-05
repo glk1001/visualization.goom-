@@ -5,7 +5,7 @@
 #include "goom/goom_graphic.h"
 #include "goom/logging_control.h"
 #include "utils/enumutils.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
 
@@ -25,7 +25,7 @@ namespace GOOM::COLOR
 #endif
 
 using COLOR_DATA::ColorMapName;
-using UTILS::GetRandInRange;
+using UTILS::IGoomRand;
 using UTILS::NUM;
 using UTILS::Weights;
 
@@ -46,14 +46,14 @@ const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::ALL{
 
 auto RandomColorMaps::GetRandomColorMapName() const -> COLOR_DATA::ColorMapName
 {
-  return static_cast<ColorMapName>(GetRandInRange(0U, GetNumColorMapNames()));
+  return static_cast<ColorMapName>(m_goomRand.GetRandInRange(0U, GetNumColorMapNames()));
 }
 
 auto RandomColorMaps::GetRandomColorMapName(const ColorMapGroup cmg) const
     -> COLOR_DATA::ColorMapName
 {
   const ColorMapNames& colorMapNames = GetColorMapNames(cmg);
-  return colorMapNames[GetRandInRange(0U, static_cast<uint32_t>(colorMapNames.size()))];
+  return colorMapNames[m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(colorMapNames.size()))];
 }
 
 auto RandomColorMaps::GetRandomColorMap() const -> const IColorMap&
@@ -72,30 +72,30 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::set<ColorMapTypes>& types)
   return GetRandomColorMapPtr(GetColorMapPtr(GetRandomColorMapName()), types);
 }
 
-auto RandomColorMaps::GetRandomColorMapPtr(const COLOR_DATA::ColorMapName cmName,
+auto RandomColorMaps::GetRandomColorMapPtr(const COLOR_DATA::ColorMapName colorMapName,
                                            const std::set<ColorMapTypes>& types) const
     -> std::shared_ptr<const IColorMap>
 {
-  return GetRandomColorMapPtr(GetColorMapPtr(cmName), types);
+  return GetRandomColorMapPtr(GetColorMapPtr(colorMapName), types);
 }
 
-auto RandomColorMaps::GetRandomColorMapPtr(const ColorMapGroup cmg,
+auto RandomColorMaps::GetRandomColorMapPtr(const ColorMapGroup colorMapGroup,
                                            const std::set<ColorMapTypes>& types) const
     -> std::shared_ptr<const IColorMap>
 {
-  return GetRandomColorMapPtr(GetColorMapPtr(GetRandomColorMapName(cmg)), types);
+  return GetRandomColorMapPtr(GetColorMapPtr(GetRandomColorMapName(colorMapGroup)), types);
 }
 
-auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
+auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap,
                                            const std::set<ColorMapTypes>& types) const
     -> std::shared_ptr<const IColorMap>
 {
   if (types.empty())
   {
-    return cm;
+    return colorMap;
   }
 
-  std::shared_ptr<const IColorMap> colorMap = cm;
+  std::shared_ptr<const IColorMap> newColorMap = colorMap;
 
 #if __cplusplus <= 201703L
   if (types.find(ColorMapTypes::ROTATED_T) != types.end())
@@ -103,7 +103,7 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap
   if (types.contains(ColorMapTypes::ROTATED_T))
 #endif
   {
-    colorMap = GetRandomRotatedColorMapPtr(colorMap);
+    newColorMap = GetRandomRotatedColorMapPtr(newColorMap);
   }
 #if __cplusplus <= 201703L
   if (types.find(ColorMapTypes::SHADES) != types.end())
@@ -111,7 +111,7 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap
   if (types.contains(ColorMapTypes::SHADES))
 #endif
   {
-    colorMap = GetRandomTintedColorMapPtr(colorMap);
+    newColorMap = GetRandomTintedColorMapPtr(newColorMap);
   }
 
   return colorMap;
@@ -120,66 +120,69 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap
 auto RandomColorMaps::GetRandomRotatedColorMapPtr() const -> std::shared_ptr<const IColorMap>
 {
   return GetRotatedColorMapPtr(GetRandomColorMapName(),
-                               GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
+                               m_goomRand.GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
 }
 
-auto RandomColorMaps::GetRandomRotatedColorMapPtr(const COLOR_DATA::ColorMapName cmName) const
+auto RandomColorMaps::GetRandomRotatedColorMapPtr(const COLOR_DATA::ColorMapName colorMapName) const
     -> std::shared_ptr<const IColorMap>
 {
-  return GetRotatedColorMapPtr(cmName, GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
+  return GetRotatedColorMapPtr(colorMapName,
+                               m_goomRand.GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
 }
 
-auto RandomColorMaps::GetRandomRotatedColorMapPtr(const ColorMapGroup cmg) const
+auto RandomColorMaps::GetRandomRotatedColorMapPtr(const ColorMapGroup colorMapGroup) const
     -> std::shared_ptr<const IColorMap>
 {
-  return GetRotatedColorMapPtr(GetRandomColorMapName(cmg),
-                               GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
+  return GetRotatedColorMapPtr(GetRandomColorMapName(colorMapGroup),
+                               m_goomRand.GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
 }
 
-auto RandomColorMaps::GetRandomRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& cm) const
-    -> std::shared_ptr<const IColorMap>
+auto RandomColorMaps::GetRandomRotatedColorMapPtr(
+    const std::shared_ptr<const IColorMap>& colorMap) const -> std::shared_ptr<const IColorMap>
 {
-  return GetRotatedColorMapPtr(cm, GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
+  return GetRotatedColorMapPtr(colorMap,
+                               m_goomRand.GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
 }
 
 auto RandomColorMaps::GetRandomTintedColorMapPtr() const -> std::shared_ptr<const IColorMap>
 {
   return GetTintedColorMapPtr(GetRandomColorMapName(),
-                              GetRandInRange(m_minSaturation, m_maxSaturation),
-                              GetRandInRange(m_minLightness, m_maxLightness));
+                              m_goomRand.GetRandInRange(m_minSaturation, m_maxSaturation),
+                              m_goomRand.GetRandInRange(m_minLightness, m_maxLightness));
 }
 
-auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapName cmName) const
+auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapName colorMapName) const
     -> std::shared_ptr<const IColorMap>
 {
-  return GetTintedColorMapPtr(cmName, GetRandInRange(m_minSaturation, m_maxSaturation),
-                              GetRandInRange(m_minLightness, m_maxLightness));
+  return GetTintedColorMapPtr(colorMapName,
+                              m_goomRand.GetRandInRange(m_minSaturation, m_maxSaturation),
+                              m_goomRand.GetRandInRange(m_minLightness, m_maxLightness));
 }
 
-auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapGroup cmg) const
+auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapGroup colorMapGroup) const
     -> std::shared_ptr<const IColorMap>
 {
-  return GetTintedColorMapPtr(GetRandomColorMapName(cmg),
-                              GetRandInRange(m_minSaturation, m_maxSaturation),
-                              GetRandInRange(m_minLightness, m_maxLightness));
+  return GetTintedColorMapPtr(GetRandomColorMapName(colorMapGroup),
+                              m_goomRand.GetRandInRange(m_minSaturation, m_maxSaturation),
+                              m_goomRand.GetRandInRange(m_minLightness, m_maxLightness));
 }
 
-auto RandomColorMaps::GetRandomTintedColorMapPtr(const std::shared_ptr<const IColorMap>& cm) const
-    -> std::shared_ptr<const IColorMap>
+auto RandomColorMaps::GetRandomTintedColorMapPtr(
+    const std::shared_ptr<const IColorMap>& colorMap) const -> std::shared_ptr<const IColorMap>
 {
-  return GetTintedColorMapPtr(cm, GetRandInRange(m_minSaturation, m_maxSaturation),
-                              GetRandInRange(m_minLightness, m_maxLightness));
+  return GetTintedColorMapPtr(colorMap, m_goomRand.GetRandInRange(m_minSaturation, m_maxSaturation),
+                              m_goomRand.GetRandInRange(m_minLightness, m_maxLightness));
 }
 
 auto RandomColorMaps::GetRandomGroup() const -> ColorMapGroup
 {
-  return static_cast<ColorMapGroup>(GetRandInRange(0U, NUM<ColorMapGroup>));
+  return static_cast<ColorMapGroup>(m_goomRand.GetRandInRange(0U, NUM<ColorMapGroup>));
 }
 
 auto RandomColorMaps::GetRandomColor(const IColorMap& colorMap, const float t0, const float t1)
     -> Pixel
 {
-  return colorMap.GetColor(GetRandInRange(t0, t1));
+  return colorMap.GetColor(m_goomRand.GetRandInRange(t0, t1));
 }
 
 auto RandomColorMaps::GetMinRotationPoint() const -> float
@@ -275,33 +278,14 @@ void RandomColorMaps::SetLightnessLimits(const float minLightness, const float m
   m_maxLightness = maxLightness;
 }
 
-WeightedColorMaps::WeightedColorMaps() : RandomColorMaps{}
+WeightedColorMaps::WeightedColorMaps(IGoomRand& goomRand)
+  : RandomColorMaps{goomRand}, m_weights{goomRand}
 {
 }
 
-WeightedColorMaps::WeightedColorMaps(const Weights<ColorMapGroup>& weights)
-  : RandomColorMaps{}, m_weights{weights}, m_weightsActive{true}
+WeightedColorMaps::WeightedColorMaps(IGoomRand& goomRand, const Weights<ColorMapGroup>& weights)
+  : RandomColorMaps{goomRand}, m_weights{weights}, m_weightsActive{true}
 {
-}
-
-auto WeightedColorMaps::GetWeights() const -> const Weights<ColorMapGroup>&
-{
-  return m_weights;
-}
-
-void WeightedColorMaps::SetWeights(const Weights<ColorMapGroup>& weights)
-{
-  m_weights = weights;
-}
-
-auto WeightedColorMaps::AreWeightsActive() const -> bool
-{
-  return m_weightsActive;
-}
-
-void WeightedColorMaps::SetWeightsActive(const bool value)
-{
-  m_weightsActive = value;
 }
 
 auto WeightedColorMaps::GetRandomGroup() const -> ColorMapGroup
@@ -314,191 +298,330 @@ auto WeightedColorMaps::GetRandomGroup() const -> ColorMapGroup
   return m_weights.GetRandomWeighted();
 }
 
-auto GetAllMapsUnweighted() -> std::shared_ptr<RandomColorMaps>
+auto GetAllMapsUnweighted(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::ALL, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::ALL, 1},
+          }}
+  );
+  // clang-format on
 }
 
-auto GetAllStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetAllStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      // clang-format off
-      {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 1},
-      {ColorMapGroup::SEQUENTIAL,                      1},
-      {ColorMapGroup::SEQUENTIAL2,                     1},
-      {ColorMapGroup::CYCLIC,                          1},
-      {ColorMapGroup::DIVERGING,                       1},
-      {ColorMapGroup::DIVERGING_BLACK,                 1},
-      {ColorMapGroup::QUALITATIVE,                     1},
-      {ColorMapGroup::MISC,                            1},
-      // clang-format on
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 1},
+              {ColorMapGroup::SEQUENTIAL,                      1},
+              {ColorMapGroup::SEQUENTIAL2,                     1},
+              {ColorMapGroup::CYCLIC,                          1},
+              {ColorMapGroup::DIVERGING,                       1},
+              {ColorMapGroup::DIVERGING_BLACK,                 1},
+              {ColorMapGroup::QUALITATIVE,                     1},
+              {ColorMapGroup::MISC,                            1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetAllSlimMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetAllSlimMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      // clang-format off
-      {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 1},
-      {ColorMapGroup::SEQUENTIAL_SLIM,                      1},
-      {ColorMapGroup::SEQUENTIAL2_SLIM,                     1},
-      {ColorMapGroup::CYCLIC_SLIM,                          1},
-      {ColorMapGroup::DIVERGING_SLIM,                       1},
-      {ColorMapGroup::DIVERGING_BLACK_SLIM,                 1},
-      {ColorMapGroup::QUALITATIVE_SLIM,                     1},
-      {ColorMapGroup::MISC_SLIM,                            1},
-      // clang-format on
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 1},
+              {ColorMapGroup::SEQUENTIAL_SLIM,                      1},
+              {ColorMapGroup::SEQUENTIAL2_SLIM,                     1},
+              {ColorMapGroup::CYCLIC_SLIM,                          1},
+              {ColorMapGroup::DIVERGING_SLIM,                       1},
+              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 1},
+              {ColorMapGroup::QUALITATIVE_SLIM,                     1},
+              {ColorMapGroup::MISC_SLIM,                            1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetMostlySequentialStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetMostlySequentialStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      // clang-format off
-      {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 1},
-      {ColorMapGroup::SEQUENTIAL,                      1},
-      {ColorMapGroup::SEQUENTIAL2,                     1},
-      {ColorMapGroup::CYCLIC,                          0},
-      {ColorMapGroup::DIVERGING,                       0},
-      {ColorMapGroup::DIVERGING_BLACK,                 0},
-      {ColorMapGroup::QUALITATIVE,                     1},
-      {ColorMapGroup::MISC,                            1},
-      // clang-format on
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 1},
+              {ColorMapGroup::SEQUENTIAL,                      1},
+              {ColorMapGroup::SEQUENTIAL2,                     1},
+              {ColorMapGroup::CYCLIC,                          0},
+              {ColorMapGroup::DIVERGING,                       0},
+              {ColorMapGroup::DIVERGING_BLACK,                 0},
+              {ColorMapGroup::QUALITATIVE,                     1},
+              {ColorMapGroup::MISC,                            1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetMostlySequentialSlimMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetMostlySequentialSlimMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      // clang-format off
-      {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 1},
-      {ColorMapGroup::SEQUENTIAL_SLIM,                      1},
-      {ColorMapGroup::SEQUENTIAL2_SLIM,                     1},
-      {ColorMapGroup::CYCLIC_SLIM,                          0},
-      {ColorMapGroup::DIVERGING_SLIM,                       0},
-      {ColorMapGroup::DIVERGING_BLACK_SLIM,                 0},
-      {ColorMapGroup::QUALITATIVE_SLIM,                     1},
-      {ColorMapGroup::MISC_SLIM,                            1},
-      // clang-format on
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 1},
+              {ColorMapGroup::SEQUENTIAL_SLIM,                      1},
+              {ColorMapGroup::SEQUENTIAL2_SLIM,                     1},
+              {ColorMapGroup::CYCLIC_SLIM,                          0},
+              {ColorMapGroup::DIVERGING_SLIM,                       0},
+              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 0},
+              {ColorMapGroup::QUALITATIVE_SLIM,                     1},
+              {ColorMapGroup::MISC_SLIM,                            1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetSlightlyDivergingStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetSlightlyDivergingStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      // clang-format off
-      {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 10},
-      {ColorMapGroup::SEQUENTIAL,                      10},
-      {ColorMapGroup::SEQUENTIAL2,                     10},
-      {ColorMapGroup::CYCLIC,                          10},
-      {ColorMapGroup::DIVERGING,                       20},
-      {ColorMapGroup::DIVERGING_BLACK,                  1},
-      {ColorMapGroup::QUALITATIVE,                     10},
-      {ColorMapGroup::MISC,                            20},
-      // clang-format on
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 10},
+              {ColorMapGroup::SEQUENTIAL,                      10},
+              {ColorMapGroup::SEQUENTIAL2,                     10},
+              {ColorMapGroup::CYCLIC,                          10},
+              {ColorMapGroup::DIVERGING,                       20},
+              {ColorMapGroup::DIVERGING_BLACK,                  1},
+              {ColorMapGroup::QUALITATIVE,                     10},
+              {ColorMapGroup::MISC,                            20},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetSlightlyDivergingSlimMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetSlightlyDivergingSlimMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      // clang-format off
-      {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 10},
-      {ColorMapGroup::SEQUENTIAL_SLIM,                      10},
-      {ColorMapGroup::SEQUENTIAL2_SLIM,                     10},
-      {ColorMapGroup::CYCLIC_SLIM,                          10},
-      {ColorMapGroup::DIVERGING_SLIM,                       20},
-      {ColorMapGroup::DIVERGING_BLACK_SLIM,                  1},
-      {ColorMapGroup::QUALITATIVE_SLIM,                     10},
-      {ColorMapGroup::MISC_SLIM,                            20},
-      // clang-format on
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 10},
+              {ColorMapGroup::SEQUENTIAL_SLIM,                      10},
+              {ColorMapGroup::SEQUENTIAL2_SLIM,                     10},
+              {ColorMapGroup::CYCLIC_SLIM,                          10},
+              {ColorMapGroup::DIVERGING_SLIM,                       20},
+              {ColorMapGroup::DIVERGING_BLACK_SLIM,                  1},
+              {ColorMapGroup::QUALITATIVE_SLIM,                     10},
+              {ColorMapGroup::MISC_SLIM,                            20},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetBlueStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetBlueStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::BLUES, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::BLUES, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetRedStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetRedStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::REDS, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::REDS, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetGreenStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetGreenStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::GREENS, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::GREENS, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetYellowStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetYellowStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::YELLOWS, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::YELLOWS, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetOrangeStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetOrangeStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::ORANGES, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::ORANGES, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetPurpleStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetPurpleStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::PURPLES, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::PURPLES, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetCitiesStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetCitiesStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::CITIES, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::CITIES, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetSeasonsStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetSeasonsStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::SEASONS, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::SEASONS, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetHeatStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetHeatStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::HEAT, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::HEAT, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetColdStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetColdStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::COLD, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::COLD, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetPastelStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetPastelStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::PASTEL, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::PASTEL, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
-auto GetDivergingBlackStandardMaps() -> std::shared_ptr<RandomColorMaps>
+auto GetDivergingBlackStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
-  return std::make_shared<WeightedColorMaps>(Weights<ColorMapGroup>{{
-      {ColorMapGroup::DIVERGING_BLACK, 1},
-  }});
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::DIVERGING_BLACK, 1},
+          }
+      }
+  );
+  // clang-format on
 }
 
 #if __cplusplus <= 201402L

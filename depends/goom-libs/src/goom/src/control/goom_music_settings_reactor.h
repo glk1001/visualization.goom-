@@ -5,7 +5,7 @@
 #include "goom_lock.h"
 #include "goom_music_lines_reactor.h"
 #include "goom_plugin_info.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 #include "utils/timer.h"
 #include "visual_fx/filters/filter_settings_service.h"
@@ -24,6 +24,7 @@ class GoomMusicSettingsReactor
 {
 public:
   GoomMusicSettingsReactor(const PluginInfo& goomInfo,
+                           UTILS::IGoomRand& goomRand,
                            GoomAllVisualFx& visualFx,
                            const GoomEvents& goomEvents,
                            FILTERS::FilterSettingsService& filterSettingsService) noexcept;
@@ -50,6 +51,7 @@ public:
 
 private:
   const PluginInfo& m_goomInfo;
+  UTILS::IGoomRand& m_goomRand;
   GoomAllVisualFx& m_visualFx;
   using GoomEvent = GoomEvents::GoomEvent;
   const GoomEvents& m_goomEvents;
@@ -304,7 +306,7 @@ inline void GoomMusicSettingsReactor::BigNormalUpdate()
   ChangeTranBufferSwitchValues();
 
   constexpr float PROB_SINGLE_BUFFER_DOTS = 1.0F / 20.0F;
-  m_visualFx.SetSingleBufferDots(UTILS::ProbabilityOf(PROB_SINGLE_BUFFER_DOTS));
+  m_visualFx.SetSingleBufferDots(m_goomRand.ProbabilityOf(PROB_SINGLE_BUFFER_DOTS));
 }
 
 inline void GoomMusicSettingsReactor::MegaLentUpdate()

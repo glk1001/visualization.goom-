@@ -23,8 +23,10 @@ namespace GOOM
 {
 namespace UTILS
 {
+namespace RAND
+{
 #else
-namespace GOOM::UTILS
+namespace GOOM::UTILS::RAND
 {
 #endif
 
@@ -131,8 +133,9 @@ auto GetRandInRange(const float x0, const float x1) -> float
 }
 
 #if __cplusplus <= 201402L
+} // namespace RAND
 } // namespace UTILS
 } // namespace GOOM
 #else
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::RAND
 #endif

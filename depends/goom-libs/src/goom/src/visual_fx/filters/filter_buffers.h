@@ -43,7 +43,7 @@ public:
 
   using ZoomPointFunc = std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords)>;
 
-  ZoomFilterBuffers(UTILS::Parallel& p,
+  ZoomFilterBuffers(UTILS::Parallel& parallel,
                     const PluginInfo& goomInfo,
                     const ZoomPointFunc& zoomPointFunc);
 

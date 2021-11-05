@@ -24,10 +24,11 @@
 #include "draw/goom_draw_to_buffer.h"
 #include "goom/logging_control.h"
 #include "goom_graphic.h"
-#undef NO_LOGGING
+//#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
+#include "utils/goom_rand.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/parallel_utils.h"
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
@@ -62,6 +63,7 @@ using FILTERS::FilterSettingsService;
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 using UTILS::GetNameValuesString;
 #endif
+using UTILS::GoomRand;
 using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::SmallImageBitmaps;
@@ -92,14 +94,15 @@ public:
 private:
   Parallel m_parallel{-1}; // max cores - 1
   WritablePluginInfo m_goomInfo;
+  GoomRand m_goomRand{};
   GoomDrawToBuffer m_multiBufferDraw;
   GoomImageBuffers m_imageBuffers;
   const std::string m_resourcesDirectory;
   FilterSettingsService m_filterSettingsService;
   const SmallImageBitmaps m_smallBitmaps;
   GoomAllVisualFx m_visualFx;
-  GoomEvents m_goomEvents{};
-  GoomRandomStateHandler m_stateHandler{};
+  GoomEvents m_goomEvents;
+  GoomRandomStateHandler m_stateHandler;
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
   GoomMusicSettingsReactor m_musicSettingsReactor;
 
@@ -125,12 +128,12 @@ private:
   GoomDrawToBuffer m_goomTextOutput;
   GoomTitleDisplayer m_goomTitleDisplayer;
   GoomMessageDisplayer m_messageDisplayer;
-  auto GetFontDirectory() const -> std::string;
+  [[nodiscard]] auto GetFontDirectory() const -> std::string;
   void InitTitleDisplay(const std::string& songTitle);
   void DisplayTitle(const std::string& songTitle, const std::string& message, float fps);
   void DisplayCurrentTitle();
   void UpdateMessages(const std::string& messages);
-  auto GetMessagesFontFile() const -> std::string;
+  [[nodiscard]] auto GetMessagesFontFile() const -> std::string;
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
   void DisplayStateText();
 #endif
@@ -138,13 +141,13 @@ private:
 
 auto GoomControl::GetRandSeed() -> uint64_t
 {
-  return GOOM::UTILS::GetRandSeed();
+  return GOOM::UTILS::RAND::GetRandSeed();
 }
 
 void GoomControl::SetRandSeed(const uint64_t seed)
 {
   LogDebug("Set goom seed = {}.", seed);
-  GOOM::UTILS::SetRandSeed(seed);
+  GOOM::UTILS::RAND::SetRandSeed(seed);
 }
 
 GoomControl::GoomControl(const uint32_t width,
@@ -194,18 +197,21 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_multiBufferDraw{screenWidth, screenHeight},
     m_imageBuffers{screenWidth, screenHeight},
     m_resourcesDirectory{std::move(resourcesDirectory)},
-    m_filterSettingsService{m_parallel, m_goomInfo, m_resourcesDirectory},
+    m_filterSettingsService{m_parallel, m_goomInfo, m_goomRand, m_resourcesDirectory},
     m_smallBitmaps{m_resourcesDirectory},
     m_visualFx{m_parallel,
-               FxHelpers{m_multiBufferDraw, m_goomInfo},
+               FxHelpers{m_multiBufferDraw, m_goomInfo, m_goomRand},
                m_smallBitmaps,
                m_resourcesDirectory,
                m_stateHandler,
                m_filterSettingsService.GetFilterBuffersService(),
-               FilterSettingsService::GetFilterColorsService()},
-    m_musicSettingsReactor{m_goomInfo, m_visualFx, m_goomEvents, m_filterSettingsService},
+               m_filterSettingsService.GetFilterColorsService()},
+    m_goomEvents{m_goomRand},
+    m_stateHandler{m_goomRand},
+    m_musicSettingsReactor{m_goomInfo, m_goomRand, m_visualFx, m_goomEvents,
+                           m_filterSettingsService},
     m_goomTextOutput{screenWidth, screenHeight},
-    m_goomTitleDisplayer{m_goomTextOutput, GetFontDirectory()},
+    m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory()},
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile()}
 {
   RotateBuffers();

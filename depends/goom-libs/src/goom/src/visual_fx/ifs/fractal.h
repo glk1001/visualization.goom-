@@ -2,6 +2,7 @@
 
 #include "goom_graphic.h"
 #include "ifs_types.h"
+#include "utils/goom_rand_base.h"
 #include "utils/t_values.h"
 
 #include <cstdint>
@@ -15,13 +16,12 @@ namespace GOOM
 namespace COLOR
 {
 class IColorMap;
-class ImageBitmap;
 class RandomColorMaps;
-class SmallImageBitmaps;
 } // namespace COLOR
 
 namespace UTILS
 {
+class IGoomRand;
 class ImageBitmap;
 class SmallImageBitmaps;
 } // namespace UTILS
@@ -62,6 +62,7 @@ class Fractal
 public:
   Fractal(uint32_t screenWidth,
           uint32_t screenHeight,
+          UTILS::IGoomRand& goomRand,
           const COLOR::RandomColorMaps& randomColorMaps,
           const UTILS::SmallImageBitmaps& smallBitmaps);
 
@@ -81,6 +82,7 @@ private:
   static constexpr uint32_t MAX_MAX_COUNT_TIMES_SPEED = 1500;
   std::unique_ptr<std::vector<Similitude>> m_components;
 
+  UTILS::IGoomRand& m_goomRand;
   const UTILS::SmallImageBitmaps& m_smallBitmaps;
   const COLOR::RandomColorMaps& m_colorMaps;
 
@@ -107,6 +109,17 @@ private:
   std::reference_wrapper<FractalHits> m_prevHits;
   std::reference_wrapper<FractalHits> m_curHits;
 
+  struct CentreType
+  {
+    uint32_t depth;
+    Dbl r1Mean;
+    Dbl r2Mean;
+    Dbl dr1Mean;
+    Dbl dr2Mean;
+  };
+  const std::vector<CentreType> m_centreList;
+  const UTILS::Weights<size_t> m_centreWeights;
+
   [[nodiscard]] auto GetLx() const -> Flt;
   [[nodiscard]] auto GetLy() const -> Flt;
   void DrawFractal();
@@ -117,8 +130,8 @@ private:
   using IfsFunc = std::function<FltPoint(const Similitude& simi, Flt x1, Flt y1, Flt x2, Flt y2)>;
   IfsFunc m_curFunc{};
   [[nodiscard]] auto Transform(const Similitude& simi, const FltPoint& p0) const -> FltPoint;
-  [[nodiscard]] static auto GaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
-  [[nodiscard]] static auto HalfGaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
+  [[nodiscard]] auto GaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
+  [[nodiscard]] auto HalfGaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
 #if __cplusplus <= 201402L
   [[nodiscard]] static auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
 #else

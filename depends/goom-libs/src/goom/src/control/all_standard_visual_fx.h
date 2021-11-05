@@ -83,7 +83,7 @@ private:
 
   const std::vector<std::shared_ptr<VISUAL_FX::IVisualFx>> m_list;
   const std::map<GoomDrawables, std::shared_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
-  VisualFxColorMaps m_visualFxColorMaps{};
+  VisualFxColorMaps m_visualFxColorMaps;
 
   GoomDrawablesSet m_currentGoomDrawables{};
   [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;

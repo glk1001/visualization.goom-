@@ -13,14 +13,13 @@
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
 #include "goom/logging_control.h"
-#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "sound_info.h"
-#include "utils/randutils.h"
+#include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/mathutils.h"
@@ -53,14 +52,12 @@ using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
-using UTILS::GetNRand;
-using UTILS::GetRandInRange;
 using UTILS::floats_equal;
+using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::m_two_pi;
-using UTILS::ProbabilityOfMInN;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
 using UTILS::Weights;
@@ -110,10 +107,10 @@ public:
 private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
+  IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
   std::shared_ptr<RandomColorMaps> m_colorMaps;
   std::reference_wrapper<const IColorMap> m_currentColorMap;
-  std::string m_resourcesDirectory{};
   static constexpr float GAMMA = 1.0F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
@@ -140,6 +137,10 @@ private:
   void GenerateLinePoints(LineType lineType, float lineParam, std::vector<LinePoint>& line);
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
 
+  // pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera
+  Pixel m_srceColor{};
+  Pixel m_destColor{};
+
   float m_power = 0.0F;
   float m_powerIncrement = 0.0F;
   // This factor gives height to the audio samples lines. This value seems pleasing.
@@ -154,12 +155,10 @@ private:
   static_assert(MAX_IMAGE_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
   size_t m_currentDotSize = MIN_IMAGE_DOT_SIZE;
   bool m_beadedLook = false;
-  [[nodiscard]] static auto GetNextDotSize(size_t maxSize) -> size_t;
+  const Weights<size_t> m_dotSizesMin;
+  const Weights<size_t> m_dotSizes;
+  [[nodiscard]] auto GetNextDotSize(size_t maxSize) const -> size_t;
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
-
-  // pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera
-  Pixel m_srceColor{};
-  Pixel m_destColor{};
 
   struct PointAndColor
   {
@@ -272,8 +271,9 @@ LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
                               const Pixel& destColor)
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
+    m_goomRand{fxHelpers.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
-    m_colorMaps{GetAllSlimMaps()},
+    m_colorMaps{GetAllSlimMaps(m_goomRand)},
     m_currentColorMap{GetRandomColorMap()},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
@@ -283,7 +283,30 @@ LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
     m_destLineType{destLineType},
     m_destParam{destParam},
     m_srceColor{srceColor},
-    m_destColor{destColor}
+    m_destColor{destColor},
+    // clang-format off
+    m_dotSizesMin{
+        m_goomRand,
+        {
+            {1, 100},
+            {3, 50},
+            {5, 5},
+            {7, 1},
+        }},
+    m_dotSizes{
+        m_goomRand,
+        {
+            {1, 50},
+            {3, 20},
+            {5, 5},
+            {7, 1},
+            {9, 1},
+            {11, 1},
+            {13, 1},
+            {15, 1},
+        }
+    }
+// clang-format on
 {
 }
 
@@ -307,6 +330,7 @@ void LinesFx::LinesImpl::SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> w
 
 void LinesFx::LinesImpl::Finish()
 {
+  // nothing to do
 }
 
 void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
@@ -314,7 +338,7 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
                                             std::vector<LinePoint>& line)
 {
   m_currentColorMap = GetRandomColorMap();
-  m_useLineColor = ProbabilityOfMInN(10, 20);
+  m_useLineColor = m_goomRand.ProbabilityOfMInN(10, 20);
 
   switch (lineType)
   {
@@ -397,7 +421,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   if (m_lineLerpFactor >= 1.0F)
   {
     m_srcLineType = m_destLineType;
-    m_currentBrightness = GetRandInRange(2.0F, 3.5F);
+    m_currentBrightness = m_goomRand.GetRandInRange(2.0F, 3.5F);
   }
 
   assert(m_srcLineType != LineType::CIRCLE || m_lineLerpFactor < 1.0F ||
@@ -415,12 +439,12 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   if (m_power < MIN_POWER)
   {
     m_power = MIN_POWER;
-    m_powerIncrement = GetRandInRange(MIN_POW_INC, MAX_POW_INC);
+    m_powerIncrement = m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
   }
   if (m_power > MAX_POWER)
   {
     m_power = MAX_POWER;
-    m_powerIncrement = -GetRandInRange(MIN_POW_INC, MAX_POW_INC);
+    m_powerIncrement = -m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
   }
 
   constexpr float AMP_MIX_AMOUNT = 0.01F;
@@ -444,9 +468,9 @@ void LinesFx::LinesImpl::ResetDestLine(const LineType newLineType,
   m_newAmplitude = newAmplitude;
   m_destColor = newColor;
   m_lineLerpFactor = 0.0;
-  m_currentBrightness = GetRandInRange(1.0F, 2.5F);
-  m_beadedLook = ProbabilityOfMInN(3, 20);
-  m_maxNormalizedPeak = GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
+  m_currentBrightness = m_goomRand.GetRandInRange(1.0F, 2.5F);
+  m_beadedLook = m_goomRand.ProbabilityOfMInN(3, 20);
+  m_maxNormalizedPeak = m_goomRand.GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
 
   m_srcePointsCopy = m_srcePoints;
 }
@@ -516,31 +540,11 @@ inline auto LinesFx::LinesImpl::GetRedLineColor() -> Pixel
 
 auto LinesFx::LinesImpl::GetRandomLineColor() const -> Pixel
 {
-  if (ProbabilityOfMInN(1, 50))
+  if (m_goomRand.ProbabilityOfMInN(1, 50))
   {
-    return GetColor(static_cast<int>(GetNRand(6)));
+    return GetColor(static_cast<int>(m_goomRand.GetNRand(6)));
   }
-  return RandomColorMaps::GetRandomColor(GetRandomColorMap(), 0.0F, 1.0F);
-}
-
-auto SimpleMovingAverage(const std::vector<int16_t>& x, const uint32_t winLen) -> std::vector<float>
-{
-  int32_t temp = 0;
-  for (size_t i = 0; i < (winLen - 1); ++i)
-  {
-    temp += x[i];
-  }
-
-  std::vector<float> result{};
-  result.reserve((AudioSamples::AUDIO_SAMPLE_LEN - winLen) + 1);
-  for (size_t i = 0; i < ((AudioSamples::AUDIO_SAMPLE_LEN - winLen) + 1); ++i)
-  {
-    temp += x[(winLen - 1) + i];
-    result.push_back(static_cast<float>(temp) / static_cast<float>(winLen));
-    temp -= x[i];
-  }
-
-  return result;
+  return RandomColorMaps{m_goomRand}.GetRandomColor(GetRandomColorMap(), 0.0F, 1.0F);
 }
 
 void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
@@ -733,32 +737,15 @@ inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float
   return m_currentColorMap.get().GetColor(t);
 }
 
-inline auto LinesFx::LinesImpl::GetNextDotSize(const size_t maxSize) -> size_t
+inline auto LinesFx::LinesImpl::GetNextDotSize(const size_t maxSize) const -> size_t
 {
   // TODO Fix this hack
-  static const Weights<size_t> s_dotSizesMin{{
-      {1, 100},
-      {3, 50},
-      {5, 5},
-      {7, 1},
-  }};
   constexpr size_t MAX_MIN_DOT_SIZE = 7;
   if (maxSize <= MAX_MIN_DOT_SIZE)
   {
-    return s_dotSizesMin.GetRandomWeighted();
+    return m_dotSizesMin.GetRandomWeighted();
   }
-
-  static const Weights<size_t> s_dotSizes{{
-      {1, 50},
-      {3, 20},
-      {5, 5},
-      {7, 1},
-      {9, 1},
-      {11, 1},
-      {13, 1},
-      {15, 1},
-  }};
-  return s_dotSizes.GetRandomWeighted();
+  return m_dotSizes.GetRandomWeighted();
 }
 
 #if __cplusplus <= 201402L

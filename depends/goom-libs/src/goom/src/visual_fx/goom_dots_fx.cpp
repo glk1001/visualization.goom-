@@ -7,6 +7,7 @@
 #include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
@@ -20,7 +21,6 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
-#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -32,24 +32,18 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
-using DRAW::IGoomDraw;
-using COLOR::COLOR_DATA::ColorMapName;
 using COLOR::ColorMapGroup;
-using COLOR::GetColorMultiply;
-using COLOR::GetBrighterColor;
 using COLOR::GammaCorrection;
+using COLOR::GetBrighterColor;
+using COLOR::GetColorMultiply;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
-using UTILS::GetRandInRange;
+using COLOR::COLOR_DATA::ColorMapName;
+using DRAW::IGoomDraw;
+using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
-using UTILS::ProbabilityOfMInN;
 using UTILS::SmallImageBitmaps;
 using UTILS::Weights;
-
-inline auto ChangeDotColorsEvent() -> bool
-{
-  return ProbabilityOfMInN(1, 3);
-}
 
 class GoomDotsFx::GoomDotsFxImpl
 {
@@ -66,6 +60,7 @@ public:
 private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
+  IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
   const V2dInt m_screenMidPoint;
   const uint32_t m_pointWidth;
@@ -79,7 +74,7 @@ private:
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
   uint32_t m_numFlowersInRow = 0;
-  auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
+  [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
 
   static constexpr size_t MIN_DOT_SIZE = 3;
   static constexpr size_t MAX_DOT_SIZE = 17;
@@ -97,7 +92,7 @@ private:
   static constexpr float GAMMA = 1.0F / 1.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
+  [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 
   void Update();
 
@@ -110,7 +105,9 @@ private:
                                     float xOffsetFreqDenom,
                                     float yOffsetFreqDenom,
                                     uint32_t offsetCycle) const -> V2dInt;
+  const Weights<SmallImageBitmaps::ImageNames> m_dotTypes;
   void SetNextCurrentBitmapName();
+  [[nodiscard]] auto ChangeDotColorsEvent() -> bool;
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -161,6 +158,7 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelpers& fxHelpers,
                                            const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
+    m_goomRand{fxHelpers.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
     m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
     m_pointWidth{(m_goomInfo.GetScreenInfo().width * 2) / 5},
@@ -168,8 +166,25 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelpers& fxHelpers,
     m_pointWidthDiv2{static_cast<float>(m_pointWidth) / 2.0F},
     m_pointHeightDiv2{static_cast<float>(m_pointHeight) / 2.0F},
     m_pointWidthDiv3{static_cast<float>(m_pointWidth) / 3.0F},
-    m_pointHeightDiv3{static_cast<float>(m_pointHeight) / 3.0F}
+    m_pointHeightDiv3{static_cast<float>(m_pointHeight) / 3.0F},
+    // clang-format off
+    m_dotTypes{
+        m_goomRand,
+        {
+            {SmallImageBitmaps::ImageNames::SPHERE, 50},
+            {SmallImageBitmaps::ImageNames::CIRCLE, 20},
+            {SmallImageBitmaps::ImageNames::RED_FLOWER, 5},
+            {SmallImageBitmaps::ImageNames::ORANGE_FLOWER, 5},
+            {SmallImageBitmaps::ImageNames::WHITE_FLOWER, 5},
+        }
+    }
+// clang-format on
 {
+}
+
+inline auto GoomDotsFx::GoomDotsFxImpl::ChangeDotColorsEvent() -> bool
+{
+  return m_goomRand.ProbabilityOfMInN(1, 3);
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::Start()
@@ -191,10 +206,10 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
     colorMapsManager.ChangeAllColorMapsNow();
   }
 
-  m_middleColor = RandomColorMaps::GetRandomColor(
+  m_middleColor = RandomColorMaps{m_goomRand}.GetRandomColor(
       *m_colorMaps[0]->GetRandomColorMapPtr(ColorMapGroup::MISC, RandomColorMaps::ALL), 0.1F, 1.0F);
 
-  m_useSingleBufferOnly = ProbabilityOfMInN(0, 2);
+  m_useSingleBufferOnly = m_goomRand.ProbabilityOfMInN(0, 2);
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
@@ -225,7 +240,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
   {
     ChangeColors();
-    radius = GetRandInRange(radius, (MAX_DOT_SIZE / 2) + 1);
+    radius = m_goomRand.GetRandInRange(radius, (MAX_DOT_SIZE / 2) + 1);
     SetNextCurrentBitmapName();
   }
 
@@ -320,11 +335,11 @@ void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
     {
       m_numFlowersInRow = 0;
     }
-    if (ProbabilityOfMInN(1, 3))
+    if (m_goomRand.ProbabilityOfMInN(1, 3))
     {
       m_currentBitmapName = SmallImageBitmaps::ImageNames::RED_FLOWER;
     }
-    else if (ProbabilityOfMInN(1, 3))
+    else if (m_goomRand.ProbabilityOfMInN(1, 3))
     {
       m_currentBitmapName = SmallImageBitmaps::ImageNames::ORANGE_FLOWER;
     }
@@ -333,21 +348,14 @@ void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
       m_currentBitmapName = SmallImageBitmaps::ImageNames::WHITE_FLOWER;
     }
   }
-  else if (ProbabilityOfMInN(1, 50))
+  else if (m_goomRand.ProbabilityOfMInN(1, 50))
   {
     m_numFlowersInRow = 1;
     SetNextCurrentBitmapName();
   }
   else
   {
-    static const Weights<SmallImageBitmaps::ImageNames> s_dotTypes{{
-        {SmallImageBitmaps::ImageNames::SPHERE, 50},
-        {SmallImageBitmaps::ImageNames::CIRCLE, 20},
-        {SmallImageBitmaps::ImageNames::RED_FLOWER, 5},
-        {SmallImageBitmaps::ImageNames::ORANGE_FLOWER, 5},
-        {SmallImageBitmaps::ImageNames::WHITE_FLOWER, 5},
-    }};
-    m_currentBitmapName = s_dotTypes.GetRandomWeighted();
+    m_currentBitmapName = m_dotTypes.GetRandomWeighted();
   }
 }
 
