@@ -81,16 +81,16 @@ auto GoomStateInfo::GetStateInfoArray() -> StateInfoArray
       },
   };
   statesArray[ToUType(GoomStates::DOTS_IMAGE_STARS)] = {
-      /*.name = */ "Dots, Image, Stars",
-      /*.drawablesInfo */
+  /*.name = */ "Dots, Image, Stars",
+ /*.drawablesInfo */
       {
-          {/*.fx = */ GoomDrawables::DOTS,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.7F, /*.allowOverexposed = */ true}},
-          {/*.fx = */ GoomDrawables::IMAGE,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.3F, /*.allowOverexposed = */ true}},
-          {/*.fx = */ GoomDrawables::STARS,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.3F, /*.allowOverexposed = */ true}},
-      },
+       {/*.fx = */ GoomDrawables::DOTS,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.7F, /*.allowOverexposed = */ true}},
+       {/*.fx = */ GoomDrawables::IMAGE,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.2F, /*.allowOverexposed = */ true}},
+       {/*.fx = */ GoomDrawables::STARS,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.3F, /*.allowOverexposed = */ true}},
+       },
   };
   statesArray[ToUType(GoomStates::DOTS_LINES)] = {
       /*.name = */ "Dots and Lines",
@@ -204,14 +204,14 @@ auto GoomStateInfo::GetStateInfoArray() -> StateInfoArray
       },
   };
   statesArray[ToUType(GoomStates::IFS_IMAGE)] = {
-      /*.name = */ "Ifs and Image",
-      /*.drawablesInfo */
+  /*.name = */ "Ifs and Image",
+ /*.drawablesInfo */
       {
-          {/*.fx = */ GoomDrawables::IFS,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.7F, /*.allowOverexposed = */ true}},
-          {/*.fx = */ GoomDrawables::IMAGE,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
-      },
+       {/*.fx = */ GoomDrawables::IFS,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.7F, /*.allowOverexposed = */ true}},
+       {/*.fx = */ GoomDrawables::IMAGE,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.3F, /*.allowOverexposed = */ true}},
+       },
   };
   statesArray[ToUType(GoomStates::IFS_LINES_STARS)] = {
       /*.name = */ "IFS, Lines, Stars",
@@ -306,30 +306,30 @@ auto GoomStateInfo::GetStateInfoArray() -> StateInfoArray
       },
   };
   statesArray[ToUType(GoomStates::IMAGE_LINES_STARS_TENTACLES)] = {
-      /*.name = */ "Im, L, S, Te",
-      /*.drawablesInfo */
+  /*.name = */ "Im, L, S, Te",
+ /*.drawablesInfo */
       {
-          {/*.fx = */ GoomDrawables::IMAGE,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.3F, /*.allowOverexposed = */ true}},
-          {/*.fx = */ GoomDrawables::LINES,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
-          {/*.fx = */ GoomDrawables::STARS,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.4F, /*.allowOverexposed = */ true}},
-          {/*.fx = */ GoomDrawables::TENTACLES,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
-          {/*.fx = */ GoomDrawables::FAR_SCOPE,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
-      },
+       {/*.fx = */ GoomDrawables::IMAGE,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.2F, /*.allowOverexposed = */ true}},
+       {/*.fx = */ GoomDrawables::LINES,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
+       {/*.fx = */ GoomDrawables::STARS,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.4F, /*.allowOverexposed = */ true}},
+       {/*.fx = */ GoomDrawables::TENTACLES,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
+       {/*.fx = */ GoomDrawables::FAR_SCOPE,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
+       },
   };
   statesArray[ToUType(GoomStates::IMAGE_STARS)] = {
-      /*.name = */ "Image and Stars",
-      /*.drawablesInfo */
+  /*.name = */ "Image and Stars",
+ /*.drawablesInfo */
       {
-          {/*.fx = */ GoomDrawables::IMAGE,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.7F, /*.allowOverexposed = */ true}},
-          {/*.fx = */ GoomDrawables::STARS,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.3F, /*.allowOverexposed = */ true}},
-      },
+       {/*.fx = */ GoomDrawables::IMAGE,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
+       {/*.fx = */ GoomDrawables::STARS,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
+       },
   };
   statesArray[ToUType(GoomStates::IMAGE_TENTACLES)] = {
       /*.name = */ "Image and Tentacles",
@@ -342,14 +342,14 @@ auto GoomStateInfo::GetStateInfoArray() -> StateInfoArray
       },
   };
   statesArray[ToUType(GoomStates::IMAGE_TUBES)] = {
-      /*.name = */ "Image and Tubes",
-      /*.drawablesInfo */
+  /*.name = */ "Image and Tubes",
+ /*.drawablesInfo */
       {
-          {/*.fx = */ GoomDrawables::IMAGE,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
-          {/*.fx = */ GoomDrawables::TUBE,
-           /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
-      },
+       {/*.fx = */ GoomDrawables::IMAGE,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.2F, /*.allowOverexposed = */ true}},
+       {/*.fx = */ GoomDrawables::TUBE,
+       /*.buffSettings = */ {/*.buffIntensity = */ 0.5F, /*.allowOverexposed = */ true}},
+       },
   };
 
   statesArray[ToUType(GoomStates::LINES_ONLY)] = {
