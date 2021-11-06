@@ -38,6 +38,7 @@ public:
   explicit ShaderFxImpl(const FxHelpers& fxHelpers) noexcept;
 
   void Start();
+  void StartExposureControl();
   void ApplyMultiple();
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
@@ -49,7 +50,7 @@ private:
 
   const IGoomRand::NumberRange<int32_t> m_exposureSampleWidthRange;
   const IGoomRand::NumberRange<int32_t> m_exposureSampleHeightRange;
-  static constexpr uint32_t NUM_UPDATES_TO_WAIT_BEFORE_STARTING_EXPOSURE_CHECKS = 250;
+  bool m_doExposureControl = false;
   static constexpr float DEFAULT_BRIGHTNESS = 1.0F;
   static constexpr float DEFAULT_EXPOSURE = 1.0F;
   void UpdateExposure();
@@ -72,7 +73,8 @@ private:
   float m_contrastMinChannelValue = 0.0F;
   void UpdateHighContrast();
 
-  GoomShaderEffects m_goomShaderEffects{DEFAULT_EXPOSURE, DEFAULT_BRIGHTNESS, DEFAULT_CONTRAST};
+  GoomShaderEffects m_goomShaderEffects{1.5F * DEFAULT_EXPOSURE, DEFAULT_BRIGHTNESS,
+                                        DEFAULT_CONTRAST};
   [[nodiscard]] auto GetAverageLuminanceOfSpotSamples() const -> float;
 };
 
@@ -94,6 +96,11 @@ void ShaderFx::Finish()
 auto ShaderFx::GetFxName() const -> std::string
 {
   return "shader";
+}
+
+void ShaderFx::StartExposureControl()
+{
+  m_fxImpl->StartExposureControl();
 }
 
 void ShaderFx::ApplyMultiple()
@@ -122,6 +129,12 @@ ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelpers& fxHelpers) noexcept
 inline void ShaderFx::ShaderFxImpl::Start()
 {
   m_updateNum = 0;
+  m_doExposureControl = false;
+}
+
+inline void ShaderFx::ShaderFxImpl::StartExposureControl()
+{
+  m_doExposureControl = true;
 }
 
 inline void ShaderFx::ShaderFxImpl::ApplyMultiple()
@@ -191,7 +204,7 @@ inline void ShaderFx::ShaderFxImpl::UpdateHighContrast()
 
 inline void ShaderFx::ShaderFxImpl::UpdateExposure()
 {
-  if (m_updateNum < NUM_UPDATES_TO_WAIT_BEFORE_STARTING_EXPOSURE_CHECKS)
+  if (!m_doExposureControl)
   {
     return;
   }

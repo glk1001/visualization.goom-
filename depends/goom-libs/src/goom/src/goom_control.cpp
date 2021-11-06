@@ -132,6 +132,7 @@ private:
   void InitTitleDisplay(const std::string& songTitle);
   void DisplayTitle(const std::string& songTitle, const std::string& message, float fps);
   void DisplayCurrentTitle();
+  void CheckFinishedTitle();
   void UpdateMessages(const std::string& messages);
   [[nodiscard]] auto GetMessagesFontFile() const -> std::string;
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
@@ -300,6 +301,17 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
   DisplayStateText();
 #endif
   DisplayTitle(songTitle, message, fps);
+
+  CheckFinishedTitle();
+}
+
+void GoomControl::GoomControlImpl::CheckFinishedTitle()
+{
+  if (m_currentSongTitle.empty() || m_goomTitleDisplayer.IsFinished() ||
+      (m_showTitle == ShowTitleType::ALWAYS))
+  {
+    m_visualFx.StartShaderExposureControl();
+  }
 }
 
 inline void GoomControl::GoomControlImpl::UseMusicToChangeSettings()

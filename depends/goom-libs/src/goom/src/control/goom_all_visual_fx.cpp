@@ -119,6 +119,11 @@ void GoomAllVisualFx::ChangeState()
   m_allStandardVisualFx->ResumeFx();
 }
 
+void GoomAllVisualFx::StartShaderExposureControl()
+{
+  m_allStandardVisualFx->StartShaderExposureControl();
+}
+
 auto GoomAllVisualFx::GetLastShaderEffects() const -> const GoomShaderEffects&
 {
   return m_allStandardVisualFx->GetLastShaderEffects();

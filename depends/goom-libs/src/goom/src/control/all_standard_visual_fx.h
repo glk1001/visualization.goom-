@@ -54,6 +54,7 @@ public:
   using ResetCurrentDrawBuffSettingsFunc = std::function<void(GoomDrawables fx)>;
   void SetResetDrawBuffSettingsFunc(const ResetCurrentDrawBuffSettingsFunc& func);
 
+  void StartShaderExposureControl();
   void SetSingleBufferDots(bool value);
 
   void Start();

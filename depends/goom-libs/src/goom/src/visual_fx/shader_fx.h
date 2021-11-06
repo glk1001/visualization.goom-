@@ -23,6 +23,8 @@ public:
 
   void Start() override;
 
+  void StartExposureControl();
+
   void ApplyMultiple();
 
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;

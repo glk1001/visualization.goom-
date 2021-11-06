@@ -58,6 +58,7 @@ public:
   void SetNextState();
   [[nodiscard]] auto GetCurrentStateName() const -> std::string;
 
+  void StartShaderExposureControl();
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
   void SetSingleBufferDots(bool value);
