@@ -1036,15 +1036,15 @@ void ShapeColorizer::UpdateAllTValues()
 
 auto ShapeColorizer::GetBrightness(const Shape& shape, const V2dInt& shapeCentrePos) const -> float
 {
-  constexpr float MIN_BRIGHTNESS = 0.35F;
+  constexpr float MIN_BRIGHTNESS = 0.5F;
   const float brightness =
       std::min(3.0F, m_brightnessFactor * m_brightnessAttenuation.GetPositionBrightness(
                                               shapeCentrePos, MIN_BRIGHTNESS));
 
-  constexpr float SMALL_T = 0.25F;
-  if (shape.path->GetT() < SMALL_T)
+  constexpr float SMALL_T = 0.15F;
+  if (std::fabs(shape.path->GetT() - 0.5F) < SMALL_T)
   {
-    constexpr float SMALL_T_BRIGHTNESS = 0.50F;
+    constexpr float SMALL_T_BRIGHTNESS = 0.250F;
     return SMALL_T_BRIGHTNESS * brightness;
   }
   return brightness;
