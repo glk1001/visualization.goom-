@@ -1,5 +1,6 @@
 #include "shader_fx.h"
 
+#include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
 #include "goom_plugin_info.h"
@@ -26,6 +27,7 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
+using COLOR::GetLuma;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
 using UTILS::Logging;
@@ -200,11 +202,6 @@ inline void ShaderFx::ShaderFxImpl::UpdateExposure()
   constexpr float EXPOSURE_LERP_FACTOR = 0.1F;
   m_goomShaderEffects.exposure =
       stdnew::lerp(m_goomShaderEffects.exposure, targetExposure, EXPOSURE_LERP_FACTOR);
-}
-
-[[nodiscard]] inline auto GetLuma(const Pixel& color) -> float
-{
-  return (0.2125F * color.RFlt()) + (0.7154F * color.GFlt()) + (0.0721F * color.BFlt());
 }
 
 auto ShaderFx::ShaderFxImpl::GetAverageLuminanceOfSpotSamples() const -> float

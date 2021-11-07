@@ -44,6 +44,7 @@ template<typename T>
 [[nodiscard]] auto GetRgbColorChannelLerp(int32_t ch1, int32_t ch2, int32_t intT) -> uint32_t;
 [[nodiscard]] auto GetRgbColorLerp(const Pixel& colA, const Pixel& colB, float t) -> Pixel;
 
+[[nodiscard]] auto GetLuma(const Pixel& color) -> float;
 constexpr float INCREASED_CHROMA_FACTOR = 2.0F;
 constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
 [[nodiscard]] auto GetAlteredChroma(float lchYFactor, const Pixel& color) -> Pixel;
@@ -257,6 +258,11 @@ inline auto GetRgbColorLerp(const Pixel& colA, const Pixel& colB, float t) -> Pi
 //     Y = (R+R+B+G+G+G)/6
 //
 //     Y = (R+R+R+B+G+G+G+G)>>3
+
+inline auto GetLuma(const Pixel& color) -> float
+{
+  return (0.2125F * color.RFlt()) + (0.7154F * color.GFlt()) + (0.0721F * color.BFlt());
+}
 
 inline auto GetIncreasedChroma(const Pixel& color) -> Pixel
 {
