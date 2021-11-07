@@ -17,7 +17,7 @@ class FxHelpers;
 class ShaderFx : public IVisualFx
 {
 public:
-  ShaderFx(const FxHelpers& fxHelpers) noexcept;
+  explicit ShaderFx(const FxHelpers& fxHelpers) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

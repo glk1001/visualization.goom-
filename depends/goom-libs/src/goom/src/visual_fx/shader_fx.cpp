@@ -48,28 +48,25 @@ private:
   IGoomRand& m_goomRand;
   uint64_t m_updateNum{};
 
+  static constexpr float DEFAULT_EXPOSURE = 1.0F;
+  static constexpr float DEFAULT_BRIGHTNESS = 1.0F;
+  static constexpr float DEFAULT_CONTRAST = 1.0F;
+
   const IGoomRand::NumberRange<int32_t> m_exposureSampleWidthRange;
   const IGoomRand::NumberRange<int32_t> m_exposureSampleHeightRange;
   bool m_doExposureControl = false;
-  static constexpr float DEFAULT_BRIGHTNESS = 1.0F;
-  static constexpr float DEFAULT_EXPOSURE = 1.0F;
   void UpdateExposure();
-
-  static constexpr uint32_t NUM_HIGH_BRIGHTNESS_STEPS = 100;
-  TValue m_highBrightnessT{TValue::StepType::SINGLE_CYCLE, NUM_HIGH_BRIGHTNESS_STEPS, 1.0F};
-  void UpdateHighBrightness();
 
   static constexpr uint32_t NUM_HIGH_CONTRAST_ON_STEPS = 250;
   static constexpr uint32_t HIGH_CONTRAST_ON_DELAY_TIME = 100;
-  static constexpr uint32_t TOTAL_HIGH_CONTRAST_ON_STEPS =
+  static constexpr uint32_t HIGH_CONTRAST_ON_TIME =
       (2 * NUM_HIGH_CONTRAST_ON_STEPS) + HIGH_CONTRAST_ON_DELAY_TIME;
   TValue m_highContrastT{TValue::StepType::CONTINUOUS_REVERSIBLE,
                          NUM_HIGH_CONTRAST_ON_STEPS,
                          {{1.0F, HIGH_CONTRAST_ON_DELAY_TIME}}};
-  Timer m_highContrastOnTimer{TOTAL_HIGH_CONTRAST_ON_STEPS, true};
+  Timer m_highContrastOnTimer{HIGH_CONTRAST_ON_TIME, true};
   static constexpr uint32_t HIGH_CONTRAST_OFF_TIME = 300;
   Timer m_highContrastOffTimer{HIGH_CONTRAST_OFF_TIME, false};
-  static constexpr float DEFAULT_CONTRAST = 1.0F;
   float m_contrastMinChannelValue = 0.0F;
   void UpdateHighContrast();
 
@@ -141,22 +138,8 @@ inline void ShaderFx::ShaderFxImpl::ApplyMultiple()
 {
   ++m_updateNum;
 
-  UpdateHighBrightness();
   UpdateHighContrast();
   UpdateExposure();
-}
-
-inline void ShaderFx::ShaderFxImpl::UpdateHighBrightness()
-{
-  m_highBrightnessT.Increment();
-
-  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastBigGoom()) && m_goomRand.ProbabilityOf(0.0F))
-  {
-    m_highBrightnessT.Reset();
-  }
-  constexpr float MIX_VAL = 0.3F;
-  m_goomShaderEffects.brightness = stdnew::lerp(
-      m_goomShaderEffects.brightness, 1.0F + ((1.0F - m_highBrightnessT()) * 4.0F), MIX_VAL);
 }
 
 inline void ShaderFx::ShaderFxImpl::UpdateHighContrast()
@@ -196,7 +179,7 @@ inline void ShaderFx::ShaderFxImpl::UpdateHighContrast()
     m_highContrastT.Reset();
     m_highContrastOnTimer.ResetToZero();
     constexpr float CONTRAST_MIN_CHAN = -0.1F;
-    constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.9F;
+    constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.8F;
     m_contrastMinChannelValue =
         m_goomRand.ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
   }
@@ -213,15 +196,6 @@ inline void ShaderFx::ShaderFxImpl::UpdateExposure()
   constexpr float MIN_EXPOSURE = 0.01F;
   constexpr float MAX_EXPOSURE = 100.0F;
   const float targetExposure = stdnew::clamp(1.0F / avLuminance, MIN_EXPOSURE, MAX_EXPOSURE);
-
-  /**
-  constexpr float TOO_BRIGHT = 0.95F;
-  if (avLuminance > TOO_BRIGHT)
-  {
-    // Stop any high brightness.
-    m_highBrightnessT.Reset(1.0F);
-  }
-   ***/
 
   constexpr float EXPOSURE_LERP_FACTOR = 0.1F;
   m_goomShaderEffects.exposure =
