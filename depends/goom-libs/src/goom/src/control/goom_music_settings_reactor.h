@@ -93,11 +93,6 @@ private:
 
   void UpdateTimers();
 
-  static constexpr uint32_t NUM_ALLOW_OVEREXPOSED_ON_UPDATES = 500;
-  static constexpr uint32_t NUM_ALLOW_OVEREXPOSED_OFF_UPDATES = 100;
-  UTILS::Timer m_allowOverexposedTimer{NUM_ALLOW_OVEREXPOSED_ON_UPDATES};
-  void ChangeAllowOverexposed();
-
   static constexpr uint32_t NUM_BLOCKY_WAVY_UPDATES = 100;
   UTILS::Timer m_blockyWavyTimer{NUM_BLOCKY_WAVY_UPDATES};
   void ChangeBlockyWavy();
@@ -131,7 +126,6 @@ inline void GoomMusicSettingsReactor::UpdateTimers()
 {
   m_blockyWavyTimer.Increment();
   m_noiseTimer.Increment();
-  m_allowOverexposedTimer.Increment();
 }
 
 inline auto GoomMusicSettingsReactor::CanDisplayLines() const -> bool
@@ -185,21 +179,6 @@ inline void GoomMusicSettingsReactor::ChangeFilterMode()
 inline void GoomMusicSettingsReactor::ChangeMilieu()
 {
   m_filterSettingsService.ChangeMilieu();
-}
-
-inline void GoomMusicSettingsReactor::ChangeAllowOverexposed()
-{
-  if (!m_allowOverexposedTimer.Finished())
-  {
-    return;
-  }
-
-  const bool allowOverexposed =
-      m_goomEvents.Happens(GoomEvent::CHANGE_ZOOM_FILTER_ALLOW_OVEREXPOSED_TO_ON);
-
-  m_visualFx.SetZoomFilterAllowOverexposed(allowOverexposed);
-  m_allowOverexposedTimer.SetTimeLimit(allowOverexposed ? NUM_ALLOW_OVEREXPOSED_ON_UPDATES
-                                                        : NUM_ALLOW_OVEREXPOSED_OFF_UPDATES);
 }
 
 inline void GoomMusicSettingsReactor::ChangeBlockyWavy()
@@ -301,7 +280,6 @@ inline void GoomMusicSettingsReactor::BigNormalUpdate()
   ChangeMilieu();
   ChangeNoise();
   ChangeBlockyWavy();
-  ChangeAllowOverexposed();
   ChangeVitesse();
   ChangeTranBufferSwitchValues();
 

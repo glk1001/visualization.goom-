@@ -36,7 +36,6 @@ GoomMusicSettingsReactor::GoomMusicSettingsReactor(
 void GoomMusicSettingsReactor::ChangeZoomEffects()
 {
   ChangeBlockyWavy();
-  ChangeAllowOverexposed();
 
   if (!m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
   {

@@ -36,16 +36,10 @@ TEST_CASE("Colors are added", "[color-add]")
   const Pixel c1{{.r = 100, .g = 50, .b = 20}};
   const Pixel c2{{.r = 120, .g = 250, .b = 70}};
 #endif
-  const Pixel c3 = GetColorAdd(c1, c2, true);
-
+  const Pixel c3 = GetColorAdd(c1, c2);
   REQUIRE(static_cast<uint32_t>(c3.R()) == 220);
   REQUIRE(static_cast<uint32_t>(c3.G()) == 300);
   REQUIRE(static_cast<uint32_t>(c3.B()) == 90);
-
-  const Pixel c4 = GetColorAdd(c1, c2, false);
-  REQUIRE(static_cast<uint32_t>(c4.R()) == 220 );
-  REQUIRE(static_cast<uint32_t>(c4.G()) == 300);
-  REQUIRE(static_cast<uint32_t>(c4.B()) == 90);
 }
 
 TEST_CASE("Color channels are brightened", "[color-channel-bright]")
@@ -64,17 +58,17 @@ TEST_CASE("Colors are brightened", "[color-bright]")
   const Pixel c{{.r = 100, .g = 50, .b = 20}};
 #endif
 
-  Pixel cb = GetBrighterColor(1.0F, c, false);
+  Pixel cb = GetBrighterColor(1.0F, c);
   REQUIRE(cb.R() == 100);
   REQUIRE(cb.G() == 50);
   REQUIRE(cb.B() == 20);
 
-  cb = GetBrighterColor(0.5F, c, false);
+  cb = GetBrighterColor(0.5F, c);
   REQUIRE(cb.R() == 50);
   REQUIRE(cb.G() == 25);
   REQUIRE(cb.B() == 10);
 
-  cb = GetBrighterColor(0.01F, c, false);
+  cb = GetBrighterColor(0.01F, c);
   REQUIRE(cb.R() == 1);
   REQUIRE(cb.G() == 0);
   REQUIRE(cb.B() == 0);

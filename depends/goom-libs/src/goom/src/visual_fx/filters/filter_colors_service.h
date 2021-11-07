@@ -123,11 +123,6 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
   uint32_t newG = multG / MAX_SUM_COEFFS;
   uint32_t newB = multB / MAX_SUM_COEFFS;
 
-  if (!m_buffSettings.allowOverexposed)
-  {
-    return GetPixelScaledByMax(newR, newG, newB, MAX_ALPHA);
-  }
-
   return Pixel{newR, newG, newB, MAX_ALPHA};
 }
 

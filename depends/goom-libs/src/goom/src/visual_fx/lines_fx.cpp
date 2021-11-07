@@ -612,16 +612,14 @@ void LinesFx::LinesImpl::DrawDots(const V2dInt& pt, const std::vector<Pixel>& co
   if (dotSize > 1)
   {
     const auto getModColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                                 const Pixel& b) -> Pixel {
-      return GetColorMultiply(b, colors[0], true);
-    };
+                                 const Pixel& b) -> Pixel
+    { return GetColorMultiply(b, colors[0]); };
     const auto getLineColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                                  const Pixel& b) -> Pixel {
-      return GetColorMultiply(b, colors[1], true);
-    };
+                                  const Pixel& b) -> Pixel
+    { return GetColorMultiply(b, colors[1]); };
     const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getModColor, getLineColor};
     const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
-    m_draw.Bitmap(pt.x, pt.y, bitmap, getColors, true);
+    m_draw.Bitmap(pt.x, pt.y, bitmap, getColors);
   }
 }
 
@@ -723,7 +721,7 @@ inline auto LinesFx::LinesImpl::GetGammaCorrection(const float brightness, const
   // if constexpr (GAMMA == 1.0F)
   if (1.0F == GAMMA)
   {
-    return GetBrighterColor(brightness, color, true);
+    return GetBrighterColor(brightness, color);
   }
   return m_gammaCorrect.GetCorrection(brightness, color);
 }

@@ -45,11 +45,6 @@ auto IfsPoint::GetSimiCurrentPointBitmap() const -> const UTILS::ImageBitmap*
   return m_simi->currentPointBitmap;
 }
 
-auto IfsPoint::GetSimiOverExposeBitmaps() const -> bool
-{
-  return m_simi->overExposeBitmaps;
-}
-
 Fractal::Fractal(const uint32_t screenWidth,
                  const uint32_t screenHeight,
                  IGoomRand& goomRand,
@@ -327,7 +322,6 @@ void Fractal::RandomSimis(const size_t start, const size_t num)
       constexpr uint32_t MIN_RES = 3;
       constexpr uint32_t MAX_RES = 5;
       const uint32_t res = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
-      (*m_components)[i].overExposeBitmaps = m_goomRand.ProbabilityOfMInN(10, 10);
       if (m_goomRand.ProbabilityOfMInN(6, 10))
       {
         (*m_components)[i].currentPointBitmap =

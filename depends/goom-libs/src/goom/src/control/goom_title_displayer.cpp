@@ -265,7 +265,7 @@ inline auto GoomTitleDisplayer::GetTextGammaCorrection(const float brightness,
   // if constexpr (TEXT_GAMMA == 1.0F)
   if (1.0F == TEXT_GAMMA)
   {
-    return GetBrighterColor(brightness, color, true);
+    return GetBrighterColor(brightness, color);
   }
   return m_textGammaCorrect.GetCorrection(brightness, color);
 }

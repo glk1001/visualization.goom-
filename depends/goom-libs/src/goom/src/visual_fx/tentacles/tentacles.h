@@ -180,9 +180,6 @@ public:
   [[nodiscard]] auto GetReverseColorMix() const -> bool { return m_reverseColorMix; }
   void SetReverseColorMix(const bool val) { m_reverseColorMix = val; }
 
-  [[nodiscard]] auto GetAllowOverexposed() const -> bool { return m_allowOverexposed; }
-  void SetAllowOverexposed(const bool val) { m_allowOverexposed = val; }
-
   [[nodiscard]] auto GetHead() const -> const V3dFlt& { return m_head; }
   void SetHead(const V3dFlt& val) { m_head = val; }
 
@@ -200,7 +197,6 @@ private:
   V3dFlt m_head{};
   size_t m_numHeadNodes{};
   bool m_reverseColorMix = false;
-  bool m_allowOverexposed = true;
   static constexpr float GAMMA = 1.0F / 1.5F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
@@ -215,7 +211,7 @@ private:
   class Iter
   {
   public:
-    Iter(Tentacles3D* const tents, const size_t p) : m_pos(p), m_tentacles(tents) {}
+    Iter(Tentacles3D* const tents, const size_t pos) : m_pos(pos), m_tentacles(tents) {}
     auto operator!=(const Iter& other) const -> bool { return m_pos != other.m_pos; }
     auto operator*() const -> Tentacle3D&;
     auto operator++() -> const Iter&
@@ -244,7 +240,6 @@ public:
   [[nodiscard]] auto operator[](const size_t i) -> Tentacle3D& { return m_tentacles.at(i); }
 
   void ColorMapsChanged();
-  void SetAllowOverexposed(bool val);
 
 private:
   UTILS::IGoomRand& m_goomRand;

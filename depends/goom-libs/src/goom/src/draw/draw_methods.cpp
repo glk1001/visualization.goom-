@@ -25,8 +25,8 @@ using COLOR::GetBrighterColor;
 
 DrawMethods::DrawMethods(const uint32_t screenWidth,
                          const uint32_t screenHeight,
-                         const DrawPixelFunc& f)
-  : m_screenWidth{screenWidth}, m_screenHeight{screenHeight}, m_drawPixelFunc{f}
+                         const DrawPixelFunc& func)
+  : m_screenWidth{screenWidth}, m_screenHeight{screenHeight}, m_drawPixelFunc{func}
 {
 }
 
@@ -190,7 +190,7 @@ void DrawMethods::DrawWuLine(
     {
       for (size_t i = 0; i < colors.size(); ++i)
       {
-        tempColors[i] = GetBrighterColor(brightness, colors[i], m_allowOverexposed);
+        tempColors[i] = GetBrighterColor(brightness, colors[i]);
       }
       DrawPixels(x, y, tempColors);
     }
@@ -337,7 +337,7 @@ void DrawMethods::DrawLineOverlap(int x0,
     {
       for (size_t i = 0; i < colors.size(); ++i)
       {
-        tempColors[i] = GetBrighterColor(brightness, colors[i], m_allowOverexposed);
+        tempColors[i] = GetBrighterColor(brightness, colors[i]);
       }
       DrawPixels(x, y, tempColors);
     }

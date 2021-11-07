@@ -71,8 +71,6 @@ public:
   void DoToggleRotation();
   void DoBlockyWavyOff();
   void DoBlockyWavyOn();
-  void DoZoomFilterAllowOverexposedOff();
-  void DoZoomFilterAllowOverexposedOn();
 
 private:
   std::string m_songTitle{};

@@ -72,7 +72,6 @@ public:
   void ApplyCurrentStateToSingleBuffer();
   void ApplyCurrentStateToMultipleBuffers();
 
-  void SetZoomFilterAllowOverexposed(bool allowOverexposed);
   void UpdateFilterSettings(const FILTERS::ZoomFilterSettings& filterSettings,
                             bool updateFilterEffects);
   void ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
@@ -152,12 +151,6 @@ inline auto GoomAllVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawabl
 inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
 {
   m_zoomFilter_fx->ZoomFilterFastRgb(srceBuff, destBuff);
-}
-
-inline void GoomAllVisualFx::SetZoomFilterAllowOverexposed(const bool allowOverexposed)
-{
-  m_zoomFilter_fx->SetBuffSettings({/*.buffIntensity = */ FXBuffSettings::INITIAL_BUFF_INTENSITY,
-                                    /*.allowOverexposed = */ allowOverexposed});
 }
 
 inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string

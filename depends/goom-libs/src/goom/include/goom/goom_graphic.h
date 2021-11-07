@@ -158,7 +158,6 @@ struct FXBuffSettings
 {
   static constexpr float INITIAL_BUFF_INTENSITY = 0.5F;
   float buffIntensity = INITIAL_BUFF_INTENSITY;
-  bool allowOverexposed = true;
 };
 
 class PixelBuffer

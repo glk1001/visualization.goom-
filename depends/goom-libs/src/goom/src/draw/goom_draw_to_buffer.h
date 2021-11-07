@@ -33,8 +33,7 @@ private:
                          int32_t x,
                          int32_t y,
                          const std::vector<Pixel>& colors,
-                         uint32_t intBuffIntensity,
-                         bool allowOverexposed);
+                         uint32_t intBuffIntensity);
 };
 
 inline void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)

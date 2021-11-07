@@ -104,7 +104,6 @@ constexpr uint32_t MIN_STAY_AWAY_FROM_CENTRE_TIME = 100;
 constexpr uint32_t MAX_STAY_AWAY_FROM_CENTRE_TIME = 100;
 
 constexpr float PROB_RESET_COLOR_MAPS = 1.0F / 3.0F;
-constexpr float PROB_ALLOW_OVEREXPOSED = 1.0F;
 constexpr float PROB_DECREASE_SPEED = 1.0F / 5.0F;
 constexpr float PROB_INCREASE_SPEED = 1.0F / 2.0F;
 constexpr float PROB_RANDOM_INCREASE_SPEED = 1.0F / 20.0F;
@@ -141,7 +140,6 @@ private:
   uint64_t m_updateNum = 0;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
-  bool m_allowOverexposed = true;
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath;
   uint32_t m_numCapturedPrevShapesGroups = 0;
@@ -456,8 +454,7 @@ inline void TubeFx::TubeFxImpl::DrawImageToOne(const int x,
                                                const uint32_t size,
                                                const std::vector<Pixel>& colors)
 {
-  m_draw.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors),
-                m_allowOverexposed);
+  m_draw.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors));
 }
 
 inline void TubeFx::TubeFxImpl::DrawImageToMany(const int x,
@@ -466,10 +463,8 @@ inline void TubeFx::TubeFxImpl::DrawImageToMany(const int x,
                                                 const uint32_t size,
                                                 const std::vector<Pixel>& colors)
 {
-  //m_drawToContainer.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors),
-  //                         m_allowOverexposed);
-  m_drawToMany.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors),
-                      m_allowOverexposed);
+  //m_drawToContainer.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors));
+  m_drawToMany.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors));
 }
 
 inline auto TubeFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& colors)
@@ -540,8 +535,6 @@ void TubeFx::TubeFxImpl::DoUpdates()
 
 void TubeFx::TubeFxImpl::UpdateColorMaps()
 {
-  m_allowOverexposed = m_goomRand.ProbabilityOf(PROB_ALLOW_OVEREXPOSED);
-
   if (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() >= 1)
   {
     return;
@@ -664,7 +657,7 @@ void TubeFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
     const Pixel avColor = GetAverageColor(colorsList);
     constexpr float BRIGHTNESS_FACTOR = 0.1F;
     const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
-    const Pixel newColor0 = GetBrighterColor(brightness, avColor, m_allowOverexposed);
+    const Pixel newColor0 = GetBrighterColor(brightness, avColor);
 
     // IMPORTANT - Best results come from putting color in second buffer.
     m_draw.DrawPixels(newX, newY, {Pixel::BLACK, newColor0});

@@ -370,7 +370,6 @@ inline void GoomControl::GoomControlImpl::UpdateFilterSettings()
 inline void GoomControl::GoomControlImpl::ResetDrawBuffSettings(const FXBuffSettings& settings)
 {
   m_multiBufferDraw.SetBuffIntensity(settings.buffIntensity);
-  m_multiBufferDraw.SetAllowOverexposed(settings.allowOverexposed);
 }
 
 inline void GoomControl::GoomControlImpl::UpdateBuffers()

@@ -100,7 +100,6 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
   GoomDrawToContainer draw{WIDTH, HEIGHT};
 
   draw.SetBuffIntensity(1.0F);
-  draw.SetAllowOverexposed(true);
 
   constexpr size_t NUM_CHANGED_COORDS = 5;
   std::vector<PixelInfo> pixelsNewToOld = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
@@ -133,7 +132,6 @@ TEST_CASE("Test DrawMovingText to Container with Duplicates", "[GoomDrawToContai
   GoomDrawToContainer draw{WIDTH, HEIGHT};
 
   draw.SetBuffIntensity(1.0F);
-  draw.SetAllowOverexposed(true);
 
   constexpr size_t NUM_CHANGED_COORDS = 5;
   std::vector<PixelInfo> pixelsNewToOld = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
@@ -163,7 +161,6 @@ TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
   GoomDrawToContainer draw{WIDTH, HEIGHT};
 
   draw.SetBuffIntensity(1.0F);
-  draw.SetAllowOverexposed(true);
 
   constexpr size_t NUM_CHANGED_COORDS = 5;
   std::vector<PixelInfo> pixelsNewToOld = FillDrawContainer(&draw, NUM_CHANGED_COORDS);

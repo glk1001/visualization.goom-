@@ -520,7 +520,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
     const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                               [[maybe_unused]] const Pixel& b) { return mixedColor; };
     const ImageBitmap& bitmap{*point.GetSimiCurrentPointBitmap()};
-    m_draw.Bitmap(pX, pY, bitmap, {getColor, getColor}, point.GetSimiOverExposeBitmaps());
+    m_draw.Bitmap(pX, pY, bitmap, {getColor, getColor});
   }
 }
 

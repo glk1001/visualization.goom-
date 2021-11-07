@@ -80,8 +80,6 @@ void GoomControlStats::Reset()
   m_numToggleRotation = 0;
   m_numBlockyWavyOn = 0;
   m_numBlockyWavyOff = 0;
-  m_numZoomFilterAllowOverexposedOff = 0;
-  m_numZoomFilterAllowOverexposedOn = 0;
 }
 
 void GoomControlStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
@@ -168,8 +166,6 @@ void GoomControlStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
   logVal(MODULE, "numToggleRotation", m_numToggleRotation);
   logVal(MODULE, "numBlockyWavyOff", m_numBlockyWavyOff);
   logVal(MODULE, "numBlockyWavyOn", m_numBlockyWavyOn);
-  logVal(MODULE, "numZoomFilterAllowOverexposedOff", m_numZoomFilterAllowOverexposedOff);
-  logVal(MODULE, "numZoomFilterAllowOverexposedOn", m_numZoomFilterAllowOverexposedOn);
 
   logVal(MODULE, "numDoIFS", m_numDoIFS);
   logVal(MODULE, "numIfsRenew", m_numIfsRenew);
@@ -440,16 +436,6 @@ void GoomControlStats::DoBlockyWavyOff()
 void GoomControlStats::DoBlockyWavyOn()
 {
   m_numBlockyWavyOn++;
-}
-
-void GoomControlStats::DoZoomFilterAllowOverexposedOff()
-{
-  m_numZoomFilterAllowOverexposedOff++;
-}
-
-void GoomControlStats::DoZoomFilterAllowOverexposedOn()
-{
-  m_numZoomFilterAllowOverexposedOn++;
 }
 
 } // namespace GOOM

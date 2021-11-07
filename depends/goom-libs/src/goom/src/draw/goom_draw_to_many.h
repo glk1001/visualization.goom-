@@ -32,8 +32,7 @@ private:
   static void DrawPixels(const std::vector<IGoomDraw*>& manyDraws,
                          int32_t x,
                          int32_t y,
-                         const std::vector<Pixel>& colors,
-                         bool allowOverexposed);
+                         const std::vector<Pixel>& colors);
 };
 
 #if __cplusplus <= 201402L

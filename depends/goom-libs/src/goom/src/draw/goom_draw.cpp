@@ -1,6 +1,5 @@
 #include "goom_draw.h"
 
-#include "draw_methods.h"
 #include "utils/graphics/image_bitmaps.h"
 
 #include <cstdint>
@@ -15,7 +14,6 @@ namespace GOOM::DRAW
 {
 #endif
 
-using DRAW::DrawMethods;
 using UTILS::ImageBitmap;
 
 IGoomDraw::IGoomDraw(const uint32_t screenWidth,
@@ -33,8 +31,7 @@ IGoomDraw::IGoomDraw(const uint32_t screenWidth,
 void IGoomDraw::Bitmap(const int xCentre,
                        const int yCentre,
                        const ImageBitmap& bitmap,
-                       const std::vector<GetBitmapColorFunc>& getColors,
-                       const bool allowOverexposed)
+                       const std::vector<GetBitmapColorFunc>& getColors)
 {
   const auto bitmapWidth = static_cast<int>(bitmap.GetWidth());
   const auto bitmapHeight = static_cast<int>(bitmap.GetHeight());
@@ -84,7 +81,7 @@ void IGoomDraw::Bitmap(const int xCentre,
         finalColors[i] = getColors[i](xBitmap, yBitmap, bitmapColor);
       }
       const int xBuff = x0 + static_cast<int>(xBitmap);
-      DrawPixels(xBuff, yBuff, finalColors, allowOverexposed);
+      DrawPixels(xBuff, yBuff, finalColors);
     }
   };
 

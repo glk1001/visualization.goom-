@@ -158,7 +158,6 @@ struct Similitude
   const COLOR::IColorMap* colorMap{};
   Pixel color = Pixel::BLACK;
   const UTILS::ImageBitmap* currentPointBitmap{};
-  bool overExposeBitmaps = true;
 };
 
 class IfsPoint
@@ -180,7 +179,6 @@ public:
   [[nodiscard]] auto GetSimiColor() const -> Pixel;
   [[nodiscard]] auto GetSimiColorMap() const -> const COLOR::IColorMap*;
   [[nodiscard]] auto GetSimiCurrentPointBitmap() const -> const UTILS::ImageBitmap*;
-  [[nodiscard]] auto GetSimiOverExposeBitmaps() const -> bool;
 
 private:
   uint32_t m_x = 0;

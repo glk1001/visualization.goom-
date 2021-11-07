@@ -23,9 +23,9 @@ auto GammaCorrection::GetCorrection(const float brightness, const Pixel& color) 
 {
   if (brightness < m_threshold)
   {
-    return GetBrighterColor(brightness, color, m_allowOverexposure);
+    return GetBrighterColor(brightness, color);
   }
-  // OLD  return GetBrighterColor(std::pow(brightness, m_gamma), color, m_allowOverexposure);
+  // OLD  return GetBrighterColor(std::pow(brightness, m_gamma), color);
 
   auto newR = static_cast<uint32_t>(
       std::round(channel_limits<float>::max() * std::pow(brightness * color.RFlt(), m_gamma)));
@@ -34,11 +34,6 @@ auto GammaCorrection::GetCorrection(const float brightness, const Pixel& color) 
   auto newB = static_cast<uint32_t>(
       std::round(channel_limits<float>::max() * std::pow(brightness * color.BFlt(), m_gamma)));
   const uint32_t newA = color.A();
-
-  if (!m_allowOverexposure)
-  {
-    return GetPixelScaledByMax(newR, newG, newB, newA);
-  }
 
   return Pixel{newR, newG, newB, newA};
 }

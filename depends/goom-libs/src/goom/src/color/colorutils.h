@@ -23,20 +23,13 @@ template<typename T>
 [[nodiscard]] auto GetColorAverage(size_t num, const T& colors) -> Pixel;
 
 [[nodiscard]] auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel;
-[[nodiscard]] auto GetColorMultiply(const Pixel& srce, const Pixel& dest, bool allowOverexposed)
-    -> Pixel;
-[[nodiscard]] auto GetColorAdd(const Pixel& color1, const Pixel& color2, bool allowOverexposed)
-    -> Pixel;
-[[nodiscard]] auto GetBrighterColorInt(uint32_t brightness,
-                                       const Pixel& color,
-                                       bool allowOverexposed) -> Pixel;
-[[nodiscard]] auto GetBrighterColorInt(const float brightness, const Pixel&, const bool)
-    -> Pixel = delete;
+[[nodiscard]] auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel;
+[[nodiscard]] auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel;
+[[nodiscard]] auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
+[[nodiscard]] auto GetBrighterColorInt(float brightness, const Pixel&) -> Pixel = delete;
 
-[[nodiscard]] auto GetBrighterColor(float brightness, const Pixel& color, bool allowOverexposed)
-    -> Pixel;
-[[nodiscard]] auto GetBrighterColor(const uint32_t brightness, const Pixel&, const bool)
-    -> Pixel = delete;
+[[nodiscard]] auto GetBrighterColor(float brightness, const Pixel& color) -> Pixel;
+[[nodiscard]] auto GetBrighterColor(uint32_t brightness, const Pixel&) -> Pixel = delete;
 
 [[nodiscard]] auto GetLightenedColor(const Pixel& oldColor, float power) -> Pixel;
 [[nodiscard]] auto GetEvolvedColor(const Pixel& baseColor) -> Pixel;
@@ -54,20 +47,18 @@ constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
 class GammaCorrection
 {
 public:
-  GammaCorrection(float gamma, float threshold, bool allowOverexposure = true);
+  GammaCorrection(float gamma, float threshold);
 
   [[nodiscard]] auto GetThreshold() const -> float;
   void SetThreshold(float val);
   [[nodiscard]] auto GetGamma() const -> float;
   void SetGamma(float val);
-  [[nodiscard]] auto GetAllowOverExposure() const -> bool;
 
   [[nodiscard]] auto GetCorrection(float brightness, const Pixel& color) const -> Pixel;
 
 private:
   float m_gamma;
   float m_threshold;
-  bool m_allowOverexposure;
 };
 
 
@@ -139,34 +130,22 @@ inline auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
   return Pixel{newR, newG, newB, newA};
 }
 
-inline auto GetColorMultiply(const Pixel& srce, const Pixel& dest, const bool allowOverexposed)
-    -> Pixel
+inline auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel
 {
   const uint32_t newR = ColorChannelMultiply(srce.R(), dest.R());
   const uint32_t newG = ColorChannelMultiply(srce.G(), dest.G());
   const uint32_t newB = ColorChannelMultiply(srce.B(), dest.B());
   const uint32_t newA = ColorChannelMultiply(srce.A(), dest.A());
 
-  if (!allowOverexposed)
-  {
-    return GetPixelScaledByMax(newR, newG, newB, newA);
-  }
-
   return Pixel{newR, newG, newB, newA};
 }
 
-inline auto GetColorAdd(const Pixel& color1, const Pixel& color2, const bool allowOverexposed)
-    -> Pixel
+inline auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
 {
   const uint32_t newR = ColorChannelAdd(color1.R(), color2.R());
   const uint32_t newG = ColorChannelAdd(color1.G(), color2.G());
   const uint32_t newB = ColorChannelAdd(color1.B(), color2.B());
   const uint32_t newA = ColorChannelAdd(color1.A(), color2.A());
-
-  if (!allowOverexposed)
-  {
-    return GetPixelScaledByMax(newR, newG, newB, newA);
-  }
 
   return Pixel{newR, newG, newB, newA};
 }
@@ -178,31 +157,22 @@ inline auto GetBrighterChannelColor(const uint32_t brightness, const PixelChanne
   return MultiplyChannelColorByScalar(brightness, channelVal);
 }
 
-inline auto GetBrighterColorInt(const uint32_t brightness,
-                                const Pixel& color,
-                                const bool allowOverexposed) -> Pixel
+inline auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -> Pixel
 {
   const uint32_t newR = GetBrighterChannelColor(brightness, color.R());
   const uint32_t newG = GetBrighterChannelColor(brightness, color.G());
   const uint32_t newB = GetBrighterChannelColor(brightness, color.B());
   const uint32_t newA = color.A();
 
-  if (!allowOverexposed)
-  {
-    return GetPixelScaledByMax(newR, newG, newB, newA);
-  }
-
   return Pixel{newR, newG, newB, newA};
 }
 
 
-inline auto GetBrighterColor(const float brightness,
-                             const Pixel& color,
-                             const bool allowOverexposed) -> Pixel
+inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
   assert(brightness >= 0.0F && brightness <= 50.0F);
   const auto intBrightness = static_cast<uint32_t>(std::round((brightness * 256.0F) + 0.0001F));
-  return GetBrighterColorInt(intBrightness, color, allowOverexposed);
+  return GetBrighterColorInt(intBrightness, color);
 }
 
 
@@ -274,10 +244,8 @@ inline auto GetDecreasedChroma(const Pixel& color) -> Pixel
   return GetAlteredChroma(DECREASED_CHROMA_FACTOR, color);
 }
 
-inline GammaCorrection::GammaCorrection(const float gamma,
-                                        const float threshold,
-                                        const bool allowOverexposure)
-  : m_gamma(gamma), m_threshold(threshold), m_allowOverexposure{allowOverexposure}
+inline GammaCorrection::GammaCorrection(const float gamma, const float threshold)
+  : m_gamma{gamma}, m_threshold{threshold}
 {
 }
 
@@ -299,11 +267,6 @@ inline auto GammaCorrection::GetGamma() const -> float
 inline void GammaCorrection::SetGamma(const float val)
 {
   m_gamma = val;
-}
-
-inline auto GammaCorrection::GetAllowOverExposure() const -> bool
-{
-  return m_allowOverexposure;
 }
 
 #if __cplusplus <= 201402L

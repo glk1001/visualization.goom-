@@ -34,9 +34,6 @@ public:
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
 
-  [[nodiscard]] auto GetAllowOverexposed() const -> bool;
-  void SetAllowOverexposed(bool val);
-
   [[nodiscard]] auto GetBuffIntensity() const -> float;
   void SetBuffIntensity(float val);
 
@@ -54,21 +51,11 @@ public:
   void Bitmap(int xCentre,
               int yCentre,
               const UTILS::ImageBitmap& bitmap,
-              const GetBitmapColorFunc& getColor,
-              bool allowOverexposed);
-  void Bitmap(int xCentre,
-              int yCentre,
-              const UTILS::ImageBitmap& bitmap,
               const std::vector<GetBitmapColorFunc>& getColors);
-  void Bitmap(int xCentre,
-              int yCentre,
-              const UTILS::ImageBitmap& bitmap,
-              const std::vector<GetBitmapColorFunc>& getColors,
-              bool allowOverexposed);
+
+  void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& colors);
 
   [[nodiscard]] virtual auto GetPixel(int32_t x, int32_t y) const -> Pixel = 0;
-  void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& colors);
-  void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& colors, bool allowOverexposed);
   virtual void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) = 0;
 
 protected:
@@ -79,8 +66,8 @@ private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
   DrawMethods m_drawMethods;
-  bool m_allowOverexposed = true;
-  float m_buffIntensity = 0.5F;
+  static constexpr float DEFAULT_BUFF_INTENSITY = 0.5F;
+  float m_buffIntensity = DEFAULT_BUFF_INTENSITY;
   uint32_t m_intBuffIntensity;
   mutable GOOM::UTILS::Parallel m_parallel;
 };
@@ -93,17 +80,6 @@ inline auto IGoomDraw::GetScreenWidth() const -> uint32_t
 inline auto IGoomDraw::GetScreenHeight() const -> uint32_t
 {
   return m_screenHeight;
-}
-
-inline auto IGoomDraw::GetAllowOverexposed() const -> bool
-{
-  return m_allowOverexposed;
-}
-
-inline void IGoomDraw::SetAllowOverexposed(const bool val)
-{
-  m_allowOverexposed = val;
-  m_drawMethods.SetAllowOverexposed(val);
 }
 
 inline auto IGoomDraw::GetBuffIntensity() const -> float
@@ -166,39 +142,15 @@ inline void IGoomDraw::Bitmap(const int xCentre,
                               const UTILS::ImageBitmap& bitmap,
                               const GetBitmapColorFunc& getColor)
 {
-  Bitmap(xCentre, yCentre, bitmap, getColor, GetAllowOverexposed());
-}
-
-inline void IGoomDraw::Bitmap(const int xCentre,
-                              const int yCentre,
-                              const UTILS::ImageBitmap& bitmap,
-                              const GetBitmapColorFunc& getColor,
-                              const bool allowOverexposed)
-{
-  Bitmap(xCentre, yCentre, bitmap, std::vector<GetBitmapColorFunc>{getColor}, allowOverexposed);
-}
-
-inline void IGoomDraw::Bitmap(const int xCentre,
-                              const int yCentre,
-                              const UTILS::ImageBitmap& bitmap,
-                              const std::vector<GetBitmapColorFunc>& getColors)
-{
-  Bitmap(xCentre, yCentre, bitmap, getColors, GetAllowOverexposed());
+  // WARNING undefined behaviour - GCC 11 does not like passing just '{getColor}'. 
+  Bitmap(xCentre, yCentre, bitmap, std::vector<GetBitmapColorFunc>{getColor});
 }
 
 inline void IGoomDraw::DrawPixels(const int32_t x,
                                   const int32_t y,
                                   const std::vector<Pixel>& colors)
 {
-  DrawPixels(x, y, colors, GetAllowOverexposed());
-}
-
-inline void IGoomDraw::DrawPixels(const int32_t x,
-                                  const int32_t y,
-                                  const std::vector<Pixel>& colors,
-                                  const bool allowOverexposed)
-{
-  m_drawMethods.DrawPixels(x, y, colors, allowOverexposed);
+  m_drawMethods.DrawPixels(x, y, colors);
 }
 
 } // namespace DRAW

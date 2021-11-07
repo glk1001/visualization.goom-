@@ -574,13 +574,9 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const int32_t x1,
                                                      const std::vector<Pixel>& colors)
 {
   const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                            const Pixel& b) {
-    return GetColorMultiply(b, colors[0], m_draw.GetAllowOverexposed());
-  };
+                            const Pixel& b) { return GetColorMultiply(b, colors[0]); };
   const auto getLowColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                               const Pixel& b) {
-    return GetColorMultiply(b, colors[1], m_draw.GetAllowOverexposed());
-  };
+                               const Pixel& b) { return GetColorMultiply(b, colors[1]); };
 
   const ImageBitmap& bitmap = GetImageBitmap(size);
 
@@ -829,7 +825,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetGammaCorrection(const float brigh
   // if constexpr (GAMMA == 1.0F)
   if (1.0F == GAMMA)
   {
-    return GetBrighterColor(brightness, color, true);
+    return GetBrighterColor(brightness, color);
   }
   return m_gammaCorrect.GetCorrection(brightness, color);
 }

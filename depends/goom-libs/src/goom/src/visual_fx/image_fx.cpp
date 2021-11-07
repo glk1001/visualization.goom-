@@ -411,7 +411,7 @@ void ImageFx::ImageFxImpl::DrawChunk(const V2dInt& pos,
         continue;
       }
       const std::vector<Pixel> pixelColors = GetPixelColors(pixelRow[xPixel], brightness);
-      m_draw.DrawPixels(x, y, pixelColors, true);
+      m_draw.DrawPixels(x, y, pixelColors);
 
       ++x;
     }
@@ -424,8 +424,8 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
                                                  const float brightness) const -> std::vector<Pixel>
 {
   const Pixel mixedColor = IColorMap::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutTSq);
-  const Pixel color0 = GetBrighterColor(brightness, mixedColor, false);
-  const Pixel color1 = GetBrighterColor(0.5F * brightness, pixelColor, false);
+  const Pixel color0 = GetBrighterColor(brightness, mixedColor);
+  const Pixel color1 = GetBrighterColor(0.5F * brightness, pixelColor);
 
   if (m_pixelColorIsDominant)
   {

@@ -154,7 +154,7 @@ inline auto LowDensityBlurrer::GetGammaCorrection(const float brightness, const 
   // if constexpr (GAMMA == 1.0F)
   if (1.0F == GAMMA)
   {
-    return GetBrighterColor(brightness, color, true);
+    return GetBrighterColor(brightness, color);
   }
   return m_gammaCorrect.GetCorrection(brightness, color);
 }

@@ -26,12 +26,8 @@ using UTILS::Logging;
 
 GoomDrawToContainer::GoomDrawToContainer(const uint32_t screenWidth, const uint32_t screenHeight)
   : IGoomDraw{screenWidth, screenHeight,
-              [&](const int32_t x,
-                  const int32_t y,
-                  const std::vector<Pixel>& newColors,
-                  const bool allowOverexposed) {
-                SavePixels(x, y, newColors, GetIntBuffIntensity(), allowOverexposed);
-              }},
+              [&](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
+              { SavePixels(x, y, newColors, GetIntBuffIntensity()); }},
     m_xyPixelList(screenHeight)
 {
   for (auto& xPixelList : m_xyPixelList)
@@ -69,8 +65,7 @@ void GoomDrawToContainer::DrawPixelsUnblended([[maybe_unused]] const int32_t x,
 void GoomDrawToContainer::SavePixels(const int32_t x,
                                      const int32_t y,
                                      const std::vector<Pixel>& colors,
-                                     const uint32_t intBuffIntensity,
-                                     const bool allowOverexposed)
+                                     const uint32_t intBuffIntensity)
 {
   ColorsList& colorsList = GetWriteableColorsList(x, y);
 
@@ -80,7 +75,7 @@ void GoomDrawToContainer::SavePixels(const int32_t x,
   }
 
   // NOTE: Just save the first pixel in 'colors'. May need to improve this.
-  const Pixel newColor = GetBrighterColorInt(intBuffIntensity, colors[0], allowOverexposed);
+  const Pixel newColor = GetBrighterColorInt(intBuffIntensity, colors[0]);
 
   colorsList.colorsArray[colorsList.count] = newColor;
   ++colorsList.count;
