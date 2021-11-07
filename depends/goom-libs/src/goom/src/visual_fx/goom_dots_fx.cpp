@@ -36,6 +36,7 @@ using COLOR::ColorMapGroup;
 using COLOR::GammaCorrection;
 using COLOR::GetBrighterColor;
 using COLOR::GetColorMultiply;
+using COLOR::GetIncreasedChroma;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::COLOR_DATA::ColorMapName;
@@ -76,16 +77,19 @@ private:
   uint32_t m_numFlowersInRow = 0;
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
 
-  static constexpr size_t MIN_DOT_SIZE = 3;
+  static constexpr size_t MIN_DOT_SIZE = 5;
   static constexpr size_t MAX_DOT_SIZE = 17;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
   std::array<std::shared_ptr<RandomColorMaps>, NUM_DOT_TYPES> m_colorMaps{};
   std::array<RandomColorMapsManager, NUM_DOT_TYPES> m_colorMapsManagers{};
   std::array<uint32_t, NUM_DOT_TYPES> m_colorMapIds{};
+  std::array<bool, NUM_DOT_TYPES> m_usePrimaryColors{};
   Pixel m_middleColor{};
   bool m_useSingleBufferOnly = true;
   bool m_thereIsOneBuffer = true;
+  bool m_useIncreasedChroma = true;
+  [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
 
   uint32_t m_loopVar = 0; // mouvement des points
 
@@ -205,20 +209,26 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
   {
     colorMapsManager.ChangeAllColorMapsNow();
   }
+  for (auto& usePrimaryColor : m_usePrimaryColors)
+  {
+    usePrimaryColor = m_goomRand.ProbabilityOf(0.5F);
+  }
 
   m_middleColor = RandomColorMaps{m_goomRand}.GetRandomColor(
       *m_colorMaps[0]->GetRandomColorMapPtr(ColorMapGroup::MISC, RandomColorMaps::ALL), 0.1F, 1.0F);
 
   m_useSingleBufferOnly = m_goomRand.ProbabilityOfMInN(0, 2);
+  constexpr float PROB_INCREASED_CHROMA = 0.8F;
+  m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_INCREASED_CHROMA);
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
     const uint32_t dotNum, const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps.at(dotNum) = weightedMaps;
-  m_colorMapIds[dotNum] = m_colorMapsManagers[dotNum].AddColorMapInfo(
-      {m_colorMaps[dotNum],
-       m_colorMaps[dotNum]->GetRandomColorMapName(m_colorMaps[dotNum]->GetRandomGroup()),
+  m_colorMapIds.at(dotNum) = m_colorMapsManagers.at(dotNum).AddColorMapInfo(
+      {m_colorMaps.at(dotNum),
+       m_colorMaps.at(dotNum)->GetRandomColorMapName(m_colorMaps.at(dotNum)->GetRandomGroup()),
        RandomColorMaps::ALL});
 }
 
@@ -244,8 +254,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     SetNextCurrentBitmapName();
   }
 
-  const float speedFactor = 0.25F * m_goomInfo.GetSoundInfo().GetSpeed();
-
+  const float speedFactor = 0.35F * m_goomInfo.GetSoundInfo().GetSpeed();
   const float largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
   const auto speedVarMult80Plus15 = static_cast<uint32_t>((speedFactor * 80.0F) + 15.0F);
   const auto speedVarMult50Plus1 = static_cast<uint32_t>((speedFactor * 50.0F) + 1.0F);
@@ -263,7 +272,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   const float dot3YOffsetAmp = dot3XOffsetAmp;
 
   const size_t speedVarMult80Plus15Div15 = speedVarMult80Plus15 / 15;
-  constexpr float T_MIN = 0.5F;
+  constexpr float T_MIN = 0.1F;
   constexpr float T_MAX = 1.0F;
   const float t_step = (T_MAX - T_MIN) / static_cast<float>(speedVarMult80Plus15Div15);
 
@@ -272,42 +281,42 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   {
     m_loopVar += speedVarMult50Plus1;
 
-    const uint32_t loopvarDivI = m_loopVar / i;
+    const uint32_t loopVarDivI = m_loopVar / i;
     const float iMult10 = 10.0F * static_cast<float>(i);
 
-    const Pixel dot0Color = m_colorMapsManagers[0].GetColorMap(m_colorMapIds[0]).GetColor(t);
+    const Pixel dot0Color = GetDotColor(0, t);
     const float dot0XFreqDenom = static_cast<float>(i) * 152.0F;
     const float dot0YFreqDenom = 128.0F;
     const uint32_t dot0Cycle = m_loopVar + (i * 2032);
     const V2dInt dot0Position =
         GetDotPosition(dot0XOffsetAmp, dot0YOffsetAmp, dot0XFreqDenom, dot0YFreqDenom, dot0Cycle);
 
-    const Pixel dot1Color = m_colorMapsManagers[1].GetColorMap(m_colorMapIds[1]).GetColor(t);
+    const Pixel dot1Color = GetDotColor(1, t);
     const float dot1XOffsetAmp = (pointWidthDiv2MultLarge / static_cast<float>(i)) + iMult10;
     const float dot1YOffsetAmp = (pointHeightDiv2MultLarge / static_cast<float>(i)) + iMult10;
     const float dot1XFreqDenom = 96.0F;
     const float dot1YFreqDenom = static_cast<float>(i) * 80.0F;
-    const uint32_t dot1Cycle = loopvarDivI;
+    const uint32_t dot1Cycle = loopVarDivI;
     const V2dInt dot1Position =
         GetDotPosition(dot1XOffsetAmp, dot1YOffsetAmp, dot1XFreqDenom, dot1YFreqDenom, dot1Cycle);
 
-    const Pixel dot2Color = m_colorMapsManagers[2].GetColorMap(m_colorMapIds[2]).GetColor(t);
+    const Pixel dot2Color = GetDotColor(2, t);
     const float dot2XOffsetAmp = (pointWidthDiv3MultLarge / static_cast<float>(i)) + iMult10;
     const float dot2YOffsetAmp = (pointHeightDiv3MultLarge / static_cast<float>(i)) + iMult10;
     const float dot2XFreqDenom = static_cast<float>(i) + 122.0F;
     const float dot2YFreqDenom = 134.0F;
-    const uint32_t dot2Cycle = loopvarDivI;
+    const uint32_t dot2Cycle = loopVarDivI;
     const V2dInt dot2Position =
         GetDotPosition(dot2XOffsetAmp, dot2YOffsetAmp, dot2XFreqDenom, dot2YFreqDenom, dot2Cycle);
 
-    const Pixel dot3Color = m_colorMapsManagers[3].GetColorMap(m_colorMapIds[3]).GetColor(t);
+    const Pixel dot3Color = GetDotColor(3, t);
     const float dot3XFreqDenom = 58.0F;
     const float dot3YFreqDenom = static_cast<float>(i) * 66.0F;
-    const uint32_t dot3Cycle = loopvarDivI;
+    const uint32_t dot3Cycle = loopVarDivI;
     const V2dInt dot3Position =
         GetDotPosition(dot3XOffsetAmp, dot3YOffsetAmp, dot3XFreqDenom, dot3YFreqDenom, dot3Cycle);
 
-    const Pixel dot4Color = m_colorMapsManagers[4].GetColorMap(m_colorMapIds[4]).GetColor(t);
+    const Pixel dot4Color = GetDotColor(4, t);
     const float dot4XOffsetAmp = (pointWidthMultLarge + iMult10) / static_cast<float>(i);
     const float dot4YOffsetAmp = (pointHeightMultLarge + iMult10) / static_cast<float>(i);
     const float dot4XFreqDenom = 66.0F;
@@ -324,6 +333,23 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
 
     t += t_step;
   }
+}
+
+inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(size_t dotNum, float t) const -> Pixel
+{
+  if (m_usePrimaryColors.at(dotNum))
+  {
+    static const std::array<Pixel, NUM_DOT_TYPES> s_PRIMARY_COLORS{
+        Pixel{255,   0,   0, 0},
+        Pixel{  0, 255,   0, 0},
+        Pixel{  0,   0, 255, 0},
+        Pixel{255, 255,   0, 0},
+        Pixel{  0, 255, 255, 0},
+    };
+    return s_PRIMARY_COLORS.at(dotNum);
+  }
+
+  return m_colorMapsManagers.at(dotNum).GetColorMap(m_colorMapIds.at(dotNum)).GetColor(t);
 }
 
 void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
@@ -343,6 +369,10 @@ void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
     {
       m_currentBitmapName = SmallImageBitmaps::ImageNames::ORANGE_FLOWER;
     }
+    else if (m_goomRand.ProbabilityOfMInN(1, 3))
+    {
+      m_currentBitmapName = SmallImageBitmaps::ImageNames::PINK_FLOWER;
+    }
     else
     {
       m_currentBitmapName = SmallImageBitmaps::ImageNames::WHITE_FLOWER;
@@ -361,8 +391,8 @@ void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetLargeSoundFactor(const SoundInfo& soundInfo) -> float
 {
-  constexpr float MAX_LARGE_FACTOR = 1.45F;
-  return (soundInfo.GetSpeed() / 750.0F) + (soundInfo.GetVolume() / MAX_LARGE_FACTOR);
+  constexpr float MAX_LARGE_FACTOR = 1.5F;
+  return (soundInfo.GetSpeed() / 50.0F) + (soundInfo.GetVolume() / MAX_LARGE_FACTOR);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPosition(const float xOffsetAmp,
@@ -396,24 +426,22 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     return;
   }
 
-  constexpr float BRIGHTNESS = 5.0F;
+  constexpr float BRIGHTNESS = 1.0F;
   const auto getColor1 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             const Pixel& b) -> Pixel {
-    // const Pixel newColor = x == xMid && y == yMid ? m_middleColor : color;
+                             const Pixel& b) -> Pixel
+  {
+    // const Pixel newColor = x == xMid && y == yMid ? m_middleColor : finalColor;
     if (0 == b.A())
     {
       return Pixel::BLACK;
     }
-    return GetGammaCorrection(BRIGHTNESS, GetColorMultiply(b, color, m_draw.GetAllowOverexposed()));
+    const Pixel mixedColor = COLOR::IColorMap::GetColorMix(b, color, 0.5F);
+    const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
+    return GetGammaCorrection(BRIGHTNESS, finalColor);
   };
   const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& b) -> Pixel {
-    if (0 == b.A())
-    {
-      return Pixel::BLACK;
-    }
-    return GetGammaCorrection(BRIGHTNESS, color);
-  };
+                             [[maybe_unused]] const Pixel& b) -> Pixel
+  { return getColor1(x, y, b); };
 
   const auto xMid = dotPosition.x + static_cast<int32_t>(radius);
   const auto yMid = dotPosition.y + static_cast<int32_t>(radius);

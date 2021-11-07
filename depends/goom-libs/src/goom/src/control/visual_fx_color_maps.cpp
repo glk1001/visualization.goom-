@@ -91,7 +91,7 @@ auto VisualFxColorMaps::GetColorMatchedSet1() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetSlightlyDivergingSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetPurpleStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IFS)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetMostlySequentialStandardMaps;
@@ -113,7 +113,7 @@ auto VisualFxColorMaps::GetColorMatchedSet2() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetPurpleStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetSlightlyDivergingSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IFS)) = GetSlightlyDivergingSlimMaps;
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetSlightlyDivergingSlimMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingSlimMaps;
@@ -157,7 +157,7 @@ auto VisualFxColorMaps::GetColorMatchedSet4() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetPurpleStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetSlightlyDivergingSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetYellowStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IFS)) = GetCitiesStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetCitiesStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
@@ -179,7 +179,7 @@ auto VisualFxColorMaps::GetColorMatchedSet5() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetSlightlyDivergingSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetSeasonsStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IFS)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
