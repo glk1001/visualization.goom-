@@ -481,8 +481,8 @@ in vec2 texCoords;
 
 void main()
 {
-  //const int toneMapType = EXPOSURE_TONE_MAP;
-  const int toneMapType = UCHIMURA_TONE_MAP;
+  const int toneMapType = EXPOSURE_TONE_MAP;
+  //const int toneMapType = UCHIMURA_TONE_MAP;
 
   // Brightness factor after gamma correction
   float A = 1.0;
@@ -558,7 +558,7 @@ void main()
     //mapped = vec3(1.0) - exp(-hdrColor * exposure);
     const float exposureMultiplier = 1.0;
     mapped = vec3(1.0) - exp(-hdrColor * exposureMultiplier * u_texExposure);
-    A = 3.0;
+    A = 5.0;
   }
 
   // Color effects
