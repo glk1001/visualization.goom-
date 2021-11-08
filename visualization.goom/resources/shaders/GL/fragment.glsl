@@ -1,7 +1,8 @@
 #version 330 core
 
-#define EXPOSURE_TONE_MAP 1
-#define UCHIMURA_TONE_MAP 2
+#define NO_TONE_MAP 1
+#define EXPOSURE_TONE_MAP 2
+#define UCHIMURA_TONE_MAP 3
 
 // == TONE MAPPING =======================================
 // Reinhard
@@ -544,7 +545,11 @@ void main()
 
   //vec3 mapped = unreal(hdrColor); // needs lower 'A' value
 
-  if (toneMapType == UCHIMURA_TONE_MAP)
+  if (toneMapType == NO_TONE_MAP)
+  {
+    A = 5.0;
+  }
+  else if (toneMapType == UCHIMURA_TONE_MAP)
   {
     // Uchimura tone mapping
     const float exposureMultiplier = 2.0;
@@ -557,7 +562,7 @@ void main()
     //const float exposure = 30.0;
     //mapped = vec3(1.0) - exp(-hdrColor * exposure);
     const float exposureMultiplier = 1.0;
-    mapped = vec3(1.0) - exp(-hdrColor * exposureMultiplier * u_texExposure);
+    mapped = vec3(1.0) - exp(-mapped * exposureMultiplier * u_texExposure);
     A = 5.0;
   }
 
