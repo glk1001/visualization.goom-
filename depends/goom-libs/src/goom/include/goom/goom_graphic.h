@@ -141,8 +141,6 @@ private:
   Color m_color{};
 };
 
-[[nodiscard]] auto GetPixelScaledByMax(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha)
-    -> Pixel;
 [[nodiscard]] auto MultiplyColorChannels(PixelChannelType ch1, PixelChannelType ch2) -> uint32_t;
 [[nodiscard]] auto MultiplyChannelColorByScalar(uint32_t scalar, PixelChannelType channelVal)
     -> uint32_t;
@@ -228,31 +226,14 @@ inline Pixel::Pixel(const uint32_t red,
                     const uint32_t green,
                     const uint32_t blue,
                     const uint32_t alpha)
-  : m_color{{/*.r = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, red)),
-             /*.g = */
-             static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, green)),
-             /*.b = */
-             static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, blue)),
-             /*.a = */
-             static_cast<PixelChannelType>(std::min(static_cast<uint32_t>(MAX_ALPHA), alpha))}}
-{
+  : m_color{
+        {/*.r = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, red)),
+         /*.g = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, green)),
+         /*.b = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, blue)),
+         /*.a = */
+         static_cast<PixelChannelType>(std::min(static_cast<uint32_t>(MAX_ALPHA), alpha))}
 }
-
-inline auto GetPixelScaledByMax(uint32_t red, uint32_t green, uint32_t blue, const uint32_t alpha)
-    -> Pixel
 {
-  const uint32_t maxVal = std::max({red, green, blue});
-  constexpr uint32_t MAX_CHAN_EXPOSURE = 512;
-
-  if (maxVal > MAX_CHAN_EXPOSURE)
-  {
-    // scale all channels back
-    red = (red * channel_limits<uint32_t>::max()) / maxVal;
-    green = (green * channel_limits<uint32_t>::max()) / maxVal;
-    blue = (blue * channel_limits<uint32_t>::max()) / maxVal;
-  }
-
-  return {red, green, blue, alpha};
 }
 
 inline auto MultiplyColorChannels(const PixelChannelType ch1, const PixelChannelType ch2)

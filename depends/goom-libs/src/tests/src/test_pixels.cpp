@@ -11,7 +11,6 @@
 #include <vector>
 
 using GOOM::channel_limits;
-using GOOM::GetPixelScaledByMax;
 using GOOM::MAX_ALPHA;
 using GOOM::MAX_COLOR_VAL;
 using GOOM::MAX_CHANNEL_VALUE_HDR;
@@ -92,20 +91,6 @@ TEST_CASE("Pixels")
     const uint32_t gChannel = pixel.G();
     const uint32_t rgProduct = rChannel * gChannel;
     REQUIRE(MultiplyColorChannels(pixel.R(), pixel.G()) == rgProduct / MAX_COLOR_VAL);
-  }
-  SECTION("Pixel Scaled by Max")
-  {
-    constexpr uint32_t RED = 100;
-    constexpr uint32_t GREEN = 300;
-    constexpr uint32_t BLUE = 200;
-    constexpr uint32_t ALPHA = 100;
-    constexpr uint32_t MAX_CHANNEL = GREEN;
-    const Pixel scaledByMaxPixel = GetPixelScaledByMax(RED, GREEN, BLUE, ALPHA);
-    const Pixel expectedPixel{{(GREEN * RED) / MAX_CHANNEL, GREEN,
-                               (GREEN * BLUE) / MAX_CHANNEL, ALPHA}};
-    UNSCOPED_INFO("scaledByMaxPixel " << scaledByMaxPixel.ToString());
-    UNSCOPED_INFO("expectedPixel " << expectedPixel.ToString());
-    REQUIRE(scaledByMaxPixel == expectedPixel);
   }
 }
 
