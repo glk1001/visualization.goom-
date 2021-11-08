@@ -1,5 +1,6 @@
 #pragma once
 
+#include "draw/goom_draw.h"
 #include "goom/spimpl.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
@@ -20,6 +21,7 @@ class PixelBuffer;
 
 namespace UTILS
 {
+class IGoomRand;
 class Parallel;
 class SmallImageBitmaps;
 } // namespace UTILS
@@ -67,6 +69,7 @@ public:
   void SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func);
 
   void ChangeAllFxColorMaps();
+  void ChangeDrawPixelBlend();
   void RefreshAllFx();
 
   void ApplyCurrentStateToSingleBuffer();
@@ -109,6 +112,8 @@ private:
   const std::unique_ptr<VISUAL_FX::ZoomFilterFx> m_zoomFilter_fx;
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine1;
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine2;
+  DRAW::IGoomDraw& m_goomDraw;
+  UTILS::IGoomRand& m_goomRand;
 
   IGoomStateHandler& m_goomStateHandler;
   void ChangeState();
@@ -125,12 +130,18 @@ private:
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
   void ChangeLineColorMaps();
+
+  [[nodiscard]] static auto GetReverseColorAddBlendPixelPixelFunc()
+      -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] static auto GetSameLumaBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] static auto GetSameLumaMixBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
 };
 
 inline void GoomAllVisualFx::SetNextState()
 {
   ChangeState();
   ChangeAllFxColorMaps();
+  ChangeDrawPixelBlend();
   PostStateUpdate(m_currentGoomDrawables);
 }
 

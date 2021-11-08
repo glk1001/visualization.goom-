@@ -53,20 +53,8 @@ void GoomDrawToBuffer::DrawPixels(const std::vector<PixelBuffer*>& buffs,
 {
   for (size_t i = 0; i < colors.size(); ++i)
   {
-    const Pixel newColor = GetBrighterColorInt(intBuffIntensity, colors[i]);
-
     Pixel& pixel = (*buffs[i])(static_cast<size_t>(x), static_cast<size_t>(y));
-    pixel = GetColorAdd(pixel, newColor);
-
-    /***
-      ATTEMPT AT BLENDING - WON'T WORK THOUGH - BECAUSE OF MULTIPLE BUFFERS??
-        Pixel* const p = &(buffs[i][pos]);
-        const Pixel existingColorBlended =
-            GetBrighterColorInt(intBuffIntensity, *p);
-        const Pixel pixColorBlended =
-            GetBrighterColorInt(channel_limits<uint32_t>::max() - intBuffIntensity, newColors[i]);
-        *p = GetColorAdd(existingColorBlended, pixColorBlended);
-      ***/
+    pixel = GetBlendedPixel(pixel, colors[i], intBuffIntensity);
   }
 }
 

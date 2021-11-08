@@ -37,6 +37,11 @@ public:
   [[nodiscard]] auto GetBuffIntensity() const -> float;
   void SetBuffIntensity(float val);
 
+  using BlendPixelFunc =
+      std::function<Pixel(const Pixel& oldColor, const Pixel& newColor, uint32_t intBuffIntensity)>;
+  void SetBlendPixelFunc(const BlendPixelFunc& func);
+  void SetDefaultBlendPixelFunc();
+
   void Circle(int x0, int y0, int radius, const Pixel& color);
   void Circle(int x0, int y0, int radius, const std::vector<Pixel>& colors);
 
@@ -59,13 +64,22 @@ public:
   virtual void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) = 0;
 
 protected:
-  [[nodiscard]] auto GetIntBuffIntensity() const -> uint32_t;
   [[nodiscard]] auto GetParallel() const -> GOOM::UTILS::Parallel&;
+  [[nodiscard]] auto GetIntBuffIntensity() const -> uint32_t;
+
+  // Use the following to set the final pixel in the buffer.
+  [[nodiscard]] auto GetBlendedPixel(const Pixel& oldColor,
+                                     const Pixel& newColor,
+                                     uint32_t intBuffIntensity) const -> Pixel;
 
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
   DrawMethods m_drawMethods;
+  BlendPixelFunc m_blendPixelFunc{};
+  [[nodiscard]] static auto ColorAddBlendPixel(const Pixel& oldColor,
+                                               const Pixel& newColor,
+                                               uint32_t intBuffIntensity) -> Pixel;
   static constexpr float DEFAULT_BUFF_INTENSITY = 0.5F;
   float m_buffIntensity = DEFAULT_BUFF_INTENSITY;
   uint32_t m_intBuffIntensity;
@@ -97,6 +111,32 @@ inline void IGoomDraw::SetBuffIntensity(const float val)
 inline auto IGoomDraw::GetIntBuffIntensity() const -> uint32_t
 {
   return m_intBuffIntensity;
+}
+
+inline void IGoomDraw::SetBlendPixelFunc(const BlendPixelFunc& func)
+{
+  m_blendPixelFunc = func;
+}
+
+inline void IGoomDraw::SetDefaultBlendPixelFunc()
+{
+  m_blendPixelFunc =
+      [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  { return ColorAddBlendPixel(oldColor, newColor, intBuffIntensity); };
+}
+
+inline auto IGoomDraw::GetBlendedPixel(const Pixel& oldColor,
+                                       const Pixel& newColor,
+                                       uint32_t intBuffIntensity) const -> Pixel
+{
+  return m_blendPixelFunc(oldColor, newColor, intBuffIntensity);
+}
+
+inline auto IGoomDraw::ColorAddBlendPixel(const Pixel& oldColor,
+                                          const Pixel& newColor,
+                                          const uint32_t intBuffIntensity) -> Pixel
+{
+  return COLOR::GetColorAdd(oldColor, COLOR::GetBrighterColorInt(intBuffIntensity, newColor));
 }
 
 inline auto IGoomDraw::GetParallel() const -> GOOM::UTILS::Parallel&

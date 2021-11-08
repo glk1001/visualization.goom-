@@ -1,6 +1,9 @@
 #include "goom_all_visual_fx.h"
 
 #include "all_standard_visual_fx.h"
+#include "color/colormaps.h"
+#include "color/colorutils.h"
+#include "draw/goom_draw.h"
 #include "goom_plugin_info.h"
 #include "sound_info.h"
 #include "utils/name_value_pairs.h"
@@ -9,6 +12,8 @@
 #include "visual_fx/fx_helpers.h"
 #include "visual_fx_color_maps.h"
 
+//#undef NDEBUG
+#include <cassert>
 #include <memory>
 
 #if __cplusplus <= 201402L
@@ -21,7 +26,12 @@ namespace GOOM::CONTROL
 {
 #endif
 
+using COLOR::GetBrighterColor;
+using COLOR::GetBrighterColorInt;
+using COLOR::GetLuma;
+using COLOR::IColorMap;
 using CONTROL::GoomDrawables;
+using DRAW::IGoomDraw;
 using FILTERS::FilterBuffersService;
 using FILTERS::FilterColorsService;
 using FILTERS::ZoomFilterSettings;
@@ -69,11 +79,13 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
         INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
             static_cast<float>(fxHelpers.GetGoomInfo().GetScreenInfo().height),
         RED_LINE)},
+    m_goomDraw{fxHelpers.GetDraw()},
+    m_goomRand{fxHelpers.GetGoomRand()},
     m_goomStateHandler{goomStateHandler},
     m_visualFxColorMaps{fxHelpers.GetGoomRand()}
 {
-  m_allStandardVisualFx->SetResetDrawBuffSettingsFunc(
-      [&](const GoomDrawables fx) { ResetCurrentDrawBuffSettings(fx); });
+  m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([&](const GoomDrawables fx)
+                                                      { ResetCurrentDrawBuffSettings(fx); });
 }
 
 void GoomAllVisualFx::Start()
@@ -134,8 +146,7 @@ void GoomAllVisualFx::SetSingleBufferDots(const bool value)
   m_allStandardVisualFx->SetSingleBufferDots(value);
 }
 
-void GoomAllVisualFx::PostStateUpdate(
-    const std::unordered_set<GoomDrawables>& oldGoomDrawables)
+void GoomAllVisualFx::PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables)
 {
   m_allStandardVisualFx->PostStateUpdate(oldGoomDrawables);
 }
@@ -159,6 +170,75 @@ void GoomAllVisualFx::ChangeAllFxColorMaps()
 {
   m_allStandardVisualFx->ChangeColorMaps();
   ChangeLineColorMaps();
+}
+
+void GoomAllVisualFx::ChangeDrawPixelBlend()
+{
+  if (m_goomRand.ProbabilityOf(0.0F))
+  {
+    m_goomDraw.SetBlendPixelFunc(GetReverseColorAddBlendPixelPixelFunc());
+  }
+  else if (m_goomRand.ProbabilityOf(0.0F))
+  {
+    m_goomDraw.SetBlendPixelFunc(GetSameLumaMixBlendPixelFunc());
+  }
+  else if (m_goomRand.ProbabilityOf(0.3F))
+  {
+    m_goomDraw.SetBlendPixelFunc(GetSameLumaBlendPixelFunc());
+  }
+  else
+  {
+    m_goomDraw.SetDefaultBlendPixelFunc();
+  }
+}
+
+auto GoomAllVisualFx::GetReverseColorAddBlendPixelPixelFunc() -> IGoomDraw::BlendPixelFunc
+{
+  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  { return COLOR::GetColorAdd(COLOR::GetBrighterColorInt(intBuffIntensity, oldColor), newColor); };
+}
+
+auto GoomAllVisualFx::GetSameLumaBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
+{
+  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  {
+    const float newColorLuma =
+        GetLuma(newColor) * (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
+    if (newColorLuma < 0.1F)
+    {
+      return COLOR::GetColorAdd(oldColor, newColor);
+    }
+    const float oldColorLuma = GetLuma(oldColor);
+    const float brightness = 1.0F + (oldColorLuma / newColorLuma);
+
+    const auto red = static_cast<uint32_t>(brightness * static_cast<float>(newColor.R()));
+    const auto green = static_cast<uint32_t>(brightness * static_cast<float>(newColor.G()));
+    const auto blue = static_cast<uint32_t>(brightness * static_cast<float>(newColor.B()));
+
+    return Pixel{red, green, blue, MAX_ALPHA};
+  };
+}
+
+auto GoomAllVisualFx::GetSameLumaMixBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
+{
+  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  {
+    const float newColorLuma =
+        GetLuma(newColor) * (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
+    if (newColorLuma < 0.1F)
+    {
+      return COLOR::GetColorAdd(oldColor, newColor);
+    }
+    const float oldColorLuma = GetLuma(oldColor);
+    const float brightness = 0.5F * (1.0F + (oldColorLuma / newColorLuma));
+
+    const Pixel finalNewColor = IColorMap::GetColorMix(oldColor, newColor, 0.7F);
+    const auto red = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.R()));
+    const auto green = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.G()));
+    const auto blue = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.B()));
+
+    return Pixel{red, green, blue, MAX_ALPHA};
+  };
 }
 
 void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings,

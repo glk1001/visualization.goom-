@@ -26,6 +26,7 @@ IGoomDraw::IGoomDraw(const uint32_t screenWidth,
     m_parallel{-1} // max cores - 1
 {
   SetBuffIntensity(m_buffIntensity);
+  SetDefaultBlendPixelFunc();
 }
 
 void IGoomDraw::Bitmap(const int xCentre,

@@ -29,11 +29,11 @@ public:
 
 private:
   std::vector<PixelBuffer*> m_multipleBuffers{};
-  static void DrawPixels(const std::vector<PixelBuffer*>& buffs,
-                         int32_t x,
-                         int32_t y,
-                         const std::vector<Pixel>& colors,
-                         uint32_t intBuffIntensity);
+  void DrawPixels(const std::vector<PixelBuffer*>& buffs,
+                  int32_t x,
+                  int32_t y,
+                  const std::vector<Pixel>& colors,
+                  uint32_t intBuffIntensity);
 };
 
 inline void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
