@@ -85,6 +85,8 @@ add_library(goom
         src/visual_fx/ifs/colorizer.cpp
         src/visual_fx/ifs/fractal.cpp
         src/visual_fx/ifs/low_density_blurrer.cpp
+        src/visual_fx/shaders/high_contrast.cpp
+        src/visual_fx/shaders/adaptive_exposure.cpp
         src/visual_fx/tentacles/tentacle_driver.cpp
         src/visual_fx/tentacles/tentacles.cpp
         src/visual_fx/tubes/tubes.cpp
@@ -98,7 +100,7 @@ add_library(goom
         src/visual_fx/shader_fx.cpp
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tube_fx.cpp
-        src/visual_fx/zoom_filter_fx.cpp)
+        src/visual_fx/zoom_filter_fx.cpp src/visual_fx/shaders/adaptive_exposure.h)
 
 target_include_directories(goom
     PUBLIC

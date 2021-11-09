@@ -109,4 +109,3 @@ inline void Colorizer::SetMaxHitCount(const uint32_t val)
 #else
 } // namespace GOOM::IFS
 #endif
-
