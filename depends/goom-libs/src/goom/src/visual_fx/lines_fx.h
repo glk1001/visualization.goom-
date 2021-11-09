@@ -16,12 +16,12 @@ namespace GOOM
 namespace COLOR
 {
 class RandomColorMaps;
-} // namespace COLOR
+}
 
 namespace UTILS
 {
 class SmallImageBitmaps;
-} // namespace UTILS
+}
 
 namespace VISUAL_FX
 {
