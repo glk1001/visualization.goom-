@@ -48,7 +48,7 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
     m_image_fx{std::make_shared<ImageFx>(parallel, fxHelpers, resourcesDirectory)},
     m_shader_fx{std::make_shared<ShaderFx>(fxHelpers)},
     m_star_fx{std::make_shared<FlyingStarsFx>(fxHelpers, smallBitmaps)},
-    m_tentacles_fx{std::make_shared<TentaclesFx>(fxHelpers)},
+    m_tentacles_fx{std::make_shared<TentaclesFx>(fxHelpers, smallBitmaps)},
     m_tube_fx{std::make_shared<TubeFx>(fxHelpers, smallBitmaps)},
     m_list{
         m_star_fx, m_ifs_fx, m_image_fx, m_goomDots_fx, m_tentacles_fx, m_tube_fx,

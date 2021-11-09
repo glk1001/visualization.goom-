@@ -174,21 +174,21 @@ void GoomAllVisualFx::ChangeAllFxColorMaps()
 
 void GoomAllVisualFx::ChangeDrawPixelBlend()
 {
-  if (m_goomRand.ProbabilityOf(0.0F))
+  if (m_goomRand.ProbabilityOf(1.0F))
   {
-    m_goomDraw.SetBlendPixelFunc(GetReverseColorAddBlendPixelPixelFunc());
+    m_goomDraw.SetDefaultBlendPixelFunc();
+  }
+  else if (m_goomRand.ProbabilityOf(0.0F))
+  {
+    m_goomDraw.SetBlendPixelFunc(GetSameLumaBlendPixelFunc());
   }
   else if (m_goomRand.ProbabilityOf(0.0F))
   {
     m_goomDraw.SetBlendPixelFunc(GetSameLumaMixBlendPixelFunc());
   }
-  else if (m_goomRand.ProbabilityOf(0.3F))
-  {
-    m_goomDraw.SetBlendPixelFunc(GetSameLumaBlendPixelFunc());
-  }
   else
   {
-    m_goomDraw.SetDefaultBlendPixelFunc();
+    m_goomDraw.SetBlendPixelFunc(GetReverseColorAddBlendPixelPixelFunc());
   }
 }
 

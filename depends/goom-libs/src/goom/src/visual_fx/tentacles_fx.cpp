@@ -9,6 +9,7 @@
 #include "goom_plugin_info.h"
 #include "tentacles/tentacle_driver.h"
 #include "utils/goom_rand_base.h"
+#include "utils/graphics/small_image_bitmaps.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
@@ -47,12 +48,13 @@ using UTILS::IGoomRand;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::m_two_pi;
+using UTILS::SmallImageBitmaps;
 using UTILS::Weights;
 
 class TentaclesFx::TentaclesImpl
 {
 public:
-  explicit TentaclesImpl(const FxHelpers& fxHelpers);
+  explicit TentaclesImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps);
   TentaclesImpl(const TentaclesImpl&) noexcept = delete;
   TentaclesImpl(TentaclesImpl&&) noexcept = delete;
   ~TentaclesImpl() noexcept = default;
@@ -71,6 +73,7 @@ private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   IGoomRand& m_goomRand;
+  const SmallImageBitmaps& m_smallBitmaps;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
   Pixel m_dominantColor{};
@@ -141,8 +144,8 @@ private:
   [[nodiscard]] auto ChangeDominantColorEvent() -> bool;
 };
 
-TentaclesFx::TentaclesFx(const FxHelpers& fxHelpers) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelpers)}
+TentaclesFx::TentaclesFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelpers, smallBitmaps)}
 {
 }
 
@@ -191,10 +194,11 @@ auto TentaclesFx::GetFxName() const -> std::string
   return "Tentacles FX";
 }
 
-TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers)
+TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps)
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
     m_goomRand{fxHelpers.GetGoomRand()},
+    m_smallBitmaps{smallBitmaps},
     // clang-format off
     m_driverWeights{
       m_goomRand,
@@ -295,7 +299,7 @@ colorMaps.setWeights(colorGroupWeights);
 
   for (size_t i = 0; i < NUM_DRIVERS; ++i)
   {
-    m_drivers.emplace_back(std::make_unique<TentacleDriver>(m_draw, m_goomRand));
+    m_drivers.emplace_back(std::make_unique<TentacleDriver>(m_draw, m_goomRand, m_smallBitmaps));
   }
 
   if (NUM_DRIVERS != m_driverWeights.GetNumElements())
@@ -326,7 +330,7 @@ void TentaclesFx::TentaclesImpl::InitData()
   {
     m_currentDriver->SetColorMode(TentacleDriver::ColorModes::MINIMAL);
   }
-  else if (m_goomRand.ProbabilityOfMInN(1, 500))
+  else if (m_goomRand.ProbabilityOfMInN(450, 500))
   {
     m_currentDriver->SetColorMode(TentacleDriver::ColorModes::MULTI_GROUPS);
   }

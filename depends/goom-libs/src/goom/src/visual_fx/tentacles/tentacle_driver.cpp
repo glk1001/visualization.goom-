@@ -34,34 +34,63 @@ namespace GOOM::TENTACLES
 #endif
 
 using COLOR::ColorMapGroup;
+using COLOR::GetColorMultiply;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
+using UTILS::ImageBitmap;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
+using UTILS::SmallImageBitmaps;
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
-TentacleDriver::TentacleDriver(IGoomDraw& draw, IGoomRand& goomRand) noexcept
+TentacleDriver::TentacleDriver(IGoomDraw& draw, IGoomRand& goomRand, const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
     m_goomRand{goomRand},
-    m_iterParamsGroups{{
-                           m_goomRand,
-                           {100, 0.600F, 1.0F, {1.5F, -10.0f, +10.0F, m_pi}, 100.0F},
-                           {125, 0.700F, 2.0F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0F},
-                       },
-                       {
-                           m_goomRand,
-                           {125, 0.700F, 0.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 100.0},
-                           {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 105.0},
-                       },
-                       {
-                           m_goomRand,
-                           {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 100.0},
-                           {200, 0.900F, 2.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0},
-                       }},
-    m_tentacles{m_goomRand}
+    m_tentacles{m_goomRand},
+    // clang-format off
+    m_iterParamsGroups{
+        {
+            m_goomRand,
+            {100, 0.600F, 1.0F, {1.5F, -10.0f, +10.0F, m_pi}, 100.0F},
+            {125, 0.700F, 2.0F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0F},
+        },
+        {
+            m_goomRand,
+            {125, 0.700F, 0.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 100.0},
+            {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 105.0},
+        },
+        {
+            m_goomRand,
+            {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 100.0},
+            {200, 0.900F, 2.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0},
+
+        }},
+    m_dotSizesMin{
+        m_goomRand,
+        {
+            {1, 100},
+            {3, 50},
+            {5, 5},
+            {7, 100},
+        }},
+    m_dotSizes{
+        m_goomRand,
+        {
+            {1, 50},
+            {3, 20},
+            {5, 5},
+            {7, 1},
+            {9, 1},
+            {11, 1},
+            {13, 100},
+            {15, 100},
+        }
+    },
+    // clang-format on
+    m_smallBitmaps{smallBitmaps}
 {
 }
 
@@ -249,7 +278,7 @@ auto TentacleDriver::GetNextColorMapGroups() const -> std::vector<ColorMapGroup>
 {
   const size_t numDifferentGroups =
       ((m_colorMode == ColorModes::MINIMAL) || (m_colorMode == ColorModes::ONE_GROUP_FOR_ALL) ||
-       m_goomRand.ProbabilityOfMInN(99, 100))
+       m_goomRand.ProbabilityOfMInN(1, 100))
           ? 1
           : m_goomRand.GetRandInRange(1U, std::min(5U, static_cast<uint32_t>(m_colorizers.size())));
   std::vector<ColorMapGroup> groups(numDifferentGroups);
@@ -303,6 +332,11 @@ void TentacleDriver::CheckForTimerEvents()
   }
 
   m_tentacles.ColorMapsChanged();
+
+  constexpr size_t MAX_DOT_SIZE = 7;
+  m_currentDotSize = GetNextDotSize(MAX_DOT_SIZE);
+  m_beadedLook = m_goomRand.ProbabilityOfMInN(3, 20);
+  m_numNodesBetweenDots = m_goomRand.GetRandInRange(MIN_STEPS_BETWEEN_NODES, MAX_STEPS_BETWEEN_NODES + 1U);
 }
 
 void TentacleDriver::FreshStart()
@@ -460,8 +494,54 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
 
       constexpr uint8_t THICKNESS = 1;
       m_draw.Line(ix0, iy0, ix1, iy1, colors, THICKNESS);
+
+      if ((nodeNum % m_numNodesBetweenDots) == 0)
+      {
+        const Pixel color1 = m_colorizers.at(tentacle.Get2DTentacle().GetID())->GetColor(nodeNum);
+        DrawDots({ix1, iy1}, {color1, color});
+      }
     }
   }
+}
+
+void TentacleDriver::DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors) const
+{
+  size_t dotSize = m_currentDotSize;
+  if (m_beadedLook)
+  {
+    dotSize = GetNextDotSize(MAX_IMAGE_DOT_SIZE);
+  }
+
+  if (dotSize > 1)
+  {
+    constexpr float DOT_BRIGHTNESS = 5.0F;
+    const auto getModColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
+                                 const Pixel& b) -> Pixel
+    { return GetColorMultiply(b, COLOR::GetBrighterColor(DOT_BRIGHTNESS, colors[0])); };
+    const auto getLineColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
+                                  const Pixel& b) -> Pixel
+    { return GetColorMultiply(b, COLOR::GetBrighterColor(DOT_BRIGHTNESS, colors[1])); };
+    const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getModColor, getLineColor};
+    const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
+    m_draw.Bitmap(pt.x, pt.y, bitmap, getColors);
+  }
+}
+
+auto TentacleDriver::GetNextDotSize(size_t maxSize) const -> size_t
+{
+  // TODO Fix this hack
+  constexpr size_t MAX_MIN_DOT_SIZE = 7;
+  if (maxSize <= MAX_MIN_DOT_SIZE)
+  {
+    return m_dotSizesMin.GetRandomWeighted();
+  }
+  return m_dotSizes.GetRandomWeighted();
+}
+
+inline auto TentacleDriver::GetImageBitmap(size_t size) const -> const UTILS::ImageBitmap&
+{
+  return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
+                                       stdnew::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
 }
 
 auto TentacleDriver::ProjectV3DOntoV2D(const std::vector<V3dFlt>& v3, const float distance) const
