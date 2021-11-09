@@ -20,7 +20,7 @@ namespace GOOM::VISUAL_FX::SHADERS
 class AdaptiveExposure
 {
 public:
-  static constexpr float MIN_EXPOSURE = 0.010F;
+  static constexpr float MIN_EXPOSURE = 0.10F;
   static constexpr float MAX_EXPOSURE = 50.0F;
   static constexpr float DEFAULT_EXPOSURE = 1.0F;
 

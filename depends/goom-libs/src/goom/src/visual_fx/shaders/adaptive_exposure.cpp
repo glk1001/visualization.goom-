@@ -48,8 +48,8 @@ void AdaptiveExposure::UpdateExposure()
 
 void AdaptiveExposure::UpdateLuminanceCounters(const float avLuminance)
 {
-  constexpr float TOO_LOW_LUMINANCE = 0.1F;
-  constexpr float TOO_HIGH_LUMINANCE = 2.0F;
+  constexpr float TOO_LOW_LUMINANCE = 0.05F;
+  constexpr float TOO_HIGH_LUMINANCE = 5.0F;
 
   if (avLuminance > TOO_HIGH_LUMINANCE)
   {
@@ -71,9 +71,9 @@ void AdaptiveExposure::UpdateLuminanceCounters(const float avLuminance)
 
 auto AdaptiveExposure::GetTargetExposureLerpFactor() const -> float
 {
-  constexpr float NORMAL_EXPOSURE_LERP_FACTOR = 0.1F;
-  constexpr float TOO_HIGH_EXPOSURE_LERP_FACTOR = 0.9F;
-  constexpr float TOO_LOW_EXPOSURE_LERP_FACTOR = 0.5F;
+  constexpr float NORMAL_EXPOSURE_LERP_FACTOR = 0.08F;
+  constexpr float TOO_HIGH_EXPOSURE_LERP_FACTOR = 0.6F;
+  constexpr float TOO_LOW_EXPOSURE_LERP_FACTOR = 0.3F;
 
   if (m_tooLowLuminanceInARow > 10)
   {
