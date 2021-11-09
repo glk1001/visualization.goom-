@@ -50,7 +50,7 @@ void HighContrast::UpdateHighContrast()
     m_currentContrast = stdnew::lerp(DEFAULT_CONTRAST, HIGH_CONTRAST, m_highContrastT());
     m_currentContrastMinChannelValue =
         stdnew::lerp(0.0F, m_currentContrastMinChannelValue, m_highContrastT());
-    constexpr float CONTRAST_BRIGHTNESS = 1.5F;
+    constexpr float CONTRAST_BRIGHTNESS = 0.9F;
     m_currentBrightness = stdnew::lerp(DEFAULT_BRIGHTNESS, CONTRAST_BRIGHTNESS, m_highContrastT());
 
     return;

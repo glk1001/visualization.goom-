@@ -307,7 +307,7 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
 
 void GoomControl::GoomControlImpl::CheckFinishedTitle()
 {
-  if (m_currentSongTitle.empty() || m_goomTitleDisplayer.IsFinished() ||
+  if (m_currentSongTitle.empty() || m_goomTitleDisplayer.IsFinalPhase() ||
       (m_showTitle == ShowTitleType::ALWAYS))
   {
     m_visualFx.StartShaderExposureControl();
