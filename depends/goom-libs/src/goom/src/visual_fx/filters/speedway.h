@@ -76,9 +76,9 @@ inline auto Speedway::GetMode0SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                                 const NormalizedCoords& coords) const -> V2dFlt
 {
   constexpr float SQ_DIST_FACTOR = 0.01F;
-  const float yAdd = SQ_DIST_FACTOR * sqDistFromZero;
+  const float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
 
-  const float xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + yAdd));
+  const float xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
   const float ySpeedCoeff = m_params.yAmplitude * xSpeedCoeff;
 
   return {xSpeedCoeff, ySpeedCoeff};
@@ -103,10 +103,10 @@ inline auto Speedway::GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
   const float xDiff = coords.GetX() - xAdd;
   const float sign = xDiff < 0.0F ? -1.0F : +1.0F;
   const float xWarp = 0.1F * ((sign * UTILS::Sq(xDiff) / xAdd) + xAdd);
+  const float amplitude = (1.0F - sqDistFromZero) / 4.0F;
 
-  const float xSpeedCoeff =
-      (1.0F - sqDistFromZero / 4.0F) * baseSpeedCoeffs.x * (m_params.xAmplitude * xWarp);
-  const float ySpeedCoeff = (1.0F - sqDistFromZero / 4.0F) * m_params.yAmplitude * xSpeedCoeff;
+  const float xSpeedCoeff = amplitude * baseSpeedCoeffs.x * (m_params.xAmplitude * xWarp);
+  const float ySpeedCoeff = amplitude * m_params.yAmplitude * xSpeedCoeff;
 
   return {xSpeedCoeff, ySpeedCoeff};
 }
