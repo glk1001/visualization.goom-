@@ -39,6 +39,7 @@ private:
   float m_currentContrast = DEFAULT_CONTRAST;
   float m_currentBrightness = DEFAULT_BRIGHTNESS;
   float m_currentContrastMinChannelValue = 0.0F;
+  float m_maxContrastMinChannelValue = 0.0F;
 
   static constexpr uint32_t NUM_HIGH_CONTRAST_ON_STEPS = 250;
   static constexpr uint32_t HIGH_CONTRAST_ON_DELAY_TIME = 100;

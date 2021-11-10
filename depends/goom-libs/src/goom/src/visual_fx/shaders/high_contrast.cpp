@@ -31,6 +31,7 @@ void HighContrast::Start()
   m_currentContrast = DEFAULT_CONTRAST;
   m_currentBrightness = DEFAULT_BRIGHTNESS;
   m_currentContrastMinChannelValue = 0.0F;
+  m_maxContrastMinChannelValue = 0.0F;
 }
 
 void HighContrast::UpdateHighContrast()
@@ -49,7 +50,7 @@ void HighContrast::UpdateHighContrast()
     constexpr float HIGH_CONTRAST = 1.01F;
     m_currentContrast = stdnew::lerp(DEFAULT_CONTRAST, HIGH_CONTRAST, m_highContrastT());
     m_currentContrastMinChannelValue =
-        stdnew::lerp(0.0F, m_currentContrastMinChannelValue, m_highContrastT());
+        stdnew::lerp(0.0F, m_maxContrastMinChannelValue, m_highContrastT());
     constexpr float CONTRAST_BRIGHTNESS = 0.9F;
     m_currentBrightness = stdnew::lerp(DEFAULT_BRIGHTNESS, CONTRAST_BRIGHTNESS, m_highContrastT());
 
@@ -70,7 +71,7 @@ void HighContrast::UpdateHighContrast()
     m_highContrastOnTimer.ResetToZero();
     constexpr float CONTRAST_MIN_CHAN = -0.1F;
     constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.8F;
-    m_currentContrastMinChannelValue =
+    m_maxContrastMinChannelValue =
         m_goomRand.ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
   }
 }
