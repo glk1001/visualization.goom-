@@ -12,6 +12,7 @@
 #include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
+#include "fx_utils/dot_drawer.h"
 #include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -47,7 +48,6 @@ namespace GOOM::VISUAL_FX
 using COLOR::GammaCorrection;
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
-using COLOR::GetColorMultiply;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
@@ -108,7 +108,6 @@ private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   IGoomRand& m_goomRand;
-  const SmallImageBitmaps& m_smallBitmaps;
   std::shared_ptr<RandomColorMaps> m_colorMaps;
   std::reference_wrapper<const IColorMap> m_currentColorMap;
   static constexpr float GAMMA = 1.0F / 1.0F;
@@ -141,6 +140,8 @@ private:
   Pixel m_srceColor{};
   Pixel m_destColor{};
 
+  FX_UTILS::DotDrawer m_dotDrawer;
+
   float m_power = 0.0F;
   float m_powerIncrement = 0.0F;
   // This factor gives height to the audio samples lines. This value seems pleasing.
@@ -150,15 +151,6 @@ private:
   float m_amplitude = 1.0F;
   float m_audioRange = 0.0F;
   float m_minAudioValue = 0.0F;
-  static constexpr size_t MIN_IMAGE_DOT_SIZE = 3;
-  static constexpr size_t MAX_IMAGE_DOT_SIZE = 15;
-  static_assert(MAX_IMAGE_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
-  size_t m_currentDotSize = MIN_IMAGE_DOT_SIZE;
-  bool m_beadedLook = false;
-  const Weights<size_t> m_dotSizesMin;
-  const Weights<size_t> m_dotSizes;
-  [[nodiscard]] auto GetNextDotSize(size_t maxSize) const -> size_t;
-  [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
 
   struct PointAndColor
   {
@@ -174,7 +166,6 @@ private:
                                       float dataVal) const -> PointAndColor;
   [[nodiscard]] auto GetMainColor(const Pixel& lineColor, float t) const -> Pixel;
   void MoveSrceLineCloserToDest();
-  void DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors);
   static void SmoothCircleJoin(std::vector<PointAndColor>& audioPoints);
 };
 
@@ -272,7 +263,6 @@ LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
     m_goomRand{fxHelpers.GetGoomRand()},
-    m_smallBitmaps{smallBitmaps},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
     m_currentColorMap{GetRandomColorMap()},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
@@ -284,29 +274,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
     m_destParam{destParam},
     m_srceColor{srceColor},
     m_destColor{destColor},
-    // clang-format off
-    m_dotSizesMin{
-        m_goomRand,
-        {
-            {1, 100},
-            {3, 50},
-            {5, 20},
-            {7, 10},
-        }},
-    m_dotSizes{
-        m_goomRand,
-        {
-            {1, 50},
-            {3, 20},
-            {5, 10},
-            {7, 10},
-            {9, 10},
-            {11, 5},
-            {13, 4},
-            {15, 3},
-        }
-    }
-// clang-format on
+    m_dotDrawer{m_draw, m_goomRand, smallBitmaps}
 {
 }
 
@@ -469,16 +437,10 @@ void LinesFx::LinesImpl::ResetDestLine(const LineType newLineType,
   m_destColor = newColor;
   m_lineLerpFactor = 0.0;
   m_currentBrightness = m_goomRand.GetRandInRange(1.0F, 2.5F);
-  m_beadedLook = m_goomRand.ProbabilityOfMInN(3, 20);
+  m_dotDrawer.ChangeDotSizes();
   m_maxNormalizedPeak = m_goomRand.GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
 
   m_srcePointsCopy = m_srcePoints;
-}
-
-inline auto LinesFx::LinesImpl::GetImageBitmap(const size_t size) const -> const ImageBitmap&
-{
-  return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
-                                       stdnew::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
 }
 
 inline auto LinesFx::LinesImpl::GetPower() const -> float
@@ -590,37 +552,14 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
     const std::vector<Pixel> colors = {lineColor, modColor};
 
     m_draw.Line(point1.x, point1.y, point2.x, point2.y, colors, THICKNESS);
-    DrawDots(point2, colors);
+    m_dotDrawer.DrawDots(point2, colors, 1.0F);
 
     point1 = point2;
   }
 
   MoveSrceLineCloserToDest();
 
-  constexpr size_t MAX_DOT_SIZE = 7;
-  m_currentDotSize = GetNextDotSize(MAX_DOT_SIZE);
-}
-
-void LinesFx::LinesImpl::DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors)
-{
-  size_t dotSize = m_currentDotSize;
-  if (m_beadedLook)
-  {
-    dotSize = GetNextDotSize(MAX_IMAGE_DOT_SIZE);
-  }
-
-  if (dotSize > 1)
-  {
-    const auto getModColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                                 const Pixel& b) -> Pixel
-    { return GetColorMultiply(b, colors[0]); };
-    const auto getLineColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                                  const Pixel& b) -> Pixel
-    { return GetColorMultiply(b, colors[1]); };
-    const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getModColor, getLineColor};
-    const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
-    m_draw.Bitmap(pt.x, pt.y, bitmap, getColors);
-  }
+  m_dotDrawer.ChangeDotSizes();
 }
 
 auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,
@@ -733,17 +672,6 @@ inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float
     return lineColor;
   }
   return m_currentColorMap.get().GetColor(t);
-}
-
-inline auto LinesFx::LinesImpl::GetNextDotSize(const size_t maxSize) const -> size_t
-{
-  // TODO Fix this hack
-  constexpr size_t MAX_MIN_DOT_SIZE = 7;
-  if (maxSize <= MAX_MIN_DOT_SIZE)
-  {
-    return m_dotSizesMin.GetRandomWeighted();
-  }
-  return m_dotSizes.GetRandomWeighted();
 }
 
 #if __cplusplus <= 201402L

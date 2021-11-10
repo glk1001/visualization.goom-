@@ -1,12 +1,10 @@
 #pragma once
 
+#include "../fx_utils/dot_drawer.h"
 #include "color/colormaps.h"
 #include "color/random_colormaps.h"
 #include "goom_graphic.h"
 #include "tentacles.h"
-#include "utils/goom_rand_base.h"
-#include "utils/graphics/image_bitmaps.h"
-#include "utils/graphics/small_image_bitmaps.h"
 #include "utils/mathutils.h"
 #include "v2d.h"
 
@@ -20,8 +18,15 @@ namespace GOOM
 namespace DRAW
 {
 class IGoomDraw;
-} // namespace DRAW
+}
+namespace UTILS
+{
+class IGoomRand;
+class SmallImageBitmaps;
+} // namespace UTILS
 
+namespace VISUAL_FX
+{
 namespace TENTACLES
 {
 
@@ -73,7 +78,7 @@ public:
                  UTILS::IGoomRand& goomRand,
                  const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
-  void Init(COLOR::ColorMapGroup initialColorMapGroup, const ITentacleLayout& l);
+  void Init(COLOR::ColorMapGroup initialColorMapGroup, const ITentacleLayout& layout);
 
   void SetColorMode(ColorModes m);
 
@@ -132,23 +137,12 @@ private:
               const Pixel& dominantLowColor,
               float angle,
               float distance,
-              float distance2) const;
-  static constexpr size_t MIN_IMAGE_DOT_SIZE = 3;
-  static constexpr size_t MAX_IMAGE_DOT_SIZE = 15;
-  static_assert(MAX_IMAGE_DOT_SIZE <= UTILS::SmallImageBitmaps::MAX_IMAGE_SIZE,
-                "Max dot size mismatch.");
-  size_t m_currentDotSize = MIN_IMAGE_DOT_SIZE;
-  bool m_beadedLook = false;
+              float distance2);
+  FX_UTILS::DotDrawer m_dotDrawer;
   static constexpr uint32_t MIN_STEPS_BETWEEN_NODES = 1;
   static constexpr uint32_t MAX_STEPS_BETWEEN_NODES = 6;
   uint32_t m_numNodesBetweenDots = (MIN_STEPS_BETWEEN_NODES + MAX_STEPS_BETWEEN_NODES) / 2;
-  const UTILS::Weights<size_t> m_dotSizesMin;
-  const UTILS::Weights<size_t> m_dotSizes;
-  const UTILS::SmallImageBitmaps& m_smallBitmaps;
-  [[nodiscard]] auto GetNextDotSize(size_t maxSize) const -> size_t;
-  [[nodiscard]] auto GetImageBitmap(size_t size) const -> const UTILS::ImageBitmap&;
-  void DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors) const;
-  [[nodiscard]] auto ProjectV3DOntoV2D(const std::vector<V3dFlt>& v3, float distance) const
+  [[nodiscard]] auto ProjectV3DOntoV2D(const std::vector<V3dFlt>& point3D, float distance) const
       -> std::vector<V2dInt>;
   static void RotateV3DAboutYAxis(float sinAngle,
                                   float cosAngle,
@@ -170,7 +164,7 @@ public:
   auto operator=(TentacleColorMapColorizer&&) -> TentacleColorMapColorizer& = delete;
 
   auto GetColorMapGroup() const -> COLOR::ColorMapGroup override;
-  void SetColorMapGroup(COLOR::ColorMapGroup c) override;
+  void SetColorMapGroup(COLOR::ColorMapGroup colorMapGroup) override;
   void ChangeColorMap() override;
   auto GetColor(size_t nodeNum) const -> Pixel override;
 
@@ -202,4 +196,5 @@ private:
 };
 
 } // namespace TENTACLES
+} // namespace VISUAL_FX
 } // namespace GOOM

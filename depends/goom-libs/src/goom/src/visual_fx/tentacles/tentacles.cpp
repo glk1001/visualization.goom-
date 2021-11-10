@@ -19,10 +19,12 @@
 #if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
 namespace TENTACLES
 {
 #else
-namespace GOOM::TENTACLES
+namespace GOOM::VISUAL_FX::TENTACLES
 {
 #endif
 
@@ -450,7 +452,8 @@ void Tentacles3D::ColorMapsChanged()
 
 #if __cplusplus <= 201402L
 } // namespace TENTACLES
+} // namespace VISUAL_FX
 } // namespace GOOM
 #else
-} // namespace GOOM::TENTACLES
+} // namespace GOOM::VISUAL_FX::TENTACLES
 #endif

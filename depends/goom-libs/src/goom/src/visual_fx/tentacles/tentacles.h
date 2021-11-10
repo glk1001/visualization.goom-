@@ -14,10 +14,12 @@
 #if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
 namespace TENTACLES
 {
 #else
-namespace GOOM::TENTACLES
+namespace GOOM::VISUAL_FX::TENTACLES
 {
 #endif
 
@@ -331,8 +333,9 @@ inline auto Tentacles3D::Iter::operator*() const -> Tentacle3D&
 
 #if __cplusplus <= 201402L
 } // namespace TENTACLES
+} // namespace VISUAL_FX
 } // namespace GOOM
 #else
-} // namespace GOOM::TENTACLES
+} // namespace GOOM::VISUAL_FX::TENTACLES
 #endif
 

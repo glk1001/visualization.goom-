@@ -1,12 +1,13 @@
 #include "tentacle_driver.h"
 
 #include "color/colormaps.h"
+#include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
 #include "goom/logging_control.h"
 //#undef NO_LOGGING
-#include "color/random_colormaps.h"
 #include "goom/logging.h"
 #include "tentacles.h"
+#include "utils/goom_rand_base.h"
 #include "utils/mathutils.h"
 #include "v2d.h"
 
@@ -26,10 +27,12 @@
 #if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
 namespace TENTACLES
 {
 #else
-namespace GOOM::TENTACLES
+namespace GOOM::VISUAL_FX::TENTACLES
 {
 #endif
 
@@ -46,7 +49,9 @@ using UTILS::SmallImageBitmaps;
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
-TentacleDriver::TentacleDriver(IGoomDraw& draw, IGoomRand& goomRand, const SmallImageBitmaps& smallBitmaps) noexcept
+TentacleDriver::TentacleDriver(IGoomDraw& draw,
+                               IGoomRand& goomRand,
+                               const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
     m_goomRand{goomRand},
     m_tentacles{m_goomRand},
@@ -68,29 +73,8 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw, IGoomRand& goomRand, const Small
             {200, 0.900F, 2.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0},
 
         }},
-    m_dotSizesMin{
-        m_goomRand,
-        {
-            {1, 100},
-            {3, 50},
-            {5, 5},
-            {7, 100},
-        }},
-    m_dotSizes{
-        m_goomRand,
-        {
-            {1, 50},
-            {3, 20},
-            {5, 5},
-            {7, 1},
-            {9, 1},
-            {11, 1},
-            {13, 100},
-            {15, 100},
-        }
-    },
     // clang-format on
-    m_smallBitmaps{smallBitmaps}
+    m_dotDrawer{m_draw, m_goomRand, smallBitmaps}
 {
 }
 
@@ -113,9 +97,9 @@ constexpr double TENT2D_X_MIN = 0.0;
 constexpr double TENT2D_Y_MIN = 0.065736;
 constexpr double TENT2D_Y_MAX = 10000.0;
 
-void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITentacleLayout& l)
+void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITentacleLayout& layout)
 {
-  m_numTentacles = l.GetNumPoints();
+  m_numTentacles = layout.GetNumPoints();
 
   m_tentacleParams.resize(m_numTentacles);
 
@@ -149,7 +133,7 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
     std::unique_ptr<Tentacle2D> tentacle2D{CreateNewTentacle2D(i, params)};
 
     // To hide the annoying flapping tentacle head, make near the head very dark.
-    const Pixel headColor = Pixel{5, 5, 5, MAX_ALPHA};
+    const auto headColor = Pixel{5, 5, 5, MAX_ALPHA};
     const Pixel headLowColor = headColor;
     Tentacle3D tentacle{std::move(tentacle2D),
                         m_colorizers[m_colorizers.size() - 1],
@@ -162,7 +146,7 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
     m_tentacles.AddTentacle(std::move(tentacle));
   }
 
-  UpdateTentaclesLayout(l);
+  UpdateTentaclesLayout(layout);
 
   m_updateNum = 0;
 }
@@ -219,7 +203,8 @@ void TentacleDriver::UpdateTentaclesLayout(const ITentacleLayout& layout)
 
   std::vector<size_t> sortedLongestFirst(m_numTentacles);
   std::iota(sortedLongestFirst.begin(), sortedLongestFirst.end(), 0);
-  const auto compareByLength = [this](const size_t id1, const size_t id2) {
+  const auto compareByLength = [this](const size_t id1, const size_t id2)
+  {
     const double len1 = m_tentacles[id1].Get2DTentacle().GetLength();
     const double len2 = m_tentacles[id2].Get2DTentacle().GetLength();
     // Sort by longest first.
@@ -333,10 +318,9 @@ void TentacleDriver::CheckForTimerEvents()
 
   m_tentacles.ColorMapsChanged();
 
-  constexpr size_t MAX_DOT_SIZE = 7;
-  m_currentDotSize = GetNextDotSize(MAX_DOT_SIZE);
-  m_beadedLook = m_goomRand.ProbabilityOfMInN(3, 20);
-  m_numNodesBetweenDots = m_goomRand.GetRandInRange(MIN_STEPS_BETWEEN_NODES, MAX_STEPS_BETWEEN_NODES + 1U);
+  m_dotDrawer.ChangeDotSizes();
+  m_numNodesBetweenDots =
+      m_goomRand.GetRandInRange(MIN_STEPS_BETWEEN_NODES, MAX_STEPS_BETWEEN_NODES + 1U);
 }
 
 void TentacleDriver::FreshStart()
@@ -400,7 +384,7 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
                             const Pixel& dominantLowColor,
                             const float angle,
                             const float distance,
-                            const float distance2) const
+                            const float distance2)
 {
   const std::vector<V3dFlt> vertices = tentacle.GetVertices();
   const size_t n = vertices.size();
@@ -442,7 +426,8 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
   // very white and over-exposed. If we reduce the brightness, then all the combined
   // tentacles look less bright and white and more colors show through.
   using GetMixedColorsFunc = std::function<std::tuple<Pixel, Pixel>(const size_t nodeNum)>;
-  GetMixedColorsFunc getMixedColors = [&](const size_t nodeNum) {
+  GetMixedColorsFunc getMixedColors = [&](const size_t nodeNum)
+  {
     return tentacle.GetMixedColors(nodeNum, dominantColor, dominantLowColor,
                                    brightnessCut * BRIGHTNESS);
   };
@@ -455,9 +440,8 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
         m_goomRand.GetRandInRange(MIN_RAND_BRIGHTNESS, MAX_RAND_BRIGHTNESS);
     const float brightness =
         brightnessCut * std::max(randBrightness, FAR_AWAY_DISTANCE / distance2);
-    getMixedColors = [&, brightness](const size_t nodeNum) {
-      return tentacle.GetMixedColors(nodeNum, dominantColor, dominantLowColor, brightness);
-    };
+    getMixedColors = [&, brightness](const size_t nodeNum)
+    { return tentacle.GetMixedColors(nodeNum, dominantColor, dominantLowColor, brightness); };
   }
 
   for (size_t nodeNum = 0; nodeNum < (v2.size() - 1); ++nodeNum)
@@ -498,81 +482,44 @@ void TentacleDriver::Plot3D(const Tentacle3D& tentacle,
       if ((nodeNum % m_numNodesBetweenDots) == 0)
       {
         const Pixel color1 = m_colorizers.at(tentacle.Get2DTentacle().GetID())->GetColor(nodeNum);
-        DrawDots({ix1, iy1}, {color1, color});
+        constexpr float DOT_BRIGHTNESS = 5.0F;
+        m_dotDrawer.DrawDots({ix1, iy1}, {color1, color}, DOT_BRIGHTNESS);
       }
     }
   }
 }
 
-void TentacleDriver::DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors) const
+auto TentacleDriver::ProjectV3DOntoV2D(const std::vector<V3dFlt>& point3D,
+                                       const float distance) const -> std::vector<V2dInt>
 {
-  size_t dotSize = m_currentDotSize;
-  if (m_beadedLook)
-  {
-    dotSize = GetNextDotSize(MAX_IMAGE_DOT_SIZE);
-  }
+  std::vector<V2dInt> point2D(point3D.size());
 
-  if (dotSize > 1)
-  {
-    constexpr float DOT_BRIGHTNESS = 5.0F;
-    const auto getModColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                                 const Pixel& b) -> Pixel
-    { return GetColorMultiply(b, COLOR::GetBrighterColor(DOT_BRIGHTNESS, colors[0])); };
-    const auto getLineColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                                  const Pixel& b) -> Pixel
-    { return GetColorMultiply(b, COLOR::GetBrighterColor(DOT_BRIGHTNESS, colors[1])); };
-    const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getModColor, getLineColor};
-    const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
-    m_draw.Bitmap(pt.x, pt.y, bitmap, getColors);
-  }
-}
-
-auto TentacleDriver::GetNextDotSize(size_t maxSize) const -> size_t
-{
-  // TODO Fix this hack
-  constexpr size_t MAX_MIN_DOT_SIZE = 7;
-  if (maxSize <= MAX_MIN_DOT_SIZE)
-  {
-    return m_dotSizesMin.GetRandomWeighted();
-  }
-  return m_dotSizes.GetRandomWeighted();
-}
-
-inline auto TentacleDriver::GetImageBitmap(size_t size) const -> const UTILS::ImageBitmap&
-{
-  return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
-                                       stdnew::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
-}
-
-auto TentacleDriver::ProjectV3DOntoV2D(const std::vector<V3dFlt>& v3, const float distance) const
-    -> std::vector<V2dInt>
-{
-  std::vector<V2dInt> v2(v3.size());
-
-  const int Xp0 =
-      v3[0].ignore || (v3[0].z <= 2) ? 1 : static_cast<int>((distance * v3[0].x) / v3[0].z);
-  const int Xpn = v3[v3.size() - 1].ignore || (v3[v3.size() - 1].z <= 2)
+  const int Xp0 = point3D[0].ignore || (point3D[0].z <= 2)
                       ? 1
-                      : static_cast<int>((distance * v3[v3.size() - 1].x) / v3[v3.size() - 1].z);
+                      : static_cast<int>((distance * point3D[0].x) / point3D[0].z);
+  const int Xpn = point3D[point3D.size() - 1].ignore || (point3D[point3D.size() - 1].z <= 2)
+                      ? 1
+                      : static_cast<int>((distance * point3D[point3D.size() - 1].x) /
+                                         point3D[point3D.size() - 1].z);
   const float xSpread = std::min(1.0F, std::abs(static_cast<float>(Xp0 - Xpn)) / 10.0F);
 
-  for (size_t i = 0; i < v3.size(); ++i)
+  for (size_t i = 0; i < point3D.size(); ++i)
   {
-    if ((!v3[i].ignore) && (v3[i].z > 2))
+    if ((!point3D[i].ignore) && (point3D[i].z > 2))
     {
-      const auto Xp = static_cast<int32_t>((xSpread * distance * v3[i].x) / v3[i].z);
-      const auto Yp = static_cast<int32_t>((xSpread * distance * v3[i].y) / v3[i].z);
-      v2[i].x = Xp + static_cast<int32_t>(m_draw.GetScreenWidth() >> 1);
-      v2[i].y = -Yp + static_cast<int32_t>(m_draw.GetScreenHeight() >> 1);
+      const auto Xp = static_cast<int32_t>((xSpread * distance * point3D[i].x) / point3D[i].z);
+      const auto Yp = static_cast<int32_t>((xSpread * distance * point3D[i].y) / point3D[i].z);
+      point2D[i].x = Xp + static_cast<int32_t>(m_draw.GetScreenWidth() >> 1);
+      point2D[i].y = -Yp + static_cast<int32_t>(m_draw.GetScreenHeight() >> 1);
     }
     else
     {
-      v2[i].x = COORD_IGNORE_VAL;
-      v2[i].y = COORD_IGNORE_VAL;
+      point2D[i].x = COORD_IGNORE_VAL;
+      point2D[i].y = COORD_IGNORE_VAL;
     }
   }
 
-  return v2;
+  return point2D;
 }
 
 inline void TentacleDriver::RotateV3DAboutYAxis(const float sinAngle,
@@ -610,9 +557,9 @@ auto TentacleColorMapColorizer::GetColorMapGroup() const -> ColorMapGroup
   return m_currentColorMapGroup;
 }
 
-void TentacleColorMapColorizer::SetColorMapGroup(const ColorMapGroup c)
+void TentacleColorMapColorizer::SetColorMapGroup(const ColorMapGroup colorMapGroup)
 {
-  m_currentColorMapGroup = c;
+  m_currentColorMapGroup = colorMapGroup;
 }
 
 void TentacleColorMapColorizer::ChangeColorMap()
@@ -659,7 +606,8 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
 
 #ifndef NO_LOGGING
   // TODO - Should be lerps here?
-  const auto logLastPoint = [&](size_t i, const float r, const float angle) {
+  const auto logLastPoint = [&](size_t i, const float r, const float angle)
+  {
     const size_t el = points.size() - 1;
     logDebug("  sample {:3}: angle = {:+6.2f}, cos(angle) = {:+6.2f}, r = {:+6.2f},"
              " pt[{:3}] = ({:+6.2f}, {:+6.2f}, {:+6.2f})",
@@ -668,7 +616,8 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
 #endif
 
   const auto getSamplePoints = [&](const float radius, const size_t numSample,
-                                   const float angleStart, const float angleFinish) {
+                                   const float angleStart, const float angleFinish)
+  {
     const float angleStep = (angleFinish - angleStart) / static_cast<float>(numSample - 1);
     float angle = angleStart;
     for (size_t i = 0; i < numSample; ++i)
@@ -720,7 +669,8 @@ auto CirclesTentacleLayout::GetPoints() const -> const std::vector<V3dFlt>&
 
 #if __cplusplus <= 201402L
 } // namespace TENTACLES
+} // namespace VISUAL_FX
 } // namespace GOOM
 #else
-} // namespace GOOM::TENTACLES
+} // namespace GOOM::VISUAL_FX::TENTACLES
 #endif
