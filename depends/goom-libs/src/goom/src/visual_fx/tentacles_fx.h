@@ -32,13 +32,11 @@ public:
 
   void Start() override;
 
-  void FreshStart();
   void Resume() override;
   void Suspend() override;
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
-  void ApplyNoDraw();
   void ApplyMultiple();
 
   void Finish() override;

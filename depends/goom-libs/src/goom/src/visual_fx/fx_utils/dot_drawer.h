@@ -29,7 +29,9 @@ class DotDrawer
 public:
   DotDrawer(DRAW::IGoomDraw& draw,
             UTILS::IGoomRand& goomRand,
-            const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+            const UTILS::SmallImageBitmaps& smallBitmaps,
+            const UTILS::Weights<size_t>& minDotSizes,
+            const UTILS::Weights<size_t>& normalDotSizes) noexcept;
 
   void ChangeDotSizes();
 
@@ -44,8 +46,8 @@ private:
   static constexpr size_t MAX_IMAGE_DOT_SIZE = 15;
   size_t m_currentDotSize = MIN_IMAGE_DOT_SIZE;
   bool m_beadedLook = false;
-  const UTILS::Weights<size_t> m_dotSizesMin;
-  const UTILS::Weights<size_t> m_dotSizes;
+  const UTILS::Weights<size_t> m_minDotSizes;
+  const UTILS::Weights<size_t> m_normalDotSizes;
   [[nodiscard]] auto GetNextDotSize(size_t maxSize) const -> size_t;
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const UTILS::ImageBitmap&;
 };

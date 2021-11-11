@@ -4,7 +4,9 @@
 #include "color/colormaps.h"
 #include "color/random_colormaps.h"
 #include "goom_graphic.h"
-#include "tentacles.h"
+#include "tentacle_colorizer.h"
+#include "tentacle_layout.h"
+#include "tentacles3d.h"
 #include "utils/mathutils.h"
 #include "v2d.h"
 
@@ -19,6 +21,7 @@ namespace DRAW
 {
 class IGoomDraw;
 }
+
 namespace UTILS
 {
 class IGoomRand;
@@ -29,39 +32,6 @@ namespace VISUAL_FX
 {
 namespace TENTACLES
 {
-
-class IterTimer
-{
-public:
-  explicit IterTimer(const size_t startCnt) : m_startCount{startCnt} {}
-
-  void Start() { m_count = m_startCount; }
-  void Next()
-  {
-    if (m_count > 0)
-    {
-      --m_count;
-    }
-  }
-
-private:
-  const size_t m_startCount;
-  size_t m_count = 0;
-};
-
-class ITentacleLayout
-{
-public:
-  ITentacleLayout() noexcept = default;
-  ITentacleLayout(const ITentacleLayout&) noexcept = default;
-  ITentacleLayout(ITentacleLayout&&) noexcept = delete;
-  virtual ~ITentacleLayout() noexcept = default;
-  auto operator=(const ITentacleLayout&) -> ITentacleLayout& = delete;
-  auto operator=(ITentacleLayout&&) -> ITentacleLayout& = delete;
-
-  [[nodiscard]] virtual auto GetNumPoints() const -> size_t = 0;
-  [[nodiscard]] virtual auto GetPoints() const -> const std::vector<V3dFlt>& = 0;
-};
 
 class TentacleDriver
 {
@@ -87,16 +57,21 @@ public:
   void StartIterating();
 
   void FreshStart();
-  void Update(
-      float angle, float distance, float distance2, const Pixel& color, const Pixel& lowColor);
-
   void SetReverseColorMix(bool val);
   void MultiplyIterZeroYValWaveFreq(float val);
+  void SetTentacleAngle(float value);
+  void SetProjectionDistance(float value);
+  void SetCameraDistance(float value);
+  void SetDominantColors(const Pixel& dominantColor, const Pixel& dominantLowColor);
+
+  void Update();
 
 private:
   DRAW::IGoomDraw& m_draw;
   UTILS::IGoomRand& m_goomRand;
-  Tentacles3D m_tentacles;
+  const int32_t m_halfScreenWidth;
+  const int32_t m_halfScreenHeight;
+  Tentacles3D m_tentacles{};
   ColorModes m_colorMode = ColorModes::ONE_GROUP_FOR_ALL;
   struct IterationParams
   {
@@ -128,27 +103,47 @@ private:
 
   auto CreateNewTentacle2D(size_t id, const IterationParams& iterationParams)
       -> std::unique_ptr<Tentacle2D>;
-  const std::vector<IterTimer*> m_iterTimers{};
-  void UpdateIterTimers();
+
   void CheckForTimerEvents();
   [[nodiscard]] auto ChangeCurrentColorMapEvent() const -> bool;
-  void Plot3D(const Tentacle3D& tentacle,
-              const Pixel& dominantColor,
-              const Pixel& dominantLowColor,
-              float angle,
-              float distance,
-              float distance2);
+
+  float m_tentacleAngle = 0.0F;
+  float m_projectionDistance = 0.0F;
+  float m_cameraDistance = 0.0F;
+  Pixel m_dominantColor{};
+  Pixel m_dominantLowColor{};
   FX_UTILS::DotDrawer m_dotDrawer;
   static constexpr uint32_t MIN_STEPS_BETWEEN_NODES = 1;
   static constexpr uint32_t MAX_STEPS_BETWEEN_NODES = 6;
   uint32_t m_numNodesBetweenDots = (MIN_STEPS_BETWEEN_NODES + MAX_STEPS_BETWEEN_NODES) / 2;
-  [[nodiscard]] auto ProjectV3DOntoV2D(const std::vector<V3dFlt>& point3D, float distance) const
+
+  void Plot3D(const Tentacle3D& tentacle);
+  void DrawNode(const Tentacle3D& tentacle,
+                size_t nodeNum,
+                int32_t x0,
+                int32_t y0,
+                int32_t x1,
+                int32_t y1,
+                float brightness);
+  void DrawNodeLine(
+      int32_t x0, int32_t y0, int32_t x1, int32_t y1, const std::vector<Pixel>& colors);
+  void DrawNodeDot(size_t nodeNum, int32_t x, int32_t y, const std::vector<Pixel>& colors);
+
+  [[nodiscard]] auto GetMixedColors(const Tentacle3D& tentacle,
+                                    float brightness,
+                                    size_t nodeNum) const -> std::vector<Pixel>;
+  [[nodiscard]] auto GetBrightness(const Tentacle3D& tentacle) const -> float;
+  [[nodiscard]] auto GetBrightnessCut(const Tentacle3D& tentacle) const -> float;
+  [[nodiscard]] auto GetCameraPosition() const -> V3dFlt;
+  [[nodiscard]] auto Get2DTentaclePoints(const Tentacle3D& tentacle) const -> std::vector<V2dInt>;
+  [[nodiscard]] auto GetTentacleAngleAboutY(const Tentacle3D& tentacle) const -> float;
+  [[nodiscard]] static auto GetTransformedPoints(const std::vector<V3dFlt>& points,
+                                                 const V3dFlt& translate,
+                                                 float angle) -> std::vector<V3dFlt>;
+  [[nodiscard]] auto GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
       -> std::vector<V2dInt>;
-  static void RotateV3DAboutYAxis(float sinAngle,
-                                  float cosAngle,
-                                  const V3dFlt& vSrc,
-                                  V3dFlt& vDest);
-  static void TranslateV3D(const V3dFlt& vAdd, V3dFlt& vInOut);
+  static void RotateAboutYAxis(float sinAngle, float cosAngle, const V3dFlt& vSrc, V3dFlt& vDest);
+  static void Translate(const V3dFlt& vAdd, V3dFlt& vInOut);
 };
 
 class TentacleColorMapColorizer : public ITentacleColorizer
@@ -163,7 +158,6 @@ public:
   auto operator=(const TentacleColorMapColorizer&) -> TentacleColorMapColorizer& = delete;
   auto operator=(TentacleColorMapColorizer&&) -> TentacleColorMapColorizer& = delete;
 
-  auto GetColorMapGroup() const -> COLOR::ColorMapGroup override;
   void SetColorMapGroup(COLOR::ColorMapGroup colorMapGroup) override;
   void ChangeColorMap() override;
   auto GetColor(size_t nodeNum) const -> Pixel override;
@@ -180,20 +174,27 @@ private:
   mutable float m_tTransition = 0.0F;
 };
 
-class CirclesTentacleLayout : public ITentacleLayout
+inline void TentacleDriver::SetTentacleAngle(const float value)
 {
-public:
-  CirclesTentacleLayout(float radiusMin,
-                        float radiusMax,
-                        const std::vector<size_t>& numCircleSamples,
-                        float zConst);
-  // Order of points is outer circle to inner.
-  [[nodiscard]] auto GetNumPoints() const -> size_t override;
-  [[nodiscard]] auto GetPoints() const -> const std::vector<V3dFlt>& override;
+  m_tentacleAngle = value;
+}
 
-private:
-  std::vector<V3dFlt> m_points{};
-};
+inline void TentacleDriver::SetProjectionDistance(const float value)
+{
+  m_projectionDistance = value;
+}
+
+inline void TentacleDriver::SetCameraDistance(const float value)
+{
+  m_cameraDistance = value;
+}
+
+inline void TentacleDriver::SetDominantColors(const Pixel& dominantColor,
+                                              const Pixel& dominantLowColor)
+{
+  m_dominantColor = dominantColor;
+  m_dominantLowColor = dominantLowColor;
+}
 
 } // namespace TENTACLES
 } // namespace VISUAL_FX

@@ -274,7 +274,37 @@ LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
     m_destParam{destParam},
     m_srceColor{srceColor},
     m_destColor{destColor},
-    m_dotDrawer{m_draw, m_goomRand, smallBitmaps}
+    m_dotDrawer{
+        m_draw,
+        m_goomRand,
+        smallBitmaps,
+        // clang-format off
+        // min dot sizes
+        {
+            m_goomRand,
+            {
+                {1, 100},
+                {3, 50},
+                {5, 5},
+                {7, 100},
+            }
+        },
+        // normal dot sizes
+        {
+            m_goomRand,
+            {
+                {1, 50},
+                {3, 20},
+                {5, 5},
+                {7, 1},
+                {9, 1},
+                {11, 1},
+                {13, 100},
+                {15, 100},
+            }
+        }
+        // clang-format on
+    }
 {
 }
 
