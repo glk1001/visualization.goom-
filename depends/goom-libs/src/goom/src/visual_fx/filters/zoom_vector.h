@@ -7,7 +7,8 @@
 
 namespace GOOM
 {
-
+namespace VISUAL_FX
+{
 namespace FILTERS
 {
 
@@ -33,5 +34,5 @@ public:
 };
 
 } // namespace FILTERS
+} // namespace VISUAL_FX
 } // namespace GOOM
-

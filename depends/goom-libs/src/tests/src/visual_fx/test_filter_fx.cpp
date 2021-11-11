@@ -12,11 +12,11 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::PluginInfo;
 using GOOM::V2dInt;
-using GOOM::FILTERS::FilterSettingsService;
-using GOOM::FILTERS::ZoomFilterBufferSettings;
 using GOOM::UTILS::GoomRand;
 using GOOM::UTILS::Parallel;
 using GOOM::VISUAL_FX::ZoomFilterFx;
+using GOOM::VISUAL_FX::FILTERS::FilterSettingsService;
+using GOOM::VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
 
 constexpr size_t WIDTH = 120;
 constexpr size_t HEIGHT = 70;

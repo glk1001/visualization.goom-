@@ -10,6 +10,8 @@
 
 namespace GOOM
 {
+namespace VISUAL_FX
+{
 namespace FILTERS
 {
 
@@ -96,5 +98,5 @@ inline void ImageDisplacement::SetAmplitude(const float value)
 }
 
 } // namespace FILTERS
+} // namespace VISUAL_FX
 } // namespace GOOM
-

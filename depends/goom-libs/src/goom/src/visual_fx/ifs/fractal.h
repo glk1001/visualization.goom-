@@ -26,6 +26,8 @@ class ImageBitmap;
 class SmallImageBitmaps;
 } // namespace UTILS
 
+namespace VISUAL_FX
+{
 namespace IFS
 {
 
@@ -210,4 +212,5 @@ inline auto FractalHits::GetMaxHitCount() const -> uint32_t
 }
 
 } // namespace IFS
+} // namespace VISUAL_FX
 } // namespace GOOM

@@ -22,6 +22,8 @@ namespace UTILS
 class IGoomRand;
 } // namespace UTILS
 
+namespace VISUAL_FX
+{
 namespace FILTERS
 {
 
@@ -225,4 +227,5 @@ inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& 
 }
 
 } // namespace FILTERS
+} // namespace VISUAL_FX
 } // namespace GOOM

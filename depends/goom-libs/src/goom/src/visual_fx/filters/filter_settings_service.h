@@ -26,6 +26,8 @@ class IGoomRand;
 class Parallel;
 } // namespace UTILS
 
+namespace VISUAL_FX
+{
 namespace FILTERS
 {
 
@@ -273,5 +275,6 @@ inline void FilterSettingsService::SetTranLerpToMaxDefaultSwitchMult()
 }
 
 } // namespace FILTERS
+} // namespace VISUAL_FX
 } // namespace GOOM
 

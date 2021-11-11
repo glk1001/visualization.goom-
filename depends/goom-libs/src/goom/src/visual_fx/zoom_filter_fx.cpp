@@ -45,16 +45,16 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
-using FILTERS::FilterBuffersService;
-using FILTERS::FilterColorsService;
-using FILTERS::ZoomFilterBufferSettings;
-using FILTERS::ZoomFilterColorSettings;
-using FILTERS::ZoomFilterEffectsSettings;
 using UTILS::GetPair;
 using UTILS::Logging;
 using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
+using VISUAL_FX::FILTERS::FilterBuffersService;
+using VISUAL_FX::FILTERS::FilterColorsService;
+using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
+using VISUAL_FX::FILTERS::ZoomFilterColorSettings;
+using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 
 class ZoomFilterFx::ZoomFilterImpl
 {

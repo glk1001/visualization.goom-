@@ -12,11 +12,11 @@ namespace GOOM::CONTROL
 {
 #endif
 
-using FILTERS::FilterSettingsService;
-using FILTERS::Vitesse;
 using UTILS::GetPair;
 using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
+using VISUAL_FX::FILTERS::FilterSettingsService;
+using VISUAL_FX::FILTERS::Vitesse;
 
 GoomMusicSettingsReactor::GoomMusicSettingsReactor(
     const PluginInfo& goomInfo,

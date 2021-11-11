@@ -18,6 +18,8 @@ namespace UTILS
 class IGoomRand;
 } // namespace UTILS
 
+namespace VISUAL_FX
+{
 namespace FILTERS
 {
 
@@ -45,5 +47,6 @@ private:
 };
 
 } // namespace FILTERS
+} // namespace VISUAL_FX
 } // namespace GOOM
 

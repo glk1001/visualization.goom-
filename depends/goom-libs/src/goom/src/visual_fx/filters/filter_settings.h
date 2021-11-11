@@ -9,6 +9,8 @@
 
 namespace GOOM
 {
+namespace VISUAL_FX
+{
 namespace FILTERS
 {
 
@@ -120,5 +122,6 @@ inline auto Vitesse::GetRelativeSpeed() const -> float
 }
 
 } // namespace FILTERS
+} // namespace VISUAL_FX
 } // namespace GOOM
 

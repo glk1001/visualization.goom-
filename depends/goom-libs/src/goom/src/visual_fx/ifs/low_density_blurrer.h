@@ -14,6 +14,8 @@ namespace DRAW
 class IGoomDraw;
 } // namespace DRAW
 
+namespace VISUAL_FX
+{
 namespace IFS
 {
 
@@ -91,4 +93,5 @@ inline void LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFac
 }
 
 } // namespace IFS
+} // namespace VISUAL_FX
 } // namespace GOOM

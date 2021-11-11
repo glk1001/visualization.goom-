@@ -17,8 +17,10 @@ class PluginInfo;
 namespace UTILS
 {
 class Parallel;
-} // namespace UTILS
+}
 
+namespace VISUAL_FX
+{
 namespace FILTERS
 {
 
@@ -34,7 +36,7 @@ public:
   void SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
   void SetFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
-  auto GetTranLerpFactor() const -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
 
   void UpdateTranBuffers();
   void UpdateTranLerpFactor(int32_t tranLerpIncrement, float tranLerpToMaxSwitchMult);
@@ -54,7 +56,7 @@ private:
   bool m_pendingFilterEffectsSettings = false;
 
   void UpdateFilterEffectsSettings();
-  auto AreStartingFreshTranBuffers() const -> bool;
+  [[nodiscard]] auto AreStartingFreshTranBuffers() const -> bool;
   void StartFreshTranBuffers();
 };
 
@@ -69,5 +71,5 @@ inline auto FilterBuffersService::GetTranLerpFactor() const -> int32_t
 }
 
 } // namespace FILTERS
+} // namespace VISUAL_FX
 } // namespace GOOM
-

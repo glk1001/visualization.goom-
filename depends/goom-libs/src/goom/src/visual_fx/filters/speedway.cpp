@@ -8,10 +8,12 @@
 #if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
 namespace FILTERS
 {
 #else
-namespace GOOM::FILTERS
+namespace GOOM::VISUAL_FX::FILTERS
 {
 #endif
 
@@ -64,7 +66,8 @@ auto Speedway::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePai
 
 #if __cplusplus <= 201402L
 } // namespace FILTERS
+} // namespace VISUAL_FX
 } // namespace GOOM
 #else
-} // namespace GOOM::FILTERS
+} // namespace GOOM::VISUAL_FX::FILTERS
 #endif

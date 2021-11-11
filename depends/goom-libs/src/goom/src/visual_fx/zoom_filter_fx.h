@@ -11,6 +11,18 @@
 namespace GOOM
 {
 
+namespace UTILS
+{
+class Parallel;
+}
+
+struct FXBuffSettings;
+class PixelBuffer;
+class PluginInfo;
+
+namespace VISUAL_FX
+{
+
 namespace FILTERS
 {
 class FilterBuffersService;
@@ -19,18 +31,6 @@ struct ZoomFilterBufferSettings;
 struct ZoomFilterEffectsSettings;
 struct ZoomFilterColorSettings;
 } // namespace FILTERS
-
-namespace UTILS
-{
-class Parallel;
-} // namespace UTILS
-
-struct FXBuffSettings;
-class PixelBuffer;
-class PluginInfo;
-
-namespace VISUAL_FX
-{
 
 class ZoomFilterFx : public IVisualFx
 {
@@ -48,9 +48,12 @@ public:
 
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
 
-  void UpdateFilterEffectsSettings(const FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings);
-  void UpdateFilterBufferSettings(const FILTERS::ZoomFilterBufferSettings& filterBufferSettings);
-  void UpdateFilterColorSettings(const FILTERS::ZoomFilterColorSettings& filterColorSettings);
+  void UpdateFilterEffectsSettings(
+      const VISUAL_FX::FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings);
+  void UpdateFilterBufferSettings(
+      const VISUAL_FX::FILTERS::ZoomFilterBufferSettings& filterBufferSettings);
+  void UpdateFilterColorSettings(
+      const VISUAL_FX::FILTERS::ZoomFilterColorSettings& filterColorSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 

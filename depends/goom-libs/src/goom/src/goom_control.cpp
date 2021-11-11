@@ -59,7 +59,7 @@ using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
 using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToBuffer;
-using FILTERS::FilterSettingsService;
+using VISUAL_FX::FILTERS::FilterSettingsService;
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 using UTILS::GetNameValuesString;
 using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
@@ -491,9 +491,9 @@ void GoomControl::GoomControlImpl::DisplayStateText()
 {
   std::string message = "";
 
-  const FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings =
+  const ZoomFilterEffectsSettings& filterEffectsSettings =
       m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
-  const FILTERS::ZoomFilterBufferSettings& filterBufferSettings =
+  const ZoomFilterBufferSettings& filterBufferSettings =
       m_filterSettingsService.GetFilterSettings().filterBufferSettings;
 
   const GoomShaderEffects& shaderEffects = GetLastShaderEffects();

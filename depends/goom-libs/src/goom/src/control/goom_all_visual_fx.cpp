@@ -32,15 +32,15 @@ using COLOR::GetLuma;
 using COLOR::IColorMap;
 using CONTROL::GoomDrawables;
 using DRAW::IGoomDraw;
-using FILTERS::FilterBuffersService;
-using FILTERS::FilterColorsService;
-using FILTERS::ZoomFilterSettings;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::SmallImageBitmaps;
 using VISUAL_FX::FxHelpers;
 using VISUAL_FX::LinesFx;
 using VISUAL_FX::ZoomFilterFx;
+using VISUAL_FX::FILTERS::FilterBuffersService;
+using VISUAL_FX::FILTERS::FilterColorsService;
+using VISUAL_FX::FILTERS::ZoomFilterSettings;
 
 static const Pixel RED_LINE = LinesFx::GetRedLineColor();
 static const Pixel GREEN_LINE = LinesFx::GetGreenLineColor();

@@ -11,8 +11,8 @@ using GOOM::MAX_ALPHA;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::PixelChannelType;
-using GOOM::FILTERS::FilterColorsService;
-using GOOM::FILTERS::ZoomFilterBuffers;
+using GOOM::VISUAL_FX::FILTERS::FilterColorsService;
+using GOOM::VISUAL_FX::FILTERS::ZoomFilterBuffers;
 
 constexpr size_t WIDTH = 120;
 constexpr size_t HEIGHT = 70;

@@ -26,10 +26,12 @@
 #if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
 namespace TUBES
 {
 #else
-namespace GOOM::TUBES
+namespace GOOM::VISUAL_FX::TUBES
 {
 #endif
 
@@ -1343,7 +1345,8 @@ inline auto ShapePath::GetOscillatingPointAtT(const V2dFlt& point, const float t
 
 #if __cplusplus <= 201402L
 } // namespace TUBES
+} // namespace VISUAL_FX
 } // namespace GOOM
 #else
-} // namespace GOOM::TENTACLES
+} // namespace GOOM::VISUAL_FX::TUBES
 #endif

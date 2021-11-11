@@ -5,9 +5,9 @@
 
 #include <cmath>
 
-using GOOM::FILTERS::NormalizedCoords;
 using GOOM::V2dInt;
 using GOOM::UTILS::floats_equal;
+using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;
 
 constexpr uint32_t WIDTH = 1280;
 constexpr uint32_t HEIGHT = 720;

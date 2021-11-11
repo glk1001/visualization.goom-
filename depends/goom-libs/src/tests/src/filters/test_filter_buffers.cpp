@@ -15,13 +15,13 @@
 
 using GOOM::PluginInfo;
 using GOOM::V2dInt;
-using GOOM::FILTERS::FilterZoomVector;
-using GOOM::FILTERS::NormalizedCoords;
-using GOOM::FILTERS::ZoomFilterBuffers;
-using GOOM::FILTERS::ZoomFilterEffectsSettings;
 using GOOM::UTILS::floats_equal;
 using GOOM::UTILS::GoomRand;
 using GOOM::UTILS::Parallel;
+using GOOM::VISUAL_FX::FILTERS::FilterZoomVector;
+using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;
+using GOOM::VISUAL_FX::FILTERS::ZoomFilterBuffers;
+using GOOM::VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 
 constexpr size_t WIDTH = 120;
 constexpr size_t HEIGHT = 70;

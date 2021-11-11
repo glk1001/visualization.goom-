@@ -29,7 +29,6 @@ class SmallImageBitmaps;
 namespace VISUAL_FX
 {
 class FxHelpers;
-} // namespace VISUAL_FX
 
 namespace FILTERS
 {
@@ -37,6 +36,7 @@ class FilterBuffersService;
 class FilterColorsService;
 struct ZoomFilterSettings;
 } // namespace FILTERS
+} // namespace VISUAL_FX
 
 namespace CONTROL
 {
@@ -46,13 +46,14 @@ class GoomAllVisualFx
 {
 public:
   GoomAllVisualFx() noexcept = delete;
-  GoomAllVisualFx(UTILS::Parallel& parallel,
-                  const VISUAL_FX::FxHelpers& fxHelpers,
-                  const UTILS::SmallImageBitmaps& smallBitmaps,
-                  const std::string& resourcesDirectory,
-                  IGoomStateHandler& goomStateHandler,
-                  std::unique_ptr<FILTERS::FilterBuffersService> filterBuffersService,
-                  std::unique_ptr<FILTERS::FilterColorsService> filterColorsService) noexcept;
+  GoomAllVisualFx(
+      UTILS::Parallel& parallel,
+      const VISUAL_FX::FxHelpers& fxHelpers,
+      const UTILS::SmallImageBitmaps& smallBitmaps,
+      const std::string& resourcesDirectory,
+      IGoomStateHandler& goomStateHandler,
+      std::unique_ptr<VISUAL_FX::FILTERS::FilterBuffersService> filterBuffersService,
+      std::unique_ptr<VISUAL_FX::FILTERS::FilterColorsService> filterColorsService) noexcept;
 
   void Start();
   void Finish();
@@ -75,7 +76,7 @@ public:
   void ApplyCurrentStateToSingleBuffer();
   void ApplyCurrentStateToMultipleBuffers();
 
-  void UpdateFilterSettings(const FILTERS::ZoomFilterSettings& filterSettings,
+  void UpdateFilterSettings(const VISUAL_FX::FILTERS::ZoomFilterSettings& filterSettings,
                             bool updateFilterEffects);
   void ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 

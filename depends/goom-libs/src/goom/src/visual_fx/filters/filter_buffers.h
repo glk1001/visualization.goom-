@@ -21,8 +21,10 @@ class PixelBuffer;
 namespace UTILS
 {
 class Parallel;
-} // namespace UTILS
+}
 
+namespace VISUAL_FX
+{
 namespace FILTERS
 {
 
@@ -334,5 +336,5 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
 }
 
 } // namespace FILTERS
+} // namespace VISUAL_FX
 } // namespace GOOM
-

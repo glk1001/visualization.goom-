@@ -20,6 +20,8 @@ namespace UTILS
 class IGoomRand;
 } // namespace UTILS
 
+namespace VISUAL_FX
+{
 namespace TUBES
 {
 
@@ -133,5 +135,5 @@ private:
 };
 
 } // namespace TUBES
+} // namespace VISUAL_FX
 } // namespace GOOM
-

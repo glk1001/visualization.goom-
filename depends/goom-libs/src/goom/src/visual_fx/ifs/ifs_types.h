@@ -5,10 +5,12 @@
 #if __cplusplus <= 201402L
 namespace GOOM
 {
+namespace VISUAL_FX
+{
 namespace IFS
 {
 #else
-namespace GOOM::IFS
+namespace GOOM::VISUAL_FX::IFS
 {
 #endif
 
@@ -41,8 +43,9 @@ inline auto DivBy2Units(const Flt x) -> Flt
 
 #if __cplusplus <= 201402L
 } // namespace IFS
+} // namespace VISUAL_FX
 } // namespace GOOM
 #else
-} // namespace GOOM::IFS
+} // namespace GOOM::VISUAL_FX::IFS
 #endif
 
