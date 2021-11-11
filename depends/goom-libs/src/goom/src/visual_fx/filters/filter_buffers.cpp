@@ -90,6 +90,8 @@ void ZoomFilterBuffers::NotifyFilterSettingsHaveChanged()
 
 void ZoomFilterBuffers::InitAllTranBuffers()
 {
+  m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
+
   GenerateWaterFxHorizontalBuffer();
 
   FillTempTranBuffers();

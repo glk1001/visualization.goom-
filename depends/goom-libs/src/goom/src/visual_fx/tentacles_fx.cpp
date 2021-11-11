@@ -289,14 +289,7 @@ void TentaclesFx::TentaclesImpl::SetupDrivers()
     throw std::logic_error("numDrivers != layouts.size()");
   }
 
-  /**
-// Temp hack of weights
-Weights<ColorMapGroup> colorGroupWeights = colorMaps.getWeights();
-colorGroupWeights.ClearWeights(1);
-colorGroupWeights.SetWeight(ColorMapGroup::misc, 30000);
-colorMaps.setWeights(colorGroupWeights);
-***/
-
+  m_drivers.clear();
   for (size_t i = 0; i < NUM_DRIVERS; ++i)
   {
     m_drivers.emplace_back(std::make_unique<TentacleDriver>(m_draw, m_goomRand, m_smallBitmaps));
