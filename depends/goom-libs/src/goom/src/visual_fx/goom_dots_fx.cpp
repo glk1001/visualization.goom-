@@ -33,9 +33,7 @@ namespace GOOM::VISUAL_FX
 #endif
 
 using COLOR::ColorMapGroup;
-using COLOR::GammaCorrection;
 using COLOR::GetBrighterColor;
-using COLOR::GetColorMultiply;
 using COLOR::GetIncreasedChroma;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
@@ -75,7 +73,12 @@ private:
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
   uint32_t m_numFlowersInRow = 0;
+  const Weights<SmallImageBitmaps::ImageNames> m_flowerDotTypes;
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
+  void SetFlowerBitmap();
+  void SetNonFlowerBitmap();
+  void SetNextCurrentBitmapName();
+  [[nodiscard]] auto ChangeDotColorsEvent() -> bool;
 
   static constexpr size_t MIN_DOT_SIZE = 5;
   static constexpr size_t MAX_DOT_SIZE = 17;
@@ -89,14 +92,10 @@ private:
   bool m_useSingleBufferOnly = true;
   bool m_thereIsOneBuffer = true;
   bool m_useIncreasedChroma = true;
+  bool m_useMiddleColor = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
 
   uint32_t m_loopVar = 0; // mouvement des points
-
-  static constexpr float GAMMA = 1.0F / 1.0F;
-  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-  [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 
   void Update();
 
@@ -109,9 +108,6 @@ private:
                                     float xOffsetFreqDenom,
                                     float yOffsetFreqDenom,
                                     uint32_t offsetCycle) const -> V2dInt;
-  const Weights<SmallImageBitmaps::ImageNames> m_dotTypes;
-  void SetNextCurrentBitmapName();
-  [[nodiscard]] auto ChangeDotColorsEvent() -> bool;
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -132,14 +128,17 @@ void GoomDotsFx::Start()
 
 void GoomDotsFx::Resume()
 {
+  // nothing to do
 }
 
 void GoomDotsFx::Suspend()
 {
+  // nothing to do
 }
 
 void GoomDotsFx::Finish()
 {
+  // nothing to do
 }
 
 auto GoomDotsFx::GetFxName() const -> std::string
@@ -172,14 +171,13 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelpers& fxHelpers,
     m_pointWidthDiv3{static_cast<float>(m_pointWidth) / 3.0F},
     m_pointHeightDiv3{static_cast<float>(m_pointHeight) / 3.0F},
     // clang-format off
-    m_dotTypes{
+    m_flowerDotTypes{
         m_goomRand,
         {
-            {SmallImageBitmaps::ImageNames::SPHERE, 50},
-            {SmallImageBitmaps::ImageNames::CIRCLE, 20},
-            {SmallImageBitmaps::ImageNames::RED_FLOWER, 5},
-            {SmallImageBitmaps::ImageNames::ORANGE_FLOWER, 5},
-            {SmallImageBitmaps::ImageNames::WHITE_FLOWER, 5},
+            {SmallImageBitmaps::ImageNames::ORANGE_FLOWER, 10},
+            {SmallImageBitmaps::ImageNames::PINK_FLOWER,    5},
+            {SmallImageBitmaps::ImageNames::RED_FLOWER,    10},
+            {SmallImageBitmaps::ImageNames::WHITE_FLOWER,   5},
         }
     }
 // clang-format on
@@ -220,6 +218,8 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
   m_useSingleBufferOnly = m_goomRand.ProbabilityOfMInN(0, 2);
   constexpr float PROB_INCREASED_CHROMA = 0.8F;
   m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_INCREASED_CHROMA);
+  constexpr float PROB_USE_MIDDLE_COLOR = 0.2F;
+  m_useMiddleColor = m_goomRand.ProbabilityOf(PROB_USE_MIDDLE_COLOR);
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
@@ -335,7 +335,8 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   }
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(size_t dotNum, float t) const -> Pixel
+inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const float t) const
+    -> Pixel
 {
   if (m_usePrimaryColors.at(dotNum))
   {
@@ -352,40 +353,47 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(size_t dotNum, float t) cons
   return m_colorMapsManagers.at(dotNum).GetColorMap(m_colorMapIds.at(dotNum)).GetColor(t);
 }
 
-void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
+inline void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
 {
+  constexpr float PROB_MORE_FLOWERS = 1.0F / 50.0F;
+
   if (m_numFlowersInRow > 0)
   {
-    ++m_numFlowersInRow;
-    if (m_numFlowersInRow > MAX_FLOWERS_IN_ROW)
-    {
-      m_numFlowersInRow = 0;
-    }
-    if (m_goomRand.ProbabilityOfMInN(1, 3))
-    {
-      m_currentBitmapName = SmallImageBitmaps::ImageNames::RED_FLOWER;
-    }
-    else if (m_goomRand.ProbabilityOfMInN(1, 3))
-    {
-      m_currentBitmapName = SmallImageBitmaps::ImageNames::ORANGE_FLOWER;
-    }
-    else if (m_goomRand.ProbabilityOfMInN(1, 3))
-    {
-      m_currentBitmapName = SmallImageBitmaps::ImageNames::PINK_FLOWER;
-    }
-    else
-    {
-      m_currentBitmapName = SmallImageBitmaps::ImageNames::WHITE_FLOWER;
-    }
+    SetFlowerBitmap();
   }
-  else if (m_goomRand.ProbabilityOfMInN(1, 50))
+  else if (m_goomRand.ProbabilityOf(PROB_MORE_FLOWERS))
   {
     m_numFlowersInRow = 1;
     SetNextCurrentBitmapName();
   }
   else
   {
-    m_currentBitmapName = m_dotTypes.GetRandomWeighted();
+    SetNonFlowerBitmap();
+  }
+}
+
+inline void GoomDotsFx::GoomDotsFxImpl::SetFlowerBitmap()
+{
+  ++m_numFlowersInRow;
+  if (m_numFlowersInRow > MAX_FLOWERS_IN_ROW)
+  {
+    m_numFlowersInRow = 0;
+  }
+
+  m_currentBitmapName = m_flowerDotTypes.GetRandomWeighted();
+}
+
+inline void GoomDotsFx::GoomDotsFxImpl::SetNonFlowerBitmap()
+{
+  constexpr float PROB_SPHERE = 0.7F;
+
+  if (m_goomRand.ProbabilityOf(PROB_SPHERE))
+  {
+    m_currentBitmapName = SmallImageBitmaps::ImageNames::SPHERE;
+  }
+  else
+  {
+    m_currentBitmapName = SmallImageBitmaps::ImageNames::CIRCLE;
   }
 }
 
@@ -427,21 +435,21 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   }
 
   constexpr float BRIGHTNESS = 1.0F;
-  const auto getColor1 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             const Pixel& b) -> Pixel
+  const auto getColor1 =
+      [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& b)
   {
-    // const Pixel newColor = x == xMid && y == yMid ? m_middleColor : finalColor;
+    const Pixel newColor =
+        m_useMiddleColor && (x == radius) && (y == radius) ? m_middleColor : color;
     if (0 == b.A())
     {
       return Pixel::BLACK;
     }
-    const Pixel mixedColor = COLOR::IColorMap::GetColorMix(b, color, 0.5F);
+    const Pixel mixedColor = COLOR::IColorMap::GetColorMix(b, newColor, 0.5F);
     const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
-    return GetGammaCorrection(BRIGHTNESS, finalColor);
+    return GetBrighterColor(BRIGHTNESS, finalColor);
   };
   const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& b) -> Pixel
-  { return getColor1(x, y, b); };
+                             [[maybe_unused]] const Pixel& bgnd) { return getColor1(x, y, bgnd); };
 
   const auto xMid = dotPosition.x + static_cast<int32_t>(radius);
   const auto yMid = dotPosition.y + static_cast<int32_t>(radius);
@@ -453,17 +461,6 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   {
     m_draw.Bitmap(xMid, yMid, GetImageBitmap(diameter), {getColor1, getColor2});
   }
-}
-
-inline auto GoomDotsFx::GoomDotsFxImpl::GetGammaCorrection(const float brightness,
-                                                           const Pixel& color) const -> Pixel
-{
-  // if constexpr (GAMMA == 1.0F)
-  if (1.0F == GAMMA)
-  {
-    return GetBrighterColor(brightness, color);
-  }
-  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 #if __cplusplus <= 201402L
