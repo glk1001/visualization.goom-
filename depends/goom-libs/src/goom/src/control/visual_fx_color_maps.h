@@ -59,13 +59,15 @@ private:
   using ColorMatchedSet = std::array<ColorMapFunc, UTILS::NUM<GoomEffect>>;
   const ColorMatchedSet* m_currentColorMatchedMap{};
 
-  [[nodiscard]] auto GetNextColorMatchedSet() const -> const ColorMatchedSet&;
+  [[nodiscard]] auto GetNextColorMatchedSet() -> const ColorMatchedSet&;
 
   static constexpr size_t NUM_COLOR_MATCHED_SETS = 18;
   using ColorMatchedSets = std::array<ColorMatchedSet, NUM_COLOR_MATCHED_SETS>;
-  [[nodiscard]] static auto GetColorMatchedSets() -> const ColorMatchedSets&;
+  [[nodiscard]] auto GetColorMatchedSets() -> const ColorMatchedSets&;
 
   [[nodiscard]] static auto GetConstColorMatchedSet(const ColorMapFunc& func) -> ColorMatchedSet;
+  [[nodiscard]] auto GetColorPairColorMatchedSet(const ColorMapFunc& func1,
+                                                 const ColorMapFunc& func2) -> ColorMatchedSet;
 
   [[nodiscard]] static auto GetColorMatchedSet1() -> ColorMatchedSet;
   [[nodiscard]] static auto GetColorMatchedSet2() -> ColorMatchedSet;

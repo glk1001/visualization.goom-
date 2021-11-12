@@ -1,11 +1,11 @@
 #include "visual_fx_color_maps.h"
 
 #include "color/random_colormaps.h"
-#include "goom/logging_control.h"
-//#undef NO_LOGGING
-#include "goom/logging.h"
 #include "utils/enumutils.h"
 #include "utils/goom_rand_base.h"
+
+#include <array>
+#include <numeric>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -37,7 +37,7 @@ using COLOR::GetSlightlyDivergingSlimMaps;
 using COLOR::GetSlightlyDivergingStandardMaps;
 using COLOR::GetYellowStandardMaps;
 using UTILS::IGoomRand;
-using UTILS::Logging;
+using UTILS::NUM;
 using UTILS::ToUType;
 
 VisualFxColorMaps::VisualFxColorMaps(IGoomRand& goomRand) noexcept
@@ -45,33 +45,35 @@ VisualFxColorMaps::VisualFxColorMaps(IGoomRand& goomRand) noexcept
 {
 }
 
-auto VisualFxColorMaps::GetNextColorMatchedSet() const -> const ColorMatchedSet&
+auto VisualFxColorMaps::GetNextColorMatchedSet() -> const ColorMatchedSet&
 {
   return GetColorMatchedSets()[m_goomRand.GetRandInRange(0U, NUM_COLOR_MATCHED_SETS)];
 }
 
 inline auto VisualFxColorMaps::GetColorMatchedSets() -> const ColorMatchedSets&
 {
-  static const ColorMatchedSets s_COLOR_MATCHED_SETS{{
-      {GetConstColorMatchedSet(GetRedStandardMaps)},
-      {GetConstColorMatchedSet(GetGreenStandardMaps)},
-      {GetConstColorMatchedSet(GetBlueStandardMaps)},
-      {GetConstColorMatchedSet(GetYellowStandardMaps)},
-      {GetConstColorMatchedSet(GetOrangeStandardMaps)},
-      {GetConstColorMatchedSet(GetPurpleStandardMaps)},
-      {GetConstColorMatchedSet(GetAllStandardMaps)},
-      {GetConstColorMatchedSet(GetHeatStandardMaps)},
-      {GetConstColorMatchedSet(GetColdStandardMaps)},
-      {GetConstColorMatchedSet(GetDivergingBlackStandardMaps)},
-      {GetColorMatchedSet1()},
-      {GetColorMatchedSet2()},
-      {GetColorMatchedSet3()},
-      {GetColorMatchedSet4()},
-      {GetColorMatchedSet5()},
-      {GetColorMatchedSet6()},
-      {GetColorMatchedSet7()},
-      {GetColorMatchedSet8()},
-  }};
+  static const ColorMatchedSets s_COLOR_MATCHED_SETS{
+      {
+       {GetColorPairColorMatchedSet(GetRedStandardMaps, GetGreenStandardMaps)},
+       {GetColorPairColorMatchedSet(GetRedStandardMaps, GetBlueStandardMaps)},
+       {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetBlueStandardMaps)},
+       {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetPurpleStandardMaps)},
+       {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetGreenStandardMaps)},
+       {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetPurpleStandardMaps)},
+       {GetConstColorMatchedSet(GetAllStandardMaps)},
+       {GetConstColorMatchedSet(GetHeatStandardMaps)},
+       {GetConstColorMatchedSet(GetColdStandardMaps)},
+       {GetConstColorMatchedSet(GetDivergingBlackStandardMaps)},
+       {GetColorMatchedSet1()},
+       {GetColorMatchedSet2()},
+       {GetColorMatchedSet3()},
+       {GetColorMatchedSet4()},
+       {GetColorMatchedSet5()},
+       {GetColorMatchedSet6()},
+       {GetColorMatchedSet7()},
+       {GetColorMatchedSet8()},
+       }
+  };
 
   return s_COLOR_MATCHED_SETS;
 }
@@ -80,6 +82,21 @@ inline auto VisualFxColorMaps::GetConstColorMatchedSet(const ColorMapFunc& func)
 {
   ColorMatchedSet matchedSet;
   matchedSet.fill(func);
+  return matchedSet;
+}
+
+auto VisualFxColorMaps::GetColorPairColorMatchedSet(const ColorMapFunc& func1,
+                                                    const ColorMapFunc& func2) -> ColorMatchedSet
+{
+  ColorMatchedSet matchedSet = GetConstColorMatchedSet(func1);
+  std::array<size_t, NUM<GoomEffect>> indexes{};
+  std::iota(begin(indexes), end(indexes), 0);
+  m_goomRand.Shuffle(begin(indexes), end(indexes));
+  for (size_t i = 0; i < indexes.size(); i += 2)
+  {
+    matchedSet.at(indexes.at(i)) = func2;
+  }
+
   return matchedSet;
 }
 
