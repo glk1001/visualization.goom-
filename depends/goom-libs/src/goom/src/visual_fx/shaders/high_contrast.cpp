@@ -63,14 +63,14 @@ void HighContrast::UpdateHighContrast()
     return;
   }
 
-  constexpr float PROB_CONTRAST = 0.4F;
+  constexpr float PROB_CONTRAST = 0.3F;
   if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
       m_goomRand.ProbabilityOf(PROB_CONTRAST))
   {
     m_highContrastT.Reset();
     m_highContrastOnTimer.ResetToZero();
-    constexpr float CONTRAST_MIN_CHAN = -0.5F;
-    constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.7F;
+    constexpr float CONTRAST_MIN_CHAN = -0.4F;
+    constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.9F;
     m_maxContrastMinChannelValue =
         m_goomRand.ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
   }
