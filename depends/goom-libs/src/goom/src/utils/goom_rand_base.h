@@ -59,22 +59,19 @@ template<class E>
 class Weights
 {
 public:
-  explicit Weights(IGoomRand& goomRand) noexcept;
   Weights(IGoomRand& goomRand, const std::vector<std::pair<E, size_t>>& weights);
 
-  void ClearWeights(size_t value);
   [[nodiscard]] auto GetNumElements() const -> size_t;
-  void SetWeight(E enumClass, size_t value);
   [[nodiscard]] auto GetWeight(E enumClass) const -> size_t;
 
   [[nodiscard]] auto GetSumOfWeights() const -> size_t { return m_sumOfWeights; }
 
-  [[nodiscard]] auto GetRandomWeighted() const -> E;
+  [[nodiscard]] auto GetRandomWeighted() const -> const E&;
 
 private:
   IGoomRand& m_goomRand;
-  std::vector<std::pair<E, size_t>> m_weights{};
-  size_t m_sumOfWeights{};
+  const std::vector<std::pair<E, size_t>> m_weights;
+  const size_t m_sumOfWeights;
   [[nodiscard]] static auto GetSumOfWeights(const std::vector<std::pair<E, size_t>>& weights)
       -> size_t;
 };
@@ -99,11 +96,6 @@ inline void IGoomRand::Shuffle(RandomIt first, RandomIt last)
   {
     std::swap(first[i], first[GetRandInRange(0, static_cast<int32_t>(i + 1))]);
   }
-}
-
-template<class E>
-Weights<E>::Weights(IGoomRand& goomRand) noexcept : m_goomRand{goomRand}
-{
 }
 
 template<class E>
@@ -136,29 +128,6 @@ auto Weights<E>::GetNumElements() const -> size_t
 }
 
 template<class E>
-void Weights<E>::SetWeight(const E enumClass, const size_t value)
-{
-#if __cplusplus <= 201402L
-  for (auto& wgt : m_weights)
-  {
-    const auto& e = std::get<0>(wgt);
-    auto& w = std::get<1>(wgt);
-#else
-  for (auto& [e, w] : m_weights)
-  {
-#endif
-    if (e == enumClass)
-    {
-      w = value;
-      m_sumOfWeights = GetSumOfWeights(m_weights);
-      return;
-    }
-  }
-  m_weights.emplace_back(std::make_pair(enumClass, value));
-  m_sumOfWeights = GetSumOfWeights(m_weights);
-}
-
-template<class E>
 auto Weights<E>::GetWeight(const E enumClass) const -> size_t
 {
 #if __cplusplus <= 201402L
@@ -179,23 +148,7 @@ auto Weights<E>::GetWeight(const E enumClass) const -> size_t
 }
 
 template<class E>
-void Weights<E>::ClearWeights(const size_t value)
-{
-#if __cplusplus <= 201402L
-  for (auto& wgt : m_weights)
-  {
-    auto& w = std::get<1>(wgt);
-#else
-  for (auto& [e, w] : m_weights)
-  {
-#endif
-    w = value;
-  }
-  m_sumOfWeights = GetSumOfWeights(m_weights);
-}
-
-template<class E>
-auto Weights<E>::GetRandomWeighted() const -> E
+auto Weights<E>::GetRandomWeighted() const -> const E&
 {
   if (m_weights.empty())
   {

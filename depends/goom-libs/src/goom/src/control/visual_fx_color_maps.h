@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils/enumutils.h"
+#include "utils/goom_rand_base.h"
 
 #include <array>
 #include <functional>
@@ -57,13 +58,10 @@ private:
   using ColorMapFunc =
       std::function<std::shared_ptr<COLOR::RandomColorMaps>(UTILS::IGoomRand& goomRand)>;
   using ColorMatchedSet = std::array<ColorMapFunc, UTILS::NUM<GoomEffect>>;
-  const ColorMatchedSet* m_currentColorMatchedMap{};
+  const UTILS::Weights<ColorMatchedSet> m_colorMatchedSets;
+  const ColorMatchedSet* m_currentColorMatchedMap;
 
   [[nodiscard]] auto GetNextColorMatchedSet() -> const ColorMatchedSet&;
-
-  static constexpr size_t NUM_COLOR_MATCHED_SETS = 18;
-  using ColorMatchedSets = std::array<ColorMatchedSet, NUM_COLOR_MATCHED_SETS>;
-  [[nodiscard]] auto GetColorMatchedSets() -> const ColorMatchedSets&;
 
   [[nodiscard]] static auto GetConstColorMatchedSet(const ColorMapFunc& func) -> ColorMatchedSet;
   [[nodiscard]] auto GetColorPairColorMatchedSet(const ColorMapFunc& func1,

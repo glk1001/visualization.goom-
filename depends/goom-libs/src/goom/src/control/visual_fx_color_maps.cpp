@@ -41,41 +41,40 @@ using UTILS::NUM;
 using UTILS::ToUType;
 
 VisualFxColorMaps::VisualFxColorMaps(IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand}, m_currentColorMatchedMap{&GetNextColorMatchedSet()}
+  : m_goomRand{goomRand},
+    // clang-format off
+    m_colorMatchedSets
+    {
+        m_goomRand,
+        {
+             {GetColorPairColorMatchedSet(GetRedStandardMaps,    GetGreenStandardMaps),    10},
+             {GetColorPairColorMatchedSet(GetRedStandardMaps,    GetBlueStandardMaps),     10},
+             {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetBlueStandardMaps),     10},
+             {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetPurpleStandardMaps),   10},
+             {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetGreenStandardMaps),    10},
+             {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetPurpleStandardMaps),   10},
+             {GetConstColorMatchedSet(GetAllStandardMaps),                                 20},
+             {GetConstColorMatchedSet(GetHeatStandardMaps),                                15},
+             {GetConstColorMatchedSet(GetColdStandardMaps),                                15},
+             {GetConstColorMatchedSet(GetDivergingBlackStandardMaps),                      40},
+             {GetColorMatchedSet1(),                                                       90},
+             {GetColorMatchedSet2(),                                                       90},
+             {GetColorMatchedSet3(),                                                       90},
+             {GetColorMatchedSet4(),                                                       90},
+             {GetColorMatchedSet5(),                                                       90},
+             {GetColorMatchedSet6(),                                                       90},
+             {GetColorMatchedSet7(),                                                       90},
+             {GetColorMatchedSet8(),                                                       90},
+        }
+    },
+    // clang-format on
+    m_currentColorMatchedMap{&GetNextColorMatchedSet()}
 {
 }
 
 auto VisualFxColorMaps::GetNextColorMatchedSet() -> const ColorMatchedSet&
 {
-  return GetColorMatchedSets()[m_goomRand.GetRandInRange(0U, NUM_COLOR_MATCHED_SETS)];
-}
-
-inline auto VisualFxColorMaps::GetColorMatchedSets() -> const ColorMatchedSets&
-{
-  static const ColorMatchedSets s_COLOR_MATCHED_SETS{
-      {
-       {GetColorPairColorMatchedSet(GetRedStandardMaps, GetGreenStandardMaps)},
-       {GetColorPairColorMatchedSet(GetRedStandardMaps, GetBlueStandardMaps)},
-       {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetBlueStandardMaps)},
-       {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetPurpleStandardMaps)},
-       {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetGreenStandardMaps)},
-       {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetPurpleStandardMaps)},
-       {GetConstColorMatchedSet(GetAllStandardMaps)},
-       {GetConstColorMatchedSet(GetHeatStandardMaps)},
-       {GetConstColorMatchedSet(GetColdStandardMaps)},
-       {GetConstColorMatchedSet(GetDivergingBlackStandardMaps)},
-       {GetColorMatchedSet1()},
-       {GetColorMatchedSet2()},
-       {GetColorMatchedSet3()},
-       {GetColorMatchedSet4()},
-       {GetColorMatchedSet5()},
-       {GetColorMatchedSet6()},
-       {GetColorMatchedSet7()},
-       {GetColorMatchedSet8()},
-       }
-  };
-
-  return s_COLOR_MATCHED_SETS;
+  return m_colorMatchedSets.GetRandomWeighted();
 }
 
 inline auto VisualFxColorMaps::GetConstColorMatchedSet(const ColorMapFunc& func) -> ColorMatchedSet

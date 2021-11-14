@@ -119,7 +119,6 @@ private:
 class WeightedColorMaps : public RandomColorMaps
 {
 public:
-  explicit WeightedColorMaps(UTILS::IGoomRand& goomRand);
   WeightedColorMaps(UTILS::IGoomRand& goomRand, const UTILS::Weights<ColorMapGroup>& weights);
 
   [[nodiscard]] auto GetRandomGroup() const -> ColorMapGroup override;

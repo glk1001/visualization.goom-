@@ -278,11 +278,6 @@ void RandomColorMaps::SetLightnessLimits(const float minLightness, const float m
   m_maxLightness = maxLightness;
 }
 
-WeightedColorMaps::WeightedColorMaps(IGoomRand& goomRand)
-  : RandomColorMaps{goomRand}, m_weights{goomRand}
-{
-}
-
 WeightedColorMaps::WeightedColorMaps(IGoomRand& goomRand, const Weights<ColorMapGroup>& weights)
   : RandomColorMaps{goomRand}, m_weights{weights}, m_weightsActive{true}
 {
