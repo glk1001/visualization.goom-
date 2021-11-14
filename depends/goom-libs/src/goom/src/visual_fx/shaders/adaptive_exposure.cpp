@@ -75,11 +75,14 @@ auto AdaptiveExposure::GetTargetExposureLerpFactor() const -> float
   constexpr float TOO_HIGH_EXPOSURE_LERP_FACTOR = 0.6F;
   constexpr float TOO_LOW_EXPOSURE_LERP_FACTOR = 0.3F;
 
-  if (m_tooLowLuminanceInARow > 10)
+  constexpr uint32_t MAX_TOO_LOW_EXPOSURE_IN_A_ROW = 100000;
+  constexpr uint32_t MAX_TOO_HIGH_EXPOSURE_IN_A_ROW = 50000;
+
+  if (m_tooLowLuminanceInARow > MAX_TOO_LOW_EXPOSURE_IN_A_ROW)
   {
     return TOO_LOW_EXPOSURE_LERP_FACTOR;
   }
-  if (m_tooHighLuminanceInARow > 5)
+  if (m_tooHighLuminanceInARow > MAX_TOO_HIGH_EXPOSURE_IN_A_ROW)
   {
     return TOO_HIGH_EXPOSURE_LERP_FACTOR;
   }
@@ -88,8 +91,9 @@ auto AdaptiveExposure::GetTargetExposureLerpFactor() const -> float
 
 auto AdaptiveExposure::GetAverageLuminanceOfSpotSamples() const -> float
 {
-  float totalLogLuminance = 0.0F;
   constexpr size_t NUM_SAMPLES_TO_DO = 10;
+
+  float totalLogLuminance = 0.0F;
   size_t numNonZeroSamples = 0;
   for (size_t i = 0; i < NUM_SAMPLES_TO_DO; ++i)
   {
