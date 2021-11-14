@@ -107,7 +107,6 @@ private:
   const V2dInt m_screenMidPoint;
   const std::string m_resourcesDirectory;
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
-  const UTILS::Weights<ZoomFilterMode> m_weightedFilterEvents;
 
   struct ZoomFilterModeInfo
   {
@@ -127,6 +126,7 @@ private:
   static constexpr float DEFAULT_MAX_SPEED_COEFF = 2.01F;
   static constexpr float MAX_MAX_SPEED_COEFF = 4.01F;
   ZoomFilterSettings m_filterSettings;
+  const UTILS::Weights<ZoomFilterMode> m_weightedFilterEvents;
 
   bool m_filterEffectsSettingsHaveChanged = false;
 

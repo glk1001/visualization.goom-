@@ -280,25 +280,6 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
     m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
     m_resourcesDirectory{resourcesDirectory},
     m_filterEvents{spimpl::make_unique_impl<FilterEvents>(m_goomRand)},
-    m_weightedFilterEvents{goomRand,
-                           {
-                               {ZoomFilterMode::AMULET_MODE, 8},
-                               {ZoomFilterMode::CRYSTAL_BALL_MODE0, 4},
-                               {ZoomFilterMode::CRYSTAL_BALL_MODE1, 2},
-                               {ZoomFilterMode::HYPERCOS_MODE0, 6},
-                               {ZoomFilterMode::HYPERCOS_MODE1, 5},
-                               {ZoomFilterMode::HYPERCOS_MODE2, 3},
-                               {ZoomFilterMode::HYPERCOS_MODE3, 3},
-                               {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, 5},
-                               {ZoomFilterMode::NORMAL_MODE, 6},
-                               {ZoomFilterMode::SCRUNCH_MODE, 6},
-                               {ZoomFilterMode::SPEEDWAY_MODE0, 3},
-                               {ZoomFilterMode::SPEEDWAY_MODE1, 3},
-                               {ZoomFilterMode::WAVE_MODE0, 5},
-                               {ZoomFilterMode::WAVE_MODE1, 4},
-                               {ZoomFilterMode::WATER_MODE, 0},
-                               {ZoomFilterMode::Y_ONLY_MODE, 4},
-                           }},
     m_filterModeData{GetFilterModeData(m_resourcesDirectory)},
     m_filterSettings{{Vitesse{},
                       HypercosOverlay::NONE,
@@ -312,15 +293,40 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                       false},
                      {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
                      {false, Pixel::BLACK}},
-    m_zoomMidPointWeights{m_goomRand,
-                          {
-                              {ZoomMidPointEvents::EVENT1, 3},
-                              {ZoomMidPointEvents::EVENT2, 2},
-                              {ZoomMidPointEvents::EVENT3, 2},
-                              {ZoomMidPointEvents::EVENT4, 18},
-                              {ZoomMidPointEvents::EVENT5, 10},
-                              {ZoomMidPointEvents::EVENT6, 10},
-                          }}
+    // clang-format off
+    m_weightedFilterEvents{
+        m_goomRand,
+        {
+            {ZoomFilterMode::AMULET_MODE,              8},
+            {ZoomFilterMode::CRYSTAL_BALL_MODE0,       4},
+            {ZoomFilterMode::CRYSTAL_BALL_MODE1,       2},
+            {ZoomFilterMode::HYPERCOS_MODE0,           8},
+            {ZoomFilterMode::HYPERCOS_MODE1,           4},
+            {ZoomFilterMode::HYPERCOS_MODE2,           1},
+            {ZoomFilterMode::HYPERCOS_MODE3,           1},
+            {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,  5},
+            {ZoomFilterMode::NORMAL_MODE,              6},
+            {ZoomFilterMode::SCRUNCH_MODE,             6},
+            {ZoomFilterMode::SPEEDWAY_MODE0,           3},
+            {ZoomFilterMode::SPEEDWAY_MODE1,           3},
+            {ZoomFilterMode::WAVE_MODE0,               5},
+            {ZoomFilterMode::WAVE_MODE1,               4},
+            {ZoomFilterMode::WATER_MODE,               0},
+            {ZoomFilterMode::Y_ONLY_MODE,              4},
+        }
+    },
+    m_zoomMidPointWeights{
+        m_goomRand,
+        {
+            {ZoomMidPointEvents::EVENT1,  3},
+            {ZoomMidPointEvents::EVENT2,  2},
+            {ZoomMidPointEvents::EVENT3,  2},
+            {ZoomMidPointEvents::EVENT4, 18},
+            {ZoomMidPointEvents::EVENT5, 10},
+            {ZoomMidPointEvents::EVENT6, 10},
+        }
+    }
+// clang-format on
 {
 }
 
