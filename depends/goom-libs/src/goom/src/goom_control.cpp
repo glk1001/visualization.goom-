@@ -62,6 +62,8 @@ using DRAW::GoomDrawToBuffer;
 using FILTERS::FilterSettingsService;
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 using UTILS::GetNameValuesString;
+using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
+using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 #endif
 using UTILS::GoomRand;
 using UTILS::Logging;
@@ -494,6 +496,8 @@ void GoomControl::GoomControlImpl::DisplayStateText()
   const FILTERS::ZoomFilterBufferSettings& filterBufferSettings =
       m_filterSettingsService.GetFilterSettings().filterBufferSettings;
 
+  const GoomShaderEffects& shaderEffects = GetLastShaderEffects();
+
   message += std20::format("State: {}\n", m_visualFx.GetCurrentStateName());
   message += std20::format("Filter Mode: {}\n", m_filterSettingsService.GetCurrentFilterMode());
   message +=
@@ -502,6 +506,11 @@ void GoomControl::GoomControlImpl::DisplayStateText()
   message += std20::format("tranLerpIncrement: {}\n", filterBufferSettings.tranLerpIncrement);
   message +=
       std20::format("tranLerpToMaxSwitchMult: {}\n", filterBufferSettings.tranLerpToMaxSwitchMult);
+
+  message += std20::format("exposure: {}\n", shaderEffects.exposure);
+  message += std20::format("contrast: {}\n", shaderEffects.contrast);
+  message += std20::format("minChan: {}\n", shaderEffects.contrastMinChannelValue);
+  message += std20::format("brightness: {}\n", shaderEffects.brightness);
 
   message += GetNameValuesString(m_visualFx.GetZoomFilterFxNameValueParams()) + "\n";
 
