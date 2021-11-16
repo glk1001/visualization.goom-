@@ -219,11 +219,6 @@ TubeFx::TubeFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps
 {
 }
 
-void TubeFx::ApplyNoDraw()
-{
-  // Not needed.
-}
-
 void TubeFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps);

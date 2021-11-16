@@ -41,7 +41,6 @@ public:
 
   void SetZoomMidPoint(const V2dInt& zoomMidPoint) override;
 
-  void ApplyNoDraw();
   void ApplyMultiple();
 
   void Finish() override;

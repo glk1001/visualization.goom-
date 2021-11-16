@@ -222,7 +222,6 @@ void AllStandardVisualFx::ApplyTentaclesToBothBuffersIfRequired()
 {
   if (!IsCurrentlyDrawable(GoomDrawables::TENTACLES))
   {
-    m_tentacles_fx->ApplyNoDraw();
     return;
   }
 
@@ -234,7 +233,6 @@ void AllStandardVisualFx::ApplyTubeToBothBuffersIfRequired()
 {
   if (!IsCurrentlyDrawable(GoomDrawables::TUBE))
   {
-    m_tube_fx->ApplyNoDraw();
     return;
   }
 
