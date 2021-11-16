@@ -113,9 +113,9 @@ void TentacleDriver::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>
   m_colorMaps = weightedMaps;
 }
 
-void TentacleDriver::SetColorMode(const ColorModes m)
+void TentacleDriver::SetColorMode(const ColorModes colorMode)
 {
-  m_colorMode = m;
+  m_colorMode = colorMode;
 }
 
 constexpr double TENT2D_X_MIN = 0.0;
@@ -126,18 +126,18 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
 {
   m_numTentacles = layout.GetNumPoints();
 
-  m_tentacleParams.resize(m_numTentacles);
-
-  constexpr V3dFlt INITIAL_HEAD_POS = {0, 0, 0};
-
   const size_t numInParamGroup = m_numTentacles / m_iterParamsGroups.size();
-  const float tStep = 1.0F / static_cast<float>(numInParamGroup - 1);
 
+  // IMPORTANT: Dividing the m_numTentacles into param groups makes the tentacle movements
+  //            look good. I tried making them all move the same, but it just didn't look
+  //            right. For the moment this seems best.
+  const float tStep = 1.0F / static_cast<float>(numInParamGroup - 1);
   size_t paramsIndex = 0;
-  float t = 0.0;
+  float t = 0.0F;
+  m_tentacleParams.resize(m_numTentacles);
   for (size_t i = 0; i < m_numTentacles; ++i)
   {
-    const IterParamsGroup paramsGrp = m_iterParamsGroups.at(paramsIndex);
+    const IterParamsGroup paramsGroup = m_iterParamsGroups.at(paramsIndex);
     if (0 == (i % numInParamGroup))
     {
       if (paramsIndex < (m_iterParamsGroups.size() - 1))
@@ -146,29 +146,11 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
       }
       t = 0.0;
     }
-    const IterationParams params = paramsGrp.GetNext(t);
+    m_tentacleParams[i] = paramsGroup.GetNext(t);
     t += tStep;
-    m_tentacleParams[i] = params;
 
-    std::shared_ptr<TentacleColorMapColorizer> colorizer{
-        std::make_shared<TentacleColorMapColorizer>(initialColorMapGroup, params.numNodes,
-                                                    m_goomRand)};
-    m_colorizers.emplace_back(colorizer);
-
-    std::unique_ptr<Tentacle2D> tentacle2D{CreateNewTentacle2D(i, params)};
-
-    // To hide the annoying flapping tentacle head, make near the head very dark.
-    const auto headColor = Pixel{5, 5, 5, MAX_ALPHA};
-    const Pixel headLowColor = headColor;
-    Tentacle3D tentacle{std::move(tentacle2D),
-                        m_colorizers[m_colorizers.size() - 1],
-                        headColor,
-                        headLowColor,
-                        INITIAL_HEAD_POS,
-                        Tentacle2D::MIN_NUM_NODES,
-                        m_goomRand};
-
-    m_tentacles.AddTentacle(std::move(tentacle));
+    AddColorizer(initialColorMapGroup, m_tentacleParams[i]);
+    AddTentacle(i, m_tentacleParams[i]);
   }
 
   UpdateTentaclesLayout(layout);
@@ -176,19 +158,47 @@ void TentacleDriver::Init(const ColorMapGroup initialColorMapGroup, const ITenta
   m_updateNum = 0;
 }
 
+void TentacleDriver::AddColorizer(const ColorMapGroup initialColorMapGroup,
+                                  const IterationParams& params)
+{
+  std::shared_ptr<TentacleColorMapColorizer> colorizer{std::make_shared<TentacleColorMapColorizer>(
+      initialColorMapGroup, params.numNodes, m_goomRand)};
+  m_colorizers.emplace_back(colorizer);
+}
+
+void TentacleDriver::AddTentacle(const size_t id, const IterationParams& params)
+{
+  std::unique_ptr<Tentacle2D> tentacle2D{CreateNewTentacle2D(id, params)};
+
+  // To hide the annoying flapping tentacle head, make near the head very dark.
+  constexpr V3dFlt INITIAL_HEAD_POS = {0, 0, 0};
+  const auto headColor = Pixel{5, 5, 5, MAX_ALPHA};
+  const Pixel headLowColor = headColor;
+  Tentacle3D tentacle{std::move(tentacle2D),
+                      m_colorizers[m_colorizers.size() - 1],
+                      headColor,
+                      headLowColor,
+                      INITIAL_HEAD_POS,
+                      Tentacle2D::MIN_NUM_NODES,
+                      m_goomRand};
+
+  m_tentacles.AddTentacle(std::move(tentacle));
+}
+
 auto TentacleDriver::IterParamsGroup::GetNext(const float t) const
     -> TentacleDriver::IterationParams
 {
-  const float prevYWeight =
-      goomRand.GetRandInRange(1.0F, 1.000001F) * stdnew::lerp(first.prevYWeight, last.prevYWeight, t);
   IterationParams params{};
-  params.length = goomRand.GetRandInRange(1.0F, 1.000001F * stdnew::lerp(first.length, last.length, t));
+  params.length =
+      goomRand.GetRandInRange(1.0F, 1.000001F * stdnew::lerp(first.length, last.length, t));
   assert(params.length >= 1.0F);
   params.numNodes = static_cast<size_t>(
       goomRand.GetRandInRange(1.0F, 1.000001F) *
       stdnew::lerp(static_cast<float>(first.numNodes), static_cast<float>(last.numNodes), t));
   assert(params.numNodes >= 10);
-  params.prevYWeight = prevYWeight;
+
+  params.prevYWeight = goomRand.GetRandInRange(1.0F, 1.000001F) *
+                       stdnew::lerp(first.prevYWeight, last.prevYWeight, t);
   params.iterZeroYValWave = first.iterZeroYValWave;
   params.iterZeroYValWaveFreq =
       goomRand.GetRandInRange(1.0F, 1.000001F) *
@@ -196,18 +206,17 @@ auto TentacleDriver::IterParamsGroup::GetNext(const float t) const
   return params;
 }
 
-auto TentacleDriver::CreateNewTentacle2D(size_t id, const IterationParams& iterationParams)
+auto TentacleDriver::CreateNewTentacle2D(const size_t id, const IterationParams& params)
     -> std::unique_ptr<Tentacle2D>
 {
-  const float tentacleLen =
-      std::max(1.0F, m_goomRand.GetRandInRange(0.99F, 1.01F) * iterationParams.length);
+  const float tentacleLen = std::max(1.0F, m_goomRand.GetRandInRange(0.99F, 1.01F) * params.length);
   assert(tentacleLen >= 1);
   const double tent2d_xMax = TENT2D_X_MIN + static_cast<double>(tentacleLen);
   assert(tent2d_xMax >= 1.0);
 
-  std::unique_ptr<Tentacle2D> tentacle{std::make_unique<Tentacle2D>(
-      id, iterationParams.numNodes, TENT2D_X_MIN, tent2d_xMax, TENT2D_Y_MIN, TENT2D_Y_MAX,
-      iterationParams.prevYWeight, 1.0F - iterationParams.prevYWeight)};
+  std::unique_ptr<Tentacle2D> tentacle{
+      std::make_unique<Tentacle2D>(id, params.numNodes, TENT2D_X_MIN, tent2d_xMax, TENT2D_Y_MIN,
+                                   TENT2D_Y_MAX, params.prevYWeight, 1.0F - params.prevYWeight)};
 
   tentacle->SetDoDamping(true);
 
@@ -259,20 +268,20 @@ void TentacleDriver::UpdateTentaclesLayout(const ITentacleLayout& layout)
   }
 }
 
-void TentacleDriver::MultiplyIterZeroYValWaveFreq(const float val)
+void TentacleDriver::MultiplyIterZeroYValWaveFreq(const float value)
 {
   for (size_t i = 0; i < m_numTentacles; ++i)
   {
-    const float newFreq = val * m_tentacleParams[i].iterZeroYValWaveFreq;
+    const float newFreq = value * m_tentacleParams[i].iterZeroYValWaveFreq;
     m_tentacleParams[i].iterZeroYValWave.SetFrequency(newFreq);
   }
 }
 
-void TentacleDriver::SetReverseColorMix(const bool val)
+void TentacleDriver::SetReverseColorMix(const bool value)
 {
   for (auto& t : m_tentacles)
   {
-    t.SetReverseColorMix(val);
+    t.SetReverseColorMix(value);
   }
 }
 
@@ -283,6 +292,8 @@ auto TentacleDriver::GetNextColorMapGroups() const -> std::vector<ColorMapGroup>
        m_goomRand.ProbabilityOfMInN(1, 100))
           ? 1
           : m_goomRand.GetRandInRange(1U, std::min(5U, static_cast<uint32_t>(m_colorizers.size())));
+  assert(numDifferentGroups > 0);
+
   std::vector<ColorMapGroup> groups(numDifferentGroups);
   for (size_t i = 0; i < numDifferentGroups; ++i)
   {

@@ -50,15 +50,15 @@ public:
 
   void Init(COLOR::ColorMapGroup initialColorMapGroup, const ITentacleLayout& layout);
 
-  void SetColorMode(ColorModes m);
+  void SetColorMode(ColorModes colorMode);
 
   void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);
 
   void StartIterating();
 
   void FreshStart();
-  void SetReverseColorMix(bool val);
-  void MultiplyIterZeroYValWaveFreq(float val);
+  void SetReverseColorMix(bool value);
+  void MultiplyIterZeroYValWaveFreq(float value);
   void SetTentacleAngle(float value);
   void SetProjectionDistance(float value);
   void SetCameraDistance(float value);
@@ -101,8 +101,9 @@ private:
   static const size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES;
   [[nodiscard]] auto GetNextColorMapGroups() const -> std::vector<COLOR::ColorMapGroup>;
 
-  auto CreateNewTentacle2D(size_t id, const IterationParams& iterationParams)
-      -> std::unique_ptr<Tentacle2D>;
+  void AddTentacle(size_t id, const IterationParams& params);
+  auto CreateNewTentacle2D(size_t id, const IterationParams& params) -> std::unique_ptr<Tentacle2D>;
+  void AddColorizer(COLOR::ColorMapGroup initialColorMapGroup, const IterationParams& params);
 
   void CheckForTimerEvents();
   [[nodiscard]] auto ChangeCurrentColorMapEvent() const -> bool;
