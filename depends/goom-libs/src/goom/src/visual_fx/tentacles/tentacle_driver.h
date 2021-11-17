@@ -1,14 +1,13 @@
 #pragma once
 
-#include "../fx_utils/dot_drawer.h"
 #include "color/colormaps.h"
 #include "color/random_colormaps.h"
 #include "goom_graphic.h"
+#include "tentacle3d.h"
 #include "tentacle_colorizer.h"
 #include "tentacle_layout.h"
-#include "tentacles3d.h"
+#include "tentacle_plotter.h"
 #include "utils/mathutils.h"
-#include "v2d.h"
 
 #include <cstdint>
 #include <memory>
@@ -46,12 +45,11 @@ public:
   TentacleDriver() noexcept = delete;
   TentacleDriver(DRAW::IGoomDraw& draw,
                  UTILS::IGoomRand& goomRand,
-                 const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
-
-  void Init(COLOR::ColorMapGroup initialColorMapGroup, const ITentacleLayout& layout);
+                 const UTILS::SmallImageBitmaps& smallBitmaps,
+                 COLOR::ColorMapGroup initialColorMapGroup,
+                 const ITentacleLayout& tentacleLayout) noexcept;
 
   void SetColorMode(ColorModes colorMode);
-
   void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);
 
   void StartIterating();
@@ -69,10 +67,8 @@ public:
 private:
   DRAW::IGoomDraw& m_draw;
   UTILS::IGoomRand& m_goomRand;
-  const int32_t m_halfScreenWidth;
-  const int32_t m_halfScreenHeight;
-  Tentacles3D m_tentacles{};
-  ColorModes m_colorMode = ColorModes::ONE_GROUP_FOR_ALL;
+  const ITentacleLayout& m_tentacleLayout;
+
   struct IterationParams
   {
     size_t numNodes = 200;
@@ -86,65 +82,45 @@ private:
     UTILS::IGoomRand& goomRand;
     IterationParams first{};
     IterationParams last{};
-    [[nodiscard]] auto GetNext(float t) const -> IterationParams;
+    [[nodiscard]] auto GetNextIterationParams(float t) const -> IterationParams;
   };
   const std::vector<IterParamsGroup> m_iterParamsGroups;
-
-  void UpdateTentaclesLayout(const ITentacleLayout& layout);
+  std::vector<IterationParams> m_tentacleParams;
+  [[nodiscard]] static auto GetTentacleParams(size_t numTentacles,
+                                              const std::vector<IterParamsGroup>& iterParamsGroups)
+      -> std::vector<IterationParams>;
 
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
-  std::vector<std::shared_ptr<ITentacleColorizer>> m_colorizers{};
+  std::vector<std::shared_ptr<ITentacleColorizer>> m_colorizers;
+  [[nodiscard]] static auto GetColorizers(UTILS::IGoomRand& goomRand,
+                                          const std::vector<IterationParams>& tentacleParams,
+                                          COLOR::ColorMapGroup initialColorMapGroup)
+      -> std::vector<std::shared_ptr<ITentacleColorizer>>;
 
-  size_t m_updateNum = 0;
-  size_t m_numTentacles = 0;
-  std::vector<IterationParams> m_tentacleParams{};
+  std::vector<Tentacle3D> m_tentacles;
+  [[nodiscard]] static auto GetTentacles(
+      UTILS::IGoomRand& goomRand,
+      const std::vector<IterationParams>& tentacleParams,
+      const ITentacleLayout& tentacleLayout,
+      const std::vector<std::shared_ptr<ITentacleColorizer>>& colorizers)
+      -> std::vector<Tentacle3D>;
+  [[nodiscard]] static auto CreateNewTentacle2D(UTILS::IGoomRand& goomRand,
+                                                size_t id,
+                                                const IterationParams& params)
+      -> std::unique_ptr<Tentacle2D>;
+  static void UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
+                                    const ITentacleLayout& tentacleLayout);
+
+  ColorModes m_colorMode = ColorModes::ONE_GROUP_FOR_ALL;
   static const size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES;
   [[nodiscard]] auto GetNextColorMapGroups() const -> std::vector<COLOR::ColorMapGroup>;
+  void TentaclesColorMapsChanged();
 
-  void AddTentacle(size_t id, const IterationParams& params);
-  auto CreateNewTentacle2D(size_t id, const IterationParams& params) -> std::unique_ptr<Tentacle2D>;
-  void AddColorizer(COLOR::ColorMapGroup initialColorMapGroup, const IterationParams& params);
-
+  size_t m_updateNum = 0;
   void CheckForTimerEvents();
   [[nodiscard]] auto ChangeCurrentColorMapEvent() const -> bool;
 
-  float m_tentacleAngle = 0.0F;
-  float m_projectionDistance = 0.0F;
-  float m_cameraDistance = 0.0F;
-  Pixel m_dominantColor{};
-  Pixel m_dominantLowColor{};
-  FX_UTILS::DotDrawer m_dotDrawer;
-  static constexpr uint32_t MIN_STEPS_BETWEEN_NODES = 1;
-  static constexpr uint32_t MAX_STEPS_BETWEEN_NODES = 6;
-  uint32_t m_numNodesBetweenDots = (MIN_STEPS_BETWEEN_NODES + MAX_STEPS_BETWEEN_NODES) / 2;
-
-  void Plot3D(const Tentacle3D& tentacle);
-  void DrawNode(const Tentacle3D& tentacle,
-                size_t nodeNum,
-                int32_t x0,
-                int32_t y0,
-                int32_t x1,
-                int32_t y1,
-                float brightness);
-  void DrawNodeLine(
-      int32_t x0, int32_t y0, int32_t x1, int32_t y1, const std::vector<Pixel>& colors);
-  void DrawNodeDot(size_t nodeNum, int32_t x, int32_t y, const std::vector<Pixel>& colors);
-
-  [[nodiscard]] auto GetMixedColors(const Tentacle3D& tentacle,
-                                    float brightness,
-                                    size_t nodeNum) const -> std::vector<Pixel>;
-  [[nodiscard]] auto GetBrightness(const Tentacle3D& tentacle) const -> float;
-  [[nodiscard]] auto GetBrightnessCut(const Tentacle3D& tentacle) const -> float;
-  [[nodiscard]] auto GetCameraPosition() const -> V3dFlt;
-  [[nodiscard]] auto Get2DTentaclePoints(const Tentacle3D& tentacle) const -> std::vector<V2dInt>;
-  [[nodiscard]] auto GetTentacleAngleAboutY(const Tentacle3D& tentacle) const -> float;
-  [[nodiscard]] static auto GetTransformedPoints(const std::vector<V3dFlt>& points,
-                                                 const V3dFlt& translate,
-                                                 float angle) -> std::vector<V3dFlt>;
-  [[nodiscard]] auto GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
-      -> std::vector<V2dInt>;
-  static void RotateAboutYAxis(float sinAngle, float cosAngle, const V3dFlt& vSrc, V3dFlt& vDest);
-  static void Translate(const V3dFlt& vAdd, V3dFlt& vInOut);
+  TentaclePlotter m_tentaclePlotter;
 };
 
 class TentacleColorMapColorizer : public ITentacleColorizer
@@ -177,24 +153,23 @@ private:
 
 inline void TentacleDriver::SetTentacleAngle(const float value)
 {
-  m_tentacleAngle = value;
+  m_tentaclePlotter.SetTentacleAngle(value);
 }
 
 inline void TentacleDriver::SetProjectionDistance(const float value)
 {
-  m_projectionDistance = value;
+  m_tentaclePlotter.SetProjectionDistance(value);
 }
 
 inline void TentacleDriver::SetCameraDistance(const float value)
 {
-  m_cameraDistance = value;
+  m_tentaclePlotter.SetCameraDistance(value);
 }
 
 inline void TentacleDriver::SetDominantColors(const Pixel& dominantColor,
                                               const Pixel& dominantLowColor)
 {
-  m_dominantColor = dominantColor;
-  m_dominantLowColor = dominantLowColor;
+  m_tentaclePlotter.SetDominantColors(dominantColor, dominantLowColor);
 }
 
 } // namespace TENTACLES

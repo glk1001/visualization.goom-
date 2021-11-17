@@ -177,17 +177,17 @@ inline void TentaclesFx::TentaclesImpl::Resume()
 
 void TentaclesFx::TentaclesImpl::SetupTentacleDrivers()
 {
+  const ColorMapGroup initialColorMapGroup = m_colorMaps->GetRandomGroup();
+
   m_tentacleDrivers.clear();
   for (size_t i = 0; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    m_tentacleDrivers.emplace_back(
-        std::make_unique<TentacleDriver>(m_draw, m_goomRand, m_smallBitmaps));
+    m_tentacleDrivers.emplace_back(std::make_unique<TentacleDriver>(
+        m_draw, m_goomRand, m_smallBitmaps, initialColorMapGroup, m_tentacleLayouts.at(i)));
   }
 
-  const ColorMapGroup initialColorMapGroup = m_colorMaps->GetRandomGroup();
   for (size_t i = 0; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    m_tentacleDrivers[i]->Init(initialColorMapGroup, m_tentacleLayouts.at(i));
     m_tentacleDrivers[i]->StartIterating();
     m_tentacleDrivers[i]->SetTentacleAngle(m_half_pi - ROTATION);
     m_tentacleDrivers[i]->SetProjectionDistance(PROJECTION_DISTANCE);

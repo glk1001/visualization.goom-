@@ -92,9 +92,9 @@ add_library(goom
         src/visual_fx/tentacles/tentacle_colorizer.h
         src/visual_fx/tentacles/tentacle_driver.cpp
         src/visual_fx/tentacles/tentacle_layout.h
+        src/visual_fx/tentacles/tentacle_plotter.cpp
         src/visual_fx/tentacles/tentacle2d.cpp
         src/visual_fx/tentacles/tentacle3d.cpp
-        src/visual_fx/tentacles/tentacles3d.h
         src/visual_fx/tubes/tubes.cpp
         src/visual_fx/flying_stars_fx.cpp
         src/visual_fx/fx_helpers.h

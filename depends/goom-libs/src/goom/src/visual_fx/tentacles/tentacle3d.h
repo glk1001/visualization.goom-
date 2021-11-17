@@ -34,12 +34,6 @@ class Tentacle3D
 public:
   Tentacle3D() noexcept = delete;
   Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-             const Pixel& headColor,
-             const Pixel& headLowColor,
-             const V3dFlt& head,
-             size_t numHeadNodes,
-             UTILS::IGoomRand& goomRand) noexcept;
-  Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
              std::shared_ptr<const ITentacleColorizer> colorizer,
              const Pixel& headColor,
              const Pixel& headLowColor,

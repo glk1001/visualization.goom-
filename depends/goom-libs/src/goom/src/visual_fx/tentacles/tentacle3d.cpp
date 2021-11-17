@@ -28,21 +28,6 @@ using COLOR::IColorMap;
 using UTILS::IGoomRand;
 
 Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-                       const Pixel& headColor,
-                       const Pixel& headLowColor,
-                       const V3dFlt& head,
-                       const size_t numHeadNodes,
-                       IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
-    m_tentacle{std::move(tentacle)},
-    m_headColor{headColor},
-    m_headLowColor{headLowColor},
-    m_head{head},
-    m_numHeadNodes{numHeadNodes}
-{
-}
-
-Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
                        std::shared_ptr<const ITentacleColorizer> colorizer,
                        const Pixel& headColor,
                        const Pixel& headLowColor,
