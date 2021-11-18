@@ -226,7 +226,7 @@ void TentaclesFx::TentaclesImpl::RefreshTentacles()
   assert(m_currentTentacleDriver);
 
   constexpr float PROB_MINIMAL_COLOR_MODE = 1.0F / 500.0F;
-  constexpr float PROB_MULTI_GROUPS_COLOR_MODE = 150.0F / 500.0F;
+  constexpr float PROB_MULTI_GROUPS_COLOR_MODE = 350.0F / 500.0F;
   constexpr float PROB_REVERSE_COLOR_MIX = 0.33F;
 
   if (m_goomRand.ProbabilityOf(PROB_MINIMAL_COLOR_MODE))
