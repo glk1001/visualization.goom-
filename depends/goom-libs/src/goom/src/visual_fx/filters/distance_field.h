@@ -51,8 +51,13 @@ protected:
 private:
   UTILS::IGoomRand& m_goomRand;
   Params m_params;
+  struct RelativeDistancePoint
+  {
+    float sqDistanceFromCoords;
+    const NormalizedCoords& distancePoint;
+  };
   [[nodiscard]] auto GetClosestDistancePoint(const NormalizedCoords& coords) const
-      -> const NormalizedCoords&;
+      -> RelativeDistancePoint;
   [[nodiscard]] static auto GetSpeedCoefficient(float baseSpeedCoeff,
                                                 float sqDistFromZero,
                                                 float amplitude,
@@ -64,9 +69,7 @@ inline auto DistanceField::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                                 [[maybe_unused]] const float sqDistFromZero,
                                                 const NormalizedCoords& coords) const -> V2dFlt
 {
-  const NormalizedCoords& closestDistancePoint = GetClosestDistancePoint(coords);
-  const float sqDistFromClosestPoint =
-      UTILS::SqDistance(closestDistancePoint.GetX(), closestDistancePoint.GetY());
+  const float sqDistFromClosestPoint = GetClosestDistancePoint(coords).sqDistanceFromCoords;
 
   if (m_params.mode0)
   {

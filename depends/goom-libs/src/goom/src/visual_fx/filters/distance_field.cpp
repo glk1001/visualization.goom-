@@ -95,7 +95,7 @@ void DistanceField::SetRandomParams()
 }
 
 auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) const
-    -> const NormalizedCoords&
+    -> RelativeDistancePoint
 {
   const NormalizedCoords* closestPoint{};
   float minDistanceSq = 100.0F * Sq(NormalizedCoords::MAX_NORMALIZED_COORD);
@@ -109,7 +109,7 @@ auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) cons
     }
   }
   assert(closestPoint != nullptr);
-  return *closestPoint;
+  return {minDistanceSq, *closestPoint};
 }
 
 auto DistanceField::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
