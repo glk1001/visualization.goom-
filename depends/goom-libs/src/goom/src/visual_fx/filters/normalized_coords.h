@@ -25,7 +25,7 @@ public:
   /*static constexpr*/ static const float MIN_NORMALIZED_COORD;
 
   static void SetScreenDimensions(uint32_t width, uint32_t height, float minScreenCoordVal);
-  static auto GetMinNormalizedCoordVal() -> float;
+  [[nodiscard]] static auto GetMinNormalizedCoordVal() -> float;
 
   explicit NormalizedCoords(const V2dInt& screenCoords) noexcept;
   explicit NormalizedCoords(const V2dFlt& normalized) noexcept;
@@ -47,7 +47,7 @@ public:
   auto operator-=(const NormalizedCoords& other) -> NormalizedCoords&;
   auto operator*=(float scalar) -> NormalizedCoords&;
 
-  auto equals(const NormalizedCoords& other) const -> bool;
+  [[nodiscard]] auto Equals(const NormalizedCoords& other) const -> bool;
 
 private:
   static float s_ratioScreenToNormalizedCoord;
@@ -60,11 +60,13 @@ private:
   [[nodiscard]] static auto ScreenToNormalizedCoord(int32_t screenCoord) -> float;
 };
 
-auto operator+(const NormalizedCoords& c1, const NormalizedCoords& c2)
+[[nodiscard]] auto operator+(const NormalizedCoords& c1, const NormalizedCoords& c2)
     -> NormalizedCoords;
-auto operator-(const NormalizedCoords& c1, const NormalizedCoords& c2)
+[[nodiscard]] auto operator-(const NormalizedCoords& c1, const NormalizedCoords& c2)
     -> NormalizedCoords;
-auto operator*(float scalar, const NormalizedCoords& c) -> NormalizedCoords;
+[[nodiscard]] auto operator*(float scalar, const NormalizedCoords& c) -> NormalizedCoords;
+[[nodiscard]] auto GetSqDistance(const NormalizedCoords& point1, const NormalizedCoords& point2)
+    -> float;
 
 inline auto NormalizedCoords::NormalizedToScreenCoordsFlt(const V2dFlt& normalizedCoords) -> V2dFlt
 {
@@ -148,7 +150,7 @@ inline void NormalizedCoords::SetY(const float yNormalized)
   m_normalizedCoords.y = yNormalized;
 }
 
-inline auto NormalizedCoords::equals(const NormalizedCoords& other) const -> bool
+inline auto NormalizedCoords::Equals(const NormalizedCoords& other) const -> bool
 {
   return UTILS::floats_equal(GetX(), other.GetX()) && UTILS::floats_equal(GetY(), other.GetY());
 }
@@ -187,6 +189,11 @@ inline auto operator*(const float scalar, const NormalizedCoords& c) -> Normaliz
 {
   NormalizedCoords c1{c};
   return c1 *= scalar;
+}
+
+inline auto GetSqDistance(const NormalizedCoords& point1, const NormalizedCoords& point2) -> float
+{
+  return UTILS::SqDistance(point1.GetX() - point2.GetX(), point1.GetY() - point2.GetY());
 }
 
 #if __cplusplus <= 201402L

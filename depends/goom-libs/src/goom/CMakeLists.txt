@@ -60,6 +60,7 @@ add_library(goom
         src/utils/thread_pool.cpp
         src/visual_fx/filters/amulet.cpp
         src/visual_fx/filters/crystal_ball.cpp
+        src/visual_fx/filters/distance_field.cpp
         src/visual_fx/filters/filter_buffers.cpp
         src/visual_fx/filters/filter_buffers_service.cpp
         src/visual_fx/filters/filter_colors_service.cpp

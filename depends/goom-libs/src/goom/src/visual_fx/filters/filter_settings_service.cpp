@@ -2,6 +2,7 @@
 
 #include "amulet.h"
 #include "crystal_ball.h"
+#include "distance_field.h"
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
 #include "filter_settings.h"
@@ -48,6 +49,7 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
   const auto amuletRotateProb     = PROB_HIGH;
   const auto crysBall0RotateProb  = PROB_HIGH;
   const auto crysBall1RotateProb  = PROB_HIGH;
+  const auto distFieldRotateProb  = PROB_HIGH;
   const auto hypercos0RotateProb  = PROB_LOW;
   const auto hypercos1RotateProb  = PROB_LOW;
   const auto hypercos2RotateProb  = PROB_LOW;
@@ -65,6 +67,7 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
   const auto amuletWeights     = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 20}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto crysBall0Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  5}, {Hyp::MODE0, 10}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto crysBall1Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  5}, {Hyp::MODE0,  1}, {Hyp::MODE1, 99}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto distFieldWeights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  5}, {Hyp::MODE0, 10}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto hypercos0Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  0}, {Hyp::MODE0,  1}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0}}};
   const auto hypercos1Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  1}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0}}};
   const auto hypercos2Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0}}};
@@ -88,107 +91,114 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
       }
     },
     { ZoomFilterMode::CRYSTAL_BALL_MODE0, {
-        "Crystal Ball Mode 0", 
+        "Crystal Ball Mode 0",
         std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0, m_goomRand),
         crysBall0RotateProb,
         crysBall0Weights
       }
     },
     { ZoomFilterMode::CRYSTAL_BALL_MODE1, {
-        "Crystal Ball Mode 1", 
+        "Crystal Ball Mode 1",
         std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1, m_goomRand),
         crysBall1RotateProb,
         crysBall1Weights
       }
     },
+    { ZoomFilterMode::DISTANCE_FIELD_MODE, {
+        "Distance Field",
+        std::make_shared<DistanceField>(m_goomRand),
+        distFieldRotateProb,
+        distFieldWeights
+      }
+    },
     { ZoomFilterMode::HYPERCOS_MODE0, {
-        "Hypercos Mode 0",  
+        "Hypercos Mode 0",
         std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        hypercos0RotateProb, 
+        hypercos0RotateProb,
         hypercos0Weights
       }
     },
     { ZoomFilterMode::HYPERCOS_MODE1, {
-        "Hypercos Mode 1",  
+        "Hypercos Mode 1",
         std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        hypercos1RotateProb, 
+        hypercos1RotateProb,
         hypercos1Weights
       }
     },
     { ZoomFilterMode::HYPERCOS_MODE2, {
-        "Hypercos Mode 2",  
+        "Hypercos Mode 2",
         std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        hypercos2RotateProb, 
+        hypercos2RotateProb,
         hypercos2Weights
       }
     },
     { ZoomFilterMode::HYPERCOS_MODE3, {
-        "Hypercos Mode 3",  
+        "Hypercos Mode 3",
         std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        hypercos3RotateProb, 
+        hypercos3RotateProb,
         hypercos3Weights
       }
     },
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, {
-        "Image Displacement",  
+        "Image Displacement",
         std::make_shared<ImageSpeedCoefficients>(resourcesDirectory, m_goomRand),
-        imageDisplRotateProb, 
+        imageDisplRotateProb,
         imageDisplWeights
       }
     },
     { ZoomFilterMode::NORMAL_MODE, {
-        "Normal",  
+        "Normal",
         std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        normalRotateProb, 
+        normalRotateProb,
         normalWeights
       }
     },
     { ZoomFilterMode::SCRUNCH_MODE, {
-        "Scrunch",  
+        "Scrunch",
         std::make_shared<Scrunch>(m_goomRand),
-        scrunchRotateProb, 
+        scrunchRotateProb,
         scrunchWeights
       }
     },
     { ZoomFilterMode::SPEEDWAY_MODE0, {
-        "Speedway Mode 0",  
+        "Speedway Mode 0",
         std::make_shared<Speedway>(Speedway::Modes::MODE0, m_goomRand),
-        speedway0RotateProb, 
+        speedway0RotateProb,
         speedway0Weights
       }
     },
     { ZoomFilterMode::SPEEDWAY_MODE1, {
-        "Speedway Mode 1",  
+        "Speedway Mode 1",
         std::make_shared<Speedway>(Speedway::Modes::MODE1, m_goomRand),
-        speedway1RotateProb, 
+        speedway1RotateProb,
         speedway1Weights
       }
     },
     { ZoomFilterMode::WATER_MODE, {
-        "Water",  
+        "Water",
         std::make_shared<SimpleSpeedCoefficientsEffect>(),
-        waterRotateProb, 
+        waterRotateProb,
         waterWeights
       }
     },
     { ZoomFilterMode::WAVE_MODE0, {
-        "Wave Mode 0",  
+        "Wave Mode 0",
         std::make_shared<Wave>(Wave::Modes::MODE0, m_goomRand),
-        wave0RotateProb, 
+        wave0RotateProb,
         wave0Weights
       }
     },
     { ZoomFilterMode::WAVE_MODE1, {
-        "Wave Mode 1",  
+        "Wave Mode 1",
         std::make_shared<Wave>(Wave::Modes::MODE1, m_goomRand),
-        wave1RotateProb, 
+        wave1RotateProb,
         wave1Weights
       }
     },
     { ZoomFilterMode::Y_ONLY_MODE, {
-        "Y Only",  
+        "Y Only",
         std::make_shared<YOnly>(m_goomRand),
-        yOnlyRotateProb, 
+        yOnlyRotateProb,
         yOnlyWeights
       }
     },
@@ -300,6 +310,7 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
             {ZoomFilterMode::AMULET_MODE,              8},
             {ZoomFilterMode::CRYSTAL_BALL_MODE0,       4},
             {ZoomFilterMode::CRYSTAL_BALL_MODE1,       2},
+            {ZoomFilterMode::DISTANCE_FIELD_MODE,      8},
             {ZoomFilterMode::HYPERCOS_MODE0,           8},
             {ZoomFilterMode::HYPERCOS_MODE1,           4},
             {ZoomFilterMode::HYPERCOS_MODE2,           1},
