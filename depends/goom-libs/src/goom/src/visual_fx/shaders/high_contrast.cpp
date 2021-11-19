@@ -70,7 +70,7 @@ void HighContrast::UpdateHighContrast()
     m_highContrastT.Reset();
     m_highContrastOnTimer.ResetToZero();
     constexpr float CONTRAST_MIN_CHAN = -0.4F;
-    constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.9F;
+    constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.95F;
     m_maxContrastMinChannelValue =
         m_goomRand.ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
   }
