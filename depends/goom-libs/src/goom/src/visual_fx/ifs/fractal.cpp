@@ -30,7 +30,6 @@ using UTILS::IGoomRand;
 using UTILS::m_pi;
 using UTILS::SmallImageBitmaps;
 using UTILS::TValue;
-using UTILS::Weights;
 
 auto IfsPoint::GetSimiColor() const -> Pixel
 {
@@ -138,7 +137,9 @@ void Fractal::Reset()
 
 void Fractal::ResetCurrentIfsFunc()
 {
-  if (m_goomRand.ProbabilityOfMInN(3, 10))
+  constexpr float PROB_REVERSED_IFS_FUNC = 0.3F;
+
+  if (m_goomRand.ProbabilityOf(PROB_REVERSED_IFS_FUNC))
   {
     m_curFunc = [&](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2,
                     const Flt y2) -> FltPoint {
@@ -168,75 +169,111 @@ auto Fractal::GetNextIfsPoints() -> const std::vector<IfsPoint>&
 {
   m_speedTransitionT.Increment();
 
+  UpdateMainSimi();
+
+  const std::vector<IfsPoint>& currentIfsPoints = GetCurrentIfsPoints();
+
+  UpdateCount();
+
+  return currentIfsPoints;
+}
+
+inline void Fractal::UpdateMainSimi()
+{
   const Dbl u = static_cast<Dbl>(m_count * GetSpeed()) / static_cast<Dbl>(m_maxCountTimesSpeed);
   const Dbl uSq = u * u;
   const Dbl v = 1.0F - u;
   const Dbl vSq = v * v;
-  const Dbl u0 = vSq * v;
-  const Dbl u1 = 3.0F * vSq * u;
-  const Dbl u2 = 3.0F * v * uSq;
-  const Dbl u3 = u * uSq;
 
-  Similitude* s = m_components->data();
-  Similitude* s0 = s + m_numSimi;
-  Similitude* s1 = s0 + m_numSimi;
-  const Similitude* s2 = s1 + m_numSimi;
-  const Similitude* s3 = s2 + m_numSimi;
+  const std::array<Dbl, NUM_SIMI_GROUPS - 1> uVals = {
+      vSq * v,
+      3.0F * vSq * u,
+      3.0F * v * uSq,
+      u * uSq,
+  };
+  using DiffType = std::vector<Similitude>::difference_type;
+  std::array<std::vector<Similitude>::const_iterator, NUM_SIMI_GROUPS - 1> simis = {
+      cbegin(*m_components) + (1 * static_cast<DiffType>(m_numSimi)),
+      cbegin(*m_components) + (2 * static_cast<DiffType>(m_numSimi)),
+      cbegin(*m_components) + (3 * static_cast<DiffType>(m_numSimi)),
+      cbegin(*m_components) + (4 * static_cast<DiffType>(m_numSimi)),
+  };
 
   for (size_t i = 0; i < m_numSimi; ++i)
   {
-    s[i].dbl_cx =
-        (u0 * s0[i].dbl_cx) + (u1 * s1[i].dbl_cx) + (u2 * s2[i].dbl_cx) + (u3 * s3[i].dbl_cx);
-    s[i].dbl_cy =
-        (u0 * s0[i].dbl_cy) + (u1 * s1[i].dbl_cy) + (u2 * s2[i].dbl_cy) + (u3 * s3[i].dbl_cy);
+    (*m_components)[i].dbl_cx = 0.0F;
+    (*m_components)[i].dbl_cy = 0.0F;
+    (*m_components)[i].dbl_r1 = 0.0F;
+    (*m_components)[i].dbl_r2 = 0.0F;
+    (*m_components)[i].A1 = 0.0F;
+    (*m_components)[i].A2 = 0.0F;
 
-    s[i].dbl_r1 =
-        (u0 * s0[i].dbl_r1) + (u1 * s1[i].dbl_r1) + (u2 * s2[i].dbl_r1) + (u3 * s3[i].dbl_r1);
-    s[i].dbl_r2 =
-        (u0 * s0[i].dbl_r2) + (u1 * s1[i].dbl_r2) + (u2 * s2[i].dbl_r2) + (u3 * s3[i].dbl_r2);
+    for (size_t j = 0; j < uVals.size(); ++j)
+    {
+      (*m_components)[i].dbl_cx += uVals[j] * simis[j]->dbl_cx;
+      (*m_components)[i].dbl_cy += uVals[j] * simis[j]->dbl_cy;
 
-    s[i].A1 = (u0 * s0[i].A1) + (u1 * s1[i].A1) + (u2 * s2[i].A1) + (u3 * s3[i].A1);
-    s[i].A2 = (u0 * s0[i].A2) + (u1 * s1[i].A2) + (u2 * s2[i].A2) + (u3 * s3[i].A2);
+      (*m_components)[i].dbl_r1 += uVals[j] * simis[j]->dbl_r1;
+      (*m_components)[i].dbl_r2 += uVals[j] * simis[j]->dbl_r2;
+
+      (*m_components)[i].A1 += uVals[j] * simis[j]->A1;
+      (*m_components)[i].A2 += uVals[j] * simis[j]->A2;
+
+      ++(simis[j]);
+    }
+  }
+}
+
+inline void Fractal::IterateSimis()
+{
+  using DiffType = std::vector<Similitude>::difference_type;
+  auto simi0 = begin(*m_components) + (1 * static_cast<DiffType>(m_numSimi));
+  auto simi1 = begin(*m_components) + (2 * static_cast<DiffType>(m_numSimi));
+  auto simi2 = cbegin(*m_components) + (3 * static_cast<DiffType>(m_numSimi));
+  auto simi3 = cbegin(*m_components) + (4 * static_cast<DiffType>(m_numSimi));
+
+  for (size_t i = 0; i < m_numSimi; ++i)
+  {
+    simi1->dbl_cx = (2.0F * simi3->dbl_cx) - simi2->dbl_cx;
+    simi1->dbl_cy = (2.0F * simi3->dbl_cy) - simi2->dbl_cy;
+
+    simi1->dbl_r1 = (2.0F * simi3->dbl_r1) - simi2->dbl_r1;
+    simi1->dbl_r2 = (2.0F * simi3->dbl_r2) - simi2->dbl_r2;
+
+    simi1->A1 = (2.0F * simi3->A1) - simi2->A1;
+    simi1->A2 = (2.0F * simi3->A2) - simi2->A2;
+
+    *simi0 = *simi3;
+
+    ++simi0;
+    ++simi1;
+    ++simi2;
+    ++simi3;
   }
 
+  RandomSimis(3 * m_numSimi, m_numSimi);
+  RandomSimis(4 * m_numSimi, m_numSimi);
+}
+
+inline auto Fractal::GetCurrentIfsPoints() -> const std::vector<IfsPoint>&
+{
   m_curHits.get().Reset();
   DrawFractal();
-  const std::vector<IfsPoint>& curBuffer = m_curHits.get().GetBuffer();
+  const std::vector<IfsPoint>& currentBuffer = m_curHits.get().GetBuffer();
   std::swap(m_prevHits, m_curHits);
+  return currentBuffer;
+}
 
+inline void Fractal::UpdateCount()
+{
   if (m_count < (m_maxCountTimesSpeed / GetSpeed()))
   {
     ++m_count;
-  }
-  else
-  {
-    s = m_components->data();
-    s0 = s + m_numSimi;
-    s1 = s0 + m_numSimi;
-    s2 = s1 + m_numSimi;
-    s3 = s2 + m_numSimi;
-
-    for (size_t i = 0; i < m_numSimi; ++i)
-    {
-      s1[i].dbl_cx = (2.0F * s3[i].dbl_cx) - s2[i].dbl_cx;
-      s1[i].dbl_cy = (2.0F * s3[i].dbl_cy) - s2[i].dbl_cy;
-
-      s1[i].dbl_r1 = (2.0F * s3[i].dbl_r1) - s2[i].dbl_r1;
-      s1[i].dbl_r2 = (2.0F * s3[i].dbl_r2) - s2[i].dbl_r2;
-
-      s1[i].A1 = (2.0F * s3[i].A1) - s2[i].A1;
-      s1[i].A2 = (2.0F * s3[i].A2) - s2[i].A2;
-
-      s0[i] = s3[i];
-    }
-
-    RandomSimis(3 * m_numSimi, m_numSimi);
-    RandomSimis(4 * m_numSimi, m_numSimi);
-
-    m_count = 0;
+    return;
   }
 
-  return curBuffer;
+  IterateSimis();
+  m_count = 0;
 }
 
 void Fractal::DrawFractal()

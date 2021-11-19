@@ -44,7 +44,6 @@ public:
   void SetColorMode(BlurrerColorMode colorMode);
   void SetSingleColor(const Pixel& color);
 
-  auto GetNeighbourMixFactor() const -> float;
   void SetNeighbourMixFactor(float neighbourMixFactor);
 
   void DoBlur(std::vector<IfsPoint>& lowDensityPoints, uint32_t maxLowDensityCount) const;
@@ -80,11 +79,6 @@ inline void LowDensityBlurrer::SetColorMode(const BlurrerColorMode colorMode)
 inline void LowDensityBlurrer::SetSingleColor(const Pixel& color)
 {
   m_singleColor = color;
-}
-
-inline auto LowDensityBlurrer::GetNeighbourMixFactor() const -> float
-{
-  return m_neighbourMixFactor;
 }
 
 inline void LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFactor)

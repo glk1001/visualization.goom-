@@ -46,11 +46,6 @@ public:
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
-  // If colorMode is not set or set to '_null', then returns
-  // random weighted color mode.
-  [[nodiscard]] auto GetColorMode() const -> ColorMode;
-  void SetColorMode(ColorMode colorMode);
-
   void Start() override;
 
   void Resume() override;

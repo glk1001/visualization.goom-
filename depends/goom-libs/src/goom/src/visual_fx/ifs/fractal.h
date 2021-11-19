@@ -125,6 +125,9 @@ private:
   [[nodiscard]] auto GetLx() const -> Flt;
   [[nodiscard]] auto GetLy() const -> Flt;
   void DrawFractal();
+  void UpdateMainSimi();
+  void IterateSimis();
+  [[nodiscard]] auto GetCurrentIfsPoints() -> const std::vector<IfsPoint>&;
   void RandomSimis(size_t start, size_t num);
   void ResetCurrentIfsFunc();
   void Trace(uint32_t curDepth, const FltPoint& p0);
@@ -139,6 +142,7 @@ private:
 #else
   [[nodiscard]] static constexpr auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
 #endif
+  void UpdateCount();
 };
 
 struct Similitude
@@ -172,8 +176,6 @@ public:
   }
   [[nodiscard]] auto GetX() const -> uint32_t { return m_x; }
   [[nodiscard]] auto GetY() const -> uint32_t { return m_y; }
-  void SetX(const uint32_t val) { m_x = val; }
-  void SetY(const uint32_t val) { m_y = val; }
   [[nodiscard]] auto GetColor() const -> Pixel { return m_color; }
   void SetColor(const Pixel& val) { m_color = val; }
   [[nodiscard]] auto GetCount() const -> uint32_t { return m_count; }
