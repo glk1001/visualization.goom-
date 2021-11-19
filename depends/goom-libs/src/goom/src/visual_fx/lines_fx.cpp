@@ -54,13 +54,11 @@ using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using UTILS::floats_equal;
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::m_two_pi;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
-using UTILS::Weights;
 
 constexpr float MIN_MAX_NORMALIZED_PEAK = 100.0F;
 constexpr float MAX_MAX_NORMALIZED_PEAK = 300.0F;
@@ -285,22 +283,22 @@ LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
             {
                 {1, 100},
                 {3, 50},
-                {5, 5},
-                {7, 100},
+                {5, 20},
+                {7, 10},
             }
         },
         // normal dot sizes
         {
             m_goomRand,
             {
-                {1, 50},
-                {3, 20},
-                {5, 5},
-                {7, 1},
-                {9, 1},
-                {11, 1},
-                {13, 100},
-                {15, 100},
+                { 1, 50},
+                { 3, 20},
+                { 5, 20},
+                { 7, 10},
+                { 9, 10},
+                {11, 10},
+                {13, 10},
+                {15, 10},
             }
         }
         // clang-format on
@@ -484,13 +482,13 @@ inline void LinesFx::LinesImpl::SetPower(const float val)
 }
 
 // les modes couleur possible (si tu mets un autre c'est noir)
-#define GML_BLEUBLANC 0
-#define GML_RED 1
-#define GML_ORANGE_V 2
-#define GML_ORANGE_J 3
-#define GML_VERT 4
-#define GML_BLEU 5
-#define GML_BLACK 6
+constexpr uint32_t GML_BLEUBLANC = 0;
+constexpr uint32_t GML_RED = 1;
+constexpr uint32_t GML_ORANGE_V = 2;
+constexpr uint32_t GML_ORANGE_J = 3;
+constexpr uint32_t GML_VERT = 4;
+constexpr uint32_t GML_BLEU = 5;
+constexpr uint32_t GML_BLACK = 6;
 
 inline auto GetColor(const int mode) -> Pixel
 {
@@ -555,7 +553,7 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
 
   m_audioRange = soundMinMax.maxVal - soundMinMax.minVal;
   assert(m_audioRange >= 0.0F);
-  m_minAudioValue = static_cast<float>(soundMinMax.minVal);
+  m_minAudioValue = soundMinMax.minVal;
 
   if (m_audioRange < SMALL_FLOAT)
   {
