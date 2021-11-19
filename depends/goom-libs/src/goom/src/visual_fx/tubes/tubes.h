@@ -56,12 +56,13 @@ class BrightnessAttenuation
 public:
   static constexpr float DIST_SQ_CUTOFF = 0.10F;
   BrightnessAttenuation(uint32_t screenWidth, uint32_t screenHeight, float cutoffBrightness);
-  auto GetPositionBrightness(const V2dInt& pos, float minBrightnessPastCutoff) const -> float;
+  [[nodiscard]] auto GetPositionBrightness(const V2dInt& pos, float minBrightnessPastCutoff) const
+      -> float;
 
 private:
   const float m_cutoffBrightness;
   const uint32_t m_maxRSquared;
-  auto GetDistFromCentreFactor(const V2dInt& pos) const -> float;
+  [[nodiscard]] auto GetDistFromCentreFactor(const V2dInt& pos) const -> float;
 };
 
 class Tube
@@ -94,26 +95,20 @@ public:
        float radiusEdgeOffset,
        float brightnessFactor) noexcept;
 
-  [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> colorMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps);
 
   void ResetColorMaps();
-  void RotateShapeColorMaps();
 
-  [[nodiscard]] auto GetBrightnessFactor() const -> float;
   void SetBrightnessFactor(float val);
 
-  [[nodiscard]] auto GetMaxJitterOffset() const -> int32_t;
   void SetMaxJitterOffset(int32_t val);
 
   using TransformCentreFunc = std::function<V2dInt(uint32_t tubeId, const V2dInt& centre)>;
   void SetTransformCentreFunc(const TransformCentreFunc& f);
-  [[nodiscard]] auto GetCentrePathT() const -> float;
   void SetCentrePathT(float val);
-  [[nodiscard]] auto GetCentreSpeed() const -> float;
   static const float NORMAL_CENTRE_SPEED;
   void SetCentreSpeed(float val);
   void IncreaseCentreSpeed();
@@ -121,7 +116,6 @@ public:
 
   void SetAllowOscillatingCirclePaths(bool val);
   void SetCirclePathParams(const PathParams& params);
-  [[nodiscard]] auto GetCircleSpeed() const -> float;
   static const float NORMAL_CIRCLE_SPEED;
   void SetCircleSpeed(float val);
   void IncreaseCircleSpeed();

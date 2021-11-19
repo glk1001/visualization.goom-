@@ -246,16 +246,6 @@ void Tube::ResetColorMaps()
   m_impl->ResetColorMaps();
 }
 
-void Tube::RotateShapeColorMaps()
-{
-  m_impl->RotateShapeColorMaps();
-}
-
-auto Tube::GetTubeId() const -> uint32_t
-{
-  return m_impl->GetTubeId();
-}
-
 auto Tube::IsActive() const -> bool
 {
   return m_impl->IsActive();
@@ -266,19 +256,9 @@ void Tube::SetTransformCentreFunc(const TransformCentreFunc& f)
   m_impl->SetTransformCentreFunc(f);
 }
 
-auto Tube::GetCentrePathT() const -> float
-{
-  return m_impl->GetCentrePathT();
-}
-
 void Tube::SetCentrePathT(const float val)
 {
   m_impl->SetCentrePathT(val);
-}
-
-auto Tube::GetCentreSpeed() const -> float
-{
-  return m_impl->GetCentreSpeed();
 }
 
 void Tube::SetCentreSpeed(const float val)
@@ -306,11 +286,6 @@ void Tube::SetCirclePathParams(const PathParams& params)
   m_impl->SetCirclePathParams(params);
 }
 
-auto Tube::GetCircleSpeed() const -> float
-{
-  return m_impl->GetCircleSpeed();
-}
-
 void Tube::SetCircleSpeed(const float val)
 {
   m_impl->SetCircleSpeed(val);
@@ -331,19 +306,9 @@ void Tube::DrawCircleOfShapes()
   m_impl->DrawShapes();
 }
 
-auto Tube::GetBrightnessFactor() const -> float
-{
-  return m_impl->GetBrightnessFactor();
-}
-
 void Tube::SetBrightnessFactor(const float val)
 {
   m_impl->SetBrightnessFactor(val);
-}
-
-auto Tube::GetMaxJitterOffset() const -> int32_t
-{
-  return m_impl->GetMaxJitterOffset();
 }
 
 void Tube::SetMaxJitterOffset(const int32_t val)
@@ -588,8 +553,6 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
 
     shape.shapeNum = shapeNum;
     shape.path = std::make_unique<ShapePath>(fromPos, toPos, m_shapeT, OSCILLATING_SHAPE_PATHS);
-    //shape.lineThickness = ProbabilityOf(0.8) ? 1U : 2U;
-    //shape.lineThickness = GetRandInRange(1U, 4U);
 
     angle += angleStep;
     ++shapeNum;
@@ -611,13 +574,6 @@ void Tube::TubeImpl::ResetColorMaps()
   m_colorizer->ResetColorMaps();
   m_circleGroupTimer.SetTimeLimit(
       m_goomRand.GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP));
-
-  /**
-  for (auto& shape : m_shapes)
-  {
-    shape.lineThickness = GetRandInRange(1U, 4U);
-  }
-   **/
 }
 
 inline void Tube::TubeImpl::RotateShapeColorMaps()
@@ -979,8 +935,6 @@ inline void ShapeColorizer::ResetColorMapsLists()
 
 void ShapeColorizer::RotateShapeColorMaps()
 {
-  //ShapeColorMaps lastShapeColorMaps = m_shapeColorMaps.back();
-  //std::shift_right(begin(m_shapeColorMaps), end(m_shapeColorMaps), 2);
   std::rotate(begin(m_shapeColorMaps), begin(m_shapeColorMaps) + 1, end(m_shapeColorMaps));
   std::rotate(begin(m_oldShapeColors), begin(m_oldShapeColors) + 1, end(m_oldShapeColors));
 }

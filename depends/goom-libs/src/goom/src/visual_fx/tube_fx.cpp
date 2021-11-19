@@ -62,16 +62,19 @@ struct TubeSettings
   float radiusEdgeOffset;
   PathParams circlePathParams;
 };
-constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{{
-    {true, false, 3.4F, 150.0F, {10.0F, +0.5F, +0.5F}},
-    {false, false, 0.19F, 130.0F, {50.0F, -0.75F, -1.0F}},
-    {false, false, 0.18F, 130.0F, {40.0F, +1.0F, +0.75F}},
-}};
+constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{
+    {
+     {true, false, 3.4F, 150.0F, {10.0F, +0.5F, +0.5F}},
+     {false, false, 0.19F, 130.0F, {50.0F, -0.75F, -1.0F}},
+     {false, false, 0.18F, 130.0F, {40.0F, +1.0F, +0.75F}},
+     }
+};
 constexpr size_t MAIN_TUBE_INDEX = 0;
 constexpr size_t SECONDARY_TUBES_START_INDEX = 1;
 constexpr PathParams COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
 
-auto lerp(const PathParams& p0, const PathParams& p1, const float t) -> PathParams
+[[nodiscard]] inline auto lerp(const PathParams& p0, const PathParams& p1, const float t)
+    -> PathParams
 {
   return {
       stdnew::lerp(p0.oscillatingAmplitude, p1.oscillatingAmplitude, t),
@@ -368,8 +371,8 @@ void TubeFx::TubeFxImpl::InitTubes()
       [&](const int x, const int y, const int radius, const std::vector<Pixel>& colors,
           const uint8_t thickness) { DrawCircleToOne(x, y, radius, colors, thickness); },
       [&](const int x, const int y, const SmallImageBitmaps::ImageNames imageName,
-          const uint32_t size,
-          const std::vector<Pixel>& colors) { DrawImageToOne(x, y, imageName, size, colors); },
+          const uint32_t size, const std::vector<Pixel>& colors)
+      { DrawImageToOne(x, y, imageName, size, colors); },
   };
   const Tube::DrawFuncs drawToManyFuncs{
       [&](const int x1, const int y1, const int x2, const int y2, const std::vector<Pixel>& colors,
@@ -377,8 +380,8 @@ void TubeFx::TubeFxImpl::InitTubes()
       [&](const int x, const int y, const int radius, const std::vector<Pixel>& colors,
           const uint8_t thickness) { DrawCircleToMany(x, y, radius, colors, thickness); },
       [&](const int x, const int y, const SmallImageBitmaps::ImageNames imageName,
-          const uint32_t size,
-          const std::vector<Pixel>& colors) { DrawImageToMany(x, y, imageName, size, colors); },
+          const uint32_t size, const std::vector<Pixel>& colors)
+      { DrawImageToMany(x, y, imageName, size, colors); },
   };
 
   m_tubes.emplace_back(MAIN_TUBE_INDEX, drawToManyFuncs, m_draw.GetScreenWidth(),
@@ -420,7 +423,6 @@ inline void TubeFx::TubeFxImpl::DrawLineToMany(const int x1,
                                                const std::vector<Pixel>& colors,
                                                const uint8_t thickness)
 {
-  //m_drawToContainer.Line(x1, y1, x2, y2, colors, thickness);
   m_drawToMany.Line(x1, y1, x2, y2, colors, thickness);
 }
 
@@ -439,7 +441,6 @@ inline void TubeFx::TubeFxImpl::DrawCircleToMany(const int x,
                                                  const std::vector<Pixel>& colors,
                                                  [[maybe_unused]] const uint8_t thickness)
 {
-  //m_drawToContainer.Circle(x, y, radius, colors);
   m_drawToMany.Circle(x, y, radius, colors);
 }
 
@@ -474,9 +475,8 @@ inline auto TubeFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& co
 
 void TubeFx::TubeFxImpl::InitPaths()
 {
-  const auto transformCentre = [this](const uint32_t tubeId, const V2dInt& centre) {
-    return this->GetTransformedCentrePoint(tubeId, centre);
-  };
+  const auto transformCentre = [this](const uint32_t tubeId, const V2dInt& centre)
+  { return this->GetTransformedCentrePoint(tubeId, centre); };
   const float centreStep = 1.0F / static_cast<float>(m_tubes.size());
   float centreT = 0.0;
   for (auto& tube : m_tubes)
@@ -606,7 +606,8 @@ void TubeFx::TubeFxImpl::DrawPreviousShapes()
 
 void TubeFx::TubeFxImpl::DrawTubeCircles()
 {
-  const auto drawTubeCircles = [&](const size_t i) {
+  const auto drawTubeCircles = [&](const size_t i)
+  {
     if (!m_tubes[i].IsActive())
     {
       return;
@@ -640,23 +641,24 @@ void TubeFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
   const float brightnessAttenuation = GetApproxBrightnessAttenuation();
   using ColorsList = GoomDrawToContainer::ColorsList;
 
-  m_drawToContainer.IterateChangedCoordsNewToOld([&](const int32_t x, const int32_t y,
-                                                     const ColorsList& colorsList) {
-    const int32_t jitterAmount =
-        !m_prevShapesJitter
-            ? 0
-            : m_goomRand.GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
-    const int32_t newX = GetClipped(x + jitterAmount, m_draw.GetScreenWidth() - 1);
-    const int32_t newY = GetClipped(y + jitterAmount, m_draw.GetScreenHeight() - 1);
+  m_drawToContainer.IterateChangedCoordsNewToOld(
+      [&](const int32_t x, const int32_t y, const ColorsList& colorsList)
+      {
+        const int32_t jitterAmount = !m_prevShapesJitter
+                                         ? 0
+                                         : m_goomRand.GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT,
+                                                                     PREV_SHAPES_JITTER_AMOUNT + 1);
+        const int32_t newX = GetClipped(x + jitterAmount, m_draw.GetScreenWidth() - 1);
+        const int32_t newY = GetClipped(y + jitterAmount, m_draw.GetScreenHeight() - 1);
 
-    const Pixel avColor = GetAverageColor(colorsList);
-    constexpr float BRIGHTNESS_FACTOR = 0.1F;
-    const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
-    const Pixel newColor0 = GetBrighterColor(brightness, avColor);
+        const Pixel avColor = GetAverageColor(colorsList);
+        constexpr float BRIGHTNESS_FACTOR = 0.1F;
+        const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
+        const Pixel newColor0 = GetBrighterColor(brightness, avColor);
 
-    // IMPORTANT - Best results come from putting color in second buffer.
-    m_draw.DrawPixels(newX, newY, {Pixel::BLACK, newColor0});
-  });
+        // IMPORTANT - Best results come from putting color in second buffer.
+        m_draw.DrawPixels(newX, newY, {Pixel::BLACK, newColor0});
+      });
 }
 
 inline auto TubeFx::TubeFxImpl::GetAverageColor(const GoomDrawToContainer::ColorsList& colorsList)
