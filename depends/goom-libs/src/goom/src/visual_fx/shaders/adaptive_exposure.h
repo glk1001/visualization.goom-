@@ -1,8 +1,5 @@
 #pragma once
 
-#include "draw/goom_draw.h"
-#include "utils/goom_rand.h"
-
 #include <cstdint>
 
 #if __cplusplus <= 201402L
@@ -24,17 +21,14 @@ public:
   static constexpr float MAX_EXPOSURE = 50.0F;
   static constexpr float DEFAULT_EXPOSURE = 1.0F;
 
-  explicit AdaptiveExposure(const DRAW::IGoomDraw& goomDraw, UTILS::IGoomRand& goomRand) noexcept;
+  AdaptiveExposure() noexcept = default;
 
   void Start();
 
-  void UpdateExposure();
   void UpdateExposure(float averageLuminance);
   [[nodiscard]] auto GetCurrentExposure() const -> float;
 
 private:
-  const DRAW::IGoomDraw& m_goomDraw;
-  UTILS::IGoomRand& m_goomRand;
   float m_currentExposure = DEFAULT_EXPOSURE;
 
   uint32_t m_tooHighLuminanceInARow = 0;
@@ -42,10 +36,6 @@ private:
   void UpdateLuminanceCounters(float avLuminance);
 
   [[nodiscard]] auto GetTargetExposureLerpFactor() const -> float;
-
-  const UTILS::IGoomRand::NumberRange<int32_t> m_exposureSampleWidthRange;
-  const UTILS::IGoomRand::NumberRange<int32_t> m_exposureSampleHeightRange;
-  [[nodiscard]] auto GetAverageLuminanceOfSpotSamples() const -> float;
 };
 
 inline auto AdaptiveExposure::GetCurrentExposure() const -> float

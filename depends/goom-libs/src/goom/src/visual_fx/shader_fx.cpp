@@ -12,8 +12,6 @@
 #include "shaders/high_contrast.h"
 #include "utils/goom_rand_base.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <memory>
 
 #if __cplusplus <= 201402L
@@ -54,7 +52,7 @@ private:
 
   float m_averageLuminance = 0.0F;
   bool m_doExposureControl = false;
-  AdaptiveExposure m_adaptiveExposure;
+  AdaptiveExposure m_adaptiveExposure{};
   void UpdateExposure();
 
   HighContrast m_highContrast;
@@ -105,7 +103,6 @@ ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelpers& fxHelpers) noexcept
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
     m_goomRand{fxHelpers.GetGoomRand()},
-    m_adaptiveExposure{m_draw, m_goomRand},
     m_highContrast{m_goomInfo, m_goomRand}
 {
 }
