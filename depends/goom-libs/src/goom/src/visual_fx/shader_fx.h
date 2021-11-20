@@ -24,6 +24,7 @@ public:
   void Start() override;
 
   void StartExposureControl();
+  void SetAverageLuminance(float value);
 
   void ApplyMultiple();
 

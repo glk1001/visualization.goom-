@@ -17,6 +17,7 @@
 
 #include "zoom_filter_fx.h"
 
+#include "filters/filter_buffer_row_color_info.h"
 #include "filters/filter_buffers_service.h"
 #include "filters/filter_colors_service.h"
 #include "goom/logging_control.h"
@@ -30,10 +31,8 @@
 
 #include <array>
 #undef NDEBUG
-#include <cassert>
 #include <cstdint>
 #include <memory>
-#include <string>
 
 #if __cplusplus <= 201402L
 namespace GOOM
@@ -50,6 +49,7 @@ using UTILS::Logging;
 using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
+using VISUAL_FX::FILTERS::FilterBufferRowColorInfo;
 using VISUAL_FX::FILTERS::FilterBuffersService;
 using VISUAL_FX::FILTERS::FilterColorsService;
 using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
@@ -76,6 +76,8 @@ public:
   void UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
+  [[nodiscard]] auto GetLastFilterBufferColorInfo() const
+      -> const std::vector<FilterBufferRowColorInfo>&;
 
   [[nodiscard]] auto GetNameValueParams() const -> NameValuePairs;
 
@@ -89,7 +91,8 @@ private:
 
   uint64_t m_updateNum = 0;
 
-  void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const;
+  std::vector<FilterBufferRowColorInfo> m_filterBufferColorInfo;
+  void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 };
 
 ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
@@ -152,6 +155,12 @@ void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& d
   m_fxImpl->ZoomFilterFastRgb(srceBuff, destBuff);
 }
 
+auto ZoomFilterFx::GetLastFilterBufferColorInfo() const
+    -> const std::vector<FilterBufferRowColorInfo>&
+{
+  return m_fxImpl->GetLastFilterBufferColorInfo();
+}
+
 ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     Parallel& parallel,
     const PluginInfo& goomInfo,
@@ -161,7 +170,8 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     m_screenHeight{goomInfo.GetScreenInfo().height},
     m_parallel{parallel},
     m_filterBuffersService{std::move(filterBuffersService)},
-    m_filterColorsService{std::move(filterColorsService)}
+    m_filterColorsService{std::move(filterColorsService)},
+    m_filterBufferColorInfo(m_screenHeight)
 {
 }
 
@@ -233,7 +243,13 @@ inline void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& s
   CZoom(srceBuff, destBuff);
 }
 
-void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) const
+inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() const
+    -> const std::vector<FilterBufferRowColorInfo>&
+{
+  return m_filterBufferColorInfo;
+}
+
+void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
 {
   const auto setDestPixelRow = [&](const size_t destY)
   {
@@ -245,11 +261,15 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffe
 #else
     const auto [destRowBegin, destRowEnd] = destBuff.GetRowIter(destY);
 #endif
+    FilterBufferRowColorInfo& filterBufferRowColorInfo = m_filterBufferColorInfo[destY];
+    filterBufferRowColorInfo.Reset();
+
     for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
     {
-      const auto srceInfo = m_filterBuffersService->GetSourcePointInfo(destPos);
+      *destRowBuff = m_filterColorsService->GetNewColor(
+          srceBuff, m_filterBuffersService->GetSourcePointInfo(destPos));
 
-      *destRowBuff = m_filterColorsService->GetNewColor(srceBuff, srceInfo);
+      filterBufferRowColorInfo.UpdateColor(*destRowBuff);
 
       ++destPos;
     }

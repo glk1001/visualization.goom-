@@ -2,13 +2,13 @@
 
 #ifndef GOOM_DEBUG
 #define GOOM_DEBUG
+#undef NDEBUG
 #endif
 
 #include "goom_config.h"
 
 #include <algorithm>
 #include <array>
-//#undef NDEBUG
 #include <cassert>
 #include <cstdint>
 #include <cstring>
@@ -111,6 +111,8 @@ public:
 
   static const Pixel BLACK;
   static const Pixel WHITE;
+
+  [[nodiscard]] auto IsBlack() const -> bool;
 
   friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) -> bool;
 
@@ -312,6 +314,11 @@ inline auto Pixel::BFlt() const -> float
 inline auto Pixel::Rgba() const -> PixelIntType
 {
   return m_color.intVal;
+}
+
+inline auto Pixel::IsBlack() const -> bool
+{
+  return m_color.intVal == 0;
 }
 
 inline auto Pixel::ToString() const -> std::string

@@ -213,6 +213,11 @@ void AllStandardVisualFx::StartShaderExposureControl()
   m_shader_fx->StartExposureControl();
 }
 
+void AllStandardVisualFx::SetAverageLuminance(const float value)
+{
+  m_shader_fx->SetAverageLuminance(value);
+}
+
 auto AllStandardVisualFx::GetLastShaderEffects() const -> const GoomShaderEffects&
 {
   return m_shader_fx->GetLastShaderEffects();

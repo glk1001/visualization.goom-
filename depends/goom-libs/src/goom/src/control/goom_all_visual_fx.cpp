@@ -262,6 +262,7 @@ void GoomAllVisualFx::ApplyCurrentStateToSingleBuffer()
 
 void GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers()
 {
+  m_allStandardVisualFx->SetAverageLuminance(m_currentBufferAverageLuminance);
   m_allStandardVisualFx->ApplyCurrentStateToMultipleBuffers();
 }
 

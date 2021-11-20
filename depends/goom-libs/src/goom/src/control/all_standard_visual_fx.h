@@ -55,6 +55,7 @@ public:
   void SetResetDrawBuffSettingsFunc(const ResetCurrentDrawBuffSettingsFunc& func);
 
   void StartShaderExposureControl();
+  void SetAverageLuminance(float value);
   void SetSingleBufferDots(bool value);
 
   void Start();

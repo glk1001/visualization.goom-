@@ -426,11 +426,11 @@ auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(const uint
   }
   else
   {
-    for (auto& c : coeffs)
+    for (auto& coeff : coeffs)
     {
-      if (maxCoeff == c)
+      if (maxCoeff == coeff)
       {
-        --c;
+        --coeff;
         break;
       }
     }
@@ -448,5 +448,5 @@ auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(const uint
 } // namespace VISUAL_FX
 } // namespace GOOM
 #else
-} // namespace GOOM::DRAW
+} // namespace GOOM::VISUAL_FX::FILTERS
 #endif

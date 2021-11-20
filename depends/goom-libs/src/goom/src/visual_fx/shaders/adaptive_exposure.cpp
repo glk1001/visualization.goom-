@@ -36,11 +36,14 @@ void AdaptiveExposure::Start()
 
 void AdaptiveExposure::UpdateExposure()
 {
-  const float avLuminance = GetAverageLuminanceOfSpotSamples();
+  UpdateExposure(GetAverageLuminanceOfSpotSamples());
+}
 
-  UpdateLuminanceCounters(avLuminance);
+void AdaptiveExposure::UpdateExposure(const float averageLuminance)
+{
+  UpdateLuminanceCounters(averageLuminance);
 
-  const float targetExposure = stdnew::clamp(1.0F / avLuminance, MIN_EXPOSURE, MAX_EXPOSURE);
+  const float targetExposure = stdnew::clamp(1.0F / averageLuminance, MIN_EXPOSURE, MAX_EXPOSURE);
 
   m_currentExposure =
       stdnew::lerp(m_currentExposure, targetExposure, GetTargetExposureLerpFactor());

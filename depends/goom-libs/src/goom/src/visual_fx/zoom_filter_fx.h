@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filters/filter_buffer_row_color_info.h"
 #include "goom/spimpl.h"
 #include "goom_visual_fx.h"
 #include "utils/name_value_pairs.h"
@@ -56,6 +57,8 @@ public:
       const VISUAL_FX::FILTERS::ZoomFilterColorSettings& filterColorSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
+  [[nodiscard]] auto GetLastFilterBufferColorInfo() const
+      -> const std::vector<FILTERS::FilterBufferRowColorInfo>&;
 
   void Finish() override;
 

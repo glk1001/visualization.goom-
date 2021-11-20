@@ -39,6 +39,7 @@ public:
 
   void Start();
   void StartExposureControl();
+  void SetAverageLuminance(float value);
   void ApplyMultiple();
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
@@ -51,6 +52,7 @@ private:
                                         HighContrast::DEFAULT_BRIGHTNESS,
                                         HighContrast::DEFAULT_CONTRAST};
 
+  float m_averageLuminance = 0.0F;
   bool m_doExposureControl = false;
   AdaptiveExposure m_adaptiveExposure;
   void UpdateExposure();
@@ -84,6 +86,11 @@ void ShaderFx::StartExposureControl()
   m_fxImpl->StartExposureControl();
 }
 
+void ShaderFx::SetAverageLuminance(const float value)
+{
+  m_fxImpl->SetAverageLuminance(value);
+}
+
 void ShaderFx::ApplyMultiple()
 {
   m_fxImpl->ApplyMultiple();
@@ -114,6 +121,11 @@ inline void ShaderFx::ShaderFxImpl::StartExposureControl()
   m_doExposureControl = true;
 }
 
+inline void ShaderFx::ShaderFxImpl::SetAverageLuminance(const float value)
+{
+  m_averageLuminance = value;
+}
+
 inline void ShaderFx::ShaderFxImpl::ApplyMultiple()
 {
   UpdateHighContrast();
@@ -141,7 +153,7 @@ inline void ShaderFx::ShaderFxImpl::UpdateExposure()
     return;
   }
 
-  m_adaptiveExposure.UpdateExposure();
+  m_adaptiveExposure.UpdateExposure(m_averageLuminance);
 
   m_goomShaderEffects.exposure = m_adaptiveExposure.GetCurrentExposure();
 }

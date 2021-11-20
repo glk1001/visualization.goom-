@@ -212,26 +212,14 @@ inline auto GetRgbColorLerp(const Pixel& colA, const Pixel& colB, float t) -> Pi
 //
 //     Y = 0.2126 R + 0.7152 G + 0.0722 B
 //
-// Digital ITU BT.601 (gives more weight to the R and B components):
-//
-//     Y = 0.299 R + 0.587 G + 0.114 B
-//
-// If you are willing to trade accuracy for perfomance, there are two approximation formulas
-// for this one:
-//
-//     Y = 0.33 R + 0.5 G + 0.16 B
-//
-//     Y = 0.375 R + 0.5 G + 0.125 B
-//
-// These can be calculated quickly as
-//
-//     Y = (R+R+B+G+G+G)/6
-//
-//     Y = (R+R+R+B+G+G+G+G)>>3
+constexpr float LUMA_RED_COMPONENT = 0.2126F;
+constexpr float LUMA_GREEN_COMPONENT = 0.7152F;
+constexpr float LUMA_BLUE_COMPONENT = 0.0722F;
 
 inline auto GetLuma(const Pixel& color) -> float
 {
-  return (0.2125F * color.RFlt()) + (0.7154F * color.GFlt()) + (0.0721F * color.BFlt());
+  return (LUMA_RED_COMPONENT * color.RFlt()) + (LUMA_GREEN_COMPONENT * color.GFlt()) +
+         (LUMA_BLUE_COMPONENT * color.BFlt());
 }
 
 inline auto GetIncreasedChroma(const Pixel& color) -> Pixel

@@ -4,6 +4,7 @@
 #include "goom/spimpl.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
+#include "visual_fx/filters/filter_buffer_row_color_info.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
 #include "visual_fx_color_maps.h"
@@ -126,6 +127,7 @@ private:
   void ResetCurrentDrawBuffSettings(GoomDrawables fx);
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
 
+  float m_currentBufferAverageLuminance = 0.0F;
   VisualFxColorMaps m_visualFxColorMaps;
 
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
@@ -163,6 +165,10 @@ inline auto GoomAllVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawabl
 inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
 {
   m_zoomFilter_fx->ZoomFilterFastRgb(srceBuff, destBuff);
+
+  m_currentBufferAverageLuminance =
+      VISUAL_FX::FILTERS::FilterBufferRowColorInfo::GetBufferAverageLuminance(
+          m_zoomFilter_fx->GetLastFilterBufferColorInfo());
 }
 
 inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string

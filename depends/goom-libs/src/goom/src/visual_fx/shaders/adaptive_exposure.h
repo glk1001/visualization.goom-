@@ -29,6 +29,7 @@ public:
   void Start();
 
   void UpdateExposure();
+  void UpdateExposure(float averageLuminance);
   [[nodiscard]] auto GetCurrentExposure() const -> float;
 
 private:
