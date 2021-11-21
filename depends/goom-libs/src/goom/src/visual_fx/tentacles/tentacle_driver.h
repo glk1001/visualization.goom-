@@ -57,9 +57,8 @@ public:
   void FreshStart();
   void SetReverseColorMix(bool value);
   void MultiplyIterZeroYValWaveFreq(float value);
-  void SetTentacleAngle(float value);
   void SetProjectionDistance(float value);
-  void SetCameraDistance(float value);
+  void SetCameraPosition(float cameraDistance, float tentacleAngle);
   void SetDominantColors(const Pixel& dominantColor, const Pixel& dominantLowColor);
 
   void Update();
@@ -151,19 +150,14 @@ private:
   mutable float m_tTransition = 0.0F;
 };
 
-inline void TentacleDriver::SetTentacleAngle(const float value)
-{
-  m_tentaclePlotter.SetTentacleAngle(value);
-}
-
 inline void TentacleDriver::SetProjectionDistance(const float value)
 {
   m_tentaclePlotter.SetProjectionDistance(value);
 }
 
-inline void TentacleDriver::SetCameraDistance(const float value)
+inline void TentacleDriver::SetCameraPosition(const float cameraDistance, const float tentacleAngle)
 {
-  m_tentaclePlotter.SetCameraDistance(value);
+  m_tentaclePlotter.SetCameraPosition(cameraDistance, tentacleAngle);
 }
 
 inline void TentacleDriver::SetDominantColors(const Pixel& dominantColor,

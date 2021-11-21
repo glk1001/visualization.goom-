@@ -143,10 +143,10 @@ inline auto TentaclePlotter::Get2DTentaclePoints(const Tentacle3D& tentacle) con
     -> std::vector<V2dInt>
 {
   const std::vector<V3dFlt> vertices = tentacle.GetVertices();
-  const V3dFlt cam = GetCameraPosition();
   const float angleAboutY = GetTentacleAngleAboutY(tentacle);
 
-  const std::vector<V3dFlt> points3D = GetTransformedPoints(vertices, cam, m_pi - angleAboutY);
+  const std::vector<V3dFlt> points3D =
+      GetTransformedPoints(vertices, m_cameraPosition, m_pi - angleAboutY);
 
   return GetPerspectiveProjection(points3D);
 }
@@ -168,12 +168,14 @@ inline auto TentaclePlotter::GetTentacleAngleAboutY(const Tentacle3D& tentacle) 
   return angleAboutY;
 }
 
-inline auto TentaclePlotter::GetCameraPosition() const -> V3dFlt
+void TentaclePlotter::SetCameraPosition(const float cameraDistance, const float tentacleAngle)
 {
-  V3dFlt cam = {0.0F, 0.0F, -3.0F}; // TODO ????????????????????????????????
-  cam.z += m_cameraDistance;
-  cam.y += 2.0F * std::sin(-(m_tentacleAngle - m_half_pi) / 4.3F);
-  return cam;
+  m_tentacleAngle = tentacleAngle;
+  m_cameraDistance = cameraDistance;
+
+  m_cameraPosition = {0.0F, 0.0F, -3.0F}; // TODO ????????????????????????????????
+  m_cameraPosition.z += m_cameraDistance;
+  m_cameraPosition.y += 2.0F * std::sin(-(m_tentacleAngle - m_half_pi) / 4.3F);
 }
 
 inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& points,

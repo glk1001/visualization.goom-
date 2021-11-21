@@ -174,19 +174,18 @@ auto TentacleDriver::IterParamsGroup::GetNextIterationParams(const float t) cons
     -> TentacleDriver::IterationParams
 {
   IterationParams params{};
-  params.length =
-      goomRand.GetRandInRange(1.0F, 1.000001F * stdnew::lerp(first.length, last.length, t));
+  params.length = goomRand.GetRandInRange(1.0F, 1.1F * stdnew::lerp(first.length, last.length, t));
   assert(params.length >= 1.0F);
   params.numNodes = static_cast<size_t>(
-      goomRand.GetRandInRange(1.0F, 1.000001F) *
+      goomRand.GetRandInRange(1.0F, 1.1F) *
       stdnew::lerp(static_cast<float>(first.numNodes), static_cast<float>(last.numNodes), t));
   assert(params.numNodes >= 10);
 
-  params.prevYWeight = goomRand.GetRandInRange(1.0F, 1.000001F) *
-                       stdnew::lerp(first.prevYWeight, last.prevYWeight, t);
+  params.prevYWeight =
+      goomRand.GetRandInRange(1.0F, 1.1F) * stdnew::lerp(first.prevYWeight, last.prevYWeight, t);
   params.iterZeroYValWave = first.iterZeroYValWave;
   params.iterZeroYValWaveFreq =
-      goomRand.GetRandInRange(1.0F, 1.000001F) *
+      goomRand.GetRandInRange(1.0F, 1.1F) *
       stdnew::lerp(first.iterZeroYValWaveFreq, last.iterZeroYValWaveFreq, t);
   return params;
 }
@@ -197,7 +196,7 @@ auto TentacleDriver::CreateNewTentacle2D(IGoomRand& goomRand,
     -> std::unique_ptr<Tentacle2D>
 {
   const float tentacleLen = std::max(1.0F, goomRand.GetRandInRange(0.99F, 1.01F) * params.length);
-  assert(tentacleLen >= 1);
+  assert(tentacleLen >= 1.0F);
   const double tent2d_xMax = TENT2D_X_MIN + static_cast<double>(tentacleLen);
   assert(tent2d_xMax >= 1.0);
 
@@ -234,16 +233,29 @@ void TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
   };
   std::sort(sortedLongestFirst.begin(), sortedLongestFirst.end(), compareByLength);
 
+  constexpr float SMALL_X = 10.0F;
+
   for (size_t i = 0; i < tentacles.size(); ++i)
   {
-    tentacles[sortedLongestFirst.at(i)].SetHead(tentacleLayout.GetPoints().at(i));
+    V3dFlt head = tentacleLayout.GetPoints().at(i);
+
+    if ((0.0F <= head.x) && (head.x < SMALL_X))
+    {
+      head.x = SMALL_X;
+    }
+    else if ((-SMALL_X < head.x) && (head.x <= 0.0F))
+    {
+      head.x = -SMALL_X;
+    }
+
+    tentacles[sortedLongestFirst.at(i)].SetHead(head);
   }
 
   // To help with perspective, any tentacles near vertical centre will be shortened.
   for (auto& tentacle : tentacles)
   {
     const V3dFlt& head = tentacle.GetHead();
-    if (std::fabs(head.x) < 10.0F)
+    if (std::fabs(head.x) <= SMALL_X)
     {
       Tentacle2D& tentacle2D = tentacle.Get2DTentacle();
       const double xMin = tentacle2D.GetXMin();

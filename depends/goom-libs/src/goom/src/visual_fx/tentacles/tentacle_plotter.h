@@ -34,9 +34,8 @@ public:
   void ChangeNumNodesBetweenDots();
   void ChangeDotSizes();
 
-  void SetTentacleAngle(float value);
   void SetProjectionDistance(float value);
-  void SetCameraDistance(float value);
+  void SetCameraPosition(float cameraDistance, float tentacleAngle);
   void SetDominantColors(const Pixel& dominantColor, const Pixel& dominantLowColor);
 
   void Plot3D(const Tentacle3D& tentacle);
@@ -52,9 +51,10 @@ private:
   static constexpr uint32_t MAX_STEPS_BETWEEN_NODES = 6;
   uint32_t m_numNodesBetweenDots = (MIN_STEPS_BETWEEN_NODES + MAX_STEPS_BETWEEN_NODES) / 2;
 
-  float m_tentacleAngle = 0.0F;
   float m_projectionDistance = 0.0F;
+  float m_tentacleAngle = 0.0F;
   float m_cameraDistance = 0.0F;
+  V3dFlt m_cameraPosition{};
   Pixel m_dominantColor{};
   Pixel m_dominantLowColor{};
 
@@ -74,7 +74,6 @@ private:
                                     size_t nodeNum) const -> std::vector<Pixel>;
   [[nodiscard]] auto GetBrightness(const Tentacle3D& tentacle) const -> float;
   [[nodiscard]] auto GetBrightnessCut(const Tentacle3D& tentacle) const -> float;
-  [[nodiscard]] auto GetCameraPosition() const -> V3dFlt;
   [[nodiscard]] auto Get2DTentaclePoints(const Tentacle3D& tentacle) const -> std::vector<V2dInt>;
   [[nodiscard]] auto GetTentacleAngleAboutY(const Tentacle3D& tentacle) const -> float;
   [[nodiscard]] static auto GetTransformedPoints(const std::vector<V3dFlt>& points,
@@ -86,19 +85,9 @@ private:
   static void Translate(const V3dFlt& vAdd, V3dFlt& vInOut);
 };
 
-inline void TentaclePlotter::SetTentacleAngle(const float value)
-{
-  m_tentacleAngle = value;
-}
-
 inline void TentaclePlotter::SetProjectionDistance(const float value)
 {
   m_projectionDistance = value;
-}
-
-inline void TentaclePlotter::SetCameraDistance(const float value)
-{
-  m_cameraDistance = value;
 }
 
 inline void TentaclePlotter::SetDominantColors(const Pixel& dominantColor,

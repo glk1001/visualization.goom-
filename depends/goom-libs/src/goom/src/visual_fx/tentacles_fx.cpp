@@ -189,9 +189,8 @@ void TentaclesFx::TentaclesImpl::SetupTentacleDrivers()
   for (size_t i = 0; i < NUM_TENTACLE_DRIVERS; ++i)
   {
     m_tentacleDrivers[i]->StartIterating();
-    m_tentacleDrivers[i]->SetTentacleAngle(m_half_pi - ROTATION);
     m_tentacleDrivers[i]->SetProjectionDistance(PROJECTION_DISTANCE);
-    m_tentacleDrivers[i]->SetCameraDistance(CAMERA_DISTANCE);
+    m_tentacleDrivers[i]->SetCameraPosition(CAMERA_DISTANCE, m_half_pi - ROTATION);
   }
 
   SetColorsForTentacleDrivers();
