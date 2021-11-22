@@ -57,6 +57,7 @@ public:
       const VISUAL_FX::FILTERS::ZoomFilterColorSettings& filterColorSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
+  void SetZoomFilterBrightness(float brightness);
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const
       -> const std::vector<FILTERS::FilterBufferRowColorInfo>&;
 

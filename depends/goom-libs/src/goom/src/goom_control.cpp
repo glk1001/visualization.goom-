@@ -309,10 +309,10 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
 
 void GoomControl::GoomControlImpl::CheckFinishedTitle()
 {
-  if (m_currentSongTitle.empty() || m_goomTitleDisplayer.IsFinalPhase() ||
+  if (m_currentSongTitle.empty() || m_goomTitleDisplayer.IsMiddlePhase() ||
       (m_showTitle == ShowTitleType::ALWAYS))
   {
-    m_visualFx.StartShaderExposureControl();
+    m_visualFx.StartExposureControl();
   }
 }
 
@@ -507,7 +507,7 @@ void GoomControl::GoomControlImpl::DisplayStateText()
   message +=
       std20::format("tranLerpToMaxSwitchMult: {}\n", filterBufferSettings.tranLerpToMaxSwitchMult);
 
-  message += std20::format("exposure: {}\n", shaderEffects.exposure);
+  message += std20::format("exposure: {}\n", m_visualFx.GetCurrentExposure());
   message += std20::format("contrast: {}\n", shaderEffects.contrast);
   message += std20::format("minChan: {}\n", shaderEffects.contrastMinChannelValue);
   message += std20::format("brightness: {}\n", shaderEffects.brightness);

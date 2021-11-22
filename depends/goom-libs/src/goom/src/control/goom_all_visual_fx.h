@@ -4,7 +4,9 @@
 #include "goom/spimpl.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
+#include "utils/mathutils.h"
 #include "visual_fx/filters/filter_buffer_row_color_info.h"
+#include "visual_fx/fx_utils/adaptive_exposure.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
 #include "visual_fx_color_maps.h"
@@ -62,10 +64,11 @@ public:
   void SetNextState();
   [[nodiscard]] auto GetCurrentStateName() const -> std::string;
 
-  void StartShaderExposureControl();
-  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
-
   void SetSingleBufferDots(bool value);
+
+  void StartExposureControl();
+  [[nodiscard]] auto GetCurrentExposure() const -> float;
+  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
   void SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func);
@@ -127,8 +130,10 @@ private:
   void ResetCurrentDrawBuffSettings(GoomDrawables fx);
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
 
-  float m_currentBufferAverageLuminance = 0.0F;
   VisualFxColorMaps m_visualFxColorMaps;
+  VISUAL_FX::FX_UTILS::AdaptiveExposure m_adaptiveExposure{};
+  bool m_doExposureControl = false;
+  void UpdateZoomFilterLuminance();
 
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
@@ -166,9 +171,30 @@ inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer&
 {
   m_zoomFilter_fx->ZoomFilterFastRgb(srceBuff, destBuff);
 
-  m_currentBufferAverageLuminance =
+  UpdateZoomFilterLuminance();
+}
+
+inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
+{
+  const float currentBufferAverageLuminance =
       VISUAL_FX::FILTERS::FilterBufferRowColorInfo::GetBufferAverageLuminance(
           m_zoomFilter_fx->GetLastFilterBufferColorInfo());
+
+  if (currentBufferAverageLuminance < UTILS::SMALL_FLOAT)
+  {
+    return;
+  }
+  m_adaptiveExposure.UpdateAverageLuminance(currentBufferAverageLuminance);
+
+  if (m_doExposureControl)
+  {
+    m_zoomFilter_fx->SetZoomFilterBrightness(m_adaptiveExposure.GetCurrentExposure());
+  }
+}
+
+inline auto GoomAllVisualFx::GetCurrentExposure() const -> float
+{
+  return m_adaptiveExposure.GetCurrentExposure();
 }
 
 inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string

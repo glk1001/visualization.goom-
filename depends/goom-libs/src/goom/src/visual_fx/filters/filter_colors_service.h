@@ -66,14 +66,14 @@ inline void FilterColorsService::SetBrightness(const float brightness)
   // In method 'GetMixedColor' we multiply an array of coefficients by an array of colors
   // and get a sum as the result. The sum is then divided by 'MAX_SUM_COEFFS'. For optimizing
   // reasons, we can use this point to also factor in integer brightness for free.
-  // 
+  //
   //  (c/x) * (m/n) = (c*m) / (x*n) = c / (x*n / m)
 
-  constexpr uint32_t x = MAX_SUM_COEFFS;
-  constexpr uint32_t n = channel_limits<uint32_t>::max();
+  constexpr uint32_t X = MAX_SUM_COEFFS;
+  constexpr uint32_t N = channel_limits<uint32_t>::max();
   const uint32_t m = std::max(1U, static_cast<uint32_t>(brightness * channel_limits<float>::max()));
 
-  m_coeffsAndBrightnessDivisor =  (x * n) / m;
+  m_coeffsAndBrightnessDivisor = (X * N) / m;
 }
 
 inline void FilterColorsService::SetBlockyWavy(const bool val)
@@ -139,9 +139,9 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
     multG += static_cast<uint32_t>(color.G()) * coeff;
     multB += static_cast<uint32_t>(color.B()) * coeff;
   }
-  uint32_t newR = multR / m_coeffsAndBrightnessDivisor;
-  uint32_t newG = multG / m_coeffsAndBrightnessDivisor;
-  uint32_t newB = multB / m_coeffsAndBrightnessDivisor;
+  const uint32_t newR = multR / m_coeffsAndBrightnessDivisor;
+  const uint32_t newG = multG / m_coeffsAndBrightnessDivisor;
+  const uint32_t newB = multB / m_coeffsAndBrightnessDivisor;
 
   return Pixel{newR, newG, newB, MAX_ALPHA};
 }

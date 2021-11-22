@@ -23,29 +23,29 @@ using COLOR::LUMA_RED_COMPONENT;
 auto FilterBufferRowColorInfo::GetBufferAverageLuminance(
     const std::vector<FilterBufferRowColorInfo>& filterBufferColorInfo) -> float
 {
-  auto infoBegin = cbegin(filterBufferColorInfo);
-  auto infoEnd = cend(filterBufferColorInfo);
+  const auto infoBegin = cbegin(filterBufferColorInfo);
+  const auto infoEnd = cend(filterBufferColorInfo);
 
   const auto totalNonZeroPixels =
-      std::accumulate(infoBegin, infoEnd, 0,
+      std::accumulate(infoBegin, infoEnd, 0UL,
                       [](const uint64_t sum, const FilterBufferRowColorInfo& info)
                       { return sum + info.m_numNonzeroInRow; });
 
-  if (totalNonZeroPixels == 0)
+  if (0 == totalNonZeroPixels)
   {
     return 0.0F;
   }
 
-  const auto totalRedColor =
-      std::accumulate(infoBegin, infoEnd, 0,
+  const uint64_t totalRedColor =
+      std::accumulate(infoBegin, infoEnd, 0UL,
                       [](const uint64_t sum, const FilterBufferRowColorInfo& info)
                       { return sum + info.m_sumRedInRow; });
-  const auto totalGreenColor =
-      std::accumulate(infoBegin, infoEnd, 0,
+  const uint64_t totalGreenColor =
+      std::accumulate(infoBegin, infoEnd, 0UL,
                       [](const uint64_t sum, const FilterBufferRowColorInfo& info)
                       { return sum + info.m_sumGreenInRow; });
-  const auto totalBlueColor =
-      std::accumulate(infoBegin, infoEnd, 0,
+  const uint64_t totalBlueColor =
+      std::accumulate(infoBegin, infoEnd, 0UL,
                       [](const uint64_t sum, const FilterBufferRowColorInfo& info)
                       { return sum + info.m_sumBlueInRow; });
 

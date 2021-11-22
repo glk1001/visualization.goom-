@@ -34,6 +34,43 @@ void HighContrast::Start()
   m_maxContrastMinChannelValue = 0.0F;
 }
 
+void HighContrast::ChangeHighContrast()
+{
+  ChangeHighContrast(true);
+}
+
+inline void HighContrast::ChangeHighContrast(const bool allowNegativeContrast)
+{
+  if (!m_highContrastOffTimer.Finished())
+  {
+    return;
+  }
+  if (!m_highContrastOnTimer.Finished())
+  {
+    return;
+  }
+
+  constexpr float PROB_CONTRAST = 0.4F;
+
+  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
+      m_goomRand.ProbabilityOf(PROB_CONTRAST))
+  {
+    m_highContrastT.Reset();
+    m_highContrastOnTimer.ResetToZero();
+    if (!allowNegativeContrast)
+    {
+      m_maxContrastMinChannelValue = 0.0F;
+    }
+    else
+    {
+      constexpr float CONTRAST_MIN_CHAN = -0.4F;
+      constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.85F;
+      m_maxContrastMinChannelValue =
+          m_goomRand.ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
+    }
+  }
+}
+
 void HighContrast::UpdateHighContrast()
 {
   m_highContrastT.Increment();
@@ -63,17 +100,7 @@ void HighContrast::UpdateHighContrast()
     return;
   }
 
-  constexpr float PROB_CONTRAST = 0.3F;
-  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
-      m_goomRand.ProbabilityOf(PROB_CONTRAST))
-  {
-    m_highContrastT.Reset();
-    m_highContrastOnTimer.ResetToZero();
-    constexpr float CONTRAST_MIN_CHAN = -0.4F;
-    constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.95F;
-    m_maxContrastMinChannelValue =
-        m_goomRand.ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
-  }
+  ChangeHighContrast(false);
 }
 
 #if __cplusplus <= 201402L

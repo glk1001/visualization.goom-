@@ -93,9 +93,9 @@ void GoomAllVisualFx::Start()
   m_goomLine1->Start();
   m_goomLine2->Start();
 
-  m_zoomFilter_fx->Start();
-
   m_allStandardVisualFx->Start();
+  m_adaptiveExposure.Start();
+  m_zoomFilter_fx->Start();
 }
 
 void GoomAllVisualFx::Finish()
@@ -127,13 +127,14 @@ void GoomAllVisualFx::ChangeState()
 
   m_currentGoomDrawables = m_goomStateHandler.GetCurrentDrawables();
   m_allStandardVisualFx->SetCurrentGoomDrawables(m_currentGoomDrawables);
+  m_allStandardVisualFx->ChangeShaderEffects();
 
   m_allStandardVisualFx->ResumeFx();
 }
 
-void GoomAllVisualFx::StartShaderExposureControl()
+void GoomAllVisualFx::StartExposureControl()
 {
-  m_allStandardVisualFx->StartShaderExposureControl();
+  m_doExposureControl = true;
 }
 
 auto GoomAllVisualFx::GetLastShaderEffects() const -> const GoomShaderEffects&
@@ -262,7 +263,6 @@ void GoomAllVisualFx::ApplyCurrentStateToSingleBuffer()
 
 void GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers()
 {
-  m_allStandardVisualFx->SetAverageLuminance(m_currentBufferAverageLuminance);
   m_allStandardVisualFx->ApplyCurrentStateToMultipleBuffers();
 }
 

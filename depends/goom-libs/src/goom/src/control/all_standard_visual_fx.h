@@ -54,8 +54,6 @@ public:
   using ResetCurrentDrawBuffSettingsFunc = std::function<void(GoomDrawables fx)>;
   void SetResetDrawBuffSettingsFunc(const ResetCurrentDrawBuffSettingsFunc& func);
 
-  void StartShaderExposureControl();
-  void SetAverageLuminance(float value);
   void SetSingleBufferDots(bool value);
 
   void Start();
@@ -70,6 +68,7 @@ public:
   void ApplyCurrentStateToSingleBuffer();
   void ApplyCurrentStateToMultipleBuffers();
 
+  void ChangeShaderEffects();
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
   [[nodiscard]] auto CanDraw(GoomDrawables goomDrawable) const -> bool;

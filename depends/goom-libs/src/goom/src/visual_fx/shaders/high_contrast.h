@@ -27,6 +27,7 @@ public:
 
   void Start();
 
+  void ChangeHighContrast();
   void UpdateHighContrast();
   [[nodiscard]] auto GetCurrentContrast() const -> float;
   [[nodiscard]] auto GetCurrentBrightness() const -> float;
@@ -51,6 +52,8 @@ private:
   UTILS::Timer m_highContrastOnTimer{HIGH_CONTRAST_ON_TIME, true};
   static constexpr uint32_t HIGH_CONTRAST_OFF_TIME = 300;
   UTILS::Timer m_highContrastOffTimer{HIGH_CONTRAST_OFF_TIME, false};
+
+  void ChangeHighContrast(bool allowNegativeContrast);
 };
 
 inline auto HighContrast::GetCurrentContrast() const -> float

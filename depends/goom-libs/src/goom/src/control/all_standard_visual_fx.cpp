@@ -208,14 +208,9 @@ void AllStandardVisualFx::ApplyShaderToBothBuffersIfRequired()
   m_shader_fx->ApplyMultiple();
 }
 
-void AllStandardVisualFx::StartShaderExposureControl()
+void AllStandardVisualFx::ChangeShaderEffects()
 {
-  m_shader_fx->StartExposureControl();
-}
-
-void AllStandardVisualFx::SetAverageLuminance(const float value)
-{
-  m_shader_fx->SetAverageLuminance(value);
+  m_shader_fx->ChangeEffects();
 }
 
 auto AllStandardVisualFx::GetLastShaderEffects() const -> const GoomShaderEffects&

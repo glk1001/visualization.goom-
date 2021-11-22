@@ -7,29 +7,29 @@ namespace GOOM
 {
 namespace VISUAL_FX
 {
-namespace SHADERS
+namespace FX_UTILS
 {
 #else
-namespace GOOM::VISUAL_FX::SHADERS
+namespace GOOM::VISUAL_FX::FX_UTILS
 {
 #endif
 
 class AdaptiveExposure
 {
 public:
-  static constexpr float MIN_EXPOSURE = 0.10F;
-  static constexpr float MAX_EXPOSURE = 50.0F;
-  static constexpr float DEFAULT_EXPOSURE = 1.0F;
+  static constexpr float MIN_EXPOSURE = 0.01F;
+  static constexpr float MAX_EXPOSURE = 100.0F;
+  static constexpr float INITIAL_EXPOSURE = MIN_EXPOSURE;
 
   AdaptiveExposure() noexcept = default;
 
   void Start();
 
-  void UpdateExposure(float averageLuminance);
+  void UpdateAverageLuminance(float averageLuminance);
   [[nodiscard]] auto GetCurrentExposure() const -> float;
 
 private:
-  float m_currentExposure = DEFAULT_EXPOSURE;
+  float m_currentExposure = INITIAL_EXPOSURE;
 
   uint32_t m_tooHighLuminanceInARow = 0;
   uint32_t m_tooLowLuminanceInARow = 0;
@@ -44,9 +44,9 @@ inline auto AdaptiveExposure::GetCurrentExposure() const -> float
 }
 
 #if __cplusplus <= 201402L
-} // namespace SHADERS
+} // namespace FX_UTILS
 } // namespace VISUAL_FX
 } // namespace GOOM
 #else
-} // namespace GOOM::VISUAL_FX::SHADERS
+} // namespace GOOM::VISUAL_FX::FX_UTILS
 #endif

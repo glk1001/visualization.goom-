@@ -76,6 +76,7 @@ public:
   void UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
+  void SetZoomFilterBrightness(float brightness);
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const
       -> const std::vector<FilterBufferRowColorInfo>&;
 
@@ -153,6 +154,11 @@ void ZoomFilterFx::UpdateFilterColorSettings(const ZoomFilterColorSettings& filt
 void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
 {
   m_fxImpl->ZoomFilterFastRgb(srceBuff, destBuff);
+}
+
+void ZoomFilterFx::SetZoomFilterBrightness(const float brightness)
+{
+  m_fxImpl->SetZoomFilterBrightness(brightness);
 }
 
 auto ZoomFilterFx::GetLastFilterBufferColorInfo() const
@@ -241,6 +247,11 @@ inline void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& s
   m_filterBuffersService->UpdateTranBuffers();
 
   CZoom(srceBuff, destBuff);
+}
+
+inline void ZoomFilterFx::ZoomFilterImpl::SetZoomFilterBrightness(const float brightness)
+{
+  m_filterColorsService->SetBrightness(brightness);
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() const

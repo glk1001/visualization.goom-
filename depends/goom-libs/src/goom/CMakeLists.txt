@@ -84,12 +84,12 @@ add_library(goom
         src/visual_fx/filters/tan_effect.cpp
         src/visual_fx/filters/wave.cpp
         src/visual_fx/filters/y_only.cpp
+        src/visual_fx/fx_utils/adaptive_exposure.cpp
         src/visual_fx/fx_utils/dot_drawer.cpp
         src/visual_fx/ifs/colorizer.cpp
         src/visual_fx/ifs/fractal.cpp
         src/visual_fx/ifs/low_density_blurrer.cpp
         src/visual_fx/shaders/high_contrast.cpp
-        src/visual_fx/shaders/adaptive_exposure.cpp
         src/visual_fx/tentacles/circles_tentacle_layout.cpp
         src/visual_fx/tentacles/tentacle_colorizer.h
         src/visual_fx/tentacles/tentacle_driver.cpp
