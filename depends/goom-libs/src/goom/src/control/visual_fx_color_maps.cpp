@@ -47,12 +47,12 @@ VisualFxColorMaps::VisualFxColorMaps(IGoomRand& goomRand) noexcept
     {
         m_goomRand,
         {
-             {GetColorPairColorMatchedSet(GetRedStandardMaps,    GetGreenStandardMaps),    10},
-             {GetColorPairColorMatchedSet(GetRedStandardMaps,    GetBlueStandardMaps),     10},
-             {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetBlueStandardMaps),     10},
-             {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetPurpleStandardMaps),   10},
-             {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetGreenStandardMaps),    10},
-             {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetPurpleStandardMaps),   10},
+             {GetColorPairColorMatchedSet(GetRedStandardMaps,    GetGreenStandardMaps),     1},
+             {GetColorPairColorMatchedSet(GetRedStandardMaps,    GetBlueStandardMaps),      1},
+             {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetBlueStandardMaps),      1},
+             {GetColorPairColorMatchedSet(GetYellowStandardMaps, GetPurpleStandardMaps),    1},
+             {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetGreenStandardMaps),     1},
+             {GetColorPairColorMatchedSet(GetOrangeStandardMaps, GetPurpleStandardMaps),    1},
              {GetConstColorMatchedSet(GetAllStandardMaps),                                 20},
              {GetConstColorMatchedSet(GetHeatStandardMaps),                                15},
              {GetConstColorMatchedSet(GetColdStandardMaps),                                15},
@@ -81,6 +81,9 @@ inline auto VisualFxColorMaps::GetConstColorMatchedSet(const ColorMapFunc& func)
 {
   ColorMatchedSet matchedSet;
   matchedSet.fill(func);
+
+  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllSlimMaps;
+
   return matchedSet;
 }
 
@@ -95,6 +98,8 @@ auto VisualFxColorMaps::GetColorPairColorMatchedSet(const ColorMapFunc& func1,
   {
     matchedSet.at(indexes.at(i)) = func2;
   }
+
+  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllSlimMaps;
 
   return matchedSet;
 }
@@ -153,7 +158,7 @@ auto VisualFxColorMaps::GetColorMatchedSet3() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetGreenStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IFS)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetMostlySequentialStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetAllSlimMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetSlightlyDivergingSlimMaps;
@@ -263,7 +268,7 @@ auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetHeatStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IFS)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetRedStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetAllStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetAllStandardMaps;
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetBlueStandardMaps;
