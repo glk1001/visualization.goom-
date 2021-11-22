@@ -49,14 +49,14 @@ public:
                     const PluginInfo& goomInfo,
                     const ZoomPointFunc& zoomPointFunc);
 
+  [[nodiscard]] auto GetBuffMidPoint() const -> V2dInt;
+  void SetBuffMidPoint(const V2dInt& val);
+
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
   void SetTranLerpFactor(int32_t val);
   [[nodiscard]] static auto GetMaxTranLerpFactor() -> int32_t;
 
   [[nodiscard]] auto GetTranBuffYLineStart() const -> uint32_t;
-
-  [[nodiscard]] auto GetBuffMidPoint() const -> V2dInt;
-  void SetBuffMidPoint(const V2dInt& val);
 
   void Start();
 
