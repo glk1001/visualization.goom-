@@ -1,5 +1,7 @@
 #pragma once
 
+#include "color/colormaps.h"
+#include "color/random_colormaps.h"
 #include "goom_graphic.h"
 #include "tentacle2d.h"
 #include "utils/goom_rand_base.h"
@@ -19,8 +21,6 @@ namespace GOOM::VISUAL_FX::TENTACLES
 {
 #endif
 
-class ITentacleColorizer;
-
 struct V3dFlt
 {
   float x = 0.0;
@@ -34,7 +34,6 @@ class Tentacle3D
 public:
   Tentacle3D() noexcept = delete;
   Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-             std::shared_ptr<const ITentacleColorizer> colorizer,
              const Pixel& headColor,
              const Pixel& headLowColor,
              const V3dFlt& head,
@@ -49,10 +48,9 @@ public:
   auto Get2DTentacle() -> Tentacle2D& { return *m_tentacle; }
   [[nodiscard]] auto Get2DTentacle() const -> const Tentacle2D& { return *m_tentacle; }
 
+  void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);
   void ColorMapsChanged();
-  [[nodiscard]] auto GetColor(size_t nodeNum) const -> Pixel;
-  [[nodiscard]] auto GetMixedColors(size_t nodeNum, const Pixel& color, const Pixel& lowColor) const
-      -> std::pair<Pixel, Pixel>;
+
   [[nodiscard]] auto GetMixedColors(size_t nodeNum,
                                     const Pixel& color,
                                     const Pixel& lowColor,
@@ -71,17 +69,34 @@ public:
 private:
   UTILS::IGoomRand& m_goomRand;
   std::unique_ptr<Tentacle2D> m_tentacle;
-  std::shared_ptr<const ITentacleColorizer> m_colorizer;
+
+  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
+  const COLOR::IColorMap* m_currentColorMap = nullptr;
+  const COLOR::IColorMap* m_currentLowColorMap = nullptr;
+  bool m_reverseColorMix = false;
+  bool m_useIncreasedChroma = true;
+
   Pixel m_headColor{};
   Pixel m_headLowColor{};
   V3dFlt m_head{};
   size_t m_numHeadNodes{};
-  bool m_reverseColorMix = false;
-  bool m_useIncreasedChroma = true;
+
+  [[nodiscard]] auto GetMixedColors(size_t nodeNum, const Pixel& color, const Pixel& lowColor) const
+      -> std::pair<Pixel, Pixel>;
+  [[nodiscard]] auto GetMixedHeadColors(size_t nodeNum,
+                                        const Pixel& color,
+                                        const Pixel& lowColor) const -> std::pair<Pixel, Pixel>;
   [[nodiscard]] auto GetFinalMixedColor(const Pixel& color,
                                         const Pixel& segmentColor,
                                         float t) const -> Pixel;
 };
+
+inline void Tentacle3D::SetWeightedColorMaps(
+    const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps)
+{
+  m_colorMaps = weightedMaps;
+  ColorMapsChanged();
+}
 
 #if __cplusplus <= 201402L
 } // namespace TENTACLES

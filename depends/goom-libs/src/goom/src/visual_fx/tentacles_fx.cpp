@@ -31,7 +31,6 @@ namespace GOOM::VISUAL_FX
 {
 #endif
 
-using COLOR::ColorMapGroup;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
@@ -62,31 +61,28 @@ private:
   const PluginInfo& m_goomInfo;
   IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
-  std::shared_ptr<RandomColorMaps> m_colorMaps{};
+
+  static constexpr double PROJECTION_DISTANCE = 170.0;
+  static constexpr float CAMERA_DISTANCE = 8.0F;
+  static constexpr float ROTATION = 1.5F * m_pi;
+  static constexpr size_t NUM_TENTACLE_DRIVERS = 4;
+  const Weights<size_t> m_driverWeights;
+  const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;
+  std::vector<std::unique_ptr<TentacleDriver>> m_tentacleDrivers;
+  [[nodiscard]] auto GetTentacleDrivers() const -> std::vector<std::unique_ptr<TentacleDriver>>;
+  TentacleDriver* m_currentTentacleDriver;
+  [[nodiscard]] auto GetNextDriver() const -> TentacleDriver*;
+
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
   Pixel m_dominantColor{};
   Pixel m_dominantLowColor{};
   void ChangeDominantColor();
   void UpdateDominantColors();
 
-  static constexpr double PROJECTION_DISTANCE = 170.0;
-  static constexpr float CAMERA_DISTANCE = 8.0F;
-  static constexpr float ROTATION = 1.5F * m_pi;
-
   static constexpr uint32_t MAX_TIME_FOR_DOMINANT_COLOR = 100;
   Timer m_timeWithThisDominantColor{MAX_TIME_FOR_DOMINANT_COLOR};
   void UpdateTimers();
 
-  static constexpr size_t NUM_TENTACLE_DRIVERS = 4;
-  std::vector<std::unique_ptr<TentacleDriver>> m_tentacleDrivers{};
-  TentacleDriver* m_currentTentacleDriver = nullptr;
-  [[nodiscard]] auto GetNextDriver() const -> TentacleDriver*;
-
-  const Weights<size_t> m_driverWeights;
-  const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;
-
-  void SetupTentacleDrivers();
-  void SetColorsForTentacleDrivers();
   void RefreshTentacles();
   void DoTentaclesUpdate();
   void UpdateTentacleWaveFrequency();
@@ -95,6 +91,11 @@ private:
 TentaclesFx::TentaclesFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelpers, smallBitmaps)}
 {
+}
+
+auto TentaclesFx::GetFxName() const -> std::string
+{
+  return "Tentacles FX";
 }
 
 void TentaclesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
@@ -127,11 +128,6 @@ void TentaclesFx::ApplyMultiple()
   m_fxImpl->Update();
 }
 
-auto TentaclesFx::GetFxName() const -> std::string
-{
-  return "Tentacles FX";
-}
-
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers,
                                           const SmallImageBitmaps& smallBitmaps)
   : m_draw{fxHelpers.GetDraw()},
@@ -152,15 +148,17 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers,
         {10,  80, {20, 16, 12,  6, 4}, 0},
         {10, 100, {30, 20, 14,  6, 4}, 0},
         {10, 110, {36, 26, 20, 12, 6}, 0},
-    }}
-// clang-format on
+    }},
+    // clang-format on
+    m_tentacleDrivers{GetTentacleDrivers()},
+    m_currentTentacleDriver{GetNextDriver()}
 {
   assert(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());
+  assert(m_currentTentacleDriver);
 }
 
 inline void TentaclesFx::TentaclesImpl::Start()
 {
-  SetupTentacleDrivers();
   RefreshTentacles();
 }
 
@@ -175,75 +173,53 @@ inline void TentaclesFx::TentaclesImpl::Resume()
   RefreshTentacles();
 }
 
-void TentaclesFx::TentaclesImpl::SetupTentacleDrivers()
+auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
+    -> std::vector<std::unique_ptr<TentacleDriver>>
 {
-  const ColorMapGroup initialColorMapGroup = m_colorMaps->GetRandomGroup();
-
-  m_tentacleDrivers.clear();
+  std::vector<std::unique_ptr<TentacleDriver>> tentacleDrivers{};
   for (size_t i = 0; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    m_tentacleDrivers.emplace_back(std::make_unique<TentacleDriver>(
-        m_draw, m_goomRand, m_smallBitmaps, initialColorMapGroup, m_tentacleLayouts.at(i)));
+    tentacleDrivers.emplace_back(std::make_unique<TentacleDriver>(
+        m_draw, m_goomRand, m_smallBitmaps, m_tentacleLayouts.at(i)));
   }
 
   for (size_t i = 0; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    m_tentacleDrivers[i]->StartIterating();
-    m_tentacleDrivers[i]->SetProjectionDistance(PROJECTION_DISTANCE);
-    m_tentacleDrivers[i]->SetCameraPosition(CAMERA_DISTANCE, m_half_pi - ROTATION);
+    tentacleDrivers[i]->StartIterating();
+    tentacleDrivers[i]->SetProjectionDistance(PROJECTION_DISTANCE);
+    tentacleDrivers[i]->SetCameraPosition(CAMERA_DISTANCE, m_half_pi - ROTATION);
   }
 
-  SetColorsForTentacleDrivers();
+  return tentacleDrivers;
+}
 
-  m_currentTentacleDriver = GetNextDriver();
+inline auto TentaclesFx::TentaclesImpl::GetNextDriver() const -> TentacleDriver*
+{
+  const size_t driverIndex = m_driverWeights.GetRandomWeighted();
+  return m_tentacleDrivers[driverIndex].get();
+}
+
+inline void TentaclesFx::TentaclesImpl::RefreshTentacles()
+{
   assert(m_currentTentacleDriver);
+
+  constexpr float PROB_REVERSE_COLOR_MIX = 0.33F;
+  m_currentTentacleDriver->SetReverseColorMix(m_goomRand.ProbabilityOf(PROB_REVERSE_COLOR_MIX));
+  m_currentTentacleDriver->TentaclesColorMapsChanged();
 }
 
 inline void TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
-  m_colorMaps = weightedMaps;
-
-  m_dominantColorMap = m_colorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL);
+  m_dominantColorMap = weightedMaps->GetRandomColorMapPtr(RandomColorMaps::ALL);
   m_dominantColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   UpdateDominantColors();
 
-  SetColorsForTentacleDrivers();
-}
-
-void TentaclesFx::TentaclesImpl::SetColorsForTentacleDrivers()
-{
   for (auto& driver : m_tentacleDrivers)
   {
-    driver->SetWeightedColorMaps(m_colorMaps);
+    driver->SetWeightedColorMaps(weightedMaps);
     driver->SetDominantColors(m_dominantColor, m_dominantLowColor);
   }
-}
-
-void TentaclesFx::TentaclesImpl::RefreshTentacles()
-{
-  assert(m_currentTentacleDriver);
-
-  constexpr float PROB_MINIMAL_COLOR_MODE = 1.0F / 500.0F;
-  constexpr float PROB_MULTI_GROUPS_COLOR_MODE = 350.0F / 500.0F;
-  constexpr float PROB_REVERSE_COLOR_MIX = 0.33F;
-
-  if (m_goomRand.ProbabilityOf(PROB_MINIMAL_COLOR_MODE))
-  {
-    m_currentTentacleDriver->SetColorMode(TentacleDriver::ColorModes::MINIMAL);
-  }
-  else if (m_goomRand.ProbabilityOf(PROB_MULTI_GROUPS_COLOR_MODE))
-  {
-    m_currentTentacleDriver->SetColorMode(TentacleDriver::ColorModes::MULTI_GROUPS);
-  }
-  else
-  {
-    m_currentTentacleDriver->SetColorMode(TentacleDriver::ColorModes::ONE_GROUP_FOR_ALL);
-  }
-
-  m_currentTentacleDriver->SetReverseColorMix(m_goomRand.ProbabilityOf(PROB_REVERSE_COLOR_MIX));
-
-  m_currentTentacleDriver->FreshStart();
 }
 
 inline void TentaclesFx::TentaclesImpl::Update()
@@ -301,12 +277,6 @@ inline void TentaclesFx::TentaclesImpl::UpdateDominantColors()
       RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   m_dominantColor = IColorMap::GetColorMix(m_dominantColor, newColor, 0.7F);
   m_dominantLowColor = GetLightenedColor(m_dominantColor, 0.67F);
-}
-
-inline auto TentaclesFx::TentaclesImpl::GetNextDriver() const -> TentacleDriver*
-{
-  const size_t driverIndex = m_driverWeights.GetRandomWeighted();
-  return m_tentacleDrivers[driverIndex].get();
 }
 
 #if __cplusplus <= 201402L

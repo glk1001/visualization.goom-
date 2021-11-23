@@ -91,7 +91,6 @@ add_library(goom
         src/visual_fx/ifs/low_density_blurrer.cpp
         src/visual_fx/shaders/high_contrast.cpp
         src/visual_fx/tentacles/circles_tentacle_layout.cpp
-        src/visual_fx/tentacles/tentacle_colorizer.h
         src/visual_fx/tentacles/tentacle_driver.cpp
         src/visual_fx/tentacles/tentacle_layout.h
         src/visual_fx/tentacles/tentacle_plotter.cpp

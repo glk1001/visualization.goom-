@@ -30,12 +30,12 @@ public:
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+
   void Start() override;
 
   void Resume() override;
   void Suspend() override;
-
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
   void ApplyMultiple();
 
