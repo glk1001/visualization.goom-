@@ -4,9 +4,9 @@
 #include "goom/spimpl.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
+#include "utils/adaptive_exposure.h"
 #include "utils/mathutils.h"
 #include "visual_fx/filters/filter_buffer_row_color_info.h"
-#include "visual_fx/fx_utils/adaptive_exposure.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
 #include "visual_fx_color_maps.h"
@@ -131,7 +131,7 @@ private:
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
 
   VisualFxColorMaps m_visualFxColorMaps;
-  VISUAL_FX::FX_UTILS::AdaptiveExposure m_adaptiveExposure{};
+  UTILS::AdaptiveExposure m_adaptiveExposure{};
   bool m_doExposureControl = false;
   void UpdateZoomFilterLuminance();
 

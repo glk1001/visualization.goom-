@@ -47,6 +47,7 @@ add_library(goom
         src/goom_control.cpp
         src/goom_graphic.cpp
         src/sound_info.cpp
+        src/utils/adaptive_exposure.cpp
         src/utils/goom_rand.h
         src/utils/goom_rand_base.h
         src/utils/graphics/image_bitmaps.cpp
@@ -84,7 +85,6 @@ add_library(goom
         src/visual_fx/filters/tan_effect.cpp
         src/visual_fx/filters/wave.cpp
         src/visual_fx/filters/y_only.cpp
-        src/visual_fx/fx_utils/adaptive_exposure.cpp
         src/visual_fx/fx_utils/dot_drawer.cpp
         src/visual_fx/ifs/colorizer.cpp
         src/visual_fx/ifs/fractal.cpp

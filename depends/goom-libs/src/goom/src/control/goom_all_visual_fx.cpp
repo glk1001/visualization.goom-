@@ -26,7 +26,6 @@ namespace GOOM::CONTROL
 {
 #endif
 
-using COLOR::GetBrighterColor;
 using COLOR::GetBrighterColorInt;
 using COLOR::GetLuma;
 using COLOR::IColorMap;

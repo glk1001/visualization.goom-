@@ -5,12 +5,10 @@
 #if __cplusplus <= 201402L
 namespace GOOM
 {
-namespace VISUAL_FX
-{
-namespace FX_UTILS
+namespace UTILS
 {
 #else
-namespace GOOM::VISUAL_FX::FX_UTILS
+namespace GOOM::UTILS
 {
 #endif
 
@@ -44,9 +42,8 @@ inline auto AdaptiveExposure::GetCurrentExposure() const -> float
 }
 
 #if __cplusplus <= 201402L
-} // namespace FX_UTILS
-} // namespace VISUAL_FX
+} // namespace UTILS
 } // namespace GOOM
 #else
-} // namespace GOOM::VISUAL_FX::FX_UTILS
+} // namespace GOOM::UTILS
 #endif
