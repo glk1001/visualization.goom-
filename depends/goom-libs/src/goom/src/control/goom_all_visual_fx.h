@@ -182,6 +182,7 @@ inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
 
   if (currentBufferAverageLuminance < UTILS::SMALL_FLOAT)
   {
+    // No point trying to handle zero luminance.
     return;
   }
   m_adaptiveExposure.UpdateAverageLuminance(currentBufferAverageLuminance);

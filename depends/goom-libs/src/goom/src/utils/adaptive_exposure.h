@@ -27,13 +27,9 @@ public:
   [[nodiscard]] auto GetCurrentExposure() const -> float;
 
 private:
+  static constexpr uint32_t RAMP_UP_PERIOD = 100;
+  uint64_t m_updateNum = 0;
   float m_currentExposure = INITIAL_EXPOSURE;
-
-  uint32_t m_tooHighLuminanceInARow = 0;
-  uint32_t m_tooLowLuminanceInARow = 0;
-  void UpdateLuminanceCounters(float avLuminance);
-
-  [[nodiscard]] auto GetTargetExposureLerpFactor() const -> float;
 };
 
 inline auto AdaptiveExposure::GetCurrentExposure() const -> float
