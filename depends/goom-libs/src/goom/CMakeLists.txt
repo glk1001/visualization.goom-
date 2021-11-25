@@ -88,7 +88,10 @@ add_library(goom
         src/visual_fx/fx_utils/dot_drawer.cpp
         src/visual_fx/ifs/colorizer.cpp
         src/visual_fx/ifs/fractal.cpp
+        src/visual_fx/ifs/fractal_hits.cpp
+        src/visual_fx/ifs/ifs_types.h
         src/visual_fx/ifs/low_density_blurrer.cpp
+        src/visual_fx/ifs/similitudes.cpp
         src/visual_fx/shaders/high_contrast.cpp
         src/visual_fx/tentacles/circles_tentacle_layout.cpp
         src/visual_fx/tentacles/tentacle_driver.cpp

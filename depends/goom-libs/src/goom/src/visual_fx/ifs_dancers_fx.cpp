@@ -109,7 +109,7 @@ private:
 
   std::unique_ptr<Fractal> m_fractal{};
 
-  void Init();
+  void InitFractal();
 
   int32_t m_cycle = 0;
   int32_t m_ifsIncr = 1; // dessiner l'ifs (0 = non: > = increment)
@@ -243,7 +243,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() -> bool
   return m_goomRand.ProbabilityOf(PROB_IFS_RENEW_EVENT);
 }
 
-void IfsDancersFx::IfsDancersFxImpl::Init()
+void IfsDancersFx::IfsDancersFxImpl::InitFractal()
 {
   m_fractal->Init();
   UpdateLowDensityThreshold();
@@ -257,7 +257,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(
 
 inline void IfsDancersFx::IfsDancersFxImpl::Start()
 {
-  Init();
+  InitFractal();
 }
 
 inline void IfsDancersFx::IfsDancersFxImpl::Finish()
@@ -269,7 +269,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::PostStateUpdate(const bool wasActive
 {
   if (!wasActiveInPreviousState)
   {
-    Init();
+    InitFractal();
   }
   UpdateIncr();
 
@@ -485,10 +485,10 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
   const auto tX = static_cast<float>(pX) / static_cast<float>(m_draw.GetScreenWidth());
   const auto tY = static_cast<float>(pY) / static_cast<float>(m_draw.GetScreenHeight());
 
-  const Pixel baseColor = point.GetSimiColorMap()->GetColor(t);
+  const Pixel baseColor = point.GetSimi()->GetColorMap()->GetColor(t);
 
   //  const float t = static_cast<float>(m_cycle) / static_cast<float>(m_cycleLength);
-  if (nullptr == point.GetSimiCurrentPointBitmap())
+  if (nullptr == point.GetSimi()->GetCurrentPointBitmap())
   {
     const Pixel mixedColor =
         m_colorizer.GetMixedColor(baseColor, point.GetCount(), POINT_BRIGHTNESS, tMix, tX, tY);
@@ -500,7 +500,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
         m_colorizer.GetMixedColor(baseColor, point.GetCount(), BITMAP_BRIGHTNESS, tMix, tX, tY);
     const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                               [[maybe_unused]] const Pixel& b) { return mixedColor; };
-    const ImageBitmap& bitmap{*point.GetSimiCurrentPointBitmap()};
+    const ImageBitmap& bitmap{*point.GetSimi()->GetCurrentPointBitmap()};
     m_draw.Bitmap(pX, pY, bitmap, {getColor, getColor});
   }
 }

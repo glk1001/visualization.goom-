@@ -55,6 +55,7 @@ void SetRandSeed(const uint64_t seed)
 {
   randSeed = seed;
   xoshiroEng = GetRandSeed();
+  LogDebug("SetRandSeed: xoshiroEng = {}", GetRandSeed());
 }
 
 inline auto RandXoshiroFunc(const uint32_t n0, const uint32_t n1) -> uint32_t
@@ -92,11 +93,6 @@ auto GetRandInRange(const uint32_t n0, const uint32_t n1) -> uint32_t
   {
     throw std::logic_error("uint n0 >= n1");
   }
-#endif
-#ifndef NO_LOGGING
-  const uint32_t randVal = randXoshiroFunc(n0, n1);
-  logDebug("randVal = {}", randVal);
-  return randVal;
 #endif
 
   return RandXoshiroFunc(n0, n1);

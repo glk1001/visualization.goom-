@@ -1,21 +1,29 @@
 #pragma once
 
+#include "goom_graphic.h"
+
 #include <cstdint>
 
-#if __cplusplus <= 201402L
 namespace GOOM
 {
+
+namespace COLOR
+{
+class IColorMap;
+}
+
+namespace UTILS
+{
+class ImageBitmap;
+}
+
 namespace VISUAL_FX
 {
 namespace IFS
 {
-#else
-namespace GOOM::VISUAL_FX::IFS
-{
-#endif
 
 using Dbl = float;
-using Flt = int;
+using Flt = int32_t;
 
 struct FltPoint
 {
@@ -25,7 +33,32 @@ struct FltPoint
 
 constexpr int32_t FIX = 12;
 
-inline auto DblToFlt(const Dbl x) -> Flt
+class Similitude;
+
+class IfsPoint
+{
+public:
+  IfsPoint() noexcept = delete;
+  IfsPoint(uint32_t x, uint32_t y, uint32_t count) noexcept;
+
+  [[nodiscard]] auto GetX() const -> uint32_t { return m_x; }
+  [[nodiscard]] auto GetY() const -> uint32_t { return m_y; }
+  [[nodiscard]] auto GetColor() const -> Pixel { return m_color; }
+  void SetColor(const Pixel& val) { m_color = val; }
+  [[nodiscard]] auto GetCount() const -> uint32_t { return m_count; }
+  void SetCount(const uint32_t val) { m_count = val; }
+  [[nodiscard]] auto GetSimi() const -> const Similitude* { return m_simi; }
+  void SetSimi(const Similitude* const simi) { m_simi = simi; }
+
+private:
+  const uint32_t m_x;
+  const uint32_t m_y;
+  uint32_t m_count;
+  Pixel m_color = Pixel::BLACK;
+  const Similitude* m_simi = nullptr;
+};
+
+inline auto MultByUnit(const Dbl x) -> Flt
 {
   constexpr int32_t UNIT = 1 << FIX;
   return static_cast<Flt>(static_cast<Dbl>(UNIT) * x);
@@ -41,11 +74,11 @@ inline auto DivBy2Units(const Flt x) -> Flt
   return x >> (FIX + 1);
 }
 
-#if __cplusplus <= 201402L
+inline IfsPoint::IfsPoint(const uint32_t x, const uint32_t y, const uint32_t count) noexcept
+  : m_x{x}, m_y{y}, m_count{count}
+{
+}
+
 } // namespace IFS
 } // namespace VISUAL_FX
 } // namespace GOOM
-#else
-} // namespace GOOM::VISUAL_FX::IFS
-#endif
-

@@ -73,7 +73,7 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
   const auto hypercos2Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0}}};
   const auto hypercos3Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  1}}};
   const auto imageDisplWeights = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 99}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
-  const auto normalWeights     = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto normalWeights     = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0}}};
   const auto scrunchWeights    = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto speedway0Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto speedway1Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
@@ -316,7 +316,7 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
             {ZoomFilterMode::HYPERCOS_MODE2,           1},
             {ZoomFilterMode::HYPERCOS_MODE3,           1},
             {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,  5},
-            {ZoomFilterMode::NORMAL_MODE,              6},
+            {ZoomFilterMode::NORMAL_MODE,             10},
             {ZoomFilterMode::SCRUNCH_MODE,             6},
             {ZoomFilterMode::SPEEDWAY_MODE0,           3},
             {ZoomFilterMode::SPEEDWAY_MODE1,           3},

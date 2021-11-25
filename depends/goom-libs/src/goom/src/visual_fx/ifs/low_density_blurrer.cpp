@@ -51,21 +51,21 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
 
   float t = 0.0;
   const float tStep = 1.0F / static_cast<float>(lowDensityPoints.size());
-  for (auto& p : lowDensityPoints)
+  for (auto& point : lowDensityPoints)
   {
-    if ((p.GetX() < (m_width / 2)) || (p.GetY() < (m_width / 2)) ||
-        (p.GetX() >= (m_draw.GetScreenWidth() - (m_width / 2))) ||
-        (p.GetY() >= (m_draw.GetScreenHeight() - (m_width / 2))))
+    if ((point.GetX() < (m_width / 2)) || (point.GetY() < (m_width / 2)) ||
+        (point.GetX() >= (m_draw.GetScreenWidth() - (m_width / 2))) ||
+        (point.GetY() >= (m_draw.GetScreenHeight() - (m_width / 2))))
     {
-      p.SetCount(0); // just signal that no need to set buff
+      point.SetCount(0); // just signal that no need to set buff
       continue;
     }
 
     size_t n = 0;
-    auto neighY = static_cast<int32_t>(p.GetY() - (m_width / 2));
+    auto neighY = static_cast<int32_t>(point.GetY() - (m_width / 2));
     for (size_t i = 0; i < m_width; ++i)
     {
-      auto neighX = static_cast<int32_t>(p.GetX() - (m_width / 2));
+      auto neighX = static_cast<int32_t>(point.GetX() - (m_width / 2));
       for (size_t j = 0; j < m_width; ++j)
       {
         neighbours[n] = m_draw.GetPixel(neighX, neighY);
@@ -75,22 +75,23 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
       ++neighY;
     }
 
-    SetPointColor(p, t, logMaxLowDensityCount, neighbours);
+    SetPointColor(point, t, logMaxLowDensityCount, neighbours);
 
     t += tStep;
   }
 
-  for (const auto& p : lowDensityPoints)
+  for (const auto& point : lowDensityPoints)
   {
-    if (0 == p.GetCount())
+    if (0 == point.GetCount())
     {
       continue;
     }
-    const std::vector<Pixel> colors{p.GetColor(), p.GetColor()};
+    const std::vector<Pixel> colors{point.GetColor(), point.GetColor()};
     // TODO bitmap here
-    m_draw.DrawPixels(static_cast<int32_t>(p.GetX()), static_cast<int32_t>(p.GetY()), colors);
+    m_draw.DrawPixels(static_cast<int32_t>(point.GetX()), static_cast<int32_t>(point.GetY()),
+                      colors);
     // ??? NOTE: We need to set raw (unblended) pixels here, otherwise we get unpleasant overexposure.
-    //m_draw->DrawPixelsUnblended(static_cast<int32_t>(p.x), static_cast<int32_t>(p.y), colors);
+    //m_draw->DrawPixelsUnblended(static_cast<int32_t>(point.x), static_cast<int32_t>(point.y), colors);
   }
 }
 
@@ -114,7 +115,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
           m_singleColor, GetColorAverage(neighbours.size(), neighbours), m_neighbourMixFactor));
       break;
     case BlurrerColorMode::SIMI_NO_NEIGHBOURS:
-      point.SetColor(point.GetSimiColor());
+      point.SetColor(point.GetSimi()->GetColor());
       break;
     case BlurrerColorMode::SIMI_WITH_NEIGHBOURS:
     {
@@ -123,14 +124,14 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
       const float fy =
           static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());
       point.SetColor(m_colorizer->GetMixedColor(
-          IColorMap::GetColorMix(point.GetSimiColor(),
+          IColorMap::GetColorMix(point.GetSimi()->GetColor(),
                                  GetColorAverage(neighbours.size(), neighbours),
                                  m_neighbourMixFactor),
           point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
       break;
     }
     case BlurrerColorMode::SMOOTH_NO_NEIGHBOURS:
-      point.SetColor(point.GetSimiColorMap()->GetColor(t));
+      point.SetColor(point.GetSimi()->GetColorMap()->GetColor(t));
       break;
     case BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS:
     {
@@ -139,7 +140,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
       const float fy =
           static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());
       point.SetColor(m_colorizer->GetMixedColor(
-          IColorMap::GetColorMix(point.GetSimiColorMap()->GetColor(t),
+          IColorMap::GetColorMix(point.GetSimi()->GetColorMap()->GetColor(t),
                                  GetColorAverage(neighbours.size(), neighbours),
                                  m_neighbourMixFactor),
           point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
