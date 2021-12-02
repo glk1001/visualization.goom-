@@ -3,8 +3,16 @@
 #define NO_TONE_MAP 1
 #define EXPOSURE_TONE_MAP 2
 #define UCHIMURA_TONE_MAP 3
+#define LOTTES_TONE_MAP 4
+#define ACES_TONE_MAP 5
+#define UNCHARTED2_TONE_MAP 6
+#define REINHARD2_TONE_MAP 7
+#define UNREAL_TONE_MAP 8
 
-// == TONE MAPPING =======================================
+
+// ***********************
+// Tone mapping
+
 // Reinhard
 vec3 reinhard(vec3 x) {
   return x / (1.0 + x);
@@ -208,15 +216,11 @@ float unreal(float x) {
   return x / (x + 0.155) * 1.019;
 }
 
-// ===============================================
 
-vec3 hueShift(vec3 color, float hue)
-{
-  const vec3 k = vec3(0.57735, 0.57735, 0.57735);
-  float cosAngle = cos(hue);
-  return vec3(color * cosAngle + cross(k, color) * sin(hue) + k * dot(k, color) * (1.0 - cosAngle));
-}
+// ***********************
+// Color space conversions
 
+/**
 // Converts a color from linear RGB to XYZ space
 const mat3 RGB_2_XYZ = (mat3(
   0.4124564, 0.2126729, 0.0193339,
@@ -231,7 +235,6 @@ const mat3 XYZ_2_RGB = (mat3(
   -0.4985314, 0.0415560, 1.0572252
 ));
 
-/**
 vec3 rgb_to_xyz(vec3 rgb) {
   return RGB_2_XYZ * rgb;
 }
@@ -326,7 +329,6 @@ vec3 rgb_to_xyz(vec3 color)
   
   return vec3(X, Y, Z);
 }
-/***/
 
 vec3 lab_to_lch(vec3 color) 
 {
@@ -471,6 +473,18 @@ vec3 lch_to_rgb(vec3 color)
   return rgb;
 }
 
+
+vec3 hueShift(vec3 color, float hue)
+{
+  const vec3 k = vec3(0.57735, 0.57735, 0.57735);
+  float cosAngle = cos(hue);
+  return vec3(color * cosAngle + cross(k, color) * sin(hue) + k * dot(k, color) * (1.0 - cosAngle));
+}
+
+
+// ***********************
+// Input/Output variables
+
 out vec4 fragColor;
 
 uniform sampler2D texBuffer;
@@ -478,17 +492,27 @@ uniform float u_texExposure;
 uniform float u_texBrightness;
 uniform float u_texContrast;
 uniform float u_texContrastMinChan;
+uniform int u_time;
 in vec2 texCoords;
+
 
 void main()
 {
-  const int toneMapType = EXPOSURE_TONE_MAP;
-  //const int toneMapType = UCHIMURA_TONE_MAP;
+  //const int toneMapType = EXPOSURE_TONE_MAP;
+  const int toneMapType = UCHIMURA_TONE_MAP;
+  //const int toneMapType = LOTTES_TONE_MAP;
+  //const int toneMapType = ACES_TONE_MAP;
+  //const int toneMapType = UNCHARTED2_TONE_MAP;
+  //const int toneMapType = REINHARD2_TONE_MAP;
+  //const int toneMapType = UNREAL_TONE_MAP;
 
   // Brightness factor after gamma correction
   float A = 1.0;
+  const float gamma = 2.2;
 
-  vec3 hdrColor = texture(texBuffer, texCoords).rgb;
+  vec2 uvTex = texCoords;
+  vec3 hdrColor = texture(texBuffer, uvTex).rgb;
+
 
 /**
   if (hdrColor.r < 125.0/65535.0 && hdrColor.g < 125.0/65535.0 && hdrColor.b < 125.0/65535.0)
@@ -513,7 +537,6 @@ void main()
   return;  
 **/  
 
-  
 
   // Pre Tone Map Color effects
 
@@ -522,38 +545,44 @@ void main()
   lch.y = min(lch.y * 2.f, 140.0);
   vec3 mapped = lch_to_rgb(lch);
 
-  
-  // Tone mapping
-  //vec3 mapped = 65.0*hdrColor;
-  //A = 1.0;
-
-  //vec3 mapped = reinhard(hdrColor);
-  //vec3 mapped = reinhard2(hdrColor);
-  //A = 10.0;
-
-  //vec3 mapped = tonemapFilmic(hdrColor); // Doesn't seem to show anything
-  //A = 10.0;
-
-  //vec3 mapped = aces(hdrColor);
-  //A = 10.0;
-
-  //vec3 mapped = lottes(hdrColor);
-  //A = 10.0;
-
-  //vec3 mapped = uncharted2Tonemap(hdrColor);
-  //A = 10.0;
-
-  //vec3 mapped = unreal(hdrColor); // needs lower 'A' value
-
   if (toneMapType == NO_TONE_MAP)
   {
     A = 5.0;
   }
   else if (toneMapType == UCHIMURA_TONE_MAP)
   {
-    // Uchimura tone mapping
     const float exposureMultiplier = 2.0;
     mapped = uchimura(exposureMultiplier * u_texExposure * mapped);
+    A = 5.0;
+  }
+  else if (toneMapType == LOTTES_TONE_MAP)
+  {
+    const float exposureMultiplier = 2.0;
+    mapped = lottes(exposureMultiplier * u_texExposure * mapped);
+    A = 5.0;
+  }
+  else if (toneMapType == ACES_TONE_MAP)
+  {
+    const float exposureMultiplier = 2.0;
+    mapped = aces(exposureMultiplier * u_texExposure * mapped);
+    A = 5.0;
+  }
+  else if (toneMapType == UNCHARTED2_TONE_MAP)
+  {
+    const float exposureMultiplier = 5.0;
+    mapped = uncharted2Tonemap(exposureMultiplier * u_texExposure * mapped);
+    A = 5.0;
+  }
+  else if (toneMapType == REINHARD2_TONE_MAP)
+  {
+    const float exposureMultiplier = 2.0;
+    mapped = reinhard2(exposureMultiplier * u_texExposure * mapped);
+    A = 5.0;
+  }
+  else if (toneMapType == UNREAL_TONE_MAP)
+  {
+    const float exposureMultiplier = 3.0;
+    mapped = reinhard2(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
   else if (toneMapType == EXPOSURE_TONE_MAP)
@@ -577,7 +606,6 @@ void main()
   const float brightnessMultiplier = 1.0;
   mapped = brightnessMultiplier * u_texBrightness * mapped;
 
-  const float gamma = 2.2;
   mapped = A * pow(mapped, vec3(1.0 / gamma));
 
   fragColor = vec4(mapped, 1.0);

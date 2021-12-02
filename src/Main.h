@@ -120,6 +120,7 @@ private:
   GLint m_uTexBrightnessLoc = -1;
   GLint m_uTexContrastLoc = -1;
   GLint m_uTexContrastMinChannelValueLoc = -1;
+  GLint m_uTimeLoc = -1;
 
   // Goom's data itself
   std::unique_ptr<GOOM::GoomControl> m_goomControl{};

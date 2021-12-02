@@ -519,6 +519,7 @@ void CVisualizationGoom::OnCompiledAndLinked()
   m_uTexBrightnessLoc = glGetUniformLocation(ProgramHandle(), "u_texBrightness");
   m_uTexContrastLoc = glGetUniformLocation(ProgramHandle(), "u_texContrast");
   m_uTexContrastMinChannelValueLoc = glGetUniformLocation(ProgramHandle(), "u_texContrastMinChan");
+  m_uTimeLoc = glGetUniformLocation(ProgramHandle(), "u_time");
 }
 
 auto CVisualizationGoom::OnEnabled() -> bool
@@ -756,6 +757,9 @@ inline void CVisualizationGoom::SetGlShaderValues(
     glUniform1f(m_uTexContrastLoc, goomShaderEffects.contrast);
     glUniform1f(m_uTexContrastMinChannelValueLoc, goomShaderEffects.contrastMinChannelValue);
   }
+  static GLint m_time = 0;
+  ++m_time;
+  glUniform1i(m_uTimeLoc, m_time);
 }
 
 #ifndef DO_TESTING
