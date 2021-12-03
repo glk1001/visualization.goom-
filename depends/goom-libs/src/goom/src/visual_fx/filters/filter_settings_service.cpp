@@ -60,8 +60,8 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
   const auto speedway0RotateProb  = PROB_LOW;
   const auto speedway1RotateProb  = PROB_LOW;
   const auto waterRotateProb      = PROB_ZERO;
-  const auto wave0RotateProb      = PROB_LOW;
-  const auto wave1RotateProb      = PROB_HALF;
+  const auto wave0RotateProb      = PROB_HIGH;
+  const auto wave1RotateProb      = PROB_HIGH;
   const auto yOnlyRotateProb      = PROB_HALF;
 
   const auto amuletWeights     = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 20}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
@@ -209,7 +209,7 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
 class FilterSettingsService::FilterEvents
 {
 public:
-  explicit FilterEvents(IGoomRand& goomRand) noexcept;
+  explicit FilterEvents(const IGoomRand& goomRand) noexcept;
 
   enum class FilterEventTypes
   {
@@ -232,7 +232,7 @@ public:
   [[nodiscard]] auto Happens(FilterEventTypes event) const -> bool;
 
 private:
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
   static constexpr size_t NUM_FILTER_EVENT_TYPES = NUM<FilterEventTypes>;
 
   //@formatter:off
@@ -267,7 +267,7 @@ const std::array<FilterSettingsService::FilterEvents::Event,
 // clang-format on
 #endif
 
-inline FilterSettingsService::FilterEvents::FilterEvents(IGoomRand& goomRand) noexcept
+inline FilterSettingsService::FilterEvents::FilterEvents(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand}
 {
 }
@@ -282,7 +282,7 @@ using FilterEventTypes = FilterSettingsService::FilterEvents::FilterEventTypes;
 
 FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                                              const PluginInfo& goomInfo,
-                                             IGoomRand& goomRand,
+                                             const IGoomRand& goomRand,
                                              const std::string& resourcesDirectory) noexcept
   : m_parallel{parallel},
     m_goomInfo{goomInfo},
@@ -324,7 +324,84 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
             {ZoomFilterMode::WAVE_MODE1,               4},
             {ZoomFilterMode::WATER_MODE,               0},
             {ZoomFilterMode::Y_ONLY_MODE,              4},
-        }
+        },
+        // weight 'given' multipliers
+        {
+            {ZoomFilterMode::CRYSTAL_BALL_MODE0,
+                {
+                    {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0},
+                    {ZoomFilterMode::CRYSTAL_BALL_MODE1, 0},
+                }
+            },
+            {ZoomFilterMode::CRYSTAL_BALL_MODE1,
+                {
+                    {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0},
+                    {ZoomFilterMode::CRYSTAL_BALL_MODE1, 0},
+                }
+            },
+            {ZoomFilterMode::NORMAL_MODE,
+                {
+                    {ZoomFilterMode::NORMAL_MODE, 1},
+                    {ZoomFilterMode::DISTANCE_FIELD_MODE, 2},
+                }
+            },
+            {ZoomFilterMode::HYPERCOS_MODE0,
+                {
+                    {ZoomFilterMode::HYPERCOS_MODE0, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE1, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE2, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE3, 0},
+                }
+            },
+            {ZoomFilterMode::HYPERCOS_MODE1,
+                {
+                    {ZoomFilterMode::HYPERCOS_MODE0, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE1, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE2, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE3, 0},
+                }
+            },
+            {ZoomFilterMode::HYPERCOS_MODE2,
+                {
+                    {ZoomFilterMode::HYPERCOS_MODE0, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE1, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE2, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE3, 0},
+                }
+            },
+            {ZoomFilterMode::HYPERCOS_MODE3,
+                {
+                    {ZoomFilterMode::HYPERCOS_MODE0, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE1, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE2, 0},
+                    {ZoomFilterMode::HYPERCOS_MODE3, 0},
+                }
+            },
+            {ZoomFilterMode::SPEEDWAY_MODE0,
+                {
+                    {ZoomFilterMode::SPEEDWAY_MODE0, 0},
+                    {ZoomFilterMode::SPEEDWAY_MODE1, 0},
+                }
+            },
+            {ZoomFilterMode::SPEEDWAY_MODE1,
+                {
+                    {ZoomFilterMode::SPEEDWAY_MODE0, 0},
+                    {ZoomFilterMode::SPEEDWAY_MODE1, 0},
+                }
+            },
+            {ZoomFilterMode::WAVE_MODE0,
+                {
+                    {ZoomFilterMode::WAVE_MODE0, 0},
+                    {ZoomFilterMode::WAVE_MODE1, 0},
+                }
+            },
+            {ZoomFilterMode::WAVE_MODE1,
+                {
+                    {ZoomFilterMode::WAVE_MODE0, 0},
+                    {ZoomFilterMode::WAVE_MODE1, 0},
+                }
+            },
+        },
     },
     m_zoomMidPointWeights{
         m_goomRand,
@@ -366,24 +443,7 @@ auto FilterSettingsService::GetPreviousFilterMode() const -> const std::string&
 
 auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
 {
-  uint32_t numTries = 0;
-  constexpr uint32_t MAX_TRIES = 20;
-
-  while (true)
-  {
-    const auto newMode = m_weightedFilterEvents.GetRandomWeighted();
-    if (newMode != m_filterMode)
-    {
-      return newMode;
-    }
-    ++numTries;
-    if (numTries >= MAX_TRIES)
-    {
-      break;
-    }
-  }
-
-  return m_filterMode;
+  return m_weightedFilterEvents.GetRandomWeighted(m_filterMode);
 }
 
 void FilterSettingsService::Start()

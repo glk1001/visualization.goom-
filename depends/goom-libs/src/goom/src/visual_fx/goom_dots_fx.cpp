@@ -59,7 +59,7 @@ public:
 private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
   const V2dInt m_screenMidPoint;
   const uint32_t m_pointWidth;

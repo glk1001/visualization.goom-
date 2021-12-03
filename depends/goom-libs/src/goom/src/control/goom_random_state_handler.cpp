@@ -19,7 +19,7 @@ using UTILS::IGoomRand;
 using UTILS::NUM;
 using UTILS::Weights;
 
-GoomRandomStateHandler::GoomRandomStateHandler(IGoomRand& goomRand)
+GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
   // clang-format off
   : m_weightedStates{
         goomRand,

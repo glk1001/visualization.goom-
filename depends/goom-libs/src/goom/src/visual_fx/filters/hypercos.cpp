@@ -56,7 +56,7 @@ constexpr Hypercos::Params DEFAULT_PARAMS{DEFAULT_OVERLAY,    DEFAULT_EFFECT, DE
                                           X_DEFAULT_FREQ,     Y_DEFAULT_FREQ, X_DEFAULT_AMPLITUDE,
                                           Y_DEFAULT_AMPLITUDE};
 
-Hypercos::Hypercos(IGoomRand& goomRand) noexcept
+Hypercos::Hypercos(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_params{DEFAULT_PARAMS},
     // clang-format off

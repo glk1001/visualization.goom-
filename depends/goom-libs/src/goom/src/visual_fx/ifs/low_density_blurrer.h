@@ -30,6 +30,7 @@ enum class BlurrerColorMode
   SIMI_NO_NEIGHBOURS,
   SINGLE_WITH_NEIGHBOURS,
   SINGLE_NO_NEIGHBOURS,
+  _NUM // unused and must be last
 };
 
 class LowDensityBlurrer

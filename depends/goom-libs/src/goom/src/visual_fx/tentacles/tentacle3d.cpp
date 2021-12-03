@@ -33,7 +33,7 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
                        const Pixel& headLowColor,
                        const V3dFlt& head,
                        const size_t numHeadNodes,
-                       IGoomRand& goomRand) noexcept
+                       const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_tentacle{std::move(tentacle)},
     m_headColor{headColor},

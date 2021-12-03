@@ -15,7 +15,7 @@ namespace GOOM::CONTROL
 using UTILS::IGoomRand;
 using VISUAL_FX::LinesFx;
 
-GoomEvents::GoomEvents(IGoomRand& goomRand) noexcept
+GoomEvents::GoomEvents(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     // clang-format off
     m_weightedEvents{{

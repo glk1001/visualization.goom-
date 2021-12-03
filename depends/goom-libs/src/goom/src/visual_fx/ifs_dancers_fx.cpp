@@ -103,7 +103,7 @@ private:
 
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
 
   Colorizer m_colorizer;
 

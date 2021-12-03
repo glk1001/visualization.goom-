@@ -39,7 +39,7 @@ constexpr float PROB_Y_ONLY_STRICT = 0.9F;
 constexpr float PROB_FREQ_EQUAL = 0.9F;
 constexpr float PROB_AMPLITUDE_EQUAL = 0.9F;
 
-YOnly::YOnly(IGoomRand& goomRand) noexcept
+YOnly::YOnly(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand}, m_params{X_DEFAULT_EFFECT,      Y_DEFAULT_EFFECT,
                                    X_DEFAULT_FREQ_FACTOR, Y_DEFAULT_FREQ_FACTOR,
                                    X_DEFAULT_AMPLITUDE,   Y_DEFAULT_AMPLITUDE}

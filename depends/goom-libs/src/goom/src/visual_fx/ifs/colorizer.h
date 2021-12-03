@@ -27,7 +27,7 @@ namespace GOOM::VISUAL_FX::IFS
 class Colorizer
 {
 public:
-  explicit Colorizer(UTILS::IGoomRand& goomRand) noexcept;
+  explicit Colorizer(const UTILS::IGoomRand& goomRand) noexcept;
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
@@ -49,7 +49,7 @@ public:
                                    float tY) const -> Pixel;
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   uint32_t m_mixerMap1Id{};

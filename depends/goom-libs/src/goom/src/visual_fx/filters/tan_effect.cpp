@@ -29,7 +29,7 @@ constexpr float PROB_XY_AMPLITUDES_EQUAL = 0.90F;
 constexpr float DEFAULT_LIMITING_FACTOR = 0.75F;
 constexpr IGoomRand::NumberRange<float> LIMITING_FACTOR_RANGE = {0.10F, 0.85F};
 
-TanEffect::TanEffect(IGoomRand& goomRand) noexcept
+TanEffect::TanEffect(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand}, m_params{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE, DEFAULT_LIMITING_FACTOR}
 {
 }

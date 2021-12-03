@@ -24,7 +24,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class ImageSpeedCoefficients : public ISpeedCoefficientsEffect
 {
 public:
-  ImageSpeedCoefficients(const std::string& resourcesDirectory, UTILS::IGoomRand& goomRand);
+  ImageSpeedCoefficients(const std::string& resourcesDirectory, const UTILS::IGoomRand& goomRand);
 
   void SetRandomParams() override;
 
@@ -36,7 +36,7 @@ public:
       -> UTILS::NameValuePairs override;
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   ImageDisplacementList m_imageDisplacementList;
 };
 

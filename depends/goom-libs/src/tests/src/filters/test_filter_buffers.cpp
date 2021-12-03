@@ -26,7 +26,7 @@ using GOOM::VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 constexpr size_t WIDTH = 120;
 constexpr size_t HEIGHT = 70;
 constexpr const char* RESOURCES_DIRECTORY = "";
-GoomRand goomRand{};
+static const GoomRand goomRand{};
 
 const V2dInt MID_PT = {static_cast<int32_t>(WIDTH) / 2, static_cast<int32_t>(HEIGHT) / 2};
 const V2dInt CONST_ZOOM_VECTOR_COORDS_1 = {16, 40};

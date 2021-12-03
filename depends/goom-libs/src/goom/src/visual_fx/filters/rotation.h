@@ -23,7 +23,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class Rotation
 {
 public:
-  explicit Rotation(UTILS::IGoomRand& goomRand) noexcept;
+  explicit Rotation(const UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams();
 
@@ -50,7 +50,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   Params m_params;
 };
 

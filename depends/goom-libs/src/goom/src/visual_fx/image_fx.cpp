@@ -107,7 +107,7 @@ private:
   Parallel& m_parallel;
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
   const std::string m_resourcesDirectory;
   const int32_t m_availableWidth;
   const int32_t m_availableHeight;

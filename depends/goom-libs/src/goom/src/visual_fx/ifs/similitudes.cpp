@@ -28,7 +28,7 @@ using UTILS::ImageBitmap;
 using UTILS::m_pi;
 using UTILS::SmallImageBitmaps;
 
-Similitudes::Similitudes(IGoomRand& goomRand,
+Similitudes::Similitudes(const IGoomRand& goomRand,
                          const RandomColorMaps& randomColorMaps,
                          const SmallImageBitmaps& smallBitmaps)
   : m_goomRand{goomRand},
@@ -44,10 +44,10 @@ Similitudes::Similitudes(IGoomRand& goomRand,
     m_centreWeights{
         m_goomRand,
         {
-            {0, 10},
-            {1,  5},
-            {2,  3},
-            {3,  1},
+            {CentreNums::NUM0, 10},
+            {CentreNums::NUM1,  5},
+            {CentreNums::NUM2,  3},
+            {CentreNums::NUM3,  1},
         }
     }
 // clang-format on
@@ -66,7 +66,7 @@ void Similitudes::Init()
 
 inline void Similitudes::InitCentre()
 {
-  const auto numCentres = static_cast<uint32_t>(2 + m_centreWeights.GetRandomWeighted());
+  const uint32_t numCentres = 2 + static_cast<uint32_t>(m_centreWeights.GetRandomWeighted());
 
   m_numSimis = numCentres;
 

@@ -38,7 +38,7 @@ using UTILS::SmallImageBitmaps;
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
-                               IGoomRand& goomRand,
+                               const IGoomRand& goomRand,
                                const SmallImageBitmaps& smallBitmaps,
                                const ITentacleLayout& tentacleLayout) noexcept
   : m_draw{draw},
@@ -113,7 +113,7 @@ auto TentacleDriver::GetTentacleParams(const size_t numTentacles,
   return tentacleParams;
 }
 
-auto TentacleDriver::GetTentacles(IGoomRand& goomRand,
+auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
                                   const std::vector<IterationParams>& tentacleParams,
                                   const ITentacleLayout& tentacleLayout) -> std::vector<Tentacle3D>
 {
@@ -158,7 +158,7 @@ auto TentacleDriver::IterParamsGroup::GetNextIterationParams(const float t) cons
   return params;
 }
 
-auto TentacleDriver::CreateNewTentacle2D(IGoomRand& goomRand,
+auto TentacleDriver::CreateNewTentacle2D(const IGoomRand& goomRand,
                                          const size_t id,
                                          const IterationParams& params)
     -> std::unique_ptr<Tentacle2D>

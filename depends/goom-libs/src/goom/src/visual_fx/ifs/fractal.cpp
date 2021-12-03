@@ -28,7 +28,7 @@ using UTILS::TValue;
 
 Fractal::Fractal(const uint32_t screenWidth,
                  const uint32_t screenHeight,
-                 IGoomRand& goomRand,
+                 const IGoomRand& goomRand,
                  const RandomColorMaps& randomColorMaps,
                  const SmallImageBitmaps& smallBitmaps)
   : m_similitudes{goomRand, randomColorMaps, smallBitmaps},

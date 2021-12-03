@@ -25,7 +25,7 @@ constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.1F, 1.51F};
 
 constexpr float PROB_XY_AMPLITUDES_EQUAL = 0.98F;
 
-Amulet::Amulet(IGoomRand& goomRand) noexcept
+Amulet::Amulet(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand}, m_params{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE}
 {
 }

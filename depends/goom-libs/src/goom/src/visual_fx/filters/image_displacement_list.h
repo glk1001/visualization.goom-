@@ -23,7 +23,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class ImageDisplacementList
 {
 public:
-  ImageDisplacementList(const std::string& resourcesDirectory, UTILS::IGoomRand& goomRand);
+  ImageDisplacementList(const std::string& resourcesDirectory, const UTILS::IGoomRand& goomRand);
 
   struct Params
   {
@@ -46,7 +46,7 @@ private:
 
   std::vector<ImageDisplacement> m_imageDisplacements{};
   const std::string m_resourcesDirectory;
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   size_t m_currentImageDisplacementIndex = 0;
   [[nodiscard]] auto GetImageFilename(const std::string& imageFilename) const -> std::string;
 };

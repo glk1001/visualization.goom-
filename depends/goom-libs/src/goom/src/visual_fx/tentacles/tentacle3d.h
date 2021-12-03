@@ -38,7 +38,7 @@ public:
              const Pixel& headLowColor,
              const V3dFlt& head,
              size_t numHeadNodes,
-             UTILS::IGoomRand& goomRand) noexcept;
+             const UTILS::IGoomRand& goomRand) noexcept;
   Tentacle3D(const Tentacle3D&) noexcept = delete;
   Tentacle3D(Tentacle3D&&) noexcept = default;
   ~Tentacle3D() noexcept = default;
@@ -67,7 +67,7 @@ public:
   [[nodiscard]] auto GetVertices() const -> std::vector<V3dFlt>;
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   std::unique_ptr<Tentacle2D> m_tentacle;
 
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};

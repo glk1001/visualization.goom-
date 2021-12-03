@@ -28,7 +28,7 @@ class TentaclePlotter
 public:
   TentaclePlotter() noexcept = delete;
   TentaclePlotter(DRAW::IGoomDraw& draw,
-                  UTILS::IGoomRand& goomRand,
+                  const UTILS::IGoomRand& goomRand,
                   const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   void ChangeNumNodesBetweenDots();
@@ -42,7 +42,7 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   const int32_t m_halfScreenWidth;
   const int32_t m_halfScreenHeight;
 

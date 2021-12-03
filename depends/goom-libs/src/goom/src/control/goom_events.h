@@ -20,7 +20,7 @@ namespace GOOM::CONTROL
 class GoomEvents
 {
 public:
-  explicit GoomEvents(UTILS::IGoomRand& goomRand) noexcept;
+  explicit GoomEvents(const UTILS::IGoomRand& goomRand) noexcept;
   GoomEvents(const GoomEvents&) noexcept = delete;
   GoomEvents(GoomEvents&&) noexcept = delete;
   ~GoomEvents() = default;
@@ -58,7 +58,7 @@ public:
   [[nodiscard]] auto GetRandomLineTypeEvent() const -> VISUAL_FX::LinesFx::LineType;
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   static constexpr size_t NUM_GOOM_EVENTS = UTILS::NUM<GoomEvent>;
   struct WeightedEvent
   {

@@ -43,7 +43,7 @@ constexpr float PROB_ALLOW_STRANGE_WAVE_VALUES = 0.1F;
 constexpr float PROB_WAVE_XY_EFFECTS_EQUAL = 0.75F;
 constexpr float PROB_NO_PERIODIC_FACTOR = 0.2F;
 
-Wave::Wave(const Modes mode, IGoomRand& goomRand) noexcept
+Wave::Wave(const Modes mode, const IGoomRand& goomRand) noexcept
   : m_mode{mode},
     m_goomRand{goomRand},
     m_params{DEFAULT_WAVE_EFFECT, DEFAULT_WAVE_EFFECT, DEFAULT_FREQ_FACTOR, DEFAULT_AMPLITUDE,

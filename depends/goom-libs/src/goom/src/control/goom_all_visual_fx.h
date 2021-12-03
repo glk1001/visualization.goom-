@@ -118,7 +118,7 @@ private:
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine1;
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine2;
   DRAW::IGoomDraw& m_goomDraw;
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
 
   IGoomStateHandler& m_goomStateHandler;
   void ChangeState();

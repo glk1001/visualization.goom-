@@ -32,6 +32,7 @@ enum class ColorMapMixMode
   CIRCLES_ONLY,
   SHAPES_AND_CIRCLES,
   STRIPED_SHAPES_AND_CIRCLES,
+  _NUM // unused and must be last
 };
 
 struct ShapeColors
@@ -89,7 +90,7 @@ public:
        const DrawFuncs& drawFuncs,
        uint32_t screenWidth,
        uint32_t screenHeight,
-       UTILS::IGoomRand& goomRand,
+       const UTILS::IGoomRand& goomRand,
        std::shared_ptr<COLOR::RandomColorMaps> colorMaps,
        std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps,
        float radiusEdgeOffset,

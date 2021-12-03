@@ -25,7 +25,7 @@ using UTILS::NameValuePairs;
 
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const std::string& resourcesDirectory,
-                                     UTILS::IGoomRand& goomRand) noexcept
+                                     const UTILS::IGoomRand& goomRand) noexcept
   : m_screenWidth{screenWidth},
     m_imageVelocity{resourcesDirectory, goomRand},
     m_noise{goomRand},
@@ -98,6 +98,8 @@ void ZoomVectorEffects::SetRandomHypercosOverlayEffects()
       break;
     case HypercosOverlay::MODE3:
       m_hypercos.SetMode3RandomParams();
+      break;
+    default:
       break;
   }
 }

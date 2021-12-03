@@ -21,7 +21,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class Amulet : public ISpeedCoefficientsEffect
 {
 public:
-  explicit Amulet(UTILS::IGoomRand& goomRand) noexcept;
+  explicit Amulet(const UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -43,7 +43,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   Params m_params;
 };
 

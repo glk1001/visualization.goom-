@@ -22,7 +22,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class Planes
 {
 public:
-  explicit Planes(UTILS::IGoomRand& goomRand) noexcept;
+  explicit Planes(const UTILS::IGoomRand& goomRand) noexcept;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;
@@ -48,7 +48,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   Params m_params;
   enum class PlaneEffectEvents
   {
@@ -59,7 +59,8 @@ private:
     EVENT5,
     EVENT6,
     EVENT7,
-    EVENT8
+    EVENT8,
+    _NUM // unused and must be last
   };
   const UTILS::Weights<PlaneEffectEvents> m_planeEffectWeights;
 };

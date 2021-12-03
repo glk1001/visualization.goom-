@@ -17,7 +17,7 @@ namespace GOOM::FILTERS
 class Noise
 {
 public:
-  explicit Noise(UTILS::IGoomRand& goomRand) noexcept;
+  explicit Noise(const UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams();
 
@@ -36,7 +36,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
   static constexpr float NOISE_MAX = 120.0F;

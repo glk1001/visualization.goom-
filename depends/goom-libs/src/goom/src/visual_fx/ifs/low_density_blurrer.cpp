@@ -146,6 +146,8 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
           point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
       break;
     }
+    default:
+      break;
   }
 
   point.SetColor(GetGammaCorrection(BRIGHTNESS * logAlpha, point.GetColor()));

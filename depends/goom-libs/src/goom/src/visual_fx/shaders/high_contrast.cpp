@@ -17,7 +17,7 @@ using UTILS::IGoomRand;
 using UTILS::Timer;
 using UTILS::TValue;
 
-HighContrast::HighContrast(const PluginInfo& goomInfo, IGoomRand& goomRand) noexcept
+HighContrast::HighContrast(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
   : m_goomInfo{goomInfo}, m_goomRand{goomRand}
 {
 }

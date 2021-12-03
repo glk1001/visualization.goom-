@@ -17,13 +17,14 @@ namespace GOOM::VISUAL_FX::TENTACLES
 #endif
 
 using DRAW::IGoomDraw;
+using FX_UTILS::DotSizes;
 using UTILS::IGoomRand;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::SmallImageBitmaps;
 
 TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
-                                 IGoomRand& goomRand,
+                                 const IGoomRand& goomRand,
                                  const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
     m_goomRand{goomRand},
@@ -38,24 +39,24 @@ TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
           {
               m_goomRand,
               {
-                  {1, 100},
-                  {3, 50},
-                  {5, 5},
-                  {7, 100},
+                  {DotSizes::DOT_SIZE01, 100},
+                  {DotSizes::DOT_SIZE02, 50},
+                  {DotSizes::DOT_SIZE03, 5},
+                  {DotSizes::DOT_SIZE04, 100},
               }
           },
           // normal dot sizes
           {
               m_goomRand,
               {
-                  { 1, 50},
-                  { 3, 20},
-                  { 5, 10},
-                  { 7, 10},
-                  { 9, 10},
-                  {11, 10},
-                  {13,  1},
-                  {15,  1},
+                  {DotSizes::DOT_SIZE01, 50},
+                  {DotSizes::DOT_SIZE02, 20},
+                  {DotSizes::DOT_SIZE03, 10},
+                  {DotSizes::DOT_SIZE04, 10},
+                  {DotSizes::DOT_SIZE05, 10},
+                  {DotSizes::DOT_SIZE06, 10},
+                  {DotSizes::DOT_SIZE07,  1},
+                  {DotSizes::DOT_SIZE08,  1},
               }
           }
           // clang-format on

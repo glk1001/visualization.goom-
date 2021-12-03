@@ -26,7 +26,7 @@ using UTILS::IGoomRand;
 using UTILS::Weights;
 using VISUAL_FX::IfsDancersFx;
 
-Colorizer::Colorizer(IGoomRand& goomRand) noexcept
+Colorizer::Colorizer(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     // clang-format off
     m_colorModeWeights{

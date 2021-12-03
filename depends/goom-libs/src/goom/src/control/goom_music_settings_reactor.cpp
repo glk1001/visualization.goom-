@@ -20,7 +20,7 @@ using VISUAL_FX::FILTERS::Vitesse;
 
 GoomMusicSettingsReactor::GoomMusicSettingsReactor(
     const PluginInfo& goomInfo,
-    IGoomRand& goomRand,
+    const IGoomRand& goomRand,
     GoomAllVisualFx& visualFx,
     const GoomEvents& goomEvents,
     FilterSettingsService& filterSettingsService) noexcept

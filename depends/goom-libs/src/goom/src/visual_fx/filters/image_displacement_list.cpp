@@ -39,7 +39,7 @@ const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
 //@formatter:on
 
 ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirectory,
-                                             IGoomRand& goomRand)
+                                             const IGoomRand& goomRand)
   : m_resourcesDirectory{resourcesDirectory}, m_goomRand{goomRand}
 {
   if (m_resourcesDirectory.empty())

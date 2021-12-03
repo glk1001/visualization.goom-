@@ -92,6 +92,7 @@ enum class LowColorTypes
   TRUE_LOW_COLOR,
   MAIN_COLOR,
   LIGHTENED_LOW_COLOR,
+  _NUM // unused and must be last
 };
 constexpr uint32_t MIN_LOW_COLOR_TYPE_TIME = 100;
 constexpr uint32_t MAX_LOW_COLOR_TYPE_TIME = 1000;
@@ -118,7 +119,7 @@ public:
            DrawFuncs drawFuncs,
            uint32_t screenWidth,
            uint32_t screenHeight,
-           IGoomRand& goomRand,
+           const IGoomRand& goomRand,
            std::shared_ptr<RandomColorMaps> colorMaps,
            std::shared_ptr<RandomColorMaps> lowColorMaps,
            float radiusEdgeOffset,
@@ -163,7 +164,7 @@ private:
   const DrawFuncs m_drawFuncs;
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
   const std::unique_ptr<ShapeColorizer> m_colorizer;
   bool m_active = true;
   static constexpr float PATH_STEP = NML_CIRCLE_SPEED;
@@ -214,7 +215,7 @@ Tube::Tube(const uint32_t tubeId,
            const DrawFuncs& drawFuncs,
            const uint32_t screenWidth,
            const uint32_t screenHeight,
-           IGoomRand& goomRand,
+           const IGoomRand& goomRand,
            const std::shared_ptr<RandomColorMaps> colorMaps,
            const std::shared_ptr<RandomColorMaps> lowColorMaps,
            const float radiusEdgeOffset,
@@ -332,7 +333,7 @@ public:
                  uint32_t screenHeight,
                  uint32_t numShapes,
                  uint32_t numCircles,
-                 IGoomRand& goomRand,
+                 const IGoomRand& goomRand,
                  std::shared_ptr<RandomColorMaps> colorMaps,
                  std::shared_ptr<RandomColorMaps> innerColorMaps,
                  float brightnessFactor);
@@ -352,7 +353,7 @@ public:
   void UpdateAllTValues();
 
 private:
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
   std::shared_ptr<RandomColorMaps> m_randomColorMaps;
   std::shared_ptr<RandomColorMaps> m_randomInnerColorMaps;
   float m_brightnessFactor;
@@ -490,7 +491,7 @@ Tube::TubeImpl::TubeImpl(const uint32_t tubeId,
                          DrawFuncs drawFuncs,
                          const uint32_t screenWidth,
                          const uint32_t screenHeight,
-                         IGoomRand& goomRand,
+                         const IGoomRand& goomRand,
                          const std::shared_ptr<RandomColorMaps> colorMaps,
                          const std::shared_ptr<RandomColorMaps> lowColorMaps,
                          const float radiusEdgeOffset,
@@ -854,7 +855,7 @@ ShapeColorizer::ShapeColorizer(const uint32_t screenWidth,
                                const uint32_t screenHeight,
                                const uint32_t numShapes,
                                const uint32_t numCircles,
-                               IGoomRand& goomRand,
+                               const IGoomRand& goomRand,
                                const std::shared_ptr<RandomColorMaps> colorMaps,
                                const std::shared_ptr<RandomColorMaps> innerColorMaps,
                                const float brightnessFactor)

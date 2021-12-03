@@ -38,7 +38,7 @@ constexpr IGoomRand::NumberRange<float> VERTICAL_EFFECT_AMPLITUDE_RANGE = {0.001
 constexpr float PROB_PLANE_AMPLITUDES_EQUAL = 12.0F / 16.0F;
 constexpr float PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.5F;
 
-Planes::Planes(IGoomRand& goomRand) noexcept
+Planes::Planes(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_params{0, DEFAULT_HORIZONTAL_EFFECT_AMPLITUDE, 0, DEFAULT_VERTICAL_EFFECT_AMPLITUDE},
     // clang-format off

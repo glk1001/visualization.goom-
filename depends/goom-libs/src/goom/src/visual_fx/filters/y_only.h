@@ -21,7 +21,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class YOnly : public ISpeedCoefficientsEffect
 {
 public:
-  explicit YOnly(UTILS::IGoomRand& goomRand) noexcept;
+  explicit YOnly(const UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -56,7 +56,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   Params m_params;
   [[nodiscard]] auto GetYOnlySpeedMultiplier(YOnlyEffect effect,
                                              const NormalizedCoords& coords) const -> float;

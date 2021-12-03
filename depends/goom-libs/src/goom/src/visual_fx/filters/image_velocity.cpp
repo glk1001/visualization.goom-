@@ -28,7 +28,7 @@ constexpr IGoomRand::NumberRange<float> ZOOM_FACTOR_RANGE = {0.9F, 1.0F};
 
 constexpr float PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
-ImageVelocity::ImageVelocity(const std::string& resourcesDirectory, IGoomRand& goomRand)
+ImageVelocity::ImageVelocity(const std::string& resourcesDirectory, const IGoomRand& goomRand)
   : m_goomRand{goomRand}, m_imageDisplacementList{resourcesDirectory, m_goomRand}
 {
   if (!resourcesDirectory.empty())

@@ -27,7 +27,7 @@ TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
 {
   Parallel parallel{-1};
   const PluginInfo goomInfo{WIDTH, HEIGHT};
-  GoomRand goomRand{};
+  const GoomRand goomRand{};
   FilterSettingsService filterSettingsService{parallel, goomInfo, goomRand, RESOURCES_DIRECTORY};
   ZoomFilterFx zoomFilter_fx{parallel, goomInfo, filterSettingsService.GetFilterBuffersService(),
                              filterSettingsService.GetFilterColorsService()};

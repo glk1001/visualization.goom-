@@ -13,6 +13,7 @@
 #undef NDEBUG
 
 #include <cstdint>
+#include <format>
 #include <limits>
 #include <ostream>
 #include <random>
@@ -91,7 +92,7 @@ auto GetRandInRange(const uint32_t n0, const uint32_t n1) -> uint32_t
 #ifndef NDEBUG
   if (n0 >= n1)
   {
-    throw std::logic_error("uint n0 >= n1");
+    throw std::logic_error(std20::format("uint n0:'{}' >= n1:'{}'", n0, n1));
   }
 #endif
 
@@ -102,7 +103,7 @@ auto GetRandInRange(const int32_t n0, const int32_t n1) -> int32_t
 {
   if (n0 >= n1)
   {
-    throw std::logic_error("int n0 >= n1");
+    throw std::logic_error(std20::format("int n0:'{}' >= n1:'{}'", n0, n1));
   }
   if ((n0 >= 0) && (n1 >= 0))
   {
@@ -117,7 +118,7 @@ auto GetRandInRange(const float x0, const float x1) -> float
 #ifndef NDEBUG
   if (x0 >= x1)
   {
-    throw std::logic_error("float x0 >= x1");
+    throw std::logic_error(std20::format("float x0:'{}' >= x1:'{}'", x0, x1));
   }
 #endif
 

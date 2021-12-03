@@ -101,7 +101,7 @@ public:
 private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
   const int32_t m_halfWidth;
   const int32_t m_halfHeight;
   const float m_xMax;
@@ -206,6 +206,7 @@ private:
     LINES,
     DOTS,
     CIRCLES_AND_LINES,
+    _NUM // unused and must be last
   };
   DrawMode m_drawMode = DrawMode::CIRCLES;
   const Weights<DrawMode> m_drawModeWeights;

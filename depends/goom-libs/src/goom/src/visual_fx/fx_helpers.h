@@ -22,25 +22,24 @@ namespace VISUAL_FX
 class FxHelpers
 {
 public:
-  FxHelpers(DRAW::IGoomDraw& draw, const PluginInfo& goomInfo, UTILS::IGoomRand& goomRand);
+  FxHelpers(DRAW::IGoomDraw& draw, const PluginInfo& goomInfo, const UTILS::IGoomRand& goomRand);
 
   [[nodiscard]] auto GetDraw() const -> DRAW::IGoomDraw&;
   [[nodiscard]] auto GetDraw() -> DRAW::IGoomDraw&;
 
   [[nodiscard]] auto GetGoomInfo() const -> const PluginInfo&;
 
-  [[nodiscard]] auto GetGoomRand() const -> UTILS::IGoomRand&;
-  [[nodiscard]] auto GetGoomRand() -> UTILS::IGoomRand&;
+  [[nodiscard]] auto GetGoomRand() const -> const UTILS::IGoomRand&;
 
 private:
   DRAW::IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
 };
 
 inline FxHelpers::FxHelpers(DRAW::IGoomDraw& draw,
                             const PluginInfo& goomInfo,
-                            UTILS::IGoomRand& goomRand)
+                            const UTILS::IGoomRand& goomRand)
   : m_draw{draw}, m_goomInfo{goomInfo}, m_goomRand{goomRand}
 {
 }
@@ -60,12 +59,7 @@ inline auto FxHelpers::GetGoomInfo() const -> const PluginInfo&
   return m_goomInfo;
 }
 
-inline auto FxHelpers::GetGoomRand() const -> UTILS::IGoomRand&
-{
-  return m_goomRand;
-}
-
-inline auto FxHelpers::GetGoomRand() -> UTILS::IGoomRand&
+inline auto FxHelpers::GetGoomRand() const -> const UTILS::IGoomRand&
 {
   return m_goomRand;
 }

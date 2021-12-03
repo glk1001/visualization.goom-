@@ -35,7 +35,7 @@ class Fractal
 public:
   Fractal(uint32_t screenWidth,
           uint32_t screenHeight,
-          UTILS::IGoomRand& goomRand,
+          const UTILS::IGoomRand& goomRand,
           const COLOR::RandomColorMaps& randomColorMaps,
           const UTILS::SmallImageBitmaps& smallBitmaps);
 
@@ -50,7 +50,7 @@ public:
 
 private:
   Similitudes m_similitudes;
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
 
   const Flt m_halfWidth;
   const Flt m_halfHeight;

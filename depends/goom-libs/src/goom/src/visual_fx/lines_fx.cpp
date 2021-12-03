@@ -52,6 +52,7 @@ using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using FX_UTILS::DotSizes;
 using UTILS::floats_equal;
 using UTILS::IGoomRand;
 using UTILS::m_half_pi;
@@ -105,7 +106,7 @@ public:
 private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
   std::shared_ptr<RandomColorMaps> m_colorMaps;
   std::reference_wrapper<const IColorMap> m_currentColorMap;
   static constexpr float GAMMA = 1.0F / 1.0F;
@@ -281,24 +282,24 @@ LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
         {
             m_goomRand,
             {
-                {1, 100},
-                {3, 50},
-                {5, 20},
-                {7, 10},
+                {DotSizes::DOT_SIZE01, 100},
+                {DotSizes::DOT_SIZE02, 50},
+                {DotSizes::DOT_SIZE03, 20},
+                {DotSizes::DOT_SIZE04, 10},
             }
         },
         // normal dot sizes
         {
             m_goomRand,
             {
-                { 1, 50},
-                { 3, 20},
-                { 5, 20},
-                { 7, 10},
-                { 9, 10},
-                {11, 10},
-                {13, 10},
-                {15, 10},
+                {DotSizes::DOT_SIZE01, 50},
+                {DotSizes::DOT_SIZE02, 20},
+                {DotSizes::DOT_SIZE03, 20},
+                {DotSizes::DOT_SIZE04, 10},
+                {DotSizes::DOT_SIZE05, 10},
+                {DotSizes::DOT_SIZE06, 10},
+                {DotSizes::DOT_SIZE07, 10},
+                {DotSizes::DOT_SIZE08, 10},
             }
         }
         // clang-format on

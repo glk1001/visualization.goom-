@@ -23,7 +23,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class ImageVelocity
 {
 public:
-  ImageVelocity(const std::string& resourcesDirectory, UTILS::IGoomRand& goomRand);
+  ImageVelocity(const std::string& resourcesDirectory, const UTILS::IGoomRand& goomRand);
 
   void SetRandomParams();
 
@@ -33,7 +33,7 @@ public:
       -> UTILS::NameValuePairs;
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   ImageDisplacementList m_imageDisplacementList;
 };
 

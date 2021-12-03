@@ -38,7 +38,7 @@ public:
 
   FilterSettingsService(UTILS::Parallel& parallel,
                         const GOOM::PluginInfo& goomInfo,
-                        UTILS::IGoomRand& goomRand,
+                        const UTILS::IGoomRand& goomRand,
                         const std::string& resourcesDirectory) noexcept;
 
   [[nodiscard]] auto GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>;
@@ -104,7 +104,7 @@ private:
 
   UTILS::Parallel& m_parallel;
   const PluginInfo& m_goomInfo;
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   const V2dInt m_screenMidPoint;
   const std::string m_resourcesDirectory;
   spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
@@ -127,7 +127,7 @@ private:
   static constexpr float DEFAULT_MAX_SPEED_COEFF = 2.01F;
   static constexpr float MAX_MAX_SPEED_COEFF = 4.01F;
   ZoomFilterSettings m_filterSettings;
-  const UTILS::Weights<ZoomFilterMode> m_weightedFilterEvents;
+  const UTILS::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
 
   bool m_filterEffectsSettingsHaveChanged = false;
 
@@ -147,7 +147,8 @@ private:
     EVENT3,
     EVENT4,
     EVENT5,
-    EVENT6
+    EVENT6,
+    _NUM // unused and must be last
   };
   const UTILS::Weights<ZoomMidPointEvents> m_zoomMidPointWeights;
   void SetRandomZoomMidPoint();

@@ -21,7 +21,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class Scrunch : public ISpeedCoefficientsEffect
 {
 public:
-  explicit Scrunch(UTILS::IGoomRand& goomRand) noexcept;
+  explicit Scrunch(const UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -43,7 +43,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   Params m_params;
 };
 

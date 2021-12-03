@@ -8,6 +8,7 @@
 #include <tuple>
 #include <vector>
 
+using Catch::Matchers::StartsWith;
 using GOOM::UTILS::RAND::GetRand;
 using GOOM::UTILS::RAND::GetRandInRange;
 using GOOM::UTILS::RAND::GetRandSeed;
@@ -15,7 +16,7 @@ using GOOM::UTILS::RAND::RestoreRandState;
 using GOOM::UTILS::RAND::SaveRandState;
 using GOOM::UTILS::RAND::SetRandSeed;
 
-TEST_CASE("save/restore random state", "[saveRestoreRandState]")
+TEST_CASE("save/restore random state")
 {
   const uint64_t seed = 1000;
 
@@ -49,7 +50,7 @@ TEST_CASE("save/restore random state", "[saveRestoreRandState]")
   REQUIRE(r == r_justAfterSave);
 }
 
-TEST_CASE("repeatable random sequence", "[repeatableRandomSequence]")
+TEST_CASE("repeatable random sequence")
 {
   const uint64_t seed = 1000;
 
@@ -112,7 +113,7 @@ auto GetMinMax(const size_t numLoop, const valtype& nMin, const valtype& nMax)
   return std::make_tuple(min, max);
 }
 
-TEST_CASE("uint32_t min max get random", "[uintMinMaxGetRandom]")
+TEST_CASE("uint32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
@@ -143,10 +144,10 @@ TEST_CASE("uint32_t min max get random", "[uintMinMaxGetRandom]")
   REQUIRE(max2 == nMax2 - 1);
 
   REQUIRE_NOTHROW(GetRandInRange(5U, 6U));
-  REQUIRE_THROWS_WITH(GetRandInRange(5U, 1U), "uint n0 >= n1");
+  REQUIRE_THROWS_WITH(GetRandInRange(5U, 1U), StartsWith("uint n0"));
 }
 
-TEST_CASE("int32_t min max get random", "[intMinMaxGetRandom]")
+TEST_CASE("int32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
@@ -203,12 +204,12 @@ TEST_CASE("int32_t min max get random", "[intMinMaxGetRandom]")
   REQUIRE_NOTHROW(GetRandInRange(5, 6));
   REQUIRE_NOTHROW(GetRandInRange(-6, -5));
   REQUIRE_NOTHROW(GetRandInRange(-6, 10));
-  REQUIRE_THROWS_WITH(GetRandInRange(-5, -6), "int n0 >= n1");
-  REQUIRE_THROWS_WITH(GetRandInRange(5, 1), "int n0 >= n1");
-  REQUIRE_THROWS_WITH(GetRandInRange(5, -1), "int n0 >= n1");
+  REQUIRE_THROWS_WITH(GetRandInRange(-5, -6), StartsWith("int n0"));
+  REQUIRE_THROWS_WITH(GetRandInRange(5, 1), StartsWith("int n0"));
+  REQUIRE_THROWS_WITH(GetRandInRange(5, -1), StartsWith("int n0"));
 }
 
-TEST_CASE("float min max get random", "[fltMinMaxGetRandom]")
+TEST_CASE("float min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
@@ -253,7 +254,7 @@ TEST_CASE("float min max get random", "[fltMinMaxGetRandom]")
   REQUIRE_NOTHROW(GetRandInRange(5.0F, 6.0F));
   REQUIRE_NOTHROW(GetRandInRange(-6.0F, -5.0F));
   REQUIRE_NOTHROW(GetRandInRange(-6.0F, 10.0F));
-  REQUIRE_THROWS_WITH(GetRandInRange(-5.0F, -6.0F), "float x0 >= x1");
-  REQUIRE_THROWS_WITH(GetRandInRange(5.0F, 1.0F), "float x0 >= x1");
-  REQUIRE_THROWS_WITH(GetRandInRange(5.0F, -1.0F), "float x0 >= x1");
+  REQUIRE_THROWS_WITH(GetRandInRange(-5.0F, -6.0F), StartsWith("float x0"));
+  REQUIRE_THROWS_WITH(GetRandInRange(5.0F, 1.0F), StartsWith("float x0"));
+  REQUIRE_THROWS_WITH(GetRandInRange(5.0F, -1.0F), StartsWith("float x0"));
 }

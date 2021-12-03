@@ -25,7 +25,7 @@ class GoomMusicSettingsReactor
 public:
   GoomMusicSettingsReactor(
       const PluginInfo& goomInfo,
-      UTILS::IGoomRand& goomRand,
+      const UTILS::IGoomRand& goomRand,
       GoomAllVisualFx& visualFx,
       const GoomEvents& goomEvents,
       VISUAL_FX::FILTERS::FilterSettingsService& filterSettingsService) noexcept;
@@ -52,7 +52,7 @@ public:
 
 private:
   const PluginInfo& m_goomInfo;
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   GoomAllVisualFx& m_visualFx;
   using GoomEvent = GoomEvents::GoomEvent;
   const GoomEvents& m_goomEvents;

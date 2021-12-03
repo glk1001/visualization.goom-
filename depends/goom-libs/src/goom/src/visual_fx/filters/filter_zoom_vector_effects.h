@@ -35,7 +35,7 @@ class ZoomVectorEffects
 public:
   ZoomVectorEffects(uint32_t screenWidth,
                     const std::string& resourcesDirectory,
-                    UTILS::IGoomRand& goomRand) noexcept;
+                    const UTILS::IGoomRand& goomRand) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 

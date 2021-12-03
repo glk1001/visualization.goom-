@@ -75,7 +75,7 @@ auto GoomTitleDisplayer::GetSelectedFontSize() const -> int32_t
 }
 
 GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
-                                       IGoomRand& goomRand,
+                                       const IGoomRand& goomRand,
                                        const std::string& fontDirectory)
   : m_goomRand{goomRand},
     m_textDraw{std::make_unique<TextDraw>(draw)},

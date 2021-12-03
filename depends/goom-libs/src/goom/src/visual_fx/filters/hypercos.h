@@ -23,7 +23,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class Hypercos
 {
 public:
-  explicit Hypercos(UTILS::IGoomRand& goomRand) noexcept;
+  explicit Hypercos(const UTILS::IGoomRand& goomRand) noexcept;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 
@@ -68,7 +68,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   Params m_params;
   const UTILS::Weights<HypercosEffect> m_hypercosOverlayWeights;
   void SetHypercosEffect(const UTILS::IGoomRand::NumberRange<float>& freqRange,

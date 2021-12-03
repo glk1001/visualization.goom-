@@ -26,7 +26,7 @@ using UTILS::SqDistance;
 
 FilterZoomVector::FilterZoomVector(const uint32_t screenWidth,
                                    const std::string& resourcesDirectory,
-                                   IGoomRand& goomRand) noexcept
+                                   const IGoomRand& goomRand) noexcept
   : m_zoomVectorEffects{screenWidth, resourcesDirectory, goomRand}
 {
 }

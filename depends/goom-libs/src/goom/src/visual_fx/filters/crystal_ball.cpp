@@ -42,7 +42,7 @@ constexpr float PROB_XY_AMPLITUDES_EQUAL = 1.00F;
 constexpr float PROB_XY_SQ_DIST_MULT_EQUAL = 1.00F;
 constexpr float PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 
-CrystalBall::CrystalBall(const Modes mode, UTILS::IGoomRand& goomRand) noexcept
+CrystalBall::CrystalBall(const Modes mode, const UTILS::IGoomRand& goomRand) noexcept
   : m_mode{mode}, m_goomRand{goomRand}, m_params{DEFAULT_AMPLITUDE,      DEFAULT_AMPLITUDE,
                                                  DEFAULT_SQ_DIST_MULT,   DEFAULT_SQ_DIST_MULT,
                                                  DEFAULT_SQ_DIST_OFFSET, DEFAULT_SQ_DIST_OFFSET}

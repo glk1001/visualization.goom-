@@ -62,7 +62,7 @@ private:
 class Similitudes
 {
 public:
-  Similitudes(UTILS::IGoomRand& goomRand,
+  Similitudes(const UTILS::IGoomRand& goomRand,
               const COLOR::RandomColorMaps& randomColorMaps,
               const UTILS::SmallImageBitmaps& smallBitmaps);
 
@@ -96,7 +96,7 @@ private:
   void UpdateMainSimisFltPart();
   [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) -> const UTILS::ImageBitmap*;
 
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   const UTILS::SmallImageBitmaps& m_smallBitmaps;
   const COLOR::RandomColorMaps& m_colorMaps;
 
@@ -112,7 +112,15 @@ private:
     Dbl dr2Mean;
   };
   const std::vector<CentreType> m_centreList;
-  const UTILS::Weights<size_t> m_centreWeights;
+  enum class CentreNums
+  {
+    NUM0 = 0,
+    NUM1,
+    NUM2,
+    NUM3,
+    _NUM // unused and must be last
+  };
+  const UTILS::Weights<CentreNums> m_centreWeights;
   CentreType m_centreAttributes{};
   void InitCentre();
 

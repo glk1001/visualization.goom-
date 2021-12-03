@@ -96,7 +96,7 @@ public:
 private:
   Parallel m_parallel{-1}; // max cores - 1
   WritablePluginInfo m_goomInfo;
-  GoomRand m_goomRand{};
+  const GoomRand m_goomRand{};
   GoomDrawToBuffer m_multiBufferDraw;
   GoomImageBuffers m_imageBuffers;
   const std::string m_resourcesDirectory;

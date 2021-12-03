@@ -33,7 +33,7 @@ constexpr float PROB_EQUAL_XY_ROTATE_SPEEDS = 0.8F;
 constexpr float DEFAULT_ROTATE_ANGLE = m_pi / 4.0F;
 constexpr IGoomRand::NumberRange<float> ANGLE_RANGE = {(1.0F / 8.0F) * m_pi, (3.0F / 8.0F) * m_pi};
 
-Rotation::Rotation(IGoomRand& goomRand) noexcept
+Rotation::Rotation(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_params{DEFAULT_ROTATE_SPEED, DEFAULT_ROTATE_SPEED, std::sin(DEFAULT_ROTATE_ANGLE),
              std::cos(DEFAULT_ROTATE_ANGLE)}

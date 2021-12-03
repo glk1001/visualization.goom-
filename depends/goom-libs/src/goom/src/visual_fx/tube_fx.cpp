@@ -138,7 +138,7 @@ private:
   GoomDrawToContainer m_drawToContainer;
   GoomDrawToMany m_drawToMany;
   const PluginInfo& m_goomInfo;
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
   uint64_t m_updateNum = 0;
   std::shared_ptr<RandomColorMaps> m_colorMaps{};

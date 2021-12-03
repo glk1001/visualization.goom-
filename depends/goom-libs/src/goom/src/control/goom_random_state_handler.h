@@ -18,7 +18,7 @@ namespace GOOM::CONTROL
 class GoomRandomStateHandler : public IGoomStateHandler
 {
 public:
-  explicit GoomRandomStateHandler(UTILS::IGoomRand& goomRand);
+  explicit GoomRandomStateHandler(const UTILS::IGoomRand& goomRand);
 
   void ChangeToNextState() override;
 

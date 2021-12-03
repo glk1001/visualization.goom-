@@ -278,7 +278,8 @@ void RandomColorMaps::SetLightnessLimits(const float minLightness, const float m
   m_maxLightness = maxLightness;
 }
 
-WeightedColorMaps::WeightedColorMaps(IGoomRand& goomRand, const Weights<ColorMapGroup>& weights)
+WeightedColorMaps::WeightedColorMaps(const IGoomRand& goomRand,
+                                     const Weights<ColorMapGroup>& weights)
   : RandomColorMaps{goomRand}, m_weights{weights}, m_weightsActive{true}
 {
 }
@@ -293,7 +294,7 @@ auto WeightedColorMaps::GetRandomGroup() const -> ColorMapGroup
   return m_weights.GetRandomWeighted();
 }
 
-auto GetAllMapsUnweighted(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetAllMapsUnweighted(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -307,7 +308,7 @@ auto GetAllMapsUnweighted(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMap
   // clang-format on
 }
 
-auto GetAllStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetAllStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -329,7 +330,7 @@ auto GetAllStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
   // clang-format on
 }
 
-auto GetAllSlimMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetAllSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -351,7 +352,7 @@ auto GetAllSlimMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
   // clang-format on
 }
 
-auto GetMostlySequentialStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -373,7 +374,7 @@ auto GetMostlySequentialStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<Ran
   // clang-format on
 }
 
-auto GetMostlySequentialSlimMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -395,7 +396,7 @@ auto GetMostlySequentialSlimMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomC
   // clang-format on
 }
 
-auto GetSlightlyDivergingStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -417,7 +418,7 @@ auto GetSlightlyDivergingStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<Ra
   // clang-format on
 }
 
-auto GetSlightlyDivergingSlimMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetSlightlyDivergingSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -439,7 +440,7 @@ auto GetSlightlyDivergingSlimMaps(IGoomRand& goomRand) -> std::shared_ptr<Random
   // clang-format on
 }
 
-auto GetBlueStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetBlueStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -454,7 +455,7 @@ auto GetBlueStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps
   // clang-format on
 }
 
-auto GetRedStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetRedStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -469,7 +470,7 @@ auto GetRedStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
   // clang-format on
 }
 
-auto GetGreenStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetGreenStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -484,7 +485,7 @@ auto GetGreenStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMap
   // clang-format on
 }
 
-auto GetYellowStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetYellowStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -499,7 +500,7 @@ auto GetYellowStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMa
   // clang-format on
 }
 
-auto GetOrangeStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetOrangeStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -514,7 +515,7 @@ auto GetOrangeStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMa
   // clang-format on
 }
 
-auto GetPurpleStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetPurpleStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -529,7 +530,7 @@ auto GetPurpleStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMa
   // clang-format on
 }
 
-auto GetCitiesStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetCitiesStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -544,7 +545,7 @@ auto GetCitiesStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMa
   // clang-format on
 }
 
-auto GetSeasonsStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetSeasonsStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -559,7 +560,7 @@ auto GetSeasonsStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorM
   // clang-format on
 }
 
-auto GetHeatStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetHeatStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -574,7 +575,7 @@ auto GetHeatStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps
   // clang-format on
 }
 
-auto GetColdStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetColdStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -589,7 +590,7 @@ auto GetColdStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps
   // clang-format on
 }
 
-auto GetPastelStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetPastelStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -604,7 +605,7 @@ auto GetPastelStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMa
   // clang-format on
 }
 
-auto GetDivergingBlackStandardMaps(IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(

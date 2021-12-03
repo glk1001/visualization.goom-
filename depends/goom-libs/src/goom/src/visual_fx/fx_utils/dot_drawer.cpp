@@ -1,6 +1,7 @@
 #include "dot_drawer.h"
 
 #include "draw/goom_draw.h"
+#include "utils/enumutils.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -23,13 +24,14 @@ using COLOR::GetColorMultiply;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
+using UTILS::NUM;
 using UTILS::SmallImageBitmaps;
 
 DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
-                     UTILS::IGoomRand& goomRand,
+                     const UTILS::IGoomRand& goomRand,
                      const UTILS::SmallImageBitmaps& smallBitmaps,
-                     const UTILS::Weights<size_t>& minDotSizes,
-                     const UTILS::Weights<size_t>& normalDotSizes) noexcept
+                     const UTILS::Weights<DotSizes>& minDotSizes,
+                     const UTILS::Weights<DotSizes>& normalDotSizes) noexcept
   : m_goomDraw{draw},
     m_goomRand{goomRand},
     m_smallBitmaps{smallBitmaps},
@@ -73,12 +75,25 @@ void DotDrawer::DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors, con
 
 auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t
 {
+  // clang-format off
+  static const std::array<size_t, NUM<DotSizes>> s_dotSizes = {{
+      1,
+      3,
+      5,
+      7,
+      9,
+     11,
+     13,
+     15,
+  }};
+  // clang-format on
+
   constexpr size_t MAX_MIN_DOT_SIZE = 7;
   if (maxSize <= MAX_MIN_DOT_SIZE)
   {
-    return m_minDotSizes.GetRandomWeighted();
+    return s_dotSizes.at(static_cast<size_t>(m_minDotSizes.GetRandomWeighted()));
   }
-  return m_normalDotSizes.GetRandomWeighted();
+  return s_dotSizes.at(static_cast<size_t>(m_normalDotSizes.GetRandomWeighted()));
 }
 
 inline auto DotDrawer::GetImageBitmap(const size_t size) const -> const ImageBitmap&

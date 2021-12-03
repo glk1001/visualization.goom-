@@ -59,14 +59,22 @@ public:
 private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
-  IGoomRand& m_goomRand;
+  const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
 
   static constexpr double PROJECTION_DISTANCE = 170.0;
   static constexpr float CAMERA_DISTANCE = 8.0F;
   static constexpr float ROTATION = 1.5F * m_pi;
   static constexpr size_t NUM_TENTACLE_DRIVERS = 4;
-  const Weights<size_t> m_driverWeights;
+  enum class Drivers
+  {
+    NUM0 = 0,
+    NUM1,
+    NUM2,
+    NUM3,
+    _NUM // unused and must be last
+  };
+  const Weights<Drivers> m_driverWeights;
   const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;
   std::vector<std::unique_ptr<TentacleDriver>> m_tentacleDrivers;
   [[nodiscard]] auto GetTentacleDrivers() const -> std::vector<std::unique_ptr<TentacleDriver>>;
@@ -138,10 +146,10 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers,
     m_driverWeights{
       m_goomRand,
       {
-          {0,  5},
-          {1, 15},
-          {2, 15},
-          {3,  5},
+          {Drivers::NUM0,  5},
+          {Drivers::NUM1, 15},
+          {Drivers::NUM2, 15},
+          {Drivers::NUM3,  5},
       }},
     m_tentacleLayouts{{
         {10,  80, {16, 12,  8,  6, 4}, 0},
@@ -195,7 +203,7 @@ auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
 
 inline auto TentaclesFx::TentaclesImpl::GetNextDriver() const -> TentacleDriver*
 {
-  const size_t driverIndex = m_driverWeights.GetRandomWeighted();
+  const auto driverIndex = static_cast<size_t>(m_driverWeights.GetRandomWeighted());
   return m_tentacleDrivers[driverIndex].get();
 }
 

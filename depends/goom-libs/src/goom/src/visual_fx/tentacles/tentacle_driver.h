@@ -35,7 +35,7 @@ class TentacleDriver
 public:
   TentacleDriver() noexcept = delete;
   TentacleDriver(DRAW::IGoomDraw& draw,
-                 UTILS::IGoomRand& goomRand,
+                 const UTILS::IGoomRand& goomRand,
                  const UTILS::SmallImageBitmaps& smallBitmaps,
                  const ITentacleLayout& tentacleLayout) noexcept;
 
@@ -54,7 +54,7 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   const ITentacleLayout& m_tentacleLayout;
 
   struct IterationParams
@@ -67,7 +67,7 @@ private:
   };
   struct IterParamsGroup
   {
-    UTILS::IGoomRand& goomRand;
+    const UTILS::IGoomRand& goomRand;
     IterationParams first{};
     IterationParams last{};
     [[nodiscard]] auto GetNextIterationParams(float t) const -> IterationParams;
@@ -79,11 +79,11 @@ private:
       -> std::vector<IterationParams>;
 
   std::vector<Tentacle3D> m_tentacles;
-  [[nodiscard]] static auto GetTentacles(UTILS::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetTentacles(const UTILS::IGoomRand& goomRand,
                                          const std::vector<IterationParams>& tentacleParams,
                                          const ITentacleLayout& tentacleLayout)
       -> std::vector<Tentacle3D>;
-  [[nodiscard]] static auto CreateNewTentacle2D(UTILS::IGoomRand& goomRand,
+  [[nodiscard]] static auto CreateNewTentacle2D(const UTILS::IGoomRand& goomRand,
                                                 size_t id,
                                                 const IterationParams& params)
       -> std::unique_ptr<Tentacle2D>;

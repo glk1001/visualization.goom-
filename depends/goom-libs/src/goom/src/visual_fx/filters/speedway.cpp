@@ -27,7 +27,8 @@ constexpr IGoomRand::NumberRange<float> Y_AMPLITUDE_RANGE = {-10.0F, +10.0F};
 
 constexpr float PROB_AMPLITUDE_EQUAL = 0.5F;
 
-Speedway::Speedway(Modes mode, IGoomRand& goomRand) noexcept : m_mode{mode}, m_goomRand{goomRand}, m_params{X_DEFAULT_AMPLITUDE, Y_DEFAULT_AMPLITUDE}
+Speedway::Speedway(Modes mode, const IGoomRand& goomRand) noexcept
+  : m_mode{mode}, m_goomRand{goomRand}, m_params{X_DEFAULT_AMPLITUDE, Y_DEFAULT_AMPLITUDE}
 {
 }
 

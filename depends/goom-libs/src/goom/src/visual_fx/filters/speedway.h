@@ -26,7 +26,7 @@ public:
     MODE0,
     MODE1,
   };
-  Speedway(Modes mode, UTILS::IGoomRand& goomRand) noexcept;
+  Speedway(Modes mode, const UTILS::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -49,7 +49,7 @@ protected:
 
 private:
   const Modes m_mode;
-  UTILS::IGoomRand& m_goomRand;
+  const UTILS::IGoomRand& m_goomRand;
   Params m_params;
   void SetMode0RandomParams();
   void SetMode1RandomParams();

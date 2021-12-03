@@ -42,7 +42,7 @@ constexpr float PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 constexpr float PROB_MODE0 = 0.05F;
 constexpr float PROB_RANDOM_DISTANCE_POINTS = 0.7F;
 
-DistanceField::DistanceField(IGoomRand& goomRand) noexcept
+DistanceField::DistanceField(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_params{false,
              DEFAULT_AMPLITUDE,
