@@ -57,8 +57,9 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
   const auto imageDisplRotateProb = PROB_ZERO;
   const auto normalRotateProb     = PROB_ZERO;
   const auto scrunchRotateProb    = PROB_HALF;
-  const auto speedway0RotateProb  = PROB_LOW;
-  const auto speedway1RotateProb  = PROB_LOW;
+  const auto speedway0RotateProb  = PROB_HALF;
+  const auto speedway1RotateProb  = PROB_HIGH;
+  const auto speedway2RotateProb  = PROB_HIGH;
   const auto waterRotateProb      = PROB_ZERO;
   const auto wave0RotateProb      = PROB_HIGH;
   const auto wave1RotateProb      = PROB_HIGH;
@@ -77,6 +78,7 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
   const auto scrunchWeights    = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto speedway0Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto speedway1Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
+  const auto speedway2Weights  = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto waterWeights      = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto wave0Weights      = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
   const auto wave1Weights      = Weights<Hyp>{m_goomRand, {{Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1}}};
@@ -172,6 +174,13 @@ auto FilterSettingsService::GetFilterModeData(const std::string& resourcesDirect
         std::make_shared<Speedway>(Speedway::Modes::MODE1, m_goomRand),
         speedway1RotateProb,
         speedway1Weights
+      }
+    },
+    { ZoomFilterMode::SPEEDWAY_MODE2, {
+        "Speedway Mode 2",
+        std::make_shared<Speedway>(Speedway::Modes::MODE2, m_goomRand),
+        speedway2RotateProb,
+        speedway2Weights
       }
     },
     { ZoomFilterMode::WATER_MODE, {
@@ -319,7 +328,8 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
             {ZoomFilterMode::NORMAL_MODE,             10},
             {ZoomFilterMode::SCRUNCH_MODE,             6},
             {ZoomFilterMode::SPEEDWAY_MODE0,           3},
-            {ZoomFilterMode::SPEEDWAY_MODE1,           3},
+            {ZoomFilterMode::SPEEDWAY_MODE1,           2},
+            {ZoomFilterMode::SPEEDWAY_MODE2,           2},
             {ZoomFilterMode::WAVE_MODE0,               5},
             {ZoomFilterMode::WAVE_MODE1,               4},
             {ZoomFilterMode::WATER_MODE,               0},
@@ -387,6 +397,13 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                 {
                     {ZoomFilterMode::SPEEDWAY_MODE0, 0},
                     {ZoomFilterMode::SPEEDWAY_MODE1, 0},
+                }
+            },
+            {ZoomFilterMode::SPEEDWAY_MODE2,
+                {
+                    {ZoomFilterMode::SPEEDWAY_MODE0, 0},
+                    {ZoomFilterMode::SPEEDWAY_MODE1, 0},
+                    {ZoomFilterMode::SPEEDWAY_MODE2, 0},
                 }
             },
             {ZoomFilterMode::WAVE_MODE0,
@@ -599,5 +616,5 @@ void FilterSettingsService::SetRandomZoomMidPoint()
 } // namespace VISUAL_FX
 } // namespace GOOM
 #else
-} // namespace GOOM::DRAW
+} // namespace GOOM::VISUAL_FX::FILTERS
 #endif

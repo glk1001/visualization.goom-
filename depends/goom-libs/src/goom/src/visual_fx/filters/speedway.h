@@ -25,6 +25,7 @@ public:
   {
     MODE0,
     MODE1,
+    MODE2,
   };
   Speedway(Modes mode, const UTILS::IGoomRand& goomRand) noexcept;
 
@@ -53,10 +54,14 @@ private:
   Params m_params;
   void SetMode0RandomParams();
   void SetMode1RandomParams();
+  void SetMode2RandomParams();
   [[nodiscard]] auto GetMode0SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                                float sqDistFromZero,
                                                const NormalizedCoords& coords) const -> V2dFlt;
   [[nodiscard]] auto GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+                                               float sqDistFromZero,
+                                               const NormalizedCoords& coords) const -> V2dFlt;
+  [[nodiscard]] auto GetMode2SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                                float sqDistFromZero,
                                                const NormalizedCoords& coords) const -> V2dFlt;
 };
@@ -65,12 +70,17 @@ inline auto Speedway::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                            const float sqDistFromZero,
                                            const NormalizedCoords& coords) const -> V2dFlt
 {
-  if (m_mode == Modes::MODE0)
+  switch (m_mode)
   {
-    return GetMode0SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
-  }
+    case Modes::MODE0:
+      return GetMode0SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
+    case Modes::MODE1:
+      return GetMode1SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
+    case Modes::MODE2:
+      return GetMode2SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
+  };
 
-  return GetMode1SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
+  return {0.0F, 0.0F};
 }
 
 inline auto Speedway::GetMode0SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
@@ -78,7 +88,11 @@ inline auto Speedway::GetMode0SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                                 const NormalizedCoords& coords) const -> V2dFlt
 {
   constexpr float SQ_DIST_FACTOR = 0.01F;
-  const float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
+  float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
+  if (m_goomRand.ProbabilityOf(0.5F))
+  {
+    xAdd = -xAdd;
+  }
 
   const float xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
   const float ySpeedCoeff = m_params.yAmplitude * xSpeedCoeff;
@@ -92,12 +106,12 @@ inline auto Speedway::GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 {
   float xAdd = -1.0F;
 
-  if (m_goomRand.ProbabilityOf(0.0F))
+  if (m_goomRand.ProbabilityOf(0.5F))
   {
     xAdd = m_goomRand.ProbabilityOf(0.5F) ? m_goomRand.GetRandInRange(-1.9F, -0.5F)
                                           : m_goomRand.GetRandInRange(+0.5F, +1.9F);
   }
-  else if (m_goomRand.ProbabilityOf(0.0F))
+  else if (m_goomRand.ProbabilityOf(0.5F))
   {
     xAdd = +1.0F;
   }
@@ -109,6 +123,23 @@ inline auto Speedway::GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 
   const float xSpeedCoeff = amplitude * baseSpeedCoeffs.x * (m_params.xAmplitude * xWarp);
   const float ySpeedCoeff = amplitude * m_params.yAmplitude * xSpeedCoeff;
+
+  return {xSpeedCoeff, ySpeedCoeff};
+}
+
+inline auto Speedway::GetMode2SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+                                                const float sqDistFromZero,
+                                                const NormalizedCoords& coords) const -> V2dFlt
+{
+  constexpr float SQ_DIST_FACTOR = 0.01F;
+  float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
+  if (m_goomRand.ProbabilityOf(0.5F))
+  {
+    xAdd = -xAdd;
+  }
+
+  const float xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
+  const float ySpeedCoeff = std::tan(0.01F * sqDistFromZero) * m_params.yAmplitude * xSpeedCoeff;
 
   return {xSpeedCoeff, ySpeedCoeff};
 }

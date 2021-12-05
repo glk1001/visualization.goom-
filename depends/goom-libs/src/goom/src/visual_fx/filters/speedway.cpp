@@ -34,17 +34,27 @@ Speedway::Speedway(Modes mode, const IGoomRand& goomRand) noexcept
 
 void Speedway::SetRandomParams()
 {
-  if (m_mode == Modes::MODE0)
+  switch (m_mode)
   {
-    SetMode0RandomParams();
-  }
-  else
-  {
-    SetMode1RandomParams();
+    case Modes::MODE0:
+      SetMode0RandomParams();
+      break;
+    case Modes::MODE1:
+      SetMode1RandomParams();
+      break;
+    case Modes::MODE2:
+      SetMode2RandomParams();
+      break;
   }
 }
 
 void Speedway::SetMode0RandomParams()
+{
+  m_params.xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
+  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL) ? +1.0F : -1.0F;
+}
+
+void Speedway::SetMode1RandomParams()
 {
   m_params.xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
   m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
@@ -52,7 +62,7 @@ void Speedway::SetMode0RandomParams()
                             : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE);
 }
 
-void Speedway::SetMode1RandomParams()
+void Speedway::SetMode2RandomParams()
 {
   m_params.xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
   m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
