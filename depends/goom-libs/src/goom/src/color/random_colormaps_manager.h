@@ -20,11 +20,6 @@ class RandomColorMapsManager
 {
 public:
   RandomColorMapsManager() noexcept = default;
-  RandomColorMapsManager(const RandomColorMapsManager&) noexcept = delete;
-  RandomColorMapsManager(RandomColorMapsManager&&) noexcept = delete;
-  ~RandomColorMapsManager() noexcept = default;
-  auto operator=(const RandomColorMapsManager&) -> RandomColorMapsManager& = delete;
-  auto operator=(RandomColorMapsManager&&) -> RandomColorMapsManager& = delete;
 
   void IncCounter();
   void ResetCounter();

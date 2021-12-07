@@ -25,11 +25,6 @@ class RandomColorMaps : public ColorMaps
 {
 public:
   explicit RandomColorMaps(const UTILS::IGoomRand& goomRand) noexcept;
-  RandomColorMaps(const RandomColorMaps&) noexcept = delete;
-  RandomColorMaps(RandomColorMaps&&) noexcept = delete;
-  ~RandomColorMaps() noexcept override = default;
-  auto operator=(const RandomColorMaps&) -> RandomColorMaps& = delete;
-  auto operator=(RandomColorMaps&&) -> RandomColorMaps& = delete;
 
   [[nodiscard]] auto GetRandomColorMapName() const -> COLOR_DATA::ColorMapName;
   [[nodiscard]] auto GetRandomColorMapName(ColorMapGroup cmg) const -> COLOR_DATA::ColorMapName;
