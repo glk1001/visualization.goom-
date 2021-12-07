@@ -18,17 +18,8 @@
 #include <numeric>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 using UTILS::Logging;
 using UTILS::Parallel;
@@ -374,11 +365,7 @@ inline void ZoomFilterBuffers::TransformBuffers::SetTempBuffersTransformPoint(
   m_tranYTemp[pos] = transformPoint.y;
 }
 
-// TODO Old Clang and MSVC won't allow the following '= default'
-//ZoomFilterBuffers::FilterCoefficients::FilterCoefficients() noexcept = default;
-ZoomFilterBuffers::FilterCoefficients::FilterCoefficients() noexcept
-{
-}
+ZoomFilterBuffers::FilterCoefficients::FilterCoefficients() noexcept = default;
 
 inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const -> const FilterCoeff2dArray&
 {
@@ -443,10 +430,4 @@ auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(const uint
   return {coeffs, allZero};
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

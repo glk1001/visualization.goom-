@@ -11,15 +11,8 @@
 #include <functional>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
 
 using COLOR::GetBrighterColor;
 
@@ -639,9 +632,4 @@ void DrawMethods::DrawThickLine(int x0,
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif

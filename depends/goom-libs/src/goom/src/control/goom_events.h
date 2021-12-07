@@ -7,15 +7,8 @@
 #include <array>
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 class GoomEvents
 {
@@ -76,10 +69,5 @@ inline auto GoomEvents::GetRandomLineTypeEvent() const -> VISUAL_FX::LinesFx::Li
   return m_lineTypeWeights.GetRandomWeighted();
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif
 

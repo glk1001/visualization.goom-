@@ -4,17 +4,8 @@
 
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-namespace COLOR_DATA
-{
-#else
 namespace GOOM::COLOR::COLOR_DATA
 {
-#endif
 
 extern const std::vector<ColorMapName> WES_ANDERSON_MAPS;
 extern const std::vector<ColorMapName> BLUE_MAPS;
@@ -29,11 +20,4 @@ extern const std::vector<ColorMapName> HEAT_MAPS;
 extern const std::vector<ColorMapName> COLD_MAPS;
 extern const std::vector<ColorMapName> PASTEL_MAPS;
 
-#if __cplusplus <= 201402L
-} // namespace COLOR_DATA
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR::COLOR_DATA
-#endif
-

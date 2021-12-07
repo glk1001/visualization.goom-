@@ -8,15 +8,8 @@
 #include <tuple>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 ExpIncreasingFunction::ExpIncreasingFunction(const double x0,
                                              const double x1,
@@ -121,16 +114,8 @@ PiecewiseDampingFunction::PiecewiseDampingFunction(
 
 auto PiecewiseDampingFunction::operator()(const double x) -> double
 {
-#if __cplusplus <= 201402L
-  for (const auto& pieces : m_pieces)
-  {
-    const auto& x0 = std::get<0>(pieces);
-    const auto& x1 = std::get<1>(pieces);
-    const auto& func = std::get<2>(pieces);
-#else
   for (const auto& [x0, x1, func] : m_pieces)
   {
-#endif
     if ((x0 <= x) && (x < x1))
     {
       return (*func)(x);
@@ -162,9 +147,4 @@ auto SineWaveMultiplier::GetNext() -> float
   return val;
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

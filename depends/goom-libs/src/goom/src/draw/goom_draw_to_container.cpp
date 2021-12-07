@@ -11,15 +11,8 @@
 #include <cstdint>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
 
 using COLOR::GetBrighterColorInt;
 using UTILS::Logging;
@@ -120,9 +113,4 @@ void GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& func) c
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif

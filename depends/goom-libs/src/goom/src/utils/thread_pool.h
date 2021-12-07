@@ -10,22 +10,11 @@
 #include <utility>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
-#if __cplusplus <= 201402L
-#define INVOKE_MACRO(CALLABLE, ARGS_TYPE, ARGS) CALLABLE(std::forward<ARGS_TYPE>(ARGS)...)
-#else
 #define INVOKE_MACRO(CALLABLE, ARGS_TYPE, ARGS) \
   std::invoke(CALLABLE, std::forward<ARGS_TYPE>(ARGS)...)
-#endif
 
 class ThreadPool
 {
@@ -167,10 +156,5 @@ auto ThreadPool::ScheduleAndGetFuture(FuncT&& func, ArgsT&&... args)
   return retFuture;
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif
 

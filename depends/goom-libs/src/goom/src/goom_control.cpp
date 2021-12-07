@@ -6,7 +6,7 @@
  *
  * (c)2000-2003, by iOS-software.
  *
- *  - converted to C++14 2021-02-01 (glk)
+ *  - converted to C++17 2021-02-01 (glk)
  *
  */
 
@@ -38,9 +38,7 @@
 #include "visual_fx/fx_helpers.h"
 
 #include <cstdint>
-#if __cplusplus > 201402L
 #include <filesystem>
-#endif
 //#undef NDEBUG
 #include <cassert>
 #include <memory>

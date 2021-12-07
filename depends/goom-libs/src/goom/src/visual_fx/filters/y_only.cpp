@@ -6,17 +6,8 @@
 #undef NDEBUG
 #include <cassert>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
@@ -71,10 +62,4 @@ auto YOnly::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
   return NameValuePairs();
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

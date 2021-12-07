@@ -121,25 +121,13 @@ TEST_CASE("uint32_t min max get random")
 
   constexpr uint32_t nMin1 = 999;
   constexpr uint32_t nMax1 = 10001;
-#if __cplusplus <= 201402L
-  const auto mins1 = GetMinMax(numLoop, nMin1, nMax1);
-  const auto min1 = std::get<0>(mins1);
-  const auto max1 = std::get<1>(mins1);
-#else
   const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
-#endif
   REQUIRE(min1 == nMin1);
   REQUIRE(max1 == nMax1 - 1);
 
   constexpr uint32_t nMin2 = 0;
   constexpr uint32_t nMax2 = 120;
-#if __cplusplus <= 201402L
-  const auto mins2 = GetMinMax(numLoop, nMin2, nMax2);
-  const auto min2 = std::get<0>(mins2);
-  const auto max2 = std::get<1>(mins2);
-#else
   const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
-#endif
   REQUIRE(min2 == nMin2);
   REQUIRE(max2 == nMax2 - 1);
 
@@ -155,49 +143,25 @@ TEST_CASE("int32_t min max get random")
 
   constexpr int32_t nMin1 = -999;
   constexpr int32_t nMax1 = 10001;
-#if __cplusplus <= 201402L
-  const auto mins1 = GetMinMax(numLoop, nMin1, nMax1);
-  const auto min1 = std::get<0>(mins1);
-  const auto max1 = std::get<1>(mins1);
-#else
   const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
-#endif
   REQUIRE(min1 == nMin1);
   REQUIRE(max1 == nMax1 - 1);
 
   constexpr int32_t nMin2 = -999;
   constexpr int32_t nMax2 = -50;
-#if __cplusplus <= 201402L
-  const auto mins2 = GetMinMax(numLoop, nMin2, nMax2);
-  const auto min2 = std::get<0>(mins2);
-  const auto max2 = std::get<1>(mins2);
-#else
   const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
-#endif
   REQUIRE(min2 == nMin2);
   REQUIRE(max2 == nMax2 - 1);
 
   constexpr int32_t nMin3 = 1;
   constexpr int32_t nMax3 = 999;
-#if __cplusplus <= 201402L
-  const auto mins3 = GetMinMax(numLoop, nMin3, nMax3);
-  const auto min3 = std::get<0>(mins3);
-  const auto max3 = std::get<1>(mins3);
-#else
   const auto [min3, max3] = GetMinMax(numLoop, nMin3, nMax3);
-#endif
   REQUIRE(min3 == nMin3);
   REQUIRE(max3 == nMax3 - 1);
 
   constexpr int32_t nMin4 = 0;
   constexpr int32_t nMax4 = 635;
-#if __cplusplus <= 201402L
-  const auto mins4 = GetMinMax(numLoop, nMin4, nMax4);
-  const auto min4 = std::get<0>(mins4);
-  const auto max4 = std::get<1>(mins4);
-#else
   const auto [min4, max4] = GetMinMax(numLoop, nMin4, nMax4);
-#endif
   REQUIRE(min4 == nMin4);
   REQUIRE(max4 == nMax4 - 1);
 
@@ -217,37 +181,19 @@ TEST_CASE("float min max get random")
 
   constexpr float nMin1 = 0;
   constexpr float nMax1 = 1;
-#if __cplusplus <= 201402L
-  const auto mins1 = GetMinMax(numLoop, nMin1, nMax1);
-  const auto min1 = std::get<0>(mins1);
-  const auto max1 = std::get<1>(mins1);
-#else
   const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
-#endif
   REQUIRE(std::fabs(min1 - nMin1) < 0.0001F);
   REQUIRE(std::fabs(max1 - nMax1) < 0.0001F);
 
   constexpr float nMin2 = -1;
   constexpr float nMax2 = 0;
-#if __cplusplus <= 201402L
-  const auto mins2 = GetMinMax(numLoop, nMin2, nMax2);
-  const auto min2 = std::get<0>(mins2);
-  const auto max2 = std::get<1>(mins2);
-#else
   const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
-#endif
   REQUIRE(std::fabs(min2 - nMin2) < 0.0001F);
   REQUIRE(std::fabs(max2 - nMax2) < 0.0001F);
 
   constexpr float nMin3 = -10;
   constexpr float nMax3 = +10;
-#if __cplusplus <= 201402L
-  const auto mins3 = GetMinMax(numLoop, nMin3, nMax3);
-  const auto min3 = std::get<0>(mins3);
-  const auto max3 = std::get<1>(mins3);
-#else
   const auto [min3, max3] = GetMinMax(numLoop, nMin3, nMax3);
-#endif
   REQUIRE(std::fabs(min3 - nMin3) < 0.0001F);
   REQUIRE(std::fabs(max3 - nMax3) < 0.0001F);
 

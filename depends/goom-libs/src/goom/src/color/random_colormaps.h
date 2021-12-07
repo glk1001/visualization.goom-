@@ -11,15 +11,8 @@
 #include <utility>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-#else
 namespace GOOM::COLOR
 {
-#endif
 
 class RandomColorMaps : public ColorMaps
 {
@@ -84,27 +77,15 @@ public:
 
 private:
   const UTILS::IGoomRand& m_goomRand;
-#if __cplusplus <= 201402L
-  static const float MIN_ROTATION_POINT;
-  static const float MAX_ROTATION_POINT;
-#else
   static constexpr float MIN_ROTATION_POINT = 0.1F;
   static constexpr float MAX_ROTATION_POINT = 0.9F;
-#endif
   float m_minRotationPoint = MIN_ROTATION_POINT;
   float m_maxRotationPoint = MAX_ROTATION_POINT;
 
-#if __cplusplus <= 201402L
-  static const float MIN_SATURATION;
-  static const float MAX_SATURATION;
-  static const float MIN_LIGHTNESS;
-  static const float MAX_LIGHTNESS;
-#else
   static constexpr float MIN_SATURATION = 0.1F;
   static constexpr float MAX_SATURATION = 1.0F;
   static constexpr float MIN_LIGHTNESS = 0.1F;
   static constexpr float MAX_LIGHTNESS = 1.0F;
-#endif
   float m_minSaturation = MIN_SATURATION;
   float m_maxSaturation = MAX_SATURATION;
   float m_minLightness = MIN_LIGHTNESS;
@@ -153,9 +134,4 @@ inline RandomColorMaps::RandomColorMaps(const UTILS::IGoomRand& goomRand) noexce
 {
 }
 
-#if __cplusplus <= 201402L
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR
-#endif

@@ -7,15 +7,8 @@
 #include <string>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 enum class GoomStates : size_t
 {
@@ -100,9 +93,4 @@ inline auto GoomStateInfo::GetStateInfo(const GoomStates goomState) -> const Sta
   return STATE_INFO_ARRAY.at(UTILS::ToUType(goomState));
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

@@ -12,15 +12,8 @@
 #include <functional>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
 
 using DrawPixelFunc =
     std::function<void(int32_t x, int32_t y, const std::vector<Pixel>& newColors)>;
@@ -92,10 +85,5 @@ inline void DrawMethods::DrawPixels(const int32_t x,
   m_drawPixelFunc(x, y, newColors);
 }
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif
 

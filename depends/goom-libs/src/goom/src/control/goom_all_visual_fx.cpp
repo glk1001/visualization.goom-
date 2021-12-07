@@ -16,15 +16,8 @@
 #include <cassert>
 #include <memory>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using COLOR::GetBrighterColorInt;
 using COLOR::GetLuma;
@@ -288,9 +281,4 @@ auto GoomAllVisualFx::GetZoomFilterFxNameValueParams() const -> NameValuePairs
   return m_zoomFilter_fx->GetNameValueParams();
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

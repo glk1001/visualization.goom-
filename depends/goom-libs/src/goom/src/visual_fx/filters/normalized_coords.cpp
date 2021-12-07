@@ -5,21 +5,9 @@
 #include <cassert>
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
-// clang linking trouble with C++14 - should be able to use static constexpr
-const float NormalizedCoords::MAX_NORMALIZED_COORD = 2.0;
-const float NormalizedCoords::MIN_NORMALIZED_COORD = -MAX_NORMALIZED_COORD;
 float NormalizedCoords::s_ratioScreenToNormalizedCoord = 1.0F;
 float NormalizedCoords::s_ratioNormalizedToScreenCoord = 1.0F;
 float NormalizedCoords::s_minNormalizedCoordVal = 0.0F;
@@ -38,10 +26,4 @@ void NormalizedCoords::SetScreenDimensions(const uint32_t width,
   s_minNormalizedCoordVal = minScreenCoordVal * s_ratioScreenToNormalizedCoord;
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

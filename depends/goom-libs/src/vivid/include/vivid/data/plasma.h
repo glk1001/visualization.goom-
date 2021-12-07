@@ -3,12 +3,7 @@
 #include "vivid/types.h" 
 #include <vector> 
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace data {
-#else
-namespace vivid::data {
-#endif
+namespace vivid::data { 
 
 
 static const std::vector<srgb_t> plasma = 
@@ -269,12 +264,7 @@ static const std::vector<srgb_t> plasma =
     { 0.944152f, 0.961916f, 0.146861f },
     { 0.941896f, 0.96859f, 0.140956f },
     { 0.940015f, 0.975158f, 0.131326f }
-};
+}; 
 
 
-#if __cplusplus <= 201402L
-} // namespace data
-} // namespace vivid
-#else
-}   //  ::vivid::data
-#endif
+}  //  ::vivid::data

@@ -3,12 +3,7 @@
 #include <glm/glm.hpp>
 #include <cmath>
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace lab {
-#else
 namespace vivid::lab {
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,9 +44,5 @@ lab_t fromLch( const lch_t& lch )
     return lab;
 }
 
-#if __cplusplus <= 201402L
-} // namespace lab
-} // namespace vivid
-#else
-}   //  ::vivid::lab
-#endif
+
+} // namespace vivid::lab

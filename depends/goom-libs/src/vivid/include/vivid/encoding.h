@@ -9,13 +9,8 @@
 #include <iomanip>
 
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace ansi {
-#else
 namespace vivid::ansi
 {
-#endif
     inline std::string fg( const uint8_t index ) {
         return "\x1b[38;5;" + std::to_string( index ) + "m";
     }
@@ -56,21 +51,11 @@ namespace vivid::ansi
     static const auto grey100 = ansi::fg( 241 );
     static const auto grey150 = ansi::fg( 246 );
     static const auto grey200 = ansi::fg( 251 );
-#if __cplusplus <= 201402L
-} // namespace ansi
-} // namespace vivid
-#else
-}   //  ::vivid::ansi
-#endif
+    } // namespace vivid::ansi
 
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace html {
-#else
 namespace vivid::html
 {
-#endif
     inline std::string fg( const std::string& hex ) {
         return "<span style='color:" + hex + "'>";
     }
@@ -108,10 +93,4 @@ namespace vivid::html
     }
 
     static const std::string close = "</span>";
-
-#if __cplusplus <= 201402L
-} // namespace html
-} // namespace vivid
-#else
-}   //  ::vivid::html
-#endif
+    } // namespace vivid::html

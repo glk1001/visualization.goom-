@@ -12,12 +12,7 @@
 #include "vivid/types.h" 
 #include <vector> 
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace data {
-#else
-namespace vivid::data {
-#endif
+namespace vivid::data { 
 
 
 static const std::vector<srgb_t> turbo = 
@@ -281,9 +276,4 @@ static const std::vector<srgb_t> turbo =
 };
 
 
-#if __cplusplus <= 201402L
-} // namespace data
-} // namespace vivid
-#else
-}   //  ::vivid::data
-#endif
+}  //  ::vivid::data

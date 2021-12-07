@@ -14,29 +14,13 @@
 #include <set>
 #include <stdexcept>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-#else
 namespace GOOM::COLOR
 {
-#endif
 
 using COLOR_DATA::ColorMapName;
 using UTILS::IGoomRand;
 using UTILS::NUM;
 using UTILS::Weights;
-
-#if __cplusplus <= 201402L
-const float RandomColorMaps::MIN_ROTATION_POINT = 0.1F;
-const float RandomColorMaps::MAX_ROTATION_POINT = 0.9F;
-const float RandomColorMaps::MIN_SATURATION = 0.1F;
-const float RandomColorMaps::MAX_SATURATION = 1.0F;
-const float RandomColorMaps::MIN_LIGHTNESS = 0.1F;
-const float RandomColorMaps::MAX_LIGHTNESS = 1.0F;
-#endif
 
 const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::EMPTY{};
 const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::ALL{
@@ -620,9 +604,4 @@ auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr
   // clang-format on
 }
 
-#if __cplusplus <= 201402L
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR
-#endif

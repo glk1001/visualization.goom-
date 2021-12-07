@@ -23,7 +23,7 @@
  * When shown ifs, Diana Rose (4 years old) said, "It looks like dancing."
  *
  * Revision History:
- * 01-Feb-2021: converted to C++14, lots of color changes (glk)
+ * 01-Feb-2021: converted to C++17, lots of color changes (glk)
  * 13-Dec-2003: Added some goom specific stuffs (to make ifs a VisualFX).
  * 11-Apr-2002: jeko@ios-software.com: Make ifs.c system-indendent. (ifs.h added)
  * 01-Nov-2000: Allocation checks
@@ -57,15 +57,8 @@
 #include <memory>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-#else
 namespace GOOM::VISUAL_FX
 {
-#endif
 
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
@@ -565,9 +558,4 @@ inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const -> uint32_t
   return blurWidth;
 }
 
-#if __cplusplus <= 201402L
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX
-#endif

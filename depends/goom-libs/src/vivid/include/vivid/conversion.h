@@ -3,9 +3,7 @@
 #include "vivid/types.h"
 
 #include <glm/mat3x3.hpp>
-#if __cplusplus > 201402L
 #include <optional>
-#endif
 #include <string>
 
 namespace vivid {
@@ -92,9 +90,7 @@ namespace index {
     uint8_t fromRgb8( const col8_t& );
     uint8_t fromHsl( const hsl_t& );
     uint8_t fromHex( const std::string& );
-#if __cplusplus > 201402L
     std::optional<uint8_t> fromName( const std::string& );
-#endif
 }
 
 

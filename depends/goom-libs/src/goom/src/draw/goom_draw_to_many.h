@@ -6,15 +6,8 @@
 #include <cstdint>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
 
 class GoomDrawToMany : public IGoomDraw
 {
@@ -35,9 +28,4 @@ private:
                          const std::vector<Pixel>& colors);
 };
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif

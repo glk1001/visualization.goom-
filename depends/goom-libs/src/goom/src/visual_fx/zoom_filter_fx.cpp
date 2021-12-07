@@ -12,7 +12,7 @@
  *  -optimisation de la procedure de generation du buffer de transformation
  *     la vitesse est maintenant comprise dans [0..128] au lieu de [0..100]
  *
- *  - converted to C++14 2021-02-01 (glk)
+ *  - converted to C++17 2021-02-01 (glk)
  */
 
 #include "zoom_filter_fx.h"
@@ -34,15 +34,8 @@
 #include <cstdint>
 #include <memory>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-#else
 namespace GOOM::VISUAL_FX
 {
-#endif
 
 using UTILS::GetPair;
 using UTILS::Logging;
@@ -265,13 +258,7 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffe
   const auto setDestPixelRow = [&](const size_t destY)
   {
     uint32_t destPos = m_screenWidth * static_cast<uint32_t>(destY);
-#if __cplusplus <= 201402L
-    const auto destRowIter = destBuff.GetRowIter(destY);
-    const auto destRowBegin = std::get<0>(destRowIter);
-    const auto destRowEnd = std::get<1>(destRowIter);
-#else
     const auto [destRowBegin, destRowEnd] = destBuff.GetRowIter(destY);
-#endif
     FilterBufferRowColorInfo& filterBufferRowColorInfo = m_filterBufferColorInfo[destY];
     filterBufferRowColorInfo.Reset();
 
@@ -289,9 +276,4 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffe
   m_parallel.ForLoop(m_screenHeight, setDestPixelRow);
 }
 
-#if __cplusplus <= 201402L
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX
-#endif

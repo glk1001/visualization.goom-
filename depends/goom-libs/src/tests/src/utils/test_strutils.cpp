@@ -54,7 +54,6 @@ TEST_CASE("StringSplit", "[StringSplit]")
 
 TEST_CASE("EnumToString", "[EnumToString]")
 {
-#if __cplusplus > 201402L
   enum class EnumTester
   {
     _NULL = -1,
@@ -74,5 +73,4 @@ TEST_CASE("EnumToString", "[EnumToString]")
   REQUIRE(EnumToString(test) == "_NUM");
 
   REQUIRE(EnumToString(EnumTester::TEST3) == "TEST3");
-#endif
 }

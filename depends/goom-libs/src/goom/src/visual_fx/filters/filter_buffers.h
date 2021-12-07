@@ -324,12 +324,12 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(cons
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetClampedXVal(const int32_t x) const -> int32_t
 {
-  return stdnew::clamp(x, 0, m_maxTranPointMinus1.x);
+  return std::clamp(x, 0, m_maxTranPointMinus1.x);
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetClampedYVal(const int32_t y) const -> int32_t
 {
-  return stdnew::clamp(y, 0, m_maxTranPointMinus1.y);
+  return std::clamp(y, 0, m_maxTranPointMinus1.y);
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_t srceBuffVal,

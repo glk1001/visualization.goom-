@@ -3,12 +3,7 @@
 #include "vivid/types.h" 
 #include <vector> 
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace data {
-#else
-namespace vivid::data {
-#endif
+namespace vivid::data { 
 
 
 static const std::vector<srgb_t> inferno = 
@@ -269,12 +264,7 @@ static const std::vector<srgb_t> inferno =
     { 0.976511f, 0.989753f, 0.61676f },
     { 0.982257f, 0.994109f, 0.631017f },
     { 0.988362f, 0.998364f, 0.644924f }
-};
+}; 
 
 
-#if __cplusplus <= 201402L
-} // namespace data
-} // namespace vivid
-#else
-}   //  ::vivid::data
-#endif
+}  //  ::vivid::data

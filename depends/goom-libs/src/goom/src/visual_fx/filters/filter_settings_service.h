@@ -16,7 +16,6 @@
 
 namespace GOOM
 {
-
 class Pixel;
 class PluginInfo;
 
@@ -26,9 +25,7 @@ class IGoomRand;
 class Parallel;
 } // namespace UTILS
 
-namespace VISUAL_FX
-{
-namespace FILTERS
+namespace VISUAL_FX::FILTERS
 {
 
 class FilterSettingsService
@@ -277,7 +274,5 @@ inline void FilterSettingsService::SetTranLerpToMaxDefaultSwitchMult()
   SetTranLerpToMaxSwitchMult(DEFAULT_SWITCH_MULT);
 }
 
-} // namespace FILTERS
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::FILTERS
 } // namespace GOOM
-

@@ -7,15 +7,8 @@
 #include <stdexcept>
 #include <string>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 std::unique_ptr<Logging> Logging::logger(new Logging());
 
@@ -46,14 +39,8 @@ void Logging::Log(LogLevel lvl, int line_num, const std::string& func_name, cons
   }
   if (lvl >= m_cutoffHandlersLogLevel)
   {
-#if __cplusplus <= 201402L
-    for (const auto& handlerInfo : m_handlers)
-    {
-      const auto& handler = std::get<1>(handlerInfo);
-#else
     for (const auto& [name, handler] : m_handlers)
     {
-#endif
       handler(lvl, logMsg);
     }
   }
@@ -85,14 +72,8 @@ void Logging::SetHandlersLogLevel(LogLevel lvl)
 
 void Logging::AddHandler(const std::string& name, const HandlerFunc& f)
 {
-#if __cplusplus <= 201402L
-  for (const auto& handlerInfo : m_handlers)
-  {
-    const auto& hname = std::get<0>(handlerInfo);
-#else
   for (const auto& [hname, handlr] : m_handlers)
   {
-#endif
     if (hname == name)
     {
       return;
@@ -131,9 +112,4 @@ void Logging::DoFlush()
   m_logEntries.clear();
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

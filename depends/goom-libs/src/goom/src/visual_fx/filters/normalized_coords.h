@@ -5,24 +5,14 @@
 
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 class NormalizedCoords
 {
 public:
-  // clang compiler doesn't like 'static constexpr' for C++14
-  /*static constexpr*/ static const float MAX_NORMALIZED_COORD;
-  /*static constexpr*/ static const float MIN_NORMALIZED_COORD;
+  static constexpr float MAX_NORMALIZED_COORD = 2.0F;
+  static constexpr float MIN_NORMALIZED_COORD = -MAX_NORMALIZED_COORD;
 
   static void SetScreenDimensions(uint32_t width, uint32_t height, float minScreenCoordVal);
   [[nodiscard]] static auto GetMinNormalizedCoordVal() -> float;
@@ -196,10 +186,4 @@ inline auto GetSqDistance(const NormalizedCoords& point1, const NormalizedCoords
   return UTILS::SqDistance(point1.GetX() - point2.GetX(), point1.GetY() - point2.GetY());
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

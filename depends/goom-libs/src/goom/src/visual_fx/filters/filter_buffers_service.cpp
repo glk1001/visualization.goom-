@@ -17,17 +17,8 @@
 #include <cstdint>
 #include <string>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 using FILTERS::IZoomVector;
 using FILTERS::NormalizedCoords;
@@ -121,8 +112,8 @@ inline void FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpInc
 
   if (tranLerpIncrement != 0)
   {
-    tranLerpFactor = stdnew::clamp(tranLerpFactor + tranLerpIncrement, 0,
-                                   ZoomFilterBuffers::GetMaxTranLerpFactor());
+    tranLerpFactor = std::clamp(tranLerpFactor + tranLerpIncrement, 0,
+                                ZoomFilterBuffers::GetMaxTranLerpFactor());
   }
 
   if (!floats_equal(tranLerpToMaxSwitchMult, 1.0F))
@@ -135,10 +126,4 @@ inline void FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpInc
   m_filterBuffers.SetTranLerpFactor(tranLerpFactor);
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

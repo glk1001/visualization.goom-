@@ -7,21 +7,11 @@
 #include <format>
 #include <map>
 #include <stdexcept>
-#if __cplusplus <= 201402L
-#include <tuple>
-#endif
 #include <type_traits>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 class IGoomRand
 {
@@ -151,15 +141,8 @@ template<class E>
 inline auto Weights<E>::GetWeights(const EventWeightPairs& eventWeightPairs) -> WeightArray
 {
   WeightArray weightArray{0};
-#if __cplusplus <= 201402L
-  for (const auto& wgt : eventWeightPairs)
-  {
-    const auto& e = wgt.first;
-    const auto& w = wgt.second;
-#else
   for (const auto& [e, w] : eventWeightPairs)
   {
-#endif
     weightArray.at(static_cast<size_t>(e)) = w;
   }
 
@@ -170,14 +153,8 @@ template<class E>
 inline auto Weights<E>::GetSumOfWeights(const EventWeightPairs& eventWeightPairs) -> float
 {
   float sumOfWeights = 0.0F;
-#if __cplusplus <= 201402L
-  for (const auto& wgt : eventWeightPairs)
-  {
-    const auto& w = wgt.second;
-#else
   for (const auto& [e, w] : eventWeightPairs)
   {
-#endif
     sumOfWeights += w;
   }
   return sumOfWeights - SMALL_FLOAT;
@@ -330,9 +307,4 @@ auto ConditionalWeights<E>::GetConditionalWeightMap(
   return conditionalWeights;
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

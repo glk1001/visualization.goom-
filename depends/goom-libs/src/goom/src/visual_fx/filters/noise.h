@@ -59,10 +59,4 @@ inline void Noise::SetParams(const Params& params)
   m_params = params;
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

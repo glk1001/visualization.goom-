@@ -80,13 +80,11 @@ Color::Color( const std::string& hexOrName )
         return;
     }
 
-#if __cplusplus > 201402L
     if ( const auto maybeValue = index::fromName( hexOrName ) ) {
         srgb_ = srgb::fromIndex( maybeValue.value_or( 0 ) );
         space_ = Space::Rgb;
         return;
     }
-#endif
 
     //  if parsing of hex and name fails, space stays undefined
 }

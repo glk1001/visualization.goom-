@@ -2,15 +2,8 @@
 
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 /* note pour ceux qui n'ont pas suivis : le GoomLock permet d'empecher un */
 /* changement d'etat du plugin juste apres un autre changement d'etat. oki */
@@ -62,10 +55,5 @@ inline void GoomLock::IncreaseLockTime(const uint32_t byAmount)
   m_lockTime += static_cast<int32_t>(byAmount);
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif
 

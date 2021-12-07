@@ -5,15 +5,8 @@
 #include <cstdint>
 #include <memory>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 auto GoomImageBuffers::GetBuffs(const uint32_t width, const uint32_t height)
     -> std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS>
@@ -36,9 +29,4 @@ void GoomImageBuffers::RotateBuffers()
   std::swap(m_p1, m_p2);
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

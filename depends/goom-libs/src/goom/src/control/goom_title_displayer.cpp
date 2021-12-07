@@ -17,15 +17,8 @@
 #include <memory>
 #include <string>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using COLOR::ColorMapGroup;
 using COLOR::GetBrighterColor;
@@ -270,9 +263,4 @@ inline auto GoomTitleDisplayer::GetTextGammaCorrection(const float brightness,
   return m_textGammaCorrect.GetCorrection(brightness, color);
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

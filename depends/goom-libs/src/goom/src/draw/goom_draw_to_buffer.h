@@ -6,15 +6,8 @@
 #include <cstdint>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
 
 class GoomDrawToBuffer : public IGoomDraw
 {
@@ -41,9 +34,4 @@ inline void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
   m_multipleBuffers = buffs;
 }
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif

@@ -7,17 +7,8 @@
 #include <cstdint>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace IFS
-{
-#else
 namespace GOOM::VISUAL_FX::IFS
 {
-#endif
 
 class FractalHits
 {
@@ -50,10 +41,4 @@ inline auto FractalHits::GetMaxHitCount() const -> uint32_t
   return m_maxHitCount;
 }
 
-#if __cplusplus <= 201402L
-} // namespace IFS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::IFS
-#endif

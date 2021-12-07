@@ -3,12 +3,7 @@
 #include "vivid/profiles.h"
 #include "vivid/data.h"
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace srgb {
-#else
 namespace vivid::srgb {
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,12 +43,11 @@ srgb_t fromIndex( const uint8_t index ) {
     );
 }
 
-#if __cplusplus > 201402L
+
 ////////////////////////////////////////////////////////////////////////////////
 srgb_t fromName( const std::string& name ) {
     return srgb::fromIndex( index::fromName( name ).value_or( 0 ) );
 }
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,9 +56,4 @@ srgb_t fromOklab( const oklab_t& oklab ) {
 }
 
 
-#if __cplusplus <= 201402L
-} // namespace srgb
-} // namespace vivid
-#else
 }   //  ::vivid::srgb
-#endif

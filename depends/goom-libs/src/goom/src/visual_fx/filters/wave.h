@@ -6,17 +6,8 @@
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 class Wave : public ISpeedCoefficientsEffect
 {
@@ -119,10 +110,4 @@ inline void Wave::SetParams(const Params& params)
   m_params = params;
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

@@ -6,15 +6,8 @@
 
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using DRAW::TextDraw;
 using DRAW::IGoomDraw;
@@ -69,10 +62,4 @@ void GoomMessageDisplayer::UpdateMessages(const std::string& messages)
   }
 }
 
-
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

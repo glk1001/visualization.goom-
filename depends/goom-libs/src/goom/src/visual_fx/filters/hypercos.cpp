@@ -7,17 +7,8 @@
 #undef NDEBUG
 #include <cassert>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
@@ -226,8 +217,8 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords,
       throw std::logic_error("Unknown Hypercos effect value");
   }
 
-  //  xVal = stdnew::clamp(std::tan(hypercosFreqY * xVal), -1.0, 1.0);
-  //  yVal = stdnew::clamp(std::tan(hypercosFreqX * yVal), -1.0, 1.0);
+  //  xVal = std::clamp(std::tan(hypercosFreqY * xVal), -1.0, 1.0);
+  //  yVal = std::clamp(std::tan(hypercosFreqX * yVal), -1.0, 1.0);
 
   return {m_params.xAmplitude * xVal, m_params.yAmplitude * yVal};
 }
@@ -252,10 +243,4 @@ auto Hypercos::GetNameValueParams(const std::string& paramGroup) const -> NameVa
   };
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

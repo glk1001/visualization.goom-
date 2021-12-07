@@ -18,15 +18,8 @@
 #include <vector>
 #include <vivid/vivid.h>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-#else
 namespace GOOM::COLOR
 {
-#endif
 
 using COLOR_DATA::ColorMapName;
 using UTILS::NUM;
@@ -39,21 +32,10 @@ public:
   [[nodiscard]] auto GetColor(float t) const -> Pixel override;
 
 private:
-#if __cplusplus <= 201402L
-  static const float MIN_ROTATE_POINT;
-  static const float MAX_ROTATE_POINT;
-#else
   static constexpr float MIN_ROTATE_POINT = 0.0F;
   static constexpr float MAX_ROTATE_POINT = 1.0F;
-#endif
   const float m_tRotatePoint;
 };
-
-#if __cplusplus <= 201402L
-const float RotatedColorMap::MIN_ROTATE_POINT = 0.0F;
-const float RotatedColorMap::MAX_ROTATE_POINT = 1.0F;
-#else
-#endif
 
 RotatedColorMap::RotatedColorMap(const std::shared_ptr<const IColorMap>& cm,
                                  const float tRotatePoint)
@@ -89,21 +71,11 @@ public:
   [[nodiscard]] auto GetColor(float t) const -> Pixel override;
 
 private:
-#if __cplusplus <= 201402L
-  static const float MIN_LIGHTNESS;
-  static const float MAX_LIGHTNESS;
-#else
   static constexpr float MIN_LIGHTNESS = 0.1F;
   static constexpr float MAX_LIGHTNESS = 1.0F;
-#endif
   const float m_saturation;
   const float m_lightness;
 };
-
-#if __cplusplus <= 201402L
-const float TintedColorMap::MIN_LIGHTNESS = 0.1F;
-const float TintedColorMap::MAX_LIGHTNESS = 1.0F;
-#endif
 
 TintedColorMap::TintedColorMap(const std::shared_ptr<const IColorMap>& cm,
                                const float saturation,
@@ -451,9 +423,4 @@ inline auto PrebuiltColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, 
    **/
 }
 
-#if __cplusplus <= 201402L
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR
-#endif

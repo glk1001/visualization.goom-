@@ -10,15 +10,8 @@
 
 #include <memory>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-#else
 namespace GOOM::VISUAL_FX
 {
-#endif
 
 using SHADERS::HighContrast;
 using UTILS::Logging;
@@ -104,9 +97,4 @@ inline auto ShaderFx::ShaderFxImpl::GetLastShaderEffects() const -> const GoomSh
   return m_goomShaderEffects;
 }
 
-#if __cplusplus <= 201402L
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX
-#endif

@@ -18,15 +18,8 @@
 #endif
 #include <locale>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
 
 using COLOR::GetColorBlend;
 using UTILS::Logging;
@@ -192,10 +185,9 @@ private:
   FontColorFunc m_getFontColor{};
   FontColorFunc m_getOutlineFontColor{};
 
-  // clang compiler doesn't like 'static constexpr'
-  /*static constexpr*/ static auto ToStdPixelCoord(int32_t freeTypeCoord) -> int;
-  /*static constexpr*/ static auto ToFreeTypeCoord(int32_t stdPixelCoord) -> int;
-  /*static constexpr*/ static auto ToFreeTypeCoord(float stdPixelCoord) -> int;
+  static constexpr auto ToStdPixelCoord(int32_t freeTypeCoord) -> int;
+  static constexpr auto ToFreeTypeCoord(int32_t stdPixelCoord) -> int;
+  static constexpr auto ToFreeTypeCoord(float stdPixelCoord) -> int;
   struct Vec2;
   struct Span;
   using SpanArray = std::vector<Span>;
@@ -640,21 +632,17 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
   }
 }
 
-// clang compiler doesn't like 'static constexpr'
-/*constexpr*/ inline auto TextDraw::TextDrawImpl::ToStdPixelCoord(const int32_t freeTypeCoord)
-    -> int32_t
+constexpr auto TextDraw::TextDrawImpl::ToStdPixelCoord(const int32_t freeTypeCoord) -> int32_t
 {
   return freeTypeCoord >> 6;
 }
 
-/*constexpr*/ inline auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const int32_t stdPixelCoord)
-    -> int32_t
+constexpr auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const int32_t stdPixelCoord) -> int32_t
 {
   return stdPixelCoord << 6;
 }
 
-/*constexpr*/ inline auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const float stdPixelCoord)
-    -> int32_t
+constexpr auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const float stdPixelCoord) -> int32_t
 {
   return static_cast<int>(std::lround(stdPixelCoord * 64.0F));
 }
@@ -798,9 +786,4 @@ auto TextDraw::TextDrawImpl::GetBoundingRect(const SpanArray& stdSpans,
 }
 #endif
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif

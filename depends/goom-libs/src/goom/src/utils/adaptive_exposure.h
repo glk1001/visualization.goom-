@@ -2,15 +2,8 @@
 
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 class AdaptiveExposure
 {
@@ -37,9 +30,4 @@ inline auto AdaptiveExposure::GetCurrentExposure() const -> float
   return m_currentExposure;
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

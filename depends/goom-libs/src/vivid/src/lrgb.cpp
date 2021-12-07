@@ -1,12 +1,8 @@
 #include "vivid/conversion.h"
 #include "vivid/utility.h"
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace lrgb {
-#else
 namespace vivid::lrgb {
-#endif
+
 
 ////////////////////////////////////////////////////////////////////////////////
 lrgb_t fromSrgb( const srgb_t& srgb )
@@ -36,9 +32,6 @@ lrgb_t fromOklab( const oklab_t& oklab )
 		-0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s,
     };
 }
-#if __cplusplus <= 201402L
-} // namespace lrgb
-} // namespace vivid
-#else
+
+
 }   //  ::vivid::lrgb
-#endif

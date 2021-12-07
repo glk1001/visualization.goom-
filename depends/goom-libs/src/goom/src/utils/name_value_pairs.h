@@ -8,15 +8,8 @@
 #include <tuple>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 using NameValuePair = std::pair<std::string, std::string>;
 using NameValuePairs = std::vector<NameValuePair>;
@@ -103,9 +96,4 @@ inline auto to_string(const Pixel& value) -> std::string
   return value.ToString();
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

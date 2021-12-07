@@ -55,55 +55,6 @@ inline auto lerp(const int32_t a, const int32_t b, const float t) noexcept -> in
   return static_cast<int32_t>(
       std::round(stdnew::lerp(static_cast<float>(a), static_cast<float>(b), t)));
 }
-
-constexpr auto clamp(const int x, const int lo, const int hi) -> int
-{
-  if (x < lo)
-  {
-    return lo;
-  }
-  if (x > hi)
-  {
-    return hi;
-  }
-  return x;
-}
-constexpr auto clamp(const uint32_t x, const uint32_t lo, const uint32_t hi) -> uint32_t
-{
-  if (x < lo)
-  {
-    return lo;
-  }
-  if (x > hi)
-  {
-    return hi;
-  }
-  return x;
-}
-constexpr auto clamp(const uint64_t x, const size_t lo, const uint64_t hi) -> uint64_t
-{
-  if (x < lo)
-  {
-    return lo;
-  }
-  if (x > hi)
-  {
-    return hi;
-  }
-  return x;
-}
-constexpr auto clamp(const float x, const float lo, const float hi) -> float
-{
-  if (x < lo)
-  {
-    return lo;
-  }
-  if (x > hi)
-  {
-    return hi;
-  }
-  return x;
-}
 #else
 constexpr float lerp(float __a, float __b, float __t) noexcept
 {
@@ -113,24 +64,12 @@ constexpr double lerp(double __a, double __b, double __t) noexcept
 {
   return std::lerp(__a, __b, __t);
 }
-
-constexpr auto clamp(const float x, const float lo, const float hi) -> float
-{
-  return std::clamp(x, lo, hi);
-}
 #endif
 } // namespace stdnew
 
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 #if __cplusplus <= 201703L
 constexpr float m_pi = 3.14159265358979323846264F;
@@ -386,9 +325,4 @@ inline auto RangeMapper::operator()(const double r0, const double r1, const doub
   return stdnew::lerp(r0, r1, (x - m_xmin) / m_xwidth);
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

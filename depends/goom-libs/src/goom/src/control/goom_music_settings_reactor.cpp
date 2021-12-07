@@ -2,15 +2,8 @@
 
 #include "utils/name_value_pairs.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using UTILS::GetPair;
 using UTILS::IGoomRand;
@@ -133,9 +126,4 @@ auto GoomMusicSettingsReactor::GetNameValueParams() const -> NameValuePairs
   };
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

@@ -1,12 +1,7 @@
 #include "vivid/conversion.h"
 #include "vivid/data/xterm.h"
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace name {
-#else
 namespace vivid::name {
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,9 +16,4 @@ const std::string& fromIndex( const uint8_t index ) {
 }
 
 
-#if __cplusplus <= 201402L
-} // namespace name
-} // namespace vivid
-#else
 }   //  ::vivid::name
-#endif

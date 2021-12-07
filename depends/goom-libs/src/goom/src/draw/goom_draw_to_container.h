@@ -8,15 +8,8 @@
 #include <map>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
 
 class GoomDrawToContainer : public IGoomDraw
 {
@@ -108,9 +101,4 @@ inline auto GoomDrawToContainer::GetChangedCoordsList() const -> const std::vect
   return m_orderedXYPixelList;
 }
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif

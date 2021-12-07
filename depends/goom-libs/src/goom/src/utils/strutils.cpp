@@ -6,15 +6,8 @@
 #include <string>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 auto bool_to_string(const bool value) -> std::string
 {
@@ -71,9 +64,4 @@ auto StringSplit(const std::string& str, const std::string& delim) -> std::vecto
 #endif
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

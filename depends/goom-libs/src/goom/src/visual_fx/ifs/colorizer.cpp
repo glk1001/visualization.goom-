@@ -5,17 +5,8 @@
 
 #include <cmath>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace IFS
-{
-#else
 namespace GOOM::VISUAL_FX::IFS
 {
-#endif
 
 using COLOR::GetBrighterColor;
 using COLOR::GetSlightlyDivergingStandardMaps;
@@ -211,10 +202,4 @@ inline auto Colorizer::GetGammaCorrection(const float brightness, const Pixel& c
   return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
-#if __cplusplus <= 201402L
-} // namespace IFS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::IFS
-#endif

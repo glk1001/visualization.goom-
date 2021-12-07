@@ -6,17 +6,8 @@
 #include <cassert>
 #include <string>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 using UTILS::GetFullParamGroup;
 using UTILS::IGoomRand;
@@ -59,10 +50,4 @@ auto ImageVelocity::GetNameValueParams(const std::string& paramGroup) const -> N
       GetFullParamGroup({paramGroup, "ImageVelocity"}));
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

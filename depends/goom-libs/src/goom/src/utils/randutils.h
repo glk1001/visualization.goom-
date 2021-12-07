@@ -13,17 +13,8 @@
 #include <vector>
 
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-namespace RAND
-{
-#else
 namespace GOOM::UTILS::RAND
 {
-#endif
 
 [[nodiscard]] auto GetRandSeed() -> uint64_t;
 void SetRandSeed(uint64_t seed);
@@ -118,10 +109,4 @@ inline auto ProbabilityOf(const float p) -> bool
   return GetRandInRange(0.0F, 1.0F) <= p;
 }
 
-#if __cplusplus <= 201402L
-} // namespace RAND
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS::RAND
-#endif

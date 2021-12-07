@@ -18,4 +18,4 @@ Rémi Duraffort <ivoire@videolan.org>
 ---
 GOOM++
     GLK (2021-02-01)
-        C++14 rewrite and more colors from 'vivid'
+        C++17 rewrite and more colors from 'vivid'

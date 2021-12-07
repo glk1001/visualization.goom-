@@ -2,15 +2,8 @@
 
 #include "utils/enumutils.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using UTILS::ToUType;
 
@@ -422,9 +415,4 @@ auto GoomStateInfo::GetStateInfoArray() -> StateInfoArray
   return statesArray;
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

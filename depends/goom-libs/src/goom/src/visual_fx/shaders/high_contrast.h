@@ -5,17 +5,8 @@
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace SHADERS
-{
-#else
 namespace GOOM::VISUAL_FX::SHADERS
 {
-#endif
 
 class HighContrast
 {
@@ -71,10 +62,4 @@ inline auto HighContrast::GetCurrentContrastMinChannelValue() const -> float
   return m_currentContrastMinChannelValue;
 }
 
-#if __cplusplus <= 201402L
-} // namespace SHADERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::SHADERS
-#endif

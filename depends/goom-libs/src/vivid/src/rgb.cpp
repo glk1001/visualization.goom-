@@ -5,15 +5,12 @@
 #include <glm/glm.hpp>
 #include <glm/common.hpp>           //  clamp
 #include <glm/gtc/constants.hpp>    //  pi
+#include <glm/gtx/string_cast.hpp>
 
 #include <cmath>
+#include <iostream>
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace rgb {
-#else
 namespace vivid::rgb {
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,9 +97,4 @@ rgb_t fromHex( const std::string& hexStr ) {
 }
 
 
-#if __cplusplus <= 201402L
-} // namespace rgb
-} // namespace vivid
-#else
 }   //  ::vivid::rgb
-#endif

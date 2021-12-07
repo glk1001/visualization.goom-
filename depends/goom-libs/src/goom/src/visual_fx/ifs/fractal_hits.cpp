@@ -2,17 +2,8 @@
 
 #include "color/colorutils.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace IFS
-{
-#else
 namespace GOOM::VISUAL_FX::IFS
 {
-#endif
 
 using COLOR::GetColorAverage;
 
@@ -86,10 +77,4 @@ auto FractalHits::GetBuffer() -> const std::vector<IfsPoint>&
   return m_buffer;
 }
 
-#if __cplusplus <= 201402L
-} // namespace IFS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::IFS
-#endif

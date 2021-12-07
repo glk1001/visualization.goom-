@@ -126,11 +126,7 @@ private:
 
   [[nodiscard]] auto GaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
   [[nodiscard]] auto HalfGaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
-#if __cplusplus <= 201402L
-  [[nodiscard]] static auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
-#else
   [[nodiscard]] static constexpr auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
-#endif
 };
 
 inline auto Similitudes::GetNumSimis() const -> size_t

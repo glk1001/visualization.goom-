@@ -65,7 +65,6 @@ struct ZoomFilterBufferSettings
 struct ZoomFilterColorSettings
 {
   bool blockyWavy;
-  Pixel clippedColor;
 };
 
 class ISpeedCoefficientsEffect;
@@ -97,7 +96,7 @@ struct ZoomFilterSettings
 
 inline void Vitesse::SetVitesse(const int32_t val)
 {
-  m_vitesse = stdnew::clamp(val, FASTEST_SPEED, STOP_SPEED);
+  m_vitesse = std::clamp(val, FASTEST_SPEED, STOP_SPEED);
 }
 
 inline void Vitesse::SetDefault()

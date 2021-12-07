@@ -27,15 +27,8 @@
 #include <utility>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-#else
 namespace GOOM::VISUAL_FX
 {
-#endif
 
 using COLOR::GammaCorrection;
 using COLOR::GetBrighterColor;
@@ -388,7 +381,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetImageBitmap(const size_t size) co
     -> const ImageBitmap&
 {
   return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
-                                       stdnew::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
+                                       std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
 inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
@@ -1029,8 +1022,7 @@ void FlyingStarsFx::FlyingStarsImpl::AddABomb(const V2dInt& pos,
     return;
   }
 
-  m_stars.emplace_back();
-  Star& star = m_stars[m_stars.size() - 1];
+  Star& star = m_stars.emplace_back();
 
   star.pos = pos.ToFlt();
 
@@ -1100,9 +1092,4 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetRainBombAngle(const Star& star) c
   return m_goomRand.GetRandInRange(minAngle, maxAngle);
 }
 
-#if __cplusplus <= 201402L
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX
-#endif

@@ -4,17 +4,8 @@
 
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-namespace COLOR_DATA
-{
-#else
 namespace GOOM::COLOR::COLOR_DATA
 {
-#endif
 
 // clang-format off
 const std::vector<ColorMapName> WES_ANDERSON_MAPS {
@@ -407,10 +398,4 @@ const std::vector<ColorMapName> PASTEL_MAPS
 };
 // clang-format on
 
-#if __cplusplus <= 201402L
-} // namespace COLOR_DATA
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR::COLOR_DATA
-#endif

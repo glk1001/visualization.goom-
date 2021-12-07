@@ -8,18 +8,8 @@
 #include <cstdint>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
-
-using COLOR::GetBrighterColorInt;
-using COLOR::GetColorAdd;
 
 GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t screenHeight)
   : IGoomDraw{screenWidth, screenHeight,
@@ -58,9 +48,4 @@ void GoomDrawToBuffer::DrawPixels(const std::vector<PixelBuffer*>& buffs,
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif

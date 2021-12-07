@@ -9,15 +9,8 @@
 #include <memory>
 #include <string>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 class SmallImageBitmaps
 {
@@ -49,9 +42,4 @@ private:
   auto GetImageFilename(ImageNames name, size_t sizeOfImageSquare) const -> std::string;
 };
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

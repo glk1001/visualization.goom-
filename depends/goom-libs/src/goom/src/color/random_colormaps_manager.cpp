@@ -7,15 +7,8 @@
 #include <stdexcept>
 
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-#else
 namespace GOOM::COLOR
 {
-#endif
 
 void RandomColorMapsManager::IncCounter()
 {
@@ -162,9 +155,4 @@ inline void RandomColorMapsManager::DoChangeColorMap(const size_t id)
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR
-#endif

@@ -10,17 +10,8 @@
 #include <cstdint>
 #include <memory>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
@@ -78,14 +69,8 @@ inline auto ImageDisplacement::NormalizedToImagePoint(const V2dFlt& normalizedPo
   {
     return {x, y};
   }
-  return {stdnew::clamp(m_goomRand.GetRandInRange(x - FUZZ, x + FUZZ), 0, m_xMax),
-          stdnew::clamp(m_goomRand.GetRandInRange(y - FUZZ, y + FUZZ), 0, m_yMax)};
+  return {std::clamp(m_goomRand.GetRandInRange(x - FUZZ, x + FUZZ), 0, m_xMax),
+          std::clamp(m_goomRand.GetRandInRange(y - FUZZ, y + FUZZ), 0, m_yMax)};
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

@@ -4,15 +4,9 @@
 #include <glm/common.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/constants.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/component_wise.hpp>
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace hsl {
-#else
 namespace vivid::hsl {
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,9 +54,4 @@ hsl_t fromIndex( const uint8_t index ) {
 }
 
 
-#if __cplusplus <= 201402L
-} // namespace hsl
-} // namespace vivid
-#else
 }   //  ::vivid::hsl
-#endif

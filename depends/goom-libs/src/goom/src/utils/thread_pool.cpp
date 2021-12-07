@@ -5,15 +5,8 @@
 #include <thread>
 #include <utility>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 ThreadPool::ThreadPool(const size_t numWorkers) noexcept : m_numWorkers(numWorkers)
 {
@@ -119,9 +112,4 @@ void ThreadPool::ThreadLoop()
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

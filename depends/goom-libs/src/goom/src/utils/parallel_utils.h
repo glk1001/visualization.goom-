@@ -8,15 +8,8 @@
 #include <thread>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 class Parallel
 {
@@ -109,9 +102,4 @@ void Parallel::ForLoop(const size_t numIters, const Callable loopFunc)
   m_forLoopInUse = false;
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

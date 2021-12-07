@@ -223,7 +223,7 @@ void SoundInfo::UpdateGoomLimit()
     m_goomLimit -= GOOM_LIMIT_TOO_BIG_DECREMENT;
   }
 
-  m_goomLimit = stdnew::clamp(m_goomLimit, GOOM_LIMIT_MIN, GOOM_LIMIT_MAX);
+  m_goomLimit = std::clamp(m_goomLimit, GOOM_LIMIT_MIN, GOOM_LIMIT_MAX);
 }
 
 } // namespace GOOM

@@ -6,15 +6,8 @@
 #include <memory>
 #include <set>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-#else
 namespace GOOM::COLOR
 {
-#endif
 
 class RandomColorMapsManager
 {
@@ -59,9 +52,4 @@ private:
   void DoChangeColorMap(size_t id);
 };
 
-#if __cplusplus <= 201402L
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR
-#endif

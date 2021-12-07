@@ -30,15 +30,8 @@
 #include <utility>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-#else
 namespace GOOM::VISUAL_FX
 {
-#endif
 
 using COLOR::GammaCorrection;
 using COLOR::GetAllSlimMaps;
@@ -522,9 +515,4 @@ void ChunkedImage::SetImageChunkPixels(const ImageBitmap& imageBitmap,
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX
-#endif

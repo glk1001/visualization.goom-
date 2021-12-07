@@ -2,15 +2,8 @@
 
 #include "utils/goom_rand_base.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using UTILS::IGoomRand;
 using VISUAL_FX::LinesFx;
@@ -60,9 +53,4 @@ auto GoomEvents::Happens(const GoomEvent event) const -> bool
   return m_goomRand.ProbabilityOfMInN(weightedEvent.m, weightedEvent.outOf);
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

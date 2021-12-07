@@ -5,15 +5,8 @@
 #undef NDEBUG
 #include <cassert>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using UTILS::IGoomRand;
 using UTILS::NUM;
@@ -73,9 +66,4 @@ void GoomRandomStateHandler::ChangeToNextState()
   m_currentState = m_weightedStates.GetRandomWeighted();
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

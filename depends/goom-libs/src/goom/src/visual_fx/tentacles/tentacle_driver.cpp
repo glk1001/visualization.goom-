@@ -17,17 +17,8 @@
 #include <utility>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace TENTACLES
-{
-#else
 namespace GOOM::VISUAL_FX::TENTACLES
 {
-#endif
 
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
@@ -297,10 +288,4 @@ void TentacleDriver::Update()
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace TENTACLES
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::TENTACLES
-#endif

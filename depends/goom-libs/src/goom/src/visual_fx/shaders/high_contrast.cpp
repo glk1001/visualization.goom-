@@ -1,17 +1,8 @@
 #include "high_contrast.h"
 
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace SHADERS
-{
-#else
 namespace GOOM::VISUAL_FX::SHADERS
 {
-#endif
 
 using UTILS::IGoomRand;
 using UTILS::Timer;
@@ -103,10 +94,4 @@ void HighContrast::UpdateHighContrast()
   ChangeHighContrast(false);
 }
 
-#if __cplusplus <= 201402L
-} // namespace SHADERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::SHADERS
-#endif

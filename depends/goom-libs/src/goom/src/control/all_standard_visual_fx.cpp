@@ -16,15 +16,8 @@
 
 #include <memory>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using CONTROL::GoomDrawables;
 using DRAW::IGoomDraw;
@@ -274,9 +267,4 @@ void AllStandardVisualFx::ChangeColorMaps()
   m_tube_fx->SetWeightedLowColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TUBE_LOW));
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

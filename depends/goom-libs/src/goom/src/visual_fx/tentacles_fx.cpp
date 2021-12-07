@@ -21,15 +21,8 @@
 #include <memory>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-#else
 namespace GOOM::VISUAL_FX
 {
-#endif
 
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
@@ -287,9 +280,4 @@ inline void TentaclesFx::TentaclesImpl::UpdateDominantColors()
   m_dominantLowColor = GetLightenedColor(m_dominantColor, 0.67F);
 }
 
-#if __cplusplus <= 201402L
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX
-#endif

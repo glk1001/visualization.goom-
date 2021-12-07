@@ -3,12 +3,7 @@
 #include "vivid/types.h" 
 #include <vector> 
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace data {
-#else
-namespace vivid::data {
-#endif
+namespace vivid::data { 
 
 
 static const std::vector<srgb_t> cool_warm = 
@@ -46,12 +41,7 @@ static const std::vector<srgb_t> cool_warm =
     { 0.795632f, 0.241284f, 0.220526f },
     { 0.752535f, 0.157246f, 0.184115f },
     { 0.705673f, 0.0155562f, 0.150233f }
-};
+}; 
 
 
-#if __cplusplus <= 201402L
-} // namespace data
-} // namespace vivid
-#else
-}   //  ::vivid::data
-#endif
+}  //  ::vivid::data

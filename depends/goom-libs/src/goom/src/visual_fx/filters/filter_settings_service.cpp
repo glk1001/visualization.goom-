@@ -19,17 +19,8 @@
 
 #include <stdexcept>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 using UTILS::IGoomRand;
 using UTILS::NUM;
@@ -310,8 +301,7 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                       false,
                       false,
                       false},
-                     {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
-                     {false, Pixel::BLACK}},
+                     {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT}},
     // clang-format off
     m_weightedFilterEvents{
         m_goomRand,
@@ -500,7 +490,6 @@ void FilterSettingsService::SetDefaultSettings()
   m_filterSettings.filterEffectsSettings.noiseEffect = false;
 
   m_filterSettings.filterColorSettings.blockyWavy = false;
-  m_filterSettings.filterColorSettings.clippedColor = Pixel::BLACK;
 }
 
 void FilterSettingsService::SetRandomEffects()
@@ -611,10 +600,4 @@ void FilterSettingsService::SetRandomZoomMidPoint()
     }
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

@@ -9,15 +9,8 @@
 #include <memory>
 #include <utility>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-#else
 namespace GOOM::COLOR
 {
-#endif
 
 class IColorMap
 {
@@ -174,11 +167,5 @@ inline auto ColorMapWrapper::GetColor(const float t) const -> Pixel
   return m_colorMap->GetColor(t);
 }
 
-
-#if __cplusplus <= 201402L
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR
-#endif
 

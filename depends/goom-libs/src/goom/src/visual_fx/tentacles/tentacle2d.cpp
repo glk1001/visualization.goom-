@@ -8,26 +8,13 @@
 #include <tuple>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace TENTACLES
-{
-#else
 namespace GOOM::VISUAL_FX::TENTACLES
 {
-#endif
 
 using UTILS::ExpDampingFunction;
 using UTILS::FlatDampingFunction;
 using UTILS::LinearDampingFunction;
 using UTILS::PiecewiseDampingFunction;
-
-#if __cplusplus <= 201402L
-const size_t Tentacle2D::MIN_NUM_NODES = 10;
-#endif
 
 Tentacle2D::Tentacle2D(const size_t id,
                        const size_t numNodes,
@@ -257,10 +244,4 @@ auto Tentacle2D::CreateLinearDampingFunc(const double xMin, const double xMax)
   return DampingFuncPtr{std::make_unique<PiecewiseDampingFunction>(pieces)};
 }
 
-#if __cplusplus <= 201402L
-} // namespace TENTACLES
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::TENTACLES
-#endif

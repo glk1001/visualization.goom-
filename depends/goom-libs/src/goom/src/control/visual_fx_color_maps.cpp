@@ -7,15 +7,8 @@
 #include <array>
 #include <numeric>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using COLOR::GetAllMapsUnweighted;
 using COLOR::GetAllSlimMaps;
@@ -310,9 +303,4 @@ auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
   return matchedSet;
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

@@ -21,12 +21,7 @@
 
 #include "vivid/conversion.h"
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace oklab {
-#else
 namespace vivid::oklab {
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,9 +49,4 @@ oklab_t fromLrgb( const lrgb_t& lrgb )
 }
 
 
-#if __cplusplus <= 201402L
-} // namespace oklab
-} // namespace vivid
-#else
 }   //  ::vivid::oklab
-#endif

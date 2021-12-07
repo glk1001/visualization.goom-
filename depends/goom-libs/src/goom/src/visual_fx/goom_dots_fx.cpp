@@ -22,15 +22,8 @@
 #include <cstdint>
 #include <memory>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-#else
 namespace GOOM::VISUAL_FX
 {
-#endif
 
 using COLOR::ColorMapGroup;
 using COLOR::GetBrighterColor;
@@ -198,7 +191,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetImageBitmap(const size_t size) const
     -> const ImageBitmap&
 {
   return m_smallBitmaps.GetImageBitmap(m_currentBitmapName,
-                                       stdnew::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
+                                       std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
@@ -463,9 +456,4 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX
-#endif

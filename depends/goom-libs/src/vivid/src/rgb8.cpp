@@ -2,12 +2,7 @@
 #include "vivid/data/xterm.h"
 #include <glm/common.hpp>
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace rgb8 {
-#else
 namespace vivid::rgb8 {
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,17 +33,11 @@ col8_t fromHex( const std::string& hexStr ) {
     return rgb8::fromRgb32( rgb32::fromHex( hexStr ) );
 }
 
-#if __cplusplus > 201402L
+
 ////////////////////////////////////////////////////////////////////////////////
 col8_t fromName( const std::string& name ) {
     return rgb8::fromIndex( index::fromName( name ).value_or( 0 ) );
 }
-#endif
 
 
-#if __cplusplus <= 201402L
-} // namespace rgb8
-} // namespace vivid
-#else
 }   //  ::vivid::rgb8
-#endif

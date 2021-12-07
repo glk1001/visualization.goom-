@@ -9,17 +9,8 @@
 #undef NDEBUG
 #include <cassert>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace IFS
-{
-#else
 namespace GOOM::VISUAL_FX::IFS
 {
-#endif
 
 using COLOR::ColorMapGroup;
 using COLOR::RandomColorMaps;
@@ -261,11 +252,7 @@ auto Similitudes::GetSimiBitmap(const bool useBitmaps) -> const ImageBitmap*
   return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE, res);
 }
 
-#if __cplusplus <= 201402L
-inline auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
-#else
 constexpr auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
-#endif
 {
   return 1.0F - std::exp(-S);
 }
@@ -322,10 +309,4 @@ void Similitudes::ResetCurrentIfsFunc()
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace IFS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::IFS
-#endif

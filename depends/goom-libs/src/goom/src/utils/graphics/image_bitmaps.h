@@ -4,15 +4,8 @@
 
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 class ImageBitmap
 {
@@ -65,9 +58,4 @@ inline auto ImageBitmap::operator()(const size_t x, const size_t y) const -> Pix
   return Pixel{{pixel.red, pixel.green, pixel.blue, pixel.alpha}};
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

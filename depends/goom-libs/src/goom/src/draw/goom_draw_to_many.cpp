@@ -7,15 +7,8 @@
 #include <cstdint>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
 
 GoomDrawToMany::GoomDrawToMany(const uint32_t screenWidth,
                                const uint32_t screenHeight,
@@ -55,9 +48,4 @@ void GoomDrawToMany::DrawPixels(const std::vector<IGoomDraw*>& manyDraws,
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif

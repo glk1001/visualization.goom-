@@ -23,17 +23,8 @@
 #include <utility>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace TUBES
-{
-#else
 namespace GOOM::VISUAL_FX::TUBES
 {
-#endif
 
 using COLOR::GammaCorrection;
 using COLOR::GetBrighterColor;
@@ -1298,10 +1289,4 @@ inline auto ShapePath::GetOscillatingPointAtT(const V2dFlt& point, const float t
   };
 }
 
-#if __cplusplus <= 201402L
-} // namespace TUBES
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::TUBES
-#endif

@@ -2,12 +2,7 @@
 #include "vivid/utility.h"
 #include "vivid/profiles.h"
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace adobe {
-#else
 namespace vivid::adobe {
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,9 +22,4 @@ adobe_t fromXyz( const xyz_t& xyz )
 }
 
 
-#if __cplusplus <= 201402L
-} // namespace adobe
-} // namespace vivid
-#else
 }   //  ::vivid::adobe
-#endif

@@ -11,17 +11,8 @@
 #include <tuple>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace TENTACLES
-{
-#else
 namespace GOOM::VISUAL_FX::TENTACLES
 {
-#endif
 
 using COLOR::GetBrighterColor;
 using COLOR::GetIncreasedChroma;
@@ -62,13 +53,7 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
     return GetMixedColors(nodeNum, color, lowColor);
   }
 
-#if __cplusplus <= 201402L
-  const auto mixedColors = GetMixedColors(nodeNum, color, lowColor);
-  const auto mixedColor = std::get<0>(mixedColors);
-  const auto mixedLowColor = std::get<1>(mixedColors);
-#else
   const auto [mixedColor, mixedLowColor] = GetMixedColors(nodeNum, color, lowColor);
-#endif
   const Pixel mixedColorPixel = mixedColor;
   const Pixel mixedLowColorPixel = mixedLowColor;
   return std::make_pair(GetBrighterColor(brightness, mixedColorPixel),
@@ -133,13 +118,7 @@ inline auto Tentacle3D::GetFinalMixedColor(const Pixel& color,
 
 auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
 {
-#if __cplusplus <= 201402L
-  const auto xYVecs = m_tentacle->GetDampedXAndYVectors();
-  const auto& xVec2D = std::get<0>(xYVecs);
-  const auto& yVec2D = std::get<1>(xYVecs);
-#else
   const auto [xVec2D, yVec2D] = m_tentacle->GetDampedXAndYVectors();
-#endif
   const size_t n = xVec2D.size();
 
   std::vector<V3dFlt> vec3d(n);
@@ -165,10 +144,4 @@ auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
   return vec3d;
 }
 
-#if __cplusplus <= 201402L
-} // namespace TENTACLES
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::TENTACLES
-#endif

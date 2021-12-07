@@ -8,15 +8,8 @@
 #include <format>
 #include <stdexcept>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 void ImageBitmap::Resize(const size_t width, const size_t height)
 {
@@ -89,9 +82,4 @@ void ImageBitmap::Load(std::string imageFilename)
   stbi_image_free(rgbImage);
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

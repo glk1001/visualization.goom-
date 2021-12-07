@@ -3,15 +3,8 @@
 #include "goom_events.h"
 #include "utils/name_value_pairs.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
@@ -208,9 +201,4 @@ auto GoomMusicLinesReactor::GetNameValueParams() const -> NameValuePairs
   return {};
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

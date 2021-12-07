@@ -2,7 +2,7 @@
  *  Goom
  *  Copyright (c) 2000-2003 iOS-software. All rights reserved.
  *
- *  - converted to C++14 2021-02-01 (glk)
+ *  - converted to C++17 2021-02-01 (glk)
  */
 
 #include "lines_fx.h"
@@ -35,15 +35,8 @@
 #include <stdexcept>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-#else
 namespace GOOM::VISUAL_FX
 {
-#endif
 
 using COLOR::GammaCorrection;
 using COLOR::GetAllSlimMaps;
@@ -703,9 +696,4 @@ inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float
   return m_currentColorMap.get().GetColor(t);
 }
 
-#if __cplusplus <= 201402L
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX
-#endif

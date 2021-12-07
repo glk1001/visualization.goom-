@@ -25,15 +25,8 @@
 #include <memory>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-#else
 namespace GOOM::VISUAL_FX
 {
-#endif
 
 using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
@@ -315,7 +308,7 @@ inline auto TubeFx::TubeFxImpl::GetImageBitmap(const SmallImageBitmaps::ImageNam
 {
   return m_smallBitmaps.GetImageBitmap(
       imageName,
-      stdnew::clamp(size, SmallImageBitmaps::MIN_IMAGE_SIZE, SmallImageBitmaps::MAX_IMAGE_SIZE));
+      std::clamp(size, SmallImageBitmaps::MIN_IMAGE_SIZE, SmallImageBitmaps::MAX_IMAGE_SIZE));
 }
 
 inline void TubeFx::TubeFxImpl::SetWeightedColorMaps(
@@ -795,9 +788,4 @@ void TubeFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube)
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX
-#endif

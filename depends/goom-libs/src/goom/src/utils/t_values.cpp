@@ -8,15 +8,8 @@
 #undef NDEBUG
 #include <cassert>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 TValue::TValue(const TValue::StepType stepType,
                const float stepSize,
@@ -237,9 +230,4 @@ inline void TValue::HandleBoundary(const float continueValue, const float stepSi
   m_currentDelayPoints = m_delayPoints;
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

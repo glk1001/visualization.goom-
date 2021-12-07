@@ -5,15 +5,8 @@
 #include "goom_states.h"
 #include "utils/goom_rand_base.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 class GoomRandomStateHandler : public IGoomStateHandler
 {
@@ -34,9 +27,4 @@ inline auto GoomRandomStateHandler::GetCurrentState() const -> GoomStates
   return m_currentState;
 }
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

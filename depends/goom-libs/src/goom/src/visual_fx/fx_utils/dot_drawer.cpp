@@ -8,17 +8,8 @@
 #include "utils/mathutils.h"
 #include "v2d.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FX_UTILS
-{
-#else
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
-#endif
 
 using COLOR::GetColorMultiply;
 using DRAW::IGoomDraw;
@@ -99,13 +90,7 @@ auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t
 inline auto DotDrawer::GetImageBitmap(const size_t size) const -> const ImageBitmap&
 {
   return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
-                                       stdnew::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
+                                       std::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
 }
 
-#if __cplusplus <= 201402L
-} // namespace FX_UTILS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FX_UTILS
-#endif

@@ -12,15 +12,8 @@
 #include <string>
 #include <utility>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 const std::array<std::string, NUM<SmallImageBitmaps::ImageNames>> SmallImageBitmaps::IMAGE_NAMES{
     "circle", "sphere", "pink-flower", "red-flower", "orange-flower", "white-flower",
@@ -73,9 +66,4 @@ auto SmallImageBitmaps::GetImageFilename(const ImageNames name,
   return filename;
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

@@ -4,16 +4,8 @@
 
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
-
 
 class TValue
 {
@@ -132,9 +124,4 @@ inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const -> boo
          && (m_t < (delayPoint.t0 + m_stepSize - T_EPSILON));
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

@@ -26,7 +26,7 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 
-// TODO Figure out correct format here 
+// TODO Figure out correct format here
 //      - GL_BGRA looks good but why?
 //constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
 constexpr GLenum TEXTURE_FORMAT = GL_BGRA;
@@ -244,7 +244,7 @@ void CVisualizationGoom::StopGoomProcessBuffersThread()
 {
   LogInfo("CVisualizationGoom: Stopping goom process buffers thread.");
   {
-    const std::unique_lock<std::mutex> lock(m_mutex);
+    const std::unique_lock lock(m_mutex);
     m_workerThreadExit = true;
     m_wait.notify_one();
   }
@@ -274,7 +274,7 @@ void CVisualizationGoom::AudioData(const float* const audioData, size_t audioDat
     StartGoomProcessBuffersThread();
   }
 
-  const std::unique_lock<std::mutex> lock(m_mutex);
+  const std::unique_lock lock(m_mutex);
   if (m_audioBuffer.DataAvailable() >= CIRCULAR_BUFFER_SIZE)
   {
     AudioDataQueueTooBig();
@@ -321,7 +321,7 @@ inline auto CVisualizationGoom::GetNextActivePixelBufferData() -> PixelBufferDat
 {
   PixelBufferData pixelBufferData{};
 
-  const std::lock_guard<std::mutex> lk(m_mutex);
+  const std::scoped_lock lk(m_mutex);
   if (m_activeQueue.empty())
   {
     NoActiveBufferAvailable();
@@ -337,7 +337,7 @@ inline auto CVisualizationGoom::GetNextActivePixelBufferData() -> PixelBufferDat
 
 inline void CVisualizationGoom::PushUsedPixels(const PixelBufferData& pixelBufferData)
 {
-  const std::lock_guard<std::mutex> lk(m_mutex);
+  const std::scoped_lock lk(m_mutex);
   m_storedQueue.push(pixelBufferData);
 }
 
@@ -350,7 +350,7 @@ void CVisualizationGoom::Process()
 
     while (true)
     {
-      std::unique_lock<std::mutex> lk(m_mutex);
+      std::unique_lock lk(m_mutex);
       if (m_workerThreadExit)
       {
         break;
@@ -582,7 +582,7 @@ auto CVisualizationGoom::CreateGlTexture() -> bool
 #endif
   constexpr GLint LEVEL = 0;
   constexpr GLint BORDER = 0;
-  constexpr void* NULL_DATA = nullptr;
+  constexpr void* const NULL_DATA = nullptr;
   glTexImage2D(GL_TEXTURE_2D, LEVEL, TEXTURE_SIZED_INTERNAL_FORMAT,
                static_cast<GLsizei>(m_textureWidth), static_cast<GLsizei>(m_textureHeight), BORDER,
                TEXTURE_FORMAT, TEXTURE_DATA_TYPE, NULL_DATA);
@@ -717,7 +717,7 @@ inline void CVisualizationGoom::RenderGlPixelBuffer(const GOOM::PixelBuffer& pix
     constexpr GLint LEVEL = 0;
     constexpr GLint X_OFFSET = 0;
     constexpr GLint Y_OFFSET = 0;
-    constexpr void* NULL_PIXELS = nullptr;
+    constexpr void* const NULL_PIXELS = nullptr;
     glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
                     static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
                     NULL_PIXELS);

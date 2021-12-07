@@ -7,17 +7,8 @@
 #include <stdexcept>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace TENTACLES
-{
-#else
 namespace GOOM::VISUAL_FX::TENTACLES
 {
-#endif
 
 using UTILS::m_half_pi;
 using UTILS::m_pi;
@@ -91,10 +82,4 @@ auto CirclesTentacleLayout::GetPoints() const -> const std::vector<V3dFlt>&
   return m_points;
 }
 
-#if __cplusplus <= 201402L
-} // namespace TENTACLES
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::TENTACLES
-#endif

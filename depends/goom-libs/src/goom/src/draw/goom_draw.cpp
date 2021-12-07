@@ -4,15 +4,8 @@
 
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace DRAW
-{
-#else
 namespace GOOM::DRAW
 {
-#endif
 
 using UTILS::ImageBitmap;
 
@@ -99,9 +92,4 @@ void IGoomDraw::Bitmap(const int xCentre,
   }
 }
 
-#if __cplusplus <= 201402L
-} // namespace DRAW
-} // namespace GOOM
-#else
 } // namespace GOOM::DRAW
-#endif

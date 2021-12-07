@@ -1,7 +1,7 @@
 ********************************
-* What a GOOM++! version C++14 *
+* What a GOOM++! version C++17 *
 ********************************
-Same algorithms (different tentacles), re-written in C++14 by GLK for 
+Same algorithms (different tentacles), re-written in C++17 by GLK for
 use as a Kodi visualization addon. With added color from Gurki's 'vivid' 
 library.
 

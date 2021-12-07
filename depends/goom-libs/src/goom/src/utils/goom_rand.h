@@ -5,15 +5,8 @@
 
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 class GoomRand : public IGoomRand
 {
@@ -64,9 +57,4 @@ inline auto GoomRand::ProbabilityOf(const float x) const -> bool
   return RAND::ProbabilityOf(x);
 }
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

@@ -3,15 +3,8 @@
 #include <string>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace UTILS
-{
-#else
 namespace GOOM::UTILS
 {
-#endif
 
 [[nodiscard]] auto bool_to_string(bool value) -> std::string;
 
@@ -21,9 +14,4 @@ namespace GOOM::UTILS
 [[nodiscard]] auto StringJoin(const std::vector<std::string>& strings, const std::string& delim)
     -> std::string;
 
-#if __cplusplus <= 201402L
-} // namespace UTILS
-} // namespace GOOM
-#else
 } // namespace GOOM::UTILS
-#endif

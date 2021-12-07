@@ -9,17 +9,8 @@
 #include <memory>
 #include <vector>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace TENTACLES
-{
-#else
 namespace GOOM::VISUAL_FX::TENTACLES
 {
-#endif
 
 struct V3dFlt
 {
@@ -98,10 +89,4 @@ inline void Tentacle3D::SetWeightedColorMaps(
   ColorMapsChanged();
 }
 
-#if __cplusplus <= 201402L
-} // namespace TENTACLES
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::TENTACLES
-#endif

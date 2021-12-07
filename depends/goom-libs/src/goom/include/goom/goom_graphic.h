@@ -147,12 +147,10 @@ private:
 [[nodiscard]] auto MultiplyChannelColorByScalar(uint32_t scalar, PixelChannelType channelVal)
     -> uint32_t;
 
-#if __cplusplus > 201402L
 inline const Pixel Pixel::BLACK{{/*.red = */ 0, /*.green = */ 0, /*.blue = */ 0, /*.alpha = */ 0}};
 
 inline const Pixel Pixel::WHITE{{/*.red = */ MAX_COLOR_VAL, /*.green = */ MAX_COLOR_VAL,
                                  /*.blue = */ MAX_COLOR_VAL, /*.alpha = */ MAX_ALPHA}};
-#endif
 
 struct FXBuffSettings
 {

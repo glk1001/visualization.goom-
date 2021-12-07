@@ -12,17 +12,8 @@
 #include <cstdint>
 #include <memory>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace IFS
-{
-#else
 namespace GOOM::VISUAL_FX::IFS
 {
-#endif
 
 class Colorizer
 {
@@ -105,10 +96,4 @@ inline void Colorizer::SetMaxHitCount(const uint32_t val)
   m_logMaxHitCount = std::log(static_cast<float>(m_maxHitCount));
 }
 
-#if __cplusplus <= 201402L
-} // namespace IFS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::IFS
-#endif

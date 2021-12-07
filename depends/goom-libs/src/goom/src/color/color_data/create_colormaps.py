@@ -200,27 +200,12 @@ def write_cpp_headers(used_mps: List[str]):
 
 
 def write_namespace_begin(f):
-    f.write('#if __cplusplus <= 201402L\n')
-    f.write(f'namespace {GOOM_NAMESPACE}\n')
-    f.write('{\n')
-    f.write(f'namespace {COLOR_NAMESPACE}\n')
-    f.write('{\n')
-    f.write(f'namespace {COLOR_DATA_NAMESPACE}\n')
-    f.write('{\n')
-    f.write('#else\n')
     f.write(f'namespace {GOOM_NAMESPACE}::{COLOR_NAMESPACE}::{COLOR_DATA_NAMESPACE}\n')
     f.write('{\n')
-    f.write('#endif\n')
 
 
 def write_namespace_end(f):
-    f.write('#if __cplusplus <= 201402L\n')
-    f.write(f'}} // namespace {COLOR_DATA_NAMESPACE}\n')
-    f.write(f'}} // namespace {COLOR_NAMESPACE}\n')
-    f.write(f'}} // namespace {GOOM_NAMESPACE}\n')
-    f.write('#else\n')
     f.write(f'}} // namespace {GOOM_NAMESPACE}::{COLOR_NAMESPACE}::{COLOR_DATA_NAMESPACE}\n')
-    f.write('#endif\n')
 
 
 def write_cpp_header(cm: Colormap):

@@ -4,17 +4,8 @@
 #include "utils/mathutils.h"
 #include "v2d.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace TENTACLES
-{
-#else
 namespace GOOM::VISUAL_FX::TENTACLES
 {
-#endif
 
 using DRAW::IGoomDraw;
 using FX_UTILS::DotSizes;
@@ -300,10 +291,4 @@ inline void TentaclePlotter::Translate(const V3dFlt& vAdd, V3dFlt& vInOut)
   vInOut.z += vAdd.z;
 }
 
-#if __cplusplus <= 201402L
-} // namespace TENTACLES
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::TENTACLES
-#endif

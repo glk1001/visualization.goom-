@@ -9,17 +9,8 @@
 #undef NDEBUG
 #include <cassert>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace IFS
-{
-#else
 namespace GOOM::VISUAL_FX::IFS
 {
-#endif
 
 using COLOR::RandomColorMaps;
 using UTILS::IGoomRand;
@@ -182,10 +173,4 @@ inline void Fractal::UpdateHits(const Similitude& simi, const FltPoint& point)
   m_curHits.get().AddHit(x, y, simi);
 }
 
-#if __cplusplus <= 201402L
-} // namespace IFS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::IFS
-#endif

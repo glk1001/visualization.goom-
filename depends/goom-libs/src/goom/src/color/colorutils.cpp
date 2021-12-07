@@ -1,23 +1,13 @@
 #include "colorutils.h"
 
 #include "goom/goom_graphic.h"
-#if __cplusplus <= 201402L
-#include "../utils/mathutils.h"
-#endif
 
 #include <cmath>
 #include <cstdint>
 #include <vivid/vivid.h>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-#else
 namespace GOOM::COLOR
 {
-#endif
 
 auto GammaCorrection::GetCorrection(const float brightness, const Pixel& color) const -> Pixel
 {
@@ -58,7 +48,7 @@ inline auto Lighten(const PixelChannelType value, const float power) -> PixelCha
 
   // (32.0f * log (t));
   return static_cast<PixelChannelType>(
-      stdnew::clamp(static_cast<int>(t), channel_limits<int>::min(), channel_limits<int>::max()));
+      std::clamp(static_cast<int>(t), channel_limits<int>::min(), channel_limits<int>::max()));
 }
 
 auto GetLightenedColor(const Pixel& oldColor, const float power) -> Pixel
@@ -128,9 +118,4 @@ auto GetEvolvedColor(const Pixel& baseColor) -> Pixel
   return newColor;
 }
 
-#if __cplusplus <= 201402L
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR
-#endif

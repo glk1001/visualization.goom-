@@ -282,7 +282,7 @@ void printColorPresets()
 }
 
 
-}   //  ansi
+} // namespace ansi
 
 
-}   //  vivid
+} // namespace vivid

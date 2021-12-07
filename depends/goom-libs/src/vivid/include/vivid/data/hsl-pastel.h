@@ -3,12 +3,7 @@
 #include "vivid/types.h" 
 #include <vector> 
 
-#if __cplusplus <= 201402L
-namespace vivid {
-namespace data {
-#else
-namespace vivid::data {
-#endif
+namespace vivid::data { 
 
 
 static const std::vector<srgb_t> hsl_pastel = 
@@ -269,12 +264,7 @@ static const std::vector<srgb_t> hsl_pastel =
     { 0.92f, 0.28f, 0.325f },
     { 0.92f, 0.28f, 0.31f },
     { 0.92f, 0.28f, 0.295f }
-};
+}; 
 
 
-#if __cplusplus <= 201402L
-} // namespace data
-} // namespace vivid
-#else
-}   //  ::vivid::data
-#endif
+}  //  ::vivid::data

@@ -4,15 +4,8 @@
 
 #include <unordered_set>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace CONTROL
-{
-#else
 namespace GOOM::CONTROL
 {
-#endif
 
 class IGoomStateHandler
 {
@@ -28,9 +21,4 @@ public:
   [[nodiscard]] auto GetCurrentDrawables() const -> DrawablesState;
 };
 
-#if __cplusplus <= 201402L
-} // namespace CONTROL
-} // namespace GOOM
-#else
 } // namespace GOOM::CONTROL
-#endif

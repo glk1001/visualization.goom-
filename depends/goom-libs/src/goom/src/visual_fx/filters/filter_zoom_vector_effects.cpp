@@ -7,17 +7,8 @@
 #include <cstdint>
 #include <string>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
-{
-#else
 namespace GOOM::VISUAL_FX::FILTERS
 {
-#endif
 
 using UTILS::GetPair;
 using UTILS::MoveNameValuePairs;
@@ -194,10 +185,4 @@ inline auto ZoomVectorEffects::GetRotateNameValueParams() const -> NameValuePair
   return m_filterEffectsSettings->rotation->GetNameValueParams(PARAM_GROUP);
 }
 
-#if __cplusplus <= 201402L
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-#else
 } // namespace GOOM::VISUAL_FX::FILTERS
-#endif

@@ -8,15 +8,8 @@
 #include <cmath>
 #include <cstdint>
 
-#if __cplusplus <= 201402L
-namespace GOOM
-{
-namespace COLOR
-{
-#else
 namespace GOOM::COLOR
 {
-#endif
 
 [[nodiscard]] auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel;
 template<typename T>
@@ -185,7 +178,7 @@ inline auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, const i
 
 inline auto GetRgbColorLerp(const Pixel& colA, const Pixel& colB, float t) -> Pixel
 {
-  t = stdnew::clamp(t, 0.0F, 1.0F);
+  t = std::clamp(t, 0.0F, 1.0F);
   const auto intT = static_cast<int32_t>(t * static_cast<float>(MAX_COLOR_VAL));
 
   const auto colA_R = static_cast<int32_t>(colA.R());
@@ -257,10 +250,5 @@ inline void GammaCorrection::SetGamma(const float val)
   m_gamma = val;
 }
 
-#if __cplusplus <= 201402L
-} // namespace COLOR
-} // namespace GOOM
-#else
 } // namespace GOOM::COLOR
-#endif
 
