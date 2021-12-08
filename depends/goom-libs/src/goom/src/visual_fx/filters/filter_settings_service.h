@@ -28,6 +28,29 @@ class Parallel;
 namespace VISUAL_FX::FILTERS
 {
 
+enum class ZoomFilterMode
+{
+  AMULET_MODE = 0,
+  CRYSTAL_BALL_MODE0,
+  CRYSTAL_BALL_MODE1,
+  DISTANCE_FIELD_MODE,
+  HYPERCOS_MODE0,
+  HYPERCOS_MODE1,
+  HYPERCOS_MODE2,
+  HYPERCOS_MODE3,
+  IMAGE_DISPLACEMENT_MODE,
+  NORMAL_MODE,
+  SCRUNCH_MODE,
+  SPEEDWAY_MODE0,
+  SPEEDWAY_MODE1,
+  SPEEDWAY_MODE2,
+  WATER_MODE,
+  WAVE_MODE0,
+  WAVE_MODE1,
+  Y_ONLY_MODE,
+  _NUM // unused and must be last
+};
+
 class FilterSettingsService
 {
 public:
@@ -71,29 +94,6 @@ public:
   void SetTranLerpToMaxDefaultSwitchMult();
 
 private:
-  enum class ZoomFilterMode
-  {
-    AMULET_MODE = 0,
-    CRYSTAL_BALL_MODE0,
-    CRYSTAL_BALL_MODE1,
-    DISTANCE_FIELD_MODE,
-    HYPERCOS_MODE0,
-    HYPERCOS_MODE1,
-    HYPERCOS_MODE2,
-    HYPERCOS_MODE3,
-    IMAGE_DISPLACEMENT_MODE,
-    NORMAL_MODE,
-    SCRUNCH_MODE,
-    SPEEDWAY_MODE0,
-    SPEEDWAY_MODE1,
-    SPEEDWAY_MODE2,
-    WATER_MODE,
-    WAVE_MODE0,
-    WAVE_MODE1,
-    Y_ONLY_MODE,
-    _NUM // unused and must be last
-  };
-
   ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_previousFilterMode = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
@@ -115,8 +115,16 @@ private:
     UTILS::Weights<HypercosOverlay> hypercosWeights;
   };
   std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
-  [[nodiscard]] auto GetFilterModeData(const std::string& resourcesDirectory) const
+  [[nodiscard]] static auto GetFilterModeData(const UTILS::IGoomRand& goomRand,
+                                              const std::string& resourcesDirectory)
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
+  struct FilterModeData
+  {
+    ZoomFilterMode filterMode;
+    const char* name;
+    float rotateProb;
+    std::array<std::pair<HypercosOverlay, float>, UTILS::NUM<HypercosOverlay>> modeWeights;
+  };
 
   static constexpr uint32_t DEFAULT_ZOOM_MID_X = 16;
   static constexpr uint32_t DEFAULT_ZOOM_MID_Y = 1;
@@ -134,18 +142,18 @@ private:
   [[nodiscard]] auto GetRotation() const -> std::shared_ptr<Rotation>;
 
   void SetDefaultSettings();
-  void SetRandomEffects();
-  void SetFilterModeSettings();
-  void SetWaveModeSettings();
+  void SetRandomExtraEffects();
+  void SetFilterModeExtraEffects();
+  void SetWaveModeExtraEffects();
 
   enum class ZoomMidPointEvents
   {
-    EVENT1,
-    EVENT2,
-    EVENT3,
-    EVENT4,
-    EVENT5,
-    EVENT6,
+    BOTTOM_MID_POINT,
+    RIGHT_MID_POINT,
+    LEFT_MID_POINT,
+    CENTRE_MID_POINT,
+    TOP_LEFT_QUARTER_MID_POINT,
+    BOTTOM_RIGHT_QUARTER_MID_POINT,
     _NUM // unused and must be last
   };
   const UTILS::Weights<ZoomMidPointEvents> m_zoomMidPointWeights;
