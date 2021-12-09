@@ -36,8 +36,8 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
 
 void Tentacle3D::ColorMapsChanged()
 {
-  m_currentColorMap = &m_colorMaps->GetRandomColorMap();
-  m_currentLowColorMap = &m_colorMaps->GetRandomColorMap();
+  m_currentColorMap = m_colorMaps->GetRandomColorMapPtr(COLOR::RandomColorMaps::ALL);
+  m_currentLowColorMap = m_colorMaps->GetRandomColorMapPtr(COLOR::RandomColorMaps::ALL);
 
   constexpr float PROB_CHROMA_INCREASE = 0.7F;
   m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_CHROMA_INCREASE);

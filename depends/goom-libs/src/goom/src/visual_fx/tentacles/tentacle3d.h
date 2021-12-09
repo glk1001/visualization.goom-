@@ -62,8 +62,8 @@ private:
   std::unique_ptr<Tentacle2D> m_tentacle;
 
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
-  const COLOR::IColorMap* m_currentColorMap = nullptr;
-  const COLOR::IColorMap* m_currentLowColorMap = nullptr;
+  std::shared_ptr<const COLOR::IColorMap> m_currentColorMap{};
+  std::shared_ptr<const COLOR::IColorMap> m_currentLowColorMap{};
   bool m_reverseColorMix = false;
   bool m_useIncreasedChroma = true;
 

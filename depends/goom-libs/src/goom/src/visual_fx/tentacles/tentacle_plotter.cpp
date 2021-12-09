@@ -31,9 +31,9 @@ TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
               m_goomRand,
               {
                   {DotSizes::DOT_SIZE01, 100},
-                  {DotSizes::DOT_SIZE02, 50},
-                  {DotSizes::DOT_SIZE03, 5},
-                  {DotSizes::DOT_SIZE04, 100},
+                  {DotSizes::DOT_SIZE02,  50},
+                  {DotSizes::DOT_SIZE03,  50},
+                  {DotSizes::DOT_SIZE04,  20},
               }
           },
           // normal dot sizes
@@ -44,8 +44,8 @@ TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
                   {DotSizes::DOT_SIZE02, 20},
                   {DotSizes::DOT_SIZE03, 10},
                   {DotSizes::DOT_SIZE04, 10},
-                  {DotSizes::DOT_SIZE05, 10},
-                  {DotSizes::DOT_SIZE06, 10},
+                  {DotSizes::DOT_SIZE05,  5},
+                  {DotSizes::DOT_SIZE06,  1},
                   {DotSizes::DOT_SIZE07,  1},
                   {DotSizes::DOT_SIZE08,  1},
               }
