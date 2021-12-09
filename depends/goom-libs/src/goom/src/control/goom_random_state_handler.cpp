@@ -15,14 +15,14 @@ using UTILS::NUM;
 // For debugging:
 constexpr bool USE_FORCED_GOOM_STATE = false;
 
-constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
+// constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES_STAR_TENTACLES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TENTACLES_TUBES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TUBES;
-// constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_ONLY;
+constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_ONLY;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_STARS_TENTACLES_TUBES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_TENTACLES_TUBES;

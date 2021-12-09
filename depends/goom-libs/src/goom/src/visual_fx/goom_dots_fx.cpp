@@ -101,6 +101,11 @@ private:
                                     float xOffsetFreqDenom,
                                     float yOffsetFreqDenom,
                                     uint32_t offsetCycle) const -> V2dInt;
+
+  static constexpr float GAMMA = 2.0F;
+  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+  const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -427,7 +432,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     return;
   }
 
-  constexpr float BRIGHTNESS = 1.0F;
+  constexpr float BRIGHTNESS = 1.5F;
   const auto getColor1 =
       [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& b)
   {
@@ -439,7 +444,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     }
     const Pixel mixedColor = COLOR::IColorMap::GetColorMix(b, newColor, 0.5F);
     const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
-    return GetBrighterColor(BRIGHTNESS, finalColor);
+    return GetGammaCorrection(BRIGHTNESS, finalColor);
   };
   const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                              [[maybe_unused]] const Pixel& bgnd) { return getColor1(x, y, bgnd); };
@@ -454,6 +459,16 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   {
     m_draw.Bitmap(xMid, yMid, GetImageBitmap(diameter), {getColor1, getColor2});
   }
+}
+
+inline auto GoomDotsFx::GoomDotsFxImpl::GetGammaCorrection(const float brightness,
+                                                           const Pixel& color) const -> Pixel
+{
+  if constexpr (GAMMA == 1.0F)
+  {
+    return GetBrighterColor(brightness, color);
+  }
+  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 } // namespace GOOM::VISUAL_FX
