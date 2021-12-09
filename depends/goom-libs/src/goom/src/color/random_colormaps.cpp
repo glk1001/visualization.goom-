@@ -98,7 +98,7 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap
     newColorMap = GetRandomTintedColorMapPtr(newColorMap);
   }
 
-  return colorMap;
+  return newColorMap;
 }
 
 auto RandomColorMaps::GetRandomRotatedColorMapPtr() const -> std::shared_ptr<const IColorMap>
