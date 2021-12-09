@@ -40,31 +40,31 @@ static const std::vector DOTS_IMAGE_STARS_DRAWABLES_INFO {
 static const std::vector DOTS_LINES_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {0.5F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {0.5F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.5F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.5F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
 };
 static const std::vector DOTS_LINES_STAR_TENTACLES_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {0.5F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {0.5F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {0.3F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {0.5F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.2F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.2F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
 };
 static const std::vector DOTS_LINES_TENTACLES_TUBES_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {0.5F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {0.3F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {0.5F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::TUBE,      {0.4F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.2F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.2F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
 };
 static const std::vector DOTS_LINES_TUBES_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {0.5F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {0.3F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::TUBE,      {0.4F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.2F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.2F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
 };
 static const std::vector DOTS_STARS_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {0.7F}},
@@ -92,8 +92,8 @@ static const std::vector IFS_LINES_STARS_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {0.7F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {0.4F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {0.5F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.2F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.2F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
 };
 static const std::vector IFS_STARS_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {0.7F}},
@@ -123,15 +123,15 @@ static const std::vector IMAGE_ONLY_DRAWABLES_INFO {
 static const std::vector IMAGE_LINES_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {0.2F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {0.5F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.2F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.2F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
 };
 static const std::vector IMAGE_LINES_STARS_TENTACLES_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {0.2F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {0.5F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {0.4F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {0.5F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.2F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
 };
 static const std::vector IMAGE_STARS_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {0.2F}},
@@ -151,14 +151,14 @@ static const std::vector LINES_ONLY_DRAWABLES_INFO {
 static const std::vector LINES_STARS_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {0.7F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {0.4F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.2F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.2F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
 };
 static const std::vector LINES_TENTACLES_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {0.5F}},
     GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {0.5F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.2F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.2F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
 };
 static const std::vector STARS_ONLY_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {1.0F}},
