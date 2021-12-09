@@ -12,7 +12,7 @@ namespace GOOM::CONTROL
 
 enum class GoomStates : size_t
 {
-  DOTS_IFS = 0U,
+  DOTS_IFS = 0,
   DOTS_IFS_STARS,
   DOTS_IMAGE_STARS,
   DOTS_LINES,
@@ -84,7 +84,7 @@ public:
 private:
   using StateInfoArray = std::array<StateInfo, UTILS::NUM<GoomStates>>;
   static const StateInfoArray STATE_INFO_ARRAY;
-  [[nodiscard]] static auto GetStateInfoArray() -> StateInfoArray;
+  [[nodiscard]] static auto GetStateInfoArray() noexcept -> StateInfoArray;
   static void NormaliseStates(StateInfoArray& stateInfoArray);
 };
 
