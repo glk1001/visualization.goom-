@@ -27,13 +27,6 @@ using UTILS::NUM;
 using UTILS::Weights;
 
 template<class E, size_t N>
-inline auto ToVector(const std::array<std::pair<E, float>, N>& stdArray)
-    -> std::vector<std::pair<E, float>>
-{
-  return std::vector<std::pair<E, float>>(cbegin(stdArray), cend(stdArray));
-}
-
-template<class E, size_t N>
 inline auto ToMap(const std::array<std::pair<E, float>, N>& stdArray) -> std::map<E, float>
 {
   std::map<E, float> map{};
@@ -185,26 +178,27 @@ constexpr float WAVE1_ROTATE_PROB       = PROB_HIGH;
 constexpr float Y_ONLY_ROTATE_PROB      = PROB_HALF;
 
 using Hyp = HypercosOverlay;
-using ModeWeights = std::array<std::pair<Hyp, float>, NUM<Hyp>>;
+using ModeWeights = std::vector<std::pair<Hyp, float>>;
 
-constexpr ModeWeights AMULET_WEIGHTS      = {{ {Hyp::NONE, 20}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights CRYS_BALL0_WEIGHTS  = {{ {Hyp::NONE,  5}, {Hyp::MODE0, 10}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights CRYS_BALL1_WEIGHTS  = {{ {Hyp::NONE,  5}, {Hyp::MODE0,  1}, {Hyp::MODE1, 99}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights DIST_FIELD_WEIGHTS  = {{ {Hyp::NONE,  5}, {Hyp::MODE0, 10}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights HYPERCOS0_WEIGHTS   = {{ {Hyp::NONE,  0}, {Hyp::MODE0,  1}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0} }};
-constexpr ModeWeights HYPERCOS1_WEIGHTS   = {{ {Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  1}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0} }};
-constexpr ModeWeights HYPERCOS2_WEIGHTS   = {{ {Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0} }};
-constexpr ModeWeights HYPERCOS3_WEIGHTS   = {{ {Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights IMAGE_DISPL_WEIGHTS = {{ {Hyp::NONE, 99}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights NORMAL_WEIGHTS      = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0} }};
-constexpr ModeWeights SCRUNCH_WEIGHTS     = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights SPEEDWAY0_WEIGHTS   = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights SPEEDWAY1_WEIGHTS   = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights SPEEDWAY2_WEIGHTS   = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights WATER_WEIGHTS       = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights WAVE0_WEIGHTS       = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights WAVE1_WEIGHTS       = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
-constexpr ModeWeights Y_ONLY_WEIGHTS      = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+// TODO - Use 'constexpr' when we get to use C++20.
+static const ModeWeights AMULET_WEIGHTS      = {{ {Hyp::NONE, 20}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights CRYS_BALL0_WEIGHTS  = {{ {Hyp::NONE,  5}, {Hyp::MODE0, 10}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights CRYS_BALL1_WEIGHTS  = {{ {Hyp::NONE,  5}, {Hyp::MODE0,  1}, {Hyp::MODE1, 99}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights DIST_FIELD_WEIGHTS  = {{ {Hyp::NONE,  5}, {Hyp::MODE0, 10}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights HYPERCOS0_WEIGHTS   = {{ {Hyp::NONE,  0}, {Hyp::MODE0,  1}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0} }};
+static const ModeWeights HYPERCOS1_WEIGHTS   = {{ {Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  1}, {Hyp::MODE2,  0}, {Hyp::MODE3,  0} }};
+static const ModeWeights HYPERCOS2_WEIGHTS   = {{ {Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0} }};
+static const ModeWeights HYPERCOS3_WEIGHTS   = {{ {Hyp::NONE,  0}, {Hyp::MODE0,  0}, {Hyp::MODE1,  0}, {Hyp::MODE2,  0}, {Hyp::MODE3,  1} }};
+static const ModeWeights IMAGE_DISPL_WEIGHTS = {{ {Hyp::NONE, 99}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights NORMAL_WEIGHTS      = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  0} }};
+static const ModeWeights SCRUNCH_WEIGHTS     = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights SPEEDWAY0_WEIGHTS   = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights SPEEDWAY1_WEIGHTS   = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights SPEEDWAY2_WEIGHTS   = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights WATER_WEIGHTS       = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights WAVE0_WEIGHTS       = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  5}, {Hyp::MODE1,  1}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights WAVE1_WEIGHTS       = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
+static const ModeWeights Y_ONLY_WEIGHTS      = {{ {Hyp::NONE, 10}, {Hyp::MODE0,  1}, {Hyp::MODE1,  5}, {Hyp::MODE2,  1}, {Hyp::MODE3,  1} }};
 
 constexpr float BOTTOM_MID_POINT_WEIGHT               =  3.0F;
 constexpr float RIGHT_MID_POINT_WEIGHT                =  2.0F;
@@ -264,7 +258,8 @@ auto FilterSettingsService::GetFilterModeData(const IGoomRand& goomRand,
     -> std::map<ZoomFilterMode, ZoomFilterModeInfo>
 {
   // clang-format off
-  constexpr std::array<FilterModeData, NUM<ZoomFilterMode>> ZOOM_FILTER_DATA = {{
+  // TODO - Use 'constexpr' when we get to use C++20.
+  static const std::array<FilterModeData, NUM<ZoomFilterMode>> s_ZOOM_FILTER_DATA = {{
       { ZoomFilterMode::AMULET_MODE, "Amulet", AMULET_ROTATE_PROB, AMULET_WEIGHTS },
       { ZoomFilterMode::CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0", CRYS_BALL0_ROTATE_PROB, CRYS_BALL0_WEIGHTS },
       { ZoomFilterMode::CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1", CRYS_BALL1_ROTATE_PROB, CRYS_BALL1_WEIGHTS },
@@ -288,7 +283,7 @@ auto FilterSettingsService::GetFilterModeData(const IGoomRand& goomRand,
 
   std::map<ZoomFilterMode, ZoomFilterModeInfo> filterMap{};
 
-  for (const auto& filterModeData : ZOOM_FILTER_DATA)
+  for (const auto& filterModeData : s_ZOOM_FILTER_DATA)
   {
     filterMap.try_emplace(
         filterModeData.filterMode,
@@ -296,7 +291,7 @@ auto FilterSettingsService::GetFilterModeData(const IGoomRand& goomRand,
             std::string(filterModeData.name),
             CreateSpeedCoefficientsEffect(filterModeData.filterMode, goomRand, resourcesDirectory),
             filterModeData.rotateProb,
-            Weights<Hyp>{goomRand, ToVector(filterModeData.modeWeights)},
+            Weights<Hyp>{goomRand, filterModeData.modeWeights},
     });
   }
 

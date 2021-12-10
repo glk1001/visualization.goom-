@@ -123,7 +123,7 @@ private:
     ZoomFilterMode filterMode;
     const char* name;
     float rotateProb;
-    std::array<std::pair<HypercosOverlay, float>, UTILS::NUM<HypercosOverlay>> modeWeights;
+    std::vector<std::pair<HypercosOverlay, float>> modeWeights;
   };
 
   static constexpr uint32_t DEFAULT_ZOOM_MID_X = 16;

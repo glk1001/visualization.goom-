@@ -153,9 +153,9 @@ template<class E>
 inline auto Weights<E>::GetSumOfWeights(const EventWeightPairs& eventWeightPairs) -> float
 {
   float sumOfWeights = 0.0F;
-  for (const auto& [e, w] : eventWeightPairs)
+  for (const auto& eventWeightPair : eventWeightPairs)
   {
-    sumOfWeights += w;
+    sumOfWeights += eventWeightPair.second;
   }
   return sumOfWeights - SMALL_FLOAT;
 }
