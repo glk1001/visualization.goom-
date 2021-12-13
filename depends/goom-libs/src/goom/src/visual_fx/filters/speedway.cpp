@@ -41,24 +41,30 @@ void Speedway::SetRandomParams()
 
 void Speedway::SetMode0RandomParams()
 {
-  m_params.xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
-  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL) ? +1.0F : -1.0F;
+  const float xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
+  const float yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL) ? +1.0F : -1.0F;
+
+  SetParams({xAmplitude, yAmplitude});
 }
 
 void Speedway::SetMode1RandomParams()
 {
-  m_params.xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
-  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
-                            ? m_params.xAmplitude
-                            : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE);
+  const float xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
+  const float yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
+                               ? xAmplitude
+                               : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE);
+
+  SetParams({xAmplitude, yAmplitude});
 }
 
 void Speedway::SetMode2RandomParams()
 {
-  m_params.xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
-  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
-                            ? m_params.xAmplitude
-                            : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE);
+  const float xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
+  const float yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
+                               ? xAmplitude
+                               : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE);
+
+  SetParams({xAmplitude, yAmplitude});
 }
 
 auto Speedway::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs

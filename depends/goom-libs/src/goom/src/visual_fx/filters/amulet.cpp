@@ -23,10 +23,12 @@ Amulet::Amulet(const IGoomRand& goomRand) noexcept
 
 void Amulet::SetRandomParams()
 {
-  m_params.xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
-  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
-                            ? m_params.xAmplitude
-                            : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+  const float xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+  const float yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+                               ? xAmplitude
+                               : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+
+  SetParams({xAmplitude, yAmplitude});
 }
 
 auto Amulet::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs

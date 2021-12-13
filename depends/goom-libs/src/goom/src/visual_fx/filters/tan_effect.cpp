@@ -27,11 +27,13 @@ TanEffect::TanEffect(const IGoomRand& goomRand) noexcept
 
 void TanEffect::SetRandomParams()
 {
-  m_params.xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
-  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
-                            ? m_params.xAmplitude
-                            : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
-  m_params.limitingFactor = m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE);
+  const float xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+  const float yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+                               ? xAmplitude
+                               : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+  const float limitingFactor = m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE);
+
+  SetParams({xAmplitude, yAmplitude, limitingFactor});
 }
 
 auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs

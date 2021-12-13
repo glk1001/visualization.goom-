@@ -33,23 +33,25 @@ Rotation::Rotation(const IGoomRand& goomRand) noexcept
 
 void Rotation::SetRandomParams()
 {
-  m_params.xRotateSpeed = m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
-  m_params.yRotateSpeed = m_goomRand.ProbabilityOf(PROB_EQUAL_XY_ROTATE_SPEEDS)
-                              ? m_params.xRotateSpeed
-                              : m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
+  float xRotateSpeed = m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
+  float yRotateSpeed = m_goomRand.ProbabilityOf(PROB_EQUAL_XY_ROTATE_SPEEDS)
+                           ? xRotateSpeed
+                           : m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
 
-  if ((m_params.xRotateSpeed < 0.0F) && (m_params.yRotateSpeed > 0.0F))
+  if ((xRotateSpeed < 0.0F) && (yRotateSpeed > 0.0F))
   {
-    m_params.yRotateSpeed = -m_params.yRotateSpeed;
+    yRotateSpeed = -yRotateSpeed;
   }
-  else if ((m_params.xRotateSpeed > 0.0F) && (m_params.yRotateSpeed < 0.0F))
+  else if ((xRotateSpeed > 0.0F) && (yRotateSpeed < 0.0F))
   {
-    m_params.yRotateSpeed = -m_params.yRotateSpeed;
+    yRotateSpeed = -yRotateSpeed;
   }
 
   const float angle = m_goomRand.GetRandInRange(ANGLE_RANGE);
-  m_params.sinAngle = std::sin(angle);
-  m_params.cosAngle = std::cos(angle);
+  const float sinAngle = std::sin(angle);
+  const float cosAngle = std::cos(angle);
+
+  SetParams({xRotateSpeed, yRotateSpeed, sinAngle, cosAngle});
 }
 
 auto Rotation::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs

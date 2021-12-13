@@ -23,8 +23,10 @@ Scrunch::Scrunch(const IGoomRand& goomRand) noexcept
 
 void Scrunch::SetRandomParams()
 {
-  m_params.xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
-  m_params.yAmplitude = m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE);
+  const float xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
+  const float yAmplitude = m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE);
+
+  SetParams({xAmplitude, yAmplitude});
 }
 
 auto Scrunch::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs

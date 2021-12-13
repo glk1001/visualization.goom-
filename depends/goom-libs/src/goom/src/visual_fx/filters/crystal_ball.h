@@ -31,10 +31,10 @@ public:
   struct Params
   {
     float xAmplitude;
-    float xSqDistMult;
-    float xSqDistOffset;
     float yAmplitude;
+    float xSqDistMult;
     float ySqDistMult;
+    float xSqDistOffset;
     float ySqDistOffset;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;

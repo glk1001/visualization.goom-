@@ -48,41 +48,45 @@ DistanceField::DistanceField(const IGoomRand& goomRand) noexcept
 
 void DistanceField::SetRandomParams()
 {
-  m_params.xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE_MODE0);
-  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
-                            ? m_params.xAmplitude
-                            : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE_MODE0);
+  const bool mode0 = m_goomRand.ProbabilityOf(PROB_MODE0);
 
-  m_params.xSqDistMult = m_goomRand.GetRandInRange(X_SQ_DIST_MULT_RANGE_MODE0);
-  m_params.ySqDistMult = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_MULT_EQUAL)
-                             ? m_params.xSqDistMult
-                             : m_goomRand.GetRandInRange(Y_SQ_DIST_MULT_RANGE_MODE0);
+  const float xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE_MODE0);
+  const float yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+                               ? xAmplitude
+                               : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE_MODE0);
 
-  m_params.xSqDistOffset = m_goomRand.GetRandInRange(X_SQ_DIST_OFFSET_RANGE_MODE0);
-  m_params.ySqDistOffset = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_OFFSET_EQUAL)
-                               ? m_params.xSqDistOffset
-                               : m_goomRand.GetRandInRange(Y_SQ_DIST_OFFSET_RANGE_MODE0);
+  const float xSqDistMult = m_goomRand.GetRandInRange(X_SQ_DIST_MULT_RANGE_MODE0);
+  const float ySqDistMult = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_MULT_EQUAL)
+                                ? xSqDistMult
+                                : m_goomRand.GetRandInRange(Y_SQ_DIST_MULT_RANGE_MODE0);
 
-  m_params.mode0 = m_goomRand.ProbabilityOf(PROB_MODE0);
+  const float xSqDistOffset = m_goomRand.GetRandInRange(X_SQ_DIST_OFFSET_RANGE_MODE0);
+  const float ySqDistOffset = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_OFFSET_EQUAL)
+                                  ? xSqDistOffset
+                                  : m_goomRand.GetRandInRange(Y_SQ_DIST_OFFSET_RANGE_MODE0);
+
+  std::vector<NormalizedCoords> distancePoints{};
 
   constexpr size_t NUM_DISTANCE_POINTS = 4;
-  m_params.distancePoints.clear();
 
   if (m_goomRand.ProbabilityOf(PROB_RANDOM_DISTANCE_POINTS))
   {
-    m_params.distancePoints.emplace_back(-1.0F, -1.0F);
-    m_params.distancePoints.emplace_back(+1.0F, -1.0F);
-    m_params.distancePoints.emplace_back(-1.0F, +1.0F);
-    m_params.distancePoints.emplace_back(+1.0F, +1.0F);
+    distancePoints.emplace_back(-1.0F, -1.0F);
+    distancePoints.emplace_back(+1.0F, -1.0F);
+    distancePoints.emplace_back(-1.0F, +1.0F);
+    distancePoints.emplace_back(+1.0F, +1.0F);
   }
   else
   {
     for (size_t i = 0; i < NUM_DISTANCE_POINTS; ++i)
     {
-      m_params.distancePoints.emplace_back(m_goomRand.GetRandInRange(-1.9F, 1.9F),
-                                           m_goomRand.GetRandInRange(-1.9F, 1.9F));
+      distancePoints.emplace_back(m_goomRand.GetRandInRange(-1.9F, 1.9F),
+                                  m_goomRand.GetRandInRange(-1.9F, 1.9F));
     }
   }
+
+  SetParams({mode0, xAmplitude, yAmplitude, xSqDistMult, ySqDistMult, xSqDistOffset, ySqDistOffset,
+             distancePoints});
 }
 
 auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) const

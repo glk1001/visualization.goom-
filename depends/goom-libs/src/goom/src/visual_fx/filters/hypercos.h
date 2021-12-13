@@ -62,7 +62,8 @@ private:
   const UTILS::IGoomRand& m_goomRand;
   Params m_params;
   const UTILS::Weights<HypercosEffect> m_hypercosOverlayWeights;
-  void SetHypercosEffect(const UTILS::IGoomRand::NumberRange<float>& freqRange,
+  void SetHypercosEffect(HypercosOverlay overlay,
+                         const UTILS::IGoomRand::NumberRange<float>& freqRange,
                          const UTILS::IGoomRand::NumberRange<float>& amplitudeRange);
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
                                  HypercosEffect effect,

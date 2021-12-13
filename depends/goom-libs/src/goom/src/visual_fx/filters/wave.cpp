@@ -74,26 +74,29 @@ void Wave::SetMode1RandomParams()
 void Wave::SetWaveModeSettings(const IGoomRand::NumberRange<float>& freqFactorRange,
                                const IGoomRand::NumberRange<float>& amplitudeRange)
 {
-  m_params.xWaveEffect = static_cast<WaveEffect>(m_goomRand.GetRandInRange(0U, NUM<WaveEffect>));
-  m_params.yWaveEffect =
+  const auto xWaveEffect = static_cast<WaveEffect>(m_goomRand.GetRandInRange(0U, NUM<WaveEffect>));
+  const WaveEffect yWaveEffect =
       m_goomRand.ProbabilityOf(PROB_WAVE_XY_EFFECTS_EQUAL)
-          ? m_params.xWaveEffect
+          ? xWaveEffect
           : static_cast<WaveEffect>(m_goomRand.GetRandInRange(0U, NUM<WaveEffect>));
 
+  float periodicFactor{};
   if (m_goomRand.ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
   {
-    m_params.periodicFactor = m_params.xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
-                                  ? DEFAULT_SIN_COS_PERIODIC_FACTOR
-                                  : DEFAULT_PERIODIC_FACTOR;
+    periodicFactor = xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
+                         ? DEFAULT_SIN_COS_PERIODIC_FACTOR
+                         : DEFAULT_PERIODIC_FACTOR;
   }
   else
   {
-    m_params.periodicFactor = m_goomRand.GetRandInRange(
-        m_params.xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT ? SIN_COS_PERIODIC_FACTOR_RANGE
-                                                                : PERIODIC_FACTOR_RANGE);
+    periodicFactor = m_goomRand.GetRandInRange(xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
+                                                   ? SIN_COS_PERIODIC_FACTOR_RANGE
+                                                   : PERIODIC_FACTOR_RANGE);
   }
-  m_params.freqFactor = m_goomRand.GetRandInRange(freqFactorRange);
-  m_params.amplitude = m_goomRand.GetRandInRange(amplitudeRange);
+  const float freqFactor = m_goomRand.GetRandInRange(freqFactorRange);
+  const float amplitude = m_goomRand.GetRandInRange(amplitudeRange);
+
+  SetParams({xWaveEffect, yWaveEffect, freqFactor, amplitude, periodicFactor});
 }
 
 auto Wave::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs

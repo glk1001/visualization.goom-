@@ -39,22 +39,25 @@ YOnly::YOnly(const IGoomRand& goomRand) noexcept
 
 void YOnly::SetRandomParams()
 {
-  m_params.xEffect = static_cast<YOnlyEffect>(
+  const auto xEffect = static_cast<YOnlyEffect>(
       m_goomRand.GetRandInRange(static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect>));
-  m_params.yEffect = m_goomRand.ProbabilityOf(PROB_Y_ONLY_STRICT)
-                         ? YOnlyEffect::NONE
-                         : static_cast<YOnlyEffect>(m_goomRand.GetRandInRange(
-                               static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect>));
+  const YOnlyEffect yEffect =
+      m_goomRand.ProbabilityOf(PROB_Y_ONLY_STRICT)
+          ? YOnlyEffect::NONE
+          : static_cast<YOnlyEffect>(m_goomRand.GetRandInRange(
+                static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect>));
 
-  m_params.xFreqFactor = m_goomRand.GetRandInRange(X_FREQ_FACTOR_RANGE);
-  m_params.yFreqFactor = m_goomRand.ProbabilityOf(PROB_FREQ_EQUAL)
-                             ? m_params.xFreqFactor
-                             : m_goomRand.GetRandInRange(Y_FREQ_FACTOR_RANGE);
+  const float xFreqFactor = m_goomRand.GetRandInRange(X_FREQ_FACTOR_RANGE);
+  const float yFreqFactor = m_goomRand.ProbabilityOf(PROB_FREQ_EQUAL)
+                                ? xFreqFactor
+                                : m_goomRand.GetRandInRange(Y_FREQ_FACTOR_RANGE);
 
-  m_params.xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
-  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
-                            ? m_params.xAmplitude
-                            : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE);
+  const float xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE);
+  const float yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
+                               ? xAmplitude
+                               : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE);
+
+  SetParams({xEffect, yEffect, xFreqFactor, yFreqFactor, xAmplitude, yAmplitude});
 }
 
 auto YOnly::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs

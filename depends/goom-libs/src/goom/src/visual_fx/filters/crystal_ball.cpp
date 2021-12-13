@@ -73,20 +73,22 @@ void CrystalBall::SetRandomParams(const IGoomRand::NumberRange<float>& xAmplitud
                                   const IGoomRand::NumberRange<float>& xSqDistOffsetRange,
                                   const IGoomRand::NumberRange<float>& ySqDistOffsetRange)
 {
-  m_params.xAmplitude = m_goomRand.GetRandInRange(xAmplitudeRange);
-  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
-                            ? m_params.xAmplitude
-                            : m_goomRand.GetRandInRange(yAmplitudeRange);
+  const float xAmplitude = m_goomRand.GetRandInRange(xAmplitudeRange);
+  const float yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+                               ? xAmplitude
+                               : m_goomRand.GetRandInRange(yAmplitudeRange);
 
-  m_params.xSqDistMult = m_goomRand.GetRandInRange(xSqDistMultRange);
-  m_params.ySqDistMult = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_MULT_EQUAL)
-                             ? m_params.xSqDistMult
-                             : m_goomRand.GetRandInRange(ySqDistMultRange);
+  const float xSqDistMult = m_goomRand.GetRandInRange(xSqDistMultRange);
+  const float ySqDistMult = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_MULT_EQUAL)
+                                ? xSqDistMult
+                                : m_goomRand.GetRandInRange(ySqDistMultRange);
 
-  m_params.xSqDistOffset = m_goomRand.GetRandInRange(xSqDistOffsetRange);
-  m_params.ySqDistOffset = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_OFFSET_EQUAL)
-                               ? m_params.xSqDistOffset
-                               : m_goomRand.GetRandInRange(ySqDistOffsetRange);
+  const float xSqDistOffset = m_goomRand.GetRandInRange(xSqDistOffsetRange);
+  const float ySqDistOffset = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_OFFSET_EQUAL)
+                                  ? xSqDistOffset
+                                  : m_goomRand.GetRandInRange(ySqDistOffsetRange);
+
+  SetParams({xAmplitude, yAmplitude, xSqDistMult, ySqDistMult, xSqDistOffset, ySqDistOffset});
 }
 
 auto CrystalBall::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs

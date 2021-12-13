@@ -93,6 +93,9 @@ public:
   void SetTranLerpToMaxSwitchMult(float value);
   void SetTranLerpToMaxDefaultSwitchMult();
 
+protected:
+  void SetFilterMode(ZoomFilterMode filterMode);
+
 private:
   ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_previousFilterMode = ZoomFilterMode::NORMAL_MODE;
@@ -199,6 +202,16 @@ inline void FilterSettingsService::ChangeMilieu()
   m_filterEffectsSettingsHaveChanged = true;
   SetMaxSpeedCoeff();
   SetRandomZoomMidPoint();
+}
+
+inline void FilterSettingsService::SetFilterMode(ZoomFilterMode filterMode)
+{
+  m_filterEffectsSettingsHaveChanged = true;
+
+  m_previousFilterMode = m_filterMode;
+  m_filterMode = filterMode;
+
+  SetDefaultSettings();
 }
 
 inline void FilterSettingsService::SetRandomFilterSettings()

@@ -442,6 +442,7 @@ void FilterSettingsService::SetDefaultSettings()
   m_filterSettings.filterEffectsSettings.tanEffect = false;
   m_filterSettings.filterEffectsSettings.planeEffect = false;
   m_filterSettings.filterEffectsSettings.noiseEffect = false;
+  m_filterSettings.filterEffectsSettings.rotation = GetRotation();
 
   m_filterSettings.filterColorSettings.blockyWavy = false;
 }
@@ -465,8 +466,6 @@ inline void FilterSettingsService::SetFilterModeExtraEffects()
   {
     return;
   }
-
-  m_filterSettings.filterEffectsSettings.rotation = GetRotation();
 
   const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
   SetRotate(modeInfo.rotateProbability);

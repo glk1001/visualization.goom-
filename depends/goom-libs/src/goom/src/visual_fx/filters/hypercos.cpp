@@ -73,62 +73,56 @@ Hypercos::Hypercos(const IGoomRand& goomRand) noexcept
 
 void Hypercos::SetDefaultParams()
 {
-  m_params = DEFAULT_PARAMS;
+  SetParams(DEFAULT_PARAMS);
 }
 
 void Hypercos::SetMode0RandomParams()
 {
-  m_params.overlay = HypercosOverlay::MODE0;
-
   const float hypercosMax = stdnew::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.15F);
-  SetHypercosEffect({FREQ_RANGE.min, hypercosMax}, AMPLITUDE_RANGE);
+  SetHypercosEffect(HypercosOverlay::MODE0, {FREQ_RANGE.min, hypercosMax}, AMPLITUDE_RANGE);
 }
 
 void Hypercos::SetMode1RandomParams()
 {
-  m_params.overlay = HypercosOverlay::MODE1;
-
   const float hypercosMin = stdnew::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.20F);
-  SetHypercosEffect({hypercosMin, FREQ_RANGE.max}, AMPLITUDE_RANGE);
+  SetHypercosEffect(HypercosOverlay::MODE1, {hypercosMin, FREQ_RANGE.max}, AMPLITUDE_RANGE);
 }
 
 void Hypercos::SetMode2RandomParams()
 {
-  m_params.overlay = HypercosOverlay::MODE2;
-
   const IGoomRand::NumberRange<float> amplitudeRange =
       m_goomRand.ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
   const float hypercosMin = stdnew::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.50F);
 
-  SetHypercosEffect({hypercosMin, BIG_FREQ_RANGE.max}, amplitudeRange);
+  SetHypercosEffect(HypercosOverlay::MODE2, {hypercosMin, BIG_FREQ_RANGE.max}, amplitudeRange);
 }
 
 void Hypercos::SetMode3RandomParams()
 {
-  m_params.overlay = HypercosOverlay::MODE3;
-
   const IGoomRand::NumberRange<float> amplitudeRange =
       m_goomRand.ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
-  SetHypercosEffect(VERY_BIG_FREQ_RANGE, amplitudeRange);
+  SetHypercosEffect(HypercosOverlay::MODE3, VERY_BIG_FREQ_RANGE, amplitudeRange);
 }
 
-void Hypercos::SetHypercosEffect(const IGoomRand::NumberRange<float>& freqRange,
+void Hypercos::SetHypercosEffect(const HypercosOverlay overlay,
+                                 const IGoomRand::NumberRange<float>& freqRange,
                                  const IGoomRand::NumberRange<float>& amplitudeRange)
 {
-  m_params.effect = m_hypercosOverlayWeights.GetRandomWeighted();
+  const float xFreq = m_goomRand.GetRandInRange(freqRange);
+  const float yFreq =
+      m_goomRand.ProbabilityOf(PROB_FREQ_EQUAL) ? xFreq : m_goomRand.GetRandInRange(freqRange);
 
-  m_params.xFreq = m_goomRand.GetRandInRange(freqRange);
-  m_params.yFreq = m_goomRand.ProbabilityOf(PROB_FREQ_EQUAL) ? m_params.xFreq
-                                                             : m_goomRand.GetRandInRange(freqRange);
+  const bool reverse = m_goomRand.ProbabilityOf(PROB_REVERSE);
 
-  m_params.reverse = m_goomRand.ProbabilityOf(PROB_REVERSE);
+  const float xAmplitude = m_goomRand.GetRandInRange(amplitudeRange);
+  const float yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
+                               ? xAmplitude
+                               : m_goomRand.GetRandInRange(amplitudeRange);
 
-  m_params.xAmplitude = m_goomRand.GetRandInRange(amplitudeRange);
-  m_params.yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
-                            ? m_params.xAmplitude
-                            : m_goomRand.GetRandInRange(amplitudeRange);
+  SetParams({overlay, m_hypercosOverlayWeights.GetRandomWeighted(), reverse, xFreq, yFreq,
+             xAmplitude, yAmplitude});
 }
 
 inline auto Hypercos::GetFreqToUse(const float freq) const -> float

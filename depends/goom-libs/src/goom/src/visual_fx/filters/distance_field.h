@@ -27,10 +27,10 @@ public:
   {
     bool mode0;
     float xAmplitude;
-    float xSqDistMult;
-    float xSqDistOffset;
     float yAmplitude;
+    float xSqDistMult;
     float ySqDistMult;
+    float xSqDistOffset;
     float ySqDistOffset;
     std::vector<NormalizedCoords> distancePoints;
   };
