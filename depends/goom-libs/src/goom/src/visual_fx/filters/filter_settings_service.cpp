@@ -208,10 +208,10 @@ constexpr float TOP_LEFT_QUARTER_MID_POINT_WEIGHT     = 10.0F;
 constexpr float BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
 // clang-format on
 
-static std::shared_ptr<ISpeedCoefficientsEffect> CreateSpeedCoefficientsEffect(
-    const ZoomFilterMode filterMode,
-    const IGoomRand& goomRand,
-    const std::string& resourcesDirectory)
+auto FilterSettingsService::CreateSpeedCoefficientsEffect(const ZoomFilterMode filterMode,
+                                                          const IGoomRand& goomRand,
+                                                          const std::string& resourcesDirectory)
+    -> std::shared_ptr<ISpeedCoefficientsEffect>
 {
   switch (filterMode)
   {
@@ -253,8 +253,10 @@ static std::shared_ptr<ISpeedCoefficientsEffect> CreateSpeedCoefficientsEffect(
   }
 }
 
-auto FilterSettingsService::GetFilterModeData(const IGoomRand& goomRand,
-                                              const std::string& resourcesDirectory)
+auto FilterSettingsService::GetFilterModeData(
+    const IGoomRand& goomRand,
+    const std::string& resourcesDirectory,
+    const GetSpeedCoefficientsEffectFunc& getSpeedCoefficientsEffect)
     -> std::map<ZoomFilterMode, ZoomFilterModeInfo>
 {
   // clang-format off
@@ -289,7 +291,7 @@ auto FilterSettingsService::GetFilterModeData(const IGoomRand& goomRand,
         filterModeData.filterMode,
         ZoomFilterModeInfo{
             std::string(filterModeData.name),
-            CreateSpeedCoefficientsEffect(filterModeData.filterMode, goomRand, resourcesDirectory),
+            getSpeedCoefficientsEffect(filterModeData.filterMode, goomRand, resourcesDirectory),
             filterModeData.rotateProb,
             Weights<Hyp>{goomRand, filterModeData.modeWeights},
     });
@@ -301,13 +303,17 @@ auto FilterSettingsService::GetFilterModeData(const IGoomRand& goomRand,
 FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                                              const PluginInfo& goomInfo,
                                              const IGoomRand& goomRand,
-                                             const std::string& resourcesDirectory) noexcept
+                                             const std::string& resourcesDirectory,
+                                             const GetSpeedCoefficientsEffectFunc&
+                                                 getSpeedCoefficientsEffect) noexcept
   : m_parallel{parallel},
     m_goomInfo{goomInfo},
     m_goomRand{goomRand},
     m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
     m_resourcesDirectory{resourcesDirectory},
-    m_filterModeData{GetFilterModeData(m_goomRand, m_resourcesDirectory)},
+    m_filterModeData{GetFilterModeData(m_goomRand,
+                                       m_resourcesDirectory,
+                                       getSpeedCoefficientsEffect)},
     m_filterSettings{{Vitesse{},
          HypercosOverlay::NONE,
          DEFAULT_MAX_SPEED_COEFF,

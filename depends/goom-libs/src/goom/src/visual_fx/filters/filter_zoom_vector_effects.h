@@ -12,6 +12,8 @@
 #include "utils/name_value_pairs.h"
 #include "v2d.h"
 
+#include <functional>
+#include <memory>
 #include <string>
 
 namespace GOOM
@@ -27,15 +29,28 @@ namespace VISUAL_FX
 namespace FILTERS
 {
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++" // Allow the const 'ZoomFilterEffectsSettings*' pointer
 class ZoomVectorEffects
 {
-#pragma GCC diagnostic pop
 public:
+  struct TheExtraEffects
+  {
+    std::unique_ptr<ImageVelocity> imageVelocity;
+    std::unique_ptr<Noise> noise;
+    std::unique_ptr<Hypercos> hypercos;
+    std::unique_ptr<Planes> planes;
+    std::unique_ptr<TanEffect> tanEffect;
+  };
+  using GetTheEffectsFunc =
+      std::function<auto(const std::string& resourcesDirectory, const UTILS::IGoomRand& goomRand)
+                        ->TheExtraEffects>;
+  [[nodiscard]] static auto GetStandardExtraEffects(const std::string& resourcesDirectory,
+                                                    const UTILS::IGoomRand& goomRand)
+      -> TheExtraEffects;
+
   ZoomVectorEffects(uint32_t screenWidth,
                     const std::string& resourcesDirectory,
-                    const UTILS::IGoomRand& goomRand) noexcept;
+                    const UTILS::IGoomRand& goomRand,
+                    const GetTheEffectsFunc& getTheExtraEffects) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
 
@@ -73,12 +88,7 @@ public:
 private:
   const uint32_t m_screenWidth;
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
-
-  ImageVelocity m_imageVelocity;
-  Noise m_noise;
-  Hypercos m_hypercos;
-  Planes m_planes;
-  TanEffect m_tanEffect;
+  TheExtraEffects m_theEffects;
 
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
   static constexpr float MIN_SPEED_COEFF = -4.01F;
@@ -157,7 +167,7 @@ inline auto ZoomVectorEffects::IsImageVelocityActive() const -> bool
 inline auto ZoomVectorEffects::GetImageVelocity(const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  return NormalizedCoords{m_imageVelocity.GetVelocity(coords)};
+  return NormalizedCoords{m_theEffects.imageVelocity->GetVelocity(coords)};
 }
 
 inline auto ZoomVectorEffects::IsRotateActive() const -> bool
@@ -178,7 +188,7 @@ inline auto ZoomVectorEffects::IsNoiseActive() const -> bool
 
 inline auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
 {
-  return m_noise.GetVelocity();
+  return m_theEffects.noise->GetVelocity();
 }
 
 inline auto ZoomVectorEffects::IsTanEffectActive() const -> bool
@@ -190,7 +200,7 @@ inline auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
                                                     const NormalizedCoords& velocity) const
     -> NormalizedCoords
 {
-  return m_tanEffect.GetVelocity(sqDistFromZero, velocity);
+  return m_theEffects.tanEffect->GetVelocity(sqDistFromZero, velocity);
 }
 
 inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
@@ -201,29 +211,29 @@ inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
 inline auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  return m_hypercos.GetVelocity(coords);
+  return m_theEffects.hypercos->GetVelocity(coords);
 }
 
 inline auto ZoomVectorEffects::IsHorizontalPlaneVelocityActive() const -> bool
 {
-  return m_planes.IsHorizontalPlaneVelocityActive();
+  return m_theEffects.planes->IsHorizontalPlaneVelocityActive();
 }
 
 inline auto ZoomVectorEffects::GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const
     -> float
 {
-  return m_planes.GetHorizontalPlaneVelocity(coords);
+  return m_theEffects.planes->GetHorizontalPlaneVelocity(coords);
 }
 
 inline auto ZoomVectorEffects::IsVerticalPlaneVelocityActive() const -> bool
 {
-  return m_planes.IsVerticalPlaneVelocityActive();
+  return m_theEffects.planes->IsVerticalPlaneVelocityActive();
 }
 
 inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords) const
     -> float
 {
-  return m_planes.GetVerticalPlaneVelocity(coords);
+  return m_theEffects.planes->GetVerticalPlaneVelocity(coords);
 }
 
 } // namespace FILTERS

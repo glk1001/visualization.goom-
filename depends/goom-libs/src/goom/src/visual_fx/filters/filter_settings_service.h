@@ -9,6 +9,7 @@
 #include "speed_coefficients_effect.h"
 #include "utils/mathutils.h"
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -54,12 +55,25 @@ enum class ZoomFilterMode
 class FilterSettingsService
 {
 public:
+  using GetSpeedCoefficientsEffectFunc =
+      std::function<auto(ZoomFilterMode filterMode,
+                         const UTILS::IGoomRand& goomRand,
+                         const std::string& resourcesDirectory)
+                        ->std::shared_ptr<ISpeedCoefficientsEffect>>;
+
   class FilterEvents;
 
   FilterSettingsService(UTILS::Parallel& parallel,
                         const GOOM::PluginInfo& goomInfo,
                         const UTILS::IGoomRand& goomRand,
-                        const std::string& resourcesDirectory) noexcept;
+                        const std::string& resourcesDirectory,
+                        const GetSpeedCoefficientsEffectFunc& getSpeedCoefficientsEffect =
+                            CreateSpeedCoefficientsEffect) noexcept;
+  FilterSettingsService(const FilterSettingsService&) noexcept = delete;
+  FilterSettingsService(FilterSettingsService&&) noexcept = delete;
+  virtual ~FilterSettingsService() noexcept = default;
+  auto operator=(const FilterSettingsService&) -> FilterSettingsService& = delete;
+  auto operator=(FilterSettingsService&&) -> FilterSettingsService& = delete;
 
   [[nodiscard]] auto GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>;
   [[nodiscard]] auto GetFilterColorsService() const -> std::unique_ptr<FilterColorsService>;
@@ -95,6 +109,11 @@ public:
 
 protected:
   void SetFilterMode(ZoomFilterMode filterMode);
+  [[nodiscard]] auto GetFilterSettings() -> ZoomFilterSettings&;
+  virtual void SetDefaultSettings();
+  virtual void SetRandomExtraEffects();
+  virtual void SetFilterModeExtraEffects();
+  virtual void SetWaveModeExtraEffects();
 
 private:
   ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
@@ -118,8 +137,10 @@ private:
     UTILS::Weights<HypercosOverlay> hypercosWeights;
   };
   std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
-  [[nodiscard]] static auto GetFilterModeData(const UTILS::IGoomRand& goomRand,
-                                              const std::string& resourcesDirectory)
+  [[nodiscard]] static auto GetFilterModeData(
+      const UTILS::IGoomRand& goomRand,
+      const std::string& resourcesDirectory,
+      const GetSpeedCoefficientsEffectFunc& getSpeedCoefficientsEffect)
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
   struct FilterModeData
   {
@@ -137,17 +158,16 @@ private:
   static constexpr float MAX_MAX_SPEED_COEFF = 4.01F;
   ZoomFilterSettings m_filterSettings;
   const UTILS::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
+  [[nodiscard]] static auto CreateSpeedCoefficientsEffect(const ZoomFilterMode filterMode,
+                                                          const UTILS::IGoomRand& goomRand,
+                                                          const std::string& resourcesDirectory)
+      -> std::shared_ptr<ISpeedCoefficientsEffect>;
 
   bool m_filterEffectsSettingsHaveChanged = false;
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
   [[nodiscard]] auto GetRotation() const -> std::shared_ptr<Rotation>;
-
-  void SetDefaultSettings();
-  void SetRandomExtraEffects();
-  void SetFilterModeExtraEffects();
-  void SetWaveModeExtraEffects();
 
   enum class ZoomMidPointEvents
   {
@@ -166,6 +186,11 @@ private:
 };
 
 inline auto FilterSettingsService::GetFilterSettings() const -> const ZoomFilterSettings&
+{
+  return m_filterSettings;
+}
+
+inline auto FilterSettingsService::GetFilterSettings() -> ZoomFilterSettings&
 {
   return m_filterSettings;
 }
@@ -211,7 +236,7 @@ inline void FilterSettingsService::SetFilterMode(ZoomFilterMode filterMode)
   m_previousFilterMode = m_filterMode;
   m_filterMode = filterMode;
 
-  SetDefaultSettings();
+  SetRandomSettingsForNewFilterMode();
 }
 
 inline void FilterSettingsService::SetRandomFilterSettings()

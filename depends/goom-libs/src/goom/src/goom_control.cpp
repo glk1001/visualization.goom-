@@ -352,7 +352,7 @@ inline void GoomControl::GoomControlImpl::ApplyZoomEffects()
 inline void GoomControl::GoomControlImpl::UpdateFilterSettings()
 {
   m_visualFx.UpdateFilterSettings(
-      m_filterSettingsService.GetFilterSettings(),
+      const_cast<const FilterSettingsService&>(m_filterSettingsService).GetFilterSettings(),
       m_filterSettingsService.HaveEffectsSettingsChangedSinceLastUpdate());
   m_filterSettingsService.NotifyUpdatedFilterEffectsSettings();
 }

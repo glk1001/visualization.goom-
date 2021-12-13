@@ -15,10 +15,12 @@ using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 using UTILS::SqDistance;
 
-FilterZoomVector::FilterZoomVector(const uint32_t screenWidth,
-                                   const std::string& resourcesDirectory,
-                                   const IGoomRand& goomRand) noexcept
-  : m_zoomVectorEffects{screenWidth, resourcesDirectory, goomRand}
+FilterZoomVector::FilterZoomVector(
+    const uint32_t screenWidth,
+    const std::string& resourcesDirectory,
+    const IGoomRand& goomRand,
+    const ZoomVectorEffects::GetTheEffectsFunc& getTheExtraEffects) noexcept
+  : m_zoomVectorEffects{screenWidth, resourcesDirectory, goomRand, getTheExtraEffects}
 {
 }
 

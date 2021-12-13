@@ -15,17 +15,22 @@ class Hypercos
 {
 public:
   explicit Hypercos(const UTILS::IGoomRand& goomRand) noexcept;
+  Hypercos(const Hypercos&) noexcept = delete;
+  Hypercos(Hypercos&&) noexcept = delete;
+  virtual ~Hypercos() noexcept = default;
+  auto operator=(const Hypercos&) -> Hypercos& = delete;
+  auto operator=(Hypercos&&) -> Hypercos& = delete;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
 
-  void SetDefaultParams();
-  void SetMode0RandomParams();
-  void SetMode1RandomParams();
-  void SetMode2RandomParams();
-  void SetMode3RandomParams();
+  virtual void SetDefaultParams();
+  virtual void SetMode0RandomParams();
+  virtual void SetMode1RandomParams();
+  virtual void SetMode2RandomParams();
+  virtual void SetMode3RandomParams();
 
   enum class HypercosEffect
   {
