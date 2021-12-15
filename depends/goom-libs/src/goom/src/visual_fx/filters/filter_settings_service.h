@@ -164,7 +164,7 @@ private:
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
-  [[nodiscard]] auto GetRotation() const -> std::shared_ptr<Rotation>;
+  [[nodiscard]] auto MakeRotation() const -> std::shared_ptr<Rotation>;
 
   enum class ZoomMidPointEvents
   {
@@ -177,6 +177,8 @@ private:
     _NUM // unused and must be last
   };
   const UTILS::Weights<ZoomMidPointEvents> m_zoomMidPointWeights;
+  [[nodiscard]] auto IsZoomMidPointInTheMiddle() const -> bool;
+  void SetAnyRandomZoomMidPoint();
   void SetRotate(float rotateProbability);
   void SetMaxSpeedCoeff();
 };

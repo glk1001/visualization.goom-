@@ -15,6 +15,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 
 using UTILS::IGoomRand;
 using UTILS::NUM;
+using UTILS::Parallel;
 using UTILS::Weights;
 
 template<class E, size_t N>
@@ -246,7 +247,7 @@ auto FilterSettingsService::GetFilterModeData(
   return filterMap;
 }
 
-FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
+FilterSettingsService::FilterSettingsService(Parallel& parallel,
                                              const PluginInfo& goomInfo,
                                              const IGoomRand& goomRand,
                                              const std::string& resourcesDirectory,
@@ -368,7 +369,7 @@ inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
   return m_filterModeData.at(m_filterMode).speedCoefficientsEffect;
 }
 
-inline auto FilterSettingsService::GetRotation() const -> std::shared_ptr<Rotation>
+inline auto FilterSettingsService::MakeRotation() const -> std::shared_ptr<Rotation>
 {
   return std::make_shared<Rotation>(m_goomRand);
 }
@@ -394,7 +395,7 @@ void FilterSettingsService::SetDefaultSettings()
   m_filterSettings.filterEffectsSettings.tanEffect = false;
   m_filterSettings.filterEffectsSettings.planeEffect = false;
   m_filterSettings.filterEffectsSettings.noiseEffect = false;
-  m_filterSettings.filterEffectsSettings.rotation = GetRotation();
+  m_filterSettings.filterEffectsSettings.rotation = MakeRotation();
 
   m_filterSettings.filterColorSettings.blockyWavy = false;
 }
@@ -466,55 +467,68 @@ void FilterSettingsService::SetMaxSpeedCoeff()
 
 void FilterSettingsService::SetRandomZoomMidPoint()
 {
-  if ((m_filterMode == ZoomFilterMode::WATER_MODE) ||
-      (m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::AMULET_MODE))
+  if (IsZoomMidPointInTheMiddle())
   {
     m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
     return;
+  }
+
+  SetAnyRandomZoomMidPoint();
+}
+
+auto FilterSettingsService::IsZoomMidPointInTheMiddle() const -> bool
+{
+  if ((m_filterMode == ZoomFilterMode::WATER_MODE) || (m_filterMode == ZoomFilterMode::AMULET_MODE))
+  {
+    return true;
   }
 
   if (((m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE0) ||
        (m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
       m_goomRand.ProbabilityOf(PROB_CRYSTAL_BALL_IN_MIDDLE))
   {
-    m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
-    return;
-    }
-    if ((m_filterMode == ZoomFilterMode::WAVE_MODE1) &&
-        m_goomRand.ProbabilityOf(PROB_WAVE_IN_MIDDLE))
-    {
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
-      return;
-    }
+    return true;
+  }
 
-    switch (m_zoomMidPointWeights.GetRandomWeighted())
-    {
-      case ZoomMidPointEvents::BOTTOM_MID_POINT:
-        m_filterSettings.filterEffectsSettings.zoomMidPoint = {
-            m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height - 1};
-        break;
-      case ZoomMidPointEvents::RIGHT_MID_POINT:
-        m_filterSettings.filterEffectsSettings.zoomMidPoint.x =
-            static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - 1);
-        break;
-      case ZoomMidPointEvents::LEFT_MID_POINT:
-        m_filterSettings.filterEffectsSettings.zoomMidPoint.x = 1;
-        break;
-      case ZoomMidPointEvents::CENTRE_MID_POINT:
-        m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
-        break;
-      case ZoomMidPointEvents::TOP_LEFT_QUARTER_MID_POINT:
-        m_filterSettings.filterEffectsSettings.zoomMidPoint = {
-            m_goomInfo.GetScreenInfo().width / 4, m_goomInfo.GetScreenInfo().height / 4};
-        break;
-      case ZoomMidPointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT:
-        m_filterSettings.filterEffectsSettings.zoomMidPoint = {
-            (3 * m_goomInfo.GetScreenInfo().width) / 4,
-            (3 * m_goomInfo.GetScreenInfo().height) / 4};
-        break;
-      default:
-        throw std::logic_error("Unknown ZoomMidPointEvents enum.");
-    }
+  if (((m_filterMode == ZoomFilterMode::WAVE_MODE0) ||
+       (m_filterMode == ZoomFilterMode::WAVE_MODE1)) &&
+      m_goomRand.ProbabilityOf(PROB_WAVE_IN_MIDDLE))
+  {
+    return true;
+  }
+
+  return false;
+}
+
+void FilterSettingsService::SetAnyRandomZoomMidPoint()
+{
+  switch (m_zoomMidPointWeights.GetRandomWeighted())
+  {
+    case ZoomMidPointEvents::BOTTOM_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidPoint = {m_goomInfo.GetScreenInfo().width / 2,
+                                                             m_goomInfo.GetScreenInfo().height - 1};
+      break;
+    case ZoomMidPointEvents::RIGHT_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidPoint.x =
+          static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - 1);
+      break;
+    case ZoomMidPointEvents::LEFT_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidPoint.x = 1;
+      break;
+    case ZoomMidPointEvents::CENTRE_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
+      break;
+    case ZoomMidPointEvents::TOP_LEFT_QUARTER_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidPoint = {m_goomInfo.GetScreenInfo().width / 4,
+                                                             m_goomInfo.GetScreenInfo().height / 4};
+      break;
+    case ZoomMidPointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidPoint = {
+          (3 * m_goomInfo.GetScreenInfo().width) / 4, (3 * m_goomInfo.GetScreenInfo().height) / 4};
+      break;
+    default:
+      throw std::logic_error("Unknown ZoomMidPointEvents enum.");
+  }
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS
