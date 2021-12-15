@@ -35,6 +35,7 @@
 #include "utils/name_value_pairs.h"
 #endif
 #include "visual_fx/filters/filter_settings_service.h"
+#include "visual_fx/filters/speed_coefficients_effect_factory.h"
 #include "visual_fx/fx_helpers.h"
 
 #include <cstdint>
@@ -57,17 +58,20 @@ using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
 using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToBuffer;
-using VISUAL_FX::FILTERS::FilterSettingsService;
+
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 using UTILS::GetNameValuesString;
 using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
 using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 #endif
+
 using UTILS::GoomRand;
 using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::SmallImageBitmaps;
 using VISUAL_FX::FxHelpers;
+using VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
+using VISUAL_FX::FILTERS::FilterSettingsService;
 
 class GoomControl::GoomControlImpl
 {
@@ -157,7 +161,7 @@ GoomControl::GoomControl(const uint32_t width,
 {
 }
 
-void GoomControl::SetShowTitle(ShowTitleType value)
+void GoomControl::SetShowTitle(const ShowTitleType value)
 {
   m_controller->SetShowTitle(value);
 }
@@ -197,7 +201,11 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_multiBufferDraw{screenWidth, screenHeight},
     m_imageBuffers{screenWidth, screenHeight},
     m_resourcesDirectory{std::move(resourcesDirectory)},
-    m_filterSettingsService{m_parallel, m_goomInfo, m_goomRand, m_resourcesDirectory},
+    m_filterSettingsService{m_parallel,
+                            m_goomInfo,
+                            m_goomRand,
+                            m_resourcesDirectory,
+                            CreateSpeedCoefficientsEffect},
     m_smallBitmaps{m_resourcesDirectory},
     m_visualFx{m_parallel,
                FxHelpers{m_multiBufferDraw, m_goomInfo, m_goomRand},
@@ -248,8 +256,8 @@ void GoomControl::GoomControlImpl::Start()
   m_filterSettingsService.Start();
   UpdateFilterSettings();
 
-  m_visualFx.SetResetDrawBuffSettingsFunc(
-      [this](const FXBuffSettings& settings) { ResetDrawBuffSettings(settings); });
+  m_visualFx.SetResetDrawBuffSettingsFunc([this](const FXBuffSettings& settings)
+                                          { ResetDrawBuffSettings(settings); });
   m_visualFx.ChangeAllFxColorMaps();
   m_visualFx.Start();
 

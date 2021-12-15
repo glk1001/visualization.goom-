@@ -55,7 +55,7 @@ enum class ZoomFilterMode
 class FilterSettingsService
 {
 public:
-  using GetSpeedCoefficientsEffectFunc =
+  using CreateSpeedCoefficientsEffectFunc =
       std::function<auto(ZoomFilterMode filterMode,
                          const UTILS::IGoomRand& goomRand,
                          const std::string& resourcesDirectory)
@@ -63,12 +63,12 @@ public:
 
   class FilterEvents;
 
-  FilterSettingsService(UTILS::Parallel& parallel,
-                        const GOOM::PluginInfo& goomInfo,
-                        const UTILS::IGoomRand& goomRand,
-                        const std::string& resourcesDirectory,
-                        const GetSpeedCoefficientsEffectFunc& getSpeedCoefficientsEffect =
-                            CreateSpeedCoefficientsEffect) noexcept;
+  FilterSettingsService(
+      UTILS::Parallel& parallel,
+      const GOOM::PluginInfo& goomInfo,
+      const UTILS::IGoomRand& goomRand,
+      const std::string& resourcesDirectory,
+      const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect) noexcept;
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
   FilterSettingsService(FilterSettingsService&&) noexcept = delete;
   virtual ~FilterSettingsService() noexcept = default;
@@ -114,6 +114,7 @@ protected:
   virtual void SetRandomExtraEffects();
   virtual void SetFilterModeExtraEffects();
   virtual void SetWaveModeExtraEffects();
+  virtual void SetRandomZoomMidPoint();
 
 private:
   ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
@@ -140,7 +141,7 @@ private:
   [[nodiscard]] static auto GetFilterModeData(
       const UTILS::IGoomRand& goomRand,
       const std::string& resourcesDirectory,
-      const GetSpeedCoefficientsEffectFunc& getSpeedCoefficientsEffect)
+      const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect)
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
   struct FilterModeData
   {
@@ -158,10 +159,6 @@ private:
   static constexpr float MAX_MAX_SPEED_COEFF = 4.01F;
   ZoomFilterSettings m_filterSettings;
   const UTILS::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
-  [[nodiscard]] static auto CreateSpeedCoefficientsEffect(const ZoomFilterMode filterMode,
-                                                          const UTILS::IGoomRand& goomRand,
-                                                          const std::string& resourcesDirectory)
-      -> std::shared_ptr<ISpeedCoefficientsEffect>;
 
   bool m_filterEffectsSettingsHaveChanged = false;
 
@@ -180,7 +177,6 @@ private:
     _NUM // unused and must be last
   };
   const UTILS::Weights<ZoomMidPointEvents> m_zoomMidPointWeights;
-  void SetRandomZoomMidPoint();
   void SetRotate(float rotateProbability);
   void SetMaxSpeedCoeff();
 };
@@ -229,7 +225,7 @@ inline void FilterSettingsService::ChangeMilieu()
   SetRandomZoomMidPoint();
 }
 
-inline void FilterSettingsService::SetFilterMode(ZoomFilterMode filterMode)
+inline void FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode)
 {
   m_filterEffectsSettingsHaveChanged = true;
 

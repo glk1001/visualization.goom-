@@ -1,21 +1,12 @@
 #include "filter_settings_service.h"
 
-#include "amulet.h"
-#include "crystal_ball.h"
-#include "distance_field.h"
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
 #include "filter_settings.h"
 #include "filter_zoom_vector.h"
 #include "goom_plugin_info.h"
-#include "image_speed_coeffs.h"
-#include "scrunch.h"
-#include "simple_speed_coefficients_effect.h"
-#include "speedway.h"
 #include "utils/enumutils.h"
 #include "utils/goom_rand_base.h"
-#include "wave.h"
-#include "y_only.h"
 
 #include <stdexcept>
 
@@ -208,55 +199,10 @@ constexpr float TOP_LEFT_QUARTER_MID_POINT_WEIGHT     = 10.0F;
 constexpr float BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
 // clang-format on
 
-auto FilterSettingsService::CreateSpeedCoefficientsEffect(const ZoomFilterMode filterMode,
-                                                          const IGoomRand& goomRand,
-                                                          const std::string& resourcesDirectory)
-    -> std::shared_ptr<ISpeedCoefficientsEffect>
-{
-  switch (filterMode)
-  {
-    case ZoomFilterMode::AMULET_MODE:
-      return std::make_shared<Amulet>(goomRand);
-    case ZoomFilterMode::CRYSTAL_BALL_MODE0:
-      return std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0, goomRand);
-    case ZoomFilterMode::CRYSTAL_BALL_MODE1:
-      return std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1, goomRand);
-    case ZoomFilterMode::DISTANCE_FIELD_MODE:
-      return std::make_shared<DistanceField>(goomRand);
-    case ZoomFilterMode::HYPERCOS_MODE0:
-    case ZoomFilterMode::HYPERCOS_MODE1:
-    case ZoomFilterMode::HYPERCOS_MODE2:
-    case ZoomFilterMode::HYPERCOS_MODE3:
-      return std::make_shared<SimpleSpeedCoefficientsEffect>();
-    case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
-      return std::make_shared<ImageSpeedCoefficients>(resourcesDirectory, goomRand);
-    case ZoomFilterMode::NORMAL_MODE:
-      return std::make_shared<SimpleSpeedCoefficientsEffect>();
-    case ZoomFilterMode::SCRUNCH_MODE:
-      return std::make_shared<Scrunch>(goomRand);
-    case ZoomFilterMode::SPEEDWAY_MODE0:
-      return std::make_shared<Speedway>(Speedway::Modes::MODE0, goomRand);
-    case ZoomFilterMode::SPEEDWAY_MODE1:
-      return std::make_shared<Speedway>(Speedway::Modes::MODE1, goomRand);
-    case ZoomFilterMode::SPEEDWAY_MODE2:
-      return std::make_shared<Speedway>(Speedway::Modes::MODE2, goomRand);
-    case ZoomFilterMode::WATER_MODE:
-      return std::make_shared<SimpleSpeedCoefficientsEffect>();
-    case ZoomFilterMode::WAVE_MODE0:
-      return std::make_shared<Wave>(Wave::Modes::MODE0, goomRand);
-    case ZoomFilterMode::WAVE_MODE1:
-      return std::make_shared<Wave>(Wave::Modes::MODE1, goomRand);
-    case ZoomFilterMode::Y_ONLY_MODE:
-      return std::make_shared<YOnly>(goomRand);
-    default:
-      throw std::logic_error("Invalid filter mode.");
-  }
-}
-
 auto FilterSettingsService::GetFilterModeData(
     const IGoomRand& goomRand,
     const std::string& resourcesDirectory,
-    const GetSpeedCoefficientsEffectFunc& getSpeedCoefficientsEffect)
+    const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect)
     -> std::map<ZoomFilterMode, ZoomFilterModeInfo>
 {
   // clang-format off
@@ -291,7 +237,7 @@ auto FilterSettingsService::GetFilterModeData(
         filterModeData.filterMode,
         ZoomFilterModeInfo{
             std::string(filterModeData.name),
-            getSpeedCoefficientsEffect(filterModeData.filterMode, goomRand, resourcesDirectory),
+            createSpeedCoefficientsEffect(filterModeData.filterMode, goomRand, resourcesDirectory),
             filterModeData.rotateProb,
             Weights<Hyp>{goomRand, filterModeData.modeWeights},
     });
@@ -304,8 +250,8 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
                                              const PluginInfo& goomInfo,
                                              const IGoomRand& goomRand,
                                              const std::string& resourcesDirectory,
-                                             const GetSpeedCoefficientsEffectFunc&
-                                                 getSpeedCoefficientsEffect) noexcept
+                                             const CreateSpeedCoefficientsEffectFunc&
+                                                 createSpeedCoefficientsEffect) noexcept
   : m_parallel{parallel},
     m_goomInfo{goomInfo},
     m_goomRand{goomRand},
@@ -313,7 +259,7 @@ FilterSettingsService::FilterSettingsService(UTILS::Parallel& parallel,
     m_resourcesDirectory{resourcesDirectory},
     m_filterModeData{GetFilterModeData(m_goomRand,
                                        m_resourcesDirectory,
-                                       getSpeedCoefficientsEffect)},
+                                       createSpeedCoefficientsEffect)},
     m_filterSettings{{Vitesse{},
          HypercosOverlay::NONE,
          DEFAULT_MAX_SPEED_COEFF,

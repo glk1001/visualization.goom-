@@ -81,6 +81,7 @@ add_library(goom
         src/visual_fx/filters/scrunch.cpp
         src/visual_fx/filters/simple_speed_coefficients_effect.h
         src/visual_fx/filters/speed_coefficients_effect.h
+        src/visual_fx/filters/speed_coefficients_effect_factory.cpp
         src/visual_fx/filters/speedway.cpp
         src/visual_fx/filters/tan_effect.cpp
         src/visual_fx/filters/wave.cpp
