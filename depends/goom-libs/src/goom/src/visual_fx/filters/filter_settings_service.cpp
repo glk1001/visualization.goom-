@@ -433,6 +433,8 @@ inline void FilterSettingsService::SetFilterModeExtraEffects()
 
 void FilterSettingsService::SetWaveModeExtraEffects()
 {
+  m_filterSettings.filterEffectsSettings.planeEffect = true;
+
   m_filterSettings.filterEffectsSettings.vitesse.SetReverseVitesse(
       m_goomRand.ProbabilityOf(PROB_REVERSE_SPEED));
 

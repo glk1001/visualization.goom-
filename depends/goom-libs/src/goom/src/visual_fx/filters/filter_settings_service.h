@@ -3,11 +3,9 @@
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
 #include "filter_settings.h"
-#include "filter_zoom_vector.h"
 #include "goom/spimpl.h"
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
-#include "utils/mathutils.h"
 
 #include <functional>
 #include <map>
@@ -110,11 +108,14 @@ public:
 protected:
   void SetFilterMode(ZoomFilterMode filterMode);
   [[nodiscard]] auto GetFilterSettings() -> ZoomFilterSettings&;
+  [[nodiscard]] auto GetGoomRand() const -> const UTILS::IGoomRand&;
+  [[nodiscard]] virtual auto MakeRotation() const -> std::shared_ptr<Rotation>;
   virtual void SetDefaultSettings();
   virtual void SetRandomExtraEffects();
   virtual void SetFilterModeExtraEffects();
   virtual void SetWaveModeExtraEffects();
   virtual void SetRandomZoomMidPoint();
+  virtual void SetRotate(float rotateProbability);
 
 private:
   ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
@@ -164,7 +165,6 @@ private:
 
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
-  [[nodiscard]] auto MakeRotation() const -> std::shared_ptr<Rotation>;
 
   enum class ZoomMidPointEvents
   {
@@ -179,7 +179,6 @@ private:
   const UTILS::Weights<ZoomMidPointEvents> m_zoomMidPointWeights;
   [[nodiscard]] auto IsZoomMidPointInTheMiddle() const -> bool;
   void SetAnyRandomZoomMidPoint();
-  void SetRotate(float rotateProbability);
   void SetMaxSpeedCoeff();
 };
 
@@ -191,6 +190,11 @@ inline auto FilterSettingsService::GetFilterSettings() const -> const ZoomFilter
 inline auto FilterSettingsService::GetFilterSettings() -> ZoomFilterSettings&
 {
   return m_filterSettings;
+}
+
+inline auto FilterSettingsService::GetGoomRand() const -> const UTILS::IGoomRand&
+{
+  return m_goomRand;
 }
 
 inline auto FilterSettingsService::HaveEffectsSettingsChangedSinceLastUpdate() const -> bool

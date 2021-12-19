@@ -15,8 +15,13 @@ class Rotation
 {
 public:
   explicit Rotation(const UTILS::IGoomRand& goomRand) noexcept;
+  Rotation(const Rotation&) noexcept = delete;
+  Rotation(Rotation&&) noexcept = delete;
+  virtual ~Rotation() noexcept = default;
+  auto operator=(const Rotation&) -> Rotation& = delete;
+  auto operator=(Rotation&&) -> Rotation& = delete;
 
-  void SetRandomParams();
+  virtual void SetRandomParams();
 
   void SetZero();
   [[nodiscard]] auto IsActive() const -> bool;

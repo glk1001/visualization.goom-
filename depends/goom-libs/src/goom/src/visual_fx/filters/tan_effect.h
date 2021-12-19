@@ -15,8 +15,13 @@ class TanEffect
 {
 public:
   explicit TanEffect(const UTILS::IGoomRand& goomRand) noexcept;
+  TanEffect(const TanEffect&) noexcept = delete;
+  TanEffect(TanEffect&&) noexcept = delete;
+  virtual ~TanEffect() noexcept = default;
+  auto operator=(const TanEffect&) -> TanEffect& = delete;
+  auto operator=(TanEffect&&) -> TanEffect& = delete;
 
-  void SetRandomParams();
+  virtual void SetRandomParams();
 
   [[nodiscard]] auto GetVelocity(float sqDistFromZero, const NormalizedCoords& velocity) const
       -> NormalizedCoords;
