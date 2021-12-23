@@ -7,7 +7,7 @@
 namespace GOOM
 {
 class Pixel;
-class V2dInt;
+struct V2dInt;
 
 namespace DRAW
 {

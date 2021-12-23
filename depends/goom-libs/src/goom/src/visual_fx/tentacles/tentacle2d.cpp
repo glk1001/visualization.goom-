@@ -16,7 +16,7 @@ using UTILS::FlatDampingFunction;
 using UTILS::LinearDampingFunction;
 using UTILS::PiecewiseDampingFunction;
 
-Tentacle2D::Tentacle2D(const size_t id,
+Tentacle2D::Tentacle2D([[maybe_unused]] const size_t id,
                        const size_t numNodes,
                        const double xMin,
                        const double xMax,
@@ -24,8 +24,7 @@ Tentacle2D::Tentacle2D(const size_t id,
                        const double yMax,
                        const double basePrevYWeight,
                        const double baseCurrentYWeight) noexcept
-  : m_id{id},
-    m_numNodes{numNodes},
+  : m_numNodes{numNodes},
     m_xMin{xMin},
     m_xMax{xMax},
     m_yMin{yMin},

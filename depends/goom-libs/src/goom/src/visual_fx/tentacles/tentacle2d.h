@@ -43,7 +43,6 @@ public:
   void SetDoDamping(bool val);
 
 private:
-  const size_t m_id;
   const size_t m_numNodes;
   double m_xMin = 0.0;
   double m_xMax = 0.0;
