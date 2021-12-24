@@ -117,8 +117,8 @@ private:
 
   // TODO Move to simi
   TValue m_tMix{TValue::StepType::CONTINUOUS_REVERSIBLE, 0.01F};
-  static constexpr float POINT_BRIGHTNESS = 2.0F;
-  static constexpr float BITMAP_BRIGHTNESS = 1.0F;
+  static constexpr float POINT_BRIGHTNESS = 3.0F;
+  static constexpr float BITMAP_BRIGHTNESS = 2.0F;
   void ChangeColorMaps();
   void ChangeSpeed();
   void DrawNextIfsPoints();

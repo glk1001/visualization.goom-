@@ -102,7 +102,7 @@ private:
   const IGoomRand& m_goomRand;
   std::shared_ptr<RandomColorMaps> m_colorMaps;
   std::reference_wrapper<const IColorMap> m_currentColorMap;
-  static constexpr float GAMMA = 1.0F / 1.0F;
+  static constexpr float GAMMA = 1.0F / 2.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
@@ -411,7 +411,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   if (m_lineLerpFactor >= 1.0F)
   {
     m_srcLineType = m_destLineType;
-    m_currentBrightness = m_goomRand.GetRandInRange(2.0F, 3.5F);
+    m_currentBrightness = m_goomRand.GetRandInRange(2.0F, 4.0F);
   }
 
   assert(m_srcLineType != LineType::CIRCLE || m_lineLerpFactor < 1.0F ||
@@ -458,7 +458,7 @@ void LinesFx::LinesImpl::ResetDestLine(const LineType newLineType,
   m_newAmplitude = newAmplitude;
   m_destColor = newColor;
   m_lineLerpFactor = 0.0;
-  m_currentBrightness = m_goomRand.GetRandInRange(1.0F, 2.5F);
+  m_currentBrightness = m_goomRand.GetRandInRange(1.0F, 3.0F);
   m_dotDrawer.ChangeDotSizes();
   m_maxNormalizedPeak = m_goomRand.GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
 

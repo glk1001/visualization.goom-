@@ -514,7 +514,7 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
                  star.velocity.y * static_cast<float>(j));
 
     const float brightness =
-        (2.7F * ageBrightness * static_cast<float>(j)) / static_cast<float>(numParts);
+        (3.7F * ageBrightness * static_cast<float>(j)) / static_cast<float>(numParts);
     const auto mixedColors = GetMixedColors(star, tAge, brightness);
     const std::vector<Pixel> colors = {mixedColors.first, mixedColors.second};
     const uint32_t size = tAge < OLD_AGE ? 1 : m_goomRand.GetRandInRange(2U, MAX_DOT_SIZE + 1);

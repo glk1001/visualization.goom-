@@ -147,8 +147,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
 inline auto LowDensityBlurrer::GetGammaCorrection(const float brightness, const Pixel& color) const
     -> Pixel
 {
-  // if constexpr (GAMMA == 1.0F)
-  if (1.0F == GAMMA)
+  if constexpr (GAMMA == 1.0F)
   {
     return GetBrighterColor(brightness, color);
   }

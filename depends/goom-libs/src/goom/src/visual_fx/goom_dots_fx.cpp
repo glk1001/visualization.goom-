@@ -432,7 +432,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     return;
   }
 
-  constexpr float BRIGHTNESS = 1.5F;
+  constexpr float BRIGHTNESS = 3.5F;
   const auto getColor1 =
       [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& b)
   {

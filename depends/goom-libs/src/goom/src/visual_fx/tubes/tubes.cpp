@@ -349,7 +349,7 @@ private:
   std::shared_ptr<RandomColorMaps> m_randomInnerColorMaps;
   float m_brightnessFactor;
 
-  static constexpr float GAMMA = 1.0F / 1.0F;
+  static constexpr float GAMMA = 1.0F / 2.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;

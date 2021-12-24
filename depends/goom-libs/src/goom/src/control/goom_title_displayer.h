@@ -78,7 +78,7 @@ private:
   [[nodiscard]] auto GetCharSpacing() const -> float;
   [[nodiscard]] auto GetXIncrement() const -> float;
   [[nodiscard]] auto GetYIncrement() const -> float;
-  static constexpr float TEXT_GAMMA = 1.0F / 1.0F;
+  static constexpr float TEXT_GAMMA = 1.0F / 2.0F;
   static constexpr float TEXT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   COLOR::GammaCorrection m_textGammaCorrect{TEXT_GAMMA, TEXT_GAMMA_BRIGHTNESS_THRESHOLD};
   [[nodiscard]] auto GetTextGammaCorrection(float brightness, const Pixel& color) const -> Pixel;

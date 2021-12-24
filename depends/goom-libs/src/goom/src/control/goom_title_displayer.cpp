@@ -255,8 +255,7 @@ auto GoomTitleDisplayer::GetYIncrement() const -> float
 inline auto GoomTitleDisplayer::GetTextGammaCorrection(const float brightness,
                                                        const Pixel& color) const -> Pixel
 {
-  // if constexpr (TEXT_GAMMA == 1.0F)
-  if (1.0F == TEXT_GAMMA)
+  if constexpr (TEXT_GAMMA == 1.0F)
   {
     return GetBrighterColor(brightness, color);
   }

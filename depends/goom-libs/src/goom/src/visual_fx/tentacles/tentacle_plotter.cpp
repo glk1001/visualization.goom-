@@ -204,7 +204,7 @@ inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) const -> 
   // very white and over-exposed. If we reduce the brightness, then all the combined
   // tentacles look less bright and white and more colors show through.
 
-  constexpr float BRIGHTNESS = 2.0F;
+  constexpr float BRIGHTNESS = 3.0F;
   constexpr float BRIGHTNESS_DISTANCE_CUTOFF = 30.F;
   const float brightnessCut = GetBrightnessCut(tentacle);
 

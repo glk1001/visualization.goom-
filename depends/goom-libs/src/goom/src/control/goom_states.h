@@ -85,7 +85,6 @@ private:
   using StateInfoArray = std::array<StateInfo, UTILS::NUM<GoomStates>>;
   static const StateInfoArray STATE_INFO_ARRAY;
   [[nodiscard]] static auto GetStateInfoArray() noexcept -> StateInfoArray;
-  static void NormaliseStates(StateInfoArray& stateInfoArray);
 };
 
 inline auto GoomStateInfo::GetStateInfo(const GoomStates goomState) -> const StateInfo&
