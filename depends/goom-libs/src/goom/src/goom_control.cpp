@@ -491,19 +491,21 @@ inline void GoomControl::GoomControlImpl::UpdateMessages(const std::string& mess
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 void GoomControl::GoomControlImpl::DisplayStateText()
 {
-  std::string message = "";
+  std::string message;
+
+  const FilterSettingsService& filterSettingsService = m_filterSettingsService;
 
   const ZoomFilterEffectsSettings& filterEffectsSettings =
-      m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
+      filterSettingsService.GetFilterSettings().filterEffectsSettings;
   const ZoomFilterBufferSettings& filterBufferSettings =
-      m_filterSettingsService.GetFilterSettings().filterBufferSettings;
+      filterSettingsService.GetFilterSettings().filterBufferSettings;
 
   const GoomShaderEffects& shaderEffects = GetLastShaderEffects();
 
   message += std20::format("State: {}\n", m_visualFx.GetCurrentStateName());
-  message += std20::format("Filter Mode: {}\n", m_filterSettingsService.GetCurrentFilterMode());
+  message += std20::format("Filter Mode: {}\n", filterSettingsService.GetCurrentFilterMode());
   message +=
-      std20::format("Previous Filter Mode: {}\n", m_filterSettingsService.GetPreviousFilterMode());
+      std20::format("Previous Filter Mode: {}\n", filterSettingsService.GetPreviousFilterMode());
 
   message += std20::format("tranLerpIncrement: {}\n", filterBufferSettings.tranLerpIncrement);
   message +=
