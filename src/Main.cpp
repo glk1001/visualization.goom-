@@ -8,6 +8,7 @@
 
 #include "Main.h"
 
+#include "goom/compiler_versions.h"
 #include "goom/goom_graphic.h"
 #include "goom/logging_control.h"
 #undef NO_LOGGING
@@ -21,6 +22,7 @@
 #include <stdexcept>
 
 using GOOM::AudioSamples;
+using GOOM::GetCompilerVersion;
 using GOOM::GoomControl;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
@@ -210,6 +212,9 @@ auto CVisualizationGoom::InitGoomController() -> bool
     LogError("CVisualizationGoom: Goom controller could not be initialized!");
     return false;
   }
+
+  LogInfo("CVisualizationGoom: Compiler: {}.", GetCompilerVersion());
+  LogInfo("Goom Library: Compiler: {}.", GoomControl::GetCompilerVersion());
 
   m_goomControl->SetShowTitle(m_showTitle);
 

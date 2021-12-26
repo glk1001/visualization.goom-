@@ -48,6 +48,8 @@ public:
 
   void Finish();
 
+  [[nodiscard]] static auto GetCompilerVersion() -> std::string;
+
 private:
   class GoomControlImpl;
   spimpl::unique_impl_ptr<GoomControlImpl> m_controller;
