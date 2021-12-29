@@ -24,6 +24,7 @@ Checks: >
   portability-*,
   readability-*,
   zircon-*,
+  -llvm-header-guard,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -hicpp-no-array-decay,
   -cert-err58-cpp, # Can activate this when we can use 'constexpr std::vector'
@@ -85,6 +86,7 @@ CheckOptions:
   - { key: google-readability-braces-around-statements.ShortStatementLines, value: '1' }
   - { key: google-readability-function-size.StatementThreshold,             value: '800' }
   - { key: google-readability-namespace-comments.ShortNamespaceLines,       value: '10' }
+  - { key: llvm-namespace-comment.ShortNamespaceLines,                      value: '10' }
   - { key: google-readability-namespace-comments.SpacesBeforeComments,      value: '2' }
   - { key: modernize-loop-convert.MaxCopySize,                              value: '16' }
   - { key: modernize-loop-convert.MinConfidence,                            value: reasonable }
