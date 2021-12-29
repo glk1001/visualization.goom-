@@ -49,7 +49,7 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
     m_drawablesMap{
         {GoomDrawables::STARS, m_star_fx},          {GoomDrawables::IFS, m_ifs_fx},
         {GoomDrawables::IMAGE, m_image_fx},         {GoomDrawables::DOTS, m_goomDots_fx},
-        {GoomDrawables::TENTACLES, m_tentacles_fx}, {GoomDrawables::TUBE, m_tube_fx},
+        {GoomDrawables::TENTACLES, m_tentacles_fx}, {GoomDrawables::TUBES, m_tube_fx},
     },
     m_visualFxColorMaps{fxHelpers.GetGoomRand()}
 {
@@ -224,12 +224,12 @@ void AllStandardVisualFx::ApplyTentaclesToBothBuffersIfRequired()
 
 void AllStandardVisualFx::ApplyTubeToBothBuffersIfRequired()
 {
-  if (!IsCurrentlyDrawable(GoomDrawables::TUBE))
+  if (!IsCurrentlyDrawable(GoomDrawables::TUBES))
   {
     return;
   }
 
-  ResetDrawBuffSettings(GoomDrawables::TUBE);
+  ResetDrawBuffSettings(GoomDrawables::TUBES);
   m_tube_fx->ApplyMultiple();
 }
 

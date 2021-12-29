@@ -57,7 +57,7 @@ enum class GoomDrawables
   FAR_SCOPE,
   IMAGE,
   SHADER,
-  TUBE,
+  TUBES,
   _NUM // unused and must be last
 };
 
