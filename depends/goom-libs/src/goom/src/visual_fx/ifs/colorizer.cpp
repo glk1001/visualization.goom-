@@ -125,7 +125,7 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
       throw std::logic_error("Unknown ColorMode");
   }
 
-  mixColor = GetFinalMixedColor(mixColor, baseColor, tBaseMix);
+  mixColor = GetFinalMixedColor(baseColor, mixColor, tBaseMix);
 
   return GetGammaCorrection(brightness * logAlpha, mixColor);
 }
