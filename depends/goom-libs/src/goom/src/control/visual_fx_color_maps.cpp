@@ -7,6 +7,12 @@
 #include <array>
 #include <numeric>
 
+// CLion is giving false positives for unreachable functions.
+// For example 'GetConstColorMatchedSet'.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma ide diagnostic ignored "UnreachableCallsOfFunction"
+
 namespace GOOM::CONTROL
 {
 
@@ -304,3 +310,5 @@ auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
 }
 
 } // namespace GOOM::CONTROL
+
+#pragma clang diagnostic pop
