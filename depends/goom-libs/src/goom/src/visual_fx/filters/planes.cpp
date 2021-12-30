@@ -58,9 +58,9 @@ constexpr IGoomRand::NumberRange<float> VERTICAL_SWIRL_AMPLITUDE_RANGE = {0.1F, 
 constexpr float PROB_PLANE_AMPLITUDES_EQUAL = 0.75F;
 constexpr float PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.5F;
 constexpr float PROB_MUCH_SPIRALLING = 0.2F;
-constexpr float PROB_NO_SWIRL = 0.9F;
-constexpr float PROB_SWIRL_AMPLITUDES_EQUAL = 0.9F;
-constexpr float PROB_SWIRL_FREQ_EQUAL = 0.9F;
+constexpr float PROB_NO_SWIRL = 0.95F;
+constexpr float PROB_SWIRL_AMPLITUDES_EQUAL = 0.7F;
+constexpr float PROB_SWIRL_FREQ_EQUAL = 0.7F;
 
 Planes::Planes(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
