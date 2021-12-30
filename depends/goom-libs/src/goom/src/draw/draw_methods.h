@@ -1,13 +1,11 @@
 #pragma once
 
-#include "color/colorutils.h"
 #include "goom_graphic.h"
 
 #ifdef GOOM_DEBUG
 #undef NDEBUG
 #endif
 #include <cassert>
-#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <vector>

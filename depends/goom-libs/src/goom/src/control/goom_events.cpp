@@ -49,7 +49,7 @@ GoomEvents::GoomEvents(const IGoomRand& goomRand) noexcept
 
 auto GoomEvents::Happens(const GoomEvent event) const -> bool
 {
-  const WeightedEvent& weightedEvent = m_weightedEvents[static_cast<size_t>(event)];
+  const WeightedEvent& weightedEvent = m_weightedEvents.at(static_cast<size_t>(event));
   return m_goomRand.ProbabilityOfMInN(weightedEvent.m, weightedEvent.outOf);
 }
 

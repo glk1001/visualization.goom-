@@ -80,7 +80,7 @@ void Wave::SetWaveModeSettings(const IGoomRand::NumberRange<float>& freqFactorRa
           ? xWaveEffect
           : static_cast<WaveEffect>(m_goomRand.GetRandInRange(0U, NUM<WaveEffect>));
 
-  float periodicFactor{};
+  float periodicFactor;
   if (m_goomRand.ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
   {
     periodicFactor = xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT

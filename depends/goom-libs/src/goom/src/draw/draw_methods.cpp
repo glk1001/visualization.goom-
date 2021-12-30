@@ -8,7 +8,6 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <functional>
 #include <vector>
 
 namespace GOOM::DRAW
@@ -150,7 +149,6 @@ void DrawMethods::DrawLine(const int32_t x1,
   else
   {
     DrawThickLine(x1, y1, x2, y2, colors, thickness, LINE_THICKNESS_MIDDLE);
-    // plotLineWidth(n, buffs, colors, x1, y1, x2, y2, 1.0, screenx, screeny);
   }
 }
 
@@ -198,10 +196,10 @@ void DrawMethods::DrawWuLine(
 //
 void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot)
 {
-  const auto ipart = [](const float x) -> int { return static_cast<int>(std::floor(x)); };
-  const auto fround = [](const float x) -> float { return std::round(x); };
-  const auto fpart = [](const float x) -> float { return x - std::floor(x); };
-  const auto rfpart = [=](const float x) -> float { return 1 - fpart(x); };
+  const auto iPart = [](const float x) -> int { return static_cast<int>(std::floor(x)); };
+  const auto fRound = [](const float x) -> float { return std::round(x); };
+  const auto fPart = [](const float x) -> float { return x - std::floor(x); };
+  const auto rFPart = [=](const float x) -> float { return 1 - fPart(x); };
 
   const bool steep = std::abs(y1 - y0) > std::abs(x1 - x0);
   if (steep)
@@ -220,42 +218,42 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
   const float gradient = (dx < 0.001F) ? 1 : (dy / dx);
 
   int xpx11;
-  float intery;
+  float interY;
   {
-    const float xend = fround(x0);
-    const float yend = y0 + (gradient * (xend - x0));
-    const float xgap = rfpart(x0 + 0.5F);
-    xpx11 = static_cast<int>(xend);
-    const int ypx11 = ipart(yend);
+    const float xEnd = fRound(x0);
+    const float yEnd = y0 + (gradient * (xEnd - x0));
+    const float xGap = rFPart(x0 + 0.5F);
+    xpx11 = static_cast<int>(xEnd);
+    const int ypx11 = iPart(yEnd);
     if (steep)
     {
-      plot(ypx11, xpx11, rfpart(yend) * xgap);
-      plot(ypx11 + 1, xpx11, fpart(yend) * xgap);
+      plot(ypx11, xpx11, rFPart(yEnd) * xGap);
+      plot(ypx11 + 1, xpx11, fPart(yEnd) * xGap);
     }
     else
     {
-      plot(xpx11, ypx11, rfpart(yend) * xgap);
-      plot(xpx11, ypx11 + 1, fpart(yend) * xgap);
+      plot(xpx11, ypx11, rFPart(yEnd) * xGap);
+      plot(xpx11, ypx11 + 1, fPart(yEnd) * xGap);
     }
-    intery = yend + gradient;
+    interY = yEnd + gradient;
   }
 
   int xpx12;
   {
-    const float xend = fround(x1);
-    const float yend = y1 + (gradient * (xend - x1));
-    const float xgap = rfpart(x1 + 0.5F);
-    xpx12 = static_cast<int>(xend);
-    const int ypx12 = ipart(yend);
+    const float xEnd = fRound(x1);
+    const float yEnd = y1 + (gradient * (xEnd - x1));
+    const float xGap = rFPart(x1 + 0.5F);
+    xpx12 = static_cast<int>(xEnd);
+    const int ypx12 = iPart(yEnd);
     if (steep)
     {
-      plot(ypx12, xpx12, rfpart(yend) * xgap);
-      plot(ypx12 + 1, xpx12, fpart(yend) * xgap);
+      plot(ypx12, xpx12, rFPart(yEnd) * xGap);
+      plot(ypx12 + 1, xpx12, fPart(yEnd) * xGap);
     }
     else
     {
-      plot(xpx12, ypx12, rfpart(yend) * xgap);
-      plot(xpx12, ypx12 + 1, fpart(yend) * xgap);
+      plot(xpx12, ypx12, rFPart(yEnd) * xGap);
+      plot(xpx12, ypx12 + 1, fPart(yEnd) * xGap);
     }
   }
 
@@ -263,18 +261,18 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
   {
     for (int x = xpx11 + 1; x < xpx12; ++x)
     {
-      plot(ipart(intery), x, rfpart(intery));
-      plot(ipart(intery) + 1, x, fpart(intery));
-      intery += gradient;
+      plot(iPart(interY), x, rFPart(interY));
+      plot(iPart(interY) + 1, x, fPart(interY));
+      interY += gradient;
     }
   }
   else
   {
     for (int x = xpx11 + 1; x < xpx12; ++x)
     {
-      plot(x, ipart(intery), rfpart(intery));
-      plot(x, ipart(intery) + 1, fpart(intery));
-      intery += gradient;
+      plot(x, iPart(interY), rFPart(interY));
+      plot(x, iPart(interY) + 1, fPart(interY));
+      interY += gradient;
     }
   }
 }
@@ -526,7 +524,7 @@ void DrawMethods::DrawThickLine(int x0,
     }
     /*
      * Vector for draw direction of start of lines is rectangular and counterclockwise to
-     * main line direction. Therefore no pixel will be missed if LINE_OVERLAP_MAJOR is used
+     * main line direction. Therefore, no pixel will be missed if LINE_OVERLAP_MAJOR is used
      * on change in minor rectangular direction.
      */
     // adjust draw start point

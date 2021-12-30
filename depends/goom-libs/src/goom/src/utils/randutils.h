@@ -3,14 +3,10 @@
 #include "xoshiro.hpp"
 
 #include <algorithm>
-#include <cmath>
 #include <cstdlib>
-#include <istream>
-#include <ostream>
+#include <iosfwd>
 #include <stdexcept>
 #include <type_traits>
-#include <utility>
-#include <vector>
 
 
 namespace GOOM::UTILS::RAND
@@ -21,8 +17,8 @@ void SetRandSeed(uint64_t seed);
 extern const uint32_t g_randMax;
 [[nodiscard]] auto GetXoshiroEng() -> xoshiro256plus64;
 
-void SaveRandState(std::ostream& f);
-void RestoreRandState(std::istream& f);
+void SaveRandState(std::ostream& file);
+void RestoreRandState(std::istream& file);
 
 // Return random sign integer, either -1 or +1.
 [[nodiscard]] inline auto GetRandSignInt() -> int;
@@ -53,7 +49,7 @@ void Shuffle(RandomIt first, RandomIt last);
 
 // Return prob(m/n)
 [[nodiscard]] inline auto ProbabilityOfMInN(uint32_t m, uint32_t n) -> bool;
-[[nodiscard]] inline auto ProbabilityOf(float p) -> bool;
+[[nodiscard]] inline auto ProbabilityOf(float prob) -> bool;
 
 inline auto GetRandSignInt() -> int
 {
@@ -104,9 +100,9 @@ inline auto ProbabilityOfMInN(const uint32_t m, const uint32_t n) -> bool
   return GetRandInRange(0.0F, 1.0F) <= (static_cast<float>(m) / static_cast<float>(n));
 }
 
-inline auto ProbabilityOf(const float p) -> bool
+inline auto ProbabilityOf(const float prob) -> bool
 {
-  return GetRandInRange(0.0F, 1.0F) <= p;
+  return GetRandInRange(0.0F, 1.0F) <= prob;
 }
 
 } // namespace GOOM::UTILS::RAND

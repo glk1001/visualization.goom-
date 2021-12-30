@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <string>
 
 namespace GOOM
 {
@@ -31,7 +30,7 @@ class FilterColorsService;
 struct ZoomFilterBufferSettings;
 struct ZoomFilterEffectsSettings;
 struct ZoomFilterColorSettings;
-} // namespace FILTERS
+}
 
 class ZoomFilterFx : public IVisualFx
 {

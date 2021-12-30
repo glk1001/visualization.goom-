@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
-#include <string>
 
 namespace GOOM
 {
@@ -48,12 +47,12 @@ public:
 
   struct Rect
   {
-    int32_t xmin{};
-    int32_t xmax{};
-    int32_t ymin{};
-    int32_t ymax{};
-    [[nodiscard]] auto Width() const -> int32_t { return (xmax - xmin) + 1; }
-    [[nodiscard]] auto Height() const -> int32_t { return (ymax - ymin) + 1; }
+    int32_t xMin{};
+    int32_t xMax{};
+    int32_t yMin{};
+    int32_t yMax{};
+    [[nodiscard]] auto Width() const -> int32_t { return (xMax - xMin) + 1; }
+    [[nodiscard]] auto Height() const -> int32_t { return (yMax - yMin) + 1; }
   };
   [[nodiscard]] auto GetPreparedTextBoundingRect() const -> Rect;
   [[nodiscard]] auto GetBearingX() const -> int;

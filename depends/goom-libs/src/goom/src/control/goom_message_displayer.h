@@ -10,7 +10,7 @@ namespace GOOM
 namespace DRAW
 {
 class IGoomDraw;
-} // namespace DRAW
+}
 
 namespace CONTROL
 {

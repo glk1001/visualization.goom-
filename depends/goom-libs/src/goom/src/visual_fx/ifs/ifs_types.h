@@ -17,9 +17,7 @@ namespace UTILS
 class ImageBitmap;
 }
 
-namespace VISUAL_FX
-{
-namespace IFS
+namespace VISUAL_FX::IFS
 {
 
 using Dbl = float;
@@ -79,6 +77,5 @@ inline IfsPoint::IfsPoint(const uint32_t x, const uint32_t y, const uint32_t cou
 {
 }
 
-} // namespace IFS
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::IFS
 } // namespace GOOM

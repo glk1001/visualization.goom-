@@ -1,15 +1,9 @@
 #pragma once
 
-#include "color/colormaps.h"
-#include "color/colorutils.h"
-#include "color/random_colormaps.h"
 #include "filter_buffers.h"
 #include "goom_graphic.h"
-#include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
-#include "utils/t_values.h"
 #include "utils/timer.h"
-#include "v2d.h"
 
 //#undef NDEBUG
 #include <cassert>

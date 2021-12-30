@@ -1,6 +1,5 @@
 #pragma once
 
-#include "goom_config.h"
 #include "sound_info.h"
 
 #include <cstdint>
@@ -21,7 +20,7 @@ public:
 
   PluginInfo() noexcept = delete;
   PluginInfo(uint32_t width, uint32_t height) noexcept;
-  PluginInfo(const PluginInfo& p) noexcept = delete;
+  PluginInfo(const PluginInfo&) noexcept = delete;
   PluginInfo(PluginInfo&&) noexcept = delete;
   virtual ~PluginInfo() noexcept = default;
   auto operator=(const PluginInfo&) -> PluginInfo& = delete;

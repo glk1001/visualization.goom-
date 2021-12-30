@@ -2,7 +2,6 @@
 
 #include "goom_graphic.h"
 
-#include <algorithm>
 #include <vector>
 
 namespace GOOM

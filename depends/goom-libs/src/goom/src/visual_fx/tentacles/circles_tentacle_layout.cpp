@@ -59,15 +59,16 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
       (angleOffsetStart - angleOffsetFinish) / static_cast<float>(numCircles - 1);
   const float radiusStep = (radiusMax - radiusMin) / static_cast<float>(numCircles - 1);
 
-  float r = radiusMax;
+  float radius = radiusMax;
   float angleOffset = angleOffsetStart;
   for (const auto numSample : numCircleSamples)
   {
-    getSamplePoints(r, numSample / 2, angleLeftStart + angleOffset, angleLeftFinish - angleOffset);
-    getSamplePoints(r, numSample / 2, angleRightStart + angleOffset,
+    getSamplePoints(radius, numSample / 2, angleLeftStart + angleOffset,
+                    angleLeftFinish - angleOffset);
+    getSamplePoints(radius, numSample / 2, angleRightStart + angleOffset,
                     angleRightFinish - angleOffset);
 
-    r -= radiusStep;
+    radius -= radiusStep;
     angleOffset -= offsetStep;
   }
 }

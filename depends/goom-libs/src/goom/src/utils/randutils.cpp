@@ -63,16 +63,16 @@ inline auto RandSplitMixFunc(const uint32_t n0, const uint32_t n1) -> uint32_t
   return n0 + static_cast<uint32_t>(m);
 }
 
-void SaveRandState(std::ostream& f)
+void SaveRandState(std::ostream& file)
 {
-  f << randSeed << "\n";
-  f << xoshiroEng << "\n";
+  file << randSeed << "\n";
+  file << xoshiroEng << "\n";
 }
 
-void RestoreRandState(std::istream& f)
+void RestoreRandState(std::istream& file)
 {
-  f >> randSeed;
-  f >> xoshiroEng;
+  file >> randSeed;
+  file >> xoshiroEng;
 }
 
 auto GetRandInRange(const uint32_t n0, const uint32_t n1) -> uint32_t

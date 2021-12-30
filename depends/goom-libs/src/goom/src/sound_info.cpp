@@ -1,8 +1,6 @@
 #undef NDEBUG
 #include "sound_info.h"
 
-#include "utils/mathutils.h"
-
 #include <algorithm>
 #include <cassert>
 #include <cstddef>

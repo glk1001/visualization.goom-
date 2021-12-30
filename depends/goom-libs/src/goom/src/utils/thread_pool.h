@@ -97,7 +97,7 @@ struct FuncWrapper
       -> std::function<void()>
   {
     // Capturing by value is inefficient. It would be more efficient to move-capture
-    // everything - can generalized lambda capture help??
+    // everything - can a generalized lambda capture help??
     return
         [promise, func, args...]() mutable { promise->set_value(INVOKE_MACRO(func, ArgsT, args)); };
   }

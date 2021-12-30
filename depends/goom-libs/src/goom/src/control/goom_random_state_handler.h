@@ -1,6 +1,5 @@
 #pragma once
 
-#include "goom_graphic.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
 #include "utils/goom_rand_base.h"

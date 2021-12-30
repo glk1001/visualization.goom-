@@ -25,9 +25,7 @@ class ImageBitmap;
 class SmallImageBitmaps;
 }
 
-namespace VISUAL_FX
-{
-namespace IFS
+namespace VISUAL_FX::IFS
 {
 
 class Similitude
@@ -175,6 +173,5 @@ inline auto Similitude::GetCurrentPointBitmap() const -> const UTILS::ImageBitma
   return m_currentPointBitmap;
 }
 
-} // namespace IFS
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::IFS
 } // namespace GOOM

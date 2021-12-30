@@ -31,7 +31,7 @@ constexpr float PROB_XY_SQ_DIST_MULT_EQUAL = 1.00F;
 constexpr float PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 
 constexpr float PROB_MODE0 = 0.05F;
-constexpr float PROB_RANDOM_DISTANCE_POINTS = 0.7F;
+constexpr float PROB_RANDOM_DISTANCE_POINTS = 0.3F;
 
 DistanceField::DistanceField(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
@@ -69,7 +69,7 @@ void DistanceField::SetRandomParams()
 
   constexpr size_t NUM_DISTANCE_POINTS = 4;
 
-  if (m_goomRand.ProbabilityOf(PROB_RANDOM_DISTANCE_POINTS))
+  if (!m_goomRand.ProbabilityOf(PROB_RANDOM_DISTANCE_POINTS))
   {
     distancePoints.emplace_back(-1.0F, -1.0F);
     distancePoints.emplace_back(+1.0F, -1.0F);
@@ -78,10 +78,12 @@ void DistanceField::SetRandomParams()
   }
   else
   {
+    constexpr float DISTANCE_MIN = -1.9F;
+    constexpr float DISTANCE_MAX = +1.9F;
     for (size_t i = 0; i < NUM_DISTANCE_POINTS; ++i)
     {
-      distancePoints.emplace_back(m_goomRand.GetRandInRange(-1.9F, 1.9F),
-                                  m_goomRand.GetRandInRange(-1.9F, 1.9F));
+      distancePoints.emplace_back(m_goomRand.GetRandInRange(DISTANCE_MIN, DISTANCE_MAX),
+                                  m_goomRand.GetRandInRange(DISTANCE_MIN, DISTANCE_MAX));
     }
   }
 

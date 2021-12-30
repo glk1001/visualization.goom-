@@ -13,7 +13,7 @@ using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
 
-constexpr YOnly::YOnlyEffect X_DEFAULT_EFFECT = YOnly::YOnlyEffect::XSIN_YSIN;
+constexpr YOnly::YOnlyEffect X_DEFAULT_EFFECT = YOnly::YOnlyEffect::X_SIN_Y_SIN;
 constexpr YOnly::YOnlyEffect Y_DEFAULT_EFFECT = YOnly::YOnlyEffect::NONE;
 
 constexpr float X_DEFAULT_FREQ_FACTOR = 1.0F;

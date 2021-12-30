@@ -19,7 +19,6 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
-#include <random>
 #include <utility>
 #include <vector>
 
@@ -243,9 +242,9 @@ auto Tube::IsActive() const -> bool
   return m_impl->IsActive();
 }
 
-void Tube::SetTransformCentreFunc(const TransformCentreFunc& f)
+void Tube::SetTransformCentreFunc(const TransformCentreFunc& func)
 {
-  m_impl->SetTransformCentreFunc(f);
+  m_impl->SetTransformCentreFunc(func);
 }
 
 void Tube::SetCentrePathT(const float val)
@@ -446,7 +445,8 @@ private:
   V2dInt m_currentFinishPos;
   PathParams m_pathParams{};
   bool m_allowOscillatingPath;
-  [[nodiscard]] auto GetPointAtT(const V2dInt& p0, const V2dInt& p1, float t) const -> V2dInt;
+  [[nodiscard]] auto GetPointAtT(const V2dInt& point0, const V2dInt& point1, float t) const
+      -> V2dInt;
   [[nodiscard]] auto GetOscillatingPointAtT(const V2dFlt& point, float t) const -> V2dFlt;
 };
 
@@ -1264,10 +1264,10 @@ inline auto ShapePath::GetNextPoint() const -> V2dInt
   return GetPointAtT(m_currentStartPos, m_currentFinishPos, m_t());
 }
 
-inline auto ShapePath::GetPointAtT(const V2dInt& p0, const V2dInt& p1, const float t) const
+inline auto ShapePath::GetPointAtT(const V2dInt& point0, const V2dInt& point1, const float t) const
     -> V2dInt
 {
-  const V2dFlt linearPoint = lerp(p0.ToFlt(), p1.ToFlt(), t);
+  const V2dFlt linearPoint = lerp(point0.ToFlt(), point1.ToFlt(), t);
   if (!m_allowOscillatingPath)
   {
     return {static_cast<int32_t>(std::round(linearPoint.x)),

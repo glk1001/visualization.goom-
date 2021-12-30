@@ -2,18 +2,17 @@
 
 #include "color/colormaps.h"
 #include "color/colorutils.h"
+#include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
+#include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "logging_control.h"
+//#undef NO_LOGGING
+#include "logging.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
-//#undef NO_LOGGING
-#include "color/random_colormaps.h"
-#include "goom/spimpl.h"
-#include "logging.h"
-#include "utils/randutils.h"
 #include "utils/mathutils.h"
 #include "utils/parallel_utils.h"
 #include "utils/t_values.h"
@@ -403,7 +402,7 @@ void ImageFx::ImageFxImpl::DrawChunk(const V2dInt& pos,
       {
         continue;
       }
-      const std::vector<Pixel> pixelColors = GetPixelColors(pixelRow[xPixel], brightness);
+      const std::vector<Pixel> pixelColors = GetPixelColors(pixelRow.at(xPixel), brightness);
       m_draw.DrawPixels(x, y, pixelColors);
 
       ++x;

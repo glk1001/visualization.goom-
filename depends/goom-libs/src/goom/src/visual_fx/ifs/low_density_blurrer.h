@@ -12,11 +12,9 @@ namespace GOOM
 namespace DRAW
 {
 class IGoomDraw;
-} // namespace DRAW
+}
 
-namespace VISUAL_FX
-{
-namespace IFS
+namespace VISUAL_FX::IFS
 {
 
 class IfsPoint;
@@ -87,6 +85,5 @@ inline void LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFac
   m_neighbourMixFactor = neighbourMixFactor;
 }
 
-} // namespace IFS
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::IFS
 } // namespace GOOM

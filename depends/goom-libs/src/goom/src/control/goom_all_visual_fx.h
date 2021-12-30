@@ -12,7 +12,6 @@
 #include "visual_fx_color_maps.h"
 
 #include <functional>
-#include <map>
 #include <memory>
 #include <unordered_set>
 
@@ -27,7 +26,7 @@ namespace UTILS
 class IGoomRand;
 class Parallel;
 class SmallImageBitmaps;
-} // namespace UTILS
+}
 
 namespace VISUAL_FX
 {
@@ -38,7 +37,7 @@ namespace FILTERS
 class FilterBuffersService;
 class FilterColorsService;
 struct ZoomFilterSettings;
-} // namespace FILTERS
+}
 } // namespace VISUAL_FX
 
 namespace CONTROL

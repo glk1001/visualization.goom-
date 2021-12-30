@@ -4,7 +4,6 @@
 #include "normalized_coords.h"
 #include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 
 #include <string>
 

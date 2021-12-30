@@ -15,7 +15,6 @@
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/mathutils.h"
 #include "v2d.h"
 
 #include <cmath>

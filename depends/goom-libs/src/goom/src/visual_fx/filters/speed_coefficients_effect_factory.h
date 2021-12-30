@@ -1,10 +1,8 @@
 #pragma once
 
-#include "filter_settings.h"
 #include "filter_settings_service.h"
 
 #include <memory>
-#include <string>
 
 namespace GOOM
 {

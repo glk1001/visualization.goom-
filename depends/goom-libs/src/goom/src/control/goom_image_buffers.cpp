@@ -12,9 +12,9 @@ auto GoomImageBuffers::GetBuffs(const uint32_t width, const uint32_t height)
     -> std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS>
 {
   std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS> buffs{};
-  for (auto& b : buffs)
+  for (auto& buff : buffs)
   {
-    b = std::make_unique<PixelBuffer>(width, height);
+    buff = std::make_unique<PixelBuffer>(width, height);
   }
   return buffs;
 }

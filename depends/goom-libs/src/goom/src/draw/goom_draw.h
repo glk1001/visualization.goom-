@@ -1,5 +1,6 @@
 #pragma once
 
+#include "color/colorutils.h"
 #include "draw_methods.h"
 #include "goom_graphic.h"
 #include "utils/parallel_utils.h"
@@ -15,7 +16,7 @@ namespace GOOM
 namespace UTILS
 {
 class ImageBitmap;
-} // namespace UTILS
+}
 
 namespace DRAW
 {

@@ -15,7 +15,6 @@
 #undef NDEBUG
 #include <cassert>
 #include <cstdint>
-#include <string>
 
 namespace GOOM::VISUAL_FX::FILTERS
 {

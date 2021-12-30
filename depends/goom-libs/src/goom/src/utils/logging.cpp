@@ -70,16 +70,16 @@ void Logging::SetHandlersLogLevel(LogLevel lvl)
   m_cutoffHandlersLogLevel = lvl;
 }
 
-void Logging::AddHandler(const std::string& name, const HandlerFunc& f)
+void Logging::AddHandler(const std::string& name, const HandlerFunc& handlerFunc)
 {
-  for (const auto& [hname, handlr] : m_handlers)
+  for (const auto& [hName, handler] : m_handlers)
   {
-    if (hname == name)
+    if (hName == name)
     {
       return;
     }
   }
-  m_handlers.emplace_back(name, f);
+  m_handlers.emplace_back(name, handlerFunc);
 }
 
 void Logging::Flush()

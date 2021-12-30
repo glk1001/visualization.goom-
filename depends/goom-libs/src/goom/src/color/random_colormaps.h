@@ -5,11 +5,8 @@
 #include "goom/goom_graphic.h"
 #include "utils/goom_rand_base.h"
 
-#include <array>
 #include <memory>
 #include <set>
-#include <utility>
-#include <vector>
 
 namespace GOOM::COLOR
 {

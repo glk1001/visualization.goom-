@@ -29,6 +29,7 @@ public:
 private:
   const UTILS::IGoomRand& m_goomRand;
   ImageDisplacementList m_imageDisplacementList;
+  void DoSetRandomParams();
 };
 
 inline auto ImageSpeedCoefficients::GetSpeedCoefficients(

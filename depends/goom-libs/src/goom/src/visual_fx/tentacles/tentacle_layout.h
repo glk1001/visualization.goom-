@@ -2,7 +2,6 @@
 
 #include "tentacle3d.h"
 
-#include <cstdint>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::TENTACLES

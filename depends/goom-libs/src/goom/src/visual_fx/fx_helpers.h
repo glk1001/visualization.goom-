@@ -9,12 +9,12 @@ class PluginInfo;
 namespace DRAW
 {
   class IGoomDraw;
-} // namespace DRAW
+  }
 
 namespace UTILS
 {
 class IGoomRand;
-} // namespace UTILS
+}
 
 namespace VISUAL_FX
 {

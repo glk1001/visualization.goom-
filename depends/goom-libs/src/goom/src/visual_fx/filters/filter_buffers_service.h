@@ -3,7 +3,6 @@
 #include "filter_buffers.h"
 #include "filter_settings.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 #include "zoom_vector.h"
 
 #include <cstdint>

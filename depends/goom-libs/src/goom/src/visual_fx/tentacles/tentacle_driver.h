@@ -7,7 +7,6 @@
 #include "tentacle_plotter.h"
 #include "utils/mathutils.h"
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -23,11 +22,9 @@ namespace UTILS
 {
 class IGoomRand;
 class SmallImageBitmaps;
-} // namespace UTILS
+}
 
-namespace VISUAL_FX
-{
-namespace TENTACLES
+namespace VISUAL_FX::TENTACLES
 {
 
 class TentacleDriver
@@ -113,6 +110,5 @@ inline void TentacleDriver::SetDominantColors(const Pixel& dominantColor,
   m_tentaclePlotter.SetDominantColors(dominantColor, dominantLowColor);
 }
 
-} // namespace TENTACLES
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::TENTACLES
 } // namespace GOOM

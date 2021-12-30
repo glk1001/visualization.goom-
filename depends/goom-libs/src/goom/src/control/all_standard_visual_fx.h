@@ -16,7 +16,7 @@ namespace UTILS
 {
 class Parallel;
 class SmallImageBitmaps;
-} // namespace UTILS
+}
 
 namespace VISUAL_FX
 {

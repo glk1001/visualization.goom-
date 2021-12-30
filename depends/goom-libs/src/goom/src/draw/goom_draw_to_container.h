@@ -5,7 +5,6 @@
 
 #include <array>
 #include <cstdint>
-#include <map>
 #include <vector>
 
 namespace GOOM::DRAW

@@ -13,15 +13,14 @@ namespace DRAW
 {
 class IGoomDraw;
 }
+
 namespace UTILS
 {
 class ImageBitmap;
 class SmallImageBitmaps;
 }
 
-namespace VISUAL_FX
-{
-namespace FX_UTILS
+namespace VISUAL_FX::FX_UTILS
 {
 
 enum class DotSizes
@@ -65,6 +64,5 @@ private:
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const UTILS::ImageBitmap&;
 };
 
-} // namespace FX_UTILS
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::FX_UTILS
 } // namespace GOOM

@@ -2,6 +2,8 @@
 
 #include "utils/mathutils.h"
 
+#include <algorithm>
+
 namespace GOOM::UTILS
 {
 

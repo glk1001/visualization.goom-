@@ -26,10 +26,10 @@ public:
   enum class YOnlyEffect
   {
     NONE,
-    XSIN_YSIN,
-    XSIN_YCOS,
-    XCOS_YSIN,
-    XCOS_YCOS,
+    X_SIN_Y_SIN,
+    X_SIN_Y_COS,
+    X_COS_Y_SIN,
+    X_COS_Y_COS,
     _NUM // unused and must be last
   };
   struct Params
@@ -73,16 +73,16 @@ inline auto YOnly::GetYOnlySpeedMultiplier(const YOnlyEffect effect,
 {
   switch (effect)
   {
-    case YOnlyEffect::XSIN_YSIN:
+    case YOnlyEffect::X_SIN_Y_SIN:
       return std::sin(m_params.xFreqFactor * coords.GetX()) *
              std::sin(m_params.yFreqFactor * coords.GetY());
-    case YOnlyEffect::XSIN_YCOS:
+    case YOnlyEffect::X_SIN_Y_COS:
       return std::sin(m_params.xFreqFactor * coords.GetX()) *
              std::cos(m_params.yFreqFactor * coords.GetY());
-    case YOnlyEffect::XCOS_YSIN:
+    case YOnlyEffect::X_COS_Y_SIN:
       return std::cos(m_params.xFreqFactor * coords.GetX()) *
              std::sin(m_params.yFreqFactor * coords.GetY());
-    case YOnlyEffect::XCOS_YCOS:
+    case YOnlyEffect::X_COS_Y_COS:
       return std::cos(m_params.xFreqFactor * coords.GetX()) *
              std::cos(m_params.yFreqFactor * coords.GetY());
     default:

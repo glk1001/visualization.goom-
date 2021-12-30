@@ -11,6 +11,7 @@ coeff
 coeffs
 colorizer
 colorizers
+colormaps
 commencer
 construit
 coord
@@ -31,6 +32,7 @@ goom's
 gooms
 horitontale
 hypercos
+ide
 iter
 iters
 Joes
@@ -46,15 +48,19 @@ mult
 NBRS
 noisify
 pbos
+pragma
+pragmas
 simi
 simis
 similitude
 similitudes
 spdx
+splitmix
 srce
 stdnew
 stocke
 stockera
+stroker
 terme
 texel
 unblended
@@ -64,3 +70,7 @@ unif
 unlerped
 utils
 vitesse
+Wu
+Wunknown
+Xiaolin
+xoshiro

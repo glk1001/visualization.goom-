@@ -1,6 +1,5 @@
 #include "goom_draw_to_buffer.h"
 
-#include "color/colorutils.h"
 #include "goom_graphic.h"
 
 #undef NDEBUG

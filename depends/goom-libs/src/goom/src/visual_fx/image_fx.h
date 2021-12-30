@@ -4,7 +4,6 @@
 #include "goom_visual_fx.h"
 
 #include <memory>
-#include <string>
 
 namespace GOOM
 {
@@ -12,12 +11,12 @@ namespace GOOM
 namespace COLOR
 {
 class RandomColorMaps;
-} // namespace COLOR
+}
 
 namespace UTILS
 {
 class Parallel;
-} // namespace UTILS
+}
 
 namespace VISUAL_FX
 {

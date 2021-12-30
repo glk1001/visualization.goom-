@@ -1,7 +1,6 @@
 #pragma once
 
 #include "fractal_hits.h"
-#include "goom_graphic.h"
 #include "ifs_types.h"
 #include "similitudes.h"
 #include "utils/goom_rand_base.h"
@@ -25,9 +24,7 @@ class ImageBitmap;
 class SmallImageBitmaps;
 }
 
-namespace VISUAL_FX
-{
-namespace IFS
+namespace VISUAL_FX::IFS
 {
 
 class Fractal
@@ -88,6 +85,5 @@ inline auto Fractal::GetMaxHitCount() const -> uint32_t
   return m_curHits.get().GetMaxHitCount();
 }
 
-} // namespace IFS
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::IFS
 } // namespace GOOM

@@ -66,17 +66,17 @@ inline auto AllStandardVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDra
 
 void AllStandardVisualFx::Start()
 {
-  for (auto& v : m_list)
+  for (auto& visualFx : m_list)
   {
-    v->Start();
+    visualFx->Start();
   }
 }
 
 void AllStandardVisualFx::Finish()
 {
-  for (auto& v : m_list)
+  for (auto& visualFx : m_list)
   {
-    v->Finish();
+    visualFx->Finish();
   }
 }
 

@@ -3,6 +3,7 @@
 #include "goom_graphic.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/timer.h"
+#include "v2d.h"
 
 #include <functional>
 #include <memory>
@@ -13,16 +14,14 @@ namespace GOOM
 namespace COLOR
 {
 class RandomColorMaps;
-} // namespace COLOR
+}
 
 namespace UTILS
 {
 class IGoomRand;
-} // namespace UTILS
+}
 
-namespace VISUAL_FX
-{
-namespace TUBES
+namespace VISUAL_FX::TUBES
 {
 
 enum class ColorMapMixMode
@@ -108,7 +107,7 @@ public:
   void SetMaxJitterOffset(int32_t val);
 
   using TransformCentreFunc = std::function<V2dInt(uint32_t tubeId, const V2dInt& centre)>;
-  void SetTransformCentreFunc(const TransformCentreFunc& f);
+  void SetTransformCentreFunc(const TransformCentreFunc& func);
   void SetCentrePathT(float val);
   static const float NORMAL_CENTRE_SPEED;
   void SetCentreSpeed(float val);
@@ -129,6 +128,5 @@ private:
   const std::shared_ptr<TubeImpl> m_impl;
 };
 
-} // namespace TUBES
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::TUBES
 } // namespace GOOM

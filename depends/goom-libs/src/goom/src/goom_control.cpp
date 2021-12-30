@@ -40,7 +40,6 @@
 #include "visual_fx/fx_helpers.h"
 
 #include <cstdint>
-#include <filesystem>
 //#undef NDEBUG
 #include <cassert>
 #include <memory>

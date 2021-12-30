@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../utils/mathutils.h"
 #include "goom/goom_graphic.h"
 
 #include <algorithm>

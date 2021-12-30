@@ -1,15 +1,11 @@
 #pragma once
 
-#include "randutils.h"
-
-#include <array>
 #include <cmath>
 #include <cstdlib>
 #include <memory>
 #if __cplusplus > 201703L
 #include <numbers>
 #endif
-#include <cmath>
 #include <tuple>
 #include <vector>
 
@@ -107,19 +103,18 @@ constexpr auto IsOdd(const T& n) -> bool
 class VertNum
 {
 public:
-  explicit VertNum(const int xw) noexcept : m_xwidth(xw) {}
+  explicit VertNum(const int xWidth) noexcept : m_xWidth(xWidth) {}
   [[nodiscard]] auto GetRowZeroVertNum(const int x) const -> int { return x; }
-  auto operator()(const int x, const int z) const -> int { return z * m_xwidth + x; }
-  //  int getPrevRowVertNum(const int vertNum) const { return vertNum - xwidth; }
+  auto operator()(const int x, const int z) const -> int { return z * m_xWidth + x; }
   [[nodiscard]] auto GetXz(const int vertNum) const -> std::tuple<int, int>
   {
-    const int z = vertNum / m_xwidth;
-    const int x = vertNum % m_xwidth;
+    const int z = vertNum / m_xWidth;
+    const int x = vertNum % m_xWidth;
     return std::make_tuple(x, z);
   }
 
 private:
-  const int m_xwidth;
+  const int m_xWidth;
 };
 
 class RangeMapper
@@ -127,14 +122,14 @@ class RangeMapper
 public:
   RangeMapper() noexcept = default;
   explicit RangeMapper(double x0, double x1) noexcept;
-  auto operator()(double r0, double r1, double x) const -> double;
-  [[nodiscard]] auto GetXMin() const -> double { return m_xmin; }
-  [[nodiscard]] auto GetXMax() const -> double { return m_xmax; }
+  auto operator()(double x0, double x1, double x) const -> double;
+  [[nodiscard]] auto GetXMin() const -> double { return m_xMin; }
+  [[nodiscard]] auto GetXMax() const -> double { return m_xMax; }
 
 private:
-  double m_xmin = 0;
-  double m_xmax = 0;
-  double m_xwidth = 0;
+  double m_xMin = 0;
+  double m_xMax = 0;
+  double m_xWidth = 0;
 };
 
 class IDampingFunction
@@ -159,12 +154,12 @@ public:
 class LogDampingFunction : public IDampingFunction
 {
 public:
-  explicit LogDampingFunction(double amplitude, double xmin, double xStart = 2.0) noexcept;
+  explicit LogDampingFunction(double amplitude, double xMin, double xStart = 2.0) noexcept;
   auto operator()(double x) -> double override;
 
 private:
   const double m_amplitude;
-  const double m_xmin;
+  const double m_xMin;
   const double m_xStart;
 };
 
@@ -215,7 +210,7 @@ class PiecewiseDampingFunction : public IDampingFunction
 public:
   PiecewiseDampingFunction() noexcept = default;
   explicit PiecewiseDampingFunction(
-      std::vector<std::tuple<double, double, std::unique_ptr<IDampingFunction>>>& pieces) noexcept;
+      std::vector<std::tuple<double, double, std::unique_ptr<IDampingFunction>>>& func) noexcept;
   auto operator()(double x) -> double override;
 
 private:
@@ -282,15 +277,15 @@ public:
   virtual auto operator()(double x) -> double = 0;
 
 protected:
-  const double m_xmin;
-  const double m_xmax;
+  const double m_xMin;
+  const double m_xMax;
 };
 
 // Asymptotes to 1, depending on 'k' value.
 class ExpIncreasingFunction : public IIncreasingFunction
 {
 public:
-  explicit ExpIncreasingFunction(double xmin, double xmax, double k = 0.1) noexcept;
+  explicit ExpIncreasingFunction(double xMin, double xMax, double k = 0.1) noexcept;
   auto operator()(double x) -> double override;
 
 private:
@@ -300,29 +295,29 @@ private:
 class LogIncreasingFunction : public IIncreasingFunction
 {
 public:
-  explicit LogIncreasingFunction(double amplitude, double xmin, double xStart = 2.0) noexcept;
+  explicit LogIncreasingFunction(double amplitude, double xMin, double xStart = 2.0) noexcept;
   auto operator()(double x) -> double override;
 
 private:
   const double m_amplitude;
-  const double m_xmin;
+  const double m_xMin;
   const double m_xStart;
 };
 
 inline IIncreasingFunction::IIncreasingFunction(const double x0, const double x1) noexcept
-  : m_xmin(x0), m_xmax(x1)
+  : m_xMin(x0), m_xMax(x1)
 {
 }
 
 inline RangeMapper::RangeMapper(const double x0, const double x1) noexcept
-  : m_xmin(x0), m_xmax(x1), m_xwidth(m_xmax - m_xmin)
+  : m_xMin(x0), m_xMax(x1), m_xWidth(m_xMax - m_xMin)
 {
 }
 
-inline auto RangeMapper::operator()(const double r0, const double r1, const double x) const
+inline auto RangeMapper::operator()(const double x0, const double x1, const double x) const
     -> double
 {
-  return stdnew::lerp(r0, r1, (x - m_xmin) / m_xwidth);
+  return stdnew::lerp(x0, x1, (x - m_xMin) / m_xWidth);
 }
 
 } // namespace GOOM::UTILS

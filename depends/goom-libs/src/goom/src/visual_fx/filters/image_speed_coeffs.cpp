@@ -24,11 +24,16 @@ ImageSpeedCoefficients::ImageSpeedCoefficients(const std::string& resourcesDirec
 {
   if (!resourcesDirectory.empty())
   {
-    SetRandomParams();
+    DoSetRandomParams();
   }
 }
 
 void ImageSpeedCoefficients::SetRandomParams()
+{
+  DoSetRandomParams();
+}
+
+inline void ImageSpeedCoefficients::DoSetRandomParams()
 {
   m_imageDisplacementList.SetRandomImageDisplacement();
 

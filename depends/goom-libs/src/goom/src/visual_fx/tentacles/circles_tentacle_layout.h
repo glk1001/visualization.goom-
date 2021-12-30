@@ -3,7 +3,6 @@
 #include "tentacle3d.h"
 #include "tentacle_layout.h"
 
-#include <cstdint>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::TENTACLES

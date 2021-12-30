@@ -34,7 +34,7 @@ public:
   auto operator=(Logging&&) -> Logging& = delete;
 
   void SetLogFile(const std::string& logF);
-  void AddHandler(const std::string& name, const HandlerFunc& f);
+  void AddHandler(const std::string& name, const HandlerFunc& handlerFunc);
   void Start();
   void Stop();
   void Flush();

@@ -1,7 +1,5 @@
 #include "image_bitmaps.h"
 
-#include "goom/goom_graphic.h"
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "../stb_image.h"
 

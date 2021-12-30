@@ -66,13 +66,13 @@ constexpr size_t MAIN_TUBE_INDEX = 0;
 constexpr size_t SECONDARY_TUBES_START_INDEX = 1;
 constexpr PathParams COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
 
-[[nodiscard]] inline auto lerp(const PathParams& p0, const PathParams& p1, const float t)
+[[nodiscard]] inline auto lerp(const PathParams& params0, const PathParams& params1, const float t)
     -> PathParams
 {
   return {
-      stdnew::lerp(p0.oscillatingAmplitude, p1.oscillatingAmplitude, t),
-      stdnew::lerp(p0.xOscillatingFreq, p1.xOscillatingFreq, t),
-      stdnew::lerp(p0.yOscillatingFreq, p1.yOscillatingFreq, t),
+      stdnew::lerp(params0.oscillatingAmplitude, params1.oscillatingAmplitude, t),
+      stdnew::lerp(params0.xOscillatingFreq, params1.xOscillatingFreq, t),
+      stdnew::lerp(params0.yOscillatingFreq, params1.yOscillatingFreq, t),
   };
 }
 
@@ -460,9 +460,9 @@ inline auto TubeFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& co
     -> std::vector<IGoomDraw::GetBitmapColorFunc>
 {
   const auto getColor1 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& b) { return colors[0]; };
+                             [[maybe_unused]] const Pixel& bgnd) { return colors[0]; };
   const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& b) { return colors[1]; };
+                             [[maybe_unused]] const Pixel& bgnd) { return colors[1]; };
   return {getColor1, getColor2};
 }
 

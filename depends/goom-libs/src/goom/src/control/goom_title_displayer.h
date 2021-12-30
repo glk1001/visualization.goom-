@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
-#include <string>
 #include <vector>
 
 namespace GOOM
@@ -16,17 +15,17 @@ namespace DRAW
 {
 class IGoomDraw;
 class TextDraw;
-} // namespace DRAW
+}
 
 namespace COLOR
 {
 class IColorMap;
-} // namespace COLOR
+}
 
 namespace UTILS
 {
 class IGoomRand;
-} // namespace UTILS
+}
 
 namespace CONTROL
 {
@@ -66,7 +65,7 @@ private:
     std::string fontFilename;
     float fontSizeNormalizeFactor;
   };
-  static const std::vector<FontInfo> s_fontInfo;
+  static const std::vector<FontInfo> S_FONT_INFO;
   const size_t m_fontInfoIndex;
   [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
   [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;

@@ -38,7 +38,7 @@ constexpr int32_t OUTLINE_FONT_WIDTH = 4;
 //
 //@formatter:off
 // clang-format off
-const std::vector<GoomTitleDisplayer::FontInfo> GoomTitleDisplayer::s_fontInfo = {
+const std::vector<GoomTitleDisplayer::FontInfo> GoomTitleDisplayer::S_FONT_INFO = {
     {"AeroviasBrasilNF.ttf", 1.34F},
     {"AlexBrush-Regular.ttf", 1.25F},
     {"AvenueX-Regular.otf", 1.01F},
@@ -55,12 +55,12 @@ const std::vector<GoomTitleDisplayer::FontInfo> GoomTitleDisplayer::s_fontInfo =
 
 auto GoomTitleDisplayer::GetSelectedFontPath() const -> std::string
 {
-  return m_fontDirectory + PATH_SEP + s_fontInfo.at(m_fontInfoIndex).fontFilename;
+  return m_fontDirectory + PATH_SEP + S_FONT_INFO.at(m_fontInfoIndex).fontFilename;
 }
 
 auto GoomTitleDisplayer::GetSelectedFontSize() const -> int32_t
 {
-  const FontInfo& fontInfo = s_fontInfo.at(m_fontInfoIndex);
+  const FontInfo& fontInfo = S_FONT_INFO.at(m_fontInfoIndex);
   const auto maxFontSize =
       static_cast<int32_t>(FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT *
                            static_cast<float>(m_screenHeight) * fontInfo.fontSizeNormalizeFactor);
@@ -74,7 +74,7 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
     m_textDraw{std::make_unique<TextDraw>(draw)},
     m_screenHeight{draw.GetScreenHeight()},
     m_fontDirectory{fontDirectory},
-    m_fontInfoIndex{m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(s_fontInfo.size()))},
+    m_fontInfoIndex{m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(S_FONT_INFO.size()))},
     m_textColorMap{RandomColorMaps{m_goomRand}.GetRandomColorMap(
         COLOR::ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM)},
     m_textOutlineColorMap{

@@ -13,12 +13,12 @@ namespace GOOM
 namespace COLOR
 {
 class RandomColorMaps;
-} // namespace COLOR
+}
 
 namespace UTILS
 {
 class IGoomRand;
-} // namespace UTILS
+}
 
 namespace CONTROL
 {

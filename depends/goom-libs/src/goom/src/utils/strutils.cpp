@@ -16,7 +16,7 @@ auto bool_to_string(const bool value) -> std::string
 
 auto StringJoin(const std::vector<std::string>& strings, const std::string& delim) -> std::string
 {
-  std::string joinedStr = "";
+  std::string joinedStr{};
 
   for (auto str = cbegin(strings); str != cend(strings); ++str)
   {
@@ -35,17 +35,17 @@ auto StringSplit(const std::string& str, const std::string& delim) -> std::vecto
 #if __cplusplus <= 201703L
   std::vector<std::string> vec;
   std::string token;
-  std::string s = str;
+  std::string copyOfStr = str;
   size_t pos;
-  while ((pos = s.find(delim)) != std::string::npos)
+  while ((pos = copyOfStr.find(delim)) != std::string::npos)
   {
-    token = s.substr(0, pos);
-    s.erase(0, pos + delim.length());
+    token = copyOfStr.substr(0, pos);
+    copyOfStr.erase(0, pos + delim.length());
     vec.emplace_back(token);
   }
-  if (!s.empty())
+  if (!copyOfStr.empty())
   {
-    vec.emplace_back(s);
+    vec.emplace_back(copyOfStr);
   }
   return vec;
 #else

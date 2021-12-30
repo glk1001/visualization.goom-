@@ -4,7 +4,6 @@
 #include "goom_visual_fx.h"
 
 #include <memory>
-#include <string>
 
 namespace GOOM
 {

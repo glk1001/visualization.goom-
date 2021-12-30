@@ -11,10 +11,10 @@
 namespace GOOM::UTILS
 {
 
-ExpIncreasingFunction::ExpIncreasingFunction(const double x0,
-                                             const double x1,
+ExpIncreasingFunction::ExpIncreasingFunction(const double xMin,
+                                             const double xMax,
                                              const double _k) noexcept
-  : IIncreasingFunction(x1, x0), m_k(_k)
+  : IIncreasingFunction(xMax, xMin), m_k(_k)
 {
 }
 
@@ -24,28 +24,28 @@ auto ExpIncreasingFunction::operator()(const double x) -> double
 }
 
 LogIncreasingFunction::LogIncreasingFunction(const double amp,
-                                             const double xm,
+                                             const double xMin,
                                              const double xStart) noexcept
-  : IIncreasingFunction(xm, 10000000000), m_amplitude(amp), m_xmin(xm), m_xStart(xStart)
+  : IIncreasingFunction(xMin, 10000000000), m_amplitude(amp), m_xMin(xMin), m_xStart(xStart)
 {
 }
 
 double LogIncreasingFunction::operator()(const double x)
 {
-  return m_amplitude / std::log(x - m_xmin + m_xStart);
+  return m_amplitude / std::log(x - m_xMin + m_xStart);
 }
 
 
 LogDampingFunction::LogDampingFunction(const double amp,
-                                       const double xm,
+                                       const double xMin,
                                        const double xStart) noexcept
-  : m_amplitude(amp), m_xmin(xm), m_xStart(xStart)
+  : m_amplitude(amp), m_xMin(xMin), m_xStart(xStart)
 {
 }
 
 double LogDampingFunction::operator()(const double x)
 {
-  return m_amplitude * std::log(x - m_xmin + m_xStart);
+  return m_amplitude * std::log(x - m_xMin + m_xStart);
 }
 
 ExpDampingFunction::ExpDampingFunction(const double amp,
@@ -107,8 +107,8 @@ auto LinearDampingFunction::operator()(const double x) -> double
 }
 
 PiecewiseDampingFunction::PiecewiseDampingFunction(
-    std::vector<std::tuple<double, double, std::unique_ptr<IDampingFunction>>>& p) noexcept
-  : m_pieces{std::move(p)}
+    std::vector<std::tuple<double, double, std::unique_ptr<IDampingFunction>>>& func) noexcept
+  : m_pieces{std::move(func)}
 {
 }
 

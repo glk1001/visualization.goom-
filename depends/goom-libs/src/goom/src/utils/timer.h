@@ -1,7 +1,5 @@
 #pragma once
 
-#include "v2d.h"
-
 #include <cstdint>
 
 namespace GOOM::UTILS

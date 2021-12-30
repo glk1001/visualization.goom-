@@ -167,9 +167,9 @@ private:
   float m_minGravity = MAX_MIN_GRAVITY;
   float m_maxGravity = MAX_MAX_GRAVITY;
 
-  // For fireworks largest bombs.
+  // For fireworks' largest bombs.
   float m_minAge = 1.0F - (99.0F / 100.0F);
-  // For fireworks smallest bombs.
+  // For fireworks' smallest bombs.
   float m_maxAge = 1.0F - (80.0F / 100.0F);
 
   bool m_useSingleBufferOnly = true;

@@ -1,14 +1,10 @@
 #pragma once
 
 #include "goom/spimpl.h"
-#include "goom_config.h"
 #include "goom_graphic.h"
 #include "sound_info.h"
 
-#include <cstddef>
 #include <memory>
-#include <string>
-#include <vector>
 
 namespace GOOM
 {
@@ -37,7 +33,6 @@ public:
     V_LINE, // (param = x)
     _NUM // must be last - gives number of enums
   };
-  static constexpr size_t NUM_LINE_TYPES = static_cast<size_t>(LineType::_NUM);
 
   LinesFx() noexcept = delete;
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "goom/goom_graphic.h"
-#include "utils/mathutils.h"
 #include "v2d.h"
 
 #include <cstdint>

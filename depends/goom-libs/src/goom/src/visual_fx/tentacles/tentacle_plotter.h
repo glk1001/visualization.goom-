@@ -16,11 +16,9 @@ namespace UTILS
 {
 class IGoomRand;
 class SmallImageBitmaps;
-} // namespace UTILS
+}
 
-namespace VISUAL_FX
-{
-namespace TENTACLES
+namespace VISUAL_FX::TENTACLES
 {
 
 class TentaclePlotter
@@ -97,6 +95,5 @@ inline void TentaclePlotter::SetDominantColors(const Pixel& dominantColor,
   m_dominantLowColor = dominantLowColor;
 }
 
-} // namespace TENTACLES
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::TENTACLES
 } // namespace GOOM
