@@ -5,7 +5,6 @@
 #include "draw/goom_draw_to_container.h"
 #include "draw/goom_draw_to_many.h"
 #include "fx_helpers.h"
-#include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "tubes/tubes.h"

@@ -113,7 +113,8 @@ auto GetEvolvedColor(const Pixel& baseColor) -> Pixel
   newColor = EvolvedColor(newColor, baseColor, 0xFF0000U, 0x010000U);
   newColor = EvolvedColor(newColor, baseColor, 0xFF000000U, 0x01000000U);
 
-  newColor = GetLightenedColor(newColor, (10.0F * 2.0F) + 2.0F);
+  constexpr float LIGHTENED_COLOR_POWER = (10.0F * 2.0F) + 2.0F;
+  newColor = GetLightenedColor(newColor, LIGHTENED_COLOR_POWER);
 
   return newColor;
 }

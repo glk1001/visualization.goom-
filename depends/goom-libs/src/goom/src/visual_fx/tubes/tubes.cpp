@@ -2,7 +2,6 @@
 
 #include "color/colormaps.h"
 #include "color/colorutils.h"
-#include "goom/logging_control.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
 //#undef NO_LOGGING

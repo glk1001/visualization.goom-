@@ -23,7 +23,6 @@
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
 #include "goom/compiler_versions.h"
-#include "goom/logging_control.h"
 #include "goom_graphic.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"

@@ -5,7 +5,6 @@
 #include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
 #include "draw/text_draw.h"
-#include "goom/logging_control.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 //#undef NO_LOGGING

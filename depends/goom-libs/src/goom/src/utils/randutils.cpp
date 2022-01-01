@@ -1,6 +1,5 @@
 #include "randutils.h"
 
-#include "logging_control.h"
 //#undef NO_LOGGING
 #include "logging.h"
 #include "mathutils.h"

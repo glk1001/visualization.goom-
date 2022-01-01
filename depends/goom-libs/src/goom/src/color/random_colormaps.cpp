@@ -3,7 +3,6 @@
 #include "color_data/colormap_enums.h"
 #include "colormaps.h"
 #include "goom/goom_graphic.h"
-#include "goom/logging_control.h"
 #include "utils/enumutils.h"
 #include "utils/goom_rand_base.h"
 //#undef NO_LOGGING

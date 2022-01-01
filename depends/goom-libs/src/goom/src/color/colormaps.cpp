@@ -5,7 +5,6 @@
 #include "color_data/extra_color_groups.h"
 #include "colorutils.h"
 #include "goom/goom_graphic.h"
-#include "goom/logging_control.h"
 #include "utils/enumutils.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
@@ -304,9 +303,9 @@ inline auto ColorMaps::ColorMapsImpl::GetColorMapNames(const ColorMapGroup group
 
 auto ColorMaps::ColorMapsImpl::GetPreBuiltColorMaps() -> const std::vector<PrebuiltColorMap>&
 {
-  static const std::vector<PrebuiltColorMap> s_preBuiltColorMaps{MakePrebuiltColorMaps()};
+  static const std::vector<PrebuiltColorMap> s_PRE_BUILT_COLOR_MAPS{MakePrebuiltColorMaps()};
 
-  return s_preBuiltColorMaps;
+  return s_PRE_BUILT_COLOR_MAPS;
 }
 
 auto ColorMaps::ColorMapsImpl::MakePrebuiltColorMaps() -> std::vector<PrebuiltColorMap>
@@ -331,9 +330,9 @@ inline auto ColorMaps::ColorMapsImpl::GetNumGroups() -> uint32_t
 
 auto ColorMaps::ColorMapsImpl::GetAllColorMapNames() -> const std::vector<ColorMapName>&
 {
-  static const std::vector<ColorMapName> s_allColorMapNames{MakeAllColorMapNames()};
+  static const std::vector<ColorMapName> s_ALL_COLOR_MAP_NAMES{MakeAllColorMapNames()};
 
-  return s_allColorMapNames;
+  return s_ALL_COLOR_MAP_NAMES;
 }
 
 auto ColorMaps::ColorMapsImpl::MakeAllColorMapNames() -> std::vector<ColorMapName>
@@ -351,9 +350,9 @@ auto ColorMaps::ColorMapsImpl::MakeAllColorMapNames() -> std::vector<ColorMapNam
 
 auto ColorMaps::ColorMapsImpl::GetColorGroupNames() -> const ColorGroupNamesArray&
 {
-  static const ColorGroupNamesArray s_colorGroupNames{MakeColorGroupNames()};
+  static const ColorGroupNamesArray s_COLOR_GROUP_NAMES{MakeColorGroupNames()};
 
-  return s_colorGroupNames;
+  return s_COLOR_GROUP_NAMES;
 }
 
 auto ColorMaps::ColorMapsImpl::MakeColorGroupNames() -> ColorGroupNamesArray

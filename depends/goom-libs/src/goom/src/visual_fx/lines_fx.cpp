@@ -13,7 +13,6 @@
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
 #include "fx_utils/dot_drawer.h"
-#include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 //#undef NO_LOGGING

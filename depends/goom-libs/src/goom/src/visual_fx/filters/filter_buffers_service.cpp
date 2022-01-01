@@ -2,7 +2,6 @@
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
-#include "goom/logging_control.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"

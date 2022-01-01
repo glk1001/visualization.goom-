@@ -1,7 +1,6 @@
 #include "text_draw.h"
 
 #include "color/colorutils.h"
-#include "goom/logging_control.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
 //#undef NO_LOGGING

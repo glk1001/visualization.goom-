@@ -20,7 +20,6 @@
 #include "filters/filter_buffer_row_color_info.h"
 #include "filters/filter_buffers_service.h"
 #include "filters/filter_colors_service.h"
-#include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 //#undef NO_LOGGING

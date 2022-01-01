@@ -10,7 +10,6 @@
 
 #include "goom/compiler_versions.h"
 #include "goom/goom_graphic.h"
-#include "goom/logging_control.h"
 #undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/sound_info.h"

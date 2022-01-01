@@ -8,7 +8,6 @@
 #include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-#include "logging_control.h"
 //#undef NO_LOGGING
 #include "logging.h"
 #include "utils/goom_rand_base.h"

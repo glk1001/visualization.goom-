@@ -66,8 +66,8 @@ class GoomStateInfo
 public:
   struct DrawableInfo
   {
-    GoomDrawables fx;
-    FXBuffSettings buffSettings;
+    GoomDrawables fx{};
+    FXBuffSettings buffSettings{};
   };
   struct StateInfo
   {

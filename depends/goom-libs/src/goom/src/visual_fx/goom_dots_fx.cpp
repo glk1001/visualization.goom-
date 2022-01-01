@@ -6,7 +6,6 @@
 #include "color/random_colormaps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
-#include "goom/logging_control.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/spimpl.h"

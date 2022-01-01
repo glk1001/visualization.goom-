@@ -155,7 +155,6 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers,
     m_goomInfo{fxHelpers.GetGoomInfo()},
     m_goomRand{fxHelpers.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
-    // clang-format off
     m_driverWeights{
       m_goomRand,
       {
@@ -170,7 +169,6 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers,
         LAYOUT3,
         LAYOUT4,
     },
-    // clang-format on
     m_tentacleDrivers{GetTentacleDrivers()},
     m_currentTentacleDriver{GetNextDriver()}
 {

@@ -36,7 +36,6 @@
 
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
-#include "goom/logging_control.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "ifs/colorizer.h"

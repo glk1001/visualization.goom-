@@ -1,6 +1,5 @@
 #include "t_values.h"
 
-#include "goom/logging_control.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
 #include "mathutils.h"
