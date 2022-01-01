@@ -5,7 +5,6 @@
 #include "visual_fx/lines_fx.h"
 
 #include <array>
-#include <cstdint>
 
 namespace GOOM::CONTROL
 {
@@ -56,9 +55,7 @@ private:
   struct WeightedEvent
   {
     GoomEvent event;
-    // m out of n
-    uint32_t m;
-    uint32_t outOf;
+    float probability;
   };
   const std::array<WeightedEvent, NUM_GOOM_EVENTS> m_weightedEvents;
   const UTILS::Weights<VISUAL_FX::LinesFx::LineType> m_lineTypeWeights;

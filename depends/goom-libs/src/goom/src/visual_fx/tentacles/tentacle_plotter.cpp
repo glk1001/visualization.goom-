@@ -14,6 +14,22 @@ using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::SmallImageBitmaps;
 
+// clang-format off
+constexpr float MIN_DOT_SIZE01_WEIGHT = 100.0F;
+constexpr float MIN_DOT_SIZE02_WEIGHT =  50.0F;
+constexpr float MIN_DOT_SIZE03_WEIGHT =  50.0F;
+constexpr float MIN_DOT_SIZE04_WEIGHT =  20.0F;
+
+constexpr float NORMAL_DOT_SIZE01_WEIGHT = 50.0F;
+constexpr float NORMAL_DOT_SIZE02_WEIGHT = 20.0F;
+constexpr float NORMAL_DOT_SIZE03_WEIGHT = 10.0F;
+constexpr float NORMAL_DOT_SIZE04_WEIGHT = 10.0F;
+constexpr float NORMAL_DOT_SIZE05_WEIGHT =  5.0F;
+constexpr float NORMAL_DOT_SIZE06_WEIGHT =  1.0F;
+constexpr float NORMAL_DOT_SIZE07_WEIGHT =  1.0F;
+constexpr float NORMAL_DOT_SIZE08_WEIGHT =  1.0F;
+// clang-format on
+
 TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
                                  const IGoomRand& goomRand,
                                  const SmallImageBitmaps& smallBitmaps) noexcept
@@ -30,24 +46,24 @@ TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
           {
               m_goomRand,
               {
-                  {DotSizes::DOT_SIZE01, 100},
-                  {DotSizes::DOT_SIZE02,  50},
-                  {DotSizes::DOT_SIZE03,  50},
-                  {DotSizes::DOT_SIZE04,  20},
+                  {DotSizes::DOT_SIZE01, MIN_DOT_SIZE01_WEIGHT},
+                  {DotSizes::DOT_SIZE02, MIN_DOT_SIZE02_WEIGHT},
+                  {DotSizes::DOT_SIZE03, MIN_DOT_SIZE03_WEIGHT},
+                  {DotSizes::DOT_SIZE04, MIN_DOT_SIZE04_WEIGHT},
               }
           },
           // normal dot sizes
           {
               m_goomRand,
               {
-                  {DotSizes::DOT_SIZE01, 50},
-                  {DotSizes::DOT_SIZE02, 20},
-                  {DotSizes::DOT_SIZE03, 10},
-                  {DotSizes::DOT_SIZE04, 10},
-                  {DotSizes::DOT_SIZE05,  5},
-                  {DotSizes::DOT_SIZE06,  1},
-                  {DotSizes::DOT_SIZE07,  1},
-                  {DotSizes::DOT_SIZE08,  1},
+                  {DotSizes::DOT_SIZE01, NORMAL_DOT_SIZE01_WEIGHT},
+                  {DotSizes::DOT_SIZE02, NORMAL_DOT_SIZE02_WEIGHT},
+                  {DotSizes::DOT_SIZE03, NORMAL_DOT_SIZE03_WEIGHT},
+                  {DotSizes::DOT_SIZE04, NORMAL_DOT_SIZE04_WEIGHT},
+                  {DotSizes::DOT_SIZE05, NORMAL_DOT_SIZE05_WEIGHT},
+                  {DotSizes::DOT_SIZE06, NORMAL_DOT_SIZE06_WEIGHT},
+                  {DotSizes::DOT_SIZE07, NORMAL_DOT_SIZE07_WEIGHT},
+                  {DotSizes::DOT_SIZE08, NORMAL_DOT_SIZE08_WEIGHT},
               }
           }
           // clang-format on
@@ -165,9 +181,12 @@ void TentaclePlotter::SetCameraPosition(const float cameraDistance, const float 
   m_tentacleAngle = tentacleAngle;
   m_cameraDistance = cameraDistance;
 
-  m_cameraPosition = {0.0F, 0.0F, -3.0F}; // TODO ????????????????????????????????
+  constexpr float CAMERA_Z_OFFSET = -3.0F;
+  m_cameraPosition = {0.0F, 0.0F, CAMERA_Z_OFFSET}; // TODO ????????????????????????????????
   m_cameraPosition.z += m_cameraDistance;
-  m_cameraPosition.y += 2.0F * std::sin(-(m_tentacleAngle - m_half_pi) / 4.3F);
+  constexpr float ANGLE_FACTOR = 1.0F / 4.3F;
+  constexpr float CAMERA_POS_FACTOR = 2.0F;
+  m_cameraPosition.y += CAMERA_POS_FACTOR * std::sin(-ANGLE_FACTOR * (m_tentacleAngle - m_half_pi));
 }
 
 inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& points,
@@ -223,15 +242,20 @@ inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) const -> 
 
 inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) const -> float
 {
-  if (std::abs(tentacle.GetHead().x) < 10)
+  constexpr float IN_HEAD_CLOSE_CAMERA_BRIGHTNESS_CUT = 0.5F;
+  constexpr float IN_HEAD_BRIGHTNESS_CUT = 0.2F;
+  constexpr float NORMAL_BRIGHTNESS_CUT = 1.0F;
+
+  if (std::abs(tentacle.GetHead().x) < Tentacle3D::HEAD_SMALL_X)
   {
-    if (m_cameraDistance < 8)
+    constexpr float CLOSE_CAMERA_DISTANCE = 8.0F;
+    if (m_cameraDistance < CLOSE_CAMERA_DISTANCE)
     {
-      return 0.5F;
+      return IN_HEAD_CLOSE_CAMERA_BRIGHTNESS_CUT;
     }
-    return 0.2F;
+    return IN_HEAD_BRIGHTNESS_CUT;
   }
-  return 1.0F;
+  return NORMAL_BRIGHTNESS_CUT;
 }
 
 auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
@@ -274,14 +298,14 @@ auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points
 
 inline void TentaclePlotter::RotateAboutYAxis(const float sinAngle,
                                               const float cosAngle,
-                                              const V3dFlt& vSrc,
-                                              V3dFlt& vDest)
+                                              const V3dFlt& srcPoint,
+                                              V3dFlt& destPoint)
 {
-  const float vi_x = vSrc.x;
-  const float vi_z = vSrc.z;
-  vDest.x = (vi_x * cosAngle) - (vi_z * sinAngle);
-  vDest.z = (vi_x * sinAngle) + (vi_z * cosAngle);
-  vDest.y = vSrc.y;
+  const float srcX = srcPoint.x;
+  const float srcZ = srcPoint.z;
+  destPoint.x = (srcX * cosAngle) - (srcZ * sinAngle);
+  destPoint.z = (srcX * sinAngle) + (srcZ * cosAngle);
+  destPoint.y = srcPoint.y;
 }
 
 inline void TentaclePlotter::Translate(const V3dFlt& vAdd, V3dFlt& vInOut)

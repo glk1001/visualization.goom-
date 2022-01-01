@@ -2,18 +2,18 @@
 
 #include "color/colormaps.h"
 #include "color/colorutils.h"
+#include "color/random_colormaps.h"
+#include "color/random_colormaps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
 #include "goom/logging_control.h"
+//#undef NO_LOGGING
+#include "goom/logging.h"
+#include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
-//#undef NO_LOGGING
-#include "color/random_colormaps.h"
-#include "color/random_colormaps_manager.h"
-#include "goom/logging.h"
-#include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "v2d.h"
 
@@ -29,7 +29,6 @@ using COLOR::GetBrighterColor;
 using COLOR::GetIncreasedChroma;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
-using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
@@ -153,6 +152,15 @@ void GoomDotsFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
+constexpr float HALF = 1.0F / 2.0F;
+constexpr float THIRD = 1.0F / 3.0F;
+
+// clang-format off
+constexpr float IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 10.0F;
+constexpr float IMAGE_NAMES_PINK_FLOWER_WEIGHT   =  5.0F;
+constexpr float IMAGE_NAMES_RED_FLOWER_WEIGHT    = 10.0F;
+constexpr float IMAGE_NAMES_WHITE_FLOWER_WEIGHT  =  5.0F;
+// clang-format on
 
 GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelpers& fxHelpers,
                                            const SmallImageBitmaps& smallBitmaps) noexcept
@@ -163,18 +171,18 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelpers& fxHelpers,
     m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
     m_pointWidth{(m_goomInfo.GetScreenInfo().width * 2) / 5},
     m_pointHeight{(m_goomInfo.GetScreenInfo().height * 2) / 5},
-    m_pointWidthDiv2{static_cast<float>(m_pointWidth) / 2.0F},
-    m_pointHeightDiv2{static_cast<float>(m_pointHeight) / 2.0F},
-    m_pointWidthDiv3{static_cast<float>(m_pointWidth) / 3.0F},
-    m_pointHeightDiv3{static_cast<float>(m_pointHeight) / 3.0F},
+    m_pointWidthDiv2{HALF * static_cast<float>(m_pointWidth)},
+    m_pointHeightDiv2{HALF * static_cast<float>(m_pointHeight)},
+    m_pointWidthDiv3{THIRD * static_cast<float>(m_pointWidth)},
+    m_pointHeightDiv3{THIRD * static_cast<float>(m_pointHeight)},
     // clang-format off
     m_flowerDotTypes{
         m_goomRand,
         {
-            {SmallImageBitmaps::ImageNames::ORANGE_FLOWER, 10},
-            {SmallImageBitmaps::ImageNames::PINK_FLOWER,    5},
-            {SmallImageBitmaps::ImageNames::RED_FLOWER,    10},
-            {SmallImageBitmaps::ImageNames::WHITE_FLOWER,   5},
+            {SmallImageBitmaps::ImageNames::ORANGE_FLOWER, IMAGE_NAMES_ORANGE_FLOWER_WEIGHT},
+            {SmallImageBitmaps::ImageNames::PINK_FLOWER,   IMAGE_NAMES_PINK_FLOWER_WEIGHT},
+            {SmallImageBitmaps::ImageNames::RED_FLOWER,    IMAGE_NAMES_RED_FLOWER_WEIGHT},
+            {SmallImageBitmaps::ImageNames::WHITE_FLOWER,  IMAGE_NAMES_WHITE_FLOWER_WEIGHT},
         }
     }
 // clang-format on
@@ -206,13 +214,18 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
   }
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
-    usePrimaryColor = m_goomRand.ProbabilityOf(0.5F);
+    constexpr float PROB_USE_PRIMARY_COLOR = 0.5F;
+    usePrimaryColor = m_goomRand.ProbabilityOf(PROB_USE_PRIMARY_COLOR);
   }
 
+  constexpr float MIN_MIX_T = 0.1F;
+  constexpr float MAX_MIX_T = 1.0F;
   m_middleColor = RandomColorMaps{m_goomRand}.GetRandomColor(
-      *m_colorMaps[0]->GetRandomColorMapPtr(ColorMapGroup::MISC, RandomColorMaps::ALL), 0.1F, 1.0F);
+      *m_colorMaps[0]->GetRandomColorMapPtr(ColorMapGroup::MISC, RandomColorMaps::ALL), MIN_MIX_T,
+      MAX_MIX_T);
 
-  m_useSingleBufferOnly = m_goomRand.ProbabilityOfMInN(0, 2);
+  constexpr float PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
+  m_useSingleBufferOnly = m_goomRand.ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
   constexpr float PROB_INCREASED_CHROMA = 0.8F;
   m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_INCREASED_CHROMA);
   constexpr float PROB_USE_MIDDLE_COLOR = 0.2F;
@@ -271,7 +284,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   const size_t speedVarMult80Plus15Div15 = speedVarMult80Plus15 / 15;
   constexpr float T_MIN = 0.1F;
   constexpr float T_MAX = 1.0F;
-  const float t_step = (T_MAX - T_MIN) / static_cast<float>(speedVarMult80Plus15Div15);
+  const float tStep = (T_MAX - T_MIN) / static_cast<float>(speedVarMult80Plus15Div15);
 
   float t = T_MIN;
   for (uint32_t i = 1; i <= speedVarMult80Plus15Div15; ++i)
@@ -328,7 +341,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     DotFilter(dot3Color, dot3Position, radius);
     DotFilter(dot4Color, dot4Position, radius);
 
-    t += t_step;
+    t += tStep;
   }
 }
 
@@ -337,7 +350,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const f
 {
   if (m_usePrimaryColors.at(dotNum))
   {
-    static const std::array<Pixel, NUM_DOT_TYPES> s_PRIMARY_COLORS{
+    static const std::array s_PRIMARY_COLORS{
         Pixel{255,   0,   0, 0},
         Pixel{  0, 255,   0, 0},
         Pixel{  0,   0, 255, 0},
@@ -396,8 +409,9 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetNonFlowerBitmap()
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetLargeSoundFactor(const SoundInfo& soundInfo) -> float
 {
-  constexpr float MAX_LARGE_FACTOR = 1.5F;
-  return (soundInfo.GetSpeed() / 50.0F) + (soundInfo.GetVolume() / MAX_LARGE_FACTOR);
+  constexpr float SOUND_SPEED_REDUCER = 1.0F / 50.0F;
+  constexpr float VOLUME_REDUCER = 1.0F / 1.5F;
+  return (SOUND_SPEED_REDUCER * soundInfo.GetSpeed()) + (VOLUME_REDUCER * soundInfo.GetVolume());
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPosition(const float xOffsetAmp,
@@ -432,16 +446,15 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   }
 
   constexpr float BRIGHTNESS = 3.5F;
-  const auto getColor1 =
-      [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& b)
+  const auto getColor1 = [&](const size_t x, const size_t y, const Pixel& bgnd)
   {
     const Pixel newColor =
         m_useMiddleColor && (x == radius) && (y == radius) ? m_middleColor : color;
-    if (0 == b.A())
+    if (0 == bgnd.A())
     {
       return Pixel::BLACK;
     }
-    const Pixel mixedColor = COLOR::IColorMap::GetColorMix(b, newColor, 0.5F);
+    const Pixel mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, 0.5F);
     const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
     return GetGammaCorrection(BRIGHTNESS, finalColor);
   };

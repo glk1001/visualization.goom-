@@ -41,7 +41,7 @@ CheckOptions:
   - { key: readability-identifier-naming.ClassCase,                         value: CamelCase }
   - { key: readability-identifier-naming.ConstexprVariableCase,             value: UPPER_CASE }
   - { key: readability-identifier-naming.ConstexprVariablePrefix,           value: '' }
-  - { key: readability-identifier-naming.ConstantMemberCase,                value: camelCase }
+  - { key: readability-identifier-naming.ConstantMemberCase,                value: camelBack }
   - { key: readability-identifier-naming.ConstantMemberPrefix,              value: 'm_' }
   - { key: readability-identifier-naming.EnumConstantCase,                  value: UPPER_CASE }
   - { key: readability-identifier-naming.EnumConstantPrefix,                value: '' }
@@ -50,35 +50,35 @@ CheckOptions:
   - { key: readability-identifier-naming.GlobalConstantPrefix,              value: '' }
   - { key: readability-identifier-naming.GlobalFunctionCase,                value: CamelCase }
   - { key: readability-identifier-length.MinimumVariableNameLength,         value: 3 }
-  - { key: readability-identifier-length.IgnoredVariableNames,              value: 't|x.*|y.*|z.*|u.*|v.*|i.*|j.*|k.*|m.*|n.*' }
+  - { key: readability-identifier-length.IgnoredVariableNames,              value: 't|x.*|X.*|y.*|z.*|u.*|v.*|i.*|j.*|k.*|m.*|n.*|N.*' }
   - { key: readability-identifier-length.MinimumParameterNameLength,        value: 3 }
   - { key: readability-identifier-length.IgnoredParameterNames,             value: 't|x.*|y.*|z.*|i|m|n|k.*' }
   - { key: readability-identifier-length.MinimumLoopCounterNameLength,      value: 3 }
   - { key: readability-identifier-length.IgnoredLoopCounterNames,           value: 'x|y|i|j|k' }
-  - { key: readability-identifier-naming.LocalConstantCase,                 value: camelCase }
+  - { key: readability-identifier-naming.LocalConstantCase,                 value: camelBack }
   - { key: readability-identifier-naming.MacroDefinitionCase,               value: UPPER_CASE }
   - { key: readability-identifier-naming.MethodCase,                        value: CamelCase }
   - { key: readability-identifier-naming.NamespaceCase,                     value: UPPER_CASE }
-  - { key: readability-identifier-naming.ParameterCase,                     value: camelCase }
+  - { key: readability-identifier-naming.ParameterCase,                     value: camelBack }
   - { key: readability-identifier-naming.PrivateMemberPrefix,               value: 'm_' }
   - { key: readability-identifier-naming.ProtectedMemberPrefix,             value: 'm_' }
   - { key: readability-identifier-naming.PublicMemberPrefix,                value: '' }
   - { key: readability-identifier-naming.ScopedEnumConstantCase,            value: UPPER_CASE }
   - { key: readability-identifier-naming.ScopedEnumConstantPrefix,          value: '' }
-  - { key: readability-identifier-naming.StaticConstantCase,                value: camelCase }
+  - { key: readability-identifier-naming.StaticConstantCase,                value: UPPER_CASE }
   - { key: readability-identifier-naming.StaticConstantPrefix,              value: 's_' }
-  - { key: readability-identifier-naming.StaticVariableCase,                value: camelCase }
+  - { key: readability-identifier-naming.StaticVariableCase,                value: camelBack }
   - { key: readability-identifier-naming.StaticVariablePrefix,              value: 's_' }
-  - { key: readability-identifier-naming.StaticMemberPrefix,                value: 'ms_' }
   - { key: readability-identifier-naming.StructCase,                        value: CamelCase }
   - { key: readability-identifier-naming.TemplateParameterCase,             value: CamelCase }
   - { key: readability-identifier-naming.TypeAliasCase,                     value: CamelCase }
   - { key: readability-identifier-naming.UnionCase,                         value: CamelCase }
-  - { key: readability-identifier-naming.VariableCase,                      value: camelCase }
+  - { key: readability-identifier-naming.VariableCase,                      value: camelBack }
   - { key: readability-identifier-naming.VirtualMethodCase,                 value: CamelCase }
 
   - { key: readability-implicit-bool-conversion.AllowIntegerConditions,     value: '1' }
   - { key: readability-implicit-bool-conversion.AllowPointerConditions,     value: '1' }
+
   - { key: cert-oop54-cpp.WarnOnlyIfThisHasSuspiciousField,                 value: '0' }
   - { key: cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors,  value: '1' }
   - { key: cppcoreguidelines-non-private-member-variables-in-classes

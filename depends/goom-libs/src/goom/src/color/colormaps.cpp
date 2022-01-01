@@ -116,7 +116,7 @@ public:
   auto operator=(const PrebuiltColorMap&) -> PrebuiltColorMap& = delete;
   auto operator=(PrebuiltColorMap&&) -> PrebuiltColorMap& = delete;
 
-  [[nodiscard]] auto GetNumStops() const -> size_t override { return m_cmap.numStops(); }
+  [[nodiscard]] auto GetNumStops() const -> size_t override { return m_vividColorMap.numStops(); }
   [[nodiscard]] auto GetMapName() const -> ColorMapName override { return m_mapName; }
   [[nodiscard]] auto GetColor(float t) const -> Pixel override;
 
@@ -124,7 +124,7 @@ public:
 
 private:
   const ColorMapName m_mapName;
-  const vivid::ColorMap m_cmap;
+  const vivid::ColorMap m_vividColorMap;
 };
 
 class ColorMaps::ColorMapsImpl
@@ -395,19 +395,20 @@ auto ColorMaps::ColorMapsImpl::MakeColorGroupNames() -> ColorGroupNamesArray
   at(groups, ColorMapGroup::COLD) = &COLOR_DATA::COLD_MAPS;
   at(groups, ColorMapGroup::PASTEL) = &COLOR_DATA::PASTEL_MAPS;
 
-  assert(std::all_of(groups.cbegin(), groups.cend(), [](const auto& g) { return g != nullptr; }));
+  assert(std::all_of(groups.cbegin(), groups.cend(),
+                     [](const auto& group) { return group != nullptr; }));
 
   return groups;
 }
 
 inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName, vivid::ColorMap cm)
-  : m_mapName{mapName}, m_cmap{std::move(cm)}
+  : m_mapName{mapName}, m_vividColorMap{std::move(cm)}
 {
 }
 
 inline auto PrebuiltColorMap::GetColor(const float t) const -> Pixel
 {
-  const vivid::col8_t rgb8 = vivid::rgb8::fromRgb(m_cmap.at(t));
+  const vivid::col8_t rgb8 = vivid::rgb8::fromRgb(m_vividColorMap.at(t));
   return Pixel{{rgb8.r, rgb8.g, rgb8.b, MAX_ALPHA}};
 }
 

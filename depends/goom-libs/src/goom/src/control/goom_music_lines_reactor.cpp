@@ -6,7 +6,6 @@
 namespace GOOM::CONTROL
 {
 
-using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using VISUAL_FX::LinesFx;
 

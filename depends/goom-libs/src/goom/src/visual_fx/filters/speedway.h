@@ -69,7 +69,7 @@ inline auto Speedway::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
       return GetMode1SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
     case Modes::MODE2:
       return GetMode2SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
-  };
+  }
 
   return {0.0F, 0.0F};
 }
@@ -80,7 +80,8 @@ inline auto Speedway::GetMode0SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 {
   constexpr float SQ_DIST_FACTOR = 0.01F;
   float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (m_goomRand.ProbabilityOf(0.5F))
+  constexpr float PROB_FLIP_X_ADD = 0.5F;
+  if (m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
@@ -97,14 +98,23 @@ inline auto Speedway::GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 {
   float xAdd = -1.0F;
 
-  if (m_goomRand.ProbabilityOf(0.5F))
+  constexpr float PROB_RANDOM_X_ADD = 0.5F;
+  constexpr float PROB_FLIP_X_ADD = 0.5F;
+  constexpr float PROB_NEGATIVE_X_ADD = 0.5F;
+
+  if (m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
   {
-    xAdd = m_goomRand.ProbabilityOf(0.5F) ? m_goomRand.GetRandInRange(-1.9F, -0.5F)
-                                          : m_goomRand.GetRandInRange(+0.5F, +1.9F);
+    constexpr float MIN_NEGATIVE_X_ADD = -1.9F;
+    constexpr float MAX_NEGATIVE_X_ADD = -0.5F;
+    constexpr float MIN_POSITIVE_X_ADD = +0.5F;
+    constexpr float MAX_POSITIVE_X_ADD = +1.9F;
+    xAdd = m_goomRand.ProbabilityOf(PROB_NEGATIVE_X_ADD)
+               ? m_goomRand.GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
+               : m_goomRand.GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
   }
-  else if (m_goomRand.ProbabilityOf(0.5F))
+  else if (m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
-    xAdd = +1.0F;
+    xAdd = -xAdd;
   }
 
   const float xDiff = coords.GetX() - xAdd;
@@ -124,7 +134,8 @@ inline auto Speedway::GetMode2SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 {
   constexpr float SQ_DIST_FACTOR = 0.01F;
   float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (m_goomRand.ProbabilityOf(0.5F))
+  constexpr float PROB_FLIP_X_ADD = 0.5F;
+  if (m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }

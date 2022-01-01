@@ -48,10 +48,14 @@ private:
   double m_xMax = 0.0;
   double m_yMin = 0.0;
   double m_yMax = 0.0;
-  double m_basePrevYWeight = 0.770;
-  double m_baseCurrentYWeight = 0.230;
-  double m_iterZeroYVal = 0.9;
-  double m_iterZeroLerpFactor = 0.8;
+  static constexpr double DEFAULT_BASE_PREV_Y_WEIGHT = 0.770;
+  double m_basePrevYWeight = DEFAULT_BASE_PREV_Y_WEIGHT;
+  static constexpr double DEFAULT_BASE_CURRENT_Y_WEIGHT = 0.230;
+  double m_baseCurrentYWeight = DEFAULT_BASE_CURRENT_Y_WEIGHT;
+  static constexpr double DEFAULT_ITER_ZERO_Y_VAL = 0.9;
+  double m_iterZeroYVal = DEFAULT_ITER_ZERO_Y_VAL;
+  static constexpr double DEFAULT_ITER_ZERO_LERP_FACTOR = 0.8;
+  double m_iterZeroLerpFactor = DEFAULT_ITER_ZERO_LERP_FACTOR;
   size_t m_iterNum = 0;
   bool m_startedIterating = false;
   std::vector<double> m_xVec{};

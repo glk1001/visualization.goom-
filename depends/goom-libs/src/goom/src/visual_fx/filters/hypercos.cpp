@@ -16,7 +16,6 @@ using UTILS::IGoomRand;
 using UTILS::m_pi;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
-using UTILS::Weights;
 
 // Hypercos:
 // applique une surcouche de hypercos effect
@@ -43,9 +42,29 @@ constexpr float PROB_REVERSE = 0.5F;
 constexpr float PROB_AMPLITUDE_EQUAL = 0.5F;
 constexpr float PROB_BIG_AMPLITUDE_RANGE = 0.2F;
 
-constexpr Hypercos::Params DEFAULT_PARAMS{DEFAULT_OVERLAY,    DEFAULT_EFFECT, DEFAULT_REVERSE,
-                                          X_DEFAULT_FREQ,     Y_DEFAULT_FREQ, X_DEFAULT_AMPLITUDE,
-                                          Y_DEFAULT_AMPLITUDE};
+// clang-format off
+constexpr Hypercos::Params DEFAULT_PARAMS{
+    DEFAULT_OVERLAY,
+    DEFAULT_EFFECT,
+    DEFAULT_REVERSE,
+    X_DEFAULT_FREQ,
+    Y_DEFAULT_FREQ,
+    X_DEFAULT_AMPLITUDE,
+    Y_DEFAULT_AMPLITUDE
+};
+
+constexpr float HYPERCOS_EFFECT_NONE_WEIGHT               =  0.0F;
+constexpr float HYPERCOS_EFFECT_SIN_CURL_SWIRL_WEIGHT     = 15.0F;
+constexpr float HYPERCOS_EFFECT_COS_CURL_SWIRL_WEIGHT     = 15.0F;
+constexpr float HYPERCOS_EFFECT_SIN_COS_CURL_SWIRL_WEIGHT = 15.0F;
+constexpr float HYPERCOS_EFFECT_COS_SIN_CURL_SWIRL_WEIGHT = 15.0F;
+constexpr float HYPERCOS_EFFECT_SIN_TAN_CURL_SWIRL_WEIGHT =  5.0F;
+constexpr float HYPERCOS_EFFECT_COS_TAN_CURL_SWIRL_WEIGHT =  5.0F;
+constexpr float HYPERCOS_EFFECT_SIN_RECTANGULAR_WEIGHT    =  5.0F;
+constexpr float HYPERCOS_EFFECT_COS_RECTANGULAR_WEIGHT    =  5.0F;
+constexpr float HYPERCOS_EFFECT_SIN_OF_COS_SWIRL_WEIGHT   = 15.0F;
+constexpr float HYPERCOS_EFFECT_COS_OF_SIN_SWIRL_WEIGHT   = 15.0F;
+// clang-format on
 
 Hypercos::Hypercos(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
@@ -54,17 +73,17 @@ Hypercos::Hypercos(const IGoomRand& goomRand) noexcept
     m_hypercosOverlayWeights{
         m_goomRand,
         {
-            { HypercosEffect::NONE,                0 },
-            { HypercosEffect::SIN_CURL_SWIRL,     15 },
-            { HypercosEffect::COS_CURL_SWIRL,     15 },
-            { HypercosEffect::SIN_COS_CURL_SWIRL, 15 },
-            { HypercosEffect::COS_SIN_CURL_SWIRL, 15 },
-            { HypercosEffect::SIN_TAN_CURL_SWIRL,  5 },
-            { HypercosEffect::COS_TAN_CURL_SWIRL,  5 },
-            { HypercosEffect::SIN_RECTANGULAR,     5 },
-            { HypercosEffect::COS_RECTANGULAR,     5 },
-            { HypercosEffect::SIN_OF_COS_SWIRL,   15 },
-            { HypercosEffect::COS_OF_SIN_SWIRL,   15 },
+            { HypercosEffect::NONE,               HYPERCOS_EFFECT_NONE_WEIGHT },
+            { HypercosEffect::SIN_CURL_SWIRL,     HYPERCOS_EFFECT_SIN_CURL_SWIRL_WEIGHT },
+            { HypercosEffect::COS_CURL_SWIRL,     HYPERCOS_EFFECT_COS_CURL_SWIRL_WEIGHT },
+            { HypercosEffect::SIN_COS_CURL_SWIRL, HYPERCOS_EFFECT_SIN_COS_CURL_SWIRL_WEIGHT },
+            { HypercosEffect::COS_SIN_CURL_SWIRL, HYPERCOS_EFFECT_COS_SIN_CURL_SWIRL_WEIGHT },
+            { HypercosEffect::SIN_TAN_CURL_SWIRL, HYPERCOS_EFFECT_SIN_TAN_CURL_SWIRL_WEIGHT },
+            { HypercosEffect::COS_TAN_CURL_SWIRL, HYPERCOS_EFFECT_COS_TAN_CURL_SWIRL_WEIGHT },
+            { HypercosEffect::SIN_RECTANGULAR,    HYPERCOS_EFFECT_SIN_RECTANGULAR_WEIGHT },
+            { HypercosEffect::COS_RECTANGULAR,    HYPERCOS_EFFECT_COS_RECTANGULAR_WEIGHT },
+            { HypercosEffect::SIN_OF_COS_SWIRL,   HYPERCOS_EFFECT_SIN_OF_COS_SWIRL_WEIGHT },
+            { HypercosEffect::COS_OF_SIN_SWIRL,   HYPERCOS_EFFECT_COS_OF_SIN_SWIRL_WEIGHT },
         }
     }
 // clang-format on
@@ -132,25 +151,8 @@ inline auto Hypercos::GetFreqToUse(const float freq) const -> float
 
 auto Hypercos::GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords
 {
-  //  if (std::fabs(std::sin(10.0F * coords.GetX())) < 0.5F && std::fabs(std::cos(10.0F * coords.GetY())) < 0.5F)
-  //  if (UTILS::Sq(coords.GetX() - 0.5F) + UTILS::Sq(coords.GetY() - 0.5F) < UTILS::Sq(0.2F) ||
-  //      UTILS::Sq(coords.GetX() + 0.5F) + UTILS::Sq(coords.GetY() + 0.5F) < UTILS::Sq(0.2F) ||
-  //      UTILS::Sq(coords.GetX() - 0.5F) + UTILS::Sq(coords.GetY() + 0.5F) < UTILS::Sq(0.2F) ||
-  //      UTILS::Sq(coords.GetX() + 0.5F) + UTILS::Sq(coords.GetY() - 0.5F) < UTILS::Sq(0.2F))
-  //  {
-  //    return {-0.05F, -0.05F};
-  //  }
-
   const float xFreqToUse = GetFreqToUse(m_params.xFreq);
   const float yFreqToUse = GetFreqToUse(m_params.yFreq);
-
-  //  if (UTILS::Sq(coords.GetX() - 0.5F) + UTILS::Sq(coords.GetY() - 0.5F) < UTILS::Sq(0.2F) ||
-  //    UTILS::Sq(coords.GetX() + 0.5F) + UTILS::Sq(coords.GetY() + 0.5F) < UTILS::Sq(0.2F) ||
-  //    UTILS::Sq(coords.GetX() - 0.5F) + UTILS::Sq(coords.GetY() + 0.5F) < UTILS::Sq(0.2F) ||
-  //    UTILS::Sq(coords.GetX() + 0.5F) + UTILS::Sq(coords.GetY() - 0.5F) < UTILS::Sq(0.2F))
-  //    {
-  //      return GetVelocity(coords, HypercosEffect::COS_TAN_CURL_SWIRL, xFreqToUse, yFreqToUse);
-  //    }
 
   return GetVelocity(coords, m_params.effect, xFreqToUse, yFreqToUse);
 }

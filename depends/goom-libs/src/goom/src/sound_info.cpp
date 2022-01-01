@@ -10,9 +10,6 @@
 namespace GOOM
 {
 
-const size_t AudioSamples::NUM_AUDIO_SAMPLES = 2;
-const size_t AudioSamples::AUDIO_SAMPLE_LEN = 512;
-
 auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
     -> std::vector<SampleArray>
 {

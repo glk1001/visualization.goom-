@@ -38,6 +38,8 @@ static const Pixel RED_LINE = LinesFx::GetRedLineColor();
 static const Pixel GREEN_LINE = LinesFx::GetGreenLineColor();
 static const Pixel BLACK_LINE = LinesFx::GetBlackLineColor();
 
+constexpr float SMALL_LUMA = 0.1F;
+
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  const FxHelpers& fxHelpers,
                                  const SmallImageBitmaps& smallBitmaps,
@@ -47,10 +49,10 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept
   : m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelpers, smallBitmaps, resourcesDirectory)},
-    m_zoomFilter_fx{std::make_unique<ZoomFilterFx>(parallel,
-                                                   fxHelpers.GetGoomInfo(),
-                                                   std::move(filterBuffersService),
-                                                   std::move(filterColorsService))},
+    m_zoomFilterFx{std::make_unique<ZoomFilterFx>(parallel,
+                                                  fxHelpers.GetGoomInfo(),
+                                                  std::move(filterBuffersService),
+                                                  std::move(filterColorsService))},
     m_goomLine1{std::make_unique<LinesFx>(
         fxHelpers,
         smallBitmaps,
@@ -87,14 +89,14 @@ void GoomAllVisualFx::Start()
 
   m_allStandardVisualFx->Start();
   m_adaptiveExposure.Start();
-  m_zoomFilter_fx->Start();
+  m_zoomFilterFx->Start();
 }
 
 void GoomAllVisualFx::Finish()
 {
   m_allStandardVisualFx->Finish();
 
-  m_zoomFilter_fx->Finish();
+  m_zoomFilterFx->Finish();
 
   m_goomLine1->Finish();
   m_goomLine2->Finish();
@@ -197,7 +199,7 @@ auto GoomAllVisualFx::GetSameLumaBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
   {
     const float newColorLuma =
         GetLuma(newColor) * (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
-    if (newColorLuma < 0.1F)
+    if (newColorLuma < SMALL_LUMA)
     {
       return COLOR::GetColorAdd(oldColor, newColor);
     }
@@ -218,7 +220,7 @@ auto GoomAllVisualFx::GetSameLumaMixBlendPixelFunc() -> IGoomDraw::BlendPixelFun
   {
     const float newColorLuma =
         GetLuma(newColor) * (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
-    if (newColorLuma < 0.1F)
+    if (newColorLuma < SMALL_LUMA)
     {
       return COLOR::GetColorAdd(oldColor, newColor);
     }
@@ -239,11 +241,11 @@ void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSetti
 {
   if (updateFilterEffects)
   {
-    m_zoomFilter_fx->UpdateFilterEffectsSettings(filterSettings.filterEffectsSettings);
+    m_zoomFilterFx->UpdateFilterEffectsSettings(filterSettings.filterEffectsSettings);
   }
 
-  m_zoomFilter_fx->UpdateFilterBufferSettings(filterSettings.filterBufferSettings);
-  m_zoomFilter_fx->UpdateFilterColorSettings(filterSettings.filterColorSettings);
+  m_zoomFilterFx->UpdateFilterBufferSettings(filterSettings.filterBufferSettings);
+  m_zoomFilterFx->UpdateFilterColorSettings(filterSettings.filterColorSettings);
 
   m_allStandardVisualFx->SetZoomMidPoint(filterSettings.filterEffectsSettings.zoomMidPoint);
 }
@@ -278,7 +280,7 @@ void GoomAllVisualFx::ChangeLineColorMaps()
 
 auto GoomAllVisualFx::GetZoomFilterFxNameValueParams() const -> NameValuePairs
 {
-  return m_zoomFilter_fx->GetNameValueParams();
+  return m_zoomFilterFx->GetNameValueParams();
 }
 
 } // namespace GOOM::CONTROL

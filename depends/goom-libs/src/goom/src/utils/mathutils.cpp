@@ -13,8 +13,8 @@ namespace GOOM::UTILS
 
 ExpIncreasingFunction::ExpIncreasingFunction(const double xMin,
                                              const double xMax,
-                                             const double _k) noexcept
-  : IIncreasingFunction(xMax, xMin), m_k(_k)
+                                             const double k) noexcept
+  : IIncreasingFunction{xMax, xMin}, m_k{k}
 {
 }
 
@@ -39,7 +39,7 @@ double LogIncreasingFunction::operator()(const double x)
 LogDampingFunction::LogDampingFunction(const double amp,
                                        const double xMin,
                                        const double xStart) noexcept
-  : m_amplitude(amp), m_xMin(xMin), m_xStart(xStart)
+  : m_amplitude{amp}, m_xMin{xMin}, m_xStart{xStart}
 {
 }
 
@@ -53,7 +53,7 @@ ExpDampingFunction::ExpDampingFunction(const double amp,
                                        const double yAtStartToRise,
                                        const double xMax,
                                        const double yAtXMax)
-  : m_amplitude(amp)
+  : m_amplitude{amp}
 {
   constexpr double MIN_AMP = 0.00001;
   if (std::fabs(m_amplitude) < MIN_AMP)
@@ -84,7 +84,7 @@ auto ExpDampingFunction::operator()(const double x) -> double
   return m_amplitude * (1.0 + std::exp(m_k * (x - m_b)));
 }
 
-FlatDampingFunction::FlatDampingFunction(const double y_) noexcept : m_y{y_}
+FlatDampingFunction::FlatDampingFunction(const double y) noexcept : m_y{y}
 {
 }
 
@@ -93,11 +93,11 @@ auto FlatDampingFunction::operator()([[maybe_unused]] const double x) -> double
   return m_y;
 }
 
-LinearDampingFunction::LinearDampingFunction(const double x0_,
-                                             const double y0_,
-                                             const double x1_,
-                                             const double y1_) noexcept
-  : m_m{(y1_ - y0_) / (x1_ - x0_)}, m_x1{x1_}, m_y1{y1_}
+LinearDampingFunction::LinearDampingFunction(const double x0,
+                                             const double y0,
+                                             const double x1,
+                                             const double y1) noexcept
+  : m_m{(y1 - y0) / (x1 - x0)}, m_x1{x1}, m_y1{y1}
 {
 }
 

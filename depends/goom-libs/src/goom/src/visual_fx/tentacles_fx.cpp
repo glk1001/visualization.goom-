@@ -129,6 +129,26 @@ void TentaclesFx::ApplyMultiple()
   m_fxImpl->Update();
 }
 
+// clang-format off
+static const CirclesTentacleLayout LAYOUT1{
+    10,  80, {16, 12,  8,  6, 4}, 0
+};
+static const CirclesTentacleLayout LAYOUT2{
+    10,  80, {20, 16, 12,  6, 4}, 0
+};
+static const CirclesTentacleLayout LAYOUT3{
+    10, 100, {30, 20, 14,  6, 4}, 0
+};
+static const CirclesTentacleLayout LAYOUT4{
+    10, 110, {36, 26, 20, 12, 6}, 0
+};
+
+constexpr float DRIVERS_NUM0_WEIGHT =   5.0F;
+constexpr float DRIVERS_NUM1_WEIGHT =  15.0F;
+constexpr float DRIVERS_NUM2_WEIGHT =  15.0F;
+constexpr float DRIVERS_NUM3_WEIGHT =   5.0F;
+// clang-format on
+
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers,
                                           const SmallImageBitmaps& smallBitmaps)
   : m_draw{fxHelpers.GetDraw()},
@@ -139,17 +159,17 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers,
     m_driverWeights{
       m_goomRand,
       {
-          {Drivers::NUM0,  5},
-          {Drivers::NUM1, 15},
-          {Drivers::NUM2, 15},
-          {Drivers::NUM3,  5},
+          {Drivers::NUM0, DRIVERS_NUM0_WEIGHT},
+          {Drivers::NUM1, DRIVERS_NUM1_WEIGHT},
+          {Drivers::NUM2, DRIVERS_NUM2_WEIGHT},
+          {Drivers::NUM3, DRIVERS_NUM3_WEIGHT},
       }},
-    m_tentacleLayouts{{
-        {10,  80, {16, 12,  8,  6, 4}, 0},
-        {10,  80, {20, 16, 12,  6, 4}, 0},
-        {10, 100, {30, 20, 14,  6, 4}, 0},
-        {10, 110, {36, 26, 20, 12, 6}, 0},
-    }},
+    m_tentacleLayouts{
+        LAYOUT1,
+        LAYOUT2,
+        LAYOUT3,
+        LAYOUT4,
+    },
     // clang-format on
     m_tentacleDrivers{GetTentacleDrivers()},
     m_currentTentacleDriver{GetNextDriver()}
@@ -276,8 +296,10 @@ inline void TentaclesFx::TentaclesImpl::UpdateDominantColors()
   assert(m_dominantColorMap);
   const Pixel newColor =
       RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
-  m_dominantColor = IColorMap::GetColorMix(m_dominantColor, newColor, 0.7F);
-  m_dominantLowColor = GetLightenedColor(m_dominantColor, 0.67F);
+  constexpr float COLOR_MIX_T = 0.70F;
+  m_dominantColor = IColorMap::GetColorMix(m_dominantColor, newColor, COLOR_MIX_T);
+  constexpr float LOW_COLOR_POWER = 0.67F;
+  m_dominantLowColor = GetLightenedColor(m_dominantColor, LOW_COLOR_POWER);
 }
 
 } // namespace GOOM::VISUAL_FX

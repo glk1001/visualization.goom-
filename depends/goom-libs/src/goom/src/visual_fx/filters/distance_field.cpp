@@ -12,7 +12,6 @@ namespace GOOM::VISUAL_FX::FILTERS
 using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 using UTILS::Sq;
-using UTILS::SqDistance;
 
 constexpr float DEFAULT_AMPLITUDE = 0.1F;
 constexpr IGoomRand::NumberRange<float> X_AMPLITUDE_RANGE_MODE0 = {0.01F, 0.501F};

@@ -110,8 +110,8 @@ auto GetRandInRange(const float x0, const float x1) -> float
   }
 #endif
 
-  static const auto s_eng_max = static_cast<float>(g_randMax);
-  const float t = static_cast<float>(RandXoshiroFunc(0, g_randMax)) / s_eng_max;
+  static const auto s_engMax = static_cast<float>(g_randMax);
+  const float t = static_cast<float>(RandXoshiroFunc(0, g_randMax)) / s_engMax;
   return stdnew::lerp(x0, x1, t);
   //  thread_local std::uniform_real_distribution<> dis(0, 1);
   //  return std::lerp(x0, x1, static_cast<float>(dis(eng)));

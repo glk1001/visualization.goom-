@@ -110,7 +110,7 @@ add_library(goom
         src/visual_fx/lines_fx.cpp
         src/visual_fx/shader_fx.cpp
         src/visual_fx/tentacles_fx.cpp
-        src/visual_fx/tube_fx.cpp
+        src/visual_fx/tubes_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp)
 
 target_include_directories(goom

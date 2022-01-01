@@ -50,7 +50,7 @@ inline void FilterColorsService::SetBrightness(const float brightness)
 {
   // In method 'GetMixedColor' we multiply an array of coefficients by an array of colors
   // and get a sum as the result. The sum is then divided by 'MAX_SUM_COEFFS'. For optimizing
-  // reasons, we can use this point to also factor in integer brightness for free.
+  // reasons, we can use this step to also factor in integer brightness for free.
   //
   //  (c/x) * (m/n) = (c*m) / (x*n) = c / (x*n / m)
 
@@ -118,6 +118,7 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
   uint32_t multB = 0;
   for (size_t i = 0; i < coeffs.val.size(); ++i)
   {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
     const uint32_t& coeff = coeffs.val[i];
     const Pixel& color = colors[i];
     multR += static_cast<uint32_t>(color.R()) * coeff;

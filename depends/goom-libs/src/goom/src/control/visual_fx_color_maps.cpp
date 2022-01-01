@@ -7,12 +7,6 @@
 #include <array>
 #include <numeric>
 
-// CLion is giving false positives for unreachable functions.
-// For example 'GetConstColorMatchedSet'.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma ide diagnostic ignored "UnreachableCallsOfFunction"
-
 namespace GOOM::CONTROL
 {
 
@@ -67,6 +61,27 @@ auto VisualFxColorMaps::GetColorMatchedSetArray() const -> ColorMatchedSetArray
   return colorSets;
 }
 
+// clang-format off
+constexpr float RED_GREEN_STANDARD_MAPS_WEIGHT             =   1.0F;
+constexpr float RED_BLUE_STANDARD_MAPS_WEIGHT              =   1.0F;
+constexpr float YELLOW_BLUE_STANDARD_MAPS_WEIGHT           =   1.0F;
+constexpr float YELLOW_PURPLE_STANDARD_MAPS_WEIGHT         =   1.0F;
+constexpr float ORANGE_GREEN_STANDARD_MAPS_WEIGHT          =   1.0F;
+constexpr float ORANGE_PURPLE_STANDARD_MAPS_WEIGHT         =   1.0F;
+constexpr float CONST_ALL_STANDARD_MAPS_WEIGHT             =  20.0F;
+constexpr float CONST_HEAT_STANDARD_MAPS_WEIGHT            =  15.0F;
+constexpr float CONST_COLD_STANDARD_MAPS_WEIGHT            =  15.0F;
+constexpr float CONST_DIVERGING_BLACK_STANDARD_MAPS_WEIGHT =  40.0F;
+constexpr float COLOR_MATCHED_SET1_WEIGHT                  =  90.0F;
+constexpr float COLOR_MATCHED_SET2_WEIGHT                  =  90.0F;
+constexpr float COLOR_MATCHED_SET3_WEIGHT                  =  90.0F;
+constexpr float COLOR_MATCHED_SET4_WEIGHT                  =  90.0F;
+constexpr float COLOR_MATCHED_SET5_WEIGHT                  =  90.0F;
+constexpr float COLOR_MATCHED_SET6_WEIGHT                  =  90.0F;
+constexpr float COLOR_MATCHED_SET7_WEIGHT                  =  90.0F;
+constexpr float COLOR_MATCHED_SET8_WEIGHT                  =  90.0F;
+// clang-format on
+
 VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_colorMatchedSets{GetColorMatchedSetArray()},
@@ -75,24 +90,24 @@ VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand) noexcept
     {
         m_goomRand,
         {
-             {ColorMatchedSets::RED_GREEN_STANDARD_MAPS,              1},
-             {ColorMatchedSets::RED_BLUE_STANDARD_MAPS,               1},
-             {ColorMatchedSets::YELLOW_BLUE_STANDARD_MAPS,            1},
-             {ColorMatchedSets::YELLOW_PURPLE_STANDARD_MAPS,          1},
-             {ColorMatchedSets::ORANGE_GREEN_STANDARD_MAPS,           1},
-             {ColorMatchedSets::ORANGE_PURPLE_STANDARD_MAPS,          1},
-             {ColorMatchedSets::CONST_ALL_STANDARD_MAPS,             20},
-             {ColorMatchedSets::CONST_HEAT_STANDARD_MAPS,            15},
-             {ColorMatchedSets::CONST_COLD_STANDARD_MAPS,            15},
-             {ColorMatchedSets::CONST_DIVERGING_BLACK_STANDARD_MAPS, 40},
-             {ColorMatchedSets::COLOR_MATCHED_SET1,                  90},
-             {ColorMatchedSets::COLOR_MATCHED_SET2,                  90},
-             {ColorMatchedSets::COLOR_MATCHED_SET3,                  90},
-             {ColorMatchedSets::COLOR_MATCHED_SET4,                  90},
-             {ColorMatchedSets::COLOR_MATCHED_SET5,                  90},
-             {ColorMatchedSets::COLOR_MATCHED_SET6,                  90},
-             {ColorMatchedSets::COLOR_MATCHED_SET7,                  90},
-             {ColorMatchedSets::COLOR_MATCHED_SET8,                  90},
+             {ColorMatchedSets::RED_GREEN_STANDARD_MAPS,             RED_GREEN_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::RED_BLUE_STANDARD_MAPS,              RED_BLUE_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::YELLOW_BLUE_STANDARD_MAPS,           YELLOW_BLUE_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::YELLOW_PURPLE_STANDARD_MAPS,         YELLOW_PURPLE_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::ORANGE_GREEN_STANDARD_MAPS,          ORANGE_GREEN_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::ORANGE_PURPLE_STANDARD_MAPS,         ORANGE_PURPLE_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::CONST_ALL_STANDARD_MAPS,             CONST_ALL_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::CONST_HEAT_STANDARD_MAPS,            CONST_HEAT_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::CONST_COLD_STANDARD_MAPS,            CONST_COLD_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::CONST_DIVERGING_BLACK_STANDARD_MAPS, CONST_DIVERGING_BLACK_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::COLOR_MATCHED_SET1,                  COLOR_MATCHED_SET1_WEIGHT},
+             {ColorMatchedSets::COLOR_MATCHED_SET2,                  COLOR_MATCHED_SET2_WEIGHT},
+             {ColorMatchedSets::COLOR_MATCHED_SET3,                  COLOR_MATCHED_SET3_WEIGHT},
+             {ColorMatchedSets::COLOR_MATCHED_SET4,                  COLOR_MATCHED_SET4_WEIGHT},
+             {ColorMatchedSets::COLOR_MATCHED_SET5,                  COLOR_MATCHED_SET5_WEIGHT},
+             {ColorMatchedSets::COLOR_MATCHED_SET6,                  COLOR_MATCHED_SET6_WEIGHT},
+             {ColorMatchedSets::COLOR_MATCHED_SET7,                  COLOR_MATCHED_SET7_WEIGHT},
+             {ColorMatchedSets::COLOR_MATCHED_SET8,                  COLOR_MATCHED_SET8_WEIGHT},
         }
     },
     // clang-format on
@@ -105,9 +120,11 @@ auto VisualFxColorMaps::GetNextColorMatchedSet() const -> const ColorMatchedSet&
   return m_colorMatchedSets.at(static_cast<size_t>(m_colorMatchedSetWeights.GetRandomWeighted()));
 }
 
+// TODO: CLion is giving false positives for unreachable functions.
+// For example 'GetConstColorMatchedSet'.
 inline auto VisualFxColorMaps::GetConstColorMatchedSet(const ColorMapFunc& func) -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet;
+  ColorMatchedSet matchedSet{nullptr};
   matchedSet.fill(func);
 
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllSlimMaps;
@@ -123,7 +140,8 @@ auto VisualFxColorMaps::GetColorPairColorMatchedSet(const ColorMapFunc& func1,
   std::array<size_t, NUM<GoomEffect>> indexes{};
   std::iota(begin(indexes), end(indexes), 0);
   m_goomRand.Shuffle(begin(indexes), end(indexes));
-  for (size_t i = 0; i < indexes.size(); i += 2)
+  constexpr size_t INC_BY_2 = 2;
+  for (size_t i = 0; i < NUM<GoomEffect>; i += INC_BY_2)
   {
     matchedSet.at(indexes.at(i)) = func2;
   }
@@ -135,7 +153,7 @@ auto VisualFxColorMaps::GetColorPairColorMatchedSet(const ColorMapFunc& func1,
 
 auto VisualFxColorMaps::GetColorMatchedSet1() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet;
+  ColorMatchedSet matchedSet{nullptr};
 
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
@@ -157,7 +175,7 @@ auto VisualFxColorMaps::GetColorMatchedSet1() -> ColorMatchedSet
 
 auto VisualFxColorMaps::GetColorMatchedSet2() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet;
+  ColorMatchedSet matchedSet{nullptr};
 
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetOrangeStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetPurpleStandardMaps;
@@ -179,7 +197,7 @@ auto VisualFxColorMaps::GetColorMatchedSet2() -> ColorMatchedSet
 
 auto VisualFxColorMaps::GetColorMatchedSet3() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet;
+  ColorMatchedSet matchedSet{nullptr};
 
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
@@ -201,7 +219,7 @@ auto VisualFxColorMaps::GetColorMatchedSet3() -> ColorMatchedSet
 
 auto VisualFxColorMaps::GetColorMatchedSet4() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet;
+  ColorMatchedSet matchedSet{nullptr};
 
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
@@ -223,7 +241,7 @@ auto VisualFxColorMaps::GetColorMatchedSet4() -> ColorMatchedSet
 
 auto VisualFxColorMaps::GetColorMatchedSet5() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet;
+  ColorMatchedSet matchedSet{nullptr};
 
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
@@ -245,7 +263,7 @@ auto VisualFxColorMaps::GetColorMatchedSet5() -> ColorMatchedSet
 
 auto VisualFxColorMaps::GetColorMatchedSet6() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet;
+  ColorMatchedSet matchedSet{nullptr};
 
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
@@ -267,7 +285,7 @@ auto VisualFxColorMaps::GetColorMatchedSet6() -> ColorMatchedSet
 
 auto VisualFxColorMaps::GetColorMatchedSet7() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet;
+  ColorMatchedSet matchedSet{nullptr};
 
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
@@ -289,7 +307,7 @@ auto VisualFxColorMaps::GetColorMatchedSet7() -> ColorMatchedSet
 
 auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet;
+  ColorMatchedSet matchedSet{nullptr};
 
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
@@ -310,5 +328,3 @@ auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
 }
 
 } // namespace GOOM::CONTROL
-
-#pragma clang diagnostic pop

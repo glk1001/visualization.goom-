@@ -33,16 +33,13 @@ Rotation::Rotation(const IGoomRand& goomRand) noexcept
 
 void Rotation::SetRandomParams()
 {
-  float xRotateSpeed = m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
+  const float xRotateSpeed = m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
   float yRotateSpeed = m_goomRand.ProbabilityOf(PROB_EQUAL_XY_ROTATE_SPEEDS)
                            ? xRotateSpeed
                            : m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
 
-  if ((xRotateSpeed < 0.0F) && (yRotateSpeed > 0.0F))
-  {
-    yRotateSpeed = -yRotateSpeed;
-  }
-  else if ((xRotateSpeed > 0.0F) && (yRotateSpeed < 0.0F))
+  if (((xRotateSpeed < 0.0F) && (yRotateSpeed > 0.0F)) ||
+      ((xRotateSpeed > 0.0F) && (yRotateSpeed < 0.0F)))
   {
     yRotateSpeed = -yRotateSpeed;
   }

@@ -100,9 +100,10 @@ void GoomTitleDisplayer::DrawMovingText(const std::string& title)
   }
   else if (m_timeLeftOfTitleDisplay < TIME_TO_START_FINAL_PHASE)
   {
+    constexpr float MAX_FONT_SIZE = 15.0F;
     m_textDraw->SetFontSize(static_cast<int32_t>(
-        std::round(std::min(15.0F, static_cast<float>(TIME_TO_START_FINAL_PHASE) /
-                                       static_cast<float>(m_timeLeftOfTitleDisplay)) *
+        std::round(std::min(MAX_FONT_SIZE, static_cast<float>(TIME_TO_START_FINAL_PHASE) /
+                                               static_cast<float>(m_timeLeftOfTitleDisplay)) *
                    static_cast<float>(GetSelectedFontSize()))));
   }
 
@@ -185,8 +186,7 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
 auto GoomTitleDisplayer::GetTextLines(const std::string& text) -> std::vector<std::string>
 {
   constexpr size_t MAX_LINE_LENGTH = 40;
-  const size_t textLen = text.length();
-  if (textLen <= MAX_LINE_LENGTH)
+  if (text.length() <= MAX_LINE_LENGTH)
   {
     return {text};
   }
@@ -221,41 +221,48 @@ auto GoomTitleDisplayer::GetCharSpacing() const -> float
   }
 
   const auto timeGone = static_cast<float>(TIME_TO_START_MIDDLE_PHASE - m_timeLeftOfTitleDisplay);
-  return 0.056F * timeGone;
+  constexpr float SPACE_FACTOR = 0.056F;
+  return SPACE_FACTOR * timeGone;
 }
 
 auto GoomTitleDisplayer::GetXIncrement() const -> float
 {
   if (IsInitialPhase())
   {
-    return 0.01F;
+    constexpr float INITIAL_PHASE_X_INCREMENT = 0.01F;
+    return INITIAL_PHASE_X_INCREMENT;
   }
   if (IsMiddlePhase())
   {
-    return 1.0F;
+    constexpr float MIDDLE_PHASE_X_INCREMENT = 1.0F;
+    return MIDDLE_PHASE_X_INCREMENT;
   }
 
-  return 7.0F;
+  constexpr float FINAL_PHASE_X_INCREMENT = 7.0F;
+  return FINAL_PHASE_X_INCREMENT;
 }
 
 auto GoomTitleDisplayer::GetYIncrement() const -> float
 {
   if (IsInitialPhase())
   {
-    return 0.0F;
+    constexpr float INITIAL_PHASE_Y_INCREMENT = 0.0F;
+    return INITIAL_PHASE_Y_INCREMENT;
   }
   if (IsMiddlePhase())
   {
-    return 0.0F;
+    constexpr float MIDDLE_PHASE_Y_INCREMENT = 0.0F;
+    return MIDDLE_PHASE_Y_INCREMENT;
   }
 
-  return 8.0F;
+  constexpr float FINAL_PHASE_Y_INCREMENT = 8.0F;
+  return FINAL_PHASE_Y_INCREMENT;
 }
 
 inline auto GoomTitleDisplayer::GetTextGammaCorrection(const float brightness,
                                                        const Pixel& color) const -> Pixel
 {
-  if constexpr (TEXT_GAMMA == 1.0F)
+  if constexpr (1.0F == TEXT_GAMMA)
   {
     return GetBrighterColor(brightness, color);
   }

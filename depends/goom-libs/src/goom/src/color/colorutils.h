@@ -27,7 +27,7 @@ template<typename T>
 [[nodiscard]] auto GetEvolvedColor(const Pixel& baseColor) -> Pixel;
 
 [[nodiscard]] auto GetRgbColorChannelLerp(int32_t ch1, int32_t ch2, int32_t intT) -> uint32_t;
-[[nodiscard]] auto GetRgbColorLerp(const Pixel& colA, const Pixel& colB, float t) -> Pixel;
+[[nodiscard]] auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -> Pixel;
 
 [[nodiscard]] auto GetLuma(const Pixel& color) -> float;
 constexpr float INCREASED_CHROMA_FACTOR = 2.0F;
@@ -162,7 +162,8 @@ inline auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -
 
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
-  assert(brightness >= 0.0F && brightness <= 50.0F);
+  constexpr float MAX_BRIGHTNESS = 50.0F;
+  assert(brightness >= 0.0F && brightness <= MAX_BRIGHTNESS);
   const auto intBrightness = static_cast<uint32_t>(std::round((brightness * 256.0F) + 0.0001F));
   return GetBrighterColorInt(intBrightness, color);
 }
@@ -175,24 +176,24 @@ inline auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, const i
   return static_cast<uint32_t>(((MAX_COL_VAL_32 * ch1) + (intT * (ch2 - ch1))) / MAX_COL_VAL_32);
 }
 
-inline auto GetRgbColorLerp(const Pixel& colA, const Pixel& colB, float t) -> Pixel
+inline auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -> Pixel
 {
   t = std::clamp(t, 0.0F, 1.0F);
   const auto intT = static_cast<int32_t>(t * static_cast<float>(MAX_COLOR_VAL));
 
-  const auto colA_R = static_cast<int32_t>(colA.R());
-  const auto colA_G = static_cast<int32_t>(colA.G());
-  const auto colA_B = static_cast<int32_t>(colA.B());
-  const auto colA_A = static_cast<int32_t>(colA.A());
-  const auto colB_R = static_cast<int32_t>(colB.R());
-  const auto colB_G = static_cast<int32_t>(colB.G());
-  const auto colB_B = static_cast<int32_t>(colB.B());
-  const auto colB_A = static_cast<int32_t>(colB.A());
+  const auto color1Red = static_cast<int32_t>(color1.R());
+  const auto color1Green = static_cast<int32_t>(color1.G());
+  const auto color1Blue = static_cast<int32_t>(color1.B());
+  const auto color1Alpha = static_cast<int32_t>(color1.A());
+  const auto color2Red = static_cast<int32_t>(color2.R());
+  const auto color2Green = static_cast<int32_t>(color2.G());
+  const auto color2Blue = static_cast<int32_t>(color2.B());
+  const auto color2Alpha = static_cast<int32_t>(color2.A());
 
-  const uint32_t newR = GetRgbColorChannelLerp(colA_R, colB_R, intT);
-  const uint32_t newG = GetRgbColorChannelLerp(colA_G, colB_G, intT);
-  const uint32_t newB = GetRgbColorChannelLerp(colA_B, colB_B, intT);
-  const uint32_t newA = GetRgbColorChannelLerp(colA_A, colB_A, intT);
+  const uint32_t newR = GetRgbColorChannelLerp(color1Red, color2Red, intT);
+  const uint32_t newG = GetRgbColorChannelLerp(color1Green, color2Green, intT);
+  const uint32_t newB = GetRgbColorChannelLerp(color1Blue, color2Blue, intT);
+  const uint32_t newA = GetRgbColorChannelLerp(color1Alpha, color2Alpha, intT);
 
   return Pixel{newR, newG, newB, newA};
 }

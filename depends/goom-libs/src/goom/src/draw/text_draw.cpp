@@ -24,6 +24,8 @@ namespace GOOM::DRAW
 using COLOR::GetColorBlend;
 using UTILS::Logging;
 
+constexpr int32_t FREE_TYPE_UNITS_PER_PIXEL = 64;
+
 #ifdef NO_FREETYPE_INSTALLED
 class TextDraw::TextDrawImpl
 {
@@ -171,9 +173,12 @@ private:
   FT_Library m_library{};
   static constexpr int32_t DEFAULT_FONT_SIZE = 100;
   int32_t m_fontSize = DEFAULT_FONT_SIZE;
-  uint32_t m_horizontalResolution = 90;
-  uint32_t m_verticalResolution = 90;
-  float m_outlineWidth = 3.0F;
+  static constexpr uint32_t DEFAULT_HORIZONTAL_RES = 90;
+  uint32_t m_horizontalResolution = DEFAULT_HORIZONTAL_RES;
+  static constexpr uint32_t DEFAULT_VERTICAL_RES = 90;
+  uint32_t m_verticalResolution = DEFAULT_VERTICAL_RES;
+  static constexpr float DEFAULT_OUTLINE_WIDTH = 3.0F;
+  float m_outlineWidth = DEFAULT_OUTLINE_WIDTH;
   float m_charSpacing = 0.0F;
   std::string m_fontFilename{};
   std::vector<unsigned char> m_fontBuffer{};
@@ -404,7 +409,7 @@ void TextDraw::TextDrawImpl::SetFontSize(const int32_t val)
 
 inline auto TextDraw::TextDrawImpl::GetLineSpacing() const -> int32_t
 {
-  return m_face->height / 64;
+  return m_face->height / static_cast<FT_Short>(FREE_TYPE_UNITS_PER_PIXEL);
 }
 
 void TextDraw::TextDrawImpl::SetOutlineWidth(const float val)
@@ -571,8 +576,8 @@ void TextDraw::TextDrawImpl::RectImpl::Include(const Vec2& span)
 
 struct TextDraw::TextDrawImpl::Span
 {
-  Span(const int32_t _x, const int32_t _y, const int32_t _width, const int32_t _coverage)
-    : x{_x}, y{_y}, width{_width}, coverage{_coverage}
+  Span(const int32_t xVal, const int32_t yVal, const int32_t widthVal, const int32_t coverageVal)
+    : x{xVal}, y{yVal}, width{widthVal}, coverage{coverageVal}
   {
   }
 
@@ -635,17 +640,18 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
 
 constexpr auto TextDraw::TextDrawImpl::ToStdPixelCoord(const int32_t freeTypeCoord) -> int32_t
 {
-  return freeTypeCoord >> 6;
+  return freeTypeCoord / FREE_TYPE_UNITS_PER_PIXEL;
 }
 
 constexpr auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const int32_t stdPixelCoord) -> int32_t
 {
-  return stdPixelCoord << 6;
+  return stdPixelCoord * FREE_TYPE_UNITS_PER_PIXEL;
 }
 
 constexpr auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const float stdPixelCoord) -> int32_t
 {
-  return static_cast<int>(std::lround(stdPixelCoord * 64.0F));
+  return static_cast<int32_t>(
+      std::lround(stdPixelCoord * static_cast<float>(FREE_TYPE_UNITS_PER_PIXEL)));
 }
 
 // Each time the renderer calls us back we just push another span entry on our list.

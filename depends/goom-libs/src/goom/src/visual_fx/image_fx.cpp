@@ -35,7 +35,6 @@ namespace GOOM::VISUAL_FX
 using COLOR::GammaCorrection;
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
-using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
@@ -178,6 +177,8 @@ void ImageFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
+constexpr float HALF = 0.5F;
+
 ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
                                   const FxHelpers& fxHelpers,
                                   const std::string& resourcesDirectory) noexcept
@@ -189,7 +190,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
     m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
     m_availableHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)},
     m_screenCentre{m_availableWidth / 2, m_availableHeight / 2},
-    m_maxRadius{0.5F * static_cast<float>(std::min(m_availableWidth, m_availableHeight))},
+    m_maxRadius{HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight))},
     m_maxDiameterSq{2.0F * Sq(m_maxRadius)},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
     m_currentColorMap{GetRandomColorMap()}
@@ -219,9 +220,8 @@ void ImageFx::ImageFxImpl::Start()
 
 void ImageFx::ImageFxImpl::InitImage()
 {
-  using ImageFilenameArray = std::array<std::string, 13>;
   // clang-format off
-  static const ImageFilenameArray s_imageFilenames{
+  static const std::array s_IMAGE_FILENAMES{
       "blossoms.jpg",
       "bokeh.jpg",
       "butterfly.jpg",
@@ -237,7 +237,7 @@ void ImageFx::ImageFxImpl::InitImage()
       "pretty-flowers.jpg",
   };
   // clang-format on
-  std::array<size_t, s_imageFilenames.size()> randImageIndexes{};
+  std::array<size_t, s_IMAGE_FILENAMES.size()> randImageIndexes{};
   std::iota(randImageIndexes.begin(), randImageIndexes.end(), 0);
   m_goomRand.Shuffle(begin(randImageIndexes), end(randImageIndexes));
 
@@ -246,7 +246,7 @@ void ImageFx::ImageFxImpl::InitImage()
   for (size_t i = 0; i < MAX_IMAGES; ++i)
   {
     const std::string imageFilename =
-        imageDir + PATH_SEP + s_imageFilenames.at(randImageIndexes.at(i));
+        imageDir + PATH_SEP + s_IMAGE_FILENAMES.at(randImageIndexes.at(i));
     m_images.emplace_back(
         std::make_unique<ChunkedImage>(std::make_shared<ImageBitmap>(imageFilename), m_goomInfo));
   }

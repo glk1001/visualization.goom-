@@ -28,6 +28,33 @@ using UTILS::SmallImageBitmaps;
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
+// clang-format off
+static const UTILS::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_ZERO_START{
+    1.0F, -10.0F, +10.0F, 0.0F
+};
+static const UTILS::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_PI_START{
+    1.5F, -10.0F, +10.0F, m_pi
+};
+const TentacleDriver::IterationParams TentacleDriver::ITER_PARAM_GROUP1_FIRST{
+    100, 0.600F, 100.0F, 1.0F, ITER_ZERO_Y_VAL_WAVE_PI_START
+};
+const TentacleDriver::IterationParams TentacleDriver::ITER_PARAM_GROUP1_LAST{
+    125, 0.700F, 105.0F, 2.0F, ITER_ZERO_Y_VAL_WAVE_ZERO_START
+};
+const TentacleDriver::IterationParams TentacleDriver::ITER_PARAM_GROUP2_FIRST{
+    125, 0.700F, 100.0F, 0.5F, ITER_ZERO_Y_VAL_WAVE_ZERO_START
+};
+const TentacleDriver::IterationParams TentacleDriver::ITER_PARAM_GROUP2_LAST{
+    150, 0.800F, 105.0F, 1.5F, ITER_ZERO_Y_VAL_WAVE_PI_START
+};
+const TentacleDriver::IterationParams TentacleDriver::ITER_PARAM_GROUP3_FIRST{
+    150, 0.800F, 100.0F, 1.5F, ITER_ZERO_Y_VAL_WAVE_PI_START
+};
+const TentacleDriver::IterationParams TentacleDriver::ITER_PARAM_GROUP3_LAST{
+    200, 0.900F, 105.0F, 2.5F, ITER_ZERO_Y_VAL_WAVE_ZERO_START
+};
+// clang-format on
+
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
                                const IGoomRand& goomRand,
                                const SmallImageBitmaps& smallBitmaps,
@@ -35,26 +62,11 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw,
   : m_draw{draw},
     m_goomRand{goomRand},
     m_tentacleLayout{tentacleLayout},
-    // clang-format off
     m_iterParamsGroups{
-        {
-            m_goomRand,
-            {100, 0.600F, 1.0F, {1.5F, -10.0f, +10.0F, m_pi}, 100.0F},
-            {125, 0.700F, 2.0F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0F},
-        },
-        {
-            m_goomRand,
-            {125, 0.700F, 0.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 100.0},
-            {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 105.0},
-        },
-        {
-            m_goomRand,
-            {150, 0.800F, 1.5F, {1.5F, -10.0F, +10.0F, m_pi}, 100.0},
-            {200, 0.900F, 2.5F, {1.0F, -10.0F, +10.0F, 0.0F}, 105.0},
-
-        }
+        { m_goomRand, ITER_PARAM_GROUP1_FIRST, ITER_PARAM_GROUP1_LAST },
+        { m_goomRand, ITER_PARAM_GROUP2_FIRST, ITER_PARAM_GROUP2_LAST },
+        { m_goomRand, ITER_PARAM_GROUP3_FIRST, ITER_PARAM_GROUP3_LAST },
     },
-    // clang-format on
     m_tentacleParams{GetTentacleParams(m_tentacleLayout.GetNumPoints(), m_iterParamsGroups)},
     m_tentacles{GetTentacles(m_goomRand, m_tentacleParams, m_tentacleLayout)},
     m_tentaclePlotter{m_draw, m_goomRand, smallBitmaps}
@@ -77,7 +89,7 @@ auto TentacleDriver::GetTentacleParams(const size_t numTentacles,
                                        const std::vector<IterParamsGroup>& iterParamsGroups)
     -> std::vector<IterationParams>
 {
-  std::vector<IterationParams> tentacleParams(numTentacles);
+  std::vector<IterationParams> tentacleParams{};
   const size_t numInParamGroup = numTentacles / iterParamsGroups.size();
 
   // IMPORTANT: Dividing the numTentacles into param groups makes the tentacle movements
@@ -86,6 +98,7 @@ auto TentacleDriver::GetTentacleParams(const size_t numTentacles,
   const float tStep = 1.0F / static_cast<float>(numInParamGroup - 1);
   size_t paramsIndex = 0;
   float t = 0.0F;
+  tentacleParams.reserve(numTentacles);
   for (size_t i = 0; i < numTentacles; ++i)
   {
     const IterParamsGroup paramsGroup = iterParamsGroups.at(paramsIndex);
@@ -97,7 +110,7 @@ auto TentacleDriver::GetTentacleParams(const size_t numTentacles,
       }
       t = 0.0;
     }
-    tentacleParams[i] = paramsGroup.GetNextIterationParams(t);
+    tentacleParams.emplace_back(paramsGroup.GetNextIterationParams(t));
     t += tStep;
   }
 
@@ -110,6 +123,7 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
 {
   std::vector<Tentacle3D> tentacles{};
 
+  tentacles.reserve(tentacleParams.size());
   for (size_t i = 0; i < tentacleParams.size(); ++i)
   {
     std::unique_ptr<Tentacle2D> tentacle2D{CreateNewTentacle2D(goomRand, i, tentacleParams[i])};
@@ -132,20 +146,37 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
 auto TentacleDriver::IterParamsGroup::GetNextIterationParams(const float t) const
     -> TentacleDriver::IterationParams
 {
-  IterationParams params{};
-  params.length = goomRand.GetRandInRange(1.0F, 1.1F * stdnew::lerp(first.length, last.length, t));
-  assert(params.length >= 1.0F);
-  params.numNodes = static_cast<size_t>(
-      goomRand.GetRandInRange(1.0F, 1.1F) *
-      stdnew::lerp(static_cast<float>(first.numNodes), static_cast<float>(last.numNodes), t));
-  assert(params.numNodes >= 10);
+  constexpr float MIN_NUM_NODES_FACTOR = 1.0F;
+  constexpr float MAX_NUM_NODES_FACTOR = 1.1F;
+  constexpr float MIN_PREV_Y_WEIGHT_FACTOR = 1.0F;
+  constexpr float MAX_PREV_Y_WEIGHT_FACTOR = 1.1F;
+  constexpr float MIN_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR = 1.0F;
+  constexpr float MAX_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR = 1.1F;
+  constexpr float MIN_LENGTH = 1.0F;
+  constexpr float MAX_LENGTH_FACTOR = 1.1F;
 
-  params.prevYWeight =
-      goomRand.GetRandInRange(1.0F, 1.1F) * stdnew::lerp(first.prevYWeight, last.prevYWeight, t);
-  params.iterZeroYValWave = first.iterZeroYValWave;
-  params.iterZeroYValWaveFreq =
-      goomRand.GetRandInRange(1.0F, 1.1F) *
-      stdnew::lerp(first.iterZeroYValWaveFreq, last.iterZeroYValWaveFreq, t);
+  IterationParams params{
+      /* .numNodes = */
+      static_cast<size_t>(
+          goomRand.GetRandInRange(MIN_NUM_NODES_FACTOR, MAX_NUM_NODES_FACTOR) *
+          stdnew::lerp(static_cast<float>(first.numNodes), static_cast<float>(last.numNodes), t)),
+      /* .prevYWeight = */
+      goomRand.GetRandInRange(MIN_PREV_Y_WEIGHT_FACTOR, MAX_PREV_Y_WEIGHT_FACTOR) *
+          stdnew::lerp(first.prevYWeight, last.prevYWeight, t),
+      /* .length = */
+      goomRand.GetRandInRange(MIN_LENGTH,
+                              MAX_LENGTH_FACTOR * stdnew::lerp(first.length, last.length, t)),
+      /* .iterZeroYValWaveFreq = */
+      goomRand.GetRandInRange(MIN_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR,
+                              MAX_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR) *
+          stdnew::lerp(first.iterZeroYValWaveFreq, last.iterZeroYValWaveFreq, t),
+      /* .iterZeroYValWave = */
+      first.iterZeroYValWave,
+  };
+
+  assert(params.numNodes >= 10);
+  assert(params.length >= MIN_LENGTH);
+
   return params;
 }
 
@@ -156,11 +187,11 @@ auto TentacleDriver::CreateNewTentacle2D(const IGoomRand& goomRand,
 {
   const float tentacleLen = std::max(1.0F, goomRand.GetRandInRange(0.99F, 1.01F) * params.length);
   assert(tentacleLen >= 1.0F);
-  const double tent2d_xMax = TENT2D_X_MIN + static_cast<double>(tentacleLen);
-  assert(tent2d_xMax >= 1.0);
+  const double tent2dXMax = TENT2D_X_MIN + static_cast<double>(tentacleLen);
+  assert(tent2dXMax >= 1.0);
 
   std::unique_ptr<Tentacle2D> tentacle{
-      std::make_unique<Tentacle2D>(id, params.numNodes, TENT2D_X_MIN, tent2d_xMax, TENT2D_Y_MIN,
+      std::make_unique<Tentacle2D>(id, params.numNodes, TENT2D_X_MIN, tent2dXMax, TENT2D_Y_MIN,
                                    TENT2D_Y_MAX, params.prevYWeight, 1.0F - params.prevYWeight)};
 
   tentacle->SetDoDamping(true);
@@ -192,19 +223,17 @@ void TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
   };
   std::sort(sortedLongestFirst.begin(), sortedLongestFirst.end(), compareByLength);
 
-  constexpr float SMALL_X = 10.0F;
-
   for (size_t i = 0; i < tentacles.size(); ++i)
   {
     V3dFlt head = tentacleLayout.GetPoints().at(i);
 
-    if ((0.0F <= head.x) && (head.x < SMALL_X))
+    if ((0.0F <= head.x) && (head.x < Tentacle3D::HEAD_SMALL_X))
     {
-      head.x = SMALL_X;
+      head.x = Tentacle3D::HEAD_SMALL_X;
     }
-    else if ((-SMALL_X < head.x) && (head.x <= 0.0F))
+    else if ((-Tentacle3D::HEAD_SMALL_X < head.x) && (head.x <= 0.0F))
     {
-      head.x = -SMALL_X;
+      head.x = -Tentacle3D::HEAD_SMALL_X;
     }
 
     tentacles[sortedLongestFirst.at(i)].SetHead(head);
@@ -214,15 +243,16 @@ void TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
   for (auto& tentacle : tentacles)
   {
     const V3dFlt& head = tentacle.GetHead();
-    if (std::fabs(head.x) <= SMALL_X)
+    if (std::fabs(head.x) <= Tentacle3D::HEAD_SMALL_X)
     {
       Tentacle2D& tentacle2D = tentacle.Get2DTentacle();
       const double xMin = tentacle2D.GetXMin();
       const double xMax = tentacle2D.GetXMax();
       const double newXMax = xMin + (1.0 * (xMax - xMin));
       tentacle2D.SetXDimensions(xMin, newXMax);
-      tentacle.SetNumHeadNodes(
-          std::max(6 * Tentacle2D::MIN_NUM_NODES, tentacle.Get2DTentacle().GetNumNodes() / 2));
+      constexpr size_t NUM_NODE_FACTOR = 6;
+      tentacle.SetNumHeadNodes(std::max(NUM_NODE_FACTOR * Tentacle2D::MIN_NUM_NODES,
+                                        tentacle.Get2DTentacle().GetNumNodes() / 2));
     }
   }
 }

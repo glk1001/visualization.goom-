@@ -27,7 +27,8 @@ LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
 
 void LowDensityBlurrer::SetWidth(const uint32_t val)
 {
-  if ((val != 3) && (val != 5) && (val != 7))
+  constexpr std::array VALID_WIDTHS{3, 5, 7};
+  if (std::find(cbegin(VALID_WIDTHS), cend(VALID_WIDTHS), val) == cend(VALID_WIDTHS))
   {
     throw std::logic_error(std20::format("Invalid blur width {}.", val));
   }
@@ -147,7 +148,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
 inline auto LowDensityBlurrer::GetGammaCorrection(const float brightness, const Pixel& color) const
     -> Pixel
 {
-  if constexpr (GAMMA == 1.0F)
+  if constexpr (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color);
   }

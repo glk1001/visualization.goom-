@@ -28,7 +28,7 @@ class IfsDancersFx;
 class ImageFx;
 class ShaderFx;
 class TentaclesFx;
-class TubeFx;
+class TubesFx;
 
 class LinesFx;
 } // namespace VISUAL_FX
@@ -74,13 +74,13 @@ public:
   [[nodiscard]] auto CanDraw(GoomDrawables goomDrawable) const -> bool;
 
 private:
-  const std::shared_ptr<VISUAL_FX::GoomDotsFx> m_goomDots_fx;
-  const std::shared_ptr<VISUAL_FX::IfsDancersFx> m_ifs_fx;
-  const std::shared_ptr<VISUAL_FX::ImageFx> m_image_fx;
-  const std::shared_ptr<VISUAL_FX::ShaderFx> m_shader_fx;
-  const std::shared_ptr<VISUAL_FX::FlyingStarsFx> m_star_fx;
-  const std::shared_ptr<VISUAL_FX::TentaclesFx> m_tentacles_fx;
-  const std::shared_ptr<VISUAL_FX::TubeFx> m_tube_fx;
+  const std::shared_ptr<VISUAL_FX::GoomDotsFx> m_goomDotsFx;
+  const std::shared_ptr<VISUAL_FX::IfsDancersFx> m_ifsFx;
+  const std::shared_ptr<VISUAL_FX::ImageFx> m_imageFx;
+  const std::shared_ptr<VISUAL_FX::ShaderFx> m_shaderFx;
+  const std::shared_ptr<VISUAL_FX::FlyingStarsFx> m_starFx;
+  const std::shared_ptr<VISUAL_FX::TentaclesFx> m_tentaclesFx;
+  const std::shared_ptr<VISUAL_FX::TubesFx> m_tubesFx;
 
   const std::vector<std::shared_ptr<VISUAL_FX::IVisualFx>> m_list;
   const std::map<GoomDrawables, std::shared_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;

@@ -30,7 +30,9 @@ void AdaptiveExposure::UpdateAverageLuminance(float averageLuminance)
   if (m_updateNum < RAMP_UP_PERIOD)
   {
     // Don't do anything too sudden until things have smoothed down.
-    m_currentExposure = std::clamp(m_currentExposure, 0.9F, 1.05F);
+    constexpr float MIN_GRADUAL_EXPOSURE = 0.90F;
+    constexpr float MAX_GRADUAL_EXPOSURE = 1.05F;
+    m_currentExposure = std::clamp(m_currentExposure, MIN_GRADUAL_EXPOSURE, MAX_GRADUAL_EXPOSURE);
   }
 }
 

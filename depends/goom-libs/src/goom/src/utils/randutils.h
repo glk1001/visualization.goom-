@@ -2,7 +2,6 @@
 
 #include "xoshiro.hpp"
 
-#include <algorithm>
 #include <cstdlib>
 #include <iosfwd>
 #include <stdexcept>
@@ -19,11 +18,6 @@ extern const uint32_t g_randMax;
 
 void SaveRandState(std::ostream& file);
 void RestoreRandState(std::istream& file);
-
-// Return random sign integer, either -1 or +1.
-[[nodiscard]] inline auto GetRandSignInt() -> int;
-// Return random sign float, either -1.0 or +1.0.
-[[nodiscard]] inline auto GetRandSignFlt() -> float;
 
 // Return random positive integer in the range n0 <= n < n1.
 [[nodiscard]] auto GetRandInRange(uint32_t n0, uint32_t n1) -> uint32_t;
@@ -44,22 +38,9 @@ struct NumberRange
 template<typename T>
 [[nodiscard]] auto GetRandInRange(const NumberRange<T>& numberRange) -> T;
 
-template<class RandomIt>
-void Shuffle(RandomIt first, RandomIt last);
-
 // Return prob(m/n)
 [[nodiscard]] inline auto ProbabilityOfMInN(uint32_t m, uint32_t n) -> bool;
 [[nodiscard]] inline auto ProbabilityOf(float prob) -> bool;
-
-inline auto GetRandSignInt() -> int
-{
-  return GetRandInRange(0U, 100U) < 50 ? -1 : +1;
-}
-
-inline auto GetRandSignFlt() -> float
-{
-  return GetRandInRange(0U, 100U) < 50 ? -1.0F : +1.0F;
-}
 
 inline auto GetNRand(const uint32_t n1) -> uint32_t
 {
@@ -79,12 +60,6 @@ inline auto GetRandInRange(const NumberRange<T>& numberRange) -> T
     return GetRandInRange(numberRange.min, numberRange.max + 1);
   }
   return GetRandInRange(numberRange.min, numberRange.max);
-}
-
-template<class RandomIt>
-inline void Shuffle(RandomIt first, RandomIt last)
-{
-  return std::shuffle(first, last, GetXoshiroEng());
 }
 
 inline auto ProbabilityOfMInN(const uint32_t m, const uint32_t n) -> bool

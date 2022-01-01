@@ -32,7 +32,6 @@ public:
   void SetVitesse(int32_t val);
   void SetDefault();
   void GoSlowerBy(int32_t val);
-  void GoFasterBy(int32_t val);
 
   auto GetReverseVitesse() const -> bool { return m_reverseVitesse; }
   void SetReverseVitesse(const bool val) { m_reverseVitesse = val; }
@@ -107,11 +106,6 @@ inline void Vitesse::SetDefault()
 inline void Vitesse::GoSlowerBy(const int32_t val)
 {
   SetVitesse(m_vitesse + val);
-}
-
-inline void Vitesse::GoFasterBy(const int32_t val)
-{
-  SetVitesse(m_vitesse - (30 * val));
 }
 
 inline auto Vitesse::GetRelativeSpeed() const -> float

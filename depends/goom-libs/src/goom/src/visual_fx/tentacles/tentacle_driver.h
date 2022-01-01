@@ -56,19 +56,25 @@ private:
 
   struct IterationParams
   {
-    size_t numNodes = 200;
-    float prevYWeight = 0.770F;
-    float iterZeroYValWaveFreq = 1.0F;
-    UTILS::SineWaveMultiplier iterZeroYValWave{};
-    float length = 50.0F;
+    size_t numNodes;
+    float prevYWeight;
+    float length;
+    float iterZeroYValWaveFreq;
+    UTILS::SineWaveMultiplier iterZeroYValWave;
   };
   struct IterParamsGroup
   {
     const UTILS::IGoomRand& goomRand;
-    IterationParams first{};
-    IterationParams last{};
+    IterationParams first;
+    IterationParams last;
     [[nodiscard]] auto GetNextIterationParams(float t) const -> IterationParams;
   };
+  static const IterationParams ITER_PARAM_GROUP1_FIRST;
+  static const IterationParams ITER_PARAM_GROUP1_LAST;
+  static const IterationParams ITER_PARAM_GROUP2_FIRST;
+  static const IterationParams ITER_PARAM_GROUP2_LAST;
+  static const IterationParams ITER_PARAM_GROUP3_FIRST;
+  static const IterationParams ITER_PARAM_GROUP3_LAST;
   const std::vector<IterParamsGroup> m_iterParamsGroups;
   std::vector<IterationParams> m_tentacleParams;
   [[nodiscard]] static auto GetTentacleParams(size_t numTentacles,

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "goom_config.h"
-
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -14,11 +12,8 @@ namespace GOOM
 class AudioSamples
 {
 public:
-  // GCC doesn't like this (link problem):
-  //static constexpr size_t NUM_AUDIO_SAMPLES = 2;
-  //static constexpr size_t AUDIO_SAMPLE_LEN = 512;
-  static const size_t NUM_AUDIO_SAMPLES;
-  static const size_t AUDIO_SAMPLE_LEN;
+  static constexpr size_t NUM_AUDIO_SAMPLES = 2;
+  static constexpr size_t AUDIO_SAMPLE_LEN = 512;
   [[nodiscard]] static constexpr auto GetPositiveValue(float audioValue) -> float;
 
   // AudioSample object: numSampleChannels = 1 or 2.
@@ -126,7 +121,8 @@ constexpr auto AudioSamples::GetPositiveValue(const float audioValue) -> float
   assert(-1.0F <= audioValue);
   assert(audioValue <= 1.0F);
 
-  return 0.5F * (1.0F + audioValue);
+  constexpr float HALF = 0.5F;
+  return HALF * (1.0F + audioValue);
 }
 
 inline auto AudioSamples::GetNumDistinctChannels() const -> size_t

@@ -79,7 +79,10 @@ private:
                                                  float angle) -> std::vector<V3dFlt>;
   [[nodiscard]] auto GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
       -> std::vector<V2dInt>;
-  static void RotateAboutYAxis(float sinAngle, float cosAngle, const V3dFlt& vSrc, V3dFlt& vDest);
+  static void RotateAboutYAxis(float sinAngle,
+                               float cosAngle,
+                               const V3dFlt& srcPoint,
+                               V3dFlt& destPoint);
   static void Translate(const V3dFlt& vAdd, V3dFlt& vInOut);
 };
 

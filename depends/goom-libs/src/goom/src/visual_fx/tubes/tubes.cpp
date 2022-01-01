@@ -463,9 +463,12 @@ public:
 
 private:
   TValue m_t{TValue::StepType::CONTINUOUS_REVERSIBLE, NML_CENTRE_SPEED};
-  float m_b = 350.0F;
-  float m_kX = 3.0F;
-  float m_kY = 3.0F;
+  static constexpr float DEFAULT_B = 350.0F;
+  float m_b = DEFAULT_B;
+  static constexpr float DEFAULT_K_X = 3.0F;
+  float m_kX = DEFAULT_K_X;
+  static constexpr float DEFAULT_K_Y = 3.0F;
+  float m_kY = DEFAULT_K_Y;
 };
 
 auto ParametricPath::GetNextPoint() const -> V2dInt
@@ -477,6 +480,12 @@ auto ParametricPath::GetNextPoint() const -> V2dInt
 
   return point;
 }
+
+// clang-format off
+constexpr float TRUE_LOW_COLOR_WEIGHT      = 30.0F;
+constexpr float MAIN_COLOR_WEIGHT          = 10.0F;
+constexpr float LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
+// clang-format on
 
 Tube::TubeImpl::TubeImpl(const uint32_t tubeId,
                          DrawFuncs drawFuncs,
@@ -508,9 +517,9 @@ Tube::TubeImpl::TubeImpl(const uint32_t tubeId,
     m_lowColorTypes{
         m_goomRand,
         {
-            {LowColorTypes::TRUE_LOW_COLOR, 30},
-            {LowColorTypes::MAIN_COLOR, 10},
-            {LowColorTypes::LIGHTENED_LOW_COLOR, 10},
+            {LowColorTypes::TRUE_LOW_COLOR,      TRUE_LOW_COLOR_WEIGHT},
+            {LowColorTypes::MAIN_COLOR,          MAIN_COLOR_WEIGHT},
+            {LowColorTypes::LIGHTENED_LOW_COLOR, LIGHTENED_LOW_COLOR_WEIGHT},
         }
     }
     // clang-format off
@@ -842,6 +851,14 @@ inline void Tube::TubeImpl::DrawOuterCircle(const V2dInt& shapeCentrePos,
                          OUTER_CIRCLE_LINE_THICKNESS);
 }
 
+// clang-format off
+constexpr float SHAPES_ONLY_WEIGHT                = 20.0F;
+constexpr float STRIPED_SHAPES_ONLY_WEIGHT        = 10.0F;
+constexpr float CIRCLES_ONLY_WEIGHT               = 20.0F;
+constexpr float SHAPES_AND_CIRCLES_WEIGHT         =  5.0F;
+constexpr float STRIPED_SHAPES_AND_CIRCLES_WEIGHT = 15.0F;
+// clang-format on
+
 ShapeColorizer::ShapeColorizer(const uint32_t screenWidth,
                                const uint32_t screenHeight,
                                const uint32_t numShapes,
@@ -864,11 +881,11 @@ ShapeColorizer::ShapeColorizer(const uint32_t screenWidth,
     m_colorMapMixModes{
         m_goomRand,
         {
-            {ColorMapMixMode::SHAPES_ONLY, 20},
-            {ColorMapMixMode::STRIPED_SHAPES_ONLY, 10},
-            {ColorMapMixMode::CIRCLES_ONLY, 20},
-            {ColorMapMixMode::SHAPES_AND_CIRCLES, 5},
-            {ColorMapMixMode::STRIPED_SHAPES_AND_CIRCLES, 15},
+            {ColorMapMixMode::SHAPES_ONLY,                SHAPES_ONLY_WEIGHT},
+            {ColorMapMixMode::STRIPED_SHAPES_ONLY,        STRIPED_SHAPES_ONLY_WEIGHT},
+            {ColorMapMixMode::CIRCLES_ONLY,               CIRCLES_ONLY_WEIGHT},
+            {ColorMapMixMode::SHAPES_AND_CIRCLES,         SHAPES_AND_CIRCLES_WEIGHT},
+            {ColorMapMixMode::STRIPED_SHAPES_AND_CIRCLES, STRIPED_SHAPES_AND_CIRCLES_WEIGHT},
         }
     },
     // clang-format on
@@ -990,7 +1007,8 @@ auto ShapeColorizer::GetBrightness(const Shape& shape, const V2dInt& shapeCentre
                                               shapeCentrePos, MIN_BRIGHTNESS));
 
   constexpr float SMALL_T = 0.15F;
-  if (std::fabs(shape.path->GetT() - 0.5F) < SMALL_T)
+  constexpr float HALFWAY_T = 0.5F;
+  if (std::fabs(shape.path->GetT() - HALFWAY_T) < SMALL_T)
   {
     constexpr float SMALL_T_BRIGHTNESS = 0.250F;
     return SMALL_T_BRIGHTNESS * brightness;

@@ -27,7 +27,7 @@ public:
   [[nodiscard]] auto IsActive() const -> bool;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
-  void Multiply(const float factor);
+  void Multiply(float factor);
   void Toggle();
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const

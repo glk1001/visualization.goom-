@@ -36,7 +36,8 @@ void DotDrawer::ChangeDotSizes()
 {
   constexpr size_t MAX_DOT_SIZE = 7;
   m_currentDotSize = GetNextDotSize(MAX_DOT_SIZE);
-  m_beadedLook = m_goomRand.ProbabilityOfMInN(3, 20);
+  constexpr float PROB_BEADED_LOOK = 0.15F;
+  m_beadedLook = m_goomRand.ProbabilityOf(PROB_BEADED_LOOK);
 }
 
 void DotDrawer::DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors, const float brightness)

@@ -5,8 +5,6 @@ namespace GOOM::VISUAL_FX::SHADERS
 {
 
 using UTILS::IGoomRand;
-using UTILS::Timer;
-using UTILS::TValue;
 
 HighContrast::HighContrast(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
   : m_goomInfo{goomInfo}, m_goomRand{goomRand}

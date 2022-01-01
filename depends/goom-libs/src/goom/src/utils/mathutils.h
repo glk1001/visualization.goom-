@@ -76,6 +76,10 @@ constexpr float m_two_pi = 2.0F * m_pi;
 constexpr float m_half_pi = 0.5F * m_pi;
 constexpr float m_third_pi = m_pi / 3.0F;
 
+constexpr float DEGREES_90 = 90.0F;
+constexpr float DEGREES_180 = 180.0F;
+constexpr float DEGREES_360 = 360.0F;
+
 template<typename T>
 constexpr auto Sq(const T& x) -> T
 {
@@ -189,7 +193,7 @@ public:
   auto operator()(double x) -> double override;
 
 private:
-  const double m_y = 0;
+  const double m_y = 0.0;
 };
 
 class LinearDampingFunction : public IDampingFunction
@@ -233,10 +237,7 @@ public:
 class SineWaveMultiplier : public ISequenceFunction
 {
 public:
-  SineWaveMultiplier(float frequency = 1.0,
-                     float lower = -1.0,
-                     float upper = 1.0,
-                     float x0 = 0.0) noexcept;
+  SineWaveMultiplier(float frequency, float lower, float upper, float x0) noexcept;
 
   auto GetNext() -> float override;
 

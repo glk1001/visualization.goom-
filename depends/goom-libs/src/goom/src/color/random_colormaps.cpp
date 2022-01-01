@@ -295,19 +295,28 @@ auto GetAllMapsUnweighted(const IGoomRand& goomRand) -> std::shared_ptr<RandomCo
 auto GetAllStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
+  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
+  constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
+  constexpr float SEQUENTIAL2_WEIGHT                     = 1.0F;
+  constexpr float CYCLIC_WEIGHT                          = 1.0F;
+  constexpr float DIVERGING_WEIGHT                       = 1.0F;
+  constexpr float DIVERGING_BLACK_WEIGHT                 = 1.0F;
+  constexpr float QUALITATIVE_WEIGHT                     = 1.0F;
+  constexpr float MISC_WEIGHT                            = 1.0F;
+
   return std::make_shared<WeightedColorMaps>(
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 1},
-              {ColorMapGroup::SEQUENTIAL,                      1},
-              {ColorMapGroup::SEQUENTIAL2,                     1},
-              {ColorMapGroup::CYCLIC,                          1},
-              {ColorMapGroup::DIVERGING,                       1},
-              {ColorMapGroup::DIVERGING_BLACK,                 1},
-              {ColorMapGroup::QUALITATIVE,                     1},
-              {ColorMapGroup::MISC,                            1},
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL,                      SEQUENTIAL_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL2,                     SEQUENTIAL2_WEIGHT},
+              {ColorMapGroup::CYCLIC,                          CYCLIC_WEIGHT},
+              {ColorMapGroup::DIVERGING,                       DIVERGING_WEIGHT},
+              {ColorMapGroup::DIVERGING_BLACK,                 DIVERGING_BLACK_WEIGHT},
+              {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
+              {ColorMapGroup::MISC,                            MISC_WEIGHT},
           }
       }
   );
@@ -317,19 +326,28 @@ auto GetAllStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColo
 auto GetAllSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
+  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
+  constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
+  constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
+  constexpr float CYCLIC_SLIM_WEIGHT                          = 1.0F;
+  constexpr float DIVERGING_SLIM_WEIGHT                       = 1.0F;
+  constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 = 1.0F;
+  constexpr float QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
+  constexpr float MISC_SLIM_WEIGHT                            = 1.0F;
+
   return std::make_shared<WeightedColorMaps>(
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 1},
-              {ColorMapGroup::SEQUENTIAL_SLIM,                      1},
-              {ColorMapGroup::SEQUENTIAL2_SLIM,                     1},
-              {ColorMapGroup::CYCLIC_SLIM,                          1},
-              {ColorMapGroup::DIVERGING_SLIM,                       1},
-              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 1},
-              {ColorMapGroup::QUALITATIVE_SLIM,                     1},
-              {ColorMapGroup::MISC_SLIM,                            1},
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL_SLIM,                      SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL2_SLIM,                     SEQUENTIAL2_SLIM_WEIGHT},
+              {ColorMapGroup::CYCLIC_SLIM,                          CYCLIC_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_SLIM,                       DIVERGING_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 DIVERGING_BLACK_SLIM_WEIGHT},
+              {ColorMapGroup::QUALITATIVE_SLIM,                     QUALITATIVE_SLIM_WEIGHT},
+              {ColorMapGroup::MISC_SLIM,                            MISC_SLIM_WEIGHT},
           }
       }
   );
@@ -339,19 +357,28 @@ auto GetAllSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMap
 auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
+  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
+  constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
+  constexpr float SEQUENTIAL2_WEIGHT                     = 1.0F;
+  constexpr float CYCLIC_WEIGHT                          = 0.0F;
+  constexpr float DIVERGING_WEIGHT                       = 0.0F;
+  constexpr float DIVERGING_BLACK_WEIGHT                 = 0.0F;
+  constexpr float QUALITATIVE_WEIGHT                     = 1.0F;
+  constexpr float MISC_WEIGHT                            = 1.0F;
+
   return std::make_shared<WeightedColorMaps>(
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 1},
-              {ColorMapGroup::SEQUENTIAL,                      1},
-              {ColorMapGroup::SEQUENTIAL2,                     1},
-              {ColorMapGroup::CYCLIC,                          0},
-              {ColorMapGroup::DIVERGING,                       0},
-              {ColorMapGroup::DIVERGING_BLACK,                 0},
-              {ColorMapGroup::QUALITATIVE,                     1},
-              {ColorMapGroup::MISC,                            1},
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL,                      SEQUENTIAL_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL2,                     SEQUENTIAL2_WEIGHT},
+              {ColorMapGroup::CYCLIC,                          CYCLIC_WEIGHT},
+              {ColorMapGroup::DIVERGING,                       DIVERGING_WEIGHT},
+              {ColorMapGroup::DIVERGING_BLACK,                 DIVERGING_BLACK_WEIGHT},
+              {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
+              {ColorMapGroup::MISC,                            MISC_WEIGHT},
           }
       }
   );
@@ -361,19 +388,28 @@ auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) -> std::shared_p
 auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
+  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
+  constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
+  constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
+  constexpr float CYCLIC_SLIM_WEIGHT                          = 0.0F;
+  constexpr float DIVERGING_SLIM_WEIGHT                       = 0.0F;
+  constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 = 0.0F;
+  constexpr float QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
+  constexpr float MISC_SLIM_WEIGHT                            = 1.0F;
+
   return std::make_shared<WeightedColorMaps>(
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 1},
-              {ColorMapGroup::SEQUENTIAL_SLIM,                      1},
-              {ColorMapGroup::SEQUENTIAL2_SLIM,                     1},
-              {ColorMapGroup::CYCLIC_SLIM,                          0},
-              {ColorMapGroup::DIVERGING_SLIM,                       0},
-              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 0},
-              {ColorMapGroup::QUALITATIVE_SLIM,                     1},
-              {ColorMapGroup::MISC_SLIM,                            1},
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL_SLIM,                      SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL2_SLIM,                     SEQUENTIAL2_SLIM_WEIGHT},
+              {ColorMapGroup::CYCLIC_SLIM,                          CYCLIC_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_SLIM,                       DIVERGING_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 DIVERGING_BLACK_SLIM_WEIGHT},
+              {ColorMapGroup::QUALITATIVE_SLIM,                     QUALITATIVE_SLIM_WEIGHT},
+              {ColorMapGroup::MISC_SLIM,                            MISC_SLIM_WEIGHT},
           }
       }
   );
@@ -383,19 +419,28 @@ auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<R
 auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
+  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 10.0F;
+  constexpr float SEQUENTIAL_WEIGHT                      = 10.0F;
+  constexpr float SEQUENTIAL2_WEIGHT                     = 10.0F;
+  constexpr float CYCLIC_WEIGHT                          = 10.0F;
+  constexpr float DIVERGING_WEIGHT                       = 20.0F;
+  constexpr float DIVERGING_BLACK_WEIGHT                 =  1.0F;
+  constexpr float QUALITATIVE_WEIGHT                     = 10.0F;
+  constexpr float MISC_WEIGHT                            = 20.0F;
+
   return std::make_shared<WeightedColorMaps>(
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, 10},
-              {ColorMapGroup::SEQUENTIAL,                      10},
-              {ColorMapGroup::SEQUENTIAL2,                     10},
-              {ColorMapGroup::CYCLIC,                          10},
-              {ColorMapGroup::DIVERGING,                       20},
-              {ColorMapGroup::DIVERGING_BLACK,                  1},
-              {ColorMapGroup::QUALITATIVE,                     10},
-              {ColorMapGroup::MISC,                            20},
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL,                      SEQUENTIAL_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL2,                     SEQUENTIAL2_WEIGHT},
+              {ColorMapGroup::CYCLIC,                          CYCLIC_WEIGHT},
+              {ColorMapGroup::DIVERGING,                       DIVERGING_WEIGHT},
+              {ColorMapGroup::DIVERGING_BLACK,                 DIVERGING_BLACK_WEIGHT},
+              {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
+              {ColorMapGroup::MISC,                            MISC_WEIGHT},
           }
       }
   );
@@ -405,19 +450,28 @@ auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) -> std::shared_
 auto GetSlightlyDivergingSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
+  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 10.0F;
+  constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 10.0F;
+  constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 10.0F;
+  constexpr float CYCLIC_SLIM_WEIGHT                          = 10.0F;
+  constexpr float DIVERGING_SLIM_WEIGHT                       = 20.0F;
+  constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 =  1.0F;
+  constexpr float QUALITATIVE_SLIM_WEIGHT                     = 10.0F;
+  constexpr float MISC_SLIM_WEIGHT                            = 20.0F;
+
   return std::make_shared<WeightedColorMaps>(
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, 10},
-              {ColorMapGroup::SEQUENTIAL_SLIM,                      10},
-              {ColorMapGroup::SEQUENTIAL2_SLIM,                     10},
-              {ColorMapGroup::CYCLIC_SLIM,                          10},
-              {ColorMapGroup::DIVERGING_SLIM,                       20},
-              {ColorMapGroup::DIVERGING_BLACK_SLIM,                  1},
-              {ColorMapGroup::QUALITATIVE_SLIM,                     10},
-              {ColorMapGroup::MISC_SLIM,                            20},
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL_SLIM,                      SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL2_SLIM,                     SEQUENTIAL2_SLIM_WEIGHT},
+              {ColorMapGroup::CYCLIC_SLIM,                          CYCLIC_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_SLIM,                       DIVERGING_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 DIVERGING_BLACK_SLIM_WEIGHT},
+              {ColorMapGroup::QUALITATIVE_SLIM,                     QUALITATIVE_SLIM_WEIGHT},
+              {ColorMapGroup::MISC_SLIM,                            MISC_SLIM_WEIGHT},
           }
       }
   );

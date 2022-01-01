@@ -116,7 +116,8 @@ private:
   void Renew();
 
   // TODO Move to simi
-  TValue m_tMix{TValue::StepType::CONTINUOUS_REVERSIBLE, 0.01F};
+  static constexpr float T_MIX_STARTING_VALUE = 0.01F;
+  TValue m_tMix{TValue::StepType::CONTINUOUS_REVERSIBLE, T_MIX_STARTING_VALUE};
   static constexpr float POINT_BRIGHTNESS = 3.0F;
   static constexpr float BITMAP_BRIGHTNESS = 2.0F;
   void ChangeColorMaps();
@@ -128,7 +129,8 @@ private:
   static constexpr uint32_t MIN_DENSITY_COUNT = 5;
   uint32_t m_lowDensityCount = MIN_DENSITY_COUNT;
   LowDensityBlurrer m_blurrer;
-  float m_lowDensityBlurThreshold = 0.99F;
+  static constexpr float DEFAULT_LOW_DENSITY_BLUR_THRESHOLD = 0.99F;
+  float m_lowDensityBlurThreshold = DEFAULT_LOW_DENSITY_BLUR_THRESHOLD;
   [[nodiscard]] auto BlurLowDensityColors(size_t numPoints,
                                           const std::vector<IfsPoint>& lowDensityPoints) const
       -> bool;
@@ -197,6 +199,15 @@ void IfsDancersFx::Refresh()
   m_fxImpl->Refresh();
 }
 
+// clang-format off
+constexpr float BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT = 1000.0F;
+constexpr float BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT   =    1.0F;
+constexpr float BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT   =    1.0F;
+constexpr float BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT     =    5.0F;
+constexpr float BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT =    1.0F;
+constexpr float BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT   =    5.0F;
+// clang-format on
+
 IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelpers& fxHelpers,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{fxHelpers.GetDraw()},
@@ -213,12 +224,12 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelpers& fxHelpers,
     m_blurrerColorModeWeights{
         m_goomRand,
         {
-            {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, 1000},
-            {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,      1},
-            {BlurrerColorMode::SIMI_WITH_NEIGHBOURS,      1},
-            {BlurrerColorMode::SIMI_NO_NEIGHBOURS,        5},
-            {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS,    1},
-            {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,      5},
+            {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT},
+            {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT},
+            {BlurrerColorMode::SIMI_WITH_NEIGHBOURS,   BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT},
+            {BlurrerColorMode::SIMI_NO_NEIGHBOURS,     BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT},
+            {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT},
+            {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT},
         }}
 // clang-format on
 {
@@ -301,7 +312,8 @@ inline void IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps()
 {
   m_colorizer.ChangeColorMaps();
   m_blurrer.SetColorMode(m_blurrerColorModeWeights.GetRandomWeighted());
-  m_blurrer.SetSingleColor(m_colorizer.GetColorMaps().GetRandomColorMap().GetColor(0.5F));
+  constexpr float SINGLE_COLOR_T = 0.5F;
+  m_blurrer.SetSingleColor(m_colorizer.GetColorMaps().GetRandomColorMap().GetColor(SINGLE_COLOR_T));
 }
 
 inline void IfsDancersFx::IfsDancersFxImpl::ApplyNoDraw()
@@ -350,8 +362,10 @@ inline void IfsDancersFx::IfsDancersFxImpl::UpdateIncr()
 {
   if (m_ifsIncr <= 0)
   {
-    m_recayIfs = 5;
-    m_ifsIncr = 11;
+    constexpr int32_t NEW_RECAY_IFS = 5;
+    m_recayIfs = NEW_RECAY_IFS;
+    constexpr int32_t NEW_IFS_INCR = 11;
+    m_ifsIncr = NEW_IFS_INCR;
     Renew();
   }
 }
@@ -360,7 +374,8 @@ inline void IfsDancersFx::IfsDancersFxImpl::UpdateDecay()
 {
   if ((m_ifsIncr > 0) && (m_decayIfs <= 0))
   {
-    m_decayIfs = 100;
+    constexpr int32_t NEW_DECAY_IFS = 100;
+    m_decayIfs = NEW_DECAY_IFS;
   }
 }
 
@@ -456,13 +471,17 @@ void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
   else
   {
     // Enough dense points to make blurring worthwhile.
-    if (m_goomRand.ProbabilityOfMInN(4, 5))
+    constexpr float PROB_NON_RANDOM_MIX_FACTOR = 4.0F / 5.0F;
+    if (m_goomRand.ProbabilityOf(PROB_NON_RANDOM_MIX_FACTOR))
     {
-      m_blurrer.SetNeighbourMixFactor(0.98F);
+      constexpr float FIXED_MIX_FACTOR = 0.98F;
+      m_blurrer.SetNeighbourMixFactor(FIXED_MIX_FACTOR);
     }
     else
     {
-      m_blurrer.SetNeighbourMixFactor(m_goomRand.GetRandInRange(0.90F, 1.0F));
+      constexpr float MIN_MIX_FACTOR = 0.9F;
+      constexpr float MAX_MIX_FACTOR = 1.0F;
+      m_blurrer.SetNeighbourMixFactor(m_goomRand.GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
     }
     m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
   }
@@ -472,11 +491,11 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
                                                       const float t,
                                                       const float tMix) const
 {
-  const auto pX = static_cast<int32_t>(point.GetX());
-  const auto pY = static_cast<int32_t>(point.GetY());
+  const auto pointX = static_cast<int32_t>(point.GetX());
+  const auto pointY = static_cast<int32_t>(point.GetY());
 
-  const auto tX = static_cast<float>(pX) / static_cast<float>(m_draw.GetScreenWidth());
-  const auto tY = static_cast<float>(pY) / static_cast<float>(m_draw.GetScreenHeight());
+  const auto tX = static_cast<float>(pointX) / static_cast<float>(m_draw.GetScreenWidth());
+  const auto tY = static_cast<float>(pointY) / static_cast<float>(m_draw.GetScreenHeight());
 
   const Pixel baseColor = point.GetSimi()->GetColorMap()->GetColor(t);
 
@@ -485,16 +504,16 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
   {
     const Pixel mixedColor =
         m_colorizer.GetMixedColor(baseColor, point.GetCount(), POINT_BRIGHTNESS, tMix, tX, tY);
-    m_draw.DrawPixels(pX, pY, {mixedColor, mixedColor});
+    m_draw.DrawPixels(pointX, pointY, {mixedColor, mixedColor});
   }
   else
   {
     const Pixel mixedColor =
         m_colorizer.GetMixedColor(baseColor, point.GetCount(), BITMAP_BRIGHTNESS, tMix, tX, tY);
     const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                              [[maybe_unused]] const Pixel& b) { return mixedColor; };
+                              [[maybe_unused]] const Pixel& bgnd) { return mixedColor; };
     const ImageBitmap& bitmap{*point.GetSimi()->GetCurrentPointBitmap()};
-    m_draw.Bitmap(pX, pY, bitmap, {getColor, getColor});
+    m_draw.Bitmap(pointX, pointY, bitmap, {getColor, getColor});
   }
 }
 

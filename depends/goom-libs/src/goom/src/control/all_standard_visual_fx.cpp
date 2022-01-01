@@ -11,7 +11,7 @@
 #include "visual_fx/image_fx.h"
 #include "visual_fx/shader_fx.h"
 #include "visual_fx/tentacles_fx.h"
-#include "visual_fx/tube_fx.h"
+#include "visual_fx/tubes_fx.h"
 #include "visual_fx_color_maps.h"
 
 #include <memory>
@@ -20,7 +20,6 @@ namespace GOOM::CONTROL
 {
 
 using CONTROL::GoomDrawables;
-using DRAW::IGoomDraw;
 using UTILS::Parallel;
 using UTILS::SmallImageBitmaps;
 using VISUAL_FX::FlyingStarsFx;
@@ -30,26 +29,26 @@ using VISUAL_FX::IfsDancersFx;
 using VISUAL_FX::ImageFx;
 using VISUAL_FX::ShaderFx;
 using VISUAL_FX::TentaclesFx;
-using VISUAL_FX::TubeFx;
+using VISUAL_FX::TubesFx;
 
 AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
                                          const FxHelpers& fxHelpers,
                                          const SmallImageBitmaps& smallBitmaps,
                                          const std::string& resourcesDirectory) noexcept
-  : m_goomDots_fx{std::make_shared<GoomDotsFx>(fxHelpers, smallBitmaps)},
-    m_ifs_fx{std::make_shared<IfsDancersFx>(fxHelpers, smallBitmaps)},
-    m_image_fx{std::make_shared<ImageFx>(parallel, fxHelpers, resourcesDirectory)},
-    m_shader_fx{std::make_shared<ShaderFx>(fxHelpers)},
-    m_star_fx{std::make_shared<FlyingStarsFx>(fxHelpers, smallBitmaps)},
-    m_tentacles_fx{std::make_shared<TentaclesFx>(fxHelpers, smallBitmaps)},
-    m_tube_fx{std::make_shared<TubeFx>(fxHelpers, smallBitmaps)},
+  : m_goomDotsFx{std::make_shared<GoomDotsFx>(fxHelpers, smallBitmaps)},
+    m_ifsFx{std::make_shared<IfsDancersFx>(fxHelpers, smallBitmaps)},
+    m_imageFx{std::make_shared<ImageFx>(parallel, fxHelpers, resourcesDirectory)},
+    m_shaderFx{std::make_shared<ShaderFx>(fxHelpers)},
+    m_starFx{std::make_shared<FlyingStarsFx>(fxHelpers, smallBitmaps)},
+    m_tentaclesFx{std::make_shared<TentaclesFx>(fxHelpers, smallBitmaps)},
+    m_tubesFx{std::make_shared<TubesFx>(fxHelpers, smallBitmaps)},
     m_list{
-        m_star_fx, m_ifs_fx, m_image_fx, m_goomDots_fx, m_tentacles_fx, m_tube_fx,
+        m_starFx, m_ifsFx, m_imageFx, m_goomDotsFx, m_tentaclesFx, m_tubesFx,
     },
     m_drawablesMap{
-        {GoomDrawables::STARS, m_star_fx},          {GoomDrawables::IFS, m_ifs_fx},
-        {GoomDrawables::IMAGE, m_image_fx},         {GoomDrawables::DOTS, m_goomDots_fx},
-        {GoomDrawables::TENTACLES, m_tentacles_fx}, {GoomDrawables::TUBES, m_tube_fx},
+        {GoomDrawables::STARS, m_starFx},          {GoomDrawables::IFS, m_ifsFx},
+        {GoomDrawables::IMAGE, m_imageFx},         {GoomDrawables::DOTS, m_goomDotsFx},
+        {GoomDrawables::TENTACLES, m_tentaclesFx}, {GoomDrawables::TUBES, m_tubesFx},
     },
     m_visualFxColorMaps{fxHelpers.GetGoomRand()}
 {
@@ -66,7 +65,7 @@ inline auto AllStandardVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDra
 
 void AllStandardVisualFx::Start()
 {
-  for (auto& visualFx : m_list)
+  for (const auto& visualFx : m_list)
   {
     visualFx->Start();
   }
@@ -74,7 +73,7 @@ void AllStandardVisualFx::Start()
 
 void AllStandardVisualFx::Finish()
 {
-  for (auto& visualFx : m_list)
+  for (const auto& visualFx : m_list)
   {
     visualFx->Finish();
   }
@@ -154,7 +153,7 @@ void AllStandardVisualFx::ApplyDotsIfRequired()
   }
 
   ResetDrawBuffSettings(GoomDrawables::DOTS);
-  m_goomDots_fx->ApplySingle();
+  m_goomDotsFx->ApplySingle();
 }
 
 void AllStandardVisualFx::ApplyDotsToBothBuffersIfRequired()
@@ -169,19 +168,19 @@ void AllStandardVisualFx::ApplyDotsToBothBuffersIfRequired()
   }
 
   ResetDrawBuffSettings(GoomDrawables::DOTS);
-  m_goomDots_fx->ApplyMultiple();
+  m_goomDotsFx->ApplyMultiple();
 }
 
 void AllStandardVisualFx::ApplyIfsToBothBuffersIfRequired()
 {
   if (!IsCurrentlyDrawable(GoomDrawables::IFS))
   {
-    m_ifs_fx->ApplyNoDraw();
+    m_ifsFx->ApplyNoDraw();
     return;
   }
 
   ResetDrawBuffSettings(GoomDrawables::IFS);
-  m_ifs_fx->ApplyMultiple();
+  m_ifsFx->ApplyMultiple();
 }
 
 void AllStandardVisualFx::ApplyImageToBothBuffersIfRequired()
@@ -192,23 +191,23 @@ void AllStandardVisualFx::ApplyImageToBothBuffersIfRequired()
   }
 
   ResetDrawBuffSettings(GoomDrawables::IMAGE);
-  m_image_fx->ApplyMultiple();
+  m_imageFx->ApplyMultiple();
 }
 
 void AllStandardVisualFx::ApplyShaderToBothBuffersIfRequired()
 {
   ResetDrawBuffSettings(GoomDrawables::SHADER);
-  m_shader_fx->ApplyMultiple();
+  m_shaderFx->ApplyMultiple();
 }
 
 void AllStandardVisualFx::ChangeShaderEffects()
 {
-  m_shader_fx->ChangeEffects();
+  m_shaderFx->ChangeEffects();
 }
 
 auto AllStandardVisualFx::GetLastShaderEffects() const -> const GoomShaderEffects&
 {
-  return m_shader_fx->GetLastShaderEffects();
+  return m_shaderFx->GetLastShaderEffects();
 }
 
 void AllStandardVisualFx::ApplyTentaclesToBothBuffersIfRequired()
@@ -219,7 +218,7 @@ void AllStandardVisualFx::ApplyTentaclesToBothBuffersIfRequired()
   }
 
   ResetDrawBuffSettings(GoomDrawables::TENTACLES);
-  m_tentacles_fx->ApplyMultiple();
+  m_tentaclesFx->ApplyMultiple();
 }
 
 void AllStandardVisualFx::ApplyTubeToBothBuffersIfRequired()
@@ -230,7 +229,7 @@ void AllStandardVisualFx::ApplyTubeToBothBuffersIfRequired()
   }
 
   ResetDrawBuffSettings(GoomDrawables::TUBES);
-  m_tube_fx->ApplyMultiple();
+  m_tubesFx->ApplyMultiple();
 }
 
 void AllStandardVisualFx::ApplyStarsToBothBuffersIfRequired()
@@ -241,30 +240,30 @@ void AllStandardVisualFx::ApplyStarsToBothBuffersIfRequired()
   }
 
   ResetDrawBuffSettings(GoomDrawables::STARS);
-  m_star_fx->ApplyMultiple();
+  m_starFx->ApplyMultiple();
 }
 
 void AllStandardVisualFx::ChangeColorMaps()
 {
   m_visualFxColorMaps.SetNextColorMapSet();
 
-  m_goomDots_fx->SetWeightedColorMaps(0, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS0));
-  m_goomDots_fx->SetWeightedColorMaps(1, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS1));
-  m_goomDots_fx->SetWeightedColorMaps(2, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS2));
-  m_goomDots_fx->SetWeightedColorMaps(3, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS3));
-  m_goomDots_fx->SetWeightedColorMaps(4, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS4));
+  m_goomDotsFx->SetWeightedColorMaps(0, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS0));
+  m_goomDotsFx->SetWeightedColorMaps(1, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS1));
+  m_goomDotsFx->SetWeightedColorMaps(2, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS2));
+  m_goomDotsFx->SetWeightedColorMaps(3, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS3));
+  m_goomDotsFx->SetWeightedColorMaps(4, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS4));
 
-  m_ifs_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::IFS));
+  m_ifsFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::IFS));
 
-  m_image_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::IMAGE));
+  m_imageFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::IMAGE));
 
-  m_star_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS));
-  m_star_fx->SetWeightedLowColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS_LOW));
+  m_starFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS));
+  m_starFx->SetWeightedLowColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS_LOW));
 
-  m_tentacles_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TENTACLES));
+  m_tentaclesFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TENTACLES));
 
-  m_tube_fx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TUBE));
-  m_tube_fx->SetWeightedLowColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TUBE_LOW));
+  m_tubesFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TUBE));
+  m_tubesFx->SetWeightedLowColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TUBE_LOW));
 }
 
 } // namespace GOOM::CONTROL

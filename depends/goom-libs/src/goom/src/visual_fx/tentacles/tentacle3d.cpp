@@ -19,6 +19,8 @@ using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
 using UTILS::IGoomRand;
 
+constexpr float HEAD_X_MAX = 10.0F;
+
 Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
                        const Pixel& headColor,
                        const Pixel& headLowColor,
@@ -83,7 +85,7 @@ inline auto Tentacle3D::GetMixedColors(const size_t nodeNum,
   const Pixel mixedColor = GetFinalMixedColor(color, segmentColor, 0.8F);
   const Pixel mixedLowColor = GetFinalMixedColor(lowColor, segmentLowColor, 0.8F);
 
-  if (std::abs(GetHead().x) < 10.0F)
+  if (std::abs(GetHead().x) < HEAD_X_MAX)
   {
     const float brightnessCut = t * t;
     return std::make_pair(GetBrighterColor(brightnessCut, mixedColor),
@@ -126,7 +128,7 @@ auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
   const float y0 = m_head.y - static_cast<float>(yVec2D[0]);
   const float z0 = m_head.z - static_cast<float>(xVec2D[0]);
   float xStep = 0.0;
-  if (std::abs(x0) < 10.0F)
+  if (std::abs(x0) < HEAD_X_MAX)
   {
     const float xn = 0.1F * x0;
     xStep = (x0 - xn) / static_cast<float>(n);

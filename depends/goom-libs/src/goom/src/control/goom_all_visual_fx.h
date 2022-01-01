@@ -113,7 +113,7 @@ public:
 
 private:
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
-  const std::unique_ptr<VISUAL_FX::ZoomFilterFx> m_zoomFilter_fx;
+  const std::unique_ptr<VISUAL_FX::ZoomFilterFx> m_zoomFilterFx;
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine1;
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine2;
   DRAW::IGoomDraw& m_goomDraw;
@@ -168,7 +168,7 @@ inline auto GoomAllVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawabl
 
 inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
 {
-  m_zoomFilter_fx->ZoomFilterFastRgb(srceBuff, destBuff);
+  m_zoomFilterFx->ZoomFilterFastRgb(srceBuff, destBuff);
 
   UpdateZoomFilterLuminance();
 }
@@ -177,7 +177,7 @@ inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
 {
   const float currentBufferAverageLuminance =
       VISUAL_FX::FILTERS::FilterBufferRowColorInfo::GetBufferAverageLuminance(
-          m_zoomFilter_fx->GetLastFilterBufferColorInfo());
+          m_zoomFilterFx->GetLastFilterBufferColorInfo());
 
   if (currentBufferAverageLuminance < UTILS::SMALL_FLOAT)
   {
@@ -188,7 +188,7 @@ inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
 
   if (m_doExposureControl)
   {
-    m_zoomFilter_fx->SetZoomFilterBrightness(m_adaptiveExposure.GetCurrentExposure());
+    m_zoomFilterFx->SetZoomFilterBrightness(m_adaptiveExposure.GetCurrentExposure());
   }
 }
 

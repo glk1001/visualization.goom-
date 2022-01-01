@@ -14,10 +14,18 @@ namespace GOOM::VISUAL_FX::IFS
 
 using COLOR::ColorMapGroup;
 using COLOR::RandomColorMaps;
+using UTILS::DEGREES_180;
 using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
 using UTILS::m_pi;
 using UTILS::SmallImageBitmaps;
+
+// clang-format off
+constexpr float NUM0_WEIGHT = 10.0F;
+constexpr float NUM1_WEIGHT =  5.0F;
+constexpr float NUM2_WEIGHT =  3.0F;
+constexpr float NUM3_WEIGHT =  1.0F;
+// clang-format on
 
 Similitudes::Similitudes(const IGoomRand& goomRand,
                          const RandomColorMaps& randomColorMaps,
@@ -25,25 +33,18 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
   : m_goomRand{goomRand},
     m_smallBitmaps{smallBitmaps},
     m_colorMaps{randomColorMaps},
-    // clang-format off
-    m_centreList {
-        { /*.depth = */10, /*.r1Mean = */0.7F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.3F, /*.dr2Mean = */0.4F },
-        { /*.depth = */ 6, /*.r1Mean = */0.6F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.4F, /*.dr2Mean = */0.3F },
-        { /*.depth = */ 4, /*.r1Mean = */0.5F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.4F, /*.dr2Mean = */0.3F },
-        { /*.depth = */ 2, /*.r1Mean = */0.4F, /*.r2Mean = */0.0F, /*.dr1Mean = */0.5F, /*.dr2Mean = */0.3F },
-    },
     m_centreWeights{
         m_goomRand,
         {
-            {CentreNums::NUM0, 10},
-            {CentreNums::NUM1,  5},
-            {CentreNums::NUM2,  3},
-            {CentreNums::NUM3,  1},
+            {CentreNums::NUM0, NUM0_WEIGHT},
+            {CentreNums::NUM1, NUM1_WEIGHT},
+            {CentreNums::NUM2, NUM2_WEIGHT},
+            {CentreNums::NUM3, NUM3_WEIGHT},
         }
     }
 // clang-format on
 {
-  assert(m_centreWeights.GetNumElements() == m_centreList.size());
+  assert(m_centreWeights.GetNumElements() == CENTRE_LIST.size());
 
   Init();
   ResetCurrentIfsFunc();
@@ -61,7 +62,7 @@ inline void Similitudes::InitCentre()
 
   m_numSimis = numCentres;
 
-  m_centreAttributes = m_centreList.at(numCentres - 2);
+  m_centreAttributes = CENTRE_LIST.at(numCentres - 2);
 }
 
 inline void Similitudes::ResetSimiGroups()
@@ -160,20 +161,21 @@ void Similitudes::IterateSimis()
 
   for (size_t i = 0; i < m_numSimis; ++i)
   {
+    constexpr float GROUP3_FACTOR = 2.0F;
     extraSimiGroup1[i].m_dbl_cx =
-        (2.0F * extraSimiGroup3[i].m_dbl_cx) - extraSimiGroup2[i].m_dbl_cx;
+        (GROUP3_FACTOR * extraSimiGroup3[i].m_dbl_cx) - extraSimiGroup2[i].m_dbl_cx;
     extraSimiGroup1[i].m_dbl_cy =
-        (2.0F * extraSimiGroup3[i].m_dbl_cy) - extraSimiGroup2[i].m_dbl_cy;
+        (GROUP3_FACTOR * extraSimiGroup3[i].m_dbl_cy) - extraSimiGroup2[i].m_dbl_cy;
 
     extraSimiGroup1[i].m_dbl_r1 =
-        (2.0F * extraSimiGroup3[i].m_dbl_r1) - extraSimiGroup2[i].m_dbl_r1;
+        (GROUP3_FACTOR * extraSimiGroup3[i].m_dbl_r1) - extraSimiGroup2[i].m_dbl_r1;
     extraSimiGroup1[i].m_dbl_r2 =
-        (2.0F * extraSimiGroup3[i].m_dbl_r2) - extraSimiGroup2[i].m_dbl_r2;
+        (GROUP3_FACTOR * extraSimiGroup3[i].m_dbl_r2) - extraSimiGroup2[i].m_dbl_r2;
 
     extraSimiGroup1[i].m_dbl_A1 =
-        (2.0F * extraSimiGroup3[i].m_dbl_A1) - extraSimiGroup2[i].m_dbl_A1;
+        (GROUP3_FACTOR * extraSimiGroup3[i].m_dbl_A1) - extraSimiGroup2[i].m_dbl_A1;
     extraSimiGroup1[i].m_dbl_A2 =
-        (2.0F * extraSimiGroup3[i].m_dbl_A2) - extraSimiGroup2[i].m_dbl_A2;
+        (GROUP3_FACTOR * extraSimiGroup3[i].m_dbl_A2) - extraSimiGroup2[i].m_dbl_A2;
 
     extraSimiGroup0[i] = extraSimiGroup3[i];
   }
@@ -213,8 +215,8 @@ void Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup)
     simi.m_dbl_cy = GaussRand(0.0, 4.0, c_factor);
     simi.m_dbl_r1 = GaussRand(m_centreAttributes.r1Mean, 3.0, r1Factor);
     simi.m_dbl_r2 = HalfGaussRand(m_centreAttributes.r2Mean, 2.0, r2Factor);
-    simi.m_dbl_A1 = GaussRand(0.0F, 4.0F, A1_factor) * (m_pi / 180.0F);
-    simi.m_dbl_A2 = GaussRand(0.0F, 4.0F, A2_factor) * (m_pi / 180.0F);
+    simi.m_dbl_A1 = GaussRand(0.0F, 4.0F, A1_factor) * (m_pi / DEGREES_180);
+    simi.m_dbl_A2 = GaussRand(0.0F, 4.0F, A2_factor) * (m_pi / DEGREES_180);
     simi.m_cx = 0;
     simi.m_cy = 0;
     simi.m_r1 = 0;

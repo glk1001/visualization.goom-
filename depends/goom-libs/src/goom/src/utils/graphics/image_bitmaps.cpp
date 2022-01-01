@@ -28,7 +28,7 @@ void ImageBitmap::Load(std::string imageFilename)
   int width{};
   int height{};
   int bpp{};
-  uint8_t* rgbImage{};
+  uint8_t* rgbImage;
   try
   {
     rgbImage = stbi_load(m_filename.c_str(), &width, &height, &bpp, 4);

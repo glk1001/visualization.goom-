@@ -22,11 +22,11 @@ namespace VISUAL_FX
 {
 class FxHelpers;
 
-class TubeFx : public IVisualFx
+class TubesFx : public IVisualFx
 {
 public:
-  TubeFx() noexcept = delete;
-  TubeFx(const FxHelpers& fxHelpers, const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+  TubesFx() noexcept = delete;
+  TubesFx(const FxHelpers& fxHelpers, const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

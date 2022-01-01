@@ -49,6 +49,7 @@ public:
 
   void SetReverseColorMix(const bool val) { m_reverseColorMix = val; }
 
+  static constexpr float HEAD_SMALL_X = 10.0F;
   [[nodiscard]] auto GetHead() const -> const V3dFlt& { return m_head; }
   void SetHead(const V3dFlt& val) { m_head = val; }
 

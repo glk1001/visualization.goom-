@@ -3,14 +3,12 @@
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
 #include "filter_settings.h"
-#include "goom/spimpl.h"
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
 
 #include <functional>
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 namespace GOOM
@@ -58,8 +56,6 @@ public:
                          const UTILS::IGoomRand& goomRand,
                          const std::string& resourcesDirectory)
                         ->std::shared_ptr<ISpeedCoefficientsEffect>>;
-
-  class FilterEvents;
 
   FilterSettingsService(
       UTILS::Parallel& parallel,
@@ -129,7 +125,6 @@ private:
   const UTILS::IGoomRand& m_goomRand;
   const V2dInt m_screenMidPoint;
   const std::string m_resourcesDirectory;
-  spimpl::unique_impl_ptr<FilterEvents> m_filterEvents;
 
   struct ZoomFilterModeInfo
   {

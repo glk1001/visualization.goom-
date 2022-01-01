@@ -50,12 +50,12 @@ private:
   [[nodiscard]] static auto ScreenToNormalizedCoord(int32_t screenCoord) -> float;
 };
 
-[[nodiscard]] auto operator+(const NormalizedCoords& c1, const NormalizedCoords& c2)
+[[nodiscard]] auto operator+(const NormalizedCoords& coords1, const NormalizedCoords& coords2)
     -> NormalizedCoords;
-[[nodiscard]] auto operator-(const NormalizedCoords& c1, const NormalizedCoords& c2)
+[[nodiscard]] auto operator-(const NormalizedCoords& coords1, const NormalizedCoords& coords2)
     -> NormalizedCoords;
-[[nodiscard]] auto operator*(float scalar, const NormalizedCoords& c) -> NormalizedCoords;
-[[nodiscard]] auto GetSqDistance(const NormalizedCoords& point1, const NormalizedCoords& point2)
+[[nodiscard]] auto operator*(float scalar, const NormalizedCoords& coords) -> NormalizedCoords;
+[[nodiscard]] auto GetSqDistance(const NormalizedCoords& coords1, const NormalizedCoords& coords2)
     -> float;
 
 inline auto NormalizedCoords::NormalizedToScreenCoordsFlt(const V2dFlt& normalizedCoords) -> V2dFlt
@@ -163,27 +163,29 @@ inline auto NormalizedCoords::operator*=(const float scalar) -> NormalizedCoords
   return *this;
 }
 
-inline auto operator+(const NormalizedCoords& c1, const NormalizedCoords& c2) -> NormalizedCoords
+inline auto operator+(const NormalizedCoords& coords1, const NormalizedCoords& coords2)
+    -> NormalizedCoords
 {
-  NormalizedCoords c3{c1};
-  return c3 += c2;
+  NormalizedCoords coords3{coords1};
+  return coords3 += coords2;
 }
 
-inline auto operator-(const NormalizedCoords& c1, const NormalizedCoords& c2) -> NormalizedCoords
+inline auto operator-(const NormalizedCoords& coords1, const NormalizedCoords& coords2)
+    -> NormalizedCoords
 {
-  NormalizedCoords c3{c1};
-  return c3 -= c2;
+  NormalizedCoords coords3{coords1};
+  return coords3 -= coords2;
 }
 
-inline auto operator*(const float scalar, const NormalizedCoords& c) -> NormalizedCoords
+inline auto operator*(const float scalar, const NormalizedCoords& coords) -> NormalizedCoords
 {
-  NormalizedCoords c1{c};
-  return c1 *= scalar;
+  NormalizedCoords coords1{coords};
+  return coords1 *= scalar;
 }
 
-inline auto GetSqDistance(const NormalizedCoords& point1, const NormalizedCoords& point2) -> float
+inline auto GetSqDistance(const NormalizedCoords& coords1, const NormalizedCoords& coords2) -> float
 {
-  return UTILS::SqDistance(point1.GetX() - point2.GetX(), point1.GetY() - point2.GetY());
+  return UTILS::SqDistance(coords1.GetX() - coords2.GetX(), coords1.GetY() - coords2.GetY());
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS

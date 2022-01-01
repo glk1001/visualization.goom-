@@ -14,8 +14,18 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::IGoomRand;
-using UTILS::Weights;
 using VISUAL_FX::IfsDancersFx;
+
+// clang-format off
+constexpr float MAP_COLORS_WEIGHT            = 15.0F;
+constexpr float MEGA_MAP_COLOR_CHANGE_WEIGHT = 20.0F;
+constexpr float MIX_COLORS_WEIGHT            = 15.0F;
+constexpr float MEGA_MIX_COLOR_CHANGE_WEIGHT = 20.0F;
+constexpr float REVERSE_MIX_COLORS_WEIGHT    = 15.0F;
+constexpr float SINGLE_COLORS_WEIGHT         = 10.0F;
+constexpr float SINE_MIX_COLORS_WEIGHT       = 10.0F;
+constexpr float SINE_MAP_COLORS_WEIGHT       = 10.0F;
+// clang-format on
 
 Colorizer::Colorizer(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
@@ -23,14 +33,14 @@ Colorizer::Colorizer(const IGoomRand& goomRand) noexcept
     m_colorModeWeights{
         m_goomRand,
         {
-            { IfsDancersFx::ColorMode::MAP_COLORS,            15 },
-            { IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE, 20 },
-            { IfsDancersFx::ColorMode::MIX_COLORS,            15 },
-            { IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE, 20 },
-            { IfsDancersFx::ColorMode::REVERSE_MIX_COLORS,    15 },
-            { IfsDancersFx::ColorMode::SINGLE_COLORS,         10 },
-            { IfsDancersFx::ColorMode::SINE_MIX_COLORS,       10 },
-            { IfsDancersFx::ColorMode::SINE_MAP_COLORS,       10 },
+            { IfsDancersFx::ColorMode::MAP_COLORS,            MAP_COLORS_WEIGHT },
+            { IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE, MEGA_MAP_COLOR_CHANGE_WEIGHT },
+            { IfsDancersFx::ColorMode::MIX_COLORS,            MIX_COLORS_WEIGHT },
+            { IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE, MEGA_MIX_COLOR_CHANGE_WEIGHT },
+            { IfsDancersFx::ColorMode::REVERSE_MIX_COLORS,    REVERSE_MIX_COLORS_WEIGHT },
+            { IfsDancersFx::ColorMode::SINGLE_COLORS,         SINGLE_COLORS_WEIGHT },
+            { IfsDancersFx::ColorMode::SINE_MIX_COLORS,       SINE_MIX_COLORS_WEIGHT },
+            { IfsDancersFx::ColorMode::SINE_MAP_COLORS,       SINE_MAP_COLORS_WEIGHT },
         }
     }
 // clang-format on
@@ -194,7 +204,7 @@ inline auto Colorizer::GetFinalMixedColor(const Pixel& baseColor,
 
 inline auto Colorizer::GetGammaCorrection(const float brightness, const Pixel& color) const -> Pixel
 {
-  if constexpr (GAMMA == 1.0F)
+  if constexpr (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color);
   }
