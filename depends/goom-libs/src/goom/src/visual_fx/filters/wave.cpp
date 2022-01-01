@@ -33,6 +33,7 @@ constexpr IGoomRand::NumberRange<float> BIG_AMPLITUDE_RANGE = {1.0F, 50.0F};
 constexpr float PROB_ALLOW_STRANGE_WAVE_VALUES = 0.1F;
 constexpr float PROB_WAVE_XY_EFFECTS_EQUAL = 0.75F;
 constexpr float PROB_NO_PERIODIC_FACTOR = 0.2F;
+constexpr float PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT = 0.9F;
 
 Wave::Wave(const Modes mode, const IGoomRand& goomRand) noexcept
   : m_mode{mode},
@@ -80,23 +81,31 @@ void Wave::SetWaveModeSettings(const IGoomRand::NumberRange<float>& freqFactorRa
           ? xWaveEffect
           : static_cast<WaveEffect>(m_goomRand.GetRandInRange(0U, NUM<WaveEffect>));
 
-  float periodicFactor;
-  if (m_goomRand.ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
-  {
-    periodicFactor = xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
-                         ? DEFAULT_SIN_COS_PERIODIC_FACTOR
-                         : DEFAULT_PERIODIC_FACTOR;
-  }
-  else
-  {
-    periodicFactor = m_goomRand.GetRandInRange(xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
-                                                   ? SIN_COS_PERIODIC_FACTOR_RANGE
-                                                   : PERIODIC_FACTOR_RANGE);
-  }
+  const float periodicFactor = GetPeriodicFactor(xWaveEffect, yWaveEffect);
   const float freqFactor = m_goomRand.GetRandInRange(freqFactorRange);
   const float amplitude = m_goomRand.GetRandInRange(amplitudeRange);
 
   SetParams({xWaveEffect, yWaveEffect, freqFactor, amplitude, periodicFactor});
+}
+
+inline auto Wave::GetPeriodicFactor(const WaveEffect xWaveEffect,
+                                    const WaveEffect yWaveEffect) const -> float
+{
+  if (m_goomRand.ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
+  {
+    return xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT ? DEFAULT_SIN_COS_PERIODIC_FACTOR
+                                                          : DEFAULT_PERIODIC_FACTOR;
+  }
+  if (m_goomRand.ProbabilityOf(PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT))
+  {
+    return m_goomRand.GetRandInRange(xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
+                                         ? SIN_COS_PERIODIC_FACTOR_RANGE
+                                         : PERIODIC_FACTOR_RANGE);
+  }
+
+  return m_goomRand.GetRandInRange(yWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
+                                       ? SIN_COS_PERIODIC_FACTOR_RANGE
+                                       : PERIODIC_FACTOR_RANGE);
 }
 
 auto Wave::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs

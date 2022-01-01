@@ -60,6 +60,8 @@ private:
   [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
                                             float angle,
                                             float periodicFactor) -> float;
+  [[nodiscard]] auto GetPeriodicFactor(WaveEffect xWaveEffect, WaveEffect yWaveEffect) const
+      -> float;
 };
 
 inline auto Wave::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
