@@ -19,14 +19,14 @@ struct VersionInfoInt
   int32_t verRevision;
 };
 
-inline auto GetFullVersionStr() -> std::string
+[[nodiscard]] inline auto GetFullVersionStr() -> std::string
 {
   return std::string(GOOM_VER_NAME) + " " + std::to_string(GOOM_VER_MAJOR) + "." +
          std::to_string(GOOM_VER_MINOR) + "." + std::to_string(GOOM_VER_REVISION) + "," + " " +
          GOOM_VER_DESCRIPTION;
 }
 
-inline auto GetVersionInfo() -> VersionInfoInt
+[[nodiscard]] inline auto GetVersionInfo() -> VersionInfoInt
 {
   return {GOOM_VER_MAJOR, GOOM_VER_MINOR, GOOM_VER_REVISION};
 }

@@ -28,6 +28,7 @@
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
+#include "goom_version.h"
 #include "utils/goom_rand.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/parallel_utils.h"
@@ -145,6 +146,11 @@ private:
 auto GoomControl::GetCompilerVersion() -> std::string
 {
   return GOOM::GetCompilerVersion();
+}
+
+auto GoomControl::GetGoomVersionInfo() -> std::string
+{
+  return GetFullVersionStr();
 }
 
 auto GoomControl::GetRandSeed() -> uint64_t

@@ -49,6 +49,7 @@ public:
   void Finish();
 
   [[nodiscard]] static auto GetCompilerVersion() -> std::string;
+  [[nodiscard]] static auto GetGoomVersionInfo() -> std::string;
 
 private:
   class GoomControlImpl;

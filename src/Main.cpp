@@ -212,6 +212,7 @@ auto CVisualizationGoom::InitGoomController() -> bool
     return false;
   }
 
+  LogInfo("CVisualizationGoom: Goom: {}.", GoomControl::GetGoomVersionInfo());
   LogInfo("CVisualizationGoom: Compiler: {}.", GetCompilerVersion());
   LogInfo("Goom Library: Compiler: {}.", GoomControl::GetCompilerVersion());
 
