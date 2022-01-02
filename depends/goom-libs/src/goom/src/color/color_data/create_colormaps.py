@@ -105,6 +105,8 @@ def find_palettes(mod):
 def get_cpp_name(nm: str) -> str:
     cpp_nm = nm.replace('(', '_')
     cpp_nm = cpp_nm.replace(')', '_')
+    if cpp_nm.endswith('_'):
+        cpp_nm = cpp_nm[:-1]
     return cpp_nm
 
 
@@ -241,7 +243,7 @@ def write_colormaps_enums_header(maps: List[str], dupl: Dict[str, str]):
         f.write('\n')
         f.write(f'enum class {MAPS_ENUM_NAME}\n')
         f.write('{\n')
-        f.write(f'  _NULL = -1,\n')
+        f.write(f'  _NULL = -1, // NOLINT\n')
         for m in maps:
             f.write(f'  {get_upper_cpp_name(m)},' + get_enum_line_end(m, dupl))
         f.write(f'  _NUM,\n')
@@ -468,3 +470,5 @@ if __name__ == '__main__':
 
     write_all_maps_header(color_map_groups, len(used_maps))
     write_all_maps_cpp(color_map_groups, used_maps, duplicate_maps)
+
+    print(f'Wrote generated files to "{SRCE_DIR}".')

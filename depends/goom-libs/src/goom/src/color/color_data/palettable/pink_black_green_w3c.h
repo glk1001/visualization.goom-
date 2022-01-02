@@ -13,7 +13,7 @@ namespace GOOM::COLOR::COLOR_DATA
 {
 
 // clang-format off
-static const std::vector<vivid::srgb_t> PINK_BLACK_GREEN_W3C_
+static const std::vector<vivid::srgb_t> PINK_BLACK_GREEN_W3C
 {
   {   1.00000F,   0.75294F,   0.79608F },
   {   0.99216F,   0.74704F,   0.78983F },

@@ -1156,7 +1156,7 @@
 #include "palettable/Phase_19.h"
 #include "palettable/Phase_20.h"
 #include "palettable/pink.h"
-#include "palettable/pink_black_green_w3c_.h"
+#include "palettable/pink_black_green_w3c.h"
 #include "palettable/PinkYl_2.h"
 #include "palettable/PinkYl_3.h"
 #include "palettable/PinkYl_4.h"
@@ -2855,7 +2855,7 @@ const std::array<ColorNamePair, 1687> ALL_MAPS{{
   {ColorMapName::PHASE_19, &COLOR_DATA::PHASE_19},
   {ColorMapName::PHASE_20, &COLOR_DATA::PHASE_20},
   {ColorMapName::PINK, &COLOR_DATA::PINK},
-  {ColorMapName::PINK_BLACK_GREEN_W3C_, &COLOR_DATA::PINK_BLACK_GREEN_W3C_},
+  {ColorMapName::PINK_BLACK_GREEN_W3C, &COLOR_DATA::PINK_BLACK_GREEN_W3C},
   {ColorMapName::PINKYL_2, &COLOR_DATA::PINKYL_2},
   {ColorMapName::PINKYL_3, &COLOR_DATA::PINKYL_3},
   {ColorMapName::PINKYL_4, &COLOR_DATA::PINKYL_4},
@@ -4908,7 +4908,7 @@ const std::vector<ColorMapName> DIVERGING_MAPS
 };
 const std::vector<ColorMapName> DIVERGING_BLACK_MAPS
 {
-    ColorMapName::PINK_BLACK_GREEN_W3C_,
+    ColorMapName::PINK_BLACK_GREEN_W3C,
     ColorMapName::RED_BLACK_BLUE,
     ColorMapName::RED_BLACK_GREEN,
     ColorMapName::RED_BLACK_ORANGE,
@@ -5171,7 +5171,7 @@ const std::vector<ColorMapName> DIVERGING_SLIM_MAPS
 };
 const std::vector<ColorMapName> DIVERGING_BLACK_SLIM_MAPS
 {
-    ColorMapName::PINK_BLACK_GREEN_W3C_,
+    ColorMapName::PINK_BLACK_GREEN_W3C,
     ColorMapName::RED_BLACK_BLUE,
     ColorMapName::RED_BLACK_GREEN,
     ColorMapName::RED_BLACK_ORANGE,

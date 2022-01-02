@@ -160,7 +160,7 @@ const std::vector<ColorMapName> GREEN_MAPS
     ColorMapName::GREENORANGE_12,
     ColorMapName::GREENS,
     ColorMapName::MINT_7,
-    ColorMapName::PINK_BLACK_GREEN_W3C_,
+    ColorMapName::PINK_BLACK_GREEN_W3C,
     ColorMapName::PRGN_11,
     ColorMapName::PUBUGN,
     ColorMapName::RDGY,

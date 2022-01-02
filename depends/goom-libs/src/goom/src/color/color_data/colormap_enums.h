@@ -11,7 +11,7 @@ namespace GOOM::COLOR::COLOR_DATA
 
 enum class ColorMapName
 {
-  _NULL = -1,
+  _NULL = -1, // NOLINT
   ACCENT, // = Accent_8
   ACCENT_3,
   ACCENT_4,
@@ -1161,7 +1161,7 @@ enum class ColorMapName
   PHASE_19,
   PHASE_20,
   PINK,
-  PINK_BLACK_GREEN_W3C_,
+  PINK_BLACK_GREEN_W3C,
   PINKYL_2,
   PINKYL_3,
   PINKYL_4,
