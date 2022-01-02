@@ -27,15 +27,15 @@ public:
     ROTATED_T,
     SHADES,
   };
-  static const std::set<ColorMapTypes> EMPTY;
-  static const std::set<ColorMapTypes> ALL;
-  [[nodiscard]] auto GetRandomColorMapPtr(const std::set<ColorMapTypes>& types = EMPTY) const
+  static const std::set<ColorMapTypes> NO_COLOR_MAP_TYPES;
+  static const std::set<ColorMapTypes> ALL_COLOR_MAP_TYPES;
+  [[nodiscard]] auto GetRandomColorMapPtr(const std::set<ColorMapTypes>& types) const
       -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] auto GetRandomColorMapPtr(COLOR_DATA::ColorMapName colorMapName,
-                                          const std::set<ColorMapTypes>& types = EMPTY) const
+                                          const std::set<ColorMapTypes>& types) const
       -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] auto GetRandomColorMapPtr(ColorMapGroup colorMapGroup,
-                                          const std::set<ColorMapTypes>& types = EMPTY) const
+                                          const std::set<ColorMapTypes>& types) const
       -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] auto GetRandomColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap,
                                           const std::set<ColorMapTypes>& types) const

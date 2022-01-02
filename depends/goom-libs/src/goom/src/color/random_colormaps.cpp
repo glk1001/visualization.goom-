@@ -21,8 +21,8 @@ using UTILS::IGoomRand;
 using UTILS::NUM;
 using UTILS::Weights;
 
-const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::EMPTY{};
-const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::ALL{
+const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::NO_COLOR_MAP_TYPES{};
+const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::ALL_COLOR_MAP_TYPES{
     ColorMapTypes::ROTATED_T,
     ColorMapTypes::SHADES,
 };

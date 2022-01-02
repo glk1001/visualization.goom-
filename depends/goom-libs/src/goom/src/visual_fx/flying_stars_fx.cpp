@@ -405,9 +405,9 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
   m_colorMaps = weightedMaps;
 
   m_dominantColorMapID = m_randomColorMapsManager.AddColorMapInfo(
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL});
+      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
   m_colorMapID = m_randomColorMapsManager.AddColorMapInfo(
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL});
+      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
   m_colorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
   m_colorMaps->SetLightnessLimits(MIN_LIGHTNESS, MAX_LIGHTNESS);
@@ -419,9 +419,9 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedLowColorMaps(
   m_lowColorMaps = weightedMaps;
 
   m_dominantLowColorMapID = m_randomColorMapsManager.AddColorMapInfo(
-      {m_lowColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL});
+      {m_lowColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
   m_lowColorMapID = m_randomColorMapsManager.AddColorMapInfo(
-      {m_lowColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL});
+      {m_lowColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
   m_lowColorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
   m_lowColorMaps->SetLightnessLimits(MIN_LIGHTNESS, MAX_LIGHTNESS);

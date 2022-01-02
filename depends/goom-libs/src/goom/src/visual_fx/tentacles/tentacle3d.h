@@ -1,7 +1,7 @@
 #pragma once
 
-#include "color/colormaps.h"
 #include "color/random_colormaps.h"
+#include "color/random_colormaps_manager.h"
 #include "goom_graphic.h"
 #include "tentacle2d.h"
 #include "utils/goom_rand_base.h"
@@ -63,8 +63,9 @@ private:
   std::unique_ptr<Tentacle2D> m_tentacle;
 
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
-  std::shared_ptr<const COLOR::IColorMap> m_currentColorMap{};
-  std::shared_ptr<const COLOR::IColorMap> m_currentLowColorMap{};
+  COLOR::RandomColorMapsManager m_randomColorMapsManager{};
+  uint32_t m_colorMapID{};
+  uint32_t m_lowColorMapID{};
   bool m_reverseColorMix = false;
   bool m_useIncreasedChroma = true;
 
@@ -82,12 +83,5 @@ private:
                                         const Pixel& segmentColor,
                                         float t) const -> Pixel;
 };
-
-inline void Tentacle3D::SetWeightedColorMaps(
-    const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps)
-{
-  m_colorMaps = weightedMaps;
-  ColorMapsChanged();
-}
 
 } // namespace GOOM::VISUAL_FX::TENTACLES

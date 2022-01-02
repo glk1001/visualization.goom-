@@ -220,8 +220,9 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
   constexpr float MIN_MIX_T = 0.1F;
   constexpr float MAX_MIX_T = 1.0F;
   m_middleColor = RandomColorMaps{m_goomRand}.GetRandomColor(
-      *m_colorMaps[0]->GetRandomColorMapPtr(ColorMapGroup::MISC, RandomColorMaps::ALL), MIN_MIX_T,
-      MAX_MIX_T);
+      *m_colorMaps[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
+                                            RandomColorMaps::ALL_COLOR_MAP_TYPES),
+      MIN_MIX_T, MAX_MIX_T);
 
   constexpr float PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
   m_useSingleBufferOnly = m_goomRand.ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
@@ -238,7 +239,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
   m_colorMapIds.at(dotNum) = m_colorMapsManagers.at(dotNum).AddColorMapInfo(
       {m_colorMaps.at(dotNum),
        m_colorMaps.at(dotNum)->GetRandomColorMapName(m_colorMaps.at(dotNum)->GetRandomGroup()),
-       RandomColorMaps::ALL});
+       RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::ApplySingle()

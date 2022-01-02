@@ -10,6 +10,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
+#include "color/random_colormaps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
 #include "fx_utils/dot_drawer.h"
@@ -28,7 +29,6 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
-#include <functional>
 #include <memory>
 #include <stdexcept>
 #include <vector>
@@ -42,6 +42,8 @@ using COLOR::GetBrighterColor;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
+using COLOR::RandomColorMapsManager;
+using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::IGoomDraw;
 using FX_UTILS::DotSizes;
 using UTILS::floats_equal;
@@ -98,8 +100,11 @@ private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
+
   std::shared_ptr<RandomColorMaps> m_colorMaps;
-  std::reference_wrapper<const IColorMap> m_currentColorMap;
+  RandomColorMapsManager m_randomColorMapsManager{};
+  uint32_t m_currentColorMapID{};
+
   static constexpr float GAMMA = 1.0F / 2.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
@@ -275,7 +280,6 @@ LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
     m_goomInfo{fxHelpers.GetGoomInfo()},
     m_goomRand{fxHelpers.GetGoomRand()},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
-    m_currentColorMap{GetRandomColorMap()},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcLineType{srceLineType},
@@ -335,6 +339,8 @@ void LinesFx::LinesImpl::Start()
 void LinesFx::LinesImpl::SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
+  m_currentColorMapID = m_randomColorMapsManager.AddColorMapInfo(
+      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }
 
 void LinesFx::LinesImpl::Finish()
@@ -346,7 +352,8 @@ void LinesFx::LinesImpl::GenerateLinePoints(const LineType lineType,
                                             const float lineParam,
                                             std::vector<LinePoint>& line)
 {
-  m_currentColorMap = GetRandomColorMap();
+  m_randomColorMapsManager.ChangeAllColorMapsNow();
+
   constexpr float PROB_USE_LINE_COLOR = 0.5F;
   m_useLineColor = m_goomRand.ProbabilityOf(PROB_USE_LINE_COLOR);
 
@@ -717,7 +724,7 @@ inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float
   {
     return lineColor;
   }
-  return m_currentColorMap.get().GetColor(t);
+  return m_randomColorMapsManager.GetColorMap(m_currentColorMapID).GetColor(t);
 }
 
 } // namespace GOOM::VISUAL_FX

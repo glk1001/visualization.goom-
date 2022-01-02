@@ -53,10 +53,10 @@ void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weig
   m_colorMaps = weightedMaps;
 
   m_mixerMap1Id = m_colorMapsManager.AddColorMapInfo(
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::EMPTY});
+      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
   m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);
   m_mixerMap2Id = m_colorMapsManager.AddColorMapInfo(
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::EMPTY});
+      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
   m_prevMixerMap2 = m_colorMapsManager.GetColorMapPtr(m_mixerMap2Id);
 }
 

@@ -14,9 +14,6 @@ class RandomColorMapsManager
 public:
   RandomColorMapsManager() noexcept = default;
 
-  void IncCounter();
-  void ResetCounter();
-
   struct ColorMapInfo
   {
     std::shared_ptr<const RandomColorMaps> colorMaps{};
@@ -24,17 +21,9 @@ public:
     std::set<RandomColorMaps::ColorMapTypes> types{};
   };
 
-  [[nodiscard]] auto GetColorMapInfo(size_t id) const -> const ColorMapInfo&;
   [[nodiscard]] auto AddColorMapInfo(const ColorMapInfo& info) -> uint32_t;
 
-  void UpdateAllColorMapInfo(const ColorMapInfo& info);
-  void UpdateColorMapInfo(size_t id, const ColorMapInfo& info);
-
-  void UpdateAllColorMapNames(COLOR_DATA::ColorMapName colorMapName);
   void UpdateColorMapName(size_t id, COLOR_DATA::ColorMapName colorMapName);
-
-  void UpdateAllColorMapTypes(const std::set<RandomColorMaps::ColorMapTypes>& types);
-  void UpdateColorMapTypes(size_t id, const std::set<RandomColorMaps::ColorMapTypes>& types);
 
   void ChangeAllColorMapsNow();
   void ChangeColorMapNow(size_t id);
@@ -46,9 +35,7 @@ private:
   std::vector<ColorMapInfo> m_infoList{};
   std::vector<std::shared_ptr<const IColorMap>> m_colorMaps{};
 
-  void DoUpdateColorMap(size_t id, const ColorMapInfo& info);
   void DoUpdateColorMapName(size_t id, COLOR_DATA::ColorMapName colorMapName);
-  void DoUpdateColorMapTypes(size_t id, const std::set<RandomColorMaps::ColorMapTypes>& types);
   void DoChangeColorMap(size_t id);
 };
 

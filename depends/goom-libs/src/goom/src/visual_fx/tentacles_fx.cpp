@@ -230,7 +230,7 @@ inline void TentaclesFx::TentaclesImpl::RefreshTentacles()
 inline void TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
-  m_dominantColorMap = weightedMaps->GetRandomColorMapPtr(RandomColorMaps::ALL);
+  m_dominantColorMap = weightedMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
   m_dominantColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   UpdateDominantColors();
 

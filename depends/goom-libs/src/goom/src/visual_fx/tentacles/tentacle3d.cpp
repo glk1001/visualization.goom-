@@ -5,8 +5,6 @@
 #include "tentacle2d.h"
 #include "utils/mathutils.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <memory>
 #include <tuple>
 #include <vector>
@@ -17,6 +15,8 @@ namespace GOOM::VISUAL_FX::TENTACLES
 using COLOR::GetBrighterColor;
 using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
+using COLOR::RandomColorMaps;
+using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::IGoomRand;
 
 constexpr float HEAD_X_MAX = 10.0F;
@@ -36,10 +36,22 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
 {
 }
 
+void Tentacle3D::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps)
+{
+  m_colorMaps = weightedMaps;
+
+  m_colorMapID = m_randomColorMapsManager.AddColorMapInfo(
+      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_lowColorMapID = m_randomColorMapsManager.AddColorMapInfo(
+      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+
+  ColorMapsChanged();
+}
+
 void Tentacle3D::ColorMapsChanged()
 {
-  m_currentColorMap = m_colorMaps->GetRandomColorMapPtr(COLOR::RandomColorMaps::ALL);
-  m_currentLowColorMap = m_colorMaps->GetRandomColorMapPtr(COLOR::RandomColorMaps::ALL);
+  m_randomColorMapsManager.ChangeColorMapNow(m_colorMapID);
+  m_randomColorMapsManager.ChangeColorMapNow(m_lowColorMapID);
 
   constexpr float PROB_CHROMA_INCREASE = 0.7F;
   m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_CHROMA_INCREASE);
@@ -66,9 +78,6 @@ inline auto Tentacle3D::GetMixedColors(const size_t nodeNum,
                                        const Pixel& color,
                                        const Pixel& lowColor) const -> std::pair<Pixel, Pixel>
 {
-  assert(m_currentColorMap != nullptr);
-  assert(m_currentLowColorMap != nullptr);
-
   if (nodeNum < GetNumHeadNodes())
   {
     return GetMixedHeadColors(nodeNum, color, lowColor);
@@ -80,8 +89,8 @@ inline auto Tentacle3D::GetMixedColors(const size_t nodeNum,
     t = 1 - t;
   }
 
-  const Pixel segmentColor = m_currentColorMap->GetColor(t);
-  const Pixel segmentLowColor = m_currentLowColorMap->GetColor(t);
+  const Pixel segmentColor = m_randomColorMapsManager.GetColorMap(m_colorMapID).GetColor(t);
+  const Pixel segmentLowColor = m_randomColorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
   const Pixel mixedColor = GetFinalMixedColor(color, segmentColor, 0.8F);
   const Pixel mixedLowColor = GetFinalMixedColor(lowColor, segmentLowColor, 0.8F);
 
