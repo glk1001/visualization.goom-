@@ -5,9 +5,6 @@
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
 
-#undef NDEBUG
-#include <cassert>
-
 namespace GOOM::VISUAL_FX::FILTERS
 {
 

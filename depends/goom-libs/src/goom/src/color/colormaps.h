@@ -2,7 +2,6 @@
 
 #include "color_data/colormap_enums.h"
 #include "goom/goom_graphic.h"
-#include "goom/spimpl.h"
 #include "utils/enumutils.h"
 
 #include <cstdint>
@@ -57,7 +56,6 @@ private:
 
 enum class ColorMapGroup : int
 {
-  _NULL = -1,
   ALL = 0, // all possible maps
   PERCEPTUALLY_UNIFORM_SEQUENTIAL,
   SEQUENTIAL,
@@ -144,7 +142,6 @@ public:
 
 private:
   class ColorMapsImpl;
-  spimpl::unique_impl_ptr<ColorMapsImpl> m_colorMapsImpl;
 };
 
 inline ColorMapWrapper::ColorMapWrapper(std::shared_ptr<const IColorMap> cm) noexcept

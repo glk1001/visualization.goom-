@@ -6,9 +6,6 @@
 #include "utils/mathutils.h"
 #include "utils/t_values.h"
 
-#undef NDEBUG
-#include <cassert>
-
 namespace GOOM::VISUAL_FX::IFS
 {
 

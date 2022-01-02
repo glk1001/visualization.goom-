@@ -68,7 +68,7 @@ void DotDrawer::DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors, con
 auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t
 {
   // clang-format off
-  static const std::array<size_t, NUM<DotSizes>> s_dotSizes = {{
+  static const std::array<size_t, NUM<DotSizes>> s_DOT_SIZES = {{
       1,
       3,
       5,
@@ -83,9 +83,9 @@ auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t
   constexpr size_t MAX_MIN_DOT_SIZE = 7;
   if (maxSize <= MAX_MIN_DOT_SIZE)
   {
-    return s_dotSizes.at(static_cast<size_t>(m_minDotSizes.GetRandomWeighted()));
+    return s_DOT_SIZES.at(static_cast<size_t>(m_minDotSizes.GetRandomWeighted()));
   }
-  return s_dotSizes.at(static_cast<size_t>(m_normalDotSizes.GetRandomWeighted()));
+  return s_DOT_SIZES.at(static_cast<size_t>(m_normalDotSizes.GetRandomWeighted()));
 }
 
 inline auto DotDrawer::GetImageBitmap(const size_t size) const -> const ImageBitmap&

@@ -25,7 +25,7 @@
  * Revision History:
  * 01-Feb-2021: converted to C++17, lots of color changes (glk)
  * 13-Dec-2003: Added some goom specific stuffs (to make ifs a VisualFX).
- * 11-Apr-2002: jeko@ios-software.com: Make ifs.c system-indendent. (ifs.h added)
+ * 11-Apr-2002: jeko@ios-software.com: Make ifs.c system-independent. (ifs.h added)
  * 01-Nov-2000: Allocation checks
  * 10-May-1997: jwz@jwz.org: turned into a standalone program.
  *              Made it render into an off-screen bitmap and then copy

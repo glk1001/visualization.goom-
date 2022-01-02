@@ -73,10 +73,10 @@ ExpDampingFunction::ExpDampingFunction(const double amp,
   }
   const double y0 = yAtStartToRise / m_amplitude - 1.0;
   const double y1 = yAtXMax / m_amplitude - 1.0;
-  const double log_y0 = std::log(y0);
-  const double log_y1 = std::log(y1);
-  m_b = (xToStartRise * log_y1 - xMax * log_y0) / (log_y1 - log_y0);
-  m_k = log_y1 / (xMax - m_b);
+  const double logY0 = std::log(y0);
+  const double logY1 = std::log(y1);
+  m_b = (xToStartRise * logY1 - xMax * logY0) / (logY1 - logY0);
+  m_k = logY1 / (xMax - m_b);
 }
 
 auto ExpDampingFunction::operator()(const double x) -> double

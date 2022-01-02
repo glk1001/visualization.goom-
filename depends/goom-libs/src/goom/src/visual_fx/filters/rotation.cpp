@@ -3,8 +3,6 @@
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <cmath>
 #include <string>
 

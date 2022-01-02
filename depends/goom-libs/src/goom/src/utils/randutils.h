@@ -13,7 +13,7 @@ namespace GOOM::UTILS::RAND
 
 [[nodiscard]] auto GetRandSeed() -> uint64_t;
 void SetRandSeed(uint64_t seed);
-extern const uint32_t g_randMax;
+extern const uint32_t G_RAND_MAX;
 [[nodiscard]] auto GetXoshiroEng() -> xoshiro256plus64;
 
 void SaveRandState(std::ostream& file);
@@ -49,7 +49,7 @@ inline auto GetNRand(const uint32_t n1) -> uint32_t
 
 inline auto GetRand() -> uint32_t
 {
-  return GetRandInRange(0U, g_randMax);
+  return GetRandInRange(0U, G_RAND_MAX);
 }
 
 template<typename T>

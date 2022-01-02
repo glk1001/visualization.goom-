@@ -3,10 +3,7 @@
 #include "goom/goom_config.h"
 #include "utils/name_value_pairs.h"
 
-#undef NDEBUG
-#include <cassert>
-#include <string>
-#include <vector>
+#include <cstdint>
 
 namespace GOOM::VISUAL_FX::FILTERS
 {
@@ -16,18 +13,16 @@ using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 
 // clang-format off
-//@formatter:off
 const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
-  "pattern1.jpg",
-  "pattern2.jpg",
-  "pattern3.jpg",
-  "pattern4.jpg",
-  "pattern5.jpg",
-  "chameleon-tail.jpg",
-  "mountain_sunset.png",
-  };
+    "pattern1.jpg",
+    "pattern2.jpg",
+    "pattern3.jpg",
+    "pattern4.jpg",
+    "pattern5.jpg",
+    "chameleon-tail.jpg",
+    "mountain_sunset.png",
+};
 // clang-format on
-//@formatter:on
 
 ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirectory,
                                              const IGoomRand& goomRand)

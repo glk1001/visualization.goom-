@@ -18,9 +18,9 @@
 namespace GOOM::UTILS::RAND
 {
 
-const uint32_t g_randMax = (xoshiro256plus64::max() > std::numeric_limits<uint32_t>::max())
-                               ? std::numeric_limits<uint32_t>::max()
-                               : static_cast<uint32_t>(xoshiro256plus64::max());
+const uint32_t G_RAND_MAX = (xoshiro256plus64::max() > std::numeric_limits<uint32_t>::max())
+                                ? std::numeric_limits<uint32_t>::max()
+                                : static_cast<uint32_t>(xoshiro256plus64::max());
 
 // NOTE: C++ std::uniform_int_distribution is too expensive (about double time) so we use
 // Xoshiro and multiplication/shift technique. For timings, see tests/test_goomrand.cpp.
@@ -109,8 +109,8 @@ auto GetRandInRange(const float x0, const float x1) -> float
   }
 #endif
 
-  static const auto s_engMax = static_cast<float>(g_randMax);
-  const float t = static_cast<float>(RandXoshiroFunc(0, g_randMax)) / s_engMax;
+  static const auto s_ENG_MAX = static_cast<float>(G_RAND_MAX);
+  const float t = static_cast<float>(RandXoshiroFunc(0, G_RAND_MAX)) / s_ENG_MAX;
   return stdnew::lerp(x0, x1, t);
   //  thread_local std::uniform_real_distribution<> dis(0, 1);
   //  return std::lerp(x0, x1, static_cast<float>(dis(eng)));

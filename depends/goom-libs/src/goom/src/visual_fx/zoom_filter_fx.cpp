@@ -1,6 +1,3 @@
-// --- CHUI EN TRAIN DE SUPPRIMER LES EXTERN RESOLX ET C_RESOLY ---
-// --- CHUI EN TRAIN DE SUPPRIMER LES EXTERN RESOLX ET C_RESOLY ---
-
 /* filter.c version 0.7
  * contient les filtres applicable a un buffer
  * creation : 01/10/2000
@@ -228,7 +225,7 @@ inline void ZoomFilterFx::ZoomFilterImpl::Start()
  * If you think that this is a strange function name, let me say that a long time ago,
  *  there has been a slow version and a gray-level only one. Then came these function,
  *  fast and working in RGB colorspace ! nice but it only was applying a zoom to the image.
- *  So that is why you have this name, for the nostalgy of the first days of goom
+ *  So that is why you have this name, for the nostalgia of the first days of goom
  *  when it was just a tiny program writen in Turbo Pascal on my i486...
  */
 inline void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& srceBuff,

@@ -8,7 +8,6 @@
 #include "utils/enumutils.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
-#include "goom/spimpl.h"
 
 #include <algorithm>
 #undef NDEBUG
@@ -177,9 +176,7 @@ auto IColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, const float t)
   return PrebuiltColorMap::GetColorMix(col1, col2, t);
 }
 
-ColorMaps::ColorMaps() noexcept : m_colorMapsImpl{spimpl::make_unique_impl<ColorMapsImpl>()}
-{
-}
+ColorMaps::ColorMaps() noexcept = default;
 
 auto ColorMaps::GetNumColorMapNames() const -> uint32_t
 {

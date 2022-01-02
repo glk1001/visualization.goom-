@@ -27,7 +27,6 @@ class FlyingStarsFx : public IVisualFx
 public:
   enum class ColorMode
   {
-    _NULL = -1,
     MIX_COLORS,
     REVERSE_MIX_COLORS,
     SIMILAR_LOW_COLORS,

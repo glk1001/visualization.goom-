@@ -50,9 +50,6 @@ using UTILS::Weights;
 constexpr uint32_t MIN_STAR_AGE = 15;
 constexpr uint32_t MAX_STAR_EXTRA_AGE = 50;
 
-/* TODO:-- FAIRE PROPREMENT... BOAH... */
-
-// The different modes of the visual FX.
 enum class StarModes
 {
   NO_FX = 0,

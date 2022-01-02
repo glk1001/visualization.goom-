@@ -179,11 +179,11 @@ inline auto Colorizer::GetSineMixColor(const float tX, const float tY) const -> 
   constexpr float INITIAL_FREQ = 20.0F;
   constexpr float T_MIX_FACTOR = 0.5F;
   constexpr float Z_STEP = 0.1F;
-  static const float s_freq = INITIAL_FREQ;
+  static const float s_FREQ = INITIAL_FREQ;
   static float s_z = 0.0F;
 
   const Pixel mixColor =
-      GetNextMixerMapColor(T_MIX_FACTOR * (1.0F + std::sin(s_freq * s_z)), tX, tY);
+      GetNextMixerMapColor(T_MIX_FACTOR * (1.0F + std::sin(s_FREQ * s_z)), tX, tY);
 
   s_z += Z_STEP;
 

@@ -2,8 +2,6 @@
 
 #include "utils/name_value_pairs.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <string>
 
 namespace GOOM::VISUAL_FX::FILTERS
