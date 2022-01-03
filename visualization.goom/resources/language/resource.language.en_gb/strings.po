@@ -21,7 +21,7 @@ msgid "Goom++ Visualization"
 msgstr ""
 
 msgctxt "Addon Description"
-msgid "The Goom++ visualization supports effects like Tentacles, Flash, Stars, Fireworks, Waves, Blurs and Glows and includes a large number of trippy hypnotic effects that dance, swirl and pop with the music,"
+msgid "Goom++ visualization: Tentacles, Stars, Fireworks, Waves, Tubes, and IFS fractals, all zooming and swirling with vivid colors that dance and react to the music."
 msgstr ""
 
 #settings labels
@@ -51,7 +51,7 @@ msgid "Render quality"
 msgstr ""
 
 msgctxt "#30003"
-msgid "If the Kodi is slow with a higher render quality, then try reducing it."
+msgid "If Kodi is slow with a higher render quality, then try reducing it."
 msgstr ""
 
 msgctxt "#30004"
