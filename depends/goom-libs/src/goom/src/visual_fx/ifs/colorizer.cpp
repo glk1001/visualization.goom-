@@ -48,15 +48,22 @@ Colorizer::Colorizer(const IGoomRand& goomRand) noexcept
   SetWeightedColorMaps(GetSlightlyDivergingStandardMaps(m_goomRand));
 }
 
-void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedMaps)
 {
   m_colorMaps = weightedMaps;
 
-  m_mixerMap1Id = m_colorMapsManager.AddColorMapInfo(
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  constexpr float PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
+  const std::set<RandomColorMaps::ColorMapTypes>& colorMapTypes =
+      m_goomRand.ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
+          ? RandomColorMaps::NO_COLOR_MAP_TYPES
+          : RandomColorMaps::ALL_COLOR_MAP_TYPES;
+
+  m_mixerMap1Id =
+      m_colorMapsManager.AddColorMapInfo({m_colorMaps, ColorMapName::_NULL, colorMapTypes});
   m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);
-  m_mixerMap2Id = m_colorMapsManager.AddColorMapInfo(
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+
+  m_mixerMap2Id =
+      m_colorMapsManager.AddColorMapInfo({m_colorMaps, ColorMapName::_NULL, colorMapTypes});
   m_prevMixerMap2 = m_colorMapsManager.GetColorMapPtr(m_mixerMap2Id);
 }
 

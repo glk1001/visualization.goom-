@@ -20,7 +20,7 @@ class Colorizer
 public:
   explicit Colorizer(const UTILS::IGoomRand& goomRand) noexcept;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);
 
   auto GetColorMaps() const -> const COLOR::RandomColorMaps&;
 
