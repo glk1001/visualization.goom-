@@ -46,7 +46,15 @@ set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
 CPMAddPackage("gh:fmtlib/fmt#8.0.1")
 
+<<<<<<< HEAD
 list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
+=======
+find_package(glm REQUIRED)
+# Provides GLM_INCLUDE_DIRS
+set(GLM_INCLUDE_DIR "${GLM_INCLUDE_DIRS}")
+
+list(APPEND GOOM_SYS_INC_DIRS "${magic_enum_SOURCE_DIR}/include" "${fmt_SOURCE_DIR}/include")
+>>>>>>> 3b530c5be (Fix kodi and glm include dirs.)
 
 
 include(ExternalProject)
@@ -63,7 +71,11 @@ ExternalProject_Add(${GOOM_LIBS_TARGET_NAME}
                     -D GLM_INCLUDE_DIR=${GLM_INCLUDE_DIR}
                     -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -D ENABLE_TESTING=${ENABLE_TESTING}
+<<<<<<< HEAD
                     -D USE_MAGIC_ENUM=${USE_MAGIC_ENUM}
+=======
+                    -D GLM_INCLUDE_DIR=${GLM_INCLUDE_DIR}
+>>>>>>> 3b530c5be (Fix kodi and glm include dirs.)
 )
 
 
@@ -99,8 +111,14 @@ endif()
 
 
 find_package(Kodi REQUIRED)
+<<<<<<< HEAD
 # Provides KODI_INCLUDE_DIR but out by one!
 set(KODI_PARENT_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
+=======
+# Provides KODI_INCLUDE_DIR
+# But override KODI_INCLUDE_DIR to use xbmc git file
+set(KODI_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../xbmc/xbmc/addons/kodi-dev-kit/include/kodi")
+>>>>>>> 3b530c5be (Fix kodi and glm include dirs.)
 
 if(NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
   find_package(OpenGl REQUIRED)
@@ -123,7 +141,10 @@ include_directories(${GOOM_INCLUDE_DIRS}
                     SYSTEM ${GOOM_SYS_INC_DIRS}
                     SYSTEM ${GLM_INCLUDE_DIR}
                     SYSTEM ${KODI_INCLUDE_DIR}
+<<<<<<< HEAD
                     SYSTEM ${KODI_PARENT_INCLUDE_DIR}
+=======
+>>>>>>> 3b530c5be (Fix kodi and glm include dirs.)
 )
 
 set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp)
