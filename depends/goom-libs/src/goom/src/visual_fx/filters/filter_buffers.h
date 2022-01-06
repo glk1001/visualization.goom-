@@ -135,7 +135,7 @@ public:
 class ZoomFilterBuffers::FilterCoefficients
 {
 public:
-  FilterCoefficients() noexcept;
+  FilterCoefficients() noexcept = default;
 
   using FilterCoeff2dArray =
       std::array<std::array<NeighborhoodCoeffArray, DIM_FILTER_COEFFS>, DIM_FILTER_COEFFS>;

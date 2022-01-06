@@ -364,8 +364,6 @@ inline void ZoomFilterBuffers::TransformBuffers::SetTempBuffersTransformPoint(
   m_tranYTemp[pos] = transformPoint.y;
 }
 
-ZoomFilterBuffers::FilterCoefficients::FilterCoefficients() noexcept = default;
-
 inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const -> const FilterCoeff2dArray&
 {
   return m_precalculatedCoeffs;
