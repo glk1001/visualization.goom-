@@ -162,7 +162,7 @@ class PixelBuffer
   using Buffer = std::vector<Pixel>;
 
 public:
-  PixelBuffer() noexcept = default;
+  PixelBuffer() noexcept {} // appleclang can't handle ' = default';
   PixelBuffer(uint32_t width, uint32_t height) noexcept;
   PixelBuffer(const PixelBuffer&) noexcept = delete;
   PixelBuffer(PixelBuffer&&) noexcept = delete;
