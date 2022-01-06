@@ -27,6 +27,11 @@
 #include <thread>
 #include <vector>
 
+// TODO Fix this properly!
+#if !defined(ATTRIBUTE_HIDDEN)
+#define ATTRIBUTE_HIDDEN
+#endif
+
 class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,
                                             public kodi::addon::CInstanceVisualization,
                                             public kodi::gui::gl::CShaderProgram
@@ -126,12 +131,10 @@ private:
   std::unique_ptr<GOOM::GoomControl> m_goomControl{};
 
   // Audio buffer storage
-  //static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
-  //                                               GOOM::AudioSamples::NUM_AUDIO_SAMPLES *
-  //                                               GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
-  //CircularBuffer<float> m_buffer(CIRCULAR_BUFFER_SIZE);
-  static const size_t CIRCULAR_BUFFER_SIZE;
-  CircularBuffer<float> m_audioBuffer{static_cast<uint32_t>(CIRCULAR_BUFFER_SIZE)};
+  static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
+                                                 GOOM::AudioSamples::NUM_AUDIO_SAMPLES *
+                                                 GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
+  CircularBuffer<float> m_audioBuffer{CIRCULAR_BUFFER_SIZE};
 
   // Goom process thread handles
   bool m_workerThreadExit = false;

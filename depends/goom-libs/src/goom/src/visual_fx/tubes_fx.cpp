@@ -61,8 +61,8 @@ constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{
      {false, false, 0.18F, 130.0F, {40.0F, +1.0F, +0.75F}},
      }
 };
-constexpr size_t MAIN_TUBE_INDEX = 0;
-constexpr size_t SECONDARY_TUBES_START_INDEX = 1;
+constexpr uint32_t MAIN_TUBE_INDEX = 0;
+constexpr uint32_t SECONDARY_TUBES_START_INDEX = 1;
 constexpr PathParams COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
 
 [[nodiscard]] inline auto lerp(const PathParams& params0, const PathParams& params1, const float t)
@@ -442,7 +442,8 @@ inline void TubesFx::TubeFxImpl::DrawImageToOne(const int x,
                                                 const uint32_t size,
                                                 const std::vector<Pixel>& colors)
 {
-  m_draw.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors));
+  m_draw.Bitmap(x, y, GetImageBitmap(imageName, static_cast<size_t>(size)),
+                GetSimpleColorFuncs(colors));
 }
 
 inline void TubesFx::TubeFxImpl::DrawImageToMany(const int x,
@@ -452,7 +453,8 @@ inline void TubesFx::TubeFxImpl::DrawImageToMany(const int x,
                                                  const std::vector<Pixel>& colors)
 {
   //m_drawToContainer.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors));
-  m_drawToMany.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors));
+  m_drawToMany.Bitmap(x, y, GetImageBitmap(imageName, static_cast<size_t>(size)),
+                      GetSimpleColorFuncs(colors));
 }
 
 inline auto TubesFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& colors)

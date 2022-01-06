@@ -39,9 +39,9 @@ void Logging::Log(LogLevel lvl, int line_num, const std::string& func_name, cons
   }
   if (lvl >= m_cutoffHandlersLogLevel)
   {
-    for (const auto& [name, handler] : m_handlers)
+    for (const auto& handler : m_handlers)
     {
-      handler(lvl, logMsg);
+      handler.second(lvl, logMsg);
     }
   }
 }
@@ -72,9 +72,9 @@ void Logging::SetHandlersLogLevel(LogLevel lvl)
 
 void Logging::AddHandler(const std::string& name, const HandlerFunc& handlerFunc)
 {
-  for (const auto& [hName, handler] : m_handlers)
+  for (const auto& handler : m_handlers)
   {
-    if (hName == name)
+    if (handler.first == name)
     {
       return;
     }

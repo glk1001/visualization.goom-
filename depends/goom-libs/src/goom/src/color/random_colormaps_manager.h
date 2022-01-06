@@ -12,7 +12,7 @@ namespace GOOM::COLOR
 class RandomColorMapsManager
 {
 public:
-  RandomColorMapsManager() noexcept = default;
+  RandomColorMapsManager() noexcept {} // Older visual studio does not like '= default;'
 
   struct ColorMapInfo
   {

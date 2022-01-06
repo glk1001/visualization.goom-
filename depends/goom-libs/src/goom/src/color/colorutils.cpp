@@ -4,7 +4,17 @@
 
 #include <cmath>
 #include <cstdint>
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // glm: nonstandard extension used: nameless struct/union
+#pragma warning(disable : 4242) // possible loss of data
+#pragma warning(disable : 4244) // possible loss of data
+#endif
 #include <vivid/vivid.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 namespace GOOM::COLOR
 {
@@ -69,14 +79,14 @@ inline auto EvolvedColor(const Pixel& src,
 {
   struct RGBChannels
   {
-    PixelChannelType r = 0;
-    PixelChannelType g = 0;
-    PixelChannelType b = 0;
-    PixelChannelType a = 0;
+    PixelChannelType r;
+    PixelChannelType g;
+    PixelChannelType b;
+    PixelChannelType a;
   };
   union RGBColor
   {
-    RGBChannels channels{};
+    RGBChannels channels;
     PixelIntType intVal;
   };
 

@@ -17,17 +17,20 @@ GoomMessageDisplayer::GoomMessageDisplayer(IGoomDraw& textOutput,
                                            const std::string& updateMessagesFontFile)
   : m_updateMessagesDisplay{textOutput}
 {
-  constexpr uint8_t OUTLINE_GREY = 0xFA;
   const auto getFontColor = []([[maybe_unused]] const size_t textIndexOfChar,
-                               [[maybe_unused]] const float x, [[maybe_unused]] const float y,
-                               [[maybe_unused]] const float width,
-                               [[maybe_unused]] const float height) { return Pixel::WHITE; };
+                               [[maybe_unused]] const int32_t x, [[maybe_unused]] const int32_t y,
+                               [[maybe_unused]] const int32_t width,
+                               [[maybe_unused]] const int32_t height) { return Pixel::WHITE; };
   const auto getOutlineFontColor =
-      []([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] const float x,
-         [[maybe_unused]] const float y, [[maybe_unused]] const float width,
-         [[maybe_unused]] const float height) {
-        return Pixel{{OUTLINE_GREY, OUTLINE_GREY, OUTLINE_GREY, MAX_ALPHA}};
-      };
+      []([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] const int32_t x,
+         [[maybe_unused]] const int32_t y, [[maybe_unused]] const int32_t width,
+         [[maybe_unused]] const int32_t height)
+  {
+    constexpr uint8_t OUTLINE_GREY = 0xFA;
+    return Pixel{
+        {OUTLINE_GREY, OUTLINE_GREY, OUTLINE_GREY, MAX_ALPHA}
+    };
+  };
   m_updateMessagesDisplay.SetFontFile(updateMessagesFontFile);
   m_updateMessagesDisplay.SetFontSize(MSG_FONT_SIZE);
   m_updateMessagesDisplay.SetOutlineWidth(1);

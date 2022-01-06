@@ -14,7 +14,16 @@
 #include <cassert>
 #include <format>
 #include <vector>
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // glm: nonstandard extension used: nameless struct/union
+#pragma warning(disable : 4242) // possible loss of data
+#pragma warning(disable : 4244) // possible loss of data
+#endif
 #include <vivid/vivid.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 namespace GOOM::COLOR
 {
@@ -106,10 +115,10 @@ auto TintedColorMap::GetColor(const float t) const -> Pixel
 class PrebuiltColorMap : public IColorMap
 {
 public:
-  PrebuiltColorMap() noexcept = delete;
-  PrebuiltColorMap(ColorMapName mapName, vivid::ColorMap cm);
-  PrebuiltColorMap(const PrebuiltColorMap&) noexcept = delete;
-  PrebuiltColorMap(PrebuiltColorMap&& other) noexcept = default;
+  PrebuiltColorMap() = delete;
+  PrebuiltColorMap(ColorMapName mapName, vivid::ColorMap colorMap);
+  PrebuiltColorMap(const PrebuiltColorMap&) = default;
+  PrebuiltColorMap(PrebuiltColorMap&&) = default;
   ~PrebuiltColorMap() noexcept override = default;
   auto operator=(const PrebuiltColorMap&) -> PrebuiltColorMap& = delete;
   auto operator=(PrebuiltColorMap&&) -> PrebuiltColorMap& = delete;
@@ -122,6 +131,7 @@ public:
 
 private:
   const ColorMapName m_mapName;
+  // TODO 'vivid::ColorMap' is NOT noexcept which stops 'PrebuiltColorMap' being noexcept.
   const vivid::ColorMap m_vividColorMap;
 };
 
@@ -397,8 +407,8 @@ auto ColorMaps::ColorMapsImpl::MakeColorGroupNames() -> ColorGroupNamesArray
   return groups;
 }
 
-inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName, vivid::ColorMap cm)
-  : m_mapName{mapName}, m_vividColorMap{std::move(cm)}
+inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName, vivid::ColorMap colorMap)
+  : m_mapName{mapName}, m_vividColorMap{std::move(colorMap)}
 {
 }
 

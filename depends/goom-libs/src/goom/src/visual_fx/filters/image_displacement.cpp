@@ -64,12 +64,15 @@ inline auto ImageDisplacement::NormalizedToImagePoint(const V2dFlt& normalizedPo
       m_ratioNormalizedCoordToImageCoord * (yZoom - NormalizedCoords::MIN_NORMALIZED_COORD)));
 
   constexpr int32_t FUZZ = 0;
-  if (0 == FUZZ)
+  if constexpr (0 == FUZZ)
   {
     return {x, y};
   }
-  return {std::clamp(m_goomRand.GetRandInRange(x - FUZZ, x + FUZZ), 0, m_xMax),
-          std::clamp(m_goomRand.GetRandInRange(y - FUZZ, y + FUZZ), 0, m_yMax)};
+  else
+  {
+    return {std::clamp(m_goomRand.GetRandInRange(x - FUZZ, x + FUZZ), 0, m_xMax),
+            std::clamp(m_goomRand.GetRandInRange(y - FUZZ, y + FUZZ), 0, m_yMax)};
+  }
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS

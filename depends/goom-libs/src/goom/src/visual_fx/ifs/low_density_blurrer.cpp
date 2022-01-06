@@ -28,10 +28,19 @@ LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
 void LowDensityBlurrer::SetWidth(const uint32_t val)
 {
   constexpr std::array VALID_WIDTHS{3, 5, 7};
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4389) // '==' mismatch. Not sure why?
+#endif
   if (std::find(cbegin(VALID_WIDTHS), cend(VALID_WIDTHS), val) == cend(VALID_WIDTHS))
   {
     throw std::logic_error(std20::format("Invalid blur width {}.", val));
   }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
   m_width = val;
 }
 

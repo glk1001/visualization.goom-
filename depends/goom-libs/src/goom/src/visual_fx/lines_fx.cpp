@@ -710,8 +710,7 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
 inline auto LinesFx::LinesImpl::GetGammaCorrection(const float brightness, const Pixel& color) const
     -> Pixel
 {
-  // if constexpr (GAMMA == 1.0F)
-  if (1.0F == GAMMA)
+  if constexpr (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color);
   }

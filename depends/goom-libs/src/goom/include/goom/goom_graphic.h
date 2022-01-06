@@ -146,11 +146,6 @@ private:
 [[nodiscard]] auto MultiplyChannelColorByScalar(uint32_t scalar, PixelChannelType channelVal)
     -> uint32_t;
 
-inline const Pixel Pixel::BLACK{{/*.red = */ 0, /*.green = */ 0, /*.blue = */ 0, /*.alpha = */ 0}};
-
-inline const Pixel Pixel::WHITE{{/*.red = */ MAX_COLOR_VAL, /*.green = */ MAX_COLOR_VAL,
-                                 /*.blue = */ MAX_COLOR_VAL, /*.alpha = */ MAX_ALPHA}};
-
 struct FXBuffSettings
 {
   static constexpr float INITIAL_BUFF_INTENSITY = 0.5F;
@@ -358,7 +353,7 @@ inline void PixelBuffer::Fill(const Pixel& pixel)
 
 inline auto PixelBuffer::GetIntBufferSize(const uint32_t width, const uint32_t height) -> size_t
 {
-  return static_cast<size_t>(width * height) * sizeof(Pixel);
+  return static_cast<size_t>(width) * static_cast<size_t>(height) * sizeof(Pixel);
 }
 
 inline auto PixelBuffer::GetIntBuff() const -> const PixelIntType*
@@ -424,10 +419,12 @@ inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
   const size_t xPos = (y * m_width) + x;
 
   return {
-      m_buff[xPos],
-      m_buff[xPos + 1],
-      m_buff[xPos + m_width],
-      m_buff[xPos + m_width + 1],
+      {
+       m_buff[xPos],
+       m_buff[xPos + 1],
+       m_buff[xPos + m_width],
+       m_buff[xPos + m_width + 1],
+       }
   };
 }
 

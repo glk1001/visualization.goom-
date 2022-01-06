@@ -834,12 +834,14 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetFinalMixedColors(const StarColorS
 inline auto FlyingStarsFx::FlyingStarsImpl::GetGammaCorrection(const float brightness,
                                                                const Pixel& color) const -> Pixel
 {
-  // if constexpr (GAMMA == 1.0F)
-  if (1.0F == GAMMA)
+  if constexpr (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color);
   }
-  return m_gammaCorrect.GetCorrection(brightness, color);
+  else
+  {
+    return m_gammaCorrect.GetCorrection(brightness, color);
+  }
 }
 
 /**

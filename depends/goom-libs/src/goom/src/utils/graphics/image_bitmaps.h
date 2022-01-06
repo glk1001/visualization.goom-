@@ -10,7 +10,7 @@ namespace GOOM::UTILS
 class ImageBitmap
 {
 public:
-  ImageBitmap() noexcept = default;
+  ImageBitmap() noexcept {} // Older visual studio does not like '= default;'
   explicit ImageBitmap(std::string imageFilename);
 
   void Load(std::string imageFilename);

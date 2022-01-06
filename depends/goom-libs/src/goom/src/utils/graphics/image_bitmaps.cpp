@@ -1,7 +1,15 @@
 #include "image_bitmaps.h"
 
 #define STB_IMAGE_IMPLEMENTATION
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4068) // unknown pragma 'GCC'
+#pragma warning(disable : 4296) // '>=': expression is always true
+#endif
 #include "../stb_image.h"
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include <format>
 #include <stdexcept>

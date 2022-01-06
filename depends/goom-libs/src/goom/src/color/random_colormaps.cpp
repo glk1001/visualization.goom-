@@ -285,7 +285,7 @@ auto GetAllMapsUnweighted(const IGoomRand& goomRand) -> std::shared_ptr<RandomCo
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::ALL, 1},
+              {ColorMapGroup::ALL, 1.0F},
           }}
   );
   // clang-format on
@@ -485,7 +485,7 @@ auto GetBlueStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomCol
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::BLUES, 1},
+              {ColorMapGroup::BLUES, 1.0F},
           }
       }
   );
@@ -500,7 +500,7 @@ auto GetRedStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColo
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::REDS, 1},
+              {ColorMapGroup::REDS, 1.0F},
           }
       }
   );
@@ -515,7 +515,7 @@ auto GetGreenStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomCo
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::GREENS, 1},
+              {ColorMapGroup::GREENS, 1.0F},
           }
       }
   );
@@ -530,7 +530,7 @@ auto GetYellowStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::YELLOWS, 1},
+              {ColorMapGroup::YELLOWS, 1.0F},
           }
       }
   );
@@ -545,7 +545,7 @@ auto GetOrangeStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::ORANGES, 1},
+              {ColorMapGroup::ORANGES, 1.0F},
           }
       }
   );
@@ -560,7 +560,7 @@ auto GetPurpleStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PURPLES, 1},
+              {ColorMapGroup::PURPLES, 1.0F},
           }
       }
   );
@@ -575,7 +575,7 @@ auto GetCitiesStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::CITIES, 1},
+              {ColorMapGroup::CITIES, 1.0F},
           }
       }
   );
@@ -590,7 +590,7 @@ auto GetSeasonsStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<Random
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::SEASONS, 1},
+              {ColorMapGroup::SEASONS, 1.0F},
           }
       }
   );
@@ -605,7 +605,7 @@ auto GetHeatStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomCol
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::HEAT, 1},
+              {ColorMapGroup::HEAT, 1.0F},
           }
       }
   );
@@ -620,7 +620,7 @@ auto GetColdStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomCol
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::COLD, 1},
+              {ColorMapGroup::COLD, 1.0F},
           }
       }
   );
@@ -635,7 +635,7 @@ auto GetPastelStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PASTEL, 1},
+              {ColorMapGroup::PASTEL, 1.0F},
           }
       }
   );
@@ -650,7 +650,7 @@ auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::DIVERGING_BLACK, 1},
+              {ColorMapGroup::DIVERGING_BLACK, 1.0F},
           }
       }
   );

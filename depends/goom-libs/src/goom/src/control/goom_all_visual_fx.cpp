@@ -67,7 +67,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
         fxHelpers,
         smallBitmaps,
         LinesFx::LineType::H_LINE,
-        0,
+        0.0F,
         BLACK_LINE,
         LinesFx::LineType::CIRCLE,
         INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *

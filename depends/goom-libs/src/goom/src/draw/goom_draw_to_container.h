@@ -75,7 +75,7 @@ inline auto GoomDrawToContainer::GetLastDrawnColor(const int32_t x, const int32_
   {
     return Pixel::BLACK;
   }
-  return colorsList.colorsArray[colorsList.count - 1];
+  return colorsList.colorsArray[static_cast<size_t>(colorsList.count - 1)];
 }
 
 inline auto GoomDrawToContainer::GetLastDrawnColors(const int32_t x, const int32_t y) const

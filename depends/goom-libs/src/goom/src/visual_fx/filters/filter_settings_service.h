@@ -51,11 +51,11 @@ enum class ZoomFilterMode
 class FilterSettingsService
 {
 public:
-  using CreateSpeedCoefficientsEffectFunc =
-      std::function<auto(ZoomFilterMode filterMode,
-                         const UTILS::IGoomRand& goomRand,
-                         const std::string& resourcesDirectory)
-                        ->std::shared_ptr<ISpeedCoefficientsEffect>>;
+  using CreateSpeedCoefficientsEffectFunc = std::function<std::shared_ptr<ISpeedCoefficientsEffect>(
+      ZoomFilterMode filterMode,
+      const UTILS::IGoomRand& goomRand,
+      const std::string& resourcesDirectory)>;
+  // TODO - Visual Studio doesn't like a trailing return type in above function definition.
 
   FilterSettingsService(
       UTILS::Parallel& parallel,

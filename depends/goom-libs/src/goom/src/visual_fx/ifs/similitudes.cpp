@@ -254,7 +254,7 @@ auto Similitudes::GetSimiBitmap(const bool useBitmaps) -> const ImageBitmap*
   return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE, res);
 }
 
-constexpr auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
+inline auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
 {
   return 1.0F - std::exp(-S);
 }

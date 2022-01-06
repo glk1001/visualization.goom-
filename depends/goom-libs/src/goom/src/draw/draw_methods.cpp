@@ -343,13 +343,13 @@ void DrawMethods::DrawLineOverlap(int x0,
   }
   else
   {
-    int16_t error;
-    int16_t stepX;
-    int16_t stepY;
+    int32_t error;
+    int32_t stepX;
+    int32_t stepY;
 
     // Calculate direction.
-    auto deltaX = static_cast<int16_t>(x1 - x0);
-    auto deltaY = static_cast<int16_t>(y1 - y0);
+    int32_t deltaX = x1 - x0;
+    int32_t deltaY = y1 - y0;
     if (deltaX < 0)
     {
       deltaX = -deltaX;
@@ -369,8 +369,8 @@ void DrawMethods::DrawLineOverlap(int x0,
       stepY = +1;
     }
 
-    const auto deltaXTimes2 = static_cast<int16_t>(deltaX << 1);
-    const auto deltaYTimes2 = static_cast<int16_t>(deltaY << 1);
+    const int32_t deltaXTimes2 = deltaX << 1;
+    const int32_t deltaYTimes2 = deltaY << 1;
 
     // Draw start pixel.
     plot(x0, y0);
@@ -466,11 +466,11 @@ void DrawMethods::DrawThickLine(int x0,
     * The right rectangular direction for LINE_OVERLAP_MAJOR toggles with each octant.
   */
 
-  int16_t error;
-  int16_t stepX;
-  int16_t stepY;
-  auto deltaY = static_cast<int16_t>(x1 - x0);
-  auto deltaX = static_cast<int16_t>(y1 - y0);
+  int error;
+  int stepX;
+  int stepY;
+  int deltaY = x1 - x0;
+  int deltaX = y1 - y0;
 
   // Mirror 4 quadrants to one and adjust deltas and stepping direction.
   bool swap = true; // count effective mirroring
@@ -528,7 +528,7 @@ void DrawMethods::DrawThickLine(int x0,
      * on change in minor rectangular direction.
      */
     // adjust draw start point
-    error = static_cast<int16_t>(deltaYTimes2) - deltaX;
+    error = deltaYTimes2 - deltaX;
     for (int i = drawStartAdjustCount; i > 0; --i)
     {
       // change X (main direction here)
@@ -539,14 +539,14 @@ void DrawMethods::DrawThickLine(int x0,
         // change Y
         y0 -= stepY;
         y1 -= stepY;
-        error -= static_cast<int16_t>(deltaXTimes2);
+        error -= deltaXTimes2;
       }
-      error += static_cast<int16_t>(deltaYTimes2);
+      error += deltaYTimes2;
     }
     //draw start line
     DrawLineOverlap(x0, y0, x1, y1, colors, brightness, 1);
     // draw 'thickness' number of lines
-    error = static_cast<int16_t>(deltaYTimes2) - deltaX;
+    error = deltaYTimes2 - deltaX;
     for (int i = thickness; i > 1; --i)
     {
       // change X (main direction here)
@@ -558,7 +558,7 @@ void DrawMethods::DrawThickLine(int x0,
         // change Y
         y0 += stepY;
         y1 += stepY;
-        error -= static_cast<int16_t>(deltaXTimes2);
+        error -= deltaXTimes2;
         /*
          * Change minor direction reverse to line (main) direction because of choosing
          * the right (counter)clockwise draw vector. Use LINE_OVERLAP_MAJOR to fill all pixels.
@@ -578,7 +578,7 @@ void DrawMethods::DrawThickLine(int x0,
          */
         overlap = LINE_OVERLAP_MAJOR;
       }
-      error += static_cast<int16_t>(deltaYTimes2);
+      error += deltaYTimes2;
       DrawLineOverlap(x0, y0, x1, y1, colors, brightness, overlap);
     }
   }
@@ -595,7 +595,7 @@ void DrawMethods::DrawThickLine(int x0,
       stepY = -stepY;
     }
     // adjust draw start point
-    error = static_cast<int16_t>(deltaXTimes2) - deltaY;
+    error = deltaXTimes2 - deltaY;
     for (int i = drawStartAdjustCount; i > 0; --i)
     {
       y0 -= stepY;
@@ -604,14 +604,14 @@ void DrawMethods::DrawThickLine(int x0,
       {
         x0 -= stepX;
         x1 -= stepX;
-        error -= static_cast<int16_t>(deltaYTimes2);
+        error -= deltaYTimes2;
       }
-      error += static_cast<int16_t>(deltaXTimes2);
+      error += deltaXTimes2;
     }
     // draw start line
     DrawLineOverlap(x0, y0, x1, y1, colors, brightness, 0);
     // draw 'thickness' number of lines
-    error = static_cast<int16_t>(deltaXTimes2) - deltaY;
+    error = deltaXTimes2 - deltaY;
     for (int i = thickness; i > 1; --i)
     {
       y0 += stepY;
@@ -621,10 +621,10 @@ void DrawMethods::DrawThickLine(int x0,
       {
         x0 += stepX;
         x1 += stepX;
-        error -= static_cast<int16_t>(deltaYTimes2);
+        error -= deltaYTimes2;
         overlap = LINE_OVERLAP_MAJOR;
       }
-      error += static_cast<int16_t>(deltaXTimes2);
+      error += deltaXTimes2;
       DrawLineOverlap(x0, y0, x1, y1, colors, brightness, overlap);
     }
   }

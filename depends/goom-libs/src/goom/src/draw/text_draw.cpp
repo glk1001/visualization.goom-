@@ -23,29 +23,29 @@ namespace GOOM::DRAW
 using COLOR::GetColorBlend;
 using UTILS::Logging;
 
-constexpr int32_t FREE_TYPE_UNITS_PER_PIXEL = 64;
-
 #ifdef NO_FREETYPE_INSTALLED
 class TextDraw::TextDrawImpl
 {
 public:
-  explicit TextDrawImpl(const IGoomDraw* draw) noexcept;
-  ~TextDrawImpl() noexcept;
+  explicit TextDrawImpl(IGoomDraw& draw) noexcept;
   TextDrawImpl(const TextDrawImpl&) noexcept = delete;
   TextDrawImpl(TextDrawImpl&&) noexcept = delete;
+  ~TextDrawImpl() noexcept;
   auto operator=(const TextDrawImpl&) -> TextDrawImpl& = delete;
   auto operator=(TextDrawImpl&&) -> TextDrawImpl& = delete;
 
-  void SetAlignment(TextAlignment a);
+  void SetAlignment(TextAlignment alignment);
   [[nodiscard]] auto GetFontFile() const -> const std::string&;
   void SetFontFile(const std::string& filename);
+  auto GetFontSize() const -> int32_t;
   void SetFontSize(int32_t val);
+  auto GetLineSpacing() const -> int32_t;
   void SetOutlineWidth(float val);
   void SetCharSpacing(float val);
   void SetText(const std::string& str);
 
-  void SetFontColorFunc(const FontColorFunc& f);
-  void SetOutlineFontColorFunc(const FontColorFunc& f);
+  void SetFontColorFunc(const FontColorFunc& func);
+  void SetOutlineFontColorFunc(const FontColorFunc& func);
 
   void Prepare();
   [[nodiscard]] auto GetPreparedTextBoundingRect() const -> Rect;
@@ -54,11 +54,12 @@ public:
 
   void Draw(int32_t xPen, int32_t yPen);
   void Draw(int32_t xPen, int32_t yPen, int32_t& xNext, int32_t& yNext);
+
 private:
   std::string m_fontFilename{};
 };
 
-TextDraw::TextDrawImpl::TextDrawImpl(const IGoomDraw* const) noexcept
+TextDraw::TextDrawImpl::TextDrawImpl(IGoomDraw&) noexcept
 {
 }
 
@@ -80,8 +81,18 @@ void TextDraw::TextDrawImpl::SetFontFile(const std::string& filename)
   m_fontFilename = filename;
 }
 
+auto TextDraw::TextDrawImpl::GetFontSize() const -> int32_t
+{
+  return 0;
+}
+
 void TextDraw::TextDrawImpl::SetFontSize(const int32_t)
 {
+}
+
+auto TextDraw::TextDrawImpl::GetLineSpacing() const -> int32_t
+{
+  return 0;
 }
 
 void TextDraw::TextDrawImpl::SetOutlineWidth(const float)
@@ -136,6 +147,8 @@ inline auto TextDraw::TextDrawImpl::GetBearingY() const -> int32_t
 #endif
 
 #ifndef NO_FREETYPE_INSTALLED
+constexpr int32_t FREE_TYPE_UNITS_PER_PIXEL = 64;
+
 class TextDraw::TextDrawImpl
 {
 public:

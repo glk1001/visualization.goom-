@@ -20,9 +20,9 @@ namespace GOOM
 #elif defined(__MINGW64_VERSION_MAJOR)
   return std::string("MinGw64 ") + std::to_string(__MINGW64_VERSION_MAJOR) +
          std::to_string(__MINGW64_VERSION_MINOR);
-#endif
-
+#else
   return "unknown_compiler";
+#endif
 }
 
 } // namespace GOOM

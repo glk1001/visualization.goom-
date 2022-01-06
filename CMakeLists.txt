@@ -111,14 +111,8 @@ endif()
 
 
 find_package(Kodi REQUIRED)
-<<<<<<< HEAD
 # Provides KODI_INCLUDE_DIR but out by one!
 set(KODI_PARENT_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
-=======
-# Provides KODI_INCLUDE_DIR
-# But override KODI_INCLUDE_DIR to use xbmc git file
-set(KODI_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../xbmc/xbmc/addons/kodi-dev-kit/include/kodi")
->>>>>>> 3b530c5be (Fix kodi and glm include dirs.)
 
 if(NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
   find_package(OpenGl REQUIRED)

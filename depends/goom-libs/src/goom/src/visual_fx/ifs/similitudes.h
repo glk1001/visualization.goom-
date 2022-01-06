@@ -131,7 +131,7 @@ private:
 
   [[nodiscard]] auto GaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
   [[nodiscard]] auto HalfGaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
-  [[nodiscard]] static constexpr auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
+  [[nodiscard]] static auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
 };
 
 inline auto Similitudes::GetNumSimis() const -> size_t

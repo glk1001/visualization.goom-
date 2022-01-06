@@ -82,13 +82,13 @@ Planes::Planes(const IGoomRand& goomRand) noexcept
     m_planeEffectWeights{
       m_goomRand,
       {
-          { PlaneEffectEvents::SMALL_EFFECTS,                                  1 },
-          { PlaneEffectEvents::MEDIUM_EFFECTS,                                 4 },
-          { PlaneEffectEvents::LARGE_EFFECTS,                                  1 },
-          { PlaneEffectEvents::VERY_LARGE_EFFECTS,                             1 },
-          { PlaneEffectEvents::POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS,  1 },
-          { PlaneEffectEvents::POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS,  1 },
-          { PlaneEffectEvents::ZERO_EFFECTS,                                   2 },
+          { PlaneEffectEvents::SMALL_EFFECTS,                                  1.0F },
+          { PlaneEffectEvents::MEDIUM_EFFECTS,                                 4.0F },
+          { PlaneEffectEvents::LARGE_EFFECTS,                                  1.0F },
+          { PlaneEffectEvents::VERY_LARGE_EFFECTS,                             1.0F },
+          { PlaneEffectEvents::POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS,  1.0F },
+          { PlaneEffectEvents::POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS,  1.0F },
+          { PlaneEffectEvents::ZERO_EFFECTS,                                   2.0F },
       }
     }
 // clang-format on
