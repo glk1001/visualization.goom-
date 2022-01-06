@@ -62,15 +62,15 @@ auto VisualFxColorMaps::GetColorMatchedSetArray() const -> ColorMatchedSetArray
 }
 
 // clang-format off
-constexpr float RED_GREEN_STANDARD_MAPS_WEIGHT             =   1.0F;
-constexpr float RED_BLUE_STANDARD_MAPS_WEIGHT              =   1.0F;
-constexpr float YELLOW_BLUE_STANDARD_MAPS_WEIGHT           =   1.0F;
-constexpr float YELLOW_PURPLE_STANDARD_MAPS_WEIGHT         =   1.0F;
-constexpr float ORANGE_GREEN_STANDARD_MAPS_WEIGHT          =   1.0F;
-constexpr float ORANGE_PURPLE_STANDARD_MAPS_WEIGHT         =   1.0F;
+constexpr float RED_GREEN_STANDARD_MAPS_WEIGHT             =   5.0F;
+constexpr float RED_BLUE_STANDARD_MAPS_WEIGHT              =   5.0F;
+constexpr float YELLOW_BLUE_STANDARD_MAPS_WEIGHT           =   5.0F;
+constexpr float YELLOW_PURPLE_STANDARD_MAPS_WEIGHT         =   5.0F;
+constexpr float ORANGE_GREEN_STANDARD_MAPS_WEIGHT          =   5.0F;
+constexpr float ORANGE_PURPLE_STANDARD_MAPS_WEIGHT         =   5.0F;
 constexpr float CONST_ALL_STANDARD_MAPS_WEIGHT             =  20.0F;
-constexpr float CONST_HEAT_STANDARD_MAPS_WEIGHT            =  15.0F;
-constexpr float CONST_COLD_STANDARD_MAPS_WEIGHT            =  15.0F;
+constexpr float CONST_HEAT_STANDARD_MAPS_WEIGHT            =  35.0F;
+constexpr float CONST_COLD_STANDARD_MAPS_WEIGHT            =  35.0F;
 constexpr float CONST_DIVERGING_BLACK_STANDARD_MAPS_WEIGHT =  40.0F;
 constexpr float COLOR_MATCHED_SET1_WEIGHT                  =  90.0F;
 constexpr float COLOR_MATCHED_SET2_WEIGHT                  =  90.0F;
