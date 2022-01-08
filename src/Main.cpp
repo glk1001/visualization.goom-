@@ -27,6 +27,14 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 
+#ifdef MATRIX
+namespace KODI_ADDON = kodi;
+using AddonLogEnum = AddonLog;
+#else
+namespace KODI_ADDON = kodi::addon;
+using AddonLogEnum = ADDON_LOG;
+#endif
+
 #ifdef HAS_GL
 // TODO Figure out correct format here
 //      - GL_BGRA looks good but why?
@@ -56,17 +64,17 @@ CVisualizationGoom::CVisualizationGoom()
     m_windowXPos{X()},
     m_windowYPos{Y()},
     m_textureWidth{WIDTHS_BY_QUALITY.at(
-        static_cast<size_t>(std::min(MAX_QUALITY, kodi::GetSettingInt("quality"))))},
+        static_cast<size_t>(std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt("quality"))))},
     m_textureHeight{HEIGHTS_BY_QUALITY.at(
-        static_cast<size_t>(std::min(MAX_QUALITY, kodi::GetSettingInt("quality"))))},
+        static_cast<size_t>(std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt("quality"))))},
     m_goomBufferLen{static_cast<size_t>(m_textureWidth * m_textureHeight)},
     m_goomBufferSize{PixelBuffer::GetIntBufferSize(m_textureWidth, m_textureHeight)},
-    m_showTitle{static_cast<GoomControl::ShowTitleType>(kodi::GetSettingInt("show_title"))},
+    m_showTitle{static_cast<GoomControl::ShowTitleType>(KODI_ADDON::GetSettingInt("show_title"))},
     m_quadData{GetGlQuadData(m_windowWidth, m_windowHeight, m_windowXPos, m_windowYPos)},
 #ifdef HAS_GL
     m_usePixelBufferObjects
 {
-  kodi::addon::GetSettingBoolean("use_pixel_buffer_objects")
+  KODI_ADDON::GetSettingBoolean("use_pixel_buffer_objects")
 }
 #else
     m_usePixelBufferObjects
@@ -151,8 +159,9 @@ void CVisualizationGoom::SetSongTitle(const std::string& songTitle)
 
 void CVisualizationGoom::StartLogging()
 {
-  static const auto s_fKodiLog = [](const Logging::LogLevel lvl, const std::string& msg) {
-    const auto kodiLvl = static_cast<AddonLog>(static_cast<size_t>(lvl));
+  static const auto s_fKodiLog = [](const Logging::LogLevel lvl, const std::string& msg)
+  {
+    const auto kodiLvl = static_cast<AddonLogEnum>(static_cast<size_t>(lvl));
     kodi::Log(kodiLvl, msg.c_str());
   };
   AddLogHandler("kodi-logger", s_fKodiLog);
@@ -217,7 +226,7 @@ auto CVisualizationGoom::InitGoomController() -> bool
 
   LogInfo("CVisualizationGoom: Initializing goom controller.");
   m_goomControl = std::make_unique<GOOM::GoomControl>(m_textureWidth, m_textureHeight,
-                                                      kodi::GetAddonPath("resources"));
+                                                      KODI_ADDON::GetAddonPath("resources"));
   if (!m_goomControl)
   {
     LogError("CVisualizationGoom: Goom controller could not be initialized!");
@@ -509,8 +518,8 @@ auto CVisualizationGoom::GetGlQuadData(const int width,
 auto CVisualizationGoom::InitGlShaders() -> bool
 {
   const std::string shaderSubdir = "resources/shaders/" GL_TYPE_STRING;
-  const std::string vertexShaderFile = kodi::GetAddonPath(shaderSubdir + "/vertex.glsl");
-  const std::string fragmentShaderFile = kodi::GetAddonPath(shaderSubdir + "/fragment.glsl");
+  const std::string vertexShaderFile = KODI_ADDON::GetAddonPath(shaderSubdir + "/vertex.glsl");
+  const std::string fragmentShaderFile = KODI_ADDON::GetAddonPath(shaderSubdir + "/fragment.glsl");
 
   if (!LoadShaderFiles(vertexShaderFile, fragmentShaderFile))
   {

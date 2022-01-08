@@ -27,6 +27,7 @@ set(GOOM_INCLUDE_DIRS "${GOOM_ROOT_DIR}/src/goom/include")
 set(GOOM_SYS_INC_DIRS "${GOOM_ROOT_DIR}/src/vivid/include"
                       "${GOOM_ROOT_DIR}/lib/fmt/include")
 
+# TODO Fix this Windows lib hack.
 if(NOT WIN32)
   set(GOOM_BIN_LIBS ${GOOM_BUILD_ARTIFACTS_DIR}/lib/libgoom.a
                     ${GOOM_BUILD_ARTIFACTS_DIR}/lib/libvivid.a)
@@ -114,6 +115,7 @@ find_package(Kodi REQUIRED)
 # Provides KODI_INCLUDE_DIR but out by one!
 set(KODI_PARENT_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
 
+#set(APP_RENDER_SYSTEM "gles")
 if(NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
   find_package(OpenGl REQUIRED)
   set(DEPLIBS ${OPENGL_LIBRARIES})
