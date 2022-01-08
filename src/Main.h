@@ -100,7 +100,9 @@ private:
   [[nodiscard]] auto GetTitle() -> std::string;
 
   GLint m_componentsPerVertex = 2;
+#ifdef HAS_GL
   GLint m_componentsPerTexel = 2;
+#endif
   int m_numVertices = 2 * 3; // 2 triangles
   const std::vector<GLfloat> m_quadData;
   [[nodiscard]] static auto GetGlQuadData(int width, int height, int xPos, int yPos)
@@ -111,12 +113,14 @@ private:
   // And when 'true', there may be issues with screen refreshes when changing windows in Kodi.
 
   GLuint m_textureId = 0;
-  static const int G_NUM_PBOS = 3;
+#ifdef HAS_GL
+  static constexpr int G_NUM_PBOS = 3;
   std::array<GLuint, G_NUM_PBOS> m_pboIds{};
   std::array<uint8_t*, G_NUM_PBOS> m_pboGoomBuffer{};
   size_t m_currentPboIndex = 0;
-  glm::mat4 m_projModelMatrix{};
   GLuint m_vaoObject = 0;
+#endif
+  glm::mat4 m_projModelMatrix{};
   GLuint m_vertexVBO = 0;
   GLint m_uProjModelMatLoc = -1;
   GLint m_aPositionLoc = -1;

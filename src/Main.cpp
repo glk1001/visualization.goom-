@@ -27,12 +27,18 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 
+#ifdef HAS_GL
 // TODO Figure out correct format here
 //      - GL_BGRA looks good but why?
 //constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
 constexpr GLenum TEXTURE_FORMAT = GL_BGRA;
-//constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA;
 constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
+#else
+constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
+// TODO Not correct but compiles - that's a start.
+constexpr GLint GL_RGBA16 = 0x805B;
+constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
+#endif
 //constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE;
 constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_SHORT;
 
@@ -57,7 +63,17 @@ CVisualizationGoom::CVisualizationGoom()
     m_goomBufferSize{PixelBuffer::GetIntBufferSize(m_textureWidth, m_textureHeight)},
     m_showTitle{static_cast<GoomControl::ShowTitleType>(kodi::GetSettingInt("show_title"))},
     m_quadData{GetGlQuadData(m_windowWidth, m_windowHeight, m_windowXPos, m_windowYPos)},
-    m_usePixelBufferObjects{kodi::GetSettingBoolean("use_pixel_buffer_objects")}
+#ifdef HAS_GL
+    m_usePixelBufferObjects
+{
+  kodi::addon::GetSettingBoolean("use_pixel_buffer_objects")
+}
+#else
+    m_usePixelBufferObjects
+{
+  false
+}
+#endif
 {
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Created CVisualizationGoom object.");
 }
@@ -605,6 +621,9 @@ auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
     return true;
   }
 
+#ifndef HAS_GL
+  return true;
+#else
   m_currentPboIndex = 0;
 
   glGenBuffers(G_NUM_PBOS, m_pboIds.data());
@@ -630,6 +649,7 @@ auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
   return true;
+#endif
 }
 
 //-- Render -------------------------------------------------------------------
@@ -662,11 +682,12 @@ void CVisualizationGoom::Render()
 #ifdef HAS_GL
     glBindVertexArray(m_vaoObject);
 #else
-    glVertexAttribPointer(m_aPositionLoc, 2, GL_FLOAT, GL_FALSE, 0, m_quadData.data());
-    glEnableVertexAttribArray(m_aPositionLoc);
-    glVertexAttribPointer(m_aTexCoordsLoc, 2, GL_FLOAT, GL_FALSE, 0,
-                          m_quadData + m_numVertices * m_componentsPerVertex);
-    glEnableVertexAttribArray(m_aTexCoordsLoc);
+    glVertexAttribPointer(static_cast<GLuint>(m_aPositionLoc), 2, GL_FLOAT, GL_FALSE, 0,
+                          m_quadData.data());
+    glEnableVertexAttribArray(static_cast<GLuint>(m_aPositionLoc));
+    glVertexAttribPointer(static_cast<GLuint>(m_aTexCoordsLoc), 2, GL_FLOAT, GL_FALSE, 0,
+                          m_quadData.data() + (m_numVertices * m_componentsPerVertex));
+    glEnableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
 #endif
 
     // Setup texture.
@@ -694,8 +715,8 @@ void CVisualizationGoom::Render()
 #ifdef HAS_GL
     glBindVertexArray(0);
 #else
-    glDisableVertexAttribArray(m_aPositionLoc);
-    glDisableVertexAttribArray(m_aTexCoordsLoc);
+    glDisableVertexAttribArray(static_cast<GLuint>(m_aPositionLoc));
+    glDisableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
 #endif
   }
   catch (const std::exception& e)

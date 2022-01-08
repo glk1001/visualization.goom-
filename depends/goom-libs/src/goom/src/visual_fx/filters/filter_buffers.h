@@ -135,7 +135,7 @@ public:
 class ZoomFilterBuffers::FilterCoefficients
 {
 public:
-  FilterCoefficients() noexcept = default;
+  FilterCoefficients() = default; // Android does not like 'noexcept'
 
   using FilterCoeff2dArray =
       std::array<std::array<NeighborhoodCoeffArray, DIM_FILTER_COEFFS>, DIM_FILTER_COEFFS>;
