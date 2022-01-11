@@ -59,6 +59,13 @@ public:
   [[nodiscard]] auto OnEnabled() -> bool override;
 
 protected:
+  static constexpr size_t MAX_ACTIVE_QUEUE_LENGTH = 20;
+  struct PixelBufferData
+  {
+    std::shared_ptr<GOOM::PixelBuffer> pixelBuffer;
+    GOOM::GoomShaderEffects goomShaderEffects;
+  };
+
   static constexpr size_t NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER = 16;
   [[nodiscard]] auto GetGoomControl() const -> const GOOM::GoomControl& { return *m_goomControl; };
   [[nodiscard]] auto GetGoomControl() -> GOOM::GoomControl& { return *m_goomControl; };
@@ -72,23 +79,22 @@ protected:
   virtual void AudioDataQueueTooBig() {}
   virtual void SkippedAudioData() {}
   virtual void AudioDataIncorrectReadLength() {}
-  struct PixelBufferData;
   virtual void UpdateGoomBuffer(const std::string& title,
                                 const std::vector<float>& floatAudioData,
                                 PixelBufferData& pixelBufferData);
 
 private:
-  const int m_windowWidth;
-  const int m_windowHeight;
-  const int m_windowXPos;
-  const int m_windowYPos;
+  const int32_t m_windowWidth;
+  const int32_t m_windowHeight;
+  const int32_t m_windowXPos;
+  const int32_t m_windowYPos;
 
   const uint32_t m_textureWidth;
   const uint32_t m_textureHeight;
   const size_t m_goomBufferLen;
   const size_t m_goomBufferSize;
 
-  size_t m_numChannels{};
+  size_t m_numChannels = 0;
   size_t m_audioBufferLen = 0;
   uint32_t m_audioBufferNum = 0;
   static constexpr uint32_t MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6;
@@ -99,22 +105,25 @@ private:
   bool m_titleChange = false;
   [[nodiscard]] auto GetTitle() -> std::string;
 
-  GLint m_componentsPerVertex = 2;
+  const GLint m_componentsPerVertex = 2;
 #ifdef HAS_GL
-  GLint m_componentsPerTexel = 2;
+  const GLint m_componentsPerTexel = 2;
 #endif
-  int m_numVertices = 2 * 3; // 2 triangles
+  static constexpr int32_t NUM_VERTICES_IN_TRIANGLE = 3;
+  static constexpr int32_t NUM_TRIANGLES = 2;
+  const int32_t m_numVertices = NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE;
   const std::vector<GLfloat> m_quadData;
-  [[nodiscard]] static auto GetGlQuadData(int width, int height, int xPos, int yPos)
+  [[nodiscard]] static auto GetGlQuadData(int32_t width, int32_t height, int32_t xPos, int32_t yPos)
       -> std::vector<GLfloat>;
-
-  const bool m_usePixelBufferObjects;
-  // Note: 'true' is supposed to give better performance, but it's not obvious.
-  // And when 'true', there may be issues with screen refreshes when changing windows in Kodi.
 
   GLuint m_textureId = 0;
 #ifdef HAS_GL
-  static constexpr int G_NUM_PBOS = 3;
+  const bool m_usePixelBufferObjects;
+  // Note: 'true' is supposed to give better performance, but it's not obvious.
+  // And when 'true', there may be issues with screen refreshes when changing windows in Kodi.
+  [[nodiscard]] auto SetupGlPixelBufferObjects() -> bool;
+  void RenderGlPBOPixelBuffer(const GOOM::PixelBuffer& pixelBuffer);
+  static constexpr int32_t G_NUM_PBOS = 3;
   std::array<GLuint, G_NUM_PBOS> m_pboIds{};
   std::array<uint8_t*, G_NUM_PBOS> m_pboGoomBuffer{};
   size_t m_currentPboIndex = 0;
@@ -131,7 +140,7 @@ private:
   GLint m_uTexContrastMinChannelValueLoc = -1;
   GLint m_uTimeLoc = -1;
 
-  // Goom's data itself
+  // The Goom object
   std::unique_ptr<GOOM::GoomControl> m_goomControl{};
 
   // Audio buffer storage
@@ -146,17 +155,6 @@ private:
   std::mutex m_mutex{};
   std::condition_variable m_wait{};
 
-  // Screen frames storage, m_activeQueue for next view and m_storedQueue to
-  // use on next goom round become active again.
-protected:
-  static constexpr size_t MAX_ACTIVE_QUEUE_LENGTH = 20;
-  struct PixelBufferData
-  {
-    std::shared_ptr<GOOM::PixelBuffer> pixelBuffer;
-    GOOM::GoomShaderEffects goomShaderEffects;
-  };
-
-private:
   void SetNumChannels(int numChannels);
   void SetSongTitle(const std::string& songTitle);
   static void StartLogging() ;
@@ -164,6 +162,7 @@ private:
   void DeinitGoomController();
   void StartGoomProcessBuffersThread();
   void StopGoomProcessBuffersThread();
+  void ExitWorkerThread();
   void Process();
   [[nodiscard]] auto GetNextActivePixelBufferData() -> PixelBufferData;
   void PushUsedPixels(const PixelBufferData& pixelBufferData);
@@ -172,13 +171,18 @@ private:
   void DeinitGl();
   [[nodiscard]] auto InitGlShaders() -> bool;
   [[nodiscard]] auto InitGlObjects() -> bool;
-  void SetupGlVertexAttributes();
+  void InitGlVertexAttributes();
+  void InitVertexAttributes() const;
+  void DeinitVertexAttributes() const;
   [[nodiscard]] auto CreateGlTexture() -> bool;
-  [[nodiscard]] auto SetupGlPixelBufferObjects() -> bool;
+  void DrawGlTexture();
   void RenderGlPixelBuffer(const GOOM::PixelBuffer& pixelBuffer);
+  void RenderGlNormalPixelBuffer(const GOOM::PixelBuffer& pixelBuffer) const;
   void SetGlShaderValues(const GOOM::GoomShaderEffects& goomShaderEffects) const;
 
   [[nodiscard]] auto MakePixelBufferData() const -> PixelBufferData;
+  // Screen frames storage: m_activeQueue for next view and m_storedQueue to
+  // use on next goom update.
   std::queue<PixelBufferData> m_activeQueue{};
   std::queue<PixelBufferData> m_storedQueue{};
   void StartActiveQueue();

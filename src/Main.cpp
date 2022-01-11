@@ -15,10 +15,8 @@
 #include "goom/sound_info.h"
 
 #undef NDEBUG
-#include <cassert>
 #include <cstddef>
 #include <memory>
-#include <stdexcept>
 
 using GOOM::AudioSamples;
 using GOOM::GetCompilerVersion;
@@ -75,11 +73,6 @@ CVisualizationGoom::CVisualizationGoom()
     m_usePixelBufferObjects
 {
   KODI_ADDON::GetSettingBoolean("use_pixel_buffer_objects")
-}
-#else
-    m_usePixelBufferObjects
-{
-  false
 }
 #endif
 {
@@ -269,16 +262,21 @@ void CVisualizationGoom::StartGoomProcessBuffersThread()
 void CVisualizationGoom::StopGoomProcessBuffersThread()
 {
   LogInfo("CVisualizationGoom: Stopping goom process buffers thread.");
-  {
-    const std::unique_lock lock(m_mutex);
-    m_workerThreadExit = true;
-    m_wait.notify_one();
-  }
+
+  ExitWorkerThread();
+
   if (m_workerThread.joinable())
   {
     m_workerThread.join();
   }
   LogInfo("CVisualizationGoom: Goom process buffers thread stopped.");
+}
+
+void CVisualizationGoom::ExitWorkerThread()
+{
+  const std::unique_lock lock(m_mutex);
+  m_workerThreadExit = true;
+  m_wait.notify_one();
 }
 
 //-- AudioData ----------------------------------------------------------------
@@ -485,10 +483,10 @@ void CVisualizationGoom::DeinitGl()
   m_vertexVBO = 0;
 }
 
-auto CVisualizationGoom::GetGlQuadData(const int width,
-                                       const int height,
-                                       const int xPos,
-                                       const int yPos) -> std::vector<GLfloat>
+auto CVisualizationGoom::GetGlQuadData(const int32_t width,
+                                       const int32_t height,
+                                       const int32_t xPos,
+                                       const int32_t yPos) -> std::vector<GLfloat>
 {
   const auto x0 = static_cast<GLfloat>(xPos);
   const auto y0 = static_cast<GLfloat>(yPos);
@@ -559,12 +557,12 @@ auto CVisualizationGoom::InitGlObjects() -> bool
   m_projModelMatrix =
       glm::ortho(0.0F, static_cast<float>(Width()), 0.0F, static_cast<float>(Height()));
 
-  SetupGlVertexAttributes();
+  InitGlVertexAttributes();
 
   return CreateGlTexture();
 }
 
-void CVisualizationGoom::SetupGlVertexAttributes()
+void CVisualizationGoom::InitGlVertexAttributes()
 {
 #ifdef HAS_GL
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -622,6 +620,7 @@ auto CVisualizationGoom::CreateGlTexture() -> bool
 #endif
 }
 
+#ifdef HAS_GL
 auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
 {
   if (!m_usePixelBufferObjects)
@@ -630,9 +629,6 @@ auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
     return true;
   }
 
-#ifndef HAS_GL
-  return true;
-#else
   m_currentPboIndex = 0;
 
   glGenBuffers(G_NUM_PBOS, m_pboIds.data());
@@ -658,8 +654,8 @@ auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
   return true;
-#endif
 }
+#endif
 
 //-- Render -------------------------------------------------------------------
 // Called once per frame. Do all rendering here.
@@ -677,56 +673,18 @@ void CVisualizationGoom::Render()
     LogWarn("CVisualizationGoom: Goom not started - skipping this.");
     return;
   }
-
   if (m_audioBufferNum < MIN_AUDIO_BUFFERS_BEFORE_STARTING)
   {
-    // Skip the first few - for some reason Kodi does a
-    // 'reload' before really starting the music.
+    // Skip the first few - for some reason Kodi does a 'reload'
+    // before really starting the music.
     return;
   }
 
   try
   {
-    // Setup vertex attributes.
-#ifdef HAS_GL
-    glBindVertexArray(m_vaoObject);
-#else
-    glVertexAttribPointer(static_cast<GLuint>(m_aPositionLoc), 2, GL_FLOAT, GL_FALSE, 0,
-                          m_quadData.data());
-    glEnableVertexAttribArray(static_cast<GLuint>(m_aPositionLoc));
-    glVertexAttribPointer(static_cast<GLuint>(m_aTexCoordsLoc), 2, GL_FLOAT, GL_FALSE, 0,
-                          m_quadData.data() + (m_numVertices * m_componentsPerVertex));
-    glEnableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
-#endif
-
-    // Setup texture.
-    glDisable(GL_BLEND);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_textureId);
-
-    const PixelBufferData pixelBufferData = GetNextActivePixelBufferData();
-    if (pixelBufferData.pixelBuffer != nullptr)
-    {
-      RenderGlPixelBuffer(*pixelBufferData.pixelBuffer);
-      PushUsedPixels(pixelBufferData);
-    }
-
-    EnableShader();
-    if (pixelBufferData.pixelBuffer != nullptr)
-    {
-      SetGlShaderValues(pixelBufferData.goomShaderEffects);
-    }
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
-    DisableShader();
-
-    glEnable(GL_BLEND);
-
-#ifdef HAS_GL
-    glBindVertexArray(0);
-#else
-    glDisableVertexAttribArray(static_cast<GLuint>(m_aPositionLoc));
-    glDisableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
-#endif
+    InitVertexAttributes();
+    DrawGlTexture();
+    DeinitVertexAttributes();
   }
   catch (const std::exception& e)
   {
@@ -734,42 +692,104 @@ void CVisualizationGoom::Render()
   }
 }
 
+inline void CVisualizationGoom::InitVertexAttributes() const
+{
+#ifdef HAS_GL
+  glBindVertexArray(m_vaoObject);
+#else
+  glVertexAttribPointer(static_cast<GLuint>(m_aPositionLoc), 2, GL_FLOAT, GL_FALSE, 0,
+                        m_quadData.data());
+  glEnableVertexAttribArray(static_cast<GLuint>(m_aPositionLoc));
+  glVertexAttribPointer(static_cast<GLuint>(m_aTexCoordsLoc), 2, GL_FLOAT, GL_FALSE, 0,
+                        m_quadData.data() + (m_numVertices * m_componentsPerVertex));
+  glEnableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
+#endif
+}
+
+inline void CVisualizationGoom::DeinitVertexAttributes() const
+{
+#ifdef HAS_GL
+  glBindVertexArray(0);
+#else
+  glDisableVertexAttribArray(static_cast<GLuint>(m_aPositionLoc));
+  glDisableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
+#endif
+}
+
+inline void CVisualizationGoom::DrawGlTexture()
+{
+  // Setup texture.
+  glDisable(GL_BLEND);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, m_textureId);
+
+  const PixelBufferData pixelBufferData = GetNextActivePixelBufferData();
+  if (pixelBufferData.pixelBuffer != nullptr)
+  {
+    RenderGlPixelBuffer(*pixelBufferData.pixelBuffer);
+    PushUsedPixels(pixelBufferData);
+  }
+
+  EnableShader();
+  if (pixelBufferData.pixelBuffer != nullptr)
+  {
+    SetGlShaderValues(pixelBufferData.goomShaderEffects);
+  }
+  glDrawArrays(GL_TRIANGLE_FAN, 0, NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE);
+  DisableShader();
+
+  glEnable(GL_BLEND);
+}
+
 inline void CVisualizationGoom::RenderGlPixelBuffer(const GOOM::PixelBuffer& pixelBuffer)
 {
 #ifdef HAS_GL
   if (m_usePixelBufferObjects)
   {
-    m_currentPboIndex = (m_currentPboIndex + 1) % G_NUM_PBOS;
-    const size_t nextPboIndex = (m_currentPboIndex + 1) % G_NUM_PBOS;
-
-    // Bind to current PBO and send pixels to texture object.
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(m_currentPboIndex));
-
-    constexpr GLint LEVEL = 0;
-    constexpr GLint X_OFFSET = 0;
-    constexpr GLint Y_OFFSET = 0;
-    constexpr void* const NULL_PIXELS = nullptr;
-    glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
-                    static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
-                    NULL_PIXELS);
-
-    // Bind to next PBO and update data directly on the mapped buffer.
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(nextPboIndex));
-    std::memcpy(m_pboGoomBuffer.at(nextPboIndex), pixelBuffer.GetIntBuff(), m_goomBufferSize);
-
-    glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    RenderGlPBOPixelBuffer(pixelBuffer);
   }
   else
 #endif
   {
-    constexpr GLint LEVEL = 0;
-    constexpr GLint X_OFFSET = 0;
-    constexpr GLint Y_OFFSET = 0;
-    glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
-                    static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
-                    pixelBuffer.GetIntBuff());
+    RenderGlNormalPixelBuffer(pixelBuffer);
   }
+}
+
+#ifdef HAS_GL
+inline void CVisualizationGoom::RenderGlPBOPixelBuffer(const GOOM::PixelBuffer& pixelBuffer)
+{
+  m_currentPboIndex = (m_currentPboIndex + 1) % G_NUM_PBOS;
+  const size_t nextPboIndex = (m_currentPboIndex + 1) % G_NUM_PBOS;
+
+  // Bind to current PBO and send pixels to texture object.
+  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(m_currentPboIndex));
+
+  constexpr GLint LEVEL = 0;
+  constexpr GLint X_OFFSET = 0;
+  constexpr GLint Y_OFFSET = 0;
+  constexpr void* const NULL_PIXELS = nullptr;
+  glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
+                  static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
+                  NULL_PIXELS);
+
+  // Bind to next PBO and update data directly on the mapped buffer.
+  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(nextPboIndex));
+  std::memcpy(m_pboGoomBuffer.at(nextPboIndex), pixelBuffer.GetIntBuff(), m_goomBufferSize);
+
+  glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
+  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+}
+#endif
+
+inline void CVisualizationGoom::RenderGlNormalPixelBuffer(
+    const GOOM::PixelBuffer& pixelBuffer) const
+{
+  constexpr GLint LEVEL = 0;
+  constexpr GLint X_OFFSET = 0;
+  constexpr GLint Y_OFFSET = 0;
+  glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
+                  static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
+                  pixelBuffer.GetIntBuff());
 }
 
 inline void CVisualizationGoom::SetGlShaderValues(

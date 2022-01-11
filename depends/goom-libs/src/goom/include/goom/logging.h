@@ -144,7 +144,7 @@ inline void Logging::VLog(LogLevel lvl,
 #else
 #pragma message("Compiling " __FILE__ " with 'NO_LOGGING' OFF - SO THERE WILL BE LOGGING.")
 #define SetLogFile(logF) Logging::GetLogger().SetLogFile(logF)
-#define AddLogHandler(name, h) Logging::GetLogger().AddHandler(name, h);
+#define AddLogHandler(name, h) Logging::GetLogger().AddHandler(name, h)
 #define LogStart() Logging::GetLogger().Start()
 #define LogStop() Logging::GetLogger().Stop()
 #define LogFlush() Logging::GetLogger().Flush()
