@@ -1,5 +1,8 @@
 #version 100
 
+precision mediump float;
+
+
 // Lottes 2016, "Advanced Techniques and Optimization of HDR Color Pipelines"
 vec3 lottes(vec3 x) {
   const vec3 a = vec3(1.6);
@@ -36,8 +39,6 @@ float lottes(float x) {
 }
 
 
-precision mediump float;
-
 uniform sampler2D texBuffer;
 
 varying vec2 texCoords;
@@ -45,10 +46,10 @@ varying vec2 texCoords;
 void main()
 {
   vec2 uvTex = texCoords;
-  vec3 hdrColor = texture(texBuffer, uvTex).rgb;
+  vec3 hdrColor = texture2D(texBuffer, uvTex).rgb;
 
   const float exposureMultiplier = 2.0;
-  mapped = lottes(exposureMultiplier * hdrColor);
+  vec3 mapped = lottes(exposureMultiplier * hdrColor);
 
   const float gamma = 2.2;
   const float A = 5.0;

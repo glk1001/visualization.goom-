@@ -56,6 +56,7 @@ constexpr std::array<uint32_t, MAX_QUALITY + 1> HEIGHTS_BY_QUALITY{
     256, 360, 720, 900, 1080,
 };
 
+// clang-format off
 CVisualizationGoom::CVisualizationGoom()
   : m_windowWidth{Width()},
     m_windowHeight{Height()},
@@ -68,13 +69,12 @@ CVisualizationGoom::CVisualizationGoom()
     m_goomBufferLen{static_cast<size_t>(m_textureWidth * m_textureHeight)},
     m_goomBufferSize{PixelBuffer::GetIntBufferSize(m_textureWidth, m_textureHeight)},
     m_showTitle{static_cast<GoomControl::ShowTitleType>(KODI_ADDON::GetSettingInt("show_title"))},
-    m_quadData{GetGlQuadData(m_windowWidth, m_windowHeight, m_windowXPos, m_windowYPos)},
+    m_quadData{GetGlQuadData(m_windowWidth, m_windowHeight, m_windowXPos, m_windowYPos)}
 #ifdef HAS_GL
-    m_usePixelBufferObjects
-{
-  KODI_ADDON::GetSettingBoolean("use_pixel_buffer_objects")
-}
+    ,
+    m_usePixelBufferObjects{KODI_ADDON::GetSettingBoolean("use_pixel_buffer_objects")}
 #endif
+// clang-format on
 {
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Created CVisualizationGoom object.");
 }
