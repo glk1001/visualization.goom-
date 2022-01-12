@@ -25,7 +25,7 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 
-#ifdef MATRIX
+#ifdef KODI_MATRIX
 namespace KODI_ADDON = kodi;
 using AddonLogEnum = AddonLog;
 #else
