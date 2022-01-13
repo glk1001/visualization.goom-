@@ -17,14 +17,14 @@ using UTILS::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
 
 // clang-format off
-constexpr float MAP_COLORS_WEIGHT            = 15.0F;
-constexpr float MEGA_MAP_COLOR_CHANGE_WEIGHT = 20.0F;
-constexpr float MIX_COLORS_WEIGHT            = 15.0F;
-constexpr float MEGA_MIX_COLOR_CHANGE_WEIGHT = 20.0F;
-constexpr float REVERSE_MIX_COLORS_WEIGHT    = 15.0F;
-constexpr float SINGLE_COLORS_WEIGHT         = 10.0F;
-constexpr float SINE_MIX_COLORS_WEIGHT       = 10.0F;
-constexpr float SINE_MAP_COLORS_WEIGHT       = 10.0F;
+constexpr float MAP_COLORS_WEIGHT            = 20.0F;
+constexpr float MEGA_MAP_COLOR_CHANGE_WEIGHT = 15.0F;
+constexpr float MIX_COLORS_WEIGHT            = 20.0F;
+constexpr float MEGA_MIX_COLOR_CHANGE_WEIGHT = 15.0F;
+constexpr float REVERSE_MIX_COLORS_WEIGHT    = 20.0F;
+constexpr float SINGLE_COLORS_WEIGHT         =  5.0F;
+constexpr float SINE_MIX_COLORS_WEIGHT       =  5.0F;
+constexpr float SINE_MAP_COLORS_WEIGHT       =  5.0F;
 // clang-format on
 
 Colorizer::Colorizer(const IGoomRand& goomRand) noexcept
