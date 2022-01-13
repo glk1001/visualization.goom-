@@ -125,6 +125,7 @@ auto GetColdStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<Ra
 auto GetPastelStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
 auto GetDivergingBlackStandardMaps(const UTILS::IGoomRand& goomRand)
     -> std::shared_ptr<RandomColorMaps>;
+auto GetWesAndersonMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
 
 inline RandomColorMaps::RandomColorMaps(const UTILS::IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand}

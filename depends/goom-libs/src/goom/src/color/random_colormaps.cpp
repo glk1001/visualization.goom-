@@ -657,4 +657,19 @@ auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr
   // clang-format on
 }
 
+auto GetWesAndersonMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+{
+  // clang-format off
+  return std::make_shared<WeightedColorMaps>(
+      goomRand,
+      Weights<ColorMapGroup>{
+          goomRand,
+          {
+              {ColorMapGroup::WES_ANDERSON, 1.0F},
+          }
+      }
+  );
+  // clang-format on
+}
+
 } // namespace GOOM::COLOR

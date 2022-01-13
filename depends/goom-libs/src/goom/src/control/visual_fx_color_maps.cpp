@@ -28,6 +28,7 @@ using COLOR::GetRedStandardMaps;
 using COLOR::GetSeasonsStandardMaps;
 using COLOR::GetSlightlyDivergingSlimMaps;
 using COLOR::GetSlightlyDivergingStandardMaps;
+using COLOR::GetWesAndersonMaps;
 using COLOR::GetYellowStandardMaps;
 using UTILS::IGoomRand;
 using UTILS::NUM;
@@ -48,6 +49,7 @@ auto VisualFxColorMaps::GetColorMatchedSetArray() const -> ColorMatchedSetArray
   colorSets.at(ToUType(ColorMatchedSets::CONST_HEAT_STANDARD_MAPS))            = GetConstColorMatchedSet(GetHeatStandardMaps);
   colorSets.at(ToUType(ColorMatchedSets::CONST_COLD_STANDARD_MAPS))            = GetConstColorMatchedSet(GetColdStandardMaps);
   colorSets.at(ToUType(ColorMatchedSets::CONST_DIVERGING_BLACK_STANDARD_MAPS)) = GetConstColorMatchedSet(GetDivergingBlackStandardMaps);
+  colorSets.at(ToUType(ColorMatchedSets::CONST_WES_ANDERSON_MAPS))             = GetConstColorMatchedSet(GetWesAndersonMaps);
   colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET1))                  = GetColorMatchedSet1();
   colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET2))                  = GetColorMatchedSet2();
   colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET3))                  = GetColorMatchedSet3();
@@ -72,6 +74,7 @@ constexpr float CONST_ALL_STANDARD_MAPS_WEIGHT             =  20.0F;
 constexpr float CONST_HEAT_STANDARD_MAPS_WEIGHT            =  35.0F;
 constexpr float CONST_COLD_STANDARD_MAPS_WEIGHT            =  35.0F;
 constexpr float CONST_DIVERGING_BLACK_STANDARD_MAPS_WEIGHT =  40.0F;
+constexpr float CONST_WES_ANDERSON_MAPS_WEIGHT             =  40.0F;
 constexpr float COLOR_MATCHED_SET1_WEIGHT                  =  90.0F;
 constexpr float COLOR_MATCHED_SET2_WEIGHT                  =  90.0F;
 constexpr float COLOR_MATCHED_SET3_WEIGHT                  =  90.0F;
@@ -100,6 +103,7 @@ VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand) noexcept
              {ColorMatchedSets::CONST_HEAT_STANDARD_MAPS,            CONST_HEAT_STANDARD_MAPS_WEIGHT},
              {ColorMatchedSets::CONST_COLD_STANDARD_MAPS,            CONST_COLD_STANDARD_MAPS_WEIGHT},
              {ColorMatchedSets::CONST_DIVERGING_BLACK_STANDARD_MAPS, CONST_DIVERGING_BLACK_STANDARD_MAPS_WEIGHT},
+             {ColorMatchedSets::CONST_WES_ANDERSON_MAPS,             CONST_WES_ANDERSON_MAPS_WEIGHT},
              {ColorMatchedSets::COLOR_MATCHED_SET1,                  COLOR_MATCHED_SET1_WEIGHT},
              {ColorMatchedSets::COLOR_MATCHED_SET2,                  COLOR_MATCHED_SET2_WEIGHT},
              {ColorMatchedSets::COLOR_MATCHED_SET3,                  COLOR_MATCHED_SET3_WEIGHT},
