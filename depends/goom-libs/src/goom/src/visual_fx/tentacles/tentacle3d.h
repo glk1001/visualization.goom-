@@ -66,6 +66,11 @@ private:
   COLOR::RandomColorMapsManager m_randomColorMapsManager{};
   uint32_t m_colorMapID{};
   uint32_t m_lowColorMapID{};
+  static constexpr float MIN_COLOR_SEGMENT_MIX_T = 0.4F;
+  static constexpr float MAX_COLOR_SEGMENT_MIX_T = 1.0F;
+  static constexpr float DEFAULT_COLOR_SEGMENT_MIX_T = 0.8F;
+  float m_colorSegmentMixT = DEFAULT_COLOR_SEGMENT_MIX_T;
+  float m_lowColorSegmentMixT = DEFAULT_COLOR_SEGMENT_MIX_T;
   bool m_reverseColorMix = false;
   bool m_useIncreasedChroma = true;
 

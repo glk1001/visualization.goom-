@@ -53,6 +53,14 @@ void Tentacle3D::ColorMapsChanged()
   m_randomColorMapsManager.ChangeColorMapNow(m_colorMapID);
   m_randomColorMapsManager.ChangeColorMapNow(m_lowColorMapID);
 
+  m_colorSegmentMixT = m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
+
+  constexpr float PROB_LOW_MIX_SAME = 0.5F;
+  m_lowColorSegmentMixT =
+      m_goomRand.ProbabilityOf(PROB_LOW_MIX_SAME)
+          ? m_colorSegmentMixT
+          : m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
+
   constexpr float PROB_CHROMA_INCREASE = 0.7F;
   m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_CHROMA_INCREASE);
 }
@@ -91,8 +99,8 @@ inline auto Tentacle3D::GetMixedColors(const size_t nodeNum,
 
   const Pixel segmentColor = m_randomColorMapsManager.GetColorMap(m_colorMapID).GetColor(t);
   const Pixel segmentLowColor = m_randomColorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
-  const Pixel mixedColor = GetFinalMixedColor(color, segmentColor, 0.8F);
-  const Pixel mixedLowColor = GetFinalMixedColor(lowColor, segmentLowColor, 0.8F);
+  const Pixel mixedColor = GetFinalMixedColor(color, segmentColor, m_colorSegmentMixT);
+  const Pixel mixedLowColor = GetFinalMixedColor(lowColor, segmentLowColor, m_lowColorSegmentMixT);
 
   if (std::abs(GetHead().x) < HEAD_X_MAX)
   {
