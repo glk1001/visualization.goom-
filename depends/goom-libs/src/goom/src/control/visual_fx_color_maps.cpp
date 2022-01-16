@@ -131,6 +131,9 @@ inline auto VisualFxColorMaps::GetConstColorMatchedSet(const ColorMapFunc& func)
   ColorMatchedSet matchedSet{nullptr};
   matchedSet.fill(func);
 
+  GetPrimaryColorDots(matchedSet);
+  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetMostlySequentialStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllSlimMaps;
 
   return matchedSet;
@@ -150,20 +153,28 @@ auto VisualFxColorMaps::GetColorPairColorMatchedSet(const ColorMapFunc& func1,
     matchedSet.at(indexes.at(i)) = func2;
   }
 
+  GetPrimaryColorDots(matchedSet);
+  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetMostlySequentialStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllSlimMaps;
 
   return matchedSet;
+}
+
+void VisualFxColorMaps::GetPrimaryColorDots(ColorMatchedSet& matchedSet)
+{
+  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetPurpleStandardMaps;
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet1() -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet{nullptr};
 
-  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetPurpleStandardMaps;
+  GetPrimaryColorDots(matchedSet);
   matchedSet.at(ToUType(GoomEffect::IFS)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetMostlySequentialStandardMaps;

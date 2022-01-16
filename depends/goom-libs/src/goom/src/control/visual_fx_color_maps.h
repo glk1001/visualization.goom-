@@ -94,6 +94,8 @@ private:
                                                  const ColorMapFunc& func2) const
       -> ColorMatchedSet;
 
+  static void GetPrimaryColorDots(ColorMatchedSet& matchedSet);
+
   [[nodiscard]] static auto GetColorMatchedSet1() -> ColorMatchedSet;
   [[nodiscard]] static auto GetColorMatchedSet2() -> ColorMatchedSet;
   [[nodiscard]] static auto GetColorMatchedSet3() -> ColorMatchedSet;
