@@ -68,7 +68,7 @@ private:
   void SetFlowerBitmap();
   void SetNonFlowerBitmap();
   void SetNextCurrentBitmapName();
-  [[nodiscard]] auto ChangeDotColorsEvent() -> bool;
+  [[nodiscard]] auto ChangeDotColorsEvent() const -> bool;
 
   static constexpr size_t MIN_DOT_SIZE = 5;
   static constexpr size_t MAX_DOT_SIZE = 17;
@@ -84,6 +84,10 @@ private:
   bool m_useIncreasedChroma = true;
   bool m_useMiddleColor = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
+  [[nodiscard]] static auto GetDotPrimaryColor(size_t dotNum) -> Pixel;
+  [[nodiscard]] static auto IsImagePointCloseToMiddle(size_t x, size_t y, uint32_t radius) -> bool;
+  [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
+  [[nodiscard]] auto GetMiddleColor() const -> Pixel;
 
   uint32_t m_loopVar = 0; // mouvement des points
 
@@ -188,9 +192,10 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelpers& fxHelpers,
 {
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::ChangeDotColorsEvent() -> bool
+inline auto GoomDotsFx::GoomDotsFxImpl::ChangeDotColorsEvent() const -> bool
 {
-  return m_goomRand.ProbabilityOfMInN(1, 3);
+  constexpr float PROB_CHANGE_DOT_COLORS = 0.33F;
+  return m_goomRand.ProbabilityOf(PROB_CHANGE_DOT_COLORS);
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::Start()
@@ -211,25 +216,41 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
   {
     colorMapsManager.ChangeAllColorMapsNow();
   }
+
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
     constexpr float PROB_USE_PRIMARY_COLOR = 0.5F;
     usePrimaryColor = m_goomRand.ProbabilityOf(PROB_USE_PRIMARY_COLOR);
   }
 
+  constexpr float PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
+  m_useSingleBufferOnly = m_goomRand.ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
+
+  constexpr float PROB_INCREASED_CHROMA = 0.8F;
+  m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_INCREASED_CHROMA);
+
+  constexpr float PROB_USE_MIDDLE_COLOR = 0.05F;
+  m_useMiddleColor = m_goomRand.ProbabilityOf(PROB_USE_MIDDLE_COLOR);
+  if (m_useMiddleColor)
+  {
+    m_middleColor = GetMiddleColor();
+  }
+}
+
+auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
+{
+  constexpr float PROB_PRIMARY_COLOR = 0.5F;
+  if (m_goomRand.ProbabilityOf(PROB_PRIMARY_COLOR))
+  {
+    return GetDotPrimaryColor(m_goomRand.GetRandInRange(0U, NUM_DOT_TYPES));
+  }
+
   constexpr float MIN_MIX_T = 0.1F;
   constexpr float MAX_MIX_T = 1.0F;
-  m_middleColor = RandomColorMaps{m_goomRand}.GetRandomColor(
+  return RandomColorMaps{m_goomRand}.GetRandomColor(
       *m_colorMaps[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
                                             RandomColorMaps::ALL_COLOR_MAP_TYPES),
       MIN_MIX_T, MAX_MIX_T);
-
-  constexpr float PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
-  m_useSingleBufferOnly = m_goomRand.ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
-  constexpr float PROB_INCREASED_CHROMA = 0.8F;
-  m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_INCREASED_CHROMA);
-  constexpr float PROB_USE_MIDDLE_COLOR = 0.2F;
-  m_useMiddleColor = m_goomRand.ProbabilityOf(PROB_USE_MIDDLE_COLOR);
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
@@ -350,17 +371,22 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const f
 {
   if (m_usePrimaryColors.at(dotNum))
   {
-    static const std::array s_PRIMARY_COLORS{
-        Pixel{255,   0,   0, 0},
-        Pixel{  0, 255,   0, 0},
-        Pixel{  0,   0, 255, 0},
-        Pixel{255, 255,   0, 0},
-        Pixel{  0, 255, 255, 0},
-    };
-    return s_PRIMARY_COLORS.at(dotNum);
+    return GetDotPrimaryColor(dotNum);
   }
 
   return m_colorMapsManagers.at(dotNum).GetColorMap(m_colorMapIds.at(dotNum)).GetColor(t);
+}
+
+inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) -> Pixel
+{
+  static const std::array s_PRIMARY_COLORS{
+      Pixel{255,   0,   0, 0},
+      Pixel{  0, 255,   0, 0},
+      Pixel{  0,   0, 255, 0},
+      Pixel{255, 255,   0, 0},
+      Pixel{  0, 255, 255, 0},
+  };
+  return s_PRIMARY_COLORS.at(dotNum);
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
@@ -448,13 +474,14 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   constexpr float BRIGHTNESS = 3.5F;
   const auto getColor1 = [&](const size_t x, const size_t y, const Pixel& bgnd)
   {
-    const Pixel newColor =
-        m_useMiddleColor && (x == radius) && (y == radius) ? m_middleColor : color;
     if (0 == bgnd.A())
     {
       return Pixel::BLACK;
     }
-    const Pixel mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, 0.5F);
+    const Pixel newColor =
+        m_useMiddleColor && IsImagePointCloseToMiddle(x, y, radius) ? m_middleColor : color;
+    constexpr float COLOR_MIX_T = 0.6F;
+    const Pixel mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
     return GetGammaCorrection(BRIGHTNESS, finalColor);
   };
@@ -473,10 +500,32 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   }
 }
 
+inline auto GoomDotsFx::GoomDotsFxImpl::IsImagePointCloseToMiddle(const size_t x,
+                                                                  const size_t y,
+                                                                  const uint32_t radius) -> bool
+{
+  const size_t margin = GetMargin(radius);
+  const size_t minVal = radius - margin;
+  const size_t maxVal = radius + margin;
+  return (minVal <= x) && (x <= maxVal) && (minVal <= y) && (y <= maxVal);
+}
+
+inline auto GoomDotsFx::GoomDotsFxImpl::GetMargin(const uint32_t radius) -> size_t
+{
+  constexpr size_t SMALLEST_MARGIN = 2;
+  constexpr uint32_t SMALL_RADIUS = 7;
+
+  if (radius < SMALL_RADIUS)
+  {
+    return SMALLEST_MARGIN;
+  }
+  return SMALLEST_MARGIN + 1;
+}
+
 inline auto GoomDotsFx::GoomDotsFxImpl::GetGammaCorrection(const float brightness,
                                                            const Pixel& color) const -> Pixel
 {
-  if constexpr (GAMMA == 1.0F)
+  if constexpr (1.0F == GAMMA)
   {
     return GetBrighterColor(brightness, color);
   }
