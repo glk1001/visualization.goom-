@@ -16,6 +16,7 @@ struct RawStateInfo
 };
 
 // clang-format off
+constexpr float CIRCLES_DEFAULT_BUFF_INTENSITY   = 0.3F;
 constexpr float DOTS_DEFAULT_BUFF_INTENSITY      = 0.3F;
 constexpr float IFS_DEFAULT_BUFF_INTENSITY       = 0.3F;
 constexpr float IMAGE_DEFAULT_BUFF_INTENSITY     = 0.1F;
@@ -27,6 +28,39 @@ constexpr float TUBES_DEFAULT_BUFF_INTENSITY     = 0.8F;
 // TODO - When we get to use C++20 we can simplify things with
 //        constexpr std::vector.
 //  Drawable                                              BuffIntensity
+static const std::vector CIRCLES_ONLY_DRAWABLES_INFO {
+    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
+};
+static const std::vector CIRCLES_IFS_DRAWABLES_INFO {
+    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
+};
+static const std::vector CIRCLES_IMAGE_DRAWABLES_INFO {
+    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
+};
+static const std::vector CIRCLES_IMAGE_STARS_DRAWABLES_INFO {
+    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
+};
+static const std::vector CIRCLES_LINES_DRAWABLES_INFO {
+    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
+};
+static const std::vector CIRCLES_STARS_TUBES_DRAWABLES_INFO {
+    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
+};
+static const std::vector CIRCLES_TENTACLES_DRAWABLES_INFO {
+    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
+};
+static const std::vector CIRCLES_TUBES_DRAWABLES_INFO {
+    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
+    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
+};
 static const std::vector DOTS_ONLY_DRAWABLES_INFO {
     GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
 };
@@ -178,6 +212,15 @@ static const std::vector TUBES_ONLY_DRAWABLES_INFO {
 };
 
 static const std::array RAW_STATE_INFO_ARRAY{
+    RawStateInfo{GoomStates::CIRCLES_ONLY,                "Circles Only",           CIRCLES_ONLY_DRAWABLES_INFO},
+    RawStateInfo{GoomStates::CIRCLES_IFS,                 "Circles and IFS",        CIRCLES_IFS_DRAWABLES_INFO},
+    RawStateInfo{GoomStates::CIRCLES_IMAGE,               "Circles and Image",      CIRCLES_IMAGE_DRAWABLES_INFO},
+    RawStateInfo{GoomStates::CIRCLES_IMAGE_STARS,         "Circles, Image, Stars",  CIRCLES_IMAGE_STARS_DRAWABLES_INFO},
+    RawStateInfo{GoomStates::CIRCLES_LINES,               "Circles and Lines",      CIRCLES_LINES_DRAWABLES_INFO},
+    RawStateInfo{GoomStates::CIRCLES_STARS_TUBES,         "Circles, Stars, Tubes",  CIRCLES_STARS_TUBES_DRAWABLES_INFO},
+    RawStateInfo{GoomStates::CIRCLES_TENTACLES,           "Circles and Tentacles",  CIRCLES_TENTACLES_DRAWABLES_INFO},
+    RawStateInfo{GoomStates::CIRCLES_TUBES,               "Circles and Tubes",      CIRCLES_TUBES_DRAWABLES_INFO},
+
     RawStateInfo{GoomStates::DOTS_ONLY,                   "Dots Only",              DOTS_ONLY_DRAWABLES_INFO},
     RawStateInfo{GoomStates::DOTS_IFS,                    "Dots and Ifs",           DOTS_IFS_DRAWABLES_INFO},
     RawStateInfo{GoomStates::DOTS_IFS_STARS,              "Dots, IFS, Stars",       DOTS_IFS_STARS_DRAWABLES_INFO},

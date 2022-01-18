@@ -15,6 +15,7 @@ using UTILS::NUM;
 // For debugging:
 constexpr bool USE_FORCED_GOOM_STATE = false;
 
+constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
@@ -22,7 +23,7 @@ constexpr bool USE_FORCED_GOOM_STATE = false;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES_STAR_TENTACLES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TENTACLES_TUBES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TUBES;
-constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_ONLY;
+//constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_ONLY;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_STARS_TENTACLES_TUBES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_TENTACLES_TUBES;
@@ -50,6 +51,15 @@ constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_ONLY;
 
 
 // clang-format off
+constexpr float CIRCLES_ONLY_WEIGHT                =    1.0F;
+constexpr float CIRCLES_IFS_WEIGHT                 =  200.0F;
+constexpr float CIRCLES_IMAGE_WEIGHT               =   50.0F;
+constexpr float CIRCLES_IMAGE_STARS_WEIGHT         =  200.0F;
+constexpr float CIRCLES_LINES_WEIGHT               =  200.0F;
+constexpr float CIRCLES_STARS_TUBES_WEIGHT         =  200.0F;
+constexpr float CIRCLES_TENTACLES_WEIGHT           =  200.0F;
+constexpr float CIRCLES_TUBES_WEIGHT               =  200.0F;
+
 constexpr float DOTS_IFS_WEIGHT                    = 200.0F;
 constexpr float DOTS_IFS_STARS_WEIGHT              = 100.0F;
 constexpr float DOTS_IMAGE_STARS_WEIGHT            =  50.0F;
@@ -93,6 +103,15 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
   : m_weightedStates{
         goomRand,
         {
+            {GoomStates::CIRCLES_ONLY, CIRCLES_ONLY_WEIGHT},
+            {GoomStates::CIRCLES_IFS, CIRCLES_IFS_WEIGHT},
+            {GoomStates::CIRCLES_IMAGE, CIRCLES_IMAGE_WEIGHT},
+            {GoomStates::CIRCLES_IMAGE_STARS, CIRCLES_IMAGE_STARS_WEIGHT},
+            {GoomStates::CIRCLES_LINES, CIRCLES_LINES_WEIGHT},
+            {GoomStates::CIRCLES_STARS_TUBES, CIRCLES_STARS_TUBES_WEIGHT},
+            {GoomStates::CIRCLES_TENTACLES, CIRCLES_TENTACLES_WEIGHT},
+            {GoomStates::CIRCLES_TUBES, CIRCLES_TUBES_WEIGHT},
+
             {GoomStates::DOTS_IFS, DOTS_IFS_WEIGHT},
             {GoomStates::DOTS_IFS_STARS, DOTS_IFS_STARS_WEIGHT},
             {GoomStates::DOTS_IMAGE_STARS, DOTS_IMAGE_STARS_WEIGHT},

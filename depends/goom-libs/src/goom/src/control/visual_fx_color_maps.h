@@ -25,7 +25,8 @@ namespace CONTROL
 
 enum class GoomEffect
 {
-  DOTS0 = 0,
+  CIRCLES = 0,
+  DOTS0,
   DOTS1,
   DOTS2,
   DOTS3,

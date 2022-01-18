@@ -175,6 +175,7 @@ auto VisualFxColorMaps::GetColorMatchedSet1() -> ColorMatchedSet
   ColorMatchedSet matchedSet{nullptr};
 
   GetPrimaryColorDots(matchedSet);
+  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IFS)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetMostlySequentialStandardMaps;
@@ -192,6 +193,7 @@ auto VisualFxColorMaps::GetColorMatchedSet2() -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet{nullptr};
 
+  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetSlightlyDivergingSlimMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetOrangeStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetPurpleStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
@@ -214,6 +216,7 @@ auto VisualFxColorMaps::GetColorMatchedSet3() -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet{nullptr};
 
+  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetColdStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetOrangeStandardMaps;
@@ -236,6 +239,7 @@ auto VisualFxColorMaps::GetColorMatchedSet4() -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet{nullptr};
 
+  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetCitiesStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
@@ -258,6 +262,7 @@ auto VisualFxColorMaps::GetColorMatchedSet5() -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet{nullptr};
 
+  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
@@ -280,6 +285,7 @@ auto VisualFxColorMaps::GetColorMatchedSet6() -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet{nullptr};
 
+  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
@@ -302,6 +308,7 @@ auto VisualFxColorMaps::GetColorMatchedSet7() -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet{nullptr};
 
+  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
@@ -324,6 +331,7 @@ auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet{nullptr};
 
+  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetHeatStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;

@@ -12,7 +12,15 @@ namespace GOOM::CONTROL
 
 enum class GoomStates : size_t
 {
-  DOTS_IFS = 0,
+  CIRCLES_ONLY = 0,
+  CIRCLES_IFS,
+  CIRCLES_IMAGE,
+  CIRCLES_IMAGE_STARS,
+  CIRCLES_LINES,
+  CIRCLES_STARS_TUBES,
+  CIRCLES_TENTACLES,
+  CIRCLES_TUBES,
+  DOTS_IFS,
   DOTS_IFS_STARS,
   DOTS_IMAGE_STARS,
   DOTS_LINES,
@@ -49,6 +57,7 @@ enum class GoomStates : size_t
 enum class GoomDrawables
 {
   IFS = 0,
+  CIRCLES,
   DOTS,
   TENTACLES,
   STARS,

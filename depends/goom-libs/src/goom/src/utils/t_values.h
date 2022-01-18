@@ -43,6 +43,15 @@ public:
 
   auto operator()() const -> float;
 
+  enum class Boundaries
+  {
+    START,
+    INSIDE,
+    END
+  };
+  [[nodiscard]] auto HasJustHitStartBoundary() const -> bool;
+  [[nodiscard]] auto HasJustHitEndBoundary() const -> bool;
+
   [[nodiscard]] auto DelayJustFinishing() const -> bool;
   [[nodiscard]] auto IsDelayed() const -> bool;
 
@@ -56,6 +65,7 @@ private:
   float m_stepSize;
   float m_currentStep;
   float m_t;
+  Boundaries m_currentPosition;
   const std::vector<DelayPoint> m_delayPoints;
   std::vector<DelayPoint> m_currentDelayPoints;
   bool m_startedDelay = false;
@@ -85,6 +95,16 @@ inline auto TValue::GetStepSize() const -> float
 inline auto TValue::operator()() const -> float
 {
   return m_t;
+}
+
+inline auto TValue::HasJustHitStartBoundary() const -> bool
+{
+  return m_currentPosition == Boundaries::START;
+}
+
+inline auto TValue::HasJustHitEndBoundary() const -> bool
+{
+  return m_currentPosition == Boundaries::END;
 }
 
 inline auto TValue::DelayJustFinishing() const -> bool

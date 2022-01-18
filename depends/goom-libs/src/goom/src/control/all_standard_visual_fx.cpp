@@ -4,6 +4,7 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/parallel_utils.h"
 #include "v2d.h"
+#include "visual_fx/circles_fx.h"
 #include "visual_fx/flying_stars_fx.h"
 #include "visual_fx/fx_helpers.h"
 #include "visual_fx/goom_dots_fx.h"
@@ -22,6 +23,7 @@ namespace GOOM::CONTROL
 using CONTROL::GoomDrawables;
 using UTILS::Parallel;
 using UTILS::SmallImageBitmaps;
+using VISUAL_FX::CirclesFx;
 using VISUAL_FX::FlyingStarsFx;
 using VISUAL_FX::FxHelpers;
 using VISUAL_FX::GoomDotsFx;
@@ -35,7 +37,8 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
                                          const FxHelpers& fxHelpers,
                                          const SmallImageBitmaps& smallBitmaps,
                                          const std::string& resourcesDirectory) noexcept
-  : m_goomDotsFx{std::make_shared<GoomDotsFx>(fxHelpers, smallBitmaps)},
+  : m_circlesFx{std::make_shared<CirclesFx>(fxHelpers, smallBitmaps)},
+    m_goomDotsFx{std::make_shared<GoomDotsFx>(fxHelpers, smallBitmaps)},
     m_ifsFx{std::make_shared<IfsDancersFx>(fxHelpers, smallBitmaps)},
     m_imageFx{std::make_shared<ImageFx>(parallel, fxHelpers, resourcesDirectory)},
     m_shaderFx{std::make_shared<ShaderFx>(fxHelpers)},
@@ -43,9 +46,10 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
     m_tentaclesFx{std::make_shared<TentaclesFx>(fxHelpers, smallBitmaps)},
     m_tubesFx{std::make_shared<TubesFx>(fxHelpers, smallBitmaps)},
     m_list{
-        m_starFx, m_ifsFx, m_imageFx, m_goomDotsFx, m_tentaclesFx, m_tubesFx,
+        m_circlesFx, m_starFx, m_ifsFx, m_imageFx, m_goomDotsFx, m_tentaclesFx, m_tubesFx,
     },
     m_drawablesMap{
+        {GoomDrawables::CIRCLES, m_circlesFx},
         {GoomDrawables::STARS, m_starFx},          {GoomDrawables::IFS, m_ifsFx},
         {GoomDrawables::IMAGE, m_imageFx},         {GoomDrawables::DOTS, m_goomDotsFx},
         {GoomDrawables::TENTACLES, m_tentaclesFx}, {GoomDrawables::TUBES, m_tubesFx},
@@ -183,6 +187,17 @@ void AllStandardVisualFx::ApplyIfsToBothBuffersIfRequired()
   m_ifsFx->ApplyMultiple();
 }
 
+void AllStandardVisualFx::ApplyCirclesToBothBuffersIfRequired()
+{
+  if (!IsCurrentlyDrawable(GoomDrawables::CIRCLES))
+  {
+    return;
+  }
+
+  ResetDrawBuffSettings(GoomDrawables::CIRCLES);
+  m_circlesFx->ApplyMultiple();
+}
+
 void AllStandardVisualFx::ApplyImageToBothBuffersIfRequired()
 {
   if (!IsCurrentlyDrawable(GoomDrawables::IMAGE))
@@ -246,6 +261,8 @@ void AllStandardVisualFx::ApplyStarsToBothBuffersIfRequired()
 void AllStandardVisualFx::ChangeColorMaps()
 {
   m_visualFxColorMaps.SetNextColorMapSet();
+
+  m_circlesFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::CIRCLES));
 
   m_goomDotsFx->SetWeightedColorMaps(0, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS0));
   m_goomDotsFx->SetWeightedColorMaps(1, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS1));

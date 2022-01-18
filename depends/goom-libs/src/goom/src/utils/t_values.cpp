@@ -17,6 +17,8 @@ TValue::TValue(const TValue::StepType stepType,
     m_stepSize{stepSize},
     m_currentStep{m_stepSize},
     m_t{startingT},
+    m_currentPosition{(m_stepType == StepType::SINGLE_CYCLE) ? Boundaries::INSIDE
+                                                             : Boundaries::START},
     m_delayPoints{},
     m_currentDelayPoints{m_delayPoints}
 {
@@ -111,7 +113,12 @@ inline void TValue::ContinuousRepeatableIncrement()
 
   if (m_t > (1.0F + T_EPSILON))
   {
+    m_currentPosition = Boundaries::END;
     HandleBoundary(0.0F, +1.0F);
+  }
+  else
+  {
+    m_currentPosition = Boundaries::INSIDE;
   }
 }
 
@@ -136,13 +143,19 @@ inline void TValue::CheckContinuousReversibleBoundary()
 {
   if (m_t > (1.0F + T_EPSILON))
   {
+    m_currentPosition = Boundaries::END;
     HandleBoundary(1.0F, -1.0F);
     m_t += m_currentStep;
   }
   else if (m_t < (0.0F - T_EPSILON))
   {
+    m_currentPosition = Boundaries::START;
     HandleBoundary(0.0F, +1.0F);
     m_t += m_currentStep;
+  }
+  else
+  {
+    m_currentPosition = Boundaries::INSIDE;
   }
 }
 

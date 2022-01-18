@@ -22,6 +22,7 @@ namespace VISUAL_FX
 {
 class IVisualFx;
 class FxHelpers;
+class CirclesFx;
 class FlyingStarsFx;
 class GoomDotsFx;
 class IfsDancersFx;
@@ -74,6 +75,7 @@ public:
   [[nodiscard]] auto CanDraw(GoomDrawables goomDrawable) const -> bool;
 
 private:
+  const std::shared_ptr<VISUAL_FX::CirclesFx> m_circlesFx;
   const std::shared_ptr<VISUAL_FX::GoomDotsFx> m_goomDotsFx;
   const std::shared_ptr<VISUAL_FX::IfsDancersFx> m_ifsFx;
   const std::shared_ptr<VISUAL_FX::ImageFx> m_imageFx;
@@ -93,6 +95,7 @@ private:
 
   bool m_singleBufferDots = true;
 
+  void ApplyCirclesToBothBuffersIfRequired();
   void ApplyDotsIfRequired();
   void ApplyDotsToBothBuffersIfRequired();
   void ApplyIfsToBothBuffersIfRequired();
@@ -142,6 +145,7 @@ inline void AllStandardVisualFx::ApplyCurrentStateToSingleBuffer()
 
 inline void AllStandardVisualFx::ApplyCurrentStateToMultipleBuffers()
 {
+  ApplyCirclesToBothBuffersIfRequired();
   ApplyDotsToBothBuffersIfRequired();
   ApplyIfsToBothBuffersIfRequired();
   ApplyImageToBothBuffersIfRequired();
