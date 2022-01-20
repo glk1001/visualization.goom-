@@ -26,7 +26,7 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
                  const std::vector<PixelInfo>& expectedPixels)
 {
   // '1' is old, 'expectedPixels.size() - 1' is new.
-  for (size_t i = 0; i < expectedPixels.size(); i++)
+  for (size_t i = 0; i < expectedPixels.size(); ++i)
   {
     const int32_t x = expectedPixels[i].x;
     const int32_t y = expectedPixels[i].y;
@@ -64,7 +64,8 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
   CheckPixels(changedPixels, expectedPixels);
 }
 
-auto FillDrawContainer(GoomDrawToContainer* draw, const size_t numChanged) -> std::vector<PixelInfo>
+auto FillDrawContainer(GoomDrawToContainer* const draw, const size_t numChanged)
+    -> std::vector<PixelInfo>
 {
   std::vector<PixelInfo> pixelsNewToOld{};
   // Add some changed coords - '1' is old, 'numChanged' is new.
@@ -109,7 +110,7 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
   {
     REQUIRE(p.x == i);
     REQUIRE(p.y == i);
-    i--;
+    --i;
   }
 
   CheckContainer(draw, pixelsNewToOld);
@@ -122,7 +123,7 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
   {
     REQUIRE(p.x == i);
     REQUIRE(p.y == i);
-    i--;
+    --i;
   }
   CheckContainer(draw, pixelsNewToOld);
 }
@@ -139,7 +140,7 @@ TEST_CASE("Test DrawMovingText to Container with Duplicates", "[GoomDrawToContai
   const Pixel color0{{10, 10, 10, 255U}};
   const Pixel color1{{11, 11, 11, 0U}};
   const std::vector<Pixel> colors{color0, color1};
-  PixelInfo oldest = pixelsNewToOld.back();
+  const PixelInfo oldest = pixelsNewToOld.back();
   draw.DrawPixels(oldest.x, oldest.y, colors);
   REQUIRE(draw.GetNumChangedCoords() == NUM_CHANGED_COORDS);
 
@@ -163,7 +164,7 @@ TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
   draw.SetBuffIntensity(1.0F);
 
   constexpr size_t NUM_CHANGED_COORDS = 5;
-  std::vector<PixelInfo> pixelsNewToOld = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
+  const std::vector<PixelInfo> pixelsNewToOld = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
 
   for (const auto& pixelInfo : pixelsNewToOld)
   {
