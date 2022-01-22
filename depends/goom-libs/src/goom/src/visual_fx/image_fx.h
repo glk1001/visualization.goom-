@@ -34,9 +34,8 @@ public:
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
   void Start() override;
-
+  void Resume() override;
   void ApplyMultiple();
-
   void Finish() override;
 
 private:

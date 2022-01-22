@@ -91,6 +91,7 @@ public:
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
   void Start();
+  void Resume();
   void ApplyMultiple();
 
 private:
@@ -109,6 +110,8 @@ private:
   std::reference_wrapper<const IColorMap> m_currentColorMap;
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
   bool m_pixelColorIsDominant = false;
+  static constexpr float DEFAULT_BRIGHTNESS_BASE = 0.1F;
+  float m_brightnessBase = DEFAULT_BRIGHTNESS_BASE;
 
   std::vector<std::unique_ptr<ChunkedImage>> m_images{};
   ChunkedImage* m_currentImage{};
@@ -161,6 +164,11 @@ void ImageFx::Start()
   m_fxImpl->Start();
 }
 
+void ImageFx::Resume()
+{
+  m_fxImpl->Resume();
+}
+
 void ImageFx::Finish()
 {
   // nothing to do
@@ -206,6 +214,11 @@ void ImageFx::ImageFxImpl::SetWeightedColorMaps(std::shared_ptr<COLOR::RandomCol
 {
   m_colorMaps = weightedMaps;
   m_pixelColorIsDominant = m_goomRand.ProbabilityOf(0.0F);
+}
+
+void ImageFx::ImageFxImpl::Resume()
+{
+  m_brightnessBase = m_goomRand.GetRandInRange(0.1F, 1.0F) * DEFAULT_BRIGHTNESS_BASE;
 }
 
 void ImageFx::ImageFxImpl::Start()
@@ -316,7 +329,7 @@ void ImageFx::ImageFxImpl::ApplyMultiple()
 
 inline void ImageFx::ImageFxImpl::DrawChunks()
 {
-  const float brightness = 0.1F + (0.02F * m_inOutT());
+  const float brightness = m_brightnessBase + (0.02F * m_inOutT());
 
   const auto drawChunk = [&](const size_t i) {
     const V2dInt nextStartPosition = GetNextChunkStartPosition(i);
