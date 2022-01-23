@@ -14,14 +14,14 @@ namespace stdnew
 {
 #if __cplusplus <= 201703L
 template<typename _Fp>
-constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept
+[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept
 {
   if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
   {
     return __t * __b + (1 - __t) * __a;
   }
 
-  if (__t == 1)
+  if (1 == __t)
   {
     return __b; // exact
   }
@@ -33,20 +33,21 @@ constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept
                                   : (__b > __x ? __x : __b); // monotonic near __t=1
 }
 
-constexpr float lerp(const float __a, const float __b, const float __t) noexcept
+[[nodiscard]] constexpr float lerp(const float __a, const float __b, const float __t) noexcept
 {
   return __lerp(__a, __b, __t);
 }
-constexpr double lerp(const double __a, const double __b, const double __t) noexcept
+[[nodiscard]] constexpr double lerp(const double __a, const double __b, const double __t) noexcept
 {
   return __lerp(__a, __b, __t);
 }
-inline auto lerp(const uint32_t a, const uint32_t b, const float t) noexcept -> uint32_t
+[[nodiscard]] inline auto lerp(const uint32_t a, const uint32_t b, const float t) noexcept
+    -> uint32_t
 {
   return static_cast<uint32_t>(
       std::round(stdnew::lerp(static_cast<float>(a), static_cast<float>(b), t)));
 }
-inline auto lerp(const int32_t a, const int32_t b, const float t) noexcept -> int32_t
+[[nodiscard]] inline auto lerp(const int32_t a, const int32_t b, const float t) noexcept -> int32_t
 {
   return static_cast<int32_t>(
       std::round(stdnew::lerp(static_cast<float>(a), static_cast<float>(b), t)));
@@ -86,7 +87,7 @@ constexpr auto Sq(const T& x) -> T
   return x * x;
 }
 
-constexpr auto SqDistance(const float x, const float y) -> float
+[[nodiscard]] constexpr auto SqDistance(const float x, const float y) -> float
 {
   return Sq(x) + Sq(y);
 }
@@ -101,25 +102,8 @@ inline bool floats_equal(const float x, const float y, const float epsilon = SMA
 template<typename T>
 constexpr auto IsOdd(const T& n) -> bool
 {
-  return n % 2 != 0;
+  return (n % 2) != 0;
 }
-
-class VertNum
-{
-public:
-  explicit VertNum(const int xWidth) noexcept : m_xWidth(xWidth) {}
-  [[nodiscard]] auto GetRowZeroVertNum(const int x) const -> int { return x; }
-  auto operator()(const int x, const int z) const -> int { return z * m_xWidth + x; }
-  [[nodiscard]] auto GetXz(const int vertNum) const -> std::tuple<int, int>
-  {
-    const int z = vertNum / m_xWidth;
-    const int x = vertNum % m_xWidth;
-    return std::make_tuple(x, z);
-  }
-
-private:
-  const int m_xWidth;
-};
 
 class RangeMapper
 {
@@ -147,24 +131,6 @@ public:
   auto operator=(IDampingFunction&&) -> IDampingFunction& = delete;
 
   virtual auto operator()(double x) -> double = 0;
-};
-
-class NoDampingFunction : public IDampingFunction
-{
-public:
-  auto operator()([[maybe_unused]] const double x) -> double override { return 1.0; }
-};
-
-class LogDampingFunction : public IDampingFunction
-{
-public:
-  explicit LogDampingFunction(double amplitude, double xMin, double xStart = 2.0) noexcept;
-  auto operator()(double x) -> double override;
-
-private:
-  const double m_amplitude;
-  const double m_xMin;
-  const double m_xStart;
 };
 
 // Asymptotes to 'amplitude' in negative x direction,
@@ -263,52 +229,6 @@ private:
   float m_piStepFrac;
   float m_x;
 };
-
-class IIncreasingFunction
-{
-public:
-  IIncreasingFunction() noexcept = delete;
-  virtual ~IIncreasingFunction() noexcept = default;
-  explicit IIncreasingFunction(double x0, double x1) noexcept;
-  IIncreasingFunction(const IIncreasingFunction&) noexcept = delete;
-  IIncreasingFunction(IIncreasingFunction&&) noexcept = delete;
-  auto operator=(const IIncreasingFunction&) noexcept -> IIncreasingFunction& = delete;
-  auto operator=(IIncreasingFunction&&) noexcept -> IIncreasingFunction& = delete;
-
-  virtual auto operator()(double x) -> double = 0;
-
-protected:
-  const double m_xMin;
-  const double m_xMax;
-};
-
-// Asymptotes to 1, depending on 'k' value.
-class ExpIncreasingFunction : public IIncreasingFunction
-{
-public:
-  explicit ExpIncreasingFunction(double xMin, double xMax, double k = 0.1) noexcept;
-  auto operator()(double x) -> double override;
-
-private:
-  const double m_k;
-};
-
-class LogIncreasingFunction : public IIncreasingFunction
-{
-public:
-  explicit LogIncreasingFunction(double amplitude, double xMin, double xStart = 2.0) noexcept;
-  auto operator()(double x) -> double override;
-
-private:
-  const double m_amplitude;
-  const double m_xMin;
-  const double m_xStart;
-};
-
-inline IIncreasingFunction::IIncreasingFunction(const double x0, const double x1) noexcept
-  : m_xMin(x0), m_xMax(x1)
-{
-}
 
 inline RangeMapper::RangeMapper(const double x0, const double x1) noexcept
   : m_xMin(x0), m_xMax(x1), m_xWidth(m_xMax - m_xMin)
