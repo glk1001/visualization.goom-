@@ -15,6 +15,7 @@
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "utils/mathutils.h"
+#include "utils/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -34,11 +35,11 @@ using DRAW::GoomDrawToContainer;
 using DRAW::GoomDrawToMany;
 using DRAW::IGoomDraw;
 using TUBES::BrightnessAttenuation;
-using TUBES::PathParams;
 using TUBES::Tube;
 using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
 using UTILS::Logging;
+using UTILS::PathParams;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
 using UTILS::Timer;

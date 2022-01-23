@@ -8,6 +8,7 @@
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
 #include "utils/mathutils.h"
+#include "utils/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 #include "v2d.h"
@@ -31,10 +32,13 @@ using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using UTILS::IGoomRand;
+using UTILS::LinearTimePath;
 using UTILS::Logging;
 using UTILS::m_pi;
 using UTILS::m_third_pi;
 using UTILS::m_two_pi;
+using UTILS::OscillatingPath;
+using UTILS::PathParams;
 using UTILS::SMALL_FLOAT;
 using UTILS::SmallImageBitmaps;
 using UTILS::Sq;
@@ -90,13 +94,46 @@ constexpr float OUTER_CIRCLE_BRIGHTNESS = 0.4F;
 constexpr float LIGHTER_COLOR_POWER = 10.0F;
 
 class ShapeColorizer;
-class ShapePath;
-class ParametricPath;
+
+class ParametricPath : public LinearTimePath
+{
+public:
+  explicit ParametricPath(const TValue& t) noexcept;
+
+  [[nodiscard]] auto GetNextPoint() const -> V2dInt override;
+
+private:
+  static constexpr float DEFAULT_B = 350.0F;
+  float m_b = DEFAULT_B;
+  static constexpr float DEFAULT_K_X = 3.0F;
+  float m_kX = DEFAULT_K_X;
+  static constexpr float DEFAULT_K_Y = 3.0F;
+  float m_kY = DEFAULT_K_Y;
+};
+
+ParametricPath::ParametricPath(const TValue& t) noexcept
+  : LinearTimePath{
+        V2dInt{0, 0},
+        V2dInt{0, 0},
+        t
+}
+{
+}
+
+auto ParametricPath::GetNextPoint() const -> V2dInt
+{
+  const V2dInt point{
+      static_cast<int32_t>(std::round((m_b * std::cos(m_kX * GetT())) * std::cos(GetT()))),
+      static_cast<int32_t>(std::round((m_b * std::cos(m_kY * GetT())) * std::sin(GetT()))),
+  };
+
+  return point;
+}
 
 struct Shape
 {
   uint32_t shapeNum{};
-  std::unique_ptr<ShapePath> path{};
+  std::unique_ptr<OscillatingPath> path{};
   uint8_t lineThickness{1};
 };
 
@@ -172,6 +209,7 @@ private:
   // clang-format on
   std::vector<Shape> m_shapes{};
   int32_t m_maxJitterOffset{};
+  TValue m_centrePathT{TValue::StepType::CONTINUOUS_REVERSIBLE, NML_CENTRE_SPEED};
   std::unique_ptr<ParametricPath> m_centrePath{};
   TransformCentreFunc m_getTransformedCentre{};
 
@@ -421,65 +459,6 @@ private:
                                                float brightness) const -> ShapeColors;
 };
 
-class ShapePath
-{
-public:
-  ShapePath(const V2dInt& startPos,
-            const V2dInt& finishPos,
-            const TValue& t,
-            bool allowOscillatingPath);
-
-  [[nodiscard]] auto GetT() const -> float;
-  void SetPathParams(const PathParams& params);
-
-  void SetAllowOscillatingPath(bool val);
-
-  [[nodiscard]] auto GetNextPoint() const -> V2dInt;
-
-private:
-  const V2dInt m_startPos;
-  const V2dInt m_finishPos;
-  const TValue& m_t;
-  V2dInt m_currentStartPos;
-  V2dInt m_currentFinishPos;
-  PathParams m_pathParams{};
-  bool m_allowOscillatingPath;
-  [[nodiscard]] auto GetPointAtT(const V2dInt& point0, const V2dInt& point1, float t) const
-      -> V2dInt;
-  [[nodiscard]] auto GetOscillatingPointAtT(const V2dFlt& point, float t) const -> V2dFlt;
-};
-
-class ParametricPath
-{
-public:
-  explicit ParametricPath() noexcept = default;
-  [[nodiscard]] auto GetStepSize() const -> float { return m_t.GetStepSize(); }
-  void SetStepSize(const float val) { m_t.SetStepSize(val); }
-  [[nodiscard]] auto GetT() const -> float { return m_t(); }
-  void SetT(const float val) { m_t.Reset(val); }
-  [[nodiscard]] auto GetNextPoint() const -> V2dInt;
-  void Increment() { m_t.Increment(); }
-
-private:
-  TValue m_t{TValue::StepType::CONTINUOUS_REVERSIBLE, NML_CENTRE_SPEED};
-  static constexpr float DEFAULT_B = 350.0F;
-  float m_b = DEFAULT_B;
-  static constexpr float DEFAULT_K_X = 3.0F;
-  float m_kX = DEFAULT_K_X;
-  static constexpr float DEFAULT_K_Y = 3.0F;
-  float m_kY = DEFAULT_K_Y;
-};
-
-auto ParametricPath::GetNextPoint() const -> V2dInt
-{
-  const V2dInt point{
-      static_cast<int32_t>(std::round((m_b * std::cos(m_kX * m_t())) * std::cos(m_t()))),
-      static_cast<int32_t>(std::round((m_b * std::cos(m_kY * m_t())) * std::sin(m_t()))),
-  };
-
-  return point;
-}
-
 // clang-format off
 constexpr float TRUE_LOW_COLOR_WEIGHT      = 30.0F;
 constexpr float MAIN_COLOR_WEIGHT          = 10.0F;
@@ -534,7 +513,7 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
       (0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight))) - radiusEdgeOffset;
   const float angleStep = m_two_pi / static_cast<float>(m_shapes.size());
 
-  m_centrePath = std::make_unique<ParametricPath>();
+  m_centrePath = std::make_unique<ParametricPath>(m_centrePathT);
 
   float angle = 0.0;
   uint32_t shapeNum = 0;
@@ -552,7 +531,7 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
                                             static_cast<int32_t>(std::round(yTo))};
 
     shape.shapeNum = shapeNum;
-    shape.path = std::make_unique<ShapePath>(fromPos, toPos, m_shapeT, OSCILLATING_SHAPE_PATHS);
+    shape.path = std::make_unique<OscillatingPath>(fromPos, toPos, m_shapeT, OSCILLATING_SHAPE_PATHS);
 
     angle += angleStep;
     ++shapeNum;
@@ -623,31 +602,31 @@ inline auto Tube::TubeImpl::GetCentrePathT() const -> float
 
 inline void Tube::TubeImpl::SetCentrePathT(const float val)
 {
-  m_centrePath->SetT(val);
+  m_centrePathT.Reset(val);
 }
 
 inline auto Tube::TubeImpl::GetCentreSpeed() const -> float
 {
-  return m_centrePath->GetStepSize();
+  return m_centrePathT.GetStepSize();
 }
 
 inline void Tube::TubeImpl::SetCentreSpeed(const float val)
 {
-  m_centrePath->SetStepSize(val);
+  m_centrePathT.SetStepSize(val);
 }
 
 inline void Tube::TubeImpl::IncreaseCentreSpeed()
 {
   const float factor = m_goomRand.GetRandInRange(1.01F, 10.0F);
   const float newSpeed = std::min(MAX_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
-  m_centrePath->SetStepSize(newSpeed);
+  m_centrePathT.SetStepSize(newSpeed);
 }
 
 inline void Tube::TubeImpl::DecreaseCentreSpeed()
 {
   const float factor = m_goomRand.GetRandInRange(0.1F, 0.99F);
   const float newSpeed = std::min(MIN_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
-  m_centrePath->SetStepSize(newSpeed);
+  m_centrePathT.SetStepSize(newSpeed);
 }
 
 inline void Tube::TubeImpl::SetAllowOscillatingCirclePaths(const bool val)
@@ -722,7 +701,7 @@ inline auto Tube::TubeImpl::GetHexLen() const -> float
 inline void Tube::TubeImpl::UpdateTValues()
 {
   m_shapeT.Increment();
-  m_centrePath->Increment();
+  m_centrePathT.Increment();
   m_colorizer->UpdateAllTValues();
 }
 
@@ -1245,64 +1224,6 @@ auto BrightnessAttenuation::GetPositionBrightness(const V2dInt& pos,
 inline auto BrightnessAttenuation::GetDistFromCentreFactor(const V2dInt& pos) const -> float
 {
   return static_cast<float>(Sq(pos.x) + Sq(pos.y)) / static_cast<float>(m_maxRSquared);
-}
-
-inline ShapePath::ShapePath(const V2dInt& startPos,
-                            const V2dInt& finishPos,
-                            const TValue& t,
-                            const bool allowOscillatingPath)
-  : m_startPos{startPos},
-    m_finishPos{finishPos},
-    m_t{t},
-    m_currentStartPos{m_startPos},
-    m_currentFinishPos{m_finishPos},
-    m_allowOscillatingPath{allowOscillatingPath}
-{
-}
-
-inline auto ShapePath::GetT() const -> float
-{
-  return m_t();
-}
-
-inline void ShapePath::SetAllowOscillatingPath(const bool val)
-{
-  m_allowOscillatingPath = val;
-}
-
-inline void ShapePath::SetPathParams(const PathParams& params)
-{
-  m_pathParams = params;
-}
-
-inline auto ShapePath::GetNextPoint() const -> V2dInt
-{
-  return GetPointAtT(m_currentStartPos, m_currentFinishPos, m_t());
-}
-
-inline auto ShapePath::GetPointAtT(const V2dInt& point0, const V2dInt& point1, const float t) const
-    -> V2dInt
-{
-  const V2dFlt linearPoint = lerp(point0.ToFlt(), point1.ToFlt(), t);
-  if (!m_allowOscillatingPath)
-  {
-    return {static_cast<int32_t>(std::round(linearPoint.x)),
-            static_cast<int32_t>(std::round(linearPoint.y))};
-  }
-
-  const V2dFlt finalPoint = GetOscillatingPointAtT(linearPoint, t);
-  return {static_cast<int32_t>(std::round(finalPoint.x)),
-          static_cast<int32_t>(std::round(finalPoint.y))};
-}
-
-inline auto ShapePath::GetOscillatingPointAtT(const V2dFlt& point, const float t) const -> V2dFlt
-{
-  return {
-      point.x + (m_pathParams.oscillatingAmplitude *
-                 std::cos(m_pathParams.xOscillatingFreq * t * m_two_pi)),
-      point.y + (m_pathParams.oscillatingAmplitude *
-                 std::sin(m_pathParams.yOscillatingFreq * t * m_two_pi)),
-  };
 }
 
 } // namespace GOOM::VISUAL_FX::TUBES

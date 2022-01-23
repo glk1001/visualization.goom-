@@ -19,6 +19,7 @@ class RandomColorMaps;
 namespace UTILS
 {
 class IGoomRand;
+struct PathParams;
 }
 
 namespace VISUAL_FX::TUBES
@@ -42,13 +43,6 @@ struct ShapeColors
   Pixel innerLowColor{};
   Pixel outerCircleColor{};
   Pixel outerCircleLowColor{};
-};
-
-struct PathParams
-{
-  float oscillatingAmplitude = 1.0;
-  float xOscillatingFreq = 1.0;
-  float yOscillatingFreq = 1.0;
 };
 
 class BrightnessAttenuation
@@ -115,7 +109,7 @@ public:
   void DecreaseCentreSpeed();
 
   void SetAllowOscillatingCirclePaths(bool val);
-  void SetCirclePathParams(const PathParams& params);
+  void SetCirclePathParams(const UTILS::PathParams& params);
   static const float NORMAL_CIRCLE_SPEED;
   void SetCircleSpeed(float val);
   void IncreaseCircleSpeed();
