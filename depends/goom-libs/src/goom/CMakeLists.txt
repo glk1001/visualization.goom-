@@ -55,6 +55,7 @@ add_library(goom
         src/utils/logging.cpp
         src/utils/mathutils.cpp
         src/utils/name_value_pairs.h
+        src/utils/paths.h
         src/utils/randutils.cpp
         src/utils/strutils.cpp
         src/utils/t_values.cpp
