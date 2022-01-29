@@ -183,7 +183,7 @@ static const std::array RAW_STATE_INFO_ARRAY{
     RawStateInfo{GoomStates::DOTS_IFS_STARS,              "Dots, IFS, Stars",       DOTS_IFS_STARS_DRAWABLES_INFO},
     RawStateInfo{GoomStates::DOTS_IMAGE_STARS,            "Dots, Image, Stars",     DOTS_IMAGE_STARS_DRAWABLES_INFO},
     RawStateInfo{GoomStates::DOTS_LINES,                  "Dots and Lines",         DOTS_LINES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_LINES_STAR_TENTACLES,   "D, L, S, Te",            DOTS_LINES_STAR_TENTACLES_DRAWABLES_INFO},
+    RawStateInfo{GoomStates::DOTS_LINES_STARS_TENTACLES,  "D, L, S, Te",            DOTS_LINES_STAR_TENTACLES_DRAWABLES_INFO},
     RawStateInfo{GoomStates::DOTS_LINES_TENTACLES_TUBES,  "D, L, Te, Tu",           DOTS_LINES_TENTACLES_TUBES_DRAWABLES_INFO},
     RawStateInfo{GoomStates::DOTS_LINES_TUBES,            "D, L, Tu",               DOTS_LINES_TUBES_DRAWABLES_INFO},
     RawStateInfo{GoomStates::DOTS_STARS,                  "Dots and Stars",         DOTS_STARS_DRAWABLES_INFO},
