@@ -37,6 +37,7 @@ public:
 
   [[nodiscard]] auto GetStepType() const -> StepType;
   [[nodiscard]] auto GetStepSize() const -> float;
+  [[nodiscard]] auto GetNumSteps() const -> uint32_t;
   void SetStepSize(float val);
   void SetNumSteps(uint32_t val);
 

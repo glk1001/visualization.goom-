@@ -203,6 +203,11 @@ void TValue::SetStepSize(const float val)
   }
 }
 
+auto TValue::GetNumSteps() const -> uint32_t
+{
+  return static_cast<uint32_t>(1.0F / m_stepSize);
+}
+
 void TValue::SetNumSteps(const uint32_t val)
 {
   assert(val != 0U);
