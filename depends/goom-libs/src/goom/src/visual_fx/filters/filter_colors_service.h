@@ -99,7 +99,8 @@ inline auto FilterColorsService::GetBlockyMixedColor(const NeighborhoodCoeffArra
 {
   // Changing the color order gives a strange blocky, wavy look.
   // The order col4, col3, col2, col1 gave a black tear - no so good.
-  static_assert(4 == ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS, "NUM_NEIGHBOR_COEFFS must be 4.");
+  constexpr size_t ALLOWED_NUM_NEIGHBORS = 4;
+  static_assert(ALLOWED_NUM_NEIGHBORS == ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS);
   assert(ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS == coeffs.val.size());
   const NeighborhoodPixelArray reorderedColors{colors[0], colors[2], colors[1], colors[3]};
   return GetMixedColor(coeffs, reorderedColors);
@@ -116,7 +117,7 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
   uint32_t multR = 0;
   uint32_t multG = 0;
   uint32_t multB = 0;
-  for (size_t i = 0; i < coeffs.val.size(); ++i)
+  for (size_t i = 0; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; ++i)
   {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
     const uint32_t& coeff = coeffs.val[i];
