@@ -2,8 +2,8 @@
 
 #include "goom_graphic.h"
 #include "normalized_coords.h"
+#include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
-#include "v2d.h"
 
 #include <cmath>
 #include <cstdint>
@@ -27,9 +27,9 @@ ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
 {
 }
 
-auto ImageDisplacement::GetDisplacementVector(const V2dFlt& normalizedPoint) const -> V2dFlt
+auto ImageDisplacement::GetDisplacementVector(const Point2dFlt& normalizedPoint) const -> Point2dFlt
 {
-  const V2dInt imagePoint = NormalizedToImagePoint(normalizedPoint);
+  const Point2dInt imagePoint = NormalizedToImagePoint(normalizedPoint);
   if ((imagePoint.x < 0) || (imagePoint.x > m_xMax))
   {
     return {0.0F, 0.0F};
@@ -45,7 +45,8 @@ auto ImageDisplacement::GetDisplacementVector(const V2dFlt& normalizedPoint) con
   return ColorToNormalizedPoint(color);
 }
 
-inline auto ImageDisplacement::NormalizedToImagePoint(const V2dFlt& normalizedPoint) const -> V2dInt
+inline auto ImageDisplacement::NormalizedToImagePoint(const Point2dFlt& normalizedPoint) const
+    -> Point2dInt
 {
   const float xZoom = m_zoomFactor * normalizedPoint.x;
   const float yZoom = m_zoomFactor * normalizedPoint.y;
@@ -58,7 +59,7 @@ inline auto ImageDisplacement::NormalizedToImagePoint(const V2dFlt& normalizedPo
   return {x, y};
 }
 
-inline auto ImageDisplacement::ColorToNormalizedPoint(const Pixel& color) const -> V2dFlt
+inline auto ImageDisplacement::ColorToNormalizedPoint(const Pixel& color) const -> Point2dFlt
 {
   const float x =
       NormalizedCoords::MAX_NORMALIZED_COORD * m_amplitude * (color.RFlt() - m_xColorCutoff);

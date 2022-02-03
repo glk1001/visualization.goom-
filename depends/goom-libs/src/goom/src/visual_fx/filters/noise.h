@@ -1,6 +1,7 @@
 #pragma once
 
 #include "normalized_coords.h"
+#include "point2d.h"
 #include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 

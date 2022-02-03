@@ -8,11 +8,11 @@
 #include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "point2d.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/t_values.h"
-#include "v2d.h"
 
 #include <array>
 #undef NDEBUG
@@ -45,7 +45,7 @@ public:
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
-  void SetZoomMidPoint(const V2dInt& zoomMidPoint);
+  void SetZoomMidPoint(const Point2dInt& zoomMidPoint);
 
   void Start();
   void ApplyMultiple();
@@ -73,22 +73,22 @@ private:
       {{0.0F, DELAY_TIME_AT_EDGE}, {1.0F, DELAY_TIME_AT_CENTRE}},
       0.0F
   };
-  V2dInt m_centreTargetPosition;
-  V2dInt m_zoomMidPoint;
+  Point2dInt m_centreTargetPosition;
+  Point2dInt m_zoomMidPoint;
   static constexpr size_t MIN_DIAMETER = 5;
   static constexpr size_t MAX_DIAMETER = 21;
   std::array<uint32_t, NUM_CIRCLE_PATHS> m_circleDiameters;
   [[nodiscard]] static auto GetInitialCircleDiameters() -> std::array<uint32_t, NUM_CIRCLE_PATHS>;
-  std::array<V2dInt, NUM_CIRCLE_PATHS> m_circleRandomStartingPositions;
-  const std::array<V2dInt, NUM_CIRCLE_PATHS> m_circleStartingPositions;
+  std::array<Point2dInt, NUM_CIRCLE_PATHS> m_circleRandomStartingPositions;
+  const std::array<Point2dInt, NUM_CIRCLE_PATHS> m_circleStartingPositions;
   [[nodiscard]] static auto GetRandomStartingCirclePositions(const IGoomRand& goomRand,
                                                              int32_t width,
                                                              int32_t height)
-      -> std::array<V2dInt, NUM_CIRCLE_PATHS>;
+      -> std::array<Point2dInt, NUM_CIRCLE_PATHS>;
   [[nodiscard]] static auto GetStartingCirclePositions(const IGoomRand& goomRand,
                                                        int32_t width,
                                                        int32_t height)
-      -> std::array<V2dInt, NUM_CIRCLE_PATHS>;
+      -> std::array<Point2dInt, NUM_CIRCLE_PATHS>;
   static constexpr uint32_t NUM_COLOR_STEPS = 20;
   std::vector<TValue> m_colorTs;
   [[nodiscard]] static auto GetInitialColorTs() -> std::vector<TValue>;
@@ -102,14 +102,14 @@ private:
   void ResetCentreTargetPosition();
   static constexpr float POSITION_MARGIN = 0.01F;
   void DrawNextCircles();
-  [[nodiscard]] auto GetCircleCentrePositions() const -> std::array<V2dInt, NUM_CIRCLE_PATHS>;
-  [[nodiscard]] auto GetNextTargetPosition() const -> V2dInt;
-  void DrawCircle(const V2dInt& centre,
+  [[nodiscard]] auto GetCircleCentrePositions() const -> std::array<Point2dInt, NUM_CIRCLE_PATHS>;
+  [[nodiscard]] auto GetNextTargetPosition() const -> Point2dInt;
+  void DrawCircle(const Point2dInt& centre,
                   uint32_t diameter,
                   const Pixel& color,
                   const Pixel& lowColor);
-  void DrawLine(const V2dInt& pos1,
-                const V2dInt& pos2,
+  void DrawLine(const Point2dInt& pos1,
+                const Point2dInt& pos2,
                 const Pixel& color,
                 const Pixel& lowColor,
                 uint8_t lineThickness);
@@ -137,7 +137,7 @@ void CirclesFx::SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> wei
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
 }
 
-void CirclesFx::SetZoomMidPoint(const V2dInt& zoomMidPoint)
+void CirclesFx::SetZoomMidPoint(const Point2dInt& zoomMidPoint)
 {
   m_fxImpl->SetZoomMidPoint(zoomMidPoint);
 }
@@ -225,11 +225,11 @@ auto CirclesFx::CirclesFxImpl::GetInitialColorTs() -> std::vector<TValue>
 auto CirclesFx::CirclesFxImpl::GetRandomStartingCirclePositions(const IGoomRand& goomRand,
                                                                 const int32_t width,
                                                                 const int32_t height)
-    -> std::array<V2dInt, NUM_CIRCLE_PATHS>
+    -> std::array<Point2dInt, NUM_CIRCLE_PATHS>
 {
   constexpr int32_t MARGIN = 50;
 
-  std::array<V2dInt, NUM_CIRCLE_PATHS> randomStartingCirclePositions{
+  std::array<Point2dInt, NUM_CIRCLE_PATHS> randomStartingCirclePositions{
       GetStartingCirclePositions(goomRand, width, height)};
   for (size_t i = 0; i < NUM_CIRCLE_PATHS; ++i)
   {
@@ -242,14 +242,14 @@ auto CirclesFx::CirclesFxImpl::GetRandomStartingCirclePositions(const IGoomRand&
 
 auto CirclesFx::CirclesFxImpl::GetStartingCirclePositions(
     [[maybe_unused]] const IGoomRand& goomRand, const int32_t width, const int32_t height)
-    -> std::array<V2dInt, NUM_CIRCLE_PATHS>
+    -> std::array<Point2dInt, NUM_CIRCLE_PATHS>
 {
   //  const float aRadius = (0.5F * static_cast<float>(width - MARGIN));
   const float aRadius = (0.5F * static_cast<float>(height));
   const float bRadius = (0.5F * static_cast<float>(height));
-  const V2dInt centre = {width / 2, height / 2};
+  const Point2dInt centre = {width / 2, height / 2};
 
-  std::array<V2dInt, NUM_CIRCLE_PATHS> startingCirclePositions{};
+  std::array<Point2dInt, NUM_CIRCLE_PATHS> startingCirclePositions{};
   const float angleStep = UTILS::m_two_pi / static_cast<float>(NUM_CIRCLE_PATHS);
   float angle = 0.0F;
   for (size_t i = 0; i < NUM_CIRCLE_PATHS; ++i)
@@ -257,7 +257,7 @@ auto CirclesFx::CirclesFxImpl::GetStartingCirclePositions(
     const auto x = static_cast<int32_t>(std::lround(aRadius * std::cos(angle)));
     const auto y = static_cast<int32_t>(std::lround(bRadius * std::sin(angle)));
 
-    startingCirclePositions.at(i) = centre + V2dInt{x, y};
+    startingCirclePositions.at(i) = centre + Point2dInt{x, y};
 
     angle += angleStep;
   }
@@ -315,7 +315,7 @@ inline void CirclesFx::CirclesFxImpl::ResetCentreTargetPosition()
   }
 
   constexpr int32_t MARGIN = 50;
-  const V2dInt randomPosition{
+  const Point2dInt randomPosition{
       m_goomRand.GetRandInRange(MARGIN, static_cast<int32_t>(m_draw.GetScreenWidth() - MARGIN)),
       m_goomRand.GetRandInRange(MARGIN, static_cast<int32_t>(m_draw.GetScreenHeight()) - MARGIN)};
 
@@ -323,7 +323,7 @@ inline void CirclesFx::CirclesFxImpl::ResetCentreTargetPosition()
   m_centreTargetPosition = lerp(m_zoomMidPoint, randomPosition, TARGET_T);
 }
 
-void CirclesFx::CirclesFxImpl::SetZoomMidPoint([[maybe_unused]] const V2dInt& zoomMidPoint)
+void CirclesFx::CirclesFxImpl::SetZoomMidPoint([[maybe_unused]] const Point2dInt& zoomMidPoint)
 {
   m_zoomMidPoint = zoomMidPoint;
 }
@@ -384,7 +384,7 @@ void CirclesFx::CirclesFxImpl::DrawNextCircles()
   const float brightness = m_positionT() < (1.0F - POSITION_MARGIN) ? 1.0F : BRIGHTNESS_CUT;
 
   constexpr uint32_t NUM_CIRCLES = NUM_CIRCLE_PATHS;
-  const std::array<V2dInt, NUM_CIRCLES> circleCentrePositions = GetCircleCentrePositions();
+  const std::array<Point2dInt, NUM_CIRCLES> circleCentrePositions = GetCircleCentrePositions();
 
   // Following was worth a try, but looked a bit too flat.
   //   constexpr float HALFWAY_T = 0.5F;
@@ -395,7 +395,7 @@ void CirclesFx::CirclesFxImpl::DrawNextCircles()
   const uint32_t fixedCircleDiameter = m_goomRand.GetRandInRange(
       static_cast<uint32_t>(MIN_DIAMETER + 2), static_cast<uint32_t>(MAX_DIAMETER + 1));
 
-  V2dInt prevCircleCentre = circleCentrePositions[NUM_CIRCLES - 1];
+  Point2dInt prevCircleCentre = circleCentrePositions[NUM_CIRCLES - 1];
 
   for (size_t i = 0; i < NUM_CIRCLES; ++i)
   {
@@ -408,7 +408,7 @@ void CirclesFx::CirclesFxImpl::DrawNextCircles()
         GetFinalColor(1.1F * circleBrightness, m_circleColorMaps.at(i)->GetColor(tColor));
     //GetFinalLowColor(circleBrightness, m_circleLowColorMaps.at(i)->GetColor(tColor));
 
-    const V2dInt circleCentre = circleCentrePositions.at(i);
+    const Point2dInt circleCentre = circleCentrePositions.at(i);
 
     DrawCircle(circleCentre, fixedCircleDiameter, color, lowColor);
 
@@ -436,13 +436,13 @@ void CirclesFx::CirclesFxImpl::DrawNextCircles()
 }
 
 auto CirclesFx::CirclesFxImpl::GetCircleCentrePositions() const
-    -> std::array<V2dInt, NUM_CIRCLE_PATHS>
+    -> std::array<Point2dInt, NUM_CIRCLE_PATHS>
 {
   const float tPosition =
       m_positionT() < (1.0F - POSITION_MARGIN) ? m_positionT() : (1.0F - POSITION_MARGIN);
-  const V2dInt circleTargetPosition = GetNextTargetPosition();
+  const Point2dInt circleTargetPosition = GetNextTargetPosition();
 
-  std::array<V2dInt, NUM_CIRCLE_PATHS> circleCentrePositions{};
+  std::array<Point2dInt, NUM_CIRCLE_PATHS> circleCentrePositions{};
 
   for (size_t i = 0; i < NUM_CIRCLE_PATHS; ++i)
   {
@@ -450,9 +450,10 @@ auto CirclesFx::CirclesFxImpl::GetCircleCentrePositions() const
     //    const V2dInt newCircleStartingPosition =
     //        lerp(m_circleRandomStartingPositions.at(i), m_circleStartingPositions.at(i), newT);
 
-    const V2dInt newCircleStartingPosition = m_circleStartingPositions.at(i);
+    const Point2dInt newCircleStartingPosition = m_circleStartingPositions.at(i);
 
-    const V2dInt jitter = {m_goomRand.GetRandInRange(-2, +3), m_goomRand.GetRandInRange(-2, +3)};
+    const Point2dInt jitter = {m_goomRand.GetRandInRange(-2, +3),
+                               m_goomRand.GetRandInRange(-2, +3)};
     circleCentrePositions.at(i) =
         jitter + lerp(newCircleStartingPosition, circleTargetPosition, tPosition);
   }
@@ -470,7 +471,7 @@ inline void CirclesFx::CirclesFxImpl::UpdateTs()
   }
 }
 
-inline auto CirclesFx::CirclesFxImpl::GetNextTargetPosition() const -> V2dInt
+inline auto CirclesFx::CirclesFxImpl::GetNextTargetPosition() const -> Point2dInt
 {
   return m_centreTargetPosition;
 }
@@ -495,7 +496,7 @@ inline auto CirclesFx::CirclesFxImpl::GetCorrectedColor(const float brightness,
   return GetGammaCorrection(brightness, GetIncreasedChroma(color));
 }
 
-void CirclesFx::CirclesFxImpl::DrawCircle(const V2dInt& centre,
+void CirclesFx::CirclesFxImpl::DrawCircle(const Point2dInt& centre,
                                           const uint32_t diameter,
                                           const Pixel& color,
                                           const Pixel& lowColor)
@@ -522,8 +523,8 @@ void CirclesFx::CirclesFxImpl::DrawCircle(const V2dInt& centre,
   m_draw.Bitmap(centre.x, centre.y, GetImageBitmap(diameter), {getColor1, getColor2});
 }
 
-inline void CirclesFx::CirclesFxImpl::DrawLine(const V2dInt& pos1,
-                                               const V2dInt& pos2,
+inline void CirclesFx::CirclesFxImpl::DrawLine(const Point2dInt& pos1,
+                                               const Point2dInt& pos2,
                                                const Pixel& color,
                                                const Pixel& lowColor,
                                                const uint8_t lineThickness)

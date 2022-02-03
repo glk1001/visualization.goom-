@@ -11,10 +11,10 @@
 #include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "point2d.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "v2d.h"
 
 #include <cmath>
 #include <cstdint>
@@ -51,7 +51,7 @@ private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
-  const V2dInt m_screenMidPoint;
+  const Point2dInt m_screenMidPoint;
   const uint32_t m_pointWidth;
   const uint32_t m_pointHeight;
 
@@ -96,12 +96,12 @@ private:
   void ChangeColors();
   [[nodiscard]] static auto GetLargeSoundFactor(const SoundInfo& soundInfo) -> float;
 
-  void DotFilter(const Pixel& color, const V2dInt& dotPosition, uint32_t radius);
+  void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
   [[nodiscard]] auto GetDotPosition(float xOffsetAmp,
                                     float yOffsetAmp,
                                     float xOffsetFreqDenom,
                                     float yOffsetFreqDenom,
-                                    uint32_t offsetCycle) const -> V2dInt;
+                                    uint32_t offsetCycle) const -> Point2dInt;
 
   static constexpr float GAMMA = 2.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
@@ -319,7 +319,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     const float dot0XFreqDenom = static_cast<float>(i) * 152.0F;
     const float dot0YFreqDenom = 128.0F;
     const uint32_t dot0Cycle = m_loopVar + (i * 2032);
-    const V2dInt dot0Position =
+    const Point2dInt dot0Position =
         GetDotPosition(dot0XOffsetAmp, dot0YOffsetAmp, dot0XFreqDenom, dot0YFreqDenom, dot0Cycle);
 
     const Pixel dot1Color = GetDotColor(1, t);
@@ -328,7 +328,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     const float dot1XFreqDenom = 96.0F;
     const float dot1YFreqDenom = static_cast<float>(i) * 80.0F;
     const uint32_t dot1Cycle = loopVarDivI;
-    const V2dInt dot1Position =
+    const Point2dInt dot1Position =
         GetDotPosition(dot1XOffsetAmp, dot1YOffsetAmp, dot1XFreqDenom, dot1YFreqDenom, dot1Cycle);
 
     const Pixel dot2Color = GetDotColor(2, t);
@@ -337,14 +337,14 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     const float dot2XFreqDenom = static_cast<float>(i) + 122.0F;
     const float dot2YFreqDenom = 134.0F;
     const uint32_t dot2Cycle = loopVarDivI;
-    const V2dInt dot2Position =
+    const Point2dInt dot2Position =
         GetDotPosition(dot2XOffsetAmp, dot2YOffsetAmp, dot2XFreqDenom, dot2YFreqDenom, dot2Cycle);
 
     const Pixel dot3Color = GetDotColor(3, t);
     const float dot3XFreqDenom = 58.0F;
     const float dot3YFreqDenom = static_cast<float>(i) * 66.0F;
     const uint32_t dot3Cycle = loopVarDivI;
-    const V2dInt dot3Position =
+    const Point2dInt dot3Position =
         GetDotPosition(dot3XOffsetAmp, dot3YOffsetAmp, dot3XFreqDenom, dot3YFreqDenom, dot3Cycle);
 
     const Pixel dot4Color = GetDotColor(4, t);
@@ -353,7 +353,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
     const float dot4XFreqDenom = 66.0F;
     const float dot4YFreqDenom = 74.0F;
     const uint32_t dot4Cycle = m_loopVar + (i * 500);
-    const V2dInt dot4Position =
+    const Point2dInt dot4Position =
         GetDotPosition(dot4XOffsetAmp, dot4YOffsetAmp, dot4XFreqDenom, dot4YFreqDenom, dot4Cycle);
 
     DotFilter(dot0Color, dot0Position, radius);
@@ -444,7 +444,8 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPosition(const float xOffsetAmp,
                                                        const float yOffsetAmp,
                                                        const float xOffsetFreqDenom,
                                                        const float yOffsetFreqDenom,
-                                                       const uint32_t offsetCycle) const -> V2dInt
+                                                       const uint32_t offsetCycle) const
+    -> Point2dInt
 {
   const auto xOffset = static_cast<int32_t>(
       xOffsetAmp * std::cos(static_cast<float>(offsetCycle) / xOffsetFreqDenom));
@@ -455,7 +456,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPosition(const float xOffsetAmp,
 }
 
 void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
-                                           const V2dInt& dotPosition,
+                                           const Point2dInt& dotPosition,
                                            const uint32_t radius)
 {
   const uint32_t diameter = (2 * radius) + 1; // must be odd

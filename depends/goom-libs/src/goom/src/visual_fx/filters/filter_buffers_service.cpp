@@ -1,16 +1,18 @@
 #include "filter_buffers_service.h"
 
+//#undef NO_LOGGING
+
 #include "filter_buffers.h"
 #include "filter_settings.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"
 #include "zoom_vector.h"
-//#undef NO_LOGGING
 #include "goom/logging.h"
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
+
 #undef NDEBUG
 #include <cassert>
 #include <cstdint>

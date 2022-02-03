@@ -1,7 +1,7 @@
 #pragma once
 
+#include "point2d.h"
 #include "utils/mathutils.h"
-#include "v2d.h"
 
 #include <cstdint>
 
@@ -17,11 +17,11 @@ public:
   static void SetScreenDimensions(uint32_t width, uint32_t height, float minScreenCoordVal);
   [[nodiscard]] static auto GetMinNormalizedCoordVal() -> float;
 
-  explicit NormalizedCoords(const V2dInt& screenCoords) noexcept;
-  explicit NormalizedCoords(const V2dFlt& normalized) noexcept;
+  explicit NormalizedCoords(const Point2dInt& screenCoords) noexcept;
+  explicit NormalizedCoords(const Point2dFlt& normalized) noexcept;
   NormalizedCoords(float xNormalized, float yNormalized) noexcept;
 
-  [[nodiscard]] auto GetScreenCoordsFlt() const -> V2dFlt;
+  [[nodiscard]] auto GetScreenCoordsFlt() const -> Point2dFlt;
 
   void Inc();
   void IncX();
@@ -29,7 +29,7 @@ public:
 
   [[nodiscard]] auto GetX() const -> float;
   [[nodiscard]] auto GetY() const -> float;
-  [[nodiscard]] auto ToFlt() const -> V2dFlt;
+  [[nodiscard]] auto ToFlt() const -> Point2dFlt;
   void SetX(float xNormalized);
   void SetY(float yNormalized);
 
@@ -43,10 +43,11 @@ private:
   static float s_ratioScreenToNormalizedCoord;
   static float s_ratioNormalizedToScreenCoord;
   static float s_minNormalizedCoordVal;
-  V2dFlt m_normalizedCoords;
+  Point2dFlt m_normalizedCoords;
 
-  [[nodiscard]] static auto NormalizedToScreenCoordsFlt(const V2dFlt& normalizedCoords) -> V2dFlt;
-  [[nodiscard]] static auto ScreenToNormalizedCoords(const V2dInt& screenCoords) -> V2dFlt;
+  [[nodiscard]] static auto NormalizedToScreenCoordsFlt(const Point2dFlt& normalizedCoords)
+      -> Point2dFlt;
+  [[nodiscard]] static auto ScreenToNormalizedCoords(const Point2dInt& screenCoords) -> Point2dFlt;
   [[nodiscard]] static auto ScreenToNormalizedCoord(int32_t screenCoord) -> float;
 };
 
@@ -58,13 +59,14 @@ private:
 [[nodiscard]] auto GetSqDistance(const NormalizedCoords& coords1, const NormalizedCoords& coords2)
     -> float;
 
-inline auto NormalizedCoords::NormalizedToScreenCoordsFlt(const V2dFlt& normalizedCoords) -> V2dFlt
+inline auto NormalizedCoords::NormalizedToScreenCoordsFlt(const Point2dFlt& normalizedCoords)
+    -> Point2dFlt
 {
   return {s_ratioNormalizedToScreenCoord * (normalizedCoords.x - MIN_NORMALIZED_COORD),
           s_ratioNormalizedToScreenCoord * (normalizedCoords.y - MIN_NORMALIZED_COORD)};
 }
 
-inline auto NormalizedCoords::ScreenToNormalizedCoords(const V2dInt& screenCoords) -> V2dFlt
+inline auto NormalizedCoords::ScreenToNormalizedCoords(const Point2dInt& screenCoords) -> Point2dFlt
 {
   return {ScreenToNormalizedCoord(screenCoords.x), ScreenToNormalizedCoord(screenCoords.y)};
 }
@@ -95,12 +97,12 @@ inline void NormalizedCoords::IncY()
   m_normalizedCoords.y += s_ratioScreenToNormalizedCoord;
 }
 
-inline NormalizedCoords::NormalizedCoords(const V2dInt& screenCoords) noexcept
+inline NormalizedCoords::NormalizedCoords(const Point2dInt& screenCoords) noexcept
   : m_normalizedCoords{ScreenToNormalizedCoords(screenCoords)}
 {
 }
 
-inline NormalizedCoords::NormalizedCoords(const V2dFlt& normalized) noexcept
+inline NormalizedCoords::NormalizedCoords(const Point2dFlt& normalized) noexcept
   : m_normalizedCoords{normalized}
 {
 }
@@ -110,7 +112,7 @@ inline NormalizedCoords::NormalizedCoords(const float xNormalized, const float y
 {
 }
 
-inline auto NormalizedCoords::GetScreenCoordsFlt() const -> V2dFlt
+inline auto NormalizedCoords::GetScreenCoordsFlt() const -> Point2dFlt
 {
   return NormalizedToScreenCoordsFlt(m_normalizedCoords);
 }
@@ -125,7 +127,7 @@ inline auto NormalizedCoords::GetY() const -> float
   return m_normalizedCoords.y;
 }
 
-inline auto NormalizedCoords::ToFlt() const -> V2dFlt
+inline auto NormalizedCoords::ToFlt() const -> Point2dFlt
 {
   return {GetX(), GetY()};
 }

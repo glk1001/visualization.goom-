@@ -123,7 +123,7 @@ private:
   UTILS::Parallel& m_parallel;
   const PluginInfo& m_goomInfo;
   const UTILS::IGoomRand& m_goomRand;
-  const V2dInt m_screenMidPoint;
+  const Point2dInt m_screenMidPoint;
   const std::string m_resourcesDirectory;
 
   struct ZoomFilterModeInfo

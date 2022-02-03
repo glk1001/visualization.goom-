@@ -1,8 +1,8 @@
 #include "tentacle_plotter.h"
 
 #include "draw/goom_draw.h"
+#include "point2d.h"
 #include "utils/mathutils.h"
-#include "v2d.h"
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {
@@ -87,7 +87,7 @@ constexpr int COORD_IGNORE_VAL = -666;
 void TentaclePlotter::Plot3D(const Tentacle3D& tentacle)
 {
   const float brightness = GetBrightness(tentacle);
-  const std::vector<V2dInt> points2D = Get2DTentaclePoints(tentacle);
+  const std::vector<Point2dInt> points2D = Get2DTentaclePoints(tentacle);
 
   for (size_t nodeNum = 0; nodeNum < (points2D.size() - 1); ++nodeNum)
   {
@@ -148,7 +148,7 @@ inline void TentaclePlotter::DrawNodeDot(const size_t nodeNum,
 }
 
 inline auto TentaclePlotter::Get2DTentaclePoints(const Tentacle3D& tentacle) const
-    -> std::vector<V2dInt>
+    -> std::vector<Point2dInt>
 {
   const std::vector<V3dFlt> vertices = tentacle.GetVertices();
   const float angleAboutY = GetTentacleAngleAboutY(tentacle);
@@ -259,9 +259,9 @@ inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) const 
 }
 
 auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
-    -> std::vector<V2dInt>
+    -> std::vector<Point2dInt>
 {
-  std::vector<V2dInt> points2D(points3D.size());
+  std::vector<Point2dInt> points2D(points3D.size());
 
   const int32_t xProj0 =
       points3D[0].ignore || (points3D[0].z <= 2)

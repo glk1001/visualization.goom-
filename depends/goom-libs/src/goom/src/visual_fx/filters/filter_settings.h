@@ -1,7 +1,7 @@
 #pragma once
 
 #include "goom/goom_graphic.h"
-#include "v2d.h"
+#include "point2d.h"
 
 #include <cstdint>
 #include <memory>
@@ -73,7 +73,7 @@ struct ZoomFilterEffectsSettings
   std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect;
   std::shared_ptr<Rotation> rotation;
 
-  V2dInt zoomMidPoint; // milieu de l'effet
+  Point2dInt zoomMidPoint; // milieu de l'effet
 
   bool imageVelocityEffect;
   bool tanEffect;

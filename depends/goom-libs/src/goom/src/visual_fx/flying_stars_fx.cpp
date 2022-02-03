@@ -10,11 +10,11 @@
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
+#include "point2d.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/mathutils.h"
-#include "v2d.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -61,9 +61,9 @@ enum class StarModes
 
 struct Star
 {
-  V2dFlt pos{};
-  V2dFlt velocity{};
-  V2dFlt acceleration{};
+  Point2dFlt pos{};
+  Point2dFlt velocity{};
+  Point2dFlt acceleration{};
   float age = 0.0;
   float vage = 0.0;
   std::shared_ptr<const IColorMap> dominantColormap{};
@@ -235,7 +235,7 @@ private:
 
   struct StarModeParams
   {
-    V2dInt pos{};
+    Point2dInt pos{};
     float gravityFactor = 1.0F;
     float windFactor = 1.0F;
     float vage = 0.0;
@@ -247,7 +247,7 @@ private:
   [[nodiscard]] auto GetFountainStarParams(float defaultRadius) const -> StarModeParams;
   void AddStarBombs(const StarModeParams& starModeParams, size_t maxStarsInBomb);
   [[nodiscard]] auto GetMaxStarsInABomb(float heightRatio) const -> size_t;
-  void AddABomb(const V2dInt& pos, float radius, float vage, float gravity, float sideWind);
+  void AddABomb(const Point2dInt& pos, float radius, float vage, float gravity, float sideWind);
   [[nodiscard]] auto GetBombAngle(const Star& star) const -> float;
   [[nodiscard]] auto GetRainBombAngle(const Star& star) const -> float;
   [[nodiscard]] auto GetFireworksBombAngle() const -> float;
@@ -1044,7 +1044,7 @@ void FlyingStarsFx::FlyingStarsImpl::AddStarBombs(const StarModeParams& starMode
 /**
  * Cree une nouvelle 'bombe', c'est a dire une particule appartenant a une fusee d'artifice.
  */
-void FlyingStarsFx::FlyingStarsImpl::AddABomb(const V2dInt& pos,
+void FlyingStarsFx::FlyingStarsImpl::AddABomb(const Point2dInt& pos,
                                               const float radius,
                                               const float vage,
                                               const float gravity,

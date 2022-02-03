@@ -6,11 +6,11 @@
 #include "noise.h"
 #include "normalized_coords.h"
 #include "planes.h"
+#include "point2d.h"
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
 #include "tan_effect.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 
 #include <functional>
 #include <memory>
@@ -98,9 +98,9 @@ private:
 
   [[nodiscard]] static auto GetMinVelocityVal(float velocityVal) -> float;
   [[nodiscard]] auto GetXYSpeedCoefficients(float sqDistFromZero,
-                                            const NormalizedCoords& coords) const -> V2dFlt;
-  [[nodiscard]] auto GetBaseSpeedCoefficients() const -> V2dFlt;
-  [[nodiscard]] auto GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt;
+                                            const NormalizedCoords& coords) const -> Point2dFlt;
+  [[nodiscard]] auto GetBaseSpeedCoefficients() const -> Point2dFlt;
+  [[nodiscard]] auto GetClampedSpeedCoeffs(const Point2dFlt& speedCoeffs) const -> Point2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
 
   [[nodiscard]] auto GetSpeedCoefficientsNameValueParams() const -> UTILS::NameValuePairs;
@@ -116,13 +116,14 @@ inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
                                                      const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  const V2dFlt speedCoeffs = GetClampedSpeedCoeffs(GetXYSpeedCoefficients(sqDistFromZero, coords));
+  const Point2dFlt speedCoeffs =
+      GetClampedSpeedCoeffs(GetXYSpeedCoefficients(sqDistFromZero, coords));
   return {speedCoeffs.x * coords.GetX(), speedCoeffs.y * coords.GetY()};
 }
 
 inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero,
                                                       const NormalizedCoords& coords) const
-    -> V2dFlt
+    -> Point2dFlt
 {
   return m_filterEffectsSettings->speedCoefficientsEffect->GetSpeedCoefficients(
       GetBaseSpeedCoefficients(), sqDistFromZero, coords);
@@ -131,14 +132,15 @@ inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero
   // vy = Y * tan(dist);
 }
 
-inline auto ZoomVectorEffects::GetBaseSpeedCoefficients() const -> V2dFlt
+inline auto ZoomVectorEffects::GetBaseSpeedCoefficients() const -> Point2dFlt
 {
   const float speedCoeff =
       (1.0F + m_filterEffectsSettings->vitesse.GetRelativeSpeed()) / SPEED_COEFF_DENOMINATOR;
   return {speedCoeff, speedCoeff};
 }
 
-inline auto ZoomVectorEffects::GetClampedSpeedCoeffs(const V2dFlt& speedCoeffs) const -> V2dFlt
+inline auto ZoomVectorEffects::GetClampedSpeedCoeffs(const Point2dFlt& speedCoeffs) const
+    -> Point2dFlt
 {
   return {GetClampedSpeedCoeff(speedCoeffs.x), GetClampedSpeedCoeff(speedCoeffs.y)};
 }

@@ -4,7 +4,7 @@
 
 namespace GOOM
 {
-struct V2dInt;
+struct Point2dInt;
 
 namespace VISUAL_FX
 {
@@ -28,7 +28,7 @@ public:
 
   virtual void Refresh(){};
   virtual void PostStateUpdate([[maybe_unused]] const bool wasActiveInPreviousState){};
-  virtual void SetZoomMidPoint([[maybe_unused]] const V2dInt& zoomMidPoint){};
+  virtual void SetZoomMidPoint([[maybe_unused]] const Point2dInt& zoomMidPoint){};
 
   virtual void Finish() = 0;
 };

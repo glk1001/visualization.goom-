@@ -7,11 +7,11 @@
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
+#include "point2d.h"
 #include "utils/mathutils.h"
 #include "utils/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
-#include "v2d.h"
 
 #include <array>
 #undef NDEBUG
@@ -100,7 +100,7 @@ class ParametricPath : public LinearTimePath
 public:
   explicit ParametricPath(const TValue& t) noexcept;
 
-  [[nodiscard]] auto GetNextPoint() const -> V2dInt override;
+  [[nodiscard]] auto GetNextPoint() const -> Point2dInt override;
 
 private:
   static constexpr float DEFAULT_B = 350.0F;
@@ -113,16 +113,16 @@ private:
 
 ParametricPath::ParametricPath(const TValue& t) noexcept
   : LinearTimePath{
-        V2dInt{0, 0},
-        V2dInt{0, 0},
+        Point2dInt{0, 0},
+        Point2dInt{0, 0},
         t
 }
 {
 }
 
-auto ParametricPath::GetNextPoint() const -> V2dInt
+auto ParametricPath::GetNextPoint() const -> Point2dInt
 {
-  const V2dInt point{
+  const Point2dInt point{
       static_cast<int32_t>(std::round((m_b * std::cos(m_kX * GetT())) * std::cos(GetT()))),
       static_cast<int32_t>(std::round((m_b * std::cos(m_kY * GetT())) * std::sin(GetT()))),
   };
@@ -227,12 +227,12 @@ private:
   const Weights<LowColorTypes> m_lowColorTypes;
 
   void InitShapes(float radiusEdgeOffset);
-  void DrawShape(const Shape& shape, const V2dInt& centreOffset) const;
-  void DrawInteriorShape(const V2dInt& shapeCentrePos, const ShapeColors& allColors) const;
-  void DrawHexOutline(const V2dInt& hexCentre,
+  void DrawShape(const Shape& shape, const Point2dInt& centreOffset) const;
+  void DrawInteriorShape(const Point2dInt& shapeCentrePos, const ShapeColors& allColors) const;
+  void DrawHexOutline(const Point2dInt& hexCentre,
                       const ShapeColors& allColors,
                       uint8_t lineThickness) const;
-  void DrawOuterCircle(const V2dInt& shapeCentrePos, const ShapeColors& allColors) const;
+  void DrawOuterCircle(const Point2dInt& shapeCentrePos, const ShapeColors& allColors) const;
 };
 
 const float Tube::NORMAL_CENTRE_SPEED = NML_CENTRE_SPEED;
@@ -376,7 +376,7 @@ public:
   [[nodiscard]] auto GetColors(LowColorTypes lowColorType,
                                uint32_t circleNum,
                                const Shape& shape,
-                               const V2dInt& shapeCentrePos) -> ShapeColors;
+                               const Point2dInt& shapeCentrePos) -> ShapeColors;
   void UpdateAllTValues();
 
 private:
@@ -423,7 +423,8 @@ private:
 
   uint32_t m_stripeWidth = MIN_STRIPE_WIDTH;
   [[nodiscard]] auto GetShapeNumToUse(uint32_t shapeNum) const -> uint32_t;
-  [[nodiscard]] auto GetBrightness(const Shape& shape, const V2dInt& shapeCentrePos) const -> float;
+  [[nodiscard]] auto GetBrightness(const Shape& shape, const Point2dInt& shapeCentrePos) const
+      -> float;
 
   [[nodiscard]] auto GetShapeColors(uint32_t shapeNum, float brightness) const -> ShapeColors;
   [[nodiscard]] auto GetCircleColors(uint32_t circleNum, float brightness) const -> ShapeColors;
@@ -507,7 +508,7 @@ Tube::TubeImpl::TubeImpl(const uint32_t tubeId,
 
 void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
 {
-  const V2dInt middlePos{static_cast<int32_t>(m_screenWidth / 2),
+  const Point2dInt middlePos{static_cast<int32_t>(m_screenWidth / 2),
                          static_cast<int32_t>(m_screenHeight / 2)};
   const auto radius =
       (0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight))) - radiusEdgeOffset;
@@ -523,11 +524,11 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
     const float sinAngle = std::sin(angle);
     const float xFrom = radius * cosAngle;
     const float yFrom = radius * sinAngle;
-    const V2dInt fromPos = middlePos + V2dInt{static_cast<int32_t>(std::round(xFrom)),
+    const Point2dInt fromPos = middlePos + Point2dInt{static_cast<int32_t>(std::round(xFrom)),
                                               static_cast<int32_t>(std::round(yFrom))};
     const float xTo = radius * std::cos(m_pi + angle);
     const float yTo = radius * std::sin(m_pi + angle);
-    const V2dInt toPos = middlePos + V2dInt{static_cast<int32_t>(std::round(xTo)),
+    const Point2dInt toPos = middlePos + Point2dInt{static_cast<int32_t>(std::round(xTo)),
                                             static_cast<int32_t>(std::round(yTo))};
 
     shape.shapeNum = shapeNum;
@@ -682,7 +683,7 @@ void Tube::TubeImpl::DrawShapes()
   m_hexLen = GetHexLen();
   m_interiorShapeSize = GetInteriorShapeSize(m_hexLen);
 
-  const V2dInt centreOffset = m_getTransformedCentre(m_tubeId, m_centrePath->GetNextPoint());
+  const Point2dInt centreOffset = m_getTransformedCentre(m_tubeId, m_centrePath->GetNextPoint());
   for (const auto& shape : m_shapes)
   {
     DrawShape(shape, centreOffset);
@@ -748,12 +749,12 @@ inline auto Tube::TubeImpl::GetInteriorShapeSize(const float hexLen) -> uint32_t
       std::round(m_goomRand.GetRandInRange(MIN_SIZE_FACTOR, MAX_SIZE_FACTOR) * hexLen));
 }
 
-void Tube::TubeImpl::DrawShape(const Shape& shape, const V2dInt& centreOffset) const
+void Tube::TubeImpl::DrawShape(const Shape& shape, const Point2dInt& centreOffset) const
 {
   const int32_t jitterXOffset = m_goomRand.GetRandInRange(0, m_maxJitterOffset + 1);
   const int32_t jitterYOffset = jitterXOffset;
-  const V2dInt jitterOffset{jitterXOffset, jitterYOffset};
-  const V2dInt shapeCentrePos = shape.path->GetNextPoint() + jitterOffset + centreOffset;
+  const Point2dInt jitterOffset{jitterXOffset, jitterYOffset};
+  const Point2dInt shapeCentrePos = shape.path->GetNextPoint() + jitterOffset + centreOffset;
 
   const ShapeColors allColors = m_colorizer->GetColors(
       m_currentLowColorType, static_cast<uint32_t>(m_circleGroupTimer.GetCurrentCount()), shape,
@@ -772,7 +773,7 @@ void Tube::TubeImpl::DrawShape(const Shape& shape, const V2dInt& centreOffset) c
   }
 }
 
-void Tube::TubeImpl::DrawHexOutline(const V2dInt& hexCentre,
+void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
                                     const ShapeColors& allColors,
                                     const uint8_t lineThickness) const
 {
@@ -808,7 +809,7 @@ void Tube::TubeImpl::DrawHexOutline(const V2dInt& hexCentre,
   }
 }
 
-inline void Tube::TubeImpl::DrawInteriorShape(const V2dInt& shapeCentrePos,
+inline void Tube::TubeImpl::DrawInteriorShape(const Point2dInt& shapeCentrePos,
                                               const ShapeColors& allColors) const
 {
   const std::vector<Pixel> colors{allColors.innerColor, allColors.innerLowColor};
@@ -816,7 +817,7 @@ inline void Tube::TubeImpl::DrawInteriorShape(const V2dInt& shapeCentrePos,
                              SmallImageBitmaps::ImageNames::SPHERE, m_interiorShapeSize, colors);
 }
 
-inline void Tube::TubeImpl::DrawOuterCircle(const V2dInt& shapeCentrePos,
+inline void Tube::TubeImpl::DrawOuterCircle(const Point2dInt& shapeCentrePos,
                                             const ShapeColors& allColors) const
 {
   constexpr float OUTER_CIRCLE_RADIUS_FACTOR = 1.5;
@@ -977,7 +978,8 @@ void ShapeColorizer::UpdateAllTValues()
   m_mixT.Increment();
 }
 
-auto ShapeColorizer::GetBrightness(const Shape& shape, const V2dInt& shapeCentrePos) const -> float
+auto ShapeColorizer::GetBrightness(const Shape& shape, const Point2dInt& shapeCentrePos) const
+    -> float
 {
   constexpr float MIN_BRIGHTNESS = 0.5F;
   const float brightness =
@@ -997,7 +999,7 @@ auto ShapeColorizer::GetBrightness(const Shape& shape, const V2dInt& shapeCentre
 auto ShapeColorizer::GetColors(const LowColorTypes lowColorType,
                                const uint32_t circleNum,
                                const Shape& shape,
-                               const V2dInt& shapeCentrePos) -> ShapeColors
+                               const Point2dInt& shapeCentrePos) -> ShapeColors
 {
   const float brightness = GetBrightness(shape, shapeCentrePos);
 
@@ -1212,7 +1214,7 @@ BrightnessAttenuation::BrightnessAttenuation(const uint32_t screenWidth,
 {
 }
 
-auto BrightnessAttenuation::GetPositionBrightness(const V2dInt& pos,
+auto BrightnessAttenuation::GetPositionBrightness(const Point2dInt& pos,
                                                   const float minBrightnessPastCutoff) const
     -> float
 {
@@ -1221,7 +1223,7 @@ auto BrightnessAttenuation::GetPositionBrightness(const V2dInt& pos,
                                          : (minBrightnessPastCutoff + distFromCentre);
 }
 
-inline auto BrightnessAttenuation::GetDistFromCentreFactor(const V2dInt& pos) const -> float
+inline auto BrightnessAttenuation::GetDistFromCentreFactor(const Point2dInt& pos) const -> float
 {
   return static_cast<float>(Sq(pos.x) + Sq(pos.y)) / static_cast<float>(m_maxRSquared);
 }

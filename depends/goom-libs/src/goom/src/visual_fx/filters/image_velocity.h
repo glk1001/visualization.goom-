@@ -2,9 +2,9 @@
 
 #include "image_displacement_list.h"
 #include "normalized_coords.h"
+#include "point2d.h"
 #include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 
 #include <string>
 
@@ -18,7 +18,7 @@ public:
 
   void SetRandomParams();
 
-  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> V2dFlt;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> Point2dFlt;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
@@ -28,7 +28,7 @@ private:
   ImageDisplacementList m_imageDisplacementList;
 };
 
-inline auto ImageVelocity::GetVelocity(const NormalizedCoords& coords) const -> V2dFlt
+inline auto ImageVelocity::GetVelocity(const NormalizedCoords& coords) const -> Point2dFlt
 {
   return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(
       coords.ToFlt());

@@ -118,7 +118,7 @@ public:
   void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
 
-  void SetZoomMidPoint(const V2dInt& zoomMidPoint);
+  void SetZoomMidPoint(const Point2dInt& zoomMidPoint);
 
   void Start();
   void Resume();
@@ -149,17 +149,17 @@ private:
   std::vector<Tube> m_tubes{};
   static constexpr float ALL_JOIN_CENTRE_STEP = 0.001F;
   TValue m_allJoinCentreT{TValue::StepType::CONTINUOUS_REVERSIBLE, ALL_JOIN_CENTRE_STEP};
-  const V2dInt m_screenMidPoint;
-  V2dInt m_targetMiddlePos{0, 0};
-  V2dInt m_previousMiddlePos{0, 0};
+  const Point2dInt m_screenMidPoint;
+  Point2dInt m_targetMiddlePos{0, 0};
+  Point2dInt m_previousMiddlePos{0, 0};
   static constexpr uint32_t MIDDLE_POS_NUM_STEPS = 100;
   TValue m_middlePosT{TValue::StepType::SINGLE_CYCLE, MIDDLE_POS_NUM_STEPS, TValue::MAX_T_VALUE};
-  [[nodiscard]] auto GetMiddlePos() const -> V2dInt;
+  [[nodiscard]] auto GetMiddlePos() const -> Point2dInt;
   Timer m_allStayInCentreTimer;
   Timer m_allStayAwayFromCentreTimer;
   void IncrementAllJoinCentreT();
-  [[nodiscard]] auto GetTransformedCentrePoint(uint32_t tubeId, const V2dInt& centre) const
-      -> V2dInt;
+  [[nodiscard]] auto GetTransformedCentrePoint(uint32_t tubeId, const Point2dInt& centre) const
+      -> Point2dInt;
 
   static constexpr float JITTER_STEP = 0.1F;
   TValue m_shapeJitterT{TValue::StepType::CONTINUOUS_REVERSIBLE, JITTER_STEP};
@@ -225,7 +225,7 @@ void TubesFx::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> wei
   m_fxImpl->SetWeightedLowColorMaps(weightedMaps);
 }
 
-void TubesFx::SetZoomMidPoint(const V2dInt& zoomMidPoint)
+void TubesFx::SetZoomMidPoint(const Point2dInt& zoomMidPoint)
 {
   m_fxImpl->SetZoomMidPoint(zoomMidPoint);
 }
@@ -333,7 +333,7 @@ inline void TubesFx::TubeFxImpl::SetWeightedLowColorMaps(
   }
 }
 
-inline void TubesFx::TubeFxImpl::SetZoomMidPoint(const V2dInt& zoomMidPoint)
+inline void TubesFx::TubeFxImpl::SetZoomMidPoint(const Point2dInt& zoomMidPoint)
 {
   m_previousMiddlePos = GetMiddlePos();
   m_middlePosT.Reset();
@@ -348,7 +348,7 @@ inline void TubesFx::TubeFxImpl::SetZoomMidPoint(const V2dInt& zoomMidPoint)
   }
 }
 
-inline auto TubesFx::TubeFxImpl::GetMiddlePos() const -> V2dInt
+inline auto TubesFx::TubeFxImpl::GetMiddlePos() const -> Point2dInt
 {
   return lerp(m_previousMiddlePos, m_targetMiddlePos, m_middlePosT());
 }
@@ -470,7 +470,7 @@ inline auto TubesFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& c
 
 void TubesFx::TubeFxImpl::InitPaths()
 {
-  const auto transformCentre = [this](const uint32_t tubeId, const V2dInt& centre)
+  const auto transformCentre = [this](const uint32_t tubeId, const Point2dInt& centre)
   { return this->GetTransformedCentrePoint(tubeId, centre); };
   const float centreStep = 1.0F / static_cast<float>(m_tubes.size());
   float centreT = 0.0;
@@ -698,7 +698,7 @@ void TubesFx::TubeFxImpl::UpdatePreviousShapesSettings()
 }
 
 auto TubesFx::TubeFxImpl::GetTransformedCentrePoint(const uint32_t tubeId,
-                                                    const V2dInt& centre) const -> V2dInt
+                                                    const Point2dInt& centre) const -> Point2dInt
 {
   if ((!m_allowMovingAwayFromCentre) || TUBE_SETTINGS.at(tubeId).noMoveFromCentre)
   {

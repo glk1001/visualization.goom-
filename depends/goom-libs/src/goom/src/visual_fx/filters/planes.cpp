@@ -95,7 +95,7 @@ Planes::Planes(const IGoomRand& goomRand) noexcept
 {
 }
 
-void Planes::SetRandomParams(const V2dInt& zoomMidPoint, const uint32_t screenWidth)
+void Planes::SetRandomParams(const Point2dInt& zoomMidPoint, const uint32_t screenWidth)
 {
   SetParams(GetRandomParams(m_goomRand, m_planeEffectWeights.GetRandomWeighted(), zoomMidPoint,
                             screenWidth));
@@ -103,7 +103,7 @@ void Planes::SetRandomParams(const V2dInt& zoomMidPoint, const uint32_t screenWi
 
 auto Planes::GetRandomParams(const IGoomRand& goomRand,
                              const PlaneEffectEvents planeEffectsEvent,
-                             const V2dInt& zoomMidPoint,
+                             const Point2dInt& zoomMidPoint,
                              const uint32_t screenWidth) -> Params
 {
   const bool muchSpiralling = goomRand.ProbabilityOf(PROB_MUCH_SPIRALLING);
@@ -116,7 +116,7 @@ auto Planes::GetRandomParams(const IGoomRand& goomRand,
 auto Planes::GetRandomPlaneEffects(const IGoomRand& goomRand,
                                    const PlaneEffectEvents planeEffectsEvent,
                                    const bool muchSpiralling,
-                                   const V2dInt& zoomMidPoint,
+                                   const Point2dInt& zoomMidPoint,
                                    const uint32_t screenWidth) -> PlaneEffects
 {
   const IntAmplitudes intAmplitudes = GetRandomIntAmplitudes(goomRand, planeEffectsEvent);
@@ -201,7 +201,7 @@ auto Planes::GetRandomIntAmplitudes(const IGoomRand& goomRand,
 
 auto Planes::GetAdjustedIntAmplitudes(const IGoomRand& goomRand,
                                       const IntAmplitudes& intAmplitudes,
-                                      const V2dInt& zoomMidPoint,
+                                      const Point2dInt& zoomMidPoint,
                                       const uint32_t screenWidth) -> IntAmplitudes
 {
   IntAmplitudes adjustedIntAmplitudes = intAmplitudes;

@@ -2,10 +2,10 @@
 
 #include "image_displacement_list.h"
 #include "normalized_coords.h"
+#include "point2d.h"
 #include "speed_coefficients_effect.h"
 #include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 
 #include <string>
 
@@ -19,9 +19,10 @@ public:
 
   void SetRandomParams() override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
-                                          const NormalizedCoords& coords) const -> V2dFlt override;
+                                          const NormalizedCoords& coords) const
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs override;
@@ -33,9 +34,9 @@ private:
 };
 
 inline auto ImageSpeedCoefficients::GetSpeedCoefficients(
-    [[maybe_unused]] const V2dFlt& baseSpeedCoeffs,
+    [[maybe_unused]] const Point2dFlt& baseSpeedCoeffs,
     [[maybe_unused]] const float sqDistFromZero,
-    const NormalizedCoords& coords) const -> V2dFlt
+    const NormalizedCoords& coords) const -> Point2dFlt
 {
   return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(
       coords.ToFlt());

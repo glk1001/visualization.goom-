@@ -1,11 +1,11 @@
 #include "catch2/catch.hpp"
+#include "point2d.h"
 #include "utils/mathutils.h"
-#include "v2d.h"
 #include "visual_fx/filters/normalized_coords.h"
 
 #include <cmath>
 
-using GOOM::V2dInt;
+using GOOM::Point2dInt;
 using GOOM::UTILS::floats_equal;
 using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;
 
@@ -28,13 +28,15 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
 
   SECTION("Min coords")
   {
-    const NormalizedCoords coords{V2dInt{0, 0}};
+    const NormalizedCoords coords{
+        Point2dInt{0, 0}
+    };
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), NormalizedCoords::MIN_NORMALIZED_COORD));
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
     REQUIRE(floats_equal(coords.GetY(), NormalizedCoords::MIN_NORMALIZED_COORD));
 
-    const V2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
+    const Point2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     REQUIRE(screenCoords.x == 0);
     UNSCOPED_INFO("screenCoords.y = " << screenCoords.y);
@@ -43,7 +45,9 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
 
   SECTION("Max coords")
   {
-    const NormalizedCoords coords{V2dInt{WIDTH - 1U, HEIGHT - 1U}};
+    const NormalizedCoords coords{
+        Point2dInt{WIDTH - 1U, HEIGHT - 1U}
+    };
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), NormalizedCoords::MAX_NORMALIZED_COORD));
     const float maxY =
@@ -54,7 +58,7 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
     UNSCOPED_INFO("maxY = " << maxY);
     REQUIRE(floats_equal(coords.GetY(), maxY, MIN_COORD_VAL));
 
-    const V2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
+    const Point2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     REQUIRE(screenCoords.x == WIDTH - 1);
     UNSCOPED_INFO("screenCoords.y = " << screenCoords.y);
@@ -63,13 +67,15 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
 
   SECTION("Zero coords (middle)")
   {
-    const NormalizedCoords coords{V2dInt{WIDTH / 2, WIDTH / 2}};
+    const NormalizedCoords coords{
+        Point2dInt{WIDTH / 2, WIDTH / 2}
+    };
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), 0.0F, MIN_COORD_VAL));
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
     REQUIRE(floats_equal(coords.GetY(), 0.0F, MIN_COORD_VAL));
 
-    const V2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
+    const Point2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     REQUIRE(screenCoords.x == WIDTH / 2);
     UNSCOPED_INFO("screenCoords.y = " << screenCoords.y);
@@ -84,7 +90,7 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
     REQUIRE(floats_equal(coords.GetY(), 0.3F));
 
-    const V2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
+    const Point2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
     const int32_t x = ConvertToScreen(0.5F);
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     UNSCOPED_INFO("x = " << x);
@@ -98,7 +104,9 @@ TEST_CASE("Normalized Coords Increments", "[CoordsIncrements]")
 
   SECTION("Inc")
   {
-    NormalizedCoords coords{V2dInt{0, 0}};
+    NormalizedCoords coords{
+        Point2dInt{0, 0}
+    };
     coords.Inc();
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));
@@ -107,14 +115,18 @@ TEST_CASE("Normalized Coords Increments", "[CoordsIncrements]")
   }
   SECTION("IncX")
   {
-    NormalizedCoords coords{V2dInt{0, 0}};
+    NormalizedCoords coords{
+        Point2dInt{0, 0}
+    };
     coords.IncX();
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));
   }
   SECTION("IncY")
   {
-    NormalizedCoords coords{V2dInt{0, 0}};
+    NormalizedCoords coords{
+        Point2dInt{0, 0}
+    };
     coords.IncY();
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
     REQUIRE(floats_equal(coords.GetY(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));

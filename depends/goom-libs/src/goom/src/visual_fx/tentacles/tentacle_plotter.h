@@ -72,13 +72,14 @@ private:
                                     size_t nodeNum) const -> std::vector<Pixel>;
   [[nodiscard]] auto GetBrightness(const Tentacle3D& tentacle) const -> float;
   [[nodiscard]] auto GetBrightnessCut(const Tentacle3D& tentacle) const -> float;
-  [[nodiscard]] auto Get2DTentaclePoints(const Tentacle3D& tentacle) const -> std::vector<V2dInt>;
+  [[nodiscard]] auto Get2DTentaclePoints(const Tentacle3D& tentacle) const
+      -> std::vector<Point2dInt>;
   [[nodiscard]] auto GetTentacleAngleAboutY(const Tentacle3D& tentacle) const -> float;
   [[nodiscard]] static auto GetTransformedPoints(const std::vector<V3dFlt>& points,
                                                  const V3dFlt& translate,
                                                  float angle) -> std::vector<V3dFlt>;
   [[nodiscard]] auto GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
-      -> std::vector<V2dInt>;
+      -> std::vector<Point2dInt>;
   static void RotateAboutYAxis(float sinAngle,
                                float cosAngle,
                                const V3dFlt& srcPoint,

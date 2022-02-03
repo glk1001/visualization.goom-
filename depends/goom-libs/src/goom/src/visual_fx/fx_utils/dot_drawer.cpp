@@ -1,12 +1,12 @@
 #include "dot_drawer.h"
 
 #include "draw/goom_draw.h"
+#include "point2d.h"
 #include "utils/enumutils.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/mathutils.h"
-#include "v2d.h"
 
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
@@ -40,7 +40,9 @@ void DotDrawer::ChangeDotSizes()
   m_beadedLook = m_goomRand.ProbabilityOf(PROB_BEADED_LOOK);
 }
 
-void DotDrawer::DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors, const float brightness)
+void DotDrawer::DrawDots(const Point2dInt& pt,
+                         const std::vector<Pixel>& colors,
+                         const float brightness)
 {
   size_t dotSize = m_currentDotSize;
   if (m_beadedLook)

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "normalized_coords.h"
+#include "point2d.h"
 #include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 
 #include <string>
 
@@ -29,7 +29,7 @@ public:
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
 
-  virtual void SetRandomParams(const V2dInt& zoomMidPoint, uint32_t screenWidth);
+  virtual void SetRandomParams(const Point2dInt& zoomMidPoint, uint32_t screenWidth);
 
   enum class PlaneSwirlType
   {
@@ -94,13 +94,13 @@ private:
 
   [[nodiscard]] static auto GetRandomParams(const UTILS::IGoomRand& goomRand,
                                             PlaneEffectEvents planeEffectsEvent,
-                                            const V2dInt& zoomMidPoint,
+                                            const Point2dInt& zoomMidPoint,
                                             uint32_t screenWidth) -> Params;
 
   [[nodiscard]] static auto GetRandomPlaneEffects(const UTILS::IGoomRand& goomRand,
                                                   PlaneEffectEvents planeEffectsEvent,
                                                   bool muchSpiralling,
-                                                  const V2dInt& zoomMidPoint,
+                                                  const Point2dInt& zoomMidPoint,
                                                   uint32_t screenWidth) -> PlaneEffects;
   struct IntAmplitudes
   {
@@ -112,7 +112,7 @@ private:
       -> IntAmplitudes;
   [[nodiscard]] static auto GetAdjustedIntAmplitudes(const UTILS::IGoomRand& goomRand,
                                                      const IntAmplitudes& intAmplitudes,
-                                                     const V2dInt& zoomMidPoint,
+                                                     const Point2dInt& zoomMidPoint,
                                                      uint32_t screenWidth) -> IntAmplitudes;
   [[nodiscard]] static auto GetRandomEffectMultipliers(const UTILS::IGoomRand& goomRand,
                                                        bool muchSpiralling) -> Amplitudes;

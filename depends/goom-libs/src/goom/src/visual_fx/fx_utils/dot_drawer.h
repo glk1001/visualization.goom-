@@ -7,7 +7,7 @@
 namespace GOOM
 {
 class Pixel;
-struct V2dInt;
+struct Point2dInt;
 
 namespace DRAW
 {
@@ -47,7 +47,7 @@ public:
 
   void ChangeDotSizes();
 
-  void DrawDots(const V2dInt& pt, const std::vector<Pixel>& colors, float brightness);
+  void DrawDots(const Point2dInt& pt, const std::vector<Pixel>& colors, float brightness);
 
 private:
   DRAW::IGoomDraw& m_goomDraw;

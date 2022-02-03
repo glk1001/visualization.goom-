@@ -19,11 +19,11 @@
 //#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/spimpl.h"
+#include "point2d.h"
 #include "sound_info.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/mathutils.h"
-#include "v2d.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -149,7 +149,7 @@ private:
 
   struct PointAndColor
   {
-    V2dInt point;
+    Point2dInt point;
     Pixel color;
   };
   [[nodiscard]] auto GetAudioPoints(const Pixel& lineColor,
@@ -594,8 +594,8 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
   constexpr uint8_t THICKNESS = 1;
   const std::vector<PointAndColor> audioPoints = GetAudioPoints(lineColor, soundData);
 
-  V2dInt point1 = audioPoints[0].point;
-  V2dInt point2{};
+  Point2dInt point1 = audioPoints[0].point;
+  Point2dInt point2{};
 
   for (size_t i = 1; i < audioPoints.size(); ++i)
   {
@@ -659,13 +659,13 @@ void LinesFx::LinesImpl::SmoothCircleJoin(std::vector<PointAndColor>& audioPoint
   constexpr float T_STEP = 1.0F / static_cast<float>(NUM_POINTS_TO_LERP);
 
   const size_t lastPointIndex = audioPoints.size() - 1;
-  const V2dInt endDiff = audioPoints[0].point - audioPoints[lastPointIndex].point;
+  const Point2dInt endDiff = audioPoints[0].point - audioPoints[lastPointIndex].point;
   if ((0 == endDiff.x) && (0 == endDiff.y))
   {
     return;
   }
 
-  V2dInt diff = endDiff;
+  Point2dInt diff = endDiff;
   float t = 1.0F - T_STEP;
   for (size_t i = lastPointIndex; i > (audioPoints.size() - NUM_POINTS_TO_LERP); --i)
   {
@@ -697,8 +697,9 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
   const float sinAngle = std::sin(pt.angle);
   const float normalizedDataVal = m_maxNormalizedPeak * tData;
   assert(normalizedDataVal >= 0.0F);
-  const V2dInt nextPointData{static_cast<int>(pt.x + (m_amplitude * cosAngle * normalizedDataVal)),
-                             static_cast<int>(pt.y + (m_amplitude * sinAngle * normalizedDataVal))};
+  const Point2dInt nextPointData{
+      static_cast<int>(pt.x + (m_amplitude * cosAngle * normalizedDataVal)),
+      static_cast<int>(pt.y + (m_amplitude * sinAngle * normalizedDataVal))};
 
   const float brightness = m_currentBrightness * tData;
   const Pixel modColor =

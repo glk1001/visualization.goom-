@@ -1,8 +1,8 @@
 #pragma once
 
 #include "normalized_coords.h"
+#include "point2d.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 
 namespace GOOM::VISUAL_FX::FILTERS
 {
@@ -19,10 +19,10 @@ public:
 
   virtual void SetRandomParams() = 0;
 
-  [[nodiscard]] virtual auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] virtual auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                                   float sqDistFromZero,
                                                   const NormalizedCoords& coords) const
-      -> V2dFlt = 0;
+      -> Point2dFlt = 0;
 
   [[nodiscard]] virtual auto GetSpeedCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs = 0;

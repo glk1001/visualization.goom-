@@ -1,10 +1,10 @@
 #pragma once
 
 #include "normalized_coords.h"
+#include "point2d.h"
 #include "speed_coefficients_effect.h"
 #include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 
 namespace GOOM::VISUAL_FX::FILTERS
 {
@@ -21,9 +21,10 @@ public:
 
   void SetRandomParams() override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
-                                          const NormalizedCoords& coords) const -> V2dFlt override;
+                                          const NormalizedCoords& coords) const
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs override;
@@ -61,10 +62,10 @@ private:
                                                 float sqDistOffset) -> float;
 };
 
-inline auto CrystalBall::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+inline auto CrystalBall::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                               const float sqDistFromZero,
                                               [[maybe_unused]] const NormalizedCoords& coords) const
-    -> V2dFlt
+    -> Point2dFlt
 {
   return {GetSpeedCoefficient(baseSpeedCoeffs.x, sqDistFromZero, m_params.xAmplitude,
                               m_params.xSqDistMult, m_params.xSqDistOffset),

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "normalized_coords.h"
+#include "point2d.h"
 #include "speed_coefficients_effect.h"
 #include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
-#include "v2d.h"
 
 namespace GOOM::VISUAL_FX::FILTERS
 {
@@ -22,9 +22,10 @@ public:
 
   void SetRandomParams() override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                           float sqDistFromZero,
-                                          const NormalizedCoords& coords) const -> V2dFlt override;
+                                          const NormalizedCoords& coords) const
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs override;
@@ -46,20 +47,20 @@ private:
   void SetMode0RandomParams();
   void SetMode1RandomParams();
   void SetMode2RandomParams();
-  [[nodiscard]] auto GetMode0SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetMode0SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                                float sqDistFromZero,
-                                               const NormalizedCoords& coords) const -> V2dFlt;
-  [[nodiscard]] auto GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+                                               const NormalizedCoords& coords) const -> Point2dFlt;
+  [[nodiscard]] auto GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                                float sqDistFromZero,
-                                               const NormalizedCoords& coords) const -> V2dFlt;
-  [[nodiscard]] auto GetMode2SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+                                               const NormalizedCoords& coords) const -> Point2dFlt;
+  [[nodiscard]] auto GetMode2SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                                float sqDistFromZero,
-                                               const NormalizedCoords& coords) const -> V2dFlt;
+                                               const NormalizedCoords& coords) const -> Point2dFlt;
 };
 
-inline auto Speedway::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+inline auto Speedway::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                            const float sqDistFromZero,
-                                           const NormalizedCoords& coords) const -> V2dFlt
+                                           const NormalizedCoords& coords) const -> Point2dFlt
 {
   switch (m_mode)
   {
@@ -74,9 +75,9 @@ inline auto Speedway::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
   return {0.0F, 0.0F};
 }
 
-inline auto Speedway::GetMode0SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+inline auto Speedway::GetMode0SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                                 const float sqDistFromZero,
-                                                const NormalizedCoords& coords) const -> V2dFlt
+                                                const NormalizedCoords& coords) const -> Point2dFlt
 {
   constexpr float SQ_DIST_FACTOR = 0.01F;
   float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
@@ -91,9 +92,9 @@ inline auto Speedway::GetMode0SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
   return {xSpeedCoeff, ySpeedCoeff};
 }
 
-inline auto Speedway::GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+inline auto Speedway::GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                                 const float sqDistFromZero,
-                                                const NormalizedCoords& coords) const -> V2dFlt
+                                                const NormalizedCoords& coords) const -> Point2dFlt
 {
   float xAdd = -1.0F;
 
@@ -127,9 +128,9 @@ inline auto Speedway::GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
   return {xSpeedCoeff, ySpeedCoeff};
 }
 
-inline auto Speedway::GetMode2SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
+inline auto Speedway::GetMode2SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                                 const float sqDistFromZero,
-                                                const NormalizedCoords& coords) const -> V2dFlt
+                                                const NormalizedCoords& coords) const -> Point2dFlt
 {
   constexpr float SQ_DIST_FACTOR = 0.01F;
   float xAdd = SQ_DIST_FACTOR * sqDistFromZero;

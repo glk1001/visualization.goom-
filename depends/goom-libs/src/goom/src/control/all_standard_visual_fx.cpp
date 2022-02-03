@@ -1,9 +1,9 @@
 #include "all_standard_visual_fx.h"
 
 #include "goom_plugin_info.h"
+#include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/parallel_utils.h"
-#include "v2d.h"
 #include "visual_fx/circles_fx.h"
 #include "visual_fx/flying_stars_fx.h"
 #include "visual_fx/fx_helpers.h"
@@ -119,7 +119,7 @@ void AllStandardVisualFx::ResumeFx()
   }
 }
 
-void AllStandardVisualFx::SetZoomMidPoint(const V2dInt& zoomMidPoint)
+void AllStandardVisualFx::SetZoomMidPoint(const Point2dInt& zoomMidPoint)
 {
   for (const auto& currentlyDrawable : m_currentGoomDrawables)
   {

@@ -4,10 +4,10 @@
 
 #include "catch2/catch.hpp"
 #include "goom_plugin_info.h"
+#include "point2d.h"
 #include "utils/goom_rand.h"
 #include "utils/mathutils.h"
 #include "utils/parallel_utils.h"
-#include "v2d.h"
 #include "visual_fx/filters/filter_buffers.h"
 #include "visual_fx/filters/filter_settings.h"
 #include "visual_fx/filters/filter_zoom_vector.h"
@@ -16,7 +16,7 @@
 #include <cmath>
 
 using GOOM::PluginInfo;
-using GOOM::V2dInt;
+using GOOM::Point2dInt;
 using GOOM::UTILS::floats_equal;
 using GOOM::UTILS::GoomRand;
 using GOOM::UTILS::Parallel;
@@ -30,10 +30,10 @@ constexpr size_t HEIGHT = 70;
 constexpr const char* RESOURCES_DIRECTORY = "";
 static const GoomRand goomRand{};
 
-const V2dInt MID_PT = {static_cast<int32_t>(WIDTH) / 2, static_cast<int32_t>(HEIGHT) / 2};
-const V2dInt CONST_ZOOM_VECTOR_COORDS_1 = {16, 40};
-const V2dInt CONST_ZOOM_VECTOR_COORDS_2 = {32, 52};
-const V2dInt DUMMY_COORDS = {14, 38};
+const Point2dInt MID_PT = {static_cast<int32_t>(WIDTH) / 2, static_cast<int32_t>(HEIGHT) / 2};
+const Point2dInt CONST_ZOOM_VECTOR_COORDS_1 = {16, 40};
+const Point2dInt CONST_ZOOM_VECTOR_COORDS_2 = {32, 52};
+const Point2dInt DUMMY_COORDS = {14, 38};
 
 inline auto GetBuffPos(const int32_t x, const int32_t y) -> size_t
 {
@@ -50,15 +50,15 @@ public:
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) override;
 
-  [[nodiscard]] auto GetConstCoords() const -> const V2dInt& { return m_constCoords; }
-  void SetConstCoords(const V2dInt& coords) { m_constCoords = coords; }
+  [[nodiscard]] auto GetConstCoords() const -> const Point2dInt& { return m_constCoords; }
+  void SetConstCoords(const Point2dInt& coords) { m_constCoords = coords; }
 
   [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const
       -> NormalizedCoords override;
 
 private:
   const bool m_ReturnConst;
-  V2dInt m_constCoords = CONST_ZOOM_VECTOR_COORDS_1;
+  Point2dInt m_constCoords = CONST_ZOOM_VECTOR_COORDS_1;
 };
 
 void TestZoomVector::SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
@@ -77,7 +77,7 @@ auto TestZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> Norma
 
 using CoordTransforms = ZoomFilterBuffers::CoordTransforms;
 
-auto GetSourcePoint(const ZoomFilterBuffers& filterBuffers, const size_t buffPos) -> V2dInt
+auto GetSourcePoint(const ZoomFilterBuffers& filterBuffers, const size_t buffPos) -> Point2dInt
 {
   return filterBuffers.GetSourcePointInfo(buffPos).screenPoint;
 }
@@ -86,7 +86,7 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
 {
   constexpr int32_t TEST_X = 10;
   constexpr int32_t TEST_Y = 50;
-  const V2dInt TEST_SRCE_POINT = {TEST_X, TEST_Y};
+  const Point2dInt TEST_SRCE_POINT = {TEST_X, TEST_Y};
   static_assert((0 <= TEST_X) && (TEST_X < WIDTH), "Invalid X");
   static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
 
@@ -123,8 +123,8 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
     REQUIRE(DUMMY_NML_COORDS.Equals(identityZoomVector.GetZoomPoint(DUMMY_NML_COORDS)));
 
     // TranLerpFactor is zero so starting tranPoint should be srce identity buffer
-    const V2dInt expectedSrceIdentityPoint = TEST_SRCE_POINT;
-    const V2dInt srcePoint = GetSourcePoint(filterBuffers, GetBuffPos(TEST_X, TEST_Y));
+    const Point2dInt expectedSrceIdentityPoint = TEST_SRCE_POINT;
+    const Point2dInt srcePoint = GetSourcePoint(filterBuffers, GetBuffPos(TEST_X, TEST_Y));
     UNSCOPED_INFO("srcePoint.x = " << srcePoint.x);
     UNSCOPED_INFO("srcePoint.y = " << srcePoint.y);
     REQUIRE(expectedSrceIdentityPoint == srcePoint);
@@ -139,8 +139,8 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
 
     // tranPoint comes solely from the dest Zoom buffer which because we are using an
     // identity ZoomVectorFunc should be the identity point.
-    const V2dInt expectedSrceIdentityPoint = TEST_SRCE_POINT;
-    const V2dInt srcePoint = GetSourcePoint(filterBuffers, GetBuffPos(TEST_X, TEST_Y));
+    const Point2dInt expectedSrceIdentityPoint = TEST_SRCE_POINT;
+    const Point2dInt srcePoint = GetSourcePoint(filterBuffers, GetBuffPos(TEST_X, TEST_Y));
     UNSCOPED_INFO("expectedSrceIdentityPoint.x = " << expectedSrceIdentityPoint.x);
     UNSCOPED_INFO("expectedSrceIdentityPoint.y = " << expectedSrceIdentityPoint.y);
     UNSCOPED_INFO("srcePoint.x = " << srcePoint.x);
@@ -160,8 +160,8 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
 
     // tranPoint comes solely from the lerp middle of srce and dest Zoom buffer which
     // because we are using an identity ZoomVectorFunc should still be the identity point.
-    const V2dInt expectedSrceIdentityPoint = TEST_SRCE_POINT;
-    const V2dInt srcePoint = GetSourcePoint(filterBuffers, GetBuffPos(TEST_X, TEST_Y));
+    const Point2dInt expectedSrceIdentityPoint = TEST_SRCE_POINT;
+    const Point2dInt srcePoint = GetSourcePoint(filterBuffers, GetBuffPos(TEST_X, TEST_Y));
     UNSCOPED_INFO("srcePoint.x = " << srcePoint.x);
     UNSCOPED_INFO("srcePoint.y = " << srcePoint.y);
     REQUIRE(expectedSrceIdentityPoint == srcePoint);
@@ -202,7 +202,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
     REQUIRE(
         NML_CONST_ZOOM_VECTOR_COORDS_1.Equals(constantZoomVector.GetZoomPoint(DUMMY_NML_COORDS)));
     const NormalizedCoords normalizedMidPt{filterBuffers.GetBuffMidPoint()};
-    const V2dInt expectedTranPoint = CoordTransforms::NormalizedToTranPoint(
+    const Point2dInt expectedTranPoint = CoordTransforms::NormalizedToTranPoint(
         normalizedMidPt + NormalizedCoords{CONST_ZOOM_VECTOR_COORDS_1});
     UNSCOPED_INFO("filterBuffers.GetBuffMidPoint().x = " << filterBuffers.GetBuffMidPoint().x);
     UNSCOPED_INFO("filterBuffers.GetBuffMidPoint().y = " << filterBuffers.GetBuffMidPoint().y);
@@ -211,13 +211,13 @@ TEST_CASE("ZoomFilterBuffers Calculations")
     UNSCOPED_INFO("expectedTranPoint.x = " << expectedTranPoint.x);
     UNSCOPED_INFO("expectedTranPoint.y = " << expectedTranPoint.y);
 
-    const V2dInt expectedSrcePoint = CoordTransforms::TranToScreenPoint(expectedTranPoint);
+    const Point2dInt expectedSrcePoint = CoordTransforms::TranToScreenPoint(expectedTranPoint);
     UNSCOPED_INFO("expectedSrcePoint.x = " << expectedSrcePoint.x);
     UNSCOPED_INFO("expectedSrcePoint.y = " << expectedSrcePoint.y);
 
     for (size_t buffPos = 0; buffPos < WIDTH * HEIGHT; buffPos++)
     {
-      const V2dInt srcePoint = GetSourcePoint(filterBuffers, buffPos);
+      const Point2dInt srcePoint = GetSourcePoint(filterBuffers, buffPos);
       UNSCOPED_INFO("srcePoint.x = " << srcePoint.x);
       UNSCOPED_INFO("srcePoint.y = " << srcePoint.y);
 
@@ -244,27 +244,30 @@ TEST_CASE("ZoomFilterBuffers Calculations")
         // tranPoint comes from halfway between srce and dest Zoom buffer.
         REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS_1.Equals(
             constantZoomVector.GetZoomPoint(DUMMY_NML_COORDS)));
-        const NormalizedCoords normalizedSrcePt{V2dInt{x, y}};
-        const V2dInt expectedSrceTranPoint =
+        const NormalizedCoords normalizedSrcePt{
+            Point2dInt{x, y}
+        };
+        const Point2dInt expectedSrceTranPoint =
             CoordTransforms::NormalizedToTranPoint(normalizedSrcePt);
         const NormalizedCoords normalizedMidPt{filterBuffers.GetBuffMidPoint()};
         UNSCOPED_INFO("filterBuffers.GetBuffMidPoint().x = " << filterBuffers.GetBuffMidPoint().x);
         UNSCOPED_INFO("filterBuffers.GetBuffMidPoint().y = " << filterBuffers.GetBuffMidPoint().y);
         UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
         UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());
-        const V2dInt expectedDestTranPoint = CoordTransforms::NormalizedToTranPoint(
+        const Point2dInt expectedDestTranPoint = CoordTransforms::NormalizedToTranPoint(
             normalizedMidPt + NormalizedCoords{CONST_ZOOM_VECTOR_COORDS_1});
-        const V2dInt expectedTranPoint = {
+        const Point2dInt expectedTranPoint = {
             stdnew::lerp(expectedSrceTranPoint.x, expectedDestTranPoint.x, tLerp),
             stdnew::lerp(expectedSrceTranPoint.y, expectedDestTranPoint.y, tLerp)};
         UNSCOPED_INFO("expectedTranPoint.x = " << expectedTranPoint.x);
         UNSCOPED_INFO("expectedTranPoint.y = " << expectedTranPoint.y);
 
-        const V2dInt expectedScreenPoint = CoordTransforms::TranToScreenPoint(expectedTranPoint);
+        const Point2dInt expectedScreenPoint =
+            CoordTransforms::TranToScreenPoint(expectedTranPoint);
         UNSCOPED_INFO("expectedScreenPoint.x = " << expectedScreenPoint.x);
         UNSCOPED_INFO("expectedScreenPoint.y = " << expectedScreenPoint.y);
 
-        const V2dInt screenPoint = GetSourcePoint(filterBuffers, GetBuffPos(x, y));
+        const Point2dInt screenPoint = GetSourcePoint(filterBuffers, GetBuffPos(x, y));
         UNSCOPED_INFO("srcePoint.x = " << screenPoint.x);
         UNSCOPED_INFO("srcePoint.y = " << screenPoint.y);
 
@@ -345,9 +348,9 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
     // Get srce buffer points - should be all CONST_ZOOM_VECTOR_COORDS_1
     filterBuffers.SetTranLerpFactor(0);
     REQUIRE(0 == filterBuffers.GetTranLerpFactor());
-    const V2dInt expectedSrceTranPoint = CoordTransforms::NormalizedToTranPoint(
+    const Point2dInt expectedSrceTranPoint = CoordTransforms::NormalizedToTranPoint(
         normalizedMidPt + NormalizedCoords{CONST_ZOOM_VECTOR_COORDS_1});
-    const V2dInt expectedSrcePoint = CoordTransforms::TranToScreenPoint(expectedSrceTranPoint);
+    const Point2dInt expectedSrcePoint = CoordTransforms::TranToScreenPoint(expectedSrceTranPoint);
     UNSCOPED_INFO("expectedSrceTranPoint.x = " << expectedSrceTranPoint.x);
     UNSCOPED_INFO("expectedSrceTranPoint.y = " << expectedSrceTranPoint.y);
     UNSCOPED_INFO("expectedSrcePoint.x = " << expectedSrcePoint.x);
@@ -355,7 +358,7 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
 
     for (size_t buffPos = 0; buffPos < WIDTH * HEIGHT; buffPos++)
     {
-      const V2dInt srcePoint = GetSourcePoint(filterBuffers, GetBuffPos(TEST_X, TEST_Y));
+      const Point2dInt srcePoint = GetSourcePoint(filterBuffers, GetBuffPos(TEST_X, TEST_Y));
       UNSCOPED_INFO("srcePoint.x = " << srcePoint.x);
       UNSCOPED_INFO("srcePoint.y = " << srcePoint.y);
 
@@ -365,9 +368,9 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
     // Get dest buffer points - should be all CONST_ZOOM_VECTOR_COORDS_2
     filterBuffers.SetTranLerpFactor(filterBuffers.GetMaxTranLerpFactor());
     REQUIRE(filterBuffers.GetMaxTranLerpFactor() == filterBuffers.GetTranLerpFactor());
-    const V2dInt expectedDestTranPoint = CoordTransforms::NormalizedToTranPoint(
-        normalizedMidPt + NML_CONST_ZOOM_VECTOR_COORDS_2);
-    const V2dInt expectedDestPoint = CoordTransforms::TranToScreenPoint(expectedDestTranPoint);
+    const Point2dInt expectedDestTranPoint =
+        CoordTransforms::NormalizedToTranPoint(normalizedMidPt + NML_CONST_ZOOM_VECTOR_COORDS_2);
+    const Point2dInt expectedDestPoint = CoordTransforms::TranToScreenPoint(expectedDestTranPoint);
     UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
     UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());
     UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_2.x = " << NML_CONST_ZOOM_VECTOR_COORDS_2.GetX());
@@ -379,7 +382,7 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
 
     for (size_t buffPos = 0; buffPos < WIDTH * HEIGHT; buffPos++)
     {
-      const V2dInt destPoint = GetSourcePoint(filterBuffers, buffPos);
+      const Point2dInt destPoint = GetSourcePoint(filterBuffers, buffPos);
       UNSCOPED_INFO("destPoint.x = " << destPoint.x);
       UNSCOPED_INFO("destPoint.y = " << destPoint.y);
 
@@ -406,7 +409,7 @@ TEST_CASE("ZoomFilterBuffers Clipping", "[ZoomFilterBuffersClipping]")
 
   SECTION("Clipped ZoomBufferTranPoint")
   {
-    REQUIRE(V2dInt{0, 0} == filterBuffers.GetBuffMidPoint());
+    REQUIRE(Point2dInt{0, 0} == filterBuffers.GetBuffMidPoint());
 
     // Lerp to the dest buffer only
     filterBuffers.SetTranLerpFactor(filterBuffers.GetMaxTranLerpFactor());
@@ -423,7 +426,7 @@ TEST_CASE("ZoomFilterBuffers Clipping", "[ZoomFilterBuffersClipping]")
     REQUIRE(
         NML_CONST_ZOOM_VECTOR_COORDS_1.Equals(constantZoomVector.GetZoomPoint(DUMMY_NML_COORDS)));
     const NormalizedCoords normalizedMidPt{filterBuffers.GetBuffMidPoint()};
-    const V2dInt expectedTranPoint = CoordTransforms::NormalizedToTranPoint(
+    const Point2dInt expectedTranPoint = CoordTransforms::NormalizedToTranPoint(
         normalizedMidPt + NormalizedCoords{CONST_ZOOM_VECTOR_COORDS_1});
     // Because mid-point is zero, the trans point is negative and therefore clipped.
     REQUIRE(expectedTranPoint.x < 0);

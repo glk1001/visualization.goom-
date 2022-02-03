@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../v2d.h"
+#include "../point2d.h"
 #include "t_values.h"
 
 #include <cmath>
@@ -12,27 +12,27 @@ namespace GOOM::UTILS
 class IPath
 {
 public:
-  IPath(const V2dInt& startPos, const V2dInt& finishPos) noexcept;
+  IPath(const Point2dInt& startPos, const Point2dInt& finishPos) noexcept;
   IPath(const IPath&) noexcept = delete;
   IPath(IPath&&) noexcept = delete;
   auto operator=(const IPath&) -> IPath& = delete;
   auto operator=(IPath&&) -> IPath& = delete;
   virtual ~IPath() = default;
 
-  [[nodiscard]] auto GetStartPos() const -> V2dInt;
-  [[nodiscard]] auto GetFinishPos() const -> V2dInt;
+  [[nodiscard]] auto GetStartPos() const -> Point2dInt;
+  [[nodiscard]] auto GetFinishPos() const -> Point2dInt;
 
-  [[nodiscard]] virtual auto GetNextPoint() const -> V2dInt = 0;
+  [[nodiscard]] virtual auto GetNextPoint() const -> Point2dInt = 0;
 
 private:
-  const V2dInt m_startPos;
-  const V2dInt m_finishPos;
+  const Point2dInt m_startPos;
+  const Point2dInt m_finishPos;
 };
 
 class LinearTimePath : public IPath
 {
 public:
-  LinearTimePath(const V2dInt& startPos, const V2dInt& finishPos, const TValue& t) noexcept;
+  LinearTimePath(const Point2dInt& startPos, const Point2dInt& finishPos, const TValue& t) noexcept;
 
   [[nodiscard]] auto GetStepSize() const -> float;
   [[nodiscard]] auto GetT() const -> float;
@@ -51,42 +51,43 @@ struct PathParams
 class OscillatingPath : public LinearTimePath
 {
 public:
-  OscillatingPath(const V2dInt& startPos,
-                  const V2dInt& finishPos,
+  OscillatingPath(const Point2dInt& startPos,
+                  const Point2dInt& finishPos,
                   const TValue& t,
                   bool allowOscillatingPath);
 
   void SetPathParams(const PathParams& params);
   void SetAllowOscillatingPath(bool val);
 
-  [[nodiscard]] auto GetNextPoint() const -> V2dInt override;
+  [[nodiscard]] auto GetNextPoint() const -> Point2dInt override;
 
 private:
-  V2dInt m_currentStartPos;
-  V2dInt m_currentFinishPos;
+  Point2dInt m_currentStartPos;
+  Point2dInt m_currentFinishPos;
   PathParams m_pathParams{};
   bool m_allowOscillatingPath;
-  [[nodiscard]] auto GetPointAtNextT(const V2dInt& point0, const V2dInt& point1) const -> V2dInt;
-  [[nodiscard]] auto GetOscillatingPointAtNextT(const V2dFlt& point) const -> V2dFlt;
+  [[nodiscard]] auto GetPointAtNextT(const Point2dInt& point0, const Point2dInt& point1) const
+      -> Point2dInt;
+  [[nodiscard]] auto GetOscillatingPointAtNextT(const Point2dFlt& point) const -> Point2dFlt;
 };
 
-inline IPath::IPath(const V2dInt& startPos, const V2dInt& finishPos) noexcept
+inline IPath::IPath(const Point2dInt& startPos, const Point2dInt& finishPos) noexcept
   : m_startPos{startPos}, m_finishPos{finishPos}
 {
 }
 
-inline auto IPath::GetStartPos() const -> V2dInt
+inline auto IPath::GetStartPos() const -> Point2dInt
 {
   return m_startPos;
 }
 
-inline auto IPath::GetFinishPos() const -> V2dInt
+inline auto IPath::GetFinishPos() const -> Point2dInt
 {
   return m_finishPos;
 }
 
-inline LinearTimePath::LinearTimePath(const V2dInt& startPos,
-                                      const V2dInt& finishPos,
+inline LinearTimePath::LinearTimePath(const Point2dInt& startPos,
+                                      const Point2dInt& finishPos,
                                       const TValue& t) noexcept
   : IPath{startPos, finishPos}, m_t{t}
 {
@@ -102,8 +103,8 @@ inline auto LinearTimePath::GetT() const -> float
   return m_t();
 }
 
-inline OscillatingPath::OscillatingPath(const V2dInt& startPos,
-                                        const V2dInt& finishPos,
+inline OscillatingPath::OscillatingPath(const Point2dInt& startPos,
+                                        const Point2dInt& finishPos,
                                         const TValue& t,
                                         const bool allowOscillatingPath)
   : LinearTimePath{startPos, finishPos, t},
@@ -123,15 +124,15 @@ inline void OscillatingPath::SetPathParams(const PathParams& params)
   m_pathParams = params;
 }
 
-inline auto OscillatingPath::GetNextPoint() const -> V2dInt
+inline auto OscillatingPath::GetNextPoint() const -> Point2dInt
 {
   return GetPointAtNextT(m_currentStartPos, m_currentFinishPos);
 }
 
-inline auto OscillatingPath::GetPointAtNextT(const V2dInt& point0, const V2dInt& point1) const
-    -> V2dInt
+inline auto OscillatingPath::GetPointAtNextT(const Point2dInt& point0,
+                                             const Point2dInt& point1) const -> Point2dInt
 {
-  const V2dFlt linearPoint = lerp(point0.ToFlt(), point1.ToFlt(), GetT());
+  const Point2dFlt linearPoint = lerp(point0.ToFlt(), point1.ToFlt(), GetT());
 
   if (!m_allowOscillatingPath)
   {
@@ -139,12 +140,12 @@ inline auto OscillatingPath::GetPointAtNextT(const V2dInt& point0, const V2dInt&
             static_cast<int32_t>(std::round(linearPoint.y))};
   }
 
-  const V2dFlt finalPoint = GetOscillatingPointAtNextT(linearPoint);
+  const Point2dFlt finalPoint = GetOscillatingPointAtNextT(linearPoint);
   return {static_cast<int32_t>(std::round(finalPoint.x)),
           static_cast<int32_t>(std::round(finalPoint.y))};
 }
 
-inline auto OscillatingPath::GetOscillatingPointAtNextT(const V2dFlt& point) const -> V2dFlt
+inline auto OscillatingPath::GetOscillatingPointAtNextT(const Point2dFlt& point) const -> Point2dFlt
 {
   return {
       point.x + (m_pathParams.oscillatingAmplitude *

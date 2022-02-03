@@ -5,8 +5,8 @@
 #include "normalized_coords.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
+#include "point2d.h"
 #include "utils/parallel_utils.h"
-#include "v2d.h"
 
 #include <array>
 #undef NDEBUG
@@ -54,9 +54,9 @@ void ZoomFilterBuffers::Start()
 auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const -> SourcePointInfo
 {
   bool isClipped = false;
-  const V2dInt tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
+  const Point2dInt tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
 
-  const V2dInt srceScreenPoint = CoordTransforms::TranToScreenPoint(tranPoint);
+  const Point2dInt srceScreenPoint = CoordTransforms::TranToScreenPoint(tranPoint);
   const size_t xIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
   const size_t yIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
 
@@ -65,7 +65,7 @@ auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const -> Source
 }
 
 inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos, bool& isClipped) const
-    -> V2dInt
+    -> Point2dInt
 {
   return m_transformBuffers->GetSrceDestLerpBufferPoint(buffPos, isClipped);
 }
@@ -160,7 +160,10 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
     const uint32_t tranPosStart = yOffset * m_screenWidth;
 
     NormalizedCoords normalizedCentredPoint =
-        NormalizedCoords{V2dInt{0, static_cast<int32_t>(yOffset)}} - normalizedMidPt;
+        NormalizedCoords{
+            Point2dInt{0, static_cast<int32_t>(yOffset)}
+    } -
+        normalizedMidPt;
 
     for (uint32_t x = 0; x < m_screenWidth; ++x)
     {
@@ -191,7 +194,7 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
   }
 }
 
-inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) -> V2dInt
+inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) -> Point2dInt
 {
   return CoordTransforms::NormalizedToTranPoint(normalized);
 
@@ -282,11 +285,11 @@ void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
 
 ZoomFilterBuffers::TransformBuffers::TransformBuffers(const uint32_t screenWidth,
                                                       const uint32_t screenHeight,
-                                                      const V2dInt& maxTranPoint) noexcept
+                                                      const Point2dInt& maxTranPoint) noexcept
   : m_screenWidth{screenWidth},
     m_screenHeight{screenHeight},
     m_bufferSize{m_screenWidth * m_screenHeight},
-    m_maxTranPointMinus1{maxTranPoint - V2dInt{1, 1}},
+    m_maxTranPointMinus1{maxTranPoint - Point2dInt{1, 1}},
     m_tranXSrce(m_bufferSize),
     m_tranYSrce(m_bufferSize),
     m_tranXDest(m_bufferSize),
@@ -303,7 +306,7 @@ void ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity()
   {
     for (int32_t x = 0; x < static_cast<int32_t>(m_screenWidth); ++x)
     {
-      const V2dInt tranPoint = CoordTransforms::ScreenToTranPoint({x, y});
+      const Point2dInt tranPoint = CoordTransforms::ScreenToTranPoint({x, y});
       m_tranXSrce[i] = tranPoint.x;
       m_tranYSrce[i] = tranPoint.y;
       ++i;
@@ -327,7 +330,7 @@ void ZoomFilterBuffers::TransformBuffers::CopyUnlerpedDestTranToSrceTran()
 {
   for (size_t i = 0; i < m_bufferSize; ++i)
   {
-    const V2dInt tranPoint = GetSrceDestLerpBufferPoint(i);
+    const Point2dInt tranPoint = GetSrceDestLerpBufferPoint(i);
     m_tranXSrce[i] = tranPoint.x;
     m_tranYSrce[i] = tranPoint.y;
   }
@@ -358,7 +361,7 @@ inline void ZoomFilterBuffers::TransformBuffers::SetUpNextDestTran()
 }
 
 inline void ZoomFilterBuffers::TransformBuffers::SetTempBuffersTransformPoint(
-    const uint32_t pos, const V2dInt& transformPoint)
+    const uint32_t pos, const Point2dInt& transformPoint)
 {
   m_tranXTemp[pos] = transformPoint.x;
   m_tranYTemp[pos] = transformPoint.y;

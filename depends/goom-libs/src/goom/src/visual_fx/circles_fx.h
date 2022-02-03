@@ -31,7 +31,7 @@ public:
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
-  void SetZoomMidPoint(const V2dInt& zoomMidPoint) override;
+  void SetZoomMidPoint(const Point2dInt& zoomMidPoint) override;
 
   void Start() override;
 

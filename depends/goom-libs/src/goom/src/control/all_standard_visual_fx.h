@@ -1,7 +1,7 @@
 #pragma once
 
 #include "goom_states.h"
-#include "v2d.h"
+#include "point2d.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
@@ -63,7 +63,7 @@ public:
   void RefreshAllFx();
   void SuspendFx();
   void ResumeFx();
-  void SetZoomMidPoint(const V2dInt& zoomMidPoint);
+  void SetZoomMidPoint(const Point2dInt& zoomMidPoint);
   void PostStateUpdate(const GoomDrawablesSet& oldGoomDrawables);
 
   void ApplyCurrentStateToSingleBuffer();

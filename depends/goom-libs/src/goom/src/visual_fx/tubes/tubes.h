@@ -1,9 +1,9 @@
 #pragma once
 
 #include "goom_graphic.h"
+#include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/timer.h"
-#include "v2d.h"
 
 #include <functional>
 #include <memory>
@@ -50,13 +50,13 @@ class BrightnessAttenuation
 public:
   static constexpr float DIST_SQ_CUTOFF = 0.10F;
   BrightnessAttenuation(uint32_t screenWidth, uint32_t screenHeight, float cutoffBrightness);
-  [[nodiscard]] auto GetPositionBrightness(const V2dInt& pos, float minBrightnessPastCutoff) const
-      -> float;
+  [[nodiscard]] auto GetPositionBrightness(const Point2dInt& pos,
+                                           float minBrightnessPastCutoff) const -> float;
 
 private:
   const float m_cutoffBrightness;
   const uint32_t m_maxRSquared;
-  [[nodiscard]] auto GetDistFromCentreFactor(const V2dInt& pos) const -> float;
+  [[nodiscard]] auto GetDistFromCentreFactor(const Point2dInt& pos) const -> float;
 };
 
 class Tube
@@ -100,7 +100,7 @@ public:
 
   void SetMaxJitterOffset(int32_t val);
 
-  using TransformCentreFunc = std::function<V2dInt(uint32_t tubeId, const V2dInt& centre)>;
+  using TransformCentreFunc = std::function<Point2dInt(uint32_t tubeId, const Point2dInt& centre)>;
   void SetTransformCentreFunc(const TransformCentreFunc& func);
   void SetCentrePathT(float val);
   static const float NORMAL_CENTRE_SPEED;
