@@ -55,7 +55,7 @@ inline auto Rotation::GetVelocity(const NormalizedCoords& velocity) const -> Nor
   float xRotateSpeed = m_params.xRotateSpeed;
   float yRotateSpeed = m_params.yRotateSpeed;
   float sinAngle = m_params.sinAngle;
-  float cosAngle = m_params.cosAngle;
+  const float cosAngle = m_params.cosAngle;
   if (m_params.xRotateSpeed < 0.0F)
   {
     xRotateSpeed = -xRotateSpeed;

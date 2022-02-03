@@ -34,7 +34,7 @@ private:
 
 inline auto ImageSpeedCoefficients::GetSpeedCoefficients(
     [[maybe_unused]] const V2dFlt& baseSpeedCoeffs,
-    [[maybe_unused]] float sqDistFromZero,
+    [[maybe_unused]] const float sqDistFromZero,
     const NormalizedCoords& coords) const -> V2dFlt
 {
   return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(

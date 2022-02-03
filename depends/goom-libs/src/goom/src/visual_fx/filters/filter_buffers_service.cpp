@@ -43,9 +43,10 @@ void FilterBuffersService::SetFilterBufferSettings(
                        filterBufferSettings.tranLerpToMaxSwitchMult);
 }
 
-void FilterBuffersService::SetFilterEffectsSettings(const ZoomFilterEffectsSettings& filterSettings)
+void FilterBuffersService::SetFilterEffectsSettings(
+    const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
-  m_nextFilterEffectsSettings = filterSettings;
+  m_nextFilterEffectsSettings = filterEffectsSettings;
   m_pendingFilterEffectsSettings = true;
 }
 

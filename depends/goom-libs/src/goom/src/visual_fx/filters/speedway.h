@@ -80,8 +80,7 @@ inline auto Speedway::GetMode0SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 {
   constexpr float SQ_DIST_FACTOR = 0.01F;
   float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  constexpr float PROB_FLIP_X_ADD = 0.5F;
-  if (m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  if (constexpr float PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
@@ -119,7 +118,7 @@ inline auto Speedway::GetMode1SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 
   const float xDiff = coords.GetX() - xAdd;
   const float sign = xDiff < 0.0F ? -1.0F : +1.0F;
-  const float xWarp = 0.1F * ((sign * UTILS::Sq(xDiff) / xAdd) + xAdd);
+  const float xWarp = 0.1F * (((sign * UTILS::Sq(xDiff)) / xAdd) + xAdd);
   const float amplitude = (1.0F - sqDistFromZero) / 4.0F;
 
   const float xSpeedCoeff = amplitude * baseSpeedCoeffs.x * (m_params.xAmplitude * xWarp);
@@ -134,8 +133,7 @@ inline auto Speedway::GetMode2SpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
 {
   constexpr float SQ_DIST_FACTOR = 0.01F;
   float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  constexpr float PROB_FLIP_X_ADD = 0.5F;
-  if (m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  if (constexpr float PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }

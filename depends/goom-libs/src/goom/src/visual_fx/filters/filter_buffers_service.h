@@ -18,9 +18,7 @@ namespace UTILS
 class Parallel;
 }
 
-namespace VISUAL_FX
-{
-namespace FILTERS
+namespace VISUAL_FX::FILTERS
 {
 
 class FilterBuffersService
@@ -69,6 +67,5 @@ inline auto FilterBuffersService::GetTranLerpFactor() const -> int32_t
   return m_filterBuffers.GetTranLerpFactor();
 }
 
-} // namespace FILTERS
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::FILTERS
 } // namespace GOOM

@@ -6,11 +6,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
+namespace GOOM::VISUAL_FX::FILTERS
 {
 
 // 128 = vitesse nule...
@@ -28,16 +24,16 @@ public:
   static constexpr int32_t FASTEST_SPEED = 0;
   static constexpr int32_t DEFAULT_VITESSE = 127;
 
-  auto GetVitesse() const -> int32_t { return m_vitesse; };
+  [[nodiscard]] auto GetVitesse() const -> int32_t { return m_vitesse; };
   void SetVitesse(int32_t val);
   void SetDefault();
   void GoSlowerBy(int32_t val);
 
-  auto GetReverseVitesse() const -> bool { return m_reverseVitesse; }
+  [[nodiscard]] auto GetReverseVitesse() const -> bool { return m_reverseVitesse; }
   void SetReverseVitesse(const bool val) { m_reverseVitesse = val; }
   void ToggleReverseVitesse() { m_reverseVitesse = !m_reverseVitesse; }
 
-  auto GetRelativeSpeed() const -> float;
+  [[nodiscard]] auto GetRelativeSpeed() const -> float;
 
 private:
   int32_t m_vitesse = DEFAULT_VITESSE;
@@ -114,7 +110,4 @@ inline auto Vitesse::GetRelativeSpeed() const -> float
   return m_reverseVitesse ? -speed : +speed;
 }
 
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
-
+} // namespace GOOM::VISUAL_FX::FILTERS

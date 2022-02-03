@@ -14,11 +14,9 @@ namespace GOOM
 namespace UTILS
 {
 class IGoomRand;
-} // namespace UTILS
+}
 
-namespace VISUAL_FX
-{
-namespace FILTERS
+namespace VISUAL_FX::FILTERS
 {
 
 class FilterZoomVector : public IZoomVector
@@ -32,7 +30,8 @@ public:
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) override;
 
-  [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords override;
+  [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const
+      -> NormalizedCoords override;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs override;
@@ -46,7 +45,6 @@ private:
       -> NormalizedCoords;
 };
 
-} // namespace FILTERS
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::FILTERS
 } // namespace GOOM
 

@@ -4,11 +4,7 @@
 
 #include <vector>
 
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
+namespace GOOM::VISUAL_FX::FILTERS
 {
 
 class FilterBufferRowColorInfo
@@ -51,6 +47,4 @@ inline void FilterBufferRowColorInfo::UpdateColor(const Pixel& color)
 }
 
 
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
+} // namespace GOOM::VISUAL_FX::FILTERS

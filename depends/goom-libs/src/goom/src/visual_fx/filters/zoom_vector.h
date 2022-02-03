@@ -5,11 +5,7 @@
 
 #include <string>
 
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
+namespace GOOM::VISUAL_FX::FILTERS
 {
 
 class NormalizedCoords;
@@ -33,6 +29,4 @@ public:
       -> UTILS::NameValuePairs = 0;
 };
 
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
+} // namespace GOOM::VISUAL_FX::FILTERS

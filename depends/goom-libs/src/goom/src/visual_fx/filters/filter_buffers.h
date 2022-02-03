@@ -22,9 +22,7 @@ namespace UTILS
 class Parallel;
 }
 
-namespace VISUAL_FX
-{
-namespace FILTERS
+namespace VISUAL_FX::FILTERS
 {
 
 class ZoomFilterBuffers
@@ -344,6 +342,5 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
   return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);
 }
 
-} // namespace FILTERS
-} // namespace VISUAL_FX
+} // namespace VISUAL_FX::FILTERS
 } // namespace GOOM

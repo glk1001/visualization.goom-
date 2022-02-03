@@ -43,7 +43,7 @@ inline auto Scrunch::GetSpeedCoefficients(const V2dFlt& baseSpeedCoeffs,
                                           [[maybe_unused]] const NormalizedCoords& coords) const
     -> V2dFlt
 {
-  const float xSpeedCoeff = baseSpeedCoeffs.x + m_params.xAmplitude * sqDistFromZero;
+  const float xSpeedCoeff = baseSpeedCoeffs.x + (m_params.xAmplitude * sqDistFromZero);
   const float ySpeedCoeff = m_params.yAmplitude * xSpeedCoeff;
   return {xSpeedCoeff, ySpeedCoeff};
 }
