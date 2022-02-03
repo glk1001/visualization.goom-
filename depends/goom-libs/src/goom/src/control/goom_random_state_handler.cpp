@@ -58,7 +58,6 @@ constexpr float CIRCLES_IMAGE_STARS_WEIGHT         =  200.0F;
 constexpr float CIRCLES_LINES_WEIGHT               =  200.0F;
 constexpr float CIRCLES_STARS_TUBES_WEIGHT         =  200.0F;
 constexpr float CIRCLES_TENTACLES_WEIGHT           =  200.0F;
-constexpr float CIRCLES_TUBES_WEIGHT               =  200.0F;
 
 constexpr float DOTS_IFS_WEIGHT                    = 200.0F;
 constexpr float DOTS_IFS_STARS_WEIGHT              = 100.0F;
@@ -110,7 +109,6 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
             {GoomStates::CIRCLES_LINES, CIRCLES_LINES_WEIGHT},
             {GoomStates::CIRCLES_STARS_TUBES, CIRCLES_STARS_TUBES_WEIGHT},
             {GoomStates::CIRCLES_TENTACLES, CIRCLES_TENTACLES_WEIGHT},
-            {GoomStates::CIRCLES_TUBES, CIRCLES_TUBES_WEIGHT},
 
             {GoomStates::DOTS_IFS, DOTS_IFS_WEIGHT},
             {GoomStates::DOTS_IFS_STARS, DOTS_IFS_STARS_WEIGHT},

@@ -13,6 +13,7 @@
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/t_values.h"
+#include "utils/timer.h"
 
 #include <array>
 #undef NDEBUG
@@ -35,6 +36,7 @@ using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
 using UTILS::SmallImageBitmaps;
+using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::Weights;
 
@@ -60,6 +62,10 @@ private:
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
 
   uint64_t m_updateNum = 0;
+  static constexpr uint32_t BLANK_TIME = 40;
+  Timer m_blankTimer{BLANK_TIME, true};
+  void UpdateTime();
+
   static constexpr uint32_t NUM_CIRCLE_PATHS = 30;
   static_assert(0 == (NUM_CIRCLE_PATHS % 2));
   static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
@@ -102,6 +108,8 @@ private:
   void ResetCentreTargetPosition();
   static constexpr float POSITION_MARGIN = 0.01F;
   void DrawNextCircles();
+  void DrawTheCircles();
+  void UpdateTs();
   [[nodiscard]] auto GetCircleCentrePositions() const -> std::array<Point2dInt, NUM_CIRCLE_PATHS>;
   [[nodiscard]] auto GetNextTargetPosition() const -> Point2dInt;
   void DrawCircle(const Point2dInt& centre,
@@ -124,7 +132,6 @@ private:
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
   auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
-  void UpdateTs();
 };
 
 CirclesFx::CirclesFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -337,10 +344,16 @@ void CirclesFx::CirclesFxImpl::Start()
 
 inline void CirclesFx::CirclesFxImpl::ApplyMultiple()
 {
-  ++m_updateNum;
+  UpdateTime();
 
   UpdateSpeeds();
   DrawNextCircles();
+}
+
+inline void CirclesFx::CirclesFxImpl::UpdateTime()
+{
+  ++m_updateNum;
+  m_blankTimer.Increment();
 }
 
 inline void CirclesFx::CirclesFxImpl::UpdateSpeeds()
@@ -379,19 +392,30 @@ void CirclesFx::CirclesFxImpl::UpdateColorTs()
   }
 }
 
-void CirclesFx::CirclesFxImpl::DrawNextCircles()
+inline void CirclesFx::CirclesFxImpl::DrawNextCircles()
+{
+  if (!m_blankTimer.Finished())
+  {
+    return;
+  }
+
+  DrawTheCircles();
+
+  ResetCentreTargetPosition();
+  m_circleRandomStartingPositions =
+      GetRandomStartingCirclePositions(m_goomRand, static_cast<int32_t>(m_draw.GetScreenWidth()),
+                                       static_cast<int32_t>(m_draw.GetScreenHeight()));
+
+  UpdateTs();
+}
+
+void CirclesFx::CirclesFxImpl::DrawTheCircles()
 {
   constexpr float BRIGHTNESS_CUT = 0.001F;
   const float brightness = m_positionT() < (1.0F - POSITION_MARGIN) ? 1.0F : BRIGHTNESS_CUT;
 
   constexpr uint32_t NUM_CIRCLES = NUM_CIRCLE_PATHS;
   const std::array<Point2dInt, NUM_CIRCLES> circleCentrePositions = GetCircleCentrePositions();
-
-  // Following was worth a try, but looked a bit too flat.
-  //   constexpr float HALFWAY_T = 0.5F;
-  //   constexpr uint32_t HALFWAY_CIRCLE = NUM_CIRCLES / 2;
-  //   const V2dInt outerCircleCentre = lerp(circleCentrePositions[0],
-  //                                        circleCentrePositions[HALFWAY_CIRCLE], HALFWAY_T);
 
   const uint32_t fixedCircleDiameter = m_goomRand.GetRandInRange(
       static_cast<uint32_t>(MIN_DIAMETER + 2), static_cast<uint32_t>(MAX_DIAMETER + 1));
@@ -422,18 +446,8 @@ void CirclesFx::CirclesFxImpl::DrawNextCircles()
     const uint8_t lineThickness = 0 == (m_updateNum % 5) ? 5 : 1;
     DrawLine(prevCircleCentre, circleCentre, linesColor, linesLowColor, lineThickness);
 
-    // Following was worth a try, but looked a bit too flat. See above.
-    //    constexpr uint8_t LONG_LINE_THICKNESS = 1;
-    //    DrawLine(outerCircleCentre, circleCentre, color, lowColor, LONG_LINE_THICKNESS);
-
     prevCircleCentre = circleCentre;
   }
-
-  ResetCentreTargetPosition();
-  m_circleRandomStartingPositions =
-      GetRandomStartingCirclePositions(m_goomRand, static_cast<int32_t>(m_draw.GetScreenWidth()),
-                                       static_cast<int32_t>(m_draw.GetScreenHeight()));
-  UpdateTs();
 }
 
 auto CirclesFx::CirclesFxImpl::GetCircleCentrePositions() const
@@ -464,6 +478,11 @@ auto CirclesFx::CirclesFxImpl::GetCircleCentrePositions() const
 
 inline void CirclesFx::CirclesFxImpl::UpdateTs()
 {
+  if (m_positionT.HasJustHitStartBoundary())
+  {
+    m_blankTimer.ResetToZero();
+  }
+
   m_positionT.Increment();
 
   for (auto& colorT : m_colorTs)
