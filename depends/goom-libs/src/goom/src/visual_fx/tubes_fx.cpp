@@ -1,5 +1,7 @@
 #include "tubes_fx.h"
 
+//#undef NO_LOGGING
+
 #include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
@@ -10,7 +12,6 @@
 #include "tubes/tubes.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
-//#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
 #include "goom/spimpl.h"
@@ -158,8 +159,8 @@ private:
   Timer m_allStayInCentreTimer;
   Timer m_allStayAwayFromCentreTimer;
   void IncrementAllJoinCentreT();
-  [[nodiscard]] auto GetTransformedCentrePoint(uint32_t tubeId, const Point2dInt& centre) const
-      -> Point2dInt;
+  [[nodiscard]] auto GetTransformedCentreVector(const uint32_t tubeId,
+                                                const Point2dInt& centre) const -> Vec2dInt;
 
   static constexpr float JITTER_STEP = 0.1F;
   TValue m_shapeJitterT{TValue::StepType::CONTINUOUS_REVERSIBLE, JITTER_STEP};
@@ -340,7 +341,7 @@ inline void TubesFx::TubeFxImpl::SetZoomMidPoint(const Point2dInt& zoomMidPoint)
 
   if (m_goomRand.ProbabilityOf(PROB_FOLLOW_ZOOM_MID_POINT))
   {
-    m_targetMiddlePos = zoomMidPoint - m_screenMidPoint;
+    m_targetMiddlePos = zoomMidPoint - Vec2dInt{m_screenMidPoint};
   }
   else
   {
@@ -471,7 +472,7 @@ inline auto TubesFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& c
 void TubesFx::TubeFxImpl::InitPaths()
 {
   const auto transformCentre = [this](const uint32_t tubeId, const Point2dInt& centre)
-  { return this->GetTransformedCentrePoint(tubeId, centre); };
+  { return this->GetTransformedCentreVector(tubeId, centre); };
   const float centreStep = 1.0F / static_cast<float>(m_tubes.size());
   float centreT = 0.0;
   for (auto& tube : m_tubes)
@@ -697,14 +698,14 @@ void TubesFx::TubeFxImpl::UpdatePreviousShapesSettings()
   m_prevShapesJitter = m_goomRand.ProbabilityOf(PROB_PREV_SHAPES_JITTER);
 }
 
-auto TubesFx::TubeFxImpl::GetTransformedCentrePoint(const uint32_t tubeId,
-                                                    const Point2dInt& centre) const -> Point2dInt
+auto TubesFx::TubeFxImpl::GetTransformedCentreVector(const uint32_t tubeId,
+                                                     const Point2dInt& centre) const -> Vec2dInt
 {
   if ((!m_allowMovingAwayFromCentre) || TUBE_SETTINGS.at(tubeId).noMoveFromCentre)
   {
-    return GetMiddlePos();
+    return Vec2dInt{GetMiddlePos()};
   }
-  return lerp(centre, GetMiddlePos(), m_allJoinCentreT());
+  return Vec2dInt{lerp(centre, GetMiddlePos(), m_allJoinCentreT())};
 }
 
 void TubesFx::TubeFxImpl::IncrementAllJoinCentreT()

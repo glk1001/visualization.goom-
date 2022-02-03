@@ -7,6 +7,8 @@
 
 #include "lines_fx.h"
 
+//#undef NO_LOGGING
+
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
@@ -16,7 +18,6 @@
 #include "fx_utils/dot_drawer.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
-//#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "point2d.h"
@@ -659,17 +660,17 @@ void LinesFx::LinesImpl::SmoothCircleJoin(std::vector<PointAndColor>& audioPoint
   constexpr float T_STEP = 1.0F / static_cast<float>(NUM_POINTS_TO_LERP);
 
   const size_t lastPointIndex = audioPoints.size() - 1;
-  const Point2dInt endDiff = audioPoints[0].point - audioPoints[lastPointIndex].point;
+  const Point2dInt endDiff = audioPoints[0].point - Vec2dInt{audioPoints[lastPointIndex].point};
   if ((0 == endDiff.x) && (0 == endDiff.y))
   {
     return;
   }
 
-  Point2dInt diff = endDiff;
+  Vec2dInt diff{endDiff};
   float t = 1.0F - T_STEP;
   for (size_t i = lastPointIndex; i > (audioPoints.size() - NUM_POINTS_TO_LERP); --i)
   {
-    audioPoints[i].point += diff;
+    audioPoints[i].point.Translate(diff);
 
     diff = {static_cast<int32_t>(std::round(t * static_cast<float>(endDiff.x))),
             static_cast<int32_t>(std::round(t * static_cast<float>(endDiff.y)))};

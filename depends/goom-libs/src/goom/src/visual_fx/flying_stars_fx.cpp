@@ -62,8 +62,8 @@ enum class StarModes
 struct Star
 {
   Point2dFlt pos{};
-  Point2dFlt velocity{};
-  Point2dFlt acceleration{};
+  Vec2dFlt velocity{};
+  Vec2dFlt acceleration{};
   float age = 0.0;
   float vage = 0.0;
   std::shared_ptr<const IColorMap> dominantColormap{};
@@ -664,8 +664,8 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetNextAngleColorMapName() const -> 
 void FlyingStarsFx::FlyingStarsImpl::UpdateStarColorMaps(const float angle, Star& star)
 {
   // TODO Get colormap based on current mode.
-  constexpr float PROB_RANDOM_COLOR_MAPS = 0.5F;
-  if (m_goomRand.ProbabilityOf(PROB_RANDOM_COLOR_MAPS))
+  if (constexpr float PROB_RANDOM_COLOR_MAPS = 0.5F;
+      m_goomRand.ProbabilityOf(PROB_RANDOM_COLOR_MAPS))
   {
     star.dominantColormap = m_randomColorMapsManager.GetColorMapPtr(m_dominantColorMapID);
     star.dominantLowColormap = m_randomColorMapsManager.GetColorMapPtr(m_dominantLowColorMapID);
@@ -849,7 +849,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetGammaCorrection(const float brigh
  */
 inline void FlyingStarsFx::FlyingStarsImpl::UpdateStar(Star& star)
 {
-  star.pos += star.velocity;
+  star.pos.Translate(star.velocity);
   star.velocity += star.acceleration;
   star.age += star.vage;
 }
@@ -887,8 +887,8 @@ void FlyingStarsFx::FlyingStarsImpl::SoundEventOccurred()
 
 inline void FlyingStarsFx::FlyingStarsImpl::UpdateWindAndGravity()
 {
-  constexpr float PROB_NEW_WIND_AND_GRAVITY = 1.0F / 10.0F;
-  if (!m_goomRand.ProbabilityOf(PROB_NEW_WIND_AND_GRAVITY))
+  if (constexpr float PROB_NEW_WIND_AND_GRAVITY = 1.0F / 10.0F;
+      !m_goomRand.ProbabilityOf(PROB_NEW_WIND_AND_GRAVITY))
   {
     return;
   }

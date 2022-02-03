@@ -38,8 +38,7 @@ inline auto ImageSpeedCoefficients::GetSpeedCoefficients(
     [[maybe_unused]] const float sqDistFromZero,
     const NormalizedCoords& coords) const -> Point2dFlt
 {
-  return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(
-      coords.ToFlt());
+  return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords);
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS

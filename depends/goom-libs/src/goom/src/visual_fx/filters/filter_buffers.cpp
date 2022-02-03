@@ -289,7 +289,7 @@ ZoomFilterBuffers::TransformBuffers::TransformBuffers(const uint32_t screenWidth
   : m_screenWidth{screenWidth},
     m_screenHeight{screenHeight},
     m_bufferSize{m_screenWidth * m_screenHeight},
-    m_maxTranPointMinus1{maxTranPoint - Point2dInt{1, 1}},
+    m_maxTranPointMinus1{maxTranPoint - Vec2dInt{1, 1}},
     m_tranXSrce(m_bufferSize),
     m_tranYSrce(m_bufferSize),
     m_tranXDest(m_bufferSize),

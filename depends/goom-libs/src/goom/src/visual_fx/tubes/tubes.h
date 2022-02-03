@@ -100,7 +100,7 @@ public:
 
   void SetMaxJitterOffset(int32_t val);
 
-  using TransformCentreFunc = std::function<Point2dInt(uint32_t tubeId, const Point2dInt& centre)>;
+  using TransformCentreFunc = std::function<Vec2dInt(uint32_t tubeId, const Point2dInt& centre)>;
   void SetTransformCentreFunc(const TransformCentreFunc& func);
   void SetCentrePathT(float val);
   static const float NORMAL_CENTRE_SPEED;

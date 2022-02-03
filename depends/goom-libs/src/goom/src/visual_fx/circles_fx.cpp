@@ -61,7 +61,7 @@ private:
 
   uint64_t m_updateNum = 0;
   static constexpr uint32_t NUM_CIRCLE_PATHS = 30;
-  static_assert((NUM_CIRCLE_PATHS % 2) == 0);
+  static_assert(0 == (NUM_CIRCLE_PATHS % 2));
   static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
   static constexpr uint32_t MIN_POSITION_STEPS = 50;
   static constexpr uint32_t MAX_POSITION_STEPS = 250;
@@ -181,9 +181,10 @@ CirclesFx::CirclesFxImpl::CirclesFxImpl(const FxHelpers& fxHelpers,
     m_centreTargetPosition{m_draw.GetScreenWidth() / 2, m_draw.GetScreenHeight() / 2},
     m_zoomMidPoint{m_centreTargetPosition},
     m_circleDiameters{GetInitialCircleDiameters()},
-    m_circleRandomStartingPositions{GetRandomStartingCirclePositions(m_goomRand,
-                                                                     static_cast<int32_t>(m_draw.GetScreenWidth()),
-                                                                     static_cast<int32_t>(m_draw.GetScreenHeight()))},
+    m_circleRandomStartingPositions{
+        GetRandomStartingCirclePositions(m_goomRand,
+                                         static_cast<int32_t>(m_draw.GetScreenWidth()),
+                                         static_cast<int32_t>(m_draw.GetScreenHeight()))},
     m_circleStartingPositions{
         GetStartingCirclePositions(m_goomRand,
                                    static_cast<int32_t>(m_draw.GetScreenWidth()),
@@ -233,8 +234,9 @@ auto CirclesFx::CirclesFxImpl::GetRandomStartingCirclePositions(const IGoomRand&
       GetStartingCirclePositions(goomRand, width, height)};
   for (size_t i = 0; i < NUM_CIRCLE_PATHS; ++i)
   {
-    randomStartingCirclePositions.at(i) += {goomRand.GetRandInRange(MARGIN, width - MARGIN),
-                                            goomRand.GetRandInRange(MARGIN, height - MARGIN)};
+    randomStartingCirclePositions.at(i).Translate(
+        {goomRand.GetRandInRange(MARGIN, width - MARGIN),
+         goomRand.GetRandInRange(MARGIN, height - MARGIN)});
   }
 
   return randomStartingCirclePositions;
@@ -257,7 +259,7 @@ auto CirclesFx::CirclesFxImpl::GetStartingCirclePositions(
     const auto x = static_cast<int32_t>(std::lround(aRadius * std::cos(angle)));
     const auto y = static_cast<int32_t>(std::lround(bRadius * std::sin(angle)));
 
-    startingCirclePositions.at(i) = centre + Point2dInt{x, y};
+    startingCirclePositions.at(i) = centre + Vec2dInt{x, y};
 
     angle += angleStep;
   }
@@ -309,7 +311,7 @@ void CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
 
 inline void CirclesFx::CirclesFxImpl::ResetCentreTargetPosition()
 {
-  if (!m_positionT.HasJustHitStartBoundary() && !m_positionT.HasJustHitEndBoundary())
+  if ((!m_positionT.HasJustHitStartBoundary()) && (!m_positionT.HasJustHitEndBoundary()))
   {
     return;
   }
@@ -359,8 +361,7 @@ void CirclesFx::CirclesFxImpl::UpdateColorTs()
 {
   constexpr uint32_t MAX_COLOR_STEPS_DIVISOR = 10;
 
-  constexpr float PROB_SAME_TS = 0.9F;
-  if (m_goomRand.ProbabilityOf(PROB_SAME_TS))
+  if (constexpr float PROB_SAME_TS = 0.9F; m_goomRand.ProbabilityOf(PROB_SAME_TS))
   {
     const uint32_t colorStepsDivisor = m_goomRand.GetRandInRange(1U, MAX_COLOR_STEPS_DIVISOR);
     for (auto& colorT : m_colorTs)
@@ -400,9 +401,9 @@ void CirclesFx::CirclesFxImpl::DrawNextCircles()
   for (size_t i = 0; i < NUM_CIRCLES; ++i)
   {
     const float tColor = m_colorTs.at(i)();
-    const float circleBrightness = (m_updateNum % 2) == 0 ? (5.0F * brightness) : brightness;
+    const float circleBrightness = 0 == (m_updateNum % 2) ? (5.0F * brightness) : brightness;
     const Pixel color = GetFinalColor(
-        circleBrightness, (m_updateNum % 5) == 0 ? m_circleLowColorMaps.at(i)->GetColor(tColor)
+        circleBrightness, 0 == (m_updateNum % 5) ? m_circleLowColorMaps.at(i)->GetColor(tColor)
                                                  : m_circleColorMaps.at(i)->GetColor(tColor));
     const Pixel lowColor =
         GetFinalColor(1.1F * circleBrightness, m_circleColorMaps.at(i)->GetColor(tColor));
@@ -412,13 +413,13 @@ void CirclesFx::CirclesFxImpl::DrawNextCircles()
 
     DrawCircle(circleCentre, fixedCircleDiameter, color, lowColor);
 
-    const float lineBrightness = (m_updateNum % 5) == 0 ? (10.0F * brightness) : brightness;
+    const float lineBrightness = 0 == (m_updateNum % 5) ? (10.0F * brightness) : brightness;
     const Pixel linesColor =
         GetFinalColor(lineBrightness, m_circleColorMaps.at(i)->GetColor(tColor));
     const Pixel linesLowColor =
         GetFinalColor(1.1F * lineBrightness, m_circleColorMaps.at(i)->GetColor(tColor));
     //        GetFinalLowColor(lineBrightness, m_circleLowColorMaps.at(i)->GetColor(tColor));
-    const uint8_t lineThickness = (m_updateNum % 5) == 0 ? 5 : 1;
+    const uint8_t lineThickness = 0 == (m_updateNum % 5) ? 5 : 1;
     DrawLine(prevCircleCentre, circleCentre, linesColor, linesLowColor, lineThickness);
 
     // Following was worth a try, but looked a bit too flat. See above.
@@ -455,7 +456,7 @@ auto CirclesFx::CirclesFxImpl::GetCircleCentrePositions() const
     const Point2dInt jitter = {m_goomRand.GetRandInRange(-2, +3),
                                m_goomRand.GetRandInRange(-2, +3)};
     circleCentrePositions.at(i) =
-        jitter + lerp(newCircleStartingPosition, circleTargetPosition, tPosition);
+        jitter + Vec2dInt{lerp(newCircleStartingPosition, circleTargetPosition, tPosition)};
   }
 
   return circleCentrePositions;

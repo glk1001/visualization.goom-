@@ -1,5 +1,6 @@
 #pragma once
 
+#include "normalized_coords.h"
 #include "point2d.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
@@ -26,7 +27,8 @@ public:
   [[nodiscard]] auto GetAmplitude() const -> float;
   void SetAmplitude(float value);
 
-  [[nodiscard]] auto GetDisplacementVector(const Point2dFlt& normalizedPoint) const -> Point2dFlt;
+  [[nodiscard]] auto GetDisplacementVector(const NormalizedCoords& normalizedCoords) const
+      -> Point2dFlt;
 
 private:
   std::unique_ptr<UTILS::ImageBitmap> m_imageBuffer;
@@ -39,8 +41,9 @@ private:
   static constexpr float INITIAL_CUTOFF = 0.5F;
   float m_xColorCutoff = INITIAL_CUTOFF;
   float m_yColorCutoff = INITIAL_CUTOFF;
-  [[nodiscard]] auto NormalizedToImagePoint(const Point2dFlt& normalizedPoint) const -> Point2dInt;
-  [[nodiscard]] auto ColorToNormalizedPoint(const Pixel& color) const -> Point2dFlt;
+  [[nodiscard]] auto NormalizedCoordsToImagePoint(const NormalizedCoords& normalizedCoords) const
+      -> Point2dInt;
+  [[nodiscard]] auto ColorToNormalizedDisplacement(const Pixel& color) const -> Point2dFlt;
 };
 
 inline auto ImageDisplacement::GetImageFilename() const -> std::string

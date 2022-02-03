@@ -27,9 +27,11 @@ ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
 {
 }
 
-auto ImageDisplacement::GetDisplacementVector(const Point2dFlt& normalizedPoint) const -> Point2dFlt
+auto ImageDisplacement::GetDisplacementVector(const NormalizedCoords& normalizedCoords) const
+    -> Point2dFlt
 {
-  const Point2dInt imagePoint = NormalizedToImagePoint(normalizedPoint);
+  const Point2dInt imagePoint = NormalizedCoordsToImagePoint(normalizedCoords);
+
   if ((imagePoint.x < 0) || (imagePoint.x > m_xMax))
   {
     return {0.0F, 0.0F};
@@ -42,24 +44,25 @@ auto ImageDisplacement::GetDisplacementVector(const Point2dFlt& normalizedPoint)
   const Pixel color =
       (*m_imageBuffer)(static_cast<size_t>(imagePoint.x), static_cast<size_t>(imagePoint.y));
 
-  return ColorToNormalizedPoint(color);
+  return ColorToNormalizedDisplacement(color);
 }
 
-inline auto ImageDisplacement::NormalizedToImagePoint(const Point2dFlt& normalizedPoint) const
-    -> Point2dInt
+inline auto ImageDisplacement::NormalizedCoordsToImagePoint(
+    const NormalizedCoords& normalizedCoords) const -> Point2dInt
 {
-  const float xZoom = m_zoomFactor * normalizedPoint.x;
-  const float yZoom = m_zoomFactor * normalizedPoint.y;
+  const NormalizedCoords normalizedZoom = m_zoomFactor * normalizedCoords;
 
-  const auto x = static_cast<int32_t>(std::lround(
-      m_ratioNormalizedCoordToImageCoord * (xZoom - NormalizedCoords::MIN_NORMALIZED_COORD)));
-  const auto y = static_cast<int32_t>(std::lround(
-      m_ratioNormalizedCoordToImageCoord * (yZoom - NormalizedCoords::MIN_NORMALIZED_COORD)));
+  const auto x = static_cast<int32_t>(
+      std::lround(m_ratioNormalizedCoordToImageCoord *
+                  (normalizedZoom.GetX() - NormalizedCoords::MIN_NORMALIZED_COORD)));
+  const auto y = static_cast<int32_t>(
+      std::lround(m_ratioNormalizedCoordToImageCoord *
+                  (normalizedZoom.GetY() - NormalizedCoords::MIN_NORMALIZED_COORD)));
 
   return {x, y};
 }
 
-inline auto ImageDisplacement::ColorToNormalizedPoint(const Pixel& color) const -> Point2dFlt
+inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color) const -> Point2dFlt
 {
   const float x =
       NormalizedCoords::MAX_NORMALIZED_COORD * m_amplitude * (color.RFlt() - m_xColorCutoff);

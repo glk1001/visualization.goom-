@@ -227,7 +227,7 @@ private:
   const Weights<LowColorTypes> m_lowColorTypes;
 
   void InitShapes(float radiusEdgeOffset);
-  void DrawShape(const Shape& shape, const Point2dInt& centreOffset) const;
+  void DrawShape(const Shape& shape, const Vec2dInt& centreOffset) const;
   void DrawInteriorShape(const Point2dInt& shapeCentrePos, const ShapeColors& allColors) const;
   void DrawHexOutline(const Point2dInt& hexCentre,
                       const ShapeColors& allColors,
@@ -524,15 +524,18 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
     const float sinAngle = std::sin(angle);
     const float xFrom = radius * cosAngle;
     const float yFrom = radius * sinAngle;
-    const Point2dInt fromPos = middlePos + Point2dInt{static_cast<int32_t>(std::round(xFrom)),
+    const Point2dInt fromPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xFrom)),
                                               static_cast<int32_t>(std::round(yFrom))};
     const float xTo = radius * std::cos(m_pi + angle);
     const float yTo = radius * std::sin(m_pi + angle);
-    const Point2dInt toPos = middlePos + Point2dInt{static_cast<int32_t>(std::round(xTo)),
+    const Point2dInt toPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xTo)),
                                             static_cast<int32_t>(std::round(yTo))};
 
     shape.shapeNum = shapeNum;
-    shape.path = std::make_unique<OscillatingPath>(fromPos, toPos, m_shapeT, OSCILLATING_SHAPE_PATHS);
+    shape.path = std::make_unique<OscillatingPath>(fromPos,
+                                                   toPos,
+                                                   m_shapeT,
+                                                   OSCILLATING_SHAPE_PATHS);
 
     angle += angleStep;
     ++shapeNum;
@@ -683,7 +686,7 @@ void Tube::TubeImpl::DrawShapes()
   m_hexLen = GetHexLen();
   m_interiorShapeSize = GetInteriorShapeSize(m_hexLen);
 
-  const Point2dInt centreOffset = m_getTransformedCentre(m_tubeId, m_centrePath->GetNextPoint());
+  const Vec2dInt centreOffset = m_getTransformedCentre(m_tubeId, m_centrePath->GetNextPoint());
   for (const auto& shape : m_shapes)
   {
     DrawShape(shape, centreOffset);
@@ -749,11 +752,11 @@ inline auto Tube::TubeImpl::GetInteriorShapeSize(const float hexLen) -> uint32_t
       std::round(m_goomRand.GetRandInRange(MIN_SIZE_FACTOR, MAX_SIZE_FACTOR) * hexLen));
 }
 
-void Tube::TubeImpl::DrawShape(const Shape& shape, const Point2dInt& centreOffset) const
+void Tube::TubeImpl::DrawShape(const Shape& shape, const Vec2dInt& centreOffset) const
 {
   const int32_t jitterXOffset = m_goomRand.GetRandInRange(0, m_maxJitterOffset + 1);
   const int32_t jitterYOffset = jitterXOffset;
-  const Point2dInt jitterOffset{jitterXOffset, jitterYOffset};
+  const Vec2dInt jitterOffset{jitterXOffset, jitterYOffset};
   const Point2dInt shapeCentrePos = shape.path->GetNextPoint() + jitterOffset + centreOffset;
 
   const ShapeColors allColors = m_colorizer->GetColors(
@@ -987,8 +990,7 @@ auto ShapeColorizer::GetBrightness(const Shape& shape, const Point2dInt& shapeCe
                                               shapeCentrePos, MIN_BRIGHTNESS));
 
   constexpr float SMALL_T = 0.15F;
-  constexpr float HALFWAY_T = 0.5F;
-  if (std::fabs(shape.path->GetT() - HALFWAY_T) < SMALL_T)
+  if (constexpr float HALFWAY_T = 0.5F; std::fabs(shape.path->GetT() - HALFWAY_T) < SMALL_T)
   {
     constexpr float SMALL_T_BRIGHTNESS = 0.250F;
     return SMALL_T_BRIGHTNESS * brightness;

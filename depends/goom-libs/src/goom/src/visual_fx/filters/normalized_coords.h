@@ -11,6 +11,8 @@ namespace GOOM::VISUAL_FX::FILTERS
 class NormalizedCoords
 {
 public:
+  // IMPORTANT: Max coord must be 2.0F - other filter functions
+  //            implicitly depend on this.
   static constexpr float MAX_NORMALIZED_COORD = 2.0F;
   static constexpr float MIN_NORMALIZED_COORD = -MAX_NORMALIZED_COORD;
 
@@ -18,8 +20,8 @@ public:
   [[nodiscard]] static auto GetMinNormalizedCoordVal() -> float;
 
   explicit NormalizedCoords(const Point2dInt& screenCoords) noexcept;
-  explicit NormalizedCoords(const Point2dFlt& normalized) noexcept;
-  NormalizedCoords(float xNormalized, float yNormalized) noexcept;
+  explicit NormalizedCoords(const Point2dFlt& alreadyNormalized) noexcept;
+  NormalizedCoords(float xAlreadyNormalized, float yAlreadyNormalized) noexcept;
 
   [[nodiscard]] auto GetScreenCoordsFlt() const -> Point2dFlt;
 
@@ -29,7 +31,6 @@ public:
 
   [[nodiscard]] auto GetX() const -> float;
   [[nodiscard]] auto GetY() const -> float;
-  [[nodiscard]] auto ToFlt() const -> Point2dFlt;
   void SetX(float xNormalized);
   void SetY(float yNormalized);
 
@@ -102,13 +103,14 @@ inline NormalizedCoords::NormalizedCoords(const Point2dInt& screenCoords) noexce
 {
 }
 
-inline NormalizedCoords::NormalizedCoords(const Point2dFlt& normalized) noexcept
-  : m_normalizedCoords{normalized}
+inline NormalizedCoords::NormalizedCoords(const Point2dFlt& alreadyNormalized) noexcept
+  : m_normalizedCoords{alreadyNormalized}
 {
 }
 
-inline NormalizedCoords::NormalizedCoords(const float xNormalized, const float yNormalized) noexcept
-  : m_normalizedCoords{xNormalized, yNormalized}
+inline NormalizedCoords::NormalizedCoords(const float xAlreadyNormalized,
+                                          const float yAlreadyNormalized) noexcept
+  : m_normalizedCoords{xAlreadyNormalized, yAlreadyNormalized}
 {
 }
 
@@ -125,11 +127,6 @@ inline auto NormalizedCoords::GetX() const -> float
 inline auto NormalizedCoords::GetY() const -> float
 {
   return m_normalizedCoords.y;
-}
-
-inline auto NormalizedCoords::ToFlt() const -> Point2dFlt
-{
-  return {GetX(), GetY()};
 }
 
 inline void NormalizedCoords::SetX(const float xNormalized)
@@ -149,19 +146,22 @@ inline auto NormalizedCoords::Equals(const NormalizedCoords& other) const -> boo
 
 inline auto NormalizedCoords::operator+=(const NormalizedCoords& other) -> NormalizedCoords&
 {
-  m_normalizedCoords += other.m_normalizedCoords;
+  m_normalizedCoords.x += other.m_normalizedCoords.x;
+  m_normalizedCoords.y += other.m_normalizedCoords.y;
   return *this;
 }
 
 inline auto NormalizedCoords::operator-=(const NormalizedCoords& other) -> NormalizedCoords&
 {
-  m_normalizedCoords -= other.m_normalizedCoords;
+  m_normalizedCoords.x -= other.m_normalizedCoords.x;
+  m_normalizedCoords.y -= other.m_normalizedCoords.y;
   return *this;
 }
 
 inline auto NormalizedCoords::operator*=(const float scalar) -> NormalizedCoords&
 {
-  m_normalizedCoords *= scalar;
+  m_normalizedCoords.x *= scalar;
+  m_normalizedCoords.y *= scalar;
   return *this;
 }
 

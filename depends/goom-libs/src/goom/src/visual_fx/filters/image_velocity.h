@@ -30,8 +30,7 @@ private:
 
 inline auto ImageVelocity::GetVelocity(const NormalizedCoords& coords) const -> Point2dFlt
 {
-  return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(
-      coords.ToFlt());
+  return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords);
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS
