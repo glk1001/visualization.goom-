@@ -33,6 +33,7 @@ public:
     float xAmplitude;
     float yAmplitude;
     float limitingFactor;
+    bool useTan;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -49,7 +50,7 @@ inline auto TanEffect::GetVelocity(const float sqDistFromZero,
 {
   const float limit = m_params.limitingFactor * UTILS::m_half_pi;
   const float tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::m_half_pi), -limit, +limit);
-  const float tanSqDist = std::tan(tanArg);
+  const float tanSqDist = m_params.useTan ? std::tan(tanArg) : std::tan(UTILS::m_half_pi - tanArg);
   return {m_params.xAmplitude * tanSqDist * velocity.GetX(),
           m_params.yAmplitude * tanSqDist * velocity.GetY()};
 }

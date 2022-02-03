@@ -17,8 +17,11 @@ constexpr float PROB_XY_AMPLITUDES_EQUAL = 0.90F;
 constexpr float DEFAULT_LIMITING_FACTOR = 0.75F;
 constexpr IGoomRand::NumberRange<float> LIMITING_FACTOR_RANGE = {0.10F, 0.85F};
 
+constexpr float PROB_USE_TAN = 0.75F;
+
 TanEffect::TanEffect(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand}, m_params{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE, DEFAULT_LIMITING_FACTOR}
+  : m_goomRand{goomRand},
+    m_params{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE, DEFAULT_LIMITING_FACTOR, true}
 {
 }
 
@@ -29,8 +32,9 @@ void TanEffect::SetRandomParams()
                                ? xAmplitude
                                : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
   const float limitingFactor = m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE);
+  const bool useTan = m_goomRand.ProbabilityOf(PROB_USE_TAN);
 
-  SetParams({xAmplitude, yAmplitude, limitingFactor});
+  SetParams({xAmplitude, yAmplitude, limitingFactor, useTan});
 }
 
 auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
@@ -40,6 +44,7 @@ auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameV
       GetPair(fullParamGroup, "x amplitude", m_params.xAmplitude),
       GetPair(fullParamGroup, "y amplitude", m_params.yAmplitude),
       GetPair(fullParamGroup, "limiting factor", m_params.limitingFactor),
+      GetPair(fullParamGroup, "use tan", m_params.useTan),
   };
 }
 
