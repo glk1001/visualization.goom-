@@ -8,12 +8,14 @@
 using GOOM::Point2dInt;
 using GOOM::UTILS::floats_equal;
 using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;
+using GOOM::VISUAL_FX::FILTERS::NormalizedCoordsConverter;
 
 constexpr uint32_t WIDTH = 1280;
 constexpr uint32_t HEIGHT = 720;
 static const float MIN_COORD_VAL =
     (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) /
     static_cast<float>(WIDTH - 1);
+static const NormalizedCoordsConverter NORMALIZED_COORDS_CONVERTER{WIDTH, HEIGHT, MIN_COORD_VAL};
 
 inline auto ConvertToScreen(const float normalizedValue) -> int32_t
 {
@@ -24,19 +26,17 @@ inline auto ConvertToScreen(const float normalizedValue) -> int32_t
 
 TEST_CASE("Normalized Coords Values", "[CoordsValues]")
 {
-  NormalizedCoords::SetScreenDimensions(WIDTH, HEIGHT, MIN_COORD_VAL);
-
   SECTION("Min coords")
   {
     const NormalizedCoords coords{
-        Point2dInt{0, 0}
-    };
+        NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(Point2dInt{0, 0})};
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), NormalizedCoords::MIN_NORMALIZED_COORD));
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
     REQUIRE(floats_equal(coords.GetY(), NormalizedCoords::MIN_NORMALIZED_COORD));
 
-    const Point2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
+    const Point2dInt screenCoords =
+        NORMALIZED_COORDS_CONVERTER.NormalizedToScreenCoordsFlt(coords).ToInt();
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     REQUIRE(screenCoords.x == 0);
     UNSCOPED_INFO("screenCoords.y = " << screenCoords.y);
@@ -46,8 +46,7 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
   SECTION("Max coords")
   {
     const NormalizedCoords coords{
-        Point2dInt{WIDTH - 1U, HEIGHT - 1U}
-    };
+        NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(Point2dInt{WIDTH - 1U, HEIGHT - 1U})};
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), NormalizedCoords::MAX_NORMALIZED_COORD));
     const float maxY =
@@ -58,7 +57,8 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
     UNSCOPED_INFO("maxY = " << maxY);
     REQUIRE(floats_equal(coords.GetY(), maxY, MIN_COORD_VAL));
 
-    const Point2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
+    const Point2dInt screenCoords =
+        NORMALIZED_COORDS_CONVERTER.NormalizedToScreenCoordsFlt(coords).ToInt();
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     REQUIRE(screenCoords.x == WIDTH - 1);
     UNSCOPED_INFO("screenCoords.y = " << screenCoords.y);
@@ -68,14 +68,14 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
   SECTION("Zero coords (middle)")
   {
     const NormalizedCoords coords{
-        Point2dInt{WIDTH / 2, WIDTH / 2}
-    };
+        NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(Point2dInt{WIDTH / 2, WIDTH / 2})};
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), 0.0F, MIN_COORD_VAL));
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
     REQUIRE(floats_equal(coords.GetY(), 0.0F, MIN_COORD_VAL));
 
-    const Point2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
+    const Point2dInt screenCoords =
+        NORMALIZED_COORDS_CONVERTER.NormalizedToScreenCoordsFlt(coords).ToInt();
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     REQUIRE(screenCoords.x == WIDTH / 2);
     UNSCOPED_INFO("screenCoords.y = " << screenCoords.y);
@@ -90,7 +90,8 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
     REQUIRE(floats_equal(coords.GetY(), 0.3F));
 
-    const Point2dInt screenCoords = coords.GetScreenCoordsFlt().ToInt();
+    const Point2dInt screenCoords =
+        NORMALIZED_COORDS_CONVERTER.NormalizedToScreenCoordsFlt(coords).ToInt();
     const int32_t x = ConvertToScreen(0.5F);
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     UNSCOPED_INFO("x = " << x);
@@ -100,14 +101,10 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
 
 TEST_CASE("Normalized Coords Increments", "[CoordsIncrements]")
 {
-  NormalizedCoords::SetScreenDimensions(WIDTH, HEIGHT, MIN_COORD_VAL);
-
   SECTION("Inc")
   {
-    NormalizedCoords coords{
-        Point2dInt{0, 0}
-    };
-    coords.Inc();
+    NormalizedCoords coords{NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(Point2dInt{0, 0})};
+    NORMALIZED_COORDS_CONVERTER.Inc(coords);
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
@@ -115,19 +112,15 @@ TEST_CASE("Normalized Coords Increments", "[CoordsIncrements]")
   }
   SECTION("IncX")
   {
-    NormalizedCoords coords{
-        Point2dInt{0, 0}
-    };
-    coords.IncX();
+    NormalizedCoords coords{NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(Point2dInt{0, 0})};
+    NORMALIZED_COORDS_CONVERTER.IncX(coords);
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
     REQUIRE(floats_equal(coords.GetX(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));
   }
   SECTION("IncY")
   {
-    NormalizedCoords coords{
-        Point2dInt{0, 0}
-    };
-    coords.IncY();
+    NormalizedCoords coords{NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(Point2dInt{0, 0})};
+    NORMALIZED_COORDS_CONVERTER.IncY(coords);
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
     REQUIRE(floats_equal(coords.GetY(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));
   }
@@ -135,8 +128,6 @@ TEST_CASE("Normalized Coords Increments", "[CoordsIncrements]")
 
 TEST_CASE("Normalized Coords Operations", "[CoordsOperations]")
 {
-  NormalizedCoords::SetScreenDimensions(WIDTH, HEIGHT, MIN_COORD_VAL);
-
   SECTION("Plus")
   {
     NormalizedCoords coords{0.5F, 0.5F};

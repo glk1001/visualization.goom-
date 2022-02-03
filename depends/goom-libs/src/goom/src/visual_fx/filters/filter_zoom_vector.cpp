@@ -19,8 +19,10 @@ FilterZoomVector::FilterZoomVector(
     const uint32_t screenWidth,
     const std::string& resourcesDirectory,
     const IGoomRand& goomRand,
+    const NormalizedCoordsConverter& normalizedCoordsConverter,
     const ZoomVectorEffects::GetTheEffectsFunc& getTheExtraEffects) noexcept
-  : m_zoomVectorEffects{screenWidth, resourcesDirectory, goomRand, getTheExtraEffects}
+  : m_zoomVectorEffects{screenWidth, resourcesDirectory, goomRand, normalizedCoordsConverter,
+                        getTheExtraEffects}
 {
 }
 
@@ -44,7 +46,7 @@ auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> Nor
       m_zoomVectorEffects.GetSpeedCoeffVelocity(sqDistFromZero, coords);
   const NormalizedCoords adjustedVelocity =
       GetZoomEffectsAdjustedVelocity(sqDistFromZero, coords, baseVelocity);
-  const NormalizedCoords cleanedVelocity = ZoomVectorEffects::GetCleanedVelocity(adjustedVelocity);
+  const NormalizedCoords cleanedVelocity = m_zoomVectorEffects.GetCleanedVelocity(adjustedVelocity);
 
   return coords - cleanedVelocity;
 }

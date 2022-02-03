@@ -76,7 +76,7 @@ add_library(goom
         src/visual_fx/filters/image_speed_coeffs.cpp
         src/visual_fx/filters/image_velocity.cpp
         src/visual_fx/filters/noise.cpp
-        src/visual_fx/filters/normalized_coords.cpp
+        src/visual_fx/filters/normalized_coords.h
         src/visual_fx/filters/planes.cpp
         src/visual_fx/filters/rotation.cpp
         src/visual_fx/filters/scrunch.cpp

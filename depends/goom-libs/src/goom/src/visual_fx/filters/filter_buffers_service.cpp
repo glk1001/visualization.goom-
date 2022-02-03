@@ -4,14 +4,14 @@
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
+#include "goom/logging.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"
-#include "zoom_vector.h"
-#include "goom/logging.h"
 #include "utils/mathutils.h"
 #include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
+#include "zoom_vector.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -28,13 +28,15 @@ using UTILS::Logging;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 
-FilterBuffersService::FilterBuffersService(Parallel& parallel,
-                                           const PluginInfo& goomInfo,
-                                           std::unique_ptr<IZoomVector> zoomVector) noexcept
+FilterBuffersService::FilterBuffersService(
+    Parallel& parallel,
+    const PluginInfo& goomInfo,
+    const NormalizedCoordsConverter& normalizedCoordsConverter,
+    std::unique_ptr<IZoomVector> zoomVector) noexcept
   : m_zoomVector{std::move(zoomVector)},
-    m_filterBuffers{parallel, goomInfo, [this](const NormalizedCoords& normalizedCoords) {
-                      return m_zoomVector->GetZoomPoint(normalizedCoords);
-                    }}
+    m_filterBuffers{parallel, goomInfo, normalizedCoordsConverter,
+                    [this](const NormalizedCoords& normalizedCoords)
+                    { return m_zoomVector->GetZoomPoint(normalizedCoords); }}
 {
 }
 

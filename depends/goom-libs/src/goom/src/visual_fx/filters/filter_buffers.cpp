@@ -1,10 +1,11 @@
 #include "filter_buffers.h"
 
+//#undef NO_LOGGING
+
+#include "goom/logging.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
-//#undef NO_LOGGING
-#include "goom/logging.h"
 #include "point2d.h"
 #include "utils/parallel_utils.h"
 
@@ -25,9 +26,12 @@ using UTILS::Parallel;
 
 ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
                                      const PluginInfo& goomInfo,
+                                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                                      const ZoomPointFunc& zoomPointFunc)
   : m_screenWidth{goomInfo.GetScreenInfo().width},
     m_screenHeight{goomInfo.GetScreenInfo().height},
+    m_normalizedCoordsConverter{normalizedCoordsConverter},
+    m_coordTransforms{std::make_unique<CoordTransforms>(m_normalizedCoordsConverter)},
     m_precalculatedCoeffs{std::make_unique<FilterCoefficients>()},
     m_parallel{parallel},
     m_getZoomPoint{zoomPointFunc},
@@ -42,8 +46,6 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
                                   std::pow(2, CoordTransforms::DIM_FILTER_COEFFS_DIV_SHIFT))));
   assert(CoordTransforms::MAX_TRAN_LERP_VALUE ==
          static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS))) - 1);
-
-  NormalizedCoords::SetScreenDimensions(m_screenWidth, m_screenHeight, MIN_SCREEN_COORD_ABS_VAL);
 }
 
 void ZoomFilterBuffers::Start()
@@ -152,18 +154,19 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
 {
   assert(m_tranBuffersState == TranBuffersState::TRAN_BUFFERS_READY);
 
-  const NormalizedCoords normalizedMidPt{m_buffMidPoint}; //TODO optimize
+  //TODO optimize
+  const NormalizedCoords normalizedMidPt =
+      m_normalizedCoordsConverter.ScreenToNormalizedCoords(m_buffMidPoint);
 
-  const auto doStripeLine = [&](const size_t y) {
+  const auto doStripeLine = [&](const size_t y)
+  {
     // Position of the pixel to compute in screen coordinates
     const uint32_t yOffset = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
     const uint32_t tranPosStart = yOffset * m_screenWidth;
 
-    NormalizedCoords normalizedCentredPoint =
-        NormalizedCoords{
-            Point2dInt{0, static_cast<int32_t>(yOffset)}
-    } -
-        normalizedMidPt;
+    NormalizedCoords normalizedCentredPoint = m_normalizedCoordsConverter.ScreenToNormalizedCoords(
+                                                  Point2dInt{0, static_cast<int32_t>(yOffset)}) -
+                                              normalizedMidPt;
 
     for (uint32_t x = 0; x < m_screenWidth; ++x)
     {
@@ -173,7 +176,7 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
       m_transformBuffers->SetTempBuffersTransformPoint(tranPosStart + x,
                                                        GetTranPoint(uncenteredZoomPoint));
 
-      normalizedCentredPoint.IncX();
+      m_normalizedCoordsConverter.IncX(normalizedCentredPoint);
     }
   };
 
@@ -194,9 +197,9 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
   }
 }
 
-inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) -> Point2dInt
+inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) const -> Point2dInt
 {
-  return CoordTransforms::NormalizedToTranPoint(normalized);
+  return m_coordTransforms->NormalizedToTranPoint(normalized);
 
   /**
   int32_t tranX = NormalizedToTranPoint(xNormalised);

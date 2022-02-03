@@ -25,6 +25,7 @@ public:
   FilterZoomVector(uint32_t screenWidth,
                    const std::string& resourcesDirectory,
                    const UTILS::IGoomRand& goomRand,
+                   const NormalizedCoordsConverter& normalizedCoordsConverter,
                    const ZoomVectorEffects::GetTheEffectsFunc& getTheExtraEffects =
                        ZoomVectorEffects::GetStandardExtraEffects) noexcept;
 

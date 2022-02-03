@@ -258,6 +258,7 @@ FilterSettingsService::FilterSettingsService(Parallel& parallel,
     m_goomRand{goomRand},
     m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
     m_resourcesDirectory{resourcesDirectory},
+    m_normalizedCoordsConverter{m_goomInfo.GetScreenInfo().width, m_goomInfo.GetScreenInfo().height, ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL},
     m_filterModeData{GetFilterModeData(m_goomRand,
                                        m_resourcesDirectory,
                                        createSpeedCoefficientsEffect)},
@@ -329,9 +330,9 @@ FilterSettingsService::FilterSettingsService(Parallel& parallel,
 auto FilterSettingsService::GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>
 {
   return std::make_unique<FilterBuffersService>(
-      m_parallel, m_goomInfo,
+      m_parallel, m_goomInfo, m_normalizedCoordsConverter,
       std::make_unique<FilterZoomVector>(m_goomInfo.GetScreenInfo().width, m_resourcesDirectory,
-                                         m_goomRand));
+                                         m_goomRand, m_normalizedCoordsConverter));
 }
 
 auto FilterSettingsService::GetFilterColorsService() const -> std::unique_ptr<FilterColorsService>

@@ -31,6 +31,7 @@ public:
   static constexpr int32_t DIM_FILTER_COEFFS = 16;
   static constexpr size_t NUM_NEIGHBOR_COEFFS = 4;
   using NeighborhoodPixelArray = std::array<Pixel, NUM_NEIGHBOR_COEFFS>;
+  static constexpr float MIN_SCREEN_COORD_ABS_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
   class CoordTransforms;
 
   enum class TranBuffersState
@@ -44,6 +45,7 @@ public:
 
   ZoomFilterBuffers(UTILS::Parallel& parallel,
                     const PluginInfo& goomInfo,
+                    const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const ZoomPointFunc& zoomPointFunc);
 
   [[nodiscard]] auto GetBuffMidPoint() const -> Point2dInt;
@@ -79,6 +81,8 @@ public:
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
+  const NormalizedCoordsConverter& m_normalizedCoordsConverter;
+  const std::unique_ptr<const CoordTransforms> m_coordTransforms;
 
   class FilterCoefficients;
   const std::unique_ptr<const FilterCoefficients> m_precalculatedCoeffs;
@@ -101,8 +105,6 @@ private:
 
   std::vector<int32_t> m_firedec{};
 
-  static constexpr float MIN_SCREEN_COORD_ABS_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
-
   void InitAllTranBuffers();
   void StartFreshTranBuffers();
   void ResetTranBuffers();
@@ -110,12 +112,17 @@ private:
   void DoNextTempTranBuffersStripe(uint32_t tranBuffStripeHeight);
   void GenerateWaterFxHorizontalBuffer();
   [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos, bool& isClipped) const -> Point2dInt;
-  [[nodiscard]] static auto GetTranPoint(const NormalizedCoords& normalized) -> Point2dInt;
+  [[nodiscard]] auto GetTranPoint(const NormalizedCoords& normalized) const -> Point2dInt;
 };
 
 class ZoomFilterBuffers::CoordTransforms
 {
 public:
+  explicit CoordTransforms(const NormalizedCoordsConverter& normalizedCoordsConverter);
+
+  [[nodiscard]] auto NormalizedToTranPoint(const NormalizedCoords& normalizedPoint) const
+      -> Point2dInt;
+
   // Use these consts for optimising multiplication, division, and mod, by DIM_FILTER_COEFFS.
   static constexpr int32_t MAX_TRAN_LERP_VALUE = 0xFFFF;
   static constexpr int32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
@@ -126,8 +133,8 @@ public:
   [[nodiscard]] static auto ScreenToTranPoint(const Point2dInt& screenPoint) -> Point2dInt;
   [[nodiscard]] static auto ScreenToTranCoord(float screenCoord) -> uint32_t;
 
-  [[nodiscard]] static auto NormalizedToTranPoint(const NormalizedCoords& normalizedPoint)
-      -> Point2dInt;
+private:
+  const NormalizedCoordsConverter& m_normalizedCoordsConverter;
 };
 
 class ZoomFilterBuffers::FilterCoefficients
@@ -215,10 +222,17 @@ inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranCoord(const float sc
   return static_cast<uint32_t>(std::lround(screenCoord * static_cast<float>(DIM_FILTER_COEFFS)));
 }
 
-inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
-    const NormalizedCoords& normalizedPoint) -> Point2dInt
+inline ZoomFilterBuffers::CoordTransforms::CoordTransforms(
+    const NormalizedCoordsConverter& normalizedCoordsConverter)
+  : m_normalizedCoordsConverter{normalizedCoordsConverter}
 {
-  const Point2dFlt screenCoords = normalizedPoint.GetScreenCoordsFlt();
+}
+
+inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
+    const NormalizedCoords& normalizedPoint) const -> Point2dInt
+{
+  const Point2dFlt screenCoords =
+      m_normalizedCoordsConverter.NormalizedToScreenCoordsFlt(normalizedPoint);
 
   // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
   return {static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.x))),

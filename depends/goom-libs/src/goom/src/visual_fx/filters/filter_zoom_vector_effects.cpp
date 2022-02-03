@@ -18,8 +18,11 @@ using UTILS::NameValuePairs;
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const std::string& resourcesDirectory,
                                      const IGoomRand& goomRand,
+                                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                                      const GetTheEffectsFunc& getTheExtraEffects) noexcept
-  : m_screenWidth{screenWidth}, m_theEffects{getTheExtraEffects(resourcesDirectory, goomRand)}
+  : m_screenWidth{screenWidth},
+    m_normalizedCoordsConverter{normalizedCoordsConverter},
+    m_theEffects{getTheExtraEffects(resourcesDirectory, goomRand)}
 {
 }
 
@@ -104,17 +107,18 @@ void ZoomVectorEffects::SetRandomHypercosOverlayEffects()
   }
 }
 
-auto ZoomVectorEffects::GetCleanedVelocity(const NormalizedCoords& velocity) -> NormalizedCoords
+auto ZoomVectorEffects::GetCleanedVelocity(const NormalizedCoords& velocity) const
+    -> NormalizedCoords
 {
   return {GetMinVelocityVal(velocity.GetX()), GetMinVelocityVal(velocity.GetY())};
 }
 
-inline auto ZoomVectorEffects::GetMinVelocityVal(const float velocityVal) -> float
+inline auto ZoomVectorEffects::GetMinVelocityVal(const float velocityVal) const -> float
 {
-  if (std::fabs(velocityVal) < NormalizedCoords::GetMinNormalizedCoordVal())
+  if (std::fabs(velocityVal) < m_normalizedCoordsConverter.GetMinNormalizedCoordVal())
   {
-    return velocityVal < 0.0F ? -NormalizedCoords::GetMinNormalizedCoordVal()
-                              : NormalizedCoords::GetMinNormalizedCoordVal();
+    return velocityVal < 0.0F ? -m_normalizedCoordsConverter.GetMinNormalizedCoordVal()
+                              : +m_normalizedCoordsConverter.GetMinNormalizedCoordVal();
   }
   return velocityVal;
 }

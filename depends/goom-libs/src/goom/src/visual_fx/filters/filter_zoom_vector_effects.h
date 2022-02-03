@@ -47,6 +47,7 @@ public:
   ZoomVectorEffects(uint32_t screenWidth,
                     const std::string& resourcesDirectory,
                     const UTILS::IGoomRand& goomRand,
+                    const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const GetTheEffectsFunc& getTheExtraEffects) noexcept;
 
   void SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
@@ -54,8 +55,7 @@ public:
   [[nodiscard]] auto GetSpeedCoeffVelocity(float sqDistFromZero,
                                            const NormalizedCoords& coords) const
       -> NormalizedCoords;
-  [[nodiscard]] static auto GetCleanedVelocity(const NormalizedCoords& velocity)
-      -> NormalizedCoords;
+  [[nodiscard]] auto GetCleanedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto IsImageVelocityActive() const -> bool;
   [[nodiscard]] auto GetImageVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
@@ -84,6 +84,7 @@ public:
 
 private:
   const uint32_t m_screenWidth;
+  const NormalizedCoordsConverter& m_normalizedCoordsConverter;
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
   TheExtraEffects m_theEffects;
 
@@ -96,7 +97,7 @@ private:
   void SetRandomPlaneEffects();
   void SetRandomTanEffects();
 
-  [[nodiscard]] static auto GetMinVelocityVal(float velocityVal) -> float;
+  [[nodiscard]] auto GetMinVelocityVal(float velocityVal) const -> float;
   [[nodiscard]] auto GetXYSpeedCoefficients(float sqDistFromZero,
                                             const NormalizedCoords& coords) const -> Point2dFlt;
   [[nodiscard]] auto GetBaseSpeedCoefficients() const -> Point2dFlt;

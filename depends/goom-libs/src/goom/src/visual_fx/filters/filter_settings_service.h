@@ -125,6 +125,7 @@ private:
   const UTILS::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidPoint;
   const std::string m_resourcesDirectory;
+  const NormalizedCoordsConverter m_normalizedCoordsConverter;
 
   struct ZoomFilterModeInfo
   {

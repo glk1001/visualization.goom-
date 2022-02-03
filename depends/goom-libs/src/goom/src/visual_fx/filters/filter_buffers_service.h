@@ -26,6 +26,7 @@ class FilterBuffersService
 public:
   FilterBuffersService(UTILS::Parallel& parallel,
                        const PluginInfo& goomInfo,
+                       const NormalizedCoordsConverter& normalizedCoordsConverter,
                        std::unique_ptr<IZoomVector> zoomVector) noexcept;
 
   void Start();
