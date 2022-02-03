@@ -7,11 +7,7 @@
 #include <memory>
 #include <stdexcept>
 
-namespace GOOM
-{
-namespace VISUAL_FX
-{
-namespace FILTERS
+namespace GOOM::VISUAL_FX::FILTERS
 {
 
 class ImageDisplacement
@@ -19,23 +15,22 @@ class ImageDisplacement
 public:
   explicit ImageDisplacement(const std::string& imageFilename, const UTILS::IGoomRand& goomRand);
 
-  auto GetImageFilename() const -> std::string;
-  auto GetXColorCutoff() const -> float;
-  auto GetYColorCutoff() const -> float;
+  [[nodiscard]] auto GetImageFilename() const -> std::string;
+  [[nodiscard]] auto GetXColorCutoff() const -> float;
+  [[nodiscard]] auto GetYColorCutoff() const -> float;
   void SetXyColorCutoffs(float xColorCutoff, float yColorCutoff);
 
-  auto GetZoomFactor() const -> float;
+  [[nodiscard]] auto GetZoomFactor() const -> float;
   void SetZoomFactor(float value);
 
-  auto GetAmplitude() const -> float;
+  [[nodiscard]] auto GetAmplitude() const -> float;
   void SetAmplitude(float value);
 
-  auto GetDisplacementVector(const V2dFlt& normalizedPoint) const -> V2dFlt;
+  [[nodiscard]] auto GetDisplacementVector(const V2dFlt& normalizedPoint) const -> V2dFlt;
 
 private:
   std::unique_ptr<UTILS::ImageBitmap> m_imageBuffer;
   const std::string m_imageFilename;
-  const UTILS::IGoomRand& m_goomRand;
   const int32_t m_xMax;
   const int32_t m_yMax;
   const float m_ratioNormalizedCoordToImageCoord;
@@ -44,7 +39,8 @@ private:
   static constexpr float INITIAL_CUTOFF = 0.5F;
   float m_xColorCutoff = INITIAL_CUTOFF;
   float m_yColorCutoff = INITIAL_CUTOFF;
-  auto NormalizedToImagePoint(const V2dFlt& normalizedPoint) const -> V2dInt;
+  [[nodiscard]] auto NormalizedToImagePoint(const V2dFlt& normalizedPoint) const -> V2dInt;
+  [[nodiscard]] auto ColorToNormalizedPoint(const Pixel& color) const -> V2dFlt;
 };
 
 inline auto ImageDisplacement::GetImageFilename() const -> std::string
@@ -96,6 +92,4 @@ inline void ImageDisplacement::SetAmplitude(const float value)
   m_amplitude = value;
 }
 
-} // namespace FILTERS
-} // namespace VISUAL_FX
-} // namespace GOOM
+} // namespace GOOM::VISUAL_FX::FILTERS

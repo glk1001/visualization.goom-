@@ -15,10 +15,10 @@ namespace GOOM::VISUAL_FX::FILTERS
 using UTILS::IGoomRand;
 using UTILS::ImageBitmap;
 
-ImageDisplacement::ImageDisplacement(const std::string& imageFilename, const IGoomRand& goomRand)
+ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
+                                     [[maybe_unused]] const IGoomRand& goomRand)
   : m_imageBuffer(std::make_unique<ImageBitmap>(imageFilename)),
     m_imageFilename{imageFilename},
-    m_goomRand{goomRand},
     m_xMax{static_cast<int32_t>(m_imageBuffer->GetWidth() - 1)},
     m_yMax{static_cast<int32_t>(m_imageBuffer->GetHeight() - 1)},
     m_ratioNormalizedCoordToImageCoord{
@@ -42,15 +42,7 @@ auto ImageDisplacement::GetDisplacementVector(const V2dFlt& normalizedPoint) con
   const Pixel color =
       (*m_imageBuffer)(static_cast<size_t>(imagePoint.x), static_cast<size_t>(imagePoint.y));
 
-  const float x =
-      (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) *
-      m_amplitude * (color.RFlt() - m_xColorCutoff);
-  const float y =
-      (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) *
-      m_amplitude * (color.GFlt() - m_yColorCutoff);
-  //const float y = (ProbabilityOfMInN(1, 2) ? color.GFlt() : color.BFlt()) - 0.5F;
-
-  return {x, y};
+  return ColorToNormalizedPoint(color);
 }
 
 inline auto ImageDisplacement::NormalizedToImagePoint(const V2dFlt& normalizedPoint) const -> V2dInt
@@ -63,16 +55,18 @@ inline auto ImageDisplacement::NormalizedToImagePoint(const V2dFlt& normalizedPo
   const auto y = static_cast<int32_t>(std::lround(
       m_ratioNormalizedCoordToImageCoord * (yZoom - NormalizedCoords::MIN_NORMALIZED_COORD)));
 
-  constexpr int32_t FUZZ = 0;
-  if constexpr (0 == FUZZ)
-  {
-    return {x, y};
-  }
-  else
-  {
-    return {std::clamp(m_goomRand.GetRandInRange(x - FUZZ, x + FUZZ), 0, m_xMax),
-            std::clamp(m_goomRand.GetRandInRange(y - FUZZ, y + FUZZ), 0, m_yMax)};
-  }
+  return {x, y};
+}
+
+inline auto ImageDisplacement::ColorToNormalizedPoint(const Pixel& color) const -> V2dFlt
+{
+  const float x =
+      NormalizedCoords::MAX_NORMALIZED_COORD * m_amplitude * (color.RFlt() - m_xColorCutoff);
+  const float y =
+      NormalizedCoords::MAX_NORMALIZED_COORD * m_amplitude * (color.GFlt() - m_yColorCutoff);
+  //const float y = (ProbabilityOfMInN(1, 2) ? color.GFlt() : color.BFlt()) - 0.5F;
+
+  return {x, y};
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS

@@ -70,19 +70,22 @@ void DistanceField::SetRandomParams()
 
   if (!m_goomRand.ProbabilityOf(PROB_RANDOM_DISTANCE_POINTS))
   {
-    distancePoints.emplace_back(-1.0F, -1.0F);
-    distancePoints.emplace_back(+1.0F, -1.0F);
-    distancePoints.emplace_back(-1.0F, +1.0F);
-    distancePoints.emplace_back(+1.0F, +1.0F);
+    constexpr float HALF_MIN_COORD = 0.5F * NormalizedCoords::MIN_NORMALIZED_COORD;
+    constexpr float HALF_MAX_COORD = 0.5F * NormalizedCoords::MAX_NORMALIZED_COORD;
+    distancePoints.emplace_back(HALF_MIN_COORD, HALF_MIN_COORD);
+    distancePoints.emplace_back(HALF_MAX_COORD, HALF_MIN_COORD);
+    distancePoints.emplace_back(HALF_MIN_COORD, HALF_MAX_COORD);
+    distancePoints.emplace_back(HALF_MAX_COORD, HALF_MAX_COORD);
   }
   else
   {
-    constexpr float DISTANCE_MIN = -1.9F;
-    constexpr float DISTANCE_MAX = +1.9F;
+    constexpr float MIN_DISTANCE_COORD = 0.95F * NormalizedCoords::MIN_NORMALIZED_COORD;
+    constexpr float MAX_DISTANCE_COORD = 0.95F * NormalizedCoords::MAX_NORMALIZED_COORD;
     for (size_t i = 0; i < NUM_DISTANCE_POINTS; ++i)
     {
-      distancePoints.emplace_back(m_goomRand.GetRandInRange(DISTANCE_MIN, DISTANCE_MAX),
-                                  m_goomRand.GetRandInRange(DISTANCE_MIN, DISTANCE_MAX));
+      distancePoints.emplace_back(
+          m_goomRand.GetRandInRange(MIN_DISTANCE_COORD, MAX_DISTANCE_COORD),
+          m_goomRand.GetRandInRange(MIN_DISTANCE_COORD, MAX_DISTANCE_COORD));
     }
   }
 
@@ -93,8 +96,11 @@ void DistanceField::SetRandomParams()
 auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) const
     -> RelativeDistancePoint
 {
-  const NormalizedCoords* closestPoint{};
-  float minDistanceSq = 100.0F * Sq(NormalizedCoords::MAX_NORMALIZED_COORD);
+  constexpr float MAX_DISTANCE_SQ =
+      2.0F * Sq(NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD);
+  float minDistanceSq = MAX_DISTANCE_SQ;
+  const NormalizedCoords* closestPoint = nullptr;
+
   for (const auto& distancePoint : m_params.distancePoints)
   {
     const float distanceSq = GetSqDistance(coords, distancePoint);
@@ -105,6 +111,7 @@ auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) cons
     }
   }
   assert(closestPoint != nullptr);
+
   return {minDistanceSq, *closestPoint};
 }
 
