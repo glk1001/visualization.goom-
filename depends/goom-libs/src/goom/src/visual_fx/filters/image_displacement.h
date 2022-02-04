@@ -35,7 +35,7 @@ private:
   const std::string m_imageFilename;
   const int32_t m_xMax;
   const int32_t m_yMax;
-  const float m_ratioNormalizedCoordToImageCoord;
+  const NormalizedCoordsConverter m_normalizedCoordsConverter;
   float m_zoomFactor = 1.0F;
   float m_amplitude = 1.0F;
   static constexpr float INITIAL_CUTOFF = 0.5F;

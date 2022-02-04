@@ -1,5 +1,6 @@
 #include "image_displacement.h"
 
+#include "filter_buffers.h"
 #include "goom_graphic.h"
 #include "normalized_coords.h"
 #include "point2d.h"
@@ -21,9 +22,8 @@ ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
     m_imageFilename{imageFilename},
     m_xMax{static_cast<int32_t>(m_imageBuffer->GetWidth() - 1)},
     m_yMax{static_cast<int32_t>(m_imageBuffer->GetHeight() - 1)},
-    m_ratioNormalizedCoordToImageCoord{
-        static_cast<float>(std::min(m_xMax, m_yMax)) /
-        (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD)}
+    m_normalizedCoordsConverter{m_imageBuffer->GetWidth(), m_imageBuffer->GetHeight(),
+                                ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL}
 {
 }
 
@@ -51,26 +51,19 @@ inline auto ImageDisplacement::NormalizedCoordsToImagePoint(
     const NormalizedCoords& normalizedCoords) const -> Point2dInt
 {
   const NormalizedCoords normalizedZoom = m_zoomFactor * normalizedCoords;
-
-  const auto x = static_cast<int32_t>(
-      std::lround(m_ratioNormalizedCoordToImageCoord *
-                  (normalizedZoom.GetX() - NormalizedCoords::MIN_NORMALIZED_COORD)));
-  const auto y = static_cast<int32_t>(
-      std::lround(m_ratioNormalizedCoordToImageCoord *
-                  (normalizedZoom.GetY() - NormalizedCoords::MIN_NORMALIZED_COORD)));
-
-  return {x, y};
+  return m_normalizedCoordsConverter.NormalizedToScreenCoordsFlt(normalizedZoom).ToInt();
 }
 
 inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color) const -> Point2dFlt
 {
-  const float x =
+  const float normalizedDisplacementX =
       NormalizedCoords::MAX_NORMALIZED_COORD * m_amplitude * (color.RFlt() - m_xColorCutoff);
-  const float y =
+  const float normalizedDisplacementY =
       NormalizedCoords::MAX_NORMALIZED_COORD * m_amplitude * (color.GFlt() - m_yColorCutoff);
-  //const float y = (ProbabilityOfMInN(1, 2) ? color.GFlt() : color.BFlt()) - 0.5F;
+  //const float normalizedDisplacementY =
+  //         (ProbabilityOfMInN(1, 2) ? color.GFlt() : color.BFlt()) - 0.5F;
 
-  return {x, y};
+  return {normalizedDisplacementX, normalizedDisplacementY};
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS

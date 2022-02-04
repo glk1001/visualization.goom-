@@ -34,7 +34,7 @@ inline auto ToMap(const std::array<std::pair<E, float>, N>& stdArray) -> std::ma
 constexpr bool NO_EXTRA_EFFECTS = false;
 constexpr bool USE_FORCED_FILTER_MODE = false;
 
-constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
+//constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::CRYSTAL_BALL_MODE0;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::CRYSTAL_BALL_MODE1;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::DISTANCE_FIELD_MODE;
@@ -42,7 +42,7 @@ constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE1;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE2;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE3;
-//constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
+constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::NORMAL_MODE;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::SCRUNCH_MODE;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::SPEEDWAY_MODE0;
@@ -258,7 +258,9 @@ FilterSettingsService::FilterSettingsService(Parallel& parallel,
     m_goomRand{goomRand},
     m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
     m_resourcesDirectory{resourcesDirectory},
-    m_normalizedCoordsConverter{m_goomInfo.GetScreenInfo().width, m_goomInfo.GetScreenInfo().height, ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL},
+    m_normalizedCoordsConverter{m_goomInfo.GetScreenInfo().width,
+                                m_goomInfo.GetScreenInfo().height,
+                                ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL},
     m_filterModeData{GetFilterModeData(m_goomRand,
                                        m_resourcesDirectory,
                                        createSpeedCoefficientsEffect)},
