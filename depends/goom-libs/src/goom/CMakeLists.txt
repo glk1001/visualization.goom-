@@ -96,6 +96,7 @@ add_library(goom
         src/visual_fx/ifs/low_density_blurrer.cpp
         src/visual_fx/ifs/similitudes.cpp
         src/visual_fx/shaders/high_contrast.cpp
+        src/visual_fx/shapes/bezier_flower.cpp
         src/visual_fx/tentacles/circles_tentacle_layout.cpp
         src/visual_fx/tentacles/tentacle_driver.cpp
         src/visual_fx/tentacles/tentacle_layout.h
@@ -115,7 +116,7 @@ add_library(goom
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp
-        )
+	)
 
 target_include_directories(goom
     PUBLIC
