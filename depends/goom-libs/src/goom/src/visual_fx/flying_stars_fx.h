@@ -13,7 +13,7 @@ namespace COLOR
 class RandomColorMaps;
 }
 
-namespace UTILS
+namespace UTILS::GRAPHICS
 {
 class SmallImageBitmaps;
 }
@@ -35,7 +35,8 @@ public:
   };
 
   FlyingStarsFx() noexcept = delete;
-  FlyingStarsFx(const FxHelpers& fxHelpers, const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+  FlyingStarsFx(const FxHelpers& fxHelpers,
+                const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

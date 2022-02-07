@@ -26,7 +26,7 @@ using CONTROL::GoomDrawables;
 using DRAW::IGoomDraw;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
-using UTILS::SmallImageBitmaps;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelpers;
 using VISUAL_FX::LinesFx;
 using VISUAL_FX::ZoomFilterFx;

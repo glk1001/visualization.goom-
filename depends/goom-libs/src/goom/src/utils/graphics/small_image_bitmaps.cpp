@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-namespace GOOM::UTILS
+namespace GOOM::UTILS::GRAPHICS
 {
 
 const std::array<std::string, NUM<SmallImageBitmaps::ImageNames>> SmallImageBitmaps::IMAGE_NAMES{
@@ -65,4 +65,4 @@ auto SmallImageBitmaps::GetImageFilename(const ImageNames name,
   return filename;
 }
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::GRAPHICS

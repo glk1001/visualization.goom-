@@ -12,7 +12,7 @@ namespace COLOR
 {
 class RandomColorMaps;
 }
-namespace UTILS
+namespace UTILS::GRAPHICS
 {
 class SmallImageBitmaps;
 }
@@ -25,7 +25,8 @@ class TentaclesFx : public IVisualFx
 {
 public:
   TentaclesFx() noexcept = delete;
-  TentaclesFx(const FxHelpers& fxHelpers, const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+  TentaclesFx(const FxHelpers& fxHelpers,
+              const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

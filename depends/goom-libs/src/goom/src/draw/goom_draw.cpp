@@ -7,7 +7,7 @@
 namespace GOOM::DRAW
 {
 
-using UTILS::ImageBitmap;
+using UTILS::GRAPHICS::ImageBitmap;
 
 IGoomDraw::IGoomDraw(const uint32_t screenWidth,
                      const uint32_t screenHeight,

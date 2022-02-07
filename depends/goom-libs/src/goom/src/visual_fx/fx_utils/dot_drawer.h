@@ -14,7 +14,7 @@ namespace DRAW
 class IGoomDraw;
 }
 
-namespace UTILS
+namespace UTILS::GRAPHICS
 {
 class ImageBitmap;
 class SmallImageBitmaps;
@@ -41,7 +41,7 @@ class DotDrawer
 public:
   DotDrawer(DRAW::IGoomDraw& draw,
             const UTILS::IGoomRand& goomRand,
-            const UTILS::SmallImageBitmaps& smallBitmaps,
+            const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
             const UTILS::Weights<DotSizes>& minDotSizes,
             const UTILS::Weights<DotSizes>& normalDotSizes) noexcept;
 
@@ -52,7 +52,7 @@ public:
 private:
   DRAW::IGoomDraw& m_goomDraw;
   const GOOM::UTILS::IGoomRand& m_goomRand;
-  const GOOM::UTILS::SmallImageBitmaps& m_smallBitmaps;
+  const GOOM::UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
 
   static constexpr size_t MIN_IMAGE_DOT_SIZE = 3;
   static constexpr size_t MAX_IMAGE_DOT_SIZE = 15;
@@ -61,7 +61,7 @@ private:
   const UTILS::Weights<DotSizes> m_minDotSizes;
   const UTILS::Weights<DotSizes> m_normalDotSizes;
   [[nodiscard]] auto GetNextDotSize(size_t maxSize) const -> size_t;
-  [[nodiscard]] auto GetImageBitmap(size_t size) const -> const UTILS::ImageBitmap&;
+  [[nodiscard]] auto GetImageBitmap(size_t size) const -> const UTILS::GRAPHICS::ImageBitmap&;
 };
 
 } // namespace VISUAL_FX::FX_UTILS

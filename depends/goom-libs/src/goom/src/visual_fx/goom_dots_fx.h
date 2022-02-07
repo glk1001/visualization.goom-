@@ -13,7 +13,7 @@ namespace COLOR
 class RandomColorMaps;
 }
 
-namespace UTILS
+namespace UTILS::GRAPHICS
 {
 class SmallImageBitmaps;
 }
@@ -26,7 +26,8 @@ class GoomDotsFx : public IVisualFx
 {
 public:
   GoomDotsFx() noexcept = delete;
-  GoomDotsFx(const FxHelpers& fxHelpers, const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+  GoomDotsFx(const FxHelpers& fxHelpers,
+             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

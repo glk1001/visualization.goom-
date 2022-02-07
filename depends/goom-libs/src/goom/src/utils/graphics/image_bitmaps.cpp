@@ -14,7 +14,7 @@
 #include <format>
 #include <stdexcept>
 
-namespace GOOM::UTILS
+namespace GOOM::UTILS::GRAPHICS
 {
 
 void ImageBitmap::Resize(const size_t width, const size_t height)
@@ -88,4 +88,4 @@ void ImageBitmap::Load(std::string imageFilename)
   stbi_image_free(rgbImage);
 }
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::GRAPHICS

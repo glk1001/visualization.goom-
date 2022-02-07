@@ -40,11 +40,11 @@ using UTILS::m_two_pi;
 using UTILS::OscillatingPath;
 using UTILS::PathParams;
 using UTILS::SMALL_FLOAT;
-using UTILS::SmallImageBitmaps;
 using UTILS::Sq;
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::Weights;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 constexpr uint32_t NUM_SHAPES_PER_TUBE = 45;
 // Strangely, 'NUM_SHAPES_PER_TUBE = 100' gives a small gap in

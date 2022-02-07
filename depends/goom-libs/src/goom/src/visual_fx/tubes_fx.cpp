@@ -38,13 +38,13 @@ using DRAW::IGoomDraw;
 using TUBES::BrightnessAttenuation;
 using TUBES::Tube;
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
 using UTILS::Logging;
 using UTILS::PathParams;
 using UTILS::SMALL_FLOAT;
-using UTILS::SmallImageBitmaps;
 using UTILS::Timer;
 using UTILS::TValue;
+using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 constexpr size_t NUM_TUBES = 3;
 

@@ -25,6 +25,9 @@ namespace UTILS
 {
 class IGoomRand;
 class Parallel;
+}
+namespace UTILS::GRAPHICS
+{
 class SmallImageBitmaps;
 }
 
@@ -51,7 +54,7 @@ public:
   GoomAllVisualFx(
       UTILS::Parallel& parallel,
       const VISUAL_FX::FxHelpers& fxHelpers,
-      const UTILS::SmallImageBitmaps& smallBitmaps,
+      const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
       const std::string& resourcesDirectory,
       IGoomStateHandler& goomStateHandler,
       std::unique_ptr<VISUAL_FX::FILTERS::FilterBuffersService> filterBuffersService,

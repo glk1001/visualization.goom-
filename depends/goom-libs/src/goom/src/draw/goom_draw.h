@@ -13,7 +13,7 @@
 namespace GOOM
 {
 
-namespace UTILS
+namespace UTILS::GRAPHICS
 {
 class ImageBitmap;
 }
@@ -52,11 +52,11 @@ public:
   using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& imageColor)>;
   void Bitmap(int xCentre,
               int yCentre,
-              const UTILS::ImageBitmap& bitmap,
+              const UTILS::GRAPHICS::ImageBitmap& bitmap,
               const GetBitmapColorFunc& getColor);
   void Bitmap(int xCentre,
               int yCentre,
-              const UTILS::ImageBitmap& bitmap,
+              const UTILS::GRAPHICS::ImageBitmap& bitmap,
               const std::vector<GetBitmapColorFunc>& getColors);
 
   void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& colors);
@@ -180,7 +180,7 @@ inline void IGoomDraw::Line(const int x1,
 
 inline void IGoomDraw::Bitmap(const int xCentre,
                               const int yCentre,
-                              const UTILS::ImageBitmap& bitmap,
+                              const UTILS::GRAPHICS::ImageBitmap& bitmap,
                               const GetBitmapColorFunc& getColor)
 {
   // WARNING undefined behaviour - GCC 11 does not like passing just '{getColor}'. 

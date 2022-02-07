@@ -21,6 +21,10 @@ class IGoomDraw;
 namespace UTILS
 {
 class IGoomRand;
+}
+
+namespace UTILS::GRAPHICS
+{
 class SmallImageBitmaps;
 }
 
@@ -33,7 +37,7 @@ public:
   TentacleDriver() noexcept = delete;
   TentacleDriver(DRAW::IGoomDraw& draw,
                  const UTILS::IGoomRand& goomRand,
-                 const UTILS::SmallImageBitmaps& smallBitmaps,
+                 const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                  const ITentacleLayout& tentacleLayout) noexcept;
 
   void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);

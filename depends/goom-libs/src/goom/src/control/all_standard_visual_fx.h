@@ -15,6 +15,9 @@ namespace GOOM
 namespace UTILS
 {
 class Parallel;
+}
+namespace UTILS::GRAPHICS
+{
 class SmallImageBitmaps;
 }
 
@@ -44,7 +47,7 @@ public:
 
   AllStandardVisualFx(UTILS::Parallel& parallel,
                       const VISUAL_FX::FxHelpers& fxHelpers,
-                      const UTILS::SmallImageBitmaps& smallBitmaps,
+                      const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                       const std::string& resourcesDirectory) noexcept;
 
   [[nodiscard]] auto GetCurrentGoomDrawables() const -> const GoomDrawablesSet&;

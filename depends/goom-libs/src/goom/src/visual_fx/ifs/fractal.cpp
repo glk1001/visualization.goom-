@@ -11,8 +11,8 @@ namespace GOOM::VISUAL_FX::IFS
 
 using COLOR::RandomColorMaps;
 using UTILS::IGoomRand;
-using UTILS::SmallImageBitmaps;
 using UTILS::TValue;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 Fractal::Fractal(const uint32_t screenWidth,
                  const uint32_t screenHeight,

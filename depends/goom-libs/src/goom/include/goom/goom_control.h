@@ -3,7 +3,6 @@
 #include "spimpl.h"
 
 #include <cstdint>
-#include <string>
 
 namespace GOOM
 {

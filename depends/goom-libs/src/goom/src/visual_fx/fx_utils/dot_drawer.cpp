@@ -14,15 +14,16 @@ namespace GOOM::VISUAL_FX::FX_UTILS
 using COLOR::GetColorMultiply;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
 using UTILS::NUM;
-using UTILS::SmallImageBitmaps;
+using UTILS::Weights;
+using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
-                     const UTILS::IGoomRand& goomRand,
-                     const UTILS::SmallImageBitmaps& smallBitmaps,
-                     const UTILS::Weights<DotSizes>& minDotSizes,
-                     const UTILS::Weights<DotSizes>& normalDotSizes) noexcept
+                     const IGoomRand& goomRand,
+                     const SmallImageBitmaps& smallBitmaps,
+                     const Weights<DotSizes>& minDotSizes,
+                     const Weights<DotSizes>& normalDotSizes) noexcept
   : m_goomDraw{draw},
     m_goomRand{goomRand},
     m_smallBitmaps{smallBitmaps},

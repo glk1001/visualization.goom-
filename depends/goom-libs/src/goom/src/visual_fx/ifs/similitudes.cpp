@@ -16,9 +16,9 @@ using COLOR::ColorMapGroup;
 using COLOR::RandomColorMaps;
 using UTILS::DEGREES_180;
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
 using UTILS::m_pi;
-using UTILS::SmallImageBitmaps;
+using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 // clang-format off
 constexpr float NUM0_WEIGHT = 10.0F;

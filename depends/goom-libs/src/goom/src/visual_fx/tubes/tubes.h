@@ -66,11 +66,12 @@ public:
       int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors, uint8_t thickness)>;
   using DrawCircleFunc = std::function<void(
       int x, int y, int radius, const std::vector<Pixel>& colors, uint8_t thickness)>;
-  using DrawSmallImageFunc = std::function<void(int xMid,
-                                                int yMid,
-                                                UTILS::SmallImageBitmaps::ImageNames imageName,
-                                                uint32_t size,
-                                                const std::vector<Pixel>& colors)>;
+  using DrawSmallImageFunc =
+      std::function<void(int xMid,
+                         int yMid,
+                         UTILS::GRAPHICS::SmallImageBitmaps::ImageNames imageName,
+                         uint32_t size,
+                         const std::vector<Pixel>& colors)>;
   struct DrawFuncs
   {
     DrawLineFunc drawLine;

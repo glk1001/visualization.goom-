@@ -15,6 +15,10 @@ class IGoomDraw;
 namespace UTILS
 {
 class IGoomRand;
+}
+
+namespace UTILS::GRAPHICS
+{
 class SmallImageBitmaps;
 }
 
@@ -27,7 +31,7 @@ public:
   TentaclePlotter() noexcept = delete;
   TentaclePlotter(DRAW::IGoomDraw& draw,
                   const UTILS::IGoomRand& goomRand,
-                  const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+                  const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   void ChangeNumNodesBetweenDots();
   void ChangeDotSizes();

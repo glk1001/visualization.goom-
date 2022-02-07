@@ -21,6 +21,10 @@ class RandomColorMaps;
 namespace UTILS
 {
 class IGoomRand;
+}
+
+namespace UTILS::GRAPHICS
+{
 class ImageBitmap;
 class SmallImageBitmaps;
 }
@@ -34,7 +38,7 @@ public:
   [[nodiscard]] auto GetCPoint() const -> FltPoint;
   [[nodiscard]] auto GetColor() const -> Pixel;
   [[nodiscard]] auto GetColorMap() const -> const COLOR::IColorMap*;
-  [[nodiscard]] auto GetCurrentPointBitmap() const -> const UTILS::ImageBitmap*;
+  [[nodiscard]] auto GetCurrentPointBitmap() const -> const UTILS::GRAPHICS::ImageBitmap*;
 
 private:
   friend class Similitudes;
@@ -54,7 +58,7 @@ private:
   Flt m_sinA2 = 0;
   const COLOR::IColorMap* m_colorMap = nullptr;
   Pixel m_color = Pixel::BLACK;
-  const UTILS::ImageBitmap* m_currentPointBitmap = nullptr;
+  const UTILS::GRAPHICS::ImageBitmap* m_currentPointBitmap = nullptr;
 };
 
 class Similitudes
@@ -62,7 +66,7 @@ class Similitudes
 public:
   Similitudes(const UTILS::IGoomRand& goomRand,
               const COLOR::RandomColorMaps& randomColorMaps,
-              const UTILS::SmallImageBitmaps& smallBitmaps);
+              const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
 
   void Init();
 
@@ -92,10 +96,10 @@ private:
                              size_t extraSimiIndex,
                              Similitude& mainSimi);
   void UpdateMainSimisFltPart();
-  [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) -> const UTILS::ImageBitmap*;
+  [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) -> const UTILS::GRAPHICS::ImageBitmap*;
 
   const UTILS::IGoomRand& m_goomRand;
-  const UTILS::SmallImageBitmaps& m_smallBitmaps;
+  const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
   const COLOR::RandomColorMaps& m_colorMaps;
 
   using IfsFunc = std::function<FltPoint(const Similitude& simi, Flt x1, Flt y1, Flt x2, Flt y2)>;
@@ -175,7 +179,7 @@ inline auto Similitude::GetColorMap() const -> const COLOR::IColorMap*
   return m_colorMap;
 }
 
-inline auto Similitude::GetCurrentPointBitmap() const -> const UTILS::ImageBitmap*
+inline auto Similitude::GetCurrentPointBitmap() const -> const UTILS::GRAPHICS::ImageBitmap*
 {
   return m_currentPointBitmap;
 }

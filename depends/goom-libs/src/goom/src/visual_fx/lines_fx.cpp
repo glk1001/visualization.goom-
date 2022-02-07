@@ -53,7 +53,7 @@ using UTILS::m_half_pi;
 using UTILS::m_pi;
 using UTILS::m_two_pi;
 using UTILS::SMALL_FLOAT;
-using UTILS::SmallImageBitmaps;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 constexpr float MIN_MAX_NORMALIZED_PEAK = 100.0F;
 constexpr float MAX_MAX_NORMALIZED_PEAK = 300.0F;

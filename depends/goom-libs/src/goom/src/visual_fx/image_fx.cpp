@@ -39,13 +39,13 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
 using UTILS::Logging;
 using UTILS::m_two_pi;
 using UTILS::Parallel;
 using UTILS::Sq;
 using UTILS::SqDistance;
 using UTILS::TValue;
+using UTILS::GRAPHICS::ImageBitmap;
 
 constexpr int32_t CHUNK_WIDTH = 4;
 constexpr int32_t CHUNK_HEIGHT = 4;

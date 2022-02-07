@@ -13,7 +13,7 @@ namespace COLOR
 class RandomColorMaps;
 }
 
-namespace UTILS
+namespace UTILS::GRAPHICS
 {
 class SmallImageBitmaps;
 }
@@ -26,7 +26,8 @@ class TubesFx : public IVisualFx
 {
 public:
   TubesFx() noexcept = delete;
-  TubesFx(const FxHelpers& fxHelpers, const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+  TubesFx(const FxHelpers& fxHelpers,
+          const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

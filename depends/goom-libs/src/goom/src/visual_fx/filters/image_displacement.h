@@ -31,7 +31,7 @@ public:
       -> Point2dFlt;
 
 private:
-  std::unique_ptr<UTILS::ImageBitmap> m_imageBuffer;
+  std::unique_ptr<UTILS::GRAPHICS::ImageBitmap> m_imageBuffer;
   const std::string m_imageFilename;
   const int32_t m_xMax;
   const int32_t m_yMax;

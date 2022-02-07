@@ -13,7 +13,7 @@ namespace COLOR
 class RandomColorMaps;
 }
 
-namespace UTILS
+namespace UTILS::GRAPHICS
 {
 class SmallImageBitmaps;
 }
@@ -25,7 +25,8 @@ class FxHelpers;
 class CirclesFx : public IVisualFx
 {
 public:
-  CirclesFx(const FxHelpers& fxHelpers, const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+  CirclesFx(const FxHelpers& fxHelpers,
+            const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

@@ -39,13 +39,13 @@ using COLOR::RandomColorMapsManager;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
 using UTILS::m_pi;
 using UTILS::m_third_pi;
 using UTILS::m_two_pi;
-using UTILS::SmallImageBitmaps;
 using UTILS::SqDistance;
 using UTILS::Weights;
+using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 constexpr uint32_t MIN_STAR_AGE = 15;
 constexpr uint32_t MAX_STAR_EXTRA_AGE = 50;

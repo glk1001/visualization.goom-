@@ -67,10 +67,10 @@ using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
-using UTILS::SmallImageBitmaps;
 using UTILS::TValue;
 using UTILS::Weights;
+using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 class IfsDancersFx::IfsDancersFxImpl
 {

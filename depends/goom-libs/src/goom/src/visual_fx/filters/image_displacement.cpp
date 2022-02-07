@@ -14,7 +14,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 {
 
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
+using UTILS::GRAPHICS::ImageBitmap;
 
 ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
                                      [[maybe_unused]] const IGoomRand& goomRand)

@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-namespace GOOM::UTILS
+namespace GOOM::UTILS::GRAPHICS
 {
 
 class ImageBitmap
@@ -58,4 +58,4 @@ inline auto ImageBitmap::operator()(const size_t x, const size_t y) const -> Pix
   return Pixel{{pixel.red, pixel.green, pixel.blue, pixel.alpha}};
 }
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::GRAPHICS

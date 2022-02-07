@@ -30,9 +30,9 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
-using UTILS::SmallImageBitmaps;
 using UTILS::Weights;
+using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 class GoomDotsFx::GoomDotsFxImpl
 {

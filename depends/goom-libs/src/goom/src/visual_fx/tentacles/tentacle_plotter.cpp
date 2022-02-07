@@ -12,7 +12,7 @@ using FX_UTILS::DotSizes;
 using UTILS::IGoomRand;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
-using UTILS::SmallImageBitmaps;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 // clang-format off
 constexpr float MIN_DOT_SIZE01_WEIGHT = 100.0F;

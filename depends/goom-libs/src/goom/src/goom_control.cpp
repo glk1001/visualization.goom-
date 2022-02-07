@@ -66,7 +66,7 @@ using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 using UTILS::GoomRand;
 using UTILS::Logging;
 using UTILS::Parallel;
-using UTILS::SmallImageBitmaps;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelpers;
 using VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
 using VISUAL_FX::FILTERS::FilterSettingsService;

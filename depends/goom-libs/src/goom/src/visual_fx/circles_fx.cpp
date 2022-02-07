@@ -34,11 +34,11 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
-using UTILS::ImageBitmap;
-using UTILS::SmallImageBitmaps;
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::Weights;
+using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 class CirclesFx::CirclesFxImpl
 {

@@ -33,9 +33,9 @@ using TENTACLES::TentacleDriver;
 using UTILS::IGoomRand;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
-using UTILS::SmallImageBitmaps;
 using UTILS::Timer;
 using UTILS::Weights;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 class TentaclesFx::TentaclesImpl
 {

@@ -20,7 +20,10 @@ class RandomColorMaps;
 namespace UTILS
 {
 class IGoomRand;
-class ImageBitmap;
+}
+
+namespace UTILS::GRAPHICS
+{
 class SmallImageBitmaps;
 }
 
@@ -34,7 +37,7 @@ public:
           uint32_t screenHeight,
           const UTILS::IGoomRand& goomRand,
           const COLOR::RandomColorMaps& randomColorMaps,
-          const UTILS::SmallImageBitmaps& smallBitmaps);
+          const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
 
   void Init();
   void Reset();

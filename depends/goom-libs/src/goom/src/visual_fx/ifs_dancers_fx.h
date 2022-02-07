@@ -13,7 +13,7 @@ namespace COLOR
 class RandomColorMaps;
 }
 
-namespace UTILS
+namespace UTILS::GRAPHICS
 {
 class SmallImageBitmaps;
 }
@@ -41,7 +41,7 @@ public:
 
   IfsDancersFx() noexcept = delete;
   explicit IfsDancersFx(const FxHelpers& fxHelpers,
-                        const UTILS::SmallImageBitmaps& smallBitmaps) noexcept;
+                        const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

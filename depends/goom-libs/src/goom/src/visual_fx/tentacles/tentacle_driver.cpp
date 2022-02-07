@@ -24,7 +24,7 @@ using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using UTILS::IGoomRand;
 using UTILS::m_pi;
-using UTILS::SmallImageBitmaps;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 

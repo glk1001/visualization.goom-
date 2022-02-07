@@ -7,7 +7,7 @@
 #include <map>
 #include <memory>
 
-namespace GOOM::UTILS
+namespace GOOM::UTILS::GRAPHICS
 {
 
 class SmallImageBitmaps
@@ -40,4 +40,4 @@ private:
   auto GetImageFilename(ImageNames name, size_t sizeOfImageSquare) const -> std::string;
 };
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::GRAPHICS

@@ -14,7 +14,7 @@ namespace COLOR
 class RandomColorMaps;
 }
 
-namespace UTILS
+namespace UTILS::GRAPHICS
 {
 class SmallImageBitmaps;
 }
@@ -38,7 +38,7 @@ public:
 
   // construit un effet de line (une ligne horitontale pour commencer)
   LinesFx(const FxHelpers& fxHelpers,
-          const UTILS::SmallImageBitmaps& smallBitmaps,
+          const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
           LineType srceLineType,
           float srceParam,
           const Pixel& srceColor,

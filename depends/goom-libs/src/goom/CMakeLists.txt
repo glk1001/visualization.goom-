@@ -50,6 +50,7 @@ add_library(goom
         src/utils/adaptive_exposure.cpp
         src/utils/goom_rand.h
         src/utils/goom_rand_base.h
+        src/utils/graphics/bezier_drawer.cpp
         src/utils/graphics/image_bitmaps.cpp
         src/utils/graphics/small_image_bitmaps.cpp
         src/utils/logging.cpp
@@ -113,19 +114,22 @@ add_library(goom
         src/visual_fx/shader_fx.cpp
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
-        src/visual_fx/zoom_filter_fx.cpp)
+        src/visual_fx/zoom_filter_fx.cpp
+        )
 
 target_include_directories(goom
     PUBLIC
         ${GOOM_ROOT_DIR}/goom/include
         ${GOOM_ROOT_DIR}/utils/include
     PRIVATE
+        /home/greg/Prj/github/bezier/include
         ${GOOM_ROOT_DIR}/goom/include/goom
         ${GOOM_ROOT_DIR}/goom/src
 )
 
 target_include_directories(goom
     SYSTEM PRIVATE
+        ${GOOM_ROOT_DIR}/bezier/include
         ${GOOM_ROOT_DIR}/vivid/include
         ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
         ${fmt_SOURCE_DIR}/include

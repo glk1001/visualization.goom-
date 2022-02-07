@@ -22,7 +22,7 @@ namespace GOOM::CONTROL
 
 using CONTROL::GoomDrawables;
 using UTILS::Parallel;
-using UTILS::SmallImageBitmaps;
+using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::CirclesFx;
 using VISUAL_FX::FlyingStarsFx;
 using VISUAL_FX::FxHelpers;
