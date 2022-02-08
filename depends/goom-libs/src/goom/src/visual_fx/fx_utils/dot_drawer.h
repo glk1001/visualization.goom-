@@ -47,7 +47,7 @@ public:
 
   void ChangeDotSizes();
 
-  void DrawDots(const Point2dInt& pt, const std::vector<Pixel>& colors, float brightness);
+  void DrawDot(const Point2dInt& pt, const std::vector<Pixel>& colors, float brightness);
 
 private:
   DRAW::IGoomDraw& m_goomDraw;

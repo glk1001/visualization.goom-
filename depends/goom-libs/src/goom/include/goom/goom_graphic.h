@@ -108,9 +108,9 @@ public:
     PixelChannelType alpha = MAX_ALPHA;
   };
 
-  Pixel();
-  explicit Pixel(const RGB& color);
-  Pixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha);
+  Pixel() noexcept;
+  explicit Pixel(const RGB& color) noexcept;
+  Pixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept;
 
   [[nodiscard]] auto R() const -> PixelChannelType;
   [[nodiscard]] auto G() const -> PixelChannelType;
@@ -217,36 +217,34 @@ public:
 #endif
 
 private:
-  uint32_t m_width{};
-  uint32_t m_height{};
-  uint32_t m_xMax{};
-  uint32_t m_yMax{};
+  uint32_t m_width = 0;
+  uint32_t m_height = 0;
+  uint32_t m_xMax = 0;
+  uint32_t m_yMax = 0;
   Buffer m_buff{};
 };
 
 static_assert(sizeof(Pixel) == sizeof(PixelIntType), "Invalid Pixel size.");
 
-inline Pixel::Pixel() : m_color{/*.channels*/ {}}
+inline Pixel::Pixel() noexcept : m_color{Channels{}}
 {
 }
 
-inline Pixel::Pixel(const RGB& color)
-  : m_color{{/*.r = */ color.red,
-             /*.g = */ color.green,
-             /*.b = */ color.blue,
-             /*.a = */ color.alpha}}
+inline Pixel::Pixel(const RGB& color) noexcept
+  : m_color{
+        {color.red, color.green, color.blue, color.alpha}
+}
 {
 }
 
 inline Pixel::Pixel(const uint32_t red,
                     const uint32_t green,
                     const uint32_t blue,
-                    const uint32_t alpha)
+                    const uint32_t alpha) noexcept
   : m_color{
-        {/*.r = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, red)),
-         /*.g = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, green)),
-         /*.b = */ static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, blue)),
-         /*.a = */
+        {static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, red)),
+         static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, green)),
+         static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, blue)),
          static_cast<PixelChannelType>(std::min(static_cast<uint32_t>(MAX_ALPHA), alpha))}
 }
 {

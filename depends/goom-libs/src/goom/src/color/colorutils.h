@@ -36,6 +36,19 @@ constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
 [[nodiscard]] auto GetIncreasedChroma(const Pixel& color) -> Pixel;
 [[nodiscard]] auto GetDecreasedChroma(const Pixel& color) -> Pixel;
 
+enum class SimpleColors
+{
+  BLEUBLANC = 0,
+  RED,
+  ORANGE_V,
+  ORANGE_J,
+  VERT,
+  BLEU,
+  BLACK,
+  _NUM
+};
+[[nodiscard]] auto GetSimpleColor(SimpleColors simpleColor) -> Pixel;
+
 class GammaCorrection
 {
 public:
@@ -54,12 +67,14 @@ private:
 };
 
 
-inline auto ColorChannelMultiply(const PixelChannelType ch1, const PixelChannelType ch2) -> uint32_t
+[[nodiscard]] inline auto ColorChannelMultiply(const PixelChannelType ch1,
+                                               const PixelChannelType ch2) -> uint32_t
 {
   return MultiplyColorChannels(ch1, ch2);
 }
 
-inline auto ColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2) -> uint32_t
+[[nodiscard]] inline auto ColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2)
+    -> uint32_t
 {
   return static_cast<uint32_t>(ch1) + static_cast<uint32_t>(ch2);
 }
@@ -143,8 +158,8 @@ inline auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
 }
 
 
-inline auto GetBrighterChannelColor(const uint32_t brightness, const PixelChannelType channelVal)
-    -> uint32_t
+[[nodiscard]] inline auto GetBrighterChannelColor(const uint32_t brightness,
+                                                  const PixelChannelType channelVal) -> uint32_t
 {
   return MultiplyChannelColorByScalar(brightness, channelVal);
 }
@@ -224,6 +239,37 @@ inline auto GetIncreasedChroma(const Pixel& color) -> Pixel
 inline auto GetDecreasedChroma(const Pixel& color) -> Pixel
 {
   return GetAlteredChroma(DECREASED_CHROMA_FACTOR, color);
+}
+
+inline auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
+{
+  constexpr Pixel::RGB RED{230, 120, 18, MAX_ALPHA};
+  constexpr Pixel::RGB ORANGE_J{120, 252, 18, MAX_ALPHA};
+  constexpr Pixel::RGB ORANGE_V{160, 236, 40, MAX_ALPHA};
+  constexpr Pixel::RGB BLEUBLANC{40, 220, 140, MAX_ALPHA};
+  constexpr Pixel::RGB VERT{200, 80, 18, MAX_ALPHA};
+  constexpr Pixel::RGB BLEU{250, 30, 80, MAX_ALPHA};
+  constexpr Pixel::RGB BLACK{16, 16, 16, MAX_ALPHA};
+
+  switch (simpleColor)
+  {
+    case SimpleColors::RED:
+      return Pixel{RED};
+    case SimpleColors::ORANGE_J:
+      return Pixel{ORANGE_J};
+    case SimpleColors::ORANGE_V:
+      return Pixel{ORANGE_V};
+    case SimpleColors::BLEUBLANC:
+      return Pixel{BLEUBLANC};
+    case SimpleColors::VERT:
+      return Pixel{VERT};
+    case SimpleColors::BLEU:
+      return Pixel{BLEU};
+    case SimpleColors::BLACK:
+      return Pixel{BLACK};
+    default:
+      throw std::logic_error("Unknown simple color enum.");
+  }
 }
 
 inline GammaCorrection::GammaCorrection(const float gamma, const float threshold)

@@ -51,10 +51,9 @@ public:
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
   void Start();
-  auto GetRandomLineColor() const -> Pixel;
 
-  [[nodiscard]] auto GetPower() const -> float;
-  void SetPower(float val);
+  [[nodiscard]] auto GetLineColorPower() const -> float;
+  void SetLineColorPower(float val);
 
   static constexpr uint32_t MIN_LINE_DURATION = 80;
   [[nodiscard]] auto CanResetDestLine() const -> bool;
@@ -68,6 +67,7 @@ public:
 
   void Finish();
 
+  [[nodiscard]] auto GetRandomLineColor() const -> Pixel;
   [[nodiscard]] static auto GetBlackLineColor() -> Pixel;
   [[nodiscard]] static auto GetGreenLineColor() -> Pixel;
   [[nodiscard]] static auto GetRedLineColor() -> Pixel;

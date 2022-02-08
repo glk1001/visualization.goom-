@@ -41,31 +41,32 @@ void DotDrawer::ChangeDotSizes()
   m_beadedLook = m_goomRand.ProbabilityOf(PROB_BEADED_LOOK);
 }
 
-void DotDrawer::DrawDots(const Point2dInt& pt,
-                         const std::vector<Pixel>& colors,
-                         const float brightness)
+void DotDrawer::DrawDot(const Point2dInt& pt,
+                        const std::vector<Pixel>& colors,
+                        const float brightness)
 {
   size_t dotSize = m_currentDotSize;
   if (m_beadedLook)
   {
     dotSize = GetNextDotSize(MAX_IMAGE_DOT_SIZE);
   }
-
-  if (dotSize > 1)
+  if (dotSize <= 1)
   {
-    const auto getColor1 =
-        [=]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
-    { return GetColorMultiply(bgnd, COLOR::GetBrighterColor(brightness, colors[0])); };
-
-    const auto getColor2 =
-        [=]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
-    { return GetColorMultiply(bgnd, COLOR::GetBrighterColor(brightness, colors[1])); };
-
-    const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getColor1, getColor2};
-    const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
-
-    m_goomDraw.Bitmap(pt.x, pt.y, bitmap, getColors);
+    return;
   }
+
+  const auto getColor1 =
+      [=]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
+  { return GetColorMultiply(bgnd, COLOR::GetBrighterColor(brightness, colors[0])); };
+
+  const auto getColor2 =
+      [=]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
+  { return GetColorMultiply(bgnd, COLOR::GetBrighterColor(brightness, colors[1])); };
+
+  const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getColor1, getColor2};
+  const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
+
+  m_goomDraw.Bitmap(pt.x, pt.y, bitmap, getColors);
 }
 
 auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t

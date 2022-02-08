@@ -264,7 +264,7 @@ void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
 {
   assert(IsCurrentlyDrawable(GoomDrawables::LINES));
 
-  m_goomLine2->SetPower(m_goomLine1->GetPower());
+  m_goomLine2->SetLineColorPower(m_goomLine1->GetLineColorPower());
 
   m_goomLine1->DrawLines(soundData.GetSample(0), soundData.GetSampleMinMax(0));
   m_goomLine2->DrawLines(soundData.GetSample(1), soundData.GetSampleMinMax(1));

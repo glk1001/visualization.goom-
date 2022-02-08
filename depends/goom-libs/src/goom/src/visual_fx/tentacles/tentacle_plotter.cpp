@@ -144,7 +144,7 @@ inline void TentaclePlotter::DrawNodeDot(const size_t nodeNum,
   }
 
   constexpr float DOT_BRIGHTNESS = 1.5F;
-  m_dotDrawer.DrawDots({x, y}, colors, DOT_BRIGHTNESS);
+  m_dotDrawer.DrawDot({x, y}, colors, DOT_BRIGHTNESS);
 }
 
 inline auto TentaclePlotter::Get2DTentaclePoints(const Tentacle3D& tentacle) const

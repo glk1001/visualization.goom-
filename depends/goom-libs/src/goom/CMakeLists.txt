@@ -89,6 +89,7 @@ add_library(goom
         src/visual_fx/filters/wave.cpp
         src/visual_fx/filters/y_only.cpp
         src/visual_fx/fx_utils/dot_drawer.cpp
+        src/visual_fx/fx_utils/lines.cpp
         src/visual_fx/ifs/colorizer.cpp
         src/visual_fx/ifs/fractal.cpp
         src/visual_fx/ifs/fractal_hits.cpp
@@ -116,7 +117,7 @@ add_library(goom
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp
-	)
+        )
 
 target_include_directories(goom
     PUBLIC
