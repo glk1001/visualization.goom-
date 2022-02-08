@@ -25,12 +25,10 @@ constexpr float FILTER_REVERSE_OFF_AND_STOP_SPEED_PROB        = 0.20F;
 constexpr float FILTER_VITESSE_STOP_SPEED_MINUS1_PROB         = 0.20F;
 constexpr float FILTER_VITESSE_STOP_SPEED_PROB                = 0.10F;
 constexpr float FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE_PROB = 0.05F;
-constexpr float TURN_OFF_NOISE_PROB                           = 0.90F;
 constexpr float FILTER_TOGGLE_ROTATION_PROB                   = 0.125F;
 constexpr float FILTER_INCREASE_ROTATION_PROB                 = 0.25F;
 constexpr float FILTER_DECREASE_ROTATION_PROB                 = 0.875F;
 constexpr float FILTER_STOP_ROTATION_PROB                     = 0.25F;
-constexpr float CHANGE_BLOCKY_WAVY_TO_ON_PROB                 = 0.50F;
 
 constexpr float CIRCLE_LINE_TYPE_WEIGHT = 10.0F;
 constexpr float H_LINE_LINE_TYPE_WEIGHT =  2.0F;
@@ -57,12 +55,10 @@ GoomEvents::GoomEvents(const IGoomRand& goomRand) noexcept
         { GoomEvent::FILTER_VITESSE_STOP_SPEED_MINUS1,         FILTER_VITESSE_STOP_SPEED_MINUS1_PROB},
         { GoomEvent::FILTER_VITESSE_STOP_SPEED,                FILTER_VITESSE_STOP_SPEED_PROB},
         { GoomEvent::FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE, FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE_PROB},
-        { GoomEvent::TURN_OFF_NOISE,                           TURN_OFF_NOISE_PROB},
         { GoomEvent::FILTER_TOGGLE_ROTATION,                   FILTER_TOGGLE_ROTATION_PROB},
         { GoomEvent::FILTER_INCREASE_ROTATION,                 FILTER_INCREASE_ROTATION_PROB},
         { GoomEvent::FILTER_DECREASE_ROTATION,                 FILTER_DECREASE_ROTATION_PROB},
         { GoomEvent::FILTER_STOP_ROTATION,                     FILTER_STOP_ROTATION_PROB},
-        { GoomEvent::CHANGE_BLOCKY_WAVY_TO_ON,                 CHANGE_BLOCKY_WAVY_TO_ON_PROB},
     }},
     m_lineTypeWeights{
         m_goomRand,

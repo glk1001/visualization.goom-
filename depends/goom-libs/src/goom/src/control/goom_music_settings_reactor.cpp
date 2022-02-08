@@ -28,8 +28,6 @@ GoomMusicSettingsReactor::GoomMusicSettingsReactor(
 
 void GoomMusicSettingsReactor::ChangeZoomEffects()
 {
-  ChangeBlockyWavy();
-
   if (!m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
   {
     if (m_updatesSinceLastZoomEffectsChange > MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE)

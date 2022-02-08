@@ -25,38 +25,65 @@ struct GoomShaderEffects
 template<class T>
 struct channel_limits
 {
-  static constexpr auto min() noexcept -> T { return T(); }
-  static constexpr auto max() noexcept -> T { return T(); }
+  [[nodiscard]] static constexpr auto min() noexcept -> T { return T(); }
+  [[nodiscard]] static constexpr auto max() noexcept -> T { return T(); }
 };
 template<>
 struct channel_limits<uint8_t>
 {
-  static constexpr auto min() noexcept -> uint8_t { return 0; }
-  static constexpr auto max() noexcept -> uint8_t { return std::numeric_limits<uint8_t>::max(); }
+  [[nodiscard]] static constexpr auto min() noexcept -> uint8_t { return 0; }
+  [[nodiscard]] static constexpr auto max() noexcept -> uint8_t
+  {
+    return std::numeric_limits<uint8_t>::max();
+  }
 };
 template<>
 struct channel_limits<uint16_t>
 {
-  static constexpr auto min() noexcept -> uint16_t { return channel_limits<uint8_t>::min(); }
-  static constexpr auto max() noexcept -> uint16_t { return channel_limits<uint8_t>::max(); }
+  [[nodiscard]] static constexpr auto min() noexcept -> uint16_t
+  {
+    return channel_limits<uint8_t>::min();
+  }
+  [[nodiscard]] static constexpr auto max() noexcept -> uint16_t
+  {
+    return channel_limits<uint8_t>::max();
+  }
 };
 template<>
 struct channel_limits<uint32_t>
 {
-  static constexpr auto min() noexcept -> uint32_t { return channel_limits<uint8_t>::min(); }
-  static constexpr auto max() noexcept -> uint32_t { return channel_limits<uint8_t>::max(); }
+  [[nodiscard]] static constexpr auto min() noexcept -> uint32_t
+  {
+    return channel_limits<uint8_t>::min();
+  }
+  [[nodiscard]] static constexpr auto max() noexcept -> uint32_t
+  {
+    return channel_limits<uint8_t>::max();
+  }
 };
 template<>
 struct channel_limits<int32_t>
 {
-  static constexpr auto min() noexcept -> int32_t { return channel_limits<uint8_t>::min(); }
-  static constexpr auto max() noexcept -> int32_t { return channel_limits<uint8_t>::max(); }
+  [[nodiscard]] static constexpr auto min() noexcept -> int32_t
+  {
+    return channel_limits<uint8_t>::min();
+  }
+  [[nodiscard]] static constexpr auto max() noexcept -> int32_t
+  {
+    return channel_limits<uint8_t>::max();
+  }
 };
 template<>
 struct channel_limits<float>
 {
-  static constexpr auto min() noexcept -> float { return channel_limits<uint8_t>::min(); }
-  static constexpr auto max() noexcept -> float { return channel_limits<uint8_t>::max(); }
+  [[nodiscard]] static constexpr auto min() noexcept -> float
+  {
+    return channel_limits<uint8_t>::min();
+  }
+  [[nodiscard]] static constexpr auto max() noexcept -> float
+  {
+    return channel_limits<uint8_t>::max();
+  }
 };
 
 using PixelChannelType = uint16_t;
@@ -185,7 +212,7 @@ public:
   class RangeError : public std::logic_error
   {
   public:
-    explicit RangeError(const std::string& msg) : std::logic_error{msg} {}
+    using std::logic_error::logic_error;
   };
 #endif
 
@@ -305,7 +332,7 @@ inline auto Pixel::Rgba() const -> PixelIntType
 
 inline auto Pixel::IsBlack() const -> bool
 {
-  return m_color.intVal == 0;
+  return 0 == m_color.intVal;
 }
 
 inline auto Pixel::ToString() const -> std::string

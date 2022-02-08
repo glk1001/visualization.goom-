@@ -65,7 +65,7 @@ public:
       const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect) noexcept;
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
   FilterSettingsService(FilterSettingsService&&) noexcept = delete;
-  virtual ~FilterSettingsService() noexcept = default;
+  virtual ~FilterSettingsService() noexcept;
   auto operator=(const FilterSettingsService&) -> FilterSettingsService& = delete;
   auto operator=(FilterSettingsService&&) -> FilterSettingsService& = delete;
 
@@ -73,6 +73,7 @@ public:
   [[nodiscard]] auto GetFilterColorsService() const -> std::unique_ptr<FilterColorsService>;
 
   void Start();
+  void NewCycle();
 
   void NotifyUpdatedFilterEffectsSettings();
   [[nodiscard]] auto HaveEffectsSettingsChangedSinceLastUpdate() const -> bool;
@@ -86,8 +87,7 @@ public:
   [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
 
   void ChangeMilieu();
-  void SetNoise(bool value);
-  void SetBlockyWavy(bool value);
+  virtual void SetRandomExtraEffects();
   void SetRotateToZero();
   void MultiplyRotate(float factor);
   void ToggleRotate();
@@ -107,7 +107,6 @@ protected:
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::IGoomRand&;
   [[nodiscard]] virtual auto MakeRotation() const -> std::shared_ptr<Rotation>;
   virtual void SetDefaultSettings();
-  virtual void SetRandomExtraEffects();
   virtual void SetFilterModeExtraEffects();
   virtual void SetWaveModeExtraEffects();
   virtual void SetRandomZoomMidPoint();
@@ -126,6 +125,8 @@ private:
   const Point2dInt m_screenMidPoint;
   const std::string m_resourcesDirectory;
   const NormalizedCoordsConverter m_normalizedCoordsConverter;
+  class ExtraEffects;
+  std::unique_ptr<ExtraEffects> m_extraEffects;
 
   struct ZoomFilterModeInfo
   {
@@ -203,12 +204,6 @@ inline auto FilterSettingsService::HasFilterModeChangedSinceLastUpdate() const -
   return m_filterModeAtLastUpdate != m_filterMode;
 }
 
-inline void FilterSettingsService::NotifyUpdatedFilterEffectsSettings()
-{
-  m_filterEffectsSettingsHaveChanged = false;
-  m_filterModeAtLastUpdate = m_filterMode;
-}
-
 inline auto FilterSettingsService::GetROVitesse() const -> const Vitesse&
 {
   return m_filterSettings.filterEffectsSettings.vitesse;
@@ -245,21 +240,6 @@ inline void FilterSettingsService::SetRandomFilterSettings()
   m_filterMode = GetNewRandomMode();
 
   SetRandomSettingsForNewFilterMode();
-}
-
-inline void FilterSettingsService::SetNoise(const bool value)
-{
-  if (m_filterSettings.filterEffectsSettings.noiseEffect == value)
-  {
-    return;
-  }
-  m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.noiseEffect = value;
-}
-
-inline void FilterSettingsService::SetBlockyWavy(const bool value)
-{
-  m_filterSettings.filterColorSettings.blockyWavy = value;
 }
 
 inline void FilterSettingsService::SetRotateToZero()

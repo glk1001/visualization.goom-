@@ -42,6 +42,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -118,6 +119,7 @@ private:
   void ApplyStateToMultipleBuffersPostZoom();
   void DisplayLinesIfInAGoom(const AudioSamples& soundData);
 
+  void NewCycle();
   void ApplyZoomEffects();
   void UpdateFilterSettings();
   void UpdateBuffers();
@@ -131,7 +133,7 @@ private:
   GoomTitleDisplayer m_goomTitleDisplayer;
   GoomMessageDisplayer m_messageDisplayer;
   [[nodiscard]] auto GetFontDirectory() const -> std::string;
-  void InitTitleDisplay(const std::string& songTitle);
+  void InitTitleDisplay(const std::string_view& songTitle);
   void DisplayTitle(const std::string& songTitle, const std::string& message, float fps);
   void DisplayCurrentTitle();
   void UpdateMessages(const std::string& messages);
@@ -299,7 +301,7 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
                                           const std::string& songTitle,
                                           const std::string& message)
 {
-  m_musicSettingsReactor.NewCycle();
+  NewCycle();
 
   // Elargissement de l'intervalle d'évolution des points!
   // Calcul du deplacement des petits points ...
@@ -318,6 +320,12 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
   DisplayStateText();
 #endif
   DisplayTitle(songTitle, message, fps);
+}
+
+inline void GoomControl::GoomControlImpl::NewCycle()
+{
+  m_musicSettingsReactor.NewCycle();
+  m_filterSettingsService.NewCycle();
 }
 
 inline void GoomControl::GoomControlImpl::UseMusicToChangeSettings()
@@ -439,7 +447,7 @@ void GoomControl::GoomControlImpl::DisplayTitle(const std::string& songTitle,
   }
 }
 
-void GoomControl::GoomControlImpl::InitTitleDisplay(const std::string& songTitle)
+void GoomControl::GoomControlImpl::InitTitleDisplay(const std::string_view& songTitle)
 {
   m_currentSongTitle = songTitle;
 

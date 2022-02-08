@@ -7,7 +7,6 @@
 #include "goom_plugin_info.h"
 #include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
-#include "utils/timer.h"
 #include "visual_fx/filters/filter_settings_service.h"
 
 #include <cstdint>
@@ -85,22 +84,12 @@ private:
   void BigUpdate();
   void BigBreak();
   void ChangeFilterMode();
-  void ChangeMilieu();
+  void ChangeFilterExtraSettings();
   void ChangeRotation();
   void ChangeTranBufferSwitchValues();
   void ChangeSpeedReverse();
   void ChangeVitesse();
   void ChangeStopSpeeds();
-
-  void UpdateTimers();
-
-  static constexpr uint32_t NUM_BLOCKY_WAVY_UPDATES = 100;
-  UTILS::Timer m_blockyWavyTimer{NUM_BLOCKY_WAVY_UPDATES};
-  void ChangeBlockyWavy();
-
-  static constexpr uint32_t NUM_NOISE_UPDATES = 100;
-  UTILS::Timer m_noiseTimer{NUM_NOISE_UPDATES};
-  void ChangeNoise();
 };
 
 inline void GoomMusicSettingsReactor::Start()
@@ -118,15 +107,8 @@ inline void GoomMusicSettingsReactor::NewCycle()
   ++m_updateNum;
   ++m_timeInState;
   m_lock.Update();
-  UpdateTimers();
 
   m_musicLinesReactor.NewCycle();
-}
-
-inline void GoomMusicSettingsReactor::UpdateTimers()
-{
-  m_blockyWavyTimer.Increment();
-  m_noiseTimer.Increment();
 }
 
 inline auto GoomMusicSettingsReactor::CanDisplayLines() const -> bool
@@ -178,35 +160,10 @@ inline void GoomMusicSettingsReactor::ChangeFilterMode()
   m_visualFx.RefreshAllFx();
 }
 
-inline void GoomMusicSettingsReactor::ChangeMilieu()
+inline void GoomMusicSettingsReactor::ChangeFilterExtraSettings()
 {
   m_filterSettingsService.ChangeMilieu();
-}
-
-inline void GoomMusicSettingsReactor::ChangeBlockyWavy()
-{
-  if (!m_blockyWavyTimer.Finished())
-  {
-    return;
-  }
-
-  const bool blockyWavy = m_goomEvents.Happens(GoomEvent::CHANGE_BLOCKY_WAVY_TO_ON);
-
-  m_filterSettingsService.SetBlockyWavy(blockyWavy);
-  m_blockyWavyTimer.ResetToZero();
-}
-
-inline void GoomMusicSettingsReactor::ChangeNoise()
-{
-  if (!m_noiseTimer.Finished())
-  {
-    return;
-  }
-
-  const bool noiseOn = !m_goomEvents.Happens(GoomEvent::TURN_OFF_NOISE);
-
-  m_filterSettingsService.SetNoise(noiseOn);
-  m_noiseTimer.ResetToZero();
+  m_filterSettingsService.SetRandomExtraEffects();
 }
 
 inline void GoomMusicSettingsReactor::ChangeRotation()
@@ -279,9 +236,7 @@ inline void GoomMusicSettingsReactor::BigNormalUpdate()
   ChangeSpeedReverse();
   ChangeStopSpeeds();
   ChangeRotation();
-  ChangeMilieu();
-  ChangeNoise();
-  ChangeBlockyWavy();
+  ChangeFilterExtraSettings();
   ChangeVitesse();
   ChangeTranBufferSwitchValues();
 
