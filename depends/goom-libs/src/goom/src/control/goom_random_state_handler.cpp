@@ -15,7 +15,7 @@ using UTILS::NUM;
 // For debugging:
 constexpr bool USE_FORCED_GOOM_STATE = false;
 
-//constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
+constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
@@ -41,7 +41,7 @@ constexpr bool USE_FORCED_GOOM_STATE = false;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_TENTACLES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_TUBES;
-constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
+//constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_TENTACLES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
@@ -54,10 +54,10 @@ constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
 constexpr float CIRCLES_ONLY_WEIGHT                =    1.0F;
 constexpr float CIRCLES_IFS_WEIGHT                 =  200.0F;
 constexpr float CIRCLES_IMAGE_WEIGHT               =   50.0F;
-constexpr float CIRCLES_IMAGE_STARS_WEIGHT         =  200.0F;
-constexpr float CIRCLES_LINES_WEIGHT               =  200.0F;
-constexpr float CIRCLES_STARS_TUBES_WEIGHT         =  200.0F;
-constexpr float CIRCLES_TENTACLES_WEIGHT           =  200.0F;
+constexpr float CIRCLES_IMAGE_STARS_WEIGHT         =  100.0F;
+constexpr float CIRCLES_LINES_WEIGHT               =  100.0F;
+constexpr float CIRCLES_STARS_TUBES_WEIGHT         =  100.0F;
+constexpr float CIRCLES_TENTACLES_WEIGHT           =  100.0F;
 
 constexpr float DOTS_IFS_WEIGHT                    = 200.0F;
 constexpr float DOTS_IFS_STARS_WEIGHT              = 100.0F;
@@ -72,10 +72,10 @@ constexpr float DOTS_STARS_TENTACLES_TUBES_WEIGHT  = 100.0F;
 constexpr float DOTS_TENTACLES_TUBES_WEIGHT        = 200.0F;
 
 constexpr float IFS_IMAGE_WEIGHT                   =  10.0F;
-constexpr float IFS_LINES_STARS_WEIGHT             = 100.0F;
+constexpr float IFS_LINES_STARS_WEIGHT             = 200.0F;
 constexpr float IFS_ONLY_WEIGHT                    = 100.0F;
 constexpr float IFS_STARS_WEIGHT                   = 200.0F;
-constexpr float IFS_STARS_TENTACLES_WEIGHT         =  20.0F;
+constexpr float IFS_STARS_TENTACLES_WEIGHT         =  70.0F;
 constexpr float IFS_TENTACLES_WEIGHT               =  70.0F;
 constexpr float IFS_TENTACLES_TUBES_WEIGHT         =  70.0F;
 constexpr float IFS_TUBES_WEIGHT                   = 200.0F;

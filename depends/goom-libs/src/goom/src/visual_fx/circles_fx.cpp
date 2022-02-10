@@ -106,7 +106,7 @@ private:
   void ChangeCircleDiameters();
   void UpdateSpeeds();
   void ResetCentreTargetPosition();
-  static constexpr float POSITION_MARGIN = 0.01F;
+  static constexpr float POSITION_MARGIN = 0.05F;
   void DrawNextCircles();
   void DrawTheCircles();
   void UpdateTs();
@@ -421,11 +421,15 @@ void CirclesFx::CirclesFxImpl::DrawTheCircles()
       static_cast<uint32_t>(MIN_DIAMETER + 2), static_cast<uint32_t>(MAX_DIAMETER + 1));
 
   Point2dInt prevCircleCentre = circleCentrePositions[NUM_CIRCLES - 1];
+  const float circleBrightness = 0 == (m_updateNum % 2) ? (5.0F * brightness) : brightness;
+  const float lineBrightness = 0 == (m_updateNum % 5) ? (10.0F * brightness) : brightness;
+  const uint8_t lineThickness = (0 == (m_updateNum % 5)) ? 5 : 1;
 
+  constexpr float T_LINE_COLOR_STEP = 1.0F / static_cast<float>(NUM_CIRCLE_PATHS);
+  float tLineColor = 0.0F;
   for (size_t i = 0; i < NUM_CIRCLES; ++i)
   {
     const float tColor = m_colorTs.at(i)();
-    const float circleBrightness = 0 == (m_updateNum % 2) ? (5.0F * brightness) : brightness;
     const Pixel color = GetFinalColor(
         circleBrightness, 0 == (m_updateNum % 5) ? m_circleLowColorMaps.at(i)->GetColor(tColor)
                                                  : m_circleColorMaps.at(i)->GetColor(tColor));
@@ -437,16 +441,15 @@ void CirclesFx::CirclesFxImpl::DrawTheCircles()
 
     DrawCircle(circleCentre, fixedCircleDiameter, color, lowColor);
 
-    const float lineBrightness = 0 == (m_updateNum % 5) ? (10.0F * brightness) : brightness;
     const Pixel linesColor =
-        GetFinalColor(lineBrightness, m_circleColorMaps.at(i)->GetColor(tColor));
+        GetFinalColor(lineBrightness, m_circleLowColorMaps.at(i)->GetColor(tLineColor));
     const Pixel linesLowColor =
-        GetFinalColor(1.1F * lineBrightness, m_circleColorMaps.at(i)->GetColor(tColor));
+        GetFinalColor(1.1F * lineBrightness, m_circleLowColorMaps.at(i)->GetColor(tLineColor));
     //        GetFinalLowColor(lineBrightness, m_circleLowColorMaps.at(i)->GetColor(tColor));
-    const uint8_t lineThickness = 0 == (m_updateNum % 5) ? 5 : 1;
     DrawLine(prevCircleCentre, circleCentre, linesColor, linesLowColor, lineThickness);
 
     prevCircleCentre = circleCentre;
+    tLineColor += T_LINE_COLOR_STEP;
   }
 }
 
@@ -499,14 +502,14 @@ inline auto CirclesFx::CirclesFxImpl::GetNextTargetPosition() const -> Point2dIn
 inline auto CirclesFx::CirclesFxImpl::GetFinalColor(const float brightness,
                                                     const Pixel& color) const -> Pixel
 {
-  constexpr float COLOR_BRIGHTNESS = 5.5F;
+  constexpr float COLOR_BRIGHTNESS = 12.0F;
   return GetCorrectedColor(brightness * COLOR_BRIGHTNESS, color);
 }
 
 inline auto CirclesFx::CirclesFxImpl::GetFinalLowColor(const float brightness,
                                                        const Pixel& lowColor) const -> Pixel
 {
-  constexpr float LOW_COLOR_BRIGHTNESS = 7.5F;
+  constexpr float LOW_COLOR_BRIGHTNESS = 15.0F;
   return GetCorrectedColor(brightness * LOW_COLOR_BRIGHTNESS, lowColor);
 }
 
