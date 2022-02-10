@@ -17,7 +17,7 @@ using UTILS::Weights;
 constexpr TanEffect::TanType DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_ONLY;
 constexpr float DEFAULT_COT_MIX = 1.1F;
 constexpr IGoomRand::NumberRange<float> COT_MIX_RANGE = {0.6F, 1.6F};
-constexpr float TAN_ONLY_WEIGHT = 18.0F;
+constexpr float TAN_ONLY_WEIGHT = 100.0F;
 constexpr float COT_ONLY_WEIGHT = 5.0F;
 constexpr float COT_MIX_WEIGHT = 1.0F;
 
