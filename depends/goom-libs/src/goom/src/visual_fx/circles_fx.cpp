@@ -442,10 +442,9 @@ void CirclesFx::CirclesFxImpl::DrawTheCircles()
     DrawCircle(circleCentre, fixedCircleDiameter, color, lowColor);
 
     const Pixel linesColor =
-        GetFinalColor(lineBrightness, m_circleLowColorMaps.at(i)->GetColor(tLineColor));
+        GetFinalColor(lineBrightness, m_circleColorMaps.at(i)->GetColor(tLineColor));
     const Pixel linesLowColor =
-        GetFinalColor(1.1F * lineBrightness, m_circleLowColorMaps.at(i)->GetColor(tLineColor));
-    //        GetFinalLowColor(lineBrightness, m_circleLowColorMaps.at(i)->GetColor(tColor));
+        GetFinalLowColor(lineBrightness, m_circleLowColorMaps.at(i)->GetColor(tLineColor));
     DrawLine(prevCircleCentre, circleCentre, linesColor, linesLowColor, lineThickness);
 
     prevCircleCentre = circleCentre;
@@ -550,9 +549,25 @@ inline void CirclesFx::CirclesFxImpl::DrawLine(const Point2dInt& pos1,
                                                const Point2dInt& pos2,
                                                const Pixel& color,
                                                const Pixel& lowColor,
-                                               const uint8_t lineThickness)
+                                               [[maybe_unused]] const uint8_t lineThickness)
 {
-  m_draw.Line(pos1.x, pos1.y, pos2.x, pos2.y, {color, lowColor}, lineThickness);
+  constexpr uint32_t NUM_DOTS = 5;
+  constexpr float T_STEP = 1.0F / static_cast<float>(NUM_DOTS);
+  float t = T_STEP;
+  for (uint32_t i = 0; i < (NUM_DOTS - 1); ++i)
+  {
+    const Point2dInt pos = lerp(pos1, pos2, t);
+    if (0 == (i % 2))
+    {
+      DrawCircle(pos, 5, color, color);
+    }
+    else
+    {
+      DrawCircle(pos, 5, lowColor, lowColor);
+    }
+    t += T_STEP;
+  }
+  //m_draw.Line(pos1.x, pos1.y, pos2.x, pos2.y, {color, lowColor}, lineThickness);
 }
 
 inline auto CirclesFx::CirclesFxImpl::GetImageBitmap(const size_t size) const -> const ImageBitmap&
