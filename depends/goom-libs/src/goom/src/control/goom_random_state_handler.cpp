@@ -54,10 +54,10 @@ constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 constexpr float CIRCLES_ONLY_WEIGHT                =    1.0F;
 constexpr float CIRCLES_IFS_WEIGHT                 =  200.0F;
 constexpr float CIRCLES_IMAGE_WEIGHT               =   50.0F;
-constexpr float CIRCLES_IMAGE_STARS_WEIGHT         =  100.0F;
-constexpr float CIRCLES_LINES_WEIGHT               =  100.0F;
+constexpr float CIRCLES_IMAGE_STARS_WEIGHT         =  200.0F;
+constexpr float CIRCLES_LINES_WEIGHT               =  200.0F;
 constexpr float CIRCLES_STARS_TUBES_WEIGHT         =  100.0F;
-constexpr float CIRCLES_TENTACLES_WEIGHT           =  100.0F;
+constexpr float CIRCLES_TENTACLES_WEIGHT           =  200.0F;
 
 constexpr float DOTS_IFS_WEIGHT                    = 200.0F;
 constexpr float DOTS_IFS_STARS_WEIGHT              = 100.0F;

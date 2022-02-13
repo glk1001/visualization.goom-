@@ -104,6 +104,7 @@ public:
 protected:
   void SetFilterMode(ZoomFilterMode filterMode);
   [[nodiscard]] auto GetFilterSettings() -> ZoomFilterSettings&;
+  [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::IGoomRand&;
   [[nodiscard]] virtual auto MakeRotation() const -> std::shared_ptr<Rotation>;
   virtual void SetDefaultSettings();
@@ -187,6 +188,11 @@ inline auto FilterSettingsService::GetFilterSettings() const -> const ZoomFilter
 inline auto FilterSettingsService::GetFilterSettings() -> ZoomFilterSettings&
 {
   return m_filterSettings;
+}
+
+inline auto FilterSettingsService::GetPluginInfo() const -> const PluginInfo&
+{
+  return m_goomInfo;
 }
 
 inline auto FilterSettingsService::GetGoomRand() const -> const UTILS::IGoomRand&

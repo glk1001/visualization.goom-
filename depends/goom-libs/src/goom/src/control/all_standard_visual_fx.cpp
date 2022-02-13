@@ -262,7 +262,8 @@ void AllStandardVisualFx::ChangeColorMaps()
 {
   m_visualFxColorMaps.SetNextColorMapSet();
 
-  m_circlesFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::CIRCLES));
+  m_circlesFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::CIRCLES),
+                                    m_visualFxColorMaps.GetColorMap(GoomEffect::CIRCLES_LOW));
 
   m_goomDotsFx->SetWeightedColorMaps(0, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS0));
   m_goomDotsFx->SetWeightedColorMaps(1, m_visualFxColorMaps.GetColorMap(GoomEffect::DOTS1));

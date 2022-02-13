@@ -30,7 +30,8 @@ public:
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
+                            std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
 
   void SetZoomMidPoint(const Point2dInt& zoomMidPoint) override;
 
