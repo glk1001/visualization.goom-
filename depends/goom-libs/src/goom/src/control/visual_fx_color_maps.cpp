@@ -85,7 +85,7 @@ constexpr float COLOR_MATCHED_SET7_WEIGHT                  =  90.0F;
 constexpr float COLOR_MATCHED_SET8_WEIGHT                  =  90.0F;
 // clang-format on
 
-VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand) noexcept
+VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
     m_colorMatchedSets{GetColorMatchedSetArray()},
     // clang-format off

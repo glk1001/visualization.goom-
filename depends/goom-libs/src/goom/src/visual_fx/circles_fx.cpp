@@ -43,7 +43,7 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 class CirclesFx::CirclesFxImpl
 {
 public:
-  CirclesFxImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept;
+  CirclesFxImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps);
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
@@ -179,7 +179,7 @@ constexpr float IMAGE_NAMES_WHITE_FLOWER_WEIGHT  =  5.0F;
 // clang-format on
 
 CirclesFx::CirclesFxImpl::CirclesFxImpl(const FxHelpers& fxHelpers,
-                                        const SmallImageBitmaps& smallBitmaps) noexcept
+                                        const SmallImageBitmaps& smallBitmaps)
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
     m_goomRand{fxHelpers.GetGoomRand()},

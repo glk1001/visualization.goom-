@@ -46,7 +46,7 @@ enum class GoomEffect
 class VisualFxColorMaps
 {
 public:
-  explicit VisualFxColorMaps(const UTILS::IGoomRand& goomRand) noexcept;
+  explicit VisualFxColorMaps(const UTILS::IGoomRand& goomRand);
 
   void SetNextColorMapSet();
 
