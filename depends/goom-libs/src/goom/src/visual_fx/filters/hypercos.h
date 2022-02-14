@@ -44,7 +44,7 @@ public:
     COS_RECTANGULAR,
     SIN_OF_COS_SWIRL,
     COS_OF_SIN_SWIRL,
-    _NUM // unused and must be last
+    _num // unused and must be last
   };
 
   struct Params

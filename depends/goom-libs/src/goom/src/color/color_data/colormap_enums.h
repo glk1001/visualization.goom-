@@ -1699,7 +1699,7 @@ enum class ColorMapName
   YLORRD_8,
   YLORRD_9,
   ZISSOU_5,
-  _NUM,
+  _num,
 };
 
 } // namespace GOOM::COLOR::COLOR_DATA

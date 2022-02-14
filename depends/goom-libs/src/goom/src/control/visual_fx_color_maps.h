@@ -41,7 +41,7 @@ enum class GoomEffect
   TENTACLES,
   TUBE,
   TUBE_LOW,
-  _NUM // unused and must be last
+  _num // unused and must be last
 };
 
 class VisualFxColorMaps
@@ -81,7 +81,7 @@ private:
     COLOR_MATCHED_SET6,
     COLOR_MATCHED_SET7,
     COLOR_MATCHED_SET8,
-    _NUM // unused and must be last
+    _num // unused and must be last
   };
   using ColorMatchedSetArray = std::array<ColorMatchedSet, UTILS::NUM<ColorMatchedSets>>;
   const ColorMatchedSetArray m_colorMatchedSets;

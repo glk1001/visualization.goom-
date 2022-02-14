@@ -37,10 +37,6 @@ AnalyzeTemporaryDtors: false
 FormatStyle: none
 
 CheckOptions:
-  - { key: bugprone-reserved-identifier.AllowedIdentifiers,                 value: '_NUM' }
-  - { key: cert-dcl37-c.AllowedIdentifiers,                                 value: '_NUM' }
-  - { key: cert-dcl51-cpp.AllowedIdentifiers,                               value: '_NUM' }
-
   - { key: readability-identifier-naming.AbstractClassCase,                 value: CamelCase }
   - { key: readability-identifier-naming.AbstractClassPrefix,               value: 'I' }
   - { key: readability-identifier-naming.ClassCase,                         value: CamelCase }
@@ -70,7 +66,7 @@ CheckOptions:
   - { key: readability-identifier-naming.PublicMemberPrefix,                value: '' }
   - { key: readability-identifier-naming.ScopedEnumConstantCase,            value: UPPER_CASE }
   - { key: readability-identifier-naming.ScopedEnumConstantPrefix,          value: '' }
-  - { key: readability-identifier-naming.ScopedEnumConstantIgnoredRegexp,   value: '\_NUM' }
+  - { key: readability-identifier-naming.ScopedEnumConstantIgnoredRegexp,   value: '\_num' }
   - { key: readability-identifier-naming.StaticConstantCase,                value: UPPER_CASE }
   - { key: readability-identifier-naming.StaticConstantPrefix,              value: 's_' }
   - { key: readability-identifier-naming.StaticVariableCase,                value: camelBack }

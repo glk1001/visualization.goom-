@@ -246,7 +246,7 @@ def write_colormaps_enums_header(maps: List[str], dupl: Dict[str, str]):
         f.write(f'  _NULL = -1, // NOLINT\n')
         for m in maps:
             f.write(f'  {get_upper_cpp_name(m)},' + get_enum_line_end(m, dupl))
-        f.write(f'  _NUM,\n')
+        f.write(f'  _num,\n')
         f.write(f'}};\n')
         f.write('\n')
         write_namespace_end(f)

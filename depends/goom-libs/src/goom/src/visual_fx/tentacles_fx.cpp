@@ -65,7 +65,7 @@ private:
     NUM1,
     NUM2,
     NUM3,
-    _NUM // unused and must be last
+    _num // unused and must be last
   };
   const Weights<Drivers> m_driverWeights;
   const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;

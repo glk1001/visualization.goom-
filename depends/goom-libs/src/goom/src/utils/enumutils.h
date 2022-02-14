@@ -9,7 +9,7 @@
 namespace GOOM::UTILS
 {
 template<class E>
-constexpr uint32_t NUM = static_cast<size_t>(E::_NUM);
+constexpr uint32_t NUM = static_cast<size_t>(E::_num);
 
 template<typename E>
 constexpr auto ToUType(E value) noexcept

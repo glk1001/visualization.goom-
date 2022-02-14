@@ -31,7 +31,7 @@ public:
     CIRCLE = 0, // (param = radius)
     H_LINE, // (param = y)
     V_LINE, // (param = x)
-    _NUM // must be last - gives number of enums
+    _num // must be last - gives number of enums
   };
 
   LinesFx() noexcept = delete;

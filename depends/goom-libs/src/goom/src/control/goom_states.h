@@ -50,7 +50,7 @@ enum class GoomStates : size_t
   STARS_ONLY,
   TENTACLES_ONLY,
   TUBES_ONLY,
-  _NUM
+  _num // unused and must be last
 };
 
 enum class GoomDrawables
@@ -66,7 +66,7 @@ enum class GoomDrawables
   IMAGE,
   SHADER,
   TUBES,
-  _NUM // unused and must be last
+  _num // unused and must be last
 };
 
 class GoomStateInfo

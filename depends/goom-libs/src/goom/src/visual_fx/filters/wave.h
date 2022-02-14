@@ -34,7 +34,7 @@ public:
     WAVE_SIN_EFFECT,
     WAVE_COS_EFFECT,
     WAVE_SIN_COS_EFFECT,
-    _NUM // unused and must be last
+    _num // unused and must be last
   };
   struct Params
   {

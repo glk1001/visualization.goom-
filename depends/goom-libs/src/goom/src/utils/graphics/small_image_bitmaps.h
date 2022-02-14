@@ -21,7 +21,7 @@ public:
     RED_FLOWER,
     ORANGE_FLOWER,
     WHITE_FLOWER,
-    _NUM // unused and must be last
+    _num // unused and must be last
   };
   static constexpr size_t MIN_IMAGE_SIZE = 3;
   static constexpr size_t MAX_IMAGE_SIZE = 21;

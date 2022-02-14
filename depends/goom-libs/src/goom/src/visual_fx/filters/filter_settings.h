@@ -47,7 +47,7 @@ enum class HypercosOverlay
   MODE1,
   MODE2,
   MODE3,
-  _NUM // unused and must be last
+  _num // unused and must be last
 };
 
 struct ZoomFilterBufferSettings

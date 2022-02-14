@@ -60,7 +60,7 @@ TEST_CASE("EnumToString", "[EnumToString]")
     TEST1,
     TEST2,
     TEST3,
-    _NUM
+    _num // unused and must be last
   };
 
   EnumTester test = EnumTester::_NULL;
@@ -69,8 +69,8 @@ TEST_CASE("EnumToString", "[EnumToString]")
   REQUIRE(EnumToString(test) == "TEST1");
   test = EnumTester::TEST2;
   REQUIRE(EnumToString(test) == "TEST2");
-  test = EnumTester::_NUM;
-  REQUIRE(EnumToString(test) == "_NUM");
+  test = EnumTester::_num;
+  REQUIRE(EnumToString(test) == "_num");
 
   REQUIRE(EnumToString(EnumTester::TEST3) == "TEST3");
 }

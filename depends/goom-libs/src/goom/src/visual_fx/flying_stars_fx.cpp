@@ -57,7 +57,7 @@ enum class StarModes
   FIREWORKS,
   RAIN,
   FOUNTAIN,
-  _NUM // unused and must be last
+  _num // unused and must be last
 };
 
 struct Star
@@ -198,7 +198,7 @@ private:
     LINES,
     DOTS,
     CIRCLES_AND_LINES,
-    _NUM // unused and must be last
+    _num // unused and must be last
   };
   DrawMode m_drawMode = DrawMode::CIRCLES;
   const Weights<DrawMode> m_drawModeWeights;

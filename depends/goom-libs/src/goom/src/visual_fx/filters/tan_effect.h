@@ -35,7 +35,7 @@ public:
     TAN_ONLY,
     COT_ONLY,
     COT_MIX,
-    _NUM
+    _num // unused and must be last
   };
   struct Params
   {

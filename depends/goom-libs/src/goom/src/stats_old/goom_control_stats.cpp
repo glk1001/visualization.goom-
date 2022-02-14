@@ -19,7 +19,7 @@ using GOOM::UTILS::Logging;
 void GoomControlStats::Reset()
 {
   m_startingState = 0;
-  m_startingFilterMode = ZoomFilterMode::_NUM;
+  m_startingFilterMode = ZoomFilterMode::_num;
   m_startingSeed = 0;
   m_lastState = 0;
   m_lastSeed = 0;

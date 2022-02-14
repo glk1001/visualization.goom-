@@ -31,7 +31,7 @@ public:
     REVERSE_MIX_COLORS,
     SIMILAR_LOW_COLORS,
     SINE_MIX_COLORS,
-    _NUM // unused and must be last
+    _num // unused and must be last
   };
 
   FlyingStarsFx() noexcept = delete;

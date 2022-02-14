@@ -127,7 +127,7 @@ private:
     NUM1,
     NUM2,
     NUM3,
-    _NUM // unused and must be last
+    _num // unused and must be last
   };
   const UTILS::Weights<CentreNums> m_centreWeights;
   CentreType m_centreAttributes{};

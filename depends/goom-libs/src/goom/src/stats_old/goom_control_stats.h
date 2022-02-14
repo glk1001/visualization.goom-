@@ -76,7 +76,7 @@ private:
   std::string m_songTitle{};
   size_t m_startingState = 0;
   size_t m_lastState = 0;
-  ZoomFilterMode m_startingFilterMode = ZoomFilterMode::_NUM;
+  ZoomFilterMode m_startingFilterMode = ZoomFilterMode::_num;
   uint64_t m_startingSeed = 0;
   uint64_t m_lastSeed = 0;
   size_t m_numThreadsUsed = 0;

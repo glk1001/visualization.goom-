@@ -1,13 +1,14 @@
 #include "colormaps.h"
 
+//#undef NO_LOGGING
+
 #include "color_data/color_data_maps.h"
 #include "color_data/colormap_enums.h"
 #include "color_data/extra_color_groups.h"
 #include "colorutils.h"
 #include "goom/goom_graphic.h"
-#include "utils/enumutils.h"
-//#undef NO_LOGGING
 #include "goom/logging.h"
+#include "utils/enumutils.h"
 
 #include <algorithm>
 #undef NDEBUG
@@ -111,7 +112,9 @@ auto TintedColorMap::GetColor(const float t) const -> Pixel
   hsv[LIGHTNESS_INDEX] = m_lightness;
 
   const vivid::col8_t newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
-  return Pixel{{newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}};
+  return Pixel{
+      {newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}
+  };
 }
 
 class PrebuiltColorMap : public IColorMap
@@ -419,7 +422,9 @@ inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName,
 inline auto PrebuiltColorMap::GetColor(const float t) const -> Pixel
 {
   const vivid::col8_t rgb8 = vivid::rgb8::fromRgb(m_vividColorMap.at(t));
-  return Pixel{{rgb8.r, rgb8.g, rgb8.b, MAX_ALPHA}};
+  return Pixel{
+      {rgb8.r, rgb8.g, rgb8.b, MAX_ALPHA}
+  };
 }
 
 inline auto PrebuiltColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, const float t)

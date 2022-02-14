@@ -31,7 +31,7 @@ public:
     X_SIN_Y_COS,
     X_COS_Y_SIN,
     X_COS_Y_COS,
-    _NUM // unused and must be last
+    _num // unused and must be last
   };
   struct Params
   {

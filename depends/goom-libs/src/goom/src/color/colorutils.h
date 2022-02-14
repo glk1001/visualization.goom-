@@ -45,7 +45,7 @@ enum class SimpleColors
   VERT,
   BLEU,
   BLACK,
-  _NUM
+  _num // unused and must be last
 };
 [[nodiscard]] auto GetSimpleColor(SimpleColors simpleColor) -> Pixel;
 

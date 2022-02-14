@@ -36,7 +36,7 @@ class ColorMapWrapper : public IColorMap
 {
 public:
   ColorMapWrapper() noexcept = delete;
-  explicit ColorMapWrapper(std::shared_ptr<const IColorMap> cm) noexcept;
+  explicit ColorMapWrapper(std::shared_ptr<const IColorMap> colorMap) noexcept;
   ColorMapWrapper(const ColorMapWrapper&) noexcept = delete;
   ColorMapWrapper(ColorMapWrapper&&) noexcept = delete;
   ~ColorMapWrapper() noexcept override = default;
@@ -85,7 +85,7 @@ enum class ColorMapGroup : int
   HEAT,
   COLD,
   PASTEL,
-  _NUM // unused and must be last
+  _num // unused and must be last
 };
 
 //constexpr size_t to_int(const ColorMapGroup i) { return static_cast<size_t>(i); }
@@ -144,8 +144,8 @@ private:
   class ColorMapsImpl;
 };
 
-inline ColorMapWrapper::ColorMapWrapper(std::shared_ptr<const IColorMap> cm) noexcept
-  : m_colorMap{std::move(cm)}
+inline ColorMapWrapper::ColorMapWrapper(std::shared_ptr<const IColorMap> colorMap) noexcept
+  : m_colorMap{std::move(colorMap)}
 {
 }
 

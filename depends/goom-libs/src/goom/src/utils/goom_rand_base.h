@@ -189,13 +189,13 @@ inline auto Weights<E>::GetSumOfWeights() const -> float
 template<class E>
 inline auto Weights<E>::GetRandomWeighted() const -> E
 {
-  return GetRandomWeighted(E::_NUM);
+  return GetRandomWeighted(E::_num);
 }
 
 template<class E>
 inline auto Weights<E>::GetRandomWeighted(const E& given) const -> E
 {
-  const float sumOfWeights = (given == E::_NUM)
+  const float sumOfWeights = (given == E::_num)
                                  ? m_sumOfWeights
                                  : (m_sumOfWeights - m_weights[static_cast<size_t>(given)]);
 

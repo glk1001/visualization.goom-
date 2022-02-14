@@ -33,7 +33,7 @@ enum class DotSizes
   DOT_SIZE06,
   DOT_SIZE07,
   DOT_SIZE08,
-  _NUM // unused and must be last
+  _num // unused and must be last
 };
 
 class DotDrawer
