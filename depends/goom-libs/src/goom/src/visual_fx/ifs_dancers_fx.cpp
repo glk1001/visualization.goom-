@@ -35,7 +35,7 @@
 #include "ifs_dancers_fx.h"
 
 #include "draw/goom_draw.h"
-#include "fx_helpers.h"
+#include "fx_helper.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "ifs/colorizer.h"
@@ -75,7 +75,7 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 class IfsDancersFx::IfsDancersFxImpl
 {
 public:
-  IfsDancersFxImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept;
+  IfsDancersFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void ApplyNoDraw();
   void UpdateIfs();
@@ -143,9 +143,8 @@ private:
   const Weights<BlurrerColorMode> m_blurrerColorModeWeights;
 };
 
-IfsDancersFx::IfsDancersFx(const FxHelpers& fxHelpers,
-                           const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<IfsDancersFxImpl>(fxHelpers, smallBitmaps)}
+IfsDancersFx::IfsDancersFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<IfsDancersFxImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -208,11 +207,11 @@ constexpr float BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT =    1.0F;
 constexpr float BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT   =    5.0F;
 // clang-format on
 
-IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelpers& fxHelpers,
+IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{fxHelpers.GetDraw()},
-    m_goomInfo{fxHelpers.GetGoomInfo()},
-    m_goomRand{fxHelpers.GetGoomRand()},
+  : m_draw{fxHelper.GetDraw()},
+    m_goomInfo{fxHelper.GetGoomInfo()},
+    m_goomRand{fxHelper.GetGoomRand()},
     m_colorizer{m_goomRand},
     m_fractal{std::make_unique<Fractal>(m_draw.GetScreenWidth(),
                                         m_draw.GetScreenHeight(),

@@ -20,12 +20,12 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 class CirclesFx : public IVisualFx
 {
 public:
-  CirclesFx(const FxHelpers& fxHelpers,
+  CirclesFx(const FxHelper& fxHelper,
             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
@@ -33,7 +33,7 @@ public:
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
                             std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
 
-  void SetZoomMidPoint(const Point2dInt& zoomMidPoint) override;
+  void SetZoomMidpoint(const Point2dInt& zoomMidpoint) override;
 
   void Start() override;
 

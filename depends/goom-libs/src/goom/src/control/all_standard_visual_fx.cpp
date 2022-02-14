@@ -6,7 +6,7 @@
 #include "utils/parallel_utils.h"
 #include "visual_fx/circles_fx.h"
 #include "visual_fx/flying_stars_fx.h"
-#include "visual_fx/fx_helpers.h"
+#include "visual_fx/fx_helper.h"
 #include "visual_fx/goom_dots_fx.h"
 #include "visual_fx/ifs_dancers_fx.h"
 #include "visual_fx/image_fx.h"
@@ -25,7 +25,7 @@ using UTILS::Parallel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::CirclesFx;
 using VISUAL_FX::FlyingStarsFx;
-using VISUAL_FX::FxHelpers;
+using VISUAL_FX::FxHelper;
 using VISUAL_FX::GoomDotsFx;
 using VISUAL_FX::IfsDancersFx;
 using VISUAL_FX::ImageFx;
@@ -34,17 +34,17 @@ using VISUAL_FX::TentaclesFx;
 using VISUAL_FX::TubesFx;
 
 AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
-                                         const FxHelpers& fxHelpers,
+                                         const FxHelper& fxHelper,
                                          const SmallImageBitmaps& smallBitmaps,
                                          const std::string& resourcesDirectory) noexcept
-  : m_circlesFx{std::make_shared<CirclesFx>(fxHelpers, smallBitmaps)},
-    m_goomDotsFx{std::make_shared<GoomDotsFx>(fxHelpers, smallBitmaps)},
-    m_ifsFx{std::make_shared<IfsDancersFx>(fxHelpers, smallBitmaps)},
-    m_imageFx{std::make_shared<ImageFx>(parallel, fxHelpers, resourcesDirectory)},
-    m_shaderFx{std::make_shared<ShaderFx>(fxHelpers)},
-    m_starFx{std::make_shared<FlyingStarsFx>(fxHelpers, smallBitmaps)},
-    m_tentaclesFx{std::make_shared<TentaclesFx>(fxHelpers, smallBitmaps)},
-    m_tubesFx{std::make_shared<TubesFx>(fxHelpers, smallBitmaps)},
+  : m_circlesFx{std::make_shared<CirclesFx>(fxHelper, smallBitmaps)},
+    m_goomDotsFx{std::make_shared<GoomDotsFx>(fxHelper, smallBitmaps)},
+    m_ifsFx{std::make_shared<IfsDancersFx>(fxHelper, smallBitmaps)},
+    m_imageFx{std::make_shared<ImageFx>(parallel, fxHelper, resourcesDirectory)},
+    m_shaderFx{std::make_shared<ShaderFx>(fxHelper)},
+    m_starFx{std::make_shared<FlyingStarsFx>(fxHelper, smallBitmaps)},
+    m_tentaclesFx{std::make_shared<TentaclesFx>(fxHelper, smallBitmaps)},
+    m_tubesFx{std::make_shared<TubesFx>(fxHelper, smallBitmaps)},
     m_list{
         m_circlesFx, m_starFx, m_ifsFx, m_imageFx, m_goomDotsFx, m_tentaclesFx, m_tubesFx,
     },
@@ -54,7 +54,7 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
         {GoomDrawables::IMAGE, m_imageFx},         {GoomDrawables::DOTS, m_goomDotsFx},
         {GoomDrawables::TENTACLES, m_tentaclesFx}, {GoomDrawables::TUBES, m_tubesFx},
     },
-    m_visualFxColorMaps{fxHelpers.GetGoomRand()}
+    m_visualFxColorMaps{fxHelper.GetGoomRand()}
 {
 }
 
@@ -119,7 +119,7 @@ void AllStandardVisualFx::ResumeFx()
   }
 }
 
-void AllStandardVisualFx::SetZoomMidPoint(const Point2dInt& zoomMidPoint)
+void AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
 {
   for (const auto& currentlyDrawable : m_currentGoomDrawables)
   {
@@ -127,7 +127,7 @@ void AllStandardVisualFx::SetZoomMidPoint(const Point2dInt& zoomMidPoint)
     {
       continue;
     }
-    m_drawablesMap.at(currentlyDrawable)->SetZoomMidPoint(zoomMidPoint);
+    m_drawablesMap.at(currentlyDrawable)->SetZoomMidpoint(zoomMidpoint);
   }
 }
 

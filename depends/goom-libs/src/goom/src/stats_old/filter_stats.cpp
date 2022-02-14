@@ -100,8 +100,8 @@ void FilterStats::Log(const GoomStats::LogStatsValueFunc& logVal) const
          static_cast<uint32_t>(m_lastZoomFilterSettings.vitesse.GetReverseVitesse()));
   logVal(MODULE, "lastZoomFilterData->relativeSpeed",
          m_lastZoomFilterSettings.vitesse.GetRelativeSpeed());
-  logVal(MODULE, "lastZoomFilterData->zoomMidPoint.x", m_lastZoomFilterSettings.zoomMidPoint.x);
-  logVal(MODULE, "lastZoomFilterData->zoomMidPoint.y", m_lastZoomFilterSettings.zoomMidPoint.y);
+  logVal(MODULE, "lastZoomFilterData->zoomMidpoint.x", m_lastZoomFilterSettings.zoomMidpoint.x);
+  logVal(MODULE, "lastZoomFilterData->zoomMidpoint.y", m_lastZoomFilterSettings.zoomMidpoint.y);
 
   logVal(MODULE, "lastXAmuletAmplitude", m_lastAmuletParams.xAmplitude);
   logVal(MODULE, "lastYAmuletAmplitude", m_lastAmuletParams.yAmplitude);

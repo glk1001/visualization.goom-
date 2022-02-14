@@ -20,13 +20,13 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 class TubesFx : public IVisualFx
 {
 public:
   TubesFx() noexcept = delete;
-  TubesFx(const FxHelpers& fxHelpers,
+  TubesFx(const FxHelper& fxHelper,
           const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
@@ -39,7 +39,7 @@ public:
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
-  void SetZoomMidPoint(const Point2dInt& zoomMidPoint) override;
+  void SetZoomMidpoint(const Point2dInt& zoomMidpoint) override;
 
   void ApplyMultiple();
 

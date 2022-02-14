@@ -24,9 +24,9 @@ class SmallImageBitmaps;
 namespace VISUAL_FX
 {
 class IVisualFx;
-class FxHelpers;
 class CirclesFx;
 class FlyingStarsFx;
+class FxHelper;
 class GoomDotsFx;
 class IfsDancersFx;
 class ImageFx;
@@ -46,7 +46,7 @@ public:
   using GoomDrawablesSet = std::unordered_set<GoomDrawables>;
 
   AllStandardVisualFx(UTILS::Parallel& parallel,
-                      const VISUAL_FX::FxHelpers& fxHelpers,
+                      const VISUAL_FX::FxHelper& fxHelper,
                       const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                       const std::string& resourcesDirectory) noexcept;
 
@@ -66,7 +66,7 @@ public:
   void RefreshAllFx();
   void SuspendFx();
   void ResumeFx();
-  void SetZoomMidPoint(const Point2dInt& zoomMidPoint);
+  void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
   void PostStateUpdate(const GoomDrawablesSet& oldGoomDrawables);
 
   void ApplyCurrentStateToSingleBuffer();

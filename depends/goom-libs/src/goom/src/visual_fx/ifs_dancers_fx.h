@@ -20,7 +20,7 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 class IfsDancersFx : public IVisualFx
 {
@@ -40,8 +40,8 @@ public:
   };
 
   IfsDancersFx() noexcept = delete;
-  explicit IfsDancersFx(const FxHelpers& fxHelpers,
-                        const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
+  IfsDancersFx(const FxHelper& fxHelper,
+               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

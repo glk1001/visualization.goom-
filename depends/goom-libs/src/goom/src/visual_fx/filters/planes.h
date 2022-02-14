@@ -29,7 +29,7 @@ public:
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
 
-  virtual void SetRandomParams(const Point2dInt& zoomMidPoint, uint32_t screenWidth);
+  virtual void SetRandomParams(const Point2dInt& zoomMidpoint, uint32_t screenWidth);
 
   enum class PlaneSwirlType
   {
@@ -94,13 +94,13 @@ private:
 
   [[nodiscard]] static auto GetRandomParams(const UTILS::IGoomRand& goomRand,
                                             PlaneEffectEvents planeEffectsEvent,
-                                            const Point2dInt& zoomMidPoint,
+                                            const Point2dInt& zoomMidpoint,
                                             uint32_t screenWidth) -> Params;
 
   [[nodiscard]] static auto GetRandomPlaneEffects(const UTILS::IGoomRand& goomRand,
                                                   PlaneEffectEvents planeEffectsEvent,
                                                   bool muchSpiralling,
-                                                  const Point2dInt& zoomMidPoint,
+                                                  const Point2dInt& zoomMidpoint,
                                                   uint32_t screenWidth) -> PlaneEffects;
   struct IntAmplitudes
   {
@@ -112,7 +112,7 @@ private:
       -> IntAmplitudes;
   [[nodiscard]] static auto GetAdjustedIntAmplitudes(const UTILS::IGoomRand& goomRand,
                                                      const IntAmplitudes& intAmplitudes,
-                                                     const Point2dInt& zoomMidPoint,
+                                                     const Point2dInt& zoomMidpoint,
                                                      uint32_t screenWidth) -> IntAmplitudes;
   [[nodiscard]] static auto GetRandomEffectMultipliers(const UTILS::IGoomRand& goomRand,
                                                        bool muchSpiralling) -> Amplitudes;

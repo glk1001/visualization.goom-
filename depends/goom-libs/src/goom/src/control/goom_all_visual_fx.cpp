@@ -9,7 +9,7 @@
 #include "utils/name_value_pairs.h"
 #include "visual_fx/filters/filter_buffers_service.h"
 #include "visual_fx/filters/filter_colors_service.h"
-#include "visual_fx/fx_helpers.h"
+#include "visual_fx/fx_helper.h"
 #include "visual_fx_color_maps.h"
 
 //#undef NDEBUG
@@ -27,7 +27,7 @@ using DRAW::IGoomDraw;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using VISUAL_FX::FxHelpers;
+using VISUAL_FX::FxHelper;
 using VISUAL_FX::LinesFx;
 using VISUAL_FX::ZoomFilterFx;
 using VISUAL_FX::FILTERS::FilterBuffersService;
@@ -41,42 +41,42 @@ static const Pixel BLACK_LINE = LinesFx::GetBlackLineColor();
 constexpr float SMALL_LUMA = 0.1F;
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
-                                 const FxHelpers& fxHelpers,
+                                 const FxHelper& fxHelper,
                                  const SmallImageBitmaps& smallBitmaps,
                                  const std::string& resourcesDirectory,
                                  IGoomStateHandler& goomStateHandler,
                                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept
   : m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
-        parallel, fxHelpers, smallBitmaps, resourcesDirectory)},
+        parallel, fxHelper, smallBitmaps, resourcesDirectory)},
     m_zoomFilterFx{std::make_unique<ZoomFilterFx>(parallel,
-                                                  fxHelpers.GetGoomInfo(),
+                                                  fxHelper.GetGoomInfo(),
                                                   std::move(filterBuffersService),
                                                   std::move(filterColorsService))},
     m_goomLine1{std::make_unique<LinesFx>(
-        fxHelpers,
+        fxHelper,
         smallBitmaps,
         LinesFx::LineType::H_LINE,
-        static_cast<float>(fxHelpers.GetGoomInfo().GetScreenInfo().height),
+        static_cast<float>(fxHelper.GetGoomInfo().GetScreenInfo().height),
         BLACK_LINE,
         LinesFx::LineType::CIRCLE,
         INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
-            static_cast<float>(fxHelpers.GetGoomInfo().GetScreenInfo().height),
+            static_cast<float>(fxHelper.GetGoomInfo().GetScreenInfo().height),
         GREEN_LINE)},
     m_goomLine2{std::make_unique<LinesFx>(
-        fxHelpers,
+        fxHelper,
         smallBitmaps,
         LinesFx::LineType::H_LINE,
         0.0F,
         BLACK_LINE,
         LinesFx::LineType::CIRCLE,
         INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
-            static_cast<float>(fxHelpers.GetGoomInfo().GetScreenInfo().height),
+            static_cast<float>(fxHelper.GetGoomInfo().GetScreenInfo().height),
         RED_LINE)},
-    m_goomDraw{fxHelpers.GetDraw()},
-    m_goomRand{fxHelpers.GetGoomRand()},
+    m_goomDraw{fxHelper.GetDraw()},
+    m_goomRand{fxHelper.GetGoomRand()},
     m_goomStateHandler{goomStateHandler},
-    m_visualFxColorMaps{fxHelpers.GetGoomRand()}
+    m_visualFxColorMaps{fxHelper.GetGoomRand()}
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([this](const GoomDrawables fx)
                                                       { ResetCurrentDrawBuffSettings(fx); });
@@ -247,7 +247,7 @@ void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSetti
   m_zoomFilterFx->UpdateFilterBufferSettings(filterSettings.filterBufferSettings);
   m_zoomFilterFx->UpdateFilterColorSettings(filterSettings.filterColorSettings);
 
-  m_allStandardVisualFx->SetZoomMidPoint(filterSettings.filterEffectsSettings.zoomMidPoint);
+  m_allStandardVisualFx->SetZoomMidpoint(filterSettings.filterEffectsSettings.zoomMidpoint);
 }
 
 void GoomAllVisualFx::ApplyCurrentStateToSingleBuffer()

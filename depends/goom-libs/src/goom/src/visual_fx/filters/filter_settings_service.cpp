@@ -320,7 +320,7 @@ FilterSettingsService::FilterSettingsService(Parallel& parallel,
   : m_parallel{parallel},
     m_goomInfo{goomInfo},
     m_goomRand{goomRand},
-    m_screenMidPoint{GetHalf(m_goomInfo.GetScreenInfo().width),
+    m_screenMidpoint{GetHalf(m_goomInfo.GetScreenInfo().width),
                      GetHalf(m_goomInfo.GetScreenInfo().height)},
     m_resourcesDirectory{resourcesDirectory},
     m_normalizedCoordsConverter{m_goomInfo.GetScreenInfo().width,
@@ -380,15 +380,15 @@ FilterSettingsService::FilterSettingsService(Parallel& parallel,
             {ZoomFilterMode::WAVE_MODE1,         ToMap(WAVE_MODE1_MULTIPLIERS)},
         },
     },
-    m_zoomMidPointWeights{
+    m_zoomMidpointWeights{
         m_goomRand,
         {
-            {ZoomMidPointEvents::BOTTOM_MID_POINT,               BOTTOM_MID_POINT_WEIGHT},
-            {ZoomMidPointEvents::RIGHT_MID_POINT,                RIGHT_MID_POINT_WEIGHT},
-            {ZoomMidPointEvents::LEFT_MID_POINT,                 LEFT_MID_POINT_WEIGHT},
-            {ZoomMidPointEvents::CENTRE_MID_POINT,               CENTRE_MID_POINT_WEIGHT},
-            {ZoomMidPointEvents::TOP_LEFT_QUARTER_MID_POINT,     TOP_LEFT_QUARTER_MID_POINT_WEIGHT},
-            {ZoomMidPointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT, BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT},
+            {ZoomMidpointEvents::BOTTOM_MID_POINT,               BOTTOM_MID_POINT_WEIGHT},
+            {ZoomMidpointEvents::RIGHT_MID_POINT,                RIGHT_MID_POINT_WEIGHT},
+            {ZoomMidpointEvents::LEFT_MID_POINT,                 LEFT_MID_POINT_WEIGHT},
+            {ZoomMidpointEvents::CENTRE_MID_POINT,               CENTRE_MID_POINT_WEIGHT},
+            {ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT,     TOP_LEFT_QUARTER_MID_POINT_WEIGHT},
+            {ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT, BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT},
         }
     }
 // clang-format on
@@ -454,7 +454,7 @@ void FilterSettingsService::SetRandomSettingsForNewFilterMode()
 {
   SetDefaultSettings();
   SetRandomExtraEffects();
-  SetRandomZoomMidPoint();
+  SetRandomZoomMidpoint();
   SetFilterModeExtraEffects();
 }
 
@@ -462,7 +462,7 @@ void FilterSettingsService::SetDefaultSettings()
 {
   m_filterSettings.filterEffectsSettings.speedCoefficientsEffect = GetSpeedCoefficientsEffect();
 
-  m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
+  m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
 
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
@@ -549,18 +549,18 @@ void FilterSettingsService::SetMaxSpeedCoeff()
       m_goomRand.GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_SPEED_COEFF;
 }
 
-void FilterSettingsService::SetRandomZoomMidPoint()
+void FilterSettingsService::SetRandomZoomMidpoint()
 {
-  if (IsZoomMidPointInTheMiddle())
+  if (IsZoomMidpointInTheMiddle())
   {
-    m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
+    m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
     return;
   }
 
-  SetAnyRandomZoomMidPoint();
+  SetAnyRandomZoomMidpoint();
 }
 
-auto FilterSettingsService::IsZoomMidPointInTheMiddle() const -> bool
+auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
 {
   if ((m_filterMode == ZoomFilterMode::WATER_MODE) || (m_filterMode == ZoomFilterMode::AMULET_MODE))
   {
@@ -584,36 +584,36 @@ auto FilterSettingsService::IsZoomMidPointInTheMiddle() const -> bool
   return false;
 }
 
-void FilterSettingsService::SetAnyRandomZoomMidPoint()
+void FilterSettingsService::SetAnyRandomZoomMidpoint()
 {
-  switch (m_zoomMidPointWeights.GetRandomWeighted())
+  switch (m_zoomMidpointWeights.GetRandomWeighted())
   {
-    case ZoomMidPointEvents::BOTTOM_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = {
+    case ZoomMidpointEvents::BOTTOM_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
           GetHalf(m_goomInfo.GetScreenInfo().width), m_goomInfo.GetScreenInfo().height - 1};
       break;
-    case ZoomMidPointEvents::RIGHT_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint.x =
+    case ZoomMidpointEvents::RIGHT_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint.x =
           static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - 1);
       break;
-    case ZoomMidPointEvents::LEFT_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint.x = 1;
+    case ZoomMidpointEvents::LEFT_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint.x = 1;
       break;
-    case ZoomMidPointEvents::CENTRE_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
+    case ZoomMidpointEvents::CENTRE_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
       break;
-    case ZoomMidPointEvents::TOP_LEFT_QUARTER_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = {
+    case ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
           GetQuarter(m_goomInfo.GetScreenInfo().width),
           GetQuarter(m_goomInfo.GetScreenInfo().height)};
       break;
-    case ZoomMidPointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = {
+    case ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
           GetThreeQuarters(m_goomInfo.GetScreenInfo().width),
           GetThreeQuarters(m_goomInfo.GetScreenInfo().height)};
       break;
     default:
-      throw std::logic_error("Unknown ZoomMidPointEvents enum.");
+      throw std::logic_error("Unknown ZoomMidpointEvents enum.");
   }
 }
 

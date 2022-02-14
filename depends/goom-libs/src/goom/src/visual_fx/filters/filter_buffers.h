@@ -48,8 +48,8 @@ public:
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const ZoomPointFunc& zoomPointFunc);
 
-  [[nodiscard]] auto GetBuffMidPoint() const -> Point2dInt;
-  void SetBuffMidPoint(const Point2dInt& val);
+  [[nodiscard]] auto GetBuffMidpoint() const -> Point2dInt;
+  void SetBuffMidpoint(const Point2dInt& val);
 
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
   void SetTranLerpFactor(int32_t val);
@@ -97,7 +97,7 @@ private:
   class TransformBuffers;
   std::unique_ptr<TransformBuffers> m_transformBuffers;
 
-  Point2dInt m_buffMidPoint{};
+  Point2dInt m_buffMidpoint{};
   bool m_filterSettingsHaveChanged = false;
 
   uint32_t m_tranBuffYLineStart = 0;
@@ -239,14 +239,14 @@ inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
           static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.y)))};
 }
 
-inline auto ZoomFilterBuffers::GetBuffMidPoint() const -> Point2dInt
+inline auto ZoomFilterBuffers::GetBuffMidpoint() const -> Point2dInt
 {
-  return m_buffMidPoint;
+  return m_buffMidpoint;
 }
 
-inline void ZoomFilterBuffers::SetBuffMidPoint(const Point2dInt& val)
+inline void ZoomFilterBuffers::SetBuffMidpoint(const Point2dInt& val)
 {
-  m_buffMidPoint = val;
+  m_buffMidpoint = val;
 }
 
 inline auto ZoomFilterBuffers::GetTranBuffersState() const -> TranBuffersState

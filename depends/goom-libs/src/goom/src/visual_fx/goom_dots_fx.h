@@ -20,13 +20,13 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 class GoomDotsFx : public IVisualFx
 {
 public:
   GoomDotsFx() noexcept = delete;
-  GoomDotsFx(const FxHelpers& fxHelpers,
+  GoomDotsFx(const FxHelper& fxHelper,
              const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;

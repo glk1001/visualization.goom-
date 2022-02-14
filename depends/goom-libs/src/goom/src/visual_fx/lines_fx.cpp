@@ -14,7 +14,7 @@
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
 #include "draw/goom_draw.h"
-#include "fx_helpers.h"
+#include "fx_helper.h"
 #include "fx_utils/dot_drawer.h"
 #include "fx_utils/lines.h"
 #include "goom/logging.h"
@@ -72,7 +72,7 @@ class LinesFx::LinesImpl
 public:
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
-  LinesImpl(const FxHelpers& fxHelpers,
+  LinesImpl(const FxHelper& fxHelper,
             const SmallImageBitmaps& smallBitmaps,
             LineType srceLineType,
             float srceParam,
@@ -171,7 +171,7 @@ private:
   void DrawFlatLine(const Pixel& lineColor);
 };
 
-LinesFx::LinesFx(const FxHelpers& fxHelpers,
+LinesFx::LinesFx(const FxHelper& fxHelper,
                  const SmallImageBitmaps& smallBitmaps,
                  const LineType srceLineType,
                  const float srceParam,
@@ -179,7 +179,7 @@ LinesFx::LinesFx(const FxHelpers& fxHelpers,
                  const LineType destLineType,
                  const float destParam,
                  const Pixel& destColor) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<LinesImpl>(fxHelpers,
+  : m_fxImpl{spimpl::make_unique_impl<LinesImpl>(fxHelper,
                                                  smallBitmaps,
                                                  srceLineType,
                                                  srceParam,
@@ -275,7 +275,7 @@ constexpr float NORMAL_DOT_SIZE07_WEIGHT = 10.0F;
 constexpr float NORMAL_DOT_SIZE08_WEIGHT = 10.0F;
 // clang-format on
 
-LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
+LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
                               const SmallImageBitmaps& smallBitmaps,
                               const LineType srceLineType,
                               const float srceParam,
@@ -283,9 +283,9 @@ LinesFx::LinesImpl::LinesImpl(const FxHelpers& fxHelpers,
                               const LineType destLineType,
                               const float destParam,
                               const Pixel& destColor)
-  : m_draw{fxHelpers.GetDraw()},
-    m_goomInfo{fxHelpers.GetGoomInfo()},
-    m_goomRand{fxHelpers.GetGoomRand()},
+  : m_draw{fxHelper.GetDraw()},
+    m_goomInfo{fxHelper.GetGoomInfo()},
+    m_goomRand{fxHelper.GetGoomRand()},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),

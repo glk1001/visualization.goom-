@@ -1,8 +1,9 @@
 #include "small_image_bitmaps.h"
 
+//#undef NO_LOGGING
+
 #include "goom/goom_config.h"
 #include "utils/enumutils.h"
-//#undef NO_LOGGING
 #include "goom/logging.h"
 #include "utils/mathutils.h"
 
@@ -37,7 +38,7 @@ auto SmallImageBitmaps::GetImageBitmap(const ImageNames name, const size_t res) 
     -> const ImageBitmap&
 {
   size_t imageRes = res;
-  if (!IsOdd(imageRes))
+  if (IsEven(imageRes))
   {
     imageRes = 2 == res ? (res + 1) : (res - 1);
   }

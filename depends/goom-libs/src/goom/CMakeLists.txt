@@ -61,6 +61,10 @@ add_library(goom
         src/utils/strutils.cpp
         src/utils/t_values.cpp
         src/utils/thread_pool.cpp
+        src/visual_fx/circles/bitmap_getter_base.h
+        src/visual_fx/circles/bitmap_getter.cpp
+        src/visual_fx/circles/circle.cpp
+        src/visual_fx/circles/circles.cpp
         src/visual_fx/filters/amulet.cpp
         src/visual_fx/filters/crystal_ball.cpp
         src/visual_fx/filters/distance_field.cpp
@@ -107,7 +111,7 @@ add_library(goom
         src/visual_fx/tubes/tubes.cpp
         src/visual_fx/circles_fx.cpp
         src/visual_fx/flying_stars_fx.cpp
-        src/visual_fx/fx_helpers.h
+        src/visual_fx/fx_helper.h
         src/visual_fx/goom_dots_fx.cpp
         src/visual_fx/goom_visual_fx.h
         src/visual_fx/ifs_dancers_fx.cpp

@@ -19,13 +19,13 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 class TentaclesFx : public IVisualFx
 {
 public:
   TentaclesFx() noexcept = delete;
-  TentaclesFx(const FxHelpers& fxHelpers,
+  TentaclesFx(const FxHelper& fxHelper,
               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;

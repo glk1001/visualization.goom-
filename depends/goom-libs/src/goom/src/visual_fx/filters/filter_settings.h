@@ -73,7 +73,7 @@ struct ZoomFilterEffectsSettings
   std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect;
   std::shared_ptr<Rotation> rotation;
 
-  Point2dInt zoomMidPoint; // milieu de l'effet
+  Point2dInt zoomMidpoint; // milieu de l'effet
 
   bool imageVelocityEffect;
   bool tanEffect;

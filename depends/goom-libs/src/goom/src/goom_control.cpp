@@ -37,7 +37,7 @@
 #endif
 #include "visual_fx/filters/filter_settings_service.h"
 #include "visual_fx/filters/speed_coefficients_effect_factory.h"
-#include "visual_fx/fx_helpers.h"
+#include "visual_fx/fx_helper.h"
 
 #include <cstdint>
 #include <memory>
@@ -68,7 +68,7 @@ using UTILS::GoomRand;
 using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using VISUAL_FX::FxHelpers;
+using VISUAL_FX::FxHelper;
 using VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
 using VISUAL_FX::FILTERS::FilterSettingsService;
 
@@ -218,7 +218,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
                             CreateSpeedCoefficientsEffect},
     m_smallBitmaps{m_resourcesDirectory},
     m_visualFx{m_parallel,
-               FxHelpers{m_multiBufferDraw, m_goomInfo, m_goomRand},
+               FxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand},
                m_smallBitmaps,
                m_resourcesDirectory,
                m_stateHandler,
@@ -528,8 +528,8 @@ void GoomControl::GoomControlImpl::DisplayStateText()
 
   message += GetNameValuesString(m_visualFx.GetZoomFilterFxNameValueParams()) + "\n";
 
-  message += std20::format("middleX: {}\n", filterEffectsSettings.zoomMidPoint.x);
-  message += std20::format("middleY: {}\n", filterEffectsSettings.zoomMidPoint.y);
+  message += std20::format("middleX: {}\n", filterEffectsSettings.zoomMidpoint.x);
+  message += std20::format("middleY: {}\n", filterEffectsSettings.zoomMidpoint.y);
 
   message += GetNameValuesString(m_musicSettingsReactor.GetNameValueParams());
 

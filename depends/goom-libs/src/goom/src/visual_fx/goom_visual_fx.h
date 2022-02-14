@@ -28,7 +28,7 @@ public:
 
   virtual void Refresh(){};
   virtual void PostStateUpdate([[maybe_unused]] const bool wasActiveInPreviousState){};
-  virtual void SetZoomMidPoint([[maybe_unused]] const Point2dInt& zoomMidPoint){};
+  virtual void SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint){};
 
   virtual void Finish() = 0;
 };

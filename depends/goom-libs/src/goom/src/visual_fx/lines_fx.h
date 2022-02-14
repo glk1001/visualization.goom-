@@ -21,7 +21,7 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 class LinesFx
 {
@@ -37,7 +37,7 @@ public:
   LinesFx() noexcept = delete;
 
   // construit un effet de line (une ligne horitontale pour commencer)
-  LinesFx(const FxHelpers& fxHelpers,
+  LinesFx(const FxHelper& fxHelper,
           const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
           LineType srceLineType,
           float srceParam,

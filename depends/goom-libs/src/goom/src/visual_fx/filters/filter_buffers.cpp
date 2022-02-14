@@ -156,7 +156,7 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
 
   //TODO optimize
   const NormalizedCoords normalizedMidPt =
-      m_normalizedCoordsConverter.ScreenToNormalizedCoords(m_buffMidPoint);
+      m_normalizedCoordsConverter.ScreenToNormalizedCoords(m_buffMidpoint);
 
   const auto doStripeLine = [this, &normalizedMidPt](const size_t y)
   {

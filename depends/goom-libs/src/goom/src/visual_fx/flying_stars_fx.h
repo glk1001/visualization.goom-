@@ -20,7 +20,7 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 class FlyingStarsFx : public IVisualFx
 {
@@ -35,7 +35,7 @@ public:
   };
 
   FlyingStarsFx() noexcept = delete;
-  FlyingStarsFx(const FxHelpers& fxHelpers,
+  FlyingStarsFx(const FxHelper& fxHelper,
                 const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;

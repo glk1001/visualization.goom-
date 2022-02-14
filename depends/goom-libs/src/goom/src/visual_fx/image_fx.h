@@ -20,13 +20,13 @@ class Parallel;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 class ImageFx : public IVisualFx
 {
 public:
   ImageFx(UTILS::Parallel& parallel,
-          const FxHelpers& fxHelpers,
+          const FxHelper& fxHelper,
           const std::string& resourcesDirectory) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;

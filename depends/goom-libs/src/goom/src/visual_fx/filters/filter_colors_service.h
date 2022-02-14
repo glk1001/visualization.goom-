@@ -98,7 +98,7 @@ inline auto FilterColorsService::GetBlockyMixedColor(const NeighborhoodCoeffArra
     -> Pixel
 {
   // Changing the color order gives a strange blocky, wavy look.
-  // The order col4, col3, col2, col1 gave a black tear - no so good.
+  // The order col4, col3, col2, col1 gave a black tear - not so good.
   constexpr size_t ALLOWED_NUM_NEIGHBORS = 4;
   static_assert(ALLOWED_NUM_NEIGHBORS == ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS);
   assert(ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS == coeffs.val.size());

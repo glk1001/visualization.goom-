@@ -11,12 +11,12 @@ struct GoomShaderEffects;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 class ShaderFx : public IVisualFx
 {
 public:
-  explicit ShaderFx(const FxHelpers& fxHelpers) noexcept;
+  explicit ShaderFx(const FxHelper& fxHelper) noexcept;
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 

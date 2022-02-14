@@ -110,7 +110,7 @@ protected:
   virtual void SetDefaultSettings();
   virtual void SetFilterModeExtraEffects();
   virtual void SetWaveModeExtraEffects();
-  virtual void SetRandomZoomMidPoint();
+  virtual void SetRandomZoomMidpoint();
   virtual void SetRotate(float rotateProbability);
 
 private:
@@ -123,7 +123,7 @@ private:
   UTILS::Parallel& m_parallel;
   const PluginInfo& m_goomInfo;
   const UTILS::IGoomRand& m_goomRand;
-  const Point2dInt m_screenMidPoint;
+  const Point2dInt m_screenMidpoint;
   const std::string m_resourcesDirectory;
   const NormalizedCoordsConverter m_normalizedCoordsConverter;
   class ExtraEffects;
@@ -164,7 +164,7 @@ private:
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
 
-  enum class ZoomMidPointEvents
+  enum class ZoomMidpointEvents
   {
     BOTTOM_MID_POINT,
     RIGHT_MID_POINT,
@@ -174,9 +174,9 @@ private:
     BOTTOM_RIGHT_QUARTER_MID_POINT,
     _num // unused and must be last
   };
-  const UTILS::Weights<ZoomMidPointEvents> m_zoomMidPointWeights;
-  [[nodiscard]] auto IsZoomMidPointInTheMiddle() const -> bool;
-  void SetAnyRandomZoomMidPoint();
+  const UTILS::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
+  [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
+  void SetAnyRandomZoomMidpoint();
   void SetMaxSpeedCoeff();
 };
 
@@ -225,7 +225,7 @@ inline void FilterSettingsService::ChangeMilieu()
 {
   m_filterEffectsSettingsHaveChanged = true;
   SetMaxSpeedCoeff();
-  SetRandomZoomMidPoint();
+  SetRandomZoomMidpoint();
 }
 
 inline void FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode)

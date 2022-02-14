@@ -33,7 +33,7 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelpers;
+class FxHelper;
 
 namespace FILTERS
 {
@@ -53,7 +53,7 @@ public:
   GoomAllVisualFx() noexcept = delete;
   GoomAllVisualFx(
       UTILS::Parallel& parallel,
-      const VISUAL_FX::FxHelpers& fxHelpers,
+      const VISUAL_FX::FxHelper& fxHelper,
       const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
       const std::string& resourcesDirectory,
       IGoomStateHandler& goomStateHandler,

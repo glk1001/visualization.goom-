@@ -7,7 +7,7 @@
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
 #include "draw/goom_draw.h"
-#include "fx_helpers.h"
+#include "fx_helper.h"
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "goom_graphic.h"
@@ -40,7 +40,7 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 class GoomDotsFx::GoomDotsFxImpl
 {
 public:
-  GoomDotsFxImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept;
+  GoomDotsFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void Start();
 
@@ -54,7 +54,7 @@ private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
-  const Point2dInt m_screenMidPoint;
+  const Point2dInt m_screenMidpoint;
   const uint32_t m_pointWidth;
   const uint32_t m_pointHeight;
 
@@ -112,8 +112,8 @@ private:
   auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
-GoomDotsFx::GoomDotsFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<GoomDotsFxImpl>(fxHelpers, smallBitmaps)}
+GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<GoomDotsFxImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -168,13 +168,13 @@ constexpr float IMAGE_NAMES_RED_FLOWER_WEIGHT    = 10.0F;
 constexpr float IMAGE_NAMES_WHITE_FLOWER_WEIGHT  =  5.0F;
 // clang-format on
 
-GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelpers& fxHelpers,
+GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
                                            const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{fxHelpers.GetDraw()},
-    m_goomInfo{fxHelpers.GetGoomInfo()},
-    m_goomRand{fxHelpers.GetGoomRand()},
+  : m_draw{fxHelper.GetDraw()},
+    m_goomInfo{fxHelper.GetGoomInfo()},
+    m_goomRand{fxHelper.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
-    m_screenMidPoint{GetHalf(m_goomInfo.GetScreenInfo().width),
+    m_screenMidpoint{GetHalf(m_goomInfo.GetScreenInfo().width),
                      GetHalf(m_goomInfo.GetScreenInfo().height)},
     m_pointWidth{(m_goomInfo.GetScreenInfo().width * 2) / 5},
     m_pointHeight{(m_goomInfo.GetScreenInfo().height * 2) / 5},
@@ -455,7 +455,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPosition(const float xOffsetAmp,
   const auto yOffset = static_cast<int32_t>(
       yOffsetAmp * std::sin(static_cast<float>(offsetCycle) / yOffsetFreqDenom));
 
-  return {m_screenMidPoint.x + xOffset, m_screenMidPoint.y + yOffset};
+  return {m_screenMidpoint.x + xOffset, m_screenMidpoint.y + yOffset};
 }
 
 void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,

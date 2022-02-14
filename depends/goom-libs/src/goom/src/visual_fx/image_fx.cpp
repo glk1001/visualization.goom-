@@ -6,7 +6,7 @@
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
-#include "fx_helpers.h"
+#include "fx_helper.h"
 #include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -87,7 +87,7 @@ class ImageFx::ImageFxImpl
 {
 public:
   ImageFxImpl(Parallel& parallel,
-              const FxHelpers& fxHelpers,
+              const FxHelper& fxHelper,
               const std::string& resourcesDirectory) noexcept;
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
@@ -150,9 +150,9 @@ private:
 };
 
 ImageFx::ImageFx(Parallel& parallel,
-                 const FxHelpers& fxHelpers,
+                 const FxHelper& fxHelper,
                  const std::string& resourcesDirectory) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<ImageFxImpl>(parallel, fxHelpers, resourcesDirectory)}
+  : m_fxImpl{spimpl::make_unique_impl<ImageFxImpl>(parallel, fxHelper, resourcesDirectory)}
 {
 }
 
@@ -189,12 +189,12 @@ void ImageFx::ApplyMultiple()
 constexpr float HALF = 0.5F;
 
 ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
-                                  const FxHelpers& fxHelpers,
+                                  const FxHelper& fxHelper,
                                   const std::string& resourcesDirectory) noexcept
   : m_parallel{parallel},
-    m_draw{fxHelpers.GetDraw()},
-    m_goomInfo{fxHelpers.GetGoomInfo()},
-    m_goomRand{fxHelpers.GetGoomRand()},
+    m_draw{fxHelper.GetDraw()},
+    m_goomInfo{fxHelper.GetGoomInfo()},
+    m_goomRand{fxHelper.GetGoomRand()},
     m_resourcesDirectory{resourcesDirectory},
     m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
     m_availableHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)},

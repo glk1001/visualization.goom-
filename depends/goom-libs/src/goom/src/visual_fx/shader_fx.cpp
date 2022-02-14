@@ -1,7 +1,7 @@
 #include "shader_fx.h"
 
 #include "color/colorutils.h"
-#include "fx_helpers.h"
+#include "fx_helper.h"
 //#undef NO_LOGGING
 #include "goom/spimpl.h"
 #include "logging.h"
@@ -18,7 +18,7 @@ using UTILS::Logging;
 class ShaderFx::ShaderFxImpl
 {
 public:
-  explicit ShaderFxImpl(const FxHelpers& fxHelpers) noexcept;
+  explicit ShaderFxImpl(const FxHelper& fxHelper) noexcept;
 
   void Start();
   void ChangeEffects();
@@ -32,8 +32,8 @@ private:
   HighContrast m_highContrast;
 };
 
-ShaderFx::ShaderFx(const FxHelpers& fxHelpers) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<ShaderFxImpl>(fxHelpers)}
+ShaderFx::ShaderFx(const FxHelper& fxHelper) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<ShaderFxImpl>(fxHelper)}
 {
 }
 
@@ -67,8 +67,8 @@ auto ShaderFx::GetLastShaderEffects() const -> const GoomShaderEffects&
   return m_fxImpl->GetLastShaderEffects();
 }
 
-ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelpers& fxHelpers) noexcept
-  : m_highContrast{fxHelpers.GetGoomInfo(), fxHelpers.GetGoomRand()}
+ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
+  : m_highContrast{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()}
 {
 }
 

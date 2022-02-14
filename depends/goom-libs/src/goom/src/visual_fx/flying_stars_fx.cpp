@@ -5,7 +5,7 @@
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
 #include "draw/goom_draw.h"
-#include "fx_helpers.h"
+#include "fx_helper.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/spimpl.h"
@@ -76,7 +76,7 @@ struct Star
 class FlyingStarsFx::FlyingStarsImpl
 {
 public:
-  FlyingStarsImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept;
+  FlyingStarsImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void Start();
 
@@ -259,9 +259,9 @@ private:
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 };
 
-FlyingStarsFx::FlyingStarsFx(const FxHelpers& fxHelpers,
+FlyingStarsFx::FlyingStarsFx(const FxHelper& fxHelper,
                              const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<FlyingStarsImpl>(fxHelpers, smallBitmaps)}
+  : m_fxImpl{spimpl::make_unique_impl<FlyingStarsImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -323,11 +323,11 @@ constexpr float DRAW_MODE_LINES_WEIGHT             = 10.0F;
 constexpr float DRAW_MODE_CIRCLES_AND_LINES_WEIGHT = 15.0F;
 // clang-format on
 
-FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelpers& fxHelpers,
+FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
                                                 const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{fxHelpers.GetDraw()},
-    m_goomInfo{fxHelpers.GetGoomInfo()},
-    m_goomRand{fxHelpers.GetGoomRand()},
+  : m_draw{fxHelper.GetDraw()},
+    m_goomInfo{fxHelper.GetGoomInfo()},
+    m_goomRand{fxHelper.GetGoomRand()},
     m_halfWidth{static_cast<int32_t>(GetHalf(m_goomInfo.GetScreenInfo().width))},
     m_halfHeight{static_cast<int32_t>(GetHalf(m_goomInfo.GetScreenInfo().height))},
     m_xMax{static_cast<float>(m_goomInfo.GetScreenInfo().width - 1)},

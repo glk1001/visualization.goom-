@@ -4,7 +4,7 @@
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
-#include "fx_helpers.h"
+#include "fx_helper.h"
 #include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -40,7 +40,7 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 class TentaclesFx::TentaclesImpl
 {
 public:
-  TentaclesImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps);
+  TentaclesImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
 
   void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
 
@@ -89,8 +89,8 @@ private:
   void UpdateTentacleWaveFrequency();
 };
 
-TentaclesFx::TentaclesFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelpers, smallBitmaps)}
+TentaclesFx::TentaclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -149,11 +149,11 @@ constexpr float DRIVERS_NUM2_WEIGHT =  15.0F;
 constexpr float DRIVERS_NUM3_WEIGHT =   5.0F;
 // clang-format on
 
-TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelpers& fxHelpers,
+TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper,
                                           const SmallImageBitmaps& smallBitmaps)
-  : m_draw{fxHelpers.GetDraw()},
-    m_goomInfo{fxHelpers.GetGoomInfo()},
-    m_goomRand{fxHelpers.GetGoomRand()},
+  : m_draw{fxHelper.GetDraw()},
+    m_goomInfo{fxHelper.GetGoomInfo()},
+    m_goomRand{fxHelper.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
     m_driverWeights{
       m_goomRand,

@@ -3,18 +3,18 @@
 //#undef NO_LOGGING
 
 #include "color/colorutils.h"
+#include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
 #include "draw/goom_draw_to_many.h"
-#include "fx_helpers.h"
+#include "fx_helper.h"
+#include "goom/logging.h"
+#include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "tubes/tubes.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "color/random_colormaps.h"
-#include "goom/logging.h"
-#include "goom/spimpl.h"
 #include "utils/mathutils.h"
 #include "utils/paths.h"
 #include "utils/t_values.h"
@@ -115,12 +115,12 @@ constexpr float PROB_FOLLOW_ZOOM_MID_POINT = 0.3F;
 class TubesFx::TubeFxImpl
 {
 public:
-  TubeFxImpl(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept;
+  TubeFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
 
-  void SetZoomMidPoint(const Point2dInt& zoomMidPoint);
+  void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
 
   void Start();
   void Resume();
@@ -151,7 +151,7 @@ private:
   std::vector<Tube> m_tubes{};
   static constexpr float ALL_JOIN_CENTRE_STEP = 0.001F;
   TValue m_allJoinCentreT{TValue::StepType::CONTINUOUS_REVERSIBLE, ALL_JOIN_CENTRE_STEP};
-  const Point2dInt m_screenMidPoint;
+  const Point2dInt m_screenMidpoint;
   Point2dInt m_targetMiddlePos{0, 0};
   Point2dInt m_previousMiddlePos{0, 0};
   static constexpr uint32_t MIDDLE_POS_NUM_STEPS = 100;
@@ -212,8 +212,8 @@ private:
       -> std::vector<IGoomDraw::GetBitmapColorFunc>;
 };
 
-TubesFx::TubesFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(fxHelpers, smallBitmaps)}
+TubesFx::TubesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -227,9 +227,9 @@ void TubesFx::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> wei
   m_fxImpl->SetWeightedLowColorMaps(weightedMaps);
 }
 
-void TubesFx::SetZoomMidPoint(const Point2dInt& zoomMidPoint)
+void TubesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
 {
-  m_fxImpl->SetZoomMidPoint(zoomMidPoint);
+  m_fxImpl->SetZoomMidpoint(zoomMidpoint);
 }
 
 void TubesFx::Start()
@@ -262,18 +262,18 @@ void TubesFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
-TubesFx::TubeFxImpl::TubeFxImpl(const FxHelpers& fxHelpers,
+TubesFx::TubeFxImpl::TubeFxImpl(const FxHelper& fxHelper,
                                const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{fxHelpers.GetDraw()},
+  : m_draw{fxHelper.GetDraw()},
     m_drawToContainer{m_draw.GetScreenWidth(), m_draw.GetScreenHeight()},
     m_drawToMany{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(), {&m_draw, &m_drawToContainer}},
-    m_goomInfo{fxHelpers.GetGoomInfo()},
-    m_goomRand{fxHelpers.GetGoomRand()},
+    m_goomInfo{fxHelper.GetGoomInfo()},
+    m_goomRand{fxHelper.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
     m_oscillatingShapePath{m_goomRand.ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)},
     m_prevShapesBrightnessAttenuation{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(),
                                       PREV_SHAPES_CUTOFF_BRIGHTNESS},
-    m_screenMidPoint{GetHalf(m_draw.GetScreenWidth()), GetHalf(m_draw.GetScreenHeight())},
+    m_screenMidpoint{GetHalf(m_draw.GetScreenWidth()), GetHalf(m_draw.GetScreenHeight())},
     m_allStayInCentreTimer{1},
     m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME},
     m_colorMapTimer{m_goomRand.GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)},
@@ -335,14 +335,14 @@ inline void TubesFx::TubeFxImpl::SetWeightedLowColorMaps(
   }
 }
 
-inline void TubesFx::TubeFxImpl::SetZoomMidPoint(const Point2dInt& zoomMidPoint)
+inline void TubesFx::TubeFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
 {
   m_previousMiddlePos = GetMiddlePos();
   m_middlePosT.Reset();
 
   if (m_goomRand.ProbabilityOf(PROB_FOLLOW_ZOOM_MID_POINT))
   {
-    m_targetMiddlePos = zoomMidPoint - Vec2dInt{m_screenMidPoint};
+    m_targetMiddlePos = zoomMidpoint - Vec2dInt{m_screenMidpoint};
   }
   else
   {

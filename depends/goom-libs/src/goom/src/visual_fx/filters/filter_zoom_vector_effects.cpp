@@ -71,7 +71,7 @@ inline void ZoomVectorEffects::SetRandomPlaneEffects()
 {
   if (m_filterEffectsSettings->planeEffect)
   {
-    m_theEffects.planes->SetRandomParams(m_filterEffectsSettings->zoomMidPoint, m_screenWidth);
+    m_theEffects.planes->SetRandomParams(m_filterEffectsSettings->zoomMidpoint, m_screenWidth);
   }
 }
 
