@@ -9,17 +9,24 @@ namespace GOOM::DRAW
 
 using UTILS::GRAPHICS::ImageBitmap;
 
-IGoomDraw::IGoomDraw(const uint32_t screenWidth,
-                     const uint32_t screenHeight,
-                     const DrawPixelFunc& drawPixelFunc)
+IGoomDraw::IGoomDraw(const uint32_t screenWidth, const uint32_t screenHeight)
   : m_screenWidth{screenWidth},
     m_screenHeight{screenHeight},
-    m_drawMethods{m_screenWidth, m_screenHeight, drawPixelFunc},
+    m_drawMethods{m_screenWidth, m_screenHeight,
+                  [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
+                  { DrawPixelsToDevice(x, y, newColors); }},
     m_intBuffIntensity{},
     m_parallel{-1} // max cores - 1
 {
   SetBuffIntensity(m_buffIntensity);
   SetDefaultBlendPixelFunc();
+}
+
+inline void IGoomDraw::DrawPixelsToDevice(const int32_t x,
+                                          const int32_t y,
+                                          const std::vector<Pixel>& colors)
+{
+  DrawPixelsToDevice(x, y, colors, GetIntBuffIntensity());
 }
 
 void IGoomDraw::Bitmap(const int xCentre,

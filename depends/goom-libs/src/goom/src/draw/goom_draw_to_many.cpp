@@ -13,10 +13,7 @@ namespace GOOM::DRAW
 GoomDrawToMany::GoomDrawToMany(const uint32_t screenWidth,
                                const uint32_t screenHeight,
                                const std::vector<IGoomDraw*>& manyDraws)
-  : IGoomDraw{screenWidth, screenHeight,
-              [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
-              { DrawPixels(m_manyDraws, x, y, newColors); }},
-    m_manyDraws{manyDraws}
+  : IGoomDraw{screenWidth, screenHeight}, m_manyDraws{manyDraws}
 {
   assert(!m_manyDraws.empty());
 }
@@ -37,12 +34,12 @@ void GoomDrawToMany::DrawPixelsUnblended(const int32_t x,
   }
 }
 
-void GoomDrawToMany::DrawPixels(const std::vector<IGoomDraw*>& manyDraws,
-                                const int32_t x,
-                                const int32_t y,
-                                const std::vector<Pixel>& colors)
+void GoomDrawToMany::DrawPixelsToDevice(const int32_t x,
+                                        const int32_t y,
+                                        const std::vector<Pixel>& colors,
+                                        [[maybe_unused]] const uint32_t intBuffIntensity)
 {
-  for (auto* const draw : manyDraws)
+  for (auto* const draw : m_manyDraws)
   {
     draw->DrawPixels(x, y, colors);
   }

@@ -20,13 +20,14 @@ public:
   auto GetPixel(int32_t x, int32_t y) const -> Pixel override;
   void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) override;
 
+protected:
+  void DrawPixelsToDevice(int32_t x,
+                          int32_t y,
+                          const std::vector<Pixel>& colors,
+                          uint32_t intBuffIntensity) override;
+
 private:
   std::vector<PixelBuffer*> m_multipleBuffers{};
-  void DrawPixels(const std::vector<PixelBuffer*>& buffs,
-                  int32_t x,
-                  int32_t y,
-                  const std::vector<Pixel>& colors,
-                  uint32_t intBuffIntensity);
 };
 
 inline void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)

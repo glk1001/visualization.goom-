@@ -25,7 +25,7 @@ class IGoomDraw
 {
 public:
   IGoomDraw() noexcept = delete;
-  IGoomDraw(uint32_t screenWidth, uint32_t screenHeight, const DrawPixelFunc& drawPixelFunc);
+  IGoomDraw(uint32_t screenWidth, uint32_t screenHeight);
   IGoomDraw(const IGoomDraw&) noexcept = delete;
   IGoomDraw(IGoomDraw&&) noexcept = delete;
   virtual ~IGoomDraw() noexcept = default;
@@ -73,10 +73,17 @@ protected:
                                      const Pixel& newColor,
                                      uint32_t intBuffIntensity) const -> Pixel;
 
+  virtual void DrawPixelsToDevice(int32_t x,
+                                  int32_t y,
+                                  const std::vector<Pixel>& colors,
+                                  uint32_t intBuffIntensity) = 0;
+
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  DrawMethods m_drawMethods;
+  const DrawMethods m_drawMethods;
+  void DrawPixelsToDevice(int32_t x, int32_t y, const std::vector<Pixel>& colors);
+
   BlendPixelFunc m_blendPixelFunc{};
   [[nodiscard]] static auto ColorAddBlendPixel(const Pixel& oldColor,
                                                const Pixel& newColor,

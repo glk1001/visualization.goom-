@@ -11,9 +11,7 @@ namespace GOOM::DRAW
 {
 
 GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t screenHeight)
-  : IGoomDraw{screenWidth, screenHeight,
-              [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
-              { DrawPixels(m_multipleBuffers, x, y, newColors, GetIntBuffIntensity()); }}
+  : IGoomDraw{screenWidth, screenHeight}
 {
 }
 
@@ -34,15 +32,14 @@ void GoomDrawToBuffer::DrawPixelsUnblended(const int32_t x,
   }
 }
 
-void GoomDrawToBuffer::DrawPixels(const std::vector<PixelBuffer*>& buffs,
-                                  const int32_t x,
-                                  const int32_t y,
-                                  const std::vector<Pixel>& colors,
-                                  const uint32_t intBuffIntensity)
+void GoomDrawToBuffer::DrawPixelsToDevice(const int32_t x,
+                                          const int32_t y,
+                                          const std::vector<Pixel>& colors,
+                                          const uint32_t intBuffIntensity)
 {
   for (size_t i = 0; i < colors.size(); ++i)
   {
-    Pixel& pixel = (*buffs[i])(static_cast<size_t>(x), static_cast<size_t>(y));
+    Pixel& pixel = (*m_multipleBuffers[i])(static_cast<size_t>(x), static_cast<size_t>(y));
     pixel = GetBlendedPixel(pixel, colors[i], intBuffIntensity);
   }
 }

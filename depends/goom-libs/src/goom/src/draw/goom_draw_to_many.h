@@ -20,12 +20,14 @@ public:
   auto GetPixel(int32_t x, int32_t y) const -> Pixel override;
   void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) override;
 
+protected:
+  void DrawPixelsToDevice(int32_t x,
+                          int32_t y,
+                          const std::vector<Pixel>& colors,
+                          uint32_t intBuffIntensity) override;
+
 private:
   const std::vector<IGoomDraw*> m_manyDraws;
-  static void DrawPixels(const std::vector<IGoomDraw*>& manyDraws,
-                         int32_t x,
-                         int32_t y,
-                         const std::vector<Pixel>& colors);
 };
 
 } // namespace GOOM::DRAW

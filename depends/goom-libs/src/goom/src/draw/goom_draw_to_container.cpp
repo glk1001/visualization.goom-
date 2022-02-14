@@ -1,8 +1,9 @@
 #include "goom_draw_to_container.h"
 
+//#undef NO_LOGGING
+
 #include "color/colorutils.h"
 #include "goom_graphic.h"
-//#undef NO_LOGGING
 #include "goom/logging.h"
 
 #undef NDEBUG
@@ -17,10 +18,7 @@ using COLOR::GetBrighterColorInt;
 using UTILS::Logging;
 
 GoomDrawToContainer::GoomDrawToContainer(const uint32_t screenWidth, const uint32_t screenHeight)
-  : IGoomDraw{screenWidth, screenHeight,
-              [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
-              { SavePixels(x, y, newColors, GetIntBuffIntensity()); }},
-    m_xyPixelList(screenHeight)
+  : IGoomDraw{screenWidth, screenHeight}, m_xyPixelList(screenHeight)
 {
   for (auto& xPixelList : m_xyPixelList)
   {
@@ -54,10 +52,10 @@ void GoomDrawToContainer::DrawPixelsUnblended([[maybe_unused]] const int32_t x,
   throw std::logic_error("GoomDrawToContainer::DrawPixelsUnblended not implemented.");
 }
 
-void GoomDrawToContainer::SavePixels(const int32_t x,
-                                     const int32_t y,
-                                     const std::vector<Pixel>& colors,
-                                     const uint32_t intBuffIntensity)
+void GoomDrawToContainer::DrawPixelsToDevice(const int32_t x,
+                                             const int32_t y,
+                                             const std::vector<Pixel>& colors,
+                                             const uint32_t intBuffIntensity)
 {
   ColorsList& colorsList = GetWriteableColorsList(x, y);
 

@@ -45,16 +45,18 @@ public:
   void ResizeChangedCoordsKeepingNewest(size_t numToKeep);
   void ClearAll();
 
+protected:
+  void DrawPixelsToDevice(int32_t x,
+                          int32_t y,
+                          const std::vector<Pixel>& colors,
+                          uint32_t intBuffIntensity) override;
+
 private:
   std::vector<std::vector<ColorsList>> m_xyPixelList{};
   std::vector<Coords> m_orderedXYPixelList{};
   [[nodiscard]] auto GetWriteableColorsList(int32_t x, int32_t y) -> ColorsList&;
   [[nodiscard]] auto GetLastDrawnColor(int32_t x, int32_t y) const -> Pixel;
   [[nodiscard]] auto GetLastDrawnColors(int32_t x, int32_t y) const -> std::vector<Pixel>;
-  void SavePixels(int32_t x,
-                  int32_t y,
-                  const std::vector<Pixel>& colors,
-                  uint32_t intBuffIntensity);
 };
 
 inline auto GoomDrawToContainer::GetPixel(const int32_t x, const int32_t y) const -> Pixel

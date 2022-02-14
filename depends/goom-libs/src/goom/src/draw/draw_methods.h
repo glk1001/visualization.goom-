@@ -13,13 +13,13 @@
 namespace GOOM::DRAW
 {
 
-using DrawPixelFunc =
+using DrawPixelsToDeviceFunc =
     std::function<void(int32_t x, int32_t y, const std::vector<Pixel>& newColors)>;
 
 class DrawMethods
 {
 public:
-  DrawMethods(uint32_t screenWidth, uint32_t screenHeight, const DrawPixelFunc& func);
+  DrawMethods(uint32_t screenWidth, uint32_t screenHeight, const DrawPixelsToDeviceFunc& func);
 
   void DrawCircle(int32_t x0, int32_t y0, int32_t radius, const Pixel& color) const;
   void DrawCircle(int32_t x0, int32_t y0, int32_t radius, const std::vector<Pixel>& colors) const;
@@ -42,7 +42,7 @@ public:
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  const DrawPixelFunc m_drawPixelFunc;
+  const DrawPixelsToDeviceFunc m_drawPixelsToDevice;
 
   using PlotCirclePointsFunc = std::function<void(int32_t x1, int32_t y1, int32_t x2, int32_t y2)>;
   static void DrawBresenhamCircle(int32_t x0,
@@ -80,7 +80,7 @@ inline void DrawMethods::DrawPixels(const int32_t x,
   assert(static_cast<uint32_t>(x) < m_screenWidth);
   assert(static_cast<uint32_t>(y) < m_screenHeight);
 #endif
-  m_drawPixelFunc(x, y, newColors);
+  m_drawPixelsToDevice(x, y, newColors);
 }
 
 } // namespace GOOM::DRAW
