@@ -70,7 +70,7 @@ public:
 
   [[nodiscard]] virtual auto GetRandomGroup() const -> ColorMapGroup;
 
-  [[nodiscard]] auto GetRandomColor(const IColorMap& colorMap, float t0, float t1) -> Pixel;
+  [[nodiscard]] auto GetRandomColor(const IColorMap& colorMap, float t0, float t1) const -> Pixel;
 
 private:
   const UTILS::IGoomRand& m_goomRand;

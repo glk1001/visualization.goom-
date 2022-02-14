@@ -100,9 +100,33 @@ inline bool floats_equal(const float x, const float y, const float epsilon = SMA
 }
 
 template<typename T>
+constexpr auto IsEven(const T& n) -> bool
+{
+  return 0 == (n % 2);
+}
+
+template<typename T>
 constexpr auto IsOdd(const T& n) -> bool
 {
-  return (n % 2) != 0;
+  return 0 != (n % 2);
+}
+
+template<typename T>
+constexpr auto GetHalf(const T& n) -> T
+{
+  return n / 2;
+}
+
+template<typename T>
+constexpr auto GetQuarter(const T& n) -> T
+{
+  return n / 4;
+}
+
+template<typename T>
+constexpr auto GetThreeQuarters(const T& n) -> T
+{
+  return (3 * n) / 4;
 }
 
 class RangeMapper
@@ -124,9 +148,9 @@ class IDampingFunction
 {
 public:
   IDampingFunction() noexcept = default;
-  virtual ~IDampingFunction() noexcept = default;
   IDampingFunction(const IDampingFunction&) noexcept = delete;
   IDampingFunction(IDampingFunction&&) noexcept = delete;
+  virtual ~IDampingFunction() noexcept = default;
   auto operator=(const IDampingFunction&) -> IDampingFunction& = delete;
   auto operator=(IDampingFunction&&) -> IDampingFunction& = delete;
 
@@ -191,9 +215,9 @@ class ISequenceFunction
 {
 public:
   ISequenceFunction() noexcept = default;
-  virtual ~ISequenceFunction() noexcept = default;
   ISequenceFunction(const ISequenceFunction&) noexcept = default;
   ISequenceFunction(ISequenceFunction&&) noexcept = delete;
+  virtual ~ISequenceFunction() noexcept = default;
   auto operator=(const ISequenceFunction&) noexcept -> ISequenceFunction& = default;
   auto operator=(ISequenceFunction&&) noexcept -> ISequenceFunction& = delete;
 

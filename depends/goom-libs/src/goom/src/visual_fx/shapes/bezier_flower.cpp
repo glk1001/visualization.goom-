@@ -18,9 +18,9 @@ void BezierFlower::Draw(const Point2dInt& origin,
   const auto originY = static_cast<float>(origin.y);
 
   m_petalColoring.SetNumPetals(numPetals);
-  m_bezierDrawer.SetLineColorFunc([&](const float t)
+  m_bezierDrawer.SetLineColorFunc([this](const float t)
                                   { return m_petalColoring.GetCurrentLineColorMap().GetColor(t); });
-  m_bezierDrawer.SetDotColorFunc([&](const float t)
+  m_bezierDrawer.SetDotColorFunc([this](const float t)
                                  { return m_petalColoring.GetCurrentDotColorMap().GetColor(t); });
 
   const float angleStep = 1.0F / static_cast<float>(numPetals);

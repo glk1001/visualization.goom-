@@ -14,11 +14,11 @@ class GoomLock
 public:
   GoomLock() noexcept = default;
 
-  auto IsLocked() const -> bool;
+  [[nodiscard]] auto IsLocked() const -> bool;
 
   void Update();
 
-  auto GetLockTime() const -> uint32_t;
+  [[nodiscard]] auto GetLockTime() const -> uint32_t;
   void SetLockTime(uint32_t val);
   void IncreaseLockTime(uint32_t byAmount);
 
@@ -33,7 +33,7 @@ inline auto GoomLock::IsLocked() const -> bool
 
 inline void GoomLock::Update()
 {
-  m_lockTime--;
+  --m_lockTime;
   if (m_lockTime < 0)
   {
     m_lockTime = 0;

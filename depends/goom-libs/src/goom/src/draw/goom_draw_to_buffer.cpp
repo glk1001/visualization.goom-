@@ -12,7 +12,7 @@ namespace GOOM::DRAW
 
 GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t screenHeight)
   : IGoomDraw{screenWidth, screenHeight,
-              [&](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
+              [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
               { DrawPixels(m_multipleBuffers, x, y, newColors, GetIntBuffIntensity()); }}
 {
 }

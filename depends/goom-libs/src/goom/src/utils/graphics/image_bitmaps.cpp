@@ -52,7 +52,7 @@ void ImageBitmap::Load(std::string imageFilename)
     throw std::runtime_error(std20::format(R"(Could not load image file "{}".)", m_filename));
   }
 
-  if (width == 0 || height == 0 || bpp == 0)
+  if ((0 == width) || (0 == height) || (0 == bpp))
   {
     throw std::runtime_error(
         std20::format("Error loading image \"{}\". width = {}, height = {}, bpp = {}.", m_filename,
@@ -66,15 +66,15 @@ void ImageBitmap::Load(std::string imageFilename)
     for (size_t x = 0; x < GetWidth(); ++x)
     {
       uint8_t blue = *rgbPtr;
-      rgbPtr++;
+      ++rgbPtr;
       uint8_t green = *rgbPtr;
-      rgbPtr++;
+      ++rgbPtr;
       uint8_t red = *rgbPtr;
-      rgbPtr++;
+      ++rgbPtr;
       const uint8_t alpha = *rgbPtr;
-      rgbPtr++;
+      ++rgbPtr;
 
-      if (alpha == 0)
+      if (0 == alpha)
       {
         red = 0;
         green = 0;

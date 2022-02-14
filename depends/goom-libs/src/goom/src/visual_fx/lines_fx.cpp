@@ -195,7 +195,7 @@ auto LinesFx::GetFxName() const -> std::string
   return "lines";
 }
 
-void LinesFx::SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps)
+void LinesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
 }
@@ -344,7 +344,7 @@ void LinesFx::LinesImpl::Start()
   ResetDestLine(m_destLineType, m_destParam, 1.0F, m_destColor);
 }
 
-void LinesFx::LinesImpl::SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps)
+void LinesFx::LinesImpl::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
   m_currentColorMapID = m_randomColorMapsManager.AddColorMapInfo(

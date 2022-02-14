@@ -22,6 +22,7 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using UTILS::GetHalf;
 using UTILS::IGoomRand;
 using UTILS::m_pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -252,7 +253,7 @@ void TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
       tentacle2D.SetXDimensions(xMin, newXMax);
       constexpr size_t NUM_NODE_FACTOR = 6;
       tentacle.SetNumHeadNodes(std::max(NUM_NODE_FACTOR * Tentacle2D::MIN_NUM_NODES,
-                                        tentacle.Get2DTentacle().GetNumNodes() / 2));
+                                        GetHalf(tentacle.Get2DTentacle().GetNumNodes())));
     }
   }
 }

@@ -221,8 +221,7 @@ auto Tentacle2D::GetDampedXAndYVectors() const -> const Tentacle2D::XAndYVectors
 auto Tentacle2D::CreateDampingFunc(const double prevYWeight, const double xMin, const double xMax)
     -> Tentacle2D::DampingFuncPtr
 {
-  constexpr double LINEAR_CUTOFF_WEIGHT = 0.6;
-  if (prevYWeight < LINEAR_CUTOFF_WEIGHT)
+  if (constexpr double LINEAR_CUTOFF_WEIGHT = 0.6; prevYWeight < LINEAR_CUTOFF_WEIGHT)
   {
     return CreateLinearDampingFunc(xMin, xMax);
   }

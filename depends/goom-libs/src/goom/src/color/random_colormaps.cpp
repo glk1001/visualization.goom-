@@ -162,8 +162,9 @@ auto RandomColorMaps::GetRandomGroup() const -> ColorMapGroup
   return static_cast<ColorMapGroup>(m_goomRand.GetRandInRange(0U, NUM<ColorMapGroup>));
 }
 
-auto RandomColorMaps::GetRandomColor(const IColorMap& colorMap, const float t0, const float t1)
-    -> Pixel
+auto RandomColorMaps::GetRandomColor(const IColorMap& colorMap,
+                                     const float t0,
+                                     const float t1) const -> Pixel
 {
   return colorMap.GetColor(m_goomRand.GetRandInRange(t0, t1));
 }

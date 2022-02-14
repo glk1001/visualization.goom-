@@ -53,8 +53,7 @@ void GoomMusicSettingsReactor::ChangeZoomEffects()
       diff = -diff;
     }
 
-    constexpr int32_t DIFF_CUT = 2;
-    if (diff > DIFF_CUT)
+    if (constexpr int32_t DIFF_CUT = 2; diff > DIFF_CUT)
     {
       m_filterSettingsService.MultiplyTranLerpIncrement((diff + DIFF_CUT) / DIFF_CUT);
     }

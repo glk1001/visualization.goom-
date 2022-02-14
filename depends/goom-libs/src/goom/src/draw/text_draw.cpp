@@ -1,11 +1,13 @@
 #include "text_draw.h"
 
-#include "color/colorutils.h"
-#include "goom_draw.h"
-#include "goom_graphic.h"
 //#undef NO_LOGGING
+
+#include "color/colorutils.h"
 #include "goom/logging.h"
 #include "goom/spimpl.h"
+#include "goom_draw.h"
+#include "goom_graphic.h"
+#include "utils/mathutils.h"
 
 #include <codecvt>
 #include <format>
@@ -21,6 +23,7 @@ namespace GOOM::DRAW
 {
 
 using COLOR::GetColorBlend;
+using UTILS::GetHalf;
 using UTILS::Logging;
 
 #ifdef NO_FREETYPE_INSTALLED
@@ -37,9 +40,9 @@ public:
   void SetAlignment(TextAlignment alignment);
   [[nodiscard]] auto GetFontFile() const -> const std::string&;
   void SetFontFile(const std::string& filename);
-  auto GetFontSize() const -> int32_t;
+  [[nodiscard]] auto GetFontSize() const -> int32_t;
   void SetFontSize(int32_t val);
-  auto GetLineSpacing() const -> int32_t;
+  [[nodiscard]] auto GetLineSpacing() const -> int32_t;
   void SetOutlineWidth(float val);
   void SetCharSpacing(float val);
   void SetText(const std::string& str);
@@ -162,9 +165,9 @@ public:
   void SetAlignment(TextAlignment alignment);
   [[nodiscard]] auto GetFontFile() const -> const std::string&;
   void SetFontFile(const std::string& filename);
-  auto GetFontSize() const -> int32_t;
+  [[nodiscard]] auto GetFontSize() const -> int32_t;
   void SetFontSize(int32_t val);
-  auto GetLineSpacing() const -> int32_t;
+  [[nodiscard]] auto GetLineSpacing() const -> int32_t;
   void SetOutlineWidth(float val);
   void SetCharSpacing(float val);
   void SetText(const std::string& str);
@@ -202,9 +205,9 @@ private:
   FontColorFunc m_getFontColor{};
   FontColorFunc m_getOutlineFontColor{};
 
-  static constexpr auto ToStdPixelCoord(int32_t freeTypeCoord) -> int;
-  static constexpr auto ToFreeTypeCoord(int32_t stdPixelCoord) -> int;
-  static constexpr auto ToFreeTypeCoord(float stdPixelCoord) -> int;
+  [[nodiscard]] static constexpr auto ToStdPixelCoord(int32_t freeTypeCoord) -> int;
+  [[nodiscard]] static constexpr auto ToFreeTypeCoord(int32_t stdPixelCoord) -> int;
+  [[nodiscard]] static constexpr auto ToFreeTypeCoord(float stdPixelCoord) -> int;
   struct Vec2;
   struct Span;
   using SpanArray = std::vector<Span>;
@@ -235,7 +238,8 @@ private:
 
   std::vector<Spans> m_textSpans{};
   Rect m_textBoundingRect{};
-  static auto GetBoundingRect(const SpanArray& stdSpans, const SpanArray& outlineSpans) -> RectImpl;
+  [[nodiscard]] static auto GetBoundingRect(const SpanArray& stdSpans,
+                                            const SpanArray& outlineSpans) -> RectImpl;
   [[nodiscard]] auto GetSpans(size_t textIndexOfChar) const -> Spans;
   [[nodiscard]] auto GetStdSpans() const -> SpanArray;
   [[nodiscard]] auto GetOutlineSpans() const -> SpanArray;
@@ -377,7 +381,7 @@ void TextDraw::TextDrawImpl::SetFontFile(const std::string& filename)
   }
 
   (void)fontFile.seekg(0, std::ios::end);
-  std::fstream::pos_type fontFileSize = fontFile.tellg();
+  const std::fstream::pos_type fontFileSize = fontFile.tellg();
   (void)fontFile.seekg(0);
   m_fontBuffer.resize(static_cast<size_t>(fontFileSize));
   (void)fontFile.read(reinterpret_cast<char*>(m_fontBuffer.data()), fontFileSize);
@@ -519,7 +523,8 @@ auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int
     case TextAlignment::LEFT:
       return xPen;
     case TextAlignment::CENTER:
-      return xPen - ((GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin) / 2);
+      return xPen -
+             GetHalf(GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin);
     case TextAlignment::RIGHT:
       return xPen - (GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin);
     default:

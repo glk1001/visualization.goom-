@@ -38,6 +38,7 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::IGoomDraw;
+using UTILS::GetHalf;
 using UTILS::IGoomRand;
 using UTILS::m_pi;
 using UTILS::m_third_pi;
@@ -327,8 +328,8 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelpers& fxHelpers,
   : m_draw{fxHelpers.GetDraw()},
     m_goomInfo{fxHelpers.GetGoomInfo()},
     m_goomRand{fxHelpers.GetGoomRand()},
-    m_halfWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width / 2)},
-    m_halfHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height / 2)},
+    m_halfWidth{static_cast<int32_t>(GetHalf(m_goomInfo.GetScreenInfo().width))},
+    m_halfHeight{static_cast<int32_t>(GetHalf(m_goomInfo.GetScreenInfo().height))},
     m_xMax{static_cast<float>(m_goomInfo.GetScreenInfo().width - 1)},
     // clang-format off
     m_colorModeWeights{
@@ -362,7 +363,7 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelpers& fxHelpers,
     m_smallBitmaps{smallBitmaps},
     m_drawFuncs{
         {DrawMode::CIRCLES,
-         [&](const int32_t x1,
+         [this](const int32_t x1,
              const int32_t y1,
              const int32_t x2,
              const int32_t y2,
@@ -371,7 +372,7 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelpers& fxHelpers,
            DrawParticleCircle(x1, y1, x2, y2, size, colors);
          }},
         {DrawMode::LINES,
-         [&](const int32_t x1,
+         [this](const int32_t x1,
              const int32_t y1,
              const int32_t x2,
              const int32_t y2,
@@ -379,7 +380,7 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelpers& fxHelpers,
              const std::vector<Pixel>& colors) { DrawParticleLine(x1, y1, x2, y2, size, colors); }},
         {
             DrawMode::DOTS,
-            [&](const int32_t x1,
+            [this](const int32_t x1,
                 const int32_t y1,
                 const int32_t x2,
                 const int32_t y2,
@@ -500,8 +501,9 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetDrawFunc() const -> DrawFunc
   {
     return m_drawFuncs.at(m_drawMode);
   }
-  return m_goomRand.ProbabilityOfMInN(1, 2) ? m_drawFuncs.at(DrawMode::CIRCLES)
-                                            : m_drawFuncs.at(DrawMode::LINES);
+  constexpr float PROB_CIRCLES = 0.5F;
+  return m_goomRand.ProbabilityOf(PROB_CIRCLES) ? m_drawFuncs.at(DrawMode::CIRCLES)
+                                                : m_drawFuncs.at(DrawMode::LINES);
 }
 
 void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
@@ -583,10 +585,11 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const int32_t x1,
                                                      const uint32_t size,
                                                      const std::vector<Pixel>& colors)
 {
-  const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                            const Pixel& bgnd) { return GetColorMultiply(bgnd, colors[0]); };
-  const auto getLowColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                               const Pixel& bgnd) { return GetColorMultiply(bgnd, colors[1]); };
+  const auto getColor = [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
+                                  const Pixel& bgnd) { return GetColorMultiply(bgnd, colors[0]); };
+  const auto getLowColor =
+      [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
+  { return GetColorMultiply(bgnd, colors[1]); };
 
   const ImageBitmap& bitmap = GetImageBitmap(size);
 

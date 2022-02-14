@@ -70,9 +70,9 @@ inline auto Speedway::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
       return GetMode1SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
     case Modes::MODE2:
       return GetMode2SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
+    default:
+      throw std::logic_error("Unexpected Modes enum.");
   }
-
-  return {0.0F, 0.0F};
 }
 
 inline auto Speedway::GetMode0SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,

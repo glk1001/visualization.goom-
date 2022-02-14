@@ -158,7 +158,7 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
   const NormalizedCoords normalizedMidPt =
       m_normalizedCoordsConverter.ScreenToNormalizedCoords(m_buffMidPoint);
 
-  const auto doStripeLine = [&](const size_t y)
+  const auto doStripeLine = [this, &normalizedMidPt](const size_t y)
   {
     // Position of the pixel to compute in screen coordinates
     const uint32_t yOffset = static_cast<uint32_t>(y) + m_tranBuffYLineStart;

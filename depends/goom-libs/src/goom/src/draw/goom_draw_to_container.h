@@ -71,7 +71,7 @@ inline auto GoomDrawToContainer::GetPixels(const int32_t x, const int32_t y) con
 inline auto GoomDrawToContainer::GetLastDrawnColor(const int32_t x, const int32_t y) const -> Pixel
 {
   const ColorsList& colorsList = GetColorsList(x, y);
-  if (colorsList.count == 0)
+  if (0 == colorsList.count)
   {
     return Pixel::BLACK;
   }

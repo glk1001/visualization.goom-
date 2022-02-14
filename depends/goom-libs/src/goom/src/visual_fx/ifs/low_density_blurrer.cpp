@@ -5,6 +5,7 @@
 #include "draw/goom_draw.h"
 #include "fractal.h"
 #include "goom_graphic.h"
+#include "utils/mathutils.h"
 
 #include <cmath>
 #include <cstdint>
@@ -13,10 +14,11 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using DRAW::IGoomDraw;
 using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
 using COLOR::IColorMap;
+using DRAW::IGoomDraw;
+using UTILS::GetHalf;
 
 LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
                                      const uint32_t width,
@@ -52,11 +54,12 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
 
   float t = 0.0;
   const float tStep = 1.0F / static_cast<float>(lowDensityPoints.size());
+  const uint32_t halfWidth = GetHalf(m_width);
   for (auto& point : lowDensityPoints)
   {
-    if ((point.GetX() < (m_width / 2)) || (point.GetY() < (m_width / 2)) ||
-        (point.GetX() >= (m_draw.GetScreenWidth() - (m_width / 2))) ||
-        (point.GetY() >= (m_draw.GetScreenHeight() - (m_width / 2))))
+    if ((point.GetX() < halfWidth) || (point.GetY() < halfWidth) ||
+        (point.GetX() >= (m_draw.GetScreenWidth() - halfWidth)) ||
+        (point.GetY() >= (m_draw.GetScreenHeight() - halfWidth)))
     {
       point.SetCount(0); // just signal that no need to set buff
       continue;
@@ -91,8 +94,6 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
     // TODO bitmap here
     m_draw.DrawPixels(static_cast<int32_t>(point.GetX()), static_cast<int32_t>(point.GetY()),
                       colors);
-    // ??? NOTE: We need to set raw (unblended) pixels here, otherwise we get unpleasant overexposure.
-    //m_draw->DrawPixelsUnblended(static_cast<int32_t>(point.x), static_cast<int32_t>(point.y), colors);
   }
 }
 

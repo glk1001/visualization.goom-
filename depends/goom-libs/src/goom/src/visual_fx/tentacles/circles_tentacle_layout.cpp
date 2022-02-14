@@ -10,6 +10,8 @@
 namespace GOOM::VISUAL_FX::TENTACLES
 {
 
+using UTILS::GetHalf;
+using UTILS::IsOdd;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
 
@@ -19,14 +21,14 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
                                              const float zConst)
 {
   const size_t numCircles = numCircleSamples.size();
-  if (numCircles < 2)
+  if (constexpr size_t MIN_NUM_CIRCLES = 2; numCircles < MIN_NUM_CIRCLES)
   {
     throw std::logic_error(
         std20::format("There must be >= 2 circle sample numbers not {}.", numCircles));
   }
   for (const auto numSample : numCircleSamples)
   {
-    if ((numSample % 2) != 0)
+    if (IsOdd(numSample))
     {
       // Perspective looks bad with odd because of x=0 tentacle.
       throw std::logic_error(std20::format("Circle sample num must be even not {}.", numSample));
@@ -63,9 +65,9 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
   float angleOffset = angleOffsetStart;
   for (const auto numSample : numCircleSamples)
   {
-    getSamplePoints(radius, numSample / 2, angleLeftStart + angleOffset,
+    getSamplePoints(radius, GetHalf(numSample), angleLeftStart + angleOffset,
                     angleLeftFinish - angleOffset);
-    getSamplePoints(radius, numSample / 2, angleRightStart + angleOffset,
+    getSamplePoints(radius, GetHalf(numSample), angleRightStart + angleOffset,
                     angleRightFinish - angleOffset);
 
     radius -= radiusStep;

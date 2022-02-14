@@ -29,9 +29,9 @@ public:
   };
   void SetAlignment(TextAlignment alignment);
 
-  auto GetFontSize() const -> int32_t;
+  [[nodiscard]] auto GetFontSize() const -> int32_t;
   void SetFontSize(int32_t val);
-  auto GetLineSpacing() const -> int32_t;
+  [[nodiscard]] auto GetLineSpacing() const -> int32_t;
   void SetOutlineWidth(float val);
   void SetCharSpacing(float val);
   [[nodiscard]] auto GetFontFile() const -> const std::string&;

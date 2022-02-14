@@ -12,6 +12,7 @@
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "utils/mathutils.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -33,7 +34,9 @@ using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using UTILS::GetHalf;
 using UTILS::IGoomRand;
+using UTILS::IsEven;
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::Weights;
@@ -70,7 +73,7 @@ private:
   void UpdateTime();
 
   static constexpr uint32_t NUM_CIRCLE_PATHS = 30;
-  static_assert(0 == (NUM_CIRCLE_PATHS % 2));
+  static_assert(IsEven(NUM_CIRCLE_PATHS));
   static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
   static constexpr uint32_t MIN_POSITION_STEPS = 50;
   static constexpr uint32_t MAX_POSITION_STEPS = 250;
@@ -144,8 +147,8 @@ CirclesFx::CirclesFx(const FxHelpers& fxHelpers, const SmallImageBitmaps& smallB
 {
 }
 
-void CirclesFx::SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
-                                     std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps)
+void CirclesFx::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
+                                     const std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps)
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps, weightedLowMaps);
 }
@@ -191,7 +194,7 @@ CirclesFx::CirclesFxImpl::CirclesFxImpl(const FxHelpers& fxHelpers,
     m_goomRand{fxHelpers.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
-    m_centreTargetPosition{m_draw.GetScreenWidth() / 2, m_draw.GetScreenHeight() / 2},
+    m_centreTargetPosition{GetHalf(m_draw.GetScreenWidth()), GetHalf(m_draw.GetScreenHeight())},
     m_zoomMidPoint{m_centreTargetPosition},
     m_circleDiameters{GetInitialCircleDiameters()},
     m_circleRandomStartingPositions{
@@ -259,7 +262,6 @@ auto CirclesFx::CirclesFxImpl::GetStartingCirclePositions(
     [[maybe_unused]] const IGoomRand& goomRand, const int32_t width, const int32_t height)
     -> std::array<Point2dInt, NUM_CIRCLE_PATHS>
 {
-  //  const float aRadius = (0.5F * static_cast<float>(width - MARGIN));
   const float aRadius = (0.5F * static_cast<float>(height));
   const float bRadius = (0.5F * static_cast<float>(height));
   const Point2dInt centre = {width / 2, height / 2};
@@ -321,8 +323,8 @@ inline auto CirclesFx::CirclesFxImpl::GetRandomLowColorMap() const -> const ICol
 }
 
 void CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
-    std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
-    std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps)
+    const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
+    const std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps)
 {
   m_colorMaps = weightedMaps;
   m_lowColorMaps = weightedLowMaps;
@@ -472,10 +474,6 @@ auto CirclesFx::CirclesFxImpl::GetCircleCentrePositions() const
 
   for (size_t i = 0; i < NUM_CIRCLE_PATHS; ++i)
   {
-    //    const float newT = std::min(1.0F, tPosition + 0.75F);
-    //    const V2dInt newCircleStartingPosition =
-    //        lerp(m_circleRandomStartingPositions.at(i), m_circleStartingPositions.at(i), newT);
-
     const Point2dInt newCircleStartingPosition = m_circleStartingPositions.at(i);
 
     const Point2dInt jitter = {m_goomRand.GetRandInRange(-2, +3),
@@ -533,7 +531,7 @@ void CirclesFx::CirclesFxImpl::DrawCircle(const Point2dInt& centre,
                                           const Pixel& lowColor)
 {
   const auto getColor1 =
-      [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
+      [&color]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
   {
     if (0 == bgnd.A())
     {
@@ -541,8 +539,8 @@ void CirclesFx::CirclesFxImpl::DrawCircle(const Point2dInt& centre,
     }
     return color;
   };
-  const auto getColor2 =
-      [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
+  const auto getColor2 = [&lowColor]([[maybe_unused]] const size_t x,
+                                     [[maybe_unused]] const size_t y, const Pixel& bgnd)
   {
     if (0 == bgnd.A())
     {
@@ -568,7 +566,8 @@ inline void CirclesFx::CirclesFxImpl::DrawLine(const Point2dInt& pos1,
   for (uint32_t i = 0; i < (NUM_DOTS - 1); ++i)
   {
     const Point2dInt pos = lerp(pos1, pos2, t);
-    DrawCircle(pos, 5, GetFinalColor(lineBrightness, m_linesColorMap->GetColor(tLine)),
+    constexpr uint32_t DOT_DIAMETER = 5;
+    DrawCircle(pos, DOT_DIAMETER, GetFinalColor(lineBrightness, m_linesColorMap->GetColor(tLine)),
                GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tLine)));
     t += T_STEP;
     tLine += T_LINE_STEP;

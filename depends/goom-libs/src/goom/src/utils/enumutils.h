@@ -26,8 +26,7 @@ auto EnumToString(const E value) -> std::string
 template<class E>
 auto StringToEnum(const std::string& eStr) -> E
 {
-  const auto val = magic_enum::enum_cast<E>(eStr);
-  if (val)
+  if (const auto val = magic_enum::enum_cast<E>(eStr); val)
   {
     return *val;
   }

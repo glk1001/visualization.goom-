@@ -55,12 +55,12 @@ void DotDrawer::DrawDot(const Point2dInt& pt,
     return;
   }
 
-  const auto getColor1 =
-      [=]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
+  const auto getColor1 = [&brightness, &colors]([[maybe_unused]] const size_t x,
+                                                [[maybe_unused]] const size_t y, const Pixel& bgnd)
   { return GetColorMultiply(bgnd, COLOR::GetBrighterColor(brightness, colors[0])); };
 
-  const auto getColor2 =
-      [=]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
+  const auto getColor2 = [&brightness, &colors]([[maybe_unused]] const size_t x,
+                                                [[maybe_unused]] const size_t y, const Pixel& bgnd)
   { return GetColorMultiply(bgnd, COLOR::GetBrighterColor(brightness, colors[1])); };
 
   const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getColor1, getColor2};
@@ -84,8 +84,7 @@ auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t
   }};
   // clang-format on
 
-  constexpr size_t MAX_MIN_DOT_SIZE = 7;
-  if (maxSize <= MAX_MIN_DOT_SIZE)
+  if (constexpr size_t MAX_MIN_DOT_SIZE = 7; maxSize <= MAX_MIN_DOT_SIZE)
   {
     return s_DOT_SIZES.at(static_cast<size_t>(m_minDotSizes.GetRandomWeighted()));
   }

@@ -17,7 +17,7 @@ void AdaptiveExposure::UpdateAverageLuminance(float averageLuminance)
 {
   ++m_updateNum;
 
-  if (averageLuminance < 1.0F / MAX_EXPOSURE)
+  if (averageLuminance < (1.0F / MAX_EXPOSURE))
   {
     averageLuminance = 1.0F / MAX_EXPOSURE;
   }

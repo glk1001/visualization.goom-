@@ -37,6 +37,7 @@ using DRAW::GoomDrawToMany;
 using DRAW::IGoomDraw;
 using TUBES::BrightnessAttenuation;
 using TUBES::Tube;
+using UTILS::GetHalf;
 using UTILS::IGoomRand;
 using UTILS::Logging;
 using UTILS::PathParams;
@@ -272,7 +273,7 @@ TubesFx::TubeFxImpl::TubeFxImpl(const FxHelpers& fxHelpers,
     m_oscillatingShapePath{m_goomRand.ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)},
     m_prevShapesBrightnessAttenuation{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(),
                                       PREV_SHAPES_CUTOFF_BRIGHTNESS},
-    m_screenMidPoint{m_draw.GetScreenWidth() / 2, m_draw.GetScreenHeight() / 2},
+    m_screenMidPoint{GetHalf(m_draw.GetScreenWidth()), GetHalf(m_draw.GetScreenHeight())},
     m_allStayInCentreTimer{1},
     m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME},
     m_colorMapTimer{m_goomRand.GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)},
@@ -360,21 +361,23 @@ void TubesFx::TubeFxImpl::InitTubes()
   assert(m_lowColorMaps != nullptr);
 
   const Tube::DrawFuncs drawToOneFuncs{
-      [&](const int x1, const int y1, const int x2, const int y2, const std::vector<Pixel>& colors,
-          const uint8_t thickness) { DrawLineToOne(x1, y1, x2, y2, colors, thickness); },
-      [&](const int x, const int y, const int radius, const std::vector<Pixel>& colors,
-          const uint8_t thickness) { DrawCircleToOne(x, y, radius, colors, thickness); },
-      [&](const int x, const int y, const SmallImageBitmaps::ImageNames imageName,
-          const uint32_t size, const std::vector<Pixel>& colors)
+      [this](const int x1, const int y1, const int x2, const int y2,
+             const std::vector<Pixel>& colors, const uint8_t thickness)
+      { DrawLineToOne(x1, y1, x2, y2, colors, thickness); },
+      [this](const int x, const int y, const int radius, const std::vector<Pixel>& colors,
+             const uint8_t thickness) { DrawCircleToOne(x, y, radius, colors, thickness); },
+      [this](const int x, const int y, const SmallImageBitmaps::ImageNames imageName,
+             const uint32_t size, const std::vector<Pixel>& colors)
       { DrawImageToOne(x, y, imageName, size, colors); },
   };
   const Tube::DrawFuncs drawToManyFuncs{
-      [&](const int x1, const int y1, const int x2, const int y2, const std::vector<Pixel>& colors,
-          const uint8_t thickness) { DrawLineToMany(x1, y1, x2, y2, colors, thickness); },
-      [&](const int x, const int y, const int radius, const std::vector<Pixel>& colors,
-          const uint8_t thickness) { DrawCircleToMany(x, y, radius, colors, thickness); },
-      [&](const int x, const int y, const SmallImageBitmaps::ImageNames imageName,
-          const uint32_t size, const std::vector<Pixel>& colors)
+      [this](const int x1, const int y1, const int x2, const int y2,
+             const std::vector<Pixel>& colors, const uint8_t thickness)
+      { DrawLineToMany(x1, y1, x2, y2, colors, thickness); },
+      [this](const int x, const int y, const int radius, const std::vector<Pixel>& colors,
+             const uint8_t thickness) { DrawCircleToMany(x, y, radius, colors, thickness); },
+      [this](const int x, const int y, const SmallImageBitmaps::ImageNames imageName,
+             const uint32_t size, const std::vector<Pixel>& colors)
       { DrawImageToMany(x, y, imageName, size, colors); },
   };
 
@@ -462,10 +465,10 @@ inline void TubesFx::TubeFxImpl::DrawImageToMany(const int x,
 inline auto TubesFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& colors)
     -> std::vector<IGoomDraw::GetBitmapColorFunc>
 {
-  const auto getColor1 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& bgnd) { return colors[0]; };
-  const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& bgnd) { return colors[1]; };
+  const auto getColor1 = [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
+                                   [[maybe_unused]] const Pixel& bgnd) { return colors[0]; };
+  const auto getColor2 = [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
+                                   [[maybe_unused]] const Pixel& bgnd) { return colors[1]; };
   return {getColor1, getColor2};
 }
 
@@ -638,7 +641,7 @@ void TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
   using ColorsList = GoomDrawToContainer::ColorsList;
 
   m_drawToContainer.IterateChangedCoordsNewToOld(
-      [&](const int32_t x, const int32_t y, const ColorsList& colorsList)
+      [this, &brightnessAttenuation](const int32_t x, const int32_t y, const ColorsList& colorsList)
       {
         const int32_t jitterAmount = !m_prevShapesJitter
                                          ? 0

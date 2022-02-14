@@ -38,6 +38,7 @@ using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using UTILS::GetHalf;
 using UTILS::IGoomRand;
 using UTILS::Logging;
 using UTILS::m_two_pi;
@@ -155,7 +156,7 @@ ImageFx::ImageFx(Parallel& parallel,
 {
 }
 
-void ImageFx::SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps)
+void ImageFx::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
 }
@@ -197,7 +198,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
     m_resourcesDirectory{resourcesDirectory},
     m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
     m_availableHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)},
-    m_screenCentre{m_availableWidth / 2, m_availableHeight / 2},
+    m_screenCentre{GetHalf(m_availableWidth), GetHalf(m_availableHeight)},
     m_maxRadius{HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight))},
     m_maxDiameterSq{2.0F * Sq(m_maxRadius)},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
@@ -212,7 +213,7 @@ auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
 }
 
 void ImageFx::ImageFxImpl::SetWeightedColorMaps(
-    std::shared_ptr<COLOR::RandomColorMaps> weightedMaps)
+    const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
   m_pixelColorIsDominant = m_goomRand.ProbabilityOf(0.0F);
@@ -333,7 +334,7 @@ inline void ImageFx::ImageFxImpl::DrawChunks()
 {
   const float brightness = m_brightnessBase + (0.02F * m_inOutT());
 
-  const auto drawChunk = [&](const size_t i)
+  const auto drawChunk = [this, &brightness](const size_t i)
   {
     const Point2dInt nextStartPosition = GetNextChunkStartPosition(i);
     const ChunkedImage::ImageChunk& imageChunk = m_currentImage->GetImageChunk(i);

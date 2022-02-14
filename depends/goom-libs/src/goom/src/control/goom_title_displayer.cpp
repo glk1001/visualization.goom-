@@ -130,10 +130,12 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
 
   const Pixel fontColor = m_textColorMap.get().GetColor(t);
   float tFontChar = 0.0F;
-  const auto getFontColor = [&]([[maybe_unused]] const size_t textIndexOfChar,
-                                [[maybe_unused]] const int32_t x, [[maybe_unused]] const int32_t y,
-                                [[maybe_unused]] const int32_t width,
-                                [[maybe_unused]] const int32_t height) {
+  const auto getFontColor =
+      [this, &tFontChar, &tCharStep, &brightness, &fontColor,
+       &tMix]([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] const int32_t x,
+              [[maybe_unused]] const int32_t y, [[maybe_unused]] const int32_t width,
+              [[maybe_unused]] const int32_t height)
+  {
     const Pixel charColor = m_charColorMap.get().GetColor(tFontChar);
     tFontChar += tCharStep;
     if (tFontChar > 1.0F)
@@ -147,9 +149,10 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
       IsInitialPhase() ? Pixel::WHITE : m_textOutlineColorMap.get().GetColor(t);
   float tOutlineFontChar = 0.0F;
   const auto getOutlineFontColor =
-      [&]([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] const int32_t x,
-          [[maybe_unused]] const int32_t y, [[maybe_unused]] const int32_t width,
-          [[maybe_unused]] const int32_t height)
+      [this, &tOutlineFontChar, &tCharStep, &brightness, &outlineFontColor,
+       &tMix]([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] const int32_t x,
+              [[maybe_unused]] const int32_t y, [[maybe_unused]] const int32_t width,
+              [[maybe_unused]] const int32_t height)
   {
     tOutlineFontChar += tCharStep;
     if (tOutlineFontChar > 1.0F)

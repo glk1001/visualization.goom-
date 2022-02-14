@@ -14,7 +14,7 @@ GoomDrawToMany::GoomDrawToMany(const uint32_t screenWidth,
                                const uint32_t screenHeight,
                                const std::vector<IGoomDraw*>& manyDraws)
   : IGoomDraw{screenWidth, screenHeight,
-              [&](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
+              [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
               { DrawPixels(m_manyDraws, x, y, newColors); }},
     m_manyDraws{manyDraws}
 {

@@ -11,15 +11,15 @@ public:
   Timer() noexcept = delete;
   explicit Timer(uint32_t numCount, bool setToFinished = false) noexcept;
 
-  auto GetTimeLimit() const -> uint32_t;
+  [[nodiscard]] auto GetTimeLimit() const -> uint32_t;
   void SetTimeLimit(uint32_t val);
 
   void ResetToZero();
   void SetToFinished();
   void Increment();
-  auto JustFinished() const -> bool;
-  auto Finished() const -> bool;
-  auto GetCurrentCount() const -> uint64_t;
+  [[nodiscard]] auto JustFinished() const -> bool;
+  [[nodiscard]] auto Finished() const -> bool;
+  [[nodiscard]] auto GetCurrentCount() const -> uint64_t;
 
 private:
   uint32_t m_numCount;

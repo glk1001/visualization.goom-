@@ -244,9 +244,8 @@ auto Similitudes::GetSimiBitmap(const bool useBitmaps) -> const ImageBitmap*
   constexpr uint32_t MIN_RES = 3;
   constexpr uint32_t MAX_RES = 7;
   const uint32_t res = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
-  constexpr float PROB_SPHERE_BITMAP = 0.6F;
 
-  if (m_goomRand.ProbabilityOf(PROB_SPHERE_BITMAP))
+  if (constexpr float PROB_SPHERE_BITMAP = 0.6F; m_goomRand.ProbabilityOf(PROB_SPHERE_BITMAP))
   {
     return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
   }
@@ -264,7 +263,8 @@ inline auto Similitudes::GaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_
 {
   const Dbl x = m_goomRand.GetRandInRange(0.0F, 1.0F);
   const Dbl y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
-  return m_goomRand.ProbabilityOfMInN(1, 2) ? (c + y) : (c - y);
+  constexpr float PROB_HALF = 0.5F;
+  return m_goomRand.ProbabilityOf(PROB_HALF) ? (c + y) : (c - y);
 }
 
 inline auto Similitudes::HalfGaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S)
@@ -282,7 +282,7 @@ void Similitudes::ResetCurrentIfsFunc()
   if (m_goomRand.ProbabilityOf(PROB_REVERSED_IFS_FUNC))
   {
     m_currentIfsFunc =
-        [&](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2, const Flt y2)
+        [](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2, const Flt y2)
     {
       return FltPoint{
           DivByUnit((x1 * simi.m_sinA1) - (y1 * simi.m_cosA1) + (x2 * simi.m_sinA2) -
@@ -297,7 +297,7 @@ void Similitudes::ResetCurrentIfsFunc()
   else
   {
     m_currentIfsFunc =
-        [&](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2, const Flt y2)
+        [](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2, const Flt y2)
     {
       return FltPoint{
           DivByUnit((x1 * simi.m_cosA1) - (y1 * simi.m_sinA1) + (x2 * simi.m_cosA2) -

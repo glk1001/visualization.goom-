@@ -104,9 +104,11 @@ auto TintedColorMap::GetColor(const float t) const -> Pixel
   const Pixel color = GetColorMap()->GetColor(t);
   const vivid::col8_t rgb8 = {color.R(), color.G(), color.B()};
 
+  constexpr size_t SATURATION_INDEX = 1;
+  constexpr size_t LIGHTNESS_INDEX = 2;
   vivid::hsv_t hsv{vivid::rgb::fromRgb8(rgb8)};
-  hsv[1] = m_saturation;
-  hsv[2] = m_lightness;
+  hsv[SATURATION_INDEX] = m_saturation;
+  hsv[LIGHTNESS_INDEX] = m_lightness;
 
   const vivid::col8_t newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
   return Pixel{{newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}};
@@ -115,10 +117,10 @@ auto TintedColorMap::GetColor(const float t) const -> Pixel
 class PrebuiltColorMap : public IColorMap
 {
 public:
-  PrebuiltColorMap() = delete;
-  PrebuiltColorMap(ColorMapName mapName, vivid::ColorMap colorMap);
-  PrebuiltColorMap(const PrebuiltColorMap&) = default;
-  PrebuiltColorMap(PrebuiltColorMap&&) = default;
+  PrebuiltColorMap() noexcept = delete;
+  PrebuiltColorMap(ColorMapName mapName, vivid::ColorMap colorMap) noexcept;
+  PrebuiltColorMap(const PrebuiltColorMap&) noexcept = default;
+  PrebuiltColorMap(PrebuiltColorMap&&) noexcept = default;
   ~PrebuiltColorMap() noexcept override = default;
   auto operator=(const PrebuiltColorMap&) -> PrebuiltColorMap& = delete;
   auto operator=(PrebuiltColorMap&&) -> PrebuiltColorMap& = delete;
@@ -251,9 +253,10 @@ inline auto ColorMaps::ColorMapsImpl::GetColorMap(const ColorMapName mapName) ->
 }
 
 // Wrap a raw pointer in a shared_ptr and make sure the raw pointer is never deleted.
-static const auto MAKE_SHARED_ADDR = [](const IColorMap* const colorMap) {
-  return std::shared_ptr<const IColorMap>{colorMap,
-                                          []([[maybe_unused]] const IColorMap* const cm) {}};
+static const auto MAKE_SHARED_ADDR = [](const IColorMap* const colorMap)
+{
+  return std::shared_ptr<const IColorMap>{
+      colorMap, []([[maybe_unused]] const IColorMap* const cm) { /* never delete */ }};
 };
 
 inline auto ColorMaps::ColorMapsImpl::GetColorMapPtr(const ColorMapName mapName)
@@ -308,7 +311,7 @@ inline auto ColorMaps::ColorMapsImpl::GetColorMapNames(const ColorMapGroup group
   return *at(GetColorGroupNames(), groupName);
 }
 
-auto ColorMaps::ColorMapsImpl::GetPreBuiltColorMaps() -> const std::vector<PrebuiltColorMap>&
+inline auto ColorMaps::ColorMapsImpl::GetPreBuiltColorMaps() -> const std::vector<PrebuiltColorMap>&
 {
   static const std::vector<PrebuiltColorMap> s_PRE_BUILT_COLOR_MAPS{MakePrebuiltColorMaps()};
 
@@ -335,7 +338,7 @@ inline auto ColorMaps::ColorMapsImpl::GetNumGroups() -> uint32_t
   return static_cast<uint32_t>(GetColorGroupNames().size());
 }
 
-auto ColorMaps::ColorMapsImpl::GetAllColorMapNames() -> const std::vector<ColorMapName>&
+inline auto ColorMaps::ColorMapsImpl::GetAllColorMapNames() -> const std::vector<ColorMapName>&
 {
   static const std::vector<ColorMapName> s_ALL_COLOR_MAP_NAMES{MakeAllColorMapNames()};
 
@@ -355,7 +358,7 @@ auto ColorMaps::ColorMapsImpl::MakeAllColorMapNames() -> std::vector<ColorMapNam
   return allColorMapNames;
 }
 
-auto ColorMaps::ColorMapsImpl::GetColorGroupNames() -> const ColorGroupNamesArray&
+inline auto ColorMaps::ColorMapsImpl::GetColorGroupNames() -> const ColorGroupNamesArray&
 {
   static const ColorGroupNamesArray s_COLOR_GROUP_NAMES{MakeColorGroupNames()};
 
@@ -407,7 +410,8 @@ auto ColorMaps::ColorMapsImpl::MakeColorGroupNames() -> ColorGroupNamesArray
   return groups;
 }
 
-inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName, vivid::ColorMap colorMap)
+inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName,
+                                          vivid::ColorMap colorMap) noexcept
   : m_mapName{mapName}, m_vividColorMap{std::move(colorMap)}
 {
 }

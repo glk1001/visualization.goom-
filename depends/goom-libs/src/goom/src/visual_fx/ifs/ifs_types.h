@@ -56,18 +56,18 @@ private:
   const Similitude* m_simi = nullptr;
 };
 
-inline auto MultByUnit(const Dbl x) -> Flt
+[[nodiscard]] inline auto MultByUnit(const Dbl x) -> Flt
 {
   constexpr int32_t UNIT = 1 << FIX;
   return static_cast<Flt>(static_cast<Dbl>(UNIT) * x);
 }
 
-inline auto DivByUnit(const Flt x) -> Flt
+[[nodiscard]] inline auto DivByUnit(const Flt x) -> Flt
 {
   return x >> FIX;
 }
 
-inline auto DivBy2Units(const Flt x) -> Flt
+[[nodiscard]] inline auto DivBy2Units(const Flt x) -> Flt
 {
   return x >> (FIX + 1);
 }

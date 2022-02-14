@@ -1,10 +1,11 @@
 #include "tubes.h"
 
+//#undef NO_LOGGING
+
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
-//#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
 #include "point2d.h"
@@ -31,6 +32,7 @@ using COLOR::GetIncreasedChroma;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
+using UTILS::GetHalf;
 using UTILS::IGoomRand;
 using UTILS::LinearTimePath;
 using UTILS::Logging;
@@ -1211,7 +1213,7 @@ BrightnessAttenuation::BrightnessAttenuation(const uint32_t screenWidth,
                                              const uint32_t screenHeight,
                                              const float cutoffBrightness)
   : m_cutoffBrightness{cutoffBrightness},
-    m_maxRSquared{2 * Sq(std::min(screenWidth, screenHeight) / 2)}
+    m_maxRSquared{2 * Sq(GetHalf(std::min(screenWidth, screenHeight)))}
 
 {
 }

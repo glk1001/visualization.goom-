@@ -142,7 +142,6 @@ inline void AllStandardVisualFx::SetSingleBufferDots(const bool value)
 
 inline void AllStandardVisualFx::ApplyCurrentStateToSingleBuffer()
 {
-  // applyIfsIfRequired();
   ApplyDotsIfRequired();
 }
 

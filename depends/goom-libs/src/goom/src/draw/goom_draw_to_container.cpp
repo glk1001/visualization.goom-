@@ -18,7 +18,7 @@ using UTILS::Logging;
 
 GoomDrawToContainer::GoomDrawToContainer(const uint32_t screenWidth, const uint32_t screenHeight)
   : IGoomDraw{screenWidth, screenHeight,
-              [&](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
+              [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
               { SavePixels(x, y, newColors, GetIntBuffIntensity()); }},
     m_xyPixelList(screenHeight)
 {

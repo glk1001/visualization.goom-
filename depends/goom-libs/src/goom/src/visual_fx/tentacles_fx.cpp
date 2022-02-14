@@ -183,8 +183,7 @@ inline void TentaclesFx::TentaclesImpl::Start()
 
 inline void TentaclesFx::TentaclesImpl::Resume()
 {
-  constexpr float PROB_NEW_DRIVER = 0.5F;
-  if (m_goomRand.ProbabilityOf(PROB_NEW_DRIVER))
+  if (constexpr float PROB_NEW_DRIVER = 0.5F; m_goomRand.ProbabilityOf(PROB_NEW_DRIVER))
   {
     m_currentTentacleDriver = GetNextDriver();
   }

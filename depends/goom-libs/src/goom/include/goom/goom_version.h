@@ -6,8 +6,8 @@
 namespace GOOM
 {
 
-constexpr auto GOOM_VER_NAME = "Goom Library";
-constexpr auto GOOM_VER_DESCRIPTION = "Goom++ Initial Release";
+constexpr auto* GOOM_VER_NAME = "Goom Library";
+constexpr auto* GOOM_VER_DESCRIPTION = "Goom++ Initial Release";
 constexpr auto GOOM_VER_MAJOR = 1;
 constexpr auto GOOM_VER_MINOR = 0;
 constexpr auto GOOM_VER_REVISION = 0;

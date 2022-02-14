@@ -141,8 +141,8 @@ inline void TValue::Reset(const float t)
 
 inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const -> bool
 {
-  return ((delayPoint.t0 - m_stepSize + T_EPSILON) < m_t)
-         && (m_t < (delayPoint.t0 + m_stepSize - T_EPSILON));
+  return (((delayPoint.t0 - m_stepSize) + T_EPSILON) < m_t) &&
+         (m_t < ((delayPoint.t0 + m_stepSize) - T_EPSILON));
 }
 
 } // namespace GOOM::UTILS

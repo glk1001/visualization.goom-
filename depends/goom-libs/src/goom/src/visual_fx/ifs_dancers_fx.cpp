@@ -128,6 +128,7 @@ private:
   static constexpr uint32_t MIN_DENSITY_COUNT = 5;
   uint32_t m_lowDensityCount = MIN_DENSITY_COUNT;
   LowDensityBlurrer m_blurrer;
+  static constexpr uint32_t BLUR_WIDTH = 3;
   static constexpr float DEFAULT_LOW_DENSITY_BLUR_THRESHOLD = 0.99F;
   float m_lowDensityBlurThreshold = DEFAULT_LOW_DENSITY_BLUR_THRESHOLD;
   [[nodiscard]] auto BlurLowDensityColors(size_t numPoints,
@@ -218,7 +219,7 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelpers& fxHelpers,
                                         m_goomRand,
                                         m_colorizer.GetColorMaps(),
                                         smallBitmaps)},
-    m_blurrer{m_draw, 3, &m_colorizer},
+    m_blurrer{m_draw, BLUR_WIDTH, &m_colorizer},
     // clang-format off
     m_blurrerColorModeWeights{
         m_goomRand,
@@ -336,10 +337,12 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateIfs()
 
 void IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay()
 {
+  constexpr int32_t BY_TWO = 2;
+
   --m_decayIfs;
   if (m_decayIfs > 0)
   {
-    m_ifsIncr += 2;
+    m_ifsIncr += BY_TWO;
   }
   if (0 == m_decayIfs)
   {
@@ -348,7 +351,7 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay()
 
   if (m_recayIfs)
   {
-    m_ifsIncr -= 2;
+    m_ifsIncr -= BY_TWO;
     --m_recayIfs;
     if ((0 == m_recayIfs) && (m_ifsIncr <= 0))
     {
@@ -498,7 +501,6 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
 
   const Pixel baseColor = point.GetSimi()->GetColorMap()->GetColor(t);
 
-  //  const float t = static_cast<float>(m_cycle) / static_cast<float>(m_cycleLength);
   if (nullptr == point.GetSimi()->GetCurrentPointBitmap())
   {
     const Pixel mixedColor =
@@ -509,8 +511,9 @@ inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
   {
     const Pixel mixedColor =
         m_colorizer.GetMixedColor(baseColor, point.GetCount(), BITMAP_BRIGHTNESS, tMix, tX, tY);
-    const auto getColor = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                              [[maybe_unused]] const Pixel& bgnd) { return mixedColor; };
+    const auto getColor = [&mixedColor]([[maybe_unused]] const size_t x,
+                                        [[maybe_unused]] const size_t y,
+                                        [[maybe_unused]] const Pixel& bgnd) { return mixedColor; };
     const ImageBitmap& bitmap{*point.GetSimi()->GetCurrentPointBitmap()};
     m_draw.Bitmap(pointX, pointY, bitmap, {getColor, getColor});
   }
@@ -557,6 +560,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const -> uint32_t
 {
   constexpr uint32_t NUM_WIDTHS = 3;
   constexpr uint32_t WIDTH_RANGE = (MAX_DENSITY_COUNT - MIN_DENSITY_COUNT) / NUM_WIDTHS;
+  constexpr uint32_t DOUBLE_WIDTH_RANGE = 2 * WIDTH_RANGE;
 
   constexpr uint32_t LARGE_BLUR_WIDTH = 7;
   constexpr uint32_t MEDIUM_BLUR_WIDTH = 5;
@@ -568,7 +572,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const -> uint32_t
   {
     blurWidth = LARGE_BLUR_WIDTH;
   }
-  else if (m_lowDensityCount <= (MIN_DENSITY_COUNT + (2 * WIDTH_RANGE)))
+  else if (m_lowDensityCount <= (MIN_DENSITY_COUNT + DOUBLE_WIDTH_RANGE))
   {
     blurWidth = MEDIUM_BLUR_WIDTH;
   }

@@ -10,6 +10,7 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::RandomColorMaps;
+using UTILS::GetHalf;
 using UTILS::IGoomRand;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -21,8 +22,8 @@ Fractal::Fractal(const uint32_t screenWidth,
                  const SmallImageBitmaps& smallBitmaps)
   : m_similitudes{goomRand, randomColorMaps, smallBitmaps},
     m_goomRand{goomRand},
-    m_halfWidth{static_cast<Flt>((screenWidth - 1) / 2)},
-    m_halfHeight{static_cast<Flt>((screenHeight - 1) / 2)},
+    m_halfWidth{static_cast<Flt>(GetHalf(screenWidth - 1))},
+    m_halfHeight{static_cast<Flt>(GetHalf(screenHeight - 1))},
     m_hits1{screenWidth, screenHeight},
     m_hits2{screenWidth, screenHeight},
     m_prevHits{m_hits1},

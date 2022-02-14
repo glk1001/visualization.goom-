@@ -27,11 +27,11 @@ auto GammaCorrection::GetCorrection(const float brightness, const Pixel& color) 
   }
   // OLD  return GetBrighterColor(std::pow(brightness, m_gamma), color);
 
-  auto newR = static_cast<uint32_t>(
+  const auto newR = static_cast<uint32_t>(
       std::round(channel_limits<float>::max() * std::pow(brightness * color.RFlt(), m_gamma)));
-  auto newG = static_cast<uint32_t>(
+  const auto newG = static_cast<uint32_t>(
       std::round(channel_limits<float>::max() * std::pow(brightness * color.GFlt(), m_gamma)));
-  auto newB = static_cast<uint32_t>(
+  const auto newB = static_cast<uint32_t>(
       std::round(channel_limits<float>::max() * std::pow(brightness * color.BFlt(), m_gamma)));
   const uint32_t newA = color.A();
 
@@ -72,10 +72,10 @@ auto GetLightenedColor(const Pixel& oldColor, const float power) -> Pixel
   return pixel;
 }
 
-inline auto EvolvedColor(const Pixel& src,
-                         const Pixel& dest,
-                         const PixelIntType mask,
-                         const PixelIntType incr) -> Pixel
+[[nodiscard]] inline auto EvolvedColor(const Pixel& src,
+                                       const Pixel& dest,
+                                       const PixelIntType mask,
+                                       const PixelIntType incr) -> Pixel
 {
   struct RGBChannels
   {
@@ -108,7 +108,7 @@ inline auto EvolvedColor(const Pixel& src,
   const PixelIntType color = srcColor.intVal & (~mask);
 
   RGBColor finalColor;
-  finalColor.intVal = (iMaskedSrc & mask) | static_cast<PixelIntType>(color);
+  finalColor.intVal = (iMaskedSrc & mask) | color;
 
   return Pixel{
       {finalColor.channels.r, finalColor.channels.g, finalColor.channels.b, finalColor.channels.a}};

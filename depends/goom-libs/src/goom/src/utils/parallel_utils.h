@@ -77,7 +77,9 @@ void Parallel::ForLoop(const size_t numIters, const Callable loopFunc)
   const size_t chunkSize = numIters / numThreads; // >= 1
   const size_t numLeftoverIters = numIters - (numThreads * chunkSize);
 
-  const auto loopContents = [&](const uint32_t threadIndex) {
+  const auto loopContents =
+      [&chunkSize, &numThreads, &numLeftoverIters, &loopFunc](const uint32_t threadIndex)
+  {
     const size_t inclusiveStartIndex = threadIndex * chunkSize;
     const size_t exclusiveEndIndex =
         inclusiveStartIndex + chunkSize + (threadIndex < (numThreads - 1) ? 0 : numLeftoverIters);

@@ -33,6 +33,8 @@ void Speedway::SetRandomParams()
     case Modes::MODE2:
       SetMode2RandomParams();
       break;
+    default:
+      throw std::logic_error("Unexpected Modes enum.");
   }
 }
 

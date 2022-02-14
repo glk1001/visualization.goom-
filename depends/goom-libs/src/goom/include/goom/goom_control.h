@@ -27,7 +27,7 @@ public:
     NEVER,
   };
   void SetShowTitle(ShowTitleType value);
-  
+
   void Start();
 
   /*

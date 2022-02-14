@@ -251,7 +251,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() const
 
 void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
 {
-  const auto setDestPixelRow = [&](const size_t destY)
+  const auto setDestPixelRow = [this, &srceBuff, &destBuff](const size_t destY)
   {
     uint32_t destPos = m_screenWidth * static_cast<uint32_t>(destY);
     const auto [destRowBegin, destRowEnd] = destBuff.GetRowIter(destY);

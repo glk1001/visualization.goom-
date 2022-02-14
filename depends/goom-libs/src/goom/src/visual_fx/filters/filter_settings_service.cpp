@@ -7,6 +7,7 @@
 #include "goom_plugin_info.h"
 #include "utils/enumutils.h"
 #include "utils/goom_rand_base.h"
+#include "utils/mathutils.h"
 #include "utils/timer.h"
 
 #include <stdexcept>
@@ -14,6 +15,9 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
+using UTILS::GetHalf;
+using UTILS::GetQuarter;
+using UTILS::GetThreeQuarters;
 using UTILS::IGoomRand;
 using UTILS::NUM;
 using UTILS::Parallel;
@@ -316,7 +320,8 @@ FilterSettingsService::FilterSettingsService(Parallel& parallel,
   : m_parallel{parallel},
     m_goomInfo{goomInfo},
     m_goomRand{goomRand},
-    m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
+    m_screenMidPoint{GetHalf(m_goomInfo.GetScreenInfo().width),
+                     GetHalf(m_goomInfo.GetScreenInfo().height)},
     m_resourcesDirectory{resourcesDirectory},
     m_normalizedCoordsConverter{m_goomInfo.GetScreenInfo().width,
                                 m_goomInfo.GetScreenInfo().height,
@@ -518,9 +523,8 @@ void FilterSettingsService::SetWaveModeExtraEffects()
 
   if (m_goomRand.ProbabilityOf(PROB_CHANGE_SPEED))
   {
-    m_filterSettings.filterEffectsSettings.vitesse.SetVitesse(
-        (m_filterSettings.filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE) /
-        2);
+    m_filterSettings.filterEffectsSettings.vitesse.SetVitesse(GetHalf(
+        m_filterSettings.filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE));
   }
 }
 
@@ -585,8 +589,8 @@ void FilterSettingsService::SetAnyRandomZoomMidPoint()
   switch (m_zoomMidPointWeights.GetRandomWeighted())
   {
     case ZoomMidPointEvents::BOTTOM_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = {m_goomInfo.GetScreenInfo().width / 2,
-                                                             m_goomInfo.GetScreenInfo().height - 1};
+      m_filterSettings.filterEffectsSettings.zoomMidPoint = {
+          GetHalf(m_goomInfo.GetScreenInfo().width), m_goomInfo.GetScreenInfo().height - 1};
       break;
     case ZoomMidPointEvents::RIGHT_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidPoint.x =
@@ -599,12 +603,14 @@ void FilterSettingsService::SetAnyRandomZoomMidPoint()
       m_filterSettings.filterEffectsSettings.zoomMidPoint = m_screenMidPoint;
       break;
     case ZoomMidPointEvents::TOP_LEFT_QUARTER_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidPoint = {m_goomInfo.GetScreenInfo().width / 4,
-                                                             m_goomInfo.GetScreenInfo().height / 4};
+      m_filterSettings.filterEffectsSettings.zoomMidPoint = {
+          GetQuarter(m_goomInfo.GetScreenInfo().width),
+          GetQuarter(m_goomInfo.GetScreenInfo().height)};
       break;
     case ZoomMidPointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidPoint = {
-          (3 * m_goomInfo.GetScreenInfo().width) / 4, (3 * m_goomInfo.GetScreenInfo().height) / 4};
+          GetThreeQuarters(m_goomInfo.GetScreenInfo().width),
+          GetThreeQuarters(m_goomInfo.GetScreenInfo().height)};
       break;
     default:
       throw std::logic_error("Unknown ZoomMidPointEvents enum.");

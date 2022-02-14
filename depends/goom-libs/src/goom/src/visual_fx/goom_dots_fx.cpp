@@ -1,12 +1,13 @@
 #include "goom_dots_fx.h"
 
+//#undef NO_LOGGING
+
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helpers.h"
-//#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "goom_graphic.h"
@@ -15,6 +16,7 @@
 #include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "utils/mathutils.h"
 
 #include <cmath>
 #include <cstdint>
@@ -29,6 +31,7 @@ using COLOR::GetIncreasedChroma;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
+using UTILS::GetHalf;
 using UTILS::IGoomRand;
 using UTILS::Weights;
 using UTILS::GRAPHICS::ImageBitmap;
@@ -171,7 +174,8 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelpers& fxHelpers,
     m_goomInfo{fxHelpers.GetGoomInfo()},
     m_goomRand{fxHelpers.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
-    m_screenMidPoint{m_goomInfo.GetScreenInfo().width / 2, m_goomInfo.GetScreenInfo().height / 2},
+    m_screenMidPoint{GetHalf(m_goomInfo.GetScreenInfo().width),
+                     GetHalf(m_goomInfo.GetScreenInfo().height)},
     m_pointWidth{(m_goomInfo.GetScreenInfo().width * 2) / 5},
     m_pointHeight{(m_goomInfo.GetScreenInfo().height * 2) / 5},
     m_pointWidthDiv2{HALF * static_cast<float>(m_pointWidth)},
@@ -239,8 +243,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
 
 auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
 {
-  constexpr float PROB_PRIMARY_COLOR = 0.5F;
-  if (m_goomRand.ProbabilityOf(PROB_PRIMARY_COLOR))
+  if (constexpr float PROB_PRIMARY_COLOR = 0.5F; m_goomRand.ProbabilityOf(PROB_PRIMARY_COLOR))
   {
     return GetDotPrimaryColor(m_goomRand.GetRandInRange(0U, NUM_DOT_TYPES));
   }
@@ -281,7 +284,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
   {
     ChangeColors();
-    radius = m_goomRand.GetRandInRange(radius, (MAX_DOT_SIZE / 2) + 1);
+    radius = m_goomRand.GetRandInRange(radius, GetHalf(MAX_DOT_SIZE) + 1);
     SetNextCurrentBitmapName();
   }
 
@@ -473,7 +476,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   }
 
   constexpr float BRIGHTNESS = 3.5F;
-  const auto getColor1 = [&](const size_t x, const size_t y, const Pixel& bgnd)
+  const auto getColor1 = [this, &radius, &color](const size_t x, const size_t y, const Pixel& bgnd)
   {
     if (0 == bgnd.A())
     {
@@ -486,8 +489,9 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
     return GetGammaCorrection(BRIGHTNESS, finalColor);
   };
-  const auto getColor2 = [&]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                             [[maybe_unused]] const Pixel& bgnd) { return getColor1(x, y, bgnd); };
+  const auto getColor2 =
+      [&getColor1]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
+                   [[maybe_unused]] const Pixel& bgnd) { return getColor1(x, y, bgnd); };
 
   const auto xMid = dotPosition.x + static_cast<int32_t>(radius);
   const auto yMid = dotPosition.y + static_cast<int32_t>(radius);
@@ -514,9 +518,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::IsImagePointCloseToMiddle(const size_t x
 inline auto GoomDotsFx::GoomDotsFxImpl::GetMargin(const uint32_t radius) -> size_t
 {
   constexpr size_t SMALLEST_MARGIN = 2;
-  constexpr uint32_t SMALL_RADIUS = 7;
-
-  if (radius < SMALL_RADIUS)
+  if (constexpr uint32_t SMALL_RADIUS = 7; radius < SMALL_RADIUS)
   {
     return SMALLEST_MARGIN;
   }

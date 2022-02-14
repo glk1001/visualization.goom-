@@ -9,6 +9,7 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using DRAW::IGoomDraw;
 using FX_UTILS::DotSizes;
+using UTILS::GetHalf;
 using UTILS::IGoomRand;
 using UTILS::m_half_pi;
 using UTILS::m_pi;
@@ -35,8 +36,8 @@ TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
                                  const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
     m_goomRand{goomRand},
-    m_halfScreenWidth{static_cast<int32_t>(m_draw.GetScreenWidth() / 2)},
-    m_halfScreenHeight{static_cast<int32_t>(m_draw.GetScreenHeight() / 2)},
+    m_halfScreenWidth{static_cast<int32_t>(GetHalf(m_draw.GetScreenWidth()))},
+    m_halfScreenHeight{static_cast<int32_t>(GetHalf(m_draw.GetScreenHeight()))},
     m_dotDrawer{
         m_draw,
         m_goomRand,
@@ -248,8 +249,7 @@ inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) const 
 
   if (std::abs(tentacle.GetHead().x) < Tentacle3D::HEAD_SMALL_X)
   {
-    constexpr float CLOSE_CAMERA_DISTANCE = 8.0F;
-    if (m_cameraDistance < CLOSE_CAMERA_DISTANCE)
+    if (constexpr float CLOSE_CAMERA_DISTANCE = 8.0F; m_cameraDistance < CLOSE_CAMERA_DISTANCE)
     {
       return IN_HEAD_CLOSE_CAMERA_BRIGHTNESS_CUT;
     }
@@ -277,7 +277,8 @@ auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points
 
   for (size_t i = 0; i < points3D.size(); ++i)
   {
-    if ((!points3D[i].ignore) && (points3D[i].z > 2))
+    constexpr float MIN_Z = 2.0F;
+    if ((!points3D[i].ignore) && (points3D[i].z > MIN_Z))
     {
       const auto xProj =
           static_cast<int32_t>((xSpread * m_projectionDistance * points3D[i].x) / points3D[i].z);

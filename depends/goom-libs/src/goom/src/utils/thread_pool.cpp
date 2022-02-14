@@ -21,7 +21,7 @@ ThreadPool::ThreadPool(const size_t numWorkers) noexcept : m_numWorkers(numWorke
 ThreadPool::~ThreadPool() noexcept
 {
   {
-    const std::lock_guard<std::mutex> lock{m_mutex};
+    const std::scoped_lock lock{m_mutex};
     m_finished = true;
   }
   // Tell all the workers we're ready.
@@ -45,7 +45,7 @@ auto ThreadPool::GetThreadIds() const -> std::vector<std::thread::id>
 
 auto ThreadPool::GetOutstandingWorkSize() const -> size_t
 {
-  const std::lock_guard<std::mutex> lock{m_mutex};
+  const std::scoped_lock lock{m_mutex};
   return m_workQueue.size();
 }
 
@@ -77,7 +77,7 @@ void ThreadPool::ThreadLoop()
 
     int32_t prevWorkSize = -1;
     {
-      std::unique_lock<std::mutex> lock{m_mutex};
+      std::unique_lock lock{m_mutex};
       m_newWorkCondition.wait(lock, [this] { return m_finished || (!m_workQueue.empty()); });
 
       // If all the work is done and exit_ is true, then break out of the loop.
@@ -103,8 +103,8 @@ void ThreadPool::ThreadLoop()
 
     // Notify if all work is done.
     {
-      const std::unique_lock<std::mutex> lock{m_mutex};
-      if (m_workQueue.empty() && prevWorkSize == 1)
+      const std::unique_lock lock{m_mutex};
+      if (m_workQueue.empty() && (1 == prevWorkSize))
       {
         m_workDoneCondition.notify_all();
       }

@@ -90,8 +90,6 @@ void Colorizer::ChangeColorMaps()
   m_prevMixerMap2 = m_colorMapsManager.GetColorMapPtr(m_mixerMap2Id);
   m_colorMapsManager.ChangeAllColorMapsNow();
 
-  //  logInfo("prevMixerMap = {}", enumToString(prevMixerMap->GetMapName()));
-  //  logInfo("mixerMap = {}", enumToString(mixerMap->GetMapName()));
   m_colorMapChangeCompleted =
       m_goomRand.GetRandInRange(MIN_COLOR_MAP_CHANGE_COMPLETED, MAX_COLOR_MAP_CHANGE_COMPLETED);
   m_tAwayFromBaseColor =
@@ -150,12 +148,9 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
 inline auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const
     -> Pixel
 {
-  //  const float angle = y == 0.0F ? m_half_pi : std::atan2(y, x);
-  //  const Pixel nextColor = mixerMap1->GetColor((m_pi + angle) / m_two_pi);
   const Pixel nextColor =
       IColorMap::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),
                              m_colorMapsManager.GetColorMap(m_mixerMap2Id).GetColor(tY), t);
-  //  const Pixel nextColor = m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(x);
   if (0 == m_countSinceColorMapChange)
   {
     return nextColor;

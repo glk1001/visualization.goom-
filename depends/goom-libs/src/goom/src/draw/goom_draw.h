@@ -128,7 +128,7 @@ inline void IGoomDraw::SetDefaultBlendPixelFunc()
 
 inline auto IGoomDraw::GetBlendedPixel(const Pixel& oldColor,
                                        const Pixel& newColor,
-                                       uint32_t intBuffIntensity) const -> Pixel
+                                       const uint32_t intBuffIntensity) const -> Pixel
 {
   return m_blendPixelFunc(oldColor, newColor, intBuffIntensity);
 }
@@ -183,7 +183,7 @@ inline void IGoomDraw::Bitmap(const int xCentre,
                               const UTILS::GRAPHICS::ImageBitmap& bitmap,
                               const GetBitmapColorFunc& getColor)
 {
-  // WARNING undefined behaviour - GCC 11 does not like passing just '{getColor}'. 
+  // WARNING undefined behaviour - GCC 11 does not like passing just '{getColor}'.
   Bitmap(xCentre, yCentre, bitmap, std::vector<GetBitmapColorFunc>{getColor});
 }
 

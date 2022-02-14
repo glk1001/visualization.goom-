@@ -60,7 +60,9 @@ void IGoomDraw::Bitmap(const int xCentre,
   const auto actualBitmapWidth = static_cast<uint32_t>(x1 - x0) + 1;
   const auto actualBitmapHeight = static_cast<uint32_t>(y1 - y0) + 1;
 
-  const auto setDestPixelRow = [&](const size_t yBitmap) {
+  const auto setDestPixelRow =
+      [this, &x0, &y0, &actualBitmapWidth, &bitmap, &getColors](const size_t yBitmap)
+  {
     const int yBuff = y0 + static_cast<int>(yBitmap);
     for (size_t xBitmap = 0; xBitmap < actualBitmapWidth; ++xBitmap)
     {
