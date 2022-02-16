@@ -15,7 +15,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class TanEffect
 {
 public:
-  explicit TanEffect(const UTILS::IGoomRand& goomRand) noexcept;
+  explicit TanEffect(const UTILS::IGoomRand& goomRand);
   TanEffect(const TanEffect&) noexcept = delete;
   TanEffect(TanEffect&&) noexcept = delete;
   virtual ~TanEffect() noexcept = default;
@@ -53,6 +53,7 @@ protected:
 private:
   const UTILS::IGoomRand& m_goomRand;
   Params m_params;
+  const UTILS::Weights<TanType> m_tanEffectWeights;
   [[nodiscard]] auto GetTanSqDist(float tanArg) const -> float;
 };
 
