@@ -1,7 +1,7 @@
 #pragma once
 
 #include "point2d.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cstdint>

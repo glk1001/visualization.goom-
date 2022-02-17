@@ -1,6 +1,6 @@
 #include "rotation.h"
 
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
 #include <cmath>

@@ -1,9 +1,10 @@
 #include "randutils.h"
 
 //#undef NO_LOGGING
+
 #include "logging.h"
 #include "splitmix.hpp"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 #include "xoshiro.hpp"
 
 #undef NDEBUG

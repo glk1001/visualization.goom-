@@ -4,7 +4,7 @@
 #include "color/random_colormaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #undef NDEBUG
 #include <cassert>

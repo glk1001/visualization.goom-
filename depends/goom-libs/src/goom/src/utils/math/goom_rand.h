@@ -1,7 +1,7 @@
 #pragma once
 
+#include "goom_rand_base.h"
 #include "randutils.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 

@@ -1,6 +1,6 @@
 #include "tentacle2d.h"
 
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <format>
 #include <memory>

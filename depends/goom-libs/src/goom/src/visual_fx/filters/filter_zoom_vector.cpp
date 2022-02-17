@@ -2,7 +2,7 @@
 
 #include "filter_zoom_vector_effects.h"
 #include "normalized_coords.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
 #include <cstdint>

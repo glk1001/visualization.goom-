@@ -1,7 +1,7 @@
 #pragma once
 
+#include "misc.h"
 #include "utils/enumutils.h"
-#include "utils/math/mathutils.h"
 
 #include <cstdint>
 #include <format>

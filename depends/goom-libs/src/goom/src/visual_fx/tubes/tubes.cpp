@@ -9,7 +9,7 @@
 #include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 #include "utils/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
@@ -40,12 +40,12 @@ using UTILS::PathParams;
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
 using UTILS::MATH::THIRD_PI;
 using UTILS::MATH::TWO_PI;
+using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
 
 constexpr uint32_t NUM_SHAPES_PER_TUBE = 45;
@@ -1213,8 +1213,7 @@ BrightnessAttenuation::BrightnessAttenuation(const uint32_t screenWidth,
                                              const uint32_t screenHeight,
                                              const float cutoffBrightness)
   : m_cutoffBrightness{cutoffBrightness},
-    m_maxRSquared{2 * Sq(GetHalf(std::min(screenWidth, screenHeight)))}
-
+    m_maxRSquared{2 * Sq(U_HALF * std::min(screenWidth, screenHeight))}
 {
 }
 

@@ -15,7 +15,7 @@
 #include "tubes/tubes.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 #include "utils/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
@@ -43,9 +43,9 @@ using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
+using UTILS::MATH::U_HALF;
 
 constexpr size_t NUM_TUBES = 3;
 
@@ -273,7 +273,7 @@ TubesFx::TubeFxImpl::TubeFxImpl(const FxHelper& fxHelper,
     m_oscillatingShapePath{m_goomRand.ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)},
     m_prevShapesBrightnessAttenuation{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(),
                                       PREV_SHAPES_CUTOFF_BRIGHTNESS},
-    m_screenMidpoint{GetHalf(m_draw.GetScreenWidth()), GetHalf(m_draw.GetScreenHeight())},
+    m_screenMidpoint{U_HALF * m_draw.GetScreenWidth(), U_HALF * m_draw.GetScreenHeight()},
     m_allStayInCentreTimer{1},
     m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME},
     m_colorMapTimer{m_goomRand.GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)},

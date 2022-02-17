@@ -5,7 +5,7 @@
 #include "catch2/catch.hpp"
 #include "goom/goom_graphic.h"
 #include "point2d.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <chrono>
 #include <cstdint>

@@ -14,7 +14,7 @@
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -41,11 +41,11 @@ using DRAW::IGoomDraw;
 using STD20::pi;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SqDistance;
 using UTILS::MATH::THIRD_PI;
 using UTILS::MATH::TWO_PI;
+using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
 
 constexpr uint32_t MIN_STAR_AGE = 15;
@@ -328,8 +328,8 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_halfWidth{static_cast<int32_t>(GetHalf(m_goomInfo.GetScreenInfo().width))},
-    m_halfHeight{static_cast<int32_t>(GetHalf(m_goomInfo.GetScreenInfo().height))},
+    m_halfWidth{static_cast<int32_t>(U_HALF * m_goomInfo.GetScreenInfo().width)},
+    m_halfHeight{static_cast<int32_t>(U_HALF * m_goomInfo.GetScreenInfo().height)},
     m_xMax{static_cast<float>(m_goomInfo.GetScreenInfo().width - 1)},
     // clang-format off
     m_colorModeWeights{

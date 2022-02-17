@@ -1,7 +1,7 @@
 #include "circles_tentacle_layout.h"
 
 #include "tentacle3d.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <format>
 #include <stdexcept>
@@ -11,13 +11,13 @@ namespace GOOM::VISUAL_FX::TENTACLES
 {
 
 using STD20::pi;
-using UTILS::MATH::GetHalf;
 using UTILS::MATH::HALF_PI;
 using UTILS::MATH::IsOdd;
+using UTILS::MATH::U_HALF;
 
 CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
                                              const float radiusMax,
-                                             const std::vector<size_t>& numCircleSamples,
+                                             const std::vector<uint32_t>& numCircleSamples,
                                              const float zConst)
 {
   const size_t numCircles = numCircleSamples.size();
@@ -65,9 +65,9 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
   float angleOffset = angleOffsetStart;
   for (const auto numSample : numCircleSamples)
   {
-    getSamplePoints(radius, GetHalf(numSample), angleLeftStart + angleOffset,
+    getSamplePoints(radius, U_HALF * numSample, angleLeftStart + angleOffset,
                     angleLeftFinish - angleOffset);
-    getSamplePoints(radius, GetHalf(numSample), angleRightStart + angleOffset,
+    getSamplePoints(radius, U_HALF * numSample, angleRightStart + angleOffset,
                     angleRightFinish - angleOffset);
 
     radius -= radiusStep;

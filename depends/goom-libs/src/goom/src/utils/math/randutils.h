@@ -7,7 +7,6 @@
 #include <stdexcept>
 #include <type_traits>
 
-
 namespace GOOM::UTILS::MATH::RAND
 {
 

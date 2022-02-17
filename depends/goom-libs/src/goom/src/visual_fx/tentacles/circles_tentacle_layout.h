@@ -13,7 +13,7 @@ class CirclesTentacleLayout : public ITentacleLayout
 public:
   CirclesTentacleLayout(float radiusMin,
                         float radiusMax,
-                        const std::vector<size_t>& numCircleSamples,
+                        const std::vector<uint32_t>& numCircleSamples,
                         float zConst);
   // Order of points is outer circle to inner.
   [[nodiscard]] auto GetNumPoints() const -> size_t override;

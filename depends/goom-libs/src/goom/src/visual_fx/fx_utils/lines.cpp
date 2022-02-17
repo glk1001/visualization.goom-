@@ -1,6 +1,6 @@
 #include "lines.h"
 
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #undef NDEBUG
 #include <cassert>

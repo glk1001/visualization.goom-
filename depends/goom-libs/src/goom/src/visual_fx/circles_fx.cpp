@@ -6,6 +6,7 @@
 #include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/misc.h"
 #include "visual_fx/circles/circles.h"
 
 #include <memory>
@@ -17,10 +18,9 @@ using CIRCLES::Circle;
 using COLOR::IColorMap;
 using DRAW::IGoomDraw;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::GetHalf;
-using UTILS::MATH::GetQuarter;
-using UTILS::MATH::GetThreeQuarters;
+using UTILS::MATH::Fraction;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::U_HALF;
 
 class CirclesFx::CirclesFxImpl
 {
@@ -103,16 +103,18 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams(const PluginInfo& goomInfo)
   circleParams[3].circleRadius = RADIUS_REDUCER * circleParams[2].circleRadius;
   circleParams[4].circleRadius = RADIUS_REDUCER * circleParams[3].circleRadius;
 
-  circleParams[0].circleCentreTarget = {1 * goomInfo.GetScreenInfo().width / 2,
-                                        1 * goomInfo.GetScreenInfo().height / 2};
-  circleParams[1].circleCentreTarget = {1 * goomInfo.GetScreenInfo().width / 10,
-                                        1 * goomInfo.GetScreenInfo().height / 10};
-  circleParams[2].circleCentreTarget = {9 * goomInfo.GetScreenInfo().width / 10,
-                                        1 * goomInfo.GetScreenInfo().height / 10};
-  circleParams[3].circleCentreTarget = {9 * goomInfo.GetScreenInfo().width / 10,
-                                        9 * goomInfo.GetScreenInfo().height / 10};
-  circleParams[4].circleCentreTarget = {1 * goomInfo.GetScreenInfo().width / 10,
-                                        9 * goomInfo.GetScreenInfo().height / 10};
+  constexpr Fraction SMALL_FRAC{1U, 10U};
+  constexpr Fraction LARGE_FRAC = 1U - SMALL_FRAC;
+  circleParams[0].circleCentreTarget = {U_HALF * goomInfo.GetScreenInfo().width,
+                                        U_HALF * goomInfo.GetScreenInfo().height};
+  circleParams[1].circleCentreTarget = {SMALL_FRAC * goomInfo.GetScreenInfo().width,
+                                        SMALL_FRAC * goomInfo.GetScreenInfo().height};
+  circleParams[2].circleCentreTarget = {LARGE_FRAC * goomInfo.GetScreenInfo().width,
+                                        SMALL_FRAC * goomInfo.GetScreenInfo().height};
+  circleParams[3].circleCentreTarget = {LARGE_FRAC * goomInfo.GetScreenInfo().width,
+                                        LARGE_FRAC * goomInfo.GetScreenInfo().height};
+  circleParams[4].circleCentreTarget = {SMALL_FRAC * goomInfo.GetScreenInfo().width,
+                                        LARGE_FRAC * goomInfo.GetScreenInfo().height};
 
   return circleParams;
 }

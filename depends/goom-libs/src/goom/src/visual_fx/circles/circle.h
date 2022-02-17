@@ -8,7 +8,7 @@
 #include "goom_plugin_info.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 #include "visual_fx/fx_helper.h"

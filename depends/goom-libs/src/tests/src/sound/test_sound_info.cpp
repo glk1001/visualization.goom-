@@ -1,6 +1,6 @@
 #include "catch2/catch.hpp"
 #include "sound_info.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <memory>

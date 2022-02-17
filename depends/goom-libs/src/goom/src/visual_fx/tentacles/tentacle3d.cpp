@@ -3,7 +3,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "tentacle2d.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <memory>
 #include <tuple>

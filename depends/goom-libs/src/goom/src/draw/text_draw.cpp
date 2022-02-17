@@ -7,7 +7,7 @@
 #include "goom/spimpl.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <codecvt>
 #include <format>
@@ -24,7 +24,7 @@ namespace GOOM::DRAW
 
 using COLOR::GetColorBlend;
 using UTILS::Logging;
-using UTILS::MATH::GetHalf;
+using UTILS::MATH::I_HALF;
 
 #ifdef NO_FREETYPE_INSTALLED
 class TextDraw::TextDrawImpl
@@ -524,7 +524,7 @@ auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int
       return xPen;
     case TextAlignment::CENTER:
       return xPen -
-             GetHalf(GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin);
+             I_HALF * (GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin);
     case TextAlignment::RIGHT:
       return xPen - (GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin);
     default:

@@ -5,7 +5,7 @@
 #include "tentacle3d.h"
 #include "tentacle_layout.h"
 #include "tentacle_plotter.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <memory>
 #include <vector>

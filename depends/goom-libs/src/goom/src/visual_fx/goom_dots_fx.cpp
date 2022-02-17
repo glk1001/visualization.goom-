@@ -16,7 +16,7 @@
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstdint>
@@ -33,8 +33,9 @@ using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::S_HALF;
+using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
 
 class GoomDotsFx::GoomDotsFxImpl
@@ -174,8 +175,8 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
-    m_screenMidpoint{GetHalf(m_goomInfo.GetScreenInfo().width),
-                     GetHalf(m_goomInfo.GetScreenInfo().height)},
+    m_screenMidpoint{U_HALF * m_goomInfo.GetScreenInfo().width,
+                     U_HALF * m_goomInfo.GetScreenInfo().height},
     m_pointWidth{(m_goomInfo.GetScreenInfo().width * 2) / 5},
     m_pointHeight{(m_goomInfo.GetScreenInfo().height * 2) / 5},
     m_pointWidthDiv2{HALF * static_cast<float>(m_pointWidth)},
@@ -284,7 +285,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
   {
     ChangeColors();
-    radius = m_goomRand.GetRandInRange(radius, GetHalf(MAX_DOT_SIZE) + 1);
+    radius = m_goomRand.GetRandInRange(radius, (S_HALF * MAX_DOT_SIZE) + 1);
     SetNextCurrentBitmapName();
   }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../point2d.h"
-#include "math/mathutils.h"
+#include "math/misc.h"
 #include "t_values.h"
 
 #include <cmath>

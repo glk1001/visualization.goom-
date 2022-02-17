@@ -8,7 +8,7 @@
 #include "point2d.h"
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -31,10 +31,10 @@ using DRAW::IGoomDraw;
 using UTILS::NUM;
 using UTILS::Timer;
 using UTILS::TValue;
-using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
 using UTILS::MATH::TWO_PI;
+using UTILS::MATH::U_HALF;
 
 Circle::Circle(const FxHelper& fxHelper, const Helper& helper, const Params& circleParams)
   : m_draw{fxHelper.GetDraw()},
@@ -47,8 +47,8 @@ Circle::Circle(const FxHelper& fxHelper, const Helper& helper, const Params& cir
     m_dotDiameters{GetInitialDotDiameters(m_helper.maxDotDiameter)},
     m_dotStartingPositions{
         GetStartingDotPositions(m_goomRand,
-                                {static_cast<int32_t>(GetHalf(m_draw.GetScreenWidth())),
-                                 static_cast<int32_t>(GetHalf(m_draw.GetScreenHeight()))},
+                                {static_cast<int32_t>(U_HALF * m_draw.GetScreenWidth()),
+                                 static_cast<int32_t>(U_HALF * m_draw.GetScreenHeight())},
                                 circleParams.circleRadius)},
     m_colorTs{GetInitialColorTs()}
 {

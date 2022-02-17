@@ -6,7 +6,7 @@
 #include "goom_plugin_info.h"
 #include "point2d.h"
 #include "utils/math/goom_rand.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
 #include "visual_fx/filters/filter_buffers.h"
 #include "visual_fx/filters/filter_settings.h"

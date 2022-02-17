@@ -5,7 +5,7 @@
 #include "draw/goom_draw.h"
 #include "fractal.h"
 #include "goom_graphic.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstdint>
@@ -18,7 +18,7 @@ using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
 using COLOR::IColorMap;
 using DRAW::IGoomDraw;
-using UTILS::MATH::GetHalf;
+using UTILS::MATH::U_HALF;
 
 LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
                                      const uint32_t width,
@@ -54,7 +54,7 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
 
   float t = 0.0;
   const float tStep = 1.0F / static_cast<float>(lowDensityPoints.size());
-  const uint32_t halfWidth = GetHalf(m_width);
+  const uint32_t halfWidth = U_HALF * m_width;
   for (auto& point : lowDensityPoints)
   {
     if ((point.GetX() < halfWidth) || (point.GetY() < halfWidth) ||

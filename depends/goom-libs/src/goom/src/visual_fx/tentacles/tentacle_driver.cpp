@@ -5,7 +5,7 @@
 #include "draw/goom_draw.h"
 #include "tentacle3d.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -24,8 +24,8 @@ using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using STD20::pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::S_HALF;
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
@@ -253,7 +253,7 @@ void TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
       tentacle2D.SetXDimensions(xMin, newXMax);
       constexpr size_t NUM_NODE_FACTOR = 6;
       tentacle.SetNumHeadNodes(std::max(NUM_NODE_FACTOR * Tentacle2D::MIN_NUM_NODES,
-                                        GetHalf(tentacle.Get2DTentacle().GetNumNodes())));
+                                        S_HALF * tentacle.Get2DTentacle().GetNumNodes()));
     }
   }
 }

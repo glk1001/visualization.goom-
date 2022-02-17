@@ -14,7 +14,7 @@
 #include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/mathutils.h"
+#include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
 #include "utils/t_values.h"
 
@@ -42,7 +42,7 @@ using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
-using UTILS::MATH::GetHalf;
+using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
 using UTILS::MATH::SqDistance;
@@ -198,7 +198,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
     m_resourcesDirectory{resourcesDirectory},
     m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
     m_availableHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)},
-    m_screenCentre{GetHalf(m_availableWidth), GetHalf(m_availableHeight)},
+    m_screenCentre{I_HALF * m_availableWidth, I_HALF * m_availableHeight},
     m_maxRadius{HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight))},
     m_maxDiameterSq{2.0F * Sq(m_maxRadius)},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
