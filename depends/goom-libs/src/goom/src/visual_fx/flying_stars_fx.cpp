@@ -38,14 +38,14 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::IGoomDraw;
+using STD20::pi;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::m_pi;
-using UTILS::MATH::m_third_pi;
-using UTILS::MATH::m_two_pi;
 using UTILS::MATH::SqDistance;
+using UTILS::MATH::third_pi;
+using UTILS::MATH::two_pi;
 using UTILS::MATH::Weights;
 
 constexpr uint32_t MIN_STAR_AGE = 15;
@@ -727,7 +727,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetCurrentLowColorMapPtr(const float angle)
 
 auto FlyingStarsFx::FlyingStarsImpl::GetSegmentNum(const float angle) -> size_t
 {
-  const float segmentSize = m_two_pi / static_cast<float>(NUM_SEGMENTS);
+  const float segmentSize = two_pi / static_cast<float>(NUM_SEGMENTS);
   float nextAngle = segmentSize;
   for (size_t i = 0; i < NUM_SEGMENTS; ++i)
   {
@@ -1097,16 +1097,16 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetBombAngle(const Star& star) const
 inline auto FlyingStarsFx::FlyingStarsImpl::GetFireworksBombAngle() const -> float
 {
   constexpr float MIN_FIREWORKS_ANGLE = 0.0F;
-  constexpr float MAX_FIREWORKS_ANGLE = m_two_pi;
+  constexpr float MAX_FIREWORKS_ANGLE = two_pi;
 
   return m_goomRand.GetRandInRange(MIN_FIREWORKS_ANGLE, MAX_FIREWORKS_ANGLE);
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetFountainBombAngle(const Star& star) const -> float
 {
-  constexpr float MIN_FOUNTAIN_ANGLE = m_pi + 0.1F;
-  constexpr float MAX_MIN_FOUNTAIN_ANGLE = m_pi + m_third_pi;
-  constexpr float MAX_FOUNTAIN_ANGLE = m_two_pi - 0.1F;
+  constexpr float MIN_FOUNTAIN_ANGLE = pi + 0.1F;
+  constexpr float MAX_MIN_FOUNTAIN_ANGLE = pi + third_pi;
+  constexpr float MAX_FOUNTAIN_ANGLE = two_pi - 0.1F;
 
   const float xFactor = star.pos.x / m_xMax;
   const float minAngle =
@@ -1119,8 +1119,8 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetFountainBombAngle(const Star& sta
 inline auto FlyingStarsFx::FlyingStarsImpl::GetRainBombAngle(const Star& star) const -> float
 {
   constexpr float MIN_RAIN_ANGLE = 0.1F;
-  constexpr float MAX_MIN_RAIN_ANGLE = m_third_pi;
-  constexpr float MAX_RAIN_ANGLE = m_pi - 0.1F;
+  constexpr float MAX_MIN_RAIN_ANGLE = third_pi;
+  constexpr float MAX_RAIN_ANGLE = pi - 0.1F;
 
   const float xFactor = star.pos.x / m_xMax;
   const float minAngle = STD20::lerp(MIN_RAIN_ANGLE, MAX_MIN_RAIN_ANGLE - 0.1F, 1.0F - xFactor);

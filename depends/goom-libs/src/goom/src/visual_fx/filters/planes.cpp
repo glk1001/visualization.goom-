@@ -8,12 +8,12 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
+using STD20::pi;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::m_pi;
 
 // clang-format off
 constexpr IGoomRand::NumberRange<int32_t> SMALL_EFFECTS_RANGE               = {-2,  +2 + 1};
@@ -319,10 +319,10 @@ auto Planes::GetHorizontalSwirlOffsetFactor(const float coordValue) const -> flo
       return std::cos(swirlFreq * coordValue);
     case PlaneSwirlType::SIN_OF_COS_SWIRL:
       // 'sin' for horizontal
-      return std::sin(m_pi * std::cos(swirlFreq * coordValue));
+      return std::sin(pi * std::cos(swirlFreq * coordValue));
     case PlaneSwirlType::COS_OF_SIN_SWIRL:
       // 'cos' for horizontal
-      return std::cos(m_pi * std::sin(swirlFreq * coordValue));
+      return std::cos(pi * std::sin(swirlFreq * coordValue));
     default:
       throw std::logic_error("Unknown horizontal plane swirl type");
   }
@@ -346,10 +346,10 @@ auto Planes::GetVerticalSwirlOffsetFactor(const float coordValue) const -> float
       return std::sin(swirlFreq * coordValue);
     case PlaneSwirlType::SIN_OF_COS_SWIRL:
       // 'cos' for vertical
-      return std::cos(m_pi * std::cos(swirlFreq * coordValue));
+      return std::cos(pi * std::cos(swirlFreq * coordValue));
     case PlaneSwirlType::COS_OF_SIN_SWIRL:
       // 'sin' for vertical
-      return std::sin(m_pi * std::sin(swirlFreq * coordValue));
+      return std::sin(pi * std::sin(swirlFreq * coordValue));
     default:
       throw std::logic_error("Unknown vertical plane swirl type");
   }

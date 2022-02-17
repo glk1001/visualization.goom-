@@ -32,6 +32,7 @@ using COLOR::GetIncreasedChroma;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
+using STD20::pi;
 using UTILS::LinearTimePath;
 using UTILS::Logging;
 using UTILS::OscillatingPath;
@@ -41,11 +42,10 @@ using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::m_pi;
-using UTILS::MATH::m_third_pi;
-using UTILS::MATH::m_two_pi;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
+using UTILS::MATH::third_pi;
+using UTILS::MATH::two_pi;
 using UTILS::MATH::Weights;
 
 constexpr uint32_t NUM_SHAPES_PER_TUBE = 45;
@@ -514,7 +514,7 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
                          static_cast<int32_t>(m_screenHeight / 2)};
   const auto radius =
       (0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight))) - radiusEdgeOffset;
-  const float angleStep = m_two_pi / static_cast<float>(m_shapes.size());
+  const float angleStep = two_pi / static_cast<float>(m_shapes.size());
 
   m_centrePath = std::make_unique<ParametricPath>(m_centrePathT);
 
@@ -528,8 +528,8 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
     const float yFrom = radius * sinAngle;
     const Point2dInt fromPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xFrom)),
                                               static_cast<int32_t>(std::round(yFrom))};
-    const float xTo = radius * std::cos(m_pi + angle);
-    const float yTo = radius * std::sin(m_pi + angle);
+    const float xTo = radius * std::cos(pi + angle);
+    const float yTo = radius * std::sin(pi + angle);
     const Point2dInt toPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xTo)),
                                             static_cast<int32_t>(std::round(yTo))};
 
@@ -783,7 +783,7 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
                                     const uint8_t lineThickness) const
 {
   constexpr uint32_t NUM_HEX_SIDES = 6;
-  constexpr float ANGLE_STEP = m_third_pi;
+  constexpr float ANGLE_STEP = third_pi;
   constexpr float START_ANGLE = 2.0F * ANGLE_STEP;
   const std::vector<Pixel> lineColors{allColors.color, allColors.lowColor};
   const std::vector<Pixel> outerCircleColors{allColors.outerCircleColor,

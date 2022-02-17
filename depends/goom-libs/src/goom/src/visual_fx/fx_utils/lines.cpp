@@ -11,8 +11,8 @@ namespace GOOM::VISUAL_FX::FX_UTILS
 {
 
 using UTILS::MATH::floats_equal;
-using UTILS::MATH::m_half_pi;
-using UTILS::MATH::m_two_pi;
+using UTILS::MATH::half_pi;
+using UTILS::MATH::two_pi;
 
 auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, const float yValue)
     -> std::vector<LinePoint>
@@ -25,7 +25,7 @@ auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, con
   float x = 0.0F;
   for (auto& pt : linePoints)
   {
-    pt.angle = m_half_pi;
+    pt.angle = half_pi;
     pt.point.x = x;
     pt.point.y = yValue;
 
@@ -74,7 +74,7 @@ auto GetCircularLinePoints(const uint32_t numPoints,
   const double xCentre = 0.5 * static_cast<double>(width);
   const double yCentre = 0.5 * static_cast<double>(height);
 
-  const double angleStep = static_cast<double>(m_two_pi) / static_cast<double>(numPoints - 1);
+  const double angleStep = static_cast<double>(two_pi) / static_cast<double>(numPoints - 1);
   double angle = 0.0;
   for (size_t i = 0; i < numPoints; ++i)
   {

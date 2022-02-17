@@ -9,18 +9,18 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
+using STD20::pi;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::m_pi;
 
 constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
 constexpr IGoomRand::NumberRange<float> ROTATE_SPEED_RANGE = {-0.5F, +0.5F};
 constexpr float PROB_EQUAL_XY_ROTATE_SPEEDS = 0.8F;
 
-constexpr float DEFAULT_ROTATE_ANGLE = m_pi / 4.0F;
-constexpr IGoomRand::NumberRange<float> ANGLE_RANGE = {(1.0F / 8.0F) * m_pi, (3.0F / 8.0F) * m_pi};
+constexpr float DEFAULT_ROTATE_ANGLE = pi / 4.0F;
+constexpr IGoomRand::NumberRange<float> ANGLE_RANGE = {(1.0F / 8.0F) * pi, (3.0F / 8.0F) * pi};
 
 Rotation::Rotation(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},

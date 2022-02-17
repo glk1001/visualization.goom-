@@ -9,11 +9,11 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using DRAW::IGoomDraw;
 using FX_UTILS::DotSizes;
+using STD20::pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GetHalf;
+using UTILS::MATH::half_pi;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::m_half_pi;
-using UTILS::MATH::m_pi;
 
 // clang-format off
 constexpr float MIN_DOT_SIZE01_WEIGHT = 100.0F;
@@ -155,7 +155,7 @@ inline auto TentaclePlotter::Get2DTentaclePoints(const Tentacle3D& tentacle) con
   const float angleAboutY = GetTentacleAngleAboutY(tentacle);
 
   const std::vector<V3dFlt> points3D =
-      GetTransformedPoints(vertices, m_cameraPosition, m_pi - angleAboutY);
+      GetTransformedPoints(vertices, m_cameraPosition, pi - angleAboutY);
 
   return GetPerspectiveProjection(points3D);
 }
@@ -167,11 +167,11 @@ inline auto TentaclePlotter::GetTentacleAngleAboutY(const Tentacle3D& tentacle) 
   float angleAboutY = m_tentacleAngle;
   if ((-HEAD_CUTOFF < tentacle.GetHead().x) && (tentacle.GetHead().x < 0.0F))
   {
-    angleAboutY -= ANGLE_ADJ_FRACTION * m_pi;
+    angleAboutY -= ANGLE_ADJ_FRACTION * pi;
   }
   else if ((0.0F <= tentacle.GetHead().x) && (tentacle.GetHead().x < HEAD_CUTOFF))
   {
-    angleAboutY += ANGLE_ADJ_FRACTION * m_pi;
+    angleAboutY += ANGLE_ADJ_FRACTION * pi;
   }
 
   return angleAboutY;
@@ -187,7 +187,7 @@ void TentaclePlotter::SetCameraPosition(const float cameraDistance, const float 
   m_cameraPosition.z += m_cameraDistance;
   constexpr float ANGLE_FACTOR = 1.0F / 4.3F;
   constexpr float CAMERA_POS_FACTOR = 2.0F;
-  m_cameraPosition.y += CAMERA_POS_FACTOR * std::sin(-ANGLE_FACTOR * (m_tentacleAngle - m_half_pi));
+  m_cameraPosition.y += CAMERA_POS_FACTOR * std::sin(-ANGLE_FACTOR * (m_tentacleAngle - half_pi));
 }
 
 inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& points,

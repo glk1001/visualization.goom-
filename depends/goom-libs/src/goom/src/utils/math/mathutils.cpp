@@ -104,7 +104,7 @@ auto SineWaveMultiplier::GetNext() -> float
   const auto val =
       static_cast<float>(m_rangeMapper(static_cast<double>(m_lower), static_cast<double>(m_upper),
                                        static_cast<double>(std::sin(m_frequency * m_x))));
-  m_x += m_piStepFrac * m_pi;
+  m_x += m_piStepFrac * STD20::pi;
   return val;
 }
 

@@ -22,10 +22,10 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using STD20::pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::m_pi;
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
@@ -34,7 +34,7 @@ static const UTILS::MATH::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_ZERO_START{
     1.0F, -10.0F, +10.0F, 0.0F
 };
 static const UTILS::MATH::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_PI_START{
-    1.5F, -10.0F, +10.0F, m_pi
+    1.5F, -10.0F, +10.0F, pi
 };
 const TentacleDriver::IterationParams TentacleDriver::ITER_PARAM_GROUP1_FIRST{
     100, 0.600F, 100.0F, 1.0F, ITER_ZERO_Y_VAL_WAVE_PI_START

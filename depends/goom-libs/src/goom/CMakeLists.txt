@@ -121,7 +121,7 @@ add_library(goom
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp
-        )
+        src/utils/math/math20.h)
 
 target_include_directories(goom
     PUBLIC

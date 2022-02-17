@@ -7,7 +7,7 @@ namespace GOOM::VISUAL_FX::SHAPES
 {
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
-using UTILS::MATH::m_two_pi;
+using UTILS::MATH::two_pi;
 
 void BezierFlower::Draw(const Point2dInt& origin,
                         const uint32_t numPetals,
@@ -27,7 +27,7 @@ void BezierFlower::Draw(const Point2dInt& origin,
   for (uint32_t i = 0; i < numPetals; ++i)
   {
     m_petalColoring.StartColoringPetal(i);
-    const float petalRotation = m_rotation + (angleStep * m_two_pi);
+    const float petalRotation = m_rotation + (angleStep * two_pi);
     petal.rotate(petalRotation, {originX, originY});
     m_bezierDrawer.Draw(petal, 0.0F, 1.0F);
   }

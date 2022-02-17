@@ -1,86 +1,25 @@
 #pragma once
 
+#include "math20.h"
+
 #include <cmath>
-#include <cstdlib>
 #include <memory>
-#if __cplusplus > 201703L
-#include <numbers>
-#endif
 #include <tuple>
 #include <vector>
-
-namespace STD20
-{
-#if __cplusplus <= 201703L
-template<typename _Fp>
-[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept
-{
-  if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
-  {
-    return __t * __b + (1 - __t) * __a;
-  }
-
-  if (1 == __t)
-  {
-    return __b; // exact
-  }
-
-  // Exact at __t=0, monotonic except near __t=1,
-  // bounded, determinate, and consistent:
-  const _Fp __x = __a + __t * (__b - __a);
-  return (__t > 1) == (__b > __a) ? (__b < __x ? __x : __b)
-                                  : (__b > __x ? __x : __b); // monotonic near __t=1
-}
-
-[[nodiscard]] constexpr float lerp(const float __a, const float __b, const float __t) noexcept
-{
-  return __lerp(__a, __b, __t);
-}
-[[nodiscard]] constexpr double lerp(const double __a, const double __b, const double __t) noexcept
-{
-  return __lerp(__a, __b, __t);
-}
-[[nodiscard]] inline auto lerp(const uint32_t a, const uint32_t b, const float t) noexcept
-    -> uint32_t
-{
-  return static_cast<uint32_t>(
-      std::round(STD20::lerp(static_cast<float>(a), static_cast<float>(b), t)));
-}
-[[nodiscard]] inline auto lerp(const int32_t a, const int32_t b, const float t) noexcept -> int32_t
-{
-  return static_cast<int32_t>(
-      std::round(STD20::lerp(static_cast<float>(a), static_cast<float>(b), t)));
-}
-#else
-constexpr float lerp(float __a, float __b, float __t) noexcept
-{
-  return std::lerp(__a, __b, __t);
-}
-constexpr double lerp(double __a, double __b, double __t) noexcept
-{
-  return std::lerp(__a, __b, __t);
-}
-#endif
-} // namespace STD20
 
 namespace GOOM::UTILS::MATH
 {
 
-#if __cplusplus <= 201703L
-constexpr float m_pi = 3.14159265358979323846264F;
-#else
-constexpr float m_pi = std::numbers::pi;
-#endif
-constexpr float m_two_pi = 2.0F * m_pi;
-constexpr float m_half_pi = 0.5F * m_pi;
-constexpr float m_third_pi = m_pi / 3.0F;
+constexpr float two_pi = 2.0F * STD20::pi;
+constexpr float half_pi = 0.5F * STD20::pi;
+constexpr float third_pi = STD20::pi / 3.0F;
 
 constexpr float DEGREES_90 = 90.0F;
 constexpr float DEGREES_180 = 180.0F;
 constexpr float DEGREES_360 = 360.0F;
 
 template<typename T>
-constexpr auto Sq(const T& x) -> T
+[[nodiscard]] constexpr auto Sq(const T& x) -> T
 {
   return x * x;
 }
@@ -92,37 +31,39 @@ constexpr auto Sq(const T& x) -> T
 
 constexpr float SMALL_FLOAT = 0.00001F;
 
-inline bool floats_equal(const float x, const float y, const float epsilon = SMALL_FLOAT)
+[[nodiscard]] inline bool floats_equal(const float x,
+                                       const float y,
+                                       const float epsilon = SMALL_FLOAT)
 {
   return std::fabs(x - y) < epsilon;
 }
 
 template<typename T>
-constexpr auto IsEven(const T& n) -> bool
+[[nodiscard]] constexpr auto IsEven(const T& n) -> bool
 {
   return 0 == (n % 2);
 }
 
 template<typename T>
-constexpr auto IsOdd(const T& n) -> bool
+[[nodiscard]] constexpr auto IsOdd(const T& n) -> bool
 {
   return 0 != (n % 2);
 }
 
 template<typename T>
-constexpr auto GetHalf(const T& n) -> T
+[[nodiscard]] constexpr auto GetHalf(const T& n) -> T
 {
   return n / 2;
 }
 
 template<typename T>
-constexpr auto GetQuarter(const T& n) -> T
+[[nodiscard]] constexpr auto GetQuarter(const T& n) -> T
 {
   return n / 4;
 }
 
 template<typename T>
-constexpr auto GetThreeQuarters(const T& n) -> T
+[[nodiscard]] constexpr auto GetThreeQuarters(const T& n) -> T
 {
   return (3 * n) / 4;
 }

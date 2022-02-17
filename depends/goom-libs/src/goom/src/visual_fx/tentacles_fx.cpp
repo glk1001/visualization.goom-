@@ -28,13 +28,13 @@ using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using STD20::pi;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::half_pi;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::m_half_pi;
-using UTILS::MATH::m_pi;
 using UTILS::MATH::Weights;
 
 class TentaclesFx::TentaclesImpl
@@ -57,7 +57,7 @@ private:
 
   static constexpr double PROJECTION_DISTANCE = 170.0;
   static constexpr float CAMERA_DISTANCE = 8.0F;
-  static constexpr float ROTATION = 1.5F * m_pi;
+  static constexpr float ROTATION = 1.5F * pi;
   static constexpr size_t NUM_TENTACLE_DRIVERS = 4;
   enum class Drivers
   {
@@ -205,7 +205,7 @@ auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
   {
     tentacleDrivers[i]->StartIterating();
     tentacleDrivers[i]->SetProjectionDistance(PROJECTION_DISTANCE);
-    tentacleDrivers[i]->SetCameraPosition(CAMERA_DISTANCE, m_half_pi - ROTATION);
+    tentacleDrivers[i]->SetCameraPosition(CAMERA_DISTANCE, half_pi - ROTATION);
   }
 
   return tentacleDrivers;

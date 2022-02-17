@@ -14,11 +14,11 @@ namespace GOOM::VISUAL_FX::IFS
 
 using COLOR::ColorMapGroup;
 using COLOR::RandomColorMaps;
+using STD20::pi;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::DEGREES_180;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::m_pi;
 
 // clang-format off
 constexpr float NUM0_WEIGHT = 10.0F;
@@ -215,8 +215,8 @@ void Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup)
     simi.m_dbl_cy = GaussRand(0.0, 4.0, c_factor);
     simi.m_dbl_r1 = GaussRand(m_centreAttributes.r1Mean, 3.0, r1Factor);
     simi.m_dbl_r2 = HalfGaussRand(m_centreAttributes.r2Mean, 2.0, r2Factor);
-    simi.m_dbl_A1 = GaussRand(0.0F, 4.0F, A1_factor) * (m_pi / DEGREES_180);
-    simi.m_dbl_A2 = GaussRand(0.0F, 4.0F, A2_factor) * (m_pi / DEGREES_180);
+    simi.m_dbl_A1 = GaussRand(0.0F, 4.0F, A1_factor) * (pi / DEGREES_180);
+    simi.m_dbl_A2 = GaussRand(0.0F, 4.0F, A2_factor) * (pi / DEGREES_180);
     simi.m_cx = 0;
     simi.m_cy = 0;
     simi.m_r1 = 0;

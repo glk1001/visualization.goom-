@@ -7,12 +7,12 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
+using STD20::pi;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::m_pi;
 
 // Hypercos:
 // applique une surcouche de hypercos effect
@@ -199,12 +199,12 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords,
       yVal = std::sin(std::tan(xFreqToUse * coords.GetX()));
       break;
     case HypercosEffect::SIN_OF_COS_SWIRL:
-      xVal = std::sin(m_pi * std::cos(yFreqToUse * coords.GetY()));
-      yVal = std::cos(m_pi * std::sin(xFreqToUse * coords.GetX()));
+      xVal = std::sin(pi * std::cos(yFreqToUse * coords.GetY()));
+      yVal = std::cos(pi * std::sin(xFreqToUse * coords.GetX()));
       break;
     case HypercosEffect::COS_OF_SIN_SWIRL:
-      xVal = std::cos(m_pi * std::sin(yFreqToUse * coords.GetY()));
-      yVal = std::sin(m_pi * std::cos(xFreqToUse * coords.GetX()));
+      xVal = std::cos(pi * std::sin(yFreqToUse * coords.GetY()));
+      yVal = std::sin(pi * std::cos(xFreqToUse * coords.GetX()));
       break;
     default:
       throw std::logic_error("Unknown Hypercos effect value");
