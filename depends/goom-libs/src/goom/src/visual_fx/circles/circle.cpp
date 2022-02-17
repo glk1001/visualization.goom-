@@ -334,8 +334,8 @@ inline auto Circle::GetNextDotOffset(const float t) const -> Point2dInt
 {
   constexpr float AMP_X = 100.0F;
   constexpr float AMP_Y = 100.0F;
-  constexpr float FREQ_X = 1.0F * TWO_PI;
-  constexpr float FREQ_Y = 2.0F * TWO_PI;
+  constexpr float FREQ_X = 1.5F * TWO_PI;
+  constexpr float FREQ_Y = 1.5F * TWO_PI;
 
   switch (m_dotOffsetType)
   {

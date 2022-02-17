@@ -68,7 +68,7 @@ private:
 
   static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
   static constexpr uint32_t MIN_POSITION_STEPS = 100;
-  static constexpr uint32_t MAX_POSITION_STEPS = 400;
+  static constexpr uint32_t MAX_POSITION_STEPS = 500;
   static constexpr uint32_t DELAY_TIME_AT_CENTRE = 20;
   static constexpr uint32_t DELAY_TIME_AT_EDGE = 10;
   UTILS::TValue m_positionT{
