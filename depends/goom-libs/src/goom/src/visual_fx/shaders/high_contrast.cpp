@@ -4,7 +4,7 @@
 namespace GOOM::VISUAL_FX::SHADERS
 {
 
-using UTILS::IGoomRand;
+using UTILS::MATH::IGoomRand;
 
 HighContrast::HighContrast(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
   : m_goomInfo{goomInfo}, m_goomRand{goomRand}
@@ -74,11 +74,11 @@ void HighContrast::UpdateHighContrast()
   if (!m_highContrastOnTimer.Finished())
   {
     constexpr float HIGH_CONTRAST = 1.01F;
-    m_currentContrast = stdnew::lerp(DEFAULT_CONTRAST, HIGH_CONTRAST, m_highContrastT());
+    m_currentContrast = STD20::lerp(DEFAULT_CONTRAST, HIGH_CONTRAST, m_highContrastT());
     m_currentContrastMinChannelValue =
-        stdnew::lerp(0.0F, m_maxContrastMinChannelValue, m_highContrastT());
+        STD20::lerp(0.0F, m_maxContrastMinChannelValue, m_highContrastT());
     constexpr float CONTRAST_BRIGHTNESS = 0.9F;
-    m_currentBrightness = stdnew::lerp(DEFAULT_BRIGHTNESS, CONTRAST_BRIGHTNESS, m_highContrastT());
+    m_currentBrightness = STD20::lerp(DEFAULT_BRIGHTNESS, CONTRAST_BRIGHTNESS, m_highContrastT());
 
     return;
   }

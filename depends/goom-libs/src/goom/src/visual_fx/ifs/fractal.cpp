@@ -2,18 +2,18 @@
 
 #include "color/random_colormaps.h"
 #include "similitudes.h"
-#include "utils/goom_rand_base.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/t_values.h"
 
 namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::RandomColorMaps;
-using UTILS::GetHalf;
-using UTILS::IGoomRand;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IGoomRand;
 
 Fractal::Fractal(const uint32_t screenWidth,
                  const uint32_t screenHeight,
@@ -53,7 +53,7 @@ auto Fractal::GetSpeed() const -> uint32_t
   {
     return m_speed;
   }
-  return stdnew::lerp(m_prevSpeed, m_speed, m_speedTransitionT());
+  return STD20::lerp(m_prevSpeed, m_speed, m_speedTransitionT());
 }
 
 void Fractal::SetSpeed(const uint32_t val)

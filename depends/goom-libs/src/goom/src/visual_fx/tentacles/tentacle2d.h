@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <memory>
 #include <tuple>
@@ -64,7 +64,7 @@ private:
   std::vector<double> m_dampedYVec{};
   std::vector<double> m_dampingCache{};
   XAndYVectors m_dampedVectors{std::make_tuple(std::ref(m_xVec), std::ref(m_dampedYVec))};
-  std::unique_ptr<UTILS::IDampingFunction> m_dampingFunc;
+  std::unique_ptr<UTILS::MATH::IDampingFunction> m_dampingFunc;
   bool m_doDamping = true;
 
   [[nodiscard]] auto GetFirstY() -> float;
@@ -80,7 +80,7 @@ private:
   void ValidatePrevYWeight() const;
   void ValidateCurrentYWeight() const;
 
-  using DampingFuncPtr = std::unique_ptr<UTILS::IDampingFunction>;
+  using DampingFuncPtr = std::unique_ptr<UTILS::MATH::IDampingFunction>;
   [[nodiscard]] static auto CreateDampingFunc(double prevYWeight, double xMin, double xMax)
       -> DampingFuncPtr;
   [[nodiscard]] static auto CreateExpDampingFunc(double xMin, double xMax) -> DampingFuncPtr;

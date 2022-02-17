@@ -3,7 +3,7 @@
 #include "normalized_coords.h"
 #include "point2d.h"
 #include "speed_coefficients_effect.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -12,7 +12,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class YOnly : public ISpeedCoefficientsEffect
 {
 public:
-  explicit YOnly(const UTILS::IGoomRand& goomRand) noexcept;
+  explicit YOnly(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -48,7 +48,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   [[nodiscard]] auto GetYOnlySpeedMultiplier(YOnlyEffect effect,
                                              const NormalizedCoords& coords) const -> float;

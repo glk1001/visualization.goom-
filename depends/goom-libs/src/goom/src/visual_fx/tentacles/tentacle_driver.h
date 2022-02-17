@@ -5,7 +5,7 @@
 #include "tentacle3d.h"
 #include "tentacle_layout.h"
 #include "tentacle_plotter.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <memory>
 #include <vector>
@@ -36,7 +36,7 @@ class TentacleDriver
 public:
   TentacleDriver() noexcept = delete;
   TentacleDriver(DRAW::IGoomDraw& draw,
-                 const UTILS::IGoomRand& goomRand,
+                 const UTILS::MATH::IGoomRand& goomRand,
                  const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                  const ITentacleLayout& tentacleLayout) noexcept;
 
@@ -55,7 +55,7 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   const ITentacleLayout& m_tentacleLayout;
 
   struct IterationParams
@@ -64,11 +64,11 @@ private:
     float prevYWeight;
     float length;
     float iterZeroYValWaveFreq;
-    UTILS::SineWaveMultiplier iterZeroYValWave;
+    UTILS::MATH::SineWaveMultiplier iterZeroYValWave;
   };
   struct IterParamsGroup
   {
-    const UTILS::IGoomRand& goomRand;
+    const UTILS::MATH::IGoomRand& goomRand;
     IterationParams first;
     IterationParams last;
     [[nodiscard]] auto GetNextIterationParams(float t) const -> IterationParams;
@@ -86,11 +86,11 @@ private:
       -> std::vector<IterationParams>;
 
   std::vector<Tentacle3D> m_tentacles;
-  [[nodiscard]] static auto GetTentacles(const UTILS::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetTentacles(const UTILS::MATH::IGoomRand& goomRand,
                                          const std::vector<IterationParams>& tentacleParams,
                                          const ITentacleLayout& tentacleLayout)
       -> std::vector<Tentacle3D>;
-  [[nodiscard]] static auto CreateNewTentacle2D(const UTILS::IGoomRand& goomRand,
+  [[nodiscard]] static auto CreateNewTentacle2D(const UTILS::MATH::IGoomRand& goomRand,
                                                 size_t id,
                                                 const IterationParams& params)
       -> std::unique_ptr<Tentacle2D>;

@@ -41,8 +41,8 @@
 #include "ifs/colorizer.h"
 #include "ifs/fractal.h"
 #include "ifs/low_density_blurrer.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "utils/math/goom_rand_base.h"
 //#undef NO_LOGGING
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
@@ -66,11 +66,11 @@ using IFS::Colorizer;
 using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
-using UTILS::IGoomRand;
 using UTILS::TValue;
-using UTILS::Weights;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Weights;
 
 class IfsDancersFx::IfsDancersFxImpl
 {

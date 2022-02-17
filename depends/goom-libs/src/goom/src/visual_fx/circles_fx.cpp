@@ -4,8 +4,8 @@
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom/spimpl.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "utils/math/goom_rand_base.h"
 #include "visual_fx/circles/circles.h"
 
 #include <memory>
@@ -16,11 +16,11 @@ namespace GOOM::VISUAL_FX
 using CIRCLES::Circle;
 using COLOR::IColorMap;
 using DRAW::IGoomDraw;
-using UTILS::GetHalf;
-using UTILS::GetQuarter;
-using UTILS::GetThreeQuarters;
-using UTILS::IGoomRand;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::GetQuarter;
+using UTILS::MATH::GetThreeQuarters;
+using UTILS::MATH::IGoomRand;
 
 class CirclesFx::CirclesFxImpl
 {

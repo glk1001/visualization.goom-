@@ -1,5 +1,5 @@
 #include "catch2/catch.hpp"
-#include "utils/randutils.h"
+#include "utils/math/randutils.h"
 
 #include <cstdint>
 #include <fstream>
@@ -9,12 +9,12 @@
 #include <vector>
 
 using Catch::Matchers::StartsWith;
-using GOOM::UTILS::RAND::GetRand;
-using GOOM::UTILS::RAND::GetRandInRange;
-using GOOM::UTILS::RAND::GetRandSeed;
-using GOOM::UTILS::RAND::RestoreRandState;
-using GOOM::UTILS::RAND::SaveRandState;
-using GOOM::UTILS::RAND::SetRandSeed;
+using GOOM::UTILS::MATH::RAND::GetRand;
+using GOOM::UTILS::MATH::RAND::GetRandInRange;
+using GOOM::UTILS::MATH::RAND::GetRandSeed;
+using GOOM::UTILS::MATH::RAND::RestoreRandState;
+using GOOM::UTILS::MATH::RAND::SaveRandState;
+using GOOM::UTILS::MATH::RAND::SetRandSeed;
 
 TEST_CASE("save/restore random state")
 {

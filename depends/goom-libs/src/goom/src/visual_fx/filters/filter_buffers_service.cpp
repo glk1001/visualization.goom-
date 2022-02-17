@@ -8,7 +8,7 @@
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 #include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
 #include "zoom_vector.h"
@@ -23,10 +23,10 @@ namespace GOOM::VISUAL_FX::FILTERS
 using FILTERS::IZoomVector;
 using FILTERS::NormalizedCoords;
 using FILTERS::ZoomFilterBuffers;
-using UTILS::floats_equal;
 using UTILS::Logging;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
+using UTILS::MATH::floats_equal;
 
 FilterBuffersService::FilterBuffersService(
     Parallel& parallel,
@@ -122,8 +122,8 @@ inline void FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpInc
   if (!floats_equal(tranLerpToMaxSwitchMult, 1.0F))
   {
     tranLerpFactor = static_cast<int32_t>(
-        stdnew::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
-                     static_cast<float>(tranLerpFactor), tranLerpToMaxSwitchMult));
+        STD20::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
+                    static_cast<float>(tranLerpFactor), tranLerpToMaxSwitchMult));
   }
 
   m_filterBuffers.SetTranLerpFactor(tranLerpFactor);

@@ -5,8 +5,8 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
 
 constexpr float X_DEFAULT_AMPLITUDE = 0.1F;
 constexpr float Y_DEFAULT_AMPLITUDE = 1.0F;

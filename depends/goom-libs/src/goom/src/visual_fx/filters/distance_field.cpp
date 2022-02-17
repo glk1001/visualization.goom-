@@ -1,6 +1,6 @@
 #include "distance_field.h"
 
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 #include "utils/name_value_pairs.h"
 
 #undef NDEBUG
@@ -9,9 +9,9 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
-using UTILS::Sq;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Sq;
 
 constexpr float DEFAULT_AMPLITUDE = 0.1F;
 constexpr IGoomRand::NumberRange<float> X_AMPLITUDE_RANGE_MODE0 = {0.01F, 0.501F};

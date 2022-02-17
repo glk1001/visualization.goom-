@@ -1,8 +1,8 @@
 #include "planes.h"
 
 #include "utils/enumutils.h"
-#include "utils/goom_rand_base.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -10,10 +10,10 @@ namespace GOOM::VISUAL_FX::FILTERS
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::IGoomRand;
-using UTILS::m_pi;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_pi;
 
 // clang-format off
 constexpr IGoomRand::NumberRange<int32_t> SMALL_EFFECTS_RANGE               = {-2,  +2 + 1};
@@ -241,8 +241,8 @@ auto Planes::GetRandomEffectMultipliers(const IGoomRand& goomRand, const bool mu
   return effectMultipliers;
 }
 
-auto Planes::GetRandomSwirlEffects(const UTILS::IGoomRand& goomRand, const bool muchSpiralling)
-    -> PlaneSwirlEffects
+auto Planes::GetRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand,
+                                   const bool muchSpiralling) -> PlaneSwirlEffects
 {
   PlaneSwirlEffects swirlEffects{};
 

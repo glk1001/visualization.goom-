@@ -11,9 +11,9 @@ namespace GOOM::VISUAL_FX::FILTERS
 {
 
 using UTILS::GetPair;
-using UTILS::IGoomRand;
 using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
 
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const std::string& resourcesDirectory,

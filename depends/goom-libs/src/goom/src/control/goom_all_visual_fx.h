@@ -5,7 +5,7 @@
 #include "goom_state_handler.h"
 #include "goom_states.h"
 #include "utils/adaptive_exposure.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 #include "visual_fx/filters/filter_buffer_row_color_info.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
@@ -120,7 +120,7 @@ private:
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine1;
   const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine2;
   DRAW::IGoomDraw& m_goomDraw;
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
 
   IGoomStateHandler& m_goomStateHandler;
   void ChangeState();
@@ -182,7 +182,7 @@ inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
       VISUAL_FX::FILTERS::FilterBufferRowColorInfo::GetBufferAverageLuminance(
           m_zoomFilterFx->GetLastFilterBufferColorInfo());
 
-  if (currentBufferAverageLuminance < UTILS::SMALL_FLOAT)
+  if (currentBufferAverageLuminance < UTILS::MATH::SMALL_FLOAT)
   {
     // No point trying to handle zero luminance.
     return;

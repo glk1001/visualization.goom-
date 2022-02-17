@@ -13,7 +13,7 @@ using COLOR::GetSlightlyDivergingStandardMaps;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
-using UTILS::IGoomRand;
+using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
 
 // clang-format off

@@ -6,8 +6,8 @@ namespace GOOM::CONTROL
 {
 
 using UTILS::GetPair;
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
 using VISUAL_FX::FILTERS::FilterSettingsService;
 using VISUAL_FX::FILTERS::Vitesse;
 
@@ -103,7 +103,7 @@ void GoomMusicSettingsReactor::ChangeVitesse()
   }
   else
   {
-    m_filterSettingsService.GetRWVitesse().SetVitesse(static_cast<int32_t>(std::lround(stdnew::lerp(
+    m_filterSettingsService.GetRWVitesse().SetVitesse(static_cast<int32_t>(std::lround(STD20::lerp(
         static_cast<float>(oldVitesse), static_cast<float>(newVitesse), OLD_TO_NEW_MIX))));
   }
 

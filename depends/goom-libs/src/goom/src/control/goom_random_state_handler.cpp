@@ -8,8 +8,8 @@
 namespace GOOM::CONTROL
 {
 
-using UTILS::IGoomRand;
 using UTILS::NUM;
+using UTILS::MATH::IGoomRand;
 
 
 // For debugging:

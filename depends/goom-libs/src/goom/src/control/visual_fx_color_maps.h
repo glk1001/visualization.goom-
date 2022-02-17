@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utils/enumutils.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <array>
 #include <functional>
@@ -47,7 +47,7 @@ enum class GoomEffect
 class VisualFxColorMaps
 {
 public:
-  explicit VisualFxColorMaps(const UTILS::IGoomRand& goomRand);
+  explicit VisualFxColorMaps(const UTILS::MATH::IGoomRand& goomRand);
 
   void SetNextColorMapSet();
 
@@ -55,10 +55,10 @@ public:
       -> std::shared_ptr<COLOR::RandomColorMaps>;
 
 private:
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
 
-  using ColorMapFunc =
-      std::function<std::shared_ptr<COLOR::RandomColorMaps>(const UTILS::IGoomRand& goomRand)>;
+  using ColorMapFunc = std::function<std::shared_ptr<COLOR::RandomColorMaps>(
+      const UTILS::MATH::IGoomRand& goomRand)>;
   using ColorMatchedSet = std::array<ColorMapFunc, UTILS::NUM<GoomEffect>>;
   enum class ColorMatchedSets
   {
@@ -86,7 +86,7 @@ private:
   using ColorMatchedSetArray = std::array<ColorMatchedSet, UTILS::NUM<ColorMatchedSets>>;
   const ColorMatchedSetArray m_colorMatchedSets;
   [[nodiscard]] auto GetColorMatchedSetArray() const -> ColorMatchedSetArray;
-  const UTILS::Weights<ColorMatchedSets> m_colorMatchedSetWeights;
+  const UTILS::MATH::Weights<ColorMatchedSets> m_colorMatchedSetWeights;
   const ColorMatchedSet* m_currentColorMatchedMap;
 
   [[nodiscard]] auto GetNextColorMatchedSet() const -> const ColorMatchedSet&;

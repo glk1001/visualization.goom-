@@ -3,7 +3,7 @@
 #include "normalized_coords.h"
 #include "point2d.h"
 #include "speed_coefficients_effect.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -17,7 +17,7 @@ public:
     MODE0,
     MODE1
   };
-  Wave(Modes mode, const UTILS::IGoomRand& goomRand) noexcept;
+  Wave(Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -51,12 +51,12 @@ protected:
 
 private:
   const Modes m_mode;
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   void SetMode0RandomParams();
   void SetMode1RandomParams();
-  void SetWaveModeSettings(const UTILS::IGoomRand::NumberRange<float>& freqFactorRange,
-                           const UTILS::IGoomRand::NumberRange<float>& amplitudeRange);
+  void SetWaveModeSettings(const UTILS::MATH::IGoomRand::NumberRange<float>& freqFactorRange,
+                           const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange);
   [[nodiscard]] auto GetSpeedAdd(WaveEffect waveEffect, float angle) const -> float;
   [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
                                             float angle,
@@ -97,7 +97,7 @@ inline auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
     case WaveEffect::WAVE_COS_EFFECT:
       return periodicFactor * std::cos(angle);
     case WaveEffect::WAVE_SIN_COS_EFFECT:
-      return stdnew::lerp(std::sin(angle), std::cos(angle), periodicFactor);
+      return STD20::lerp(std::sin(angle), std::cos(angle), periodicFactor);
     default:
       throw std::logic_error("Unknown WaveEffect enum");
   }

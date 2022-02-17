@@ -1,8 +1,8 @@
 #pragma once
 
 #include "normalized_coords.h"
-#include "utils/goom_rand_base.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/name_value_pairs.h"
 
 #include <algorithm>
@@ -15,7 +15,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class TanEffect
 {
 public:
-  explicit TanEffect(const UTILS::IGoomRand& goomRand);
+  explicit TanEffect(const UTILS::MATH::IGoomRand& goomRand);
   TanEffect(const TanEffect&) noexcept = delete;
   TanEffect(TanEffect&&) noexcept = delete;
   virtual ~TanEffect() noexcept = default;
@@ -51,17 +51,18 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
-  const UTILS::Weights<TanType> m_tanEffectWeights;
+  const UTILS::MATH::Weights<TanType> m_tanEffectWeights;
   [[nodiscard]] auto GetTanSqDist(float tanArg) const -> float;
 };
 
 inline auto TanEffect::GetVelocity(const float sqDistFromZero,
                                    const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const float limit = m_params.limitingFactor * UTILS::m_half_pi;
-  const float tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::m_half_pi), -limit, +limit);
+  const float limit = m_params.limitingFactor * UTILS::MATH::m_half_pi;
+  const float tanArg =
+      std::clamp(std::fmod(sqDistFromZero, UTILS::MATH::m_half_pi), -limit, +limit);
   const float tanSqDist = GetTanSqDist(tanArg);
   return {m_params.xAmplitude * tanSqDist * velocity.GetX(),
           m_params.yAmplitude * tanSqDist * velocity.GetY()};
@@ -74,9 +75,9 @@ inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
     case TanType::TAN_ONLY:
       return std::tan(tanArg);
     case TanType::COT_ONLY:
-      return std::tan(UTILS::m_half_pi - tanArg);
+      return std::tan(UTILS::MATH::m_half_pi - tanArg);
     case TanType::COT_MIX:
-      return std::tan((m_params.cotMix * UTILS::m_half_pi) - tanArg);
+      return std::tan((m_params.cotMix * UTILS::MATH::m_half_pi) - tanArg);
     default:
       throw std::logic_error("Unknown TanType enum.");
   }

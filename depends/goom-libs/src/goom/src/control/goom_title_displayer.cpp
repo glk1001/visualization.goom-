@@ -9,7 +9,7 @@
 #include "goom_graphic.h"
 //#undef NO_LOGGING
 #include "goom/logging.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/strutils.h"
 
 #include <cstdint>
@@ -25,9 +25,9 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::TextDraw;
-using UTILS::IGoomRand;
 using UTILS::Logging;
 using UTILS::StringSplit;
+using UTILS::MATH::IGoomRand;
 
 constexpr float FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT = 0.05F;
 constexpr int32_t OUTLINE_FONT_WIDTH = 4;

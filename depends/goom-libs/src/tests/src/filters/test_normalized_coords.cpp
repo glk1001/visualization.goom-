@@ -1,12 +1,12 @@
 #include "catch2/catch.hpp"
 #include "point2d.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 #include "visual_fx/filters/normalized_coords.h"
 
 #include <cmath>
 
 using GOOM::Point2dInt;
-using GOOM::UTILS::floats_equal;
+using GOOM::UTILS::MATH::floats_equal;
 using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;
 using GOOM::VISUAL_FX::FILTERS::NormalizedCoordsConverter;
 

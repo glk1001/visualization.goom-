@@ -48,16 +48,16 @@ add_library(goom
         src/goom_graphic.cpp
         src/sound_info.cpp
         src/utils/adaptive_exposure.cpp
-        src/utils/goom_rand.h
-        src/utils/goom_rand_base.h
         src/utils/graphics/bezier_drawer.cpp
         src/utils/graphics/image_bitmaps.cpp
         src/utils/graphics/small_image_bitmaps.cpp
         src/utils/logging.cpp
-        src/utils/mathutils.cpp
+        src/utils/math/goom_rand.h
+        src/utils/math/goom_rand_base.h
+        src/utils/math/mathutils.cpp
+        src/utils/math/randutils.cpp
         src/utils/name_value_pairs.h
         src/utils/paths.h
-        src/utils/randutils.cpp
         src/utils/strutils.cpp
         src/utils/t_values.cpp
         src/utils/thread_pool.cpp

@@ -11,10 +11,10 @@
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -38,15 +38,15 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::IGoomDraw;
-using UTILS::GetHalf;
-using UTILS::IGoomRand;
-using UTILS::m_pi;
-using UTILS::m_third_pi;
-using UTILS::m_two_pi;
-using UTILS::SqDistance;
-using UTILS::Weights;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_pi;
+using UTILS::MATH::m_third_pi;
+using UTILS::MATH::m_two_pi;
+using UTILS::MATH::SqDistance;
+using UTILS::MATH::Weights;
 
 constexpr uint32_t MIN_STAR_AGE = 15;
 constexpr uint32_t MAX_STAR_EXTRA_AGE = 50;
@@ -821,7 +821,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetFinalMixedColors(const StarColorS
 {
   constexpr float MIN_MIX = 0.2F;
   constexpr float MAX_MIX = 0.8F;
-  const float tMix = stdnew::lerp(MIN_MIX, MAX_MIX, t);
+  const float tMix = STD20::lerp(MIN_MIX, MAX_MIX, t);
   const Pixel mixedColor = GetGammaCorrection(
       brightness, IColorMap::GetColorMix(starColorSet.color, starColorSet.dominantColor, tMix));
   const Pixel mixedLowColor = GetLightenedColor(
@@ -1110,8 +1110,8 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetFountainBombAngle(const Star& sta
 
   const float xFactor = star.pos.x / m_xMax;
   const float minAngle =
-      stdnew::lerp(MIN_FOUNTAIN_ANGLE, MAX_MIN_FOUNTAIN_ANGLE - 0.1F, 1.0F - xFactor);
-  const float maxAngle = stdnew::lerp(MAX_MIN_FOUNTAIN_ANGLE + 0.1F, MAX_FOUNTAIN_ANGLE, xFactor);
+      STD20::lerp(MIN_FOUNTAIN_ANGLE, MAX_MIN_FOUNTAIN_ANGLE - 0.1F, 1.0F - xFactor);
+  const float maxAngle = STD20::lerp(MAX_MIN_FOUNTAIN_ANGLE + 0.1F, MAX_FOUNTAIN_ANGLE, xFactor);
 
   return m_goomRand.GetRandInRange(minAngle, maxAngle);
 }
@@ -1123,8 +1123,8 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetRainBombAngle(const Star& star) c
   constexpr float MAX_RAIN_ANGLE = m_pi - 0.1F;
 
   const float xFactor = star.pos.x / m_xMax;
-  const float minAngle = stdnew::lerp(MIN_RAIN_ANGLE, MAX_MIN_RAIN_ANGLE - 0.1F, 1.0F - xFactor);
-  const float maxAngle = stdnew::lerp(MAX_MIN_RAIN_ANGLE + 0.1F, MAX_RAIN_ANGLE, xFactor);
+  const float minAngle = STD20::lerp(MIN_RAIN_ANGLE, MAX_MIN_RAIN_ANGLE - 0.1F, 1.0F - xFactor);
+  const float maxAngle = STD20::lerp(MAX_MIN_RAIN_ANGLE + 0.1F, MAX_RAIN_ANGLE, xFactor);
 
   return m_goomRand.GetRandInRange(minAngle, maxAngle);
 }

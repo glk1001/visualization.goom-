@@ -9,10 +9,10 @@ namespace GOOM::VISUAL_FX::FILTERS
 using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
-using UTILS::Weights;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Weights;
 
 constexpr TanEffect::TanType DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_ONLY;
 constexpr float DEFAULT_COT_MIX = 1.1F;

@@ -2,7 +2,7 @@
 
 #include "color/random_colormaps.h"
 #include "utils/enumutils.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <array>
 #include <numeric>
@@ -30,9 +30,9 @@ using COLOR::GetSlightlyDivergingSlimMaps;
 using COLOR::GetSlightlyDivergingStandardMaps;
 using COLOR::GetWesAndersonMaps;
 using COLOR::GetYellowStandardMaps;
-using UTILS::IGoomRand;
 using UTILS::NUM;
 using UTILS::ToUType;
+using UTILS::MATH::IGoomRand;
 
 auto VisualFxColorMaps::GetColorMatchedSetArray() const -> ColorMatchedSetArray
 {

@@ -2,7 +2,7 @@
 
 #include "goom_graphic.h"
 #include "ifs_types.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <array>
 #include <cstdint>
@@ -64,7 +64,7 @@ private:
 class Similitudes
 {
 public:
-  Similitudes(const UTILS::IGoomRand& goomRand,
+  Similitudes(const UTILS::MATH::IGoomRand& goomRand,
               const COLOR::RandomColorMaps& randomColorMaps,
               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
 
@@ -98,7 +98,7 @@ private:
   void UpdateMainSimisFltPart();
   [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) -> const UTILS::GRAPHICS::ImageBitmap*;
 
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
   const COLOR::RandomColorMaps& m_colorMaps;
 
@@ -129,7 +129,7 @@ private:
     NUM3,
     _num // unused and must be last
   };
-  const UTILS::Weights<CentreNums> m_centreWeights;
+  const UTILS::MATH::Weights<CentreNums> m_centreWeights;
   CentreType m_centreAttributes{};
   void InitCentre();
 

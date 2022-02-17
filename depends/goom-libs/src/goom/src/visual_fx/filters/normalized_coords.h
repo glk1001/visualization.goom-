@@ -1,7 +1,7 @@
 #pragma once
 
 #include "point2d.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -159,7 +159,8 @@ inline void NormalizedCoords::SetY(const float yNormalized)
 
 inline auto NormalizedCoords::Equals(const NormalizedCoords& other) const -> bool
 {
-  return UTILS::floats_equal(GetX(), other.GetX()) && UTILS::floats_equal(GetY(), other.GetY());
+  return UTILS::MATH::floats_equal(GetX(), other.GetX()) &&
+         UTILS::MATH::floats_equal(GetY(), other.GetY());
 }
 
 inline auto NormalizedCoords::operator+=(const NormalizedCoords& other) -> NormalizedCoords&
@@ -205,7 +206,7 @@ inline auto operator*(const float scalar, const NormalizedCoords& coords) -> Nor
 
 inline auto GetSqDistance(const NormalizedCoords& coords1, const NormalizedCoords& coords2) -> float
 {
-  return UTILS::SqDistance(coords1.GetX() - coords2.GetX(), coords1.GetY() - coords2.GetY());
+  return UTILS::MATH::SqDistance(coords1.GetX() - coords2.GetX(), coords1.GetY() - coords2.GetY());
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS

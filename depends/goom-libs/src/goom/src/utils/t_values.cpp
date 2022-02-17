@@ -2,7 +2,7 @@
 
 //#undef NO_LOGGING
 #include "goom/logging.h"
-#include "mathutils.h"
+#include "utils/math/mathutils.h"
 
 #undef NDEBUG
 #include <cassert>

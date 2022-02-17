@@ -7,7 +7,7 @@ namespace GOOM::VISUAL_FX::SHAPES
 {
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
-using UTILS::m_two_pi;
+using UTILS::MATH::m_two_pi;
 
 void BezierFlower::Draw(const Point2dInt& origin,
                         const uint32_t numPetals,

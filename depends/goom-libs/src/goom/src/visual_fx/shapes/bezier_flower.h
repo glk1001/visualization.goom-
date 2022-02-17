@@ -1,8 +1,8 @@
 #pragma once
 
 #include "color/colormaps.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/bezier_drawer.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <bezier/bezier.h>
 #include <cstdint>
@@ -14,7 +14,7 @@ namespace GOOM::VISUAL_FX::SHAPES
 class PetalColoring
 {
 public:
-  explicit PetalColoring(const UTILS::IGoomRand& goomRand) noexcept;
+  explicit PetalColoring(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   void SetNumPetals(uint32_t numPetals);
 
@@ -23,7 +23,7 @@ public:
   [[nodiscard]] auto GetCurrentDotColorMap() const -> const COLOR::IColorMap&;
 
 private:
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   uint32_t m_numPetals = 0;
   std::vector<const COLOR::IColorMap*> m_lineColorMaps{};
   std::vector<const COLOR::IColorMap*> m_dotColorMaps{};
@@ -49,7 +49,7 @@ private:
       -> Bezier::Bezier<3>;
 };
 
-inline PetalColoring::PetalColoring(const UTILS::IGoomRand& goomRand) noexcept
+inline PetalColoring::PetalColoring(const UTILS::MATH::IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand}
 {
 }

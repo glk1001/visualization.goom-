@@ -5,8 +5,8 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
 
 constexpr float DEFAULT_AMPLITUDE = 0.1F;
 constexpr IGoomRand::NumberRange<float> X_AMPLITUDE_RANGE_MODE0 = {0.001F, 0.501F};
@@ -30,7 +30,7 @@ constexpr float PROB_XY_AMPLITUDES_EQUAL = 1.00F;
 constexpr float PROB_XY_SQ_DIST_MULT_EQUAL = 1.00F;
 constexpr float PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 
-CrystalBall::CrystalBall(const Modes mode, const UTILS::IGoomRand& goomRand) noexcept
+CrystalBall::CrystalBall(const Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept
   : m_mode{mode}, m_goomRand{goomRand}, m_params{DEFAULT_AMPLITUDE,      DEFAULT_AMPLITUDE,
                                                  DEFAULT_SQ_DIST_MULT,   DEFAULT_SQ_DIST_MULT,
                                                  DEFAULT_SQ_DIST_OFFSET, DEFAULT_SQ_DIST_OFFSET}

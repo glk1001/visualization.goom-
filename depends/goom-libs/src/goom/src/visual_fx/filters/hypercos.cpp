@@ -1,7 +1,7 @@
 #include "hypercos.h"
 
 #include "utils/enumutils.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -9,10 +9,10 @@ namespace GOOM::VISUAL_FX::FILTERS
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::IGoomRand;
-using UTILS::m_pi;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_pi;
 
 // Hypercos:
 // applique une surcouche de hypercos effect
@@ -94,13 +94,13 @@ void Hypercos::SetDefaultParams()
 
 void Hypercos::SetMode0RandomParams()
 {
-  const float hypercosMax = stdnew::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.15F);
+  const float hypercosMax = STD20::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.15F);
   SetHypercosEffect(HypercosOverlay::MODE0, {FREQ_RANGE.min, hypercosMax}, AMPLITUDE_RANGE);
 }
 
 void Hypercos::SetMode1RandomParams()
 {
-  const float hypercosMin = stdnew::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.20F);
+  const float hypercosMin = STD20::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.20F);
   SetHypercosEffect(HypercosOverlay::MODE1, {hypercosMin, FREQ_RANGE.max}, AMPLITUDE_RANGE);
 }
 
@@ -109,7 +109,7 @@ void Hypercos::SetMode2RandomParams()
   const IGoomRand::NumberRange<float> amplitudeRange =
       m_goomRand.ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
-  const float hypercosMin = stdnew::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.50F);
+  const float hypercosMin = STD20::lerp(FREQ_RANGE.min, FREQ_RANGE.max, 0.50F);
 
   SetHypercosEffect(HypercosOverlay::MODE2, {hypercosMin, BIG_FREQ_RANGE.max}, amplitudeRange);
 }

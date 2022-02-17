@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <cstdint>
 

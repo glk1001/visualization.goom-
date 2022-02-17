@@ -24,9 +24,9 @@
 #include "point2d.h"
 #include "sound_info.h"
 #include "utils/enumutils.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -58,11 +58,11 @@ using FX_UTILS::GetHorizontalLinePoints;
 using FX_UTILS::GetVerticalLinePoints;
 using FX_UTILS::LinePoint;
 using FX_UTILS::SmoothTheCircleJoinAtEnds;
-using UTILS::floats_equal;
-using UTILS::IGoomRand;
 using UTILS::NUM;
-using UTILS::SMALL_FLOAT;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::floats_equal;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::SMALL_FLOAT;
 
 constexpr float MIN_MAX_NORMALIZED_PEAK = 100.0F;
 constexpr float MAX_MAX_NORMALIZED_PEAK = 400.0F;
@@ -392,7 +392,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   for (uint32_t i = 0; i < AudioSamples::AUDIO_SAMPLE_LEN; ++i)
   {
     m_srcePoints[i].point = lerp(m_srcePointsCopy[i].point, m_destPoints[i].point, t);
-    m_srcePoints[i].angle = stdnew::lerp(m_srcePointsCopy[i].angle, m_destPoints[i].angle, t);
+    m_srcePoints[i].angle = STD20::lerp(m_srcePointsCopy[i].angle, m_destPoints[i].angle, t);
   }
   if (m_lineLerpParam >= 1.0F)
   {
@@ -428,7 +428,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   }
 
   constexpr float AMP_MIX_AMOUNT = 0.01F;
-  m_linePeakAmplitude = stdnew::lerp(m_linePeakAmplitude, m_newLinePeakAmplitude, AMP_MIX_AMOUNT);
+  m_linePeakAmplitude = STD20::lerp(m_linePeakAmplitude, m_newLinePeakAmplitude, AMP_MIX_AMOUNT);
 }
 
 auto LinesFx::LinesImpl::CanResetDestLine() const -> bool

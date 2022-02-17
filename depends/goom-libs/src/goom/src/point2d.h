@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <cmath>
 #include <cstdint>
@@ -213,17 +213,17 @@ inline auto lerp(const Point2dInt& point1, const Point2dInt& point2, const float
 {
   return {
       static_cast<int32_t>(
-          std::round(stdnew::lerp(static_cast<float>(point1.x), static_cast<float>(point2.x), t))),
+          std::round(STD20::lerp(static_cast<float>(point1.x), static_cast<float>(point2.x), t))),
       static_cast<int32_t>(
-          std::round(stdnew::lerp(static_cast<float>(point1.y), static_cast<float>(point2.y), t))),
+          std::round(STD20::lerp(static_cast<float>(point1.y), static_cast<float>(point2.y), t))),
   };
 }
 
 inline auto lerp(const Point2dFlt& point1, const Point2dFlt& point2, const float t) -> Point2dFlt
 {
   return {
-      stdnew::lerp(point1.x, point2.x, t),
-      stdnew::lerp(point1.y, point2.y, t),
+      STD20::lerp(point1.x, point2.x, t),
+      STD20::lerp(point1.y, point2.y, t),
   };
 }
 

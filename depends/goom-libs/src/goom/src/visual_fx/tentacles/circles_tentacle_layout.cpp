@@ -1,7 +1,7 @@
 #include "circles_tentacle_layout.h"
 
 #include "tentacle3d.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <format>
 #include <stdexcept>
@@ -10,10 +10,10 @@
 namespace GOOM::VISUAL_FX::TENTACLES
 {
 
-using UTILS::GetHalf;
-using UTILS::IsOdd;
-using UTILS::m_half_pi;
-using UTILS::m_pi;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IsOdd;
+using UTILS::MATH::m_half_pi;
+using UTILS::MATH::m_pi;
 
 CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
                                              const float radiusMax,

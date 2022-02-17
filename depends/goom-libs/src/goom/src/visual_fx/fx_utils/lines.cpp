@@ -1,6 +1,6 @@
 #include "lines.h"
 
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -10,9 +10,9 @@
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 
-using UTILS::floats_equal;
-using UTILS::m_half_pi;
-using UTILS::m_two_pi;
+using UTILS::MATH::floats_equal;
+using UTILS::MATH::m_half_pi;
+using UTILS::MATH::m_two_pi;
 
 auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, const float yValue)
     -> std::vector<LinePoint>

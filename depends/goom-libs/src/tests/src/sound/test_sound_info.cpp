@@ -1,13 +1,13 @@
 #include "catch2/catch.hpp"
 #include "sound_info.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <algorithm>
 #include <memory>
 
 using GOOM::AudioSamples;
 using GOOM::SoundInfo;
-using GOOM::UTILS::SMALL_FLOAT;
+using GOOM::UTILS::MATH::SMALL_FLOAT;
 
 [[nodiscard]] static auto GetAudioData(const float xMin0,
                                        const float xMax0,

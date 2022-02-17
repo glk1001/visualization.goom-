@@ -6,8 +6,8 @@
 #include "filter_zoom_vector.h"
 #include "goom_plugin_info.h"
 #include "utils/enumutils.h"
-#include "utils/goom_rand_base.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/timer.h"
 
 #include <stdexcept>
@@ -15,19 +15,19 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
-using UTILS::GetHalf;
-using UTILS::GetQuarter;
-using UTILS::GetThreeQuarters;
-using UTILS::IGoomRand;
 using UTILS::NUM;
 using UTILS::Parallel;
 using UTILS::Timer;
-using UTILS::Weights;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::GetQuarter;
+using UTILS::MATH::GetThreeQuarters;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Weights;
 
 class ExtraEffect
 {
 public:
-  explicit ExtraEffect(const UTILS::IGoomRand& goomRand,
+  explicit ExtraEffect(const UTILS::MATH::IGoomRand& goomRand,
                        float probabilityOfEffect,
                        float probabilityOfRepeatEffect,
                        uint32_t effectOffTime) noexcept;
@@ -50,7 +50,7 @@ private:
 class FilterSettingsService::ExtraEffects
 {
 public:
-  explicit ExtraEffects(const UTILS::IGoomRand& goomRand) noexcept;
+  explicit ExtraEffects(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   void UpdateTimers();
   void UpdateEffects();
@@ -665,7 +665,7 @@ inline void FilterSettingsService::ExtraEffects::EffectsUpdatesActivated()
   m_tanEffect.EffectUpdateActivated();
 }
 
-inline ExtraEffect::ExtraEffect(const UTILS::IGoomRand& goomRand,
+inline ExtraEffect::ExtraEffect(const UTILS::MATH::IGoomRand& goomRand,
                                 const float probabilityOfEffect,
                                 const float probabilityOfRepeatEffect,
                                 const uint32_t effectOffTime) noexcept

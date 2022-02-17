@@ -3,7 +3,7 @@
 #include "fractal_hits.h"
 #include "ifs_types.h"
 #include "similitudes.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
 
 #include <cstdint>
@@ -35,7 +35,7 @@ class Fractal
 public:
   Fractal(uint32_t screenWidth,
           uint32_t screenHeight,
-          const UTILS::IGoomRand& goomRand,
+          const UTILS::MATH::IGoomRand& goomRand,
           const COLOR::RandomColorMaps& randomColorMaps,
           const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
 
@@ -50,7 +50,7 @@ public:
 
 private:
   Similitudes m_similitudes;
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
 
   const Flt m_halfWidth;
   const Flt m_halfHeight;

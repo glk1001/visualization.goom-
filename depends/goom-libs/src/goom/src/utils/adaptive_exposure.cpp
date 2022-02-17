@@ -1,6 +1,6 @@
 #include "adaptive_exposure.h"
 
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <algorithm>
 
@@ -25,7 +25,7 @@ void AdaptiveExposure::UpdateAverageLuminance(float averageLuminance)
   const float targetExposure = std::clamp(1.0F / averageLuminance, MIN_EXPOSURE, MAX_EXPOSURE);
 
   constexpr float EXPOSURE_LERP_FACTOR = 0.08F;
-  m_currentExposure = stdnew::lerp(m_currentExposure, targetExposure, EXPOSURE_LERP_FACTOR);
+  m_currentExposure = STD20::lerp(m_currentExposure, targetExposure, EXPOSURE_LERP_FACTOR);
 
   if (m_updateNum < RAMP_UP_PERIOD)
   {

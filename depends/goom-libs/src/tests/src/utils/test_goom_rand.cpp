@@ -1,16 +1,16 @@
 #include "catch2/catch.hpp"
 #include "utils/enumutils.h"
-#include "utils/goom_rand.h"
+#include "utils/math/goom_rand.h"
 
 #include <cstdint>
 #include <format>
 #include <map>
 #include <string>
 
-using GOOM::UTILS::ConditionalWeights;
-using GOOM::UTILS::GoomRand;
 using GOOM::UTILS::NUM;
-using GOOM::UTILS::Weights;
+using GOOM::UTILS::MATH::ConditionalWeights;
+using GOOM::UTILS::MATH::GoomRand;
+using GOOM::UTILS::MATH::Weights;
 
 enum class Events
 {

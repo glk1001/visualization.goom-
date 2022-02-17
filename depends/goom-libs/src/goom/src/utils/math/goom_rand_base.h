@@ -1,7 +1,7 @@
 #pragma once
 
-#include "enumutils.h"
-#include "mathutils.h"
+#include "utils/enumutils.h"
+#include "utils/math/mathutils.h"
 
 #include <cstdint>
 #include <format>
@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace GOOM::UTILS
+namespace GOOM::UTILS::MATH
 {
 
 class IGoomRand
@@ -307,4 +307,4 @@ auto ConditionalWeights<E>::GetConditionalWeightMap(
   return conditionalWeights;
 }
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::MATH

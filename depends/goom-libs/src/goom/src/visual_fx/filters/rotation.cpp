@@ -1,6 +1,6 @@
 #include "rotation.h"
 
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 #include "utils/name_value_pairs.h"
 
 #include <cmath>
@@ -11,9 +11,9 @@ namespace GOOM::VISUAL_FX::FILTERS
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::IGoomRand;
-using UTILS::m_pi;
 using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_pi;
 
 constexpr float DEFAULT_ROTATE_SPEED = 0.0F;
 constexpr IGoomRand::NumberRange<float> ROTATE_SPEED_RANGE = {-0.5F, +0.5F};

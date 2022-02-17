@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <vector>
 
@@ -40,10 +40,10 @@ class DotDrawer
 {
 public:
   DotDrawer(DRAW::IGoomDraw& draw,
-            const UTILS::IGoomRand& goomRand,
+            const UTILS::MATH::IGoomRand& goomRand,
             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
-            const UTILS::Weights<DotSizes>& minDotSizes,
-            const UTILS::Weights<DotSizes>& normalDotSizes) noexcept;
+            const UTILS::MATH::Weights<DotSizes>& minDotSizes,
+            const UTILS::MATH::Weights<DotSizes>& normalDotSizes) noexcept;
 
   void ChangeDotSizes();
 
@@ -51,15 +51,15 @@ public:
 
 private:
   DRAW::IGoomDraw& m_goomDraw;
-  const GOOM::UTILS::IGoomRand& m_goomRand;
+  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   const GOOM::UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
 
   static constexpr size_t MIN_IMAGE_DOT_SIZE = 3;
   static constexpr size_t MAX_IMAGE_DOT_SIZE = 15;
   size_t m_currentDotSize = MIN_IMAGE_DOT_SIZE;
   bool m_beadedLook = false;
-  const UTILS::Weights<DotSizes> m_minDotSizes;
-  const UTILS::Weights<DotSizes> m_normalDotSizes;
+  const UTILS::MATH::Weights<DotSizes> m_minDotSizes;
+  const UTILS::MATH::Weights<DotSizes> m_normalDotSizes;
   [[nodiscard]] auto GetNextDotSize(size_t maxSize) const -> size_t;
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const UTILS::GRAPHICS::ImageBitmap&;
 };

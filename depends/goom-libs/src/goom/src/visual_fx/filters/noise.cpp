@@ -7,8 +7,8 @@ namespace GOOM::VISUAL_FX::FILTERS
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
 
 constexpr float DEFAULT_NOISE_FACTOR = 0.01F;
 constexpr IGoomRand::NumberRange<float> NOISE_FACTOR_RANGE = {0.001F, 0.100F};

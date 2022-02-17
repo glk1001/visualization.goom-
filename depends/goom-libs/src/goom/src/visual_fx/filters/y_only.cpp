@@ -6,9 +6,9 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
+using UTILS::MATH::IGoomRand;
 
 constexpr YOnly::YOnlyEffect X_DEFAULT_EFFECT = YOnly::YOnlyEffect::X_SIN_Y_SIN;
 constexpr YOnly::YOnlyEffect Y_DEFAULT_EFFECT = YOnly::YOnlyEffect::NONE;

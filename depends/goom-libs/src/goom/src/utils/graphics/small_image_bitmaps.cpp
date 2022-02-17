@@ -3,9 +3,9 @@
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "utils/enumutils.h"
 #include "goom/logging.h"
-#include "utils/mathutils.h"
+#include "utils/enumutils.h"
+#include "utils/math/mathutils.h"
 
 #include <array>
 #include <format>
@@ -14,6 +14,8 @@
 
 namespace GOOM::UTILS::GRAPHICS
 {
+
+using MATH::IsEven;
 
 const std::array<std::string, NUM<SmallImageBitmaps::ImageNames>> SmallImageBitmaps::IMAGE_NAMES{
     "circle", "sphere", "pink-flower", "red-flower", "orange-flower", "white-flower",

@@ -29,8 +29,8 @@
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
 #include "goom_version.h"
-#include "utils/goom_rand.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 #include "utils/name_value_pairs.h"
@@ -64,10 +64,10 @@ using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
 using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 #endif
 
-using UTILS::GoomRand;
 using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GoomRand;
 using VISUAL_FX::FxHelper;
 using VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
 using VISUAL_FX::FILTERS::FilterSettingsService;
@@ -155,13 +155,13 @@ auto GoomControl::GetGoomVersionInfo() -> std::string
 
 auto GoomControl::GetRandSeed() -> uint64_t
 {
-  return GOOM::UTILS::RAND::GetRandSeed();
+  return UTILS::MATH::RAND::GetRandSeed();
 }
 
 void GoomControl::SetRandSeed(const uint64_t seed)
 {
   LogDebug("Set goom seed = {}.", seed);
-  GOOM::UTILS::RAND::SetRandSeed(seed);
+  UTILS::MATH::RAND::SetRandSeed(seed);
 }
 
 GoomControl::GoomControl(const uint32_t width,

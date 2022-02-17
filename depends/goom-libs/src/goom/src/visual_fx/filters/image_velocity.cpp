@@ -8,8 +8,8 @@ namespace GOOM::VISUAL_FX::FILTERS
 {
 
 using UTILS::GetFullParamGroup;
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
 
 constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.0100F};
 constexpr IGoomRand::NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};

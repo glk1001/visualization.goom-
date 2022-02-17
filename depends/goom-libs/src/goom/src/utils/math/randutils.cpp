@@ -2,8 +2,8 @@
 
 //#undef NO_LOGGING
 #include "logging.h"
-#include "mathutils.h"
 #include "splitmix.hpp"
+#include "utils/math/mathutils.h"
 #include "xoshiro.hpp"
 
 #undef NDEBUG
@@ -15,7 +15,7 @@
 #include <random>
 #include <stdexcept>
 
-namespace GOOM::UTILS::RAND
+namespace GOOM::UTILS::MATH::RAND
 {
 
 const uint32_t G_RAND_MAX = (xoshiro256plus64::max() > std::numeric_limits<uint32_t>::max())
@@ -111,9 +111,9 @@ auto GetRandInRange(const float x0, const float x1) -> float
 
   static const auto s_ENG_MAX = static_cast<float>(G_RAND_MAX);
   const float t = static_cast<float>(RandXoshiroFunc(0, G_RAND_MAX)) / s_ENG_MAX;
-  return stdnew::lerp(x0, x1, t);
+  return STD20::lerp(x0, x1, t);
   //  thread_local std::uniform_real_distribution<> dis(0, 1);
   //  return std::lerp(x0, x1, static_cast<float>(dis(eng)));
 }
 
-} // namespace GOOM::UTILS::RAND
+} // namespace GOOM::UTILS::MATH::RAND

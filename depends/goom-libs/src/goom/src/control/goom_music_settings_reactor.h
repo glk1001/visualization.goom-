@@ -5,7 +5,7 @@
 #include "goom_lock.h"
 #include "goom_music_lines_reactor.h"
 #include "goom_plugin_info.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 #include "visual_fx/filters/filter_settings_service.h"
 
@@ -24,7 +24,7 @@ class GoomMusicSettingsReactor
 public:
   GoomMusicSettingsReactor(
       const PluginInfo& goomInfo,
-      const UTILS::IGoomRand& goomRand,
+      const UTILS::MATH::IGoomRand& goomRand,
       GoomAllVisualFx& visualFx,
       const GoomEvents& goomEvents,
       VISUAL_FX::FILTERS::FilterSettingsService& filterSettingsService) noexcept;
@@ -51,7 +51,7 @@ public:
 
 private:
   const PluginInfo& m_goomInfo;
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   GoomAllVisualFx& m_visualFx;
   using GoomEvent = GoomEvents::GoomEvent;
   const GoomEvents& m_goomEvents;

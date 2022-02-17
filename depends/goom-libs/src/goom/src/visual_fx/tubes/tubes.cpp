@@ -4,12 +4,12 @@
 
 #include "color/colormaps.h"
 #include "color/colorutils.h"
-#include "utils/goom_rand_base.h"
-#include "utils/graphics/small_image_bitmaps.h"
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
 #include "point2d.h"
-#include "utils/mathutils.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
@@ -32,21 +32,21 @@ using COLOR::GetIncreasedChroma;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
-using UTILS::GetHalf;
-using UTILS::IGoomRand;
 using UTILS::LinearTimePath;
 using UTILS::Logging;
-using UTILS::m_pi;
-using UTILS::m_third_pi;
-using UTILS::m_two_pi;
 using UTILS::OscillatingPath;
 using UTILS::PathParams;
-using UTILS::SMALL_FLOAT;
-using UTILS::Sq;
 using UTILS::Timer;
 using UTILS::TValue;
-using UTILS::Weights;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_pi;
+using UTILS::MATH::m_third_pi;
+using UTILS::MATH::m_two_pi;
+using UTILS::MATH::SMALL_FLOAT;
+using UTILS::MATH::Sq;
+using UTILS::MATH::Weights;
 
 constexpr uint32_t NUM_SHAPES_PER_TUBE = 45;
 // Strangely, 'NUM_SHAPES_PER_TUBE = 100' gives a small gap in
@@ -701,7 +701,7 @@ void Tube::TubeImpl::DrawShapes()
 inline auto Tube::TubeImpl::GetHexLen() const -> float
 {
   const float hexSizeT = std::fabs(m_shapes[0].path->GetT() - T_AT_CENTRE) / T_AT_CENTRE;
-  return stdnew::lerp(MIN_HEX_SIZE, MAX_HEX_SIZE, hexSizeT);
+  return STD20::lerp(MIN_HEX_SIZE, MAX_HEX_SIZE, hexSizeT);
 }
 
 inline void Tube::TubeImpl::UpdateTValues()
@@ -783,7 +783,7 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
                                     const uint8_t lineThickness) const
 {
   constexpr uint32_t NUM_HEX_SIDES = 6;
-  constexpr float ANGLE_STEP = GOOM::UTILS::m_third_pi;
+  constexpr float ANGLE_STEP = m_third_pi;
   constexpr float START_ANGLE = 2.0F * ANGLE_STEP;
   const std::vector<Pixel> lineColors{allColors.color, allColors.lowColor};
   const std::vector<Pixel> outerCircleColors{allColors.outerCircleColor,

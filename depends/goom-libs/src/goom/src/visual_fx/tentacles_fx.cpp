@@ -10,9 +10,9 @@
 #include "goom_plugin_info.h"
 #include "tentacles/circles_tentacle_layout.h"
 #include "tentacles/tentacle_driver.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/timer.h"
 
 #include <array>
@@ -30,12 +30,12 @@ using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
-using UTILS::IGoomRand;
-using UTILS::m_half_pi;
-using UTILS::m_pi;
 using UTILS::Timer;
-using UTILS::Weights;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_half_pi;
+using UTILS::MATH::m_pi;
+using UTILS::MATH::Weights;
 
 class TentaclesFx::TentaclesImpl
 {

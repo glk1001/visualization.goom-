@@ -6,9 +6,9 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
+using UTILS::MATH::IGoomRand;
 
 constexpr Wave::WaveEffect DEFAULT_WAVE_EFFECT = Wave::WaveEffect::WAVE_SIN_EFFECT;
 

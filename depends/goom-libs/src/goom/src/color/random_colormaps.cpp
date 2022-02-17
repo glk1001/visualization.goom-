@@ -1,12 +1,13 @@
 #include "random_colormaps.h"
 
+//#undef NO_LOGGING
+
 #include "color_data/colormap_enums.h"
 #include "colormaps.h"
 #include "goom/goom_graphic.h"
-#include "utils/enumutils.h"
-#include "utils/goom_rand_base.h"
-//#undef NO_LOGGING
 #include "goom/logging.h"
+#include "utils/enumutils.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <format>
 #include <memory>
@@ -17,9 +18,9 @@ namespace GOOM::COLOR
 {
 
 using COLOR_DATA::ColorMapName;
-using UTILS::IGoomRand;
 using UTILS::NUM;
-using UTILS::Weights;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Weights;
 
 const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::NO_COLOR_MAP_TYPES{};
 const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::ALL_COLOR_MAP_TYPES{
@@ -658,7 +659,7 @@ auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr
   // clang-format on
 }
 
-auto GetWesAndersonMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
+auto GetWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
   return std::make_shared<WeightedColorMaps>(

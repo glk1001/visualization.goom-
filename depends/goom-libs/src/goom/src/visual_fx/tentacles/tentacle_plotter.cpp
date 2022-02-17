@@ -2,18 +2,18 @@
 
 #include "draw/goom_draw.h"
 #include "point2d.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {
 
 using DRAW::IGoomDraw;
 using FX_UTILS::DotSizes;
-using UTILS::GetHalf;
-using UTILS::IGoomRand;
-using UTILS::m_half_pi;
-using UTILS::m_pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_half_pi;
+using UTILS::MATH::m_pi;
 
 // clang-format off
 constexpr float MIN_DOT_SIZE01_WEIGHT = 100.0F;

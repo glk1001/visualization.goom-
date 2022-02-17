@@ -2,9 +2,9 @@
 
 #include "color/colormaps.h"
 #include "color/random_colormaps.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -14,11 +14,11 @@ namespace GOOM::VISUAL_FX::IFS
 
 using COLOR::ColorMapGroup;
 using COLOR::RandomColorMaps;
-using UTILS::DEGREES_180;
-using UTILS::IGoomRand;
-using UTILS::m_pi;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::DEGREES_180;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_pi;
 
 // clang-format off
 constexpr float NUM0_WEIGHT = 10.0F;

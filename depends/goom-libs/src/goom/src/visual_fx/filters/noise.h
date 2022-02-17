@@ -2,7 +2,7 @@
 
 #include "normalized_coords.h"
 #include "point2d.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -11,7 +11,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class Noise
 {
 public:
-  explicit Noise(const UTILS::IGoomRand& goomRand) noexcept;
+  explicit Noise(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams();
 
@@ -30,7 +30,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
   static constexpr float NOISE_MAX = 120.0F;

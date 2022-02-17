@@ -1,7 +1,7 @@
 #pragma once
 
 #include "image_displacement.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
 #include <cstddef>
@@ -14,7 +14,8 @@ namespace GOOM::VISUAL_FX::FILTERS
 class ImageDisplacementList
 {
 public:
-  ImageDisplacementList(const std::string& resourcesDirectory, const UTILS::IGoomRand& goomRand);
+  ImageDisplacementList(const std::string& resourcesDirectory,
+                        const UTILS::MATH::IGoomRand& goomRand);
 
   struct Params
   {
@@ -37,7 +38,7 @@ private:
 
   std::vector<ImageDisplacement> m_imageDisplacements{};
   const std::string m_resourcesDirectory;
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   size_t m_currentImageDisplacementIndex = 0;
   [[nodiscard]] auto GetImageFilename(const std::string& imageFilename) const -> std::string;
 };

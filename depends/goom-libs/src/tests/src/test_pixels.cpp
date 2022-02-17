@@ -5,7 +5,7 @@
 #include "catch2/catch.hpp"
 #include "goom/goom_graphic.h"
 #include "point2d.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <chrono>
 #include <cstdint>
@@ -14,15 +14,15 @@
 
 using GOOM::channel_limits;
 using GOOM::MAX_ALPHA;
-using GOOM::MAX_COLOR_VAL;
 using GOOM::MAX_CHANNEL_VALUE_HDR;
+using GOOM::MAX_COLOR_VAL;
 using GOOM::MultiplyChannelColorByScalar;
 using GOOM::MultiplyColorChannels;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::PixelChannelType;
 using GOOM::PixelIntType;
-using GOOM::UTILS::floats_equal;
+using GOOM::UTILS::MATH::floats_equal;
 using namespace std::chrono_literals;
 using std::chrono::high_resolution_clock;
 using std::chrono::microseconds;

@@ -4,8 +4,8 @@
 #include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
 #include "tentacle3d.h"
-#include "utils/goom_rand_base.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -22,18 +22,18 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
-using UTILS::GetHalf;
-using UTILS::IGoomRand;
-using UTILS::m_pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_pi;
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
 // clang-format off
-static const UTILS::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_ZERO_START{
+static const UTILS::MATH::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_ZERO_START{
     1.0F, -10.0F, +10.0F, 0.0F
 };
-static const UTILS::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_PI_START{
+static const UTILS::MATH::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_PI_START{
     1.5F, -10.0F, +10.0F, m_pi
 };
 const TentacleDriver::IterationParams TentacleDriver::ITER_PARAM_GROUP1_FIRST{
@@ -160,17 +160,17 @@ auto TentacleDriver::IterParamsGroup::GetNextIterationParams(const float t) cons
       /* .numNodes = */
       static_cast<size_t>(
           goomRand.GetRandInRange(MIN_NUM_NODES_FACTOR, MAX_NUM_NODES_FACTOR) *
-          stdnew::lerp(static_cast<float>(first.numNodes), static_cast<float>(last.numNodes), t)),
+          STD20::lerp(static_cast<float>(first.numNodes), static_cast<float>(last.numNodes), t)),
       /* .prevYWeight = */
       goomRand.GetRandInRange(MIN_PREV_Y_WEIGHT_FACTOR, MAX_PREV_Y_WEIGHT_FACTOR) *
-          stdnew::lerp(first.prevYWeight, last.prevYWeight, t),
+          STD20::lerp(first.prevYWeight, last.prevYWeight, t),
       /* .length = */
       goomRand.GetRandInRange(MIN_LENGTH,
-                              MAX_LENGTH_FACTOR * stdnew::lerp(first.length, last.length, t)),
+                              MAX_LENGTH_FACTOR * STD20::lerp(first.length, last.length, t)),
       /* .iterZeroYValWaveFreq = */
       goomRand.GetRandInRange(MIN_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR,
                               MAX_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR) *
-          stdnew::lerp(first.iterZeroYValWaveFreq, last.iterZeroYValWaveFreq, t),
+          STD20::lerp(first.iterZeroYValWaveFreq, last.iterZeroYValWaveFreq, t),
       /* .iterZeroYValWave = */
       first.iterZeroYValWave,
   };

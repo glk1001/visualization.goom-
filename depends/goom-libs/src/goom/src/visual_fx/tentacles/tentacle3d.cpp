@@ -3,7 +3,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "tentacle2d.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <memory>
 #include <tuple>
@@ -17,7 +17,7 @@ using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
-using UTILS::IGoomRand;
+using UTILS::MATH::IGoomRand;
 
 constexpr float HEAD_X_MAX = 10.0F;
 

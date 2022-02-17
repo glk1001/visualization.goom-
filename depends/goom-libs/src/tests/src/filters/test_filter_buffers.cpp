@@ -5,8 +5,8 @@
 #include "catch2/catch.hpp"
 #include "goom_plugin_info.h"
 #include "point2d.h"
-#include "utils/goom_rand.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand.h"
+#include "utils/math/mathutils.h"
 #include "utils/parallel_utils.h"
 #include "visual_fx/filters/filter_buffers.h"
 #include "visual_fx/filters/filter_settings.h"
@@ -17,9 +17,9 @@
 
 using GOOM::PluginInfo;
 using GOOM::Point2dInt;
-using GOOM::UTILS::floats_equal;
-using GOOM::UTILS::GoomRand;
 using GOOM::UTILS::Parallel;
+using GOOM::UTILS::MATH::floats_equal;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::VISUAL_FX::FILTERS::FilterZoomVector;
 using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;
 using GOOM::VISUAL_FX::FILTERS::NormalizedCoordsConverter;
@@ -266,8 +266,8 @@ TEST_CASE("ZoomFilterBuffers Calculations")
             normalizedMidPt + NormalizedCoords{NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(
                                   CONST_ZOOM_VECTOR_COORDS_1)});
         const Point2dInt expectedTranPoint = {
-            stdnew::lerp(expectedSrceTranPoint.x, expectedDestTranPoint.x, tLerp),
-            stdnew::lerp(expectedSrceTranPoint.y, expectedDestTranPoint.y, tLerp)};
+            STD20::lerp(expectedSrceTranPoint.x, expectedDestTranPoint.x, tLerp),
+            STD20::lerp(expectedSrceTranPoint.y, expectedDestTranPoint.y, tLerp)};
         UNSCOPED_INFO("expectedTranPoint.x = " << expectedTranPoint.x);
         UNSCOPED_INFO("expectedTranPoint.y = " << expectedTranPoint.y);
 

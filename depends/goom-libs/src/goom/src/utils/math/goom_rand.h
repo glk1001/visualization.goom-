@@ -1,11 +1,11 @@
 #pragma once
 
-#include "goom_rand_base.h"
 #include "randutils.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 
-namespace GOOM::UTILS
+namespace GOOM::UTILS::MATH
 {
 
 class GoomRand : public IGoomRand
@@ -57,4 +57,4 @@ inline auto GoomRand::ProbabilityOf(const float x) const -> bool
   return RAND::ProbabilityOf(x);
 }
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::MATH

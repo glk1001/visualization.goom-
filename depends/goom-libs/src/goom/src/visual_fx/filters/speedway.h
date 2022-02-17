@@ -3,7 +3,7 @@
 #include "normalized_coords.h"
 #include "point2d.h"
 #include "speed_coefficients_effect.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -18,7 +18,7 @@ public:
     MODE1,
     MODE2,
   };
-  Speedway(Modes mode, const UTILS::IGoomRand& goomRand) noexcept;
+  Speedway(Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   void SetRandomParams() override;
 
@@ -42,7 +42,7 @@ protected:
 
 private:
   const Modes m_mode;
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   void SetMode0RandomParams();
   void SetMode1RandomParams();
@@ -119,7 +119,7 @@ inline auto Speedway::GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
 
   const float xDiff = coords.GetX() - xAdd;
   const float sign = xDiff < 0.0F ? -1.0F : +1.0F;
-  const float xWarp = 0.1F * (((sign * UTILS::Sq(xDiff)) / xAdd) + xAdd);
+  const float xWarp = 0.1F * (((sign * UTILS::MATH::Sq(xDiff)) / xAdd) + xAdd);
   const float amplitude = (1.0F - sqDistFromZero) / 4.0F;
 
   const float xSpeedCoeff = amplitude * baseSpeedCoeffs.x * (m_params.xAmplitude * xWarp);

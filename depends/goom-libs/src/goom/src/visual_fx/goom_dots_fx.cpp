@@ -13,10 +13,10 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 
 #include <cmath>
 #include <cstdint>
@@ -31,11 +31,11 @@ using COLOR::GetIncreasedChroma;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
-using UTILS::GetHalf;
-using UTILS::IGoomRand;
-using UTILS::Weights;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Weights;
 
 class GoomDotsFx::GoomDotsFxImpl
 {

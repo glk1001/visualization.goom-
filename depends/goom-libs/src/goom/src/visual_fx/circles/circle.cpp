@@ -7,8 +7,8 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "utils/enumutils.h"
-#include "utils/goom_rand_base.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -28,13 +28,13 @@ using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
-using UTILS::GetHalf;
-using UTILS::IGoomRand;
-using UTILS::IsEven;
-using UTILS::m_two_pi;
 using UTILS::NUM;
 using UTILS::Timer;
 using UTILS::TValue;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::IsEven;
+using UTILS::MATH::m_two_pi;
 
 Circle::Circle(const FxHelper& fxHelper, const Helper& helper, const Params& circleParams)
   : m_draw{fxHelper.GetDraw()},
@@ -104,7 +104,7 @@ auto Circle::GetStartingDotPositions([[maybe_unused]] const IGoomRand& goomRand,
                                      const float radius) -> std::array<Point2dInt, NUM_DOT_PATHS>
 {
   std::array<Point2dInt, NUM_DOT_PATHS> startingDotPositions{};
-  const float angleStep = UTILS::m_two_pi / static_cast<float>(NUM_DOT_PATHS);
+  const float angleStep = UTILS::MATH::m_two_pi / static_cast<float>(NUM_DOT_PATHS);
   float angle = 0.0F;
   for (size_t i = 0; i < NUM_DOT_PATHS; ++i)
   {

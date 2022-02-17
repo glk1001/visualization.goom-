@@ -13,9 +13,9 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "tubes/tubes.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
@@ -37,15 +37,15 @@ using DRAW::GoomDrawToMany;
 using DRAW::IGoomDraw;
 using TUBES::BrightnessAttenuation;
 using TUBES::Tube;
-using UTILS::GetHalf;
-using UTILS::IGoomRand;
 using UTILS::Logging;
 using UTILS::PathParams;
-using UTILS::SMALL_FLOAT;
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::SMALL_FLOAT;
 
 constexpr size_t NUM_TUBES = 3;
 
@@ -72,9 +72,9 @@ constexpr PathParams COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
     -> PathParams
 {
   return {
-      stdnew::lerp(params0.oscillatingAmplitude, params1.oscillatingAmplitude, t),
-      stdnew::lerp(params0.xOscillatingFreq, params1.xOscillatingFreq, t),
-      stdnew::lerp(params0.yOscillatingFreq, params1.yOscillatingFreq, t),
+      STD20::lerp(params0.oscillatingAmplitude, params1.oscillatingAmplitude, t),
+      STD20::lerp(params0.xOscillatingFreq, params1.xOscillatingFreq, t),
+      STD20::lerp(params0.yOscillatingFreq, params1.yOscillatingFreq, t),
   };
 }
 
@@ -787,7 +787,7 @@ void TubesFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube)
   else
   {
     const auto maxJitter = static_cast<int32_t>(std::round(
-        stdnew::lerp(MIN_SHAPE_JITTER_OFFSET, MAX_SHAPE_JITTER_OFFSET, m_shapeJitterT())));
+        STD20::lerp(MIN_SHAPE_JITTER_OFFSET, MAX_SHAPE_JITTER_OFFSET, m_shapeJitterT())));
     tube.SetMaxJitterOffset(maxJitter);
     m_shapeJitterT.Increment();
     m_jitterTimer.SetTimeLimit(m_goomRand.GetRandInRange(MIN_JITTER_TIME, MAX_JITTER_TIME + 1));

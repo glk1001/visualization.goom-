@@ -5,7 +5,7 @@
 #include "draw/goom_draw.h"
 #include "fractal.h"
 #include "goom_graphic.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <cmath>
 #include <cstdint>
@@ -18,7 +18,7 @@ using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
 using COLOR::IColorMap;
 using DRAW::IGoomDraw;
-using UTILS::GetHalf;
+using UTILS::MATH::GetHalf;
 
 LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
                                      const uint32_t width,

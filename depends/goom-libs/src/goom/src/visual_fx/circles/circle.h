@@ -7,8 +7,8 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
-#include "utils/goom_rand_base.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 #include "visual_fx/fx_helper.h"
@@ -51,7 +51,7 @@ public:
 private:
   DRAW::IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   const Helper m_helper;
   const Point2dInt m_circleCentreTarget;
 
@@ -84,12 +84,12 @@ private:
   void ResetCircleParams();
 
   static constexpr uint32_t NUM_DOT_PATHS = 30;
-  static_assert(UTILS::IsEven(NUM_DOT_PATHS));
+  static_assert(UTILS::MATH::IsEven(NUM_DOT_PATHS));
   std::array<uint32_t, NUM_DOT_PATHS> m_dotDiameters;
   [[nodiscard]] static auto GetInitialDotDiameters(uint32_t maxDotDiameter)
       -> std::array<uint32_t, NUM_DOT_PATHS>;
   const std::array<Point2dInt, NUM_DOT_PATHS> m_dotStartingPositions;
-  [[nodiscard]] static auto GetStartingDotPositions(const UTILS::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetStartingDotPositions(const UTILS::MATH::IGoomRand& goomRand,
                                                     const Point2dInt& centre,
                                                     float radius)
       -> std::array<Point2dInt, NUM_DOT_PATHS>;

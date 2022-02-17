@@ -2,8 +2,8 @@
 
 #include "normalized_coords.h"
 #include "point2d.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <memory>
 #include <stdexcept>
@@ -14,7 +14,8 @@ namespace GOOM::VISUAL_FX::FILTERS
 class ImageDisplacement
 {
 public:
-  explicit ImageDisplacement(const std::string& imageFilename, const UTILS::IGoomRand& goomRand);
+  explicit ImageDisplacement(const std::string& imageFilename,
+                             const UTILS::MATH::IGoomRand& goomRand);
 
   [[nodiscard]] auto GetImageFilename() const -> std::string;
   [[nodiscard]] auto GetXColorCutoff() const -> float;

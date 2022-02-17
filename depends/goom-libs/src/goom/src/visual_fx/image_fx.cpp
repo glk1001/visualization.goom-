@@ -12,9 +12,9 @@
 #include "goom_plugin_info.h"
 #include "logging.h"
 #include "point2d.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/parallel_utils.h"
 #include "utils/t_values.h"
 
@@ -38,15 +38,15 @@ using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
-using UTILS::GetHalf;
-using UTILS::IGoomRand;
 using UTILS::Logging;
-using UTILS::m_two_pi;
 using UTILS::Parallel;
-using UTILS::Sq;
-using UTILS::SqDistance;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::MATH::GetHalf;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::m_two_pi;
+using UTILS::MATH::Sq;
+using UTILS::MATH::SqDistance;
 
 constexpr int32_t CHUNK_WIDTH = 4;
 constexpr int32_t CHUNK_HEIGHT = 4;

@@ -9,7 +9,7 @@
 #include "scrunch.h"
 #include "simple_speed_coefficients_effect.h"
 #include "speedway.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 #include "wave.h"
 #include "y_only.h"
 
@@ -18,7 +18,7 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
-using UTILS::IGoomRand;
+using UTILS::MATH::IGoomRand;
 
 auto CreateSpeedCoefficientsEffect(const ZoomFilterMode filterMode,
                                    const IGoomRand& goomRand,

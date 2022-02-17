@@ -1,12 +1,12 @@
 #include "catch2/catch.hpp"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 #include "utils/t_values.h"
 
 #include <string>
 #include <vector>
 
-using GOOM::UTILS::SMALL_FLOAT;
 using GOOM::UTILS::TValue;
+using GOOM::UTILS::MATH::SMALL_FLOAT;
 
 TEST_CASE("TValue SINGLE_CYCLE")
 {

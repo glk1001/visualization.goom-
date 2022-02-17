@@ -9,8 +9,8 @@ namespace GOOM::VISUAL_FX::FILTERS
 {
 
 using UTILS::GetPair;
-using UTILS::IGoomRand;
 using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
 
 // clang-format off
 const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{

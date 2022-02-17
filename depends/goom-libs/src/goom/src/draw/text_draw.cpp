@@ -7,7 +7,7 @@
 #include "goom/spimpl.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <codecvt>
 #include <format>
@@ -23,8 +23,8 @@ namespace GOOM::DRAW
 {
 
 using COLOR::GetColorBlend;
-using UTILS::GetHalf;
 using UTILS::Logging;
+using UTILS::MATH::GetHalf;
 
 #ifdef NO_FREETYPE_INSTALLED
 class TextDraw::TextDrawImpl

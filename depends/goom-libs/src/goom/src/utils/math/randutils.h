@@ -8,7 +8,7 @@
 #include <type_traits>
 
 
-namespace GOOM::UTILS::RAND
+namespace GOOM::UTILS::MATH::RAND
 {
 
 [[nodiscard]] auto GetRandSeed() -> uint64_t;
@@ -80,4 +80,4 @@ inline auto ProbabilityOf(const float prob) -> bool
   return GetRandInRange(0.0F, 1.0F) <= prob;
 }
 
-} // namespace GOOM::UTILS::RAND
+} // namespace GOOM::UTILS::MATH::RAND

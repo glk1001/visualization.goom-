@@ -1,8 +1,8 @@
 #pragma once
 
 #include "normalized_coords.h"
-#include "utils/goom_rand_base.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 #include "utils/name_value_pairs.h"
 
 #include <cmath>
@@ -14,7 +14,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 class Rotation
 {
 public:
-  explicit Rotation(const UTILS::IGoomRand& goomRand) noexcept;
+  explicit Rotation(const UTILS::MATH::IGoomRand& goomRand) noexcept;
   Rotation(const Rotation&) noexcept = delete;
   Rotation(Rotation&&) noexcept = delete;
   virtual ~Rotation() noexcept = default;
@@ -46,7 +46,7 @@ protected:
   void SetParams(const Params& params);
 
 private:
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
 };
 
@@ -87,8 +87,8 @@ inline void Rotation::Toggle()
 
 inline auto Rotation::IsActive() const -> bool
 {
-  return (std::fabs(m_params.xRotateSpeed) > UTILS::SMALL_FLOAT) ||
-         (std::fabs(m_params.yRotateSpeed) > UTILS::SMALL_FLOAT);
+  return (std::fabs(m_params.xRotateSpeed) > UTILS::MATH::SMALL_FLOAT) ||
+         (std::fabs(m_params.yRotateSpeed) > UTILS::MATH::SMALL_FLOAT);
 }
 
 inline auto Rotation::GetParams() const -> const Params&

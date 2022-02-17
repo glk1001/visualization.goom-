@@ -13,9 +13,9 @@ namespace GOOM::VISUAL_FX::CIRCLES
 using COLOR::GammaCorrection;
 using COLOR::GetBrighterColor;
 using COLOR::RandomColorMaps;
-using UTILS::IGoomRand;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::IGoomRand;
 
 Circles::Circles(const FxHelper& fxHelper,
                  const SmallImageBitmaps& smallBitmaps,

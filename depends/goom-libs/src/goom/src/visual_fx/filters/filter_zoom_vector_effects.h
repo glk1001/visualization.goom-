@@ -37,16 +37,16 @@ public:
     std::unique_ptr<Planes> planes;
     std::unique_ptr<TanEffect> tanEffect;
   };
-  using GetTheEffectsFunc =
-      std::function<auto(const std::string& resourcesDirectory, const UTILS::IGoomRand& goomRand)
-                        ->TheExtraEffects>;
+  using GetTheEffectsFunc = std::function<auto(const std::string& resourcesDirectory,
+                                               const UTILS::MATH::IGoomRand& goomRand)
+                                              ->TheExtraEffects>;
   [[nodiscard]] static auto GetStandardExtraEffects(const std::string& resourcesDirectory,
-                                                    const UTILS::IGoomRand& goomRand)
+                                                    const UTILS::MATH::IGoomRand& goomRand)
       -> TheExtraEffects;
 
   ZoomVectorEffects(uint32_t screenWidth,
                     const std::string& resourcesDirectory,
-                    const UTILS::IGoomRand& goomRand,
+                    const UTILS::MATH::IGoomRand& goomRand,
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const GetTheEffectsFunc& getTheExtraEffects) noexcept;
 

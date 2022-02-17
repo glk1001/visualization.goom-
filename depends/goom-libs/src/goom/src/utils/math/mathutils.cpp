@@ -1,4 +1,4 @@
-#include "mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <array>
 #include <cmath>
@@ -8,9 +8,8 @@
 #include <tuple>
 #include <vector>
 
-namespace GOOM::UTILS
+namespace GOOM::UTILS::MATH
 {
-
 
 ExpDampingFunction::ExpDampingFunction(const double amplitude,
                                        const double xToStartRise,
@@ -109,4 +108,4 @@ auto SineWaveMultiplier::GetNext() -> float
   return val;
 }
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::MATH

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../point2d.h"
+#include "math/mathutils.h"
 #include "t_values.h"
 
 #include <cmath>
@@ -149,9 +150,9 @@ inline auto OscillatingPath::GetOscillatingPointAtNextT(const Point2dFlt& point)
 {
   return {
       point.x + (m_pathParams.oscillatingAmplitude *
-                 std::cos(m_pathParams.xOscillatingFreq * GetT() * m_two_pi)),
+                 std::cos(m_pathParams.xOscillatingFreq * GetT() * MATH::m_two_pi)),
       point.y + (m_pathParams.oscillatingAmplitude *
-                 std::sin(m_pathParams.yOscillatingFreq * GetT() * m_two_pi)),
+                 std::sin(m_pathParams.yOscillatingFreq * GetT() * MATH::m_two_pi)),
   };
 }
 

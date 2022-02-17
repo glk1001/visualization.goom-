@@ -1,6 +1,6 @@
 #include "tentacle2d.h"
 
-#include "utils/mathutils.h"
+#include "utils/math/mathutils.h"
 
 #include <format>
 #include <memory>
@@ -11,10 +11,10 @@
 namespace GOOM::VISUAL_FX::TENTACLES
 {
 
-using UTILS::ExpDampingFunction;
-using UTILS::FlatDampingFunction;
-using UTILS::LinearDampingFunction;
-using UTILS::PiecewiseDampingFunction;
+using UTILS::MATH::ExpDampingFunction;
+using UTILS::MATH::FlatDampingFunction;
+using UTILS::MATH::LinearDampingFunction;
+using UTILS::MATH::PiecewiseDampingFunction;
 
 Tentacle2D::Tentacle2D([[maybe_unused]] const size_t id,
                        const size_t numNodes,
@@ -161,7 +161,7 @@ void Tentacle2D::UpdateDampedValues(const std::vector<double>& yValues)
   for (size_t i = 1; i < NUM_SMOOTH_NODES; ++i)
   {
     const double t = tSmooth(tNext);
-    m_dampedYVec[i] = stdnew::lerp(m_dampedYVec[i - 1], GetDampedVal(i, yValues[i]), t);
+    m_dampedYVec[i] = STD20::lerp(m_dampedYVec[i - 1], GetDampedVal(i, yValues[i]), t);
     tNext += tStep;
   }
 
@@ -173,7 +173,7 @@ void Tentacle2D::UpdateDampedValues(const std::vector<double>& yValues)
 
 inline auto Tentacle2D::GetFirstY() -> float
 {
-  return static_cast<float>(stdnew::lerp(m_yVec[0], m_iterZeroYVal, m_iterZeroLerpFactor));
+  return static_cast<float>(STD20::lerp(m_yVec[0], m_iterZeroYVal, m_iterZeroLerpFactor));
 }
 
 inline auto Tentacle2D::GetNextY(const size_t nodeNum) -> float

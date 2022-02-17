@@ -3,21 +3,21 @@
 #include "draw/goom_draw.h"
 #include "point2d.h"
 #include "utils/enumutils.h"
-#include "utils/goom_rand_base.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/mathutils.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/mathutils.h"
 
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 
 using COLOR::GetColorMultiply;
 using DRAW::IGoomDraw;
-using UTILS::IGoomRand;
 using UTILS::NUM;
-using UTILS::Weights;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Weights;
 
 DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
                      const IGoomRand& goomRand,

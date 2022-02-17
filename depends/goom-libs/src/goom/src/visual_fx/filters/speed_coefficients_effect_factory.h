@@ -17,7 +17,7 @@ namespace VISUAL_FX::FILTERS
 {
 
 [[nodiscard]] extern auto CreateSpeedCoefficientsEffect(ZoomFilterMode filterMode,
-                                                        const UTILS::IGoomRand& goomRand,
+                                                        const UTILS::MATH::IGoomRand& goomRand,
                                                         const std::string& resourcesDirectory)
     -> std::shared_ptr<ISpeedCoefficientsEffect>;
 

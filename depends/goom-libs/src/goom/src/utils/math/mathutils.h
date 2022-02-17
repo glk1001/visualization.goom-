@@ -9,8 +9,7 @@
 #include <tuple>
 #include <vector>
 
-
-namespace stdnew
+namespace STD20
 {
 #if __cplusplus <= 201703L
 template<typename _Fp>
@@ -45,12 +44,12 @@ template<typename _Fp>
     -> uint32_t
 {
   return static_cast<uint32_t>(
-      std::round(stdnew::lerp(static_cast<float>(a), static_cast<float>(b), t)));
+      std::round(STD20::lerp(static_cast<float>(a), static_cast<float>(b), t)));
 }
 [[nodiscard]] inline auto lerp(const int32_t a, const int32_t b, const float t) noexcept -> int32_t
 {
   return static_cast<int32_t>(
-      std::round(stdnew::lerp(static_cast<float>(a), static_cast<float>(b), t)));
+      std::round(STD20::lerp(static_cast<float>(a), static_cast<float>(b), t)));
 }
 #else
 constexpr float lerp(float __a, float __b, float __t) noexcept
@@ -62,10 +61,9 @@ constexpr double lerp(double __a, double __b, double __t) noexcept
   return std::lerp(__a, __b, __t);
 }
 #endif
-} // namespace stdnew
+} // namespace STD20
 
-
-namespace GOOM::UTILS
+namespace GOOM::UTILS::MATH
 {
 
 #if __cplusplus <= 201703L
@@ -262,7 +260,7 @@ inline RangeMapper::RangeMapper(const double x0, const double x1) noexcept
 inline auto RangeMapper::operator()(const double x0, const double x1, const double x) const
     -> double
 {
-  return stdnew::lerp(x0, x1, (x - m_xMin) / m_xWidth);
+  return STD20::lerp(x0, x1, (x - m_xMin) / m_xWidth);
 }
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::MATH

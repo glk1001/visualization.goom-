@@ -1,6 +1,6 @@
 #include "catch2/catch.hpp"
 #include "goom_plugin_info.h"
-#include "utils/goom_rand.h"
+#include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
 #include "visual_fx/filters/filter_settings.h"
 #include "visual_fx/filters/filter_settings_service.h"
@@ -8,8 +8,8 @@
 #include "visual_fx/zoom_filter_fx.h"
 
 using GOOM::PluginInfo;
-using GOOM::UTILS::GoomRand;
 using GOOM::UTILS::Parallel;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::VISUAL_FX::ZoomFilterFx;
 using GOOM::VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
 using GOOM::VISUAL_FX::FILTERS::FilterSettingsService;

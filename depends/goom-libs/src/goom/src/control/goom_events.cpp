@@ -1,11 +1,11 @@
 #include "goom_events.h"
 
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 
 namespace GOOM::CONTROL
 {
 
-using UTILS::IGoomRand;
+using UTILS::MATH::IGoomRand;
 using VISUAL_FX::LinesFx;
 
 // clang-format off

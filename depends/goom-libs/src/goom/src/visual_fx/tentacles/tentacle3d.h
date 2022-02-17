@@ -4,7 +4,7 @@
 #include "color/random_colormaps_manager.h"
 #include "goom_graphic.h"
 #include "tentacle2d.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <memory>
 #include <vector>
@@ -29,7 +29,7 @@ public:
              const Pixel& headLowColor,
              const V3dFlt& head,
              size_t numHeadNodes,
-             const UTILS::IGoomRand& goomRand) noexcept;
+             const UTILS::MATH::IGoomRand& goomRand) noexcept;
   Tentacle3D(const Tentacle3D&) noexcept = delete;
   Tentacle3D(Tentacle3D&&) noexcept = default;
   ~Tentacle3D() noexcept = default;
@@ -59,7 +59,7 @@ public:
   [[nodiscard]] auto GetVertices() const -> std::vector<V3dFlt>;
 
 private:
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   std::unique_ptr<Tentacle2D> m_tentacle;
 
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};

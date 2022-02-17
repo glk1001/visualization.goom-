@@ -3,7 +3,7 @@
 #include "color/color_data/colormap_enums.h"
 #include "color/colormaps.h"
 #include "goom/goom_graphic.h"
-#include "utils/goom_rand_base.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <memory>
 #include <set>
@@ -14,7 +14,7 @@ namespace GOOM::COLOR
 class RandomColorMaps : public ColorMaps
 {
 public:
-  explicit RandomColorMaps(const UTILS::IGoomRand& goomRand) noexcept;
+  explicit RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   [[nodiscard]] auto GetRandomColorMapName() const -> COLOR_DATA::ColorMapName;
   [[nodiscard]] auto GetRandomColorMapName(ColorMapGroup cmg) const -> COLOR_DATA::ColorMapName;
@@ -73,7 +73,7 @@ public:
   [[nodiscard]] auto GetRandomColor(const IColorMap& colorMap, float t0, float t1) const -> Pixel;
 
 private:
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   static constexpr float MIN_ROTATION_POINT = 0.1F;
   static constexpr float MAX_ROTATION_POINT = 0.9F;
   float m_minRotationPoint = MIN_ROTATION_POINT;
@@ -92,42 +92,54 @@ private:
 class WeightedColorMaps : public RandomColorMaps
 {
 public:
-  WeightedColorMaps(const UTILS::IGoomRand& goomRand, const UTILS::Weights<ColorMapGroup>& weights);
+  WeightedColorMaps(const UTILS::MATH::IGoomRand& goomRand,
+                    const UTILS::MATH::Weights<ColorMapGroup>& weights);
 
   [[nodiscard]] auto GetRandomGroup() const -> ColorMapGroup override;
 
 private:
-  UTILS::Weights<ColorMapGroup> m_weights;
+  UTILS::MATH::Weights<ColorMapGroup> m_weights;
   bool m_weightsActive = true;
 };
 
-auto GetAllMapsUnweighted(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetAllStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetAllSlimMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetMostlySequentialStandardMaps(const UTILS::IGoomRand& goomRand)
+auto GetAllMapsUnweighted(const UTILS::MATH::IGoomRand& goomRand)
     -> std::shared_ptr<RandomColorMaps>;
-auto GetMostlySequentialSlimMaps(const UTILS::IGoomRand& goomRand)
+auto GetAllStandardMaps(const UTILS::MATH::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
+auto GetAllSlimMaps(const UTILS::MATH::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
+auto GetMostlySequentialStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
     -> std::shared_ptr<RandomColorMaps>;
-auto GetSlightlyDivergingStandardMaps(const UTILS::IGoomRand& goomRand)
+auto GetMostlySequentialSlimMaps(const UTILS::MATH::IGoomRand& goomRand)
     -> std::shared_ptr<RandomColorMaps>;
-auto GetSlightlyDivergingSlimMaps(const UTILS::IGoomRand& goomRand)
+auto GetSlightlyDivergingStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
     -> std::shared_ptr<RandomColorMaps>;
-auto GetBlueStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetRedStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetGreenStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetYellowStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetOrangeStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetPurpleStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetCitiesStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetSeasonsStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetHeatStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetColdStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetPastelStandardMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
-auto GetDivergingBlackStandardMaps(const UTILS::IGoomRand& goomRand)
+auto GetSlightlyDivergingSlimMaps(const UTILS::MATH::IGoomRand& goomRand)
     -> std::shared_ptr<RandomColorMaps>;
-auto GetWesAndersonMaps(const UTILS::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
+auto GetBlueStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetRedStandardMaps(const UTILS::MATH::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
+auto GetGreenStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetYellowStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetOrangeStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetPurpleStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetCitiesStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetSeasonsStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetHeatStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetColdStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetPastelStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetDivergingBlackStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
+    -> std::shared_ptr<RandomColorMaps>;
+auto GetWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
 
-inline RandomColorMaps::RandomColorMaps(const UTILS::IGoomRand& goomRand) noexcept
+inline RandomColorMaps::RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand}
 {
 }

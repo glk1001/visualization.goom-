@@ -53,14 +53,14 @@ class FilterSettingsService
 public:
   using CreateSpeedCoefficientsEffectFunc = std::function<std::shared_ptr<ISpeedCoefficientsEffect>(
       ZoomFilterMode filterMode,
-      const UTILS::IGoomRand& goomRand,
+      const UTILS::MATH::IGoomRand& goomRand,
       const std::string& resourcesDirectory)>;
   // TODO - Visual Studio doesn't like a trailing return type in above function definition.
 
   FilterSettingsService(
       UTILS::Parallel& parallel,
       const GOOM::PluginInfo& goomInfo,
-      const UTILS::IGoomRand& goomRand,
+      const UTILS::MATH::IGoomRand& goomRand,
       const std::string& resourcesDirectory,
       const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect) noexcept;
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
@@ -105,7 +105,7 @@ protected:
   void SetFilterMode(ZoomFilterMode filterMode);
   [[nodiscard]] auto GetFilterSettings() -> ZoomFilterSettings&;
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
-  [[nodiscard]] auto GetGoomRand() const -> const UTILS::IGoomRand&;
+  [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
   [[nodiscard]] virtual auto MakeRotation() const -> std::shared_ptr<Rotation>;
   virtual void SetDefaultSettings();
   virtual void SetFilterModeExtraEffects();
@@ -122,7 +122,7 @@ private:
 
   UTILS::Parallel& m_parallel;
   const PluginInfo& m_goomInfo;
-  const UTILS::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
   const std::string m_resourcesDirectory;
   const NormalizedCoordsConverter m_normalizedCoordsConverter;
@@ -134,11 +134,11 @@ private:
     const std::string name;
     std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
     const float rotateProbability;
-    UTILS::Weights<HypercosOverlay> hypercosWeights;
+    UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
   };
   std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
   [[nodiscard]] static auto GetFilterModeData(
-      const UTILS::IGoomRand& goomRand,
+      const UTILS::MATH::IGoomRand& goomRand,
       const std::string& resourcesDirectory,
       const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect)
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
@@ -157,7 +157,7 @@ private:
   static constexpr float DEFAULT_MAX_SPEED_COEFF = 2.01F;
   static constexpr float MAX_MAX_SPEED_COEFF = 4.01F;
   ZoomFilterSettings m_filterSettings;
-  const UTILS::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
+  const UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
 
   bool m_filterEffectsSettingsHaveChanged = false;
 
@@ -174,7 +174,7 @@ private:
     BOTTOM_RIGHT_QUARTER_MID_POINT,
     _num // unused and must be last
   };
-  const UTILS::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
+  const UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
   [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
   void SetAnyRandomZoomMidpoint();
   void SetMaxSpeedCoeff();
@@ -195,7 +195,7 @@ inline auto FilterSettingsService::GetPluginInfo() const -> const PluginInfo&
   return m_goomInfo;
 }
 
-inline auto FilterSettingsService::GetGoomRand() const -> const UTILS::IGoomRand&
+inline auto FilterSettingsService::GetGoomRand() const -> const UTILS::MATH::IGoomRand&
 {
   return m_goomRand;
 }
