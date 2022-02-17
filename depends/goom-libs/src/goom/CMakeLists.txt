@@ -52,9 +52,11 @@ add_library(goom
         src/utils/graphics/image_bitmaps.cpp
         src/utils/graphics/small_image_bitmaps.cpp
         src/utils/logging.cpp
+        src/utils/math/damping_functions.cpp
         src/utils/math/goom_rand.h
         src/utils/math/goom_rand_base.h
-        src/utils/math/mathutils.cpp
+        src/utils/math/math20.h
+        src/utils/math/mathutils.h
         src/utils/math/randutils.cpp
         src/utils/name_value_pairs.h
         src/utils/paths.h
@@ -121,7 +123,7 @@ add_library(goom
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp
-        src/utils/math/math20.h)
+        src/utils/math/math20.h src/utils/math/damping_functions.h src/utils/math/damping_functions.cpp)
 
 target_include_directories(goom
     PUBLIC

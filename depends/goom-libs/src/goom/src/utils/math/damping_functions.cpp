@@ -1,6 +1,5 @@
-#include "utils/math/mathutils.h"
+#include "damping_functions.h"
 
-#include <array>
 #include <cmath>
 #include <format>
 #include <memory>

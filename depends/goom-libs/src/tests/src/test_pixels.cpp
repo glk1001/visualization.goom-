@@ -22,7 +22,7 @@ using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::PixelChannelType;
 using GOOM::PixelIntType;
-using GOOM::UTILS::MATH::floats_equal;
+using GOOM::UTILS::MATH::FloatsEqual;
 using namespace std::chrono_literals;
 using std::chrono::high_resolution_clock;
 using std::chrono::microseconds;
@@ -38,9 +38,9 @@ TEST_CASE("Pixels")
   SECTION("Pixel RGB")
   {
     const Pixel pixel{{TEST_R, TEST_G, TEST_B}};
-    REQUIRE(floats_equal(static_cast<float>(TEST_R) / channel_limits<float>::max(), pixel.RFlt()));
-    REQUIRE(floats_equal(static_cast<float>(TEST_G) / channel_limits<float>::max(), pixel.GFlt()));
-    REQUIRE(floats_equal(static_cast<float>(TEST_B) / channel_limits<float>::max(), pixel.BFlt()));
+    REQUIRE(FloatsEqual(static_cast<float>(TEST_R) / channel_limits<float>::max(), pixel.RFlt()));
+    REQUIRE(FloatsEqual(static_cast<float>(TEST_G) / channel_limits<float>::max(), pixel.GFlt()));
+    REQUIRE(FloatsEqual(static_cast<float>(TEST_B) / channel_limits<float>::max(), pixel.BFlt()));
   }
   SECTION("Pixel uint32_t RGB")
   {

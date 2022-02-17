@@ -18,7 +18,7 @@
 using GOOM::PluginInfo;
 using GOOM::Point2dInt;
 using GOOM::UTILS::Parallel;
-using GOOM::UTILS::MATH::floats_equal;
+using GOOM::UTILS::MATH::FloatsEqual;
 using GOOM::UTILS::MATH::GoomRand;
 using GOOM::VISUAL_FX::FILTERS::FilterZoomVector;
 using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;

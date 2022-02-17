@@ -150,9 +150,9 @@ inline auto OscillatingPath::GetOscillatingPointAtNextT(const Point2dFlt& point)
 {
   return {
       point.x + (m_pathParams.oscillatingAmplitude *
-                 std::cos(m_pathParams.xOscillatingFreq * GetT() * MATH::two_pi)),
+                 std::cos(m_pathParams.xOscillatingFreq * GetT() * MATH::TWO_PI)),
       point.y + (m_pathParams.oscillatingAmplitude *
-                 std::sin(m_pathParams.yOscillatingFreq * GetT() * MATH::two_pi)),
+                 std::sin(m_pathParams.yOscillatingFreq * GetT() * MATH::TWO_PI)),
   };
 }
 

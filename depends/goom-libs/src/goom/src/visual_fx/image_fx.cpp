@@ -46,7 +46,7 @@ using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
 using UTILS::MATH::SqDistance;
-using UTILS::MATH::two_pi;
+using UTILS::MATH::TWO_PI;
 
 constexpr int32_t CHUNK_WIDTH = 4;
 constexpr int32_t CHUNK_HEIGHT = 4;
@@ -278,14 +278,14 @@ inline void ImageFx::ImageFxImpl::ResetStartPositions()
   const auto randMaxRadius = m_goomRand.GetRandInRange(0.7F, 1.0F) * m_maxRadius;
 
   float radiusTheta = 0.0F;
-  const float radiusThetaStep = two_pi / static_cast<float>(m_currentImage->GetNumChunks());
+  const float radiusThetaStep = TWO_PI / static_cast<float>(m_currentImage->GetNumChunks());
   for (size_t i = 0; i < m_currentImage->GetNumChunks(); ++i)
   {
     constexpr float SMALL_OFFSET = 0.4F;
     const float maxRadiusAdj =
         (1.0F - (SMALL_OFFSET * (1.0F + std::sin(radiusTheta)))) * randMaxRadius;
     const float radius = m_goomRand.GetRandInRange(10.0F, maxRadiusAdj);
-    const float theta = m_goomRand.GetRandInRange(0.0F, two_pi);
+    const float theta = m_goomRand.GetRandInRange(0.0F, TWO_PI);
     const Point2dInt startPos =
         m_screenCentre + Vec2dInt{static_cast<int32_t>((std::cos(theta) * radius)),
                                   static_cast<int32_t>((std::sin(theta) * radius))};
@@ -307,7 +307,7 @@ inline auto ImageFx::ImageFxImpl::GetChunkFloatingStartPosition(const size_t i) 
                         static_cast<float>(m_availableHeight)) -
                        MARGIN;
   const float theta =
-      (two_pi * static_cast<float>(i)) / static_cast<float>(m_currentImage->GetNumChunks());
+      (TWO_PI * static_cast<float>(i)) / static_cast<float>(m_currentImage->GetNumChunks());
   const Point2dInt floatingStartPosition =
       m_screenCentre + Vec2dInt{static_cast<int32_t>((std::cos(theta) * aRadius)),
                                 static_cast<int32_t>((std::sin(theta) * bRadius))};

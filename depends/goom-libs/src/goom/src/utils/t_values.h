@@ -3,6 +3,7 @@
 #include "utils/math/mathutils.h"
 
 #include <cstdint>
+#include <vector>
 
 namespace GOOM::UTILS
 {

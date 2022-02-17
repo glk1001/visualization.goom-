@@ -12,7 +12,7 @@ using FX_UTILS::DotSizes;
 using STD20::pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GetHalf;
-using UTILS::MATH::half_pi;
+using UTILS::MATH::HALF_PI;
 using UTILS::MATH::IGoomRand;
 
 // clang-format off
@@ -187,7 +187,7 @@ void TentaclePlotter::SetCameraPosition(const float cameraDistance, const float 
   m_cameraPosition.z += m_cameraDistance;
   constexpr float ANGLE_FACTOR = 1.0F / 4.3F;
   constexpr float CAMERA_POS_FACTOR = 2.0F;
-  m_cameraPosition.y += CAMERA_POS_FACTOR * std::sin(-ANGLE_FACTOR * (m_tentacleAngle - half_pi));
+  m_cameraPosition.y += CAMERA_POS_FACTOR * std::sin(-ANGLE_FACTOR * (m_tentacleAngle - HALF_PI));
 }
 
 inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& points,

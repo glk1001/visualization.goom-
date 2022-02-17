@@ -60,8 +60,8 @@ private:
 inline auto TanEffect::GetVelocity(const float sqDistFromZero,
                                    const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const float limit = m_params.limitingFactor * UTILS::MATH::half_pi;
-  const float tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::MATH::half_pi), -limit, +limit);
+  const float limit = m_params.limitingFactor * UTILS::MATH::HALF_PI;
+  const float tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::MATH::HALF_PI), -limit, +limit);
   const float tanSqDist = GetTanSqDist(tanArg);
   return {m_params.xAmplitude * tanSqDist * velocity.GetX(),
           m_params.yAmplitude * tanSqDist * velocity.GetY()};
@@ -74,9 +74,9 @@ inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
     case TanType::TAN_ONLY:
       return std::tan(tanArg);
     case TanType::COT_ONLY:
-      return std::tan(UTILS::MATH::half_pi - tanArg);
+      return std::tan(UTILS::MATH::HALF_PI - tanArg);
     case TanType::COT_MIX:
-      return std::tan((m_params.cotMix * UTILS::MATH::half_pi) - tanArg);
+      return std::tan((m_params.cotMix * UTILS::MATH::HALF_PI) - tanArg);
     default:
       throw std::logic_error("Unknown TanType enum.");
   }

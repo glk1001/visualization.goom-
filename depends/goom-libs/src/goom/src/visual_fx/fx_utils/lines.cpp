@@ -10,9 +10,9 @@
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 
-using UTILS::MATH::floats_equal;
-using UTILS::MATH::half_pi;
-using UTILS::MATH::two_pi;
+using UTILS::MATH::FloatsEqual;
+using UTILS::MATH::HALF_PI;
+using UTILS::MATH::TWO_PI;
 
 auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, const float yValue)
     -> std::vector<LinePoint>
@@ -25,7 +25,7 @@ auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, con
   float x = 0.0F;
   for (auto& pt : linePoints)
   {
-    pt.angle = half_pi;
+    pt.angle = HALF_PI;
     pt.point.x = x;
     pt.point.y = yValue;
 
@@ -74,7 +74,7 @@ auto GetCircularLinePoints(const uint32_t numPoints,
   const double xCentre = 0.5 * static_cast<double>(width);
   const double yCentre = 0.5 * static_cast<double>(height);
 
-  const double angleStep = static_cast<double>(two_pi) / static_cast<double>(numPoints - 1);
+  const double angleStep = static_cast<double>(TWO_PI) / static_cast<double>(numPoints - 1);
   double angle = 0.0;
   for (size_t i = 0; i < numPoints; ++i)
   {
@@ -86,8 +86,8 @@ auto GetCircularLinePoints(const uint32_t numPoints,
     angle += angleStep;
   }
 
-  assert(floats_equal(linePoint[0].point.x, linePoint[linePoint.size() - 1].point.x));
-  assert(floats_equal(linePoint[0].point.y, linePoint[linePoint.size() - 1].point.y));
+  assert(FloatsEqual(linePoint[0].point.x, linePoint[linePoint.size() - 1].point.x));
+  assert(FloatsEqual(linePoint[0].point.y, linePoint[linePoint.size() - 1].point.y));
 
   return linePoint;
 }

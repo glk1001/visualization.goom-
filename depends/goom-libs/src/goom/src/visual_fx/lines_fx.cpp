@@ -60,7 +60,7 @@ using FX_UTILS::LinePoint;
 using FX_UTILS::SmoothTheCircleJoinAtEnds;
 using UTILS::NUM;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::floats_equal;
+using UTILS::MATH::FloatsEqual;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
 
@@ -403,10 +403,10 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   }
 
   assert(m_srceLineType != LineType::CIRCLE || m_lineLerpParam < 1.0F ||
-         (floats_equal(m_srcePoints[0].point.x,
-                       m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.x) &&
-          floats_equal(m_srcePoints[0].point.y,
-                       m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.y)));
+         (FloatsEqual(m_srcePoints[0].point.x,
+                      m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.x) &&
+          FloatsEqual(m_srcePoints[0].point.y,
+                      m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.y)));
 
   constexpr float COLOR_MIX_AMOUNT = 1.0F / 64.0F;
   m_srceColor = IColorMap::GetColorMix(m_srceColor, m_destColor, COLOR_MIX_AMOUNT);
@@ -513,8 +513,8 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
   constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
 
   assert(m_srceLineType != LineType::CIRCLE || m_lineLerpParam < 1.0F ||
-         (floats_equal(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) &&
-          floats_equal(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
+         (FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) &&
+          FloatsEqual(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
 
   const Pixel lineColor = GetFinalLineColor(m_srceColor);
 

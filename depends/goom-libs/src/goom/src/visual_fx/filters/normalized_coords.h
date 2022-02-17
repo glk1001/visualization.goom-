@@ -159,8 +159,8 @@ inline void NormalizedCoords::SetY(const float yNormalized)
 
 inline auto NormalizedCoords::Equals(const NormalizedCoords& other) const -> bool
 {
-  return UTILS::MATH::floats_equal(GetX(), other.GetX()) &&
-         UTILS::MATH::floats_equal(GetY(), other.GetY());
+  return UTILS::MATH::FloatsEqual(GetX(), other.GetX()) &&
+         UTILS::MATH::FloatsEqual(GetY(), other.GetY());
 }
 
 inline auto NormalizedCoords::operator+=(const NormalizedCoords& other) -> NormalizedCoords&

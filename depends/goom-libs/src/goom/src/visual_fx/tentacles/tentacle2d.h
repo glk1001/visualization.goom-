@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/math/mathutils.h"
+#include "utils/math/damping_functions.h"
 
 #include <memory>
 #include <tuple>

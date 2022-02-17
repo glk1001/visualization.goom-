@@ -44,8 +44,8 @@ using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
-using UTILS::MATH::third_pi;
-using UTILS::MATH::two_pi;
+using UTILS::MATH::THIRD_PI;
+using UTILS::MATH::TWO_PI;
 using UTILS::MATH::Weights;
 
 constexpr uint32_t NUM_SHAPES_PER_TUBE = 45;
@@ -514,7 +514,7 @@ void Tube::TubeImpl::InitShapes(const float radiusEdgeOffset)
                          static_cast<int32_t>(m_screenHeight / 2)};
   const auto radius =
       (0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight))) - radiusEdgeOffset;
-  const float angleStep = two_pi / static_cast<float>(m_shapes.size());
+  const float angleStep = TWO_PI / static_cast<float>(m_shapes.size());
 
   m_centrePath = std::make_unique<ParametricPath>(m_centrePathT);
 
@@ -783,7 +783,7 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
                                     const uint8_t lineThickness) const
 {
   constexpr uint32_t NUM_HEX_SIDES = 6;
-  constexpr float ANGLE_STEP = third_pi;
+  constexpr float ANGLE_STEP = THIRD_PI;
   constexpr float START_ANGLE = 2.0F * ANGLE_STEP;
   const std::vector<Pixel> lineColors{allColors.color, allColors.lowColor};
   const std::vector<Pixel> outerCircleColors{allColors.outerCircleColor,

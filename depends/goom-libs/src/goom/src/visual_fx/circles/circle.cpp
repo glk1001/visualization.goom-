@@ -34,7 +34,7 @@ using UTILS::TValue;
 using UTILS::MATH::GetHalf;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
-using UTILS::MATH::two_pi;
+using UTILS::MATH::TWO_PI;
 
 Circle::Circle(const FxHelper& fxHelper, const Helper& helper, const Params& circleParams)
   : m_draw{fxHelper.GetDraw()},
@@ -104,7 +104,7 @@ auto Circle::GetStartingDotPositions([[maybe_unused]] const IGoomRand& goomRand,
                                      const float radius) -> std::array<Point2dInt, NUM_DOT_PATHS>
 {
   std::array<Point2dInt, NUM_DOT_PATHS> startingDotPositions{};
-  const float angleStep = UTILS::MATH::two_pi / static_cast<float>(NUM_DOT_PATHS);
+  const float angleStep = UTILS::MATH::TWO_PI / static_cast<float>(NUM_DOT_PATHS);
   float angle = 0.0F;
   for (size_t i = 0; i < NUM_DOT_PATHS; ++i)
   {
@@ -334,8 +334,8 @@ inline auto Circle::GetNextDotOffset(const float t) const -> Point2dInt
 {
   constexpr float AMP_X = 100.0F;
   constexpr float AMP_Y = 100.0F;
-  constexpr float FREQ_X = 1.0F * two_pi;
-  constexpr float FREQ_Y = 2.0F * two_pi;
+  constexpr float FREQ_X = 1.0F * TWO_PI;
+  constexpr float FREQ_Y = 2.0F * TWO_PI;
 
   switch (m_dotOffsetType)
   {

@@ -33,7 +33,7 @@ using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::half_pi;
+using UTILS::MATH::HALF_PI;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
@@ -205,7 +205,7 @@ auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
   {
     tentacleDrivers[i]->StartIterating();
     tentacleDrivers[i]->SetProjectionDistance(PROJECTION_DISTANCE);
-    tentacleDrivers[i]->SetCameraPosition(CAMERA_DISTANCE, half_pi - ROTATION);
+    tentacleDrivers[i]->SetCameraPosition(CAMERA_DISTANCE, HALF_PI - ROTATION);
   }
 
   return tentacleDrivers;

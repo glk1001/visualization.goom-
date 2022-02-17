@@ -12,7 +12,7 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using STD20::pi;
 using UTILS::MATH::GetHalf;
-using UTILS::MATH::half_pi;
+using UTILS::MATH::HALF_PI;
 using UTILS::MATH::IsOdd;
 
 CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
@@ -50,10 +50,10 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
     }
   };
 
-  const float angleLeftStart = +half_pi;
+  const float angleLeftStart = +HALF_PI;
   const float angleLeftFinish = 1.5F * pi;
-  const float angleRightStart = -half_pi;
-  const float angleRightFinish = +half_pi;
+  const float angleRightStart = -HALF_PI;
+  const float angleRightFinish = +HALF_PI;
 
   const float angleOffsetStart = 0.035F * pi;
   const float angleOffsetFinish = 0.035F * pi;

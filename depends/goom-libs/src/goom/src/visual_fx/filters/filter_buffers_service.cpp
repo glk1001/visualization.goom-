@@ -26,7 +26,7 @@ using FILTERS::ZoomFilterBuffers;
 using UTILS::Logging;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
-using UTILS::MATH::floats_equal;
+using UTILS::MATH::FloatsEqual;
 
 FilterBuffersService::FilterBuffersService(
     Parallel& parallel,
@@ -119,7 +119,7 @@ inline void FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpInc
                                 ZoomFilterBuffers::GetMaxTranLerpFactor());
   }
 
-  if (!floats_equal(tranLerpToMaxSwitchMult, 1.0F))
+  if (!FloatsEqual(tranLerpToMaxSwitchMult, 1.0F))
   {
     tranLerpFactor = static_cast<int32_t>(
         STD20::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
