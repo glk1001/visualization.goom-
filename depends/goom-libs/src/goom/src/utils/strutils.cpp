@@ -14,7 +14,8 @@ auto bool_to_string(const bool value) -> std::string
   return value ? "true" : "false";
 }
 
-auto StringJoin(const std::vector<std::string>& strings, const std::string& delim) -> std::string
+auto StringJoin(const std::vector<std::string>& strings, const std::string_view& delim)
+    -> std::string
 {
   std::string joinedStr{};
 
@@ -30,7 +31,7 @@ auto StringJoin(const std::vector<std::string>& strings, const std::string& deli
   return joinedStr;
 }
 
-auto StringSplit(const std::string& str, const std::string& delim) -> std::vector<std::string>
+auto StringSplit(const std::string& str, const std::string_view& delim) -> std::vector<std::string>
 {
 #if __cplusplus <= 201703L
   std::vector<std::string> vec;

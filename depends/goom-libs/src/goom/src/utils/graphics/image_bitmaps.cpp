@@ -39,9 +39,10 @@ void ImageBitmap::Load(std::string imageFilename)
   uint8_t* rgbImage;
   try
   {
-    rgbImage = stbi_load(m_filename.c_str(), &width, &height, &bpp, 4);
+    constexpr int DESIRED_CHANNELS = 4;
+    rgbImage = stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
   }
-  catch (std::exception& e)
+  catch (const std::exception& e)
   {
     throw std::runtime_error(
         std20::format(R"(Could not load image file "{}". Exception: "{}".)", m_filename, e.what()));

@@ -42,7 +42,8 @@ auto SmallImageBitmaps::GetImageBitmap(const ImageNames name, const size_t res) 
   size_t imageRes = res;
   if (IsEven(imageRes))
   {
-    imageRes = 2 == res ? (res + 1) : (res - 1);
+    constexpr size_t MIN_EVEN_RES = 2;
+    imageRes = (MIN_EVEN_RES == res) ? (res + 1) : (res - 1);
   }
   return *m_bitmapImages.at(GetImageKey(name, imageRes));
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace GOOM::UTILS
@@ -8,10 +9,10 @@ namespace GOOM::UTILS
 
 [[nodiscard]] auto bool_to_string(bool value) -> std::string;
 
-[[nodiscard]] auto StringSplit(const std::string& str, const std::string& delim)
+[[nodiscard]] auto StringSplit(const std::string& str, const std::string_view& delim)
     -> std::vector<std::string>;
 
-[[nodiscard]] auto StringJoin(const std::vector<std::string>& strings, const std::string& delim)
-    -> std::string;
+[[nodiscard]] auto StringJoin(const std::vector<std::string>& strings,
+                              const std::string_view& delim) -> std::string;
 
 } // namespace GOOM::UTILS

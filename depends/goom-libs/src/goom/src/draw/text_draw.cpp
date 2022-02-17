@@ -524,7 +524,7 @@ auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int
       return xPen;
     case TextAlignment::CENTER:
       return xPen -
-             I_HALF * (GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin);
+             (I_HALF * (GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin));
     case TextAlignment::RIGHT:
       return xPen - (GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin);
     default:

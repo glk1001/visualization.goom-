@@ -30,7 +30,7 @@ inline void MoveNameValuePairs(NameValuePairs&& nameValues, NameValuePairs& dest
   std::string fullParamGroup{};
   for (auto str = cbegin(paramGroups); str != cend(paramGroups); ++str)
   {
-    if (str != cend(paramGroups) - 1)
+    if (str != (cend(paramGroups) - 1))
     {
       fullParamGroup += GetParamGroupPrefix(*str);
     }
