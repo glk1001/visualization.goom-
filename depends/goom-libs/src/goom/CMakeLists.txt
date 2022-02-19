@@ -57,11 +57,14 @@ add_library(goom
         src/utils/math/goom_rand_base.h
         src/utils/math/math20.h
         src/utils/math/misc.h
+        src/utils/math/math20.h
+        src/utils/math/damping_functions.cpp
         src/utils/math/randutils.cpp
         src/utils/name_value_pairs.h
         src/utils/paths.h
         src/utils/strutils.cpp
         src/utils/t_values.cpp
+        src/utils/text/drawable_text.cpp
         src/utils/thread_pool.cpp
         src/visual_fx/circles/bitmap_getter_base.h
         src/visual_fx/circles/bitmap_getter.cpp
@@ -123,7 +126,7 @@ add_library(goom
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp
-        src/utils/math/math20.h src/utils/math/damping_functions.h src/utils/math/damping_functions.cpp)
+        )
 
 target_include_directories(goom
     PUBLIC

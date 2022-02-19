@@ -87,6 +87,12 @@ constexpr Fraction<T> THREE_QUARTERS = Fraction<T>{T(3), T(4)};
 constexpr auto I_THREE_QUARTERS = THREE_QUARTERS<int32_t>;
 constexpr auto U_THREE_QUARTERS = THREE_QUARTERS<uint32_t>;
 
+template<typename T>
+[[nodiscard]] inline auto GetFltFraction(const T numerator, const T denominator) -> float
+{
+  return static_cast<float>(numerator) / static_cast<float>(denominator);
+}
+
 class RangeMapper
 {
 public:

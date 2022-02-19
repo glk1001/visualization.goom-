@@ -92,7 +92,7 @@ constexpr bool NO_EXTRA_EFFECTS = false;
 constexpr bool USE_FORCED_FILTER_MODE = false;
 
 //constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
-//constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::CRYSTAL_BALL_MODE0;
+//constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::CRYSTAL_BALL_MODE1;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::DISTANCE_FIELD_MODE;
 //constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE0;

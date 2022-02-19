@@ -162,6 +162,7 @@ public:
   auto operator=(const TextDrawImpl&) -> TextDrawImpl& = delete;
   auto operator=(TextDrawImpl&&) -> TextDrawImpl& = delete;
 
+  [[nodiscard]] auto GetAlignment() const -> TextAlignment;
   void SetAlignment(TextAlignment alignment);
   [[nodiscard]] auto GetFontFile() const -> const std::string&;
   void SetFontFile(const std::string& filename);
@@ -169,6 +170,7 @@ public:
   void SetFontSize(int32_t val);
   [[nodiscard]] auto GetLineSpacing() const -> int32_t;
   void SetOutlineWidth(float val);
+  [[nodiscard]] auto GetCharSpacing() const -> float;
   void SetCharSpacing(float val);
   void SetText(const std::string& str);
 
@@ -263,6 +265,11 @@ TextDraw::TextDraw(IGoomDraw& draw) noexcept
 {
 }
 
+auto TextDraw::GetAlignment() const -> TextAlignment
+{
+  return m_textDrawImpl->GetAlignment();
+}
+
 void TextDraw::SetAlignment(const TextAlignment alignment)
 {
   m_textDrawImpl->SetAlignment(alignment);
@@ -296,6 +303,11 @@ auto TextDraw::GetLineSpacing() const -> int32_t
 void TextDraw::SetOutlineWidth(const float val)
 {
   m_textDrawImpl->SetOutlineWidth(val);
+}
+
+auto TextDraw::GetCharSpacing() const -> float
+{
+  return m_textDrawImpl->GetCharSpacing();
 }
 
 void TextDraw::SetCharSpacing(const float val)
@@ -359,6 +371,11 @@ TextDraw::TextDrawImpl::~TextDrawImpl() noexcept
   (void)FT_Done_FreeType(m_library);
 }
 
+inline auto TextDraw::TextDrawImpl::GetAlignment() const -> TextAlignment
+{
+  return m_textAlignment;
+}
+
 inline void TextDraw::TextDrawImpl::SetAlignment(const TextAlignment alignment)
 {
   m_textAlignment = alignment;
@@ -394,7 +411,7 @@ void TextDraw::TextDrawImpl::SetFontFile(const std::string& filename)
   SetFaceFontSize();
 }
 
-void TextDraw::TextDrawImpl::SetFaceFontSize()
+inline void TextDraw::TextDrawImpl::SetFaceFontSize()
 {
   if (FT_Set_Char_Size(m_face, ToFreeTypeCoord(m_fontSize), ToFreeTypeCoord(m_fontSize),
                        m_horizontalResolution, m_verticalResolution) != 0)
@@ -403,7 +420,7 @@ void TextDraw::TextDrawImpl::SetFaceFontSize()
   }
 }
 
-auto TextDraw::TextDrawImpl::GetFontSize() const -> int32_t
+inline auto TextDraw::TextDrawImpl::GetFontSize() const -> int32_t
 {
   return m_fontSize;
 }
@@ -437,7 +454,12 @@ void TextDraw::TextDrawImpl::SetOutlineWidth(const float val)
   m_outlineWidth = val;
 }
 
-void TextDraw::TextDrawImpl::SetCharSpacing(const float val)
+inline auto TextDraw::TextDrawImpl::GetCharSpacing() const -> float
+{
+  return m_charSpacing;
+}
+
+inline void TextDraw::TextDrawImpl::SetCharSpacing(const float val)
 {
   if (val < 0.0F)
   {
@@ -446,7 +468,7 @@ void TextDraw::TextDrawImpl::SetCharSpacing(const float val)
   m_charSpacing = val;
 }
 
-void TextDraw::TextDrawImpl::SetText(const std::string& str)
+inline void TextDraw::TextDrawImpl::SetText(const std::string& str)
 {
   if (str.empty())
   {
@@ -457,12 +479,12 @@ void TextDraw::TextDrawImpl::SetText(const std::string& str)
   LogInfo("Setting font text '{}'.", m_theText);
 }
 
-void TextDraw::TextDrawImpl::SetFontColorFunc(const FontColorFunc& func)
+inline void TextDraw::TextDrawImpl::SetFontColorFunc(const FontColorFunc& func)
 {
   m_getFontColor = func;
 }
 
-void TextDraw::TextDrawImpl::SetOutlineFontColorFunc(const FontColorFunc& func)
+inline void TextDraw::TextDrawImpl::SetOutlineFontColorFunc(const FontColorFunc& func)
 {
   m_getOutlineFontColor = func;
 }
@@ -512,8 +534,9 @@ void TextDraw::TextDrawImpl::Prepare()
   m_textBoundingRect.xMax = xMax;
   m_textBoundingRect.yMin = yMin;
   m_textBoundingRect.yMax = yMax;
-  LogInfo("Font bounding rectangle: {}, {}, {}, {}.", m_textBoundingRect.xMin,
-          m_textBoundingRect.xMax, m_textBoundingRect.yMin, m_textBoundingRect.yMax);
+  LogInfo("Font bounding rectangle: {}, {}, {}, {}, m_textSpans.size = {}.",
+          m_textBoundingRect.xMin, m_textBoundingRect.xMax, m_textBoundingRect.yMin,
+          m_textBoundingRect.yMax, m_textSpans.size());
 }
 
 auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int
