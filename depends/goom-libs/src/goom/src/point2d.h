@@ -27,6 +27,7 @@ struct Point2dInt
 [[nodiscard]] auto operator+(const Point2dInt& point, const Vec2dInt& vec) -> Point2dInt;
 [[nodiscard]] auto operator-(const Point2dInt& point, const Vec2dInt& vec) -> Point2dInt;
 [[nodiscard]] auto lerp(const Point2dInt& point1, const Point2dInt& point2, float t) -> Point2dInt;
+[[nodiscard]] auto Distance(const Point2dInt& point1, const Point2dInt& point2) -> int32_t;
 
 struct Vec2dInt
 {
@@ -52,12 +53,14 @@ struct Point2dFlt
   [[nodiscard]] auto ToInt() const -> Point2dInt;
   void Translate(const Vec2dFlt& vec);
   void Translate(float scalar);
+  void Rotate(float angle);
   void Scale(float scalar);
 };
 
 [[nodiscard]] auto operator+(const Point2dFlt& point, const Vec2dFlt& vec) -> Point2dFlt;
 [[nodiscard]] auto operator-(const Point2dFlt& point, const Vec2dFlt& vec) -> Point2dFlt;
 [[nodiscard]] auto lerp(const Point2dFlt& point1, const Point2dFlt& point2, float t) -> Point2dFlt;
+[[nodiscard]] auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) -> float;
 
 struct Vec2dFlt
 {
@@ -65,6 +68,7 @@ struct Vec2dFlt
   float y = 0.0F;
   Vec2dFlt() noexcept = default;
   Vec2dFlt(float xx, float yy) noexcept;
+  explicit Vec2dFlt(const Point2dFlt& point) noexcept;
   [[nodiscard]] auto ToInt() const -> Vec2dInt;
   auto operator+=(const Vec2dFlt& vec) -> Vec2dFlt&;
 };
@@ -167,6 +171,15 @@ inline void Point2dFlt::Translate(const float scalar)
   y += scalar;
 }
 
+inline void Point2dFlt::Rotate(const float angle)
+{
+  const float sinAngle = std::sin(angle);
+  const float cosAngle = std::cos(angle);
+  const float xNext = (x * cosAngle) - (y * sinAngle);
+  y = (x * sinAngle) + (y * cosAngle);
+  x = xNext;
+}
+
 inline void Point2dFlt::Scale(const float scalar)
 {
   x *= scalar;
@@ -184,6 +197,10 @@ inline auto operator*(const float scalar, const Point2dFlt& point) -> Point2dFlt
 }
 
 inline Vec2dFlt::Vec2dFlt(const float xx, const float yy) noexcept : x{xx}, y{yy}
+{
+}
+
+inline Vec2dFlt::Vec2dFlt(const Point2dFlt& point) noexcept : x{point.x}, y{point.y}
 {
 }
 
@@ -225,6 +242,16 @@ inline auto lerp(const Point2dFlt& point1, const Point2dFlt& point2, const float
       STD20::lerp(point1.x, point2.x, t),
       STD20::lerp(point1.y, point2.y, t),
   };
+}
+
+inline auto Distance(const Point2dInt& point1, const Point2dInt& point2) -> int32_t
+{
+  return static_cast<int32_t>(std::lround(Distance(point1.ToFlt(), point2.ToFlt())));
+}
+
+inline auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) -> float
+{
+  return std::sqrt(UTILS::MATH::SqDistance(point1.x - point2.x, point1.y - point2.y));
 }
 
 } // namespace GOOM
