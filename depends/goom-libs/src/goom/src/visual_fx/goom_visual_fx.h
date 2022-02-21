@@ -23,12 +23,14 @@ public:
 
   virtual void Start() = 0;
 
-  virtual void Resume(){};
-  virtual void Suspend(){};
+  virtual void Resume(){/* default does nothing */};
+  virtual void Suspend(){/* default does nothing */};
 
-  virtual void Refresh(){};
-  virtual void PostStateUpdate([[maybe_unused]] const bool wasActiveInPreviousState){};
-  virtual void SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint){};
+  virtual void Refresh(){/* default does nothing */};
+  virtual void PostStateUpdate([[maybe_unused]] const bool wasActiveInPreviousState){
+      /* default does nothing */};
+  virtual void SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint){
+      /* default does nothing */};
 
   virtual void Finish() = 0;
 };

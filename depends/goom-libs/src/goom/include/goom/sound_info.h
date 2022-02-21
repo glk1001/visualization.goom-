@@ -118,11 +118,12 @@ private:
 
 constexpr auto AudioSamples::GetPositiveValue(const float audioValue) -> float
 {
-  assert(-1.0F <= audioValue);
-  assert(audioValue <= 1.0F);
+  constexpr float MIN_AUDIO_VALUE = -1.0F;
+  constexpr float MAX_AUDIO_VALUE = +1.0F;
+  assert(MIN_AUDIO_VALUE <= audioValue);
+  assert(audioValue <= MAX_AUDIO_VALUE);
 
-  constexpr float HALF = 0.5F;
-  return HALF * (1.0F + audioValue);
+  return (1.0F + audioValue) / (MAX_AUDIO_VALUE - MIN_AUDIO_VALUE);
 }
 
 inline auto AudioSamples::GetNumDistinctChannels() const -> size_t

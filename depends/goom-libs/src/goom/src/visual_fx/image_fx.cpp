@@ -42,6 +42,7 @@ using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::MATH::HALF;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
@@ -185,8 +186,6 @@ void ImageFx::ApplyMultiple()
 {
   m_fxImpl->ApplyMultiple();
 }
-
-constexpr float HALF = 0.5F;
 
 ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
                                   const FxHelper& fxHelper,

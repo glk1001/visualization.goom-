@@ -33,15 +33,18 @@ using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::Fraction;
+using UTILS::MATH::HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::S_HALF;
+using UTILS::MATH::THIRD;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
 
 class GoomDotsFx::GoomDotsFxImpl
 {
 public:
-  GoomDotsFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
+  GoomDotsFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
 
   void Start();
 
@@ -110,7 +113,6 @@ private:
   static constexpr float GAMMA = 2.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -159,8 +161,7 @@ void GoomDotsFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
-constexpr float HALF = 1.0F / 2.0F;
-constexpr float THIRD = 1.0F / 3.0F;
+constexpr Fraction<uint32_t> TWO_FIFTHS{2, 5};
 
 // clang-format off
 constexpr float IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 10.0F;
@@ -170,15 +171,15 @@ constexpr float IMAGE_NAMES_WHITE_FLOWER_WEIGHT  =  5.0F;
 // clang-format on
 
 GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
-                                           const SmallImageBitmaps& smallBitmaps) noexcept
+                                           const SmallImageBitmaps& smallBitmaps)
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
     m_screenMidpoint{U_HALF * m_goomInfo.GetScreenInfo().width,
                      U_HALF * m_goomInfo.GetScreenInfo().height},
-    m_pointWidth{(m_goomInfo.GetScreenInfo().width * 2) / 5},
-    m_pointHeight{(m_goomInfo.GetScreenInfo().height * 2) / 5},
+    m_pointWidth{TWO_FIFTHS * m_goomInfo.GetScreenInfo().width},
+    m_pointHeight{TWO_FIFTHS * m_goomInfo.GetScreenInfo().height},
     m_pointWidthDiv2{HALF * static_cast<float>(m_pointWidth)},
     m_pointHeightDiv2{HALF * static_cast<float>(m_pointHeight)},
     m_pointWidthDiv3{THIRD * static_cast<float>(m_pointWidth)},
@@ -488,7 +489,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     constexpr float COLOR_MIX_T = 0.6F;
     const Pixel mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
-    return GetGammaCorrection(BRIGHTNESS, finalColor);
+    return m_gammaCorrect.GetCorrection(BRIGHTNESS, finalColor);
   };
   const auto getColor2 =
       [&getColor1]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
@@ -524,16 +525,6 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetMargin(const uint32_t radius) -> size
     return SMALLEST_MARGIN;
   }
   return SMALLEST_MARGIN + 1;
-}
-
-inline auto GoomDotsFx::GoomDotsFxImpl::GetGammaCorrection(const float brightness,
-                                                           const Pixel& color) const -> Pixel
-{
-  if constexpr (1.0F == GAMMA)
-  {
-    return GetBrighterColor(brightness, color);
-  }
-  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 } // namespace GOOM::VISUAL_FX

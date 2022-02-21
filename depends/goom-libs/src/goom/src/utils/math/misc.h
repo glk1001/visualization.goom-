@@ -72,10 +72,10 @@ private:
 };
 
 template<typename T>
-constexpr Fraction<T> HALF = Fraction<T>{T(1), T(2)};
-constexpr auto I_HALF = HALF<int32_t>;
-constexpr auto U_HALF = HALF<uint32_t>;
-constexpr auto S_HALF = HALF<size_t>;
+constexpr Fraction<T> FRAC_HALF = Fraction<T>{T(1), T(2)};
+constexpr auto I_HALF = FRAC_HALF<int32_t>;
+constexpr auto U_HALF = FRAC_HALF<uint32_t>;
+constexpr auto S_HALF = FRAC_HALF<size_t>;
 
 template<typename T>
 constexpr Fraction<T> QUARTER = Fraction<T>{T(1), T(4)};
@@ -92,6 +92,8 @@ template<typename T>
 {
   return static_cast<float>(numerator) / static_cast<float>(denominator);
 }
+constexpr float HALF = 1.0F / 2.0F;
+constexpr float THIRD = 1.0F / 3.0F;
 
 class RangeMapper
 {

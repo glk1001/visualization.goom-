@@ -472,8 +472,8 @@ void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
   else
   {
     // Enough dense points to make blurring worthwhile.
-    constexpr float PROB_NON_RANDOM_MIX_FACTOR = 4.0F / 5.0F;
-    if (m_goomRand.ProbabilityOf(PROB_NON_RANDOM_MIX_FACTOR))
+    if (constexpr float PROB_FIXED_MIX_FACTOR = 0.8F;
+        m_goomRand.ProbabilityOf(PROB_FIXED_MIX_FACTOR))
     {
       constexpr float FIXED_MIX_FACTOR = 0.98F;
       m_blurrer.SetNeighbourMixFactor(FIXED_MIX_FACTOR);
