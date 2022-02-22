@@ -57,11 +57,9 @@ add_library(goom
         src/utils/math/goom_rand_base.h
         src/utils/math/math20.h
         src/utils/math/misc.h
-        src/utils/math/math20.h
-        src/utils/math/damping_functions.cpp
+        src/utils/math/paths.h
         src/utils/math/randutils.cpp
         src/utils/name_value_pairs.h
-        src/utils/paths.h
         src/utils/strutils.cpp
         src/utils/t_values.cpp
         src/utils/text/drawable_text.cpp

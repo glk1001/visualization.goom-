@@ -16,7 +16,7 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
-#include "utils/paths.h"
+#include "utils/math/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -38,12 +38,12 @@ using DRAW::IGoomDraw;
 using TUBES::BrightnessAttenuation;
 using TUBES::Tube;
 using UTILS::Logging;
-using UTILS::PathParams;
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::PathParams;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::U_HALF;
 

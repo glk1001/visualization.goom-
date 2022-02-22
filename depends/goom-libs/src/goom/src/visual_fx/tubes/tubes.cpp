@@ -10,7 +10,7 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
-#include "utils/paths.h"
+#include "utils/math/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -33,14 +33,14 @@ using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using STD20::pi;
-using UTILS::LinearTimePath;
 using UTILS::Logging;
-using UTILS::OscillatingPath;
-using UTILS::PathParams;
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::IPath;
+using UTILS::MATH::OscillatingPath;
+using UTILS::MATH::PathParams;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
 using UTILS::MATH::THIRD_PI;
@@ -97,10 +97,10 @@ constexpr float LIGHTER_COLOR_POWER = 10.0F;
 
 class ShapeColorizer;
 
-class ParametricPath : public LinearTimePath
+class ParametricPath : public IPath
 {
 public:
-  explicit ParametricPath(const TValue& t) noexcept;
+  explicit ParametricPath(TValue& t) noexcept;
 
   [[nodiscard]] auto GetNextPoint() const -> Point2dInt override;
 
@@ -113,8 +113,8 @@ private:
   float m_kY = DEFAULT_K_Y;
 };
 
-ParametricPath::ParametricPath(const TValue& t) noexcept
-  : LinearTimePath{
+ParametricPath::ParametricPath(TValue& t) noexcept
+  : IPath{
         Point2dInt{0, 0},
         Point2dInt{0, 0},
         t
@@ -125,8 +125,10 @@ ParametricPath::ParametricPath(const TValue& t) noexcept
 auto ParametricPath::GetNextPoint() const -> Point2dInt
 {
   const Point2dInt point{
-      static_cast<int32_t>(std::round((m_b * std::cos(m_kX * GetT())) * std::cos(GetT()))),
-      static_cast<int32_t>(std::round((m_b * std::cos(m_kY * GetT())) * std::sin(GetT()))),
+      static_cast<int32_t>(
+          std::round((m_b * std::cos(m_kX * GetCurrentT())) * std::cos(GetCurrentT()))),
+      static_cast<int32_t>(
+          std::round((m_b * std::cos(m_kY * GetCurrentT())) * std::sin(GetCurrentT()))),
   };
 
   return point;
@@ -603,7 +605,7 @@ inline void Tube::TubeImpl::SetTransformCentreFunc(const TransformCentreFunc& fu
 
 inline auto Tube::TubeImpl::GetCentrePathT() const -> float
 {
-  return m_centrePath->GetT();
+  return m_centrePath->GetCurrentT();
 }
 
 inline void Tube::TubeImpl::SetCentrePathT(const float val)
@@ -700,7 +702,7 @@ void Tube::TubeImpl::DrawShapes()
 
 inline auto Tube::TubeImpl::GetHexLen() const -> float
 {
-  const float hexSizeT = std::fabs(m_shapes[0].path->GetT() - T_AT_CENTRE) / T_AT_CENTRE;
+  const float hexSizeT = std::fabs(m_shapes[0].path->GetCurrentT() - T_AT_CENTRE) / T_AT_CENTRE;
   return STD20::lerp(MIN_HEX_SIZE, MAX_HEX_SIZE, hexSizeT);
 }
 
@@ -992,7 +994,7 @@ auto ShapeColorizer::GetBrightness(const Shape& shape, const Point2dInt& shapeCe
                                               shapeCentrePos, MIN_BRIGHTNESS));
 
   constexpr float SMALL_T = 0.15F;
-  if (constexpr float HALFWAY_T = 0.5F; std::fabs(shape.path->GetT() - HALFWAY_T) < SMALL_T)
+  if (constexpr float HALFWAY_T = 0.5F; std::fabs(shape.path->GetCurrentT() - HALFWAY_T) < SMALL_T)
   {
     constexpr float SMALL_T_BRIGHTNESS = 0.250F;
     return SMALL_T_BRIGHTNESS * brightness;

@@ -1,45 +1,60 @@
 #pragma once
 
-#include "../point2d.h"
-#include "math/misc.h"
-#include "t_values.h"
+#include "misc.h"
+#include "point2d.h"
+#include "utils/t_values.h"
 
 #include <cmath>
 #include <cstdint>
 
-namespace GOOM::UTILS
+namespace GOOM::UTILS::MATH
 {
 
 class IPath
 {
 public:
-  IPath(const Point2dInt& startPos, const Point2dInt& finishPos) noexcept;
+  IPath(const Point2dInt& startPos, const Point2dInt& endPos, TValue& positionT) noexcept;
   IPath(const IPath&) noexcept = delete;
   IPath(IPath&&) noexcept = delete;
+  virtual ~IPath() noexcept = default;
   auto operator=(const IPath&) -> IPath& = delete;
   auto operator=(IPath&&) -> IPath& = delete;
-  virtual ~IPath() = default;
 
   [[nodiscard]] auto GetStartPos() const -> Point2dInt;
-  [[nodiscard]] auto GetFinishPos() const -> Point2dInt;
+  [[nodiscard]] auto GetEndPos() const -> Point2dInt;
+
+  [[nodiscard]] auto GetNumSteps() const -> uint32_t;
+  [[nodiscard]] auto GetStepSize() const -> float;
+  [[nodiscard]] auto GetCurrentT() const -> float;
+  void IncrementT();
 
   [[nodiscard]] virtual auto GetNextPoint() const -> Point2dInt = 0;
 
 private:
   const Point2dInt m_startPos;
-  const Point2dInt m_finishPos;
+  const Point2dInt m_endPos;
+  TValue& m_positionT;
 };
 
-class LinearTimePath : public IPath
+
+class LinearPath : public IPath
 {
 public:
-  LinearTimePath(const Point2dInt& startPos, const Point2dInt& finishPos, const TValue& t) noexcept;
+  using IPath::IPath;
 
-  [[nodiscard]] auto GetStepSize() const -> float;
-  [[nodiscard]] auto GetT() const -> float;
+  [[nodiscard]] auto GetNextPoint() const -> Point2dInt override;
+};
+
+class SinePath : public IPath
+{
+public:
+  SinePath(const Point2dInt& startPos, const Point2dInt& endPos, TValue& positionT) noexcept;
+
+  [[nodiscard]] auto GetNextPoint() const -> Point2dInt override;
 
 private:
-  const TValue& m_t;
+  const float m_distance;
+  const float m_rotateAngle;
 };
 
 struct PathParams
@@ -49,12 +64,12 @@ struct PathParams
   float yOscillatingFreq = 1.0;
 };
 
-class OscillatingPath : public LinearTimePath
+class OscillatingPath : public IPath
 {
 public:
   OscillatingPath(const Point2dInt& startPos,
                   const Point2dInt& finishPos,
-                  const TValue& t,
+                  TValue& t,
                   bool allowOscillatingPath);
 
   void SetPathParams(const PathParams& params);
@@ -72,8 +87,10 @@ private:
   [[nodiscard]] auto GetOscillatingPointAtNextT(const Point2dFlt& point) const -> Point2dFlt;
 };
 
-inline IPath::IPath(const Point2dInt& startPos, const Point2dInt& finishPos) noexcept
-  : m_startPos{startPos}, m_finishPos{finishPos}
+inline IPath::IPath(const Point2dInt& startPos,
+                    const Point2dInt& endPos,
+                    TValue& positionT) noexcept
+  : m_startPos{startPos}, m_endPos{endPos}, m_positionT{positionT}
 {
 }
 
@@ -82,33 +99,62 @@ inline auto IPath::GetStartPos() const -> Point2dInt
   return m_startPos;
 }
 
-inline auto IPath::GetFinishPos() const -> Point2dInt
+inline auto IPath::GetEndPos() const -> Point2dInt
 {
-  return m_finishPos;
+  return m_endPos;
 }
 
-inline LinearTimePath::LinearTimePath(const Point2dInt& startPos,
-                                      const Point2dInt& finishPos,
-                                      const TValue& t) noexcept
-  : IPath{startPos, finishPos}, m_t{t}
+inline auto IPath::GetNumSteps() const -> uint32_t
+{
+  return m_positionT.GetNumSteps();
+}
+
+inline auto IPath::GetStepSize() const -> float
+{
+  return m_positionT.GetStepSize();
+}
+
+inline auto IPath::GetCurrentT() const -> float
+{
+  return m_positionT();
+}
+
+inline void IPath::IncrementT()
+{
+  m_positionT.Increment();
+}
+
+inline auto LinearPath::GetNextPoint() const -> Point2dInt
+{
+  return lerp(GetStartPos(), GetEndPos(), GetCurrentT());
+}
+
+inline SinePath::SinePath(const Point2dInt& startPos,
+                          const Point2dInt& endPos,
+                          TValue& positionT) noexcept
+  : IPath{startPos, endPos, positionT},
+    m_distance{Distance(startPos.ToFlt(), endPos.ToFlt())},
+    m_rotateAngle{std::asin((static_cast<float>(endPos.y - startPos.y)) / m_distance)}
 {
 }
 
-inline auto LinearTimePath::GetStepSize() const -> float
+inline auto SinePath::GetNextPoint() const -> Point2dInt
 {
-  return m_t.GetStepSize();
-}
+  constexpr float FREQ = 2.0F;
 
-inline auto LinearTimePath::GetT() const -> float
-{
-  return m_t();
+  const float y = 100.0F * std::sin(FREQ * TWO_PI * GetCurrentT());
+  const float x = m_distance * GetCurrentT();
+
+  Point2dFlt newPoint{x, y};
+  newPoint.Rotate(m_rotateAngle);
+  return (newPoint + Vec2dFlt{GetStartPos().ToFlt()}).ToInt();
 }
 
 inline OscillatingPath::OscillatingPath(const Point2dInt& startPos,
                                         const Point2dInt& finishPos,
-                                        const TValue& t,
+                                        TValue& t,
                                         const bool allowOscillatingPath)
-  : LinearTimePath{startPos, finishPos, t},
+  : IPath{startPos, finishPos, t},
     m_currentStartPos{startPos},
     m_currentFinishPos{finishPos},
     m_allowOscillatingPath{allowOscillatingPath}
@@ -133,7 +179,7 @@ inline auto OscillatingPath::GetNextPoint() const -> Point2dInt
 inline auto OscillatingPath::GetPointAtNextT(const Point2dInt& point0,
                                              const Point2dInt& point1) const -> Point2dInt
 {
-  const Point2dFlt linearPoint = lerp(point0.ToFlt(), point1.ToFlt(), GetT());
+  const Point2dFlt linearPoint = lerp(point0.ToFlt(), point1.ToFlt(), GetCurrentT());
 
   if (!m_allowOscillatingPath)
   {
@@ -150,10 +196,10 @@ inline auto OscillatingPath::GetOscillatingPointAtNextT(const Point2dFlt& point)
 {
   return {
       point.x + (m_pathParams.oscillatingAmplitude *
-                 std::cos(m_pathParams.xOscillatingFreq * GetT() * MATH::TWO_PI)),
+                 std::cos(m_pathParams.xOscillatingFreq * GetCurrentT() * MATH::TWO_PI)),
       point.y + (m_pathParams.oscillatingAmplitude *
-                 std::sin(m_pathParams.yOscillatingFreq * GetT() * MATH::TWO_PI)),
+                 std::sin(m_pathParams.yOscillatingFreq * GetCurrentT() * MATH::TWO_PI)),
   };
 }
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::MATH

@@ -16,13 +16,10 @@ namespace COLOR
 class RandomColorMaps;
 }
 
-namespace UTILS
-{
-struct PathParams;
-namespace MATH
+namespace UTILS::MATH
 {
 class IGoomRand;
-}
+struct PathParams;
 }
 
 namespace VISUAL_FX::TUBES
@@ -113,7 +110,7 @@ public:
   void DecreaseCentreSpeed();
 
   void SetAllowOscillatingCirclePaths(bool val);
-  void SetCirclePathParams(const UTILS::PathParams& params);
+  void SetCirclePathParams(const UTILS::MATH::PathParams& params);
   static const float NORMAL_CIRCLE_SPEED;
   void SetCircleSpeed(float val);
   void IncreaseCircleSpeed();
