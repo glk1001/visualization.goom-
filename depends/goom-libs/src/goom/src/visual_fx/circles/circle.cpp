@@ -39,7 +39,10 @@ using UTILS::MATH::PathParams;
 using UTILS::MATH::TWO_PI;
 using UTILS::MATH::U_HALF;
 
-Circle::Circle(const FxHelper& fxHelper, const Helper& helper, const Params& circleParams)
+Circle::Circle(const FxHelper& fxHelper,
+               const Helper& helper,
+               const Params& circleParams,
+               const PathParams& pathParams)
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
@@ -53,7 +56,8 @@ Circle::Circle(const FxHelper& fxHelper, const Helper& helper, const Params& cir
                                 {static_cast<int32_t>(U_HALF * m_draw.GetScreenWidth()),
                                  static_cast<int32_t>(U_HALF * m_draw.GetScreenHeight())},
                                 circleParams.circleRadius)},
-    m_dotPaths{GetDotPaths()},
+    m_pathParams{pathParams},
+    m_dotPaths{GetDotPaths(pathParams)},
     m_colorTs{GetInitialColorTs()}
 {
 }
@@ -71,6 +75,11 @@ void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weighte
 void Circle::SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint)
 {
   // Don't need the zoom midpoint.
+}
+
+void Circle::SetPathParams(const PathParams& params)
+{
+  m_pathParams = params;
 }
 
 void Circle::Start()
@@ -140,12 +149,42 @@ void Circle::ChangeDotColorMaps()
 
 void Circle::ChangeDotDiameters()
 {
+  if (m_goomRand.ProbabilityOf(PROB_FIXED_DIAMETER))
+  {
+    ChangeToFixedDotDiameters();
+  }
+  else
+  {
+    ChangeToVariableDotDiameters();
+  }
+}
+
+void Circle::ChangeToFixedDotDiameters()
+{
   const uint32_t fixedDotDiameter =
       m_goomRand.GetRandInRange(m_helper.minDotDiameter, m_helper.maxDotDiameter + 1);
 
   for (auto& dotDiameter : m_dotDiameters)
   {
     dotDiameter = fixedDotDiameter;
+  }
+}
+
+void Circle::ChangeToVariableDotDiameters()
+{
+  const uint32_t smallDotDiameter =
+      m_goomRand.GetRandInRange(m_helper.minDotDiameter, m_helper.maxDotDiameter - 1);
+
+  constexpr uint32_t INCREASED_DIAMETER = 2;
+  const uint32_t minLargerDotDiameter =
+      std::min(m_helper.maxDotDiameter, smallDotDiameter + INCREASED_DIAMETER);
+  const uint32_t largerDotDiameter =
+      m_goomRand.GetRandInRange(minLargerDotDiameter, m_helper.maxDotDiameter + 1);
+
+  constexpr size_t LARGER_DIAMETER_EVERY = 10;
+  for (size_t i = 1; i < NUM_DOT_PATHS; ++i)
+  {
+    m_dotDiameters.at(i) = 0 == (i % LARGER_DIAMETER_EVERY) ? largerDotDiameter : smallDotDiameter;
   }
 }
 
@@ -360,16 +399,14 @@ auto Circle::GetRandomCircleCentreTargetPosition() const -> Point2dInt
   return lerp(m_circleCentreTarget, randomPosition, TARGET_T);
 }
 
-auto Circle::GetDotPaths() -> std::vector<UTILS::MATH::OscillatingPath>
+auto Circle::GetDotPaths(const PathParams& pathParams) -> std::vector<OscillatingPath>
 {
-  constexpr PathParams PATH_PARAMS{100.0F, 2.0F, 1.0F};
-
   std::vector<UTILS::MATH::OscillatingPath> dotPaths{};
 
   for (size_t i = 0; i < NUM_DOT_PATHS; ++i)
   {
     dotPaths.emplace_back(m_dotStartingPositions.at(i), m_currentCircleCentreTarget, m_positionT,
-                          PATH_PARAMS, true);
+                          pathParams, true);
   }
 
   return dotPaths;
@@ -383,7 +420,7 @@ inline void Circle::ResetCircleParams()
   }
 
   m_currentCircleCentreTarget = GetRandomCircleCentreTargetPosition();
-  m_dotPaths = GetDotPaths();
+  m_dotPaths = GetDotPaths(m_pathParams);
 
   ChangeDotOffset();
 }

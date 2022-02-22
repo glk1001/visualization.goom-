@@ -39,7 +39,10 @@ public:
     Point2dInt circleCentreTarget;
   };
 
-  Circle(const FxHelper& fxHelper, const Helper& helper, const Params& circleParams);
+  Circle(const FxHelper& fxHelper,
+         const Helper& helper,
+         const Params& circleParams,
+         const UTILS::MATH::PathParams& pathParams);
   Circle(const Circle&) noexcept = delete;
   Circle(Circle&&) noexcept = default;
   ~Circle() noexcept = default;
@@ -48,8 +51,8 @@ public:
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
                             std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
-
   void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
+  void SetPathParams(const UTILS::MATH::PathParams& params);
 
   void Start();
   void UpdateAndDraw();
@@ -100,8 +103,10 @@ private:
       {{0.0F, DELAY_TIME_AT_EDGE}, {1.0F, DELAY_TIME_AT_CENTRE}},
       0.0F
   };
+  UTILS::MATH::PathParams m_pathParams;
   std::vector<UTILS::MATH::OscillatingPath> m_dotPaths;
-  [[nodiscard]] auto GetDotPaths() -> std::vector<UTILS::MATH::OscillatingPath>;
+  [[nodiscard]] auto GetDotPaths(const UTILS::MATH::PathParams& pathParams)
+      -> std::vector<UTILS::MATH::OscillatingPath>;
 
   static constexpr float INNER_POSITION_MARGIN = 0.05F;
   void DrawNextCircle();
@@ -142,6 +147,9 @@ private:
   const COLOR::IColorMap* m_linesLowColorMap{};
   void ChangeDotColorMaps();
   void ChangeDotDiameters();
+  static constexpr float PROB_FIXED_DIAMETER = 0.2F;
+  void ChangeToFixedDotDiameters();
+  void ChangeToVariableDotDiameters();
   [[nodiscard]] auto GetFinalColor(float brightness, const Pixel& color) const -> Pixel;
   [[nodiscard]] auto GetFinalLowColor(float brightness, const Pixel& lowColor) const -> Pixel;
   [[nodiscard]] auto GetCorrectedColor(float brightness, const Pixel& color) const -> Pixel;

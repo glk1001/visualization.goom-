@@ -32,6 +32,8 @@ public:
   void UpdateAndDraw();
 
 private:
+  const UTILS::MATH::IGoomRand& m_goomRand;
+  const PluginInfo& m_goomInfo;
   BitmapGetter m_bitmapGetter;
 
   static constexpr float GAMMA = 1.0F / 2.2F;
@@ -42,9 +44,13 @@ private:
   std::vector<Circle> m_circles;
   [[nodiscard]] static auto GetCircles(const FxHelper& fxHelper,
                                        const Circle::Helper& helper,
+                                       const UTILS::MATH::PathParams& pathParams,
                                        uint32_t numCircles,
                                        const std::vector<Circle::Params>& circleParams)
       -> std::vector<Circle>;
+
+  void UpdateCirclePathParams();
+  [[nodiscard]] auto GetPathParams() const -> UTILS::MATH::PathParams;
 };
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
