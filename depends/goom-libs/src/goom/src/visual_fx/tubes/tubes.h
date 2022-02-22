@@ -78,17 +78,21 @@ public:
     DrawCircleFunc drawCircle;
     DrawSmallImageFunc drawSmallImage;
   };
+  struct Data
+  {
+    uint32_t tubeId;
+    DrawFuncs drawFuncs;
+    uint32_t screenWidth;
+    uint32_t screenHeight;
+    const UTILS::MATH::IGoomRand& goomRand;
+    std::shared_ptr<COLOR::RandomColorMaps> colorMaps;
+    std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps;
+    float radiusEdgeOffset;
+    float brightnessFactor;
+  };
 
   Tube() noexcept = delete;
-  Tube(uint32_t tubeId,
-       const DrawFuncs& drawFuncs,
-       uint32_t screenWidth,
-       uint32_t screenHeight,
-       const UTILS::MATH::IGoomRand& goomRand,
-       std::shared_ptr<COLOR::RandomColorMaps> colorMaps,
-       std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps,
-       float radiusEdgeOffset,
-       float brightnessFactor) noexcept;
+  Tube(const Data& data, const UTILS::MATH::PathParams& pathParams) noexcept;
 
   [[nodiscard]] auto IsActive() const -> bool;
 

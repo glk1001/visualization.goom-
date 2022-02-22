@@ -9,6 +9,7 @@
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+#include "utils/math/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 #include "visual_fx/fx_helper.h"
@@ -39,6 +40,11 @@ public:
   };
 
   Circle(const FxHelper& fxHelper, const Helper& helper, const Params& circleParams);
+  Circle(const Circle&) noexcept = delete;
+  Circle(Circle&&) noexcept = default;
+  ~Circle() noexcept = default;
+  auto operator=(const Circle&) -> Circle& = delete;
+  auto operator=(Circle&&) -> Circle& = delete;
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
                             std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
@@ -66,17 +72,6 @@ private:
   UTILS::Timer m_blankTimer{BLANK_TIME, true};
   void UpdateTime();
 
-  static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
-  static constexpr uint32_t MIN_POSITION_STEPS = 100;
-  static constexpr uint32_t MAX_POSITION_STEPS = 500;
-  static constexpr uint32_t DELAY_TIME_AT_CENTRE = 20;
-  static constexpr uint32_t DELAY_TIME_AT_EDGE = 10;
-  UTILS::TValue m_positionT{
-      UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-      DEFAULT_POSITION_STEPS,
-      {{0.0F, DELAY_TIME_AT_EDGE}, {1.0F, DELAY_TIME_AT_CENTRE}},
-      0.0F
-  };
   Point2dInt m_currentCircleCentreTarget;
   [[nodiscard]] auto GetRandomCircleCentreTargetPosition() const -> Point2dInt;
   void UpdateSpeeds();
@@ -93,6 +88,20 @@ private:
                                                     const Point2dInt& centre,
                                                     float radius)
       -> std::array<Point2dInt, NUM_DOT_PATHS>;
+
+  static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
+  static constexpr uint32_t MIN_POSITION_STEPS = 100;
+  static constexpr uint32_t MAX_POSITION_STEPS = 500;
+  static constexpr uint32_t DELAY_TIME_AT_CENTRE = 20;
+  static constexpr uint32_t DELAY_TIME_AT_EDGE = 10;
+  UTILS::TValue m_positionT{
+      UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
+      DEFAULT_POSITION_STEPS,
+      {{0.0F, DELAY_TIME_AT_EDGE}, {1.0F, DELAY_TIME_AT_CENTRE}},
+      0.0F
+  };
+  std::vector<UTILS::MATH::OscillatingPath> m_dotPaths;
+  [[nodiscard]] auto GetDotPaths() -> std::vector<UTILS::MATH::OscillatingPath>;
 
   static constexpr float INNER_POSITION_MARGIN = 0.05F;
   void DrawNextCircle();

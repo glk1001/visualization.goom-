@@ -14,8 +14,8 @@ class IPath
 {
 public:
   IPath(const Point2dInt& startPos, const Point2dInt& endPos, TValue& positionT) noexcept;
-  IPath(const IPath&) noexcept = delete;
-  IPath(IPath&&) noexcept = delete;
+  IPath(const IPath&) noexcept = default;
+  IPath(IPath&&) noexcept = default;
   virtual ~IPath() noexcept = default;
   auto operator=(const IPath&) -> IPath& = delete;
   auto operator=(IPath&&) -> IPath& = delete;
@@ -70,6 +70,7 @@ public:
   OscillatingPath(const Point2dInt& startPos,
                   const Point2dInt& finishPos,
                   TValue& t,
+                  const PathParams& params,
                   bool allowOscillatingPath);
 
   void SetPathParams(const PathParams& params);
@@ -80,7 +81,7 @@ public:
 private:
   Point2dInt m_currentStartPos;
   Point2dInt m_currentFinishPos;
-  PathParams m_pathParams{};
+  PathParams m_pathParams;
   bool m_allowOscillatingPath;
   [[nodiscard]] auto GetPointAtNextT(const Point2dInt& point0, const Point2dInt& point1) const
       -> Point2dInt;
@@ -153,10 +154,12 @@ inline auto SinePath::GetNextPoint() const -> Point2dInt
 inline OscillatingPath::OscillatingPath(const Point2dInt& startPos,
                                         const Point2dInt& finishPos,
                                         TValue& t,
+                                        const PathParams& params,
                                         const bool allowOscillatingPath)
   : IPath{startPos, finishPos, t},
     m_currentStartPos{startPos},
     m_currentFinishPos{finishPos},
+    m_pathParams{params},
     m_allowOscillatingPath{allowOscillatingPath}
 {
 }

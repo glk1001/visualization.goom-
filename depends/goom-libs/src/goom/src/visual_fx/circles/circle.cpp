@@ -9,6 +9,7 @@
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+#include "utils/math/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -33,6 +34,8 @@ using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
+using UTILS::MATH::OscillatingPath;
+using UTILS::MATH::PathParams;
 using UTILS::MATH::TWO_PI;
 using UTILS::MATH::U_HALF;
 
@@ -50,6 +53,7 @@ Circle::Circle(const FxHelper& fxHelper, const Helper& helper, const Params& cir
                                 {static_cast<int32_t>(U_HALF * m_draw.GetScreenWidth()),
                                  static_cast<int32_t>(U_HALF * m_draw.GetScreenHeight())},
                                 circleParams.circleRadius)},
+    m_dotPaths{GetDotPaths()},
     m_colorTs{GetInitialColorTs()}
 {
 }
@@ -308,19 +312,12 @@ inline auto Circle::GetDotLowColor(const size_t i, const float dotBrightness) co
 
 auto Circle::GetNextDotPositions() const -> std::array<Point2dInt, NUM_DOT_PATHS>
 {
-  const float tPosition = m_positionT() < (1.0F - INNER_POSITION_MARGIN)
-                              ? m_positionT()
-                              : (1.0F - INNER_POSITION_MARGIN);
-
-  const Point2dInt dotOffset = GetNextDotOffset(tPosition);
-
   std::array<Point2dInt, NUM_DOT_PATHS> nextDotPositions{};
   for (size_t i = 0; i < NUM_DOT_PATHS; ++i)
   {
     //const Point2dInt jitter = {m_goomRand.GetRandInRange(-2, +3),
     //                           m_goomRand.GetRandInRange(-2, +3)};
-    nextDotPositions.at(i) = dotOffset + Vec2dInt{lerp(m_dotStartingPositions.at(i),
-                                                       m_currentCircleCentreTarget, tPosition)};
+    nextDotPositions.at(i) = m_dotPaths.at(i).GetNextPoint();
   }
   return nextDotPositions;
 }
@@ -363,6 +360,21 @@ auto Circle::GetRandomCircleCentreTargetPosition() const -> Point2dInt
   return lerp(m_circleCentreTarget, randomPosition, TARGET_T);
 }
 
+auto Circle::GetDotPaths() -> std::vector<UTILS::MATH::OscillatingPath>
+{
+  constexpr PathParams PATH_PARAMS{100.0F, 2.0F, 1.0F};
+
+  std::vector<UTILS::MATH::OscillatingPath> dotPaths{};
+
+  for (size_t i = 0; i < NUM_DOT_PATHS; ++i)
+  {
+    dotPaths.emplace_back(m_dotStartingPositions.at(i), m_currentCircleCentreTarget, m_positionT,
+                          PATH_PARAMS, true);
+  }
+
+  return dotPaths;
+}
+
 inline void Circle::ResetCircleParams()
 {
   if ((!m_positionT.HasJustHitStartBoundary()) && (!m_positionT.HasJustHitEndBoundary()))
@@ -371,6 +383,7 @@ inline void Circle::ResetCircleParams()
   }
 
   m_currentCircleCentreTarget = GetRandomCircleCentreTargetPosition();
+  m_dotPaths = GetDotPaths();
 
   ChangeDotOffset();
 }

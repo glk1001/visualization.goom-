@@ -381,16 +381,29 @@ void TubesFx::TubeFxImpl::InitTubes()
       { DrawImageToMany(x, y, imageName, size, colors); },
   };
 
-  m_tubes.emplace_back(MAIN_TUBE_INDEX, drawToManyFuncs, m_draw.GetScreenWidth(),
-                       m_draw.GetScreenHeight(), m_goomRand, m_colorMaps, m_lowColorMaps,
-                       TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
-                       TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor);
+  const Tube::Data mainTubeData{MAIN_TUBE_INDEX,
+                                drawToManyFuncs,
+                                m_draw.GetScreenWidth(),
+                                m_draw.GetScreenHeight(),
+                                m_goomRand,
+                                m_colorMaps,
+                                m_lowColorMaps,
+                                TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
+                                TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor};
+  m_tubes.emplace_back(mainTubeData, TUBE_SETTINGS.at(MAIN_TUBE_INDEX).circlePathParams);
+
   for (uint32_t i = SECONDARY_TUBES_START_INDEX; i < NUM_TUBES; ++i)
   {
-    m_tubes.emplace_back(i, drawToOneFuncs, m_draw.GetScreenWidth(), m_draw.GetScreenHeight(),
-                         m_goomRand, m_colorMaps, m_lowColorMaps,
-                         TUBE_SETTINGS.at(i).radiusEdgeOffset,
-                         TUBE_SETTINGS.at(i).brightnessFactor);
+    const Tube::Data tubeData{i,
+                              drawToOneFuncs,
+                              m_draw.GetScreenWidth(),
+                              m_draw.GetScreenHeight(),
+                              m_goomRand,
+                              m_colorMaps,
+                              m_lowColorMaps,
+                              TUBE_SETTINGS.at(i).radiusEdgeOffset,
+                              TUBE_SETTINGS.at(i).brightnessFactor};
+    m_tubes.emplace_back(tubeData, TUBE_SETTINGS.at(i).circlePathParams);
   }
 
   for (auto& tube : m_tubes)
