@@ -64,9 +64,9 @@ inline auto GoomTitleDisplayer::GetSelectedFontPath() const -> std::string
 inline auto GoomTitleDisplayer::GetSelectedFontSize() const -> int32_t
 {
   const FontInfo& fontInfo = S_FONT_INFO.at(m_fontInfoIndex);
-  const auto maxFontSize =
-      static_cast<int32_t>(FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT *
-                           static_cast<float>(m_screenHeight) * fontInfo.fontSizeNormalizeFactor);
+  const auto maxFontSize = static_cast<int32_t>(
+      (FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT * static_cast<float>(m_screenHeight)) *
+      fontInfo.fontSizeNormalizeFactor);
   return maxFontSize;
 }
 
@@ -119,6 +119,11 @@ inline void GoomTitleDisplayer::UpdateColorMaps()
 
 inline void GoomTitleDisplayer::UpdateFontSize()
 {
+  if (m_timeLeftOfTitleDisplay < 0)
+  {
+    return;
+  }
+
   if (m_timeLeftOfTitleDisplay < TIME_TO_START_FINAL_PHASE)
   {
     m_textDraw->SetFontSize(GetFinalPhaseFontSize(m_timeLeftOfTitleDisplay));
@@ -127,6 +132,11 @@ inline void GoomTitleDisplayer::UpdateFontSize()
 
 inline void GoomTitleDisplayer::UpdateTextPosition()
 {
+  if (m_timeLeftOfTitleDisplay < 0)
+  {
+    return;
+  }
+
   m_xPos += GetXIncrement();
   m_yPos += GetYIncrement();
 }
@@ -143,7 +153,7 @@ inline void GoomTitleDisplayer::SetFinalPhaseColorMaps()
 inline auto GoomTitleDisplayer::GetFinalPhaseFontSize(const int32_t timeLeftOfTitleDisplay) const
     -> int32_t
 {
-  constexpr float MAX_FONT_SIZE_MULTIPLIER = 15.0F;
+  constexpr float MAX_FONT_SIZE_MULTIPLIER = 10.0F;
   const float fractionOfTimeLeft =
       GetFltFraction(timeLeftOfTitleDisplay, TIME_TO_START_FINAL_PHASE);
   const float t = 1.0F - std::pow(fractionOfTimeLeft, 0.7F);
@@ -167,8 +177,21 @@ inline auto GoomTitleDisplayer::GetFinalPhaseCentrePenPos(const std::string& str
   return GetLeftAlignedPenForCentringStringAt(*m_textDraw, str, fontSize, screenCentre).ToFlt();
 }
 
+// Reduce processing time by skipping some draws near the end (when the font is bigger).
+inline auto GoomTitleDisplayer::SkipThisDraw() const -> bool
+{
+  constexpr int32_t SKIP_FREQ = 5;
+  return IsFinalPhase() && (m_timeLeftOfTitleDisplay > 0) &&
+         (0 == (m_timeLeftOfTitleDisplay % SKIP_FREQ));
+}
+
 void GoomTitleDisplayer::DrawText(const std::string& text)
 {
+  if (SkipThisDraw())
+  {
+    return;
+  }
+
   const float colorT = GetColorT();
   const float fontCharColorMixT = GetFontCharColorMixT();
   const float textBrightness = GetTextBrightness();
@@ -253,6 +276,11 @@ inline auto GoomTitleDisplayer::GetFinalOutlineColor(const float fontColorT,
 
 inline auto GoomTitleDisplayer::GetColorT() const -> float
 {
+  if (m_timeLeftOfTitleDisplay <= 0)
+  {
+    return 0.0F;
+  }
+
   return GetFltFraction(m_timeLeftOfTitleDisplay, MAX_TEXT_DISPLAY_TIME);
 }
 
@@ -266,6 +294,11 @@ inline auto GoomTitleDisplayer::GetTextBrightness() const -> float
   }
 
   constexpr float MAX_BRIGHTNESS_FACTOR = 2.0F;
+  if (m_timeLeftOfTitleDisplay <= 0)
+  {
+    return BASE_BRIGHTNESS * MAX_BRIGHTNESS_FACTOR;
+  }
+
   const float fractionOfTimeLeft =
       GetFltFraction(m_timeLeftOfTitleDisplay, TIME_TO_START_FINAL_PHASE);
   return BASE_BRIGHTNESS * (MAX_BRIGHTNESS_FACTOR - fractionOfTimeLeft);
@@ -282,6 +315,10 @@ inline auto GoomTitleDisplayer::GetFontCharColorMixT() const -> float
   {
     return GetFltFraction(m_timeLeftOfTitleDisplay, TIME_TO_START_MIDDLE_PHASE);
   }
+  if (m_timeLeftOfTitleDisplay <= 0)
+  {
+    return 0.0F;
+  }
 
   return GetFltFraction(m_timeLeftOfTitleDisplay, TIME_TO_START_FINAL_PHASE);
 }
@@ -293,8 +330,11 @@ auto GoomTitleDisplayer::GetCharSpacing() const -> float
     return 0.0F;
   }
 
-  const auto timeGone = static_cast<float>(TIME_TO_START_MIDDLE_PHASE - m_timeLeftOfTitleDisplay);
   constexpr float SPACE_FACTOR = 0.056F;
+  const auto timeGone = static_cast<float>(
+      m_timeLeftOfTitleDisplay <= 0 ? TIME_TO_START_MIDDLE_PHASE
+                                    : TIME_TO_START_MIDDLE_PHASE - m_timeLeftOfTitleDisplay);
+
   return SPACE_FACTOR * timeGone;
 }
 

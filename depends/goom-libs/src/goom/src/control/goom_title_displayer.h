@@ -76,6 +76,7 @@ private:
   std::reference_wrapper<const COLOR::IColorMap> m_textOutlineColorMap;
   std::reference_wrapper<const COLOR::IColorMap> m_charColorMap;
   void DrawText(const std::string& text);
+  [[nodiscard]] auto SkipThisDraw() const -> bool;
   [[nodiscard]] auto GetColorT() const -> float;
   [[nodiscard]] auto GetFontCharColorMixT() const -> float;
   [[nodiscard]] auto GetTextBrightness() const -> float;
@@ -147,7 +148,8 @@ inline auto GoomTitleDisplayer::IsFinalPhase() const -> bool
 
 inline auto GoomTitleDisplayer::IsFinished() const -> bool
 {
-  return m_timeLeftOfTitleDisplay <= 0;
+  constexpr int32_t LINGER_TIME = 10;
+  return m_timeLeftOfTitleDisplay <= -LINGER_TIME;
 }
 
 } // namespace CONTROL
