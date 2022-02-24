@@ -477,7 +477,7 @@ inline void GoomControl::GoomControlImpl::DisplayCurrentTitle()
   {
     constexpr float FINAL_TITLE_BUFF_INTENSITY = 0.2F;
     m_goomTextOutput.SetBuffIntensity(FINAL_TITLE_BUFF_INTENSITY);
-    m_goomTextOutput.SetBuffers(GetCurrentBuffers());
+    m_goomTextOutput.SetBuffers({&m_imageBuffers.GetP1()});
   }
   else
   {
