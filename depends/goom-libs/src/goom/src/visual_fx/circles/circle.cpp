@@ -101,12 +101,14 @@ void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weighte
   m_colorMaps = weightedMaps;
   m_lowColorMaps = weightedLowMaps;
 
-  m_colorMapsGrid.SetColorMaps(m_colorMaps->GetRandomColorMap(), GetVerticalColorMaps());
-  m_lowColorMapsGrid.SetColorMaps(m_lowColorMaps->GetRandomColorMap(), GetVerticalLowColorMaps());
+  const IColorMap& newColorMap = m_colorMaps->GetRandomColorMap();
+  m_colorMapsGrid.SetColorMaps(newColorMap, GetVerticalColorMaps());
+  const IColorMap& newLowColorMap = m_lowColorMaps->GetRandomColorMap();
+  m_lowColorMapsGrid.SetColorMaps(newLowColorMap, GetVerticalLowColorMaps());
   m_currentColorGridMixT = m_goomRand.GetRandInRange(0.0F, 1.0F);
 
-  m_linesColorMap = &m_colorMaps->GetRandomColorMap();
-  m_linesLowColorMap = &m_lowColorMaps->GetRandomColorMap();
+  m_linesColorMap = &newColorMap;
+  m_linesLowColorMap = &newLowColorMap;
   constexpr float PROB_SHOW_LINE = 0.05F;
   m_showLine = m_goomRand.ProbabilityOf(PROB_SHOW_LINE);
 
