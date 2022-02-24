@@ -76,9 +76,13 @@ void Circles::Start()
 
 void Circles::UpdateAndDraw()
 {
-  std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.UpdateAndDraw(); });
-
+  UpdateAndDrawCircles();
   UpdateCirclePathParams();
+}
+
+inline void Circles::UpdateAndDrawCircles()
+{
+  std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.UpdateAndDraw(); });
 }
 
 inline void Circles::UpdateCirclePathParams()

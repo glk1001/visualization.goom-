@@ -48,6 +48,7 @@ private:
                                        uint32_t numCircles,
                                        const std::vector<Circle::Params>& circleParams)
       -> std::vector<Circle>;
+  void UpdateAndDrawCircles();
 
   void UpdateCirclePathParams();
   [[nodiscard]] auto GetPathParams() const -> UTILS::MATH::PathParams;

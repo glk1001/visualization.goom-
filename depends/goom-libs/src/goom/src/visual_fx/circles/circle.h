@@ -57,6 +57,7 @@ public:
 
   void Start();
   void UpdateAndDraw();
+  [[nodiscard]] auto GetLastDrawnCircleDots() const -> const std::vector<Point2dInt>&;
 
 private:
   DRAW::IGoomDraw& m_draw;
@@ -82,6 +83,7 @@ private:
 
   static constexpr uint32_t NUM_DOTS = 30;
   static_assert(UTILS::MATH::IsEven(NUM_DOTS));
+  std::vector<Point2dInt> m_lastDrawnDots;
 
   void DrawNextCircle();
   void DrawNextCircleDots();
@@ -118,5 +120,10 @@ private:
   [[nodiscard]] auto GetFinalLowColor(float brightness, const Pixel& lowColor) const -> Pixel;
   [[nodiscard]] auto GetCorrectedColor(float brightness, const Pixel& color) const -> Pixel;
 };
+
+inline auto Circle::GetLastDrawnCircleDots() const -> const std::vector<Point2dInt>&
+{
+  return m_lastDrawnDots;
+}
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

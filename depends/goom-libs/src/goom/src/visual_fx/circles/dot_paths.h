@@ -15,8 +15,9 @@ class DotPaths
 {
 public:
   DotPaths(uint32_t numDots,
-           const Point2dInt& startTarget,
+           const Point2dInt& startCentre,
            float startRadius,
+           const Point2dInt& startTarget,
            const UTILS::MATH::PathParams& startPathParams) noexcept;
 
   void SetTarget(const Point2dInt& target);

@@ -47,23 +47,20 @@ Circle::Circle(const FxHelper& fxHelper,
     m_helper{helper},
     m_circleCentreTarget{circleParams.circleCentreTarget},
     m_dotPaths{NUM_DOTS,
-              {static_cast<int32_t>(U_HALF * m_draw.GetScreenWidth()),
-               static_cast<int32_t>(U_HALF * m_draw.GetScreenHeight())},
-              circleParams.circleRadius,
-              pathParams},
+               {static_cast<int32_t>(U_HALF * m_draw.GetScreenWidth()),
+                static_cast<int32_t>(U_HALF * m_draw.GetScreenHeight())},
+               circleParams.circleRadius,
+               circleParams.circleCentreTarget,
+               pathParams},
     m_dotDiameters{m_goomRand, NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter},
+    m_lastDrawnDots(NUM_DOTS),
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
     m_lowColorMaps{m_colorMaps},
-    m_colorMapsGrid{NUM_DOTS,
-                    m_colorMaps->GetRandomColorMap(),
-                    m_dotPaths.GetPositionTRef(),
-                    GetVerticalColorMaps(),
-                    [this](const size_t i){ return GetColorMixT(i);} },
-    m_lowColorMapsGrid{NUM_DOTS,
-                       m_lowColorMaps->GetRandomColorMap(),
-                       m_dotPaths.GetPositionTRef(),
+    m_colorMapsGrid{NUM_DOTS, m_colorMaps->GetRandomColorMap(), m_dotPaths.GetPositionTRef(),
+                    GetVerticalColorMaps(), [this](const size_t i) { return GetColorMixT(i); }},
+    m_lowColorMapsGrid{NUM_DOTS, m_lowColorMaps->GetRandomColorMap(), m_dotPaths.GetPositionTRef(),
                        GetVerticalLowColorMaps(),
-                       [this](const size_t i){ return GetColorMixT(i);} }
+                       [this](const size_t i) { return GetColorMixT(i); }}
 {
 }
 
@@ -205,6 +202,7 @@ void Circle::DrawNextCircleDots()
     DrawDot(dotPosition, dotDiameter, dotColor, dotLowColor);
     DrawLine(prevDotPosition, dotPosition, lineBrightness, tLineColor);
 
+    m_lastDrawnDots.at(i) = dotPosition;
     prevDotPosition = dotPosition;
     tLineColor += T_LINE_COLOR_STEP;
   }

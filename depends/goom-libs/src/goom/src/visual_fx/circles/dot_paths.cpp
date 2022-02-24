@@ -19,11 +19,12 @@ using UTILS::MATH::PathParams;
 using UTILS::MATH::TWO_PI;
 
 DotPaths::DotPaths(const uint32_t numDots,
-                   const Point2dInt& startTarget,
+                   const Point2dInt& startCentre,
                    const float startRadius,
+                   const Point2dInt& startTarget,
                    const PathParams& startPathParams) noexcept
   : m_numDots{numDots},
-    m_dotStartingPositions{GetDotStartingPositions(m_numDots, startTarget, startRadius)},
+    m_dotStartingPositions{GetDotStartingPositions(m_numDots, startCentre, startRadius)},
     m_target{startTarget},
     m_pathParams{startPathParams},
     m_dotPaths{GetNewDotPaths()}

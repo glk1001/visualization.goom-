@@ -56,14 +56,14 @@ void DotDiameters::ChangeToVariableDotDiameters()
   const uint32_t smallDotDiameter =
       m_goomRand.GetRandInRange(m_minDotDiameter, m_maxDotDiameter - 1);
 
-  constexpr uint32_t INCREASED_DIAMETER = 2;
+  constexpr uint32_t INCREASED_DIAMETER = 3;
   const uint32_t minLargerDotDiameter =
       std::min(m_maxDotDiameter, smallDotDiameter + INCREASED_DIAMETER);
   const uint32_t largerDotDiameter =
       m_goomRand.GetRandInRange(minLargerDotDiameter, m_maxDotDiameter + 1);
 
   constexpr uint32_t MIN_LARGER_DIAMETER_FREQ = 2;
-  constexpr uint32_t MAX_LARGER_DIAMETER_FREQ = 7;
+  constexpr uint32_t MAX_LARGER_DIAMETER_FREQ = 5;
   const size_t largerDiameterEvery =
       m_goomRand.GetRandInRange(MIN_LARGER_DIAMETER_FREQ, MAX_LARGER_DIAMETER_FREQ + 1);
 
