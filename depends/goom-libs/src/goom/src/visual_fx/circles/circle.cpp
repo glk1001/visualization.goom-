@@ -35,6 +35,7 @@ using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
 using UTILS::MATH::PathParams;
+using UTILS::MATH::U_HALF;
 
 Circle::Circle(const FxHelper& fxHelper,
                const Helper& helper,
@@ -45,12 +46,56 @@ Circle::Circle(const FxHelper& fxHelper,
     m_goomRand{fxHelper.GetGoomRand()},
     m_helper{helper},
     m_circleCentreTarget{circleParams.circleCentreTarget},
-    m_dotPaths{NUM_DOTS, m_circleCentreTarget, circleParams.circleRadius, pathParams},
+    m_dotPaths{NUM_DOTS,
+              {static_cast<int32_t>(U_HALF * m_draw.GetScreenWidth()),
+               static_cast<int32_t>(U_HALF * m_draw.GetScreenHeight())},
+              circleParams.circleRadius,
+              pathParams},
     m_dotDiameters{m_goomRand, NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter},
-    m_colorTs{GetInitialColorTs()},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
-    m_lowColorMaps{m_colorMaps}
+    m_lowColorMaps{m_colorMaps},
+    m_colorMapsGrid{NUM_DOTS,
+                    m_colorMaps->GetRandomColorMap(),
+                    m_dotPaths.GetPositionTRef(),
+                    GetVerticalColorMaps(),
+                    [this](const size_t i){ return GetColorMixT(i);} },
+    m_lowColorMapsGrid{NUM_DOTS,
+                       m_lowColorMaps->GetRandomColorMap(),
+                       m_dotPaths.GetPositionTRef(),
+                       GetVerticalLowColorMaps(),
+                       [this](const size_t i){ return GetColorMixT(i);} }
 {
+}
+
+inline auto Circle::GetColorMixT([[maybe_unused]] const size_t colorIndex) const -> float
+{
+  return m_currentColorGridMixT;
+}
+
+auto Circle::GetVerticalColorMaps() const -> std::vector<const COLOR::IColorMap*>
+{
+  std::vector<const COLOR::IColorMap*> colorMaps(NUM_DOTS);
+
+  colorMaps.at(0) = &m_colorMaps->GetRandomColorMap();
+  for (size_t i = 1; i < NUM_DOTS; ++i)
+  {
+    colorMaps.at(i) = colorMaps.at(0);
+  }
+
+  return colorMaps;
+}
+
+auto Circle::GetVerticalLowColorMaps() const -> std::vector<const COLOR::IColorMap*>
+{
+  std::vector<const COLOR::IColorMap*> colorMaps(NUM_DOTS);
+
+  colorMaps.at(0) = &m_lowColorMaps->GetRandomColorMap();
+  for (size_t i = 1; i < NUM_DOTS; ++i)
+  {
+    colorMaps.at(i) = colorMaps.at(0);
+  }
+
+  return colorMaps;
 }
 
 void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps,
@@ -59,7 +104,15 @@ void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weighte
   m_colorMaps = weightedMaps;
   m_lowColorMaps = weightedLowMaps;
 
-  ChangeDotColorMaps();
+  m_colorMapsGrid.SetColorMaps(m_colorMaps->GetRandomColorMap(), GetVerticalColorMaps());
+  m_lowColorMapsGrid.SetColorMaps(m_lowColorMaps->GetRandomColorMap(), GetVerticalLowColorMaps());
+  m_currentColorGridMixT = m_goomRand.GetRandInRange(0.0F, 1.0F);
+
+  m_linesColorMap = &m_colorMaps->GetRandomColorMap();
+  m_linesLowColorMap = &m_lowColorMaps->GetRandomColorMap();
+  constexpr float PROB_SHOW_LINE = 0.2F;
+  m_showLine = m_goomRand.ProbabilityOf(PROB_SHOW_LINE);
+
   m_dotDiameters.ChangeDotDiameters();
 }
 
@@ -75,51 +128,20 @@ void Circle::SetPathParams(const PathParams& pathParams)
 
 void Circle::Start()
 {
-  ChangeDotColorMaps();
+  // nothing to do
 }
 
 void Circle::UpdateAndDraw()
 {
   UpdateTime();
-  UpdateSpeeds();
+  UpdatePositionSpeed();
   DrawNextCircle();
-}
-
-auto Circle::GetInitialColorTs() -> std::vector<TValue>
-{
-  std::vector<TValue> colorTs{};
-  for (size_t i = 0; i < NUM_DOTS; ++i)
-  {
-    colorTs.emplace_back(TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_COLOR_STEPS, 0.0F);
-  }
-  return colorTs;
-}
-
-void Circle::ChangeDotColorMaps()
-{
-  m_dotColorMaps.at(0) = &m_colorMaps->GetRandomColorMap();
-  m_dotLowColorMaps.at(0) = &m_lowColorMaps->GetRandomColorMap();
-
-  for (size_t i = 1; i < NUM_DOTS; ++i)
-  {
-    m_dotColorMaps.at(i) = m_dotColorMaps.at(0);
-    m_dotLowColorMaps.at(i) = m_dotLowColorMaps.at(0);
-  }
-
-  m_linesColorMap = m_dotColorMaps.at(0);
-  m_linesLowColorMap = m_dotLowColorMaps.at(0);
 }
 
 inline void Circle::UpdateTime()
 {
   ++m_updateNum;
   m_blankTimer.Increment();
-}
-
-inline void Circle::UpdateSpeeds()
-{
-  UpdatePositionSpeed();
-  UpdateColorLerpSpeed();
 }
 
 inline void Circle::UpdatePositionSpeed()
@@ -136,37 +158,6 @@ inline auto Circle::GetPositionTNumSteps() const -> uint32_t
 {
   return std::min(MIN_POSITION_STEPS + m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom(),
                   MAX_POSITION_STEPS);
-}
-
-void Circle::UpdateColorLerpSpeed()
-{
-  if (constexpr float PROB_NO_SPEED_CHANGE = 0.3F; m_goomRand.ProbabilityOf(PROB_NO_SPEED_CHANGE))
-  {
-    return;
-  }
-
-  constexpr uint32_t MAX_COLOR_STEPS_DIVISOR = 10;
-
-  if (constexpr float PROB_SAME_T_S = 0.9F; m_goomRand.ProbabilityOf(PROB_SAME_T_S))
-  {
-    const uint32_t colorStepsDivisor = m_goomRand.GetRandInRange(1U, MAX_COLOR_STEPS_DIVISOR);
-    for (auto& colorT : m_colorTs)
-    {
-      colorT.SetNumSteps(GetColorTNumSteps(colorStepsDivisor));
-    }
-    return;
-  }
-
-  for (auto& colorT : m_colorTs)
-  {
-    const uint32_t colorStepsDivisor = m_goomRand.GetRandInRange(1U, MAX_COLOR_STEPS_DIVISOR);
-    colorT.SetNumSteps(GetColorTNumSteps(colorStepsDivisor));
-  }
-}
-
-inline auto Circle::GetColorTNumSteps(const uint32_t colorStepsDivisor) const -> uint32_t
-{
-  return std::max(m_dotPaths.GetPositionTNumSteps() / colorStepsDivisor, colorStepsDivisor);
 }
 
 inline void Circle::DrawNextCircle()
@@ -189,11 +180,6 @@ inline void Circle::IncrementTs()
   }
 
   m_dotPaths.IncrementPositionT();
-
-  for (auto& colorT : m_colorTs)
-  {
-    colorT.Increment();
-  }
 }
 
 void Circle::DrawNextCircleDots()
@@ -203,15 +189,18 @@ void Circle::DrawNextCircleDots()
   const float brightness = GetCurrentBrightness();
   const float dotBrightness = GetDotBrightness(brightness);
   const float lineBrightness = GetLineBrightness(brightness);
+  const std::vector<Pixel> dotColors = GetDotColors(dotBrightness);
+  const std::vector<Pixel> dotLowColors = GetDotLowColors(dotBrightness);
 
   float tLineColor = 0.0F;
   Point2dInt prevDotPosition = nextDotPositions[NUM_DOTS - 1];
   for (size_t i = 0; i < NUM_DOTS; ++i)
   {
-    const Point2dInt dotPosition = nextDotPositions.at(i);
+    const Vec2dInt jitter = {m_goomRand.GetRandInRange(-2, +3), m_goomRand.GetRandInRange(-2, +3)};
+    const Point2dInt dotPosition = nextDotPositions.at(i) + jitter;
     const uint32_t dotDiameter = m_dotDiameters.GetDotDiameters().at(i);
-    const Pixel dotColor = GetDotColor(i, dotBrightness);
-    const Pixel dotLowColor = GetDotLowColor(i, dotBrightness);
+    const Pixel dotColor = dotColors.at(i);
+    const Pixel dotLowColor = dotLowColors.at(i);
 
     DrawDot(dotPosition, dotDiameter, dotColor, dotLowColor);
     DrawLine(prevDotPosition, dotPosition, lineBrightness, tLineColor);
@@ -249,20 +238,30 @@ inline auto Circle::GetLineBrightness(const float brightness) const -> float
   return IsSpecialUpdateNum() ? (BRIGHTNESS_INCREASE * brightness) : brightness;
 }
 
-inline auto Circle::GetDotColor(const size_t i, const float dotBrightness) const -> Pixel
+inline auto Circle::GetDotColors(const float dotBrightness) const -> std::vector<Pixel>
 {
-  const float tColor = m_colorTs.at(i)();
-  const Pixel colorToUse = IsSpecialUpdateNum() ? m_dotLowColorMaps.at(i)->GetColor(tColor)
-                                                : m_dotColorMaps.at(i)->GetColor(tColor);
-  return GetFinalColor(dotBrightness, colorToUse);
+  std::vector<Pixel> dotColors = m_colorMapsGrid.GetNextColors();
+
+  for (auto& color : dotColors)
+  {
+    color = GetFinalColor(dotBrightness, color);
+  }
+
+  return dotColors;
 }
 
-inline auto Circle::GetDotLowColor(const size_t i, const float dotBrightness) const -> Pixel
+inline auto Circle::GetDotLowColors(const float dotBrightness) const -> std::vector<Pixel>
 {
-  const float tColor = m_colorTs.at(i)();
   constexpr float BRIGHTNESS_INCREASE = 1.1F;
-  return GetFinalLowColor(BRIGHTNESS_INCREASE * dotBrightness,
-                          m_dotLowColorMaps.at(i)->GetColor(tColor));
+
+  std::vector<Pixel> dotColors = m_lowColorMapsGrid.GetNextColors();
+
+  for (auto& color : dotColors)
+  {
+    color = GetFinalColor(BRIGHTNESS_INCREASE * dotBrightness, color);
+  }
+
+  return dotColors;
 }
 
 inline auto Circle::GetRandomCircleCentreTargetPosition() const -> Point2dInt
@@ -349,13 +348,24 @@ inline void Circle::DrawLine(const Point2dInt& pos1,
   for (uint32_t i = 0; i < (NUM_LINE_DOTS - 1); ++i)
   {
     const Point2dInt dotPos = lerp(pos1, pos2, tDotPos);
-    DrawDot(dotPos, m_helper.minDotDiameter,
-            GetFinalColor(lineBrightness, m_linesColorMap->GetColor(tDotColor)),
-            GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor)));
+    const Pixel color = GetFinalColor(lineBrightness, m_linesColorMap->GetColor(tDotColor));
+    const Pixel lowColor =
+        GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
+
+    DrawDot(dotPos, m_helper.minDotDiameter, color, lowColor);
+
     tDotPos += T_DOT_POS_STEP;
     tDotColor += T_DOT_COLOR_STEP;
   }
-  //m_draw.Line(pos1.x, pos1.y, pos2.x, pos2.y, {color, lowColor}, lineThickness);
+
+  if (m_showLine)
+  {
+    constexpr uint8_t LINE_THICKNESS = 1;
+    const Pixel color = GetFinalColor(lineBrightness, m_linesColorMap->GetColor(tDotColor));
+    const Pixel lowColor =
+        GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
+    m_draw.Line(pos1.x, pos1.y, pos2.x, pos2.y, {color, lowColor}, LINE_THICKNESS);
+  }
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

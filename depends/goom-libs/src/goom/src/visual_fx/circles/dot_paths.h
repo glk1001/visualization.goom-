@@ -22,6 +22,8 @@ public:
   void SetTarget(const Point2dInt& target);
   void SetPathParams(const UTILS::MATH::PathParams& params);
 
+  [[nodiscard]] auto GetPositionTRef() const -> const UTILS::TValue&;
+
   [[nodiscard]] auto GetPositionTNumSteps() const -> uint32_t;
   void SetPositionTNumSteps(uint32_t numSteps);
 
@@ -37,7 +39,7 @@ private:
   const uint32_t m_numDots;
   const std::vector<Point2dInt> m_dotStartingPositions;
   [[nodiscard]] static auto GetDotStartingPositions(uint32_t numDots,
-                                                    const Point2dInt& target,
+                                                    const Point2dInt& centre,
                                                     float radius) -> std::vector<Point2dInt>;
   Point2dInt m_target;
 
@@ -58,6 +60,11 @@ private:
 inline void DotPaths::SetPathParams(const UTILS::MATH::PathParams& params)
 {
   m_pathParams = params;
+}
+
+inline auto DotPaths::GetPositionTRef() const -> const UTILS::TValue&
+{
+  return m_positionT;
 }
 
 inline auto DotPaths::GetPositionTNumSteps() const -> uint32_t

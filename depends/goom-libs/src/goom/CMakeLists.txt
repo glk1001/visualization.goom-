@@ -23,6 +23,7 @@ add_library(goom
         src/color/color_data/color_data_maps.cpp
         src/color/color_data/extra_color_groups.cpp
         src/color/colormaps.cpp
+        src/color/colormaps_grid.cpp
         src/color/colorutils.cpp
         src/color/random_colormaps.cpp
         src/color/random_colormaps_manager.cpp

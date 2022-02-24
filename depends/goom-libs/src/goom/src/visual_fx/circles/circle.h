@@ -2,6 +2,7 @@
 
 #include "bitmap_getter_base.h"
 #include "color/colormaps.h"
+#include "color/colormaps_grids.h"
 #include "color/random_colormaps.h"
 #include "dot_diameters.h"
 #include "dot_paths.h"
@@ -12,11 +13,9 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/math/paths.h"
-#include "utils/t_values.h"
 #include "utils/timer.h"
 #include "visual_fx/fx_helper.h"
 
-#include <array>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -77,7 +76,6 @@ private:
   UTILS::Timer m_blankTimer{BLANK_TIME, true};
 
   void UpdateTime();
-  void UpdateSpeeds();
   void UpdatePositionSpeed();
   void ResetCircleParams();
   [[nodiscard]] auto GetPositionTNumSteps() const -> uint32_t;
@@ -92,32 +90,33 @@ private:
   [[nodiscard]] auto GetCurrentBrightness() const -> float;
   [[nodiscard]] auto GetDotBrightness(float brightness) const -> float;
   [[nodiscard]] auto GetLineBrightness(float brightness) const -> float;
-  [[nodiscard]] auto GetDotColor(size_t i, float dotBrightness) const -> Pixel;
-  [[nodiscard]] auto GetDotLowColor(size_t i, float dotBrightness) const -> Pixel;
   void DrawDot(const Point2dInt& pos, uint32_t diameter, const Pixel& color, const Pixel& lowColor);
+  bool m_showLine = false;
   void DrawLine(const Point2dInt& pos1,
                 const Point2dInt& pos2,
                 float lineBrightness,
                 float tLineColor);
 
-  static constexpr uint32_t NUM_COLOR_STEPS = 20;
   static constexpr float T_LINE_COLOR_STEP = 1.0F / static_cast<float>(NUM_DOTS);
-  std::vector<UTILS::TValue> m_colorTs;
-  [[nodiscard]] static auto GetInitialColorTs() -> std::vector<UTILS::TValue>;
-  void UpdateColorLerpSpeed();
-  [[nodiscard]] auto GetColorTNumSteps(uint32_t colorStepsDivisor) const -> uint32_t;
 
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps;
   std::shared_ptr<COLOR::RandomColorMaps> m_lowColorMaps;
-
-  std::array<const COLOR::IColorMap*, NUM_DOTS> m_dotColorMaps{};
-  std::array<const COLOR::IColorMap*, NUM_DOTS> m_dotLowColorMaps{};
   const COLOR::IColorMap* m_linesColorMap{};
   const COLOR::IColorMap* m_linesLowColorMap{};
+
+  COLOR::ColorMapsGrid m_colorMapsGrid;
+  COLOR::ColorMapsGrid m_lowColorMapsGrid;
+  static constexpr float DEFAULT_COLOR_GRID_MIX_T = 0.5F;
+  float m_currentColorGridMixT = DEFAULT_COLOR_GRID_MIX_T;
+  [[nodiscard]] auto GetVerticalColorMaps() const -> std::vector<const COLOR::IColorMap*>;
+  [[nodiscard]] auto GetVerticalLowColorMaps() const -> std::vector<const COLOR::IColorMap*>;
+  [[nodiscard]] auto GetColorMixT(size_t colorIndex) const -> float;
+  [[nodiscard]] auto GetDotColors(float dotBrightness) const -> std::vector<Pixel>;
+  [[nodiscard]] auto GetDotLowColors(float dotBrightness) const -> std::vector<Pixel>;
+
   [[nodiscard]] auto GetFinalColor(float brightness, const Pixel& color) const -> Pixel;
   [[nodiscard]] auto GetFinalLowColor(float brightness, const Pixel& lowColor) const -> Pixel;
   [[nodiscard]] auto GetCorrectedColor(float brightness, const Pixel& color) const -> Pixel;
-  void ChangeDotColorMaps();
 };
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

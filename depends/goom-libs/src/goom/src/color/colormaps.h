@@ -165,4 +165,3 @@ inline auto ColorMapWrapper::GetColor(const float t) const -> Pixel
 }
 
 } // namespace GOOM::COLOR
-

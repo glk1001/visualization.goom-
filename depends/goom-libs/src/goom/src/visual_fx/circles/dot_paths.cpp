@@ -31,7 +31,7 @@ DotPaths::DotPaths(const uint32_t numDots,
 }
 
 auto DotPaths::GetDotStartingPositions(const uint32_t numDots,
-                                       const Point2dInt& target,
+                                       const Point2dInt& centre,
                                        const float radius) -> std::vector<Point2dInt>
 {
   std::vector<Point2dInt> dotStartingPositions(numDots);
@@ -44,7 +44,7 @@ auto DotPaths::GetDotStartingPositions(const uint32_t numDots,
     const auto x = static_cast<int32_t>(std::lround(radius * std::cos(angle)));
     const auto y = static_cast<int32_t>(std::lround(radius * std::sin(angle)));
 
-    dotStartingPositions.at(i) = target + Vec2dInt{x, y};
+    dotStartingPositions.at(i) = centre + Vec2dInt{x, y};
 
     angle += angleStep;
   }
@@ -75,8 +75,6 @@ auto DotPaths::GetNextDotPositions() const -> std::vector<Point2dInt>
   std::vector<Point2dInt> nextDotPositions(m_numDots);
   for (size_t i = 0; i < m_numDots; ++i)
   {
-    //const Point2dInt jitter = {m_goomRand.GetRandInRange(-2, +3),
-    //                           m_goomRand.GetRandInRange(-2, +3)};
     nextDotPositions.at(i) = m_dotPaths.at(i).GetNextPoint();
   }
   return nextDotPositions;
