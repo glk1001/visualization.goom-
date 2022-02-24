@@ -107,7 +107,7 @@ void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weighte
 
   m_linesColorMap = &m_colorMaps->GetRandomColorMap();
   m_linesLowColorMap = &m_lowColorMaps->GetRandomColorMap();
-  constexpr float PROB_SHOW_LINE = 0.2F;
+  constexpr float PROB_SHOW_LINE = 0.05F;
   m_showLine = m_goomRand.ProbabilityOf(PROB_SHOW_LINE);
 
   m_dotDiameters.ChangeDotDiameters();
@@ -193,8 +193,7 @@ void Circle::DrawNextCircleDots()
   Point2dInt prevDotPosition = nextDotPositions[NUM_DOTS - 1];
   for (size_t i = 0; i < NUM_DOTS; ++i)
   {
-    const Vec2dInt jitter = {m_goomRand.GetRandInRange(-2, +3), m_goomRand.GetRandInRange(-2, +3)};
-    const Point2dInt dotPosition = nextDotPositions.at(i) + jitter;
+    const Point2dInt dotPosition = nextDotPositions.at(i);
     const uint32_t dotDiameter = m_dotDiameters.GetDotDiameters().at(i);
     const Pixel dotColor = dotColors.at(i);
     const Pixel dotLowColor = dotLowColors.at(i);

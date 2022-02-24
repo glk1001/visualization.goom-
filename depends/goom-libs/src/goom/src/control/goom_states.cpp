@@ -16,7 +16,7 @@ struct RawStateInfo
 };
 
 // clang-format off
-constexpr float CIRCLES_DEFAULT_BUFF_INTENSITY   = 0.5F;
+constexpr float CIRCLES_DEFAULT_BUFF_INTENSITY   = 0.8F;
 constexpr float DOTS_DEFAULT_BUFF_INTENSITY      = 0.3F;
 constexpr float IFS_DEFAULT_BUFF_INTENSITY       = 0.3F;
 constexpr float IMAGE_DEFAULT_BUFF_INTENSITY     = 0.1F;
