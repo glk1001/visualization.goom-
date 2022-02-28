@@ -16,13 +16,13 @@ struct RawStateInfo
 };
 
 // clang-format off
-constexpr float CIRCLES_DEFAULT_BUFF_INTENSITY   = 0.8F;
+constexpr float CIRCLES_DEFAULT_BUFF_INTENSITY   = 0.7F;
 constexpr float DOTS_DEFAULT_BUFF_INTENSITY      = 0.3F;
-constexpr float IFS_DEFAULT_BUFF_INTENSITY       = 0.3F;
+constexpr float IFS_DEFAULT_BUFF_INTENSITY       = 0.5F;
 constexpr float IMAGE_DEFAULT_BUFF_INTENSITY     = 0.1F;
-constexpr float LINES_DEFAULT_BUFF_INTENSITY     = 0.3F;
-constexpr float STARS_DEFAULT_BUFF_INTENSITY     = 0.3F;
-constexpr float TENTACLES_DEFAULT_BUFF_INTENSITY = 0.5F;
+constexpr float LINES_DEFAULT_BUFF_INTENSITY     = 0.6F;
+constexpr float STARS_DEFAULT_BUFF_INTENSITY     = 0.4F;
+constexpr float TENTACLES_DEFAULT_BUFF_INTENSITY = 0.4F;
 constexpr float TUBES_DEFAULT_BUFF_INTENSITY     = 0.8F;
 
 // TODO - When we get to use C++20 we can simplify things with

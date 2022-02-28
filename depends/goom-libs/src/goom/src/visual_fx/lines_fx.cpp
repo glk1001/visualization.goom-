@@ -397,7 +397,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   if (m_lineLerpParam >= 1.0F)
   {
     m_srceLineType = m_destLineType;
-    constexpr float MIN_BRIGHTNESS = 2.0F;
+    constexpr float MIN_BRIGHTNESS = 2.5F;
     constexpr float MAX_BRIGHTNESS = 4.0F;
     m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
   }
@@ -449,7 +449,7 @@ void LinesFx::LinesImpl::ResetDestLine(const LineType newLineType,
   m_newLinePeakAmplitude = newAmplitude;
   m_destColor = newColor;
   m_lineLerpParam = 0.0;
-  constexpr float MIN_BRIGHTNESS = 1.0F;
+  constexpr float MIN_BRIGHTNESS = 1.5F;
   constexpr float MAX_BRIGHTNESS = 3.0F;
   m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
   m_dotDrawer.ChangeDotSizes();
@@ -546,7 +546,7 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
 
     m_draw.Line(point1.x, point1.y, point2.x, point2.y, colors, LINE_THICKNESS);
 
-    constexpr float DOT_BRIGHTNESS = 1.0F;
+    constexpr float DOT_BRIGHTNESS = 1.5F;
     m_dotDrawer.DrawDot(point2, colors, DOT_BRIGHTNESS);
 
     point1 = point2;
