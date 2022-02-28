@@ -94,7 +94,7 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams(const PluginInfo& goomInfo)
   constexpr float RADIUS_MARGIN = 10.0F;
   const float maxRadius = 0.5F * static_cast<float>(std::min(goomInfo.GetScreenInfo().width,
                                                              goomInfo.GetScreenInfo().height));
-  constexpr float RADIUS_REDUCER = 0.95F;
+  constexpr float RADIUS_REDUCER = 1.0F;
   const float radius0 = maxRadius - RADIUS_MARGIN;
 
   circleParams[0].circleRadius = radius0;
