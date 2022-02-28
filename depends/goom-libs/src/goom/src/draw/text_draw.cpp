@@ -250,13 +250,19 @@ private:
 
   [[nodiscard]] auto GetStartXPen(int32_t xPen) const -> int;
   [[nodiscard]] static auto GetStartYPen(int32_t yPen) -> int;
-  void WriteGlyph(const Spans& spans, int32_t xPen, int32_t yPen) const;
+  void WriteGlyph(const Spans& spans, int32_t xPen, int32_t yPen);
   void WriteSpansToImage(const SpanArray& spanArray,
                          const RectImpl& rect,
                          int32_t xPen,
                          int32_t yPen,
                          size_t textIndexOfChar,
-                         const FontColorFunc& getColor) const;
+                         const FontColorFunc& getColor);
+  void WriteXSpan(const Span& span,
+                  const RectImpl& rect,
+                  int32_t xPen,
+                  int32_t yPos,
+                  size_t textIndexOfChar,
+                  const FontColorFunc& getColor);
 };
 #endif
 
@@ -425,7 +431,7 @@ inline auto TextDraw::TextDrawImpl::GetFontSize() const -> int32_t
   return m_fontSize;
 }
 
-void TextDraw::TextDrawImpl::SetFontSize(const int32_t val)
+inline void TextDraw::TextDrawImpl::SetFontSize(const int32_t val)
 {
   if (val <= 0)
   {
@@ -445,7 +451,7 @@ inline auto TextDraw::TextDrawImpl::GetLineSpacing() const -> int32_t
   return m_face->height / static_cast<FT_Short>(FREE_TYPE_UNITS_PER_PIXEL);
 }
 
-void TextDraw::TextDrawImpl::SetOutlineWidth(const float val)
+inline void TextDraw::TextDrawImpl::SetOutlineWidth(const float val)
 {
   if (val <= 0.0F)
   {
@@ -534,6 +540,7 @@ void TextDraw::TextDrawImpl::Prepare()
   m_textBoundingRect.xMax = xMax;
   m_textBoundingRect.yMin = yMin;
   m_textBoundingRect.yMax = yMax;
+
   LogInfo("Font bounding rectangle: {}, {}, {}, {}, m_textSpans.size = {}.",
           m_textBoundingRect.xMin, m_textBoundingRect.xMax, m_textBoundingRect.yMin,
           m_textBoundingRect.yMax, m_textSpans.size());
@@ -595,10 +602,10 @@ struct TextDraw::TextDrawImpl::Vec2
   int32_t y;
 };
 
-TextDraw::TextDrawImpl::RectImpl::RectImpl(const int32_t left,
-                                           const int32_t top,
-                                           const int32_t right,
-                                           const int32_t bottom) noexcept
+inline TextDraw::TextDrawImpl::RectImpl::RectImpl(const int32_t left,
+                                                  const int32_t top,
+                                                  const int32_t right,
+                                                  const int32_t bottom) noexcept
 {
   xMin = left;
   xMax = right;
@@ -606,7 +613,7 @@ TextDraw::TextDrawImpl::RectImpl::RectImpl(const int32_t left,
   yMax = bottom;
 }
 
-void TextDraw::TextDrawImpl::RectImpl::Include(const Vec2& span)
+inline void TextDraw::TextDrawImpl::RectImpl::Include(const Vec2& span)
 {
   xMin = std::min(xMin, span.x);
   yMin = std::min(yMin, span.y);
@@ -628,9 +635,9 @@ struct TextDraw::TextDrawImpl::Span
 };
 
 // Render the specified character as a colored glyph with a colored outline.
-void TextDraw::TextDrawImpl::WriteGlyph(const Spans& spans,
-                                        const int32_t xPen,
-                                        const int32_t yPen) const
+inline void TextDraw::TextDrawImpl::WriteGlyph(const Spans& spans,
+                                               const int32_t xPen,
+                                               const int32_t yPen)
 {
   // Loop over the outline spans and just draw them into the image.
   WriteSpansToImage(spans.outlineSpans, spans.rect, xPen, yPen, spans.textIndexOfChar,
@@ -645,36 +652,64 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
                                                const int32_t xPen,
                                                const int32_t yPen,
                                                const size_t textIndexOfChar,
-                                               const FontColorFunc& getColor) const
+                                               const FontColorFunc& getColor)
 {
-  for (const auto& span : spanArray)
+  const auto writeSpan =
+      [this, &spanArray, &xPen, &yPen, &rect, &getColor, &textIndexOfChar](const size_t i)
   {
+    const Span& span = spanArray.at(i);
+
     const int32_t yPos = static_cast<int>(m_draw.GetScreenHeight()) - (yPen + span.y);
     if ((yPos < 0) || (yPos >= static_cast<int>(m_draw.GetScreenHeight())))
+    {
+      return;
+    }
+
+    WriteXSpan(span, rect, xPen, yPos, textIndexOfChar, getColor);
+  };
+
+  constexpr int32_t MIN_PARALLEL_SPAN_ARRAY_SIZE = 20;
+  if (spanArray.size() >= MIN_PARALLEL_SPAN_ARRAY_SIZE)
+  {
+    LogInfo("WriteSpansToImage using parallel.");
+    m_draw.GetParallel().ForLoop(spanArray.size(), writeSpan);
+  }
+  else
+  {
+    LogInfo("WriteSpansToImage NOT using parallel.");
+    for (size_t i = 0; i < spanArray.size(); ++i)
+    {
+      writeSpan(i);
+    }
+  }
+}
+
+void TextDraw::TextDrawImpl::WriteXSpan(const Span& span,
+                                        const RectImpl& rect,
+                                        const int32_t xPen,
+                                        const int32_t yPos,
+                                        const size_t textIndexOfChar,
+                                        const FontColorFunc& getColor)
+{
+  const int32_t xPos0 = xPen + (span.x - rect.xMin);
+  const int32_t xf0 = span.x - rect.xMin;
+  const auto coverage = static_cast<uint8_t>(span.coverage);
+  for (int32_t width = 0; width < span.width; ++width)
+  {
+    const int32_t xPos = xPos0 + width;
+    if ((xPos < 0) || (xPos >= static_cast<int>(m_draw.GetScreenWidth())))
     {
       continue;
     }
 
-    const int32_t xPos0 = xPen + (span.x - rect.xMin);
-    const int32_t xf0 = span.x - rect.xMin;
-    const auto coverage = static_cast<uint8_t>(span.coverage);
-    for (int32_t width = 0; width < span.width; ++width)
-    {
-      const int32_t xPos = xPos0 + width;
-      if ((xPos < 0) || (xPos >= static_cast<int>(m_draw.GetScreenWidth())))
-      {
-        continue;
-      }
+    const Pixel color = getColor(textIndexOfChar, xf0 + width, rect.Height() - (span.y - rect.yMin),
+                                 rect.Width(), rect.Height());
+    const Pixel srceColor{
+        {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}
+    };
+    const Pixel destColor = m_draw.GetPixel(xPos, yPos);
 
-      const Pixel color =
-          getColor(textIndexOfChar, xf0 + width, rect.Height() - (span.y - rect.yMin), rect.Width(),
-                   rect.Height());
-      const Pixel srceColor{
-          {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}};
-      const Pixel destColor = m_draw.GetPixel(xPos, yPos);
-
-      m_draw.DrawPixelsUnblended(xPos, yPos, {GetColorBlend(srceColor, destColor)});
-    }
+    m_draw.DrawPixelsUnblended(xPos, yPos, {GetColorBlend(srceColor, destColor)});
   }
 }
 
@@ -750,7 +785,7 @@ auto TextDraw::TextDrawImpl::GetSpans(const size_t textIndexOfChar) const -> Spa
   };
 }
 
-auto TextDraw::TextDrawImpl::GetStdSpans() const -> SpanArray
+inline auto TextDraw::TextDrawImpl::GetStdSpans() const -> SpanArray
 {
   SpanArray spans{};
 

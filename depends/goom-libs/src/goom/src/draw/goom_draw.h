@@ -35,6 +35,8 @@ public:
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
 
+  [[nodiscard]] auto GetParallel() const -> GOOM::UTILS::Parallel&;
+
   [[nodiscard]] auto GetBuffIntensity() const -> float;
   void SetBuffIntensity(float val);
 
@@ -65,7 +67,6 @@ public:
   virtual void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) = 0;
 
 protected:
-  [[nodiscard]] auto GetParallel() const -> GOOM::UTILS::Parallel&;
   [[nodiscard]] auto GetIntBuffIntensity() const -> uint32_t;
 
   // Use the following to set the final pixel in the buffer.

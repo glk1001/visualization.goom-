@@ -177,21 +177,8 @@ inline auto GoomTitleDisplayer::GetFinalPhaseCentrePenPos(const std::string& str
   return GetLeftAlignedPenForCentringStringAt(*m_textDraw, str, fontSize, screenCentre).ToFlt();
 }
 
-// Reduce processing time by skipping some draws near the end (when the font is bigger).
-inline auto GoomTitleDisplayer::SkipThisDraw() const -> bool
-{
-  constexpr int32_t SKIP_FREQ = 5;
-  return IsFinalPhase() && (m_timeLeftOfTitleDisplay > 0) &&
-         (0 == (m_timeLeftOfTitleDisplay % SKIP_FREQ));
-}
-
 void GoomTitleDisplayer::DrawText(const std::string& text)
 {
-  if (SkipThisDraw())
-  {
-    return;
-  }
-
   const float colorT = GetColorT();
   const float fontCharColorMixT = GetFontCharColorMixT();
   const float textBrightness = GetTextBrightness();
@@ -333,7 +320,7 @@ auto GoomTitleDisplayer::GetCharSpacing() const -> float
   constexpr float SPACE_FACTOR = 0.056F;
   const auto timeGone = static_cast<float>(
       m_timeLeftOfTitleDisplay <= 0 ? TIME_TO_START_MIDDLE_PHASE
-                                    : TIME_TO_START_MIDDLE_PHASE - m_timeLeftOfTitleDisplay);
+                                    : (TIME_TO_START_MIDDLE_PHASE - m_timeLeftOfTitleDisplay));
 
   return SPACE_FACTOR * timeGone;
 }

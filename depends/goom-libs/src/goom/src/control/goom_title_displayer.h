@@ -76,7 +76,6 @@ private:
   std::reference_wrapper<const COLOR::IColorMap> m_textOutlineColorMap;
   std::reference_wrapper<const COLOR::IColorMap> m_charColorMap;
   void DrawText(const std::string& text);
-  [[nodiscard]] auto SkipThisDraw() const -> bool;
   [[nodiscard]] auto GetColorT() const -> float;
   [[nodiscard]] auto GetFontCharColorMixT() const -> float;
   [[nodiscard]] auto GetTextBrightness() const -> float;
