@@ -1,0 +1,14 @@
+FROM kodi-nightly:spotify
+
+# Install lirc
+ARG LIRC_SEED="lirc/remote select Windows Media Center Transceivers/Remotes (all)"
+ARG LIRC_SEED_FILE=/etc/lirc/lirc_mce.seed
+RUN mkdir -p /etc/lirc                                               && \
+    echo "lirc ${LIRC_SEED}" > "${LIRC_SEED_FILE}"                   && \
+    echo "lirc lirc/transmitter select None" >> "${LIRC_SEED_FILE}"  && \
+    debconf-set-selections "${LIRC_SEED_FILE}"                       && \
+    apt-get update && apt-get install -y -q lirc                     && \
+    rm -f "${LIRC_SEED_FILE}"                                        && \
+                                                                        \
+    mkdir -p /var/run/lirc/                                          && \
+    ln -sf /dev/lircd /var/run/lirc/lircd

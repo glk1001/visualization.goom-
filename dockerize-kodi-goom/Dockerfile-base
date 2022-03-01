@@ -1,0 +1,40 @@
+FROM ubuntu:impish
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ARG TIME_ZONE=Australia/Melbourne
+
+# NOTE: For packages, we need 'kodi-eventclients-kodi-send' to shut down
+#       Kodi gracefully when it's container terminates.
+#       'psmisc' is needed for 'killall'.
+
+ARG KODI_ESSENTIAL_PACKAGES=" \
+  ca-certificates             \
+  kodi                        \
+  kodi-inputstream-adaptive   \
+  locales                     \
+  pulseaudio                  \
+  tzdata                      \
+  va-driver-all               \
+  psmisc"
+
+ARG KODI_EXTRA_PACKAGES="     \
+  kodi-visualization-goom     \
+  kodi-eventclients-kodi-send \
+  less                        \
+  gdb"
+
+ARG KODI_PACKAGES="${KODI_ESSENTIAL_PACKAGES} ${KODI_EXTRA_PACKAGES}"
+
+RUN apt-get update                                                        && \
+    apt-get install -y gpg-agent                                          && \
+    apt-get install -y --no-install-recommends software-properties-common && \
+    add-apt-repository -y ppa:team-xbmc/xbmc-nightly                      && \
+    apt-get install -y --no-install-recommends ${KODI_PACKAGES}           && \
+                                                                             \
+    echo "${TIME_ZONE}" >/etc/timezone                                    && \
+    ln -sf /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime                && \
+                                                                             \
+    apt-get -y purge openssl software-properties-common                   && \
+    apt-get -y --purge autoremove                                         && \
+    rm -rf /var/lib/apt/lists/*
