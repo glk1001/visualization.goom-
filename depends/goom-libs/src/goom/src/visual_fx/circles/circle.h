@@ -66,7 +66,7 @@ private:
   const Helper m_helper;
   const Point2dInt m_circleCentreTarget;
   static constexpr uint32_t MIN_POSITION_STEPS = 100;
-  static constexpr uint32_t MAX_POSITION_STEPS = 500;
+  static constexpr uint32_t MAX_POSITION_STEPS = 600;
   DotPaths m_dotPaths;
   DotDiameters m_dotDiameters;
   [[nodiscard]] auto GetRandomCircleCentreTargetPosition() const -> Point2dInt;

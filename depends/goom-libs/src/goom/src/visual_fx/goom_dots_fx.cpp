@@ -245,7 +245,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
 
 auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
 {
-  if (constexpr float PROB_PRIMARY_COLOR = 0.5F; m_goomRand.ProbabilityOf(PROB_PRIMARY_COLOR))
+  if (constexpr float PROB_PRIMARY_COLOR = 0.1F; m_goomRand.ProbabilityOf(PROB_PRIMARY_COLOR))
   {
     return GetDotPrimaryColor(m_goomRand.GetRandInRange(0U, NUM_DOT_TYPES));
   }
