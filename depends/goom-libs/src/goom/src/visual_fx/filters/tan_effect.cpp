@@ -1,5 +1,8 @@
 #include "tan_effect.h"
 
+#undef NO_LOGGING
+
+#include "goom/logging.h"
 #include "utils/enumutils.h"
 #include "utils/name_value_pairs.h"
 
@@ -9,6 +12,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
+using UTILS::Logging;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
@@ -55,6 +59,10 @@ void TanEffect::SetRandomParams()
                                ? xAmplitude
                                : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
   const float limitingFactor = m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE);
+
+  LogInfo("tanType = {}, cotMix = {}", tanType, cotMix);
+  LogInfo("xAmplitude = {}, yAmplitude = {}", xAmplitude, yAmplitude);
+  LogInfo("limitingFactor = {}", limitingFactor);
 
   SetParams({tanType, cotMix, xAmplitude, yAmplitude, limitingFactor});
 }
