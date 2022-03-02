@@ -8,14 +8,16 @@
 
 #include "Main.h"
 
+#undef NO_LOGGING
+
 #include "goom/compiler_versions.h"
 #include "goom/goom_graphic.h"
-#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/sound_info.h"
 
 #undef NDEBUG
 #include <cstddef>
+#include <format>
 #include <memory>
 
 using GOOM::AudioSamples;
@@ -115,13 +117,21 @@ auto CVisualizationGoom::Start(const int numChannels,
 
     if (!InitGl())
     {
+#ifdef GOOM_DEBUG
+      throw std::runtime_error("CVisualizationGoom: Could not initialize OpenGL.");
+#else
       LogError("CVisualizationGoom: Could not initialize OpenGL.");
+#endif
       return false;
     }
 
     if (!InitGoomController())
     {
+#ifdef GOOM_DEBUG
+      throw std::runtime_error("CVisualizationGoom: Could not initialize Goom Controller.");
+#else
       LogError("CVisualizationGoom: Could not initialize Goom Controller.");
+#endif
       return false;
     }
 
@@ -131,7 +141,11 @@ auto CVisualizationGoom::Start(const int numChannels,
   }
   catch (const std::exception& e)
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error(std20::format("CVisualizationGoom: Goom start failed: {}", e.what()));
+#else
     LogError("CVisualizationGoom: Goom start failed: {}", e.what());
+#endif
     return false;
   }
 }
@@ -205,7 +219,11 @@ void CVisualizationGoom::Stop()
   }
   catch (const std::exception& e)
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error(std20::format("CVisualizationGoom: Goom stop failed: {}", e.what()));
+#else
     LogError("CVisualizationGoom: Goom stop failed: {}", e.what());
+#endif
   }
 }
 
@@ -213,7 +231,11 @@ auto CVisualizationGoom::InitGoomController() -> bool
 {
   if (m_goomControl)
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error("CVisualizationGoom: Goom controller already initialized!");
+#else
     LogError("CVisualizationGoom: Goom controller already initialized!");
+#endif
     return true;
   }
 
@@ -222,7 +244,11 @@ auto CVisualizationGoom::InitGoomController() -> bool
                                                       KODI_ADDON::GetAddonPath("resources"));
   if (!m_goomControl)
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error("CVisualizationGoom: Goom controller could not be initialized!");
+#else
     LogError("CVisualizationGoom: Goom controller could not be initialized!");
+#endif
     return false;
   }
 
@@ -243,7 +269,11 @@ void CVisualizationGoom::DeinitGoomController()
 {
   if (!m_goomControl)
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error("CVisualizationGoom: Goom controller already uninitialized!");
+#else
     LogError("CVisualizationGoom: Goom controller already uninitialized!");
+#endif
     return;
   }
 
@@ -286,7 +316,11 @@ void CVisualizationGoom::AudioData(const float* const audioData, size_t audioDat
 {
   if (!m_started)
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error("CVisualizationGoom: Goom not started - cannot process audio.");
+#else
     LogError("CVisualizationGoom: Goom not started - cannot process audio.");
+#endif
     return;
   }
 
@@ -432,7 +466,12 @@ void CVisualizationGoom::Process()
   }
   catch (const std::exception& e)
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error(
+        std20::format("CVisualizationGoom: Goom process failed: {}", e.what()));
+#else
     LogError("CVisualizationGoom: Goom process failed: {}", e.what());
+#endif
   }
 }
 
@@ -460,13 +499,21 @@ auto CVisualizationGoom::InitGl() -> bool
 {
   if (!InitGlShaders())
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error("CVisualizationGoom: Failed to initialize GL shaders.");
+#else
     LogError("CVisualizationGoom: Failed to initialize GL shaders.");
+#endif
     return false;
   }
 
   if (!InitGlObjects())
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error("CVisualizationGoom: Could not initialize GL objects.");
+#else
     LogError("CVisualizationGoom: Could not initialize GL objects.");
+#endif
     return false;
   }
 
@@ -527,7 +574,11 @@ auto CVisualizationGoom::InitGlShaders() -> bool
 
   if (!CompileAndLink())
   {
+#ifdef GOOM_DEBUG
+    throw std::runtime_error("CVisualizationGoom: Failed to compile GL shaders.");
+#else
     LogError("CVisualizationGoom: Failed to compile GL shaders.");
+#endif
     return false;
   }
 
@@ -645,7 +696,12 @@ auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
         static_cast<uint8_t*>(glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY));
     if (!m_pboGoomBuffer.at(i))
     {
-      LogError("CVisualizationGoom: Could not do glMapBuffer for pbo %d.", i);
+#ifdef GOOM_DEBUG
+      throw std::runtime_error(
+          std20::format("CVisualizationGoom: Could not do glMapBuffer for pbo {}.", i));
+#else
+      LogError("CVisualizationGoom: Could not do glMapBuffer for pbo {}.", i);
+#endif
       return false;
     }
   }
