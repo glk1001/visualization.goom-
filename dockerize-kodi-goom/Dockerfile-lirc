@@ -8,6 +8,7 @@ RUN mkdir -p /etc/lirc                                               && \
     echo "lirc lirc/transmitter select None" >> "${LIRC_SEED_FILE}"  && \
     debconf-set-selections "${LIRC_SEED_FILE}"                       && \
     apt-get update && apt-get install -y -q lirc                     && \
+    apt-get clean                                                    && \
     rm -f "${LIRC_SEED_FILE}"                                        && \
                                                                         \
     mkdir -p /var/run/lirc/                                          && \
