@@ -36,6 +36,10 @@
           </dependencies>
           <control type="toggle" />
         </setting>
+        <setting id="show_goom_state" type="boolean" label="30014" help="30015">
+          <default>false</default>
+          <control type="toggle" />
+        </setting>
       </group>
     </category>
   </section>

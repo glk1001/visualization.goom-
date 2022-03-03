@@ -30,6 +30,9 @@ public:
 
   void Start();
 
+  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
+  void ShowGoomState(bool value);
+
   /*
    * Update the next goom frame
    *
@@ -37,7 +40,6 @@ public:
    *      - empty if it is not the start of the song
    *      - only have a value at the start of the song
    */
-  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
   void Update(const AudioSamples& audioSamples,
               float fps,
               const std::string& songTitle,

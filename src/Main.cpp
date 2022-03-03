@@ -256,6 +256,7 @@ auto CVisualizationGoom::InitGoomController() -> bool
   LogInfo("CVisualizationGoom: Compiler: {}.", GetCompilerVersion());
   LogInfo("Goom Library: Compiler: {}.", GoomControl::GetCompilerVersion());
 
+  m_goomControl->ShowGoomState(KODI_ADDON::GetSettingBoolean("show_goom_state"));
   m_goomControl->SetShowTitle(m_showTitle);
 
   // goom will use same random sequence if following is uncommented

@@ -81,3 +81,11 @@ msgstr ""
 msgctxt "#30010"
 msgid "If set, then OpenGL will use a faster pixel data transfer option for the Goom window."
 msgstr ""
+
+msgctxt "#30014"
+msgid "Show Goom state"
+msgstr ""
+
+msgctxt "#30015"
+msgid "If set, then the current Goom state values will be overlaid on the main Goom window."
+msgstr ""

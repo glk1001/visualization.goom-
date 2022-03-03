@@ -10,8 +10,6 @@
  *
  */
 
-//#define SHOW_STATE_TEXT_ON_SCREEN
-
 #include "goom_control.h"
 
 //#undef NO_LOGGING
@@ -33,9 +31,7 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
-#ifdef SHOW_STATE_TEXT_ON_SCREEN
 #include "utils/name_value_pairs.h"
-#endif
 #include "utils/strutils.h"
 #include "visual_fx/filters/filter_settings_service.h"
 #include "visual_fx/filters/speed_coefficients_effect_factory.h"
@@ -59,13 +55,7 @@ using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
 using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToBuffer;
-
-#ifdef SHOW_STATE_TEXT_ON_SCREEN
 using UTILS::GetNameValuesString;
-using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
-using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
-#endif
-
 using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::StringSplit;
@@ -74,6 +64,8 @@ using UTILS::MATH::GoomRand;
 using VISUAL_FX::FxHelper;
 using VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
 using VISUAL_FX::FILTERS::FilterSettingsService;
+using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
+using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 
 class GoomControl::GoomControlImpl
 {
@@ -89,6 +81,7 @@ public:
   void Finish();
 
   void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
+  void ShowGoomState(bool value);
 
   void Update(const AudioSamples& soundData,
               float fps,
@@ -135,15 +128,14 @@ private:
   GoomDrawToBuffer m_goomTextOutput;
   GoomTitleDisplayer m_goomTitleDisplayer;
   GoomMessageDisplayer m_messageDisplayer;
+  bool m_showGoomState = false;
+  void DisplayGoomState();
   [[nodiscard]] auto GetFontDirectory() const -> std::string;
   void InitTitleDisplay(const std::string_view& songTitle);
   void DisplayTitle(const std::string& songTitle, const std::string& message, float fps);
   void DisplayCurrentTitle();
   void UpdateMessages(const std::string& messages);
   [[nodiscard]] auto GetMessagesFontFile() const -> std::string;
-#ifdef SHOW_STATE_TEXT_ON_SCREEN
-  void DisplayStateText();
-#endif
 };
 
 auto GoomControl::GetCompilerVersion() -> std::string
@@ -177,6 +169,11 @@ GoomControl::GoomControl(const uint32_t width,
 void GoomControl::SetShowTitle(const ShowTitleType value)
 {
   m_controller->SetShowTitle(value);
+}
+
+void GoomControl::ShowGoomState(const bool value)
+{
+  m_controller->ShowGoomState(value);
 }
 
 void GoomControl::Start()
@@ -259,6 +256,11 @@ inline void GoomControl::GoomControlImpl::SetScreenBuffer(
   m_imageBuffers.SetOutputBuff(buffer);
 }
 
+inline void GoomControl::GoomControlImpl::ShowGoomState(const bool value)
+{
+  m_showGoomState = value;
+}
+
 inline auto GoomControl::GoomControlImpl::GetLastShaderEffects() const -> const GoomShaderEffects&
 {
   return m_visualFx.GetLastShaderEffects();
@@ -319,9 +321,7 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
 
   UpdateBuffers();
 
-#ifdef SHOW_STATE_TEXT_ON_SCREEN
-  DisplayStateText();
-#endif
+  DisplayGoomState();
   DisplayTitle(songTitle, message, fps);
 }
 
@@ -505,9 +505,13 @@ inline void GoomControl::GoomControlImpl::UpdateMessages(const std::string& mess
   m_messageDisplayer.UpdateMessages(msgLines);
 }
 
-#ifdef SHOW_STATE_TEXT_ON_SCREEN
-void GoomControl::GoomControlImpl::DisplayStateText()
+void GoomControl::GoomControlImpl::DisplayGoomState()
 {
+  if (!m_showGoomState)
+  {
+    return;
+  }
+
   std::string message;
 
   const FilterSettingsService& filterSettingsService = m_filterSettingsService;
@@ -540,6 +544,5 @@ void GoomControl::GoomControlImpl::DisplayStateText()
 
   UpdateMessages(message);
 }
-#endif
 
 } // namespace GOOM
