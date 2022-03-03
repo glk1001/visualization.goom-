@@ -27,11 +27,11 @@ using namespace std::chrono_literals;
 using std::chrono::high_resolution_clock;
 using std::chrono::microseconds;
 
-constexpr size_t WIDTH = 1280;
-constexpr size_t HEIGHT = 720;
-constexpr PixelChannelType TEST_R = 200;
-constexpr PixelChannelType TEST_G = 100;
-constexpr PixelChannelType TEST_B = 50;
+static constexpr size_t WIDTH = 1280;
+static constexpr size_t HEIGHT = 720;
+static constexpr PixelChannelType TEST_R = 200;
+static constexpr PixelChannelType TEST_G = 100;
+static constexpr PixelChannelType TEST_B = 50;
 
 TEST_CASE("Pixels")
 {
@@ -44,10 +44,10 @@ TEST_CASE("Pixels")
   }
   SECTION("Pixel uint32_t RGB")
   {
-    constexpr uint32_t RED = 299;
-    constexpr uint32_t GREEN = 200;
-    constexpr uint32_t BLUE = MAX_CHANNEL_VALUE_HDR + 10;
-    constexpr uint32_t ALPHA = 256;
+    static constexpr uint32_t RED = 299;
+    static constexpr uint32_t GREEN = 200;
+    static constexpr uint32_t BLUE = MAX_CHANNEL_VALUE_HDR + 10;
+    static constexpr uint32_t ALPHA = 256;
     const Pixel pixel{RED, GREEN, BLUE, ALPHA};
     REQUIRE(pixel.R() == RED);
     REQUIRE(pixel.G() == GREEN);
@@ -82,7 +82,7 @@ TEST_CASE("Pixels")
   {
     const Pixel pixel{{TEST_R, TEST_G, TEST_B}};
     const uint32_t rChannel = pixel.R();
-    constexpr uint32_t SCALAR = 32;
+    static constexpr uint32_t SCALAR = 32;
     REQUIRE(MultiplyChannelColorByScalar(SCALAR, pixel.R()) ==
             ((SCALAR * rChannel) / MAX_COLOR_VAL));
   }
@@ -126,7 +126,7 @@ TEST_CASE("PixelBuffers")
 
   SECTION("PixelBuffer copy time")
   {
-    constexpr size_t NUM_LOOPS = 100;
+    static constexpr size_t NUM_LOOPS = 100;
     const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
 
     auto intSrceBuff = std::make_unique<std::vector<PixelIntType>>(WIDTH * HEIGHT);
@@ -175,8 +175,8 @@ TEST_CASE("PixelBuffers")
     const Pixel testPixel4{{TEST_R+3, TEST_G+3, TEST_B+3}};
     buffer.Fill(Pixel::WHITE);
 
-    constexpr size_t X = 20;
-    constexpr size_t Y = 40;
+    static constexpr size_t X = 20;
+    static constexpr size_t Y = 40;
     buffer(X, Y) = testPixel1;
     buffer(X+1, Y) = testPixel2;
     buffer(X, Y+1) = testPixel3;
@@ -204,7 +204,7 @@ TEST_CASE("PixelBuffers")
     const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
     PixelBuffer buffer{WIDTH, HEIGHT};
     buffer.Fill(Pixel::WHITE);
-    constexpr size_t Y = 10;
+    static constexpr size_t Y = 10;
     for (size_t x = 0; x < WIDTH; ++x)
     {
       buffer(x, Y) = testPixel;

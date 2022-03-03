@@ -64,12 +64,12 @@ AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<flo
   assert((0 < numSampleChannels) && (numSampleChannels <= 2));
 }
 
-constexpr uint32_t NUM_GOOMS_IN_SHORT_CYCLE = 4;
-constexpr float GOOM_LIMIT_SHORT_CYCLE_INCREMENT = 0.02F;
-constexpr uint32_t NUM_GOOMS_IN_MEDIUM_CYCLE = 7;
-constexpr float GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT = 0.03F;
-constexpr uint32_t NUM_GOOMS_IN_LONG_CYCLE = 16;
-constexpr float GOOM_LIMIT_LONG_CYCLE_INCREMENT = 0.04F;
+static constexpr uint32_t NUM_GOOMS_IN_SHORT_CYCLE = 4;
+static constexpr float GOOM_LIMIT_SHORT_CYCLE_INCREMENT = 0.02F;
+static constexpr uint32_t NUM_GOOMS_IN_MEDIUM_CYCLE = 7;
+static constexpr float GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT = 0.03F;
+static constexpr uint32_t NUM_GOOMS_IN_LONG_CYCLE = 16;
+static constexpr float GOOM_LIMIT_LONG_CYCLE_INCREMENT = 0.04F;
 
 void SoundInfo::ProcessSample(const AudioSamples& samples)
 {
@@ -172,7 +172,7 @@ void SoundInfo::UpdateLastBigGoom()
 
 inline void SoundInfo::CheckSettledGoomLimits()
 {
-  constexpr uint32_t NUM_UPDATES_TO_SETTLE = 5;
+  static constexpr uint32_t NUM_UPDATES_TO_SETTLE = 5;
   if (m_updateNum <= NUM_UPDATES_TO_SETTLE)
   {
     m_goomLimit = m_acceleration + GOOM_LIMIT_SHORT_CYCLE_INCREMENT;
@@ -184,8 +184,8 @@ inline void SoundInfo::CheckSettledGoomLimits()
 // Detection of new goom
 void SoundInfo::UpdateGoomLimit()
 {
-  constexpr float VERY_SLOW_SPEED = 0.01F;
-  constexpr float GOOM_LIMIT_SLOW_SPEED_FACTOR = 0.91F;
+  static constexpr float VERY_SLOW_SPEED = 0.01F;
+  static constexpr float GOOM_LIMIT_SLOW_SPEED_FACTOR = 0.91F;
   if (m_speed < VERY_SLOW_SPEED)
   {
     m_goomLimit *= GOOM_LIMIT_SLOW_SPEED_FACTOR;
@@ -207,12 +207,12 @@ void SoundInfo::UpdateGoomLimit()
   }
   else if (0 == m_totalGoomsInCurrentCycle)
   {
-    constexpr float GOOM_LIMIT_ACCELERATION_DECREMENT = 0.03F;
+    static constexpr float GOOM_LIMIT_ACCELERATION_DECREMENT = 0.03F;
     m_goomLimit = m_maxAccelerationSinceLastReset - GOOM_LIMIT_ACCELERATION_DECREMENT;
   }
 
-  constexpr float GOOM_LIMIT_TOO_BIG = 0.02F;
-  constexpr float GOOM_LIMIT_TOO_BIG_DECREMENT = 0.02F;
+  static constexpr float GOOM_LIMIT_TOO_BIG = 0.02F;
+  static constexpr float GOOM_LIMIT_TOO_BIG_DECREMENT = 0.02F;
   if ((1 == m_totalGoomsInCurrentCycle) && (m_goomLimit > GOOM_LIMIT_TOO_BIG))
   {
     m_goomLimit -= GOOM_LIMIT_TOO_BIG_DECREMENT;

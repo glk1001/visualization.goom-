@@ -10,8 +10,8 @@ using GOOM::UTILS::MATH::FloatsEqual;
 using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;
 using GOOM::VISUAL_FX::FILTERS::NormalizedCoordsConverter;
 
-constexpr uint32_t WIDTH = 1280;
-constexpr uint32_t HEIGHT = 720;
+static constexpr uint32_t WIDTH = 1280;
+static constexpr uint32_t HEIGHT = 720;
 static const float MIN_COORD_VAL =
     (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) /
     static_cast<float>(WIDTH - 1);

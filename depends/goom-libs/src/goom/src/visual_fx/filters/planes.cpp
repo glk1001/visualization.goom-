@@ -16,48 +16,48 @@ using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
 
 // clang-format off
-constexpr IGoomRand::NumberRange<int32_t> SMALL_EFFECTS_RANGE               = {-2,  +2 + 1};
-constexpr IGoomRand::NumberRange<int32_t> MEDIUM_EFFECTS_RANGE              = {-5,  +5 + 1};
-constexpr IGoomRand::NumberRange<int32_t> LARGE_EFFECTS_RANGE               = {-7,  +7 + 1};
-constexpr IGoomRand::NumberRange<int32_t> VERY_LARGE_EFFECTS_RANGE          = {-9,  +9 + 1};
-constexpr IGoomRand::NumberRange<int32_t> VERY_LARGE_POSITIVE_EFFECTS_RANGE = {+5, +12 + 1};
+static constexpr IGoomRand::NumberRange<int32_t> SMALL_EFFECTS_RANGE               = {-2,  +2 + 1};
+static constexpr IGoomRand::NumberRange<int32_t> MEDIUM_EFFECTS_RANGE              = {-5,  +5 + 1};
+static constexpr IGoomRand::NumberRange<int32_t> LARGE_EFFECTS_RANGE               = {-7,  +7 + 1};
+static constexpr IGoomRand::NumberRange<int32_t> VERY_LARGE_EFFECTS_RANGE          = {-9,  +9 + 1};
+static constexpr IGoomRand::NumberRange<int32_t> VERY_LARGE_POSITIVE_EFFECTS_RANGE = {+5, +12 + 1};
 
-constexpr float PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE = 0.2F;
-constexpr float PROB_ZERO_VERTICAL_FOR_LARGE_RANGE        = 0.2F;
-constexpr float PROB_HORIZONTAL_OPPOSITE_TO_VERTICAL      = 0.9F;
+static constexpr float PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE = 0.2F;
+static constexpr float PROB_ZERO_VERTICAL_FOR_LARGE_RANGE        = 0.2F;
+static constexpr float PROB_HORIZONTAL_OPPOSITE_TO_VERTICAL      = 0.9F;
 // clang-format on
 
 // H Plane:
 // @since June 2001
 // clang-format off
-constexpr IGoomRand::NumberRange<float> HORIZONTAL_EFFECTS_MULTIPLIER_RANGE = {0.0015F, 0.0035F};
-constexpr IGoomRand::NumberRange<float>
+static constexpr IGoomRand::NumberRange<float> HORIZONTAL_EFFECTS_MULTIPLIER_RANGE = {0.0015F, 0.0035F};
+static constexpr IGoomRand::NumberRange<float>
                              HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE = {0.0015F, 0.0351F};
 // clang-format on
 
-constexpr float DEFAULT_HORIZONTAL_SWIRL_FREQ = 1.0F;
-constexpr IGoomRand::NumberRange<float> HORIZONTAL_SWIRL_FREQ_RANGE = {0.1F, 30.01F};
-constexpr float DEFAULT_HORIZONTAL_SWIRL_AMPLITUDE = 1.0F;
-constexpr IGoomRand::NumberRange<float> HORIZONTAL_SWIRL_AMPLITUDE_RANGE = {0.1F, 30.01F};
+static constexpr float DEFAULT_HORIZONTAL_SWIRL_FREQ = 1.0F;
+static constexpr IGoomRand::NumberRange<float> HORIZONTAL_SWIRL_FREQ_RANGE = {0.1F, 30.01F};
+static constexpr float DEFAULT_HORIZONTAL_SWIRL_AMPLITUDE = 1.0F;
+static constexpr IGoomRand::NumberRange<float> HORIZONTAL_SWIRL_AMPLITUDE_RANGE = {0.1F, 30.01F};
 
 // V Plane:
 // clang-format off
-constexpr IGoomRand::NumberRange<float> VERTICAL_EFFECTS_AMPLITUDE_RANGE = {0.0015F, 0.0035F};
-constexpr IGoomRand::NumberRange<float>
+static constexpr IGoomRand::NumberRange<float> VERTICAL_EFFECTS_AMPLITUDE_RANGE = {0.0015F, 0.0035F};
+static constexpr IGoomRand::NumberRange<float>
                              VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = {0.0015F, 0.0351F};
 // clang-format on
 
-constexpr float DEFAULT_VERTICAL_SWIRL_FREQ = 1.0F;
-constexpr IGoomRand::NumberRange<float> VERTICAL_SWIRL_FREQ_RANGE = {0.1F, 30.01F};
-constexpr float DEFAULT_VERTICAL_SWIRL_AMPLITUDE = 1.0F;
-constexpr IGoomRand::NumberRange<float> VERTICAL_SWIRL_AMPLITUDE_RANGE = {0.1F, 30.01F};
+static constexpr float DEFAULT_VERTICAL_SWIRL_FREQ = 1.0F;
+static constexpr IGoomRand::NumberRange<float> VERTICAL_SWIRL_FREQ_RANGE = {0.1F, 30.01F};
+static constexpr float DEFAULT_VERTICAL_SWIRL_AMPLITUDE = 1.0F;
+static constexpr IGoomRand::NumberRange<float> VERTICAL_SWIRL_AMPLITUDE_RANGE = {0.1F, 30.01F};
 
-constexpr float PROB_PLANE_AMPLITUDES_EQUAL = 0.75F;
-constexpr float PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.5F;
-constexpr float PROB_MUCH_SPIRALLING = 0.2F;
-constexpr float PROB_NO_SWIRL = 0.95F;
-constexpr float PROB_SWIRL_AMPLITUDES_EQUAL = 0.7F;
-constexpr float PROB_SWIRL_FREQ_EQUAL = 0.7F;
+static constexpr float PROB_PLANE_AMPLITUDES_EQUAL = 0.75F;
+static constexpr float PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.5F;
+static constexpr float PROB_MUCH_SPIRALLING = 0.2F;
+static constexpr float PROB_NO_SWIRL = 0.95F;
+static constexpr float PROB_SWIRL_AMPLITUDES_EQUAL = 0.7F;
+static constexpr float PROB_SWIRL_FREQ_EQUAL = 0.7F;
 
 Planes::Planes(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},

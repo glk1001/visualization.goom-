@@ -22,8 +22,8 @@ enum class Events
 };
 using EventCounts = std::array<uint32_t, NUM<Events>>;
 
-constexpr size_t NUM_LOOPS = 10000000;
-constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
+static constexpr size_t NUM_LOOPS = 10000000;
+static constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
 [[nodiscard]] static auto GetWeightedCounts(const Weights<Events>& weights) -> EventCounts
 {
@@ -61,7 +61,7 @@ TEST_CASE("Weighted Events")
       {Events::EVENT4, 06.0F},
   };
   const Weights<Events> weightedEvents{goomRand, weightPairs};
-  constexpr double EXPECTED_SUM = 23.0;
+  static constexpr double EXPECTED_SUM = 23.0;
 
   SECTION("Unconditional weights")
   {
@@ -87,7 +87,7 @@ TEST_CASE("Weighted Events")
 
   SECTION("Conditional weights")
   {
-    constexpr Events GIVEN_EVENT = Events::EVENT3;
+    static constexpr Events GIVEN_EVENT = Events::EVENT3;
 
     const std::map<Events, float> event3WeightMultipliers = {
         {Events::EVENT1, 1.0F},
@@ -102,7 +102,7 @@ TEST_CASE("Weighted Events")
                                                                weightMultipliers};
     const auto conditionalSumOfWeights =
         static_cast<double>(conditionalWeightedEvents.GetSumOfWeights(GIVEN_EVENT));
-    constexpr double EXPECTED_SUM_FOR_GIVEN = 5.0 + 2.0 * 10.0 + 6.0;
+    static constexpr double EXPECTED_SUM_FOR_GIVEN = 5.0 + 2.0 * 10.0 + 6.0;
     REQUIRE(conditionalSumOfWeights == Approx(EXPECTED_SUM_FOR_GIVEN));
 
     const EventCounts conditionalEventCounts =
@@ -134,7 +134,7 @@ TEST_CASE("Weighted Events")
 
   SECTION("DisallowEventsSameAsGiven = true")
   {
-    constexpr Events GIVEN_EVENT = Events::EVENT3;
+    static constexpr Events GIVEN_EVENT = Events::EVENT3;
 
     const ConditionalWeights<Events> conditionalWeightedEvents{goomRand, weightPairs, true};
 
@@ -219,7 +219,7 @@ TEST_CASE("Conditional Weighted Events Exceptions")
       {Events::EVENT3, 0.0F},
       {Events::EVENT4, 0.0F},
   };
-  constexpr Events GIVEN_EVENT = Events::EVENT3;
+  static constexpr Events GIVEN_EVENT = Events::EVENT3;
   const ConditionalWeights<Events>::EventWeightMultiplierPairs weightMultipliers1 = {
       {GIVEN_EVENT, event3WeightMultipliers1}
   };

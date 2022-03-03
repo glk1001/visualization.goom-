@@ -147,7 +147,7 @@ inline auto GoomTitleDisplayer::IsFinalPhase() const -> bool
 
 inline auto GoomTitleDisplayer::IsFinished() const -> bool
 {
-  constexpr int32_t LINGER_TIME = 10;
+  static constexpr int32_t LINGER_TIME = 10;
   return m_timeLeftOfTitleDisplay <= -LINGER_TIME;
 }
 

@@ -199,12 +199,12 @@ void IfsDancersFx::Refresh()
 }
 
 // clang-format off
-constexpr float BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT = 1000.0F;
-constexpr float BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT   =    1.0F;
-constexpr float BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT   =    1.0F;
-constexpr float BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT     =    5.0F;
-constexpr float BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT =    1.0F;
-constexpr float BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT   =    5.0F;
+static constexpr float BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT = 1000.0F;
+static constexpr float BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT   =    1.0F;
+static constexpr float BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT   =    1.0F;
+static constexpr float BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT     =    5.0F;
+static constexpr float BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT =    1.0F;
+static constexpr float BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT   =    5.0F;
 // clang-format on
 
 IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
@@ -236,13 +236,13 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
 
 inline auto IfsDancersFx::IfsDancersFxImpl::MegaChangeColorMapEvent() -> bool
 {
-  constexpr float PROB_MEGA_CHANGE_COLOR_MAP_EVENT = 0.5F;
+  static constexpr float PROB_MEGA_CHANGE_COLOR_MAP_EVENT = 0.5F;
   return m_goomRand.ProbabilityOf(PROB_MEGA_CHANGE_COLOR_MAP_EVENT);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() -> bool
 {
-  constexpr float PROB_IFS_RENEW_EVENT = 2.0F / 3.0F;
+  static constexpr float PROB_IFS_RENEW_EVENT = 2.0F / 3.0F;
   return m_goomRand.ProbabilityOf(PROB_IFS_RENEW_EVENT);
 }
 
@@ -298,9 +298,9 @@ inline void IfsDancersFx::IfsDancersFxImpl::Renew()
 
 inline void IfsDancersFx::IfsDancersFxImpl::ChangeSpeed()
 {
-  constexpr float MIN_SPEED_AMP = 1.1F;
-  constexpr float MAX_SPEED_AMP = 5.1F;
-  constexpr float MAX_SPEED_WEIGHT = 10.0F;
+  static constexpr float MIN_SPEED_AMP = 1.1F;
+  static constexpr float MAX_SPEED_AMP = 5.1F;
+  static constexpr float MAX_SPEED_WEIGHT = 10.0F;
   const float speedAmp =
       std::min(m_goomRand.GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
   const float accelFactor = 1.0F / (1.1F - m_goomInfo.GetSoundInfo().GetAcceleration());
@@ -312,7 +312,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps()
 {
   m_colorizer.ChangeColorMaps();
   m_blurrer.SetColorMode(m_blurrerColorModeWeights.GetRandomWeighted());
-  constexpr float SINGLE_COLOR_T = 0.5F;
+  static constexpr float SINGLE_COLOR_T = 0.5F;
   m_blurrer.SetSingleColor(m_colorizer.GetColorMaps().GetRandomColorMap().GetColor(SINGLE_COLOR_T));
 }
 
@@ -337,7 +337,7 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateIfs()
 
 void IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay()
 {
-  constexpr int32_t BY_TWO = 2;
+  static constexpr int32_t BY_TWO = 2;
 
   --m_decayIfs;
   if (m_decayIfs > 0)
@@ -364,9 +364,9 @@ inline void IfsDancersFx::IfsDancersFxImpl::UpdateIncr()
 {
   if (m_ifsIncr <= 0)
   {
-    constexpr int32_t NEW_RECAY_IFS = 5;
+    static constexpr int32_t NEW_RECAY_IFS = 5;
     m_recayIfs = NEW_RECAY_IFS;
-    constexpr int32_t NEW_IFS_INCR = 11;
+    static constexpr int32_t NEW_IFS_INCR = 11;
     m_ifsIncr = NEW_IFS_INCR;
     Renew();
   }
@@ -376,7 +376,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::UpdateDecay()
 {
   if ((m_ifsIncr > 0) && (m_decayIfs <= 0))
   {
-    constexpr int32_t NEW_DECAY_IFS = 100;
+    static constexpr int32_t NEW_DECAY_IFS = 100;
     m_decayIfs = NEW_DECAY_IFS;
   }
 }
@@ -411,9 +411,9 @@ inline void IfsDancersFx::IfsDancersFxImpl::UpdateCycle()
 
 inline void IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold()
 {
-  constexpr float PROB_HIGH_BLUR_THRESHOLD = 0.75F;
-  constexpr float HIGH_BLUR_THRESHOLD = 0.99F;
-  constexpr float LOW_BLUR_THRESHOLD = 0.40F;
+  static constexpr float PROB_HIGH_BLUR_THRESHOLD = 0.75F;
+  static constexpr float HIGH_BLUR_THRESHOLD = 0.99F;
+  static constexpr float LOW_BLUR_THRESHOLD = 0.40F;
   m_lowDensityBlurThreshold =
       m_goomRand.ProbabilityOf(PROB_HIGH_BLUR_THRESHOLD) ? HIGH_BLUR_THRESHOLD : LOW_BLUR_THRESHOLD;
 }
@@ -476,13 +476,13 @@ void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
     if (constexpr float PROB_FIXED_MIX_FACTOR = 0.8F;
         m_goomRand.ProbabilityOf(PROB_FIXED_MIX_FACTOR))
     {
-      constexpr float FIXED_MIX_FACTOR = 0.98F;
+      static constexpr float FIXED_MIX_FACTOR = 0.98F;
       m_blurrer.SetNeighbourMixFactor(FIXED_MIX_FACTOR);
     }
     else
     {
-      constexpr float MIN_MIX_FACTOR = 0.9F;
-      constexpr float MAX_MIX_FACTOR = 1.0F;
+      static constexpr float MIN_MIX_FACTOR = 0.9F;
+      static constexpr float MAX_MIX_FACTOR = 1.0F;
       m_blurrer.SetNeighbourMixFactor(m_goomRand.GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
     }
     m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
@@ -558,13 +558,13 @@ inline void IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold()
 
 inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const -> uint32_t
 {
-  constexpr uint32_t NUM_WIDTHS = 3;
-  constexpr uint32_t WIDTH_RANGE = (MAX_DENSITY_COUNT - MIN_DENSITY_COUNT) / NUM_WIDTHS;
-  constexpr uint32_t DOUBLE_WIDTH_RANGE = 2 * WIDTH_RANGE;
+  static constexpr uint32_t NUM_WIDTHS = 3;
+  static constexpr uint32_t WIDTH_RANGE = (MAX_DENSITY_COUNT - MIN_DENSITY_COUNT) / NUM_WIDTHS;
+  static constexpr uint32_t DOUBLE_WIDTH_RANGE = 2 * WIDTH_RANGE;
 
-  constexpr uint32_t LARGE_BLUR_WIDTH = 7;
-  constexpr uint32_t MEDIUM_BLUR_WIDTH = 5;
-  constexpr uint32_t SMALL_BLUR_WIDTH = 3;
+  static constexpr uint32_t LARGE_BLUR_WIDTH = 7;
+  static constexpr uint32_t MEDIUM_BLUR_WIDTH = 5;
+  static constexpr uint32_t SMALL_BLUR_WIDTH = 3;
 
   uint32_t blurWidth = SMALL_BLUR_WIDTH;
 

@@ -19,7 +19,7 @@ using COLOR::RandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::MATH::IGoomRand;
 
-constexpr float HEAD_X_MAX = 10.0F;
+static constexpr float HEAD_X_MAX = 10.0F;
 
 Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
                        const Pixel& headColor,
@@ -55,13 +55,13 @@ void Tentacle3D::ColorMapsChanged()
 
   m_colorSegmentMixT = m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
 
-  constexpr float PROB_LOW_MIX_SAME = 0.5F;
+  static constexpr float PROB_LOW_MIX_SAME = 0.5F;
   m_lowColorSegmentMixT =
       m_goomRand.ProbabilityOf(PROB_LOW_MIX_SAME)
           ? m_colorSegmentMixT
           : m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
 
-  constexpr float PROB_CHROMA_INCREASE = 0.7F;
+  static constexpr float PROB_CHROMA_INCREASE = 0.7F;
   m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_CHROMA_INCREASE);
 }
 

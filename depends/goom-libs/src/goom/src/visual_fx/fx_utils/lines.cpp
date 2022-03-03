@@ -58,7 +58,7 @@ auto GetVerticalLinePoints(const uint32_t numPoints, const uint32_t height, cons
 
 inline auto RoundToTwoDecimals(const double x) -> double
 {
-  constexpr double TEN_TO_THE_TWO = 100.0;
+  static constexpr double TEN_TO_THE_TWO = 100.0;
   return std::round(x * TEN_TO_THE_TWO) / TEN_TO_THE_TWO;
 }
 

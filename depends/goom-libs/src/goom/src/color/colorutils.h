@@ -30,8 +30,8 @@ template<typename T>
 [[nodiscard]] auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -> Pixel;
 
 [[nodiscard]] auto GetLuma(const Pixel& color) -> float;
-constexpr float INCREASED_CHROMA_FACTOR = 2.0F;
-constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
+static constexpr float INCREASED_CHROMA_FACTOR = 2.0F;
+static constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
 [[nodiscard]] auto GetAlteredChroma(float lchYFactor, const Pixel& color) -> Pixel;
 [[nodiscard]] auto GetIncreasedChroma(const Pixel& color) -> Pixel;
 [[nodiscard]] auto GetDecreasedChroma(const Pixel& color) -> Pixel;
@@ -177,8 +177,7 @@ inline auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -
 
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
-  constexpr float MAX_BRIGHTNESS = 50.0F;
-  UNUSED_FOR_NDEBUG(MAX_BRIGHTNESS);
+  static constexpr float MAX_BRIGHTNESS = 50.0F;
   assert(brightness >= 0.0F && brightness <= MAX_BRIGHTNESS);
   const auto intBrightness = static_cast<uint32_t>(std::round((brightness * 256.0F) + 0.0001F));
   return GetBrighterColorInt(intBrightness, color);
@@ -188,7 +187,7 @@ inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixe
 inline auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, const int32_t intT)
     -> uint32_t
 {
-  constexpr auto MAX_COL_VAL_32 = static_cast<int32_t>(MAX_COLOR_VAL);
+  static constexpr auto MAX_COL_VAL_32 = static_cast<int32_t>(MAX_COLOR_VAL);
   return static_cast<uint32_t>(((MAX_COL_VAL_32 * ch1) + (intT * (ch2 - ch1))) / MAX_COL_VAL_32);
 }
 
@@ -221,9 +220,9 @@ inline auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -
 //
 //     Y = 0.2126 R + 0.7152 G + 0.0722 B
 //
-constexpr float LUMA_RED_COMPONENT = 0.2126F;
-constexpr float LUMA_GREEN_COMPONENT = 0.7152F;
-constexpr float LUMA_BLUE_COMPONENT = 0.0722F;
+static constexpr float LUMA_RED_COMPONENT = 0.2126F;
+static constexpr float LUMA_GREEN_COMPONENT = 0.7152F;
+static constexpr float LUMA_BLUE_COMPONENT = 0.0722F;
 
 inline auto GetLuma(const Pixel& color) -> float
 {
@@ -243,13 +242,13 @@ inline auto GetDecreasedChroma(const Pixel& color) -> Pixel
 
 inline auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
 {
-  constexpr Pixel::RGB RED{230, 120, 18, MAX_ALPHA};
-  constexpr Pixel::RGB ORANGE_J{120, 252, 18, MAX_ALPHA};
-  constexpr Pixel::RGB ORANGE_V{160, 236, 40, MAX_ALPHA};
-  constexpr Pixel::RGB BLEUBLANC{40, 220, 140, MAX_ALPHA};
-  constexpr Pixel::RGB VERT{200, 80, 18, MAX_ALPHA};
-  constexpr Pixel::RGB BLEU{250, 30, 80, MAX_ALPHA};
-  constexpr Pixel::RGB BLACK{16, 16, 16, MAX_ALPHA};
+  static constexpr Pixel::RGB RED{230, 120, 18, MAX_ALPHA};
+  static constexpr Pixel::RGB ORANGE_J{120, 252, 18, MAX_ALPHA};
+  static constexpr Pixel::RGB ORANGE_V{160, 236, 40, MAX_ALPHA};
+  static constexpr Pixel::RGB BLEUBLANC{40, 220, 140, MAX_ALPHA};
+  static constexpr Pixel::RGB VERT{200, 80, 18, MAX_ALPHA};
+  static constexpr Pixel::RGB BLEU{250, 30, 80, MAX_ALPHA};
+  static constexpr Pixel::RGB BLACK{16, 16, 16, MAX_ALPHA};
 
   switch (simpleColor)
   {

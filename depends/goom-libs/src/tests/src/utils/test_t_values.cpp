@@ -10,10 +10,10 @@ using GOOM::UTILS::MATH::SMALL_FLOAT;
 
 TEST_CASE("TValue SINGLE_CYCLE")
 {
-  constexpr uint32_t NUM_STEPS = 10;
+  static constexpr uint32_t NUM_STEPS = 10;
   TValue tValue{TValue::StepType::SINGLE_CYCLE, NUM_STEPS};
 
-  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
   // Zero steps
@@ -32,10 +32,10 @@ TEST_CASE("TValue SINGLE_CYCLE")
 
 TEST_CASE("TValue CONTINUOUS_REPEATABLE")
 {
-  constexpr uint32_t NUM_STEPS = 10;
+  static constexpr uint32_t NUM_STEPS = 10;
   TValue tValue{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS};
 
-  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
   // Zero steps
@@ -59,10 +59,10 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE")
 
 TEST_CASE("TValue CONTINUOUS_REVERSIBLE")
 {
-  constexpr uint32_t NUM_STEPS = 10;
+  static constexpr uint32_t NUM_STEPS = 10;
   TValue tValue{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
 
-  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
   // Zero steps
@@ -131,16 +131,16 @@ void CheckIsDelayed(TValue& tValue, const uint32_t delayTime, const float delayT
 
 TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
 {
-  constexpr uint32_t NUM_STEPS = 10;
-  constexpr uint32_t T_DELAY_TIME = 6;
-  constexpr float MID_DELAY_T = 0.5F;
+  static constexpr uint32_t NUM_STEPS = 10;
+  static constexpr uint32_t T_DELAY_TIME = 6;
+  static constexpr float MID_DELAY_T = 0.5F;
   TValue tValue{TValue::StepType::CONTINUOUS_REPEATABLE,
                 NUM_STEPS,
                 {{0.0F, T_DELAY_TIME}, {MID_DELAY_T, T_DELAY_TIME}, {1.0F, T_DELAY_TIME}}};
   REQUIRE((NUM_STEPS % 2) == 0);
   REQUIRE((T_DELAY_TIME % 2) == 0);
 
-  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
   // Zero steps
@@ -181,9 +181,9 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
 
 TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
 {
-  constexpr uint32_t NUM_STEPS = 10;
-  constexpr uint32_t T_DELAY_TIME = 6;
-  constexpr float MID_DELAY_T = 0.5F;
+  static constexpr uint32_t NUM_STEPS = 10;
+  static constexpr uint32_t T_DELAY_TIME = 6;
+  static constexpr float MID_DELAY_T = 0.5F;
   TValue tValue{TValue::StepType::CONTINUOUS_REVERSIBLE,
                 NUM_STEPS,
                 {{0.0F, T_DELAY_TIME}, {MID_DELAY_T, T_DELAY_TIME}, {1.0F, T_DELAY_TIME}}};
@@ -191,7 +191,7 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
   REQUIRE((T_DELAY_TIME % 2) == 0);
   REQUIRE(tValue() == Approx(0.0F));
 
-  constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
   REQUIRE(tValue.GetCurrentStep() > 0.0F);
 

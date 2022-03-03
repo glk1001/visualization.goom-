@@ -21,10 +21,10 @@ using UTILS::MATH::DEGREES_180;
 using UTILS::MATH::IGoomRand;
 
 // clang-format off
-constexpr float NUM0_WEIGHT = 10.0F;
-constexpr float NUM1_WEIGHT =  5.0F;
-constexpr float NUM2_WEIGHT =  3.0F;
-constexpr float NUM3_WEIGHT =  1.0F;
+static constexpr float NUM0_WEIGHT = 10.0F;
+static constexpr float NUM1_WEIGHT =  5.0F;
+static constexpr float NUM2_WEIGHT =  3.0F;
+static constexpr float NUM3_WEIGHT =  1.0F;
 // clang-format on
 
 Similitudes::Similitudes(const IGoomRand& goomRand,
@@ -161,7 +161,7 @@ void Similitudes::IterateSimis()
 
   for (size_t i = 0; i < m_numSimis; ++i)
   {
-    constexpr float GROUP3_FACTOR = 2.0F;
+    static constexpr float GROUP3_FACTOR = 2.0F;
     extraSimiGroup1[i].m_dbl_cx =
         (GROUP3_FACTOR * extraSimiGroup3[i].m_dbl_cx) - extraSimiGroup2[i].m_dbl_cx;
     extraSimiGroup1[i].m_dbl_cy =
@@ -204,7 +204,7 @@ void Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup)
   const Dbl r2Factor = m_centreAttributes.dr2Mean * r2_1_minus_exp_neg_S;
 
   const ColorMapGroup colorMapGroup = m_colorMaps.GetRandomGroup();
-  constexpr float PROB_USE_BITMAPS = 0.7F;
+  static constexpr float PROB_USE_BITMAPS = 0.7F;
   const bool useBitmaps = m_goomRand.ProbabilityOf(PROB_USE_BITMAPS);
 
   for (size_t i = 0; i < m_numSimis; ++i)
@@ -241,8 +241,8 @@ auto Similitudes::GetSimiBitmap(const bool useBitmaps) -> const ImageBitmap*
     return nullptr;
   }
 
-  constexpr uint32_t MIN_RES = 3;
-  constexpr uint32_t MAX_RES = 7;
+  static constexpr uint32_t MIN_RES = 3;
+  static constexpr uint32_t MAX_RES = 7;
   const uint32_t res = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
 
   if (constexpr float PROB_SPHERE_BITMAP = 0.6F; m_goomRand.ProbabilityOf(PROB_SPHERE_BITMAP))
@@ -263,7 +263,7 @@ inline auto Similitudes::GaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_
 {
   const Dbl x = m_goomRand.GetRandInRange(0.0F, 1.0F);
   const Dbl y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
-  constexpr float PROB_HALF = 0.5F;
+  static constexpr float PROB_HALF = 0.5F;
   return m_goomRand.ProbabilityOf(PROB_HALF) ? (c + y) : (c - y);
 }
 
@@ -277,7 +277,7 @@ inline auto Similitudes::HalfGaussRand(const Dbl c, const Dbl S, const Dbl A_mul
 
 void Similitudes::ResetCurrentIfsFunc()
 {
-  constexpr float PROB_REVERSED_IFS_FUNC = 0.3F;
+  static constexpr float PROB_REVERSED_IFS_FUNC = 0.3F;
 
   if (m_goomRand.ProbabilityOf(PROB_REVERSED_IFS_FUNC))
   {

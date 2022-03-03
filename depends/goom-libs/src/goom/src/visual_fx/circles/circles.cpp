@@ -98,12 +98,12 @@ inline void Circles::UpdateCirclePathParams()
 
 inline auto Circles::GetPathParams() const -> PathParams
 {
-  constexpr float MIN_PATH_AMPLITUDE = 90.0F;
-  constexpr float MAX_PATH_AMPLITUDE = 110.0F;
-  constexpr float MIN_PATH_X_FREQ = 0.9F;
-  constexpr float MAX_PATH_X_FREQ = 2.0F;
-  constexpr float MIN_PATH_Y_FREQ = 0.9F;
-  constexpr float MAX_PATH_Y_FREQ = 2.0F;
+  static constexpr float MIN_PATH_AMPLITUDE = 90.0F;
+  static constexpr float MAX_PATH_AMPLITUDE = 110.0F;
+  static constexpr float MIN_PATH_X_FREQ = 0.9F;
+  static constexpr float MAX_PATH_X_FREQ = 2.0F;
+  static constexpr float MIN_PATH_Y_FREQ = 0.9F;
+  static constexpr float MAX_PATH_Y_FREQ = 2.0F;
 
   return {
       m_goomRand.GetRandInRange(MIN_PATH_AMPLITUDE, MAX_PATH_AMPLITUDE),

@@ -8,12 +8,12 @@ namespace GOOM::VISUAL_FX::FILTERS
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
-constexpr float X_DEFAULT_AMPLITUDE = 4.0F;
-constexpr float Y_DEFAULT_AMPLITUDE = 1.0F;
-constexpr IGoomRand::NumberRange<float> X_AMPLITUDE_RANGE = {+01.0F, +08.0F};
-constexpr IGoomRand::NumberRange<float> Y_AMPLITUDE_RANGE = {-10.0F, +10.0F};
+static constexpr float X_DEFAULT_AMPLITUDE = 4.0F;
+static constexpr float Y_DEFAULT_AMPLITUDE = 1.0F;
+static constexpr IGoomRand::NumberRange<float> X_AMPLITUDE_RANGE = {+01.0F, +08.0F};
+static constexpr IGoomRand::NumberRange<float> Y_AMPLITUDE_RANGE = {-10.0F, +10.0F};
 
-constexpr float PROB_AMPLITUDE_EQUAL = 0.5F;
+static constexpr float PROB_AMPLITUDE_EQUAL = 0.5F;
 
 Speedway::Speedway(const Modes mode, const IGoomRand& goomRand) noexcept
   : m_mode{mode}, m_goomRand{goomRand}, m_params{X_DEFAULT_AMPLITUDE, Y_DEFAULT_AMPLITUDE}

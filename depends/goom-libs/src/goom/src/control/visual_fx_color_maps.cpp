@@ -64,25 +64,25 @@ auto VisualFxColorMaps::GetColorMatchedSetArray() const -> ColorMatchedSetArray
 }
 
 // clang-format off
-constexpr float RED_GREEN_STANDARD_MAPS_WEIGHT             =   5.0F;
-constexpr float RED_BLUE_STANDARD_MAPS_WEIGHT              =   5.0F;
-constexpr float YELLOW_BLUE_STANDARD_MAPS_WEIGHT           =   5.0F;
-constexpr float YELLOW_PURPLE_STANDARD_MAPS_WEIGHT         =   5.0F;
-constexpr float ORANGE_GREEN_STANDARD_MAPS_WEIGHT          =   5.0F;
-constexpr float ORANGE_PURPLE_STANDARD_MAPS_WEIGHT         =   5.0F;
-constexpr float CONST_ALL_STANDARD_MAPS_WEIGHT             =  20.0F;
-constexpr float CONST_HEAT_STANDARD_MAPS_WEIGHT            =  35.0F;
-constexpr float CONST_COLD_STANDARD_MAPS_WEIGHT            =  35.0F;
-constexpr float CONST_DIVERGING_BLACK_STANDARD_MAPS_WEIGHT =  40.0F;
-constexpr float CONST_WES_ANDERSON_MAPS_WEIGHT             =  40.0F;
-constexpr float COLOR_MATCHED_SET1_WEIGHT                  =  90.0F;
-constexpr float COLOR_MATCHED_SET2_WEIGHT                  =  90.0F;
-constexpr float COLOR_MATCHED_SET3_WEIGHT                  =  90.0F;
-constexpr float COLOR_MATCHED_SET4_WEIGHT                  =  90.0F;
-constexpr float COLOR_MATCHED_SET5_WEIGHT                  =  90.0F;
-constexpr float COLOR_MATCHED_SET6_WEIGHT                  =  90.0F;
-constexpr float COLOR_MATCHED_SET7_WEIGHT                  =  90.0F;
-constexpr float COLOR_MATCHED_SET8_WEIGHT                  =  90.0F;
+static constexpr float RED_GREEN_STANDARD_MAPS_WEIGHT             =   5.0F;
+static constexpr float RED_BLUE_STANDARD_MAPS_WEIGHT              =   5.0F;
+static constexpr float YELLOW_BLUE_STANDARD_MAPS_WEIGHT           =   5.0F;
+static constexpr float YELLOW_PURPLE_STANDARD_MAPS_WEIGHT         =   5.0F;
+static constexpr float ORANGE_GREEN_STANDARD_MAPS_WEIGHT          =   5.0F;
+static constexpr float ORANGE_PURPLE_STANDARD_MAPS_WEIGHT         =   5.0F;
+static constexpr float CONST_ALL_STANDARD_MAPS_WEIGHT             =  20.0F;
+static constexpr float CONST_HEAT_STANDARD_MAPS_WEIGHT            =  35.0F;
+static constexpr float CONST_COLD_STANDARD_MAPS_WEIGHT            =  35.0F;
+static constexpr float CONST_DIVERGING_BLACK_STANDARD_MAPS_WEIGHT =  40.0F;
+static constexpr float CONST_WES_ANDERSON_MAPS_WEIGHT             =  40.0F;
+static constexpr float COLOR_MATCHED_SET1_WEIGHT                  =  90.0F;
+static constexpr float COLOR_MATCHED_SET2_WEIGHT                  =  90.0F;
+static constexpr float COLOR_MATCHED_SET3_WEIGHT                  =  90.0F;
+static constexpr float COLOR_MATCHED_SET4_WEIGHT                  =  90.0F;
+static constexpr float COLOR_MATCHED_SET5_WEIGHT                  =  90.0F;
+static constexpr float COLOR_MATCHED_SET6_WEIGHT                  =  90.0F;
+static constexpr float COLOR_MATCHED_SET7_WEIGHT                  =  90.0F;
+static constexpr float COLOR_MATCHED_SET8_WEIGHT                  =  90.0F;
 // clang-format on
 
 VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand)
@@ -147,7 +147,7 @@ auto VisualFxColorMaps::GetColorPairColorMatchedSet(const ColorMapFunc& func1,
   std::array<size_t, NUM<GoomEffect>> indexes{};
   std::iota(begin(indexes), end(indexes), 0);
   m_goomRand.Shuffle(begin(indexes), end(indexes));
-  constexpr size_t INC_BY_2 = 2;
+  static constexpr size_t INC_BY_2 = 2;
   for (size_t i = 0; i < NUM<GoomEffect>; i += INC_BY_2)
   {
     matchedSet.at(indexes.at(i)) = func2;

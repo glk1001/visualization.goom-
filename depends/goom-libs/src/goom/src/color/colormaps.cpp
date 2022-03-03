@@ -105,8 +105,8 @@ auto TintedColorMap::GetColor(const float t) const -> Pixel
   const Pixel color = GetColorMap()->GetColor(t);
   const vivid::col8_t rgb8 = {color.R(), color.G(), color.B()};
 
-  constexpr size_t SATURATION_INDEX = 1;
-  constexpr size_t LIGHTNESS_INDEX = 2;
+  static constexpr size_t SATURATION_INDEX = 1;
+  static constexpr size_t LIGHTNESS_INDEX = 2;
   vivid::hsv_t hsv{vivid::rgb::fromRgb8(rgb8)};
   hsv[SATURATION_INDEX] = m_saturation;
   hsv[LIGHTNESS_INDEX] = m_lightness;

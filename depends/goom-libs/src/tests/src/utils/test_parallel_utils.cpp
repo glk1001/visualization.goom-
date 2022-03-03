@@ -13,9 +13,9 @@ TEST_CASE("Test Parallel Utils", "[ParallelFor]")
   std::set<std::thread::id> threadsUsed{};
   std::mutex mutex{};
 
-  constexpr size_t ARRAY_LEN = 100000;
+  static constexpr size_t ARRAY_LEN = 100000;
   std::vector<uint64_t> testArray(ARRAY_LEN);
-  constexpr uint64_t FIXED_VAL = 33;
+  static constexpr uint64_t FIXED_VAL = 33;
   const auto f = [](const uint64_t i) { return i * FIXED_VAL + i * i; };
   const auto assignF = [&testArray, &f, &threadsUsed, &mutex](const uint64_t i) {
     testArray[i] = f(i);

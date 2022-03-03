@@ -39,7 +39,7 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
                   [[maybe_unused]] const int32_t y, [[maybe_unused]] const int32_t width,
                   [[maybe_unused]] const int32_t height) { return textColor; };
 
-  constexpr uint8_t OUTLINE_GREY = 0xFA;
+  static constexpr uint8_t OUTLINE_GREY = 0xFA;
   const Pixel outlineColor =
       GetBrighterColor(2.0F, Pixel{
                                  {OUTLINE_GREY, OUTLINE_GREY, OUTLINE_GREY, MAX_ALPHA}
@@ -84,10 +84,10 @@ void GoomMessageDisplayer::UpdateMessages(const std::vector<std::string>& msgLin
         GetUpdateMessagesDisplayers(numberOfLinesInMessage, m_textOutput, m_updateMessagesFontFile);
   }
 
-  constexpr int32_t VERTICAL_SPACING = 10;
-  constexpr size_t LINE_HEIGHT = MSG_FONT_SIZE + VERTICAL_SPACING;
-  constexpr int32_t X_POS = 30;
-  constexpr int32_t Y_START = 10;
+  static constexpr int32_t VERTICAL_SPACING = 10;
+  static constexpr size_t LINE_HEIGHT = MSG_FONT_SIZE + VERTICAL_SPACING;
+  static constexpr int32_t X_POS = 30;
+  static constexpr int32_t Y_START = 10;
 
   const size_t totalMessagesHeight = 20 + (LINE_HEIGHT * numberOfLinesInMessage);
 

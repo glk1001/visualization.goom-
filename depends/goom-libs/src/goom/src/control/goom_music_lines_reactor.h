@@ -75,7 +75,7 @@ inline void GoomMusicLinesReactor::NewCycle()
 
 inline auto GoomMusicLinesReactor::CanDisplayLines() const -> bool
 {
-  constexpr uint32_t DISPLAY_LINES_GOOM_NUM = 5;
+  static constexpr uint32_t DISPLAY_LINES_GOOM_NUM = 5;
 
   return ((m_lineMode != 0) ||
           (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
@@ -94,8 +94,8 @@ inline void GoomMusicLinesReactor::ChangeGoomLines()
     return;
   }
 
-  constexpr uint32_t CHANGE_GOOM_LINE_CYCLES = 121;
-  constexpr uint32_t GOOM_CYCLE_MOD_CHANGE = 9;
+  static constexpr uint32_t CHANGE_GOOM_LINE_CYCLES = 121;
+  static constexpr uint32_t GOOM_CYCLE_MOD_CHANGE = 9;
 
   if ((GOOM_CYCLE_MOD_CHANGE == (m_updateNum % CHANGE_GOOM_LINE_CYCLES)) &&
       m_goomEvents.Happens(GoomEvent::CHANGE_GOOM_LINE) &&
@@ -109,7 +109,7 @@ inline void GoomMusicLinesReactor::ResetLineModes()
 {
   if (!m_visualFx.IsScopeDrawable())
   {
-    constexpr int32_t SCOPE_RESET = 0xF000 & 5;
+    static constexpr int32_t SCOPE_RESET = 0xF000 & 5;
     m_stopLines = SCOPE_RESET;
   }
   if (!m_visualFx.IsFarScopeDrawable())
@@ -121,7 +121,7 @@ inline void GoomMusicLinesReactor::ResetLineModes()
 
 inline void GoomMusicLinesReactor::StopLinesIfRequested()
 {
-  constexpr int32_t LARGE_STOP_LINE = 0xF000;
+  static constexpr int32_t LARGE_STOP_LINE = 0xF000;
   if (((m_stopLines & LARGE_STOP_LINE) != 0) || (!m_visualFx.IsScopeDrawable()))
   {
     StopGoomLines();
@@ -137,7 +137,7 @@ inline void GoomMusicLinesReactor::StopGoomLines()
 
   m_visualFx.ResetDestGoomLines(GetGoomLineStopSettings());
 
-  constexpr int32_t STOP_MASK = 0x0FFF;
+  static constexpr int32_t STOP_MASK = 0x0FFF;
   m_stopLines &= STOP_MASK;
 }
 

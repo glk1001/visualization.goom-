@@ -10,11 +10,11 @@ namespace GOOM::VISUAL_FX::FILTERS
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
-constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.01000F};
-constexpr IGoomRand::NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};
-constexpr IGoomRand::NumberRange<float> ZOOM_FACTOR_RANGE = {0.10F, 1.0F};
+static constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.01000F};
+static constexpr IGoomRand::NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};
+static constexpr IGoomRand::NumberRange<float> ZOOM_FACTOR_RANGE = {0.10F, 1.0F};
 
-constexpr float PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
+static constexpr float PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
 ImageSpeedCoefficients::ImageSpeedCoefficients(const std::string& resourcesDirectory,
                                                const IGoomRand& goomRand)
@@ -49,7 +49,7 @@ inline void ImageSpeedCoefficients::DoSetRandomParams()
 
 auto ImageSpeedCoefficients::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  constexpr const char* PARAM_GROUP = "ImageSpeedCoeffs";
+  static constexpr const char* PARAM_GROUP = "ImageSpeedCoeffs";
   return m_imageDisplacementList.GetNameValueParams(PARAM_GROUP);
 }
 

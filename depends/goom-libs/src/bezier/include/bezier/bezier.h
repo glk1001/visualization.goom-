@@ -34,18 +34,18 @@ namespace Bezier
 {
     namespace Math
     {
-        constexpr float PI = 3.14159265358979f;
+    static constexpr float PI = 3.14159265358979f;
 
-        inline size_t binomial(size_t n, size_t k)
-        {
-            assert(k <= n);
-            size_t val = 1;
-            for (size_t i = 1; i <= k; i++)
-            {
-                val *= n + 1 - i;
-                val /= i;
-            }
-            return val;
+    inline size_t binomial(size_t n, size_t k)
+    {
+      assert(k <= n);
+      size_t val = 1;
+      for (size_t i = 1; i <= k; i++)
+      {
+        val *= n + 1 - i;
+        val /= i;
+      }
+      return val;
         }
 
         inline bool isWithinZeroAndOne(float x)

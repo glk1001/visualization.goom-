@@ -64,8 +64,8 @@ using UTILS::MATH::FloatsEqual;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
 
-constexpr float MIN_MAX_NORMALIZED_PEAK = 100.0F;
-constexpr float MAX_MAX_NORMALIZED_PEAK = 400.0F;
+static constexpr float MIN_MAX_NORMALIZED_PEAK = 100.0F;
+static constexpr float MAX_MAX_NORMALIZED_PEAK = 400.0F;
 
 class LinesFx::LinesImpl
 {
@@ -260,19 +260,19 @@ void LinesFx::DrawLines(const AudioSamples::SampleArray& soundData,
 }
 
 // clang-format off
-constexpr float MIN_DOT_SIZE01_WEIGHT = 100.0F;
-constexpr float MIN_DOT_SIZE02_WEIGHT =  50.0F;
-constexpr float MIN_DOT_SIZE03_WEIGHT =  20.0F;
-constexpr float MIN_DOT_SIZE04_WEIGHT =  10.0F;
+static constexpr float MIN_DOT_SIZE01_WEIGHT = 100.0F;
+static constexpr float MIN_DOT_SIZE02_WEIGHT =  50.0F;
+static constexpr float MIN_DOT_SIZE03_WEIGHT =  20.0F;
+static constexpr float MIN_DOT_SIZE04_WEIGHT =  10.0F;
 
-constexpr float NORMAL_DOT_SIZE01_WEIGHT = 50.0F;
-constexpr float NORMAL_DOT_SIZE02_WEIGHT = 20.0F;
-constexpr float NORMAL_DOT_SIZE03_WEIGHT = 20.0F;
-constexpr float NORMAL_DOT_SIZE04_WEIGHT = 10.0F;
-constexpr float NORMAL_DOT_SIZE05_WEIGHT = 10.0F;
-constexpr float NORMAL_DOT_SIZE06_WEIGHT = 10.0F;
-constexpr float NORMAL_DOT_SIZE07_WEIGHT = 10.0F;
-constexpr float NORMAL_DOT_SIZE08_WEIGHT = 10.0F;
+static constexpr float NORMAL_DOT_SIZE01_WEIGHT = 50.0F;
+static constexpr float NORMAL_DOT_SIZE02_WEIGHT = 20.0F;
+static constexpr float NORMAL_DOT_SIZE03_WEIGHT = 20.0F;
+static constexpr float NORMAL_DOT_SIZE04_WEIGHT = 10.0F;
+static constexpr float NORMAL_DOT_SIZE05_WEIGHT = 10.0F;
+static constexpr float NORMAL_DOT_SIZE06_WEIGHT = 10.0F;
+static constexpr float NORMAL_DOT_SIZE07_WEIGHT = 10.0F;
+static constexpr float NORMAL_DOT_SIZE08_WEIGHT = 10.0F;
 // clang-format on
 
 LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
@@ -360,9 +360,9 @@ inline void LinesFx::LinesImpl::UpdateColorInfo()
 {
   m_randomColorMapsManager.ChangeAllColorMapsNow();
 
-  constexpr float PROB_USE_LINE_COLOR = 0.5F;
+  static constexpr float PROB_USE_LINE_COLOR = 0.5F;
   m_useLineColor = m_goomRand.ProbabilityOf(PROB_USE_LINE_COLOR);
-  constexpr float PROB_USE_INCREASED_CHROMA = 0.3F;
+  static constexpr float PROB_USE_INCREASED_CHROMA = 0.3F;
   m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_USE_INCREASED_CHROMA);
 }
 
@@ -397,8 +397,8 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
   if (m_lineLerpParam >= 1.0F)
   {
     m_srceLineType = m_destLineType;
-    constexpr float MIN_BRIGHTNESS = 2.5F;
-    constexpr float MAX_BRIGHTNESS = 4.0F;
+    static constexpr float MIN_BRIGHTNESS = 2.5F;
+    static constexpr float MAX_BRIGHTNESS = 4.0F;
     m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
   }
 
@@ -408,13 +408,13 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
           FloatsEqual(m_srcePoints[0].point.y,
                       m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.y)));
 
-  constexpr float COLOR_MIX_AMOUNT = 1.0F / 64.0F;
+  static constexpr float COLOR_MIX_AMOUNT = 1.0F / 64.0F;
   m_srceColor = IColorMap::GetColorMix(m_srceColor, m_destColor, COLOR_MIX_AMOUNT);
 
-  constexpr float MIN_POW_INC = 0.03F;
-  constexpr float MAX_POW_INC = 0.10F;
-  constexpr float MIN_POWER = 1.1F;
-  constexpr float MAX_POWER = 17.5F;
+  static constexpr float MIN_POW_INC = 0.03F;
+  static constexpr float MAX_POW_INC = 0.10F;
+  static constexpr float MIN_POWER = 1.1F;
+  static constexpr float MAX_POWER = 17.5F;
   m_lineColorPower += m_lineColorPowerIncrement;
   if (m_lineColorPower < MIN_POWER)
   {
@@ -427,7 +427,7 @@ void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
     m_lineColorPowerIncrement = -m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
   }
 
-  constexpr float AMP_MIX_AMOUNT = 0.01F;
+  static constexpr float AMP_MIX_AMOUNT = 0.01F;
   m_linePeakAmplitude = STD20::lerp(m_linePeakAmplitude, m_newLinePeakAmplitude, AMP_MIX_AMOUNT);
 }
 
@@ -449,8 +449,8 @@ void LinesFx::LinesImpl::ResetDestLine(const LineType newLineType,
   m_newLinePeakAmplitude = newAmplitude;
   m_destColor = newColor;
   m_lineLerpParam = 0.0;
-  constexpr float MIN_BRIGHTNESS = 1.5F;
-  constexpr float MAX_BRIGHTNESS = 3.0F;
+  static constexpr float MIN_BRIGHTNESS = 1.5F;
+  static constexpr float MAX_BRIGHTNESS = 3.0F;
   m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
   m_dotDrawer.ChangeDotSizes();
   m_maxNormalizedPeak = m_goomRand.GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
@@ -510,7 +510,7 @@ inline auto LinesFx::LinesImpl::GetFinalLineColor(const Pixel& color) const -> P
 void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
                                    const AudioSamples::MaxMinValues& soundMinMax)
 {
-  constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
+  static constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
 
   assert(m_srceLineType != LineType::CIRCLE || m_lineLerpParam < 1.0F ||
          (FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) &&
@@ -530,7 +530,7 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
     return;
   }
 
-  constexpr uint8_t LINE_THICKNESS = 1;
+  static constexpr uint8_t LINE_THICKNESS = 1;
   const std::vector<PointAndColor> audioPoints = GetAudioPoints(lineColor, soundData);
 
   Point2dInt point1 = audioPoints[0].point;
@@ -546,7 +546,7 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
 
     m_draw.Line(point1.x, point1.y, point2.x, point2.y, colors, LINE_THICKNESS);
 
-    constexpr float DOT_BRIGHTNESS = 1.5F;
+    static constexpr float DOT_BRIGHTNESS = 1.5F;
     m_dotDrawer.DrawDot(point2, colors, DOT_BRIGHTNESS);
 
     point1 = point2;
@@ -573,8 +573,8 @@ auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,
 {
   const Pixel randColor = GetRandomLineColor();
 
-  constexpr float T_STEP = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
-  constexpr float HALFWAY_T = 0.5F;
+  static constexpr float T_STEP = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
+  static constexpr float HALFWAY_T = 0.5F;
   float currentTStep = T_STEP;
   float t = 0.0;
 
@@ -596,7 +596,7 @@ auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,
   if ((m_srceLineType == LineType::CIRCLE) && (m_lineLerpParam >= 1.0F))
   {
     // It's a complete circle - lerp the last few points to nicely join back to start.
-    constexpr size_t NUM_POINTS_TO_LERP = 50;
+    static constexpr size_t NUM_POINTS_TO_LERP = 50;
     SmoothTheCircleJoinAtEnds(audioPoints, NUM_POINTS_TO_LERP);
   }
 

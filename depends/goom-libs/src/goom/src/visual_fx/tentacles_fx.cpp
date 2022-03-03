@@ -143,10 +143,10 @@ static const CirclesTentacleLayout LAYOUT4{
     10, 110, {36, 26, 20, 12, 6}, 0
 };
 
-constexpr float DRIVERS_NUM0_WEIGHT =   5.0F;
-constexpr float DRIVERS_NUM1_WEIGHT =  15.0F;
-constexpr float DRIVERS_NUM2_WEIGHT =  15.0F;
-constexpr float DRIVERS_NUM3_WEIGHT =   5.0F;
+static constexpr float DRIVERS_NUM0_WEIGHT =   5.0F;
+static constexpr float DRIVERS_NUM1_WEIGHT =  15.0F;
+static constexpr float DRIVERS_NUM2_WEIGHT =  15.0F;
+static constexpr float DRIVERS_NUM3_WEIGHT =   5.0F;
 // clang-format on
 
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper,
@@ -221,7 +221,7 @@ inline void TentaclesFx::TentaclesImpl::RefreshTentacles()
 {
   assert(m_currentTentacleDriver);
 
-  constexpr float PROB_REVERSE_COLOR_MIX = 0.33F;
+  static constexpr float PROB_REVERSE_COLOR_MIX = 0.33F;
   m_currentTentacleDriver->SetReverseColorMix(m_goomRand.ProbabilityOf(PROB_REVERSE_COLOR_MIX));
   m_currentTentacleDriver->TentaclesColorMapsChanged();
 }
@@ -293,9 +293,9 @@ inline void TentaclesFx::TentaclesImpl::UpdateDominantColors()
   assert(m_dominantColorMap);
   const Pixel newColor =
       RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
-  constexpr float COLOR_MIX_T = 0.70F;
+  static constexpr float COLOR_MIX_T = 0.70F;
   m_dominantColor = IColorMap::GetColorMix(m_dominantColor, newColor, COLOR_MIX_T);
-  constexpr float LOW_COLOR_POWER = 0.67F;
+  static constexpr float LOW_COLOR_POWER = 0.67F;
   m_dominantLowColor = GetLightenedColor(m_dominantColor, LOW_COLOR_POWER);
 }
 

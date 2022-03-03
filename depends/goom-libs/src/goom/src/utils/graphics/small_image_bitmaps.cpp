@@ -24,7 +24,7 @@ const std::array<std::string, NUM<SmallImageBitmaps::ImageNames>> SmallImageBitm
 SmallImageBitmaps::SmallImageBitmaps(std::string resourcesDirectory)
   : m_resourcesDirectory{std::move(resourcesDirectory)}
 {
-  constexpr size_t BY_TWO = 2;
+  static constexpr size_t BY_TWO = 2;
   for (size_t res = MIN_IMAGE_SIZE; res <= MAX_IMAGE_SIZE; res += BY_TWO)
   {
     for (size_t i = 0; i < NUM<ImageNames>; ++i)
@@ -42,7 +42,7 @@ auto SmallImageBitmaps::GetImageBitmap(const ImageNames name, const size_t res) 
   size_t imageRes = res;
   if (IsEven(imageRes))
   {
-    constexpr size_t MIN_EVEN_RES = 2;
+    static constexpr size_t MIN_EVEN_RES = 2;
     imageRes = (MIN_EVEN_RES == res) ? (res + 1) : (res - 1);
   }
   return *m_bitmapImages.at(GetImageKey(name, imageRes));

@@ -49,8 +49,8 @@ using UTILS::MATH::Sq;
 using UTILS::MATH::SqDistance;
 using UTILS::MATH::TWO_PI;
 
-constexpr int32_t CHUNK_WIDTH = 4;
-constexpr int32_t CHUNK_HEIGHT = 4;
+static constexpr int32_t CHUNK_WIDTH = 4;
+static constexpr int32_t CHUNK_HEIGHT = 4;
 using ChunkPixels = std::array<std::array<Pixel, CHUNK_WIDTH>, CHUNK_HEIGHT>;
 
 class ChunkedImage
@@ -256,7 +256,7 @@ void ImageFx::ImageFxImpl::InitImage()
   m_goomRand.Shuffle(begin(randImageIndexes), end(randImageIndexes));
 
   const std::string imageDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + "image_fx";
-  constexpr size_t MAX_IMAGES = 5;
+  static constexpr size_t MAX_IMAGES = 5;
   for (size_t i = 0; i < MAX_IMAGES; ++i)
   {
     const std::string imageFilename =
@@ -280,7 +280,7 @@ inline void ImageFx::ImageFxImpl::ResetStartPositions()
   const float radiusThetaStep = TWO_PI / static_cast<float>(m_currentImage->GetNumChunks());
   for (size_t i = 0; i < m_currentImage->GetNumChunks(); ++i)
   {
-    constexpr float SMALL_OFFSET = 0.4F;
+    static constexpr float SMALL_OFFSET = 0.4F;
     const float maxRadiusAdj =
         (1.0F - (SMALL_OFFSET * (1.0F + std::sin(radiusTheta)))) * randMaxRadius;
     const float radius = m_goomRand.GetRandInRange(10.0F, maxRadiusAdj);
@@ -296,9 +296,9 @@ inline void ImageFx::ImageFxImpl::ResetStartPositions()
 
 inline auto ImageFx::ImageFxImpl::GetChunkFloatingStartPosition(const size_t i) const -> Point2dInt
 {
-  constexpr float MARGIN = 20.0F;
-  constexpr float MIN_RADIUS_FACTOR = 0.025F;
-  constexpr float MAX_RADIUS_FACTOR = 0.5F;
+  static constexpr float MARGIN = 20.0F;
+  static constexpr float MIN_RADIUS_FACTOR = 0.025F;
+  static constexpr float MAX_RADIUS_FACTOR = 0.5F;
   const auto aRadius = (m_goomRand.GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
                         static_cast<float>(m_availableWidth)) -
                        MARGIN;

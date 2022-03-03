@@ -117,16 +117,16 @@ TEST_CASE("uint32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  constexpr size_t numLoop = 100000;
+  static constexpr size_t numLoop = 100000;
 
-  constexpr uint32_t nMin1 = 999;
-  constexpr uint32_t nMax1 = 10001;
+  static constexpr uint32_t nMin1 = 999;
+  static constexpr uint32_t nMax1 = 10001;
   const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
   REQUIRE(min1 == nMin1);
   REQUIRE(max1 == nMax1 - 1);
 
-  constexpr uint32_t nMin2 = 0;
-  constexpr uint32_t nMax2 = 120;
+  static constexpr uint32_t nMin2 = 0;
+  static constexpr uint32_t nMax2 = 120;
   const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
   REQUIRE(min2 == nMin2);
   REQUIRE(max2 == nMax2 - 1);
@@ -139,28 +139,28 @@ TEST_CASE("int32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  constexpr size_t numLoop = 100000;
+  static constexpr size_t numLoop = 100000;
 
-  constexpr int32_t nMin1 = -999;
-  constexpr int32_t nMax1 = 10001;
+  static constexpr int32_t nMin1 = -999;
+  static constexpr int32_t nMax1 = 10001;
   const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
   REQUIRE(min1 == nMin1);
   REQUIRE(max1 == nMax1 - 1);
 
-  constexpr int32_t nMin2 = -999;
-  constexpr int32_t nMax2 = -50;
+  static constexpr int32_t nMin2 = -999;
+  static constexpr int32_t nMax2 = -50;
   const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
   REQUIRE(min2 == nMin2);
   REQUIRE(max2 == nMax2 - 1);
 
-  constexpr int32_t nMin3 = 1;
-  constexpr int32_t nMax3 = 999;
+  static constexpr int32_t nMin3 = 1;
+  static constexpr int32_t nMax3 = 999;
   const auto [min3, max3] = GetMinMax(numLoop, nMin3, nMax3);
   REQUIRE(min3 == nMin3);
   REQUIRE(max3 == nMax3 - 1);
 
-  constexpr int32_t nMin4 = 0;
-  constexpr int32_t nMax4 = 635;
+  static constexpr int32_t nMin4 = 0;
+  static constexpr int32_t nMax4 = 635;
   const auto [min4, max4] = GetMinMax(numLoop, nMin4, nMax4);
   REQUIRE(min4 == nMin4);
   REQUIRE(max4 == nMax4 - 1);
@@ -177,22 +177,22 @@ TEST_CASE("float min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  constexpr size_t numLoop = 1000000;
+  static constexpr size_t numLoop = 1000000;
 
-  constexpr float nMin1 = 0;
-  constexpr float nMax1 = 1;
+  static constexpr float nMin1 = 0;
+  static constexpr float nMax1 = 1;
   const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
   REQUIRE(std::fabs(min1 - nMin1) < 0.0001F);
   REQUIRE(std::fabs(max1 - nMax1) < 0.0001F);
 
-  constexpr float nMin2 = -1;
-  constexpr float nMax2 = 0;
+  static constexpr float nMin2 = -1;
+  static constexpr float nMax2 = 0;
   const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
   REQUIRE(std::fabs(min2 - nMin2) < 0.0001F);
   REQUIRE(std::fabs(max2 - nMax2) < 0.0001F);
 
-  constexpr float nMin3 = -10;
-  constexpr float nMax3 = +10;
+  static constexpr float nMin3 = -10;
+  static constexpr float nMax3 = +10;
   const auto [min3, max3] = GetMinMax(numLoop, nMin3, nMax3);
   REQUIRE(std::fabs(min3 - nMin3) < 0.0001F);
   REQUIRE(std::fabs(max3 - nMax3) < 0.0001F);

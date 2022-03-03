@@ -109,7 +109,7 @@ void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weighte
 
   m_linesColorMap = &newColorMap;
   m_linesLowColorMap = &newLowColorMap;
-  constexpr float PROB_SHOW_LINE = 0.05F;
+  static constexpr float PROB_SHOW_LINE = 0.05F;
   m_showLine = m_goomRand.ProbabilityOf(PROB_SHOW_LINE);
 
   m_dotDiameters.ChangeDotDiameters();
@@ -211,15 +211,15 @@ void Circle::DrawNextCircleDots()
 
 inline auto Circle::GetCurrentBrightness() const -> float
 {
-  constexpr float BRIGHTNESS_CUT = 0.001F;
-  constexpr float INNER_POSITION_MARGIN = 0.05F;
+  static constexpr float BRIGHTNESS_CUT = 0.001F;
+  static constexpr float INNER_POSITION_MARGIN = 0.05F;
   return m_dotPaths.GetPositionT() < (1.0F - INNER_POSITION_MARGIN) ? 1.0F : BRIGHTNESS_CUT;
 }
 
 inline auto Circle::GetDotBrightness(const float brightness) const -> float
 {
-  constexpr float T_NEAR_START = 0.1F;
-  constexpr float BRIGHTNESS_INCREASE = 5.0F;
+  static constexpr float T_NEAR_START = 0.1F;
+  static constexpr float BRIGHTNESS_INCREASE = 5.0F;
   return (m_dotPaths.GetPositionT() < T_NEAR_START) && IsEven(m_updateNum)
              ? (BRIGHTNESS_INCREASE * brightness)
              : brightness;
@@ -227,13 +227,13 @@ inline auto Circle::GetDotBrightness(const float brightness) const -> float
 
 inline auto Circle::IsSpecialUpdateNum() const -> bool
 {
-  constexpr uint64_t SPECIAL_UPDATE_MULTIPLE = 5;
+  static constexpr uint64_t SPECIAL_UPDATE_MULTIPLE = 5;
   return 0 == (m_updateNum % SPECIAL_UPDATE_MULTIPLE);
 }
 
 inline auto Circle::GetLineBrightness(const float brightness) const -> float
 {
-  constexpr float BRIGHTNESS_INCREASE = 10.0F;
+  static constexpr float BRIGHTNESS_INCREASE = 10.0F;
   return IsSpecialUpdateNum() ? (BRIGHTNESS_INCREASE * brightness) : brightness;
 }
 
@@ -251,7 +251,7 @@ inline auto Circle::GetDotColors(const float dotBrightness) const -> std::vector
 
 inline auto Circle::GetDotLowColors(const float dotBrightness) const -> std::vector<Pixel>
 {
-  constexpr float BRIGHTNESS_INCREASE = 1.1F;
+  static constexpr float BRIGHTNESS_INCREASE = 1.1F;
 
   std::vector<Pixel> dotColors = m_lowColorMapsGrid.GetNextColors();
 
@@ -265,12 +265,12 @@ inline auto Circle::GetDotLowColors(const float dotBrightness) const -> std::vec
 
 inline auto Circle::GetRandomCircleCentreTargetPosition() const -> Point2dInt
 {
-  constexpr int32_t MARGIN = 50;
+  static constexpr int32_t MARGIN = 50;
   const Point2dInt randomPosition{
       m_goomRand.GetRandInRange(MARGIN, static_cast<int32_t>(m_draw.GetScreenWidth() - MARGIN)),
       m_goomRand.GetRandInRange(MARGIN, static_cast<int32_t>(m_draw.GetScreenHeight()) - MARGIN)};
 
-  constexpr float TARGET_T = 0.1F;
+  static constexpr float TARGET_T = 0.1F;
   return lerp(m_circleCentreTarget, randomPosition, TARGET_T);
 }
 
@@ -287,13 +287,13 @@ inline void Circle::ResetCircleParams()
 
 inline auto Circle::GetFinalColor(const float brightness, const Pixel& color) const -> Pixel
 {
-  constexpr float COLOR_BRIGHTNESS = 15.0F;
+  static constexpr float COLOR_BRIGHTNESS = 15.0F;
   return GetCorrectedColor(brightness * COLOR_BRIGHTNESS, color);
 }
 
 inline auto Circle::GetFinalLowColor(const float brightness, const Pixel& lowColor) const -> Pixel
 {
-  constexpr float LOW_COLOR_BRIGHTNESS = 15.0F;
+  static constexpr float LOW_COLOR_BRIGHTNESS = 15.0F;
   return GetCorrectedColor(brightness * LOW_COLOR_BRIGHTNESS, lowColor);
 }
 
@@ -314,7 +314,7 @@ inline void Circle::DrawDot(const Point2dInt& pos,
     {
       return Pixel::BLACK;
     }
-    constexpr float BGND_COLOR_T_MIX = 0.3F;
+    static constexpr float BGND_COLOR_T_MIX = 0.3F;
     return IColorMap::GetColorMix(bgnd, color, BGND_COLOR_T_MIX);
   };
   const auto getColor2 = [&lowColor]([[maybe_unused]] const size_t x,
@@ -324,7 +324,7 @@ inline void Circle::DrawDot(const Point2dInt& pos,
     {
       return Pixel::BLACK;
     }
-    constexpr float BGND_LOW_COLOR_T_MIX = 0.3F;
+    static constexpr float BGND_LOW_COLOR_T_MIX = 0.3F;
     return IColorMap::GetColorMix(bgnd, lowColor, BGND_LOW_COLOR_T_MIX);
   };
 
@@ -336,12 +336,12 @@ inline void Circle::DrawLine(const Point2dInt& pos1,
                              const float lineBrightness,
                              const float tLineColor)
 {
-  constexpr uint32_t NUM_LINE_DOTS = 5;
+  static constexpr uint32_t NUM_LINE_DOTS = 5;
 
-  constexpr float T_DOT_POS_STEP = 1.0F / static_cast<float>(NUM_LINE_DOTS);
+  static constexpr float T_DOT_POS_STEP = 1.0F / static_cast<float>(NUM_LINE_DOTS);
   float tDotPos = T_DOT_POS_STEP;
 
-  constexpr float T_DOT_COLOR_STEP = T_LINE_COLOR_STEP / static_cast<float>(NUM_LINE_DOTS);
+  static constexpr float T_DOT_COLOR_STEP = T_LINE_COLOR_STEP / static_cast<float>(NUM_LINE_DOTS);
 
   float tDotColor = tLineColor + T_DOT_COLOR_STEP;
   for (uint32_t i = 0; i < (NUM_LINE_DOTS - 1); ++i)
@@ -359,7 +359,7 @@ inline void Circle::DrawLine(const Point2dInt& pos1,
 
   if (m_showLine)
   {
-    constexpr uint8_t LINE_THICKNESS = 1;
+    static constexpr uint8_t LINE_THICKNESS = 1;
     const Pixel color = GetFinalColor(lineBrightness, m_linesColorMap->GetColor(tDotColor));
     const Pixel lowColor =
         GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));

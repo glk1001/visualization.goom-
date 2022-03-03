@@ -17,14 +17,14 @@ using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
 
 // clang-format off
-constexpr float MAP_COLORS_WEIGHT            = 20.0F;
-constexpr float MEGA_MAP_COLOR_CHANGE_WEIGHT = 15.0F;
-constexpr float MIX_COLORS_WEIGHT            = 20.0F;
-constexpr float MEGA_MIX_COLOR_CHANGE_WEIGHT = 15.0F;
-constexpr float REVERSE_MIX_COLORS_WEIGHT    = 20.0F;
-constexpr float SINGLE_COLORS_WEIGHT         =  5.0F;
-constexpr float SINE_MIX_COLORS_WEIGHT       =  5.0F;
-constexpr float SINE_MAP_COLORS_WEIGHT       =  5.0F;
+static constexpr float MAP_COLORS_WEIGHT            = 20.0F;
+static constexpr float MEGA_MAP_COLOR_CHANGE_WEIGHT = 15.0F;
+static constexpr float MIX_COLORS_WEIGHT            = 20.0F;
+static constexpr float MEGA_MIX_COLOR_CHANGE_WEIGHT = 15.0F;
+static constexpr float REVERSE_MIX_COLORS_WEIGHT    = 20.0F;
+static constexpr float SINGLE_COLORS_WEIGHT         =  5.0F;
+static constexpr float SINE_MIX_COLORS_WEIGHT       =  5.0F;
+static constexpr float SINE_MAP_COLORS_WEIGHT       =  5.0F;
 // clang-format on
 
 Colorizer::Colorizer(const IGoomRand& goomRand) noexcept
@@ -52,7 +52,7 @@ void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& wei
 {
   m_colorMaps = weightedMaps;
 
-  constexpr float PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
+  static constexpr float PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
   const std::set<RandomColorMaps::ColorMapTypes>& colorMapTypes =
       m_goomRand.ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
           ? RandomColorMaps::NO_COLOR_MAP_TYPES
@@ -171,16 +171,16 @@ inline auto Colorizer::GetMapColorsTBaseMix() const -> float
     return 1.0F - m_tAwayFromBaseColor;
   }
 
-  constexpr float MIN_T_BASE_MIX = 0.3F;
-  constexpr float MAX_T_BASE_MIX = 0.5F;
+  static constexpr float MIN_T_BASE_MIX = 0.3F;
+  static constexpr float MAX_T_BASE_MIX = 0.5F;
   return m_goomRand.GetRandInRange(MIN_T_BASE_MIX, MAX_T_BASE_MIX);
 }
 
 inline auto Colorizer::GetSineMixColor(const float tX, const float tY) const -> Pixel
 {
-  constexpr float INITIAL_FREQ = 20.0F;
-  constexpr float T_MIX_FACTOR = 0.5F;
-  constexpr float Z_STEP = 0.1F;
+  static constexpr float INITIAL_FREQ = 20.0F;
+  static constexpr float T_MIX_FACTOR = 0.5F;
+  static constexpr float Z_STEP = 0.1F;
   static const float s_FREQ = INITIAL_FREQ;
   static float s_z = 0.0F;
 

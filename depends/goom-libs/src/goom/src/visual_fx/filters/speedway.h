@@ -79,7 +79,7 @@ inline auto Speedway::GetMode0SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
                                                 const float sqDistFromZero,
                                                 const NormalizedCoords& coords) const -> Point2dFlt
 {
-  constexpr float SQ_DIST_FACTOR = 0.01F;
+  static constexpr float SQ_DIST_FACTOR = 0.01F;
   float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
   if (constexpr float PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
@@ -98,16 +98,16 @@ inline auto Speedway::GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
 {
   float xAdd = -1.0F;
 
-  constexpr float PROB_RANDOM_X_ADD = 0.5F;
-  constexpr float PROB_FLIP_X_ADD = 0.5F;
-  constexpr float PROB_NEGATIVE_X_ADD = 0.5F;
+  static constexpr float PROB_RANDOM_X_ADD = 0.5F;
+  static constexpr float PROB_FLIP_X_ADD = 0.5F;
+  static constexpr float PROB_NEGATIVE_X_ADD = 0.5F;
 
   if (m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
   {
-    constexpr float MIN_NEGATIVE_X_ADD = -1.9F;
-    constexpr float MAX_NEGATIVE_X_ADD = -0.5F;
-    constexpr float MIN_POSITIVE_X_ADD = +0.5F;
-    constexpr float MAX_POSITIVE_X_ADD = +1.9F;
+    static constexpr float MIN_NEGATIVE_X_ADD = -1.9F;
+    static constexpr float MAX_NEGATIVE_X_ADD = -0.5F;
+    static constexpr float MIN_POSITIVE_X_ADD = +0.5F;
+    static constexpr float MAX_POSITIVE_X_ADD = +1.9F;
     xAdd = m_goomRand.ProbabilityOf(PROB_NEGATIVE_X_ADD)
                ? m_goomRand.GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
                : m_goomRand.GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
@@ -132,7 +132,7 @@ inline auto Speedway::GetMode2SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
                                                 const float sqDistFromZero,
                                                 const NormalizedCoords& coords) const -> Point2dFlt
 {
-  constexpr float SQ_DIST_FACTOR = 0.01F;
+  static constexpr float SQ_DIST_FACTOR = 0.01F;
   float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
   if (constexpr float PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {

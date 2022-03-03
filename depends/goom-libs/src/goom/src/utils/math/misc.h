@@ -9,13 +9,13 @@
 namespace GOOM::UTILS::MATH
 {
 
-constexpr float TWO_PI = 2.0F * STD20::pi;
-constexpr float HALF_PI = 0.5F * STD20::pi;
-constexpr float THIRD_PI = STD20::pi / 3.0F;
+static constexpr float TWO_PI = 2.0F * STD20::pi;
+static constexpr float HALF_PI = 0.5F * STD20::pi;
+static constexpr float THIRD_PI = STD20::pi / 3.0F;
 
-constexpr float DEGREES_90 = 90.0F;
-constexpr float DEGREES_180 = 180.0F;
-constexpr float DEGREES_360 = 360.0F;
+static constexpr float DEGREES_90 = 90.0F;
+static constexpr float DEGREES_180 = 180.0F;
+static constexpr float DEGREES_360 = 360.0F;
 
 template<typename T>
 [[nodiscard]] constexpr auto Sq(const T& x) -> T
@@ -28,7 +28,7 @@ template<typename T>
   return Sq(x) + Sq(y);
 }
 
-constexpr float SMALL_FLOAT = 0.00001F;
+static constexpr float SMALL_FLOAT = 0.00001F;
 
 [[nodiscard]] inline bool FloatsEqual(const float x,
                                       const float y,
@@ -72,28 +72,28 @@ private:
 };
 
 template<typename T>
-constexpr Fraction<T> FRAC_HALF = Fraction<T>{T(1), T(2)};
-constexpr auto I_HALF = FRAC_HALF<int32_t>;
-constexpr auto U_HALF = FRAC_HALF<uint32_t>;
-constexpr auto S_HALF = FRAC_HALF<size_t>;
+static constexpr Fraction<T> FRAC_HALF = Fraction<T>{T(1), T(2)};
+static constexpr auto I_HALF = FRAC_HALF<int32_t>;
+static constexpr auto U_HALF = FRAC_HALF<uint32_t>;
+static constexpr auto S_HALF = FRAC_HALF<size_t>;
 
 template<typename T>
 constexpr Fraction<T> QUARTER = Fraction<T>{T(1), T(4)};
-constexpr auto I_QUARTER = QUARTER<int32_t>;
-constexpr auto U_QUARTER = QUARTER<uint32_t>;
+static constexpr auto I_QUARTER = QUARTER<int32_t>;
+static constexpr auto U_QUARTER = QUARTER<uint32_t>;
 
 template<typename T>
 constexpr Fraction<T> THREE_QUARTERS = Fraction<T>{T(3), T(4)};
-constexpr auto I_THREE_QUARTERS = THREE_QUARTERS<int32_t>;
-constexpr auto U_THREE_QUARTERS = THREE_QUARTERS<uint32_t>;
+static constexpr auto I_THREE_QUARTERS = THREE_QUARTERS<int32_t>;
+static constexpr auto U_THREE_QUARTERS = THREE_QUARTERS<uint32_t>;
 
 template<typename T>
 [[nodiscard]] inline auto GetFltFraction(const T numerator, const T denominator) -> float
 {
   return static_cast<float>(numerator) / static_cast<float>(denominator);
 }
-constexpr float HALF = 1.0F / 2.0F;
-constexpr float THIRD = 1.0F / 3.0F;
+static constexpr float HALF = 1.0F / 2.0F;
+static constexpr float THIRD = 1.0F / 3.0F;
 
 class RangeMapper
 {

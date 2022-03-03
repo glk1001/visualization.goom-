@@ -38,7 +38,7 @@ static const Pixel RED_LINE = LinesFx::GetRedLineColor();
 static const Pixel GREEN_LINE = LinesFx::GetGreenLineColor();
 static const Pixel BLACK_LINE = LinesFx::GetBlackLineColor();
 
-constexpr float SMALL_LUMA = 0.1F;
+static constexpr float SMALL_LUMA = 0.1F;
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  const FxHelper& fxHelper,
@@ -106,7 +106,7 @@ void GoomAllVisualFx::ChangeState()
 {
   m_allStandardVisualFx->SuspendFx();
 
-  constexpr size_t MAX_TRIES = 10;
+  static constexpr size_t MAX_TRIES = 10;
   const GoomStates oldState = m_goomStateHandler.GetCurrentState();
 
   for (size_t numTry = 0; numTry < MAX_TRIES; ++numTry)

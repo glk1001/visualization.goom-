@@ -157,7 +157,7 @@ inline auto TextDraw::TextDrawImpl::GetBearingY() const -> int32_t
 #endif
 
 #ifndef NO_FREETYPE_INSTALLED
-constexpr int32_t FREE_TYPE_UNITS_PER_PIXEL = 64;
+static constexpr int32_t FREE_TYPE_UNITS_PER_PIXEL = 64;
 
 class TextDraw::TextDrawImpl
 {
@@ -689,7 +689,7 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
     WriteXSpan(span, rect, xPen, yPos, textIndexOfChar, getColor);
   };
 
-  constexpr int32_t MIN_PARALLEL_SPAN_ARRAY_SIZE = 20;
+  static constexpr int32_t MIN_PARALLEL_SPAN_ARRAY_SIZE = 20;
   if (m_useParallelRender && (spanArray.size() >= MIN_PARALLEL_SPAN_ARRAY_SIZE))
   {
     LogInfo("WriteSpansToImage using parallel.");

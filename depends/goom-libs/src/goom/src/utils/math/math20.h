@@ -9,7 +9,7 @@
 
 namespace STD20
 {
-constexpr float pi = 3.14159265358979323846264F;
+static constexpr float pi = 3.14159265358979323846264F;
 
 template<typename _Fp>
 [[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept

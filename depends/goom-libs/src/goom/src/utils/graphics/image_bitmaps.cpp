@@ -39,7 +39,7 @@ void ImageBitmap::Load(std::string imageFilename)
   uint8_t* rgbImage;
   try
   {
-    constexpr int DESIRED_CHANNELS = 4;
+    static constexpr int DESIRED_CHANNELS = 4;
     rgbImage = stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
   }
   catch (const std::exception& e)

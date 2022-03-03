@@ -82,9 +82,9 @@ void TentacleDriver::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>
   }
 }
 
-constexpr double TENT2D_X_MIN = 0.0;
-constexpr double TENT2D_Y_MIN = 0.065736;
-constexpr double TENT2D_Y_MAX = 10000.0;
+static constexpr double TENT2D_X_MIN = 0.0;
+static constexpr double TENT2D_Y_MIN = 0.065736;
+static constexpr double TENT2D_Y_MAX = 10000.0;
 
 auto TentacleDriver::GetTentacleParams(const size_t numTentacles,
                                        const std::vector<IterParamsGroup>& iterParamsGroups)
@@ -130,7 +130,7 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
     std::unique_ptr<Tentacle2D> tentacle2D{CreateNewTentacle2D(goomRand, i, tentacleParams[i])};
 
     // To hide the annoying flapping tentacle head, make near the head very dark.
-    constexpr V3dFlt INITIAL_HEAD_POS = {0, 0, 0};
+    static constexpr V3dFlt INITIAL_HEAD_POS = {0, 0, 0};
     const auto headColor = Pixel{5, 5, 5, MAX_ALPHA};
     const Pixel headLowColor = headColor;
     Tentacle3D tentacle{std::move(tentacle2D),     headColor, headLowColor, INITIAL_HEAD_POS,
@@ -147,14 +147,14 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
 auto TentacleDriver::IterParamsGroup::GetNextIterationParams(const float t) const
     -> TentacleDriver::IterationParams
 {
-  constexpr float MIN_NUM_NODES_FACTOR = 1.0F;
-  constexpr float MAX_NUM_NODES_FACTOR = 1.1F;
-  constexpr float MIN_PREV_Y_WEIGHT_FACTOR = 1.0F;
-  constexpr float MAX_PREV_Y_WEIGHT_FACTOR = 1.1F;
-  constexpr float MIN_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR = 1.0F;
-  constexpr float MAX_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR = 1.1F;
-  constexpr float MIN_LENGTH = 1.0F;
-  constexpr float MAX_LENGTH_FACTOR = 1.1F;
+  static constexpr float MIN_NUM_NODES_FACTOR = 1.0F;
+  static constexpr float MAX_NUM_NODES_FACTOR = 1.1F;
+  static constexpr float MIN_PREV_Y_WEIGHT_FACTOR = 1.0F;
+  static constexpr float MAX_PREV_Y_WEIGHT_FACTOR = 1.1F;
+  static constexpr float MIN_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR = 1.0F;
+  static constexpr float MAX_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR = 1.1F;
+  static constexpr float MIN_LENGTH = 1.0F;
+  static constexpr float MAX_LENGTH_FACTOR = 1.1F;
 
   IterationParams params{
       /* .numNodes = */
@@ -251,7 +251,7 @@ void TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
       const double xMax = tentacle2D.GetXMax();
       const double newXMax = xMin + (1.0 * (xMax - xMin));
       tentacle2D.SetXDimensions(xMin, newXMax);
-      constexpr size_t NUM_NODE_FACTOR = 6;
+      static constexpr size_t NUM_NODE_FACTOR = 6;
       tentacle.SetNumHeadNodes(std::max(NUM_NODE_FACTOR * Tentacle2D::MIN_NUM_NODES,
                                         S_HALF * tentacle.Get2DTentacle().GetNumNodes()));
     }
@@ -302,7 +302,7 @@ void TentacleDriver::Update()
 
   CheckForTimerEvents();
 
-  constexpr float ITER_ZERO_LERP_FACTOR = 0.9F;
+  static constexpr float ITER_ZERO_LERP_FACTOR = 0.9F;
 
   for (size_t i = 0; i < m_tentacles.size(); ++i)
   {

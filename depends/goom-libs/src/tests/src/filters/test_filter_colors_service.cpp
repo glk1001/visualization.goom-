@@ -14,8 +14,8 @@ using GOOM::PixelChannelType;
 using GOOM::VISUAL_FX::FILTERS::FilterColorsService;
 using GOOM::VISUAL_FX::FILTERS::ZoomFilterBuffers;
 
-constexpr size_t WIDTH = 120;
-constexpr size_t HEIGHT = 70;
+static constexpr size_t WIDTH = 120;
+static constexpr size_t HEIGHT = 70;
 
 inline auto GetColor(const uint32_t red, const uint32_t green, const uint32_t blue) -> GOOM::Pixel
 {
@@ -27,20 +27,20 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
   FilterColorsService filterColorsService{};
   PixelBuffer pixelBuffer{WIDTH, HEIGHT};
 
-  constexpr uint32_t R1 = 50;
-  constexpr uint32_t G1 = 150;
-  constexpr uint32_t B1 = 200;
-  constexpr uint32_t R2 = 80;
-  constexpr uint32_t G2 = 120;
-  constexpr uint32_t B2 = 50;
-  constexpr uint32_t R3 = 120;
-  constexpr uint32_t G3 = 200;
-  constexpr uint32_t B3 = 150;
-  constexpr uint32_t R4 = 120;
-  constexpr uint32_t G4 = 200;
-  constexpr uint32_t B4 = 60;
+  static constexpr uint32_t R1 = 50;
+  static constexpr uint32_t G1 = 150;
+  static constexpr uint32_t B1 = 200;
+  static constexpr uint32_t R2 = 80;
+  static constexpr uint32_t G2 = 120;
+  static constexpr uint32_t B2 = 50;
+  static constexpr uint32_t R3 = 120;
+  static constexpr uint32_t G3 = 200;
+  static constexpr uint32_t B3 = 150;
+  static constexpr uint32_t R4 = 120;
+  static constexpr uint32_t G4 = 200;
+  static constexpr uint32_t B4 = 60;
 
-  constexpr uint32_t MAX_SUM_COEFF = channel_limits<uint32_t>::max() + 1;
+  static constexpr uint32_t MAX_SUM_COEFF = channel_limits<uint32_t>::max() + 1;
 
   const ZoomFilterBuffers::NeighborhoodCoeffArray coeffs = {{50, 60, 70, 76}, false};
   REQUIRE(MAX_SUM_COEFF == std::accumulate(cbegin(coeffs.val), cend(coeffs.val), 0U));
@@ -49,8 +49,8 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
 
   SECTION("Correct new color")
   {
-    constexpr size_t X = 5;
-    constexpr size_t Y = 5;
+    static constexpr size_t X = 5;
+    static constexpr size_t Y = 5;
 
     const ZoomFilterBuffers::SourcePointInfo sourcePointInfo = {
         {static_cast<int32_t>(X), static_cast<int32_t>(Y)}, coeffs, false};

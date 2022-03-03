@@ -17,30 +17,30 @@ using UTILS::MATH::IGoomRand;
 // Hypercos:
 // applique une surcouche de hypercos effect
 // applies an overlay of hypercos effect
-constexpr HypercosOverlay DEFAULT_OVERLAY = HypercosOverlay::NONE;
-constexpr Hypercos::HypercosEffect DEFAULT_EFFECT = Hypercos::HypercosEffect::NONE;
-constexpr bool DEFAULT_REVERSE = false;
+static constexpr HypercosOverlay DEFAULT_OVERLAY = HypercosOverlay::NONE;
+static constexpr Hypercos::HypercosEffect DEFAULT_EFFECT = Hypercos::HypercosEffect::NONE;
+static constexpr bool DEFAULT_REVERSE = false;
 
-constexpr float X_DEFAULT_FREQ = 10.0F;
-constexpr float Y_DEFAULT_FREQ = 10.0F;
-constexpr IGoomRand::NumberRange<float> FREQ_RANGE = {5.0F, 100.0F};
-constexpr IGoomRand::NumberRange<float> BIG_FREQ_RANGE = {5.0F, 500.0F};
-constexpr IGoomRand::NumberRange<float> VERY_BIG_FREQ_RANGE = {30000.0F, 50000.0F};
+static constexpr float X_DEFAULT_FREQ = 10.0F;
+static constexpr float Y_DEFAULT_FREQ = 10.0F;
+static constexpr IGoomRand::NumberRange<float> FREQ_RANGE = {5.0F, 100.0F};
+static constexpr IGoomRand::NumberRange<float> BIG_FREQ_RANGE = {5.0F, 500.0F};
+static constexpr IGoomRand::NumberRange<float> VERY_BIG_FREQ_RANGE = {30000.0F, 50000.0F};
 
-constexpr float X_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
-constexpr float Y_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
-constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.1F * X_DEFAULT_AMPLITUDE,
-                                                           1.1F * X_DEFAULT_AMPLITUDE};
-constexpr IGoomRand::NumberRange<float> BIG_AMPLITUDE_RANGE = {0.1F * X_DEFAULT_AMPLITUDE,
-                                                               10.1F * X_DEFAULT_AMPLITUDE};
+static constexpr float X_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
+static constexpr float Y_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
+static constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.1F * X_DEFAULT_AMPLITUDE,
+                                                                  1.1F * X_DEFAULT_AMPLITUDE};
+static constexpr IGoomRand::NumberRange<float> BIG_AMPLITUDE_RANGE = {0.1F * X_DEFAULT_AMPLITUDE,
+                                                                      10.1F * X_DEFAULT_AMPLITUDE};
 
-constexpr float PROB_FREQ_EQUAL = 0.5F;
-constexpr float PROB_REVERSE = 0.5F;
-constexpr float PROB_AMPLITUDE_EQUAL = 0.5F;
-constexpr float PROB_BIG_AMPLITUDE_RANGE = 0.2F;
+static constexpr float PROB_FREQ_EQUAL = 0.5F;
+static constexpr float PROB_REVERSE = 0.5F;
+static constexpr float PROB_AMPLITUDE_EQUAL = 0.5F;
+static constexpr float PROB_BIG_AMPLITUDE_RANGE = 0.2F;
 
 // clang-format off
-constexpr Hypercos::Params DEFAULT_PARAMS{
+static constexpr Hypercos::Params DEFAULT_PARAMS{
     DEFAULT_OVERLAY,
     DEFAULT_EFFECT,
     DEFAULT_REVERSE,
@@ -50,17 +50,17 @@ constexpr Hypercos::Params DEFAULT_PARAMS{
     Y_DEFAULT_AMPLITUDE
 };
 
-constexpr float HYPERCOS_EFFECT_NONE_WEIGHT               =  0.0F;
-constexpr float HYPERCOS_EFFECT_SIN_CURL_SWIRL_WEIGHT     = 15.0F;
-constexpr float HYPERCOS_EFFECT_COS_CURL_SWIRL_WEIGHT     = 15.0F;
-constexpr float HYPERCOS_EFFECT_SIN_COS_CURL_SWIRL_WEIGHT = 15.0F;
-constexpr float HYPERCOS_EFFECT_COS_SIN_CURL_SWIRL_WEIGHT = 15.0F;
-constexpr float HYPERCOS_EFFECT_SIN_TAN_CURL_SWIRL_WEIGHT =  5.0F;
-constexpr float HYPERCOS_EFFECT_COS_TAN_CURL_SWIRL_WEIGHT =  5.0F;
-constexpr float HYPERCOS_EFFECT_SIN_RECTANGULAR_WEIGHT    =  5.0F;
-constexpr float HYPERCOS_EFFECT_COS_RECTANGULAR_WEIGHT    =  5.0F;
-constexpr float HYPERCOS_EFFECT_SIN_OF_COS_SWIRL_WEIGHT   = 15.0F;
-constexpr float HYPERCOS_EFFECT_COS_OF_SIN_SWIRL_WEIGHT   = 15.0F;
+static constexpr float HYPERCOS_EFFECT_NONE_WEIGHT               =  0.0F;
+static constexpr float HYPERCOS_EFFECT_SIN_CURL_SWIRL_WEIGHT     = 15.0F;
+static constexpr float HYPERCOS_EFFECT_COS_CURL_SWIRL_WEIGHT     = 15.0F;
+static constexpr float HYPERCOS_EFFECT_SIN_COS_CURL_SWIRL_WEIGHT = 15.0F;
+static constexpr float HYPERCOS_EFFECT_COS_SIN_CURL_SWIRL_WEIGHT = 15.0F;
+static constexpr float HYPERCOS_EFFECT_SIN_TAN_CURL_SWIRL_WEIGHT =  5.0F;
+static constexpr float HYPERCOS_EFFECT_COS_TAN_CURL_SWIRL_WEIGHT =  5.0F;
+static constexpr float HYPERCOS_EFFECT_SIN_RECTANGULAR_WEIGHT    =  5.0F;
+static constexpr float HYPERCOS_EFFECT_COS_RECTANGULAR_WEIGHT    =  5.0F;
+static constexpr float HYPERCOS_EFFECT_SIN_OF_COS_SWIRL_WEIGHT   = 15.0F;
+static constexpr float HYPERCOS_EFFECT_COS_OF_SIN_SWIRL_WEIGHT   = 15.0F;
 // clang-format on
 
 Hypercos::Hypercos(const IGoomRand& goomRand) noexcept

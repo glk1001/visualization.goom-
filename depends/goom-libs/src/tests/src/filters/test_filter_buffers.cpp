@@ -26,9 +26,9 @@ using GOOM::VISUAL_FX::FILTERS::NormalizedCoordsConverter;
 using GOOM::VISUAL_FX::FILTERS::ZoomFilterBuffers;
 using GOOM::VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 
-constexpr size_t WIDTH = 120;
-constexpr size_t HEIGHT = 70;
-constexpr const char* RESOURCES_DIRECTORY = "";
+static constexpr size_t WIDTH = 120;
+static constexpr size_t HEIGHT = 70;
+static constexpr const char* RESOURCES_DIRECTORY = "";
 static const GoomRand GOOM_RAND{};
 static const NormalizedCoordsConverter NORMALIZED_COORDS_CONVERTER{
     WIDTH, HEIGHT, ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL};
@@ -89,8 +89,8 @@ auto GetSourcePoint(const ZoomFilterBuffers& filterBuffers, const size_t buffPos
 
 TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
 {
-  constexpr int32_t TEST_X = 10;
-  constexpr int32_t TEST_Y = 50;
+  static constexpr int32_t TEST_X = 10;
+  static constexpr int32_t TEST_Y = 50;
   const Point2dInt TEST_SRCE_POINT = {TEST_X, TEST_Y};
   static_assert((0 <= TEST_X) && (TEST_X < WIDTH), "Invalid X");
   static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
@@ -154,7 +154,7 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
   }
   SECTION("Correct Lerped ZoomBufferTranPoint")
   {
-    constexpr float tLerp = 0.5F;
+    static constexpr float tLerp = 0.5F;
     const auto tranLerpFactor = static_cast<int32_t>(
         std::round(tLerp * static_cast<float>(filterBuffers.GetMaxTranLerpFactor())));
 
@@ -238,7 +238,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
     REQUIRE(CONST_ZOOM_VECTOR_COORDS_1 == constantZoomVector.GetConstCoords());
     REQUIRE(MID_PT == filterBuffers.GetBuffMidpoint());
 
-    constexpr float tLerp = 0.5F;
+    static constexpr float tLerp = 0.5F;
     const auto tranLerpFactor = static_cast<int32_t>(
         std::round(tLerp * static_cast<float>(filterBuffers.GetMaxTranLerpFactor())));
 
@@ -288,8 +288,8 @@ TEST_CASE("ZoomFilterBuffers Calculations")
 
 TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
 {
-  constexpr int32_t TEST_X = 10;
-  constexpr int32_t TEST_Y = 50;
+  static constexpr int32_t TEST_X = 10;
+  static constexpr int32_t TEST_Y = 50;
   static_assert((0 <= TEST_X) && (TEST_X < WIDTH), "Invalid X");
   static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
 

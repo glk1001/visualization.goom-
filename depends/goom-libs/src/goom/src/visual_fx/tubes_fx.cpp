@@ -47,7 +47,7 @@ using UTILS::MATH::PathParams;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::U_HALF;
 
-constexpr size_t NUM_TUBES = 3;
+static constexpr size_t NUM_TUBES = 3;
 
 struct TubeSettings
 {
@@ -57,16 +57,16 @@ struct TubeSettings
   float radiusEdgeOffset;
   PathParams circlePathParams;
 };
-constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{
+static constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{
     {
      {true, false, 3.4F, 150.0F, {10.0F, +0.5F, +0.5F}},
      {false, false, 0.19F, 130.0F, {50.0F, -0.75F, -1.0F}},
      {false, false, 0.18F, 130.0F, {40.0F, +1.0F, +0.75F}},
      }
 };
-constexpr uint32_t MAIN_TUBE_INDEX = 0;
-constexpr uint32_t SECONDARY_TUBES_START_INDEX = 1;
-constexpr PathParams COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
+static constexpr uint32_t MAIN_TUBE_INDEX = 0;
+static constexpr uint32_t SECONDARY_TUBES_START_INDEX = 1;
+static constexpr PathParams COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
 
 [[nodiscard]] inline auto lerp(const PathParams& params0, const PathParams& params1, const float t)
     -> PathParams
@@ -78,39 +78,39 @@ constexpr PathParams COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
   };
 }
 
-constexpr uint32_t MIN_COLORMAP_TIME = 100;
-constexpr uint32_t MAX_COLORMAP_TIME = 1000;
+static constexpr uint32_t MIN_COLORMAP_TIME = 100;
+static constexpr uint32_t MAX_COLORMAP_TIME = 1000;
 
-constexpr float MIN_BRIGHTNESS_FACTOR = 0.01F;
-constexpr float MAX_BRIGHTNESS_FACTOR = 0.20F;
+static constexpr float MIN_BRIGHTNESS_FACTOR = 0.01F;
+static constexpr float MAX_BRIGHTNESS_FACTOR = 0.20F;
 
-constexpr uint32_t MIN_JITTER_TIME = 50;
-constexpr uint32_t MAX_JITTER_TIME = 500;
-constexpr float MIN_SHAPE_JITTER_OFFSET = 10.0F;
-constexpr float MAX_SHAPE_JITTER_OFFSET = 20.0F;
+static constexpr uint32_t MIN_JITTER_TIME = 50;
+static constexpr uint32_t MAX_JITTER_TIME = 500;
+static constexpr float MIN_SHAPE_JITTER_OFFSET = 10.0F;
+static constexpr float MAX_SHAPE_JITTER_OFFSET = 20.0F;
 
-constexpr uint32_t MIN_DECREASED_SPEED_TIME = 100;
-constexpr uint32_t MAX_DECREASED_SPEED_TIME = 500;
-constexpr uint32_t MIN_INCREASED_SPEED_TIME = 100;
-constexpr uint32_t MAX_INCREASED_SPEED_TIME = 500;
-constexpr uint32_t MIN_NORMAL_SPEED_TIME = 20;
-constexpr uint32_t MAX_NORMAL_SPEED_TIME = 50;
+static constexpr uint32_t MIN_DECREASED_SPEED_TIME = 100;
+static constexpr uint32_t MAX_DECREASED_SPEED_TIME = 500;
+static constexpr uint32_t MIN_INCREASED_SPEED_TIME = 100;
+static constexpr uint32_t MAX_INCREASED_SPEED_TIME = 500;
+static constexpr uint32_t MIN_NORMAL_SPEED_TIME = 20;
+static constexpr uint32_t MAX_NORMAL_SPEED_TIME = 50;
 
-constexpr uint32_t MIN_STAY_IN_CENTRE_TIME = 1000;
-constexpr uint32_t MAX_STAY_IN_CENTRE_TIME = 1000;
-constexpr uint32_t MIN_STAY_AWAY_FROM_CENTRE_TIME = 100;
-constexpr uint32_t MAX_STAY_AWAY_FROM_CENTRE_TIME = 100;
+static constexpr uint32_t MIN_STAY_IN_CENTRE_TIME = 1000;
+static constexpr uint32_t MAX_STAY_IN_CENTRE_TIME = 1000;
+static constexpr uint32_t MIN_STAY_AWAY_FROM_CENTRE_TIME = 100;
+static constexpr uint32_t MAX_STAY_AWAY_FROM_CENTRE_TIME = 100;
 
-constexpr float PROB_RESET_COLOR_MAPS = 1.0F / 3.0F;
-constexpr float PROB_DECREASE_SPEED = 1.0F / 5.0F;
-constexpr float PROB_INCREASE_SPEED = 1.0F / 2.0F;
-constexpr float PROB_RANDOM_INCREASE_SPEED = 1.0F / 20.0F;
-constexpr float PROB_NORMAL_SPEED = 1.0F / 20.0F;
-constexpr float PROB_NO_SHAPE_JITTER = 0.8F;
-constexpr float PROB_PREV_SHAPES_JITTER = 0.0F;
-constexpr float PROB_OSCILLATING_SHAPE_PATH = 1.0F;
-constexpr float PROB_MOVE_AWAY_FROM_CENTRE = 0.3F;
-constexpr float PROB_FOLLOW_ZOOM_MID_POINT = 0.3F;
+static constexpr float PROB_RESET_COLOR_MAPS = 1.0F / 3.0F;
+static constexpr float PROB_DECREASE_SPEED = 1.0F / 5.0F;
+static constexpr float PROB_INCREASE_SPEED = 1.0F / 2.0F;
+static constexpr float PROB_RANDOM_INCREASE_SPEED = 1.0F / 20.0F;
+static constexpr float PROB_NORMAL_SPEED = 1.0F / 20.0F;
+static constexpr float PROB_NO_SHAPE_JITTER = 0.8F;
+static constexpr float PROB_PREV_SHAPES_JITTER = 0.0F;
+static constexpr float PROB_OSCILLATING_SHAPE_PATH = 1.0F;
+static constexpr float PROB_MOVE_AWAY_FROM_CENTRE = 0.3F;
+static constexpr float PROB_FOLLOW_ZOOM_MID_POINT = 0.3F;
 
 class TubesFx::TubeFxImpl
 {
@@ -664,7 +664,7 @@ void TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
         const int32_t newY = GetClipped(y + jitterAmount, m_draw.GetScreenHeight() - 1);
 
         const Pixel avColor = GetAverageColor(colorsList);
-        constexpr float BRIGHTNESS_FACTOR = 0.1F;
+        static constexpr float BRIGHTNESS_FACTOR = 0.1F;
         const float brightness = BRIGHTNESS_FACTOR * brightnessAttenuation;
         const Pixel newColor0 = GetBrighterColor(brightness, avColor);
 
@@ -703,7 +703,7 @@ inline auto TubesFx::TubeFxImpl::GetClipped(const int32_t val, const uint32_t ma
 
 auto TubesFx::TubeFxImpl::GetApproxBrightnessAttenuation() const -> float
 {
-  constexpr float MIN_BRIGHTNESS = 0.1F;
+  static constexpr float MIN_BRIGHTNESS = 0.1F;
   const GoomDrawToContainer::Coords& firstCoords = m_drawToContainer.GetChangedCoordsList().front();
   return m_prevShapesBrightnessAttenuation.GetPositionBrightness({firstCoords.x, firstCoords.y},
                                                                  MIN_BRIGHTNESS);

@@ -160,7 +160,7 @@ void Fractal::Trace(const uint32_t curDepth, const FltPoint& point0)
 inline auto Fractal::AreSimilarPoints(const FltPoint& point1, const FltPoint& point2) -> bool
 {
   // TODO What's going on here?
-  constexpr Flt CUTOFF = 16;
+  static constexpr Flt CUTOFF = 16;
   return (std::abs(point1.x - point2.x) < CUTOFF) || (std::abs(point1.y - point2.y) < CUTOFF);
 }
 

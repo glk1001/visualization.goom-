@@ -15,10 +15,10 @@ using GOOM::VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
 using GOOM::VISUAL_FX::FILTERS::FilterSettingsService;
 using GOOM::VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
 
-constexpr size_t WIDTH = 120;
-constexpr size_t HEIGHT = 70;
+static constexpr size_t WIDTH = 120;
+static constexpr size_t HEIGHT = 70;
 
-constexpr const char* RESOURCES_DIRECTORY = "";
+static constexpr const char* RESOURCES_DIRECTORY = "";
 
 TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
 {

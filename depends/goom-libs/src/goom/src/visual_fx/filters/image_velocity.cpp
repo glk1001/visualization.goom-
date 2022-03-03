@@ -11,11 +11,11 @@ using UTILS::GetFullParamGroup;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
-constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.0100F};
-constexpr IGoomRand::NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};
-constexpr IGoomRand::NumberRange<float> ZOOM_FACTOR_RANGE = {0.9F, 1.0F};
+static constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.0100F};
+static constexpr IGoomRand::NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};
+static constexpr IGoomRand::NumberRange<float> ZOOM_FACTOR_RANGE = {0.9F, 1.0F};
 
-constexpr float PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
+static constexpr float PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
 ImageVelocity::ImageVelocity(const std::string& resourcesDirectory, const IGoomRand& goomRand)
   : m_goomRand{goomRand}, m_imageDisplacementList{resourcesDirectory, m_goomRand}

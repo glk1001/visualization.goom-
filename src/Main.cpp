@@ -38,23 +38,23 @@ using AddonLogEnum = ADDON_LOG;
 #ifdef HAS_GL
 // TODO Figure out correct format here
 //      - GL_BGRA looks good but why?
-//constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
-constexpr GLenum TEXTURE_FORMAT = GL_BGRA;
-constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
+//static constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
+static constexpr GLenum TEXTURE_FORMAT = GL_BGRA;
+static constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
 #else
-constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
+static constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
 // TODO Not correct but compiles - that's a start.
-constexpr GLint GL_RGBA16 = 0x805B;
-constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
+static constexpr GLint GL_RGBA16 = 0x805B;
+static constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
 #endif
-//constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE;
-constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_SHORT;
+//static constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_BYTE;
+static constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_SHORT;
 
-constexpr int MAX_QUALITY = 4;
-constexpr std::array<uint32_t, MAX_QUALITY + 1> WIDTHS_BY_QUALITY{
+static constexpr int MAX_QUALITY = 4;
+static constexpr std::array<uint32_t, MAX_QUALITY + 1> WIDTHS_BY_QUALITY{
     512, 640, 1280, 1600, 1920,
 };
-constexpr std::array<uint32_t, MAX_QUALITY + 1> HEIGHTS_BY_QUALITY{
+static constexpr std::array<uint32_t, MAX_QUALITY + 1> HEIGHTS_BY_QUALITY{
     256, 360, 720, 900, 1080,
 };
 
@@ -656,9 +656,9 @@ auto CVisualizationGoom::CreateGlTexture() -> bool
 #ifdef HAS_GL
   glGenerateMipmap(GL_TEXTURE_2D);
 #endif
-  constexpr GLint LEVEL = 0;
-  constexpr GLint BORDER = 0;
-  constexpr void* const NULL_DATA = nullptr;
+  static constexpr GLint LEVEL = 0;
+  static constexpr GLint BORDER = 0;
+  static constexpr void* const NULL_DATA = nullptr;
   glTexImage2D(GL_TEXTURE_2D, LEVEL, TEXTURE_SIZED_INTERNAL_FORMAT,
                static_cast<GLsizei>(m_textureWidth), static_cast<GLsizei>(m_textureHeight), BORDER,
                TEXTURE_FORMAT, TEXTURE_DATA_TYPE, NULL_DATA);
@@ -821,10 +821,10 @@ inline void CVisualizationGoom::RenderGlPBOPixelBuffer(const GOOM::PixelBuffer& 
   // Bind to current PBO and send pixels to texture object.
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(m_currentPboIndex));
 
-  constexpr GLint LEVEL = 0;
-  constexpr GLint X_OFFSET = 0;
-  constexpr GLint Y_OFFSET = 0;
-  constexpr void* const NULL_PIXELS = nullptr;
+  static constexpr GLint LEVEL = 0;
+  static constexpr GLint X_OFFSET = 0;
+  static constexpr GLint Y_OFFSET = 0;
+  static constexpr void* const NULL_PIXELS = nullptr;
   glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
                   static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
                   NULL_PIXELS);
@@ -841,9 +841,9 @@ inline void CVisualizationGoom::RenderGlPBOPixelBuffer(const GOOM::PixelBuffer& 
 inline void CVisualizationGoom::RenderGlNormalPixelBuffer(
     const GOOM::PixelBuffer& pixelBuffer) const
 {
-  constexpr GLint LEVEL = 0;
-  constexpr GLint X_OFFSET = 0;
-  constexpr GLint Y_OFFSET = 0;
+  static constexpr GLint LEVEL = 0;
+  static constexpr GLint X_OFFSET = 0;
+  static constexpr GLint Y_OFFSET = 0;
   glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
                   static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
                   pixelBuffer.GetIntBuff());

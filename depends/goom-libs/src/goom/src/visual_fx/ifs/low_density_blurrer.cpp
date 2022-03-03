@@ -29,7 +29,7 @@ LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
 
 void LowDensityBlurrer::SetWidth(const uint32_t val)
 {
-  constexpr std::array VALID_WIDTHS{3, 5, 7};
+  static constexpr std::array VALID_WIDTHS{3, 5, 7};
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -105,7 +105,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
   const float logAlpha = point.GetCount() <= 1 ? 1.0F
                                                : (std::log(static_cast<float>(point.GetCount())) /
                                                      logMaxLowDensityCount);
-  constexpr float BRIGHTNESS = 0.9F;
+  static constexpr float BRIGHTNESS = 0.9F;
 
   switch (m_colorMode)
   {

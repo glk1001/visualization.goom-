@@ -35,9 +35,9 @@ DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
 
 void DotDrawer::ChangeDotSizes()
 {
-  constexpr size_t MAX_DOT_SIZE = 7;
+  static constexpr size_t MAX_DOT_SIZE = 7;
   m_currentDotSize = GetNextDotSize(MAX_DOT_SIZE);
-  constexpr float PROB_BEADED_LOOK = 0.15F;
+  static constexpr float PROB_BEADED_LOOK = 0.15F;
   m_beadedLook = m_goomRand.ProbabilityOf(PROB_BEADED_LOOK);
 }
 

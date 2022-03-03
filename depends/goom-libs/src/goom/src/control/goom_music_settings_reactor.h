@@ -123,9 +123,9 @@ inline void GoomMusicSettingsReactor::UpdateLineModes()
 
 inline void GoomMusicSettingsReactor::BigBreakIfMusicIsCalm()
 {
-  constexpr float CALM_SPEED = 0.05F;
-  constexpr uint32_t CALM_CYCLES = 16;
-  constexpr int32_t CALM_VITESSE = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 4;
+  static constexpr float CALM_SPEED = 0.05F;
+  static constexpr uint32_t CALM_CYCLES = 16;
+  static constexpr int32_t CALM_VITESSE = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 4;
 
   if ((m_goomInfo.GetSoundInfo().GetSpeed() < CALM_SPEED) &&
       (m_filterSettingsService.GetROVitesse().GetVitesse() < CALM_VITESSE) &&
@@ -137,7 +137,7 @@ inline void GoomMusicSettingsReactor::BigBreakIfMusicIsCalm()
 
 inline void GoomMusicSettingsReactor::BigBreak()
 {
-  constexpr int32_t SLOWER_BY = 3;
+  static constexpr int32_t SLOWER_BY = 3;
   m_filterSettingsService.GetRWVitesse().GoSlowerBy(SLOWER_BY);
 
   m_visualFx.ChangeAllFxColorMaps();
@@ -174,12 +174,12 @@ inline void GoomMusicSettingsReactor::ChangeRotation()
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_DECREASE_ROTATION))
   {
-    constexpr float ROTATE_SLOWER_FACTOR = 0.9F;
+    static constexpr float ROTATE_SLOWER_FACTOR = 0.9F;
     m_filterSettingsService.MultiplyRotate(ROTATE_SLOWER_FACTOR);
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_INCREASE_ROTATION))
   {
-    constexpr float ROTATE_FASTER_FACTOR = 1.1F;
+    static constexpr float ROTATE_FASTER_FACTOR = 1.1F;
     m_filterSettingsService.MultiplyRotate(ROTATE_FASTER_FACTOR);
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_TOGGLE_ROTATION))
@@ -190,8 +190,8 @@ inline void GoomMusicSettingsReactor::ChangeRotation()
 
 inline void GoomMusicSettingsReactor::RegularlyLowerTheSpeed()
 {
-  constexpr uint32_t LOWER_SPEED_CYCLES = 73;
-  constexpr int32_t FAST_SPEED = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 5;
+  static constexpr uint32_t LOWER_SPEED_CYCLES = 73;
+  static constexpr int32_t FAST_SPEED = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 5;
 
   if ((0 == (m_updateNum % LOWER_SPEED_CYCLES)) &&
       (m_filterSettingsService.GetROVitesse().GetVitesse() < FAST_SPEED))
@@ -240,7 +240,7 @@ inline void GoomMusicSettingsReactor::BigNormalUpdate()
   ChangeVitesse();
   ChangeTranBufferSwitchValues();
 
-  constexpr float PROB_SINGLE_BUFFER_DOTS = 1.0F / 20.0F;
+  static constexpr float PROB_SINGLE_BUFFER_DOTS = 1.0F / 20.0F;
   m_visualFx.SetSingleBufferDots(m_goomRand.ProbabilityOf(PROB_SINGLE_BUFFER_DOTS));
 }
 
@@ -258,8 +258,8 @@ inline void GoomMusicSettingsReactor::ChangeSpeedReverse()
   // Retablir le zoom avant.
   // Restore zoom in.
 
-  constexpr uint32_t REVERSE_VITESSE_CYCLES = 13;
-  constexpr int32_t SLOW_SPEED = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 2;
+  static constexpr uint32_t REVERSE_VITESSE_CYCLES = 13;
+  static constexpr int32_t SLOW_SPEED = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 2;
 
   if ((m_filterSettingsService.GetROVitesse().GetReverseVitesse()) &&
       ((m_updateNum % REVERSE_VITESSE_CYCLES) != 0) &&
@@ -280,7 +280,7 @@ inline void GoomMusicSettingsReactor::ChangeStopSpeeds()
 {
   if (m_goomEvents.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED_MINUS1))
   {
-    constexpr int32_t SLOW_SPEED = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 1;
+    static constexpr int32_t SLOW_SPEED = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 1;
     m_filterSettingsService.GetRWVitesse().SetVitesse(SLOW_SPEED);
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED))

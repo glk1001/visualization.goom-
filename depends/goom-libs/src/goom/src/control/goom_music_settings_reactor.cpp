@@ -60,7 +60,7 @@ void GoomMusicSettingsReactor::ChangeZoomEffects()
     m_previousZoomSpeed = m_filterSettingsService.GetROVitesse().GetVitesse();
     m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
 
-    constexpr uint32_t NUM_CYCLES_BEFORE_LERP_CHANGE = 2;
+    static constexpr uint32_t NUM_CYCLES_BEFORE_LERP_CHANGE = 2;
     if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
         (m_goomInfo.GetSoundInfo().GetTotalGoomsInCurrentCycle() < NUM_CYCLES_BEFORE_LERP_CHANGE))
     {
@@ -76,7 +76,7 @@ void GoomMusicSettingsReactor::ChangeZoomEffects()
 void GoomMusicSettingsReactor::ChangeVitesse()
 {
   // SPEED_FACTOR is delicate. Too small and zooms don't happen often enough.
-  constexpr float SPEED_FACTOR = 500.0F;
+  static constexpr float SPEED_FACTOR = 500.0F;
   const auto goFasterVal = static_cast<int32_t>(
       std::lround(3.5F * std::log10(1.0F + (SPEED_FACTOR * m_goomInfo.GetSoundInfo().GetSpeed()))));
   const int32_t newVitesse = Vitesse::STOP_SPEED - goFasterVal;
@@ -87,11 +87,11 @@ void GoomMusicSettingsReactor::ChangeVitesse()
     return;
   }
 
-  constexpr uint32_t VITESSE_CYCLES = 3;
-  constexpr int32_t FAST_SPEED = Vitesse::STOP_SPEED - 6;
-  constexpr int32_t FASTER_SPEED = Vitesse::STOP_SPEED - 7;
-  constexpr int32_t SLOW_SPEED = Vitesse::STOP_SPEED - 1;
-  constexpr float OLD_TO_NEW_MIX = 0.4F;
+  static constexpr uint32_t VITESSE_CYCLES = 3;
+  static constexpr int32_t FAST_SPEED = Vitesse::STOP_SPEED - 6;
+  static constexpr int32_t FASTER_SPEED = Vitesse::STOP_SPEED - 7;
+  static constexpr int32_t SLOW_SPEED = Vitesse::STOP_SPEED - 1;
+  static constexpr float OLD_TO_NEW_MIX = 0.4F;
 
   // on accelere
   if (((newVitesse < FASTER_SPEED) && (oldVitesse < FAST_SPEED) &&
@@ -112,7 +112,7 @@ void GoomMusicSettingsReactor::ChangeVitesse()
 
 auto GoomMusicSettingsReactor::GetNameValueParams() const -> NameValuePairs
 {
-  constexpr const char* PARAM_GROUP = "Music Settings";
+  static constexpr const char* PARAM_GROUP = "Music Settings";
   return {
       GetPair(PARAM_GROUP, "vitesse", m_filterSettingsService.GetROVitesse().GetVitesse()),
       GetPair(PARAM_GROUP, "previousZoomSpeed", m_previousZoomSpeed),

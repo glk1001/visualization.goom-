@@ -141,7 +141,7 @@ inline SinePath::SinePath(const Point2dInt& startPos,
 
 inline auto SinePath::GetNextPoint() const -> Point2dInt
 {
-  constexpr float FREQ = 2.0F;
+  static constexpr float FREQ = 2.0F;
 
   const float y = 100.0F * std::sin(FREQ * TWO_PI * GetCurrentT());
   const float x = m_distance * GetCurrentT();

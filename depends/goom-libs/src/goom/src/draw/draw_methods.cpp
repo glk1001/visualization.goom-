@@ -120,9 +120,9 @@ void DrawMethods::DrawFilledCircle(const int32_t x0,
   DrawBresenhamCircle(x0, y0, radius, plotter);
 }
 
-constexpr int LINE_THICKNESS_MIDDLE = 0;
-constexpr int LINE_THICKNESS_DRAW_CLOCKWISE = 1;
-constexpr int LINE_THICKNESS_DRAW_COUNTERCLOCKWISE = 2;
+static constexpr int LINE_THICKNESS_MIDDLE = 0;
+static constexpr int LINE_THICKNESS_DRAW_CLOCKWISE = 1;
+static constexpr int LINE_THICKNESS_DRAW_COUNTERCLOCKWISE = 2;
 
 void DrawMethods::DrawLine(const int32_t x1,
                            const int32_t y1,
@@ -168,7 +168,7 @@ void DrawMethods::DrawWuLine(
     {
       return;
     }
-    constexpr float TOLERANCE = 0.001F;
+    static constexpr float TOLERANCE = 0.001F;
     if (brightness < TOLERANCE)
     {
       return;
@@ -294,9 +294,9 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
  *  - pixels are drawn if LINE_OVERLAP_MINOR
  */
 
-constexpr int LINE_OVERLAP_NONE = 0;
-constexpr int LINE_OVERLAP_MAJOR = 1;
-constexpr int LINE_OVERLAP_MINOR = 2;
+static constexpr int LINE_OVERLAP_NONE = 0;
+static constexpr int LINE_OVERLAP_MAJOR = 1;
+static constexpr int LINE_OVERLAP_MINOR = 2;
 
 void DrawMethods::DrawLineOverlap(int x0,
                                   int y0,
@@ -319,7 +319,7 @@ void DrawMethods::DrawLineOverlap(int x0,
     {
       return;
     }
-    constexpr float TOLERANCE = 0.001F;
+    static constexpr float TOLERANCE = 0.001F;
     if (brightness >= (1.0F - TOLERANCE))
     {
       DrawPixels(x, y, colors);

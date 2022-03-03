@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <vector>
 
-constexpr int SILENCE_THRESHOLD = 8;
+static constexpr int SILENCE_THRESHOLD = 8;
 
 template<typename T>
 class CircularBuffer

@@ -36,17 +36,17 @@ using GOOM::UTILS::MATH::SMALL_FLOAT;
 }
 
 
-//constexpr size_t NUM_SAMPLE_CHANNELS = AudioSamples::NUM_AUDIO_SAMPLES;
+//static constexpr size_t NUM_SAMPLE_CHANNELS = AudioSamples::NUM_AUDIO_SAMPLES;
 const size_t NUM_SAMPLE_CHANNELS = AudioSamples::NUM_AUDIO_SAMPLES;
-constexpr float X_MIN0 = -0.9F;
-constexpr float X_MAX0 = +0.1F;
-constexpr float X_MIN1 = +0.2F;
-constexpr float X_MAX1 = +0.9F;
+static constexpr float X_MIN0 = -0.9F;
+static constexpr float X_MAX0 = +0.1F;
+static constexpr float X_MIN1 = +0.2F;
+static constexpr float X_MAX1 = +0.9F;
 
-constexpr auto EXPECTED_X_MIN0 = X_MIN0;
-constexpr auto EXPECTED_X_MAX0 = X_MAX0;
-constexpr auto EXPECTED_X_MIN1 = X_MIN1;
-constexpr auto EXPECTED_X_MAX1 = X_MAX1;
+static constexpr auto EXPECTED_X_MIN0 = X_MIN0;
+static constexpr auto EXPECTED_X_MAX0 = X_MAX0;
+static constexpr auto EXPECTED_X_MIN1 = X_MIN1;
+static constexpr auto EXPECTED_X_MAX1 = X_MAX1;
 
 TEST_CASE("Test AudioSamples MinMax")
 {
@@ -122,16 +122,16 @@ TEST_CASE("Test SoundInfo Volume")
   auto audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
 
   // First update - defaults
-  constexpr float ALL_TIMES_MAX = AudioSamples::GetPositiveValue(EXPECTED_X_MAX1);
-  constexpr float ALL_TIMES_MIN = AudioSamples::GetPositiveValue(EXPECTED_X_MIN0);
+  static constexpr float ALL_TIMES_MAX = AudioSamples::GetPositiveValue(EXPECTED_X_MAX1);
+  static constexpr float ALL_TIMES_MIN = AudioSamples::GetPositiveValue(EXPECTED_X_MIN0);
   soundInfo.ProcessSample(*audioSamples);
   REQUIRE(soundInfo.GetVolume() == Approx(ALL_TIMES_MAX));
   REQUIRE(soundInfo.GetAllTimesMaxVolume() == Approx(ALL_TIMES_MAX));
   REQUIRE(soundInfo.GetAllTimesMinVolume() == Approx(ALL_TIMES_MIN));
 
   // Second update - flat line, new volume
-  constexpr float FLAT_VOL = 0.1F;
-  constexpr float EXPECTED_NEW_VOLUME = AudioSamples::GetPositiveValue(FLAT_VOL);
+  static constexpr float FLAT_VOL = 0.1F;
+  static constexpr float EXPECTED_NEW_VOLUME = AudioSamples::GetPositiveValue(FLAT_VOL);
 
   std::fill(begin(audioData), end(audioData), FLAT_VOL);
   audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
@@ -141,7 +141,7 @@ TEST_CASE("Test SoundInfo Volume")
   REQUIRE(soundInfo.GetAllTimesMinVolume() == Approx(ALL_TIMES_MIN));
 
   // Third update - new max volume
-  constexpr float NEW_MAX_VOL = X_MAX1 + 0.02F;
+  static constexpr float NEW_MAX_VOL = X_MAX1 + 0.02F;
   audioData.at(10) = NEW_MAX_VOL;
   audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
   soundInfo.ProcessSample(*audioSamples);
@@ -150,7 +150,7 @@ TEST_CASE("Test SoundInfo Volume")
   REQUIRE(soundInfo.GetAllTimesMinVolume() == Approx(ALL_TIMES_MIN));
 
   // Fourth update - negative sound values
-  constexpr float NEGATIVE_VOL = -0.2F;
+  static constexpr float NEGATIVE_VOL = -0.2F;
   std::fill(begin(audioData), end(audioData), NEGATIVE_VOL);
   audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
   soundInfo.ProcessSample(*audioSamples);

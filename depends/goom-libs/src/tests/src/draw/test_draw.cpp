@@ -11,8 +11,8 @@ using GOOM::PixelChannelType;
 using GOOM::DRAW::GoomDrawToContainer;
 using ColorsList = GoomDrawToContainer::ColorsList;
 
-constexpr uint32_t WIDTH = 100;
-constexpr uint32_t HEIGHT = 100;
+static constexpr uint32_t WIDTH = 100;
+static constexpr uint32_t HEIGHT = 100;
 
 
 struct PixelInfo
@@ -102,7 +102,7 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
 
   draw.SetBuffIntensity(1.0F);
 
-  constexpr size_t NUM_CHANGED_COORDS = 5;
+  static constexpr size_t NUM_CHANGED_COORDS = 5;
   std::vector<PixelInfo> pixelsNewToOld = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
 
   int32_t i = NUM_CHANGED_COORDS;
@@ -134,7 +134,7 @@ TEST_CASE("Test DrawMovingText to Container with Duplicates", "[GoomDrawToContai
 
   draw.SetBuffIntensity(1.0F);
 
-  constexpr size_t NUM_CHANGED_COORDS = 5;
+  static constexpr size_t NUM_CHANGED_COORDS = 5;
   std::vector<PixelInfo> pixelsNewToOld = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
 
   const Pixel color0{{10, 10, 10, 255U}};
@@ -163,7 +163,7 @@ TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
 
   draw.SetBuffIntensity(1.0F);
 
-  constexpr size_t NUM_CHANGED_COORDS = 5;
+  static constexpr size_t NUM_CHANGED_COORDS = 5;
   const std::vector<PixelInfo> pixelsNewToOld = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
 
   for (const auto& pixelInfo : pixelsNewToOld)

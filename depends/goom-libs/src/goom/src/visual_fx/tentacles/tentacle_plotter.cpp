@@ -16,19 +16,19 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;
 
 // clang-format off
-constexpr float MIN_DOT_SIZE01_WEIGHT = 100.0F;
-constexpr float MIN_DOT_SIZE02_WEIGHT =  50.0F;
-constexpr float MIN_DOT_SIZE03_WEIGHT =  50.0F;
-constexpr float MIN_DOT_SIZE04_WEIGHT =  20.0F;
+static constexpr float MIN_DOT_SIZE01_WEIGHT    = 100.0F;
+static constexpr float MIN_DOT_SIZE02_WEIGHT    =  50.0F;
+static constexpr float MIN_DOT_SIZE03_WEIGHT    =  50.0F;
+static constexpr float MIN_DOT_SIZE04_WEIGHT    =  20.0F;
 
-constexpr float NORMAL_DOT_SIZE01_WEIGHT = 50.0F;
-constexpr float NORMAL_DOT_SIZE02_WEIGHT = 20.0F;
-constexpr float NORMAL_DOT_SIZE03_WEIGHT = 10.0F;
-constexpr float NORMAL_DOT_SIZE04_WEIGHT = 10.0F;
-constexpr float NORMAL_DOT_SIZE05_WEIGHT =  5.0F;
-constexpr float NORMAL_DOT_SIZE06_WEIGHT =  1.0F;
-constexpr float NORMAL_DOT_SIZE07_WEIGHT =  1.0F;
-constexpr float NORMAL_DOT_SIZE08_WEIGHT =  1.0F;
+static constexpr float NORMAL_DOT_SIZE01_WEIGHT =  50.0F;
+static constexpr float NORMAL_DOT_SIZE02_WEIGHT =  20.0F;
+static constexpr float NORMAL_DOT_SIZE03_WEIGHT =  10.0F;
+static constexpr float NORMAL_DOT_SIZE04_WEIGHT =  10.0F;
+static constexpr float NORMAL_DOT_SIZE05_WEIGHT =   5.0F;
+static constexpr float NORMAL_DOT_SIZE06_WEIGHT =   1.0F;
+static constexpr float NORMAL_DOT_SIZE07_WEIGHT =   1.0F;
+static constexpr float NORMAL_DOT_SIZE08_WEIGHT =   1.0F;
 // clang-format on
 
 TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
@@ -83,7 +83,7 @@ void TentaclePlotter::ChangeNumNodesBetweenDots()
       m_goomRand.GetRandInRange(MIN_STEPS_BETWEEN_NODES, MAX_STEPS_BETWEEN_NODES + 1U);
 }
 
-constexpr int COORD_IGNORE_VAL = -666;
+static constexpr int COORD_IGNORE_VAL = -666;
 
 void TentaclePlotter::Plot3D(const Tentacle3D& tentacle)
 {
@@ -130,7 +130,7 @@ inline void TentaclePlotter::DrawNodeLine(const int32_t x0,
                                           const int32_t y1,
                                           const std::vector<Pixel>& colors)
 {
-  constexpr uint8_t THICKNESS = 1;
+  static constexpr uint8_t THICKNESS = 1;
   m_draw.Line(x0, y0, x1, y1, colors, THICKNESS);
 }
 
@@ -144,7 +144,7 @@ inline void TentaclePlotter::DrawNodeDot(const size_t nodeNum,
     return;
   }
 
-  constexpr float DOT_BRIGHTNESS = 1.5F;
+  static constexpr float DOT_BRIGHTNESS = 1.5F;
   m_dotDrawer.DrawDot({x, y}, colors, DOT_BRIGHTNESS);
 }
 
@@ -162,8 +162,8 @@ inline auto TentaclePlotter::Get2DTentaclePoints(const Tentacle3D& tentacle) con
 
 inline auto TentaclePlotter::GetTentacleAngleAboutY(const Tentacle3D& tentacle) const -> float
 {
-  constexpr float HEAD_CUTOFF = 10.0F;
-  constexpr float ANGLE_ADJ_FRACTION = 0.05F;
+  static constexpr float HEAD_CUTOFF = 10.0F;
+  static constexpr float ANGLE_ADJ_FRACTION = 0.05F;
   float angleAboutY = m_tentacleAngle;
   if ((-HEAD_CUTOFF < tentacle.GetHead().x) && (tentacle.GetHead().x < 0.0F))
   {
@@ -182,11 +182,11 @@ void TentaclePlotter::SetCameraPosition(const float cameraDistance, const float 
   m_tentacleAngle = tentacleAngle;
   m_cameraDistance = cameraDistance;
 
-  constexpr float CAMERA_Z_OFFSET = -3.0F;
+  static constexpr float CAMERA_Z_OFFSET = -3.0F;
   m_cameraPosition = {0.0F, 0.0F, CAMERA_Z_OFFSET}; // TODO ????????????????????????????????
   m_cameraPosition.z += m_cameraDistance;
-  constexpr float ANGLE_FACTOR = 1.0F / 4.3F;
-  constexpr float CAMERA_POS_FACTOR = 2.0F;
+  static constexpr float ANGLE_FACTOR = 1.0F / 4.3F;
+  static constexpr float CAMERA_POS_FACTOR = 2.0F;
   m_cameraPosition.y += CAMERA_POS_FACTOR * std::sin(-ANGLE_FACTOR * (m_tentacleAngle - HALF_PI));
 }
 
@@ -224,8 +224,8 @@ inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) const -> 
   // very white and over-exposed. If we reduce the brightness, then all the combined
   // tentacles look less bright and white and more colors show through.
 
-  constexpr float BRIGHTNESS = 3.0F;
-  constexpr float BRIGHTNESS_DISTANCE_CUTOFF = 30.F;
+  static constexpr float BRIGHTNESS = 3.0F;
+  static constexpr float BRIGHTNESS_DISTANCE_CUTOFF = 30.F;
   const float brightnessCut = GetBrightnessCut(tentacle);
 
   if (m_cameraDistance <= BRIGHTNESS_DISTANCE_CUTOFF)
@@ -233,19 +233,19 @@ inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) const -> 
     return brightnessCut * BRIGHTNESS;
   }
 
-  constexpr float FAR_AWAY_DISTANCE = 50.0F;
+  static constexpr float FAR_AWAY_DISTANCE = 50.0F;
   const float farAwayBrightness = FAR_AWAY_DISTANCE / m_cameraDistance;
-  constexpr float MIN_RAND_BRIGHTNESS = 0.1F;
-  constexpr float MAX_RAND_BRIGHTNESS = 0.3F;
+  static constexpr float MIN_RAND_BRIGHTNESS = 0.1F;
+  static constexpr float MAX_RAND_BRIGHTNESS = 0.3F;
   const float randBrightness = m_goomRand.GetRandInRange(MIN_RAND_BRIGHTNESS, MAX_RAND_BRIGHTNESS);
   return brightnessCut * std::max(randBrightness, farAwayBrightness);
 }
 
 inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) const -> float
 {
-  constexpr float IN_HEAD_CLOSE_CAMERA_BRIGHTNESS_CUT = 0.5F;
-  constexpr float IN_HEAD_BRIGHTNESS_CUT = 0.2F;
-  constexpr float NORMAL_BRIGHTNESS_CUT = 1.0F;
+  static constexpr float IN_HEAD_CLOSE_CAMERA_BRIGHTNESS_CUT = 0.5F;
+  static constexpr float IN_HEAD_BRIGHTNESS_CUT = 0.2F;
+  static constexpr float NORMAL_BRIGHTNESS_CUT = 1.0F;
 
   if (std::abs(tentacle.GetHead().x) < Tentacle3D::HEAD_SMALL_X)
   {
@@ -277,7 +277,7 @@ auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points
 
   for (size_t i = 0; i < points3D.size(); ++i)
   {
-    constexpr float MIN_Z = 2.0F;
+    static constexpr float MIN_Z = 2.0F;
     if ((!points3D[i].ignore) && (points3D[i].z > MIN_Z))
     {
       const auto xProj =

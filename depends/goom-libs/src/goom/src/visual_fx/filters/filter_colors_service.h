@@ -54,8 +54,8 @@ inline void FilterColorsService::SetBrightness(const float brightness)
   //
   //  (c/x) * (m/n) = (c*m) / (x*n) = c / (x*n / m)
 
-  constexpr uint32_t X = MAX_SUM_COEFFS;
-  constexpr uint32_t N = channel_limits<uint32_t>::max();
+  static constexpr uint32_t X = MAX_SUM_COEFFS;
+  static constexpr uint32_t N = channel_limits<uint32_t>::max();
   const uint32_t m = std::max(1U, static_cast<uint32_t>(brightness * channel_limits<float>::max()));
 
   m_coeffsAndBrightnessDivisor = (X * N) / m;
@@ -99,7 +99,7 @@ inline auto FilterColorsService::GetBlockyMixedColor(const NeighborhoodCoeffArra
 {
   // Changing the color order gives a strange blocky, wavy look.
   // The order col4, col3, col2, col1 gave a black tear - not so good.
-  constexpr size_t ALLOWED_NUM_NEIGHBORS = 4;
+  static constexpr size_t ALLOWED_NUM_NEIGHBORS = 4;
   static_assert(ALLOWED_NUM_NEIGHBORS == ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS);
   assert(ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS == coeffs.val.size());
   const NeighborhoodPixelArray reorderedColors{colors[0], colors[2], colors[1], colors[3]};

@@ -296,14 +296,14 @@ auto GetAllMapsUnweighted(const IGoomRand& goomRand) -> std::shared_ptr<RandomCo
 auto GetAllStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
-  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
-  constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
-  constexpr float SEQUENTIAL2_WEIGHT                     = 1.0F;
-  constexpr float CYCLIC_WEIGHT                          = 1.0F;
-  constexpr float DIVERGING_WEIGHT                       = 1.0F;
-  constexpr float DIVERGING_BLACK_WEIGHT                 = 1.0F;
-  constexpr float QUALITATIVE_WEIGHT                     = 1.0F;
-  constexpr float MISC_WEIGHT                            = 1.0F;
+  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
+  static constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
+  static constexpr float SEQUENTIAL2_WEIGHT                     = 1.0F;
+  static constexpr float CYCLIC_WEIGHT                          = 1.0F;
+  static constexpr float DIVERGING_WEIGHT                       = 1.0F;
+  static constexpr float DIVERGING_BLACK_WEIGHT                 = 1.0F;
+  static constexpr float QUALITATIVE_WEIGHT                     = 1.0F;
+  static constexpr float MISC_WEIGHT                            = 1.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -327,14 +327,14 @@ auto GetAllStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColo
 auto GetAllSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
-  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
-  constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
-  constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
-  constexpr float CYCLIC_SLIM_WEIGHT                          = 1.0F;
-  constexpr float DIVERGING_SLIM_WEIGHT                       = 1.0F;
-  constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 = 1.0F;
-  constexpr float QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
-  constexpr float MISC_SLIM_WEIGHT                            = 1.0F;
+  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
+  static constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
+  static constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
+  static constexpr float CYCLIC_SLIM_WEIGHT                          = 1.0F;
+  static constexpr float DIVERGING_SLIM_WEIGHT                       = 1.0F;
+  static constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 = 1.0F;
+  static constexpr float QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
+  static constexpr float MISC_SLIM_WEIGHT                            = 1.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -358,14 +358,14 @@ auto GetAllSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMap
 auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
-  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
-  constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
-  constexpr float SEQUENTIAL2_WEIGHT                     = 1.0F;
-  constexpr float CYCLIC_WEIGHT                          = 0.0F;
-  constexpr float DIVERGING_WEIGHT                       = 0.0F;
-  constexpr float DIVERGING_BLACK_WEIGHT                 = 0.0F;
-  constexpr float QUALITATIVE_WEIGHT                     = 1.0F;
-  constexpr float MISC_WEIGHT                            = 1.0F;
+  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
+  static constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
+  static constexpr float SEQUENTIAL2_WEIGHT                     = 1.0F;
+  static constexpr float CYCLIC_WEIGHT                          = 0.0F;
+  static constexpr float DIVERGING_WEIGHT                       = 0.0F;
+  static constexpr float DIVERGING_BLACK_WEIGHT                 = 0.0F;
+  static constexpr float QUALITATIVE_WEIGHT                     = 1.0F;
+  static constexpr float MISC_WEIGHT                            = 1.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -389,14 +389,14 @@ auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) -> std::shared_p
 auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
-  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
-  constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
-  constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
-  constexpr float CYCLIC_SLIM_WEIGHT                          = 0.0F;
-  constexpr float DIVERGING_SLIM_WEIGHT                       = 0.0F;
-  constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 = 0.0F;
-  constexpr float QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
-  constexpr float MISC_SLIM_WEIGHT                            = 1.0F;
+  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
+  static constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
+  static constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
+  static constexpr float CYCLIC_SLIM_WEIGHT                          = 0.0F;
+  static constexpr float DIVERGING_SLIM_WEIGHT                       = 0.0F;
+  static constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 = 0.0F;
+  static constexpr float QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
+  static constexpr float MISC_SLIM_WEIGHT                            = 1.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -420,14 +420,14 @@ auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<R
 auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
-  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 10.0F;
-  constexpr float SEQUENTIAL_WEIGHT                      = 10.0F;
-  constexpr float SEQUENTIAL2_WEIGHT                     = 10.0F;
-  constexpr float CYCLIC_WEIGHT                          = 10.0F;
-  constexpr float DIVERGING_WEIGHT                       = 20.0F;
-  constexpr float DIVERGING_BLACK_WEIGHT                 =  1.0F;
-  constexpr float QUALITATIVE_WEIGHT                     = 10.0F;
-  constexpr float MISC_WEIGHT                            = 20.0F;
+  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 10.0F;
+  static constexpr float SEQUENTIAL_WEIGHT                      = 10.0F;
+  static constexpr float SEQUENTIAL2_WEIGHT                     = 10.0F;
+  static constexpr float CYCLIC_WEIGHT                          = 10.0F;
+  static constexpr float DIVERGING_WEIGHT                       = 20.0F;
+  static constexpr float DIVERGING_BLACK_WEIGHT                 =  1.0F;
+  static constexpr float QUALITATIVE_WEIGHT                     = 10.0F;
+  static constexpr float MISC_WEIGHT                            = 20.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -451,14 +451,14 @@ auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) -> std::shared_
 auto GetSlightlyDivergingSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
   // clang-format off
-  constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 10.0F;
-  constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 10.0F;
-  constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 10.0F;
-  constexpr float CYCLIC_SLIM_WEIGHT                          = 10.0F;
-  constexpr float DIVERGING_SLIM_WEIGHT                       = 20.0F;
-  constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 =  1.0F;
-  constexpr float QUALITATIVE_SLIM_WEIGHT                     = 10.0F;
-  constexpr float MISC_SLIM_WEIGHT                            = 20.0F;
+  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 10.0F;
+  static constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 10.0F;
+  static constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 10.0F;
+  static constexpr float CYCLIC_SLIM_WEIGHT                          = 10.0F;
+  static constexpr float DIVERGING_SLIM_WEIGHT                       = 20.0F;
+  static constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 =  1.0F;
+  static constexpr float QUALITATIVE_SLIM_WEIGHT                     = 10.0F;
+  static constexpr float MISC_SLIM_WEIGHT                            = 20.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,

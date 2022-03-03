@@ -91,10 +91,10 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams(const PluginInfo& goomInfo)
 
   std::vector<Circle::Params> circleParams(NUM_CIRCLES);
 
-  constexpr float RADIUS_MARGIN = 10.0F;
+  static constexpr float RADIUS_MARGIN = 10.0F;
   const float maxRadius = 0.5F * static_cast<float>(std::min(goomInfo.GetScreenInfo().width,
                                                              goomInfo.GetScreenInfo().height));
-  constexpr float RADIUS_REDUCER = 1.0F;
+  static constexpr float RADIUS_REDUCER = 1.0F;
   const float radius0 = maxRadius - RADIUS_MARGIN;
 
   circleParams[0].circleRadius = radius0;
@@ -103,8 +103,8 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams(const PluginInfo& goomInfo)
   circleParams[3].circleRadius = RADIUS_REDUCER * circleParams[2].circleRadius;
   circleParams[4].circleRadius = RADIUS_REDUCER * circleParams[3].circleRadius;
 
-  constexpr Fraction SMALL_FRAC{1U, 10U};
-  constexpr Fraction LARGE_FRAC = 1U - SMALL_FRAC;
+  static constexpr Fraction SMALL_FRAC{1U, 10U};
+  static constexpr Fraction LARGE_FRAC = 1U - SMALL_FRAC;
   circleParams[0].circleCentreTarget = {U_HALF * goomInfo.GetScreenInfo().width,
                                         U_HALF * goomInfo.GetScreenInfo().height};
   circleParams[1].circleCentreTarget = {SMALL_FRAC * goomInfo.GetScreenInfo().width,

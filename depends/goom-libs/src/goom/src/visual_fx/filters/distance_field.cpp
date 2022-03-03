@@ -13,24 +13,24 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
 
-constexpr float DEFAULT_AMPLITUDE = 0.1F;
-constexpr IGoomRand::NumberRange<float> X_AMPLITUDE_RANGE_MODE0 = {0.01F, 0.501F};
-constexpr IGoomRand::NumberRange<float> Y_AMPLITUDE_RANGE_MODE0 = {0.01F, 0.501F};
+static constexpr float DEFAULT_AMPLITUDE = 0.1F;
+static constexpr IGoomRand::NumberRange<float> X_AMPLITUDE_RANGE_MODE0 = {0.01F, 0.501F};
+static constexpr IGoomRand::NumberRange<float> Y_AMPLITUDE_RANGE_MODE0 = {0.01F, 0.501F};
 
-constexpr float DEFAULT_SQ_DIST_MULT = 0.025F;
-constexpr IGoomRand::NumberRange<float> X_SQ_DIST_MULT_RANGE_MODE0 = {0.01F, 0.051F};
-constexpr IGoomRand::NumberRange<float> Y_SQ_DIST_MULT_RANGE_MODE0 = {0.01F, 0.051F};
+static constexpr float DEFAULT_SQ_DIST_MULT = 0.025F;
+static constexpr IGoomRand::NumberRange<float> X_SQ_DIST_MULT_RANGE_MODE0 = {0.01F, 0.051F};
+static constexpr IGoomRand::NumberRange<float> Y_SQ_DIST_MULT_RANGE_MODE0 = {0.01F, 0.051F};
 
-constexpr float DEFAULT_SQ_DIST_OFFSET = 0.05F;
-constexpr IGoomRand::NumberRange<float> X_SQ_DIST_OFFSET_RANGE_MODE0 = {0.01F, 0.11F};
-constexpr IGoomRand::NumberRange<float> Y_SQ_DIST_OFFSET_RANGE_MODE0 = {0.01F, 0.11F};
+static constexpr float DEFAULT_SQ_DIST_OFFSET = 0.05F;
+static constexpr IGoomRand::NumberRange<float> X_SQ_DIST_OFFSET_RANGE_MODE0 = {0.01F, 0.11F};
+static constexpr IGoomRand::NumberRange<float> Y_SQ_DIST_OFFSET_RANGE_MODE0 = {0.01F, 0.11F};
 
-constexpr float PROB_XY_AMPLITUDES_EQUAL = 1.00F;
-constexpr float PROB_XY_SQ_DIST_MULT_EQUAL = 1.00F;
-constexpr float PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
+static constexpr float PROB_XY_AMPLITUDES_EQUAL = 1.00F;
+static constexpr float PROB_XY_SQ_DIST_MULT_EQUAL = 1.00F;
+static constexpr float PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 
-constexpr float PROB_MODE0 = 0.05F;
-constexpr float PROB_RANDOM_DISTANCE_POINTS = 0.3F;
+static constexpr float PROB_MODE0 = 0.05F;
+static constexpr float PROB_RANDOM_DISTANCE_POINTS = 0.3F;
 
 DistanceField::DistanceField(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
@@ -66,12 +66,12 @@ void DistanceField::SetRandomParams()
 
   std::vector<NormalizedCoords> distancePoints{};
 
-  constexpr size_t NUM_DISTANCE_POINTS = 4;
+  static constexpr size_t NUM_DISTANCE_POINTS = 4;
 
   if (!m_goomRand.ProbabilityOf(PROB_RANDOM_DISTANCE_POINTS))
   {
-    constexpr float HALF_MIN_COORD = 0.5F * NormalizedCoords::MIN_NORMALIZED_COORD;
-    constexpr float HALF_MAX_COORD = 0.5F * NormalizedCoords::MAX_NORMALIZED_COORD;
+    static constexpr float HALF_MIN_COORD = 0.5F * NormalizedCoords::MIN_NORMALIZED_COORD;
+    static constexpr float HALF_MAX_COORD = 0.5F * NormalizedCoords::MAX_NORMALIZED_COORD;
     distancePoints.emplace_back(HALF_MIN_COORD, HALF_MIN_COORD);
     distancePoints.emplace_back(HALF_MAX_COORD, HALF_MIN_COORD);
     distancePoints.emplace_back(HALF_MIN_COORD, HALF_MAX_COORD);
@@ -79,8 +79,8 @@ void DistanceField::SetRandomParams()
   }
   else
   {
-    constexpr float MIN_DISTANCE_COORD = 0.95F * NormalizedCoords::MIN_NORMALIZED_COORD;
-    constexpr float MAX_DISTANCE_COORD = 0.95F * NormalizedCoords::MAX_NORMALIZED_COORD;
+    static constexpr float MIN_DISTANCE_COORD = 0.95F * NormalizedCoords::MIN_NORMALIZED_COORD;
+    static constexpr float MAX_DISTANCE_COORD = 0.95F * NormalizedCoords::MAX_NORMALIZED_COORD;
     for (size_t i = 0; i < NUM_DISTANCE_POINTS; ++i)
     {
       distancePoints.emplace_back(
@@ -96,7 +96,7 @@ void DistanceField::SetRandomParams()
 auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) const
     -> RelativeDistancePoint
 {
-  constexpr float MAX_DISTANCE_SQ =
+  static constexpr float MAX_DISTANCE_SQ =
       2.0F * Sq(NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD);
   float minDistanceSq = MAX_DISTANCE_SQ;
   const NormalizedCoords* closestPoint = nullptr;

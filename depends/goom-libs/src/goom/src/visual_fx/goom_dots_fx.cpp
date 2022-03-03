@@ -161,13 +161,13 @@ void GoomDotsFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
-constexpr Fraction<uint32_t> TWO_FIFTHS{2, 5};
+static constexpr Fraction<uint32_t> TWO_FIFTHS{2, 5};
 
 // clang-format off
-constexpr float IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 10.0F;
-constexpr float IMAGE_NAMES_PINK_FLOWER_WEIGHT   =  5.0F;
-constexpr float IMAGE_NAMES_RED_FLOWER_WEIGHT    = 10.0F;
-constexpr float IMAGE_NAMES_WHITE_FLOWER_WEIGHT  =  5.0F;
+static constexpr float IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 10.0F;
+static constexpr float IMAGE_NAMES_PINK_FLOWER_WEIGHT   =  5.0F;
+static constexpr float IMAGE_NAMES_RED_FLOWER_WEIGHT    = 10.0F;
+static constexpr float IMAGE_NAMES_WHITE_FLOWER_WEIGHT  =  5.0F;
 // clang-format on
 
 GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
@@ -200,7 +200,7 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
 
 inline auto GoomDotsFx::GoomDotsFxImpl::ChangeDotColorsEvent() const -> bool
 {
-  constexpr float PROB_CHANGE_DOT_COLORS = 0.33F;
+  static constexpr float PROB_CHANGE_DOT_COLORS = 0.33F;
   return m_goomRand.ProbabilityOf(PROB_CHANGE_DOT_COLORS);
 }
 
@@ -225,17 +225,17 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
 
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
-    constexpr float PROB_USE_PRIMARY_COLOR = 0.5F;
+    static constexpr float PROB_USE_PRIMARY_COLOR = 0.5F;
     usePrimaryColor = m_goomRand.ProbabilityOf(PROB_USE_PRIMARY_COLOR);
   }
 
-  constexpr float PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
+  static constexpr float PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
   m_useSingleBufferOnly = m_goomRand.ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
 
-  constexpr float PROB_INCREASED_CHROMA = 0.8F;
+  static constexpr float PROB_INCREASED_CHROMA = 0.8F;
   m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_INCREASED_CHROMA);
 
-  constexpr float PROB_USE_MIDDLE_COLOR = 0.05F;
+  static constexpr float PROB_USE_MIDDLE_COLOR = 0.05F;
   m_useMiddleColor = m_goomRand.ProbabilityOf(PROB_USE_MIDDLE_COLOR);
   if (m_useMiddleColor)
   {
@@ -250,8 +250,8 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
     return GetDotPrimaryColor(m_goomRand.GetRandInRange(0U, NUM_DOT_TYPES));
   }
 
-  constexpr float MIN_MIX_T = 0.1F;
-  constexpr float MAX_MIX_T = 1.0F;
+  static constexpr float MIN_MIX_T = 0.1F;
+  static constexpr float MAX_MIX_T = 1.0F;
   return RandomColorMaps{m_goomRand}.GetRandomColor(
       *m_colorMaps[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
                                             RandomColorMaps::ALL_COLOR_MAP_TYPES),
@@ -308,8 +308,8 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   const float dot3YOffsetAmp = dot3XOffsetAmp;
 
   const size_t speedVarMult80Plus15Div15 = speedVarMult80Plus15 / 15;
-  constexpr float T_MIN = 0.1F;
-  constexpr float T_MAX = 1.0F;
+  static constexpr float T_MIN = 0.1F;
+  static constexpr float T_MAX = 1.0F;
   const float tStep = (T_MAX - T_MIN) / static_cast<float>(speedVarMult80Plus15Div15);
 
   float t = T_MIN;
@@ -396,7 +396,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) 
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
 {
-  constexpr float PROB_MORE_FLOWERS = 1.0F / 50.0F;
+  static constexpr float PROB_MORE_FLOWERS = 1.0F / 50.0F;
 
   if (m_numFlowersInRow > 0)
   {
@@ -426,7 +426,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetFlowerBitmap()
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetNonFlowerBitmap()
 {
-  constexpr float PROB_SPHERE = 0.7F;
+  static constexpr float PROB_SPHERE = 0.7F;
 
   if (m_goomRand.ProbabilityOf(PROB_SPHERE))
   {
@@ -440,8 +440,8 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetNonFlowerBitmap()
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetLargeSoundFactor(const SoundInfo& soundInfo) -> float
 {
-  constexpr float SOUND_SPEED_REDUCER = 1.0F / 50.0F;
-  constexpr float VOLUME_REDUCER = 1.0F / 1.5F;
+  static constexpr float SOUND_SPEED_REDUCER = 1.0F / 50.0F;
+  static constexpr float VOLUME_REDUCER = 1.0F / 1.5F;
   return (SOUND_SPEED_REDUCER * soundInfo.GetSpeed()) + (VOLUME_REDUCER * soundInfo.GetVolume());
 }
 
@@ -477,7 +477,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     return;
   }
 
-  constexpr float BRIGHTNESS = 3.5F;
+  static constexpr float BRIGHTNESS = 3.5F;
   const auto getColor1 = [this, &radius, &color](const size_t x, const size_t y, const Pixel& bgnd)
   {
     if (0 == bgnd.A())
@@ -486,7 +486,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     }
     const Pixel newColor =
         m_useMiddleColor && IsImagePointCloseToMiddle(x, y, radius) ? m_middleColor : color;
-    constexpr float COLOR_MIX_T = 0.6F;
+    static constexpr float COLOR_MIX_T = 0.6F;
     const Pixel mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
     return m_gammaCorrect.GetCorrection(BRIGHTNESS, finalColor);
@@ -519,7 +519,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::IsImagePointCloseToMiddle(const size_t x
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetMargin(const uint32_t radius) -> size_t
 {
-  constexpr size_t SMALLEST_MARGIN = 2;
+  static constexpr size_t SMALLEST_MARGIN = 2;
   if (constexpr uint32_t SMALL_RADIUS = 7; radius < SMALL_RADIUS)
   {
     return SMALLEST_MARGIN;

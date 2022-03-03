@@ -10,8 +10,8 @@ using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
-constexpr float DEFAULT_NOISE_FACTOR = 0.01F;
-constexpr IGoomRand::NumberRange<float> NOISE_FACTOR_RANGE = {0.001F, 0.100F};
+static constexpr float DEFAULT_NOISE_FACTOR = 0.01F;
+static constexpr IGoomRand::NumberRange<float> NOISE_FACTOR_RANGE = {0.001F, 0.100F};
 
 Noise::Noise(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand}, m_params{DEFAULT_NOISE_FACTOR}

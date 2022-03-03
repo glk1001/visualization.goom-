@@ -42,7 +42,7 @@ auto GetAlteredChroma(const float lchYFactor, const Pixel& color) -> Pixel
 {
   const vivid::col8_t rgb8 = {color.R(), color.G(), color.B()};
   vivid::lch_t lch = vivid::lch::fromSrgb(vivid::rgb::fromRgb8(rgb8));
-  constexpr float MAX_LCH_Y = 140.0F;
+  static constexpr float MAX_LCH_Y = 140.0F;
   lch.y = std::min(lch.y * lchYFactor, MAX_LCH_Y);
   const vivid::col8_t newRgb8 = vivid::rgb8::fromRgb(vivid::srgb::fromLch(lch));
   return Pixel{{newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}};
@@ -123,7 +123,7 @@ auto GetEvolvedColor(const Pixel& baseColor) -> Pixel
   newColor = EvolvedColor(newColor, baseColor, 0xFF0000U, 0x010000U);
   newColor = EvolvedColor(newColor, baseColor, 0xFF000000U, 0x01000000U);
 
-  constexpr float LIGHTENED_COLOR_POWER = (10.0F * 2.0F) + 2.0F;
+  static constexpr float LIGHTENED_COLOR_POWER = (10.0F * 2.0F) + 2.0F;
   newColor = GetLightenedColor(newColor, LIGHTENED_COLOR_POWER);
 
   return newColor;

@@ -47,39 +47,39 @@ using UTILS::MATH::TWO_PI;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
 
-constexpr uint32_t NUM_SHAPES_PER_TUBE = 45;
+static constexpr uint32_t NUM_SHAPES_PER_TUBE = 45;
 // Strangely, 'NUM_SHAPES_PER_TUBE = 100' gives a small gap in
 // circle at 90 and 270 degrees.
 
-constexpr bool OSCILLATING_SHAPE_PATHS = true;
+static constexpr bool OSCILLATING_SHAPE_PATHS = true;
 
 // TODO: Probability and random should be higher up???????
-constexpr float PROB_INTERIOR_SHAPE = 45.0F / 50.0F;
-constexpr uint32_t MAX_INTERIOR_SHAPES_TIME = 500;
-constexpr float PROB_NO_BOUNDARY_SHAPES = 10.0F / 50.0F;
-constexpr uint32_t MAX_NO_BOUNDARY_SHAPES_TIME = 1;
-constexpr float PROB_HEX_DOT_SHAPE = 1.0F / 50.0F;
-constexpr uint32_t MAX_HEX_DOT_SHAPES_TIME = 100;
+static constexpr float PROB_INTERIOR_SHAPE = 45.0F / 50.0F;
+static constexpr uint32_t MAX_INTERIOR_SHAPES_TIME = 500;
+static constexpr float PROB_NO_BOUNDARY_SHAPES = 10.0F / 50.0F;
+static constexpr uint32_t MAX_NO_BOUNDARY_SHAPES_TIME = 1;
+static constexpr float PROB_HEX_DOT_SHAPE = 1.0F / 50.0F;
+static constexpr uint32_t MAX_HEX_DOT_SHAPES_TIME = 100;
 
-constexpr float PROB_INCREASED_CHROMA = 0.8F;
+static constexpr float PROB_INCREASED_CHROMA = 0.8F;
 
-constexpr uint32_t MIN_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 6;
-constexpr uint32_t MAX_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 3;
+static constexpr uint32_t MIN_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 6;
+static constexpr uint32_t MAX_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 3;
 static_assert(MIN_STRIPE_WIDTH > 0, "MIN_STRIPE_WIDTH must be > 0.");
 
-constexpr uint32_t MIN_NUM_CIRCLES_IN_GROUP = 10;
-constexpr uint32_t MAX_NUM_CIRCLES_IN_GROUP = 100;
+static constexpr uint32_t MIN_NUM_CIRCLES_IN_GROUP = 10;
+static constexpr uint32_t MAX_NUM_CIRCLES_IN_GROUP = 100;
 
-constexpr float MIN_HEX_SIZE = 3.0F;
-constexpr float MAX_HEX_SIZE = 9.0F;
+static constexpr float MIN_HEX_SIZE = 3.0F;
+static constexpr float MAX_HEX_SIZE = 9.0F;
 
-constexpr float MIN_CIRCLE_SPEED = 0.0005F;
-constexpr float NML_CIRCLE_SPEED = 0.005F;
-constexpr float MAX_CIRCLE_SPEED = 0.008F;
+static constexpr float MIN_CIRCLE_SPEED = 0.0005F;
+static constexpr float NML_CIRCLE_SPEED = 0.005F;
+static constexpr float MAX_CIRCLE_SPEED = 0.008F;
 
-constexpr float MIN_CENTRE_SPEED = 0.0005F;
-constexpr float NML_CENTRE_SPEED = 0.005F;
-constexpr float MAX_CENTRE_SPEED = 0.05F;
+static constexpr float MIN_CENTRE_SPEED = 0.0005F;
+static constexpr float NML_CENTRE_SPEED = 0.005F;
+static constexpr float MAX_CENTRE_SPEED = 0.05F;
 
 enum class LowColorTypes
 {
@@ -88,11 +88,11 @@ enum class LowColorTypes
   LIGHTENED_LOW_COLOR,
   _num // unused and must be last
 };
-constexpr uint32_t MIN_LOW_COLOR_TYPE_TIME = 100;
-constexpr uint32_t MAX_LOW_COLOR_TYPE_TIME = 1000;
+static constexpr uint32_t MIN_LOW_COLOR_TYPE_TIME = 100;
+static constexpr uint32_t MAX_LOW_COLOR_TYPE_TIME = 1000;
 
-constexpr float OUTER_CIRCLE_BRIGHTNESS = 0.4F;
-constexpr float LIGHTER_COLOR_POWER = 10.0F;
+static constexpr float OUTER_CIRCLE_BRIGHTNESS = 0.4F;
+static constexpr float LIGHTER_COLOR_POWER = 10.0F;
 
 class ShapeColorizer;
 
@@ -428,9 +428,9 @@ private:
 };
 
 // clang-format off
-constexpr float TRUE_LOW_COLOR_WEIGHT      = 30.0F;
-constexpr float MAIN_COLOR_WEIGHT          = 10.0F;
-constexpr float LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
+static constexpr float TRUE_LOW_COLOR_WEIGHT      = 30.0F;
+static constexpr float MAIN_COLOR_WEIGHT          = 10.0F;
+static constexpr float LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
 // clang-format on
 
 Tube::TubeImpl::TubeImpl(const Data& data, const PathParams& pathParams)
@@ -464,7 +464,7 @@ auto Tube::TubeImpl::GetInitialShapes(const Data& data,
                              static_cast<int32_t>(U_HALF * data.screenHeight)};
   const auto radius = (0.5F * static_cast<float>(std::min(data.screenWidth, data.screenHeight))) -
                       data.radiusEdgeOffset;
-  constexpr float ANGLE_STEP = TWO_PI / static_cast<float>(NUM_SHAPES_PER_TUBE);
+  static constexpr float ANGLE_STEP = TWO_PI / static_cast<float>(NUM_SHAPES_PER_TUBE);
 
   std::vector<Shape> shapes(NUM_SHAPES_PER_TUBE);
 
@@ -613,8 +613,8 @@ inline void Tube::TubeImpl::SetCircleSpeed(const float val)
 
 inline void Tube::TubeImpl::IncreaseCircleSpeed()
 {
-  constexpr float MIN_INCREASE_SPEED_FACTOR = 1.01F;
-  constexpr float MAX_INCREASE_SPEED_FACTOR = 10.0F;
+  static constexpr float MIN_INCREASE_SPEED_FACTOR = 1.01F;
+  static constexpr float MAX_INCREASE_SPEED_FACTOR = 10.0F;
   const float factor =
       m_data.goomRand.GetRandInRange(MIN_INCREASE_SPEED_FACTOR, MAX_INCREASE_SPEED_FACTOR);
 
@@ -624,8 +624,8 @@ inline void Tube::TubeImpl::IncreaseCircleSpeed()
 
 inline void Tube::TubeImpl::DecreaseCircleSpeed()
 {
-  constexpr float MIN_DECREASE_SPEED_FACTOR = 0.1F;
-  constexpr float MAX_DECREASE_SPEED_FACTOR = 0.99F;
+  static constexpr float MIN_DECREASE_SPEED_FACTOR = 0.1F;
+  static constexpr float MAX_DECREASE_SPEED_FACTOR = 0.99F;
   const float factor =
       m_data.goomRand.GetRandInRange(MIN_DECREASE_SPEED_FACTOR, MAX_DECREASE_SPEED_FACTOR);
 
@@ -698,8 +698,8 @@ inline void Tube::TubeImpl::UpdateTimers()
 
 inline auto Tube::TubeImpl::GetInteriorShapeSize(const float hexLen) -> uint32_t
 {
-  constexpr float MIN_SIZE_FACTOR = 0.5F;
-  constexpr float MAX_SIZE_FACTOR = 1.3F;
+  static constexpr float MIN_SIZE_FACTOR = 0.5F;
+  static constexpr float MAX_SIZE_FACTOR = 1.3F;
   return static_cast<uint32_t>(
       std::round(m_data.goomRand.GetRandInRange(MIN_SIZE_FACTOR, MAX_SIZE_FACTOR) * hexLen));
 }
@@ -720,7 +720,7 @@ void Tube::TubeImpl::DrawShape(const Shape& shape, const Vec2dInt& centreOffset)
     DrawHexOutline(shapeCentrePos, allColors, shape.lineThickness);
   }
 
-  constexpr float MIN_HEX_LEN_FOR_INTERIOR = 2.0;
+  static constexpr float MIN_HEX_LEN_FOR_INTERIOR = 2.0;
   if ((!m_interiorShapeTimer.Finished()) && (m_hexLen > (MIN_HEX_LEN_FOR_INTERIOR + SMALL_FLOAT)))
   {
     DrawInteriorShape(shapeCentrePos, allColors);
@@ -732,9 +732,9 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
                                     const ShapeColors& allColors,
                                     const uint8_t lineThickness) const
 {
-  constexpr uint32_t NUM_HEX_SIDES = 6;
-  constexpr float ANGLE_STEP = THIRD_PI;
-  constexpr float START_ANGLE = 2.0F * ANGLE_STEP;
+  static constexpr uint32_t NUM_HEX_SIDES = 6;
+  static constexpr float ANGLE_STEP = THIRD_PI;
+  static constexpr float START_ANGLE = 2.0F * ANGLE_STEP;
   const std::vector<Pixel> lineColors{allColors.color, allColors.lowColor};
   const std::vector<Pixel> outerCircleColors{allColors.outerCircleColor,
                                              allColors.outerCircleLowColor};
@@ -753,7 +753,7 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
     m_data.drawFuncs.drawLine(x0, y0, x1, y1, lineColors, lineThickness);
     if (drawHexDot)
     {
-      constexpr uint32_t HEX_DOT_SIZE = 3;
+      static constexpr uint32_t HEX_DOT_SIZE = 3;
       m_data.drawFuncs.drawSmallImage(x1, y1, SmallImageBitmaps::ImageNames::SPHERE, HEX_DOT_SIZE,
                                       outerCircleColors);
     }
@@ -776,10 +776,10 @@ inline void Tube::TubeImpl::DrawInteriorShape(const Point2dInt& shapeCentrePos,
 inline void Tube::TubeImpl::DrawOuterCircle(const Point2dInt& shapeCentrePos,
                                             const ShapeColors& allColors) const
 {
-  constexpr float OUTER_CIRCLE_RADIUS_FACTOR = 1.5;
+  static constexpr float OUTER_CIRCLE_RADIUS_FACTOR = 1.5;
   const auto outerCircleRadius =
       static_cast<int32_t>(std::round(OUTER_CIRCLE_RADIUS_FACTOR * m_hexLen));
-  constexpr uint8_t OUTER_CIRCLE_LINE_THICKNESS = 1;
+  static constexpr uint8_t OUTER_CIRCLE_LINE_THICKNESS = 1;
   const std::vector<Pixel> outerCircleColors{allColors.outerCircleColor,
                                              allColors.outerCircleLowColor};
   m_data.drawFuncs.drawCircle(shapeCentrePos.x, shapeCentrePos.y, outerCircleRadius,
@@ -787,11 +787,11 @@ inline void Tube::TubeImpl::DrawOuterCircle(const Point2dInt& shapeCentrePos,
 }
 
 // clang-format off
-constexpr float SHAPES_ONLY_WEIGHT                = 20.0F;
-constexpr float STRIPED_SHAPES_ONLY_WEIGHT        = 10.0F;
-constexpr float CIRCLES_ONLY_WEIGHT               = 20.0F;
-constexpr float SHAPES_AND_CIRCLES_WEIGHT         =  5.0F;
-constexpr float STRIPED_SHAPES_AND_CIRCLES_WEIGHT = 15.0F;
+static constexpr float SHAPES_ONLY_WEIGHT                = 20.0F;
+static constexpr float STRIPED_SHAPES_ONLY_WEIGHT        = 10.0F;
+static constexpr float CIRCLES_ONLY_WEIGHT               = 20.0F;
+static constexpr float SHAPES_AND_CIRCLES_WEIGHT         =  5.0F;
+static constexpr float STRIPED_SHAPES_AND_CIRCLES_WEIGHT = 15.0F;
 // clang-format on
 
 ShapeColorizer::ShapeColorizer(const Tube::Data& data,
@@ -929,15 +929,15 @@ void ShapeColorizer::UpdateAllTValues()
 auto ShapeColorizer::GetBrightness(const Shape& shape, const Point2dInt& shapeCentrePos) const
     -> float
 {
-  constexpr float MIN_BRIGHTNESS = 0.5F;
+  static constexpr float MIN_BRIGHTNESS = 0.5F;
   const float brightness =
       std::min(3.0F, m_data.brightnessFactor * m_brightnessAttenuation.GetPositionBrightness(
                                                    shapeCentrePos, MIN_BRIGHTNESS));
 
-  constexpr float SMALL_T = 0.15F;
+  static constexpr float SMALL_T = 0.15F;
   if (constexpr float HALFWAY_T = 0.5F; std::fabs(shape.path->GetCurrentT() - HALFWAY_T) < SMALL_T)
   {
-    constexpr float SMALL_T_BRIGHTNESS = 0.250F;
+    static constexpr float SMALL_T_BRIGHTNESS = 0.250F;
     return SMALL_T_BRIGHTNESS * brightness;
   }
   return brightness;

@@ -29,7 +29,7 @@ struct FltPoint
   Flt y = 0;
 };
 
-constexpr int32_t FIX = 12;
+static constexpr int32_t FIX = 12;
 
 class Similitude;
 
@@ -58,7 +58,7 @@ private:
 
 [[nodiscard]] inline auto MultByUnit(const Dbl x) -> Flt
 {
-  constexpr int32_t UNIT = 1 << FIX;
+  static constexpr int32_t UNIT = 1 << FIX;
   return static_cast<Flt>(static_cast<Dbl>(UNIT) * x);
 }
 

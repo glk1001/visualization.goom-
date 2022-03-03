@@ -83,7 +83,7 @@ void Tentacle2D::ValidateNumNodes() const
   }
 }
 
-constexpr double SMALL_WEIGHT = 0.001;
+static constexpr double SMALL_WEIGHT = 0.001;
 
 void Tentacle2D::ValidatePrevYWeight() const
 {
@@ -126,7 +126,7 @@ void Tentacle2D::StartIterating()
   {
     m_dampingCache[i] = GetDamping(x);
     m_xVec[i] = x;
-    constexpr double DEFAULT_Y_DAMPING_FACTOR = 0.1;
+    static constexpr double DEFAULT_Y_DAMPING_FACTOR = 0.1;
     m_yVec[i] = DEFAULT_Y_DAMPING_FACTOR * m_dampingCache[i];
 
     x += xStep;
@@ -148,10 +148,10 @@ void Tentacle2D::Iterate()
 
 void Tentacle2D::UpdateDampedValues(const std::vector<double>& yValues)
 {
-  constexpr size_t NUM_SMOOTH_NODES = std::min(size_t(10), MIN_NUM_NODES);
+  static constexpr size_t NUM_SMOOTH_NODES = std::min(size_t(10), MIN_NUM_NODES);
   const auto tSmooth = [](const double t)
   {
-    constexpr double PARABOLA_COEFF = 2.0;
+    static constexpr double PARABOLA_COEFF = 2.0;
     return t * (PARABOLA_COEFF - t);
   };
 
@@ -195,7 +195,7 @@ inline auto Tentacle2D::GetDampedVal(const size_t nodeNum, const double val) con
 
 auto Tentacle2D::GetDampedXAndYVectors() const -> const Tentacle2D::XAndYVectors&
 {
-  constexpr size_t MIN_VEC_SIZE = 2;
+  static constexpr size_t MIN_VEC_SIZE = 2;
 
   if (m_xVec.size() < MIN_VEC_SIZE)
   {
@@ -232,9 +232,9 @@ auto Tentacle2D::CreateExpDampingFunc(const double xMin, const double xMax)
     -> Tentacle2D::DampingFuncPtr
 {
   const double xRiseStart = xMin + (0.25 * xMax);
-  constexpr double AMPLITUDE = 0.1;
-  constexpr double DAMP_START = 5.0;
-  constexpr double DAMP_MAX = 30.0;
+  static constexpr double AMPLITUDE = 0.1;
+  static constexpr double DAMP_START = 5.0;
+  static constexpr double DAMP_MAX = 30.0;
 
   return DampingFuncPtr{
       std::make_unique<ExpDampingFunction>(AMPLITUDE, xRiseStart, DAMP_START, xMax, DAMP_MAX)};
@@ -245,13 +245,13 @@ auto Tentacle2D::CreateLinearDampingFunc(const double xMin, const double xMax)
 {
   std::vector<std::tuple<double, double, DampingFuncPtr>> pieces{};
 
-  constexpr double FLAT_DAMPING_VALUE = 0.1;
+  static constexpr double FLAT_DAMPING_VALUE = 0.1;
   const double flatXMin = xMin;
   const double flatXMax = 0.1 * xMax;
   pieces.emplace_back(flatXMin, flatXMax,
                       DampingFuncPtr{std::make_unique<FlatDampingFunction>(FLAT_DAMPING_VALUE)});
 
-  constexpr float Y_SCALE = 30.0;
+  static constexpr float Y_SCALE = 30.0;
   const double linearXMin = flatXMax;
   const double linearXMax = 10.0 * xMax;
   pieces.emplace_back(linearXMin, linearXMax,

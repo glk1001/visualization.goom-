@@ -200,7 +200,7 @@ inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
 
 auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams() const -> NameValuePairs
 {
-  constexpr const char* PARAM_GROUP = "ZoomFilterFx";
+  static constexpr const char* PARAM_GROUP = "ZoomFilterFx";
 
   NameValuePairs nameValuePairs{GetPair(PARAM_GROUP, "tranLerpFactor", GetTranLerpFactor())};
 

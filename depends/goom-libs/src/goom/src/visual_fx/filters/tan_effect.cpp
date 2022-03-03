@@ -18,19 +18,19 @@ using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
-constexpr TanEffect::TanType DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_ONLY;
-constexpr float DEFAULT_COT_MIX = 1.1F;
-constexpr IGoomRand::NumberRange<float> COT_MIX_RANGE = {0.6F, 1.6F};
-constexpr float TAN_ONLY_WEIGHT = 500.0F;
-constexpr float COT_ONLY_WEIGHT = 5.0F;
-constexpr float COT_MIX_WEIGHT = 1.0F;
+static constexpr TanEffect::TanType DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_ONLY;
+static constexpr float DEFAULT_COT_MIX = 1.1F;
+static constexpr IGoomRand::NumberRange<float> COT_MIX_RANGE = {0.6F, 1.6F};
+static constexpr float TAN_ONLY_WEIGHT = 500.0F;
+static constexpr float COT_ONLY_WEIGHT = 5.0F;
+static constexpr float COT_MIX_WEIGHT = 1.0F;
 
-constexpr float DEFAULT_AMPLITUDE = 1.0F;
-constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.10F, 1.11F};
-constexpr float PROB_XY_AMPLITUDES_EQUAL = 1.00F;
+static constexpr float DEFAULT_AMPLITUDE = 1.0F;
+static constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.10F, 1.11F};
+static constexpr float PROB_XY_AMPLITUDES_EQUAL = 1.00F;
 
-constexpr float DEFAULT_LIMITING_FACTOR = 0.75F;
-constexpr IGoomRand::NumberRange<float> LIMITING_FACTOR_RANGE = {0.10F, 0.85F};
+static constexpr float DEFAULT_LIMITING_FACTOR = 0.75F;
+static constexpr IGoomRand::NumberRange<float> LIMITING_FACTOR_RANGE = {0.10F, 0.85F};
 
 TanEffect::TanEffect(const IGoomRand& goomRand)
   : m_goomRand{goomRand},

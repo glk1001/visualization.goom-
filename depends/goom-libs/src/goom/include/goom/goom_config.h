@@ -10,14 +10,14 @@ namespace GOOM
 {
 
 #ifdef _WIN32PC
-constexpr const char* PATH_SEP = "\\";
+static constexpr const char* PATH_SEP = "\\";
 #else
-constexpr auto* PATH_SEP = "/";
+static constexpr auto* PATH_SEP = "/";
 #endif
 
-constexpr auto* FONTS_DIR = "fonts";
-constexpr auto* IMAGES_DIR = "images";
-constexpr auto* IMAGE_DISPLACEMENT_DIR = "displacements";
+static constexpr auto* FONTS_DIR = "fonts";
+static constexpr auto* IMAGES_DIR = "images";
+static constexpr auto* IMAGE_DISPLACEMENT_DIR = "displacements";
 
 #ifdef WORDS_BIGENDIAN
 #define COLOR_ARGB
