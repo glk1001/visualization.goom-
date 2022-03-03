@@ -22,8 +22,8 @@ static constexpr TanEffect::TanType DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_O
 static constexpr float DEFAULT_COT_MIX = 1.1F;
 static constexpr IGoomRand::NumberRange<float> COT_MIX_RANGE = {0.6F, 1.6F};
 static constexpr float TAN_ONLY_WEIGHT = 500.0F;
-static constexpr float COT_ONLY_WEIGHT = 5.0F;
-static constexpr float COT_MIX_WEIGHT = 1.0F;
+static constexpr float COT_ONLY_WEIGHT = 1.0F;
+static constexpr float COT_MIX_WEIGHT = 50.0F;
 
 static constexpr float DEFAULT_AMPLITUDE = 1.0F;
 static constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.10F, 1.11F};
