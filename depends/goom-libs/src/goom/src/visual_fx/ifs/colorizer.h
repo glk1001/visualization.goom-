@@ -69,10 +69,9 @@ private:
                                         const Pixel& mixColor,
                                         float tBaseMix) const -> Pixel;
 
-  static constexpr float GAMMA = 1.5F;
+  static constexpr float GAMMA = 2.2F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 };
 
 inline auto Colorizer::GetColorMaps() const -> const COLOR::RandomColorMaps&

@@ -55,14 +55,19 @@ private:
   BlurrerColorMode m_colorMode{};
   Pixel m_singleColor{};
 
-  static constexpr float GAMMA = 2.0F;
-  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-  auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
   void SetPointColor(IfsPoint& point,
                      float t,
                      float logMaxLowDensityCount,
                      const std::vector<Pixel>& neighbours) const;
+  [[nodiscard]] auto GetMixedPointColor(const Pixel& baseColor,
+                                        const IfsPoint& point,
+                                        const std::vector<Pixel>& neighbours,
+                                        const float brightness,
+                                        const float logAlpha) const -> Pixel;
+
+  static constexpr float GAMMA = 2.2F;
+  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+  const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
 };
 
 inline auto LowDensityBlurrer::GetWidth() const -> uint32_t

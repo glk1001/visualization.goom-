@@ -142,7 +142,7 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
 
   mixColor = GetFinalMixedColor(baseColor, mixColor, tBaseMix);
 
-  return GetGammaCorrection(brightness * logAlpha, mixColor);
+  return m_gammaCorrect.GetCorrection(brightness * logAlpha, mixColor);
 }
 
 inline auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const
@@ -202,15 +202,6 @@ inline auto Colorizer::GetFinalMixedColor(const Pixel& baseColor,
   }
 
   return IColorMap::GetColorMix(baseColor, mixColor, tBaseMix);
-}
-
-inline auto Colorizer::GetGammaCorrection(const float brightness, const Pixel& color) const -> Pixel
-{
-  if constexpr (1.0F == GAMMA)
-  {
-    return GetBrighterColor(brightness, color);
-  }
-  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 } // namespace GOOM::VISUAL_FX::IFS

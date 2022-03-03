@@ -105,7 +105,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
   const float logAlpha = point.GetCount() <= 1 ? 1.0F
                                                : (std::log(static_cast<float>(point.GetCount())) /
                                                      logMaxLowDensityCount);
-  constexpr float BRIGHTNESS = 0.5F;
+  constexpr float BRIGHTNESS = 0.9F;
 
   switch (m_colorMode)
   {
@@ -121,15 +121,10 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
       break;
     case BlurrerColorMode::SIMI_WITH_NEIGHBOURS:
     {
-      const float fx =
-          static_cast<float>(point.GetX()) / static_cast<float>(m_draw.GetScreenWidth());
-      const float fy =
-          static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());
-      point.SetColor(m_colorizer->GetMixedColor(
-          IColorMap::GetColorMix(point.GetSimi()->GetColor(),
-                                 GetColorAverage(neighbours.size(), neighbours),
-                                 m_neighbourMixFactor),
-          point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
+      const Pixel simiColor = point.GetSimi()->GetColor();
+      const Pixel mixedPointColor =
+          GetMixedPointColor(simiColor, point, neighbours, BRIGHTNESS, logAlpha);
+      point.SetColor(mixedPointColor);
       break;
     }
     case BlurrerColorMode::SMOOTH_NO_NEIGHBOURS:
@@ -137,32 +132,35 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
       break;
     case BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS:
     {
-      const float fx =
-          static_cast<float>(point.GetX()) / static_cast<float>(m_draw.GetScreenWidth());
-      const float fy =
-          static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());
-      point.SetColor(m_colorizer->GetMixedColor(
-          IColorMap::GetColorMix(point.GetSimi()->GetColorMap()->GetColor(t),
-                                 GetColorAverage(neighbours.size(), neighbours),
-                                 m_neighbourMixFactor),
-          point.GetCount(), BRIGHTNESS, logAlpha, fx, fy));
+      const Pixel simiSmoothColor = point.GetSimi()->GetColorMap()->GetColor(t);
+      const Pixel mixedPointColor =
+          GetMixedPointColor(simiSmoothColor, point, neighbours, BRIGHTNESS, logAlpha);
+      point.SetColor(mixedPointColor);
       break;
     }
     default:
       break;
   }
 
-  point.SetColor(GetGammaCorrection(BRIGHTNESS * logAlpha, point.GetColor()));
+  point.SetColor(m_gammaCorrect.GetCorrection(BRIGHTNESS * logAlpha, point.GetColor()));
 }
 
-inline auto LowDensityBlurrer::GetGammaCorrection(const float brightness, const Pixel& color) const
-    -> Pixel
+inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
+                                                  const IfsPoint& point,
+                                                  const std::vector<Pixel>& neighbours,
+                                                  const float brightness,
+                                                  const float logAlpha) const -> Pixel
 {
-  if constexpr (1.0F == GAMMA)
-  {
-    return GetBrighterColor(brightness, color);
-  }
-  return m_gammaCorrect.GetCorrection(brightness, color);
+  const float fx = static_cast<float>(point.GetX()) / static_cast<float>(m_draw.GetScreenWidth());
+  const float fy = static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());
+
+  const Pixel neighbourhoodAverageColor = GetColorAverage(neighbours.size(), neighbours);
+
+  const Pixel baseAndNeighbourhoodMixedColor =
+      IColorMap::GetColorMix(baseColor, neighbourhoodAverageColor, m_neighbourMixFactor);
+
+  return m_colorizer->GetMixedColor(baseAndNeighbourhoodMixedColor, point.GetCount(), brightness,
+                                    logAlpha, fx, fy);
 }
 
 } // namespace GOOM::VISUAL_FX::IFS

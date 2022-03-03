@@ -274,6 +274,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::PostStateUpdate(const bool wasActive
   {
     InitFractal();
   }
+
   UpdateIncr();
 
   if (IfsRenewEvent())

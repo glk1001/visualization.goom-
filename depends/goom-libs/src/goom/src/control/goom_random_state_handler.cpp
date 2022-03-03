@@ -15,7 +15,7 @@ using UTILS::MATH::IGoomRand;
 // For debugging:
 constexpr bool USE_FORCED_GOOM_STATE = false;
 
-constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
+//constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
@@ -29,7 +29,7 @@ constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_TENTACLES_TUBES;
 //constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_IMAGE;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_LINES_STARS;
-// constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_ONLY;
+constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_ONLY;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_STARS;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_STARS_TENTACLES;
 // constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES;
