@@ -38,13 +38,15 @@ public:
   void SetCharSpacing(float val);
   [[nodiscard]] auto GetFontFile() const -> const std::string&;
   void SetFontFile(const std::string& filename);
-  void SetText(const std::string& str);
 
   using FontColorFunc = std::function<Pixel(
       size_t textIndexOfChar, int32_t x, int32_t y, int32_t width, int32_t height)>;
   void SetFontColorFunc(const FontColorFunc& func);
   void SetOutlineFontColorFunc(const FontColorFunc& func);
 
+  void SetParallelRender(bool val);
+
+  void SetText(const std::string& str);
   void Prepare();
 
   struct Rect

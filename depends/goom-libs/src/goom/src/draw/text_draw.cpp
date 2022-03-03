@@ -45,10 +45,13 @@ public:
   [[nodiscard]] auto GetLineSpacing() const -> int32_t;
   void SetOutlineWidth(float val);
   void SetCharSpacing(float val);
-  void SetText(const std::string& str);
 
   void SetFontColorFunc(const FontColorFunc& func);
   void SetOutlineFontColorFunc(const FontColorFunc& func);
+
+  void SetParallelRender(bool val);
+
+  void SetText(const std::string& str);
 
   void Prepare();
   [[nodiscard]] auto GetPreparedTextBoundingRect() const -> Rect;
@@ -103,6 +106,10 @@ void TextDraw::TextDrawImpl::SetOutlineWidth(const float)
 }
 
 void TextDraw::TextDrawImpl::SetCharSpacing(const float)
+{
+}
+
+void TextDraw::TextDrawImpl::SetParallelRender(const bool)
 {
 }
 
@@ -172,10 +179,13 @@ public:
   void SetOutlineWidth(float val);
   [[nodiscard]] auto GetCharSpacing() const -> float;
   void SetCharSpacing(float val);
-  void SetText(const std::string& str);
 
   void SetFontColorFunc(const FontColorFunc& func);
   void SetOutlineFontColorFunc(const FontColorFunc& func);
+
+  void SetParallelRender(bool val);
+
+  void SetText(const std::string& str);
 
   void Prepare();
   [[nodiscard]] auto GetPreparedTextBoundingRect() const -> Rect;
@@ -199,6 +209,7 @@ private:
   float m_charSpacing = 0.0F;
   std::string m_fontFilename{};
   std::vector<unsigned char> m_fontBuffer{};
+  bool m_useParallelRender = true;
   std::string m_theText{};
   TextAlignment m_textAlignment{TextAlignment::LEFT};
   FT_Face m_face{};
@@ -319,6 +330,11 @@ auto TextDraw::GetCharSpacing() const -> float
 void TextDraw::SetCharSpacing(const float val)
 {
   m_textDrawImpl->SetCharSpacing(val);
+}
+
+void TextDraw::SetParallelRender(const bool val)
+{
+  m_textDrawImpl->SetParallelRender(val);
 }
 
 void TextDraw::SetText(const std::string& str)
@@ -472,6 +488,11 @@ inline void TextDraw::TextDrawImpl::SetCharSpacing(const float val)
     throw std::logic_error(std20::format("Char spacing < 0: {}.", val));
   }
   m_charSpacing = val;
+}
+
+inline void TextDraw::TextDrawImpl::SetParallelRender(const bool val)
+{
+  m_useParallelRender = val;
 }
 
 inline void TextDraw::TextDrawImpl::SetText(const std::string& str)
@@ -669,7 +690,7 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
   };
 
   constexpr int32_t MIN_PARALLEL_SPAN_ARRAY_SIZE = 20;
-  if (spanArray.size() >= MIN_PARALLEL_SPAN_ARRAY_SIZE)
+  if (m_useParallelRender && (spanArray.size() >= MIN_PARALLEL_SPAN_ARRAY_SIZE))
   {
     LogInfo("WriteSpansToImage using parallel.");
     m_draw.GetParallel().ForLoop(spanArray.size(), writeSpan);

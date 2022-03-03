@@ -14,6 +14,8 @@
 
 #include "goom_control.h"
 
+//#undef NO_LOGGING
+
 #include "control/goom_all_visual_fx.h"
 #include "control/goom_events.h"
 #include "control/goom_image_buffers.h"
@@ -24,7 +26,6 @@
 #include "draw/goom_draw_to_buffer.h"
 #include "goom/compiler_versions.h"
 #include "goom_graphic.h"
-//#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
@@ -35,6 +36,7 @@
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
 #include "utils/name_value_pairs.h"
 #endif
+#include "utils/strutils.h"
 #include "visual_fx/filters/filter_settings_service.h"
 #include "visual_fx/filters/speed_coefficients_effect_factory.h"
 #include "visual_fx/fx_helper.h"
@@ -66,6 +68,7 @@ using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 
 using UTILS::Logging;
 using UTILS::Parallel;
+using UTILS::StringSplit;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
 using VISUAL_FX::FxHelper;
@@ -497,7 +500,9 @@ inline void GoomControl::GoomControlImpl::UpdateMessages(const std::string& mess
   }
 
   m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
-  m_messageDisplayer.UpdateMessages(messages);
+
+  const std::vector<std::string> msgLines = StringSplit(messages, "\n");
+  m_messageDisplayer.UpdateMessages(msgLines);
 }
 
 #ifdef SHOW_STATE_TEXT_ON_SCREEN
@@ -507,33 +512,31 @@ void GoomControl::GoomControlImpl::DisplayStateText()
 
   const FilterSettingsService& filterSettingsService = m_filterSettingsService;
 
-  const ZoomFilterEffectsSettings& filterEffectsSettings =
-      filterSettingsService.GetFilterSettings().filterEffectsSettings;
-  const ZoomFilterBufferSettings& filterBufferSettings =
-      filterSettingsService.GetFilterSettings().filterBufferSettings;
-
-  const GoomShaderEffects& shaderEffects = GetLastShaderEffects();
-
   message += std20::format("State: {}\n", m_visualFx.GetCurrentStateName());
   message += std20::format("Filter Mode: {}\n", filterSettingsService.GetCurrentFilterMode());
   message +=
       std20::format("Previous Filter Mode: {}\n", filterSettingsService.GetPreviousFilterMode());
 
+  const ZoomFilterBufferSettings& filterBufferSettings =
+      filterSettingsService.GetFilterSettings().filterBufferSettings;
   message += std20::format("tranLerpIncrement: {}\n", filterBufferSettings.tranLerpIncrement);
   message +=
       std20::format("tranLerpToMaxSwitchMult: {}\n", filterBufferSettings.tranLerpToMaxSwitchMult);
 
+  const GoomShaderEffects& shaderEffects = GetLastShaderEffects();
   message += std20::format("exposure: {}\n", m_visualFx.GetCurrentExposure());
   message += std20::format("contrast: {}\n", shaderEffects.contrast);
   message += std20::format("minChan: {}\n", shaderEffects.contrastMinChannelValue);
   message += std20::format("brightness: {}\n", shaderEffects.brightness);
 
-  message += GetNameValuesString(m_visualFx.GetZoomFilterFxNameValueParams()) + "\n";
-
+  const ZoomFilterEffectsSettings& filterEffectsSettings =
+      filterSettingsService.GetFilterSettings().filterEffectsSettings;
   message += std20::format("middleX: {}\n", filterEffectsSettings.zoomMidpoint.x);
   message += std20::format("middleY: {}\n", filterEffectsSettings.zoomMidpoint.y);
 
-  message += GetNameValuesString(m_musicSettingsReactor.GetNameValueParams());
+  message += GetNameValuesString(m_musicSettingsReactor.GetNameValueParams()) + "\n";
+
+  message += GetNameValuesString(m_visualFx.GetZoomFilterFxNameValueParams());
 
   UpdateMessages(message);
 }
