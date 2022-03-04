@@ -91,6 +91,11 @@ inline auto ToMap(const std::array<std::pair<E, float>, N>& stdArray) -> std::ma
 static constexpr bool NO_EXTRA_EFFECTS = false;
 static constexpr bool USE_FORCED_FILTER_MODE = false;
 
+static constexpr bool DEFAULT_IMAGE_VELOCITY_EFFECT = true;
+static constexpr bool DEFAULT_TAN_EFFECT = false;
+static constexpr bool DEFAULT_PLANE_EFFECT = false;
+static constexpr bool DEFAULT_NOISE_EFFECT = false;
+
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::CRYSTAL_BALL_MODE1;
@@ -468,10 +473,10 @@ void FilterSettingsService::SetDefaultSettings()
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
   m_filterSettings.filterEffectsSettings.hypercosOverlay = HypercosOverlay::NONE;
-  m_filterSettings.filterEffectsSettings.imageVelocityEffect = false;
-  m_filterSettings.filterEffectsSettings.tanEffect = false;
-  m_filterSettings.filterEffectsSettings.planeEffect = false;
-  m_filterSettings.filterEffectsSettings.noiseEffect = false;
+  m_filterSettings.filterEffectsSettings.imageVelocityEffect = DEFAULT_IMAGE_VELOCITY_EFFECT;
+  m_filterSettings.filterEffectsSettings.tanEffect = DEFAULT_TAN_EFFECT;
+  m_filterSettings.filterEffectsSettings.planeEffect = DEFAULT_PLANE_EFFECT;
+  m_filterSettings.filterEffectsSettings.noiseEffect = DEFAULT_NOISE_EFFECT;
   m_filterSettings.filterEffectsSettings.rotation = MakeRotation();
 
   m_filterSettings.filterColorSettings.blockyWavy = false;
