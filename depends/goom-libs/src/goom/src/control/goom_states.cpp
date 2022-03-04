@@ -1,286 +1,188 @@
 #include "goom_states.h"
 
+//#undef NO_LOGGING
+
+#include "goom/logging.h"
 #include "utils/enumutils.h"
+#include "utils/math/goom_rand_base.h"
+
+#undef NDEBUG
+#include <cassert>
+#include <format>
+#include <map>
+#include <set>
+#include <stdexcept>
+#include <string_view>
 
 namespace GOOM::CONTROL
 {
 
+using UTILS::EnumToString;
+using UTILS::Logging;
 using UTILS::NUM;
-using UTILS::ToUType;
-
-struct RawStateInfo
-{
-  GoomStates state;
-  const char* name;
-  std::vector<GoomStateInfo::DrawableInfo> drawableInfo;
-};
+using UTILS::MATH::IGoomRand;
 
 // clang-format off
-static constexpr float CIRCLES_DEFAULT_BUFF_INTENSITY   = 0.7F;
-static constexpr float DOTS_DEFAULT_BUFF_INTENSITY      = 0.3F;
-static constexpr float IFS_DEFAULT_BUFF_INTENSITY       = 0.5F;
-static constexpr float IMAGE_DEFAULT_BUFF_INTENSITY     = 0.1F;
-static constexpr float LINES_DEFAULT_BUFF_INTENSITY     = 0.6F;
-static constexpr float STARS_DEFAULT_BUFF_INTENSITY     = 0.4F;
-static constexpr float TENTACLES_DEFAULT_BUFF_INTENSITY = 0.4F;
-static constexpr float TUBES_DEFAULT_BUFF_INTENSITY     = 0.8F;
-
 // TODO - When we get to use C++20 we can simplify things with
-//        constexpr std::vector.
-//  Drawable                                              BuffIntensity
-static const std::vector CIRCLES_ONLY_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector CIRCLES_IFS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector CIRCLES_IMAGE_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector CIRCLES_IMAGE_STARS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector CIRCLES_LINES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector CIRCLES_STARS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector CIRCLES_TENTACLES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::CIRCLES,   {CIRCLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector DOTS_ONLY_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector DOTS_IFS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector DOTS_IFS_STARS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector DOTS_IMAGE_STARS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector DOTS_LINES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
-};
-static const std::vector DOTS_LINES_STAR_TENTACLES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
-};
-static const std::vector DOTS_LINES_TENTACLES_TUBES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
-};
-static const std::vector DOTS_LINES_TUBES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
-};
-static const std::vector DOTS_STARS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector DOTS_STARS_TENTACLES_TUBES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector DOTS_TENTACLES_TUBES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::DOTS,      {DOTS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IFS_ONLY_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IFS_IMAGE_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IFS_LINES_STARS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
-};
-static const std::vector IFS_STARS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IFS_STARS_TENTACLES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IFS_TENTACLES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IFS_TENTACLES_TUBES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IFS_TUBES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IFS,       {IFS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IMAGE_ONLY_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IMAGE_LINES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
-};
-static const std::vector IMAGE_LINES_STARS_TENTACLES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
-};
-static const std::vector IMAGE_STARS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IMAGE_TENTACLES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector IMAGE_TUBES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::IMAGE,     {IMAGE_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector LINES_ONLY_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector LINES_STARS_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
-};
-static const std::vector LINES_TENTACLES_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::LINES,     {LINES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::SCOPE,     {0.0F}},
-    GoomStateInfo::DrawableInfo{GoomDrawables::FAR_SCOPE, {0.0F}},
-};
-static const std::vector STARS_ONLY_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::STARS,     {STARS_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector TENTACLES_ONLY_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::TENTACLES, {TENTACLES_DEFAULT_BUFF_INTENSITY}},
-};
-static const std::vector TUBES_ONLY_DRAWABLES_INFO {
-    GoomStateInfo::DrawableInfo{GoomDrawables::TUBES,     {TUBES_DEFAULT_BUFF_INTENSITY}},
+//        constexpr std::map.
+static const std::map<GoomDrawables, BuffIntensityRange> DEFAULT_BUFF_INTENSITY_RANGES{
+    {GoomDrawables::CIRCLES,   {0.50F, 0.90F}},
+    {GoomDrawables::DOTS,      {0.30F, 0.50F}},
+    {GoomDrawables::FAR_SCOPE, {0.00F, 0.01F}},
+    {GoomDrawables::IFS,       {0.40F, 0.60F}},
+    {GoomDrawables::LINES,     {0.50F, 0.70F}},
+    {GoomDrawables::IMAGE,     {0.05F, 0.15F}},
+    {GoomDrawables::SCOPE,     {0.00F, 0.01F}},
+    {GoomDrawables::SHADER,    {0.00F, 0.01F}},
+    {GoomDrawables::STARS,     {0.30F, 0.50F}},
+    {GoomDrawables::TENTACLES, {0.30F, 0.50F}},
+    {GoomDrawables::TUBES,     {0.70F, 0.90F}},
 };
 
-static const std::array RAW_STATE_INFO_ARRAY{
-    RawStateInfo{GoomStates::CIRCLES_ONLY,                "Circles Only",           CIRCLES_ONLY_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::CIRCLES_IFS,                 "Circles and IFS",        CIRCLES_IFS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::CIRCLES_IMAGE,               "Circles and Image",      CIRCLES_IMAGE_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::CIRCLES_IMAGE_STARS,         "Circles, Image, Stars",  CIRCLES_IMAGE_STARS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::CIRCLES_LINES,               "Circles and Lines",      CIRCLES_LINES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::CIRCLES_STARS_TUBES,         "Circles, Stars, Tubes",  CIRCLES_STARS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::CIRCLES_TENTACLES,           "Circles and Tentacles",  CIRCLES_TENTACLES_DRAWABLES_INFO},
+static const std::map<GoomStates, std::set<GoomDrawables>> STATE_DRAWABLES{
+    {GoomStates::CIRCLES_ONLY,                {GoomDrawables::CIRCLES}},
+    {GoomStates::CIRCLES_IFS,                 {GoomDrawables::CIRCLES, GoomDrawables::IFS}},
+    {GoomStates::CIRCLES_IMAGE,               {GoomDrawables::CIRCLES, GoomDrawables::IMAGE}},
+    {GoomStates::CIRCLES_IMAGE_STARS,         {GoomDrawables::CIRCLES, GoomDrawables::IMAGE, 
+                                               GoomDrawables::STARS}},
+    {GoomStates::CIRCLES_LINES,               {GoomDrawables::CIRCLES, GoomDrawables::LINES}},
+    {GoomStates::CIRCLES_STARS_TUBES,         {GoomDrawables::CIRCLES, GoomDrawables::STARS, 
+                                               GoomDrawables::TUBES}},
+    {GoomStates::CIRCLES_TENTACLES,           {GoomDrawables::CIRCLES, GoomDrawables::TENTACLES}},
+    {GoomStates::DOTS_IFS,                    {GoomDrawables::DOTS, GoomDrawables::IFS}},
+    {GoomStates::DOTS_IFS_STARS,              {GoomDrawables::DOTS, GoomDrawables::IFS, 
+                                               GoomDrawables::STARS}},
+    {GoomStates::DOTS_IMAGE_STARS,            {GoomDrawables::DOTS, GoomDrawables::IMAGE, 
+                                               GoomDrawables::STARS}},
+    {GoomStates::DOTS_LINES,                  {GoomDrawables::DOTS, GoomDrawables::LINES}},
+    {GoomStates::DOTS_LINES_STARS_TENTACLES,  {GoomDrawables::DOTS, GoomDrawables::LINES, 
+                                               GoomDrawables::STARS, GoomDrawables::TENTACLES}},
+    {GoomStates::DOTS_LINES_TENTACLES_TUBES,  {GoomDrawables::DOTS, GoomDrawables::LINES, 
+                                               GoomDrawables::TENTACLES, GoomDrawables::TUBES}},
+    {GoomStates::DOTS_LINES_TUBES,            {GoomDrawables::DOTS, GoomDrawables::LINES, 
+                                               GoomDrawables::TUBES}},
+    {GoomStates::DOTS_ONLY,                   {GoomDrawables::DOTS}},
+    {GoomStates::DOTS_STARS,                  {GoomDrawables::DOTS, GoomDrawables::STARS}},
+    {GoomStates::DOTS_STARS_TENTACLES_TUBES,  {GoomDrawables::DOTS, GoomDrawables::STARS, 
+                                               GoomDrawables::TENTACLES, GoomDrawables::TUBES}},
+    {GoomStates::DOTS_TENTACLES_TUBES,        {GoomDrawables::DOTS, GoomDrawables::TENTACLES, 
+                                               GoomDrawables::TUBES}},
+    {GoomStates::IFS_IMAGE,                   {GoomDrawables::IFS, GoomDrawables::IMAGE}},
+    {GoomStates::IFS_LINES_STARS,             {GoomDrawables::IFS, GoomDrawables::LINES, 
+                                               GoomDrawables::STARS}},
+    {GoomStates::IFS_ONLY,                    {GoomDrawables::IFS}},
+    {GoomStates::IFS_STARS,                   {GoomDrawables::IFS, GoomDrawables::STARS}},
+    {GoomStates::IFS_STARS_TENTACLES,         {GoomDrawables::IFS, GoomDrawables::STARS, 
+                                               GoomDrawables::TENTACLES}},
+    {GoomStates::IFS_TENTACLES,               {GoomDrawables::IFS, GoomDrawables::TENTACLES}},
+    {GoomStates::IFS_TENTACLES_TUBES,         {GoomDrawables::IFS, GoomDrawables::TENTACLES, 
+                                               GoomDrawables::TUBES}},
+    {GoomStates::IFS_TUBES,                   {GoomDrawables::IFS, GoomDrawables::TUBES}},
+    {GoomStates::IMAGE_LINES,                 {GoomDrawables::IMAGE, GoomDrawables::LINES}},
+    {GoomStates::IMAGE_LINES_STARS_TENTACLES, {GoomDrawables::IMAGE, GoomDrawables::LINES, 
+                                               GoomDrawables::STARS, GoomDrawables::TENTACLES}},
+    {GoomStates::IMAGE_ONLY,                  {GoomDrawables::IMAGE}},
+    {GoomStates::IMAGE_STARS,                 {GoomDrawables::IMAGE, GoomDrawables::STARS}},
+    {GoomStates::IMAGE_TENTACLES,             {GoomDrawables::IMAGE, GoomDrawables::TENTACLES}},
+    {GoomStates::IMAGE_TUBES,                 {GoomDrawables::IMAGE, GoomDrawables::TUBES}},
+    {GoomStates::LINES_ONLY,                  {GoomDrawables::LINES}},
+    {GoomStates::LINES_STARS,                 {GoomDrawables::LINES, GoomDrawables::STARS}},
+    {GoomStates::LINES_TENTACLES,             {GoomDrawables::LINES, GoomDrawables::TENTACLES}},
+    {GoomStates::STARS_ONLY,                  {GoomDrawables::STARS}},
+    {GoomStates::TENTACLES_ONLY,              {GoomDrawables::TENTACLES}},
+    {GoomStates::TUBES_ONLY,                  {GoomDrawables::TUBES}},
+};
 
-    RawStateInfo{GoomStates::DOTS_ONLY,                   "Dots Only",              DOTS_ONLY_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_IFS,                    "Dots and Ifs",           DOTS_IFS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_IFS_STARS,              "Dots, IFS, Stars",       DOTS_IFS_STARS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_IMAGE_STARS,            "Dots, Image, Stars",     DOTS_IMAGE_STARS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_LINES,                  "Dots and Lines",         DOTS_LINES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_LINES_STARS_TENTACLES,  "D, L, S, Te",            DOTS_LINES_STAR_TENTACLES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_LINES_TENTACLES_TUBES,  "D, L, Te, Tu",           DOTS_LINES_TENTACLES_TUBES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_LINES_TUBES,            "D, L, Tu",               DOTS_LINES_TUBES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_STARS,                  "Dots and Stars",         DOTS_STARS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_STARS_TENTACLES_TUBES,  "D, S, Te, Tu",           DOTS_STARS_TENTACLES_TUBES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::DOTS_TENTACLES_TUBES,        "Dots, Tentacles, Tubes", DOTS_TENTACLES_TUBES_DRAWABLES_INFO},
+static const std::map<GoomStates, std::string_view> STATE_NAMES{
+    {GoomStates::CIRCLES_ONLY,                "Circles Only"},
+    {GoomStates::CIRCLES_IFS,                 "Circles and IFS"},
+    {GoomStates::CIRCLES_IMAGE,               "Circles and Image"},
+    {GoomStates::CIRCLES_IMAGE_STARS,         "Circles, Image, Stars"},
+    {GoomStates::CIRCLES_LINES,               "Circles and Lines"},
+    {GoomStates::CIRCLES_STARS_TUBES,         "Circles, Stars, Tubes"},
+    {GoomStates::CIRCLES_TENTACLES,           "Circles and Tentacles"},
 
-    RawStateInfo{GoomStates::IFS_ONLY,                    "IFS Only",               IFS_ONLY_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IFS_IMAGE,                   "IFS and Image",          IFS_IMAGE_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IFS_LINES_STARS,             "IFS, Lines, Stars",      IFS_LINES_STARS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IFS_STARS,                   "IFS and Stars",          IFS_STARS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IFS_STARS_TENTACLES,         "IFS, Stars, Tentacles",  IFS_STARS_TENTACLES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IFS_TENTACLES,               "IFS and Tentacles",      IFS_TENTACLES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IFS_TENTACLES_TUBES,         "IFS, Tentacles, Tubes",  IFS_TENTACLES_TUBES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IFS_TUBES,                   "Ifs and Tubes",          IFS_TUBES_DRAWABLES_INFO},
+    {GoomStates::DOTS_ONLY,                   "Dots Only"},
+    {GoomStates::DOTS_IFS,                    "Dots and Ifs"},
+    {GoomStates::DOTS_IFS_STARS,              "Dots, IFS, Stars"},
+    {GoomStates::DOTS_IMAGE_STARS,            "Dots, Image, Stars"},
+    {GoomStates::DOTS_LINES,                  "Dots and Lines"},
+    {GoomStates::DOTS_LINES_STARS_TENTACLES,  "D, L, S, Te"},
+    {GoomStates::DOTS_LINES_TENTACLES_TUBES,  "D, L, Te, Tu"},
+    {GoomStates::DOTS_LINES_TUBES,            "D, L, Tu"},
+    {GoomStates::DOTS_STARS,                  "Dots and Stars"},
+    {GoomStates::DOTS_STARS_TENTACLES_TUBES,  "D, S, Te, Tu"},
+    {GoomStates::DOTS_TENTACLES_TUBES,        "Dots, Tentacles, Tubes"},
 
-    RawStateInfo{GoomStates::IMAGE_ONLY,                  "Image Only",             IMAGE_ONLY_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IMAGE_LINES,                 "Image and Lines",        IMAGE_LINES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IMAGE_LINES_STARS_TENTACLES, "Im, L, S, Te",           IMAGE_LINES_STARS_TENTACLES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IMAGE_STARS,                 "Image and Stars",        IMAGE_STARS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IMAGE_TENTACLES,             "Image and Tentacles",    IMAGE_TENTACLES_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::IMAGE_TUBES,                 "Image and Tubes",        IMAGE_TUBES_DRAWABLES_INFO},
+    {GoomStates::IFS_ONLY,                    "IFS Only"},
+    {GoomStates::IFS_IMAGE,                   "IFS and Image"},
+    {GoomStates::IFS_LINES_STARS,             "IFS, Lines, Stars"},
+    {GoomStates::IFS_STARS,                   "IFS and Stars"},
+    {GoomStates::IFS_STARS_TENTACLES,         "IFS, Stars, Tentacles"},
+    {GoomStates::IFS_TENTACLES,               "IFS and Tentacles"},
+    {GoomStates::IFS_TENTACLES_TUBES,         "IFS, Tentacles, Tubes"},
+    {GoomStates::IFS_TUBES,                   "Ifs and Tubes"},
 
-    RawStateInfo{GoomStates::LINES_ONLY,                  "Lines Only",             LINES_ONLY_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::LINES_STARS,                 "Lines and Stars",        LINES_STARS_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::LINES_TENTACLES,             "Tentacles and Lines",    LINES_TENTACLES_DRAWABLES_INFO},
+    {GoomStates::IMAGE_ONLY,                  "Image Only"},
+    {GoomStates::IMAGE_LINES,                 "Image and Lines"},
+    {GoomStates::IMAGE_LINES_STARS_TENTACLES, "Im, L, S, Te"},
+    {GoomStates::IMAGE_STARS,                 "Image and Stars"},
+    {GoomStates::IMAGE_TENTACLES,             "Image and Tentacles"},
+    {GoomStates::IMAGE_TUBES,                 "Image and Tubes"},
 
-    RawStateInfo{GoomStates::STARS_ONLY,                  "Stars Only",             STARS_ONLY_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::TENTACLES_ONLY,              "Tentacles Only",         TENTACLES_ONLY_DRAWABLES_INFO},
-    RawStateInfo{GoomStates::TUBES_ONLY,                  "Tubes Only",             TUBES_ONLY_DRAWABLES_INFO},
+    {GoomStates::LINES_ONLY,                  "Lines Only"},
+    {GoomStates::LINES_STARS,                 "Lines and Stars"},
+    {GoomStates::LINES_TENTACLES,             "Lines and Tentacles"},
+
+    {GoomStates::STARS_ONLY,                  "Stars Only"},
+    {GoomStates::TENTACLES_ONLY,              "Tentacles Only"},
+    {GoomStates::TUBES_ONLY,                  "Tubes Only"},
 };
 // clang-format on
-
-static_assert(RAW_STATE_INFO_ARRAY.size() == NUM<GoomStates>);
 
 const GoomStateInfo::StateInfoArray GoomStateInfo::STATE_INFO_ARRAY = GetStateInfoArray();
 
 auto GoomStateInfo::GetStateInfoArray() noexcept -> StateInfoArray
 {
+  assert(STATE_DRAWABLES.size() == NUM<GoomStates>);
+  assert(STATE_NAMES.size() == NUM<GoomStates>);
+
   StateInfoArray statesArray{};
 
-  for (const auto& stateInfo : RAW_STATE_INFO_ARRAY)
+  for (size_t i = 0; i < NUM<GoomStates>; ++i)
   {
-    statesArray[ToUType(stateInfo.state)] = {std::string(stateInfo.name), stateInfo.drawableInfo};
+    const auto goomState = static_cast<GoomStates>(i);
+    statesArray.at(i) = {STATE_NAMES.at(goomState), GetDrawablesInfo(goomState)};
   }
 
   return statesArray;
 }
 
-auto GoomStateInfo::GetBuffSettings(const GoomStates goomState, const GoomDrawables fx)
-    -> FXBuffSettings
+auto GoomStateInfo::GetDrawablesInfo(const GoomStates goomState) -> std::vector<DrawableInfo>
+{
+  std::vector<DrawableInfo> drawablesInfo{};
+
+  for (const auto& drawable : STATE_DRAWABLES.at(goomState))
+  {
+    drawablesInfo.emplace_back(DrawableInfo{drawable, DEFAULT_BUFF_INTENSITY_RANGES.at(drawable)});
+  }
+
+  return drawablesInfo;
+}
+
+auto GoomStateInfo::GetBuffIntensityRange(const GoomStates goomState, const GoomDrawables fx)
+    -> BuffIntensityRange
 {
   for (const auto& drawableInfo : GetStateInfo(goomState).drawablesInfo)
   {
     if (drawableInfo.fx == fx)
     {
-      return drawableInfo.buffSettings;
+      return drawableInfo.buffIntensityRange;
     }
   }
-  return FXBuffSettings{};
+
+  throw std::logic_error(std20::format("Could not find drawable {} for state {}.", EnumToString(fx),
+                                       EnumToString(goomState)));
 }
 
 } // namespace GOOM::CONTROL

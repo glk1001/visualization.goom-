@@ -2,9 +2,10 @@
 
 #include "goom_graphic.h"
 #include "utils/enumutils.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <array>
-#include <string>
+#include <string_view>
 #include <vector>
 
 namespace GOOM::CONTROL
@@ -55,19 +56,21 @@ enum class GoomStates : size_t
 
 enum class GoomDrawables
 {
-  IFS = 0,
-  CIRCLES,
+  CIRCLES = 0,
   DOTS,
-  TENTACLES,
-  STARS,
-  LINES,
-  SCOPE,
   FAR_SCOPE,
+  IFS,
+  LINES,
   IMAGE,
+  SCOPE,
   SHADER,
+  STARS,
+  TENTACLES,
   TUBES,
   _num // unused and must be last
 };
+
+using BuffIntensityRange = UTILS::MATH::IGoomRand::NumberRange<float>;
 
 class GoomStateInfo
 {
@@ -75,24 +78,25 @@ public:
   struct DrawableInfo
   {
     GoomDrawables fx{};
-    FXBuffSettings buffSettings{};
+    BuffIntensityRange buffIntensityRange{};
   };
   struct StateInfo
   {
-    std::string name;
+    std::string_view name;
     std::vector<DrawableInfo> drawablesInfo;
   };
 
   GoomStateInfo() noexcept = delete;
 
   [[nodiscard]] static auto GetStateInfo(GoomStates goomState) -> const StateInfo&;
-  [[nodiscard]] static auto GetBuffSettings(GoomStates goomState, GoomDrawables fx)
-      -> FXBuffSettings;
+  [[nodiscard]] static auto GetBuffIntensityRange(GoomStates goomState, GoomDrawables fx)
+      -> BuffIntensityRange;
 
 private:
   using StateInfoArray = std::array<StateInfo, UTILS::NUM<GoomStates>>;
   static const StateInfoArray STATE_INFO_ARRAY;
   [[nodiscard]] static auto GetStateInfoArray() noexcept -> StateInfoArray;
+  [[nodiscard]] static auto GetDrawablesInfo(GoomStates goomState) -> std::vector<DrawableInfo>;
 };
 
 inline auto GoomStateInfo::GetStateInfo(const GoomStates goomState) -> const StateInfo&

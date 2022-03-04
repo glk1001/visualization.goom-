@@ -153,12 +153,18 @@ void GoomAllVisualFx::RefreshAllFx()
 
 inline void GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx)
 {
+  if (GoomDrawables::SHADER == fx)
+  {
+    return;
+  }
   m_resetDrawBuffSettings(GetCurrentBuffSettings(fx));
 }
 
 inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const -> FXBuffSettings
 {
-  return GoomStateInfo::GetBuffSettings(m_goomStateHandler.GetCurrentState(), fx);
+  const float buffIntensity = m_goomRand.GetRandInRange(
+      GoomStateInfo::GetBuffIntensityRange(m_goomStateHandler.GetCurrentState(), fx));
+  return {buffIntensity};
 }
 
 void GoomAllVisualFx::ChangeAllFxColorMaps()

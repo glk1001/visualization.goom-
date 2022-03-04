@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <memory>
+#include <string_view>
 #include <unordered_set>
 
 namespace GOOM
@@ -64,7 +65,7 @@ public:
   void Finish();
 
   void SetNextState();
-  [[nodiscard]] auto GetCurrentStateName() const -> std::string;
+  [[nodiscard]] auto GetCurrentStateName() const -> std::string_view;
 
   void SetSingleBufferDots(bool value);
 
@@ -200,7 +201,7 @@ inline auto GoomAllVisualFx::GetCurrentExposure() const -> float
   return m_adaptiveExposure.GetCurrentExposure();
 }
 
-inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string
+inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string_view
 {
   return GoomStateInfo::GetStateInfo(m_goomStateHandler.GetCurrentState()).name;
 }
