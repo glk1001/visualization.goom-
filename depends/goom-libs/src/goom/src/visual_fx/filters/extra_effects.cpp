@@ -11,6 +11,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 
 using UTILS::MATH::IGoomRand;
 
+static constexpr HypercosOverlay DEFAULT_HYPERCOS_OVERLAY = HypercosOverlay::NONE;
 static constexpr bool DEFAULT_IMAGE_VELOCITY_EFFECT = false;
 static constexpr bool DEFAULT_TAN_EFFECT = false;
 static constexpr bool DEFAULT_PLANE_EFFECT = false;
@@ -19,6 +20,7 @@ static constexpr bool DEFAULT_BLOCKY_WAVY_NOISE_EFFECT = false;
 
 ExtraEffects::ExtraEffects(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
+    m_hypercosOverlayEffect{DEFAULT_HYPERCOS_OVERLAY},
     m_blockyWavyEffect{goomRand, PROB_BLOCKY_WAVY_EFFECT, PROB_REPEAT_BLOCKY_WAVY_EFFECT,
                        BLOCKY_WAVY_EFFECT_OFF_TIME},
     m_imageVelocityEffect{goomRand, PROB_IMAGE_VELOCITY_EFFECT, PROB_REPEAT_IMAGE_VELOCITY_EFFECT,
@@ -29,13 +31,21 @@ ExtraEffects::ExtraEffects(const IGoomRand& goomRand) noexcept
 {
 }
 
+void ExtraEffects::SetHypercosOverlayEffect(HypercosOverlay value)
+{
+  m_hypercosOverlayEffect = value;
+}
+
 void ExtraEffects::TurnPlaneEffectOn()
 {
   m_planeEffect.SetEffect(true);
 }
 
-void ExtraEffects::SetFilterSettingsDefaults(ZoomFilterSettings& filterSettings) const
+void ExtraEffects::SetFilterSettingsDefaults(ZoomFilterSettings& filterSettings)
 {
+  m_hypercosOverlayEffect = DEFAULT_HYPERCOS_OVERLAY;
+  filterSettings.filterEffectsSettings.hypercosOverlay = DEFAULT_HYPERCOS_OVERLAY;
+
   filterSettings.filterEffectsSettings.imageVelocityEffect = DEFAULT_IMAGE_VELOCITY_EFFECT;
   filterSettings.filterEffectsSettings.tanEffect = DEFAULT_TAN_EFFECT;
   filterSettings.filterEffectsSettings.planeEffect = DEFAULT_PLANE_EFFECT;
@@ -47,6 +57,8 @@ void ExtraEffects::SetFilterSettingsDefaults(ZoomFilterSettings& filterSettings)
 
 void ExtraEffects::UpdateFilterSettings(ZoomFilterSettings& filterSettings) const
 {
+  filterSettings.filterEffectsSettings.hypercosOverlay = m_hypercosOverlayEffect;
+
   filterSettings.filterColorSettings.blockyWavy = m_blockyWavyEffect.IsTurnedOn();
   filterSettings.filterEffectsSettings.imageVelocityEffect = m_imageVelocityEffect.IsTurnedOn();
   filterSettings.filterEffectsSettings.noiseEffect = m_noiseEffect.IsTurnedOn();

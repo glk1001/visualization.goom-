@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_settings.h"
 #include "utils/timer.h"
 
 #include <cstdint>
@@ -14,8 +15,6 @@ class IGoomRand;
 
 namespace VISUAL_FX::FILTERS
 {
-
-struct ZoomFilterSettings;
 
 class ExtraEffect
 {
@@ -46,17 +45,20 @@ class ExtraEffects
 public:
   explicit ExtraEffects(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  void SetFilterSettingsDefaults(ZoomFilterSettings& filterSettings) const;
+  void SetFilterSettingsDefaults(ZoomFilterSettings& filterSettings);
   void UpdateFilterSettings(ZoomFilterSettings& filterSettings) const;
 
   void UpdateTimers();
   void UpdateEffects();
   void EffectsUpdatesActivated();
 
+  void SetHypercosOverlayEffect(HypercosOverlay value);
   void TurnPlaneEffectOn();
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
+
+  HypercosOverlay m_hypercosOverlayEffect;
 
   static constexpr float PROB_BLOCKY_WAVY_EFFECT = 0.3F;
   static constexpr float PROB_REPEAT_BLOCKY_WAVY_EFFECT = 0.9F;

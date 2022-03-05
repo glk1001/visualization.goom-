@@ -401,8 +401,6 @@ void FilterSettingsService::SetDefaultSettings()
 
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
-  m_filterSettings.filterEffectsSettings.hypercosOverlay = HypercosOverlay::NONE;
-
   m_extraEffects->SetFilterSettingsDefaults(m_filterSettings);
 }
 
@@ -434,9 +432,9 @@ inline void FilterSettingsService::SetFilterModeExtraEffects()
   }
 
   const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
+
+  m_extraEffects->SetHypercosOverlayEffect(modeInfo.hypercosWeights.GetRandomWeighted());
   SetRotate(modeInfo.rotateProbability);
-  m_filterSettings.filterEffectsSettings.hypercosOverlay =
-      modeInfo.hypercosWeights.GetRandomWeighted();
 
   if ((m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::WAVE_MODE1))
   {
