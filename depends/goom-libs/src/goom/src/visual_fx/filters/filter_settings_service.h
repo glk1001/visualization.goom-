@@ -5,6 +5,7 @@
 #include "filter_settings.h"
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <functional>
 #include <map>
@@ -18,12 +19,12 @@ class PluginInfo;
 
 namespace UTILS
 {
-class IGoomRand;
 class Parallel;
-} // namespace UTILS
+}
 
 namespace VISUAL_FX::FILTERS
 {
+class ExtraEffects;
 
 enum class ZoomFilterMode
 {
@@ -57,12 +58,11 @@ public:
       const std::string& resourcesDirectory)>;
   // TODO - Visual Studio doesn't like a trailing return type in above function definition.
 
-  FilterSettingsService(
-      UTILS::Parallel& parallel,
-      const GOOM::PluginInfo& goomInfo,
-      const UTILS::MATH::IGoomRand& goomRand,
-      const std::string& resourcesDirectory,
-      const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect) noexcept;
+  FilterSettingsService(UTILS::Parallel& parallel,
+                        const GOOM::PluginInfo& goomInfo,
+                        const UTILS::MATH::IGoomRand& goomRand,
+                        const std::string& resourcesDirectory,
+                        const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect);
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
   FilterSettingsService(FilterSettingsService&&) noexcept = delete;
   virtual ~FilterSettingsService() noexcept;
@@ -106,7 +106,6 @@ protected:
   [[nodiscard]] auto GetFilterSettings() -> ZoomFilterSettings&;
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
-  [[nodiscard]] virtual auto MakeRotation() const -> std::shared_ptr<Rotation>;
   virtual void SetDefaultSettings();
   virtual void SetFilterModeExtraEffects();
   virtual void SetWaveModeExtraEffects();
@@ -126,7 +125,6 @@ private:
   const Point2dInt m_screenMidpoint;
   const std::string m_resourcesDirectory;
   const NormalizedCoordsConverter m_normalizedCoordsConverter;
-  class ExtraEffects;
   std::unique_ptr<ExtraEffects> m_extraEffects;
 
   struct ZoomFilterModeInfo

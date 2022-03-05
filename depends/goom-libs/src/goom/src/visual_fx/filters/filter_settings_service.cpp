@@ -1,5 +1,6 @@
 #include "filter_settings_service.h"
 
+#include "extra_effects.h"
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
 #include "filter_settings.h"
@@ -8,7 +9,6 @@
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
-#include "utils/timer.h"
 
 #include <stdexcept>
 
@@ -17,63 +17,12 @@ namespace GOOM::VISUAL_FX::FILTERS
 
 using UTILS::NUM;
 using UTILS::Parallel;
-using UTILS::Timer;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::U_QUARTER;
 using UTILS::MATH::U_THREE_QUARTERS;
 using UTILS::MATH::Weights;
-
-class ExtraEffect
-{
-public:
-  explicit ExtraEffect(const UTILS::MATH::IGoomRand& goomRand,
-                       float probabilityOfEffect,
-                       float probabilityOfRepeatEffect,
-                       uint32_t effectOffTime) noexcept;
-
-  void UpdateTimer();
-  void UpdateEffect();
-  void EffectUpdateActivated();
-  [[nodiscard]] auto IsTurnedOn() const -> bool;
-
-private:
-  const IGoomRand& m_goomRand;
-
-  const float m_probabilityOfEffect;
-  const float m_probabilityOfRepeatEffect;
-  bool m_effectTurnedOn = false;
-  Timer m_effectOffTimer;
-  bool m_effectOffTimerResetPending = false;
-};
-
-class FilterSettingsService::ExtraEffects
-{
-public:
-  explicit ExtraEffects(const UTILS::MATH::IGoomRand& goomRand) noexcept;
-
-  void UpdateTimers();
-  void UpdateEffects();
-  void CopySettingsTo(ZoomFilterSettings& filterSettings) const;
-  void EffectsUpdatesActivated();
-
-private:
-  static constexpr uint32_t BLOCKY_WAVY_EFFECT_OFF_TIME = 100;
-  ExtraEffect m_blockyWavyEffect;
-
-  static constexpr uint32_t IMAGE_VELOCITY_EFFECT_OFF_TIME = 100;
-  ExtraEffect m_imageVelocityEffect;
-
-  static constexpr uint32_t NOISE_EFFECT_OFF_TIME = 100;
-  ExtraEffect m_noiseEffect;
-
-  static constexpr uint32_t PLANE_EFFECT_OFF_TIME = 100;
-  ExtraEffect m_planeEffect;
-
-  static constexpr uint32_t TAN_EFFECT_OFF_TIME = 100;
-  ExtraEffect m_tanEffect;
-};
 
 template<class E, size_t N>
 inline auto ToMap(const std::array<std::pair<E, float>, N>& stdArray) -> std::map<E, float>
@@ -86,15 +35,9 @@ inline auto ToMap(const std::array<std::pair<E, float>, N>& stdArray) -> std::ma
   return map;
 }
 
-
 // For debugging:
 static constexpr bool NO_EXTRA_EFFECTS = false;
 static constexpr bool USE_FORCED_FILTER_MODE = false;
-
-static constexpr bool DEFAULT_IMAGE_VELOCITY_EFFECT = true;
-static constexpr bool DEFAULT_TAN_EFFECT = false;
-static constexpr bool DEFAULT_PLANE_EFFECT = false;
-static constexpr bool DEFAULT_NOISE_EFFECT = false;
 
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
@@ -127,17 +70,6 @@ static constexpr float PROB_CRYSTAL_BALL_IN_MIDDLE = 0.8F;
 static constexpr float PROB_WAVE_IN_MIDDLE         = 0.5F;
 static constexpr float PROB_CHANGE_SPEED           = 0.5F;
 static constexpr float PROB_REVERSE_SPEED          = 0.5F;
-
-static constexpr float PROB_BLOCKY_WAVY_EFFECT           = 0.3F;
-static constexpr float PROB_REPEAT_BLOCKY_WAVY_EFFECT    = 0.9F;
-static constexpr float PROB_IMAGE_VELOCITY_EFFECT        = 0.1F;
-static constexpr float PROB_REPEAT_IMAGE_VELOCITY_EFFECT = 0.9F;
-static constexpr float PROB_NOISE_EFFECT                 = 0.1F;
-static constexpr float PROB_REPEAT_NOISE_EFFECT          = 0.0F;
-static constexpr float PROB_PLANE_EFFECT                 = 0.8F;
-static constexpr float PROB_REPEAT_PLANE_EFFECT          = 0.3F;
-static constexpr float PROB_TAN_EFFECT                   = 0.2F;
-static constexpr float PROB_REPEAT_TAN_EFFECT            = 0.1F;
 
 static constexpr float AMULET_MODE_WEIGHT             = 10.0F;
 static constexpr float CRYSTAL_BALL_MODE0_WEIGHT      =  4.0F;
@@ -322,7 +254,7 @@ FilterSettingsService::FilterSettingsService(Parallel& parallel,
                                              const IGoomRand& goomRand,
                                              const std::string& resourcesDirectory,
                                              const CreateSpeedCoefficientsEffectFunc&
-                                                 createSpeedCoefficientsEffect) noexcept
+                                                 createSpeedCoefficientsEffect)
   : m_parallel{parallel},
     m_goomInfo{goomInfo},
     m_goomRand{goomRand},
@@ -446,11 +378,6 @@ inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
   return m_filterModeData.at(m_filterMode).speedCoefficientsEffect;
 }
 
-inline auto FilterSettingsService::MakeRotation() const -> std::shared_ptr<Rotation>
-{
-  return std::make_shared<Rotation>(m_goomRand);
-}
-
 void FilterSettingsService::NewCycle()
 {
   m_extraEffects->UpdateTimers();
@@ -462,6 +389,8 @@ void FilterSettingsService::SetRandomSettingsForNewFilterMode()
   SetRandomExtraEffects();
   SetRandomZoomMidpoint();
   SetFilterModeExtraEffects();
+
+  m_extraEffects->UpdateFilterSettings(m_filterSettings);
 }
 
 void FilterSettingsService::SetDefaultSettings()
@@ -473,13 +402,8 @@ void FilterSettingsService::SetDefaultSettings()
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
   m_filterSettings.filterEffectsSettings.hypercosOverlay = HypercosOverlay::NONE;
-  m_filterSettings.filterEffectsSettings.imageVelocityEffect = DEFAULT_IMAGE_VELOCITY_EFFECT;
-  m_filterSettings.filterEffectsSettings.tanEffect = DEFAULT_TAN_EFFECT;
-  m_filterSettings.filterEffectsSettings.planeEffect = DEFAULT_PLANE_EFFECT;
-  m_filterSettings.filterEffectsSettings.noiseEffect = DEFAULT_NOISE_EFFECT;
-  m_filterSettings.filterEffectsSettings.rotation = MakeRotation();
 
-  m_filterSettings.filterColorSettings.blockyWavy = false;
+  m_extraEffects->SetFilterSettingsDefaults(m_filterSettings);
 }
 
 void FilterSettingsService::SetRandomExtraEffects()
@@ -492,12 +416,12 @@ void FilterSettingsService::SetRandomExtraEffects()
   m_filterEffectsSettingsHaveChanged = true;
 
   m_extraEffects->UpdateEffects();
-  m_extraEffects->CopySettingsTo(m_filterSettings);
 }
 
 void FilterSettingsService::NotifyUpdatedFilterEffectsSettings()
 {
   m_filterEffectsSettingsHaveChanged = false;
+
   m_filterModeAtLastUpdate = m_filterMode;
   m_extraEffects->EffectsUpdatesActivated();
 }
@@ -522,7 +446,7 @@ inline void FilterSettingsService::SetFilterModeExtraEffects()
 
 void FilterSettingsService::SetWaveModeExtraEffects()
 {
-  m_filterSettings.filterEffectsSettings.planeEffect = true;
+  m_extraEffects->TurnPlaneEffectOn();
 
   m_filterSettings.filterEffectsSettings.vitesse.SetReverseVitesse(
       m_goomRand.ProbabilityOf(PROB_REVERSE_SPEED));
@@ -622,111 +546,6 @@ void FilterSettingsService::SetAnyRandomZoomMidpoint()
     default:
       throw std::logic_error("Unknown ZoomMidpointEvents enum.");
   }
-}
-
-inline FilterSettingsService::ExtraEffects::ExtraEffects(const IGoomRand& goomRand) noexcept
-  : m_blockyWavyEffect{goomRand, PROB_BLOCKY_WAVY_EFFECT, PROB_REPEAT_BLOCKY_WAVY_EFFECT,
-                       BLOCKY_WAVY_EFFECT_OFF_TIME},
-    m_imageVelocityEffect{goomRand, PROB_IMAGE_VELOCITY_EFFECT, PROB_REPEAT_IMAGE_VELOCITY_EFFECT,
-                          IMAGE_VELOCITY_EFFECT_OFF_TIME},
-    m_noiseEffect{goomRand, PROB_NOISE_EFFECT, PROB_REPEAT_NOISE_EFFECT, NOISE_EFFECT_OFF_TIME},
-    m_planeEffect{goomRand, PROB_PLANE_EFFECT, PROB_REPEAT_PLANE_EFFECT, PLANE_EFFECT_OFF_TIME},
-    m_tanEffect{goomRand, PROB_TAN_EFFECT, PROB_REPEAT_TAN_EFFECT, TAN_EFFECT_OFF_TIME}
-{
-}
-
-inline void FilterSettingsService::ExtraEffects::UpdateTimers()
-{
-  m_blockyWavyEffect.UpdateTimer();
-  m_imageVelocityEffect.UpdateTimer();
-  m_noiseEffect.UpdateTimer();
-  m_planeEffect.UpdateTimer();
-  m_tanEffect.UpdateTimer();
-}
-
-inline void FilterSettingsService::ExtraEffects::UpdateEffects()
-{
-  m_blockyWavyEffect.UpdateEffect();
-  m_imageVelocityEffect.UpdateEffect();
-  m_noiseEffect.UpdateEffect();
-  m_planeEffect.UpdateEffect();
-  m_tanEffect.UpdateEffect();
-}
-
-inline void FilterSettingsService::ExtraEffects::CopySettingsTo(
-    ZoomFilterSettings& filterSettings) const
-{
-  filterSettings.filterColorSettings.blockyWavy = m_blockyWavyEffect.IsTurnedOn();
-  filterSettings.filterEffectsSettings.imageVelocityEffect = m_imageVelocityEffect.IsTurnedOn();
-  filterSettings.filterEffectsSettings.noiseEffect = m_noiseEffect.IsTurnedOn();
-  filterSettings.filterEffectsSettings.planeEffect = m_planeEffect.IsTurnedOn();
-  filterSettings.filterEffectsSettings.tanEffect = m_tanEffect.IsTurnedOn();
-}
-
-inline void FilterSettingsService::ExtraEffects::EffectsUpdatesActivated()
-{
-  m_blockyWavyEffect.EffectUpdateActivated();
-  m_imageVelocityEffect.EffectUpdateActivated();
-  m_noiseEffect.EffectUpdateActivated();
-  m_planeEffect.EffectUpdateActivated();
-  m_tanEffect.EffectUpdateActivated();
-}
-
-inline ExtraEffect::ExtraEffect(const UTILS::MATH::IGoomRand& goomRand,
-                                const float probabilityOfEffect,
-                                const float probabilityOfRepeatEffect,
-                                const uint32_t effectOffTime) noexcept
-  : m_goomRand{goomRand},
-    m_probabilityOfEffect{probabilityOfEffect},
-    m_probabilityOfRepeatEffect{probabilityOfRepeatEffect},
-    m_effectOffTimer{effectOffTime, true}
-{
-}
-
-inline void ExtraEffect::UpdateTimer()
-{
-  m_effectOffTimer.Increment();
-}
-
-inline void ExtraEffect::UpdateEffect()
-{
-  if (!m_effectOffTimer.Finished())
-  {
-    return;
-  }
-  if (m_effectOffTimerResetPending)
-  {
-    return;
-  }
-
-  const bool previouslyTurnedOn = m_effectTurnedOn;
-  m_effectTurnedOn = m_goomRand.ProbabilityOf(m_probabilityOfEffect);
-
-  if (previouslyTurnedOn && m_effectTurnedOn)
-  {
-    m_effectTurnedOn = m_goomRand.ProbabilityOf(m_probabilityOfRepeatEffect);
-  }
-  if (previouslyTurnedOn && (!m_effectTurnedOn))
-  {
-    m_effectOffTimerResetPending = true;
-  }
-}
-
-inline void ExtraEffect::EffectUpdateActivated()
-{
-  if (!m_effectOffTimerResetPending)
-  {
-    return;
-  }
-
-  // Wait a while before allowing effect back on.
-  m_effectOffTimer.ResetToZero();
-  m_effectOffTimerResetPending = false;
-}
-
-inline auto ExtraEffect::IsTurnedOn() const -> bool
-{
-  return m_effectTurnedOn;
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS
