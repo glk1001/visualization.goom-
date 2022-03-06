@@ -20,7 +20,7 @@
 #include "control/goom_message_displayer.h"
 #include "control/goom_music_settings_reactor.h"
 #include "control/goom_random_state_handler.h"
-#include "control/goom_state_strings.h"
+#include "control/goom_state_monitor.h"
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
 #include "goom/compiler_versions.h"
@@ -47,13 +47,13 @@
 namespace GOOM
 {
 
-using CONTROL::GetGoomStateStrings;
 using CONTROL::GoomAllVisualFx;
 using CONTROL::GoomEvents;
 using CONTROL::GoomImageBuffers;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
+using CONTROL::GoomStateMonitor;
 using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToBuffer;
 using UTILS::Logging;
@@ -102,6 +102,7 @@ private:
   GoomRandomStateHandler m_stateHandler;
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
   GoomMusicSettingsReactor m_musicSettingsReactor;
+  const GoomStateMonitor m_goomStateMonitor;
 
   void ProcessAudio(const AudioSamples& soundData);
 
@@ -226,6 +227,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_stateHandler{m_goomRand},
     m_musicSettingsReactor{m_goomInfo, m_goomRand, m_visualFx, m_goomEvents,
                            m_filterSettingsService},
+    m_goomStateMonitor{m_visualFx, m_musicSettingsReactor, m_filterSettingsService},
     m_goomTextOutput{screenWidth, screenHeight},
     m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory()},
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile()}
@@ -509,8 +511,7 @@ inline void GoomControl::GoomControlImpl::DisplayGoomState()
     return;
   }
 
-  const std::string message = GetGoomStateStrings(m_visualFx, m_musicSettingsReactor,
-                                                  m_filterSettingsService, GetLastShaderEffects());
+  const std::string message = m_goomStateMonitor.GetCurrentState();
 
   UpdateMessages(message);
 }

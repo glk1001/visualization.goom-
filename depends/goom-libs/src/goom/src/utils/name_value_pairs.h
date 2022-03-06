@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -82,6 +83,12 @@ template<>
 inline auto to_string(const std::string& value) -> std::string
 {
   return value;
+}
+
+template<>
+inline auto to_string(const std::string_view& value) -> std::string
+{
+  return std::string(value);
 }
 
 template<>
