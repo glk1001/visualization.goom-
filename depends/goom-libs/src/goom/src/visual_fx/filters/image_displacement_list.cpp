@@ -73,8 +73,9 @@ auto ImageDisplacementList::GetNameValueParams(const std::string& paramGroup) co
       GetPair(paramGroup, "filename", IMAGE_FILENAMES[m_currentImageDisplacementIndex]),
       GetPair(paramGroup, "zoom factor", GetCurrentImageDisplacement().GetZoomFactor()),
       GetPair(paramGroup, "amplitude", GetCurrentImageDisplacement().GetAmplitude()),
-      GetPair(paramGroup, "x cutoff", GetCurrentImageDisplacement().GetXColorCutoff()),
-      GetPair(paramGroup, "y cutoff", GetCurrentImageDisplacement().GetYColorCutoff()),
+      GetPair(paramGroup, "cutoff",
+              Point2dFlt{GetCurrentImageDisplacement().GetXColorCutoff(),
+                         GetCurrentImageDisplacement().GetYColorCutoff()}),
   };
 }
 

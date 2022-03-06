@@ -1,9 +1,11 @@
 #pragma once
 
 #include "goom_graphic.h"
+#include "point2d.h"
 #include "strutils.h"
 
 #include <algorithm>
+#include <format>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -101,6 +103,18 @@ template<>
 inline auto to_string(const Pixel& value) -> std::string
 {
   return value.ToString();
+}
+
+template<>
+inline auto to_string(const Point2dInt& value) -> std::string
+{
+  return std20::format("({}, {})", value.x, value.y);
+}
+
+template<>
+inline auto to_string(const Point2dFlt& value) -> std::string
+{
+  return std20::format("({}, {})", value.x, value.y);
 }
 
 } // namespace GOOM::UTILS

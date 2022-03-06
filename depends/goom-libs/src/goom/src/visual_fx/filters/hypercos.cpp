@@ -229,10 +229,8 @@ auto Hypercos::GetNameValueParams(const std::string& paramGroup) const -> NameVa
       GetPair(fullParamGroup, "overlay", static_cast<uint32_t>(m_params.overlay)),
       GetPair(fullParamGroup, "effect", static_cast<uint32_t>(m_params.effect)),
       GetPair(fullParamGroup, "reverse", m_params.reverse),
-      GetPair(fullParamGroup, "xFreq", m_params.xFreq),
-      GetPair(fullParamGroup, "yFreq", m_params.yFreq),
-      GetPair(fullParamGroup, "xAmplitude", m_params.xAmplitude),
-      GetPair(fullParamGroup, "yAmplitude", m_params.yAmplitude),
+      GetPair(fullParamGroup, "Freq", Point2dFlt{m_params.xFreq, m_params.yFreq}),
+      GetPair(fullParamGroup, "Amplitude", Point2dFlt{m_params.xAmplitude, m_params.yAmplitude}),
   };
 }
 

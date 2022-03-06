@@ -73,8 +73,7 @@ auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameV
   return {
       GetPair(fullParamGroup, "tan type", EnumToString(m_params.tanType)),
       GetPair(fullParamGroup, "cot mix", m_params.cotMix),
-      GetPair(fullParamGroup, "x amplitude", m_params.xAmplitude),
-      GetPair(fullParamGroup, "y amplitude", m_params.yAmplitude),
+      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.xAmplitude, m_params.yAmplitude}),
       GetPair(fullParamGroup, "limiting factor", m_params.limitingFactor),
   };
 }

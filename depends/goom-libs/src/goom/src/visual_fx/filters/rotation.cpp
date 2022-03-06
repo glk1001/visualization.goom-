@@ -59,8 +59,7 @@ auto Rotation::GetNameValueParams(const std::string& paramGroup) const -> NameVa
 
   const std::string fullParamGroup = GetFullParamGroup({paramGroup, "rotate"});
   return {
-      GetPair(fullParamGroup, "x speed", m_params.xRotateSpeed),
-      GetPair(fullParamGroup, "y speed", m_params.yRotateSpeed),
+      GetPair(fullParamGroup, "speed", Point2dFlt{m_params.xRotateSpeed, m_params.yRotateSpeed}),
       GetPair(fullParamGroup, "sinAngle", m_params.sinAngle),
       GetPair(fullParamGroup, "cosAngle", m_params.cosAngle),
   };

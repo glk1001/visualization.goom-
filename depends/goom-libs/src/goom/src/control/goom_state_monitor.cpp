@@ -80,8 +80,9 @@ inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> UTILS::
   const ZoomFilterEffectsSettings& filterEffectsSettings =
       m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
   return {
-      GetPair(PARAM_GROUP, "MiddleX", filterEffectsSettings.zoomMidpoint.x),
-      GetPair(PARAM_GROUP, "MiddleY", filterEffectsSettings.zoomMidpoint.y),
+      GetPair(
+          PARAM_GROUP, "Middle",
+          Point2dInt{filterEffectsSettings.zoomMidpoint.x, filterEffectsSettings.zoomMidpoint.y}),
   };
 }
 

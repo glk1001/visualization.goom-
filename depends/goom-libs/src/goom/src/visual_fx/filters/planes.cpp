@@ -359,14 +359,14 @@ auto Planes::GetNameValueParams(const std::string& paramGroup) const -> NameValu
 {
   const std::string fullParamGroup = GetFullParamGroup({paramGroup, "planes"});
   return {
-      GetPair(fullParamGroup, "planeEffects.amplitudes.x", m_params.planeEffects.amplitudes.x),
-      GetPair(fullParamGroup, "planeEffects.amplitudes.y", m_params.planeEffects.amplitudes.y),
+      GetPair(fullParamGroup, "planeEffects.amplitudes",
+              Point2dFlt{m_params.planeEffects.amplitudes.x, m_params.planeEffects.amplitudes.y}),
       GetPair(fullParamGroup, "swirlEffects.swirlType",
               static_cast<int32_t>(m_params.swirlEffects.swirlType)),
-      GetPair(fullParamGroup, "swirlEffects.frequencies.x", m_params.swirlEffects.frequencies.x),
-      GetPair(fullParamGroup, "swirlEffects.frequencies.y", m_params.swirlEffects.frequencies.y),
-      GetPair(fullParamGroup, "swirlEffects.amplitudes.x", m_params.swirlEffects.amplitudes.x),
-      GetPair(fullParamGroup, "swirlEffects.amplitudes.y", m_params.swirlEffects.amplitudes.y),
+      GetPair(fullParamGroup, "swirlEffects.frequencies",
+              Point2dFlt{m_params.swirlEffects.frequencies.x, m_params.swirlEffects.frequencies.y}),
+      GetPair(fullParamGroup, "swirlEffects.amplitudes",
+              Point2dFlt{m_params.swirlEffects.amplitudes.x, m_params.swirlEffects.amplitudes.y}),
   };
 }
 
