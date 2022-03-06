@@ -1,10 +1,7 @@
 #include "filter_settings_service.h"
 
 #include "extra_effects.h"
-#include "filter_buffers_service.h"
-#include "filter_colors_service.h"
 #include "filter_settings.h"
-#include "filter_zoom_vector.h"
 #include "goom_plugin_info.h"
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
@@ -16,7 +13,6 @@ namespace GOOM::VISUAL_FX::FILTERS
 {
 
 using UTILS::NUM;
-using UTILS::Parallel;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;
@@ -36,7 +32,6 @@ inline auto ToMap(const std::array<std::pair<E, float>, N>& stdArray) -> std::ma
 }
 
 // For debugging:
-static constexpr bool NO_EXTRA_EFFECTS = false;
 static constexpr bool USE_FORCED_FILTER_MODE = false;
 
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
@@ -249,21 +244,16 @@ auto FilterSettingsService::GetFilterModeData(
   return filterMap;
 }
 
-FilterSettingsService::FilterSettingsService(Parallel& parallel,
-                                             const PluginInfo& goomInfo,
+FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                              const IGoomRand& goomRand,
                                              const std::string& resourcesDirectory,
                                              const CreateSpeedCoefficientsEffectFunc&
                                                  createSpeedCoefficientsEffect)
-  : m_parallel{parallel},
-    m_goomInfo{goomInfo},
+  : m_goomInfo{goomInfo},
     m_goomRand{goomRand},
     m_screenMidpoint{U_HALF * m_goomInfo.GetScreenInfo().width,
                      U_HALF * m_goomInfo.GetScreenInfo().height},
     m_resourcesDirectory{resourcesDirectory},
-    m_normalizedCoordsConverter{m_goomInfo.GetScreenInfo().width,
-                                m_goomInfo.GetScreenInfo().height,
-                                ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL},
     m_extraEffects{std::make_unique<ExtraEffects>(m_goomRand)},
     m_filterModeData{GetFilterModeData(m_goomRand,
                                        m_resourcesDirectory,
@@ -335,19 +325,6 @@ FilterSettingsService::FilterSettingsService(Parallel& parallel,
 
 FilterSettingsService::~FilterSettingsService() noexcept = default;
 
-auto FilterSettingsService::GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>
-{
-  return std::make_unique<FilterBuffersService>(
-      m_parallel, m_goomInfo, m_normalizedCoordsConverter,
-      std::make_unique<FilterZoomVector>(m_goomInfo.GetScreenInfo().width, m_resourcesDirectory,
-                                         m_goomRand, m_normalizedCoordsConverter));
-}
-
-auto FilterSettingsService::GetFilterColorsService() const -> std::unique_ptr<FilterColorsService>
-{
-  return std::make_unique<FilterColorsService>();
-}
-
 auto FilterSettingsService::GetCurrentFilterMode() const -> const std::string&
 {
   return m_filterModeData.at(m_filterMode).name;
@@ -383,39 +360,6 @@ void FilterSettingsService::NewCycle()
   m_extraEffects->UpdateTimers();
 }
 
-void FilterSettingsService::SetRandomSettingsForNewFilterMode()
-{
-  SetDefaultSettings();
-  SetRandomExtraEffects();
-  SetRandomZoomMidpoint();
-  SetFilterModeExtraEffects();
-
-  m_extraEffects->UpdateFilterSettings(m_filterSettings);
-}
-
-void FilterSettingsService::SetDefaultSettings()
-{
-  m_filterSettings.filterEffectsSettings.speedCoefficientsEffect = GetSpeedCoefficientsEffect();
-
-  m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
-
-  m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
-
-  m_extraEffects->SetFilterSettingsDefaults(m_filterSettings);
-}
-
-void FilterSettingsService::SetRandomExtraEffects()
-{
-  if constexpr (NO_EXTRA_EFFECTS)
-  {
-    return;
-  }
-
-  m_filterEffectsSettingsHaveChanged = true;
-
-  m_extraEffects->UpdateEffects();
-}
-
 void FilterSettingsService::NotifyUpdatedFilterEffectsSettings()
 {
   m_filterEffectsSettingsHaveChanged = false;
@@ -424,17 +368,47 @@ void FilterSettingsService::NotifyUpdatedFilterEffectsSettings()
   m_extraEffects->EffectsUpdatesActivated();
 }
 
+void FilterSettingsService::SetRandomExtraEffects()
+{
+  SetExtraEffects();
+  m_filterEffectsSettingsHaveChanged = true;
+}
+
+void FilterSettingsService::SetRandomSettingsForNewFilterMode()
+{
+  SetDefaultSettings();
+  SetExtraEffects();
+  SetRandomZoomMidpoint();
+  SetFilterModeExtraEffects();
+  UpdateFilterSettings();
+}
+
+inline void FilterSettingsService::UpdateFilterSettings()
+{
+  m_filterEffectsSettingsHaveChanged = true;
+  m_extraEffects->UpdateFilterSettings(m_filterSettings);
+}
+
+void FilterSettingsService::SetDefaultSettings()
+{
+  m_filterSettings.filterEffectsSettings.speedCoefficientsEffect = GetSpeedCoefficientsEffect();
+  m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
+  m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
+
+  m_extraEffects->SetDefaults();
+}
+
+inline void FilterSettingsService::SetExtraEffects()
+{
+  m_extraEffects->UpdateEffects();
+}
+
 inline void FilterSettingsService::SetFilterModeExtraEffects()
 {
-  if constexpr (NO_EXTRA_EFFECTS)
-  {
-    return;
-  }
-
   const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
 
   m_extraEffects->SetHypercosOverlayEffect(modeInfo.hypercosWeights.GetRandomWeighted());
-  SetRotate(modeInfo.rotateProbability);
+  m_extraEffects->SetRotate(modeInfo.rotateProbability);
 
   if ((m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::WAVE_MODE1))
   {
@@ -455,19 +429,6 @@ void FilterSettingsService::SetWaveModeExtraEffects()
         I_HALF *
         (m_filterSettings.filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE));
   }
-}
-
-inline void FilterSettingsService::SetRotate(const float rotateProbability)
-{
-  if (!m_goomRand.ProbabilityOf(rotateProbability))
-  {
-    return;
-  }
-
-  m_filterEffectsSettingsHaveChanged = true;
-
-  m_filterSettings.filterEffectsSettings.rotation->SetRandomParams();
-  m_filterSettings.filterEffectsSettings.rotation->Multiply(rotateProbability);
 }
 
 void FilterSettingsService::SetMaxSpeedCoeff()

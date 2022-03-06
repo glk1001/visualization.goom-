@@ -1,7 +1,5 @@
 #pragma once
 
-#include "filter_buffers_service.h"
-#include "filter_colors_service.h"
 #include "filter_settings.h"
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
@@ -16,11 +14,6 @@ namespace GOOM
 {
 class Pixel;
 class PluginInfo;
-
-namespace UTILS
-{
-class Parallel;
-}
 
 namespace VISUAL_FX::FILTERS
 {
@@ -58,8 +51,7 @@ public:
       const std::string& resourcesDirectory)>;
   // TODO - Visual Studio doesn't like a trailing return type in above function definition.
 
-  FilterSettingsService(UTILS::Parallel& parallel,
-                        const GOOM::PluginInfo& goomInfo,
+  FilterSettingsService(const GOOM::PluginInfo& goomInfo,
                         const UTILS::MATH::IGoomRand& goomRand,
                         const std::string& resourcesDirectory,
                         const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect);
@@ -68,9 +60,6 @@ public:
   virtual ~FilterSettingsService() noexcept;
   auto operator=(const FilterSettingsService&) -> FilterSettingsService& = delete;
   auto operator=(FilterSettingsService&&) -> FilterSettingsService& = delete;
-
-  [[nodiscard]] auto GetFilterBuffersService() -> std::unique_ptr<FilterBuffersService>;
-  [[nodiscard]] auto GetFilterColorsService() const -> std::unique_ptr<FilterColorsService>;
 
   void Start();
   void NewCycle();
@@ -107,10 +96,10 @@ protected:
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
   virtual void SetDefaultSettings();
+  virtual void SetExtraEffects();
   virtual void SetFilterModeExtraEffects();
   virtual void SetWaveModeExtraEffects();
   virtual void SetRandomZoomMidpoint();
-  virtual void SetRotate(float rotateProbability);
 
 private:
   ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
@@ -118,13 +107,12 @@ private:
   ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
 
   void SetRandomSettingsForNewFilterMode();
+  void UpdateFilterSettings();
 
-  UTILS::Parallel& m_parallel;
   const PluginInfo& m_goomInfo;
   const UTILS::MATH::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
   const std::string m_resourcesDirectory;
-  const NormalizedCoordsConverter m_normalizedCoordsConverter;
   std::unique_ptr<ExtraEffects> m_extraEffects;
 
   struct ZoomFilterModeInfo

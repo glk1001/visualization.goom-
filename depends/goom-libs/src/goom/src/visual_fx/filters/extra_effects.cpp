@@ -3,113 +3,196 @@
 #include "filter_settings.h"
 #include "rotation.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/timer.h"
 
 #include <memory>
 
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
+using UTILS::Timer;
 using UTILS::MATH::IGoomRand;
 
+static constexpr bool NO_EXTRA_EFFECTS = false;
+
 static constexpr HypercosOverlay DEFAULT_HYPERCOS_OVERLAY = HypercosOverlay::NONE;
-static constexpr bool DEFAULT_IMAGE_VELOCITY_EFFECT = false;
-static constexpr bool DEFAULT_TAN_EFFECT = false;
-static constexpr bool DEFAULT_PLANE_EFFECT = false;
-static constexpr bool DEFAULT_NOISE_EFFECT = false;
 static constexpr bool DEFAULT_BLOCKY_WAVY_NOISE_EFFECT = false;
+static constexpr bool DEFAULT_IMAGE_VELOCITY_EFFECT = false;
+static constexpr bool DEFAULT_NOISE_EFFECT = false;
+static constexpr bool DEFAULT_PLANE_EFFECT = false;
+static constexpr bool DEFAULT_TAN_EFFECT = false;
+
+class ExtraEffects::ExtraEffect
+{
+public:
+  ExtraEffect(const IGoomRand& goomRand,
+              bool defaultValue,
+              float probabilityOfEffect,
+              float probabilityOfRepeatEffect,
+              uint32_t effectOffTime) noexcept;
+
+  void UpdateTimer();
+  void UpdateEffect();
+  void SetEffect(bool value);
+  void EffectUpdateActivated();
+
+  [[nodiscard]] auto IsTurnedOn() const -> bool;
+
+private:
+  const IGoomRand& m_goomRand;
+  const float m_probabilityOfEffect;
+  const float m_probabilityOfRepeatEffect;
+  bool m_effectTurnedOn;
+  Timer m_effectOffTimer;
+  bool m_effectOffTimerResetPending = false;
+};
 
 ExtraEffects::ExtraEffects(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_hypercosOverlayEffect{DEFAULT_HYPERCOS_OVERLAY},
-    m_blockyWavyEffect{goomRand, PROB_BLOCKY_WAVY_EFFECT, PROB_REPEAT_BLOCKY_WAVY_EFFECT,
-                       BLOCKY_WAVY_EFFECT_OFF_TIME},
-    m_imageVelocityEffect{goomRand, PROB_IMAGE_VELOCITY_EFFECT, PROB_REPEAT_IMAGE_VELOCITY_EFFECT,
-                          IMAGE_VELOCITY_EFFECT_OFF_TIME},
-    m_noiseEffect{goomRand, PROB_NOISE_EFFECT, PROB_REPEAT_NOISE_EFFECT, NOISE_EFFECT_OFF_TIME},
-    m_planeEffect{goomRand, PROB_PLANE_EFFECT, PROB_REPEAT_PLANE_EFFECT, PLANE_EFFECT_OFF_TIME},
-    m_tanEffect{goomRand, PROB_TAN_EFFECT, PROB_REPEAT_TAN_EFFECT, TAN_EFFECT_OFF_TIME}
+    m_rotation{std::make_shared<Rotation>(m_goomRand)},
+    m_blockyWavyEffect{std::make_unique<ExtraEffect>(goomRand,
+                                                     DEFAULT_BLOCKY_WAVY_NOISE_EFFECT,
+                                                     PROB_BLOCKY_WAVY_EFFECT,
+                                                     PROB_REPEAT_BLOCKY_WAVY_EFFECT,
+                                                     BLOCKY_WAVY_EFFECT_OFF_TIME)},
+    m_imageVelocityEffect{std::make_unique<ExtraEffect>(goomRand,
+                                                        DEFAULT_IMAGE_VELOCITY_EFFECT,
+                                                        PROB_IMAGE_VELOCITY_EFFECT,
+                                                        PROB_REPEAT_IMAGE_VELOCITY_EFFECT,
+                                                        IMAGE_VELOCITY_EFFECT_OFF_TIME)},
+    m_noiseEffect{std::make_unique<ExtraEffect>(goomRand,
+                                                DEFAULT_NOISE_EFFECT,
+                                                PROB_NOISE_EFFECT,
+                                                PROB_REPEAT_NOISE_EFFECT,
+                                                NOISE_EFFECT_OFF_TIME)},
+    m_planeEffect{std::make_unique<ExtraEffect>(goomRand,
+                                                DEFAULT_PLANE_EFFECT,
+                                                PROB_PLANE_EFFECT,
+                                                PROB_REPEAT_PLANE_EFFECT,
+                                                PLANE_EFFECT_OFF_TIME)},
+    m_tanEffect{std::make_unique<ExtraEffect>(
+        goomRand, DEFAULT_TAN_EFFECT, PROB_TAN_EFFECT, PROB_REPEAT_TAN_EFFECT, TAN_EFFECT_OFF_TIME)}
 {
 }
 
-void ExtraEffects::SetHypercosOverlayEffect(HypercosOverlay value)
-{
-  m_hypercosOverlayEffect = value;
-}
-
-void ExtraEffects::TurnPlaneEffectOn()
-{
-  m_planeEffect.SetEffect(true);
-}
-
-void ExtraEffects::SetFilterSettingsDefaults(ZoomFilterSettings& filterSettings)
-{
-  m_hypercosOverlayEffect = DEFAULT_HYPERCOS_OVERLAY;
-  filterSettings.filterEffectsSettings.hypercosOverlay = DEFAULT_HYPERCOS_OVERLAY;
-
-  filterSettings.filterEffectsSettings.imageVelocityEffect = DEFAULT_IMAGE_VELOCITY_EFFECT;
-  filterSettings.filterEffectsSettings.tanEffect = DEFAULT_TAN_EFFECT;
-  filterSettings.filterEffectsSettings.planeEffect = DEFAULT_PLANE_EFFECT;
-  filterSettings.filterEffectsSettings.noiseEffect = DEFAULT_NOISE_EFFECT;
-  filterSettings.filterColorSettings.blockyWavy = DEFAULT_BLOCKY_WAVY_NOISE_EFFECT;
-
-  filterSettings.filterEffectsSettings.rotation = std::make_shared<Rotation>(m_goomRand);
-}
+ExtraEffects::~ExtraEffects() noexcept = default;
 
 void ExtraEffects::UpdateFilterSettings(ZoomFilterSettings& filterSettings) const
 {
   filterSettings.filterEffectsSettings.hypercosOverlay = m_hypercosOverlayEffect;
 
-  filterSettings.filterColorSettings.blockyWavy = m_blockyWavyEffect.IsTurnedOn();
-  filterSettings.filterEffectsSettings.imageVelocityEffect = m_imageVelocityEffect.IsTurnedOn();
-  filterSettings.filterEffectsSettings.noiseEffect = m_noiseEffect.IsTurnedOn();
-  filterSettings.filterEffectsSettings.planeEffect = m_planeEffect.IsTurnedOn();
-  filterSettings.filterEffectsSettings.tanEffect = m_tanEffect.IsTurnedOn();
+  filterSettings.filterColorSettings.blockyWavy = m_blockyWavyEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.imageVelocityEffect = m_imageVelocityEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.noiseEffect = m_noiseEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.planeEffect = m_planeEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.tanEffect = m_tanEffect->IsTurnedOn();
+
+  filterSettings.filterEffectsSettings.rotation = m_rotation;
+}
+
+void ExtraEffects::SetHypercosOverlayEffect(const HypercosOverlay value)
+{
+  if constexpr (NO_EXTRA_EFFECTS)
+  {
+    return;
+  }
+
+  m_hypercosOverlayEffect = value;
+}
+
+void ExtraEffects::SetRotate(const float rotateProbability)
+{
+  if constexpr (NO_EXTRA_EFFECTS)
+  {
+    return;
+  }
+  if (!m_goomRand.ProbabilityOf(rotateProbability))
+  {
+    return;
+  }
+
+  m_rotation->SetRandomParams();
+  m_rotation->Multiply(rotateProbability);
+}
+
+void ExtraEffects::TurnPlaneEffectOn()
+{
+  if constexpr (NO_EXTRA_EFFECTS)
+  {
+    return;
+  }
+
+  m_planeEffect->SetEffect(true);
+}
+
+void ExtraEffects::SetDefaults()
+{
+  m_hypercosOverlayEffect = DEFAULT_HYPERCOS_OVERLAY;
+  m_rotation = std::make_shared<Rotation>(m_goomRand);
 }
 
 void ExtraEffects::UpdateTimers()
 {
-  m_blockyWavyEffect.UpdateTimer();
-  m_imageVelocityEffect.UpdateTimer();
-  m_noiseEffect.UpdateTimer();
-  m_planeEffect.UpdateTimer();
-  m_tanEffect.UpdateTimer();
+  if constexpr (NO_EXTRA_EFFECTS)
+  {
+    return;
+  }
+
+  m_blockyWavyEffect->UpdateTimer();
+  m_imageVelocityEffect->UpdateTimer();
+  m_noiseEffect->UpdateTimer();
+  m_planeEffect->UpdateTimer();
+  m_tanEffect->UpdateTimer();
 }
 
 void ExtraEffects::UpdateEffects()
 {
-  m_blockyWavyEffect.UpdateEffect();
-  m_imageVelocityEffect.UpdateEffect();
-  m_noiseEffect.UpdateEffect();
-  m_planeEffect.UpdateEffect();
-  m_tanEffect.UpdateEffect();
+  if constexpr (NO_EXTRA_EFFECTS)
+  {
+    return;
+  }
+
+  m_blockyWavyEffect->UpdateEffect();
+  m_imageVelocityEffect->UpdateEffect();
+  m_noiseEffect->UpdateEffect();
+  m_planeEffect->UpdateEffect();
+  m_tanEffect->UpdateEffect();
 }
 
 void ExtraEffects::EffectsUpdatesActivated()
 {
-  m_blockyWavyEffect.EffectUpdateActivated();
-  m_imageVelocityEffect.EffectUpdateActivated();
-  m_noiseEffect.EffectUpdateActivated();
-  m_planeEffect.EffectUpdateActivated();
-  m_tanEffect.EffectUpdateActivated();
+  if constexpr (NO_EXTRA_EFFECTS)
+  {
+    return;
+  }
+
+  m_blockyWavyEffect->EffectUpdateActivated();
+  m_imageVelocityEffect->EffectUpdateActivated();
+  m_noiseEffect->EffectUpdateActivated();
+  m_planeEffect->EffectUpdateActivated();
+  m_tanEffect->EffectUpdateActivated();
 }
 
-inline ExtraEffect::ExtraEffect(const UTILS::MATH::IGoomRand& goomRand,
-                                const float probabilityOfEffect,
-                                const float probabilityOfRepeatEffect,
-                                const uint32_t effectOffTime) noexcept
+inline ExtraEffects::ExtraEffect::ExtraEffect(const UTILS::MATH::IGoomRand& goomRand,
+                                              const bool defaultValue,
+                                              const float probabilityOfEffect,
+                                              const float probabilityOfRepeatEffect,
+                                              const uint32_t effectOffTime) noexcept
   : m_goomRand{goomRand},
     m_probabilityOfEffect{probabilityOfEffect},
     m_probabilityOfRepeatEffect{probabilityOfRepeatEffect},
+    m_effectTurnedOn{defaultValue},
     m_effectOffTimer{effectOffTime, true}
 {
 }
 
-inline void ExtraEffect::UpdateTimer()
+inline void ExtraEffects::ExtraEffect::UpdateTimer()
 {
   m_effectOffTimer.Increment();
 }
 
-inline void ExtraEffect::UpdateEffect()
+inline void ExtraEffects::ExtraEffect::UpdateEffect()
 {
   if (!m_effectOffTimer.Finished())
   {
@@ -123,7 +206,7 @@ inline void ExtraEffect::UpdateEffect()
   SetEffect(m_goomRand.ProbabilityOf(m_probabilityOfEffect));
 }
 
-inline void ExtraEffect::SetEffect(const bool value)
+inline void ExtraEffects::ExtraEffect::SetEffect(const bool value)
 {
   const bool previouslyTurnedOn = m_effectTurnedOn;
   m_effectTurnedOn = value;
@@ -138,7 +221,7 @@ inline void ExtraEffect::SetEffect(const bool value)
   }
 }
 
-inline void ExtraEffect::EffectUpdateActivated()
+inline void ExtraEffects::ExtraEffect::EffectUpdateActivated()
 {
   if (!m_effectOffTimerResetPending)
   {
@@ -150,7 +233,7 @@ inline void ExtraEffect::EffectUpdateActivated()
   m_effectOffTimerResetPending = false;
 }
 
-inline auto ExtraEffect::IsTurnedOn() const -> bool
+inline auto ExtraEffects::ExtraEffect::IsTurnedOn() const -> bool
 {
   return m_effectTurnedOn;
 }

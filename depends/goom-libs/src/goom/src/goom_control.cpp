@@ -33,7 +33,12 @@
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
 #include "utils/strutils.h"
+#include "visual_fx/filters/filter_buffers.h"
+#include "visual_fx/filters/filter_buffers_service.h"
+#include "visual_fx/filters/filter_colors_service.h"
 #include "visual_fx/filters/filter_settings_service.h"
+#include "visual_fx/filters/filter_zoom_vector.h"
+#include "visual_fx/filters/normalized_coords.h"
 #include "visual_fx/filters/speed_coefficients_effect_factory.h"
 #include "visual_fx/fx_helper.h"
 
@@ -63,7 +68,12 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
 using VISUAL_FX::FxHelper;
 using VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
+using VISUAL_FX::FILTERS::FilterBuffersService;
+using VISUAL_FX::FILTERS::FilterColorsService;
 using VISUAL_FX::FILTERS::FilterSettingsService;
+using VISUAL_FX::FILTERS::FilterZoomVector;
+using VISUAL_FX::FILTERS::NormalizedCoordsConverter;
+using VISUAL_FX::FILTERS::ZoomFilterBuffers;
 
 class GoomControl::GoomControlImpl
 {
@@ -95,6 +105,7 @@ private:
   GoomDrawToBuffer m_multiBufferDraw;
   GoomImageBuffers m_imageBuffers;
   const std::string m_resourcesDirectory;
+  const NormalizedCoordsConverter m_normalizedCoordsConverter;
   FilterSettingsService m_filterSettingsService;
   const SmallImageBitmaps m_smallBitmaps;
   GoomAllVisualFx m_visualFx;
@@ -210,8 +221,10 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
     m_multiBufferDraw{screenWidth, screenHeight},
     m_imageBuffers{screenWidth, screenHeight},
     m_resourcesDirectory{std::move(resourcesDirectory)},
-    m_filterSettingsService{m_parallel,
-                            m_goomInfo,
+    m_normalizedCoordsConverter{screenWidth,
+                                screenHeight,
+                                ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL},
+    m_filterSettingsService{m_goomInfo,
                             m_goomRand,
                             m_resourcesDirectory,
                             CreateSpeedCoefficientsEffect},
@@ -221,8 +234,15 @@ GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
                m_smallBitmaps,
                m_resourcesDirectory,
                m_stateHandler,
-               m_filterSettingsService.GetFilterBuffersService(),
-               m_filterSettingsService.GetFilterColorsService()},
+               std::make_unique<FilterBuffersService>(
+                  m_parallel,
+                  m_goomInfo,
+                  m_normalizedCoordsConverter,
+                  std::make_unique<FilterZoomVector>(screenWidth,
+                                                     m_resourcesDirectory,
+                                                     m_goomRand,
+                                                     m_normalizedCoordsConverter)),
+               std::make_unique<FilterColorsService>()},
     m_goomEvents{m_goomRand},
     m_stateHandler{m_goomRand},
     m_musicSettingsReactor{m_goomInfo, m_goomRand, m_visualFx, m_goomEvents,
@@ -379,7 +399,7 @@ inline void GoomControl::GoomControlImpl::ApplyZoomEffects()
 inline void GoomControl::GoomControlImpl::UpdateFilterSettings()
 {
   m_visualFx.UpdateFilterSettings(
-      const_cast<const FilterSettingsService&>(m_filterSettingsService).GetFilterSettings(),
+      std::as_const(m_filterSettingsService).GetFilterSettings(),
       m_filterSettingsService.HaveEffectsSettingsChangedSinceLastUpdate());
   m_filterSettingsService.NotifyUpdatedFilterEffectsSettings();
 }
