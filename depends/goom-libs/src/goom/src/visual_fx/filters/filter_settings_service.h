@@ -68,8 +68,10 @@ public:
   [[nodiscard]] auto HaveEffectsSettingsChangedSinceLastUpdate() const -> bool;
   [[nodiscard]] auto HasFilterModeChangedSinceLastUpdate() const -> bool;
 
-  [[nodiscard]] auto GetCurrentFilterMode() const -> const std::string&;
-  [[nodiscard]] auto GetPreviousFilterMode() const -> const std::string&;
+  [[nodiscard]] auto GetCurrentFilterMode() const -> ZoomFilterMode;
+  [[nodiscard]] auto GetCurrentFilterModeName() const -> const std::string&;
+  [[nodiscard]] auto GetPreviousFilterMode() const -> ZoomFilterMode;
+  [[nodiscard]] auto GetPreviousFilterModeName() const -> const std::string&;
 
   [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterSettings&;
   [[nodiscard]] auto GetROVitesse() const -> const Vitesse&;
@@ -169,6 +171,26 @@ private:
 inline auto FilterSettingsService::GetFilterSettings() const -> const ZoomFilterSettings&
 {
   return m_filterSettings;
+}
+
+inline auto FilterSettingsService::GetCurrentFilterMode() const -> ZoomFilterMode
+{
+  return m_filterMode;
+}
+
+inline auto FilterSettingsService::GetCurrentFilterModeName() const -> const std::string&
+{
+  return m_filterModeData.at(m_filterMode).name;
+}
+
+inline auto FilterSettingsService::GetPreviousFilterMode() const -> ZoomFilterMode
+{
+  return m_previousFilterMode;
+}
+
+inline auto FilterSettingsService::GetPreviousFilterModeName() const -> const std::string&
+{
+  return m_filterModeData.at(m_previousFilterMode).name;
 }
 
 inline auto FilterSettingsService::GetFilterSettings() -> ZoomFilterSettings&

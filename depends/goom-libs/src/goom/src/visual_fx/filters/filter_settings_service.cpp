@@ -325,16 +325,6 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
 
 FilterSettingsService::~FilterSettingsService() noexcept = default;
 
-auto FilterSettingsService::GetCurrentFilterMode() const -> const std::string&
-{
-  return m_filterModeData.at(m_filterMode).name;
-}
-
-auto FilterSettingsService::GetPreviousFilterMode() const -> const std::string&
-{
-  return m_filterModeData.at(m_previousFilterMode).name;
-}
-
 auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
 {
   if constexpr (USE_FORCED_FILTER_MODE)

@@ -32,6 +32,7 @@ public:
 
   void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
   void ShowGoomState(bool value);
+  void SetDumpDirectory(const std::string& dumpDirectory);
 
   /*
    * Update the next goom frame

@@ -18,6 +18,7 @@
 #undef NDEBUG
 #include <cstddef>
 #include <format>
+#include <kodi/Filesystem.h>
 #include <memory>
 
 using GOOM::AudioSamples;
@@ -257,6 +258,8 @@ auto CVisualizationGoom::InitGoomController() -> bool
   LogInfo("Goom Library: Compiler: {}.", GoomControl::GetCompilerVersion());
 
   m_goomControl->ShowGoomState(KODI_ADDON::GetSettingBoolean("show_goom_state"));
+  m_goomControl->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
+      "special://userdata/addon_data/visualization.goom/goom_dumps"));
   m_goomControl->SetShowTitle(m_showTitle);
 
   // goom will use same random sequence if following is uncommented

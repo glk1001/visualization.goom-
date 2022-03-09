@@ -46,8 +46,9 @@ inline auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UT
   static constexpr const char* PARAM_GROUP = "";
   return {
       GetPair(PARAM_GROUP, "State", m_visualFx.GetCurrentStateName()),
-      GetPair(PARAM_GROUP, "Filter Mode", m_filterSettingsService.GetCurrentFilterMode()),
-      GetPair(PARAM_GROUP, "Previous Filter Mode", m_filterSettingsService.GetPreviousFilterMode()),
+      GetPair(PARAM_GROUP, "Filter Mode", m_filterSettingsService.GetCurrentFilterModeName()),
+      GetPair(PARAM_GROUP, "Previous Filter Mode",
+              m_filterSettingsService.GetPreviousFilterModeName()),
   };
 }
 

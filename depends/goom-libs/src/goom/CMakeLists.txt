@@ -35,6 +35,7 @@ add_library(goom
         src/control/goom_music_lines_reactor.cpp
         src/control/goom_music_settings_reactor.cpp
         src/control/goom_random_state_handler.cpp
+        src/control/goom_state_dump.cpp
         src/control/goom_state_handler.cpp
         src/control/goom_state_monitor.cpp
         src/control/goom_states.cpp

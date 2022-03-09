@@ -65,6 +65,7 @@ public:
   void Finish();
 
   void SetNextState();
+  [[nodiscard]] auto GetCurrentState() const -> GoomStates;
   [[nodiscard]] auto GetCurrentStateName() const -> std::string_view;
 
   void SetSingleBufferDots(bool value);
@@ -199,6 +200,11 @@ inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
 inline auto GoomAllVisualFx::GetCurrentExposure() const -> float
 {
   return m_adaptiveExposure.GetCurrentExposure();
+}
+
+inline auto GoomAllVisualFx::GetCurrentState() const -> GoomStates
+{
+  return m_goomStateHandler.GetCurrentState();
 }
 
 inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string_view
