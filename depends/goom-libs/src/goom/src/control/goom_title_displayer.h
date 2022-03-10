@@ -85,6 +85,18 @@ private:
                                            int32_t y,
                                            int32_t charWidth,
                                            int32_t charHeight) const -> Pixel;
+  [[nodiscard]] auto GetInitialPhaseInteriorColor(float fontColorT) const -> Pixel;
+  [[nodiscard]] auto GetMiddlePhaseInteriorColor(float fontColorT,
+                                                 float fontCharColorMixT,
+                                                 int32_t x,
+                                                 int32_t y,
+                                                 int32_t charWidth,
+                                                 int32_t charHeight) const -> Pixel;
+  [[nodiscard]] auto GetFinalPhaseInteriorColor(float fontCharColorMixT,
+                                                int32_t x,
+                                                int32_t y,
+                                                int32_t charWidth,
+                                                int32_t charHeight) const -> Pixel;
   [[nodiscard]] auto GetFinalOutlineColor(float fontColorT,
                                           float fontCharColorMixT,
                                           int32_t x,

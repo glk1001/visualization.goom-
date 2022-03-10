@@ -32,6 +32,7 @@ using UTILS::Logging;
 using UTILS::MATH::GetFltFraction;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::TWO_PI;
 using UTILS::TEXT::GetLeftAlignedPenForCentringStringAt;
 using UTILS::TEXT::GetLinesOfWords;
 
@@ -82,7 +83,7 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
     m_textColorMap{RandomColorMaps{m_goomRand}.GetRandomColorMap()},
     m_textOutlineColorMap{RandomColorMaps{m_goomRand}.GetRandomColorMap()},
     m_charColorMap{
-        RandomColorMaps{m_goomRand}.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK_SLIM)}
+        RandomColorMaps{m_goomRand}.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK)}
 {
   m_textDraw->SetFontFile(GetSelectedFontPath());
   m_textDraw->SetFontSize(GetSelectedFontSize());
@@ -144,10 +145,9 @@ inline void GoomTitleDisplayer::UpdateTextPosition()
 inline void GoomTitleDisplayer::SetFinalPhaseColorMaps()
 {
   const RandomColorMaps randomColorMaps{m_goomRand};
-  m_textColorMap =
-      randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM);
+  m_textColorMap = randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);
   m_textOutlineColorMap = randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::HEAT);
-  m_charColorMap = randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK_SLIM);
+  m_charColorMap = randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);
 }
 
 inline auto GoomTitleDisplayer::GetFinalPhaseFontSize(const int32_t timeLeftOfTitleDisplay) const
@@ -179,6 +179,15 @@ inline auto GoomTitleDisplayer::GetFinalPhaseCentrePenPos(const std::string& str
 
 void GoomTitleDisplayer::DrawText(const std::string& text)
 {
+  if ((m_xPos < 0.0F) || (m_xPos >= static_cast<float>(m_screenWidth)))
+  {
+    return;
+  }
+  if ((m_yPos < 0.0F) || (m_yPos >= static_cast<float>(m_screenHeight)))
+  {
+    return;
+  }
+
   const float colorT = GetColorT();
   const float fontCharColorMixT = GetFontCharColorMixT();
   const float textBrightness = GetTextBrightness();
@@ -232,19 +241,56 @@ inline auto GoomTitleDisplayer::GetFinalInteriorColor(const float fontColorT,
                                                       const int32_t charWidth,
                                                       const int32_t charHeight) const -> Pixel
 {
-  const Pixel fontColor = m_textColorMap.get().GetColor(fontColorT);
   if (IsInitialPhase())
   {
-    return fontColor;
+    return GetInitialPhaseInteriorColor(fontColorT);
   }
 
+  if (IsMiddlePhase())
+  {
+    return GetMiddlePhaseInteriorColor(fontColorT, fontCharColorMixT, x, y, charWidth, charHeight);
+  }
+
+  return GetFinalPhaseInteriorColor(fontCharColorMixT, x, y, charWidth, charHeight);
+}
+
+inline auto GoomTitleDisplayer::GetInitialPhaseInteriorColor(const float fontColorT) const -> Pixel
+{
+  return m_textColorMap.get().GetColor(fontColorT);
+}
+
+inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(const float fontColorT,
+                                                            const float fontCharColorMixT,
+                                                            const int32_t x,
+                                                            const int32_t y,
+                                                            const int32_t charWidth,
+                                                            const int32_t charHeight) const -> Pixel
+{
+  const Pixel fontColor = m_textColorMap.get().GetColor(fontColorT);
   const Pixel charColor1 = m_charColorMap.get().GetColor(GetFltFraction(x, charWidth));
   const Pixel charColor2 = m_textOutlineColorMap.get().GetColor(GetFltFraction(y, charHeight));
   static constexpr float CHAR_COLOR_MIX = 0.5F;
   const Pixel charColor = IColorMap::GetColorMix(charColor1, charColor2, CHAR_COLOR_MIX);
 
-  // Favour the char color for the final phase.
-  const float finalColorMixT = IsFinalPhase() ? (1.0F - fontCharColorMixT) : fontCharColorMixT;
+  return GetIncreasedChroma(IColorMap::GetColorMix(fontColor, charColor, fontCharColorMixT));
+}
+
+inline auto GoomTitleDisplayer::GetFinalPhaseInteriorColor(
+    [[maybe_unused]] const float fontCharColorMixT,
+    const int32_t x,
+    const int32_t y,
+    const int32_t charWidth,
+    const int32_t charHeight) const -> Pixel
+{
+  const float tX = GetFltFraction(x, charWidth);
+  const float tY = GetFltFraction(y, charHeight);
+  const float t = tX * tY;
+  const float tReverse = (1.0F - tX) * (1.0F - tY);
+  static constexpr float FREQ = 15.0F * TWO_PI;
+  const Pixel fontColor = m_textColorMap.get().GetColor(std::sin(FREQ * t));
+  const Pixel charColor = m_charColorMap.get().GetColor(std::sin(FREQ * tReverse));
+  static constexpr float MIX_FACTOR = 0.5F;
+  const float finalColorMixT = MIX_FACTOR;
 
   return GetIncreasedChroma(IColorMap::GetColorMix(fontColor, charColor, finalColorMixT));
 }
