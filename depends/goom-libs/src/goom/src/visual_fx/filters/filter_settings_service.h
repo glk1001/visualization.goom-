@@ -78,7 +78,7 @@ public:
   [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
 
   void ChangeMilieu();
-  virtual void SetRandomExtraEffects();
+  void SetRandomExtraEffects();
   void SetRotateToZero();
   void MultiplyRotate(float factor);
   void ToggleRotate();
@@ -98,10 +98,11 @@ protected:
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
   virtual void SetDefaultSettings();
-  virtual void SetExtraEffects();
+  virtual void SetRandomizedExtraEffects();
   virtual void SetFilterModeExtraEffects();
   virtual void SetWaveModeExtraEffects();
   virtual void SetRandomZoomMidpoint();
+  virtual void UpdateFilterSettingsFromExtraEffects();
 
 private:
   ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
@@ -109,13 +110,12 @@ private:
   ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
 
   void SetRandomSettingsForNewFilterMode();
-  void UpdateFilterSettings();
 
   const PluginInfo& m_goomInfo;
   const UTILS::MATH::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
   const std::string m_resourcesDirectory;
-  std::unique_ptr<ExtraEffects> m_extraEffects;
+  std::unique_ptr<ExtraEffects> m_randomizedExtraEffects;
 
   struct ZoomFilterModeInfo
   {

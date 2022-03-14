@@ -254,7 +254,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
     m_screenMidpoint{U_HALF * m_goomInfo.GetScreenInfo().width,
                      U_HALF * m_goomInfo.GetScreenInfo().height},
     m_resourcesDirectory{resourcesDirectory},
-    m_extraEffects{std::make_unique<ExtraEffects>(m_goomRand)},
+    m_randomizedExtraEffects{std::make_unique<ExtraEffects>(m_goomRand)},
     m_filterModeData{GetFilterModeData(m_goomRand,
                                        m_resourcesDirectory,
                                        createSpeedCoefficientsEffect)},
@@ -347,7 +347,7 @@ inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
 
 void FilterSettingsService::NewCycle()
 {
-  m_extraEffects->UpdateTimers();
+  m_randomizedExtraEffects->UpdateTimers();
 }
 
 void FilterSettingsService::NotifyUpdatedFilterEffectsSettings()
@@ -355,28 +355,28 @@ void FilterSettingsService::NotifyUpdatedFilterEffectsSettings()
   m_filterEffectsSettingsHaveChanged = false;
 
   m_filterModeAtLastUpdate = m_filterMode;
-  m_extraEffects->EffectsUpdatesActivated();
+  m_randomizedExtraEffects->EffectsUpdatesActivated();
 }
 
 void FilterSettingsService::SetRandomExtraEffects()
 {
-  SetExtraEffects();
+  SetRandomizedExtraEffects();
   m_filterEffectsSettingsHaveChanged = true;
 }
 
 void FilterSettingsService::SetRandomSettingsForNewFilterMode()
 {
   SetDefaultSettings();
-  SetExtraEffects();
+  SetRandomizedExtraEffects();
   SetRandomZoomMidpoint();
   SetFilterModeExtraEffects();
-  UpdateFilterSettings();
+  UpdateFilterSettingsFromExtraEffects();
 }
 
-inline void FilterSettingsService::UpdateFilterSettings()
+inline void FilterSettingsService::UpdateFilterSettingsFromExtraEffects()
 {
   m_filterEffectsSettingsHaveChanged = true;
-  m_extraEffects->UpdateFilterSettings(m_filterSettings);
+  m_randomizedExtraEffects->UpdateFilterSettings(m_filterSettings);
 }
 
 void FilterSettingsService::SetDefaultSettings()
@@ -385,20 +385,20 @@ void FilterSettingsService::SetDefaultSettings()
   m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
-  m_extraEffects->SetDefaults();
+  m_randomizedExtraEffects->SetDefaults();
 }
 
-inline void FilterSettingsService::SetExtraEffects()
+inline void FilterSettingsService::SetRandomizedExtraEffects()
 {
-  m_extraEffects->UpdateEffects();
+  m_randomizedExtraEffects->UpdateEffects();
 }
 
 inline void FilterSettingsService::SetFilterModeExtraEffects()
 {
   const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
 
-  m_extraEffects->SetHypercosOverlayEffect(modeInfo.hypercosWeights.GetRandomWeighted());
-  m_extraEffects->SetRotate(modeInfo.rotateProbability);
+  m_randomizedExtraEffects->SetHypercosOverlayEffect(modeInfo.hypercosWeights.GetRandomWeighted());
+  m_randomizedExtraEffects->SetRotate(modeInfo.rotateProbability);
 
   if ((m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::WAVE_MODE1))
   {
@@ -408,7 +408,7 @@ inline void FilterSettingsService::SetFilterModeExtraEffects()
 
 void FilterSettingsService::SetWaveModeExtraEffects()
 {
-  m_extraEffects->TurnPlaneEffectOn();
+  m_randomizedExtraEffects->TurnPlaneEffectOn();
 
   m_filterSettings.filterEffectsSettings.vitesse.SetReverseVitesse(
       m_goomRand.ProbabilityOf(PROB_REVERSE_SPEED));
