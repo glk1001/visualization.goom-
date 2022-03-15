@@ -12,7 +12,7 @@ namespace GOOM::CONTROL
 class GoomEvents
 {
 public:
-  explicit GoomEvents(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit GoomEvents(const UTILS::MATH::IGoomRand& goomRand);
   GoomEvents(const GoomEvents&) noexcept = delete;
   GoomEvents(GoomEvents&&) noexcept = delete;
   ~GoomEvents() = default;

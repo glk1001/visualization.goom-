@@ -71,10 +71,17 @@ void FilterBuffersService::Start()
 
 inline void FilterBuffersService::UpdateFilterEffectsSettings()
 {
-  m_zoomVector->SetFilterSettings(m_currentFilterEffectsSettings);
+  UpdateZoomVectorFilterEffectsSettings();
 
   m_filterBuffers.SetBuffMidpoint(m_currentFilterEffectsSettings.zoomMidpoint);
   m_filterBuffers.NotifyFilterSettingsHaveChanged();
+}
+
+inline void FilterBuffersService::UpdateZoomVectorFilterEffectsSettings()
+{
+  m_zoomVector->SetFilterSettings(m_currentFilterEffectsSettings);
+
+  m_currentFilterEffectsSettings.rotationAdjustments.Reset();
 }
 
 void FilterBuffersService::UpdateTranBuffers()

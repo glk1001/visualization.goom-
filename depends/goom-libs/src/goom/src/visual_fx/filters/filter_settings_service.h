@@ -79,9 +79,9 @@ public:
 
   void ChangeMilieu();
   void SetRandomExtraEffects();
-  void SetRotateToZero();
-  void MultiplyRotate(float factor);
-  void ToggleRotate();
+  void SetRotationToZero();
+  void MultiplyRotation(float factor);
+  void ToggleRotationDirection();
 
   void SetRandomFilterSettings();
 
@@ -98,10 +98,9 @@ protected:
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
   virtual void SetDefaultSettings();
-  virtual void SetRandomizedExtraEffects();
+  virtual void SetRandomZoomMidpoint();
   virtual void SetFilterModeExtraEffects();
   virtual void SetWaveModeExtraEffects();
-  virtual void SetRandomZoomMidpoint();
   virtual void UpdateFilterSettingsFromExtraEffects();
 
 private:
@@ -256,35 +255,35 @@ inline void FilterSettingsService::SetRandomFilterSettings()
   SetRandomSettingsForNewFilterMode();
 }
 
-inline void FilterSettingsService::SetRotateToZero()
+inline void FilterSettingsService::SetRotationToZero()
 {
-  if (!m_filterSettings.filterEffectsSettings.rotation->IsActive())
+  if (!m_filterSettings.filterEffectsSettings.rotationEffect)
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotation->SetZero();
+  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetToZero();
 }
 
-inline void FilterSettingsService::MultiplyRotate(const float factor)
+inline void FilterSettingsService::MultiplyRotation(const float factor)
 {
-  if (!m_filterSettings.filterEffectsSettings.rotation->IsActive())
+  if (!m_filterSettings.filterEffectsSettings.rotationEffect)
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotation->Multiply(factor);
+  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetMultiplyFactor(factor);
 }
 
-inline void FilterSettingsService::ToggleRotate()
+inline void FilterSettingsService::ToggleRotationDirection()
 {
-  if (!m_filterSettings.filterEffectsSettings.rotation->IsActive())
+  if (!m_filterSettings.filterEffectsSettings.rotationEffect)
   {
     return;
   }
 
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotation->Toggle();
+  m_filterSettings.filterEffectsSettings.rotationAdjustments.Toggle();
 }
 
 inline void FilterSettingsService::SetTranLerpIncrement(const int32_t value)

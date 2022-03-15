@@ -31,10 +31,11 @@ class ZoomVectorEffects
 public:
   struct TheExtraEffects
   {
+    std::unique_ptr<Hypercos> hypercos;
     std::unique_ptr<ImageVelocity> imageVelocity;
     std::unique_ptr<Noise> noise;
-    std::unique_ptr<Hypercos> hypercos;
     std::unique_ptr<Planes> planes;
+    std::unique_ptr<Rotation> rotation;
     std::unique_ptr<TanEffect> tanEffect;
   };
   using GetTheEffectsFunc = std::function<auto(const std::string& resourcesDirectory,
@@ -57,27 +58,27 @@ public:
       -> NormalizedCoords;
   [[nodiscard]] auto GetCleanedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
+  [[nodiscard]] auto IsHypercosOverlayActive() const -> bool;
+  [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
+
   [[nodiscard]] auto IsImageVelocityActive() const -> bool;
   [[nodiscard]] auto GetImageVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 
-  [[nodiscard]] auto IsRotateActive() const -> bool;
-  [[nodiscard]] auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
-
   [[nodiscard]] auto IsNoiseActive() const -> bool;
   [[nodiscard]] auto GetNoiseVelocity() const -> NormalizedCoords;
-
-  [[nodiscard]] auto IsTanEffectActive() const -> bool;
-  [[nodiscard]] auto GetTanEffectVelocity(float sqDistFromZero,
-                                          const NormalizedCoords& velocity) const
-      -> NormalizedCoords;
-
-  [[nodiscard]] auto IsHypercosOverlayActive() const -> bool;
-  [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;
   [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
+
+  [[nodiscard]] auto IsRotationActive() const -> bool;
+  [[nodiscard]] auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
+
+  [[nodiscard]] auto IsTanEffectActive() const -> bool;
+  [[nodiscard]] auto GetTanEffectVelocity(float sqDistFromZero,
+                                          const NormalizedCoords& velocity) const
+      -> NormalizedCoords;
 
   static constexpr const char* PARAM_GROUP = "Zoom Effects";
   [[nodiscard]] auto GetZoomEffectsNameValueParams() const -> UTILS::NameValuePairs;
@@ -91,10 +92,11 @@ private:
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
   static constexpr float MIN_SPEED_COEFF = -4.01F;
 
-  void SetNoiseSettings();
-  void SetRandomImageVelocityEffects();
   void SetRandomHypercosOverlayEffects();
+  void SetRandomImageVelocityEffects();
+  void SetRandomNoiseSettings();
   void SetRandomPlaneEffects();
+  void SetRandomRotationSettings();
   void SetRandomTanEffects();
 
   [[nodiscard]] auto GetMinVelocityVal(float velocityVal) const -> float;
@@ -104,13 +106,13 @@ private:
   [[nodiscard]] auto GetClampedSpeedCoeffs(const Point2dFlt& speedCoeffs) const -> Point2dFlt;
   [[nodiscard]] auto GetClampedSpeedCoeff(float speedCoeff) const -> float;
 
-  [[nodiscard]] auto GetSpeedCoefficientsNameValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetImageVelocityNameValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetRotateNameValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetNoiseNameValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetTanEffectNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetHypercosNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetImageVelocityNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNoiseNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetPlaneNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetRotationNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetSpeedCoefficientsNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetTanEffectNameValueParams() const -> UTILS::NameValuePairs;
 };
 
 inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
@@ -159,6 +161,17 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) cons
   return speedCoeff;
 }
 
+inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
+{
+  return m_filterEffectsSettings->hypercosOverlay != HypercosOverlay::NONE;
+}
+
+inline auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords) const
+    -> NormalizedCoords
+{
+  return m_theEffects.hypercos->GetVelocity(coords);
+}
+
 inline auto ZoomVectorEffects::IsImageVelocityActive() const -> bool
 {
   return m_filterEffectsSettings->imageVelocityEffect;
@@ -170,17 +183,6 @@ inline auto ZoomVectorEffects::GetImageVelocity(const NormalizedCoords& coords) 
   return NormalizedCoords{m_theEffects.imageVelocity->GetVelocity(coords)};
 }
 
-inline auto ZoomVectorEffects::IsRotateActive() const -> bool
-{
-  return m_filterEffectsSettings->rotation->IsActive();
-}
-
-inline auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) const
-    -> NormalizedCoords
-{
-  return m_filterEffectsSettings->rotation->GetVelocity(velocity);
-}
-
 inline auto ZoomVectorEffects::IsNoiseActive() const -> bool
 {
   return m_filterEffectsSettings->noiseEffect;
@@ -189,29 +191,6 @@ inline auto ZoomVectorEffects::IsNoiseActive() const -> bool
 inline auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
 {
   return m_theEffects.noise->GetVelocity();
-}
-
-inline auto ZoomVectorEffects::IsTanEffectActive() const -> bool
-{
-  return m_filterEffectsSettings->tanEffect;
-}
-
-inline auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
-                                                    const NormalizedCoords& velocity) const
-    -> NormalizedCoords
-{
-  return m_theEffects.tanEffect->GetVelocity(sqDistFromZero, velocity);
-}
-
-inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
-{
-  return m_filterEffectsSettings->hypercosOverlay != HypercosOverlay::NONE;
-}
-
-inline auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords) const
-    -> NormalizedCoords
-{
-  return m_theEffects.hypercos->GetVelocity(coords);
 }
 
 inline auto ZoomVectorEffects::IsHorizontalPlaneVelocityActive() const -> bool
@@ -234,6 +213,29 @@ inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& 
     -> float
 {
   return m_theEffects.planes->GetVerticalPlaneVelocity(coords);
+}
+
+inline auto ZoomVectorEffects::IsRotationActive() const -> bool
+{
+  return m_filterEffectsSettings->rotationEffect;
+}
+
+inline auto ZoomVectorEffects::GetRotatedVelocity(const NormalizedCoords& velocity) const
+    -> NormalizedCoords
+{
+  return m_theEffects.rotation->GetVelocity(velocity);
+}
+
+inline auto ZoomVectorEffects::IsTanEffectActive() const -> bool
+{
+  return m_filterEffectsSettings->tanEffect;
+}
+
+inline auto ZoomVectorEffects::GetTanEffectVelocity(const float sqDistFromZero,
+                                                    const NormalizedCoords& velocity) const
+    -> NormalizedCoords
+{
+  return m_theEffects.tanEffect->GetVelocity(sqDistFromZero, velocity);
 }
 
 } // namespace VISUAL_FX::FILTERS

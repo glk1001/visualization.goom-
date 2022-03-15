@@ -50,7 +50,7 @@ private:
 ExtraEffects::ExtraEffects(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_hypercosOverlayEffect{DEFAULT_HYPERCOS_OVERLAY},
-    m_rotation{std::make_shared<Rotation>(m_goomRand)},
+    m_rotationEffect{false},
     m_blockyWavyEffect{std::make_unique<ExtraEffect>(goomRand,
                                                      DEFAULT_BLOCKY_WAVY_NOISE_EFFECT,
                                                      PROB_BLOCKY_WAVY_EFFECT,
@@ -81,39 +81,13 @@ ExtraEffects::~ExtraEffects() noexcept = default;
 void ExtraEffects::UpdateFilterSettings(ZoomFilterSettings& filterSettings) const
 {
   filterSettings.filterEffectsSettings.hypercosOverlay = m_hypercosOverlayEffect;
+  filterSettings.filterEffectsSettings.rotationEffect = m_rotationEffect;
 
   filterSettings.filterColorSettings.blockyWavy = m_blockyWavyEffect->IsTurnedOn();
   filterSettings.filterEffectsSettings.imageVelocityEffect = m_imageVelocityEffect->IsTurnedOn();
   filterSettings.filterEffectsSettings.noiseEffect = m_noiseEffect->IsTurnedOn();
   filterSettings.filterEffectsSettings.planeEffect = m_planeEffect->IsTurnedOn();
   filterSettings.filterEffectsSettings.tanEffect = m_tanEffect->IsTurnedOn();
-
-  filterSettings.filterEffectsSettings.rotation = m_rotation;
-}
-
-void ExtraEffects::SetHypercosOverlayEffect(const HypercosOverlay value)
-{
-  if constexpr (NO_EXTRA_EFFECTS)
-  {
-    return;
-  }
-
-  m_hypercosOverlayEffect = value;
-}
-
-void ExtraEffects::SetRotate(const float rotateProbability)
-{
-  if constexpr (NO_EXTRA_EFFECTS)
-  {
-    return;
-  }
-  if (!m_goomRand.ProbabilityOf(rotateProbability))
-  {
-    return;
-  }
-
-  m_rotation->SetRandomParams();
-  m_rotation->Multiply(rotateProbability);
 }
 
 void ExtraEffects::TurnPlaneEffectOn()
@@ -129,7 +103,7 @@ void ExtraEffects::TurnPlaneEffectOn()
 void ExtraEffects::SetDefaults()
 {
   m_hypercosOverlayEffect = DEFAULT_HYPERCOS_OVERLAY;
-  m_rotation = std::make_shared<Rotation>(m_goomRand);
+  m_rotationEffect = false;
 }
 
 void ExtraEffects::UpdateTimers()
@@ -144,6 +118,19 @@ void ExtraEffects::UpdateTimers()
   m_noiseEffect->UpdateTimer();
   m_planeEffect->UpdateTimer();
   m_tanEffect->UpdateTimer();
+}
+
+void ExtraEffects::UpdateAllEffects(const HypercosOverlay value, const float rotateProbability)
+{
+  if constexpr (NO_EXTRA_EFFECTS)
+  {
+    return;
+  }
+
+  m_hypercosOverlayEffect = value;
+  m_rotationEffect = m_goomRand.ProbabilityOf(rotateProbability);
+
+  UpdateEffects();
 }
 
 void ExtraEffects::UpdateEffects()

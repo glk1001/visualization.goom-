@@ -11,6 +11,31 @@
 namespace GOOM::VISUAL_FX::FILTERS
 {
 
+class RotationAdjustments
+{
+public:
+  RotationAdjustments() noexcept = default;
+
+  [[nodiscard]] auto AreAdjustmentsPending() const -> bool;
+
+  [[nodiscard]] auto IsSetToZero() const -> bool;
+  void SetToZero();
+
+  [[nodiscard]] auto IsToggle() const -> bool;
+  void Toggle();
+
+  [[nodiscard]] auto GetMultiplyfactor() const -> float;
+  void SetMultiplyFactor(float value);
+
+  void Reset();
+
+private:
+  bool m_setToZero = false;
+  bool m_toggle = false;
+  float m_multiplyFactor = 1.0F;
+  bool m_adjustmentsPending = false;
+};
+
 class Rotation
 {
 public:
@@ -23,12 +48,9 @@ public:
 
   virtual void SetRandomParams();
 
-  void SetZero();
-  [[nodiscard]] auto IsActive() const -> bool;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
-  void Multiply(float factor);
-  void Toggle();
+  void ApplyAdjustments(const RotationAdjustments& rotationAdjustments);
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
@@ -48,7 +70,57 @@ protected:
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
+
+  void SetZero();
+  void Multiply(float factor);
+  void Toggle();
 };
+
+inline auto RotationAdjustments::AreAdjustmentsPending() const -> bool
+{
+  return m_adjustmentsPending;
+}
+
+inline auto RotationAdjustments::IsSetToZero() const -> bool
+{
+  return m_setToZero;
+}
+
+inline void RotationAdjustments::SetToZero()
+{
+  m_setToZero = true;
+  m_adjustmentsPending = true;
+}
+
+inline auto RotationAdjustments::IsToggle() const -> bool
+{
+  return m_toggle;
+}
+
+inline void RotationAdjustments::Toggle()
+{
+  m_toggle = true;
+  m_adjustmentsPending = true;
+}
+
+inline auto RotationAdjustments::GetMultiplyfactor() const -> float
+{
+  return m_multiplyFactor;
+}
+
+inline void RotationAdjustments::SetMultiplyFactor(const float value)
+{
+  m_multiplyFactor = value;
+  m_adjustmentsPending = true;
+}
+
+inline void RotationAdjustments::Reset()
+{
+  m_adjustmentsPending = false;
+  m_setToZero = false;
+  m_toggle = false;
+  m_multiplyFactor = 1.0F;
+}
 
 inline auto Rotation::GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords
 {
@@ -67,6 +139,24 @@ inline auto Rotation::GetVelocity(const NormalizedCoords& velocity) const -> Nor
           yRotateSpeed * ((sinAngle * velocity.GetX()) + (cosAngle * velocity.GetY()))};
 }
 
+inline void Rotation::ApplyAdjustments(const RotationAdjustments& rotationAdjustments)
+{
+  if (!rotationAdjustments.AreAdjustmentsPending())
+  {
+    return;
+  }
+
+  if (rotationAdjustments.IsSetToZero())
+  {
+    SetZero();
+  }
+  if (rotationAdjustments.IsToggle())
+  {
+    Toggle();
+  }
+  Multiply(rotationAdjustments.GetMultiplyfactor());
+}
+
 inline void Rotation::SetZero()
 {
   m_params.xRotateSpeed = 0.0F;
@@ -83,12 +173,6 @@ inline void Rotation::Toggle()
 {
   m_params.xRotateSpeed = -m_params.xRotateSpeed;
   m_params.yRotateSpeed = -m_params.yRotateSpeed;
-}
-
-inline auto Rotation::IsActive() const -> bool
-{
-  return (std::fabs(m_params.xRotateSpeed) > UTILS::MATH::SMALL_FLOAT) ||
-         (std::fabs(m_params.yRotateSpeed) > UTILS::MATH::SMALL_FLOAT);
 }
 
 inline auto Rotation::GetParams() const -> const Params&

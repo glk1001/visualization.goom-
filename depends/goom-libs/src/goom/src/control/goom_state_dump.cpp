@@ -137,7 +137,7 @@ void GoomStateDump::AddCurrentState()
   m_cumulativeState->AddCurrentImageVelocityEffect(filterEffectsSettings.imageVelocityEffect);
   m_cumulativeState->AddCurrentNoiseEffect(filterEffectsSettings.noiseEffect);
   m_cumulativeState->AddCurrentPlaneEffect(filterEffectsSettings.planeEffect);
-  m_cumulativeState->AddCurrentRotationEffect(filterEffectsSettings.rotation->IsActive());
+  m_cumulativeState->AddCurrentRotationEffect(filterEffectsSettings.rotationEffect);
   m_cumulativeState->AddCurrentTanEffect(filterEffectsSettings.tanEffect);
 
   const SoundInfo& soundInfo = m_goomInfo.GetSoundInfo();

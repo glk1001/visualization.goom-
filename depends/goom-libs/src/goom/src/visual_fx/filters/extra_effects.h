@@ -28,11 +28,9 @@ public:
   auto operator=(ExtraEffects&&) -> ExtraEffects& = delete;
 
   void SetDefaults();
-  void SetHypercosOverlayEffect(HypercosOverlay value);
-  void SetRotate(float rotateProbability);
   void TurnPlaneEffectOn();
-
   void UpdateTimers();
+  void UpdateAllEffects(HypercosOverlay value, float rotateProbability);
   void UpdateEffects();
   void EffectsUpdatesActivated();
   void UpdateFilterSettings(ZoomFilterSettings& filterSettings) const;
@@ -41,7 +39,7 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
 
   HypercosOverlay m_hypercosOverlayEffect;
-  std::shared_ptr<Rotation> m_rotation;
+  bool m_rotationEffect;
 
   class ExtraEffect;
 

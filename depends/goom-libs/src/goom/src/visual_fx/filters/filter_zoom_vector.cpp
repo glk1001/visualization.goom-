@@ -63,7 +63,7 @@ auto FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero
     newVelocity += m_zoomVectorEffects.GetImageVelocity(coords);
   }
 
-  if (m_zoomVectorEffects.IsRotateActive())
+  if (m_zoomVectorEffects.IsRotationActive())
   {
     newVelocity = m_zoomVectorEffects.GetRotatedVelocity(newVelocity);
   }

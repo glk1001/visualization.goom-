@@ -30,10 +30,11 @@ auto ZoomVectorEffects::GetStandardExtraEffects(const std::string& resourcesDire
                                                 const IGoomRand& goomRand) -> TheExtraEffects
 {
   return {
+      std::make_unique<Hypercos>(goomRand),
       std::make_unique<ImageVelocity>(resourcesDirectory, goomRand),
       std::make_unique<Noise>(goomRand),
-      std::make_unique<Hypercos>(goomRand),
       std::make_unique<Planes>(goomRand),
+      std::make_unique<Rotation>(goomRand),
       std::make_unique<TanEffect>(goomRand),
   };
 }
@@ -44,43 +45,69 @@ void ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filte
 
   m_filterEffectsSettings->speedCoefficientsEffect->SetRandomParams();
 
-  SetNoiseSettings();
-  SetRandomImageVelocityEffects();
   SetRandomHypercosOverlayEffects();
+  SetRandomImageVelocityEffects();
+  SetRandomNoiseSettings();
   SetRandomPlaneEffects();
+  SetRandomRotationSettings();
   SetRandomTanEffects();
-}
-
-inline void ZoomVectorEffects::SetNoiseSettings()
-{
-  if (m_filterEffectsSettings->noiseEffect)
-  {
-    m_theEffects.noise->SetRandomParams();
-  }
 }
 
 inline void ZoomVectorEffects::SetRandomImageVelocityEffects()
 {
-  if (m_filterEffectsSettings->imageVelocityEffect)
+  if (!m_filterEffectsSettings->imageVelocityEffect)
   {
-    m_theEffects.imageVelocity->SetRandomParams();
+    return;
   }
+
+  m_theEffects.imageVelocity->SetRandomParams();
+}
+
+inline void ZoomVectorEffects::SetRandomNoiseSettings()
+{
+  if (!m_filterEffectsSettings->noiseEffect)
+  {
+    return;
+  }
+
+  m_theEffects.noise->SetRandomParams();
 }
 
 inline void ZoomVectorEffects::SetRandomPlaneEffects()
 {
-  if (m_filterEffectsSettings->planeEffect)
+  if (!m_filterEffectsSettings->planeEffect)
   {
-    m_theEffects.planes->SetRandomParams(m_filterEffectsSettings->zoomMidpoint, m_screenWidth);
+    return;
+  }
+
+  m_theEffects.planes->SetRandomParams(m_filterEffectsSettings->zoomMidpoint, m_screenWidth);
+}
+
+inline void ZoomVectorEffects::SetRandomRotationSettings()
+{
+  if (!m_filterEffectsSettings->rotationEffect)
+  {
+    return;
+  }
+
+  if (m_filterEffectsSettings->rotationAdjustments.AreAdjustmentsPending())
+  {
+    m_theEffects.rotation->ApplyAdjustments(m_filterEffectsSettings->rotationAdjustments);
+  }
+  else
+  {
+    m_theEffects.rotation->SetRandomParams();
   }
 }
 
 inline void ZoomVectorEffects::SetRandomTanEffects()
 {
-  if (m_filterEffectsSettings->tanEffect)
+  if (!m_filterEffectsSettings->tanEffect)
   {
-    m_theEffects.tanEffect->SetRandomParams();
+    return;
   }
+
+  m_theEffects.tanEffect->SetRandomParams();
 }
 
 void ZoomVectorEffects::SetRandomHypercosOverlayEffects()
@@ -127,13 +154,13 @@ auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{};
 
-  MoveNameValuePairs(GetRotateNameValueParams(), nameValuePairs);
-  MoveNameValuePairs(GetNoiseNameValueParams(), nameValuePairs);
-  MoveNameValuePairs(GetTanEffectNameValueParams(), nameValuePairs);
-  MoveNameValuePairs(GetImageVelocityNameValueParams(), nameValuePairs);
-  MoveNameValuePairs(GetPlaneNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetHypercosNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetImageVelocityNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetNoiseNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetPlaneNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetRotationNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetSpeedCoefficientsNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetTanEffectNameValueParams(), nameValuePairs);
 
   return nameValuePairs;
 }
@@ -149,6 +176,28 @@ inline auto ZoomVectorEffects::GetHypercosNameValueParams() const -> NameValuePa
   return m_theEffects.hypercos->GetNameValueParams(PARAM_GROUP);
 }
 
+inline auto ZoomVectorEffects::GetImageVelocityNameValueParams() const -> NameValuePairs
+{
+  NameValuePairs nameValuePairs{
+      GetPair(PARAM_GROUP, "imageVelocity", m_filterEffectsSettings->imageVelocityEffect)};
+  if (m_filterEffectsSettings->imageVelocityEffect)
+  {
+    MoveNameValuePairs(m_theEffects.imageVelocity->GetNameValueParams(PARAM_GROUP), nameValuePairs);
+  }
+  return nameValuePairs;
+}
+
+inline auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
+{
+  NameValuePairs nameValuePairs{
+      GetPair(PARAM_GROUP, "noiseEffect", m_filterEffectsSettings->noiseEffect)};
+  if (m_filterEffectsSettings->noiseEffect)
+  {
+    MoveNameValuePairs(m_theEffects.noise->GetNameValueParams(PARAM_GROUP), nameValuePairs);
+  }
+  return nameValuePairs;
+}
+
 inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{
@@ -160,13 +209,13 @@ inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
   return nameValuePairs;
 }
 
-inline auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
+inline auto ZoomVectorEffects::GetRotationNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{
-      GetPair(PARAM_GROUP, "noise", m_filterEffectsSettings->noiseEffect)};
-  if (m_filterEffectsSettings->noiseEffect)
+      GetPair(PARAM_GROUP, "rotation", m_filterEffectsSettings->rotationEffect)};
+  if (m_filterEffectsSettings->rotationEffect)
   {
-    MoveNameValuePairs(m_theEffects.noise->GetNameValueParams(PARAM_GROUP), nameValuePairs);
+    MoveNameValuePairs(m_theEffects.rotation->GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
   return nameValuePairs;
 }
@@ -180,22 +229,6 @@ inline auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValueP
     MoveNameValuePairs(m_theEffects.tanEffect->GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
   return nameValuePairs;
-}
-
-inline auto ZoomVectorEffects::GetImageVelocityNameValueParams() const -> NameValuePairs
-{
-  NameValuePairs nameValuePairs{
-      GetPair(PARAM_GROUP, "imageVelocity", m_filterEffectsSettings->imageVelocityEffect)};
-  if (m_filterEffectsSettings->imageVelocityEffect)
-  {
-    MoveNameValuePairs(m_theEffects.imageVelocity->GetNameValueParams(PARAM_GROUP), nameValuePairs);
-  }
-  return nameValuePairs;
-}
-
-inline auto ZoomVectorEffects::GetRotateNameValueParams() const -> NameValuePairs
-{
-  return m_filterEffectsSettings->rotation->GetNameValueParams(PARAM_GROUP);
 }
 
 } // namespace GOOM::VISUAL_FX::FILTERS

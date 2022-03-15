@@ -52,12 +52,7 @@ void Rotation::SetRandomParams()
 
 auto Rotation::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
-  if (!IsActive())
-  {
-    return {GetPair(paramGroup, "rotation", std::string{"None"})};
-  }
-
-  const std::string fullParamGroup = GetFullParamGroup({paramGroup, "rotate"});
+  const std::string fullParamGroup = GetFullParamGroup({paramGroup, "rotation"});
   return {
       GetPair(fullParamGroup, "speed", Point2dFlt{m_params.xRotateSpeed, m_params.yRotateSpeed}),
       GetPair(fullParamGroup, "sinAngle", m_params.sinAngle),

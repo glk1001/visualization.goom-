@@ -170,21 +170,21 @@ inline void GoomMusicSettingsReactor::ChangeRotation()
 {
   if (m_goomEvents.Happens(GoomEvent::FILTER_STOP_ROTATION))
   {
-    m_filterSettingsService.SetRotateToZero();
+    m_filterSettingsService.SetRotationToZero();
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_DECREASE_ROTATION))
   {
     static constexpr float ROTATE_SLOWER_FACTOR = 0.9F;
-    m_filterSettingsService.MultiplyRotate(ROTATE_SLOWER_FACTOR);
+    m_filterSettingsService.MultiplyRotation(ROTATE_SLOWER_FACTOR);
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_INCREASE_ROTATION))
   {
     static constexpr float ROTATE_FASTER_FACTOR = 1.1F;
-    m_filterSettingsService.MultiplyRotate(ROTATE_FASTER_FACTOR);
+    m_filterSettingsService.MultiplyRotation(ROTATE_FASTER_FACTOR);
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_TOGGLE_ROTATION))
   {
-    m_filterSettingsService.ToggleRotate();
+    m_filterSettingsService.ToggleRotationDirection();
   }
 }
 

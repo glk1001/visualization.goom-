@@ -35,7 +35,7 @@ static constexpr float H_LINE_LINE_TYPE_WEIGHT =  2.0F;
 static constexpr float V_LINE_LINE_TYPE_WEIGHT =  2.0F;
 // clang-format on
 
-GoomEvents::GoomEvents(const IGoomRand& goomRand) noexcept
+GoomEvents::GoomEvents(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
     // clang-format off
     m_weightedEvents{{

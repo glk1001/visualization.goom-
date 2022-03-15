@@ -54,6 +54,7 @@ private:
   bool m_pendingFilterEffectsSettings = false;
 
   void UpdateFilterEffectsSettings();
+  void UpdateZoomVectorFilterEffectsSettings();
   [[nodiscard]] auto AreStartingFreshTranBuffers() const -> bool;
   void StartFreshTranBuffers();
 };

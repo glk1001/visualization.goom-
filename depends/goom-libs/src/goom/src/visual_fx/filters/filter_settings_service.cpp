@@ -262,8 +262,9 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
          HypercosOverlay::NONE,
          DEFAULT_MAX_SPEED_COEFF,
          nullptr,
-         nullptr,
+         RotationAdjustments{},
          {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
+         false,
          false,
          false,
          false,
@@ -360,23 +361,16 @@ void FilterSettingsService::NotifyUpdatedFilterEffectsSettings()
 
 void FilterSettingsService::SetRandomExtraEffects()
 {
-  SetRandomizedExtraEffects();
+  m_randomizedExtraEffects->UpdateEffects();
   m_filterEffectsSettingsHaveChanged = true;
 }
 
 void FilterSettingsService::SetRandomSettingsForNewFilterMode()
 {
   SetDefaultSettings();
-  SetRandomizedExtraEffects();
   SetRandomZoomMidpoint();
   SetFilterModeExtraEffects();
   UpdateFilterSettingsFromExtraEffects();
-}
-
-inline void FilterSettingsService::UpdateFilterSettingsFromExtraEffects()
-{
-  m_filterEffectsSettingsHaveChanged = true;
-  m_randomizedExtraEffects->UpdateFilterSettings(m_filterSettings);
 }
 
 void FilterSettingsService::SetDefaultSettings()
@@ -388,17 +382,12 @@ void FilterSettingsService::SetDefaultSettings()
   m_randomizedExtraEffects->SetDefaults();
 }
 
-inline void FilterSettingsService::SetRandomizedExtraEffects()
-{
-  m_randomizedExtraEffects->UpdateEffects();
-}
-
 inline void FilterSettingsService::SetFilterModeExtraEffects()
 {
   const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
 
-  m_randomizedExtraEffects->SetHypercosOverlayEffect(modeInfo.hypercosWeights.GetRandomWeighted());
-  m_randomizedExtraEffects->SetRotate(modeInfo.rotateProbability);
+  m_randomizedExtraEffects->UpdateAllEffects(modeInfo.hypercosWeights.GetRandomWeighted(),
+                                             modeInfo.rotateProbability);
 
   if ((m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::WAVE_MODE1))
   {
@@ -419,6 +408,12 @@ void FilterSettingsService::SetWaveModeExtraEffects()
         I_HALF *
         (m_filterSettings.filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE));
   }
+}
+
+inline void FilterSettingsService::UpdateFilterSettingsFromExtraEffects()
+{
+  m_filterEffectsSettingsHaveChanged = true;
+  m_randomizedExtraEffects->UpdateFilterSettings(m_filterSettings);
 }
 
 void FilterSettingsService::SetMaxSpeedCoeff()

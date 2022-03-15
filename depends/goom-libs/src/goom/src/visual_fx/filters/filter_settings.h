@@ -2,6 +2,7 @@
 
 #include "goom/goom_graphic.h"
 #include "point2d.h"
+#include "rotation.h"
 
 #include <cstdint>
 #include <memory>
@@ -62,7 +63,6 @@ struct ZoomFilterColorSettings
 };
 
 class ISpeedCoefficientsEffect;
-class Rotation;
 
 struct ZoomFilterEffectsSettings
 {
@@ -71,14 +71,15 @@ struct ZoomFilterEffectsSettings
 
   float maxSpeedCoeff;
   std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect;
-  std::shared_ptr<Rotation> rotation;
+  RotationAdjustments rotationAdjustments;
 
   Point2dInt zoomMidpoint; // milieu de l'effet
 
   bool imageVelocityEffect;
-  bool tanEffect;
-  bool planeEffect;
   bool noiseEffect; // ajoute un bruit a la transformation
+  bool planeEffect;
+  bool rotationEffect;
+  bool tanEffect;
 };
 
 struct ZoomFilterSettings
