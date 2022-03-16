@@ -90,13 +90,22 @@ inline void ZoomVectorEffects::SetRandomRotationSettings()
     return;
   }
 
-  if (m_filterEffectsSettings->rotationAdjustments.AreAdjustmentsPending())
+  using Adj = RotationAdjustments::AdjustmentType;
+
+  switch (m_filterEffectsSettings->rotationAdjustments.GetAdjustmentType())
   {
-    m_theEffects.rotation->ApplyAdjustments(m_filterEffectsSettings->rotationAdjustments);
-  }
-  else
-  {
-    m_theEffects.rotation->SetRandomParams();
+    case Adj::NONE:
+      m_theEffects.rotation->SetRandomParams();
+      break;
+    case Adj::INSTEAD_OF_RANDOM:
+      m_theEffects.rotation->ApplyAdjustments(m_filterEffectsSettings->rotationAdjustments);
+      break;
+    case Adj::AFTER_RANDOM:
+      m_theEffects.rotation->SetRandomParams();
+      m_theEffects.rotation->ApplyAdjustments(m_filterEffectsSettings->rotationAdjustments);
+      break;
+    default:
+      throw std::logic_error("RotationAdjustments::AdjustmentType not implemented.");
   }
 }
 

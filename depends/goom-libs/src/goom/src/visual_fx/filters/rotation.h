@@ -16,16 +16,22 @@ class RotationAdjustments
 public:
   RotationAdjustments() noexcept = default;
 
-  [[nodiscard]] auto AreAdjustmentsPending() const -> bool;
+  enum class AdjustmentType
+  {
+    NONE,
+    AFTER_RANDOM,
+    INSTEAD_OF_RANDOM,
+  };
+  [[nodiscard]] auto GetAdjustmentType() const -> AdjustmentType;
 
   [[nodiscard]] auto IsSetToZero() const -> bool;
-  void SetToZero();
+  void SetToZero(AdjustmentType adjustmentType);
 
   [[nodiscard]] auto IsToggle() const -> bool;
-  void Toggle();
+  void Toggle(AdjustmentType adjustmentType);
 
-  [[nodiscard]] auto GetMultiplyfactor() const -> float;
-  void SetMultiplyFactor(float value);
+  [[nodiscard]] auto GetMultiplyFactor() const -> float;
+  void SetMultiplyFactor(float value, AdjustmentType adjustmentType);
 
   void Reset();
 
@@ -33,7 +39,7 @@ private:
   bool m_setToZero = false;
   bool m_toggle = false;
   float m_multiplyFactor = 1.0F;
-  bool m_adjustmentsPending = false;
+  AdjustmentType m_adjustmentType = AdjustmentType::NONE;
 };
 
 class Rotation
@@ -47,10 +53,9 @@ public:
   auto operator=(Rotation&&) -> Rotation& = delete;
 
   virtual void SetRandomParams();
+  void ApplyAdjustments(const RotationAdjustments& rotationAdjustments);
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
-
-  void ApplyAdjustments(const RotationAdjustments& rotationAdjustments);
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
@@ -76,9 +81,9 @@ private:
   void Toggle();
 };
 
-inline auto RotationAdjustments::AreAdjustmentsPending() const -> bool
+inline auto RotationAdjustments::GetAdjustmentType() const -> AdjustmentType
 {
-  return m_adjustmentsPending;
+  return m_adjustmentType;
 }
 
 inline auto RotationAdjustments::IsSetToZero() const -> bool
@@ -86,10 +91,10 @@ inline auto RotationAdjustments::IsSetToZero() const -> bool
   return m_setToZero;
 }
 
-inline void RotationAdjustments::SetToZero()
+inline void RotationAdjustments::SetToZero(const AdjustmentType adjustmentType)
 {
   m_setToZero = true;
-  m_adjustmentsPending = true;
+  m_adjustmentType = adjustmentType;
 }
 
 inline auto RotationAdjustments::IsToggle() const -> bool
@@ -97,26 +102,27 @@ inline auto RotationAdjustments::IsToggle() const -> bool
   return m_toggle;
 }
 
-inline void RotationAdjustments::Toggle()
+inline void RotationAdjustments::Toggle(const AdjustmentType adjustmentType)
 {
   m_toggle = true;
-  m_adjustmentsPending = true;
+  m_adjustmentType = adjustmentType;
 }
 
-inline auto RotationAdjustments::GetMultiplyfactor() const -> float
+inline auto RotationAdjustments::GetMultiplyFactor() const -> float
 {
   return m_multiplyFactor;
 }
 
-inline void RotationAdjustments::SetMultiplyFactor(const float value)
+inline void RotationAdjustments::SetMultiplyFactor(const float value,
+                                                   const AdjustmentType adjustmentType)
 {
   m_multiplyFactor = value;
-  m_adjustmentsPending = true;
+  m_adjustmentType = adjustmentType;
 }
 
 inline void RotationAdjustments::Reset()
 {
-  m_adjustmentsPending = false;
+  m_adjustmentType = AdjustmentType::NONE;
   m_setToZero = false;
   m_toggle = false;
   m_multiplyFactor = 1.0F;
@@ -141,11 +147,6 @@ inline auto Rotation::GetVelocity(const NormalizedCoords& velocity) const -> Nor
 
 inline void Rotation::ApplyAdjustments(const RotationAdjustments& rotationAdjustments)
 {
-  if (!rotationAdjustments.AreAdjustmentsPending())
-  {
-    return;
-  }
-
   if (rotationAdjustments.IsSetToZero())
   {
     SetZero();
@@ -154,7 +155,7 @@ inline void Rotation::ApplyAdjustments(const RotationAdjustments& rotationAdjust
   {
     Toggle();
   }
-  Multiply(rotationAdjustments.GetMultiplyfactor());
+  Multiply(rotationAdjustments.GetMultiplyFactor());
 }
 
 inline void Rotation::SetZero()

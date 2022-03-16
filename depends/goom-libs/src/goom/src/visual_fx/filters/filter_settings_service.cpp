@@ -384,29 +384,35 @@ void FilterSettingsService::SetDefaultSettings()
 
 inline void FilterSettingsService::SetFilterModeExtraEffects()
 {
+  SetRandomizedExtraEffects();
+  SetWaveModeExtraEffects();
+}
+
+inline void FilterSettingsService::SetRandomizedExtraEffects()
+{
   const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
 
   m_randomizedExtraEffects->UpdateAllEffects(modeInfo.hypercosWeights.GetRandomWeighted(),
                                              modeInfo.rotateProbability);
-
-  if ((m_filterMode == ZoomFilterMode::WAVE_MODE0) || (m_filterMode == ZoomFilterMode::WAVE_MODE1))
-  {
-    SetWaveModeExtraEffects();
-  }
+  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetMultiplyFactor(
+      modeInfo.rotateProbability, RotationAdjustments::AdjustmentType::AFTER_RANDOM);
 }
 
 void FilterSettingsService::SetWaveModeExtraEffects()
 {
+  if ((m_filterMode != ZoomFilterMode::WAVE_MODE0) && (m_filterMode != ZoomFilterMode::WAVE_MODE1))
+  {
+    return;
+  }
+
   m_randomizedExtraEffects->TurnPlaneEffectOn();
 
-  m_filterSettings.filterEffectsSettings.vitesse.SetReverseVitesse(
-      m_goomRand.ProbabilityOf(PROB_REVERSE_SPEED));
-
+  ZoomFilterEffectsSettings& filterEffectsSettings = m_filterSettings.filterEffectsSettings;
+  filterEffectsSettings.vitesse.SetReverseVitesse(m_goomRand.ProbabilityOf(PROB_REVERSE_SPEED));
   if (m_goomRand.ProbabilityOf(PROB_CHANGE_SPEED))
   {
-    m_filterSettings.filterEffectsSettings.vitesse.SetVitesse(
-        I_HALF *
-        (m_filterSettings.filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE));
+    filterEffectsSettings.vitesse.SetVitesse(
+        I_HALF * (filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE));
   }
 }
 

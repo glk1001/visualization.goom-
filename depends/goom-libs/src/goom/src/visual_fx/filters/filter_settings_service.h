@@ -100,6 +100,7 @@ protected:
   virtual void SetDefaultSettings();
   virtual void SetRandomZoomMidpoint();
   virtual void SetFilterModeExtraEffects();
+  virtual void SetRandomizedExtraEffects();
   virtual void SetWaveModeExtraEffects();
   virtual void UpdateFilterSettingsFromExtraEffects();
 
@@ -262,7 +263,8 @@ inline void FilterSettingsService::SetRotationToZero()
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetToZero();
+  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetToZero(
+      RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
 inline void FilterSettingsService::MultiplyRotation(const float factor)
@@ -272,7 +274,8 @@ inline void FilterSettingsService::MultiplyRotation(const float factor)
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetMultiplyFactor(factor);
+  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetMultiplyFactor(
+      factor, RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
 inline void FilterSettingsService::ToggleRotationDirection()
@@ -283,7 +286,8 @@ inline void FilterSettingsService::ToggleRotationDirection()
   }
 
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotationAdjustments.Toggle();
+  m_filterSettings.filterEffectsSettings.rotationAdjustments.Toggle(
+      RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
 inline void FilterSettingsService::SetTranLerpIncrement(const int32_t value)
