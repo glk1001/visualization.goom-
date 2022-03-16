@@ -136,7 +136,6 @@ public:
 
 private:
   const ColorMapName m_mapName;
-  // TODO 'vivid::ColorMap' is NOT noexcept which stops 'PrebuiltColorMap' being noexcept.
   const vivid::ColorMap m_vividColorMap;
 };
 

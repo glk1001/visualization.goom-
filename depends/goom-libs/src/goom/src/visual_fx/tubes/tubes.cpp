@@ -53,7 +53,6 @@ static constexpr uint32_t NUM_SHAPES_PER_TUBE = 45;
 
 static constexpr bool OSCILLATING_SHAPE_PATHS = true;
 
-// TODO: Probability and random should be higher up???????
 static constexpr float PROB_INTERIOR_SHAPE = 45.0F / 50.0F;
 static constexpr uint32_t MAX_INTERIOR_SHAPES_TIME = 500;
 static constexpr float PROB_NO_BOUNDARY_SHAPES = 10.0F / 50.0F;
