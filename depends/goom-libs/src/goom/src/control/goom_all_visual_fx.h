@@ -64,6 +64,8 @@ public:
   void Start();
   void Finish();
 
+  [[nodiscard]] auto GetZoomFilterFx() const -> const VISUAL_FX::ZoomFilterFx&;
+
   void SetNextState();
   [[nodiscard]] auto GetCurrentState() const -> GoomStates;
   [[nodiscard]] auto GetCurrentStateName() const -> std::string_view;
@@ -148,6 +150,11 @@ private:
   [[nodiscard]] static auto GetSameLumaBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
   [[nodiscard]] static auto GetSameLumaMixBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
 };
+
+inline auto GoomAllVisualFx::GetZoomFilterFx() const -> const VISUAL_FX::ZoomFilterFx&
+{
+  return *m_zoomFilterFx;
+}
 
 inline void GoomAllVisualFx::SetNextState()
 {

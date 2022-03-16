@@ -16,6 +16,7 @@ namespace GOOM::CONTROL
 {
 
 using UTILS::Logging;
+using VISUAL_FX::FILTERS::FilterSettingsService;
 using VISUAL_FX::FILTERS::HypercosOverlay;
 using VISUAL_FX::FILTERS::ZoomFilterColorSettings;
 using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
@@ -44,6 +45,8 @@ public:
   void AddCurrentRotationEffect(bool value);
   void AddCurrentTanEffect(bool value);
 
+  void AddBufferLerp(int32_t value);
+
   void AddCurrentTimeSinceLastGoom(uint32_t value);
   void AddCurrentTimeSinceLastBigGoom(uint32_t value);
   void AddCurrentTotalGoomsInCurrentCycle(uint32_t value);
@@ -62,11 +65,13 @@ public:
   [[nodiscard]] auto GetRotationEffects() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetTanEffects() const -> const std::vector<uint8_t>&;
 
-  [[nodiscard]] auto GetTimeSinceLastGoom() const -> const std::vector<uint32_t>&;
-  [[nodiscard]] auto GetTimeSinceLastBigGoom() const -> const std::vector<uint32_t>&;
+  [[nodiscard]] auto GetBufferLerps() const -> const std::vector<int32_t>&;
+
+  [[nodiscard]] auto GetTimesSinceLastGoom() const -> const std::vector<uint32_t>&;
+  [[nodiscard]] auto GetTimesSinceLastBigGoom() const -> const std::vector<uint32_t>&;
   [[nodiscard]] auto GetTotalGoomsInCurrentCycle() const -> const std::vector<uint32_t>&;
-  [[nodiscard]] auto GetGoomPower() const -> const std::vector<float>&;
-  [[nodiscard]] auto GetGoomVolume() const -> const std::vector<float>&;
+  [[nodiscard]] auto GetGoomPowers() const -> const std::vector<float>&;
+  [[nodiscard]] auto GetGoomVolumes() const -> const std::vector<float>&;
 
 private:
   static constexpr uint32_t INITIAL_NUM_UPDATES_ESTIMATE = 5 * 60 * 60 * 25;
@@ -85,20 +90,21 @@ private:
   std::vector<uint8_t> m_rotationEffects{};
   std::vector<uint8_t> m_tanEffects{};
 
-  std::vector<uint32_t> m_timeSinceLastGoom{};
-  std::vector<uint32_t> m_timeSinceLastBigGoom{};
+  std::vector<int32_t> m_bufferLerps{};
+
+  std::vector<uint32_t> m_timesSinceLastGoom{};
+  std::vector<uint32_t> m_timesSinceLastBigGoom{};
   std::vector<uint32_t> m_totalGoomsInCurrentCycle{};
-  std::vector<float> m_goomPower{};
-  std::vector<float> m_goomVolume{};
+  std::vector<float> m_goomPowers{};
+  std::vector<float> m_goomVolumes{};
 
   void Reserve();
 };
 
-GoomStateDump::GoomStateDump(
-    const PluginInfo& goomInfo,
-    const GoomAllVisualFx& visualFx,
-    [[maybe_unused]] const GoomMusicSettingsReactor& musicSettingsReactor,
-    const VISUAL_FX::FILTERS::FilterSettingsService& filterSettingsService) noexcept
+GoomStateDump::GoomStateDump(const PluginInfo& goomInfo,
+                             const GoomAllVisualFx& visualFx,
+                             [[maybe_unused]] const GoomMusicSettingsReactor& musicSettingsReactor,
+                             const FilterSettingsService& filterSettingsService) noexcept
   : m_goomInfo{goomInfo},
     m_visualFx{visualFx},
     //    m_musicSettingsReactor{musicSettingsReactor},
@@ -139,6 +145,8 @@ void GoomStateDump::AddCurrentState()
   m_cumulativeState->AddCurrentPlaneEffect(filterEffectsSettings.planeEffect);
   m_cumulativeState->AddCurrentRotationEffect(filterEffectsSettings.rotationEffect);
   m_cumulativeState->AddCurrentTanEffect(filterEffectsSettings.tanEffect);
+
+  m_cumulativeState->AddBufferLerp(m_visualFx.GetZoomFilterFx().GetTranLerpFactor());
 
   const SoundInfo& soundInfo = m_goomInfo.GetSoundInfo();
   m_cumulativeState->AddCurrentTimeSinceLastGoom(soundInfo.GetTimeSinceLastGoom());
@@ -187,11 +195,13 @@ void GoomStateDump::DumpData(const std::string& directory)
   DumpDataArray("rotation_effects", m_cumulativeState->GetRotationEffects());
   DumpDataArray("tan_effects", m_cumulativeState->GetTanEffects());
 
-  DumpDataArray("time_since_last_goom", m_cumulativeState->GetTimeSinceLastGoom());
-  DumpDataArray("time_since_last_big_goom", m_cumulativeState->GetTimeSinceLastBigGoom());
+  DumpDataArray("buffer_lerps", m_cumulativeState->GetBufferLerps());
+
+  DumpDataArray("time_since_last_goom", m_cumulativeState->GetTimesSinceLastGoom());
+  DumpDataArray("time_since_last_big_goom", m_cumulativeState->GetTimesSinceLastBigGoom());
   DumpDataArray("total_gooms_in_current_cycle", m_cumulativeState->GetTotalGoomsInCurrentCycle());
-  DumpDataArray("goom_power", m_cumulativeState->GetGoomPower());
-  DumpDataArray("goom_volume", m_cumulativeState->GetGoomVolume());
+  DumpDataArray("goom_power", m_cumulativeState->GetGoomPowers());
+  DumpDataArray("goom_volume", m_cumulativeState->GetGoomVolumes());
 }
 
 void GoomStateDump::DumpSummary() const
@@ -254,6 +264,7 @@ inline void GoomStateDump::CumulativeState::Reserve()
   m_updateTimesInMs.reserve(m_numUpdatesEstimate);
   m_goomStates.reserve(m_numUpdatesEstimate);
   m_filterModes.reserve(m_numUpdatesEstimate);
+  m_bufferLerps.reserve(m_numUpdatesEstimate);
   m_hypercosOverlays.reserve(m_numUpdatesEstimate);
   m_blockyWavyEffects.reserve(m_numUpdatesEstimate);
   m_imageVelocityEffects.reserve(m_numUpdatesEstimate);
@@ -320,6 +331,11 @@ inline void GoomStateDump::CumulativeState::AddCurrentRotationEffect(const bool 
   m_rotationEffects.push_back(static_cast<uint8_t>(value));
 }
 
+inline void GoomStateDump::CumulativeState::AddBufferLerp(const int32_t value)
+{
+  m_bufferLerps.push_back(value);
+}
+
 inline void GoomStateDump::CumulativeState::AddCurrentTanEffect(const bool value)
 {
   m_tanEffects.push_back(static_cast<uint8_t>(value));
@@ -327,12 +343,12 @@ inline void GoomStateDump::CumulativeState::AddCurrentTanEffect(const bool value
 
 inline void GoomStateDump::CumulativeState::AddCurrentTimeSinceLastGoom(const uint32_t value)
 {
-  m_timeSinceLastGoom.push_back(value);
+  m_timesSinceLastGoom.push_back(value);
 }
 
 inline void GoomStateDump::CumulativeState::AddCurrentTimeSinceLastBigGoom(const uint32_t value)
 {
-  m_timeSinceLastBigGoom.push_back(value);
+  m_timesSinceLastBigGoom.push_back(value);
 }
 
 inline void GoomStateDump::CumulativeState::AddCurrentTotalGoomsInCurrentCycle(const uint32_t value)
@@ -342,12 +358,12 @@ inline void GoomStateDump::CumulativeState::AddCurrentTotalGoomsInCurrentCycle(c
 
 inline void GoomStateDump::CumulativeState::AddCurrentGoomPower(const float value)
 {
-  m_goomPower.push_back(value);
+  m_goomPowers.push_back(value);
 }
 
 inline void GoomStateDump::CumulativeState::AddCurrentGoomVolume(const float value)
 {
-  m_goomVolume.push_back(value);
+  m_goomVolumes.push_back(value);
 }
 
 inline auto GoomStateDump::CumulativeState::GetNumUpdates() const -> uint32_t
@@ -405,21 +421,26 @@ inline auto GoomStateDump::CumulativeState::GetRotationEffects() const
   return m_rotationEffects;
 }
 
+inline auto GoomStateDump::CumulativeState::GetBufferLerps() const -> const std::vector<int32_t>&
+{
+  return m_bufferLerps;
+}
+
 inline auto GoomStateDump::CumulativeState::GetTanEffects() const -> const std::vector<uint8_t>&
 {
   return m_tanEffects;
 }
 
-inline auto GoomStateDump::CumulativeState::GetTimeSinceLastGoom() const
+inline auto GoomStateDump::CumulativeState::GetTimesSinceLastGoom() const
     -> const std::vector<uint32_t>&
 {
-  return m_timeSinceLastGoom;
+  return m_timesSinceLastGoom;
 }
 
-inline auto GoomStateDump::CumulativeState::GetTimeSinceLastBigGoom() const
+inline auto GoomStateDump::CumulativeState::GetTimesSinceLastBigGoom() const
     -> const std::vector<uint32_t>&
 {
-  return m_timeSinceLastBigGoom;
+  return m_timesSinceLastBigGoom;
 }
 
 inline auto GoomStateDump::CumulativeState::GetTotalGoomsInCurrentCycle() const
@@ -428,14 +449,14 @@ inline auto GoomStateDump::CumulativeState::GetTotalGoomsInCurrentCycle() const
   return m_totalGoomsInCurrentCycle;
 }
 
-inline auto GoomStateDump::CumulativeState::GetGoomPower() const -> const std::vector<float>&
+inline auto GoomStateDump::CumulativeState::GetGoomPowers() const -> const std::vector<float>&
 {
-  return m_goomPower;
+  return m_goomPowers;
 }
 
-inline auto GoomStateDump::CumulativeState::GetGoomVolume() const -> const std::vector<float>&
+inline auto GoomStateDump::CumulativeState::GetGoomVolumes() const -> const std::vector<float>&
 {
-  return m_goomVolume;
+  return m_goomVolumes;
 }
 
 } // namespace GOOM::CONTROL

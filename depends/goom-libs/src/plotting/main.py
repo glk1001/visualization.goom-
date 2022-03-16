@@ -148,14 +148,18 @@ def plot(subdirs):
             DataType('rotation_effects.dat', 'rot', 0, 1, (0, 1), 'orange', True),
             DataType('tan_effects.dat', 'tan', 0, 1, (0, 1), 'orange', True),
     ]
+    buffer_data = [
+            DataType('buffer_lerps.dat', 'ler', 0, -1, (), 'red', False),
+    ]
     update_times_data = [
             DataType('update_times.dat', 'upd', 0, -1, (), 'black', False),
     ]
 
     plot_data = [
             main_data,
-            #            sound_data,
-            effects_data,
+            # sound_data,
+            # effects_data,
+            buffer_data,
             update_times_data
     ]
 

@@ -33,10 +33,10 @@ auto GoomStateMonitor::GetCurrentState() const -> std::string
 
   message += GetNameValuesString(GetStateAndFilterModeNameValueParams()) + "\n";
   message += GetNameValuesString(GetShaderEffectsNameValueParams()) + "\n";
-  message += GetNameValuesString(GetFilterBufferValueParams()) + "\n";
-  message += GetNameValuesString(GetFilterEffectsNameValueParams()) + "\n";
   message += GetNameValuesString(GetMusicSettingsNameValueParams()) + "\n";
+  message += GetNameValuesString(GetFilterBufferValueParams()) + "\n";
   message += GetNameValuesString(GetZoomFilterFxNameValueParams());
+  message += GetNameValuesString(GetFilterEffectsNameValueParams()) + "\n";
 
   return message;
 }
