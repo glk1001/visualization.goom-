@@ -81,16 +81,6 @@ void ExtraEffectsStates::UpdateFilterSettingsFromStates(ZoomFilterSettings& filt
   filterSettings.filterEffectsSettings.tanEffect = m_tanEffect->IsTurnedOn();
 }
 
-void ExtraEffectsStates::TurnPlaneEffectOn()
-{
-  if constexpr (EXTRA_EFFECTS_TURNED_OFF)
-  {
-    return;
-  }
-
-  m_planeEffect->SetState(true);
-}
-
 void ExtraEffectsStates::SetDefaults()
 {
   m_hypercosOverlayEffect = DEFAULT_HYPERCOS_OVERLAY;
@@ -111,7 +101,8 @@ void ExtraEffectsStates::UpdateTimers()
   m_tanEffect->UpdateTimer();
 }
 
-void ExtraEffectsStates::ResetAllStates(const HypercosOverlay value, const float rotateProbability)
+void ExtraEffectsStates::ResetAllStates(const HypercosOverlay value,
+                                        const ExtraEffectsProbabilities& effectsProbabilities)
 {
   if constexpr (EXTRA_EFFECTS_TURNED_OFF)
   {
@@ -119,23 +110,23 @@ void ExtraEffectsStates::ResetAllStates(const HypercosOverlay value, const float
   }
 
   m_hypercosOverlayEffect = value;
-  m_rotationEffect->UpdateState(rotateProbability);
 
-  ResetStandardStates();
+  ResetStandardStates(effectsProbabilities);
 }
 
-void ExtraEffectsStates::ResetStandardStates()
+void ExtraEffectsStates::ResetStandardStates(const ExtraEffectsProbabilities& effectsProbabilities)
 {
   if constexpr (EXTRA_EFFECTS_TURNED_OFF)
   {
     return;
   }
 
-  m_blockyWavyEffect->UpdateState(PROB_BLOCKY_WAVY_EFFECT);
-  m_imageVelocityEffect->UpdateState(PROB_IMAGE_VELOCITY_EFFECT);
-  m_noiseEffect->UpdateState(PROB_NOISE_EFFECT);
-  m_planeEffect->UpdateState(PROB_PLANE_EFFECT);
-  m_tanEffect->UpdateState(PROB_TAN_EFFECT);
+  m_blockyWavyEffect->UpdateState(effectsProbabilities.blockWavyProbability);
+  m_imageVelocityEffect->UpdateState(effectsProbabilities.imageVelocityProbability);
+  m_noiseEffect->UpdateState(effectsProbabilities.noiseProbability);
+  m_planeEffect->UpdateState(effectsProbabilities.planeProbability);
+  m_rotationEffect->UpdateState(effectsProbabilities.rotateProbability);
+  m_tanEffect->UpdateState(effectsProbabilities.tanEffectProbability);
 }
 
 void ExtraEffectsStates::CheckForPendingOffTimers()

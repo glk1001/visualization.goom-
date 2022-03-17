@@ -1,5 +1,6 @@
 #pragma once
 
+#include "extra_effects_states.h"
 #include "filter_settings.h"
 #include "rotation.h"
 #include "speed_coefficients_effect.h"
@@ -18,7 +19,6 @@ class PluginInfo;
 
 namespace VISUAL_FX::FILTERS
 {
-class ExtraEffectsStates;
 
 enum class ZoomFilterMode
 {
@@ -122,8 +122,8 @@ private:
   {
     const std::string_view name;
     std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
-    const float rotateProbability;
-    UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
+    const ExtraEffectsProbabilities extraEffectsProbabilities;
+    const UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
   };
   std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
   [[nodiscard]] static auto GetFilterModeData(
@@ -131,13 +131,6 @@ private:
       const std::string& resourcesDirectory,
       const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect)
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
-  struct FilterModeData
-  {
-    ZoomFilterMode filterMode;
-    const char* name;
-    float rotateProb;
-    std::vector<std::pair<HypercosOverlay, float>> modeWeights;
-  };
 
   static constexpr uint32_t DEFAULT_ZOOM_MID_X = 16;
   static constexpr uint32_t DEFAULT_ZOOM_MID_Y = 1;

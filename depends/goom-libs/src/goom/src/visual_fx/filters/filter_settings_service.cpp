@@ -22,16 +22,6 @@ using UTILS::MATH::U_QUARTER;
 using UTILS::MATH::U_THREE_QUARTERS;
 using UTILS::MATH::Weights;
 
-template<class E, size_t N>
-inline auto ToMap(const std::array<std::pair<E, float>, N>& stdArray) -> std::map<E, float>
-{
-  std::map<E, float> map{};
-  for (const auto& element : stdArray)
-  {
-    map.emplace(element.first, element.second);
-  }
-  return map;
-}
 
 // For debugging:
 static constexpr bool USE_FORCED_FILTER_MODE = false;
@@ -95,114 +85,343 @@ static constexpr float TOP_LEFT_QUARTER_MID_POINT_WEIGHT     = 10.0F;
 static constexpr float BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
 // clang-format on
 
-// TODO - When we get to use C++20 we can simplify things with
-//        constexpr std::vector.
-static constexpr std::array CRYSTAL_BALL_MODE0_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::CRYSTAL_BALL_MODE1, 0.0F},
+// TODO - When we get to use C++20, then replace the below 'inline consts' with 'static constexpr'.
+
+// clang-format off
+inline const std::map<ZoomFilterMode, float> CRYSTAL_BALL_MODE0_MULTIPLIERS{
+  {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
+  {ZoomFilterMode::CRYSTAL_BALL_MODE1, 0.0F},
 };
-static constexpr std::array CRYSTAL_BALL_MODE1_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::CRYSTAL_BALL_MODE1, 0.0F},
+inline const std::map<ZoomFilterMode, float> CRYSTAL_BALL_MODE1_MULTIPLIERS {
+  {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
+  {ZoomFilterMode::CRYSTAL_BALL_MODE1, 0.0F},
 };
-static constexpr std::array NORMAL_MODE_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::NORMAL_MODE, 1.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::DISTANCE_FIELD_MODE, 2.0F},
+inline const std::map<ZoomFilterMode, float> NORMAL_MODE_MULTIPLIERS {
+  {ZoomFilterMode::NORMAL_MODE, 1.0F},
+  {ZoomFilterMode::DISTANCE_FIELD_MODE, 2.0F},
 };
-static constexpr std::array HYPERCOS_MODE0_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE0, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
+inline const std::map<ZoomFilterMode, float> HYPERCOS_MODE0_MULTIPLIERS {
+  {ZoomFilterMode::HYPERCOS_MODE0, 0.0F},
+  {ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
+  {ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
+  {ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
 };
-static constexpr std::array HYPERCOS_MODE1_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
+inline const std::map<ZoomFilterMode, float> HYPERCOS_MODE1_MULTIPLIERS {
+  {ZoomFilterMode::HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
+  {ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
+  {ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
+  {ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
 };
-static constexpr std::array HYPERCOS_MODE2_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
+inline const std::map<ZoomFilterMode, float> HYPERCOS_MODE2_MULTIPLIERS {
+  {ZoomFilterMode::HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
+  {ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
+  {ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
+  {ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
 };
-static constexpr std::array HYPERCOS_MODE3_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
+inline const std::map<ZoomFilterMode, float> HYPERCOS_MODE3_MULTIPLIERS {
+  {ZoomFilterMode::HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
+  {ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
+  {ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
+  {ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
 };
-static constexpr std::array SPEEDWAY_MODE0_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::SPEEDWAY_MODE0, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::SPEEDWAY_MODE1, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::SPEEDWAY_MODE2, 0.0F},
+inline const std::map<ZoomFilterMode, float> SPEEDWAY_MODE0_MULTIPLIERS {
+  {ZoomFilterMode::SPEEDWAY_MODE0, 0.0F},
+  {ZoomFilterMode::SPEEDWAY_MODE1, 0.0F},
+  {ZoomFilterMode::SPEEDWAY_MODE2, 0.0F},
 };
-static constexpr std::array SPEEDWAY_MODE1_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::SPEEDWAY_MODE0, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::SPEEDWAY_MODE1, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::SPEEDWAY_MODE2, 0.0F},
+inline const std::map<ZoomFilterMode, float> SPEEDWAY_MODE1_MULTIPLIERS {
+  {ZoomFilterMode::SPEEDWAY_MODE0, 0.0F},
+  {ZoomFilterMode::SPEEDWAY_MODE1, 0.0F},
+  {ZoomFilterMode::SPEEDWAY_MODE2, 0.0F},
 };
-static constexpr std::array SPEEDWAY_MODE2_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::SPEEDWAY_MODE0, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::SPEEDWAY_MODE1, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::SPEEDWAY_MODE2, 0.0F},
+inline const std::map<ZoomFilterMode, float> SPEEDWAY_MODE2_MULTIPLIERS {
+  {ZoomFilterMode::SPEEDWAY_MODE0, 0.0F},
+  {ZoomFilterMode::SPEEDWAY_MODE1, 0.0F},
+  {ZoomFilterMode::SPEEDWAY_MODE2, 0.0F},
 };
-static constexpr std::array WAVE_MODE0_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::WAVE_MODE0, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::WAVE_MODE1, 0.0F},
+inline const std::map<ZoomFilterMode, float> WAVE_MODE0_MULTIPLIERS {
+  {ZoomFilterMode::WAVE_MODE0, 0.0F},
+  {ZoomFilterMode::WAVE_MODE1, 0.0F},
 };
-static constexpr std::array WAVE_MODE1_MULTIPLIERS {
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::WAVE_MODE0, 0.0F},
-  std::pair<ZoomFilterMode, float>{ZoomFilterMode::WAVE_MODE1, 0.0F},
+inline const std::map<ZoomFilterMode, float> WAVE_MODE1_MULTIPLIERS {
+  {ZoomFilterMode::WAVE_MODE0, 0.0F},
+  {ZoomFilterMode::WAVE_MODE1, 0.0F},
+};
+// clang-format on
+
+// clang-format off
+inline const std::map<ZoomFilterMode, std::string_view> FILTER_MODE_NAMES{
+  { ZoomFilterMode::AMULET_MODE,             "Amulet"},
+  { ZoomFilterMode::CRYSTAL_BALL_MODE0,      "Crystal Ball Mode 0"},
+  { ZoomFilterMode::CRYSTAL_BALL_MODE1,      "Crystal Ball Mode 1"},
+  { ZoomFilterMode::DISTANCE_FIELD_MODE,     "Distance Field" },
+  { ZoomFilterMode::HYPERCOS_MODE0,          "Hypercos Mode 0"},
+  { ZoomFilterMode::HYPERCOS_MODE1,          "Hypercos Mode 1"},
+  { ZoomFilterMode::HYPERCOS_MODE2,          "Hypercos Mode 2"},
+  { ZoomFilterMode::HYPERCOS_MODE3,          "Hypercos Mode 3"},
+  { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, "Image Displacement"},
+  { ZoomFilterMode::NORMAL_MODE,             "Normal"},
+  { ZoomFilterMode::SCRUNCH_MODE,            "Scrunch"},
+  { ZoomFilterMode::SPEEDWAY_MODE0,          "Speedway Mode 0"},
+  { ZoomFilterMode::SPEEDWAY_MODE1,          "Speedway Mode 1"},
+  { ZoomFilterMode::SPEEDWAY_MODE2,          "Speedway Mode 2"},
+  { ZoomFilterMode::WATER_MODE,              "Water"},
+  { ZoomFilterMode::WAVE_MODE0,              "Wave Mode 0"},
+  { ZoomFilterMode::WAVE_MODE1,              "Wave Mode 1"},
+  { ZoomFilterMode::Y_ONLY_MODE,             "Y Only"},
 };
 
-static constexpr float AMULET_PROB_ROTATE = PROB_HIGH;
-static constexpr float CRYSTAL_BALL0_PROB_ROTATE = PROB_HIGH;
-static constexpr float CRYSTAL_BALL1_PROB_ROTATE = PROB_HIGH;
-static constexpr float DISTANCE_FIELD_PROB_ROTATE = PROB_HIGH;
-static constexpr float HYPERCOS0_PROB_ROTATE = PROB_LOW;
-static constexpr float HYPERCOS1_PROB_ROTATE = PROB_LOW;
-static constexpr float HYPERCOS2_PROB_ROTATE = PROB_LOW;
-static constexpr float HYPERCOS3_PROB_ROTATE = PROB_LOW;
+static constexpr float AMULET_PROB_ROTATE             = PROB_HIGH;
+static constexpr float CRYSTAL_BALL0_PROB_ROTATE      = PROB_HIGH;
+static constexpr float CRYSTAL_BALL1_PROB_ROTATE      = PROB_HIGH;
+static constexpr float DISTANCE_FIELD_PROB_ROTATE     = PROB_HIGH;
+static constexpr float HYPERCOS0_PROB_ROTATE          = PROB_LOW;
+static constexpr float HYPERCOS1_PROB_ROTATE          = PROB_LOW;
+static constexpr float HYPERCOS2_PROB_ROTATE          = PROB_LOW;
+static constexpr float HYPERCOS3_PROB_ROTATE          = PROB_LOW;
 static constexpr float IMAGE_DISPLACEMENT_PROB_ROTATE = PROB_ZERO;
-static constexpr float NORMAL_PROB_ROTATE = PROB_ZERO;
-static constexpr float SCRUNCH_PROB_ROTATE = PROB_HALF;
-static constexpr float SPEEDWAY0_PROB_ROTATE = PROB_HALF;
-static constexpr float SPEEDWAY1_PROB_ROTATE = PROB_HIGH;
-static constexpr float SPEEDWAY2_PROB_ROTATE = PROB_HIGH;
-static constexpr float WATER_PROB_ROTATE = PROB_ZERO;
-static constexpr float WAVE0_PROB_ROTATE = PROB_HIGH;
-static constexpr float WAVE1_PROB_ROTATE = PROB_HIGH;
-static constexpr float Y_ONLY_PROB_ROTATE = PROB_HALF;
+static constexpr float NORMAL_PROB_ROTATE             = PROB_ZERO;
+static constexpr float SCRUNCH_PROB_ROTATE            = PROB_HALF;
+static constexpr float SPEEDWAY0_PROB_ROTATE          = PROB_HALF;
+static constexpr float SPEEDWAY1_PROB_ROTATE          = PROB_HIGH;
+static constexpr float SPEEDWAY2_PROB_ROTATE          = PROB_HIGH;
+static constexpr float WATER_PROB_ROTATE              = PROB_ZERO;
+static constexpr float WAVE0_PROB_ROTATE              = PROB_HIGH;
+static constexpr float WAVE1_PROB_ROTATE              = PROB_HIGH;
+static constexpr float Y_ONLY_PROB_ROTATE             = PROB_HALF;
+
+static constexpr float DEFAULT_PROB_BLOCKY_WAVY_EFFECT    = 0.3F;
+static constexpr float DEFAULT_PROB_IMAGE_VELOCITY_EFFECT = 0.1F;
+static constexpr float DEFAULT_PROB_NOISE_EFFECT          = 0.1F;
+static constexpr float DEFAULT_PROB_PLANE_EFFECT          = 0.8F;
+static constexpr float DEFAULT_PROB_TAN_EFFECT            = 0.2F;
+
+static constexpr float WAVE0_PROB_PLANE_EFFECT = 1.0F;
+static constexpr float WAVE1_PROB_PLANE_EFFECT = 1.0F;
+
+inline const std::map<ZoomFilterMode, ExtraEffectsProbabilities> EFFECTS_PROBABILITIES{
+  { ZoomFilterMode::AMULET_MODE, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      AMULET_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::CRYSTAL_BALL_MODE0, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      CRYSTAL_BALL0_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::CRYSTAL_BALL_MODE1, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      CRYSTAL_BALL1_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::DISTANCE_FIELD_MODE, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      DISTANCE_FIELD_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::HYPERCOS_MODE0, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      HYPERCOS0_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::HYPERCOS_MODE1, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      HYPERCOS1_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::HYPERCOS_MODE2, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      HYPERCOS2_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::HYPERCOS_MODE3, {
+    DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+    DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+    DEFAULT_PROB_NOISE_EFFECT,
+    DEFAULT_PROB_PLANE_EFFECT,
+    HYPERCOS3_PROB_ROTATE,
+    DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      IMAGE_DISPLACEMENT_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::NORMAL_MODE, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      NORMAL_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::SCRUNCH_MODE, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      SCRUNCH_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::SPEEDWAY_MODE0, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      SPEEDWAY0_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::SPEEDWAY_MODE1, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      SPEEDWAY1_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::SPEEDWAY_MODE2, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      SPEEDWAY2_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::WATER_MODE, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      WATER_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::WAVE_MODE0, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      WAVE0_PROB_PLANE_EFFECT,
+      WAVE0_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::WAVE_MODE1, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      WAVE1_PROB_PLANE_EFFECT,
+      WAVE1_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+  { ZoomFilterMode::Y_ONLY_MODE, {
+      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+      DEFAULT_PROB_NOISE_EFFECT,
+      DEFAULT_PROB_PLANE_EFFECT,
+      Y_ONLY_PROB_ROTATE,
+      DEFAULT_PROB_TAN_EFFECT
+    }
+  },
+};
 
 using Hyp = HypercosOverlay;
 using ModeWeights = std::vector<std::pair<HypercosOverlay, float>>;
 
-// TODO - Use 'constexpr' when we get to use C++20.
-static const ModeWeights AMULET_WEIGHTS      = {{ {Hyp::NONE, 20.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights CRYS_BALL0_WEIGHTS  = {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights CRYS_BALL1_WEIGHTS  = {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1, 99.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights DIST_FIELD_WEIGHTS  = {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights HYPERCOS0_WEIGHTS   = {{ {Hyp::NONE,  0.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  0.0F}, {Hyp::MODE2,  0.0F}, {Hyp::MODE3,  0.0F} }};
-static const ModeWeights HYPERCOS1_WEIGHTS   = {{ {Hyp::NONE,  0.0F}, {Hyp::MODE0,  0.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  0.0F}, {Hyp::MODE3,  0.0F} }};
-static const ModeWeights HYPERCOS2_WEIGHTS   = {{ {Hyp::NONE,  0.0F}, {Hyp::MODE0,  0.0F}, {Hyp::MODE1,  0.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  0.0F} }};
-static const ModeWeights HYPERCOS3_WEIGHTS   = {{ {Hyp::NONE,  0.0F}, {Hyp::MODE0,  0.0F}, {Hyp::MODE1,  0.0F}, {Hyp::MODE2,  0.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights IMAGE_DISPL_WEIGHTS = {{ {Hyp::NONE, 99.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights NORMAL_WEIGHTS      = {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  0.0F} }};
-static const ModeWeights SCRUNCH_WEIGHTS     = {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights SPEEDWAY0_WEIGHTS   = {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights SPEEDWAY1_WEIGHTS   = {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights SPEEDWAY2_WEIGHTS   = {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights WATER_WEIGHTS       = {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights WAVE0_WEIGHTS       = {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights WAVE1_WEIGHTS       = {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }};
-static const ModeWeights Y_ONLY_WEIGHTS = {
-    {{Hyp::NONE, 10.0F},
-     {Hyp::MODE0, 1.0F},
-     {Hyp::MODE1, 5.0F},
-     {Hyp::MODE2, 1.0F},
-     {Hyp::MODE3, 1.0F}}
+inline const std::map<ZoomFilterMode, ModeWeights> HYPERCOS_WEIGHTS{
+  { ZoomFilterMode::AMULET_MODE,
+    {{ {Hyp::NONE, 20.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::CRYSTAL_BALL_MODE0,
+    {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::CRYSTAL_BALL_MODE1,
+    {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1, 99.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::DISTANCE_FIELD_MODE,
+    {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::HYPERCOS_MODE0,
+    {{ {Hyp::NONE,  0.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  0.0F}, {Hyp::MODE2,  0.0F}, {Hyp::MODE3,  0.0F} }}
+  },
+  { ZoomFilterMode::HYPERCOS_MODE1,
+    {{ {Hyp::NONE,  0.0F}, {Hyp::MODE0,  0.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  0.0F}, {Hyp::MODE3,  0.0F} }}
+  },
+  { ZoomFilterMode::HYPERCOS_MODE2,
+    {{ {Hyp::NONE,  0.0F}, {Hyp::MODE0,  0.0F}, {Hyp::MODE1,  0.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  0.0F} }}
+  },
+  { ZoomFilterMode::HYPERCOS_MODE3,
+    {{ {Hyp::NONE,  0.0F}, {Hyp::MODE0,  0.0F}, {Hyp::MODE1,  0.0F}, {Hyp::MODE2,  0.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,
+    {{ {Hyp::NONE, 99.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::NORMAL_MODE,
+    {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  0.0F} }}
+  },
+  { ZoomFilterMode::SCRUNCH_MODE,
+    {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::SPEEDWAY_MODE0,
+    {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::SPEEDWAY_MODE1,
+    {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::SPEEDWAY_MODE2,
+    {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::WATER_MODE,
+    {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::WAVE_MODE0,
+    {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::WAVE_MODE1,
+    {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::Y_ONLY_MODE,
+    {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
 };
 // clang-format on
 
@@ -212,41 +431,22 @@ auto FilterSettingsService::GetFilterModeData(
     const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect)
     -> std::map<ZoomFilterMode, ZoomFilterModeInfo>
 {
-  // clang-format off
-  // TODO - Use 'constexpr' when we get to use C++20.
-  static const std::array<FilterModeData, NUM<ZoomFilterMode>> s_ZOOM_FILTER_DATA = {{
-      { ZoomFilterMode::AMULET_MODE, "Amulet", AMULET_PROB_ROTATE, AMULET_WEIGHTS },
-      { ZoomFilterMode::CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0", CRYSTAL_BALL0_PROB_ROTATE, CRYS_BALL0_WEIGHTS },
-      { ZoomFilterMode::CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1", CRYSTAL_BALL1_PROB_ROTATE, CRYS_BALL1_WEIGHTS },
-      { ZoomFilterMode::DISTANCE_FIELD_MODE, "Distance Field", DISTANCE_FIELD_PROB_ROTATE, DIST_FIELD_WEIGHTS },
-      { ZoomFilterMode::HYPERCOS_MODE0, "Hypercos Mode 0", HYPERCOS0_PROB_ROTATE, HYPERCOS0_WEIGHTS},
-      { ZoomFilterMode::HYPERCOS_MODE1, "Hypercos Mode 1", HYPERCOS1_PROB_ROTATE, HYPERCOS1_WEIGHTS},
-      { ZoomFilterMode::HYPERCOS_MODE2, "Hypercos Mode 2", HYPERCOS2_PROB_ROTATE, HYPERCOS2_WEIGHTS},
-      { ZoomFilterMode::HYPERCOS_MODE3, "Hypercos Mode 3", HYPERCOS3_PROB_ROTATE, HYPERCOS3_WEIGHTS},
-      { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, "Image Displacement", IMAGE_DISPLACEMENT_PROB_ROTATE, IMAGE_DISPL_WEIGHTS},
-      { ZoomFilterMode::NORMAL_MODE, "Normal", NORMAL_PROB_ROTATE, NORMAL_WEIGHTS},
-      { ZoomFilterMode::SCRUNCH_MODE, "Scrunch", SCRUNCH_PROB_ROTATE, SCRUNCH_WEIGHTS},
-      { ZoomFilterMode::SPEEDWAY_MODE0, "Speedway Mode 0", SPEEDWAY0_PROB_ROTATE, SPEEDWAY0_WEIGHTS},
-      { ZoomFilterMode::SPEEDWAY_MODE1, "Speedway Mode 1", SPEEDWAY1_PROB_ROTATE, SPEEDWAY1_WEIGHTS},
-      { ZoomFilterMode::SPEEDWAY_MODE2, "Speedway Mode 2", SPEEDWAY2_PROB_ROTATE, SPEEDWAY2_WEIGHTS},
-      { ZoomFilterMode::WATER_MODE, "Water", WATER_PROB_ROTATE, WATER_WEIGHTS},
-      { ZoomFilterMode::WAVE_MODE0, "Wave Mode 0", WAVE0_PROB_ROTATE, WAVE0_WEIGHTS},
-      { ZoomFilterMode::WAVE_MODE1, "Wave Mode 1", WAVE1_PROB_ROTATE, WAVE1_WEIGHTS},
-      { ZoomFilterMode::Y_ONLY_MODE, "Y Only", Y_ONLY_PROB_ROTATE, Y_ONLY_WEIGHTS},
-  }};
-  // clang-format on
+  assert(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
+  assert(EFFECTS_PROBABILITIES.size() == NUM<ZoomFilterMode>);
+  assert(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
 
   std::map<ZoomFilterMode, ZoomFilterModeInfo> filterMap{};
 
-  for (const auto& filterModeData : s_ZOOM_FILTER_DATA)
+  for (size_t i = 0; i < NUM<ZoomFilterMode>; ++i)
   {
+    const auto filterMode = static_cast<ZoomFilterMode>(i);
+
     filterMap.try_emplace(
-        filterModeData.filterMode,
-        ZoomFilterModeInfo{
-            std::string(filterModeData.name),
-            createSpeedCoefficientsEffect(filterModeData.filterMode, goomRand, resourcesDirectory),
-            filterModeData.rotateProb,
-            Weights<Hyp>{goomRand, filterModeData.modeWeights},
+        filterMode, ZoomFilterModeInfo{
+                        FILTER_MODE_NAMES.at(filterMode),
+                        createSpeedCoefficientsEffect(filterMode, goomRand, resourcesDirectory),
+                        EFFECTS_PROBABILITIES.at(filterMode),
+                        Weights<Hyp>{goomRand, HYPERCOS_WEIGHTS.at(filterMode)},
     });
   }
 
@@ -304,18 +504,18 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
             {ZoomFilterMode::Y_ONLY_MODE,             Y_ONLY_MODE_WEIGHT},
         },
         {
-            {ZoomFilterMode::CRYSTAL_BALL_MODE0, ToMap(CRYSTAL_BALL_MODE0_MULTIPLIERS)},
-            {ZoomFilterMode::CRYSTAL_BALL_MODE1, ToMap(CRYSTAL_BALL_MODE1_MULTIPLIERS)},
-            {ZoomFilterMode::NORMAL_MODE,        ToMap(NORMAL_MODE_MULTIPLIERS)},
-            {ZoomFilterMode::HYPERCOS_MODE0,     ToMap(HYPERCOS_MODE0_MULTIPLIERS)},
-            {ZoomFilterMode::HYPERCOS_MODE1,     ToMap(HYPERCOS_MODE1_MULTIPLIERS)},
-            {ZoomFilterMode::HYPERCOS_MODE2,     ToMap(HYPERCOS_MODE2_MULTIPLIERS)},
-            {ZoomFilterMode::HYPERCOS_MODE3,     ToMap(HYPERCOS_MODE3_MULTIPLIERS)},
-            {ZoomFilterMode::SPEEDWAY_MODE0,     ToMap(SPEEDWAY_MODE0_MULTIPLIERS)},
-            {ZoomFilterMode::SPEEDWAY_MODE1,     ToMap(SPEEDWAY_MODE1_MULTIPLIERS)},
-            {ZoomFilterMode::SPEEDWAY_MODE2,     ToMap(SPEEDWAY_MODE2_MULTIPLIERS)},
-            {ZoomFilterMode::WAVE_MODE0,         ToMap(WAVE_MODE0_MULTIPLIERS)},
-            {ZoomFilterMode::WAVE_MODE1,         ToMap(WAVE_MODE1_MULTIPLIERS)},
+            {ZoomFilterMode::CRYSTAL_BALL_MODE0, CRYSTAL_BALL_MODE0_MULTIPLIERS},
+            {ZoomFilterMode::CRYSTAL_BALL_MODE1, CRYSTAL_BALL_MODE1_MULTIPLIERS},
+            {ZoomFilterMode::NORMAL_MODE,        NORMAL_MODE_MULTIPLIERS},
+            {ZoomFilterMode::HYPERCOS_MODE0,     HYPERCOS_MODE0_MULTIPLIERS},
+            {ZoomFilterMode::HYPERCOS_MODE1,     HYPERCOS_MODE1_MULTIPLIERS},
+            {ZoomFilterMode::HYPERCOS_MODE2,     HYPERCOS_MODE2_MULTIPLIERS},
+            {ZoomFilterMode::HYPERCOS_MODE3,     HYPERCOS_MODE3_MULTIPLIERS},
+            {ZoomFilterMode::SPEEDWAY_MODE0,     SPEEDWAY_MODE0_MULTIPLIERS},
+            {ZoomFilterMode::SPEEDWAY_MODE1,     SPEEDWAY_MODE1_MULTIPLIERS},
+            {ZoomFilterMode::SPEEDWAY_MODE2,     SPEEDWAY_MODE2_MULTIPLIERS},
+            {ZoomFilterMode::WAVE_MODE0,         WAVE_MODE0_MULTIPLIERS},
+            {ZoomFilterMode::WAVE_MODE1,         WAVE_MODE1_MULTIPLIERS},
         },
     },
     m_zoomMidpointWeights{
@@ -393,7 +593,8 @@ inline void FilterSettingsService::SetFilterModeExtraEffects()
 
 void FilterSettingsService::ResetRandomExtraEffects()
 {
-  m_randomizedExtraEffects->ResetStandardStates();
+  const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
+  m_randomizedExtraEffects->ResetStandardStates(modeInfo.extraEffectsProbabilities);
   m_filterEffectsSettingsHaveChanged = true;
 }
 
@@ -402,10 +603,11 @@ inline void FilterSettingsService::SetRandomizedExtraEffects()
   const ZoomFilterModeInfo& modeInfo = m_filterModeData.at(m_filterMode);
 
   m_randomizedExtraEffects->ResetAllStates(modeInfo.hypercosWeights.GetRandomWeighted(),
-                                           modeInfo.rotateProbability);
+                                           modeInfo.extraEffectsProbabilities);
 
   m_filterSettings.filterEffectsSettings.rotationAdjustments.SetMultiplyFactor(
-      modeInfo.rotateProbability, RotationAdjustments::AdjustmentType::AFTER_RANDOM);
+      modeInfo.extraEffectsProbabilities.rotateProbability,
+      RotationAdjustments::AdjustmentType::AFTER_RANDOM);
 }
 
 void FilterSettingsService::SetWaveModeExtraEffects()
@@ -414,8 +616,6 @@ void FilterSettingsService::SetWaveModeExtraEffects()
   {
     return;
   }
-
-  m_randomizedExtraEffects->TurnPlaneEffectOn();
 
   ZoomFilterEffectsSettings& filterEffectsSettings = m_filterSettings.filterEffectsSettings;
   filterEffectsSettings.vitesse.SetReverseVitesse(m_goomRand.ProbabilityOf(PROB_REVERSE_SPEED));
