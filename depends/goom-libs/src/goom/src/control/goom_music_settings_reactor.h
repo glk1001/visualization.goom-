@@ -156,21 +156,21 @@ inline void GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges()
 
 inline void GoomMusicSettingsReactor::ChangeFilterMode()
 {
-  m_filterSettingsService.SetRandomFilterSettings();
+  m_filterSettingsService.SetNewRandomFilter();
   m_visualFx.RefreshAllFx();
 }
 
 inline void GoomMusicSettingsReactor::ChangeFilterExtraSettings()
 {
   m_filterSettingsService.ChangeMilieu();
-  m_filterSettingsService.SetRandomExtraEffects();
+  m_filterSettingsService.ResetRandomExtraEffects();
 }
 
 inline void GoomMusicSettingsReactor::ChangeRotation()
 {
   if (m_goomEvents.Happens(GoomEvent::FILTER_STOP_ROTATION))
   {
-    m_filterSettingsService.SetRotationToZero();
+    m_filterSettingsService.TurnOffRotation();
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_DECREASE_ROTATION))
   {

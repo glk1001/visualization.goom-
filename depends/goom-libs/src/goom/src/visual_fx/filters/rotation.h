@@ -2,10 +2,8 @@
 
 #include "normalized_coords.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
-#include <cmath>
 #include <string>
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -24,9 +22,6 @@ public:
   };
   [[nodiscard]] auto GetAdjustmentType() const -> AdjustmentType;
 
-  [[nodiscard]] auto IsSetToZero() const -> bool;
-  void SetToZero(AdjustmentType adjustmentType);
-
   [[nodiscard]] auto IsToggle() const -> bool;
   void Toggle(AdjustmentType adjustmentType);
 
@@ -36,7 +31,6 @@ public:
   void Reset();
 
 private:
-  bool m_setToZero = false;
   bool m_toggle = false;
   float m_multiplyFactor = 1.0F;
   AdjustmentType m_adjustmentType = AdjustmentType::NONE;
@@ -76,7 +70,6 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
 
-  void SetZero();
   void Multiply(float factor);
   void Toggle();
 };
@@ -84,17 +77,6 @@ private:
 inline auto RotationAdjustments::GetAdjustmentType() const -> AdjustmentType
 {
   return m_adjustmentType;
-}
-
-inline auto RotationAdjustments::IsSetToZero() const -> bool
-{
-  return m_setToZero;
-}
-
-inline void RotationAdjustments::SetToZero(const AdjustmentType adjustmentType)
-{
-  m_setToZero = true;
-  m_adjustmentType = adjustmentType;
 }
 
 inline auto RotationAdjustments::IsToggle() const -> bool
@@ -123,7 +105,6 @@ inline void RotationAdjustments::SetMultiplyFactor(const float value,
 inline void RotationAdjustments::Reset()
 {
   m_adjustmentType = AdjustmentType::NONE;
-  m_setToZero = false;
   m_toggle = false;
   m_multiplyFactor = 1.0F;
 }
@@ -147,21 +128,11 @@ inline auto Rotation::GetVelocity(const NormalizedCoords& velocity) const -> Nor
 
 inline void Rotation::ApplyAdjustments(const RotationAdjustments& rotationAdjustments)
 {
-  if (rotationAdjustments.IsSetToZero())
-  {
-    SetZero();
-  }
   if (rotationAdjustments.IsToggle())
   {
     Toggle();
   }
   Multiply(rotationAdjustments.GetMultiplyFactor());
-}
-
-inline void Rotation::SetZero()
-{
-  m_params.xRotateSpeed = 0.0F;
-  m_params.yRotateSpeed = 0.0F;
 }
 
 inline void Rotation::Multiply(const float factor)

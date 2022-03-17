@@ -8,6 +8,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 namespace GOOM
@@ -17,7 +18,7 @@ class PluginInfo;
 
 namespace VISUAL_FX::FILTERS
 {
-class ExtraEffects;
+class ExtraEffectsStates;
 
 enum class ZoomFilterMode
 {
@@ -69,21 +70,21 @@ public:
   [[nodiscard]] auto HasFilterModeChangedSinceLastUpdate() const -> bool;
 
   [[nodiscard]] auto GetCurrentFilterMode() const -> ZoomFilterMode;
-  [[nodiscard]] auto GetCurrentFilterModeName() const -> const std::string&;
+  [[nodiscard]] auto GetCurrentFilterModeName() const -> const std::string_view&;
   [[nodiscard]] auto GetPreviousFilterMode() const -> ZoomFilterMode;
-  [[nodiscard]] auto GetPreviousFilterModeName() const -> const std::string&;
+  [[nodiscard]] auto GetPreviousFilterModeName() const -> const std::string_view&;
 
   [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterSettings&;
   [[nodiscard]] auto GetROVitesse() const -> const Vitesse&;
   [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
 
   void ChangeMilieu();
-  void SetRandomExtraEffects();
-  void SetRotationToZero();
+  void ResetRandomExtraEffects();
+  void TurnOffRotation();
   void MultiplyRotation(float factor);
   void ToggleRotationDirection();
 
-  void SetRandomFilterSettings();
+  void SetNewRandomFilter();
 
   void SetTranLerpIncrement(int32_t value);
   void SetDefaultTranLerpIncrement();
@@ -115,11 +116,11 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
   const std::string m_resourcesDirectory;
-  std::unique_ptr<ExtraEffects> m_randomizedExtraEffects;
+  std::unique_ptr<ExtraEffectsStates> m_randomizedExtraEffects;
 
   struct ZoomFilterModeInfo
   {
-    const std::string name;
+    const std::string_view name;
     std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
     const float rotateProbability;
     UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
@@ -178,7 +179,7 @@ inline auto FilterSettingsService::GetCurrentFilterMode() const -> ZoomFilterMod
   return m_filterMode;
 }
 
-inline auto FilterSettingsService::GetCurrentFilterModeName() const -> const std::string&
+inline auto FilterSettingsService::GetCurrentFilterModeName() const -> const std::string_view&
 {
   return m_filterModeData.at(m_filterMode).name;
 }
@@ -188,7 +189,7 @@ inline auto FilterSettingsService::GetPreviousFilterMode() const -> ZoomFilterMo
   return m_previousFilterMode;
 }
 
-inline auto FilterSettingsService::GetPreviousFilterModeName() const -> const std::string&
+inline auto FilterSettingsService::GetPreviousFilterModeName() const -> const std::string_view&
 {
   return m_filterModeData.at(m_previousFilterMode).name;
 }
@@ -246,7 +247,7 @@ inline void FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode
   SetRandomSettingsForNewFilterMode();
 }
 
-inline void FilterSettingsService::SetRandomFilterSettings()
+inline void FilterSettingsService::SetNewRandomFilter()
 {
   m_filterEffectsSettingsHaveChanged = true;
 
@@ -256,15 +257,14 @@ inline void FilterSettingsService::SetRandomFilterSettings()
   SetRandomSettingsForNewFilterMode();
 }
 
-inline void FilterSettingsService::SetRotationToZero()
+inline void FilterSettingsService::TurnOffRotation()
 {
   if (!m_filterSettings.filterEffectsSettings.rotationEffect)
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetToZero(
-      RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
+  m_filterSettings.filterEffectsSettings.rotationEffect = false;
 }
 
 inline void FilterSettingsService::MultiplyRotation(const float factor)
