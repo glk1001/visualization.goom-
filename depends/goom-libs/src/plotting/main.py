@@ -134,10 +134,10 @@ def plot(subdirs):
             DataType('hypercos_overlays.dat', 'hyp', 0, 4, (0, 4), 'blue', True),
     ]
     sound_data = [
-            DataType('goom_volume.dat', 'vol', 0.0, 1.0, (0, 1), 'orange', False),
-            DataType('goom_power.dat', 'pwr', 0.0, 1.0, (0, 1), 'purple', False),
-            DataType('time_since_last_goom.dat', 'lst', 0, -1, (), 'orange', False),
-            DataType('time_since_last_big_goom.dat', 'big', 0, -1, (), 'purple', False),
+            DataType('goom_volumes.dat', 'vol', 0.0, 1.0, (0, 1), 'orange', False),
+            DataType('goom_powers.dat', 'pwr', 0.0, 1.0, (0, 1), 'purple', False),
+            DataType('times_since_last_goom.dat', 'lst', 0, -1, (), 'orange', False),
+            DataType('times_since_last_big_goom.dat', 'big', 0, -1, (), 'purple', False),
             DataType('total_gooms_in_current_cycle.dat', 'cyc', 0, -1, (), 'orange', False),
     ]
     effects_data = [
@@ -157,9 +157,9 @@ def plot(subdirs):
 
     plot_data = [
             main_data,
-            # sound_data,
-            effects_data,
-            buffer_data,
+            sound_data,
+            # effects_data,
+            # buffer_data,
             update_times_data
     ]
 

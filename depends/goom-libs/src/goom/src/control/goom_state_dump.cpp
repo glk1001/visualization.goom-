@@ -197,11 +197,11 @@ void GoomStateDump::DumpData(const std::string& directory)
 
   DumpDataArray("buffer_lerps", m_cumulativeState->GetBufferLerps());
 
-  DumpDataArray("time_since_last_goom", m_cumulativeState->GetTimesSinceLastGoom());
-  DumpDataArray("time_since_last_big_goom", m_cumulativeState->GetTimesSinceLastBigGoom());
+  DumpDataArray("times_since_last_goom", m_cumulativeState->GetTimesSinceLastGoom());
+  DumpDataArray("times_since_last_big_goom", m_cumulativeState->GetTimesSinceLastBigGoom());
   DumpDataArray("total_gooms_in_current_cycle", m_cumulativeState->GetTotalGoomsInCurrentCycle());
-  DumpDataArray("goom_power", m_cumulativeState->GetGoomPowers());
-  DumpDataArray("goom_volume", m_cumulativeState->GetGoomVolumes());
+  DumpDataArray("goom_powers", m_cumulativeState->GetGoomPowers());
+  DumpDataArray("goom_volumes", m_cumulativeState->GetGoomVolumes());
 }
 
 void GoomStateDump::DumpSummary() const
