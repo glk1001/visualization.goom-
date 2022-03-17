@@ -167,6 +167,12 @@ auto GoomControl::GetGoomVersionInfo() -> std::string
   return GetFullVersionStr();
 }
 
+auto GoomControl::GetGoomLibBuildTime() -> std::string
+{
+  constexpr const char* BUILD_TIME = __DATE__ ", " __TIME__;
+  return BUILD_TIME;
+}
+
 auto GoomControl::GetRandSeed() -> uint64_t
 {
   return UTILS::MATH::RAND::GetRandSeed();

@@ -228,6 +228,12 @@ void CVisualizationGoom::Stop()
   }
 }
 
+inline auto GetGoomVisualizationBuildTime() -> std::string
+{
+  constexpr const char* BUILD_TIME = __DATE__ ", " __TIME__;
+  return BUILD_TIME;
+}
+
 auto CVisualizationGoom::InitGoomController() -> bool
 {
   if (m_goomControl)
@@ -255,7 +261,9 @@ auto CVisualizationGoom::InitGoomController() -> bool
 
   LogInfo("CVisualizationGoom: Goom: {}.", GoomControl::GetGoomVersionInfo());
   LogInfo("CVisualizationGoom: Compiler: {}.", GetCompilerVersion());
+  LogInfo("CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
   LogInfo("Goom Library: Compiler: {}.", GoomControl::GetCompilerVersion());
+  LogInfo("Goom Library: Build Time: {}.", GoomControl::GetGoomLibBuildTime());
 
   m_goomControl->ShowGoomState(KODI_ADDON::GetSettingBoolean("show_goom_state"));
   m_goomControl->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(

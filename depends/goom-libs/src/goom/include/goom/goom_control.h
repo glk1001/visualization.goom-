@@ -52,6 +52,7 @@ public:
 
   [[nodiscard]] static auto GetCompilerVersion() -> std::string;
   [[nodiscard]] static auto GetGoomVersionInfo() -> std::string;
+  [[nodiscard]] static auto GetGoomLibBuildTime() -> std::string;
 
 private:
   class GoomControlImpl;

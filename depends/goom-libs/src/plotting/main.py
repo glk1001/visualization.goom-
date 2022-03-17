@@ -157,8 +157,8 @@ def plot(subdirs):
 
     plot_data = [
             main_data,
-            sound_data,
-            # effects_data,
+            # sound_data,
+            effects_data,
             # buffer_data,
             update_times_data
     ]
