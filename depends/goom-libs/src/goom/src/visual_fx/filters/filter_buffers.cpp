@@ -154,11 +154,7 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
 {
   assert(m_tranBuffersState == TranBuffersState::TRAN_BUFFERS_READY);
 
-  //TODO optimize
-  const NormalizedCoords normalizedMidPt =
-      m_normalizedCoordsConverter.ScreenToNormalizedCoords(m_buffMidpoint);
-
-  const auto doStripeLine = [this, &normalizedMidPt](const size_t y)
+  const auto doStripeLine = [this](const size_t y)
   {
     // Position of the pixel to compute in screen coordinates
     const uint32_t yOffset = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
@@ -166,12 +162,12 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
 
     NormalizedCoords normalizedCentredPoint = m_normalizedCoordsConverter.ScreenToNormalizedCoords(
                                                   Point2dInt{0, static_cast<int32_t>(yOffset)}) -
-                                              normalizedMidPt;
+                                              m_normalizedMidPt;
 
     for (uint32_t x = 0; x < m_screenWidth; ++x)
     {
       const NormalizedCoords normalizedZoomPoint = m_getZoomPoint(normalizedCentredPoint);
-      const NormalizedCoords uncenteredZoomPoint = normalizedMidPt + normalizedZoomPoint;
+      const NormalizedCoords uncenteredZoomPoint = m_normalizedMidPt + normalizedZoomPoint;
 
       m_transformBuffers->SetTempBuffersTransformPoint(tranPosStart + x,
                                                        GetTranPoint(uncenteredZoomPoint));

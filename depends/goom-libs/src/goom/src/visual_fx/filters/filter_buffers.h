@@ -97,7 +97,8 @@ private:
   class TransformBuffers;
   std::unique_ptr<TransformBuffers> m_transformBuffers;
 
-  Point2dInt m_buffMidpoint{};
+  Point2dInt m_buffMidpoint{0, 0};
+  NormalizedCoords m_normalizedMidPt{0.0F, 0.0F};
   bool m_filterSettingsHaveChanged = false;
 
   uint32_t m_tranBuffYLineStart = 0;
@@ -247,6 +248,7 @@ inline auto ZoomFilterBuffers::GetBuffMidpoint() const -> Point2dInt
 inline void ZoomFilterBuffers::SetBuffMidpoint(const Point2dInt& val)
 {
   m_buffMidpoint = val;
+  m_normalizedMidPt = m_normalizedCoordsConverter.ScreenToNormalizedCoords(m_buffMidpoint);
 }
 
 inline auto ZoomFilterBuffers::GetTranBuffersState() const -> TranBuffersState
