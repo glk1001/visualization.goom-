@@ -213,7 +213,10 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords,
   //  xVal = std::clamp(std::tan(hypercosFreqY * xVal), -1.0, 1.0);
   //  yVal = std::clamp(std::tan(hypercosFreqX * yVal), -1.0, 1.0);
 
-  return {m_params.xAmplitude * xVal, m_params.yAmplitude * yVal};
+  xVal *= m_params.xAmplitude;
+  yVal *= m_params.yAmplitude;
+
+  return {xVal, yVal};
 }
 
 auto Hypercos::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs

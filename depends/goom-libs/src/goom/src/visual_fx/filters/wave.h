@@ -17,7 +17,7 @@ public:
     MODE0,
     MODE1
   };
-  Wave(Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  Wave(Modes mode, const UTILS::MATH::IGoomRand& goomRand);
 
   void SetRandomParams() override;
 
@@ -34,6 +34,12 @@ public:
     WAVE_SIN_EFFECT,
     WAVE_COS_EFFECT,
     WAVE_SIN_COS_EFFECT,
+    WAVE_TAN_EFFECT,
+    WAVE_TAN_SIN_EFFECT,
+    WAVE_TAN_COS_EFFECT,
+    WAVE_COT_EFFECT,
+    WAVE_COT_SIN_EFFECT,
+    WAVE_COT_COS_EFFECT,
     _num // unused and must be last
   };
   struct Params
@@ -43,6 +49,7 @@ public:
     float freqFactor;
     float amplitude;
     float periodicFactor;
+    float reducerCoeff;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -52,17 +59,21 @@ protected:
 private:
   const Modes m_mode;
   const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::Weights<WaveEffect> m_weightedEffects;
   Params m_params;
   void SetMode0RandomParams();
   void SetMode1RandomParams();
   void SetWaveModeSettings(const UTILS::MATH::IGoomRand::NumberRange<float>& freqFactorRange,
                            const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange);
-  [[nodiscard]] auto GetSpeedAdd(WaveEffect waveEffect, float angle) const -> float;
+  [[nodiscard]] auto GetSpeedAdd(float sqDistFromZero, WaveEffect waveEffect) const -> float;
   [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
                                             float angle,
                                             float periodicFactor) -> float;
   [[nodiscard]] auto GetPeriodicFactor(WaveEffect xWaveEffect, WaveEffect yWaveEffect) const
       -> float;
+  [[nodiscard]] auto GetReducerCoeff(WaveEffect xWaveEffect,
+                                     WaveEffect yWaveEffect,
+                                     float periodicFactor) const -> float;
 };
 
 inline auto Wave::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
@@ -70,20 +81,18 @@ inline auto Wave::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                        [[maybe_unused]] const NormalizedCoords& coords) const
     -> Point2dFlt
 {
-  const float angle = m_params.freqFactor * sqDistFromZero;
-  const float xSpeedCoeff = baseSpeedCoeffs.x + GetSpeedAdd(m_params.xWaveEffect, angle);
+  const float xSpeedCoeff = baseSpeedCoeffs.x + GetSpeedAdd(sqDistFromZero, m_params.xWaveEffect);
+  const float ySpeedCoeff = baseSpeedCoeffs.y + GetSpeedAdd(sqDistFromZero, m_params.yWaveEffect);
 
-  if (m_params.xWaveEffect == m_params.yWaveEffect)
-  {
-    return {xSpeedCoeff, xSpeedCoeff};
-  }
-
-  return {xSpeedCoeff, baseSpeedCoeffs.y + GetSpeedAdd(m_params.yWaveEffect, angle)};
+  return {xSpeedCoeff, ySpeedCoeff};
 }
 
-inline auto Wave::GetSpeedAdd(const WaveEffect waveEffect, const float angle) const -> float
+inline auto Wave::GetSpeedAdd(const float sqDistFromZero, const WaveEffect waveEffect) const
+    -> float
 {
-  return m_params.amplitude * GetPeriodicPart(waveEffect, angle, m_params.periodicFactor);
+  const float angle = m_params.freqFactor * sqDistFromZero;
+  const float reducer = std::exp(-m_params.reducerCoeff * sqDistFromZero);
+  return reducer * m_params.amplitude * GetPeriodicPart(waveEffect, angle, m_params.periodicFactor);
 }
 
 inline auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
@@ -97,7 +106,21 @@ inline auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
     case WaveEffect::WAVE_COS_EFFECT:
       return periodicFactor * std::cos(angle);
     case WaveEffect::WAVE_SIN_COS_EFFECT:
-      return STD20::lerp(std::sin(angle), std::cos(angle), periodicFactor);
+      return periodicFactor * STD20::lerp(std::sin(angle), std::cos(angle), periodicFactor);
+    case WaveEffect::WAVE_TAN_EFFECT:
+      return periodicFactor * std::tan(angle);
+    case WaveEffect::WAVE_TAN_SIN_EFFECT:
+      return periodicFactor * STD20::lerp(std::tan(angle), std::sin(angle), periodicFactor);
+    case WaveEffect::WAVE_TAN_COS_EFFECT:
+      return periodicFactor * STD20::lerp(std::tan(angle), std::cos(angle), periodicFactor);
+    case WaveEffect::WAVE_COT_EFFECT:
+      return periodicFactor * std::tan(UTILS::MATH::HALF_PI - angle);
+    case WaveEffect::WAVE_COT_SIN_EFFECT:
+      return periodicFactor *
+             STD20::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::sin(angle), periodicFactor);
+    case WaveEffect::WAVE_COT_COS_EFFECT:
+      return periodicFactor *
+             STD20::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::cos(angle), periodicFactor);
     default:
       throw std::logic_error("Unknown WaveEffect enum");
   }
