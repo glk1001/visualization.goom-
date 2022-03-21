@@ -1,5 +1,6 @@
 #include "text_draw.h"
 
+//#define NO_FREETYPE_INSTALLED
 //#undef NO_LOGGING
 
 #include "color/colorutils.h"
@@ -37,6 +38,7 @@ public:
   auto operator=(const TextDrawImpl&) -> TextDrawImpl& = delete;
   auto operator=(TextDrawImpl&&) -> TextDrawImpl& = delete;
 
+  [[nodiscard]] auto GetAlignment() const -> TextAlignment;
   void SetAlignment(TextAlignment alignment);
   [[nodiscard]] auto GetFontFile() const -> const std::string&;
   void SetFontFile(const std::string& filename);
@@ -44,6 +46,7 @@ public:
   void SetFontSize(int32_t val);
   [[nodiscard]] auto GetLineSpacing() const -> int32_t;
   void SetOutlineWidth(float val);
+  [[nodiscard]] auto GetCharSpacing() const -> float;
   void SetCharSpacing(float val);
 
   void SetFontColorFunc(const FontColorFunc& func);

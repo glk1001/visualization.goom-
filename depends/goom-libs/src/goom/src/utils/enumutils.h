@@ -1,8 +1,12 @@
 #pragma once
 
+//#define NO_MAGIC_ENUM_AVAILABLE
+
 #include <cstdint>
+#ifndef NO_MAGIC_ENUM_AVAILABLE
 #include <magic_enum.hpp>
 #include <stdexcept>
+#endif
 #include <string>
 #include <type_traits>
 
@@ -17,6 +21,13 @@ constexpr auto ToUType(E value) noexcept
   return static_cast<std::underlying_type_t<E>>(value);
 }
 
+#ifdef NO_MAGIC_ENUM_AVAILABLE
+template<class E>
+auto EnumToString(const E value) -> std::string
+{
+  return std::to_string(static_cast<int>(value));
+}
+#else
 template<class E>
 auto EnumToString(const E value) -> std::string
 {
@@ -33,5 +44,6 @@ auto StringToEnum(const std::string& eStr) -> E
 
   throw std::runtime_error("Unknown enum value \"" + eStr + "\".");
 }
+#endif
 
 } // namespace GOOM::UTILS

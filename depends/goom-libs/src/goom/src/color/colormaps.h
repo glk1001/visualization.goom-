@@ -14,9 +14,9 @@ namespace GOOM::COLOR
 class IColorMap
 {
 public:
-  IColorMap() = default;
-  IColorMap(const IColorMap&) = default;
-  IColorMap(IColorMap&&) = default;
+  IColorMap() noexcept = default;
+  IColorMap(const IColorMap&) noexcept = default;
+  IColorMap(IColorMap&&) noexcept = default;
   virtual ~IColorMap() noexcept = default;
   auto operator=(const IColorMap&) -> IColorMap& = delete;
   auto operator=(IColorMap&&) -> IColorMap& = delete;

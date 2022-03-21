@@ -122,7 +122,7 @@ class PrebuiltColorMap : public IColorMap
 public:
   PrebuiltColorMap() noexcept = delete;
   PrebuiltColorMap(ColorMapName mapName, vivid::ColorMap colorMap) noexcept;
-  PrebuiltColorMap(const PrebuiltColorMap&) noexcept = default;
+  PrebuiltColorMap(const PrebuiltColorMap&) noexcept = delete;
   PrebuiltColorMap(PrebuiltColorMap&&) noexcept = default;
   ~PrebuiltColorMap() noexcept override = default;
   auto operator=(const PrebuiltColorMap&) -> PrebuiltColorMap& = delete;
@@ -135,8 +135,8 @@ public:
   static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
 
 private:
-  const ColorMapName m_mapName;
-  const vivid::ColorMap m_vividColorMap;
+  ColorMapName m_mapName; // Could be 'const' but some compilers
+  vivid::ColorMap m_vividColorMap; // don't like the move contructor with const members.
 };
 
 class ColorMaps::ColorMapsImpl

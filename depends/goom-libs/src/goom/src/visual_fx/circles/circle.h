@@ -40,13 +40,14 @@ public:
     Point2dInt circleCentreTarget;
   };
 
+  Circle() = delete;
   Circle(const FxHelper& fxHelper,
          const Helper& helper,
          const Params& circleParams,
-         const UTILS::MATH::PathParams& pathParams);
-  Circle(const Circle&) noexcept = delete;
-  Circle(Circle&&) noexcept = default;
-  ~Circle() noexcept = default;
+         const UTILS::MATH::PathParams& pathParams) noexcept;
+  Circle(const Circle&) = delete;
+  Circle(Circle&&) = default;
+  ~Circle() = default;
   auto operator=(const Circle&) -> Circle& = delete;
   auto operator=(Circle&&) -> Circle& = delete;
 
@@ -63,8 +64,8 @@ private:
   DRAW::IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const UTILS::MATH::IGoomRand& m_goomRand;
-  const Helper m_helper;
-  const Point2dInt m_circleCentreTarget;
+  Helper m_helper; // These could be const but some compilers
+  Point2dInt m_circleCentreTarget; // don't like the move constructor with 'const' members.
   static constexpr uint32_t MIN_POSITION_STEPS = 100;
   static constexpr uint32_t MAX_POSITION_STEPS = 600;
   DotPaths m_dotPaths;

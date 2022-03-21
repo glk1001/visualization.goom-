@@ -40,7 +40,7 @@ using UTILS::MATH::U_HALF;
 Circle::Circle(const FxHelper& fxHelper,
                const Helper& helper,
                const Params& circleParams,
-               const PathParams& pathParams)
+               const PathParams& pathParams) noexcept
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
