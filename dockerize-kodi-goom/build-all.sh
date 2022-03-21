@@ -20,9 +20,9 @@ fi
 
 cd "${THIS_SCRIPT_PATH}"
 
-docker build -t ${KODI_BASE_IMAGE}    -f Dockerfile-base .
-docker build -t ${KODI_SPOTIFY_IMAGE} -f Dockerfile-spotify-dependencies .
-docker build -t ${KODI_LIRC_IMAGE}    -f Dockerfile-lirc .
-docker build -t ${KODI_GOOM_IMAGE}    -f Dockerfile .
+docker build ${NO_CACHE} -t ${KODI_BASE_IMAGE}    -f Dockerfile-base .
+docker build ${NO_CACHE} -t ${KODI_SPOTIFY_IMAGE} -f Dockerfile-spotify-dependencies .
+docker build ${NO_CACHE} -t ${KODI_LIRC_IMAGE}    -f Dockerfile-lirc .
+docker build ${NO_CACHE} -t ${KODI_GOOM_IMAGE}    -f Dockerfile .
 
 cd -
