@@ -8,6 +8,8 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
+#include <array>
+
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 

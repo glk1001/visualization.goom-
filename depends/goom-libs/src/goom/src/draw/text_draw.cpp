@@ -76,6 +76,11 @@ TextDraw::TextDrawImpl::~TextDrawImpl() noexcept
 {
 }
 
+inline auto TextDraw::TextDrawImpl::GetAlignment() const -> TextAlignment
+{
+  return TextAlignment::LEFT;
+}
+
 inline void TextDraw::TextDrawImpl::SetAlignment(const TextAlignment)
 {
 }
@@ -106,6 +111,11 @@ auto TextDraw::TextDrawImpl::GetLineSpacing() const -> int32_t
 
 void TextDraw::TextDrawImpl::SetOutlineWidth(const float)
 {
+}
+
+inline auto TextDraw::TextDrawImpl::GetCharSpacing() const -> float
+{
+  return 0.0F;
 }
 
 void TextDraw::TextDrawImpl::SetCharSpacing(const float)

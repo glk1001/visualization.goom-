@@ -286,7 +286,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
   {
     ChangeColors();
-    radius = m_goomRand.GetRandInRange(radius, (S_HALF * MAX_DOT_SIZE) + 1);
+    radius = m_goomRand.GetRandInRange(radius, static_cast<uint32_t>(S_HALF * MAX_DOT_SIZE) + 1);
     SetNextCurrentBitmapName();
   }
 

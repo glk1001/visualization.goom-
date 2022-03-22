@@ -11,6 +11,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <time.h>
 
 namespace GOOM::CONTROL
 {
@@ -161,10 +162,19 @@ void GoomStateDump::AddCurrentState()
 [[nodiscard]] auto GetCurrentDateTimeAsStr() -> std::string
 {
   const std::time_t t = std::time(nullptr);
-  if (char str[100]; std::strftime(str, sizeof(str), "%Y-%m-%d_%H-%M-%S", std::localtime(&t)))
+  struct tm buff;
+#ifdef _MSC_VER
+  localtime_s(&buff, &t);
+  if (char str[100]; std::strftime(str, sizeof(str), "%Y-%m-%d_%H-%M-%S", &buff))
   {
     return std::string{str};
   }
+#else
+  if (char str[100]; std::strftime(str, sizeof(str), "%Y-%m-%d_%H-%M-%S", localtime_r(&t, &buff)))
+  {
+    return std::string{str};
+  }
+#endif
   return "TIME_ERROR";
 }
 

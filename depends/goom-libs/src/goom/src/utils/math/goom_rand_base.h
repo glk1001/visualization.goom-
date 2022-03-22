@@ -3,6 +3,7 @@
 #include "misc.h"
 #include "utils/enumutils.h"
 
+#include <array>
 #include <cstdint>
 #include <format>
 #include <map>
