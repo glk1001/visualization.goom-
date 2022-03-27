@@ -16,12 +16,6 @@ endif()
 option(ENABLE_TESTING "Enable unit testing" OFF)
 option(USE_MAGIC_ENUM "Use magic enum" OFF)
 option(IS_KODI_MATRIX "Compatible with kodi Matrix" OFF)
-<<<<<<< HEAD
-=======
-option(USE_MAGIC_ENUM "Use magic enum" OFF)
-message(STATUS "ENABLE_TESTING = \"${ENABLE_TESTING}\".")
-
->>>>>>> dd7534bfd (Cmake fixes to match latest Nexus push.)
 if (IS_KODI_MATRIX)
   add_definitions(-DKODI_MATRIX)
 endif()
@@ -33,7 +27,6 @@ set(GOOM_INCLUDE_DIRS "${GOOM_ROOT_DIR}/src/goom/include")
 set(GOOM_SYS_INC_DIRS "${GOOM_ROOT_DIR}/src/vivid/include"
                       "${GOOM_ROOT_DIR}/lib/fmt/include")
 
-# TODO Fix this Windows lib hack.
 if(NOT WIN32)
   set(GOOM_BIN_LIBS ${GOOM_BUILD_ARTIFACTS_DIR}/lib/libgoom.a
                     ${GOOM_BUILD_ARTIFACTS_DIR}/lib/libvivid.a)
@@ -52,23 +45,14 @@ include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
 CPMAddPackage("gh:g-truc/glm#0.9.9.8")
 set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
-=======
->>>>>>> dd7534bfd (Cmake fixes to match latest Nexus push.)
 CPMAddPackage("gh:fmtlib/fmt#8.0.1")
 
-<<<<<<< HEAD
 list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
-=======
 find_package(glm REQUIRED)
-# Provides GLM_INCLUDE_DIRS
 set(GLM_INCLUDE_DIR "${GLM_INCLUDE_DIRS}")
 
-<<<<<<< HEAD
 list(APPEND GOOM_SYS_INC_DIRS "${magic_enum_SOURCE_DIR}/include" "${fmt_SOURCE_DIR}/include")
->>>>>>> 3b530c5be (Fix kodi and glm include dirs.)
-=======
 list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
->>>>>>> dd7534bfd (Cmake fixes to match latest Nexus push.)
 
 
 include(ExternalProject)
@@ -85,15 +69,7 @@ ExternalProject_Add(${GOOM_LIBS_TARGET_NAME}
                     -D GLM_INCLUDE_DIR=${GLM_INCLUDE_DIR}
                     -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                     -D ENABLE_TESTING=${ENABLE_TESTING}
-<<<<<<< HEAD
-<<<<<<< HEAD
                     -D USE_MAGIC_ENUM=${USE_MAGIC_ENUM}
-=======
-=======
-                    -D USE_MAGIC_ENUM=${USE_MAGIC_ENUM}
->>>>>>> dd7534bfd (Cmake fixes to match latest Nexus push.)
-                    -D GLM_INCLUDE_DIR=${GLM_INCLUDE_DIR}
->>>>>>> 3b530c5be (Fix kodi and glm include dirs.)
 )
 
 
@@ -132,7 +108,6 @@ find_package(Kodi REQUIRED)
 # Provides KODI_INCLUDE_DIR but out by one!
 set(KODI_PARENT_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
 
-#set(APP_RENDER_SYSTEM "gles")
 if(NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
   find_package(OpenGl REQUIRED)
   set(DEPLIBS ${OPENGL_LIBRARIES})
