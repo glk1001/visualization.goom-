@@ -14,6 +14,16 @@ namespace DRAW
 class IGoomDraw;
 }
 
+namespace UTILS::GRAPHICS
+{
+class ImageBitmap;
+class SmallImageBitmaps;
+}
+namespace UTILS::MATH
+{
+class IGoomRand;
+}
+
 namespace VISUAL_FX::IFS
 {
 
@@ -35,7 +45,11 @@ class LowDensityBlurrer
 {
 public:
   LowDensityBlurrer() noexcept = delete;
-  LowDensityBlurrer(DRAW::IGoomDraw& draw, uint32_t width, const Colorizer* colorizer) noexcept;
+  LowDensityBlurrer(DRAW::IGoomDraw& draw,
+                    const UTILS::MATH::IGoomRand& goomRand,
+                    uint32_t width,
+                    const Colorizer* colorizer,
+                    const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetWidth() const -> uint32_t;
   void SetWidth(uint32_t val);
@@ -49,12 +63,17 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   uint32_t m_width;
-  const Colorizer* const m_colorizer{};
+  const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
+  const UTILS::GRAPHICS::ImageBitmap* m_currentImageBitmap{};
+  const Colorizer* const m_colorizer;
   float m_neighbourMixFactor = 1.0;
   BlurrerColorMode m_colorMode{};
   Pixel m_singleColor{};
 
+  [[nodiscard]] auto GetImageBitmap(bool useBitmaps) const -> const UTILS::GRAPHICS::ImageBitmap*;
+  [[nodiscard]] auto GetBrightness() const -> float;
   void SetPointColor(IfsPoint& point,
                      float t,
                      float logMaxLowDensityCount,
@@ -62,8 +81,8 @@ private:
   [[nodiscard]] auto GetMixedPointColor(const Pixel& baseColor,
                                         const IfsPoint& point,
                                         const std::vector<Pixel>& neighbours,
-                                        const float brightness,
-                                        const float logAlpha) const -> Pixel;
+                                        float brightness,
+                                        float logAlpha) const -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
@@ -73,11 +92,6 @@ private:
 inline auto LowDensityBlurrer::GetWidth() const -> uint32_t
 {
   return m_width;
-}
-
-inline void LowDensityBlurrer::SetColorMode(const BlurrerColorMode colorMode)
-{
-  m_colorMode = colorMode;
 }
 
 inline void LowDensityBlurrer::SetSingleColor(const Pixel& color)

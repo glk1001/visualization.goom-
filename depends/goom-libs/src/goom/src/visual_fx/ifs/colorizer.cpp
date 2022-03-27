@@ -8,7 +8,6 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using COLOR::GetBrighterColor;
 using COLOR::GetSlightlyDivergingStandardMaps;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
@@ -27,7 +26,7 @@ static constexpr float SINE_MIX_COLORS_WEIGHT       =  5.0F;
 static constexpr float SINE_MAP_COLORS_WEIGHT       =  5.0F;
 // clang-format on
 
-Colorizer::Colorizer(const IGoomRand& goomRand) noexcept
+Colorizer::Colorizer(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
     // clang-format off
     m_colorModeWeights{

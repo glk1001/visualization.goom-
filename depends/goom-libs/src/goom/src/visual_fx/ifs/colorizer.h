@@ -18,7 +18,7 @@ namespace GOOM::VISUAL_FX::IFS
 class Colorizer
 {
 public:
-  explicit Colorizer(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Colorizer(const UTILS::MATH::IGoomRand& goomRand);
 
   void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);
 

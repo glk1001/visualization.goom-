@@ -138,8 +138,8 @@ private:
   void UpdateLowDensityBlurThreshold();
   [[nodiscard]] auto GetNewBlurWidth() const -> uint32_t;
 
-  [[nodiscard]] auto MegaChangeColorMapEvent() -> bool;
-  [[nodiscard]] auto IfsRenewEvent() -> bool;
+  [[nodiscard]] auto MegaChangeColorMapEvent() const -> bool;
+  [[nodiscard]] auto IfsRenewEvent() const -> bool;
   const Weights<BlurrerColorMode> m_blurrerColorModeWeights;
 };
 
@@ -218,29 +218,29 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
                                         m_goomRand,
                                         m_colorizer.GetColorMaps(),
                                         smallBitmaps)},
-    m_blurrer{m_draw, BLUR_WIDTH, &m_colorizer},
+    m_blurrer{m_draw, m_goomRand, BLUR_WIDTH, &m_colorizer, smallBitmaps},
     // clang-format off
     m_blurrerColorModeWeights{
-        m_goomRand,
-        {
-            {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT},
-            {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT},
-            {BlurrerColorMode::SIMI_WITH_NEIGHBOURS,   BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT},
-            {BlurrerColorMode::SIMI_NO_NEIGHBOURS,     BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT},
-            {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT},
-            {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT},
-        }}
+      m_goomRand,
+      {
+        {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT},
+        {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT},
+        {BlurrerColorMode::SIMI_WITH_NEIGHBOURS,   BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT},
+        {BlurrerColorMode::SIMI_NO_NEIGHBOURS,     BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT},
+        {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT},
+        {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT},
+    }}
 // clang-format on
 {
 }
 
-inline auto IfsDancersFx::IfsDancersFxImpl::MegaChangeColorMapEvent() -> bool
+inline auto IfsDancersFx::IfsDancersFxImpl::MegaChangeColorMapEvent() const -> bool
 {
   static constexpr float PROB_MEGA_CHANGE_COLOR_MAP_EVENT = 0.5F;
   return m_goomRand.ProbabilityOf(PROB_MEGA_CHANGE_COLOR_MAP_EVENT);
 }
 
-inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() -> bool
+inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() const -> bool
 {
   static constexpr float PROB_IFS_RENEW_EVENT = 2.0F / 3.0F;
   return m_goomRand.ProbabilityOf(PROB_IFS_RENEW_EVENT);
@@ -440,9 +440,8 @@ void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
   {
     t += tStep;
 
-    const uint32_t x = points[i].GetX();
-    const uint32_t y = points[i].GetY();
-    if ((x >= m_goomInfo.GetScreenInfo().width) || (y >= m_goomInfo.GetScreenInfo().height))
+    if (const auto [x, y] = std::pair(points[i].GetX(), points[i].GetY());
+        (x >= m_goomInfo.GetScreenInfo().width) || (y >= m_goomInfo.GetScreenInfo().height))
     {
       continue;
     }

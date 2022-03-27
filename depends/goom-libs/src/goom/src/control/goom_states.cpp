@@ -29,7 +29,7 @@ static const std::map<GoomDrawables, BuffIntensityRange> DEFAULT_BUFF_INTENSITY_
     {GoomDrawables::CIRCLES,   {0.50F, 0.90F}},
     {GoomDrawables::DOTS,      {0.30F, 0.50F}},
     {GoomDrawables::FAR_SCOPE, {0.00F, 0.01F}},
-    {GoomDrawables::IFS,       {0.40F, 0.60F}},
+    {GoomDrawables::IFS,       {0.40F, 0.70F}},
     {GoomDrawables::LINES,     {0.50F, 0.70F}},
     {GoomDrawables::IMAGE,     {0.05F, 0.15F}},
     {GoomDrawables::SCOPE,     {0.00F, 0.01F}},

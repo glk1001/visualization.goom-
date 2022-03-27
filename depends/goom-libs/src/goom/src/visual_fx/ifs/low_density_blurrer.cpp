@@ -5,6 +5,9 @@
 #include "draw/goom_draw.h"
 #include "fractal.h"
 #include "goom_graphic.h"
+#include "utils/graphics/image_bitmaps.h"
+#include "utils/graphics/small_image_bitmaps.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
 #include <cmath>
@@ -18,24 +21,32 @@ using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
 using COLOR::IColorMap;
 using DRAW::IGoomDraw;
+using UTILS::GRAPHICS::ImageBitmap;
+using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;
 
 LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
+                                     const IGoomRand& goomRand,
                                      const uint32_t width,
-                                     const Colorizer* const colorizer) noexcept
-  : m_draw{draw}, m_width{width}, m_colorizer{colorizer}
+                                     const Colorizer* const colorizer,
+                                     const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_draw{draw},
+    m_goomRand{goomRand},
+    m_width{width},
+    m_smallBitmaps{smallBitmaps},
+    m_colorizer{colorizer}
 {
 }
 
 void LowDensityBlurrer::SetWidth(const uint32_t val)
 {
-  static constexpr std::array VALID_WIDTHS{3, 5, 7};
-
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4389) // '==' mismatch. Not sure why?
 #endif
-  if (std::find(cbegin(VALID_WIDTHS), cend(VALID_WIDTHS), val) == cend(VALID_WIDTHS))
+  if (static constexpr std::array VALID_WIDTHS{3, 5, 7};
+      std::find(cbegin(VALID_WIDTHS), cend(VALID_WIDTHS), val) == cend(VALID_WIDTHS))
   {
     throw std::logic_error(std20::format("Invalid blur width {}.", val));
   }
@@ -44,6 +55,29 @@ void LowDensityBlurrer::SetWidth(const uint32_t val)
 #endif
 
   m_width = val;
+}
+
+void LowDensityBlurrer::SetColorMode(const BlurrerColorMode colorMode)
+{
+  m_colorMode = colorMode;
+
+  static constexpr float PROB_USE_BITMAPS = 0.1F;
+  const bool useBitmaps = m_goomRand.ProbabilityOf(PROB_USE_BITMAPS);
+  m_currentImageBitmap = GetImageBitmap(useBitmaps);
+}
+
+auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const -> const ImageBitmap*
+{
+  if (!useBitmaps)
+  {
+    return nullptr;
+  }
+
+  static constexpr uint32_t MIN_RES = 3;
+  static constexpr uint32_t MAX_RES = 7;
+  const uint32_t res = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
+
+  return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
 }
 
 void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
@@ -90,10 +124,22 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
     {
       continue;
     }
-    const std::vector<Pixel> colors{point.GetColor(), point.GetColor()};
-    // TODO bitmap here
-    m_draw.DrawPixels(static_cast<int32_t>(point.GetX()), static_cast<int32_t>(point.GetY()),
-                      colors);
+
+    const auto x = static_cast<int32_t>(point.GetX());
+    const auto y = static_cast<int32_t>(point.GetY());
+
+    if (nullptr == m_currentImageBitmap)
+    {
+      const std::vector<Pixel> colors{point.GetColor(), point.GetColor()};
+      m_draw.DrawPixels(x, y, colors);
+    }
+    else
+    {
+      const auto getColor =
+          [&point]([[maybe_unused]] const size_t xVal, [[maybe_unused]] const size_t yVal,
+                   [[maybe_unused]] const Pixel& bgnd) { return point.GetColor(); };
+      m_draw.Bitmap(x, y, *m_currentImageBitmap, {getColor, getColor});
+    }
   }
 }
 
@@ -102,10 +148,12 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
                                       const float logMaxLowDensityCount,
                                       const std::vector<Pixel>& neighbours) const
 {
-  const float logAlpha = point.GetCount() <= 1 ? 1.0F
-                                               : (std::log(static_cast<float>(point.GetCount())) /
-                                                     logMaxLowDensityCount);
-  static constexpr float BRIGHTNESS = 0.9F;
+  const float logAlpha =
+      point.GetCount() <= 1
+          ? 1.0F
+          : (std::log(static_cast<float>(point.GetCount())) / logMaxLowDensityCount);
+
+  const float brightness = GetBrightness();
 
   switch (m_colorMode)
   {
@@ -123,7 +171,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
     {
       const Pixel simiColor = point.GetSimi()->GetColor();
       const Pixel mixedPointColor =
-          GetMixedPointColor(simiColor, point, neighbours, BRIGHTNESS, logAlpha);
+          GetMixedPointColor(simiColor, point, neighbours, brightness, logAlpha);
       point.SetColor(mixedPointColor);
       break;
     }
@@ -134,7 +182,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
     {
       const Pixel simiSmoothColor = point.GetSimi()->GetColorMap()->GetColor(t);
       const Pixel mixedPointColor =
-          GetMixedPointColor(simiSmoothColor, point, neighbours, BRIGHTNESS, logAlpha);
+          GetMixedPointColor(simiSmoothColor, point, neighbours, brightness, logAlpha);
       point.SetColor(mixedPointColor);
       break;
     }
@@ -142,7 +190,39 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
       break;
   }
 
-  point.SetColor(m_gammaCorrect.GetCorrection(BRIGHTNESS * logAlpha, point.GetColor()));
+  point.SetColor(m_gammaCorrect.GetCorrection(brightness * logAlpha, point.GetColor()));
+}
+
+inline auto LowDensityBlurrer::GetBrightness() const -> float
+{
+  static constexpr float NO_NEIGHBOUR_BRIGHTNESS = 1.5F;
+  static constexpr float NEIGHBOUR_BRIGHTNESS = 0.1F;
+
+  float brightness;
+
+  switch (m_colorMode)
+  {
+    case BlurrerColorMode::SINGLE_NO_NEIGHBOURS:
+    case BlurrerColorMode::SIMI_NO_NEIGHBOURS:
+      brightness = NO_NEIGHBOUR_BRIGHTNESS;
+      break;
+    case BlurrerColorMode::SINGLE_WITH_NEIGHBOURS:
+    case BlurrerColorMode::SIMI_WITH_NEIGHBOURS:
+    case BlurrerColorMode::SMOOTH_NO_NEIGHBOURS:
+    case BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS:
+      brightness = NEIGHBOUR_BRIGHTNESS;
+      break;
+    default:
+      throw std::logic_error("Unexpected m_colorMode enum.");
+  }
+
+  if (nullptr != m_currentImageBitmap)
+  {
+    static constexpr float BITMAP_BRIGHTNESS_CUT = 0.5F;
+    brightness *= BITMAP_BRIGHTNESS_CUT;
+  }
+
+  return brightness;
 }
 
 inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
