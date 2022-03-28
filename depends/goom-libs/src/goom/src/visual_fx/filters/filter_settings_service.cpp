@@ -617,6 +617,8 @@ void FilterSettingsService::SetWaveModeExtraEffects()
     return;
   }
 
+  m_randomizedExtraEffects->TurnPlaneEffectOn();
+
   ZoomFilterEffectsSettings& filterEffectsSettings = m_filterSettings.filterEffectsSettings;
   filterEffectsSettings.vitesse.SetReverseVitesse(m_goomRand.ProbabilityOf(PROB_REVERSE_SPEED));
   if (m_goomRand.ProbabilityOf(PROB_CHANGE_SPEED))

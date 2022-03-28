@@ -81,6 +81,16 @@ void ExtraEffectsStates::UpdateFilterSettingsFromStates(ZoomFilterSettings& filt
   filterSettings.filterEffectsSettings.tanEffect = m_tanEffect->IsTurnedOn();
 }
 
+void ExtraEffectsStates::TurnPlaneEffectOn()
+{
+  if constexpr (EXTRA_EFFECTS_TURNED_OFF)
+  {
+    return;
+  }
+
+  m_planeEffect->SetState(true);
+}
+
 void ExtraEffectsStates::SetDefaults()
 {
   m_hypercosOverlayEffect = DEFAULT_HYPERCOS_OVERLAY;

@@ -36,6 +36,8 @@ public:
   auto operator=(const ExtraEffectsStates&) -> ExtraEffectsStates& = delete;
   auto operator=(ExtraEffectsStates&&) -> ExtraEffectsStates& = delete;
 
+  void TurnPlaneEffectOn();
+
   void SetDefaults();
   void UpdateTimers();
   void ResetAllStates(HypercosOverlay value, const ExtraEffectsProbabilities& effectsProbabilities);
@@ -64,7 +66,7 @@ private:
   static constexpr uint32_t PLANE_EFFECT_OFF_TIME = 100;
   std::unique_ptr<EffectState> m_planeEffect;
 
-  static constexpr float PROB_REPEAT_ROTATION_EFFECT = 0.9F;
+  static constexpr float PROB_REPEAT_ROTATION_EFFECT = 0.0F;
   static constexpr uint32_t ROTATION_EFFECT_OFF_TIME = 0;
   std::unique_ptr<EffectState> m_rotationEffect;
 
