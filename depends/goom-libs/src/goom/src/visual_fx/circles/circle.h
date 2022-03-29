@@ -46,8 +46,8 @@ public:
          const Params& circleParams,
          const UTILS::MATH::PathParams& pathParams) noexcept;
   Circle(const Circle&) = delete;
-  Circle(Circle&&) = default;
-  ~Circle() = default;
+  Circle(Circle&& other) noexcept;
+  ~Circle() noexcept;
   auto operator=(const Circle&) -> Circle& = delete;
   auto operator=(Circle&&) -> Circle& = delete;
 
@@ -93,14 +93,15 @@ private:
   [[nodiscard]] auto GetCurrentBrightness() const -> float;
   [[nodiscard]] auto GetDotBrightness(float brightness) const -> float;
   [[nodiscard]] auto GetLineBrightness(float brightness) const -> float;
-  void DrawDot(const Point2dInt& pos, uint32_t diameter, const Pixel& color, const Pixel& lowColor);
+
+  class DotDrawer;
+  std::unique_ptr<DotDrawer> m_dotDrawer;
   bool m_showLine = false;
+  static constexpr float T_LINE_COLOR_STEP = 1.0F / static_cast<float>(NUM_DOTS);
   void DrawLine(const Point2dInt& pos1,
                 const Point2dInt& pos2,
                 float lineBrightness,
                 float tLineColor);
-
-  static constexpr float T_LINE_COLOR_STEP = 1.0F / static_cast<float>(NUM_DOTS);
 
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps;
   std::shared_ptr<COLOR::RandomColorMaps> m_lowColorMaps;
