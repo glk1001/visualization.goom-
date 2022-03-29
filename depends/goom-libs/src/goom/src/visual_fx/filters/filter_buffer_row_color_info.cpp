@@ -11,11 +11,10 @@ using COLOR::LUMA_BLUE_COMPONENT;
 using COLOR::LUMA_GREEN_COMPONENT;
 using COLOR::LUMA_RED_COMPONENT;
 
-auto FilterBufferRowColorInfo::GetBufferAverageLuminance(
-    const std::vector<FilterBufferRowColorInfo>& filterBufferColorInfo) -> float
+auto FilterBufferColorInfo::GetAverageLuminance() const -> float
 {
-  const auto infoBegin = cbegin(filterBufferColorInfo);
-  const auto infoEnd = cend(filterBufferColorInfo);
+  const auto infoBegin = cbegin(m_filterBufferColorInfo);
+  const auto infoEnd = cend(m_filterBufferColorInfo);
 
   const auto totalNonZeroPixels =
       std::accumulate(infoBegin, infoEnd, 0ULL,

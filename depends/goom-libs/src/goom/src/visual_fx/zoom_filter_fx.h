@@ -1,6 +1,5 @@
 #pragma once
 
-#include "filters/filter_buffer_row_color_info.h"
 #include "goom/spimpl.h"
 #include "goom_visual_fx.h"
 #include "utils/name_value_pairs.h"
@@ -25,6 +24,7 @@ namespace VISUAL_FX
 
 namespace FILTERS
 {
+class FilterBufferColorInfo;
 class FilterBuffersService;
 class FilterColorsService;
 struct ZoomFilterBufferSettings;
@@ -57,8 +57,7 @@ public:
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
   void SetZoomFilterBrightness(float brightness);
-  [[nodiscard]] auto GetLastFilterBufferColorInfo() const
-      -> const std::vector<FILTERS::FilterBufferRowColorInfo>&;
+  [[nodiscard]] auto GetLastFilterBufferColorInfo() const -> const FILTERS::FilterBufferColorInfo&;
 
   void Finish() override;
 
