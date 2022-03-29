@@ -6,7 +6,7 @@
 #include "goom_states.h"
 #include "utils/adaptive_exposure.h"
 #include "utils/math/misc.h"
-#include "visual_fx/filters/filter_buffer_row_color_info.h"
+#include "visual_fx/filters/filter_buffer_color_info.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
 #include "visual_fx_color_maps.h"

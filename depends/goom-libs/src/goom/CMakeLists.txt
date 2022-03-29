@@ -85,7 +85,7 @@ add_library(goom
         src/visual_fx/filters/crystal_ball.cpp
         src/visual_fx/filters/distance_field.cpp
         src/visual_fx/filters/extra_effects_states.cpp
-        src/visual_fx/filters/filter_buffer_row_color_info.cpp
+        src/visual_fx/filters/filter_buffer_color_info.cpp
         src/visual_fx/filters/filter_buffers.cpp
         src/visual_fx/filters/filter_buffers_service.cpp
         src/visual_fx/filters/filter_colors_service.cpp

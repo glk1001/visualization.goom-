@@ -16,7 +16,7 @@
 
 //#undef NO_LOGGING
 
-#include "filters/filter_buffer_row_color_info.h"
+#include "filters/filter_buffer_color_info.h"
 #include "filters/filter_buffers_service.h"
 #include "filters/filter_colors_service.h"
 #include "goom/logging.h"

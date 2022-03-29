@@ -1,4 +1,4 @@
-#include "filter_buffer_row_color_info.h"
+#include "filter_buffer_color_info.h"
 
 #include "color/colorutils.h"
 
