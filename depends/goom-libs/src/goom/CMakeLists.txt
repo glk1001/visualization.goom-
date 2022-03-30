@@ -17,6 +17,14 @@ else()
     MESSAGE(STATUS "Goom: Logging turned off.")
 endif()
 
+string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_CMAKE_BUILD_TYPE)
+if (UPPER_CMAKE_BUILD_TYPE STREQUAL "RELEASE")
+    MESSAGE(STATUS "Goom: GOOM_DEBUG turned off.")
+else()
+    add_definitions(-DGOOM_DEBUG)
+    MESSAGE(STATUS "Goom: GOOM_DEBUG turned on.")
+endif()
+
 
 add_library(goom
     STATIC

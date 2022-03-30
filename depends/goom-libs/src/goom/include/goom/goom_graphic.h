@@ -179,7 +179,7 @@ class PixelBuffer
   using Buffer = std::vector<Pixel>;
 
 public:
-  PixelBuffer() noexcept {} // appleclang can't handle ' = default';
+  PixelBuffer() noexcept = default;
   PixelBuffer(uint32_t width, uint32_t height) noexcept;
   PixelBuffer(const PixelBuffer&) noexcept = delete;
   PixelBuffer(PixelBuffer&&) noexcept = delete;
@@ -438,14 +438,34 @@ inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
 
   const size_t xPos = (y * m_width) + x;
 
+  // This is a serious hotspot so the following ugly access optimization
+  // saves a few milliseconds per update.
+
+  /** Simple, clean code, but slightly slower.
   return {
       {
-       m_buff[xPos],
-       m_buff[xPos + 1],
-       m_buff[xPos + m_width],
-       m_buff[xPos + m_width + 1],
-       }
+        m_buff[xPos],
+        m_buff[xPos + 1],
+        m_buff[xPos + m_width],
+        m_buff[xPos + m_width + 1]
+      }
   };
+   **/
+
+  // Ugly code, but slightly faster.
+  struct TwoPixels
+  {
+    Pixel pixel1;
+    Pixel pixel2;
+  };
+  std::array<Pixel, NUM_NBRS> neighbours{};
+
+  *reinterpret_cast<TwoPixels*>(&(neighbours[0])) =
+      *reinterpret_cast<const TwoPixels*>(&(m_buff[xPos]));
+  *reinterpret_cast<TwoPixels*>(&(neighbours[2])) =
+      *reinterpret_cast<const TwoPixels*>(&(m_buff[xPos + m_width]));
+
+  return neighbours;
 }
 
 } // namespace GOOM

@@ -174,15 +174,15 @@ inline auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -
   return Pixel{newR, newG, newB, newA};
 }
 
-
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
   static constexpr float MAX_BRIGHTNESS = 50.0F;
   assert(brightness >= 0.0F && brightness <= MAX_BRIGHTNESS);
+  UNUSED_FOR_NDEBUG(MAX_BRIGHTNESS);
+
   const auto intBrightness = static_cast<uint32_t>(std::round((brightness * 256.0F) + 0.0001F));
   return GetBrighterColorInt(intBrightness, color);
 }
-
 
 inline auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, const int32_t intT)
     -> uint32_t
