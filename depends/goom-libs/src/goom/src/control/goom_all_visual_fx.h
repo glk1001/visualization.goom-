@@ -188,7 +188,7 @@ inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer&
 inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
 {
   const float currentBufferAverageLuminance =
-      m_zoomFilterFx->GetLastFilterBufferColorInfo().GetAverageLuminance();
+      m_zoomFilterFx->GetLastFilterBufferColorInfo().GetMaxRegionAverageLuminance();
 
   if (currentBufferAverageLuminance < UTILS::MATH::SMALL_FLOAT)
   {

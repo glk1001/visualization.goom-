@@ -165,7 +165,7 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     m_parallel{parallel},
     m_filterBuffersService{std::move(filterBuffersService)},
     m_filterColorsService{std::move(filterColorsService)},
-    m_filterBufferColorInfo(m_screenHeight)
+    m_filterBufferColorInfo(m_screenWidth, m_screenHeight)
 {
 }
 
@@ -259,19 +259,17 @@ void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffe
 
     filterBufferRowColorInfo.Reset();
     uint32_t destPos = m_screenWidth * static_cast<uint32_t>(destY);
-    size_t x = 0;
 
     for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
     {
       const Pixel newColor = m_filterColorsService->GetNewColor(
           srceBuff, m_filterBuffersService->GetSourcePointInfo(destPos));
 
-      filterBufferRowColorInfo.UpdateColor(x, newColor);
-
+      filterBufferRowColorInfo.UpdateColor(newColor);
       *destRowBuff = newColor;
 
+      filterBufferRowColorInfo.NextX();
       ++destPos;
-      ++x;
     }
   };
 
