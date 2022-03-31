@@ -2,6 +2,7 @@
 
 #include "goom_graphic.h"
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -28,7 +29,7 @@ public:
   private:
     const std::array<size_t, NUM_X_REGIONS>& m_xRegionBorders;
     size_t m_currentX = 0;
-    size_t m_currentXRegionNum = 0;
+    size_t m_currentXRegionIndex = 0;
 
     struct Counts
     {
@@ -38,7 +39,6 @@ public:
       uint32_t sumBlueInRow = 0;
     };
     std::array<Counts, NUM_X_REGIONS> m_xRegionCountsArray{};
-    [[nodiscard]] auto GetXRegionCountsArray() const -> const std::array<Counts, NUM_X_REGIONS>&;
     [[nodiscard]] auto GetXRegionTotals() const -> Counts;
     [[nodiscard]] auto GetXRegionCounts(size_t xRegionIndex) const -> Counts;
 
@@ -55,9 +55,9 @@ private:
   const uint32_t m_height;
 
   const std::array<size_t, NUM_X_REGIONS> m_xRegionBorders;
-  [[nodiscard]] static auto GetXRegionBorders(uint32_t width) -> std::array<size_t, NUM_X_REGIONS>;
   const std::array<size_t, NUM_Y_REGIONS> m_yRegionBorders;
-  [[nodiscard]] static auto GetYRegionBorders(uint32_t height) -> std::array<size_t, NUM_Y_REGIONS>;
+  template<uint32_t numRegions>
+  [[nodiscard]] static auto GetRegionBorders(uint32_t length) -> std::array<size_t, numRegions>;
 
   std::vector<FilterBufferRowColorInfo> m_filterBufferRowColorInfoArray;
   [[nodiscard]] static auto GetFilterBufferRowColorInfoArray(
@@ -87,8 +87,8 @@ inline FilterBufferColorInfo::FilterBufferColorInfo(const uint32_t width,
                                                     const uint32_t height) noexcept
   : m_width{width},
     m_height{height},
-    m_xRegionBorders{GetXRegionBorders(m_width)},
-    m_yRegionBorders{GetYRegionBorders(m_height)},
+    m_xRegionBorders{GetRegionBorders<NUM_X_REGIONS>(m_width)},
+    m_yRegionBorders{GetRegionBorders<NUM_Y_REGIONS>(m_height)},
     m_filterBufferRowColorInfoArray{GetFilterBufferRowColorInfoArray(m_height, m_xRegionBorders)},
     m_regionInfoArray{GetRegionInfoArray(m_yRegionBorders)}
 {
@@ -99,22 +99,41 @@ inline auto FilterBufferColorInfo::GetRow(const size_t y) -> FilterBufferRowColo
   return m_filterBufferRowColorInfoArray[y];
 }
 
+template<uint32_t numRegions>
+auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length)
+    -> std::array<size_t, numRegions>
+{
+  static_assert(numRegions > 0);
+  assert(length > 0);
+  const uint32_t regionSize = length / numRegions;
+
+  std::array<size_t, numRegions> regionBorders{};
+  size_t border = regionSize - 1;
+  for (auto& regionBorder : regionBorders)
+  {
+    regionBorder = border;
+
+    border += regionSize;
+    if (border >= length)
+    {
+      border = length - 1;
+    }
+    assert(border < length);
+  }
+
+  return regionBorders;
+}
+
 inline FilterBufferColorInfo::FilterBufferRowColorInfo::FilterBufferRowColorInfo(
     const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept
   : m_xRegionBorders{xRegionBorders}
 {
 }
 
-inline auto FilterBufferColorInfo::FilterBufferRowColorInfo::GetXRegionCountsArray() const
-    -> const std::array<Counts, NUM_X_REGIONS>&
-{
-  return m_xRegionCountsArray;
-}
-
 inline void FilterBufferColorInfo::FilterBufferRowColorInfo::Reset()
 {
   m_currentX = 0;
-  m_currentXRegionNum = 0;
+  m_currentXRegionIndex = 0;
 
   for (auto& regionCounts : m_xRegionCountsArray)
   {
@@ -132,7 +151,7 @@ inline void FilterBufferColorInfo::FilterBufferRowColorInfo::UpdateColor(const P
     return;
   }
 
-  Counts& regionCounts = m_xRegionCountsArray.at(m_currentXRegionNum);
+  Counts& regionCounts = m_xRegionCountsArray.at(m_currentXRegionIndex);
   ++regionCounts.numNonzeroInRow;
   regionCounts.sumRedInRow += color.R();
   regionCounts.sumGreenInRow += color.G();
@@ -142,9 +161,9 @@ inline void FilterBufferColorInfo::FilterBufferRowColorInfo::UpdateColor(const P
 inline void FilterBufferColorInfo::FilterBufferRowColorInfo::NextX()
 {
   ++m_currentX;
-  if (m_currentX > m_xRegionBorders.at(m_currentXRegionNum))
+  if (m_currentX > m_xRegionBorders.at(m_currentXRegionIndex))
   {
-    ++m_currentXRegionNum;
+    ++m_currentXRegionIndex;
   }
 }
 
