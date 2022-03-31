@@ -41,15 +41,10 @@ set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
 
-<<<<<<< HEAD
 CPMAddPackage("gh:g-truc/glm#0.9.9.8")
 set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
 CPMAddPackage("gh:fmtlib/fmt#8.0.1")
-
-list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
-find_package(glm REQUIRED)
-set(GLM_INCLUDE_DIR "${GLM_INCLUDE_DIRS}")
 
 list(APPEND GOOM_SYS_INC_DIRS "${magic_enum_SOURCE_DIR}/include" "${fmt_SOURCE_DIR}/include")
 list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
