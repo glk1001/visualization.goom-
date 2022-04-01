@@ -7,6 +7,7 @@
 #include "utils/adaptive_exposure.h"
 #include "utils/math/misc.h"
 #include "visual_fx/filters/filter_buffer_color_info.h"
+#include "visual_fx/filters/filter_settings.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/zoom_filter_fx.h"
 #include "visual_fx_color_maps.h"
@@ -140,6 +141,7 @@ private:
   UTILS::AdaptiveExposure m_adaptiveExposure{};
   bool m_doExposureControl = false;
   void UpdateZoomFilterLuminance();
+  [[nodiscard]] auto GetCurrentBufferAverageLuminance() -> float;
 
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
@@ -187,20 +189,40 @@ inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer&
 
 inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
 {
-  const float currentBufferAverageLuminance =
-      m_zoomFilterFx->GetLastFilterBufferColorInfo().GetMaxRegionAverageLuminance();
-
-  if (currentBufferAverageLuminance < UTILS::MATH::SMALL_FLOAT)
+  const float averageLuminanceToUse = GetCurrentBufferAverageLuminance();
+  if (averageLuminanceToUse < UTILS::MATH::SMALL_FLOAT)
   {
     // No point trying to handle zero luminance.
     return;
   }
-  m_adaptiveExposure.UpdateAverageLuminance(currentBufferAverageLuminance);
+
+  m_adaptiveExposure.UpdateAverageLuminance(averageLuminanceToUse);
 
   if (m_doExposureControl)
   {
     m_zoomFilterFx->SetZoomFilterBrightness(m_adaptiveExposure.GetCurrentExposure());
   }
+}
+
+inline auto GoomAllVisualFx::GetCurrentBufferAverageLuminance() -> float
+{
+  m_zoomFilterFx->GetLastFilterBufferColorInfo().CalculateLuminances();
+
+  const VISUAL_FX::FILTERS::FilterBufferColorInfo& filterBufferColorInfo =
+      m_zoomFilterFx->GetLastFilterBufferColorInfo();
+
+  const float maxRegionAverageLuminance = filterBufferColorInfo.GetMaxRegionAverageLuminance();
+  if (maxRegionAverageLuminance < UTILS::MATH::SMALL_FLOAT)
+  {
+    return 0.0F;
+  }
+
+  const float zoomPointRegionAverageLuminance =
+      filterBufferColorInfo.GetRegionAverageLuminanceAtPoint(
+          m_zoomFilterFx->GetFilterEffectsSettings().zoomMidpoint);
+  static constexpr float LUMINANCE_MIX = 0.2F;
+
+  return STD20::lerp(zoomPointRegionAverageLuminance, maxRegionAverageLuminance, LUMINANCE_MIX);
 }
 
 inline auto GoomAllVisualFx::GetCurrentExposure() const -> float

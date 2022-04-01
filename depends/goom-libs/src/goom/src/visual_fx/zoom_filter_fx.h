@@ -48,6 +48,8 @@ public:
 
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
 
+  [[nodiscard]] auto GetFilterEffectsSettings() const
+      -> const VISUAL_FX::FILTERS::ZoomFilterEffectsSettings&;
   void UpdateFilterEffectsSettings(
       const VISUAL_FX::FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings);
   void UpdateFilterBufferSettings(
@@ -58,6 +60,7 @@ public:
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
   void SetZoomFilterBrightness(float brightness);
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const -> const FILTERS::FilterBufferColorInfo&;
+  [[nodiscard]] auto GetLastFilterBufferColorInfo() -> FILTERS::FilterBufferColorInfo&;
 
   void Finish() override;
 
@@ -70,4 +73,3 @@ private:
 
 } // namespace VISUAL_FX
 } // namespace GOOM
-

@@ -31,8 +31,9 @@ public:
 
   void Start();
 
-  void SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
+  [[nodiscard]] auto GetCurrentFilterEffectsSettings() const -> const ZoomFilterEffectsSettings&;
   void SetFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
+  void SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
 
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
 
@@ -58,6 +59,12 @@ private:
   [[nodiscard]] auto AreStartingFreshTranBuffers() const -> bool;
   void StartFreshTranBuffers();
 };
+
+inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const
+    -> const ZoomFilterEffectsSettings&
+{
+  return m_currentFilterEffectsSettings;
+}
 
 inline auto FilterBuffersService::GetSourcePointInfo(const size_t buffPos) const -> SourcePointInfo
 {

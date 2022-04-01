@@ -61,13 +61,15 @@ public:
 
   [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
 
-  void UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
+  [[nodiscard]] auto GetFilterEffectsSettings() const -> const ZoomFilterEffectsSettings&;
   void UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
+  void UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
   void UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings);
 
   void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
   void SetZoomFilterBrightness(float brightness);
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const -> const FilterBufferColorInfo&;
+  [[nodiscard]] auto GetLastFilterBufferColorInfo() -> FilterBufferColorInfo&;
 
   [[nodiscard]] auto GetNameValueParams() const -> NameValuePairs;
 
@@ -124,15 +126,20 @@ auto ZoomFilterFx::GetTranLerpFactor() const -> int32_t
   return m_fxImpl->GetTranLerpFactor();
 }
 
-void ZoomFilterFx::UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings)
+auto ZoomFilterFx::GetFilterEffectsSettings() const -> const ZoomFilterEffectsSettings&
 {
-  m_fxImpl->UpdateFilterBufferSettings(filterBufferSettings);
+  return m_fxImpl->GetFilterEffectsSettings();
 }
 
 void ZoomFilterFx::UpdateFilterEffectsSettings(
     const ZoomFilterEffectsSettings& filterEffectsSettings)
 {
   m_fxImpl->UpdateFilterEffectsSettings(filterEffectsSettings);
+}
+
+void ZoomFilterFx::UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings)
+{
+  m_fxImpl->UpdateFilterBufferSettings(filterBufferSettings);
 }
 
 void ZoomFilterFx::UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings)
@@ -151,6 +158,11 @@ void ZoomFilterFx::SetZoomFilterBrightness(const float brightness)
 }
 
 auto ZoomFilterFx::GetLastFilterBufferColorInfo() const -> const FilterBufferColorInfo&
+{
+  return m_fxImpl->GetLastFilterBufferColorInfo();
+}
+
+auto ZoomFilterFx::GetLastFilterBufferColorInfo() -> FilterBufferColorInfo&
 {
   return m_fxImpl->GetLastFilterBufferColorInfo();
 }
@@ -177,6 +189,12 @@ inline void ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& 
 inline auto ZoomFilterFx::ZoomFilterImpl::GetTranLerpFactor() const -> int32_t
 {
   return m_filterBuffersService->GetTranLerpFactor();
+}
+
+inline auto ZoomFilterFx::ZoomFilterImpl::GetFilterEffectsSettings() const
+    -> const ZoomFilterEffectsSettings&
+{
+  return m_filterBuffersService->GetCurrentFilterEffectsSettings();
 }
 
 inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterEffectsSettings(
@@ -244,6 +262,11 @@ inline void ZoomFilterFx::ZoomFilterImpl::SetZoomFilterBrightness(const float br
 
 inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() const
     -> const FilterBufferColorInfo&
+{
+  return m_filterBufferColorInfo;
+}
+
+inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() -> FilterBufferColorInfo&
 {
   return m_filterBufferColorInfo;
 }

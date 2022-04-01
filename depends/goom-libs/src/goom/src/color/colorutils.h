@@ -36,6 +36,8 @@ static constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
 [[nodiscard]] auto GetIncreasedChroma(const Pixel& color) -> Pixel;
 [[nodiscard]] auto GetDecreasedChroma(const Pixel& color) -> Pixel;
 
+[[nodiscard]] auto IsCloseToBlack(const Pixel& color, uint32_t threshold = 10) -> bool;
+
 enum class SimpleColors
 {
   BLEUBLANC = 0,
@@ -213,6 +215,11 @@ inline auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -
   return Pixel{newR, newG, newB, newA};
 }
 
+inline auto IsCloseToBlack(const Pixel& color, const uint32_t threshold) -> bool
+{
+  return (color.R() < threshold) && (color.G() < threshold) && (color.B() < threshold);
+}
+
 
 // RGB -> Luma conversion formula.
 //
@@ -297,4 +304,3 @@ inline void GammaCorrection::SetGamma(const float val)
 }
 
 } // namespace GOOM::COLOR
-

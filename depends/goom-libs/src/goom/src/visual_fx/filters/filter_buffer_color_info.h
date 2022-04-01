@@ -1,6 +1,9 @@
 #pragma once
 
+#include "color/colorutils.h"
 #include "goom_graphic.h"
+#include "point2d.h"
+#include "utils/math/misc.h"
 
 #include <cassert>
 #include <cstddef>
@@ -12,10 +15,10 @@ namespace GOOM::VISUAL_FX::FILTERS
 
 class FilterBufferColorInfo
 {
-  static constexpr uint32_t NUM_X_REGIONS = 5;
-  static constexpr uint32_t NUM_Y_REGIONS = 4;
-
 public:
+  static constexpr uint32_t NUM_X_REGIONS = 5;
+  static constexpr uint32_t NUM_Y_REGIONS = 3;
+
   class FilterBufferRowColorInfo
   {
   public:
@@ -48,7 +51,9 @@ public:
   explicit FilterBufferColorInfo(uint32_t width, uint32_t height) noexcept;
 
   [[nodiscard]] auto GetRow(size_t y) -> FilterBufferRowColorInfo&;
+  void CalculateLuminances();
   [[nodiscard]] auto GetMaxRegionAverageLuminance() const -> float;
+  [[nodiscard]] auto GetRegionAverageLuminanceAtPoint(const Point2dInt& point) const -> float;
 
 private:
   const uint32_t m_width;
@@ -75,7 +80,10 @@ private:
   [[nodiscard]] static auto GetRegionInfoArray(
       const std::array<size_t, NUM_Y_REGIONS>& yRegionBorders)
       -> std::array<RegionInfo, NUM_REGIONS>;
+  [[nodiscard]] auto GetRegionIndexOfPoint(const Point2dInt& point) const -> size_t;
+  [[nodiscard]] auto IsInXRegion(int32_t x, size_t xRegionIndex) const -> bool;
 
+  std::array<float, NUM_REGIONS> m_regionAverageLuminances;
   [[nodiscard]] auto GetRegionAverageLuminance(size_t regionIndex) const -> float;
   using Counts = FilterBufferRowColorInfo::Counts;
   [[nodiscard]] static auto GetAverageLuminance(const Counts& totals) -> float;
@@ -92,6 +100,8 @@ inline FilterBufferColorInfo::FilterBufferColorInfo(const uint32_t width,
     m_filterBufferRowColorInfoArray{GetFilterBufferRowColorInfoArray(m_height, m_xRegionBorders)},
     m_regionInfoArray{GetRegionInfoArray(m_yRegionBorders)}
 {
+  static_assert(UTILS::MATH::IsOdd(NUM_X_REGIONS));
+  static_assert(UTILS::MATH::IsOdd(NUM_Y_REGIONS));
 }
 
 inline auto FilterBufferColorInfo::GetRow(const size_t y) -> FilterBufferRowColorInfo&
@@ -146,7 +156,7 @@ inline void FilterBufferColorInfo::FilterBufferRowColorInfo::Reset()
 
 inline void FilterBufferColorInfo::FilterBufferRowColorInfo::UpdateColor(const Pixel& color)
 {
-  if (color.IsBlack())
+  if (COLOR::IsCloseToBlack(color))
   {
     return;
   }
