@@ -372,7 +372,7 @@ inline void Circle::DrawLine(const Point2dInt& pos1,
     const Pixel lowColor =
         GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
 
-    m_dotDrawer->DrawDot(dotPos, m_helper.minDotDiameter, color, lowColor);
+    m_dotDrawer->DrawDot(dotPos, m_helper.lineDotDiameter, color, lowColor);
 
     tDotPos += T_DOT_POS_STEP;
     tDotColor += T_DOT_COLOR_STEP;

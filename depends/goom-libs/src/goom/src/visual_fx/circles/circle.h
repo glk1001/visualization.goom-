@@ -29,6 +29,7 @@ class Circle
 public:
   struct Helper
   {
+    uint32_t lineDotDiameter;
     uint32_t minDotDiameter;
     uint32_t maxDotDiameter;
     const IBitmapGetter& bitmapGetter;

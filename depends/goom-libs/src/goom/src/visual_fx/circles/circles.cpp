@@ -19,6 +19,10 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::PathParams;
 
+static constexpr uint32_t LINE_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER;
+static constexpr uint32_t MIN_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER + 2;
+static constexpr uint32_t MAX_DOT_DIAMETER = BitmapGetter::MAX_DOT_DIAMETER;
+
 Circles::Circles(const FxHelper& fxHelper,
                  const SmallImageBitmaps& smallBitmaps,
                  const uint32_t numCircles,
@@ -27,12 +31,12 @@ Circles::Circles(const FxHelper& fxHelper,
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_bitmapGetter{fxHelper.GetGoomRand(), smallBitmaps},
     m_numCircles{numCircles},
-    m_circles{GetCircles(fxHelper,
-                         {BitmapGetter::MIN_DOT_DIAMETER, BitmapGetter::MAX_DOT_DIAMETER,
-                          m_bitmapGetter, m_gammaCorrect},
-                         GetPathParams(),
-                         m_numCircles,
-                         circleParams)}
+    m_circles{GetCircles(
+        fxHelper,
+        {LINE_DOT_DIAMETER, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER, m_bitmapGetter, m_gammaCorrect},
+        GetPathParams(),
+        m_numCircles,
+        circleParams)}
 {
 }
 
