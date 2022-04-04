@@ -220,7 +220,7 @@ inline auto GoomAllVisualFx::GetCurrentBufferAverageLuminance() -> float
   const float zoomPointRegionAverageLuminance =
       filterBufferColorInfo.GetRegionAverageLuminanceAtPoint(
           m_zoomFilterFx->GetFilterEffectsSettings().zoomMidpoint);
-  static constexpr float LUMINANCE_MIX = 0.2F;
+  static constexpr float LUMINANCE_MIX = 0.5F;
 
   return STD20::lerp(zoomPointRegionAverageLuminance, maxRegionAverageLuminance, LUMINANCE_MIX);
 }

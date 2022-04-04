@@ -111,6 +111,10 @@ auto CVisualizationGoom::Start(const int numChannels,
     StartLogging();
 
     LogInfo("CVisualizationGoom: Texture width, height = {}, {}.", m_textureWidth, m_textureHeight);
+#ifdef HAS_GL
+    LogInfo("CVisualizationGoom: Supported GLSL version is {}.",
+            glGetString(GL_SHADING_LANGUAGE_VERSION));
+#endif
 
     SetNumChannels(numChannels);
     SetSongTitle(songName);
