@@ -20,6 +20,9 @@
 #include <functional>
 #include <glm/gtc/type_ptr.hpp>
 #include <kodi/addon-instance/Visualization.h>
+#ifdef TARGET_DARWIN
+#define GL_SILENCE_DEPRECATION
+#endif
 #include <kodi/gui/gl/Shader.h>
 #include <mutex>
 #include <queue>
