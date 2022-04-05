@@ -3,6 +3,7 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "utils/math/paths.h"
 #include "utils/timer.h"
 
 #include <functional>
@@ -19,7 +20,6 @@ class RandomColorMaps;
 namespace UTILS::MATH
 {
 class IGoomRand;
-struct PathParams;
 }
 
 namespace VISUAL_FX::TUBES
@@ -92,7 +92,7 @@ public:
   };
 
   Tube() noexcept = delete;
-  Tube(const Data& data, const UTILS::MATH::PathParams& pathParams) noexcept;
+  Tube(const Data& data, const UTILS::MATH::OscillatingPath::Params& pathParams) noexcept;
 
   [[nodiscard]] auto IsActive() const -> bool;
 
@@ -114,7 +114,7 @@ public:
   void DecreaseCentreSpeed();
 
   void SetAllowOscillatingCirclePaths(bool val);
-  void SetCirclePathParams(const UTILS::MATH::PathParams& params);
+  void SetCirclePathParams(const UTILS::MATH::OscillatingPath::Params& params);
   static const float NORMAL_CIRCLE_SPEED;
   void SetCircleSpeed(float val);
   void IncreaseCircleSpeed();

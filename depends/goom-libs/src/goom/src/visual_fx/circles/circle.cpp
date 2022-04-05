@@ -33,7 +33,7 @@ using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
-using UTILS::MATH::PathParams;
+using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::U_HALF;
 
 class Circle::DotDrawer
@@ -78,7 +78,7 @@ private:
 Circle::Circle(const FxHelper& fxHelper,
                const Helper& helper,
                const Params& circleParams,
-               const PathParams& pathParams) noexcept
+               const OscillatingPath::Params& pathParams) noexcept
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
@@ -164,7 +164,7 @@ void Circle::SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint)
   // Don't need the zoom midpoint.
 }
 
-void Circle::SetPathParams(const PathParams& pathParams)
+void Circle::SetPathParams(const OscillatingPath::Params& pathParams)
 {
   m_dotPaths.SetPathParams(pathParams);
 }

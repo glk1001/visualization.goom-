@@ -45,7 +45,7 @@ public:
   Circle(const FxHelper& fxHelper,
          const Helper& helper,
          const Params& circleParams,
-         const UTILS::MATH::PathParams& pathParams) noexcept;
+         const UTILS::MATH::OscillatingPath::Params& pathParams) noexcept;
   Circle(const Circle&) = delete;
   Circle(Circle&& other) noexcept;
   ~Circle() noexcept;
@@ -55,7 +55,7 @@ public:
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
                             std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
   void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
-  void SetPathParams(const UTILS::MATH::PathParams& pathParams);
+  void SetPathParams(const UTILS::MATH::OscillatingPath::Params& pathParams);
 
   void Start();
   void UpdateAndDraw();

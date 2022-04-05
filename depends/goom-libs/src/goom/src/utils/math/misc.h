@@ -17,6 +17,56 @@ static constexpr float DEGREES_90 = 90.0F;
 static constexpr float DEGREES_180 = 180.0F;
 static constexpr float DEGREES_360 = 360.0F;
 
+[[nodiscard]] constexpr auto ToRadians(const float degrees) -> float
+{
+  return degrees * (TWO_PI / DEGREES_360);
+}
+
+[[nodiscard]] constexpr auto ToDegrees(const float radians) -> float
+{
+  return radians * (DEGREES_360 / TWO_PI);
+}
+
+[[nodiscard]] constexpr auto Gcd(const int32_t a, const int32_t b) -> int64_t
+{
+  if (0 == b)
+  {
+    return static_cast<int64_t>(a);
+  }
+  return Gcd(b, a % b);
+}
+
+[[nodiscard]] constexpr auto Lcm(const int32_t a, const int32_t b) -> int64_t
+{
+  return (static_cast<int64_t>(a) / Gcd(a, b)) * static_cast<int64_t>(b);
+}
+
+struct RationalNumber
+{
+  int32_t numerator;
+  int32_t denominator;
+  bool isRational;
+};
+
+[[nodiscard]] inline auto FloatToIrreducibleFraction(const float fltVal) -> RationalNumber
+{
+  static constexpr double PRECISION = 10000000.0;
+
+  const auto dblVal = static_cast<double>(fltVal);
+  const double intVal = std::floor(dblVal);
+  const double fracVal = dblVal - intVal;
+
+  const auto gcdVal = static_cast<int32_t>(
+      Gcd(static_cast<int32_t>(std::lround(fracVal * PRECISION)), static_cast<int32_t>(PRECISION)));
+
+  const auto numerator = static_cast<int32_t>(std::lround(fracVal * PRECISION) / gcdVal);
+  const auto denominator = static_cast<int32_t>(PRECISION) / gcdVal;
+
+  const bool isRational = denominator != static_cast<int32_t>(PRECISION);
+
+  return {(static_cast<int32_t>(intVal) * denominator) + numerator, denominator, isRational};
+}
+
 template<typename T>
 [[nodiscard]] constexpr auto Sq(const T& x) -> T
 {

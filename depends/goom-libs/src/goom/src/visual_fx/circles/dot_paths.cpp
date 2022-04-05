@@ -15,14 +15,13 @@ namespace GOOM::VISUAL_FX::CIRCLES
 
 using UTILS::TValue;
 using UTILS::MATH::OscillatingPath;
-using UTILS::MATH::PathParams;
 using UTILS::MATH::TWO_PI;
 
 DotPaths::DotPaths(const uint32_t numDots,
                    const Point2dInt& startCentre,
                    const float startRadius,
                    const Point2dInt& startTarget,
-                   const PathParams& startPathParams) noexcept
+                   const OscillatingPath::Params& startPathParams) noexcept
   : m_numDots{numDots},
     m_dotStartingPositions{GetDotStartingPositions(m_numDots, startCentre, startRadius)},
     m_target{startTarget},

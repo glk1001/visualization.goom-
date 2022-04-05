@@ -18,10 +18,10 @@ public:
            const Point2dInt& startCentre,
            float startRadius,
            const Point2dInt& startTarget,
-           const UTILS::MATH::PathParams& startPathParams) noexcept;
+           const UTILS::MATH::OscillatingPath::Params& startPathParams) noexcept;
 
   void SetTarget(const Point2dInt& target);
-  void SetPathParams(const UTILS::MATH::PathParams& params);
+  void SetPathParams(const UTILS::MATH::OscillatingPath::Params& params);
 
   [[nodiscard]] auto GetPositionTRef() const -> const UTILS::TValue&;
 
@@ -53,12 +53,12 @@ private:
       {{0.0F, DELAY_TIME_AT_EDGE}, {1.0F, DELAY_TIME_AT_CENTRE}},
       0.0F
   };
-  UTILS::MATH::PathParams m_pathParams;
+  UTILS::MATH::OscillatingPath::Params m_pathParams;
   std::vector<UTILS::MATH::OscillatingPath> m_dotPaths;
   [[nodiscard]] auto GetNewDotPaths() -> std::vector<UTILS::MATH::OscillatingPath>;
 };
 
-inline void DotPaths::SetPathParams(const UTILS::MATH::PathParams& params)
+inline void DotPaths::SetPathParams(const UTILS::MATH::OscillatingPath::Params& params)
 {
   m_pathParams = params;
 }

@@ -43,7 +43,7 @@ using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::PathParams;
+using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::U_HALF;
 
@@ -55,7 +55,7 @@ struct TubeSettings
   bool noOscillating;
   float brightnessFactor;
   float radiusEdgeOffset;
-  PathParams circlePathParams;
+  OscillatingPath::Params circlePathParams;
 };
 static constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{
     {
@@ -66,10 +66,10 @@ static constexpr std::array<TubeSettings, NUM_TUBES> TUBE_SETTINGS{
 };
 static constexpr uint32_t MAIN_TUBE_INDEX = 0;
 static constexpr uint32_t SECONDARY_TUBES_START_INDEX = 1;
-static constexpr PathParams COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
+static constexpr OscillatingPath::Params COMMON_CIRCLE_PATH_PARAMS{10.0F, +3.0F, +3.0F};
 
-[[nodiscard]] inline auto lerp(const PathParams& params0, const PathParams& params1, const float t)
-    -> PathParams
+[[nodiscard]] inline auto lerp(const OscillatingPath::Params& params0, const OscillatingPath::Params& params1, const float t)
+    -> OscillatingPath::Params
 {
   return {
       STD20::lerp(params0.oscillatingAmplitude, params1.oscillatingAmplitude, t),

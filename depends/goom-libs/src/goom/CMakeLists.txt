@@ -68,7 +68,7 @@ add_library(goom
         src/utils/math/goom_rand_base.h
         src/utils/math/math20.h
         src/utils/math/misc.h
-        src/utils/math/paths.h
+        src/utils/math/paths.cpp
         src/utils/math/randutils.cpp
         src/utils/name_value_pairs.h
         src/utils/strutils.cpp

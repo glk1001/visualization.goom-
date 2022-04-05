@@ -39,7 +39,6 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IPath;
 using UTILS::MATH::OscillatingPath;
-using UTILS::MATH::PathParams;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
 using UTILS::MATH::THIRD_PI;
@@ -143,7 +142,7 @@ class Tube::TubeImpl
 {
 public:
   TubeImpl() noexcept = delete;
-  TubeImpl(const Data& data, const PathParams& pathParams);
+  TubeImpl(const Data& data, const OscillatingPath::Params& pathParams);
 
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
@@ -169,7 +168,7 @@ public:
   void DecreaseCentreSpeed();
 
   void SetAllowOscillatingCirclePaths(bool val);
-  void SetCirclePathParams(const PathParams& params);
+  void SetCirclePathParams(const OscillatingPath::Params& params);
   [[nodiscard]] auto GetCircleSpeed() const -> float;
   void SetCircleSpeed(float val);
   void IncreaseCircleSpeed();
@@ -204,7 +203,8 @@ private:
   const std::vector<Shape> m_shapes;
   [[nodiscard]] static auto GetInitialShapes(const Data& data,
                                              TValue& shapeT,
-                                             const PathParams& pathParams) -> std::vector<Shape>;
+                                             const OscillatingPath::Params& pathParams)
+      -> std::vector<Shape>;
 
   Timer m_circleGroupTimer;
   Timer m_interiorShapeTimer{MAX_INTERIOR_SHAPES_TIME};
@@ -230,7 +230,7 @@ private:
 const float Tube::NORMAL_CENTRE_SPEED = NML_CENTRE_SPEED;
 const float Tube::NORMAL_CIRCLE_SPEED = NML_CIRCLE_SPEED;
 
-Tube::Tube(const Data& data, const PathParams& pathParams) noexcept
+Tube::Tube(const Data& data, const OscillatingPath::Params& pathParams) noexcept
   : m_impl{std::make_unique<Tube::TubeImpl>(data, pathParams)}
 {
 }
@@ -285,7 +285,7 @@ void Tube::SetAllowOscillatingCirclePaths(const bool val)
   m_impl->SetAllowOscillatingCirclePaths(val);
 }
 
-void Tube::SetCirclePathParams(const PathParams& params)
+void Tube::SetCirclePathParams(const OscillatingPath::Params& params)
 {
   m_impl->SetCirclePathParams(params);
 }
@@ -432,7 +432,7 @@ static constexpr float MAIN_COLOR_WEIGHT          = 10.0F;
 static constexpr float LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
 // clang-format on
 
-Tube::TubeImpl::TubeImpl(const Data& data, const PathParams& pathParams)
+Tube::TubeImpl::TubeImpl(const Data& data, const OscillatingPath::Params& pathParams)
   : m_data{data},
     m_colorizer{std::make_unique<ShapeColorizer>(data,
                                                  NUM_SHAPES_PER_TUBE,
@@ -457,7 +457,8 @@ Tube::TubeImpl::TubeImpl(const Data& data, const PathParams& pathParams)
 
 auto Tube::TubeImpl::GetInitialShapes(const Data& data,
                                       TValue& shapeT,
-                                      const PathParams& pathParams) -> std::vector<Shape>
+                                      const OscillatingPath::Params& pathParams)
+    -> std::vector<Shape>
 {
   const Point2dInt middlePos{static_cast<int32_t>(U_HALF * data.screenWidth),
                              static_cast<int32_t>(U_HALF * data.screenHeight)};
@@ -592,11 +593,11 @@ inline void Tube::TubeImpl::SetAllowOscillatingCirclePaths(const bool val)
   }
 }
 
-inline void Tube::TubeImpl::SetCirclePathParams(const PathParams& params)
+inline void Tube::TubeImpl::SetCirclePathParams(const OscillatingPath::Params& params)
 {
   for (const auto& shape : m_shapes)
   {
-    shape.path->SetPathParams(params);
+    shape.path->SetParams(params);
   }
 }
 
