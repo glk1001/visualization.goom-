@@ -17,7 +17,10 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+#include "utils/math/paths.h"
+#include "utils/t_values.h"
 
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -31,11 +34,17 @@ using COLOR::GetIncreasedChroma;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
+using UTILS::Logging;
+using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::Epicycloid;
 using UTILS::MATH::Fraction;
 using UTILS::MATH::HALF;
+using UTILS::MATH::Hypotrochoid;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::IPath;
+using UTILS::MATH::LissajousPath;
 using UTILS::MATH::S_HALF;
 using UTILS::MATH::THIRD;
 using UTILS::MATH::U_HALF;
@@ -59,13 +68,6 @@ private:
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
   const Point2dInt m_screenMidpoint;
-  const uint32_t m_pointWidth;
-  const uint32_t m_pointHeight;
-
-  const float m_pointWidthDiv2;
-  const float m_pointHeightDiv2;
-  const float m_pointWidthDiv3;
-  const float m_pointHeightDiv3;
 
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
@@ -96,19 +98,18 @@ private:
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
   [[nodiscard]] auto GetMiddleColor() const -> Pixel;
 
-  uint32_t m_loopVar = 0; // mouvement des points
+  std::array<TValue, NUM_DOT_TYPES> m_dotPositionTs;
+  [[nodiscard]] static auto GetDotPositionTs() -> std::array<TValue, NUM_DOT_TYPES>;
+  const std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths;
+  [[nodiscard]] static auto GetDotPaths(const Point2dInt& centre,
+                                        std::array<TValue, NUM_DOT_TYPES>& dotPositionTs)
+      -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>;
 
   void Update();
 
   void ChangeColors();
-  [[nodiscard]] static auto GetLargeSoundFactor(const SoundInfo& soundInfo) -> float;
 
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
-  [[nodiscard]] auto GetDotPosition(float xOffsetAmp,
-                                    float yOffsetAmp,
-                                    float xOffsetFreqDenom,
-                                    float yOffsetFreqDenom,
-                                    uint32_t offsetCycle) const -> Point2dInt;
 
   static constexpr float GAMMA = 2.0F;
   static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
@@ -161,8 +162,6 @@ void GoomDotsFx::ApplyMultiple()
   m_fxImpl->ApplyMultiple();
 }
 
-static constexpr Fraction<uint32_t> TWO_FIFTHS{2, 5};
-
 // clang-format off
 static constexpr float IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 10.0F;
 static constexpr float IMAGE_NAMES_PINK_FLOWER_WEIGHT   =  5.0F;
@@ -178,12 +177,6 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
     m_smallBitmaps{smallBitmaps},
     m_screenMidpoint{U_HALF * m_goomInfo.GetScreenInfo().width,
                      U_HALF * m_goomInfo.GetScreenInfo().height},
-    m_pointWidth{TWO_FIFTHS * m_goomInfo.GetScreenInfo().width},
-    m_pointHeight{TWO_FIFTHS * m_goomInfo.GetScreenInfo().height},
-    m_pointWidthDiv2{HALF * static_cast<float>(m_pointWidth)},
-    m_pointHeightDiv2{HALF * static_cast<float>(m_pointHeight)},
-    m_pointWidthDiv3{THIRD * static_cast<float>(m_pointWidth)},
-    m_pointHeightDiv3{THIRD * static_cast<float>(m_pointHeight)},
     // clang-format off
     m_flowerDotTypes{
         m_goomRand,
@@ -193,9 +186,49 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
             {SmallImageBitmaps::ImageNames::RED_FLOWER,    IMAGE_NAMES_RED_FLOWER_WEIGHT},
             {SmallImageBitmaps::ImageNames::WHITE_FLOWER,  IMAGE_NAMES_WHITE_FLOWER_WEIGHT},
         }
-    }
-// clang-format on
+    },
+    // clang-format on
+    m_dotPositionTs{GetDotPositionTs()},
+    m_dotPaths{GetDotPaths(m_screenMidpoint, m_dotPositionTs)}
 {
+}
+
+auto GoomDotsFx::GoomDotsFxImpl::GetDotPositionTs() -> std::array<TValue, NUM_DOT_TYPES>
+{
+  static constexpr float HYPOTROCHOID_STEP_SIZE = 0.01F;
+  static constexpr float LISSAJOUS_STEP_SIZE = 0.01F;
+  static constexpr float EPICYCLOID_STEP_SIZE = 0.001F;
+
+  return {
+      {
+       {TValue::StepType::CONTINUOUS_REVERSIBLE, HYPOTROCHOID_STEP_SIZE},
+       {TValue::StepType::CONTINUOUS_REVERSIBLE, HYPOTROCHOID_STEP_SIZE},
+       {TValue::StepType::CONTINUOUS_REVERSIBLE, HYPOTROCHOID_STEP_SIZE},
+       {TValue::StepType::CONTINUOUS_REVERSIBLE, LISSAJOUS_STEP_SIZE},
+       {TValue::StepType::CONTINUOUS_REVERSIBLE, EPICYCLOID_STEP_SIZE},
+       }
+  };
+}
+
+auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre,
+                                             std::array<TValue, NUM_DOT_TYPES>& dotPositionTs)
+    -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>
+{
+  static constexpr Hypotrochoid::Params HYPOTROCHOID_PARAMS1{7.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr Hypotrochoid::Params HYPOTROCHOID_PARAMS2{8.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr Hypotrochoid::Params HYPOTROCHOID_PARAMS3{9.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr LissajousPath::Params LISSAJOUS_PATH_PARAMS{50.0F, 50.F, 3.0F, 2.0F};
+  static constexpr Epicycloid::Params EPICYCLOID_PARAMS{5.1F, 1.0F, 30.0F};
+
+  return {
+      {
+       std::make_unique<Hypotrochoid>(centre, dotPositionTs.at(0), HYPOTROCHOID_PARAMS1),
+       std::make_unique<Hypotrochoid>(centre, dotPositionTs.at(1), HYPOTROCHOID_PARAMS2),
+       std::make_unique<Hypotrochoid>(centre, dotPositionTs.at(2), HYPOTROCHOID_PARAMS3),
+       std::make_unique<LissajousPath>(centre, dotPositionTs.at(3), LISSAJOUS_PATH_PARAMS),
+       std::make_unique<Epicycloid>(centre, dotPositionTs.at(4), EPICYCLOID_PARAMS),
+       }
+  };
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::ChangeDotColorsEvent() const -> bool
@@ -291,21 +324,8 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   }
 
   const float speedFactor = 0.35F * m_goomInfo.GetSoundInfo().GetSpeed();
-  const float largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
+  //  const float largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
   const auto speedVarMult80Plus15 = static_cast<uint32_t>((speedFactor * 80.0F) + 15.0F);
-  const auto speedVarMult50Plus1 = static_cast<uint32_t>((speedFactor * 50.0F) + 1.0F);
-
-  const float pointWidthDiv2MultLarge = m_pointWidthDiv2 * largeFactor;
-  const float pointHeightDiv2MultLarge = m_pointHeightDiv2 * largeFactor;
-  const float pointWidthDiv3MultLarge = (m_pointWidthDiv3 + 5.0F) * largeFactor;
-  const float pointHeightDiv3MultLarge = (m_pointHeightDiv3 + 5.0F) * largeFactor;
-  const float pointWidthMultLarge = static_cast<float>(m_pointWidth) * largeFactor;
-  const float pointHeightMultLarge = static_cast<float>(m_pointHeight) * largeFactor;
-
-  const float dot0XOffsetAmp = ((static_cast<float>(m_pointWidth) - 6.0F) * largeFactor) + 5.0F;
-  const float dot0YOffsetAmp = ((static_cast<float>(m_pointHeight) - 6.0F) * largeFactor) + 5.0F;
-  const float dot3XOffsetAmp = (m_pointHeightDiv3 * largeFactor) + 20.0F;
-  const float dot3YOffsetAmp = dot3XOffsetAmp;
 
   const size_t speedVarMult80Plus15Div15 = speedVarMult80Plus15 / 15;
   static constexpr float T_MIN = 0.1F;
@@ -315,57 +335,13 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   float t = T_MIN;
   for (uint32_t i = 1; i <= speedVarMult80Plus15Div15; ++i)
   {
-    m_loopVar += speedVarMult50Plus1;
-
-    const uint32_t loopVarDivI = m_loopVar / i;
-    const float iMult10 = 10.0F * static_cast<float>(i);
-
-    const Pixel dot0Color = GetDotColor(0, t);
-    const float dot0XFreqDenom = static_cast<float>(i) * 152.0F;
-    const float dot0YFreqDenom = 128.0F;
-    const uint32_t dot0Cycle = m_loopVar + (i * 2032);
-    const Point2dInt dot0Position =
-        GetDotPosition(dot0XOffsetAmp, dot0YOffsetAmp, dot0XFreqDenom, dot0YFreqDenom, dot0Cycle);
-
-    const Pixel dot1Color = GetDotColor(1, t);
-    const float dot1XOffsetAmp = (pointWidthDiv2MultLarge / static_cast<float>(i)) + iMult10;
-    const float dot1YOffsetAmp = (pointHeightDiv2MultLarge / static_cast<float>(i)) + iMult10;
-    const float dot1XFreqDenom = 96.0F;
-    const float dot1YFreqDenom = static_cast<float>(i) * 80.0F;
-    const uint32_t dot1Cycle = loopVarDivI;
-    const Point2dInt dot1Position =
-        GetDotPosition(dot1XOffsetAmp, dot1YOffsetAmp, dot1XFreqDenom, dot1YFreqDenom, dot1Cycle);
-
-    const Pixel dot2Color = GetDotColor(2, t);
-    const float dot2XOffsetAmp = (pointWidthDiv3MultLarge / static_cast<float>(i)) + iMult10;
-    const float dot2YOffsetAmp = (pointHeightDiv3MultLarge / static_cast<float>(i)) + iMult10;
-    const float dot2XFreqDenom = static_cast<float>(i) + 122.0F;
-    const float dot2YFreqDenom = 134.0F;
-    const uint32_t dot2Cycle = loopVarDivI;
-    const Point2dInt dot2Position =
-        GetDotPosition(dot2XOffsetAmp, dot2YOffsetAmp, dot2XFreqDenom, dot2YFreqDenom, dot2Cycle);
-
-    const Pixel dot3Color = GetDotColor(3, t);
-    const float dot3XFreqDenom = 58.0F;
-    const float dot3YFreqDenom = static_cast<float>(i) * 66.0F;
-    const uint32_t dot3Cycle = loopVarDivI;
-    const Point2dInt dot3Position =
-        GetDotPosition(dot3XOffsetAmp, dot3YOffsetAmp, dot3XFreqDenom, dot3YFreqDenom, dot3Cycle);
-
-    const Pixel dot4Color = GetDotColor(4, t);
-    const float dot4XOffsetAmp = (pointWidthMultLarge + iMult10) / static_cast<float>(i);
-    const float dot4YOffsetAmp = (pointHeightMultLarge + iMult10) / static_cast<float>(i);
-    const float dot4XFreqDenom = 66.0F;
-    const float dot4YFreqDenom = 74.0F;
-    const uint32_t dot4Cycle = m_loopVar + (i * 500);
-    const Point2dInt dot4Position =
-        GetDotPosition(dot4XOffsetAmp, dot4YOffsetAmp, dot4XFreqDenom, dot4YFreqDenom, dot4Cycle);
-
-    DotFilter(dot0Color, dot0Position, radius);
-    DotFilter(dot1Color, dot1Position, radius);
-    DotFilter(dot2Color, dot2Position, radius);
-    DotFilter(dot3Color, dot3Position, radius);
-    DotFilter(dot4Color, dot4Position, radius);
+    for (size_t dotNum = 0; dotNum < NUM_DOT_TYPES; ++dotNum)
+    {
+      const Pixel dotColor = GetDotColor(dotNum, t);
+      const Point2dInt dotPosition = m_dotPaths.at(dotNum)->GetNextPoint();
+      m_dotPaths.at(dotNum)->IncrementT();
+      DotFilter(dotColor, dotPosition, radius);
+    }
 
     t += tStep;
   }
@@ -436,28 +412,6 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetNonFlowerBitmap()
   {
     m_currentBitmapName = SmallImageBitmaps::ImageNames::CIRCLE;
   }
-}
-
-inline auto GoomDotsFx::GoomDotsFxImpl::GetLargeSoundFactor(const SoundInfo& soundInfo) -> float
-{
-  static constexpr float SOUND_SPEED_REDUCER = 1.0F / 50.0F;
-  static constexpr float VOLUME_REDUCER = 1.0F / 1.5F;
-  return (SOUND_SPEED_REDUCER * soundInfo.GetSpeed()) + (VOLUME_REDUCER * soundInfo.GetVolume());
-}
-
-inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPosition(const float xOffsetAmp,
-                                                       const float yOffsetAmp,
-                                                       const float xOffsetFreqDenom,
-                                                       const float yOffsetFreqDenom,
-                                                       const uint32_t offsetCycle) const
-    -> Point2dInt
-{
-  const auto xOffset = static_cast<int32_t>(
-      xOffsetAmp * std::cos(static_cast<float>(offsetCycle) / xOffsetFreqDenom));
-  const auto yOffset = static_cast<int32_t>(
-      yOffsetAmp * std::sin(static_cast<float>(offsetCycle) / yOffsetFreqDenom));
-
-  return {m_screenMidpoint.x + xOffset, m_screenMidpoint.y + yOffset};
 }
 
 void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
