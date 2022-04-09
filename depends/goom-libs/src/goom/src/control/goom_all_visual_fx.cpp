@@ -164,7 +164,9 @@ inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) cons
 {
   const float buffIntensity = m_goomRand.GetRandInRange(
       GoomStateInfo::GetBuffIntensityRange(m_goomStateHandler.GetCurrentState(), fx));
-  return {buffIntensity};
+  // Careful here. > 1 reduces smearing.
+  static constexpr float INTENSITY_FACTOR = 1.0F;
+  return {INTENSITY_FACTOR * buffIntensity};
 }
 
 void GoomAllVisualFx::ChangeAllFxColorMaps()

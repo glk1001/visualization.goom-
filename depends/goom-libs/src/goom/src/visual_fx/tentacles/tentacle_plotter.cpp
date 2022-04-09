@@ -212,10 +212,10 @@ inline auto TentaclePlotter::GetMixedColors(const Tentacle3D& tentacle,
                                             const float brightness,
                                             const size_t nodeNum) const -> std::vector<Pixel>
 {
-  const std::pair<Pixel, Pixel> colors =
+  const auto [color, lowColor] =
       tentacle.GetMixedColors(nodeNum, m_dominantColor, m_dominantLowColor, brightness);
 
-  return {colors.first, colors.second};
+  return {color, lowColor};
 }
 
 inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) const -> float

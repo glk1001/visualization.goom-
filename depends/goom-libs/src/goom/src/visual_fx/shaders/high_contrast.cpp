@@ -39,9 +39,8 @@ inline void HighContrast::ChangeHighContrast(const bool allowNegativeContrast)
     return;
   }
 
-  static constexpr float PROB_CONTRAST = 0.4F;
-
-  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
+  if (static constexpr float PROB_CONTRAST = 0.2F;
+      (0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
       m_goomRand.ProbabilityOf(PROB_CONTRAST))
   {
     m_highContrastT.Reset();
@@ -53,7 +52,7 @@ inline void HighContrast::ChangeHighContrast(const bool allowNegativeContrast)
     else
     {
       static constexpr float CONTRAST_MIN_CHAN = -0.4F;
-      static constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.85F;
+      static constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.75F;
       m_maxContrastMinChannelValue =
           m_goomRand.ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
     }

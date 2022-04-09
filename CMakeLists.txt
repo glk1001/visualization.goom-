@@ -46,7 +46,6 @@ set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
 CPMAddPackage("gh:fmtlib/fmt#8.0.1")
 
-list(APPEND GOOM_SYS_INC_DIRS "${magic_enum_SOURCE_DIR}/include" "${fmt_SOURCE_DIR}/include")
 list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
 
 
@@ -124,10 +123,7 @@ include_directories(${GOOM_INCLUDE_DIRS}
                     SYSTEM ${GOOM_SYS_INC_DIRS}
                     SYSTEM ${GLM_INCLUDE_DIR}
                     SYSTEM ${KODI_INCLUDE_DIR}
-<<<<<<< HEAD
                     SYSTEM ${KODI_PARENT_INCLUDE_DIR}
-=======
->>>>>>> 3b530c5be (Fix kodi and glm include dirs.)
 )
 
 set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp)
