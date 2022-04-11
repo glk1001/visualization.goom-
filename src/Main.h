@@ -192,4 +192,27 @@ private:
 
   // Start flag to know init was OK
   bool m_started = false;
+
+  [[nodiscard]] auto StartWithCatch(int numChannels,
+                                    int samplesPerSec,
+                                    int bitsPerSample,
+                                    std::string songName) -> bool;
+  [[nodiscard]] auto StartWithNoCatch(int numChannels,
+                                      int samplesPerSec,
+                                      int bitsPerSample,
+                                      std::string songName) -> bool;
+  [[nodiscard]] auto StartVis(int numChannels,
+                              int samplesPerSec,
+                              int bitsPerSample,
+                              std::string songName) -> bool;
+
+  void StopWithCatch();
+  void StopWithNoCatch();
+  void StopVis();
+
+  void ProcessWithCatch();
+  void ProcessWithNoCatch();
+  void ProcessVis();
+
+  static void HandleError(const std::string& errorMsg);
 };

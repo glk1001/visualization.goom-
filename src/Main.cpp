@@ -11,11 +11,11 @@
 #undef NO_LOGGING
 
 #include "goom/compiler_versions.h"
+#include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/logging.h"
 #include "goom/sound_info.h"
 
-#undef NDEBUG
 #include <cstddef>
 #include <format>
 #include <kodi/Filesystem.h>
@@ -91,12 +91,23 @@ CVisualizationGoom::~CVisualizationGoom()
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Destroyed CVisualizationGoom object.");
 }
 
+void CVisualizationGoom::HandleError(const std::string& errorMsg)
+{
+  const std::string fullMsg = std20::format("CVisualizationGoom: {}", errorMsg);
+
+#ifdef GOOM_DEBUG
+  throw std::runtime_error(fullMsg);
+#else
+  LogError(fullMsg);
+#endif
+}
+
 //-- Start --------------------------------------------------------------------
 // Called when a new soundtrack is played
 //-----------------------------------------------------------------------------
 auto CVisualizationGoom::Start(const int numChannels,
-                               [[maybe_unused]] const int samplesPerSec,
-                               [[maybe_unused]] const int bitsPerSample,
+                               const int samplesPerSec,
+                               const int bitsPerSample,
                                const std::string& songName) -> bool
 {
   if (m_started)
@@ -106,53 +117,69 @@ auto CVisualizationGoom::Start(const int numChannels,
     return true;
   }
 
+#ifdef GOOM_DEBUG
+  return StartWithNoCatch(numChannels, samplesPerSec, bitsPerSample, songName);
+#else
+  return StartWithCatch(numChannels, samplesPerSec, bitsPerSample, songName);
+#endif
+}
+
+inline auto CVisualizationGoom::StartWithNoCatch(const int numChannels,
+                                                 const int samplesPerSec,
+                                                 const int bitsPerSample,
+                                                 const std::string songName) -> bool
+{
+  return StartVis(numChannels, samplesPerSec, bitsPerSample, songName);
+}
+
+auto CVisualizationGoom::StartWithCatch(const int numChannels,
+                                        const int samplesPerSec,
+                                        const int bitsPerSample,
+                                        const std::string songName) -> bool
+{
   try
   {
-    StartLogging();
-
-    LogInfo("CVisualizationGoom: Texture width, height = {}, {}.", m_textureWidth, m_textureHeight);
-#ifdef HAS_GL
-    LogInfo("CVisualizationGoom: Supported GLSL version is {}.",
-            glGetString(GL_SHADING_LANGUAGE_VERSION));
-#endif
-
-    SetNumChannels(numChannels);
-    SetSongTitle(songName);
-    StartActiveQueue();
-
-    if (!InitGl())
-    {
-#ifdef GOOM_DEBUG
-      throw std::runtime_error("CVisualizationGoom: Could not initialize OpenGL.");
-#else
-      LogError("CVisualizationGoom: Could not initialize OpenGL.");
-#endif
-      return false;
-    }
-
-    if (!InitGoomController())
-    {
-#ifdef GOOM_DEBUG
-      throw std::runtime_error("CVisualizationGoom: Could not initialize Goom Controller.");
-#else
-      LogError("CVisualizationGoom: Could not initialize Goom Controller.");
-#endif
-      return false;
-    }
-
-    m_started = true;
-
-    return true;
+    return StartVis(numChannels, samplesPerSec, bitsPerSample, songName);
   }
   catch (const std::exception& e)
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error(std20::format("CVisualizationGoom: Goom start failed: {}", e.what()));
-#else
-    LogError("CVisualizationGoom: Goom start failed: {}", e.what());
-#endif
+    HandleError(std20::format("Goom start failed: {}", e.what()));
     return false;
   }
+}
+
+inline auto CVisualizationGoom::StartVis(const int numChannels,
+                                         [[maybe_unused]] const int samplesPerSec,
+                                         [[maybe_unused]] const int bitsPerSample,
+                                         const std::string songName) -> bool
+{
+  StartLogging();
+
+  LogInfo("CVisualizationGoom: Texture width, height = {}, {}.", m_textureWidth, m_textureHeight);
+#ifdef HAS_GL
+  LogInfo("CVisualizationGoom: Supported GLSL version is {}.",
+          glGetString(GL_SHADING_LANGUAGE_VERSION));
+#endif
+
+  SetNumChannels(numChannels);
+  SetSongTitle(songName);
+  StartActiveQueue();
+
+  if (!InitGl())
+  {
+    HandleError("Could not initialize OpenGL.");
+    return false;
+  }
+
+  if (!InitGoomController())
+  {
+    HandleError("Could not initialize Goom Controller.");
+    return false;
+  }
+
+  m_started = true;
+
+  return true;
 }
 
 void CVisualizationGoom::SetNumChannels(const int numChannels)
@@ -209,27 +236,42 @@ void CVisualizationGoom::Stop()
     return;
   }
 
+#ifdef GOOM_DEBUG
+  StopWithNoCatch();
+#else
+  StopWithCatch();
+#endif
+}
+
+inline void CVisualizationGoom::StopWithNoCatch()
+{
+  StopVis();
+}
+
+void CVisualizationGoom::StopWithCatch()
+{
   try
   {
-    LogInfo("CVisualizationGoom: Visualization stopping.");
-    m_started = false;
-
-    StopGoomProcessBuffersThread();
-
-    DeinitGoomController();
-
-    DeinitGl();
-
-    m_audioBufferNum = 0;
+    StopVis();
   }
   catch (const std::exception& e)
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error(std20::format("CVisualizationGoom: Goom stop failed: {}", e.what()));
-#else
-    LogError("CVisualizationGoom: Goom stop failed: {}", e.what());
-#endif
+    HandleError(std20::format("Goom stop failed: {}", e.what()));
   }
+}
+
+inline void CVisualizationGoom::StopVis()
+{
+  LogInfo("CVisualizationGoom: Visualization stopping.");
+  m_started = false;
+
+  StopGoomProcessBuffersThread();
+
+  DeinitGoomController();
+
+  DeinitGl();
+
+  m_audioBufferNum = 0;
 }
 
 inline auto GetGoomVisualizationBuildTime() -> std::string
@@ -242,11 +284,7 @@ auto CVisualizationGoom::InitGoomController() -> bool
 {
   if (m_goomControl)
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error("CVisualizationGoom: Goom controller already initialized!");
-#else
-    LogError("CVisualizationGoom: Goom controller already initialized!");
-#endif
+    HandleError("Goom controller already initialized!");
     return true;
   }
 
@@ -255,11 +293,7 @@ auto CVisualizationGoom::InitGoomController() -> bool
                                                       KODI_ADDON::GetAddonPath("resources"));
   if (!m_goomControl)
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error("CVisualizationGoom: Goom controller could not be initialized!");
-#else
-    LogError("CVisualizationGoom: Goom controller could not be initialized!");
-#endif
+    HandleError("Goom controller could not be initialized!");
     return false;
   }
 
@@ -285,11 +319,7 @@ void CVisualizationGoom::DeinitGoomController()
 {
   if (!m_goomControl)
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error("CVisualizationGoom: Goom controller already uninitialized!");
-#else
-    LogError("CVisualizationGoom: Goom controller already uninitialized!");
-#endif
+    HandleError("Goom controller already uninitialized!");
     return;
   }
 
@@ -332,11 +362,7 @@ void CVisualizationGoom::AudioData(const float* const audioData, size_t audioDat
 {
   if (!m_started)
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error("CVisualizationGoom: Goom not started - cannot process audio.");
-#else
-    LogError("CVisualizationGoom: Goom not started - cannot process audio.");
-#endif
+    HandleError("Goom not started - cannot process audio.");
     return;
   }
 
@@ -417,77 +443,91 @@ inline void CVisualizationGoom::PushUsedPixels(const PixelBufferData& pixelBuffe
 
 void CVisualizationGoom::Process()
 {
+#ifdef GOOM_DEBUG
+  ProcessWithNoCatch();
+#else
+  ProcessWithCatch();
+#endif
+}
+
+inline void CVisualizationGoom::ProcessWithNoCatch()
+{
+  ProcessVis();
+}
+
+inline void CVisualizationGoom::ProcessWithCatch()
+{
   try
   {
-    std::vector<float> floatAudioData(m_audioBufferLen);
-    uint64_t buffNum = 0;
-
-    while (true)
-    {
-      std::unique_lock lk(m_mutex);
-      if (m_workerThreadExit)
-      {
-        break;
-      }
-
-      if (m_audioBuffer.DataAvailable() < m_audioBufferLen)
-      {
-        m_wait.wait(lk);
-      }
-      const size_t read = m_audioBuffer.Read(floatAudioData.data(), m_audioBufferLen);
-      if (read != m_audioBufferLen)
-      {
-        LogWarn("CVisualizationGoom: Num read audio length {} != {} = expected audio data length - "
-                "skipping this.",
-                read, m_audioBufferLen);
-        AudioDataIncorrectReadLength();
-        continue;
-      }
-      lk.unlock();
-
-      if (m_workerThreadExit)
-      {
-        break;
-      }
-
-      lk.lock();
-      if (m_activeQueue.size() > MAX_ACTIVE_QUEUE_LENGTH)
-      {
-        // Too far behind, skip this audio data.
-        SkippedAudioData();
-        continue;
-      }
-      lk.unlock();
-
-      PixelBufferData pixelBufferData;
-      lk.lock();
-      if (m_storedQueue.empty())
-      {
-        pixelBufferData = MakePixelBufferData();
-      }
-      else
-      {
-        pixelBufferData = m_storedQueue.front();
-        m_storedQueue.pop();
-      }
-      lk.unlock();
-
-      UpdateGoomBuffer(GetTitle(), floatAudioData, pixelBufferData);
-      ++buffNum;
-
-      lk.lock();
-      m_activeQueue.push(pixelBufferData);
-      lk.unlock();
-    }
+    ProcessVis();
   }
   catch (const std::exception& e)
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error(
-        std20::format("CVisualizationGoom: Goom process failed: {}", e.what()));
-#else
-    LogError("CVisualizationGoom: Goom process failed: {}", e.what());
-#endif
+    HandleError(std20::format("Goom process failed: {}", e.what()));
+  }
+}
+
+inline void CVisualizationGoom::ProcessVis()
+{
+  std::vector<float> floatAudioData(m_audioBufferLen);
+  uint64_t buffNum = 0;
+
+  while (true)
+  {
+    std::unique_lock lk(m_mutex);
+    if (m_workerThreadExit)
+    {
+      break;
+    }
+
+    if (m_audioBuffer.DataAvailable() < m_audioBufferLen)
+    {
+      m_wait.wait(lk);
+    }
+    const size_t read = m_audioBuffer.Read(floatAudioData.data(), m_audioBufferLen);
+    if (read != m_audioBufferLen)
+    {
+      LogWarn("CVisualizationGoom: Num read audio length {} != {} = expected audio data length - "
+              "skipping this.",
+              read, m_audioBufferLen);
+      AudioDataIncorrectReadLength();
+      continue;
+    }
+    lk.unlock();
+
+    if (m_workerThreadExit)
+    {
+      break;
+    }
+
+    lk.lock();
+    if (m_activeQueue.size() > MAX_ACTIVE_QUEUE_LENGTH)
+    {
+      // Too far behind, skip this audio data.
+      SkippedAudioData();
+      continue;
+    }
+    lk.unlock();
+
+    PixelBufferData pixelBufferData;
+    lk.lock();
+    if (m_storedQueue.empty())
+    {
+      pixelBufferData = MakePixelBufferData();
+    }
+    else
+    {
+      pixelBufferData = m_storedQueue.front();
+      m_storedQueue.pop();
+    }
+    lk.unlock();
+
+    UpdateGoomBuffer(GetTitle(), floatAudioData, pixelBufferData);
+    ++buffNum;
+
+    lk.lock();
+    m_activeQueue.push(pixelBufferData);
+    lk.unlock();
   }
 }
 
@@ -515,21 +555,13 @@ auto CVisualizationGoom::InitGl() -> bool
 {
   if (!InitGlShaders())
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error("CVisualizationGoom: Failed to initialize GL shaders.");
-#else
-    LogError("CVisualizationGoom: Failed to initialize GL shaders.");
-#endif
+    HandleError("Failed to initialize GL shaders.");
     return false;
   }
 
   if (!InitGlObjects())
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error("CVisualizationGoom: Could not initialize GL objects.");
-#else
-    LogError("CVisualizationGoom: Could not initialize GL objects.");
-#endif
+    HandleError("Could not initialize GL objects.");
     return false;
   }
 
@@ -590,11 +622,7 @@ auto CVisualizationGoom::InitGlShaders() -> bool
 
   if (!CompileAndLink())
   {
-#ifdef GOOM_DEBUG
-    throw std::runtime_error("CVisualizationGoom: Failed to compile GL shaders.");
-#else
-    LogError("CVisualizationGoom: Failed to compile GL shaders.");
-#endif
+    HandleError("Failed to compile GL shaders.");
     return false;
   }
 
@@ -712,12 +740,7 @@ auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
         static_cast<uint8_t*>(glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY));
     if (!m_pboGoomBuffer.at(i))
     {
-#ifdef GOOM_DEBUG
-      throw std::runtime_error(
-          std20::format("CVisualizationGoom: Could not do glMapBuffer for pbo {}.", i));
-#else
-      LogError("CVisualizationGoom: Could not do glMapBuffer for pbo {}.", i);
-#endif
+      HandleError(std20::format("Could not do glMapBuffer for pbo {}.", i));
       return false;
     }
   }
