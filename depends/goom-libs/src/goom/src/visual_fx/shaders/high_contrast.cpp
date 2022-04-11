@@ -39,7 +39,7 @@ inline void HighContrast::ChangeHighContrast(const bool allowNegativeContrast)
     return;
   }
 
-  if (static constexpr float PROB_CONTRAST = 0.2F;
+  if (static constexpr float PROB_CONTRAST = 0.4F;
       (0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
       m_goomRand.ProbabilityOf(PROB_CONTRAST))
   {
@@ -76,7 +76,7 @@ void HighContrast::UpdateHighContrast()
     m_currentContrast = STD20::lerp(DEFAULT_CONTRAST, HIGH_CONTRAST, m_highContrastT());
     m_currentContrastMinChannelValue =
         STD20::lerp(0.0F, m_maxContrastMinChannelValue, m_highContrastT());
-    static constexpr float CONTRAST_BRIGHTNESS = 0.9F;
+    static constexpr float CONTRAST_BRIGHTNESS = 1.1F;
     m_currentBrightness = STD20::lerp(DEFAULT_BRIGHTNESS, CONTRAST_BRIGHTNESS, m_highContrastT());
 
     return;
