@@ -86,7 +86,7 @@ inline void ShaderFx::ShaderFxImpl::ApplyMultiple()
 {
   m_highContrast.UpdateHighContrast();
 
-  static constexpr float DEFAULT_EXPOSURE = 2.0F;
+  static constexpr float DEFAULT_EXPOSURE = 1.5F;
   m_goomShaderEffects.exposure = DEFAULT_EXPOSURE;
   m_goomShaderEffects.contrast = m_highContrast.GetCurrentContrast();
   m_goomShaderEffects.contrastMinChannelValue = m_highContrast.GetCurrentContrastMinChannelValue();

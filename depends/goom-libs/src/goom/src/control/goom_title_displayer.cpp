@@ -319,9 +319,13 @@ inline auto GoomTitleDisplayer::GetColorT() const -> float
 
 inline auto GoomTitleDisplayer::GetTextBrightness() const -> float
 {
-  static constexpr float BASE_BRIGHTNESS = 20.0F;
+  static constexpr float BASE_BRIGHTNESS = 10.0F;
 
-  if (!IsFinalPhase())
+  if (IsInitialPhase())
+  {
+    return BASE_BRIGHTNESS;
+  }
+  if (IsMiddlePhase())
   {
     return BASE_BRIGHTNESS;
   }
