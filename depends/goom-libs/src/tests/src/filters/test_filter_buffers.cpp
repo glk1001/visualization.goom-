@@ -3,6 +3,7 @@
 #endif
 
 #include "catch2/catch.hpp"
+#include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
 #include "utils/math/goom_rand.h"

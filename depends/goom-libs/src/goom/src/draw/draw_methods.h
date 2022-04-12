@@ -1,10 +1,8 @@
 #pragma once
 
+#include "goom_config.h"
 #include "goom_graphic.h"
 
-#ifdef GOOM_DEBUG
-#undef NDEBUG
-#endif
 #include <cassert>
 #include <cstdint>
 #include <functional>
