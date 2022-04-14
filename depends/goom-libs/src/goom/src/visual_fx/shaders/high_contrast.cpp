@@ -39,7 +39,7 @@ void HighContrast::ChangeHighContrast()
     return;
   }
 
-  if (static constexpr float PROB_CONTRAST = 0.1F;
+  if (static constexpr float PROB_CONTRAST = 0.001F;
       (0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
       m_goomRand.ProbabilityOf(PROB_CONTRAST))
   {
