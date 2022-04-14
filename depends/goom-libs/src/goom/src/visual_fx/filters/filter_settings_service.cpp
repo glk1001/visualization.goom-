@@ -1,6 +1,7 @@
 #include "filter_settings_service.h"
 
 #include "extra_effects_states.h"
+#include "filter_consts.h"
 #include "filter_settings.h"
 #include "goom_plugin_info.h"
 #include "utils/enumutils.h"
@@ -24,7 +25,7 @@ using UTILS::MATH::Weights;
 
 
 // For debugging:
-static constexpr bool USE_FORCED_FILTER_MODE = false;
+static constexpr bool USE_FORCED_FILTER_MODE = ALL_FILTER_EFFECTS_TURNED_OFF;
 
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;

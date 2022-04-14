@@ -74,6 +74,7 @@ add_library(goom
         src/visual_fx/circles/dot_diameters.cpp
         src/visual_fx/circles/dot_paths.cpp
         src/visual_fx/filters/amulet.cpp
+	src/visual_fx/filters/filter_consts.h
         src/visual_fx/filters/crystal_ball.cpp
         src/visual_fx/filters/distance_field.cpp
         src/visual_fx/filters/extra_effects_states.cpp

@@ -1,5 +1,6 @@
 #include "extra_effects_states.h"
 
+#include "filter_consts.h"
 #include "filter_settings.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/timer.h"
@@ -12,7 +13,7 @@ namespace GOOM::VISUAL_FX::FILTERS
 using UTILS::Timer;
 using UTILS::MATH::IGoomRand;
 
-static constexpr bool EXTRA_EFFECTS_TURNED_OFF = false;
+static constexpr bool EXTRA_EFFECTS_TURNED_OFF = ALL_FILTER_EFFECTS_TURNED_OFF;
 
 static constexpr HypercosOverlay DEFAULT_HYPERCOS_OVERLAY = HypercosOverlay::NONE;
 
