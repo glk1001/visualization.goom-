@@ -17,6 +17,11 @@ void HighContrast::Start()
   m_highContrastOnTimer.ResetToZero();
   m_highContrastOffTimer.ResetToZero();
 
+  ResetValues();
+}
+
+inline void HighContrast::ResetValues()
+{
   m_currentContrast = DEFAULT_CONTRAST;
   m_currentBrightness = DEFAULT_BRIGHTNESS;
   m_currentContrastMinChannelValue = 0.0F;
@@ -24,11 +29,6 @@ void HighContrast::Start()
 }
 
 void HighContrast::ChangeHighContrast()
-{
-  ChangeHighContrast(true);
-}
-
-inline void HighContrast::ChangeHighContrast(const bool allowNegativeContrast)
 {
   if (!m_highContrastOffTimer.Finished())
   {
@@ -39,23 +39,16 @@ inline void HighContrast::ChangeHighContrast(const bool allowNegativeContrast)
     return;
   }
 
-  if (static constexpr float PROB_CONTRAST = 0.4F;
+  if (static constexpr float PROB_CONTRAST = 0.1F;
       (0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) &&
       m_goomRand.ProbabilityOf(PROB_CONTRAST))
   {
     m_highContrastT.Reset();
     m_highContrastOnTimer.ResetToZero();
-    if (!allowNegativeContrast)
-    {
-      m_maxContrastMinChannelValue = 0.0F;
-    }
-    else
-    {
-      static constexpr float CONTRAST_MIN_CHAN = -0.4F;
-      static constexpr float PROB_ZERO_CONTRAST_MIN_CHAN = 0.75F;
-      m_maxContrastMinChannelValue =
-          m_goomRand.ProbabilityOf(PROB_ZERO_CONTRAST_MIN_CHAN) ? 0.0F : CONTRAST_MIN_CHAN;
-    }
+    static constexpr float MIN_CONTRAST_MIN_CHAN = -0.5F;
+    static constexpr float MAX_CONTRAST_MIN_CHAN = -0.2F;
+    m_maxContrastMinChannelValue =
+        m_goomRand.GetRandInRange(MIN_CONTRAST_MIN_CHAN, MAX_CONTRAST_MIN_CHAN);
   }
 }
 
@@ -85,10 +78,11 @@ void HighContrast::UpdateHighContrast()
   if (m_highContrastOnTimer.JustFinished())
   {
     m_highContrastOffTimer.ResetToZero();
+    ResetValues();
     return;
   }
 
-  ChangeHighContrast(false);
+  ChangeHighContrast();
 }
 
 } // namespace GOOM::VISUAL_FX::SHADERS

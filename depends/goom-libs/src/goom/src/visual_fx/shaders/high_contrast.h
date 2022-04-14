@@ -33,6 +33,7 @@ private:
   float m_currentBrightness = DEFAULT_BRIGHTNESS;
   float m_currentContrastMinChannelValue = 0.0F;
   float m_maxContrastMinChannelValue = 0.0F;
+  void ResetValues();
 
   static constexpr uint32_t NUM_HIGH_CONTRAST_ON_STEPS = 250;
   static constexpr uint32_t HIGH_CONTRAST_ON_DELAY_TIME = 100;
@@ -44,8 +45,6 @@ private:
   UTILS::Timer m_highContrastOnTimer{HIGH_CONTRAST_ON_TIME, true};
   static constexpr uint32_t HIGH_CONTRAST_OFF_TIME = 300;
   UTILS::Timer m_highContrastOffTimer{HIGH_CONTRAST_OFF_TIME, false};
-
-  void ChangeHighContrast(bool allowNegativeContrast);
 };
 
 inline auto HighContrast::GetCurrentContrast() const -> float
