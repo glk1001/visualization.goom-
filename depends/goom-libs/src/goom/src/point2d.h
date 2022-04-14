@@ -191,6 +191,11 @@ inline auto operator+(const Point2dFlt& point, const Vec2dFlt& vec) -> Point2dFl
   return {point.x + vec.x, point.y + vec.y};
 }
 
+inline auto operator-(const Point2dFlt& point, const Vec2dFlt& vec) -> Point2dFlt
+{
+  return {point.x - vec.x, point.y - vec.y};
+}
+
 inline auto operator*(const float scalar, const Point2dFlt& point) -> Point2dFlt
 {
   return {scalar * point.x, scalar * point.y};
