@@ -470,7 +470,6 @@ inline void CVisualizationGoom::ProcessWithCatch()
 inline void CVisualizationGoom::ProcessVis()
 {
   std::vector<float> floatAudioData(m_audioBufferLen);
-  uint64_t buffNum = 0;
 
   while (true)
   {
@@ -523,7 +522,6 @@ inline void CVisualizationGoom::ProcessVis()
     lk.unlock();
 
     UpdateGoomBuffer(GetTitle(), floatAudioData, pixelBufferData);
-    ++buffNum;
 
     lk.lock();
     m_activeQueue.push(pixelBufferData);
