@@ -81,7 +81,24 @@ void Circles::Start()
 void Circles::UpdateAndDraw()
 {
   UpdateAndDrawCircles();
+  UpdatePositionSpeed();
   UpdateCirclePathParams();
+}
+
+void Circles::UpdatePositionSpeed()
+{
+  if (constexpr float PROB_NO_SPEED_CHANGE = 0.7F; m_goomRand.ProbabilityOf(PROB_NO_SPEED_CHANGE))
+  {
+    return;
+  }
+
+  static constexpr uint32_t MIN_POSITION_STEPS = 100;
+  static constexpr uint32_t MAX_POSITION_STEPS = 600;
+  const uint32_t newNumSteps = std::min(
+      MIN_POSITION_STEPS + m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom(), MAX_POSITION_STEPS);
+
+  std::for_each(begin(m_circles), end(m_circles),
+                [&newNumSteps](Circle& circle) { circle.UpdatePositionSpeed(newNumSteps); });
 }
 
 inline void Circles::UpdateAndDrawCircles()

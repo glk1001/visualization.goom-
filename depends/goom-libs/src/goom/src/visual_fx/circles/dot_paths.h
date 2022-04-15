@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goom_graphic.h"
 #include "point2d.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
@@ -14,34 +14,33 @@ namespace GOOM::VISUAL_FX::CIRCLES
 class DotPaths
 {
 public:
-  DotPaths(uint32_t numDots,
-           const Point2dInt& startCentre,
-           float startRadius,
-           const Point2dInt& startTarget,
-           const UTILS::MATH::OscillatingPath::Params& startPathParams) noexcept;
+  DotPaths(const UTILS::MATH::IGoomRand& goomRand,
+           uint32_t numDots,
+           std::vector<Point2dInt>&& dotStartingPositions,
+           const Point2dInt& dotTarget,
+           const UTILS::MATH::OscillatingPath::Params& dotPathParams) noexcept;
 
-  void SetTarget(const Point2dInt& target);
-  void SetPathParams(const UTILS::MATH::OscillatingPath::Params& params);
+  auto Reset() -> void;
+  auto SetTarget(const Point2dInt& target) -> void;
+  auto SetPathParams(const UTILS::MATH::OscillatingPath::Params& params) -> void;
 
   [[nodiscard]] auto GetPositionTRef() const -> const UTILS::TValue&;
 
   [[nodiscard]] auto GetPositionTNumSteps() const -> uint32_t;
-  void SetPositionTNumSteps(uint32_t numSteps);
+  auto SetPositionTNumSteps(uint32_t numSteps) -> void;
 
   [[nodiscard]] auto HasPositionTJustHitStartBoundary() const -> bool;
   [[nodiscard]] auto HasPositionTJustHitEndBoundary() const -> bool;
 
   [[nodiscard]] auto GetPositionT() const -> float;
-  void IncrementPositionT();
+  auto IncrementPositionT() -> void;
 
   [[nodiscard]] auto GetNextDotPositions() const -> std::vector<Point2dInt>;
 
 private:
+  const UTILS::MATH::IGoomRand& m_goomRand;
   const uint32_t m_numDots;
   const std::vector<Point2dInt> m_dotStartingPositions;
-  [[nodiscard]] static auto GetDotStartingPositions(uint32_t numDots,
-                                                    const Point2dInt& centre,
-                                                    float radius) -> std::vector<Point2dInt>;
   Point2dInt m_target;
 
   static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
@@ -54,11 +53,19 @@ private:
       0.0F
   };
   UTILS::MATH::OscillatingPath::Params m_pathParams;
+  bool m_randomizePoints = false;
   std::vector<UTILS::MATH::OscillatingPath> m_dotPaths;
-  [[nodiscard]] auto GetNewDotPaths() -> std::vector<UTILS::MATH::OscillatingPath>;
+  [[nodiscard]] auto GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions)
+      -> std::vector<UTILS::MATH::OscillatingPath>;
+  [[nodiscard]] auto GetSmallRandomOffset() const -> Vec2dInt;
 };
 
-inline void DotPaths::SetPathParams(const UTILS::MATH::OscillatingPath::Params& params)
+inline auto DotPaths::Reset() -> void
+{
+  m_positionT.Reset();
+}
+
+inline auto DotPaths::SetPathParams(const UTILS::MATH::OscillatingPath::Params& params) -> void
 {
   m_pathParams = params;
 }
@@ -73,7 +80,7 @@ inline auto DotPaths::GetPositionTNumSteps() const -> uint32_t
   return m_positionT.GetNumSteps();
 }
 
-inline void DotPaths::SetPositionTNumSteps(const uint32_t numSteps)
+inline auto DotPaths::SetPositionTNumSteps(const uint32_t numSteps) -> void
 {
   m_positionT.SetNumSteps(numSteps);
 }
@@ -93,7 +100,7 @@ inline auto DotPaths::GetPositionT() const -> float
   return m_positionT();
 }
 
-inline void DotPaths::IncrementPositionT()
+inline auto DotPaths::IncrementPositionT() -> void
 {
   m_positionT.Increment();
 }

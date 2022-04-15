@@ -48,6 +48,7 @@ private:
                                        uint32_t numCircles,
                                        const std::vector<Circle::Params>& circleParams)
       -> std::vector<Circle>;
+  void UpdatePositionSpeed();
   void UpdateAndDrawCircles();
 
   void UpdateCirclePathParams();

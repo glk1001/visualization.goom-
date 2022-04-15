@@ -43,7 +43,7 @@ private:
 class LerpedPath : public IPath
 {
 public:
-  LerpedPath(TValue& positionT, IPath& path1, IPath& path2, float lerpFactor);
+  LerpedPath(TValue& positionT, IPath& path1, IPath& path2, TValue& lerpT);
 
   [[nodiscard]] auto GetStartPos() const -> Point2dInt override;
   [[nodiscard]] auto GetEndPos() const -> Point2dInt override;
@@ -52,7 +52,7 @@ public:
 private:
   IPath& m_path1;
   IPath& m_path2;
-  const float m_lerpFactor;
+  TValue& m_lerpT;
 };
 
 class LinearPath : public IPath
@@ -281,17 +281,17 @@ inline void IPath::Reset(const float t)
 
 inline auto LerpedPath::GetNextPoint() const -> Point2dInt
 {
-  return lerp(m_path1.GetNextPoint(), m_path2.GetNextPoint(), m_lerpFactor);
+  return lerp(m_path1.GetNextPoint(), m_path2.GetNextPoint(), m_lerpT());
 }
 
 inline auto LerpedPath::GetStartPos() const -> Point2dInt
 {
-  return lerp(m_path1.GetStartPos(), m_path2.GetStartPos(), m_lerpFactor);
+  return lerp(m_path1.GetStartPos(), m_path2.GetStartPos(), 0.0F);
 }
 
 inline auto LerpedPath::GetEndPos() const -> Point2dInt
 {
-  return lerp(m_path1.GetEndPos(), m_path2.GetEndPos(), m_lerpFactor);
+  return lerp(m_path1.GetEndPos(), m_path2.GetEndPos(), 1.0F);
 }
 
 inline auto LinearPath::GetNextPoint() const -> Point2dInt

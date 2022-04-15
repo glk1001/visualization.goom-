@@ -36,10 +36,9 @@ public:
   void SetZoomMidpoint(const Point2dInt& zoomMidpoint) override;
 
   void Start() override;
+  void Finish() override;
 
   void ApplyMultiple();
-
-  void Finish() override;
 
 private:
   class CirclesFxImpl;

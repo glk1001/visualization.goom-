@@ -9,8 +9,8 @@
 namespace GOOM::UTILS::MATH
 {
 
-LerpedPath::LerpedPath(TValue& positionT, IPath& path1, IPath& path2, const float lerpFactor)
-  : IPath{positionT}, m_path1{path1}, m_path2{path2}, m_lerpFactor{lerpFactor}
+LerpedPath::LerpedPath(TValue& positionT, IPath& path1, IPath& path2, TValue& lerpT)
+  : IPath{positionT}, m_path1{path1}, m_path2{path2}, m_lerpT{lerpT}
 {
   assert(&positionT == &path1.m_positionT);
   assert(&positionT == &path2.m_positionT);

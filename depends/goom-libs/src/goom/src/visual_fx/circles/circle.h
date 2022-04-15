@@ -58,6 +58,7 @@ public:
   void SetPathParams(const UTILS::MATH::OscillatingPath::Params& pathParams);
 
   void Start();
+  void UpdatePositionSpeed(uint32_t newNumSteps);
   void UpdateAndDraw();
   [[nodiscard]] auto GetLastDrawnCircleDots() const -> const std::vector<Point2dInt>&;
 
@@ -67,11 +68,11 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   Helper m_helper; // These could be const but some compilers
   Point2dInt m_circleCentreTarget; // don't like the move constructor with 'const' members.
-  static constexpr uint32_t MIN_POSITION_STEPS = 100;
-  static constexpr uint32_t MAX_POSITION_STEPS = 600;
   DotPaths m_dotPaths;
   DotDiameters m_dotDiameters;
   [[nodiscard]] auto GetRandomCircleCentreTargetPosition() const -> Point2dInt;
+  [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, const float radius)
+      -> std::vector<Point2dInt>;
 
   uint64_t m_updateNum = 0;
   [[nodiscard]] auto IsSpecialUpdateNum() const -> bool;
@@ -79,13 +80,13 @@ private:
   UTILS::Timer m_blankTimer{BLANK_TIME, true};
 
   void UpdateTime();
-  void UpdatePositionSpeed();
+  void ResetNumSteps();
   void ResetCircleParams();
-  [[nodiscard]] auto GetPositionTNumSteps() const -> uint32_t;
 
   static constexpr uint32_t NUM_DOTS = 30;
   static_assert(UTILS::MATH::IsEven(NUM_DOTS));
   std::vector<Point2dInt> m_lastDrawnDots;
+  uint32_t m_newNumSteps = 0;
 
   void DrawNextCircle();
   void DrawNextCircleDots();
@@ -123,6 +124,11 @@ private:
   [[nodiscard]] auto GetFinalLowColor(float brightness, const Pixel& lowColor) const -> Pixel;
   [[nodiscard]] auto GetCorrectedColor(float brightness, const Pixel& color) const -> Pixel;
 };
+
+inline void Circle::UpdatePositionSpeed(const uint32_t newNumSteps)
+{
+  m_newNumSteps = newNumSteps;
+}
 
 inline auto Circle::GetLastDrawnCircleDots() const -> const std::vector<Point2dInt>&
 {
