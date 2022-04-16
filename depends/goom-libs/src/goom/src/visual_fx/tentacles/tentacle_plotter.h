@@ -33,14 +33,14 @@ public:
                   const UTILS::MATH::IGoomRand& goomRand,
                   const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
-  void ChangeNumNodesBetweenDots();
-  void ChangeDotSizes();
+  auto ChangeNumNodesBetweenDots() -> void;
+  auto ChangeDotSizes() -> void;
 
-  void SetProjectionDistance(float value);
-  void SetCameraPosition(float cameraDistance, float tentacleAngle);
-  void SetDominantColors(const Pixel& dominantColor, const Pixel& dominantLowColor);
+  auto SetProjectionDistance(float value) -> void;
+  auto SetCameraPosition(float cameraDistance, float tentacleAngle) -> void;
+  auto SetDominantColors(const Pixel& dominantColor, const Pixel& dominantLowColor) -> void;
 
-  void Plot3D(const Tentacle3D& tentacle);
+  auto Plot3D(const Tentacle3D& tentacle) -> void;
 
 private:
   DRAW::IGoomDraw& m_draw;
@@ -60,16 +60,16 @@ private:
   Pixel m_dominantColor{};
   Pixel m_dominantLowColor{};
 
-  void DrawNode(const Tentacle3D& tentacle,
+  auto DrawNode(const Tentacle3D& tentacle,
                 size_t nodeNum,
                 int32_t x0,
                 int32_t y0,
                 int32_t x1,
                 int32_t y1,
-                float brightness);
-  void DrawNodeLine(
-      int32_t x0, int32_t y0, int32_t x1, int32_t y1, const std::vector<Pixel>& colors);
-  void DrawNodeDot(size_t nodeNum, int32_t x, int32_t y, const std::vector<Pixel>& colors);
+                float brightness) -> void;
+  auto DrawNodeLine(
+      int32_t x0, int32_t y0, int32_t x1, int32_t y1, const std::vector<Pixel>& colors) -> void;
+  auto DrawNodeDot(size_t nodeNum, int32_t x, int32_t y, const std::vector<Pixel>& colors) -> void;
 
   [[nodiscard]] auto GetMixedColors(const Tentacle3D& tentacle,
                                     float brightness,
@@ -84,20 +84,20 @@ private:
                                                  float angle) -> std::vector<V3dFlt>;
   [[nodiscard]] auto GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
       -> std::vector<Point2dInt>;
-  static void RotateAboutYAxis(float sinAngle,
+  static auto RotateAboutYAxis(float sinAngle,
                                float cosAngle,
                                const V3dFlt& srcPoint,
-                               V3dFlt& destPoint);
-  static void Translate(const V3dFlt& vAdd, V3dFlt& vInOut);
+                               V3dFlt& destPoint) -> void;
+  static auto Translate(const V3dFlt& vAdd, V3dFlt& vInOut) -> void;
 };
 
-inline void TentaclePlotter::SetProjectionDistance(const float value)
+inline auto TentaclePlotter::SetProjectionDistance(const float value) -> void
 {
   m_projectionDistance = value;
 }
 
-inline void TentaclePlotter::SetDominantColors(const Pixel& dominantColor,
-                                               const Pixel& dominantLowColor)
+inline auto TentaclePlotter::SetDominantColors(const Pixel& dominantColor,
+                                               const Pixel& dominantLowColor) -> void
 {
   m_dominantColor = dominantColor;
   m_dominantLowColor = dominantLowColor;

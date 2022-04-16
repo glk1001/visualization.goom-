@@ -42,12 +42,12 @@ class TentaclesFx::TentaclesImpl
 public:
   TentaclesImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
 
-  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
+  auto SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) -> void;
 
-  void Start();
-  void Resume();
+  auto Start() -> void;
+  auto Resume() -> void;
 
-  void Update();
+  auto Update() -> void;
 
 private:
   IGoomDraw& m_draw;
@@ -77,16 +77,16 @@ private:
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
   Pixel m_dominantColor{};
   Pixel m_dominantLowColor{};
-  void ChangeDominantColor();
-  void UpdateDominantColors();
+  auto ChangeDominantColor() -> void;
+  auto UpdateDominantColors() -> void;
 
   static constexpr uint32_t MAX_TIME_FOR_DOMINANT_COLOR = 100;
   Timer m_timeWithThisDominantColor{MAX_TIME_FOR_DOMINANT_COLOR};
-  void UpdateTimers();
+  auto UpdateTimers() -> void;
 
-  void RefreshTentacles();
-  void DoTentaclesUpdate();
-  void UpdateTentacleWaveFrequency();
+  auto RefreshTentacles() -> void;
+  auto DoTentaclesUpdate() -> void;
+  auto UpdateTentacleWaveFrequency() -> void;
 };
 
 TentaclesFx::TentaclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -99,32 +99,32 @@ auto TentaclesFx::GetFxName() const -> std::string
   return "Tentacles FX";
 }
 
-void TentaclesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+auto TentaclesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps) -> void
 {
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
 }
 
-void TentaclesFx::Start()
+auto TentaclesFx::Start() -> void
 {
   m_fxImpl->Start();
 }
 
-void TentaclesFx::Resume()
+auto TentaclesFx::Resume() -> void
 {
   m_fxImpl->Resume();
 }
 
-void TentaclesFx::Suspend()
+auto TentaclesFx::Suspend() -> void
 {
   // nothing to do
 }
 
-void TentaclesFx::Finish()
+auto TentaclesFx::Finish() -> void
 {
   // nothing to do
 }
 
-void TentaclesFx::ApplyMultiple()
+auto TentaclesFx::ApplyMultiple() -> void
 {
   m_fxImpl->Update();
 }
@@ -176,12 +176,12 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper,
   assert(m_currentTentacleDriver);
 }
 
-inline void TentaclesFx::TentaclesImpl::Start()
+inline auto TentaclesFx::TentaclesImpl::Start() -> void
 {
   RefreshTentacles();
 }
 
-inline void TentaclesFx::TentaclesImpl::Resume()
+inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 {
   if (constexpr float PROB_NEW_DRIVER = 0.5F; m_goomRand.ProbabilityOf(PROB_NEW_DRIVER))
   {
@@ -217,7 +217,7 @@ inline auto TentaclesFx::TentaclesImpl::GetNextDriver() const -> TentacleDriver*
   return m_tentacleDrivers[driverIndex].get();
 }
 
-inline void TentaclesFx::TentaclesImpl::RefreshTentacles()
+inline auto TentaclesFx::TentaclesImpl::RefreshTentacles() -> void
 {
   assert(m_currentTentacleDriver);
 
@@ -226,8 +226,8 @@ inline void TentaclesFx::TentaclesImpl::RefreshTentacles()
   m_currentTentacleDriver->TentaclesColorMapsChanged();
 }
 
-inline void TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps)
+inline auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
+    const std::shared_ptr<RandomColorMaps> weightedMaps) -> void
 {
   m_dominantColorMap = weightedMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
   m_dominantColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
@@ -240,19 +240,19 @@ inline void TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
   }
 }
 
-inline void TentaclesFx::TentaclesImpl::Update()
+inline auto TentaclesFx::TentaclesImpl::Update() -> void
 {
   UpdateTimers();
 
   DoTentaclesUpdate();
 }
 
-inline void TentaclesFx::TentaclesImpl::UpdateTimers()
+inline auto TentaclesFx::TentaclesImpl::UpdateTimers() -> void
 {
   m_timeWithThisDominantColor.Increment();
 }
 
-inline void TentaclesFx::TentaclesImpl::DoTentaclesUpdate()
+inline auto TentaclesFx::TentaclesImpl::DoTentaclesUpdate() -> void
 {
   if (0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom())
   {
@@ -264,7 +264,7 @@ inline void TentaclesFx::TentaclesImpl::DoTentaclesUpdate()
   m_currentTentacleDriver->Update();
 }
 
-inline void TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency()
+inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
 {
   // Higher sound acceleration increases tentacle wave frequency.
   assert(m_currentTentacleDriver);
@@ -275,7 +275,7 @@ inline void TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency()
   m_currentTentacleDriver->MultiplyIterZeroYValWaveFreq(tentacleWaveFreq);
 }
 
-inline void TentaclesFx::TentaclesImpl::ChangeDominantColor()
+inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
 {
   if (!m_timeWithThisDominantColor.Finished())
   {
@@ -288,7 +288,7 @@ inline void TentaclesFx::TentaclesImpl::ChangeDominantColor()
   m_currentTentacleDriver->SetDominantColors(m_dominantColor, m_dominantLowColor);
 }
 
-inline void TentaclesFx::TentaclesImpl::UpdateDominantColors()
+inline auto TentaclesFx::TentaclesImpl::UpdateDominantColors() -> void
 {
   assert(m_dominantColorMap);
   const Pixel newColor =

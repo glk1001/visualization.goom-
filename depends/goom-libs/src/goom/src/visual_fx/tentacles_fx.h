@@ -30,16 +30,16 @@ public:
 
   [[nodiscard]] auto GetFxName() const -> std::string override;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  auto SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) -> void;
 
-  void Start() override;
+  auto Start() -> void override;
 
-  void Resume() override;
-  void Suspend() override;
+  auto Resume() -> void override;
+  auto Suspend() -> void override;
 
-  void ApplyMultiple();
+  auto ApplyMultiple() -> void;
 
-  void Finish() override;
+  auto Finish() -> void override;
 
 private:
   class TentaclesImpl;

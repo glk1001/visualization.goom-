@@ -72,12 +72,12 @@ TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
 {
 }
 
-void TentaclePlotter::ChangeDotSizes()
+auto TentaclePlotter::ChangeDotSizes() -> void
 {
   m_dotDrawer.ChangeDotSizes();
 }
 
-void TentaclePlotter::ChangeNumNodesBetweenDots()
+auto TentaclePlotter::ChangeNumNodesBetweenDots() -> void
 {
   m_numNodesBetweenDots =
       m_goomRand.GetRandInRange(MIN_STEPS_BETWEEN_NODES, MAX_STEPS_BETWEEN_NODES + 1U);
@@ -85,7 +85,7 @@ void TentaclePlotter::ChangeNumNodesBetweenDots()
 
 static constexpr int COORD_IGNORE_VAL = -666;
 
-void TentaclePlotter::Plot3D(const Tentacle3D& tentacle)
+auto TentaclePlotter::Plot3D(const Tentacle3D& tentacle) -> void
 {
   const float brightness = GetBrightness(tentacle);
   const std::vector<Point2dInt> points2D = Get2DTentaclePoints(tentacle);
@@ -111,33 +111,33 @@ void TentaclePlotter::Plot3D(const Tentacle3D& tentacle)
   }
 }
 
-inline void TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
+inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
                                       const size_t nodeNum,
                                       const int32_t x0,
                                       const int32_t y0,
                                       const int32_t x1,
                                       const int32_t y1,
-                                      const float brightness)
+                                      const float brightness) -> void
 {
   const std::vector<Pixel> colors = GetMixedColors(tentacle, brightness, nodeNum);
   DrawNodeLine(x0, y0, x1, y1, colors);
   DrawNodeDot(nodeNum, x1, y1, colors);
 }
 
-inline void TentaclePlotter::DrawNodeLine(const int32_t x0,
+inline auto TentaclePlotter::DrawNodeLine(const int32_t x0,
                                           const int32_t y0,
                                           const int32_t x1,
                                           const int32_t y1,
-                                          const std::vector<Pixel>& colors)
+                                          const std::vector<Pixel>& colors) -> void
 {
   static constexpr uint8_t THICKNESS = 1;
   m_draw.Line(x0, y0, x1, y1, colors, THICKNESS);
 }
 
-inline void TentaclePlotter::DrawNodeDot(const size_t nodeNum,
+inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
                                          const int32_t x,
                                          const int32_t y,
-                                         const std::vector<Pixel>& colors)
+                                         const std::vector<Pixel>& colors) -> void
 {
   if ((nodeNum % m_numNodesBetweenDots) != 0)
   {
@@ -177,7 +177,8 @@ inline auto TentaclePlotter::GetTentacleAngleAboutY(const Tentacle3D& tentacle) 
   return angleAboutY;
 }
 
-void TentaclePlotter::SetCameraPosition(const float cameraDistance, const float tentacleAngle)
+auto TentaclePlotter::SetCameraPosition(const float cameraDistance, const float tentacleAngle)
+    -> void
 {
   m_tentacleAngle = tentacleAngle;
   m_cameraDistance = cameraDistance;
@@ -297,10 +298,10 @@ auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points
   return points2D;
 }
 
-inline void TentaclePlotter::RotateAboutYAxis(const float sinAngle,
+inline auto TentaclePlotter::RotateAboutYAxis(const float sinAngle,
                                               const float cosAngle,
                                               const V3dFlt& srcPoint,
-                                              V3dFlt& destPoint)
+                                              V3dFlt& destPoint) -> void
 {
   const float srcX = srcPoint.x;
   const float srcZ = srcPoint.z;
@@ -309,7 +310,7 @@ inline void TentaclePlotter::RotateAboutYAxis(const float sinAngle,
   destPoint.y = srcPoint.y;
 }
 
-inline void TentaclePlotter::Translate(const V3dFlt& vAdd, V3dFlt& vInOut)
+inline auto TentaclePlotter::Translate(const V3dFlt& vAdd, V3dFlt& vInOut) -> void
 {
   vInOut.x += vAdd.x;
   vInOut.y += vAdd.y;
