@@ -40,18 +40,18 @@ public:
                  const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                  const ITentacleLayout& tentacleLayout) noexcept;
 
-  void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);
-  void TentaclesColorMapsChanged();
+  auto SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps) -> void;
+  auto TentaclesColorMapsChanged() -> void;
 
-  void StartIterating();
+  auto StartIterating() -> void;
 
-  void SetReverseColorMix(bool value);
-  void MultiplyIterZeroYValWaveFreq(float value);
-  void SetProjectionDistance(float value);
-  void SetCameraPosition(float cameraDistance, float tentacleAngle);
-  void SetDominantColors(const Pixel& dominantColor, const Pixel& dominantLowColor);
+  auto SetReverseColorMix(bool value) -> void;
+  auto MultiplyIterZeroYValWaveFreq(float value) -> void;
+  auto SetProjectionDistance(float value) -> void;
+  auto SetCameraPosition(float cameraDistance, float tentacleAngle) -> void;
+  auto SetDominantColors(const Pixel& dominantColor, const Pixel& dominantLowColor) -> void;
 
-  void Update();
+  auto Update() -> void;
 
 private:
   DRAW::IGoomDraw& m_draw;
@@ -94,28 +94,29 @@ private:
                                                 size_t id,
                                                 const IterationParams& params)
       -> std::unique_ptr<Tentacle2D>;
-  static void UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
-                                    const ITentacleLayout& tentacleLayout);
+  static auto UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
+                                    const ITentacleLayout& tentacleLayout) -> void;
 
   size_t m_updateNum = 0;
   static const size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES;
-  void CheckForTimerEvents();
+  auto CheckForTimerEvents() -> void;
 
   TentaclePlotter m_tentaclePlotter;
 };
 
-inline void TentacleDriver::SetProjectionDistance(const float value)
+inline auto TentacleDriver::SetProjectionDistance(const float value) -> void
 {
   m_tentaclePlotter.SetProjectionDistance(value);
 }
 
-inline void TentacleDriver::SetCameraPosition(const float cameraDistance, const float tentacleAngle)
+inline auto TentacleDriver::SetCameraPosition(const float cameraDistance, const float tentacleAngle)
+    -> void
 {
   m_tentaclePlotter.SetCameraPosition(cameraDistance, tentacleAngle);
 }
 
-inline void TentacleDriver::SetDominantColors(const Pixel& dominantColor,
-                                              const Pixel& dominantLowColor)
+inline auto TentacleDriver::SetDominantColors(const Pixel& dominantColor,
+                                              const Pixel& dominantLowColor) -> void
 {
   m_tentaclePlotter.SetDominantColors(dominantColor, dominantLowColor);
 }

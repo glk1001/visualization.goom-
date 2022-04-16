@@ -31,10 +31,10 @@ const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 40
 
 // clang-format off
 static const UTILS::MATH::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_ZERO_START{
-    1.0F, -10.0F, +10.0F, 0.0F
+    1.0F, -15.0F, +15.0F, 0.0F
 };
 static const UTILS::MATH::SineWaveMultiplier ITER_ZERO_Y_VAL_WAVE_PI_START{
-    1.5F, -10.0F, +10.0F, pi
+    1.5F, -15.0F, +15.0F, pi
 };
 const TentacleDriver::IterationParams TentacleDriver::ITER_PARAM_GROUP1_FIRST{
     100, 0.600F, 100.0F, 1.0F, ITER_ZERO_Y_VAL_WAVE_PI_START
@@ -74,7 +74,8 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw,
 {
 }
 
-void TentacleDriver::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedMaps)
+auto TentacleDriver::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedMaps)
+    -> void
 {
   for (auto& tentacle : m_tentacles)
   {
@@ -102,7 +103,7 @@ auto TentacleDriver::GetTentacleParams(const size_t numTentacles,
   tentacleParams.reserve(numTentacles);
   for (size_t i = 0; i < numTentacles; ++i)
   {
-    const IterParamsGroup paramsGroup = iterParamsGroups.at(paramsIndex);
+    const IterParamsGroup& paramsGroup = iterParamsGroups.at(paramsIndex);
     if (0 == (i % numInParamGroup))
     {
       if (paramsIndex < (iterParamsGroups.size() - 1))
@@ -200,7 +201,7 @@ auto TentacleDriver::CreateNewTentacle2D(const IGoomRand& goomRand,
   return tentacle;
 }
 
-void TentacleDriver::StartIterating()
+auto TentacleDriver::StartIterating() -> void
 {
   for (auto& tentacle : m_tentacles)
   {
@@ -210,8 +211,8 @@ void TentacleDriver::StartIterating()
   m_updateNum = 0;
 }
 
-void TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
-                                           const ITentacleLayout& tentacleLayout)
+auto TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
+                                           const ITentacleLayout& tentacleLayout) -> void
 {
   std::vector<size_t> sortedLongestFirst(tentacles.size());
   std::iota(sortedLongestFirst.begin(), sortedLongestFirst.end(), 0);
@@ -258,7 +259,7 @@ void TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
   }
 }
 
-void TentacleDriver::MultiplyIterZeroYValWaveFreq(const float value)
+auto TentacleDriver::MultiplyIterZeroYValWaveFreq(const float value) -> void
 {
   for (auto& params : m_tentacleParams)
   {
@@ -267,7 +268,7 @@ void TentacleDriver::MultiplyIterZeroYValWaveFreq(const float value)
   }
 }
 
-void TentacleDriver::SetReverseColorMix(const bool value)
+auto TentacleDriver::SetReverseColorMix(const bool value) -> void
 {
   for (auto& tentacle : m_tentacles)
   {
@@ -275,7 +276,7 @@ void TentacleDriver::SetReverseColorMix(const bool value)
   }
 }
 
-void TentacleDriver::CheckForTimerEvents()
+auto TentacleDriver::CheckForTimerEvents() -> void
 {
   if ((m_updateNum % CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES) != 0)
   {
@@ -288,7 +289,7 @@ void TentacleDriver::CheckForTimerEvents()
   m_tentaclePlotter.ChangeNumNodesBetweenDots();
 }
 
-void TentacleDriver::TentaclesColorMapsChanged()
+auto TentacleDriver::TentaclesColorMapsChanged() -> void
 {
   for (auto& tentacle : m_tentacles)
   {
@@ -296,7 +297,7 @@ void TentacleDriver::TentaclesColorMapsChanged()
   }
 }
 
-void TentacleDriver::Update()
+auto TentacleDriver::Update() -> void
 {
   ++m_updateNum;
 

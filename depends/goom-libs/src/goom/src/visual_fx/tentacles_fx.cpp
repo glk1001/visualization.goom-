@@ -294,9 +294,9 @@ inline void TentaclesFx::TentaclesImpl::UpdateDominantColors()
   const Pixel newColor =
       RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   static constexpr float COLOR_MIX_T = 0.70F;
-  m_dominantColor = IColorMap::GetColorMix(m_dominantColor, newColor, COLOR_MIX_T);
-  static constexpr float LOW_COLOR_POWER = 0.67F;
-  m_dominantLowColor = GetLightenedColor(m_dominantColor, LOW_COLOR_POWER);
+  m_dominantLowColor = IColorMap::GetColorMix(m_dominantLowColor, newColor, COLOR_MIX_T);
+  static constexpr float COLOR_POWER = 0.67F;
+  m_dominantColor = GetLightenedColor(m_dominantLowColor, COLOR_POWER);
 }
 
 } // namespace GOOM::VISUAL_FX
