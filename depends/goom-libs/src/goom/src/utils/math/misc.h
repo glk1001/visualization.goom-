@@ -100,6 +100,17 @@ template<typename T>
 }
 
 template<typename T>
+[[nodiscard]] constexpr auto ModIncrement(T val, const T mod) -> T
+{
+  ++val;
+  if (val < mod)
+  {
+    return val;
+  }
+  return 0;
+}
+
+template<typename T>
 class Fraction
 {
 public:

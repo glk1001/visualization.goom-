@@ -75,6 +75,7 @@ private:
       -> std::vector<Point2dInt>;
 
   uint64_t m_updateNum = 0;
+  uint32_t m_dotAttributeOffset = 0;
   [[nodiscard]] auto IsSpecialUpdateNum() const -> bool;
   static constexpr uint32_t BLANK_TIME = 40;
   UTILS::Timer m_blankTimer{BLANK_TIME, true};

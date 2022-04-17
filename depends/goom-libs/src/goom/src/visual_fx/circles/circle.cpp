@@ -34,6 +34,7 @@ using UTILS::MATH::AngleParams;
 using UTILS::MATH::CirclePath;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
+using UTILS::MATH::ModIncrement;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::U_HALF;
 
@@ -226,6 +227,7 @@ inline void Circle::IncrementTs()
   }
 
   m_dotPaths.IncrementPositionT();
+  m_dotAttributeOffset = ModIncrement(m_dotAttributeOffset, NUM_DOTS);
 }
 
 void Circle::ResetNumSteps()
@@ -275,14 +277,15 @@ void Circle::DrawNextCircleDots()
   const std::vector<Pixel> dotColors = GetDotColors(dotBrightness);
   const std::vector<Pixel> dotLowColors = GetDotLowColors(dotBrightness);
 
+  uint32_t iRotate = m_dotAttributeOffset;
   float tLineColor = 0.0F;
   Point2dInt prevDotPosition = nextDotPositions[NUM_DOTS - 1];
   for (size_t i = 0; i < NUM_DOTS; ++i)
   {
     const Point2dInt dotPosition = nextDotPositions.at(i);
-    const uint32_t dotDiameter = m_dotDiameters.GetDotDiameters().at(i);
-    const Pixel dotColor = dotColors.at(i);
-    const Pixel dotLowColor = dotLowColors.at(i);
+    const uint32_t dotDiameter = m_dotDiameters.GetDotDiameters().at(iRotate);
+    const Pixel dotColor = dotColors.at(iRotate);
+    const Pixel dotLowColor = dotLowColors.at(iRotate);
 
     m_dotDrawer->DrawDot(dotPosition, dotDiameter, dotColor, dotLowColor);
     DrawLine(prevDotPosition, dotPosition, lineBrightness, tLineColor);
@@ -290,6 +293,7 @@ void Circle::DrawNextCircleDots()
     m_lastDrawnDots.at(i) = dotPosition;
     prevDotPosition = dotPosition;
     tLineColor += T_LINE_COLOR_STEP;
+    iRotate = ModIncrement(iRotate, NUM_DOTS);
   }
 }
 
