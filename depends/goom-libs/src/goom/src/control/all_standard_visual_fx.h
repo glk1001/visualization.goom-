@@ -31,6 +31,7 @@ class GoomDotsFx;
 class IfsDancersFx;
 class ImageFx;
 class ShaderFx;
+class ShapesFx;
 class TentaclesFx;
 class TubesFx;
 
@@ -83,6 +84,7 @@ private:
   const std::shared_ptr<VISUAL_FX::IfsDancersFx> m_ifsFx;
   const std::shared_ptr<VISUAL_FX::ImageFx> m_imageFx;
   const std::shared_ptr<VISUAL_FX::ShaderFx> m_shaderFx;
+  const std::shared_ptr<VISUAL_FX::ShapesFx> m_shapesFx;
   const std::shared_ptr<VISUAL_FX::FlyingStarsFx> m_starFx;
   const std::shared_ptr<VISUAL_FX::TentaclesFx> m_tentaclesFx;
   const std::shared_ptr<VISUAL_FX::TubesFx> m_tubesFx;
@@ -103,6 +105,7 @@ private:
   void ApplyDotsToBothBuffersIfRequired();
   void ApplyIfsToBothBuffersIfRequired();
   void ApplyImageToBothBuffersIfRequired();
+  auto ApplyShapesToBothBuffersIfRequired() -> void;
   void ApplyShaderToBothBuffersIfRequired();
   void ApplyTentaclesToBothBuffersIfRequired();
   void ApplyStarsToBothBuffersIfRequired();
@@ -151,8 +154,9 @@ inline void AllStandardVisualFx::ApplyCurrentStateToMultipleBuffers()
   ApplyDotsToBothBuffersIfRequired();
   ApplyIfsToBothBuffersIfRequired();
   ApplyImageToBothBuffersIfRequired();
-  ApplyTentaclesToBothBuffersIfRequired();
+  ApplyShapesToBothBuffersIfRequired();
   ApplyStarsToBothBuffersIfRequired();
+  ApplyTentaclesToBothBuffersIfRequired();
   ApplyTubeToBothBuffersIfRequired();
   ApplyShaderToBothBuffersIfRequired();
 }

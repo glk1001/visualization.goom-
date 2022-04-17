@@ -110,12 +110,7 @@ private:
   float m_kY = DEFAULT_K_Y;
 };
 
-ParametricPath::ParametricPath(TValue& t) noexcept
-  : IPath{
-        Point2dInt{0, 0},
-        Point2dInt{0, 0},
-        t
-}
+ParametricPath::ParametricPath(TValue& t) noexcept : IPath{t}
 {
 }
 

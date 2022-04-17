@@ -62,6 +62,7 @@ add_library(goom
         src/utils/math/misc.h
         src/utils/math/paths.cpp
         src/utils/math/randutils.cpp
+        src/utils/math/transform2d.h
         src/utils/name_value_pairs.h
         src/utils/strutils.cpp
         src/utils/t_values.cpp
@@ -74,7 +75,7 @@ add_library(goom
         src/visual_fx/circles/dot_diameters.cpp
         src/visual_fx/circles/dot_paths.cpp
         src/visual_fx/filters/amulet.cpp
-	src/visual_fx/filters/filter_consts.h
+    	src/visual_fx/filters/filter_consts.h
         src/visual_fx/filters/crystal_ball.cpp
         src/visual_fx/filters/distance_field.cpp
         src/visual_fx/filters/extra_effects_states.cpp
@@ -128,6 +129,7 @@ add_library(goom
         src/visual_fx/image_fx.cpp
         src/visual_fx/lines_fx.cpp
         src/visual_fx/shader_fx.cpp
+        src/visual_fx/shapes_fx.cpp
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp

@@ -11,6 +11,7 @@
 #include "visual_fx/ifs_dancers_fx.h"
 #include "visual_fx/image_fx.h"
 #include "visual_fx/shader_fx.h"
+#include "visual_fx/shapes_fx.h"
 #include "visual_fx/tentacles_fx.h"
 #include "visual_fx/tubes_fx.h"
 #include "visual_fx_color_maps.h"
@@ -30,6 +31,7 @@ using VISUAL_FX::GoomDotsFx;
 using VISUAL_FX::IfsDancersFx;
 using VISUAL_FX::ImageFx;
 using VISUAL_FX::ShaderFx;
+using VISUAL_FX::ShapesFx;
 using VISUAL_FX::TentaclesFx;
 using VISUAL_FX::TubesFx;
 
@@ -42,17 +44,29 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
     m_ifsFx{std::make_shared<IfsDancersFx>(fxHelper, smallBitmaps)},
     m_imageFx{std::make_shared<ImageFx>(parallel, fxHelper, resourcesDirectory)},
     m_shaderFx{std::make_shared<ShaderFx>(fxHelper)},
+    m_shapesFx{std::make_shared<ShapesFx>(fxHelper)},
     m_starFx{std::make_shared<FlyingStarsFx>(fxHelper, smallBitmaps)},
     m_tentaclesFx{std::make_shared<TentaclesFx>(fxHelper, smallBitmaps)},
     m_tubesFx{std::make_shared<TubesFx>(fxHelper, smallBitmaps)},
     m_list{
-        m_circlesFx, m_starFx, m_ifsFx, m_imageFx, m_goomDotsFx, m_tentaclesFx, m_tubesFx,
+        m_circlesFx,
+        m_goomDotsFx,
+        m_ifsFx,
+        m_imageFx,
+        m_shapesFx,
+        m_starFx,
+        m_tentaclesFx,
+        m_tubesFx,
     },
     m_drawablesMap{
         {GoomDrawables::CIRCLES, m_circlesFx},
-        {GoomDrawables::STARS, m_starFx},          {GoomDrawables::IFS, m_ifsFx},
-        {GoomDrawables::IMAGE, m_imageFx},         {GoomDrawables::DOTS, m_goomDotsFx},
-        {GoomDrawables::TENTACLES, m_tentaclesFx}, {GoomDrawables::TUBES, m_tubesFx},
+        {GoomDrawables::DOTS, m_goomDotsFx},
+        {GoomDrawables::IFS, m_ifsFx},
+        {GoomDrawables::IMAGE, m_imageFx},
+        {GoomDrawables::SHAPES, m_shapesFx},
+        {GoomDrawables::STARS, m_starFx},
+        {GoomDrawables::TENTACLES, m_tentaclesFx},
+        {GoomDrawables::TUBES, m_tubesFx},
     },
     m_visualFxColorMaps{fxHelper.GetGoomRand()}
 {
@@ -209,6 +223,17 @@ void AllStandardVisualFx::ApplyImageToBothBuffersIfRequired()
   m_imageFx->ApplyMultiple();
 }
 
+auto AllStandardVisualFx::ApplyShapesToBothBuffersIfRequired() -> void
+{
+  if (!IsCurrentlyDrawable(GoomDrawables::SHAPES))
+  {
+    return;
+  }
+
+  ResetDrawBuffSettings(GoomDrawables::SHAPES);
+  m_shapesFx->ApplyMultiple();
+}
+
 void AllStandardVisualFx::ApplyShaderToBothBuffersIfRequired()
 {
   ResetDrawBuffSettings(GoomDrawables::SHADER);
@@ -274,6 +299,12 @@ void AllStandardVisualFx::ChangeColorMaps()
   m_ifsFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::IFS));
 
   m_imageFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::IMAGE));
+
+  m_shapesFx->SetWeightedColorMaps(0, m_visualFxColorMaps.GetColorMap(GoomEffect::SHAPES0));
+  m_shapesFx->SetWeightedColorMaps(1, m_visualFxColorMaps.GetColorMap(GoomEffect::SHAPES1));
+  m_shapesFx->SetWeightedColorMaps(2, m_visualFxColorMaps.GetColorMap(GoomEffect::SHAPES2));
+  m_shapesFx->SetWeightedColorMaps(3, m_visualFxColorMaps.GetColorMap(GoomEffect::SHAPES3));
+  m_shapesFx->SetWeightedColorMaps(4, m_visualFxColorMaps.GetColorMap(GoomEffect::SHAPES4));
 
   m_starFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS));
   m_starFx->SetWeightedLowColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS_LOW));

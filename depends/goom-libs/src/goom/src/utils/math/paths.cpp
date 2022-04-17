@@ -9,8 +9,18 @@
 namespace GOOM::UTILS::MATH
 {
 
-LerpedPath::LerpedPath(TValue& positionT, IPath& path1, IPath& path2, TValue& lerpT)
-  : IPath{positionT}, m_path1{path1}, m_path2{path2}, m_lerpT{lerpT}
+using MATH::Transform2d;
+
+TransformedPath::TransformedPath(std::shared_ptr<IPath> path, const Transform2d& transform)
+  : IPath{path->m_positionT}, m_path{std::move(path)}, m_transform{transform}
+{
+}
+
+LerpedPath::LerpedPath(TValue& positionT,
+                       std::shared_ptr<IPath> path1,
+                       std::shared_ptr<IPath> path2,
+                       TValue& lerpT)
+  : IPath{positionT}, m_path1{std::move(path1)}, m_path2{std::move(path2)}, m_lerpT{lerpT}
 {
   assert(&positionT == &path1.m_positionT);
   assert(&positionT == &path2.m_positionT);
@@ -139,7 +149,7 @@ SinePath::SinePath(const Point2dInt& startPos,
                    const Point2dInt& endPos,
                    TValue& positionT,
                    const Params& params) noexcept
-  : IPath{startPos, endPos, positionT},
+  : IPathWithStartAndEnd{startPos, endPos, positionT},
     m_params{params},
     m_distance{Distance(startPos.ToFlt(), endPos.ToFlt())},
     m_rotateAngle{std::asin((static_cast<float>(endPos.y - startPos.y)) / m_distance)}
@@ -158,22 +168,19 @@ auto SinePath::GetNextPoint() const -> Point2dInt
 }
 
 OscillatingPath::OscillatingPath(const Point2dInt& startPos,
-                                 const Point2dInt& finishPos,
+                                 const Point2dInt& endPos,
                                  TValue& t,
                                  const Params& params,
                                  const bool allowOscillatingPath)
-  : IPath{startPos, finishPos, t},
-    m_currentStartPos{startPos},
-    m_currentFinishPos{finishPos},
+  : IPathWithStartAndEnd{startPos, endPos, t},
     m_params{params},
     m_allowOscillatingPath{allowOscillatingPath}
 {
 }
 
-auto OscillatingPath::GetPointAtNextT(const Point2dInt& point0, const Point2dInt& point1) const
-    -> Point2dInt
+auto OscillatingPath::GetNextPoint() const -> Point2dInt
 {
-  const Point2dFlt linearPoint = lerp(point0.ToFlt(), point1.ToFlt(), GetCurrentT());
+  const Point2dFlt linearPoint = lerp(GetStartPos().ToFlt(), GetEndPos().ToFlt(), GetCurrentT());
 
   if (!m_allowOscillatingPath)
   {
