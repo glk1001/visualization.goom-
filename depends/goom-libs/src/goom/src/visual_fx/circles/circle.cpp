@@ -1,10 +1,13 @@
 #include "circle.h"
 
+#undef NO_LOGGING
+
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
+#include "logging.h"
 #include "point2d.h"
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
@@ -27,6 +30,7 @@ using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using UTILS::Logging;
 using UTILS::NUM;
 using UTILS::Timer;
 using UTILS::TValue;
@@ -221,13 +225,13 @@ inline void Circle::DrawNextCircle()
 
 inline void Circle::IncrementTs()
 {
-  if (m_dotPaths.HasPositionTJustHitStartBoundary())
+  m_dotPaths.IncrementPositionT();
+  m_dotAttributeOffset = ModIncrement(m_dotAttributeOffset, NUM_DOTS);
+
+  if ((!m_dotPaths.GetPositionTRef().IsDelayed()) && m_dotPaths.HasPositionTJustHitStartBoundary())
   {
     m_blankTimer.ResetToZero();
   }
-
-  m_dotPaths.IncrementPositionT();
-  m_dotAttributeOffset = ModIncrement(m_dotAttributeOffset, NUM_DOTS);
 }
 
 void Circle::ResetNumSteps()
