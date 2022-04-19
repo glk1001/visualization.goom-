@@ -63,12 +63,11 @@ class Tube
 {
 public:
   using DrawLineFunc = std::function<void(
-      int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors, uint8_t thickness)>;
+      Point2dInt point1, Point2dInt point2, const std::vector<Pixel>& colors, uint8_t thickness)>;
   using DrawCircleFunc = std::function<void(
-      int x, int y, int radius, const std::vector<Pixel>& colors, uint8_t thickness)>;
+      Point2dInt point, int radius, const std::vector<Pixel>& colors, uint8_t thickness)>;
   using DrawSmallImageFunc =
-      std::function<void(int xMid,
-                         int yMid,
+      std::function<void(Point2dInt midPoint,
                          UTILS::GRAPHICS::SmallImageBitmaps::ImageNames imageName,
                          uint32_t size,
                          const std::vector<Pixel>& colors)>;

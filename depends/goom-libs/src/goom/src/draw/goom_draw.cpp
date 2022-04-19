@@ -13,8 +13,9 @@ IGoomDraw::IGoomDraw(const uint32_t screenWidth, const uint32_t screenHeight)
   : m_screenWidth{screenWidth},
     m_screenHeight{screenHeight},
     m_drawMethods{m_screenWidth, m_screenHeight,
-                  [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors)
-                  { DrawPixelsToDevice(x, y, newColors); }},
+                  [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors) {
+                    DrawPixelsToDevice({x, y}, newColors);
+                  }},
     m_intBuffIntensity{},
     m_parallel{-1} // max cores - 1
 {
@@ -22,23 +23,20 @@ IGoomDraw::IGoomDraw(const uint32_t screenWidth, const uint32_t screenHeight)
   SetDefaultBlendPixelFunc();
 }
 
-inline void IGoomDraw::DrawPixelsToDevice(const int32_t x,
-                                          const int32_t y,
-                                          const std::vector<Pixel>& colors)
+inline void IGoomDraw::DrawPixelsToDevice(const Point2dInt point, const std::vector<Pixel>& colors)
 {
-  DrawPixelsToDevice(x, y, colors, GetIntBuffIntensity());
+  DrawPixelsToDevice(point, colors, GetIntBuffIntensity());
 }
 
-void IGoomDraw::Bitmap(const int xCentre,
-                       const int yCentre,
+void IGoomDraw::Bitmap(const Point2dInt centre,
                        const ImageBitmap& bitmap,
                        const std::vector<GetBitmapColorFunc>& getColors)
 {
   const auto bitmapWidth = static_cast<int>(bitmap.GetWidth());
   const auto bitmapHeight = static_cast<int>(bitmap.GetHeight());
 
-  int x0 = xCentre - (bitmapWidth / 2);
-  int y0 = yCentre - (bitmapHeight / 2);
+  int x0 = centre.x - (bitmapWidth / 2);
+  int y0 = centre.y - (bitmapHeight / 2);
   int x1 = x0 + (bitmapWidth - 1);
   int y1 = y0 + (bitmapHeight - 1);
 
@@ -70,6 +68,7 @@ void IGoomDraw::Bitmap(const int xCentre,
   const auto setDestPixelRow =
       [this, &x0, &y0, &actualBitmapWidth, &bitmap, &getColors](const size_t yBitmap)
   {
+    const size_t numColors = getColors.size();
     const int yBuff = y0 + static_cast<int>(yBitmap);
     for (size_t xBitmap = 0; xBitmap < actualBitmapWidth; ++xBitmap)
     {
@@ -78,13 +77,13 @@ void IGoomDraw::Bitmap(const int xCentre,
       {
         continue;
       }
-      std::vector<Pixel> finalColors(getColors.size());
-      for (size_t i = 0; i < getColors.size(); ++i)
+      std::vector<Pixel> finalColors(numColors);
+      for (size_t i = 0; i < numColors; ++i)
       {
         finalColors[i] = getColors[i](xBitmap, yBitmap, bitmapColor);
       }
       const int xBuff = x0 + static_cast<int>(xBitmap);
-      DrawPixels(xBuff, yBuff, finalColors);
+      DrawPixels({xBuff, yBuff}, finalColors);
     }
   };
 

@@ -92,51 +92,44 @@ auto TentaclePlotter::Plot3D(const Tentacle3D& tentacle) -> void
 
   for (size_t nodeNum = 0; nodeNum < (points2D.size() - 1); ++nodeNum)
   {
-    const int32_t ix0 = points2D[nodeNum].x;
-    const int32_t ix1 = points2D[nodeNum + 1].x;
-    const int32_t iy0 = points2D[nodeNum].y;
-    const int32_t iy1 = points2D[nodeNum + 1].y;
+    const Point2dInt point1 = points2D[nodeNum];
+    const Point2dInt point2 = points2D[nodeNum + 1];
 
-    if (((ix0 == COORD_IGNORE_VAL) && (iy0 == COORD_IGNORE_VAL)) ||
-        ((ix1 == COORD_IGNORE_VAL) && (iy1 == COORD_IGNORE_VAL)))
+    if (((point1.x == COORD_IGNORE_VAL) && (point1.y == COORD_IGNORE_VAL)) ||
+        ((point2.x == COORD_IGNORE_VAL) && (point2.y == COORD_IGNORE_VAL)))
     {
       continue;
     }
-    if ((ix0 == ix1) && (iy0 == iy1))
+    if ((point1.x == point2.x) && (point1.y == point2.y))
     {
       continue;
     }
 
-    DrawNode(tentacle, nodeNum, ix0, iy0, ix1, iy1, brightness);
+    DrawNode(tentacle, nodeNum, point1, point2, brightness);
   }
 }
 
 inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
                                       const size_t nodeNum,
-                                      const int32_t x0,
-                                      const int32_t y0,
-                                      const int32_t x1,
-                                      const int32_t y1,
+                                      const Point2dInt point1,
+                                      const Point2dInt point2,
                                       const float brightness) -> void
 {
   const std::vector<Pixel> colors = GetMixedColors(tentacle, brightness, nodeNum);
-  DrawNodeLine(x0, y0, x1, y1, colors);
-  DrawNodeDot(nodeNum, x1, y1, colors);
+  DrawNodeLine(point1, point2, colors);
+  DrawNodeDot(nodeNum, point2, colors);
 }
 
-inline auto TentaclePlotter::DrawNodeLine(const int32_t x0,
-                                          const int32_t y0,
-                                          const int32_t x1,
-                                          const int32_t y1,
+inline auto TentaclePlotter::DrawNodeLine(const Point2dInt point1,
+                                          const Point2dInt point2,
                                           const std::vector<Pixel>& colors) -> void
 {
   static constexpr uint8_t THICKNESS = 1;
-  m_draw.Line(x0, y0, x1, y1, colors, THICKNESS);
+  m_draw.Line(point1, point2, colors, THICKNESS);
 }
 
 inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
-                                         const int32_t x,
-                                         const int32_t y,
+                                         const Point2dInt point,
                                          const std::vector<Pixel>& colors) -> void
 {
   if ((nodeNum % m_numNodesBetweenDots) != 0)
@@ -145,7 +138,7 @@ inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
   }
 
   static constexpr float DOT_BRIGHTNESS = 1.5F;
-  m_dotDrawer.DrawDot({x, y}, colors, DOT_BRIGHTNESS);
+  m_dotDrawer.DrawDot(point, colors, DOT_BRIGHTNESS);
 }
 
 inline auto TentaclePlotter::Get2DTentaclePoints(const Tentacle3D& tentacle) const

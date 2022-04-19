@@ -61,7 +61,7 @@ private:
   static constexpr size_t MAX_DOT_DIAMETER = 21;
   static constexpr uint32_t DEFAULT_DOT_DIAMETER = 19;
   uint32_t m_dotDiameter = DEFAULT_DOT_DIAMETER;
-  void DrawDot(const Point2dInt& centre, const uint32_t diameter, const Pixel& color);
+  void DrawDot(Point2dInt centre, const uint32_t diameter, const Pixel& color);
   SmallImageBitmaps::ImageNames m_currentBitmapName{SmallImageBitmaps::ImageNames::SPHERE};
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
 };

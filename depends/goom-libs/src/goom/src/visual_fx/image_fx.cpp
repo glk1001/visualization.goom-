@@ -8,6 +8,7 @@
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom/spimpl.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "logging.h"
@@ -19,7 +20,6 @@
 #include "utils/t_values.h"
 
 #include <array>
-#undef NDEBUG
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -419,7 +419,7 @@ void ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
         continue;
       }
       const std::vector<Pixel> pixelColors = GetPixelColors(pixelRow.at(xPixel), brightness);
-      m_draw.DrawPixels(x, y, pixelColors);
+      m_draw.DrawPixels({x, y}, pixelColors);
 
       ++x;
     }

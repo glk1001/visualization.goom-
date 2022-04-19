@@ -106,7 +106,7 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
       auto neighX = static_cast<int32_t>(point.GetX() - (m_width / 2));
       for (size_t j = 0; j < m_width; ++j)
       {
-        neighbours[n] = m_draw.GetPixel(neighX, neighY);
+        neighbours[n] = m_draw.GetPixel({neighX, neighY});
         ++n;
         ++neighX;
       }
@@ -125,20 +125,19 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
       continue;
     }
 
-    const auto x = static_cast<int32_t>(point.GetX());
-    const auto y = static_cast<int32_t>(point.GetY());
-
-    if (nullptr == m_currentImageBitmap)
+    if (const Point2dInt pt = {static_cast<int32_t>(point.GetX()),
+                               static_cast<int32_t>(point.GetY())};
+        nullptr == m_currentImageBitmap)
     {
       const std::vector<Pixel> colors{point.GetColor(), point.GetColor()};
-      m_draw.DrawPixels(x, y, colors);
+      m_draw.DrawPixels(pt, colors);
     }
     else
     {
       const auto getColor =
           [&point]([[maybe_unused]] const size_t xVal, [[maybe_unused]] const size_t yVal,
                    [[maybe_unused]] const Pixel& bgnd) { return point.GetColor(); };
-      m_draw.Bitmap(x, y, *m_currentImageBitmap, {getColor, getColor});
+      m_draw.Bitmap(pt, *m_currentImageBitmap, {getColor, getColor});
     }
   }
 }

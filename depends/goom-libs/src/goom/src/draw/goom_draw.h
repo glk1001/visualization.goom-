@@ -3,6 +3,7 @@
 #include "color/colorutils.h"
 #include "draw_methods.h"
 #include "goom_graphic.h"
+#include "point2d.h"
 #include "utils/parallel_utils.h"
 
 #include <cmath>
@@ -23,6 +24,10 @@ namespace DRAW
 
 class IGoomDraw
 {
+  // Use the following to check it's efficient to pass Point2dInts by value.
+  static constexpr size_t MAX_NUM_VOID_PTRS = 3;
+  static_assert(sizeof(Point2dInt) < (MAX_NUM_VOID_PTRS * sizeof(void*)));
+
 public:
   IGoomDraw() noexcept = delete;
   IGoomDraw(uint32_t screenWidth, uint32_t screenHeight);
@@ -45,26 +50,27 @@ public:
   void SetBlendPixelFunc(const BlendPixelFunc& func);
   void SetDefaultBlendPixelFunc();
 
-  void Circle(int x0, int y0, int radius, const Pixel& color);
-  void Circle(int x0, int y0, int radius, const std::vector<Pixel>& colors);
+  void Circle(Point2dInt point, int radius, const Pixel& color);
+  void Circle(Point2dInt point, int radius, const std::vector<Pixel>& colors);
 
-  void Line(int x1, int y1, int x2, int y2, const Pixel& color, uint8_t thickness);
-  void Line(int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors, uint8_t thickness);
+  void Line(Point2dInt point1, Point2dInt point2, const Pixel& color, uint8_t thickness);
+  void Line(Point2dInt point1,
+            Point2dInt point2,
+            const std::vector<Pixel>& colors,
+            uint8_t thickness);
 
   using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& imageColor)>;
-  void Bitmap(int xCentre,
-              int yCentre,
+  void Bitmap(Point2dInt centre,
               const UTILS::GRAPHICS::ImageBitmap& bitmap,
               const GetBitmapColorFunc& getColor);
-  void Bitmap(int xCentre,
-              int yCentre,
+  void Bitmap(Point2dInt centre,
               const UTILS::GRAPHICS::ImageBitmap& bitmap,
               const std::vector<GetBitmapColorFunc>& getColors);
 
-  void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& colors);
+  void DrawPixels(Point2dInt point, const std::vector<Pixel>& colors);
 
-  [[nodiscard]] virtual auto GetPixel(int32_t x, int32_t y) const -> Pixel = 0;
-  virtual void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) = 0;
+  [[nodiscard]] virtual auto GetPixel(Point2dInt point) const -> Pixel = 0;
+  virtual void DrawPixelsUnblended(Point2dInt point, const std::vector<Pixel>& colors) = 0;
 
 protected:
   [[nodiscard]] auto GetIntBuffIntensity() const -> uint32_t;
@@ -74,8 +80,7 @@ protected:
                                      const Pixel& newColor,
                                      uint32_t intBuffIntensity) const -> Pixel;
 
-  virtual void DrawPixelsToDevice(int32_t x,
-                                  int32_t y,
+  virtual void DrawPixelsToDevice(Point2dInt point,
                                   const std::vector<Pixel>& colors,
                                   uint32_t intBuffIntensity) = 0;
 
@@ -83,7 +88,7 @@ private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
   const DrawMethods m_drawMethods;
-  void DrawPixelsToDevice(int32_t x, int32_t y, const std::vector<Pixel>& colors);
+  void DrawPixelsToDevice(Point2dInt point, const std::vector<Pixel>& colors);
 
   BlendPixelFunc m_blendPixelFunc{};
   [[nodiscard]] static auto ColorAddBlendPixel(const Pixel& oldColor,
@@ -153,53 +158,45 @@ inline auto IGoomDraw::GetParallel() const -> GOOM::UTILS::Parallel&
   return m_parallel;
 }
 
-inline void IGoomDraw::Circle(const int x0, const int y0, const int radius, const Pixel& color)
+inline void IGoomDraw::Circle(const Point2dInt point, const int radius, const Pixel& color)
 {
-  Circle(x0, y0, radius, std::vector<Pixel>{color});
+  Circle(point, radius, std::vector<Pixel>{color});
 }
 
-inline void IGoomDraw::Circle(const int x0,
-                              const int y0,
+inline void IGoomDraw::Circle(const Point2dInt point,
                               const int radius,
                               const std::vector<Pixel>& colors)
 {
-  m_drawMethods.DrawCircle(x0, y0, radius, colors);
+  m_drawMethods.DrawCircle(point.x, point.y, radius, colors);
 }
 
-inline void IGoomDraw::Line(const int x1,
-                            const int y1,
-                            const int x2,
-                            const int y2,
+inline void IGoomDraw::Line(const Point2dInt point1,
+                            const Point2dInt point2,
                             const Pixel& color,
                             const uint8_t thickness)
 {
-  Line(x1, y1, x2, y2, std::vector<Pixel>{color}, thickness);
+  Line(point1, point2, std::vector<Pixel>{color}, thickness);
 }
 
-inline void IGoomDraw::Line(const int x1,
-                            const int y1,
-                            const int x2,
-                            const int y2,
+inline void IGoomDraw::Line(const Point2dInt point1,
+                            const Point2dInt point2,
                             const std::vector<Pixel>& colors,
                             const uint8_t thickness)
 {
-  m_drawMethods.DrawLine(x1, y1, x2, y2, colors, thickness);
+  m_drawMethods.DrawLine(point1.x, point1.y, point2.x, point2.y, colors, thickness);
 }
 
-inline void IGoomDraw::Bitmap(const int xCentre,
-                              const int yCentre,
+inline void IGoomDraw::Bitmap(const Point2dInt centre,
                               const UTILS::GRAPHICS::ImageBitmap& bitmap,
                               const GetBitmapColorFunc& getColor)
 {
   // WARNING undefined behaviour - GCC 11 does not like passing just '{getColor}'.
-  Bitmap(xCentre, yCentre, bitmap, std::vector<GetBitmapColorFunc>{getColor});
+  Bitmap(centre, bitmap, std::vector<GetBitmapColorFunc>{getColor});
 }
 
-inline void IGoomDraw::DrawPixels(const int32_t x,
-                                  const int32_t y,
-                                  const std::vector<Pixel>& colors)
+inline void IGoomDraw::DrawPixels(const Point2dInt point, const std::vector<Pixel>& colors)
 {
-  m_drawMethods.DrawPixels(x, y, colors);
+  m_drawMethods.DrawPixels(point.x, point.y, colors);
 }
 
 } // namespace DRAW

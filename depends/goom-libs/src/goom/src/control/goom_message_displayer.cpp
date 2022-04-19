@@ -6,6 +6,7 @@
 #include "draw/goom_draw.h"
 #include "goom/logging.h"
 #include "goom_graphic.h"
+#include "point2d.h"
 
 #include <vector>
 
@@ -35,8 +36,8 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
 
   const Pixel textColor = GetBrighterColor(10.0F, Pixel::WHITE);
   const auto getFontColor =
-      [textColor]([[maybe_unused]] const size_t textIndexOfChar, [[maybe_unused]] const int32_t x,
-                  [[maybe_unused]] const int32_t y, [[maybe_unused]] const int32_t width,
+      [textColor]([[maybe_unused]] const size_t textIndexOfChar,
+                  [[maybe_unused]] const Point2dInt point, [[maybe_unused]] const int32_t width,
                   [[maybe_unused]] const int32_t height) { return textColor; };
 
   static constexpr uint8_t OUTLINE_GREY = 0xFA;
@@ -46,9 +47,8 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
   });
   const auto getOutlineFontColor =
       [outlineColor]([[maybe_unused]] const size_t textIndexOfChar,
-                     [[maybe_unused]] const int32_t x, [[maybe_unused]] const int32_t y,
-                     [[maybe_unused]] const int32_t width, [[maybe_unused]] const int32_t height)
-  { return outlineColor; };
+                     [[maybe_unused]] const Point2dInt point, [[maybe_unused]] const int32_t width,
+                     [[maybe_unused]] const int32_t height) { return outlineColor; };
 
   std::vector<TextDraw> updateMessagesDisplayers{};
 
@@ -98,7 +98,7 @@ void GoomMessageDisplayer::UpdateMessages(const std::vector<std::string>& msgLin
                                            ((numberOfLinesInMessage - i) * LINE_HEIGHT));
     m_updateMessagesDisplayers.at(i).SetText(msgLines[i]);
     m_updateMessagesDisplayers.at(i).Prepare();
-    m_updateMessagesDisplayers.at(i).Draw(X_POS, yPos);
+    m_updateMessagesDisplayers.at(i).Draw({X_POS, yPos});
   };
 
   m_parallel.ForLoop(numberOfLinesInMessage, displayMessage);

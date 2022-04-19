@@ -1,14 +1,16 @@
 #include "flying_stars_fx.h"
 
+//#undef NO_LOGGING
+
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
-//#undef NO_LOGGING
 #include "goom/logging.h"
 #include "goom/spimpl.h"
+#include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
@@ -16,7 +18,6 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
-#undef NDEBUG
 #include <cassert>
 #include <cmath>
 #include <cstddef>
@@ -205,31 +206,21 @@ private:
   void ChangeDrawMode();
   const SmallImageBitmaps& m_smallBitmaps;
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
-  using DrawFunc = std::function<void(int32_t x1,
-                                      int32_t y1,
-                                      int32_t x2,
-                                      int32_t y2,
-                                      uint32_t size,
-                                      const std::vector<Pixel>& colors)>;
+  using DrawFunc = std::function<void(
+      Point2dInt point1, Point2dInt point2, uint32_t size, const std::vector<Pixel>& colors)>;
   const std::map<DrawMode, const DrawFunc> m_drawFuncs{};
   [[nodiscard]] auto GetDrawFunc() const -> DrawFunc;
   void DrawStar(const Star& star, float flipSpeed, const DrawFunc& drawFunc);
-  void DrawParticleCircle(int32_t x1,
-                          int32_t y1,
-                          int32_t x2,
-                          int32_t y2,
+  void DrawParticleCircle(Point2dInt point1,
+                          Point2dInt point2,
                           uint32_t size,
                           const std::vector<Pixel>& colors);
-  void DrawParticleLine(int32_t x1,
-                        int32_t y1,
-                        int32_t x2,
-                        int32_t y2,
+  void DrawParticleLine(Point2dInt point1,
+                        Point2dInt point2,
                         uint32_t size,
                         const std::vector<Pixel>& colors);
-  void DrawParticleDot(int32_t x1,
-                       int32_t y1,
-                       int32_t x2,
-                       int32_t y2,
+  void DrawParticleDot(Point2dInt point1,
+                       Point2dInt point2,
                        uint32_t size,
                        const std::vector<Pixel>& colors);
   void RemoveDeadStars();
@@ -270,8 +261,7 @@ void FlyingStarsFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> 
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
 }
 
-void FlyingStarsFx::SetWeightedLowColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps)
+void FlyingStarsFx::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_fxImpl->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -363,30 +353,24 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
     m_smallBitmaps{smallBitmaps},
     m_drawFuncs{
         {DrawMode::CIRCLES,
-         [this](const int32_t x1,
-             const int32_t y1,
-             const int32_t x2,
-             const int32_t y2,
+         [this](const Point2dInt point1,
+             const Point2dInt point2,
              const uint32_t size,
              const std::vector<Pixel>& colors) {
-           DrawParticleCircle(x1, y1, x2, y2, size, colors);
+           DrawParticleCircle(point1, point2, size, colors);
          }},
         {DrawMode::LINES,
-         [this](const int32_t x1,
-             const int32_t y1,
-             const int32_t x2,
-             const int32_t y2,
+         [this](const Point2dInt point1,
+             const Point2dInt point2,
              const uint32_t size,
-             const std::vector<Pixel>& colors) { DrawParticleLine(x1, y1, x2, y2, size, colors); }},
+             const std::vector<Pixel>& colors) { DrawParticleLine(point1, point2, size, colors); }},
         {
             DrawMode::DOTS,
-            [this](const int32_t x1,
-                const int32_t y1,
-                const int32_t x2,
-                const int32_t y2,
+            [this](const Point2dInt point1,
+                const Point2dInt point2,
                 const uint32_t size,
                 const std::vector<Pixel>& colors) {
-              DrawParticleDot(x1, y1, x2, y2, size, colors);
+              DrawParticleDot(point1, point2, size, colors);
             },
         }}
 {
@@ -515,21 +499,20 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
   const size_t numParts =
       tAge > OLD_AGE ? 4 : (2 + static_cast<size_t>(std::lround((1.0F - tAge) * 2.0F)));
 
-  const auto x0 = static_cast<int32_t>(star.pos.x);
-  const auto y0 = static_cast<int32_t>(star.pos.y);
+  const Point2dInt point0 = star.pos.ToInt();
 
-  int32_t x1 = x0;
-  int32_t y1 = y0;
+  Point2dInt point1 = point0;
   for (size_t j = 1; j <= numParts; ++j)
   {
-    const int32_t x2 =
-        x0 - static_cast<int32_t>(
-                 0.5F * (1.0F + std::sin(flipSpeed * star.velocity.x * static_cast<float>(j))) *
-                 star.velocity.x * static_cast<float>(j));
-    const int32_t y2 =
-        y0 - static_cast<int32_t>(
-                 0.5F * (1.0F + std::cos(flipSpeed * star.velocity.y * static_cast<float>(j))) *
-                 star.velocity.y * static_cast<float>(j));
+    const Point2dInt point2 = {
+        point0.x -
+            static_cast<int32_t>(
+                0.5F * (1.0F + std::sin(flipSpeed * star.velocity.x * static_cast<float>(j))) *
+                star.velocity.x * static_cast<float>(j)),
+        point0.y -
+            static_cast<int32_t>(
+                0.5F * (1.0F + std::cos(flipSpeed * star.velocity.y * static_cast<float>(j))) *
+                star.velocity.y * static_cast<float>(j))};
 
     const float brightness =
         (3.7F * ageBrightness * static_cast<float>(j)) / static_cast<float>(numParts);
@@ -537,51 +520,44 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
     const std::vector<Pixel> colors = {mixedColors.first, mixedColors.second};
     const uint32_t size = tAge < OLD_AGE ? 1 : m_goomRand.GetRandInRange(2U, MAX_DOT_SIZE + 1);
 
-    drawFunc(x1, y1, x2, y2, size, colors);
+    drawFunc(point1, point2, size, colors);
 
-    x1 = x2;
-    y1 = y2;
+    point1 = point2;
   }
 }
 
-void FlyingStarsFx::FlyingStarsImpl::DrawParticleCircle(const int32_t x1,
-                                                        const int32_t y1,
-                                                        [[maybe_unused]] const int32_t x2,
-                                                        [[maybe_unused]] const int32_t y2,
+void FlyingStarsFx::FlyingStarsImpl::DrawParticleCircle(const Point2dInt point1,
+                                                        [[maybe_unused]] const Point2dInt point2,
                                                         const uint32_t size,
                                                         const std::vector<Pixel>& colors)
 {
   if (m_useSingleBufferOnly)
   {
-    m_draw.Circle(x1, y1, static_cast<int>(size), colors[0]);
+    m_draw.Circle(point1, static_cast<int>(size), colors[0]);
   }
   else
   {
-    m_draw.Circle(x1, y1, static_cast<int>(size), colors);
+    m_draw.Circle(point1, static_cast<int>(size), colors);
   }
 }
 
-void FlyingStarsFx::FlyingStarsImpl::DrawParticleLine(const int32_t x1,
-                                                      const int32_t y1,
-                                                      const int32_t x2,
-                                                      const int32_t y2,
+void FlyingStarsFx::FlyingStarsImpl::DrawParticleLine(const Point2dInt point1,
+                                                      const Point2dInt point2,
                                                       const uint32_t size,
                                                       const std::vector<Pixel>& colors)
 {
   if (m_useSingleBufferOnly)
   {
-    m_draw.Line(x1, y1, x2, y2, colors[0], static_cast<uint8_t>(size));
+    m_draw.Line(point1, point2, colors[0], static_cast<uint8_t>(size));
   }
   else
   {
-    m_draw.Line(x1, y1, x2, y2, colors, static_cast<uint8_t>(size));
+    m_draw.Line(point1, point2, colors, static_cast<uint8_t>(size));
   }
 }
 
-void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const int32_t x1,
-                                                     const int32_t y1,
-                                                     [[maybe_unused]] const int32_t x2,
-                                                     [[maybe_unused]] const int32_t y2,
+void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const Point2dInt point1,
+                                                     [[maybe_unused]] const Point2dInt point2,
                                                      const uint32_t size,
                                                      const std::vector<Pixel>& colors)
 {
@@ -595,12 +571,12 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const int32_t x1,
 
   if (m_useSingleBufferOnly)
   {
-    m_draw.Bitmap(x1, y1, bitmap, getColor);
+    m_draw.Bitmap(point1, bitmap, getColor);
   }
   else
   {
     const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getColor, getLowColor};
-    m_draw.Bitmap(x1, y1, bitmap, getColors);
+    m_draw.Bitmap(point1, bitmap, getColors);
   }
 }
 

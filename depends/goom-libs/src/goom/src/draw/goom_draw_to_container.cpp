@@ -39,25 +39,22 @@ void GoomDrawToContainer::ClearAll()
   }
 }
 
-inline auto GoomDrawToContainer::GetWriteableColorsList(const int32_t x, const int32_t y)
-    -> ColorsList&
+inline auto GoomDrawToContainer::GetWriteableColorsList(const Point2dInt point) -> ColorsList&
 {
-  return m_xyPixelList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
+  return m_xyPixelList.at(static_cast<size_t>(point.y)).at(static_cast<size_t>(point.x));
 }
 
-void GoomDrawToContainer::DrawPixelsUnblended([[maybe_unused]] const int32_t x,
-                                              [[maybe_unused]] const int32_t y,
+void GoomDrawToContainer::DrawPixelsUnblended([[maybe_unused]] const Point2dInt point,
                                               [[maybe_unused]] const std::vector<Pixel>& colors)
 {
   throw std::logic_error("GoomDrawToContainer::DrawPixelsUnblended not implemented.");
 }
 
-void GoomDrawToContainer::DrawPixelsToDevice(const int32_t x,
-                                             const int32_t y,
+void GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
                                              const std::vector<Pixel>& colors,
                                              const uint32_t intBuffIntensity)
 {
-  ColorsList& colorsList = GetWriteableColorsList(x, y);
+  ColorsList& colorsList = GetWriteableColorsList(point);
 
   if (colorsList.count == colorsList.colorsArray.size())
   {
@@ -71,7 +68,7 @@ void GoomDrawToContainer::DrawPixelsToDevice(const int32_t x,
   ++colorsList.count;
   if (1 == colorsList.count)
   {
-    m_orderedXYPixelList.emplace_back(Coords{x, y});
+    m_orderedXYPixelList.emplace_back(point);
   }
 }
 
@@ -85,7 +82,7 @@ void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKee
 
   for (auto coords = eraseFrom; coords != eraseTo; ++coords)
   {
-    GetWriteableColorsList(coords->x, coords->y).count = 0;
+    GetWriteableColorsList(*coords).count = 0;
   }
 
   m_orderedXYPixelList.erase(eraseFrom, eraseTo);
@@ -96,10 +93,8 @@ void GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& func) c
 {
   const auto runFunc = [&](const size_t i) {
     const auto& coords = m_orderedXYPixelList[i];
-    const int32_t x = coords.x;
-    const int32_t y = coords.y;
-    const ColorsList& colorsList = GetColorsList(x, y);
-    func(x, y, colorsList);
+    const ColorsList& colorsList = GetColorsList(coords);
+    func(coords, colorsList);
   };
 
   // Start with the newest coords added.

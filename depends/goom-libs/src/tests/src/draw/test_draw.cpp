@@ -1,6 +1,7 @@
 #include "catch2/catch.hpp"
 #include "draw/goom_draw_to_container.h"
 #include "goom_graphic.h"
+#include "point2d.h"
 
 #include <cstdint>
 #include <format>
@@ -8,6 +9,7 @@
 
 using GOOM::Pixel;
 using GOOM::PixelChannelType;
+using GOOM::Point2dInt;
 using GOOM::DRAW::GoomDrawToContainer;
 using ColorsList = GoomDrawToContainer::ColorsList;
 
@@ -17,8 +19,7 @@ static constexpr uint32_t HEIGHT = 100;
 
 struct PixelInfo
 {
-  int32_t x{};
-  int32_t y{};
+  Point2dInt point{};
   std::vector<Pixel> colors{};
 };
 
@@ -28,16 +29,15 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
   // '1' is old, 'expectedPixels.size() - 1' is new.
   for (size_t i = 0; i < expectedPixels.size(); ++i)
   {
-    const int32_t x = expectedPixels[i].x;
-    const int32_t y = expectedPixels[i].y;
+    const Point2dInt& point = expectedPixels[i].point;
     const std::vector<Pixel>& colors = expectedPixels[i].colors;
 
-    const PixelInfo coords = changedPixels[i];
+    const PixelInfo& coords = changedPixels[i];
 
-    INFO(
-        std20::format("i = {}, coords = ({}, {}), (x, y) = ({}, {})", i, coords.x, coords.y, x, y));
-    REQUIRE(coords.x == x);
-    REQUIRE(coords.y == y);
+    INFO(std20::format("i = {}, coords = ({}, {}), (x, y) = ({}, {})", i, coords.point.x,
+                       coords.point.y, point.x, point.y));
+    REQUIRE(coords.point.x == point.x);
+    REQUIRE(coords.point.y == point.y);
 
     REQUIRE(coords.colors.size() == colors.size());
     INFO(std20::format("coords.colors[{}] = ({}, {}, {}, {}), colors[{}] = ({}, {}, {}, {})", 0,
@@ -55,8 +55,11 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
   REQUIRE(draw.GetNumChangedCoords() == expectedPixels.size());
 
   std::vector<PixelInfo> changedPixels{};
-  const auto emplaceCoords = [&](const int32_t x, const int32_t y, const ColorsList& colorsList) {
-    changedPixels.emplace_back(PixelInfo{x, y, {colorsList.colorsArray[0], Pixel::BLACK}});
+  const auto emplaceCoords = [&](const Point2dInt point, const ColorsList& colorsList)
+  {
+    changedPixels.emplace_back(PixelInfo{
+        point, {colorsList.colorsArray[0], Pixel::BLACK}
+    });
   };
   draw.IterateChangedCoordsNewToOld(emplaceCoords);
   REQUIRE(changedPixels.size() == expectedPixels.size());
@@ -71,27 +74,26 @@ auto FillDrawContainer(GoomDrawToContainer* const draw, const size_t numChanged)
   // Add some changed coords - '1' is old, 'numChanged' is new.
   for (size_t i = 1; i <= numChanged; ++i)
   {
-    const auto x = static_cast<int32_t>(i);
-    const auto y = static_cast<int32_t>(i);
+    const Point2dInt point = {static_cast<int32_t>(i), static_cast<int32_t>(i)};
     const auto c0 = static_cast<PixelChannelType>(i);
     const auto c1 = static_cast<PixelChannelType>(i + 1);
     const Pixel color0{{c0, c0, c0, 255U}};
     const Pixel color1{{c1, c1, c1, 0U}};
     const std::vector<Pixel> colors{color0, color1};
 
-    pixelsNewToOld.emplace_back(PixelInfo{x, y, colors});
+    pixelsNewToOld.emplace_back(PixelInfo{point, colors});
 
-    draw->DrawPixels(x, y, colors);
-    REQUIRE(draw->GetPixels(x, y)[0] == color0);
-    REQUIRE(draw->GetPixels(x, y)[1] == Pixel::BLACK);
+    draw->DrawPixels(point, colors);
+    REQUIRE(draw->GetPixels(point)[0] == color0);
+    REQUIRE(draw->GetPixels(point)[1] == Pixel::BLACK);
   }
   std::reverse(pixelsNewToOld.begin(), pixelsNewToOld.end());
 
   REQUIRE(pixelsNewToOld.size() == numChanged);
-  REQUIRE(pixelsNewToOld.front().x == static_cast<int32_t>(numChanged));
-  REQUIRE(pixelsNewToOld.front().y == static_cast<int32_t>(numChanged));
-  REQUIRE(pixelsNewToOld.back().x == 1);
-  REQUIRE(pixelsNewToOld.back().y == 1);
+  REQUIRE(pixelsNewToOld.front().point.x == static_cast<int32_t>(numChanged));
+  REQUIRE(pixelsNewToOld.front().point.y == static_cast<int32_t>(numChanged));
+  REQUIRE(pixelsNewToOld.back().point.x == 1);
+  REQUIRE(pixelsNewToOld.back().point.y == 1);
 
   return pixelsNewToOld;
 }
@@ -108,8 +110,8 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
   int32_t i = NUM_CHANGED_COORDS;
   for (const auto& p : pixelsNewToOld)
   {
-    REQUIRE(p.x == i);
-    REQUIRE(p.y == i);
+    REQUIRE(p.point.x == i);
+    REQUIRE(p.point.y == i);
     --i;
   }
 
@@ -121,8 +123,8 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
   i = NUM_CHANGED_COORDS;
   for (const auto& p : pixelsNewToOld)
   {
-    REQUIRE(p.x == i);
-    REQUIRE(p.y == i);
+    REQUIRE(p.point.x == i);
+    REQUIRE(p.point.y == i);
     --i;
   }
   CheckContainer(draw, pixelsNewToOld);
@@ -141,20 +143,20 @@ TEST_CASE("Test DrawMovingText to Container with Duplicates", "[GoomDrawToContai
   const Pixel color1{{11, 11, 11, 0U}};
   const std::vector<Pixel> colors{color0, color1};
   const PixelInfo oldest = pixelsNewToOld.back();
-  draw.DrawPixels(oldest.x, oldest.y, colors);
+  draw.DrawPixels(oldest.point, colors);
   REQUIRE(draw.GetNumChangedCoords() == NUM_CHANGED_COORDS);
 
-  const ColorsList& colorsListOldest = draw.GetColorsList(oldest.x, oldest.y);
+  const ColorsList& colorsListOldest = draw.GetColorsList(oldest.point);
   REQUIRE(2 == colorsListOldest.count);
 
-  const GoomDrawToContainer::Coords& coords0 = draw.GetChangedCoordsList()[0];
-  const ColorsList& colorsList0 = draw.GetColorsList(coords0.x, coords0.y);
+  const Point2dInt& coords0 = draw.GetChangedCoordsList()[0];
+  const ColorsList& colorsList0 = draw.GetColorsList(coords0);
   REQUIRE(colorsListOldest.count == colorsList0.count);
   REQUIRE(colorsListOldest.colorsArray == colorsList0.colorsArray);
 
   draw.ResizeChangedCoordsKeepingNewest(NUM_CHANGED_COORDS - 1);
   REQUIRE(draw.GetNumChangedCoords() == NUM_CHANGED_COORDS - 1);
-  REQUIRE(0 == draw.GetColorsList(oldest.x, oldest.y).count);
+  REQUIRE(0 == draw.GetColorsList(oldest.point).count);
 }
 
 TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
@@ -168,7 +170,7 @@ TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
 
   for (const auto& pixelInfo : pixelsNewToOld)
   {
-    const ColorsList& colorsList = draw.GetColorsList(pixelInfo.x, pixelInfo.y);
+    const ColorsList& colorsList = draw.GetColorsList(pixelInfo.point);
     REQUIRE(0 != colorsList.count);
   }
 
@@ -179,7 +181,7 @@ TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
 
   for (const auto& pixelInfo : pixelsNewToOld)
   {
-    const ColorsList& colorsList = draw.GetColorsList(pixelInfo.x, pixelInfo.y);
+    const ColorsList& colorsList = draw.GetColorsList(pixelInfo.point);
     REQUIRE(0 == colorsList.count);
   }
 }

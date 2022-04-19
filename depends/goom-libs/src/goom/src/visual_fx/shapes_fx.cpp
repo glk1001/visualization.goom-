@@ -173,7 +173,7 @@ inline void ShapesFx::ShapesFxImpl::ApplyMultiple()
                             .GetColorMap(m_colorMapIds.at(i))
                             .GetColor((*m_shapePaths.at(i).positionT)());
 
-    m_draw.Circle(point.x, point.y, 20,
+    m_draw.Circle(point, 20,
                   {COLOR::GetBrighterColor(20.0F, color), COLOR::GetBrighterColor(20.0F, color)});
 
     m_shapePaths.at(i).positionT->Increment();

@@ -15,31 +15,29 @@ GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t sc
 {
 }
 
-auto GoomDrawToBuffer::GetPixel(const int32_t x, const int32_t y) const -> Pixel
+auto GoomDrawToBuffer::GetPixel(const Point2dInt point) const -> Pixel
 {
   assert(!m_multipleBuffers.empty());
   assert(m_multipleBuffers[0] != nullptr);
-  return (*m_multipleBuffers[0])(static_cast<size_t>(x), static_cast<size_t>(y));
+  return (*m_multipleBuffers[0])(static_cast<size_t>(point.x), static_cast<size_t>(point.y));
 }
 
-void GoomDrawToBuffer::DrawPixelsUnblended(const int32_t x,
-                                           const int32_t y,
-                                           const std::vector<Pixel>& colors)
+void GoomDrawToBuffer::DrawPixelsUnblended(const Point2dInt point, const std::vector<Pixel>& colors)
 {
-  for (size_t i = 0; i < m_multipleBuffers.size(); ++i)
+  for (size_t i = 0; i < m_numBuffers; ++i)
   {
-    (*m_multipleBuffers[i])(static_cast<size_t>(x), static_cast<size_t>(y)) = colors[i];
+    (*m_multipleBuffers[i])(static_cast<size_t>(point.x), static_cast<size_t>(point.y)) = colors[i];
   }
 }
 
-void GoomDrawToBuffer::DrawPixelsToDevice(const int32_t x,
-                                          const int32_t y,
+void GoomDrawToBuffer::DrawPixelsToDevice(const Point2dInt point,
                                           const std::vector<Pixel>& colors,
                                           const uint32_t intBuffIntensity)
 {
-  for (size_t i = 0; i < colors.size(); ++i)
+  for (size_t i = 0; i < m_numBuffers; ++i)
   {
-    Pixel& pixel = (*m_multipleBuffers[i])(static_cast<size_t>(x), static_cast<size_t>(y));
+    Pixel& pixel =
+        (*m_multipleBuffers[i])(static_cast<size_t>(point.x), static_cast<size_t>(point.y));
     pixel = GetBlendedPixel(pixel, colors[i], intBuffIntensity);
   }
 }

@@ -2,6 +2,7 @@
 
 #include "../fx_utils/dot_drawer.h"
 #include "goom_graphic.h"
+#include "point2d.h"
 #include "tentacle3d.h"
 
 namespace GOOM
@@ -62,14 +63,11 @@ private:
 
   auto DrawNode(const Tentacle3D& tentacle,
                 size_t nodeNum,
-                int32_t x0,
-                int32_t y0,
-                int32_t x1,
-                int32_t y1,
+                Point2dInt point1,
+                Point2dInt point2,
                 float brightness) -> void;
-  auto DrawNodeLine(
-      int32_t x0, int32_t y0, int32_t x1, int32_t y1, const std::vector<Pixel>& colors) -> void;
-  auto DrawNodeDot(size_t nodeNum, int32_t x, int32_t y, const std::vector<Pixel>& colors) -> void;
+  auto DrawNodeLine(Point2dInt point1, Point2dInt point2, const std::vector<Pixel>& colors) -> void;
+  auto DrawNodeDot(size_t nodeNum, Point2dInt point, const std::vector<Pixel>& colors) -> void;
 
   [[nodiscard]] auto GetMixedColors(const Tentacle3D& tentacle,
                                     float brightness,

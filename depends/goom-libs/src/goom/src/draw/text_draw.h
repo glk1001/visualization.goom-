@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom/spimpl.h"
+#include "point2d.h"
 
 #include <cstdint>
 #include <functional>
@@ -39,8 +40,8 @@ public:
   [[nodiscard]] auto GetFontFile() const -> const std::string&;
   void SetFontFile(const std::string& filename);
 
-  using FontColorFunc = std::function<Pixel(
-      size_t textIndexOfChar, int32_t x, int32_t y, int32_t width, int32_t height)>;
+  using FontColorFunc =
+      std::function<Pixel(size_t textIndexOfChar, Point2dInt pen, int32_t width, int32_t height)>;
   void SetFontColorFunc(const FontColorFunc& func);
   void SetOutlineFontColorFunc(const FontColorFunc& func);
 
@@ -62,8 +63,8 @@ public:
   [[nodiscard]] auto GetBearingX() const -> int;
   [[nodiscard]] auto GetBearingY() const -> int;
 
-  void Draw(int32_t xPen, int32_t yPen);
-  void Draw(int32_t xPen, int32_t yPen, int32_t& xNext, int32_t& yNext);
+  void Draw(Point2dInt pen);
+  void Draw(Point2dInt pen, Point2dInt& nextPen);
 
 private:
   class TextDrawImpl;

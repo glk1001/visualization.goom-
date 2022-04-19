@@ -544,7 +544,7 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
     const Pixel modColor = GetFinalColor(nextPointData.color);
     const std::vector<Pixel> colors = {lineColor, modColor};
 
-    m_draw.Line(point1.x, point1.y, point2.x, point2.y, colors, LINE_THICKNESS);
+    m_draw.Line(point1, point2, colors, LINE_THICKNESS);
 
     static constexpr float DOT_BRIGHTNESS = 1.5F;
     m_dotDrawer.DrawDot(point2, colors, DOT_BRIGHTNESS);
@@ -563,8 +563,7 @@ void LinesFx::LinesImpl::DrawFlatLine(const Pixel& lineColor)
   const LinePoint& ptN = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
   const std::vector<Pixel> colors = {lineColor, lineColor};
 
-  m_draw.Line(static_cast<int>(pt0.point.x), static_cast<int>(pt0.point.y),
-              static_cast<int>(ptN.point.x), static_cast<int>(pt0.point.y), colors, 1);
+  m_draw.Line(pt0.point.ToInt(), ptN.point.ToInt(), colors, 1);
 }
 
 auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,

@@ -61,8 +61,8 @@ public:
   [[nodiscard]] auto GetBearingX() const -> int;
   [[nodiscard]] auto GetBearingY() const -> int;
 
-  void Draw(int32_t xPen, int32_t yPen);
-  void Draw(int32_t xPen, int32_t yPen, int32_t& xNext, int32_t& yNext);
+  void Draw(Point2dInt pen);
+  void Draw(Point2dInt pen, Point2dInt& nextPen);
 
 private:
   std::string m_fontFilename{};
@@ -142,30 +142,27 @@ void TextDraw::TextDrawImpl::Prepare()
 {
 }
 
-inline void TextDraw::TextDrawImpl::Draw(const int32_t, const int32_t)
+inline void TextDraw::TextDrawImpl::Draw(const Point2dInt)
 {
 }
 
-void TextDraw::TextDrawImpl::Draw(const int32_t,
-                                  const int32_t,
-                                  int32_t&,
-                                  int32_t&)
+void TextDraw::TextDrawImpl::Draw(const Point2dInt, Point2dInt&)
 {
 }
 
 inline auto TextDraw::TextDrawImpl::GetPreparedTextBoundingRect() const -> TextDraw::Rect
 {
-    return Rect{};
+  return Rect{};
 }
 
 inline auto TextDraw::TextDrawImpl::GetBearingX() const -> int32_t
 {
-    return 1;
+  return 1;
 }
 
 inline auto TextDraw::TextDrawImpl::GetBearingY() const -> int32_t
 {
-    return 1;
+  return 1;
 }
 #endif
 
@@ -205,8 +202,8 @@ public:
   [[nodiscard]] auto GetBearingX() const -> int;
   [[nodiscard]] auto GetBearingY() const -> int;
 
-  void Draw(int32_t xPen, int32_t yPen);
-  void Draw(int32_t xPen, int32_t yPen, int32_t& xNext, int32_t& yNext);
+  void Draw(Point2dInt pen);
+  void Draw(Point2dInt pen, Point2dInt& nextPen);
 
 private:
   IGoomDraw& m_draw;
@@ -385,25 +382,25 @@ auto TextDraw::GetBearingY() const -> int32_t
   return m_textDrawImpl->GetBearingY();
 }
 
-void TextDraw::Draw(const int32_t xPen, const int32_t yPen)
+void TextDraw::Draw(const Point2dInt pen)
 {
-  m_textDrawImpl->Draw(xPen, yPen);
+  m_textDrawImpl->Draw(pen);
 }
 
-void TextDraw::Draw(const int32_t xPen, const int32_t yPen, int32_t& xNext, int32_t& yNext)
+void TextDraw::Draw(const Point2dInt pen, Point2dInt& nextPen)
 {
-  m_textDrawImpl->Draw(xPen, yPen, xNext, yNext);
+  m_textDrawImpl->Draw(pen, nextPen);
 }
 
 #ifndef NO_FREETYPE_INSTALLED
 TextDraw::TextDrawImpl::TextDrawImpl(IGoomDraw& draw) noexcept : m_draw{draw}
 {
-  (void)FT_Init_FreeType(&m_library);
+  (void)::FT_Init_FreeType(&m_library);
 }
 
 TextDraw::TextDrawImpl::~TextDrawImpl() noexcept
 {
-  (void)FT_Done_FreeType(m_library);
+  (void)::FT_Done_FreeType(m_library);
 }
 
 inline auto TextDraw::TextDrawImpl::GetAlignment() const -> TextAlignment
@@ -440,16 +437,16 @@ void TextDraw::TextDrawImpl::SetFontFile(const std::string& filename)
 
   // Create a face from a memory buffer.  Be sure not to delete the memory buffer
   // until we are done using that font as FreeType will reference it directly.
-  (void)FT_New_Memory_Face(m_library, m_fontBuffer.data(),
-                           static_cast<FT_Long>(m_fontBuffer.size()), 0, &m_face);
+  (void)::FT_New_Memory_Face(m_library, m_fontBuffer.data(),
+                             static_cast<FT_Long>(m_fontBuffer.size()), 0, &m_face);
 
   SetFaceFontSize();
 }
 
 inline void TextDraw::TextDrawImpl::SetFaceFontSize()
 {
-  if (FT_Set_Char_Size(m_face, ToFreeTypeCoord(m_fontSize), ToFreeTypeCoord(m_fontSize),
-                       m_horizontalResolution, m_verticalResolution) != 0)
+  if (::FT_Set_Char_Size(m_face, ToFreeTypeCoord(m_fontSize), ToFreeTypeCoord(m_fontSize),
+                         m_horizontalResolution, m_verticalResolution) != 0)
   {
     throw std::logic_error(std20::format("Could not set face font size to {}.", m_fontSize));
   }
@@ -548,8 +545,8 @@ void TextDraw::TextDrawImpl::Prepare()
   for (size_t i = 0; i < utf32Text.size(); ++i)
   {
     // Load the glyph we are looking for.
-    const FT_UInt gIndex = FT_Get_Char_Index(m_face, static_cast<FT_ULong>(utf32Text[i]));
-    if (FT_Load_Glyph(m_face, gIndex, FT_LOAD_NO_BITMAP) != 0)
+    if (const FT_UInt gIndex = ::FT_Get_Char_Index(m_face, static_cast<FT_ULong>(utf32Text[i]));
+        ::FT_Load_Glyph(m_face, gIndex, FT_LOAD_NO_BITMAP) != 0)
     {
       throw std::runtime_error(
           std20::format("Could not load font char '{}' and glyph index {}.", m_theText[i], gIndex));
@@ -601,30 +598,26 @@ inline auto TextDraw::TextDrawImpl::GetStartYPen(const int32_t yPen) -> int
   return yPen;
 }
 
-inline void TextDraw::TextDrawImpl::Draw(const int32_t xPen, const int32_t yPen)
+inline void TextDraw::TextDrawImpl::Draw(const Point2dInt pen)
 {
-  int32_t xNext;
-  int32_t yNext;
-  Draw(xPen, yPen, xNext, yNext);
+  Point2dInt nextPoint{};
+  Draw(pen, nextPoint);
 }
 
-void TextDraw::TextDrawImpl::Draw(const int32_t xPen,
-                                  const int32_t yPen,
-                                  int32_t& xNext,
-                                  int32_t& yNext)
+void TextDraw::TextDrawImpl::Draw(const Point2dInt pen, Point2dInt& nextPen)
 {
   if (m_textSpans.empty())
   {
     throw std::logic_error("textSpans is empty.");
   }
 
-  xNext = GetStartXPen(xPen);
-  yNext = GetStartYPen(yPen);
+  nextPen.x = GetStartXPen(pen.x);
+  nextPen.y = GetStartYPen(pen.y);
 
   for (auto& span : m_textSpans)
   {
-    WriteGlyph(span, xNext, static_cast<int>(m_draw.GetScreenHeight()) - yNext);
-    xNext += span.advance;
+    WriteGlyph(span, nextPen.x, static_cast<int>(m_draw.GetScreenHeight()) - nextPen.y);
+    nextPen.x += span.advance;
   }
 }
 
@@ -736,14 +729,14 @@ void TextDraw::TextDrawImpl::WriteXSpan(const Span& span,
       continue;
     }
 
-    const Pixel color = getColor(textIndexOfChar, xf0 + width, rect.Height() - (span.y - rect.yMin),
-                                 rect.Width(), rect.Height());
+    const Point2dInt pen = {xf0 + width, rect.Height() - (span.y - rect.yMin)};
+    const Pixel color = getColor(textIndexOfChar, pen, rect.Width(), rect.Height());
     const Pixel srceColor{
         {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}
     };
-    const Pixel destColor = m_draw.GetPixel(xPos, yPos);
+    const Pixel destColor = m_draw.GetPixel({xPos, yPos});
 
-    m_draw.DrawPixelsUnblended(xPos, yPos, {GetColorBlend(srceColor, destColor)});
+    m_draw.DrawPixelsUnblended({xPos, yPos}, {GetColorBlend(srceColor, destColor)});
   }
 }
 
@@ -780,12 +773,12 @@ void TextDraw::TextDrawImpl::RasterCallback(const int32_t y,
 void TextDraw::TextDrawImpl::RenderSpans(FT_Outline* const outline, SpanArray* const spans) const
 {
   FT_Raster_Params params;
-  (void)memset(&params, 0, sizeof(params));
+  (void)::memset(&params, 0, sizeof(params));
   params.flags = FT_RASTER_FLAG_AA | FT_RASTER_FLAG_DIRECT;
   params.gray_spans = RasterCallback;
   params.user = spans;
 
-  (void)FT_Outline_Render(m_library, outline, &params);
+  (void)::FT_Outline_Render(m_library, outline, &params);
 }
 
 auto TextDraw::TextDrawImpl::GetSpans(const size_t textIndexOfChar) const -> Spans
@@ -832,18 +825,18 @@ auto TextDraw::TextDrawImpl::GetOutlineSpans() const -> SpanArray
 {
   // Set up a stroker.
   FT_Stroker stroker{};
-  (void)FT_Stroker_New(m_library, &stroker);
-  FT_Stroker_Set(stroker, ToFreeTypeCoord(m_outlineWidth), FT_STROKER_LINECAP_ROUND,
-                 FT_STROKER_LINEJOIN_ROUND, 0);
+  (void)::FT_Stroker_New(m_library, &stroker);
+  ::FT_Stroker_Set(stroker, ToFreeTypeCoord(m_outlineWidth), FT_STROKER_LINECAP_ROUND,
+                   FT_STROKER_LINEJOIN_ROUND, 0);
 
   FT_Glyph glyph{};
-  if (FT_Get_Glyph(m_face->glyph, &glyph) != 0)
+  if (::FT_Get_Glyph(m_face->glyph, &glyph) != 0)
   {
     throw std::runtime_error("Could not get glyph for outline spans.");
   }
 
   // Next we need the spans for the outline.
-  (void)FT_Glyph_StrokeBorder(&glyph, stroker, 0, 1);
+  (void)::FT_Glyph_StrokeBorder(&glyph, stroker, 0, 1);
 
   // Again, this needs to be an outline to work.
   if (glyph->format != FT_GLYPH_FORMAT_OUTLINE)
@@ -861,8 +854,8 @@ auto TextDraw::TextDrawImpl::GetOutlineSpans() const -> SpanArray
   }
 
   // Clean up afterwards.
-  FT_Stroker_Done(stroker);
-  FT_Done_Glyph(glyph);
+  ::FT_Stroker_Done(stroker);
+  ::FT_Done_Glyph(glyph);
 
   return outlineSpans;
 }

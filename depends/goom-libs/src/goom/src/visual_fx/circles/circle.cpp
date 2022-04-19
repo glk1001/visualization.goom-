@@ -232,7 +232,7 @@ inline void Circle::IncrementTs()
 
 void Circle::ResetNumSteps()
 {
-  if (m_newNumSteps == 0)
+  if (0 == m_newNumSteps)
   {
     return;
   }
@@ -406,7 +406,7 @@ inline void Circle::DrawLine(const Point2dInt& pos1,
     const Pixel color = GetFinalColor(lineBrightness, m_linesColorMap->GetColor(tDotColor));
     const Pixel lowColor =
         GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
-    m_draw.Line(pos1.x, pos1.y, pos2.x, pos2.y, {color, lowColor}, LINE_THICKNESS);
+    m_draw.Line(pos1, pos2, {color, lowColor}, LINE_THICKNESS);
   }
 }
 
@@ -435,7 +435,7 @@ inline void Circle::DotDrawer::DrawDot(const Point2dInt& pos,
       [this, &lowColor, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
   { return GetDotMixedColor(x, y, diameter, bgnd, lowColor, m_bgndLowColorMixT); };
 
-  m_draw.Bitmap(pos.x, pos.y, m_helper.bitmapGetter.GetBitmap(diameter), {getColor, getLowColor});
+  m_draw.Bitmap(pos, m_helper.bitmapGetter.GetBitmap(diameter), {getColor, getLowColor});
 }
 
 inline void Circle::DotDrawer::SetWeightedColorMaps(const RandomColorMaps& weightedMaps)

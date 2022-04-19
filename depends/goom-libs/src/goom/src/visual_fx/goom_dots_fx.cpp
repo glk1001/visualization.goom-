@@ -449,15 +449,15 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
       [&getColor1]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                    [[maybe_unused]] const Pixel& bgnd) { return getColor1(x, y, bgnd); };
 
-  const auto xMid = dotPosition.x + static_cast<int32_t>(radius);
-  const auto yMid = dotPosition.y + static_cast<int32_t>(radius);
-  if (m_thereIsOneBuffer || m_useSingleBufferOnly)
+  if (const Point2dInt midPoint = {dotPosition.x + static_cast<int32_t>(radius),
+                                   dotPosition.y + static_cast<int32_t>(radius)};
+      m_thereIsOneBuffer || m_useSingleBufferOnly)
   {
-    m_draw.Bitmap(xMid, yMid, GetImageBitmap(diameter), getColor1);
+    m_draw.Bitmap(midPoint, GetImageBitmap(diameter), getColor1);
   }
   else
   {
-    m_draw.Bitmap(xMid, yMid, GetImageBitmap(diameter), {getColor1, getColor2});
+    m_draw.Bitmap(midPoint, GetImageBitmap(diameter), {getColor1, getColor2});
   }
 }
 

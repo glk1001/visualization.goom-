@@ -68,7 +68,7 @@ void DotDrawer::DrawDot(const Point2dInt& pt,
   const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getColor1, getColor2};
   const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
 
-  m_goomDraw.Bitmap(pt.x, pt.y, bitmap, getColors);
+  m_goomDraw.Bitmap(pt, bitmap, getColors);
 }
 
 auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t

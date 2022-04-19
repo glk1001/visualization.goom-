@@ -2,6 +2,7 @@
 
 #include "goom_draw.h"
 #include "goom_graphic.h"
+#include "point2d.h"
 
 #include <array>
 #include <cstdint>
@@ -16,16 +17,11 @@ public:
   GoomDrawToContainer() noexcept = delete;
   GoomDrawToContainer(uint32_t screenWidth, uint32_t screenHeight);
 
-  auto GetPixel(int32_t x, int32_t y) const -> Pixel override;
-  void DrawPixelsUnblended(int32_t x, int32_t y, const std::vector<Pixel>& colors) override;
+  auto GetPixel(Point2dInt point) const -> Pixel override;
+  void DrawPixelsUnblended(Point2dInt point, const std::vector<Pixel>& colors) override;
 
-  auto GetPixels(int32_t x, int32_t y) const -> std::vector<Pixel>;
+  auto GetPixels(Point2dInt point) const -> std::vector<Pixel>;
 
-  struct Coords
-  {
-    int32_t x;
-    int32_t y;
-  };
   static constexpr size_t MAX_NUM_COLORS_LIST = 3;
   using ColorsArray = std::array<Pixel, MAX_NUM_COLORS_LIST>;
   struct ColorsList
@@ -34,11 +30,11 @@ public:
     ColorsArray colorsArray{};
   };
   [[nodiscard]] auto GetNumChangedCoords() const -> size_t;
-  [[nodiscard]] auto GetChangedCoordsList() const -> const std::vector<Coords>&;
+  [[nodiscard]] auto GetChangedCoordsList() const -> const std::vector<Point2dInt>&;
   // IMPORTANT: The above is ordered from oldest to newest.
-  [[nodiscard]] auto GetColorsList(int32_t x, int32_t y) const -> const ColorsList&;
+  [[nodiscard]] auto GetColorsList(Point2dInt point) const -> const ColorsList&;
 
-  using CoordsFunc = std::function<void(int32_t x, int32_t y, const ColorsList& colorsList)>;
+  using CoordsFunc = std::function<void(Point2dInt point, const ColorsList& colorsList)>;
   // NOTE: 'func' must be thread-safe.
   void IterateChangedCoordsNewToOld(const CoordsFunc& func) const;
 
@@ -46,33 +42,31 @@ public:
   void ClearAll();
 
 protected:
-  void DrawPixelsToDevice(int32_t x,
-                          int32_t y,
+  void DrawPixelsToDevice(Point2dInt point,
                           const std::vector<Pixel>& colors,
                           uint32_t intBuffIntensity) override;
 
 private:
   std::vector<std::vector<ColorsList>> m_xyPixelList{};
-  std::vector<Coords> m_orderedXYPixelList{};
-  [[nodiscard]] auto GetWriteableColorsList(int32_t x, int32_t y) -> ColorsList&;
-  [[nodiscard]] auto GetLastDrawnColor(int32_t x, int32_t y) const -> Pixel;
-  [[nodiscard]] auto GetLastDrawnColors(int32_t x, int32_t y) const -> std::vector<Pixel>;
+  std::vector<Point2dInt> m_orderedXYPixelList{};
+  [[nodiscard]] auto GetWriteableColorsList(Point2dInt point) -> ColorsList&;
+  [[nodiscard]] auto GetLastDrawnColor(Point2dInt point) const -> Pixel;
+  [[nodiscard]] auto GetLastDrawnColors(Point2dInt point) const -> std::vector<Pixel>;
 };
 
-inline auto GoomDrawToContainer::GetPixel(const int32_t x, const int32_t y) const -> Pixel
+inline auto GoomDrawToContainer::GetPixel(const Point2dInt point) const -> Pixel
 {
-  return GetLastDrawnColor(x, y);
+  return GetLastDrawnColor(point);
 }
 
-inline auto GoomDrawToContainer::GetPixels(const int32_t x, const int32_t y) const
-    -> std::vector<Pixel>
+inline auto GoomDrawToContainer::GetPixels(const Point2dInt point) const -> std::vector<Pixel>
 {
-  return GetLastDrawnColors(x, y);
+  return GetLastDrawnColors(point);
 }
 
-inline auto GoomDrawToContainer::GetLastDrawnColor(const int32_t x, const int32_t y) const -> Pixel
+inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt point) const -> Pixel
 {
-  const ColorsList& colorsList = GetColorsList(x, y);
+  const ColorsList& colorsList = GetColorsList(point);
   if (0 == colorsList.count)
   {
     return Pixel::BLACK;
@@ -80,16 +74,15 @@ inline auto GoomDrawToContainer::GetLastDrawnColor(const int32_t x, const int32_
   return colorsList.colorsArray[static_cast<size_t>(colorsList.count - 1)];
 }
 
-inline auto GoomDrawToContainer::GetLastDrawnColors(const int32_t x, const int32_t y) const
+inline auto GoomDrawToContainer::GetLastDrawnColors(const Point2dInt point) const
     -> std::vector<Pixel>
 {
-  return {GetLastDrawnColor(x, y), Pixel::BLACK};
+  return {GetLastDrawnColor(point), Pixel::BLACK};
 }
 
-inline auto GoomDrawToContainer::GetColorsList(const int32_t x, const int32_t y) const
-    -> const ColorsList&
+inline auto GoomDrawToContainer::GetColorsList(const Point2dInt point) const -> const ColorsList&
 {
-  return m_xyPixelList.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
+  return m_xyPixelList.at(static_cast<size_t>(point.y)).at(static_cast<size_t>(point.x));
 }
 
 inline auto GoomDrawToContainer::GetNumChangedCoords() const -> size_t
@@ -97,7 +90,7 @@ inline auto GoomDrawToContainer::GetNumChangedCoords() const -> size_t
   return m_orderedXYPixelList.size();
 }
 
-inline auto GoomDrawToContainer::GetChangedCoordsList() const -> const std::vector<Coords>&
+inline auto GoomDrawToContainer::GetChangedCoordsList() const -> const std::vector<Point2dInt>&
 {
   return m_orderedXYPixelList;
 }

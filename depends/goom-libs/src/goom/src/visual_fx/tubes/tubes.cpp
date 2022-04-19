@@ -472,11 +472,11 @@ auto Tube::TubeImpl::GetInitialShapes(const Data& data,
     const float xFrom = radius * cosAngle;
     const float yFrom = radius * sinAngle;
     const Point2dInt fromPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xFrom)),
-                                              static_cast<int32_t>(std::round(yFrom))};
+                                                    static_cast<int32_t>(std::round(yFrom))};
     const float xTo = radius * std::cos(pi + angle);
     const float yTo = radius * std::sin(pi + angle);
     const Point2dInt toPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xTo)),
-                                            static_cast<int32_t>(std::round(yTo))};
+                                                  static_cast<int32_t>(std::round(yTo))};
 
     shape.shapeNum = shapeNum;
     shape.path = std::make_unique<OscillatingPath>(fromPos, toPos, shapeT, pathParams,
@@ -736,26 +736,26 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
   const bool drawHexDot = !m_hexDotShapeTimer.Finished();
 
   // Start hex shape to right of centre position.
-  auto x0 = static_cast<int32_t>(std::round(static_cast<float>(hexCentre.x) + m_hexLen));
-  int32_t y0 = hexCentre.y;
+  Point2dInt point1 = {static_cast<int32_t>(std::round(static_cast<float>(hexCentre.x) + m_hexLen)),
+                       hexCentre.y};
   float angle = START_ANGLE;
 
   for (uint32_t i = 0; i < NUM_HEX_SIDES; ++i)
   {
-    const int32_t x1 = x0 + static_cast<int32_t>(std::round(m_hexLen * std::cos(angle)));
-    const int32_t y1 = y0 + static_cast<int32_t>(std::round(m_hexLen * std::sin(angle)));
+    const Point2dInt point2 = {
+        point1.x + static_cast<int32_t>(std::round(m_hexLen * std::cos(angle))),
+        point1.y + static_cast<int32_t>(std::round(m_hexLen * std::sin(angle)))};
 
-    m_data.drawFuncs.drawLine(x0, y0, x1, y1, lineColors, lineThickness);
+    m_data.drawFuncs.drawLine(point1, point2, lineColors, lineThickness);
     if (drawHexDot)
     {
       static constexpr uint32_t HEX_DOT_SIZE = 3;
-      m_data.drawFuncs.drawSmallImage(x1, y1, SmallImageBitmaps::ImageNames::SPHERE, HEX_DOT_SIZE,
+      m_data.drawFuncs.drawSmallImage(point2, SmallImageBitmaps::ImageNames::SPHERE, HEX_DOT_SIZE,
                                       outerCircleColors);
     }
 
     angle += ANGLE_STEP;
-    x0 = x1;
-    y0 = y1;
+    point1 = point2;
   }
 }
 
@@ -763,9 +763,8 @@ inline void Tube::TubeImpl::DrawInteriorShape(const Point2dInt& shapeCentrePos,
                                               const ShapeColors& allColors) const
 {
   const std::vector<Pixel> colors{allColors.innerColor, allColors.innerLowColor};
-  m_data.drawFuncs.drawSmallImage(shapeCentrePos.x, shapeCentrePos.y,
-                                  SmallImageBitmaps::ImageNames::SPHERE, m_interiorShapeSize,
-                                  colors);
+  m_data.drawFuncs.drawSmallImage(shapeCentrePos, SmallImageBitmaps::ImageNames::SPHERE,
+                                  m_interiorShapeSize, colors);
 }
 
 inline void Tube::TubeImpl::DrawOuterCircle(const Point2dInt& shapeCentrePos,
@@ -777,8 +776,8 @@ inline void Tube::TubeImpl::DrawOuterCircle(const Point2dInt& shapeCentrePos,
   static constexpr uint8_t OUTER_CIRCLE_LINE_THICKNESS = 1;
   const std::vector<Pixel> outerCircleColors{allColors.outerCircleColor,
                                              allColors.outerCircleLowColor};
-  m_data.drawFuncs.drawCircle(shapeCentrePos.x, shapeCentrePos.y, outerCircleRadius,
-                              outerCircleColors, OUTER_CIRCLE_LINE_THICKNESS);
+  m_data.drawFuncs.drawCircle(shapeCentrePos, outerCircleRadius, outerCircleColors,
+                              OUTER_CIRCLE_LINE_THICKNESS);
 }
 
 // clang-format off

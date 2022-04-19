@@ -34,8 +34,13 @@
 
 #include "ifs_dancers_fx.h"
 
+//#undef NO_LOGGING
+
+#include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
+#include "goom/logging.h"
+#include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "ifs/colorizer.h"
@@ -43,14 +48,9 @@
 #include "ifs/low_density_blurrer.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-//#undef NO_LOGGING
-#include "color/random_colormaps.h"
-#include "goom/logging.h"
-#include "goom/spimpl.h"
 #include "utils/t_values.h"
 
 #include <array>
-
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -122,7 +122,7 @@ private:
   void ChangeColorMaps();
   void ChangeSpeed();
   void DrawNextIfsPoints();
-  void DrawPoint(const IfsPoint& point, float t, float tMix) const;
+  void DrawPoint(const IfsPoint& ifsPoint, float t, float tMix) const;
 
   static constexpr uint32_t MAX_DENSITY_COUNT = 20;
   static constexpr uint32_t MIN_DENSITY_COUNT = 5;
@@ -488,33 +488,32 @@ void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
   }
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& point,
+inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& ifsPoint,
                                                       const float t,
                                                       const float tMix) const
 {
-  const auto pointX = static_cast<int32_t>(point.GetX());
-  const auto pointY = static_cast<int32_t>(point.GetY());
+  const Point2dInt point = {static_cast<int32_t>(ifsPoint.GetX()),
+                            static_cast<int32_t>(ifsPoint.GetY())};
 
-  const auto tX = static_cast<float>(pointX) / static_cast<float>(m_draw.GetScreenWidth());
-  const auto tY = static_cast<float>(pointY) / static_cast<float>(m_draw.GetScreenHeight());
+  const auto tX = static_cast<float>(point.x) / static_cast<float>(m_draw.GetScreenWidth());
+  const auto tY = static_cast<float>(point.y) / static_cast<float>(m_draw.GetScreenHeight());
 
-  const Pixel baseColor = point.GetSimi()->GetColorMap()->GetColor(t);
-
-  if (nullptr == point.GetSimi()->GetCurrentPointBitmap())
+  if (const Pixel baseColor = ifsPoint.GetSimi()->GetColorMap()->GetColor(t);
+      nullptr == ifsPoint.GetSimi()->GetCurrentPointBitmap())
   {
     const Pixel mixedColor =
-        m_colorizer.GetMixedColor(baseColor, point.GetCount(), POINT_BRIGHTNESS, tMix, tX, tY);
-    m_draw.DrawPixels(pointX, pointY, {mixedColor, mixedColor});
+        m_colorizer.GetMixedColor(baseColor, ifsPoint.GetCount(), POINT_BRIGHTNESS, tMix, tX, tY);
+    m_draw.DrawPixels(point, {mixedColor, mixedColor});
   }
   else
   {
     const Pixel mixedColor =
-        m_colorizer.GetMixedColor(baseColor, point.GetCount(), BITMAP_BRIGHTNESS, tMix, tX, tY);
+        m_colorizer.GetMixedColor(baseColor, ifsPoint.GetCount(), BITMAP_BRIGHTNESS, tMix, tX, tY);
     const auto getColor = [&mixedColor]([[maybe_unused]] const size_t x,
                                         [[maybe_unused]] const size_t y,
                                         [[maybe_unused]] const Pixel& bgnd) { return mixedColor; };
-    const ImageBitmap& bitmap{*point.GetSimi()->GetCurrentPointBitmap()};
-    m_draw.Bitmap(pointX, pointY, bitmap, {getColor, getColor});
+    const ImageBitmap& bitmap{*ifsPoint.GetSimi()->GetCurrentPointBitmap()};
+    m_draw.Bitmap(point, bitmap, {getColor, getColor});
   }
 }
 
@@ -538,9 +537,10 @@ inline void IfsDancersFx::IfsDancersFxImpl::SetLowDensityColors(
   const float tStep = 1.0F / static_cast<float>(points.size());
   for (const auto& point : points)
   {
-    const float logAlpha = point.GetCount() <= 1 ? 1.0F
-                                                 : (std::log(static_cast<float>(point.GetCount())) /
-                                                       logMaxLowDensityCount);
+    const float logAlpha =
+        point.GetCount() <= 1
+            ? 1.0F
+            : (std::log(static_cast<float>(point.GetCount())) / logMaxLowDensityCount);
 
     DrawPoint(point, t, logAlpha);
 
