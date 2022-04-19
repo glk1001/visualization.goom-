@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 #include <string_view>
-#include <vector>
 
 namespace GOOM
 {
@@ -158,7 +157,9 @@ private:
   };
   const UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
   [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
-  void SetAnyRandomZoomMidpoint();
+  auto SetAnyRandomZoomMidpoint(bool allowEdgePoints) -> void;
+  [[nodiscard]] auto GetWeightRandomMidPoint(bool allowEdgePoints) const -> ZoomMidpointEvents;
+  [[nodiscard]] static auto IsEdgeMidPoint(ZoomMidpointEvents midPointEvent) -> bool;
   void SetMaxSpeedCoeff();
 };
 

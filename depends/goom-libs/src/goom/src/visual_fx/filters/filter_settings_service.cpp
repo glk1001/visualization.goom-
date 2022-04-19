@@ -651,7 +651,9 @@ void FilterSettingsService::SetRandomZoomMidpoint()
     return;
   }
 
-  SetAnyRandomZoomMidpoint();
+  const bool allowEdgePoints =
+      (m_filterMode != ZoomFilterMode::WAVE_MODE0) && (m_filterMode != ZoomFilterMode::WAVE_MODE1);
+  SetAnyRandomZoomMidpoint(allowEdgePoints);
 }
 
 auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
@@ -678,9 +680,33 @@ auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
   return false;
 }
 
-void FilterSettingsService::SetAnyRandomZoomMidpoint()
+auto FilterSettingsService::GetWeightRandomMidPoint(const bool allowEdgePoints) const
+    -> ZoomMidpointEvents
 {
-  switch (m_zoomMidpointWeights.GetRandomWeighted())
+  ZoomMidpointEvents midPointEvent = m_zoomMidpointWeights.GetRandomWeighted();
+
+  if (allowEdgePoints)
+  {
+    return midPointEvent;
+  }
+
+  while (IsEdgeMidPoint(midPointEvent))
+  {
+    midPointEvent = m_zoomMidpointWeights.GetRandomWeighted();
+  }
+  return midPointEvent;
+}
+
+inline auto FilterSettingsService::IsEdgeMidPoint(const ZoomMidpointEvents midPointEvent) -> bool
+{
+  return (midPointEvent == ZoomMidpointEvents::BOTTOM_MID_POINT) ||
+         (midPointEvent == ZoomMidpointEvents::RIGHT_MID_POINT) ||
+         (midPointEvent == ZoomMidpointEvents::LEFT_MID_POINT);
+}
+
+auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints) -> void
+{
+  switch (GetWeightRandomMidPoint(allowEdgePoints))
   {
     case ZoomMidpointEvents::BOTTOM_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
