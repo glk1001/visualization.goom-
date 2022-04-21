@@ -3,8 +3,10 @@
 #include "colormaps.h"
 #include "random_colormaps.h"
 
+#include <cstdint>
 #include <memory>
 #include <set>
+#include <vector>
 
 namespace GOOM::COLOR
 {
@@ -12,7 +14,7 @@ namespace GOOM::COLOR
 class RandomColorMapsManager
 {
 public:
-  RandomColorMapsManager() noexcept {} // Older visual studio does not like '= default;'
+  RandomColorMapsManager() = default;
 
   struct ColorMapInfo
   {
@@ -22,11 +24,12 @@ public:
   };
 
   [[nodiscard]] auto AddColorMapInfo(const ColorMapInfo& info) -> uint32_t;
+  auto RemoveColorMapInfo(uint32_t id) -> void;
 
-  void UpdateColorMapName(size_t id, COLOR_DATA::ColorMapName colorMapName);
+  auto UpdateColorMapName(size_t id, COLOR_DATA::ColorMapName colorMapName) -> void;
 
-  void ChangeAllColorMapsNow();
-  void ChangeColorMapNow(size_t id);
+  auto ChangeAllColorMapsNow() -> void;
+  auto ChangeColorMapNow(size_t id) -> void;
 
   [[nodiscard]] auto GetColorMap(size_t id) const -> const IColorMap&;
   [[nodiscard]] auto GetColorMapPtr(size_t id) const -> std::shared_ptr<const IColorMap>;
@@ -34,9 +37,6 @@ public:
 private:
   std::vector<ColorMapInfo> m_infoList{};
   std::vector<std::shared_ptr<const IColorMap>> m_colorMaps{};
-
-  void DoUpdateColorMapName(size_t id, COLOR_DATA::ColorMapName colorMapName);
-  void DoChangeColorMap(size_t id);
 };
 
 } // namespace GOOM::COLOR
