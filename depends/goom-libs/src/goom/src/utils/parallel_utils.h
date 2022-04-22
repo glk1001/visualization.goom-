@@ -1,8 +1,10 @@
 #pragma once
 
+#include "goom_config.h"
 #include "thread_pool.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstdint>
 #include <future>
 #include <thread>
@@ -18,11 +20,11 @@ public:
   // numPoolThreads <= 0: use (max cores - numPoolThreads) in the pool
   explicit Parallel(int32_t numPoolThreads = 0) noexcept;
 
-  auto GetNumThreadsUsed() const -> size_t;
-  auto GetThreadIds() const -> std::vector<std::thread::id>;
+  auto GetNumThreadsUsed() const noexcept -> size_t;
+  auto GetThreadIds() const noexcept -> std::vector<std::thread::id>;
 
   template<typename Callable>
-  void ForLoop(size_t numIters, Callable loopFunc);
+  auto ForLoop(size_t numIters, Callable loopFunc) noexcept -> void;
 
 private:
   ThreadPool m_threadPool;
@@ -39,27 +41,21 @@ inline Parallel::Parallel(const int32_t numPoolThreads) noexcept
 {
 }
 
-inline auto Parallel::GetNumThreadsUsed() const -> size_t
+inline auto Parallel::GetNumThreadsUsed() const noexcept -> size_t
 {
   return m_threadPool.GetNumWorkers();
 }
 
-inline auto Parallel::GetThreadIds() const -> std::vector<std::thread::id>
+inline auto Parallel::GetThreadIds() const noexcept -> std::vector<std::thread::id>
 {
   return m_threadPool.GetThreadIds();
 }
 
 template<typename Callable>
-void Parallel::ForLoop(const size_t numIters, const Callable loopFunc)
+auto Parallel::ForLoop(const size_t numIters, const Callable loopFunc) noexcept -> void
 {
-  if (0 == numIters)
-  {
-    throw std::logic_error("ForLoop: numIters == 0.");
-  }
-  if (m_forLoopInUse)
-  {
-    throw std::logic_error("ForLoop: already in use.");
-  }
+  assert(0 != numIters);
+  assert(not m_forLoopInUse);
   m_forLoopInUse = true;
 
   const size_t numThreads = std::min(numIters, m_threadPool.GetNumWorkers());

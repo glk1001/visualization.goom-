@@ -41,30 +41,31 @@ public:
                std::unique_ptr<FILTERS::FilterBuffersService> filterBuffersService,
                std::unique_ptr<FILTERS::FilterColorsService> filterColorsService) noexcept;
 
-  [[nodiscard]] auto GetFxName() const -> std::string override;
-  void SetBuffSettings(const FXBuffSettings& settings);
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
+  auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
 
-  void Start() override;
+  auto Start() noexcept -> void override;
 
-  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
 
-  [[nodiscard]] auto GetFilterEffectsSettings() const
+  [[nodiscard]] auto GetFilterEffectsSettings() const noexcept
       -> const VISUAL_FX::FILTERS::ZoomFilterEffectsSettings&;
-  void UpdateFilterEffectsSettings(
-      const VISUAL_FX::FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings);
-  void UpdateFilterBufferSettings(
-      const VISUAL_FX::FILTERS::ZoomFilterBufferSettings& filterBufferSettings);
-  void UpdateFilterColorSettings(
-      const VISUAL_FX::FILTERS::ZoomFilterColorSettings& filterColorSettings);
+  auto UpdateFilterEffectsSettings(
+      const VISUAL_FX::FILTERS::ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void;
+  auto UpdateFilterBufferSettings(
+      const VISUAL_FX::FILTERS::ZoomFilterBufferSettings& filterBufferSettings) noexcept -> void;
+  auto UpdateFilterColorSettings(
+      const VISUAL_FX::FILTERS::ZoomFilterColorSettings& filterColorSettings) noexcept -> void;
 
-  void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
-  void SetZoomFilterBrightness(float brightness);
-  [[nodiscard]] auto GetLastFilterBufferColorInfo() const -> const FILTERS::FilterBufferColorInfo&;
-  [[nodiscard]] auto GetLastFilterBufferColorInfo() -> FILTERS::FilterBufferColorInfo&;
+  auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
+  auto SetZoomFilterBrightness(float brightness) noexcept -> void;
+  [[nodiscard]] auto GetLastFilterBufferColorInfo() const noexcept
+      -> const FILTERS::FilterBufferColorInfo&;
+  [[nodiscard]] auto GetLastFilterBufferColorInfo() noexcept -> FILTERS::FilterBufferColorInfo&;
 
-  void Finish() override;
+  auto Finish() noexcept -> void override;
 
-  [[nodiscard]] auto GetNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
   class ZoomFilterImpl;

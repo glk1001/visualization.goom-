@@ -6,7 +6,6 @@
 
 #include <cassert>
 #include <format>
-#include <stdexcept>
 
 namespace GOOM::VISUAL_FX::FILTERS
 {
@@ -16,7 +15,8 @@ using COLOR::LUMA_GREEN_COMPONENT;
 using COLOR::LUMA_RED_COMPONENT;
 
 auto FilterBufferColorInfo::GetRegionInfoArray(
-    const std::array<size_t, NUM_Y_REGIONS>& yRegionBorders) -> std::array<RegionInfo, NUM_REGIONS>
+    const std::array<size_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
+    -> std::array<RegionInfo, NUM_REGIONS>
 {
   std::array<RegionInfo, NUM_REGIONS> regionRectArray{};
 
@@ -42,7 +42,7 @@ auto FilterBufferColorInfo::GetRegionInfoArray(
 }
 
 auto FilterBufferColorInfo::GetFilterBufferRowColorInfoArray(
-    const uint32_t height, const std::array<size_t, NUM_X_REGIONS>& xRegionBorders)
+    const uint32_t height, const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept
     -> std::vector<FilterBufferRowColorInfo>
 {
   std::vector<FilterBufferRowColorInfo> filterBufferRowColorInfo{};
@@ -57,12 +57,12 @@ auto FilterBufferColorInfo::GetFilterBufferRowColorInfoArray(
 }
 
 inline auto FilterBufferColorInfo::FilterBufferRowColorInfo::GetXRegionCounts(
-    const size_t xRegionIndex) const -> Counts
+    const size_t xRegionIndex) const noexcept -> Counts
 {
   return m_xRegionCountsArray.at(xRegionIndex);
 }
 
-inline auto FilterBufferColorInfo::GetAverageLuminance(const Counts& totals) -> float
+inline auto FilterBufferColorInfo::GetAverageLuminance(const Counts& totals) noexcept -> float
 {
   if (0 == totals.numNonzeroInRow)
   {
@@ -75,7 +75,7 @@ inline auto FilterBufferColorInfo::GetAverageLuminance(const Counts& totals) -> 
          (static_cast<float>(totals.numNonzeroInRow) * channel_limits<float>::max());
 }
 
-void FilterBufferColorInfo::CalculateLuminances()
+void FilterBufferColorInfo::CalculateLuminances() noexcept
 {
   for (size_t i = 0; i < NUM_REGIONS; ++i)
   {
@@ -83,7 +83,8 @@ void FilterBufferColorInfo::CalculateLuminances()
   }
 }
 
-auto FilterBufferColorInfo::GetRegionAverageLuminance(const size_t regionIndex) const -> float
+auto FilterBufferColorInfo::GetRegionAverageLuminance(const size_t regionIndex) const noexcept
+    -> float
 {
   const RegionInfo& regionInfo = m_regionInfoArray.at(regionIndex);
 
@@ -103,7 +104,7 @@ auto FilterBufferColorInfo::GetRegionAverageLuminance(const size_t regionIndex) 
   return GetAverageLuminance(totals);
 }
 
-auto FilterBufferColorInfo::GetMaxRegionAverageLuminance() const -> float
+auto FilterBufferColorInfo::GetMaxRegionAverageLuminance() const noexcept -> float
 {
   float maxAverageLuminance = 0.0F;
   for (const float regionAverageLuminance : m_regionAverageLuminances)
@@ -117,12 +118,14 @@ auto FilterBufferColorInfo::GetMaxRegionAverageLuminance() const -> float
   return maxAverageLuminance;
 }
 
-auto FilterBufferColorInfo::GetRegionAverageLuminanceAtPoint(const Point2dInt& point) const -> float
+auto FilterBufferColorInfo::GetRegionAverageLuminanceAtPoint(const Point2dInt& point) const noexcept
+    -> float
 {
   return m_regionAverageLuminances.at(GetRegionIndexOfPoint(point));
 }
 
-inline auto FilterBufferColorInfo::GetRegionIndexOfPoint(const Point2dInt& point) const -> size_t
+inline auto FilterBufferColorInfo::GetRegionIndexOfPoint(const Point2dInt& point) const noexcept
+    -> size_t
 {
   for (size_t regionIndex = 0; regionIndex < NUM_REGIONS; ++regionIndex)
   {
@@ -136,20 +139,20 @@ inline auto FilterBufferColorInfo::GetRegionIndexOfPoint(const Point2dInt& point
     }
   }
 
-  throw std::logic_error(std20::format("Point {},{} not in any region.", point.x, point.y));
+  assert(false);
 }
 
-inline auto FilterBufferColorInfo::IsInXRegion(const int32_t x, const size_t xRegionIndex) const
-    -> bool
+inline auto FilterBufferColorInfo::IsInXRegion(const int32_t x,
+                                               const size_t xRegionIndex) const noexcept -> bool
 {
   const auto x0 =
-      xRegionIndex == 0 ? 0 : static_cast<int32_t>(m_xRegionBorders.at(xRegionIndex - 1));
+      0 == xRegionIndex ? 0 : static_cast<int32_t>(m_xRegionBorders.at(xRegionIndex - 1));
   const auto x1 = static_cast<int32_t>(m_xRegionBorders.at(xRegionIndex));
 
   return (x0 <= x) && (x <= x1);
 }
 
-auto FilterBufferColorInfo::GetAverageLuminanceTest() const -> float
+auto FilterBufferColorInfo::GetAverageLuminanceTest() const noexcept -> float
 {
   Counts totals{};
 
@@ -166,7 +169,7 @@ auto FilterBufferColorInfo::GetAverageLuminanceTest() const -> float
   return GetAverageLuminance(totals);
 }
 
-auto FilterBufferColorInfo::FilterBufferRowColorInfo::GetXRegionTotals() const -> Counts
+auto FilterBufferColorInfo::FilterBufferRowColorInfo::GetXRegionTotals() const noexcept -> Counts
 {
   Counts totals{};
   for (const auto& regionCounts : m_xRegionCountsArray)

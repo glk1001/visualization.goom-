@@ -55,23 +55,26 @@ public:
                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
 
-  void SetBuffSettings(const FXBuffSettings& settings);
+  auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
 
-  void Start();
+  auto Start() noexcept -> void;
 
-  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
 
-  [[nodiscard]] auto GetFilterEffectsSettings() const -> const ZoomFilterEffectsSettings&;
-  void UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
-  void UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
-  void UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings);
+  [[nodiscard]] auto GetFilterEffectsSettings() const noexcept -> const ZoomFilterEffectsSettings&;
+  auto UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept
+      -> void;
+  auto UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings) noexcept
+      -> void;
+  auto UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings) noexcept
+      -> void;
 
-  void ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
-  void SetZoomFilterBrightness(float brightness);
-  [[nodiscard]] auto GetLastFilterBufferColorInfo() const -> const FilterBufferColorInfo&;
-  [[nodiscard]] auto GetLastFilterBufferColorInfo() -> FilterBufferColorInfo&;
+  auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
+  auto SetZoomFilterBrightness(float brightness) noexcept -> void;
+  [[nodiscard]] auto GetLastFilterBufferColorInfo() const noexcept -> const FilterBufferColorInfo&;
+  [[nodiscard]] auto GetLastFilterBufferColorInfo() noexcept -> FilterBufferColorInfo&;
 
-  [[nodiscard]] auto GetNameValueParams() const -> NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams() const noexcept -> NameValuePairs;
 
 private:
   const uint32_t m_screenWidth;
@@ -84,7 +87,7 @@ private:
   uint64_t m_updateNum = 0;
 
   FilterBufferColorInfo m_filterBufferColorInfo;
-  void CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
+  auto CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
 };
 
 ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
@@ -96,73 +99,76 @@ ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
 {
 }
 
-void ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings)
+auto ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings) noexcept -> void
 {
   m_fxImpl->SetBuffSettings(settings);
 }
 
-auto ZoomFilterFx::GetNameValueParams() const -> NameValuePairs
+auto ZoomFilterFx::GetNameValueParams() const noexcept -> NameValuePairs
 {
   return m_fxImpl->GetNameValueParams();
 }
 
-void ZoomFilterFx::Start()
+auto ZoomFilterFx::Start() noexcept -> void
 {
   m_fxImpl->Start();
 }
 
-void ZoomFilterFx::Finish()
+auto ZoomFilterFx::Finish() noexcept -> void
 {
   // No finish actions required
 }
 
-auto ZoomFilterFx::GetFxName() const -> std::string
+auto ZoomFilterFx::GetFxName() const noexcept -> std::string
 {
   return "ZoomFilter FX";
 }
 
-auto ZoomFilterFx::GetTranLerpFactor() const -> int32_t
+auto ZoomFilterFx::GetTranLerpFactor() const noexcept -> int32_t
 {
   return m_fxImpl->GetTranLerpFactor();
 }
 
-auto ZoomFilterFx::GetFilterEffectsSettings() const -> const ZoomFilterEffectsSettings&
+auto ZoomFilterFx::GetFilterEffectsSettings() const noexcept -> const ZoomFilterEffectsSettings&
 {
   return m_fxImpl->GetFilterEffectsSettings();
 }
 
-void ZoomFilterFx::UpdateFilterEffectsSettings(
-    const ZoomFilterEffectsSettings& filterEffectsSettings)
+auto ZoomFilterFx::UpdateFilterEffectsSettings(
+    const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void
 {
   m_fxImpl->UpdateFilterEffectsSettings(filterEffectsSettings);
 }
 
-void ZoomFilterFx::UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings)
+auto ZoomFilterFx::UpdateFilterBufferSettings(
+    const ZoomFilterBufferSettings& filterBufferSettings) noexcept -> void
 {
   m_fxImpl->UpdateFilterBufferSettings(filterBufferSettings);
 }
 
-void ZoomFilterFx::UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings)
+auto ZoomFilterFx::UpdateFilterColorSettings(
+    const ZoomFilterColorSettings& filterColorSettings) noexcept -> void
 {
   m_fxImpl->UpdateFilterColorSettings(filterColorSettings);
 }
 
-void ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
+auto ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept
+    -> void
 {
   m_fxImpl->ZoomFilterFastRgb(srceBuff, destBuff);
 }
 
-void ZoomFilterFx::SetZoomFilterBrightness(const float brightness)
+auto ZoomFilterFx::SetZoomFilterBrightness(const float brightness) noexcept -> void
 {
   m_fxImpl->SetZoomFilterBrightness(brightness);
 }
 
-auto ZoomFilterFx::GetLastFilterBufferColorInfo() const -> const FilterBufferColorInfo&
+auto ZoomFilterFx::GetLastFilterBufferColorInfo() const noexcept -> const FilterBufferColorInfo&
 {
   return m_fxImpl->GetLastFilterBufferColorInfo();
 }
 
-auto ZoomFilterFx::GetLastFilterBufferColorInfo() -> FilterBufferColorInfo&
+auto ZoomFilterFx::GetLastFilterBufferColorInfo() noexcept -> FilterBufferColorInfo&
 {
   return m_fxImpl->GetLastFilterBufferColorInfo();
 }
@@ -181,41 +187,42 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
 {
 }
 
-inline void ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& settings)
+inline auto ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& settings) noexcept
+    -> void
 {
   m_filterColorsService->SetBuffSettings(settings);
 }
 
-inline auto ZoomFilterFx::ZoomFilterImpl::GetTranLerpFactor() const -> int32_t
+inline auto ZoomFilterFx::ZoomFilterImpl::GetTranLerpFactor() const noexcept -> int32_t
 {
   return m_filterBuffersService->GetTranLerpFactor();
 }
 
-inline auto ZoomFilterFx::ZoomFilterImpl::GetFilterEffectsSettings() const
+inline auto ZoomFilterFx::ZoomFilterImpl::GetFilterEffectsSettings() const noexcept
     -> const ZoomFilterEffectsSettings&
 {
   return m_filterBuffersService->GetCurrentFilterEffectsSettings();
 }
 
-inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterEffectsSettings(
-    const ZoomFilterEffectsSettings& filterEffectsSettings)
+inline auto ZoomFilterFx::ZoomFilterImpl::UpdateFilterEffectsSettings(
+    const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void
 {
   m_filterBuffersService->SetFilterEffectsSettings(filterEffectsSettings);
 }
 
-inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterColorSettings(
-    const ZoomFilterColorSettings& filterColorSettings)
+inline auto ZoomFilterFx::ZoomFilterImpl::UpdateFilterColorSettings(
+    const ZoomFilterColorSettings& filterColorSettings) noexcept -> void
 {
   m_filterColorsService->SetBlockyWavy(filterColorSettings.blockyWavy);
 }
 
-inline void ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
-    const ZoomFilterBufferSettings& filterBufferSettings)
+inline auto ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
+    const ZoomFilterBufferSettings& filterBufferSettings) noexcept -> void
 {
   m_filterBuffersService->SetFilterBufferSettings(filterBufferSettings);
 }
 
-auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams() const -> NameValuePairs
+auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams() const noexcept -> NameValuePairs
 {
   static constexpr const char* PARAM_GROUP = "ZoomFilterFx";
 
@@ -227,7 +234,7 @@ auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams() const -> NameValuePairs
   return nameValuePairs;
 }
 
-inline void ZoomFilterFx::ZoomFilterImpl::Start()
+inline auto ZoomFilterFx::ZoomFilterImpl::Start() noexcept -> void
 {
   m_filterBuffersService->Start();
 }
@@ -245,8 +252,8 @@ inline void ZoomFilterFx::ZoomFilterImpl::Start()
  *  So that is why you have this name, for the nostalgia of the first days of goom
  *  when it was just a tiny program writen in Turbo Pascal on my i486...
  */
-inline void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
-                                                            PixelBuffer& destBuff)
+inline auto ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
+                                                            PixelBuffer& destBuff) noexcept -> void
 {
   ++m_updateNum;
 
@@ -255,25 +262,28 @@ inline void ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& s
   CZoom(srceBuff, destBuff);
 }
 
-inline void ZoomFilterFx::ZoomFilterImpl::SetZoomFilterBrightness(const float brightness)
+inline auto ZoomFilterFx::ZoomFilterImpl::SetZoomFilterBrightness(const float brightness) noexcept
+    -> void
 {
   m_filterColorsService->SetBrightness(brightness);
 }
 
-inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() const
+inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() const noexcept
     -> const FilterBufferColorInfo&
 {
   return m_filterBufferColorInfo;
 }
 
-inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() -> FilterBufferColorInfo&
+inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() noexcept
+    -> FilterBufferColorInfo&
 {
   return m_filterBufferColorInfo;
 }
 
-void ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
+auto ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
+                                         PixelBuffer& destBuff) noexcept -> void
 {
-  const auto setDestPixelRow = [this, &srceBuff, &destBuff](const size_t destY)
+  const auto setDestPixelRow = [this, &srceBuff, &destBuff](const size_t destY) noexcept
   {
     const auto [destRowBegin, destRowEnd] = destBuff.GetRowIter(destY);
 

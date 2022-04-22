@@ -27,7 +27,7 @@ using UTILS::Parallel;
 ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
                                      const PluginInfo& goomInfo,
                                      const NormalizedCoordsConverter& normalizedCoordsConverter,
-                                     const ZoomPointFunc& zoomPointFunc)
+                                     const ZoomPointFunc& zoomPointFunc) noexcept
   : m_screenWidth{goomInfo.GetScreenInfo().width},
     m_screenHeight{goomInfo.GetScreenInfo().height},
     m_normalizedCoordsConverter{normalizedCoordsConverter},
@@ -48,12 +48,12 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
          static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS))) - 1);
 }
 
-void ZoomFilterBuffers::Start()
+void ZoomFilterBuffers::Start() noexcept
 {
   InitAllTranBuffers();
 }
 
-auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const -> SourcePointInfo
+auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const noexcept -> SourcePointInfo
 {
   bool isClipped = false;
   const Point2dInt tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
@@ -66,23 +66,23 @@ auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const -> Source
                          isClipped};
 }
 
-inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos, bool& isClipped) const
-    -> Point2dInt
+inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos,
+                                                      bool& isClipped) const noexcept -> Point2dInt
 {
   return m_transformBuffers->GetSrceDestLerpBufferPoint(buffPos, isClipped);
 }
 
-auto ZoomFilterBuffers::HaveFilterSettingsChanged() const -> bool
+auto ZoomFilterBuffers::HaveFilterSettingsChanged() const noexcept -> bool
 {
   return m_filterSettingsHaveChanged;
 }
 
-void ZoomFilterBuffers::NotifyFilterSettingsHaveChanged()
+void ZoomFilterBuffers::NotifyFilterSettingsHaveChanged() noexcept
 {
   m_filterSettingsHaveChanged = true;
 }
 
-void ZoomFilterBuffers::InitAllTranBuffers()
+void ZoomFilterBuffers::InitAllTranBuffers() noexcept
 {
   m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
 
@@ -97,7 +97,7 @@ void ZoomFilterBuffers::InitAllTranBuffers()
   m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
-void ZoomFilterBuffers::UpdateTranBuffers()
+void ZoomFilterBuffers::UpdateTranBuffers() noexcept
 {
   if (m_tranBuffersState == TranBuffersState::RESET_TRAN_BUFFERS)
   {
@@ -116,7 +116,7 @@ void ZoomFilterBuffers::UpdateTranBuffers()
 }
 
 // generation du buffer de transform
-void ZoomFilterBuffers::ResetTranBuffers()
+void ZoomFilterBuffers::ResetTranBuffers() noexcept
 {
   m_transformBuffers->CopyDestTranToSrceTran();
   m_transformBuffers->SetUpNextDestTran();
@@ -126,7 +126,7 @@ void ZoomFilterBuffers::ResetTranBuffers()
   m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
-void ZoomFilterBuffers::StartFreshTranBuffers()
+void ZoomFilterBuffers::StartFreshTranBuffers() noexcept
 {
   if (!m_filterSettingsHaveChanged)
   {
@@ -138,7 +138,7 @@ void ZoomFilterBuffers::StartFreshTranBuffers()
   m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
 }
 
-inline void ZoomFilterBuffers::FillTempTranBuffers()
+inline void ZoomFilterBuffers::FillTempTranBuffers() noexcept
 {
   DoNextTempTranBuffersStripe(m_screenHeight);
 }
@@ -150,7 +150,7 @@ inline void ZoomFilterBuffers::FillTempTranBuffers()
  * Translation (-data->middleX, -data->middleY)
  * Homothetie (Center : 0,0   Coeff : 2/data->screenWidth)
  */
-void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStripeHeight)
+void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStripeHeight) noexcept
 {
   assert(m_tranBuffersState == TranBuffersState::TRAN_BUFFERS_READY);
 
@@ -193,7 +193,8 @@ void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
   }
 }
 
-inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) const -> Point2dInt
+inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) const noexcept
+    -> Point2dInt
 {
   return m_coordTransforms->NormalizedToTranPoint(normalized);
 
@@ -224,7 +225,7 @@ inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) 
    **/
 }
 
-void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer()
+void ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer() noexcept
 {
   /*****************
   int32_t decc = m_goomRand.GetRandInRange(-4, +4);
@@ -298,7 +299,7 @@ ZoomFilterBuffers::TransformBuffers::TransformBuffers(const uint32_t screenWidth
 {
 }
 
-void ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity()
+void ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity() noexcept
 {
   size_t i = 0;
   for (int32_t y = 0; y < static_cast<int32_t>(m_screenHeight); ++y)
@@ -313,19 +314,19 @@ void ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity()
   }
 }
 
-inline void ZoomFilterBuffers::TransformBuffers::CopyTempTranToDestTran()
+inline void ZoomFilterBuffers::TransformBuffers::CopyTempTranToDestTran() noexcept
 {
   std::copy(m_tranXTemp.begin(), m_tranXTemp.end(), m_tranXDest.begin());
   std::copy(m_tranYTemp.begin(), m_tranYTemp.end(), m_tranYDest.begin());
 }
 
-inline void ZoomFilterBuffers::TransformBuffers::CopyAllDestTranToSrceTran()
+inline void ZoomFilterBuffers::TransformBuffers::CopyAllDestTranToSrceTran() noexcept
 {
   std::copy(m_tranXDest.begin(), m_tranXDest.end(), m_tranXSrce.begin());
   std::copy(m_tranYDest.begin(), m_tranYDest.end(), m_tranYSrce.begin());
 }
 
-void ZoomFilterBuffers::TransformBuffers::CopyUnlerpedDestTranToSrceTran()
+void ZoomFilterBuffers::TransformBuffers::CopyUnlerpedDestTranToSrceTran() noexcept
 {
   for (size_t i = 0; i < m_bufferSize; ++i)
   {
@@ -335,7 +336,7 @@ void ZoomFilterBuffers::TransformBuffers::CopyUnlerpedDestTranToSrceTran()
   }
 }
 
-void ZoomFilterBuffers::TransformBuffers::CopyDestTranToSrceTran()
+void ZoomFilterBuffers::TransformBuffers::CopyDestTranToSrceTran() noexcept
 {
   // sauvegarde de l'etat actuel dans la nouvelle source
   // Save the current state in the source buffs.
@@ -353,25 +354,27 @@ void ZoomFilterBuffers::TransformBuffers::CopyDestTranToSrceTran()
   }
 }
 
-inline void ZoomFilterBuffers::TransformBuffers::SetUpNextDestTran()
+inline void ZoomFilterBuffers::TransformBuffers::SetUpNextDestTran() noexcept
 {
   std::swap(m_tranXDest, m_tranXTemp);
   std::swap(m_tranYDest, m_tranYTemp);
 }
 
 inline void ZoomFilterBuffers::TransformBuffers::SetTempBuffersTransformPoint(
-    const uint32_t pos, const Point2dInt& transformPoint)
+    const uint32_t pos, const Point2dInt& transformPoint) noexcept
 {
   m_tranXTemp[pos] = transformPoint.x;
   m_tranYTemp[pos] = transformPoint.y;
 }
 
-inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const -> const FilterCoeff2dArray&
+inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const noexcept
+    -> const FilterCoeff2dArray&
 {
   return m_precalculatedCoeffs;
 }
 
-auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() -> FilterCoeff2dArray
+auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() noexcept
+    -> FilterCoeff2dArray
 {
   FilterCoeff2dArray precalculatedCoeffs{};
 
@@ -386,9 +389,8 @@ auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() -> Fi
   return precalculatedCoeffs;
 }
 
-auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(const uint32_t coeffH,
-                                                                      const uint32_t coeffV)
-    -> NeighborhoodCoeffArray
+auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(
+    const uint32_t coeffH, const uint32_t coeffV) noexcept -> NeighborhoodCoeffArray
 {
   const uint32_t diffCoeffH = DIM_FILTER_COEFFS - coeffH;
   const uint32_t diffCoeffV = DIM_FILTER_COEFFS - coeffV;

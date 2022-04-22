@@ -25,9 +25,9 @@ public:
     explicit FilterBufferRowColorInfo(
         const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept;
 
-    void Reset();
-    void UpdateColor(const Pixel& color);
-    void NextX();
+    void Reset() noexcept;
+    void UpdateColor(const Pixel& color) noexcept;
+    void NextX() noexcept;
 
   private:
     const std::array<size_t, NUM_X_REGIONS>& m_xRegionBorders;
@@ -42,18 +42,19 @@ public:
       uint32_t sumBlueInRow = 0;
     };
     std::array<Counts, NUM_X_REGIONS> m_xRegionCountsArray{};
-    [[nodiscard]] auto GetXRegionTotals() const -> Counts;
-    [[nodiscard]] auto GetXRegionCounts(size_t xRegionIndex) const -> Counts;
+    [[nodiscard]] auto GetXRegionTotals() const noexcept -> Counts;
+    [[nodiscard]] auto GetXRegionCounts(size_t xRegionIndex) const noexcept -> Counts;
 
     friend class FilterBufferColorInfo;
   };
 
-  explicit FilterBufferColorInfo(uint32_t width, uint32_t height) noexcept;
+  FilterBufferColorInfo(uint32_t width, uint32_t height) noexcept;
 
-  [[nodiscard]] auto GetRow(size_t y) -> FilterBufferRowColorInfo&;
-  void CalculateLuminances();
-  [[nodiscard]] auto GetMaxRegionAverageLuminance() const -> float;
-  [[nodiscard]] auto GetRegionAverageLuminanceAtPoint(const Point2dInt& point) const -> float;
+  [[nodiscard]] auto GetRow(size_t y) noexcept -> FilterBufferRowColorInfo&;
+  void CalculateLuminances() noexcept;
+  [[nodiscard]] auto GetMaxRegionAverageLuminance() const noexcept -> float;
+  [[nodiscard]] auto GetRegionAverageLuminanceAtPoint(const Point2dInt& point) const noexcept
+      -> float;
 
 private:
   const uint32_t m_width;
@@ -62,11 +63,12 @@ private:
   const std::array<size_t, NUM_X_REGIONS> m_xRegionBorders;
   const std::array<size_t, NUM_Y_REGIONS> m_yRegionBorders;
   template<uint32_t numRegions>
-  [[nodiscard]] static auto GetRegionBorders(uint32_t length) -> std::array<size_t, numRegions>;
+  [[nodiscard]] static auto GetRegionBorders(uint32_t length) noexcept
+      -> std::array<size_t, numRegions>;
 
   std::vector<FilterBufferRowColorInfo> m_filterBufferRowColorInfoArray;
   [[nodiscard]] static auto GetFilterBufferRowColorInfoArray(
-      uint32_t height, const std::array<size_t, NUM_X_REGIONS>& xRegionBorders)
+      uint32_t height, const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept
       -> std::vector<FilterBufferRowColorInfo>;
 
   static constexpr uint32_t NUM_REGIONS = NUM_X_REGIONS * NUM_Y_REGIONS;
@@ -78,17 +80,17 @@ private:
   };
   const std::array<RegionInfo, NUM_REGIONS> m_regionInfoArray;
   [[nodiscard]] static auto GetRegionInfoArray(
-      const std::array<size_t, NUM_Y_REGIONS>& yRegionBorders)
+      const std::array<size_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
       -> std::array<RegionInfo, NUM_REGIONS>;
-  [[nodiscard]] auto GetRegionIndexOfPoint(const Point2dInt& point) const -> size_t;
-  [[nodiscard]] auto IsInXRegion(int32_t x, size_t xRegionIndex) const -> bool;
+  [[nodiscard]] auto GetRegionIndexOfPoint(const Point2dInt& point) const noexcept -> size_t;
+  [[nodiscard]] auto IsInXRegion(int32_t x, size_t xRegionIndex) const noexcept -> bool;
 
-  std::array<float, NUM_REGIONS> m_regionAverageLuminances;
-  [[nodiscard]] auto GetRegionAverageLuminance(size_t regionIndex) const -> float;
+  std::array<float, NUM_REGIONS> m_regionAverageLuminances{};
+  [[nodiscard]] auto GetRegionAverageLuminance(size_t regionIndex) const noexcept -> float;
   using Counts = FilterBufferRowColorInfo::Counts;
-  [[nodiscard]] static auto GetAverageLuminance(const Counts& totals) -> float;
+  [[nodiscard]] static auto GetAverageLuminance(const Counts& totals) noexcept -> float;
 
-  [[nodiscard]] auto GetAverageLuminanceTest() const -> float;
+  [[nodiscard]] auto GetAverageLuminanceTest() const noexcept -> float;
 };
 
 inline FilterBufferColorInfo::FilterBufferColorInfo(const uint32_t width,
@@ -104,13 +106,13 @@ inline FilterBufferColorInfo::FilterBufferColorInfo(const uint32_t width,
   static_assert(UTILS::MATH::IsOdd(NUM_Y_REGIONS));
 }
 
-inline auto FilterBufferColorInfo::GetRow(const size_t y) -> FilterBufferRowColorInfo&
+inline auto FilterBufferColorInfo::GetRow(const size_t y) noexcept -> FilterBufferRowColorInfo&
 {
   return m_filterBufferRowColorInfoArray[y];
 }
 
 template<uint32_t numRegions>
-auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length)
+auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length) noexcept
     -> std::array<size_t, numRegions>
 {
   static_assert(numRegions > 0);
@@ -140,7 +142,7 @@ inline FilterBufferColorInfo::FilterBufferRowColorInfo::FilterBufferRowColorInfo
 {
 }
 
-inline void FilterBufferColorInfo::FilterBufferRowColorInfo::Reset()
+inline void FilterBufferColorInfo::FilterBufferRowColorInfo::Reset() noexcept
 {
   m_currentX = 0;
   m_currentXRegionIndex = 0;
@@ -154,7 +156,8 @@ inline void FilterBufferColorInfo::FilterBufferRowColorInfo::Reset()
   }
 }
 
-inline void FilterBufferColorInfo::FilterBufferRowColorInfo::UpdateColor(const Pixel& color)
+inline void FilterBufferColorInfo::FilterBufferRowColorInfo::UpdateColor(
+    const Pixel& color) noexcept
 {
   if (COLOR::IsCloseToBlack(color))
   {
@@ -168,7 +171,7 @@ inline void FilterBufferColorInfo::FilterBufferRowColorInfo::UpdateColor(const P
   regionCounts.sumBlueInRow += color.B();
 }
 
-inline void FilterBufferColorInfo::FilterBufferRowColorInfo::NextX()
+inline void FilterBufferColorInfo::FilterBufferRowColorInfo::NextX() noexcept
 {
   ++m_currentX;
   if (m_currentX > m_xRegionBorders.at(m_currentXRegionIndex))

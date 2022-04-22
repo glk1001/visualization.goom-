@@ -10,7 +10,8 @@ namespace GOOM::VISUAL_FX::FILTERS
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 
-auto FilterColorsService::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
+auto FilterColorsService::GetNameValueParams(const std::string& paramGroup) const noexcept
+    -> NameValuePairs
 {
   return {
       GetPair(paramGroup, "blockyWavy", m_blockyWavy),

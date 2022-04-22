@@ -46,24 +46,24 @@ public:
   ZoomFilterBuffers(UTILS::Parallel& parallel,
                     const PluginInfo& goomInfo,
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
-                    const ZoomPointFunc& zoomPointFunc);
+                    const ZoomPointFunc& zoomPointFunc) noexcept;
 
-  [[nodiscard]] auto GetBuffMidpoint() const -> Point2dInt;
-  void SetBuffMidpoint(const Point2dInt& val);
+  [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
+  void SetBuffMidpoint(const Point2dInt& val) noexcept;
 
-  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
-  void SetTranLerpFactor(int32_t val);
-  [[nodiscard]] static auto GetMaxTranLerpFactor() -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
+  void SetTranLerpFactor(int32_t val) noexcept;
+  [[nodiscard]] static auto GetMaxTranLerpFactor() noexcept -> int32_t;
 
-  [[nodiscard]] auto GetTranBuffYLineStart() const -> uint32_t;
+  [[nodiscard]] auto GetTranBuffYLineStart() const noexcept -> uint32_t;
 
-  void Start();
+  void Start() noexcept;
 
-  void NotifyFilterSettingsHaveChanged();
-  [[nodiscard]] auto HaveFilterSettingsChanged() const -> bool;
+  void NotifyFilterSettingsHaveChanged() noexcept;
+  [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
-  void UpdateTranBuffers();
-  [[nodiscard]] auto GetTranBuffersState() const -> TranBuffersState;
+  void UpdateTranBuffers() noexcept;
+  [[nodiscard]] auto GetTranBuffersState() const noexcept -> TranBuffersState;
 
   struct NeighborhoodCoeffArray
   {
@@ -76,7 +76,7 @@ public:
     NeighborhoodCoeffArray coeffs;
     bool isClipped;
   };
-  [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo;
+  [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept -> SourcePointInfo;
 
 private:
   const uint32_t m_screenWidth;
@@ -87,8 +87,8 @@ private:
   class FilterCoefficients;
   const std::unique_ptr<const FilterCoefficients> m_precalculatedCoeffs;
 
-  [[nodiscard]] auto GetMaxTranX() const -> uint32_t;
-  [[nodiscard]] auto GetMaxTranY() const -> uint32_t;
+  [[nodiscard]] auto GetMaxTranX() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetMaxTranY() const noexcept -> uint32_t;
 
   UTILS::Parallel& m_parallel;
   const ZoomPointFunc m_getZoomPoint;
@@ -106,22 +106,23 @@ private:
 
   std::vector<int32_t> m_firedec{};
 
-  void InitAllTranBuffers();
-  void StartFreshTranBuffers();
-  void ResetTranBuffers();
-  void FillTempTranBuffers();
-  void DoNextTempTranBuffersStripe(uint32_t tranBuffStripeHeight);
-  void GenerateWaterFxHorizontalBuffer();
-  [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos, bool& isClipped) const -> Point2dInt;
-  [[nodiscard]] auto GetTranPoint(const NormalizedCoords& normalized) const -> Point2dInt;
+  void InitAllTranBuffers() noexcept;
+  void StartFreshTranBuffers() noexcept;
+  void ResetTranBuffers() noexcept;
+  void FillTempTranBuffers() noexcept;
+  void DoNextTempTranBuffersStripe(uint32_t tranBuffStripeHeight) noexcept;
+  void GenerateWaterFxHorizontalBuffer() noexcept;
+  [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos, bool& isClipped) const noexcept
+      -> Point2dInt;
+  [[nodiscard]] auto GetTranPoint(const NormalizedCoords& normalized) const noexcept -> Point2dInt;
 };
 
 class ZoomFilterBuffers::CoordTransforms
 {
 public:
-  explicit CoordTransforms(const NormalizedCoordsConverter& normalizedCoordsConverter);
+  explicit CoordTransforms(const NormalizedCoordsConverter& normalizedCoordsConverter) noexcept;
 
-  [[nodiscard]] auto NormalizedToTranPoint(const NormalizedCoords& normalizedPoint) const
+  [[nodiscard]] auto NormalizedToTranPoint(const NormalizedCoords& normalizedPoint) const noexcept
       -> Point2dInt;
 
   // Use these consts for optimising multiplication, division, and mod, by DIM_FILTER_COEFFS.
@@ -129,10 +130,10 @@ public:
   static constexpr int32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
   static constexpr int32_t DIM_FILTER_COEFFS_MOD_MASK = 0xF;
 
-  [[nodiscard]] static auto TranCoordToCoeffIndex(uint32_t tranCoord) -> uint32_t;
-  [[nodiscard]] static auto TranToScreenPoint(const Point2dInt& tranPoint) -> Point2dInt;
-  [[nodiscard]] static auto ScreenToTranPoint(const Point2dInt& screenPoint) -> Point2dInt;
-  [[nodiscard]] static auto ScreenToTranCoord(float screenCoord) -> uint32_t;
+  [[nodiscard]] static auto TranCoordToCoeffIndex(uint32_t tranCoord) noexcept -> uint32_t;
+  [[nodiscard]] static auto TranToScreenPoint(const Point2dInt& tranPoint) noexcept -> Point2dInt;
+  [[nodiscard]] static auto ScreenToTranPoint(const Point2dInt& screenPoint) noexcept -> Point2dInt;
+  [[nodiscard]] static auto ScreenToTranCoord(float screenCoord) noexcept -> uint32_t;
 
 private:
   const NormalizedCoordsConverter& m_normalizedCoordsConverter;
@@ -145,13 +146,13 @@ public:
 
   using FilterCoeff2dArray =
       std::array<std::array<NeighborhoodCoeffArray, DIM_FILTER_COEFFS>, DIM_FILTER_COEFFS>;
-  [[nodiscard]] auto GetCoeffs() const -> const FilterCoeff2dArray&;
+  [[nodiscard]] auto GetCoeffs() const noexcept -> const FilterCoeff2dArray&;
 
 private:
   // modif d'optim by Jeko : precalcul des 4 coeffs resultant des 2 pos
   const FilterCoeff2dArray m_precalculatedCoeffs{GetPrecalculatedCoefficients()};
-  [[nodiscard]] static auto GetPrecalculatedCoefficients() -> FilterCoeff2dArray;
-  [[nodiscard]] static auto GetNeighborhoodCoeffArray(uint32_t coeffH, uint32_t coeffV)
+  [[nodiscard]] static auto GetPrecalculatedCoefficients() noexcept -> FilterCoeff2dArray;
+  [[nodiscard]] static auto GetNeighborhoodCoeffArray(uint32_t coeffH, uint32_t coeffV) noexcept
       -> NeighborhoodCoeffArray;
 };
 
@@ -162,17 +163,17 @@ public:
                    uint32_t screenHeight,
                    const Point2dInt& maxTranPoint) noexcept;
 
-  void SetSrceTranToIdentity();
-  void CopyTempTranToDestTran();
-  void CopyDestTranToSrceTran();
-  void SetUpNextDestTran();
+  void SetSrceTranToIdentity() noexcept;
+  void CopyTempTranToDestTran() noexcept;
+  void CopyDestTranToSrceTran() noexcept;
+  void SetUpNextDestTran() noexcept;
 
-  void SetTempBuffersTransformPoint(uint32_t pos, const Point2dInt& transformPoint);
+  void SetTempBuffersTransformPoint(uint32_t pos, const Point2dInt& transformPoint) noexcept;
 
-  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
-  void SetTranLerpFactor(int32_t val);
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
+  void SetTranLerpFactor(int32_t val) noexcept;
 
-  [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos, bool& isClipped) const
+  [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos, bool& isClipped) const noexcept
       -> Point2dInt;
 
 private:
@@ -188,35 +189,36 @@ private:
   std::vector<int32_t> m_tranYTemp{};
   int32_t m_tranLerpFactor = 0;
 
-  void CopyAllDestTranToSrceTran();
-  void CopyUnlerpedDestTranToSrceTran();
-  [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos) const -> Point2dInt;
-  [[nodiscard]] static auto GetTranBuffLerpVal(int32_t srceBuffVal, int32_t destBuffVal, int32_t t)
-      -> int32_t;
-  [[nodiscard]] auto GetClampedXVal(int32_t x) const -> int32_t;
-  [[nodiscard]] auto GetClampedYVal(int32_t y) const -> int32_t;
+  void CopyAllDestTranToSrceTran() noexcept;
+  void CopyUnlerpedDestTranToSrceTran() noexcept;
+  [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos) const noexcept -> Point2dInt;
+  [[nodiscard]] static auto GetTranBuffLerpVal(int32_t srceBuffVal,
+                                               int32_t destBuffVal,
+                                               int32_t t) noexcept -> int32_t;
+  [[nodiscard]] auto GetClampedXVal(int32_t x) const noexcept -> int32_t;
+  [[nodiscard]] auto GetClampedYVal(int32_t y) const noexcept -> int32_t;
 };
 
-inline auto ZoomFilterBuffers::CoordTransforms::TranCoordToCoeffIndex(const uint32_t tranCoord)
-    -> uint32_t
+inline auto ZoomFilterBuffers::CoordTransforms::TranCoordToCoeffIndex(
+    const uint32_t tranCoord) noexcept -> uint32_t
 {
   return tranCoord & DIM_FILTER_COEFFS_MOD_MASK;
 }
 
-inline auto ZoomFilterBuffers::CoordTransforms::TranToScreenPoint(const Point2dInt& tranPoint)
-    -> Point2dInt
+inline auto ZoomFilterBuffers::CoordTransforms::TranToScreenPoint(
+    const Point2dInt& tranPoint) noexcept -> Point2dInt
 {
   return {tranPoint.x >> DIM_FILTER_COEFFS_DIV_SHIFT, tranPoint.y >> DIM_FILTER_COEFFS_DIV_SHIFT};
 }
 
-inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranPoint(const Point2dInt& screenPoint)
-    -> Point2dInt
+inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranPoint(
+    const Point2dInt& screenPoint) noexcept -> Point2dInt
 {
   return {screenPoint.x << DIM_FILTER_COEFFS_DIV_SHIFT,
           screenPoint.y << DIM_FILTER_COEFFS_DIV_SHIFT};
 }
 
-inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranCoord(const float screenCoord)
+inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranCoord(const float screenCoord) noexcept
     -> uint32_t
 {
   // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
@@ -224,13 +226,13 @@ inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranCoord(const float sc
 }
 
 inline ZoomFilterBuffers::CoordTransforms::CoordTransforms(
-    const NormalizedCoordsConverter& normalizedCoordsConverter)
+    const NormalizedCoordsConverter& normalizedCoordsConverter) noexcept
   : m_normalizedCoordsConverter{normalizedCoordsConverter}
 {
 }
 
 inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
-    const NormalizedCoords& normalizedPoint) const -> Point2dInt
+    const NormalizedCoords& normalizedPoint) const noexcept -> Point2dInt
 {
   const Point2dFlt screenCoords =
       m_normalizedCoordsConverter.NormalizedToScreenCoordsFlt(normalizedPoint);
@@ -240,72 +242,71 @@ inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
           static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.y)))};
 }
 
-inline auto ZoomFilterBuffers::GetBuffMidpoint() const -> Point2dInt
+inline auto ZoomFilterBuffers::GetBuffMidpoint() const noexcept -> Point2dInt
 {
   return m_buffMidpoint;
 }
 
-inline void ZoomFilterBuffers::SetBuffMidpoint(const Point2dInt& val)
+inline void ZoomFilterBuffers::SetBuffMidpoint(const Point2dInt& val) noexcept
 {
   m_buffMidpoint = val;
   m_normalizedMidPt = m_normalizedCoordsConverter.ScreenToNormalizedCoords(m_buffMidpoint);
 }
 
-inline auto ZoomFilterBuffers::GetTranBuffersState() const -> TranBuffersState
+inline auto ZoomFilterBuffers::GetTranBuffersState() const noexcept -> TranBuffersState
 {
   return m_tranBuffersState;
 }
 
-inline auto ZoomFilterBuffers::GetTranLerpFactor() const -> int32_t
+inline auto ZoomFilterBuffers::GetTranLerpFactor() const noexcept -> int32_t
 {
   return m_transformBuffers->GetTranLerpFactor();
 }
 
-inline auto ZoomFilterBuffers::GetMaxTranLerpFactor() -> int32_t
+inline auto ZoomFilterBuffers::GetMaxTranLerpFactor() noexcept -> int32_t
 {
   return CoordTransforms::MAX_TRAN_LERP_VALUE;
 }
 
-inline void ZoomFilterBuffers::SetTranLerpFactor(const int32_t val)
+inline void ZoomFilterBuffers::SetTranLerpFactor(const int32_t val) noexcept
 {
   m_transformBuffers->SetTranLerpFactor(val);
 }
 
-inline auto ZoomFilterBuffers::GetMaxTranX() const -> uint32_t
+inline auto ZoomFilterBuffers::GetMaxTranX() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(m_maxTranPoint.x);
 }
 
-inline auto ZoomFilterBuffers::GetMaxTranY() const -> uint32_t
+inline auto ZoomFilterBuffers::GetMaxTranY() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(m_maxTranPoint.y);
 }
 
-inline auto ZoomFilterBuffers::GetTranBuffYLineStart() const -> uint32_t
+inline auto ZoomFilterBuffers::GetTranBuffYLineStart() const noexcept -> uint32_t
 {
   return m_tranBuffYLineStart;
 }
 
-inline auto ZoomFilterBuffers::TransformBuffers::GetTranLerpFactor() const -> int32_t
+inline auto ZoomFilterBuffers::TransformBuffers::GetTranLerpFactor() const noexcept -> int32_t
 {
   return m_tranLerpFactor;
 }
 
-inline void ZoomFilterBuffers::TransformBuffers::SetTranLerpFactor(const int32_t val)
+inline void ZoomFilterBuffers::TransformBuffers::SetTranLerpFactor(const int32_t val) noexcept
 {
   m_tranLerpFactor = val;
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(
-    const size_t buffPos) const -> Point2dInt
+    const size_t buffPos) const noexcept -> Point2dInt
 {
   bool isClipped = false;
   return GetSrceDestLerpBufferPoint(buffPos, isClipped);
 }
 
-inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(const size_t buffPos,
-                                                                            bool& isClipped) const
-    -> Point2dInt
+inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(
+    const size_t buffPos, bool& isClipped) const noexcept -> Point2dInt
 {
   const int32_t x =
       GetTranBuffLerpVal(m_tranXSrce[buffPos], m_tranXDest[buffPos], m_tranLerpFactor);
@@ -337,19 +338,22 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(cons
   return {x, y};
 }
 
-inline auto ZoomFilterBuffers::TransformBuffers::GetClampedXVal(const int32_t x) const -> int32_t
+inline auto ZoomFilterBuffers::TransformBuffers::GetClampedXVal(const int32_t x) const noexcept
+    -> int32_t
 {
   return std::clamp(x, 0, m_maxTranPointMinus1.x);
 }
 
-inline auto ZoomFilterBuffers::TransformBuffers::GetClampedYVal(const int32_t y) const -> int32_t
+inline auto ZoomFilterBuffers::TransformBuffers::GetClampedYVal(const int32_t y) const noexcept
+    -> int32_t
 {
   return std::clamp(y, 0, m_maxTranPointMinus1.y);
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_t srceBuffVal,
                                                                     const int32_t destBuffVal,
-                                                                    const int32_t t) -> int32_t
+                                                                    const int32_t t) noexcept
+    -> int32_t
 {
   // IMPORTANT: Looking at this mathematically I can't see that the '>> DIM_FILTER_COEFFS'
   //            should be there. Surely it should be '/ MAX_TRAN_LERP_VALUE' - but with this,

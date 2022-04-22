@@ -112,30 +112,30 @@ public:
   explicit Pixel(const RGB& color) noexcept;
   Pixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept;
 
-  [[nodiscard]] auto R() const -> PixelChannelType;
-  [[nodiscard]] auto G() const -> PixelChannelType;
-  [[nodiscard]] auto B() const -> PixelChannelType;
-  [[nodiscard]] auto A() const -> PixelChannelType;
+  [[nodiscard]] auto R() const noexcept -> PixelChannelType;
+  [[nodiscard]] auto G() const noexcept -> PixelChannelType;
+  [[nodiscard]] auto B() const noexcept -> PixelChannelType;
+  [[nodiscard]] auto A() const noexcept -> PixelChannelType;
 
-  void SetR(PixelChannelType val);
-  void SetG(PixelChannelType val);
-  void SetB(PixelChannelType val);
-  void SetA(PixelChannelType val);
+  auto SetR(PixelChannelType val) noexcept -> void;
+  auto SetG(PixelChannelType val) noexcept -> void;
+  auto SetB(PixelChannelType val) noexcept -> void;
+  auto SetA(PixelChannelType val) noexcept -> void;
 
-  [[nodiscard]] auto RFlt() const -> float;
-  [[nodiscard]] auto GFlt() const -> float;
-  [[nodiscard]] auto BFlt() const -> float;
+  [[nodiscard]] auto RFlt() const noexcept -> float;
+  [[nodiscard]] auto GFlt() const noexcept -> float;
+  [[nodiscard]] auto BFlt() const noexcept -> float;
 
-  [[nodiscard]] auto Rgba() const -> PixelIntType;
+  [[nodiscard]] auto Rgba() const noexcept -> PixelIntType;
 
-  [[nodiscard]] auto ToString() const -> std::string;
+  [[nodiscard]] auto ToString() const noexcept -> std::string;
 
   static const Pixel BLACK;
   static const Pixel WHITE;
 
-  [[nodiscard]] auto IsBlack() const -> bool;
+  [[nodiscard]] auto IsBlack() const noexcept -> bool;
 
-  friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) -> bool;
+  friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool;
 
 private:
 #ifdef COLOR_BGRA
@@ -164,9 +164,10 @@ private:
   Color m_color{};
 };
 
-[[nodiscard]] auto MultiplyColorChannels(PixelChannelType ch1, PixelChannelType ch2) -> uint32_t;
-[[nodiscard]] auto MultiplyChannelColorByScalar(uint32_t scalar, PixelChannelType channelVal)
+[[nodiscard]] auto MultiplyColorChannels(PixelChannelType ch1, PixelChannelType ch2) noexcept
     -> uint32_t;
+[[nodiscard]] auto MultiplyChannelColorByScalar(uint32_t scalar,
+                                                PixelChannelType channelVal) noexcept -> uint32_t;
 
 struct FXBuffSettings
 {
@@ -181,32 +182,34 @@ class PixelBuffer
 public:
   PixelBuffer() noexcept = default;
   PixelBuffer(uint32_t width, uint32_t height) noexcept;
-  PixelBuffer(const PixelBuffer&) noexcept = delete;
-  PixelBuffer(PixelBuffer&&) noexcept = delete;
+  PixelBuffer(const PixelBuffer&) = delete;
+  PixelBuffer(PixelBuffer&&) = delete;
   auto operator=(const PixelBuffer&) -> PixelBuffer& = delete;
   auto operator=(PixelBuffer&&) -> PixelBuffer& = delete;
   virtual ~PixelBuffer() noexcept = default;
 
-  void Resize(size_t width, size_t height);
+  auto Resize(size_t width, size_t height) noexcept -> void;
 
-  [[nodiscard]] auto GetWidth() const -> uint32_t;
-  [[nodiscard]] auto GetHeight() const -> uint32_t;
+  [[nodiscard]] auto GetWidth() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetHeight() const noexcept -> uint32_t;
 
-  void Fill(const Pixel& pixel);
-  void CopyTo(PixelBuffer& pixelBuffer) const;
-  [[nodiscard]] static auto GetIntBufferSize(uint32_t width, uint32_t height) -> size_t;
-  [[nodiscard]] auto GetIntBuff() const -> const PixelIntType*;
+  auto Fill(const Pixel& pixel) noexcept -> void;
+  auto CopyTo(PixelBuffer& pixelBuffer) const noexcept -> void;
+  [[nodiscard]] static auto GetIntBufferSize(uint32_t width, uint32_t height) noexcept -> size_t;
+  [[nodiscard]] auto GetIntBuff() const noexcept -> const PixelIntType*;
 
-  auto operator()(size_t x, size_t y) const -> const Pixel&;
-  auto operator()(size_t x, size_t y) -> Pixel&;
+  auto operator()(size_t x, size_t y) const noexcept -> const Pixel&;
+  auto operator()(size_t x, size_t y) noexcept -> Pixel&;
 
   using iterator = Buffer::iterator;
   using const_iterator = Buffer::const_iterator;
-  [[nodiscard]] auto GetRowIter(size_t y) -> std::tuple<iterator, iterator>;
-  [[nodiscard]] auto GetRowIter(size_t y) const -> std::tuple<const_iterator, const_iterator>;
+  [[nodiscard]] auto GetRowIter(size_t y) noexcept -> std::tuple<iterator, iterator>;
+  [[nodiscard]] auto GetRowIter(size_t y) const noexcept
+      -> std::tuple<const_iterator, const_iterator>;
 
   static constexpr size_t NUM_NBRS = 4;
-  [[nodiscard]] auto Get4RHBNeighbours(size_t x, size_t y) const -> std::array<Pixel, NUM_NBRS>;
+  [[nodiscard]] auto Get4RHBNeighbours(size_t x, size_t y) const noexcept
+      -> std::array<Pixel, NUM_NBRS>;
 
 #ifdef GOOM_DEBUG
   class RangeError : public std::logic_error
@@ -250,90 +253,90 @@ inline Pixel::Pixel(const uint32_t red,
 {
 }
 
-inline auto MultiplyColorChannels(const PixelChannelType ch1, const PixelChannelType ch2)
+inline auto MultiplyColorChannels(const PixelChannelType ch1, const PixelChannelType ch2) noexcept
     -> uint32_t
 {
   return (static_cast<uint32_t>(ch1) * static_cast<uint32_t>(ch2)) /
          channel_limits<uint32_t>::max();
 }
 
-inline auto MultiplyChannelColorByScalar(const uint32_t scalar, const PixelChannelType channelVal)
-    -> uint32_t
+inline auto MultiplyChannelColorByScalar(const uint32_t scalar,
+                                         const PixelChannelType channelVal) noexcept -> uint32_t
 {
   return (scalar * static_cast<uint32_t>(channelVal)) / channel_limits<uint32_t>::max();
 }
 
-inline auto operator==(const Pixel& pixel1, const Pixel& pixel2) -> bool
+inline auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool
 {
   return pixel1.m_color.intVal == pixel2.m_color.intVal;
 }
 
-inline auto Pixel::R() const -> PixelChannelType
+inline auto Pixel::R() const noexcept -> PixelChannelType
 {
   return m_color.channels.r;
 }
 
-inline void Pixel::SetR(const PixelChannelType val)
+inline auto Pixel::SetR(const PixelChannelType val) noexcept -> void
 {
   m_color.channels.r = val;
 }
 
-inline auto Pixel::G() const -> PixelChannelType
+inline auto Pixel::G() const noexcept -> PixelChannelType
 {
   return m_color.channels.g;
 }
 
-inline void Pixel::SetG(const PixelChannelType val)
+inline auto Pixel::SetG(const PixelChannelType val) noexcept -> void
 {
   m_color.channels.g = val;
 }
 
-inline auto Pixel::B() const -> PixelChannelType
+inline auto Pixel::B() const noexcept -> PixelChannelType
 {
   return m_color.channels.b;
 }
 
-inline void Pixel::SetB(const PixelChannelType val)
+inline auto Pixel::SetB(const PixelChannelType val) noexcept -> void
 {
   m_color.channels.b = val;
 }
 
-inline auto Pixel::A() const -> PixelChannelType
+inline auto Pixel::A() const noexcept -> PixelChannelType
 {
   return m_color.channels.a;
 }
 
-inline void Pixel::SetA(const PixelChannelType val)
+inline auto Pixel::SetA(const PixelChannelType val) noexcept -> void
 {
   m_color.channels.a = val;
 }
 
-inline auto Pixel::RFlt() const -> float
+inline auto Pixel::RFlt() const noexcept -> float
 {
   return static_cast<float>(R()) / channel_limits<float>::max();
 }
 
-inline auto Pixel::GFlt() const -> float
+inline auto Pixel::GFlt() const noexcept -> float
 {
   return static_cast<float>(G()) / channel_limits<float>::max();
 }
 
-inline auto Pixel::BFlt() const -> float
+inline auto Pixel::BFlt() const noexcept -> float
 {
   return static_cast<float>(B()) / channel_limits<float>::max();
 }
 
-inline auto Pixel::Rgba() const -> PixelIntType
+inline auto Pixel::Rgba() const noexcept -> PixelIntType
 {
   return m_color.intVal;
 }
 
-inline auto Pixel::IsBlack() const -> bool
+inline auto Pixel::IsBlack() const noexcept -> bool
 {
   return 0 == m_color.intVal;
 }
 
-inline auto Pixel::ToString() const -> std::string
+inline auto Pixel::ToString() const noexcept -> std::string
 {
   return std20::format("({}, {}, {}, {})", R(), G(), B(), A());
 }
@@ -347,7 +350,7 @@ inline PixelBuffer::PixelBuffer(const uint32_t width, const uint32_t height) noe
 {
 }
 
-inline void PixelBuffer::Resize(const size_t width, const size_t height)
+inline auto PixelBuffer::Resize(const size_t width, const size_t height) noexcept -> void
 {
   m_width = static_cast<uint32_t>(width);
   m_height = static_cast<uint32_t>(height);
@@ -356,37 +359,38 @@ inline void PixelBuffer::Resize(const size_t width, const size_t height)
   m_buff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
 }
 
-inline auto PixelBuffer::GetWidth() const -> uint32_t
+inline auto PixelBuffer::GetWidth() const noexcept -> uint32_t
 {
   return m_width;
 }
 
-inline auto PixelBuffer::GetHeight() const -> uint32_t
+inline auto PixelBuffer::GetHeight() const noexcept -> uint32_t
 {
   return m_height;
 }
 
-inline void PixelBuffer::Fill(const Pixel& pixel)
+inline auto PixelBuffer::Fill(const Pixel& pixel) noexcept -> void
 {
   std::fill(m_buff.begin(), m_buff.end(), pixel);
 }
 
-inline auto PixelBuffer::GetIntBufferSize(const uint32_t width, const uint32_t height) -> size_t
+inline auto PixelBuffer::GetIntBufferSize(const uint32_t width, const uint32_t height) noexcept
+    -> size_t
 {
   return static_cast<size_t>(width) * static_cast<size_t>(height) * sizeof(Pixel);
 }
 
-inline auto PixelBuffer::GetIntBuff() const -> const PixelIntType*
+inline auto PixelBuffer::GetIntBuff() const noexcept -> const PixelIntType*
 {
   return reinterpret_cast<const PixelIntType*>(m_buff.data());
 }
 
-inline void PixelBuffer::CopyTo(PixelBuffer& pixelBuffer) const
+inline auto PixelBuffer::CopyTo(PixelBuffer& pixelBuffer) const noexcept -> void
 {
   std::copy(cbegin(m_buff), cend(m_buff), begin(pixelBuffer.m_buff));
 }
 
-inline auto PixelBuffer::operator()(const size_t x, const size_t y) const -> const Pixel&
+inline auto PixelBuffer::operator()(const size_t x, const size_t y) const noexcept -> const Pixel&
 {
 #ifdef GOOM_DEBUG
   return m_buff.at((y * m_width) + x);
@@ -395,7 +399,7 @@ inline auto PixelBuffer::operator()(const size_t x, const size_t y) const -> con
 #endif
 }
 
-inline auto PixelBuffer::operator()(const size_t x, const size_t y) -> Pixel&
+inline auto PixelBuffer::operator()(const size_t x, const size_t y) noexcept -> Pixel&
 {
 #ifdef GOOM_DEBUG
   return m_buff.at((y * m_width) + x);
@@ -404,7 +408,7 @@ inline auto PixelBuffer::operator()(const size_t x, const size_t y) -> Pixel&
 #endif
 }
 
-inline auto PixelBuffer::GetRowIter(const size_t y)
+inline auto PixelBuffer::GetRowIter(const size_t y) noexcept
     -> std::tuple<PixelBuffer::iterator, PixelBuffer::iterator>
 {
   const auto rowPos = static_cast<int32_t>(y * m_width);
@@ -412,7 +416,7 @@ inline auto PixelBuffer::GetRowIter(const size_t y)
                          m_buff.begin() + rowPos + static_cast<int32_t>(m_width));
 }
 
-inline auto PixelBuffer::GetRowIter(const size_t y) const
+inline auto PixelBuffer::GetRowIter(const size_t y) const noexcept
     -> std::tuple<PixelBuffer::const_iterator, PixelBuffer::const_iterator>
 {
   const auto rowPos = static_cast<int32_t>(y * m_width);
@@ -420,21 +424,11 @@ inline auto PixelBuffer::GetRowIter(const size_t y) const
                          m_buff.begin() + rowPos + static_cast<int32_t>(m_width));
 }
 
-inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
+inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const noexcept
     -> std::array<Pixel, NUM_NBRS>
 {
-#ifdef GOOM_DEBUG
-  if (x >= m_xMax)
-  {
-    throw RangeError{
-        std20::format("Get4RHBNeighbours range error: x = {}, m_xMax = {}", x, m_xMax)};
-  }
-  if (y >= m_yMax)
-  {
-    throw RangeError{
-        std20::format("Get4RHBNeighbours range error: x = {}, m_xMax = {}", y, m_yMax)};
-  }
-#endif
+  assert(x < m_xMax);
+  assert(y < m_yMax);
 
   const size_t xPos = (y * m_width) + x;
 

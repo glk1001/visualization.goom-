@@ -17,18 +17,18 @@ class FilterColorsService
 public:
   FilterColorsService() noexcept = default;
 
-  void SetBrightness(float brightness);
-  void SetBuffSettings(const FXBuffSettings& settings);
-  void SetBlockyWavy(bool val);
+  void SetBrightness(float brightness) noexcept;
+  void SetBuffSettings(const FXBuffSettings& settings) noexcept;
+  void SetBlockyWavy(bool val) noexcept;
 
   using NeighborhoodCoeffArray = ZoomFilterBuffers::NeighborhoodCoeffArray;
   using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
 
-  [[nodiscard]] auto GetNewColor(const PixelBuffer& srceBuff,
-                                 const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const
-      -> Pixel;
+  [[nodiscard]] auto GetNewColor(
+      const PixelBuffer& srceBuff,
+      const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const noexcept -> Pixel;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> UTILS::NameValuePairs;
 
 private:
@@ -39,14 +39,15 @@ private:
   uint32_t m_coeffsAndBrightnessDivisor = MAX_SUM_COEFFS;
 
   [[nodiscard]] auto GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
-                                      const NeighborhoodPixelArray& pixels) const -> Pixel;
+                                      const NeighborhoodPixelArray& pixels) const noexcept -> Pixel;
   [[nodiscard]] auto GetMixedColor(const NeighborhoodCoeffArray& coeffs,
-                                   const NeighborhoodPixelArray& colors) const -> Pixel;
+                                   const NeighborhoodPixelArray& colors) const noexcept -> Pixel;
   [[nodiscard]] auto GetBlockyMixedColor(const NeighborhoodCoeffArray& coeffs,
-                                         const NeighborhoodPixelArray& colors) const -> Pixel;
+                                         const NeighborhoodPixelArray& colors) const noexcept
+      -> Pixel;
 };
 
-inline void FilterColorsService::SetBrightness(const float brightness)
+inline void FilterColorsService::SetBrightness(const float brightness) noexcept
 {
   // In method 'GetMixedColor' we multiply an array of coefficients by an array of colors
   // and get a sum as the result. The sum is then divided by 'MAX_SUM_COEFFS'. For optimizing
@@ -61,19 +62,19 @@ inline void FilterColorsService::SetBrightness(const float brightness)
   m_coeffsAndBrightnessDivisor = (X * N) / m;
 }
 
-inline void FilterColorsService::SetBlockyWavy(const bool val)
+inline void FilterColorsService::SetBlockyWavy(const bool val) noexcept
 {
   m_blockyWavy = val;
 }
 
-inline void FilterColorsService::SetBuffSettings(const FXBuffSettings& settings)
+inline void FilterColorsService::SetBuffSettings(const FXBuffSettings& settings) noexcept
 {
   m_buffSettings = settings;
 }
 
 inline auto FilterColorsService::GetNewColor(
-    const PixelBuffer& srceBuff, const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const
-    -> Pixel
+    const PixelBuffer& srceBuff,
+    const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const noexcept -> Pixel
 {
   const NeighborhoodPixelArray pixelNeighbours = srceBuff.Get4RHBNeighbours(
       static_cast<size_t>(sourceInfo.screenPoint.x), static_cast<size_t>(sourceInfo.screenPoint.y));
@@ -81,8 +82,8 @@ inline auto FilterColorsService::GetNewColor(
   return GetFilteredColor(sourceInfo.coeffs, pixelNeighbours);
 }
 
-inline auto FilterColorsService::GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
-                                                  const NeighborhoodPixelArray& pixels) const
+inline auto FilterColorsService::GetFilteredColor(
+    const NeighborhoodCoeffArray& coeffs, const NeighborhoodPixelArray& pixels) const noexcept
     -> Pixel
 {
   if (m_blockyWavy)
@@ -93,8 +94,8 @@ inline auto FilterColorsService::GetFilteredColor(const NeighborhoodCoeffArray& 
   return GetMixedColor(coeffs, pixels);
 }
 
-inline auto FilterColorsService::GetBlockyMixedColor(const NeighborhoodCoeffArray& coeffs,
-                                                     const NeighborhoodPixelArray& colors) const
+inline auto FilterColorsService::GetBlockyMixedColor(
+    const NeighborhoodCoeffArray& coeffs, const NeighborhoodPixelArray& colors) const noexcept
     -> Pixel
 {
   // Changing the color order gives a strange blocky, wavy look.
@@ -107,7 +108,8 @@ inline auto FilterColorsService::GetBlockyMixedColor(const NeighborhoodCoeffArra
 }
 
 inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coeffs,
-                                               const NeighborhoodPixelArray& colors) const -> Pixel
+                                               const NeighborhoodPixelArray& colors) const noexcept
+    -> Pixel
 {
   if (coeffs.isZero)
   {

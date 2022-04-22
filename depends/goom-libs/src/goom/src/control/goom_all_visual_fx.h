@@ -25,7 +25,10 @@ class PixelBuffer;
 
 namespace UTILS
 {
+namespace MATH
+{
 class IGoomRand;
+}
 class Parallel;
 }
 namespace UTILS::GRAPHICS
@@ -141,7 +144,7 @@ private:
   UTILS::AdaptiveExposure m_adaptiveExposure{};
   bool m_doExposureControl = false;
   void UpdateZoomFilterLuminance();
-  [[nodiscard]] auto GetCurrentBufferAverageLuminance() -> float;
+  [[nodiscard]] auto GetCurrentBufferAverageLuminance() noexcept -> float;
 
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
   static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
@@ -204,7 +207,7 @@ inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
   }
 }
 
-inline auto GoomAllVisualFx::GetCurrentBufferAverageLuminance() -> float
+inline auto GoomAllVisualFx::GetCurrentBufferAverageLuminance() noexcept -> float
 {
   m_zoomFilterFx->GetLastFilterBufferColorInfo().CalculateLuminances();
 

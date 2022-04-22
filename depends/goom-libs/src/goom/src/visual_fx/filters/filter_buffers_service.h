@@ -29,21 +29,22 @@ public:
                        const NormalizedCoordsConverter& normalizedCoordsConverter,
                        std::unique_ptr<IZoomVector> zoomVector) noexcept;
 
-  void Start();
+  void Start() noexcept;
 
-  [[nodiscard]] auto GetCurrentFilterEffectsSettings() const -> const ZoomFilterEffectsSettings&;
-  void SetFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings);
-  void SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings);
+  [[nodiscard]] auto GetCurrentFilterEffectsSettings() const noexcept
+      -> const ZoomFilterEffectsSettings&;
+  void SetFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept;
+  void SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings) noexcept;
 
-  [[nodiscard]] auto GetTranLerpFactor() const -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
 
-  void UpdateTranBuffers();
-  void UpdateTranLerpFactor(int32_t tranLerpIncrement, float tranLerpToMaxSwitchMult);
+  void UpdateTranBuffers() noexcept;
+  void UpdateTranLerpFactor(int32_t tranLerpIncrement, float tranLerpToMaxSwitchMult) noexcept;
 
   using SourcePointInfo = ZoomFilterBuffers::SourcePointInfo;
-  [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const -> SourcePointInfo;
+  [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept -> SourcePointInfo;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> UTILS::NameValuePairs;
 
 private:
@@ -54,24 +55,25 @@ private:
   ZoomFilterEffectsSettings m_nextFilterEffectsSettings{};
   bool m_pendingFilterEffectsSettings = false;
 
-  void UpdateFilterEffectsSettings();
-  void UpdateZoomVectorFilterEffectsSettings();
-  [[nodiscard]] auto AreStartingFreshTranBuffers() const -> bool;
-  void StartFreshTranBuffers();
+  void UpdateFilterEffectsSettings() noexcept;
+  void UpdateZoomVectorFilterEffectsSettings() noexcept;
+  [[nodiscard]] auto AreStartingFreshTranBuffers() const noexcept -> bool;
+  void StartFreshTranBuffers() noexcept;
 };
 
-inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const
+inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexcept
     -> const ZoomFilterEffectsSettings&
 {
   return m_currentFilterEffectsSettings;
 }
 
-inline auto FilterBuffersService::GetSourcePointInfo(const size_t buffPos) const -> SourcePointInfo
+inline auto FilterBuffersService::GetSourcePointInfo(const size_t buffPos) const noexcept
+    -> SourcePointInfo
 {
   return m_filterBuffers.GetSourcePointInfo(buffPos);
 }
 
-inline auto FilterBuffersService::GetTranLerpFactor() const -> int32_t
+inline auto FilterBuffersService::GetTranLerpFactor() const noexcept -> int32_t
 {
   return m_filterBuffers.GetTranLerpFactor();
 }

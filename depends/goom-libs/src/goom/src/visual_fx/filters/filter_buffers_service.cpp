@@ -41,25 +41,26 @@ FilterBuffersService::FilterBuffersService(
 }
 
 void FilterBuffersService::SetFilterBufferSettings(
-    const ZoomFilterBufferSettings& filterBufferSettings)
+    const ZoomFilterBufferSettings& filterBufferSettings) noexcept
 {
   UpdateTranLerpFactor(filterBufferSettings.tranLerpIncrement,
                        filterBufferSettings.tranLerpToMaxSwitchMult);
 }
 
 void FilterBuffersService::SetFilterEffectsSettings(
-    const ZoomFilterEffectsSettings& filterEffectsSettings)
+    const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept
 {
   m_nextFilterEffectsSettings = filterEffectsSettings;
   m_pendingFilterEffectsSettings = true;
 }
 
-auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
+auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) const noexcept
+    -> NameValuePairs
 {
   return m_zoomVector->GetNameValueParams(paramGroup);
 }
 
-void FilterBuffersService::Start()
+void FilterBuffersService::Start() noexcept
 {
   m_currentFilterEffectsSettings = m_nextFilterEffectsSettings;
   assert(m_currentFilterEffectsSettings.speedCoefficientsEffect != nullptr);
@@ -69,7 +70,7 @@ void FilterBuffersService::Start()
   m_filterBuffers.Start();
 }
 
-inline void FilterBuffersService::UpdateFilterEffectsSettings()
+inline void FilterBuffersService::UpdateFilterEffectsSettings() noexcept
 {
   UpdateZoomVectorFilterEffectsSettings();
 
@@ -77,14 +78,14 @@ inline void FilterBuffersService::UpdateFilterEffectsSettings()
   m_filterBuffers.NotifyFilterSettingsHaveChanged();
 }
 
-inline void FilterBuffersService::UpdateZoomVectorFilterEffectsSettings()
+inline void FilterBuffersService::UpdateZoomVectorFilterEffectsSettings() noexcept
 {
   m_zoomVector->SetFilterSettings(m_currentFilterEffectsSettings);
 
   m_currentFilterEffectsSettings.rotationAdjustments.Reset();
 }
 
-void FilterBuffersService::UpdateTranBuffers()
+void FilterBuffersService::UpdateTranBuffers() noexcept
 {
   m_filterBuffers.UpdateTranBuffers();
 
@@ -94,13 +95,13 @@ void FilterBuffersService::UpdateTranBuffers()
   }
 }
 
-inline auto FilterBuffersService::AreStartingFreshTranBuffers() const -> bool
+inline auto FilterBuffersService::AreStartingFreshTranBuffers() const noexcept -> bool
 {
   return m_filterBuffers.GetTranBuffersState() ==
          ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
-void FilterBuffersService::StartFreshTranBuffers()
+void FilterBuffersService::StartFreshTranBuffers() noexcept
 {
   // Don't start making new stripes until filter settings change.
   if (!m_pendingFilterEffectsSettings)
@@ -116,7 +117,7 @@ void FilterBuffersService::StartFreshTranBuffers()
 }
 
 inline void FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpIncrement,
-                                                       const float tranLerpToMaxSwitchMult)
+                                                       const float tranLerpToMaxSwitchMult) noexcept
 {
   int32_t tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
 
