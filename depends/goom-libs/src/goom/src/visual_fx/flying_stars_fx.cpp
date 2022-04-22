@@ -99,10 +99,10 @@ private:
   std::shared_ptr<RandomColorMaps> m_colorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
   RandomColorMapsManager m_randomColorMapsManager{};
-  uint32_t m_dominantColorMapID{};
-  uint32_t m_dominantLowColorMapID{};
-  uint32_t m_colorMapID{};
-  uint32_t m_lowColorMapID{};
+  RandomColorMapsManager::ColorMapId m_dominantColorMapID{};
+  RandomColorMapsManager::ColorMapId m_dominantLowColorMapID{};
+  RandomColorMapsManager::ColorMapId m_colorMapID{};
+  RandomColorMapsManager::ColorMapId m_lowColorMapID{};
   bool m_megaColorMode = false;
   [[nodiscard]] auto GetNextColorMapName() const -> ColorMapName;
   [[nodiscard]] auto GetNextLowColorMapName() const -> ColorMapName;
@@ -389,8 +389,11 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
 {
   m_colorMaps = weightedMaps;
 
+  m_randomColorMapsManager.RemoveColorMapInfo(m_dominantColorMapID);
   m_dominantColorMapID = m_randomColorMapsManager.AddColorMapInfo(
       {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+
+  m_randomColorMapsManager.RemoveColorMapInfo(m_colorMapID);
   m_colorMapID = m_randomColorMapsManager.AddColorMapInfo(
       {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 

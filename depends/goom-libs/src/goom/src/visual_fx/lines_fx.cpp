@@ -111,7 +111,7 @@ private:
 
   std::shared_ptr<RandomColorMaps> m_colorMaps;
   RandomColorMapsManager m_randomColorMapsManager{};
-  uint32_t m_currentColorMapID{};
+  RandomColorMapsManager::ColorMapId m_currentColorMapID{};
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
@@ -347,6 +347,7 @@ void LinesFx::LinesImpl::Start()
 void LinesFx::LinesImpl::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
+  m_randomColorMapsManager.RemoveColorMapInfo(m_currentColorMapID);
   m_currentColorMapID = m_randomColorMapsManager.AddColorMapInfo(
       {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }

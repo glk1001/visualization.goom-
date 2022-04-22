@@ -85,7 +85,7 @@ private:
 
   std::array<std::shared_ptr<RandomColorMaps>, NUM_DOT_TYPES> m_colorMaps{};
   std::array<RandomColorMapsManager, NUM_DOT_TYPES> m_colorMapsManagers{};
-  std::array<uint32_t, NUM_DOT_TYPES> m_colorMapIds{};
+  std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> m_colorMapIds{};
   std::array<bool, NUM_DOT_TYPES> m_usePrimaryColors{};
   Pixel m_middleColor{};
   bool m_useSingleBufferOnly = true;
@@ -295,6 +295,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
     const uint32_t dotNum, const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps.at(dotNum) = weightedMaps;
+  m_colorMapsManagers.at(dotNum).RemoveColorMapInfo(m_colorMapIds.at(dotNum));
   m_colorMapIds.at(dotNum) = m_colorMapsManagers.at(dotNum).AddColorMapInfo(
       {m_colorMaps.at(dotNum),
        m_colorMaps.at(dotNum)->GetRandomColorMapName(m_colorMaps.at(dotNum)->GetRandomGroup()),

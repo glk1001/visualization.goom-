@@ -81,9 +81,9 @@ private:
   std::array<std::shared_ptr<RandomColorMaps>, NUM_SHAPES> m_lowColorMaps{};
   std::array<std::shared_ptr<RandomColorMaps>, NUM_SHAPES> m_innerColorMaps{};
   std::array<RandomColorMapsManager, NUM_SHAPES> m_colorMapsManagers{};
-  std::array<uint32_t, NUM_SHAPES> m_colorMapIds{};
-  std::array<uint32_t, NUM_SHAPES> m_lowColorMapIds{};
-  std::array<uint32_t, NUM_SHAPES> m_innerColorMapIds{};
+  std::array<RandomColorMapsManager::ColorMapId, NUM_SHAPES> m_colorMapIds{};
+  std::array<RandomColorMapsManager::ColorMapId, NUM_SHAPES> m_lowColorMapIds{};
+  std::array<RandomColorMapsManager::ColorMapId, NUM_SHAPES> m_innerColorMapIds{};
   std::array<float, NUM_SHAPES> m_innerColorMixes{};
   auto UpdateColorMaps() -> void;
   auto UpdateInnerColorMaps() -> void;
@@ -203,12 +203,15 @@ inline void ShapesFx::ShapesFxImpl::Start()
   {
     shapePath.positionT->Reset();
   }
+
+  UpdateInnerColorMaps();
 }
 
 inline void ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
     const uint32_t shapeNum, const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps.at(shapeNum) = weightedMaps;
+  m_colorMapsManagers.at(shapeNum).RemoveColorMapInfo(m_colorMapIds.at(shapeNum));
   m_colorMapIds.at(shapeNum) = m_colorMapsManagers.at(shapeNum).AddColorMapInfo(
       {m_colorMaps.at(shapeNum),
        m_colorMaps.at(shapeNum)->GetRandomColorMapName(m_colorMaps.at(shapeNum)->GetRandomGroup()),
@@ -219,6 +222,7 @@ inline void ShapesFx::ShapesFxImpl::SetWeightedLowColorMaps(
     const uint32_t shapeNum, const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_lowColorMaps.at(shapeNum) = weightedMaps;
+  m_colorMapsManagers.at(shapeNum).RemoveColorMapInfo(m_lowColorMapIds.at(shapeNum));
   m_lowColorMapIds.at(shapeNum) = m_colorMapsManagers.at(shapeNum).AddColorMapInfo(
       {m_lowColorMaps.at(shapeNum),
        m_lowColorMaps.at(shapeNum)->GetRandomColorMapName(
@@ -242,6 +246,7 @@ inline auto ShapesFx::ShapesFxImpl::UpdateInnerColorMaps() -> void
   {
     m_innerColorMixes.at(shapeNum) = m_goomRand.GetRandInRange(0.1F, 0.6F);
     m_innerColorMaps.at(shapeNum) = GetAllMapsUnweighted(m_goomRand);
+    m_colorMapsManagers.at(shapeNum).RemoveColorMapInfo(m_innerColorMapIds.at(shapeNum));
     m_innerColorMapIds.at(shapeNum) = m_colorMapsManagers.at(shapeNum).AddColorMapInfo(
         {m_innerColorMaps.at(shapeNum),
          m_innerColorMaps.at(shapeNum)->GetRandomColorMapName(

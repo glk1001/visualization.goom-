@@ -43,9 +43,9 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
-  uint32_t m_mixerMap1Id{};
+  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id{};
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap1{};
-  uint32_t m_mixerMap2Id{};
+  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id{};
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap2{};
   mutable uint32_t m_countSinceColorMapChange = 0;
   static constexpr uint32_t MIN_COLOR_MAP_CHANGE_COMPLETED = 500;
