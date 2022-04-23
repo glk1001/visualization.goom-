@@ -9,19 +9,25 @@ This is a [Kodi](http://kodi.tv) visualization addon.
 ## Build instructions
 
 When building the addon you have to use the correct branch depending on which version of Kodi you're building against.
-If you want to build the addon to be compatible with the latest kodi `master` commit, you need to checkout the branch with the current kodi codename.
+If you want to build the addon to be compatible with the latest kodi `'master'` commit, you need to checkout the branch with the current Kodi codename. For example, if you, the latest Kodi codename is `'Nexus'`, then your current addon branch must be `'Nexus'`.
 Also make sure you follow this README from the branch in question.
 
 ### Linux
 
-The following instructions assume you will have built Kodi already in the `kodi-build` directory 
-suggested by the README.
+The following instructions assume, as an example, the `'Nexus'` branch. You need to have already built Kodi in the `'kodi-build'` directory suggested by the README.
 
 1. `git clone --branch master https://github.com/xbmc/xbmc.git`
-2. `git clone --branch Nexus https://github.com/xbmc/visualization.goom.git`
-3. `cd visualization.goom && mkdir build && cd build`
-4. `cmake -DADDONS_TO_BUILD=visualization.goom -DADDON_SRC_PREFIX=../.. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../../xbmc/kodi-build/addons -DPACKAGE_ZIP=1 ../../xbmc/cmake/addons`
-5. `make`
+1. `git clone --branch Nexus https://github.com/xbmc/visualization.goom.git`
+1. `cd visualization.goom`
+1. `./goom-configure.sh -b <build_dir> -c <compiler: 'gcc' or 'clang'>`
+1. `./goom-build.sh -b <build_dir> -c <compiler: 'gcc' or 'clang'>`
+1. `./goom-docker-install-to.sh && ./goom-docker-build.sh`
+1. `./goom-docker-run.sh`
 
-The addon files will be placed in `../../xbmc/kodi-build/addons` so if you build Kodi from source and run it directly 
-the addon will be available as a system addon.
+The build addon files will be placed in `'../xbmc/kodi-build/addons/visualization.goom'`.
+So if you build Kodi from source and run it directly, the addon will be available as a system addon.
+
+Alternatively, the `goom-docker-...` scripts take the Kodi goom build files and install them in a Docker image.
+This allows you to run Kodi with the freshly built goom add-on using the `./goom-docker-run.sh` script.
+
+Currently, the Docker scripts are set up for the Kodi nightly builds.
