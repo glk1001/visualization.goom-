@@ -28,6 +28,8 @@ static constexpr float SINE_MAP_COLORS_WEIGHT       =  5.0F;
 
 Colorizer::Colorizer(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
+    m_mixerMap1Id{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
+    m_mixerMap2Id{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     // clang-format off
     m_colorModeWeights{
         m_goomRand,
@@ -57,14 +59,12 @@ void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& wei
           ? RandomColorMaps::NO_COLOR_MAP_TYPES
           : RandomColorMaps::ALL_COLOR_MAP_TYPES;
 
-  m_colorMapsManager.RemoveColorMapInfo(m_mixerMap1Id);
-  m_mixerMap1Id =
-      m_colorMapsManager.AddColorMapInfo({m_colorMaps, ColorMapName::_NULL, colorMapTypes});
+  m_colorMapsManager.UpdateColorMapInfo(m_mixerMap1Id,
+                                        {m_colorMaps, ColorMapName::_NULL, colorMapTypes});
   m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);
 
-  m_colorMapsManager.RemoveColorMapInfo(m_mixerMap2Id);
-  m_mixerMap2Id =
-      m_colorMapsManager.AddColorMapInfo({m_colorMaps, ColorMapName::_NULL, colorMapTypes});
+  m_colorMapsManager.UpdateColorMapInfo(m_mixerMap2Id,
+                                        {m_colorMaps, ColorMapName::_NULL, colorMapTypes});
   m_prevMixerMap2 = m_colorMapsManager.GetColorMapPtr(m_mixerMap2Id);
 }
 

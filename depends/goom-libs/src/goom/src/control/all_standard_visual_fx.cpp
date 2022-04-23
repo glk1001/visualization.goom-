@@ -318,12 +318,13 @@ inline auto AllStandardVisualFx::ChangeDotsColorMaps() -> void
 
 inline auto AllStandardVisualFx::ChangeShapesColorMaps() -> void
 {
-  for (uint32_t i = 0; i < ShapesFx::NUM_SHAPES; ++i)
+  for (uint32_t i = 0; i < ShapesFx::NUM_SHAPE_GROUPS; ++i)
   {
     const auto shapeEffect =
         static_cast<GoomEffect>(i + static_cast<uint32_t>(GoomEffect::SHAPES0));
     m_shapesFx->SetWeightedColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
     m_shapesFx->SetWeightedLowColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
+    m_shapesFx->SetWeightedInnerColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
   }
 }
 

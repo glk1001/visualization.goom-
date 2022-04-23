@@ -84,8 +84,10 @@ private:
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
   std::array<std::shared_ptr<RandomColorMaps>, NUM_DOT_TYPES> m_colorMaps{};
-  std::array<RandomColorMapsManager, NUM_DOT_TYPES> m_colorMapsManagers{};
-  std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> m_colorMapIds{};
+  RandomColorMapsManager m_colorMapsManager{};
+  std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> m_colorMapIds;
+  [[nodiscard]] auto GetDefaultColorMapIds() noexcept
+      -> std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES>;
   std::array<bool, NUM_DOT_TYPES> m_usePrimaryColors{};
   Pixel m_middleColor{};
   bool m_useSingleBufferOnly = true;
@@ -188,9 +190,23 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
         }
     },
     // clang-format on
+    m_colorMapIds{GetDefaultColorMapIds()},
     m_dotPositionTs{GetDotPositionTs()},
     m_dotPaths{GetDotPaths(m_screenMidpoint, m_dotPositionTs)}
 {
+}
+
+auto GoomDotsFx::GoomDotsFxImpl::GetDefaultColorMapIds() noexcept
+    -> std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES>
+{
+  std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> colorMapsIds{};
+
+  for (auto& colorMapsId : colorMapsIds)
+  {
+    colorMapsId = m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand);
+  }
+
+  return colorMapsIds;
 }
 
 auto GoomDotsFx::GoomDotsFxImpl::GetDotPositionTs() -> std::array<TValue, NUM_DOT_TYPES>
@@ -251,10 +267,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetImageBitmap(const size_t size) const
 
 inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
 {
-  for (auto& colorMapsManager : m_colorMapsManagers)
-  {
-    colorMapsManager.ChangeAllColorMapsNow();
-  }
+  m_colorMapsManager.ChangeAllColorMapsNow();
 
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
@@ -295,8 +308,8 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
     const uint32_t dotNum, const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps.at(dotNum) = weightedMaps;
-  m_colorMapsManagers.at(dotNum).RemoveColorMapInfo(m_colorMapIds.at(dotNum));
-  m_colorMapIds.at(dotNum) = m_colorMapsManagers.at(dotNum).AddColorMapInfo(
+  m_colorMapsManager.UpdateColorMapInfo(
+      m_colorMapIds.at(dotNum),
       {m_colorMaps.at(dotNum),
        m_colorMaps.at(dotNum)->GetRandomColorMapName(m_colorMaps.at(dotNum)->GetRandomGroup()),
        RandomColorMaps::ALL_COLOR_MAP_TYPES});
@@ -356,7 +369,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const f
     return GetDotPrimaryColor(dotNum);
   }
 
-  return m_colorMapsManagers.at(dotNum).GetColorMap(m_colorMapIds.at(dotNum)).GetColor(t);
+  return m_colorMapsManager.GetColorMap(m_colorMapIds.at(dotNum)).GetColor(t);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) -> Pixel

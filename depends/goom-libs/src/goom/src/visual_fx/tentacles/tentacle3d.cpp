@@ -29,6 +29,8 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
                        const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_tentacle{std::move(tentacle)},
+    m_colorMapID{m_randomColorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
+    m_lowColorMapID{m_randomColorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_headColor{headColor},
     m_headLowColor{headLowColor},
     m_head{head},
@@ -40,13 +42,11 @@ void Tentacle3D::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMa
 {
   m_colorMaps = weightedMaps;
 
-  m_randomColorMapsManager.RemoveColorMapInfo(m_colorMapID);
-  m_colorMapID = m_randomColorMapsManager.AddColorMapInfo(
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_randomColorMapsManager.UpdateColorMapInfo(
+      m_colorMapID, {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
-  m_randomColorMapsManager.RemoveColorMapInfo(m_lowColorMapID);
-  m_lowColorMapID = m_randomColorMapsManager.AddColorMapInfo(
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_randomColorMapsManager.UpdateColorMapInfo(
+      m_lowColorMapID, {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
   ColorMapsChanged();
 }

@@ -55,6 +55,9 @@ trap stop_kodi EXIT
 
 declare -r KODI_OUTPUT=/tmp/kodi-standalone.output
 
+# Enable core dumps so Kodi can dump stack traces.
+ulimit -S -c unlimited
+
 # Run irexec to echo any 'KEY_SLEEP" presses to a signal file.
 log "Starting irexec..."
 rm -f "${IREXEC_CAPTURES}"

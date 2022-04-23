@@ -3,6 +3,7 @@
 #include "colormaps.h"
 #include "goom_config.h"
 #include "random_colormaps.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <cassert>
 #include <cstdint>
@@ -16,8 +17,6 @@ namespace GOOM::COLOR
 class RandomColorMapsManager
 {
 public:
-  RandomColorMapsManager() = default;
-
   struct ColorMapInfo
   {
     std::shared_ptr<const RandomColorMaps> colorMaps{};
@@ -38,9 +37,13 @@ public:
     int32_t m_id = -1;
   };
 
-  [[nodiscard]] auto AddColorMapInfo(const ColorMapInfo& info) noexcept -> ColorMapId;
-  auto RemoveColorMapInfo(ColorMapId id) noexcept -> void;
+  RandomColorMapsManager() = default;
 
+  [[nodiscard]] auto AddDefaultColorMapInfo(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> ColorMapId;
+  [[nodiscard]] auto AddColorMapInfo(const ColorMapInfo& info) noexcept -> ColorMapId;
+
+  auto UpdateColorMapInfo(ColorMapId id, const ColorMapInfo& info) noexcept -> void;
   auto UpdateColorMapName(ColorMapId id, COLOR_DATA::ColorMapName colorMapName) noexcept -> void;
 
   auto ChangeAllColorMapsNow() noexcept -> void;
@@ -53,7 +56,7 @@ public:
 private:
   std::vector<ColorMapInfo> m_infoList{};
   std::vector<std::shared_ptr<const IColorMap>> m_colorMaps{};
-  auto ChangeColorMap(size_t id) noexcept -> void;
+  auto RandomizeColorMaps(size_t id) noexcept -> void;
 };
 
 inline RandomColorMapsManager::ColorMapId::ColorMapId(const int32_t id) noexcept : m_id{id}
@@ -70,6 +73,31 @@ inline auto RandomColorMapsManager::ColorMapId::operator()() const noexcept -> s
 inline auto RandomColorMapsManager::ColorMapId::IsSet() const noexcept -> bool
 {
   return m_id != -1;
+}
+
+inline auto RandomColorMapsManager::GetColorMap(const ColorMapId id) const noexcept
+    -> const IColorMap&
+{
+  return *m_colorMaps.at(id());
+}
+
+inline auto RandomColorMapsManager::GetColorMapPtr(const ColorMapId id) const noexcept
+    -> std::shared_ptr<const IColorMap>
+{
+  return std::const_pointer_cast<const IColorMap>(m_colorMaps.at(id()));
+}
+
+inline auto RandomColorMapsManager::ChangeAllColorMapsNow() noexcept -> void
+{
+  for (size_t id = 0; id < m_infoList.size(); ++id)
+  {
+    RandomizeColorMaps(id);
+  }
+}
+
+inline auto RandomColorMapsManager::ChangeColorMapNow(const ColorMapId id) noexcept -> void
+{
+  RandomizeColorMaps(id());
 }
 
 } // namespace GOOM::COLOR
