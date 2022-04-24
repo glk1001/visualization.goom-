@@ -4,15 +4,8 @@
 #include "utils/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
-#if __cplusplus <= 201402L
-namespace GOOM
+namespace GOOM::VISUAL_FX::FILTERS
 {
-namespace FILTERS
-{
-#else
-namespace GOOM::FILTERS
-{
-#endif
 
 class Noise
 {
