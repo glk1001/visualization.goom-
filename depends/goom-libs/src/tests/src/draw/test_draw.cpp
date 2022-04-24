@@ -87,8 +87,8 @@ auto FillDrawContainer(GoomDrawToContainer* draw, const size_t numChanged) -> st
   std::reverse(pixelsNewToOld.begin(), pixelsNewToOld.end());
 
   REQUIRE(pixelsNewToOld.size() == numChanged);
-  REQUIRE(pixelsNewToOld.front().x == numChanged);
-  REQUIRE(pixelsNewToOld.front().y == numChanged);
+  REQUIRE(pixelsNewToOld.front().x == static_cast<int32_t>(numChanged));
+  REQUIRE(pixelsNewToOld.front().y == static_cast<int32_t>(numChanged));
   REQUIRE(pixelsNewToOld.back().x == 1);
   REQUIRE(pixelsNewToOld.back().y == 1);
 

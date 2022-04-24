@@ -1,4 +1,6 @@
+#ifndef GOOM_DEBUG
 #define GOOM_DEBUG
+#endif
 
 #include "catch2/catch.hpp"
 #include "goom_plugin_info.h"

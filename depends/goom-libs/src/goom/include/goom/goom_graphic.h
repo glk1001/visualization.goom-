@@ -1,10 +1,5 @@
 #pragma once
 
-#ifndef GOOM_DEBUG
-#define GOOM_DEBUG
-#undef NDEBUG
-#endif
-
 #include "goom_config.h"
 
 #include <array>

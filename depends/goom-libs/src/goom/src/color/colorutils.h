@@ -163,6 +163,7 @@ inline auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
   constexpr float MAX_BRIGHTNESS = 50.0F;
+  UNUSED_FOR_NDEBUG(MAX_BRIGHTNESS);
   assert(brightness >= 0.0F && brightness <= MAX_BRIGHTNESS);
   const auto intBrightness = static_cast<uint32_t>(std::round((brightness * 256.0F) + 0.0001F));
   return GetBrighterColorInt(intBrightness, color);

@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef GOOM_DEBUG
+#undef NDEBUG
+#endif
+
+#define UNUSED_FOR_NDEBUG(x) ((void)(x))
+
 namespace GOOM
 {
 

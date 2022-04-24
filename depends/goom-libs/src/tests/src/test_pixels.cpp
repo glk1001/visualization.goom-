@@ -1,9 +1,10 @@
+#ifndef GOOM_DEBUG
 #define GOOM_DEBUG
+#endif
 
 #include "catch2/catch.hpp"
 #include "goom/goom_graphic.h"
 #include "utils/mathutils.h"
-#include "v2d.h"
 
 #include <chrono>
 #include <cstdint>
