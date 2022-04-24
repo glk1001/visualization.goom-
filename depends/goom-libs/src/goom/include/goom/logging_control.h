@@ -11,7 +11,9 @@ namespace GOOM::UTILS
 #endif
 
 #ifndef FORCE_LOGGING
+#ifndef NO_LOGGING
 #define NO_LOGGING
+#endif
 #endif
 
 #if __cplusplus <= 201402L

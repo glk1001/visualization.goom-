@@ -20,6 +20,14 @@
 namespace GOOM
 {
 
+struct GoomShaderEffects
+{
+  float exposure = 0.0F;
+  float brightness = 0.0F;
+  float contrast = 0.0F;
+  float contrastMinChannelValue = 0.0F; // negative gives interesting effects
+};
+
 template<class T>
 struct channel_limits
 {
