@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.14 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.15 FATAL_ERROR )
 
 project( vivid
     VERSION 2.2.2
@@ -9,6 +9,10 @@ project( vivid
 
 #find_package( glm REQUIRED )
 #message(STATUS "glm included")
+if (NOT GLM_INCLUDE_DIR)
+    message(FATAL_ERROR "\"GLM_INCLUDE_DIR\" must be defined." )
+endif()
+
 
 add_library( ${PROJECT_NAME} STATIC
     src/adobe.cpp
@@ -44,9 +48,9 @@ target_compile_options( vivid
         ${CMAKE_COMMON_CXX_WARNINGS}
 )
 
-target_compile_features( vivid
-#    PUBLIC
-#        cxx_std_17  #  std::optional, nested namespaces
+target_compile_features( ${PROJECT_NAME}
+    PUBLIC
+        cxx_std_17  #  std::optional, nested namespaces
     PRIVATE
         cxx_auto_type
         cxx_defaulted_functions
@@ -63,8 +67,7 @@ target_include_directories( ${PROJECT_NAME}
         $<INSTALL_INTERFACE:include>
     PRIVATE
         SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/include
-        # Need this '..' hack here. Not nice!
-        SYSTEM ${GLM_INCLUDE_DIR}/..
+        SYSTEM ${GLM_INCLUDE_DIR}
 )
 
 enable_sanitizers(${PROJECT_NAME})
@@ -85,6 +88,7 @@ endif()
 get_target_property(vivid_compile_options  vivid COMPILE_OPTIONS)
 get_target_property(vivid_compile_features vivid COMPILE_FEATURES)
 
-message(STATUS "Vivid C++ standard = \"${CPP_STANDARD}\".")
-message(STATUS "Vivid C++ compile features = \"${vivid_compile_features}\".")
-message(STATUS "Vivid C++ compile options = \"${vivid_compile_options}\".")
+message(STATUS "Vivid: C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Vivid: C++ compile features = \"${vivid_compile_features}\".")
+message(STATUS "Vivid: C++ compile options = \"${vivid_compile_options}\".")
+message(STATUS "Vivid: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")

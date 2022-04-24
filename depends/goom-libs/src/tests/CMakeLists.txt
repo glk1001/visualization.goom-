@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.15)
 
 project(GoomTests LANGUAGES CXX)
 
@@ -30,6 +30,8 @@ target_link_libraries(goomtests
         vivid
         Catch2::Catch2
         ${CMAKE_THREAD_LIBS_INIT}
+        m
+        stdc++
 )
 
 target_include_directories(goomtests
@@ -41,7 +43,8 @@ target_include_directories(goomtests
 target_include_directories(goomtests
     SYSTEM PRIVATE 
         ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
-        ${THIRD_PARTY_INCLUDE_DIR}/magic_enum/include
+        ${fmt_SOURCE_DIR}/include
+        ${magic_enum_INCLUDE_DIR}
 )
 
 set_project_warnings(goomtests)
@@ -59,7 +62,7 @@ get_target_property(goomtests_compile_options  goomtests COMPILE_OPTIONS)
 get_target_property(goomtests_compile_features goomtests COMPILE_FEATURES)
 get_target_property(goomtests_link_options     goomtests LINK_OPTIONS)
 
-message(STATUS "Goom Tests C++ standard = \"${CPP_STANDARD}\".")
-message(STATUS "Goom Tests C++ compile features = \"${goomtests_compile_features}\".")
-message(STATUS "Goom Tests C++ compile options = \"${goomtests_compile_options}\".")
-message(STATUS "Goom Tests C++ link options = \"${goomtests_link_options}\".")
+message(STATUS "Goom Tests: C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Goom Tests: C++ compile features = \"${goomtests_compile_features}\".")
+message(STATUS "Goom Tests: C++ compile options = \"${goomtests_compile_options}\".")
+message(STATUS "Goom Tests: C++ link options = \"${goomtests_link_options}\".")

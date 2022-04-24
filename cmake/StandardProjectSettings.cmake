@@ -32,7 +32,6 @@ if(ENABLE_IPO)
     message(SEND_ERROR "IPO is not supported: ${output}")
   endif()
 endif()
-
 if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
   add_compile_options(-fcolor-diagnostics)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -40,3 +39,4 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 else()
   message(STATUS "No colored compiler diagnostic set for '${CMAKE_CXX_COMPILER_ID}' compiler.")
 endif()
+

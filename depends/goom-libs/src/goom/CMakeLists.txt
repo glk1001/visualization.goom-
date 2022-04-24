@@ -1,14 +1,22 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.15)
 
 project(Goom LANGUAGES CXX)
+
+if (NOT GLM_INCLUDE_DIR)
+    message(FATAL_ERROR "\"GLM_INCLUDE_DIR\" must be defined." )
+endif()
 
 if(WIN32)
     add_definitions(-D_WIN32PC)
 endif()
-if ($ENV{DO_GOOM_LOGGING})
-    ADD_DEFINITIONS(-DDO_GOOM_LOGGING)
-    MESSAGE("Added 'DO_GOOM_LOGGING' #define.")
+
+if(DEFINED GOOM_LOGGING)
+    MESSAGE(STATUS "Goom: Logging by default is on.")
+else()
+    add_definitions(-DNO_LOGGING)
+    MESSAGE(STATUS "Goom: Logging turned off.")
 endif()
+
 
 add_library(goom
     STATIC
@@ -102,8 +110,10 @@ target_include_directories(goom
     SYSTEM PRIVATE
         ${GOOM_ROOT_DIR}/vivid/include
         ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
-        ${THIRD_PARTY_INCLUDE_DIR}/magic_enum/include
+        ${fmt_SOURCE_DIR}/include
+        ${magic_enum_INCLUDE_DIR}
         ${FREETYPE_INCLUDE_DIRS}
+        ${GLM_INCLUDE_DIR}
 )
 
 set_project_warnings(goom)
@@ -118,6 +128,12 @@ set_target_properties(goom
 get_target_property(goom_compile_options  goom COMPILE_OPTIONS)
 get_target_property(goom_compile_features goom COMPILE_FEATURES)
 
-message(STATUS "Goom C++ standard = \"${CPP_STANDARD}\".")
-message(STATUS "Goom C++ compile features = \"${goom_compile_features}\".")
-message(STATUS "Goom C++ compile options = \"${goom_compile_options}\".")
+message(STATUS "Goom: C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Goom: C++ compile features = \"${goom_compile_features}\".")
+message(STATUS "Goom: C++ compile options = \"${goom_compile_options}\".")
+message(STATUS "Goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
+message(STATUS "Goom: THIRD_PARTY_INCLUDE_DIR = \"${THIRD_PARTY_INCLUDE_DIR}\".")
+message(STATUS "Goom: FREETYPE_INCLUDE_DIRS = \"${FREETYPE_INCLUDE_DIRS}\".")
+message(STATUS "Goom: magic_enum_INCLUDE_DIR = \"${magic_enum_INCLUDE_DIR}\".")
+message(STATUS "Goom: fmt_SOURCE_DIR = \"${fmt_SOURCE_DIR}\".")
+message(STATUS "Goom: GOOM_ROOT_DIR = \"${GOOM_ROOT_DIR}\".")
