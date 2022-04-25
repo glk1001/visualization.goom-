@@ -140,6 +140,7 @@ inline auto FilterBufferColorInfo::GetRegionIndexOfPoint(const Point2dInt& point
   }
 
   assert(false);
+  return 0;
 }
 
 inline auto FilterBufferColorInfo::IsInXRegion(const int32_t x,
