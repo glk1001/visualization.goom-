@@ -1,7 +1,5 @@
 #pragma once
 
-#include "utils/math/misc.h"
-
 #include <cstdint>
 #include <vector>
 
@@ -36,13 +34,13 @@ public:
          const std::vector<DelayPoint>& delayPoints,
          float startingT = 0.0F) noexcept;
 
-  [[nodiscard]] auto GetStepType() const -> StepType;
-  [[nodiscard]] auto GetStepSize() const -> float;
-  [[nodiscard]] auto GetNumSteps() const -> uint32_t;
-  void SetStepSize(float val);
-  void SetNumSteps(uint32_t val);
+  [[nodiscard]] auto GetStepType() const noexcept -> StepType;
+  [[nodiscard]] auto GetStepSize() const noexcept -> float;
+  [[nodiscard]] auto GetNumSteps() const noexcept -> uint32_t;
+  auto SetStepSize(float val) noexcept -> void;
+  auto SetNumSteps(uint32_t val) noexcept -> void;
 
-  auto operator()() const -> float;
+  auto operator()() const noexcept -> float;
 
   enum class Boundaries
   {
@@ -50,16 +48,16 @@ public:
     INSIDE,
     END
   };
-  [[nodiscard]] auto HasJustHitStartBoundary() const -> bool;
-  [[nodiscard]] auto HasJustHitEndBoundary() const -> bool;
+  [[nodiscard]] auto HasJustHitStartBoundary() const noexcept -> bool;
+  [[nodiscard]] auto HasJustHitEndBoundary() const noexcept -> bool;
 
-  [[nodiscard]] auto DelayJustFinishing() const -> bool;
-  [[nodiscard]] auto IsDelayed() const -> bool;
+  [[nodiscard]] auto DelayJustFinishing() const noexcept -> bool;
+  [[nodiscard]] auto IsDelayed() const noexcept -> bool;
 
-  [[nodiscard]] auto GetCurrentStep() const -> float;
-  void Increment();
-  [[nodiscard]] auto IsStopped() const -> bool;
-  void Reset(float t = 0.0);
+  [[nodiscard]] auto GetCurrentStep() const noexcept -> float;
+  auto Increment() noexcept -> void;
+  [[nodiscard]] auto IsStopped() const noexcept -> bool;
+  auto Reset(float t = 0.0) noexcept -> void;
 
 private:
   const StepType m_stepType;
@@ -72,58 +70,58 @@ private:
   bool m_startedDelay = false;
   bool m_justFinishedDelay = false;
   uint32_t m_delayPointCount = 0;
-  [[nodiscard]] auto IsInDelayZone() -> bool;
-  [[nodiscard]] auto IsInThisDelayZone(const DelayPoint& delayPoint) const -> bool;
-  [[nodiscard]] auto WeAreStartingDelayPoint() -> bool;
-  void ValidateDelayPoints();
-  void SingleCycleIncrement();
-  void ContinuousRepeatableIncrement();
-  void ContinuousReversibleIncrement();
-  void CheckContinuousReversibleBoundary();
-  void HandleBoundary(float continueValue, float stepSign);
+  [[nodiscard]] auto IsInDelayZone() noexcept -> bool;
+  [[nodiscard]] auto IsInThisDelayZone(const DelayPoint& delayPoint) const noexcept -> bool;
+  [[nodiscard]] auto WeAreStartingDelayPoint() noexcept -> bool;
+  auto ValidateDelayPoints() noexcept -> void;
+  auto SingleCycleIncrement() noexcept -> void;
+  auto ContinuousRepeatableIncrement() noexcept -> void;
+  auto ContinuousReversibleIncrement() noexcept -> void;
+  auto CheckContinuousReversibleBoundary() noexcept -> void;
+  auto HandleBoundary(float continueValue, float stepSign) noexcept -> void;
 };
 
-inline auto TValue::GetStepType() const -> StepType
+inline auto TValue::GetStepType() const noexcept -> StepType
 {
   return m_stepType;
 }
 
-inline auto TValue::GetStepSize() const -> float
+inline auto TValue::GetStepSize() const noexcept -> float
 {
   return m_stepSize;
 }
 
-inline auto TValue::operator()() const -> float
+inline auto TValue::operator()() const noexcept -> float
 {
   return m_t;
 }
 
-inline auto TValue::HasJustHitStartBoundary() const -> bool
+inline auto TValue::HasJustHitStartBoundary() const noexcept -> bool
 {
   return m_currentPosition == Boundaries::START;
 }
 
-inline auto TValue::HasJustHitEndBoundary() const -> bool
+inline auto TValue::HasJustHitEndBoundary() const noexcept -> bool
 {
   return m_currentPosition == Boundaries::END;
 }
 
-inline auto TValue::DelayJustFinishing() const -> bool
+inline auto TValue::DelayJustFinishing() const noexcept -> bool
 {
   return 1 == m_delayPointCount;
 }
 
-inline auto TValue::IsDelayed() const -> bool
+inline auto TValue::IsDelayed() const noexcept -> bool
 {
   return m_delayPointCount > 0;
 }
 
-inline auto TValue::GetCurrentStep() const -> float
+inline auto TValue::GetCurrentStep() const noexcept -> float
 {
   return m_currentStep;
 }
 
-inline auto TValue::IsStopped() const -> bool
+inline auto TValue::IsStopped() const noexcept -> bool
 {
   if (m_stepType != StepType::SINGLE_CYCLE)
   {
@@ -132,7 +130,7 @@ inline auto TValue::IsStopped() const -> bool
   return m_t >= MAX_T_VALUE;
 }
 
-inline void TValue::Reset(const float t)
+inline auto TValue::Reset(const float t) noexcept -> void
 {
   m_t = t;
   m_currentStep = m_stepSize;
@@ -140,7 +138,7 @@ inline void TValue::Reset(const float t)
   m_justFinishedDelay = false;
 }
 
-inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const -> bool
+inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const noexcept -> bool
 {
   return (((delayPoint.t0 - m_stepSize) + T_EPSILON) < m_t) &&
          (m_t < ((delayPoint.t0 + m_stepSize) - T_EPSILON));

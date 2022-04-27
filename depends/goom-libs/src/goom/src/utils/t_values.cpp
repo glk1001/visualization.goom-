@@ -65,7 +65,7 @@ TValue::TValue(const TValue::StepType stepType,
   ValidateDelayPoints();
 }
 
-void TValue::ValidateDelayPoints()
+auto TValue::ValidateDelayPoints() noexcept -> void
 {
   float prevT0 = -1.0F;
   for (const auto& delayPoint : m_delayPoints)
@@ -78,7 +78,7 @@ void TValue::ValidateDelayPoints()
   }
 }
 
-void TValue::Increment()
+auto TValue::Increment() noexcept -> void
 {
   switch (m_stepType)
   {
@@ -94,7 +94,7 @@ void TValue::Increment()
   }
 }
 
-inline void TValue::SingleCycleIncrement()
+inline auto TValue::SingleCycleIncrement() noexcept -> void
 {
   if (m_t > (1.0F + T_EPSILON))
   {
@@ -103,7 +103,7 @@ inline void TValue::SingleCycleIncrement()
   m_t += m_currentStep;
 }
 
-inline void TValue::ContinuousRepeatableIncrement()
+inline auto TValue::ContinuousRepeatableIncrement() noexcept -> void
 {
   if (IsInDelayZone())
   {
@@ -123,7 +123,7 @@ inline void TValue::ContinuousRepeatableIncrement()
   }
 }
 
-inline void TValue::ContinuousReversibleIncrement()
+inline auto TValue::ContinuousReversibleIncrement() noexcept -> void
 {
   if (IsInDelayZone())
   {
@@ -140,7 +140,7 @@ inline void TValue::ContinuousReversibleIncrement()
   CheckContinuousReversibleBoundary();
 }
 
-inline void TValue::CheckContinuousReversibleBoundary()
+inline auto TValue::CheckContinuousReversibleBoundary() noexcept -> void
 {
   if (m_t > (1.0F + T_EPSILON))
   {
@@ -160,7 +160,7 @@ inline void TValue::CheckContinuousReversibleBoundary()
   }
 }
 
-inline auto TValue::IsInDelayZone() -> bool
+inline auto TValue::IsInDelayZone() noexcept -> bool
 {
   if (m_justFinishedDelay)
   {
@@ -187,7 +187,7 @@ inline auto TValue::IsInDelayZone() -> bool
   return false;
 }
 
-inline auto TValue::WeAreStartingDelayPoint() -> bool
+inline auto TValue::WeAreStartingDelayPoint() noexcept -> bool
 {
   for (const auto& delayZone : m_currentDelayPoints)
   {
@@ -201,7 +201,7 @@ inline auto TValue::WeAreStartingDelayPoint() -> bool
   return false;
 }
 
-void TValue::SetStepSize(const float val)
+auto TValue::SetStepSize(const float val) noexcept -> void
 {
   assert(val >= 0.0F);
 
@@ -217,12 +217,12 @@ void TValue::SetStepSize(const float val)
   }
 }
 
-auto TValue::GetNumSteps() const -> uint32_t
+auto TValue::GetNumSteps() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(1.0F / m_stepSize);
 }
 
-void TValue::SetNumSteps(const uint32_t val)
+auto TValue::SetNumSteps(const uint32_t val) noexcept -> void
 {
   assert(val != 0U);
 
@@ -230,7 +230,7 @@ void TValue::SetNumSteps(const uint32_t val)
 }
 
 
-inline void TValue::HandleBoundary(const float continueValue, const float stepSign)
+inline auto TValue::HandleBoundary(const float continueValue, const float stepSign) noexcept -> void
 {
   m_t = continueValue;
 

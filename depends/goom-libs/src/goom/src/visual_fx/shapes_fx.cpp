@@ -16,6 +16,7 @@
 #include "utils/math/paths.h"
 #include "utils/math/transform2d.h"
 #include "utils/t_values.h"
+#include "utils/timer.h"
 
 #include <cassert>
 #include <memory>
@@ -32,6 +33,7 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using UTILS::Logging;
+using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::MATH::AngleParams;
 using UTILS::MATH::Hypotrochoid;
@@ -74,14 +76,19 @@ public:
   ShapeGroup(const IGoomRand& goomRand,
              RandomColorMapsManager& colorMapsManager,
              Point2dInt screenMidpoint,
-             TValue& allShapesPositionT) noexcept;
+             float tMinMaxLerp) noexcept;
 
   auto SetWeightedMainColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
   auto SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
   auto SetWeightedInnerColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
 
-  auto ChangeAllColorMapsNow() noexcept -> void;
-  auto SetRandomizedShapePaths() noexcept -> void;
+  auto Start() noexcept -> void;
+
+  auto IncrementTs() noexcept -> void;
+
+  auto DoRandomChanges() noexcept -> void;
+  auto UseRandomShapesSpeed() noexcept -> void;
+  auto UseFixedShapesSpeed(float tMinMaxLerp) noexcept -> void;
 
   auto UpdateMainColorMapId(RandomColorMapsManager::ColorMapId mainColorMapId) noexcept -> void;
   auto UpdateLowColorMapId(RandomColorMapsManager::ColorMapId lowColorMapId) noexcept -> void;
@@ -91,12 +98,21 @@ public:
   [[nodiscard]] auto GetShapePath(size_t shapeNum) const noexcept -> const ShapePath&;
   [[nodiscard]] auto GetColorMap(RandomColorMapsManager::ColorMapId colorMapId) const noexcept
       -> const IColorMap&;
+
+  [[nodiscard]] auto GetCurrentColor(RandomColorMapsManager::ColorMapId colorMapId) const noexcept
+      -> Pixel;
   [[nodiscard]] auto GetInnerColorMix() const noexcept -> float;
 
 private:
   const IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
-  TValue& m_allShapesPositionT;
+  static constexpr float MIN_SHAPE_SPEED = 0.001F;
+  static constexpr float MAX_SHAPE_SPEED = 0.005F;
+  TValue m_allShapesPositionT;
+  bool m_useRandomShapesSpeed = true;
+  float m_tMinMaxLerp = 0.0F;
+  auto SetShapesSpeed() noexcept -> void;
+  [[nodiscard]] static auto GetShapesSpeed(float tMinMaxLerp) noexcept -> float;
 
   static constexpr float MIN_INNER_COLOR_MIX_T = 0.1F;
   static constexpr float MAX_INNER_COLOR_MIX_T = 0.9F;
@@ -112,7 +128,14 @@ private:
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
   [[nodiscard]] auto MakeNewColorMapId() noexcept -> RandomColorMapsManager::ColorMapId;
 
-  std::vector<ShapePath> m_shapePaths;
+  static constexpr float MIN_COLOR_MAP_SPEED = 10.0F * MIN_SHAPE_SPEED;
+  static constexpr float MAX_COLOR_MAP_SPEED = 10.0F * MAX_SHAPE_SPEED;
+  TValue m_allColorsT;
+  auto ChangeAllColorsT() noexcept -> void;
+
+  std::vector<ShapePath> m_shapePaths{};
+  auto ChangeAllColorMapsNow() noexcept -> void;
+  auto SetRandomizedShapePaths() noexcept -> void;
   [[nodiscard]] auto GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>;
   [[nodiscard]] auto GetShapePaths(std::shared_ptr<IPath> basePath,
                                    const Point2dInt& screenMidpoint) noexcept
@@ -122,13 +145,13 @@ private:
 ShapeGroup::ShapeGroup(const IGoomRand& goomRand,
                        RandomColorMapsManager& colorMapsManager,
                        const Point2dInt screenMidpoint,
-                       TValue& allShapesPositionT) noexcept
+                       const float tMinMaxLerp) noexcept
   : m_goomRand{goomRand},
     m_screenMidpoint{screenMidpoint},
-    m_allShapesPositionT{allShapesPositionT},
+    m_allShapesPositionT{TValue::StepType::CONTINUOUS_REVERSIBLE, GetShapesSpeed(tMinMaxLerp)},
     m_colorMapsManager{colorMapsManager},
     m_colorInfo{GetInitialColorInfo()},
-    m_shapePaths{GetRandomizedShapePaths()}
+    m_allColorsT{TValue::StepType::CONTINUOUS_REVERSIBLE, GetShapesSpeed(tMinMaxLerp)}
 {
 }
 
@@ -137,6 +160,74 @@ auto ShapeGroup::GetInitialColorInfo() const noexcept -> ColorInfo
   return {GetAllMapsUnweighted(m_goomRand), GetAllMapsUnweighted(m_goomRand),
           GetAllMapsUnweighted(m_goomRand),
           m_goomRand.GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T)};
+}
+
+inline auto ShapeGroup::Start() noexcept -> void
+{
+  SetRandomizedShapePaths();
+}
+
+inline auto ShapeGroup::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
+{
+  const Hypotrochoid::Params params = {
+      m_goomRand.GetRandInRange(5.0F, 12.0F),
+      m_goomRand.GetRandInRange(3.0F, 10.0F),
+      m_goomRand.GetRandInRange(5.0F, 10.F),
+      m_goomRand.GetRandInRange(35.0F, 45.0F),
+  };
+  const auto baseHypotrochoid =
+      std::make_shared<Hypotrochoid>(Point2dInt{0, 0}, m_allShapesPositionT, params);
+
+  return GetShapePaths(baseHypotrochoid, m_screenMidpoint);
+}
+
+auto ShapeGroup::GetShapePaths(const std::shared_ptr<IPath> basePath,
+                               const Point2dInt& screenMidpoint) noexcept -> std::vector<ShapePath>
+{
+  const Vec2dFlt screenMidpointFlt{screenMidpoint.ToFlt()};
+
+  std::vector<ShapePath> shapePaths{};
+  Transform2d transform{};
+
+  static constexpr float OFFSET = 20.0F;
+
+  static constexpr float ROTATE0 = 0.0F;
+  static constexpr float SCALE0 = 1.0F;
+  transform = Transform2d{
+      ROTATE0, SCALE0, screenMidpointFlt + Vec2dFlt{-OFFSET, 0.0F}
+  };
+  shapePaths.emplace_back(
+      std::make_shared<TransformedPath>(basePath, transform),
+      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
+
+  static constexpr float ROTATE1 = 45.0F;
+  static constexpr float SCALE1 = 1.2F;
+  transform = Transform2d{
+      ROTATE1, SCALE1, screenMidpointFlt + Vec2dFlt{+OFFSET, 0.0F}
+  };
+  shapePaths.emplace_back(
+      std::make_shared<TransformedPath>(basePath, transform),
+      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
+
+  static constexpr float ROTATE2 = 90.0F;
+  static constexpr float SCALE2 = 1.3F;
+  transform = Transform2d{
+      ROTATE2, SCALE2, screenMidpointFlt + Vec2dFlt{0.0F, -OFFSET}
+  };
+  shapePaths.emplace_back(
+      std::make_shared<TransformedPath>(basePath, transform),
+      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
+
+  static constexpr float ROTATE3 = 135.0F;
+  static constexpr float SCALE3 = 1.2F;
+  transform = Transform2d{
+      ROTATE3, SCALE3, screenMidpointFlt + Vec2dFlt{0.0F, +OFFSET}
+  };
+  shapePaths.emplace_back(
+      std::make_shared<TransformedPath>(basePath, transform),
+      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
+
+  return shapePaths;
 }
 
 inline auto ShapeGroup::GetNumShapes() const noexcept -> size_t
@@ -153,6 +244,12 @@ inline auto ShapeGroup::GetColorMap(
     const RandomColorMapsManager::ColorMapId colorMapId) const noexcept -> const IColorMap&
 {
   return m_colorMapsManager.GetColorMap(colorMapId);
+}
+
+inline auto ShapeGroup::GetCurrentColor(
+    const RandomColorMapsManager::ColorMapId colorMapId) const noexcept -> Pixel
+{
+  return GetColorMap(colorMapId).GetColor(m_allColorsT());
 }
 
 inline auto ShapeGroup::GetInnerColorMix() const noexcept -> float
@@ -193,76 +290,62 @@ inline auto ShapeGroup::UpdateInnerColorMapId(
        RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }
 
+inline auto ShapeGroup::IncrementTs() noexcept -> void
+{
+  m_allShapesPositionT.Increment();
+  m_allColorsT.Increment();
+}
+
+inline auto ShapeGroup::UseRandomShapesSpeed() noexcept -> void
+{
+  m_useRandomShapesSpeed = true;
+}
+
+inline auto ShapeGroup::UseFixedShapesSpeed(const float tMinMaxLerp) noexcept -> void
+{
+  m_tMinMaxLerp = tMinMaxLerp;
+  m_useRandomShapesSpeed = false;
+}
+
+inline void ShapeGroup::DoRandomChanges() noexcept
+{
+  if (not m_allShapesPositionT.HasJustHitStartBoundary())
+  {
+    return;
+  }
+
+  SetRandomizedShapePaths();
+  SetShapesSpeed();
+  ChangeAllColorMapsNow();
+  ChangeAllColorsT();
+}
+
 inline auto ShapeGroup::ChangeAllColorMapsNow() noexcept -> void
 {
   m_colorMapsManager.ChangeAllColorMapsNow();
 }
 
-auto ShapeGroup::SetRandomizedShapePaths() noexcept -> void
+inline auto ShapeGroup::ChangeAllColorsT() noexcept -> void
+{
+  const float t = m_goomRand.GetRandInRange(MIN_COLOR_MAP_SPEED, MAX_COLOR_MAP_SPEED);
+  m_allColorsT.SetStepSize(STD20::lerp(MIN_COLOR_MAP_SPEED, MAX_COLOR_MAP_SPEED, t));
+}
+
+inline auto ShapeGroup::SetRandomizedShapePaths() noexcept -> void
 {
   m_shapePaths = GetRandomizedShapePaths();
 }
 
-auto ShapeGroup::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
+inline auto ShapeGroup::SetShapesSpeed() noexcept -> void
 {
-  const Hypotrochoid::Params params = {
-      m_goomRand.GetRandInRange(5.0F, 12.0F),
-      m_goomRand.GetRandInRange(3.0F, 10.0F),
-      m_goomRand.GetRandInRange(5.0F, 10.F),
-      m_goomRand.GetRandInRange(35.0F, 45.0F),
-  };
-  const auto baseHypotrochoid =
-      std::make_shared<Hypotrochoid>(Point2dInt{0, 0}, m_allShapesPositionT, params);
-
-  return GetShapePaths(baseHypotrochoid, m_screenMidpoint);
+  const float tMinMaxLerp =
+      m_useRandomShapesSpeed ? m_goomRand.GetRandInRange(0.0F, 1.0F) : m_tMinMaxLerp;
+  m_allShapesPositionT.SetStepSize(GetShapesSpeed(tMinMaxLerp));
 }
 
-auto ShapeGroup::GetShapePaths(const std::shared_ptr<IPath> basePath,
-                               const Point2dInt& screenMidpoint) noexcept -> std::vector<ShapePath>
+inline auto ShapeGroup::GetShapesSpeed(const float tMinMaxLerp) noexcept -> float
 {
-  const Vec2dFlt screenMidpointFlt{screenMidpoint.ToFlt()};
-
-  std::vector<ShapePath> shapePaths{};
-  Transform2d transform{};
-
-  static constexpr float OFFSET = 20.0F;
-
-  static constexpr float ROTATE0 = 0.0F;
-  static constexpr float SCALE0 = 1.0F;
-  transform = Transform2d{
-      ROTATE0, SCALE0, screenMidpointFlt + Vec2dFlt{-OFFSET, 0.0F}
-  };
-  shapePaths.emplace_back(
-      std::make_shared<TransformedPath>(basePath, transform),
-      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
-  static constexpr float ROTATE1 = 45.0F;
-  static constexpr float SCALE1 = 1.1F;
-  transform = Transform2d{
-      ROTATE1, SCALE1, screenMidpointFlt + Vec2dFlt{+OFFSET, 0.0F}
-  };
-  shapePaths.emplace_back(
-      std::make_shared<TransformedPath>(basePath, transform),
-      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
-
-  static constexpr float ROTATE2 = 90.0F;
-  static constexpr float SCALE2 = 1.2F;
-  transform = Transform2d{
-      ROTATE2, SCALE2, screenMidpointFlt + Vec2dFlt{0.0F, -OFFSET}
-  };
-  shapePaths.emplace_back(
-      std::make_shared<TransformedPath>(basePath, transform),
-      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
-
-  static constexpr float ROTATE3 = 135.0F;
-  static constexpr float SCALE3 = 1.1F;
-  transform = Transform2d{
-      ROTATE3, SCALE3, screenMidpointFlt + Vec2dFlt{0.0F, +OFFSET}
-  };
-  shapePaths.emplace_back(
-      std::make_shared<TransformedPath>(basePath, transform),
-      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
-
-  return shapePaths;
+  return STD20::lerp(MIN_SHAPE_SPEED, MAX_SHAPE_SPEED, tMinMaxLerp);
 }
 
 inline auto ShapeGroup::MakeNewColorMapId() noexcept -> RandomColorMapsManager::ColorMapId
@@ -357,25 +440,18 @@ private:
   const IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
   RandomColorMapsManager m_colorMapsManager{};
+  static constexpr uint32_t TIME_BEFORE_SYNCHRONISED_CHANGE = 5000;
+  Timer m_synchronisedShapeChangesTimer{TIME_BEFORE_SYNCHRONISED_CHANGE};
 
-  static constexpr float MIN_SPEED = 0.0001F;
-  static constexpr float MAX_SPEED = 0.001F;
-  static constexpr float INITIAL_SPEED = 0.5F * (MIN_SPEED + MAX_SPEED);
-  static_assert((MIN_SPEED <= INITIAL_SPEED) && (INITIAL_SPEED <= MAX_SPEED));
-  TValue m_allShapesPositionT{TValue::StepType::CONTINUOUS_REVERSIBLE, INITIAL_SPEED};
-  auto SetShapesSpeed(float t) noexcept -> void;
-
-  static constexpr float MIN_COLOR_MAP_SPEED = 10.0F * MIN_SPEED;
-  static constexpr float MAX_COLOR_MAP_SPEED = 10.0F * MAX_SPEED;
-  static constexpr float INITIAL_COLOR_MAP_SPEED = 10.0F * INITIAL_SPEED;
-  TValue m_allColorsT{TValue::StepType::CONTINUOUS_REVERSIBLE, INITIAL_COLOR_MAP_SPEED};
+  [[nodiscard]] auto AllColorMapsValid() const noexcept -> bool;
 
   std::vector<ShapeGroup> m_shapeGroups;
   [[nodiscard]] auto GetInitialShapeGroups() noexcept -> std::vector<ShapeGroup>;
-  [[nodiscard]] auto AllColorMapsValid() const noexcept -> bool;
-  auto UpdateColorMaps() noexcept -> void;
-  void DoRandomChanges() noexcept;
-  void DoRandomChange(ShapeGroup& shapeGroup) noexcept;
+  auto DoChanges() noexcept -> void;
+  auto DoRandomChanges() noexcept -> void;
+  auto SetShapeSpeeds() noexcept -> void;
+  auto SetFixedShapeSpeeds() noexcept -> void;
+  auto SetRandomShapeSpeeds() noexcept -> void;
   auto DrawShapeGroups() noexcept -> void;
   auto DrawShapes(const ShapeGroup& shapeGroup) noexcept -> void;
   auto DrawShape(const ShapeGroup& shapeGroup, size_t shapeNum) noexcept -> void;
@@ -384,8 +460,8 @@ private:
     Pixel mainColor;
     Pixel lowColor;
   };
-  [[nodiscard]] auto GetCurrentShapeColors(
-      const ShapeGroup& shapeGroup, const ShapePath::ColorInfo& shapePathColorInfo) const noexcept
+  [[nodiscard]] static auto GetCurrentShapeColors(
+      const ShapeGroup& shapeGroup, const ShapePath::ColorInfo& shapePathColorInfo) noexcept
       -> ShapeColors;
   [[nodiscard]] static auto GetColors(float brightness,
                                       const ShapeColors& shapeColors,
@@ -399,23 +475,14 @@ ShapesFx::ShapesFx(const FxHelper& fxHelper) noexcept
 {
 }
 
-auto ShapesFx::Start() noexcept -> void
-{
-  m_fxImpl->Start();
-}
-
-auto ShapesFx::Finish() noexcept -> void
-{
-  // nothing to do
-}
-
 auto ShapesFx::GetFxName() const noexcept -> std::string
 {
   return "shapes";
 }
 
 auto ShapesFx::SetWeightedMainColorMaps(
-    size_t shapeGroupNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
+    const size_t shapeGroupNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
+    -> void
 {
   m_fxImpl->SetWeightedMainColorMaps(shapeGroupNum, weightedMaps);
 }
@@ -432,6 +499,16 @@ auto ShapesFx::SetWeightedInnerColorMaps(
     -> void
 {
   m_fxImpl->SetWeightedInnerColorMaps(shapeGroupNum, weightedMaps);
+}
+
+auto ShapesFx::Start() noexcept -> void
+{
+  m_fxImpl->Start();
+}
+
+auto ShapesFx::Finish() noexcept -> void
+{
+  // nothing to do
 }
 
 auto ShapesFx::ApplyMultiple() noexcept -> void
@@ -456,8 +533,8 @@ auto ShapesFx::ShapesFxImpl::GetInitialShapeGroups() noexcept -> std::vector<Sha
 
   for (size_t i = 0; i < NUM_SHAPE_GROUPS; ++i)
   {
-    shapeGroups.emplace_back(m_goomRand, m_colorMapsManager, m_screenMidpoint,
-                             m_allShapesPositionT);
+    static constexpr float T_MIN_MAX_LERP = 0.5F;
+    shapeGroups.emplace_back(m_goomRand, m_colorMapsManager, m_screenMidpoint, T_MIN_MAX_LERP);
   }
 
   return shapeGroups;
@@ -478,7 +555,8 @@ auto ShapesFx::ShapesFxImpl::AllColorMapsValid() const noexcept -> bool
 }
 
 inline auto ShapesFx::ShapesFxImpl::SetWeightedMainColorMaps(
-    size_t shapeGroupNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
+    const size_t shapeGroupNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
+    -> void
 {
   assert(AllColorMapsValid());
   m_shapeGroups.at(shapeGroupNum).SetWeightedMainColorMaps(weightedMaps);
@@ -505,8 +583,10 @@ inline auto ShapesFx::ShapesFxImpl::SetWeightedInnerColorMaps(
 
 inline auto ShapesFx::ShapesFxImpl::Start() noexcept -> void
 {
-  m_allShapesPositionT.Reset();
-  m_allColorsT.Reset();
+  for (auto& shapeGroup : m_shapeGroups)
+  {
+    shapeGroup.Start();
+  }
 
   assert(AllColorMapsValid());
 }
@@ -514,20 +594,18 @@ inline auto ShapesFx::ShapesFxImpl::Start() noexcept -> void
 inline auto ShapesFx::ShapesFxImpl::ApplyMultiple() noexcept -> void
 {
   DrawShapeGroups();
-  DoRandomChanges();
+  DoChanges();
 }
 
 inline auto ShapesFx::ShapesFxImpl::DrawShapeGroups() noexcept -> void
 {
   assert(AllColorMapsValid());
 
-  for (const auto& shapeGroup : m_shapeGroups)
+  for (auto& shapeGroup : m_shapeGroups)
   {
     DrawShapes(shapeGroup);
+    shapeGroup.IncrementTs();
   }
-
-  m_allShapesPositionT.Increment();
-  m_allColorsT.Increment();
 
   assert(AllColorMapsValid());
 }
@@ -540,44 +618,54 @@ inline auto ShapesFx::ShapesFxImpl::DrawShapes(const ShapeGroup& shapeGroup) noe
   }
 }
 
-inline void ShapesFx::ShapesFxImpl::DoRandomChanges() noexcept
+inline auto ShapesFx::ShapesFxImpl::DoChanges() noexcept -> void
 {
-  if (not m_allShapesPositionT.HasJustHitStartBoundary())
+  m_synchronisedShapeChangesTimer.Increment();
+  if (m_synchronisedShapeChangesTimer.Finished())
   {
-    return;
+    SetShapeSpeeds();
+    m_synchronisedShapeChangesTimer.ResetToZero();
   }
+
+  DoRandomChanges();
+}
+
+inline auto ShapesFx::ShapesFxImpl::DoRandomChanges() noexcept -> void
+{
+  for (auto& shapeGroup : m_shapeGroups)
+  {
+    shapeGroup.DoRandomChanges();
+  }
+}
+
+inline auto ShapesFx::ShapesFxImpl::SetShapeSpeeds() noexcept -> void
+{
+  if (constexpr float PROB_FIXED_SPEEDS = 0.3F; m_goomRand.ProbabilityOf(PROB_FIXED_SPEEDS))
+  {
+    SetFixedShapeSpeeds();
+  }
+  else
+  {
+    SetRandomShapeSpeeds();
+  }
+}
+
+inline auto ShapesFx::ShapesFxImpl::SetFixedShapeSpeeds() noexcept -> void
+{
+  const float tMinMaxLerp = m_goomRand.GetRandInRange(0.0F, 1.0F);
 
   for (auto& shapeGroup : m_shapeGroups)
   {
-    DoRandomChange(shapeGroup);
+    shapeGroup.UseFixedShapesSpeed(tMinMaxLerp);
   }
-
-  SetShapesSpeed(m_goomRand.GetRandInRange(0.0F, 1.0F));
-  UpdateColorMaps();
 }
 
-inline void ShapesFx::ShapesFxImpl::DoRandomChange(ShapeGroup& shapeGroup) noexcept
+inline auto ShapesFx::ShapesFxImpl::SetRandomShapeSpeeds() noexcept -> void
 {
-  shapeGroup.SetRandomizedShapePaths();
-  assert(AllColorMapsValid());
-}
-
-inline auto ShapesFx::ShapesFxImpl::SetShapesSpeed(const float t) noexcept -> void
-{
-  m_allShapesPositionT.SetStepSize(STD20::lerp(MIN_SPEED, MAX_SPEED, t));
-  m_allColorsT.SetStepSize(STD20::lerp(MIN_COLOR_MAP_SPEED, MAX_COLOR_MAP_SPEED, t));
-}
-
-inline auto ShapesFx::ShapesFxImpl::UpdateColorMaps() noexcept -> void
-{
-  assert(AllColorMapsValid());
-
   for (auto& shapeGroup : m_shapeGroups)
   {
-    shapeGroup.ChangeAllColorMapsNow();
+    shapeGroup.UseRandomShapesSpeed();
   }
-
-  assert(AllColorMapsValid());
 }
 
 inline auto ShapesFx::ShapesFxImpl::DrawShape(const ShapeGroup& shapeGroup,
@@ -611,11 +699,11 @@ inline auto ShapesFx::ShapesFxImpl::DrawShape(const ShapeGroup& shapeGroup,
 }
 
 inline auto ShapesFx::ShapesFxImpl::GetCurrentShapeColors(
-    const ShapeGroup& shapeGroup, const ShapePath::ColorInfo& shapePathColorInfo) const noexcept
+    const ShapeGroup& shapeGroup, const ShapePath::ColorInfo& shapePathColorInfo) noexcept
     -> ShapeColors
 {
-  return {shapeGroup.GetColorMap(shapePathColorInfo.mainColorMapId).GetColor(m_allColorsT()),
-          shapeGroup.GetColorMap(shapePathColorInfo.lowColorMapId).GetColor(m_allColorsT())};
+  return {shapeGroup.GetCurrentColor(shapePathColorInfo.mainColorMapId),
+          shapeGroup.GetCurrentColor(shapePathColorInfo.lowColorMapId)};
 }
 
 inline auto ShapesFx::ShapesFxImpl::GetColors(const float brightness,
