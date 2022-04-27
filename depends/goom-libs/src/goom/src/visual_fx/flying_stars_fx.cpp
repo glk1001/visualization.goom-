@@ -68,9 +68,9 @@ struct Star
   Vec2dFlt acceleration{};
   float age = 0.0;
   float vage = 0.0;
-  std::shared_ptr<const IColorMap> dominantColormap{};
+  std::shared_ptr<const IColorMap> dominantMainColormap{};
   std::shared_ptr<const IColorMap> dominantLowColormap{};
-  std::shared_ptr<const IColorMap> currentColorMap{};
+  std::shared_ptr<const IColorMap> currentMainColorMap{};
   std::shared_ptr<const IColorMap> currentLowColorMap{};
 };
 
@@ -81,7 +81,7 @@ public:
 
   void Start();
 
-  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
+  void SetWeightedMainColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
   void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
 
   void UpdateBuffers();
@@ -96,15 +96,15 @@ private:
   const int32_t m_halfHeight;
   const float m_xMax;
 
-  std::shared_ptr<RandomColorMaps> m_colorMaps{};
+  RandomColorMapsManager m_colorMapsManager{};
+  std::shared_ptr<RandomColorMaps> m_mainColorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
-  RandomColorMapsManager m_randomColorMapsManager{};
-  RandomColorMapsManager::ColorMapId m_dominantColorMapID;
+  RandomColorMapsManager::ColorMapId m_dominantMainColorMapID;
   RandomColorMapsManager::ColorMapId m_dominantLowColorMapID;
-  RandomColorMapsManager::ColorMapId m_colorMapID;
+  RandomColorMapsManager::ColorMapId m_mainColorMapID;
   RandomColorMapsManager::ColorMapId m_lowColorMapID;
   bool m_megaColorMode = false;
-  [[nodiscard]] auto GetNextColorMapName() const -> ColorMapName;
+  [[nodiscard]] auto GetNextMainColorMapName() const -> ColorMapName;
   [[nodiscard]] auto GetNextLowColorMapName() const -> ColorMapName;
   [[nodiscard]] auto GetNextAngleColorMapName() const -> ColorMapName;
 
@@ -126,9 +126,9 @@ private:
 
   struct StarColorSet
   {
-    Pixel color;
+    Pixel mainColor;
     Pixel lowColor;
-    Pixel dominantColor;
+    Pixel dominantMainColor;
     Pixel dominantLowColor;
   };
   [[nodiscard]] auto GetMixColors(const Star& star, float t) -> StarColorSet;
@@ -184,10 +184,12 @@ private:
   std::array<ColorMapName, NUM_SEGMENTS> m_angleColorMapName{};
   void UpdateAngleColorMapNames();
   static auto GetSegmentNum(float angle) -> size_t;
-  [[nodiscard]] auto GetDominantColorMapPtr(float angle) const -> std::shared_ptr<const IColorMap>;
+  [[nodiscard]] auto GetDominantMainColorMapPtr(float angle) const
+      -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] auto GetDominantLowColorMapPtr(float angle) const
       -> std::shared_ptr<const IColorMap>;
-  [[nodiscard]] auto GetCurrentColorMapPtr(float angle) const -> std::shared_ptr<const IColorMap>;
+  [[nodiscard]] auto GetCurrentMainColorMapPtr(float angle) const
+      -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] auto GetCurrentLowColorMapPtr(float angle) const
       -> std::shared_ptr<const IColorMap>;
   void DrawStars();
@@ -256,9 +258,9 @@ FlyingStarsFx::FlyingStarsFx(const FxHelper& fxHelper,
 {
 }
 
-void FlyingStarsFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void FlyingStarsFx::SetWeightedMainColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
-  m_fxImpl->SetWeightedColorMaps(weightedMaps);
+  m_fxImpl->SetWeightedMainColorMaps(weightedMaps);
 }
 
 void FlyingStarsFx::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
@@ -321,10 +323,10 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
     m_halfWidth{static_cast<int32_t>(U_HALF * m_goomInfo.GetScreenInfo().width)},
     m_halfHeight{static_cast<int32_t>(U_HALF * m_goomInfo.GetScreenInfo().height)},
     m_xMax{static_cast<float>(m_goomInfo.GetScreenInfo().width - 1)},
-    m_dominantColorMapID{m_randomColorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_dominantLowColorMapID{m_randomColorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_colorMapID{m_randomColorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_lowColorMapID{m_randomColorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
+    m_dominantMainColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
+    m_dominantLowColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
+    m_mainColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
+    m_lowColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     // clang-format off
     m_colorModeWeights{
         m_goomRand,
@@ -388,19 +390,19 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetImageBitmap(const size_t size) co
                                        std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
-inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
+inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedMainColorMaps(
     const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
-  m_colorMaps = weightedMaps;
+  m_mainColorMaps = weightedMaps;
 
-  m_randomColorMapsManager.UpdateColorMapInfo(
-      m_dominantColorMapID,
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
-  m_randomColorMapsManager.UpdateColorMapInfo(
-      m_colorMapID, {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_colorMapsManager.UpdateColorMapInfo(
+      m_dominantMainColorMapID,
+      {m_mainColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_colorMapsManager.UpdateColorMapInfo(m_mainColorMapID, {m_mainColorMaps, ColorMapName::_NULL,
+                                                           RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
-  m_colorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
-  m_colorMaps->SetLightnessLimits(MIN_LIGHTNESS, MAX_LIGHTNESS);
+  m_mainColorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
+  m_mainColorMaps->SetLightnessLimits(MIN_LIGHTNESS, MAX_LIGHTNESS);
 }
 
 inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedLowColorMaps(
@@ -408,10 +410,10 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedLowColorMaps(
 {
   m_lowColorMaps = weightedMaps;
 
-  m_randomColorMapsManager.UpdateColorMapInfo(
+  m_colorMapsManager.UpdateColorMapInfo(
       m_dominantLowColorMapID,
       {m_lowColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
-  m_randomColorMapsManager.UpdateColorMapInfo(
+  m_colorMapsManager.UpdateColorMapInfo(
       m_lowColorMapID, {m_lowColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
   m_lowColorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
@@ -567,8 +569,9 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const Point2dInt point1,
                                                      const uint32_t size,
                                                      const std::vector<Pixel>& colors)
 {
-  const auto getColor = [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                                  const Pixel& bgnd) { return GetColorMultiply(bgnd, colors[0]); };
+  const auto getMainColor =
+      [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
+  { return GetColorMultiply(bgnd, colors[0]); };
   const auto getLowColor =
       [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
   { return GetColorMultiply(bgnd, colors[1]); };
@@ -577,11 +580,11 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const Point2dInt point1,
 
   if (m_useSingleBufferOnly)
   {
-    m_draw.Bitmap(point1, bitmap, getColor);
+    m_draw.Bitmap(point1, bitmap, getMainColor);
   }
   else
   {
-    const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getColor, getLowColor};
+    const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getMainColor, getLowColor};
     m_draw.Bitmap(point1, bitmap, getColors);
   }
 }
@@ -616,22 +619,23 @@ inline auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const -
 
 inline void FlyingStarsFx::FlyingStarsImpl::ChangeColorMaps()
 {
-  m_randomColorMapsManager.ChangeColorMapNow(m_dominantColorMapID);
-  m_randomColorMapsManager.ChangeColorMapNow(m_dominantLowColorMapID);
+  m_colorMapsManager.ChangeColorMapNow(m_dominantMainColorMapID);
+  m_colorMapsManager.ChangeColorMapNow(m_dominantLowColorMapID);
 
   static constexpr float PROB_MEGA_COLOR_MODE = 1.0F / 10.0F;
   m_megaColorMode = m_goomRand.ProbabilityOf(PROB_MEGA_COLOR_MODE);
 
-  m_randomColorMapsManager.UpdateColorMapName(m_colorMapID, GetNextColorMapName());
-  m_randomColorMapsManager.UpdateColorMapName(m_lowColorMapID, GetNextLowColorMapName());
+  m_colorMapsManager.UpdateColorMapName(m_mainColorMapID, GetNextMainColorMapName());
+  m_colorMapsManager.UpdateColorMapName(m_lowColorMapID, GetNextLowColorMapName());
 
   UpdateAngleColorMapNames();
 }
 
-inline auto FlyingStarsFx::FlyingStarsImpl::GetNextColorMapName() const -> ColorMapName
+inline auto FlyingStarsFx::FlyingStarsImpl::GetNextMainColorMapName() const -> ColorMapName
 {
-  return m_megaColorMode ? ColorMapName::_NULL
-                         : m_colorMaps->GetRandomColorMapName(m_colorMaps->GetRandomGroup());
+  return m_megaColorMode
+             ? ColorMapName::_NULL
+             : m_mainColorMaps->GetRandomColorMapName(m_mainColorMaps->GetRandomGroup());
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetNextLowColorMapName() const -> ColorMapName
@@ -642,8 +646,9 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetNextLowColorMapName() const -> Co
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetNextAngleColorMapName() const -> ColorMapName
 {
-  return m_megaColorMode ? m_colorMaps->GetRandomColorMapName()
-                         : m_colorMaps->GetRandomColorMapName(m_colorMaps->GetRandomGroup());
+  return m_megaColorMode
+             ? m_mainColorMaps->GetRandomColorMapName()
+             : m_mainColorMaps->GetRandomColorMapName(m_mainColorMaps->GetRandomGroup());
 }
 
 void FlyingStarsFx::FlyingStarsImpl::UpdateStarColorMaps(const float angle, Star& star)
@@ -652,22 +657,22 @@ void FlyingStarsFx::FlyingStarsImpl::UpdateStarColorMaps(const float angle, Star
   if (constexpr float PROB_RANDOM_COLOR_MAPS = 0.5F;
       m_goomRand.ProbabilityOf(PROB_RANDOM_COLOR_MAPS))
   {
-    star.dominantColormap = m_randomColorMapsManager.GetColorMapPtr(m_dominantColorMapID);
-    star.dominantLowColormap = m_randomColorMapsManager.GetColorMapPtr(m_dominantLowColorMapID);
-    star.currentColorMap = m_randomColorMapsManager.GetColorMapPtr(m_colorMapID);
-    star.currentLowColorMap = m_randomColorMapsManager.GetColorMapPtr(m_lowColorMapID);
+    star.dominantMainColormap = m_colorMapsManager.GetColorMapPtr(m_dominantMainColorMapID);
+    star.dominantLowColormap = m_colorMapsManager.GetColorMapPtr(m_dominantLowColorMapID);
+    star.currentMainColorMap = m_colorMapsManager.GetColorMapPtr(m_mainColorMapID);
+    star.currentLowColorMap = m_colorMapsManager.GetColorMapPtr(m_lowColorMapID);
   }
   else
   {
-    star.dominantColormap = GetDominantColorMapPtr(angle);
+    star.dominantMainColormap = GetDominantMainColorMapPtr(angle);
     star.dominantLowColormap = GetDominantLowColorMapPtr(angle);
-    star.currentColorMap = GetCurrentColorMapPtr(angle);
+    star.currentMainColorMap = GetCurrentMainColorMapPtr(angle);
     star.currentLowColorMap = GetCurrentLowColorMapPtr(angle);
   }
 
-  assert(star.dominantColormap);
+  assert(star.dominantMainColormap);
   assert(star.dominantLowColormap);
-  assert(star.currentColorMap);
+  assert(star.currentMainColorMap);
   assert(star.currentLowColorMap);
 }
 
@@ -679,32 +684,32 @@ void FlyingStarsFx::FlyingStarsImpl::UpdateAngleColorMapNames()
   }
 }
 
-auto FlyingStarsFx::FlyingStarsImpl::GetDominantColorMapPtr(const float angle) const
+auto FlyingStarsFx::FlyingStarsImpl::GetDominantMainColorMapPtr(const float angle) const
     -> std::shared_ptr<const IColorMap>
 {
   return std::const_pointer_cast<const IColorMap>(
-      m_colorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
+      m_mainColorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetDominantLowColorMapPtr(const float angle) const
     -> std::shared_ptr<const IColorMap>
 {
   return std::const_pointer_cast<const IColorMap>(
-      m_colorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
+      m_mainColorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
 }
 
-auto FlyingStarsFx::FlyingStarsImpl::GetCurrentColorMapPtr(const float angle) const
+auto FlyingStarsFx::FlyingStarsImpl::GetCurrentMainColorMapPtr(const float angle) const
     -> std::shared_ptr<const IColorMap>
 {
   return std::const_pointer_cast<const IColorMap>(
-      m_colorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
+      m_mainColorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetCurrentLowColorMapPtr(const float angle) const
     -> std::shared_ptr<const IColorMap>
 {
   return std::const_pointer_cast<const IColorMap>(
-      m_colorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
+      m_mainColorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetSegmentNum(const float angle) -> size_t
@@ -758,8 +763,8 @@ auto FlyingStarsFx::FlyingStarsImpl::GetMixedColors(const Star& star,
 inline auto FlyingStarsFx::FlyingStarsImpl::GetMixColors(const Star& star, const float t)
     -> StarColorSet
 {
-  return {star.currentColorMap->GetColor(t), star.currentLowColorMap->GetColor(t),
-          star.dominantColormap->GetColor(t), star.dominantLowColormap->GetColor(t)};
+  return {star.currentMainColorMap->GetColor(t), star.currentLowColorMap->GetColor(t),
+          star.dominantMainColormap->GetColor(t), star.dominantLowColormap->GetColor(t)};
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetReversedMixColors(const Star& star, const float t)
@@ -772,7 +777,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetSimilarLowColors(const Star& star
     -> StarColorSet
 {
   StarColorSet starColorSet = GetMixColors(star, t);
-  starColorSet.dominantLowColor = starColorSet.dominantColor;
+  starColorSet.dominantLowColor = starColorSet.dominantMainColor;
   return starColorSet;
 }
 
@@ -786,9 +791,9 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetSineMixColors(const Star& star) -
   const float tSin = T_MIX_FACTOR * (1.0F + std::sin(FREQ * s_z));
 
   StarColorSet starColorSet;
-  starColorSet.color = star.currentColorMap->GetColor(tSin);
+  starColorSet.mainColor = star.currentMainColorMap->GetColor(tSin);
   starColorSet.lowColor = star.currentLowColorMap->GetColor(tSin);
-  starColorSet.dominantColor = star.dominantColormap->GetColor(tSin);
+  starColorSet.dominantMainColor = star.dominantMainColormap->GetColor(tSin);
   starColorSet.dominantLowColor = star.dominantLowColormap->GetColor(tSin);
 
   s_z += Z_STEP;
@@ -804,16 +809,18 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetFinalMixedColors(const StarColorS
   static constexpr float MIN_MIX = 0.2F;
   static constexpr float MAX_MIX = 0.8F;
   const float tMix = STD20::lerp(MIN_MIX, MAX_MIX, t);
-  const Pixel mixedColor = GetGammaCorrection(
-      brightness, IColorMap::GetColorMix(starColorSet.color, starColorSet.dominantColor, tMix));
+  const Pixel mixedMainColor =
+      GetGammaCorrection(brightness, IColorMap::GetColorMix(starColorSet.mainColor,
+                                                            starColorSet.dominantMainColor, tMix));
   const Pixel mixedLowColor = GetLightenedColor(
       IColorMap::GetColorMix(starColorSet.lowColor, starColorSet.dominantLowColor, tMix), 10.0F);
   const Pixel remixedLowColor =
       m_colorMode == ColorMode::SIMILAR_LOW_COLORS
           ? mixedLowColor
-          : GetGammaCorrection(brightness, IColorMap::GetColorMix(mixedColor, mixedLowColor, 0.4F));
+          : GetGammaCorrection(brightness,
+                               IColorMap::GetColorMix(mixedMainColor, mixedLowColor, 0.4F));
 
-  return {mixedColor, remixedLowColor};
+  return {mixedMainColor, remixedLowColor};
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetGammaCorrection(const float brightness,
@@ -1020,8 +1027,8 @@ void FlyingStarsFx::FlyingStarsImpl::AddStarBombs(const StarModeParams& starMode
 
   for (size_t i = 0; i < maxStarsInBomb; ++i)
   {
-    m_randomColorMapsManager.ChangeColorMapNow(m_colorMapID);
-    m_randomColorMapsManager.ChangeColorMapNow(m_lowColorMapID);
+    m_colorMapsManager.ChangeColorMapNow(m_mainColorMapID);
+    m_colorMapsManager.ChangeColorMapNow(m_lowColorMapID);
     AddABomb(starModeParams.pos, starModeParams.radius, starModeParams.vage, gravity, sideWind);
   }
 }

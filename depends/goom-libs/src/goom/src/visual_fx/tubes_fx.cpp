@@ -328,7 +328,7 @@ inline void TubesFx::TubeFxImpl::SetWeightedColorMaps(
 
   for (auto& tube : m_tubes)
   {
-    tube.SetWeightedColorMaps(m_colorMaps);
+    tube.SetWeightedMainColorMaps(m_colorMaps);
   }
 }
 

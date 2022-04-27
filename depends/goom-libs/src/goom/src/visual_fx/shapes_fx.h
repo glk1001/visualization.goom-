@@ -29,8 +29,9 @@ public:
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;
 
-  auto SetWeightedColorMaps(size_t shapeGroupNum,
-                            std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept -> void;
+  auto SetWeightedMainColorMaps(size_t shapeGroupNum,
+                                std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
+      -> void;
   auto SetWeightedLowColorMaps(size_t shapeGroupNum,
                                std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;

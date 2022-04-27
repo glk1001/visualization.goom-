@@ -298,7 +298,7 @@ void AllStandardVisualFx::ChangeColorMaps()
 
   ChangeShapesColorMaps();
 
-  m_starFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS));
+  m_starFx->SetWeightedMainColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS));
   m_starFx->SetWeightedLowColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::STARS_LOW));
 
   m_tentaclesFx->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::TENTACLES));
@@ -322,7 +322,7 @@ inline auto AllStandardVisualFx::ChangeShapesColorMaps() -> void
   {
     const auto shapeEffect =
         static_cast<GoomEffect>(i + static_cast<uint32_t>(GoomEffect::SHAPES0));
-    m_shapesFx->SetWeightedColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
+    m_shapesFx->SetWeightedMainColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
     m_shapesFx->SetWeightedLowColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
     m_shapesFx->SetWeightedInnerColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
   }

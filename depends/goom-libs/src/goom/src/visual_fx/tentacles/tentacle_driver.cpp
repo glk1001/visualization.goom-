@@ -132,9 +132,9 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
 
     // To hide the annoying flapping tentacle head, make near the head very dark.
     static constexpr V3dFlt INITIAL_HEAD_POS = {0, 0, 0};
-    const auto headColor = Pixel{5, 5, 5, MAX_ALPHA};
-    const Pixel headLowColor = headColor;
-    Tentacle3D tentacle{std::move(tentacle2D),     headColor, headLowColor, INITIAL_HEAD_POS,
+    const auto headMainColor = Pixel{5, 5, 5, MAX_ALPHA};
+    const Pixel headLowColor = headMainColor;
+    Tentacle3D tentacle{std::move(tentacle2D),     headMainColor, headLowColor, INITIAL_HEAD_POS,
                         Tentacle2D::MIN_NUM_NODES, goomRand};
 
     tentacles.emplace_back(std::move(tentacle));

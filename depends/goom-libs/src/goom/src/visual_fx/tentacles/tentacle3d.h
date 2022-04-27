@@ -25,7 +25,7 @@ class Tentacle3D
 public:
   Tentacle3D() noexcept = delete;
   Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-             const Pixel& headColor,
+             const Pixel& headMainColor,
              const Pixel& headLowColor,
              const V3dFlt& head,
              size_t numHeadNodes,
@@ -43,7 +43,7 @@ public:
   void ColorMapsChanged();
 
   [[nodiscard]] auto GetMixedColors(size_t nodeNum,
-                                    const Pixel& color,
+                                    const Pixel& mainColor,
                                     const Pixel& lowColor,
                                     float brightness) const -> std::pair<Pixel, Pixel>;
 
@@ -62,27 +62,28 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   std::unique_ptr<Tentacle2D> m_tentacle;
 
+  COLOR::RandomColorMapsManager m_colorMapsManager{};
   std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
-  COLOR::RandomColorMapsManager m_randomColorMapsManager{};
-  COLOR::RandomColorMapsManager::ColorMapId m_colorMapID;
+  COLOR::RandomColorMapsManager::ColorMapId m_mainColorMapID;
   COLOR::RandomColorMapsManager::ColorMapId m_lowColorMapID;
   static constexpr float MIN_COLOR_SEGMENT_MIX_T = 0.4F;
   static constexpr float MAX_COLOR_SEGMENT_MIX_T = 1.0F;
   static constexpr float DEFAULT_COLOR_SEGMENT_MIX_T = 0.8F;
-  float m_colorSegmentMixT = DEFAULT_COLOR_SEGMENT_MIX_T;
+  float m_mainColorSegmentMixT = DEFAULT_COLOR_SEGMENT_MIX_T;
   float m_lowColorSegmentMixT = DEFAULT_COLOR_SEGMENT_MIX_T;
   bool m_reverseColorMix = false;
   bool m_useIncreasedChroma = true;
 
-  Pixel m_headColor{};
+  Pixel m_headMainColor{};
   Pixel m_headLowColor{};
   V3dFlt m_head{};
   size_t m_numHeadNodes{};
 
-  [[nodiscard]] auto GetMixedColors(size_t nodeNum, const Pixel& color, const Pixel& lowColor) const
-      -> std::pair<Pixel, Pixel>;
+  [[nodiscard]] auto GetMixedColors(size_t nodeNum,
+                                    const Pixel& mainColor,
+                                    const Pixel& lowColor) const -> std::pair<Pixel, Pixel>;
   [[nodiscard]] auto GetMixedHeadColors(size_t nodeNum,
-                                        const Pixel& color,
+                                        const Pixel& mainColor,
                                         const Pixel& lowColor) const -> std::pair<Pixel, Pixel>;
   [[nodiscard]] auto GetFinalMixedColor(const Pixel& color,
                                         const Pixel& segmentColor,

@@ -76,7 +76,7 @@ public:
              Point2dInt screenMidpoint,
              TValue& allShapesPositionT) noexcept;
 
-  auto SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
+  auto SetWeightedMainColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
   auto SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
   auto SetWeightedInnerColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
 
@@ -270,7 +270,7 @@ inline auto ShapeGroup::MakeNewColorMapId() noexcept -> RandomColorMapsManager::
   return m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand);
 }
 
-inline auto ShapeGroup::SetWeightedColorMaps(
+inline auto ShapeGroup::SetWeightedMainColorMaps(
     const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
 {
   m_colorInfo.mainColorMaps = weightedMaps;
@@ -341,8 +341,8 @@ class ShapesFx::ShapesFxImpl
 public:
   explicit ShapesFxImpl(const FxHelper& fxHelper) noexcept;
 
-  auto SetWeightedColorMaps(size_t shapeGroupNum,
-                            std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
+  auto SetWeightedMainColorMaps(size_t shapeGroupNum,
+                                std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
   auto SetWeightedLowColorMaps(size_t shapeGroupNum,
                                std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
   auto SetWeightedInnerColorMaps(size_t shapeGroupNum,
@@ -381,7 +381,7 @@ private:
   auto DrawShape(const ShapeGroup& shapeGroup, size_t shapeNum) noexcept -> void;
   struct ShapeColors
   {
-    Pixel color;
+    Pixel mainColor;
     Pixel lowColor;
   };
   [[nodiscard]] auto GetCurrentShapeColors(
@@ -414,11 +414,10 @@ auto ShapesFx::GetFxName() const noexcept -> std::string
   return "shapes";
 }
 
-auto ShapesFx::SetWeightedColorMaps(const size_t shapeGroupNum,
-                                    const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
-    -> void
+auto ShapesFx::SetWeightedMainColorMaps(
+    size_t shapeGroupNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(shapeGroupNum, weightedMaps);
+  m_fxImpl->SetWeightedMainColorMaps(shapeGroupNum, weightedMaps);
 }
 
 auto ShapesFx::SetWeightedLowColorMaps(const size_t shapeGroupNum,
@@ -478,12 +477,11 @@ auto ShapesFx::ShapesFxImpl::AllColorMapsValid() const noexcept -> bool
   return true;
 }
 
-inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
-    const size_t shapeGroupNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
-    -> void
+inline auto ShapesFx::ShapesFxImpl::SetWeightedMainColorMaps(
+    size_t shapeGroupNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
 {
   assert(AllColorMapsValid());
-  m_shapeGroups.at(shapeGroupNum).SetWeightedColorMaps(weightedMaps);
+  m_shapeGroups.at(shapeGroupNum).SetWeightedMainColorMaps(weightedMaps);
   assert(AllColorMapsValid());
 }
 
@@ -602,10 +600,10 @@ inline auto ShapesFx::ShapesFxImpl::DrawShape(const ShapeGroup& shapeGroup,
   for (int32_t radius = MAX_RADIUS; radius > 1; --radius)
   {
     const Pixel innerColor = innerColorMap.GetColor(innerColorT());
-    const auto [color, lowColor] =
+    const auto [mainColor, lowColor] =
         GetColors(brightness, shapeColors, innerColor, shapeGroup.GetInnerColorMix(), radius);
 
-    m_draw.Circle(point, radius, {color, lowColor});
+    m_draw.Circle(point, radius, {mainColor, lowColor});
 
     brightness += 1.0F;
     innerColorT.Increment();
@@ -631,19 +629,19 @@ inline auto ShapesFx::ShapesFxImpl::GetColors(const float brightness,
 
   if (static constexpr int32_t INNER_COLOR_RADIUS_CUTOFF = 10; radius < INNER_COLOR_RADIUS_CUTOFF)
   {
-    const Pixel color = GetBrighterColor(brightness, shapeColors.color);
+    const Pixel mainColor = GetBrighterColor(brightness, shapeColors.mainColor);
     const Pixel lowColor =
         GetBrighterColor(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor);
-    return {color, lowColor};
+    return {mainColor, lowColor};
   }
 
-  const Pixel color = GetBrighterColor(
-      brightness, IColorMap::GetColorMix(shapeColors.color, innerColor, innerColorMix));
+  const Pixel mainColor = GetBrighterColor(
+      brightness, IColorMap::GetColorMix(shapeColors.mainColor, innerColor, innerColorMix));
   const Pixel lowColor =
       GetBrighterColor(LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
                        IColorMap::GetColorMix(shapeColors.lowColor, innerColor, innerColorMix));
 
-  return {color, lowColor};
+  return {mainColor, lowColor};
 }
 
 } // namespace GOOM::VISUAL_FX

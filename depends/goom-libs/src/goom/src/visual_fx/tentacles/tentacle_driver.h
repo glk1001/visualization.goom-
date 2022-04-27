@@ -49,7 +49,7 @@ public:
   auto MultiplyIterZeroYValWaveFreq(float value) -> void;
   auto SetProjectionDistance(float value) -> void;
   auto SetCameraPosition(float cameraDistance, float tentacleAngle) -> void;
-  auto SetDominantColors(const Pixel& dominantColor, const Pixel& dominantLowColor) -> void;
+  auto SetDominantColors(const Pixel& dominantMainColor, const Pixel& dominantLowColor) -> void;
 
   auto Update() -> void;
 
@@ -115,10 +115,10 @@ inline auto TentacleDriver::SetCameraPosition(const float cameraDistance, const 
   m_tentaclePlotter.SetCameraPosition(cameraDistance, tentacleAngle);
 }
 
-inline auto TentacleDriver::SetDominantColors(const Pixel& dominantColor,
+inline auto TentacleDriver::SetDominantColors(const Pixel& dominantMainColor,
                                               const Pixel& dominantLowColor) -> void
 {
-  m_tentaclePlotter.SetDominantColors(dominantColor, dominantLowColor);
+  m_tentaclePlotter.SetDominantColors(dominantMainColor, dominantLowColor);
 }
 
 } // namespace VISUAL_FX::TENTACLES

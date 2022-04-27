@@ -110,7 +110,7 @@ private:
   const IGoomRand& m_goomRand;
 
   std::shared_ptr<RandomColorMaps> m_colorMaps;
-  RandomColorMapsManager m_randomColorMapsManager{};
+  RandomColorMapsManager m_colorMapsManager{};
   RandomColorMapsManager::ColorMapId m_currentColorMapID;
   float m_currentBrightness = 1.0F;
 
@@ -287,7 +287,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
-    m_currentColorMapID{m_randomColorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
+    m_currentColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srceLineType{srceLineType},
@@ -348,7 +348,7 @@ void LinesFx::LinesImpl::Start()
 void LinesFx::LinesImpl::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
-  m_randomColorMapsManager.UpdateColorMapInfo(
+  m_colorMapsManager.UpdateColorMapInfo(
       m_currentColorMapID,
       {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }
@@ -360,7 +360,7 @@ void LinesFx::LinesImpl::Finish()
 
 inline void LinesFx::LinesImpl::UpdateColorInfo()
 {
-  m_randomColorMapsManager.ChangeAllColorMapsNow();
+  m_colorMapsManager.ChangeAllColorMapsNow();
 
   static constexpr float PROB_USE_LINE_COLOR = 0.5F;
   m_useLineColor = m_goomRand.ProbabilityOf(PROB_USE_LINE_COLOR);
@@ -647,7 +647,7 @@ inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float
   {
     return lineColor;
   }
-  return m_randomColorMapsManager.GetColorMap(m_currentColorMapID).GetColor(t);
+  return m_colorMapsManager.GetColorMap(m_currentColorMapID).GetColor(t);
 }
 
 } // namespace GOOM::VISUAL_FX

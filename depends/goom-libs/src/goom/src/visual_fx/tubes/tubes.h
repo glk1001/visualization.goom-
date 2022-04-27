@@ -37,11 +37,11 @@ enum class ColorMapMixMode
 
 struct ShapeColors
 {
-  Pixel color{};
+  Pixel mainColor{};
   Pixel lowColor{};
-  Pixel innerColor{};
+  Pixel innerMainColor{};
   Pixel innerLowColor{};
-  Pixel outerCircleColor{};
+  Pixel outerCircleMainColor{};
   Pixel outerCircleLowColor{};
 };
 
@@ -84,7 +84,7 @@ public:
     uint32_t screenWidth;
     uint32_t screenHeight;
     const UTILS::MATH::IGoomRand& goomRand;
-    std::shared_ptr<COLOR::RandomColorMaps> colorMaps;
+    std::shared_ptr<COLOR::RandomColorMaps> mainColorMaps;
     std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps;
     float radiusEdgeOffset;
     float brightnessFactor;
@@ -95,8 +95,8 @@ public:
 
   [[nodiscard]] auto IsActive() const -> bool;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> colorMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps);
+  void SetWeightedMainColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
   void ResetColorMaps();
 

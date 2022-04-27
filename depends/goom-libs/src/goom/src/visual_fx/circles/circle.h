@@ -52,7 +52,7 @@ public:
   auto operator=(const Circle&) -> Circle& = delete;
   auto operator=(Circle&&) -> Circle& = delete;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
+  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMainMaps,
                             std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
   void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
   void SetPathParams(const UTILS::MATH::OscillatingPath::Params& pathParams);
@@ -106,22 +106,23 @@ private:
                 float lineBrightness,
                 float tLineColor);
 
-  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps;
+  std::shared_ptr<COLOR::RandomColorMaps> m_mainColorMaps;
   std::shared_ptr<COLOR::RandomColorMaps> m_lowColorMaps;
-  const COLOR::IColorMap* m_linesColorMap{};
+  const COLOR::IColorMap* m_linesMainColorMap{};
   const COLOR::IColorMap* m_linesLowColorMap{};
 
-  COLOR::ColorMapsGrid m_colorMapsGrid;
+  COLOR::ColorMapsGrid m_mainColorMapsGrid;
   COLOR::ColorMapsGrid m_lowColorMapsGrid;
   static constexpr float DEFAULT_COLOR_GRID_MIX_T = 0.5F;
   float m_currentColorGridMixT = DEFAULT_COLOR_GRID_MIX_T;
-  [[nodiscard]] auto GetVerticalColorMaps() const -> std::vector<const COLOR::IColorMap*>;
+  [[nodiscard]] auto GetVerticalMainColorMaps() const -> std::vector<const COLOR::IColorMap*>;
   [[nodiscard]] auto GetVerticalLowColorMaps() const -> std::vector<const COLOR::IColorMap*>;
   [[nodiscard]] auto GetColorMixT(size_t colorIndex) const -> float;
-  [[nodiscard]] auto GetDotColors(float dotBrightness) const -> std::vector<Pixel>;
+  [[nodiscard]] auto GetDotMainColors(float dotBrightness) const -> std::vector<Pixel>;
   [[nodiscard]] auto GetDotLowColors(float dotBrightness) const -> std::vector<Pixel>;
 
-  [[nodiscard]] auto GetFinalColor(float brightness, const Pixel& color) const -> Pixel;
+  [[nodiscard]] auto GetFinalMainColor(const float brightness, const Pixel& mainColor) const
+      -> Pixel;
   [[nodiscard]] auto GetFinalLowColor(float brightness, const Pixel& lowColor) const -> Pixel;
   [[nodiscard]] auto GetCorrectedColor(float brightness, const Pixel& color) const -> Pixel;
 };

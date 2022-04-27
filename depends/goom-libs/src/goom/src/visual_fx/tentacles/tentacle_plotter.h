@@ -39,7 +39,7 @@ public:
 
   auto SetProjectionDistance(float value) -> void;
   auto SetCameraPosition(float cameraDistance, float tentacleAngle) -> void;
-  auto SetDominantColors(const Pixel& dominantColor, const Pixel& dominantLowColor) -> void;
+  auto SetDominantColors(const Pixel& dominantMainColor, const Pixel& dominantLowColor) -> void;
 
   auto Plot3D(const Tentacle3D& tentacle) -> void;
 
@@ -58,7 +58,7 @@ private:
   float m_tentacleAngle = 0.0F;
   float m_cameraDistance = 0.0F;
   V3dFlt m_cameraPosition{};
-  Pixel m_dominantColor{};
+  Pixel m_dominantMainColor{};
   Pixel m_dominantLowColor{};
 
   auto DrawNode(const Tentacle3D& tentacle,
@@ -94,10 +94,10 @@ inline auto TentaclePlotter::SetProjectionDistance(const float value) -> void
   m_projectionDistance = value;
 }
 
-inline auto TentaclePlotter::SetDominantColors(const Pixel& dominantColor,
+inline auto TentaclePlotter::SetDominantColors(const Pixel& dominantMainColor,
                                                const Pixel& dominantLowColor) -> void
 {
-  m_dominantColor = dominantColor;
+  m_dominantMainColor = dominantMainColor;
   m_dominantLowColor = dominantLowColor;
 }
 

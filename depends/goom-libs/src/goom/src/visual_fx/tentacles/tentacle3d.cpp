@@ -22,16 +22,16 @@ using UTILS::MATH::IGoomRand;
 static constexpr float HEAD_X_MAX = 10.0F;
 
 Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-                       const Pixel& headColor,
+                       const Pixel& headMainColor,
                        const Pixel& headLowColor,
                        const V3dFlt& head,
                        const size_t numHeadNodes,
                        const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_tentacle{std::move(tentacle)},
-    m_colorMapID{m_randomColorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_lowColorMapID{m_randomColorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_headColor{headColor},
+    m_mainColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
+    m_lowColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
+    m_headMainColor{headMainColor},
     m_headLowColor{headLowColor},
     m_head{head},
     m_numHeadNodes{numHeadNodes}
@@ -42,10 +42,10 @@ void Tentacle3D::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMa
 {
   m_colorMaps = weightedMaps;
 
-  m_randomColorMapsManager.UpdateColorMapInfo(
-      m_colorMapID, {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_colorMapsManager.UpdateColorMapInfo(
+      m_mainColorMapID, {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
-  m_randomColorMapsManager.UpdateColorMapInfo(
+  m_colorMapsManager.UpdateColorMapInfo(
       m_lowColorMapID, {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
   ColorMapsChanged();
@@ -53,15 +53,16 @@ void Tentacle3D::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMa
 
 void Tentacle3D::ColorMapsChanged()
 {
-  m_randomColorMapsManager.ChangeColorMapNow(m_colorMapID);
-  m_randomColorMapsManager.ChangeColorMapNow(m_lowColorMapID);
+  m_colorMapsManager.ChangeColorMapNow(m_mainColorMapID);
+  m_colorMapsManager.ChangeColorMapNow(m_lowColorMapID);
 
-  m_colorSegmentMixT = m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
+  m_mainColorSegmentMixT =
+      m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
 
   static constexpr float PROB_LOW_MIX_SAME = 0.5F;
   m_lowColorSegmentMixT =
       m_goomRand.ProbabilityOf(PROB_LOW_MIX_SAME)
-          ? m_colorSegmentMixT
+          ? m_mainColorSegmentMixT
           : m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
 
   static constexpr float PROB_CHROMA_INCREASE = 0.7F;
@@ -69,30 +70,30 @@ void Tentacle3D::ColorMapsChanged()
 }
 
 auto Tentacle3D::GetMixedColors(const size_t nodeNum,
-                                const Pixel& color,
+                                const Pixel& mainColor,
                                 const Pixel& lowColor,
                                 const float brightness) const -> std::pair<Pixel, Pixel>
 {
   if (nodeNum < GetNumHeadNodes())
   {
-    return GetMixedColors(nodeNum, color, lowColor);
+    return GetMixedColors(nodeNum, mainColor, lowColor);
   }
 
-  const auto [mixedColor, mixedLowColor] = GetMixedColors(nodeNum, color, lowColor);
-  const Pixel mixedColorPixel = mixedColor;
+  const auto [mixedMainColor, mixedLowColor] = GetMixedColors(nodeNum, mainColor, lowColor);
+  const Pixel mixedMainColorPixel = mixedMainColor;
   const Pixel mixedLowColorPixel = mixedLowColor;
   static constexpr float COLOR_BRIGHTNESS_FACTOR = 2.0F;
-  return std::make_pair(GetBrighterColor(COLOR_BRIGHTNESS_FACTOR * brightness, mixedColorPixel),
+  return std::make_pair(GetBrighterColor(COLOR_BRIGHTNESS_FACTOR * brightness, mixedMainColorPixel),
                         GetBrighterColor(brightness, mixedLowColorPixel));
 }
 
 inline auto Tentacle3D::GetMixedColors(const size_t nodeNum,
-                                       const Pixel& color,
+                                       const Pixel& mainColor,
                                        const Pixel& lowColor) const -> std::pair<Pixel, Pixel>
 {
   if (nodeNum < GetNumHeadNodes())
   {
-    return GetMixedHeadColors(nodeNum, color, lowColor);
+    return GetMixedHeadColors(nodeNum, mainColor, lowColor);
   }
 
   float t = static_cast<float>(nodeNum + 1) / static_cast<float>(Get2DTentacle().GetNumNodes());
@@ -101,30 +102,31 @@ inline auto Tentacle3D::GetMixedColors(const size_t nodeNum,
     t = 1 - t;
   }
 
-  const Pixel segmentColor = m_randomColorMapsManager.GetColorMap(m_colorMapID).GetColor(t);
-  const Pixel segmentLowColor = m_randomColorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
-  const Pixel mixedColor = GetFinalMixedColor(color, segmentColor, m_colorSegmentMixT);
+  const Pixel segmentMainColor = m_colorMapsManager.GetColorMap(m_mainColorMapID).GetColor(t);
+  const Pixel segmentLowColor = m_colorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
+  const Pixel mixedMainColor =
+      GetFinalMixedColor(mainColor, segmentMainColor, m_mainColorSegmentMixT);
   const Pixel mixedLowColor = GetFinalMixedColor(lowColor, segmentLowColor, m_lowColorSegmentMixT);
 
   if (std::abs(GetHead().x) < HEAD_X_MAX)
   {
     const float brightnessCut = t * t;
-    return std::make_pair(GetBrighterColor(brightnessCut, mixedColor),
+    return std::make_pair(GetBrighterColor(brightnessCut, mixedMainColor),
                           GetBrighterColor(brightnessCut, mixedLowColor));
   }
 
-  return std::make_pair(mixedColor, mixedLowColor);
+  return std::make_pair(mixedMainColor, mixedLowColor);
 }
 
 inline auto Tentacle3D::GetMixedHeadColors(const size_t nodeNum,
-                                           const Pixel& color,
+                                           const Pixel& mainColor,
                                            const Pixel& lowColor) const -> std::pair<Pixel, Pixel>
 {
   const float t =
       0.5F * (1.0F + (static_cast<float>(nodeNum + 1) / static_cast<float>(GetNumHeadNodes() + 1)));
-  const Pixel mixedHeadColor = IColorMap::GetColorMix(m_headColor, color, t);
+  const Pixel mixedHeadMainColor = IColorMap::GetColorMix(m_headMainColor, mainColor, t);
   const Pixel mixedHeadLowColor = IColorMap::GetColorMix(m_headLowColor, lowColor, t);
-  return std::make_pair(mixedHeadColor, mixedHeadLowColor);
+  return std::make_pair(mixedHeadMainColor, mixedHeadLowColor);
 }
 
 inline auto Tentacle3D::GetFinalMixedColor(const Pixel& color,
