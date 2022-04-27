@@ -1,5 +1,12 @@
 FROM kodi-nightly:lirc
 
+# Make sure we have a 'libstdc++.so' compatible with our build tools.
+# Need this, for example, when building a Docker image with Ubuntu Impish but compiling goom on Ubuntu Jammy.
+ARG LIBSTDCPP_VERSION=6.0.30
+ARG LIBSTDCPP_DIR=/usr/lib/x86_64-linux-gnu
+COPY "files/libstdc++.so.${LIBSTDCPP_VERSION}" ${LIBSTDCPP_DIR}/libstdc++.so.${LIBSTDCPP_VERSION}
+RUN cd ${LIBSTDCPP_DIR} && ln -sf libstdc++.so.${LIBSTDCPP_VERSION} libstdc++.so.6
+
 # Copy the built goom files to kodi system directories.
 ARG GOOM_VERSION=20.0.1
 ARG KODI_GOOM_LIB_DIR=/usr/lib/x86_64-linux-gnu/kodi/addons/visualization.goom
