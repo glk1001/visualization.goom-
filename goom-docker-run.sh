@@ -8,9 +8,23 @@ declare -r CONTAINER_NAME="kodi_goom_dev"
 declare -r CONTAINER_HOME_DIR="${HOME}/docker/kodi-nightly"
 declare -r MUSIC_SHARE="/mnt/Music"
 
+declare -r OLD_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)
+echo
+echo "Setting kodi 'core' pattern:"
+echo '/tmp/core.%e.%p' | sudo tee /proc/sys/kernel/core_pattern
 
+echo
 x11docker --runasroot="service lircd start" --network --pulseaudio --gpu \
           --share=${MUSIC_SHARE} --home=${CONTAINER_HOME_DIR} --name ${CONTAINER_NAME} \
-          -- --privileged -- ${IMAGE_NAME}
+          -- \
+	  --init \
+	  --privileged \
+	  --ulimit core=-1 \
+	  --mount type=bind,source=/tmp/,target=/tmp/ \
+	  -- \
+	  ${IMAGE_NAME}
 
 echo "x11docker return code = $?"
+
+echo "${OLD_CORE_PATTERN}" | sudo tee /proc/sys/kernel/core_pattern > /dev/null
+
