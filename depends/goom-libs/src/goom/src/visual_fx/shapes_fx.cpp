@@ -20,7 +20,6 @@
 
 #include <cassert>
 #include <memory>
-#include <utility>
 #include <vector>
 
 namespace GOOM::VISUAL_FX
@@ -102,6 +101,7 @@ public:
   [[nodiscard]] auto GetCurrentColor(RandomColorMapsManager::ColorMapId colorMapId) const noexcept
       -> Pixel;
   [[nodiscard]] auto GetInnerColorMix() const noexcept -> float;
+  [[nodiscard]] auto GetCurrentShapesRadius() const noexcept -> int32_t;
 
 private:
   const IGoomRand& m_goomRand;
@@ -113,6 +113,13 @@ private:
   float m_tMinMaxLerp = 0.0F;
   auto SetShapesSpeed() noexcept -> void;
   [[nodiscard]] static auto GetShapesSpeed(float tMinMaxLerp) noexcept -> float;
+
+  static constexpr int32_t MIN_SHAPE_RADIUS = 10;
+  static constexpr int32_t MAX_SHAPE_RADIUS = 50;
+  static constexpr uint32_t MIN_RADIUS_STEPS = 10;
+  static constexpr uint32_t MAX_RADIUS_STEPS = 50;
+  static constexpr uint32_t INITIAL_RADIUS_STEPS = 20;
+  TValue m_radiusT{TValue::StepType::CONTINUOUS_REVERSIBLE, INITIAL_RADIUS_STEPS};
 
   static constexpr float MIN_INNER_COLOR_MIX_T = 0.1F;
   static constexpr float MAX_INNER_COLOR_MIX_T = 0.9F;
@@ -257,6 +264,11 @@ inline auto ShapeGroup::GetInnerColorMix() const noexcept -> float
   return m_colorInfo.innerColorMix;
 }
 
+auto ShapeGroup::GetCurrentShapesRadius() const noexcept -> int32_t
+{
+  return STD20::lerp(MIN_SHAPE_RADIUS, MAX_SHAPE_RADIUS, m_radiusT());
+}
+
 inline auto ShapeGroup::UpdateMainColorMapId(
     const RandomColorMapsManager::ColorMapId mainColorMapId) noexcept -> void
 {
@@ -294,6 +306,7 @@ inline auto ShapeGroup::IncrementTs() noexcept -> void
 {
   m_allShapesPositionT.Increment();
   m_allColorsT.Increment();
+  m_radiusT.Increment();
 }
 
 inline auto ShapeGroup::UseRandomShapesSpeed() noexcept -> void
@@ -341,6 +354,8 @@ inline auto ShapeGroup::SetShapesSpeed() noexcept -> void
   const float tMinMaxLerp =
       m_useRandomShapesSpeed ? m_goomRand.GetRandInRange(0.0F, 1.0F) : m_tMinMaxLerp;
   m_allShapesPositionT.SetStepSize(GetShapesSpeed(tMinMaxLerp));
+
+  m_radiusT.SetNumSteps(STD20::lerp(MIN_RADIUS_STEPS, MAX_RADIUS_STEPS, tMinMaxLerp));
 }
 
 inline auto ShapeGroup::GetShapesSpeed(const float tMinMaxLerp) noexcept -> float
@@ -455,6 +470,7 @@ private:
   auto DrawShapeGroups() noexcept -> void;
   auto DrawShapes(const ShapeGroup& shapeGroup) noexcept -> void;
   auto DrawShape(const ShapeGroup& shapeGroup, size_t shapeNum) noexcept -> void;
+  [[nodiscard]] static auto GetInnerColorCutoffRadius(int32_t maxRadius) noexcept -> int32_t;
   struct ShapeColors
   {
     Pixel mainColor;
@@ -463,11 +479,12 @@ private:
   [[nodiscard]] static auto GetCurrentShapeColors(
       const ShapeGroup& shapeGroup, const ShapePath::ColorInfo& shapePathColorInfo) noexcept
       -> ShapeColors;
-  [[nodiscard]] static auto GetColors(float brightness,
-                                      const ShapeColors& shapeColors,
-                                      const Pixel& innerColor,
-                                      float innerColorMix,
-                                      int32_t radius) noexcept -> std::pair<Pixel, Pixel>;
+  [[nodiscard]] static auto GetColors(float brightness, const ShapeColors& shapeColors) noexcept
+      -> std::vector<Pixel>;
+  [[nodiscard]] static auto GetColorsWithInner(float brightness,
+                                               const ShapeColors& shapeColors,
+                                               const Pixel& innerColor,
+                                               float innerColorMix) noexcept -> std::vector<Pixel>;
 };
 
 ShapesFx::ShapesFx(const FxHelper& fxHelper) noexcept
@@ -678,24 +695,38 @@ inline auto ShapesFx::ShapesFxImpl::DrawShape(const ShapeGroup& shapeGroup,
   const ShapeColors shapeColors = GetCurrentShapeColors(shapeGroup, shapePathColorInfo);
   const IColorMap& innerColorMap = shapeGroup.GetColorMap(shapePathColorInfo.innerColorMapId);
 
-  static constexpr int32_t MAX_RADIUS = 20;
+  static constexpr int32_t MAX_RADIUS_JITTER = 10;
+  const int32_t maxRadius =
+      shapeGroup.GetCurrentShapesRadius() + m_goomRand.GetRandInRange(0, MAX_RADIUS_JITTER + 1);
+  TValue innerColorT{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)};
+  const int32_t innerColorCutoffRadius = GetInnerColorCutoffRadius(maxRadius);
 
-  TValue innerColorT{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(MAX_RADIUS - 1)};
+  static constexpr float MIN_BRIGHTNESS = 1.0F;
+  static constexpr float MAX_BRIGHTNESS = 10.0F;
+  TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius)};
 
-  static constexpr float BRIGHTNESS0 = 1.0F;
-  float brightness = BRIGHTNESS0;
-
-  for (int32_t radius = MAX_RADIUS; radius > 1; --radius)
+  for (int32_t radius = maxRadius; radius > 1; --radius)
   {
+    const float brightness = STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
     const Pixel innerColor = innerColorMap.GetColor(innerColorT());
-    const auto [mainColor, lowColor] =
-        GetColors(brightness, shapeColors, innerColor, shapeGroup.GetInnerColorMix(), radius);
+    const std::vector<Pixel> colors = radius <= innerColorCutoffRadius
+                                          ? GetColors(brightness, shapeColors)
+                                          : GetColorsWithInner(brightness, shapeColors, innerColor,
+                                                               shapeGroup.GetInnerColorMix());
 
-    m_draw.Circle(point, radius, {mainColor, lowColor});
+    m_draw.Circle(point, radius, colors);
 
-    brightness += 1.0F;
+    brightnessT.Increment();
     innerColorT.Increment();
   }
+}
+
+inline auto ShapesFx::ShapesFxImpl::GetInnerColorCutoffRadius(const int32_t maxRadius) noexcept
+    -> int32_t
+{
+  static constexpr int32_t RADIUS_FRAC = 3;
+  static constexpr int32_t MIN_CUTOFF = 10;
+  return std::max(MIN_CUTOFF, maxRadius / RADIUS_FRAC);
 }
 
 inline auto ShapesFx::ShapesFxImpl::GetCurrentShapeColors(
@@ -706,23 +737,24 @@ inline auto ShapesFx::ShapesFxImpl::GetCurrentShapeColors(
           shapeGroup.GetCurrentColor(shapePathColorInfo.lowColorMapId)};
 }
 
+static constexpr float LOW_COLOR_BRIGHTNESS_FACTOR = 0.9F;
+
 inline auto ShapesFx::ShapesFxImpl::GetColors(const float brightness,
-                                              const ShapeColors& shapeColors,
-                                              const Pixel& innerColor,
-                                              const float innerColorMix,
-                                              const int32_t radius) noexcept
-    -> std::pair<Pixel, Pixel>
+                                              const ShapeColors& shapeColors) noexcept
+    -> std::vector<Pixel>
 {
-  static constexpr float LOW_COLOR_BRIGHTNESS_FACTOR = 0.9F;
+  const Pixel mainColor = GetBrighterColor(brightness, shapeColors.mainColor);
+  const Pixel lowColor =
+      GetBrighterColor(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor);
+  return {mainColor, lowColor};
+}
 
-  if (static constexpr int32_t INNER_COLOR_RADIUS_CUTOFF = 10; radius < INNER_COLOR_RADIUS_CUTOFF)
-  {
-    const Pixel mainColor = GetBrighterColor(brightness, shapeColors.mainColor);
-    const Pixel lowColor =
-        GetBrighterColor(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor);
-    return {mainColor, lowColor};
-  }
-
+inline auto ShapesFx::ShapesFxImpl::GetColorsWithInner(const float brightness,
+                                                       const ShapeColors& shapeColors,
+                                                       const Pixel& innerColor,
+                                                       const float innerColorMix) noexcept
+    -> std::vector<Pixel>
+{
   const Pixel mainColor = GetBrighterColor(
       brightness, IColorMap::GetColorMix(shapeColors.mainColor, innerColor, innerColorMix));
   const Pixel lowColor =
