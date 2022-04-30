@@ -7,6 +7,7 @@
 namespace GOOM::VISUAL_FX::TENTACLES
 {
 
+using COLOR::IColorMap;
 using DRAW::IGoomDraw;
 using FX_UTILS::DotSizes;
 using STD20::pi;
@@ -16,19 +17,12 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;
 
 // clang-format off
-static constexpr float MIN_DOT_SIZE01_WEIGHT    = 100.0F;
+static constexpr float MIN_DOT_SIZE01_WEIGHT    = 150.0F;
 static constexpr float MIN_DOT_SIZE02_WEIGHT    =  50.0F;
-static constexpr float MIN_DOT_SIZE03_WEIGHT    =  50.0F;
-static constexpr float MIN_DOT_SIZE04_WEIGHT    =  20.0F;
 
-static constexpr float NORMAL_DOT_SIZE01_WEIGHT =  50.0F;
+static constexpr float NORMAL_DOT_SIZE01_WEIGHT =  80.0F;
 static constexpr float NORMAL_DOT_SIZE02_WEIGHT =  20.0F;
 static constexpr float NORMAL_DOT_SIZE03_WEIGHT =  10.0F;
-static constexpr float NORMAL_DOT_SIZE04_WEIGHT =  10.0F;
-static constexpr float NORMAL_DOT_SIZE05_WEIGHT =   5.0F;
-static constexpr float NORMAL_DOT_SIZE06_WEIGHT =   1.0F;
-static constexpr float NORMAL_DOT_SIZE07_WEIGHT =   1.0F;
-static constexpr float NORMAL_DOT_SIZE08_WEIGHT =   1.0F;
 // clang-format on
 
 TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
@@ -49,8 +43,6 @@ TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
               {
                   {DotSizes::DOT_SIZE01, MIN_DOT_SIZE01_WEIGHT},
                   {DotSizes::DOT_SIZE02, MIN_DOT_SIZE02_WEIGHT},
-                  {DotSizes::DOT_SIZE03, MIN_DOT_SIZE03_WEIGHT},
-                  {DotSizes::DOT_SIZE04, MIN_DOT_SIZE04_WEIGHT},
               }
           },
           // normal dot sizes
@@ -60,16 +52,12 @@ TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
                   {DotSizes::DOT_SIZE01, NORMAL_DOT_SIZE01_WEIGHT},
                   {DotSizes::DOT_SIZE02, NORMAL_DOT_SIZE02_WEIGHT},
                   {DotSizes::DOT_SIZE03, NORMAL_DOT_SIZE03_WEIGHT},
-                  {DotSizes::DOT_SIZE04, NORMAL_DOT_SIZE04_WEIGHT},
-                  {DotSizes::DOT_SIZE05, NORMAL_DOT_SIZE05_WEIGHT},
-                  {DotSizes::DOT_SIZE06, NORMAL_DOT_SIZE06_WEIGHT},
-                  {DotSizes::DOT_SIZE07, NORMAL_DOT_SIZE07_WEIGHT},
-                  {DotSizes::DOT_SIZE08, NORMAL_DOT_SIZE08_WEIGHT},
               }
           }
           // clang-format on
     }
 {
+  m_dotDrawer.ChangeDotSizes();
 }
 
 auto TentaclePlotter::ChangeDotSizes() -> void
@@ -137,8 +125,12 @@ inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
     return;
   }
 
+  const std::vector<Pixel> dotColors = {
+      IColorMap::GetColorMix(colors[0], m_dominantDotColor, 0.5F),
+      IColorMap::GetColorMix(colors.at(1), m_dominantDotColor, 0.5F),
+  };
   static constexpr float DOT_BRIGHTNESS = 1.5F;
-  m_dotDrawer.DrawDot(point, colors, DOT_BRIGHTNESS);
+  m_dotDrawer.DrawDot(point, dotColors, DOT_BRIGHTNESS);
 }
 
 inline auto TentaclePlotter::Get2DTentaclePoints(const Tentacle3D& tentacle) const

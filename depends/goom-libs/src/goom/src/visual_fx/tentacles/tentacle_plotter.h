@@ -39,7 +39,9 @@ public:
 
   auto SetProjectionDistance(float value) -> void;
   auto SetCameraPosition(float cameraDistance, float tentacleAngle) -> void;
-  auto SetDominantColors(const Pixel& dominantMainColor, const Pixel& dominantLowColor) -> void;
+  auto SetDominantColors(const Pixel& dominantMainColor,
+                         const Pixel& dominantLowColor,
+                         const Pixel& dominantDotColor) -> void;
 
   auto Plot3D(const Tentacle3D& tentacle) -> void;
 
@@ -50,8 +52,8 @@ private:
   const int32_t m_halfScreenHeight;
 
   FX_UTILS::DotDrawer m_dotDrawer;
-  static constexpr uint32_t MIN_STEPS_BETWEEN_NODES = 1;
-  static constexpr uint32_t MAX_STEPS_BETWEEN_NODES = 6;
+  static constexpr uint32_t MIN_STEPS_BETWEEN_NODES = 2;
+  static constexpr uint32_t MAX_STEPS_BETWEEN_NODES = 11;
   uint32_t m_numNodesBetweenDots = (MIN_STEPS_BETWEEN_NODES + MAX_STEPS_BETWEEN_NODES) / 2;
 
   float m_projectionDistance = 0.0F;
@@ -60,6 +62,7 @@ private:
   V3dFlt m_cameraPosition{};
   Pixel m_dominantMainColor{};
   Pixel m_dominantLowColor{};
+  Pixel m_dominantDotColor{};
 
   auto DrawNode(const Tentacle3D& tentacle,
                 size_t nodeNum,
@@ -95,10 +98,12 @@ inline auto TentaclePlotter::SetProjectionDistance(const float value) -> void
 }
 
 inline auto TentaclePlotter::SetDominantColors(const Pixel& dominantMainColor,
-                                               const Pixel& dominantLowColor) -> void
+                                               const Pixel& dominantLowColor,
+                                               const Pixel& dominantDotColor) -> void
 {
   m_dominantMainColor = dominantMainColor;
   m_dominantLowColor = dominantLowColor;
+  m_dominantDotColor = dominantDotColor;
 }
 
 } // namespace VISUAL_FX::TENTACLES
