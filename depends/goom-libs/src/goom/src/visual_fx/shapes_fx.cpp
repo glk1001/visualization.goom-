@@ -120,7 +120,7 @@ private:
   [[nodiscard]] static auto GetShapesSpeed(float tMinMaxLerp) noexcept -> float;
 
   static constexpr int32_t MIN_SHAPE_RADIUS = 10;
-  static constexpr int32_t MAX_SHAPE_RADIUS = 50;
+  static constexpr int32_t MAX_SHAPE_RADIUS = 40;
   static constexpr uint32_t MIN_RADIUS_STEPS = 10;
   static constexpr uint32_t MAX_RADIUS_STEPS = 50;
   static constexpr uint32_t INITIAL_RADIUS_STEPS = 20;
