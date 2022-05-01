@@ -76,6 +76,11 @@ public:
              RandomColorMapsManager& colorMapsManager,
              Point2dInt screenMidpoint,
              float tMinMaxLerp) noexcept;
+  ShapeGroup(const ShapeGroup&) noexcept = delete;
+  ShapeGroup(ShapeGroup&&) noexcept = default;
+  ~ShapeGroup() noexcept = default;
+  auto operator=(const ShapeGroup&) -> ShapeGroup& = delete;
+  auto operator=(ShapeGroup&&) -> ShapeGroup& = delete;
 
   auto SetWeightedMainColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
   auto SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
@@ -148,6 +153,8 @@ private:
                                    const Point2dInt& screenMidpoint) noexcept
       -> std::vector<ShapePath>;
 };
+
+static_assert(std::is_nothrow_move_constructible_v<ShapeGroup>);
 
 ShapeGroup::ShapeGroup(const IGoomRand& goomRand,
                        RandomColorMapsManager& colorMapsManager,
