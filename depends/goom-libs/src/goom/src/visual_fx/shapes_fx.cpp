@@ -61,6 +61,9 @@ public:
   auto UpdateLowColorInfo(ShapeGroup& parentShapeGroup) const noexcept -> void;
   auto UpdateInnerColorInfo(ShapeGroup& parentShapeGroup) const noexcept -> void;
 
+  auto SetStepSize(float val) noexcept -> void;
+  auto IncrementT() noexcept -> void;
+  [[nodiscard]] auto HasJustHitStartBoundary() const noexcept -> bool;
   [[nodiscard]] auto GetNextPoint() const noexcept -> Point2dInt;
   [[nodiscard]] auto GetColorInfo() const noexcept -> const ColorInfo&;
 
@@ -113,7 +116,6 @@ private:
   const Point2dInt m_screenMidpoint;
   static constexpr float MIN_SHAPE_SPEED = 0.001F;
   static constexpr float MAX_SHAPE_SPEED = 0.005F;
-  TValue m_allShapesPositionT;
   bool m_useRandomShapesSpeed = true;
   float m_tMinMaxLerp = 0.0F;
   auto SetShapesSpeed() noexcept -> void;
@@ -162,7 +164,6 @@ ShapeGroup::ShapeGroup(const IGoomRand& goomRand,
                        const float tMinMaxLerp) noexcept
   : m_goomRand{goomRand},
     m_screenMidpoint{screenMidpoint},
-    m_allShapesPositionT{TValue::StepType::CONTINUOUS_REVERSIBLE, GetShapesSpeed(tMinMaxLerp)},
     m_colorMapsManager{colorMapsManager},
     m_colorInfo{GetInitialColorInfo()},
     m_allColorsT{TValue::StepType::CONTINUOUS_REVERSIBLE, GetShapesSpeed(tMinMaxLerp)}
@@ -189,8 +190,10 @@ inline auto ShapeGroup::GetRandomizedShapePaths() noexcept -> std::vector<ShapeP
       m_goomRand.GetRandInRange(5.0F, 10.F),
       m_goomRand.GetRandInRange(35.0F, 45.0F),
   };
+  auto positionT = std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE,
+                                            GetShapesSpeed(m_tMinMaxLerp));
   const auto baseHypotrochoid =
-      std::make_shared<Hypotrochoid>(Point2dInt{0, 0}, m_allShapesPositionT, params);
+      std::make_shared<Hypotrochoid>(Point2dInt{0, 0}, std::move(positionT), params);
 
   return GetShapePaths(baseHypotrochoid, m_screenMidpoint);
 }
@@ -311,7 +314,8 @@ inline auto ShapeGroup::UpdateInnerColorMapId(
 
 inline auto ShapeGroup::IncrementTs() noexcept -> void
 {
-  m_allShapesPositionT.Increment();
+  std::for_each(begin(m_shapePaths), end(m_shapePaths), [](ShapePath& path) { path.IncrementT(); });
+
   m_allColorsT.Increment();
   m_radiusT.Increment();
 }
@@ -329,7 +333,7 @@ inline auto ShapeGroup::UseFixedShapesSpeed(const float tMinMaxLerp) noexcept ->
 
 inline void ShapeGroup::DoRandomChanges() noexcept
 {
-  if (not m_allShapesPositionT.HasJustHitStartBoundary())
+  if (not m_shapePaths.at(0).HasJustHitStartBoundary())
   {
     return;
   }
@@ -360,7 +364,9 @@ inline auto ShapeGroup::SetShapesSpeed() noexcept -> void
 {
   const float tMinMaxLerp =
       m_useRandomShapesSpeed ? m_goomRand.GetRandInRange(0.0F, 1.0F) : m_tMinMaxLerp;
-  m_allShapesPositionT.SetStepSize(GetShapesSpeed(tMinMaxLerp));
+  const float newSpeed = GetShapesSpeed(tMinMaxLerp);
+  std::for_each(begin(m_shapePaths), end(m_shapePaths),
+                [&newSpeed](ShapePath& path) { path.SetStepSize(newSpeed); });
 
   m_radiusT.SetNumSteps(STD20::lerp(MIN_RADIUS_STEPS, MAX_RADIUS_STEPS, tMinMaxLerp));
 }
@@ -414,6 +420,21 @@ inline auto ShapeGroup::SetWeightedInnerColorMaps(
 inline ShapePath::ShapePath(const std::shared_ptr<IPath> path, const ColorInfo colorInfo) noexcept
   : m_path{path}, m_colorInfo{colorInfo}
 {
+}
+
+inline auto ShapePath::SetStepSize(const float val) noexcept -> void
+{
+  m_path->SetStepSize(val);
+}
+
+inline auto ShapePath::IncrementT() noexcept -> void
+{
+  m_path->IncrementT();
+}
+
+inline auto ShapePath::HasJustHitStartBoundary() const noexcept -> bool
+{
+  return m_path->GetPositionT().HasJustHitStartBoundary();
 }
 
 inline auto ShapePath::GetNextPoint() const noexcept -> Point2dInt

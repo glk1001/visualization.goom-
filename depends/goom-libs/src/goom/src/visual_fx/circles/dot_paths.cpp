@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::CIRCLES
@@ -37,7 +38,8 @@ DotPaths::DotPaths(const IGoomRand& goomRand,
 auto DotPaths::SetTarget(const Point2dInt& target) -> void
 {
   m_target = target;
-  m_dotPaths = GetNewDotPaths(m_dotStartingPositions);
+  std::for_each(begin(m_dotPaths), end(m_dotPaths),
+                [&target](OscillatingPath& path) { path.SetEndPos(target); });
   static constexpr float PROB_RANDOMIZE_POINTS = 0.3F;
   m_randomizePoints = m_goomRand.ProbabilityOf(PROB_RANDOMIZE_POINTS);
 }
@@ -49,7 +51,14 @@ auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPosition
 
   for (size_t i = 0; i < m_numDots; ++i)
   {
-    dotPaths.emplace_back(dotStartingPositions.at(i), m_target, m_positionT, m_pathParams, true);
+    static const std::vector<TValue::DelayPoint> delayPoints{
+        {0.0F,   DELAY_TIME_AT_EDGE},
+        {1.0F, DELAY_TIME_AT_CENTRE}
+    };
+    auto positionT = std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE,
+                                              DEFAULT_POSITION_STEPS, delayPoints, 0.0F);
+    dotPaths.emplace_back(dotStartingPositions.at(i), m_target, std::move(positionT), m_pathParams,
+                          true);
   }
 
   return dotPaths;

@@ -37,7 +37,7 @@ using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::IPath;
+using UTILS::MATH::IStandardPath;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
@@ -94,10 +94,10 @@ static constexpr float LIGHTER_COLOR_POWER = 10.0F;
 
 class ShapeColorizer;
 
-class ParametricPath : public IPath
+class ParametricPath : public IStandardPath
 {
 public:
-  explicit ParametricPath(TValue& t) noexcept;
+  explicit ParametricPath(std::unique_ptr<TValue> positionT) noexcept;
 
   [[nodiscard]] auto GetNextPoint() const -> Point2dInt override;
 
@@ -110,7 +110,8 @@ private:
   float m_kY = DEFAULT_K_Y;
 };
 
-ParametricPath::ParametricPath(TValue& t) noexcept : IPath{t}
+ParametricPath::ParametricPath(std::unique_ptr<TValue> positionT) noexcept
+  : IStandardPath{std::move(positionT)}
 {
 }
 
@@ -180,24 +181,11 @@ private:
   static constexpr float PATH_STEP = NML_CIRCLE_SPEED;
   static constexpr uint32_t SHAPE_T_DELAY_TIME = 10;
   static constexpr float T_AT_CENTRE = 0.5F;
-  // clang-format off
-  TValue m_shapeT{
-      TValue::StepType::CONTINUOUS_REVERSIBLE,
-      PATH_STEP,
-            {
-               {0.0F,        SHAPE_T_DELAY_TIME},
-               {T_AT_CENTRE, SHAPE_T_DELAY_TIME},
-               {1.0F,        SHAPE_T_DELAY_TIME}
-            }
-  };
-  // clang-format on
   int32_t m_maxJitterOffset = 0;
-  TValue m_centrePathT{TValue::StepType::CONTINUOUS_REVERSIBLE, NML_CENTRE_SPEED};
   std::unique_ptr<ParametricPath> m_centrePath{};
   TransformCentreFunc m_getTransformedCentre{};
-  const std::vector<Shape> m_shapes;
+  std::vector<Shape> m_shapes;
   [[nodiscard]] static auto GetInitialShapes(const Data& data,
-                                             TValue& shapeT,
                                              const OscillatingPath::Params& pathParams)
       -> std::vector<Shape>;
 
@@ -432,12 +420,12 @@ Tube::TubeImpl::TubeImpl(const Data& data, const OscillatingPath::Params& pathPa
     m_colorizer{std::make_unique<ShapeColorizer>(data,
                                                  NUM_SHAPES_PER_TUBE,
                                                  MAX_NUM_CIRCLES_IN_GROUP)},
-    m_centrePath{std::make_unique<ParametricPath>(m_centrePathT)},
-    m_shapes{GetInitialShapes(m_data, m_shapeT, pathParams)},
+    m_centrePath{std::make_unique<ParametricPath>(
+        std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP))},
+    m_shapes{GetInitialShapes(m_data, pathParams)},
     m_circleGroupTimer{
         m_data.goomRand.GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP)},
     m_interiorShapeSize{GetInteriorShapeSize(m_hexLen)},
-    // clang-format off
     m_lowColorTypes{
         m_data.goomRand,
         {
@@ -446,13 +434,10 @@ Tube::TubeImpl::TubeImpl(const Data& data, const OscillatingPath::Params& pathPa
             {LowColorTypes::LIGHTENED_LOW_COLOR, LIGHTENED_LOW_COLOR_WEIGHT},
         }
     }
-// clang-format on
 {
 }
 
-auto Tube::TubeImpl::GetInitialShapes(const Data& data,
-                                      TValue& shapeT,
-                                      const OscillatingPath::Params& pathParams)
+auto Tube::TubeImpl::GetInitialShapes(const Data& data, const OscillatingPath::Params& pathParams)
     -> std::vector<Shape>
 {
   const Point2dInt middlePos{static_cast<int32_t>(U_HALF * data.screenWidth),
@@ -479,7 +464,14 @@ auto Tube::TubeImpl::GetInitialShapes(const Data& data,
                                                   static_cast<int32_t>(std::round(yTo))};
 
     shape.shapeNum = shapeNum;
-    shape.path = std::make_unique<OscillatingPath>(fromPos, toPos, shapeT, pathParams,
+    static const std::vector<TValue::DelayPoint> delayPoints{
+        {       0.0F, SHAPE_T_DELAY_TIME},
+        {T_AT_CENTRE, SHAPE_T_DELAY_TIME},
+        {       1.0F, SHAPE_T_DELAY_TIME}
+    };
+    auto shapeT =
+        std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP, delayPoints);
+    shape.path = std::make_unique<OscillatingPath>(fromPos, toPos, std::move(shapeT), pathParams,
                                                    OSCILLATING_SHAPE_PATHS);
 
     angle += ANGLE_STEP;
@@ -553,31 +545,31 @@ inline auto Tube::TubeImpl::GetCentrePathT() const -> float
 
 inline void Tube::TubeImpl::SetCentrePathT(const float val)
 {
-  m_centrePathT.Reset(val);
+  m_centrePath->Reset(val);
 }
 
 inline auto Tube::TubeImpl::GetCentreSpeed() const -> float
 {
-  return m_centrePathT.GetStepSize();
+  return m_centrePath->GetStepSize();
 }
 
 inline void Tube::TubeImpl::SetCentreSpeed(const float val)
 {
-  m_centrePathT.SetStepSize(val);
+  m_centrePath->SetStepSize(val);
 }
 
 inline void Tube::TubeImpl::IncreaseCentreSpeed()
 {
   const float factor = m_data.goomRand.GetRandInRange(1.01F, 10.0F);
   const float newSpeed = std::min(MAX_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
-  m_centrePathT.SetStepSize(newSpeed);
+  m_centrePath->SetStepSize(newSpeed);
 }
 
 inline void Tube::TubeImpl::DecreaseCentreSpeed()
 {
   const float factor = m_data.goomRand.GetRandInRange(0.1F, 0.99F);
   const float newSpeed = std::min(MIN_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
-  m_centrePathT.SetStepSize(newSpeed);
+  m_centrePath->SetStepSize(newSpeed);
 }
 
 inline void Tube::TubeImpl::SetAllowOscillatingCirclePaths(const bool val)
@@ -598,12 +590,13 @@ inline void Tube::TubeImpl::SetCirclePathParams(const OscillatingPath::Params& p
 
 inline auto Tube::TubeImpl::GetCircleSpeed() const -> float
 {
-  return m_shapeT.GetStepSize();
+  return m_shapes.at(0).path->GetStepSize();
 }
 
 inline void Tube::TubeImpl::SetCircleSpeed(const float val)
 {
-  m_shapeT.SetStepSize(val);
+  std::for_each(begin(m_shapes), end(m_shapes),
+                [&val](Shape& shape) { shape.path->SetStepSize(val); });
 }
 
 inline void Tube::TubeImpl::IncreaseCircleSpeed()
@@ -613,8 +606,8 @@ inline void Tube::TubeImpl::IncreaseCircleSpeed()
   const float factor =
       m_data.goomRand.GetRandInRange(MIN_INCREASE_SPEED_FACTOR, MAX_INCREASE_SPEED_FACTOR);
 
-  const float newSpeed = std::min(MAX_CIRCLE_SPEED, m_shapeT.GetStepSize() * factor);
-  m_shapeT.SetStepSize(newSpeed);
+  const float newSpeed = std::min(MAX_CIRCLE_SPEED, GetCircleSpeed() * factor);
+  SetCircleSpeed(newSpeed);
 }
 
 inline void Tube::TubeImpl::DecreaseCircleSpeed()
@@ -624,8 +617,8 @@ inline void Tube::TubeImpl::DecreaseCircleSpeed()
   const float factor =
       m_data.goomRand.GetRandInRange(MIN_DECREASE_SPEED_FACTOR, MAX_DECREASE_SPEED_FACTOR);
 
-  const float newSpeed = std::max(MIN_CIRCLE_SPEED, m_shapeT.GetStepSize() * factor);
-  m_shapeT.SetStepSize(newSpeed);
+  const float newSpeed = std::max(MIN_CIRCLE_SPEED, GetCircleSpeed() * factor);
+  SetCircleSpeed(newSpeed);
 }
 
 void Tube::TubeImpl::DrawShapes()
@@ -651,8 +644,8 @@ inline auto Tube::TubeImpl::GetHexLen() const -> float
 
 inline void Tube::TubeImpl::UpdateTValues()
 {
-  m_shapeT.Increment();
-  m_centrePathT.Increment();
+  std::for_each(begin(m_shapes), end(m_shapes), [](Shape& shape) { shape.path->IncrementT(); });
+  m_centrePath->IncrementT();
   m_colorizer->UpdateAllTValues();
 }
 

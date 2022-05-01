@@ -119,9 +119,10 @@ Circle::~Circle() noexcept = default;
 auto Circle::GetDotStartingPositions(const Point2dInt& centre, const float radius)
     -> std::vector<Point2dInt>
 {
-  TValue positionT{TValue::StepType::SINGLE_CYCLE, NUM_DOTS};
+  auto positionT = std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, NUM_DOTS);
   const AngleParams circleAngleParams{0.0F, UTILS::MATH::DEGREES_360};
-  const auto path = std::make_unique<CirclePath>(centre, positionT, radius, circleAngleParams);
+  const auto path =
+      std::make_unique<CirclePath>(centre, std::move(positionT), radius, circleAngleParams);
 
   std::vector<Point2dInt> dotStartingPositions(NUM_DOTS);
 
@@ -129,7 +130,7 @@ auto Circle::GetDotStartingPositions(const Point2dInt& centre, const float radiu
   {
     dotStartingPositions.at(i) = path->GetNextPoint();
 
-    positionT.Increment();
+    path->IncrementT();
   }
 
   return dotStartingPositions;

@@ -14,8 +14,8 @@ namespace GOOM::UTILS::MATH
 class IPath
 {
 public:
-  explicit IPath(TValue& positionT) noexcept;
-  IPath(const IPath&) noexcept = default;
+  IPath() noexcept = default;
+  IPath(const IPath&) noexcept = delete;
   IPath(IPath&&) noexcept = default;
   virtual ~IPath() noexcept = default;
   auto operator=(const IPath&) -> IPath& = delete;
@@ -24,37 +24,64 @@ public:
   [[nodiscard]] virtual auto GetStartPos() const -> Point2dInt;
   [[nodiscard]] virtual auto GetEndPos() const -> Point2dInt;
 
+  [[nodiscard]] virtual auto GetPositionT() const -> const TValue& = 0;
+
   [[nodiscard]] auto GetNumSteps() const -> uint32_t;
+  virtual auto SetStepSize(float val) noexcept -> void = 0;
+
   [[nodiscard]] auto GetStepSize() const -> float;
+  virtual auto SetNumSteps(uint32_t val) noexcept -> void = 0;
+
   [[nodiscard]] auto GetCurrentT() const -> float;
   [[nodiscard]] auto IsStopped() const -> bool;
 
-  auto IncrementT() -> void;
-  auto Reset(float t = 0.0) -> void;
-
+  virtual auto IncrementT() -> void = 0;
+  virtual auto Reset(float t) -> void = 0;
   [[nodiscard]] virtual auto GetNextPoint() const -> Point2dInt = 0;
 
 private:
-  const Point2dInt m_startPos;
-  const Point2dInt m_endPos;
-  TValue& m_positionT;
   friend class TransformedPath;
   friend class LerpedPath;
 };
 
-class IPathWithStartAndEnd : public IPath
+class IStandardPath : public IPath
+{
+public:
+  explicit IStandardPath(std::unique_ptr<TValue> positionT) noexcept;
+  IStandardPath(const IStandardPath&) noexcept = delete;
+  IStandardPath(IStandardPath&&) noexcept = default;
+  ~IStandardPath() noexcept override = default;
+  auto operator=(const IStandardPath&) -> IStandardPath& = delete;
+  auto operator=(IStandardPath&&) -> IStandardPath& = delete;
+
+  [[nodiscard]] auto GetPositionT() const -> const TValue& override;
+
+  auto SetStepSize(float val) noexcept -> void override;
+  auto SetNumSteps(uint32_t val) noexcept -> void override;
+
+  auto IncrementT() -> void override;
+  auto Reset(float t) -> void override;
+
+private:
+  std::unique_ptr<TValue> m_positionT;
+};
+
+class IPathWithStartAndEnd : public IStandardPath
 {
 public:
   IPathWithStartAndEnd(const Point2dInt& startPos,
                        const Point2dInt& endPos,
-                       TValue& positionT) noexcept;
+                       std::unique_ptr<TValue> positionT) noexcept;
 
   [[nodiscard]] auto GetStartPos() const -> Point2dInt override;
   [[nodiscard]] auto GetEndPos() const -> Point2dInt override;
 
+  auto SetStartPos(const Point2dInt& startPos) noexcept -> void;
+  auto SetEndPos(const Point2dInt& endPos) noexcept -> void;
+
 private:
-  const Point2dInt m_startPos;
-  const Point2dInt m_endPos;
+  Point2dInt m_startPos;
+  Point2dInt m_endPos;
 };
 
 class TransformedPath : public IPath
@@ -64,7 +91,15 @@ public:
 
   [[nodiscard]] auto GetStartPos() const -> Point2dInt override;
   [[nodiscard]] auto GetEndPos() const -> Point2dInt override;
+
+  [[nodiscard]] auto GetPositionT() const -> const TValue& override;
+
+  auto SetStepSize(float val) noexcept -> void override;
+  auto SetNumSteps(uint32_t val) noexcept -> void override;
+
+  auto IncrementT() -> void override;
   [[nodiscard]] auto GetNextPoint() const -> Point2dInt override;
+  auto Reset(float t) -> void override;
 
 private:
   std::shared_ptr<IPath> m_path;
@@ -74,13 +109,12 @@ private:
 class LerpedPath : public IPath
 {
 public:
-  LerpedPath(TValue& positionT,
-             std::shared_ptr<IPath> path1,
-             std::shared_ptr<IPath> path2,
-             TValue& lerpT);
+  LerpedPath(std::shared_ptr<IPath> path1, std::shared_ptr<IPath> path2, TValue& lerpT);
 
   [[nodiscard]] auto GetStartPos() const -> Point2dInt override;
   [[nodiscard]] auto GetEndPos() const -> Point2dInt override;
+
+  auto IncrementT() -> void override;
   [[nodiscard]] auto GetNextPoint() const -> Point2dInt override;
 
 private:
@@ -103,11 +137,11 @@ struct AngleParams
   float endAngleInDegrees = DEGREES_360;
 };
 
-class CirclePath : public IPath
+class CirclePath : public IStandardPath
 {
 public:
   CirclePath(const Point2dInt& centrePos,
-             TValue& positionT,
+             std::unique_ptr<TValue> positionT,
              float radius,
              const AngleParams& angleParams = AngleParams{}) noexcept;
 
@@ -123,7 +157,7 @@ private:
   [[nodiscard]] auto GetPoint(float angle) const -> Point2dFlt;
 };
 
-class LissajousPath : public IPath
+class LissajousPath : public IStandardPath
 {
 public:
   struct Params
@@ -135,7 +169,7 @@ public:
   };
 
   LissajousPath(const Point2dInt& centrePos,
-                TValue& positionT,
+                std::unique_ptr<TValue> positionT,
                 const Params& params,
                 const AngleParams& angleParams = AngleParams{}) noexcept;
 
@@ -151,7 +185,7 @@ private:
   [[nodiscard]] auto GetPoint(float angle) const -> Point2dFlt;
 };
 
-class Hypotrochoid : public IPath
+class Hypotrochoid : public IStandardPath
 {
 public:
   struct Params
@@ -162,7 +196,7 @@ public:
     float amplitude;
   };
   Hypotrochoid(const Point2dInt& centrePos,
-               TValue& positionT,
+               std::unique_ptr<TValue> positionT,
                const Params& params,
                const AngleParams& angleParams = AngleParams{}) noexcept;
 
@@ -181,7 +215,7 @@ private:
   [[nodiscard]] auto GetPoint(float angle) const -> Point2dFlt;
 };
 
-class Epicycloid : public IPath
+class Epicycloid : public IStandardPath
 {
 public:
   struct Params
@@ -191,7 +225,7 @@ public:
     float amplitude;
   };
   Epicycloid(const Point2dInt& centrePos,
-             TValue& positionT,
+             std::unique_ptr<TValue> positionT,
              const Params& params,
              const AngleParams& angleParams = AngleParams{}) noexcept;
 
@@ -220,7 +254,7 @@ public:
 
   SinePath(const Point2dInt& startPos,
            const Point2dInt& endPos,
-           TValue& positionT,
+           std::unique_ptr<TValue> positionT,
            const Params& params) noexcept;
 
   [[nodiscard]] auto GetNextPoint() const -> Point2dInt override;
@@ -243,7 +277,7 @@ public:
 
   OscillatingPath(const Point2dInt& startPos,
                   const Point2dInt& endPos,
-                  TValue& t,
+                  std::unique_ptr<TValue> positionT,
                   const Params& params,
                   bool allowOscillatingPath);
 
@@ -255,12 +289,8 @@ public:
 private:
   Params m_params;
   bool m_allowOscillatingPath;
-  [[nodiscard]] auto GetOscillatingPointAtNextT(const Point2dFlt& point) const -> Point2dFlt;
+  [[nodiscard]] auto GetOscillatingPointAtNextT(const Point2dFlt& linearPoint) const -> Point2dFlt;
 };
-
-inline IPath::IPath(TValue& positionT) noexcept : m_startPos{}, m_endPos{}, m_positionT{positionT}
-{
-}
 
 inline auto IPath::GetStartPos() const -> Point2dInt
 {
@@ -274,38 +304,58 @@ inline auto IPath::GetEndPos() const -> Point2dInt
 
 inline auto IPath::GetNumSteps() const -> uint32_t
 {
-  return m_positionT.GetNumSteps();
+  return GetPositionT().GetNumSteps();
 }
 
 inline auto IPath::GetStepSize() const -> float
 {
-  return m_positionT.GetStepSize();
+  return GetPositionT().GetStepSize();
 }
 
 inline auto IPath::GetCurrentT() const -> float
 {
-  return m_positionT();
+  return GetPositionT()();
 }
 
 inline auto IPath::IsStopped() const -> bool
 {
-  return m_positionT.IsStopped();
+  return GetPositionT().IsStopped();
 }
 
-inline auto IPath::IncrementT() -> void
+inline IStandardPath::IStandardPath(std::unique_ptr<TValue> positionT) noexcept
+  : m_positionT{std::move(positionT)}
 {
-  m_positionT.Increment();
 }
 
-inline auto IPath::Reset(const float t) -> void
+inline auto IStandardPath::GetPositionT() const -> const TValue&
 {
-  m_positionT.Reset(t);
+  return *m_positionT;
+}
+
+inline auto IStandardPath::SetStepSize(const float val) noexcept -> void
+{
+  m_positionT->SetStepSize(val);
+}
+
+inline auto IStandardPath::SetNumSteps(const uint32_t val) noexcept -> void
+{
+  m_positionT->SetNumSteps(val);
+}
+
+inline auto IStandardPath::IncrementT() -> void
+{
+  m_positionT->Increment();
+}
+
+inline auto IStandardPath::Reset(const float t) -> void
+{
+  m_positionT->Reset(t);
 }
 
 inline IPathWithStartAndEnd::IPathWithStartAndEnd(const Point2dInt& startPos,
                                                   const Point2dInt& endPos,
-                                                  TValue& positionT) noexcept
-  : IPath{positionT}, m_startPos{startPos}, m_endPos{endPos}
+                                                  std::unique_ptr<TValue> positionT) noexcept
+  : IStandardPath{std::move(positionT)}, m_startPos{startPos}, m_endPos{endPos}
 {
 }
 
@@ -317,6 +367,16 @@ inline auto IPathWithStartAndEnd::GetStartPos() const -> Point2dInt
 inline auto IPathWithStartAndEnd::GetEndPos() const -> Point2dInt
 {
   return m_endPos;
+}
+
+inline auto IPathWithStartAndEnd::SetStartPos(const Point2dInt& startPos) noexcept -> void
+{
+  m_startPos = startPos;
+}
+
+inline auto IPathWithStartAndEnd::SetEndPos(const Point2dInt& endPos) noexcept -> void
+{
+  m_endPos = endPos;
 }
 
 inline auto TransformedPath::GetStartPos() const -> Point2dInt
@@ -334,6 +394,31 @@ inline auto TransformedPath::GetNextPoint() const -> Point2dInt
   return m_transform.GetTransformedPoint(m_path->GetNextPoint());
 }
 
+inline auto TransformedPath::GetPositionT() const -> const TValue&
+{
+  return m_path->GetPositionT();
+}
+
+inline auto TransformedPath::SetStepSize(const float val) noexcept -> void
+{
+  m_path->SetStepSize(val);
+}
+
+inline auto TransformedPath::SetNumSteps(const uint32_t val) noexcept -> void
+{
+  m_path->SetNumSteps(val);
+}
+
+inline auto TransformedPath::IncrementT() -> void
+{
+  m_path->IncrementT();
+}
+
+inline auto TransformedPath::Reset(const float t) -> void
+{
+  m_path->Reset(t);
+}
+
 inline auto LerpedPath::GetStartPos() const -> Point2dInt
 {
   return lerp(m_path1->GetStartPos(), m_path2->GetStartPos(), 0.0F);
@@ -347,6 +432,12 @@ inline auto LerpedPath::GetEndPos() const -> Point2dInt
 inline auto LerpedPath::GetNextPoint() const -> Point2dInt
 {
   return lerp(m_path1->GetNextPoint(), m_path2->GetNextPoint(), m_lerpT());
+}
+
+inline auto LerpedPath::IncrementT() -> void
+{
+  m_path1->IncrementT();
+  m_path2->IncrementT();
 }
 
 inline auto LinearPath::GetNextPoint() const -> Point2dInt

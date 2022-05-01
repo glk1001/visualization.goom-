@@ -100,11 +100,8 @@ private:
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
   [[nodiscard]] auto GetMiddleColor() const -> Pixel;
 
-  std::array<TValue, NUM_DOT_TYPES> m_dotPositionTs;
-  [[nodiscard]] static auto GetDotPositionTs() -> std::array<TValue, NUM_DOT_TYPES>;
   const std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths;
-  [[nodiscard]] static auto GetDotPaths(const Point2dInt& centre,
-                                        std::array<TValue, NUM_DOT_TYPES>& dotPositionTs)
+  [[nodiscard]] static auto GetDotPaths(const Point2dInt& centre)
       -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>;
 
   void Update();
@@ -191,8 +188,7 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
     },
     // clang-format on
     m_colorMapIds{GetDefaultColorMapIds()},
-    m_dotPositionTs{GetDotPositionTs()},
-    m_dotPaths{GetDotPaths(m_screenMidpoint, m_dotPositionTs)}
+    m_dotPaths{GetDotPaths(m_screenMidpoint)}
 {
 }
 
@@ -209,25 +205,7 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDefaultColorMapIds() noexcept
   return colorMapsIds;
 }
 
-auto GoomDotsFx::GoomDotsFxImpl::GetDotPositionTs() -> std::array<TValue, NUM_DOT_TYPES>
-{
-  static constexpr float HYPOTROCHOID_STEP_SIZE = 0.01F;
-  static constexpr float LISSAJOUS_STEP_SIZE = 0.01F;
-  static constexpr float EPICYCLOID_STEP_SIZE = 0.001F;
-
-  return {
-      {
-       {TValue::StepType::CONTINUOUS_REVERSIBLE, HYPOTROCHOID_STEP_SIZE},
-       {TValue::StepType::CONTINUOUS_REVERSIBLE, HYPOTROCHOID_STEP_SIZE},
-       {TValue::StepType::CONTINUOUS_REVERSIBLE, HYPOTROCHOID_STEP_SIZE},
-       {TValue::StepType::CONTINUOUS_REVERSIBLE, LISSAJOUS_STEP_SIZE},
-       {TValue::StepType::CONTINUOUS_REVERSIBLE, EPICYCLOID_STEP_SIZE},
-       }
-  };
-}
-
-auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre,
-                                             std::array<TValue, NUM_DOT_TYPES>& dotPositionTs)
+auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
     -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>
 {
   static constexpr Hypotrochoid::Params HYPOTROCHOID_PARAMS1{7.0F, 3.0F, 5.0F, 30.0F};
@@ -236,13 +214,28 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre,
   static constexpr LissajousPath::Params LISSAJOUS_PATH_PARAMS{50.0F, 50.F, 3.0F, 2.0F};
   static constexpr Epicycloid::Params EPICYCLOID_PARAMS{5.1F, 1.0F, 30.0F};
 
+  static constexpr TValue::StepType STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
+  static constexpr float HYPOTROCHOID_STEP_SIZE = 0.01F;
+  static constexpr float LISSAJOUS_STEP_SIZE = 0.01F;
+  static constexpr float EPICYCLOID_STEP_SIZE = 0.001F;
+
+  auto hypotrochoidPositionT1 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
+  auto hypotrochoidPositionT2 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
+  auto hypotrochoidPositionT3 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
+  auto lissajousPositionT = std::make_unique<TValue>(STEP_TYPE, LISSAJOUS_STEP_SIZE);
+  auto epicycloidPositionT = std::make_unique<TValue>(STEP_TYPE, EPICYCLOID_STEP_SIZE);
+
   return {
       {
-       std::make_unique<Hypotrochoid>(centre, dotPositionTs.at(0), HYPOTROCHOID_PARAMS1),
-       std::make_unique<Hypotrochoid>(centre, dotPositionTs.at(1), HYPOTROCHOID_PARAMS2),
-       std::make_unique<Hypotrochoid>(centre, dotPositionTs.at(2), HYPOTROCHOID_PARAMS3),
-       std::make_unique<LissajousPath>(centre, dotPositionTs.at(3), LISSAJOUS_PATH_PARAMS),
-       std::make_unique<Epicycloid>(centre, dotPositionTs.at(4), EPICYCLOID_PARAMS),
+       std::make_unique<Hypotrochoid>(centre, std::move(hypotrochoidPositionT1),
+       HYPOTROCHOID_PARAMS1),
+       std::make_unique<Hypotrochoid>(centre, std::move(hypotrochoidPositionT2),
+       HYPOTROCHOID_PARAMS2),
+       std::make_unique<Hypotrochoid>(centre, std::move(hypotrochoidPositionT3),
+       HYPOTROCHOID_PARAMS3),
+       std::make_unique<LissajousPath>(centre, std::move(lissajousPositionT),
+       LISSAJOUS_PATH_PARAMS),
+       std::make_unique<Epicycloid>(centre, std::move(epicycloidPositionT), EPICYCLOID_PARAMS),
        }
   };
 }

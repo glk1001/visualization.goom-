@@ -35,9 +35,11 @@ public:
          float startingT = 0.0F) noexcept;
 
   [[nodiscard]] auto GetStepType() const noexcept -> StepType;
+
   [[nodiscard]] auto GetStepSize() const noexcept -> float;
-  [[nodiscard]] auto GetNumSteps() const noexcept -> uint32_t;
   auto SetStepSize(float val) noexcept -> void;
+
+  [[nodiscard]] auto GetNumSteps() const noexcept -> uint32_t;
   auto SetNumSteps(uint32_t val) noexcept -> void;
 
   auto operator()() const noexcept -> float;

@@ -12,25 +12,22 @@ namespace GOOM::UTILS::MATH
 using MATH::Transform2d;
 
 TransformedPath::TransformedPath(std::shared_ptr<IPath> path, const Transform2d& transform)
-  : IPath{path->m_positionT}, m_path{std::move(path)}, m_transform{transform}
+  : m_path{std::move(path)}, m_transform{transform}
 {
 }
 
-LerpedPath::LerpedPath(TValue& positionT,
-                       std::shared_ptr<IPath> path1,
-                       std::shared_ptr<IPath> path2,
+LerpedPath::LerpedPath(const std::shared_ptr<IPath> path1,
+                       const std::shared_ptr<IPath> path2,
                        TValue& lerpT)
-  : IPath{positionT}, m_path1{std::move(path1)}, m_path2{std::move(path2)}, m_lerpT{lerpT}
+  : m_path1{path1}, m_path2{path2}, m_lerpT{lerpT}
 {
-  assert(&positionT == &path1.m_positionT);
-  assert(&positionT == &path2.m_positionT);
 }
 
 CirclePath::CirclePath(const Point2dInt& centrePos,
-                       TValue& positionT,
+                       std::unique_ptr<TValue> positionT,
                        const float radius,
                        const AngleParams& angleParams) noexcept
-  : IPath{positionT},
+  : IStandardPath{std::move(positionT)},
     m_centre{centrePos.ToFlt()},
     m_radius{radius},
     m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
@@ -44,10 +41,10 @@ auto CirclePath::GetPoint(const float angle) const -> Point2dFlt
 }
 
 LissajousPath::LissajousPath(const Point2dInt& centrePos,
-                             TValue& positionT,
+                             std::unique_ptr<TValue> positionT,
                              const Params& params,
                              const AngleParams& angleParams) noexcept
-  : IPath{positionT},
+  : IStandardPath{std::move(positionT)},
     m_centre{centrePos.ToFlt()},
     m_params{params},
     m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
@@ -63,10 +60,10 @@ auto LissajousPath::GetPoint(const float angle) const -> Point2dFlt
 }
 
 Hypotrochoid::Hypotrochoid(const Point2dInt& centrePos,
-                           TValue& positionT,
+                           std::unique_ptr<TValue> positionT,
                            const Params& params,
                            const AngleParams& angleParams) noexcept
-  : IPath{positionT},
+  : IStandardPath{std::move(positionT)},
     m_centre{centrePos.ToFlt()},
     m_params{params},
     m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
@@ -104,10 +101,10 @@ auto Hypotrochoid::GetPoint(const float angle) const -> Point2dFlt
 }
 
 Epicycloid::Epicycloid(const Point2dInt& centrePos,
-                       TValue& positionT,
+                       std::unique_ptr<TValue> positionT,
                        const Params& params,
                        const AngleParams& angleParams) noexcept
-  : IPath{positionT},
+  : IStandardPath{std::move(positionT)},
     m_centre{centrePos.ToFlt()},
     m_params{params},
     m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
@@ -147,9 +144,9 @@ auto Epicycloid::GetPoint(const float angle) const -> Point2dFlt
 
 SinePath::SinePath(const Point2dInt& startPos,
                    const Point2dInt& endPos,
-                   TValue& positionT,
+                   std::unique_ptr<TValue> positionT,
                    const Params& params) noexcept
-  : IPathWithStartAndEnd{startPos, endPos, positionT},
+  : IPathWithStartAndEnd{startPos, endPos, std::move(positionT)},
     m_params{params},
     m_distance{Distance(startPos.ToFlt(), endPos.ToFlt())},
     m_rotateAngle{std::asin((static_cast<float>(endPos.y - startPos.y)) / m_distance)}
@@ -169,10 +166,10 @@ auto SinePath::GetNextPoint() const -> Point2dInt
 
 OscillatingPath::OscillatingPath(const Point2dInt& startPos,
                                  const Point2dInt& endPos,
-                                 TValue& t,
+                                 std::unique_ptr<TValue> positionT,
                                  const Params& params,
                                  const bool allowOscillatingPath)
-  : IPathWithStartAndEnd{startPos, endPos, t},
+  : IPathWithStartAndEnd{startPos, endPos, std::move(positionT)},
     m_params{params},
     m_allowOscillatingPath{allowOscillatingPath}
 {
@@ -184,22 +181,20 @@ auto OscillatingPath::GetNextPoint() const -> Point2dInt
 
   if (!m_allowOscillatingPath)
   {
-    return {static_cast<int32_t>(std::round(linearPoint.x)),
-            static_cast<int32_t>(std::round(linearPoint.y))};
+    return linearPoint.ToInt();
   }
 
-  const Point2dFlt finalPoint = GetOscillatingPointAtNextT(linearPoint);
-  return {static_cast<int32_t>(std::round(finalPoint.x)),
-          static_cast<int32_t>(std::round(finalPoint.y))};
+  return GetOscillatingPointAtNextT(linearPoint).ToInt();
 }
 
-inline auto OscillatingPath::GetOscillatingPointAtNextT(const Point2dFlt& point) const -> Point2dFlt
+inline auto OscillatingPath::GetOscillatingPointAtNextT(const Point2dFlt& linearPoint) const
+    -> Point2dFlt
 {
   return {
-      point.x + (m_params.oscillatingAmplitude *
-                 std::cos(m_params.xOscillatingFreq * GetCurrentT() * TWO_PI)),
-      point.y + (m_params.oscillatingAmplitude *
-                 std::sin(m_params.yOscillatingFreq * GetCurrentT() * TWO_PI)),
+      linearPoint.x + (m_params.oscillatingAmplitude *
+                       std::cos(m_params.xOscillatingFreq * GetCurrentT() * TWO_PI)),
+      linearPoint.y + (m_params.oscillatingAmplitude *
+                       std::sin(m_params.yOscillatingFreq * GetCurrentT() * TWO_PI)),
   };
 }
 
