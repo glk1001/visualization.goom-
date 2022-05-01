@@ -5,10 +5,12 @@
 
 #include <cmath>
 
-using GOOM::Point2dInt;
-using GOOM::UTILS::MATH::FloatsEqual;
-using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;
-using GOOM::VISUAL_FX::FILTERS::NormalizedCoordsConverter;
+namespace GOOM::UNIT_TESTS
+{
+
+using UTILS::MATH::FloatsEqual;
+using VISUAL_FX::FILTERS::NormalizedCoords;
+using VISUAL_FX::FILTERS::NormalizedCoordsConverter;
 
 static constexpr uint32_t WIDTH = 1280;
 static constexpr uint32_t HEIGHT = 720;
@@ -158,3 +160,5 @@ TEST_CASE("Normalized Coords Operations", "[CoordsOperations]")
     REQUIRE(FloatsEqual(coords.GetY(), 0.25F));
   }
 }
+
+} // namespace GOOM::UNIT_TESTS

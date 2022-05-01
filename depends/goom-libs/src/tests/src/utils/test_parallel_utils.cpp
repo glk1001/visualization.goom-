@@ -6,7 +6,10 @@
 #include <thread>
 #include <vector>
 
-using GOOM::UTILS::Parallel;
+namespace GOOM::UNIT_TESTS
+{
+
+using UTILS::Parallel;
 
 TEST_CASE("Test Parallel Utils", "[ParallelFor]")
 {
@@ -51,3 +54,5 @@ TEST_CASE("Test Parallel Utils", "[ParallelFor]")
   parallel->ForLoop(ARRAY_LEN, assignF);
   checkResults(*parallel, numThreadsUsed);
 }
+
+} // namespace GOOM::UNIT_TESTS

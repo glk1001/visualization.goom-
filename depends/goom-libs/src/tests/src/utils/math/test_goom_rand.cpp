@@ -7,10 +7,13 @@
 #include <map>
 #include <string>
 
-using GOOM::UTILS::NUM;
-using GOOM::UTILS::MATH::ConditionalWeights;
-using GOOM::UTILS::MATH::GoomRand;
-using GOOM::UTILS::MATH::Weights;
+namespace GOOM::UNIT_TESTS
+{
+
+using UTILS::NUM;
+using UTILS::MATH::ConditionalWeights;
+using UTILS::MATH::GoomRand;
+using UTILS::MATH::Weights;
 
 enum class Events
 {
@@ -246,3 +249,5 @@ TEST_CASE("Conditional Weighted Events Exceptions")
                               .GetSumOfWeights(GIVEN_EVENT) == 0.0F,
                       "Sum of weights is zero.");
 }
+
+} // namespace GOOM::UNIT_TESTS

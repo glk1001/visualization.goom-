@@ -2,12 +2,12 @@
 #include "sound_info.h"
 #include "utils/math/misc.h"
 
-#include <algorithm>
 #include <memory>
 
-using GOOM::AudioSamples;
-using GOOM::SoundInfo;
-using GOOM::UTILS::MATH::SMALL_FLOAT;
+namespace GOOM::UNIT_TESTS
+{
+
+using UTILS::MATH::SMALL_FLOAT;
 
 [[nodiscard]] static auto GetAudioData(const float xMin0,
                                        const float xMax0,
@@ -158,3 +158,5 @@ TEST_CASE("Test SoundInfo Volume")
   REQUIRE(soundInfo.GetAllTimesMaxVolume() == Approx(AudioSamples::GetPositiveValue(NEW_MAX_VOL)));
   REQUIRE(soundInfo.GetAllTimesMinVolume() == Approx(ALL_TIMES_MIN));
 }
+
+} // namespace GOOM::UNIT_TESTS

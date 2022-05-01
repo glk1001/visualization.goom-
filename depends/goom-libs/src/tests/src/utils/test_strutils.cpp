@@ -5,7 +5,10 @@
 #include <string>
 #include <vector>
 
-using namespace GOOM::UTILS;
+namespace GOOM::UNIT_TESTS
+{
+
+using namespace UTILS;
 
 TEST_CASE("StringJoin", "[StringJoin]")
 {
@@ -74,3 +77,5 @@ TEST_CASE("EnumToString", "[EnumToString]")
 
   REQUIRE(EnumToString(EnumTester::TEST3) == "TEST3");
 }
+
+} // namespace GOOM::UNIT_TESTS

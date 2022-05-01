@@ -1,3 +1,5 @@
+#define CATCH_CONFIG_NO_POSIX_SIGNALS
+
 #ifndef GOOM_DEBUG
 #define GOOM_DEBUG
 #endif
@@ -12,17 +14,10 @@
 #include <memory>
 #include <vector>
 
-using GOOM::channel_limits;
-using GOOM::MAX_ALPHA;
-using GOOM::MAX_CHANNEL_VALUE_HDR;
-using GOOM::MAX_COLOR_VAL;
-using GOOM::MultiplyChannelColorByScalar;
-using GOOM::MultiplyColorChannels;
-using GOOM::Pixel;
-using GOOM::PixelBuffer;
-using GOOM::PixelChannelType;
-using GOOM::PixelIntType;
-using GOOM::UTILS::MATH::FloatsEqual;
+namespace GOOM::UNIT_TESTS
+{
+
+using UTILS::MATH::FloatsEqual;
 using namespace std::chrono_literals;
 using std::chrono::high_resolution_clock;
 using std::chrono::microseconds;
@@ -190,15 +185,6 @@ TEST_CASE("PixelBuffers")
     REQUIRE(testPixel4 == pixel4RHBNeighbours[3]);
   }
 
-  SECTION("PixelBuffer Get4RHBNeighbours Range Error")
-  {
-    PixelBuffer buffer{WIDTH, HEIGHT};
-
-    REQUIRE_THROWS_AS(buffer.Get4RHBNeighbours(WIDTH - 1, HEIGHT - 1), PixelBuffer::RangeError);
-    REQUIRE_THROWS_AS(buffer.Get4RHBNeighbours(WIDTH - 1, 40), PixelBuffer::RangeError);
-    REQUIRE_THROWS_AS(buffer.Get4RHBNeighbours(10, HEIGHT - 1), PixelBuffer::RangeError);
-  }
-
   SECTION("PixelBuffer RowIter")
   {
     const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
@@ -224,3 +210,5 @@ TEST_CASE("PixelBuffers")
     REQUIRE(count == WIDTH);
   }
 }
+
+} // namespace GOOM::UNIT_TESTS

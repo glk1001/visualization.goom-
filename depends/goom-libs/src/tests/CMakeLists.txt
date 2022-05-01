@@ -17,10 +17,10 @@ add_executable(goomtests
         src/filters/test_filter_colors_service.cpp
         src/filters/test_normalized_coords.cpp
         src/sound/test_sound_info.cpp
-        src/utils/test_goom_rand.cpp
-        src/utils/test_math.cpp
+        src/utils/math/test_goom_rand.cpp
+        src/utils/math/test_misc.cpp
+        src/utils/math/test_randutils.cpp
         src/utils/test_parallel_utils.cpp
-        src/utils/test_randutils.cpp
         src/utils/test_strutils.cpp
         src/utils/test_t_values.cpp
         src/visual_fx/test_filter_fx.cpp

@@ -7,15 +7,14 @@
 #include <format>
 #include <vector>
 
-using GOOM::Pixel;
-using GOOM::PixelChannelType;
-using GOOM::Point2dInt;
-using GOOM::DRAW::GoomDrawToContainer;
+namespace GOOM::UNIT_TESTS
+{
+
+using DRAW::GoomDrawToContainer;
 using ColorsList = GoomDrawToContainer::ColorsList;
 
 static constexpr uint32_t WIDTH = 100;
 static constexpr uint32_t HEIGHT = 100;
-
 
 struct PixelInfo
 {
@@ -185,3 +184,5 @@ TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
     REQUIRE(0 == colorsList.count);
   }
 }
+
+} // namespace GOOM::UNIT_TESTS

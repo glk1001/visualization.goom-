@@ -3,10 +3,13 @@
 
 #include <cstdint>
 
-using GOOM::UTILS::MATH::FloatToIrreducibleFraction;
-using GOOM::UTILS::MATH::Gcd;
-using GOOM::UTILS::MATH::Lcm;
-using GOOM::UTILS::MATH::RationalNumber;
+namespace GOOM::UNIT_TESTS
+{
+
+using UTILS::MATH::FloatToIrreducibleFraction;
+using UTILS::MATH::Gcd;
+using UTILS::MATH::Lcm;
+using UTILS::MATH::RationalNumber;
 
 TEST_CASE("Gcd")
 {
@@ -56,3 +59,5 @@ TEST_CASE("Frac")
   frac = FloatToIrreducibleFraction(6.0F / 7.0F);
   REQUIRE(frac.isRational == false);
 }
+
+} // namespace GOOM::UNIT_TESTS

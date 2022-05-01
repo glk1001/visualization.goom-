@@ -211,14 +211,6 @@ public:
   [[nodiscard]] auto Get4RHBNeighbours(size_t x, size_t y) const noexcept
       -> std::array<Pixel, NUM_NBRS>;
 
-#ifdef GOOM_DEBUG
-  class RangeError : public std::logic_error
-  {
-  public:
-    using std::logic_error::logic_error;
-  };
-#endif
-
 private:
   uint32_t m_width = 0;
   uint32_t m_height = 0;

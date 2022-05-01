@@ -16,16 +16,17 @@
 
 #include <cmath>
 
-using GOOM::PluginInfo;
-using GOOM::Point2dInt;
-using GOOM::UTILS::Parallel;
-using GOOM::UTILS::MATH::FloatsEqual;
-using GOOM::UTILS::MATH::GoomRand;
-using GOOM::VISUAL_FX::FILTERS::FilterZoomVector;
-using GOOM::VISUAL_FX::FILTERS::NormalizedCoords;
-using GOOM::VISUAL_FX::FILTERS::NormalizedCoordsConverter;
-using GOOM::VISUAL_FX::FILTERS::ZoomFilterBuffers;
-using GOOM::VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
+namespace GOOM::UNIT_TESTS
+{
+
+using UTILS::Parallel;
+using UTILS::MATH::FloatsEqual;
+using UTILS::MATH::GoomRand;
+using VISUAL_FX::FILTERS::FilterZoomVector;
+using VISUAL_FX::FILTERS::NormalizedCoords;
+using VISUAL_FX::FILTERS::NormalizedCoordsConverter;
+using VISUAL_FX::FILTERS::ZoomFilterBuffers;
+using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 
 static constexpr size_t WIDTH = 120;
 static constexpr size_t HEIGHT = 70;
@@ -467,3 +468,5 @@ TEST_CASE("ZoomFilterBuffers Clipping", "[ZoomFilterBuffersClipping]")
     // TODO Test coeff values
   }
 }
+
+} // namespace GOOM::UNIT_TESTS

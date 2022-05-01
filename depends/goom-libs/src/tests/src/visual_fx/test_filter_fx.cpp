@@ -13,18 +13,20 @@
 
 #include <memory>
 
-using GOOM::PluginInfo;
-using GOOM::UTILS::Parallel;
-using GOOM::UTILS::MATH::GoomRand;
-using GOOM::VISUAL_FX::ZoomFilterFx;
-using GOOM::VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
-using GOOM::VISUAL_FX::FILTERS::FilterBuffersService;
-using GOOM::VISUAL_FX::FILTERS::FilterColorsService;
-using GOOM::VISUAL_FX::FILTERS::FilterSettingsService;
-using GOOM::VISUAL_FX::FILTERS::FilterZoomVector;
-using GOOM::VISUAL_FX::FILTERS::NormalizedCoordsConverter;
-using GOOM::VISUAL_FX::FILTERS::ZoomFilterBuffers;
-using GOOM::VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
+namespace GOOM::UNIT_TESTS
+{
+
+using UTILS::Parallel;
+using UTILS::MATH::GoomRand;
+using VISUAL_FX::ZoomFilterFx;
+using VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
+using VISUAL_FX::FILTERS::FilterBuffersService;
+using VISUAL_FX::FILTERS::FilterColorsService;
+using VISUAL_FX::FILTERS::FilterSettingsService;
+using VISUAL_FX::FILTERS::FilterZoomVector;
+using VISUAL_FX::FILTERS::NormalizedCoordsConverter;
+using VISUAL_FX::FILTERS::ZoomFilterBuffers;
+using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
 
 static constexpr size_t WIDTH = 120;
 static constexpr size_t HEIGHT = 70;
@@ -56,3 +58,5 @@ TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
     REQUIRE(127 == zoomFilterFx.GetTranLerpFactor());
   }
 }
+
+} // namespace GOOM::UNIT_TESTS

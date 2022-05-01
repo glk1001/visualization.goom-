@@ -6,13 +6,11 @@
 #include <array>
 #include <numeric>
 
-using GOOM::channel_limits;
-using GOOM::MAX_ALPHA;
-using GOOM::Pixel;
-using GOOM::PixelBuffer;
-using GOOM::PixelChannelType;
-using GOOM::VISUAL_FX::FILTERS::FilterColorsService;
-using GOOM::VISUAL_FX::FILTERS::ZoomFilterBuffers;
+namespace GOOM::UNIT_TESTS
+{
+
+using VISUAL_FX::FILTERS::FilterColorsService;
+using VISUAL_FX::FILTERS::ZoomFilterBuffers;
 
 static constexpr size_t WIDTH = 120;
 static constexpr size_t HEIGHT = 70;
@@ -78,3 +76,5 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
     REQUIRE(expectedColor == newColor);
   }
 }
+
+} // namespace GOOM::UNIT_TESTS

@@ -8,13 +8,16 @@
 #include <tuple>
 #include <vector>
 
+namespace GOOM::UNIT_TESTS
+{
+
 using Catch::Matchers::StartsWith;
-using GOOM::UTILS::MATH::RAND::GetRand;
-using GOOM::UTILS::MATH::RAND::GetRandInRange;
-using GOOM::UTILS::MATH::RAND::GetRandSeed;
-using GOOM::UTILS::MATH::RAND::RestoreRandState;
-using GOOM::UTILS::MATH::RAND::SaveRandState;
-using GOOM::UTILS::MATH::RAND::SetRandSeed;
+using UTILS::MATH::RAND::GetRand;
+using UTILS::MATH::RAND::GetRandInRange;
+using UTILS::MATH::RAND::GetRandSeed;
+using UTILS::MATH::RAND::RestoreRandState;
+using UTILS::MATH::RAND::SaveRandState;
+using UTILS::MATH::RAND::SetRandSeed;
 
 TEST_CASE("save/restore random state")
 {
@@ -204,3 +207,5 @@ TEST_CASE("float min max get random")
   REQUIRE_THROWS_WITH(GetRandInRange(5.0F, 1.0F), StartsWith("float x0"));
   REQUIRE_THROWS_WITH(GetRandInRange(5.0F, -1.0F), StartsWith("float x0"));
 }
+
+} // namespace GOOM::UNIT_TESTS

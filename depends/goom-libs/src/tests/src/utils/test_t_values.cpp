@@ -5,8 +5,11 @@
 #include <string>
 #include <vector>
 
-using GOOM::UTILS::TValue;
-using GOOM::UTILS::MATH::SMALL_FLOAT;
+namespace GOOM::UNIT_TESTS
+{
+
+using UTILS::TValue;
+using UTILS::MATH::SMALL_FLOAT;
 
 TEST_CASE("TValue SINGLE_CYCLE")
 {
@@ -258,3 +261,5 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
   REQUIRE(tValue.GetCurrentStep() > 0.0F);
   REQUIRE(tValue() == Approx(STEP_SIZE));
 }
+
+} // namespace GOOM::UNIT_TESTS
