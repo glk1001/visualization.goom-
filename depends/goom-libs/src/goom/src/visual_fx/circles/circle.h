@@ -101,10 +101,18 @@ private:
   std::unique_ptr<DotDrawer> m_dotDrawer;
   bool m_showLine = false;
   static constexpr float T_LINE_COLOR_STEP = 1.0F / static_cast<float>(NUM_DOTS);
-  void DrawLine(const Point2dInt& pos1,
+  auto DrawLine(const Point2dInt& pos1,
                 const Point2dInt& pos2,
                 float lineBrightness,
-                float tLineColor);
+                float tLineColor) -> void;
+  [[nodiscard]] auto DrawLineDots(const Point2dInt& pos1,
+                                  const Point2dInt& pos2,
+                                  float lineBrightness,
+                                  float tLineColor) -> float;
+  auto DrawConnectingLine(const Point2dInt& pos1,
+                          const Point2dInt& pos2,
+                          float lineBrightness,
+                          float tDotColor) -> void;
 
   std::shared_ptr<COLOR::RandomColorMaps> m_mainColorMaps;
   std::shared_ptr<COLOR::RandomColorMaps> m_lowColorMaps;
@@ -121,8 +129,7 @@ private:
   [[nodiscard]] auto GetDotMainColors(float dotBrightness) const -> std::vector<Pixel>;
   [[nodiscard]] auto GetDotLowColors(float dotBrightness) const -> std::vector<Pixel>;
 
-  [[nodiscard]] auto GetFinalMainColor(const float brightness, const Pixel& mainColor) const
-      -> Pixel;
+  [[nodiscard]] auto GetFinalMainColor(float brightness, const Pixel& mainColor) const -> Pixel;
   [[nodiscard]] auto GetFinalLowColor(float brightness, const Pixel& lowColor) const -> Pixel;
   [[nodiscard]] auto GetCorrectedColor(float brightness, const Pixel& color) const -> Pixel;
 };

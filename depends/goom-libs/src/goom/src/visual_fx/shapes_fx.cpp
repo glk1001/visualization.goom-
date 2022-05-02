@@ -498,12 +498,17 @@ private:
   auto DrawShapeGroups() noexcept -> void;
   auto DrawShapes(const ShapeGroup& shapeGroup) noexcept -> void;
   auto DrawShape(const ShapeGroup& shapeGroup, size_t shapeNum) noexcept -> void;
-  [[nodiscard]] static auto GetInnerColorCutoffRadius(int32_t maxRadius) noexcept -> int32_t;
   struct ShapeColors
   {
     Pixel mainColor;
     Pixel lowColor;
   };
+  auto DrawCircleShape(const Point2dInt& centre,
+                       int32_t maxRadius,
+                       const ShapeColors& shapeColors,
+                       const IColorMap& innerColorMap,
+                       float innerColorMix) noexcept -> void;
+  [[nodiscard]] static auto GetInnerColorCutoffRadius(int32_t maxRadius) noexcept -> int32_t;
   [[nodiscard]] static auto GetCurrentShapeColors(
       const ShapeGroup& shapeGroup, const ShapePath::ColorInfo& shapePathColorInfo) noexcept
       -> ShapeColors;
@@ -726,6 +731,16 @@ inline auto ShapesFx::ShapesFxImpl::DrawShape(const ShapeGroup& shapeGroup,
   static constexpr int32_t MAX_RADIUS_JITTER = 10;
   const int32_t maxRadius =
       shapeGroup.GetCurrentShapesRadius() + m_goomRand.GetRandInRange(0, MAX_RADIUS_JITTER + 1);
+
+  DrawCircleShape(point, maxRadius, shapeColors, innerColorMap, shapeGroup.GetInnerColorMix());
+}
+
+inline auto ShapesFx::ShapesFxImpl::DrawCircleShape(const Point2dInt& centre,
+                                                    const int32_t maxRadius,
+                                                    const ShapeColors& shapeColors,
+                                                    const IColorMap& innerColorMap,
+                                                    const float innerColorMix) noexcept -> void
+{
   TValue innerColorT{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)};
   const int32_t innerColorCutoffRadius = GetInnerColorCutoffRadius(maxRadius);
 
@@ -737,12 +752,12 @@ inline auto ShapesFx::ShapesFxImpl::DrawShape(const ShapeGroup& shapeGroup,
   {
     const float brightness = STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
     const Pixel innerColor = innerColorMap.GetColor(innerColorT());
-    const std::vector<Pixel> colors = radius <= innerColorCutoffRadius
-                                          ? GetColors(brightness, shapeColors)
-                                          : GetColorsWithInner(brightness, shapeColors, innerColor,
-                                                               shapeGroup.GetInnerColorMix());
+    const std::vector<Pixel> colors =
+        radius <= innerColorCutoffRadius
+            ? GetColors(brightness, shapeColors)
+            : GetColorsWithInner(brightness, shapeColors, innerColor, innerColorMix);
 
-    m_draw.Circle(point, radius, colors);
+    m_draw.Circle(centre, radius, colors);
 
     brightnessT.Increment();
     innerColorT.Increment();

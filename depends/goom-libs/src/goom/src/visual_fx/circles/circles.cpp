@@ -85,6 +85,11 @@ void Circles::UpdateAndDraw()
   UpdateCirclePathParams();
 }
 
+inline void Circles::UpdateAndDrawCircles()
+{
+  std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.UpdateAndDraw(); });
+}
+
 void Circles::UpdatePositionSpeed()
 {
   if (constexpr float PROB_NO_SPEED_CHANGE = 0.7F; m_goomRand.ProbabilityOf(PROB_NO_SPEED_CHANGE))
@@ -99,11 +104,6 @@ void Circles::UpdatePositionSpeed()
 
   std::for_each(begin(m_circles), end(m_circles),
                 [&newNumSteps](Circle& circle) { circle.UpdatePositionSpeed(newNumSteps); });
-}
-
-inline void Circles::UpdateAndDrawCircles()
-{
-  std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.UpdateAndDraw(); });
 }
 
 inline void Circles::UpdateCirclePathParams()

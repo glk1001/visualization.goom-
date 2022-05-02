@@ -31,6 +31,7 @@ public:
 
   [[nodiscard]] auto HasPositionTJustHitStartBoundary() const -> bool;
   [[nodiscard]] auto HasPositionTJustHitEndBoundary() const -> bool;
+  [[nodiscard]] auto IsDelayed() const -> bool;
 
   [[nodiscard]] auto GetPositionT() const -> float;
   auto IncrementPositionT() -> void;
@@ -96,6 +97,11 @@ inline auto DotPaths::HasPositionTJustHitStartBoundary() const -> bool
 inline auto DotPaths::HasPositionTJustHitEndBoundary() const -> bool
 {
   return m_dotPaths.at(0).GetPositionT().HasJustHitEndBoundary();
+}
+
+inline auto DotPaths::IsDelayed() const -> bool
+{
+  return m_dotPaths.at(0).GetPositionT().IsDelayed();
 }
 
 inline auto DotPaths::GetPositionT() const -> float
