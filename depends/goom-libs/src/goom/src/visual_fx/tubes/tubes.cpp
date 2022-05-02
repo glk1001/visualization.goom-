@@ -37,7 +37,7 @@ using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::IStandardPath;
+using UTILS::MATH::ISimplePath;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
@@ -94,7 +94,7 @@ static constexpr float LIGHTER_COLOR_POWER = 10.0F;
 
 class ShapeColorizer;
 
-class ParametricPath : public IStandardPath
+class ParametricPath : public ISimplePath
 {
 public:
   explicit ParametricPath(std::unique_ptr<TValue> positionT) noexcept;
@@ -111,7 +111,7 @@ private:
 };
 
 ParametricPath::ParametricPath(std::unique_ptr<TValue> positionT) noexcept
-  : IStandardPath{std::move(positionT)}
+  : ISimplePath{std::move(positionT)}
 {
 }
 
