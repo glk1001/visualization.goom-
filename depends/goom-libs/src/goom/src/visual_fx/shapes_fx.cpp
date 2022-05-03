@@ -121,11 +121,11 @@ private:
   auto SetShapesSpeed() noexcept -> void;
   [[nodiscard]] static auto GetShapesSpeed(float tMinMaxLerp) noexcept -> float;
 
-  static constexpr int32_t MIN_SHAPE_RADIUS = 10;
-  static constexpr int32_t MAX_SHAPE_RADIUS = 40;
-  static constexpr uint32_t MIN_RADIUS_STEPS = 10;
-  static constexpr uint32_t MAX_RADIUS_STEPS = 50;
-  static constexpr uint32_t INITIAL_RADIUS_STEPS = 20;
+  static constexpr int32_t MIN_SHAPE_RADIUS = 8;
+  static constexpr int32_t MAX_SHAPE_RADIUS = 14;
+  static constexpr uint32_t MIN_RADIUS_STEPS = 1000;
+  static constexpr uint32_t MAX_RADIUS_STEPS = 5000;
+  static constexpr uint32_t INITIAL_RADIUS_STEPS = 1000;
   TValue m_radiusT{TValue::StepType::CONTINUOUS_REVERSIBLE, INITIAL_RADIUS_STEPS};
 
   static constexpr float MIN_INNER_COLOR_MIX_T = 0.1F;
