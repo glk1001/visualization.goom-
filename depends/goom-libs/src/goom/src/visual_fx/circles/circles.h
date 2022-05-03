@@ -44,7 +44,7 @@ private:
   std::vector<Circle> m_circles;
   [[nodiscard]] static auto GetCircles(const FxHelper& fxHelper,
                                        const Circle::Helper& helper,
-                                       const UTILS::MATH::OscillatingPath::Params& pathParams,
+                                       const UTILS::MATH::OscillatingFunction::Params& pathParams,
                                        uint32_t numCircles,
                                        const std::vector<Circle::Params>& circleParams)
       -> std::vector<Circle>;
@@ -52,7 +52,7 @@ private:
   void UpdateAndDrawCircles();
 
   void UpdateCirclePathParams();
-  [[nodiscard]] auto GetPathParams() const -> UTILS::MATH::OscillatingPath::Params;
+  [[nodiscard]] auto GetPathParams() const -> UTILS::MATH::OscillatingFunction::Params;
 };
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

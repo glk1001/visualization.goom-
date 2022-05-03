@@ -1,201 +1,92 @@
 #include "paths.h"
 
-#include "misc.h"
-#include "point2d.h"
+#include "goom_config.h"
+#include "utils/math/misc.h"
+#include "utils/t_values.h"
 
+#include <algorithm>
 #include <cassert>
-#include <cmath>
+#include <memory>
 
 namespace GOOM::UTILS::MATH
 {
 
 using MATH::Transform2d;
 
-TransformedPath::TransformedPath(std::shared_ptr<IPath> path, const Transform2d& transform)
+TransformedPath::TransformedPath(std::unique_ptr<IPath> path, const Transform2d& transform) noexcept
   : m_path{std::move(path)}, m_transform{transform}
 {
 }
 
 LerpedPath::LerpedPath(const std::shared_ptr<IPath> path1,
                        const std::shared_ptr<IPath> path2,
-                       TValue& lerpT)
+                       TValue& lerpT) noexcept
   : m_path1{path1}, m_path2{path2}, m_lerpT{lerpT}
 {
 }
 
-CirclePath::CirclePath(const Point2dInt& centrePos,
-                       std::unique_ptr<TValue> positionT,
-                       const float radius,
-                       const AngleParams& angleParams) noexcept
-  : ISimplePath{std::move(positionT)},
-    m_centre{centrePos.ToFlt()},
-    m_radius{radius},
-    m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(angleParams.endAngleInDegrees)}
+auto LerpedPath::GetClone() const noexcept -> std::unique_ptr<IPath>
 {
+  assert(false);
+  return std::unique_ptr<LerpedPath>{};
 }
 
-auto CirclePath::GetPoint(const float angle) const -> Point2dFlt
+JoinedPaths::JoinedPaths(std::unique_ptr<TValue> positionT,
+                         const std::vector<float>& pathTStarts,
+                         std::vector<std::unique_ptr<IPath>>&& subPaths) noexcept
+  : m_positionT{std::move(positionT)}, m_pathTStarts{pathTStarts}, m_subPaths{std::move(subPaths)}
 {
-  return Point2dFlt{m_radius * std::cos(angle), -m_radius * std::sin(angle)} + m_centre;
+  assert(not m_pathTStarts.empty());
+  assert(m_pathTStarts.size() == m_subPaths.size());
+  assert(SegmentPathTsAreAscending());
+  assert(SegmentPathTsAreValid());
+
+  AdjustSegmentStepSizes();
 }
 
-LissajousPath::LissajousPath(const Point2dInt& centrePos,
-                             std::unique_ptr<TValue> positionT,
-                             const Params& params,
-                             const AngleParams& angleParams) noexcept
-  : ISimplePath{std::move(positionT)},
-    m_centre{centrePos.ToFlt()},
-    m_params{params},
-    m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(angleParams.endAngleInDegrees)}
+auto JoinedPaths::SegmentPathTsAreAscending() const noexcept -> bool
 {
-}
+  float prevTStart = -SMALL_FLOAT;
 
-auto LissajousPath::GetPoint(const float angle) const -> Point2dFlt
-{
-  return Point2dFlt{m_params.a * std::cos(m_params.kX * angle),
-                    -m_params.b * std::sin(m_params.kY * angle)} +
-         m_centre;
-}
-
-Hypotrochoid::Hypotrochoid(const Point2dInt& centrePos,
-                           std::unique_ptr<TValue> positionT,
-                           const Params& params,
-                           const AngleParams& angleParams) noexcept
-  : ISimplePath{std::move(positionT)},
-    m_centre{centrePos.ToFlt()},
-    m_params{params},
-    m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(angleParams.endAngleInDegrees)},
-    m_rDiff{m_params.bigR - m_params.smallR},
-    m_numCusps{GetNumCusps(m_params.bigR, m_params.smallR)}
-{
-  assert(m_params.bigR > 0.0F);
-  assert(m_params.smallR > 0.0F);
-  assert(m_params.amplitude > 0.0F);
-  assert(m_startAngleInRadians <= m_endAngleInRadians);
-}
-
-auto Hypotrochoid::GetNumCusps(const float bigR, const float smallR) -> float
-{
-  const auto intBigR = static_cast<int32_t>(bigR + SMALL_FLOAT);
-  const auto intSmallR = static_cast<int32_t>(smallR + SMALL_FLOAT);
-
-  if ((0 == intBigR) || (0 == intSmallR))
+  for (const auto& tStart : m_pathTStarts)
   {
-    return 1.0F;
+    if (tStart <= prevTStart)
+    {
+      return false;
+    }
+    prevTStart = tStart;
   }
 
-  return static_cast<float>(Lcm(intSmallR, intBigR) / static_cast<int64_t>(intBigR));
+  return true;
 }
 
-auto Hypotrochoid::GetPoint(const float angle) const -> Point2dFlt
+auto JoinedPaths::SegmentPathTsAreValid() const noexcept -> bool
 {
-  const float angleArg2 = (m_rDiff / m_params.smallR) * angle;
-
-  const float x = +(m_rDiff * std::cos(angle)) + (m_params.height * std::cos(angleArg2));
-  const float y = -(m_rDiff * std::sin(angle)) + (m_params.height * std::sin(angleArg2));
-
-  return (m_params.amplitude * Point2dFlt{x, y}) + m_centre;
+  return std::all_of(cbegin(m_pathTStarts), cend(m_pathTStarts),
+                     [](const float tStart) { return (tStart >= 0.0F) and (tStart <= 1.0F); });
 }
 
-Epicycloid::Epicycloid(const Point2dInt& centrePos,
-                       std::unique_ptr<TValue> positionT,
-                       const Params& params,
-                       const AngleParams& angleParams) noexcept
-  : ISimplePath{std::move(positionT)},
-    m_centre{centrePos.ToFlt()},
-    m_params{params},
-    m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(angleParams.endAngleInDegrees)},
-    m_numCusps{GetNumCusps(m_params.k)}
+auto JoinedPaths::AdjustSegmentStepSizes() noexcept -> void
 {
-  assert(m_params.k > 0.0F);
-  assert(m_params.smallR > 0.0F);
-  assert(m_params.amplitude > 0.0F);
-  assert(m_startAngleInRadians <= m_endAngleInRadians);
-}
+  std::vector<float> tStartsWithSentinel{m_pathTStarts};
+  tStartsWithSentinel.push_back(1.0F);
 
-auto Epicycloid::GetNumCusps([[maybe_unused]] const float k) -> float
-{
-  // From 'https://en.wikipedia.org/wiki/Epicycloid'
-  if (const RationalNumber frac = FloatToIrreducibleFraction(k); frac.isRational)
+  float prevTStart = 0.0F;
+
+  for (size_t i = 1; i < m_pathTStarts.size(); ++i)
   {
-    return static_cast<float>(frac.numerator);
+    const float stepSizeFactor = 1.0F / (tStartsWithSentinel[i] - prevTStart);
+    const float oldStepSize = m_subPaths[i]->GetStepSize();
+    m_subPaths[i]->SetStepSize(stepSizeFactor * oldStepSize);
+
+    prevTStart = tStartsWithSentinel[i];
   }
-
-  // k is irrational. Curve never closes, so return 'large' number.
-  static constexpr float LARGE_NUM_CUSPS = 20.0F;
-  return LARGE_NUM_CUSPS;
 }
 
-auto Epicycloid::GetPoint(const float angle) const -> Point2dFlt
+auto JoinedPaths::GetClone() const noexcept -> std::unique_ptr<IPath>
 {
-  const float angleArg2 = (m_params.k + 1.0F) * angle;
-
-  const float x = +(m_params.smallR * (m_params.k + 1.0F) * std::cos(angle)) -
-                  (m_params.smallR * std::cos(angleArg2));
-  const float y = -(m_params.smallR * (m_params.k + 1.0F) * std::sin(angle)) +
-                  (m_params.smallR * std::sin(angleArg2));
-
-  return (m_params.amplitude * Point2dFlt{x, y}) + m_centre;
-}
-
-SinePath::SinePath(const Point2dInt& startPos,
-                   const Point2dInt& endPos,
-                   std::unique_ptr<TValue> positionT,
-                   const Params& params) noexcept
-  : IPathWithStartAndEnd{startPos, endPos, std::move(positionT)},
-    m_params{params},
-    m_distance{Distance(startPos.ToFlt(), endPos.ToFlt())},
-    m_rotateAngle{std::asin((static_cast<float>(endPos.y - startPos.y)) / m_distance)}
-{
-}
-
-auto SinePath::GetNextPoint() const -> Point2dInt
-{
-  const float y = 100.0F * std::sin(m_params.freq * TWO_PI * GetCurrentT());
-  const float x = m_distance * GetCurrentT();
-
-  Point2dFlt newPoint{x, y};
-  newPoint.Rotate(m_rotateAngle);
-
-  return ((m_params.amplitude * newPoint) + Vec2dFlt{GetStartPos().ToFlt()}).ToInt();
-}
-
-OscillatingPath::OscillatingPath(const Point2dInt& startPos,
-                                 const Point2dInt& endPos,
-                                 std::unique_ptr<TValue> positionT,
-                                 const Params& params,
-                                 const bool allowOscillatingPath)
-  : IPathWithStartAndEnd{startPos, endPos, std::move(positionT)},
-    m_params{params},
-    m_allowOscillatingPath{allowOscillatingPath}
-{
-}
-
-auto OscillatingPath::GetNextPoint() const -> Point2dInt
-{
-  const Point2dFlt linearPoint = lerp(GetStartPos().ToFlt(), GetEndPos().ToFlt(), GetCurrentT());
-
-  if (!m_allowOscillatingPath)
-  {
-    return linearPoint.ToInt();
-  }
-
-  return GetOscillatingPointAtNextT(linearPoint).ToInt();
-}
-
-inline auto OscillatingPath::GetOscillatingPointAtNextT(const Point2dFlt& linearPoint) const
-    -> Point2dFlt
-{
-  return {
-      linearPoint.x + (m_params.oscillatingAmplitude *
-                       std::cos(m_params.xOscillatingFreq * GetCurrentT() * TWO_PI)),
-      linearPoint.y + (m_params.oscillatingAmplitude *
-                       std::sin(m_params.yOscillatingFreq * GetCurrentT() * TWO_PI)),
-  };
+  assert(false);
+  return std::unique_ptr<JoinedPaths>{};
 }
 
 } // namespace GOOM::UTILS::MATH

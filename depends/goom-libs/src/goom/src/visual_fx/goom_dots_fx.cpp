@@ -38,12 +38,16 @@ using UTILS::Logging;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::Epicycloid;
+using UTILS::MATH::AngleParams;
+using UTILS::MATH::EpicycloidFunction;
+using UTILS::MATH::EpicycloidPath;
 using UTILS::MATH::Fraction;
 using UTILS::MATH::HALF;
-using UTILS::MATH::Hypotrochoid;
+using UTILS::MATH::HypotrochoidFunction;
+using UTILS::MATH::HypotrochoidPath;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IPath;
+using UTILS::MATH::LissajousFunction;
 using UTILS::MATH::LissajousPath;
 using UTILS::MATH::S_HALF;
 using UTILS::MATH::THIRD;
@@ -208,11 +212,11 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDefaultColorMapIds() noexcept
 auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
     -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>
 {
-  static constexpr Hypotrochoid::Params HYPOTROCHOID_PARAMS1{7.0F, 3.0F, 5.0F, 30.0F};
-  static constexpr Hypotrochoid::Params HYPOTROCHOID_PARAMS2{8.0F, 3.0F, 5.0F, 30.0F};
-  static constexpr Hypotrochoid::Params HYPOTROCHOID_PARAMS3{9.0F, 3.0F, 5.0F, 30.0F};
-  static constexpr LissajousPath::Params LISSAJOUS_PATH_PARAMS{50.0F, 50.F, 3.0F, 2.0F};
-  static constexpr Epicycloid::Params EPICYCLOID_PARAMS{5.1F, 1.0F, 30.0F};
+  static constexpr HypotrochoidFunction::Params HYPOTROCHOID_PARAMS1{7.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr HypotrochoidFunction::Params HYPOTROCHOID_PARAMS2{8.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr HypotrochoidFunction::Params HYPOTROCHOID_PARAMS3{9.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr LissajousFunction::Params LISSAJOUS_PATH_PARAMS{50.0F, 50.F, 3.0F, 2.0F};
+  static constexpr EpicycloidFunction::Params EPICYCLOID_PARAMS{5.1F, 1.0F, 30.0F};
 
   static constexpr TValue::StepType STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
   static constexpr float HYPOTROCHOID_STEP_SIZE = 0.01F;
@@ -225,18 +229,20 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
   auto lissajousPositionT = std::make_unique<TValue>(STEP_TYPE, LISSAJOUS_STEP_SIZE);
   auto epicycloidPositionT = std::make_unique<TValue>(STEP_TYPE, EPICYCLOID_STEP_SIZE);
 
+  const Vec2dFlt centrePos{centre.ToFlt()};
+  static constexpr AngleParams DEFAULT_ANGLE_PARAMS{};
+
   return {
-      {
-       std::make_unique<Hypotrochoid>(centre, std::move(hypotrochoidPositionT1),
-       HYPOTROCHOID_PARAMS1),
-       std::make_unique<Hypotrochoid>(centre, std::move(hypotrochoidPositionT2),
-       HYPOTROCHOID_PARAMS2),
-       std::make_unique<Hypotrochoid>(centre, std::move(hypotrochoidPositionT3),
-       HYPOTROCHOID_PARAMS3),
-       std::make_unique<LissajousPath>(centre, std::move(lissajousPositionT),
-       LISSAJOUS_PATH_PARAMS),
-       std::make_unique<Epicycloid>(centre, std::move(epicycloidPositionT), EPICYCLOID_PARAMS),
-       }
+      {std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT1), centrePos,
+       DEFAULT_ANGLE_PARAMS, HYPOTROCHOID_PARAMS1),
+       std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT2), centrePos,
+       DEFAULT_ANGLE_PARAMS, HYPOTROCHOID_PARAMS2),
+       std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT3), centrePos,
+       DEFAULT_ANGLE_PARAMS, HYPOTROCHOID_PARAMS3),
+       std::make_unique<LissajousPath>(std::move(lissajousPositionT), centrePos,
+       DEFAULT_ANGLE_PARAMS, LISSAJOUS_PATH_PARAMS),
+       std::make_unique<EpicycloidPath>(std::move(epicycloidPositionT), centrePos,
+       DEFAULT_ANGLE_PARAMS, EPICYCLOID_PARAMS)}
   };
 }
 

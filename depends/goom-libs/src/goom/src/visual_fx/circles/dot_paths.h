@@ -2,6 +2,7 @@
 
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
@@ -18,11 +19,11 @@ public:
            uint32_t numDots,
            std::vector<Point2dInt>&& dotStartingPositions,
            const Point2dInt& dotTarget,
-           const UTILS::MATH::OscillatingPath::Params& dotPathParams) noexcept;
+           const UTILS::MATH::OscillatingFunction::Params& dotPathParams) noexcept;
 
   auto Reset() -> void;
   auto SetTarget(const Point2dInt& target) -> void;
-  auto SetPathParams(const UTILS::MATH::OscillatingPath::Params& params) -> void;
+  auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& params) -> void;
 
   [[nodiscard]] auto GetPositionTRef() const -> const UTILS::TValue&;
 
@@ -47,7 +48,7 @@ private:
   static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
   static constexpr uint32_t DELAY_TIME_AT_CENTRE = 20;
   static constexpr uint32_t DELAY_TIME_AT_EDGE = 10;
-  UTILS::MATH::OscillatingPath::Params m_pathParams;
+  UTILS::MATH::OscillatingFunction::Params m_pathParams;
 
   bool m_randomizePoints = false;
   std::vector<UTILS::MATH::OscillatingPath> m_dotPaths;
@@ -56,7 +57,7 @@ private:
   [[nodiscard]] auto GetSmallRandomOffset() const -> Vec2dInt;
 };
 
-inline auto DotPaths::SetPathParams(const UTILS::MATH::OscillatingPath::Params& params) -> void
+inline auto DotPaths::SetPathParams(const UTILS::MATH::OscillatingFunction::Params& params) -> void
 {
   m_pathParams = params;
 }

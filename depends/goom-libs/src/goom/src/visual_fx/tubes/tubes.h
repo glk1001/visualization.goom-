@@ -91,7 +91,7 @@ public:
   };
 
   Tube() noexcept = delete;
-  Tube(const Data& data, const UTILS::MATH::OscillatingPath::Params& pathParams) noexcept;
+  Tube(const Data& data, const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept;
 
   [[nodiscard]] auto IsActive() const -> bool;
 
@@ -113,7 +113,7 @@ public:
   void DecreaseCentreSpeed();
 
   void SetAllowOscillatingCirclePaths(bool val);
-  void SetCirclePathParams(const UTILS::MATH::OscillatingPath::Params& params);
+  void SetCirclePathParams(const UTILS::MATH::OscillatingFunction::Params& params);
   static const float NORMAL_CIRCLE_SPEED;
   void SetCircleSpeed(float val);
   void IncreaseCircleSpeed();

@@ -4,6 +4,7 @@
 
 #include "logging.h"
 #include "point2d.h"
+#include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
@@ -19,13 +20,14 @@ using UTILS::Logging;
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::LerpedPath;
+using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 
 DotPaths::DotPaths(const IGoomRand& goomRand,
                    const uint32_t numDots,
                    std::vector<Point2dInt>&& dotStartingPositions,
                    const Point2dInt& dotTarget,
-                   const OscillatingPath::Params& dotPathParams) noexcept
+                   const OscillatingFunction::Params& dotPathParams) noexcept
   : m_goomRand{goomRand},
     m_numDots{numDots},
     m_dotStartingPositions{std::move(dotStartingPositions)},
@@ -39,7 +41,8 @@ auto DotPaths::SetTarget(const Point2dInt& target) -> void
 {
   m_target = target;
   std::for_each(begin(m_dotPaths), end(m_dotPaths),
-                [&target](OscillatingPath& path) { path.SetEndPos(target); });
+                [&target](OscillatingPath& path)
+                { path.GetParametricFunction().SetEndPos(target.ToFlt()); });
   static constexpr float PROB_RANDOMIZE_POINTS = 0.3F;
   m_randomizePoints = m_goomRand.ProbabilityOf(PROB_RANDOMIZE_POINTS);
 }
@@ -57,8 +60,8 @@ auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPosition
     };
     auto positionT = std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE,
                                               DEFAULT_POSITION_STEPS, delayPoints, 0.0F);
-    dotPaths.emplace_back(dotStartingPositions.at(i), m_target, std::move(positionT), m_pathParams,
-                          true);
+    dotPaths.emplace_back(std::move(positionT), dotStartingPositions.at(i).ToFlt(),
+                          m_target.ToFlt(), m_pathParams);
   }
 
   return dotPaths;

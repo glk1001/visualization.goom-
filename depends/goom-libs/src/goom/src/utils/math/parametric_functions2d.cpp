@@ -9,49 +9,67 @@
 namespace GOOM::UTILS::MATH
 {
 
-CircleFunction::CircleFunction(const Params& params) noexcept
-  : m_centre{params.centrePos.ToFlt()},
-    m_radius{params.radius},
-    m_startAngleInRadians{ToRadians(params.angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(params.angleParams.endAngleInDegrees)}
+auto IParametricFunction2d::GetPointData(const float t) const noexcept -> PointData
+{
+  return {GetPoint(t), HALF_PI};
+}
+
+CircleFunction::CircleFunction(const Vec2dFlt& centrePos,
+                               const float radius,
+                               const AngleParams& angleParams) noexcept
+  : m_centrePos{centrePos}, m_radius{radius}, m_angleParams{angleParams}
 {
 }
 
-auto CircleFunction::GetPointAtAngle(const float angle) const -> Point2dFlt
+auto CircleFunction::GetPointAtAngle(const float angle) const noexcept -> Point2dFlt
 {
-  return Point2dFlt{m_radius * std::cos(angle), -m_radius * std::sin(angle)} + m_centre;
+  return Point2dFlt{m_radius * std::cos(angle), -m_radius * std::sin(angle)} + m_centrePos;
 }
 
-LissajousFunction::LissajousFunction(const Params& params) noexcept
-  : m_centre{params.centrePos.ToFlt()},
-    m_startAngleInRadians{ToRadians(params.angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(params.angleParams.endAngleInDegrees)},
-    m_lissajousParams{params.lissajousParams}
+SpiralFunction::SpiralFunction(const Vec2dFlt& centrePos,
+                               const uint32_t numTurns,
+                               const Direction direction,
+                               const float minRadius,
+                               const float maxRadius) noexcept
+  : m_centrePos{centrePos},
+    m_minRadius{minRadius},
+    m_maxRadius{maxRadius},
+    m_angleFactor{direction == Direction::COUNTER_CLOCKWISE
+                      ? -static_cast<float>(numTurns) * TWO_PI
+                      : +static_cast<float>(numTurns) * TWO_PI}
 {
 }
 
-auto LissajousFunction::GetPointAtAngle(const float angle) const -> Point2dFlt
+LissajousFunction::LissajousFunction(const Vec2dFlt& centrePos,
+                                     const AngleParams& angleParams,
+                                     const Params& params) noexcept
+  : m_centrePos{centrePos}, m_angleParams{angleParams}, m_params{params}
 {
-  return Point2dFlt{+m_lissajousParams.a * std::cos(m_lissajousParams.kX * angle),
-                    -m_lissajousParams.b * std::sin(m_lissajousParams.kY * angle)} +
-         m_centre;
 }
 
-HypotrochoidFunction::HypotrochoidFunction(const Params& params) noexcept
-  : m_centre{params.centrePos.ToFlt()},
-    m_startAngleInRadians{ToRadians(params.angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(params.angleParams.endAngleInDegrees)},
-    m_hypotrochoidParams{params.hypotrochoidParams},
-    m_rDiff{m_hypotrochoidParams.bigR - m_hypotrochoidParams.smallR},
-    m_numCusps{GetNumCusps(m_hypotrochoidParams.bigR, m_hypotrochoidParams.smallR)}
+auto LissajousFunction::GetPointAtAngle(const float angle) const noexcept -> Point2dFlt
 {
-  assert(m_hypotrochoidParams.bigR > 0.0F);
-  assert(m_hypotrochoidParams.smallR > 0.0F);
-  assert(m_hypotrochoidParams.amplitude > 0.0F);
-  assert(m_startAngleInRadians <= m_endAngleInRadians);
+  return Point2dFlt{+m_params.a * std::cos(m_params.kX * angle),
+                    -m_params.b * std::sin(m_params.kY * angle)} +
+         m_centrePos;
 }
 
-auto HypotrochoidFunction::GetNumCusps(const float bigR, const float smallR) -> float
+HypotrochoidFunction::HypotrochoidFunction(const Vec2dFlt& centrePos,
+                                           const AngleParams& angleParams,
+                                           const Params& params) noexcept
+  : m_centrePos{centrePos},
+    m_angleParams{angleParams},
+    m_params{params},
+    m_rDiff{m_params.bigR - m_params.smallR},
+    m_numCusps{GetNumCusps(m_params.bigR, m_params.smallR)}
+{
+  assert(m_params.bigR > 0.0F);
+  assert(m_params.smallR > 0.0F);
+  assert(m_params.amplitude > 0.0F);
+  assert(m_angleParams.startAngleInRadians <= m_angleParams.endAngleInRadians);
+}
+
+auto HypotrochoidFunction::GetNumCusps(const float bigR, const float smallR) noexcept -> float
 {
   const auto intBigR = static_cast<int32_t>(bigR + SMALL_FLOAT);
   const auto intSmallR = static_cast<int32_t>(smallR + SMALL_FLOAT);
@@ -64,32 +82,31 @@ auto HypotrochoidFunction::GetNumCusps(const float bigR, const float smallR) -> 
   return static_cast<float>(Lcm(intSmallR, intBigR) / static_cast<int64_t>(intBigR));
 }
 
-auto HypotrochoidFunction::GetPointAtAngle(const float angle) const -> Point2dFlt
+auto HypotrochoidFunction::GetPointAtAngle(const float angle) const noexcept -> Point2dFlt
 {
-  const float angleArg2 = (m_rDiff / m_hypotrochoidParams.smallR) * angle;
+  const float angleArg2 = (m_rDiff / m_params.smallR) * angle;
 
-  const float x =
-      +(m_rDiff * std::cos(angle)) + (m_hypotrochoidParams.height * std::cos(angleArg2));
-  const float y =
-      -(m_rDiff * std::sin(angle)) + (m_hypotrochoidParams.height * std::sin(angleArg2));
+  const float x = +(m_rDiff * std::cos(angle)) + (m_params.height * std::cos(angleArg2));
+  const float y = -(m_rDiff * std::sin(angle)) + (m_params.height * std::sin(angleArg2));
 
-  return (m_hypotrochoidParams.amplitude * Point2dFlt{x, y}) + m_centre;
+  return (m_params.amplitude * Point2dFlt{x, y}) + m_centrePos;
 }
 
-EpicycloidFunction::EpicycloidFunction(const Params& params) noexcept
-  : m_centre{params.centrePos.ToFlt()},
-    m_startAngleInRadians{ToRadians(params.angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(params.angleParams.endAngleInDegrees)},
-    m_epicycloidParams{params.epicycloidParams},
-    m_numCusps{GetNumCusps(m_epicycloidParams.k)}
+EpicycloidFunction::EpicycloidFunction(const Vec2dFlt& centrePos,
+                                       const AngleParams& angleParams,
+                                       const Params& params) noexcept
+  : m_centrePos{centrePos},
+    m_angleParams{angleParams},
+    m_params{params},
+    m_numCusps{GetNumCusps(m_params.k)}
 {
-  assert(m_epicycloidParams.k > 0.0F);
-  assert(m_epicycloidParams.smallR > 0.0F);
-  assert(m_epicycloidParams.amplitude > 0.0F);
-  assert(m_startAngleInRadians <= m_endAngleInRadians);
+  assert(m_params.k > 0.0F);
+  assert(m_params.smallR > 0.0F);
+  assert(m_params.amplitude > 0.0F);
+  assert(m_angleParams.startAngleInRadians <= m_angleParams.endAngleInRadians);
 }
 
-auto EpicycloidFunction::GetNumCusps([[maybe_unused]] const float k) -> float
+auto EpicycloidFunction::GetNumCusps([[maybe_unused]] const float k) noexcept -> float
 {
   // From 'https://en.wikipedia.org/wiki/Epicycloid'
   if (const RationalNumber frac = FloatToIrreducibleFraction(k); frac.isRational)
@@ -102,27 +119,30 @@ auto EpicycloidFunction::GetNumCusps([[maybe_unused]] const float k) -> float
   return LARGE_NUM_CUSPS;
 }
 
-auto EpicycloidFunction::GetPointAtAngle(const float angle) const -> Point2dFlt
+auto EpicycloidFunction::GetPointAtAngle(const float angle) const noexcept -> Point2dFlt
 {
-  const float angleArg2 = (m_epicycloidParams.k + 1.0F) * angle;
+  const float angleArg2 = (m_params.k + 1.0F) * angle;
 
-  const float x = +(m_epicycloidParams.smallR * (m_epicycloidParams.k + 1.0F) * std::cos(angle)) -
-                  +(m_epicycloidParams.smallR * std::cos(angleArg2));
-  const float y = -(m_epicycloidParams.smallR * (m_epicycloidParams.k + 1.0F) * std::sin(angle)) +
-                  +(m_epicycloidParams.smallR * std::sin(angleArg2));
+  const float x = +(m_params.smallR * (m_params.k + 1.0F) * std::cos(angle)) -
+                  +(m_params.smallR * std::cos(angleArg2));
+  const float y = -(m_params.smallR * (m_params.k + 1.0F) * std::sin(angle)) +
+                  +(m_params.smallR * std::sin(angleArg2));
 
-  return (m_epicycloidParams.amplitude * Point2dFlt{x, y}) + m_centre;
+  return (m_params.amplitude * Point2dFlt{x, y}) + m_centrePos;
 }
 
-SineFunction::SineFunction(const Params& params) noexcept
-  : m_params{params},
-    m_distance{Distance(m_params.startPos.ToFlt(), m_params.endPos.ToFlt())},
-    m_rotateAngle{
-        std::asin((static_cast<float>(m_params.endPos.y - m_params.startPos.y)) / m_distance)}
+SineFunction::SineFunction(const Point2dFlt& startPos,
+                           const Point2dFlt& endPos,
+                           const Params& params) noexcept
+  : m_startPos{startPos},
+    m_endPos{endPos},
+    m_params{params},
+    m_distance{Distance(m_startPos, m_endPos)},
+    m_rotateAngle{std::asin((m_endPos.y - m_startPos.y) / m_distance)}
 {
 }
 
-auto SineFunction::GetPoint(const float t) const -> Point2dFlt
+auto SineFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
   const float y = 100.0F * std::sin(m_params.freq * TWO_PI * t);
   const float x = m_distance * t;
@@ -130,18 +150,21 @@ auto SineFunction::GetPoint(const float t) const -> Point2dFlt
   Point2dFlt newPoint{x, y};
   newPoint.Rotate(m_rotateAngle);
 
-  return ((m_params.amplitude * newPoint) + Vec2dFlt{m_params.startPos.ToFlt()});
+  return (Point2dFlt{newPoint.x, (m_params.amplitude * newPoint.y)} + Vec2dFlt{m_startPos});
 }
 
-OscillatingFunction::OscillatingFunction(const Params& params) : m_params{params}
+OscillatingFunction::OscillatingFunction(const Point2dFlt& startPos,
+                                         const Point2dFlt& endPos,
+                                         const Params& params) noexcept
+  : m_startPos{startPos}, m_endPos{endPos}, m_params{params}
 {
 }
 
-auto OscillatingFunction::GetPoint(const float t) const -> Point2dFlt
+auto OscillatingFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const Point2dFlt linearPoint = lerp(m_params.startPos.ToFlt(), m_params.endPos.ToFlt(), t);
+  const Point2dFlt linearPoint = lerp(m_startPos, m_endPos, t);
 
-  if (not m_params.allowOscillatingPath)
+  if (not m_allowOscillatingPath)
   {
     return linearPoint;
   }
@@ -150,7 +173,7 @@ auto OscillatingFunction::GetPoint(const float t) const -> Point2dFlt
 }
 
 inline auto OscillatingFunction::GetOscillatingPoint(const Point2dFlt& linearPoint,
-                                                     const float t) const -> Point2dFlt
+                                                     const float t) const noexcept -> Point2dFlt
 {
   return {
       linearPoint.x +

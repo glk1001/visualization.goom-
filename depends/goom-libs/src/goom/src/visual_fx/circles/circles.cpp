@@ -17,6 +17,7 @@ using COLOR::RandomColorMaps;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 
 static constexpr uint32_t LINE_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER;
@@ -42,7 +43,7 @@ Circles::Circles(const FxHelper& fxHelper,
 
 auto Circles::GetCircles(const FxHelper& fxHelper,
                          const Circle::Helper& helper,
-                         const OscillatingPath::Params& pathParams,
+                         const OscillatingFunction::Params& pathParams,
                          const uint32_t numCircles,
                          const std::vector<Circle::Params>& circleParams) -> std::vector<Circle>
 {
@@ -117,7 +118,7 @@ inline void Circles::UpdateCirclePathParams()
                 [this](Circle& circle) { circle.SetPathParams(GetPathParams()); });
 }
 
-inline auto Circles::GetPathParams() const -> OscillatingPath::Params
+inline auto Circles::GetPathParams() const -> OscillatingFunction::Params
 {
   static constexpr float MIN_PATH_AMPLITUDE = 90.0F;
   static constexpr float MAX_PATH_AMPLITUDE = 110.0F;

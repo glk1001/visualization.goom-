@@ -39,6 +39,7 @@ using UTILS::MATH::CirclePath;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
 using UTILS::MATH::ModIncrement;
+using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::U_HALF;
 
@@ -113,7 +114,7 @@ private:
 Circle::Circle(const FxHelper& fxHelper,
                const Helper& helper,
                const Params& circleParams,
-               const OscillatingPath::Params& pathParams) noexcept
+               const OscillatingFunction::Params& pathParams) noexcept
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
@@ -146,9 +147,10 @@ auto Circle::GetDotStartingPositions(const Point2dInt& centre, const float radiu
     -> std::vector<Point2dInt>
 {
   auto positionT = std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, NUM_DOTS);
-  const AngleParams circleAngleParams{0.0F, UTILS::MATH::DEGREES_360};
+  const Vec2dFlt centrePos{centre.ToFlt()};
+  static constexpr AngleParams DEFAULT_ANGLE_PARAMS{};
   const auto path =
-      std::make_unique<CirclePath>(centre, std::move(positionT), radius, circleAngleParams);
+      std::make_unique<CirclePath>(std::move(positionT), centrePos, radius, DEFAULT_ANGLE_PARAMS);
 
   std::vector<Point2dInt> dotStartingPositions(NUM_DOTS);
 
@@ -219,7 +221,7 @@ void Circle::SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint)
   // Don't need the zoom midpoint.
 }
 
-void Circle::SetPathParams(const OscillatingPath::Params& pathParams)
+void Circle::SetPathParams(const OscillatingFunction::Params& pathParams)
 {
   m_dotPaths.SetPathParams(pathParams);
 }

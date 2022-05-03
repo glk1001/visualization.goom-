@@ -3,6 +3,9 @@
 #include "misc.h"
 #include "point2d.h"
 
+#include <cmath>
+#include <functional>
+
 namespace GOOM::UTILS::MATH
 {
 
@@ -10,27 +13,43 @@ class IParametricFunction2d
 {
 public:
   IParametricFunction2d() noexcept = default;
-  IParametricFunction2d(const IParametricFunction2d&) noexcept = delete;
-  IParametricFunction2d(IParametricFunction2d&&) noexcept = delete;
+  IParametricFunction2d(const IParametricFunction2d&) noexcept = default;
+  IParametricFunction2d(IParametricFunction2d&&) noexcept = default;
   virtual ~IParametricFunction2d() noexcept = default;
   auto operator=(const IParametricFunction2d&) -> IParametricFunction2d& = delete;
   auto operator=(IParametricFunction2d&&) -> IParametricFunction2d& = delete;
 
-  [[nodiscard]] virtual auto GetPoint(float t) const -> Point2dFlt = 0;
+  [[nodiscard]] virtual auto GetPoint(float t) const noexcept -> Point2dFlt = 0;
+
+  struct PointData
+  {
+    Point2dFlt point;
+    float normalAngle;
+  };
+  [[nodiscard]] virtual auto GetPointData(float t) const noexcept -> PointData;
+};
+
+template<class T>
+class ModifiedFunction : public IParametricFunction2d
+{
+public:
+  using ModifierFunction = std::function<Point2dFlt(float t, const PointData& pointData)>;
+
+  ModifiedFunction(const T& mainFunction, const ModifierFunction& modifierFunction) noexcept;
+
+  [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
+
+private:
+  const T m_mainFunction;
+  const ModifierFunction m_modifierFunction;
 };
 
 class LineFunction : public IParametricFunction2d
 {
 public:
-  struct Params
-  {
-    Point2dInt startPos;
-    Point2dInt endPos;
-  };
+  LineFunction(const Point2dFlt& startPos, const Point2dFlt& endPos) noexcept;
 
-  explicit LineFunction(const Params& params) noexcept;
-
-  [[nodiscard]] auto GetPoint(float t) const -> Point2dFlt override;
+  [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
   const Point2dFlt m_startPos;
@@ -39,121 +58,124 @@ private:
 
 struct AngleParams
 {
-  float startAngleInDegrees = 0.0F;
-  float endAngleInDegrees = DEGREES_360;
+  float startAngleInRadians = 0.0F;
+  float endAngleInRadians = TWO_PI;
 };
 
 class CircleFunction : public IParametricFunction2d
 {
 public:
-  struct Params
-  {
-    Point2dInt centrePos;
-    float radius;
-    AngleParams angleParams;
-  };
+  CircleFunction(const Vec2dFlt& centrePos, float radius, const AngleParams& angleParams) noexcept;
 
-  explicit CircleFunction(const Params& params) noexcept;
-
-  [[nodiscard]] auto GetPoint(float t) const -> Point2dFlt override;
+  [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Vec2dFlt m_centre;
+  const Vec2dFlt m_centrePos;
   const float m_radius;
-  const float m_startAngleInRadians;
-  const float m_endAngleInRadians;
-  [[nodiscard]] auto GetPointAtAngle(float angle) const -> Point2dFlt;
+  const AngleParams m_angleParams;
+  [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
+};
+
+class SpiralFunction : public IParametricFunction2d
+{
+public:
+  enum class Direction
+  {
+    CLOCKWISE,
+    COUNTER_CLOCKWISE
+  };
+
+  SpiralFunction(const Vec2dFlt& centrePos,
+                 uint32_t numTurns,
+                 Direction direction,
+                 float minRadius,
+                 float maxRadius) noexcept;
+
+  [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
+  [[nodiscard]] auto GetPointData(float t) const noexcept -> PointData override;
+
+private:
+  const Vec2dFlt m_centrePos;
+  const float m_minRadius;
+  const float m_maxRadius;
+  const float m_angleFactor;
+  [[nodiscard]] static auto GetSpiralPoint(float radius, float angle) noexcept -> Point2dFlt;
 };
 
 class LissajousFunction : public IParametricFunction2d
 {
 public:
-  struct LissajousParams
+  struct Params
   {
     float a;
     float b;
     float kX;
     float kY;
   };
-  struct Params
-  {
-    Point2dInt centrePos;
-    AngleParams angleParams;
-    LissajousParams lissajousParams;
-  };
 
-  explicit LissajousFunction(const Params& params) noexcept;
+  LissajousFunction(const Vec2dFlt& centrePos,
+                    const AngleParams& angleParams,
+                    const Params& params) noexcept;
 
-  [[nodiscard]] auto GetPoint(float t) const -> Point2dFlt override;
+  [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Vec2dFlt m_centre;
-  const float m_startAngleInRadians;
-  const float m_endAngleInRadians;
-  const LissajousParams m_lissajousParams;
-  [[nodiscard]] auto GetPointAtAngle(float angle) const -> Point2dFlt;
+  const Vec2dFlt m_centrePos;
+  const AngleParams m_angleParams;
+  const Params m_params;
+  [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
 };
 
 class HypotrochoidFunction : public IParametricFunction2d
 {
 public:
-  struct HypotrochoidParams
+  struct Params
   {
     float bigR;
     float smallR;
     float height;
     float amplitude;
   };
-  struct Params
-  {
-    Point2dInt centrePos;
-    AngleParams angleParams;
-    HypotrochoidParams hypotrochoidParams;
-  };
 
-  explicit HypotrochoidFunction(const Params& params) noexcept;
+  HypotrochoidFunction(const Vec2dFlt& centrePos,
+                       const AngleParams& angleParams,
+                       const Params& params) noexcept;
 
-  [[nodiscard]] auto GetPoint(float t) const -> Point2dFlt override;
+  [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Vec2dFlt m_centre;
-  const float m_startAngleInRadians;
-  const float m_endAngleInRadians;
-  const HypotrochoidParams m_hypotrochoidParams;
+  const Vec2dFlt m_centrePos;
+  const AngleParams m_angleParams;
+  const Params m_params;
   const float m_rDiff;
   const float m_numCusps;
-  [[nodiscard]] static auto GetNumCusps(float bigR, float smallR) -> float;
-  [[nodiscard]] auto GetPointAtAngle(float angle) const -> Point2dFlt;
+  [[nodiscard]] static auto GetNumCusps(float bigR, float smallR) noexcept -> float;
+  [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
 };
 
 class EpicycloidFunction : public IParametricFunction2d
 {
 public:
-  struct EpicycloidParams
+  struct Params
   {
     float k;
     float smallR;
     float amplitude;
   };
-  struct Params
-  {
-    Point2dInt centrePos;
-    AngleParams angleParams;
-    EpicycloidParams epicycloidParams;
-  };
 
-  explicit EpicycloidFunction(const Params& params) noexcept;
+  EpicycloidFunction(const Vec2dFlt& centrePos,
+                     const AngleParams& angleParams,
+                     const Params& params) noexcept;
 
-  [[nodiscard]] auto GetPoint(float t) const -> Point2dFlt override;
+  [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Vec2dFlt m_centre;
-  const float m_startAngleInRadians;
-  const float m_endAngleInRadians;
-  const EpicycloidParams m_epicycloidParams;
+  const Vec2dFlt m_centrePos;
+  const AngleParams m_angleParams;
+  const Params m_params;
   const float m_numCusps;
-  [[nodiscard]] static auto GetNumCusps(float k) -> float;
-  [[nodiscard]] auto GetPointAtAngle(float angle) const -> Point2dFlt;
+  [[nodiscard]] static auto GetNumCusps(float k) noexcept -> float;
+  [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
 };
 
 class SineFunction : public IParametricFunction2d
@@ -161,17 +183,17 @@ class SineFunction : public IParametricFunction2d
 public:
   struct Params
   {
-    Point2dInt startPos;
-    Point2dInt endPos;
     float amplitude = 1.0;
     float freq = 1.0;
   };
 
-  explicit SineFunction(const Params& params) noexcept;
+  SineFunction(const Point2dFlt& startPos, const Point2dFlt& endPos, const Params& params) noexcept;
 
-  [[nodiscard]] auto GetPoint(float t) const -> Point2dFlt override;
+  [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
+  const Point2dFlt m_startPos;
+  const Point2dFlt m_endPos;
   const Params m_params;
   const float m_distance;
   const float m_rotateAngle;
@@ -182,69 +204,116 @@ class OscillatingFunction : public IParametricFunction2d
 public:
   struct Params
   {
-    Point2dInt startPos;
-    Point2dInt endPos;
     float oscillatingAmplitude = 1.0;
     float xOscillatingFreq = 1.0;
     float yOscillatingFreq = 1.0;
-    bool allowOscillatingPath;
   };
 
-  explicit OscillatingFunction(const Params& params);
+  OscillatingFunction(const Point2dFlt& startPos,
+                      const Point2dFlt& endPos,
+                      const Params& params) noexcept;
 
-  auto SetParams(const Params& params) -> void;
-  auto SetAllowOscillatingPath(bool val) -> void;
+  auto SetParams(const Params& params) noexcept -> void;
+  auto SetEndPos(const Point2dFlt& endPos) noexcept -> void;
+  auto SetAllowOscillatingPath(bool val) noexcept -> void;
 
-  [[nodiscard]] auto GetPoint(float t) const -> Point2dFlt override;
+  [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
+  const Point2dFlt m_startPos;
+  Point2dFlt m_endPos;
   Params m_params;
-  [[nodiscard]] auto GetOscillatingPoint(const Point2dFlt& linearPoint, float t) const
+  bool m_allowOscillatingPath = true;
+  [[nodiscard]] auto GetOscillatingPoint(const Point2dFlt& linearPoint, float t) const noexcept
       -> Point2dFlt;
 };
 
-inline LineFunction::LineFunction(const Params& params) noexcept
-  : m_startPos{params.startPos.ToFlt()}, m_endPos{params.endPos.ToFlt()}
+template<class T>
+inline ModifiedFunction<T>::ModifiedFunction(const T& mainFunction,
+                                             const ModifierFunction& modifierFunction) noexcept
+  : m_mainFunction{mainFunction}, m_modifierFunction{modifierFunction}
 {
 }
 
-inline auto LineFunction::GetPoint(const float t) const -> Point2dFlt
+template<class T>
+inline auto ModifiedFunction<T>::GetPoint(const float t) const noexcept -> Point2dFlt
+{
+  return m_modifierFunction(t, m_mainFunction.GetPointData(t));
+}
+
+inline LineFunction::LineFunction(const Point2dFlt& startPos, const Point2dFlt& endPos) noexcept
+  : m_startPos{startPos}, m_endPos{endPos}
+{
+}
+
+inline auto LineFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
   return lerp(m_startPos, m_endPos, t);
 }
 
-inline auto CircleFunction::GetPoint(const float t) const -> Point2dFlt
+inline auto CircleFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float currentAngle = STD20::lerp(m_startAngleInRadians, m_endAngleInRadians, t);
+  const float currentAngle =
+      STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(currentAngle);
 }
 
-inline auto LissajousFunction::GetPoint(const float t) const -> Point2dFlt
+inline auto SpiralFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float currentAngle = STD20::lerp(m_startAngleInRadians, m_endAngleInRadians, t);
+  const float radius = STD20::lerp(m_minRadius, m_maxRadius, t);
+  const float angle = m_angleFactor * t;
+  return GetSpiralPoint(radius, angle) + m_centrePos;
+}
+
+inline auto SpiralFunction::GetPointData(const float t) const noexcept -> PointData
+{
+  const float radius = STD20::lerp(m_minRadius, m_maxRadius, t);
+  const float angle = m_angleFactor * t;
+  const Point2dFlt point = GetSpiralPoint(radius, angle) + m_centrePos;
+
+  return {point, angle};
+}
+
+inline auto SpiralFunction::GetSpiralPoint(const float radius, const float angle) noexcept
+    -> Point2dFlt
+{
+  return Point2dFlt{+radius * std::cos(angle), -radius * std::sin(angle)};
+}
+
+inline auto LissajousFunction::GetPoint(const float t) const noexcept -> Point2dFlt
+{
+  const float currentAngle =
+      STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(currentAngle);
 }
 
-inline auto HypotrochoidFunction::GetPoint(const float t) const -> Point2dFlt
+inline auto HypotrochoidFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float currentAngle = STD20::lerp(m_startAngleInRadians, m_endAngleInRadians, t);
+  const float currentAngle =
+      STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(m_numCusps * currentAngle);
 }
 
-inline auto EpicycloidFunction::GetPoint(const float t) const -> Point2dFlt
+inline auto EpicycloidFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float currentAngle = STD20::lerp(m_startAngleInRadians, m_endAngleInRadians, t);
+  const float currentAngle =
+      STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(m_numCusps * currentAngle);
 }
 
-inline auto OscillatingFunction::SetAllowOscillatingPath(const bool val) -> void
+inline auto OscillatingFunction::SetAllowOscillatingPath(const bool val) noexcept -> void
 {
-  m_params.allowOscillatingPath = val;
+  m_allowOscillatingPath = val;
 }
 
-inline auto OscillatingFunction::SetParams(const Params& params) -> void
+inline auto OscillatingFunction::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
+}
+
+inline auto OscillatingFunction::SetEndPos(const Point2dFlt& endPos) noexcept -> void
+{
+  m_endPos = endPos;
 }
 
 } // namespace GOOM::UTILS::MATH

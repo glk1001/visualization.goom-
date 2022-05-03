@@ -40,6 +40,7 @@ add_library(goom
         src/control/goom_state_monitor.cpp
         src/control/goom_states.cpp
         src/control/goom_title_displayer.cpp
+        src/control/state_and_filter_consts.h
         src/control/visual_fx_color_maps.cpp
         src/draw/draw_methods.cpp
         src/draw/goom_draw.cpp
