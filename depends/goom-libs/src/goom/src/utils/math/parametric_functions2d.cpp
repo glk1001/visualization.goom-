@@ -1,4 +1,4 @@
-#include "paths.h"
+#include "parametric_functions2d.h"
 
 #include "misc.h"
 #include "point2d.h"
@@ -9,75 +9,49 @@
 namespace GOOM::UTILS::MATH
 {
 
-using MATH::Transform2d;
-
-TransformedPath::TransformedPath(std::shared_ptr<IPath> path, const Transform2d& transform)
-  : m_path{std::move(path)}, m_transform{transform}
+CircleFunction::CircleFunction(const Params& params) noexcept
+  : m_centre{params.centrePos.ToFlt()},
+    m_radius{params.radius},
+    m_startAngleInRadians{ToRadians(params.angleParams.startAngleInDegrees)},
+    m_endAngleInRadians{ToRadians(params.angleParams.endAngleInDegrees)}
 {
 }
 
-LerpedPath::LerpedPath(const std::shared_ptr<IPath> path1,
-                       const std::shared_ptr<IPath> path2,
-                       TValue& lerpT)
-  : m_path1{path1}, m_path2{path2}, m_lerpT{lerpT}
-{
-}
-
-CirclePath::CirclePath(const Point2dInt& centrePos,
-                       std::unique_ptr<TValue> positionT,
-                       const float radius,
-                       const AngleParams& angleParams) noexcept
-  : ISimplePath{std::move(positionT)},
-    m_centre{centrePos.ToFlt()},
-    m_radius{radius},
-    m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(angleParams.endAngleInDegrees)}
-{
-}
-
-auto CirclePath::GetPoint(const float angle) const -> Point2dFlt
+auto CircleFunction::GetPointAtAngle(const float angle) const -> Point2dFlt
 {
   return Point2dFlt{m_radius * std::cos(angle), -m_radius * std::sin(angle)} + m_centre;
 }
 
-LissajousPath::LissajousPath(const Point2dInt& centrePos,
-                             std::unique_ptr<TValue> positionT,
-                             const Params& params,
-                             const AngleParams& angleParams) noexcept
-  : ISimplePath{std::move(positionT)},
-    m_centre{centrePos.ToFlt()},
-    m_params{params},
-    m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(angleParams.endAngleInDegrees)}
+LissajousFunction::LissajousFunction(const Params& params) noexcept
+  : m_centre{params.centrePos.ToFlt()},
+    m_startAngleInRadians{ToRadians(params.angleParams.startAngleInDegrees)},
+    m_endAngleInRadians{ToRadians(params.angleParams.endAngleInDegrees)},
+    m_lissajousParams{params.lissajousParams}
 {
 }
 
-auto LissajousPath::GetPoint(const float angle) const -> Point2dFlt
+auto LissajousFunction::GetPointAtAngle(const float angle) const -> Point2dFlt
 {
-  return Point2dFlt{m_params.a * std::cos(m_params.kX * angle),
-                    -m_params.b * std::sin(m_params.kY * angle)} +
+  return Point2dFlt{+m_lissajousParams.a * std::cos(m_lissajousParams.kX * angle),
+                    -m_lissajousParams.b * std::sin(m_lissajousParams.kY * angle)} +
          m_centre;
 }
 
-Hypotrochoid::Hypotrochoid(const Point2dInt& centrePos,
-                           std::unique_ptr<TValue> positionT,
-                           const Params& params,
-                           const AngleParams& angleParams) noexcept
-  : ISimplePath{std::move(positionT)},
-    m_centre{centrePos.ToFlt()},
-    m_params{params},
-    m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(angleParams.endAngleInDegrees)},
-    m_rDiff{m_params.bigR - m_params.smallR},
-    m_numCusps{GetNumCusps(m_params.bigR, m_params.smallR)}
+HypotrochoidFunction::HypotrochoidFunction(const Params& params) noexcept
+  : m_centre{params.centrePos.ToFlt()},
+    m_startAngleInRadians{ToRadians(params.angleParams.startAngleInDegrees)},
+    m_endAngleInRadians{ToRadians(params.angleParams.endAngleInDegrees)},
+    m_hypotrochoidParams{params.hypotrochoidParams},
+    m_rDiff{m_hypotrochoidParams.bigR - m_hypotrochoidParams.smallR},
+    m_numCusps{GetNumCusps(m_hypotrochoidParams.bigR, m_hypotrochoidParams.smallR)}
 {
-  assert(m_params.bigR > 0.0F);
-  assert(m_params.smallR > 0.0F);
-  assert(m_params.amplitude > 0.0F);
+  assert(m_hypotrochoidParams.bigR > 0.0F);
+  assert(m_hypotrochoidParams.smallR > 0.0F);
+  assert(m_hypotrochoidParams.amplitude > 0.0F);
   assert(m_startAngleInRadians <= m_endAngleInRadians);
 }
 
-auto Hypotrochoid::GetNumCusps(const float bigR, const float smallR) -> float
+auto HypotrochoidFunction::GetNumCusps(const float bigR, const float smallR) -> float
 {
   const auto intBigR = static_cast<int32_t>(bigR + SMALL_FLOAT);
   const auto intSmallR = static_cast<int32_t>(smallR + SMALL_FLOAT);
@@ -90,34 +64,32 @@ auto Hypotrochoid::GetNumCusps(const float bigR, const float smallR) -> float
   return static_cast<float>(Lcm(intSmallR, intBigR) / static_cast<int64_t>(intBigR));
 }
 
-auto Hypotrochoid::GetPoint(const float angle) const -> Point2dFlt
+auto HypotrochoidFunction::GetPointAtAngle(const float angle) const -> Point2dFlt
 {
-  const float angleArg2 = (m_rDiff / m_params.smallR) * angle;
+  const float angleArg2 = (m_rDiff / m_hypotrochoidParams.smallR) * angle;
 
-  const float x = +(m_rDiff * std::cos(angle)) + (m_params.height * std::cos(angleArg2));
-  const float y = -(m_rDiff * std::sin(angle)) + (m_params.height * std::sin(angleArg2));
+  const float x =
+      +(m_rDiff * std::cos(angle)) + (m_hypotrochoidParams.height * std::cos(angleArg2));
+  const float y =
+      -(m_rDiff * std::sin(angle)) + (m_hypotrochoidParams.height * std::sin(angleArg2));
 
-  return (m_params.amplitude * Point2dFlt{x, y}) + m_centre;
+  return (m_hypotrochoidParams.amplitude * Point2dFlt{x, y}) + m_centre;
 }
 
-Epicycloid::Epicycloid(const Point2dInt& centrePos,
-                       std::unique_ptr<TValue> positionT,
-                       const Params& params,
-                       const AngleParams& angleParams) noexcept
-  : ISimplePath{std::move(positionT)},
-    m_centre{centrePos.ToFlt()},
-    m_params{params},
-    m_startAngleInRadians{ToRadians(angleParams.startAngleInDegrees)},
-    m_endAngleInRadians{ToRadians(angleParams.endAngleInDegrees)},
-    m_numCusps{GetNumCusps(m_params.k)}
+EpicycloidFunction::EpicycloidFunction(const Params& params) noexcept
+  : m_centre{params.centrePos.ToFlt()},
+    m_startAngleInRadians{ToRadians(params.angleParams.startAngleInDegrees)},
+    m_endAngleInRadians{ToRadians(params.angleParams.endAngleInDegrees)},
+    m_epicycloidParams{params.epicycloidParams},
+    m_numCusps{GetNumCusps(m_epicycloidParams.k)}
 {
-  assert(m_params.k > 0.0F);
-  assert(m_params.smallR > 0.0F);
-  assert(m_params.amplitude > 0.0F);
+  assert(m_epicycloidParams.k > 0.0F);
+  assert(m_epicycloidParams.smallR > 0.0F);
+  assert(m_epicycloidParams.amplitude > 0.0F);
   assert(m_startAngleInRadians <= m_endAngleInRadians);
 }
 
-auto Epicycloid::GetNumCusps([[maybe_unused]] const float k) -> float
+auto EpicycloidFunction::GetNumCusps([[maybe_unused]] const float k) -> float
 {
   // From 'https://en.wikipedia.org/wiki/Epicycloid'
   if (const RationalNumber frac = FloatToIrreducibleFraction(k); frac.isRational)
@@ -130,71 +102,61 @@ auto Epicycloid::GetNumCusps([[maybe_unused]] const float k) -> float
   return LARGE_NUM_CUSPS;
 }
 
-auto Epicycloid::GetPoint(const float angle) const -> Point2dFlt
+auto EpicycloidFunction::GetPointAtAngle(const float angle) const -> Point2dFlt
 {
-  const float angleArg2 = (m_params.k + 1.0F) * angle;
+  const float angleArg2 = (m_epicycloidParams.k + 1.0F) * angle;
 
-  const float x = +(m_params.smallR * (m_params.k + 1.0F) * std::cos(angle)) -
-                  (m_params.smallR * std::cos(angleArg2));
-  const float y = -(m_params.smallR * (m_params.k + 1.0F) * std::sin(angle)) +
-                  (m_params.smallR * std::sin(angleArg2));
+  const float x = +(m_epicycloidParams.smallR * (m_epicycloidParams.k + 1.0F) * std::cos(angle)) -
+                  +(m_epicycloidParams.smallR * std::cos(angleArg2));
+  const float y = -(m_epicycloidParams.smallR * (m_epicycloidParams.k + 1.0F) * std::sin(angle)) +
+                  +(m_epicycloidParams.smallR * std::sin(angleArg2));
 
-  return (m_params.amplitude * Point2dFlt{x, y}) + m_centre;
+  return (m_epicycloidParams.amplitude * Point2dFlt{x, y}) + m_centre;
 }
 
-SinePath::SinePath(const Point2dInt& startPos,
-                   const Point2dInt& endPos,
-                   std::unique_ptr<TValue> positionT,
-                   const Params& params) noexcept
-  : IPathWithStartAndEnd{startPos, endPos, std::move(positionT)},
-    m_params{params},
-    m_distance{Distance(startPos.ToFlt(), endPos.ToFlt())},
-    m_rotateAngle{std::asin((static_cast<float>(endPos.y - startPos.y)) / m_distance)}
+SineFunction::SineFunction(const Params& params) noexcept
+  : m_params{params},
+    m_distance{Distance(m_params.startPos.ToFlt(), m_params.endPos.ToFlt())},
+    m_rotateAngle{
+        std::asin((static_cast<float>(m_params.endPos.y - m_params.startPos.y)) / m_distance)}
 {
 }
 
-auto SinePath::GetNextPoint() const -> Point2dInt
+auto SineFunction::GetPoint(const float t) const -> Point2dFlt
 {
-  const float y = 100.0F * std::sin(m_params.freq * TWO_PI * GetCurrentT());
-  const float x = m_distance * GetCurrentT();
+  const float y = 100.0F * std::sin(m_params.freq * TWO_PI * t);
+  const float x = m_distance * t;
 
   Point2dFlt newPoint{x, y};
   newPoint.Rotate(m_rotateAngle);
 
-  return ((m_params.amplitude * newPoint) + Vec2dFlt{GetStartPos().ToFlt()}).ToInt();
+  return ((m_params.amplitude * newPoint) + Vec2dFlt{m_params.startPos.ToFlt()});
 }
 
-OscillatingPath::OscillatingPath(const Point2dInt& startPos,
-                                 const Point2dInt& endPos,
-                                 std::unique_ptr<TValue> positionT,
-                                 const Params& params,
-                                 const bool allowOscillatingPath)
-  : IPathWithStartAndEnd{startPos, endPos, std::move(positionT)},
-    m_params{params},
-    m_allowOscillatingPath{allowOscillatingPath}
+OscillatingFunction::OscillatingFunction(const Params& params) : m_params{params}
 {
 }
 
-auto OscillatingPath::GetNextPoint() const -> Point2dInt
+auto OscillatingFunction::GetPoint(const float t) const -> Point2dFlt
 {
-  const Point2dFlt linearPoint = lerp(GetStartPos().ToFlt(), GetEndPos().ToFlt(), GetCurrentT());
+  const Point2dFlt linearPoint = lerp(m_params.startPos.ToFlt(), m_params.endPos.ToFlt(), t);
 
-  if (!m_allowOscillatingPath)
+  if (not m_params.allowOscillatingPath)
   {
-    return linearPoint.ToInt();
+    return linearPoint;
   }
 
-  return GetOscillatingPointAtNextT(linearPoint).ToInt();
+  return GetOscillatingPoint(linearPoint, t);
 }
 
-inline auto OscillatingPath::GetOscillatingPointAtNextT(const Point2dFlt& linearPoint) const
-    -> Point2dFlt
+inline auto OscillatingFunction::GetOscillatingPoint(const Point2dFlt& linearPoint,
+                                                     const float t) const -> Point2dFlt
 {
   return {
-      linearPoint.x + (m_params.oscillatingAmplitude *
-                       std::cos(m_params.xOscillatingFreq * GetCurrentT() * TWO_PI)),
-      linearPoint.y + (m_params.oscillatingAmplitude *
-                       std::sin(m_params.yOscillatingFreq * GetCurrentT() * TWO_PI)),
+      linearPoint.x +
+          (m_params.oscillatingAmplitude * std::cos(m_params.xOscillatingFreq * t * TWO_PI)),
+      linearPoint.y +
+          (m_params.oscillatingAmplitude * std::sin(m_params.yOscillatingFreq * t * TWO_PI)),
   };
 }
 

@@ -60,6 +60,7 @@ add_library(goom
         src/utils/math/goom_rand_base.h
         src/utils/math/math20.h
         src/utils/math/misc.h
+        src/utils/math/parametric_functions2d.cpp
         src/utils/math/paths.cpp
         src/utils/math/randutils.cpp
         src/utils/math/transform2d.h
