@@ -1,8 +1,8 @@
 #pragma once
 
-namespace GOOM
+namespace GOOM::CONTROL
 {
 
-static constexpr bool FORCE_GOOM_STATE_AND_FILTER_EFFECTS_TURNED_OFF = true;
+static constexpr bool FORCE_GOOM_STATE_AND_ALL_FILTER_EFFECTS_TURNED_OFF = false;
 
-} // namespace GOOM
+} // namespace GOOM::CONTROL
