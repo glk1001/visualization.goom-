@@ -71,12 +71,13 @@ private:
   DotPaths m_dotPaths;
   DotDiameters m_dotDiameters;
   [[nodiscard]] auto GetRandomCircleCentreTargetPosition() const -> Point2dInt;
-  [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, const float radius)
+  [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, float radius)
       -> std::vector<Point2dInt>;
 
   uint64_t m_updateNum = 0;
   uint32_t m_dotAttributeOffset = 0;
   [[nodiscard]] auto IsSpecialUpdateNum() const -> bool;
+  [[nodiscard]] auto IsSpecialLineUpdateNum() const -> bool;
   static constexpr uint32_t BLANK_TIME = 40;
   UTILS::Timer m_blankTimer{BLANK_TIME, true};
 
@@ -101,16 +102,16 @@ private:
   std::unique_ptr<DotDrawer> m_dotDrawer;
   bool m_showLine = false;
   static constexpr float T_LINE_COLOR_STEP = 1.0F / static_cast<float>(NUM_DOTS);
-  auto DrawLine(const Point2dInt& pos1,
-                const Point2dInt& pos2,
+  auto DrawLine(const Point2dInt& position1,
+                const Point2dInt& position2,
                 float lineBrightness,
                 float tLineColor) -> void;
-  [[nodiscard]] auto DrawLineDots(const Point2dInt& pos1,
-                                  const Point2dInt& pos2,
+  [[nodiscard]] auto DrawLineDots(const Point2dInt& position1,
+                                  const Point2dInt& position2,
                                   float lineBrightness,
                                   float tLineColor) -> float;
-  auto DrawConnectingLine(const Point2dInt& pos1,
-                          const Point2dInt& pos2,
+  auto DrawConnectingLine(const Point2dInt& position1,
+                          const Point2dInt& position2,
                           float lineBrightness,
                           float tDotColor) -> void;
 

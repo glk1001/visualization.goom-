@@ -80,9 +80,9 @@ private:
   static constexpr float MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.1F;
   static constexpr float MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.9F;
   float m_outerCircleDotColorMix = MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T;
-  static constexpr float CIRCLE_DOT_LOW_COLOR_BRIGHTNESS_FACTOR = 0.9F;
+  static constexpr float CIRCLE_DOT_LOW_COLOR_BRIGHTNESS_FACTOR = 0.1F;
 
-  auto DrawBitmapDot(const Point2dInt& pos,
+  auto DrawBitmapDot(const Point2dInt& position,
                      uint32_t diameter,
                      const Pixel& mainColor,
                      const Pixel& lowColor) -> void;
@@ -209,7 +209,7 @@ void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weighte
 
   m_linesMainColorMap = &newMainColorMap;
   m_linesLowColorMap = &newLowColorMap;
-  static constexpr float PROB_SHOW_LINE = 0.05F;
+  static constexpr float PROB_SHOW_LINE = 0.5F;
   m_showLine = m_goomRand.ProbabilityOf(PROB_SHOW_LINE);
 
   m_dotDiameters.ChangeDotDiameters();
@@ -354,7 +354,7 @@ inline auto Circle::GetDotBrightness(const float brightness) const -> float
     static constexpr float BRIGHTNESS_INCREASE = 5.0F;
     return BRIGHTNESS_INCREASE * brightness;
   }
-  static constexpr float BRIGHTNESS_INCREASE = 2.0F;
+  static constexpr float BRIGHTNESS_INCREASE = 1.5F;
   return BRIGHTNESS_INCREASE * brightness;
 }
 
@@ -362,6 +362,12 @@ inline auto Circle::IsSpecialUpdateNum() const -> bool
 {
   static constexpr uint64_t SPECIAL_UPDATE_MULTIPLE = 5;
   return 0 == (m_updateNum % SPECIAL_UPDATE_MULTIPLE);
+}
+
+inline auto Circle::IsSpecialLineUpdateNum() const -> bool
+{
+  static constexpr uint64_t LINE_UPDATE_MULTIPLE = 8;
+  return 0 == (m_updateNum % LINE_UPDATE_MULTIPLE);
 }
 
 inline auto Circle::GetLineBrightness(const float brightness) const -> float
@@ -398,7 +404,7 @@ inline auto Circle::GetDotLowColors(const float dotBrightness) const -> std::vec
 
 inline auto Circle::GetFinalMainColor(const float brightness, const Pixel& mainColor) const -> Pixel
 {
-  static constexpr float MAIN_COLOR_BRIGHTNESS = 0.1F;
+  static constexpr float MAIN_COLOR_BRIGHTNESS = 1.0F;
   return GetCorrectedColor(brightness * MAIN_COLOR_BRIGHTNESS, mainColor);
 }
 
@@ -413,17 +419,17 @@ inline auto Circle::GetCorrectedColor(const float brightness, const Pixel& color
   return m_helper.gammaCorrect.GetCorrection(brightness, GetIncreasedChroma(color));
 }
 
-inline auto Circle::DrawLine(const Point2dInt& pos1,
-                             const Point2dInt& pos2,
+inline auto Circle::DrawLine(const Point2dInt& position1,
+                             const Point2dInt& position2,
                              const float lineBrightness,
                              const float tLineColor) -> void
 {
-  const float lastTDotColor = DrawLineDots(pos1, pos2, lineBrightness, tLineColor);
-  DrawConnectingLine(pos1, pos2, lineBrightness, lastTDotColor);
+  const float lastTDotColor = DrawLineDots(position1, position2, lineBrightness, tLineColor);
+  DrawConnectingLine(position1, position2, lineBrightness, lastTDotColor);
 }
 
-inline auto Circle::DrawLineDots(const Point2dInt& pos1,
-                                 const Point2dInt& pos2,
+inline auto Circle::DrawLineDots(const Point2dInt& position1,
+                                 const Point2dInt& position2,
                                  const float lineBrightness,
                                  const float tLineColor) -> float
 {
@@ -437,7 +443,7 @@ inline auto Circle::DrawLineDots(const Point2dInt& pos1,
   float tDotColor = tLineColor + T_DOT_COLOR_STEP;
   for (uint32_t i = 0; i < (NUM_LINE_DOTS - 1); ++i)
   {
-    const Point2dInt dotPos = lerp(pos1, pos2, tDotPos);
+    const Point2dInt dotPos = lerp(position1, position2, tDotPos);
     const Pixel mainColor =
         GetFinalMainColor(lineBrightness, m_linesMainColorMap->GetColor(tDotColor));
     const Pixel lowColor =
@@ -452,12 +458,12 @@ inline auto Circle::DrawLineDots(const Point2dInt& pos1,
   return tDotColor;
 }
 
-inline auto Circle::DrawConnectingLine(const Point2dInt& pos1,
-                                       const Point2dInt& pos2,
+inline auto Circle::DrawConnectingLine(const Point2dInt& position1,
+                                       const Point2dInt& position2,
                                        const float lineBrightness,
                                        const float tDotColor) -> void
 {
-  if (not m_showLine)
+  if ((not m_showLine) or (not IsSpecialLineUpdateNum()))
   {
     return;
   }
@@ -467,7 +473,7 @@ inline auto Circle::DrawConnectingLine(const Point2dInt& pos1,
       GetFinalMainColor(lineBrightness, m_linesMainColorMap->GetColor(tDotColor));
   const Pixel lowColor = GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
 
-  m_draw.Line(pos1, pos2, {mainColor, lowColor}, LINE_THICKNESS);
+  m_draw.Line(position1, position2, {mainColor, lowColor}, LINE_THICKNESS);
 }
 
 Circle::DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
@@ -518,12 +524,12 @@ inline auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
                                              const Pixel& lowColor,
                                              const IColorMap& innerColorMap) noexcept -> void
 {
-  const auto maxRadius = static_cast<int32_t>(diameter + 1) / 2;
+  const auto maxRadius = static_cast<int32_t>(diameter + 3) / 2;
   TValue innerColorT{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)};
   static constexpr int32_t INNER_COLOR_CUTOFF_RADIUS = 4;
 
   static constexpr float MIN_BRIGHTNESS = 1.0F;
-  static constexpr float MAX_BRIGHTNESS = 10.0F;
+  static constexpr float MAX_BRIGHTNESS = 3.0F;
   TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius)};
 
   for (int32_t radius = maxRadius; radius > 1; --radius)
@@ -541,6 +547,8 @@ inline auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
     brightnessT.Increment();
     innerColorT.Increment();
   }
+
+  m_draw.DrawPixelsClipped(centre, {mainColor, lowColor});
 }
 
 inline auto Circle::DotDrawer::GetCircleColors(const float brightness,
@@ -569,7 +577,7 @@ inline auto Circle::DotDrawer::GetCircleColorsWithInner(const float brightness,
   return {finalMainColor, finalLowColor};
 }
 
-inline auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& pos,
+inline auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& position,
                                              const uint32_t diameter,
                                              const Pixel& mainColor,
                                              const Pixel& lowColor) -> void
@@ -577,7 +585,7 @@ inline auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& pos,
   const auto getMainColor =
       [this, &mainColor, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
   {
-    static constexpr float MAIN_COLOR_BRIGHTNESS = 10.0F;
+    static constexpr float MAIN_COLOR_BRIGHTNESS = 1.0F;
     const Pixel color = GetBrighterColor(MAIN_COLOR_BRIGHTNESS, mainColor);
     return GetDotMixedColor(x, y, diameter, bgnd, color, m_bgndMainColorMixT);
   };
@@ -585,12 +593,12 @@ inline auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& pos,
   const auto getLowColor =
       [this, &lowColor, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
   {
-    static constexpr float LOW_COLOR_BRIGHTNESS = 20.0F;
+    static constexpr float LOW_COLOR_BRIGHTNESS = 2.0F;
     const Pixel color = GetBrighterColor(LOW_COLOR_BRIGHTNESS, lowColor);
     return GetDotMixedColor(x, y, diameter, bgnd, color, m_bgndLowColorMixT);
   };
 
-  m_draw.Bitmap(pos, m_helper.bitmapGetter.GetBitmap(diameter), {getMainColor, getLowColor});
+  m_draw.Bitmap(position, m_helper.bitmapGetter.GetBitmap(diameter), {getMainColor, getLowColor});
 }
 
 inline auto Circle::DotDrawer::GetRandomDecorationType() const -> DecorationType
@@ -623,8 +631,8 @@ inline auto Circle::DotDrawer::GetDotMixedColor(const size_t x,
     return mixedColor;
   }
 
-  static constexpr float DIFFERENT_COLOR_BRIGHTNESS = 10.5F;
-  static constexpr float SPECIAL_BRIGHTNESS = 10.5F;
+  static constexpr float DIFFERENT_COLOR_BRIGHTNESS = 5.0F;
+  static constexpr float SPECIAL_BRIGHTNESS = 5.0F;
 
   switch (m_decorationType)
   {

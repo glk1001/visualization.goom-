@@ -68,6 +68,7 @@ public:
               const std::vector<GetBitmapColorFunc>& getColors);
 
   void DrawPixels(Point2dInt point, const std::vector<Pixel>& colors);
+  void DrawPixelsClipped(Point2dInt point, const std::vector<Pixel>& colors);
 
   [[nodiscard]] virtual auto GetPixel(Point2dInt point) const -> Pixel = 0;
   virtual void DrawPixelsUnblended(Point2dInt point, const std::vector<Pixel>& colors) = 0;
@@ -196,6 +197,17 @@ inline void IGoomDraw::Bitmap(const Point2dInt centre,
 
 inline void IGoomDraw::DrawPixels(const Point2dInt point, const std::vector<Pixel>& colors)
 {
+  m_drawMethods.DrawPixels(point.x, point.y, colors);
+}
+
+inline void IGoomDraw::DrawPixelsClipped(const Point2dInt point, const std::vector<Pixel>& colors)
+{
+  if ((0 < point.x) || (0 < point.y) || (static_cast<uint32_t>(point.x) >= m_screenWidth) ||
+      (static_cast<uint32_t>(point.y) >= m_screenHeight))
+  {
+    return;
+  }
+
   m_drawMethods.DrawPixels(point.x, point.y, colors);
 }
 
