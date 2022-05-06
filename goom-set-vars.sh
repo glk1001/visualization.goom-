@@ -20,14 +20,14 @@ while [[ $# -gt 0 ]]; do
       shift # past value
       ;;
     *)
-      EXTRA_ARGS="${EXTRA_ARGS}${key}"
+      EXTRA_ARGS="${EXTRA_ARGS}${key} "
       shift # past argument
       ;;
     *)
   esac
 done
 
-set -- "${EXTRA_ARGS}"
+set -- ${EXTRA_ARGS}
 unset EXTRA_ARGS
 
 if [[ "${COMPILER:-}" == "" ]]; then
@@ -73,7 +73,7 @@ fi
 
 if [[ "${BUILD_DIRNAME:-}" == "" ]]; then
   declare -r BUILD_DIRNAME=build-${C_COMPILER}-${C_BUILD_TYPE}
-  echo "USING DEFAULT BUILD DIR \"${BUILD_DIRNAME}\"."
+  echo "Using BUILD_DIRNAME \"${BUILD_DIRNAME}\"."
   echo
 fi
 if [[ ${BUILD_DIRNAME} != build* ]]; then
