@@ -102,6 +102,8 @@ public:
   auto UseRandomShapesSpeed() noexcept -> void;
   auto UseFixedShapesSpeed(float tMinMaxLerp) noexcept -> void;
 
+  static inline const std::set<RandomColorMaps::ColorMapTypes> COLOR_MAP_TYPES =
+      RandomColorMaps::ALL_COLOR_MAP_TYPES;
   auto UpdateMainColorMapId(RandomColorMapsManager::ColorMapId mainColorMapId) noexcept -> void;
   auto UpdateLowColorMapId(RandomColorMapsManager::ColorMapId lowColorMapId) noexcept -> void;
   auto UpdateInnerColorMapId(RandomColorMapsManager::ColorMapId innerColorMapId) noexcept -> void;
@@ -140,8 +142,11 @@ private:
   struct ColorInfo
   {
     std::shared_ptr<RandomColorMaps> mainColorMaps;
+    COLOR::COLOR_DATA::ColorMapName mainColormapName;
     std::shared_ptr<RandomColorMaps> lowColorMaps;
+    COLOR::COLOR_DATA::ColorMapName lowColormapName;
     std::shared_ptr<RandomColorMaps> innerColorMaps;
+    COLOR::COLOR_DATA::ColorMapName innerColormapName;
     float innerColorMix;
   };
   ColorInfo m_colorInfo;
@@ -159,6 +164,16 @@ private:
   [[nodiscard]] auto GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>;
   [[nodiscard]] auto GetShapePaths(const IPath& basePath, const Point2dInt& screenMidpoint) noexcept
       -> std::vector<ShapePath>;
+  struct SpiralParams
+  {
+    uint32_t numTurns;
+    SpiralFunction::Direction spiralDirection;
+    float minRadius;
+    float maxRadius;
+  };
+  [[nodiscard]] auto GetBasePath(const SpiralFunction& baseFunction) noexcept
+      -> std::unique_ptr<IPath>;
+  [[nodiscard]] static auto GetSpiralFunction(const SpiralParams& spiralParams) -> SpiralFunction;
 };
 
 static_assert(std::is_nothrow_move_constructible_v<ShapeGroup>);
@@ -175,12 +190,19 @@ ShapeGroup::ShapeGroup(const IGoomRand& goomRand,
     m_colorInfo{GetInitialColorInfo()},
     m_allColorsT{TValue::StepType::CONTINUOUS_REVERSIBLE, GetShapesSpeed(tMinMaxLerp)}
 {
+  SetWeightedMainColorMaps(GetAllMapsUnweighted(m_goomRand));
+  SetWeightedLowColorMaps(GetAllMapsUnweighted(m_goomRand));
+  SetWeightedInnerColorMaps(GetAllMapsUnweighted(m_goomRand));
 }
 
 auto ShapeGroup::GetInitialColorInfo() const noexcept -> ColorInfo
 {
-  return {GetAllMapsUnweighted(m_goomRand), GetAllMapsUnweighted(m_goomRand),
+  return {GetAllMapsUnweighted(m_goomRand),
+          COLOR::COLOR_DATA::ColorMapName::_NULL,
           GetAllMapsUnweighted(m_goomRand),
+          COLOR::COLOR_DATA::ColorMapName::_NULL,
+          GetAllMapsUnweighted(m_goomRand),
+          COLOR::COLOR_DATA::ColorMapName::_NULL,
           m_goomRand.GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T)};
 }
 
@@ -191,13 +213,6 @@ inline auto ShapeGroup::Start() noexcept -> void
 
 inline auto ShapeGroup::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
 {
-  struct SpiralParams
-  {
-    uint32_t numTurns;
-    SpiralFunction::Direction spiralDirection;
-    float minRadius;
-    float maxRadius;
-  };
   static constexpr uint32_t FIXED_NUM_TURNS = 10;
   // clang-format off
   static constexpr std::array<SpiralParams, ShapesFx::NUM_SHAPE_GROUPS> SPIRAL_PARAMS{{
@@ -214,22 +229,19 @@ inline auto ShapeGroup::GetRandomizedShapePaths() noexcept -> std::vector<ShapeP
   }};
   // clang-format on
 
+  const SpiralFunction spiralFunction{GetSpiralFunction(SPIRAL_PARAMS.at(m_groupNum))};
+
+  return GetShapePaths(*GetBasePath(spiralFunction), m_screenMidpoint);
+}
+
+inline auto ShapeGroup::GetBasePath(const SpiralFunction& baseFunction) noexcept
+    -> std::unique_ptr<IPath>
+{
   static constexpr TValue::StepType STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
   auto positionT = std::make_unique<TValue>(STEP_TYPE, GetShapesSpeed(m_tMinMaxLerp));
-  static const Vec2dFlt s_CENTRE_POS{0.0F, 0.0F};
-  const uint32_t numTurns = SPIRAL_PARAMS.at(m_groupNum).numTurns;
-  const SpiralFunction::Direction spiralDirection = SPIRAL_PARAMS.at(m_groupNum).spiralDirection;
-  const float minRadius = SPIRAL_PARAMS.at(m_groupNum).minRadius;
-  const float maxRadius = SPIRAL_PARAMS.at(m_groupNum).maxRadius;
-
-  const SpiralFunction spiralFunction{s_CENTRE_POS, numTurns, spiralDirection, minRadius,
-                                      maxRadius};
-
-  //  const SpiralPath basePath{std::move(positionT), spiralFunction};
 
   //    static constexpr float MOD_AMOUNT = 0.1F;
   const float modAmount = m_goomRand.GetRandInRange(0.01F, 0.1F);
-
   const auto sineModifier =
       [modAmount](const float t, const IParametricFunction2d::PointData& pointData)
   {
@@ -246,10 +258,16 @@ inline auto ShapeGroup::GetRandomizedShapePaths() noexcept -> std::vector<ShapeP
     return newPoint;
   };
 
-  const ParametricPath<ModifiedFunction<SpiralFunction>> basePath{std::move(positionT),
-                                                                  spiralFunction, sineModifier};
+  return std::make_unique<ParametricPath<ModifiedFunction<SpiralFunction>>>(
+      std::move(positionT), baseFunction, sineModifier);
+}
 
-  return GetShapePaths(basePath, m_screenMidpoint);
+inline auto ShapeGroup::GetSpiralFunction(const SpiralParams& spiralParams) -> SpiralFunction
+{
+  static const Vec2dFlt s_CENTRE_POS{0.0F, 0.0F};
+
+  return {s_CENTRE_POS, spiralParams.numTurns, spiralParams.spiralDirection, spiralParams.minRadius,
+          spiralParams.maxRadius};
 }
 
 auto ShapeGroup::GetShapePaths(const IPath& basePath, const Point2dInt& screenMidpoint) noexcept
@@ -333,15 +351,54 @@ auto ShapeGroup::GetCurrentShapesRadius() const noexcept -> int32_t
   return STD20::lerp(MIN_SHAPE_RADIUS, MAX_SHAPE_RADIUS, m_radiusT());
 }
 
+inline auto ShapeGroup::SetWeightedMainColorMaps(
+    const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
+{
+  m_colorInfo.mainColorMaps = weightedMaps;
+  m_colorInfo.mainColormapName =
+      weightedMaps->GetRandomColorMapName(weightedMaps->GetRandomGroup());
+
+  for (const auto& shapePath : m_shapePaths)
+  {
+    shapePath.UpdateMainColorInfo(*this);
+  }
+}
+
+inline auto ShapeGroup::SetWeightedLowColorMaps(
+    const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
+{
+  m_colorInfo.lowColorMaps = weightedMaps;
+  m_colorInfo.lowColormapName = weightedMaps->GetRandomColorMapName(weightedMaps->GetRandomGroup());
+
+  for (const auto& shapePath : m_shapePaths)
+  {
+    shapePath.UpdateLowColorInfo(*this);
+  }
+}
+
+inline auto ShapeGroup::SetWeightedInnerColorMaps(
+    const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
+{
+  m_colorInfo.innerColorMix =
+      m_goomRand.GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);
+
+  m_colorInfo.innerColorMaps = weightedMaps;
+  m_colorInfo.innerColormapName =
+      weightedMaps->GetRandomColorMapName(weightedMaps->GetRandomGroup());
+
+  for (const auto& shapePath : m_shapePaths)
+  {
+    shapePath.UpdateInnerColorInfo(*this);
+  }
+}
+
 inline auto ShapeGroup::UpdateMainColorMapId(
     const RandomColorMapsManager::ColorMapId mainColorMapId) noexcept -> void
 {
   const std::shared_ptr<RandomColorMaps>& mainColorMaps = m_colorInfo.mainColorMaps;
 
   m_colorMapsManager.UpdateColorMapInfo(
-      mainColorMapId,
-      {mainColorMaps, mainColorMaps->GetRandomColorMapName(mainColorMaps->GetRandomGroup()),
-       RandomColorMaps::ALL_COLOR_MAP_TYPES});
+      mainColorMapId, {mainColorMaps, m_colorInfo.mainColormapName, COLOR_MAP_TYPES});
 }
 
 inline auto ShapeGroup::UpdateLowColorMapId(
@@ -350,9 +407,7 @@ inline auto ShapeGroup::UpdateLowColorMapId(
   const std::shared_ptr<RandomColorMaps>& lowColorMaps = m_colorInfo.lowColorMaps;
 
   m_colorMapsManager.UpdateColorMapInfo(
-      lowColorMapId,
-      {lowColorMaps, lowColorMaps->GetRandomColorMapName(lowColorMaps->GetRandomGroup()),
-       RandomColorMaps::ALL_COLOR_MAP_TYPES});
+      lowColorMapId, {lowColorMaps, m_colorInfo.lowColormapName, COLOR_MAP_TYPES});
 }
 
 inline auto ShapeGroup::UpdateInnerColorMapId(
@@ -361,9 +416,7 @@ inline auto ShapeGroup::UpdateInnerColorMapId(
   const std::shared_ptr<RandomColorMaps>& innerColorMaps = m_colorInfo.innerColorMaps;
 
   m_colorMapsManager.UpdateColorMapInfo(
-      innerColorMapId,
-      {innerColorMaps, innerColorMaps->GetRandomColorMapName(innerColorMaps->GetRandomGroup()),
-       RandomColorMaps::ALL_COLOR_MAP_TYPES});
+      innerColorMapId, {innerColorMaps, m_colorInfo.innerColormapName, COLOR_MAP_TYPES});
 }
 
 inline auto ShapeGroup::IncrementTs() noexcept -> void
@@ -433,42 +486,6 @@ inline auto ShapeGroup::GetShapesSpeed(const float tMinMaxLerp) noexcept -> floa
 inline auto ShapeGroup::MakeNewColorMapId() noexcept -> RandomColorMapsManager::ColorMapId
 {
   return m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand);
-}
-
-inline auto ShapeGroup::SetWeightedMainColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
-{
-  m_colorInfo.mainColorMaps = weightedMaps;
-
-  for (const auto& shapePath : m_shapePaths)
-  {
-    shapePath.UpdateMainColorInfo(*this);
-  }
-}
-
-inline auto ShapeGroup::SetWeightedLowColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
-{
-  m_colorInfo.lowColorMaps = weightedMaps;
-
-  for (const auto& shapePath : m_shapePaths)
-  {
-    shapePath.UpdateLowColorInfo(*this);
-  }
-}
-
-inline auto ShapeGroup::SetWeightedInnerColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
-{
-  m_colorInfo.innerColorMix =
-      m_goomRand.GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);
-
-  m_colorInfo.innerColorMaps = weightedMaps;
-
-  for (const auto& shapePath : m_shapePaths)
-  {
-    shapePath.UpdateInnerColorInfo(*this);
-  }
 }
 
 inline ShapePath::ShapePath(const std::shared_ptr<IPath> path, const ColorInfo colorInfo) noexcept
