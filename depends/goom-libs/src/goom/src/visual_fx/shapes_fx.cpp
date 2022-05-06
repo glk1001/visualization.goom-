@@ -102,8 +102,6 @@ public:
   auto UseRandomShapesSpeed() noexcept -> void;
   auto UseFixedShapesSpeed(float tMinMaxLerp) noexcept -> void;
 
-  static inline const std::set<RandomColorMaps::ColorMapTypes> COLOR_MAP_TYPES =
-      RandomColorMaps::ALL_COLOR_MAP_TYPES;
   auto UpdateMainColorMapId(RandomColorMapsManager::ColorMapId mainColorMapId) noexcept -> void;
   auto UpdateLowColorMapId(RandomColorMapsManager::ColorMapId lowColorMapId) noexcept -> void;
   auto UpdateInnerColorMapId(RandomColorMapsManager::ColorMapId innerColorMapId) noexcept -> void;
@@ -136,6 +134,8 @@ private:
   static constexpr uint32_t INITIAL_RADIUS_STEPS = 200;
   TValue m_radiusT{TValue::StepType::CONTINUOUS_REVERSIBLE, INITIAL_RADIUS_STEPS};
 
+  static inline const std::set<RandomColorMaps::ColorMapTypes> COLOR_MAP_TYPES =
+      RandomColorMaps::ALL_COLOR_MAP_TYPES;
   static constexpr float MIN_INNER_COLOR_MIX_T = 0.1F;
   static constexpr float MAX_INNER_COLOR_MIX_T = 0.9F;
   RandomColorMapsManager& m_colorMapsManager;
@@ -150,6 +150,7 @@ private:
     float innerColorMix;
   };
   ColorInfo m_colorInfo;
+  bool m_useRandomColorNames = false;
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
   [[nodiscard]] auto MakeNewColorMapId() noexcept -> RandomColorMapsManager::ColorMapId;
 
@@ -181,7 +182,7 @@ static_assert(std::is_nothrow_move_constructible_v<ShapeGroup>);
 ShapeGroup::ShapeGroup(const IGoomRand& goomRand,
                        RandomColorMapsManager& colorMapsManager,
                        const Point2dInt screenMidpoint,
-                       const uint32_t groupNum,
+                       uint32_t groupNum,
                        const float tMinMaxLerp) noexcept
   : m_goomRand{goomRand},
     m_screenMidpoint{screenMidpoint},
@@ -190,9 +191,6 @@ ShapeGroup::ShapeGroup(const IGoomRand& goomRand,
     m_colorInfo{GetInitialColorInfo()},
     m_allColorsT{TValue::StepType::CONTINUOUS_REVERSIBLE, GetShapesSpeed(tMinMaxLerp)}
 {
-  SetWeightedMainColorMaps(GetAllMapsUnweighted(m_goomRand));
-  SetWeightedLowColorMaps(GetAllMapsUnweighted(m_goomRand));
-  SetWeightedInnerColorMaps(GetAllMapsUnweighted(m_goomRand));
 }
 
 auto ShapeGroup::GetInitialColorInfo() const noexcept -> ColorInfo
@@ -397,8 +395,13 @@ inline auto ShapeGroup::UpdateMainColorMapId(
 {
   const std::shared_ptr<RandomColorMaps>& mainColorMaps = m_colorInfo.mainColorMaps;
 
-  m_colorMapsManager.UpdateColorMapInfo(
-      mainColorMapId, {mainColorMaps, m_colorInfo.mainColormapName, COLOR_MAP_TYPES});
+  const COLOR::COLOR_DATA::ColorMapName colormapName =
+      not m_useRandomColorNames
+          ? m_colorInfo.mainColormapName
+          : mainColorMaps->GetRandomColorMapName(mainColorMaps->GetRandomGroup());
+
+  m_colorMapsManager.UpdateColorMapInfo(mainColorMapId,
+                                        {mainColorMaps, colormapName, COLOR_MAP_TYPES});
 }
 
 inline auto ShapeGroup::UpdateLowColorMapId(
@@ -406,8 +409,13 @@ inline auto ShapeGroup::UpdateLowColorMapId(
 {
   const std::shared_ptr<RandomColorMaps>& lowColorMaps = m_colorInfo.lowColorMaps;
 
-  m_colorMapsManager.UpdateColorMapInfo(
-      lowColorMapId, {lowColorMaps, m_colorInfo.lowColormapName, COLOR_MAP_TYPES});
+  const COLOR::COLOR_DATA::ColorMapName colormapName =
+      not m_useRandomColorNames
+          ? m_colorInfo.lowColormapName
+          : lowColorMaps->GetRandomColorMapName(lowColorMaps->GetRandomGroup());
+
+  m_colorMapsManager.UpdateColorMapInfo(lowColorMapId,
+                                        {lowColorMaps, colormapName, COLOR_MAP_TYPES});
 }
 
 inline auto ShapeGroup::UpdateInnerColorMapId(
@@ -415,8 +423,13 @@ inline auto ShapeGroup::UpdateInnerColorMapId(
 {
   const std::shared_ptr<RandomColorMaps>& innerColorMaps = m_colorInfo.innerColorMaps;
 
-  m_colorMapsManager.UpdateColorMapInfo(
-      innerColorMapId, {innerColorMaps, m_colorInfo.innerColormapName, COLOR_MAP_TYPES});
+  const COLOR::COLOR_DATA::ColorMapName colormapName =
+      not m_useRandomColorNames
+          ? m_colorInfo.innerColormapName
+          : innerColorMaps->GetRandomColorMapName(innerColorMaps->GetRandomGroup());
+
+  m_colorMapsManager.UpdateColorMapInfo(innerColorMapId,
+                                        {innerColorMaps, colormapName, COLOR_MAP_TYPES});
 }
 
 inline auto ShapeGroup::IncrementTs() noexcept -> void
@@ -453,6 +466,8 @@ inline void ShapeGroup::DoRandomChanges() noexcept
 
 inline auto ShapeGroup::ChangeAllColorMapsNow() noexcept -> void
 {
+  static constexpr float PROB_USE_RANDOM_COLOR_NAMES = 0.2F;
+  m_useRandomColorNames = m_goomRand.ProbabilityOf(PROB_USE_RANDOM_COLOR_NAMES);
   m_colorMapsManager.ChangeAllColorMapsNow();
 }
 
@@ -652,7 +667,7 @@ auto ShapesFx::ShapesFxImpl::GetInitialShapeGroups() noexcept -> std::vector<Sha
 {
   std::vector<ShapeGroup> shapeGroups{};
 
-  for (size_t i = 0; i < NUM_SHAPE_GROUPS; ++i)
+  for (uint32_t i = 0; i < NUM_SHAPE_GROUPS; ++i)
   {
     static constexpr float T_MIN_MAX_LERP = 0.5F;
     shapeGroups.emplace_back(m_goomRand, m_colorMapsManager, m_screenMidpoint, i, T_MIN_MAX_LERP);
@@ -847,19 +862,66 @@ inline auto ShapesFx::ShapesFxImpl::GetCurrentShapeColors(
     const ShapeGroup& shapeGroup, const ShapePath::ColorInfo& shapePathColorInfo) noexcept
     -> ShapeColors
 {
+  /***************
+  Pixel lowColorTemp{255, 0 ,0, 255};
+  if (shapeGroup.GetGroupNum() == 0)
+  {
+    lowColorTemp = Pixel{255, 255, 0, 255};
+  }
+  else if (shapeGroup.GetGroupNum() == 1)
+  {
+    lowColorTemp = Pixel{255, 255, 255, 255};
+  }
+  else if (shapeGroup.GetGroupNum() == 2)
+  {
+    lowColorTemp = Pixel{255, 0, 255, 255};
+  }
+  else if (shapeGroup.GetGroupNum() == 3)
+  {
+    lowColorTemp = Pixel{0, 255, 255, 255};
+  }
+  else if (shapeGroup.GetGroupNum() == 4)
+  {
+    lowColorTemp = Pixel{0, 0, 255, 255};
+  }
+  else if (shapeGroup.GetGroupNum() == 5)
+  {
+    lowColorTemp = Pixel{0, 255, 0, 255};
+  }
+  else if (shapeGroup.GetGroupNum() == 6)
+  {
+    lowColorTemp = Pixel{0, 128, 0, 255};
+  }
+  else if (shapeGroup.GetGroupNum() == 7)
+  {
+    lowColorTemp = Pixel{128, 128, 0, 255};
+  }
+  else if (shapeGroup.GetGroupNum() == 8)
+  {
+    lowColorTemp = Pixel{128, 0, 0, 255};
+  }
+  else if (shapeGroup.GetGroupNum() == 9)
+  {
+    lowColorTemp = Pixel{128, 128, 128, 255};
+  }
+   ****/
+
   return {shapeGroup.GetCurrentColor(shapePathColorInfo.mainColorMapId),
           shapeGroup.GetCurrentColor(shapePathColorInfo.lowColorMapId)};
 }
 
-static constexpr float LOW_COLOR_BRIGHTNESS_FACTOR = 0.2F;
+static constexpr float MAIN_COLOR_BRIGHTNESS_FACTOR = 0.5F;
+static constexpr float LOW_COLOR_BRIGHTNESS_FACTOR = 0.5F;
 
 inline auto ShapesFx::ShapesFxImpl::GetColors(const float brightness,
                                               const ShapeColors& shapeColors) noexcept
     -> std::vector<Pixel>
 {
-  const Pixel mainColor = GetBrighterColor(brightness, shapeColors.mainColor);
+  const Pixel mainColor =
+      GetBrighterColor(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.mainColor);
   const Pixel lowColor =
       GetBrighterColor(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor);
+
   return {mainColor, lowColor};
 }
 
@@ -869,8 +931,9 @@ inline auto ShapesFx::ShapesFxImpl::GetColorsWithInner(const float brightness,
                                                        const float innerColorMix) noexcept
     -> std::vector<Pixel>
 {
-  const Pixel mainColor = GetBrighterColor(
-      brightness, IColorMap::GetColorMix(shapeColors.mainColor, innerColor, innerColorMix));
+  const Pixel mainColor =
+      GetBrighterColor(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
+                       IColorMap::GetColorMix(shapeColors.mainColor, innerColor, innerColorMix));
   const Pixel lowColor =
       GetBrighterColor(LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
                        IColorMap::GetColorMix(shapeColors.lowColor, innerColor, innerColorMix));

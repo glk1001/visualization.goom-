@@ -500,7 +500,7 @@ auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap, const Pl
     int32_t xImage = 0;
     for (int32_t xChunk = 0; xChunk < numXChunks; ++xChunk)
     {
-      ImageChunk imageChunk{};
+      ImageChunk imageChunk;
       imageChunk.finalPosition = {x, y};
       SetImageChunkPixels(imageBitmap, yImage, xImage, imageChunk);
       imageAsChunks.emplace_back(imageChunk);

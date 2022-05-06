@@ -34,8 +34,8 @@ static const std::map<GoomDrawables, BuffIntensityRange> DEFAULT_BUFF_INTENSITY_
     {GoomDrawables::IMAGE,     {0.05F, 0.30F}},
     {GoomDrawables::SCOPE,     {0.00F, 0.01F}},
     {GoomDrawables::SHADER,    {0.00F, 0.01F}},
-    {GoomDrawables::SHAPES,    {0.30F, 0.70F}},
-    {GoomDrawables::STARS,     {0.30F, 0.60F}},
+    {GoomDrawables::SHAPES,    {0.50F, 0.80F}},
+    {GoomDrawables::STARS,     {0.50F, 0.60F}},
     {GoomDrawables::TENTACLES, {0.30F, 0.50F}},
     {GoomDrawables::TUBES,     {0.70F, 0.80F}},
 };
