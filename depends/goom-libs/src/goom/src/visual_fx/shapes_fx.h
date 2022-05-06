@@ -20,7 +20,7 @@ class FxHelper;
 class ShapesFx : public IVisualFx
 {
 public:
-  static constexpr uint32_t NUM_SHAPE_GROUPS = 5;
+  static constexpr uint32_t NUM_SHAPE_GROUPS = 10;
 
   explicit ShapesFx(const FxHelper& fxHelper) noexcept;
 
