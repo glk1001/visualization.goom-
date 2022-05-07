@@ -41,9 +41,12 @@ if [[ "${BUILD_TYPE:-}" == "" ]]; then
   exit 1
 fi
 
-if [[ "${COMPILER}" == "gcc" ]]; then
-  declare -r C_COMPILER=gcc
-  declare -r CPP_COMPILER=g++
+if [[ "${COMPILER}" == "gcc-11" ]]; then
+  declare -r C_COMPILER=gcc-11
+  declare -r CPP_COMPILER=g++-11
+elif [[ "${COMPILER}" == "gcc-12" ]]; then
+  declare -r C_COMPILER=gcc-12
+  declare -r CPP_COMPILER=g++-12
 elif [[ "${COMPILER}" == "clang-13" ]]; then
   declare -r C_COMPILER=clang-13
   declare -r CPP_COMPILER=clang-13
