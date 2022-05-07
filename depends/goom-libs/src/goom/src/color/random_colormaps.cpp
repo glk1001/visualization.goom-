@@ -22,12 +22,6 @@ using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
-const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::NO_COLOR_MAP_TYPES{};
-const std::set<RandomColorMaps::ColorMapTypes> RandomColorMaps::ALL_COLOR_MAP_TYPES{
-    ColorMapTypes::ROTATED_T,
-    ColorMapTypes::SHADES,
-};
-
 auto RandomColorMaps::GetRandomColorMapName() const -> COLOR_DATA::ColorMapName
 {
   return static_cast<ColorMapName>(m_goomRand.GetRandInRange(0U, GetNumColorMapNames()));

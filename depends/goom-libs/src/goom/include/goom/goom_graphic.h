@@ -108,34 +108,34 @@ public:
     PixelChannelType alpha = MAX_ALPHA;
   };
 
-  Pixel() noexcept;
-  explicit Pixel(const RGB& color) noexcept;
-  Pixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept;
+  constexpr Pixel() noexcept;
+  constexpr explicit Pixel(const RGB& color) noexcept;
+  constexpr Pixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept;
 
-  [[nodiscard]] auto R() const noexcept -> PixelChannelType;
-  [[nodiscard]] auto G() const noexcept -> PixelChannelType;
-  [[nodiscard]] auto B() const noexcept -> PixelChannelType;
-  [[nodiscard]] auto A() const noexcept -> PixelChannelType;
+  [[nodiscard]] constexpr auto R() const noexcept -> PixelChannelType;
+  [[nodiscard]] constexpr auto G() const noexcept -> PixelChannelType;
+  [[nodiscard]] constexpr auto B() const noexcept -> PixelChannelType;
+  [[nodiscard]] constexpr auto A() const noexcept -> PixelChannelType;
 
-  auto SetR(PixelChannelType val) noexcept -> void;
-  auto SetG(PixelChannelType val) noexcept -> void;
-  auto SetB(PixelChannelType val) noexcept -> void;
-  auto SetA(PixelChannelType val) noexcept -> void;
+  constexpr auto SetR(PixelChannelType val) noexcept -> void;
+  constexpr auto SetG(PixelChannelType val) noexcept -> void;
+  constexpr auto SetB(PixelChannelType val) noexcept -> void;
+  constexpr auto SetA(PixelChannelType val) noexcept -> void;
 
-  [[nodiscard]] auto RFlt() const noexcept -> float;
-  [[nodiscard]] auto GFlt() const noexcept -> float;
-  [[nodiscard]] auto BFlt() const noexcept -> float;
+  [[nodiscard]] constexpr auto RFlt() const noexcept -> float;
+  [[nodiscard]] constexpr auto GFlt() const noexcept -> float;
+  [[nodiscard]] constexpr auto BFlt() const noexcept -> float;
 
-  [[nodiscard]] auto Rgba() const noexcept -> PixelIntType;
+  [[nodiscard]] constexpr auto Rgba() const noexcept -> PixelIntType;
 
-  [[nodiscard]] auto ToString() const noexcept -> std::string;
+  [[nodiscard]] auto ToString() const -> std::string;
 
   static const Pixel BLACK;
   static const Pixel WHITE;
 
-  [[nodiscard]] auto IsBlack() const noexcept -> bool;
+  [[nodiscard]] constexpr auto IsBlack() const noexcept -> bool;
 
-  friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool;
+  constexpr friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool;
 
 private:
 #ifdef COLOR_BGRA
@@ -164,10 +164,11 @@ private:
   Color m_color{};
 };
 
-[[nodiscard]] auto MultiplyColorChannels(PixelChannelType ch1, PixelChannelType ch2) noexcept
+[[nodiscard]] constexpr auto MultiplyColorChannels(PixelChannelType ch1,
+                                                   PixelChannelType ch2) noexcept -> uint32_t;
+[[nodiscard]] constexpr auto MultiplyChannelColorByScalar(uint32_t scalar,
+                                                          PixelChannelType channelVal) noexcept
     -> uint32_t;
-[[nodiscard]] auto MultiplyChannelColorByScalar(uint32_t scalar,
-                                                PixelChannelType channelVal) noexcept -> uint32_t;
 
 struct FXBuffSettings
 {
@@ -221,21 +222,21 @@ private:
 
 static_assert(sizeof(Pixel) == sizeof(PixelIntType), "Invalid Pixel size.");
 
-inline Pixel::Pixel() noexcept : m_color{Channels{}}
+constexpr Pixel::Pixel() noexcept : m_color{Channels{}}
 {
 }
 
-inline Pixel::Pixel(const RGB& color) noexcept
+constexpr Pixel::Pixel(const RGB& color) noexcept
   : m_color{
         {color.red, color.green, color.blue, color.alpha}
 }
 {
 }
 
-inline Pixel::Pixel(const uint32_t red,
-                    const uint32_t green,
-                    const uint32_t blue,
-                    const uint32_t alpha) noexcept
+constexpr Pixel::Pixel(const uint32_t red,
+                       const uint32_t green,
+                       const uint32_t blue,
+                       const uint32_t alpha) noexcept
   : m_color{
         {static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, red)),
          static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, green)),
@@ -245,90 +246,90 @@ inline Pixel::Pixel(const uint32_t red,
 {
 }
 
-inline auto MultiplyColorChannels(const PixelChannelType ch1, const PixelChannelType ch2) noexcept
-    -> uint32_t
+constexpr auto MultiplyColorChannels(const PixelChannelType ch1,
+                                     const PixelChannelType ch2) noexcept -> uint32_t
 {
   return (static_cast<uint32_t>(ch1) * static_cast<uint32_t>(ch2)) /
          channel_limits<uint32_t>::max();
 }
 
-inline auto MultiplyChannelColorByScalar(const uint32_t scalar,
-                                         const PixelChannelType channelVal) noexcept -> uint32_t
+constexpr auto MultiplyChannelColorByScalar(const uint32_t scalar,
+                                            const PixelChannelType channelVal) noexcept -> uint32_t
 {
   return (scalar * static_cast<uint32_t>(channelVal)) / channel_limits<uint32_t>::max();
 }
 
-inline auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool
+constexpr auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool
 {
   return pixel1.m_color.intVal == pixel2.m_color.intVal;
 }
 
-inline auto Pixel::R() const noexcept -> PixelChannelType
+constexpr auto Pixel::R() const noexcept -> PixelChannelType
 {
   return m_color.channels.r;
 }
 
-inline auto Pixel::SetR(const PixelChannelType val) noexcept -> void
+constexpr auto Pixel::SetR(const PixelChannelType val) noexcept -> void
 {
   m_color.channels.r = val;
 }
 
-inline auto Pixel::G() const noexcept -> PixelChannelType
+constexpr auto Pixel::G() const noexcept -> PixelChannelType
 {
   return m_color.channels.g;
 }
 
-inline auto Pixel::SetG(const PixelChannelType val) noexcept -> void
+constexpr auto Pixel::SetG(const PixelChannelType val) noexcept -> void
 {
   m_color.channels.g = val;
 }
 
-inline auto Pixel::B() const noexcept -> PixelChannelType
+constexpr auto Pixel::B() const noexcept -> PixelChannelType
 {
   return m_color.channels.b;
 }
 
-inline auto Pixel::SetB(const PixelChannelType val) noexcept -> void
+constexpr auto Pixel::SetB(const PixelChannelType val) noexcept -> void
 {
   m_color.channels.b = val;
 }
 
-inline auto Pixel::A() const noexcept -> PixelChannelType
+constexpr auto Pixel::A() const noexcept -> PixelChannelType
 {
   return m_color.channels.a;
 }
 
-inline auto Pixel::SetA(const PixelChannelType val) noexcept -> void
+constexpr auto Pixel::SetA(const PixelChannelType val) noexcept -> void
 {
   m_color.channels.a = val;
 }
 
-inline auto Pixel::RFlt() const noexcept -> float
+constexpr auto Pixel::RFlt() const noexcept -> float
 {
   return static_cast<float>(R()) / channel_limits<float>::max();
 }
 
-inline auto Pixel::GFlt() const noexcept -> float
+constexpr auto Pixel::GFlt() const noexcept -> float
 {
   return static_cast<float>(G()) / channel_limits<float>::max();
 }
 
-inline auto Pixel::BFlt() const noexcept -> float
+constexpr auto Pixel::BFlt() const noexcept -> float
 {
   return static_cast<float>(B()) / channel_limits<float>::max();
 }
 
-inline auto Pixel::Rgba() const noexcept -> PixelIntType
+constexpr auto Pixel::Rgba() const noexcept -> PixelIntType
 {
   return m_color.intVal;
 }
 
-inline auto Pixel::IsBlack() const noexcept -> bool
+constexpr auto Pixel::IsBlack() const noexcept -> bool
 {
   return 0 == m_color.intVal;
 }
 
-inline auto Pixel::ToString() const noexcept -> std::string
+inline auto Pixel::ToString() const -> std::string
 {
   return std20::format("({}, {}, {}, {})", R(), G(), B(), A());
 }
@@ -444,7 +445,7 @@ inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
     Pixel pixel1;
     Pixel pixel2;
   };
-  std::array<Pixel, NUM_NBRS> neighbours{};
+  std::array<Pixel, NUM_NBRS> neighbours;
 
   *reinterpret_cast<TwoPixels*>(&(neighbours[0])) =
       *reinterpret_cast<const TwoPixels*>(&(m_buff[xPos]));
