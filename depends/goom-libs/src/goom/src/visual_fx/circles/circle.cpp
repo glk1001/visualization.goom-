@@ -532,7 +532,7 @@ inline auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
   static constexpr float MAX_BRIGHTNESS = 3.0F;
   TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius)};
 
-  for (int32_t radius = maxRadius; radius > 1; --radius)
+  for (int32_t radius = maxRadius; radius > 0; --radius)
   {
     const float brightness = STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
     const Pixel innerColor = innerColorMap.GetColor(innerColorT());
@@ -547,8 +547,6 @@ inline auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
     brightnessT.Increment();
     innerColorT.Increment();
   }
-
-  m_draw.DrawPixelsClipped(centre, {mainColor, lowColor});
 }
 
 inline auto Circle::DotDrawer::GetCircleColors(const float brightness,
