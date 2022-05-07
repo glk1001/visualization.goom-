@@ -16,13 +16,19 @@ auto IParametricFunction2d::GetPointData(const float t) const noexcept -> PointD
 
 CircleFunction::CircleFunction(const Vec2dFlt& centrePos,
                                const float radius,
-                               const AngleParams& angleParams) noexcept
-  : m_centrePos{centrePos}, m_radius{radius}, m_angleParams{angleParams}
+                               const AngleParams& angleParams,
+                               const Direction direction) noexcept
+  : m_centrePos{centrePos}, m_radius{radius}, m_angleParams{angleParams}, m_direction{direction}
 {
 }
 
-auto CircleFunction::GetPointAtAngle(const float angle) const noexcept -> Point2dFlt
+auto CircleFunction::GetPointAtAngle(float angle) const noexcept -> Point2dFlt
 {
+  if (m_direction == Direction::CLOCKWISE)
+  {
+    angle = -angle;
+  }
+
   return Point2dFlt{m_radius * std::cos(angle), -m_radius * std::sin(angle)} + m_centrePos;
 }
 

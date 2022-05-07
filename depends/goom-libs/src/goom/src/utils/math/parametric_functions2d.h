@@ -65,7 +65,16 @@ struct AngleParams
 class CircleFunction : public IParametricFunction2d
 {
 public:
-  CircleFunction(const Vec2dFlt& centrePos, float radius, const AngleParams& angleParams) noexcept;
+  enum class Direction
+  {
+    CLOCKWISE,
+    COUNTER_CLOCKWISE
+  };
+
+  CircleFunction(const Vec2dFlt& centrePos,
+                 float radius,
+                 const AngleParams& angleParams,
+                 Direction direction = Direction::COUNTER_CLOCKWISE) noexcept;
 
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
@@ -73,6 +82,7 @@ private:
   const Vec2dFlt m_centrePos;
   const float m_radius;
   const AngleParams m_angleParams;
+  const Direction m_direction;
   [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
 };
 

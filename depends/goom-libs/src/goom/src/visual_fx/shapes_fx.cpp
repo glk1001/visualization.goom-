@@ -34,18 +34,27 @@ using DRAW::IGoomDraw;
 using UTILS::Logging;
 using UTILS::Timer;
 using UTILS::TValue;
+using UTILS::MATH::AngleParams;
+using UTILS::MATH::CircleFunction;
+using UTILS::MATH::CirclePath;
 using UTILS::MATH::HALF_PI;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IParametricFunction2d;
 using UTILS::MATH::IPath;
 using UTILS::MATH::ModifiedFunction;
 using UTILS::MATH::ParametricPath;
-using UTILS::MATH::SpiralFunction;
-using UTILS::MATH::SpiralPath;
 using UTILS::MATH::Transform2d;
 using UTILS::MATH::TransformedPath;
 using UTILS::MATH::TWO_PI;
 using UTILS::MATH::U_HALF;
+
+[[nodiscard]] inline auto GetNewRandomMinMaxLerpT(const IGoomRand& goomRand,
+                                                  const float oldTMinMaxLerp) noexcept -> float
+{
+  static constexpr float SMALL_OFFSET = 0.2F;
+  return goomRand.GetRandInRange(std::max(0.0F, -SMALL_OFFSET + oldTMinMaxLerp),
+                                 std::min(1.0F, oldTMinMaxLerp + SMALL_OFFSET));
+}
 
 class ShapeGroup;
 
@@ -120,10 +129,11 @@ private:
   const IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
   const uint32_t m_groupNum;
-  static constexpr float MIN_SHAPE_SPEED = 0.0005F;
-  static constexpr float MAX_SHAPE_SPEED = 0.0020F;
-  bool m_useRandomShapesSpeed = true;
-  float m_tMinMaxLerp = 0.0F;
+  static constexpr float MIN_SHAPE_SPEED = 0.005F;
+  static constexpr float MAX_SHAPE_SPEED = 0.020F;
+  bool m_useRandomShapesSpeed = false;
+  float m_currentTMinMaxLerp = 0.0F;
+  float m_fixedTMinMaxLerp = 0.0F;
   auto SetShapesSpeed() noexcept -> void;
   [[nodiscard]] static auto GetShapesSpeed(float tMinMaxLerp) noexcept -> float;
 
@@ -163,18 +173,16 @@ private:
   auto ChangeAllColorMapsNow() noexcept -> void;
   auto SetRandomizedShapePaths() noexcept -> void;
   [[nodiscard]] auto GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>;
-  [[nodiscard]] auto GetShapePaths(const IPath& basePath, const Point2dInt& screenMidpoint) noexcept
+  [[nodiscard]] auto GetShapePaths(const Point2dInt& screenMidpoint) noexcept
       -> std::vector<ShapePath>;
-  struct SpiralParams
+  struct ShapeFunctionParams
   {
-    uint32_t numTurns;
-    SpiralFunction::Direction spiralDirection;
-    float minRadius;
-    float maxRadius;
+    float radius;
+    AngleParams angleParams;
+    CircleFunction::Direction direction;
   };
-  [[nodiscard]] auto GetBasePath(const SpiralFunction& baseFunction) noexcept
-      -> std::unique_ptr<IPath>;
-  [[nodiscard]] static auto GetSpiralFunction(const SpiralParams& spiralParams) -> SpiralFunction;
+  [[nodiscard]] auto GetBasePath() const noexcept -> CirclePath;
+  [[nodiscard]] static auto GetCircleFunction(const ShapeFunctionParams& params) -> CircleFunction;
 };
 
 static_assert(std::is_nothrow_move_constructible_v<ShapeGroup>);
@@ -182,7 +190,7 @@ static_assert(std::is_nothrow_move_constructible_v<ShapeGroup>);
 ShapeGroup::ShapeGroup(const IGoomRand& goomRand,
                        RandomColorMapsManager& colorMapsManager,
                        const Point2dInt screenMidpoint,
-                       uint32_t groupNum,
+                       const uint32_t groupNum,
                        const float tMinMaxLerp) noexcept
   : m_goomRand{goomRand},
     m_screenMidpoint{screenMidpoint},
@@ -211,110 +219,82 @@ inline auto ShapeGroup::Start() noexcept -> void
 
 inline auto ShapeGroup::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
 {
-  static constexpr uint32_t FIXED_NUM_TURNS = 10;
-  // clang-format off
-  static constexpr std::array<SpiralParams, ShapesFx::NUM_SHAPE_GROUPS> SPIRAL_PARAMS{{
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::CLOCKWISE,          20.0F, 200.0F},
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::COUNTER_CLOCKWISE,  30.0F, 240.0F},
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::CLOCKWISE,          40.0F, 280.0F},
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::COUNTER_CLOCKWISE,  50.0F, 320.0F},
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::CLOCKWISE,          60.0F, 360.0F},
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::COUNTER_CLOCKWISE,  70.0F, 400.0F},
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::CLOCKWISE,          80.0F, 440.0F},
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::COUNTER_CLOCKWISE,  90.0F, 480.0F},
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::CLOCKWISE,         100.0F, 520.0F},
-      {FIXED_NUM_TURNS, SpiralFunction::Direction::COUNTER_CLOCKWISE, 110.0F, 560.0F},
+  return GetShapePaths(m_screenMidpoint);
+}
+
+// clang-format off
+  static constexpr std::array<float, ShapesFx::NUM_SHAPE_GROUPS> CIRCLE_RADII{{
+      200.0F,
+      240.0F,
+      280.0F,
+      320.0F,
+      360.0F,
+      400.0F,
+      440.0F,
+      480.0F,
+      520.0F,
+      560.0F,
   }};
-  // clang-format on
+// clang-format on
 
-  const SpiralFunction spiralFunction{GetSpiralFunction(SPIRAL_PARAMS.at(m_groupNum))};
-
-  return GetShapePaths(*GetBasePath(spiralFunction), m_screenMidpoint);
-}
-
-inline auto ShapeGroup::GetBasePath(const SpiralFunction& baseFunction) noexcept
-    -> std::unique_ptr<IPath>
-{
-  static constexpr TValue::StepType STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
-  auto positionT = std::make_unique<TValue>(STEP_TYPE, GetShapesSpeed(m_tMinMaxLerp));
-
-  //    static constexpr float MOD_AMOUNT = 0.1F;
-  const float modAmount = m_goomRand.GetRandInRange(0.01F, 0.1F);
-  const auto sineModifier =
-      [modAmount](const float t, const IParametricFunction2d::PointData& pointData)
-  {
-    static constexpr float MIN_FREQ = 11.0F;
-    static constexpr float MAX_FREQ = 51.0F;
-    const float freq = STD20::lerp(MIN_FREQ, MAX_FREQ, t);
-
-    Point2dFlt modifier{0.0F, std::sin(t * freq * TWO_PI)};
-    const float rotateAngle = HALF_PI - pointData.normalAngle;
-    modifier.Rotate(rotateAngle);
-
-    const Point2dFlt newPoint = {pointData.point.x * (1.0F + (modAmount * modifier.x)),
-                                 pointData.point.y * (1.0F + (modAmount * modifier.y))};
-    return newPoint;
-  };
-
-  return std::make_unique<ParametricPath<ModifiedFunction<SpiralFunction>>>(
-      std::move(positionT), baseFunction, sineModifier);
-}
-
-inline auto ShapeGroup::GetSpiralFunction(const SpiralParams& spiralParams) -> SpiralFunction
-{
-  static const Vec2dFlt s_CENTRE_POS{0.0F, 0.0F};
-
-  return {s_CENTRE_POS, spiralParams.numTurns, spiralParams.spiralDirection, spiralParams.minRadius,
-          spiralParams.maxRadius};
-}
-
-auto ShapeGroup::GetShapePaths(const IPath& basePath, const Point2dInt& screenMidpoint) noexcept
-    -> std::vector<ShapePath>
+auto ShapeGroup::GetShapePaths(const Point2dInt& screenMidpoint) noexcept -> std::vector<ShapePath>
 {
   const Vec2dFlt screenMidpointFlt{screenMidpoint.ToFlt()};
 
+  static constexpr uint32_t NUM_SHAPES = 4;
+
+  static constexpr float MIN_ANGLE = 0.0F;
+  static constexpr float MAX_ANGLE = TWO_PI;
+  static constexpr float MIN_SCALE = 1.0F;
+  static constexpr float MAX_SCALE = 1.15F;
+  const float offset = CIRCLE_RADII.at(m_groupNum);
+  const std::array CENTRE_OFFSETS{
+      Vec2dFlt{+offset,    0.0F},
+      Vec2dFlt{   0.0F, +offset},
+      Vec2dFlt{-offset,    0.0F},
+      Vec2dFlt{   0.0F, -offset},
+  };
+
+  TValue stepFractions(TValue::StepType::SINGLE_CYCLE, NUM_SHAPES);
+
   std::vector<ShapePath> shapePaths{};
-  Transform2d transform{};
 
-  const float offset = screenMidpointFlt.x / 5.0F;
+  for (uint32_t i = 0; i < NUM_SHAPES; ++i)
+  {
+    const auto rotate = float{STD20::lerp(MIN_ANGLE, MAX_ANGLE, stepFractions())};
+    const auto scale = float{STD20::lerp(MIN_SCALE, MAX_SCALE, stepFractions())};
+    const auto centre = Vec2dFlt{screenMidpointFlt + (scale * CENTRE_OFFSETS.at(i))};
+    const auto transform = Transform2d{rotate, scale, centre};
+    const auto colorInfo =
+        ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()};
+    const auto newBasePath = std::make_shared<TransformedPath>(GetBasePath().GetClone(), transform);
 
-  static constexpr float ROTATE0 = 0.0F;
-  static constexpr float SCALE0 = 1.0F;
-  transform = Transform2d{
-      ROTATE0, SCALE0, screenMidpointFlt + Vec2dFlt{-offset, 0.0F}
-  };
-  shapePaths.emplace_back(
-      std::make_shared<TransformedPath>(basePath.GetClone(), transform),
-      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
+    shapePaths.emplace_back(newBasePath, colorInfo);
 
-  static constexpr float ROTATE1 = 90.0F;
-  static constexpr float SCALE1 = 1.0F;
-  transform = Transform2d{
-      ROTATE1, SCALE1, screenMidpointFlt + Vec2dFlt{+offset, 0.0F}
-  };
-  shapePaths.emplace_back(
-      std::make_shared<TransformedPath>(basePath.GetClone(), transform),
-      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
-
-  static constexpr float ROTATE2 = 180.0F;
-  static constexpr float SCALE2 = 1.0F;
-  transform = Transform2d{
-      ROTATE2, SCALE2, screenMidpointFlt + Vec2dFlt{0.0F, -offset}
-  };
-  shapePaths.emplace_back(
-      std::make_shared<TransformedPath>(basePath.GetClone(), transform),
-      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
-
-  static constexpr float ROTATE3 = 270.0F;
-  static constexpr float SCALE3 = 1.0F;
-  transform = Transform2d{
-      ROTATE3, SCALE3, screenMidpointFlt + Vec2dFlt{0.0F, +offset}
-  };
-  shapePaths.emplace_back(
-      std::make_shared<TransformedPath>(basePath.GetClone(), transform),
-      ShapePath::ColorInfo{MakeNewColorMapId(), MakeNewColorMapId(), MakeNewColorMapId()});
+    stepFractions.Increment();
+  }
 
   return shapePaths;
+}
+
+inline auto ShapeGroup::GetBasePath() const noexcept -> CirclePath
+{
+  static constexpr TValue::StepType STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
+  auto positionT = std::make_unique<TValue>(STEP_TYPE, GetShapesSpeed(m_fixedTMinMaxLerp));
+
+  const CircleFunction::Direction direction = UTILS::MATH::IsEven(m_groupNum)
+                                                  ? CircleFunction::Direction::COUNTER_CLOCKWISE
+                                                  : CircleFunction::Direction::CLOCKWISE;
+  const ShapeFunctionParams params{CIRCLE_RADII.at(m_groupNum), AngleParams{}, direction};
+
+  return CirclePath{std::move(positionT), GetCircleFunction(params)};
+}
+
+inline auto ShapeGroup::GetCircleFunction(const ShapeFunctionParams& params) -> CircleFunction
+{
+  static constexpr Vec2dFlt CENTRE_POS{0.0F, 0.0F};
+
+  return {CENTRE_POS, params.radius, params.angleParams, params.direction};
 }
 
 inline auto ShapeGroup::GetNumShapes() const noexcept -> size_t
@@ -447,7 +427,7 @@ inline auto ShapeGroup::UseRandomShapesSpeed() noexcept -> void
 
 inline auto ShapeGroup::UseFixedShapesSpeed(const float tMinMaxLerp) noexcept -> void
 {
-  m_tMinMaxLerp = tMinMaxLerp;
+  m_fixedTMinMaxLerp = tMinMaxLerp;
   m_useRandomShapesSpeed = false;
 }
 
@@ -484,13 +464,15 @@ inline auto ShapeGroup::SetRandomizedShapePaths() noexcept -> void
 
 inline auto ShapeGroup::SetShapesSpeed() noexcept -> void
 {
-  const float tMinMaxLerp =
-      m_useRandomShapesSpeed ? m_goomRand.GetRandInRange(0.0F, 1.0F) : m_tMinMaxLerp;
-  const float newSpeed = GetShapesSpeed(tMinMaxLerp);
+  m_currentTMinMaxLerp = m_useRandomShapesSpeed
+                             ? GetNewRandomMinMaxLerpT(m_goomRand, m_currentTMinMaxLerp)
+                             : m_fixedTMinMaxLerp;
+  const float newSpeed = GetShapesSpeed(m_currentTMinMaxLerp);
+
   std::for_each(begin(m_shapePaths), end(m_shapePaths),
                 [&newSpeed](ShapePath& path) { path.SetStepSize(newSpeed); });
 
-  m_radiusT.SetNumSteps(STD20::lerp(MIN_RADIUS_STEPS, MAX_RADIUS_STEPS, tMinMaxLerp));
+  m_radiusT.SetNumSteps(STD20::lerp(MIN_RADIUS_STEPS, MAX_RADIUS_STEPS, m_currentTMinMaxLerp));
 }
 
 inline auto ShapeGroup::GetShapesSpeed(const float tMinMaxLerp) noexcept -> float
@@ -581,6 +563,7 @@ private:
   auto SetShapeSpeeds() noexcept -> void;
   auto SetFixedShapeSpeeds() noexcept -> void;
   auto SetRandomShapeSpeeds() noexcept -> void;
+  float m_fixedTMinMaxLerp = 0.0F;
   auto DrawShapeGroups() noexcept -> void;
   auto DrawShapes(const ShapeGroup& shapeGroup) noexcept -> void;
   auto DrawShape(const ShapeGroup& shapeGroup, size_t shapeNum) noexcept -> void;
@@ -724,6 +707,8 @@ inline auto ShapesFx::ShapesFxImpl::Start() noexcept -> void
     shapeGroup.Start();
   }
 
+  SetShapeSpeeds();
+
   assert(AllColorMapsValid());
 }
 
@@ -776,7 +761,7 @@ inline auto ShapesFx::ShapesFxImpl::DoRandomChanges() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::SetShapeSpeeds() noexcept -> void
 {
-  if (constexpr float PROB_FIXED_SPEEDS = 0.3F; m_goomRand.ProbabilityOf(PROB_FIXED_SPEEDS))
+  if (constexpr float PROB_FIXED_SPEEDS = 0.95F; m_goomRand.ProbabilityOf(PROB_FIXED_SPEEDS))
   {
     SetFixedShapeSpeeds();
   }
@@ -788,11 +773,11 @@ inline auto ShapesFx::ShapesFxImpl::SetShapeSpeeds() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::SetFixedShapeSpeeds() noexcept -> void
 {
-  const float tMinMaxLerp = m_goomRand.GetRandInRange(0.0F, 1.0F);
+  m_fixedTMinMaxLerp = GetNewRandomMinMaxLerpT(m_goomRand, m_fixedTMinMaxLerp);
 
   for (auto& shapeGroup : m_shapeGroups)
   {
-    shapeGroup.UseFixedShapesSpeed(tMinMaxLerp);
+    shapeGroup.UseFixedShapesSpeed(m_fixedTMinMaxLerp);
   }
 }
 
@@ -862,50 +847,6 @@ inline auto ShapesFx::ShapesFxImpl::GetCurrentShapeColors(
     const ShapeGroup& shapeGroup, const ShapePath::ColorInfo& shapePathColorInfo) noexcept
     -> ShapeColors
 {
-  /***************
-  Pixel lowColorTemp{255, 0 ,0, 255};
-  if (shapeGroup.GetGroupNum() == 0)
-  {
-    lowColorTemp = Pixel{255, 255, 0, 255};
-  }
-  else if (shapeGroup.GetGroupNum() == 1)
-  {
-    lowColorTemp = Pixel{255, 255, 255, 255};
-  }
-  else if (shapeGroup.GetGroupNum() == 2)
-  {
-    lowColorTemp = Pixel{255, 0, 255, 255};
-  }
-  else if (shapeGroup.GetGroupNum() == 3)
-  {
-    lowColorTemp = Pixel{0, 255, 255, 255};
-  }
-  else if (shapeGroup.GetGroupNum() == 4)
-  {
-    lowColorTemp = Pixel{0, 0, 255, 255};
-  }
-  else if (shapeGroup.GetGroupNum() == 5)
-  {
-    lowColorTemp = Pixel{0, 255, 0, 255};
-  }
-  else if (shapeGroup.GetGroupNum() == 6)
-  {
-    lowColorTemp = Pixel{0, 128, 0, 255};
-  }
-  else if (shapeGroup.GetGroupNum() == 7)
-  {
-    lowColorTemp = Pixel{128, 128, 0, 255};
-  }
-  else if (shapeGroup.GetGroupNum() == 8)
-  {
-    lowColorTemp = Pixel{128, 0, 0, 255};
-  }
-  else if (shapeGroup.GetGroupNum() == 9)
-  {
-    lowColorTemp = Pixel{128, 128, 128, 255};
-  }
-   ****/
-
   return {shapeGroup.GetCurrentColor(shapePathColorInfo.mainColorMapId),
           shapeGroup.GetCurrentColor(shapePathColorInfo.lowColorMapId)};
 }

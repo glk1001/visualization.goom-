@@ -97,8 +97,9 @@ struct Vec2dFlt
     -> Vec2dFlt;
 [[nodiscard]] constexpr auto operator-(const Vec2dFlt& vec1, const Vec2dFlt& vec2) noexcept
     -> Vec2dFlt;
-[[nodiscard]] constexpr auto operator+(const Vec2dFlt& vec1, float offset) noexcept -> Vec2dFlt;
-[[nodiscard]] constexpr auto operator-(const Vec2dFlt& vec1, float offset) noexcept -> Vec2dFlt;
+[[nodiscard]] constexpr auto operator+(const Vec2dFlt& vec, float offset) noexcept -> Vec2dFlt;
+[[nodiscard]] constexpr auto operator-(const Vec2dFlt& vec, float offset) noexcept -> Vec2dFlt;
+[[nodiscard]] constexpr auto operator*(float scale, const Vec2dFlt& vec) noexcept -> Vec2dFlt;
 
 constexpr Point2dInt::Point2dInt(const int32_t xx, const int32_t yy) noexcept : x{xx}, y{yy}
 {
@@ -286,14 +287,19 @@ constexpr auto operator-(const Vec2dFlt& vec1, const Vec2dFlt& vec2) noexcept ->
   return {vec1.x - vec2.x, vec1.y - vec2.y};
 }
 
-constexpr auto operator+(const Vec2dFlt& vec1, const float offset) noexcept -> Vec2dFlt
+constexpr auto operator+(const Vec2dFlt& vec, const float offset) noexcept -> Vec2dFlt
 {
-  return {vec1.x + offset, vec1.y + offset};
+  return {vec.x + offset, vec.y + offset};
 }
 
-constexpr auto operator-(const Vec2dFlt& vec1, const float offset) noexcept -> Vec2dFlt
+constexpr auto operator-(const Vec2dFlt& vec, const float offset) noexcept -> Vec2dFlt
 {
-  return {vec1.x - offset, vec1.y - offset};
+  return {vec.x - offset, vec.y - offset};
+}
+
+constexpr auto operator*(float scale, const Vec2dFlt& vec) noexcept -> Vec2dFlt
+{
+  return {scale * vec.x, scale * vec.y};
 }
 
 inline auto lerp(const Point2dInt& point1, const Point2dInt& point2, const float t) noexcept
