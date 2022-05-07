@@ -82,9 +82,9 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
   const auto [mixedMainColor, mixedLowColor] = GetMixedColors(nodeNum, mainColor, lowColor);
   const Pixel mixedMainColorPixel = mixedMainColor;
   const Pixel mixedLowColorPixel = mixedLowColor;
-  static constexpr float COLOR_BRIGHTNESS_FACTOR = 2.0F;
-  return std::make_pair(GetBrighterColor(COLOR_BRIGHTNESS_FACTOR * brightness, mixedMainColorPixel),
-                        GetBrighterColor(brightness, mixedLowColorPixel));
+  static constexpr float LOW_BRIGHTNESS_FACTOR = 1.8F;
+  return std::make_pair(GetBrighterColor(brightness, mixedMainColorPixel),
+                        GetBrighterColor(LOW_BRIGHTNESS_FACTOR * brightness, mixedLowColorPixel));
 }
 
 inline auto Tentacle3D::GetMixedColors(const size_t nodeNum,
