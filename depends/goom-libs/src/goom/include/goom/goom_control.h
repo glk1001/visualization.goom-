@@ -27,13 +27,15 @@ public:
     ALWAYS,
     NEVER,
   };
-  void SetShowTitle(ShowTitleType value);
+  auto SetShowTitle(ShowTitleType value) -> void;
 
-  void Start();
+  auto Start() -> void;
+  auto Finish() -> void;
 
-  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
-  void ShowGoomState(bool value);
-  void SetDumpDirectory(const std::string& dumpDirectory);
+  auto SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
+  auto NoZooms(bool value) -> void;
+  auto ShowGoomState(bool value) -> void;
+  auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
   /*
    * Update the next goom frame
@@ -42,14 +44,12 @@ public:
    *      - empty if it is not the start of the song
    *      - only have a value at the start of the song
    */
-  void Update(const AudioSamples& audioSamples,
+  auto Update(const AudioSamples& audioSamples,
               float fps,
               const std::string& songTitle,
-              const std::string& message);
+              const std::string& message) -> void;
 
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
-
-  void Finish();
 
   [[nodiscard]] static auto GetCompilerVersion() -> std::string;
   [[nodiscard]] static auto GetGoomVersionInfo() -> std::string;

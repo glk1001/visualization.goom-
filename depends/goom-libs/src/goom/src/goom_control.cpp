@@ -85,19 +85,20 @@ public:
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
 
-  void SetShowTitle(ShowTitleType value);
+  auto SetShowTitle(ShowTitleType value) -> void;
 
-  void Start();
-  void Finish();
+  auto Start() -> void;
+  auto Finish() -> void;
 
-  void SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer);
-  void ShowGoomState(bool value);
-  void SetDumpDirectory(const std::string& dumpDirectory);
+  auto SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
+  auto NoZooms(bool value) -> void;
+  auto ShowGoomState(bool value) -> void;
+  auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
-  void Update(const AudioSamples& soundData,
+  auto Update(const AudioSamples& soundData,
               float fps,
               const std::string& songTitle,
-              const std::string& message);
+              const std::string& message) -> void;
 
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
@@ -120,40 +121,42 @@ private:
   static constexpr bool DO_GOOM_STATE_DUMP = true;
   std::unique_ptr<GoomStateDump> m_goomStateDump{};
   std::string m_dumpDirectory{};
-  void StartGoomStateDump();
-  void UpdateGoomStateDump();
-  void FinishGoomStateDump();
+  bool m_noZooms = false;
 
-  void ProcessAudio(const AudioSamples& soundData);
+  auto StartGoomStateDump() -> void;
+  auto UpdateGoomStateDump() -> void;
+  auto FinishGoomStateDump() -> void;
 
-  void UseMusicToChangeSettings();
+  auto ProcessAudio(const AudioSamples& soundData) -> void;
 
-  void DrawAndZoom(const AudioSamples& soundData);
+  auto UseMusicToChangeSettings() -> void;
 
-  void ApplyStateToSingleBufferPreZoom();
-  void ApplyStateToMultipleBuffersPostZoom();
-  void DisplayLinesIfInAGoom(const AudioSamples& soundData);
+  auto DrawAndZoom(const AudioSamples& soundData) -> void;
 
-  void NewCycle();
-  void ApplyZoomEffects();
-  void UpdateFilterSettings();
-  void UpdateBuffers();
-  void RotateBuffers();
+  auto ApplyStateToSingleBufferPreZoom() -> void;
+  auto ApplyStateToMultipleBuffersPostZoom() -> void;
+  auto DisplayLinesIfInAGoom(const AudioSamples& soundData) -> void;
+
+  auto NewCycle() -> void;
+  auto ApplyZoomEffects() -> void;
+  auto UpdateFilterSettings() -> void;
+  auto UpdateBuffers() -> void;
+  auto RotateBuffers() -> void;
 
   [[nodiscard]] auto GetCurrentBuffers() const -> std::vector<PixelBuffer*>;
-  void ResetDrawBuffSettings(const FXBuffSettings& settings);
+  auto ResetDrawBuffSettings(const FXBuffSettings& settings) -> void;
 
   std::string m_currentSongTitle{};
   GoomDrawToBuffer m_goomTextOutput;
   GoomTitleDisplayer m_goomTitleDisplayer;
   GoomMessageDisplayer m_messageDisplayer;
   bool m_showGoomState = false;
-  void DisplayGoomState();
+  auto DisplayGoomState() -> void;
   [[nodiscard]] auto GetFontDirectory() const -> std::string;
-  void InitTitleDisplay(const std::string_view& songTitle);
-  void DisplayTitle(const std::string& songTitle, const std::string& message, float fps);
-  void DisplayCurrentTitle();
-  void UpdateMessages(const std::string& messages);
+  auto InitTitleDisplay(const std::string_view& songTitle) -> void;
+  auto DisplayTitle(const std::string& songTitle, const std::string& message, float fps) -> void;
+  auto DisplayCurrentTitle() -> void;
+  auto UpdateMessages(const std::string& messages) -> void;
   [[nodiscard]] auto GetMessagesFontFile() const -> std::string;
 };
 
@@ -178,7 +181,7 @@ auto GoomControl::GetRandSeed() -> uint64_t
   return UTILS::MATH::RAND::GetRandSeed();
 }
 
-void GoomControl::SetRandSeed(const uint64_t seed)
+auto GoomControl::SetRandSeed(const uint64_t seed) -> void
 {
   LogDebug("Set goom seed = {}.", seed);
   UTILS::MATH::RAND::SetRandSeed(seed);
@@ -191,34 +194,39 @@ GoomControl::GoomControl(const uint32_t width,
 {
 }
 
-void GoomControl::SetShowTitle(const ShowTitleType value)
+auto GoomControl::SetShowTitle(const ShowTitleType value) -> void
 {
   m_controller->SetShowTitle(value);
 }
 
-void GoomControl::ShowGoomState(const bool value)
+auto GoomControl::ShowGoomState(const bool value) -> void
 {
   m_controller->ShowGoomState(value);
 }
 
-void GoomControl::SetDumpDirectory(const std::string& dumpDirectory)
+auto GoomControl::SetDumpDirectory(const std::string& dumpDirectory) -> void
 {
   m_controller->SetDumpDirectory(dumpDirectory);
 }
 
-void GoomControl::Start()
+auto GoomControl::Start() -> void
 {
   m_controller->Start();
 }
 
-void GoomControl::Finish()
+auto GoomControl::Finish() -> void
 {
   m_controller->Finish();
 }
 
-void GoomControl::SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer)
+auto GoomControl::SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void
 {
   m_controller->SetScreenBuffer(buffer);
+}
+
+auto GoomControl::NoZooms(const bool value) -> void
+{
+  m_controller->NoZooms(value);
 }
 
 auto GoomControl::GetLastShaderEffects() const -> const GoomShaderEffects&
@@ -226,10 +234,10 @@ auto GoomControl::GetLastShaderEffects() const -> const GoomShaderEffects&
   return m_controller->GetLastShaderEffects();
 }
 
-void GoomControl::Update(const AudioSamples& audioSamples,
+auto GoomControl::Update(const AudioSamples& audioSamples,
                          const float fps,
                          const std::string& songTitle,
-                         const std::string& message)
+                         const std::string& message) -> void
 {
   m_controller->Update(audioSamples, fps, songTitle, message);
 }
@@ -287,23 +295,28 @@ inline auto GoomControl::GoomControlImpl::GetScreenHeight() const -> uint32_t
   return m_goomInfo.GetScreenInfo().height;
 }
 
-inline void GoomControl::GoomControlImpl::SetShowTitle(const ShowTitleType value)
+inline auto GoomControl::GoomControlImpl::SetShowTitle(const ShowTitleType value) -> void
 {
   m_showTitle = value;
 }
 
-inline void GoomControl::GoomControlImpl::SetScreenBuffer(
-    const std::shared_ptr<PixelBuffer>& buffer)
+inline auto GoomControl::GoomControlImpl::SetScreenBuffer(
+    const std::shared_ptr<PixelBuffer>& buffer) -> void
 {
   m_imageBuffers.SetOutputBuff(buffer);
 }
 
-inline void GoomControl::GoomControlImpl::ShowGoomState(const bool value)
+inline auto GoomControl::GoomControlImpl::NoZooms(const bool value) -> void
+{
+  m_noZooms = value;
+}
+
+inline auto GoomControl::GoomControlImpl::ShowGoomState(const bool value) -> void
 {
   m_showGoomState = value;
 }
 
-inline void GoomControl::GoomControlImpl::SetDumpDirectory(const std::string& dumpDirectory)
+inline auto GoomControl::GoomControlImpl::SetDumpDirectory(const std::string& dumpDirectory) -> void
 {
   m_dumpDirectory = dumpDirectory;
 }
@@ -313,7 +326,7 @@ inline auto GoomControl::GoomControlImpl::GetLastShaderEffects() const -> const 
   return m_visualFx.GetLastShaderEffects();
 }
 
-void GoomControl::GoomControlImpl::Start()
+inline auto GoomControl::GoomControlImpl::Start() -> void
 {
   m_filterSettingsService.Start();
   UpdateFilterSettings();
@@ -330,14 +343,14 @@ void GoomControl::GoomControlImpl::Start()
   StartGoomStateDump();
 }
 
-void GoomControl::GoomControlImpl::Finish()
+inline auto GoomControl::GoomControlImpl::Finish() -> void
 {
   FinishGoomStateDump();
 
   m_visualFx.Finish();
 }
 
-inline void GoomControl::GoomControlImpl::StartGoomStateDump()
+inline auto GoomControl::GoomControlImpl::StartGoomStateDump() -> void
 {
   if constexpr (GOOM::DO_GOOM_STATE_DUMP)
   {
@@ -347,7 +360,7 @@ inline void GoomControl::GoomControlImpl::StartGoomStateDump()
   }
 }
 
-inline void GoomControl::GoomControlImpl::UpdateGoomStateDump()
+inline auto GoomControl::GoomControlImpl::UpdateGoomStateDump() -> void
 {
   if constexpr (GOOM::DO_GOOM_STATE_DUMP)
   {
@@ -355,7 +368,7 @@ inline void GoomControl::GoomControlImpl::UpdateGoomStateDump()
   }
 }
 
-inline void GoomControl::GoomControlImpl::FinishGoomStateDump()
+inline auto GoomControl::GoomControlImpl::FinishGoomStateDump() -> void
 {
   if constexpr (GOOM::DO_GOOM_STATE_DUMP)
   {
@@ -384,10 +397,10 @@ inline auto GoomControl::GoomControlImpl::GetCurrentBuffers() const -> std::vect
   return {&m_imageBuffers.GetP1(), &m_imageBuffers.GetP2()};
 }
 
-void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
-                                          const float fps,
-                                          const std::string& songTitle,
-                                          const std::string& message)
+inline auto GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
+                                                 const float fps,
+                                                 const std::string& songTitle,
+                                                 const std::string& message) -> void
 {
   NewCycle();
 
@@ -410,13 +423,13 @@ void GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
   UpdateGoomStateDump();
 }
 
-inline void GoomControl::GoomControlImpl::NewCycle()
+inline auto GoomControl::GoomControlImpl::NewCycle() -> void
 {
   m_musicSettingsReactor.NewCycle();
   m_filterSettingsService.NewCycle();
 }
 
-inline void GoomControl::GoomControlImpl::UseMusicToChangeSettings()
+inline auto GoomControl::GoomControlImpl::UseMusicToChangeSettings() -> void
 {
   m_musicSettingsReactor.ChangeFilterModeIfMusicChanges();
   m_musicSettingsReactor.BigUpdateIfNotLocked();
@@ -427,7 +440,7 @@ inline void GoomControl::GoomControlImpl::UseMusicToChangeSettings()
   m_musicSettingsReactor.ChangeZoomEffects();
 }
 
-inline void GoomControl::GoomControlImpl::DrawAndZoom(const AudioSamples& soundData)
+inline auto GoomControl::GoomControlImpl::DrawAndZoom(const AudioSamples& soundData) -> void
 {
   ApplyStateToSingleBufferPreZoom();
 
@@ -438,30 +451,35 @@ inline void GoomControl::GoomControlImpl::DrawAndZoom(const AudioSamples& soundD
   DisplayLinesIfInAGoom(soundData);
 }
 
-inline void GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData)
+inline auto GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData) -> void
 {
   /* ! etude du signal ... */
   m_goomInfo.ProcessSoundSample(soundData);
 }
 
-inline void GoomControl::GoomControlImpl::ApplyStateToSingleBufferPreZoom()
+inline auto GoomControl::GoomControlImpl::ApplyStateToSingleBufferPreZoom() -> void
 {
   m_visualFx.ApplyCurrentStateToSingleBuffer();
 }
 
-inline void GoomControl::GoomControlImpl::ApplyStateToMultipleBuffersPostZoom()
+inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffersPostZoom() -> void
 {
   m_visualFx.ApplyCurrentStateToMultipleBuffers();
 }
 
-inline void GoomControl::GoomControlImpl::ApplyZoomEffects()
+inline auto GoomControl::GoomControlImpl::ApplyZoomEffects() -> void
 {
+  if (m_noZooms)
+  {
+    return;
+  }
+
   UpdateFilterSettings();
 
   m_visualFx.ApplyZoom(m_imageBuffers.GetP1(), m_imageBuffers.GetP2());
 }
 
-inline void GoomControl::GoomControlImpl::UpdateFilterSettings()
+inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
 {
   m_visualFx.UpdateFilterSettings(
       std::as_const(m_filterSettingsService).GetFilterSettings(),
@@ -469,12 +487,13 @@ inline void GoomControl::GoomControlImpl::UpdateFilterSettings()
   m_filterSettingsService.NotifyUpdatedFilterEffectsSettings();
 }
 
-inline void GoomControl::GoomControlImpl::ResetDrawBuffSettings(const FXBuffSettings& settings)
+inline auto GoomControl::GoomControlImpl::ResetDrawBuffSettings(const FXBuffSettings& settings)
+    -> void
 {
   m_multiBufferDraw.SetBuffIntensity(settings.buffIntensity);
 }
 
-inline void GoomControl::GoomControlImpl::UpdateBuffers()
+inline auto GoomControl::GoomControlImpl::UpdateBuffers() -> void
 {
   // affichage et swappage des buffers...
   m_imageBuffers.GetP1().CopyTo(m_imageBuffers.GetOutputBuff());
@@ -482,13 +501,14 @@ inline void GoomControl::GoomControlImpl::UpdateBuffers()
   RotateBuffers();
 }
 
-inline void GoomControl::GoomControlImpl::RotateBuffers()
+inline auto GoomControl::GoomControlImpl::RotateBuffers() -> void
 {
   m_imageBuffers.RotateBuffers();
   m_multiBufferDraw.SetBuffers(GetCurrentBuffers());
 }
 
-inline void GoomControl::GoomControlImpl::DisplayLinesIfInAGoom(const AudioSamples& soundData)
+inline auto GoomControl::GoomControlImpl::DisplayLinesIfInAGoom(const AudioSamples& soundData)
+    -> void
 {
   // Gestion du Scope - Scope management
   m_musicSettingsReactor.UpdateLineModes();
@@ -506,9 +526,9 @@ inline void GoomControl::GoomControlImpl::DisplayLinesIfInAGoom(const AudioSampl
   m_musicSettingsReactor.ChangeGoomLines();
 }
 
-void GoomControl::GoomControlImpl::DisplayTitle(const std::string& songTitle,
-                                                const std::string& message,
-                                                const float fps)
+inline auto GoomControl::GoomControlImpl::DisplayTitle(const std::string& songTitle,
+                                                       const std::string& message,
+                                                       const float fps) -> void
 {
   std::string msg{message};
 
@@ -535,7 +555,8 @@ void GoomControl::GoomControlImpl::DisplayTitle(const std::string& songTitle,
   }
 }
 
-void GoomControl::GoomControlImpl::InitTitleDisplay(const std::string_view& songTitle)
+inline auto GoomControl::GoomControlImpl::InitTitleDisplay(const std::string_view& songTitle)
+    -> void
 {
   m_currentSongTitle = songTitle;
 
@@ -547,7 +568,7 @@ void GoomControl::GoomControlImpl::InitTitleDisplay(const std::string_view& song
   m_goomTitleDisplayer.SetInitialPosition(xPos, yPos);
 }
 
-inline void GoomControl::GoomControlImpl::DisplayCurrentTitle()
+inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 {
   if (m_showTitle == ShowTitleType::ALWAYS)
   {
@@ -577,7 +598,7 @@ inline void GoomControl::GoomControlImpl::DisplayCurrentTitle()
 /*
  * Met a jour l'affichage du message defilant
  */
-inline void GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages)
+inline auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -> void
 {
   if (messages.empty())
   {
@@ -589,7 +610,7 @@ inline void GoomControl::GoomControlImpl::UpdateMessages(const std::string& mess
   m_messageDisplayer.UpdateMessages(StringSplit(messages, "\n"));
 }
 
-inline void GoomControl::GoomControlImpl::DisplayGoomState()
+inline auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
 {
   if (!m_showGoomState)
   {
