@@ -143,7 +143,7 @@ TEST_CASE("Lightened color", "[color-half-lightened]")
   REQUIRE(cl.G() == 25);
   REQUIRE(cl.B() == 10);
 
-  const Pixel c2 = Pixel::WHITE;
+  const Pixel c2 = WHITE_PIXEL;
   cl = GetLightenedColor(c2, 1.0);
   REQUIRE(cl.R() == 0);
   REQUIRE(cl.G() == 0);

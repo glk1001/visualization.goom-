@@ -57,7 +57,7 @@ private:
   Flt m_cosA2 = 0;
   Flt m_sinA2 = 0;
   const COLOR::IColorMap* m_colorMap = nullptr;
-  Pixel m_color = Pixel::BLACK;
+  Pixel m_color = BLACK_PIXEL;
   const UTILS::GRAPHICS::ImageBitmap* m_currentPointBitmap = nullptr;
 };
 

@@ -73,7 +73,7 @@ void IGoomDraw::Bitmap(const Point2dInt centre,
     for (size_t xBitmap = 0; xBitmap < actualBitmapWidth; ++xBitmap)
     {
       const Pixel bitmapColor = bitmap(xBitmap, yBitmap);
-      if ((0 == bitmapColor.A()) || (bitmapColor == Pixel::BLACK))
+      if ((0 == bitmapColor.A()) || (bitmapColor.IsBlack()))
       {
         continue;
       }

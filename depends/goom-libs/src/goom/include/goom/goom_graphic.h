@@ -130,9 +130,6 @@ public:
 
   [[nodiscard]] auto ToString() const -> std::string;
 
-  static const Pixel BLACK;
-  static const Pixel WHITE;
-
   [[nodiscard]] constexpr auto IsBlack() const noexcept -> bool;
 
   constexpr friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool;
@@ -245,6 +242,9 @@ constexpr Pixel::Pixel(const uint32_t red,
 }
 {
 }
+
+static inline constexpr Pixel BLACK_PIXEL{0U, 0U, 0U, MAX_ALPHA};
+static inline constexpr Pixel WHITE_PIXEL{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA};
 
 constexpr auto MultiplyColorChannels(const PixelChannelType ch1,
                                      const PixelChannelType ch2) noexcept -> uint32_t

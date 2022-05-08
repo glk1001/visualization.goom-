@@ -298,7 +298,7 @@ inline auto GoomTitleDisplayer::GetFinalOutlineColor(const float fontColorT,
                                                      const int32_t charWidth) const -> Pixel
 {
   const Pixel outlineFontColor =
-      (!IsMiddlePhase()) ? Pixel::WHITE : m_textOutlineColorMap.get().GetColor(fontColorT);
+      (!IsMiddlePhase()) ? WHITE_PIXEL : m_textOutlineColorMap.get().GetColor(fontColorT);
 
   const Pixel charColor = m_textOutlineColorMap.get().GetColor(GetFltFraction(x, charWidth));
   return IColorMap::GetColorMix(outlineFontColor, charColor, fontCharColorMixT);

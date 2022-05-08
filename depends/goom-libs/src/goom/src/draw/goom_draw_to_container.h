@@ -69,7 +69,7 @@ inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt point) const
   const ColorsList& colorsList = GetColorsList(point);
   if (0 == colorsList.count)
   {
-    return Pixel::BLACK;
+    return BLACK_PIXEL;
   }
   return colorsList.colorsArray[static_cast<size_t>(colorsList.count - 1)];
 }
@@ -77,7 +77,7 @@ inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt point) const
 inline auto GoomDrawToContainer::GetLastDrawnColors(const Point2dInt point) const
     -> std::vector<Pixel>
 {
-  return {GetLastDrawnColor(point), Pixel::BLACK};
+  return {GetLastDrawnColor(point), BLACK_PIXEL};
 }
 
 inline auto GoomDrawToContainer::GetColorsList(const Point2dInt point) const -> const ColorsList&

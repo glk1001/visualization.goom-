@@ -134,8 +134,8 @@ private:
       -> std::vector<LinePoint>;
 
   // pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera
-  Pixel m_srceColor = Pixel::BLACK;
-  Pixel m_destColor = Pixel::BLACK;
+  Pixel m_srceColor = BLACK_PIXEL;
+  Pixel m_destColor = BLACK_PIXEL;
   bool m_useLineColor = true;
   bool m_useIncreasedChroma = false;
   float m_lineColorPower = 0.0F;

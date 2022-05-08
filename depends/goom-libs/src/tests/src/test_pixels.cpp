@@ -68,10 +68,12 @@ TEST_CASE("Pixels")
     const Pixel pixel3{{TEST_R + 1, TEST_G, TEST_B}};
     REQUIRE(pixel1 == pixel2);
     REQUIRE(!(pixel1 == pixel3));
-    const Pixel pixelBlack{{0, 0, 0, 0}};
-    REQUIRE(pixelBlack == Pixel::BLACK);
+    const Pixel pixelBlack{
+        {0, 0, 0, 255}
+    };
+    REQUIRE(pixelBlack == BLACK_PIXEL);
     const Pixel pixelWhite{{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA}};
-    REQUIRE(pixelWhite == Pixel::WHITE);
+    REQUIRE(pixelWhite == WHITE_PIXEL);
   }
   SECTION("Pixel Multiply Scalar")
   {
@@ -168,7 +170,7 @@ TEST_CASE("PixelBuffers")
     const Pixel testPixel2{{TEST_R+1, TEST_G+1, TEST_B+1}};
     const Pixel testPixel3{{TEST_R+2, TEST_G+2, TEST_B+2}};
     const Pixel testPixel4{{TEST_R+3, TEST_G+3, TEST_B+3}};
-    buffer.Fill(Pixel::WHITE);
+    buffer.Fill(WHITE_PIXEL);
 
     static constexpr size_t X = 20;
     static constexpr size_t Y = 40;
@@ -189,7 +191,7 @@ TEST_CASE("PixelBuffers")
   {
     const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
     PixelBuffer buffer{WIDTH, HEIGHT};
-    buffer.Fill(Pixel::WHITE);
+    buffer.Fill(WHITE_PIXEL);
     static constexpr size_t Y = 10;
     for (size_t x = 0; x < WIDTH; ++x)
     {

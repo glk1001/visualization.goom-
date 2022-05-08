@@ -113,7 +113,7 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
 {
   if (coeffs.isZero)
   {
-    return Pixel::BLACK;
+    return BLACK_PIXEL;
   }
 
   uint32_t multR = 0;

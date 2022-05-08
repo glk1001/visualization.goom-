@@ -214,7 +214,7 @@ void CVisualizationGoom::StartActiveQueue()
 {
   // Make one initial frame in black
   PixelBufferData initialBufferData{MakePixelBufferData()};
-  initialBufferData.pixelBuffer->Fill(Pixel::BLACK);
+  initialBufferData.pixelBuffer->Fill(GOOM::BLACK_PIXEL);
   m_activeQueue.push(initialBufferData);
 }
 

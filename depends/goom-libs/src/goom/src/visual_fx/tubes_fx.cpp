@@ -668,7 +668,7 @@ void TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups()
         const Pixel newColor0 = GetBrighterColor(brightness, avColor);
 
         // IMPORTANT - Best results come from putting color in second buffer.
-        m_draw.DrawPixels(newPoint, {Pixel::BLACK, newColor0});
+        m_draw.DrawPixels(newPoint, {BLACK_PIXEL, newColor0});
       });
 }
 
@@ -681,7 +681,7 @@ inline auto TubesFx::TubeFxImpl::GetAverageColor(const GoomDrawToContainer::Colo
   }
   if (0 == colorsList.count)
   {
-    return Pixel::BLACK;
+    return BLACK_PIXEL;
   }
 
   return GetColorAverage(colorsList.count, colorsList.colorsArray);

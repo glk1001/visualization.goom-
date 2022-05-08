@@ -26,7 +26,7 @@ private:
   struct HitInfo
   {
     uint32_t count = 0;
-    Pixel color = Pixel::BLACK;
+    Pixel color = BLACK_PIXEL;
     const Similitude* simi{};
   };
   std::vector<std::vector<HitInfo>> m_hitInfo{};

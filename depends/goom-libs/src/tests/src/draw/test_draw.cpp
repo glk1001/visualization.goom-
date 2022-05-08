@@ -44,7 +44,7 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
                        coords.colors[0].A(), 0, colors[0].R(), colors[0].G(), colors[0].B(),
                        colors[0].A()));
     REQUIRE(coords.colors[0] == colors[0]);
-    REQUIRE(coords.colors[1] == Pixel::BLACK);
+    REQUIRE(coords.colors[1] == BLACK_PIXEL);
   }
 }
 
@@ -57,7 +57,7 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
   const auto emplaceCoords = [&](const Point2dInt point, const ColorsList& colorsList)
   {
     changedPixels.emplace_back(PixelInfo{
-        point, {colorsList.colorsArray[0], Pixel::BLACK}
+        point, {colorsList.colorsArray[0], BLACK_PIXEL}
     });
   };
   draw.IterateChangedCoordsNewToOld(emplaceCoords);
@@ -84,7 +84,7 @@ auto FillDrawContainer(GoomDrawToContainer* const draw, const size_t numChanged)
 
     draw->DrawPixels(point, colors);
     REQUIRE(draw->GetPixels(point)[0] == color0);
-    REQUIRE(draw->GetPixels(point)[1] == Pixel::BLACK);
+    REQUIRE(draw->GetPixels(point)[1] == BLACK_PIXEL);
   }
   std::reverse(pixelsNewToOld.begin(), pixelsNewToOld.end());
 

@@ -73,7 +73,7 @@ private:
     _num // unused and must be last
   };
   DecorationType m_decorationType;
-  Pixel m_differentColor = Pixel::BLACK;
+  Pixel m_differentColor = BLACK_PIXEL;
 
   bool m_doCircleDotShapes = true;
   const IColorMap* m_outerCircleDotColorMap{};
@@ -620,7 +620,7 @@ inline auto Circle::DotDrawer::GetDotMixedColor(const size_t x,
 {
   if (0 == bgnd.A())
   {
-    return Pixel::BLACK;
+    return BLACK_PIXEL;
   }
 
   const Pixel mixedColor = IColorMap::GetColorMix(bgnd, color, mixT);
@@ -638,7 +638,7 @@ inline auto Circle::DotDrawer::GetDotMixedColor(const size_t x,
     case DecorationType::NO_DECORATION:
       return mixedColor;
     case DecorationType::BLACK_LINES:
-      return Pixel::BLACK;
+      return BLACK_PIXEL;
     case DecorationType::DIFFERENT_COLORS:
       return GetBrighterColor(DIFFERENT_COLOR_BRIGHTNESS, m_differentColor);
     case DecorationType::BRIGHT_LINES:

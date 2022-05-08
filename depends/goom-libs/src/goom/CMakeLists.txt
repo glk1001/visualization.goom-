@@ -20,6 +20,7 @@ endif()
 
 add_library(goom
     STATIC
+        include/goom/goom_graphic.h
         src/color/color_data/color_data_maps.cpp
         src/color/color_data/extra_color_groups.cpp
         src/color/colormaps.cpp
@@ -49,7 +50,6 @@ add_library(goom
         src/draw/goom_draw_to_many.cpp
         src/draw/text_draw.cpp
         src/goom_control.cpp
-        src/goom_graphic.cpp
         src/sound_info.cpp
         src/utils/adaptive_exposure.cpp
         src/utils/graphics/bezier_drawer.cpp

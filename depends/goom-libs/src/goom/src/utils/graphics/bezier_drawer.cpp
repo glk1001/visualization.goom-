@@ -52,7 +52,7 @@ void BezierDrawer::DrawDot(const Point2dInt centre, const uint32_t diameter, con
   {
     if (0 == bgnd.A())
     {
-      return Pixel::BLACK;
+      return BLACK_PIXEL;
     }
     return color;
   };

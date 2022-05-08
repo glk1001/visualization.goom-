@@ -34,7 +34,7 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
     -> std::vector<TextDraw>
 {
 
-  const Pixel textColor = GetBrighterColor(10.0F, Pixel::WHITE);
+  const Pixel textColor = GetBrighterColor(10.0F, WHITE_PIXEL);
   const auto getFontColor =
       [textColor]([[maybe_unused]] const size_t textIndexOfChar,
                   [[maybe_unused]] const Point2dInt point, [[maybe_unused]] const int32_t width,

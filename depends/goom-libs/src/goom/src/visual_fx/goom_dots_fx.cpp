@@ -449,7 +449,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   {
     if (0 == bgnd.A())
     {
-      return Pixel::BLACK;
+      return BLACK_PIXEL;
     }
     const Pixel newColor =
         m_useMiddleColor && IsImagePointCloseToMiddle(x, y, radius) ? m_middleColor : color;
