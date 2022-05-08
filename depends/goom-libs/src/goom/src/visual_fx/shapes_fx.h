@@ -39,6 +39,8 @@ public:
                                  std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
 
+  auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void override;
+
   auto ApplyMultiple() noexcept -> void;
 
 private:
