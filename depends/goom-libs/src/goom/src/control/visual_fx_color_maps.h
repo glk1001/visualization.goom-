@@ -15,11 +15,6 @@ namespace COLOR
 class RandomColorMaps;
 }
 
-namespace UTILS
-{
-class IGoomRand;
-}
-
 namespace CONTROL
 {
 
@@ -41,6 +36,11 @@ enum class GoomEffect
   SHAPES2,
   SHAPES3,
   SHAPES4,
+  SHAPES5,
+  SHAPES6,
+  SHAPES7,
+  SHAPES8,
+  SHAPES9,
   STARS,
   STARS_LOW,
   TENTACLES,
@@ -49,12 +49,17 @@ enum class GoomEffect
   _num // unused and must be last
 };
 
+static inline constexpr auto EXPECTED_NUM_DOT_TYPES =
+    (static_cast<uint32_t>(GoomEffect::DOTS4) - static_cast<uint32_t>(GoomEffect::DOTS0)) + 1;
+static inline constexpr auto EXPECTED_NUM_SHAPES =
+    (static_cast<uint32_t>(GoomEffect::SHAPES9) - static_cast<uint32_t>(GoomEffect::SHAPES0)) + 1;
+
 class VisualFxColorMaps
 {
 public:
   explicit VisualFxColorMaps(const UTILS::MATH::IGoomRand& goomRand);
 
-  void SetNextColorMapSet();
+  auto SetNextColorMapSet() -> void;
 
   [[nodiscard]] auto GetColorMap(GoomEffect goomEffect) const
       -> std::shared_ptr<COLOR::RandomColorMaps>;
@@ -73,11 +78,13 @@ private:
     YELLOW_PURPLE_STANDARD_MAPS,
     ORANGE_GREEN_STANDARD_MAPS,
     ORANGE_PURPLE_STANDARD_MAPS,
-    CONST_ALL_STANDARD_MAPS,
-    CONST_HEAT_STANDARD_MAPS,
-    CONST_COLD_STANDARD_MAPS,
-    CONST_DIVERGING_BLACK_STANDARD_MAPS,
-    CONST_WES_ANDERSON_MAPS,
+    ALL_ONLY_STANDARD_MAPS,
+    HEAT_ONLY_STANDARD_MAPS,
+    COLD_ONLY_STANDARD_MAPS,
+    DIVERGING_ONLY_STANDARD_MAPS,
+    DIVERGING_BLACK_ONLY_STANDARD_MAPS,
+    WES_ANDERSON_ONLY_MAPS,
+    PASTEL_ONLY_MAPS,
     COLOR_MATCHED_SET1,
     COLOR_MATCHED_SET2,
     COLOR_MATCHED_SET3,
@@ -88,20 +95,19 @@ private:
     COLOR_MATCHED_SET8,
     _num // unused and must be last
   };
-  using ColorMatchedSetArray = std::array<ColorMatchedSet, UTILS::NUM<ColorMatchedSets>>;
-  const ColorMatchedSetArray m_colorMatchedSets;
-  [[nodiscard]] auto GetColorMatchedSetArray() const -> ColorMatchedSetArray;
-  const UTILS::MATH::Weights<ColorMatchedSets> m_colorMatchedSetWeights;
-  const ColorMatchedSet* m_currentColorMatchedMap;
-
+  using ColorMatchedSetsArray = std::array<ColorMatchedSet, UTILS::NUM<ColorMatchedSets>>;
+  [[nodiscard]] auto GetColorMatchedSetsArray() const -> ColorMatchedSetsArray;
+  const ColorMatchedSetsArray m_colorMatchedSets{GetColorMatchedSetsArray()};
+  const UTILS::MATH::Weights<ColorMatchedSets> m_colorMatchedSetsWeights;
   [[nodiscard]] auto GetNextColorMatchedSet() const -> const ColorMatchedSet&;
+  const ColorMatchedSet* m_currentColorMatchedMap{&GetNextColorMatchedSet()};
 
-  [[nodiscard]] static auto GetConstColorMatchedSet(const ColorMapFunc& func) -> ColorMatchedSet;
-  [[nodiscard]] auto GetColorPairColorMatchedSet(const ColorMapFunc& func1,
+  [[nodiscard]] static auto GetOneGroupColorMatchedSet(const ColorMapFunc& func) -> ColorMatchedSet;
+  [[nodiscard]] auto GetTwoGroupsColorMatchedSet(const ColorMapFunc& func1,
                                                  const ColorMapFunc& func2) const
       -> ColorMatchedSet;
 
-  static void GetPrimaryColorDots(ColorMatchedSet& matchedSet);
+  static auto GetPrimaryColorDots(ColorMatchedSet& matchedSet) -> void;
 
   [[nodiscard]] static auto GetColorMatchedSet1() -> ColorMatchedSet;
   [[nodiscard]] static auto GetColorMatchedSet2() -> ColorMatchedSet;
@@ -113,7 +119,7 @@ private:
   [[nodiscard]] static auto GetColorMatchedSet8() -> ColorMatchedSet;
 };
 
-inline void VisualFxColorMaps::SetNextColorMapSet()
+inline auto VisualFxColorMaps::SetNextColorMapSet() -> void
 {
   m_currentColorMatchedMap = &GetNextColorMatchedSet();
 }

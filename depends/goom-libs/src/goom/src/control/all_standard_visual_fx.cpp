@@ -309,6 +309,8 @@ void AllStandardVisualFx::ChangeColorMaps()
 
 inline auto AllStandardVisualFx::ChangeDotsColorMaps() -> void
 {
+  static_assert(GoomDotsFx::NUM_DOT_TYPES == EXPECTED_NUM_DOT_TYPES);
+
   for (uint32_t i = 0; i < GoomDotsFx::NUM_DOT_TYPES; ++i)
   {
     const auto dotEffect = static_cast<GoomEffect>(i + static_cast<uint32_t>(GoomEffect::DOTS0));
@@ -318,6 +320,8 @@ inline auto AllStandardVisualFx::ChangeDotsColorMaps() -> void
 
 inline auto AllStandardVisualFx::ChangeShapesColorMaps() -> void
 {
+  static_assert(ShapesFx::NUM_SHAPE_GROUPS == EXPECTED_NUM_SHAPES);
+
   for (uint32_t i = 0; i < ShapesFx::NUM_SHAPE_GROUPS; ++i)
   {
     const auto shapeEffect =
