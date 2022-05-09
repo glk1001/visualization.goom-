@@ -113,6 +113,7 @@ public:
   auto DoRandomChanges() noexcept -> void;
   auto UseRandomShapesSpeed() noexcept -> void;
   auto UseFixedShapesSpeed(float tMinMaxLerp) noexcept -> void;
+  auto UseEvenGroupsForDirection(bool val) -> void;
 
   auto UpdateMainColorMapId(RandomColorMapsManager::ColorMapId mainColorMapId) noexcept -> void;
   auto UpdateLowColorMapId(RandomColorMapsManager::ColorMapId lowColorMapId) noexcept -> void;
@@ -134,9 +135,10 @@ private:
   Point2dInt m_shapesTargetPoint{U_HALF * m_goomInfo.GetScreenInfo().width,
                                  U_HALF* m_goomInfo.GetScreenInfo().height};
   const uint32_t m_groupNum;
+  bool m_useEvenGroupsForDirection = true;
   static constexpr float MIN_SHAPE_SPEED = 0.005F;
   static_assert((0.0F < MIN_SHAPE_SPEED) and (MIN_SHAPE_SPEED < 1.0F));
-  static constexpr float MAX_SHAPE_SPEED = 0.020F;
+  static constexpr float MAX_SHAPE_SPEED = 0.010F;
   static_assert((0.0F < MAX_SHAPE_SPEED) and (MAX_SHAPE_SPEED < 1.0F));
   bool m_useRandomShapesSpeed = false;
   float m_currentTMinMaxLerp = 0.0F;
@@ -271,7 +273,14 @@ inline auto ShapeGroup::GetRandomizedShapePaths() noexcept -> std::vector<ShapeP
 
     shapePaths.emplace_back(newBasePath, colorInfo);
 
-    assert(shapePaths.at(i).GetIPath().GetStartPos() == m_shapesTargetPoint);
+    if (not(shapePaths.at(i).GetIPath().GetStartPos() == m_shapesTargetPoint))
+    {
+      LogError("shapePaths.at({}).GetIPath().GetStartPos() = {},{} != m_shapesTargetPoint = {},{}",
+               i, shapePaths.at(i).GetIPath().GetStartPos().x,
+               shapePaths.at(i).GetIPath().GetStartPos().y, m_shapesTargetPoint.x,
+               m_shapesTargetPoint.y);
+    }
+    //assert(shapePaths.at(i).GetIPath().GetStartPos() == m_shapesTargetPoint);
 
     stepFraction.Increment();
   }
@@ -300,8 +309,13 @@ inline auto ShapeGroup::GetCircleRadius() const noexcept -> float
 
 inline auto ShapeGroup::GetCircleDirection() const noexcept -> CircleFunction::Direction
 {
-  return UTILS::MATH::IsEven(m_groupNum) ? CircleFunction::Direction::COUNTER_CLOCKWISE
-                                         : CircleFunction::Direction::CLOCKWISE;
+  if (m_useEvenGroupsForDirection)
+  {
+    return UTILS::MATH::IsEven(m_groupNum) ? CircleFunction::Direction::COUNTER_CLOCKWISE
+                                           : CircleFunction::Direction::CLOCKWISE;
+  }
+  return UTILS::MATH::IsOdd(m_groupNum) ? CircleFunction::Direction::COUNTER_CLOCKWISE
+                                        : CircleFunction::Direction::CLOCKWISE;
 }
 
 inline auto ShapeGroup::GetCirclePath(const float radius,
@@ -459,6 +473,11 @@ inline auto ShapeGroup::UseFixedShapesSpeed(const float tMinMaxLerp) noexcept ->
 {
   m_fixedTMinMaxLerp = tMinMaxLerp;
   m_useRandomShapesSpeed = false;
+}
+
+inline auto ShapeGroup::UseEvenGroupsForDirection(const bool val) -> void
+{
+  m_useEvenGroupsForDirection = val;
 }
 
 inline void ShapeGroup::DoRandomChanges() noexcept
@@ -826,7 +845,7 @@ inline auto ShapesFx::ShapesFxImpl::SetWeightedInnerColorMaps(
 
 inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
 {
-  if (static constexpr float PROB_ACCEPT_NEW_MIDPOINT = 0.1F;
+  if (static constexpr float PROB_ACCEPT_NEW_MIDPOINT = 0.9F;
       not m_goomRand.ProbabilityOf(PROB_ACCEPT_NEW_MIDPOINT))
   {
     return;
@@ -928,8 +947,16 @@ inline auto ShapesFx::ShapesFxImpl::DoChanges() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::DoRandomChanges() noexcept -> void
 {
+  static constexpr float PROB_USE_EVEN_GROUPS_FOR_DIRECTION = 0.5F;
+  const bool useEvenGroupsForDirection =
+      m_goomRand.ProbabilityOf(PROB_USE_EVEN_GROUPS_FOR_DIRECTION);
+
   std::for_each(begin(m_shapeGroups), end(m_shapeGroups),
-                [](ShapeGroup& shapeGroup) { shapeGroup.DoRandomChanges(); });
+                [&useEvenGroupsForDirection](ShapeGroup& shapeGroup)
+                {
+                  shapeGroup.UseEvenGroupsForDirection(useEvenGroupsForDirection);
+                  shapeGroup.DoRandomChanges();
+                });
 }
 
 inline auto ShapesFx::ShapesFxImpl::SetShapeSpeeds() noexcept -> void
