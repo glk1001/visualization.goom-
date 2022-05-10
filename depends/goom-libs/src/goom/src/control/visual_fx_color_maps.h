@@ -31,16 +31,17 @@ enum class GoomEffect
   IMAGE,
   LINES1,
   LINES2,
-  SHAPES0,
-  SHAPES1,
-  SHAPES2,
-  SHAPES3,
-  SHAPES4,
-  SHAPES5,
-  SHAPES6,
-  SHAPES7,
-  SHAPES8,
-  SHAPES9,
+  SHAPES0_MAIN,
+  SHAPES0_LOW,
+  SHAPES0_INNER,
+  /**
+  SHAPES1_MAIN,
+  SHAPES1_LOW,
+  SHAPES1_INNER,
+  SHAPES2_MAIN,
+  SHAPES2_LOW,
+  SHAPES2_INNER,
+   **/
   STARS,
   STARS_LOW,
   TENTACLES,
@@ -50,9 +51,11 @@ enum class GoomEffect
 };
 
 static inline constexpr auto EXPECTED_NUM_DOT_TYPES =
-    (static_cast<uint32_t>(GoomEffect::DOTS4) - static_cast<uint32_t>(GoomEffect::DOTS0)) + 1;
+    1 + (static_cast<uint32_t>(GoomEffect::DOTS4) - static_cast<uint32_t>(GoomEffect::DOTS0));
 static inline constexpr auto EXPECTED_NUM_SHAPES =
-    (static_cast<uint32_t>(GoomEffect::SHAPES9) - static_cast<uint32_t>(GoomEffect::SHAPES0)) + 1;
+    1 + ((static_cast<uint32_t>(GoomEffect::SHAPES0_MAIN) -
+          static_cast<uint32_t>(GoomEffect::SHAPES0_MAIN)) /
+         3);
 
 class VisualFxColorMaps
 {

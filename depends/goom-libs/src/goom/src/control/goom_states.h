@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goom_graphic.h"
+#include "goom_config.h"
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -18,8 +18,6 @@ enum class GoomStates : size_t
   CIRCLES_IMAGE,
   CIRCLES_IMAGE_STARS,
   CIRCLES_LINES,
-  CIRCLES_LINES_SHAPES,
-  CIRCLES_SHAPES,
   CIRCLES_STARS_TUBES,
   CIRCLES_TENTACLES,
   DOTS_IFS,
@@ -47,6 +45,7 @@ enum class GoomStates : size_t
   IMAGE_LINES_SHAPES,
   IMAGE_LINES_STARS_TENTACLES,
   IMAGE_ONLY,
+  IMAGE_SHAPES,
   IMAGE_SHAPES_STARS,
   IMAGE_SHAPES_TUBES,
   IMAGE_STARS,
@@ -57,6 +56,8 @@ enum class GoomStates : size_t
   LINES_STARS,
   LINES_TENTACLES,
   SHAPES_ONLY,
+  SHAPES_STARS,
+  SHAPES_TUBES,
   STARS_ONLY,
   TENTACLES_ONLY,
   TUBES_ONLY,

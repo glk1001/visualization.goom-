@@ -186,16 +186,17 @@ auto VisualFxColorMaps::GetColorMatchedSet1() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetMostlySequentialStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES3)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES4)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES5)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES6)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES7)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES8)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES9)) = GetMostlySequentialSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetMostlySequentialSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetSlightlyDivergingStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetMostlySequentialSlimMaps;
+  /**
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
+   **/
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetMostlySequentialSlimMaps;
   matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetSlightlyDivergingSlimMaps;
@@ -220,16 +221,17 @@ auto VisualFxColorMaps::GetColorMatchedSet2() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetSlightlyDivergingSlimMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingSlimMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1)) = GetAllSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES3)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES4)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES5)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES6)) = GetAllSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES7)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES8)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES9)) = GetWesAndersonMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetColdStandardMaps;
+  /**
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
+   **/
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetHeatStandardMaps;
   matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetAllSlimMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetYellowStandardMaps;
@@ -254,16 +256,17 @@ auto VisualFxColorMaps::GetColorMatchedSet3() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetMostlySequentialStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetAllSlimMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1)) = GetDivergingBlackStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES3)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES4)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES5)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES6)) = GetDivergingBlackStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES7)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES8)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES9)) = GetYellowStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetPastelStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetDivergingBlackStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetSlightlyDivergingStandardMaps;
+  /**
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetRedStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetYellowStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetHeatStandardMaps;
+   **/
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetSlightlyDivergingSlimMaps;
   matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetMostlySequentialStandardMaps;
@@ -288,16 +291,17 @@ auto VisualFxColorMaps::GetColorMatchedSet4() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetCitiesStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0)) = GetAllMapsUnweighted;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2)) = GetAllSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES3)) = GetPurpleStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES4)) = GetOrangeStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES5)) = GetAllMapsUnweighted;
-  matchedSet.at(ToUType(GoomEffect::SHAPES6)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES7)) = GetAllSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES8)) = GetPurpleStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES9)) = GetOrangeStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetPurpleStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetGreenStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetYellowStandardMaps;
+  /**
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
+  **/
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetMostlySequentialStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetPurpleStandardMaps;
@@ -322,16 +326,17 @@ auto VisualFxColorMaps::GetColorMatchedSet5() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2)) = GetDivergingBlackStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES3)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES4)) = GetCitiesStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES5)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES6)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES7)) = GetDivergingBlackStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES8)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES9)) = GetCitiesStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetPastelStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetSlightlyDivergingStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetDivergingBlackStandardMaps;
+  /**
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetWesAndersonMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetWesAndersonMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetWesAndersonMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetWesAndersonMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetWesAndersonMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetWesAndersonMaps;
+   **/
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetMostlySequentialStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetSeasonsStandardMaps;
@@ -356,16 +361,17 @@ auto VisualFxColorMaps::GetColorMatchedSet6() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0)) = GetAllStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES3)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES4)) = GetCitiesStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES5)) = GetAllStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES6)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES7)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES8)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES9)) = GetCitiesStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetAllStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetPastelStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetHeatStandardMaps;
+  /**
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
+   **/
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetColdStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetSeasonsStandardMaps;
@@ -390,16 +396,17 @@ auto VisualFxColorMaps::GetColorMatchedSet7() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES4)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES5)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES6)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES7)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES8)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES9)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetRedStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetGreenStandardMaps;
+  /**
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
+   **/
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetAllMapsUnweighted;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetGreenStandardMaps;
@@ -424,16 +431,17 @@ auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES1)) = GetAllStandardMaps;
   matchedSet.at(ToUType(GoomEffect::LINES2)) = GetAllStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES3)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES4)) = GetAllMapsUnweighted;
-  matchedSet.at(ToUType(GoomEffect::SHAPES5)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES6)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES7)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES8)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES9)) = GetAllMapsUnweighted;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetWesAndersonMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetRedStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetSlightlyDivergingStandardMaps;
+  /**
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetHeatStandardMaps;
+   **/
   matchedSet.at(ToUType(GoomEffect::STARS)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetBlueStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetYellowStandardMaps;

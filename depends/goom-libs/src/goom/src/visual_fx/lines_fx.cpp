@@ -114,7 +114,7 @@ private:
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
+  const ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
 
   std::vector<LinePoint> m_srcePoints{};
   std::vector<LinePoint> m_srcePointsCopy{};

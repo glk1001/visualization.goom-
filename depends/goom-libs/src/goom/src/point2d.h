@@ -25,6 +25,8 @@ struct Point2dInt
 
 [[nodiscard]] constexpr auto operator==(const Point2dInt& point1, const Point2dInt& point2) noexcept
     -> bool;
+[[nodiscard]] constexpr auto operator!=(const Point2dInt& point1, const Point2dInt& point2) noexcept
+    -> bool;
 [[nodiscard]] constexpr auto operator+(const Point2dInt& point, const Vec2dInt& vec) noexcept
     -> Point2dInt;
 [[nodiscard]] constexpr auto operator-(const Point2dInt& point, const Vec2dInt& vec) noexcept
@@ -39,6 +41,8 @@ struct Point2dInt
     -> Point2dInt;
 [[nodiscard]] constexpr auto MidpointFromOrigin(const Point2dInt& point) noexcept -> Point2dInt;
 [[nodiscard]] auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t;
+[[nodiscard]] auto SqDistance(const Point2dInt& point1, const Point2dInt& point2) noexcept
+    -> int32_t;
 
 struct Vec2dInt
 {
@@ -85,6 +89,7 @@ struct Point2dFlt
                                   const Point2dFlt& point2,
                                   float t) noexcept -> Point2dFlt;
 [[nodiscard]] auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float;
+[[nodiscard]] auto SqDistance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float;
 
 struct Vec2dFlt
 {
@@ -127,6 +132,11 @@ constexpr auto Point2dInt::Translate(const Vec2dInt& vec) noexcept -> void
 constexpr auto operator==(const Point2dInt& point1, const Point2dInt& point2) noexcept -> bool
 {
   return (point1.x == point2.x) && (point1.y == point2.y);
+}
+
+constexpr auto operator!=(const Point2dInt& point1, const Point2dInt& point2) noexcept -> bool
+{
+  return not(point1 == point2);
 }
 
 constexpr auto operator+(const Point2dInt& point, const Vec2dInt& vec) noexcept -> Point2dInt
@@ -343,6 +353,16 @@ inline auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcep
 inline auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float
 {
   return std::sqrt(UTILS::MATH::SqDistance(point1.x - point2.x, point1.y - point2.y));
+}
+
+inline auto SqDistance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t
+{
+  return UTILS::MATH::SqDistance(point1.x - point2.x, point1.y - point2.y);
+}
+
+inline auto SqDistance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float
+{
+  return UTILS::MATH::SqDistance(point1.x - point2.x, point1.y - point2.y);
 }
 
 } // namespace GOOM

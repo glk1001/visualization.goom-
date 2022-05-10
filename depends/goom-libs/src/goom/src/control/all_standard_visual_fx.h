@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom_graphic.h"
 #include "goom_states.h"
 #include "point2d.h"
 #include "visual_fx_color_maps.h"

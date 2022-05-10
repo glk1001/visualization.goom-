@@ -73,7 +73,8 @@ template<typename T>
   return x * x;
 }
 
-[[nodiscard]] constexpr auto SqDistance(const float x, const float y) -> float
+template<typename T>
+[[nodiscard]] constexpr auto SqDistance(const T x, const T y) -> T
 {
   return Sq(x) + Sq(y);
 }

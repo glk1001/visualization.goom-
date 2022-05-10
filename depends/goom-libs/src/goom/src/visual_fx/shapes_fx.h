@@ -20,7 +20,7 @@ class FxHelper;
 class ShapesFx : public IVisualFx
 {
 public:
-  static constexpr uint32_t NUM_SHAPE_GROUPS = 10;
+  static constexpr uint32_t NUM_SHAPES = 1;
 
   explicit ShapesFx(const FxHelper& fxHelper) noexcept;
 
@@ -29,13 +29,13 @@ public:
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;
 
-  auto SetWeightedMainColorMaps(size_t shapeGroupNum,
+  auto SetWeightedMainColorMaps(size_t shapeNum,
                                 std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
-  auto SetWeightedLowColorMaps(size_t shapeGroupNum,
+  auto SetWeightedLowColorMaps(size_t shapeNum,
                                std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
-  auto SetWeightedInnerColorMaps(size_t shapeGroupNum,
+  auto SetWeightedInnerColorMaps(size_t shapeNum,
                                  std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
 

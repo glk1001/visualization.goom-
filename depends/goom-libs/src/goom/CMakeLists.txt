@@ -116,6 +116,10 @@ add_library(goom
         src/visual_fx/ifs/similitudes.cpp
         src/visual_fx/shaders/high_contrast.cpp
         src/visual_fx/shapes/bezier_flower.cpp
+        src/visual_fx/shapes/shape_drawers.cpp
+        src/visual_fx/shapes/shape_parts.cpp
+        src/visual_fx/shapes/shape_paths.cpp
+        src/visual_fx/shapes/shapes.cpp
         src/visual_fx/tentacles/circles_tentacle_layout.cpp
         src/visual_fx/tentacles/tentacle_driver.cpp
         src/visual_fx/tentacles/tentacle_layout.h

@@ -23,33 +23,27 @@ public:
 
 private:
   float m_rotationAngle = 0.0F;
-  bool m_rotationAngleSet = false;
-  float m_sinRotationAngle = 0.0F;
-  float m_cosRotationAngle = 1.0F;
   float m_scale = 1.0F;
-  bool m_scaleSet = false;
   Vec2dFlt m_translation{};
-  bool m_translationSet = false;
+  float m_sinRotationAngle = std::sin(m_rotationAngle);
+  float m_cosRotationAngle = std::cos(m_rotationAngle);
+  bool m_rotationAngleSet = not FloatsEqual(0.0F, m_rotationAngle);
+  bool m_scaleSet = not FloatsEqual(1.0F, m_scale);
+  bool m_translationSet =
+      (not FloatsEqual(0.0F, m_translation.x)) || (not FloatsEqual(0.0F, m_translation.y));
 };
 
 inline Transform2d::Transform2d(const float angleInRadians,
                                 const float scale,
                                 const Vec2dFlt& translation) noexcept
-  : m_rotationAngle{angleInRadians},
-    m_rotationAngleSet{!FloatsEqual(0.0F, m_rotationAngle)},
-    m_sinRotationAngle{std::sin(m_rotationAngle)},
-    m_cosRotationAngle{std::cos(m_rotationAngle)},
-    m_scale{scale},
-    m_scaleSet{!FloatsEqual(1.0F, m_scale)},
-    m_translation{translation},
-    m_translationSet{!FloatsEqual(0.0F, m_translation.x) && !FloatsEqual(0.0F, m_translation.y)}
+  : m_rotationAngle{angleInRadians}, m_scale{scale}, m_translation{translation}
 {
 }
 
 inline auto Transform2d::SetRotation(const float angleInRadians) -> void
 {
   m_rotationAngle = angleInRadians;
-  m_rotationAngleSet = !FloatsEqual(0.0F, m_rotationAngle);
+  m_rotationAngleSet = not FloatsEqual(0.0F, m_rotationAngle);
   m_sinRotationAngle = std::sin(m_rotationAngle);
   m_cosRotationAngle = std::cos(m_rotationAngle);
 }
@@ -57,13 +51,14 @@ inline auto Transform2d::SetRotation(const float angleInRadians) -> void
 inline auto Transform2d::SetScale(const float scale) -> void
 {
   m_scale = scale;
-  m_scaleSet = !FloatsEqual(1.0F, m_scale);
+  m_scaleSet = not FloatsEqual(1.0F, m_scale);
 }
 
 inline auto Transform2d::SetTranslation(const Vec2dFlt& translation) -> void
 {
   m_translation = translation;
-  m_translationSet = (!FloatsEqual(0.0F, m_translation.x)) && (!FloatsEqual(0.0F, m_translation.y));
+  m_translationSet =
+      (not FloatsEqual(0.0F, m_translation.x)) || (not FloatsEqual(0.0F, m_translation.y));
 }
 
 inline auto Transform2d::GetTransformedPoint(const Point2dInt& point) const -> Point2dInt
@@ -75,7 +70,7 @@ inline auto Transform2d::GetTransformedPoint(const Point2dFlt& point) const -> P
 {
   Point2dFlt transformedPoint;
 
-  if (!m_rotationAngleSet)
+  if (not m_rotationAngleSet)
   {
     transformedPoint = point;
   }

@@ -320,15 +320,21 @@ inline auto AllStandardVisualFx::ChangeDotsColorMaps() -> void
 
 inline auto AllStandardVisualFx::ChangeShapesColorMaps() -> void
 {
-  static_assert(ShapesFx::NUM_SHAPE_GROUPS == EXPECTED_NUM_SHAPES);
+  static_assert(ShapesFx::NUM_SHAPES == EXPECTED_NUM_SHAPES);
 
-  for (uint32_t i = 0; i < ShapesFx::NUM_SHAPE_GROUPS; ++i)
+  for (uint32_t i = 0; i < ShapesFx::NUM_SHAPES; ++i)
   {
-    const auto shapeEffect =
-        static_cast<GoomEffect>(i + static_cast<uint32_t>(GoomEffect::SHAPES0));
-    m_shapesFx->SetWeightedMainColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
-    m_shapesFx->SetWeightedLowColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
-    m_shapesFx->SetWeightedInnerColorMaps(i, m_visualFxColorMaps.GetColorMap(shapeEffect));
+    const uint32_t offsetFromZero = 3 * i;
+    const auto goomEffectMain =
+        static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES0_MAIN) + offsetFromZero);
+    const auto goomEffectLow =
+        static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES0_LOW) + offsetFromZero);
+    const auto goomEffectInner =
+        static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES0_INNER) + offsetFromZero);
+
+    m_shapesFx->SetWeightedMainColorMaps(i, m_visualFxColorMaps.GetColorMap(goomEffectMain));
+    m_shapesFx->SetWeightedLowColorMaps(i, m_visualFxColorMaps.GetColorMap(goomEffectLow));
+    m_shapesFx->SetWeightedInnerColorMaps(i, m_visualFxColorMaps.GetColorMap(goomEffectInner));
   }
 }
 

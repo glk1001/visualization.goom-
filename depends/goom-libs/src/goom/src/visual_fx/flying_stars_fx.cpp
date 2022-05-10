@@ -109,7 +109,7 @@ private:
   [[nodiscard]] auto GetNextAngleColorMapName() const -> ColorMapName;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
-  ColorCorrection m_colorCorrect{GAMMA};
+  const ColorCorrection m_colorCorrect{GAMMA};
   [[nodiscard]] auto GetColorCorrection(float brightness, const Pixel& color) const -> Pixel;
 
   static constexpr float MIN_SATURATION = 0.5F;

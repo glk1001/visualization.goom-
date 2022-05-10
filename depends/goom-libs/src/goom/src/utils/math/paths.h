@@ -76,7 +76,7 @@ private:
 class TransformedPath : public IPath
 {
 public:
-  TransformedPath(std::unique_ptr<IPath> path, const MATH::Transform2d& transform) noexcept;
+  TransformedPath(std::unique_ptr<IPath> path, const Transform2d& transform) noexcept;
 
   [[nodiscard]] auto GetClone() const noexcept -> std::unique_ptr<IPath> override;
 
@@ -93,9 +93,12 @@ public:
 
   [[nodiscard]] auto GetNextPoint() const noexcept -> Point2dInt override;
 
+  [[nodiscard]] auto GetTransform() const noexcept -> Transform2d;
+  auto SetTransform(const Transform2d& val) noexcept -> void;
+
 private:
   std::unique_ptr<IPath> m_path;
-  const MATH::Transform2d m_transform;
+  Transform2d m_transform;
 };
 
 class LerpedPath : public IPath
@@ -117,6 +120,9 @@ public:
   auto Reset(float t) noexcept -> void override;
 
   [[nodiscard]] auto GetNextPoint() const noexcept -> Point2dInt override;
+
+  [[nodiscard]] auto GetPath1() noexcept -> IPath&;
+  [[nodiscard]] auto GetPath2() noexcept -> IPath&;
 
 private:
   std::shared_ptr<IPath> m_path1;
@@ -269,6 +275,16 @@ inline auto TransformedPath::GetNextPoint() const noexcept -> Point2dInt
   return m_transform.GetTransformedPoint(m_path->GetNextPoint());
 }
 
+inline auto TransformedPath::GetTransform() const noexcept -> Transform2d
+{
+  return m_transform;
+}
+
+inline auto TransformedPath::SetTransform(const Transform2d& val) noexcept -> void
+{
+  m_transform = val;
+}
+
 inline auto TransformedPath::GetPositionT() const noexcept -> const TValue&
 {
   return m_path->GetPositionT();
@@ -336,6 +352,16 @@ inline auto LerpedPath::Reset(const float t) noexcept -> void
 {
   m_path1->Reset(t);
   m_path2->Reset(t);
+}
+
+inline auto LerpedPath::GetPath1() noexcept -> IPath&
+{
+  return *m_path1;
+}
+
+inline auto LerpedPath::GetPath2() noexcept -> IPath&
+{
+  return *m_path2;
 }
 
 inline auto JoinedPaths::GetStartPos() const noexcept -> Point2dInt

@@ -17,7 +17,7 @@ using UTILS::MATH::IGoomRand;
 static constexpr bool USE_FORCED_GOOM_STATE =
     CONTROL::FORCE_GOOM_STATE_AND_ALL_FILTER_EFFECTS_TURNED_OFF;
 
-static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
+//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
@@ -46,7 +46,7 @@ static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_STARS;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_TENTACLES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
+static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::SHAPES_STARS_LINES;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::TENTACLES_ONLY;
@@ -60,8 +60,6 @@ static constexpr float CIRCLES_IFS_WEIGHT                 =  200.0F;
 static constexpr float CIRCLES_IMAGE_WEIGHT               =   50.0F;
 static constexpr float CIRCLES_IMAGE_STARS_WEIGHT         =  200.0F;
 static constexpr float CIRCLES_LINES_WEIGHT               =  200.0F;
-static constexpr float CIRCLES_LINES_SHAPES_WEIGHT        =  200.0F;
-static constexpr float CIRCLES_SHAPES_WEIGHT              =  200.0F;
 static constexpr float CIRCLES_STARS_TUBES_WEIGHT         =  100.0F;
 static constexpr float CIRCLES_TENTACLES_WEIGHT           =  200.0F;
 
@@ -92,6 +90,7 @@ static constexpr float IMAGE_LINES_WEIGHT                 = 100.0F;
 static constexpr float IMAGE_LINES_SHAPES_WEIGHT          = 100.0F;
 static constexpr float IMAGE_LINES_STARS_TENTACLES_WEIGHT = 100.0F;
 static constexpr float IMAGE_ONLY_WEIGHT                  =   1.0F;
+static constexpr float IMAGE_SHAPES_WEIGHT                = 100.0F;
 static constexpr float IMAGE_SHAPES_STARS_WEIGHT          = 100.0F;
 static constexpr float IMAGE_SHAPES_TUBES_WEIGHT          = 100.0F;
 static constexpr float IMAGE_STARS_WEIGHT                 = 200.0F;
@@ -104,6 +103,8 @@ static constexpr float LINES_STARS_WEIGHT                 = 100.0F;
 static constexpr float LINES_TENTACLES_WEIGHT             = 200.0F;
 
 static constexpr float SHAPES_ONLY_WEIGHT                 =   1.0F;
+static constexpr float SHAPES_STARS_WEIGHT                =  200.0F;
+static constexpr float SHAPES_TUBES_WEIGHT                =  200.0F;
 static constexpr float STARS_ONLY_WEIGHT                  =   1.0F;
 static constexpr float TENTACLES_ONLY_WEIGHT              =   1.0F;
 static constexpr float TUBES_ONLY_WEIGHT                  =   1.0F;
@@ -120,8 +121,6 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
             {GoomStates::CIRCLES_IMAGE, CIRCLES_IMAGE_WEIGHT},
             {GoomStates::CIRCLES_IMAGE_STARS, CIRCLES_IMAGE_STARS_WEIGHT},
             {GoomStates::CIRCLES_LINES, CIRCLES_LINES_WEIGHT},
-            {GoomStates::CIRCLES_LINES_SHAPES, CIRCLES_LINES_SHAPES_WEIGHT},
-            {GoomStates::CIRCLES_SHAPES, CIRCLES_SHAPES_WEIGHT},
             {GoomStates::CIRCLES_STARS_TUBES, CIRCLES_STARS_TUBES_WEIGHT},
             {GoomStates::CIRCLES_TENTACLES, CIRCLES_TENTACLES_WEIGHT},
 
@@ -152,6 +151,7 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
             {GoomStates::IMAGE_LINES_SHAPES, IMAGE_LINES_SHAPES_WEIGHT},
             {GoomStates::IMAGE_LINES_STARS_TENTACLES, IMAGE_LINES_STARS_TENTACLES_WEIGHT},
             {GoomStates::IMAGE_ONLY, IMAGE_ONLY_WEIGHT},
+            {GoomStates::IMAGE_SHAPES, IMAGE_SHAPES_WEIGHT},
             {GoomStates::IMAGE_SHAPES_STARS, IMAGE_SHAPES_STARS_WEIGHT},
             {GoomStates::IMAGE_SHAPES_TUBES, IMAGE_SHAPES_TUBES_WEIGHT},
             {GoomStates::IMAGE_STARS, IMAGE_STARS_WEIGHT},
@@ -164,6 +164,8 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
             {GoomStates::LINES_TENTACLES, LINES_TENTACLES_WEIGHT},
 
             {GoomStates::SHAPES_ONLY, SHAPES_ONLY_WEIGHT},
+            {GoomStates::SHAPES_STARS, SHAPES_STARS_WEIGHT},
+            {GoomStates::SHAPES_TUBES, SHAPES_TUBES_WEIGHT},
 
             {GoomStates::STARS_ONLY, STARS_ONLY_WEIGHT},
 

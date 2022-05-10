@@ -337,7 +337,7 @@ private:
   Tube::Data m_data;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
+  const ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
   std::vector<ShapeColors> m_oldShapeColors;

@@ -28,6 +28,7 @@
 namespace GOOM::VISUAL_FX
 {
 
+using COLOR::ColorCorrection;
 using COLOR::ColorMapGroup;
 using COLOR::GetBrighterColor;
 using COLOR::RandomColorMaps;
@@ -113,7 +114,7 @@ private:
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
 
   static constexpr float GAMMA = 2.0F;
-  const COLOR::ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
+  const ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
