@@ -25,6 +25,7 @@
 namespace GOOM::VISUAL_FX
 {
 
+using COLOR::ColorCorrection;
 using COLOR::GetAllMapsUnweighted;
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
@@ -300,7 +301,7 @@ inline auto ShapeGroup::MakeShapePathColorInfo() noexcept -> ShapePath::ColorInf
 inline auto ShapeGroup::GetCircleRadius() const noexcept -> float
 {
   const float minRadius = 0.20F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
-  const float maxRadius = 0.67F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
+  const float maxRadius = 0.50F * static_cast<float>(m_goomInfo.GetScreenInfo().height);
   const float t =
       static_cast<float>(m_groupNum) / static_cast<float>(ShapesFx::NUM_SHAPE_GROUPS - 1);
 
@@ -606,7 +607,7 @@ public:
   auto SetWeightedInnerColorMaps(size_t shapeGroupNum,
                                  std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
 
-  auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void;
+  auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   auto Start() noexcept -> void;
   auto ApplyMultiple() noexcept -> void;
@@ -665,6 +666,8 @@ private:
   [[nodiscard]] static auto GetCurrentShapeColors(
       const ShapeGroup& shapeGroup, const ShapePath::ColorInfo& shapePathColorInfo) noexcept
       -> ShapeColors;
+  static constexpr float GAMMA = 1.3F;
+  ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
   [[nodiscard]] auto GetColors(int32_t radius,
                                int32_t innerColorCutoffRadius,
                                float brightness,
@@ -672,15 +675,15 @@ private:
                                const ShapeColors& shapeColors,
                                const Pixel& innerColor,
                                float innerColorMix) const noexcept -> std::vector<Pixel>;
-  [[nodiscard]] static auto GetColorsWithoutInner(float brightness,
-                                                  const ShapeColors& shapeColors) noexcept
+  [[nodiscard]] auto GetColorsWithoutInner(float brightness,
+                                           const ShapeColors& shapeColors) const noexcept
       -> std::vector<Pixel>;
-  [[nodiscard]] static auto GetColorsWithInner(float brightness,
-                                               const ShapeColors& shapeColors,
-                                               const Pixel& innerColor,
-                                               float innerColorMix) noexcept -> std::vector<Pixel>;
-  [[nodiscard]] static auto GetFinalMeetingPointColors(
-      float brightness, const ShapeColors& meetingPointColors) noexcept -> std::vector<Pixel>;
+  [[nodiscard]] auto GetColorsWithInner(float brightness,
+                                        const ShapeColors& shapeColors,
+                                        const Pixel& innerColor,
+                                        float innerColorMix) const noexcept -> std::vector<Pixel>;
+  [[nodiscard]] auto GetFinalMeetingPointColors(
+      float brightness, const ShapeColors& meetingPointColors) const noexcept -> std::vector<Pixel>;
 };
 
 ShapesFx::ShapesFx(const FxHelper& fxHelper) noexcept
@@ -714,7 +717,7 @@ auto ShapesFx::SetWeightedInnerColorMaps(
   m_fxImpl->SetWeightedInnerColorMaps(shapeGroupNum, weightedMaps);
 }
 
-auto ShapesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
+auto ShapesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
   m_fxImpl->SetZoomMidpoint(zoomMidpoint);
 }
@@ -843,7 +846,7 @@ inline auto ShapesFx::ShapesFxImpl::SetWeightedInnerColorMaps(
   assert(AllColorMapsValid());
 }
 
-inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
+inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
   if (static constexpr float PROB_ACCEPT_NEW_MIDPOINT = 0.9F;
       not m_goomRand.ProbabilityOf(PROB_ACCEPT_NEW_MIDPOINT))
@@ -921,7 +924,7 @@ inline auto ShapesFx::ShapesFxImpl::SetBrightnessAttenuation() noexcept -> void
 
   const uint32_t totalNumShapes = ShapesFx::NUM_SHAPE_GROUPS * m_shapeGroups.front().GetNumShapes();
   const float minBrightness = 2.0F / static_cast<float>(totalNumShapes);
-  static constexpr float EXPONENT = 5.0F;
+  static constexpr float EXPONENT = 25.0F;
   m_brightnessAttenuation = STD20::lerp(1.0F, minBrightness, std::pow(distanceFromOne, EXPONENT));
 }
 
@@ -1092,14 +1095,13 @@ auto ShapesFx::ShapesFxImpl::GetColors(const int32_t radius,
 static constexpr float MAIN_COLOR_BRIGHTNESS_FACTOR = 0.5F;
 static constexpr float LOW_COLOR_BRIGHTNESS_FACTOR = 0.5F;
 
-inline auto ShapesFx::ShapesFxImpl::GetColorsWithoutInner(const float brightness,
-                                                          const ShapeColors& shapeColors) noexcept
-    -> std::vector<Pixel>
+inline auto ShapesFx::ShapesFxImpl::GetColorsWithoutInner(
+    const float brightness, const ShapeColors& shapeColors) const noexcept -> std::vector<Pixel>
 {
-  const Pixel mainColor =
-      GetBrighterColor(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.mainColor);
+  const Pixel mainColor = m_colorCorrect.GetCorrection(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
+                                                       shapeColors.mainColor);
   const Pixel lowColor =
-      GetBrighterColor(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor);
+      m_colorCorrect.GetCorrection(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor);
 
   return {mainColor, lowColor};
 }
@@ -1107,15 +1109,15 @@ inline auto ShapesFx::ShapesFxImpl::GetColorsWithoutInner(const float brightness
 inline auto ShapesFx::ShapesFxImpl::GetColorsWithInner(const float brightness,
                                                        const ShapeColors& shapeColors,
                                                        const Pixel& innerColor,
-                                                       const float innerColorMix) noexcept
+                                                       const float innerColorMix) const noexcept
     -> std::vector<Pixel>
 {
-  const Pixel mainColor =
-      GetBrighterColor(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
-                       IColorMap::GetColorMix(shapeColors.mainColor, innerColor, innerColorMix));
-  const Pixel lowColor =
-      GetBrighterColor(LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
-                       IColorMap::GetColorMix(shapeColors.lowColor, innerColor, innerColorMix));
+  const Pixel mainColor = m_colorCorrect.GetCorrection(
+      MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
+      IColorMap::GetColorMix(shapeColors.mainColor, innerColor, innerColorMix));
+  const Pixel lowColor = m_colorCorrect.GetCorrection(
+      LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
+      IColorMap::GetColorMix(shapeColors.lowColor, innerColor, innerColorMix));
 
   return {mainColor, lowColor};
 }
@@ -1129,11 +1131,13 @@ inline auto ShapesFx::ShapesFxImpl::GetCurrentMeetingPointColors() const noexcep
 }
 
 inline auto ShapesFx::ShapesFxImpl::GetFinalMeetingPointColors(
-    const float brightness, const ShapeColors& meetingPointColors) noexcept -> std::vector<Pixel>
+    const float brightness, const ShapeColors& meetingPointColors) const noexcept
+    -> std::vector<Pixel>
 {
   static constexpr float BRIGHTNESS_FACTOR = 7.0F;
-  return {GetBrighterColor(brightness, meetingPointColors.mainColor),
-          GetBrighterColor(BRIGHTNESS_FACTOR * brightness, meetingPointColors.lowColor)};
+  return {
+      m_colorCorrect.GetCorrection(brightness, meetingPointColors.mainColor),
+      m_colorCorrect.GetCorrection(BRIGHTNESS_FACTOR * brightness, meetingPointColors.lowColor)};
 }
 
 } // namespace GOOM::VISUAL_FX
