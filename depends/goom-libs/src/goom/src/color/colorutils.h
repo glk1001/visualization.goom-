@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom/goom_graphic.h"
+#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cassert>
@@ -51,21 +52,30 @@ enum class SimpleColors
 };
 [[nodiscard]] auto GetSimpleColor(SimpleColors simpleColor) -> Pixel;
 
-class GammaCorrection
+class ColorCorrection
 {
 public:
-  GammaCorrection(float gamma, float threshold);
+  static constexpr float GOOD_INCREASED_CHROMA_FACTOR = INCREASED_CHROMA_FACTOR;
 
-  [[nodiscard]] auto GetThreshold() const -> float;
-  void SetThreshold(float val);
+  ColorCorrection(float gamma, float alterChromaFactor = 1.0F);
+
+  [[nodiscard]] auto GetIgnoreThreshold() const -> float;
+  auto SetIgnoreThreshold(float val) -> void;
+
   [[nodiscard]] auto GetGamma() const -> float;
-  void SetGamma(float val);
+  auto SetGamma(float val) -> void;
+
+  [[nodiscard]] auto GetAlterChromaFactor() const -> float;
+  auto SetAlterChromaFactor(float val) -> void;
 
   [[nodiscard]] auto GetCorrection(float brightness, const Pixel& color) const -> Pixel;
 
 private:
   float m_gamma;
-  float m_threshold;
+  float m_alterChromaFactor;
+  bool m_doAlterChroma = not UTILS::MATH::FloatsEqual(1.0F, m_alterChromaFactor);
+  static constexpr float DEFAULT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
+  float m_ignoreThreshold = DEFAULT_GAMMA_BRIGHTNESS_THRESHOLD;
 };
 
 
@@ -278,29 +288,40 @@ inline auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
   }
 }
 
-inline GammaCorrection::GammaCorrection(const float gamma, const float threshold)
-  : m_gamma{gamma}, m_threshold{threshold}
+inline ColorCorrection::ColorCorrection(const float gamma, const float alterChromaFactor)
+  : m_gamma{gamma}, m_alterChromaFactor{alterChromaFactor}
 {
 }
 
-inline auto GammaCorrection::GetThreshold() const -> float
-{
-  return m_threshold;
-}
-
-inline void GammaCorrection::SetThreshold(const float val)
-{
-  m_threshold = val;
-}
-
-inline auto GammaCorrection::GetGamma() const -> float
+inline auto ColorCorrection::GetGamma() const -> float
 {
   return m_gamma;
 }
 
-inline void GammaCorrection::SetGamma(const float val)
+inline auto ColorCorrection::SetGamma(const float val) -> void
 {
   m_gamma = val;
+}
+
+inline auto ColorCorrection::GetAlterChromaFactor() const -> float
+{
+  return m_alterChromaFactor;
+}
+
+inline auto ColorCorrection::SetAlterChromaFactor(const float val) -> void
+{
+  m_alterChromaFactor = val;
+  m_doAlterChroma = not UTILS::MATH::FloatsEqual(1.0F, m_alterChromaFactor);
+}
+
+inline auto ColorCorrection::GetIgnoreThreshold() const -> float
+{
+  return m_ignoreThreshold;
+}
+
+inline auto ColorCorrection::SetIgnoreThreshold(const float val) -> void
+{
+  m_ignoreThreshold = val;
 }
 
 } // namespace GOOM::COLOR

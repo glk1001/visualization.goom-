@@ -37,8 +37,7 @@ private:
   BitmapGetter m_bitmapGetter;
 
   static constexpr float GAMMA = 1.0F / 2.2F;
-  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  COLOR::ColorCorrection m_colorCorrect{GAMMA};
 
   const uint32_t m_numCircles;
   std::vector<Circle> m_circles;

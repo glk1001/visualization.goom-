@@ -32,7 +32,7 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::GammaCorrection;
+using COLOR::ColorCorrection;
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
@@ -145,9 +145,7 @@ private:
   [[nodiscard]] auto GetChunkFloatingStartPosition(size_t i) const -> Point2dInt;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
-  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-  //auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
+  ColorCorrection m_colorCorrect{GAMMA};
 };
 
 ImageFx::ImageFx(Parallel& parallel,

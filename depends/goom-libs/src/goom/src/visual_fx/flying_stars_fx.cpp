@@ -30,7 +30,7 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::GammaCorrection;
+using COLOR::ColorCorrection;
 using COLOR::GetBrighterColor;
 using COLOR::GetColorMultiply;
 using COLOR::GetLightenedColor;
@@ -109,9 +109,8 @@ private:
   [[nodiscard]] auto GetNextAngleColorMapName() const -> ColorMapName;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
-  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
-  GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-  [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
+  ColorCorrection m_colorCorrect{GAMMA};
+  [[nodiscard]] auto GetColorCorrection(float brightness, const Pixel& color) const -> Pixel;
 
   static constexpr float MIN_SATURATION = 0.5F;
   static constexpr float MAX_SATURATION = 1.0F;
@@ -810,20 +809,20 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetFinalMixedColors(const StarColorS
   static constexpr float MAX_MIX = 0.8F;
   const float tMix = STD20::lerp(MIN_MIX, MAX_MIX, t);
   const Pixel mixedMainColor =
-      GetGammaCorrection(brightness, IColorMap::GetColorMix(starColorSet.mainColor,
+      GetColorCorrection(brightness, IColorMap::GetColorMix(starColorSet.mainColor,
                                                             starColorSet.dominantMainColor, tMix));
   const Pixel mixedLowColor = GetLightenedColor(
       IColorMap::GetColorMix(starColorSet.lowColor, starColorSet.dominantLowColor, tMix), 10.0F);
   const Pixel remixedLowColor =
       m_colorMode == ColorMode::SIMILAR_LOW_COLORS
           ? mixedLowColor
-          : GetGammaCorrection(brightness,
+          : GetColorCorrection(brightness,
                                IColorMap::GetColorMix(mixedMainColor, mixedLowColor, 0.4F));
 
   return {mixedMainColor, remixedLowColor};
 }
 
-inline auto FlyingStarsFx::FlyingStarsImpl::GetGammaCorrection(const float brightness,
+inline auto FlyingStarsFx::FlyingStarsImpl::GetColorCorrection(float brightness,
                                                                const Pixel& color) const -> Pixel
 {
   if constexpr (1.0F == GAMMA)
@@ -832,7 +831,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetGammaCorrection(const float brigh
   }
   else
   {
-    return m_gammaCorrect.GetCorrection(brightness, color);
+    return m_colorCorrect.GetCorrection(brightness, color);
   }
 }
 

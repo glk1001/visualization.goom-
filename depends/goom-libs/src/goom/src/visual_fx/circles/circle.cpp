@@ -416,7 +416,7 @@ inline auto Circle::GetFinalLowColor(const float brightness, const Pixel& lowCol
 
 inline auto Circle::GetCorrectedColor(const float brightness, const Pixel& color) const -> Pixel
 {
-  return m_helper.gammaCorrect.GetCorrection(brightness, GetIncreasedChroma(color));
+  return m_helper.colorCorrect.GetCorrection(brightness, GetIncreasedChroma(color));
 }
 
 inline auto Circle::DrawLine(const Point2dInt& position1,

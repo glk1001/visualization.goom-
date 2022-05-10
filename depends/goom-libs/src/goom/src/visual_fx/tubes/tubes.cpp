@@ -25,7 +25,7 @@
 namespace GOOM::VISUAL_FX::TUBES
 {
 
-using COLOR::GammaCorrection;
+using COLOR::ColorCorrection;
 using COLOR::GetBrighterColor;
 using COLOR::GetIncreasedChroma;
 using COLOR::GetLightenedColor;
@@ -340,8 +340,7 @@ private:
   Tube::Data m_data;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  ColorCorrection m_colorCorrect{GAMMA};
   [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
@@ -1146,7 +1145,7 @@ inline auto ShapeColorizer::GetGammaCorrection(const float brightness, const Pix
   {
     return GetBrighterColor(brightness, color);
   }
-  return m_gammaCorrect.GetCorrection(brightness, color);
+  return m_colorCorrect.GetCorrection(brightness, color);
 }
 
 BrightnessAttenuation::BrightnessAttenuation(const uint32_t screenWidth,

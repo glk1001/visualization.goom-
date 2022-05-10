@@ -143,7 +143,7 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
 
   mixColor = GetFinalMixedColor(baseColor, mixColor, tBaseMix);
 
-  return m_gammaCorrect.GetCorrection(brightness * logAlpha, mixColor);
+  return m_colorCorrect.GetCorrection(brightness * logAlpha, mixColor);
 }
 
 inline auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const

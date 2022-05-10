@@ -39,7 +39,7 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::GammaCorrection;
+using COLOR::ColorCorrection;
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
 using COLOR::GetIncreasedChroma;
@@ -115,9 +115,7 @@ private:
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.1F;
-  GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
-  [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
+  ColorCorrection m_colorCorrect{GAMMA};
 
   std::vector<LinePoint> m_srcePoints{};
   std::vector<LinePoint> m_srcePointsCopy{};
@@ -626,19 +624,9 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
 
   const float brightness = m_currentBrightness * tData;
   const Pixel modColor =
-      GetGammaCorrection(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
+      m_colorCorrect.GetCorrection(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
 
   return {nextPointData, modColor};
-}
-
-inline auto LinesFx::LinesImpl::GetGammaCorrection(const float brightness, const Pixel& color) const
-    -> Pixel
-{
-  if constexpr (1.0F == GAMMA)
-  {
-    return GetBrighterColor(brightness, color);
-  }
-  return m_gammaCorrect.GetCorrection(brightness, color);
 }
 
 inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float t) const -> Pixel

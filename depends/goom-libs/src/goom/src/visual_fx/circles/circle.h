@@ -33,7 +33,7 @@ public:
     uint32_t minDotDiameter;
     uint32_t maxDotDiameter;
     const IBitmapGetter& bitmapGetter;
-    const COLOR::GammaCorrection& gammaCorrect;
+    const COLOR::ColorCorrection& colorCorrect;
   };
   struct Params
   {

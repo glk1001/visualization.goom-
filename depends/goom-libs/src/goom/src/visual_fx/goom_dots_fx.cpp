@@ -115,8 +115,7 @@ private:
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
 
   static constexpr float GAMMA = 2.0F;
-  static constexpr float GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  const COLOR::GammaCorrection m_gammaCorrect{GAMMA, GAMMA_BRIGHTNESS_THRESHOLD};
+  const COLOR::ColorCorrection m_colorCorrect{GAMMA};
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -456,7 +455,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     static constexpr float COLOR_MIX_T = 0.6F;
     const Pixel mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
-    return m_gammaCorrect.GetCorrection(BRIGHTNESS, finalColor);
+    return m_colorCorrect.GetCorrection(BRIGHTNESS, finalColor);
   };
   const auto getColor2 =
       [&getColor1]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
