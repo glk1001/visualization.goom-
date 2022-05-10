@@ -31,11 +31,6 @@ template<typename T>
 [[nodiscard]] auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -> Pixel;
 
 [[nodiscard]] auto GetLuma(const Pixel& color) -> float;
-static constexpr float INCREASED_CHROMA_FACTOR = 2.0F;
-static constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
-[[nodiscard]] auto GetAlteredChroma(float lchYFactor, const Pixel& color) -> Pixel;
-[[nodiscard]] auto GetIncreasedChroma(const Pixel& color) -> Pixel;
-[[nodiscard]] auto GetDecreasedChroma(const Pixel& color) -> Pixel;
 
 [[nodiscard]] auto IsCloseToBlack(const Pixel& color, uint32_t threshold = 10) -> bool;
 
@@ -52,11 +47,15 @@ enum class SimpleColors
 };
 [[nodiscard]] auto GetSimpleColor(SimpleColors simpleColor) -> Pixel;
 
+static constexpr float INCREASED_CHROMA_FACTOR = 2.0F;
+static constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
+[[nodiscard]] auto GetAlteredChroma(float lchYFactor, const Pixel& color) -> Pixel;
+[[nodiscard]] auto GetIncreasedChroma(const Pixel& color) -> Pixel;
+[[nodiscard]] auto GetDecreasedChroma(const Pixel& color) -> Pixel;
+
 class ColorCorrection
 {
 public:
-  static constexpr float GOOD_INCREASED_CHROMA_FACTOR = INCREASED_CHROMA_FACTOR;
-
   ColorCorrection(float gamma, float alterChromaFactor = 1.0F);
 
   [[nodiscard]] auto GetIgnoreThreshold() const -> float;

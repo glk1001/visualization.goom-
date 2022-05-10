@@ -13,7 +13,6 @@ namespace GOOM::VISUAL_FX::TENTACLES
 {
 
 using COLOR::GetBrighterColor;
-using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
@@ -64,9 +63,6 @@ void Tentacle3D::ColorMapsChanged()
       m_goomRand.ProbabilityOf(PROB_LOW_MIX_SAME)
           ? m_mainColorSegmentMixT
           : m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
-
-  static constexpr float PROB_CHROMA_INCREASE = 0.7F;
-  m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_CHROMA_INCREASE);
 }
 
 auto Tentacle3D::GetMixedColors(const size_t nodeNum,
@@ -83,8 +79,9 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
   const Pixel mixedMainColorPixel = mixedMainColor;
   const Pixel mixedLowColorPixel = mixedLowColor;
   static constexpr float LOW_BRIGHTNESS_FACTOR = 1.8F;
-  return std::make_pair(GetBrighterColor(brightness, mixedMainColorPixel),
-                        GetBrighterColor(LOW_BRIGHTNESS_FACTOR * brightness, mixedLowColorPixel));
+  return std::make_pair(
+      m_colorCorrect.GetCorrection(brightness, mixedMainColorPixel),
+      m_colorCorrect.GetCorrection(LOW_BRIGHTNESS_FACTOR * brightness, mixedLowColorPixel));
 }
 
 inline auto Tentacle3D::GetMixedColors(const size_t nodeNum,
@@ -133,12 +130,7 @@ inline auto Tentacle3D::GetFinalMixedColor(const Pixel& color,
                                            const Pixel& segmentColor,
                                            const float t) const -> Pixel
 {
-  const Pixel finalColor = IColorMap::GetColorMix(color, segmentColor, t);
-  if (!m_useIncreasedChroma)
-  {
-    return finalColor;
-  }
-  return GetIncreasedChroma(finalColor);
+  return IColorMap::GetColorMix(color, segmentColor, t);
 }
 
 auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>

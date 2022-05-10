@@ -42,7 +42,6 @@ namespace GOOM::VISUAL_FX
 using COLOR::ColorCorrection;
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
-using COLOR::GetIncreasedChroma;
 using COLOR::GetLightenedColor;
 using COLOR::GetSimpleColor;
 using COLOR::IColorMap;
@@ -115,7 +114,7 @@ private:
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  ColorCorrection m_colorCorrect{GAMMA};
+  ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
 
   std::vector<LinePoint> m_srcePoints{};
   std::vector<LinePoint> m_srcePointsCopy{};
@@ -135,11 +134,9 @@ private:
   Pixel m_srceColor = BLACK_PIXEL;
   Pixel m_destColor = BLACK_PIXEL;
   bool m_useLineColor = true;
-  bool m_useIncreasedChroma = false;
   float m_lineColorPower = 0.0F;
   float m_lineColorPowerIncrement = 0.0F;
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
-  [[nodiscard]] auto GetFinalColor(const Pixel& color) const -> Pixel;
   [[nodiscard]] auto GetFinalLineColor(const Pixel& color) const -> Pixel;
   void UpdateColorInfo();
 
@@ -362,8 +359,6 @@ inline void LinesFx::LinesImpl::UpdateColorInfo()
 
   static constexpr float PROB_USE_LINE_COLOR = 0.5F;
   m_useLineColor = m_goomRand.ProbabilityOf(PROB_USE_LINE_COLOR);
-  static constexpr float PROB_USE_INCREASED_CHROMA = 0.3F;
-  m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_USE_INCREASED_CHROMA);
 }
 
 inline auto LinesFx::LinesImpl::GetFreshLine(const LineType lineType, const float lineParam) const
@@ -493,15 +488,6 @@ auto LinesFx::LinesImpl::GetRandomLineColor() const -> Pixel
   return RandomColorMaps{m_goomRand}.GetRandomColor(GetRandomColorMap(), 0.0F, 1.0F);
 }
 
-inline auto LinesFx::LinesImpl::GetFinalColor(const Pixel& color) const -> Pixel
-{
-  if (!m_useIncreasedChroma)
-  {
-    return color;
-  }
-  return GetIncreasedChroma(color);
-}
-
 inline auto LinesFx::LinesImpl::GetFinalLineColor(const Pixel& color) const -> Pixel
 {
   return GetLightenedColor(color, m_lineColorPower);
@@ -541,8 +527,7 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
     const PointAndColor& nextPointData = audioPoints[i];
 
     point2 = nextPointData.point;
-    const Pixel modColor = GetFinalColor(nextPointData.color);
-    const std::vector<Pixel> colors = {lineColor, modColor};
+    const std::vector<Pixel> colors = {lineColor, nextPointData.color};
 
     m_draw.Line(point1, point2, colors, LINE_THICKNESS);
 

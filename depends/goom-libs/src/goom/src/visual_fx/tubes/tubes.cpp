@@ -27,7 +27,6 @@ namespace GOOM::VISUAL_FX::TUBES
 
 using COLOR::ColorCorrection;
 using COLOR::GetBrighterColor;
-using COLOR::GetIncreasedChroma;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
@@ -57,8 +56,6 @@ static constexpr float PROB_NO_BOUNDARY_SHAPES = 10.0F / 50.0F;
 static constexpr uint32_t MAX_NO_BOUNDARY_SHAPES_TIME = 1;
 static constexpr float PROB_HEX_DOT_SHAPE = 1.0F / 50.0F;
 static constexpr uint32_t MAX_HEX_DOT_SHAPES_TIME = 100;
-
-static constexpr float PROB_INCREASED_CHROMA = 0.8F;
 
 static constexpr uint32_t MIN_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 6;
 static constexpr uint32_t MAX_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 3;
@@ -340,8 +337,7 @@ private:
   Tube::Data m_data;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  ColorCorrection m_colorCorrect{GAMMA};
-  [[nodiscard]] auto GetGammaCorrection(float brightness, const Pixel& color) const -> Pixel;
+  ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
   std::vector<ShapeColors> m_oldShapeColors;
@@ -397,7 +393,6 @@ private:
                                                   const ShapeColors& colors1,
                                                   const ShapeColors& colors2,
                                                   float mixT) -> Pixel;
-  bool m_useIncreasedChroma = true;
   static constexpr float CUTOFF_BRIGHTNESS = 0.005F;
   const BrightnessAttenuation m_brightnessAttenuation;
   [[nodiscard]] auto GetFinalColor(const Pixel& oldColor, const Pixel& color) const -> Pixel;
@@ -852,7 +847,6 @@ void ShapeColorizer::ResetColorMaps()
   ResetColorMapsLists();
 
   m_stripeWidth = m_data.goomRand.GetRandInRange(MIN_STRIPE_WIDTH, MAX_STRIPE_WIDTH + 1);
-  m_useIncreasedChroma = m_data.goomRand.ProbabilityOf(PROB_INCREASED_CHROMA);
 }
 
 inline void ShapeColorizer::ResetColorMapsLists()
@@ -1119,33 +1113,18 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
                     m_outerCircleLowColorMap.get().GetColor(m_outerCircleT()));
 
   return {
-      GetGammaCorrection(brightness, mainColor),
-      GetGammaCorrection(brightness, lowColor),
-      GetGammaCorrection(brightness, innerMainColor),
-      GetGammaCorrection(brightness, innerLowColor),
-      GetGammaCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleMainColor),
-      GetGammaCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleLowColor),
+      m_colorCorrect.GetCorrection(brightness, mainColor),
+      m_colorCorrect.GetCorrection(brightness, lowColor),
+      m_colorCorrect.GetCorrection(brightness, innerMainColor),
+      m_colorCorrect.GetCorrection(brightness, innerLowColor),
+      m_colorCorrect.GetCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleMainColor),
+      m_colorCorrect.GetCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleLowColor),
   };
 }
 
 inline auto ShapeColorizer::GetFinalColor(const Pixel& oldColor, const Pixel& color) const -> Pixel
 {
-  const Pixel finalColor = IColorMap::GetColorMix(oldColor, color, m_oldT());
-  if (!m_useIncreasedChroma)
-  {
-    return finalColor;
-  }
-  return GetIncreasedChroma(finalColor);
-}
-
-inline auto ShapeColorizer::GetGammaCorrection(const float brightness, const Pixel& color) const
-    -> Pixel
-{
-  if constexpr (1.0F == GAMMA)
-  {
-    return GetBrighterColor(brightness, color);
-  }
-  return m_colorCorrect.GetCorrection(brightness, color);
+  return IColorMap::GetColorMix(oldColor, color, m_oldT());
 }
 
 BrightnessAttenuation::BrightnessAttenuation(const uint32_t screenWidth,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
 #include "goom_graphic.h"
@@ -72,7 +73,8 @@ private:
   float m_mainColorSegmentMixT = DEFAULT_COLOR_SEGMENT_MIX_T;
   float m_lowColorSegmentMixT = DEFAULT_COLOR_SEGMENT_MIX_T;
   bool m_reverseColorMix = false;
-  bool m_useIncreasedChroma = true;
+  static constexpr float GAMMA = 1.0F / 2.0F;
+  const COLOR::ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
 
   Pixel m_headMainColor{};
   Pixel m_headLowColor{};

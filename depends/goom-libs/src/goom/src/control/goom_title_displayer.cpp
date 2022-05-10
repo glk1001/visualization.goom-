@@ -23,7 +23,6 @@ namespace GOOM::CONTROL
 
 using COLOR::ColorMapGroup;
 using COLOR::GetBrighterColor;
-using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
@@ -270,7 +269,7 @@ inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(const float fontColo
   static constexpr float CHAR_COLOR_MIX = 0.5F;
   const Pixel charColor = IColorMap::GetColorMix(charColor1, charColor2, CHAR_COLOR_MIX);
 
-  return GetIncreasedChroma(IColorMap::GetColorMix(fontColor, charColor, fontCharColorMixT));
+  return IColorMap::GetColorMix(fontColor, charColor, fontCharColorMixT);
 }
 
 inline auto GoomTitleDisplayer::GetFinalPhaseInteriorColor(
@@ -289,7 +288,7 @@ inline auto GoomTitleDisplayer::GetFinalPhaseInteriorColor(
   static constexpr float MIX_FACTOR = 0.5F;
   const float finalColorMixT = MIX_FACTOR;
 
-  return GetIncreasedChroma(IColorMap::GetColorMix(fontColor, charColor, finalColorMixT));
+  return IColorMap::GetColorMix(fontColor, charColor, finalColorMixT);
 }
 
 inline auto GoomTitleDisplayer::GetFinalOutlineColor(const float fontColorT,

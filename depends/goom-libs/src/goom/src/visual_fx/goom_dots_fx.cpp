@@ -30,7 +30,6 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::ColorMapGroup;
 using COLOR::GetBrighterColor;
-using COLOR::GetIncreasedChroma;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
@@ -96,7 +95,6 @@ private:
   Pixel m_middleColor{};
   bool m_useSingleBufferOnly = true;
   bool m_thereIsOneBuffer = true;
-  bool m_useIncreasedChroma = true;
   bool m_useMiddleColor = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
   [[nodiscard]] static auto GetDotPrimaryColor(size_t dotNum) -> Pixel;
@@ -115,7 +113,7 @@ private:
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
 
   static constexpr float GAMMA = 2.0F;
-  const COLOR::ColorCorrection m_colorCorrect{GAMMA};
+  const COLOR::ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -275,9 +273,6 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
 
   static constexpr float PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
   m_useSingleBufferOnly = m_goomRand.ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
-
-  static constexpr float PROB_INCREASED_CHROMA = 0.8F;
-  m_useIncreasedChroma = m_goomRand.ProbabilityOf(PROB_INCREASED_CHROMA);
 
   static constexpr float PROB_USE_MIDDLE_COLOR = 0.05F;
   m_useMiddleColor = m_goomRand.ProbabilityOf(PROB_USE_MIDDLE_COLOR);
@@ -454,8 +449,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
         m_useMiddleColor && IsImagePointCloseToMiddle(x, y, radius) ? m_middleColor : color;
     static constexpr float COLOR_MIX_T = 0.6F;
     const Pixel mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
-    const Pixel finalColor = (!m_useIncreasedChroma) ? mixedColor : GetIncreasedChroma(mixedColor);
-    return m_colorCorrect.GetCorrection(BRIGHTNESS, finalColor);
+    return m_colorCorrect.GetCorrection(BRIGHTNESS, mixedColor);
   };
   const auto getColor2 =
       [&getColor1]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,

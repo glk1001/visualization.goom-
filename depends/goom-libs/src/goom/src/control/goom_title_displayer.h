@@ -122,7 +122,7 @@ private:
   [[nodiscard]] auto GetFinalPhaseCentrePenPos(const std::string& str) const -> Point2dFlt;
 
   static constexpr float TEXT_GAMMA = 1.0F / 2.0F;
-  COLOR::ColorCorrection m_textColorCorrect{TEXT_GAMMA};
+  COLOR::ColorCorrection m_textColorCorrect{TEXT_GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
 };
 
 inline void GoomTitleDisplayer::DrawStaticText(const std::string& title)

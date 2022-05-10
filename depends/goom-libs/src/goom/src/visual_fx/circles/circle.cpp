@@ -26,7 +26,6 @@ namespace GOOM::VISUAL_FX::CIRCLES
 
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
-using COLOR::GetIncreasedChroma;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
@@ -416,7 +415,7 @@ inline auto Circle::GetFinalLowColor(const float brightness, const Pixel& lowCol
 
 inline auto Circle::GetCorrectedColor(const float brightness, const Pixel& color) const -> Pixel
 {
-  return m_helper.colorCorrect.GetCorrection(brightness, GetIncreasedChroma(color));
+  return m_helper.colorCorrect.GetCorrection(brightness, color);
 }
 
 inline auto Circle::DrawLine(const Point2dInt& position1,
