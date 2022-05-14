@@ -1,10 +1,13 @@
 #include "goom_all_visual_fx.h"
 
+//#undef NO_LOGGING
+
 #include "all_standard_visual_fx.h"
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "goom_plugin_info.h"
+#include "logging.h"
 #include "sound_info.h"
 #include "utils/name_value_pairs.h"
 #include "visual_fx/filters/filter_buffers_service.h"
@@ -13,6 +16,7 @@
 #include "visual_fx_color_maps.h"
 
 //#undef NDEBUG
+
 #include <cassert>
 #include <memory>
 
@@ -24,6 +28,7 @@ using COLOR::GetLuma;
 using COLOR::IColorMap;
 using CONTROL::GoomDrawables;
 using DRAW::IGoomDraw;
+using UTILS::Logging;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -112,6 +117,13 @@ void GoomAllVisualFx::ChangeState()
   for (size_t numTry = 0; numTry < MAX_TRIES; ++numTry)
   {
     m_goomStateHandler.ChangeToNextState();
+
+    if ((not m_allowMultiThreadedStates) and
+        GoomStateInfo::IsMultiThreaded(m_goomStateHandler.GetCurrentState()))
+    {
+      continue;
+    }
+
     // Pick a different state if possible
     if (oldState != m_goomStateHandler.GetCurrentState())
     {

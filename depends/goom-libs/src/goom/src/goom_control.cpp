@@ -331,6 +331,7 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
   m_filterSettingsService.Start();
   UpdateFilterSettings();
 
+  m_visualFx.SetAllowMultiThreadedStates(false);
   m_visualFx.SetResetDrawBuffSettingsFunc([this](const FXBuffSettings& settings)
                                           { ResetDrawBuffSettings(settings); });
   m_visualFx.ChangeAllFxColorMaps();
@@ -425,6 +426,7 @@ inline auto GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
 
 inline auto GoomControl::GoomControlImpl::NewCycle() -> void
 {
+  m_visualFx.SetAllowMultiThreadedStates(m_goomTitleDisplayer.IsFinished());
   m_musicSettingsReactor.NewCycle();
   m_filterSettingsService.NewCycle();
 }

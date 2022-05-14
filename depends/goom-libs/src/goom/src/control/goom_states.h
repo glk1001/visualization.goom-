@@ -101,6 +101,7 @@ public:
   [[nodiscard]] static auto GetStateInfo(GoomStates goomState) -> const StateInfo&;
   [[nodiscard]] static auto GetBuffIntensityRange(GoomStates goomState, GoomDrawables fx)
       -> BuffIntensityRange;
+  [[nodiscard]] static auto IsMultiThreaded(GoomStates goomState) -> bool;
 
 private:
   using StateInfoArray = std::array<StateInfo, UTILS::NUM<GoomStates>>;

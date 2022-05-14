@@ -73,7 +73,7 @@ private:
   int32_t m_previousZoomSpeed = VISUAL_FX::FILTERS::Vitesse::DEFAULT_VITESSE + 1;
 
   static constexpr uint32_t MAX_NUM_STATE_SELECTIONS_BLOCKED = 3;
-  uint32_t m_stateSelectionBlocker = 0;
+  uint32_t m_stateSelectionBlocker = MAX_NUM_STATE_SELECTIONS_BLOCKED;
   uint32_t m_timeInState = 0;
   void ChangeState();
   void DoChangeState();

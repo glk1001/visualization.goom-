@@ -68,6 +68,8 @@ public:
   void Start();
   void Finish();
 
+  auto SetAllowMultiThreadedStates(bool val) -> void;
+
   [[nodiscard]] auto GetZoomFilterFx() const -> const VISUAL_FX::ZoomFilterFx&;
 
   void SetNextState();
@@ -131,6 +133,7 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
 
   IGoomStateHandler& m_goomStateHandler;
+  bool m_allowMultiThreadedStates = true;
   void ChangeState();
   void PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables);
   std::unordered_set<GoomDrawables> m_currentGoomDrawables{};
@@ -155,6 +158,11 @@ private:
   [[nodiscard]] static auto GetSameLumaBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
   [[nodiscard]] static auto GetSameLumaMixBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
 };
+
+inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) -> void
+{
+  m_allowMultiThreadedStates = val;
+}
 
 inline auto GoomAllVisualFx::GetZoomFilterFx() const -> const VISUAL_FX::ZoomFilterFx&
 {

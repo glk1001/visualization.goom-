@@ -40,6 +40,21 @@ static const std::map<GoomDrawables, BuffIntensityRange> DEFAULT_BUFF_INTENSITY_
     {GoomDrawables::TUBES,     {0.70F, 0.80F}},
 };
 
+static const std::map<GoomDrawables, bool> STATE_MULTI_THREADED{
+  {GoomDrawables::CIRCLES,   false},
+  {GoomDrawables::DOTS,      false},
+  {GoomDrawables::FAR_SCOPE, false},
+  {GoomDrawables::IFS,       false},
+  {GoomDrawables::LINES,     false},
+  {GoomDrawables::IMAGE,     true},
+  {GoomDrawables::SCOPE,     false},
+  {GoomDrawables::SHADER,    false},
+  {GoomDrawables::SHAPES,    false},
+  {GoomDrawables::STARS,     false},
+  {GoomDrawables::TENTACLES, false},
+  {GoomDrawables::TUBES,     false},
+};
+
 static const std::map<GoomStates, std::set<GoomDrawables>> STATE_DRAWABLES{
     {GoomStates::CIRCLES_ONLY,                {GoomDrawables::CIRCLES}},
     {GoomStates::CIRCLES_IFS,                 {GoomDrawables::CIRCLES, GoomDrawables::IFS}},
@@ -194,6 +209,21 @@ auto GoomStateInfo::GetDrawablesInfo(const GoomStates goomState) -> std::vector<
   }
 
   return drawablesInfo;
+}
+
+auto GoomStateInfo::IsMultiThreaded(const GoomStates goomState) -> bool
+{
+  const std::set<GoomDrawables>& goomDrawables = STATE_DRAWABLES.at(goomState);
+
+  for (const auto& goomDrawable : goomDrawables)
+  {
+    if (STATE_MULTI_THREADED.at(goomDrawable))
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 auto GoomStateInfo::GetBuffIntensityRange(const GoomStates goomState, const GoomDrawables fx)
