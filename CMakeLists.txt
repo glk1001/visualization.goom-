@@ -126,8 +126,8 @@ include_directories(${GOOM_INCLUDE_DIRS}
                     SYSTEM ${KODI_PARENT_INCLUDE_DIR}
 )
 
-set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp)
-set(${GOOM_ADDON_PREFIX}_HEADERS src/CircularBuffer.h src/Main.h)
+set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp src/build_time.cpp)
+set(${GOOM_ADDON_PREFIX}_HEADERS src/CircularBuffer.h src/Main.h src/build_time.h)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_CMAKE_BUILD_TYPE)
 if (UPPER_CMAKE_BUILD_TYPE STREQUAL "RELEASE")

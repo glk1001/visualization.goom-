@@ -30,6 +30,7 @@
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goom_version.h"
+#include "utils/build_time.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
@@ -172,8 +173,7 @@ auto GoomControl::GetGoomVersionInfo() -> std::string
 
 auto GoomControl::GetGoomLibBuildTime() -> std::string
 {
-  constexpr const char* BUILD_TIME = __DATE__ ", " __TIME__;
-  return BUILD_TIME;
+  return UTILS::GetBuildTime();
 }
 
 auto GoomControl::GetRandSeed() -> uint64_t

@@ -12,6 +12,7 @@
 
 namespace GOOM::UTILS
 {
+
 template<class E>
 static constexpr uint32_t NUM = static_cast<size_t>(E::_num);
 

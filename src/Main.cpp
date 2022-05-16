@@ -10,6 +10,7 @@
 
 #undef NO_LOGGING
 
+#include "build_time.h"
 #include "goom/compiler_versions.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
@@ -276,8 +277,7 @@ inline void CVisualizationGoom::StopVis()
 
 inline auto GetGoomVisualizationBuildTime() -> std::string
 {
-  constexpr const char* BUILD_TIME = __DATE__ ", " __TIME__;
-  return BUILD_TIME;
+  return GetBuildTime();
 }
 
 auto CVisualizationGoom::InitGoomController() -> bool

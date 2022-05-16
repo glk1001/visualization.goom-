@@ -52,6 +52,7 @@ add_library(goom
         src/goom_control.cpp
         src/sound_info.cpp
         src/utils/adaptive_exposure.cpp
+        src/utils/build_time.cpp
         src/utils/graphics/bezier_drawer.cpp
         src/utils/graphics/image_bitmaps.cpp
         src/utils/graphics/small_image_bitmaps.cpp
