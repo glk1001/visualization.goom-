@@ -68,6 +68,7 @@ add_library(goom
         src/utils/math/randutils.cpp
         src/utils/math/transform2d.h
         src/utils/name_value_pairs.h
+        src/utils/step_speed.h
         src/utils/strutils.cpp
         src/utils/t_values.cpp
         src/utils/text/drawable_text.cpp

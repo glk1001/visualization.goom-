@@ -43,8 +43,8 @@ auto Shape::GetInitialShapeParts(const Params& params) noexcept -> std::vector<S
         params.maxNumShapePaths,
         T_MIN_MAX_LERP,
         params.zoomMidpoint,
-        params.minShapePathSpeed,
-        params.maxShapePathSpeed,
+        params.minNumShapePathSteps,
+        params.maxNumShapePathSteps,
     };
     shapeParts.emplace_back(m_goomRand, m_goomInfo, m_colorMapsManager, shapePartParams);
   }
@@ -99,7 +99,7 @@ auto Shape::AllColorMapsValid() const noexcept -> bool
 
 auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
-  if (static constexpr float PROB_ACCEPT_NEW_MIDPOINT = 0.9F;
+  if (static constexpr float PROB_ACCEPT_NEW_MIDPOINT = 0.8F;
       not m_goomRand.ProbabilityOf(PROB_ACCEPT_NEW_MIDPOINT))
   {
     return;
@@ -110,17 +110,18 @@ auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
                 { shapePart.SetShapePathsTargetPoint(zoomMidpoint); });
 }
 
-auto Shape::SetMinMaxShapePathSpeeds(const float minShapePathSpeed,
-                                     const float maxShapePathSpeed) noexcept -> void
+auto Shape::SetShapePathsMinMaxNumSteps(const uint32_t shapePathsMinNumSteps,
+                                        const uint32_t shapePathsMaxNumSteps) noexcept -> void
 {
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
-                [&minShapePathSpeed, &maxShapePathSpeed](ShapePart& shapePart)
-                { shapePart.SetMinMaxShapePathSpeeds(minShapePathSpeed, maxShapePathSpeed); });
+  std::for_each(
+      begin(m_shapeParts), end(m_shapeParts),
+      [&shapePathsMinNumSteps, &shapePathsMaxNumSteps](ShapePart& shapePart)
+      { shapePart.SetShapePathsMinMaxNumSteps(shapePathsMinNumSteps, shapePathsMaxNumSteps); });
 }
 
 auto Shape::Start() noexcept -> void
 {
-  SetFixedShapeSpeeds();
+  SetFixedShapeNumSteps();
 
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
                 [](ShapePart& shapePart) { shapePart.Start(); });
@@ -148,7 +149,7 @@ auto Shape::DoRandomChanges() noexcept -> void
                 });
 }
 
-auto Shape::SetFixedShapeSpeeds() noexcept -> void
+auto Shape::SetFixedShapeNumSteps() noexcept -> void
 {
   m_fixedTMinMaxLerp = ShapePart::GetNewRandomMinMaxLerpT(m_goomRand, m_fixedTMinMaxLerp);
   const float positionT = GetFirstShapePathPositionT();
@@ -156,15 +157,15 @@ auto Shape::SetFixedShapeSpeeds() noexcept -> void
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
                 [this, &positionT](ShapePart& shapePart)
                 {
-                  shapePart.UseFixedShapePathsSpeed(m_fixedTMinMaxLerp);
+                  shapePart.UseFixedShapePathsNumSteps(m_fixedTMinMaxLerp);
                   shapePart.ResetTs(positionT);
                 });
 }
 
-auto Shape::SetRandomShapeSpeeds() noexcept -> void
+auto Shape::SetRandomShapeNumSteps() noexcept -> void
 {
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
-                [](ShapePart& shapePart) { shapePart.UseRandomShapePathsSpeed(); });
+                [](ShapePart& shapePart) { shapePart.UseRandomShapePathsNumSteps(); });
 }
 
 auto Shape::GetTotalNumShapePaths() const noexcept -> uint32_t

@@ -24,8 +24,8 @@ public:
     int32_t maxShapeDotRadius;
     uint32_t maxNumShapePaths;
     Point2dInt zoomMidpoint;
-    float minShapePathSpeed;
-    float maxShapePathSpeed;
+    uint32_t minNumShapePathSteps;
+    uint32_t maxNumShapePathSteps;
   };
 
   Shape(const UTILS::MATH::IGoomRand& goomRand,
@@ -41,7 +41,8 @@ public:
       -> void;
 
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
-  auto SetMinMaxShapePathSpeeds(float minShapePathSpeed, float maxShapePathSpeed) noexcept -> void;
+  auto SetShapePathsMinMaxNumSteps(uint32_t shapePathsMinNumSteps,
+                                   uint32_t shapePathsMaxNumSteps) noexcept -> void;
 
   auto Start() noexcept -> void;
 
@@ -59,8 +60,8 @@ public:
   [[nodiscard]] auto FirstShapePathAtMeetingPoint() const noexcept -> bool;
   [[nodiscard]] auto FirstShapePathsCloseToMeeting() const noexcept -> bool;
   auto DoRandomChanges() noexcept -> void;
-  auto SetShapeSpeeds() noexcept -> void;
-  auto SetFixedShapeSpeeds() noexcept -> void;
+  auto SetShapeNumSteps() noexcept -> void;
+  auto SetFixedShapeNumSteps() noexcept -> void;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
@@ -73,9 +74,8 @@ private:
   [[nodiscard]] auto GetFirstShapePathPositionT() const noexcept -> float;
 
   static constexpr float STARTING_FIXED_T_MIN_MAX_LERP = 0.5F;
-  float m_fixedTMinMaxLerp =
-      ShapePart::GetNewRandomMinMaxLerpT(m_goomRand, STARTING_FIXED_T_MIN_MAX_LERP);
-  auto SetRandomShapeSpeeds() noexcept -> void;
+  float m_fixedTMinMaxLerp = STARTING_FIXED_T_MIN_MAX_LERP;
+  auto SetRandomShapeNumSteps() noexcept -> void;
 
   [[nodiscard]] auto AllColorMapsValid() const noexcept -> bool;
 };
@@ -136,15 +136,15 @@ inline auto Shape::GetFirstShapePathPositionT() const noexcept -> float
   return m_shapeParts.front().GetFirstShapePathPositionT();
 }
 
-inline auto Shape::SetShapeSpeeds() noexcept -> void
+inline auto Shape::SetShapeNumSteps() noexcept -> void
 {
-  if (constexpr float PROB_FIXED_SPEEDS = 0.95F; m_goomRand.ProbabilityOf(PROB_FIXED_SPEEDS))
+  if (constexpr float PROB_FIXED_NUM_STEPS = 0.95F; m_goomRand.ProbabilityOf(PROB_FIXED_NUM_STEPS))
   {
-    SetFixedShapeSpeeds();
+    SetFixedShapeNumSteps();
   }
   else
   {
-    SetRandomShapeSpeeds();
+    SetRandomShapeNumSteps();
   }
 }
 

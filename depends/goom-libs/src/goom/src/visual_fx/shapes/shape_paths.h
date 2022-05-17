@@ -25,7 +25,7 @@ public:
   auto UpdateLowColorInfo(ShapePart& parentShapePart) const noexcept -> void;
   auto UpdateInnerColorInfo(ShapePart& parentShapePart) const noexcept -> void;
 
-  auto SetStepSize(float val) noexcept -> void;
+  auto SetNumSteps(uint32_t val) noexcept -> void;
   auto IncrementT() noexcept -> void;
   auto ResetT(float val) noexcept -> void;
   [[nodiscard]] auto HasJustHitStartBoundary() const noexcept -> bool;
@@ -49,9 +49,9 @@ inline ShapePath::ShapePath(const std::shared_ptr<UTILS::MATH::IPath> path,
 {
 }
 
-inline auto ShapePath::SetStepSize(const float val) noexcept -> void
+inline auto ShapePath::SetNumSteps(const uint32_t val) noexcept -> void
 {
-  m_path->SetStepSize(val);
+  m_path->SetNumSteps(val);
 }
 
 inline auto ShapePath::IncrementT() noexcept -> void

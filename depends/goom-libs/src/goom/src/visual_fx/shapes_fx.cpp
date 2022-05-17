@@ -60,7 +60,6 @@ private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   RandomColorMapsManager m_colorMapsManager{};
-  ShapeDrawer m_shapeDrawer{m_draw, m_goomRand, m_colorMapsManager};
 
   const Point2dInt m_screenMidPoint{U_HALF * m_goomInfo.GetScreenInfo().width,
                                     U_HALF* m_goomInfo.GetScreenInfo().height};
@@ -69,11 +68,10 @@ private:
   static constexpr float MAX_RADIUS_FRACTION = 0.5F;
   static_assert(MIN_RADIUS_FRACTION <= MAX_RADIUS_FRACTION);
 
-  static constexpr float MIN_SHAPE_PATH_SPEED_PER_UPDATE = 0.005F;
-  static constexpr float MAX_SHAPE_PATH_SPEED_PER_UPDATE = 0.01F;
-  static_assert(0.0F < MIN_SHAPE_PATH_SPEED_PER_UPDATE);
-  static_assert(MIN_SHAPE_PATH_SPEED_PER_UPDATE <= MAX_SHAPE_PATH_SPEED_PER_UPDATE);
-  static_assert(MAX_SHAPE_PATH_SPEED_PER_UPDATE < 1.0F);
+  static constexpr uint32_t MIN_NUM_SHAPE_PATH_STEPS = 10;
+  static constexpr uint32_t MAX_NUM_SHAPE_PATH_STEPS = 100;
+  static_assert(0 < MIN_NUM_SHAPE_PATH_STEPS);
+  static_assert(MIN_NUM_SHAPE_PATH_STEPS < MAX_NUM_SHAPE_PATH_STEPS);
 
   [[nodiscard]] auto GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>;
   std::array<Shape, NUM_SHAPES> m_shapes{GetShapes()};
@@ -88,19 +86,20 @@ private:
   static constexpr uint32_t TIME_BEFORE_SYNCHRONISED_CHANGE = 5000;
   Timer m_synchronisedShapeChangesTimer{TIME_BEFORE_SYNCHRONISED_CHANGE};
 
-  auto UpdateShapeEffects() noexcept -> void;
-  auto UpdateShapeSpeeds() noexcept -> void;
-  auto SetShapeSpeeds() noexcept -> void;
-  auto UpdateShapeMinMaxSpeeds() noexcept -> void;
-
+  ShapeDrawer m_shapeDrawer{m_draw, m_goomRand, m_colorMapsManager};
   static constexpr uint32_t MIN_INCREMENTS_PER_UPDATE = 1;
   static constexpr uint32_t MAX_INCREMENTS_PER_UPDATE = 10;
   static_assert(0 < MIN_INCREMENTS_PER_UPDATE);
   static_assert(MIN_INCREMENTS_PER_UPDATE <= MAX_INCREMENTS_PER_UPDATE);
   uint32_t m_numIncrementsPerUpdate =
       m_goomRand.GetRandInRange(MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
+  auto UpdateShapeEffects() noexcept -> void;
+  auto UpdateShapeSpeeds() noexcept -> void;
+  auto SetShapeSpeeds() noexcept -> void;
+  auto UpdateShapePathMinMaxNumSteps() noexcept -> void;
   auto UpdateShapes() noexcept -> void;
   auto UpdateShape(Shape& shape) noexcept -> void;
+  [[nodiscard]] auto GetNextNumIncrements() const noexcept -> size_t;
 };
 
 ShapesFx::ShapesFx(const FxHelper& fxHelper) noexcept
@@ -157,7 +156,7 @@ ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()}
 {
-  UpdateShapeMinMaxSpeeds();
+  UpdateShapePathMinMaxNumSteps();
 }
 
 auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>
@@ -176,7 +175,7 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
        m_colorMapsManager,
        {MIN_RADIUS_FRACTION, MAX_RADIUS_FRACTION, SHAPE0_MIN_DOT_RADIUS,
        SHAPE0_MAX_DOT_RADIUS, SHAPE0_MAX_NUM_PATHS, initialShapeZoomMidpoints.at(0),
-       MIN_SHAPE_PATH_SPEED_PER_UPDATE, MAX_SHAPE_PATH_SPEED_PER_UPDATE}},
+       MIN_NUM_SHAPE_PATH_STEPS, MAX_NUM_SHAPE_PATH_STEPS}},
        /**
        Shape{m_goomRand,
        m_goomInfo,
@@ -227,14 +226,14 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
   m_shapeDrawer.SetDoDotJitter(m_goomRand.ProbabilityOf(PROJ_DOT_JITTER));
 }
 
-inline auto ShapesFx::ShapesFxImpl::UpdateShapeMinMaxSpeeds() noexcept -> void
+inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> void
 {
-  const auto pathSpeedFactor = 1.0F / static_cast<float>(m_numIncrementsPerUpdate);
-  const float newMinShapePathSpeed = pathSpeedFactor * MIN_SHAPE_PATH_SPEED_PER_UPDATE;
-  const float newMaxShapePathSpeed = pathSpeedFactor * MAX_SHAPE_PATH_SPEED_PER_UPDATE;
-  std::for_each(begin(m_shapes), end(m_shapes),
-                [&newMinShapePathSpeed, &newMaxShapePathSpeed](Shape& shape)
-                { shape.SetMinMaxShapePathSpeeds(newMinShapePathSpeed, newMaxShapePathSpeed); });
+  const uint32_t newMinNumShapePathSteps = m_numIncrementsPerUpdate * MIN_NUM_SHAPE_PATH_STEPS;
+  const uint32_t newMaxNumShapePathSteps = m_numIncrementsPerUpdate * MAX_NUM_SHAPE_PATH_STEPS;
+  std::for_each(
+      begin(m_shapes), end(m_shapes),
+      [&newMinNumShapePathSteps, &newMaxNumShapePathSteps](Shape& shape)
+      { shape.SetShapePathsMinMaxNumSteps(newMinNumShapePathSteps, newMaxNumShapePathSteps); });
 }
 
 inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -326,7 +325,7 @@ inline auto ShapesFx::ShapesFxImpl::Start() noexcept -> void
   std::for_each(begin(m_shapes), end(m_shapes),
                 [](Shape& shape)
                 {
-                  shape.SetFixedShapeSpeeds();
+                  shape.SetFixedShapeNumSteps();
                   shape.Start();
                 });
 }
@@ -349,15 +348,33 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeSpeeds() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::SetShapeSpeeds() noexcept -> void
 {
-  std::for_each(begin(m_shapes), end(m_shapes), [](Shape& shape) { shape.SetShapeSpeeds(); });
+  std::for_each(begin(m_shapes), end(m_shapes), [](Shape& shape) { shape.SetShapeNumSteps(); });
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapes() noexcept -> void
 {
-  for (size_t i = 0; i < m_numIncrementsPerUpdate; ++i)
+  const size_t numIncrements = GetNextNumIncrements();
+
+  for (size_t i = 0; i < numIncrements; ++i)
   {
     std::for_each(begin(m_shapes), end(m_shapes), [this](Shape& shape) { UpdateShape(shape); });
   }
+}
+
+inline auto ShapesFx::ShapesFxImpl::GetNextNumIncrements() const noexcept -> size_t
+{
+  static constexpr float T_CUTOFF = 0.75F;
+  float tDistanceFromBoundary =
+      m_shapes.at(0).GetShapePart(0).GetFirstShapePathTDistanceFromClosestBoundary();
+
+  if (tDistanceFromBoundary > T_CUTOFF)
+  {
+    return m_numIncrementsPerUpdate;
+  }
+
+  tDistanceFromBoundary /= T_CUTOFF;
+
+  return STD20::lerp(1U, m_numIncrementsPerUpdate, tDistanceFromBoundary);
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShape(Shape& shape) noexcept -> void

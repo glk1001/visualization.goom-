@@ -7,6 +7,7 @@
 #include "point2d.h"
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/step_speed.h"
 #include "utils/t_values.h"
 
 #include <cstdint>
@@ -30,8 +31,8 @@ public:
     uint32_t maxNumShapePaths;
     float tMinMaxLerp;
     Point2dInt shapePathsTargetPoint;
-    float minShapePathSpeed;
-    float maxShapePathSpeed;
+    uint32_t shapePathsMinNumSteps;
+    uint32_t shapePathsMaxNumSteps;
   };
 
   ShapePart(const UTILS::MATH::IGoomRand& goomRand,
@@ -53,7 +54,8 @@ public:
 
   auto SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void;
 
-  auto SetMinMaxShapePathSpeeds(float minShapePathSpeed, float maxShapePathSpeed) noexcept -> void;
+  auto SetShapePathsMinMaxNumSteps(uint32_t shapePathsMinNumSteps,
+                                   uint32_t shapePathsMaxNumSteps) noexcept -> void;
 
   auto Start() noexcept -> void;
 
@@ -61,8 +63,8 @@ public:
   auto ResetTs(float val) noexcept -> void;
 
   auto DoRandomChanges() noexcept -> void;
-  auto UseRandomShapePathsSpeed() noexcept -> void;
-  auto UseFixedShapePathsSpeed(float tMinMaxLerp) noexcept -> void;
+  auto UseRandomShapePathsNumSteps() noexcept -> void;
+  auto UseFixedShapePathsNumSteps(float tMinMaxLerp) noexcept -> void;
   auto UseEvenShapePartNumsForDirection(bool val) -> void;
   [[nodiscard]] static auto GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goomRand,
                                                     float oldTMinMaxLerp) noexcept -> float;
@@ -91,43 +93,30 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   const PluginInfo& m_goomInfo;
   COLOR::RandomColorMapsManager& m_colorMapsManager;
-  Point2dInt m_shapePathsTargetPoint;
-  Point2dInt m_oldShapePathsTargetPoint{m_shapePathsTargetPoint};
-  bool m_needToUpdateTargetPoint = false;
-  Point2dInt m_newShapePathsTargetPoint;
-  auto UpdateShapePathTargets() noexcept -> void;
-  auto UpdateShapePathTransform(ShapePath& shapePath) const noexcept -> void;
-  static constexpr uint32_t OLD_TO_NEW_NUM_STEPS = 100;
-  UTILS::TValue m_oldToNewLerpT{UTILS::TValue::StepType::SINGLE_CYCLE, OLD_TO_NEW_NUM_STEPS};
-  const uint32_t m_shapePartNum;
-  const uint32_t m_totalNumShapeParts;
-  const float m_minRadiusFraction;
-  const float m_maxRadiusFraction;
-  static constexpr uint32_t MIN_NUM_SHAPE_PATHS = 4;
-  const uint32_t m_maxNumShapePaths;
 
-  bool m_useEvenShapePartNumsForDirection = true;
-  bool m_useRandomShapePathsSpeed = false;
-  float m_currentTMinMaxLerp = 0.0F;
-  float m_fixedTMinMaxLerp = 0.0F;
-  float m_minShapePathSpeed;
-  float m_maxShapePathSpeed;
-  auto SetShapePathsSpeed() noexcept -> void;
-  [[nodiscard]] auto GetShapePathSpeed(float tMinMaxLerp) const noexcept -> float;
+  float m_currentTMinMaxLerp;
+  UTILS::StepSpeed m_shapePathsStepSpeed;
+  auto SetShapePathsNumSteps() noexcept -> void;
 
   const int32_t m_minShapeDotRadius;
   const int32_t m_maxShapeDotRadius;
   static constexpr uint32_t MIN_DOT_RADIUS_STEPS = 100;
   static constexpr uint32_t MAX_DOT_RADIUS_STEPS = 300;
-  static constexpr uint32_t INITIAL_DOT_RADIUS_STEPS = 200;
+  static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
+  UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_DOT_RADIUS_STEPS, MAX_DOT_RADIUS_STEPS,
+                                        INITIAL_DOT_RADIUS_SPEED};
   UTILS::TValue m_dotRadiusT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                             INITIAL_DOT_RADIUS_STEPS};
+                             m_dotRadiusStepSpeed.GetCurrentNumSteps()};
 
-  static constexpr float MIN_COLOR_MAP_SPEED = 0.005F;
-  static_assert((0.0F < MIN_COLOR_MAP_SPEED) and (MIN_COLOR_MAP_SPEED < 1.0F));
-  static constexpr float MAX_COLOR_MAP_SPEED = 0.05F;
-  static_assert((0.0F < MAX_COLOR_MAP_SPEED) and (MAX_COLOR_MAP_SPEED < 1.0F));
-  UTILS::TValue m_allColorsT;
+  static constexpr uint32_t COLOR_MAP_MIN_NUM_STEPS = 100;
+  static_assert(0 < COLOR_MAP_MIN_NUM_STEPS);
+  static constexpr uint32_t COLOR_MAP_MAX_NUM_STEPS = 2000;
+  static_assert(COLOR_MAP_MIN_NUM_STEPS < COLOR_MAP_MAX_NUM_STEPS);
+  static constexpr float INITIAL_COLOR_MAP_SPEED = 0.5F;
+  UTILS::StepSpeed m_allColorsStepSpeed{COLOR_MAP_MIN_NUM_STEPS, COLOR_MAP_MAX_NUM_STEPS,
+                                        INITIAL_COLOR_MAP_SPEED};
+  UTILS::TValue m_allColorsT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
+                             m_allColorsStepSpeed.GetCurrentNumSteps()};
   auto ChangeAllColorsT() noexcept -> void;
 
   static inline const std::set<COLOR::RandomColorMaps::ColorMapTypes> COLOR_MAP_TYPES =
@@ -147,10 +136,22 @@ private:
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
   ColorInfo m_colorInfo{GetInitialColorInfo()};
   bool m_useRandomColorNames = false;
-
-  std::vector<ShapePath> m_shapePaths{};
-  auto IncrementTs() noexcept -> void;
   auto ChangeAllColorMapsNow() noexcept -> void;
+
+  const uint32_t m_shapePartNum;
+  static constexpr uint32_t MIN_NUM_SHAPE_PATHS = 4;
+  const uint32_t m_maxNumShapePaths;
+  const uint32_t m_totalNumShapeParts;
+  std::vector<ShapePath> m_shapePaths{};
+  bool m_useEvenShapePartNumsForDirection = true;
+
+  Point2dInt m_shapePathsTargetPoint;
+  Point2dInt m_newShapePathsTargetPoint;
+  bool m_needToUpdateTargetPoint = false;
+  auto UpdateShapePathTargets() noexcept -> void;
+  auto UpdateShapePathTransform(ShapePath& shapePath) const noexcept -> void;
+
+  auto IncrementTs() noexcept -> void;
   auto SetRandomizedShapePaths() noexcept -> void;
   [[nodiscard]] auto GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>;
   [[nodiscard]] auto GetShapePaths(uint32_t numShapePaths, float minScale, float maxScale) noexcept
@@ -165,12 +166,14 @@ private:
     UTILS::MATH::AngleParams angleParams;
     UTILS::MATH::CircleFunction::Direction direction;
   };
+  const float m_minRadiusFraction;
+  const float m_maxRadiusFraction;
   [[nodiscard]] auto GetCircleRadius() const noexcept -> float;
   [[nodiscard]] auto GetCircleDirection() const noexcept -> UTILS::MATH::CircleFunction::Direction;
   [[nodiscard]] auto MakeShapePathColorInfo() noexcept -> ShapePath::ColorInfo;
   [[nodiscard]] static auto GetCirclePath(float radius,
                                           UTILS::MATH::CircleFunction::Direction direction,
-                                          float speed) noexcept -> UTILS::MATH::CirclePath;
+                                          uint32_t numSteps) noexcept -> UTILS::MATH::CirclePath;
   [[nodiscard]] static auto GetCircleFunction(const ShapeFunctionParams& params)
       -> UTILS::MATH::CircleFunction;
 };
@@ -259,7 +262,6 @@ inline auto ShapePart::IncrementTs() noexcept -> void
 {
   std::for_each(begin(m_shapePaths), end(m_shapePaths), [](ShapePath& path) { path.IncrementT(); });
 
-  m_oldToNewLerpT.Increment();
   m_allColorsT.Increment();
   m_dotRadiusT.Increment();
 }
@@ -270,25 +272,18 @@ inline auto ShapePart::ResetTs(const float val) noexcept -> void
                 [&val](ShapePath& path) { path.ResetT(val); });
 }
 
-inline auto ShapePart::UseRandomShapePathsSpeed() noexcept -> void
+inline auto ShapePart::UseFixedShapePathsNumSteps(const float tMinMaxLerp) noexcept -> void
 {
-  m_useRandomShapePathsSpeed = true;
+  m_currentTMinMaxLerp = tMinMaxLerp;
+  m_shapePathsStepSpeed.SetSpeed(m_currentTMinMaxLerp);
+  m_dotRadiusStepSpeed.SetSpeed(m_currentTMinMaxLerp);
 }
 
-inline auto ShapePart::UseFixedShapePathsSpeed(const float tMinMaxLerp) noexcept -> void
+inline auto ShapePart::UseRandomShapePathsNumSteps() noexcept -> void
 {
-  m_fixedTMinMaxLerp = tMinMaxLerp;
-  m_useRandomShapePathsSpeed = false;
-}
-
-inline auto ShapePart::UseEvenShapePartNumsForDirection(const bool val) -> void
-{
-  m_useEvenShapePartNumsForDirection = val;
-}
-
-inline auto ShapePart::SetRandomizedShapePaths() noexcept -> void
-{
-  m_shapePaths = GetRandomizedShapePaths();
+  m_currentTMinMaxLerp = GetNewRandomMinMaxLerpT(m_goomRand, m_currentTMinMaxLerp);
+  m_shapePathsStepSpeed.SetSpeed(m_currentTMinMaxLerp);
+  m_dotRadiusStepSpeed.SetSpeed(m_currentTMinMaxLerp);
 }
 
 inline auto ShapePart::GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goomRand,
@@ -297,6 +292,25 @@ inline auto ShapePart::GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goo
   static constexpr float SMALL_OFFSET = 0.2F;
   return goomRand.GetRandInRange(std::max(0.0F, -SMALL_OFFSET + oldTMinMaxLerp),
                                  std::min(1.0F, oldTMinMaxLerp + SMALL_OFFSET));
+}
+
+inline auto ShapePart::UseEvenShapePartNumsForDirection(const bool val) -> void
+{
+  m_useEvenShapePartNumsForDirection = val;
+}
+
+inline auto ShapePart::SetShapePathsNumSteps() noexcept -> void
+{
+  std::for_each(begin(m_shapePaths), end(m_shapePaths),
+                [this](ShapePath& path)
+                { path.SetNumSteps(m_shapePathsStepSpeed.GetCurrentNumSteps()); });
+
+  m_dotRadiusT.SetNumSteps(m_dotRadiusStepSpeed.GetCurrentNumSteps());
+}
+
+inline auto ShapePart::SetRandomizedShapePaths() noexcept -> void
+{
+  m_shapePaths = GetRandomizedShapePaths();
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES
