@@ -2,6 +2,7 @@
 
 //#undef NO_LOGGING
 
+#include "color/color_adjustment.h"
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
@@ -25,7 +26,7 @@
 namespace GOOM::VISUAL_FX::TUBES
 {
 
-using COLOR::ColorCorrection;
+using COLOR::ColorAdjustment;
 using COLOR::GetBrighterColor;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
@@ -337,7 +338,7 @@ private:
   Tube::Data m_data;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  const ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
+  const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
   std::vector<ShapeColors> m_oldShapeColors;
@@ -1113,12 +1114,12 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
                     m_outerCircleLowColorMap.get().GetColor(m_outerCircleT()));
 
   return {
-      m_colorCorrect.GetCorrection(brightness, mainColor),
-      m_colorCorrect.GetCorrection(brightness, lowColor),
-      m_colorCorrect.GetCorrection(brightness, innerMainColor),
-      m_colorCorrect.GetCorrection(brightness, innerLowColor),
-      m_colorCorrect.GetCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleMainColor),
-      m_colorCorrect.GetCorrection(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleLowColor),
+      m_colorAdjust.GetAdjustment(brightness, mainColor),
+      m_colorAdjust.GetAdjustment(brightness, lowColor),
+      m_colorAdjust.GetAdjustment(brightness, innerMainColor),
+      m_colorAdjust.GetAdjustment(brightness, innerLowColor),
+      m_colorAdjust.GetAdjustment(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleMainColor),
+      m_colorAdjust.GetAdjustment(OUTER_CIRCLE_BRIGHTNESS * brightness, outerCircleLowColor),
   };
 }
 

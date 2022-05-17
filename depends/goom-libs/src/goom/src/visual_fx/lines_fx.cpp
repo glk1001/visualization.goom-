@@ -9,6 +9,7 @@
 
 //#undef NO_LOGGING
 
+#include "color/color_adjustment.h"
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
@@ -39,7 +40,7 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::ColorCorrection;
+using COLOR::ColorAdjustment;
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
 using COLOR::GetLightenedColor;
@@ -114,7 +115,7 @@ private:
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  const ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
+  const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   std::vector<LinePoint> m_srcePoints{};
   std::vector<LinePoint> m_srcePointsCopy{};
@@ -609,7 +610,7 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
 
   const float brightness = m_currentBrightness * tData;
   const Pixel modColor =
-      m_colorCorrect.GetCorrection(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
+      m_colorAdjust.GetAdjustment(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
 
   return {nextPointData, modColor};
 }

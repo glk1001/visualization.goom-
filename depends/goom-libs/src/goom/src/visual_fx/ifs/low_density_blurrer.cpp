@@ -189,7 +189,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
       break;
   }
 
-  point.SetColor(m_colorCorrect.GetCorrection(brightness * logAlpha, point.GetColor()));
+  point.SetColor(m_colorAdjust.GetAdjustment(brightness * logAlpha, point.GetColor()));
 }
 
 inline auto LowDensityBlurrer::GetBrightness() const -> float

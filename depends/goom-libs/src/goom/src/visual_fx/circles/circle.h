@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bitmap_getter_base.h"
+#include "color/color_adjustment.h"
 #include "color/colormaps.h"
 #include "color/colormaps_grids.h"
 #include "color/random_colormaps.h"
@@ -33,7 +34,7 @@ public:
     uint32_t minDotDiameter;
     uint32_t maxDotDiameter;
     const IBitmapGetter& bitmapGetter;
-    const COLOR::ColorCorrection& colorCorrect;
+    const COLOR::ColorAdjustment& colorAdjustment;
   };
   struct Params
   {

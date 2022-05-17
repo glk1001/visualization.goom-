@@ -1,7 +1,7 @@
 #pragma once
 
+#include "color/color_adjustment.h"
 #include "color/colormaps.h"
-#include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
 #include "goom_graphic.h"
@@ -70,7 +70,8 @@ private:
                                         float tBaseMix) const -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
-  const COLOR::ColorCorrection m_colorCorrect{GAMMA};
+  const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
+                                             COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 
 inline auto Colorizer::GetColorMaps() const -> const COLOR::RandomColorMaps&

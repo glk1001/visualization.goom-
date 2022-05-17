@@ -1,7 +1,6 @@
 #pragma once
 
 #include "goom/goom_graphic.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cassert>
@@ -46,37 +45,6 @@ enum class SimpleColors
   _num // unused and must be last
 };
 [[nodiscard]] auto GetSimpleColor(SimpleColors simpleColor) -> Pixel;
-
-static constexpr float INCREASED_CHROMA_FACTOR = 2.0F;
-static constexpr float DECREASED_CHROMA_FACTOR = 0.5F;
-[[nodiscard]] auto GetAlteredChroma(float lchYFactor, const Pixel& color) -> Pixel;
-[[nodiscard]] auto GetIncreasedChroma(const Pixel& color) -> Pixel;
-[[nodiscard]] auto GetDecreasedChroma(const Pixel& color) -> Pixel;
-
-class ColorCorrection
-{
-public:
-  ColorCorrection(float gamma, float alterChromaFactor = 1.0F);
-
-  [[nodiscard]] auto GetIgnoreThreshold() const -> float;
-  auto SetIgnoreThreshold(float val) -> void;
-
-  [[nodiscard]] auto GetGamma() const -> float;
-  auto SetGamma(float val) -> void;
-
-  [[nodiscard]] auto GetAlterChromaFactor() const -> float;
-  auto SetAlterChromaFactor(float val) -> void;
-
-  [[nodiscard]] auto GetCorrection(float brightness, const Pixel& color) const -> Pixel;
-
-private:
-  float m_gamma;
-  float m_alterChromaFactor;
-  bool m_doAlterChroma = not UTILS::MATH::FloatsEqual(1.0F, m_alterChromaFactor);
-  static constexpr float DEFAULT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
-  float m_ignoreThreshold = DEFAULT_GAMMA_BRIGHTNESS_THRESHOLD;
-};
-
 
 [[nodiscard]] inline auto ColorChannelMultiply(const PixelChannelType ch1,
                                                const PixelChannelType ch2) -> uint32_t
@@ -246,16 +214,6 @@ inline auto GetLuma(const Pixel& color) -> float
          (LUMA_BLUE_COMPONENT * color.BFlt());
 }
 
-inline auto GetIncreasedChroma(const Pixel& color) -> Pixel
-{
-  return GetAlteredChroma(INCREASED_CHROMA_FACTOR, color);
-}
-
-inline auto GetDecreasedChroma(const Pixel& color) -> Pixel
-{
-  return GetAlteredChroma(DECREASED_CHROMA_FACTOR, color);
-}
-
 inline auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
 {
   static constexpr Pixel::RGB RED{230, 120, 18, MAX_ALPHA};
@@ -285,42 +243,6 @@ inline auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
     default:
       throw std::logic_error("Unknown simple color enum.");
   }
-}
-
-inline ColorCorrection::ColorCorrection(const float gamma, const float alterChromaFactor)
-  : m_gamma{gamma}, m_alterChromaFactor{alterChromaFactor}
-{
-}
-
-inline auto ColorCorrection::GetGamma() const -> float
-{
-  return m_gamma;
-}
-
-inline auto ColorCorrection::SetGamma(const float val) -> void
-{
-  m_gamma = val;
-}
-
-inline auto ColorCorrection::GetAlterChromaFactor() const -> float
-{
-  return m_alterChromaFactor;
-}
-
-inline auto ColorCorrection::SetAlterChromaFactor(const float val) -> void
-{
-  m_alterChromaFactor = val;
-  m_doAlterChroma = not UTILS::MATH::FloatsEqual(1.0F, m_alterChromaFactor);
-}
-
-inline auto ColorCorrection::GetIgnoreThreshold() const -> float
-{
-  return m_ignoreThreshold;
-}
-
-inline auto ColorCorrection::SetIgnoreThreshold(const float val) -> void
-{
-  m_ignoreThreshold = val;
 }
 
 } // namespace GOOM::COLOR

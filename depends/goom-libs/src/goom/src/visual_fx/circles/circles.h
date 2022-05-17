@@ -37,7 +37,8 @@ private:
   BitmapGetter m_bitmapGetter;
 
   static constexpr float GAMMA = 1.0F / 2.2F;
-  const COLOR::ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
+  const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
+                                             COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   const uint32_t m_numCircles;
   std::vector<Circle> m_circles;

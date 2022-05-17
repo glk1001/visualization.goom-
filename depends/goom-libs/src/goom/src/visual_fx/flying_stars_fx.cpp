@@ -2,6 +2,7 @@
 
 //#undef NO_LOGGING
 
+#include "color/color_adjustment.h"
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
@@ -30,7 +31,7 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::ColorCorrection;
+using COLOR::ColorAdjustment;
 using COLOR::GetBrighterColor;
 using COLOR::GetColorMultiply;
 using COLOR::GetLightenedColor;
@@ -109,7 +110,7 @@ private:
   [[nodiscard]] auto GetNextAngleColorMapName() const -> ColorMapName;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
-  const ColorCorrection m_colorCorrect{GAMMA};
+  const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
   [[nodiscard]] auto GetColorCorrection(float brightness, const Pixel& color) const -> Pixel;
 
   static constexpr float MIN_SATURATION = 0.5F;
@@ -831,7 +832,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetColorCorrection(float brightness,
   }
   else
   {
-    return m_colorCorrect.GetCorrection(brightness, color);
+    return m_colorAdjust.GetAdjustment(brightness, color);
   }
 }
 

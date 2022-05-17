@@ -1,6 +1,6 @@
 #pragma once
 
-#include "color/colorutils.h"
+#include "color/color_adjustment.h"
 #include "goom_graphic.h"
 
 #include <cstdint>
@@ -85,7 +85,7 @@ private:
                                         float logAlpha) const -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
-  const COLOR::ColorCorrection m_colorCorrect{GAMMA};
+  const COLOR::ColorAdjustment m_colorAdjust{GAMMA};
 };
 
 inline auto LowDensityBlurrer::GetWidth() const -> uint32_t

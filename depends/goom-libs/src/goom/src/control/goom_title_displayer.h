@@ -1,6 +1,6 @@
 #pragma once
 
-#include "color/colorutils.h"
+#include "color/color_adjustment.h"
 #include "goom_graphic.h"
 #include "point2d.h"
 
@@ -122,7 +122,8 @@ private:
   [[nodiscard]] auto GetFinalPhaseCentrePenPos(const std::string& str) const -> Point2dFlt;
 
   static constexpr float TEXT_GAMMA = 1.0F / 2.0F;
-  COLOR::ColorCorrection m_textColorCorrect{TEXT_GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_textColorAdjust{TEXT_GAMMA,
+                                           COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 
 inline void GoomTitleDisplayer::DrawStaticText(const std::string& title)

@@ -196,7 +196,7 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
                                 const Point2dInt point, const int32_t width, const int32_t height)
   {
     const Pixel finalColor = GetFinalInteriorColor(colorT, fontCharColorMixT, point, width, height);
-    return m_textColorCorrect.GetCorrection(textBrightness, finalColor);
+    return m_textColorAdjust.GetAdjustment(textBrightness, finalColor);
   };
 
   const auto getOutlineFontColor = [this, &colorT, &textBrightness, &fontCharColorMixT](
@@ -205,7 +205,7 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
                                        [[maybe_unused]] const int32_t height)
   {
     const Pixel finalColor = GetFinalOutlineColor(colorT, fontCharColorMixT, point.x, width);
-    return m_textColorCorrect.GetCorrection(textBrightness, finalColor);
+    return m_textColorAdjust.GetAdjustment(textBrightness, finalColor);
   };
 
   const float charSpacing = GetCharSpacing();

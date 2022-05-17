@@ -2,6 +2,7 @@
 
 //#undef NO_LOGGING
 
+#include "color/color_adjustment.h"
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
@@ -28,7 +29,7 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::ColorCorrection;
+using COLOR::ColorAdjustment;
 using COLOR::ColorMapGroup;
 using COLOR::GetBrighterColor;
 using COLOR::RandomColorMaps;
@@ -114,7 +115,7 @@ private:
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
 
   static constexpr float GAMMA = 2.0F;
-  const ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
+  const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -450,7 +451,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
         m_useMiddleColor && IsImagePointCloseToMiddle(x, y, radius) ? m_middleColor : color;
     static constexpr float COLOR_MIX_T = 0.6F;
     const Pixel mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
-    return m_colorCorrect.GetCorrection(BRIGHTNESS, mixedColor);
+    return m_colorAdjust.GetAdjustment(BRIGHTNESS, mixedColor);
   };
   const auto getColor2 =
       [&getColor1]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,

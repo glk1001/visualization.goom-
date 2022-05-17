@@ -2,6 +2,7 @@
 
 //#undef NO_LOGGING
 
+#include "color/color_adjustment.h"
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
@@ -32,7 +33,7 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::ColorCorrection;
+using COLOR::ColorAdjustment;
 using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
@@ -145,7 +146,7 @@ private:
   [[nodiscard]] auto GetChunkFloatingStartPosition(size_t i) const -> Point2dInt;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
-  const ColorCorrection m_colorCorrect{GAMMA};
+  const ColorAdjustment m_colorAdjust{GAMMA};
 };
 
 ImageFx::ImageFx(Parallel& parallel,

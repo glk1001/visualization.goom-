@@ -1,7 +1,7 @@
 #include "shape_drawers.h"
 
+#include "color/color_adjustment.h"
 #include "color/colormaps.h"
-#include "color/colorutils.h"
 #include "draw/goom_draw.h"
 #include "shape_parts.h"
 #include "shape_paths.h"
@@ -11,7 +11,7 @@
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
-using COLOR::ColorCorrection;
+using COLOR::ColorAdjustment;
 using COLOR::IColorMap;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
@@ -86,7 +86,7 @@ private:
       -> std::vector<Pixel>;
 
   static constexpr float GAMMA = 1.3F;
-  const ColorCorrection m_colorCorrect{GAMMA, COLOR::INCREASED_CHROMA_FACTOR};
+  const ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 
 ShapeDrawer::ShapeDrawer(IGoomDraw& draw,
@@ -262,10 +262,10 @@ static constexpr float LOW_COLOR_BRIGHTNESS_FACTOR = 0.5F;
 inline auto ShapePathDrawer::GetColorsWithoutInner(
     const float brightness, const ShapePathColors& shapeColors) const noexcept -> std::vector<Pixel>
 {
-  const Pixel mainColor = m_colorCorrect.GetCorrection(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
-                                                       shapeColors.mainColor);
+  const Pixel mainColor =
+      m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.mainColor);
   const Pixel lowColor =
-      m_colorCorrect.GetCorrection(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor);
+      m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor);
 
   return {mainColor, lowColor};
 }
@@ -275,10 +275,10 @@ inline auto ShapePathDrawer::GetColorsWithInner(const float brightness,
                                                 const Pixel& innerColor) const noexcept
     -> std::vector<Pixel>
 {
-  const Pixel mainColor = m_colorCorrect.GetCorrection(
+  const Pixel mainColor = m_colorAdjust.GetAdjustment(
       MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
       IColorMap::GetColorMix(shapeColors.mainColor, innerColor, m_params.innerColorMix));
-  const Pixel lowColor = m_colorCorrect.GetCorrection(
+  const Pixel lowColor = m_colorAdjust.GetAdjustment(
       LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
       IColorMap::GetColorMix(shapeColors.lowColor, innerColor, m_params.innerColorMix));
 
@@ -289,9 +289,9 @@ inline auto ShapePathDrawer::GetFinalMeetingPointColors(const float brightness) 
     -> std::vector<Pixel>
 {
   static constexpr float BRIGHTNESS_FACTOR = 7.0F;
-  return {m_colorCorrect.GetCorrection(brightness, m_params.meetingPointColors.mainColor),
-          m_colorCorrect.GetCorrection(BRIGHTNESS_FACTOR * brightness,
-                                       m_params.meetingPointColors.lowColor)};
+  return {m_colorAdjust.GetAdjustment(brightness, m_params.meetingPointColors.mainColor),
+          m_colorAdjust.GetAdjustment(BRIGHTNESS_FACTOR * brightness,
+                                      m_params.meetingPointColors.lowColor)};
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES

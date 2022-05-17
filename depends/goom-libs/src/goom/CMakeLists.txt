@@ -21,6 +21,7 @@ endif()
 add_library(goom
     STATIC
         include/goom/goom_graphic.h
+        src/color/color_adjustment.cpp
         src/color/color_data/color_data_maps.cpp
         src/color/color_data/extra_color_groups.cpp
         src/color/colormaps.cpp

@@ -32,8 +32,8 @@ auto RandomColorMapsManager::AddColorMapInfo(
   return ColorMapId{static_cast<int32_t>(m_infoList.size() - 1)};
 }
 
-auto RandomColorMapsManager::UpdateColorMapInfo(ColorMapId id, const ColorMapInfo& info) noexcept
-    -> void
+auto RandomColorMapsManager::UpdateColorMapInfo(const ColorMapId id,
+                                                const ColorMapInfo& info) noexcept -> void
 {
   m_infoList.at(id()) = info;
 }

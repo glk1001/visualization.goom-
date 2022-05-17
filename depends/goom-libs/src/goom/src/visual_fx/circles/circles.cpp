@@ -11,7 +11,6 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using COLOR::ColorCorrection;
 using COLOR::GetBrighterColor;
 using COLOR::RandomColorMaps;
 using UTILS::GRAPHICS::ImageBitmap;
@@ -34,7 +33,7 @@ Circles::Circles(const FxHelper& fxHelper,
     m_numCircles{numCircles},
     m_circles{GetCircles(
         fxHelper,
-        {LINE_DOT_DIAMETER, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER, m_bitmapGetter, m_colorCorrect},
+        {LINE_DOT_DIAMETER, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER, m_bitmapGetter, m_colorAdjust},
         GetPathParams(),
         m_numCircles,
         circleParams)}
