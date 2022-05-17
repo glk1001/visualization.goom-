@@ -1,10 +1,8 @@
 #include "goom_random_state_handler.h"
 
 #include "control/state_and_filter_consts.h"
+#include "goom_config.h"
 #include "utils/enumutils.h"
-
-#undef NDEBUG
-#include <cassert>
 
 namespace GOOM::CONTROL
 {
@@ -176,7 +174,7 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
     }
 // clang-format on
 {
-  assert(m_weightedStates.GetNumElements() == NUM<GoomStates>);
+  Ensures(m_weightedStates.GetNumElements() == NUM<GoomStates>);
 }
 
 void GoomRandomStateHandler::ChangeToNextState()

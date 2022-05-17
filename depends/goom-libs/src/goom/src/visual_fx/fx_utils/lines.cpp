@@ -1,11 +1,9 @@
 #include "lines.h"
 
+#include "goom_config.h"
 #include "utils/math/misc.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <format>
-#include <stdexcept>
 
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
@@ -17,7 +15,7 @@ using UTILS::MATH::TWO_PI;
 auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, const float yValue)
     -> std::vector<LinePoint>
 {
-  assert(numPoints > 1);
+  Expects(numPoints > 1);
 
   std::vector<LinePoint> linePoints(numPoints);
 
@@ -38,7 +36,7 @@ auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, con
 auto GetVerticalLinePoints(const uint32_t numPoints, const uint32_t height, const float xValue)
     -> std::vector<LinePoint>
 {
-  assert(numPoints > 1);
+  Expects(numPoints > 1);
 
   std::vector<LinePoint> linePoints(numPoints);
 
@@ -67,7 +65,7 @@ auto GetCircularLinePoints(const uint32_t numPoints,
                            const uint32_t height,
                            const float radius) -> std::vector<LinePoint>
 {
-  assert(numPoints > 1);
+  Expects(numPoints > 1);
 
   std::vector<LinePoint> linePoint(numPoints);
 
@@ -86,8 +84,8 @@ auto GetCircularLinePoints(const uint32_t numPoints,
     angle += angleStep;
   }
 
-  assert(FloatsEqual(linePoint[0].point.x, linePoint[linePoint.size() - 1].point.x));
-  assert(FloatsEqual(linePoint[0].point.y, linePoint[linePoint.size() - 1].point.y));
+  Ensures(FloatsEqual(linePoint[0].point.x, linePoint[linePoint.size() - 1].point.x));
+  Ensures(FloatsEqual(linePoint[0].point.y, linePoint[linePoint.size() - 1].point.y));
 
   return linePoint;
 }

@@ -1,8 +1,7 @@
 #include "colormaps_grids.h"
+#include "goom_config.h"
 #include "utils/t_values.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <cstdint>
 
 namespace GOOM::COLOR
@@ -21,7 +20,7 @@ ColorMapsGrid::ColorMapsGrid(const uint32_t width,
     m_colorMixingT{colorMixingTFunc},
     m_verticalT{verticalT}
 {
-  assert(m_width == static_cast<uint32_t>(m_verticalColorMaps.size()));
+  Expects(width == static_cast<uint32_t>(verticalColorMaps.size()));
 }
 
 auto ColorMapsGrid::GetNextColors() const -> ColorArray

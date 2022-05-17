@@ -1,10 +1,9 @@
 #include "draw_methods.h"
 
 #include "color/colorutils.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -37,7 +36,8 @@ void DrawMethods::DrawBresenhamCircle(const int32_t x0,
                                       const int32_t radius,
                                       const PlotCirclePointsFunc& plotter)
 {
-  const auto drawCircle8 = [&](const int xc, int const yc, const int x, const int y) {
+  const auto drawCircle8 = [&](const int xc, int const yc, const int x, const int y)
+  {
     plotter(xc - x, yc + y, xc + x, yc + y);
     plotter(xc - x, yc - y, xc + x, yc - y);
     plotter(xc - y, yc + x, xc + y, yc + x);
@@ -72,7 +72,8 @@ void DrawMethods::DrawCircle(const int32_t x0,
                              const int32_t radius,
                              const std::vector<Pixel>& colors) const
 {
-  auto plotter = [&](const int x1, const int y1, const int x2, const int y2) -> void {
+  auto plotter = [&](const int x1, const int y1, const int x2, const int y2) -> void
+  {
     if ((static_cast<uint32_t>(x1) >= m_screenWidth) ||
         (static_cast<uint32_t>(y1) >= m_screenHeight))
     {
@@ -112,8 +113,10 @@ void DrawMethods::DrawFilledCircle(const int32_t x0,
                                    const int32_t radius,
                                    const std::vector<Pixel>& colors) const
 {
-  auto plotter = [&](const int x1, const int y1, const int x2, const int y2) -> void {
-    assert(y1 == y2);
+  auto plotter = [&](const int x1, const int y1, const int x2,
+                     [[maybe_unused]] const int y2) -> void
+  {
+    Expects(y1 == y2);
     DrawHorizontalLine(x1, y1, x2, colors);
   };
 
@@ -163,7 +166,8 @@ void DrawMethods::DrawWuLine(
   }
 
   std::vector<Pixel> tempColors = colors;
-  auto plot = [&](const int x, const int y, const float brightness) -> void {
+  auto plot = [&](const int x, const int y, const float brightness) -> void
+  {
     if ((static_cast<uint32_t>(x) >= m_screenWidth) || (static_cast<uint32_t>(y) >= m_screenHeight))
     {
       return;
@@ -314,7 +318,8 @@ void DrawMethods::DrawLineOverlap(int x0,
   }
 
   std::vector<Pixel> tempColors = colors;
-  auto plot = [&](const int x, const int y) -> void {
+  auto plot = [&](const int x, const int y) -> void
+  {
     if ((static_cast<uint32_t>(x) >= m_screenWidth) || (static_cast<uint32_t>(y) >= m_screenHeight))
     {
       return;

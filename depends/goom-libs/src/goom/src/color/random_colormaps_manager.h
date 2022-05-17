@@ -5,7 +5,6 @@
 #include "random_colormaps.h"
 #include "utils/math/goom_rand_base.h"
 
-#include <cassert>
 #include <cstdint>
 #include <memory>
 #include <set>
@@ -61,12 +60,12 @@ private:
 
 inline RandomColorMapsManager::ColorMapId::ColorMapId(const int32_t id) noexcept : m_id{id}
 {
-  assert(m_id >= 0);
+  Expects(id >= 0);
 }
 
 inline auto RandomColorMapsManager::ColorMapId::operator()() const noexcept -> size_t
 {
-  assert(m_id >= 0);
+  Expects(m_id >= 0);
   return static_cast<size_t>(m_id);
 }
 

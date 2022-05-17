@@ -45,7 +45,6 @@ CPMAddPackage("gh:g-truc/glm#0.9.9.8")
 set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
 CPMAddPackage("gh:fmtlib/fmt#8.0.1")
-
 list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
 
 

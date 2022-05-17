@@ -11,8 +11,6 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
 
-#include <cassert>
-
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
@@ -51,16 +49,16 @@ ShapePart::ShapePart(const IGoomRand& goomRand,
     m_maxShapeDotRadius{params.maxShapeDotRadius},
     m_allColorsT{TValue::StepType::CONTINUOUS_REVERSIBLE, GetShapePathSpeed(params.tMinMaxLerp)}
 {
-  assert(m_totalNumShapeParts > 0);
-  assert(m_shapePartNum < m_totalNumShapeParts);
-  assert(0.0F <= m_minRadiusFraction);
-  assert(m_minRadiusFraction < m_maxRadiusFraction);
-  assert(1 <= m_minShapeDotRadius);
-  assert(m_minShapeDotRadius <= m_maxShapeDotRadius);
-  assert(m_maxNumShapePaths >= MIN_NUM_SHAPE_PATHS);
-  assert(m_minShapePathSpeed > 0.0F);
-  assert(m_minShapePathSpeed < m_maxShapePathSpeed);
-  assert(m_maxShapePathSpeed < 1.0F);
+  Expects(m_totalNumShapeParts > 0);
+  Expects(m_shapePartNum < m_totalNumShapeParts);
+  Expects(0.0F <= m_minRadiusFraction);
+  Expects(m_minRadiusFraction < m_maxRadiusFraction);
+  Expects(1 <= m_minShapeDotRadius);
+  Expects(m_minShapeDotRadius <= m_maxShapeDotRadius);
+  Expects(m_maxNumShapePaths >= MIN_NUM_SHAPE_PATHS);
+  Expects(m_minShapePathSpeed > 0.0F);
+  Expects(m_minShapePathSpeed < m_maxShapePathSpeed);
+  Expects(m_maxShapePathSpeed < 1.0F);
 }
 
 auto ShapePart::GetInitialColorInfo() const noexcept -> ColorInfo
@@ -91,9 +89,9 @@ auto ShapePart::SetMinMaxShapePathSpeeds(const float minShapePathSpeed,
 {
   m_minShapePathSpeed = minShapePathSpeed;
   m_maxShapePathSpeed = maxShapePathSpeed;
-  assert(m_minShapePathSpeed > 0.0F);
-  assert(m_minShapePathSpeed < m_maxShapePathSpeed);
-  assert(m_maxShapePathSpeed < 1.0F);
+  Expects(m_minShapePathSpeed > 0.0F);
+  Expects(m_minShapePathSpeed < m_maxShapePathSpeed);
+  Expects(m_maxShapePathSpeed < 1.0F);
 }
 
 auto ShapePart::UpdateShapePathTargets() noexcept -> void

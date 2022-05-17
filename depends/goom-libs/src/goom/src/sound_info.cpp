@@ -1,8 +1,8 @@
-#undef NDEBUG
 #include "sound_info.h"
 
+#include "goom_config.h"
+
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -13,7 +13,7 @@ namespace GOOM
 auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
     -> std::vector<SampleArray>
 {
-  assert((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == floatAudioData.size());
+  Expects((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == floatAudioData.size());
 
   std::vector<SampleArray> sampleArrays(NUM_AUDIO_SAMPLES);
 
@@ -61,7 +61,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<flo
         std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
         std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)}
 {
-  assert((0 < numSampleChannels) && (numSampleChannels <= 2));
+  Expects((0 < numSampleChannels) && (numSampleChannels <= 2));
 }
 
 static constexpr uint32_t NUM_GOOMS_IN_SHORT_CYCLE = 4;
@@ -100,19 +100,19 @@ inline void SoundInfo::UpdateVolume(const AudioSamples& samples)
     m_allTimesMinVolume = samples.GetSampleOverallMinMax().minVal;
   }
 
-  assert(0.0F <= m_volume && m_volume <= 1.0F);
+  Ensures(0.0F <= m_volume && m_volume <= 1.0F);
 }
 
 inline void SoundInfo::UpdateSpeed(const float prevVolume)
 {
   m_speed = AudioSamples::GetPositiveValue(m_volume - prevVolume);
-  assert(0.0F <= m_speed && m_speed <= 1.0F);
+  Ensures(0.0F <= m_speed && m_speed <= 1.0F);
 }
 
 inline void SoundInfo::UpdateAcceleration(const float prevSpeed)
 {
   m_acceleration = AudioSamples::GetPositiveValue(m_speed - prevSpeed);
-  assert(0.0F <= m_acceleration && m_acceleration <= 1.0F);
+  Ensures(0.0F <= m_acceleration && m_acceleration <= 1.0F);
 
   CheckSettledGoomLimits();
 }
@@ -147,7 +147,7 @@ void SoundInfo::UpdateLastGoom()
 void SoundInfo::CheckGoomRate()
 {
   UpdateGoomLimit();
-  assert((GOOM_LIMIT_MIN <= m_goomLimit) && (m_goomLimit <= GOOM_LIMIT_MAX));
+  Ensures((GOOM_LIMIT_MIN <= m_goomLimit) && (m_goomLimit <= GOOM_LIMIT_MAX));
 
   m_totalGoomsInCurrentCycle = 0;
   m_maxAccelerationSinceLastReset = 0.0F;

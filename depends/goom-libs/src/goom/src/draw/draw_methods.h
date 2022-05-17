@@ -3,7 +3,6 @@
 #include "goom_config.h"
 #include "goom_graphic.h"
 
-#include <cassert>
 #include <cstdint>
 #include <functional>
 #include <vector>
@@ -72,12 +71,11 @@ inline void DrawMethods::DrawPixels(const int32_t x,
                                     const int32_t y,
                                     const std::vector<Pixel>& newColors) const
 {
-#ifdef GOOM_DEBUG
-  assert(x >= 0);
-  assert(y >= 0);
-  assert(static_cast<uint32_t>(x) < m_screenWidth);
-  assert(static_cast<uint32_t>(y) < m_screenHeight);
-#endif
+  Expects(x >= 0);
+  Expects(y >= 0);
+  Expects(static_cast<uint32_t>(x) < m_screenWidth);
+  Expects(static_cast<uint32_t>(y) < m_screenHeight);
+
   m_drawPixelsToDevice(x, y, newColors);
 }
 

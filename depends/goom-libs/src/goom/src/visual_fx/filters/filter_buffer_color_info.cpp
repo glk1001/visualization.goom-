@@ -1,10 +1,8 @@
 #include "filter_buffer_color_info.h"
 
 #include "color/colorutils.h"
+#include "goom_config.h"
 
-#undef NDEBUG
-
-#include <cassert>
 #include <format>
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -36,7 +34,7 @@ auto FilterBufferColorInfo::GetRegionInfoArray(
     y0 = y1 + 1;
   }
 
-  assert(regionIndex == NUM_REGIONS);
+  Ensures(regionIndex == NUM_REGIONS);
 
   return regionRectArray;
 }
@@ -139,7 +137,7 @@ inline auto FilterBufferColorInfo::GetRegionIndexOfPoint(const Point2dInt& point
     }
   }
 
-  assert(false);
+  FailFast();
   return 0;
 }
 

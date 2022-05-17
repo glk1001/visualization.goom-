@@ -20,6 +20,7 @@
 #include "fx_utils/lines.h"
 #include "goom/logging.h"
 #include "goom/spimpl.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
@@ -29,8 +30,6 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -58,6 +57,7 @@ using FX_UTILS::GetHorizontalLinePoints;
 using FX_UTILS::GetVerticalLinePoints;
 using FX_UTILS::LinePoint;
 using FX_UTILS::SmoothTheCircleJoinAtEnds;
+using UTILS::Logging;
 using UTILS::NUM;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::FloatsEqual;
@@ -329,7 +329,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
 
 auto LinesFx::LinesImpl::GetRandomColorMap() const -> const IColorMap&
 {
-  assert(m_colorMaps);
+  Expects(m_colorMaps != nullptr);
   return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
 }
 
@@ -498,10 +498,11 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
                                    const AudioSamples::MaxMinValues& soundMinMax)
 {
   static constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
+  UNUSED_FOR_NDEBUG(LAST_POINT_INDEX);
 
-  assert(m_srceLineType != LineType::CIRCLE || m_lineLerpParam < 1.0F ||
-         (FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) &&
-          FloatsEqual(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
+  Expects(m_srceLineType != LineType::CIRCLE || m_lineLerpParam < 1.0F ||
+          (FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) &&
+           FloatsEqual(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
 
   const Pixel lineColor = GetFinalLineColor(m_srceColor);
 
@@ -593,12 +594,12 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
                                           const Pixel& randColor,
                                           const float dataVal) const -> PointAndColor
 {
-  assert(m_goomInfo.GetSoundInfo().GetAllTimesMinVolume() <= (dataVal + SMALL_FLOAT));
-  assert(m_minAudioValue <= (dataVal + SMALL_FLOAT));
-  assert(dataVal <= (m_minAudioValue + m_audioRange + SMALL_FLOAT));
+  Expects(m_goomInfo.GetSoundInfo().GetAllTimesMinVolume() <= (dataVal + SMALL_FLOAT));
+  Expects(m_minAudioValue <= (dataVal + SMALL_FLOAT));
+  Expects(dataVal <= ((m_minAudioValue + m_audioRange) + SMALL_FLOAT));
 
   const float tData = (dataVal - m_minAudioValue) / m_audioRange;
-  assert(0.0F <= tData && tData <= 1.0F);
+  assert((0.0F <= tData) && (tData <= 1.0F));
 
   const float cosAngle = std::cos(pt.angle);
   const float sinAngle = std::sin(pt.angle);

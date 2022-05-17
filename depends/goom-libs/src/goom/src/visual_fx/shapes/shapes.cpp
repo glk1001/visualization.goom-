@@ -8,8 +8,6 @@
 #include "shape_parts.h"
 #include "utils/math/goom_rand_base.h"
 
-#include <cassert>
-
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
@@ -57,31 +55,31 @@ auto Shape::GetInitialShapeParts(const Params& params) noexcept -> std::vector<S
 auto Shape::SetWeightedMainColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
     -> void
 {
-  assert(AllColorMapsValid());
+  Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
                 [&weightedMaps](ShapePart& shapePart)
                 { shapePart.SetWeightedMainColorMaps(weightedMaps); });
-  assert(AllColorMapsValid());
+  Ensures(AllColorMapsValid());
 }
 
 auto Shape::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
     -> void
 {
-  assert(AllColorMapsValid());
+  Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
                 [&weightedMaps](ShapePart& shapePart)
                 { shapePart.SetWeightedLowColorMaps(weightedMaps); });
-  assert(AllColorMapsValid());
+  Ensures(AllColorMapsValid());
 }
 
 auto Shape::SetWeightedInnerColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
     -> void
 {
-  assert(AllColorMapsValid());
+  Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
                 [&weightedMaps](ShapePart& shapePart)
                 { shapePart.SetWeightedInnerColorMaps(weightedMaps); });
-  assert(AllColorMapsValid());
+  Ensures(AllColorMapsValid());
 }
 
 auto Shape::AllColorMapsValid() const noexcept -> bool
@@ -127,7 +125,7 @@ auto Shape::Start() noexcept -> void
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
                 [](ShapePart& shapePart) { shapePart.Start(); });
 
-  assert(AllColorMapsValid());
+  Ensures(AllColorMapsValid());
 }
 
 auto Shape::Update() noexcept -> void

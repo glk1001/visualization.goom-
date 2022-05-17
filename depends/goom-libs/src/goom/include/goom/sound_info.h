@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cassert>
+#include "goom_config.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -120,8 +121,8 @@ constexpr auto AudioSamples::GetPositiveValue(const float audioValue) -> float
 {
   constexpr float MIN_AUDIO_VALUE = -1.0F;
   constexpr float MAX_AUDIO_VALUE = +1.0F;
-  assert(MIN_AUDIO_VALUE <= audioValue);
-  assert(audioValue <= MAX_AUDIO_VALUE);
+  Expects(MIN_AUDIO_VALUE <= audioValue);
+  Expects(audioValue <= MAX_AUDIO_VALUE);
 
   return (1.0F + audioValue) / (MAX_AUDIO_VALUE - MIN_AUDIO_VALUE);
 }

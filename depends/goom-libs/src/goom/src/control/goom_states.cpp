@@ -3,11 +3,10 @@
 //#undef NO_LOGGING
 
 #include "goom/logging.h"
+#include "goom_config.h"
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <format>
 #include <map>
 #include <set>
@@ -185,9 +184,9 @@ const GoomStateInfo::StateInfoArray GoomStateInfo::STATE_INFO_ARRAY = GetStateIn
 
 auto GoomStateInfo::GetStateInfoArray() noexcept -> StateInfoArray
 {
-  assert(DEFAULT_BUFF_INTENSITY_RANGES.size() == NUM<GoomDrawables>);
-  assert(STATE_DRAWABLES.size() == NUM<GoomStates>);
-  assert(STATE_NAMES.size() == NUM<GoomStates>);
+  Expects(DEFAULT_BUFF_INTENSITY_RANGES.size() == NUM<GoomDrawables>);
+  Expects(STATE_DRAWABLES.size() == NUM<GoomStates>);
+  Expects(STATE_NAMES.size() == NUM<GoomStates>);
 
   StateInfoArray statesArray{};
 

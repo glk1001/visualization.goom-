@@ -21,7 +21,6 @@
 #include "utils/t_values.h"
 
 #include <array>
-#include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -206,7 +205,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
 
 auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
 {
-  assert(m_colorMaps);
+  Expects(m_colorMaps != nullptr);
   return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
 }
 

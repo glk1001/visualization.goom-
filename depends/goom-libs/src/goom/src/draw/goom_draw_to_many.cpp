@@ -3,7 +3,6 @@
 #include "goom_config.h"
 #include "goom_graphic.h"
 
-#include <cassert>
 #include <cstdint>
 #include <vector>
 
@@ -15,7 +14,7 @@ GoomDrawToMany::GoomDrawToMany(const uint32_t screenWidth,
                                const std::vector<IGoomDraw*>& manyDraws)
   : IGoomDraw{screenWidth, screenHeight}, m_manyDraws{manyDraws}
 {
-  assert(!m_manyDraws.empty());
+  Expects(not manyDraws.empty());
 }
 
 auto GoomDrawToMany::GetPixel(const Point2dInt point) const -> Pixel

@@ -6,6 +6,7 @@
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom/spimpl.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "tentacles/circles_tentacle_layout.h"
@@ -16,8 +17,6 @@
 #include "utils/timer.h"
 
 #include <array>
-#undef NDEBUG
-#include <cassert>
 #include <memory>
 #include <vector>
 
@@ -173,8 +172,8 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper,
     m_tentacleDrivers{GetTentacleDrivers()},
     m_currentTentacleDriver{GetNextDriver()}
 {
-  assert(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());
-  assert(m_currentTentacleDriver);
+  Expects(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());
+  Ensures(m_currentTentacleDriver != nullptr);
 }
 
 inline auto TentaclesFx::TentaclesImpl::Start() -> void
@@ -220,7 +219,7 @@ inline auto TentaclesFx::TentaclesImpl::GetNextDriver() const -> TentacleDriver*
 
 inline auto TentaclesFx::TentaclesImpl::RefreshTentacles() -> void
 {
-  assert(m_currentTentacleDriver);
+  Expects(m_currentTentacleDriver);
 
   static constexpr float PROB_REVERSE_COLOR_MIX = 0.33F;
   m_currentTentacleDriver->SetReverseColorMix(m_goomRand.ProbabilityOf(PROB_REVERSE_COLOR_MIX));
@@ -269,7 +268,7 @@ inline auto TentaclesFx::TentaclesImpl::DoTentaclesUpdate() -> void
 inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
 {
   // Higher sound acceleration increases tentacle wave frequency.
-  assert(m_currentTentacleDriver);
+  Expects(m_currentTentacleDriver);
   const float tentacleWaveFreq =
       m_goomInfo.GetSoundInfo().GetAcceleration() < 0.3F
           ? 1.25F
@@ -293,7 +292,7 @@ inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
 
 inline auto TentaclesFx::TentaclesImpl::UpdateDominantColors() -> void
 {
-  assert(m_dominantColorMap);
+  Expects(m_dominantColorMap != nullptr);
   const Pixel newColor =
       RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   static constexpr float COLOR_MIX_T = 0.70F;

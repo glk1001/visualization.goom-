@@ -3,12 +3,11 @@
 #include "color/colormaps.h"
 #include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
+#include "goom_config.h"
 #include "tentacle3d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <cmath>
 #include <functional>
 #include <memory>
@@ -176,8 +175,8 @@ auto TentacleDriver::IterParamsGroup::GetNextIterationParams(const float t) cons
       first.iterZeroYValWave,
   };
 
-  assert(params.numNodes >= 10);
-  assert(params.length >= MIN_LENGTH);
+  Ensures(params.numNodes >= 10);
+  Ensures(params.length >= MIN_LENGTH);
 
   return params;
 }

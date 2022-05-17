@@ -3,10 +3,7 @@
 //#undef NO_LOGGING
 
 #include "goom/logging.h"
-#include "utils/math/misc.h"
-
-#undef NDEBUG
-#include <cassert>
+#include "goom_config.h"
 
 namespace GOOM::UTILS
 {
@@ -70,6 +67,7 @@ auto TValue::ValidateDelayPoints() noexcept -> void
   float prevT0 = -1.0F;
   for (const auto& delayPoint : m_delayPoints)
   {
+    UNUSED_FOR_NDEBUG(prevT0);
     assert(prevT0 < delayPoint.t0);
     assert(0.0F <= delayPoint.t0);
     assert(delayPoint.t0 <= 1.0F);
@@ -203,7 +201,7 @@ inline auto TValue::WeAreStartingDelayPoint() noexcept -> bool
 
 auto TValue::SetStepSize(const float val) noexcept -> void
 {
-  assert(val >= 0.0F);
+  Expects(val >= 0.0F);
 
   const float oldCurrentStep = m_currentStep;
 
@@ -224,7 +222,7 @@ auto TValue::GetNumSteps() const noexcept -> uint32_t
 
 auto TValue::SetNumSteps(const uint32_t val) noexcept -> void
 {
-  assert(val != 0U);
+  Expects(val != 0U);
 
   SetStepSize(1.0F / static_cast<float>(val));
 }

@@ -5,6 +5,7 @@
 #include "filter_buffers.h"
 #include "filter_settings.h"
 #include "goom/logging.h"
+#include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "speed_coefficients_effect.h"
@@ -13,8 +14,6 @@
 #include "utils/parallel_utils.h"
 #include "zoom_vector.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <cstdint>
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -63,7 +62,7 @@ auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) con
 void FilterBuffersService::Start() noexcept
 {
   m_currentFilterEffectsSettings = m_nextFilterEffectsSettings;
-  assert(m_currentFilterEffectsSettings.speedCoefficientsEffect != nullptr);
+  Expects(m_currentFilterEffectsSettings.speedCoefficientsEffect != nullptr);
 
   UpdateFilterEffectsSettings();
 

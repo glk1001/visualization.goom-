@@ -1,8 +1,8 @@
 #pragma once
 
+#include "goom_config.h"
 #include "point2d.h"
 
-#include <cassert>
 #include <cstdint>
 #include <vector>
 
@@ -31,8 +31,8 @@ void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, uint32_t numPointsT
 template<typename T>
 void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, uint32_t numPointsToSmooth)
 {
-  assert(numPointsToSmooth > 0);
-  assert(numPointsToSmooth < circlePoints.size());
+  Expects(numPointsToSmooth > 0);
+  Expects(numPointsToSmooth < circlePoints.size());
 
   const float tStep = 1.0F / static_cast<float>(numPointsToSmooth);
 
@@ -56,8 +56,8 @@ void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, uint32_t numPointsT
     t -= tStep;
   }
 
-  assert(circlePoints[0].point.x == circlePoints[circlePoints.size() - 1].point.x);
-  assert(circlePoints[0].point.y == circlePoints[circlePoints.size() - 1].point.y);
+  Ensures(circlePoints[0].point.x == circlePoints[circlePoints.size() - 1].point.x);
+  Ensures(circlePoints[0].point.y == circlePoints[circlePoints.size() - 1].point.y);
 }
 
 } // namespace GOOM::VISUAL_FX::FX_UTILS

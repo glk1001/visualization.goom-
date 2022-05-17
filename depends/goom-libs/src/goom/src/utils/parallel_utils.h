@@ -4,7 +4,6 @@
 #include "thread_pool.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstdint>
 #include <future>
 #include <thread>
@@ -54,8 +53,8 @@ inline auto Parallel::GetThreadIds() const noexcept -> std::vector<std::thread::
 template<typename Callable>
 auto Parallel::ForLoop(const size_t numIters, const Callable loopFunc) noexcept -> void
 {
-  assert(0 != numIters);
-  assert(not m_forLoopInUse);
+  Expects(0 != numIters);
+  Expects(not m_forLoopInUse);
   m_forLoopInUse = true;
 
   const size_t numThreads = std::min(numIters, m_threadPool.GetNumWorkers());

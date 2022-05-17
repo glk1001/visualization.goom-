@@ -3,11 +3,10 @@
 //#undef NO_LOGGING
 
 #include "color/colorutils.h"
-#include "goom_graphic.h"
 #include "goom/logging.h"
+#include "goom_config.h"
+#include "goom_graphic.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <cstdint>
 #include <vector>
 
@@ -74,7 +73,7 @@ void GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
 
 void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKeep)
 {
-  assert(numToKeep <= m_orderedXYPixelList.size());
+  Expects(numToKeep <= m_orderedXYPixelList.size());
 
   const auto eraseFrom = m_orderedXYPixelList.begin();
   const auto eraseTo = m_orderedXYPixelList.begin() +

@@ -1,10 +1,8 @@
 #include "distance_field.h"
 
+#include "goom_config.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
-
-#undef NDEBUG
-#include <cassert>
 
 namespace GOOM::VISUAL_FX::FILTERS
 {
@@ -110,7 +108,7 @@ auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) cons
       closestPoint = &distancePoint;
     }
   }
-  assert(closestPoint != nullptr);
+  Ensures(closestPoint != nullptr);
 
   return {minDistanceSq, *closestPoint};
 }

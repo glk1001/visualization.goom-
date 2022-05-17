@@ -7,6 +7,7 @@
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "goom/logging.h"
+#include "goom_config.h"
 #include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
@@ -16,8 +17,6 @@
 #include "utils/timer.h"
 
 #include <array>
-#undef NDEBUG
-#include <cassert>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -866,7 +865,7 @@ void ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
                                         std::vector<ShapeColors>* const oldColors,
                                         TValue* const t)
 {
-  assert(colorMaps->size() == oldColors->size());
+  Expects(colorMaps->size() == oldColors->size());
 
   m_outerCircleMainColorMap = m_data.mainColorMaps->GetRandomColorMap();
   m_outerCircleLowColorMap = m_data.lowColorMaps->GetRandomColorMap();

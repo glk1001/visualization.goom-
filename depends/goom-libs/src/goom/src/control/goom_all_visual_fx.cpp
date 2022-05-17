@@ -6,6 +6,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "draw/goom_draw.h"
+#include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "logging.h"
 #include "sound_info.h"
@@ -15,9 +16,6 @@
 #include "visual_fx/fx_helper.h"
 #include "visual_fx_color_maps.h"
 
-//#undef NDEBUG
-
-#include <cassert>
 #include <memory>
 
 namespace GOOM::CONTROL
@@ -282,7 +280,7 @@ void GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers()
 
 void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
 {
-  assert(IsCurrentlyDrawable(GoomDrawables::LINES));
+  Expects(IsCurrentlyDrawable(GoomDrawables::LINES));
 
   m_goomLine2->SetLineColorPower(m_goomLine1->GetLineColorPower());
 

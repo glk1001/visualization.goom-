@@ -10,6 +10,7 @@
 #include "fx_helper.h"
 #include "goom/logging.h"
 #include "goom/spimpl.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
@@ -21,8 +22,6 @@
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -366,8 +365,8 @@ inline auto TubesFx::TubeFxImpl::GetMiddlePos() const -> Point2dInt
 
 void TubesFx::TubeFxImpl::InitTubes()
 {
-  assert(m_colorMaps != nullptr);
-  assert(m_lowColorMaps != nullptr);
+  Expects(m_colorMaps != nullptr);
+  Expects(m_lowColorMaps != nullptr);
 
   const Tube::DrawFuncs drawToOneFuncs{
       [this](const Point2dInt point1, const Point2dInt point2, const std::vector<Pixel>& colors,

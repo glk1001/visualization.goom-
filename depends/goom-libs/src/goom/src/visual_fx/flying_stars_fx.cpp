@@ -19,7 +19,6 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
-#include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <map>
@@ -670,10 +669,10 @@ void FlyingStarsFx::FlyingStarsImpl::UpdateStarColorMaps(const float angle, Star
     star.currentLowColorMap = GetCurrentLowColorMapPtr(angle);
   }
 
-  assert(star.dominantMainColormap);
-  assert(star.dominantLowColormap);
-  assert(star.currentMainColorMap);
-  assert(star.currentLowColorMap);
+  Ensures(star.dominantMainColormap != nullptr);
+  Ensures(star.dominantLowColormap != nullptr);
+  Ensures(star.currentMainColorMap != nullptr);
+  Ensures(star.currentLowColorMap != nullptr);
 }
 
 void FlyingStarsFx::FlyingStarsImpl::UpdateAngleColorMapNames()

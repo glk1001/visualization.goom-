@@ -3,13 +3,12 @@
 #include "extra_effects_states.h"
 #include "filter_consts.h"
 #include "filter_settings.h"
+#include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <stdexcept>
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -432,9 +431,9 @@ auto FilterSettingsService::GetFilterModeData(
     const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect)
     -> std::map<ZoomFilterMode, ZoomFilterModeInfo>
 {
-  assert(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
-  assert(EFFECTS_PROBABILITIES.size() == NUM<ZoomFilterMode>);
-  assert(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
+  Expects(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
+  Expects(EFFECTS_PROBABILITIES.size() == NUM<ZoomFilterMode>);
+  Expects(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
 
   std::map<ZoomFilterMode, ZoomFilterModeInfo> filterMap{};
 

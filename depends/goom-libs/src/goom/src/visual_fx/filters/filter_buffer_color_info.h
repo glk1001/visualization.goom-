@@ -1,11 +1,11 @@
 #pragma once
 
 #include "color/colorutils.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "utils/math/misc.h"
 
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -115,8 +115,9 @@ template<uint32_t numRegions>
 auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length) noexcept
     -> std::array<size_t, numRegions>
 {
+  Expects(length > 0);
+
   static_assert(numRegions > 0);
-  assert(length > 0);
   const uint32_t regionSize = length / numRegions;
 
   std::array<size_t, numRegions> regionBorders{};

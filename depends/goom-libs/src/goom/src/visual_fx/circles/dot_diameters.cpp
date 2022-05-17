@@ -1,7 +1,6 @@
 #include "dot_diameters.h"
 
-#undef NDEBUG
-#include <cassert>
+#include "goom_config.h"
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {
@@ -16,7 +15,7 @@ DotDiameters::DotDiameters(const UTILS::MATH::IGoomRand& goomRand,
     m_maxDotDiameter{maxDotDiameter},
     m_dotDiameters{GetInitialDotDiameters(m_numDots, m_maxDotDiameter)}
 {
-  assert(m_minDotDiameter <= m_maxDotDiameter);
+  Expects(m_minDotDiameter <= m_maxDotDiameter);
   ChangeDotDiameters();
 }
 

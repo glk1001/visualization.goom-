@@ -1,12 +1,11 @@
 #pragma once
 
 #include "filter_buffers.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "utils/name_value_pairs.h"
 #include "utils/timer.h"
 
-//#undef NDEBUG
-#include <cassert>
 #include <string>
 
 namespace GOOM::VISUAL_FX::FILTERS
@@ -100,9 +99,11 @@ inline auto FilterColorsService::GetBlockyMixedColor(
 {
   // Changing the color order gives a strange blocky, wavy look.
   // The order col4, col3, col2, col1 gave a black tear - not so good.
+
+  Expects(ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS == coeffs.val.size());
   static constexpr size_t ALLOWED_NUM_NEIGHBORS = 4;
   static_assert(ALLOWED_NUM_NEIGHBORS == ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS);
-  assert(ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS == coeffs.val.size());
+
   const NeighborhoodPixelArray reorderedColors{colors[0], colors[2], colors[1], colors[3]};
   return GetMixedColor(coeffs, reorderedColors);
 }

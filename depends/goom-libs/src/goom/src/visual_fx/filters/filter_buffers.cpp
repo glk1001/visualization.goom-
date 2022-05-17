@@ -3,6 +3,7 @@
 //#undef NO_LOGGING
 
 #include "goom/logging.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
@@ -10,8 +11,6 @@
 #include "utils/parallel_utils.h"
 
 #include <array>
-#undef NDEBUG
-#include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -42,10 +41,10 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
         std::make_unique<TransformBuffers>(m_screenWidth, m_screenHeight, m_maxTranPoint)},
     m_firedec(m_screenHeight)
 {
-  assert(DIM_FILTER_COEFFS == static_cast<int32_t>(std::lround(
-                                  std::pow(2, CoordTransforms::DIM_FILTER_COEFFS_DIV_SHIFT))));
-  assert(CoordTransforms::MAX_TRAN_LERP_VALUE ==
-         static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS))) - 1);
+  Expects(DIM_FILTER_COEFFS == static_cast<int32_t>(std::lround(
+                                   std::pow(2, CoordTransforms::DIM_FILTER_COEFFS_DIV_SHIFT))));
+  Expects(CoordTransforms::MAX_TRAN_LERP_VALUE ==
+          static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS))) - 1);
 }
 
 void ZoomFilterBuffers::Start() noexcept
@@ -152,7 +151,7 @@ inline void ZoomFilterBuffers::FillTempTranBuffers() noexcept
  */
 void ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStripeHeight) noexcept
 {
-  assert(m_tranBuffersState == TranBuffersState::TRAN_BUFFERS_READY);
+  Expects(m_tranBuffersState == TranBuffersState::TRAN_BUFFERS_READY);
 
   const auto doStripeLine = [this](const size_t y)
   {
@@ -426,7 +425,7 @@ auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(
 
   LogInfo("{:2}, {:2}:  {:3}, {:3}, {:3}, {:3} - sum: {:3}", coeffH, coeffV, coeffs[0], coeffs[1],
           coeffs[2], coeffs[3], std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
-  assert(channel_limits<uint32_t>::max() == std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
+  Ensures(channel_limits<uint32_t>::max() == std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
 
   return {coeffs, allZero};
 }

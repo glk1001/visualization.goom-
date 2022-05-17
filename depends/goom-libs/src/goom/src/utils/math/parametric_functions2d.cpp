@@ -1,9 +1,9 @@
 #include "parametric_functions2d.h"
 
+#include "goom_config.h"
 #include "misc.h"
 #include "point2d.h"
 
-#include <cassert>
 #include <cmath>
 
 namespace GOOM::UTILS::MATH
@@ -69,10 +69,10 @@ HypotrochoidFunction::HypotrochoidFunction(const Vec2dFlt& centrePos,
     m_rDiff{m_params.bigR - m_params.smallR},
     m_numCusps{GetNumCusps(m_params.bigR, m_params.smallR)}
 {
-  assert(m_params.bigR > 0.0F);
-  assert(m_params.smallR > 0.0F);
-  assert(m_params.amplitude > 0.0F);
-  assert(m_angleParams.startAngleInRadians <= m_angleParams.endAngleInRadians);
+  Expects(params.bigR > 0.0F);
+  Expects(params.smallR > 0.0F);
+  Expects(params.amplitude > 0.0F);
+  Expects(angleParams.startAngleInRadians <= angleParams.endAngleInRadians);
 }
 
 auto HypotrochoidFunction::GetNumCusps(const float bigR, const float smallR) noexcept -> float
@@ -106,10 +106,10 @@ EpicycloidFunction::EpicycloidFunction(const Vec2dFlt& centrePos,
     m_params{params},
     m_numCusps{GetNumCusps(m_params.k)}
 {
-  assert(m_params.k > 0.0F);
-  assert(m_params.smallR > 0.0F);
-  assert(m_params.amplitude > 0.0F);
-  assert(m_angleParams.startAngleInRadians <= m_angleParams.endAngleInRadians);
+  Expects(params.k > 0.0F);
+  Expects(params.smallR > 0.0F);
+  Expects(params.amplitude > 0.0F);
+  Expects(angleParams.startAngleInRadians <= angleParams.endAngleInRadians);
 }
 
 auto EpicycloidFunction::GetNumCusps([[maybe_unused]] const float k) noexcept -> float

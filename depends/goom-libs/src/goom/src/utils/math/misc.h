@@ -1,8 +1,8 @@
 #pragma once
 
+#include "goom_config.h"
 #include "math20.h"
 
-#include <cassert>
 #include <cmath>
 #include <cstdint>
 
@@ -120,7 +120,7 @@ public:
   constexpr Fraction(T numerator, T denominator) noexcept
     : m_numerator{numerator}, m_denominator{denominator}
   {
-    assert(m_denominator != 0);
+    Expects(denominator != 0);
   }
 
 private:

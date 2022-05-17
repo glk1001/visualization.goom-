@@ -1,6 +1,7 @@
 #include "color_adjustment.h"
 
 #include "colorutils.h"
+#include "goom_config.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -20,6 +21,8 @@ using UTILS::MATH::FloatsEqual;
 
 auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) const -> Pixel
 {
+  Expects(brightness >= 0.0F);
+
   if (brightness < m_ignoreThreshold)
   {
     return GetBrighterColor(brightness, color);
@@ -45,6 +48,8 @@ auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) 
 
 auto ColorAdjustment::GetAlteredChroma(const float lchYFactor, const Pixel& color) -> Pixel
 {
+  Expects(lchYFactor > 0.0F);
+
   if (FloatsEqual(1.0F, lchYFactor))
   {
     return color;

@@ -8,11 +8,10 @@
 #include "colorutils.h"
 #include "goom/goom_graphic.h"
 #include "goom/logging.h"
+#include "goom_config.h"
 #include "utils/enumutils.h"
 
 #include <algorithm>
-#undef NDEBUG
-#include <cassert>
 #include <format>
 #include <vector>
 #ifdef _MSC_VER
@@ -406,8 +405,8 @@ auto ColorMaps::ColorMapsImpl::MakeColorGroupNames() -> ColorGroupNamesArray
   at(groups, ColorMapGroup::COLD) = &COLOR_DATA::COLD_MAPS;
   at(groups, ColorMapGroup::PASTEL) = &COLOR_DATA::PASTEL_MAPS;
 
-  assert(std::all_of(groups.cbegin(), groups.cend(),
-                     [](const auto& group) { return group != nullptr; }));
+  Ensures(std::all_of(groups.cbegin(), groups.cend(),
+                      [](const auto& group) { return group != nullptr; }));
 
   return groups;
 }

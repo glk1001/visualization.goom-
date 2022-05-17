@@ -1,6 +1,7 @@
 #include "thread_pool.h"
 
-#include <cassert>
+#include "goom_config.h"
+
 #include <functional>
 #include <thread>
 #include <utility>
@@ -10,7 +11,8 @@ namespace GOOM::UTILS
 
 ThreadPool::ThreadPool(const size_t numWorkers) noexcept : m_numWorkers(numWorkers)
 {
-  assert(m_numWorkers > 0);
+  Expects(numWorkers > 0);
+
   m_workers.reserve(m_numWorkers);
   for (size_t i = 0; i < m_numWorkers; ++i)
   {

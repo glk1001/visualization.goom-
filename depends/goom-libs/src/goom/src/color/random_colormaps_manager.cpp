@@ -6,7 +6,6 @@
 #include "goom_config.h"
 #include "logging.h"
 
-#include <cassert>
 #include <cstdint>
 #include <memory>
 

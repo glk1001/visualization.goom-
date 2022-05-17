@@ -6,6 +6,11 @@
 
 #define UNUSED_FOR_NDEBUG(x) ((void)(x))
 
+#include <cassert>
+#define Expects(cond) assert(cond)
+#define Ensures(cond) assert(cond)
+#define FailFast() assert(false)
+
 namespace GOOM
 {
 

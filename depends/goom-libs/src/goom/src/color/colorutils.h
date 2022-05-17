@@ -1,9 +1,9 @@
 #pragma once
 
 #include "goom/goom_graphic.h"
+#include "goom_config.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <cstdint>
 
@@ -61,7 +61,7 @@ enum class SimpleColors
 template<typename T>
 inline auto GetColorAverage(const size_t num, const T& colors) -> Pixel
 {
-  assert(num > 0);
+  Expects(num > 0);
 
   uint32_t newR = 0;
   uint32_t newG = 0;
@@ -156,7 +156,7 @@ inline auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
   static constexpr float MAX_BRIGHTNESS = 50.0F;
-  assert(brightness >= 0.0F && brightness <= MAX_BRIGHTNESS);
+  Expects((brightness >= 0.0F) && (brightness <= MAX_BRIGHTNESS));
   UNUSED_FOR_NDEBUG(MAX_BRIGHTNESS);
 
   const auto intBrightness = static_cast<uint32_t>(std::round((brightness * 256.0F) + 0.0001F));

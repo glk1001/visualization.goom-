@@ -3,7 +3,6 @@
 #include "goom_config.h"
 
 #include <array>
-#include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <format>
@@ -420,8 +419,8 @@ inline auto PixelBuffer::GetRowIter(const size_t y) const noexcept
 inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const noexcept
     -> std::array<Pixel, NUM_NBRS>
 {
-  assert(x < m_xMax);
-  assert(y < m_yMax);
+  Expects(x < m_xMax);
+  Expects(y < m_yMax);
 
   const size_t xPos = (y * m_width) + x;
 

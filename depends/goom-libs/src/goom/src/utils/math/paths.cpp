@@ -5,7 +5,6 @@
 #include "utils/t_values.h"
 
 #include <algorithm>
-#include <cassert>
 #include <memory>
 
 namespace GOOM::UTILS::MATH
@@ -27,7 +26,7 @@ LerpedPath::LerpedPath(const std::shared_ptr<IPath> path1,
 
 auto LerpedPath::GetClone() const noexcept -> std::unique_ptr<IPath>
 {
-  assert(false);
+  FailFast();
   return std::unique_ptr<LerpedPath>{};
 }
 
@@ -36,8 +35,9 @@ JoinedPaths::JoinedPaths(std::unique_ptr<TValue> positionT,
                          std::vector<std::unique_ptr<IPath>>&& subPaths) noexcept
   : m_positionT{std::move(positionT)}, m_pathTStarts{pathTStarts}, m_subPaths{std::move(subPaths)}
 {
-  assert(not m_pathTStarts.empty());
-  assert(m_pathTStarts.size() == m_subPaths.size());
+  Expects(not pathTStarts.empty());
+  Expects(pathTStarts.size() == subPaths.size());
+
   assert(SegmentPathTsAreAscending());
   assert(SegmentPathTsAreValid());
 
@@ -85,7 +85,7 @@ auto JoinedPaths::AdjustSegmentStepSizes() noexcept -> void
 
 auto JoinedPaths::GetClone() const noexcept -> std::unique_ptr<IPath>
 {
-  assert(false);
+  FailFast();
   return std::unique_ptr<JoinedPaths>{};
 }
 

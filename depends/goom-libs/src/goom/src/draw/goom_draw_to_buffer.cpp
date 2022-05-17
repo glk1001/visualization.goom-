@@ -1,9 +1,8 @@
 #include "goom_draw_to_buffer.h"
 
+#include "goom_config.h"
 #include "goom_graphic.h"
 
-#undef NDEBUG
-#include <cassert>
 #include <cstdint>
 #include <vector>
 
@@ -17,8 +16,8 @@ GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t sc
 
 auto GoomDrawToBuffer::GetPixel(const Point2dInt point) const -> Pixel
 {
-  assert(!m_multipleBuffers.empty());
-  assert(m_multipleBuffers[0] != nullptr);
+  Expects(not m_multipleBuffers.empty());
+  Expects(m_multipleBuffers[0] != nullptr);
   return (*m_multipleBuffers[0])(static_cast<size_t>(point.x), static_cast<size_t>(point.y));
 }
 

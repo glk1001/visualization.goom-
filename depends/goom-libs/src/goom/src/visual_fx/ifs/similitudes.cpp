@@ -2,12 +2,10 @@
 
 #include "color/colormaps.h"
 #include "color/random_colormaps.h"
+#include "goom_config.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
-
-#undef NDEBUG
-#include <cassert>
 
 namespace GOOM::VISUAL_FX::IFS
 {
