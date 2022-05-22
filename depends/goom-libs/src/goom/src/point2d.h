@@ -35,6 +35,9 @@ struct Point2dInt
     -> Point2dInt;
 [[nodiscard]] auto lerp(const Point2dInt& point1, const Point2dInt& point2, float t) noexcept
     -> Point2dInt;
+[[nodiscard]] constexpr auto midpoint(const Point2dInt& point1, const Point2dInt& point2) noexcept
+    -> Point2dInt;
+[[nodiscard]] constexpr auto MidpointFromOrigin(const Point2dInt& point) noexcept -> Point2dInt;
 [[nodiscard]] auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t;
 
 struct Vec2dInt
@@ -320,6 +323,16 @@ constexpr auto lerp(const Point2dFlt& point1, const Point2dFlt& point2, const fl
       STD20::lerp(point1.x, point2.x, t),
       STD20::lerp(point1.y, point2.y, t),
   };
+}
+
+constexpr auto midpoint(const Point2dInt& point1, const Point2dInt& point2) noexcept -> Point2dInt
+{
+  return {STD20::midpoint(point1.x, point2.x), STD20::midpoint(point1.y, point2.y)};
+}
+
+constexpr auto MidpointFromOrigin(const Point2dInt& point) noexcept -> Point2dInt
+{
+  return {STD20::midpoint(0, point.x), STD20::midpoint(0, point.y)};
 }
 
 inline auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t
