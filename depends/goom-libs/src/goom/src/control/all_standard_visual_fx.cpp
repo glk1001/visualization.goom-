@@ -4,6 +4,7 @@
 #include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/parallel_utils.h"
+#include "utils/stopwatch.h"
 #include "visual_fx/circles_fx.h"
 #include "visual_fx/flying_stars_fx.h"
 #include "visual_fx/fx_helper.h"
@@ -23,6 +24,7 @@ namespace GOOM::CONTROL
 
 using CONTROL::GoomDrawables;
 using UTILS::Parallel;
+using UTILS::Stopwatch;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::CirclesFx;
 using VISUAL_FX::FlyingStarsFx;
@@ -157,6 +159,11 @@ void AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawabl
         oldGoomDrawables.find(GoomDrawables::IFS) != oldGoomDrawables.end();
     m_drawablesMap.at(currentlyDrawable)->PostStateUpdate(wasActiveInPreviousState);
   }
+}
+
+auto AllStandardVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) -> void
+{
+  m_shaderFx->ApplyEndEffect(timeValues);
 }
 
 void AllStandardVisualFx::ApplyDotsIfRequired()

@@ -3,6 +3,7 @@
 #include "goom_graphic.h"
 #include "goom_states.h"
 #include "point2d.h"
+#include "utils/stopwatch.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
@@ -73,6 +74,7 @@ public:
 
   void ApplyCurrentStateToSingleBuffer();
   void ApplyCurrentStateToMultipleBuffers();
+  auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
 
   void ChangeShaderEffects();
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;

@@ -76,14 +76,12 @@ protected:
   [[nodiscard]] auto TexWidth() const -> uint32_t { return m_textureWidth; };
   [[nodiscard]] auto TexHeight() const -> uint32_t { return m_textureHeight; };
   [[nodiscard]] auto GoomBufferLen() const -> size_t { return m_goomBufferLen; };
-  [[nodiscard]] auto CurrentSongName() const -> const std::string& { return m_currentSongName; };
   [[nodiscard]] auto NumChannels() const -> size_t { return m_numChannels; };
   virtual void NoActiveBufferAvailable() {}
   virtual void AudioDataQueueTooBig() {}
   virtual void SkippedAudioData() {}
   virtual void AudioDataIncorrectReadLength() {}
-  virtual void UpdateGoomBuffer(const std::string& title,
-                                const std::vector<float>& floatAudioData,
+  virtual void UpdateGoomBuffer(const std::vector<float>& floatAudioData,
                                 PixelBufferData& pixelBufferData);
 
 private:
@@ -102,11 +100,7 @@ private:
   uint32_t m_audioBufferNum = 0;
   static constexpr uint32_t MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6;
 
-  std::string m_currentSongName{};
-  std::string m_lastSongName{};
   const GOOM::GoomControl::ShowTitleType m_showTitle;
-  bool m_titleChange = false;
-  [[nodiscard]] auto GetTitle() -> std::string;
 
   const GLint m_componentsPerVertex = 2;
 #ifdef HAS_GL
@@ -159,7 +153,6 @@ private:
   std::condition_variable m_wait{};
 
   void SetNumChannels(int numChannels);
-  void SetSongTitle(const std::string& songTitle);
   static void StartLogging() ;
   [[nodiscard]] auto InitGoomController() -> bool;
   void DeinitGoomController();

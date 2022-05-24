@@ -1,11 +1,14 @@
 #include "shader_fx.h"
 
+//#undef NO_LOGGING
+
 #include "color/colorutils.h"
 #include "fx_helper.h"
-//#undef NO_LOGGING
 #include "goom/spimpl.h"
 #include "logging.h"
 #include "shaders/high_contrast.h"
+#include "utils/math/misc.h"
+#include "utils/stopwatch.h"
 
 #include <memory>
 
@@ -14,6 +17,9 @@ namespace GOOM::VISUAL_FX
 
 using SHADERS::HighContrast;
 using UTILS::Logging;
+using UTILS::Stopwatch;
+using UTILS::MATH::SMALL_FLOAT;
+using UTILS::MATH::Sq;
 
 class ShaderFx::ShaderFxImpl
 {
@@ -23,6 +29,7 @@ public:
   void Start();
   void ChangeEffects();
   void ApplyMultiple();
+  auto ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void;
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
 private:
@@ -30,6 +37,8 @@ private:
                                         HighContrast::DEFAULT_CONTRAST};
 
   HighContrast m_highContrast;
+
+  auto FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void;
 };
 
 ShaderFx::ShaderFx(const FxHelper& fxHelper) noexcept
@@ -60,6 +69,11 @@ void ShaderFx::ChangeEffects()
 void ShaderFx::ApplyMultiple()
 {
   m_fxImpl->ApplyMultiple();
+}
+
+auto ShaderFx::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void
+{
+  m_fxImpl->ApplyEndEffect(timeValues);
 }
 
 auto ShaderFx::GetLastShaderEffects() const -> const GoomShaderEffects&
@@ -93,9 +107,31 @@ inline void ShaderFx::ShaderFxImpl::ApplyMultiple()
   m_goomShaderEffects.brightness = m_highContrast.GetCurrentBrightness();
 }
 
+inline auto ShaderFx::ShaderFxImpl::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void
+{
+  FadeToBlack(timeValues);
+}
+
 inline auto ShaderFx::ShaderFxImpl::GetLastShaderEffects() const -> const GoomShaderEffects&
 {
   return m_goomShaderEffects;
+}
+
+inline auto ShaderFx::ShaderFxImpl::FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void
+{
+  static constexpr float TIME_REMAINING_CUTOFF_IN_MS = 20000.0F;
+
+  if (timeValues.timeRemainingInMs > TIME_REMAINING_CUTOFF_IN_MS)
+  {
+    return;
+  }
+
+  static constexpr float BRING_FINAL_BLACK_FORWARD_MS = 1000.0F;
+  const float timeLeftAsFraction =
+      std::max(0.0F, timeValues.timeRemainingInMs - BRING_FINAL_BLACK_FORWARD_MS) /
+      TIME_REMAINING_CUTOFF_IN_MS;
+
+  m_goomShaderEffects.brightness = Sq(timeLeftAsFraction);
 }
 
 } // namespace GOOM::VISUAL_FX

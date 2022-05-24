@@ -54,6 +54,7 @@ add_library(goom
         src/sound_info.cpp
         src/utils/adaptive_exposure.cpp
         src/utils/build_time.cpp
+        src/utils/date_utils.cpp
         src/utils/graphics/bezier_drawer.cpp
         src/utils/graphics/image_bitmaps.cpp
         src/utils/graphics/small_image_bitmaps.cpp
@@ -69,6 +70,7 @@ add_library(goom
         src/utils/math/transform2d.h
         src/utils/name_value_pairs.h
         src/utils/step_speed.h
+        src/utils/stopwatch.h
         src/utils/strutils.cpp
         src/utils/t_values.cpp
         src/utils/text/drawable_text.cpp
@@ -142,7 +144,7 @@ add_library(goom
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
         src/visual_fx/zoom_filter_fx.cpp
-        )
+        src/utils/date_utils.cpp)
 
 target_include_directories(goom
     PUBLIC

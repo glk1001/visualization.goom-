@@ -32,22 +32,24 @@ public:
   auto Start() -> void;
   auto Finish() -> void;
 
+  struct SongInfo
+  {
+    std::string title{};
+    std::string genre{};
+    uint32_t duration{};
+  };
+  auto SetSongInfo(const SongInfo& songInfo) -> void;
+
   auto SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
   auto NoZooms(bool value) -> void;
   auto ShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
   /*
-   * Update the next goom frame
+   * Update the next goom buffer.
    *
-   * songTitle:
-   *      - empty if it is not the start of the song
-   *      - only have a value at the start of the song
    */
-  auto Update(const AudioSamples& audioSamples,
-              float fps,
-              const std::string& songTitle,
-              const std::string& message) -> void;
+  auto Update(const AudioSamples& audioSamples, const std::string& message = "") -> void;
 
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 

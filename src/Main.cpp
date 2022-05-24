@@ -152,7 +152,7 @@ auto CVisualizationGoom::StartWithCatch(const int numChannels,
 inline auto CVisualizationGoom::StartVis(const int numChannels,
                                          [[maybe_unused]] const int samplesPerSec,
                                          [[maybe_unused]] const int bitsPerSample,
-                                         const std::string songName) -> bool
+                                         [[maybe_unused]] const std::string songName) -> bool
 {
   StartLogging();
 
@@ -163,7 +163,6 @@ inline auto CVisualizationGoom::StartVis(const int numChannels,
 #endif
 
   SetNumChannels(numChannels);
-  SetSongTitle(songName);
   StartActiveQueue();
 
   if (!InitGl())
@@ -188,13 +187,6 @@ void CVisualizationGoom::SetNumChannels(const int numChannels)
   m_numChannels = static_cast<size_t>(numChannels);
   m_audioBufferLen = m_numChannels * AudioSamples::AUDIO_SAMPLE_LEN;
   m_audioBufferNum = 0;
-}
-
-void CVisualizationGoom::SetSongTitle(const std::string& songTitle)
-{
-  LogInfo("CVisualizationGoom: Visualization starting - song title = \"{}\".", songTitle);
-  m_currentSongName = songTitle;
-  m_titleChange = true;
 }
 
 void CVisualizationGoom::StartLogging()
@@ -328,6 +320,27 @@ void CVisualizationGoom::DeinitGoomController()
   LogInfo("CVisualizationGoom: Uninitialized goom controller.");
 }
 
+auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& track) -> bool
+{
+  if (!m_goomControl)
+  {
+    return true;
+  }
+
+  const std::string artist =
+      !track.GetArtist().empty() ? track.GetArtist() : track.GetAlbumArtist();
+  const std::string currentSongName =
+      artist.empty() ? track.GetTitle() : artist + " - " + track.GetTitle();
+
+  LogInfo("Current Song Title = '{}'", currentSongName);
+  LogInfo("Genre = '{}', Duration = {}", track.GetGenre(), track.GetDuration());
+
+  m_goomControl->SetSongInfo(
+      {currentSongName, track.GetGenre(), static_cast<uint32_t>(track.GetDuration())});
+
+  return true;
+}
+
 void CVisualizationGoom::StartGoomProcessBuffersThread()
 {
 
@@ -383,38 +396,6 @@ void CVisualizationGoom::AudioData(const float* const audioData, size_t audioDat
 
   m_audioBuffer.Write(audioData, static_cast<size_t>(audioDataLength));
   m_wait.notify_one();
-}
-
-auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& track) -> bool
-{
-  if (!m_goomControl)
-  {
-    return true;
-  }
-
-  m_lastSongName = m_currentSongName;
-
-  std::string artist = track.GetArtist();
-  if (artist.empty())
-  {
-    artist = track.GetAlbumArtist();
-  }
-
-  if (!artist.empty())
-  {
-    m_currentSongName = artist + " - " + track.GetTitle();
-  }
-  else
-  {
-    m_currentSongName = track.GetTitle();
-  }
-
-  if (m_lastSongName != m_currentSongName)
-  {
-    m_titleChange = true;
-  }
-
-  return true;
 }
 
 inline auto CVisualizationGoom::GetNextActivePixelBufferData() -> PixelBufferData
@@ -521,7 +502,7 @@ inline void CVisualizationGoom::ProcessVis()
     }
     lk.unlock();
 
-    UpdateGoomBuffer(GetTitle(), floatAudioData, pixelBufferData);
+    UpdateGoomBuffer(floatAudioData, pixelBufferData);
 
     lk.lock();
     m_activeQueue.push(pixelBufferData);
@@ -529,23 +510,12 @@ inline void CVisualizationGoom::ProcessVis()
   }
 }
 
-inline auto CVisualizationGoom::GetTitle() -> std::string
-{
-  if (!m_titleChange)
-  {
-    return "";
-  }
-  m_titleChange = false;
-  return m_currentSongName;
-}
-
-inline void CVisualizationGoom::UpdateGoomBuffer(const std::string& title,
-                                                 const std::vector<float>& floatAudioData,
+inline void CVisualizationGoom::UpdateGoomBuffer(const std::vector<float>& floatAudioData,
                                                  PixelBufferData& pixelBufferData)
 {
   const GOOM::AudioSamples audioData{m_numChannels, floatAudioData};
   m_goomControl->SetScreenBuffer(pixelBufferData.pixelBuffer);
-  m_goomControl->Update(audioData, 0.0F, title, "");
+  m_goomControl->Update(audioData);
   pixelBufferData.goomShaderEffects = m_goomControl->GetLastShaderEffects();
 }
 
@@ -892,7 +862,7 @@ inline void CVisualizationGoom::SetGlShaderValues(
   {
     glUniform1f(m_uTexExposureLoc, goomShaderEffects.exposure);
   }
-  if (goomShaderEffects.brightness > 0.0F)
+  if (goomShaderEffects.brightness >= 0.0F)
   {
     glUniform1f(m_uTexBrightnessLoc, goomShaderEffects.brightness);
   }

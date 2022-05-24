@@ -2,6 +2,7 @@
 
 #include "goom/spimpl.h"
 #include "goom_visual_fx.h"
+#include "utils/stopwatch.h"
 
 #include <memory>
 
@@ -25,6 +26,8 @@ public:
   void ChangeEffects();
 
   void ApplyMultiple();
+
+  auto ApplyEndEffect(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
 
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 

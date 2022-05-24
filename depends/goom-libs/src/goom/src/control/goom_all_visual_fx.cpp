@@ -11,6 +11,7 @@
 #include "logging.h"
 #include "sound_info.h"
 #include "utils/name_value_pairs.h"
+#include "utils/stopwatch.h"
 #include "visual_fx/filters/filter_buffers_service.h"
 #include "visual_fx/filters/filter_colors_service.h"
 #include "visual_fx/fx_helper.h"
@@ -29,6 +30,7 @@ using DRAW::IGoomDraw;
 using UTILS::Logging;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
+using UTILS::Stopwatch;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelper;
 using VISUAL_FX::LinesFx;
@@ -276,6 +278,11 @@ void GoomAllVisualFx::ApplyCurrentStateToSingleBuffer()
 void GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers()
 {
   m_allStandardVisualFx->ApplyCurrentStateToMultipleBuffers();
+}
+
+auto GoomAllVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) -> void
+{
+  m_allStandardVisualFx->ApplyEndEffectIfNearEnd(timeValues);
 }
 
 void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)

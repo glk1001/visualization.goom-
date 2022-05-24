@@ -2,6 +2,7 @@
 
 #include "goom_all_visual_fx.h"
 #include "goom_music_settings_reactor.h"
+#include "utils/stopwatch.h"
 #include "visual_fx/filters/filter_settings_service.h"
 
 #include <chrono>
@@ -25,13 +26,14 @@ public:
   auto operator=(const GoomStateDump&) -> GoomStateDump& = delete;
   auto operator=(GoomStateDump&&) -> GoomStateDump& = delete;
 
-  void SetSongTitle(const std::string& songTitle);
-  void SetGoomSeed(uint64_t goomSeed);
+  auto SetSongTitle(const std::string& songTitle) noexcept -> void;
+  auto SetGoomSeed(uint64_t goomSeed) noexcept -> void;
+  auto SetStopWatch(const UTILS::Stopwatch& stopwatch) noexcept -> void;
 
-  void Start();
+  auto Start() noexcept -> void;
 
-  void AddCurrentState();
-  void DumpData(const std::string& directory);
+  auto AddCurrentState() noexcept -> void;
+  auto DumpData(const std::string& directory) -> void;
 
 private:
   static constexpr uint32_t MIN_TIMELINE_ELEMENTS_TO_DUMP = 10;
@@ -50,22 +52,29 @@ private:
   std::string m_songTitle{};
   std::string m_dateTime{};
   uint64_t m_goomSeed{};
+  const UTILS::Stopwatch* m_stopwatch{};
 
   std::string m_datedDirectory{};
-  void SetCurrentDatedDirectory(const std::string& parentDirectory);
-  void DumpSummary() const;
+  auto SetCurrentDatedDirectory(const std::string& parentDirectory) -> void;
+  auto DumpSummary() const noexcept -> void;
   template<typename T>
-  void DumpDataArray(const std::string& filename, const std::vector<T>& dataArray) const;
+  auto DumpDataArray(const std::string& filename, const std::vector<T>& dataArray) const noexcept
+      -> void;
 };
 
-inline void GoomStateDump::SetSongTitle(const std::string& songTitle)
+inline auto GoomStateDump::SetSongTitle(const std::string& songTitle) noexcept -> void
 {
   m_songTitle = songTitle;
 }
 
-inline void GoomStateDump::SetGoomSeed(uint64_t goomSeed)
+inline auto GoomStateDump::SetGoomSeed(const uint64_t goomSeed) noexcept -> void
 {
   m_goomSeed = goomSeed;
+}
+
+inline auto GoomStateDump::SetStopWatch(const UTILS::Stopwatch& stopwatch) noexcept -> void
+{
+  m_stopwatch = &stopwatch;
 }
 
 } // namespace GOOM::CONTROL

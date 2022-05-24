@@ -6,6 +6,7 @@
 #include "goom_states.h"
 #include "utils/adaptive_exposure.h"
 #include "utils/math/misc.h"
+#include "utils/stopwatch.h"
 #include "visual_fx/filters/filter_buffer_color_info.h"
 #include "visual_fx/filters/filter_settings.h"
 #include "visual_fx/lines_fx.h"
@@ -91,6 +92,7 @@ public:
 
   void ApplyCurrentStateToSingleBuffer();
   void ApplyCurrentStateToMultipleBuffers();
+  auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
 
   void UpdateFilterSettings(const VISUAL_FX::FILTERS::ZoomFilterSettings& filterSettings,
                             bool updateFilterEffects);

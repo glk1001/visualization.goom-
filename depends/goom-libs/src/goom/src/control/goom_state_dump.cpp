@@ -6,16 +6,17 @@
 #include "goom_all_visual_fx.h"
 #include "goom_graphic.h"
 #include "goom_music_settings_reactor.h"
+#include "utils/date_utils.h"
 #include "visual_fx/filters/filter_settings_service.h"
 
 #include <filesystem>
 #include <fstream>
 #include <string>
-#include <time.h>
 
 namespace GOOM::CONTROL
 {
 
+using UTILS::GetCurrentDateTimeAsString;
 using UTILS::Logging;
 using VISUAL_FX::FILTERS::FilterSettingsService;
 using VISUAL_FX::FILTERS::HypercosOverlay;
@@ -116,14 +117,14 @@ GoomStateDump::GoomStateDump(const PluginInfo& goomInfo,
 
 GoomStateDump::~GoomStateDump() noexcept = default;
 
-void GoomStateDump::Start()
+auto GoomStateDump::Start() noexcept -> void
 {
   m_cumulativeState->Reset();
 
   m_prevTimeHiRes = std::chrono::high_resolution_clock::now();
 }
 
-void GoomStateDump::AddCurrentState()
+auto GoomStateDump::AddCurrentState() noexcept -> void
 {
   const auto timeNow = std::chrono::high_resolution_clock::now();
   const Ms diff = std::chrono::duration_cast<Ms>(timeNow - m_prevTimeHiRes);
@@ -159,26 +160,7 @@ void GoomStateDump::AddCurrentState()
   m_cumulativeState->IncrementUpdateNum();
 }
 
-[[nodiscard]] auto GetCurrentDateTimeAsStr() -> std::string
-{
-  const std::time_t t = std::time(nullptr);
-  struct tm buff;
-#ifdef _MSC_VER
-  localtime_s(&buff, &t);
-  if (char str[100]; std::strftime(str, sizeof(str), "%Y-%m-%d_%H-%M-%S", &buff))
-  {
-    return std::string{str};
-  }
-#else
-  if (char str[100]; std::strftime(str, sizeof(str), "%Y-%m-%d_%H-%M-%S", localtime_r(&t, &buff)))
-  {
-    return std::string{str};
-  }
-#endif
-  return "TIME_ERROR";
-}
-
-void GoomStateDump::DumpData(const std::string& directory)
+auto GoomStateDump::DumpData(const std::string& directory) -> void
 {
   if (m_cumulativeState->GetNumUpdates() < MIN_TIMELINE_ELEMENTS_TO_DUMP)
   {
@@ -187,7 +169,7 @@ void GoomStateDump::DumpData(const std::string& directory)
     return;
   }
 
-  m_dateTime = GetCurrentDateTimeAsStr();
+  m_dateTime = GetCurrentDateTimeAsString();
 
   SetCurrentDatedDirectory(directory);
 
@@ -214,22 +196,27 @@ void GoomStateDump::DumpData(const std::string& directory)
   DumpDataArray("goom_volumes", m_cumulativeState->GetGoomVolumes());
 }
 
-void GoomStateDump::DumpSummary() const
+auto GoomStateDump::DumpSummary() const noexcept -> void
 {
   static constexpr const char* SUMMARY_FILENAME = "summary.dat";
   std::ofstream out{};
   out.open(m_datedDirectory + "/" + SUMMARY_FILENAME, std::ofstream::out);
 
-  out << "Song:   " << m_songTitle << "\n";
-  out << "Date:   " << m_dateTime << "\n";
-  out << "Seed:   " << m_goomSeed << "\n";
-  out << "Width:  " << m_goomInfo.GetScreenInfo().width << "\n";
-  out << "Height: " << m_goomInfo.GetScreenInfo().height << "\n";
+  out << "Song:       " << m_songTitle << "\n";
+  out << "Date:       " << m_dateTime << "\n";
+  out << "Seed:       " << m_goomSeed << "\n";
+  out << "Width:      " << m_goomInfo.GetScreenInfo().width << "\n";
+  out << "Height:     " << m_goomInfo.GetScreenInfo().height << "\n";
+  out << "Start Time: " << m_stopwatch->GetStartTimeAsStr() << "\n";
+  out << "Stop Time:  " << m_stopwatch->GetLastMarkedTimeAsStr() << "\n";
+  out << "Act Dur:    " << m_stopwatch->GetActualDurationInMs() << "\n";
+  out << "Given Dur:  " << m_stopwatch->GetDurationInMs() << "\n";
+  out << "Time Left:  " << m_stopwatch->GetTimeValues().timeRemainingInMs << "\n";
 
   out.close();
 }
 
-void GoomStateDump::SetCurrentDatedDirectory(const std::string& parentDirectory)
+auto GoomStateDump::SetCurrentDatedDirectory(const std::string& parentDirectory) -> void
 {
   m_datedDirectory = parentDirectory + "/" + m_dateTime;
   LogInfo("Dumping state data to \"{}\"...", m_datedDirectory);
@@ -242,8 +229,8 @@ inline std::ostream& operator<<(std::ostream& out, const uint8_t value)
 }
 
 template<typename T>
-void GoomStateDump::DumpDataArray(const std::string& filename,
-                                  const std::vector<T>& dataArray) const
+auto GoomStateDump::DumpDataArray(const std::string& filename,
+                                  const std::vector<T>& dataArray) const noexcept -> void
 {
   const uint32_t dataLen = m_cumulativeState->GetNumUpdates();
   LogInfo("Dumping Goom state data ({} values) to \"{}\".", dataLen, filename);
