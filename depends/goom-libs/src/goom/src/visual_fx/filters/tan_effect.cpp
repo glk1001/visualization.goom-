@@ -60,7 +60,7 @@ void TanEffect::SetRandomParams()
                                : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
   const float limitingFactor = m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE);
 
-  LogInfo("tanType = {}, cotMix = {}", tanType, cotMix);
+  LogInfo("tanType = {}, cotMix = {}", EnumToString(tanType), cotMix);
   LogInfo("xAmplitude = {}, yAmplitude = {}", xAmplitude, yAmplitude);
   LogInfo("limitingFactor = {}", limitingFactor);
 

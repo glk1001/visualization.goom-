@@ -3,6 +3,7 @@
 #include "normalized_coords.h"
 #include "point2d.h"
 #include "speed_coefficients_effect.h"
+#include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
@@ -58,8 +59,8 @@ inline auto YOnly::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                         [[maybe_unused]] const float sqDistFromZero,
                                         const NormalizedCoords& coords) const -> Point2dFlt
 {
-  const float xSpeedCoeff = baseSpeedCoeffs.x * m_params.xAmplitude *
-                            GetYOnlySpeedMultiplier(m_params.xEffect, coords);
+  const float xSpeedCoeff =
+      baseSpeedCoeffs.x * m_params.xAmplitude * GetYOnlySpeedMultiplier(m_params.xEffect, coords);
   if (m_params.yEffect == YOnlyEffect::NONE)
   {
     return {xSpeedCoeff, xSpeedCoeff};
@@ -87,7 +88,8 @@ inline auto YOnly::GetYOnlySpeedMultiplier(const YOnlyEffect effect,
       return std::cos(m_params.xFreqFactor * coords.GetX()) *
              std::cos(m_params.yFreqFactor * coords.GetY());
     default:
-      throw std::logic_error(std20::format("Switch: unhandled case '{}'.", effect));
+      throw std::logic_error(
+          std20::format("Switch: unhandled case '{}'.", UTILS::EnumToString(effect)));
   }
 }
 

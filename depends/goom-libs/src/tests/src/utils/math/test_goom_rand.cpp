@@ -10,6 +10,7 @@
 namespace GOOM::UNIT_TESTS
 {
 
+using UTILS::EnumToString;
 using UTILS::NUM;
 using UTILS::MATH::ConditionalWeights;
 using UTILS::MATH::GoomRand;
@@ -124,10 +125,10 @@ TEST_CASE("Weighted Events")
       const auto fConditionalEventWeight = static_cast<double>(
           conditionalWeightedEvents.GetWeight(GIVEN_EVENT, static_cast<Events>(i)));
       const double conditionalEventFraction = fConditionalEventWeight / conditionalSumOfWeights;
-      UNSCOPED_INFO(std20::format("i:{}, fConditionalEventWeight({}) = {}", i, GIVEN_EVENT,
-                                  fConditionalEventWeight));
-      UNSCOPED_INFO(std20::format("i:{}, conditionalSumOfWeights({}) = {}", i, GIVEN_EVENT,
-                                  conditionalSumOfWeights));
+      UNSCOPED_INFO(std20::format("i:{}, fConditionalEventWeight({}) = {}", i,
+                                  EnumToString(GIVEN_EVENT), fConditionalEventWeight));
+      UNSCOPED_INFO(std20::format("i:{}, conditionalSumOfWeights({}) = {}", i,
+                                  EnumToString(GIVEN_EVENT), conditionalSumOfWeights));
       UNSCOPED_INFO(
           std20::format("i:{}, conditionalEventFraction = {}", i, conditionalEventFraction));
 
