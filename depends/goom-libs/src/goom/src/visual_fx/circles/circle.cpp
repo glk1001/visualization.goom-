@@ -6,6 +6,7 @@
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
 #include "draw/goom_draw.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "logging.h"
 #include "point2d.h"
@@ -39,7 +40,6 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
 using UTILS::MATH::ModIncrement;
 using UTILS::MATH::OscillatingFunction;
-using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::U_HALF;
 
 class Circle::DotDrawer
@@ -118,14 +118,13 @@ Circle::Circle(const FxHelper& fxHelper,
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
     m_helper{helper},
-    m_circleCentreTarget{circleParams.circleCentreTarget},
+    m_circleCentreFixedTarget{circleParams.circleCentreTarget},
     m_dotPaths{m_goomRand, NUM_DOTS,
                GetDotStartingPositions({static_cast<int32_t>(U_HALF * m_draw.GetScreenWidth()),
                                         static_cast<int32_t>(U_HALF * m_draw.GetScreenHeight())},
                                        circleParams.circleRadius),
                circleParams.circleCentreTarget, pathParams},
     m_dotDiameters{m_goomRand, NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter},
-    m_lastDrawnDots(NUM_DOTS),
     m_dotDrawer{std::make_unique<DotDrawer>(m_draw, m_goomRand, m_helper)},
     m_mainColorMaps{GetAllSlimMaps(m_goomRand)},
     m_lowColorMaps{m_mainColorMaps},
@@ -212,12 +211,14 @@ void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weighte
   m_showLine = m_goomRand.ProbabilityOf(PROB_SHOW_LINE);
 
   m_dotDiameters.ChangeDotDiameters();
+  static constexpr float PROB_ALTERNATE_MAIN_LOW_DOT_COLORS = 0.1F;
+  m_alternateMainLowDotColors = m_goomRand.ProbabilityOf(PROB_ALTERNATE_MAIN_LOW_DOT_COLORS);
   m_dotDrawer->SetWeightedColorMaps(*weightedMainMaps);
 }
 
-void Circle::SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint)
+void Circle::SetZoomMidpoint(const Point2dInt& zoomMidpoint, const float lerpTFromFixedTarget)
 {
-  // Don't need the zoom midpoint.
+  m_circleCentreTarget = lerp(m_circleCentreFixedTarget, zoomMidpoint, lerpTFromFixedTarget);
 }
 
 void Circle::SetPathParams(const OscillatingFunction::Params& pathParams)
@@ -291,18 +292,7 @@ inline void Circle::ResetCircleParams()
     return;
   }
 
-  m_dotPaths.SetTarget(GetRandomCircleCentreTargetPosition());
-}
-
-inline auto Circle::GetRandomCircleCentreTargetPosition() const -> Point2dInt
-{
-  static constexpr int32_t MARGIN = 50;
-  const Point2dInt randomPosition{
-      m_goomRand.GetRandInRange(MARGIN, static_cast<int32_t>(m_draw.GetScreenWidth() - MARGIN)),
-      m_goomRand.GetRandInRange(MARGIN, static_cast<int32_t>(m_draw.GetScreenHeight()) - MARGIN)};
-
-  static constexpr float TARGET_T = 0.1F;
-  return lerp(m_circleCentreTarget, randomPosition, TARGET_T);
+  m_dotPaths.SetTarget(m_circleCentreTarget);
 }
 
 void Circle::DrawNextCircleDots()
@@ -448,13 +438,28 @@ inline auto Circle::DrawLineDots(const Point2dInt& position1,
     const Pixel lowColor =
         GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
 
-    m_dotDrawer->DrawDot(dotPos, m_helper.lineDotDiameter, mainColor, lowColor);
+    DrawDot(i, dotPos, mainColor, lowColor);
 
     tDotPos += T_DOT_POS_STEP;
     tDotColor += T_DOT_COLOR_STEP;
   }
 
   return tDotColor;
+}
+
+inline void Circle::DrawDot(const uint32_t dotNum,
+                            const Point2dInt& pos,
+                            const Pixel& mainColor,
+                            const Pixel& lowColor)
+{
+  if (m_alternateMainLowDotColors and UTILS::MATH::IsEven(dotNum))
+  {
+    m_dotDrawer->DrawDot(pos, m_helper.lineDotDiameter, lowColor, mainColor);
+  }
+  else
+  {
+    m_dotDrawer->DrawDot(pos, m_helper.lineDotDiameter, mainColor, lowColor);
+  }
 }
 
 inline auto Circle::DrawConnectingLine(const Point2dInt& position1,
@@ -643,7 +648,8 @@ inline auto Circle::DotDrawer::GetDotMixedColor(const size_t x,
     case DecorationType::BRIGHT_LINES:
       return GetBrighterColor(SPECIAL_BRIGHTNESS, mixedColor);
     default:
-      throw std::logic_error("Unknown DecorationType.");
+      FailFast();
+      return BLACK_PIXEL;
   }
 }
 

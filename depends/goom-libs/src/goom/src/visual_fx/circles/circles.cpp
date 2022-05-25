@@ -69,8 +69,10 @@ void Circles::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weight
 
 void Circles::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
 {
+  const float lerpTFromFixedTarget = m_goomRand.GetRandInRange(0.0F, 0.4F);
   std::for_each(begin(m_circles), end(m_circles),
-                [&zoomMidpoint](Circle& circle) { circle.SetZoomMidpoint(zoomMidpoint); });
+                [&zoomMidpoint, &lerpTFromFixedTarget](Circle& circle)
+                { circle.SetZoomMidpoint(zoomMidpoint, lerpTFromFixedTarget); });
 }
 
 void Circles::Start()

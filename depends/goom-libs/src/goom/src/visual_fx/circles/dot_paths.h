@@ -46,7 +46,7 @@ private:
   Point2dInt m_target;
 
   static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
-  static constexpr uint32_t DELAY_TIME_AT_CENTRE = 20;
+  static constexpr uint32_t DELAY_TIME_AT_CENTRE = 0;
   static constexpr uint32_t DELAY_TIME_AT_EDGE = 10;
   UTILS::MATH::OscillatingFunction::Params m_pathParams;
 

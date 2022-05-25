@@ -55,7 +55,7 @@ public:
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMainMaps,
                             std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
-  void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
+  void SetZoomMidpoint(const Point2dInt& zoomMidpoint, float lerpTFromFixedTarget);
   void SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams);
 
   void Start();
@@ -67,11 +67,11 @@ private:
   DRAW::IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const UTILS::MATH::IGoomRand& m_goomRand;
-  Helper m_helper; // These could be const but some compilers
-  Point2dInt m_circleCentreTarget; // don't like the move constructor with 'const' members.
+  const Helper m_helper;
+  const Point2dInt m_circleCentreFixedTarget;
+  Point2dInt m_circleCentreTarget{m_circleCentreFixedTarget};
   DotPaths m_dotPaths;
   DotDiameters m_dotDiameters;
-  [[nodiscard]] auto GetRandomCircleCentreTargetPosition() const -> Point2dInt;
   [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, float radius)
       -> std::vector<Point2dInt>;
 
@@ -88,7 +88,7 @@ private:
 
   static constexpr uint32_t NUM_DOTS = 30;
   static_assert(UTILS::MATH::IsEven(NUM_DOTS));
-  std::vector<Point2dInt> m_lastDrawnDots;
+  std::vector<Point2dInt> m_lastDrawnDots{NUM_DOTS};
   uint32_t m_newNumSteps = 0;
 
   void DrawNextCircle();
@@ -101,6 +101,7 @@ private:
 
   class DotDrawer;
   std::unique_ptr<DotDrawer> m_dotDrawer;
+  bool m_alternateMainLowDotColors = false;
   bool m_showLine = false;
   static constexpr float T_LINE_COLOR_STEP = 1.0F / static_cast<float>(NUM_DOTS);
   auto DrawLine(const Point2dInt& position1,
@@ -111,6 +112,10 @@ private:
                                   const Point2dInt& position2,
                                   float lineBrightness,
                                   float tLineColor) -> float;
+  auto DrawDot(uint32_t dotNum,
+               const Point2dInt& pos,
+               const Pixel& mainColor,
+               const Pixel& lowColor) -> void;
   auto DrawConnectingLine(const Point2dInt& position1,
                           const Point2dInt& position2,
                           float lineBrightness,

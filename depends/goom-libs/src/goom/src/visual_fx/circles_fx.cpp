@@ -9,7 +9,9 @@
 #include "utils/math/misc.h"
 #include "visual_fx/circles/circles.h"
 
+#include <array>
 #include <memory>
+#include <vector>
 
 namespace GOOM::VISUAL_FX
 {
@@ -39,6 +41,8 @@ private:
   static constexpr uint32_t NUM_CIRCLES = 5;
   [[nodiscard]] static auto GetCircleParams(const PluginInfo& goomInfo)
       -> std::vector<Circle::Params>;
+  [[nodiscard]] static auto GetCircleCentreTargets(const Point2dInt& screenMidPoint)
+      -> std::array<Point2dInt, NUM_CIRCLES>;
   CIRCLES::Circles m_circles;
 };
 
@@ -98,25 +102,38 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams(const PluginInfo& goomInfo)
   const float radius0 = maxRadius - RADIUS_MARGIN;
 
   circleParams[0].circleRadius = radius0;
-  circleParams[1].circleRadius = RADIUS_REDUCER * circleParams[0].circleRadius;
-  circleParams[2].circleRadius = RADIUS_REDUCER * circleParams[1].circleRadius;
-  circleParams[3].circleRadius = RADIUS_REDUCER * circleParams[2].circleRadius;
-  circleParams[4].circleRadius = RADIUS_REDUCER * circleParams[3].circleRadius;
+  for (size_t i = 1; i < NUM_CIRCLES; ++i)
+  {
+    circleParams[i].circleRadius = RADIUS_REDUCER * circleParams[i - 1].circleRadius;
+  }
 
-  static constexpr Fraction SMALL_FRAC{1U, 10U};
-  static constexpr Fraction LARGE_FRAC = 1U - SMALL_FRAC;
-  circleParams[0].circleCentreTarget = {U_HALF * goomInfo.GetScreenInfo().width,
-                                        U_HALF * goomInfo.GetScreenInfo().height};
-  circleParams[1].circleCentreTarget = {SMALL_FRAC * goomInfo.GetScreenInfo().width,
-                                        SMALL_FRAC * goomInfo.GetScreenInfo().height};
-  circleParams[2].circleCentreTarget = {LARGE_FRAC * goomInfo.GetScreenInfo().width,
-                                        SMALL_FRAC * goomInfo.GetScreenInfo().height};
-  circleParams[3].circleCentreTarget = {LARGE_FRAC * goomInfo.GetScreenInfo().width,
-                                        LARGE_FRAC * goomInfo.GetScreenInfo().height};
-  circleParams[4].circleCentreTarget = {SMALL_FRAC * goomInfo.GetScreenInfo().width,
-                                        LARGE_FRAC * goomInfo.GetScreenInfo().height};
+  const Point2dInt screenMidPoint =
+      MidpointFromOrigin({goomInfo.GetScreenInfo().width, goomInfo.GetScreenInfo().height});
+  std::array<Point2dInt, NUM_CIRCLES> circleCentreTargets = GetCircleCentreTargets(screenMidPoint);
+  for (size_t i = 0; i < NUM_CIRCLES; ++i)
+  {
+    circleParams[i].circleCentreTarget = circleCentreTargets.at(i);
+  }
 
   return circleParams;
+}
+
+auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets(const Point2dInt& screenMidPoint)
+    -> std::array<Point2dInt, NUM_CIRCLES>
+{
+  std::array<Point2dInt, NUM_CIRCLES> circleCentreTargets{};
+
+  const int32_t width = 2 * screenMidPoint.x;
+  const int32_t height = 2 * screenMidPoint.y;
+  static constexpr Fraction SMALL_FRAC{1, 10};
+  static constexpr Fraction LARGE_FRAC = 1 - SMALL_FRAC;
+  circleCentreTargets[0] = screenMidPoint;
+  circleCentreTargets[1] = {SMALL_FRAC * width, SMALL_FRAC * height};
+  circleCentreTargets[2] = {LARGE_FRAC * width, SMALL_FRAC * height};
+  circleCentreTargets[3] = {LARGE_FRAC * width, LARGE_FRAC * height};
+  circleCentreTargets[4] = {SMALL_FRAC * width, LARGE_FRAC * height};
+
+  return circleCentreTargets;
 }
 
 inline void CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
