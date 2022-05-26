@@ -2,6 +2,7 @@
 
 #include "goom_graphic.h"
 #include "point2d.h"
+#include "draw/goom_draw.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/paths.h"
 #include "utils/timer.h"
@@ -63,14 +64,14 @@ class Tube
 {
 public:
   using DrawLineFunc = std::function<void(
-      Point2dInt point1, Point2dInt point2, const std::vector<Pixel>& colors, uint8_t thickness)>;
+      Point2dInt point1, Point2dInt point2, const DRAW::MultiplePixels& colors, uint8_t thickness)>;
   using DrawCircleFunc = std::function<void(
-      Point2dInt point, int radius, const std::vector<Pixel>& colors, uint8_t thickness)>;
+      Point2dInt point, int radius, const DRAW::MultiplePixels& colors, uint8_t thickness)>;
   using DrawSmallImageFunc =
       std::function<void(Point2dInt midPoint,
                          UTILS::GRAPHICS::SmallImageBitmaps::ImageNames imageName,
                          uint32_t size,
-                         const std::vector<Pixel>& colors)>;
+                         const DRAW::MultiplePixels& colors)>;
   struct DrawFuncs
   {
     DrawLineFunc drawLine;

@@ -13,7 +13,7 @@ IGoomDraw::IGoomDraw(const uint32_t screenWidth, const uint32_t screenHeight)
   : m_screenWidth{screenWidth},
     m_screenHeight{screenHeight},
     m_drawMethods{m_screenWidth, m_screenHeight,
-                  [this](const int32_t x, const int32_t y, const std::vector<Pixel>& newColors) {
+                  [this](const int32_t x, const int32_t y, const MultiplePixels& newColors) {
                     DrawPixelsToDevice({x, y}, newColors);
                   }},
     m_intBuffIntensity{},
@@ -23,7 +23,7 @@ IGoomDraw::IGoomDraw(const uint32_t screenWidth, const uint32_t screenHeight)
   SetDefaultBlendPixelFunc();
 }
 
-inline void IGoomDraw::DrawPixelsToDevice(const Point2dInt point, const std::vector<Pixel>& colors)
+inline void IGoomDraw::DrawPixelsToDevice(const Point2dInt point, const MultiplePixels& colors)
 {
   DrawPixelsToDevice(point, colors, GetIntBuffIntensity());
 }
@@ -77,7 +77,7 @@ void IGoomDraw::Bitmap(const Point2dInt centre,
       {
         continue;
       }
-      std::vector<Pixel> finalColors(numColors);
+      MultiplePixels finalColors(numColors);
       for (size_t i = 0; i < numColors; ++i)
       {
         finalColors[i] = getColors[i](xBitmap, yBitmap, bitmapColor);

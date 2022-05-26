@@ -23,7 +23,7 @@ auto GoomDrawToMany::GetPixel(const Point2dInt point) const -> Pixel
   return draw->GetPixel(point);
 }
 
-void GoomDrawToMany::DrawPixelsUnblended(const Point2dInt point, const std::vector<Pixel>& colors)
+void GoomDrawToMany::DrawPixelsUnblended(const Point2dInt point, const MultiplePixels& colors)
 {
   for (auto* const draw : m_manyDraws)
   {
@@ -32,7 +32,7 @@ void GoomDrawToMany::DrawPixelsUnblended(const Point2dInt point, const std::vect
 }
 
 void GoomDrawToMany::DrawPixelsToDevice(const Point2dInt point,
-                                        const std::vector<Pixel>& colors,
+                                        const MultiplePixels& colors,
                                         [[maybe_unused]] const uint32_t intBuffIntensity)
 {
   for (auto* const draw : m_manyDraws)

@@ -35,6 +35,7 @@ using COLOR::RandomColorMaps;
 using DRAW::GoomDrawToContainer;
 using DRAW::GoomDrawToMany;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using TUBES::BrightnessAttenuation;
 using TUBES::Tube;
 using UTILS::Logging;
@@ -192,31 +193,31 @@ private:
 
   void DrawLineToOne(Point2dInt point1,
                      Point2dInt point2,
-                     const std::vector<Pixel>& colors,
+                     const MultiplePixels& colors,
                      uint8_t thickness);
   void DrawCircleToOne(Point2dInt point,
                        int radius,
-                       const std::vector<Pixel>& colors,
+                       const MultiplePixels& colors,
                        uint8_t thickness);
   void DrawImageToOne(Point2dInt point,
                       SmallImageBitmaps::ImageNames imageName,
                       uint32_t size,
-                      const std::vector<Pixel>& colors);
+                      const MultiplePixels& colors);
   void DrawLineToMany(Point2dInt point1,
                       Point2dInt point2,
-                      const std::vector<Pixel>& colors,
+                      const MultiplePixels& colors,
                       uint8_t thickness);
   void DrawCircleToMany(Point2dInt point,
                         int radius,
-                        const std::vector<Pixel>& colors,
+                        const MultiplePixels& colors,
                         uint8_t thickness);
   void DrawImageToMany(Point2dInt point,
                        SmallImageBitmaps::ImageNames imageName,
                        uint32_t size,
-                       const std::vector<Pixel>& colors);
+                       const MultiplePixels& colors);
   [[nodiscard]] auto GetImageBitmap(SmallImageBitmaps::ImageNames imageName, size_t size)
       -> const ImageBitmap&;
-  static auto GetSimpleColorFuncs(const std::vector<Pixel>& colors)
+  static auto GetSimpleColorFuncs(const MultiplePixels& colors)
       -> std::vector<IGoomDraw::GetBitmapColorFunc>;
 };
 
@@ -369,21 +370,21 @@ void TubesFx::TubeFxImpl::InitTubes()
   Expects(m_lowColorMaps != nullptr);
 
   const Tube::DrawFuncs drawToOneFuncs{
-      [this](const Point2dInt point1, const Point2dInt point2, const std::vector<Pixel>& colors,
+      [this](const Point2dInt point1, const Point2dInt point2, const MultiplePixels& colors,
              const uint8_t thickness) { DrawLineToOne(point1, point2, colors, thickness); },
-      [this](const Point2dInt point, const int radius, const std::vector<Pixel>& colors,
+      [this](const Point2dInt point, const int radius, const MultiplePixels& colors,
              const uint8_t thickness) { DrawCircleToOne(point, radius, colors, thickness); },
       [this](const Point2dInt point, const SmallImageBitmaps::ImageNames imageName,
-             const uint32_t size, const std::vector<Pixel>& colors)
+             const uint32_t size, const MultiplePixels& colors)
       { DrawImageToOne(point, imageName, size, colors); },
   };
   const Tube::DrawFuncs drawToManyFuncs{
-      [this](const Point2dInt point1, const Point2dInt point2, const std::vector<Pixel>& colors,
+      [this](const Point2dInt point1, const Point2dInt point2, const MultiplePixels& colors,
              const uint8_t thickness) { DrawLineToMany(point1, point2, colors, thickness); },
-      [this](const Point2dInt point, const int radius, const std::vector<Pixel>& colors,
+      [this](const Point2dInt point, const int radius, const MultiplePixels& colors,
              const uint8_t thickness) { DrawCircleToMany(point, radius, colors, thickness); },
       [this](const Point2dInt point, const SmallImageBitmaps::ImageNames imageName,
-             const uint32_t size, const std::vector<Pixel>& colors)
+             const uint32_t size, const MultiplePixels& colors)
       { DrawImageToMany(point, imageName, size, colors); },
   };
 
@@ -424,7 +425,7 @@ void TubesFx::TubeFxImpl::InitTubes()
 
 inline void TubesFx::TubeFxImpl::DrawLineToOne(const Point2dInt point1,
                                                const Point2dInt point2,
-                                               const std::vector<Pixel>& colors,
+                                               const MultiplePixels& colors,
                                                const uint8_t thickness)
 {
   m_draw.Line(point1, point2, colors, thickness);
@@ -432,7 +433,7 @@ inline void TubesFx::TubeFxImpl::DrawLineToOne(const Point2dInt point1,
 
 inline void TubesFx::TubeFxImpl::DrawLineToMany(const Point2dInt point1,
                                                 const Point2dInt point2,
-                                                const std::vector<Pixel>& colors,
+                                                const MultiplePixels& colors,
                                                 const uint8_t thickness)
 {
   m_drawToMany.Line(point1, point2, colors, thickness);
@@ -440,7 +441,7 @@ inline void TubesFx::TubeFxImpl::DrawLineToMany(const Point2dInt point1,
 
 inline void TubesFx::TubeFxImpl::DrawCircleToOne(const Point2dInt point,
                                                  const int radius,
-                                                 const std::vector<Pixel>& colors,
+                                                 const MultiplePixels& colors,
                                                  [[maybe_unused]] const uint8_t thickness)
 {
   m_draw.Circle(point, radius, colors);
@@ -448,7 +449,7 @@ inline void TubesFx::TubeFxImpl::DrawCircleToOne(const Point2dInt point,
 
 inline void TubesFx::TubeFxImpl::DrawCircleToMany(const Point2dInt point,
                                                   const int radius,
-                                                  const std::vector<Pixel>& colors,
+                                                  const MultiplePixels& colors,
                                                   [[maybe_unused]] const uint8_t thickness)
 {
   m_drawToMany.Circle(point, radius, colors);
@@ -457,7 +458,7 @@ inline void TubesFx::TubeFxImpl::DrawCircleToMany(const Point2dInt point,
 inline void TubesFx::TubeFxImpl::DrawImageToOne(const Point2dInt point,
                                                 const SmallImageBitmaps::ImageNames imageName,
                                                 const uint32_t size,
-                                                const std::vector<Pixel>& colors)
+                                                const MultiplePixels& colors)
 {
   m_draw.Bitmap(point, GetImageBitmap(imageName, static_cast<size_t>(size)),
                 GetSimpleColorFuncs(colors));
@@ -466,14 +467,14 @@ inline void TubesFx::TubeFxImpl::DrawImageToOne(const Point2dInt point,
 inline void TubesFx::TubeFxImpl::DrawImageToMany(const Point2dInt point,
                                                  const SmallImageBitmaps::ImageNames imageName,
                                                  const uint32_t size,
-                                                 const std::vector<Pixel>& colors)
+                                                 const MultiplePixels& colors)
 {
   //m_drawToContainer.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors));
   m_drawToMany.Bitmap(point, GetImageBitmap(imageName, static_cast<size_t>(size)),
                       GetSimpleColorFuncs(colors));
 }
 
-inline auto TubesFx::TubeFxImpl::GetSimpleColorFuncs(const std::vector<Pixel>& colors)
+inline auto TubesFx::TubeFxImpl::GetSimpleColorFuncs(const MultiplePixels& colors)
     -> std::vector<IGoomDraw::GetBitmapColorFunc>
 {
   const auto getColor1 = [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,

@@ -1,4 +1,5 @@
 #include "catch2/catch.hpp"
+#include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
 #include "goom_graphic.h"
 #include "point2d.h"
@@ -11,6 +12,7 @@ namespace GOOM::UNIT_TESTS
 {
 
 using DRAW::GoomDrawToContainer;
+using DRAW::MultiplePixels;
 using ColorsList = GoomDrawToContainer::ColorsList;
 
 static constexpr uint32_t WIDTH = 100;
@@ -19,7 +21,7 @@ static constexpr uint32_t HEIGHT = 100;
 struct PixelInfo
 {
   Point2dInt point{};
-  std::vector<Pixel> colors{};
+  MultiplePixels colors{};
 };
 
 void CheckPixels(const std::vector<PixelInfo>& changedPixels,
@@ -29,7 +31,7 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
   for (size_t i = 0; i < expectedPixels.size(); ++i)
   {
     const Point2dInt& point = expectedPixels[i].point;
-    const std::vector<Pixel>& colors = expectedPixels[i].colors;
+    const MultiplePixels& colors = expectedPixels[i].colors;
 
     const PixelInfo& coords = changedPixels[i];
 
@@ -78,7 +80,7 @@ auto FillDrawContainer(GoomDrawToContainer* const draw, const size_t numChanged)
     const auto c1 = static_cast<PixelChannelType>(i + 1);
     const Pixel color0{{c0, c0, c0, 255U}};
     const Pixel color1{{c1, c1, c1, 0U}};
-    const std::vector<Pixel> colors{color0, color1};
+    const MultiplePixels colors{color0, color1};
 
     pixelsNewToOld.emplace_back(PixelInfo{point, colors});
 
@@ -140,7 +142,7 @@ TEST_CASE("Test DrawMovingText to Container with Duplicates", "[GoomDrawToContai
 
   const Pixel color0{{10, 10, 10, 255U}};
   const Pixel color1{{11, 11, 11, 0U}};
-  const std::vector<Pixel> colors{color0, color1};
+  const MultiplePixels colors{color0, color1};
   const PixelInfo oldest = pixelsNewToOld.back();
   draw.DrawPixels(oldest.point, colors);
   REQUIRE(draw.GetNumChangedCoords() == NUM_CHANGED_COORDS);

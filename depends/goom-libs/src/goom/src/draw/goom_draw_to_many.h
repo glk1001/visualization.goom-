@@ -19,11 +19,11 @@ public:
                  const std::vector<IGoomDraw*>& manyDraws);
 
   auto GetPixel(Point2dInt point) const -> Pixel override;
-  void DrawPixelsUnblended(Point2dInt point, const std::vector<Pixel>& colors) override;
+  void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) override;
 
 protected:
   void DrawPixelsToDevice(Point2dInt point,
-                          const std::vector<Pixel>& colors,
+                          const MultiplePixels& colors,
                           uint32_t intBuffIntensity) override;
 
 private:

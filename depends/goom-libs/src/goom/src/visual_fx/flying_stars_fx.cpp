@@ -39,6 +39,7 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using STD20::pi;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -208,22 +209,22 @@ private:
   const SmallImageBitmaps& m_smallBitmaps;
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
   using DrawFunc = std::function<void(
-      Point2dInt point1, Point2dInt point2, uint32_t size, const std::vector<Pixel>& colors)>;
+      Point2dInt point1, Point2dInt point2, uint32_t size, const MultiplePixels& colors)>;
   const std::map<DrawMode, const DrawFunc> m_drawFuncs{};
   [[nodiscard]] auto GetDrawFunc() const -> DrawFunc;
   void DrawStar(const Star& star, float flipSpeed, const DrawFunc& drawFunc);
   void DrawParticleCircle(Point2dInt point1,
                           Point2dInt point2,
                           uint32_t size,
-                          const std::vector<Pixel>& colors);
+                          const MultiplePixels& colors);
   void DrawParticleLine(Point2dInt point1,
                         Point2dInt point2,
                         uint32_t size,
-                        const std::vector<Pixel>& colors);
+                        const MultiplePixels& colors);
   void DrawParticleDot(Point2dInt point1,
                        Point2dInt point2,
                        uint32_t size,
-                       const std::vector<Pixel>& colors);
+                       const MultiplePixels& colors);
   void RemoveDeadStars();
 
   struct StarModeParams
@@ -361,20 +362,20 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
          [this](const Point2dInt point1,
              const Point2dInt point2,
              const uint32_t size,
-             const std::vector<Pixel>& colors) {
+             const MultiplePixels& colors) {
            DrawParticleCircle(point1, point2, size, colors);
          }},
         {DrawMode::LINES,
          [this](const Point2dInt point1,
              const Point2dInt point2,
              const uint32_t size,
-             const std::vector<Pixel>& colors) { DrawParticleLine(point1, point2, size, colors); }},
+             const MultiplePixels& colors) { DrawParticleLine(point1, point2, size, colors); }},
         {
             DrawMode::DOTS,
             [this](const Point2dInt point1,
                 const Point2dInt point2,
                 const uint32_t size,
-                const std::vector<Pixel>& colors) {
+                const MultiplePixels& colors) {
               DrawParticleDot(point1, point2, size, colors);
             },
         }}
@@ -524,7 +525,7 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
     const float brightness =
         (3.7F * ageBrightness * static_cast<float>(j)) / static_cast<float>(numParts);
     const auto mixedColors = GetMixedColors(star, tAge, brightness);
-    const std::vector<Pixel> colors = {mixedColors.first, mixedColors.second};
+    const MultiplePixels colors = {mixedColors.first, mixedColors.second};
     const uint32_t size = tAge < OLD_AGE ? 1 : m_goomRand.GetRandInRange(2U, MAX_DOT_SIZE + 1);
 
     drawFunc(point1, point2, size, colors);
@@ -536,7 +537,7 @@ void FlyingStarsFx::FlyingStarsImpl::DrawStar(const Star& star,
 void FlyingStarsFx::FlyingStarsImpl::DrawParticleCircle(const Point2dInt point1,
                                                         [[maybe_unused]] const Point2dInt point2,
                                                         const uint32_t size,
-                                                        const std::vector<Pixel>& colors)
+                                                        const MultiplePixels& colors)
 {
   if (m_useSingleBufferOnly)
   {
@@ -551,7 +552,7 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleCircle(const Point2dInt point1,
 void FlyingStarsFx::FlyingStarsImpl::DrawParticleLine(const Point2dInt point1,
                                                       const Point2dInt point2,
                                                       const uint32_t size,
-                                                      const std::vector<Pixel>& colors)
+                                                      const MultiplePixels& colors)
 {
   if (m_useSingleBufferOnly)
   {
@@ -566,7 +567,7 @@ void FlyingStarsFx::FlyingStarsImpl::DrawParticleLine(const Point2dInt point1,
 void FlyingStarsFx::FlyingStarsImpl::DrawParticleDot(const Point2dInt point1,
                                                      [[maybe_unused]] const Point2dInt point2,
                                                      const uint32_t size,
-                                                     const std::vector<Pixel>& colors)
+                                                     const MultiplePixels& colors)
 {
   const auto getMainColor =
       [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)

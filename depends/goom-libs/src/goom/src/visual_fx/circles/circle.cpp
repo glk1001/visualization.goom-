@@ -30,6 +30,7 @@ using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using UTILS::Logging;
 using UTILS::NUM;
 using UTILS::Timer;
@@ -101,13 +102,13 @@ private:
                      const IColorMap& innerColorMap) noexcept -> void;
   [[nodiscard]] static auto GetCircleColors(float brightness,
                                             const Pixel& mainColor,
-                                            const Pixel& lowColor) noexcept -> std::vector<Pixel>;
+                                            const Pixel& lowColor) noexcept -> MultiplePixels;
   [[nodiscard]] static auto GetCircleColorsWithInner(float brightness,
                                                      const Pixel& mainColor,
                                                      const Pixel& lowColor,
                                                      const Pixel& innerColor,
                                                      float innerColorMix) noexcept
-      -> std::vector<Pixel>;
+      -> MultiplePixels;
 };
 
 Circle::Circle(const FxHelper& fxHelper,
@@ -150,7 +151,7 @@ auto Circle::GetDotStartingPositions(const Point2dInt& centre, const float radiu
   const auto path =
       std::make_unique<CirclePath>(std::move(positionT), centrePos, radius, DEFAULT_ANGLE_PARAMS);
 
-  std::vector<Point2dInt> dotStartingPositions(NUM_DOTS);
+  std::vector<Point2dInt> dotStartingPositions{NUM_DOTS};
 
   for (size_t i = 0; i < NUM_DOTS; ++i)
   {
@@ -541,7 +542,7 @@ inline auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
   {
     const float brightness = STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
     const Pixel innerColor = innerColorMap.GetColor(innerColorT());
-    const std::vector<Pixel> colors =
+    const MultiplePixels colors =
         radius <= INNER_COLOR_CUTOFF_RADIUS
             ? GetCircleColors(brightness, mainColor, lowColor)
             : GetCircleColorsWithInner(brightness, mainColor, lowColor, innerColor,
@@ -556,7 +557,7 @@ inline auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
 
 inline auto Circle::DotDrawer::GetCircleColors(const float brightness,
                                                const Pixel& mainColor,
-                                               const Pixel& lowColor) noexcept -> std::vector<Pixel>
+                                               const Pixel& lowColor) noexcept -> MultiplePixels
 {
   const Pixel finalMainColor = GetBrighterColor(brightness, mainColor);
   const Pixel finalLowColor =
@@ -569,7 +570,7 @@ inline auto Circle::DotDrawer::GetCircleColorsWithInner(const float brightness,
                                                         const Pixel& lowColor,
                                                         const Pixel& innerColor,
                                                         const float innerColorMix) noexcept
-    -> std::vector<Pixel>
+    -> MultiplePixels
 {
   const Pixel finalMainColor =
       GetBrighterColor(brightness, IColorMap::GetColorMix(mainColor, innerColor, innerColorMix));

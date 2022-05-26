@@ -21,6 +21,7 @@ using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
 using COLOR::IColorMap;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
@@ -83,7 +84,7 @@ auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const -> const Ima
 void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
                                const uint32_t maxLowDensityCount) const
 {
-  std::vector<Pixel> neighbours(static_cast<size_t>(m_width) * static_cast<size_t>(m_width));
+  MultiplePixels neighbours(static_cast<size_t>(m_width) * static_cast<size_t>(m_width));
   const float logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
 
   float t = 0.0;
@@ -129,7 +130,7 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
                                static_cast<int32_t>(point.GetY())};
         nullptr == m_currentImageBitmap)
     {
-      const std::vector<Pixel> colors{point.GetColor(), point.GetColor()};
+      const MultiplePixels colors{point.GetColor(), point.GetColor()};
       m_draw.DrawPixels(pt, colors);
     }
     else
@@ -145,7 +146,7 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
 void LowDensityBlurrer::SetPointColor(IfsPoint& point,
                                       const float t,
                                       const float logMaxLowDensityCount,
-                                      const std::vector<Pixel>& neighbours) const
+                                      const MultiplePixels& neighbours) const
 {
   const float logAlpha =
       point.GetCount() <= 1
@@ -226,7 +227,7 @@ inline auto LowDensityBlurrer::GetBrightness() const -> float
 
 inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
                                                   const IfsPoint& point,
-                                                  const std::vector<Pixel>& neighbours,
+                                                  const MultiplePixels& neighbours,
                                                   const float brightness,
                                                   const float logAlpha) const -> Pixel
 {

@@ -18,9 +18,9 @@ public:
   GoomDrawToContainer(uint32_t screenWidth, uint32_t screenHeight);
 
   auto GetPixel(Point2dInt point) const -> Pixel override;
-  void DrawPixelsUnblended(Point2dInt point, const std::vector<Pixel>& colors) override;
+  void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) override;
 
-  auto GetPixels(Point2dInt point) const -> std::vector<Pixel>;
+  auto GetPixels(Point2dInt point) const -> MultiplePixels;
 
   static constexpr size_t MAX_NUM_COLORS_LIST = 3;
   using ColorsArray = std::array<Pixel, MAX_NUM_COLORS_LIST>;
@@ -43,7 +43,7 @@ public:
 
 protected:
   void DrawPixelsToDevice(Point2dInt point,
-                          const std::vector<Pixel>& colors,
+                          const MultiplePixels& colors,
                           uint32_t intBuffIntensity) override;
 
 private:
@@ -51,7 +51,7 @@ private:
   std::vector<Point2dInt> m_orderedXYPixelList{};
   [[nodiscard]] auto GetWriteableColorsList(Point2dInt point) -> ColorsList&;
   [[nodiscard]] auto GetLastDrawnColor(Point2dInt point) const -> Pixel;
-  [[nodiscard]] auto GetLastDrawnColors(Point2dInt point) const -> std::vector<Pixel>;
+  [[nodiscard]] auto GetLastDrawnColors(Point2dInt point) const -> MultiplePixels;
 };
 
 inline auto GoomDrawToContainer::GetPixel(const Point2dInt point) const -> Pixel
@@ -59,7 +59,7 @@ inline auto GoomDrawToContainer::GetPixel(const Point2dInt point) const -> Pixel
   return GetLastDrawnColor(point);
 }
 
-inline auto GoomDrawToContainer::GetPixels(const Point2dInt point) const -> std::vector<Pixel>
+inline auto GoomDrawToContainer::GetPixels(const Point2dInt point) const -> MultiplePixels
 {
   return GetLastDrawnColors(point);
 }
@@ -75,7 +75,7 @@ inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt point) const
 }
 
 inline auto GoomDrawToContainer::GetLastDrawnColors(const Point2dInt point) const
-    -> std::vector<Pixel>
+    -> MultiplePixels
 {
   return {GetLastDrawnColor(point), BLACK_PIXEL};
 }

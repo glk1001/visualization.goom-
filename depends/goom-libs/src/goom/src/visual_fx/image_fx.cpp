@@ -38,6 +38,7 @@ using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::TValue;
@@ -133,7 +134,7 @@ private:
                                           const ChunkedImage::ImageChunk& imageChunk) const
       -> Point2dInt;
   [[nodiscard]] auto GetPixelColors(const Pixel& pixelColor, float brightness) const
-      -> std::vector<Pixel>;
+      -> MultiplePixels;
   [[nodiscard]] auto GetMappedColor(const Pixel& pixelColor) const -> Pixel;
 
   void UpdateImageStartPositions();
@@ -416,7 +417,7 @@ void ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
       {
         continue;
       }
-      const std::vector<Pixel> pixelColors = GetPixelColors(pixelRow.at(xPixel), brightness);
+      const MultiplePixels pixelColors = GetPixelColors(pixelRow.at(xPixel), brightness);
       m_draw.DrawPixels({x, y}, pixelColors);
 
       ++x;
@@ -427,7 +428,7 @@ void ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
 }
 
 inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
-                                                 const float brightness) const -> std::vector<Pixel>
+                                                 const float brightness) const -> MultiplePixels
 {
   const Pixel mixedColor =
       IColorMap::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutTSq);

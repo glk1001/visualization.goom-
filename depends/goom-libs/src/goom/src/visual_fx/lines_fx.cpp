@@ -50,6 +50,7 @@ using COLOR::RandomColorMapsManager;
 using COLOR::SimpleColors;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using FX_UTILS::DotDrawer;
 using FX_UTILS::DotSizes;
 using FX_UTILS::GetCircularLinePoints;
@@ -529,7 +530,7 @@ void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
     const PointAndColor& nextPointData = audioPoints[i];
 
     point2 = nextPointData.point;
-    const std::vector<Pixel> colors = {lineColor, nextPointData.color};
+    const MultiplePixels colors = {lineColor, nextPointData.color};
 
     m_draw.Line(point1, point2, colors, LINE_THICKNESS);
 
@@ -548,7 +549,7 @@ void LinesFx::LinesImpl::DrawFlatLine(const Pixel& lineColor)
 {
   const LinePoint& pt0 = m_srcePoints[0];
   const LinePoint& ptN = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
-  const std::vector<Pixel> colors = {lineColor, lineColor};
+  const MultiplePixels colors = {lineColor, lineColor};
 
   m_draw.Line(pt0.point.ToInt(), ptN.point.ToInt(), colors, 1);
 }

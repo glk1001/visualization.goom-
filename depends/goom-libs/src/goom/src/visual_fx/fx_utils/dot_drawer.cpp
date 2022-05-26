@@ -15,6 +15,7 @@ namespace GOOM::VISUAL_FX::FX_UTILS
 
 using COLOR::GetColorMultiply;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using UTILS::NUM;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -44,7 +45,7 @@ void DotDrawer::ChangeDotSizes()
 }
 
 void DotDrawer::DrawDot(const Point2dInt& pt,
-                        const std::vector<Pixel>& colors,
+                        const MultiplePixels& colors,
                         const float brightness)
 {
   size_t dotSize = m_currentDotSize;

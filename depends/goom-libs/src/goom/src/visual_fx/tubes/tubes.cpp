@@ -6,6 +6,7 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
+#include "draw/goom_draw.h"
 #include "goom/logging.h"
 #include "goom_config.h"
 #include "point2d.h"
@@ -30,6 +31,7 @@ using COLOR::GetBrighterColor;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
+using DRAW::MultiplePixels;
 using STD20::pi;
 using UTILS::Logging;
 using UTILS::Timer;
@@ -723,8 +725,8 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
   static constexpr uint32_t NUM_HEX_SIDES = 6;
   static constexpr float ANGLE_STEP = THIRD_PI;
   static constexpr float START_ANGLE = 2.0F * ANGLE_STEP;
-  const std::vector<Pixel> lineColors{allColors.mainColor, allColors.lowColor};
-  const std::vector<Pixel> outerCircleColors{allColors.outerCircleMainColor,
+  const MultiplePixels lineColors{allColors.mainColor, allColors.lowColor};
+  const MultiplePixels outerCircleColors{allColors.outerCircleMainColor,
                                              allColors.outerCircleLowColor};
   const bool drawHexDot = !m_hexDotShapeTimer.Finished();
 
@@ -755,7 +757,7 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
 inline void Tube::TubeImpl::DrawInteriorShape(const Point2dInt& shapeCentrePos,
                                               const ShapeColors& allColors) const
 {
-  const std::vector<Pixel> colors{allColors.innerMainColor, allColors.innerLowColor};
+  const MultiplePixels colors{allColors.innerMainColor, allColors.innerLowColor};
   m_data.drawFuncs.drawSmallImage(shapeCentrePos, SmallImageBitmaps::ImageNames::SPHERE,
                                   m_interiorShapeSize, colors);
 }
@@ -767,7 +769,7 @@ inline void Tube::TubeImpl::DrawOuterCircle(const Point2dInt& shapeCentrePos,
   const auto outerCircleRadius =
       static_cast<int32_t>(std::round(OUTER_CIRCLE_RADIUS_FACTOR * m_hexLen));
   static constexpr uint8_t OUTER_CIRCLE_LINE_THICKNESS = 1;
-  const std::vector<Pixel> outerCircleColors{allColors.outerCircleMainColor,
+  const MultiplePixels outerCircleColors{allColors.outerCircleMainColor,
                                              allColors.outerCircleLowColor};
   m_data.drawFuncs.drawCircle(shapeCentrePos, outerCircleRadius, outerCircleColors,
                               OUTER_CIRCLE_LINE_THICKNESS);

@@ -22,6 +22,8 @@ class ImageBitmap;
 namespace DRAW
 {
 
+using MultiplePixels = std::vector<Pixel>;
+
 class IGoomDraw
 {
   // Use the following to check it's efficient to pass Point2dInts by value.
@@ -51,12 +53,12 @@ public:
   void SetDefaultBlendPixelFunc();
 
   void Circle(Point2dInt point, int radius, const Pixel& color);
-  void Circle(Point2dInt point, int radius, const std::vector<Pixel>& colors);
+  void Circle(Point2dInt point, int radius, const MultiplePixels& colors);
 
   void Line(Point2dInt point1, Point2dInt point2, const Pixel& color, uint8_t thickness);
   void Line(Point2dInt point1,
             Point2dInt point2,
-            const std::vector<Pixel>& colors,
+            const MultiplePixels& colors,
             uint8_t thickness);
 
   using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& imageColor)>;
@@ -67,11 +69,11 @@ public:
               const UTILS::GRAPHICS::ImageBitmap& bitmap,
               const std::vector<GetBitmapColorFunc>& getColors);
 
-  void DrawPixels(Point2dInt point, const std::vector<Pixel>& colors);
-  void DrawPixelsClipped(Point2dInt point, const std::vector<Pixel>& colors);
+  void DrawPixels(Point2dInt point, const MultiplePixels& colors);
+  void DrawPixelsClipped(Point2dInt point, const MultiplePixels& colors);
 
   [[nodiscard]] virtual auto GetPixel(Point2dInt point) const -> Pixel = 0;
-  virtual void DrawPixelsUnblended(Point2dInt point, const std::vector<Pixel>& colors) = 0;
+  virtual void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) = 0;
 
 protected:
   [[nodiscard]] auto GetIntBuffIntensity() const -> uint32_t;
@@ -82,14 +84,14 @@ protected:
                                      uint32_t intBuffIntensity) const -> Pixel;
 
   virtual void DrawPixelsToDevice(Point2dInt point,
-                                  const std::vector<Pixel>& colors,
+                                  const MultiplePixels& colors,
                                   uint32_t intBuffIntensity) = 0;
 
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
   const DrawMethods m_drawMethods;
-  void DrawPixelsToDevice(Point2dInt point, const std::vector<Pixel>& colors);
+  void DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors);
 
   BlendPixelFunc m_blendPixelFunc{};
   [[nodiscard]] static auto ColorAddBlendPixel(const Pixel& oldColor,
@@ -161,12 +163,12 @@ inline auto IGoomDraw::GetParallel() const -> GOOM::UTILS::Parallel&
 
 inline void IGoomDraw::Circle(const Point2dInt point, const int radius, const Pixel& color)
 {
-  Circle(point, radius, std::vector<Pixel>{color});
+  Circle(point, radius, MultiplePixels{color});
 }
 
 inline void IGoomDraw::Circle(const Point2dInt point,
                               const int radius,
-                              const std::vector<Pixel>& colors)
+                              const MultiplePixels& colors)
 {
   m_drawMethods.DrawCircle(point.x, point.y, radius, colors);
 }
@@ -176,12 +178,12 @@ inline void IGoomDraw::Line(const Point2dInt point1,
                             const Pixel& color,
                             const uint8_t thickness)
 {
-  Line(point1, point2, std::vector<Pixel>{color}, thickness);
+  Line(point1, point2, MultiplePixels{color}, thickness);
 }
 
 inline void IGoomDraw::Line(const Point2dInt point1,
                             const Point2dInt point2,
-                            const std::vector<Pixel>& colors,
+                            const MultiplePixels& colors,
                             const uint8_t thickness)
 {
   m_drawMethods.DrawLine(point1.x, point1.y, point2.x, point2.y, colors, thickness);
@@ -195,12 +197,12 @@ inline void IGoomDraw::Bitmap(const Point2dInt centre,
   Bitmap(centre, bitmap, std::vector<GetBitmapColorFunc>{getColor});
 }
 
-inline void IGoomDraw::DrawPixels(const Point2dInt point, const std::vector<Pixel>& colors)
+inline void IGoomDraw::DrawPixels(const Point2dInt point, const MultiplePixels& colors)
 {
   m_drawMethods.DrawPixels(point.x, point.y, colors);
 }
 
-inline void IGoomDraw::DrawPixelsClipped(const Point2dInt point, const std::vector<Pixel>& colors)
+inline void IGoomDraw::DrawPixelsClipped(const Point2dInt point, const MultiplePixels& colors)
 {
   if ((0 < point.x) || (0 < point.y) || (static_cast<uint32_t>(point.x) >= m_screenWidth) ||
       (static_cast<uint32_t>(point.y) >= m_screenHeight))

@@ -69,12 +69,12 @@ private:
                 Point2dInt point1,
                 Point2dInt point2,
                 float brightness) -> void;
-  auto DrawNodeLine(Point2dInt point1, Point2dInt point2, const std::vector<Pixel>& colors) -> void;
-  auto DrawNodeDot(size_t nodeNum, Point2dInt point, const std::vector<Pixel>& colors) -> void;
+  auto DrawNodeLine(Point2dInt point1, Point2dInt point2, const DRAW::MultiplePixels& colors) -> void;
+  auto DrawNodeDot(size_t nodeNum, Point2dInt point, const DRAW::MultiplePixels& colors) -> void;
 
   [[nodiscard]] auto GetMixedColors(const Tentacle3D& tentacle,
                                     float brightness,
-                                    size_t nodeNum) const -> std::vector<Pixel>;
+                                    size_t nodeNum) const -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetBrightness(const Tentacle3D& tentacle) const -> float;
   [[nodiscard]] auto GetBrightnessCut(const Tentacle3D& tentacle) const -> float;
   [[nodiscard]] auto Get2DTentaclePoints(const Tentacle3D& tentacle) const

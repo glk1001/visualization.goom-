@@ -15,6 +15,7 @@ using COLOR::ColorAdjustment;
 using COLOR::IColorMap;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 
@@ -74,16 +75,16 @@ private:
   [[nodiscard]] auto GetColors(int32_t radius,
                                float brightness,
                                const ShapePathColors& shapeColors,
-                               const Pixel& innerColor) const noexcept -> std::vector<Pixel>;
+                               const Pixel& innerColor) const noexcept -> MultiplePixels;
   [[nodiscard]] auto GetColorsWithoutInner(float brightness,
                                            const ShapePathColors& shapeColors) const noexcept
-      -> std::vector<Pixel>;
+      -> MultiplePixels;
   [[nodiscard]] auto GetColorsWithInner(float brightness,
                                         const ShapePathColors& shapeColors,
                                         const Pixel& innerColor) const noexcept
-      -> std::vector<Pixel>;
+      -> MultiplePixels;
   [[nodiscard]] auto GetFinalMeetingPointColors(float brightness) const noexcept
-      -> std::vector<Pixel>;
+      -> MultiplePixels;
 
   static constexpr float GAMMA = 1.3F;
   const ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
@@ -232,7 +233,7 @@ inline auto ShapePathDrawer::DrawShapePathDot(const Point2dInt& centre,
     const float brightness =
         m_params.brightnessAttenuation * STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
     const Pixel innerColor = innerColorMap.GetColor(innerColorT());
-    const std::vector<Pixel> colors = GetColors(radius, brightness, shapeColors, innerColor);
+    const MultiplePixels colors = GetColors(radius, brightness, shapeColors, innerColor);
 
     m_draw.Circle(centre, radius, colors);
 
@@ -244,7 +245,7 @@ inline auto ShapePathDrawer::DrawShapePathDot(const Point2dInt& centre,
 auto ShapePathDrawer::GetColors(const int32_t radius,
                                 const float brightness,
                                 const ShapePathColors& shapeColors,
-                                const Pixel& innerColor) const noexcept -> std::vector<Pixel>
+                                const Pixel& innerColor) const noexcept -> MultiplePixels
 {
   if (m_params.firstShapePathAtMeetingPoint)
   {
@@ -260,7 +261,7 @@ static constexpr float MAIN_COLOR_BRIGHTNESS_FACTOR = 0.5F;
 static constexpr float LOW_COLOR_BRIGHTNESS_FACTOR = 0.5F;
 
 inline auto ShapePathDrawer::GetColorsWithoutInner(
-    const float brightness, const ShapePathColors& shapeColors) const noexcept -> std::vector<Pixel>
+    const float brightness, const ShapePathColors& shapeColors) const noexcept -> MultiplePixels
 {
   const Pixel mainColor =
       m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.mainColor);
@@ -273,7 +274,7 @@ inline auto ShapePathDrawer::GetColorsWithoutInner(
 inline auto ShapePathDrawer::GetColorsWithInner(const float brightness,
                                                 const ShapePathColors& shapeColors,
                                                 const Pixel& innerColor) const noexcept
-    -> std::vector<Pixel>
+    -> MultiplePixels
 {
   const Pixel mainColor = m_colorAdjust.GetAdjustment(
       MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
@@ -286,7 +287,7 @@ inline auto ShapePathDrawer::GetColorsWithInner(const float brightness,
 }
 
 inline auto ShapePathDrawer::GetFinalMeetingPointColors(const float brightness) const noexcept
-    -> std::vector<Pixel>
+    -> MultiplePixels
 {
   static constexpr float BRIGHTNESS_FACTOR = 7.0F;
   return {m_colorAdjust.GetAdjustment(brightness, m_params.meetingPointColors.mainColor),

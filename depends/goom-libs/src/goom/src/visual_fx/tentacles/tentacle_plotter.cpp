@@ -9,6 +9,7 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using COLOR::IColorMap;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using FX_UTILS::DotSizes;
 using STD20::pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -103,14 +104,14 @@ inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
                                       const Point2dInt point2,
                                       const float brightness) -> void
 {
-  const std::vector<Pixel> colors = GetMixedColors(tentacle, brightness, nodeNum);
+  const MultiplePixels colors = GetMixedColors(tentacle, brightness, nodeNum);
   DrawNodeLine(point1, point2, colors);
   DrawNodeDot(nodeNum, point2, colors);
 }
 
 inline auto TentaclePlotter::DrawNodeLine(const Point2dInt point1,
                                           const Point2dInt point2,
-                                          const std::vector<Pixel>& colors) -> void
+                                          const MultiplePixels& colors) -> void
 {
   static constexpr uint8_t THICKNESS = 1;
   m_draw.Line(point1, point2, colors, THICKNESS);
@@ -118,14 +119,14 @@ inline auto TentaclePlotter::DrawNodeLine(const Point2dInt point1,
 
 inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
                                          const Point2dInt point,
-                                         const std::vector<Pixel>& colors) -> void
+                                         const MultiplePixels& colors) -> void
 {
   if ((nodeNum % m_numNodesBetweenDots) != 0)
   {
     return;
   }
 
-  const std::vector<Pixel> dotColors = {
+  const MultiplePixels dotColors = {
       IColorMap::GetColorMix(colors[0], m_dominantDotColor, 0.5F),
       IColorMap::GetColorMix(colors.at(1), m_dominantDotColor, 0.5F),
   };
@@ -196,7 +197,7 @@ inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& poi
 
 inline auto TentaclePlotter::GetMixedColors(const Tentacle3D& tentacle,
                                             const float brightness,
-                                            const size_t nodeNum) const -> std::vector<Pixel>
+                                            const size_t nodeNum) const -> MultiplePixels
 {
   const auto [mainColor, lowColor] =
       tentacle.GetMixedColors(nodeNum, m_dominantMainColor, m_dominantLowColor, brightness);

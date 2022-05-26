@@ -1,5 +1,6 @@
 #pragma once
 
+#include "draw/goom_draw.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <vector>
@@ -47,7 +48,7 @@ public:
 
   void ChangeDotSizes();
 
-  void DrawDot(const Point2dInt& pt, const std::vector<Pixel>& colors, float brightness);
+  void DrawDot(const Point2dInt& pt, const DRAW::MultiplePixels& colors, float brightness);
 
 private:
   DRAW::IGoomDraw& m_goomDraw;

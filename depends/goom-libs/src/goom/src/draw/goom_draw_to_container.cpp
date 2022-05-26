@@ -44,13 +44,13 @@ inline auto GoomDrawToContainer::GetWriteableColorsList(const Point2dInt point) 
 }
 
 void GoomDrawToContainer::DrawPixelsUnblended([[maybe_unused]] const Point2dInt point,
-                                              [[maybe_unused]] const std::vector<Pixel>& colors)
+                                              [[maybe_unused]] const MultiplePixels& colors)
 {
   throw std::logic_error("GoomDrawToContainer::DrawPixelsUnblended not implemented.");
 }
 
 void GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
-                                             const std::vector<Pixel>& colors,
+                                             const MultiplePixels& colors,
                                              const uint32_t intBuffIntensity)
 {
   ColorsList& colorsList = GetWriteableColorsList(point);

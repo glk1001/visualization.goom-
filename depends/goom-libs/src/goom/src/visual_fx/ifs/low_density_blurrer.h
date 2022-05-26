@@ -1,6 +1,7 @@
 #pragma once
 
 #include "color/color_adjustment.h"
+#include "draw/goom_draw.h"
 #include "goom_graphic.h"
 
 #include <cstdint>
@@ -77,10 +78,10 @@ private:
   void SetPointColor(IfsPoint& point,
                      float t,
                      float logMaxLowDensityCount,
-                     const std::vector<Pixel>& neighbours) const;
+                     const DRAW::MultiplePixels& neighbours) const;
   [[nodiscard]] auto GetMixedPointColor(const Pixel& baseColor,
                                         const IfsPoint& point,
-                                        const std::vector<Pixel>& neighbours,
+                                        const DRAW::MultiplePixels& neighbours,
                                         float brightness,
                                         float logAlpha) const -> Pixel;
 
