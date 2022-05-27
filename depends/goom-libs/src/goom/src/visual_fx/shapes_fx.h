@@ -29,19 +29,10 @@ public:
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;
 
-  auto SetWeightedMainColorMaps(size_t shapeNum,
-                                std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
-  auto SetWeightedLowColorMaps(size_t shapeNum,
-                               std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
-  auto SetWeightedInnerColorMaps(size_t shapeNum,
-                                 std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
-
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void override;
 
-  auto ApplyMultiple() noexcept -> void;
+  auto ApplyMultiple() noexcept -> void override;
 
 private:
   class ShapesFxImpl;

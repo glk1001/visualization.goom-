@@ -82,8 +82,7 @@ public:
 
   void Start();
 
-  void SetWeightedMainColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
   void UpdateBuffers();
 
@@ -258,42 +257,38 @@ FlyingStarsFx::FlyingStarsFx(const FxHelper& fxHelper,
 {
 }
 
-void FlyingStarsFx::SetWeightedMainColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+auto FlyingStarsFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept
+    -> void
 {
-  m_fxImpl->SetWeightedMainColorMaps(weightedMaps);
+  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
-void FlyingStarsFx::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
-{
-  m_fxImpl->SetWeightedLowColorMaps(weightedMaps);
-}
-
-void FlyingStarsFx::Start()
+auto FlyingStarsFx::Start() noexcept -> void
 {
   m_fxImpl->Start();
 }
 
-void FlyingStarsFx::Resume()
-{
-  // nothing to be done
-}
-
-void FlyingStarsFx::Suspend()
-{
-  // nothing to be done
-}
-
-void FlyingStarsFx::Finish()
+auto FlyingStarsFx::Finish() noexcept -> void
 {
   m_fxImpl->Finish();
 }
 
-auto FlyingStarsFx::GetFxName() const -> std::string
+auto FlyingStarsFx::Resume() noexcept -> void
+{
+  // nothing to be done
+}
+
+auto FlyingStarsFx::Suspend() noexcept -> void
+{
+  // nothing to be done
+}
+
+auto FlyingStarsFx::GetFxName() const noexcept -> std::string
 {
   return "Flying Stars FX";
 }
 
-void FlyingStarsFx::ApplyMultiple()
+auto FlyingStarsFx::ApplyMultiple() noexcept -> void
 {
   m_fxImpl->UpdateBuffers();
 }
@@ -390,10 +385,11 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetImageBitmap(const size_t size) co
                                        std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
-inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedMainColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps)
+inline auto FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
+    const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_mainColorMaps = weightedMaps;
+  Expects(weightedColorMaps.mainColorMaps != nullptr);
+  m_mainColorMaps = weightedColorMaps.mainColorMaps;
 
   m_colorMapsManager.UpdateColorMapInfo(
       m_dominantMainColorMapID,
@@ -403,12 +399,9 @@ inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedMainColorMaps(
 
   m_mainColorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
   m_mainColorMaps->SetLightnessLimits(MIN_LIGHTNESS, MAX_LIGHTNESS);
-}
 
-inline void FlyingStarsFx::FlyingStarsImpl::SetWeightedLowColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps)
-{
-  m_lowColorMaps = weightedMaps;
+  Expects(weightedColorMaps.lowColorMaps != nullptr);
+  m_lowColorMaps = weightedColorMaps.lowColorMaps;
 
   m_colorMapsManager.UpdateColorMapInfo(
       m_dominantLowColorMapID,

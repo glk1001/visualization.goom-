@@ -35,6 +35,7 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
+#include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "utils/strutils.h"
 #include "visual_fx/filters/filter_buffers.h"
@@ -56,6 +57,7 @@
 namespace GOOM
 {
 
+using std::experimental::propagate_const;
 using CONTROL::GoomAllVisualFx;
 using CONTROL::GoomEvents;
 using CONTROL::GoomImageBuffers;
@@ -143,7 +145,7 @@ private:
   const GoomStateMonitor m_goomStateMonitor{m_visualFx, m_musicSettingsReactor,
                                             m_filterSettingsService};
   static constexpr bool DO_GOOM_STATE_DUMP = true;
-  std::unique_ptr<GoomStateDump> m_goomStateDump{};
+  propagate_const<std::unique_ptr<GoomStateDump>> m_goomStateDump{};
   std::string m_dumpDirectory{};
   bool m_noZooms = false;
   uint32_t m_updateNum = 0;

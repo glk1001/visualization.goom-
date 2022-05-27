@@ -19,19 +19,17 @@ class ShaderFx : public IVisualFx
 public:
   explicit ShaderFx(const FxHelper& fxHelper) noexcept;
 
-  [[nodiscard]] auto GetFxName() const -> std::string override;
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
-  void Start() override;
+  auto Start() noexcept -> void override;
+  auto Finish() noexcept -> void override;
 
-  void ChangeEffects();
+  auto ChangeEffects() noexcept -> void;
 
-  void ApplyMultiple();
-
-  auto ApplyEndEffect(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
+  auto ApplyMultiple() noexcept -> void override;
+  auto ApplyEndEffect(const UTILS::Stopwatch::TimeValues& timeValues) noexcept -> void;
 
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
-
-  void Finish() override;
 
 private:
   class ShaderFxImpl;

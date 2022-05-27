@@ -29,14 +29,16 @@ public:
           const FxHelper& fxHelper,
           const std::string& resourcesDirectory) noexcept;
 
-  [[nodiscard]] auto GetFxName() const -> std::string override;
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
 
-  void Start() override;
-  void Resume() override;
-  void ApplyMultiple();
-  void Finish() override;
+  auto Start() noexcept -> void override;
+  auto Finish() noexcept -> void override;
+
+  auto Resume() noexcept -> void override;
+
+  auto ApplyMultiple() noexcept -> void override;
 
 private:
   class ImageFxImpl;

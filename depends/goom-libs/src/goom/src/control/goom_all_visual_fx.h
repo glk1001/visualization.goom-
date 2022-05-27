@@ -6,6 +6,7 @@
 #include "goom_states.h"
 #include "utils/adaptive_exposure.h"
 #include "utils/math/misc.h"
+#include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/filters/filter_buffer_color_info.h"
 #include "visual_fx/filters/filter_settings.h"
@@ -128,9 +129,9 @@ public:
 
 private:
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
-  const std::unique_ptr<VISUAL_FX::ZoomFilterFx> m_zoomFilterFx;
-  const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine1;
-  const std::unique_ptr<VISUAL_FX::LinesFx> m_goomLine2;
+  std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::ZoomFilterFx>> m_zoomFilterFx;
+  std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::LinesFx>> m_goomLine1;
+  std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::LinesFx>> m_goomLine2;
   DRAW::IGoomDraw& m_goomDraw;
   const UTILS::MATH::IGoomRand& m_goomRand;
 

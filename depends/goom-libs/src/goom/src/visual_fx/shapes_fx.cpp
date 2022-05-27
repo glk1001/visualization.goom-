@@ -42,13 +42,7 @@ class ShapesFx::ShapesFxImpl
 public:
   explicit ShapesFxImpl(const FxHelper& fxHelper) noexcept;
 
-  auto SetWeightedMainColorMaps(size_t shapeNum,
-                                std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
-  auto SetWeightedLowColorMaps(size_t shapeNum,
-                               std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
-  auto SetWeightedInnerColorMaps(size_t shapeNum,
-                                 std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void;
-
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   auto Start() noexcept -> void;
@@ -112,23 +106,9 @@ auto ShapesFx::GetFxName() const noexcept -> std::string
   return "shapes";
 }
 
-auto ShapesFx::SetWeightedMainColorMaps(
-    const size_t shapeNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
+auto ShapesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedMainColorMaps(shapeNum, weightedMaps);
-}
-
-auto ShapesFx::SetWeightedLowColorMaps(const size_t shapeNum,
-                                       const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
-    -> void
-{
-  m_fxImpl->SetWeightedLowColorMaps(shapeNum, weightedMaps);
-}
-
-auto ShapesFx::SetWeightedInnerColorMaps(
-    const size_t shapeNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
-{
-  m_fxImpl->SetWeightedInnerColorMaps(shapeNum, weightedMaps);
+  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
 auto ShapesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -192,22 +172,17 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
   };
 }
 
-inline auto ShapesFx::ShapesFxImpl::SetWeightedMainColorMaps(
-    const size_t shapeNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
+inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
+    const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_shapes.at(shapeNum).SetWeightedMainColorMaps(weightedMaps);
-}
+  Expects(weightedColorMaps.mainColorMaps != nullptr);
+  Expects(weightedColorMaps.lowColorMaps != nullptr);
+  Expects(weightedColorMaps.extraColorMaps != nullptr);
 
-inline auto ShapesFx::ShapesFxImpl::SetWeightedLowColorMaps(
-    const size_t shapeNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
-{
-  m_shapes.at(shapeNum).SetWeightedLowColorMaps(weightedMaps);
-}
-
-inline auto ShapesFx::ShapesFxImpl::SetWeightedInnerColorMaps(
-    const size_t shapeNum, const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept -> void
-{
-  m_shapes.at(shapeNum).SetWeightedInnerColorMaps(weightedMaps);
+  const uint32_t shapeNum = weightedColorMaps.id;
+  m_shapes.at(shapeNum).SetWeightedMainColorMaps(weightedColorMaps.mainColorMaps);
+  m_shapes.at(shapeNum).SetWeightedLowColorMaps(weightedColorMaps.lowColorMaps);
+  m_shapes.at(shapeNum).SetWeightedInnerColorMaps(weightedColorMaps.extraColorMaps);
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void

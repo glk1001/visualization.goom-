@@ -29,8 +29,7 @@ class CirclesFx::CirclesFxImpl
 public:
   CirclesFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
-                            std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
   void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
 
@@ -51,33 +50,32 @@ CirclesFx::CirclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBit
 {
 }
 
-void CirclesFx::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
-                                     const std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps)
+auto CirclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedMaps, weightedLowMaps);
+  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
-void CirclesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
+auto CirclesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
   m_fxImpl->SetZoomMidpoint(zoomMidpoint);
 }
 
-void CirclesFx::Start()
+auto CirclesFx::Start() noexcept -> void
 {
   m_fxImpl->Start();
 }
 
-void CirclesFx::Finish()
+auto CirclesFx::Finish() noexcept -> void
 {
   // nothing to do
 }
 
-auto CirclesFx::GetFxName() const -> std::string
+auto CirclesFx::GetFxName() const noexcept -> std::string
 {
   return "circles";
 }
 
-void CirclesFx::ApplyMultiple()
+auto CirclesFx::ApplyMultiple() noexcept -> void
 {
   m_fxImpl->ApplyMultiple();
 }
@@ -136,11 +134,13 @@ auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets(const Point2dInt& screenMi
   return circleCentreTargets;
 }
 
-inline void CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
-    const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
-    const std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps)
+inline auto CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
+    const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_circles.SetWeightedColorMaps(weightedMaps, weightedLowMaps);
+  Expects(weightedColorMaps.mainColorMaps != nullptr);
+  Expects(weightedColorMaps.lowColorMaps != nullptr);
+
+  m_circles.SetWeightedColorMaps(weightedColorMaps.mainColorMaps, weightedColorMaps.lowColorMaps);
 }
 
 inline void CirclesFx::CirclesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint)

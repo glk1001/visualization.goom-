@@ -187,7 +187,7 @@ LinesFx::LinesFx(const FxHelper& fxHelper,
 {
 }
 
-auto LinesFx::GetFxName() const -> std::string
+auto LinesFx::GetFxName() const noexcept -> std::string
 {
   return "lines";
 }
@@ -197,12 +197,12 @@ void LinesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weight
   m_fxImpl->SetWeightedColorMaps(weightedMaps);
 }
 
-void LinesFx::Start()
+auto LinesFx::Start() noexcept -> void
 {
   m_fxImpl->Start();
 }
 
-void LinesFx::Finish()
+auto LinesFx::Finish() noexcept -> void
 {
   m_fxImpl->Finish();
 }
@@ -227,31 +227,31 @@ auto LinesFx::GetRandomLineColor() const -> Pixel
   return m_fxImpl->GetRandomLineColor();
 }
 
-auto LinesFx::GetLineColorPower() const -> float
+auto LinesFx::GetLineColorPower() const noexcept -> float
 {
   return m_fxImpl->GetLineColorPower();
 }
 
-void LinesFx::SetLineColorPower(const float val)
+auto LinesFx::SetLineColorPower(const float val) noexcept -> void
 {
   m_fxImpl->SetLineColorPower(val);
 }
 
-auto LinesFx::CanResetDestLine() const -> bool
+auto LinesFx::CanResetDestLine() const noexcept -> bool
 {
   return m_fxImpl->CanResetDestLine();
 }
 
-void LinesFx::ResetDestLine(const LineType newLineType,
+auto LinesFx::ResetDestLine(const LineType newLineType,
                             const float newParam,
                             const float newAmplitude,
-                            const Pixel& newColor)
+                            const Pixel& newColor) noexcept -> void
 {
   m_fxImpl->ResetDestLine(newLineType, newParam, newAmplitude, newColor);
 }
 
-void LinesFx::DrawLines(const AudioSamples::SampleArray& soundData,
-                        const AudioSamples::MaxMinValues& soundMinMax)
+auto LinesFx::DrawLines(const AudioSamples::SampleArray& soundData,
+                        const AudioSamples::MaxMinValues& soundMinMax) noexcept -> void
 {
   m_fxImpl->DrawLines(soundData, soundMinMax);
 }

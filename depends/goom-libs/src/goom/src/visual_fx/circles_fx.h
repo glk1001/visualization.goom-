@@ -28,17 +28,15 @@ public:
   CirclesFx(const FxHelper& fxHelper,
             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetFxName() const -> std::string override;
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
-                            std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
+  auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void override;
 
-  void SetZoomMidpoint(const Point2dInt& zoomMidpoint) override;
+  auto Start() noexcept -> void override;
+  auto Finish() noexcept -> void override;
 
-  void Start() override;
-  void Finish() override;
-
-  void ApplyMultiple();
+  auto ApplyMultiple() noexcept -> void override;
 
 private:
   class CirclesFxImpl;

@@ -46,32 +46,32 @@ ShaderFx::ShaderFx(const FxHelper& fxHelper) noexcept
 {
 }
 
-void ShaderFx::Start()
-{
-  m_fxImpl->Start();
-}
-
-void ShaderFx::Finish()
-{
-  // nothing to do
-}
-
-auto ShaderFx::GetFxName() const -> std::string
-{
-  return "shader";
-}
-
-void ShaderFx::ChangeEffects()
+auto ShaderFx::ChangeEffects() noexcept -> void
 {
   m_fxImpl->ChangeEffects();
 }
 
-void ShaderFx::ApplyMultiple()
+auto ShaderFx::Start() noexcept -> void
+{
+  m_fxImpl->Start();
+}
+
+auto ShaderFx::Finish() noexcept -> void
+{
+  // nothing to do
+}
+
+auto ShaderFx::GetFxName() const noexcept -> std::string
+{
+  return "shader";
+}
+
+auto ShaderFx::ApplyMultiple() noexcept -> void
 {
   m_fxImpl->ApplyMultiple();
 }
 
-auto ShaderFx::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void
+auto ShaderFx::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) noexcept -> void
 {
   m_fxImpl->ApplyEndEffect(timeValues);
 }

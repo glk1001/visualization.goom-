@@ -46,26 +46,25 @@ public:
           float destParam,
           const Pixel& destColor) noexcept;
 
-  [[nodiscard]] auto GetFxName() const -> std::string;
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string;
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
 
-  void Start();
+  auto Start() noexcept -> void;
+  auto Finish() noexcept -> void;
 
-  [[nodiscard]] auto GetLineColorPower() const -> float;
-  void SetLineColorPower(float val);
+  [[nodiscard]] auto GetLineColorPower() const noexcept -> float;
+  auto SetLineColorPower(float val) noexcept -> void;
 
   static constexpr uint32_t MIN_LINE_DURATION = 80;
-  [[nodiscard]] auto CanResetDestLine() const -> bool;
-  void ResetDestLine(LineType newLineType,
+  [[nodiscard]] auto CanResetDestLine() const noexcept -> bool;
+  auto ResetDestLine(LineType newLineType,
                      float newParam,
                      float newAmplitude,
-                     const Pixel& newColor);
+                     const Pixel& newColor) noexcept -> void;
 
-  void DrawLines(const AudioSamples::SampleArray& soundData,
-                 const AudioSamples::MaxMinValues& soundMinMax);
-
-  void Finish();
+  auto DrawLines(const AudioSamples::SampleArray& soundData,
+                 const AudioSamples::MaxMinValues& soundMinMax) noexcept -> void;
 
   [[nodiscard]] auto GetRandomLineColor() const -> Pixel;
   [[nodiscard]] static auto GetBlackLineColor() -> Pixel;

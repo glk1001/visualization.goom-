@@ -120,8 +120,7 @@ class TubesFx::TubeFxImpl
 public:
   TubeFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
-  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
   void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
 
@@ -139,7 +138,7 @@ private:
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
   uint64_t m_updateNum = 0;
-  std::shared_ptr<RandomColorMaps> m_colorMaps{};
+  std::shared_ptr<RandomColorMaps> m_mainColorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath;
@@ -226,47 +225,42 @@ TubesFx::TubesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps
 {
 }
 
-void TubesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
-{
-  m_fxImpl->SetWeightedColorMaps(weightedMaps);
-}
-
-void TubesFx::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
-{
-  m_fxImpl->SetWeightedLowColorMaps(weightedMaps);
-}
-
-void TubesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
-{
-  m_fxImpl->SetZoomMidpoint(zoomMidpoint);
-}
-
-void TubesFx::Start()
-{
-  m_fxImpl->Start();
-}
-
-void TubesFx::Resume()
-{
-  m_fxImpl->Resume();
-}
-
-void TubesFx::Suspend()
-{
-  m_fxImpl->Suspend();
-}
-
-void TubesFx::Finish()
-{
-  // Not needed.
-}
-
-auto TubesFx::GetFxName() const -> std::string
+auto TubesFx::GetFxName() const noexcept -> std::string
 {
   return "tube";
 }
 
-void TubesFx::ApplyMultiple()
+auto TubesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
+  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
+}
+
+auto TubesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
+{
+  m_fxImpl->SetZoomMidpoint(zoomMidpoint);
+}
+
+auto TubesFx::Start() noexcept -> void
+{
+  m_fxImpl->Start();
+}
+
+auto TubesFx::Finish() noexcept -> void
+{
+  // Not needed.
+}
+
+auto TubesFx::Resume() noexcept -> void
+{
+  m_fxImpl->Resume();
+}
+
+auto TubesFx::Suspend() noexcept -> void
+{
+  m_fxImpl->Suspend();
+}
+
+auto TubesFx::ApplyMultiple() noexcept -> void
 {
   m_fxImpl->ApplyMultiple();
 }
@@ -322,22 +316,18 @@ inline auto TubesFx::TubeFxImpl::GetImageBitmap(const SmallImageBitmaps::ImageNa
       std::clamp(size, SmallImageBitmaps::MIN_IMAGE_SIZE, SmallImageBitmaps::MAX_IMAGE_SIZE));
 }
 
-inline void TubesFx::TubeFxImpl::SetWeightedColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps)
+inline auto TubesFx::TubeFxImpl::SetWeightedColorMaps(
+    const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_colorMaps = weightedMaps;
-
+  Expects(weightedColorMaps.mainColorMaps != nullptr);
+  m_mainColorMaps = weightedColorMaps.mainColorMaps;
   for (auto& tube : m_tubes)
   {
-    tube.SetWeightedMainColorMaps(m_colorMaps);
+    tube.SetWeightedMainColorMaps(m_mainColorMaps);
   }
-}
 
-inline void TubesFx::TubeFxImpl::SetWeightedLowColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps)
-{
-  m_lowColorMaps = weightedMaps;
-
+  Expects(weightedColorMaps.lowColorMaps != nullptr);
+  m_lowColorMaps = weightedColorMaps.lowColorMaps;
   for (auto& tube : m_tubes)
   {
     tube.SetWeightedLowColorMaps(m_lowColorMaps);
@@ -366,7 +356,7 @@ inline auto TubesFx::TubeFxImpl::GetMiddlePos() const -> Point2dInt
 
 void TubesFx::TubeFxImpl::InitTubes()
 {
-  Expects(m_colorMaps != nullptr);
+  Expects(m_mainColorMaps != nullptr);
   Expects(m_lowColorMaps != nullptr);
 
   const Tube::DrawFuncs drawToOneFuncs{
@@ -393,7 +383,7 @@ void TubesFx::TubeFxImpl::InitTubes()
                                 m_draw.GetScreenWidth(),
                                 m_draw.GetScreenHeight(),
                                 m_goomRand,
-                                m_colorMaps,
+                                m_mainColorMaps,
                                 m_lowColorMaps,
                                 TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
                                 TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor};
@@ -406,7 +396,7 @@ void TubesFx::TubeFxImpl::InitTubes()
                               m_draw.GetScreenWidth(),
                               m_draw.GetScreenHeight(),
                               m_goomRand,
-                              m_colorMaps,
+                              m_mainColorMaps,
                               m_lowColorMaps,
                               TUBE_SETTINGS.at(i).radiusEdgeOffset,
                               TUBE_SETTINGS.at(i).brightnessFactor};

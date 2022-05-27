@@ -69,7 +69,7 @@ public:
   [[nodiscard]] auto GetImageChunk(size_t i) const -> const ImageChunk&;
 
   [[nodiscard]] auto GetStartPosition(size_t i) const -> const Point2dInt&;
-  void SetStartPosition(size_t i, const Point2dInt& pos);
+  auto SetStartPosition(size_t i, const Point2dInt& pos) -> void;
 
 private:
   using ImageAsChunks = std::vector<ImageChunk>;
@@ -79,10 +79,10 @@ private:
   std::vector<Point2dInt> m_startPositions;
   [[nodiscard]] static auto SplitImageIntoChunks(const ImageBitmap& imageBitmap,
                                                  const PluginInfo& goomInfo) -> ImageAsChunks;
-  static void SetImageChunkPixels(const ImageBitmap& imageBitmap,
+  static auto SetImageChunkPixels(const ImageBitmap& imageBitmap,
                                   int32_t yImage,
                                   int32_t xImage,
-                                  ImageChunk& imageChunk);
+                                  ImageChunk& imageChunk) -> void;
 };
 
 class ImageFx::ImageFxImpl
@@ -92,11 +92,11 @@ public:
               const FxHelper& fxHelper,
               const std::string& resourcesDirectory) noexcept;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
-  void Start();
-  void Resume();
-  void ApplyMultiple();
+  auto Start() -> void;
+  auto Resume() -> void;
+  auto ApplyMultiple() -> void;
 
 private:
   Parallel& m_parallel;
@@ -125,10 +125,10 @@ private:
   float m_inOutTSq = 0.0F;
   Point2dInt m_floatingStartPosition{};
   TValue m_floatingT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS, 1.0F};
-  void InitImage();
+  auto InitImage() -> void;
 
-  void DrawChunks();
-  void DrawChunk(const Point2dInt& pos, float brightness, const ChunkPixels& pixels) const;
+  auto DrawChunks() -> void;
+  auto DrawChunk(const Point2dInt& pos, float brightness, const ChunkPixels& pixels) const -> void;
   [[nodiscard]] auto GetNextChunkStartPosition(size_t i) const -> Point2dInt;
   [[nodiscard]] auto GetNextChunkPosition(const Point2dInt& nextStartPosition,
                                           const ChunkedImage::ImageChunk& imageChunk) const
@@ -137,12 +137,12 @@ private:
       -> MultiplePixels;
   [[nodiscard]] auto GetMappedColor(const Pixel& pixelColor) const -> Pixel;
 
-  void UpdateImageStartPositions();
-  void ResetCurrentImage();
-  void ResetStartPositions();
+  auto UpdateImageStartPositions() -> void;
+  auto ResetCurrentImage() -> void;
+  auto ResetStartPositions() -> void;
 
-  void UpdateFloatingStartPositions();
-  void SetNewFloatingStartPosition();
+  auto UpdateFloatingStartPositions() -> void;
+  auto SetNewFloatingStartPosition() -> void;
   [[nodiscard]] auto GetChunkFloatingStartPosition(size_t i) const -> Point2dInt;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
@@ -156,32 +156,32 @@ ImageFx::ImageFx(Parallel& parallel,
 {
 }
 
-void ImageFx::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps)
-{
-  m_fxImpl->SetWeightedColorMaps(weightedMaps);
-}
-
-void ImageFx::Start()
-{
-  m_fxImpl->Start();
-}
-
-void ImageFx::Resume()
-{
-  m_fxImpl->Resume();
-}
-
-void ImageFx::Finish()
-{
-  // nothing to do
-}
-
-auto ImageFx::GetFxName() const -> std::string
+auto ImageFx::GetFxName() const noexcept -> std::string
 {
   return "image";
 }
 
-void ImageFx::ApplyMultiple()
+auto ImageFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
+  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
+}
+
+auto ImageFx::Start() noexcept -> void
+{
+  m_fxImpl->Start();
+}
+
+auto ImageFx::Finish() noexcept -> void
+{
+  // nothing to do
+}
+
+auto ImageFx::Resume() noexcept -> void
+{
+  m_fxImpl->Resume();
+}
+
+auto ImageFx::ApplyMultiple() noexcept -> void
 {
   m_fxImpl->ApplyMultiple();
 }
@@ -204,25 +204,27 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
 {
 }
 
-auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
+inline auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
 {
   Expects(m_colorMaps != nullptr);
   return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
 }
 
-void ImageFx::ImageFxImpl::SetWeightedColorMaps(
-    const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps)
+inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
+    const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_colorMaps = weightedMaps;
+  Expects(weightedColorMaps.mainColorMaps != nullptr);
+
+  m_colorMaps = weightedColorMaps.mainColorMaps;
   m_pixelColorIsDominant = m_goomRand.ProbabilityOf(0.0F);
 }
 
-void ImageFx::ImageFxImpl::Resume()
+inline auto ImageFx::ImageFxImpl::Resume() -> void
 {
   m_brightnessBase = m_goomRand.GetRandInRange(0.1F, 1.0F) * DEFAULT_BRIGHTNESS_BASE;
 }
 
-void ImageFx::ImageFxImpl::Start()
+inline auto ImageFx::ImageFxImpl::Start() -> void
 {
 
   InitImage();
@@ -231,7 +233,7 @@ void ImageFx::ImageFxImpl::Start()
   SetNewFloatingStartPosition();
 }
 
-void ImageFx::ImageFxImpl::InitImage()
+auto ImageFx::ImageFxImpl::InitImage() -> void
 {
   // clang-format off
   static const std::array s_IMAGE_FILENAMES{
@@ -265,13 +267,13 @@ void ImageFx::ImageFxImpl::InitImage()
   }
 }
 
-inline void ImageFx::ImageFxImpl::ResetCurrentImage()
+inline auto ImageFx::ImageFxImpl::ResetCurrentImage() -> void
 {
   m_currentImage =
       m_images[m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(m_images.size()))].get();
 }
 
-inline void ImageFx::ImageFxImpl::ResetStartPositions()
+inline auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
 {
   const auto randMaxRadius = m_goomRand.GetRandInRange(0.7F, 1.0F) * m_maxRadius;
 
@@ -312,14 +314,14 @@ inline auto ImageFx::ImageFxImpl::GetChunkFloatingStartPosition(const size_t i) 
   return floatingStartPosition;
 }
 
-inline void ImageFx::ImageFxImpl::SetNewFloatingStartPosition()
+inline auto ImageFx::ImageFxImpl::SetNewFloatingStartPosition() -> void
 {
   m_floatingStartPosition =
       m_screenCentre - Vec2dInt{m_goomRand.GetRandInRange(CHUNK_WIDTH, m_availableWidth),
                                 m_goomRand.GetRandInRange(CHUNK_HEIGHT, m_availableHeight)};
 }
 
-void ImageFx::ImageFxImpl::ApplyMultiple()
+inline auto ImageFx::ImageFxImpl::ApplyMultiple() -> void
 {
   DrawChunks();
 
@@ -328,7 +330,7 @@ void ImageFx::ImageFxImpl::ApplyMultiple()
   UpdateImageStartPositions();
 }
 
-inline void ImageFx::ImageFxImpl::DrawChunks()
+inline auto ImageFx::ImageFxImpl::DrawChunks() -> void
 {
   const float brightness = m_brightnessBase + (0.02F * m_inOutT());
 
@@ -354,7 +356,7 @@ inline void ImageFx::ImageFxImpl::DrawChunks()
    **/
 }
 
-inline void ImageFx::ImageFxImpl::UpdateFloatingStartPositions()
+inline auto ImageFx::ImageFxImpl::UpdateFloatingStartPositions() -> void
 {
   m_floatingT.Increment();
   if (m_floatingT() <= 0.0F)
@@ -363,7 +365,7 @@ inline void ImageFx::ImageFxImpl::UpdateFloatingStartPositions()
   }
 }
 
-inline void ImageFx::ImageFxImpl::UpdateImageStartPositions()
+inline auto ImageFx::ImageFxImpl::UpdateImageStartPositions() -> void
 {
   const bool delayJustFinishing = m_inOutT.DelayJustFinishing();
 
@@ -380,7 +382,7 @@ inline void ImageFx::ImageFxImpl::UpdateImageStartPositions()
   }
 }
 
-inline Point2dInt ImageFx::ImageFxImpl::GetNextChunkStartPosition(const size_t i) const
+inline auto ImageFx::ImageFxImpl::GetNextChunkStartPosition(const size_t i) const -> Point2dInt
 {
   const Point2dInt startPos =
       lerp(m_currentImage->GetStartPosition(i),
@@ -388,17 +390,18 @@ inline Point2dInt ImageFx::ImageFxImpl::GetNextChunkStartPosition(const size_t i
   return startPos;
 }
 
-inline Point2dInt ImageFx::ImageFxImpl::GetNextChunkPosition(
+inline auto ImageFx::ImageFxImpl::GetNextChunkPosition(
     const Point2dInt& nextStartPosition, const ChunkedImage::ImageChunk& imageChunk) const
+    -> Point2dInt
 {
   const Point2dInt nextChunkPosition =
       lerp(nextStartPosition, imageChunk.finalPosition, m_inOutT());
   return nextChunkPosition;
 }
 
-void ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
+auto ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
                                      const float brightness,
-                                     const ChunkPixels& pixels) const
+                                     const ChunkPixels& pixels) const -> void
 
 {
   int32_t y = pos.y;
@@ -472,7 +475,7 @@ inline auto ChunkedImage::GetStartPosition(const size_t i) const -> const Point2
   return m_startPositions.at(i);
 }
 
-inline void ChunkedImage::SetStartPosition(const size_t i, const Point2dInt& pos)
+inline auto ChunkedImage::SetStartPosition(const size_t i, const Point2dInt& pos) -> void
 {
   m_startPositions.at(i) = pos;
 }
@@ -514,10 +517,10 @@ auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap, const Pl
   return imageAsChunks;
 }
 
-void ChunkedImage::SetImageChunkPixels(const ImageBitmap& imageBitmap,
+auto ChunkedImage::SetImageChunkPixels(const ImageBitmap& imageBitmap,
                                        const int32_t yImage,
                                        const int32_t xImage,
-                                       ChunkedImage::ImageChunk& imageChunk)
+                                       ChunkedImage::ImageChunk& imageChunk) -> void
 {
   for (size_t yPixel = 0; yPixel < CHUNK_HEIGHT; ++yPixel)
   {

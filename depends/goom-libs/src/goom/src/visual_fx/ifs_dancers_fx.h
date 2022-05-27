@@ -43,21 +43,20 @@ public:
   IfsDancersFx(const FxHelper& fxHelper,
                const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetFxName() const -> std::string override;
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
-  void Start() override;
+  auto Start() noexcept -> void override;
+  auto Finish() noexcept -> void override;
 
-  void Resume() override;
-  void Suspend() override;
+  auto Resume() noexcept -> void override;
+  auto Suspend() noexcept -> void override;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
-  void Refresh() override;
-  void PostStateUpdate(bool wasActiveInPreviousState) override;
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
+  auto Refresh() noexcept -> void override;
+  auto PostStateUpdate(bool wasActiveInPreviousState) noexcept -> void override;
 
-  void ApplyNoDraw();
-  void ApplyMultiple();
-
-  void Finish() override;
+  auto ApplyNoDraw() noexcept -> void override;
+  auto ApplyMultiple() noexcept -> void override;
 
 private:
   class IfsDancersFxImpl;

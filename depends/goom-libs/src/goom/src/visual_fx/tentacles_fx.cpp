@@ -41,7 +41,7 @@ class TentaclesFx::TentaclesImpl
 public:
   TentaclesImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
 
-  auto SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps) -> void;
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
   auto Start() -> void;
   auto Resume() -> void;
@@ -94,37 +94,37 @@ TentaclesFx::TentaclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smal
 {
 }
 
-auto TentaclesFx::GetFxName() const -> std::string
+auto TentaclesFx::GetFxName() const noexcept -> std::string
 {
   return "Tentacles FX";
 }
 
-auto TentaclesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps) -> void
+auto TentaclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedMaps);
+  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
-auto TentaclesFx::Start() -> void
+auto TentaclesFx::Start() noexcept -> void
 {
   m_fxImpl->Start();
 }
 
-auto TentaclesFx::Resume() -> void
+auto TentaclesFx::Finish() noexcept -> void
+{
+  // nothing to do
+}
+
+auto TentaclesFx::Resume() noexcept -> void
 {
   m_fxImpl->Resume();
 }
 
-auto TentaclesFx::Suspend() -> void
+auto TentaclesFx::Suspend() noexcept -> void
 {
   // nothing to do
 }
 
-auto TentaclesFx::Finish() -> void
-{
-  // nothing to do
-}
-
-auto TentaclesFx::ApplyMultiple() -> void
+auto TentaclesFx::ApplyMultiple() noexcept -> void
 {
   m_fxImpl->Update();
 }
@@ -227,16 +227,19 @@ inline auto TentaclesFx::TentaclesImpl::RefreshTentacles() -> void
 }
 
 inline auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps) -> void
+    const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_dominantColorMap = weightedMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
+  Expects(weightedColorMaps.mainColorMaps != nullptr);
+
+  m_dominantColorMap =
+      weightedColorMaps.mainColorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
   m_dominantColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   m_dominantDotColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   UpdateDominantColors();
 
   for (auto& driver : m_tentacleDrivers)
   {
-    driver->SetWeightedColorMaps(weightedMaps);
+    driver->SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
     driver->SetDominantColors(m_dominantColor, m_dominantLowColor, m_dominantDotColor);
   }
 }

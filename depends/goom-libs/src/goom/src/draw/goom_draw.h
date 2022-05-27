@@ -99,8 +99,8 @@ private:
                                                uint32_t intBuffIntensity) -> Pixel;
   static constexpr float DEFAULT_BUFF_INTENSITY = 0.5F;
   float m_buffIntensity = DEFAULT_BUFF_INTENSITY;
-  uint32_t m_intBuffIntensity;
-  mutable GOOM::UTILS::Parallel m_parallel;
+  uint32_t m_intBuffIntensity{};
+  mutable GOOM::UTILS::Parallel m_parallel{-1}; // max cores - 1
 };
 
 inline auto IGoomDraw::GetScreenWidth() const -> uint32_t

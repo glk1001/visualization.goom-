@@ -15,9 +15,7 @@ IGoomDraw::IGoomDraw(const uint32_t screenWidth, const uint32_t screenHeight)
     m_drawMethods{m_screenWidth, m_screenHeight,
                   [this](const int32_t x, const int32_t y, const MultiplePixels& newColors) {
                     DrawPixelsToDevice({x, y}, newColors);
-                  }},
-    m_intBuffIntensity{},
-    m_parallel{-1} // max cores - 1
+                  }}
 {
   SetBuffIntensity(m_buffIntensity);
   SetDefaultBlendPixelFunc();

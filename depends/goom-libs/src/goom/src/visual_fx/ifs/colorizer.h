@@ -4,6 +4,7 @@
 #include "color/colormaps.h"
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "utils/math/goom_rand_base.h"
 #include "visual_fx/ifs_dancers_fx.h"
@@ -20,7 +21,7 @@ class Colorizer
 public:
   explicit Colorizer(const UTILS::MATH::IGoomRand& goomRand);
 
-  void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);
+  void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedColorMaps);
 
   auto GetColorMaps() const -> const COLOR::RandomColorMaps&;
 
@@ -76,6 +77,7 @@ private:
 
 inline auto Colorizer::GetColorMaps() const -> const COLOR::RandomColorMaps&
 {
+  Expects(m_colorMaps != nullptr);
   return *m_colorMaps;
 }
 

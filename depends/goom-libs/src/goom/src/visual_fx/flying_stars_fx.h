@@ -38,19 +38,17 @@ public:
   FlyingStarsFx(const FxHelper& fxHelper,
                 const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetFxName() const -> std::string override;
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
-  void Start() override;
+  auto Start() noexcept -> void override;
+  auto Finish() noexcept -> void override;
 
-  void Resume() override;
-  void Suspend() override;
+  auto Resume() noexcept -> void override;
+  auto Suspend() noexcept -> void override;
 
-  void SetWeightedMainColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
 
-  void ApplyMultiple();
-
-  void Finish() override;
+  auto ApplyMultiple() noexcept -> void override;
 
 private:
   class FlyingStarsImpl;

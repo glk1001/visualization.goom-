@@ -49,9 +49,9 @@ Colorizer::Colorizer(const IGoomRand& goomRand)
   SetWeightedColorMaps(GetSlightlyDivergingStandardMaps(m_goomRand));
 }
 
-void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedMaps)
+void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedColorMaps)
 {
-  m_colorMaps = weightedMaps;
+  m_colorMaps = weightedColorMaps;
 
   static constexpr float PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
   const std::set<RandomColorMaps::ColorMapTypes>& colorMapTypes =

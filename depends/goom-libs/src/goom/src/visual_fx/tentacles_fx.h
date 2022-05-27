@@ -28,18 +28,17 @@ public:
   TentaclesFx(const FxHelper& fxHelper,
               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetFxName() const -> std::string override;
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
-  auto SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) -> void;
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
 
-  auto Start() -> void override;
+  auto Start() noexcept -> void override;
+  auto Finish() noexcept -> void override;
 
-  auto Resume() -> void override;
-  auto Suspend() -> void override;
+  auto Resume() noexcept -> void override;
+  auto Suspend() noexcept -> void override;
 
-  auto ApplyMultiple() -> void;
-
-  auto Finish() -> void override;
+  auto ApplyMultiple() noexcept -> void override;
 
 private:
   class TentaclesImpl;

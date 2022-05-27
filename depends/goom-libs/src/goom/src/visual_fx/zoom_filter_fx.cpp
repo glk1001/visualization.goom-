@@ -21,19 +21,22 @@
 #include "filters/filter_colors_service.h"
 #include "goom/logging.h"
 #include "goom/spimpl.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
+#include "utils/propagate_const.h"
 
 #include <array>
-#undef NDEBUG
 #include <cstdint>
 #include <memory>
+
 
 namespace GOOM::VISUAL_FX
 {
 
+using std::experimental::propagate_const;
 using UTILS::GetPair;
 using UTILS::Logging;
 using UTILS::MoveNameValuePairs;
@@ -81,8 +84,8 @@ private:
   const uint32_t m_screenHeight;
   Parallel& m_parallel;
 
-  std::unique_ptr<FilterBuffersService> m_filterBuffersService;
-  std::unique_ptr<FilterColorsService> m_filterColorsService;
+  propagate_const<std::unique_ptr<FilterBuffersService>> m_filterBuffersService;
+  propagate_const<std::unique_ptr<FilterColorsService>> m_filterColorsService;
 
   uint64_t m_updateNum = 0;
 
@@ -97,6 +100,11 @@ ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
   : m_fxImpl{spimpl::make_unique_impl<ZoomFilterImpl>(
         parallel, goomInfo, std::move(filterBuffersService), std::move(filterColorsService))}
 {
+}
+
+auto ZoomFilterFx::GetFxName() const noexcept -> std::string
+{
+  return "ZoomFilter FX";
 }
 
 auto ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings) noexcept -> void
@@ -117,11 +125,6 @@ auto ZoomFilterFx::Start() noexcept -> void
 auto ZoomFilterFx::Finish() noexcept -> void
 {
   // No finish actions required
-}
-
-auto ZoomFilterFx::GetFxName() const noexcept -> std::string
-{
-  return "ZoomFilter FX";
 }
 
 auto ZoomFilterFx::GetTranLerpFactor() const noexcept -> int32_t

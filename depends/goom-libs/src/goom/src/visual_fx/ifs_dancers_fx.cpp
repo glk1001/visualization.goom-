@@ -77,16 +77,16 @@ class IfsDancersFx::IfsDancersFxImpl
 public:
   IfsDancersFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
-  void ApplyNoDraw();
-  void UpdateIfs();
-  void UpdateLowDensityThreshold();
-  void Refresh();
+  auto ApplyNoDraw() -> void;
+  auto UpdateIfs() -> void;
+  auto UpdateLowDensityThreshold() -> void;
+  auto Refresh() -> void;
 
-  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
-  void PostStateUpdate(bool wasActiveInPreviousState);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+  auto PostStateUpdate(bool wasActiveInPreviousState) -> void;
 
-  void Start();
-  void Finish();
+  auto Start() -> void;
+  auto Finish() -> void;
 
 private:
   static constexpr int32_t MIN_CYCLE_LENGTH = 1000;
@@ -101,28 +101,28 @@ private:
 
   std::unique_ptr<Fractal> m_fractal{};
 
-  void InitFractal();
+  auto InitFractal() -> void;
 
   int32_t m_cycle = 0;
   int32_t m_ifsIncr = 1; // dessiner l'ifs (0 = non: > = increment)
   int32_t m_decayIfs = 0; // disparition de l'ifs
   int32_t m_recayIfs = 0; // dedisparition de l'ifs
-  void UpdateIncr();
+  auto UpdateIncr() -> void;
   [[nodiscard]] auto GetIfsIncr() const -> int;
-  void UpdateCycle();
-  void UpdateDecay();
-  void UpdateDecayAndRecay();
-  void Renew();
+  auto UpdateCycle() -> void;
+  auto UpdateDecay() -> void;
+  auto UpdateDecayAndRecay() -> void;
+  auto Renew() -> void;
 
   // TODO Move to simi
   static constexpr float T_MIX_STARTING_VALUE = 0.01F;
   TValue m_tMix{TValue::StepType::CONTINUOUS_REVERSIBLE, T_MIX_STARTING_VALUE};
   static constexpr float POINT_BRIGHTNESS = 3.0F;
   static constexpr float BITMAP_BRIGHTNESS = 2.0F;
-  void ChangeColorMaps();
-  void ChangeSpeed();
-  void DrawNextIfsPoints();
-  void DrawPoint(const IfsPoint& ifsPoint, float t, float tMix) const;
+  auto ChangeColorMaps() -> void;
+  auto ChangeSpeed() -> void;
+  auto DrawNextIfsPoints() -> void;
+  auto DrawPoint(const IfsPoint& ifsPoint, float t, float tMix) const -> void;
 
   static constexpr uint32_t MAX_DENSITY_COUNT = 20;
   static constexpr uint32_t MIN_DENSITY_COUNT = 5;
@@ -134,8 +134,9 @@ private:
   [[nodiscard]] auto BlurLowDensityColors(size_t numPoints,
                                           const std::vector<IfsPoint>& lowDensityPoints) const
       -> bool;
-  void SetLowDensityColors(const std::vector<IfsPoint>& points, uint32_t maxLowDensityCount) const;
-  void UpdateLowDensityBlurThreshold();
+  auto SetLowDensityColors(const std::vector<IfsPoint>& points, uint32_t maxLowDensityCount) const
+      -> void;
+  auto UpdateLowDensityBlurThreshold() -> void;
   [[nodiscard]] auto GetNewBlurWidth() const -> uint32_t;
 
   [[nodiscard]] auto MegaChangeColorMapEvent() const -> bool;
@@ -148,54 +149,54 @@ IfsDancersFx::IfsDancersFx(const FxHelper& fxHelper, const SmallImageBitmaps& sm
 {
 }
 
-void IfsDancersFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+auto IfsDancersFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedMaps);
+  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
-void IfsDancersFx::PostStateUpdate(const bool wasActiveInPreviousState)
-{
-  m_fxImpl->PostStateUpdate(wasActiveInPreviousState);
-}
-
-void IfsDancersFx::Start()
+auto IfsDancersFx::Start() noexcept -> void
 {
   m_fxImpl->Start();
 }
 
-void IfsDancersFx::Resume()
-{
-  // nothing to do
-}
-
-void IfsDancersFx::Suspend()
-{
-  // nothing to do
-}
-
-void IfsDancersFx::Finish()
+auto IfsDancersFx::Finish() noexcept -> void
 {
   m_fxImpl->Finish();
 }
 
-auto IfsDancersFx::GetFxName() const -> std::string
+auto IfsDancersFx::Resume() noexcept -> void
+{
+  // nothing to do
+}
+
+auto IfsDancersFx::Suspend() noexcept -> void
+{
+  // nothing to do
+}
+
+auto IfsDancersFx::GetFxName() const noexcept -> std::string
 {
   return "IFS FX";
 }
 
-void IfsDancersFx::ApplyNoDraw()
+auto IfsDancersFx::ApplyNoDraw() noexcept -> void
 {
   m_fxImpl->ApplyNoDraw();
 }
 
-void IfsDancersFx::ApplyMultiple()
+auto IfsDancersFx::ApplyMultiple() noexcept -> void
 {
   m_fxImpl->UpdateIfs();
 }
 
-void IfsDancersFx::Refresh()
+auto IfsDancersFx::Refresh() noexcept -> void
 {
   m_fxImpl->Refresh();
+}
+
+auto IfsDancersFx::PostStateUpdate(const bool wasActiveInPreviousState) noexcept -> void
+{
+  m_fxImpl->PostStateUpdate(wasActiveInPreviousState);
 }
 
 // clang-format off
@@ -246,29 +247,31 @@ inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() const -> bool
   return m_goomRand.ProbabilityOf(PROB_IFS_RENEW_EVENT);
 }
 
-void IfsDancersFx::IfsDancersFxImpl::InitFractal()
+inline auto IfsDancersFx::IfsDancersFxImpl::InitFractal() -> void
 {
   m_fractal->Init();
   UpdateLowDensityThreshold();
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(
-    const std::shared_ptr<RandomColorMaps> weightedMaps)
+inline auto IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(
+    const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_colorizer.SetWeightedColorMaps(weightedMaps);
+  Expects(weightedColorMaps.mainColorMaps != nullptr);
+  m_colorizer.SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::Start()
+inline auto IfsDancersFx::IfsDancersFxImpl::Start() -> void
 {
   InitFractal();
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::Finish()
+inline auto IfsDancersFx::IfsDancersFxImpl::Finish() -> void
 {
   // nothing to do
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::PostStateUpdate(const bool wasActiveInPreviousState)
+inline auto IfsDancersFx::IfsDancersFxImpl::PostStateUpdate(const bool wasActiveInPreviousState)
+    -> void
 {
   if (!wasActiveInPreviousState)
   {
@@ -283,12 +286,12 @@ inline void IfsDancersFx::IfsDancersFxImpl::PostStateUpdate(const bool wasActive
   }
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::Refresh()
+inline auto IfsDancersFx::IfsDancersFxImpl::Refresh() -> void
 {
   Renew();
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::Renew()
+inline auto IfsDancersFx::IfsDancersFxImpl::Renew() -> void
 {
   ChangeColorMaps();
   m_colorizer.ChangeColorMode();
@@ -296,7 +299,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::Renew()
   ChangeSpeed();
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::ChangeSpeed()
+inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() -> void
 {
   static constexpr float MIN_SPEED_AMP = 1.1F;
   static constexpr float MAX_SPEED_AMP = 5.1F;
@@ -308,7 +311,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::ChangeSpeed()
   m_fractal->SetSpeed(std::max(1U, static_cast<uint32_t>(speedAmp * accelFactor)));
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps()
+inline auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() -> void
 {
   m_colorizer.ChangeColorMaps();
   m_blurrer.SetColorMode(m_blurrerColorModeWeights.GetRandomWeighted());
@@ -316,13 +319,13 @@ inline void IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps()
   m_blurrer.SetSingleColor(m_colorizer.GetColorMaps().GetRandomColorMap().GetColor(SINGLE_COLOR_T));
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::ApplyNoDraw()
+inline auto IfsDancersFx::IfsDancersFxImpl::ApplyNoDraw() -> void
 {
   UpdateDecayAndRecay();
   UpdateDecay();
 }
 
-void IfsDancersFx::IfsDancersFxImpl::UpdateIfs()
+auto IfsDancersFx::IfsDancersFxImpl::UpdateIfs() -> void
 {
   UpdateDecayAndRecay();
   if (GetIfsIncr() <= 0)
@@ -335,7 +338,7 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateIfs()
   DrawNextIfsPoints();
 }
 
-void IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay()
+auto IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay() -> void
 {
   static constexpr int32_t BY_TWO = 2;
 
@@ -360,7 +363,7 @@ void IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay()
   }
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::UpdateIncr()
+inline auto IfsDancersFx::IfsDancersFxImpl::UpdateIncr() -> void
 {
   if (m_ifsIncr <= 0)
   {
@@ -372,7 +375,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::UpdateIncr()
   }
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::UpdateDecay()
+inline auto IfsDancersFx::IfsDancersFxImpl::UpdateDecay() -> void
 {
   if ((m_ifsIncr > 0) && (m_decayIfs <= 0))
   {
@@ -386,7 +389,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::GetIfsIncr() const -> int
   return m_ifsIncr;
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::UpdateCycle()
+inline auto IfsDancersFx::IfsDancersFxImpl::UpdateCycle() -> void
 {
   // TODO: trouver meilleur soluce pour increment (mettre le code de gestion de l'ifs
   //       dans ce fichier)
@@ -409,7 +412,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::UpdateCycle()
   Renew();
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold()
+inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold() -> void
 {
   static constexpr float PROB_HIGH_BLUR_THRESHOLD = 0.75F;
   static constexpr float HIGH_BLUR_THRESHOLD = 0.99F;
@@ -418,7 +421,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold()
       m_goomRand.ProbabilityOf(PROB_HIGH_BLUR_THRESHOLD) ? HIGH_BLUR_THRESHOLD : LOW_BLUR_THRESHOLD;
 }
 
-void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
+auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() -> void
 {
   const std::vector<IfsPoint>& points = m_fractal->GetNextIfsPoints();
   const uint32_t maxHitCount = m_fractal->GetMaxHitCount();
@@ -488,9 +491,9 @@ void IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints()
   }
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& ifsPoint,
+inline auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& ifsPoint,
                                                       const float t,
-                                                      const float tMix) const
+                                                      const float tMix) const -> void
 {
   const Point2dInt point = {static_cast<int32_t>(ifsPoint.GetX()),
                             static_cast<int32_t>(ifsPoint.GetY())};
@@ -528,8 +531,8 @@ inline auto IfsDancersFx::IfsDancersFxImpl::BlurLowDensityColors(
          m_lowDensityBlurThreshold;
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::SetLowDensityColors(
-    const std::vector<IfsPoint>& points, const uint32_t maxLowDensityCount) const
+inline auto IfsDancersFx::IfsDancersFxImpl::SetLowDensityColors(
+    const std::vector<IfsPoint>& points, const uint32_t maxLowDensityCount) const -> void
 {
   const float logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
 
@@ -548,7 +551,7 @@ inline void IfsDancersFx::IfsDancersFxImpl::SetLowDensityColors(
   }
 }
 
-inline void IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold()
+inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() -> void
 {
   m_lowDensityCount = m_goomRand.GetRandInRange(MIN_DENSITY_COUNT, MAX_DENSITY_COUNT);
 

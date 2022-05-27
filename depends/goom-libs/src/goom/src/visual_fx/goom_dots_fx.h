@@ -29,20 +29,20 @@ public:
   GoomDotsFx(const FxHelper& fxHelper,
              const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetFxName() const -> std::string override;
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
-  void Start() override;
+  auto Start() noexcept -> void override;
+  auto Finish() noexcept -> void override;
 
-  void Resume() override;
-  void Suspend() override;
+  auto Resume() noexcept -> void override;
+  auto Suspend() noexcept -> void override;
 
   static constexpr uint32_t NUM_DOT_TYPES = 5;
-  void SetWeightedColorMaps(uint32_t dotNum, std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
+  auto SetSingleBufferDots(bool val) noexcept -> void;
 
-  void ApplySingle();
-  void ApplyMultiple();
-
-  void Finish() override;
+  auto ApplySingle() noexcept -> void override;
+  auto ApplyMultiple() noexcept -> void override;
 
 private:
   class GoomDotsFxImpl;
