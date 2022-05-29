@@ -11,6 +11,7 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::ColorMapGroup;
+using COLOR::GetAllMapsUnweighted;
 using COLOR::RandomColorMaps;
 using STD20::pi;
 using UTILS::GRAPHICS::ImageBitmap;
@@ -26,11 +27,10 @@ static constexpr float NUM3_WEIGHT =  1.0F;
 // clang-format on
 
 Similitudes::Similitudes(const IGoomRand& goomRand,
-                         const RandomColorMaps& randomColorMaps,
                          const SmallImageBitmaps& smallBitmaps)
   : m_goomRand{goomRand},
     m_smallBitmaps{smallBitmaps},
-    m_colorMaps{randomColorMaps},
+    m_colorMaps{GetAllMapsUnweighted(m_goomRand)},
     m_centreWeights{
         m_goomRand,
         {
@@ -40,7 +40,6 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
             {CentreNums::NUM3, NUM3_WEIGHT},
         }
     }
-// clang-format on
 {
   assert(m_centreWeights.GetNumElements() == CENTRE_LIST.size());
 
@@ -48,13 +47,19 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
   ResetCurrentIfsFunc();
 }
 
-void Similitudes::Init()
+auto Similitudes::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedColorMaps)
+    -> void
+{
+  m_colorMaps = weightedColorMaps;
+}
+
+auto Similitudes::Init() -> void
 {
   InitCentre();
   ResetSimiGroups();
 }
 
-inline void Similitudes::InitCentre()
+inline auto Similitudes::InitCentre() -> void
 {
   const uint32_t numCentres = 2 + static_cast<uint32_t>(m_centreWeights.GetRandomWeighted());
 
@@ -63,7 +68,7 @@ inline void Similitudes::InitCentre()
   m_centreAttributes = CENTRE_LIST.at(numCentres - 2);
 }
 
-inline void Similitudes::ResetSimiGroups()
+inline auto Similitudes::ResetSimiGroups() -> void
 {
   ResetSimiGroup(m_mainSimiGroup);
   for (size_t i = 0; i < NUM_EXTRA_SIMI_GROUPS; ++i)
@@ -72,20 +77,20 @@ inline void Similitudes::ResetSimiGroups()
   }
 }
 
-inline void Similitudes::ResetSimiGroup(SimiGroup& simiGroup)
+inline auto Similitudes::ResetSimiGroup(SimiGroup& simiGroup) -> void
 {
   simiGroup.resize(m_numSimis);
   RandomizeSimiGroup(simiGroup);
 }
 
-void Similitudes::UpdateMainSimis(const Dbl uValue)
+auto Similitudes::UpdateMainSimis(const Dbl uValue) -> void
 {
   UpdateMainSimisDblPart(uValue);
 
   UpdateMainSimisFltPart();
 }
 
-inline void Similitudes::UpdateMainSimisDblPart(const Dbl uValue)
+inline auto Similitudes::UpdateMainSimisDblPart(const Dbl uValue) -> void
 {
   const Dbl u = uValue;
   const Dbl uSq = u * u;
@@ -105,9 +110,9 @@ inline void Similitudes::UpdateMainSimisDblPart(const Dbl uValue)
   }
 }
 
-inline void Similitudes::UpdateMainSimiDblPart(const UValuesArray& uValues,
+inline auto Similitudes::UpdateMainSimiDblPart(const UValuesArray& uValues,
                                                const size_t extraSimiIndex,
-                                               Similitude& mainSimi)
+                                               Similitude& mainSimi) -> void
 {
   mainSimi.m_dbl_cx = 0.0F;
   mainSimi.m_dbl_cy = 0.0F;
@@ -131,7 +136,7 @@ inline void Similitudes::UpdateMainSimiDblPart(const UValuesArray& uValues,
   }
 }
 
-inline void Similitudes::UpdateMainSimisFltPart()
+inline auto Similitudes::UpdateMainSimisFltPart() -> void
 {
   for (size_t i = 0; i < m_numSimis; ++i)
   {
@@ -150,7 +155,7 @@ inline void Similitudes::UpdateMainSimisFltPart()
   }
 }
 
-void Similitudes::IterateSimis()
+auto Similitudes::IterateSimis() -> void
 {
   SimiGroup& extraSimiGroup0 = m_extraSimiGroups[0];
   SimiGroup& extraSimiGroup1 = m_extraSimiGroups[1];
@@ -182,7 +187,7 @@ void Similitudes::IterateSimis()
   RandomizeSimiGroup(m_extraSimiGroups[3]);
 }
 
-void Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup)
+auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) -> void
 {
 #if __cplusplus <= 201703L
   static const Dbl c_factor = 0.8F * Get_1_minus_exp_neg_S(4.0);
@@ -201,7 +206,7 @@ void Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup)
   const Dbl r1Factor = m_centreAttributes.dr1Mean * r1_1_minus_exp_neg_S;
   const Dbl r2Factor = m_centreAttributes.dr2Mean * r2_1_minus_exp_neg_S;
 
-  const ColorMapGroup colorMapGroup = m_colorMaps.GetRandomGroup();
+  const ColorMapGroup colorMapGroup = m_colorMaps->GetRandomGroup();
   static constexpr float PROB_USE_BITMAPS = 0.7F;
   const bool useBitmaps = m_goomRand.ProbabilityOf(PROB_USE_BITMAPS);
 
@@ -224,17 +229,17 @@ void Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup)
     simi.m_cosA2 = 0;
     simi.m_sinA2 = 0;
 
-    simi.m_colorMap = &m_colorMaps.GetRandomColorMap(colorMapGroup);
+    simi.m_colorMap = &m_colorMaps->GetRandomColorMap(colorMapGroup);
     simi.m_color = RandomColorMaps{m_goomRand}.GetRandomColor(
-        m_colorMaps.GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
+        m_colorMaps->GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
 
     simi.m_currentPointBitmap = GetSimiBitmap(useBitmaps);
   }
 }
 
-auto Similitudes::GetSimiBitmap(const bool useBitmaps) -> const ImageBitmap*
+auto Similitudes::GetSimiBitmap(const bool useBitmaps) const -> const ImageBitmap*
 {
-  if (!useBitmaps)
+  if (not useBitmaps)
   {
     return nullptr;
   }
@@ -256,8 +261,9 @@ inline auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
   return 1.0F - std::exp(-S);
 }
 
-inline auto Similitudes::GaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S)
-    -> Dbl
+inline auto Similitudes::GaussRand(const Dbl c,
+                                   const Dbl S,
+                                   const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
 {
   const Dbl x = m_goomRand.GetRandInRange(0.0F, 1.0F);
   const Dbl y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
@@ -265,15 +271,16 @@ inline auto Similitudes::GaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_
   return m_goomRand.ProbabilityOf(PROB_HALF) ? (c + y) : (c - y);
 }
 
-inline auto Similitudes::HalfGaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S)
-    -> Dbl
+inline auto Similitudes::HalfGaussRand(const Dbl c,
+                                       const Dbl S,
+                                       const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
 {
   const Dbl x = m_goomRand.GetRandInRange(0.0F, 1.0F);
   const Dbl y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
   return c + y;
 }
 
-void Similitudes::ResetCurrentIfsFunc()
+auto Similitudes::ResetCurrentIfsFunc() -> void
 {
   static constexpr float PROB_REVERSED_IFS_FUNC = 0.3F;
 

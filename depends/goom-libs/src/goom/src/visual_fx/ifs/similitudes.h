@@ -7,6 +7,7 @@
 #include <array>
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <vector>
 
 namespace GOOM
@@ -16,11 +17,6 @@ namespace COLOR
 {
 class IColorMap;
 class RandomColorMaps;
-}
-
-namespace UTILS
-{
-class IGoomRand;
 }
 
 namespace UTILS::GRAPHICS
@@ -65,19 +61,21 @@ class Similitudes
 {
 public:
   Similitudes(const UTILS::MATH::IGoomRand& goomRand,
-              const COLOR::RandomColorMaps& randomColorMaps,
               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
 
-  void Init();
+  auto Init() -> void;
 
-  void UpdateMainSimis(Dbl uValue);
-  void IterateSimis();
+  auto SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedColorMaps)
+      -> void;
+
+  auto UpdateMainSimis(Dbl uValue) -> void;
+  auto IterateSimis() -> void;
 
   [[nodiscard]] auto GetNumSimis() const -> size_t;
   [[nodiscard]] auto GetMainSimiGroup() const -> const std::vector<Similitude>&;
   [[nodiscard]] auto GetSimiDepth() const -> uint32_t;
 
-  void ResetCurrentIfsFunc();
+  auto ResetCurrentIfsFunc() -> void;
   [[nodiscard]] auto Transform(const Similitude& simi, const FltPoint& point0) const -> FltPoint;
 
 private:
@@ -87,20 +85,20 @@ private:
   using ExtraSimiGroups = std::array<SimiGroup, NUM_EXTRA_SIMI_GROUPS>;
   ExtraSimiGroups m_extraSimiGroups{};
   uint32_t m_numSimis = 0;
-  void ResetSimiGroups();
-  void ResetSimiGroup(SimiGroup& simiGroup);
-  void RandomizeSimiGroup(SimiGroup& simiGroup);
-  void UpdateMainSimisDblPart(Dbl uValue);
+  auto ResetSimiGroups() -> void;
+  auto ResetSimiGroup(SimiGroup& simiGroup) -> void;
+  auto RandomizeSimiGroup(SimiGroup& simiGroup) -> void;
+  auto UpdateMainSimisDblPart(Dbl uValue) -> void;
   using UValuesArray = std::array<Dbl, NUM_EXTRA_SIMI_GROUPS>;
-  void UpdateMainSimiDblPart(const UValuesArray& uValues,
+  auto UpdateMainSimiDblPart(const UValuesArray& uValues,
                              size_t extraSimiIndex,
-                             Similitude& mainSimi);
-  void UpdateMainSimisFltPart();
-  [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) -> const UTILS::GRAPHICS::ImageBitmap*;
+                             Similitude& mainSimi) -> void;
+  auto UpdateMainSimisFltPart() -> void;
+  [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) const -> const UTILS::GRAPHICS::ImageBitmap*;
 
   const UTILS::MATH::IGoomRand& m_goomRand;
   const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
-  const COLOR::RandomColorMaps& m_colorMaps;
+  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps;
 
   using IfsFunc = std::function<FltPoint(const Similitude& simi, Flt x1, Flt y1, Flt x2, Flt y2)>;
   IfsFunc m_currentIfsFunc{};
@@ -131,10 +129,10 @@ private:
   };
   const UTILS::MATH::Weights<CentreNums> m_centreWeights;
   CentreType m_centreAttributes{};
-  void InitCentre();
+  auto InitCentre() -> void;
 
-  [[nodiscard]] auto GaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
-  [[nodiscard]] auto HalfGaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) -> Dbl;
+  [[nodiscard]] auto GaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) const -> Dbl;
+  [[nodiscard]] auto HalfGaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) const -> Dbl;
   [[nodiscard]] static auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
 };
 

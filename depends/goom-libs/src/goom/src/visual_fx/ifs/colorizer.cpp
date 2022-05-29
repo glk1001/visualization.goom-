@@ -28,9 +28,9 @@ static constexpr float SINE_MAP_COLORS_WEIGHT       =  5.0F;
 
 Colorizer::Colorizer(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
+    m_colorMaps{GetSlightlyDivergingStandardMaps(m_goomRand)},
     m_mixerMap1Id{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_mixerMap2Id{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    // clang-format off
     m_colorModeWeights{
         m_goomRand,
         {
@@ -44,15 +44,20 @@ Colorizer::Colorizer(const IGoomRand& goomRand)
             { IfsDancersFx::ColorMode::SINE_MAP_COLORS,       SINE_MAP_COLORS_WEIGHT },
         }
     }
-// clang-format on
 {
-  SetWeightedColorMaps(GetSlightlyDivergingStandardMaps(m_goomRand));
+  UpdateMixerMaps();
 }
 
-void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedColorMaps)
+auto Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedColorMaps)
+    -> void
 {
   m_colorMaps = weightedColorMaps;
 
+  UpdateMixerMaps();
+}
+
+inline auto Colorizer::UpdateMixerMaps() -> void
+{
   static constexpr float PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
   const std::set<RandomColorMaps::ColorMapTypes>& colorMapTypes =
       m_goomRand.ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
@@ -68,7 +73,7 @@ void Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& wei
   m_prevMixerMap2 = m_colorMapsManager.GetColorMapPtr(m_mixerMap2Id);
 }
 
-void Colorizer::ChangeColorMode()
+auto Colorizer::ChangeColorMode() -> void
 {
   if (m_forcedColorMode != IfsDancersFx::ColorMode::_NULL)
   {
@@ -85,7 +90,7 @@ inline auto Colorizer::GetNextColorMode() const -> IfsDancersFx::ColorMode
   return m_colorModeWeights.GetRandomWeighted();
 }
 
-void Colorizer::ChangeColorMaps()
+auto Colorizer::ChangeColorMaps() -> void
 {
   m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);
   m_prevMixerMap2 = m_colorMapsManager.GetColorMapPtr(m_mixerMap2Id);
@@ -108,8 +113,8 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
   const float logAlpha =
       m_maxHitCount <= 1 ? 1.0F : (std::log(static_cast<float>(hitCount)) / m_logMaxHitCount);
 
-  Pixel mixColor;
-  float tBaseMix{};
+  Pixel mixColor{};
+  float tBaseMix = 0.0F;
 
   switch (m_colorMode)
   {

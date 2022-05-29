@@ -21,17 +21,18 @@ class Colorizer
 public:
   explicit Colorizer(const UTILS::MATH::IGoomRand& goomRand);
 
-  void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedColorMaps);
+  auto SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedColorMaps)
+      -> void;
 
   auto GetColorMaps() const -> const COLOR::RandomColorMaps&;
 
   auto GetColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMode;
-  void SetForcedColorMode(VISUAL_FX::IfsDancersFx::ColorMode val);
-  void ChangeColorMode();
+  auto SetForcedColorMode(VISUAL_FX::IfsDancersFx::ColorMode val) -> void;
+  auto ChangeColorMode() -> void;
 
-  void ChangeColorMaps();
+  auto ChangeColorMaps() -> void;
 
-  void SetMaxHitCount(uint32_t val);
+  auto SetMaxHitCount(uint32_t val) -> void;
 
   [[nodiscard]] auto GetMixedColor(const Pixel& baseColor,
                                    uint32_t hitCount,
@@ -42,12 +43,13 @@ public:
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
-  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
+  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps;
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id;
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap1{};
   COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id;
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap2{};
+  auto UpdateMixerMaps() -> void;
   mutable uint32_t m_countSinceColorMapChange = 0;
   static constexpr uint32_t MIN_COLOR_MAP_CHANGE_COMPLETED = 500;
   static constexpr uint32_t MAX_COLOR_MAP_CHANGE_COMPLETED = 1000;
@@ -86,12 +88,12 @@ inline auto Colorizer::GetColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMod
   return m_colorMode;
 }
 
-inline void Colorizer::SetForcedColorMode(const VISUAL_FX::IfsDancersFx::ColorMode val)
+inline auto Colorizer::SetForcedColorMode(const VISUAL_FX::IfsDancersFx::ColorMode val) -> void
 {
   m_forcedColorMode = val;
 }
 
-inline void Colorizer::SetMaxHitCount(const uint32_t val)
+inline auto Colorizer::SetMaxHitCount(const uint32_t val) -> void
 {
   m_maxHitCount = val;
   m_logMaxHitCount = std::log(static_cast<float>(m_maxHitCount));

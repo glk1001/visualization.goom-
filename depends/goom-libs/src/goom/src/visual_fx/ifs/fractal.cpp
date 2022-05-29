@@ -18,16 +18,13 @@ using UTILS::MATH::U_HALF;
 Fractal::Fractal(const uint32_t screenWidth,
                  const uint32_t screenHeight,
                  const IGoomRand& goomRand,
-                 const RandomColorMaps& randomColorMaps,
                  const SmallImageBitmaps& smallBitmaps)
-  : m_similitudes{goomRand, randomColorMaps, smallBitmaps},
+  : m_similitudes{goomRand, smallBitmaps},
     m_goomRand{goomRand},
     m_halfWidth{static_cast<Flt>(U_HALF * (screenWidth - 1))},
     m_halfHeight{static_cast<Flt>(U_HALF * (screenHeight - 1))},
     m_hits1{screenWidth, screenHeight},
-    m_hits2{screenWidth, screenHeight},
-    m_prevHits{m_hits1},
-    m_curHits{m_hits2}
+    m_hits2{screenWidth, screenHeight}
 {
   m_speedTransitionT.Reset(TValue::MAX_T_VALUE);
 
@@ -35,13 +32,19 @@ Fractal::Fractal(const uint32_t screenWidth,
   Reset();
 }
 
-void Fractal::Init()
+auto Fractal::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedColorMaps)
+    -> void
+{
+  m_similitudes.SetWeightedColorMaps(weightedColorMaps);
+}
+
+auto Fractal::Init() -> void
 {
   InitHits();
   m_similitudes.Init();
 }
 
-inline void Fractal::InitHits()
+inline auto Fractal::InitHits() -> void
 {
   m_prevHits.get().Reset();
   m_curHits.get().Reset();
@@ -56,14 +59,14 @@ auto Fractal::GetSpeed() const -> uint32_t
   return STD20::lerp(m_prevSpeed, m_speed, m_speedTransitionT());
 }
 
-void Fractal::SetSpeed(const uint32_t val)
+auto Fractal::SetSpeed(const uint32_t val) -> void
 {
   m_prevSpeed = GetSpeed();
   m_speed = val;
   m_speedTransitionT.Reset();
 }
 
-void Fractal::Reset()
+auto Fractal::Reset() -> void
 {
   m_maxCountTimesSpeed =
       m_goomRand.GetRandInRange(MIN_MAX_COUNT_TIMES_SPEED, MAX_MAX_COUNT_TIMES_SPEED + 1U);
@@ -93,7 +96,7 @@ inline auto Fractal::GetCurrentIfsPoints() -> const std::vector<IfsPoint>&
   return currentBuffer;
 }
 
-inline void Fractal::UpdateIterationCount()
+inline auto Fractal::UpdateIterationCount() -> void
 {
   if (m_iterationCount < (m_maxCountTimesSpeed / GetSpeed()))
   {
@@ -106,7 +109,7 @@ inline void Fractal::UpdateIterationCount()
   m_iterationCount = 0;
 }
 
-void Fractal::DrawFractal()
+auto Fractal::DrawFractal() -> void
 {
   const std::vector<Similitude>& mainSimiGroup = m_similitudes.GetMainSimiGroup();
   const size_t numSimis = m_similitudes.GetNumSimis();
@@ -126,14 +129,14 @@ void Fractal::DrawFractal()
   }
 }
 
-inline void Fractal::UpdateMainSimis()
+inline auto Fractal::UpdateMainSimis() -> void
 {
   const Dbl uValue =
       static_cast<Dbl>(m_iterationCount * GetSpeed()) / static_cast<Dbl>(m_maxCountTimesSpeed);
   m_similitudes.UpdateMainSimis(uValue);
 }
 
-void Fractal::Trace(const uint32_t curDepth, const FltPoint& point0)
+auto Fractal::Trace(const uint32_t curDepth, const FltPoint& point0) -> void
 {
   const std::vector<Similitude>& mainSimiGroup = m_similitudes.GetMainSimiGroup();
   const size_t numSimis = m_similitudes.GetNumSimis();
@@ -164,7 +167,7 @@ inline auto Fractal::AreSimilarPoints(const FltPoint& point1, const FltPoint& po
   return (std::abs(point1.x - point2.x) < CUTOFF) || (std::abs(point1.y - point2.y) < CUTOFF);
 }
 
-inline void Fractal::UpdateHits(const Similitude& simi, const FltPoint& point)
+inline auto Fractal::UpdateHits(const Similitude& simi, const FltPoint& point) -> void
 {
   const int32_t x = m_halfWidth + DivBy2Units(point.x * m_halfWidth);
   const int32_t y = m_halfHeight - DivBy2Units(point.y * m_halfHeight);

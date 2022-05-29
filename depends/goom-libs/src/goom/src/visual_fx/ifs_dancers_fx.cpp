@@ -217,7 +217,6 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
     m_fractal{std::make_unique<Fractal>(m_draw.GetScreenWidth(),
                                         m_draw.GetScreenHeight(),
                                         m_goomRand,
-                                        m_colorizer.GetColorMaps(),
                                         smallBitmaps)},
     m_blurrer{m_draw, m_goomRand, BLUR_WIDTH, &m_colorizer, smallBitmaps},
     // clang-format off
@@ -257,6 +256,8 @@ inline auto IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
   Expects(weightedColorMaps.mainColorMaps != nullptr);
+
+  m_fractal->SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
   m_colorizer.SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
 }
 
