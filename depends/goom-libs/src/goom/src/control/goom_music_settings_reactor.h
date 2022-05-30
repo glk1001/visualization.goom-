@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
 #include "goom_events.h"
 #include "goom_lock.h"
@@ -7,7 +8,6 @@
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
-#include "visual_fx/filters/filter_settings_service.h"
 
 #include <cstdint>
 
@@ -22,12 +22,11 @@ class GoomAllVisualFx;
 class GoomMusicSettingsReactor
 {
 public:
-  GoomMusicSettingsReactor(
-      const PluginInfo& goomInfo,
-      const UTILS::MATH::IGoomRand& goomRand,
-      GoomAllVisualFx& visualFx,
-      const GoomEvents& goomEvents,
-      VISUAL_FX::FILTERS::FilterSettingsService& filterSettingsService) noexcept;
+  GoomMusicSettingsReactor(const PluginInfo& goomInfo,
+                           const UTILS::MATH::IGoomRand& goomRand,
+                           GoomAllVisualFx& visualFx,
+                           const GoomEvents& goomEvents,
+                           FILTER_FX::FilterSettingsService& filterSettingsService) noexcept;
 
   void Start();
   void NewCycle();
@@ -55,7 +54,7 @@ private:
   GoomAllVisualFx& m_visualFx;
   using GoomEvent = GoomEvents::GoomEvent;
   const GoomEvents& m_goomEvents;
-  VISUAL_FX::FILTERS::FilterSettingsService& m_filterSettingsService;
+  FILTER_FX::FilterSettingsService& m_filterSettingsService;
   GoomMusicLinesReactor m_musicLinesReactor;
 
   static constexpr uint32_t NORMAL_UPDATE_LOCK_TIME = 50;
@@ -70,7 +69,7 @@ private:
 
   static constexpr int32_t MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
   int32_t m_updatesSinceLastZoomEffectsChange = 0; // nombre de Cycle Depuis Dernier Changement
-  int32_t m_previousZoomSpeed = VISUAL_FX::FILTERS::Vitesse::DEFAULT_VITESSE + 1;
+  int32_t m_previousZoomSpeed = FILTER_FX::Vitesse::DEFAULT_VITESSE + 1;
 
   static constexpr uint32_t MAX_NUM_STATE_SELECTIONS_BLOCKED = 3;
   uint32_t m_stateSelectionBlocker = MAX_NUM_STATE_SELECTIONS_BLOCKED;
@@ -125,7 +124,7 @@ inline void GoomMusicSettingsReactor::BigBreakIfMusicIsCalm()
 {
   static constexpr float CALM_SPEED = 0.05F;
   static constexpr uint32_t CALM_CYCLES = 16;
-  static constexpr int32_t CALM_VITESSE = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 4;
+  static constexpr int32_t CALM_VITESSE = FILTER_FX::Vitesse::STOP_SPEED - 4;
 
   if ((m_goomInfo.GetSoundInfo().GetSpeed() < CALM_SPEED) &&
       (m_filterSettingsService.GetROVitesse().GetVitesse() < CALM_VITESSE) &&
@@ -191,7 +190,7 @@ inline void GoomMusicSettingsReactor::ChangeRotation()
 inline void GoomMusicSettingsReactor::RegularlyLowerTheSpeed()
 {
   static constexpr uint32_t LOWER_SPEED_CYCLES = 73;
-  static constexpr int32_t FAST_SPEED = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 5;
+  static constexpr int32_t FAST_SPEED = FILTER_FX::Vitesse::STOP_SPEED - 5;
 
   if ((0 == (m_updateNum % LOWER_SPEED_CYCLES)) &&
       (m_filterSettingsService.GetROVitesse().GetVitesse() < FAST_SPEED))
@@ -248,7 +247,7 @@ inline void GoomMusicSettingsReactor::MegaLentUpdate()
 {
   m_lock.IncreaseLockTime(MEGA_LENT_LOCK_TIME_INCREASE);
 
-  m_filterSettingsService.GetRWVitesse().SetVitesse(VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 1);
+  m_filterSettingsService.GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::STOP_SPEED - 1);
   m_filterSettingsService.SetDefaultTranLerpIncrement();
   m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
 }
@@ -259,7 +258,7 @@ inline void GoomMusicSettingsReactor::ChangeSpeedReverse()
   // Restore zoom in.
 
   static constexpr uint32_t REVERSE_VITESSE_CYCLES = 13;
-  static constexpr int32_t SLOW_SPEED = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 2;
+  static constexpr int32_t SLOW_SPEED = FILTER_FX::Vitesse::STOP_SPEED - 2;
 
   if ((m_filterSettingsService.GetROVitesse().GetReverseVitesse()) &&
       ((m_updateNum % REVERSE_VITESSE_CYCLES) != 0) &&
@@ -280,12 +279,12 @@ inline void GoomMusicSettingsReactor::ChangeStopSpeeds()
 {
   if (m_goomEvents.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED_MINUS1))
   {
-    static constexpr int32_t SLOW_SPEED = VISUAL_FX::FILTERS::Vitesse::STOP_SPEED - 1;
+    static constexpr int32_t SLOW_SPEED = FILTER_FX::Vitesse::STOP_SPEED - 1;
     m_filterSettingsService.GetRWVitesse().SetVitesse(SLOW_SPEED);
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED))
   {
-    m_filterSettingsService.GetRWVitesse().SetVitesse(VISUAL_FX::FILTERS::Vitesse::STOP_SPEED);
+    m_filterSettingsService.GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::STOP_SPEED);
   }
 }
 

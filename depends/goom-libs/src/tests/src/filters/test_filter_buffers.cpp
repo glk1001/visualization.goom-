@@ -3,30 +3,30 @@
 #endif
 
 #include "catch2/catch.hpp"
+#include "filter_fx/filter_buffers.h"
+#include "filter_fx/filter_settings.h"
+#include "filter_fx/filter_zoom_vector.h"
+#include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
 #include "utils/math/goom_rand.h"
 #include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
-#include "visual_fx/filters/filter_buffers.h"
-#include "visual_fx/filters/filter_settings.h"
-#include "visual_fx/filters/filter_zoom_vector.h"
-#include "visual_fx/filters/normalized_coords.h"
 
 #include <cmath>
 
 namespace GOOM::UNIT_TESTS
 {
 
+using FILTER_FX::FilterZoomVector;
+using FILTER_FX::NormalizedCoords;
+using FILTER_FX::NormalizedCoordsConverter;
+using FILTER_FX::ZoomFilterBuffers;
+using FILTER_FX::ZoomFilterEffectsSettings;
 using UTILS::Parallel;
 using UTILS::MATH::FloatsEqual;
 using UTILS::MATH::GoomRand;
-using VISUAL_FX::FILTERS::FilterZoomVector;
-using VISUAL_FX::FILTERS::NormalizedCoords;
-using VISUAL_FX::FILTERS::NormalizedCoordsConverter;
-using VISUAL_FX::FILTERS::ZoomFilterBuffers;
-using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 
 static constexpr size_t WIDTH = 120;
 static constexpr size_t HEIGHT = 70;

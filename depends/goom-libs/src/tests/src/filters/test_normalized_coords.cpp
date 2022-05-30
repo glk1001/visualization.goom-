@@ -1,16 +1,16 @@
 #include "catch2/catch.hpp"
+#include "filter_fx/normalized_coords.h"
 #include "point2d.h"
 #include "utils/math/misc.h"
-#include "visual_fx/filters/normalized_coords.h"
 
 #include <cmath>
 
 namespace GOOM::UNIT_TESTS
 {
 
+using FILTER_FX::NormalizedCoords;
+using FILTER_FX::NormalizedCoordsConverter;
 using UTILS::MATH::FloatsEqual;
-using VISUAL_FX::FILTERS::NormalizedCoords;
-using VISUAL_FX::FILTERS::NormalizedCoordsConverter;
 
 static constexpr uint32_t WIDTH = 1280;
 static constexpr uint32_t HEIGHT = 720;

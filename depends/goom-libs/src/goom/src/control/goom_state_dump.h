@@ -1,9 +1,9 @@
 #pragma once
 
+#include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
 #include "goom_music_settings_reactor.h"
 #include "utils/stopwatch.h"
-#include "visual_fx/filters/filter_settings_service.h"
 
 #include <chrono>
 #include <cstdint>
@@ -19,7 +19,7 @@ public:
   GoomStateDump(const PluginInfo& goomInfo,
                 const GoomAllVisualFx& visualFx,
                 const GoomMusicSettingsReactor& musicSettingsReactor,
-                const VISUAL_FX::FILTERS::FilterSettingsService& filterSettingsService) noexcept;
+                const FILTER_FX::FilterSettingsService& filterSettingsService) noexcept;
   GoomStateDump(const GoomStateDump&) noexcept = delete;
   GoomStateDump(GoomStateDump&&) noexcept = delete;
   ~GoomStateDump() noexcept;
@@ -40,7 +40,7 @@ private:
 
   const PluginInfo& m_goomInfo;
   const GoomAllVisualFx& m_visualFx;
-  const VISUAL_FX::FILTERS::FilterSettingsService& m_filterSettingsService;
+  const FILTER_FX::FilterSettingsService& m_filterSettingsService;
 
   using Ms = std::chrono::milliseconds;
   std::chrono::high_resolution_clock::time_point m_prevTimeHiRes{};

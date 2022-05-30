@@ -21,9 +21,9 @@ endif()
 add_library(goom
     STATIC
         include/goom/goom_graphic.h
-        src/color/color_adjustment.cpp
         src/color/color_data/color_data_maps.cpp
         src/color/color_data/extra_color_groups.cpp
+        src/color/color_adjustment.cpp
         src/color/colormaps.cpp
         src/color/colormaps_grid.cpp
         src/color/colorutils.cpp
@@ -50,15 +50,39 @@ add_library(goom
         src/draw/goom_draw_to_container.cpp
         src/draw/goom_draw_to_many.cpp
         src/draw/text_draw.cpp
-        src/goom_control.cpp
-        src/sound_info.cpp
-        src/utils/adaptive_exposure.cpp
-        src/utils/build_time.cpp
-        src/utils/date_utils.cpp
+        src/filter_fx/filter_effects/amulet.cpp
+        src/filter_fx/filter_effects/crystal_ball.cpp
+        src/filter_fx/filter_effects/distance_field.cpp
+        src/filter_fx/filter_effects/extra_effects_states.cpp
+        src/filter_fx/filter_effects/filter_zoom_vector_effects.cpp
+        src/filter_fx/filter_effects/hypercos.cpp
+        src/filter_fx/filter_effects/image_displacement.cpp
+        src/filter_fx/filter_effects/image_displacement_list.cpp
+        src/filter_fx/filter_effects/image_speed_coeffs.cpp
+        src/filter_fx/filter_effects/image_velocity.cpp
+        src/filter_fx/filter_effects/noise.cpp
+        src/filter_fx/filter_effects/planes.cpp
+        src/filter_fx/filter_effects/rotation.cpp
+        src/filter_fx/filter_effects/scrunch.cpp
+        src/filter_fx/filter_effects/simple_speed_coefficients_effect.h
+        src/filter_fx/filter_effects/speed_coefficients_effect_factory.cpp
+        src/filter_fx/filter_effects/speedway.cpp
+        src/filter_fx/filter_effects/tan_effect.cpp
+        src/filter_fx/filter_effects/wave.cpp
+        src/filter_fx/filter_effects/y_only.cpp
+        src/filter_fx/filter_consts.h
+        src/filter_fx/filter_buffer_color_info.cpp
+        src/filter_fx/filter_buffers.cpp
+        src/filter_fx/filter_buffers_service.cpp
+        src/filter_fx/filter_colors_service.cpp
+        src/filter_fx/filter_settings_service.cpp
+        src/filter_fx/filter_zoom_vector.cpp
+        src/filter_fx/normalized_coords.h
+        src/filter_fx/speed_coefficients_effect.h
+        src/filter_fx/zoom_filter_fx.cpp
         src/utils/graphics/bezier_drawer.cpp
         src/utils/graphics/image_bitmaps.cpp
         src/utils/graphics/small_image_bitmaps.cpp
-        src/utils/logging.cpp
         src/utils/math/damping_functions.cpp
         src/utils/math/goom_rand.h
         src/utils/math/goom_rand_base.h
@@ -68,13 +92,17 @@ add_library(goom
         src/utils/math/paths.cpp
         src/utils/math/randutils.cpp
         src/utils/math/transform2d.h
+        src/utils/text/drawable_text.cpp
+        src/utils/adaptive_exposure.cpp
+        src/utils/build_time.cpp
+        src/utils/date_utils.cpp
+        src/utils/logging.cpp
         src/utils/name_value_pairs.h
         src/utils/propagate_const.h
         src/utils/step_speed.h
         src/utils/stopwatch.h
         src/utils/strutils.cpp
         src/utils/t_values.cpp
-        src/utils/text/drawable_text.cpp
         src/utils/thread_pool.cpp
         src/visual_fx/circles/bitmap_getter_base.h
         src/visual_fx/circles/bitmap_getter.cpp
@@ -82,35 +110,6 @@ add_library(goom
         src/visual_fx/circles/circles.cpp
         src/visual_fx/circles/dot_diameters.cpp
         src/visual_fx/circles/dot_paths.cpp
-        src/visual_fx/filters/amulet.cpp
-    	src/visual_fx/filters/filter_consts.h
-        src/visual_fx/filters/crystal_ball.cpp
-        src/visual_fx/filters/distance_field.cpp
-        src/visual_fx/filters/extra_effects_states.cpp
-        src/visual_fx/filters/filter_buffer_color_info.cpp
-        src/visual_fx/filters/filter_buffers.cpp
-        src/visual_fx/filters/filter_buffers_service.cpp
-        src/visual_fx/filters/filter_colors_service.cpp
-        src/visual_fx/filters/filter_settings_service.cpp
-        src/visual_fx/filters/filter_zoom_vector.cpp
-        src/visual_fx/filters/filter_zoom_vector_effects.cpp
-        src/visual_fx/filters/hypercos.cpp
-        src/visual_fx/filters/image_displacement.cpp
-        src/visual_fx/filters/image_displacement_list.cpp
-        src/visual_fx/filters/image_speed_coeffs.cpp
-        src/visual_fx/filters/image_velocity.cpp
-        src/visual_fx/filters/noise.cpp
-        src/visual_fx/filters/normalized_coords.h
-        src/visual_fx/filters/planes.cpp
-        src/visual_fx/filters/rotation.cpp
-        src/visual_fx/filters/scrunch.cpp
-        src/visual_fx/filters/simple_speed_coefficients_effect.h
-        src/visual_fx/filters/speed_coefficients_effect.h
-        src/visual_fx/filters/speed_coefficients_effect_factory.cpp
-        src/visual_fx/filters/speedway.cpp
-        src/visual_fx/filters/tan_effect.cpp
-        src/visual_fx/filters/wave.cpp
-        src/visual_fx/filters/y_only.cpp
         src/visual_fx/fx_utils/dot_drawer.cpp
         src/visual_fx/fx_utils/lines.cpp
         src/visual_fx/ifs/colorizer.cpp
@@ -144,8 +143,9 @@ add_library(goom
         src/visual_fx/shapes_fx.cpp
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
-        src/visual_fx/zoom_filter_fx.cpp
-        src/utils/date_utils.cpp)
+        src/goom_control.cpp
+        src/sound_info.cpp
+        )
 
 target_include_directories(goom
     PUBLIC

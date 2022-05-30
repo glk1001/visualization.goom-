@@ -1,7 +1,7 @@
 #include "catch2/catch.hpp"
+#include "filter_fx/filter_buffers.h"
+#include "filter_fx/filter_colors_service.h"
 #include "goom/goom_graphic.h"
-#include "visual_fx/filters/filter_buffers.h"
-#include "visual_fx/filters/filter_colors_service.h"
 
 #include <array>
 #include <numeric>
@@ -9,8 +9,8 @@
 namespace GOOM::UNIT_TESTS
 {
 
-using VISUAL_FX::FILTERS::FilterColorsService;
-using VISUAL_FX::FILTERS::ZoomFilterBuffers;
+using FILTER_FX::FilterColorsService;
+using FILTER_FX::ZoomFilterBuffers;
 
 static constexpr size_t WIDTH = 120;
 static constexpr size_t HEIGHT = 70;

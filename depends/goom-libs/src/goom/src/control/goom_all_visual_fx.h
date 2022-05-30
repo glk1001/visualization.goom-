@@ -1,6 +1,9 @@
 #pragma once
 
 #include "draw/goom_draw.h"
+#include "filter_fx/filter_buffer_color_info.h"
+#include "filter_fx/filter_settings.h"
+#include "filter_fx/zoom_filter_fx.h"
 #include "goom/spimpl.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
@@ -8,10 +11,7 @@
 #include "utils/math/misc.h"
 #include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
-#include "visual_fx/filters/filter_buffer_color_info.h"
-#include "visual_fx/filters/filter_settings.h"
 #include "visual_fx/lines_fx.h"
-#include "visual_fx/zoom_filter_fx.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
@@ -41,14 +41,14 @@ class SmallImageBitmaps;
 namespace VISUAL_FX
 {
 class FxHelper;
+}
 
-namespace FILTERS
+namespace FILTER_FX
 {
 class FilterBuffersService;
 class FilterColorsService;
 struct ZoomFilterSettings;
 }
-} // namespace VISUAL_FX
 
 namespace CONTROL
 {
@@ -58,21 +58,20 @@ class GoomAllVisualFx
 {
 public:
   GoomAllVisualFx() noexcept = delete;
-  GoomAllVisualFx(
-      UTILS::Parallel& parallel,
-      const VISUAL_FX::FxHelper& fxHelper,
-      const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
-      const std::string& resourcesDirectory,
-      IGoomStateHandler& goomStateHandler,
-      std::unique_ptr<VISUAL_FX::FILTERS::FilterBuffersService> filterBuffersService,
-      std::unique_ptr<VISUAL_FX::FILTERS::FilterColorsService> filterColorsService) noexcept;
+  GoomAllVisualFx(UTILS::Parallel& parallel,
+                  const VISUAL_FX::FxHelper& fxHelper,
+                  const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
+                  const std::string& resourcesDirectory,
+                  IGoomStateHandler& goomStateHandler,
+                  std::unique_ptr<FILTER_FX::FilterBuffersService> filterBuffersService,
+                  std::unique_ptr<FILTER_FX::FilterColorsService> filterColorsService) noexcept;
 
   void Start();
   void Finish();
 
   auto SetAllowMultiThreadedStates(bool val) -> void;
 
-  [[nodiscard]] auto GetZoomFilterFx() const -> const VISUAL_FX::ZoomFilterFx&;
+  [[nodiscard]] auto GetZoomFilterFx() const -> const FILTER_FX::ZoomFilterFx&;
 
   void SetNextState();
   [[nodiscard]] auto GetCurrentState() const -> GoomStates;
@@ -95,7 +94,7 @@ public:
   void ApplyCurrentStateToMultipleBuffers();
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
 
-  void UpdateFilterSettings(const VISUAL_FX::FILTERS::ZoomFilterSettings& filterSettings,
+  void UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings,
                             bool updateFilterEffects);
   void ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
@@ -129,7 +128,7 @@ public:
 
 private:
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
-  std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::ZoomFilterFx>> m_zoomFilterFx;
+  std::experimental::propagate_const<std::unique_ptr<FILTER_FX::ZoomFilterFx>> m_zoomFilterFx;
   std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::LinesFx>> m_goomLine1;
   std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::LinesFx>> m_goomLine2;
   DRAW::IGoomDraw& m_goomDraw;
@@ -167,7 +166,7 @@ inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) -> void
   m_allowMultiThreadedStates = val;
 }
 
-inline auto GoomAllVisualFx::GetZoomFilterFx() const -> const VISUAL_FX::ZoomFilterFx&
+inline auto GoomAllVisualFx::GetZoomFilterFx() const -> const FILTER_FX::ZoomFilterFx&
 {
   return *m_zoomFilterFx;
 }
@@ -222,7 +221,7 @@ inline auto GoomAllVisualFx::GetCurrentBufferAverageLuminance() noexcept -> floa
 {
   m_zoomFilterFx->GetLastFilterBufferColorInfo().CalculateLuminances();
 
-  const VISUAL_FX::FILTERS::FilterBufferColorInfo& filterBufferColorInfo =
+  const FILTER_FX::FilterBufferColorInfo& filterBufferColorInfo =
       m_zoomFilterFx->GetLastFilterBufferColorInfo();
 
   const float maxRegionAverageLuminance = filterBufferColorInfo.GetMaxRegionAverageLuminance();

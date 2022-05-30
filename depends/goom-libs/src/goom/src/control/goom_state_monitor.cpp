@@ -1,26 +1,25 @@
 #include "goom_state_monitor.h"
 
+#include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
 #include "goom_graphic.h"
 #include "goom_music_settings_reactor.h"
 #include "utils/name_value_pairs.h"
-#include "visual_fx/filters/filter_settings_service.h"
 
 #include <format>
 
 namespace GOOM::CONTROL
 {
 
+using FILTER_FX::FilterSettingsService;
+using FILTER_FX::ZoomFilterBufferSettings;
+using FILTER_FX::ZoomFilterEffectsSettings;
 using UTILS::GetNameValuesString;
 using UTILS::GetPair;
-using VISUAL_FX::FILTERS::FilterSettingsService;
-using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
-using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
 
-GoomStateMonitor::GoomStateMonitor(
-    const GoomAllVisualFx& visualFx,
-    const GoomMusicSettingsReactor& musicSettingsReactor,
-    const VISUAL_FX::FILTERS::FilterSettingsService& filterSettingsService) noexcept
+GoomStateMonitor::GoomStateMonitor(const GoomAllVisualFx& visualFx,
+                                   const GoomMusicSettingsReactor& musicSettingsReactor,
+                                   const FilterSettingsService& filterSettingsService) noexcept
   : m_visualFx{visualFx},
     m_musicSettingsReactor{musicSettingsReactor},
     m_filterSettingsService{filterSettingsService}

@@ -2,12 +2,12 @@
 
 #undef NO_LOGGING
 
+#include "filter_fx/filter_settings_service.h"
 #include "goom/logging.h"
 #include "goom_all_visual_fx.h"
 #include "goom_graphic.h"
 #include "goom_music_settings_reactor.h"
 #include "utils/date_utils.h"
-#include "visual_fx/filters/filter_settings_service.h"
 
 #include <filesystem>
 #include <fstream>
@@ -16,14 +16,14 @@
 namespace GOOM::CONTROL
 {
 
+using FILTER_FX::FilterSettingsService;
+using FILTER_FX::HypercosOverlay;
+using FILTER_FX::ZoomFilterColorSettings;
+using FILTER_FX::ZoomFilterEffectsSettings;
+using FILTER_FX::ZoomFilterMode;
+using FILTER_FX::ZoomFilterSettings;
 using UTILS::GetCurrentDateTimeAsString;
 using UTILS::Logging;
-using VISUAL_FX::FILTERS::FilterSettingsService;
-using VISUAL_FX::FILTERS::HypercosOverlay;
-using VISUAL_FX::FILTERS::ZoomFilterColorSettings;
-using VISUAL_FX::FILTERS::ZoomFilterEffectsSettings;
-using VISUAL_FX::FILTERS::ZoomFilterMode;
-using VISUAL_FX::FILTERS::ZoomFilterSettings;
 
 class GoomStateDump::CumulativeState
 {

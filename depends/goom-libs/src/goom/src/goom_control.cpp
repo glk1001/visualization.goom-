@@ -24,6 +24,13 @@
 #include "control/goom_state_monitor.h"
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
+#include "filter_fx/filter_buffers.h"
+#include "filter_fx/filter_buffers_service.h"
+#include "filter_fx/filter_colors_service.h"
+#include "filter_fx/filter_effects/speed_coefficients_effect_factory.h"
+#include "filter_fx/filter_settings_service.h"
+#include "filter_fx/filter_zoom_vector.h"
+#include "filter_fx/normalized_coords.h"
 #include "goom/compiler_versions.h"
 #include "goom/logging.h"
 #include "goom/spimpl.h"
@@ -38,13 +45,6 @@
 #include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "utils/strutils.h"
-#include "visual_fx/filters/filter_buffers.h"
-#include "visual_fx/filters/filter_buffers_service.h"
-#include "visual_fx/filters/filter_colors_service.h"
-#include "visual_fx/filters/filter_settings_service.h"
-#include "visual_fx/filters/filter_zoom_vector.h"
-#include "visual_fx/filters/normalized_coords.h"
-#include "visual_fx/filters/speed_coefficients_effect_factory.h"
 #include "visual_fx/fx_helper.h"
 
 #include <cstdint>
@@ -57,7 +57,6 @@
 namespace GOOM
 {
 
-using std::experimental::propagate_const;
 using CONTROL::GoomAllVisualFx;
 using CONTROL::GoomEvents;
 using CONTROL::GoomImageBuffers;
@@ -68,6 +67,14 @@ using CONTROL::GoomStateDump;
 using CONTROL::GoomStateMonitor;
 using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToBuffer;
+using FILTER_FX::FilterBuffersService;
+using FILTER_FX::FilterColorsService;
+using FILTER_FX::FilterSettingsService;
+using FILTER_FX::FilterZoomVector;
+using FILTER_FX::NormalizedCoordsConverter;
+using FILTER_FX::ZoomFilterBuffers;
+using FILTER_FX::FILTER_EFFECTS::CreateSpeedCoefficientsEffect;
+using std::experimental::propagate_const;
 using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
@@ -75,13 +82,6 @@ using UTILS::StringSplit;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
 using VISUAL_FX::FxHelper;
-using VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
-using VISUAL_FX::FILTERS::FilterBuffersService;
-using VISUAL_FX::FILTERS::FilterColorsService;
-using VISUAL_FX::FILTERS::FilterSettingsService;
-using VISUAL_FX::FILTERS::FilterZoomVector;
-using VISUAL_FX::FILTERS::NormalizedCoordsConverter;
-using VISUAL_FX::FILTERS::ZoomFilterBuffers;
 
 class GoomControl::GoomControlImpl
 {

@@ -6,14 +6,14 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "draw/goom_draw.h"
+#include "filter_fx/filter_buffers_service.h"
+#include "filter_fx/filter_colors_service.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "logging.h"
 #include "sound_info.h"
 #include "utils/name_value_pairs.h"
 #include "utils/stopwatch.h"
-#include "visual_fx/filters/filter_buffers_service.h"
-#include "visual_fx/filters/filter_colors_service.h"
 #include "visual_fx/fx_helper.h"
 #include "visual_fx_color_maps.h"
 
@@ -27,6 +27,10 @@ using COLOR::GetLuma;
 using COLOR::IColorMap;
 using CONTROL::GoomDrawables;
 using DRAW::IGoomDraw;
+using FILTER_FX::FilterBuffersService;
+using FILTER_FX::FilterColorsService;
+using FILTER_FX::ZoomFilterFx;
+using FILTER_FX::ZoomFilterSettings;
 using UTILS::Logging;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
@@ -34,10 +38,6 @@ using UTILS::Stopwatch;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelper;
 using VISUAL_FX::LinesFx;
-using VISUAL_FX::ZoomFilterFx;
-using VISUAL_FX::FILTERS::FilterBuffersService;
-using VISUAL_FX::FILTERS::FilterColorsService;
-using VISUAL_FX::FILTERS::ZoomFilterSettings;
 
 static const Pixel RED_LINE = LinesFx::GetRedLineColor();
 static const Pixel GREEN_LINE = LinesFx::GetGreenLineColor();

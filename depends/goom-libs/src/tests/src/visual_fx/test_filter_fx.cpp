@@ -1,32 +1,32 @@
 #include "catch2/catch.hpp"
+#include "filter_fx/filter_buffers_service.h"
+#include "filter_fx/filter_colors_service.h"
+#include "filter_fx/filter_effects/speed_coefficients_effect_factory.h"
+#include "filter_fx/filter_settings.h"
+#include "filter_fx/filter_settings_service.h"
+#include "filter_fx/filter_zoom_vector.h"
+#include "filter_fx/normalized_coords.h"
+#include "filter_fx/zoom_filter_fx.h"
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
-#include "visual_fx/filters/filter_buffers_service.h"
-#include "visual_fx/filters/filter_colors_service.h"
-#include "visual_fx/filters/filter_settings.h"
-#include "visual_fx/filters/filter_settings_service.h"
-#include "visual_fx/filters/filter_zoom_vector.h"
-#include "visual_fx/filters/normalized_coords.h"
-#include "visual_fx/filters/speed_coefficients_effect_factory.h"
-#include "visual_fx/zoom_filter_fx.h"
 
 #include <memory>
 
 namespace GOOM::UNIT_TESTS
 {
 
+using FILTER_FX::FilterBuffersService;
+using FILTER_FX::FilterColorsService;
+using FILTER_FX::FilterSettingsService;
+using FILTER_FX::FilterZoomVector;
+using FILTER_FX::NormalizedCoordsConverter;
+using FILTER_FX::ZoomFilterBuffers;
+using FILTER_FX::ZoomFilterBufferSettings;
+using FILTER_FX::ZoomFilterFx;
+using FILTER_FX::FILTER_EFFECTS::CreateSpeedCoefficientsEffect;
 using UTILS::Parallel;
 using UTILS::MATH::GoomRand;
-using VISUAL_FX::ZoomFilterFx;
-using VISUAL_FX::FILTERS::CreateSpeedCoefficientsEffect;
-using VISUAL_FX::FILTERS::FilterBuffersService;
-using VISUAL_FX::FILTERS::FilterColorsService;
-using VISUAL_FX::FILTERS::FilterSettingsService;
-using VISUAL_FX::FILTERS::FilterZoomVector;
-using VISUAL_FX::FILTERS::NormalizedCoordsConverter;
-using VISUAL_FX::FILTERS::ZoomFilterBuffers;
-using VISUAL_FX::FILTERS::ZoomFilterBufferSettings;
 
 static constexpr size_t WIDTH = 120;
 static constexpr size_t HEIGHT = 70;
