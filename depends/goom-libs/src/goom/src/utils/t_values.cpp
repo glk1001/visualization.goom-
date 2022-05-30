@@ -62,12 +62,13 @@ TValue::TValue(const TValue::StepType stepType,
   ValidateDelayPoints();
 }
 
-auto TValue::ValidateDelayPoints() noexcept -> void
+auto TValue::ValidateDelayPoints() const noexcept -> void
 {
   float prevT0 = -1.0F;
+  UNUSED_FOR_NDEBUG(prevT0);
+
   for (const auto& delayPoint : m_delayPoints)
   {
-    UNUSED_FOR_NDEBUG(prevT0);
     assert(prevT0 < delayPoint.t0);
     assert(0.0F <= delayPoint.t0);
     assert(delayPoint.t0 <= 1.0F);
@@ -89,6 +90,8 @@ auto TValue::Increment() noexcept -> void
     case StepType::CONTINUOUS_REVERSIBLE:
       ContinuousReversibleIncrement();
       break;
+    default:
+      FailFast();
   }
 }
 

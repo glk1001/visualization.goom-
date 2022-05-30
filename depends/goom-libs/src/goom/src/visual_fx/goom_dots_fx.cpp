@@ -320,7 +320,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
        RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::SetSingleBufferDots(bool val) noexcept -> void
+inline auto GoomDotsFx::GoomDotsFxImpl::SetSingleBufferDots(const bool val) noexcept -> void
 {
   m_useSingleBuffer = val;
 }

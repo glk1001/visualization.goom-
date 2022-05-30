@@ -69,7 +69,8 @@ private:
                 Point2dInt point1,
                 Point2dInt point2,
                 float brightness) -> void;
-  auto DrawNodeLine(Point2dInt point1, Point2dInt point2, const DRAW::MultiplePixels& colors) -> void;
+  auto DrawNodeLine(Point2dInt point1, Point2dInt point2, const DRAW::MultiplePixels& colors)
+      -> void;
   auto DrawNodeDot(size_t nodeNum, Point2dInt point, const DRAW::MultiplePixels& colors) -> void;
 
   [[nodiscard]] auto GetMixedColors(const Tentacle3D& tentacle,

@@ -41,13 +41,13 @@ inline auto AudioSamples::GetMaxMinSampleValues(const std::vector<SampleArray>& 
 {
   std::vector<MaxMinValues> minMaxSampleValues(NUM_AUDIO_SAMPLES);
 
-  for (size_t i = 0; i < minMaxSampleValues.size(); ++i)
+  for (size_t i = 0; i < NUM_AUDIO_SAMPLES; ++i)
   {
     const auto sampleArrayBegin = cbegin(sampleArrays.at(i));
     const auto sampleArrayEnd = cend(sampleArrays.at(i));
-    const auto minMax = std::minmax_element(sampleArrayBegin, sampleArrayEnd);
-    minMaxSampleValues[i].minVal = *minMax.first;
-    minMaxSampleValues[i].maxVal = *minMax.second;
+    const auto& [minVal, maxVal] = std::minmax_element(sampleArrayBegin, sampleArrayEnd);
+    minMaxSampleValues[i].minVal = *minVal;
+    minMaxSampleValues[i].maxVal = *maxVal;
   }
 
   return minMaxSampleValues;

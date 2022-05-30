@@ -26,9 +26,8 @@ class ShaderFx::ShaderFxImpl
 public:
   explicit ShaderFxImpl(const FxHelper& fxHelper) noexcept;
 
-  void Start();
-  void ChangeEffects();
-  void ApplyMultiple();
+  auto ChangeEffects() -> void;
+  auto ApplyMultiple() -> void;
   auto ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void;
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
@@ -46,6 +45,11 @@ ShaderFx::ShaderFx(const FxHelper& fxHelper) noexcept
 {
 }
 
+auto ShaderFx::GetFxName() const noexcept -> std::string
+{
+  return "shader";
+}
+
 auto ShaderFx::ChangeEffects() noexcept -> void
 {
   m_fxImpl->ChangeEffects();
@@ -53,17 +57,12 @@ auto ShaderFx::ChangeEffects() noexcept -> void
 
 auto ShaderFx::Start() noexcept -> void
 {
-  m_fxImpl->Start();
+  // nothing to do
 }
 
 auto ShaderFx::Finish() noexcept -> void
 {
   // nothing to do
-}
-
-auto ShaderFx::GetFxName() const noexcept -> std::string
-{
-  return "shader";
 }
 
 auto ShaderFx::ApplyMultiple() noexcept -> void
@@ -86,17 +85,12 @@ ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
 {
 }
 
-inline void ShaderFx::ShaderFxImpl::Start()
-{
-  // nothing to do
-}
-
-void ShaderFx::ShaderFxImpl::ChangeEffects()
+inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
 {
   m_highContrast.ChangeHighContrast();
 }
 
-inline void ShaderFx::ShaderFxImpl::ApplyMultiple()
+inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
 {
   m_highContrast.UpdateHighContrast();
 

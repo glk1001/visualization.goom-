@@ -93,14 +93,12 @@ template<class T>
 constexpr const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
 {
   return arr.at(static_cast<size_t>(idx));
-  //  return arr[static_cast<size_t>(idx)];
 }
 
 template<class T>
 constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
 {
   return arr.at(static_cast<size_t>(idx));
-  //  return arr[static_cast<size_t>(idx)];
 }
 
 class ColorMaps

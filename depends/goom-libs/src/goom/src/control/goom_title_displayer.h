@@ -3,9 +3,9 @@
 #include "color/color_adjustment.h"
 #include "goom_graphic.h"
 #include "point2d.h"
+#include "utils/propagate_const.h"
 
 #include <cstdint>
-#include <functional>
 #include <memory>
 #include <vector>
 
@@ -54,11 +54,10 @@ private:
   static constexpr int32_t MAX_TEXT_DISPLAY_TIME = 200;
   static constexpr int32_t TIME_TO_START_MIDDLE_PHASE = 100;
   static constexpr int32_t TIME_TO_START_FINAL_PHASE = 50;
-  static constexpr int32_t TIME_TO_START_FINAL_FADE = 15;
   float m_xPos = 0.0F;
   float m_yPos = 0.0F;
   int32_t m_timeLeftOfTitleDisplay = MAX_TEXT_DISPLAY_TIME;
-  const std::unique_ptr<DRAW::TextDraw> m_textDraw;
+  std::experimental::propagate_const<std::unique_ptr<DRAW::TextDraw>> m_textDraw;
   const int32_t m_screenWidth;
   const int32_t m_screenHeight;
   const std::string m_fontDirectory;
@@ -71,9 +70,9 @@ private:
   const size_t m_fontInfoIndex;
   [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
   [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;
-  std::reference_wrapper<const COLOR::IColorMap> m_textColorMap;
-  std::reference_wrapper<const COLOR::IColorMap> m_textOutlineColorMap;
-  std::reference_wrapper<const COLOR::IColorMap> m_charColorMap;
+  const COLOR::IColorMap* m_textColorMap;
+  const COLOR::IColorMap* m_textOutlineColorMap;
+  const COLOR::IColorMap* m_charColorMap;
   void DrawText(const std::string& text);
   [[nodiscard]] auto GetColorT() const -> float;
   [[nodiscard]] auto GetFontCharColorMixT() const -> float;
@@ -115,11 +114,10 @@ private:
     float yIncrement = 0.0F;
   };
   FinalPhaseIncrements m_finalPhaseIncrements{};
-  [[nodiscard]] auto GetFinalPhaseIncrements(const std::string& title) const
-      -> FinalPhaseIncrements;
+  [[nodiscard]] auto GetFinalPhaseIncrements(const std::string& title) -> FinalPhaseIncrements;
   [[nodiscard]] auto GetXIncrement() const -> float;
   [[nodiscard]] auto GetYIncrement() const -> float;
-  [[nodiscard]] auto GetFinalPhaseCentrePenPos(const std::string& str) const -> Point2dFlt;
+  [[nodiscard]] auto GetFinalPhaseCentrePenPos(const std::string& str) -> Point2dFlt;
 
   static constexpr float TEXT_GAMMA = 1.0F / 2.0F;
   COLOR::ColorAdjustment m_textColorAdjust{TEXT_GAMMA,

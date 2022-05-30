@@ -75,7 +75,7 @@ private:
   [[nodiscard]] auto IsInDelayZone() noexcept -> bool;
   [[nodiscard]] auto IsInThisDelayZone(const DelayPoint& delayPoint) const noexcept -> bool;
   [[nodiscard]] auto WeAreStartingDelayPoint() noexcept -> bool;
-  auto ValidateDelayPoints() noexcept -> void;
+  auto ValidateDelayPoints() const noexcept -> void;
   auto SingleCycleIncrement() noexcept -> void;
   auto ContinuousRepeatableIncrement() noexcept -> void;
   auto ContinuousReversibleIncrement() noexcept -> void;

@@ -406,7 +406,7 @@ inline auto JoinedPaths::IncrementT() noexcept -> void
   }
 }
 
-inline auto JoinedPaths::Reset(float t) noexcept -> void
+inline auto JoinedPaths::Reset(const float t) noexcept -> void
 {
   m_positionT->Reset(t);
   m_currentSegment = 0;

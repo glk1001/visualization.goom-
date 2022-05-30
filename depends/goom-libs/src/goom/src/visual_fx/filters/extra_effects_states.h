@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filter_settings.h"
+#include "utils/propagate_const.h"
 
 #include <cstdint>
 #include <memory>
@@ -52,27 +53,27 @@ private:
 
   static constexpr float PROB_REPEAT_BLOCKY_WAVY_EFFECT = 0.9F;
   static constexpr uint32_t BLOCKY_WAVY_EFFECT_OFF_TIME = 100;
-  std::unique_ptr<EffectState> m_blockyWavyEffect;
+  std::experimental::propagate_const<std::unique_ptr<EffectState>> m_blockyWavyEffect;
 
   static constexpr float PROB_REPEAT_IMAGE_VELOCITY_EFFECT = 0.9F;
   static constexpr uint32_t IMAGE_VELOCITY_EFFECT_OFF_TIME = 100;
-  std::unique_ptr<EffectState> m_imageVelocityEffect;
+  std::experimental::propagate_const<std::unique_ptr<EffectState>> m_imageVelocityEffect;
 
   static constexpr float PROB_REPEAT_NOISE_EFFECT = 0.0F;
   static constexpr uint32_t NOISE_EFFECT_OFF_TIME = 100;
-  std::unique_ptr<EffectState> m_noiseEffect;
+  std::experimental::propagate_const<std::unique_ptr<EffectState>> m_noiseEffect;
 
   static constexpr float PROB_REPEAT_PLANE_EFFECT = 0.3F;
   static constexpr uint32_t PLANE_EFFECT_OFF_TIME = 100;
-  std::unique_ptr<EffectState> m_planeEffect;
+  std::experimental::propagate_const<std::unique_ptr<EffectState>> m_planeEffect;
 
   static constexpr float PROB_REPEAT_ROTATION_EFFECT = 0.0F;
   static constexpr uint32_t ROTATION_EFFECT_OFF_TIME = 0;
-  std::unique_ptr<EffectState> m_rotationEffect;
+  std::experimental::propagate_const<std::unique_ptr<EffectState>> m_rotationEffect;
 
   static constexpr float PROB_REPEAT_TAN_EFFECT = 0.1F;
   static constexpr uint32_t TAN_EFFECT_OFF_TIME = 100;
-  std::unique_ptr<EffectState> m_tanEffect;
+  std::experimental::propagate_const<std::unique_ptr<EffectState>> m_tanEffect;
 };
 
 } // namespace VISUAL_FX::FILTERS

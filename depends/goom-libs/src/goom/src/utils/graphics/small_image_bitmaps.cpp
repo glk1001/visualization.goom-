@@ -30,7 +30,7 @@ SmallImageBitmaps::SmallImageBitmaps(std::string resourcesDirectory)
     for (size_t i = 0; i < NUM<ImageNames>; ++i)
     {
       const auto name = static_cast<ImageNames>(i);
-      m_bitmapImages.emplace(GetImageKey(name, res), GetImageBitmapPtr(name, res));
+      m_bitmapImages.try_emplace(GetImageKey(name, res), GetImageBitmapPtr(name, res));
       LogInfo("Loaded image bitmap: '{}'.", GetImageKey(name, res));
     }
   }

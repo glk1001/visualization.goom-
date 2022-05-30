@@ -310,7 +310,7 @@ constexpr auto operator-(const Vec2dFlt& vec, const float offset) noexcept -> Ve
   return {vec.x - offset, vec.y - offset};
 }
 
-constexpr auto operator*(float scale, const Vec2dFlt& vec) noexcept -> Vec2dFlt
+constexpr auto operator*(const float scale, const Vec2dFlt& vec) noexcept -> Vec2dFlt
 {
   return {scale * vec.x, scale * vec.y};
 }

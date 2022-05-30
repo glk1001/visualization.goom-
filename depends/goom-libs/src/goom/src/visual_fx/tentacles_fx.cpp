@@ -14,6 +14,7 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+#include "utils/propagate_const.h"
 #include "utils/timer.h"
 
 #include <array>
@@ -27,6 +28,7 @@ using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using std::experimental::propagate_const;
 using STD20::pi;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
@@ -68,10 +70,11 @@ private:
   };
   const Weights<Drivers> m_driverWeights;
   const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;
-  std::vector<std::unique_ptr<TentacleDriver>> m_tentacleDrivers;
-  [[nodiscard]] auto GetTentacleDrivers() const -> std::vector<std::unique_ptr<TentacleDriver>>;
+  std::vector<propagate_const<std::unique_ptr<TentacleDriver>>> m_tentacleDrivers;
+  [[nodiscard]] auto GetTentacleDrivers() const
+      -> std::vector<propagate_const<std::unique_ptr<TentacleDriver>>>;
   TentacleDriver* m_currentTentacleDriver;
-  [[nodiscard]] auto GetNextDriver() const -> TentacleDriver*;
+  [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
   Pixel m_dominantColor{};
@@ -192,9 +195,9 @@ inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 }
 
 auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
-    -> std::vector<std::unique_ptr<TentacleDriver>>
+    -> std::vector<propagate_const<std::unique_ptr<TentacleDriver>>>
 {
-  std::vector<std::unique_ptr<TentacleDriver>> tentacleDrivers{};
+  std::vector<propagate_const<std::unique_ptr<TentacleDriver>>> tentacleDrivers{};
   for (size_t i = 0; i < NUM_TENTACLE_DRIVERS; ++i)
   {
     tentacleDrivers.emplace_back(std::make_unique<TentacleDriver>(
@@ -211,7 +214,7 @@ auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
   return tentacleDrivers;
 }
 
-inline auto TentaclesFx::TentaclesImpl::GetNextDriver() const -> TentacleDriver*
+inline auto TentaclesFx::TentaclesImpl::GetNextDriver() -> TentacleDriver*
 {
   const auto driverIndex = static_cast<size_t>(m_driverWeights.GetRandomWeighted());
   return m_tentacleDrivers[driverIndex].get();

@@ -46,8 +46,8 @@ auto Fractal::Init() -> void
 
 inline auto Fractal::InitHits() -> void
 {
-  m_prevHits.get().Reset();
-  m_curHits.get().Reset();
+  m_prevHits->Reset();
+  m_curHits->Reset();
 }
 
 auto Fractal::GetSpeed() const -> uint32_t
@@ -89,9 +89,9 @@ auto Fractal::GetNextIfsPoints() -> const std::vector<IfsPoint>&
 
 inline auto Fractal::GetCurrentIfsPoints() -> const std::vector<IfsPoint>&
 {
-  m_curHits.get().Reset();
+  m_curHits->Reset();
   DrawFractal();
-  const std::vector<IfsPoint>& currentBuffer = m_curHits.get().GetBuffer();
+  const std::vector<IfsPoint>& currentBuffer = m_curHits->GetBuffer();
   std::swap(m_prevHits, m_curHits);
   return currentBuffer;
 }
@@ -171,7 +171,7 @@ inline auto Fractal::UpdateHits(const Similitude& simi, const FltPoint& point) -
 {
   const int32_t x = m_halfWidth + DivBy2Units(point.x * m_halfWidth);
   const int32_t y = m_halfHeight - DivBy2Units(point.y * m_halfHeight);
-  m_curHits.get().AddHit(x, y, simi);
+  m_curHits->AddHit(x, y, simi);
 }
 
 } // namespace GOOM::VISUAL_FX::IFS

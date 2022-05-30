@@ -134,8 +134,8 @@ public:
   static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
 
 private:
-  ColorMapName m_mapName; // Could be 'const' but some compilers
-  vivid::ColorMap m_vividColorMap; // don't like the move contructor with const members.
+  const ColorMapName m_mapName;
+  const vivid::ColorMap m_vividColorMap;
 };
 
 class ColorMaps::ColorMapsImpl

@@ -90,7 +90,7 @@ protected:
 private:
   const uint32_t m_screenWidth;
   const uint32_t m_screenHeight;
-  const DrawMethods m_drawMethods;
+  DrawMethods m_drawMethods;
   void DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors);
 
   BlendPixelFunc m_blendPixelFunc{};

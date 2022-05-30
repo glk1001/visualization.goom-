@@ -40,7 +40,6 @@ private:
 
   const PluginInfo& m_goomInfo;
   const GoomAllVisualFx& m_visualFx;
-  //  const GoomMusicSettingsReactor& m_musicSettingsReactor;
   const VISUAL_FX::FILTERS::FilterSettingsService& m_filterSettingsService;
 
   using Ms = std::chrono::milliseconds;

@@ -614,7 +614,7 @@ void TextDraw::TextDrawImpl::Draw(const Point2dInt pen, Point2dInt& nextPen)
   nextPen.x = GetStartXPen(pen.x);
   nextPen.y = GetStartYPen(pen.y);
 
-  for (auto& span : m_textSpans)
+  for (const auto& span : m_textSpans)
   {
     WriteGlyph(span, nextPen.x, static_cast<int>(m_draw.GetScreenHeight()) - nextPen.y);
     nextPen.x += span.advance;

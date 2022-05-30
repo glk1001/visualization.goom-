@@ -98,8 +98,6 @@ public:
   void DrawLines(const AudioSamples::SampleArray& soundData,
                  const AudioSamples::MaxMinValues& soundMinMax);
 
-  void Finish();
-
   [[nodiscard]] auto GetRandomLineColor() const -> Pixel;
   [[nodiscard]] static auto GetBlackLineColor() -> Pixel;
   [[nodiscard]] static auto GetGreenLineColor() -> Pixel;
@@ -204,7 +202,7 @@ auto LinesFx::Start() noexcept -> void
 
 auto LinesFx::Finish() noexcept -> void
 {
-  m_fxImpl->Finish();
+  // nothing to do
 }
 
 auto LinesFx::GetBlackLineColor() -> Pixel
@@ -348,11 +346,6 @@ void LinesFx::LinesImpl::SetWeightedColorMaps(const std::shared_ptr<RandomColorM
   m_colorMapsManager.UpdateColorMapInfo(
       m_currentColorMapID,
       {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
-}
-
-void LinesFx::LinesImpl::Finish()
-{
-  // nothing to do
 }
 
 inline void LinesFx::LinesImpl::UpdateColorInfo()

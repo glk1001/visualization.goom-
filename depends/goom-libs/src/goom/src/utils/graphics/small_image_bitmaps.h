@@ -33,7 +33,7 @@ public:
 private:
   static const std::array<std::string, NUM<ImageNames>> IMAGE_NAMES;
   std::string m_resourcesDirectory;
-  std::map<std::string, std::unique_ptr<const ImageBitmap>> m_bitmapImages{};
+  std::map<std::string, std::unique_ptr<const ImageBitmap>, std::less<>> m_bitmapImages{};
   auto GetImageBitmapPtr(ImageNames name, size_t sizeOfImageSquare)
       -> std::unique_ptr<const ImageBitmap>;
   static auto GetImageKey(ImageNames name, size_t sizeOfImageSquare) -> std::string;

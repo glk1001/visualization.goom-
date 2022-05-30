@@ -111,7 +111,7 @@ private:
   const float m_maxDiameterSq;
 
   std::shared_ptr<RandomColorMaps> m_colorMaps;
-  std::reference_wrapper<const IColorMap> m_currentColorMap;
+  const IColorMap* m_currentColorMap;
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
   bool m_pixelColorIsDominant = false;
   static constexpr float DEFAULT_BRIGHTNESS_BASE = 0.1F;
@@ -200,7 +200,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
     m_maxRadius{HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight))},
     m_maxDiameterSq{2.0F * Sq(m_maxRadius)},
     m_colorMaps{GetAllSlimMaps(m_goomRand)},
-    m_currentColorMap{GetRandomColorMap()}
+    m_currentColorMap{&GetRandomColorMap()}
 {
 }
 
@@ -221,7 +221,8 @@ inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
 
 inline auto ImageFx::ImageFxImpl::Resume() -> void
 {
-  m_brightnessBase = m_goomRand.GetRandInRange(0.1F, 1.0F) * DEFAULT_BRIGHTNESS_BASE;
+  static constexpr float MIN_BRIGHTNESS = 0.1F;
+  m_brightnessBase = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, 1.0F) * DEFAULT_BRIGHTNESS_BASE;
 }
 
 inline auto ImageFx::ImageFxImpl::Start() -> void
@@ -277,9 +278,11 @@ inline auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
 {
   const auto randMaxRadius = m_goomRand.GetRandInRange(0.7F, 1.0F) * m_maxRadius;
 
+  const size_t numChunks = m_currentImage->GetNumChunks();
   float radiusTheta = 0.0F;
-  const float radiusThetaStep = TWO_PI / static_cast<float>(m_currentImage->GetNumChunks());
-  for (size_t i = 0; i < m_currentImage->GetNumChunks(); ++i)
+  const float radiusThetaStep = TWO_PI / static_cast<float>(numChunks);
+
+  for (size_t i = 0; i < numChunks; ++i)
   {
     static constexpr float SMALL_OFFSET = 0.4F;
     const float maxRadiusAdj =
@@ -378,7 +381,7 @@ inline auto ImageFx::ImageFxImpl::UpdateImageStartPositions() -> void
     ResetStartPositions();
     SetNewFloatingStartPosition();
     m_floatingT.Reset(1.0F);
-    m_currentColorMap = GetRandomColorMap();
+    m_currentColorMap = &GetRandomColorMap();
   }
 }
 
@@ -449,7 +452,7 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
 inline auto ImageFx::ImageFxImpl::GetMappedColor(const Pixel& pixelColor) const -> Pixel
 {
   const float t = (pixelColor.RFlt() + pixelColor.GFlt() + pixelColor.BFlt()) / 3.0F;
-  return m_currentColorMap.get().GetColor(t);
+  return m_currentColorMap->GetColor(t);
 }
 
 ChunkedImage::ChunkedImage(std::shared_ptr<ImageBitmap> image, const PluginInfo& goomInfo) noexcept

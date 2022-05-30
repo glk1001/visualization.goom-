@@ -7,8 +7,6 @@
 #include "utils/math/misc.h"
 #include "xoshiro.hpp"
 
-#undef NDEBUG
-
 #include <cstdint>
 #include <format>
 #include <limits>

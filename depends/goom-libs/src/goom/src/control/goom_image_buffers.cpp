@@ -20,7 +20,7 @@ auto GoomImageBuffers::GetBuffs(const uint32_t width, const uint32_t height)
 }
 
 GoomImageBuffers::GoomImageBuffers(const uint32_t width, const uint32_t height) noexcept
-  : m_buffs{GetBuffs(width, height)}, m_p1{*m_buffs[0]}, m_p2{*m_buffs[1]}
+  : m_buffs{GetBuffs(width, height)}
 {
 }
 

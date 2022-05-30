@@ -88,7 +88,8 @@ inline auto RandomColorMapsManager::GetColorMapPtr(const ColorMapId id) const no
 
 inline auto RandomColorMapsManager::ChangeAllColorMapsNow() noexcept -> void
 {
-  for (size_t id = 0; id < m_infoList.size(); ++id)
+  const size_t numItems = m_infoList.size();
+  for (size_t id = 0; id < numItems; ++id)
   {
     RandomizeColorMaps(id);
   }

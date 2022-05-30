@@ -68,8 +68,8 @@ private:
 
   FractalHits m_hits1;
   FractalHits m_hits2;
-  std::reference_wrapper<FractalHits> m_prevHits{m_hits1};
-  std::reference_wrapper<FractalHits> m_curHits{m_hits2};
+  FractalHits* m_prevHits{&m_hits1};
+  FractalHits* m_curHits{&m_hits2};
   auto InitHits() -> void;
 
   auto UpdateMainSimis() -> void;
@@ -83,7 +83,7 @@ private:
 
 inline auto Fractal::GetMaxHitCount() const -> uint32_t
 {
-  return m_curHits.get().GetMaxHitCount();
+  return m_curHits->GetMaxHitCount();
 }
 
 } // namespace VISUAL_FX::IFS

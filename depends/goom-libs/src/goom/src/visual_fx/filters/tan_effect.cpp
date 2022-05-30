@@ -1,6 +1,6 @@
 #include "tan_effect.h"
 
-#undef NO_LOGGING
+// #undef NO_LOGGING
 
 #include "goom/logging.h"
 #include "utils/enumutils.h"

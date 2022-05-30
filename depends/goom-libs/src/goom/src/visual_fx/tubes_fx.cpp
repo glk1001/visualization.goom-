@@ -126,7 +126,6 @@ public:
 
   void Start();
   void Resume();
-  void Suspend();
 
   void ApplyMultiple();
 
@@ -214,7 +213,7 @@ private:
                        SmallImageBitmaps::ImageNames imageName,
                        uint32_t size,
                        const MultiplePixels& colors);
-  [[nodiscard]] auto GetImageBitmap(SmallImageBitmaps::ImageNames imageName, size_t size)
+  [[nodiscard]] auto GetImageBitmap(SmallImageBitmaps::ImageNames imageName, size_t size) const
       -> const ImageBitmap&;
   static auto GetSimpleColorFuncs(const MultiplePixels& colors)
       -> std::vector<IGoomDraw::GetBitmapColorFunc>;
@@ -257,7 +256,7 @@ auto TubesFx::Resume() noexcept -> void
 
 auto TubesFx::Suspend() noexcept -> void
 {
-  m_fxImpl->Suspend();
+  // Not needed.
 }
 
 auto TubesFx::ApplyMultiple() noexcept -> void
@@ -303,13 +302,8 @@ void TubesFx::TubeFxImpl::Resume()
   ResetTubes();
 }
 
-void TubesFx::TubeFxImpl::Suspend()
-{
-  // Not needed.
-}
-
 inline auto TubesFx::TubeFxImpl::GetImageBitmap(const SmallImageBitmaps::ImageNames imageName,
-                                                const size_t size) -> const ImageBitmap&
+                                                const size_t size) const -> const ImageBitmap&
 {
   return m_smallBitmaps.GetImageBitmap(
       imageName,

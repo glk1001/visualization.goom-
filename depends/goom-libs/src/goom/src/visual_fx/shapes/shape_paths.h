@@ -2,6 +2,7 @@
 
 #include "color/random_colormaps_manager.h"
 #include "utils/math/paths.h"
+#include "utils/propagate_const.h"
 
 #include <memory>
 
@@ -39,7 +40,7 @@ public:
   [[nodiscard]] auto GetIPath() noexcept -> UTILS::MATH::IPath&;
 
 private:
-  std::shared_ptr<UTILS::MATH::IPath> m_path;
+  std::experimental::propagate_const<std::shared_ptr<UTILS::MATH::IPath>> m_path;
   ColorInfo m_colorInfo;
 };
 

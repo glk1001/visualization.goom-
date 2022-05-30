@@ -1,6 +1,6 @@
 #include "shape_parts.h"
 
-#undef NO_LOGGING
+//#undef NO_LOGGING
 
 #include "color/random_colormaps.h"
 #include "color/random_colormaps_manager.h"
@@ -182,7 +182,10 @@ inline auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 
     shapePaths.emplace_back(basePath, colorInfo);
 
-    if (SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) > 4)
+    static constexpr int32_t CLOSE_ENOUGH = 4;
+    UNUSED_FOR_NDEBUG(CLOSE_ENOUGH);
+    if (SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) >
+        CLOSE_ENOUGH)
     {
       LogError("shapePaths.at({}).GetIPath().GetStartPos() = {}, {}", i,
                shapePaths.at(i).GetIPath().GetStartPos().x,
@@ -197,7 +200,8 @@ inline auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
       LogError("scale = {}", scale);
       LogError("numSteps = {}", numSteps);
     }
-    assert(SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) <= 4);
+    assert(SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) <=
+           CLOSE_ENOUGH);
 
     stepFraction.Increment();
   }

@@ -187,7 +187,7 @@ auto Similitudes::IterateSimis() -> void
   RandomizeSimiGroup(m_extraSimiGroups[3]);
 }
 
-auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) -> void
+auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
 {
 #if __cplusplus <= 201703L
   static const Dbl c_factor = 0.8F * Get_1_minus_exp_neg_S(4.0);

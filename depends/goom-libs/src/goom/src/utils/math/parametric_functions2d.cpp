@@ -41,8 +41,8 @@ SpiralFunction::SpiralFunction(const Vec2dFlt& centrePos,
     m_minRadius{minRadius},
     m_maxRadius{maxRadius},
     m_angleFactor{direction == Direction::COUNTER_CLOCKWISE
-                      ? -static_cast<float>(numTurns) * TWO_PI
-                      : +static_cast<float>(numTurns) * TWO_PI}
+                      ? -(static_cast<float>(numTurns) * TWO_PI)
+                      : +(static_cast<float>(numTurns) * TWO_PI)}
 {
 }
 

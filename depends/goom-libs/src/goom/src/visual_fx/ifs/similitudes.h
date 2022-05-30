@@ -87,7 +87,7 @@ private:
   uint32_t m_numSimis = 0;
   auto ResetSimiGroups() -> void;
   auto ResetSimiGroup(SimiGroup& simiGroup) -> void;
-  auto RandomizeSimiGroup(SimiGroup& simiGroup) -> void;
+  auto RandomizeSimiGroup(SimiGroup& simiGroup) const -> void;
   auto UpdateMainSimisDblPart(Dbl uValue) -> void;
   using UValuesArray = std::array<Dbl, NUM_EXTRA_SIMI_GROUPS>;
   auto UpdateMainSimiDblPart(const UValuesArray& uValues,

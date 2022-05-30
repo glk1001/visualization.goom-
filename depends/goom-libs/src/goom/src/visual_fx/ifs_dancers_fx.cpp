@@ -48,6 +48,7 @@
 #include "ifs/low_density_blurrer.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/propagate_const.h"
 #include "utils/t_values.h"
 
 #include <array>
@@ -66,6 +67,7 @@ using IFS::Colorizer;
 using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
+using std::experimental::propagate_const;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -86,7 +88,6 @@ public:
   auto PostStateUpdate(bool wasActiveInPreviousState) -> void;
 
   auto Start() -> void;
-  auto Finish() -> void;
 
 private:
   static constexpr int32_t MIN_CYCLE_LENGTH = 1000;
@@ -99,7 +100,7 @@ private:
 
   Colorizer m_colorizer;
 
-  std::unique_ptr<Fractal> m_fractal{};
+  propagate_const<std::unique_ptr<Fractal>> m_fractal{};
 
   auto InitFractal() -> void;
 
@@ -149,6 +150,11 @@ IfsDancersFx::IfsDancersFx(const FxHelper& fxHelper, const SmallImageBitmaps& sm
 {
 }
 
+auto IfsDancersFx::GetFxName() const noexcept -> std::string
+{
+  return "IFS FX";
+}
+
 auto IfsDancersFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
   m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
@@ -161,7 +167,7 @@ auto IfsDancersFx::Start() noexcept -> void
 
 auto IfsDancersFx::Finish() noexcept -> void
 {
-  m_fxImpl->Finish();
+  // nothing to do
 }
 
 auto IfsDancersFx::Resume() noexcept -> void
@@ -172,11 +178,6 @@ auto IfsDancersFx::Resume() noexcept -> void
 auto IfsDancersFx::Suspend() noexcept -> void
 {
   // nothing to do
-}
-
-auto IfsDancersFx::GetFxName() const noexcept -> std::string
-{
-  return "IFS FX";
 }
 
 auto IfsDancersFx::ApplyNoDraw() noexcept -> void
@@ -264,11 +265,6 @@ inline auto IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(
 inline auto IfsDancersFx::IfsDancersFxImpl::Start() -> void
 {
   InitFractal();
-}
-
-inline auto IfsDancersFx::IfsDancersFxImpl::Finish() -> void
-{
-  // nothing to do
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::PostStateUpdate(const bool wasActiveInPreviousState)

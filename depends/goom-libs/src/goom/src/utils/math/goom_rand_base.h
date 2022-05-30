@@ -30,9 +30,6 @@ public:
   [[nodiscard]] virtual auto GetRand() const -> uint32_t = 0;
 
   // Return random number in the range n0 <= n < n1.
-  [[nodiscard]] virtual auto GetRandInRange(uint32_t n0, uint32_t n1) const -> uint32_t = 0;
-  [[nodiscard]] virtual auto GetRandInRange(int32_t n0, int32_t n1) const -> int32_t = 0;
-  [[nodiscard]] virtual auto GetRandInRange(float n0, float n1) const -> float = 0;
   template<typename T>
   struct NumberRange
   {
@@ -41,6 +38,9 @@ public:
   };
   template<typename T>
   [[nodiscard]] auto GetRandInRange(const NumberRange<T>& numberRange) const -> T;
+  [[nodiscard]] virtual auto GetRandInRange(uint32_t n0, uint32_t n1) const -> uint32_t = 0;
+  [[nodiscard]] virtual auto GetRandInRange(int32_t n0, int32_t n1) const -> int32_t = 0;
+  [[nodiscard]] virtual auto GetRandInRange(float n0, float n1) const -> float = 0;
 
   template<class RandomIt>
   void Shuffle(RandomIt first, RandomIt last) const;

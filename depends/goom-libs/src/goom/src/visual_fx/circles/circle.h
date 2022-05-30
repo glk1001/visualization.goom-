@@ -14,6 +14,7 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/math/paths.h"
+#include "utils/propagate_const.h"
 #include "utils/timer.h"
 #include "visual_fx/fx_helper.h"
 
@@ -100,7 +101,7 @@ private:
   [[nodiscard]] auto GetLineBrightness(float brightness) const -> float;
 
   class DotDrawer;
-  std::unique_ptr<DotDrawer> m_dotDrawer;
+  std::experimental::propagate_const<std::unique_ptr<DotDrawer>> m_dotDrawer;
   bool m_alternateMainLowDotColors = false;
   bool m_showLine = false;
   static constexpr float T_LINE_COLOR_STEP = 1.0F / static_cast<float>(NUM_DOTS);

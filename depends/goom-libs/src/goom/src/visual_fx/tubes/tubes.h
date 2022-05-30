@@ -1,8 +1,9 @@
 #pragma once
 
+#include "draw/goom_draw.h"
+#include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "point2d.h"
-#include "draw/goom_draw.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/paths.h"
 #include "utils/timer.h"
@@ -124,7 +125,7 @@ public:
 
 private:
   class TubeImpl;
-  const std::shared_ptr<TubeImpl> m_impl;
+  spimpl::unique_impl_ptr<TubeImpl> m_impl;
 };
 
 } // namespace VISUAL_FX::TUBES

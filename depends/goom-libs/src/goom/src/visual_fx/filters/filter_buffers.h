@@ -3,6 +3,7 @@
 #include "goom_graphic.h"
 #include "normalized_coords.h"
 #include "point2d.h"
+#include "utils/propagate_const.h"
 
 #include <array>
 #include <cmath>
@@ -95,7 +96,7 @@ private:
   const Point2dInt m_maxTranPoint;
   const uint32_t m_tranBuffStripeHeight;
   class TransformBuffers;
-  std::unique_ptr<TransformBuffers> m_transformBuffers;
+  std::experimental::propagate_const<std::unique_ptr<TransformBuffers>> m_transformBuffers;
 
   Point2dInt m_buffMidpoint{0, 0};
   NormalizedCoords m_normalizedMidPt{0.0F, 0.0F};

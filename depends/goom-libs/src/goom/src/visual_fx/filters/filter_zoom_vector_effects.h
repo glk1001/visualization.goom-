@@ -11,6 +11,7 @@
 #include "speed_coefficients_effect.h"
 #include "tan_effect.h"
 #include "utils/name_value_pairs.h"
+#include "utils/propagate_const.h"
 
 #include <functional>
 #include <memory>
@@ -18,7 +19,7 @@
 namespace GOOM
 {
 
-namespace UTILS
+namespace UTILS::MATH
 {
 class IGoomRand;
 }
@@ -31,12 +32,12 @@ class ZoomVectorEffects
 public:
   struct TheExtraEffects
   {
-    std::unique_ptr<Hypercos> hypercos;
-    std::unique_ptr<ImageVelocity> imageVelocity;
-    std::unique_ptr<Noise> noise;
-    std::unique_ptr<Planes> planes;
-    std::unique_ptr<Rotation> rotation;
-    std::unique_ptr<TanEffect> tanEffect;
+    std::experimental::propagate_const<std::unique_ptr<Hypercos>> hypercos;
+    std::experimental::propagate_const<std::unique_ptr<ImageVelocity>> imageVelocity;
+    std::experimental::propagate_const<std::unique_ptr<Noise>> noise;
+    std::experimental::propagate_const<std::unique_ptr<Planes>> planes;
+    std::experimental::propagate_const<std::unique_ptr<Rotation>> rotation;
+    std::experimental::propagate_const<std::unique_ptr<TanEffect>> tanEffect;
   };
   using GetTheEffectsFunc = std::function<auto(const std::string& resourcesDirectory,
                                                const UTILS::MATH::IGoomRand& goomRand)

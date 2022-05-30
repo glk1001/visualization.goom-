@@ -24,7 +24,7 @@ DrawMethods::DrawMethods(const uint32_t screenWidth,
 void DrawMethods::DrawCircle(const int32_t x0,
                              const int32_t y0,
                              const int32_t radius,
-                             const Pixel& color) const
+                             const Pixel& color)
 {
   const std::vector<Pixel> colors{color};
   DrawCircle(x0, y0, radius, colors);
@@ -70,7 +70,7 @@ void DrawMethods::DrawBresenhamCircle(const int32_t x0,
 void DrawMethods::DrawCircle(const int32_t x0,
                              const int32_t y0,
                              const int32_t radius,
-                             const std::vector<Pixel>& colors) const
+                             const std::vector<Pixel>& colors)
 {
   auto plotter = [&](const int x1, const int y1, const int x2, const int y2) -> void
   {
@@ -98,7 +98,7 @@ void DrawMethods::DrawCircle(const int32_t x0,
 void DrawMethods::DrawHorizontalLine(const int x1,
                                      const int y,
                                      const int x2,
-                                     const std::vector<Pixel>& colors) const
+                                     const std::vector<Pixel>& colors)
 {
   const int xEnd = x1 == x2 ? x1 : x2;
   for (int x = x1; x <= xEnd; ++x)
@@ -111,7 +111,7 @@ void DrawMethods::DrawHorizontalLine(const int x1,
 void DrawMethods::DrawFilledCircle(const int32_t x0,
                                    const int32_t y0,
                                    const int32_t radius,
-                                   const std::vector<Pixel>& colors) const
+                                   const std::vector<Pixel>& colors)
 {
   auto plotter = [&](const int x1, const int y1, const int x2,
                      [[maybe_unused]] const int y2) -> void
@@ -132,7 +132,7 @@ void DrawMethods::DrawLine(const int32_t x1,
                            const int32_t x2,
                            const int32_t y2,
                            const Pixel& color,
-                           const uint8_t thickness) const
+                           const uint8_t thickness)
 {
   const std::vector<Pixel> colors{color};
   DrawLine(x1, y1, x2, y2, colors, thickness);
@@ -143,7 +143,7 @@ void DrawMethods::DrawLine(const int32_t x1,
                            const int32_t x2,
                            const int32_t y2,
                            const std::vector<Pixel>& colors,
-                           const uint8_t thickness) const
+                           const uint8_t thickness)
 {
   if (1 == thickness)
   {
@@ -156,7 +156,7 @@ void DrawMethods::DrawLine(const int32_t x1,
 }
 
 void DrawMethods::DrawWuLine(
-    const int x1, const int y1, const int x2, const int y2, const std::vector<Pixel>& colors) const
+    const int x1, const int y1, const int x2, const int y2, const std::vector<Pixel>& colors)
 {
   if ((y1 < 0) || (y2 < 0) || (x1 < 0) || (x2 < 0) || (y1 >= static_cast<int>(m_screenHeight)) ||
       (y2 >= static_cast<int>(m_screenHeight)) || (x1 >= static_cast<int>(m_screenWidth)) ||
@@ -308,7 +308,7 @@ void DrawMethods::DrawLineOverlap(int x0,
                                   const int y1,
                                   const std::vector<Pixel>& colors,
                                   const float brightness,
-                                  const uint8_t overlap) const
+                                  const uint8_t overlap)
 {
   if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) || (y0 >= static_cast<int>(m_screenHeight)) ||
       (y1 >= static_cast<int>(m_screenHeight)) || (x0 >= static_cast<int>(m_screenWidth)) ||
@@ -448,7 +448,7 @@ void DrawMethods::DrawThickLine(int x0,
                                 int y1,
                                 const std::vector<Pixel>& colors,
                                 const uint8_t thickness,
-                                const uint8_t thicknessMode) const
+                                const uint8_t thicknessMode)
 {
   if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) || (y0 >= static_cast<int>(m_screenHeight)) ||
       (y1 >= static_cast<int>(m_screenHeight)) || (x0 >= static_cast<int>(m_screenWidth)) ||

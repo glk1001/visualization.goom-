@@ -30,9 +30,8 @@ static constexpr float PROB_HORIZONTAL_OPPOSITE_TO_VERTICAL      = 0.9F;
 // H Plane:
 // @since June 2001
 // clang-format off
-static constexpr IGoomRand::NumberRange<float> HORIZONTAL_EFFECTS_MULTIPLIER_RANGE = {0.0015F, 0.0035F};
-static constexpr IGoomRand::NumberRange<float>
-                             HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE = {0.0015F, 0.0351F};
+static constexpr IGoomRand::NumberRange<float> HORIZONTAL_EFFECTS_MULTIPLIER_RANGE            = {0.0015F, 0.0035F};
+static constexpr IGoomRand::NumberRange<float> HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE = {0.0015F, 0.0351F};
 // clang-format on
 
 static constexpr float DEFAULT_HORIZONTAL_SWIRL_FREQ = 1.0F;
@@ -42,9 +41,8 @@ static constexpr IGoomRand::NumberRange<float> HORIZONTAL_SWIRL_AMPLITUDE_RANGE 
 
 // V Plane:
 // clang-format off
-static constexpr IGoomRand::NumberRange<float> VERTICAL_EFFECTS_AMPLITUDE_RANGE = {0.0015F, 0.0035F};
-static constexpr IGoomRand::NumberRange<float>
-                             VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = {0.0015F, 0.0351F};
+static constexpr IGoomRand::NumberRange<float> VERTICAL_EFFECTS_AMPLITUDE_RANGE            = {0.0015F, 0.0035F};
+static constexpr IGoomRand::NumberRange<float> VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = {0.0015F, 0.0351F};
 // clang-format on
 
 static constexpr float DEFAULT_VERTICAL_SWIRL_FREQ = 1.0F;

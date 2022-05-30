@@ -40,7 +40,7 @@ void ImageBitmap::Load(std::string imageFilename)
   try
   {
     static constexpr int DESIRED_CHANNELS = 4;
-    rgbImage = stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
+    rgbImage = ::stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
   }
   catch (const std::exception& e)
   {
@@ -86,7 +86,7 @@ void ImageBitmap::Load(std::string imageFilename)
     }
   }
 
-  stbi_image_free(rgbImage);
+  ::stbi_image_free(rgbImage);
 }
 
 } // namespace GOOM::UTILS::GRAPHICS
