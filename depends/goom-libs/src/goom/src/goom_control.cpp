@@ -175,7 +175,7 @@ private:
   uint32_t m_numUpdatesBetweenTimeChecks = DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS;
   static constexpr float UPDATE_TIME_ESTIMATE_IN_MS = 40.0F;
   static constexpr float UPDATE_TIME_SAFETY_FACTOR = 10.0F;
-  const float m_upperLimitOfElapsedTimeInMsSinceLastCheck =
+  const float m_upperLimitOfTimeIntervalInMsSinceLastMarked =
       UPDATE_TIME_SAFETY_FACTOR *
       (static_cast<float>(m_numUpdatesBetweenTimeChecks) * UPDATE_TIME_ESTIMATE_IN_MS);
   GoomDrawToBuffer m_goomTextOutput{m_goomInfo.GetScreenInfo().width,
@@ -351,8 +351,8 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
 
   StartGoomStateDump();
 
-  m_runningTimeStopwatch.SetUpperLimitOfElapsedTimeInMsSinceLastCheck(
-      m_upperLimitOfElapsedTimeInMsSinceLastCheck);
+  m_runningTimeStopwatch.SetUpperLimitOfTimeIntervalInMsSinceLastMarked(
+      m_upperLimitOfTimeIntervalInMsSinceLastMarked);
   static constexpr float START_TIME_DELAY_IN_MS = 457.0F;
   m_runningTimeStopwatch.SetStartDelayAdjustInMs(START_TIME_DELAY_IN_MS);
   m_runningTimeStopwatch.StartNow();
@@ -464,6 +464,8 @@ inline auto GoomControl::GoomControlImpl::SetSongInfo(const SongInfo& songInfo) 
 
   static constexpr uint32_t MS_PER_SECOND = 1000;
   m_runningTimeStopwatch.SetDuration(MS_PER_SECOND * m_songInfo.duration);
+  m_runningTimeStopwatch.MarkTimeNow();
+  m_runningTimeStopwatch.DoUpperLimitOfTimeIntervalCheck(true);
 
   InitTitleDisplay();
 }
@@ -485,7 +487,7 @@ auto GoomControl::GoomControlImpl::UpdateTime() -> void
       m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs < ACCURACY_CUTOFF_MS)
   {
     m_numUpdatesBetweenTimeChecks = 1;
-    m_runningTimeStopwatch.DoUpperLimitOfElapsedTimeCheck(false);
+    m_runningTimeStopwatch.DoUpperLimitOfTimeIntervalCheck(false);
   }
 }
 

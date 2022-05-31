@@ -18,8 +18,8 @@ class Stopwatch
 public:
   Stopwatch() noexcept = default;
 
-  auto DoUpperLimitOfElapsedTimeCheck(bool val) -> void;
-  auto SetUpperLimitOfElapsedTimeInMsSinceLastCheck(float val) -> void;
+  auto DoUpperLimitOfTimeIntervalCheck(bool val) -> void;
+  auto SetUpperLimitOfTimeIntervalInMsSinceLastMarked(float val) -> void;
   auto SetStartDelayAdjustInMs(float val) -> void;
   auto SetDuration(uint32_t durationInMs) noexcept -> void;
 
@@ -45,21 +45,22 @@ private:
   ChronoTimePoint m_startTime{};
   ChronoTimePoint m_lastMarkedTime{};
   float m_startDelayAdjustInMs = 0.0F;
-  bool m_doUpperLimitOfElapsedTimeCheck = false;
-  float m_upperLimitOfElapsedTimeInMsSinceLastCheck = std::numeric_limits<float>::max();
-  [[nodiscard]] auto IsValidTimeElapsed(float timeElapsedInMs) const noexcept -> bool;
+  bool m_doUpperLimitOfTimeIntervalCheck = false;
+  float m_upperLimitOfTimeIntervalInMsSinceLastMarked = std::numeric_limits<float>::max();
+  [[nodiscard]] auto IsValidTimeIntervalSinceLastMarked(float timeIntervalInMs) const noexcept
+      -> bool;
   bool m_valid = false;
   TimeValues m_timeValues{};
 };
 
-inline auto Stopwatch::DoUpperLimitOfElapsedTimeCheck(const bool val) -> void
+inline auto Stopwatch::DoUpperLimitOfTimeIntervalCheck(const bool val) -> void
 {
-  m_doUpperLimitOfElapsedTimeCheck = val;
+  m_doUpperLimitOfTimeIntervalCheck = val;
 }
 
-inline auto Stopwatch::SetUpperLimitOfElapsedTimeInMsSinceLastCheck(const float val) -> void
+inline auto Stopwatch::SetUpperLimitOfTimeIntervalInMsSinceLastMarked(const float val) -> void
 {
-  m_upperLimitOfElapsedTimeInMsSinceLastCheck = val;
+  m_upperLimitOfTimeIntervalInMsSinceLastMarked = val;
 }
 
 inline auto Stopwatch::SetStartDelayAdjustInMs(const float val) -> void
@@ -101,9 +102,9 @@ inline auto Stopwatch::MarkTimeNow() noexcept -> void
           .count());
   float newTimeRemainingInMs = m_durationInMs - newTimeElapsedInMs;
 
-  if (not IsValidTimeElapsed(newTimeElapsedInMs))
+  if (not IsValidTimeIntervalSinceLastMarked(newTimeElapsedInMs - m_timeValues.timeElapsedInMs))
   {
-    // The elapsed time was too big. Give up.
+    // The new time interval was too big. Give up.
     m_valid = false;
     return;
   }
@@ -121,14 +122,15 @@ inline auto Stopwatch::MarkTimeNow() noexcept -> void
   m_timeValues.timeRemainingAsPercent = (100.0F * m_timeValues.timeRemainingInMs) / m_durationInMs;
 }
 
-inline auto Stopwatch::IsValidTimeElapsed(const float timeElapsedInMs) const noexcept -> bool
+inline auto Stopwatch::IsValidTimeIntervalSinceLastMarked(
+    const float timeIntervalInMs) const noexcept -> bool
 {
-  if (not m_doUpperLimitOfElapsedTimeCheck)
+  if (not m_doUpperLimitOfTimeIntervalCheck)
   {
     return true;
   }
 
-  return timeElapsedInMs <= m_upperLimitOfElapsedTimeInMsSinceLastCheck;
+  return timeIntervalInMs <= m_upperLimitOfTimeIntervalInMsSinceLastMarked;
 }
 
 inline auto Stopwatch::AreTimesValid() const noexcept -> bool
