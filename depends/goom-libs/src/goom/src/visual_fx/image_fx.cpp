@@ -104,14 +104,18 @@ private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   const std::string m_resourcesDirectory;
-  const int32_t m_availableWidth;
-  const int32_t m_availableHeight;
-  const Point2dInt m_screenCentre;
-  const float m_maxRadius;
-  const float m_maxDiameterSq;
 
-  std::shared_ptr<RandomColorMaps> m_colorMaps;
-  const IColorMap* m_currentColorMap;
+  const int32_t m_availableWidth{
+      static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)};
+  const int32_t m_availableHeight{
+      static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)};
+  const Point2dInt m_screenCentre{I_HALF * m_availableWidth, I_HALF* m_availableHeight};
+  const float m_maxRadius{HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight))};
+  [[nodiscard]] auto GetNewRandBrightnessFactor() const -> float;
+  float m_randBrightnessFactor{GetNewRandBrightnessFactor()};
+
+  std::shared_ptr<RandomColorMaps> m_colorMaps{GetAllSlimMaps(m_goomRand)};
+  const IColorMap* m_currentColorMap{&GetRandomColorMap()};
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
   bool m_pixelColorIsDominant = false;
   static constexpr float DEFAULT_BRIGHTNESS_BASE = 0.1F;
@@ -128,6 +132,8 @@ private:
   auto InitImage() -> void;
 
   auto DrawChunks() -> void;
+  [[nodiscard]] auto GetPositionAdjustedBrightness(float brightness,
+                                                   const Point2dInt& position) const -> float;
   auto DrawChunk(const Point2dInt& pos, float brightness, const ChunkPixels& pixels) const -> void;
   [[nodiscard]] auto GetNextChunkStartPosition(size_t i) const -> Point2dInt;
   [[nodiscard]] auto GetNextChunkPosition(const Point2dInt& nextStartPosition,
@@ -145,7 +151,7 @@ private:
   auto SetNewFloatingStartPosition() -> void;
   [[nodiscard]] auto GetChunkFloatingStartPosition(size_t i) const -> Point2dInt;
 
-  static constexpr float GAMMA = 1.0F / 1.0F;
+  static constexpr float GAMMA = 1.0F;
   const ColorAdjustment m_colorAdjust{GAMMA};
 };
 
@@ -193,14 +199,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
     m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_resourcesDirectory{resourcesDirectory},
-    m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - CHUNK_WIDTH)},
-    m_availableHeight{static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - CHUNK_HEIGHT)},
-    m_screenCentre{I_HALF * m_availableWidth, I_HALF * m_availableHeight},
-    m_maxRadius{HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight))},
-    m_maxDiameterSq{2.0F * Sq(m_maxRadius)},
-    m_colorMaps{GetAllSlimMaps(m_goomRand)},
-    m_currentColorMap{&GetRandomColorMap()}
+    m_resourcesDirectory{resourcesDirectory}
 {
 }
 
@@ -217,6 +216,16 @@ inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
 
   m_colorMaps = weightedColorMaps.mainColorMaps;
   m_pixelColorIsDominant = m_goomRand.ProbabilityOf(0.0F);
+  m_randBrightnessFactor = GetNewRandBrightnessFactor();
+}
+
+inline auto ImageFx::ImageFxImpl::GetNewRandBrightnessFactor() const -> float
+{
+  static constexpr float MIN_FACTOR = 0.5F;
+  static constexpr float MAX_FACTOR = 2.0F;
+  const float maxRadiusSq = Sq(m_maxRadius);
+
+  return 1.0F / m_goomRand.GetRandInRange(MIN_FACTOR * maxRadiusSq, MAX_FACTOR * maxRadiusSq);
 }
 
 inline auto ImageFx::ImageFxImpl::Resume() -> void
@@ -276,7 +285,8 @@ inline auto ImageFx::ImageFxImpl::ResetCurrentImage() -> void
 
 inline auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
 {
-  const auto randMaxRadius = m_goomRand.GetRandInRange(0.7F, 1.0F) * m_maxRadius;
+  static constexpr float MIN_RADIUS_FRACTION = 0.7F;
+  const float randMaxRadius = m_goomRand.GetRandInRange(MIN_RADIUS_FRACTION, 1.0F) * m_maxRadius;
 
   const size_t numChunks = m_currentImage->GetNumChunks();
   float radiusTheta = 0.0F;
@@ -335,18 +345,16 @@ inline auto ImageFx::ImageFxImpl::ApplyMultiple() -> void
 
 inline auto ImageFx::ImageFxImpl::DrawChunks() -> void
 {
-  const float brightness = m_brightnessBase + (0.02F * m_inOutT());
+  static constexpr float IN_OUT_FACTOR = 0.02F;
+  const float brightness = m_brightnessBase + (IN_OUT_FACTOR * m_inOutT());
 
   const auto drawChunk = [this, &brightness](const size_t i)
   {
     const Point2dInt nextStartPosition = GetNextChunkStartPosition(i);
     const ChunkedImage::ImageChunk& imageChunk = m_currentImage->GetImageChunk(i);
     const Point2dInt nextChunkPosition = GetNextChunkPosition(nextStartPosition, imageChunk);
-    const float posAdjustedBrightness =
-        brightness * (SqDistance(static_cast<float>(nextChunkPosition.x),
-                                 static_cast<float>(nextChunkPosition.y)) /
-                      m_maxDiameterSq);
-    DrawChunk(nextChunkPosition, posAdjustedBrightness, imageChunk.pixels);
+    const float adjustedBrightness = GetPositionAdjustedBrightness(brightness, nextChunkPosition);
+    DrawChunk(nextChunkPosition, adjustedBrightness, imageChunk.pixels);
   };
 
   m_parallel.ForLoop(m_currentImage->GetNumChunks(), drawChunk);
@@ -357,6 +365,14 @@ inline auto ImageFx::ImageFxImpl::DrawChunks() -> void
     drawChunk(i);
   }
    **/
+}
+
+inline auto ImageFx::ImageFxImpl::GetPositionAdjustedBrightness(const float brightness,
+                                                                const Point2dInt& position) const
+    -> float
+{
+  return m_randBrightnessFactor *
+         (brightness * static_cast<float>(SqDistance(position.x, position.y)));
 }
 
 inline auto ImageFx::ImageFxImpl::UpdateFloatingStartPositions() -> void
@@ -408,22 +424,22 @@ auto ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
 
 {
   int32_t y = pos.y;
-  for (size_t yPixel = 0; yPixel < CHUNK_HEIGHT; ++yPixel)
+  for (size_t i = 0; i < CHUNK_HEIGHT; ++i)
   {
-    int32_t x = pos.x;
-    const std::array<Pixel, CHUNK_WIDTH>& pixelRow = pixels[yPixel];
+    const std::array<Pixel, CHUNK_WIDTH>& pixelRow = pixels[i];
 
-    for (size_t xPixel = 0; xPixel < CHUNK_WIDTH; ++xPixel)
+    int32_t x = pos.x;
+    for (const auto& xPixel : pixelRow)
     {
-      if ((x < 0) || (x > m_availableWidth))
+      if ((x < 0) || (x >= m_availableWidth))
       {
         continue;
       }
-      if ((y < 0) || (y > m_availableHeight))
+      if ((y < 0) || (y >= m_availableHeight))
       {
         continue;
       }
-      const MultiplePixels pixelColors = GetPixelColors(pixelRow.at(xPixel), brightness);
+      const MultiplePixels pixelColors = GetPixelColors(xPixel, brightness);
       m_draw.DrawPixels({x, y}, pixelColors);
 
       ++x;
