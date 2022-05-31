@@ -29,6 +29,8 @@ static constexpr IGoomRand::NumberRange<float> TAN_REDUCER_COEFF_RANGE = {4.0F, 
 // These give weird but interesting wave results
 static constexpr IGoomRand::NumberRange<float> SMALL_FREQ_FACTOR_RANGE = {0.001F, 0.1F};
 static constexpr IGoomRand::NumberRange<float> BIG_AMPLITUDE_RANGE = {1.0F, 50.0F};
+static constexpr IGoomRand::NumberRange<float> BIG_PERIODIC_FACTOR_RANGE = {50.0F, 100.0F};
+static constexpr IGoomRand::NumberRange<float> BIG_SIN_COS_PERIODIC_FACTOR_RANGE = {10.0F, 90.0F};
 
 static constexpr float PROB_ALLOW_STRANGE_WAVE_VALUES = 0.1F;
 static constexpr float PROB_WAVE_XY_EFFECTS_EQUAL = 0.75F;
@@ -84,23 +86,29 @@ auto Wave::SetRandomParams() -> void
 
 auto Wave::SetMode0RandomParams() -> void
 {
-  SetWaveModeSettings(FREQ_FACTOR_RANGE, AMPLITUDE_RANGE);
+  SetWaveModeSettings(FREQ_FACTOR_RANGE, AMPLITUDE_RANGE, PERIODIC_FACTOR_RANGE,
+                      SIN_COS_PERIODIC_FACTOR_RANGE);
 }
 
 auto Wave::SetMode1RandomParams() -> void
 {
   if (m_goomRand.ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
   {
-    SetWaveModeSettings(SMALL_FREQ_FACTOR_RANGE, BIG_AMPLITUDE_RANGE);
+    SetWaveModeSettings(SMALL_FREQ_FACTOR_RANGE, BIG_AMPLITUDE_RANGE, BIG_PERIODIC_FACTOR_RANGE,
+                        BIG_SIN_COS_PERIODIC_FACTOR_RANGE);
   }
   else
   {
-    SetWaveModeSettings(FREQ_FACTOR_RANGE, AMPLITUDE_RANGE);
+    SetWaveModeSettings(FREQ_FACTOR_RANGE, AMPLITUDE_RANGE, PERIODIC_FACTOR_RANGE,
+                        SIN_COS_PERIODIC_FACTOR_RANGE);
   }
 }
 
 auto Wave::SetWaveModeSettings(const IGoomRand::NumberRange<float>& freqFactorRange,
-                               const IGoomRand::NumberRange<float>& amplitudeRange) -> void
+                               const IGoomRand::NumberRange<float>& amplitudeRange,
+                               const IGoomRand::NumberRange<float>& periodicFactorRange,
+                               const IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange)
+    -> void
 {
   const bool waveEffectsEqual = m_goomRand.ProbabilityOf(PROB_WAVE_XY_EFFECTS_EQUAL);
 
@@ -108,7 +116,8 @@ auto Wave::SetWaveModeSettings(const IGoomRand::NumberRange<float>& freqFactorRa
   const WaveEffect yWaveEffect =
       waveEffectsEqual ? xWaveEffect : m_weightedEffects.GetRandomWeighted();
 
-  const float periodicFactor = GetPeriodicFactor(xWaveEffect, yWaveEffect);
+  const float periodicFactor =
+      GetPeriodicFactor(xWaveEffect, yWaveEffect, periodicFactorRange, sinCosPeriodicFactorRange);
   const float freqFactor = m_goomRand.GetRandInRange(freqFactorRange);
   const float amplitude = m_goomRand.GetRandInRange(amplitudeRange);
   const float reducerCoeff = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
@@ -140,8 +149,11 @@ inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
   }
 }
 
-inline auto Wave::GetPeriodicFactor(const WaveEffect xWaveEffect,
-                                    const WaveEffect yWaveEffect) const -> float
+inline auto Wave::GetPeriodicFactor(
+    const WaveEffect xWaveEffect,
+    const WaveEffect yWaveEffect,
+    const IGoomRand::NumberRange<float>& periodicFactorRange,
+    const IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) const -> float
 {
   if (m_goomRand.ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
   {
@@ -151,13 +163,13 @@ inline auto Wave::GetPeriodicFactor(const WaveEffect xWaveEffect,
   if (m_goomRand.ProbabilityOf(PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT))
   {
     return m_goomRand.GetRandInRange(xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
-                                         ? SIN_COS_PERIODIC_FACTOR_RANGE
-                                         : PERIODIC_FACTOR_RANGE);
+                                         ? sinCosPeriodicFactorRange
+                                         : periodicFactorRange);
   }
 
   return m_goomRand.GetRandInRange(yWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
-                                       ? SIN_COS_PERIODIC_FACTOR_RANGE
-                                       : PERIODIC_FACTOR_RANGE);
+                                       ? sinCosPeriodicFactorRange
+                                       : periodicFactorRange);
 }
 
 auto Wave::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs

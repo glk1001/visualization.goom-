@@ -28,6 +28,7 @@ using UTILS::MATH::Weights;
 
 // For debugging:
 static constexpr bool USE_FORCED_FILTER_MODE = ALL_FILTER_EFFECTS_TURNED_OFF;
+//static constexpr bool USE_FORCED_FILTER_MODE = true;
 
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
@@ -44,7 +45,7 @@ static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::SPEEDWAY_MODE1;
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::SPEEDWAY_MODE2;
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE0;
-//static constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::WAVE_MODE1;
+//static constexpr ZoomFilterMode FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE1;
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::WATER_MODE;
 //static constexpr ZoomFilterMode FORCED_FILTER_MODE ZoomFilterMode::Y_ONLY_MODE;
 // End debugging

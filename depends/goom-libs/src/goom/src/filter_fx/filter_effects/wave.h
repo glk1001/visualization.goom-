@@ -63,15 +63,20 @@ private:
   Params m_params;
   auto SetMode0RandomParams() -> void;
   auto SetMode1RandomParams() -> void;
-  auto SetWaveModeSettings(const UTILS::MATH::IGoomRand::NumberRange<float>& freqFactorRange,
-                           const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange)
-      -> void;
+  auto SetWaveModeSettings(
+      const UTILS::MATH::IGoomRand::NumberRange<float>& freqFactorRange,
+      const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange,
+      const UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
+      const UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) -> void;
   [[nodiscard]] auto GetSpeedAdd(float sqDistFromZero, WaveEffect waveEffect) const -> float;
   [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
                                             float angle,
                                             float periodicFactor) -> float;
-  [[nodiscard]] auto GetPeriodicFactor(WaveEffect xWaveEffect, WaveEffect yWaveEffect) const
-      -> float;
+  [[nodiscard]] auto GetPeriodicFactor(
+      WaveEffect xWaveEffect,
+      WaveEffect yWaveEffect,
+      const UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
+      const UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) const -> float;
   [[nodiscard]] auto GetReducerCoeff(WaveEffect xWaveEffect,
                                      WaveEffect yWaveEffect,
                                      float periodicFactor) const -> float;
