@@ -34,6 +34,8 @@ touch --no-create "${BUILD_TIME_LIB_FILE}" "${BUILD_TIME_MAIN_FILE}"
 
 cmake --build "${BUILD_DIR}"
 
+cmake --install "${BUILD_DIR}"
+
 echo
-echo "Finished cmake build in build dir \"${BUILD_DIRNAME}\"."
+echo "Finished cmake build and install in build dir \"${BUILD_DIRNAME}\"."
 echo

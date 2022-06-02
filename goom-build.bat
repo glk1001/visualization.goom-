@@ -16,4 +16,6 @@ IF ErrorLevel 1 Exit /b 1
 
 cmake --build %BUILD_DIR% --config %BUILD_TYPE%
 
+cmake --install %BUILD_DIR%
+
 POPD

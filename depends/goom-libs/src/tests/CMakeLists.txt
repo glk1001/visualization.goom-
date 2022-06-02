@@ -2,13 +2,15 @@ cmake_minimum_required(VERSION 3.15)
 
 project(GoomTests LANGUAGES CXX)
 
+set(GOOM_LIB_TESTS_NAME goom_lib_tests)
+
 if(WIN32)
     add_definitions(-D_WIN32PC)
 endif()
 
 find_package(Threads)
 
-add_executable(goomtests
+add_executable(${GOOM_LIB_TESTS_NAME}
         src/test_main.cpp
         src/test_pixels.cpp
         src/color/test_colorutils.cpp
@@ -26,7 +28,7 @@ add_executable(goomtests
         src/visual_fx/test_filter_fx.cpp
 )
 
-target_link_libraries(goomtests
+target_link_libraries(${GOOM_LIB_TESTS_NAME}
     PRIVATE
         goom
         vivid
@@ -36,35 +38,37 @@ target_link_libraries(goomtests
         stdc++
 )
 
-target_include_directories(goomtests
+target_include_directories(${GOOM_LIB_TESTS_NAME}
     PRIVATE 
         ${GOOM_ROOT_DIR}/goom/include
         ${GOOM_ROOT_DIR}/goom/include/goom
         ${GOOM_ROOT_DIR}/goom/src
 )  
-target_include_directories(goomtests
+target_include_directories(${GOOM_LIB_TESTS_NAME}
     SYSTEM PRIVATE 
         ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
         ${fmt_SOURCE_DIR}/include
         ${magic_enum_INCLUDE_DIR}
 )
 
-set_project_warnings(goomtests)
-enable_sanitizers(goomtests)
-configure_linker(goomtests)
+set_project_warnings(${GOOM_LIB_TESTS_NAME})
+enable_sanitizers(${GOOM_LIB_TESTS_NAME})
+configure_linker(${GOOM_LIB_TESTS_NAME})
 
-set_target_properties(goomtests
+set_target_properties(${GOOM_LIB_TESTS_NAME}
     PROPERTIES
         CXX_STANDARD ${CPP_STANDARD}
 )
 
-catch_discover_tests(goomtests)
+catch_discover_tests(${GOOM_LIB_TESTS_NAME})
+add_test(NAME ${GOOM_LIB_TESTS_NAME}
+        COMMAND ${GOOM_LIB_TESTS_NAME})
 
-get_target_property(goomtests_compile_options  goomtests COMPILE_OPTIONS)
-get_target_property(goomtests_compile_features goomtests COMPILE_FEATURES)
-get_target_property(goomtests_link_options     goomtests LINK_OPTIONS)
+get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} COMPILE_OPTIONS)
+get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} COMPILE_FEATURES)
+get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} LINK_OPTIONS)
 
-message(STATUS "Goom Tests: C++ standard = \"${CPP_STANDARD}\".")
-message(STATUS "Goom Tests: C++ compile features = \"${goomtests_compile_features}\".")
-message(STATUS "Goom Tests: C++ compile options = \"${goomtests_compile_options}\".")
-message(STATUS "Goom Tests: C++ link options = \"${goomtests_link_options}\".")
+message(STATUS "Goom Lib Tests: C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Goom Lib Tests: C++ compile features = \"${${GOOM_LIB_TESTS_NAME}_compile_features}\".")
+message(STATUS "Goom Lib Tests: C++ compile options = \"${${GOOM_LIB_TESTS_NAME}_compile_options}\".")
+message(STATUS "Goom Lib Tests: C++ link options = \"${${GOOM_LIB_TESTS_NAME}_link_options}\".")

@@ -11,7 +11,8 @@ if [[ ! -d "${BUILD_DIR}" ]]; then
   exit 1
 fi  
 
-declare -r TEST_DIR=${BUILD_DIR}/visualization.goom-prefix/src/visualization.goom-build/goom_libs-prefix/src/goom_libs-build
+
+declare -r TEST_DIR=${BUILD_DIR}
 
 ctest --verbose --test-dir "${TEST_DIR}"
 if [[ $? == 0 ]]; then

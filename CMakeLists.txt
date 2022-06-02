@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.15)
 
 project(visualization.goom)
 
+set(GOOM_TARGET_NAME "visualization.goom")
+set(GOOM_ADDON_PREFIX "GOOM")
+
 if(WIN32)
   if (NOT CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION)
     message(WARNING "Windows SDK is not defined. Cannot tell if it's too old.")
@@ -21,6 +24,7 @@ if (IS_KODI_MATRIX)
 endif()
 
 set(GOOM_LIBS_TARGET_NAME "goom_libs")
+set(VIS_GOOM_PARENT_DIR ${PROJECT_SOURCE_DIR}/..)
 set(GOOM_ROOT_DIR ${PROJECT_SOURCE_DIR}/depends/goom-libs)
 set(GOOM_BUILD_ARTIFACTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/goom-libs-artifacts)
 set(GOOM_INCLUDE_DIRS "${GOOM_ROOT_DIR}/src/goom/include")
@@ -50,12 +54,33 @@ list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
 
 include(ExternalProject)
 
+# CLion puts a "-S ${PROJECT_SOURCE_DIR}" at the end of it's cmake command.
+# This doesn't work with Kodi's convoluted add-on builder, but this work-around does.
+if(EXISTS "${CMAKE_BINARY_DIR}/CMakeCache.txt")
+  message(STATUS "In build mode: Found cache file ${CMAKE_BINARY_DIR}/CMakeCache.txt.")
+else()
+  message(STATUS "In config mode: Executing kodi addons cmake.")
+  execute_process(COMMAND cmake
+          -D ADDONS_TO_BUILD=${GOOM_TARGET_NAME}
+          -D ADDON_SRC_PREFIX=${VIS_GOOM_PARENT_DIR}
+          -D CMAKE_INSTALL_PREFIX=${VIS_GOOM_PARENT_DIR}/xbmc/kodi-build/addons
+          -D PACKAGE_ZIP=1
+          ${VIS_GOOM_PARENT_DIR}/xbmc/cmake/addons
+          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+          RESULT_VARIABLE CMAKE_RESULT)
+  if(NOT CMAKE_RESULT EQUAL "0")
+    message(FATAL_ERROR "cmake kodi-addons failed.")
+  endif()
+endif()
+
 ExternalProject_Add(${GOOM_LIBS_TARGET_NAME}
     SOURCE_DIR       ${GOOM_ROOT_DIR}
     BUILD_ALWAYS     ON
     INSTALL_COMMAND  ""
     BUILD_BYPRODUCTS ${GOOM_BIN_LIBS}
-    CMAKE_ARGS      -D CMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
+    CMAKE_ARGS      -D CMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                    -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                    -D CMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
                     -D CMAKE_SCRIPTS_PATH:PATH=${CMAKE_SCRIPTS_PATH}
                     -D GOOM_BUILD_ARTIFACTS_DIR:PATH=${GOOM_BUILD_ARTIFACTS_DIR}
                     -D fmt_SOURCE_DIR:PATH=${fmt_SOURCE_DIR}
@@ -65,9 +90,13 @@ ExternalProject_Add(${GOOM_LIBS_TARGET_NAME}
                     -D USE_MAGIC_ENUM=${USE_MAGIC_ENUM}
 )
 
-
-set(GOOM_TARGET_NAME "visualization.goom")
-set(GOOM_ADDON_PREFIX "GOOM")
+# Move the external goom libs Dart file into the main build directory so CLion is happy.
+set(GOOM_LIBS_DART_DIR ${CMAKE_BINARY_DIR}/${GOOM_LIBS_TARGET_NAME}-prefix/src/${GOOM_LIBS_TARGET_NAME}-build)
+add_custom_command(
+        TARGET ${GOOM_LIBS_TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${GOOM_LIBS_DART_DIR}/DartConfiguration.tcl
+        ${CMAKE_BINARY_DIR}/DartConfiguration.tcl)
 
 
 set(CPP_STANDARD 17)
@@ -97,7 +126,7 @@ else()
 endif()
 
 
-find_package(Kodi REQUIRED)
+find_package(Kodi PATHS ${CMAKE_BINARY_DIR}/build/depends/lib/kodi NO_DEFAULT_PATH REQUIRED)
 # Provides KODI_INCLUDE_DIR but out by one!
 set(KODI_PARENT_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
 
@@ -159,8 +188,12 @@ message(STATUS "Visualization.goom: WARNINGS_AS_ERRORS = \"${WARNINGS_AS_ERRORS}
 if(WIN32)
   message(STATUS "Visualization.goom: CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION = \"${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}\".")
 endif()
+message(STATUS "Visualization.goom: CMAKE_SOURCE_DIR   = \"${CMAKE_SOURCE_DIR}\".")
+message(STATUS "Visualization.goom: PROJECT_SOURCE_DIR = \"${PROJECT_SOURCE_DIR}\".")
+message(STATUS "Visualization.goom: CMAKE_BINARY_DIR   = \"${CMAKE_BINARY_DIR}\".")
 message(STATUS "Visualization.goom: CMAKE_MODULE_PATH = \"${CMAKE_MODULE_PATH}\".")
 message(STATUS "Visualization.goom: CMAKE_SCRIPTS_PATH = \"${CMAKE_SCRIPTS_PATH}\".")
+message(STATUS "Visualization.goom: GOOM_LIBS_DART_DIR = \"${GOOM_LIBS_DART_DIR}\".")
 message(STATUS "Visualization.goom: C++ standard = \"${CPP_STANDARD}\".")
 message(STATUS "Visualization.goom: C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
 message(STATUS "Visualization.goom: C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")
@@ -172,8 +205,23 @@ message(STATUS "Visualization.goom: includes = \"${includes}\".")
 message(STATUS "Visualization.goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_INCLUDE_DIR = \"${KODI_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_PARENT_INCLUDE_DIR = \"${KODI_PARENT_INCLUDE_DIR}\".")
+message(STATUS "Visualization.goom: VIS_GOOM_PARENT_DIR = \"${VIS_GOOM_PARENT_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_ROOT_DIR = \"${GOOM_ROOT_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_INCLUDE_DIRS = \"${GOOM_INCLUDE_DIRS}\".")
 message(STATUS "Visualization.goom: GOOM_SYS_INC_DIRS = \"${GOOM_SYS_INC_DIRS}\".")
 message(STATUS "Visualization.goom: GOOM_BIN_LIBS = \"${GOOM_BIN_LIBS}\".")
 message(STATUS "Visualization.goom: GOOM_BUILD_ARTIFACTS_DIR = \"${GOOM_BUILD_ARTIFACTS_DIR}\".")
+message(STATUS "Visualization.goom: CMAKE_INSTALL_PREFIX = \"${CMAKE_INSTALL_PREFIX}\".")
+
+set(GOOM_BUILD_TIME_FILES
+        ${PROJECT_SOURCE_DIR}/depends/goom-libs/src/goom/src/utils/build_time.cpp
+        ${PROJECT_SOURCE_DIR}/src/build_time.cpp
+        )
+
+add_custom_command(OUTPUT ${GOOM_BUILD_TIME_FILES}
+        COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
+        COMMENT "Touching build files."
+        VERBATIM
+        )
+
+add_custom_target(goom_build_time DEPENDS ${GOOM_BUILD_TIME_FILES})
