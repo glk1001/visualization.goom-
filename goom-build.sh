@@ -20,6 +20,8 @@ echo
 
 cmake --build "${BUILD_DIR}"
 
+echo
+
 cmake --install "${BUILD_DIR}"
 
 echo

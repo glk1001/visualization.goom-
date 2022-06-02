@@ -23,7 +23,7 @@ if (IS_KODI_MATRIX)
   add_definitions(-DKODI_MATRIX)
 endif()
 
-set(GOOM_LIBS_TARGET_NAME "goom_libs")
+set(GOOM_LIBS_TARGET_NAME "goom")
 set(VIS_GOOM_PARENT_DIR ${PROJECT_SOURCE_DIR}/..)
 set(GOOM_ROOT_DIR ${PROJECT_SOURCE_DIR}/depends/goom-libs)
 set(GOOM_BUILD_ARTIFACTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/goom-libs-artifacts)
@@ -72,31 +72,6 @@ else()
     message(FATAL_ERROR "cmake kodi-addons failed.")
   endif()
 endif()
-
-ExternalProject_Add(${GOOM_LIBS_TARGET_NAME}
-    SOURCE_DIR       ${GOOM_ROOT_DIR}
-    BUILD_ALWAYS     ON
-    INSTALL_COMMAND  ""
-    BUILD_BYPRODUCTS ${GOOM_BIN_LIBS}
-    CMAKE_ARGS      -D CMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-                    -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                    -D CMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
-                    -D CMAKE_SCRIPTS_PATH:PATH=${CMAKE_SCRIPTS_PATH}
-                    -D GOOM_BUILD_ARTIFACTS_DIR:PATH=${GOOM_BUILD_ARTIFACTS_DIR}
-                    -D fmt_SOURCE_DIR:PATH=${fmt_SOURCE_DIR}
-                    -D GLM_INCLUDE_DIR=${GLM_INCLUDE_DIR}
-                    -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                    -D ENABLE_TESTING=${ENABLE_TESTING}
-                    -D USE_MAGIC_ENUM=${USE_MAGIC_ENUM}
-)
-
-# Move the external goom libs Dart file into the main build directory so CLion is happy.
-set(GOOM_LIBS_DART_DIR ${CMAKE_BINARY_DIR}/${GOOM_LIBS_TARGET_NAME}-prefix/src/${GOOM_LIBS_TARGET_NAME}-build)
-add_custom_command(
-        TARGET ${GOOM_LIBS_TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        ${GOOM_LIBS_DART_DIR}/DartConfiguration.tcl
-        ${CMAKE_BINARY_DIR}/DartConfiguration.tcl)
 
 
 set(CPP_STANDARD 17)
@@ -171,8 +146,33 @@ if (CORE_SYSTEM_NAME STREQUAL "osx")
   set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup -flat_namespace")
 endif()
 
+add_subdirectory(depends/goom-libs)
+
 build_addon(${GOOM_TARGET_NAME} ${GOOM_ADDON_PREFIX} DEPLIBS)
-add_dependencies(${GOOM_TARGET_NAME} ${GOOM_LIBS_TARGET_NAME})
+add_dependencies(${GOOM_TARGET_NAME} ${GOOM_LIBS_TARGET_NAME} vivid)
+
+# Move the external goom libs Dart file into the main build directory so CLion is happy.
+set(GOOM_LIBS_DART_DIR ${CMAKE_BINARY_DIR}/depends/goom-libs)
+add_custom_command(
+        TARGET ${GOOM_TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${GOOM_LIBS_DART_DIR}/DartConfiguration.tcl
+        ${CMAKE_BINARY_DIR}/DartConfiguration.tcl)
+
+# Force the build time into the compiled binaries.
+set(GOOM_BUILD_TIME_FILES
+        ${PROJECT_SOURCE_DIR}/depends/goom-libs/src/goom/src/utils/build_time.cpp
+        ${PROJECT_SOURCE_DIR}/src/build_time.cpp
+        )
+
+add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
+
+add_custom_command(TARGET goom_build_time
+        PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
+        COMMENT "Touching build files."
+        VERBATIM
+        )
 
 include(CPack)
 
@@ -212,19 +212,3 @@ message(STATUS "Visualization.goom: GOOM_SYS_INC_DIRS = \"${GOOM_SYS_INC_DIRS}\"
 message(STATUS "Visualization.goom: GOOM_BIN_LIBS = \"${GOOM_BIN_LIBS}\".")
 message(STATUS "Visualization.goom: GOOM_BUILD_ARTIFACTS_DIR = \"${GOOM_BUILD_ARTIFACTS_DIR}\".")
 message(STATUS "Visualization.goom: CMAKE_INSTALL_PREFIX = \"${CMAKE_INSTALL_PREFIX}\".")
-
-
-# Force the build time into the compiled binaries.
-set(GOOM_BUILD_TIME_FILES
-        ${PROJECT_SOURCE_DIR}/depends/goom-libs/src/goom/src/utils/build_time.cpp
-        ${PROJECT_SOURCE_DIR}/src/build_time.cpp
-        )
-
-add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
-
-add_custom_command(TARGET goom_build_time
-        PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
-        COMMENT "Touching build files."
-        VERBATIM
-        )
