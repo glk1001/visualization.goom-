@@ -213,15 +213,18 @@ message(STATUS "Visualization.goom: GOOM_BIN_LIBS = \"${GOOM_BIN_LIBS}\".")
 message(STATUS "Visualization.goom: GOOM_BUILD_ARTIFACTS_DIR = \"${GOOM_BUILD_ARTIFACTS_DIR}\".")
 message(STATUS "Visualization.goom: CMAKE_INSTALL_PREFIX = \"${CMAKE_INSTALL_PREFIX}\".")
 
+
+# Force the build time into the compiled binaries.
 set(GOOM_BUILD_TIME_FILES
         ${PROJECT_SOURCE_DIR}/depends/goom-libs/src/goom/src/utils/build_time.cpp
         ${PROJECT_SOURCE_DIR}/src/build_time.cpp
         )
 
-add_custom_command(OUTPUT ${GOOM_BUILD_TIME_FILES}
+add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
+
+add_custom_command(TARGET goom_build_time
+        PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
         COMMENT "Touching build files."
         VERBATIM
         )
-
-add_custom_target(goom_build_time DEPENDS ${GOOM_BUILD_TIME_FILES})
