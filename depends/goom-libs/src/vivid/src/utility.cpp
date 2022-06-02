@@ -152,19 +152,19 @@ namespace ansi {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string colorize( const std::string& text, const ColorMap& cmap )
+std::string colorize( const std::string& txt, const ColorMap& cmap )
 {
     if ( cmap.empty() ) {
-        return text;
+        return txt;
     }
 
-    const float n = float( text.size() );
+    const auto n = static_cast<float>(txt.size());
     std::stringstream ss;
 
-    for ( size_t i = 0; i < n; i++ ) {
-        const float t = i / n;
+    for ( size_t i = 0; i < txt.size(); i++ ) {
+        const float t = static_cast<float>(i) / n;
         const uint8_t id = index::fromRgb( cmap.at( t ) );
-        ss << ansi::fg( id ) << text[ i ];
+        ss << ansi::fg( id ) << txt[ i ];
     }
 
     ss << ansi::reset;

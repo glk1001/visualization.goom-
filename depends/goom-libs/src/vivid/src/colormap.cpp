@@ -41,7 +41,7 @@ srgb_t ColorMap::at( const float t ) const
 
     const size_t steps = stops_.size() - 1;
     const float s = glm::clamp( t, 0.f, 1.f );
-    const float sf = s * steps;
+    const float sf = s * static_cast<float>(steps);
     const size_t k = size_t( glm::floor( sf ) );
 
     if ( k + 1 == stops_.size() ) {

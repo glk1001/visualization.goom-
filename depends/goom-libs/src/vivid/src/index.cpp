@@ -35,7 +35,8 @@ uint8_t fromRgb8( const col8_t& rgb8 )
     const auto g = conv( rgb8.y );
     const auto b = conv( rgb8.z );
 
-    return ( 16 + 36 * r + 6 * g + b );
+    return static_cast<uint8_t>( 16 + (36 * static_cast<int>(r)) + (6 * static_cast<int>(g))
+                                + static_cast<int>(b) );
 }
 
 
