@@ -27,6 +27,7 @@ x11docker --runasroot="service lircd start" \
 		  --privileged \
           --ulimit core=-1 \
           --mount type=bind,source=/tmp/,target=/tmp/ \
+          --rm \
           -- \
 	      ${IMAGE_NAME}
 

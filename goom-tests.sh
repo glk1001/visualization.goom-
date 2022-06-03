@@ -9,10 +9,13 @@ source "${THIS_SCRIPT_PATH}/goom-set-vars.sh"
 if [[ ! -d "${BUILD_DIR}" ]]; then
   echo "ERROR: Could not find build directory \"${BUILD_DIR}\"."
   exit 1
-fi  
+fi
 
 
 declare -r TEST_DIR=${BUILD_DIR}
+
+echo "Using TEST_DIR \"${TEST_DIR}\"."
+echo
 
 ctest --verbose --test-dir "${TEST_DIR}"
 if [[ $? == 0 ]]; then

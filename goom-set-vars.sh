@@ -1,4 +1,5 @@
 declare EXTRA_ARGS=""
+declare USING_DOCKER="no"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -18,6 +19,10 @@ while [[ $# -gt 0 ]]; do
       BUILD_TYPE=${2}
       shift # past argument
       shift # past value
+      ;;
+    --docker)
+      USING_DOCKER="yes"
+      shift # past argument
       ;;
     *)
       EXTRA_ARGS="${EXTRA_ARGS}${key} "
@@ -74,10 +79,14 @@ else
   exit 1
 fi
 
+if [[ "${USING_DOCKER}" == "no" ]]; then
+  declare -r DOCKER=""
+else
+  declare -r DOCKER="docker-"
+fi
+
 if [[ "${BUILD_DIRNAME:-}" == "" ]]; then
-  declare -r BUILD_DIRNAME=build-${C_COMPILER}-${C_BUILD_TYPE}
-  echo "Using BUILD_DIRNAME \"${BUILD_DIRNAME}\"."
-  echo
+  declare -r BUILD_DIRNAME=build-${DOCKER}${C_COMPILER}-${C_BUILD_TYPE}
 fi
 if [[ ${BUILD_DIRNAME} != build* ]]; then
   echo "ERROR: Build dirname must start with \"build\". Not this: BUILD_DIRNAME = \"${BUILD_DIRNAME}\""
@@ -85,4 +94,3 @@ if [[ ${BUILD_DIRNAME} != build* ]]; then
 fi
 
 declare -r BUILD_DIR=${THIS_SCRIPT_PATH}/${BUILD_DIRNAME}
-

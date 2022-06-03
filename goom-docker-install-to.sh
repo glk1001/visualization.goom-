@@ -40,9 +40,12 @@ if [[ ! -d "${KODI_DOCKER_RESOURCES_DIR}" ]]; then
   exit 1
 fi
 
+echo
+echo "rsyncing \"${KODI_LIB_BUILD_DIR}/visualization.goom.so.*\" to \"${KODI_DOCKER_FILES_DIR}\"..."
 rsync ${DRY_RUN} -avh ${KODI_LIB_BUILD_DIR}/visualization.goom.so.* ${KODI_DOCKER_FILES_DIR}
 
 echo
+echo "rsyncing \"${KODI_SHARE_BUILD_DIR}/addon.xml\" to \"${KODI_DOCKER_FILES_DIR}\"..."
 rsync ${DRY_RUN} -avh ${KODI_SHARE_BUILD_DIR}/addon.xml ${KODI_DOCKER_FILES_DIR}
 
 echo

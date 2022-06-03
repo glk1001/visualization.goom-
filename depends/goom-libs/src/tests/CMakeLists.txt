@@ -4,9 +4,9 @@ project(GoomTests LANGUAGES CXX)
 
 set(GOOM_LIB_TESTS_NAME goom_lib_tests)
 
-if(WIN32)
+if (WIN32)
     add_definitions(-D_WIN32PC)
-endif()
+endif ()
 
 find_package(Threads)
 
@@ -26,39 +26,39 @@ add_executable(${GOOM_LIB_TESTS_NAME}
         src/utils/test_strutils.cpp
         src/utils/test_t_values.cpp
         src/visual_fx/test_filter_fx.cpp
-)
+        )
 
 target_link_libraries(${GOOM_LIB_TESTS_NAME}
-    PRIVATE
+        PRIVATE
         goom
         vivid
         Catch2::Catch2
         ${CMAKE_THREAD_LIBS_INIT}
         m
         stdc++
-)
+        )
 
 target_include_directories(${GOOM_LIB_TESTS_NAME}
-    PRIVATE 
+        PRIVATE
         ${GOOM_ROOT_DIR}/src/goom/include
         ${GOOM_ROOT_DIR}/src/goom/include/goom
         ${GOOM_ROOT_DIR}/src/goom/src
-)  
+        )
 target_include_directories(${GOOM_LIB_TESTS_NAME}
-    SYSTEM PRIVATE 
+        SYSTEM PRIVATE
         ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
         ${fmt_SOURCE_DIR}/include
         ${magic_enum_INCLUDE_DIR}
-)
+        )
 
 set_project_warnings(${GOOM_LIB_TESTS_NAME})
 enable_sanitizers(${GOOM_LIB_TESTS_NAME})
 configure_linker(${GOOM_LIB_TESTS_NAME})
 
 set_target_properties(${GOOM_LIB_TESTS_NAME}
-    PROPERTIES
+        PROPERTIES
         CXX_STANDARD ${CPP_STANDARD}
-)
+        )
 
 catch_discover_tests(${GOOM_LIB_TESTS_NAME})
 add_test(NAME ${GOOM_LIB_TESTS_NAME}

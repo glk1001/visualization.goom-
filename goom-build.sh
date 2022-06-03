@@ -13,12 +13,16 @@ if [[ ! -d "${BUILD_DIR}" ]]; then
   exit 1
 fi
 
-export CC=${C_COMPILER}
-export CXX=${CPP_COMPILER}
-echo "Using compilers - C: ${CC}, C++: ${CXX}."
 echo
 
-cmake --build "${BUILD_DIR}"
+export CC=${C_COMPILER}
+export CXX=${CPP_COMPILER}
+echo "Using compilers: C: ${C_COMPILER}, C++: ${CPP_COMPILER}."
+
+echo "Using BUILD_DIR: \"${BUILD_DIR}\"."
+echo
+
+cmake --build "${BUILD_DIR}" -j 6
 
 echo
 
@@ -27,4 +31,3 @@ cmake --install "${BUILD_DIR}"
 echo
 echo "Finished cmake build and install in build dir \"${BUILD_DIRNAME}\"."
 echo
-

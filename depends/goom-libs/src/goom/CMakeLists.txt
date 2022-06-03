@@ -3,23 +3,23 @@ cmake_minimum_required(VERSION 3.15)
 project(Goom LANGUAGES CXX)
 
 if (NOT GLM_INCLUDE_DIR)
-    message(FATAL_ERROR "\"GLM_INCLUDE_DIR\" must be defined." )
-endif()
+    message(FATAL_ERROR "\"GLM_INCLUDE_DIR\" must be defined.")
+endif ()
 
-if(WIN32)
+if (WIN32)
     add_definitions(-D_WIN32PC)
-endif()
+endif ()
 
-if(DEFINED GOOM_LOGGING)
+if (DEFINED GOOM_LOGGING)
     MESSAGE(STATUS "Goom: Logging by default is on.")
-else()
+else ()
     add_definitions(-DNO_LOGGING)
     MESSAGE(STATUS "Goom: Logging turned off.")
-endif()
+endif ()
 
 
 add_library(goom
-    STATIC
+        STATIC
         include/goom/goom_graphic.h
         src/color/color_data/color_data_maps.cpp
         src/color/color_data/extra_color_groups.cpp
@@ -148,16 +148,16 @@ add_library(goom
         )
 
 target_include_directories(goom
-    PUBLIC
+        PUBLIC
         ${GOOM_ROOT_DIR}/src/goom/include
         ${GOOM_ROOT_DIR}/src/goom/src/utils
-    PRIVATE
+        PRIVATE
         ${GOOM_ROOT_DIR}/src/goom/include/goom
         ${GOOM_ROOT_DIR}/src/goom/src
-)
+        )
 
 target_include_directories(goom
-    SYSTEM PRIVATE
+        SYSTEM PRIVATE
         ${GOOM_ROOT_DIR}/src/bezier/include
         ${GOOM_ROOT_DIR}/src/vivid/include
         ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
@@ -165,18 +165,18 @@ target_include_directories(goom
         ${magic_enum_INCLUDE_DIR}
         ${FREETYPE_INCLUDE_DIRS}
         ${GLM_INCLUDE_DIR}
-)
+        )
 
 set_project_warnings(goom)
 enable_sanitizers(goom)
 
 set_target_properties(goom
-    PROPERTIES
+        PROPERTIES
         CXX_STANDARD ${CPP_STANDARD}
         POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
-)
+        )
 
-get_target_property(goom_compile_options  goom COMPILE_OPTIONS)
+get_target_property(goom_compile_options goom COMPILE_OPTIONS)
 get_target_property(goom_compile_features goom COMPILE_FEATURES)
 
 message(STATUS "Goom: C++ standard = \"${CPP_STANDARD}\".")

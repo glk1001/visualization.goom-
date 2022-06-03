@@ -30,6 +30,27 @@ inline auto GetTimeTAsString(const std::time_t timeT) noexcept -> std::string
   return "TIME_ERROR";
 }
 
+#ifdef _MSC_VER
+auto GetStandardDateTimeString(const std::string& otherFormatDateTime,
+                               [[maybe_unused]] const std::string& otherFormat) noexcept
+    -> std::string
+{
+  // 'strptime' is not supported by Microsoft.
+  return otherFormatDateTime;
+}
+#else
+
+auto GetStandardDateTimeString(const std::string& otherFormatDateTime,
+                               const std::string& otherFormat) noexcept -> std::string
+{
+  struct tm timeTm;
+  ::strptime(otherFormatDateTime.c_str(), otherFormat.c_str(), &timeTm);
+  timeTm.tm_isdst = -1; // check for daylight savings
+  const time_t timeT = ::mktime(&timeTm);
+  return GetTimeTAsString(timeT);
+}
+#endif
+
 inline auto GetSteadyClockAsTimeT(const std::chrono::steady_clock::time_point t) noexcept -> time_t
 {
   const auto steadyClockDiff = t - std::chrono::steady_clock::now();
