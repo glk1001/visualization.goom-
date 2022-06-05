@@ -149,17 +149,17 @@ add_library(goom
 
 target_include_directories(goom
         PUBLIC
-        ${GOOM_ROOT_DIR}/src/goom/include
-        ${GOOM_ROOT_DIR}/src/goom/src/utils
+        ${GOOM_LIBS_DIR}/src/goom/include
+        ${GOOM_LIBS_DIR}/src/goom/src/utils
         PRIVATE
-        ${GOOM_ROOT_DIR}/src/goom/include/goom
-        ${GOOM_ROOT_DIR}/src/goom/src
+        ${GOOM_LIBS_DIR}/src/goom/include/goom
+        ${GOOM_LIBS_DIR}/src/goom/src
         )
 
 target_include_directories(goom
         SYSTEM PRIVATE
-        ${GOOM_ROOT_DIR}/src/bezier/include
-        ${GOOM_ROOT_DIR}/src/vivid/include
+        ${GOOM_LIBS_DIR}/src/bezier/include
+        ${GOOM_LIBS_DIR}/src/vivid/include
         ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
         ${fmt_SOURCE_DIR}/include
         ${magic_enum_INCLUDE_DIR}
@@ -182,10 +182,9 @@ get_target_property(goom_compile_features goom COMPILE_FEATURES)
 message(STATUS "Goom: C++ standard = \"${CPP_STANDARD}\".")
 message(STATUS "Goom: C++ compile features = \"${goom_compile_features}\".")
 message(STATUS "Goom: C++ compile options = \"${goom_compile_options}\".")
-message(STATUS "Goom: GOOM_ROOT_DIR = \"${GOOM_ROOT_DIR}\".")
+message(STATUS "Goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom: THIRD_PARTY_INCLUDE_DIR = \"${THIRD_PARTY_INCLUDE_DIR}\".")
 message(STATUS "Goom: FREETYPE_INCLUDE_DIRS = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom: magic_enum_INCLUDE_DIR = \"${magic_enum_INCLUDE_DIR}\".")
 message(STATUS "Goom: fmt_SOURCE_DIR = \"${fmt_SOURCE_DIR}\".")
-message(STATUS "Goom: GOOM_ROOT_DIR = \"${GOOM_ROOT_DIR}\".")

@@ -5,17 +5,6 @@ project(visualization.goom)
 set(GOOM_TARGET_NAME "visualization.goom")
 set(GOOM_ADDON_PREFIX "GOOM")
 
-if (WIN32)
-    if (NOT CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION)
-        message(WARNING "Windows SDK is not defined. Cannot tell if it's too old.")
-    else ()
-        set(MINIMUM_SDK_VERSION "10.0.17763.0")
-        if (CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION VERSION_LESS ${MINIMUM_SDK_VERSION})
-            message(FATAL_ERROR "Windows SDK too old: installed \"${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}\" < minimum \"${MINIMUM_SDK_VERSION}\"")
-        endif ()
-    endif ()
-endif ()
-
 option(ENABLE_TESTING "Enable unit testing" OFF)
 option(USE_MAGIC_ENUM "Use magic enum" OFF)
 option(IS_KODI_MATRIX "Compatible with kodi Matrix" OFF)
@@ -24,24 +13,26 @@ if (IS_KODI_MATRIX)
 endif ()
 
 set(GOOM_LIBS_TARGET_NAME "goom")
-set(GOOM_ROOT_DIR ${PROJECT_SOURCE_DIR}/depends/goom-libs)
+set(GOOM_LIBS_RELDIR depends/goom-libs)
+set(GOOM_LIBS_DIR ${PROJECT_SOURCE_DIR}/${GOOM_LIBS_RELDIR})
 set(GOOM_BUILD_ARTIFACTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/goom-libs-artifacts)
-set(GOOM_INCLUDE_DIRS "${GOOM_ROOT_DIR}/src/goom/include")
-set(GOOM_SYS_INC_DIRS "${GOOM_ROOT_DIR}/src/vivid/include"
-        "${GOOM_ROOT_DIR}/lib/fmt/include")
+set(GOOM_INCLUDE_DIRS "${GOOM_LIBS_DIR}/src/goom/include")
+set(GOOM_SYS_INC_DIRS "${GOOM_LIBS_DIR}/src/vivid/include" "${GOOM_LIBS_DIR}/lib/fmt/include")
 
 if (NOT WIN32)
-    set(GOOM_BIN_LIBS ${GOOM_BUILD_ARTIFACTS_DIR}/lib/libgoom.a
+    set(GOOM_BIN_LIBS
+            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/libgoom.a
             ${GOOM_BUILD_ARTIFACTS_DIR}/lib/libvivid.a)
 else ()
     set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
-    set(GOOM_BIN_LIBS ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_CONFIGURATION_TYPES}/goom.lib
+    set(GOOM_BIN_LIBS
+            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_CONFIGURATION_TYPES}/goom.lib
             ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_CONFIGURATION_TYPES}/vivid.lib)
 endif ()
 
 IF (NOT KODI_ROOT_DIR)
     set(KODI_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
-endif()
+endif ()
 set(CMAKE_INSTALL_PREFIX ${KODI_ROOT_DIR}/xbmc/kodi-build/addons)
 
 set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
@@ -56,8 +47,8 @@ CPMAddPackage("gh:fmtlib/fmt#8.0.1")
 list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
 
 
-# CLion puts a "-S ${PROJECT_SOURCE_DIR}" at the end of it's cmake command.
-# This doesn't work with Kodi's convoluted add-on builder, but this work-around does.
+# Executing the Kodi addon cmake script here allows this script to be the main cmake script.
+# This fits in with the way CLion works.
 if (EXISTS "${CMAKE_BINARY_DIR}/CMakeCache.txt")
     message(STATUS "In build mode: Found cache file ${CMAKE_BINARY_DIR}/CMakeCache.txt.")
 else ()
@@ -77,7 +68,6 @@ endif ()
 
 
 set(CPP_STANDARD 17)
-
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -91,6 +81,8 @@ include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Cache.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StaticAnalyzers.cmake)
+include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
+
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*MSVC")
     option(WARNINGS_AS_ERRORS "MSVC: Problems with glm 'type_quat.hpp' and kodi 'StringUtils.h'" OFF)
@@ -102,10 +94,14 @@ else ()
     set(POS_INDEP_CODE "ON")
 endif ()
 
+if (CORE_SYSTEM_NAME STREQUAL "osx")
+    set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup -flat_namespace")
+endif ()
+
 
 find_package(Kodi PATHS ${CMAKE_BINARY_DIR}/build/depends/lib/kodi NO_DEFAULT_PATH REQUIRED)
-# Provides KODI_INCLUDE_DIR but out by one!
-set(KODI_PARENT_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
+# Provides KODI_INCLUDE_DIR but it's out by one!
+set(KODI_FIXED_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
 
 if (NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
     find_package(OpenGl REQUIRED)
@@ -128,7 +124,7 @@ include_directories(${GOOM_INCLUDE_DIRS}
         SYSTEM ${GOOM_SYS_INC_DIRS}
         SYSTEM ${GLM_INCLUDE_DIR}
         SYSTEM ${KODI_INCLUDE_DIR}
-        SYSTEM ${KODI_PARENT_INCLUDE_DIR}
+        SYSTEM ${KODI_FIXED_INCLUDE_DIR}
         )
 
 set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp src/build_time.cpp)
@@ -144,17 +140,14 @@ endif ()
 
 list(APPEND DEPLIBS ${GOOM_BIN_LIBS})
 
-if (CORE_SYSTEM_NAME STREQUAL "osx")
-    set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup -flat_namespace")
-endif ()
-
-add_subdirectory(depends/goom-libs)
+add_subdirectory(${GOOM_LIBS_RELDIR})
 
 build_addon(${GOOM_TARGET_NAME} ${GOOM_ADDON_PREFIX} DEPLIBS)
 add_dependencies(${GOOM_TARGET_NAME} ${GOOM_LIBS_TARGET_NAME} vivid)
 
+
 # Move the external goom libs Dart file into the main build directory so CLion is happy.
-set(GOOM_LIBS_DART_DIR ${CMAKE_BINARY_DIR}/depends/goom-libs)
+set(GOOM_LIBS_DART_DIR ${CMAKE_BINARY_DIR}/${GOOM_LIBS_RELDIR})
 add_custom_command(
         TARGET ${GOOM_TARGET_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
@@ -163,18 +156,17 @@ add_custom_command(
 
 # Force the build time into the compiled binaries.
 set(GOOM_BUILD_TIME_FILES
-        ${PROJECT_SOURCE_DIR}/depends/goom-libs/src/goom/src/utils/build_time.cpp
+        ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cpp
         ${PROJECT_SOURCE_DIR}/src/build_time.cpp
         )
-
 add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
-
 add_custom_command(TARGET goom_build_time
         PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
         COMMENT "Touching build files."
         VERBATIM
         )
+
 
 include(CPack)
 
@@ -204,13 +196,13 @@ message(STATUS "Visualization.goom: C++ compile options = \"${goom_addon_compile
 message(STATUS "Visualization.goom: ENABLE_TESTING = \"${ENABLE_TESTING}\".")
 message(STATUS "Visualization.goom: IS_KODI_MATRIX = \"${IS_KODI_MATRIX}\".")
 message(STATUS "Visualization.goom: includes = \"${includes}\".")
-message(STATUS "Visualization.goom: GOOM_ROOT_DIR = \"${GOOM_ROOT_DIR}\".")
+message(STATUS "Visualization.goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_INCLUDE_DIRS = \"${GOOM_INCLUDE_DIRS}\".")
 message(STATUS "Visualization.goom: GOOM_SYS_INC_DIRS = \"${GOOM_SYS_INC_DIRS}\".")
 message(STATUS "Visualization.goom: GOOM_BIN_LIBS = \"${GOOM_BIN_LIBS}\".")
 message(STATUS "Visualization.goom: GOOM_BUILD_ARTIFACTS_DIR = \"${GOOM_BUILD_ARTIFACTS_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_LIBS_DART_DIR = \"${GOOM_LIBS_DART_DIR}\".")
 message(STATUS "Visualization.goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
-message(STATUS "Visualization.goom: KODI_INCLUDE_DIR = \"${KODI_INCLUDE_DIR}\".")
-message(STATUS "Visualization.goom: KODI_PARENT_INCLUDE_DIR = \"${KODI_PARENT_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_ROOT_DIR = \"${KODI_ROOT_DIR}\".")
+message(STATUS "Visualization.goom: KODI_INCLUDE_DIR = \"${KODI_INCLUDE_DIR}\".")
+message(STATUS "Visualization.goom: KODI_FIXED_INCLUDE_DIR = \"${KODI_FIXED_INCLUDE_DIR}\".")

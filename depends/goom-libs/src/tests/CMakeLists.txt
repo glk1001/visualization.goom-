@@ -40,9 +40,9 @@ target_link_libraries(${GOOM_LIB_TESTS_NAME}
 
 target_include_directories(${GOOM_LIB_TESTS_NAME}
         PRIVATE
-        ${GOOM_ROOT_DIR}/src/goom/include
-        ${GOOM_ROOT_DIR}/src/goom/include/goom
-        ${GOOM_ROOT_DIR}/src/goom/src
+        ${GOOM_LIBS_DIR}/src/goom/include
+        ${GOOM_LIBS_DIR}/src/goom/include/goom
+        ${GOOM_LIBS_DIR}/src/goom/src
         )
 target_include_directories(${GOOM_LIB_TESTS_NAME}
         SYSTEM PRIVATE
