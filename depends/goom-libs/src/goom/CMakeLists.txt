@@ -146,7 +146,6 @@ add_library(goom
         src/goom_control.cpp
         src/goom_graphic.cpp
         src/goom_version.cpp
-        src/logging.cpp
         src/sound_info.cpp
         src/visual_fx/tubes/tube_data.h src/visual_fx/tubes/tube_data.cpp)
 

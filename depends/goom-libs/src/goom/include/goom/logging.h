@@ -33,42 +33,44 @@ public:
   auto operator=(const Logging&) -> Logging& = delete;
   auto operator=(Logging&&) -> Logging& = delete;
 
-  void SetLogFile(const std::string& logF);
-  void AddHandler(const std::string& name, const HandlerFunc& handlerFunc);
-  void Start();
-  void Stop();
-  void Flush();
-  void Suspend();
-  void Resume();
+  auto SetLogFile(const std::string& logF) -> void;
+  auto AddHandler(const std::string& name, const HandlerFunc& handlerFunc) -> void;
+  auto SetDoDateTime(bool val) -> void;
+  auto Start() -> void;
+  auto Stop() -> void;
+  auto Flush() -> void;
+  auto Suspend() -> void;
+  auto Resume() -> void;
   [[nodiscard]] auto IsLogging() const -> bool;
   [[nodiscard]] auto GetFileLogLevel() const -> LogLevel;
-  void SetFileLogLevel(LogLevel lvl);
+  auto SetFileLogLevel(LogLevel lvl) -> void;
   [[nodiscard]] auto GetHandlersLogLevel() const -> LogLevel;
-  void SetHandlersLogLevel(LogLevel lvl);
-  void Log(LogLevel lvl, int line_num, const std::string& func_name, const std::string& msg);
+  auto SetHandlersLogLevel(LogLevel lvl) -> void;
+  auto Log(LogLevel lvl, int lineNum, const std::string& funcName, const std::string& msg) -> void;
   template<typename... Args>
-  void Log(LogLevel lvl,
+  auto Log(LogLevel lvl,
            int lineNum,
            const std::string& funcName,
            const std::string& formatStr,
-           const Args&... args);
+           const Args&... args) -> void;
 
 private:
   Logging() noexcept;
   LogLevel m_cutoffFileLogLevel = LogLevel::INFO;
   LogLevel m_cutoffHandlersLogLevel = LogLevel::INFO;
+  bool m_doDateTime = true;
   bool m_doLogging = false;
   std::string m_logFile{};
   std::vector<std::pair<std::string, HandlerFunc>> m_handlers{};
   std::vector<std::string> m_logEntries{};
   std::mutex m_mutex{};
   static std::unique_ptr<Logging> logger;
-  void DoFlush();
-  void VLog(LogLevel lvl,
+  auto DoFlush() -> void;
+  auto VLog(LogLevel lvl,
             int lineNum,
             const std::string& funcName,
             const std::string& formatStr,
-            std20::format_args args);
+            std20::format_args args) -> void;
 };
 
 inline auto Logging::GetFileLogLevel() const -> Logging::LogLevel
@@ -81,16 +83,16 @@ inline auto Logging::GetHandlersLogLevel() const -> Logging::LogLevel
   return m_cutoffHandlersLogLevel;
 }
 
-inline void Logging::SetLogFile(const std::string& logF)
+inline auto Logging::SetLogFile(const std::string& logF) -> void
 {
   m_logFile = logF;
 }
 
-inline void Logging::Suspend()
+inline auto Logging::Suspend() -> void
 {
   m_doLogging = false;
 }
-inline void Logging::Resume()
+inline auto Logging::Resume() -> void
 {
   m_doLogging = true;
 }
@@ -104,19 +106,20 @@ inline auto Logging::GetLogger() -> Logging&
 }
 
 template<typename... Args>
-void Logging::Log(LogLevel lvl,
+auto Logging::Log(LogLevel lvl,
                   const int lineNum,
                   const std::string& funcName,
                   const std::string& formatStr,
-                  const Args&... args)
+                  const Args&... args) -> void
 {
   VLog(lvl, lineNum, funcName, formatStr, std20::make_format_args(args...));
 }
 
 #ifdef NO_LOGGING
-//#pragma message("Compiling " __FILE__ " with 'NO_LOGGING' ON - SO THERE WILL BE NO LOGGING.")
+//#pragma message("Compiling " __FILE__ " with 'NO_LOGGING' = 'ON' - SO THERE WILL BE NO LOGGING.")
 #define SetLogFile(logF)
 #define AddLogHandler(name, h)
+#define SetLogDoDateTime(val)
 #define LogStart()
 #define LogStop()
 #define LogFlush()
@@ -130,9 +133,10 @@ void Logging::Log(LogLevel lvl,
 #define LogWarn(...)
 #define LogError(...)
 #else
-#pragma message("Compiling " __FILE__ " with 'NO_LOGGING' = OFF - SO THERE WILL BE LOGGING.")
+#pragma message("Compiling " __FILE__ " with 'NO_LOGGING' = 'OFF' - SO THERE WILL BE LOGGING.")
 #define SetLogFile(logF) Logging::GetLogger().SetLogFile(logF)
 #define AddLogHandler(name, h) Logging::GetLogger().AddHandler(name, h)
+#define SetLogDoDateTime(val) Logging::GetLogger().SetDoDateTime(val)
 #define LogStart() Logging::GetLogger().Start()
 #define LogStop() Logging::GetLogger().Stop()
 #define LogFlush() Logging::GetLogger().Flush()

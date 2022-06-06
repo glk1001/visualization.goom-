@@ -197,6 +197,7 @@ void CVisualizationGoom::StartLogging()
     kodi::Log(kodiLvl, msg.c_str());
   };
   AddLogHandler("kodi-logger", s_fKodiLog);
+  SetLogDoDateTime(false);
   SetLogFile("/tmp/kodi_goom.log");
   SetLogLevelForFiles(Logging::LogLevel::INFO);
   //setLogLevelForFiles(Logging::LogLevel::debug);

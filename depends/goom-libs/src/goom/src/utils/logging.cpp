@@ -1,5 +1,8 @@
 #include "goom/logging.h"
 
+#include "date_utils.h"
+
+#include <format>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -23,7 +26,27 @@ Logging::~Logging()
   DoFlush();
 }
 
-void Logging::Log(LogLevel lvl, int line_num, const std::string& func_name, const std::string& msg)
+auto Logging::SetDoDateTime(const bool val) -> void
+{
+  m_doDateTime = val;
+}
+
+auto Logging::VLog(const LogLevel lvl,
+                   const int lineNum,
+                   const std::string& funcName,
+                   const std::string& formatStr,
+                   const std20::format_args args) -> void
+{
+  std20::memory_buffer buffer;
+  // Pass custom argument formatter as a template arg to vwrite.
+  std20::vformat_to(std20::detail::buffer_appender<char>(buffer), formatStr, args);
+  Log(lvl, lineNum, funcName, std::string(buffer.data(), buffer.size()));
+}
+
+auto Logging::Log(LogLevel lvl,
+                  const int lineNum,
+                  const std::string& funcName,
+                  const std::string& msg) -> void
 {
   const std::lock_guard<std::mutex> lock{m_mutex};
   if (!m_doLogging)
@@ -31,7 +54,9 @@ void Logging::Log(LogLevel lvl, int line_num, const std::string& func_name, cons
     return;
   }
 
-  const std::string logMsg = func_name + ":" + std::to_string(line_num) + ":" + msg;
+  const std::string mainMsg = funcName + ":" + std::to_string(lineNum) + ":" + msg;
+  const std::string logMsg =
+      not m_doDateTime ? mainMsg : GetCurrentDateTimeAsString() + ":" + mainMsg;
 
   if (lvl >= m_cutoffFileLogLevel)
   {
@@ -46,31 +71,31 @@ void Logging::Log(LogLevel lvl, int line_num, const std::string& func_name, cons
   }
 }
 
-void Logging::Start()
+auto Logging::Start() -> void
 {
   const std::lock_guard<std::mutex> lock{m_mutex};
   m_doLogging = true;
   m_logEntries.clear();
 }
 
-void Logging::Stop()
+auto Logging::Stop() -> void
 {
   const std::lock_guard<std::mutex> lock{m_mutex};
   m_doLogging = false;
   DoFlush();
 }
 
-void Logging::SetFileLogLevel(LogLevel lvl)
+auto Logging::SetFileLogLevel(const LogLevel lvl) -> void
 {
   m_cutoffFileLogLevel = lvl;
 }
 
-void Logging::SetHandlersLogLevel(LogLevel lvl)
+auto Logging::SetHandlersLogLevel(const LogLevel lvl) -> void
 {
   m_cutoffHandlersLogLevel = lvl;
 }
 
-void Logging::AddHandler(const std::string& name, const HandlerFunc& handlerFunc)
+auto Logging::AddHandler(const std::string& name, const HandlerFunc& handlerFunc) -> void
 {
   for (const auto& handler : m_handlers)
   {
@@ -82,13 +107,13 @@ void Logging::AddHandler(const std::string& name, const HandlerFunc& handlerFunc
   m_handlers.emplace_back(name, handlerFunc);
 }
 
-void Logging::Flush()
+auto Logging::Flush() -> void
 {
   const std::lock_guard<std::mutex> lock{m_mutex};
   DoFlush();
 }
 
-void Logging::DoFlush()
+auto Logging::DoFlush() -> void
 {
   if (m_logFile.empty())
   {
