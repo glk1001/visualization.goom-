@@ -22,7 +22,7 @@ echo "Using compilers: C: ${C_COMPILER}, C++: ${CPP_COMPILER}."
 echo "Using BUILD_DIR: \"${BUILD_DIR}\"."
 echo
 
-cmake --build "${BUILD_DIR}" -j 6
+cmake --build "${BUILD_DIR}" --config ${BUILD_TYPE} -j 6
 
 echo
 
