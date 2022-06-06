@@ -25,6 +25,8 @@ GoomDrawToContainer::GoomDrawToContainer(const uint32_t screenWidth, const uint3
   }
 }
 
+GoomDrawToContainer::~GoomDrawToContainer() noexcept = default;
+
 void GoomDrawToContainer::ClearAll()
 {
   m_orderedXYPixelList.clear();

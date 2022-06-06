@@ -56,7 +56,7 @@ auto Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& wei
   UpdateMixerMaps();
 }
 
-inline auto Colorizer::UpdateMixerMaps() -> void
+auto Colorizer::UpdateMixerMaps() -> void
 {
   static constexpr float PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
   const std::set<RandomColorMaps::ColorMapTypes>& colorMapTypes =
@@ -151,8 +151,7 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
   return m_colorAdjust.GetAdjustment(brightness * logAlpha, mixColor);
 }
 
-inline auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const
-    -> Pixel
+auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const -> Pixel
 {
   const Pixel nextColor =
       IColorMap::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),

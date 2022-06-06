@@ -16,6 +16,11 @@ class ImageDisplacement
 {
 public:
   ImageDisplacement(const std::string& imageFilename, const UTILS::MATH::IGoomRand& goomRand);
+  ImageDisplacement(const ImageDisplacement&) noexcept = delete;
+  ImageDisplacement(ImageDisplacement&&) noexcept = default;
+  ~ImageDisplacement() noexcept;
+  auto operator=(const ImageDisplacement&) noexcept -> ImageDisplacement& = delete;
+  auto operator=(ImageDisplacement&&) noexcept -> ImageDisplacement& = delete;
 
   [[nodiscard]] auto GetImageFilename() const -> std::string;
   [[nodiscard]] auto GetXColorCutoff() const -> float;

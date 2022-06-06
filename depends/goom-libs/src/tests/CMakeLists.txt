@@ -46,7 +46,6 @@ target_include_directories(${GOOM_LIB_TESTS_NAME}
         )
 target_include_directories(${GOOM_LIB_TESTS_NAME}
         SYSTEM PRIVATE
-        ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
         ${fmt_SOURCE_DIR}/include
         ${magic_enum_INCLUDE_DIR}
         )

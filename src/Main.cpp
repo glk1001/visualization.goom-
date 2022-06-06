@@ -448,7 +448,7 @@ inline void CVisualizationGoom::ProcessWithCatch()
   }
 }
 
-inline void CVisualizationGoom::ProcessVis()
+void CVisualizationGoom::ProcessVis()
 {
   std::vector<float> floatAudioData(m_audioBufferLen);
 

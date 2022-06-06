@@ -17,6 +17,11 @@ class GoomImageBuffers
 public:
   GoomImageBuffers() noexcept = delete;
   GoomImageBuffers(uint32_t width, uint32_t height) noexcept;
+  GoomImageBuffers(const GoomImageBuffers&) noexcept = delete;
+  GoomImageBuffers(GoomImageBuffers&&) noexcept = delete;
+  ~GoomImageBuffers() noexcept;
+  auto operator=(const GoomImageBuffers&) noexcept -> GoomImageBuffers& = delete;
+  auto operator=(GoomImageBuffers&&) noexcept -> GoomImageBuffers& = delete;
 
   [[nodiscard]] auto GetP1() const -> PixelBuffer& { return *m_p1; }
   [[nodiscard]] auto GetP2() const -> PixelBuffer& { return *m_p2; }

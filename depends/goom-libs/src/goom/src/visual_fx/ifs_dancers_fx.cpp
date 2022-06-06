@@ -308,7 +308,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() -> void
   m_fractal->SetSpeed(std::max(1U, static_cast<uint32_t>(speedAmp * accelFactor)));
 }
 
-inline auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() -> void
+auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() -> void
 {
   m_colorizer.ChangeColorMaps();
   m_blurrer.SetColorMode(m_blurrerColorModeWeights.GetRandomWeighted());
@@ -488,9 +488,9 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() -> void
   }
 }
 
-inline auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& ifsPoint,
-                                                      const float t,
-                                                      const float tMix) const -> void
+auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& ifsPoint,
+                                               const float t,
+                                               const float tMix) const -> void
 {
   const Point2dInt point = {static_cast<int32_t>(ifsPoint.GetX()),
                             static_cast<int32_t>(ifsPoint.GetY())};

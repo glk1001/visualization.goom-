@@ -40,7 +40,7 @@ auto GoomStateMonitor::GetCurrentState() const -> std::string
   return message;
 }
 
-inline auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::NameValuePairs
+auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::NameValuePairs
 {
   static constexpr const char* PARAM_GROUP = "";
   return {
@@ -51,7 +51,7 @@ inline auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UT
   };
 }
 
-inline auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameValuePairs
+auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameValuePairs
 {
   static constexpr const char* PARAM_GROUP = "Shader";
   const GoomShaderEffects& lastShaderEffects = m_visualFx.GetLastShaderEffects();

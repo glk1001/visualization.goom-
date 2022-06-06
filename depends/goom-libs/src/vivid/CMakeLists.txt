@@ -66,8 +66,8 @@ target_include_directories( ${PROJECT_NAME}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
     PRIVATE
-        SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/include
-        SYSTEM ${GLM_INCLUDE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${GLM_INCLUDE_DIR}
 )
 
 enable_sanitizers(${PROJECT_NAME})

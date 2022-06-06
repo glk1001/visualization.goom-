@@ -15,6 +15,12 @@ class FractalHits
 public:
   FractalHits() noexcept = delete;
   FractalHits(uint32_t width, uint32_t height) noexcept;
+  ~FractalHits() noexcept;
+  FractalHits(const FractalHits&) noexcept = default;
+  FractalHits(FractalHits&&) noexcept = default;
+  auto operator=(const FractalHits&) noexcept -> FractalHits& = delete;
+  auto operator=(FractalHits&&) noexcept -> FractalHits& = delete;
+
   void Reset();
   void AddHit(int32_t x, int32_t y, const Similitude& simi);
   [[nodiscard]] auto GetBuffer() -> const std::vector<IfsPoint>&;

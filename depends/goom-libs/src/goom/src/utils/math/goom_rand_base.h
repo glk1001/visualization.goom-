@@ -129,7 +129,7 @@ inline void IGoomRand::Shuffle(RandomIt first, RandomIt last) const
 }
 
 template<class E>
-inline Weights<E>::Weights(const IGoomRand& goomRand, const EventWeightPairs& weights)
+Weights<E>::Weights(const IGoomRand& goomRand, const EventWeightPairs& weights)
   : m_goomRand{goomRand}, m_weights{GetWeights(weights)}, m_sumOfWeights{GetSumOfWeights(weights)}
 {
   if (m_sumOfWeights < SMALL_FLOAT)

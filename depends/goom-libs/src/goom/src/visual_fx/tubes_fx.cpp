@@ -38,6 +38,8 @@ using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using TUBES::BrightnessAttenuation;
 using TUBES::Tube;
+using TUBES::TubeData;
+using TUBES::TubeDrawFuncs;
 using UTILS::Logging;
 using UTILS::Timer;
 using UTILS::TValue;
@@ -310,8 +312,8 @@ inline auto TubesFx::TubeFxImpl::GetImageBitmap(const SmallImageBitmaps::ImageNa
       std::clamp(size, SmallImageBitmaps::MIN_IMAGE_SIZE, SmallImageBitmaps::MAX_IMAGE_SIZE));
 }
 
-inline auto TubesFx::TubeFxImpl::SetWeightedColorMaps(
-    const WeightedColorMaps& weightedColorMaps) noexcept -> void
+auto TubesFx::TubeFxImpl::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept
+    -> void
 {
   Expects(weightedColorMaps.mainColorMaps != nullptr);
   m_mainColorMaps = weightedColorMaps.mainColorMaps;
@@ -353,7 +355,7 @@ void TubesFx::TubeFxImpl::InitTubes()
   Expects(m_mainColorMaps != nullptr);
   Expects(m_lowColorMaps != nullptr);
 
-  const Tube::DrawFuncs drawToOneFuncs{
+  const TubeDrawFuncs drawToOneFuncs{
       [this](const Point2dInt point1, const Point2dInt point2, const MultiplePixels& colors,
              const uint8_t thickness) { DrawLineToOne(point1, point2, colors, thickness); },
       [this](const Point2dInt point, const int radius, const MultiplePixels& colors,
@@ -362,7 +364,7 @@ void TubesFx::TubeFxImpl::InitTubes()
              const uint32_t size, const MultiplePixels& colors)
       { DrawImageToOne(point, imageName, size, colors); },
   };
-  const Tube::DrawFuncs drawToManyFuncs{
+  const TubeDrawFuncs drawToManyFuncs{
       [this](const Point2dInt point1, const Point2dInt point2, const MultiplePixels& colors,
              const uint8_t thickness) { DrawLineToMany(point1, point2, colors, thickness); },
       [this](const Point2dInt point, const int radius, const MultiplePixels& colors,
@@ -372,28 +374,28 @@ void TubesFx::TubeFxImpl::InitTubes()
       { DrawImageToMany(point, imageName, size, colors); },
   };
 
-  const Tube::Data mainTubeData{MAIN_TUBE_INDEX,
-                                drawToManyFuncs,
-                                m_draw.GetScreenWidth(),
-                                m_draw.GetScreenHeight(),
-                                m_goomRand,
-                                m_mainColorMaps,
-                                m_lowColorMaps,
-                                TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
-                                TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor};
-  m_tubes.emplace_back(mainTubeData, TUBE_SETTINGS.at(MAIN_TUBE_INDEX).circlePathParams);
-
-  for (uint32_t i = SECONDARY_TUBES_START_INDEX; i < NUM_TUBES; ++i)
-  {
-    const Tube::Data tubeData{i,
-                              drawToOneFuncs,
+  const TubeData mainTubeData{MAIN_TUBE_INDEX,
+                              drawToManyFuncs,
                               m_draw.GetScreenWidth(),
                               m_draw.GetScreenHeight(),
                               m_goomRand,
                               m_mainColorMaps,
                               m_lowColorMaps,
-                              TUBE_SETTINGS.at(i).radiusEdgeOffset,
-                              TUBE_SETTINGS.at(i).brightnessFactor};
+                              TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
+                              TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor};
+  m_tubes.emplace_back(mainTubeData, TUBE_SETTINGS.at(MAIN_TUBE_INDEX).circlePathParams);
+
+  for (uint32_t i = SECONDARY_TUBES_START_INDEX; i < NUM_TUBES; ++i)
+  {
+    const TubeData tubeData{i,
+                            drawToOneFuncs,
+                            m_draw.GetScreenWidth(),
+                            m_draw.GetScreenHeight(),
+                            m_goomRand,
+                            m_mainColorMaps,
+                            m_lowColorMaps,
+                            TUBE_SETTINGS.at(i).radiusEdgeOffset,
+                            TUBE_SETTINGS.at(i).brightnessFactor};
     m_tubes.emplace_back(tubeData, TUBE_SETTINGS.at(i).circlePathParams);
   }
 

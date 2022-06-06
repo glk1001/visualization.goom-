@@ -15,6 +15,11 @@ class GoomDrawToBuffer : public IGoomDraw
 public:
   GoomDrawToBuffer() noexcept = delete;
   GoomDrawToBuffer(uint32_t screenWidth, uint32_t screenHeight);
+  GoomDrawToBuffer(const GoomDrawToBuffer&) noexcept = delete;
+  GoomDrawToBuffer(GoomDrawToBuffer&&) noexcept = delete;
+  ~GoomDrawToBuffer() noexcept override;
+  auto operator=(const GoomDrawToBuffer&) noexcept -> GoomDrawToBuffer& = delete;
+  auto operator=(GoomDrawToBuffer&&) noexcept -> GoomDrawToBuffer& = delete;
 
   void SetBuffers(const std::vector<PixelBuffer*>& buffs);
 
@@ -30,11 +35,5 @@ private:
   size_t m_numBuffers = 0;
   std::vector<PixelBuffer*> m_multipleBuffers{};
 };
-
-inline void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
-{
-  m_multipleBuffers = buffs;
-  m_numBuffers = m_multipleBuffers.size();
-}
 
 } // namespace GOOM::DRAW

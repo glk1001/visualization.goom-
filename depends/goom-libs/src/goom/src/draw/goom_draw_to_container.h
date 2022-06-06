@@ -16,6 +16,11 @@ class GoomDrawToContainer : public IGoomDraw
 public:
   GoomDrawToContainer() noexcept = delete;
   GoomDrawToContainer(uint32_t screenWidth, uint32_t screenHeight);
+  GoomDrawToContainer(const GoomDrawToContainer&) noexcept = delete;
+  GoomDrawToContainer(GoomDrawToContainer&&) noexcept = delete;
+  ~GoomDrawToContainer() noexcept override;
+  auto operator=(const GoomDrawToContainer&) noexcept -> GoomDrawToContainer& = delete;
+  auto operator=(GoomDrawToContainer&&) noexcept -> GoomDrawToContainer& = delete;
 
   auto GetPixel(Point2dInt point) const -> Pixel override;
   void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) override;

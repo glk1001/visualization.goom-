@@ -144,7 +144,7 @@ class Tube::TubeImpl
 {
 public:
   TubeImpl() noexcept = delete;
-  TubeImpl(const Data& data, const OscillatingFunction::Params& pathParams);
+  TubeImpl(const TubeData& data, const OscillatingFunction::Params& pathParams);
 
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
@@ -181,7 +181,7 @@ public:
   void UpdateTimers();
 
 private:
-  const Data m_data;
+  const TubeData m_data;
   propagate_const<std::unique_ptr<ShapeColorizer>> m_colorizer;
   bool m_active = true;
   static constexpr float PATH_STEP = NML_CIRCLE_SPEED;
@@ -191,7 +191,7 @@ private:
   propagate_const<std::unique_ptr<TubeParametricPath>> m_centrePath{};
   TransformCentreFunc m_getTransformedCentre{};
   std::vector<Shape> m_shapes;
-  [[nodiscard]] static auto GetInitialShapes(const Data& data,
+  [[nodiscard]] static auto GetInitialShapes(const TubeData& data,
                                              const OscillatingFunction::Params& pathParams)
       -> std::vector<Shape>;
 
@@ -219,7 +219,7 @@ private:
 const float Tube::NORMAL_CENTRE_SPEED = NML_CENTRE_SPEED;
 const float Tube::NORMAL_CIRCLE_SPEED = NML_CIRCLE_SPEED;
 
-Tube::Tube(const Data& data, const OscillatingFunction::Params& pathParams) noexcept
+Tube::Tube(const TubeData& data, const OscillatingFunction::Params& pathParams) noexcept
   : m_impl{spimpl::make_unique_impl<Tube::TubeImpl>(data, pathParams)}
 {
 }
@@ -321,7 +321,7 @@ public:
   };
 
   ShapeColorizer() noexcept = delete;
-  ShapeColorizer(const Tube::Data& data, uint32_t numShapes, uint32_t numCircles);
+  ShapeColorizer(const TubeData& data, uint32_t numShapes, uint32_t numCircles);
 
   [[nodiscard]] auto GetBrightnessFactor() const -> float;
   void SetBrightnessFactor(float val);
@@ -338,7 +338,7 @@ public:
   void UpdateAllTValues();
 
 private:
-  Tube::Data m_data;
+  TubeData m_data;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
   const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
@@ -418,7 +418,7 @@ static constexpr float MAIN_COLOR_WEIGHT          = 10.0F;
 static constexpr float LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
 // clang-format on
 
-Tube::TubeImpl::TubeImpl(const Data& data, const OscillatingFunction::Params& pathParams)
+Tube::TubeImpl::TubeImpl(const TubeData& data, const OscillatingFunction::Params& pathParams)
   : m_data{data},
     m_colorizer{std::make_unique<ShapeColorizer>(data,
                                                  NUM_SHAPES_PER_TUBE,
@@ -440,7 +440,7 @@ Tube::TubeImpl::TubeImpl(const Data& data, const OscillatingFunction::Params& pa
 {
 }
 
-auto Tube::TubeImpl::GetInitialShapes(const Data& data,
+auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
                                       const OscillatingFunction::Params& pathParams)
     -> std::vector<Shape>
 {
@@ -785,7 +785,7 @@ static constexpr float SHAPES_AND_CIRCLES_WEIGHT         =  5.0F;
 static constexpr float STRIPED_SHAPES_AND_CIRCLES_WEIGHT = 15.0F;
 // clang-format on
 
-ShapeColorizer::ShapeColorizer(const Tube::Data& data,
+ShapeColorizer::ShapeColorizer(const TubeData& data,
                                const uint32_t numShapes,
                                const uint32_t numCircles)
   : m_data{data},

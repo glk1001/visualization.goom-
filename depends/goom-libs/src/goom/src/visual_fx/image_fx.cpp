@@ -283,7 +283,7 @@ inline auto ImageFx::ImageFxImpl::ResetCurrentImage() -> void
       m_images[m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(m_images.size()))].get();
 }
 
-inline auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
+auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
 {
   static constexpr float MIN_RADIUS_FRACTION = 0.7F;
   const float randMaxRadius = m_goomRand.GetRandInRange(MIN_RADIUS_FRACTION, 1.0F) * m_maxRadius;

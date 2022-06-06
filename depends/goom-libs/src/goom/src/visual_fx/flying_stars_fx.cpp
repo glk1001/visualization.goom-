@@ -387,7 +387,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetImageBitmap(const size_t size) co
                                        std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
-inline auto FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
+auto FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
   Expects(weightedColorMaps.mainColorMaps != nullptr);
@@ -585,7 +585,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::RemoveDeadStars() noexcept -> void
 #endif
 }
 
-inline auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const noexcept -> bool
+auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const noexcept -> bool
 {
   static constexpr int32_t DEAD_MARGIN = 64;
 
@@ -750,8 +750,8 @@ auto FlyingStarsFx::FlyingStarsImpl::GetMixedColors(const Star& star,
   return GetFinalMixedColors(starColorSet, t, brightness);
 }
 
-inline auto FlyingStarsFx::FlyingStarsImpl::GetMixColors(const Star& star,
-                                                         const float t) const noexcept
+auto FlyingStarsFx::FlyingStarsImpl::GetMixColors(const Star& star,
+                                                  const float t) const noexcept
     -> StarColorSet
 {
   return {star.currentMainColorMap->GetColor(t), star.currentLowColorMap->GetColor(t),

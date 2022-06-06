@@ -30,8 +30,10 @@ namespace FILTER_FX::FILTER_EFFECTS
 class ZoomVectorEffects
 {
 public:
+  // NOLINTBEGIN
   struct TheExtraEffects
   {
+    ~TheExtraEffects() noexcept;
     std::experimental::propagate_const<std::unique_ptr<Hypercos>> hypercos;
     std::experimental::propagate_const<std::unique_ptr<ImageVelocity>> imageVelocity;
     std::experimental::propagate_const<std::unique_ptr<Noise>> noise;
@@ -39,6 +41,7 @@ public:
     std::experimental::propagate_const<std::unique_ptr<Rotation>> rotation;
     std::experimental::propagate_const<std::unique_ptr<TanEffect>> tanEffect;
   };
+  // NOLINTEND
   using GetTheEffectsFunc = std::function<auto(const std::string& resourcesDirectory,
                                                const UTILS::MATH::IGoomRand& goomRand)
                                               ->TheExtraEffects>;

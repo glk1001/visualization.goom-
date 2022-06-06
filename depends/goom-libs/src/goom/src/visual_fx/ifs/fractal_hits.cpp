@@ -17,6 +17,8 @@ FractalHits::FractalHits(const uint32_t width, const uint32_t height) noexcept
   m_hits.reserve(HITS_ESTIMATE);
 }
 
+FractalHits::~FractalHits() noexcept = default;
+
 void FractalHits::Reset()
 {
   m_maxHitCount = 0;

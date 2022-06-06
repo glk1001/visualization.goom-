@@ -15,6 +15,8 @@ namespace GOOM::COLOR
 using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::Logging;
 
+RandomColorMapsManager::ColorMapInfo::~ColorMapInfo() noexcept = default;
+
 auto RandomColorMapsManager::AddDefaultColorMapInfo(const UTILS::MATH::IGoomRand& goomRand) noexcept
     -> ColorMapId
 {

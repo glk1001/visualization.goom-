@@ -48,9 +48,9 @@ public:
   void Log(LogLevel lvl, int line_num, const std::string& func_name, const std::string& msg);
   template<typename... Args>
   void Log(LogLevel lvl,
-           int line_num,
-           const std::string& func_name,
-           const std::string& format_str,
+           int lineNum,
+           const std::string& funcName,
+           const std::string& formatStr,
            const Args&... args);
 
 private:
@@ -65,9 +65,9 @@ private:
   static std::unique_ptr<Logging> logger;
   void DoFlush();
   void VLog(LogLevel lvl,
-            int line_num,
-            const std::string& func_name,
-            const std::string& format_str,
+            int lineNum,
+            const std::string& funcName,
+            const std::string& formatStr,
             std20::format_args args);
 };
 
@@ -104,25 +104,13 @@ inline auto Logging::GetLogger() -> Logging&
 }
 
 template<typename... Args>
-inline void Logging::Log(LogLevel lvl,
-                         int line_num,
-                         const std::string& func_name,
-                         const std::string& format_str,
-                         const Args&... args)
+void Logging::Log(LogLevel lvl,
+                  const int lineNum,
+                  const std::string& funcName,
+                  const std::string& formatStr,
+                  const Args&... args)
 {
-  VLog(lvl, line_num, func_name, format_str, std20::make_format_args(args...));
-}
-
-inline void Logging::VLog(LogLevel lvl,
-                          int line_num,
-                          const std::string& func_name,
-                          const std::string& format_str,
-                          std20::format_args args)
-{
-  std20::memory_buffer buffer;
-  // Pass custom argument formatter as a template arg to vwrite.
-  std20::vformat_to(std20::detail::buffer_appender<char>(buffer), format_str, args);
-  Log(lvl, line_num, func_name, std::string(buffer.data(), buffer.size()));
+  VLog(lvl, lineNum, funcName, formatStr, std20::make_format_args(args...));
 }
 
 #ifdef NO_LOGGING

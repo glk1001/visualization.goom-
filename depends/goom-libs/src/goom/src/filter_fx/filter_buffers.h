@@ -48,6 +48,11 @@ public:
                     const PluginInfo& goomInfo,
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const ZoomPointFunc& zoomPointFunc) noexcept;
+  ZoomFilterBuffers(const ZoomFilterBuffers&) noexcept = delete;
+  ZoomFilterBuffers(ZoomFilterBuffers&&) noexcept = delete;
+  ~ZoomFilterBuffers() noexcept;
+  auto operator=(const ZoomFilterBuffers&) noexcept -> ZoomFilterBuffers& = delete;
+  auto operator=(ZoomFilterBuffers&&) noexcept -> ZoomFilterBuffers& = delete;
 
   [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
   auto SetBuffMidpoint(const Point2dInt& val) noexcept -> void;

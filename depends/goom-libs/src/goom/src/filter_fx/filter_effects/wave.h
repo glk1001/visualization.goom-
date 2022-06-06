@@ -101,37 +101,6 @@ inline auto Wave::GetSpeedAdd(const float sqDistFromZero, const WaveEffect waveE
   return reducer * m_params.amplitude * GetPeriodicPart(waveEffect, angle, m_params.periodicFactor);
 }
 
-inline auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
-                                  const float angle,
-                                  const float periodicFactor) -> float
-{
-  switch (waveEffect)
-  {
-    case WaveEffect::WAVE_SIN_EFFECT:
-      return periodicFactor * std::sin(angle);
-    case WaveEffect::WAVE_COS_EFFECT:
-      return periodicFactor * std::cos(angle);
-    case WaveEffect::WAVE_SIN_COS_EFFECT:
-      return periodicFactor * STD20::lerp(std::sin(angle), std::cos(angle), periodicFactor);
-    case WaveEffect::WAVE_TAN_EFFECT:
-      return periodicFactor * std::tan(angle);
-    case WaveEffect::WAVE_TAN_SIN_EFFECT:
-      return periodicFactor * STD20::lerp(std::tan(angle), std::sin(angle), periodicFactor);
-    case WaveEffect::WAVE_TAN_COS_EFFECT:
-      return periodicFactor * STD20::lerp(std::tan(angle), std::cos(angle), periodicFactor);
-    case WaveEffect::WAVE_COT_EFFECT:
-      return periodicFactor * std::tan(UTILS::MATH::HALF_PI - angle);
-    case WaveEffect::WAVE_COT_SIN_EFFECT:
-      return periodicFactor *
-             STD20::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::sin(angle), periodicFactor);
-    case WaveEffect::WAVE_COT_COS_EFFECT:
-      return periodicFactor *
-             STD20::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::cos(angle), periodicFactor);
-    default:
-      throw std::logic_error("Unknown WaveEffect enum");
-  }
-}
-
 inline auto Wave::GetParams() const -> const Params&
 {
   return m_params;

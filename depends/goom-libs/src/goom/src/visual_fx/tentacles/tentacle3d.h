@@ -33,7 +33,7 @@ public:
              const UTILS::MATH::IGoomRand& goomRand) noexcept;
   Tentacle3D(const Tentacle3D&) noexcept = delete;
   Tentacle3D(Tentacle3D&&) noexcept = default;
-  ~Tentacle3D() noexcept = default;
+  ~Tentacle3D() noexcept;
   auto operator=(const Tentacle3D&) -> Tentacle3D& = delete;
   auto operator=(Tentacle3D&&) -> Tentacle3D& = delete;
 

@@ -47,6 +47,8 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
   ResetCurrentIfsFunc();
 }
 
+Similitudes::~Similitudes() noexcept = default;
+
 auto Similitudes::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedColorMaps)
     -> void
 {

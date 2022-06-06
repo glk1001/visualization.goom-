@@ -256,7 +256,7 @@ inline void GoomStateDump::CumulativeState::Reset()
   Reserve();
 }
 
-inline void GoomStateDump::CumulativeState::Reserve()
+void GoomStateDump::CumulativeState::Reserve()
 {
   m_updateTimesInMs.reserve(m_numUpdatesEstimate);
   m_goomStates.reserve(m_numUpdatesEstimate);

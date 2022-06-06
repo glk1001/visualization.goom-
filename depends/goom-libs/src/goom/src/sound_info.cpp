@@ -36,7 +36,7 @@ auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
   return sampleArrays;
 }
 
-inline auto AudioSamples::GetMaxMinSampleValues(const std::vector<SampleArray>& sampleArrays)
+auto AudioSamples::GetMaxMinSampleValues(const std::vector<SampleArray>& sampleArrays)
     -> std::vector<MaxMinValues>
 {
   std::vector<MaxMinValues> minMaxSampleValues(NUM_AUDIO_SAMPLES);

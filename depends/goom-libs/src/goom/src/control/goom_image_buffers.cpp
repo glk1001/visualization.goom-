@@ -24,6 +24,8 @@ GoomImageBuffers::GoomImageBuffers(const uint32_t width, const uint32_t height) 
 {
 }
 
+GoomImageBuffers::~GoomImageBuffers() noexcept = default;
+
 void GoomImageBuffers::RotateBuffers()
 {
   std::swap(m_p1, m_p2);

@@ -21,6 +21,8 @@ ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
 {
 }
 
+ImageDisplacement::~ImageDisplacement() noexcept = default;
+
 auto ImageDisplacement::GetDisplacementVector(const NormalizedCoords& normalizedCoords) const
     -> Point2dFlt
 {

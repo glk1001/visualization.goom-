@@ -42,6 +42,8 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
           static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS))) - 1);
 }
 
+ZoomFilterBuffers::~ZoomFilterBuffers() noexcept = default;
+
 auto ZoomFilterBuffers::Start() noexcept -> void
 {
   InitAllTranBuffers();

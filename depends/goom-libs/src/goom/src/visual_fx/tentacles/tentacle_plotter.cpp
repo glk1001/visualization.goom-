@@ -134,7 +134,7 @@ inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
   m_dotDrawer.DrawDot(point, dotColors, DOT_BRIGHTNESS);
 }
 
-inline auto TentaclePlotter::Get2DTentaclePoints(const Tentacle3D& tentacle) const
+auto TentaclePlotter::Get2DTentaclePoints(const Tentacle3D& tentacle) const
     -> std::vector<Point2dInt>
 {
   const std::vector<V3dFlt> vertices = tentacle.GetVertices();

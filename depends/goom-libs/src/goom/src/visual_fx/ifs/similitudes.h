@@ -62,6 +62,11 @@ class Similitudes
 public:
   Similitudes(const UTILS::MATH::IGoomRand& goomRand,
               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
+  ~Similitudes() noexcept;
+  Similitudes(const Similitudes&) noexcept = default;
+  Similitudes(Similitudes&&) noexcept = default;
+  auto operator=(const Similitudes&) noexcept -> Similitudes& = delete;
+  auto operator=(Similitudes&&) noexcept -> Similitudes& = delete;
 
   auto Init() -> void;
 

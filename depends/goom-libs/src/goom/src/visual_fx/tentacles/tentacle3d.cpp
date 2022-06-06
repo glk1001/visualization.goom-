@@ -37,6 +37,8 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
 {
 }
 
+Tentacle3D::~Tentacle3D() noexcept = default;
+
 void Tentacle3D::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps)
 {
   m_colorMaps = weightedMaps;
@@ -84,7 +86,7 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
       m_colorAdjust.GetAdjustment(LOW_BRIGHTNESS_FACTOR * brightness, mixedLowColorPixel));
 }
 
-inline auto Tentacle3D::GetMixedColors(const size_t nodeNum,
+auto Tentacle3D::GetMixedColors(const size_t nodeNum,
                                        const Pixel& mainColor,
                                        const Pixel& lowColor) const -> std::pair<Pixel, Pixel>
 {

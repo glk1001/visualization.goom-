@@ -4,9 +4,8 @@
 
 #include <array>
 #include <cstdint>
-#include <cstring>
-#include <format>
 #include <limits>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -326,29 +325,6 @@ constexpr auto Pixel::Rgba() const noexcept -> PixelIntType
 constexpr auto Pixel::IsBlack() const noexcept -> bool
 {
   return 0 == m_color.intVal;
-}
-
-inline auto Pixel::ToString() const -> std::string
-{
-  return std20::format("({}, {}, {}, {})", R(), G(), B(), A());
-}
-
-inline PixelBuffer::PixelBuffer(const uint32_t width, const uint32_t height) noexcept
-  : m_width{width},
-    m_height{height},
-    m_xMax{m_width - 1},
-    m_yMax{m_height - 1},
-    m_buff(static_cast<size_t>(m_width) * static_cast<size_t>(m_height))
-{
-}
-
-inline auto PixelBuffer::Resize(const size_t width, const size_t height) noexcept -> void
-{
-  m_width = static_cast<uint32_t>(width);
-  m_height = static_cast<uint32_t>(height);
-  m_xMax = m_width - 1;
-  m_yMax = m_height - 1;
-  m_buff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
 }
 
 inline auto PixelBuffer::GetWidth() const noexcept -> uint32_t

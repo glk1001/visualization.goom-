@@ -305,7 +305,7 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
       MIN_MIX_T, MAX_MIX_T);
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
+auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
   Expects(weightedColorMaps.mainColorMaps != nullptr);

@@ -241,7 +241,8 @@ inline auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
     case SimpleColors::BLACK:
       return Pixel{BLACK};
     default:
-      throw std::logic_error("Unknown simple color enum.");
+      FailFast();
+      return Pixel{BLACK};
   }
 }
 

@@ -57,6 +57,29 @@ auto YOnly::SetRandomParams() -> void
   SetParams({xEffect, yEffect, xFreqFactor, yFreqFactor, xAmplitude, yAmplitude});
 }
 
+auto YOnly::GetYOnlySpeedMultiplier(const YOnlyEffect effect, const NormalizedCoords& coords) const
+    -> float
+{
+  switch (effect)
+  {
+    case YOnlyEffect::X_SIN_Y_SIN:
+      return std::sin(m_params.xFreqFactor * coords.GetX()) *
+             std::sin(m_params.yFreqFactor * coords.GetY());
+    case YOnlyEffect::X_SIN_Y_COS:
+      return std::sin(m_params.xFreqFactor * coords.GetX()) *
+             std::cos(m_params.yFreqFactor * coords.GetY());
+    case YOnlyEffect::X_COS_Y_SIN:
+      return std::cos(m_params.xFreqFactor * coords.GetX()) *
+             std::sin(m_params.yFreqFactor * coords.GetY());
+    case YOnlyEffect::X_COS_Y_COS:
+      return std::cos(m_params.xFreqFactor * coords.GetX()) *
+             std::cos(m_params.yFreqFactor * coords.GetY());
+    default:
+      throw std::logic_error(
+          std20::format("Switch: unhandled case '{}'.", UTILS::EnumToString(effect)));
+  }
+}
+
 auto YOnly::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
   return NameValuePairs();

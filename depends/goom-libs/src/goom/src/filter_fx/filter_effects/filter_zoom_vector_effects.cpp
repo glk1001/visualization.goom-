@@ -15,6 +15,8 @@ using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
+ZoomVectorEffects::TheExtraEffects::~TheExtraEffects() noexcept = default;
+
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const std::string& resourcesDirectory,
                                      const IGoomRand& goomRand,
@@ -186,7 +188,7 @@ inline auto ZoomVectorEffects::GetHypercosNameValueParams() const -> NameValuePa
   return m_theEffects.hypercos->GetNameValueParams(PARAM_GROUP);
 }
 
-inline auto ZoomVectorEffects::GetImageVelocityNameValueParams() const -> NameValuePairs
+auto ZoomVectorEffects::GetImageVelocityNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{
       GetPair(PARAM_GROUP, "imageVelocity", m_filterEffectsSettings->imageVelocityEffect)};
@@ -197,7 +199,7 @@ inline auto ZoomVectorEffects::GetImageVelocityNameValueParams() const -> NameVa
   return nameValuePairs;
 }
 
-inline auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
+auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{
       GetPair(PARAM_GROUP, "noiseEffect", m_filterEffectsSettings->noiseEffect)};
@@ -208,7 +210,7 @@ inline auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
   return nameValuePairs;
 }
 
-inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
+auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{
       GetPair(PARAM_GROUP, "planeEffect", m_filterEffectsSettings->planeEffect)};
@@ -219,7 +221,7 @@ inline auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
   return nameValuePairs;
 }
 
-inline auto ZoomVectorEffects::GetRotationNameValueParams() const -> NameValuePairs
+auto ZoomVectorEffects::GetRotationNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{
       GetPair(PARAM_GROUP, "rotation", m_filterEffectsSettings->rotationEffect)};
@@ -230,7 +232,7 @@ inline auto ZoomVectorEffects::GetRotationNameValueParams() const -> NameValuePa
   return nameValuePairs;
 }
 
-inline auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValuePairs
+auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValuePairs
 {
   NameValuePairs nameValuePairs{
       GetPair(PARAM_GROUP, "tanEffect", m_filterEffectsSettings->tanEffect)};

@@ -130,8 +130,7 @@ auto VisualFxColorMaps::GetNextColorMatchedSet() const -> const ColorMatchedSet&
 
 // TODO: CLion is giving false positives for unreachable functions.
 // For example 'GetConstColorMatchedSet'.
-inline auto VisualFxColorMaps::GetOneGroupColorMatchedSet(const ColorMapFunc& func)
-    -> ColorMatchedSet
+auto VisualFxColorMaps::GetOneGroupColorMatchedSet(const ColorMapFunc& func) -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet{nullptr};
   matchedSet.fill(func);

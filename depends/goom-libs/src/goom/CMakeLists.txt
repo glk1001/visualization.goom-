@@ -20,7 +20,6 @@ endif ()
 
 add_library(goom
         STATIC
-        include/goom/goom_graphic.h
         src/color/color_data/color_data_maps.cpp
         src/color/color_data/extra_color_groups.cpp
         src/color/color_adjustment.cpp
@@ -97,7 +96,7 @@ add_library(goom
         src/utils/build_time.cpp
         src/utils/date_utils.cpp
         src/utils/logging.cpp
-        src/utils/name_value_pairs.h
+        src/utils/name_value_pairs.cpp
         src/utils/propagate_const.h
         src/utils/step_speed.h
         src/utils/stopwatch.h
@@ -130,6 +129,7 @@ add_library(goom
         src/visual_fx/tentacles/tentacle_plotter.cpp
         src/visual_fx/tentacles/tentacle2d.cpp
         src/visual_fx/tentacles/tentacle3d.cpp
+        src/visual_fx/tubes/tube_data.cpp
         src/visual_fx/tubes/tubes.cpp
         src/visual_fx/circles_fx.cpp
         src/visual_fx/flying_stars_fx.cpp
@@ -144,8 +144,11 @@ add_library(goom
         src/visual_fx/tentacles_fx.cpp
         src/visual_fx/tubes_fx.cpp
         src/goom_control.cpp
+        src/goom_graphic.cpp
+        src/goom_version.cpp
+        src/logging.cpp
         src/sound_info.cpp
-        )
+        src/visual_fx/tubes/tube_data.h src/visual_fx/tubes/tube_data.cpp)
 
 target_include_directories(goom
         PUBLIC
@@ -160,7 +163,7 @@ target_include_directories(goom
         SYSTEM PRIVATE
         ${GOOM_LIBS_DIR}/src/bezier/include
         ${GOOM_LIBS_DIR}/src/vivid/include
-        ${THIRD_PARTY_INCLUDE_DIR}/fmt/include
+        ${GOOM_LIBS_DIR}/lib/fmt/include
         ${fmt_SOURCE_DIR}/include
         ${magic_enum_INCLUDE_DIR}
         ${FREETYPE_INCLUDE_DIRS}

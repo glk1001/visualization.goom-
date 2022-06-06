@@ -81,10 +81,8 @@ private:
       -> MultiplePixels;
   [[nodiscard]] auto GetColorsWithInner(float brightness,
                                         const ShapePathColors& shapeColors,
-                                        const Pixel& innerColor) const noexcept
-      -> MultiplePixels;
-  [[nodiscard]] auto GetFinalMeetingPointColors(float brightness) const noexcept
-      -> MultiplePixels;
+                                        const Pixel& innerColor) const noexcept -> MultiplePixels;
+  [[nodiscard]] auto GetFinalMeetingPointColors(float brightness) const noexcept -> MultiplePixels;
 
   static constexpr float GAMMA = 1.3F;
   const ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
@@ -148,7 +146,7 @@ inline ShapePartDrawer::ShapePartDrawer(IGoomDraw& draw,
 }
 
 
-inline auto ShapePartDrawer::DrawShapePaths(const ShapePart& shapePart) noexcept -> void
+auto ShapePartDrawer::DrawShapePaths(const ShapePart& shapePart) noexcept -> void
 {
   const ShapePathDrawer::Params shapePathParams{
       m_params.brightnessAttenuation, m_params.firstShapePathAtMeetingPoint,
@@ -218,9 +216,9 @@ inline auto ShapePathDrawer::GetCurrentShapeColors(
           m_parentShapePart.GetCurrentColor(shapePathColorInfo.lowColorMapId)};
 }
 
-inline auto ShapePathDrawer::DrawShapePathDot(const Point2dInt& centre,
-                                              const ShapePathColors& shapeColors,
-                                              const IColorMap& innerColorMap) noexcept -> void
+auto ShapePathDrawer::DrawShapePathDot(const Point2dInt& centre,
+                                       const ShapePathColors& shapeColors,
+                                       const IColorMap& innerColorMap) noexcept -> void
 {
   TValue innerColorT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(m_params.maxRadius - 1)};
 

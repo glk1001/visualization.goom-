@@ -17,7 +17,6 @@ set(GOOM_LIBS_RELDIR depends/goom-libs)
 set(GOOM_LIBS_DIR ${PROJECT_SOURCE_DIR}/${GOOM_LIBS_RELDIR})
 set(GOOM_BUILD_ARTIFACTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/goom-libs-artifacts)
 set(GOOM_INCLUDE_DIRS "${GOOM_LIBS_DIR}/src/goom/include")
-set(GOOM_SYS_INC_DIRS "${GOOM_LIBS_DIR}/src/vivid/include" "${GOOM_LIBS_DIR}/lib/fmt/include")
 
 if (NOT WIN32)
     set(GOOM_BIN_LIBS
@@ -44,7 +43,6 @@ CPMAddPackage("gh:g-truc/glm#0.9.9.8")
 set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
 CPMAddPackage("gh:fmtlib/fmt#8.0.1")
-list(APPEND GOOM_SYS_INC_DIRS "${fmt_SOURCE_DIR}/include")
 
 
 # Executing the Kodi addon cmake script here allows this script to be the main cmake script.
@@ -121,7 +119,9 @@ get_project_warnings(PROJECT_WARNINGS)
 add_compile_options(${PROJECT_WARNINGS})
 
 include_directories(${GOOM_INCLUDE_DIRS}
-        SYSTEM ${GOOM_SYS_INC_DIRS}
+        SYSTEM ${GOOM_LIBS_DIR}/src/vivid/include
+        SYSTEM ${GOOM_LIBS_DIR}/lib/fmt/include
+        SYSTEM ${fmt_SOURCE_DIR}/include
         SYSTEM ${GLM_INCLUDE_DIR}
         SYSTEM ${KODI_INCLUDE_DIR}
         SYSTEM ${KODI_FIXED_INCLUDE_DIR}
@@ -198,7 +198,6 @@ message(STATUS "Visualization.goom: IS_KODI_MATRIX = \"${IS_KODI_MATRIX}\".")
 message(STATUS "Visualization.goom: includes = \"${includes}\".")
 message(STATUS "Visualization.goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_INCLUDE_DIRS = \"${GOOM_INCLUDE_DIRS}\".")
-message(STATUS "Visualization.goom: GOOM_SYS_INC_DIRS = \"${GOOM_SYS_INC_DIRS}\".")
 message(STATUS "Visualization.goom: GOOM_BIN_LIBS = \"${GOOM_BIN_LIBS}\".")
 message(STATUS "Visualization.goom: GOOM_BUILD_ARTIFACTS_DIR = \"${GOOM_BUILD_ARTIFACTS_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_LIBS_DART_DIR = \"${GOOM_LIBS_DART_DIR}\".")

@@ -48,6 +48,13 @@ function(get_project_warnings compiler_warnings)
       -Wdouble-promotion # warn if float is implicit promoted to double
       -Wformat=2 # warn on security issues around functions that format output (ie printf)
       -Wimplicit-fallthrough # warn on statements that fallthrough without an explicit annotation
+#      -Wswitch-enum
+#      -Wfloat-equal
+      -Wuninitialized
+      -Wcast-qual
+      -Wcast-align
+      -Winline
+      -Wdisabled-optimization
   )
 
   if(WARNINGS_AS_ERRORS)
@@ -64,6 +71,11 @@ function(get_project_warnings compiler_warnings)
       -Wuseless-cast # warn if you perform a cast to the same type
       -fvisibility=hidden
       -fvisibility-inlines-hidden
+      -Wmissing-include-dirs
+      -Wduplicated-branches
+      -Wduplicated-cond
+      -Wunsafe-loop-optimizations
+      --param max-inline-insns-single=3000  # give some more room before -Winline kicks in
   )
 
   if(MSVC)

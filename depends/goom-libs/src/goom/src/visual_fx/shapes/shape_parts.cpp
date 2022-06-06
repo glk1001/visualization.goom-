@@ -152,9 +152,9 @@ auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
   return GetShapePaths(numShapePaths, minScale, maxScale);
 }
 
-inline auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
-                                     const float minScale,
-                                     const float maxScale) noexcept -> std::vector<ShapePath>
+auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
+                              const float minScale,
+                              const float maxScale) noexcept -> std::vector<ShapePath>
 {
 
   const Vec2dFlt targetPointFlt{m_shapePathsTargetPoint.ToFlt()};

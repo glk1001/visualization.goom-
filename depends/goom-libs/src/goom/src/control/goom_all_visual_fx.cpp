@@ -87,6 +87,8 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                                       { ResetCurrentDrawBuffSettings(fx); });
 }
 
+GoomAllVisualFx::~GoomAllVisualFx() noexcept = default;
+
 void GoomAllVisualFx::Start()
 {
   m_goomLine1->Start();

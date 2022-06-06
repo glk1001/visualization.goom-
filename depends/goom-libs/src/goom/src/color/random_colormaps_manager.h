@@ -16,12 +16,15 @@ namespace GOOM::COLOR
 class RandomColorMapsManager
 {
 public:
+  // NOLINTBEGIN
   struct ColorMapInfo
   {
+    ~ColorMapInfo() noexcept;
     std::shared_ptr<const RandomColorMaps> colorMaps{};
     COLOR_DATA::ColorMapName colorMapName{COLOR_DATA::ColorMapName::_NULL};
     std::set<RandomColorMaps::ColorMapTypes> types{};
   };
+  // NOLINTEND
 
   class ColorMapId
   {

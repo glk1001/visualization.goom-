@@ -17,6 +17,13 @@ namespace GOOM::UTILS
 using NameValuePair = std::pair<std::string, std::string>;
 using NameValuePairs = std::vector<NameValuePair>;
 
+[[nodiscard]] inline auto GetNameValueString(const NameValuePair& pair) -> std::string
+{
+  return pair.first + ": " + pair.second;
+}
+
+[[nodiscard]] auto GetNameValuesString(const NameValuePairs& nameValuePairs) -> std::string;
+
 inline void MoveNameValuePairs(NameValuePairs&& nameValues, NameValuePairs& dest)
 {
   std::move(cbegin(nameValues), cend(nameValues), std::back_inserter(dest));
@@ -45,19 +52,6 @@ inline void MoveNameValuePairs(NameValuePairs&& nameValues, NameValuePairs& dest
   return fullParamGroup;
 }
 
-[[nodiscard]] inline auto GetNameValueString(const NameValuePair& pair) -> std::string
-{
-  return pair.first + ": " + pair.second;
-}
-
-[[nodiscard]] inline auto GetNameValuesString(const NameValuePairs& nameValuePairs) -> std::string
-{
-  std::vector<std::string> nameValueStrings{};
-  std::transform(cbegin(nameValuePairs), cend(nameValuePairs), std::back_inserter(nameValueStrings),
-                 [](const NameValuePair& pair) { return GetNameValueString(pair); });
-  return StringJoin(nameValueStrings, "\n");
-}
-
 template<typename T>
 [[nodiscard]] auto GetPair(const std::string& paramGroup,
                            const std::string& paramName,
@@ -68,9 +62,9 @@ template<typename T>
 
 
 template<typename T>
-inline auto GetPair(const std::string& paramGroup,
-                    const std::string& paramName,
-                    const T& paramValue) -> NameValuePair
+auto GetPair(const std::string& paramGroup,
+             const std::string& paramName,
+             const T& paramValue) -> NameValuePair
 {
   return {paramGroup + "::" + paramName, to_string(paramValue)};
 }

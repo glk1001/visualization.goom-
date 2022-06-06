@@ -657,7 +657,7 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 /*
  * Met a jour l'affichage du message defilant
  */
-inline auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -> void
+auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -> void
 {
   if (messages.empty())
   {
@@ -669,7 +669,7 @@ inline auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& mess
   m_messageDisplayer.UpdateMessages(StringSplit(messages, "\n"));
 }
 
-inline auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
+auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
 {
   if (!m_showGoomState)
   {

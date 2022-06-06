@@ -463,10 +463,10 @@ inline void Circle::DrawDot(const uint32_t dotNum,
   }
 }
 
-inline auto Circle::DrawConnectingLine(const Point2dInt& position1,
-                                       const Point2dInt& position2,
-                                       const float lineBrightness,
-                                       const float tDotColor) -> void
+auto Circle::DrawConnectingLine(const Point2dInt& position1,
+                                const Point2dInt& position2,
+                                const float lineBrightness,
+                                const float tDotColor) -> void
 {
   if ((not m_showLine) or (not IsSpecialLineUpdateNum()))
   {
@@ -523,11 +523,11 @@ inline void Circle::DotDrawer::DrawDot(const Point2dInt& pos,
   }
 }
 
-inline auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
-                                             const uint32_t diameter,
-                                             const Pixel& mainColor,
-                                             const Pixel& lowColor,
-                                             const IColorMap& innerColorMap) noexcept -> void
+auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
+                                      const uint32_t diameter,
+                                      const Pixel& mainColor,
+                                      const Pixel& lowColor,
+                                      const IColorMap& innerColorMap) noexcept -> void
 {
   const auto maxRadius = static_cast<int32_t>(diameter + 3) / 2;
   TValue innerColorT{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)};
@@ -581,10 +581,10 @@ inline auto Circle::DotDrawer::GetCircleColorsWithInner(const float brightness,
   return {finalMainColor, finalLowColor};
 }
 
-inline auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& position,
-                                             const uint32_t diameter,
-                                             const Pixel& mainColor,
-                                             const Pixel& lowColor) -> void
+auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& position,
+                                      const uint32_t diameter,
+                                      const Pixel& mainColor,
+                                      const Pixel& lowColor) -> void
 {
   const auto getMainColor =
       [this, &mainColor, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
