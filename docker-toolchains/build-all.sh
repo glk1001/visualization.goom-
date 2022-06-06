@@ -28,7 +28,8 @@ cd "${THIS_SCRIPT_PATH}"
 docker build ${NO_CACHE} --build-arg OS_TAG=${OS_TAG} -t ${BASE_IMAGE}  -f Dockerfile-cpp-env-base      .
 docker build ${NO_CACHE} --build-arg OS_TAG=${OS_TAG} -t ${TOOLS_IMAGE} -f Dockerfile-cpp-env-dev-tools .
 docker build ${NO_CACHE} --build-arg OS_TAG=${OS_TAG} \
-                   --build-arg CLANG_VER=${CLANG_VER} -t ${CLANG_IMAGE} -f Dockerfile-cpp-env-clang     .
+                             --build-arg CLANG_VER=${CLANG_VER} \
+                             --build-arg UID=$(id -u) -t ${CLANG_IMAGE} -f Dockerfile-cpp-env-clang     .
 
 docker tag ${CLANG_IMAGE} ${FINAL_IMAGE}
 

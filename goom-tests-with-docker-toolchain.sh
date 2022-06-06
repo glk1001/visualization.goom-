@@ -1,33 +1,28 @@
 #!/bin/bash
 
 set -u
+set -e
 
 declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 
 source "${THIS_SCRIPT_PATH}/goom-set-vars.sh"
 
 
-if [[ ! -d "${BUILD_DIR}" ]]; then
-  echo "ERROR: Could not find build directory \"${BUILD_DIR}\"."
-  exit 1
+if [[ "${COMPILER}" == "gcc-12" ]]; then
+  declare -r DOCKER_IMAGE=clion/ubuntu/cpp-env:1.1-kinetic
+else
+  declare -r DOCKER_IMAGE=clion/ubuntu/cpp-env:1.1-jammy
 fi
 
-declare -r DOCKER_IMAGE=clion/ubuntu/cpp-env:1.1-jammy
+declare -r TIME_ZONE=$(cat /etc/timezone)
 declare -r DOCKER_GOOM_DIR="/tmp/visualization.goom"
-declare -r TEST_DIR="${DOCKER_GOOM_DIR}/${BUILD_DIRNAME}"
 
-docker run --rm                                            \
-           -v ${THIS_SCRIPT_PATH}:${DOCKER_GOOM_DIR}       \
-           -t ${DOCKER_IMAGE}                              \
-           bash -c "ctest --verbose --test-dir ${TEST_DIR}"
-if [[ $? == 0 ]]; then
-  exit 0
-fi
-
-
-declare -r RERUN_OPTS="--rerun-failed --output-on-failure"
-
-docker run --rm                                                          \
-           -v ${THIS_SCRIPT_PATH}:${DOCKER_GOOM_DIR}                     \
-           -t ${DOCKER_IMAGE}                                            \
-           bash -c "ctest ${RERUN_OPTS} --verbose --test-dir ${TEST_DIR}"
+docker run --rm                                      \
+           -e TZ=${TIME_ZONE}                           \
+           -v ${THIS_SCRIPT_PATH}:${DOCKER_GOOM_DIR} \
+           -t ${DOCKER_IMAGE}                        \
+           bash -c "cd ${DOCKER_GOOM_DIR} &&         \
+                    ${DOCKER_GOOM_DIR}/goom-tests.sh \
+                      --docker                       \
+                      --compiler ${COMPILER}         \
+                      --build-type ${BUILD_TYPE}"
