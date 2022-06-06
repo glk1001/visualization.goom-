@@ -5,16 +5,16 @@ if [[ ! -d "${DOCKERIZE_KODI_DIR}" ]]; then
 fi
 
 
-declare -r KODI_BUILD_ROOT_DIR=${THIS_SCRIPT_PATH}/../xbmc/kodi-build/addons
+declare -r KODI_BUILD_ROOT_DIR=$(realpath ${THIS_SCRIPT_PATH}/../xbmc/kodi-build/addons)
 
 declare -r KODI_BUILD_LIB_DIR=${KODI_BUILD_ROOT_DIR}/lib/addons/visualization.goom
 if [[ ! -d "${KODI_BUILD_LIB_DIR}" ]]; then
-  echo "ERROR: Could not find kodi lib build directory \"${KODI_BUILD_LIB_DIR}\"."
+  echo "ERROR: Could not find kodi build lib directory \"${KODI_BUILD_LIB_DIR}\"."
   exit 1
 fi
 declare -r KODI_BUILD_SHARE_DIR=${KODI_BUILD_ROOT_DIR}/share/kodi/addons/visualization.goom
 if [[ ! -d "${KODI_BUILD_SHARE_DIR}" ]]; then
-  echo "ERROR: Could not find kodi share build directory \"${KODI_BUILD_SHARE_DIR}\"."
+  echo "ERROR: Could not find kodi build share directory \"${KODI_BUILD_SHARE_DIR}\"."
   exit 1
 fi
 declare -r KODI_BUILD_RESOURCES_DIR=${KODI_BUILD_SHARE_DIR}/resources

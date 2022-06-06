@@ -1,3 +1,9 @@
+if [[ "${THIS_SCRIPT_PATH}" == "" ]]; then
+  echo "ERROR: 'THIS_SCRIPT_PATH' must be set."
+  exit 1
+fi
+
+
 declare EXTRA_ARGS=""
 declare USING_DOCKER="no"
 declare USING_CLION="no"
@@ -43,7 +49,7 @@ unset EXTRA_ARGS
 
 # Compilers
 if [[ "${COMPILER:-}" == "" ]]; then
-  echo "Compiler must be specified."
+  echo "'COMPILER' must be specified."
   echo
   exit 1
 fi
@@ -72,7 +78,7 @@ fi
 
 # Build type
 if [[ "${BUILD_TYPE:-}" == "" ]]; then
-  echo "Build type must be specified."
+  echo "'BUILD_TYPE' must be specified."
   echo
   exit 1
 fi
@@ -98,6 +104,7 @@ else
 fi
 
 if [[ "${COMPILER}" == "gcc-12" ]]; then
+  # At the moment (June 2022), gcc-12.1 is only available on Ubuntu Kinetic.
   declare -r DOCKER_IMAGE=clion/ubuntu/cpp-env:1.1-kinetic
 else
   declare -r DOCKER_IMAGE=clion/ubuntu/cpp-env:1.1-jammy
@@ -105,7 +112,7 @@ fi
 
 declare -r HOST_TIME_ZONE=$(cat /etc/timezone)
 declare -r HOST_CCACHE_DIR=${CCACHE_DIR}
-declare -r HOST_KODI_ROOT_DIR=${HOME}/Prj/github/xbmc
+declare -r HOST_KODI_ROOT_DIR=$(realpath ${THIS_SCRIPT_PATH}/..)
 declare -r DOCKER_CCACHE_DIR=/tmp/ccache
 declare -r DOCKER_GOOM_DIR=/tmp/visualization.goom
 declare -r DOCKER_KODI_ROOT_DIR=/tmp/xbmc
