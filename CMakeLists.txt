@@ -45,22 +45,26 @@ set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 CPMAddPackage("gh:fmtlib/fmt#8.0.1")
 
 
-# Executing the Kodi addon cmake script here allows this script to be the main cmake script.
-# This fits in with the way CLion works.
-if (EXISTS "${CMAKE_BINARY_DIR}/CMakeCache.txt")
-    message(STATUS "In build mode: Found cache file ${CMAKE_BINARY_DIR}/CMakeCache.txt.")
+if (NOT IS_THIS_MAIN_CMAKE_SCRIPT)
+    message(STATUS "This cmake script is being run from the kodi addons cmake script.")
 else ()
-    message(STATUS "In config mode: Executing kodi addons cmake.")
-    execute_process(COMMAND cmake
-            -D ADDONS_TO_BUILD=${GOOM_TARGET_NAME}
-            -D ADDON_SRC_PREFIX=${KODI_ROOT_DIR}
-            -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-            -D PACKAGE_ZIP=1
-            ${KODI_ROOT_DIR}/xbmc/cmake/addons
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            RESULT_VARIABLE CMAKE_RESULT)
-    if (NOT CMAKE_RESULT EQUAL "0")
-        message(FATAL_ERROR "cmake kodi-addons failed.")
+    # Executing the Kodi addon cmake script here allows this script to be the main cmake script.
+    # This fits in with the way CLion works.
+    if (EXISTS "${CMAKE_BINARY_DIR}/CMakeCache.txt")
+        message(STATUS "In build mode: Found cache file ${CMAKE_BINARY_DIR}/CMakeCache.txt.")
+    else ()
+        message(STATUS "In config mode: Executing kodi addons cmake.")
+        execute_process(COMMAND cmake
+                -D ADDONS_TO_BUILD=${GOOM_TARGET_NAME}
+                -D ADDON_SRC_PREFIX=${KODI_ROOT_DIR}
+                -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                -D PACKAGE_ZIP=1
+                ${KODI_ROOT_DIR}/xbmc/cmake/addons
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                RESULT_VARIABLE CMAKE_RESULT)
+        if (NOT CMAKE_RESULT EQUAL "0")
+            message(FATAL_ERROR "cmake kodi-addons failed.")
+        endif ()
     endif ()
 endif ()
 
