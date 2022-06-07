@@ -146,7 +146,7 @@ private:
 };
 
 IfsDancersFx::IfsDancersFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<IfsDancersFxImpl>(fxHelper, smallBitmaps)}
+  : m_pimpl{spimpl::make_unique_impl<IfsDancersFxImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -157,12 +157,12 @@ auto IfsDancersFx::GetFxName() const noexcept -> std::string
 
 auto IfsDancersFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
 auto IfsDancersFx::Start() noexcept -> void
 {
-  m_fxImpl->Start();
+  m_pimpl->Start();
 }
 
 auto IfsDancersFx::Finish() noexcept -> void
@@ -182,22 +182,22 @@ auto IfsDancersFx::Suspend() noexcept -> void
 
 auto IfsDancersFx::ApplyNoDraw() noexcept -> void
 {
-  m_fxImpl->ApplyNoDraw();
+  m_pimpl->ApplyNoDraw();
 }
 
 auto IfsDancersFx::ApplyMultiple() noexcept -> void
 {
-  m_fxImpl->UpdateIfs();
+  m_pimpl->UpdateIfs();
 }
 
 auto IfsDancersFx::Refresh() noexcept -> void
 {
-  m_fxImpl->Refresh();
+  m_pimpl->Refresh();
 }
 
 auto IfsDancersFx::PostStateUpdate(const bool wasActiveInPreviousState) noexcept -> void
 {
-  m_fxImpl->PostStateUpdate(wasActiveInPreviousState);
+  m_pimpl->PostStateUpdate(wasActiveInPreviousState);
 }
 
 // clang-format off

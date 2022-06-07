@@ -42,7 +42,7 @@ public:
 
 private:
   class TentaclesImpl;
-  spimpl::unique_impl_ptr<TentaclesImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<TentaclesImpl> m_pimpl;
 };
 
 } // namespace VISUAL_FX

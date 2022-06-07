@@ -174,7 +174,7 @@ LinesFx::LinesFx(const FxHelper& fxHelper,
                  const LineType destLineType,
                  const float destParam,
                  const Pixel& destColor) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<LinesImpl>(fxHelper,
+  : m_pimpl{spimpl::make_unique_impl<LinesImpl>(fxHelper,
                                                  smallBitmaps,
                                                  srceLineType,
                                                  srceParam,
@@ -192,12 +192,12 @@ auto LinesFx::GetFxName() const noexcept -> std::string
 
 void LinesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
-  m_fxImpl->SetWeightedColorMaps(weightedMaps);
+  m_pimpl->SetWeightedColorMaps(weightedMaps);
 }
 
 auto LinesFx::Start() noexcept -> void
 {
-  m_fxImpl->Start();
+  m_pimpl->Start();
 }
 
 auto LinesFx::Finish() noexcept -> void
@@ -222,22 +222,22 @@ auto LinesFx::GetRedLineColor() -> Pixel
 
 auto LinesFx::GetRandomLineColor() const -> Pixel
 {
-  return m_fxImpl->GetRandomLineColor();
+  return m_pimpl->GetRandomLineColor();
 }
 
 auto LinesFx::GetLineColorPower() const noexcept -> float
 {
-  return m_fxImpl->GetLineColorPower();
+  return m_pimpl->GetLineColorPower();
 }
 
 auto LinesFx::SetLineColorPower(const float val) noexcept -> void
 {
-  m_fxImpl->SetLineColorPower(val);
+  m_pimpl->SetLineColorPower(val);
 }
 
 auto LinesFx::CanResetDestLine() const noexcept -> bool
 {
-  return m_fxImpl->CanResetDestLine();
+  return m_pimpl->CanResetDestLine();
 }
 
 auto LinesFx::ResetDestLine(const LineType newLineType,
@@ -245,13 +245,13 @@ auto LinesFx::ResetDestLine(const LineType newLineType,
                             const float newAmplitude,
                             const Pixel& newColor) noexcept -> void
 {
-  m_fxImpl->ResetDestLine(newLineType, newParam, newAmplitude, newColor);
+  m_pimpl->ResetDestLine(newLineType, newParam, newAmplitude, newColor);
 }
 
 auto LinesFx::DrawLines(const AudioSamples::SampleArray& soundData,
                         const AudioSamples::MaxMinValues& soundMinMax) noexcept -> void
 {
-  m_fxImpl->DrawLines(soundData, soundMinMax);
+  m_pimpl->DrawLines(soundData, soundMinMax);
 }
 
 // clang-format off

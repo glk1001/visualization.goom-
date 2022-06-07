@@ -36,7 +36,7 @@ public:
 
 private:
   class ShapesFxImpl;
-  spimpl::unique_impl_ptr<ShapesFxImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<ShapesFxImpl> m_pimpl;
 };
 
 } // namespace VISUAL_FX

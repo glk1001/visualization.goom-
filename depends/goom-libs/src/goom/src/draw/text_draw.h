@@ -68,7 +68,7 @@ public:
 
 private:
   class TextDrawImpl;
-  spimpl::unique_impl_ptr<TextDrawImpl> m_textDrawImpl;
+  spimpl::unique_impl_ptr<TextDrawImpl> m_pimpl;
 };
 
 } // namespace DRAW

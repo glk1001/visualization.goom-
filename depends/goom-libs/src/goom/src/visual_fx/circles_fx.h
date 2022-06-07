@@ -40,7 +40,7 @@ public:
 
 private:
   class CirclesFxImpl;
-  spimpl::unique_impl_ptr<CirclesFxImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<CirclesFxImpl> m_pimpl;
 };
 
 } // namespace VISUAL_FX

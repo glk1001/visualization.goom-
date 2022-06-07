@@ -92,7 +92,7 @@ public:
 
 private:
   class TubeImpl;
-  spimpl::unique_impl_ptr<TubeImpl> m_impl;
+  spimpl::unique_impl_ptr<TubeImpl> m_pimpl;
 };
 
 } // namespace VISUAL_FX::TUBES

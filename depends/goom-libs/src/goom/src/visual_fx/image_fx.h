@@ -42,7 +42,7 @@ public:
 
 private:
   class ImageFxImpl;
-  spimpl::unique_impl_ptr<ImageFxImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<ImageFxImpl> m_pimpl;
 };
 
 } // namespace VISUAL_FX

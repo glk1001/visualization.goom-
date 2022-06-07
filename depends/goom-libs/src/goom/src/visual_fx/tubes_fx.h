@@ -44,7 +44,7 @@ public:
 
 private:
   class TubeFxImpl;
-  spimpl::unique_impl_ptr<TubeFxImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<TubeFxImpl> m_pimpl;
 };
 
 } // namespace VISUAL_FX

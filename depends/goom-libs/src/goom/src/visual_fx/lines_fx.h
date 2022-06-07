@@ -73,7 +73,7 @@ public:
 
 private:
   class LinesImpl;
-  spimpl::unique_impl_ptr<LinesImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<LinesImpl> m_pimpl;
 };
 
 } // namespace VISUAL_FX

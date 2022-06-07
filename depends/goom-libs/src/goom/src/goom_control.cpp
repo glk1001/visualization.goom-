@@ -227,58 +227,58 @@ auto GoomControl::SetRandSeed(const uint64_t seed) -> void
 GoomControl::GoomControl(const uint32_t width,
                          const uint32_t height,
                          const std::string& resourcesDirectory)
-  : m_controller{spimpl::make_unique_impl<GoomControlImpl>(width, height, resourcesDirectory)}
+  : m_pimpl{spimpl::make_unique_impl<GoomControlImpl>(width, height, resourcesDirectory)}
 {
 }
 
 auto GoomControl::SetShowTitle(const ShowTitleType value) -> void
 {
-  m_controller->SetShowTitle(value);
+  m_pimpl->SetShowTitle(value);
 }
 
 auto GoomControl::ShowGoomState(const bool value) -> void
 {
-  m_controller->ShowGoomState(value);
+  m_pimpl->ShowGoomState(value);
 }
 
 auto GoomControl::SetDumpDirectory(const std::string& dumpDirectory) -> void
 {
-  m_controller->SetDumpDirectory(dumpDirectory);
+  m_pimpl->SetDumpDirectory(dumpDirectory);
 }
 
 auto GoomControl::Start() -> void
 {
-  m_controller->Start();
+  m_pimpl->Start();
 }
 
 auto GoomControl::Finish() -> void
 {
-  m_controller->Finish();
+  m_pimpl->Finish();
 }
 
 auto GoomControl::SetSongInfo(const SongInfo& songInfo) -> void
 {
-  m_controller->SetSongInfo(songInfo);
+  m_pimpl->SetSongInfo(songInfo);
 }
 
 auto GoomControl::SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void
 {
-  m_controller->SetScreenBuffer(buffer);
+  m_pimpl->SetScreenBuffer(buffer);
 }
 
 auto GoomControl::NoZooms(const bool value) -> void
 {
-  m_controller->NoZooms(value);
+  m_pimpl->NoZooms(value);
 }
 
 auto GoomControl::GetLastShaderEffects() const -> const GoomShaderEffects&
 {
-  return m_controller->GetLastShaderEffects();
+  return m_pimpl->GetLastShaderEffects();
 }
 
 auto GoomControl::Update(const AudioSamples& audioSamples, const std::string& message) -> void
 {
-  m_controller->Update(audioSamples, message);
+  m_pimpl->Update(audioSamples, message);
 }
 
 static constexpr bool DO_GOOM_STATE_DUMP = true;

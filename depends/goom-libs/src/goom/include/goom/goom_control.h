@@ -59,7 +59,7 @@ public:
 
 private:
   class GoomControlImpl;
-  spimpl::unique_impl_ptr<GoomControlImpl> m_controller;
+  spimpl::unique_impl_ptr<GoomControlImpl> m_pimpl;
 };
 
 } // namespace GOOM

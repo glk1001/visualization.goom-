@@ -255,7 +255,7 @@ private:
 
 FlyingStarsFx::FlyingStarsFx(const FxHelper& fxHelper,
                              const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<FlyingStarsImpl>(fxHelper, smallBitmaps)}
+  : m_pimpl{spimpl::make_unique_impl<FlyingStarsImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -267,7 +267,7 @@ auto FlyingStarsFx::GetFxName() const noexcept -> std::string
 auto FlyingStarsFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept
     -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
 auto FlyingStarsFx::Start() noexcept -> void
@@ -292,7 +292,7 @@ auto FlyingStarsFx::Suspend() noexcept -> void
 
 auto FlyingStarsFx::ApplyMultiple() noexcept -> void
 {
-  m_fxImpl->UpdateBuffers();
+  m_pimpl->UpdateBuffers();
 }
 
 // clang-format off

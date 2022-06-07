@@ -158,7 +158,7 @@ private:
 ImageFx::ImageFx(Parallel& parallel,
                  const FxHelper& fxHelper,
                  const std::string& resourcesDirectory) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<ImageFxImpl>(parallel, fxHelper, resourcesDirectory)}
+  : m_pimpl{spimpl::make_unique_impl<ImageFxImpl>(parallel, fxHelper, resourcesDirectory)}
 {
 }
 
@@ -169,12 +169,12 @@ auto ImageFx::GetFxName() const noexcept -> std::string
 
 auto ImageFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
 auto ImageFx::Start() noexcept -> void
 {
-  m_fxImpl->Start();
+  m_pimpl->Start();
 }
 
 auto ImageFx::Finish() noexcept -> void
@@ -184,12 +184,12 @@ auto ImageFx::Finish() noexcept -> void
 
 auto ImageFx::Resume() noexcept -> void
 {
-  m_fxImpl->Resume();
+  m_pimpl->Resume();
 }
 
 auto ImageFx::ApplyMultiple() noexcept -> void
 {
-  m_fxImpl->ApplyMultiple();
+  m_pimpl->ApplyMultiple();
 }
 
 ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,

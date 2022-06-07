@@ -222,7 +222,7 @@ private:
 };
 
 TubesFx::TubesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<TubeFxImpl>(fxHelper, smallBitmaps)}
+  : m_pimpl{spimpl::make_unique_impl<TubeFxImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -233,17 +233,17 @@ auto TubesFx::GetFxName() const noexcept -> std::string
 
 auto TubesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
 auto TubesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
-  m_fxImpl->SetZoomMidpoint(zoomMidpoint);
+  m_pimpl->SetZoomMidpoint(zoomMidpoint);
 }
 
 auto TubesFx::Start() noexcept -> void
 {
-  m_fxImpl->Start();
+  m_pimpl->Start();
 }
 
 auto TubesFx::Finish() noexcept -> void
@@ -253,7 +253,7 @@ auto TubesFx::Finish() noexcept -> void
 
 auto TubesFx::Resume() noexcept -> void
 {
-  m_fxImpl->Resume();
+  m_pimpl->Resume();
 }
 
 auto TubesFx::Suspend() noexcept -> void
@@ -263,7 +263,7 @@ auto TubesFx::Suspend() noexcept -> void
 
 auto TubesFx::ApplyMultiple() noexcept -> void
 {
-  m_fxImpl->ApplyMultiple();
+  m_pimpl->ApplyMultiple();
 }
 
 TubesFx::TubeFxImpl::TubeFxImpl(const FxHelper& fxHelper,

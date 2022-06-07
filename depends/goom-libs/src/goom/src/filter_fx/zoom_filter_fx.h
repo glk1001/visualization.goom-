@@ -61,7 +61,7 @@ public:
 
 private:
   class ZoomFilterImpl;
-  spimpl::unique_impl_ptr<ZoomFilterImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<ZoomFilterImpl> m_pimpl;
 };
 
 } // namespace FILTER_FX

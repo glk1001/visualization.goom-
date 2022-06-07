@@ -93,7 +93,7 @@ private:
 };
 
 TentaclesFx::TentaclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelper, smallBitmaps)}
+  : m_pimpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -104,12 +104,12 @@ auto TentaclesFx::GetFxName() const noexcept -> std::string
 
 auto TentaclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
 auto TentaclesFx::Start() noexcept -> void
 {
-  m_fxImpl->Start();
+  m_pimpl->Start();
 }
 
 auto TentaclesFx::Finish() noexcept -> void
@@ -119,7 +119,7 @@ auto TentaclesFx::Finish() noexcept -> void
 
 auto TentaclesFx::Resume() noexcept -> void
 {
-  m_fxImpl->Resume();
+  m_pimpl->Resume();
 }
 
 auto TentaclesFx::Suspend() noexcept -> void
@@ -129,7 +129,7 @@ auto TentaclesFx::Suspend() noexcept -> void
 
 auto TentaclesFx::ApplyMultiple() noexcept -> void
 {
-  m_fxImpl->Update();
+  m_pimpl->Update();
 }
 
 // clang-format off

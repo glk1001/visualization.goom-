@@ -46,7 +46,7 @@ public:
 
 private:
   class GoomDotsFxImpl;
-  spimpl::unique_impl_ptr<GoomDotsFxImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<GoomDotsFxImpl> m_pimpl;
 };
 
 } // namespace VISUAL_FX

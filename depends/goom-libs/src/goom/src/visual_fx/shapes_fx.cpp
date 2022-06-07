@@ -97,7 +97,7 @@ private:
 };
 
 ShapesFx::ShapesFx(const FxHelper& fxHelper) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<ShapesFxImpl>(fxHelper)}
+  : m_pimpl{spimpl::make_unique_impl<ShapesFxImpl>(fxHelper)}
 {
 }
 
@@ -108,17 +108,17 @@ auto ShapesFx::GetFxName() const noexcept -> std::string
 
 auto ShapesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
 auto ShapesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
-  m_fxImpl->SetZoomMidpoint(zoomMidpoint);
+  m_pimpl->SetZoomMidpoint(zoomMidpoint);
 }
 
 auto ShapesFx::Start() noexcept -> void
 {
-  m_fxImpl->Start();
+  m_pimpl->Start();
 }
 
 auto ShapesFx::Finish() noexcept -> void
@@ -128,7 +128,7 @@ auto ShapesFx::Finish() noexcept -> void
 
 auto ShapesFx::ApplyMultiple() noexcept -> void
 {
-  m_fxImpl->ApplyMultiple();
+  m_pimpl->ApplyMultiple();
 }
 
 ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept

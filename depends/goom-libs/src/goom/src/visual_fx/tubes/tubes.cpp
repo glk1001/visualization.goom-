@@ -220,93 +220,93 @@ const float Tube::NORMAL_CENTRE_SPEED = NML_CENTRE_SPEED;
 const float Tube::NORMAL_CIRCLE_SPEED = NML_CIRCLE_SPEED;
 
 Tube::Tube(const TubeData& data, const OscillatingFunction::Params& pathParams) noexcept
-  : m_impl{spimpl::make_unique_impl<Tube::TubeImpl>(data, pathParams)}
+  : m_pimpl{spimpl::make_unique_impl<Tube::TubeImpl>(data, pathParams)}
 {
 }
 
 void Tube::SetWeightedMainColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
-  m_impl->SetWeightedMainColorMaps(weightedMaps);
+  m_pimpl->SetWeightedMainColorMaps(weightedMaps);
 }
 
 void Tube::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
-  m_impl->SetWeightedLowColorMaps(weightedMaps);
+  m_pimpl->SetWeightedLowColorMaps(weightedMaps);
 }
 
 void Tube::ResetColorMaps()
 {
-  m_impl->ResetColorMaps();
+  m_pimpl->ResetColorMaps();
 }
 
 auto Tube::IsActive() const -> bool
 {
-  return m_impl->IsActive();
+  return m_pimpl->IsActive();
 }
 
 void Tube::SetTransformCentreFunc(const TransformCentreFunc& func)
 {
-  m_impl->SetTransformCentreFunc(func);
+  m_pimpl->SetTransformCentreFunc(func);
 }
 
 void Tube::SetCentrePathT(const float val)
 {
-  m_impl->SetCentrePathT(val);
+  m_pimpl->SetCentrePathT(val);
 }
 
 void Tube::SetCentreSpeed(const float val)
 {
-  m_impl->SetCentreSpeed(val);
+  m_pimpl->SetCentreSpeed(val);
 }
 
 void Tube::IncreaseCentreSpeed()
 {
-  m_impl->IncreaseCentreSpeed();
+  m_pimpl->IncreaseCentreSpeed();
 }
 
 void Tube::DecreaseCentreSpeed()
 {
-  m_impl->DecreaseCentreSpeed();
+  m_pimpl->DecreaseCentreSpeed();
 }
 
 void Tube::SetAllowOscillatingCirclePaths(const bool val)
 {
-  m_impl->SetAllowOscillatingCirclePaths(val);
+  m_pimpl->SetAllowOscillatingCirclePaths(val);
 }
 
 void Tube::SetCirclePathParams(const OscillatingFunction::Params& params)
 {
-  m_impl->SetCirclePathParams(params);
+  m_pimpl->SetCirclePathParams(params);
 }
 
 void Tube::SetCircleSpeed(const float val)
 {
-  m_impl->SetCircleSpeed(val);
+  m_pimpl->SetCircleSpeed(val);
 }
 
 void Tube::IncreaseCircleSpeed()
 {
-  m_impl->IncreaseCircleSpeed();
+  m_pimpl->IncreaseCircleSpeed();
 }
 
 void Tube::DecreaseCircleSpeed()
 {
-  m_impl->DecreaseCircleSpeed();
+  m_pimpl->DecreaseCircleSpeed();
 }
 
 void Tube::DrawCircleOfShapes()
 {
-  m_impl->DrawShapes();
+  m_pimpl->DrawShapes();
 }
 
 void Tube::SetBrightnessFactor(const float val)
 {
-  m_impl->SetBrightnessFactor(val);
+  m_pimpl->SetBrightnessFactor(val);
 }
 
 void Tube::SetMaxJitterOffset(const int32_t val)
 {
-  m_impl->SetMaxJitterOffset(val);
+  m_pimpl->SetMaxJitterOffset(val);
 }
 
 class ShapeColorizer

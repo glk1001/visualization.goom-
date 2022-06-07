@@ -288,108 +288,108 @@ private:
 #endif
 
 TextDraw::TextDraw(IGoomDraw& draw) noexcept
-  : m_textDrawImpl{spimpl::make_unique_impl<TextDrawImpl>(draw)}
+  : m_pimpl{spimpl::make_unique_impl<TextDrawImpl>(draw)}
 {
 }
 
 auto TextDraw::GetAlignment() const -> TextAlignment
 {
-  return m_textDrawImpl->GetAlignment();
+  return m_pimpl->GetAlignment();
 }
 
 void TextDraw::SetAlignment(const TextAlignment alignment)
 {
-  m_textDrawImpl->SetAlignment(alignment);
+  m_pimpl->SetAlignment(alignment);
 }
 
 auto TextDraw::GetFontFile() const -> const std::string&
 {
-  return m_textDrawImpl->GetFontFile();
+  return m_pimpl->GetFontFile();
 }
 
 void TextDraw::SetFontFile(const std::string& filename)
 {
-  m_textDrawImpl->SetFontFile(filename);
+  m_pimpl->SetFontFile(filename);
 }
 
 auto TextDraw::GetFontSize() const -> int32_t
 {
-  return m_textDrawImpl->GetFontSize();
+  return m_pimpl->GetFontSize();
 }
 
 void TextDraw::SetFontSize(const int32_t val)
 {
-  m_textDrawImpl->SetFontSize(val);
+  m_pimpl->SetFontSize(val);
 }
 
 auto TextDraw::GetLineSpacing() const -> int32_t
 {
-  return m_textDrawImpl->GetLineSpacing();
+  return m_pimpl->GetLineSpacing();
 }
 
 void TextDraw::SetOutlineWidth(const float val)
 {
-  m_textDrawImpl->SetOutlineWidth(val);
+  m_pimpl->SetOutlineWidth(val);
 }
 
 auto TextDraw::GetCharSpacing() const -> float
 {
-  return m_textDrawImpl->GetCharSpacing();
+  return m_pimpl->GetCharSpacing();
 }
 
 void TextDraw::SetCharSpacing(const float val)
 {
-  m_textDrawImpl->SetCharSpacing(val);
+  m_pimpl->SetCharSpacing(val);
 }
 
 void TextDraw::SetParallelRender(const bool val)
 {
-  m_textDrawImpl->SetParallelRender(val);
+  m_pimpl->SetParallelRender(val);
 }
 
 void TextDraw::SetText(const std::string& str)
 {
-  m_textDrawImpl->SetText(str);
+  m_pimpl->SetText(str);
 }
 
 void TextDraw::SetFontColorFunc(const FontColorFunc& func)
 {
-  m_textDrawImpl->SetFontColorFunc(func);
+  m_pimpl->SetFontColorFunc(func);
 }
 
 void TextDraw::SetOutlineFontColorFunc(const FontColorFunc& func)
 {
-  m_textDrawImpl->SetOutlineFontColorFunc(func);
+  m_pimpl->SetOutlineFontColorFunc(func);
 }
 
 void TextDraw::Prepare()
 {
-  m_textDrawImpl->Prepare();
+  m_pimpl->Prepare();
 }
 
 auto TextDraw::GetPreparedTextBoundingRect() const -> TextDraw::Rect
 {
-  return m_textDrawImpl->GetPreparedTextBoundingRect();
+  return m_pimpl->GetPreparedTextBoundingRect();
 }
 
 auto TextDraw::GetBearingX() const -> int32_t
 {
-  return m_textDrawImpl->GetBearingX();
+  return m_pimpl->GetBearingX();
 }
 
 auto TextDraw::GetBearingY() const -> int32_t
 {
-  return m_textDrawImpl->GetBearingY();
+  return m_pimpl->GetBearingY();
 }
 
 void TextDraw::Draw(const Point2dInt pen)
 {
-  m_textDrawImpl->Draw(pen);
+  m_pimpl->Draw(pen);
 }
 
 void TextDraw::Draw(const Point2dInt pen, Point2dInt& nextPen)
 {
-  m_textDrawImpl->Draw(pen, nextPen);
+  m_pimpl->Draw(pen, nextPen);
 }
 
 #ifndef NO_FREETYPE_INSTALLED

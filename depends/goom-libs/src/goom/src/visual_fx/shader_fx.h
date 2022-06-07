@@ -33,7 +33,7 @@ public:
 
 private:
   class ShaderFxImpl;
-  spimpl::unique_impl_ptr<ShaderFxImpl> m_fxImpl;
+  spimpl::unique_impl_ptr<ShaderFxImpl> m_pimpl;
 };
 
 } // namespace VISUAL_FX

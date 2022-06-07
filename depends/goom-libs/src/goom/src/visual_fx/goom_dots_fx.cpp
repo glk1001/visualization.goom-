@@ -121,23 +121,23 @@ private:
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<GoomDotsFxImpl>(fxHelper, smallBitmaps)}
+  : m_pimpl{spimpl::make_unique_impl<GoomDotsFxImpl>(fxHelper, smallBitmaps)}
 {
 }
 
 auto GoomDotsFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fxImpl->SetWeightedColorMaps(weightedColorMaps);
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
 auto GoomDotsFx::SetSingleBufferDots(const bool val) noexcept -> void
 {
-  m_fxImpl->SetSingleBufferDots(val);
+  m_pimpl->SetSingleBufferDots(val);
 }
 
 auto GoomDotsFx::Start() noexcept -> void
 {
-  m_fxImpl->Start();
+  m_pimpl->Start();
 }
 
 auto GoomDotsFx::Finish() noexcept -> void
@@ -162,12 +162,12 @@ auto GoomDotsFx::GetFxName() const noexcept -> std::string
 
 auto GoomDotsFx::ApplySingle() noexcept -> void
 {
-  m_fxImpl->ApplySingle();
+  m_pimpl->ApplySingle();
 }
 
 auto GoomDotsFx::ApplyMultiple() noexcept -> void
 {
-  m_fxImpl->ApplyMultiple();
+  m_pimpl->ApplyMultiple();
 }
 
 // clang-format off

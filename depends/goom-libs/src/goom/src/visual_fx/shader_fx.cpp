@@ -41,7 +41,7 @@ private:
 };
 
 ShaderFx::ShaderFx(const FxHelper& fxHelper) noexcept
-  : m_fxImpl{spimpl::make_unique_impl<ShaderFxImpl>(fxHelper)}
+  : m_pimpl{spimpl::make_unique_impl<ShaderFxImpl>(fxHelper)}
 {
 }
 
@@ -52,7 +52,7 @@ auto ShaderFx::GetFxName() const noexcept -> std::string
 
 auto ShaderFx::ChangeEffects() noexcept -> void
 {
-  m_fxImpl->ChangeEffects();
+  m_pimpl->ChangeEffects();
 }
 
 auto ShaderFx::Start() noexcept -> void
@@ -67,17 +67,17 @@ auto ShaderFx::Finish() noexcept -> void
 
 auto ShaderFx::ApplyMultiple() noexcept -> void
 {
-  m_fxImpl->ApplyMultiple();
+  m_pimpl->ApplyMultiple();
 }
 
 auto ShaderFx::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) noexcept -> void
 {
-  m_fxImpl->ApplyEndEffect(timeValues);
+  m_pimpl->ApplyEndEffect(timeValues);
 }
 
 auto ShaderFx::GetLastShaderEffects() const -> const GoomShaderEffects&
 {
-  return m_fxImpl->GetLastShaderEffects();
+  return m_pimpl->GetLastShaderEffects();
 }
 
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
