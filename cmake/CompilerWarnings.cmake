@@ -53,7 +53,6 @@ function(get_project_warnings compiler_warnings)
       -Wuninitialized
       -Wcast-qual
       -Wcast-align
-      -Winline
       -Wdisabled-optimization
   )
 
@@ -75,8 +74,13 @@ function(get_project_warnings compiler_warnings)
       -Wduplicated-branches
       -Wduplicated-cond
       -Wunsafe-loop-optimizations
-      --param max-inline-insns-single=3000  # give some more room before -Winline kicks in
   )
+  if (CMAKE_CXX_COMPILER_ID MATCHES ".*GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.1)
+    set(GCC_WARNINGS "${GCC_WARNINGS}"
+      -Winline
+      --param max-inline-insns-single=3000  # give some more room before -Winline kicks in
+    )
+  endif()
 
   if(MSVC)
     set(PROJECT_WARNINGS ${MSVC_WARNINGS})
