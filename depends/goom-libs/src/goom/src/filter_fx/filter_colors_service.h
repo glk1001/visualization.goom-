@@ -123,17 +123,17 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
   for (size_t i = 0; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; ++i)
   {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
-    const uint32_t& coeff = coeffs.val[i];
-    const Pixel& color = colors[i];
+    const uint32_t coeff = coeffs.val[i];
+    const Pixel color = colors[i];
     multR += static_cast<uint32_t>(color.R()) * coeff;
     multG += static_cast<uint32_t>(color.G()) * coeff;
     multB += static_cast<uint32_t>(color.B()) * coeff;
   }
-  const uint32_t newR = multR / m_coeffsAndBrightnessDivisor;
-  const uint32_t newG = multG / m_coeffsAndBrightnessDivisor;
-  const uint32_t newB = multB / m_coeffsAndBrightnessDivisor;
+  const auto newR = static_cast<PixelChannelType>(multR / m_coeffsAndBrightnessDivisor);
+  const auto newG = static_cast<PixelChannelType>(multG / m_coeffsAndBrightnessDivisor);
+  const auto newB = static_cast<PixelChannelType>(multB / m_coeffsAndBrightnessDivisor);
 
-  return Pixel{newR, newG, newB, MAX_ALPHA};
+  return Pixel{Pixel::RGB{newR, newG, newB, MAX_ALPHA}};
 }
 
 } // namespace GOOM::FILTER_FX
