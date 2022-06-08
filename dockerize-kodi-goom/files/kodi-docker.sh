@@ -22,6 +22,10 @@ fi
 
 rm -f "${IREXEC_CAPTURES}" |& tee -a "${CONTAINER_LOG}"
 
+declare -r OLD_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)
+declare -r CORE_PATTERN="/tmp/core.%e.%p"
+ulimit -c unlimited
+sudo /usr/sbin/sysctl -q -w kernel.core_pattern="${CORE_PATTERN}"
 
 x11docker --runasroot="service lircd start" ${ALL_SHARES} \
           --hostuser=greg --network --pulseaudio --gpu \
@@ -33,3 +37,5 @@ if grep KEY_SLEEP "${IREXEC_CAPTURES}" > /dev/null ; then
     >&2 echo "Power off requested. Shutting down now..." |& tee -a "${CONTAINER_LOG}"
     sudo shutdown now
 fi
+
+sudo /usr/sbin/sysctl -q -w kernel.core_pattern="${OLD_CORE_PATTERN}"

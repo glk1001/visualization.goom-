@@ -8,10 +8,12 @@ declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 source "${THIS_SCRIPT_PATH}/goom-docker-paths.sh"
 
 
-declare -r OLD_LINUX_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)
+declare -r OLD_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)
+declare -r CORE_PATTERN="/tmp/core.%e.%p"
 echo
-echo "Setting kodi 'core' pattern:"
-echo '/tmp/core.%e.%p' | sudo /usr/bin/tee /proc/sys/kernel/core_pattern
+echo "Setting linux 'core' pattern: \"${CORE_PATTERN}\""
+ulimit -c unlimited
+sudo /usr/sbin/sysctl -q -w kernel.core_pattern="${CORE_PATTERN}"
 
 echo
 x11docker --runasroot="service lircd start" \
@@ -33,5 +35,4 @@ x11docker --runasroot="service lircd start" \
 
 echo "x11docker return code = $?"
 
-echo "${OLD_LINUX_CORE_PATTERN}" | sudo /usr/bin/tee /proc/sys/kernel/core_pattern > /dev/null
-
+sudo /usr/sbin/sysctl -q -w kernel.core_pattern="${OLD_CORE_PATTERN}"
