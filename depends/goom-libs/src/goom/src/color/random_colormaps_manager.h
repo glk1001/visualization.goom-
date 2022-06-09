@@ -86,13 +86,12 @@ inline auto RandomColorMapsManager::GetColorMap(const ColorMapId id) const noexc
 inline auto RandomColorMapsManager::GetColorMapPtr(const ColorMapId id) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return std::const_pointer_cast<const IColorMap>(m_colorMaps.at(id()));
+  return m_colorMaps.at(id());
 }
 
 inline auto RandomColorMapsManager::ChangeAllColorMapsNow() noexcept -> void
 {
-  const size_t numItems = m_infoList.size();
-  for (size_t id = 0; id < numItems; ++id)
+  for (size_t id = 0; id < m_infoList.size(); ++id)
   {
     RandomizeColorMaps(id);
   }

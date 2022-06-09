@@ -1,8 +1,11 @@
 #include "shape_drawers.h"
 
+//#undef NO_LOGGING
+
 #include "color/color_adjustment.h"
 #include "color/colormaps.h"
 #include "draw/goom_draw.h"
+#include "goom/logging.h"
 #include "shape_parts.h"
 #include "shape_paths.h"
 #include "shapes.h"
@@ -16,6 +19,7 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
+using UTILS::Logging;
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 

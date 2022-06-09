@@ -54,6 +54,10 @@ auto RandomColorMaps::GetRandomColorMapPtr(const COLOR_DATA::ColorMapName colorM
                                            const std::set<ColorMapTypes>& types) const
     -> std::shared_ptr<const IColorMap>
 {
+  if (colorMapName == COLOR_DATA::ColorMapName::_NULL)
+  {
+    return GetRandomColorMapPtr(types);
+  }
   return GetRandomColorMapPtr(GetColorMapPtr(colorMapName), types);
 }
 
