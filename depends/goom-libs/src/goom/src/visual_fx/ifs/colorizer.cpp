@@ -64,12 +64,10 @@ auto Colorizer::UpdateMixerMaps() -> void
           ? RandomColorMaps::NO_COLOR_MAP_TYPES
           : RandomColorMaps::ALL_COLOR_MAP_TYPES;
 
-  m_colorMapsManager.UpdateColorMapInfo(m_mixerMap1Id,
-                                        {m_colorMaps, ColorMapName::_NULL, colorMapTypes});
+  m_colorMapsManager.UpdateColorMapInfo(m_mixerMap1Id, {m_colorMaps, colorMapTypes});
   m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);
 
-  m_colorMapsManager.UpdateColorMapInfo(m_mixerMap2Id,
-                                        {m_colorMaps, ColorMapName::_NULL, colorMapTypes});
+  m_colorMapsManager.UpdateColorMapInfo(m_mixerMap2Id, {m_colorMaps, colorMapTypes});
   m_prevMixerMap2 = m_colorMapsManager.GetColorMapPtr(m_mixerMap2Id);
 }
 

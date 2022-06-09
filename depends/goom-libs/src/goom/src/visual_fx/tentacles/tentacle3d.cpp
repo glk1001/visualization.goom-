@@ -43,11 +43,11 @@ void Tentacle3D::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMa
 {
   m_colorMaps = weightedMaps;
 
-  m_colorMapsManager.UpdateColorMapInfo(
-      m_mainColorMapID, {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_colorMapsManager.UpdateColorMapInfo(m_mainColorMapID,
+                                        {m_colorMaps, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
-  m_colorMapsManager.UpdateColorMapInfo(
-      m_lowColorMapID, {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_colorMapsManager.UpdateColorMapInfo(m_lowColorMapID,
+                                        {m_colorMaps, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
   ColorMapsChanged();
 }

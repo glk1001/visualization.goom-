@@ -6,7 +6,6 @@
 #include "color/colormaps.h"
 #include "color/colorutils.h"
 #include "color/random_colormaps.h"
-#include "color/random_colormaps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom/logging.h"
@@ -35,7 +34,6 @@ using COLOR::GetColorMultiply;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
-using COLOR::RandomColorMapsManager;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
@@ -91,16 +89,9 @@ private:
   const int32_t m_halfHeight;
   const float m_xMax;
 
-  RandomColorMapsManager m_colorMapsManager{};
   std::shared_ptr<RandomColorMaps> m_mainColorMaps{};
   std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
-  RandomColorMapsManager::ColorMapId m_dominantMainColorMapID;
-  RandomColorMapsManager::ColorMapId m_dominantLowColorMapID;
-  RandomColorMapsManager::ColorMapId m_mainColorMapID;
-  RandomColorMapsManager::ColorMapId m_lowColorMapID;
   bool m_megaColorMode = false;
-  [[nodiscard]] auto GetNextMainColorMapName() const noexcept -> ColorMapName;
-  [[nodiscard]] auto GetNextLowColorMapName() const noexcept -> ColorMapName;
   [[nodiscard]] auto GetNextAngleColorMapName() const noexcept -> ColorMapName;
 
   static constexpr float GAMMA = 1.0F / 1.0F;
@@ -320,10 +311,6 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
     m_halfWidth{static_cast<int32_t>(U_HALF * m_goomInfo.GetScreenInfo().width)},
     m_halfHeight{static_cast<int32_t>(U_HALF * m_goomInfo.GetScreenInfo().height)},
     m_xMax{static_cast<float>(m_goomInfo.GetScreenInfo().width - 1)},
-    m_dominantMainColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_dominantLowColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_mainColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_lowColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     // clang-format off
     m_colorModeWeights{
         m_goomRand,
@@ -392,25 +379,11 @@ auto FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
 {
   Expects(weightedColorMaps.mainColorMaps != nullptr);
   m_mainColorMaps = weightedColorMaps.mainColorMaps;
-
-  m_colorMapsManager.UpdateColorMapInfo(
-      m_dominantMainColorMapID,
-      {m_mainColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
-  m_colorMapsManager.UpdateColorMapInfo(m_mainColorMapID, {m_mainColorMaps, ColorMapName::_NULL,
-                                                           RandomColorMaps::ALL_COLOR_MAP_TYPES});
-
   m_mainColorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
   m_mainColorMaps->SetLightnessLimits(MIN_LIGHTNESS, MAX_LIGHTNESS);
 
   Expects(weightedColorMaps.lowColorMaps != nullptr);
   m_lowColorMaps = weightedColorMaps.lowColorMaps;
-
-  m_colorMapsManager.UpdateColorMapInfo(
-      m_dominantLowColorMapID,
-      {m_lowColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
-  m_colorMapsManager.UpdateColorMapInfo(
-      m_lowColorMapID, {m_lowColorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
-
   m_lowColorMaps->SetSaturationLimits(MIN_SATURATION, MAX_SATURATION);
   m_lowColorMaps->SetLightnessLimits(MIN_LIGHTNESS, MAX_LIGHTNESS);
 }
@@ -605,26 +578,10 @@ auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const noexcept
 
 inline auto FlyingStarsFx::FlyingStarsImpl::ChangeColorMaps() noexcept -> void
 {
-  m_colorMapsManager.ChangeColorMapNow(m_dominantMainColorMapID);
-  m_colorMapsManager.ChangeColorMapNow(m_dominantLowColorMapID);
-
   static constexpr float PROB_MEGA_COLOR_MODE = 1.0F / 10.0F;
   m_megaColorMode = m_goomRand.ProbabilityOf(PROB_MEGA_COLOR_MODE);
 
-  m_colorMapsManager.UpdateColorMapName(m_mainColorMapID, GetNextMainColorMapName());
-  m_colorMapsManager.UpdateColorMapName(m_lowColorMapID, GetNextLowColorMapName());
-
   UpdateAngleColorMapNames();
-}
-
-inline auto FlyingStarsFx::FlyingStarsImpl::GetNextMainColorMapName() const noexcept -> ColorMapName
-{
-  return m_megaColorMode ? ColorMapName::_NULL : m_mainColorMaps->GetRandomColorMapName();
-}
-
-inline auto FlyingStarsFx::FlyingStarsImpl::GetNextLowColorMapName() const noexcept -> ColorMapName
-{
-  return m_megaColorMode ? ColorMapName::_NULL : m_lowColorMaps->GetRandomColorMapName();
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetNextAngleColorMapName() const noexcept
@@ -640,10 +597,10 @@ auto FlyingStarsFx::FlyingStarsImpl::UpdateStarColorMaps(const float angle,
   if (constexpr float PROB_RANDOM_COLOR_MAPS = 0.5F;
       m_goomRand.ProbabilityOf(PROB_RANDOM_COLOR_MAPS))
   {
-    star.dominantMainColormap = m_colorMapsManager.GetColorMapPtr(m_dominantMainColorMapID);
-    star.dominantLowColormap = m_colorMapsManager.GetColorMapPtr(m_dominantLowColorMapID);
-    star.currentMainColorMap = m_colorMapsManager.GetColorMapPtr(m_mainColorMapID);
-    star.currentLowColorMap = m_colorMapsManager.GetColorMapPtr(m_lowColorMapID);
+    star.dominantMainColormap = m_mainColorMaps->GetRandomColorMapPtr(COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES);
+    star.dominantLowColormap = m_lowColorMaps->GetRandomColorMapPtr(COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES);
+    star.currentMainColorMap = m_mainColorMaps->GetRandomColorMapPtr(COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES);
+    star.currentLowColorMap = m_lowColorMaps->GetRandomColorMapPtr(COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES);
   }
   else
   {
@@ -670,22 +627,22 @@ auto FlyingStarsFx::FlyingStarsImpl::UpdateAngleColorMapNames() noexcept -> void
 auto FlyingStarsFx::FlyingStarsImpl::GetDominantMainColorMapPtr(const float angle) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return std::const_pointer_cast<const IColorMap>(m_mainColorMaps->GetRandomColorMapPtr(
-      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES));
+  return m_mainColorMaps->GetRandomColorMapPtr(
+      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES);
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetDominantLowColorMapPtr(const float angle) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return std::const_pointer_cast<const IColorMap>(m_lowColorMaps->GetRandomColorMapPtr(
-      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES));
+  return m_lowColorMaps->GetRandomColorMapPtr(
+      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES);
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetCurrentMainColorMapPtr(const float angle) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return std::const_pointer_cast<const IColorMap>(m_mainColorMaps->GetRandomColorMapPtr(
-      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES));
+  return m_mainColorMaps->GetRandomColorMapPtr(
+      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES);
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetCurrentLowColorMapPtr(const float angle) const noexcept
@@ -1016,8 +973,6 @@ auto FlyingStarsFx::FlyingStarsImpl::AddStarBombs(const StarModeParams& starMode
 
   for (size_t i = 0; i < maxStarsInBomb; ++i)
   {
-    m_colorMapsManager.ChangeColorMapNow(m_mainColorMapID);
-    m_colorMapsManager.ChangeColorMapNow(m_lowColorMapID);
     AddABomb(starModeParams.pos, starModeParams.radius, starModeParams.vage, gravity, sideWind);
   }
 }

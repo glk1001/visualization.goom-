@@ -21,8 +21,7 @@ public:
   {
     ~ColorMapInfo() noexcept;
     std::shared_ptr<const RandomColorMaps> colorMaps{};
-    COLOR_DATA::ColorMapName colorMapNameToUse{COLOR_DATA::ColorMapName::_NULL};
-    std::set<RandomColorMaps::ColorMapTypes> typesToUse{};
+    std::set<RandomColorMaps::ColorMapTypes> colorMapTypes{};
   };
   // NOLINTEND
 
@@ -46,7 +45,6 @@ public:
   [[nodiscard]] auto AddColorMapInfo(const ColorMapInfo& info) noexcept -> ColorMapId;
 
   auto UpdateColorMapInfo(ColorMapId id, const ColorMapInfo& info) noexcept -> void;
-  auto UpdateColorMapName(ColorMapId id, COLOR_DATA::ColorMapName colorMapName) noexcept -> void;
 
   auto ChangeAllColorMapsNow() noexcept -> void;
   auto ChangeColorMapNow(ColorMapId id) noexcept -> void;

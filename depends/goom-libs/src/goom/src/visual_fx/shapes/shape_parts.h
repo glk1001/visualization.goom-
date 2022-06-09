@@ -126,11 +126,8 @@ private:
   struct ColorInfo
   {
     std::shared_ptr<COLOR::RandomColorMaps> mainColorMaps;
-    COLOR::COLOR_DATA::ColorMapName mainColormapName;
     std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps;
-    COLOR::COLOR_DATA::ColorMapName lowColormapName;
     std::shared_ptr<COLOR::RandomColorMaps> innerColorMaps;
-    COLOR::COLOR_DATA::ColorMapName innerColormapName;
     float innerColorMix;
   };
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;

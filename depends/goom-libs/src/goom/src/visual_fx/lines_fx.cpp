@@ -343,9 +343,8 @@ void LinesFx::LinesImpl::Start()
 void LinesFx::LinesImpl::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
-  m_colorMapsManager.UpdateColorMapInfo(
-      m_currentColorMapID,
-      {m_colorMaps, ColorMapName::_NULL, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_colorMapsManager.UpdateColorMapInfo(m_currentColorMapID,
+                                        {m_colorMaps, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }
 
 inline void LinesFx::LinesImpl::UpdateColorInfo()
