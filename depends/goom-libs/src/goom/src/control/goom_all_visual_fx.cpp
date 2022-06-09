@@ -301,8 +301,8 @@ void GoomAllVisualFx::ChangeLineColorMaps()
 {
   m_visualFxColorMaps.SetNextColorMapSet();
 
-  m_goomLine1->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::LINES1));
-  m_goomLine2->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMap(GoomEffect::LINES2));
+  m_goomLine1->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMaps(GoomEffect::LINES1));
+  m_goomLine2->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMaps(GoomEffect::LINES2));
 }
 
 auto GoomAllVisualFx::GetZoomFilterFxNameValueParams() const -> NameValuePairs

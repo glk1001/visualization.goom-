@@ -228,29 +228,29 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
   m_visualFxColorMaps.SetNextColorMapSet();
 
   m_drawablesMap.at(GoomDrawables::CIRCLES)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMap(GoomEffect::CIRCLES),
-                              m_visualFxColorMaps.GetColorMap(GoomEffect::CIRCLES_LOW)});
+      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMaps(GoomEffect::CIRCLES),
+                              m_visualFxColorMaps.GetColorMaps(GoomEffect::CIRCLES_LOW)});
 
   ChangeDotsColorMaps();
 
   m_drawablesMap.at(GoomDrawables::IFS)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMap(GoomEffect::IFS)});
+      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMaps(GoomEffect::IFS)});
 
   m_drawablesMap.at(GoomDrawables::IMAGE)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMap(GoomEffect::IMAGE)});
+      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMaps(GoomEffect::IMAGE)});
 
   ChangeShapesColorMaps();
 
   m_drawablesMap.at(GoomDrawables::STARS)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMap(GoomEffect::STARS),
-                              m_visualFxColorMaps.GetColorMap(GoomEffect::STARS_LOW)});
+      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMaps(GoomEffect::STARS),
+                              m_visualFxColorMaps.GetColorMaps(GoomEffect::STARS_LOW)});
 
   m_drawablesMap.at(GoomDrawables::TENTACLES)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMap(GoomEffect::TENTACLES)});
+      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMaps(GoomEffect::TENTACLES)});
 
   m_drawablesMap.at(GoomDrawables::TUBES)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMap(GoomEffect::TUBE),
-                              m_visualFxColorMaps.GetColorMap(GoomEffect::TUBE_LOW)});
+      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMaps(GoomEffect::TUBE),
+                              m_visualFxColorMaps.GetColorMaps(GoomEffect::TUBE_LOW)});
 }
 
 inline auto AllStandardVisualFx::ChangeDotsColorMaps() -> void
@@ -261,7 +261,7 @@ inline auto AllStandardVisualFx::ChangeDotsColorMaps() -> void
   {
     const auto dotEffect = static_cast<GoomEffect>(i + static_cast<uint32_t>(GoomEffect::DOTS0));
     m_drawablesMap.at(GoomDrawables::DOTS)
-        ->SetWeightedColorMaps({i, m_visualFxColorMaps.GetColorMap(dotEffect)});
+        ->SetWeightedColorMaps({i, m_visualFxColorMaps.GetColorMaps(dotEffect)});
   }
 }
 
@@ -280,9 +280,9 @@ inline auto AllStandardVisualFx::ChangeShapesColorMaps() -> void
         static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES0_INNER) + offsetFromZero);
 
     m_drawablesMap.at(GoomDrawables::SHAPES)
-        ->SetWeightedColorMaps({i, m_visualFxColorMaps.GetColorMap(goomEffectMain),
-                                m_visualFxColorMaps.GetColorMap(goomEffectLow),
-                                m_visualFxColorMaps.GetColorMap(goomEffectInner)});
+        ->SetWeightedColorMaps({i, m_visualFxColorMaps.GetColorMaps(goomEffectMain),
+                                m_visualFxColorMaps.GetColorMaps(goomEffectLow),
+                                m_visualFxColorMaps.GetColorMaps(goomEffectInner)});
   }
 }
 
