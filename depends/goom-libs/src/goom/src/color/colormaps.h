@@ -8,6 +8,15 @@
 #include <memory>
 #include <utility>
 
+#ifndef NO_MAGIC_ENUM_AVAILABLE
+template<>
+struct magic_enum::customize::enum_range<GOOM::COLOR::COLOR_DATA::ColorMapName>
+{
+  inline static constexpr int min = -1;
+  inline static constexpr int max = GOOM::UTILS::NUM<GOOM::COLOR::COLOR_DATA::ColorMapName> - 1;
+};
+#endif
+
 namespace GOOM::COLOR
 {
 
