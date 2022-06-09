@@ -16,11 +16,10 @@ class RandomColorMaps : public ColorMaps
 public:
   explicit RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  [[nodiscard]] auto GetRandomColorMapName() const -> COLOR_DATA::ColorMapName;
-  [[nodiscard]] auto GetRandomColorMapName(ColorMapGroup cmg) const -> COLOR_DATA::ColorMapName;
+  [[nodiscard]] virtual auto GetRandomColorMapName() const -> COLOR_DATA::ColorMapName;
 
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
-  [[nodiscard]] auto GetRandomColorMap(ColorMapGroup cmg) const -> const IColorMap&;
+  [[nodiscard]] auto GetRandomColorMap(ColorMapGroup colorMapGroup) const -> const IColorMap&;
 
   enum class ColorMapTypes
   {
@@ -75,6 +74,10 @@ public:
 
   [[nodiscard]] auto GetRandomColor(const IColorMap& colorMap, float t0, float t1) const -> Pixel;
 
+protected:
+  [[nodiscard]] auto GetRandomColorMapName(ColorMapGroup colorMapGroup) const
+      -> COLOR_DATA::ColorMapName;
+
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   static constexpr float MIN_ROTATION_POINT = 0.1F;
@@ -99,6 +102,7 @@ public:
                     const UTILS::MATH::Weights<ColorMapGroup>& weights);
 
   [[nodiscard]] auto GetRandomGroup() const -> ColorMapGroup override;
+  [[nodiscard]] auto GetRandomColorMapName() const -> COLOR_DATA::ColorMapName override;
 
 private:
   UTILS::MATH::Weights<ColorMapGroup> m_weights;

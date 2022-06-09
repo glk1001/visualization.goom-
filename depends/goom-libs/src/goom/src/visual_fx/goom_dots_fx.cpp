@@ -313,11 +313,10 @@ auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
   const uint32_t dotNum = weightedColorMaps.id;
 
   m_colorMaps.at(dotNum) = weightedColorMaps.mainColorMaps;
-  m_colorMapsManager.UpdateColorMapInfo(
-      m_colorMapIds.at(dotNum),
-      {m_colorMaps.at(dotNum),
-       m_colorMaps.at(dotNum)->GetRandomColorMapName(m_colorMaps.at(dotNum)->GetRandomGroup()),
-       RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  m_colorMapsManager.UpdateColorMapInfo(m_colorMapIds.at(dotNum),
+                                        {m_colorMaps.at(dotNum),
+                                         m_colorMaps.at(dotNum)->GetRandomColorMapName(),
+                                         RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::SetSingleBufferDots(const bool val) noexcept -> void

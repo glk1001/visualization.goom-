@@ -27,10 +27,10 @@ auto RandomColorMaps::GetRandomColorMapName() const -> COLOR_DATA::ColorMapName
   return static_cast<ColorMapName>(m_goomRand.GetRandInRange(0U, GetNumColorMapNames()));
 }
 
-auto RandomColorMaps::GetRandomColorMapName(const ColorMapGroup cmg) const
+auto RandomColorMaps::GetRandomColorMapName(const ColorMapGroup colorMapGroup) const
     -> COLOR_DATA::ColorMapName
 {
-  const ColorMapNames& colorMapNames = GetColorMapNames(cmg);
+  const ColorMapNames& colorMapNames = GetColorMapNames(colorMapGroup);
   return colorMapNames[m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(colorMapNames.size()))];
 }
 
@@ -39,9 +39,9 @@ auto RandomColorMaps::GetRandomColorMap() const -> const IColorMap&
   return GetColorMap(GetRandomColorMapName());
 }
 
-auto RandomColorMaps::GetRandomColorMap(const ColorMapGroup cmg) const -> const IColorMap&
+auto RandomColorMaps::GetRandomColorMap(const ColorMapGroup colorMapGroup) const -> const IColorMap&
 {
-  return GetColorMap(GetRandomColorMapName(cmg));
+  return GetColorMap(GetRandomColorMapName(colorMapGroup));
 }
 
 auto RandomColorMaps::GetRandomColorMapPtr(const std::set<ColorMapTypes>& types) const
@@ -275,6 +275,11 @@ auto WeightedColorMaps::GetRandomGroup() const -> ColorMapGroup
   }
 
   return m_weights.GetRandomWeighted();
+}
+
+auto WeightedColorMaps::GetRandomColorMapName() const -> COLOR_DATA::ColorMapName
+{
+  return RandomColorMaps::GetRandomColorMapName(GetRandomGroup());
 }
 
 auto GetAllMapsUnweighted(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>

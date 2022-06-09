@@ -262,8 +262,7 @@ auto ShapePart::SetWeightedMainColorMaps(
     const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept -> void
 {
   m_colorInfo.mainColorMaps = weightedMaps;
-  m_colorInfo.mainColormapName =
-      weightedMaps->GetRandomColorMapName(weightedMaps->GetRandomGroup());
+  m_colorInfo.mainColormapName = weightedMaps->GetRandomColorMapName();
 
   std::for_each(begin(m_shapePaths), end(m_shapePaths),
                 [this](const ShapePath& shapePath) { shapePath.UpdateMainColorInfo(*this); });
@@ -273,7 +272,7 @@ auto ShapePart::SetWeightedLowColorMaps(
     const std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept -> void
 {
   m_colorInfo.lowColorMaps = weightedMaps;
-  m_colorInfo.lowColormapName = weightedMaps->GetRandomColorMapName(weightedMaps->GetRandomGroup());
+  m_colorInfo.lowColormapName = weightedMaps->GetRandomColorMapName();
 
   std::for_each(begin(m_shapePaths), end(m_shapePaths),
                 [this](const ShapePath& shapePath) { shapePath.UpdateLowColorInfo(*this); });
@@ -286,8 +285,7 @@ auto ShapePart::SetWeightedInnerColorMaps(
       m_goomRand.GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);
 
   m_colorInfo.innerColorMaps = weightedMaps;
-  m_colorInfo.innerColormapName =
-      weightedMaps->GetRandomColorMapName(weightedMaps->GetRandomGroup());
+  m_colorInfo.innerColormapName = weightedMaps->GetRandomColorMapName();
 
   std::for_each(begin(m_shapePaths), end(m_shapePaths),
                 [this](const ShapePath& shapePath) { shapePath.UpdateInnerColorInfo(*this); });
@@ -299,9 +297,7 @@ auto ShapePart::UpdateMainColorMapId(
   const std::shared_ptr<COLOR::RandomColorMaps>& mainColorMaps = m_colorInfo.mainColorMaps;
 
   const COLOR::COLOR_DATA::ColorMapName colormapName =
-      not m_useRandomColorNames
-          ? m_colorInfo.mainColormapName
-          : mainColorMaps->GetRandomColorMapName(mainColorMaps->GetRandomGroup());
+      m_useRandomColorNames ? mainColorMaps->GetRandomColorMapName() : m_colorInfo.mainColormapName;
 
   m_colorMapsManager.UpdateColorMapInfo(mainColorMapId,
                                         {mainColorMaps, colormapName, COLOR_MAP_TYPES});
@@ -313,9 +309,7 @@ auto ShapePart::UpdateLowColorMapId(
   const std::shared_ptr<COLOR::RandomColorMaps>& lowColorMaps = m_colorInfo.lowColorMaps;
 
   const COLOR::COLOR_DATA::ColorMapName colormapName =
-      not m_useRandomColorNames
-          ? m_colorInfo.lowColormapName
-          : lowColorMaps->GetRandomColorMapName(lowColorMaps->GetRandomGroup());
+      m_useRandomColorNames ? lowColorMaps->GetRandomColorMapName() : m_colorInfo.lowColormapName;
 
   m_colorMapsManager.UpdateColorMapInfo(lowColorMapId,
                                         {lowColorMaps, colormapName, COLOR_MAP_TYPES});
@@ -326,10 +320,9 @@ auto ShapePart::UpdateInnerColorMapId(
 {
   const std::shared_ptr<COLOR::RandomColorMaps>& innerColorMaps = m_colorInfo.innerColorMaps;
 
-  const COLOR::COLOR_DATA::ColorMapName colormapName =
-      not m_useRandomColorNames
-          ? m_colorInfo.innerColormapName
-          : innerColorMaps->GetRandomColorMapName(innerColorMaps->GetRandomGroup());
+  const COLOR::COLOR_DATA::ColorMapName colormapName = m_useRandomColorNames
+                                                           ? innerColorMaps->GetRandomColorMapName()
+                                                           : m_colorInfo.innerColormapName;
 
   m_colorMapsManager.UpdateColorMapInfo(innerColorMapId,
                                         {innerColorMaps, colormapName, COLOR_MAP_TYPES});

@@ -28,7 +28,8 @@ auto RandomColorMapsManager::AddColorMapInfo(
     const RandomColorMapsManager::ColorMapInfo& info) noexcept -> ColorMapId
 {
   m_infoList.emplace_back(info);
-  m_colorMaps.emplace_back(info.colorMaps->GetRandomColorMapPtr(info.colorMapName, info.types));
+  m_colorMapPtrs.emplace_back(
+      info.colorMaps->GetRandomColorMapPtr(info.colorMapNameToUse, info.typesToUse));
 
   return ColorMapId{static_cast<int32_t>(m_infoList.size() - 1)};
 }
@@ -37,19 +38,21 @@ auto RandomColorMapsManager::UpdateColorMapInfo(const ColorMapId id,
                                                 const ColorMapInfo& info) noexcept -> void
 {
   m_infoList.at(id()) = info;
-  m_colorMaps.at(id()) = info.colorMaps->GetRandomColorMapPtr(info.colorMapName, info.types);
+  m_colorMapPtrs.at(id()) =
+      info.colorMaps->GetRandomColorMapPtr(info.colorMapNameToUse, info.typesToUse);
 }
 
 auto RandomColorMapsManager::UpdateColorMapName(
     const ColorMapId id, const COLOR_DATA::ColorMapName colorMapName) noexcept -> void
 {
-  m_infoList.at(id()).colorMapName = colorMapName;
+  m_infoList.at(id()).colorMapNameToUse = colorMapName;
 }
 
 auto RandomColorMapsManager::RandomizeColorMaps(const size_t id) noexcept -> void
 {
   const ColorMapInfo& info = m_infoList.at(id);
-  m_colorMaps.at(id) = info.colorMaps->GetRandomColorMapPtr(info.colorMapName, info.types);
+  m_colorMapPtrs.at(id) =
+      info.colorMaps->GetRandomColorMapPtr(info.colorMapNameToUse, info.typesToUse);
 }
 
 } // namespace GOOM::COLOR

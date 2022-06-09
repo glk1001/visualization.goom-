@@ -619,23 +619,18 @@ inline auto FlyingStarsFx::FlyingStarsImpl::ChangeColorMaps() noexcept -> void
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetNextMainColorMapName() const noexcept -> ColorMapName
 {
-  return m_megaColorMode
-             ? ColorMapName::_NULL
-             : m_mainColorMaps->GetRandomColorMapName(m_mainColorMaps->GetRandomGroup());
+  return m_megaColorMode ? ColorMapName::_NULL : m_mainColorMaps->GetRandomColorMapName();
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetNextLowColorMapName() const noexcept -> ColorMapName
 {
-  return m_megaColorMode ? ColorMapName::_NULL
-                         : m_lowColorMaps->GetRandomColorMapName(m_lowColorMaps->GetRandomGroup());
+  return m_megaColorMode ? ColorMapName::_NULL : m_lowColorMaps->GetRandomColorMapName();
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetNextAngleColorMapName() const noexcept
     -> ColorMapName
 {
-  return m_megaColorMode
-             ? m_mainColorMaps->GetRandomColorMapName()
-             : m_mainColorMaps->GetRandomColorMapName(m_mainColorMaps->GetRandomGroup());
+  return m_megaColorMode ? ColorMapName::_NULL : m_mainColorMaps->GetRandomColorMapName();
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::UpdateStarColorMaps(const float angle,
@@ -675,29 +670,29 @@ auto FlyingStarsFx::FlyingStarsImpl::UpdateAngleColorMapNames() noexcept -> void
 auto FlyingStarsFx::FlyingStarsImpl::GetDominantMainColorMapPtr(const float angle) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return std::const_pointer_cast<const IColorMap>(
-      m_mainColorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
+  return std::const_pointer_cast<const IColorMap>(m_mainColorMaps->GetRandomColorMapPtr(
+      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetDominantLowColorMapPtr(const float angle) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return std::const_pointer_cast<const IColorMap>(
-      m_mainColorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
+  return std::const_pointer_cast<const IColorMap>(m_lowColorMaps->GetRandomColorMapPtr(
+      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetCurrentMainColorMapPtr(const float angle) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return std::const_pointer_cast<const IColorMap>(
-      m_mainColorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
+  return std::const_pointer_cast<const IColorMap>(m_mainColorMaps->GetRandomColorMapPtr(
+      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetCurrentLowColorMapPtr(const float angle) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return std::const_pointer_cast<const IColorMap>(
-      m_mainColorMaps->GetColorMapPtr(m_angleColorMapName.at(GetSegmentNum(angle))));
+  return std::const_pointer_cast<const IColorMap>(m_lowColorMaps->GetRandomColorMapPtr(
+      m_angleColorMapName.at(GetSegmentNum(angle)), COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES));
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetSegmentNum(const float angle) noexcept -> size_t
@@ -750,8 +745,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetMixedColors(const Star& star,
   return GetFinalMixedColors(starColorSet, t, brightness);
 }
 
-auto FlyingStarsFx::FlyingStarsImpl::GetMixColors(const Star& star,
-                                                  const float t) const noexcept
+auto FlyingStarsFx::FlyingStarsImpl::GetMixColors(const Star& star, const float t) const noexcept
     -> StarColorSet
 {
   return {star.currentMainColorMap->GetColor(t), star.currentLowColorMap->GetColor(t),

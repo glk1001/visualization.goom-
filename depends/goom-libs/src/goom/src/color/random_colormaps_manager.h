@@ -21,8 +21,8 @@ public:
   {
     ~ColorMapInfo() noexcept;
     std::shared_ptr<const RandomColorMaps> colorMaps{};
-    COLOR_DATA::ColorMapName colorMapName{COLOR_DATA::ColorMapName::_NULL};
-    std::set<RandomColorMaps::ColorMapTypes> types{};
+    COLOR_DATA::ColorMapName colorMapNameToUse{COLOR_DATA::ColorMapName::_NULL};
+    std::set<RandomColorMaps::ColorMapTypes> typesToUse{};
   };
   // NOLINTEND
 
@@ -57,7 +57,7 @@ public:
 
 private:
   std::vector<ColorMapInfo> m_infoList{};
-  std::vector<std::shared_ptr<const IColorMap>> m_colorMaps{};
+  std::vector<std::shared_ptr<const IColorMap>> m_colorMapPtrs{};
   auto RandomizeColorMaps(size_t id) noexcept -> void;
 };
 
@@ -80,13 +80,13 @@ inline auto RandomColorMapsManager::ColorMapId::IsSet() const noexcept -> bool
 inline auto RandomColorMapsManager::GetColorMap(const ColorMapId id) const noexcept
     -> const IColorMap&
 {
-  return *m_colorMaps.at(id());
+  return *m_colorMapPtrs.at(id());
 }
 
 inline auto RandomColorMapsManager::GetColorMapPtr(const ColorMapId id) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return m_colorMaps.at(id());
+  return m_colorMapPtrs.at(id());
 }
 
 inline auto RandomColorMapsManager::ChangeAllColorMapsNow() noexcept -> void
