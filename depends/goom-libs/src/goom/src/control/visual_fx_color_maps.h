@@ -42,8 +42,12 @@ enum class GoomEffect
   SHAPES2_LOW,
   SHAPES2_INNER,
    **/
-  STARS,
-  STARS_LOW,
+  STARS_MAIN_FIREWORKS,
+  STARS_LOW_FIREWORKS,
+  STARS_MAIN_RAIN,
+  STARS_LOW_RAIN,
+  STARS_MAIN_FOUNTAIN,
+  STARS_LOW_FOUNTAIN,
   TENTACLES,
   TUBE,
   TUBE_LOW,
@@ -56,6 +60,10 @@ static inline constexpr auto EXPECTED_NUM_SHAPES =
     1 + ((static_cast<uint32_t>(GoomEffect::SHAPES0_MAIN) -
           static_cast<uint32_t>(GoomEffect::SHAPES0_MAIN)) /
          3);
+static inline constexpr auto EXPECTED_NUM_STAR_MODES =
+    1 + ((static_cast<uint32_t>(GoomEffect::STARS_LOW_FOUNTAIN) -
+          static_cast<uint32_t>(GoomEffect::STARS_MAIN_FIREWORKS)) /
+         2);
 
 class VisualFxColorMaps
 {
@@ -64,7 +72,7 @@ public:
 
   auto SetNextColorMapSet() -> void;
 
-  [[nodiscard]] auto GetColorMaps(const GoomEffect goomEffect) const
+  [[nodiscard]] auto GetColorMaps(GoomEffect goomEffect) const
       -> std::shared_ptr<COLOR::RandomColorMaps>;
 
 private:
@@ -105,7 +113,8 @@ private:
   [[nodiscard]] auto GetNextColorMatchedSet() const -> const ColorMatchedSet&;
   const ColorMatchedSet* m_currentColorMatchedSet{&GetNextColorMatchedSet()};
 
-  [[nodiscard]] static auto GetOneGroupColorMatchedSet(const ColorMapsFunc& func) -> ColorMatchedSet;
+  [[nodiscard]] static auto GetOneGroupColorMatchedSet(const ColorMapsFunc& func)
+      -> ColorMatchedSet;
   [[nodiscard]] auto GetTwoGroupsColorMatchedSet(const ColorMapsFunc& func1,
                                                  const ColorMapsFunc& func2) const
       -> ColorMatchedSet;

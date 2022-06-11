@@ -21,6 +21,7 @@ class Colorizer
 public:
   explicit Colorizer(const UTILS::MATH::IGoomRand& goomRand);
 
+  [[nodiscard]] auto GetWeightedColorMaps() const -> const std::shared_ptr<COLOR::RandomColorMaps>&;
   auto SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedColorMaps)
       -> void;
 
@@ -97,6 +98,12 @@ inline auto Colorizer::SetMaxHitCount(const uint32_t val) -> void
 {
   m_maxHitCount = val;
   m_logMaxHitCount = std::log(static_cast<float>(m_maxHitCount));
+}
+
+inline auto Colorizer::GetWeightedColorMaps() const
+    -> const std::shared_ptr<COLOR::RandomColorMaps>&
+{
+  return m_colorMaps;
 }
 
 } // namespace GOOM::VISUAL_FX::IFS

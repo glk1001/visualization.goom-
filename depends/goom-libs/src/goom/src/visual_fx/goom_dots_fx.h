@@ -4,6 +4,8 @@
 #include "goom_visual_fx.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace GOOM
 {
@@ -40,6 +42,8 @@ public:
   static constexpr uint32_t NUM_DOT_TYPES = 5;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
   auto SetSingleBufferDots(bool val) noexcept -> void;
+
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
 
   auto ApplySingle() noexcept -> void override;
   auto ApplyMultiple() noexcept -> void override;

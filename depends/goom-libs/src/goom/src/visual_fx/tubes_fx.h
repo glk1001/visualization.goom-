@@ -4,6 +4,8 @@
 #include "goom_visual_fx.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace GOOM
 {
@@ -39,6 +41,8 @@ public:
 
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void override;
+
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
 
   auto ApplyMultiple() noexcept -> void override;
 

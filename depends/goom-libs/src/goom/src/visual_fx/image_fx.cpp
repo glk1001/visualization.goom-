@@ -92,6 +92,7 @@ public:
               const FxHelper& fxHelper,
               const std::string& resourcesDirectory) noexcept;
 
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
   auto Start() -> void;
@@ -167,6 +168,11 @@ auto ImageFx::GetFxName() const noexcept -> std::string
   return "image";
 }
 
+auto ImageFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
+}
+
 auto ImageFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
   m_pimpl->SetWeightedColorMaps(weightedColorMaps);
@@ -207,6 +213,12 @@ inline auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
 {
   Expects(m_colorMaps != nullptr);
   return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
+}
+
+inline auto ImageFx::ImageFxImpl::GetCurrentColorMapsNames() const noexcept
+    -> std::vector<std::string>
+{
+  return {m_colorMaps->GetColorMapsName()};
 }
 
 inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(

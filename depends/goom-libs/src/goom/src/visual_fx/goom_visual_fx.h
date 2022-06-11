@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <string>
+#include <vector>
 
 namespace GOOM
 {
@@ -39,6 +41,8 @@ public:
   virtual auto SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint) noexcept
       -> void{/* default does nothing */};
 
+  [[nodiscard]] virtual auto GetCurrentColorMapsNames() const noexcept
+      -> std::vector<std::string> = 0;
   struct WeightedColorMaps
   {
     uint32_t id{};

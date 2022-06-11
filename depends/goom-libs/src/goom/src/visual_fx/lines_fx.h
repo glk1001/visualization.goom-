@@ -5,6 +5,8 @@
 #include "sound_info.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace GOOM
 {
@@ -49,6 +51,7 @@ public:
   [[nodiscard]] auto GetFxName() const noexcept -> std::string;
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
   auto Start() noexcept -> void;
   auto Finish() noexcept -> void;

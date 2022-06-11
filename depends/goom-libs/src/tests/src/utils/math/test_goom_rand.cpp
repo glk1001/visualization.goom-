@@ -183,6 +183,7 @@ TEST_CASE("Weighted Events Corner Cases")
   }
 }
 
+/*** Catch2 can't catch 'assert' calls.
 TEST_CASE("Weighted Events Exceptions")
 {
   const GoomRand goomRand{};
@@ -250,5 +251,6 @@ TEST_CASE("Conditional Weighted Events Exceptions")
                               .GetSumOfWeights(GIVEN_EVENT) == 0.0F,
                       "Sum of weights is zero.");
 }
+***/
 
 } // namespace GOOM::UNIT_TESTS

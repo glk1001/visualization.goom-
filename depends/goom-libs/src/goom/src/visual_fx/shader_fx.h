@@ -31,6 +31,11 @@ public:
 
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override
+  {
+    return {};
+  }
+
 private:
   class ShaderFxImpl;
   spimpl::unique_impl_ptr<ShaderFxImpl> m_pimpl;

@@ -9,7 +9,7 @@
 #include <cassert>
 #define Expects(cond) assert(cond)
 #define Ensures(cond) assert(cond)
-#define FailFast() assert(false)
+#define FailFast() assert(false) // NOLINT
 
 namespace GOOM
 {

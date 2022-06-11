@@ -82,6 +82,7 @@ public:
             float destParam,
             const Pixel& destColor);
 
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
 
   void Start();
@@ -188,6 +189,11 @@ LinesFx::LinesFx(const FxHelper& fxHelper,
 auto LinesFx::GetFxName() const noexcept -> std::string
 {
   return "lines";
+}
+
+auto LinesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
 }
 
 void LinesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
@@ -338,6 +344,11 @@ void LinesFx::LinesImpl::Start()
   m_srcePoints = GetFreshLine(m_srceLineType, m_srceParam);
   m_srcePointsCopy = m_srcePoints;
   ResetDestLine(m_destLineType, m_destParam, 1.0F, m_destColor);
+}
+
+auto LinesFx::LinesImpl::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return {m_colorMaps->GetColorMapsName()};
 }
 
 void LinesFx::LinesImpl::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)

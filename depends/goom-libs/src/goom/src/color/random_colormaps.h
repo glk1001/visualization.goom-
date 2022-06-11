@@ -14,10 +14,12 @@ namespace GOOM::COLOR
 class RandomColorMaps : public ColorMaps
 {
 public:
-  explicit RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
+                  const std::string& colorMapsName = "") noexcept;
+
+  [[nodiscard]] auto GetColorMapsName() const noexcept -> const std::string&;
 
   [[nodiscard]] virtual auto GetRandomColorMapName() const -> COLOR_DATA::ColorMapName;
-
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
   [[nodiscard]] auto GetRandomColorMap(ColorMapGroup colorMapGroup) const -> const IColorMap&;
 
@@ -80,6 +82,7 @@ protected:
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
+  const std::string m_colorMapsName;
   static constexpr float MIN_ROTATION_POINT = 0.1F;
   static constexpr float MAX_ROTATION_POINT = 0.9F;
   float m_minRotationPoint = MIN_ROTATION_POINT;
@@ -99,7 +102,8 @@ class WeightedColorMaps : public RandomColorMaps
 {
 public:
   WeightedColorMaps(const UTILS::MATH::IGoomRand& goomRand,
-                    const UTILS::MATH::Weights<ColorMapGroup>& weights);
+                    const UTILS::MATH::Weights<ColorMapGroup>& weights,
+                    const std::string& colorMapsName = "");
 
   [[nodiscard]] auto GetRandomGroup() const -> ColorMapGroup override;
   [[nodiscard]] auto GetRandomColorMapName() const -> COLOR_DATA::ColorMapName override;
@@ -146,9 +150,15 @@ auto GetDivergingBlackStandardMaps(const UTILS::MATH::IGoomRand& goomRand)
     -> std::shared_ptr<RandomColorMaps>;
 auto GetWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>;
 
-inline RandomColorMaps::RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand}
+inline RandomColorMaps::RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
+                                        const std::string& colorMapsName) noexcept
+  : m_goomRand{goomRand}, m_colorMapsName{colorMapsName}
 {
+}
+
+inline auto RandomColorMaps::GetColorMapsName() const noexcept -> const std::string&
+{
+  return m_colorMapsName;
 }
 
 } // namespace GOOM::COLOR

@@ -29,6 +29,7 @@ class CirclesFx::CirclesFxImpl
 public:
   CirclesFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
 
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
   void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
@@ -48,6 +49,11 @@ private:
 CirclesFx::CirclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
   : m_pimpl{spimpl::make_unique_impl<CirclesFxImpl>(fxHelper, smallBitmaps)}
 {
+}
+
+auto CirclesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
 }
 
 auto CirclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
@@ -132,6 +138,12 @@ auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets(const Point2dInt& screenMi
   circleCentreTargets[4] = {SMALL_FRAC * width, LARGE_FRAC * height};
 
   return circleCentreTargets;
+}
+
+inline auto CirclesFx::CirclesFxImpl::GetCurrentColorMapsNames() const noexcept
+    -> std::vector<std::string>
+{
+  return {};
 }
 
 inline auto CirclesFx::CirclesFxImpl::SetWeightedColorMaps(

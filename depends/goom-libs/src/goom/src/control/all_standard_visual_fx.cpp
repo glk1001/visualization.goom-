@@ -2,10 +2,12 @@
 
 #include "goom_plugin_info.h"
 #include "point2d.h"
+#include "utils/enumutils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/parallel_utils.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/circles_fx.h"
+#include "visual_fx/flying_stars/star_types.h"
 #include "visual_fx/flying_stars_fx.h"
 #include "visual_fx/fx_helper.h"
 #include "visual_fx/goom_dots_fx.h"
@@ -23,6 +25,7 @@ namespace GOOM::CONTROL
 {
 
 using CONTROL::GoomDrawables;
+using UTILS::NUM;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -36,6 +39,7 @@ using VISUAL_FX::ShaderFx;
 using VISUAL_FX::ShapesFx;
 using VISUAL_FX::TentaclesFx;
 using VISUAL_FX::TubesFx;
+using VISUAL_FX::FLYING_STARS::StarTypesContainer;
 
 AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
                                          const FxHelper& fxHelper,
@@ -170,6 +174,21 @@ auto AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawabl
                 });
 }
 
+auto AllStandardVisualFx::GetActiveColorMapsNames() const -> std::unordered_set<std::string>
+{
+  std::unordered_set<std::string> activeColorMapsNames{};
+
+  for (const auto& [drawable, visualFx] : m_drawablesMap)
+  {
+    for (const auto& colorMapsName : visualFx->GetCurrentColorMapsNames())
+    {
+      activeColorMapsNames.emplace(colorMapsName);
+    }
+  }
+
+  return activeColorMapsNames;
+}
+
 auto AllStandardVisualFx::ApplyCurrentStateToSingleBuffer() -> void
 {
   std::for_each(begin(m_drawablesMap), end(m_drawablesMap),
@@ -241,9 +260,7 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
 
   ChangeShapesColorMaps();
 
-  m_drawablesMap.at(GoomDrawables::STARS)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMaps(GoomEffect::STARS),
-                              m_visualFxColorMaps.GetColorMaps(GoomEffect::STARS_LOW)});
+  ChangeStarsColorMaps();
 
   m_drawablesMap.at(GoomDrawables::TENTACLES)
       ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetColorMaps(GoomEffect::TENTACLES)});
@@ -283,6 +300,24 @@ inline auto AllStandardVisualFx::ChangeShapesColorMaps() -> void
         ->SetWeightedColorMaps({i, m_visualFxColorMaps.GetColorMaps(goomEffectMain),
                                 m_visualFxColorMaps.GetColorMaps(goomEffectLow),
                                 m_visualFxColorMaps.GetColorMaps(goomEffectInner)});
+  }
+}
+
+inline auto AllStandardVisualFx::ChangeStarsColorMaps() -> void
+{
+  static_assert(StarTypesContainer::NUM_STAR_TYPES == EXPECTED_NUM_STAR_MODES);
+
+  for (uint32_t i = 0; i < StarTypesContainer::NUM_STAR_TYPES; ++i)
+  {
+    const uint32_t offsetFromZero = 3 * i;
+    const auto goomEffectMain = static_cast<GoomEffect>(
+        static_cast<uint32_t>(GoomEffect::STARS_MAIN_FIREWORKS) + offsetFromZero);
+    const auto goomEffectLow = static_cast<GoomEffect>(
+        static_cast<uint32_t>(GoomEffect::STARS_LOW_FIREWORKS) + offsetFromZero);
+
+    m_drawablesMap.at(GoomDrawables::STARS)
+        ->SetWeightedColorMaps({i, m_visualFxColorMaps.GetColorMaps(goomEffectMain),
+                                m_visualFxColorMaps.GetColorMaps(goomEffectLow)});
   }
 }
 

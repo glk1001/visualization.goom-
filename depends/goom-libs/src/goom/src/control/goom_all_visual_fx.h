@@ -129,6 +129,7 @@ public:
   [[nodiscard]] auto GetGoomLine1RandomColor() const -> Pixel;
   [[nodiscard]] auto GetGoomLine2RandomColor() const -> Pixel;
 
+  [[nodiscard]] auto GetCurrentColorMapsNames() const -> std::unordered_set<std::string>;
   [[nodiscard]] auto GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs;
 
 private:

@@ -43,6 +43,7 @@ class TentaclesFx::TentaclesImpl
 public:
   TentaclesImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
 
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
   auto Start() -> void;
@@ -76,6 +77,7 @@ private:
   TentacleDriver* m_currentTentacleDriver;
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
+  std::shared_ptr<RandomColorMaps> m_weightedDominantColorMaps{};
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
   Pixel m_dominantColor{};
   Pixel m_dominantLowColor{};
@@ -100,6 +102,11 @@ TentaclesFx::TentaclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smal
 auto TentaclesFx::GetFxName() const noexcept -> std::string
 {
   return "Tentacles FX";
+}
+
+auto TentaclesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
 }
 
 auto TentaclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
@@ -229,13 +236,20 @@ inline auto TentaclesFx::TentaclesImpl::RefreshTentacles() -> void
   m_currentTentacleDriver->TentaclesColorMapsChanged();
 }
 
-inline auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
+auto TentaclesFx::TentaclesImpl::GetCurrentColorMapsNames() const noexcept
+    -> std::vector<std::string>
+{
+  return {m_weightedDominantColorMaps->GetColorMapsName()};
+}
+
+auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
   Expects(weightedColorMaps.mainColorMaps != nullptr);
 
+  m_weightedDominantColorMaps = weightedColorMaps.mainColorMaps;
   m_dominantColorMap =
-      weightedColorMaps.mainColorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
+      m_weightedDominantColorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
   m_dominantColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   m_dominantDotColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   UpdateDominantColors();
@@ -296,9 +310,10 @@ inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
                                              m_dominantDotColor);
 }
 
-inline auto TentaclesFx::TentaclesImpl::UpdateDominantColors() -> void
+auto TentaclesFx::TentaclesImpl::UpdateDominantColors() -> void
 {
   Expects(m_dominantColorMap != nullptr);
+
   const Pixel newColor =
       RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
   static constexpr float COLOR_MIX_T = 0.70F;

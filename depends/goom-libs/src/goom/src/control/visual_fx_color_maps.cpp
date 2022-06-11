@@ -196,8 +196,12 @@ auto VisualFxColorMaps::GetColorMatchedSet1() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetSeasonsStandardMaps;
   matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
    **/
-  matchedSet.at(ToUType(GoomEffect::STARS)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetSlightlyDivergingStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetMostlySequentialSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetSlightlyDivergingStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetCitiesStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetColdStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetSlightlyDivergingSlimMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE)) = GetSlightlyDivergingStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetSlightlyDivergingSlimMaps;
@@ -231,8 +235,12 @@ auto VisualFxColorMaps::GetColorMatchedSet2() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetSeasonsStandardMaps;
   matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
    **/
-  matchedSet.at(ToUType(GoomEffect::STARS)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetAllSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetAllSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetYellowStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetYellowStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE)) = GetYellowStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetBlueStandardMaps;
@@ -266,8 +274,12 @@ auto VisualFxColorMaps::GetColorMatchedSet3() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetHeatStandardMaps;
   matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetHeatStandardMaps;
    **/
-  matchedSet.at(ToUType(GoomEffect::STARS)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetSlightlyDivergingSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetWesAndersonMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetSeasonsStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetAllSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetPastelStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetMostlySequentialStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE)) = GetMostlySequentialStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetHeatStandardMaps;
@@ -301,8 +313,12 @@ auto VisualFxColorMaps::GetColorMatchedSet4() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetColdStandardMaps;
   matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
   **/
-  matchedSet.at(ToUType(GoomEffect::STARS)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetMostlySequentialStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetMostlySequentialStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetCitiesStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetDivergingBlackStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetAllSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetSeasonsStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetPurpleStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE)) = GetPurpleStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetPastelStandardMaps;
@@ -336,8 +352,12 @@ auto VisualFxColorMaps::GetColorMatchedSet5() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetWesAndersonMaps;
   matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetWesAndersonMaps;
    **/
-  matchedSet.at(ToUType(GoomEffect::STARS)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetMostlySequentialStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetPastelStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetMostlySequentialStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetSlightlyDivergingStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetDivergingBlackStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetRedStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetGreenStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetSeasonsStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE)) = GetSeasonsStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetColdStandardMaps;
@@ -371,8 +391,12 @@ auto VisualFxColorMaps::GetColorMatchedSet6() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetColdStandardMaps;
   matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
    **/
-  matchedSet.at(ToUType(GoomEffect::STARS)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetPastelStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetPastelStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetPurpleStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetSeasonsStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetSeasonsStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE)) = GetSeasonsStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetCitiesStandardMaps;
@@ -406,8 +430,12 @@ auto VisualFxColorMaps::GetColorMatchedSet7() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetColdStandardMaps;
   matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
    **/
-  matchedSet.at(ToUType(GoomEffect::STARS)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetAllMapsUnweighted;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetPastelStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetAllMapsUnweighted;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetHeatStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetMostlySequentialSlimMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetColdStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetColdStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetGreenStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE)) = GetAllMapsUnweighted;
   matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetAllSlimMaps;
@@ -441,8 +469,12 @@ auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
   matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetHeatStandardMaps;
   matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetHeatStandardMaps;
    **/
-  matchedSet.at(ToUType(GoomEffect::STARS)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetBlueStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetRedStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetYellowStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetGreenStandardMaps;
+  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetPurpleStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetYellowStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE)) = GetGreenStandardMaps;
   matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetHeatStandardMaps;

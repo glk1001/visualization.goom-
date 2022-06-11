@@ -4,6 +4,8 @@
 #include "goom_visual_fx.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace GOOM
 {
@@ -25,15 +27,6 @@ class FxHelper;
 class FlyingStarsFx : public IVisualFx
 {
 public:
-  enum class ColorMode
-  {
-    MIX_COLORS,
-    REVERSE_MIX_COLORS,
-    SIMILAR_LOW_COLORS,
-    SINE_MIX_COLORS,
-    _num // unused and must be last
-  };
-
   FlyingStarsFx() noexcept = delete;
   FlyingStarsFx(const FxHelper& fxHelper,
                 const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
@@ -47,6 +40,8 @@ public:
   auto Suspend() noexcept -> void override;
 
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
+  auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void override;
 
   auto ApplyMultiple() noexcept -> void override;
 

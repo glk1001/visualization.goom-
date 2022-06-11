@@ -122,6 +122,7 @@ class TubesFx::TubeFxImpl
 public:
   TubeFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
   void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
@@ -231,6 +232,11 @@ auto TubesFx::GetFxName() const noexcept -> std::string
   return "tube";
 }
 
+auto TubesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
+}
+
 auto TubesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
   m_pimpl->SetWeightedColorMaps(weightedColorMaps);
@@ -310,6 +316,11 @@ inline auto TubesFx::TubeFxImpl::GetImageBitmap(const SmallImageBitmaps::ImageNa
   return m_smallBitmaps.GetImageBitmap(
       imageName,
       std::clamp(size, SmallImageBitmaps::MIN_IMAGE_SIZE, SmallImageBitmaps::MAX_IMAGE_SIZE));
+}
+
+auto TubesFx::TubeFxImpl::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return {m_mainColorMaps->GetColorMapsName(), m_lowColorMaps->GetColorMapsName()};
 }
 
 auto TubesFx::TubeFxImpl::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept

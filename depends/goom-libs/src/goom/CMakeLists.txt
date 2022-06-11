@@ -109,6 +109,9 @@ add_library(goom
         src/visual_fx/circles/circles.cpp
         src/visual_fx/circles/dot_diameters.cpp
         src/visual_fx/circles/dot_paths.cpp
+        src/visual_fx/flying_stars/star_drawer.cpp
+        src/visual_fx/flying_stars/star_types.cpp
+        src/visual_fx/flying_stars/stars.cpp
         src/visual_fx/fx_utils/dot_drawer.cpp
         src/visual_fx/fx_utils/lines.cpp
         src/visual_fx/ifs/colorizer.cpp
@@ -147,7 +150,7 @@ add_library(goom
         src/goom_graphic.cpp
         src/goom_version.cpp
         src/sound_info.cpp
-        src/visual_fx/tubes/tube_data.h src/visual_fx/tubes/tube_data.cpp)
+        )
 
 target_include_directories(goom
         PUBLIC

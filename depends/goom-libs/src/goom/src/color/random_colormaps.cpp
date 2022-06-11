@@ -262,8 +262,9 @@ void RandomColorMaps::SetLightnessLimits(const float minLightness, const float m
 }
 
 WeightedColorMaps::WeightedColorMaps(const IGoomRand& goomRand,
-                                     const Weights<ColorMapGroup>& weights)
-  : RandomColorMaps{goomRand}, m_weights{weights}, m_weightsActive{true}
+                                     const Weights<ColorMapGroup>& weights,
+                                     const std::string& colorMapsName)
+  : RandomColorMaps{goomRand, colorMapsName}, m_weights{weights}, m_weightsActive{true}
 {
 }
 
@@ -284,6 +285,8 @@ auto WeightedColorMaps::GetRandomColorMapName() const -> COLOR_DATA::ColorMapNam
 
 auto GetAllMapsUnweighted(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "AllMapsUnweighted";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -291,13 +294,17 @@ auto GetAllMapsUnweighted(const IGoomRand& goomRand) -> std::shared_ptr<RandomCo
           goomRand,
           {
               {ColorMapGroup::ALL, 1.0F},
-          }}
+          }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetAllStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "AllStandardMaps";
+
   // clang-format off
   static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
   static constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
@@ -322,13 +329,16 @@ auto GetAllStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColo
               {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
               {ColorMapGroup::MISC,                            MISC_WEIGHT},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetAllSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "AllSlimMaps";
+
   // clang-format off
   static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
   static constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
@@ -353,13 +363,16 @@ auto GetAllSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMap
               {ColorMapGroup::QUALITATIVE_SLIM,                     QUALITATIVE_SLIM_WEIGHT},
               {ColorMapGroup::MISC_SLIM,                            MISC_SLIM_WEIGHT},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "MostlySequentialStandardMaps";
+
   // clang-format off
   static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
   static constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
@@ -384,13 +397,16 @@ auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) -> std::shared_p
               {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
               {ColorMapGroup::MISC,                            MISC_WEIGHT},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "MostlySequentialSlimMaps";
+
   // clang-format off
   static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
   static constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
@@ -415,13 +431,16 @@ auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<R
               {ColorMapGroup::QUALITATIVE_SLIM,                     QUALITATIVE_SLIM_WEIGHT},
               {ColorMapGroup::MISC_SLIM,                            MISC_SLIM_WEIGHT},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "SlightlyDivergingStandardMaps";
+
   // clang-format off
   static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 10.0F;
   static constexpr float SEQUENTIAL_WEIGHT                      = 10.0F;
@@ -446,13 +465,16 @@ auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) -> std::shared_
               {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
               {ColorMapGroup::MISC,                            MISC_WEIGHT},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetSlightlyDivergingSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "SlightlyDivergingSlimMaps";
+
   // clang-format off
   static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 10.0F;
   static constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 10.0F;
@@ -477,13 +499,16 @@ auto GetSlightlyDivergingSlimMaps(const IGoomRand& goomRand) -> std::shared_ptr<
               {ColorMapGroup::QUALITATIVE_SLIM,                     QUALITATIVE_SLIM_WEIGHT},
               {ColorMapGroup::MISC_SLIM,                            MISC_SLIM_WEIGHT},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetBlueStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "BlueStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -492,13 +517,16 @@ auto GetBlueStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomCol
           {
               {ColorMapGroup::BLUES, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetRedStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "RedStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -507,13 +535,16 @@ auto GetRedStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColo
           {
               {ColorMapGroup::REDS, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetGreenStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "GreenStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -522,13 +553,16 @@ auto GetGreenStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomCo
           {
               {ColorMapGroup::GREENS, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetYellowStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "YellowStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -537,13 +571,16 @@ auto GetYellowStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
           {
               {ColorMapGroup::YELLOWS, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetOrangeStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "OrangeStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -552,13 +589,16 @@ auto GetOrangeStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
           {
               {ColorMapGroup::ORANGES, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetPurpleStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "PurpleStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -567,13 +607,16 @@ auto GetPurpleStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
           {
               {ColorMapGroup::PURPLES, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetCitiesStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "CitiesStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -582,13 +625,16 @@ auto GetCitiesStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
           {
               {ColorMapGroup::CITIES, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetSeasonsStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "SeasonsStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -597,13 +643,16 @@ auto GetSeasonsStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<Random
           {
               {ColorMapGroup::SEASONS, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetHeatStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "HeatStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -612,13 +661,16 @@ auto GetHeatStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomCol
           {
               {ColorMapGroup::HEAT, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetColdStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "ColdStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -627,13 +679,16 @@ auto GetColdStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomCol
           {
               {ColorMapGroup::COLD, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetPastelStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "PastelStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -642,13 +697,16 @@ auto GetPastelStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomC
           {
               {ColorMapGroup::PASTEL, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "DivergingBlackStandardMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -657,13 +715,16 @@ auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) -> std::shared_ptr
           {
               {ColorMapGroup::DIVERGING_BLACK, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }
 
 auto GetWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) -> std::shared_ptr<RandomColorMaps>
 {
+  static constexpr const char* MAPS_NAME = "WesAndersonMaps";
+
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -672,7 +733,8 @@ auto GetWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) -> std::shared_p
           {
               {ColorMapGroup::WES_ANDERSON, 1.0F},
           }
-      }
+      },
+      MAPS_NAME
   );
   // clang-format on
 }

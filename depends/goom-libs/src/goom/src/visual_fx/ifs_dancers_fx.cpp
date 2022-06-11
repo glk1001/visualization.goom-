@@ -84,6 +84,7 @@ public:
   auto UpdateLowDensityThreshold() -> void;
   auto Refresh() -> void;
 
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto PostStateUpdate(bool wasActiveInPreviousState) -> void;
 
@@ -153,6 +154,11 @@ IfsDancersFx::IfsDancersFx(const FxHelper& fxHelper, const SmallImageBitmaps& sm
 auto IfsDancersFx::GetFxName() const noexcept -> std::string
 {
   return "IFS FX";
+}
+
+auto IfsDancersFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
 }
 
 auto IfsDancersFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
@@ -251,6 +257,12 @@ inline auto IfsDancersFx::IfsDancersFxImpl::InitFractal() -> void
 {
   m_fractal->Init();
   UpdateLowDensityThreshold();
+}
+
+inline auto IfsDancersFx::IfsDancersFxImpl::GetCurrentColorMapsNames() const noexcept
+    -> std::vector<std::string>
+{
+  return {m_colorizer.GetWeightedColorMaps()->GetColorMapsName()};
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(

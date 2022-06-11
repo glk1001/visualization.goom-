@@ -62,6 +62,7 @@ public:
 
   auto Start() -> void;
 
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto SetSingleBufferDots(bool val) noexcept -> void;
 
@@ -123,6 +124,11 @@ private:
 GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
   : m_pimpl{spimpl::make_unique_impl<GoomDotsFxImpl>(fxHelper, smallBitmaps)}
 {
+}
+
+auto GoomDotsFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
 }
 
 auto GoomDotsFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
@@ -303,6 +309,12 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
       *m_dotColorMapsList[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
                                                    RandomColorMaps::ALL_COLOR_MAP_TYPES),
       MIN_MIX_T, MAX_MIX_T);
+}
+
+inline auto GoomDotsFx::GoomDotsFxImpl::GetCurrentColorMapsNames() const noexcept
+    -> std::vector<std::string>
+{
+  return {m_dotColorMapsList.at(0)->GetColorMapsName()};
 }
 
 auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(

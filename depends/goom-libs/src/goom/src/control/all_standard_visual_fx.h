@@ -48,6 +48,7 @@ public:
   auto SetCurrentGoomDrawables(const GoomDrawablesSet& goomDrawablesSet) -> void;
 
   auto ChangeColorMaps() -> void;
+  [[nodiscard]] auto GetActiveColorMapsNames() const -> std::unordered_set<std::string>;
 
   using ResetCurrentDrawBuffSettingsFunc = std::function<void(GoomDrawables fx)>;
   auto SetResetDrawBuffSettingsFunc(const ResetCurrentDrawBuffSettingsFunc& func) -> void;
@@ -85,6 +86,7 @@ private:
   VisualFxColorMaps m_visualFxColorMaps;
   auto ChangeDotsColorMaps() -> void;
   auto ChangeShapesColorMaps() -> void;
+  auto ChangeStarsColorMaps() -> void;
 
   GoomDrawablesSet m_currentGoomDrawables{};
   [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;

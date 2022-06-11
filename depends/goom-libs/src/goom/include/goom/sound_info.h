@@ -57,7 +57,7 @@ public:
   void ProcessSample(const AudioSamples& samples);
 
   // Note: a Goom is just a sound event...
-  [[nodiscard]] auto GetTimeSinceLastGoom() const -> uint32_t; // >= 0
+  [[nodiscard]] auto GetTimeSinceLastGoom() const noexcept -> uint32_t; // >= 0
   [[nodiscard]] auto GetTimeSinceLastBigGoom() const -> uint32_t; // >= 0
 
   // Number of Gooms since last reset (every 'CYCLE_TIME')
@@ -152,7 +152,7 @@ inline auto SoundInfo::GetTotalGoomsInCurrentCycle() const -> uint32_t
   return m_totalGoomsInCurrentCycle;
 }
 
-inline auto SoundInfo::GetTimeSinceLastGoom() const -> uint32_t
+inline auto SoundInfo::GetTimeSinceLastGoom() const noexcept -> uint32_t
 {
   return m_timeSinceLastGoom;
 }
