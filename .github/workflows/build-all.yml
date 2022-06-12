@@ -112,6 +112,7 @@ jobs:
           mkdir ${{ env.GOOM_DIR }}/${{ env.BUILD_DIR }}
           cd ${{ env.GOOM_DIR }}/${{ env.BUILD_DIR }}
           CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} cmake \
+                                                                        -DIS_THIS_MAIN_CMAKE_SCRIPT=1 \
                                                                         -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
                                                                         -DENABLE_TESTING=0 \
                                                                         -DUSE_MAGIC_ENUM=1 \

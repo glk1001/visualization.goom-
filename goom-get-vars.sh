@@ -4,6 +4,7 @@ if [[ "${THIS_SCRIPT_PATH}" == "" ]]; then
 fi
 
 
+declare GOOM_VAR_CMD_LINE=""
 declare EXTRA_ARGS=""
 declare USING_DOCKER="no"
 declare USING_CLION="no"
@@ -14,25 +15,30 @@ while [[ $# -gt 0 ]]; do
   case $key in
     -b|--build)
       declare -r BUILD_DIRNAME=${2}
+      GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --build ${BUILD_DIRNAME}"
       shift # past argument
       shift # past value
       ;;
     -c|--compiler)
       COMPILER=${2}
+      GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --compiler ${COMPILER}"
       shift # past argument
       shift # past value
       ;;
     --build-type)
       BUILD_TYPE=${2}
+      GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --build-type ${BUILD_TYPE}"
       shift # past argument
       shift # past value
       ;;
     --docker)
       USING_DOCKER="yes"
+      GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --docker"
       shift # past argument
       ;;
     --clion)
       USING_CLION="yes"
+      GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --clion"
       shift # past argument
       ;;
     *)

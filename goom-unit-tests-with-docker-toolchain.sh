@@ -9,7 +9,8 @@ source "${THIS_SCRIPT_PATH}/goom-get-vars.sh"
 
 
 docker run --rm                                           \
-           -e TZ=${TIMHOST_TIME_ZONEE_ZONE}               \
+           -e TZ=${HOST_TIME_ZONE}                        \
+           -e CCACHE_DIR=${DOCKER_CCACHE_DIR}             \
            -v ${THIS_SCRIPT_PATH}:${DOCKER_GOOM_DIR}      \
            -t ${DOCKER_IMAGE}                             \
            bash -c "cd ${DOCKER_GOOM_DIR} &&              \
