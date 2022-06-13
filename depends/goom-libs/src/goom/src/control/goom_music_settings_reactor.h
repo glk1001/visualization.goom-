@@ -238,6 +238,7 @@ inline void GoomMusicSettingsReactor::BigNormalUpdate()
   ChangeFilterExtraSettings();
   ChangeVitesse();
   ChangeTranBufferSwitchValues();
+  m_visualFx.ChangeAllFxColorMaps();
 
   static constexpr float PROB_SINGLE_BUFFER_DOTS = 1.0F / 20.0F;
   m_visualFx.SetSingleBufferDots(m_goomRand.ProbabilityOf(PROB_SINGLE_BUFFER_DOTS));
@@ -247,6 +248,7 @@ inline void GoomMusicSettingsReactor::MegaLentUpdate()
 {
   m_lock.IncreaseLockTime(MEGA_LENT_LOCK_TIME_INCREASE);
 
+  m_visualFx.ChangeAllFxColorMaps();
   m_filterSettingsService.GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::STOP_SPEED - 1);
   m_filterSettingsService.SetDefaultTranLerpIncrement();
   m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
@@ -317,6 +319,7 @@ inline void GoomMusicSettingsReactor::ChangeState()
 inline void GoomMusicSettingsReactor::DoChangeState()
 {
   m_visualFx.SetNextState();
+  m_visualFx.ChangeAllFxColorMaps();
 
   m_timeInState = 0;
 
@@ -330,4 +333,3 @@ inline void GoomMusicSettingsReactor::ChangeGoomLines()
 
 } // namespace CONTROL
 } // namespace GOOM
-
