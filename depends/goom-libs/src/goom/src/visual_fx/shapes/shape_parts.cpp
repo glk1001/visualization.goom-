@@ -318,21 +318,14 @@ void ShapePart::DoRandomChanges() noexcept
   SetRandomizedShapePaths();
   SetShapePathsNumSteps();
   ChangeAllColorMapsNow();
-  ChangeAllColorsT();
 }
 
 inline auto ShapePart::ChangeAllColorMapsNow() noexcept -> void
 {
-  static constexpr float PROB_USE_RANDOM_COLOR_NAMES = 0.2F;
-  m_useRandomColorNames = m_goomRand.ProbabilityOf(PROB_USE_RANDOM_COLOR_NAMES);
   m_colorMapsManager.ChangeAllColorMapsNow();
-}
 
-inline auto ShapePart::ChangeAllColorsT() noexcept -> void
-{
-  const float allColorsSpeed = m_goomRand.GetRandInRange(0.0F, 1.0F);
-  m_allColorsStepSpeed.SetSpeed(allColorsSpeed);
-  m_allColorsT.SetNumSteps(m_allColorsStepSpeed.GetCurrentNumSteps());
+  static constexpr float PROB_USE_EXTREME_MAX_DOT_RADIUS = 0.1F;
+  m_useExtremeMaxShapeDotRadius = m_goomRand.ProbabilityOf(PROB_USE_EXTREME_MAX_DOT_RADIUS);
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES

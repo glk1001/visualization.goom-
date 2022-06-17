@@ -95,13 +95,14 @@ inline auto StarDrawer::GetPartMultiplier() const noexcept -> float
 
 inline auto StarDrawer::GetMaxPartMultiplier() const noexcept -> float
 {
+  static constexpr float MAX_MULTIPLIER = 20.0F;
+
   switch (m_drawMode)
   {
     case DrawModes::CLEAN:
     case DrawModes::SUPER_CLEAN:
       return 1.0F + UTILS::MATH::SMALL_FLOAT;
     case DrawModes::MESSY:
-      static constexpr float MAX_MULTIPLIER = 20.0F;
       return MAX_MULTIPLIER;
     default:
       FailFast();
@@ -111,13 +112,14 @@ inline auto StarDrawer::GetMaxPartMultiplier() const noexcept -> float
 
 inline auto StarDrawer::GetLineMaxPartMultiplier() const noexcept -> float
 {
+  static constexpr float LINE_MAX_MULTIPLIER = 4.0F;
+
   switch (m_drawMode)
   {
     case DrawModes::SUPER_CLEAN:
       return 1.0F + UTILS::MATH::SMALL_FLOAT;
     case DrawModes::CLEAN:
     case DrawModes::MESSY:
-      static constexpr float LINE_MAX_MULTIPLIER = 4.0F;
       return LINE_MAX_MULTIPLIER;
     default:
       FailFast();

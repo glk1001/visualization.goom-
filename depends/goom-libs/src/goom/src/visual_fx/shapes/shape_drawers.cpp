@@ -31,17 +31,15 @@ public:
     float brightnessAttenuation;
     bool firstShapePathAtMeetingPoint;
     bool varyDotRadius;
-    bool doDotJitter;
     ShapePathColors meetingPointColors;
   };
 
-  ShapePartDrawer(IGoomDraw& draw, const IGoomRand& goomRand, const Params& params) noexcept;
+  ShapePartDrawer(IGoomDraw& draw, const Params& params) noexcept;
 
   auto DrawShapePaths(const ShapePart& shapePart) noexcept -> void;
 
 private:
   IGoomDraw& m_draw;
-  const IGoomRand& m_goomRand;
   const Params& m_params;
 
   [[nodiscard]] auto GetMaxDotRadius(const ShapePart& shapePart) const noexcept -> int32_t;
@@ -74,8 +72,8 @@ private:
                         const ShapePathColors& shapeColors,
                         const IColorMap& innerColorMap) noexcept -> void;
 
-  [[nodiscard]] auto GetCurrentShapeColors(
-      const ShapePath::ColorInfo& shapePathColorInfo) const noexcept -> ShapePathColors;
+  [[nodiscard]] auto GetCurrentShapeColors(const ShapePath& shapePath) const noexcept
+      -> ShapePathColors;
   [[nodiscard]] auto GetColors(int32_t radius,
                                float brightness,
                                const ShapePathColors& shapeColors,
@@ -113,10 +111,9 @@ auto ShapeDrawer::DrawShapeParts(const Shape& shape) noexcept -> void
       GetBrightnessAttenuation(shape),
       shape.FirstShapePathAtMeetingPoint(),
       m_varyDotRadius,
-      m_doDotJitter,
       GetCurrentMeetingPointColors(),
   };
-  ShapePartDrawer shapePartDrawer{m_draw, m_goomRand, shapePartParams};
+  ShapePartDrawer shapePartDrawer{m_draw, shapePartParams};
 
   shape.IterateAllShapeParts([&shapePartDrawer](const ShapePart& shapePart)
                              { shapePartDrawer.DrawShapePaths(shapePart); });
@@ -142,10 +139,8 @@ inline auto ShapeDrawer::GetBrightnessAttenuation(const Shape& shape) noexcept -
   return STD20::lerp(1.0F, minBrightness, std::pow(distanceFromOne, EXPONENT));
 }
 
-inline ShapePartDrawer::ShapePartDrawer(IGoomDraw& draw,
-                                        const IGoomRand& goomRand,
-                                        const Params& params) noexcept
-  : m_draw{draw}, m_goomRand{goomRand}, m_params{params}
+inline ShapePartDrawer::ShapePartDrawer(IGoomDraw& draw, const Params& params) noexcept
+  : m_draw{draw}, m_params{params}
 {
 }
 
@@ -169,12 +164,6 @@ auto ShapePartDrawer::DrawShapePaths(const ShapePart& shapePart) noexcept -> voi
 inline auto ShapePartDrawer::GetMaxDotRadius(const ShapePart& shapePart) const noexcept -> int32_t
 {
   int32_t maxRadius = shapePart.GetCurrentShapeDotRadius(m_params.varyDotRadius);
-
-  if (m_params.doDotJitter)
-  {
-    static constexpr int32_t MAX_RADIUS_JITTER = 3;
-    maxRadius += m_goomRand.GetRandInRange(0, MAX_RADIUS_JITTER + 1);
-  }
 
   if (shapePart.AreShapePathsCloseToMeeting())
   {
@@ -204,20 +193,21 @@ inline auto ShapePathDrawer::GetInnerColorCutoffRadius(const int32_t maxRadius) 
 inline auto ShapePathDrawer::DrawNextShapePathPoint(const ShapePath& shapePath) noexcept -> void
 {
   const Point2dInt point = shapePath.GetNextPoint();
-  const ShapePath::ColorInfo& shapePathColorInfo = shapePath.GetColorInfo();
 
-  const ShapePathColors shapeColors = GetCurrentShapeColors(shapePathColorInfo);
+  const ShapePathColors shapeColors = GetCurrentShapeColors(shapePath);
   const IColorMap& innerColorMap =
-      m_parentShapePart.GetColorMap(shapePathColorInfo.innerColorMapId);
+      m_parentShapePart.GetColorMap(shapePath.GetColorInfo().innerColorMapId);
 
   DrawShapePathDot(point, shapeColors, innerColorMap);
 }
 
-inline auto ShapePathDrawer::GetCurrentShapeColors(
-    const ShapePath::ColorInfo& shapePathColorInfo) const noexcept -> ShapePathColors
+inline auto ShapePathDrawer::GetCurrentShapeColors(const ShapePath& shapePath) const noexcept
+    -> ShapePathColors
 {
-  return {m_parentShapePart.GetCurrentColor(shapePathColorInfo.mainColorMapId),
-          m_parentShapePart.GetCurrentColor(shapePathColorInfo.lowColorMapId)};
+  const ShapePath::ColorInfo& shapePathColorInfo = shapePath.GetColorInfo();
+
+  return {m_parentShapePart.GetCurrentColor(shapePath, shapePathColorInfo.mainColorMapId),
+          m_parentShapePart.GetCurrentColor(shapePath, shapePathColorInfo.lowColorMapId)};
 }
 
 auto ShapePathDrawer::DrawShapePathDot(const Point2dInt& centre,
@@ -227,7 +217,7 @@ auto ShapePathDrawer::DrawShapePathDot(const Point2dInt& centre,
   TValue innerColorT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(m_params.maxRadius - 1)};
 
   static constexpr float MIN_BRIGHTNESS = 0.5F;
-  static constexpr float MAX_BRIGHTNESS = 3.0F;
+  static constexpr float MAX_BRIGHTNESS = 4.0F;
   TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(m_params.maxRadius)};
 
   for (int32_t radius = m_params.maxRadius; radius > 1; --radius)

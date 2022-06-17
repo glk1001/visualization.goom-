@@ -63,8 +63,8 @@ private:
   static constexpr float MAX_RADIUS_FRACTION = 0.5F;
   static_assert(MIN_RADIUS_FRACTION <= MAX_RADIUS_FRACTION);
 
-  static constexpr uint32_t MIN_NUM_SHAPE_PATH_STEPS = 10;
-  static constexpr uint32_t MAX_NUM_SHAPE_PATH_STEPS = 100;
+  static constexpr uint32_t MIN_NUM_SHAPE_PATH_STEPS = 20;
+  static constexpr uint32_t MAX_NUM_SHAPE_PATH_STEPS = 200;
   static_assert(0 < MIN_NUM_SHAPE_PATH_STEPS);
   static_assert(MIN_NUM_SHAPE_PATH_STEPS < MAX_NUM_SHAPE_PATH_STEPS);
 
@@ -209,9 +209,6 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
 
   static constexpr float PROB_VARY_DOT_RADIUS = 0.1F;
   m_shapeDrawer.SetVaryDotRadius(m_goomRand.ProbabilityOf(PROB_VARY_DOT_RADIUS));
-
-  static constexpr float PROJ_DOT_JITTER = 0.3F;
-  m_shapeDrawer.SetDoDotJitter(m_goomRand.ProbabilityOf(PROJ_DOT_JITTER));
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> void

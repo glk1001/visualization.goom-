@@ -44,9 +44,9 @@ static constexpr bool USE_FORCED_GOOM_STATE =
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_STARS;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_TENTACLES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
+static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::SHAPES_STARS_LINES;
-static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
+//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::TENTACLES_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::TUBES_ONLY;
 // End debugging

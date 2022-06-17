@@ -86,6 +86,7 @@ public:
   [[nodiscard]] auto GetColorMap(COLOR::RandomColorMapsManager::ColorMapId colorMapId)
       const noexcept -> const COLOR::IColorMap&;
   [[nodiscard]] auto GetCurrentColor(
+      const ShapePath& shapePath,
       COLOR::RandomColorMapsManager::ColorMapId colorMapId) const noexcept -> Pixel;
   [[nodiscard]] auto GetInnerColorMix() const noexcept -> float;
 
@@ -100,29 +101,22 @@ private:
 
   const int32_t m_minShapeDotRadius;
   const int32_t m_maxShapeDotRadius;
+  static constexpr int32_t EXTREME_MAX_DOT_RADIUS_MULTIPLIER = 5;
+  const int32_t m_extremeMaxShapeDotRadius =
+      EXTREME_MAX_DOT_RADIUS_MULTIPLIER * m_maxShapeDotRadius;
+  bool m_useExtremeMaxShapeDotRadius = false;
   static constexpr uint32_t MIN_DOT_RADIUS_STEPS = 100;
-  static constexpr uint32_t MAX_DOT_RADIUS_STEPS = 300;
+  static constexpr uint32_t MAX_DOT_RADIUS_STEPS = 200;
   static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
   UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_DOT_RADIUS_STEPS, MAX_DOT_RADIUS_STEPS,
                                         INITIAL_DOT_RADIUS_SPEED};
   UTILS::TValue m_dotRadiusT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
                              m_dotRadiusStepSpeed.GetCurrentNumSteps()};
 
-  static constexpr uint32_t COLOR_MAP_MIN_NUM_STEPS = 100;
-  static_assert(0 < COLOR_MAP_MIN_NUM_STEPS);
-  static constexpr uint32_t COLOR_MAP_MAX_NUM_STEPS = 2000;
-  static_assert(COLOR_MAP_MIN_NUM_STEPS < COLOR_MAP_MAX_NUM_STEPS);
-  static constexpr float INITIAL_COLOR_MAP_SPEED = 0.5F;
-  UTILS::StepSpeed m_allColorsStepSpeed{COLOR_MAP_MIN_NUM_STEPS, COLOR_MAP_MAX_NUM_STEPS,
-                                        INITIAL_COLOR_MAP_SPEED};
-  UTILS::TValue m_allColorsT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                             m_allColorsStepSpeed.GetCurrentNumSteps()};
-  auto ChangeAllColorsT() noexcept -> void;
-
   static inline const std::set<COLOR::RandomColorMaps::ColorMapTypes> COLOR_MAP_TYPES =
       COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES;
   static constexpr float MIN_INNER_COLOR_MIX_T = 0.1F;
-  static constexpr float MAX_INNER_COLOR_MIX_T = 1.0F;
+  static constexpr float MAX_INNER_COLOR_MIX_T = 0.9F;
   struct ColorInfo
   {
     std::shared_ptr<COLOR::RandomColorMaps> mainColorMaps;
@@ -132,7 +126,6 @@ private:
   };
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
   ColorInfo m_colorInfo{GetInitialColorInfo()};
-  bool m_useRandomColorNames = false;
   auto ChangeAllColorMapsNow() noexcept -> void;
 
   const uint32_t m_shapePartNum;
@@ -199,9 +192,10 @@ inline auto ShapePart::GetColorMap(const COLOR::RandomColorMapsManager::ColorMap
 }
 
 inline auto ShapePart::GetCurrentColor(
-    const COLOR::RandomColorMapsManager::ColorMapId colorMapId) const noexcept -> Pixel
+    const ShapePath& shapePath, COLOR::RandomColorMapsManager::ColorMapId colorMapId) const noexcept
+    -> Pixel
 {
-  return GetColorMap(colorMapId).GetColor(m_allColorsT());
+  return GetColorMap(colorMapId).GetColor(shapePath.GetCurrentT());
 }
 
 inline auto ShapePart::GetInnerColorMix() const noexcept -> float
@@ -216,7 +210,10 @@ inline auto ShapePart::GetCurrentShapeDotRadius(const bool varyRadius) const noe
     return m_minShapeDotRadius;
   }
 
-  return STD20::lerp(m_minShapeDotRadius, m_maxShapeDotRadius, m_dotRadiusT());
+  const int32_t maxShapeDotRadius =
+      m_useExtremeMaxShapeDotRadius ? m_extremeMaxShapeDotRadius : m_maxShapeDotRadius;
+
+  return STD20::lerp(m_minShapeDotRadius, maxShapeDotRadius, m_dotRadiusT());
 }
 
 inline auto ShapePart::GetFirstShapePathPositionT() const noexcept -> float
@@ -259,7 +256,6 @@ inline auto ShapePart::IncrementTs() noexcept -> void
 {
   std::for_each(begin(m_shapePaths), end(m_shapePaths), [](ShapePath& path) { path.IncrementT(); });
 
-  m_allColorsT.Increment();
   m_dotRadiusT.Increment();
 }
 

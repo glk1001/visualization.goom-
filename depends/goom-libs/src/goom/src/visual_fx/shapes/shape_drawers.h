@@ -33,7 +33,6 @@ public:
               COLOR::RandomColorMapsManager& colorMapsManager) noexcept;
 
   auto SetVaryDotRadius(bool val) -> void;
-  auto SetDoDotJitter(bool val) -> void;
 
   auto DrawShapeParts(const Shape& shape) noexcept -> void;
 
@@ -43,7 +42,6 @@ private:
   COLOR::RandomColorMapsManager& m_colorMapsManager;
 
   bool m_varyDotRadius = false;
-  bool m_doDotJitter = false;
   [[nodiscard]] static auto GetBrightnessAttenuation(const Shape& shape) noexcept -> float;
   static constexpr uint32_t NUM_MEETING_POINT_COLOR_STEPS = 50;
   UTILS::TValue m_meetingPointColorsT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
@@ -59,11 +57,6 @@ private:
 inline auto ShapeDrawer::SetVaryDotRadius(const bool val) -> void
 {
   m_varyDotRadius = val;
-}
-
-inline auto ShapeDrawer::SetDoDotJitter(const bool val) -> void
-{
-  m_doDotJitter = val;
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES
