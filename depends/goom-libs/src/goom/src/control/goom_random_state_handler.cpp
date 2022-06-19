@@ -15,7 +15,7 @@ using UTILS::MATH::IGoomRand;
 static constexpr bool USE_FORCED_GOOM_STATE =
     CONTROL::FORCE_GOOM_STATE_AND_ALL_FILTER_EFFECTS_TURNED_OFF;
 
-static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
+//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
@@ -37,7 +37,7 @@ static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_TUBES;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_LINES;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_LINES_STARS_TENTACLES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_ONLY;
+static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_ONLY;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_STARS;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_TENTACLES;
 //static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_TUBES;

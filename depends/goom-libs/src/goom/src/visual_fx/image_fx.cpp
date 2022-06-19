@@ -358,7 +358,10 @@ inline auto ImageFx::ImageFxImpl::ApplyMultiple() -> void
 inline auto ImageFx::ImageFxImpl::DrawChunks() -> void
 {
   static constexpr float IN_OUT_FACTOR = 0.02F;
-  const float brightness = m_brightnessBase + (IN_OUT_FACTOR * m_inOutT());
+  const float inOutT = m_inOutT();
+  static constexpr float IN_OUT_CLOSE_TO_RESOLVED_IMAGE = 0.99F;
+  const float brightness =
+      inOutT > IN_OUT_CLOSE_TO_RESOLVED_IMAGE ? 0.0F : m_brightnessBase + (IN_OUT_FACTOR * inOutT);
 
   const auto drawChunk = [this, &brightness](const size_t i)
   {
