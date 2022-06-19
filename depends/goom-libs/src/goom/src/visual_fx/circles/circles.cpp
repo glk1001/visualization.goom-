@@ -20,7 +20,7 @@ using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 
 static constexpr uint32_t LINE_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER;
-static constexpr uint32_t MIN_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER + 2;
+static constexpr uint32_t MIN_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER + 4;
 static constexpr uint32_t MAX_DOT_DIAMETER = BitmapGetter::MAX_DOT_DIAMETER;
 
 Circles::Circles(const FxHelper& fxHelper,
@@ -57,8 +57,8 @@ auto Circles::GetCircles(const FxHelper& fxHelper,
   return circles;
 }
 
-void Circles::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps,
-                                   const std::shared_ptr<RandomColorMaps> weightedLowMaps)
+auto Circles::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps,
+                                   const std::shared_ptr<RandomColorMaps> weightedLowMaps) -> void
 {
   std::for_each(begin(m_circles), end(m_circles),
                 [&weightedMaps, &weightedLowMaps](Circle& circle)
@@ -67,32 +67,53 @@ void Circles::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weight
   m_bitmapGetter.ChangeCurrentBitmap();
 }
 
-void Circles::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
+auto Circles::SetNewTargetPoints() -> void
 {
-  const float lerpTFromFixedTarget = m_goomRand.GetRandInRange(0.0F, 0.4F);
-  std::for_each(begin(m_circles), end(m_circles),
-                [&zoomMidpoint, &lerpTFromFixedTarget](Circle& circle)
-                { circle.SetZoomMidpoint(zoomMidpoint, lerpTFromFixedTarget); });
+  if (not m_circles.front().HasPositionTJustHitABoundary())
+  {
+    return;
+  }
+
+  const float lerpTFromFixedTarget = m_goomRand.GetRandInRange(0.0F, 0.5F);
+
+  m_circles.front().SetMovingTargetPoint(GetCentreCircleTargetPoint(), lerpTFromFixedTarget);
+
+  std::for_each(begin(m_circles) + 1, end(m_circles),
+                [this, &lerpTFromFixedTarget](Circle& circle)
+                { circle.SetMovingTargetPoint(m_zoomMidpoint, lerpTFromFixedTarget); });
 }
 
-void Circles::Start()
+inline auto Circles::GetCentreCircleTargetPoint() const noexcept -> Point2dInt
+{
+  if (static constexpr float PROB_FOLLOW_GIVEN_ZOOM_MIDPOINT = 0.2F;
+      m_goomRand.ProbabilityOf(PROB_FOLLOW_GIVEN_ZOOM_MIDPOINT))
+  {
+    return m_zoomMidpoint;
+  }
+
+  return m_circles.at(m_goomRand.GetRandInRange(1U, static_cast<uint32_t>(m_circles.size())))
+      .GetCircleCentreFixedTarget();
+}
+
+auto Circles::Start() -> void
 {
   std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.Start(); });
 }
 
-void Circles::UpdateAndDraw()
+auto Circles::UpdateAndDraw() -> void
 {
+  SetNewTargetPoints();
   UpdateAndDrawCircles();
   UpdatePositionSpeed();
   UpdateCirclePathParams();
 }
 
-inline void Circles::UpdateAndDrawCircles()
+inline auto Circles::UpdateAndDrawCircles() -> void
 {
   std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.UpdateAndDraw(); });
 }
 
-void Circles::UpdatePositionSpeed()
+auto Circles::UpdatePositionSpeed() -> void
 {
   if (constexpr float PROB_NO_SPEED_CHANGE = 0.7F; m_goomRand.ProbabilityOf(PROB_NO_SPEED_CHANGE))
   {
@@ -108,7 +129,7 @@ void Circles::UpdatePositionSpeed()
                 [&newNumSteps](Circle& circle) { circle.UpdatePositionSpeed(newNumSteps); });
 }
 
-inline void Circles::UpdateCirclePathParams()
+inline auto Circles::UpdateCirclePathParams() -> void
 {
   if (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() > 0)
   {

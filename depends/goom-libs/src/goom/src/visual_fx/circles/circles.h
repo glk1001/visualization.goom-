@@ -23,18 +23,20 @@ public:
           uint32_t numCircles,
           const std::vector<Circle::Params>& circleParams);
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
-                            std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
+  auto SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
+                            std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps) -> void;
 
-  void SetZoomMidpoint(const Point2dInt& zoomMidpoint);
+  auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  void Start();
-  void UpdateAndDraw();
+  auto Start() -> void;
+  auto UpdateAndDraw() -> void;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   const PluginInfo& m_goomInfo;
   BitmapGetter m_bitmapGetter;
+  Point2dInt m_zoomMidpoint{};
+  auto SetNewTargetPoints() -> void;
 
   static constexpr float GAMMA = 1.0F / 2.2F;
   const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
@@ -48,11 +50,17 @@ private:
                                        uint32_t numCircles,
                                        const std::vector<Circle::Params>& circleParams)
       -> std::vector<Circle>;
-  void UpdatePositionSpeed();
-  void UpdateAndDrawCircles();
+  auto UpdatePositionSpeed() -> void;
+  auto UpdateAndDrawCircles() -> void;
 
-  void UpdateCirclePathParams();
+  auto UpdateCirclePathParams() -> void;
+  [[nodiscard]] auto GetCentreCircleTargetPoint() const noexcept -> Point2dInt;
   [[nodiscard]] auto GetPathParams() const -> UTILS::MATH::OscillatingFunction::Params;
 };
+
+inline auto Circles::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
+{
+  m_zoomMidpoint = zoomMidpoint;
+}
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

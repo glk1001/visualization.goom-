@@ -56,12 +56,15 @@ public:
 
   void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMainMaps,
                             std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
-  void SetZoomMidpoint(const Point2dInt& zoomMidpoint, float lerpTFromFixedTarget);
+  void SetMovingTargetPoint(const Point2dInt& movingTargetPoint, float lerpTFromFixedTarget);
   void SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams);
 
   void Start();
   void UpdatePositionSpeed(uint32_t newNumSteps);
   void UpdateAndDraw();
+
+  [[nodiscard]] auto HasPositionTJustHitABoundary() const noexcept -> bool;
+  [[nodiscard]] auto GetCircleCentreFixedTarget() const noexcept -> Point2dInt;
   [[nodiscard]] auto GetLastDrawnCircleDots() const -> const std::vector<Point2dInt>&;
 
 private:
@@ -145,6 +148,17 @@ private:
 inline void Circle::UpdatePositionSpeed(const uint32_t newNumSteps)
 {
   m_newNumSteps = newNumSteps;
+}
+
+inline auto Circle::HasPositionTJustHitABoundary() const noexcept -> bool
+{
+  return m_dotPaths.HasPositionTJustHitStartBoundary() or
+         m_dotPaths.HasPositionTJustHitEndBoundary();
+}
+
+inline auto Circle::GetCircleCentreFixedTarget() const noexcept -> Point2dInt
+{
+  return m_circleCentreFixedTarget;
 }
 
 inline auto Circle::GetLastDrawnCircleDots() const -> const std::vector<Point2dInt>&

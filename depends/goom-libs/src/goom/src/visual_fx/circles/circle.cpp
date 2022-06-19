@@ -15,7 +15,6 @@
 #include "utils/math/misc.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
-#include "utils/timer.h"
 
 #include <cmath>
 #include <cstdint>
@@ -33,7 +32,6 @@ using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using UTILS::Logging;
 using UTILS::NUM;
-using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::MATH::AngleParams;
 using UTILS::MATH::CirclePath;
@@ -217,9 +215,9 @@ void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weighte
   m_dotDrawer->SetWeightedColorMaps(*weightedMainMaps);
 }
 
-void Circle::SetZoomMidpoint(const Point2dInt& zoomMidpoint, const float lerpTFromFixedTarget)
+void Circle::SetMovingTargetPoint(const Point2dInt& movingTargetPoint, float lerpTFromFixedTarget)
 {
-  m_circleCentreTarget = lerp(m_circleCentreFixedTarget, zoomMidpoint, lerpTFromFixedTarget);
+  m_circleCentreTarget = lerp(m_circleCentreFixedTarget, movingTargetPoint, lerpTFromFixedTarget);
 }
 
 void Circle::SetPathParams(const OscillatingFunction::Params& pathParams)
@@ -276,8 +274,7 @@ void Circle::ResetNumSteps()
   {
     return;
   }
-  if ((!m_dotPaths.HasPositionTJustHitStartBoundary()) &&
-      (!m_dotPaths.HasPositionTJustHitEndBoundary()))
+  if (not HasPositionTJustHitABoundary())
   {
     return;
   }
@@ -287,8 +284,7 @@ void Circle::ResetNumSteps()
 
 inline void Circle::ResetCircleParams()
 {
-  if ((!m_dotPaths.HasPositionTJustHitStartBoundary()) &&
-      (!m_dotPaths.HasPositionTJustHitEndBoundary()))
+  if (not HasPositionTJustHitABoundary())
   {
     return;
   }

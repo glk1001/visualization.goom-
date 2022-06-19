@@ -95,8 +95,6 @@ CirclesFx::CirclesFxImpl::CirclesFxImpl(const FxHelper& fxHelper,
 auto CirclesFx::CirclesFxImpl::GetCircleParams(const PluginInfo& goomInfo)
     -> std::vector<Circle::Params>
 {
-  static_assert(5 == NUM_CIRCLES);
-
   std::vector<Circle::Params> circleParams(NUM_CIRCLES);
 
   static constexpr float RADIUS_MARGIN = 10.0F;
@@ -131,6 +129,7 @@ auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets(const Point2dInt& screenMi
   const int32_t height = 2 * screenMidPoint.y;
   static constexpr Fraction SMALL_FRAC{1, 10};
   static constexpr Fraction LARGE_FRAC = 1 - SMALL_FRAC;
+  static_assert(5 == NUM_CIRCLES);
   circleCentreTargets[0] = screenMidPoint;
   circleCentreTargets[1] = {SMALL_FRAC * width, SMALL_FRAC * height};
   circleCentreTargets[2] = {LARGE_FRAC * width, SMALL_FRAC * height};
