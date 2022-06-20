@@ -77,7 +77,7 @@ private:
   TentacleDriver* m_currentTentacleDriver;
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
-  std::shared_ptr<RandomColorMaps> m_weightedDominantColorMaps{};
+  std::shared_ptr<const RandomColorMaps> m_weightedDominantColorMaps{};
   std::shared_ptr<const IColorMap> m_dominantColorMap{};
   Pixel m_dominantColor{};
   Pixel m_dominantLowColor{};
@@ -250,8 +250,8 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
   m_weightedDominantColorMaps = weightedColorMaps.mainColorMaps;
   m_dominantColorMap =
       m_weightedDominantColorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
-  m_dominantColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
-  m_dominantDotColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
+  m_dominantColor = RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);
+  m_dominantDotColor = RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);
   UpdateDominantColors();
 
   for (auto& driver : m_tentacleDrivers)
@@ -315,13 +315,13 @@ auto TentaclesFx::TentaclesImpl::UpdateDominantColors() -> void
   Expects(m_dominantColorMap != nullptr);
 
   const Pixel newColor =
-      RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
+      RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);
   static constexpr float COLOR_MIX_T = 0.70F;
   m_dominantLowColor = IColorMap::GetColorMix(m_dominantLowColor, newColor, COLOR_MIX_T);
   static constexpr float COLOR_POWER = 0.67F;
   m_dominantColor = GetLightenedColor(m_dominantLowColor, COLOR_POWER);
 
-  m_dominantDotColor = RandomColorMaps{m_goomRand}.GetRandomColor(*m_dominantColorMap, 0.0F, 1.0F);
+  m_dominantDotColor = RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);
 }
 
 } // namespace GOOM::VISUAL_FX

@@ -79,10 +79,10 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
     m_screenHeight{static_cast<int32_t>(draw.GetScreenHeight())},
     m_fontDirectory{fontDirectory},
     m_fontInfoIndex{m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(S_FONT_INFO.size()))},
-    m_textColorMap{&RandomColorMaps{m_goomRand}.GetRandomColorMap()},
-    m_textOutlineColorMap{&RandomColorMaps{m_goomRand}.GetRandomColorMap()},
+    m_textColorMap{&RandomColorMaps::GetRandomColorMap(m_goomRand)},
+    m_textOutlineColorMap{&RandomColorMaps::GetRandomColorMap(m_goomRand)},
     m_charColorMap{
-        &RandomColorMaps{m_goomRand}.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK)}
+        &RandomColorMaps::GetRandomColorMap(m_goomRand, COLOR::ColorMapGroup::DIVERGING_BLACK)}
 {
   m_textDraw->SetFontFile(GetSelectedFontPath());
   m_textDraw->SetFontSize(GetSelectedFontSize());

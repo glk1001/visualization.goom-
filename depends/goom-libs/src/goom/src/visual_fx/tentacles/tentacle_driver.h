@@ -40,7 +40,8 @@ public:
                  const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                  const ITentacleLayout& tentacleLayout) noexcept;
 
-  auto SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps) -> void;
+  auto SetWeightedColorMaps(const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps)
+      -> void;
   auto TentaclesColorMapsChanged() -> void;
 
   auto StartIterating() -> void;

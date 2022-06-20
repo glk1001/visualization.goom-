@@ -53,8 +53,8 @@ struct TubeData
   uint32_t screenWidth;
   uint32_t screenHeight;
   const UTILS::MATH::IGoomRand& goomRand;
-  std::shared_ptr<COLOR::RandomColorMaps> mainColorMaps;
-  std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps;
+  std::shared_ptr<const COLOR::RandomColorMaps> mainColorMaps;
+  std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps;
   float radiusEdgeOffset;
   float brightnessFactor;
 };

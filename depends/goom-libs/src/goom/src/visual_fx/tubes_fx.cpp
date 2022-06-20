@@ -140,8 +140,8 @@ private:
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
   uint64_t m_updateNum = 0;
-  std::shared_ptr<RandomColorMaps> m_mainColorMaps{};
-  std::shared_ptr<RandomColorMaps> m_lowColorMaps{};
+  std::shared_ptr<const RandomColorMaps> m_mainColorMaps{};
+  std::shared_ptr<const RandomColorMaps> m_lowColorMaps{};
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath;
   uint32_t m_numCapturedPrevShapesGroups = 0;

@@ -19,7 +19,8 @@ RandomColorMapsManager::ColorMapInfo::~ColorMapInfo() noexcept = default;
 auto RandomColorMapsManager::AddDefaultColorMapInfo(const UTILS::MATH::IGoomRand& goomRand) noexcept
     -> ColorMapId
 {
-  return AddColorMapInfo({GetAllMapsUnweighted(goomRand), RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  return AddColorMapInfo(
+      {MakeSharedAllMapsUnweighted(goomRand), RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }
 
 auto RandomColorMapsManager::AddColorMapInfo(

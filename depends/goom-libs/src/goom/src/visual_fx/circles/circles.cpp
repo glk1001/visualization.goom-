@@ -57,8 +57,9 @@ auto Circles::GetCircles(const FxHelper& fxHelper,
   return circles;
 }
 
-auto Circles::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps,
-                                   const std::shared_ptr<RandomColorMaps> weightedLowMaps) -> void
+auto Circles::SetWeightedColorMaps(const std::shared_ptr<const RandomColorMaps> weightedMaps,
+                                   const std::shared_ptr<const RandomColorMaps> weightedLowMaps)
+    -> void
 {
   std::for_each(begin(m_circles), end(m_circles),
                 [&weightedMaps, &weightedLowMaps](Circle& circle)

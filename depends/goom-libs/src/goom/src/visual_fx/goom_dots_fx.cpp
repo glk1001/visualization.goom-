@@ -90,7 +90,7 @@ private:
   static constexpr size_t MAX_DOT_SIZE = 17;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
-  std::array<std::shared_ptr<RandomColorMaps>, NUM_DOT_TYPES> m_dotColorMapsList{};
+  std::array<std::shared_ptr<const RandomColorMaps>, NUM_DOT_TYPES> m_dotColorMapsList{};
   RandomColorMapsManager m_colorMapsManager{};
   std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> m_colorMapIds;
   [[nodiscard]] auto GetDefaultColorMapIds() noexcept
@@ -305,7 +305,8 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
 
   static constexpr float MIN_MIX_T = 0.1F;
   static constexpr float MAX_MIX_T = 1.0F;
-  return RandomColorMaps{m_goomRand}.GetRandomColor(
+  return RandomColorMaps::GetRandomColor(
+      m_goomRand,
       *m_dotColorMapsList[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
                                                    RandomColorMaps::ALL_COLOR_MAP_TYPES),
       MIN_MIX_T, MAX_MIX_T);

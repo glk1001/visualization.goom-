@@ -70,7 +70,7 @@ public:
 
   auto Init() -> void;
 
-  auto SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedColorMaps)
+  auto SetWeightedColorMaps(const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps)
       -> void;
 
   auto UpdateMainSimis(Dbl uValue) -> void;
@@ -103,7 +103,7 @@ private:
 
   const UTILS::MATH::IGoomRand& m_goomRand;
   const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
-  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps;
+  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps;
 
   using IfsFunc = std::function<FltPoint(const Similitude& simi, Flt x1, Flt y1, Flt x2, Flt y2)>;
   IfsFunc m_currentIfsFunc{};

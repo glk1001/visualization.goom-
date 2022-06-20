@@ -24,9 +24,9 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
+using COLOR::MakeSharedAllSlimMaps;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
@@ -125,7 +125,7 @@ Circle::Circle(const FxHelper& fxHelper,
                circleParams.circleCentreTarget, pathParams},
     m_dotDiameters{m_goomRand, NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter},
     m_dotDrawer{std::make_unique<DotDrawer>(m_draw, m_goomRand, m_helper)},
-    m_mainColorMaps{GetAllSlimMaps(m_goomRand)},
+    m_mainColorMaps{MakeSharedAllSlimMaps(m_goomRand)},
     m_lowColorMaps{m_mainColorMaps},
     m_mainColorMapsGrid{NUM_DOTS, m_mainColorMaps->GetRandomColorMap(),
                         m_dotPaths.GetPositionTRef(), GetVerticalMainColorMaps(),
@@ -192,8 +192,8 @@ auto Circle::GetVerticalLowColorMaps() const -> std::vector<const COLOR::IColorM
   return colorMaps;
 }
 
-void Circle::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMainMaps,
-                                  const std::shared_ptr<RandomColorMaps> weightedLowMaps)
+void Circle::SetWeightedColorMaps(const std::shared_ptr<const RandomColorMaps> weightedMainMaps,
+                                  const std::shared_ptr<const RandomColorMaps> weightedLowMaps)
 {
   m_mainColorMaps = weightedMainMaps;
   m_lowColorMaps = weightedLowMaps;

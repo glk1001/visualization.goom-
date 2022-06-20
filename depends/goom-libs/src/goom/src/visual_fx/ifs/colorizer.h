@@ -21,8 +21,9 @@ class Colorizer
 public:
   explicit Colorizer(const UTILS::MATH::IGoomRand& goomRand);
 
-  [[nodiscard]] auto GetWeightedColorMaps() const -> const std::shared_ptr<COLOR::RandomColorMaps>&;
-  auto SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedColorMaps)
+  [[nodiscard]] auto GetWeightedColorMaps() const
+      -> const std::shared_ptr<const COLOR::RandomColorMaps>&;
+  auto SetWeightedColorMaps(const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps)
       -> void;
 
   auto GetColorMaps() const -> const COLOR::RandomColorMaps&;
@@ -44,7 +45,7 @@ public:
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
-  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps;
+  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps;
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id;
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap1{};
@@ -101,7 +102,7 @@ inline auto Colorizer::SetMaxHitCount(const uint32_t val) -> void
 }
 
 inline auto Colorizer::GetWeightedColorMaps() const
-    -> const std::shared_ptr<COLOR::RandomColorMaps>&
+    -> const std::shared_ptr<const COLOR::RandomColorMaps>&
 {
   return m_colorMaps;
 }

@@ -149,8 +149,8 @@ public:
   [[nodiscard]] auto GetTubeId() const -> uint32_t;
   [[nodiscard]] auto IsActive() const -> bool;
 
-  void SetWeightedMainColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
+  void SetWeightedMainColorMaps(std::shared_ptr<const RandomColorMaps> weightedMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<const RandomColorMaps> weightedMaps);
 
   void ResetColorMaps();
   void RotateShapeColorMaps();
@@ -224,12 +224,12 @@ Tube::Tube(const TubeData& data, const OscillatingFunction::Params& pathParams) 
 {
 }
 
-void Tube::SetWeightedMainColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void Tube::SetWeightedMainColorMaps(const std::shared_ptr<const RandomColorMaps> weightedMaps)
 {
   m_pimpl->SetWeightedMainColorMaps(weightedMaps);
 }
 
-void Tube::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void Tube::SetWeightedLowColorMaps(const std::shared_ptr<const RandomColorMaps> weightedMaps)
 {
   m_pimpl->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -326,8 +326,8 @@ public:
   [[nodiscard]] auto GetBrightnessFactor() const -> float;
   void SetBrightnessFactor(float val);
 
-  void SetWeightedMainColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
+  void SetWeightedMainColorMaps(std::shared_ptr<const RandomColorMaps> weightedMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<const RandomColorMaps> weightedMaps);
 
   void ResetColorMaps();
   void RotateShapeColorMaps();
@@ -485,12 +485,14 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
   return shapes;
 }
 
-void Tube::TubeImpl::SetWeightedMainColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void Tube::TubeImpl::SetWeightedMainColorMaps(
+    const std::shared_ptr<const RandomColorMaps> weightedMaps)
 {
   m_colorizer->SetWeightedMainColorMaps(weightedMaps);
 }
 
-void Tube::TubeImpl::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void Tube::TubeImpl::SetWeightedLowColorMaps(
+    const std::shared_ptr<const RandomColorMaps> weightedMaps)
 {
   m_colorizer->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -833,12 +835,14 @@ void ShapeColorizer::InitColorMaps()
   }
 }
 
-void ShapeColorizer::SetWeightedMainColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void ShapeColorizer::SetWeightedMainColorMaps(
+    const std::shared_ptr<const RandomColorMaps> weightedMaps)
 {
   m_data.mainColorMaps = weightedMaps;
 }
 
-void ShapeColorizer::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void ShapeColorizer::SetWeightedLowColorMaps(
+    const std::shared_ptr<const RandomColorMaps> weightedMaps)
 {
   m_data.lowColorMaps = weightedMaps;
 }

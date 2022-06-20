@@ -33,12 +33,12 @@ public:
         COLOR::RandomColorMapsManager& colorMapsManager,
         const Params& params) noexcept;
 
-  auto SetWeightedMainColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
+  auto SetWeightedMainColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
-  auto SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
+  auto SetWeightedLowColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
-  auto SetWeightedInnerColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
+  auto SetWeightedInnerColorMaps(
+      std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void;
 
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
   auto SetShapePathsMinMaxNumSteps(uint32_t shapePathsMinNumSteps,

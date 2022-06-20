@@ -39,10 +39,10 @@ public:
 
   [[nodiscard]] auto GetWeightedMainColorMaps() const noexcept -> const COLOR::RandomColorMaps&;
   [[nodiscard]] auto GetWeightedLowColorMaps() const noexcept -> const COLOR::RandomColorMaps&;
-  auto SetWeightedMainColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedColorMaps) noexcept
-      -> void;
-  auto SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedColorMaps) noexcept
-      -> void;
+  auto SetWeightedMainColorMaps(
+      std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(
+      std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept -> void;
 
   [[nodiscard]] auto GetFixedMainColorMapName() const noexcept -> COLOR::COLOR_DATA::ColorMapName;
   [[nodiscard]] auto GetFixedLowColorMapName() const noexcept -> COLOR::COLOR_DATA::ColorMapName;
@@ -77,14 +77,10 @@ private:
   const float m_xMax;
   Point2dInt m_zoomMidpoint;
 
-  static constexpr float MIN_SATURATION = 0.5F;
-  static constexpr float MAX_SATURATION = 1.0F;
-  static constexpr float MIN_LIGHTNESS = 0.5F;
-  static constexpr float MAX_LIGHTNESS = 1.0F;
-  std::shared_ptr<COLOR::RandomColorMaps> m_weightedMainColorMaps{
-      COLOR::GetAllStandardMaps(m_goomRand)};
-  std::shared_ptr<COLOR::RandomColorMaps> m_weightedLowColorMaps{
-      COLOR::GetAllStandardMaps(m_goomRand)};
+  std::shared_ptr<const COLOR::RandomColorMaps> m_weightedMainColorMaps{
+      COLOR::MakeSharedAllStandardMaps(m_goomRand)};
+  std::shared_ptr<const COLOR::RandomColorMaps> m_weightedLowColorMaps{
+      COLOR::MakeSharedAllStandardMaps(m_goomRand)};
   COLOR::COLOR_DATA::ColorMapName m_fixedMainColorMapName = COLOR::COLOR_DATA::ColorMapName::_NULL;
   COLOR::COLOR_DATA::ColorMapName m_fixedLowColorMapName = COLOR::COLOR_DATA::ColorMapName::_NULL;
 
@@ -147,11 +143,11 @@ public:
 
   [[nodiscard]] auto GetRandomStarType() noexcept -> IStarType*;
 
-  auto SetWeightedMainColorMaps(uint32_t starTypeId,
-                                std::shared_ptr<COLOR::RandomColorMaps> weightedColorMaps) noexcept
+  auto SetWeightedMainColorMaps(
+      uint32_t starTypeId, std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept
       -> void;
-  auto SetWeightedLowColorMaps(uint32_t starTypeId,
-                               std::shared_ptr<COLOR::RandomColorMaps> weightedColorMaps) noexcept
+  auto SetWeightedLowColorMaps(
+      uint32_t starTypeId, std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept
       -> void;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;

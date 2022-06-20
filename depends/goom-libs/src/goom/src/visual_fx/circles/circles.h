@@ -23,8 +23,8 @@ public:
           uint32_t numCircles,
           const std::vector<Circle::Params>& circleParams);
 
-  auto SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps,
-                            std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps) -> void;
+  auto SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps,
+                            std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps) -> void;
 
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 

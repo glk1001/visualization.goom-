@@ -73,8 +73,8 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw,
 {
 }
 
-auto TentacleDriver::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedMaps)
-    -> void
+auto TentacleDriver::SetWeightedColorMaps(
+    const std::shared_ptr<const RandomColorMaps>& weightedMaps) -> void
 {
   for (auto& tentacle : m_tentacles)
   {

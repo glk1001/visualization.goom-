@@ -52,8 +52,8 @@ auto Shape::GetInitialShapeParts(const Params& params) noexcept -> std::vector<S
   return shapeParts;
 }
 
-auto Shape::SetWeightedMainColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
-    -> void
+auto Shape::SetWeightedMainColorMaps(
+    const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
 {
   Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
@@ -62,8 +62,8 @@ auto Shape::SetWeightedMainColorMaps(const std::shared_ptr<RandomColorMaps> weig
   Ensures(AllColorMapsValid());
 }
 
-auto Shape::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
-    -> void
+auto Shape::SetWeightedLowColorMaps(
+    const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
 {
   Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
@@ -72,8 +72,8 @@ auto Shape::SetWeightedLowColorMaps(const std::shared_ptr<RandomColorMaps> weigh
   Ensures(AllColorMapsValid());
 }
 
-auto Shape::SetWeightedInnerColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps) noexcept
-    -> void
+auto Shape::SetWeightedInnerColorMaps(
+    const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
 {
   Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts), end(m_shapeParts),

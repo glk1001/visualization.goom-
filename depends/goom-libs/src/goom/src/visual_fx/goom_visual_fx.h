@@ -45,10 +45,10 @@ public:
       -> std::vector<std::string> = 0;
   struct WeightedColorMaps
   {
-    uint32_t id{};
-    std::shared_ptr<COLOR::RandomColorMaps> mainColorMaps{};
-    std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps{};
-    std::shared_ptr<COLOR::RandomColorMaps> extraColorMaps{};
+    uint32_t id = 0;
+    std::shared_ptr<const COLOR::RandomColorMaps> mainColorMaps = nullptr;
+    std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps = nullptr;
+    std::shared_ptr<const COLOR::RandomColorMaps> extraColorMaps = nullptr;
   };
   virtual auto SetWeightedColorMaps(
       [[maybe_unused]] const WeightedColorMaps& weightedColorMaps) noexcept

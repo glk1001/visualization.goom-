@@ -10,26 +10,26 @@
 namespace GOOM::CONTROL
 {
 
-using COLOR::GetAllMapsUnweighted;
-using COLOR::GetAllSlimMaps;
-using COLOR::GetAllStandardMaps;
-using COLOR::GetBlueStandardMaps;
-using COLOR::GetCitiesStandardMaps;
-using COLOR::GetColdStandardMaps;
-using COLOR::GetDivergingBlackStandardMaps;
-using COLOR::GetGreenStandardMaps;
-using COLOR::GetHeatStandardMaps;
-using COLOR::GetMostlySequentialSlimMaps;
-using COLOR::GetMostlySequentialStandardMaps;
-using COLOR::GetOrangeStandardMaps;
-using COLOR::GetPastelStandardMaps;
-using COLOR::GetPurpleStandardMaps;
-using COLOR::GetRedStandardMaps;
-using COLOR::GetSeasonsStandardMaps;
-using COLOR::GetSlightlyDivergingSlimMaps;
-using COLOR::GetSlightlyDivergingStandardMaps;
-using COLOR::GetWesAndersonMaps;
-using COLOR::GetYellowStandardMaps;
+using COLOR::MakeSharedAllMapsUnweighted;
+using COLOR::MakeSharedAllSlimMaps;
+using COLOR::MakeSharedAllStandardMaps;
+using COLOR::MakeSharedBlueStandardMaps;
+using COLOR::MakeSharedCitiesStandardMaps;
+using COLOR::MakeSharedColdStandardMaps;
+using COLOR::MakeSharedDivergingBlackStandardMaps;
+using COLOR::MakeSharedGreenStandardMaps;
+using COLOR::MakeSharedHeatStandardMaps;
+using COLOR::MakeSharedMostlySequentialSlimMaps;
+using COLOR::MakeSharedMostlySequentialStandardMaps;
+using COLOR::MakeSharedOrangeStandardMaps;
+using COLOR::MakeSharedPastelStandardMaps;
+using COLOR::MakeSharedPurpleStandardMaps;
+using COLOR::MakeSharedRedStandardMaps;
+using COLOR::MakeSharedSeasonsStandardMaps;
+using COLOR::MakeSharedSlightlyDivergingSlimMaps;
+using COLOR::MakeSharedSlightlyDivergingStandardMaps;
+using COLOR::MakeSharedWesAndersonMaps;
+using COLOR::MakeSharedYellowStandardMaps;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
 
@@ -37,20 +37,20 @@ auto VisualFxColorMaps::MakeColorMatchedSetsMap() const -> ColorMatchedSetsMap
 {
   // clang-format off
   return { 
-    {ColorMatchedSets::RED_GREEN_STD_MAPS,      GetTwoGroupsColorMatchedSet(GetRedStandardMaps,    GetGreenStandardMaps)},
-    {ColorMatchedSets::RED_BLUE_STD_MAPS,       GetTwoGroupsColorMatchedSet(GetRedStandardMaps,    GetBlueStandardMaps)},
-    {ColorMatchedSets::YELLOW_BLUE_STD_MAPS,    GetTwoGroupsColorMatchedSet(GetYellowStandardMaps, GetBlueStandardMaps)},
-    {ColorMatchedSets::YELLOW_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(GetYellowStandardMaps, GetPurpleStandardMaps)},
-    {ColorMatchedSets::ORANGE_GREEN_STD_MAPS,   GetTwoGroupsColorMatchedSet(GetOrangeStandardMaps, GetGreenStandardMaps)},
-    {ColorMatchedSets::ORANGE_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(GetOrangeStandardMaps, GetPurpleStandardMaps)},
-    {ColorMatchedSets::ALL_ONLY_STD_MAPS,       GetOneGroupColorMatchedSet(GetAllStandardMaps)},
-    {ColorMatchedSets::HEAT_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(GetHeatStandardMaps)},
-    {ColorMatchedSets::COLD_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(GetColdStandardMaps)},
-    {ColorMatchedSets::DIVERGING_ONLY_STD_MAPS, GetOneGroupColorMatchedSet(GetSlightlyDivergingSlimMaps)},
+    {ColorMatchedSets::RED_GREEN_STD_MAPS,      GetTwoGroupsColorMatchedSet(MakeSharedRedStandardMaps,    MakeSharedGreenStandardMaps)},
+    {ColorMatchedSets::RED_BLUE_STD_MAPS,       GetTwoGroupsColorMatchedSet(MakeSharedRedStandardMaps,    MakeSharedBlueStandardMaps)},
+    {ColorMatchedSets::YELLOW_BLUE_STD_MAPS,    GetTwoGroupsColorMatchedSet(MakeSharedYellowStandardMaps, MakeSharedBlueStandardMaps)},
+    {ColorMatchedSets::YELLOW_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(MakeSharedYellowStandardMaps, MakeSharedPurpleStandardMaps)},
+    {ColorMatchedSets::ORANGE_GREEN_STD_MAPS,   GetTwoGroupsColorMatchedSet(MakeSharedOrangeStandardMaps, MakeSharedGreenStandardMaps)},
+    {ColorMatchedSets::ORANGE_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(MakeSharedOrangeStandardMaps, MakeSharedPurpleStandardMaps)},
+    {ColorMatchedSets::ALL_ONLY_STD_MAPS,       GetOneGroupColorMatchedSet(MakeSharedAllStandardMaps)},
+    {ColorMatchedSets::HEAT_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(MakeSharedHeatStandardMaps)},
+    {ColorMatchedSets::COLD_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(MakeSharedColdStandardMaps)},
+    {ColorMatchedSets::DIVERGING_ONLY_STD_MAPS, GetOneGroupColorMatchedSet(MakeSharedSlightlyDivergingSlimMaps)},
     {ColorMatchedSets::DIVERGING_BLACK_ONLY_STD_MAPS,
-                                                GetOneGroupColorMatchedSet(GetDivergingBlackStandardMaps)},
-    {ColorMatchedSets::WES_ANDERSON_ONLY_MAPS,  GetOneGroupColorMatchedSet(GetWesAndersonMaps)},
-    {ColorMatchedSets::PASTEL_ONLY_MAPS,        GetOneGroupColorMatchedSet(GetPastelStandardMaps)},
+                                                GetOneGroupColorMatchedSet(MakeSharedDivergingBlackStandardMaps)},
+    {ColorMatchedSets::WES_ANDERSON_ONLY_MAPS,  GetOneGroupColorMatchedSet(MakeSharedWesAndersonMaps)},
+    {ColorMatchedSets::PASTEL_ONLY_MAPS,        GetOneGroupColorMatchedSet(MakeSharedPastelStandardMaps)},
     {ColorMatchedSets::COLOR_MATCHED_SET1,      GetColorMatchedSet1()},
     {ColorMatchedSets::COLOR_MATCHED_SET2,      GetColorMatchedSet2()},
     {ColorMatchedSets::COLOR_MATCHED_SET3,      GetColorMatchedSet3()},
@@ -139,9 +139,9 @@ auto VisualFxColorMaps::GetOneGroupColorMatchedSet(const GetRandomColorMapsFunc&
   }
 
   GetPrimaryColorDots(matchedSet);
-  matchedSet.at(GoomEffect::LINES1) = GetMostlySequentialStandardMaps;
-  matchedSet.at(GoomEffect::LINES2) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(GoomEffect::IMAGE) = GetAllSlimMaps;
+  matchedSet.at(GoomEffect::LINES1) = MakeSharedMostlySequentialStandardMaps;
+  matchedSet.at(GoomEffect::LINES2) = MakeSharedSlightlyDivergingStandardMaps;
+  matchedSet.at(GoomEffect::IMAGE) = MakeSharedAllSlimMaps;
 
   return matchedSet;
 }
@@ -163,251 +163,251 @@ auto VisualFxColorMaps::GetTwoGroupsColorMatchedSet(const GetRandomColorMapsFunc
   }
 
   GetPrimaryColorDots(matchedSet);
-  matchedSet.at(GoomEffect::LINES1) = GetMostlySequentialStandardMaps;
-  matchedSet.at(GoomEffect::LINES2) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(GoomEffect::IMAGE) = GetAllSlimMaps;
+  matchedSet.at(GoomEffect::LINES1) = MakeSharedMostlySequentialStandardMaps;
+  matchedSet.at(GoomEffect::LINES2) = MakeSharedSlightlyDivergingStandardMaps;
+  matchedSet.at(GoomEffect::IMAGE) = MakeSharedAllSlimMaps;
 
   return matchedSet;
 }
 
 auto VisualFxColorMaps::GetPrimaryColorDots(ColorMatchedSet& matchedSet) -> void
 {
-  matchedSet.at(GoomEffect::DOTS0) = GetRedStandardMaps;
-  matchedSet.at(GoomEffect::DOTS1) = GetBlueStandardMaps;
-  matchedSet.at(GoomEffect::DOTS2) = GetGreenStandardMaps;
-  matchedSet.at(GoomEffect::DOTS3) = GetYellowStandardMaps;
-  matchedSet.at(GoomEffect::DOTS4) = GetPurpleStandardMaps;
+  matchedSet.at(GoomEffect::DOTS0) = MakeSharedRedStandardMaps;
+  matchedSet.at(GoomEffect::DOTS1) = MakeSharedBlueStandardMaps;
+  matchedSet.at(GoomEffect::DOTS2) = MakeSharedGreenStandardMaps;
+  matchedSet.at(GoomEffect::DOTS3) = MakeSharedYellowStandardMaps;
+  matchedSet.at(GoomEffect::DOTS4) = MakeSharedPurpleStandardMaps;
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet1() -> ColorMatchedSet
 {
   return {
-      {               GoomEffect::DOTS0,               GetRedStandardMaps},
-      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
-      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
-      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
-      {               GoomEffect::DOTS4,            GetPurpleStandardMaps},
-      {             GoomEffect::CIRCLES, GetSlightlyDivergingStandardMaps},
-      {         GoomEffect::CIRCLES_LOW, GetSlightlyDivergingStandardMaps},
-      {                 GoomEffect::IFS, GetSlightlyDivergingStandardMaps},
-      {               GoomEffect::IMAGE, GetSlightlyDivergingStandardMaps},
-      {              GoomEffect::LINES1,  GetMostlySequentialStandardMaps},
-      {              GoomEffect::LINES2, GetSlightlyDivergingStandardMaps},
-      {         GoomEffect::SHAPES_MAIN,      GetMostlySequentialSlimMaps},
-      {          GoomEffect::SHAPES_LOW, GetSlightlyDivergingStandardMaps},
-      {        GoomEffect::SHAPES_INNER,      GetMostlySequentialSlimMaps},
-      {GoomEffect::STARS_MAIN_FIREWORKS,      GetMostlySequentialSlimMaps},
-      { GoomEffect::STARS_LOW_FIREWORKS, GetSlightlyDivergingStandardMaps},
-      {     GoomEffect::STARS_MAIN_RAIN,           GetSeasonsStandardMaps},
-      {      GoomEffect::STARS_LOW_RAIN,            GetCitiesStandardMaps},
-      { GoomEffect::STARS_MAIN_FOUNTAIN,              GetHeatStandardMaps},
-      {  GoomEffect::STARS_LOW_FOUNTAIN,              GetColdStandardMaps},
-      {           GoomEffect::TENTACLES,     GetSlightlyDivergingSlimMaps},
-      {                GoomEffect::TUBE, GetSlightlyDivergingStandardMaps},
-      {            GoomEffect::TUBE_LOW,     GetSlightlyDivergingSlimMaps},
+      {             GoomEffect::CIRCLES, MakeSharedSlightlyDivergingStandardMaps},
+      {         GoomEffect::CIRCLES_LOW, MakeSharedSlightlyDivergingStandardMaps},
+      {               GoomEffect::DOTS0,               MakeSharedRedStandardMaps},
+      {               GoomEffect::DOTS1,              MakeSharedBlueStandardMaps},
+      {               GoomEffect::DOTS2,             MakeSharedGreenStandardMaps},
+      {               GoomEffect::DOTS3,            MakeSharedYellowStandardMaps},
+      {               GoomEffect::DOTS4,            MakeSharedPurpleStandardMaps},
+      {                 GoomEffect::IFS, MakeSharedSlightlyDivergingStandardMaps},
+      {               GoomEffect::IMAGE, MakeSharedSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES1,  MakeSharedMostlySequentialStandardMaps},
+      {              GoomEffect::LINES2, MakeSharedSlightlyDivergingStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,      MakeSharedMostlySequentialSlimMaps},
+      {          GoomEffect::SHAPES_LOW, MakeSharedSlightlyDivergingStandardMaps},
+      {        GoomEffect::SHAPES_INNER,      MakeSharedMostlySequentialSlimMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,      MakeSharedMostlySequentialSlimMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS, MakeSharedSlightlyDivergingStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,           MakeSharedSeasonsStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,            MakeSharedCitiesStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,              MakeSharedHeatStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,              MakeSharedColdStandardMaps},
+      {           GoomEffect::TENTACLES,     MakeSharedSlightlyDivergingSlimMaps},
+      {                GoomEffect::TUBE, MakeSharedSlightlyDivergingStandardMaps},
+      {            GoomEffect::TUBE_LOW,     MakeSharedSlightlyDivergingSlimMaps},
   };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet2() -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,     GetSlightlyDivergingSlimMaps},
-      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
-      {               GoomEffect::DOTS0,            GetOrangeStandardMaps},
-      {               GoomEffect::DOTS1,            GetPurpleStandardMaps},
-      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
-      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
-      {               GoomEffect::DOTS4,               GetRedStandardMaps},
-      {                 GoomEffect::IFS,     GetSlightlyDivergingSlimMaps},
-      {               GoomEffect::IMAGE,     GetSlightlyDivergingSlimMaps},
-      {              GoomEffect::LINES1,     GetSlightlyDivergingSlimMaps},
-      {              GoomEffect::LINES2, GetSlightlyDivergingStandardMaps},
-      {         GoomEffect::SHAPES_MAIN,              GetHeatStandardMaps},
-      {          GoomEffect::SHAPES_LOW,           GetSeasonsStandardMaps},
-      {        GoomEffect::SHAPES_INNER,              GetColdStandardMaps},
-      {GoomEffect::STARS_MAIN_FIREWORKS,              GetHeatStandardMaps},
-      { GoomEffect::STARS_LOW_FIREWORKS,                   GetAllSlimMaps},
-      {     GoomEffect::STARS_MAIN_RAIN,              GetColdStandardMaps},
-      {      GoomEffect::STARS_LOW_RAIN,           GetSeasonsStandardMaps},
-      { GoomEffect::STARS_MAIN_FOUNTAIN,              GetBlueStandardMaps},
-      {  GoomEffect::STARS_LOW_FOUNTAIN,            GetYellowStandardMaps},
-      {           GoomEffect::TENTACLES,            GetYellowStandardMaps},
-      {                GoomEffect::TUBE,            GetYellowStandardMaps},
-      {            GoomEffect::TUBE_LOW,              GetBlueStandardMaps},
+      {             GoomEffect::CIRCLES,     MakeSharedSlightlyDivergingSlimMaps},
+      {         GoomEffect::CIRCLES_LOW,     MakeSharedSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,            MakeSharedOrangeStandardMaps},
+      {               GoomEffect::DOTS1,            MakeSharedPurpleStandardMaps},
+      {               GoomEffect::DOTS2,             MakeSharedGreenStandardMaps},
+      {               GoomEffect::DOTS3,            MakeSharedYellowStandardMaps},
+      {               GoomEffect::DOTS4,               MakeSharedRedStandardMaps},
+      {                 GoomEffect::IFS,     MakeSharedSlightlyDivergingSlimMaps},
+      {               GoomEffect::IMAGE,     MakeSharedSlightlyDivergingSlimMaps},
+      {              GoomEffect::LINES1,     MakeSharedSlightlyDivergingSlimMaps},
+      {              GoomEffect::LINES2, MakeSharedSlightlyDivergingStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,              MakeSharedHeatStandardMaps},
+      {          GoomEffect::SHAPES_LOW,           MakeSharedSeasonsStandardMaps},
+      {        GoomEffect::SHAPES_INNER,              MakeSharedColdStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,              MakeSharedHeatStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,                   MakeSharedAllSlimMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,              MakeSharedColdStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,           MakeSharedSeasonsStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,              MakeSharedBlueStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,            MakeSharedYellowStandardMaps},
+      {           GoomEffect::TENTACLES,            MakeSharedYellowStandardMaps},
+      {                GoomEffect::TUBE,            MakeSharedYellowStandardMaps},
+      {            GoomEffect::TUBE_LOW,              MakeSharedBlueStandardMaps},
   };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet3() -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,              GetColdStandardMaps},
-      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
-      {               GoomEffect::DOTS0,               GetRedStandardMaps},
-      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
-      {               GoomEffect::DOTS2,            GetOrangeStandardMaps},
-      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
-      {               GoomEffect::DOTS4,             GetGreenStandardMaps},
-      {                 GoomEffect::IFS,              GetColdStandardMaps},
-      {               GoomEffect::IMAGE,  GetMostlySequentialStandardMaps},
-      {              GoomEffect::LINES1,                   GetAllSlimMaps},
-      {              GoomEffect::LINES2,              GetBlueStandardMaps},
-      {         GoomEffect::SHAPES_MAIN,            GetPastelStandardMaps},
-      {          GoomEffect::SHAPES_LOW,    GetDivergingBlackStandardMaps},
-      {        GoomEffect::SHAPES_INNER, GetSlightlyDivergingStandardMaps},
-      {GoomEffect::STARS_MAIN_FIREWORKS,     GetSlightlyDivergingSlimMaps},
-      { GoomEffect::STARS_LOW_FIREWORKS,              GetBlueStandardMaps},
-      {     GoomEffect::STARS_MAIN_RAIN,               GetWesAndersonMaps},
-      {      GoomEffect::STARS_LOW_RAIN,           GetSeasonsStandardMaps},
-      { GoomEffect::STARS_MAIN_FOUNTAIN,                   GetAllSlimMaps},
-      {  GoomEffect::STARS_LOW_FOUNTAIN,            GetPastelStandardMaps},
-      {           GoomEffect::TENTACLES,  GetMostlySequentialStandardMaps},
-      {                GoomEffect::TUBE,  GetMostlySequentialStandardMaps},
-      {            GoomEffect::TUBE_LOW,              GetHeatStandardMaps},
+      {             GoomEffect::CIRCLES,              MakeSharedColdStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     MakeSharedSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               MakeSharedRedStandardMaps},
+      {               GoomEffect::DOTS1,              MakeSharedBlueStandardMaps},
+      {               GoomEffect::DOTS2,            MakeSharedOrangeStandardMaps},
+      {               GoomEffect::DOTS3,            MakeSharedYellowStandardMaps},
+      {               GoomEffect::DOTS4,             MakeSharedGreenStandardMaps},
+      {                 GoomEffect::IFS,              MakeSharedColdStandardMaps},
+      {               GoomEffect::IMAGE,  MakeSharedMostlySequentialStandardMaps},
+      {              GoomEffect::LINES1,                   MakeSharedAllSlimMaps},
+      {              GoomEffect::LINES2,              MakeSharedBlueStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,            MakeSharedPastelStandardMaps},
+      {          GoomEffect::SHAPES_LOW,    MakeSharedDivergingBlackStandardMaps},
+      {        GoomEffect::SHAPES_INNER, MakeSharedSlightlyDivergingStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,     MakeSharedSlightlyDivergingSlimMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,              MakeSharedBlueStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,               MakeSharedWesAndersonMaps},
+      {      GoomEffect::STARS_LOW_RAIN,           MakeSharedSeasonsStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,                   MakeSharedAllSlimMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,            MakeSharedPastelStandardMaps},
+      {           GoomEffect::TENTACLES,  MakeSharedMostlySequentialStandardMaps},
+      {                GoomEffect::TUBE,  MakeSharedMostlySequentialStandardMaps},
+      {            GoomEffect::TUBE_LOW,              MakeSharedHeatStandardMaps},
   };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet4() -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,            GetCitiesStandardMaps},
-      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
-      {               GoomEffect::DOTS0,               GetWesAndersonMaps},
-      {               GoomEffect::DOTS1,            GetCitiesStandardMaps},
-      {               GoomEffect::DOTS2,           GetSeasonsStandardMaps},
-      {               GoomEffect::DOTS3,              GetHeatStandardMaps},
-      {               GoomEffect::DOTS4,              GetColdStandardMaps},
-      {                 GoomEffect::IFS,            GetCitiesStandardMaps},
-      {               GoomEffect::IMAGE,            GetCitiesStandardMaps},
-      {              GoomEffect::LINES1, GetSlightlyDivergingStandardMaps},
-      {              GoomEffect::LINES2,               GetRedStandardMaps},
-      {         GoomEffect::SHAPES_MAIN,            GetPurpleStandardMaps},
-      {          GoomEffect::SHAPES_LOW,             GetGreenStandardMaps},
-      {        GoomEffect::SHAPES_INNER,            GetYellowStandardMaps},
-      {GoomEffect::STARS_MAIN_FIREWORKS,              GetBlueStandardMaps},
-      { GoomEffect::STARS_LOW_FIREWORKS,  GetMostlySequentialStandardMaps},
-      {     GoomEffect::STARS_MAIN_RAIN,            GetCitiesStandardMaps},
-      {      GoomEffect::STARS_LOW_RAIN,    GetDivergingBlackStandardMaps},
-      { GoomEffect::STARS_MAIN_FOUNTAIN,                   GetAllSlimMaps},
-      {  GoomEffect::STARS_LOW_FOUNTAIN,           GetSeasonsStandardMaps},
-      {           GoomEffect::TENTACLES,            GetPurpleStandardMaps},
-      {                GoomEffect::TUBE,            GetPurpleStandardMaps},
-      {            GoomEffect::TUBE_LOW,            GetPastelStandardMaps},
+      {             GoomEffect::CIRCLES,            MakeSharedCitiesStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     MakeSharedSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               MakeSharedWesAndersonMaps},
+      {               GoomEffect::DOTS1,            MakeSharedCitiesStandardMaps},
+      {               GoomEffect::DOTS2,           MakeSharedSeasonsStandardMaps},
+      {               GoomEffect::DOTS3,              MakeSharedHeatStandardMaps},
+      {               GoomEffect::DOTS4,              MakeSharedColdStandardMaps},
+      {                 GoomEffect::IFS,            MakeSharedCitiesStandardMaps},
+      {               GoomEffect::IMAGE,            MakeSharedCitiesStandardMaps},
+      {              GoomEffect::LINES1, MakeSharedSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES2,               MakeSharedRedStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,            MakeSharedPurpleStandardMaps},
+      {          GoomEffect::SHAPES_LOW,             MakeSharedGreenStandardMaps},
+      {        GoomEffect::SHAPES_INNER,            MakeSharedYellowStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,              MakeSharedBlueStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,  MakeSharedMostlySequentialStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,            MakeSharedCitiesStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,    MakeSharedDivergingBlackStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,                   MakeSharedAllSlimMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,           MakeSharedSeasonsStandardMaps},
+      {           GoomEffect::TENTACLES,            MakeSharedPurpleStandardMaps},
+      {                GoomEffect::TUBE,            MakeSharedPurpleStandardMaps},
+      {            GoomEffect::TUBE_LOW,            MakeSharedPastelStandardMaps},
   };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet5() -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,            GetPastelStandardMaps},
-      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
-      {               GoomEffect::DOTS0,    GetDivergingBlackStandardMaps},
-      {               GoomEffect::DOTS1, GetSlightlyDivergingStandardMaps},
-      {               GoomEffect::DOTS2,            GetPastelStandardMaps},
-      {               GoomEffect::DOTS3,               GetWesAndersonMaps},
-      {               GoomEffect::DOTS4,              GetHeatStandardMaps},
-      {                 GoomEffect::IFS,            GetPastelStandardMaps},
-      {               GoomEffect::IMAGE,            GetPastelStandardMaps},
-      {              GoomEffect::LINES1, GetSlightlyDivergingStandardMaps},
-      {              GoomEffect::LINES2,               GetRedStandardMaps},
-      {         GoomEffect::SHAPES_MAIN,            GetPastelStandardMaps},
-      {          GoomEffect::SHAPES_LOW, GetSlightlyDivergingStandardMaps},
-      {        GoomEffect::SHAPES_INNER,    GetDivergingBlackStandardMaps},
-      {GoomEffect::STARS_MAIN_FIREWORKS,            GetPastelStandardMaps},
-      { GoomEffect::STARS_LOW_FIREWORKS,  GetMostlySequentialStandardMaps},
-      {     GoomEffect::STARS_MAIN_RAIN, GetSlightlyDivergingStandardMaps},
-      {      GoomEffect::STARS_LOW_RAIN,    GetDivergingBlackStandardMaps},
-      { GoomEffect::STARS_MAIN_FOUNTAIN,               GetRedStandardMaps},
-      {  GoomEffect::STARS_LOW_FOUNTAIN,             GetGreenStandardMaps},
-      {           GoomEffect::TENTACLES,           GetSeasonsStandardMaps},
-      {                GoomEffect::TUBE,           GetSeasonsStandardMaps},
-      {            GoomEffect::TUBE_LOW,              GetColdStandardMaps},
+      {             GoomEffect::CIRCLES,            MakeSharedPastelStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     MakeSharedSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,    MakeSharedDivergingBlackStandardMaps},
+      {               GoomEffect::DOTS1, MakeSharedSlightlyDivergingStandardMaps},
+      {               GoomEffect::DOTS2,            MakeSharedPastelStandardMaps},
+      {               GoomEffect::DOTS3,               MakeSharedWesAndersonMaps},
+      {               GoomEffect::DOTS4,              MakeSharedHeatStandardMaps},
+      {                 GoomEffect::IFS,            MakeSharedPastelStandardMaps},
+      {               GoomEffect::IMAGE,            MakeSharedPastelStandardMaps},
+      {              GoomEffect::LINES1, MakeSharedSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES2,               MakeSharedRedStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,            MakeSharedPastelStandardMaps},
+      {          GoomEffect::SHAPES_LOW, MakeSharedSlightlyDivergingStandardMaps},
+      {        GoomEffect::SHAPES_INNER,    MakeSharedDivergingBlackStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,            MakeSharedPastelStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,  MakeSharedMostlySequentialStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN, MakeSharedSlightlyDivergingStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,    MakeSharedDivergingBlackStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,               MakeSharedRedStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,             MakeSharedGreenStandardMaps},
+      {           GoomEffect::TENTACLES,           MakeSharedSeasonsStandardMaps},
+      {                GoomEffect::TUBE,           MakeSharedSeasonsStandardMaps},
+      {            GoomEffect::TUBE_LOW,              MakeSharedColdStandardMaps},
   };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet6() -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,            GetPastelStandardMaps},
-      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
-      {               GoomEffect::DOTS0,               GetRedStandardMaps},
-      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
-      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
-      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
-      {               GoomEffect::DOTS4,              GetHeatStandardMaps},
-      {                 GoomEffect::IFS,            GetPastelStandardMaps},
-      {               GoomEffect::IMAGE,            GetPastelStandardMaps},
-      {              GoomEffect::LINES1, GetSlightlyDivergingStandardMaps},
-      {              GoomEffect::LINES2,               GetRedStandardMaps},
-      {         GoomEffect::SHAPES_MAIN,               GetAllStandardMaps},
-      {          GoomEffect::SHAPES_LOW,            GetPastelStandardMaps},
-      {        GoomEffect::SHAPES_INNER,              GetHeatStandardMaps},
-      {GoomEffect::STARS_MAIN_FIREWORKS,            GetPastelStandardMaps},
-      { GoomEffect::STARS_LOW_FIREWORKS,              GetColdStandardMaps},
-      {     GoomEffect::STARS_MAIN_RAIN,              GetColdStandardMaps},
-      {      GoomEffect::STARS_LOW_RAIN,            GetPastelStandardMaps},
-      { GoomEffect::STARS_MAIN_FOUNTAIN,            GetPurpleStandardMaps},
-      {  GoomEffect::STARS_LOW_FOUNTAIN,           GetSeasonsStandardMaps},
-      {           GoomEffect::TENTACLES,           GetSeasonsStandardMaps},
-      {                GoomEffect::TUBE,           GetSeasonsStandardMaps},
-      {            GoomEffect::TUBE_LOW,            GetCitiesStandardMaps},
+      {             GoomEffect::CIRCLES,            MakeSharedPastelStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     MakeSharedSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               MakeSharedRedStandardMaps},
+      {               GoomEffect::DOTS1,              MakeSharedBlueStandardMaps},
+      {               GoomEffect::DOTS2,             MakeSharedGreenStandardMaps},
+      {               GoomEffect::DOTS3,            MakeSharedYellowStandardMaps},
+      {               GoomEffect::DOTS4,              MakeSharedHeatStandardMaps},
+      {                 GoomEffect::IFS,            MakeSharedPastelStandardMaps},
+      {               GoomEffect::IMAGE,            MakeSharedPastelStandardMaps},
+      {              GoomEffect::LINES1, MakeSharedSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES2,               MakeSharedRedStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,               MakeSharedAllStandardMaps},
+      {          GoomEffect::SHAPES_LOW,            MakeSharedPastelStandardMaps},
+      {        GoomEffect::SHAPES_INNER,              MakeSharedHeatStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,            MakeSharedPastelStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,              MakeSharedColdStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,              MakeSharedColdStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,            MakeSharedPastelStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,            MakeSharedPurpleStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,           MakeSharedSeasonsStandardMaps},
+      {           GoomEffect::TENTACLES,           MakeSharedSeasonsStandardMaps},
+      {                GoomEffect::TUBE,           MakeSharedSeasonsStandardMaps},
+      {            GoomEffect::TUBE_LOW,            MakeSharedCitiesStandardMaps},
   };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet7() -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,            GetPastelStandardMaps},
-      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
-      {               GoomEffect::DOTS0,               GetRedStandardMaps},
-      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
-      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
-      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
-      {               GoomEffect::DOTS4,              GetHeatStandardMaps},
-      {                 GoomEffect::IFS,            GetPastelStandardMaps},
-      {               GoomEffect::IMAGE,            GetPastelStandardMaps},
-      {              GoomEffect::LINES1, GetSlightlyDivergingStandardMaps},
-      {              GoomEffect::LINES2,               GetRedStandardMaps},
-      {         GoomEffect::SHAPES_MAIN,               GetRedStandardMaps},
-      {          GoomEffect::SHAPES_LOW,              GetBlueStandardMaps},
-      {        GoomEffect::SHAPES_INNER,             GetGreenStandardMaps},
-      {GoomEffect::STARS_MAIN_FIREWORKS,            GetPastelStandardMaps},
-      { GoomEffect::STARS_LOW_FIREWORKS,             GetAllMapsUnweighted},
-      {     GoomEffect::STARS_MAIN_RAIN,              GetHeatStandardMaps},
-      {      GoomEffect::STARS_LOW_RAIN,      GetMostlySequentialSlimMaps},
-      { GoomEffect::STARS_MAIN_FOUNTAIN,              GetColdStandardMaps},
-      {  GoomEffect::STARS_LOW_FOUNTAIN,              GetColdStandardMaps},
-      {           GoomEffect::TENTACLES,             GetGreenStandardMaps},
-      {                GoomEffect::TUBE,             GetAllMapsUnweighted},
-      {            GoomEffect::TUBE_LOW,                   GetAllSlimMaps},
+      {             GoomEffect::CIRCLES,            MakeSharedPastelStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     MakeSharedSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               MakeSharedRedStandardMaps},
+      {               GoomEffect::DOTS1,              MakeSharedBlueStandardMaps},
+      {               GoomEffect::DOTS2,             MakeSharedGreenStandardMaps},
+      {               GoomEffect::DOTS3,            MakeSharedYellowStandardMaps},
+      {               GoomEffect::DOTS4,              MakeSharedHeatStandardMaps},
+      {                 GoomEffect::IFS,            MakeSharedPastelStandardMaps},
+      {               GoomEffect::IMAGE,            MakeSharedPastelStandardMaps},
+      {              GoomEffect::LINES1, MakeSharedSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES2,               MakeSharedRedStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,               MakeSharedRedStandardMaps},
+      {          GoomEffect::SHAPES_LOW,              MakeSharedBlueStandardMaps},
+      {        GoomEffect::SHAPES_INNER,             MakeSharedGreenStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,            MakeSharedPastelStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,             MakeSharedAllMapsUnweighted},
+      {     GoomEffect::STARS_MAIN_RAIN,              MakeSharedHeatStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,      MakeSharedMostlySequentialSlimMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,              MakeSharedColdStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,              MakeSharedColdStandardMaps},
+      {           GoomEffect::TENTACLES,             MakeSharedGreenStandardMaps},
+      {                GoomEffect::TUBE,             MakeSharedAllMapsUnweighted},
+      {            GoomEffect::TUBE_LOW,                   MakeSharedAllSlimMaps},
   };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,              GetHeatStandardMaps},
-      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
-      {               GoomEffect::DOTS0,               GetRedStandardMaps},
-      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
-      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
-      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
-      {               GoomEffect::DOTS4,              GetHeatStandardMaps},
-      {                 GoomEffect::IFS,               GetRedStandardMaps},
-      {               GoomEffect::IMAGE,               GetAllStandardMaps},
-      {              GoomEffect::LINES1,               GetAllStandardMaps},
-      {              GoomEffect::LINES2,               GetAllStandardMaps},
-      {         GoomEffect::SHAPES_MAIN,               GetWesAndersonMaps},
-      {          GoomEffect::SHAPES_LOW,               GetRedStandardMaps},
-      {        GoomEffect::SHAPES_INNER, GetSlightlyDivergingStandardMaps},
-      {GoomEffect::STARS_MAIN_FIREWORKS,              GetBlueStandardMaps},
-      { GoomEffect::STARS_LOW_FIREWORKS,              GetBlueStandardMaps},
-      {     GoomEffect::STARS_MAIN_RAIN,               GetRedStandardMaps},
-      {      GoomEffect::STARS_LOW_RAIN,            GetYellowStandardMaps},
-      { GoomEffect::STARS_MAIN_FOUNTAIN,             GetGreenStandardMaps},
-      {  GoomEffect::STARS_LOW_FOUNTAIN,            GetPurpleStandardMaps},
-      {           GoomEffect::TENTACLES,            GetYellowStandardMaps},
-      {                GoomEffect::TUBE,             GetGreenStandardMaps},
-      {            GoomEffect::TUBE_LOW,              GetHeatStandardMaps},
+      {             GoomEffect::CIRCLES,              MakeSharedHeatStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     MakeSharedSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               MakeSharedRedStandardMaps},
+      {               GoomEffect::DOTS1,              MakeSharedBlueStandardMaps},
+      {               GoomEffect::DOTS2,             MakeSharedGreenStandardMaps},
+      {               GoomEffect::DOTS3,            MakeSharedYellowStandardMaps},
+      {               GoomEffect::DOTS4,              MakeSharedHeatStandardMaps},
+      {                 GoomEffect::IFS,               MakeSharedRedStandardMaps},
+      {               GoomEffect::IMAGE,               MakeSharedAllStandardMaps},
+      {              GoomEffect::LINES1,               MakeSharedAllStandardMaps},
+      {              GoomEffect::LINES2,               MakeSharedAllStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,               MakeSharedWesAndersonMaps},
+      {          GoomEffect::SHAPES_LOW,               MakeSharedRedStandardMaps},
+      {        GoomEffect::SHAPES_INNER, MakeSharedSlightlyDivergingStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,              MakeSharedBlueStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,              MakeSharedBlueStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,               MakeSharedRedStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,            MakeSharedYellowStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,             MakeSharedGreenStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,            MakeSharedPurpleStandardMaps},
+      {           GoomEffect::TENTACLES,            MakeSharedYellowStandardMaps},
+      {                GoomEffect::TUBE,             MakeSharedGreenStandardMaps},
+      {            GoomEffect::TUBE_LOW,              MakeSharedHeatStandardMaps},
   };
 }
 

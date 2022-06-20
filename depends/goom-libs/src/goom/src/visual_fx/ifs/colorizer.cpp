@@ -8,8 +8,8 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using COLOR::GetSlightlyDivergingStandardMaps;
 using COLOR::IColorMap;
+using COLOR::MakeSharedSlightlyDivergingStandardMaps;
 using COLOR::RandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::MATH::IGoomRand;
@@ -28,7 +28,7 @@ static constexpr float SINE_MAP_COLORS_WEIGHT       =  5.0F;
 
 Colorizer::Colorizer(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
-    m_colorMaps{GetSlightlyDivergingStandardMaps(m_goomRand)},
+    m_colorMaps{MakeSharedSlightlyDivergingStandardMaps(m_goomRand)},
     m_mixerMap1Id{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_mixerMap2Id{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_colorModeWeights{
@@ -48,8 +48,8 @@ Colorizer::Colorizer(const IGoomRand& goomRand)
   UpdateMixerMaps();
 }
 
-auto Colorizer::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedColorMaps)
-    -> void
+auto Colorizer::SetWeightedColorMaps(
+    const std::shared_ptr<const RandomColorMaps>& weightedColorMaps) -> void
 {
   m_colorMaps = weightedColorMaps;
 

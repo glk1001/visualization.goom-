@@ -299,10 +299,12 @@ void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
 
 void GoomAllVisualFx::ChangeLineColorMaps()
 {
-  m_visualFxColorMaps.SetNextColorMapSet();
+  m_visualFxColorMaps.SetNextRandomColorMapSet();
 
-  m_goomLine1->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMaps(GoomEffect::LINES1));
-  m_goomLine2->SetWeightedColorMaps(m_visualFxColorMaps.GetColorMaps(GoomEffect::LINES2));
+  m_goomLine1->SetWeightedColorMaps(
+      m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::LINES1));
+  m_goomLine2->SetWeightedColorMaps(
+      m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::LINES2));
 }
 
 auto GoomAllVisualFx::GetCurrentColorMapsNames() const -> std::unordered_set<std::string>

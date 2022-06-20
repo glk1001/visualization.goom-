@@ -64,8 +64,8 @@ public:
 
   [[nodiscard]] auto IsActive() const -> bool;
 
-  void SetWeightedMainColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps);
+  void SetWeightedMainColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps);
+  void SetWeightedLowColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps);
 
   void ResetColorMaps();
 

@@ -54,8 +54,8 @@ public:
   auto operator=(const Circle&) -> Circle& = delete;
   auto operator=(Circle&&) -> Circle& = delete;
 
-  void SetWeightedColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMainMaps,
-                            std::shared_ptr<COLOR::RandomColorMaps> weightedLowMaps);
+  void SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMainMaps,
+                            std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps);
   void SetMovingTargetPoint(const Point2dInt& movingTargetPoint, float lerpTFromFixedTarget);
   void SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams);
 
@@ -125,8 +125,8 @@ private:
                           float lineBrightness,
                           float tDotColor) -> void;
 
-  std::shared_ptr<COLOR::RandomColorMaps> m_mainColorMaps;
-  std::shared_ptr<COLOR::RandomColorMaps> m_lowColorMaps;
+  std::shared_ptr<const COLOR::RandomColorMaps> m_mainColorMaps;
+  std::shared_ptr<const COLOR::RandomColorMaps> m_lowColorMaps;
   const COLOR::IColorMap* m_linesMainColorMap{};
   const COLOR::IColorMap* m_linesLowColorMap{};
 

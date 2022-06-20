@@ -40,7 +40,7 @@ public:
   auto Get2DTentacle() -> Tentacle2D& { return *m_tentacle; }
   [[nodiscard]] auto Get2DTentacle() const -> const Tentacle2D& { return *m_tentacle; }
 
-  void SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps);
+  void SetWeightedColorMaps(const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps);
   void ColorMapsChanged();
 
   [[nodiscard]] auto GetMixedColors(size_t nodeNum,
@@ -64,7 +64,7 @@ private:
   std::unique_ptr<Tentacle2D> m_tentacle;
 
   COLOR::RandomColorMapsManager m_colorMapsManager{};
-  std::shared_ptr<COLOR::RandomColorMaps> m_colorMaps{};
+  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{};
   COLOR::RandomColorMapsManager::ColorMapId m_mainColorMapID;
   COLOR::RandomColorMapsManager::ColorMapId m_lowColorMapID;
   static constexpr float MIN_COLOR_SEGMENT_MIX_T = 0.4F;

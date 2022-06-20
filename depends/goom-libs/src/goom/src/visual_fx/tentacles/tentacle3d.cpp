@@ -39,7 +39,8 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
 
 Tentacle3D::~Tentacle3D() noexcept = default;
 
-void Tentacle3D::SetWeightedColorMaps(const std::shared_ptr<COLOR::RandomColorMaps>& weightedMaps)
+void Tentacle3D::SetWeightedColorMaps(
+    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps)
 {
   m_colorMaps = weightedMaps;
 

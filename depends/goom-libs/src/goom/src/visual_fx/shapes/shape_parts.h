@@ -45,12 +45,12 @@ public:
   auto operator=(const ShapePart&) -> ShapePart& = delete;
   auto operator=(ShapePart&&) -> ShapePart& = delete;
 
-  auto SetWeightedMainColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
+  auto SetWeightedMainColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
-  auto SetWeightedLowColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
+  auto SetWeightedLowColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
-  auto SetWeightedInnerColorMaps(std::shared_ptr<COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
+  auto SetWeightedInnerColorMaps(
+      std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void;
 
   auto SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void;
 
@@ -119,9 +119,9 @@ private:
   static constexpr float MAX_INNER_COLOR_MIX_T = 0.9F;
   struct ColorInfo
   {
-    std::shared_ptr<COLOR::RandomColorMaps> mainColorMaps;
-    std::shared_ptr<COLOR::RandomColorMaps> lowColorMaps;
-    std::shared_ptr<COLOR::RandomColorMaps> innerColorMaps;
+    std::shared_ptr<const COLOR::RandomColorMaps> mainColorMaps;
+    std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps;
+    std::shared_ptr<const COLOR::RandomColorMaps> innerColorMaps;
     float innerColorMix;
   };
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;

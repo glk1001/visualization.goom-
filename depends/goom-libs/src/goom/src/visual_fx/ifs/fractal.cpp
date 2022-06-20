@@ -32,7 +32,7 @@ Fractal::Fractal(const uint32_t screenWidth,
   Reset();
 }
 
-auto Fractal::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps>& weightedColorMaps)
+auto Fractal::SetWeightedColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedColorMaps)
     -> void
 {
   m_similitudes.SetWeightedColorMaps(weightedColorMaps);

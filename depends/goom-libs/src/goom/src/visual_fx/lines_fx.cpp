@@ -40,11 +40,11 @@ namespace GOOM::VISUAL_FX
 {
 
 using COLOR::ColorAdjustment;
-using COLOR::GetAllSlimMaps;
 using COLOR::GetBrighterColor;
 using COLOR::GetLightenedColor;
 using COLOR::GetSimpleColor;
 using COLOR::IColorMap;
+using COLOR::MakeSharedAllSlimMaps;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::SimpleColors;
@@ -83,7 +83,7 @@ public:
             const Pixel& destColor);
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  void SetWeightedColorMaps(std::shared_ptr<RandomColorMaps> weightedMaps);
+  void SetWeightedColorMaps(std::shared_ptr<const RandomColorMaps> weightedMaps);
 
   void Start();
 
@@ -109,7 +109,7 @@ private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
 
-  std::shared_ptr<RandomColorMaps> m_colorMaps;
+  std::shared_ptr<const RandomColorMaps> m_colorMaps;
   RandomColorMapsManager m_colorMapsManager{};
   RandomColorMapsManager::ColorMapId m_currentColorMapID;
   float m_currentBrightness = 1.0F;
@@ -196,7 +196,7 @@ auto LinesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::stri
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-void LinesFx::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void LinesFx::SetWeightedColorMaps(const std::shared_ptr<const RandomColorMaps> weightedMaps)
 {
   m_pimpl->SetWeightedColorMaps(weightedMaps);
 }
@@ -287,7 +287,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_colorMaps{GetAllSlimMaps(m_goomRand)},
+    m_colorMaps{MakeSharedAllSlimMaps(m_goomRand)},
     m_currentColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
@@ -351,7 +351,8 @@ auto LinesFx::LinesImpl::GetCurrentColorMapsNames() const noexcept -> std::vecto
   return {m_colorMaps->GetColorMapsName()};
 }
 
-void LinesFx::LinesImpl::SetWeightedColorMaps(const std::shared_ptr<RandomColorMaps> weightedMaps)
+void LinesFx::LinesImpl::SetWeightedColorMaps(
+    const std::shared_ptr<const RandomColorMaps> weightedMaps)
 {
   m_colorMaps = weightedMaps;
   m_colorMapsManager.UpdateColorMapInfo(m_currentColorMapID,
@@ -490,7 +491,7 @@ auto LinesFx::LinesImpl::GetRandomLineColor() const -> Pixel
   {
     return GetSimpleColor(static_cast<SimpleColors>(m_goomRand.GetNRand(NUM<SimpleColors>)));
   }
-  return RandomColorMaps{m_goomRand}.GetRandomColor(GetRandomColorMap(), 0.0F, 1.0F);
+  return RandomColorMaps::GetRandomColor(m_goomRand, GetRandomColorMap(), 0.0F, 1.0F);
 }
 
 inline auto LinesFx::LinesImpl::GetFinalLineColor(const Pixel& color) const -> Pixel

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom_config.h"
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -47,31 +48,20 @@ enum class GoomEffect
   _num // unused and must be last
 };
 
-static inline constexpr auto EXPECTED_NUM_DOT_TYPES =
-    1 + (static_cast<uint32_t>(GoomEffect::DOTS4) - static_cast<uint32_t>(GoomEffect::DOTS0));
-static inline constexpr auto EXPECTED_NUM_SHAPES =
-    1 + ((static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) -
-          static_cast<uint32_t>(GoomEffect::SHAPES_MAIN)) /
-         3);
-static inline constexpr auto EXPECTED_NUM_STAR_MODES =
-    1 + ((static_cast<uint32_t>(GoomEffect::STARS_LOW_FOUNTAIN) -
-          static_cast<uint32_t>(GoomEffect::STARS_MAIN_FIREWORKS)) /
-         2);
-
 class VisualFxColorMaps
 {
 public:
   explicit VisualFxColorMaps(const UTILS::MATH::IGoomRand& goomRand);
 
-  auto SetNextColorMapSet() -> void;
+  auto SetNextRandomColorMapSet() -> void;
 
-  [[nodiscard]] auto GetColorMaps(GoomEffect goomEffect) const
-      -> std::shared_ptr<COLOR::RandomColorMaps>;
+  [[nodiscard]] auto GetCurrentRandomColorMaps(GoomEffect goomEffect) const
+      -> std::shared_ptr<const COLOR::RandomColorMaps>;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
 
-  using GetRandomColorMapsFunc = std::function<std::shared_ptr<COLOR::RandomColorMaps>(
+  using GetRandomColorMapsFunc = std::function<std::shared_ptr<const COLOR::RandomColorMaps>(
       const UTILS::MATH::IGoomRand& goomRand)>;
   using ColorMatchedSet = std::map<GoomEffect, GetRandomColorMapsFunc>;
 
@@ -126,14 +116,14 @@ private:
   [[nodiscard]] static auto GetColorMatchedSet8() -> ColorMatchedSet;
 };
 
-inline auto VisualFxColorMaps::SetNextColorMapSet() -> void
+inline auto VisualFxColorMaps::SetNextRandomColorMapSet() -> void
 {
   m_currentColorMatchedSet = &GetNextColorMatchedSet();
   Ensures(m_currentColorMatchedSet->size() == UTILS::NUM<GoomEffect>);
 }
 
-inline auto VisualFxColorMaps::GetColorMaps(const GoomEffect goomEffect) const
-    -> std::shared_ptr<COLOR::RandomColorMaps>
+inline auto VisualFxColorMaps::GetCurrentRandomColorMaps(GoomEffect goomEffect) const
+    -> std::shared_ptr<const COLOR::RandomColorMaps>
 {
   const GetRandomColorMapsFunc& getRandomColorMaps = (*m_currentColorMatchedSet).at(goomEffect);
   return getRandomColorMaps(m_goomRand);
