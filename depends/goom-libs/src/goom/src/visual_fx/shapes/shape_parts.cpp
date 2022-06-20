@@ -10,6 +10,7 @@
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
+#include "utils/timer.h"
 
 namespace GOOM::VISUAL_FX::SHAPES
 {
@@ -261,6 +262,23 @@ auto ShapePart::SetWeightedMainColorMaps(
 
   std::for_each(begin(m_shapePaths), end(m_shapePaths),
                 [this](const ShapePath& shapePath) { shapePath.UpdateMainColorInfo(*this); });
+
+  UpdateMegaColorChangeMode();
+}
+
+inline auto ShapePart::UpdateMegaColorChangeMode() -> void
+{
+  if (not m_megaColorChangeTimer.Finished())
+  {
+    return;
+  }
+
+  static constexpr float PROB_MEGA_COLOR_CHANGE = 0.1F;
+  m_megaColorChangeMode = m_goomRand.ProbabilityOf(PROB_MEGA_COLOR_CHANGE);
+  if (m_megaColorChangeMode)
+  {
+    m_megaColorChangeTimer.ResetToZero();
+  }
 }
 
 auto ShapePart::SetWeightedLowColorMaps(
@@ -310,6 +328,8 @@ auto ShapePart::UpdateInnerColorMapId(
 
 void ShapePart::DoRandomChanges() noexcept
 {
+  DoMegaColorChange();
+
   if (not m_shapePaths.at(0).HasJustHitAnyBoundary())
   {
     return;
@@ -318,6 +338,16 @@ void ShapePart::DoRandomChanges() noexcept
   SetRandomizedShapePaths();
   SetShapePathsNumSteps();
   ChangeAllColorMapsNow();
+}
+
+inline auto ShapePart::DoMegaColorChange() noexcept -> void
+{
+  if (not m_megaColorChangeMode)
+  {
+    return;
+  }
+
+  m_colorMapsManager.ChangeAllColorMapsNow();
 }
 
 inline auto ShapePart::ChangeAllColorMapsNow() noexcept -> void

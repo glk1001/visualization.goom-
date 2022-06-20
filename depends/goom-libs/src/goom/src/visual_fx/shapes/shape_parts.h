@@ -9,6 +9,7 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/step_speed.h"
 #include "utils/t_values.h"
+#include "utils/timer.h"
 
 #include <cstdint>
 #include <memory>
@@ -127,6 +128,11 @@ private:
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
   ColorInfo m_colorInfo{GetInitialColorInfo()};
   auto ChangeAllColorMapsNow() noexcept -> void;
+  bool m_megaColorChangeMode = false;
+  static constexpr uint32_t MEGA_COLOR_CHANGE_COUNT = 200;
+  UTILS::Timer m_megaColorChangeTimer{MEGA_COLOR_CHANGE_COUNT, true};
+  auto DoMegaColorChange() noexcept -> void;
+  auto UpdateMegaColorChangeMode() -> void;
 
   const uint32_t m_shapePartNum;
   static constexpr uint32_t MIN_NUM_SHAPE_PATHS = 4;
@@ -257,6 +263,11 @@ inline auto ShapePart::IncrementTs() noexcept -> void
   std::for_each(begin(m_shapePaths), end(m_shapePaths), [](ShapePath& path) { path.IncrementT(); });
 
   m_dotRadiusT.Increment();
+
+  if (m_megaColorChangeMode)
+  {
+    m_megaColorChangeTimer.Increment();
+  }
 }
 
 inline auto ShapePart::ResetTs(const float val) noexcept -> void

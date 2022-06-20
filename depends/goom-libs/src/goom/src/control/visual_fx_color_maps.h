@@ -122,7 +122,7 @@ inline auto VisualFxColorMaps::SetNextRandomColorMapSet() -> void
   Ensures(m_currentColorMatchedSet->size() == UTILS::NUM<GoomEffect>);
 }
 
-inline auto VisualFxColorMaps::GetCurrentRandomColorMaps(GoomEffect goomEffect) const
+inline auto VisualFxColorMaps::GetCurrentRandomColorMaps(const GoomEffect goomEffect) const
     -> std::shared_ptr<const COLOR::RandomColorMaps>
 {
   const GetRandomColorMapsFunc& getRandomColorMaps = (*m_currentColorMatchedSet).at(goomEffect);
