@@ -290,11 +290,11 @@ inline auto AllStandardVisualFx::ChangeShapesColorMaps() -> void
   {
     const uint32_t offsetFromZero = 3 * i;
     const auto goomEffectMain =
-        static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES0_MAIN) + offsetFromZero);
+        static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) + offsetFromZero);
     const auto goomEffectLow =
-        static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES0_LOW) + offsetFromZero);
+        static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES_LOW) + offsetFromZero);
     const auto goomEffectInner =
-        static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES0_INNER) + offsetFromZero);
+        static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES_INNER) + offsetFromZero);
 
     m_drawablesMap.at(GoomDrawables::SHAPES)
         ->SetWeightedColorMaps({i, m_visualFxColorMaps.GetColorMaps(goomEffectMain),

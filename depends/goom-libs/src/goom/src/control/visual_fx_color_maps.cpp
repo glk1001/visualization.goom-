@@ -31,62 +31,60 @@ using COLOR::GetSlightlyDivergingStandardMaps;
 using COLOR::GetWesAndersonMaps;
 using COLOR::GetYellowStandardMaps;
 using UTILS::NUM;
-using UTILS::ToUType;
 using UTILS::MATH::IGoomRand;
 
-auto VisualFxColorMaps::GetColorMatchedSetsArray() const -> ColorMatchedSetsArray
+auto VisualFxColorMaps::MakeColorMatchedSetsMap() const -> ColorMatchedSetsMap
 {
-  ColorMatchedSetsArray colorSets{};
-
   // clang-format off
-  colorSets.at(ToUType(ColorMatchedSets::RED_GREEN_STANDARD_MAPS))            = GetTwoGroupsColorMatchedSet(GetRedStandardMaps,    GetGreenStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::RED_BLUE_STANDARD_MAPS))             = GetTwoGroupsColorMatchedSet(GetRedStandardMaps,    GetBlueStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::YELLOW_BLUE_STANDARD_MAPS))          = GetTwoGroupsColorMatchedSet(GetYellowStandardMaps, GetBlueStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::YELLOW_PURPLE_STANDARD_MAPS))        = GetTwoGroupsColorMatchedSet(GetYellowStandardMaps, GetPurpleStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::ORANGE_GREEN_STANDARD_MAPS))         = GetTwoGroupsColorMatchedSet(GetOrangeStandardMaps, GetGreenStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::ORANGE_PURPLE_STANDARD_MAPS))        = GetTwoGroupsColorMatchedSet(GetOrangeStandardMaps, GetPurpleStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::ALL_ONLY_STANDARD_MAPS))             = GetOneGroupColorMatchedSet(GetAllStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::HEAT_ONLY_STANDARD_MAPS))            = GetOneGroupColorMatchedSet(GetHeatStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::COLD_ONLY_STANDARD_MAPS))            = GetOneGroupColorMatchedSet(GetColdStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::DIVERGING_ONLY_STANDARD_MAPS))       = GetOneGroupColorMatchedSet(GetSlightlyDivergingSlimMaps);
-  colorSets.at(ToUType(ColorMatchedSets::DIVERGING_BLACK_ONLY_STANDARD_MAPS)) = GetOneGroupColorMatchedSet(GetDivergingBlackStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::WES_ANDERSON_ONLY_MAPS))             = GetOneGroupColorMatchedSet(GetWesAndersonMaps);
-  colorSets.at(ToUType(ColorMatchedSets::PASTEL_ONLY_MAPS))                   = GetOneGroupColorMatchedSet(GetPastelStandardMaps);
-  colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET1))                 = GetColorMatchedSet1();
-  colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET2))                 = GetColorMatchedSet2();
-  colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET3))                 = GetColorMatchedSet3();
-  colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET4))                 = GetColorMatchedSet4();
-  colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET5))                 = GetColorMatchedSet5();
-  colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET6))                 = GetColorMatchedSet6();
-  colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET7))                 = GetColorMatchedSet7();
-  colorSets.at(ToUType(ColorMatchedSets::COLOR_MATCHED_SET8))                 = GetColorMatchedSet8();
+  return { 
+    {ColorMatchedSets::RED_GREEN_STD_MAPS,      GetTwoGroupsColorMatchedSet(GetRedStandardMaps,    GetGreenStandardMaps)},
+    {ColorMatchedSets::RED_BLUE_STD_MAPS,       GetTwoGroupsColorMatchedSet(GetRedStandardMaps,    GetBlueStandardMaps)},
+    {ColorMatchedSets::YELLOW_BLUE_STD_MAPS,    GetTwoGroupsColorMatchedSet(GetYellowStandardMaps, GetBlueStandardMaps)},
+    {ColorMatchedSets::YELLOW_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(GetYellowStandardMaps, GetPurpleStandardMaps)},
+    {ColorMatchedSets::ORANGE_GREEN_STD_MAPS,   GetTwoGroupsColorMatchedSet(GetOrangeStandardMaps, GetGreenStandardMaps)},
+    {ColorMatchedSets::ORANGE_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(GetOrangeStandardMaps, GetPurpleStandardMaps)},
+    {ColorMatchedSets::ALL_ONLY_STD_MAPS,       GetOneGroupColorMatchedSet(GetAllStandardMaps)},
+    {ColorMatchedSets::HEAT_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(GetHeatStandardMaps)},
+    {ColorMatchedSets::COLD_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(GetColdStandardMaps)},
+    {ColorMatchedSets::DIVERGING_ONLY_STD_MAPS, GetOneGroupColorMatchedSet(GetSlightlyDivergingSlimMaps)},
+    {ColorMatchedSets::DIVERGING_BLACK_ONLY_STD_MAPS,
+                                                GetOneGroupColorMatchedSet(GetDivergingBlackStandardMaps)},
+    {ColorMatchedSets::WES_ANDERSON_ONLY_MAPS,  GetOneGroupColorMatchedSet(GetWesAndersonMaps)},
+    {ColorMatchedSets::PASTEL_ONLY_MAPS,        GetOneGroupColorMatchedSet(GetPastelStandardMaps)},
+    {ColorMatchedSets::COLOR_MATCHED_SET1,      GetColorMatchedSet1()},
+    {ColorMatchedSets::COLOR_MATCHED_SET2,      GetColorMatchedSet2()},
+    {ColorMatchedSets::COLOR_MATCHED_SET3,      GetColorMatchedSet3()},
+    {ColorMatchedSets::COLOR_MATCHED_SET4,      GetColorMatchedSet4()},
+    {ColorMatchedSets::COLOR_MATCHED_SET5,      GetColorMatchedSet5()},
+    {ColorMatchedSets::COLOR_MATCHED_SET6,      GetColorMatchedSet6()},
+    {ColorMatchedSets::COLOR_MATCHED_SET7,      GetColorMatchedSet7()},
+    {ColorMatchedSets::COLOR_MATCHED_SET8,      GetColorMatchedSet8()},
+  };
   // clang-format on
-
-  return colorSets;
 }
 
 // clang-format off
-static constexpr float RED_GREEN_STANDARD_MAPS_WEIGHT            =   5.0F;
-static constexpr float RED_BLUE_STANDARD_MAPS_WEIGHT             =   5.0F;
-static constexpr float YELLOW_BLUE_STANDARD_MAPS_WEIGHT          =   5.0F;
-static constexpr float YELLOW_PURPLE_STANDARD_MAPS_WEIGHT        =   5.0F;
-static constexpr float ORANGE_GREEN_STANDARD_MAPS_WEIGHT         =   5.0F;
-static constexpr float ORANGE_PURPLE_STANDARD_MAPS_WEIGHT        =   5.0F;
-static constexpr float ALL_ONLY_STANDARD_MAPS_WEIGHT             =  20.0F;
-static constexpr float HEAT_ONLY_STANDARD_MAPS_WEIGHT            =  35.0F;
-static constexpr float COLD_ONLY_STANDARD_MAPS_WEIGHT            =  35.0F;
-static constexpr float DIVERGING_ONLY_STANDARD_MAPS_WEIGHT       =  40.0F;
-static constexpr float DIVERGING_BLACK_ONLY_STANDARD_MAPS_WEIGHT =  40.0F;
-static constexpr float WES_ANDERSON_ONLY_MAPS_WEIGHT             =  40.0F;
-static constexpr float PASTEL_ONLY_MAPS_WEIGHT                   =  40.0F;
-static constexpr float COLOR_MATCHED_SET1_WEIGHT                 =  90.0F;
-static constexpr float COLOR_MATCHED_SET2_WEIGHT                 =  90.0F;
-static constexpr float COLOR_MATCHED_SET3_WEIGHT                 =  90.0F;
-static constexpr float COLOR_MATCHED_SET4_WEIGHT                 =  90.0F;
-static constexpr float COLOR_MATCHED_SET5_WEIGHT                 =  90.0F;
-static constexpr float COLOR_MATCHED_SET6_WEIGHT                 =  90.0F;
-static constexpr float COLOR_MATCHED_SET7_WEIGHT                 =  90.0F;
-static constexpr float COLOR_MATCHED_SET8_WEIGHT                 =  90.0F;
+static constexpr float RED_GREEN_STD_MAPS_WEIGHT            =   5.0F;
+static constexpr float RED_BLUE_STD_MAPS_WEIGHT             =   5.0F;
+static constexpr float YELLOW_BLUE_STD_MAPS_WEIGHT          =   5.0F;
+static constexpr float YELLOW_PURPLE_STD_MAPS_WEIGHT        =   5.0F;
+static constexpr float ORANGE_GREEN_STD_MAPS_WEIGHT         =   5.0F;
+static constexpr float ORANGE_PURPLE_STD_MAPS_WEIGHT        =   5.0F;
+static constexpr float ALL_ONLY_STD_MAPS_WEIGHT             =  20.0F;
+static constexpr float HEAT_ONLY_STD_MAPS_WEIGHT            =  35.0F;
+static constexpr float COLD_ONLY_STD_MAPS_WEIGHT            =  35.0F;
+static constexpr float DIVERGING_ONLY_STD_MAPS_WEIGHT       =  40.0F;
+static constexpr float DIVERGING_BLACK_ONLY_STD_MAPS_WEIGHT =  40.0F;
+static constexpr float WES_ANDERSON_ONLY_MAPS_WEIGHT        =  40.0F;
+static constexpr float PASTEL_ONLY_MAPS_WEIGHT              =  40.0F;
+static constexpr float COLOR_MATCHED_SET1_WEIGHT            =  90.0F;
+static constexpr float COLOR_MATCHED_SET2_WEIGHT            =  90.0F;
+static constexpr float COLOR_MATCHED_SET3_WEIGHT            =  90.0F;
+static constexpr float COLOR_MATCHED_SET4_WEIGHT            =  90.0F;
+static constexpr float COLOR_MATCHED_SET5_WEIGHT            =  90.0F;
+static constexpr float COLOR_MATCHED_SET6_WEIGHT            =  90.0F;
+static constexpr float COLOR_MATCHED_SET7_WEIGHT            =  90.0F;
+static constexpr float COLOR_MATCHED_SET8_WEIGHT            =  90.0F;
 // clang-format on
 
 VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand)
@@ -96,27 +94,27 @@ VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand)
     {
         m_goomRand,
         {
-             {ColorMatchedSets::RED_GREEN_STANDARD_MAPS,            RED_GREEN_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::RED_BLUE_STANDARD_MAPS,             RED_BLUE_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::YELLOW_BLUE_STANDARD_MAPS,          YELLOW_BLUE_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::YELLOW_PURPLE_STANDARD_MAPS,        YELLOW_PURPLE_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::ORANGE_GREEN_STANDARD_MAPS,         ORANGE_GREEN_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::ORANGE_PURPLE_STANDARD_MAPS,        ORANGE_PURPLE_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::ALL_ONLY_STANDARD_MAPS,             ALL_ONLY_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::HEAT_ONLY_STANDARD_MAPS,            HEAT_ONLY_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::COLD_ONLY_STANDARD_MAPS,            COLD_ONLY_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::DIVERGING_ONLY_STANDARD_MAPS,       DIVERGING_ONLY_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::DIVERGING_BLACK_ONLY_STANDARD_MAPS, DIVERGING_BLACK_ONLY_STANDARD_MAPS_WEIGHT},
-             {ColorMatchedSets::WES_ANDERSON_ONLY_MAPS,             WES_ANDERSON_ONLY_MAPS_WEIGHT},
-             {ColorMatchedSets::PASTEL_ONLY_MAPS,                   PASTEL_ONLY_MAPS_WEIGHT},
-             {ColorMatchedSets::COLOR_MATCHED_SET1,                 COLOR_MATCHED_SET1_WEIGHT},
-             {ColorMatchedSets::COLOR_MATCHED_SET2,                 COLOR_MATCHED_SET2_WEIGHT},
-             {ColorMatchedSets::COLOR_MATCHED_SET3,                 COLOR_MATCHED_SET3_WEIGHT},
-             {ColorMatchedSets::COLOR_MATCHED_SET4,                 COLOR_MATCHED_SET4_WEIGHT},
-             {ColorMatchedSets::COLOR_MATCHED_SET5,                 COLOR_MATCHED_SET5_WEIGHT},
-             {ColorMatchedSets::COLOR_MATCHED_SET6,                 COLOR_MATCHED_SET6_WEIGHT},
-             {ColorMatchedSets::COLOR_MATCHED_SET7,                 COLOR_MATCHED_SET7_WEIGHT},
-             {ColorMatchedSets::COLOR_MATCHED_SET8,                 COLOR_MATCHED_SET8_WEIGHT},
+            {ColorMatchedSets::RED_GREEN_STD_MAPS,            RED_GREEN_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::RED_BLUE_STD_MAPS,             RED_BLUE_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::YELLOW_BLUE_STD_MAPS,          YELLOW_BLUE_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::YELLOW_PURPLE_STD_MAPS,        YELLOW_PURPLE_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::ORANGE_GREEN_STD_MAPS,         ORANGE_GREEN_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::ORANGE_PURPLE_STD_MAPS,        ORANGE_PURPLE_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::ALL_ONLY_STD_MAPS,             ALL_ONLY_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::HEAT_ONLY_STD_MAPS,            HEAT_ONLY_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::COLD_ONLY_STD_MAPS,            COLD_ONLY_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::DIVERGING_ONLY_STD_MAPS,       DIVERGING_ONLY_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::DIVERGING_BLACK_ONLY_STD_MAPS, DIVERGING_BLACK_ONLY_STD_MAPS_WEIGHT},
+            {ColorMatchedSets::WES_ANDERSON_ONLY_MAPS,        WES_ANDERSON_ONLY_MAPS_WEIGHT},
+            {ColorMatchedSets::PASTEL_ONLY_MAPS,              PASTEL_ONLY_MAPS_WEIGHT},
+            {ColorMatchedSets::COLOR_MATCHED_SET1,            COLOR_MATCHED_SET1_WEIGHT},
+            {ColorMatchedSets::COLOR_MATCHED_SET2,            COLOR_MATCHED_SET2_WEIGHT},
+            {ColorMatchedSets::COLOR_MATCHED_SET3,            COLOR_MATCHED_SET3_WEIGHT},
+            {ColorMatchedSets::COLOR_MATCHED_SET4,            COLOR_MATCHED_SET4_WEIGHT},
+            {ColorMatchedSets::COLOR_MATCHED_SET5,            COLOR_MATCHED_SET5_WEIGHT},
+            {ColorMatchedSets::COLOR_MATCHED_SET6,            COLOR_MATCHED_SET6_WEIGHT},
+            {ColorMatchedSets::COLOR_MATCHED_SET7,            COLOR_MATCHED_SET7_WEIGHT},
+            {ColorMatchedSets::COLOR_MATCHED_SET8,            COLOR_MATCHED_SET8_WEIGHT},
         }
     }
 // clang-format on
@@ -125,361 +123,292 @@ VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand)
 
 auto VisualFxColorMaps::GetNextColorMatchedSet() const -> const ColorMatchedSet&
 {
-  return m_colorMatchedSets.at(static_cast<size_t>(m_colorMatchedSetsWeights.GetRandomWeighted()));
+  return m_colorMatchedSetsMap.at(m_colorMatchedSetsWeights.GetRandomWeighted());
 }
 
 // TODO: CLion is giving false positives for unreachable functions.
-// For example 'GetConstColorMatchedSet'.
-auto VisualFxColorMaps::GetOneGroupColorMatchedSet(const ColorMapsFunc& func) -> ColorMatchedSet
+// For example, 'GetOneGroupColorMatchedSet'.
+auto VisualFxColorMaps::GetOneGroupColorMatchedSet(const GetRandomColorMapsFunc& func)
+    -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{nullptr};
-  matchedSet.fill(func);
+  ColorMatchedSet matchedSet{};
+
+  for (uint32_t i = 0; i < NUM<GoomEffect>; ++i)
+  {
+    matchedSet.try_emplace(static_cast<GoomEffect>(i), func);
+  }
 
   GetPrimaryColorDots(matchedSet);
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllSlimMaps;
+  matchedSet.at(GoomEffect::LINES1) = GetMostlySequentialStandardMaps;
+  matchedSet.at(GoomEffect::LINES2) = GetSlightlyDivergingStandardMaps;
+  matchedSet.at(GoomEffect::IMAGE) = GetAllSlimMaps;
 
   return matchedSet;
 }
 
-auto VisualFxColorMaps::GetTwoGroupsColorMatchedSet(const ColorMapsFunc& func1,
-                                                    const ColorMapsFunc& func2) const
+auto VisualFxColorMaps::GetTwoGroupsColorMatchedSet(const GetRandomColorMapsFunc& func1,
+                                                    const GetRandomColorMapsFunc& func2) const
     -> ColorMatchedSet
 {
   ColorMatchedSet matchedSet = GetOneGroupColorMatchedSet(func1);
+
+  // Change every second map entry to 'func2'.
   std::array<size_t, NUM<GoomEffect>> indexes{};
   std::iota(begin(indexes), end(indexes), 0);
   m_goomRand.Shuffle(begin(indexes), end(indexes));
   static constexpr size_t INC_BY_2 = 2;
   for (size_t i = 0; i < NUM<GoomEffect>; i += INC_BY_2)
   {
-    matchedSet.at(indexes.at(i)) = func2;
+    matchedSet.at(static_cast<GoomEffect>(indexes.at(i))) = func2;
   }
 
   GetPrimaryColorDots(matchedSet);
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllSlimMaps;
+  matchedSet.at(GoomEffect::LINES1) = GetMostlySequentialStandardMaps;
+  matchedSet.at(GoomEffect::LINES2) = GetSlightlyDivergingStandardMaps;
+  matchedSet.at(GoomEffect::IMAGE) = GetAllSlimMaps;
 
   return matchedSet;
 }
 
 auto VisualFxColorMaps::GetPrimaryColorDots(ColorMatchedSet& matchedSet) -> void
 {
-  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetPurpleStandardMaps;
+  matchedSet.at(GoomEffect::DOTS0) = GetRedStandardMaps;
+  matchedSet.at(GoomEffect::DOTS1) = GetBlueStandardMaps;
+  matchedSet.at(GoomEffect::DOTS2) = GetGreenStandardMaps;
+  matchedSet.at(GoomEffect::DOTS3) = GetYellowStandardMaps;
+  matchedSet.at(GoomEffect::DOTS4) = GetPurpleStandardMaps;
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet1() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{nullptr};
-
-  GetPrimaryColorDots(matchedSet);
-  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::CIRCLES_LOW)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IFS)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetMostlySequentialSlimMaps;
-  /**
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
-   **/
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetCitiesStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetSlightlyDivergingSlimMaps;
-
-  return matchedSet;
+  return {
+      {               GoomEffect::DOTS0,               GetRedStandardMaps},
+      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
+      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
+      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
+      {               GoomEffect::DOTS4,            GetPurpleStandardMaps},
+      {             GoomEffect::CIRCLES, GetSlightlyDivergingStandardMaps},
+      {         GoomEffect::CIRCLES_LOW, GetSlightlyDivergingStandardMaps},
+      {                 GoomEffect::IFS, GetSlightlyDivergingStandardMaps},
+      {               GoomEffect::IMAGE, GetSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES1,  GetMostlySequentialStandardMaps},
+      {              GoomEffect::LINES2, GetSlightlyDivergingStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,      GetMostlySequentialSlimMaps},
+      {          GoomEffect::SHAPES_LOW, GetSlightlyDivergingStandardMaps},
+      {        GoomEffect::SHAPES_INNER,      GetMostlySequentialSlimMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,      GetMostlySequentialSlimMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS, GetSlightlyDivergingStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,           GetSeasonsStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,            GetCitiesStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,              GetHeatStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,              GetColdStandardMaps},
+      {           GoomEffect::TENTACLES,     GetSlightlyDivergingSlimMaps},
+      {                GoomEffect::TUBE, GetSlightlyDivergingStandardMaps},
+      {            GoomEffect::TUBE_LOW,     GetSlightlyDivergingSlimMaps},
+  };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet2() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{nullptr};
-
-  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::CIRCLES_LOW)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetOrangeStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetPurpleStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IFS)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetColdStandardMaps;
-  /**
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
-   **/
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetAllSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetBlueStandardMaps;
-
-  return matchedSet;
+  return {
+      {             GoomEffect::CIRCLES,     GetSlightlyDivergingSlimMaps},
+      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,            GetOrangeStandardMaps},
+      {               GoomEffect::DOTS1,            GetPurpleStandardMaps},
+      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
+      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
+      {               GoomEffect::DOTS4,               GetRedStandardMaps},
+      {                 GoomEffect::IFS,     GetSlightlyDivergingSlimMaps},
+      {               GoomEffect::IMAGE,     GetSlightlyDivergingSlimMaps},
+      {              GoomEffect::LINES1,     GetSlightlyDivergingSlimMaps},
+      {              GoomEffect::LINES2, GetSlightlyDivergingStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,              GetHeatStandardMaps},
+      {          GoomEffect::SHAPES_LOW,           GetSeasonsStandardMaps},
+      {        GoomEffect::SHAPES_INNER,              GetColdStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,              GetHeatStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,                   GetAllSlimMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,              GetColdStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,           GetSeasonsStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,              GetBlueStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,            GetYellowStandardMaps},
+      {           GoomEffect::TENTACLES,            GetYellowStandardMaps},
+      {                GoomEffect::TUBE,            GetYellowStandardMaps},
+      {            GoomEffect::TUBE_LOW,              GetBlueStandardMaps},
+  };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet3() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{nullptr};
-
-  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::CIRCLES_LOW)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetOrangeStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IFS)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetAllSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetDivergingBlackStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetSlightlyDivergingStandardMaps;
-  /**
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetHeatStandardMaps;
-   **/
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetAllSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetHeatStandardMaps;
-
-  return matchedSet;
+  return {
+      {             GoomEffect::CIRCLES,              GetColdStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               GetRedStandardMaps},
+      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
+      {               GoomEffect::DOTS2,            GetOrangeStandardMaps},
+      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
+      {               GoomEffect::DOTS4,             GetGreenStandardMaps},
+      {                 GoomEffect::IFS,              GetColdStandardMaps},
+      {               GoomEffect::IMAGE,  GetMostlySequentialStandardMaps},
+      {              GoomEffect::LINES1,                   GetAllSlimMaps},
+      {              GoomEffect::LINES2,              GetBlueStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,            GetPastelStandardMaps},
+      {          GoomEffect::SHAPES_LOW,    GetDivergingBlackStandardMaps},
+      {        GoomEffect::SHAPES_INNER, GetSlightlyDivergingStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,     GetSlightlyDivergingSlimMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,              GetBlueStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,               GetWesAndersonMaps},
+      {      GoomEffect::STARS_LOW_RAIN,           GetSeasonsStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,                   GetAllSlimMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,            GetPastelStandardMaps},
+      {           GoomEffect::TENTACLES,  GetMostlySequentialStandardMaps},
+      {                GoomEffect::TUBE,  GetMostlySequentialStandardMaps},
+      {            GoomEffect::TUBE_LOW,              GetHeatStandardMaps},
+  };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet4() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{nullptr};
-
-  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetCitiesStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::CIRCLES_LOW)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetCitiesStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IFS)) = GetCitiesStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetCitiesStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetPurpleStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetYellowStandardMaps;
-  /**
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
-  **/
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetCitiesStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetDivergingBlackStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetAllSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetPurpleStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE)) = GetPurpleStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetPastelStandardMaps;
-
-  return matchedSet;
+  return {
+      {             GoomEffect::CIRCLES,            GetCitiesStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               GetWesAndersonMaps},
+      {               GoomEffect::DOTS1,            GetCitiesStandardMaps},
+      {               GoomEffect::DOTS2,           GetSeasonsStandardMaps},
+      {               GoomEffect::DOTS3,              GetHeatStandardMaps},
+      {               GoomEffect::DOTS4,              GetColdStandardMaps},
+      {                 GoomEffect::IFS,            GetCitiesStandardMaps},
+      {               GoomEffect::IMAGE,            GetCitiesStandardMaps},
+      {              GoomEffect::LINES1, GetSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES2,               GetRedStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,            GetPurpleStandardMaps},
+      {          GoomEffect::SHAPES_LOW,             GetGreenStandardMaps},
+      {        GoomEffect::SHAPES_INNER,            GetYellowStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,              GetBlueStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,  GetMostlySequentialStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,            GetCitiesStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,    GetDivergingBlackStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,                   GetAllSlimMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,           GetSeasonsStandardMaps},
+      {           GoomEffect::TENTACLES,            GetPurpleStandardMaps},
+      {                GoomEffect::TUBE,            GetPurpleStandardMaps},
+      {            GoomEffect::TUBE_LOW,            GetPastelStandardMaps},
+  };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet5() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{nullptr};
-
-  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::CIRCLES_LOW)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetDivergingBlackStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IFS)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetDivergingBlackStandardMaps;
-  /**
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetWesAndersonMaps;
-   **/
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetMostlySequentialStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetDivergingBlackStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetColdStandardMaps;
-
-  return matchedSet;
+  return {
+      {             GoomEffect::CIRCLES,            GetPastelStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,    GetDivergingBlackStandardMaps},
+      {               GoomEffect::DOTS1, GetSlightlyDivergingStandardMaps},
+      {               GoomEffect::DOTS2,            GetPastelStandardMaps},
+      {               GoomEffect::DOTS3,               GetWesAndersonMaps},
+      {               GoomEffect::DOTS4,              GetHeatStandardMaps},
+      {                 GoomEffect::IFS,            GetPastelStandardMaps},
+      {               GoomEffect::IMAGE,            GetPastelStandardMaps},
+      {              GoomEffect::LINES1, GetSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES2,               GetRedStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,            GetPastelStandardMaps},
+      {          GoomEffect::SHAPES_LOW, GetSlightlyDivergingStandardMaps},
+      {        GoomEffect::SHAPES_INNER,    GetDivergingBlackStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,            GetPastelStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,  GetMostlySequentialStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN, GetSlightlyDivergingStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,    GetDivergingBlackStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,               GetRedStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,             GetGreenStandardMaps},
+      {           GoomEffect::TENTACLES,           GetSeasonsStandardMaps},
+      {                GoomEffect::TUBE,           GetSeasonsStandardMaps},
+      {            GoomEffect::TUBE_LOW,              GetColdStandardMaps},
+  };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet6() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{nullptr};
-
-  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::CIRCLES_LOW)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IFS)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetAllStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetHeatStandardMaps;
-  /**
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
-   **/
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetPurpleStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE)) = GetSeasonsStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetCitiesStandardMaps;
-
-  return matchedSet;
+  return {
+      {             GoomEffect::CIRCLES,            GetPastelStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               GetRedStandardMaps},
+      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
+      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
+      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
+      {               GoomEffect::DOTS4,              GetHeatStandardMaps},
+      {                 GoomEffect::IFS,            GetPastelStandardMaps},
+      {               GoomEffect::IMAGE,            GetPastelStandardMaps},
+      {              GoomEffect::LINES1, GetSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES2,               GetRedStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,               GetAllStandardMaps},
+      {          GoomEffect::SHAPES_LOW,            GetPastelStandardMaps},
+      {        GoomEffect::SHAPES_INNER,              GetHeatStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,            GetPastelStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,              GetColdStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,              GetColdStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,            GetPastelStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,            GetPurpleStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,           GetSeasonsStandardMaps},
+      {           GoomEffect::TENTACLES,           GetSeasonsStandardMaps},
+      {                GoomEffect::TUBE,           GetSeasonsStandardMaps},
+      {            GoomEffect::TUBE_LOW,            GetCitiesStandardMaps},
+  };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet7() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{nullptr};
-
-  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::CIRCLES_LOW)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IFS)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetSlightlyDivergingStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetGreenStandardMaps;
-  /**
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetColdStandardMaps;
-   **/
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetPastelStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetAllMapsUnweighted;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetMostlySequentialSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetColdStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE)) = GetAllMapsUnweighted;
-  matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetAllSlimMaps;
-
-  return matchedSet;
+  return {
+      {             GoomEffect::CIRCLES,            GetPastelStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               GetRedStandardMaps},
+      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
+      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
+      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
+      {               GoomEffect::DOTS4,              GetHeatStandardMaps},
+      {                 GoomEffect::IFS,            GetPastelStandardMaps},
+      {               GoomEffect::IMAGE,            GetPastelStandardMaps},
+      {              GoomEffect::LINES1, GetSlightlyDivergingStandardMaps},
+      {              GoomEffect::LINES2,               GetRedStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,               GetRedStandardMaps},
+      {          GoomEffect::SHAPES_LOW,              GetBlueStandardMaps},
+      {        GoomEffect::SHAPES_INNER,             GetGreenStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,            GetPastelStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,             GetAllMapsUnweighted},
+      {     GoomEffect::STARS_MAIN_RAIN,              GetHeatStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,      GetMostlySequentialSlimMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,              GetColdStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,              GetColdStandardMaps},
+      {           GoomEffect::TENTACLES,             GetGreenStandardMaps},
+      {                GoomEffect::TUBE,             GetAllMapsUnweighted},
+      {            GoomEffect::TUBE_LOW,                   GetAllSlimMaps},
+  };
 }
 
 auto VisualFxColorMaps::GetColorMatchedSet8() -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{nullptr};
-
-  matchedSet.at(ToUType(GoomEffect::CIRCLES)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::CIRCLES_LOW)) = GetSlightlyDivergingSlimMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS0)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS1)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS2)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS3)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::DOTS4)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IFS)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::IMAGE)) = GetAllStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES1)) = GetAllStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::LINES2)) = GetAllStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_MAIN)) = GetWesAndersonMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_LOW)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES0_INNER)) = GetSlightlyDivergingStandardMaps;
-  /**
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_MAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_LOW)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES1_INNER)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_MAIN)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_LOW)) = GetHeatStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::SHAPES2_INNER)) = GetHeatStandardMaps;
-   **/
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FIREWORKS)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FIREWORKS)) = GetBlueStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_RAIN)) = GetRedStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_RAIN)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_MAIN_FOUNTAIN)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::STARS_LOW_FOUNTAIN)) = GetPurpleStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TENTACLES)) = GetYellowStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE)) = GetGreenStandardMaps;
-  matchedSet.at(ToUType(GoomEffect::TUBE_LOW)) = GetHeatStandardMaps;
-
-  return matchedSet;
+  return {
+      {             GoomEffect::CIRCLES,              GetHeatStandardMaps},
+      {         GoomEffect::CIRCLES_LOW,     GetSlightlyDivergingSlimMaps},
+      {               GoomEffect::DOTS0,               GetRedStandardMaps},
+      {               GoomEffect::DOTS1,              GetBlueStandardMaps},
+      {               GoomEffect::DOTS2,             GetGreenStandardMaps},
+      {               GoomEffect::DOTS3,            GetYellowStandardMaps},
+      {               GoomEffect::DOTS4,              GetHeatStandardMaps},
+      {                 GoomEffect::IFS,               GetRedStandardMaps},
+      {               GoomEffect::IMAGE,               GetAllStandardMaps},
+      {              GoomEffect::LINES1,               GetAllStandardMaps},
+      {              GoomEffect::LINES2,               GetAllStandardMaps},
+      {         GoomEffect::SHAPES_MAIN,               GetWesAndersonMaps},
+      {          GoomEffect::SHAPES_LOW,               GetRedStandardMaps},
+      {        GoomEffect::SHAPES_INNER, GetSlightlyDivergingStandardMaps},
+      {GoomEffect::STARS_MAIN_FIREWORKS,              GetBlueStandardMaps},
+      { GoomEffect::STARS_LOW_FIREWORKS,              GetBlueStandardMaps},
+      {     GoomEffect::STARS_MAIN_RAIN,               GetRedStandardMaps},
+      {      GoomEffect::STARS_LOW_RAIN,            GetYellowStandardMaps},
+      { GoomEffect::STARS_MAIN_FOUNTAIN,             GetGreenStandardMaps},
+      {  GoomEffect::STARS_LOW_FOUNTAIN,            GetPurpleStandardMaps},
+      {           GoomEffect::TENTACLES,            GetYellowStandardMaps},
+      {                GoomEffect::TUBE,             GetGreenStandardMaps},
+      {            GoomEffect::TUBE_LOW,              GetHeatStandardMaps},
+  };
 }
 
 } // namespace GOOM::CONTROL

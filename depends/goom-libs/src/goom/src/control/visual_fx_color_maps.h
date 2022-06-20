@@ -5,6 +5,7 @@
 
 #include <array>
 #include <functional>
+#include <map>
 #include <memory>
 
 namespace GOOM
@@ -31,17 +32,9 @@ enum class GoomEffect
   IMAGE,
   LINES1,
   LINES2,
-  SHAPES0_MAIN,
-  SHAPES0_LOW,
-  SHAPES0_INNER,
-  /**
-  SHAPES1_MAIN,
-  SHAPES1_LOW,
-  SHAPES1_INNER,
-  SHAPES2_MAIN,
-  SHAPES2_LOW,
-  SHAPES2_INNER,
-   **/
+  SHAPES_MAIN,
+  SHAPES_LOW,
+  SHAPES_INNER,
   STARS_MAIN_FIREWORKS,
   STARS_LOW_FIREWORKS,
   STARS_MAIN_RAIN,
@@ -57,8 +50,8 @@ enum class GoomEffect
 static inline constexpr auto EXPECTED_NUM_DOT_TYPES =
     1 + (static_cast<uint32_t>(GoomEffect::DOTS4) - static_cast<uint32_t>(GoomEffect::DOTS0));
 static inline constexpr auto EXPECTED_NUM_SHAPES =
-    1 + ((static_cast<uint32_t>(GoomEffect::SHAPES0_MAIN) -
-          static_cast<uint32_t>(GoomEffect::SHAPES0_MAIN)) /
+    1 + ((static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) -
+          static_cast<uint32_t>(GoomEffect::SHAPES_MAIN)) /
          3);
 static inline constexpr auto EXPECTED_NUM_STAR_MODES =
     1 + ((static_cast<uint32_t>(GoomEffect::STARS_LOW_FOUNTAIN) -
@@ -78,22 +71,23 @@ public:
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
 
-  using ColorMapsFunc = std::function<std::shared_ptr<COLOR::RandomColorMaps>(
+  using GetRandomColorMapsFunc = std::function<std::shared_ptr<COLOR::RandomColorMaps>(
       const UTILS::MATH::IGoomRand& goomRand)>;
-  using ColorMatchedSet = std::array<ColorMapsFunc, UTILS::NUM<GoomEffect>>;
+  using ColorMatchedSet = std::map<GoomEffect, GetRandomColorMapsFunc>;
+
   enum class ColorMatchedSets
   {
-    RED_GREEN_STANDARD_MAPS,
-    RED_BLUE_STANDARD_MAPS,
-    YELLOW_BLUE_STANDARD_MAPS,
-    YELLOW_PURPLE_STANDARD_MAPS,
-    ORANGE_GREEN_STANDARD_MAPS,
-    ORANGE_PURPLE_STANDARD_MAPS,
-    ALL_ONLY_STANDARD_MAPS,
-    HEAT_ONLY_STANDARD_MAPS,
-    COLD_ONLY_STANDARD_MAPS,
-    DIVERGING_ONLY_STANDARD_MAPS,
-    DIVERGING_BLACK_ONLY_STANDARD_MAPS,
+    RED_GREEN_STD_MAPS,
+    RED_BLUE_STD_MAPS,
+    YELLOW_BLUE_STD_MAPS,
+    YELLOW_PURPLE_STD_MAPS,
+    ORANGE_GREEN_STD_MAPS,
+    ORANGE_PURPLE_STD_MAPS,
+    ALL_ONLY_STD_MAPS,
+    HEAT_ONLY_STD_MAPS,
+    COLD_ONLY_STD_MAPS,
+    DIVERGING_ONLY_STD_MAPS,
+    DIVERGING_BLACK_ONLY_STD_MAPS,
     WES_ANDERSON_ONLY_MAPS,
     PASTEL_ONLY_MAPS,
     COLOR_MATCHED_SET1,
@@ -106,17 +100,18 @@ private:
     COLOR_MATCHED_SET8,
     _num // unused and must be last
   };
-  using ColorMatchedSetsArray = std::array<ColorMatchedSet, UTILS::NUM<ColorMatchedSets>>;
-  [[nodiscard]] auto GetColorMatchedSetsArray() const -> ColorMatchedSetsArray;
-  const ColorMatchedSetsArray m_colorMatchedSets{GetColorMatchedSetsArray()};
+  using ColorMatchedSetsMap = std::map<ColorMatchedSets, ColorMatchedSet>;
+  [[nodiscard]] auto MakeColorMatchedSetsMap() const -> ColorMatchedSetsMap;
+  const ColorMatchedSetsMap m_colorMatchedSetsMap{MakeColorMatchedSetsMap()};
+
   const UTILS::MATH::Weights<ColorMatchedSets> m_colorMatchedSetsWeights;
   [[nodiscard]] auto GetNextColorMatchedSet() const -> const ColorMatchedSet&;
   const ColorMatchedSet* m_currentColorMatchedSet{&GetNextColorMatchedSet()};
 
-  [[nodiscard]] static auto GetOneGroupColorMatchedSet(const ColorMapsFunc& func)
+  [[nodiscard]] static auto GetOneGroupColorMatchedSet(const GetRandomColorMapsFunc& func)
       -> ColorMatchedSet;
-  [[nodiscard]] auto GetTwoGroupsColorMatchedSet(const ColorMapsFunc& func1,
-                                                 const ColorMapsFunc& func2) const
+  [[nodiscard]] auto GetTwoGroupsColorMatchedSet(const GetRandomColorMapsFunc& func1,
+                                                 const GetRandomColorMapsFunc& func2) const
       -> ColorMatchedSet;
 
   static auto GetPrimaryColorDots(ColorMatchedSet& matchedSet) -> void;
@@ -134,12 +129,14 @@ private:
 inline auto VisualFxColorMaps::SetNextColorMapSet() -> void
 {
   m_currentColorMatchedSet = &GetNextColorMatchedSet();
+  Ensures(m_currentColorMatchedSet->size() == UTILS::NUM<GoomEffect>);
 }
 
 inline auto VisualFxColorMaps::GetColorMaps(const GoomEffect goomEffect) const
     -> std::shared_ptr<COLOR::RandomColorMaps>
 {
-  return (*m_currentColorMatchedSet)[static_cast<size_t>(goomEffect)](m_goomRand);
+  const GetRandomColorMapsFunc& getRandomColorMaps = (*m_currentColorMatchedSet).at(goomEffect);
+  return getRandomColorMaps(m_goomRand);
 }
 
 } // namespace CONTROL
