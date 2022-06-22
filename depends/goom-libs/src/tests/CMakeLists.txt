@@ -35,6 +35,7 @@ target_link_libraries(${GOOM_LIB_TESTS_NAME}
         Catch2::Catch2
         ${CMAKE_THREAD_LIBS_INIT}
         m
+        pthread
         stdc++
         )
 

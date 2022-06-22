@@ -109,12 +109,7 @@ else
   declare DOCKER_PREFIX="docker-"
 fi
 
-if [[ "${COMPILER}" == "gcc-12" ]]; then
-  # At the moment (June 2022), gcc-12.1 is only available on Ubuntu Kinetic.
-  declare -r DOCKER_IMAGE=clion/ubuntu/cpp-env:1.1-kinetic
-else
-  declare -r DOCKER_IMAGE=clion/ubuntu/cpp-env:1.1-jammy
-fi
+declare -r DOCKER_IMAGE=debian/cpp-env:1.1
 
 declare -r HOST_TIME_ZONE=$(cat /etc/timezone)
 declare -r HOST_CCACHE_DIR=${CCACHE_DIR}

@@ -5,15 +5,14 @@ set -e
 
 declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 
-declare -r OS_TAG=jammy
+declare -r OS_TYPE=debian
+declare -r OS_TAG=bookworm-slim
 declare -r CLANG_VER="15"
-#declare -r OS_TAG=kinetic
-#declare -r CLANG_VER=""
 
-declare -r BASE_IMAGE="clion/ubuntu/cpp-env:base-${OS_TAG}"
-declare -r TOOLS_IMAGE="clion/ubuntu/cpp-env:dev-tools-${OS_TAG}"
-declare -r CLANG_IMAGE="clion/ubuntu/cpp-env:clang-${OS_TAG}"
-declare -r FINAL_IMAGE="clion/ubuntu/cpp-env:1.1-${OS_TAG}"
+declare -r BASE_IMAGE="${OS_TYPE}/cpp-env:base-${OS_TAG}"
+declare -r TOOLS_IMAGE="${OS_TYPE}/cpp-env:dev-tools-${OS_TAG}"
+declare -r CLANG_IMAGE="${OS_TYPE}/cpp-env:clang-${OS_TAG}"
+declare -r FINAL_IMAGE="${OS_TYPE}/cpp-env:1.1"
 
 if [[ "${1:-}" == "--no-cache" ]]; then
   echo "Building \"${FINAL_IMAGE}\" with '--no-cache'..."
@@ -25,11 +24,13 @@ fi
 
 cd "${THIS_SCRIPT_PATH}"
 
-docker build ${NO_CACHE} --build-arg OS_TAG=${OS_TAG} -t ${BASE_IMAGE}  -f Dockerfile-cpp-env-base      .
-docker build ${NO_CACHE} --build-arg OS_TAG=${OS_TAG} -t ${TOOLS_IMAGE} -f Dockerfile-cpp-env-dev-tools .
-docker build ${NO_CACHE} --build-arg OS_TAG=${OS_TAG} \
-                             --build-arg CLANG_VER=${CLANG_VER} \
-                             --build-arg UID=$(id -u) -t ${CLANG_IMAGE} -f Dockerfile-cpp-env-clang     .
+declare -r BUILD_ARGS="--build-arg OS_TYPE=${OS_TYPE} --build-arg OS_TAG=${OS_TAG}"
+
+docker build ${NO_CACHE} ${BUILD_ARGS} -t ${BASE_IMAGE}  -f Dockerfile-cpp-env-base      .
+docker build ${NO_CACHE} ${BUILD_ARGS} -t ${TOOLS_IMAGE} -f Dockerfile-cpp-env-dev-tools .
+docker build ${NO_CACHE} ${BUILD_ARGS} \
+              --build-arg CLANG_VER=${CLANG_VER} \
+              --build-arg UID=$(id -u) -t ${CLANG_IMAGE} -f Dockerfile-cpp-env-clang     .
 
 docker tag ${CLANG_IMAGE} ${FINAL_IMAGE}
 

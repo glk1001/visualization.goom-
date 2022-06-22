@@ -22,7 +22,8 @@ echo "Using compilers: C: ${C_COMPILER}, C++: ${CPP_COMPILER}."
 echo "Using BUILD_DIR: \"${BUILD_DIR}\"."
 echo
 
-cmake --build "${BUILD_DIR}" --config ${BUILD_TYPE} -j 6
+declare -r NUM_JOBS=$(($(nproc --all) + 1))
+cmake --build "${BUILD_DIR}" --config ${BUILD_TYPE} -j ${NUM_JOBS}
 
 echo
 

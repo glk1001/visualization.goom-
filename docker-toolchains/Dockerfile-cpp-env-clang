@@ -1,6 +1,7 @@
+ARG OS_TYPE
 ARG OS_TAG
 
-FROM clion/ubuntu/cpp-env:dev-tools-${OS_TAG}
+FROM ${OS_TYPE}/cpp-env:dev-tools-${OS_TAG}
 
 ARG CLANG_VER=""
 
