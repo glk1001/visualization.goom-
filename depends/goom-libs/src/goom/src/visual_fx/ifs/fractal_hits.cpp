@@ -1,6 +1,6 @@
 #include "fractal_hits.h"
 
-#include "color/colorutils.h"
+#include "color/color_utils.h"
 
 namespace GOOM::VISUAL_FX::IFS
 {

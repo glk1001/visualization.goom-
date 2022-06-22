@@ -1,6 +1,6 @@
 #include "star_drawer.h"
 
-#include "color/colorutils.h"
+#include "color/color_utils.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"

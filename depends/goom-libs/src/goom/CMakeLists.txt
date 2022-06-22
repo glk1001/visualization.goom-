@@ -23,11 +23,11 @@ add_library(goom
         src/color/color_data/color_data_maps.cpp
         src/color/color_data/extra_color_groups.cpp
         src/color/color_adjustment.cpp
-        src/color/colormaps.cpp
-        src/color/colormaps_grid.cpp
-        src/color/colorutils.cpp
-        src/color/random_colormaps.cpp
-        src/color/random_colormaps_manager.cpp
+        src/color/color_maps.cpp
+        src/color/color_maps_grid.cpp
+        src/color/color_utils.cpp
+        src/color/random_color_maps.cpp
+        src/color/random_color_maps_manager.cpp
         src/control/all_standard_visual_fx.cpp
         src/control/goom_all_visual_fx.cpp
         src/control/goom_events.cpp

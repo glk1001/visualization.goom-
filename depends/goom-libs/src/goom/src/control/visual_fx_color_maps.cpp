@@ -1,6 +1,6 @@
 #include "visual_fx_color_maps.h"
 
-#include "color/random_colormaps.h"
+#include "color/random_color_maps.h"
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
 

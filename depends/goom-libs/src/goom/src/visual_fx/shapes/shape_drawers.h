@@ -1,6 +1,6 @@
 #pragma once
 
-#include "color/random_colormaps_manager.h"
+#include "color/random_color_maps_manager.h"
 #include "utils/t_values.h"
 
 #include <cstdint>

@@ -1,7 +1,7 @@
 #include "tentacle_driver.h"
 
-#include "color/colormaps.h"
-#include "color/random_colormaps.h"
+#include "color/color_maps.h"
+#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "tentacle3d.h"

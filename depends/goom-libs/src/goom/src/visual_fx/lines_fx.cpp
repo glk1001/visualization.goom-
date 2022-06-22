@@ -10,10 +10,10 @@
 //#undef NO_LOGGING
 
 #include "color/color_adjustment.h"
-#include "color/colormaps.h"
-#include "color/colorutils.h"
-#include "color/random_colormaps.h"
-#include "color/random_colormaps_manager.h"
+#include "color/color_maps.h"
+#include "color/color_utils.h"
+#include "color/random_color_maps.h"
+#include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "fx_utils/dot_drawer.h"

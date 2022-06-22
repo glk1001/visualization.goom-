@@ -3,7 +3,7 @@
 //#define NO_FREETYPE_INSTALLED
 //#undef NO_LOGGING
 
-#include "color/colorutils.h"
+#include "color/color_utils.h"
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "goom_draw.h"

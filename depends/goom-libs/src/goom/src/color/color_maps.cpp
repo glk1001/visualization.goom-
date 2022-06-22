@@ -1,11 +1,11 @@
-#include "colormaps.h"
+#include "color_maps.h"
 
 //#undef NO_LOGGING
 
 #include "color_data/color_data_maps.h"
-#include "color_data/colormap_enums.h"
+#include "color_data/color_map_enums.h"
 #include "color_data/extra_color_groups.h"
-#include "colorutils.h"
+#include "color_utils.h"
 #include "goom/goom_graphic.h"
 #include "goom/logging.h"
 #include "goom_config.h"

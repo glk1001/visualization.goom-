@@ -1,6 +1,6 @@
 #pragma once
 
-#include "color/random_colormaps.h"
+#include "color/random_color_maps.h"
 #include "goom_graphic.h"
 #include "tentacle3d.h"
 #include "tentacle_layout.h"

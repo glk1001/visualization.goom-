@@ -1,8 +1,8 @@
 #pragma once
 
-#include "colormaps.h"
+#include "color_maps.h"
 #include "goom_config.h"
-#include "random_colormaps.h"
+#include "random_color_maps.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <cstdint>

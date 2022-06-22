@@ -13,7 +13,7 @@ find_package(Threads)
 add_executable(${GOOM_LIB_TESTS_NAME}
         src/test_main.cpp
         src/test_pixels.cpp
-        src/color/test_colorutils.cpp
+        src/color/test_color_utils.cpp
         src/draw/test_draw.cpp
         src/filters/test_filter_buffers.cpp
         src/filters/test_filter_colors_service.cpp

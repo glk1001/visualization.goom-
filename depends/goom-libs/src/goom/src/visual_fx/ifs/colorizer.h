@@ -1,9 +1,9 @@
 #pragma once
 
 #include "color/color_adjustment.h"
-#include "color/colormaps.h"
-#include "color/random_colormaps.h"
-#include "color/random_colormaps_manager.h"
+#include "color/color_maps.h"
+#include "color/random_color_maps.h"
+#include "color/random_color_maps_manager.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "utils/math/goom_rand_base.h"

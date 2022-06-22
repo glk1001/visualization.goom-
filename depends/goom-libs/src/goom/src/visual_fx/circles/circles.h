@@ -2,8 +2,8 @@
 
 #include "bitmap_getter.h"
 #include "circle.h"
-#include "color/colorutils.h"
-#include "color/random_colormaps.h"
+#include "color/color_utils.h"
+#include "color/random_color_maps.h"
 #include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "visual_fx/fx_helper.h"

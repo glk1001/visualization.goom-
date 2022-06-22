@@ -2,9 +2,9 @@
 
 //#undef NO_LOGGING
 
-#include "color/colormaps.h"
-#include "color/colorutils.h"
-#include "color/random_colormaps.h"
+#include "color/color_maps.h"
+#include "color/color_utils.h"
+#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"

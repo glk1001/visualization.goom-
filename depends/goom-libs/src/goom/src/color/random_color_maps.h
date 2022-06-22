@@ -1,7 +1,7 @@
 #pragma once
 
-#include "color/color_data/colormap_enums.h"
-#include "color/colormaps.h"
+#include "color/color_data/color_map_enums.h"
+#include "color/color_maps.h"
 #include "goom/goom_graphic.h"
 #include "utils/math/goom_rand_base.h"
 

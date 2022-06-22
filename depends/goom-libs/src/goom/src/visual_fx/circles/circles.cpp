@@ -1,6 +1,6 @@
 #include "circles.h"
 
-#include "color/random_colormaps.h"
+#include "color/random_color_maps.h"
 #include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"

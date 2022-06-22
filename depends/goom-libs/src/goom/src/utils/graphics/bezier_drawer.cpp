@@ -1,6 +1,6 @@
 #include "bezier_drawer.h"
 
-#include "color/colorutils.h"
+#include "color/color_utils.h"
 #include "image_bitmaps.h"
 #include "point2d.h"
 

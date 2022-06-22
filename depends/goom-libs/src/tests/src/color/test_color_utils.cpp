@@ -1,5 +1,5 @@
 #include "catch2/catch.hpp"
-#include "color/colorutils.h"
+#include "color/color_utils.h"
 #include "goom_graphic.h"
 
 #include <algorithm>

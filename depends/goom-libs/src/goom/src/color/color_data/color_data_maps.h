@@ -6,7 +6,7 @@
 //
 // DO NOT EDIT!!
 
-#include "colormap_enums.h"
+#include "color_map_enums.h"
 #include "vivid/types.h"
 
 #include <array>

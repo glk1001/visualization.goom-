@@ -1,6 +1,6 @@
 #pragma once
 
-#include "colormap_enums.h"
+#include "color_map_enums.h"
 
 #include <vector>
 

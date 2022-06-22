@@ -1,6 +1,6 @@
 #include "color_adjustment.h"
 
-#include "colorutils.h"
+#include "color_utils.h"
 #include "goom_config.h"
 
 #ifdef _MSC_VER

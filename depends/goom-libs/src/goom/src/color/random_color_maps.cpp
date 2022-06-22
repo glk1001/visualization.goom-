@@ -1,9 +1,9 @@
-#include "random_colormaps.h"
+#include "random_color_maps.h"
 
 //#undef NO_LOGGING
 
-#include "color_data/colormap_enums.h"
-#include "colormaps.h"
+#include "color_data/color_map_enums.h"
+#include "color_maps.h"
 #include "goom/goom_graphic.h"
 #include "goom/logging.h"
 #include "utils/enumutils.h"

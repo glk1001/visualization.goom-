@@ -1,6 +1,6 @@
 #include "low_density_blurrer.h"
 
-#include "color/colormaps.h"
+#include "color/color_maps.h"
 #include "colorizer.h"
 #include "draw/goom_draw.h"
 #include "fractal.h"

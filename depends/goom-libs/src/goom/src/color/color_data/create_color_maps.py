@@ -26,7 +26,7 @@ INCLUDE_DIR = '/tmp/' + INCLUDE_RELDIR
 PALETTABLE_INCLUDE_DIR = '/tmp/' + INCLUDE_RELDIR + '/' + PALETTABLE_SUBDIR
 SRCE_DIR = '/tmp/' + SRCE_RELDIR
 
-COLOR_MAP_ENUM_H = 'colormap_enums.h'
+COLOR_MAP_ENUMS_H = 'color_map_enums.h'
 ALL_MAPS_H = 'color_data_maps.h'
 ALL_MAPS_CPP = 'color_data_maps.cpp'
 GOOM_NAMESPACE = 'GOOM'
@@ -233,8 +233,8 @@ def write_cpp_header(cm: Colormap):
         write_namespace_end(f)
 
 
-def write_colormaps_enums_header(maps: List[str], dupl: Dict[str, str]):
-    with open(f'{INCLUDE_DIR}/{COLOR_MAP_ENUM_H}', 'w') as f:
+def write_color_maps_enums_header(maps: List[str], dupl: Dict[str, str]):
+    with open(f'{INCLUDE_DIR}/{COLOR_MAP_ENUMS_H}', 'w') as f:
         f.write('#pragma once\n')
         f.write('\n')
         f.write(f'{GENERATED_CODE_WARNING}\n')
@@ -258,7 +258,7 @@ def write_all_maps_header(color_map_grps: Dict[str, List[str]], num_maps: int):
         f.write('\n')
         f.write(f'{GENERATED_CODE_WARNING}\n')
         f.write('\n')
-        f.write(f'#include "{COLOR_MAP_ENUM_H}"\n')
+        f.write(f'#include "{COLOR_MAP_ENUMS_H}"\n')
         f.write('#include "vivid/types.h"\n')
         f.write('\n')
         f.write('#include <array>\n')
@@ -295,7 +295,7 @@ def write_all_maps_cpp(color_map_grps: Dict[str, List[str]], used_mps: List[str]
                     get_enum_line_end(m, dupl))
         f.write('// clang-format on\n')
         f.write('\n')
-        f.write(f'#include "{COLOR_MAP_ENUM_H}"\n')
+        f.write(f'#include "{COLOR_MAP_ENUMS_H}"\n')
         f.write('\n')
         f.write('#include <array>\n')
         f.write('#include <vector>\n')
@@ -466,7 +466,7 @@ if __name__ == '__main__':
 
     used_maps, duplicate_maps, numbered_maps = get_map_types(all_maps)
     write_cpp_headers(used_maps)
-    write_colormaps_enums_header(used_maps, duplicate_maps)
+    write_color_maps_enums_header(used_maps, duplicate_maps)
 
     write_all_maps_header(color_map_groups, len(used_maps))
     write_all_maps_cpp(color_map_groups, used_maps, duplicate_maps)

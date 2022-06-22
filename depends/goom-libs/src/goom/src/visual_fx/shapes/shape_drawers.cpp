@@ -3,7 +3,7 @@
 //#undef NO_LOGGING
 
 #include "color/color_adjustment.h"
-#include "color/colormaps.h"
+#include "color/color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom/logging.h"
 #include "shape_parts.h"

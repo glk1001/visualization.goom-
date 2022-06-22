@@ -1,6 +1,6 @@
 #include "draw_methods.h"
 
-#include "color/colorutils.h"
+#include "color/color_utils.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 

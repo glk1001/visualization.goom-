@@ -1,6 +1,6 @@
 #pragma once
 
-#include "color_data/colormap_enums.h"
+#include "color_data/color_map_enums.h"
 #include "goom/goom_graphic.h"
 #include "utils/enumutils.h"
 

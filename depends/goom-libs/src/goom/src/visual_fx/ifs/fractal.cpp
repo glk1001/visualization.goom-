@@ -1,6 +1,6 @@
 #include "fractal.h"
 
-#include "color/random_colormaps.h"
+#include "color/random_color_maps.h"
 #include "similitudes.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"

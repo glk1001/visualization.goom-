@@ -1,7 +1,7 @@
 #include "similitudes.h"
 
-#include "color/colormaps.h"
-#include "color/random_colormaps.h"
+#include "color/color_maps.h"
+#include "color/random_color_maps.h"
 #include "goom_config.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"

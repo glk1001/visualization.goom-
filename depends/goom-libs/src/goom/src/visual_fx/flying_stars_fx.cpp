@@ -3,10 +3,10 @@
 //#undef NO_LOGGING
 
 #include "color/color_adjustment.h"
-#include "color/color_data/colormap_enums.h"
-#include "color/colormaps.h"
-#include "color/colorutils.h"
-#include "color/random_colormaps.h"
+#include "color/color_data/color_map_enums.h"
+#include "color/color_maps.h"
+#include "color/color_utils.h"
+#include "color/random_color_maps.h"
 #include "flying_stars/star_drawer.h"
 #include "flying_stars/star_types.h"
 #include "flying_stars/stars.h"

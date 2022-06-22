@@ -1,6 +1,6 @@
 #include "filter_buffer_color_info.h"
 
-#include "color/colorutils.h"
+#include "color/color_utils.h"
 #include "goom_config.h"
 
 #include <format>

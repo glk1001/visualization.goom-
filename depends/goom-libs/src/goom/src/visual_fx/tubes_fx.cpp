@@ -2,8 +2,8 @@
 
 //#undef NO_LOGGING
 
-#include "color/colorutils.h"
-#include "color/random_colormaps.h"
+#include "color/color_utils.h"
+#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
 #include "draw/goom_draw_to_many.h"

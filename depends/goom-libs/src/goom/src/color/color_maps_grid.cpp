@@ -1,4 +1,4 @@
-#include "colormaps_grids.h"
+#include "color_maps_grids.h"
 #include "goom_config.h"
 #include "utils/t_values.h"
 

@@ -2,7 +2,7 @@
 
 //#undef NO_LOGGING
 
-#include "color/colorutils.h"
+#include "color/color_utils.h"
 #include "fx_helper.h"
 #include "goom/spimpl.h"
 #include "logging.h"

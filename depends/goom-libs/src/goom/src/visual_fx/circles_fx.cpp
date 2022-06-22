@@ -1,6 +1,6 @@
 #include "circles_fx.h"
 
-#include "color/colormaps.h"
+#include "color/color_maps.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom/spimpl.h"

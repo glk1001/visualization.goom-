@@ -3,8 +3,8 @@
 //#undef NO_LOGGING
 
 #include "all_standard_visual_fx.h"
-#include "color/colormaps.h"
-#include "color/colorutils.h"
+#include "color/color_maps.h"
+#include "color/color_utils.h"
 #include "draw/goom_draw.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_colors_service.h"

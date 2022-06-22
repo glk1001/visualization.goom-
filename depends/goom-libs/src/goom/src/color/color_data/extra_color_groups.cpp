@@ -1,6 +1,6 @@
 #include "extra_color_groups.h"
 
-#include "colormap_enums.h"
+#include "color_map_enums.h"
 
 #include <vector>
 

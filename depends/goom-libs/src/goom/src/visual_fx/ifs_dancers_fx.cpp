@@ -36,7 +36,7 @@
 
 //#undef NO_LOGGING
 
-#include "color/random_colormaps.h"
+#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom/logging.h"

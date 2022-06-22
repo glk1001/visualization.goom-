@@ -2,9 +2,9 @@
 
 #include "bitmap_getter_base.h"
 #include "color/color_adjustment.h"
-#include "color/colormaps.h"
-#include "color/colormaps_grids.h"
-#include "color/random_colormaps.h"
+#include "color/color_maps.h"
+#include "color/color_maps_grids.h"
+#include "color/random_color_maps.h"
 #include "dot_diameters.h"
 #include "dot_paths.h"
 #include "draw/goom_draw.h"

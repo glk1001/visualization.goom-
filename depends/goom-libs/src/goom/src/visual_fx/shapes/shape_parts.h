@@ -1,8 +1,8 @@
 #pragma once
 
-#include "color/colormaps.h"
-#include "color/random_colormaps.h"
-#include "color/random_colormaps_manager.h"
+#include "color/color_maps.h"
+#include "color/random_color_maps.h"
+#include "color/random_color_maps_manager.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
 #include "shape_paths.h"

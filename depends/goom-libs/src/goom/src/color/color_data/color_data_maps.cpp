@@ -1696,7 +1696,7 @@
 #include "palettable/Zissou_5.h"
 // clang-format on
 
-#include "colormap_enums.h"
+#include "color_map_enums.h"
 
 #include <array>
 #include <vector>

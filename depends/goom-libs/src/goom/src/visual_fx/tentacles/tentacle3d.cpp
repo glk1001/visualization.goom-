@@ -1,7 +1,7 @@
 #include "tentacle3d.h"
 
-#include "color/colormaps.h"
-#include "color/colorutils.h"
+#include "color/color_maps.h"
+#include "color/color_utils.h"
 #include "tentacle2d.h"
 #include "utils/math/misc.h"
 
