@@ -16,7 +16,7 @@ class VisualFxColorMatchedSets
 public:
   explicit VisualFxColorMatchedSets(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  auto SetNextColorMatchedSet() noexcept -> void;
+  auto SetNextRandomColorMatchedSet() noexcept -> void;
   [[nodiscard]] auto GetCurrentRandomColorMapsGroup(GoomEffect goomEffect) const noexcept
       -> COLOR::RandomColorMapsGroups::Groups;
 
@@ -54,8 +54,8 @@ private:
   const ColorMatchedSetsMap m_colorMatchedSetsMap{MakeColorMatchedSetsMap()};
 
   const UTILS::MATH::Weights<ColorMatchedSets> m_colorMatchedSetsWeights;
-  [[nodiscard]] auto GetNextColorMatchedSet() const noexcept -> const ColorMatchedSet&;
-  const ColorMatchedSet* m_currentColorMatchedSet{&GetNextColorMatchedSet()};
+  [[nodiscard]] auto GetNextRandomColorMatchedSet() const noexcept -> const ColorMatchedSet&;
+  const ColorMatchedSet* m_currentColorMatchedSet{&GetNextRandomColorMatchedSet()};
 
   [[nodiscard]] static auto GetOneGroupColorMatchedSet(
       COLOR::RandomColorMapsGroups::Groups group) noexcept -> ColorMatchedSet;
@@ -75,9 +75,9 @@ private:
   [[nodiscard]] static auto GetColorMatchedSet8() noexcept -> ColorMatchedSet;
 };
 
-inline auto VisualFxColorMatchedSets::SetNextColorMatchedSet() noexcept -> void
+inline auto VisualFxColorMatchedSets::SetNextRandomColorMatchedSet() noexcept -> void
 {
-  m_currentColorMatchedSet = &GetNextColorMatchedSet();
+  m_currentColorMatchedSet = &GetNextRandomColorMatchedSet();
   Ensures(m_currentColorMatchedSet->size() == UTILS::NUM<GoomEffect>);
 }
 

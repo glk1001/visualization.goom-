@@ -34,12 +34,20 @@ inline VisualFxColorMaps::VisualFxColorMaps(const UTILS::MATH::IGoomRand& goomRa
 
 inline auto VisualFxColorMaps::ChangeRandomColorMaps() -> void
 {
-  m_visualFxColorMatchedSets.SetNextColorMatchedSet();
+  m_visualFxColorMatchedSets.SetNextRandomColorMatchedSet();
 }
 
 inline auto VisualFxColorMaps::GetCurrentRandomColorMaps(const GoomEffect goomEffect) const
     -> std::shared_ptr<const COLOR::RandomColorMaps>
 {
+  if (static constexpr float PROB_COMPLETELY_RANDOM = 0.05F;
+      m_goomRand.ProbabilityOf(PROB_COMPLETELY_RANDOM))
+  {
+    const auto randomGroup = static_cast<COLOR::RandomColorMapsGroups::Groups>(
+        m_goomRand.GetRandInRange(0U, UTILS::NUM<COLOR::RandomColorMapsGroups::Groups>));
+    return m_randomColorMapsGroups.MakeRandomColorMapsGroup(randomGroup);
+  }
+
   return m_randomColorMapsGroups.MakeRandomColorMapsGroup(
       m_visualFxColorMatchedSets.GetCurrentRandomColorMapsGroup(goomEffect));
 }

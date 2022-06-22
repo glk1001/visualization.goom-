@@ -106,7 +106,8 @@ VisualFxColorMatchedSets::VisualFxColorMatchedSets(const IGoomRand& goomRand) no
 {
 }
 
-auto VisualFxColorMatchedSets::GetNextColorMatchedSet() const noexcept -> const ColorMatchedSet&
+auto VisualFxColorMatchedSets::GetNextRandomColorMatchedSet() const noexcept
+    -> const ColorMatchedSet&
 {
   return m_colorMatchedSetsMap.at(m_colorMatchedSetsWeights.GetRandomWeighted());
 }
