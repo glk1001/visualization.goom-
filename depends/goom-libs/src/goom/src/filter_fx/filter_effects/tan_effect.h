@@ -35,7 +35,7 @@ public:
     TAN_ONLY,
     COT_ONLY,
     COT_MIX,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
   struct Params
   {

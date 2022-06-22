@@ -2,6 +2,7 @@
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 #include "goom_config.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
@@ -11,8 +12,8 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::ColorMapGroup;
-using COLOR::MakeSharedAllMapsUnweighted;
 using COLOR::RandomColorMaps;
+using COLOR::RandomColorMapsGroups;
 using STD20::pi;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -30,7 +31,7 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
                          const SmallImageBitmaps& smallBitmaps)
   : m_goomRand{goomRand},
     m_smallBitmaps{smallBitmaps},
-    m_colorMaps{MakeSharedAllMapsUnweighted(m_goomRand)},
+    m_colorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)},
     m_centreWeights{
         m_goomRand,
         {

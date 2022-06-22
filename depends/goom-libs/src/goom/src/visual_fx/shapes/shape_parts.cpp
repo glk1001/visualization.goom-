@@ -3,6 +3,7 @@
 //#undef NO_LOGGING
 
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 #include "color/random_color_maps_manager.h"
 #include "goom/logging.h"
 #include "goom_config.h"
@@ -15,7 +16,7 @@
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
-using COLOR::MakeSharedAllMapsUnweighted;
+using COLOR::RandomColorMapsGroups;
 using COLOR::RandomColorMapsManager;
 using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::Logging;
@@ -64,8 +65,9 @@ ShapePart::ShapePart(const IGoomRand& goomRand,
 
 auto ShapePart::GetInitialColorInfo() const noexcept -> ColorInfo
 {
-  return {MakeSharedAllMapsUnweighted(m_goomRand), MakeSharedAllMapsUnweighted(m_goomRand),
-          MakeSharedAllMapsUnweighted(m_goomRand),
+  return {RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand),
+          RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand),
+          RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand),
           m_goomRand.GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T)};
 }
 

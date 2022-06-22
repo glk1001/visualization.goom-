@@ -94,7 +94,7 @@ enum class ColorMapGroup : int
   HEAT,
   COLD,
   PASTEL,
-  _num // unused and must be last
+  _num // unused, and marks the enum end
 };
 
 //constexpr size_t to_int(const ColorMapGroup i) { return static_cast<size_t>(i); }

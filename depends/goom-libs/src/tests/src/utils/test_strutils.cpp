@@ -63,7 +63,7 @@ TEST_CASE("EnumToString", "[EnumToString]")
     TEST1,
     TEST2,
     TEST3,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
 
   EnumTester test = EnumTester::_NULL;

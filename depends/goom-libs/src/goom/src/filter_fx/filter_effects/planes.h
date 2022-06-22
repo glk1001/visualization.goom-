@@ -42,7 +42,7 @@ public:
     //    COS_TAN_CURL_SWIRL,
     SIN_OF_COS_SWIRL,
     COS_OF_SIN_SWIRL,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
   struct Frequencies
   {
@@ -88,7 +88,7 @@ private:
     VERY_LARGE_EFFECTS,
     POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS,
     POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
   const UTILS::MATH::Weights<PlaneEffectEvents> m_planeEffectWeights;
 

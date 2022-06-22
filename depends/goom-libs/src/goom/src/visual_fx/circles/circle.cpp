@@ -5,6 +5,7 @@
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
@@ -26,8 +27,8 @@ namespace GOOM::VISUAL_FX::CIRCLES
 
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
-using COLOR::MakeSharedAllSlimMaps;
 using COLOR::RandomColorMaps;
+using COLOR::RandomColorMapsGroups;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using UTILS::Logging;
@@ -68,7 +69,7 @@ private:
     BLACK_LINES,
     BRIGHT_LINES,
     DIFFERENT_COLORS,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
   DecorationType m_decorationType;
   Pixel m_differentColor = BLACK_PIXEL;
@@ -125,7 +126,7 @@ Circle::Circle(const FxHelper& fxHelper,
                circleParams.circleCentreTarget, pathParams},
     m_dotDiameters{m_goomRand, NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter},
     m_dotDrawer{std::make_unique<DotDrawer>(m_draw, m_goomRand, m_helper)},
-    m_mainColorMaps{MakeSharedAllSlimMaps(m_goomRand)},
+    m_mainColorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)},
     m_lowColorMaps{m_mainColorMaps},
     m_mainColorMapsGrid{NUM_DOTS, m_mainColorMaps->GetRandomColorMap(),
                         m_dotPaths.GetPositionTRef(), GetVerticalMainColorMaps(),

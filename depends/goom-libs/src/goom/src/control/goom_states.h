@@ -61,7 +61,7 @@ enum class GoomStates : size_t
   STARS_ONLY,
   TENTACLES_ONLY,
   TUBES_ONLY,
-  _num // unused and must be last
+  _num // unused, and marks the enum end
 };
 
 enum class GoomDrawables
@@ -78,7 +78,7 @@ enum class GoomDrawables
   STARS,
   TENTACLES,
   TUBES,
-  _num // unused and must be last
+  _num // unused, and marks the enum end
 };
 
 using BuffIntensityRange = UTILS::MATH::IGoomRand::NumberRange<float>;

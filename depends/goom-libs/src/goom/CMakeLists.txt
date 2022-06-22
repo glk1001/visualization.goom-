@@ -27,9 +27,11 @@ add_library(goom
         src/color/color_maps_grid.cpp
         src/color/color_utils.cpp
         src/color/random_color_maps.cpp
+        src/color/random_color_maps_groups.cpp
         src/color/random_color_maps_manager.cpp
         src/control/all_standard_visual_fx.cpp
         src/control/goom_all_visual_fx.cpp
+        src/control/goom_effects.h
         src/control/goom_events.cpp
         src/control/goom_image_buffers.cpp
         src/control/goom_message_displayer.cpp
@@ -42,7 +44,8 @@ add_library(goom
         src/control/goom_states.cpp
         src/control/goom_title_displayer.cpp
         src/control/state_and_filter_consts.h
-        src/control/visual_fx_color_maps.cpp
+        src/control/visual_fx_color_maps.h
+        src/control/visual_fx_color_matched_sets.cpp
         src/draw/draw_methods.cpp
         src/draw/goom_draw.cpp
         src/draw/goom_draw_to_buffer.cpp

@@ -40,7 +40,7 @@ enum class ZoomFilterMode
   WAVE_MODE0,
   WAVE_MODE1,
   Y_ONLY_MODE,
-  _num // unused and must be last
+  _num // unused, and marks the enum end
 };
 
 class FilterSettingsService
@@ -155,7 +155,7 @@ private:
     CENTRE_MID_POINT,
     TOP_LEFT_QUARTER_MID_POINT,
     BOTTOM_RIGHT_QUARTER_MID_POINT,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
   const UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
   [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;

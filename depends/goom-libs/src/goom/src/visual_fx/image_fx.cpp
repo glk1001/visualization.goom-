@@ -6,6 +6,7 @@
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom/spimpl.h"
@@ -35,8 +36,8 @@ namespace GOOM::VISUAL_FX
 using COLOR::ColorAdjustment;
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
-using COLOR::MakeSharedAllSlimMaps;
 using COLOR::RandomColorMaps;
+using COLOR::RandomColorMapsGroups;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using UTILS::Logging;
@@ -115,7 +116,8 @@ private:
   [[nodiscard]] auto GetNewRandBrightnessFactor() const -> float;
   float m_randBrightnessFactor{GetNewRandBrightnessFactor()};
 
-  std::shared_ptr<const RandomColorMaps> m_colorMaps{MakeSharedAllSlimMaps(m_goomRand)};
+  std::shared_ptr<const RandomColorMaps> m_colorMaps{
+      RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
   const IColorMap* m_currentColorMap{&GetRandomColorMap()};
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
   bool m_pixelColorIsDominant = false;

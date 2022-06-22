@@ -29,7 +29,7 @@ enum class ColorMapMixMode
   CIRCLES_ONLY,
   SHAPES_AND_CIRCLES,
   STRIPED_SHAPES_AND_CIRCLES,
-  _num // unused and must be last
+  _num // unused, and marks the enum end
 };
 
 struct ShapeColors

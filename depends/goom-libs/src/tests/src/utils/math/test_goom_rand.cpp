@@ -22,7 +22,7 @@ enum class Events
   EVENT2,
   EVENT3,
   EVENT4,
-  _num // unused and must be last
+  _num // unused, and marks the enum end
 };
 using EventCounts = std::array<uint32_t, NUM<Events>>;
 

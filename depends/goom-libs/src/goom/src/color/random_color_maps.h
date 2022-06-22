@@ -127,47 +127,6 @@ private:
   bool m_weightsActive = true;
 };
 
-auto MakeSharedAllMapsUnweighted(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedAllStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedAllSlimMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedMostlySequentialStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedMostlySequentialSlimMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedSlightlyDivergingStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedSlightlyDivergingSlimMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedBlueStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedRedStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedGreenStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedYellowStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedOrangeStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedPurpleStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedCitiesStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedSeasonsStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedHeatStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedColdStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedPastelStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedDivergingBlackStandardMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-auto MakeSharedWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>;
-
 inline RandomColorMaps::RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
                                         const std::string& colorMapsName) noexcept
   : m_goomRand{goomRand}, m_colorMapsName{colorMapsName}

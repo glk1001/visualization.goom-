@@ -84,7 +84,7 @@ enum class LowColorTypes
   TRUE_LOW_COLOR,
   MAIN_COLOR,
   LIGHTENED_LOW_COLOR,
-  _num // unused and must be last
+  _num // unused, and marks the enum end
 };
 static constexpr uint32_t MIN_LOW_COLOR_TYPE_TIME = 100;
 static constexpr uint32_t MAX_LOW_COLOR_TYPE_TIME = 1000;

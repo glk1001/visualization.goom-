@@ -241,7 +241,7 @@ auto AllStandardVisualFx::GetLastShaderEffects() const -> const GoomShaderEffect
 
 auto AllStandardVisualFx::ChangeColorMaps() -> void
 {
-  m_visualFxColorMaps.SetNextRandomColorMapSet();
+  m_visualFxColorMaps.ChangeRandomColorMaps();
 
   m_drawablesMap.at(GoomDrawables::CIRCLES)
       ->SetWeightedColorMaps(

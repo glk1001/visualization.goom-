@@ -13,6 +13,7 @@
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 #include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
@@ -44,8 +45,8 @@ using COLOR::GetBrighterColor;
 using COLOR::GetLightenedColor;
 using COLOR::GetSimpleColor;
 using COLOR::IColorMap;
-using COLOR::MakeSharedAllSlimMaps;
 using COLOR::RandomColorMaps;
+using COLOR::RandomColorMapsGroups;
 using COLOR::RandomColorMapsManager;
 using COLOR::SimpleColors;
 using COLOR::COLOR_DATA::ColorMapName;
@@ -176,13 +177,13 @@ LinesFx::LinesFx(const FxHelper& fxHelper,
                  const float destParam,
                  const Pixel& destColor) noexcept
   : m_pimpl{spimpl::make_unique_impl<LinesImpl>(fxHelper,
-                                                 smallBitmaps,
-                                                 srceLineType,
-                                                 srceParam,
-                                                 srceColor,
-                                                 destLineType,
-                                                 destParam,
-                                                 destColor)}
+                                                smallBitmaps,
+                                                srceLineType,
+                                                srceParam,
+                                                srceColor,
+                                                destLineType,
+                                                destParam,
+                                                destColor)}
 {
 }
 
@@ -287,7 +288,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_colorMaps{MakeSharedAllSlimMaps(m_goomRand)},
+    m_colorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)},
     m_currentColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
@@ -586,7 +587,7 @@ auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,
 
   if ((m_srceLineType == LineType::CIRCLE) && (m_lineLerpParam >= 1.0F))
   {
-    // It's a complete circle - lerp the last few points to nicely join back to start.
+    // This is a complete circle -- lerp the last few points to nicely join back to start.
     static constexpr size_t NUM_POINTS_TO_LERP = 50;
     SmoothTheCircleJoinAtEnds(audioPoints, NUM_POINTS_TO_LERP);
   }

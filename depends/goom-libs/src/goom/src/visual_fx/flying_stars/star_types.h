@@ -2,6 +2,7 @@
 
 #include "color/color_data/color_map_enums.h"
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
@@ -78,9 +79,9 @@ private:
   Point2dInt m_zoomMidpoint;
 
   std::shared_ptr<const COLOR::RandomColorMaps> m_weightedMainColorMaps{
-      COLOR::MakeSharedAllStandardMaps(m_goomRand)};
+      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
   std::shared_ptr<const COLOR::RandomColorMaps> m_weightedLowColorMaps{
-      COLOR::MakeSharedAllStandardMaps(m_goomRand)};
+      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
   COLOR::COLOR_DATA::ColorMapName m_fixedMainColorMapName = COLOR::COLOR_DATA::ColorMapName::_NULL;
   COLOR::COLOR_DATA::ColorMapName m_fixedLowColorMapName = COLOR::COLOR_DATA::ColorMapName::_NULL;
 
@@ -168,7 +169,7 @@ private:
     FIREWORKS,
     RAIN,
     FOUNTAIN,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
   static_assert(UTILS::NUM<AvailableStarTypes> == (NUM_STAR_TYPES));
   // clang-format off

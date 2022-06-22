@@ -41,7 +41,7 @@ public:
     FILTER_INCREASE_ROTATION,
     FILTER_DECREASE_ROTATION,
     FILTER_STOP_ROTATION,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
 
   [[nodiscard]] auto Happens(GoomEvent event) const -> bool;

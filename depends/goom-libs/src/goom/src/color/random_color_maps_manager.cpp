@@ -2,9 +2,9 @@
 
 //#undef NO_LOGGING
 
-#include "color_data/color_map_enums.h"
 #include "goom_config.h"
 #include "logging.h"
+#include "random_color_maps_groups.h"
 
 #include <cstdint>
 #include <memory>
@@ -19,8 +19,8 @@ RandomColorMapsManager::ColorMapInfo::~ColorMapInfo() noexcept = default;
 auto RandomColorMapsManager::AddDefaultColorMapInfo(const UTILS::MATH::IGoomRand& goomRand) noexcept
     -> ColorMapId
 {
-  return AddColorMapInfo(
-      {MakeSharedAllMapsUnweighted(goomRand), RandomColorMaps::ALL_COLOR_MAP_TYPES});
+  return AddColorMapInfo({RandomColorMapsGroups::MakeSharedAllMapsUnweighted(goomRand),
+                          RandomColorMaps::ALL_COLOR_MAP_TYPES});
 }
 
 auto RandomColorMapsManager::AddColorMapInfo(

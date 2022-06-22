@@ -67,7 +67,7 @@ private:
     NUM1,
     NUM2,
     NUM3,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
   const Weights<Drivers> m_driverWeights;
   const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;

@@ -91,7 +91,7 @@ private:
     REVERSE_MIX_COLORS,
     SIMILAR_LOW_COLORS,
     SINE_MIX_COLORS,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
   const Weights<ColorMode> m_colorModeWeights;
   ColorMode m_colorMode = m_colorModeWeights.GetRandomWeighted();
@@ -140,7 +140,7 @@ private:
     ONE_MAP_PER_ANGLE,
     ONE_MAP_FOR_ALL_ANGLES,
     ALL_MAPS_RANDOM,
-    _num // unused and must be last
+    _num // unused, and marks the enum end
   };
   const Weights<ColorMapMode> m_colorMapModeWeights;
   ColorMapMode m_currentColorMapMode = m_colorMapModeWeights.GetRandomWeighted();
