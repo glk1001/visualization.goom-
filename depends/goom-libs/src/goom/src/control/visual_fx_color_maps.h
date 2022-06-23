@@ -5,6 +5,7 @@
 #include "goom_effects.h"
 #include "utils/math/goom_rand_base.h"
 #include "visual_fx_color_matched_sets.h"
+#include "visual_fx_weighted_color_maps.h"
 
 #include <memory>
 
@@ -25,6 +26,7 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   COLOR::RandomColorMapsGroups m_randomColorMapsGroups{m_goomRand};
   VisualFxColorMatchedSets m_visualFxColorMatchedSets{m_goomRand};
+  VisualFxWeightedColorMaps m_visualFxWeightedColorMaps{m_goomRand};
 };
 
 inline VisualFxColorMaps::VisualFxColorMaps(const UTILS::MATH::IGoomRand& goomRand)
@@ -40,11 +42,10 @@ inline auto VisualFxColorMaps::ChangeRandomColorMaps() -> void
 inline auto VisualFxColorMaps::GetCurrentRandomColorMaps(const GoomEffect goomEffect) const
     -> std::shared_ptr<const COLOR::RandomColorMaps>
 {
-  if (static constexpr float PROB_COMPLETELY_RANDOM = 0.05F;
+  if (static constexpr float PROB_COMPLETELY_RANDOM = 0.25F;
       m_goomRand.ProbabilityOf(PROB_COMPLETELY_RANDOM))
   {
-    const auto randomGroup = static_cast<COLOR::RandomColorMapsGroups::Groups>(
-        m_goomRand.GetRandInRange(0U, UTILS::NUM<COLOR::RandomColorMapsGroups::Groups>));
+    const auto randomGroup = m_visualFxWeightedColorMaps.GetCurrentRandomColorMapsGroup(goomEffect);
     return m_randomColorMapsGroups.MakeRandomColorMapsGroup(randomGroup);
   }
 

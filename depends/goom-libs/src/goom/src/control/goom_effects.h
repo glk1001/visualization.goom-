@@ -5,7 +5,7 @@ namespace GOOM::CONTROL
 
 enum class GoomEffect
 {
-  CIRCLES = 0,
+  CIRCLES_MAIN = 0,
   CIRCLES_LOW,
   DOTS0,
   DOTS1,
@@ -26,7 +26,7 @@ enum class GoomEffect
   STARS_MAIN_FOUNTAIN,
   STARS_LOW_FOUNTAIN,
   TENTACLES,
-  TUBE,
+  TUBE_MAIN,
   TUBE_LOW,
   _num // unused, and marks the enum end
 };

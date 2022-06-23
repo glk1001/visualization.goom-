@@ -46,6 +46,7 @@ add_library(goom
         src/control/state_and_filter_consts.h
         src/control/visual_fx_color_maps.h
         src/control/visual_fx_color_matched_sets.cpp
+        src/control/visual_fx_weighted_color_maps.cpp
         src/draw/draw_methods.cpp
         src/draw/goom_draw.cpp
         src/draw/goom_draw_to_buffer.cpp

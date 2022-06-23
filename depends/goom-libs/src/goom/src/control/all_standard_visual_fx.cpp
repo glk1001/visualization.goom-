@@ -245,7 +245,7 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
 
   m_drawablesMap.at(GoomDrawables::CIRCLES)
       ->SetWeightedColorMaps(
-          {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::CIRCLES),
+          {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::CIRCLES_MAIN),
            m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::CIRCLES_LOW)});
 
   ChangeDotsColorMaps();
@@ -265,7 +265,8 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
           {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TENTACLES)});
 
   m_drawablesMap.at(GoomDrawables::TUBES)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TUBE),
+      ->SetWeightedColorMaps({0,
+                              m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TUBE_MAIN),
                               m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TUBE_LOW)});
 }
 

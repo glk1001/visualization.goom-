@@ -168,7 +168,7 @@ auto VisualFxColorMatchedSets::GetPrimaryColorDots(ColorMatchedSet& matchedSet) 
 auto VisualFxColorMatchedSets::GetColorMatchedSet1() noexcept -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,                Groups::ALL_STANDARD_MAPS},
+      {        GoomEffect::CIRCLES_MAIN,                Groups::ALL_STANDARD_MAPS},
       {         GoomEffect::CIRCLES_LOW, Groups::SLIGHTLY_DIVERGING_STANDARD_MAPS},
       {               GoomEffect::DOTS0,                Groups::RED_STANDARD_MAPS},
       {               GoomEffect::DOTS1,               Groups::BLUE_STANDARD_MAPS},
@@ -189,7 +189,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet1() noexcept -> ColorMatchedSet
       { GoomEffect::STARS_MAIN_FOUNTAIN,               Groups::HEAT_STANDARD_MAPS},
       {  GoomEffect::STARS_LOW_FOUNTAIN,               Groups::COLD_STANDARD_MAPS},
       {           GoomEffect::TENTACLES,                Groups::ALL_STANDARD_MAPS},
-      {                GoomEffect::TUBE, Groups::SLIGHTLY_DIVERGING_STANDARD_MAPS},
+      {           GoomEffect::TUBE_MAIN, Groups::SLIGHTLY_DIVERGING_STANDARD_MAPS},
       {            GoomEffect::TUBE_LOW,     Groups::SLIGHTLY_DIVERGING_SLIM_MAPS},
   };
 }
@@ -197,7 +197,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet1() noexcept -> ColorMatchedSet
 auto VisualFxColorMatchedSets::GetColorMatchedSet2() noexcept -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,            Groups::ALL_STANDARD_MAPS},
+      {        GoomEffect::CIRCLES_MAIN,            Groups::ALL_STANDARD_MAPS},
       {         GoomEffect::CIRCLES_LOW, Groups::SLIGHTLY_DIVERGING_SLIM_MAPS},
       {               GoomEffect::DOTS0,         Groups::ORANGE_STANDARD_MAPS},
       {               GoomEffect::DOTS1,         Groups::PURPLE_STANDARD_MAPS},
@@ -218,7 +218,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet2() noexcept -> ColorMatchedSet
       { GoomEffect::STARS_MAIN_FOUNTAIN,           Groups::BLUE_STANDARD_MAPS},
       {  GoomEffect::STARS_LOW_FOUNTAIN,         Groups::YELLOW_STANDARD_MAPS},
       {           GoomEffect::TENTACLES,         Groups::YELLOW_STANDARD_MAPS},
-      {                GoomEffect::TUBE,          Groups::GREEN_STANDARD_MAPS},
+      {           GoomEffect::TUBE_MAIN,          Groups::GREEN_STANDARD_MAPS},
       {            GoomEffect::TUBE_LOW,           Groups::BLUE_STANDARD_MAPS},
   };
 }
@@ -226,7 +226,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet2() noexcept -> ColorMatchedSet
 auto VisualFxColorMatchedSets::GetColorMatchedSet3() noexcept -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,               Groups::COLD_STANDARD_MAPS},
+      {        GoomEffect::CIRCLES_MAIN,               Groups::COLD_STANDARD_MAPS},
       {         GoomEffect::CIRCLES_LOW,     Groups::SLIGHTLY_DIVERGING_SLIM_MAPS},
       {               GoomEffect::DOTS0,                Groups::RED_STANDARD_MAPS},
       {               GoomEffect::DOTS1,               Groups::BLUE_STANDARD_MAPS},
@@ -247,7 +247,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet3() noexcept -> ColorMatchedSet
       { GoomEffect::STARS_MAIN_FOUNTAIN,                    Groups::ALL_SLIM_MAPS},
       {  GoomEffect::STARS_LOW_FOUNTAIN,             Groups::PASTEL_STANDARD_MAPS},
       {           GoomEffect::TENTACLES,  Groups::MOSTLY_SEQUENTIAL_STANDARD_MAPS},
-      {                GoomEffect::TUBE,            Groups::SEASONS_STANDARD_MAPS},
+      {           GoomEffect::TUBE_MAIN,            Groups::SEASONS_STANDARD_MAPS},
       {            GoomEffect::TUBE_LOW,               Groups::HEAT_STANDARD_MAPS},
   };
 }
@@ -255,7 +255,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet3() noexcept -> ColorMatchedSet
 auto VisualFxColorMatchedSets::GetColorMatchedSet4() noexcept -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,             Groups::CITIES_STANDARD_MAPS},
+      {        GoomEffect::CIRCLES_MAIN,             Groups::CITIES_STANDARD_MAPS},
       {         GoomEffect::CIRCLES_LOW,     Groups::SLIGHTLY_DIVERGING_SLIM_MAPS},
       {               GoomEffect::DOTS0,                Groups::WES_ANDERSON_MAPS},
       {               GoomEffect::DOTS1,             Groups::CITIES_STANDARD_MAPS},
@@ -276,7 +276,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet4() noexcept -> ColorMatchedSet
       { GoomEffect::STARS_MAIN_FOUNTAIN,                    Groups::ALL_SLIM_MAPS},
       {  GoomEffect::STARS_LOW_FOUNTAIN,            Groups::SEASONS_STANDARD_MAPS},
       {           GoomEffect::TENTACLES,             Groups::PURPLE_STANDARD_MAPS},
-      {                GoomEffect::TUBE,                    Groups::ALL_SLIM_MAPS},
+      {           GoomEffect::TUBE_MAIN,                    Groups::ALL_SLIM_MAPS},
       {            GoomEffect::TUBE_LOW,             Groups::PASTEL_STANDARD_MAPS},
   };
 }
@@ -284,7 +284,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet4() noexcept -> ColorMatchedSet
 auto VisualFxColorMatchedSets::GetColorMatchedSet5() noexcept -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,             Groups::PASTEL_STANDARD_MAPS},
+      {        GoomEffect::CIRCLES_MAIN,             Groups::PASTEL_STANDARD_MAPS},
       {         GoomEffect::CIRCLES_LOW,     Groups::SLIGHTLY_DIVERGING_SLIM_MAPS},
       {               GoomEffect::DOTS0,    Groups::DIVERGING_BLACK_STANDARD_MAPS},
       {               GoomEffect::DOTS1, Groups::SLIGHTLY_DIVERGING_STANDARD_MAPS},
@@ -305,7 +305,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet5() noexcept -> ColorMatchedSet
       { GoomEffect::STARS_MAIN_FOUNTAIN,                Groups::RED_STANDARD_MAPS},
       {  GoomEffect::STARS_LOW_FOUNTAIN,              Groups::GREEN_STANDARD_MAPS},
       {           GoomEffect::TENTACLES,            Groups::SEASONS_STANDARD_MAPS},
-      {                GoomEffect::TUBE,                Groups::WES_ANDERSON_MAPS},
+      {           GoomEffect::TUBE_MAIN,                Groups::WES_ANDERSON_MAPS},
       {            GoomEffect::TUBE_LOW,               Groups::COLD_STANDARD_MAPS},
   };
 }
@@ -313,7 +313,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet5() noexcept -> ColorMatchedSet
 auto VisualFxColorMatchedSets::GetColorMatchedSet6() noexcept -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,             Groups::PASTEL_STANDARD_MAPS},
+      {        GoomEffect::CIRCLES_MAIN,             Groups::PASTEL_STANDARD_MAPS},
       {         GoomEffect::CIRCLES_LOW,     Groups::SLIGHTLY_DIVERGING_SLIM_MAPS},
       {               GoomEffect::DOTS0,                Groups::RED_STANDARD_MAPS},
       {               GoomEffect::DOTS1,               Groups::BLUE_STANDARD_MAPS},
@@ -334,7 +334,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet6() noexcept -> ColorMatchedSet
       { GoomEffect::STARS_MAIN_FOUNTAIN,             Groups::PURPLE_STANDARD_MAPS},
       {  GoomEffect::STARS_LOW_FOUNTAIN,            Groups::SEASONS_STANDARD_MAPS},
       {           GoomEffect::TENTACLES,            Groups::SEASONS_STANDARD_MAPS},
-      {                GoomEffect::TUBE,    Groups::DIVERGING_BLACK_STANDARD_MAPS},
+      {           GoomEffect::TUBE_MAIN,    Groups::DIVERGING_BLACK_STANDARD_MAPS},
       {            GoomEffect::TUBE_LOW,             Groups::CITIES_STANDARD_MAPS},
   };
 }
@@ -342,7 +342,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet6() noexcept -> ColorMatchedSet
 auto VisualFxColorMatchedSets::GetColorMatchedSet7() noexcept -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,             Groups::PASTEL_STANDARD_MAPS},
+      {        GoomEffect::CIRCLES_MAIN,             Groups::PASTEL_STANDARD_MAPS},
       {         GoomEffect::CIRCLES_LOW,     Groups::SLIGHTLY_DIVERGING_SLIM_MAPS},
       {               GoomEffect::DOTS0,                Groups::RED_STANDARD_MAPS},
       {               GoomEffect::DOTS1,               Groups::BLUE_STANDARD_MAPS},
@@ -363,7 +363,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet7() noexcept -> ColorMatchedSet
       { GoomEffect::STARS_MAIN_FOUNTAIN,               Groups::COLD_STANDARD_MAPS},
       {  GoomEffect::STARS_LOW_FOUNTAIN,               Groups::COLD_STANDARD_MAPS},
       {           GoomEffect::TENTACLES,              Groups::GREEN_STANDARD_MAPS},
-      {                GoomEffect::TUBE,              Groups::ALL_MAPS_UNWEIGHTED},
+      {           GoomEffect::TUBE_MAIN,              Groups::ALL_MAPS_UNWEIGHTED},
       {            GoomEffect::TUBE_LOW,                    Groups::ALL_SLIM_MAPS},
   };
 }
@@ -371,7 +371,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet7() noexcept -> ColorMatchedSet
 auto VisualFxColorMatchedSets::GetColorMatchedSet8() noexcept -> ColorMatchedSet
 {
   return {
-      {             GoomEffect::CIRCLES,               Groups::HEAT_STANDARD_MAPS},
+      {        GoomEffect::CIRCLES_MAIN,               Groups::HEAT_STANDARD_MAPS},
       {         GoomEffect::CIRCLES_LOW,     Groups::SLIGHTLY_DIVERGING_SLIM_MAPS},
       {               GoomEffect::DOTS0,                Groups::RED_STANDARD_MAPS},
       {               GoomEffect::DOTS1,               Groups::BLUE_STANDARD_MAPS},
@@ -392,7 +392,7 @@ auto VisualFxColorMatchedSets::GetColorMatchedSet8() noexcept -> ColorMatchedSet
       { GoomEffect::STARS_MAIN_FOUNTAIN,              Groups::GREEN_STANDARD_MAPS},
       {  GoomEffect::STARS_LOW_FOUNTAIN,             Groups::PURPLE_STANDARD_MAPS},
       {           GoomEffect::TENTACLES,             Groups::YELLOW_STANDARD_MAPS},
-      {                GoomEffect::TUBE,              Groups::GREEN_STANDARD_MAPS},
+      {           GoomEffect::TUBE_MAIN,              Groups::GREEN_STANDARD_MAPS},
       {            GoomEffect::TUBE_LOW,               Groups::HEAT_STANDARD_MAPS},
   };
 }
