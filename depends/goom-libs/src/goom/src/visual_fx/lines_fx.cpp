@@ -157,7 +157,7 @@ private:
     Pixel color;
   };
   [[nodiscard]] auto GetAudioPoints(const Pixel& lineColor,
-                                    const std::vector<float>& audioData) const
+                                    const AudioSamples::SampleArray& audioData) const
       -> std::vector<PointAndColor>;
   [[nodiscard]] auto GetNextPointData(const LinePoint& pt,
                                       const Pixel& mainColor,
@@ -560,7 +560,7 @@ void LinesFx::LinesImpl::DrawFlatLine(const Pixel& lineColor)
 }
 
 auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,
-                                        const std::vector<float>& audioData) const
+                                        const AudioSamples::SampleArray& audioData) const
     -> std::vector<PointAndColor>
 {
   const Pixel randColor = GetRandomLineColor();

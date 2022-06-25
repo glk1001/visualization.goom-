@@ -2,6 +2,7 @@
 
 #include "goom_config.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -33,20 +34,21 @@ public:
     float minVal;
     float maxVal;
   };
-  using SampleArray = std::vector<float>;
+  using SampleArray = std::array<float, AUDIO_SAMPLE_LEN>;
   [[nodiscard]] auto GetSample(size_t channelIndex) const -> const SampleArray&;
   [[nodiscard]] auto GetSampleMinMax(size_t channelIndex) const -> const MaxMinValues&;
   [[nodiscard]] auto GetSampleOverallMinMax() const -> const MaxMinValues&;
 
 private:
   const size_t m_numDistinctChannels;
-  const std::vector<SampleArray> m_sampleArrays;
-  const std::vector<MaxMinValues> m_minMaxSampleValues;
+  const std::array<SampleArray, NUM_AUDIO_SAMPLES> m_sampleArrays;
+  const std::array<MaxMinValues, NUM_AUDIO_SAMPLES> m_minMaxSampleValues;
   const MaxMinValues m_overallMinMaxSampleValues;
   [[nodiscard]] static auto GetSampleArrays(const std::vector<float>& floatAudioData)
-      -> std::vector<SampleArray>;
-  [[nodiscard]] static auto GetMaxMinSampleValues(const std::vector<SampleArray>& sampleArrays)
-      -> std::vector<MaxMinValues>;
+      -> std::array<SampleArray, NUM_AUDIO_SAMPLES>;
+  [[nodiscard]] static auto GetMaxMinSampleValues(
+      const std::array<SampleArray, NUM_AUDIO_SAMPLES>& sampleArrays)
+      -> std::array<MaxMinValues, NUM_AUDIO_SAMPLES>;
 };
 
 class SoundInfo
@@ -57,10 +59,11 @@ public:
   void ProcessSample(const AudioSamples& samples);
 
   // Note: a Goom is just a sound event...
-  [[nodiscard]] auto GetTimeSinceLastGoom() const noexcept -> uint32_t; // >= 0
-  [[nodiscard]] auto GetTimeSinceLastBigGoom() const -> uint32_t; // >= 0
+  [[nodiscard]] auto GetTimeSinceLastGoom() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetTimeSinceLastBigGoom() const -> uint32_t;
 
   // Number of Gooms since last reset (every 'CYCLE_TIME')
+  static constexpr uint32_t CYCLE_TIME = 64;
   [[nodiscard]] auto GetTotalGoomsInCurrentCycle() const -> uint32_t;
 
   // Power of the last Goom [0..1]
@@ -85,7 +88,6 @@ public:
 private:
   uint32_t m_updateNum = 0;
   uint32_t m_totalGoomsInCurrentCycle = 0;
-  static constexpr uint32_t CYCLE_TIME = 64;
   uint32_t m_timeSinceLastGoom = 0;
   static constexpr uint32_t MAX_BIG_GOOM_DURATION = 100;
   uint32_t m_timeSinceLastBigGoom = 0;

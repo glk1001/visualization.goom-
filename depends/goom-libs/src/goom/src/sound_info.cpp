@@ -3,6 +3,7 @@
 #include "goom_config.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -11,43 +12,40 @@ namespace GOOM
 {
 
 auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
-    -> std::vector<SampleArray>
+    -> std::array<SampleArray, NUM_AUDIO_SAMPLES>
 {
   Expects((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == floatAudioData.size());
 
-  std::vector<SampleArray> sampleArrays(NUM_AUDIO_SAMPLES);
+  std::array<SampleArray, NUM_AUDIO_SAMPLES> sampleArrays{};
 
-  sampleArrays[0].resize(AUDIO_SAMPLE_LEN);
-  sampleArrays[1].resize(AUDIO_SAMPLE_LEN);
+  size_t fpos = 0;
+  for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
+  {
+    static_assert(sampleArrays.size() == 2);
+    sampleArrays[0][i] = GetPositiveValue(floatAudioData[fpos]);
 
-    size_t fpos = 0;
-    for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
-    {
-      sampleArrays[0][i] = GetPositiveValue(floatAudioData[fpos]);
-      if constexpr (NUM_AUDIO_SAMPLES != 1)
-      {
-        ++fpos;
-      }
+    ++fpos;
 
-      sampleArrays[1][i] = GetPositiveValue(floatAudioData[fpos]);
-      ++fpos;
-    }
+    sampleArrays[1][i] = GetPositiveValue(floatAudioData[fpos]);
+    ++fpos;
+  }
 
   return sampleArrays;
 }
 
-auto AudioSamples::GetMaxMinSampleValues(const std::vector<SampleArray>& sampleArrays)
-    -> std::vector<MaxMinValues>
+auto AudioSamples::GetMaxMinSampleValues(
+    const std::array<SampleArray, NUM_AUDIO_SAMPLES>& sampleArrays)
+    -> std::array<MaxMinValues, NUM_AUDIO_SAMPLES>
 {
-  std::vector<MaxMinValues> minMaxSampleValues(NUM_AUDIO_SAMPLES);
+  std::array<MaxMinValues, NUM_AUDIO_SAMPLES> minMaxSampleValues{};
 
   for (size_t i = 0; i < NUM_AUDIO_SAMPLES; ++i)
   {
-    const auto sampleArrayBegin = cbegin(sampleArrays.at(i));
-    const auto sampleArrayEnd = cend(sampleArrays.at(i));
+    const auto* const sampleArrayBegin = cbegin(sampleArrays.at(i));
+    const auto* const sampleArrayEnd = cend(sampleArrays.at(i));
     const auto& [minVal, maxVal] = std::minmax_element(sampleArrayBegin, sampleArrayEnd);
-    minMaxSampleValues[i].minVal = *minVal;
-    minMaxSampleValues[i].maxVal = *maxVal;
+    minMaxSampleValues.at(i).minVal = *minVal;
+    minMaxSampleValues.at(i).maxVal = *maxVal;
   }
 
   return minMaxSampleValues;
@@ -61,6 +59,7 @@ AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<flo
         std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
         std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)}
 {
+  static_assert(2 == NUM_AUDIO_SAMPLES);
   Expects((0 < numSampleChannels) && (numSampleChannels <= 2));
 }
 
