@@ -60,6 +60,10 @@ set_target_properties(${GOOM_LIB_TESTS_NAME}
         CXX_STANDARD ${CPP_STANDARD}
         )
 
+include(CheckIPOSupported)
+check_ipo_supported() # fatal error if IPO is not supported
+set_property(TARGET ${GOOM_LIB_TESTS_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 catch_discover_tests(${GOOM_LIB_TESTS_NAME})
 add_test(NAME ${GOOM_LIB_TESTS_NAME}
         COMMAND ${GOOM_LIB_TESTS_NAME})

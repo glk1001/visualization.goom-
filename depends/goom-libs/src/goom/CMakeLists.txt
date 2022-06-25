@@ -185,6 +185,10 @@ set_target_properties(goom
         POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
         )
 
+include(CheckIPOSupported)
+check_ipo_supported() # fatal error if IPO is not supported
+set_property(TARGET goom PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 get_target_property(goom_compile_options goom COMPILE_OPTIONS)
 get_target_property(goom_compile_features goom COMPILE_FEATURES)
 

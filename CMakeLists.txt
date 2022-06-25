@@ -149,6 +149,10 @@ add_subdirectory(${GOOM_LIBS_RELDIR})
 build_addon(${GOOM_TARGET_NAME} ${GOOM_ADDON_PREFIX} DEPLIBS)
 add_dependencies(${GOOM_TARGET_NAME} ${GOOM_LIBS_TARGET_NAME} vivid)
 
+include(CheckIPOSupported)
+check_ipo_supported() # fatal error if IPO is not supported
+set_property(TARGET ${GOOM_TARGET_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 
 # Move the external goom libs Dart file into the main build directory so CLion is happy.
 set(GOOM_LIBS_DART_DIR ${CMAKE_BINARY_DIR}/${GOOM_LIBS_RELDIR})

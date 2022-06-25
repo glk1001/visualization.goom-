@@ -78,6 +78,10 @@ set_target_properties( ${PROJECT_NAME}
         POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
 )
 
+include(CheckIPOSupported)
+check_ipo_supported() # fatal error if IPO is not supported
+set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 # Disable examples and tests for now - Android and Apple builds failing.
 if(OFF)
     message(STATUS "Building Vivid examples and tests.")
