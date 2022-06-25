@@ -275,7 +275,7 @@ inline auto TentaclesFx::TentaclesImpl::UpdateTimers() -> void
 
 inline auto TentaclesFx::TentaclesImpl::DoTentaclesUpdate() -> void
 {
-  if (0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom())
+  if (0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom())
   {
     ChangeDominantColor();
   }
@@ -290,9 +290,9 @@ inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
   // Higher sound acceleration increases tentacle wave frequency.
   Expects(m_currentTentacleDriver);
   const float tentacleWaveFreq =
-      m_goomInfo.GetSoundInfo().GetAcceleration() < 0.3F
+      m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration() < 0.3F
           ? 1.25F
-          : (1.0F / (1.10F - m_goomInfo.GetSoundInfo().GetAcceleration()));
+          : (1.0F / (1.10F - m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration()));
   m_currentTentacleDriver->MultiplyIterZeroYValWaveFreq(tentacleWaveFreq);
 }
 

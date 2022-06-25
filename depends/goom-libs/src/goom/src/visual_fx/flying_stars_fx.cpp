@@ -273,7 +273,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::UpdateBuffers() noexcept -> void
 
 auto FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents() noexcept -> void
 {
-  if (not m_activeStars.empty() and (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() >= 1))
+  if (not m_activeStars.empty() and (m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() >= 1))
   {
     return;
   }
@@ -549,10 +549,10 @@ auto FlyingStarsFx::FlyingStarsImpl::GetNewStarParams(
 inline auto FlyingStarsFx::FlyingStarsImpl::GetMaxStarsInACluster() const noexcept -> uint32_t
 {
   const auto maxStarsInACluster = static_cast<uint32_t>(
-      m_heightRatio * (100.0F + ((m_goomInfo.GetSoundInfo().GetGoomPower() + 1.0F) *
+      m_heightRatio * (100.0F + ((m_goomInfo.GetSoundEvents().GetGoomPower() + 1.0F) *
                                  m_goomRand.GetRandInRange(0.0F, 150.0F))));
 
-  if (m_goomInfo.GetSoundInfo().GetTimeSinceLastBigGoom() < 1)
+  if (m_goomInfo.GetSoundEvents().GetTimeSinceLastBigGoom() < 1)
   {
     return 2 * maxStarsInACluster;
   }
@@ -564,14 +564,14 @@ auto FlyingStarsFx::FlyingStarsImpl::GetSetupParams(const IStarType& starType) c
     -> IStarType::SetupParams
 {
   const float defaultPathLength =
-      (1.0F + m_goomInfo.GetSoundInfo().GetGoomPower()) *
+      (1.0F + m_goomInfo.GetSoundEvents().GetGoomPower()) *
       (m_goomRand.GetRandInRange(MIN_STAR_CLUSTER_HEIGHT, MAX_STAR_CLUSTER_HEIGHT) /
        MAX_STAR_CLUSTER_WIDTH);
 
   IStarType::SetupParams setupParams = starType.GetRandomizedSetupParams(defaultPathLength);
 
   setupParams.nominalPathLength *= m_heightRatio;
-  if (m_goomInfo.GetSoundInfo().GetTimeSinceLastBigGoom() < 1)
+  if (m_goomInfo.GetSoundEvents().GetTimeSinceLastBigGoom() < 1)
   {
     static constexpr float LENGTH_FACTOR = 1.5F;
     setupParams.nominalPathLength *= LENGTH_FACTOR;

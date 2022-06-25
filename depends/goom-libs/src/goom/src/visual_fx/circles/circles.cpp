@@ -124,7 +124,7 @@ auto Circles::UpdatePositionSpeed() -> void
   static constexpr uint32_t MIN_POSITION_STEPS = 100;
   static constexpr uint32_t MAX_POSITION_STEPS = 600;
   const uint32_t newNumSteps = std::min(
-      MIN_POSITION_STEPS + m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom(), MAX_POSITION_STEPS);
+      MIN_POSITION_STEPS + m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom(), MAX_POSITION_STEPS);
 
   std::for_each(begin(m_circles), end(m_circles),
                 [&newNumSteps](Circle& circle) { circle.UpdatePositionSpeed(newNumSteps); });
@@ -132,7 +132,7 @@ auto Circles::UpdatePositionSpeed() -> void
 
 inline auto Circles::UpdateCirclePathParams() -> void
 {
-  if (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() > 0)
+  if (m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() > 0)
   {
     return;
   }

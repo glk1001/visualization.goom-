@@ -537,7 +537,7 @@ void TubesFx::TubeFxImpl::DoUpdates()
 
 void TubesFx::TubeFxImpl::UpdateColorMaps()
 {
-  if (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() >= 1)
+  if (m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() >= 1)
   {
     return;
   }
@@ -573,7 +573,7 @@ void TubesFx::TubeFxImpl::UpdateSpeeds()
     {
       ChangeJitterOffsets(tube);
 
-      if (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() >= 1)
+      if (m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() >= 1)
       {
         ChangeSpeedForLowerVolumes(tube);
       }

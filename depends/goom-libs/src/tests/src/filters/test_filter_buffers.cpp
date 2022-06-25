@@ -3,6 +3,7 @@
 #endif
 
 #include "catch2/catch.hpp"
+#include "control/goom_sound_events.h"
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/filter_zoom_vector.h"
@@ -10,6 +11,7 @@
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
+#include "sound_info.h"
 #include "utils/math/goom_rand.h"
 #include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
@@ -19,6 +21,7 @@
 namespace GOOM::UNIT_TESTS
 {
 
+using CONTROL::GoomSoundEvents;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
@@ -98,7 +101,10 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
   static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
 
   Parallel parallel{-1};
-  const PluginInfo goomInfo{WIDTH, HEIGHT};
+  SoundInfo soundInfo{};
+  GoomSoundEvents goomSoundEvents{soundInfo};
+
+  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
   TestZoomVector identityZoomVector{false};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo, NORMALIZED_COORDS_CONVERTER,
                                   [&](const NormalizedCoords& normalizedCoords)
@@ -178,7 +184,10 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
 TEST_CASE("ZoomFilterBuffers Calculations")
 {
   Parallel parallel{-1};
-  const PluginInfo goomInfo{WIDTH, HEIGHT};
+  SoundInfo soundInfo{};
+  GoomSoundEvents goomSoundEvents{soundInfo};
+
+  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
   TestZoomVector constantZoomVector{true};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo, NORMALIZED_COORDS_CONVERTER,
                                   [&](const NormalizedCoords& normalizedCoords)
@@ -296,7 +305,10 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
   static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
 
   Parallel parallel{0};
-  const PluginInfo goomInfo{WIDTH, HEIGHT};
+  SoundInfo soundInfo{};
+  GoomSoundEvents goomSoundEvents{soundInfo};
+
+  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
   TestZoomVector constantZoomVector{true};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo, NORMALIZED_COORDS_CONVERTER,
                                   [&](const NormalizedCoords& normalizedCoords)
@@ -409,7 +421,10 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
 TEST_CASE("ZoomFilterBuffers Clipping", "[ZoomFilterBuffersClipping]")
 {
   Parallel parallel{-1};
-  const PluginInfo goomInfo{WIDTH, HEIGHT};
+  SoundInfo soundInfo{};
+  GoomSoundEvents goomSoundEvents{soundInfo};
+
+  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
   TestZoomVector constantZoomVector{true};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo, NORMALIZED_COORDS_CONVERTER,
                                   [&](const NormalizedCoords& normalizedCoords)

@@ -130,7 +130,7 @@ auto FireworksStarType::GetRandomizedSetupParams(const float defaultPathLength) 
 
   static constexpr float LENGTH_FACTOR = 1.0F;
   setupParams.nominalPathLength = LENGTH_FACTOR * defaultPathLength;
-  setupParams.vage = Star::MAX_INITIAL_AGE * (1.0F - GetGoomInfo().GetSoundInfo().GetGoomPower());
+  setupParams.vage = Star::MAX_INITIAL_AGE * (1.0F - GetGoomInfo().GetSoundEvents().GetGoomPower());
 
   static constexpr float INITIAL_WIND_FACTOR = 0.1F;
   setupParams.sideWind =

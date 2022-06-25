@@ -126,7 +126,7 @@ inline void GoomMusicSettingsReactor::BigBreakIfMusicIsCalm()
   static constexpr uint32_t CALM_CYCLES = 16;
   static constexpr int32_t CALM_VITESSE = FILTER_FX::Vitesse::STOP_SPEED - 4;
 
-  if ((m_goomInfo.GetSoundInfo().GetSpeed() < CALM_SPEED) &&
+  if ((m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed() < CALM_SPEED) &&
       (m_filterSettingsService.GetROVitesse().GetVitesse() < CALM_VITESSE) &&
       (0 == (m_updateNum % CALM_CYCLES)))
   {
@@ -145,7 +145,7 @@ inline void GoomMusicSettingsReactor::BigBreak()
 
 inline void GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges()
 {
-  if (((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) ||
+  if (((0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom()) ||
        (m_updatesSinceLastZoomEffectsChange > MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE)) &&
       m_goomEvents.Happens(GoomEvent::CHANGE_FILTER_MODE))
   {
@@ -215,7 +215,7 @@ inline void GoomMusicSettingsReactor::BigUpdate()
   // Coup de boost de la vitesse si besoin.
   // Goom tracking (strong acceleration of volume acceleration).
   // Speed boost if needed.
-  if (0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom())
+  if (0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom())
   {
     BigNormalUpdate();
   }

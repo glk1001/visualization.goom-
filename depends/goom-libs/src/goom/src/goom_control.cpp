@@ -20,6 +20,7 @@
 #include "control/goom_message_displayer.h"
 #include "control/goom_music_settings_reactor.h"
 #include "control/goom_random_state_handler.h"
+#include "control/goom_sound_events.h"
 #include "control/goom_state_dump.h"
 #include "control/goom_state_monitor.h"
 #include "control/goom_title_displayer.h"
@@ -63,6 +64,7 @@ using CONTROL::GoomImageBuffers;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
+using CONTROL::GoomSoundEvents;
 using CONTROL::GoomStateDump;
 using CONTROL::GoomStateMonitor;
 using CONTROL::GoomTitleDisplayer;
@@ -108,7 +110,9 @@ public:
 
 private:
   Parallel m_parallel{-1}; // max cores - 1
-  WritablePluginInfo m_goomInfo;
+  SoundInfo m_soundInfo{};
+  GoomSoundEvents m_goomSoundEvents{m_soundInfo};
+  PluginInfo m_goomInfo;
   const GoomRand m_goomRand{};
   GoomDrawToBuffer m_multiBufferDraw{m_goomInfo.GetScreenInfo().width,
                                      m_goomInfo.GetScreenInfo().height};
@@ -286,7 +290,8 @@ static constexpr bool DO_GOOM_STATE_DUMP = true;
 GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
                                               const uint32_t screenHeight,
                                               std::string resourcesDirectory)
-  : m_goomInfo{screenWidth, screenHeight}, m_resourcesDirectory{std::move(resourcesDirectory)}
+  : m_goomInfo{screenWidth, screenHeight, m_goomSoundEvents},
+    m_resourcesDirectory{std::move(resourcesDirectory)}
 {
   Expects(screenWidth > 0);
   Expects(screenHeight > 0);
@@ -518,7 +523,8 @@ inline auto GoomControl::GoomControlImpl::DrawAndZoom(const AudioSamples& soundD
 inline auto GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData) -> void
 {
   /* ! etude du signal ... */
-  m_goomInfo.ProcessSoundSample(soundData);
+  m_soundInfo.ProcessSample(soundData);
+  m_goomSoundEvents.Update();
 }
 
 inline auto GoomControl::GoomControlImpl::ApplyStateToSingleBufferPreZoom() -> void

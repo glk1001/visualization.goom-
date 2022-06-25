@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sound_info.h"
+#include "control/goom_sound_events.h"
 
 #include <cstdint>
 #include <memory>
@@ -19,7 +19,7 @@ public:
   };
 
   PluginInfo() noexcept = delete;
-  PluginInfo(uint32_t width, uint32_t height) noexcept;
+  PluginInfo(uint32_t width, uint32_t height, const CONTROL::GoomSoundEvents& soundEvents) noexcept;
   PluginInfo(const PluginInfo&) noexcept = delete;
   PluginInfo(PluginInfo&&) noexcept = delete;
   virtual ~PluginInfo() noexcept = default;
@@ -27,25 +27,17 @@ public:
   auto operator=(PluginInfo&&) -> PluginInfo& = delete;
 
   [[nodiscard]] auto GetScreenInfo() const -> const Screen&;
-  [[nodiscard]] auto GetSoundInfo() const -> const SoundInfo&;
-
-protected:
-  virtual void ProcessSoundSample(const AudioSamples& soundData);
+  [[nodiscard]] auto GetSoundEvents() const -> const CONTROL::GoomSoundEvents&;
 
 private:
   const Screen m_screen;
-  std::unique_ptr<SoundInfo> m_soundInfo;
+  const CONTROL::GoomSoundEvents& m_soundEvents;
 };
 
-class WritablePluginInfo : public PluginInfo
-{
-public:
-  WritablePluginInfo(uint32_t width, uint32_t height) noexcept;
-  void ProcessSoundSample(const AudioSamples& soundData) override;
-};
-
-inline PluginInfo::PluginInfo(const uint32_t width, const uint32_t height) noexcept
-  : m_screen{width, height, width * height}, m_soundInfo{std::make_unique<SoundInfo>()}
+inline PluginInfo::PluginInfo(const uint32_t width,
+                              const uint32_t height,
+                              const CONTROL::GoomSoundEvents& soundEvents) noexcept
+  : m_screen{width, height, width * height}, m_soundEvents{soundEvents}
 {
 }
 
@@ -54,24 +46,9 @@ inline auto PluginInfo::GetScreenInfo() const -> const PluginInfo::Screen&
   return m_screen;
 }
 
-inline auto PluginInfo::GetSoundInfo() const -> const SoundInfo&
+inline auto PluginInfo::GetSoundEvents() const -> const CONTROL::GoomSoundEvents&
 {
-  return *m_soundInfo;
-}
-
-inline void PluginInfo::ProcessSoundSample(const AudioSamples& soundData)
-{
-  m_soundInfo->ProcessSample(soundData);
-}
-
-inline WritablePluginInfo::WritablePluginInfo(const uint32_t width, const uint32_t height) noexcept
-  : PluginInfo{width, height}
-{
-}
-
-inline void WritablePluginInfo::ProcessSoundSample(const AudioSamples& soundData)
-{
-  PluginInfo::ProcessSoundSample(soundData);
+  return m_soundEvents;
 }
 
 } // namespace GOOM

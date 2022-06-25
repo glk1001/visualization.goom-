@@ -150,12 +150,13 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
 
   m_cumulativeState->AddBufferLerp(m_visualFx.GetZoomFilterFx().GetTranLerpFactor());
 
-  const SoundInfo& soundInfo = m_goomInfo.GetSoundInfo();
-  m_cumulativeState->AddCurrentTimeSinceLastGoom(soundInfo.GetTimeSinceLastGoom());
-  m_cumulativeState->AddCurrentTimeSinceLastBigGoom(soundInfo.GetTimeSinceLastBigGoom());
-  m_cumulativeState->AddCurrentTotalGoomsInCurrentCycle(soundInfo.GetTotalGoomsInCurrentCycle());
-  m_cumulativeState->AddCurrentGoomPower(soundInfo.GetGoomPower());
-  m_cumulativeState->AddCurrentGoomVolume(soundInfo.GetVolume());
+  const GoomSoundEvents& goomSoundEvents = m_goomInfo.GetSoundEvents();
+  m_cumulativeState->AddCurrentTimeSinceLastGoom(goomSoundEvents.GetTimeSinceLastGoom());
+  m_cumulativeState->AddCurrentTimeSinceLastBigGoom(goomSoundEvents.GetTimeSinceLastBigGoom());
+  m_cumulativeState->AddCurrentTotalGoomsInCurrentCycle(
+      goomSoundEvents.GetTotalGoomsInCurrentCycle());
+  m_cumulativeState->AddCurrentGoomPower(goomSoundEvents.GetGoomPower());
+  m_cumulativeState->AddCurrentGoomVolume(goomSoundEvents.GetSoundInfo().GetVolume());
 
   m_cumulativeState->IncrementUpdateNum();
 }

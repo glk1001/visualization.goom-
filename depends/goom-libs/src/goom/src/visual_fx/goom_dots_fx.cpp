@@ -361,14 +361,14 @@ inline void GoomDotsFx::GoomDotsFxImpl::ApplyMultiple()
 void GoomDotsFx::GoomDotsFxImpl::Update()
 {
   uint32_t radius = MIN_DOT_SIZE / 2;
-  if ((0 == m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
+  if ((0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
   {
     ChangeColors();
     radius = m_goomRand.GetRandInRange(radius, static_cast<uint32_t>(S_HALF * MAX_DOT_SIZE) + 1);
     SetNextCurrentBitmapName();
   }
 
-  const float speedFactor = 0.35F * m_goomInfo.GetSoundInfo().GetSpeed();
+  const float speedFactor = 0.35F * m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed();
   //  const float largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
   const auto speedVarMult80Plus15 = static_cast<uint32_t>((speedFactor * 80.0F) + 15.0F);
 

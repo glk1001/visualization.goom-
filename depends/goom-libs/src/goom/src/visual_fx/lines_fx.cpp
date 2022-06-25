@@ -600,7 +600,8 @@ auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
                                           const Pixel& randColor,
                                           const float dataVal) const -> PointAndColor
 {
-  Expects(m_goomInfo.GetSoundInfo().GetAllTimesMinVolume() <= (dataVal + SMALL_FLOAT));
+  Expects(m_goomInfo.GetSoundEvents().GetSoundInfo().GetAllTimesMinVolume() <=
+          (dataVal + SMALL_FLOAT));
   Expects(m_minAudioValue <= (dataVal + SMALL_FLOAT));
   Expects(dataVal <= ((m_minAudioValue + m_audioRange) + SMALL_FLOAT));
 

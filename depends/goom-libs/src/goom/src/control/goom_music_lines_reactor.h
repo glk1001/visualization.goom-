@@ -78,7 +78,7 @@ inline auto GoomMusicLinesReactor::CanDisplayLines() const -> bool
   static constexpr uint32_t DISPLAY_LINES_GOOM_NUM = 5;
 
   return ((m_lineMode != 0) ||
-          (m_goomInfo.GetSoundInfo().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
+          (m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
 }
 
 inline void GoomMusicLinesReactor::UpdateLineModes()

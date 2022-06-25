@@ -1,4 +1,5 @@
 #include "catch2/catch.hpp"
+#include "control/goom_sound_events.h"
 #include "sound_info.h"
 #include "utils/math/misc.h"
 
@@ -7,6 +8,7 @@
 namespace GOOM::UNIT_TESTS
 {
 
+using CONTROL::GoomSoundEvents;
 using UTILS::MATH::SMALL_FLOAT;
 
 [[nodiscard]] static auto GetAudioData(const float xMin0,
@@ -97,21 +99,23 @@ TEST_CASE("Test AudioSamples Arrays")
 TEST_CASE("Test SoundInfo ProcessSample Defaults")
 {
   SoundInfo soundInfo{};
+  GoomSoundEvents goomSoundEvents{soundInfo};
 
   REQUIRE(soundInfo.GetVolume() == Approx(0.0F));
-  REQUIRE(soundInfo.GetTimeSinceLastGoom() == 0);
-  REQUIRE(soundInfo.GetTimeSinceLastBigGoom() == 0);
-  REQUIRE(soundInfo.GetTotalGoomsInCurrentCycle() == 0);
+  REQUIRE(goomSoundEvents.GetTimeSinceLastGoom() == 0);
+  REQUIRE(goomSoundEvents.GetTimeSinceLastBigGoom() == 0);
+  REQUIRE(goomSoundEvents.GetTotalGoomsInCurrentCycle() == 0);
 
   const std::vector<float> audioData = GetAudioData(X_MIN0, X_MAX0, X_MIN1, X_MAX1);
   const AudioSamples audioSamples{NUM_SAMPLE_CHANNELS, audioData};
 
   soundInfo.ProcessSample(audioSamples);
+  goomSoundEvents.Update();
 
   REQUIRE(soundInfo.GetVolume() == Approx(AudioSamples::GetPositiveValue(X_MAX1)));
-  REQUIRE(soundInfo.GetTimeSinceLastGoom() == 1);
-  REQUIRE(soundInfo.GetTimeSinceLastBigGoom() == 1);
-  REQUIRE(soundInfo.GetTotalGoomsInCurrentCycle() == 0);
+  REQUIRE(goomSoundEvents.GetTimeSinceLastGoom() == 1);
+  REQUIRE(goomSoundEvents.GetTimeSinceLastBigGoom() == 1);
+  REQUIRE(goomSoundEvents.GetTotalGoomsInCurrentCycle() == 0);
 }
 
 TEST_CASE("Test SoundInfo Volume")

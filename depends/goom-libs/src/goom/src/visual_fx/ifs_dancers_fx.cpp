@@ -315,7 +315,8 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() -> void
   static constexpr float MAX_SPEED_WEIGHT = 10.0F;
   const float speedAmp =
       std::min(m_goomRand.GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
-  const float accelFactor = 1.0F / (1.1F - m_goomInfo.GetSoundInfo().GetAcceleration());
+  const float accelFactor =
+      1.0F / (1.1F - m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration());
 
   m_fractal->SetSpeed(std::max(1U, static_cast<uint32_t>(speedAmp * accelFactor)));
 }

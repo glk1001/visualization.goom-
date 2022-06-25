@@ -1,4 +1,5 @@
 #include "catch2/catch.hpp"
+#include "control/goom_sound_events.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_colors_service.h"
 #include "filter_fx/filter_effects/speed_coefficients_effect_factory.h"
@@ -8,6 +9,7 @@
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_filter_fx.h"
 #include "goom_plugin_info.h"
+#include "sound_info.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
 
@@ -16,6 +18,7 @@
 namespace GOOM::UNIT_TESTS
 {
 
+using CONTROL::GoomSoundEvents;
 using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterColorsService;
 using FILTER_FX::FilterSettingsService;
@@ -36,7 +39,10 @@ static constexpr const char* RESOURCES_DIRECTORY = "";
 TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
 {
   Parallel parallel{-1};
-  const PluginInfo goomInfo{WIDTH, HEIGHT};
+  SoundInfo soundInfo{};
+  GoomSoundEvents goomSoundEvents{soundInfo};
+
+  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
   const GoomRand goomRand{};
   FilterSettingsService filterSettingsService{goomInfo, goomRand, RESOURCES_DIRECTORY,
                                               CreateSpeedCoefficientsEffect};
