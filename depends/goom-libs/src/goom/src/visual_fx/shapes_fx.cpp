@@ -12,7 +12,6 @@
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
-#include "shapes/shape_drawers.h"
 #include "shapes/shapes.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -29,7 +28,6 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using SHAPES::Shape;
-using SHAPES::ShapeDrawer;
 using UTILS::Logging;
 using UTILS::Timer;
 using UTILS::TValue;
@@ -81,7 +79,6 @@ private:
   static constexpr uint32_t TIME_BEFORE_SYNCHRONISED_CHANGE = 5000;
   Timer m_synchronisedShapeChangesTimer{TIME_BEFORE_SYNCHRONISED_CHANGE};
 
-  ShapeDrawer m_shapeDrawer{m_draw, m_goomRand, m_colorMapsManager};
   static constexpr uint32_t MIN_INCREMENTS_PER_UPDATE = 1;
   static constexpr uint32_t MAX_INCREMENTS_PER_UPDATE = 10;
   static_assert(0 < MIN_INCREMENTS_PER_UPDATE);
@@ -156,7 +153,8 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
 
   return {
       {
-       Shape{m_goomRand,
+       Shape{m_draw,
+       m_goomRand,
        m_goomInfo,
        m_colorMapsManager,
        {MIN_RADIUS_FRACTION, MAX_RADIUS_FRACTION, SHAPE0_MIN_DOT_RADIUS,
@@ -181,7 +179,7 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
 inline auto ShapesFx::ShapesFxImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  // TODO - fix this
+  // TODO -- fix this
   return {};
 }
 
@@ -208,7 +206,9 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
   }
 
   static constexpr float PROB_VARY_DOT_RADIUS = 0.1F;
-  m_shapeDrawer.SetVaryDotRadius(m_goomRand.ProbabilityOf(PROB_VARY_DOT_RADIUS));
+  const bool varyDotRadius = m_goomRand.ProbabilityOf(PROB_VARY_DOT_RADIUS);
+  std::for_each(begin(m_shapes), end(m_shapes),
+                [&varyDotRadius](Shape& shape) { shape.SetVaryDotRadius(varyDotRadius); });
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> void
@@ -364,7 +364,7 @@ inline auto ShapesFx::ShapesFxImpl::GetNextNumIncrements() const noexcept -> siz
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShape(Shape& shape) noexcept -> void
 {
-  m_shapeDrawer.DrawShapeParts(shape);
+  shape.Draw();
   shape.Update();
   shape.DoRandomChanges();
 }

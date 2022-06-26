@@ -3,6 +3,7 @@
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_manager.h"
+#include "draw/goom_draw.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
 #include "shape_paths.h"
@@ -36,7 +37,8 @@ public:
     uint32_t shapePathsMaxNumSteps;
   };
 
-  ShapePart(const UTILS::MATH::IGoomRand& goomRand,
+  ShapePart(DRAW::IGoomDraw& draw,
+            const UTILS::MATH::IGoomRand& goomRand,
             const PluginInfo& goomInfo,
             COLOR::RandomColorMapsManager& colorMapsManager,
             const Params& params) noexcept;
@@ -52,6 +54,7 @@ public:
       -> void;
   auto SetWeightedInnerColorMaps(
       std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void;
+  auto SetChromaFactor(float val) noexcept -> void;
 
   auto SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void;
 
@@ -59,6 +62,15 @@ public:
                                    uint32_t shapePathsMaxNumSteps) noexcept -> void;
 
   auto Start() noexcept -> void;
+
+  struct DrawParams
+  {
+    float brightnessAttenuation;
+    bool firstShapePathAtMeetingPoint;
+    bool varyDotRadius;
+    ShapePath::ShapePathColors meetingPointColors;
+  };
+  auto Draw(const DrawParams& drawParams) noexcept -> void;
 
   auto Update() noexcept -> void;
   auto ResetTs(float val) noexcept -> void;
@@ -70,13 +82,6 @@ public:
   [[nodiscard]] static auto GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goomRand,
                                                     float oldTMinMaxLerp) noexcept -> float;
 
-  auto UpdateMainColorMapId(COLOR::RandomColorMapsManager::ColorMapId mainColorMapId) noexcept
-      -> void;
-  auto UpdateLowColorMapId(COLOR::RandomColorMapsManager::ColorMapId lowColorMapId) noexcept
-      -> void;
-  auto UpdateInnerColorMapId(COLOR::RandomColorMapsManager::ColorMapId innerColorMapId) noexcept
-      -> void;
-
   [[nodiscard]] auto GetNumShapePaths() const noexcept -> uint32_t;
   [[nodiscard]] auto GetShapePath(size_t shapePathNum) const noexcept -> const ShapePath&;
   [[nodiscard]] auto GetCurrentShapeDotRadius(bool varyRadius) const noexcept -> int32_t;
@@ -84,14 +89,8 @@ public:
   [[nodiscard]] auto GetFirstShapePathTDistanceFromClosestBoundary() const noexcept -> float;
   [[nodiscard]] auto AreShapePathsCloseToMeeting() const noexcept -> bool;
 
-  [[nodiscard]] auto GetColorMap(COLOR::RandomColorMapsManager::ColorMapId colorMapId)
-      const noexcept -> const COLOR::IColorMap&;
-  [[nodiscard]] auto GetCurrentColor(
-      const ShapePath& shapePath,
-      COLOR::RandomColorMapsManager::ColorMapId colorMapId) const noexcept -> Pixel;
-  [[nodiscard]] auto GetInnerColorMix() const noexcept -> float;
-
 private:
+  DRAW::IGoomDraw& m_draw;
   const UTILS::MATH::IGoomRand& m_goomRand;
   const PluginInfo& m_goomInfo;
   COLOR::RandomColorMapsManager& m_colorMapsManager;
@@ -113,9 +112,8 @@ private:
                                         INITIAL_DOT_RADIUS_SPEED};
   UTILS::TValue m_dotRadiusT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
                              m_dotRadiusStepSpeed.GetCurrentNumSteps()};
+  [[nodiscard]] auto GetMaxDotRadius(bool varyRadius) const noexcept -> int32_t;
 
-  static inline const std::set<COLOR::RandomColorMaps::ColorMapTypes> COLOR_MAP_TYPES =
-      COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES;
   static constexpr float MIN_INNER_COLOR_MIX_T = 0.1F;
   static constexpr float MAX_INNER_COLOR_MIX_T = 0.9F;
   struct ColorInfo
@@ -128,11 +126,23 @@ private:
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
   ColorInfo m_colorInfo{GetInitialColorInfo()};
   auto ChangeAllColorMapsNow() noexcept -> void;
+  float m_chromaFactor = 1.0F;
+
   bool m_megaColorChangeMode = false;
-  static constexpr uint32_t MEGA_COLOR_CHANGE_COUNT = 200;
-  UTILS::Timer m_megaColorChangeTimer{MEGA_COLOR_CHANGE_COUNT, true};
   auto DoMegaColorChange() noexcept -> void;
-  auto UpdateMegaColorChangeMode() -> void;
+  static constexpr uint32_t MEGA_COLOR_CHANGE_ON_TIME = 100;
+  static constexpr uint32_t MEGA_COLOR_CHANGE_ON_FAILED_TIME = 10;
+  static constexpr uint32_t MEGA_COLOR_CHANGE_OFF_TIME = 1000;
+  static constexpr uint32_t MEGA_COLOR_CHANGE_OFF_FAILED_TIME = 20;
+  UTILS::OnOffTimer m_megaColorChangeOnOffTimer{
+      {
+       MEGA_COLOR_CHANGE_ON_TIME, MEGA_COLOR_CHANGE_ON_FAILED_TIME,
+       MEGA_COLOR_CHANGE_OFF_TIME, MEGA_COLOR_CHANGE_OFF_FAILED_TIME,
+       }
+  };
+  auto StartMegaColorChangeOnOffTimer() noexcept -> void;
+  [[nodiscard]] auto SetMegaColorChangeOn() noexcept -> bool;
+  [[nodiscard]] auto SetMegaColorChangeOff() noexcept -> bool;
 
   const uint32_t m_shapePartNum;
   static constexpr uint32_t MIN_NUM_SHAPE_PATHS = 4;
@@ -176,11 +186,6 @@ private:
 
 static_assert(std::is_nothrow_move_constructible_v<ShapePart>);
 
-inline auto ShapePart::Start() noexcept -> void
-{
-  SetRandomizedShapePaths();
-}
-
 inline auto ShapePart::GetNumShapePaths() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(m_shapePaths.size());
@@ -191,103 +196,10 @@ inline auto ShapePart::GetShapePath(const size_t shapePathNum) const noexcept ->
   return m_shapePaths.at(shapePathNum);
 }
 
-inline auto ShapePart::GetColorMap(const COLOR::RandomColorMapsManager::ColorMapId colorMapId)
-    const noexcept -> const COLOR::IColorMap&
-{
-  return m_colorMapsManager.GetColorMap(colorMapId);
-}
-
-inline auto ShapePart::GetCurrentColor(
-    const ShapePath& shapePath, COLOR::RandomColorMapsManager::ColorMapId colorMapId) const noexcept
-    -> Pixel
-{
-  return GetColorMap(colorMapId).GetColor(shapePath.GetCurrentT());
-}
-
-inline auto ShapePart::GetInnerColorMix() const noexcept -> float
-{
-  return m_colorInfo.innerColorMix;
-}
-
-inline auto ShapePart::GetCurrentShapeDotRadius(const bool varyRadius) const noexcept -> int32_t
-{
-  if (not varyRadius)
-  {
-    return m_minShapeDotRadius;
-  }
-
-  const int32_t maxShapeDotRadius =
-      m_useExtremeMaxShapeDotRadius ? m_extremeMaxShapeDotRadius : m_maxShapeDotRadius;
-
-  return STD20::lerp(m_minShapeDotRadius, maxShapeDotRadius, m_dotRadiusT());
-}
-
-inline auto ShapePart::GetFirstShapePathPositionT() const noexcept -> float
-{
-  if (0 == GetNumShapePaths())
-  {
-    return 1.0F;
-  }
-
-  return GetShapePath(0).GetCurrentT();
-}
-
-inline auto ShapePart::GetFirstShapePathTDistanceFromClosestBoundary() const noexcept -> float
-{
-  const float positionT = GetFirstShapePathPositionT();
-
-  if (positionT < UTILS::MATH::HALF)
-  {
-    return positionT;
-  }
-
-  return 1.0F - positionT;
-}
-
-inline auto ShapePart::AreShapePathsCloseToMeeting() const noexcept -> bool
-{
-  static constexpr float T_MEETING_CUTOFF = 0.1F;
-  const float positionT = GetFirstShapePathPositionT();
-
-  return (T_MEETING_CUTOFF > positionT) || (positionT > (1.0F - T_MEETING_CUTOFF));
-}
-
-inline auto ShapePart::Update() noexcept -> void
-{
-  IncrementTs();
-  UpdateShapePathTargets();
-}
-
-inline auto ShapePart::IncrementTs() noexcept -> void
-{
-  std::for_each(begin(m_shapePaths), end(m_shapePaths), [](ShapePath& path) { path.IncrementT(); });
-
-  m_dotRadiusT.Increment();
-
-  if (m_megaColorChangeMode)
-  {
-    m_megaColorChangeTimer.Increment();
-  }
-}
-
 inline auto ShapePart::ResetTs(const float val) noexcept -> void
 {
   std::for_each(begin(m_shapePaths), end(m_shapePaths),
                 [&val](ShapePath& path) { path.ResetT(val); });
-}
-
-inline auto ShapePart::UseFixedShapePathsNumSteps(const float tMinMaxLerp) noexcept -> void
-{
-  m_currentTMinMaxLerp = tMinMaxLerp;
-  m_shapePathsStepSpeed.SetSpeed(m_currentTMinMaxLerp);
-  m_dotRadiusStepSpeed.SetSpeed(m_currentTMinMaxLerp);
-}
-
-inline auto ShapePart::UseRandomShapePathsNumSteps() noexcept -> void
-{
-  m_currentTMinMaxLerp = GetNewRandomMinMaxLerpT(m_goomRand, m_currentTMinMaxLerp);
-  m_shapePathsStepSpeed.SetSpeed(m_currentTMinMaxLerp);
-  m_dotRadiusStepSpeed.SetSpeed(m_currentTMinMaxLerp);
 }
 
 inline auto ShapePart::GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goomRand,
@@ -303,18 +215,10 @@ inline auto ShapePart::UseEvenShapePartNumsForDirection(const bool val) -> void
   m_useEvenShapePartNumsForDirection = val;
 }
 
-inline auto ShapePart::SetShapePathsNumSteps() noexcept -> void
-{
-  std::for_each(begin(m_shapePaths), end(m_shapePaths),
-                [this](ShapePath& path)
-                { path.SetNumSteps(m_shapePathsStepSpeed.GetCurrentNumSteps()); });
-
-  m_dotRadiusT.SetNumSteps(m_dotRadiusStepSpeed.GetCurrentNumSteps());
-}
-
 inline auto ShapePart::SetRandomizedShapePaths() noexcept -> void
 {
   m_shapePaths = GetRandomizedShapePaths();
+  SetChromaFactor(m_chromaFactor);
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES

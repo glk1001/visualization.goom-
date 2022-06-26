@@ -1,23 +1,129 @@
 #include "shape_paths.h"
 
-#include "shape_parts.h"
+#include "color/color_maps.h"
+#include "goom_config.h"
+#include "goom_graphic.h"
+#include "utils/t_values.h"
 
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
-auto ShapePath::UpdateMainColorInfo(ShapePart& parentShapePart) const noexcept -> void
+using COLOR::IColorMap;
+using COLOR::RandomColorMapsManager;
+using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
+using UTILS::TValue;
+using UTILS::MATH::IPath;
+
+ShapePath::ShapePath(IGoomDraw& draw,
+                     const std::shared_ptr<IPath> path,
+                     RandomColorMapsManager& colorMapsManager,
+                     const ColorInfo colorInfo) noexcept
+  : m_draw{draw}, m_path{path}, m_colorMapsManager{colorMapsManager}, m_colorInfo{colorInfo}
 {
-  parentShapePart.UpdateMainColorMapId(m_colorInfo.mainColorMapId);
 }
 
-auto ShapePath::UpdateLowColorInfo(ShapePart& parentShapePart) const noexcept -> void
+auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
 {
-  parentShapePart.UpdateLowColorMapId(m_colorInfo.lowColorMapId);
+  const Point2dInt point = GetNextPoint();
+
+  const ShapePathColors shapeColors = GetCurrentShapeColors();
+  const IColorMap& innerColorMap = m_colorMapsManager.GetColorMap(m_colorInfo.innerColorMapId);
+
+  TValue innerColorT{TValue::StepType::SINGLE_CYCLE,
+                     static_cast<uint32_t>(drawParams.maxRadius - 1)};
+
+  static constexpr float MIN_BRIGHTNESS = 0.5F;
+  static constexpr float MAX_BRIGHTNESS = 4.0F;
+  TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius)};
+
+  m_colorAdjust.SetAlterChromaFactor(m_colorInfo.chromaFactor);
+  const int32_t innerColorCutoffRadius = GetInnerColorCutoffRadius(drawParams.maxRadius);
+
+  for (int32_t radius = drawParams.maxRadius; radius > 1; --radius)
+  {
+    const float brightness = drawParams.brightnessAttenuation *
+                             STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
+    const Pixel innerColor = innerColorMap.GetColor(innerColorT());
+    const MultiplePixels colors =
+        GetColors(drawParams, radius, brightness, shapeColors, innerColorCutoffRadius, innerColor);
+
+    m_draw.Circle(point, radius, colors);
+
+    brightnessT.Increment();
+    innerColorT.Increment();
+  }
 }
 
-auto ShapePath::UpdateInnerColorInfo(ShapePart& parentShapePart) const noexcept -> void
+inline auto ShapePath::GetInnerColorCutoffRadius(const int32_t maxRadius) noexcept -> int32_t
 {
-  parentShapePart.UpdateInnerColorMapId(m_colorInfo.innerColorMapId);
+  static constexpr int32_t RADIUS_FRAC = 3;
+  static constexpr int32_t MIN_CUTOFF = 5;
+  return std::max(MIN_CUTOFF, maxRadius / RADIUS_FRAC);
+}
+
+inline auto ShapePath::GetCurrentShapeColors() const noexcept -> ShapePathColors
+{
+  return {
+      m_colorMapsManager.GetColorMap(m_colorInfo.mainColorMapId).GetColor(GetCurrentT()),
+      m_colorMapsManager.GetColorMap(m_colorInfo.lowColorMapId).GetColor(GetCurrentT()),
+  };
+}
+
+auto ShapePath::GetColors(const DrawParams& drawParams,
+                          const int32_t radius,
+                          const float brightness,
+                          const ShapePathColors& shapeColors,
+                          const int32_t innerColorCutoffRadius,
+                          const Pixel& innerColor) const noexcept -> MultiplePixels
+{
+  if (drawParams.firstShapePathAtMeetingPoint)
+  {
+    return GetFinalMeetingPointColors(drawParams.meetingPointColors, brightness);
+  }
+
+  return radius <= innerColorCutoffRadius
+             ? GetColorsWithoutInner(brightness, shapeColors)
+             : GetColorsWithInner(brightness, shapeColors, innerColor, drawParams.innerColorMix);
+}
+
+static constexpr float MAIN_COLOR_BRIGHTNESS_FACTOR = 0.5F;
+static constexpr float LOW_COLOR_BRIGHTNESS_FACTOR = 0.5F;
+static constexpr float LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR = 7.0F;
+
+inline auto ShapePath::GetColorsWithoutInner(const float brightness,
+                                             const ShapePathColors& shapeColors) const noexcept
+    -> MultiplePixels
+{
+  return {
+      m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.mainColor),
+      m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor),
+  };
+}
+
+inline auto ShapePath::GetColorsWithInner(const float brightness,
+                                          const ShapePathColors& shapeColors,
+                                          const Pixel& innerColor,
+                                          const float innerColorMix) const noexcept
+    -> MultiplePixels
+{
+  return {
+      m_colorAdjust.GetAdjustment(
+          MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
+          IColorMap::GetColorMix(shapeColors.mainColor, innerColor, innerColorMix)),
+      m_colorAdjust.GetAdjustment(
+          LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
+          IColorMap::GetColorMix(shapeColors.lowColor, innerColor, innerColorMix)),
+  };
+}
+
+inline auto ShapePath::GetFinalMeetingPointColors(const ShapePathColors& meetingPointColors,
+                                                  const float brightness) const noexcept
+    -> MultiplePixels
+{
+  return {m_colorAdjust.GetAdjustment(brightness, meetingPointColors.mainColor),
+          m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR * brightness,
+                                      meetingPointColors.lowColor)};
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES

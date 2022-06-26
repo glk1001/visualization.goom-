@@ -1,6 +1,10 @@
 #pragma once
 
+#include "color/color_adjustment.h"
 #include "color/random_color_maps_manager.h"
+#include "draw/goom_draw.h"
+#include "goom_graphic.h"
+#include "point2d.h"
 #include "utils/math/paths.h"
 #include "utils/propagate_const.h"
 
@@ -8,8 +12,6 @@
 
 namespace GOOM::VISUAL_FX::SHAPES
 {
-
-class ShapePart;
 
 class ShapePath
 {
@@ -19,12 +21,20 @@ public:
     COLOR::RandomColorMapsManager::ColorMapId mainColorMapId{};
     COLOR::RandomColorMapsManager::ColorMapId lowColorMapId{};
     COLOR::RandomColorMapsManager::ColorMapId innerColorMapId{};
+    float chromaFactor = 1.0F;
   };
-  ShapePath(std::shared_ptr<UTILS::MATH::IPath> path, ColorInfo colorInfo) noexcept;
+  ShapePath(DRAW::IGoomDraw& draw,
+            std::shared_ptr<UTILS::MATH::IPath> path,
+            COLOR::RandomColorMapsManager& colorMapsManager,
+            ColorInfo colorInfo) noexcept;
 
-  auto UpdateMainColorInfo(ShapePart& parentShapePart) const noexcept -> void;
-  auto UpdateLowColorInfo(ShapePart& parentShapePart) const noexcept -> void;
-  auto UpdateInnerColorInfo(ShapePart& parentShapePart) const noexcept -> void;
+  auto UpdateMainColorInfo(
+      const std::shared_ptr<const COLOR::RandomColorMaps>& mainColorMaps) noexcept -> void;
+  auto UpdateLowColorInfo(
+      const std::shared_ptr<const COLOR::RandomColorMaps>& lowColorMaps) noexcept -> void;
+  auto UpdateInnerColorInfo(
+      const std::shared_ptr<const COLOR::RandomColorMaps>& innerColorMaps) noexcept -> void;
+  auto SetChromaFactor(float val) noexcept -> void;
 
   auto SetNumSteps(uint32_t val) noexcept -> void;
   auto IncrementT() noexcept -> void;
@@ -39,16 +49,52 @@ public:
   [[nodiscard]] auto GetIPath() const noexcept -> const UTILS::MATH::IPath&;
   [[nodiscard]] auto GetIPath() noexcept -> UTILS::MATH::IPath&;
 
-private:
-  std::experimental::propagate_const<std::shared_ptr<UTILS::MATH::IPath>> m_path;
-  ColorInfo m_colorInfo;
-};
+  struct ShapePathColors
+  {
+    Pixel mainColor;
+    Pixel lowColor;
+  };
+  struct DrawParams
+  {
+    float brightnessAttenuation;
+    bool firstShapePathAtMeetingPoint;
+    int32_t maxRadius;
+    float innerColorMix;
+    ShapePathColors meetingPointColors;
+  };
+  auto Draw(const DrawParams& drawParams) noexcept -> void;
 
-inline ShapePath::ShapePath(const std::shared_ptr<UTILS::MATH::IPath> path,
-                            const ColorInfo colorInfo) noexcept
-  : m_path{path}, m_colorInfo{colorInfo}
-{
-}
+private:
+  DRAW::IGoomDraw& m_draw;
+  std::experimental::propagate_const<std::shared_ptr<UTILS::MATH::IPath>> m_path;
+  COLOR::RandomColorMapsManager& m_colorMapsManager;
+
+  ColorInfo m_colorInfo;
+  static inline const std::set<COLOR::RandomColorMaps::ColorMapTypes> COLOR_MAP_TYPES =
+      COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES;
+
+  [[nodiscard]] static auto GetInnerColorCutoffRadius(int32_t maxRadius) noexcept -> int32_t;
+  [[nodiscard]] auto GetCurrentShapeColors() const noexcept -> ShapePathColors;
+  [[nodiscard]] auto GetColors(const DrawParams& drawParams,
+                               int32_t radius,
+                               float brightness,
+                               const ShapePathColors& shapeColors,
+                               int32_t innerColorCutoffRadius,
+                               const Pixel& innerColor) const noexcept -> DRAW::MultiplePixels;
+  [[nodiscard]] auto GetColorsWithoutInner(float brightness,
+                                           const ShapePathColors& shapeColors) const noexcept
+      -> DRAW::MultiplePixels;
+  [[nodiscard]] auto GetColorsWithInner(float brightness,
+                                        const ShapePathColors& shapeColors,
+                                        const Pixel& innerColor,
+                                        float innerColorMix) const noexcept -> DRAW::MultiplePixels;
+  [[nodiscard]] auto GetFinalMeetingPointColors(const ShapePathColors& meetingPointColors,
+                                                float brightness) const noexcept
+      -> DRAW::MultiplePixels;
+
+  static constexpr float GAMMA = 1.3F;
+  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+};
 
 inline auto ShapePath::SetNumSteps(const uint32_t val) noexcept -> void
 {
@@ -103,6 +149,31 @@ inline auto ShapePath::GetIPath() noexcept -> UTILS::MATH::IPath&
 inline auto ShapePath::GetColorInfo() const noexcept -> const ColorInfo&
 {
   return m_colorInfo;
+}
+
+inline auto ShapePath::UpdateMainColorInfo(
+    const std::shared_ptr<const COLOR::RandomColorMaps>& mainColorMaps) noexcept -> void
+{
+  m_colorMapsManager.UpdateColorMapInfo(m_colorInfo.mainColorMapId,
+                                        {mainColorMaps, COLOR_MAP_TYPES});
+}
+
+inline auto ShapePath::UpdateLowColorInfo(
+    const std::shared_ptr<const COLOR::RandomColorMaps>& lowColorMaps) noexcept -> void
+{
+  m_colorMapsManager.UpdateColorMapInfo(m_colorInfo.lowColorMapId, {lowColorMaps, COLOR_MAP_TYPES});
+}
+
+inline auto ShapePath::UpdateInnerColorInfo(
+    const std::shared_ptr<const COLOR::RandomColorMaps>& innerColorMaps) noexcept -> void
+{
+  m_colorMapsManager.UpdateColorMapInfo(m_colorInfo.innerColorMapId,
+                                        {innerColorMaps, COLOR_MAP_TYPES});
+}
+
+inline auto ShapePath::SetChromaFactor(float val) noexcept -> void
+{
+  m_colorInfo.chromaFactor = val;
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES
