@@ -67,7 +67,7 @@ public:
                      const Pixel& newColor) noexcept -> void;
 
   auto DrawLines(const AudioSamples::SampleArray& soundData,
-                 const AudioSamples::MaxMinValues& soundMinMax) noexcept -> void;
+                 const AudioSamples::MinMaxValues& soundMinMax) noexcept -> void;
 
   [[nodiscard]] auto GetRandomLineColor() const -> Pixel;
   [[nodiscard]] static auto GetBlackLineColor() -> Pixel;

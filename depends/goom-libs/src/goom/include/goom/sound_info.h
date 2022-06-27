@@ -28,26 +28,26 @@ public:
 
   [[nodiscard]] auto GetNumDistinctChannels() const -> size_t;
 
-  struct MaxMinValues
+  struct MinMaxValues
   {
     float minVal;
     float maxVal;
   };
   using SampleArray = std::array<float, AUDIO_SAMPLE_LEN>;
   [[nodiscard]] auto GetSample(size_t channelIndex) const -> const SampleArray&;
-  [[nodiscard]] auto GetSampleMinMax(size_t channelIndex) const -> const MaxMinValues&;
-  [[nodiscard]] auto GetSampleOverallMinMax() const -> const MaxMinValues&;
+  [[nodiscard]] auto GetSampleMinMax(size_t channelIndex) const -> const MinMaxValues&;
+  [[nodiscard]] auto GetSampleOverallMinMax() const -> const MinMaxValues&;
 
 private:
   const size_t m_numDistinctChannels;
   const std::array<SampleArray, NUM_AUDIO_SAMPLES> m_sampleArrays;
-  const std::array<MaxMinValues, NUM_AUDIO_SAMPLES> m_minMaxSampleValues;
-  const MaxMinValues m_overallMinMaxSampleValues;
+  const std::array<MinMaxValues, NUM_AUDIO_SAMPLES> m_minMaxSampleValues;
+  const MinMaxValues m_overallMinMaxSampleValues;
   [[nodiscard]] static auto GetSampleArrays(const std::vector<float>& floatAudioData)
       -> std::array<SampleArray, NUM_AUDIO_SAMPLES>;
-  [[nodiscard]] static auto GetMaxMinSampleValues(
+  [[nodiscard]] static auto GetMinMaxSampleValues(
       const std::array<SampleArray, NUM_AUDIO_SAMPLES>& sampleArrays)
-      -> std::array<MaxMinValues, NUM_AUDIO_SAMPLES>;
+      -> std::array<MinMaxValues, NUM_AUDIO_SAMPLES>;
 };
 
 class SoundInfo
@@ -104,12 +104,12 @@ inline auto AudioSamples::GetSample(const size_t channelIndex) const -> const Sa
   return m_sampleArrays.at(channelIndex);
 }
 
-inline auto AudioSamples::GetSampleMinMax(const size_t channelIndex) const -> const MaxMinValues&
+inline auto AudioSamples::GetSampleMinMax(const size_t channelIndex) const -> const MinMaxValues&
 {
   return m_minMaxSampleValues.at(channelIndex);
 }
 
-inline auto AudioSamples::GetSampleOverallMinMax() const -> const MaxMinValues&
+inline auto AudioSamples::GetSampleOverallMinMax() const -> const MinMaxValues&
 {
   return m_overallMinMaxSampleValues;
 }

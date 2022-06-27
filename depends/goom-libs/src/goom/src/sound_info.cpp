@@ -18,25 +18,23 @@ auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
   std::array<SampleArray, NUM_AUDIO_SAMPLES> sampleArrays{};
 
   size_t fpos = 0;
-  for (size_t i = 0; i < AUDIO_SAMPLE_LEN; ++i)
+  for (size_t j = 0; j < AUDIO_SAMPLE_LEN; ++j)
   {
-    static_assert(sampleArrays.size() == 2);
-    sampleArrays[0][i] = GetPositiveValue(floatAudioData[fpos]);
-
-    ++fpos;
-
-    sampleArrays[1][i] = GetPositiveValue(floatAudioData[fpos]);
-    ++fpos;
+    for (size_t i = 0; i < NUM_AUDIO_SAMPLES; ++i)
+    {
+      sampleArrays[i][j] = GetPositiveValue(floatAudioData[fpos]);
+      ++fpos;
+    }
   }
 
   return sampleArrays;
 }
 
-auto AudioSamples::GetMaxMinSampleValues(
+auto AudioSamples::GetMinMaxSampleValues(
     const std::array<SampleArray, NUM_AUDIO_SAMPLES>& sampleArrays)
-    -> std::array<MaxMinValues, NUM_AUDIO_SAMPLES>
+    -> std::array<MinMaxValues, NUM_AUDIO_SAMPLES>
 {
-  std::array<MaxMinValues, NUM_AUDIO_SAMPLES> minMaxSampleValues{};
+  std::array<MinMaxValues, NUM_AUDIO_SAMPLES> minMaxSampleValues{};
 
   for (size_t i = 0; i < NUM_AUDIO_SAMPLES; ++i)
   {
@@ -52,7 +50,7 @@ auto AudioSamples::GetMaxMinSampleValues(
 AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<float>& floatAudioData)
   : m_numDistinctChannels{numSampleChannels},
     m_sampleArrays{GetSampleArrays(floatAudioData)},
-    m_minMaxSampleValues{GetMaxMinSampleValues(m_sampleArrays)},
+    m_minMaxSampleValues{GetMinMaxSampleValues(m_sampleArrays)},
     m_overallMinMaxSampleValues{
         std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
         std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)}

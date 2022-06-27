@@ -98,7 +98,7 @@ public:
                      const Pixel& newColor);
 
   void DrawLines(const AudioSamples::SampleArray& soundData,
-                 const AudioSamples::MaxMinValues& soundMinMax);
+                 const AudioSamples::MinMaxValues& soundMinMax);
 
   [[nodiscard]] auto GetRandomLineColor() const -> Pixel;
   [[nodiscard]] static auto GetBlackLineColor() -> Pixel;
@@ -256,7 +256,7 @@ auto LinesFx::ResetDestLine(const LineType newLineType,
 }
 
 auto LinesFx::DrawLines(const AudioSamples::SampleArray& soundData,
-                        const AudioSamples::MaxMinValues& soundMinMax) noexcept -> void
+                        const AudioSamples::MinMaxValues& soundMinMax) noexcept -> void
 {
   m_pimpl->DrawLines(soundData, soundMinMax);
 }
@@ -501,7 +501,7 @@ inline auto LinesFx::LinesImpl::GetFinalLineColor(const Pixel& color) const -> P
 }
 
 void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
-                                   const AudioSamples::MaxMinValues& soundMinMax)
+                                   const AudioSamples::MinMaxValues& soundMinMax)
 {
   static constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
   UNUSED_FOR_NDEBUG(LAST_POINT_INDEX);
