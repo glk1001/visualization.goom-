@@ -273,6 +273,13 @@
 #include "palettable/BlueGrey_6.h"
 #include "palettable/BlueGrey_7.h"
 #include "palettable/BlueGrey_8.h"
+#include "palettable/BlueOrange8_2.h"
+#include "palettable/BlueOrange8_3.h"
+#include "palettable/BlueOrange8_4.h"
+#include "palettable/BlueOrange8_5.h"
+#include "palettable/BlueOrange8_6.h"
+#include "palettable/BlueOrange8_7.h"
+#include "palettable/BlueOrange8_8.h"
 #include "palettable/BlueOrange10_2.h"
 #include "palettable/BlueOrange10_3.h"
 #include "palettable/BlueOrange10_4.h"
@@ -293,13 +300,6 @@
 #include "palettable/BlueOrange12_10.h"
 #include "palettable/BlueOrange12_11.h"
 #include "palettable/BlueOrange12_12.h"
-#include "palettable/BlueOrange8_2.h"
-#include "palettable/BlueOrange8_3.h"
-#include "palettable/BlueOrange8_4.h"
-#include "palettable/BlueOrange8_5.h"
-#include "palettable/BlueOrange8_6.h"
-#include "palettable/BlueOrange8_7.h"
-#include "palettable/BlueOrange8_8.h"
 #include "palettable/BlueOrangeRed_2.h"
 #include "palettable/BlueOrangeRed_3.h"
 #include "palettable/BlueOrangeRed_4.h"
@@ -316,6 +316,12 @@
 #include "palettable/BlueRed_6.h"
 #include "palettable/BlueRed_12.h"
 #include "palettable/Blues.h"
+#include "palettable/Blues7_2.h"
+#include "palettable/Blues7_3.h"
+#include "palettable/Blues7_4.h"
+#include "palettable/Blues7_5.h"
+#include "palettable/Blues7_6.h"
+#include "palettable/Blues7_7.h"
 #include "palettable/Blues10_2.h"
 #include "palettable/Blues10_3.h"
 #include "palettable/Blues10_4.h"
@@ -325,12 +331,6 @@
 #include "palettable/Blues10_8.h"
 #include "palettable/Blues10_9.h"
 #include "palettable/Blues10_10.h"
-#include "palettable/Blues7_2.h"
-#include "palettable/Blues7_3.h"
-#include "palettable/Blues7_4.h"
-#include "palettable/Blues7_5.h"
-#include "palettable/Blues7_6.h"
-#include "palettable/Blues7_7.h"
 #include "palettable/Blues_3.h"
 #include "palettable/Blues_4.h"
 #include "palettable/Blues_5.h"
@@ -1972,6 +1972,13 @@ const std::array<ColorNamePair, 1687> ALL_MAPS{{
   {ColorMapName::BLUEGREY_6, &COLOR_DATA::BLUEGREY_6},
   {ColorMapName::BLUEGREY_7, &COLOR_DATA::BLUEGREY_7},
   {ColorMapName::BLUEGREY_8, &COLOR_DATA::BLUEGREY_8},
+  {ColorMapName::BLUEORANGE8_2, &COLOR_DATA::BLUEORANGE8_2},
+  {ColorMapName::BLUEORANGE8_3, &COLOR_DATA::BLUEORANGE8_3},
+  {ColorMapName::BLUEORANGE8_4, &COLOR_DATA::BLUEORANGE8_4},
+  {ColorMapName::BLUEORANGE8_5, &COLOR_DATA::BLUEORANGE8_5},
+  {ColorMapName::BLUEORANGE8_6, &COLOR_DATA::BLUEORANGE8_6},
+  {ColorMapName::BLUEORANGE8_7, &COLOR_DATA::BLUEORANGE8_7},
+  {ColorMapName::BLUEORANGE8_8, &COLOR_DATA::BLUEORANGE8_8},
   {ColorMapName::BLUEORANGE10_2, &COLOR_DATA::BLUEORANGE10_2},
   {ColorMapName::BLUEORANGE10_3, &COLOR_DATA::BLUEORANGE10_3},
   {ColorMapName::BLUEORANGE10_4, &COLOR_DATA::BLUEORANGE10_4},
@@ -1992,13 +1999,6 @@ const std::array<ColorNamePair, 1687> ALL_MAPS{{
   {ColorMapName::BLUEORANGE12_10, &COLOR_DATA::BLUEORANGE12_10},
   {ColorMapName::BLUEORANGE12_11, &COLOR_DATA::BLUEORANGE12_11},
   {ColorMapName::BLUEORANGE12_12, &COLOR_DATA::BLUEORANGE12_12},
-  {ColorMapName::BLUEORANGE8_2, &COLOR_DATA::BLUEORANGE8_2},
-  {ColorMapName::BLUEORANGE8_3, &COLOR_DATA::BLUEORANGE8_3},
-  {ColorMapName::BLUEORANGE8_4, &COLOR_DATA::BLUEORANGE8_4},
-  {ColorMapName::BLUEORANGE8_5, &COLOR_DATA::BLUEORANGE8_5},
-  {ColorMapName::BLUEORANGE8_6, &COLOR_DATA::BLUEORANGE8_6},
-  {ColorMapName::BLUEORANGE8_7, &COLOR_DATA::BLUEORANGE8_7},
-  {ColorMapName::BLUEORANGE8_8, &COLOR_DATA::BLUEORANGE8_8},
   {ColorMapName::BLUEORANGERED_2, &COLOR_DATA::BLUEORANGERED_2},
   {ColorMapName::BLUEORANGERED_3, &COLOR_DATA::BLUEORANGERED_3},
   {ColorMapName::BLUEORANGERED_4, &COLOR_DATA::BLUEORANGERED_4},
@@ -2015,6 +2015,12 @@ const std::array<ColorNamePair, 1687> ALL_MAPS{{
   {ColorMapName::BLUERED_6, &COLOR_DATA::BLUERED_6},
   {ColorMapName::BLUERED_12, &COLOR_DATA::BLUERED_12},
   {ColorMapName::BLUES, &COLOR_DATA::BLUES},
+  {ColorMapName::BLUES7_2, &COLOR_DATA::BLUES7_2},
+  {ColorMapName::BLUES7_3, &COLOR_DATA::BLUES7_3},
+  {ColorMapName::BLUES7_4, &COLOR_DATA::BLUES7_4},
+  {ColorMapName::BLUES7_5, &COLOR_DATA::BLUES7_5},
+  {ColorMapName::BLUES7_6, &COLOR_DATA::BLUES7_6},
+  {ColorMapName::BLUES7_7, &COLOR_DATA::BLUES7_7},
   {ColorMapName::BLUES10_2, &COLOR_DATA::BLUES10_2},
   {ColorMapName::BLUES10_3, &COLOR_DATA::BLUES10_3},
   {ColorMapName::BLUES10_4, &COLOR_DATA::BLUES10_4},
@@ -2024,12 +2030,6 @@ const std::array<ColorNamePair, 1687> ALL_MAPS{{
   {ColorMapName::BLUES10_8, &COLOR_DATA::BLUES10_8},
   {ColorMapName::BLUES10_9, &COLOR_DATA::BLUES10_9},
   {ColorMapName::BLUES10_10, &COLOR_DATA::BLUES10_10},
-  {ColorMapName::BLUES7_2, &COLOR_DATA::BLUES7_2},
-  {ColorMapName::BLUES7_3, &COLOR_DATA::BLUES7_3},
-  {ColorMapName::BLUES7_4, &COLOR_DATA::BLUES7_4},
-  {ColorMapName::BLUES7_5, &COLOR_DATA::BLUES7_5},
-  {ColorMapName::BLUES7_6, &COLOR_DATA::BLUES7_6},
-  {ColorMapName::BLUES7_7, &COLOR_DATA::BLUES7_7},
   {ColorMapName::BLUES_3, &COLOR_DATA::BLUES_3},
   {ColorMapName::BLUES_4, &COLOR_DATA::BLUES_4},
   {ColorMapName::BLUES_5, &COLOR_DATA::BLUES_5},
@@ -3526,6 +3526,12 @@ const std::vector<ColorMapName> SEQUENTIAL_MAPS
     ColorMapName::BILBAO_19,
     ColorMapName::BILBAO_20,
     ColorMapName::BLUES,
+    ColorMapName::BLUES7_2,
+    ColorMapName::BLUES7_3,
+    ColorMapName::BLUES7_4,
+    ColorMapName::BLUES7_5,
+    ColorMapName::BLUES7_6,
+    ColorMapName::BLUES7_7,
     ColorMapName::BLUES10_2,
     ColorMapName::BLUES10_3,
     ColorMapName::BLUES10_4,
@@ -3535,12 +3541,6 @@ const std::vector<ColorMapName> SEQUENTIAL_MAPS
     ColorMapName::BLUES10_8,
     ColorMapName::BLUES10_9,
     ColorMapName::BLUES10_10,
-    ColorMapName::BLUES7_2,
-    ColorMapName::BLUES7_3,
-    ColorMapName::BLUES7_4,
-    ColorMapName::BLUES7_5,
-    ColorMapName::BLUES7_6,
-    ColorMapName::BLUES7_7,
     ColorMapName::BLUES_3,
     ColorMapName::BLUES_4,
     ColorMapName::BLUES_5,
@@ -4547,6 +4547,13 @@ const std::vector<ColorMapName> DIVERGING_MAPS
     ColorMapName::BLUEGREY_6,
     ColorMapName::BLUEGREY_7,
     ColorMapName::BLUEGREY_8,
+    ColorMapName::BLUEORANGE8_2,
+    ColorMapName::BLUEORANGE8_3,
+    ColorMapName::BLUEORANGE8_4,
+    ColorMapName::BLUEORANGE8_5,
+    ColorMapName::BLUEORANGE8_6,
+    ColorMapName::BLUEORANGE8_7,
+    ColorMapName::BLUEORANGE8_8,
     ColorMapName::BLUEORANGE10_2,
     ColorMapName::BLUEORANGE10_3,
     ColorMapName::BLUEORANGE10_4,
@@ -4567,13 +4574,6 @@ const std::vector<ColorMapName> DIVERGING_MAPS
     ColorMapName::BLUEORANGE12_10,
     ColorMapName::BLUEORANGE12_11,
     ColorMapName::BLUEORANGE12_12,
-    ColorMapName::BLUEORANGE8_2,
-    ColorMapName::BLUEORANGE8_3,
-    ColorMapName::BLUEORANGE8_4,
-    ColorMapName::BLUEORANGE8_5,
-    ColorMapName::BLUEORANGE8_6,
-    ColorMapName::BLUEORANGE8_7,
-    ColorMapName::BLUEORANGE8_8,
     ColorMapName::BLUEORANGERED_2,
     ColorMapName::BLUEORANGERED_3,
     ColorMapName::BLUEORANGERED_4,
