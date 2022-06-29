@@ -9,6 +9,19 @@
 namespace GOOM::UTILS
 {
 
+auto FindAndReplaceAll(std::string& dataStr,
+                       const std::string& searchStr,
+                       const std::string& replaceStr) -> void
+{
+  size_t pos = dataStr.find(searchStr);
+
+  while(pos != std::string::npos)
+  {
+    dataStr.replace(pos, searchStr.size(), replaceStr);
+    pos = dataStr.find(searchStr, pos + replaceStr.size());
+  }
+}
+
 auto bool_to_string(const bool value) -> std::string
 {
   return value ? "true" : "false";

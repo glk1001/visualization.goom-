@@ -16,8 +16,14 @@
 #include "goom/goom_graphic.h"
 #include "goom/logging.h"
 #include "goom/sound_info.h"
+#ifdef SAVE_AUDIO_BUFFERS
+#include "src/goom/src/utils/strutils.h"
+#endif
 
 #include <cstddef>
+#ifdef SAVE_AUDIO_BUFFERS
+#include <filesystem>
+#endif
 #include <format>
 #include <kodi/Filesystem.h>
 #include <memory>
@@ -28,6 +34,10 @@ using GOOM::GoomControl;
 using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
+#ifdef SAVE_AUDIO_BUFFERS
+using GOOM::UTILS::BufferView;
+using GOOM::UTILS::FindAndReplaceAll;
+#endif
 
 #ifdef KODI_MATRIX
 namespace KODI_ADDON = kodi;
@@ -59,6 +69,9 @@ static constexpr std::array<uint32_t, MAX_QUALITY + 1> WIDTHS_BY_QUALITY{
 static constexpr std::array<uint32_t, MAX_QUALITY + 1> HEIGHTS_BY_QUALITY{
     256, 360, 720, 900, 1080,
 };
+
+static constexpr const char* GOOM_ADDON_DATA_DIR =
+    "special://userdata/addon_data/visualization.goom";
 
 // clang-format off
 CVisualizationGoom::CVisualizationGoom()
@@ -298,7 +311,7 @@ auto CVisualizationGoom::InitGoomController() -> bool
 
   m_goomControl->ShowGoomState(KODI_ADDON::GetSettingBoolean("show_goom_state"));
   m_goomControl->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
-      "special://userdata/addon_data/visualization.goom/goom_dumps"));
+      std::string(GOOM_ADDON_DATA_DIR) + GOOM::PATH_SEP + "goom_dumps"));
   m_goomControl->SetShowTitle(m_showTitle);
 
   // goom will use same random sequence if following is uncommented
@@ -338,6 +351,10 @@ auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& trac
 
   m_goomControl->SetSongInfo(
       {currentSongName, track.GetGenre(), static_cast<uint32_t>(track.GetDuration())});
+
+#ifdef SAVE_AUDIO_BUFFERS
+  m_audioBufferWriter = GetAudioBufferWriter(currentSongName);
+#endif
 
   return true;
 }
@@ -518,6 +535,10 @@ inline void CVisualizationGoom::UpdateGoomBuffer(const std::vector<float>& float
   m_goomControl->SetScreenBuffer(pixelBufferData.pixelBuffer);
   m_goomControl->Update(audioData);
   pixelBufferData.goomShaderEffects = m_goomControl->GetLastShaderEffects();
+
+#ifdef SAVE_AUDIO_BUFFERS
+  SaveAudioBuffer(floatAudioData);
+#endif
 }
 
 auto CVisualizationGoom::InitGl() -> bool
@@ -877,8 +898,77 @@ inline void CVisualizationGoom::SetGlShaderValues(
   glUniform1i(m_uTimeLoc, m_time);
 }
 
-#ifndef DO_TESTING
-ADDONCREATOR(CVisualizationGoom) // Don't touch this!
-#else
-#pragma message("Compiling " __FILE__ " with 'DO_TESTING' ON.")
+#ifdef SAVE_AUDIO_BUFFERS
+
+[[nodiscard]] auto ReplaceIllegalFilenameChars(const std::string str) noexcept -> std::string
+{
+  std::string legalStr = str;
+
+  FindAndReplaceAll(legalStr, " - ", "-");
+  FindAndReplaceAll(legalStr, "- ", "-");
+  FindAndReplaceAll(legalStr, " -", "-");
+  FindAndReplaceAll(legalStr, " ", "_");
+  FindAndReplaceAll(legalStr, "&", "and");
+  FindAndReplaceAll(legalStr, "/", "-");
+  FindAndReplaceAll(legalStr, "\\", "-");
+  FindAndReplaceAll(legalStr, "?", "");
+  FindAndReplaceAll(legalStr, ":", "-");
+  FindAndReplaceAll(legalStr, "|", "-");
+  FindAndReplaceAll(legalStr, ">", "-");
+  FindAndReplaceAll(legalStr, "<", "-");
+  FindAndReplaceAll(legalStr, "\"", "");
+  FindAndReplaceAll(legalStr, "'", "");
+
+  return legalStr;
+}
+
+auto CVisualizationGoom::GetAudioBufferWriter(const std::string& songName)
+    -> std::unique_ptr<AudioBufferWriter>
+{
+  const std::string filename = ReplaceIllegalFilenameChars(songName);
+
+  static constexpr const char* AUDIO_OUTPUT_FILE_PREFIX = "audio_buffers";
+  const std::string kodiGoomDataDir = kodi::vfs::TranslateSpecialProtocol(GOOM_ADDON_DATA_DIR);
+  const std::string saveDirectory = kodiGoomDataDir + GOOM::PATH_SEP + AUDIO_OUTPUT_FILE_PREFIX +
+                                    GOOM::PATH_SEP + filename + GOOM::PATH_SEP + "audio";
+  if (std::filesystem::exists(saveDirectory))
+  {
+    std::filesystem::remove_all(saveDirectory);
+  }
+  if (not std::filesystem::create_directories(saveDirectory))
+  {
+    throw std::runtime_error{std20::format("Could not create directory '{}'.", saveDirectory)};
+  }
+
+  const std::string saveFilePrefix = saveDirectory + GOOM::PATH_SEP + "audio_buffer";
+
+  return std::make_unique<AudioBufferWriter>(saveFilePrefix, true);
+}
+
+auto CVisualizationGoom::SaveAudioBuffer(const std::vector<float>& floatAudioData) -> void
+{
+  if (m_audioBufferWriter == nullptr)
+  {
+    return;
+  }
+
+  const BufferView<float> audioBuffer{floatAudioData.size(),
+                                      const_cast<float*>(floatAudioData.data())};
+  const int64_t bufferNum = m_audioBufferWriter->GetCurrentBufferNum();
+  /**
+  if (bufferNum == 0) {
+    for (size_t i = 0; i < floatAudioData.size(); ++i)
+    {
+      LogInfo("floatAudioData[{}] = {}", i, floatAudioData[i]);
+    }
+  }
+   **/
+
+  const std::string currentFilename = m_audioBufferWriter->GetCurrentFilename();
+  m_audioBufferWriter->Write(audioBuffer, true);
+  LogInfo("Wrote audio data buffer {} to file '{}'.", bufferNum, currentFilename);
+}
+
 #endif
+
+ADDONCREATOR(CVisualizationGoom) // Don't touch this!

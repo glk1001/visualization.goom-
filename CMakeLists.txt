@@ -122,7 +122,8 @@ set(CMAKE_CXX_STANDARD ${CPP_STANDARD})
 get_project_warnings(PROJECT_WARNINGS)
 add_compile_options(${PROJECT_WARNINGS})
 
-include_directories(${GOOM_INCLUDE_DIRS}
+include_directories(${GOOM_LIBS_DIR}
+        ${GOOM_INCLUDE_DIRS}
         SYSTEM ${GOOM_LIBS_DIR}/src/vivid/include
         SYSTEM ${GOOM_LIBS_DIR}/lib/fmt/include
         SYSTEM ${fmt_SOURCE_DIR}/include

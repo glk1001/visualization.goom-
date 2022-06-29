@@ -6,6 +6,10 @@
 namespace GOOM::UTILS
 {
 
+auto FindAndReplaceAll(std::string& dataStr,
+                       const std::string& searchStr,
+                       const std::string& replaceStr) -> void;
+
 [[nodiscard]] auto bool_to_string(bool value) -> std::string;
 
 [[nodiscard]] auto StringSplit(const std::string& str, const std::string_view& delim)

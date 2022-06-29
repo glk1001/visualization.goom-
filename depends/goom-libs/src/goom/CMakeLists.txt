@@ -99,6 +99,8 @@ add_library(goom
         src/utils/text/drawable_text.cpp
         src/utils/adaptive_exposure.cpp
         src/utils/build_time.cpp
+        src/utils/buffer_saver.h
+        src/utils/buffer_view.h
         src/utils/date_utils.cpp
         src/utils/logging.cpp
         src/utils/name_value_pairs.cpp

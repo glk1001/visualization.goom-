@@ -8,11 +8,16 @@
  *  See LICENSE.md for more information.
  */
 
+//#define SAVE_AUDIO_BUFFERS
+
 #include "CircularBuffer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_control.h"
 #include "goom/goom_graphic.h"
 #include "goom/sound_info.h"
+#ifdef SAVE_AUDIO_BUFFERS
+#include "src/goom/src/utils/buffer_saver.h"
+#endif
 
 #include <array>
 #include <condition_variable>
@@ -24,6 +29,7 @@
 #define GL_SILENCE_DEPRECATION
 #endif
 #include <kodi/gui/gl/Shader.h>
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
@@ -153,7 +159,7 @@ private:
   std::condition_variable m_wait{};
 
   void SetNumChannels(int numChannels);
-  static void StartLogging() ;
+  static void StartLogging();
   [[nodiscard]] auto InitGoomController() -> bool;
   void DeinitGoomController();
   void StartGoomProcessBuffersThread();
@@ -206,6 +212,14 @@ private:
   void ProcessWithCatch();
   void ProcessWithNoCatch();
   void ProcessVis();
+
+#ifdef SAVE_AUDIO_BUFFERS
+  using AudioBufferWriter = GOOM::UTILS::BufferSaver<float>;
+  [[nodiscard]] static auto GetAudioBufferWriter(const std::string& songName)
+      -> std::unique_ptr<AudioBufferWriter>;
+  std::unique_ptr<AudioBufferWriter> m_audioBufferWriter{};
+  auto SaveAudioBuffer(const std::vector<float>& floatAudioData) -> void;
+#endif
 
   static void HandleError(const std::string& errorMsg);
 };
