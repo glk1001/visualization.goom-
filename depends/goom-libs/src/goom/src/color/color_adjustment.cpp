@@ -32,7 +32,7 @@ auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) 
 
   if (m_doAlterChroma)
   {
-    adjustedColor = GetAlteredChroma(m_alterChromaFactor, adjustedColor);
+    adjustedColor = GetAlteredChromaColor(m_chromaFactor, adjustedColor);
   }
 
   const auto newR = static_cast<uint32_t>(std::round(
@@ -46,7 +46,7 @@ auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) 
   return Pixel{newR, newG, newB, newA};
 }
 
-auto ColorAdjustment::GetAlteredChroma(const float lchYFactor, const Pixel& color) -> Pixel
+auto ColorAdjustment::GetAlteredChromaColor(float lchYFactor, const Pixel& color) -> Pixel
 {
   Expects(lchYFactor > 0.0F);
 

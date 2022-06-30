@@ -254,7 +254,7 @@ inline auto Circle::UpdateColorAdjustment() noexcept -> void
 
   static constexpr float MIN_CHROMA_FACTOR = 0.5F * COLOR::ColorAdjustment::DECREASED_CHROMA_FACTOR;
   static constexpr float MAX_CHROMA_FACTOR = 1.5F * COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR;
-  m_colorAdjustment.SetAlterChromaFactor(
+  m_colorAdjustment.SetChromaFactor(
       STD20::lerp(MIN_CHROMA_FACTOR, MAX_CHROMA_FACTOR, m_colorAdjustmentT()));
 }
 

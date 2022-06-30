@@ -37,7 +37,7 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
   static constexpr float MAX_BRIGHTNESS = 4.0F;
   TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius)};
 
-  m_colorAdjust.SetAlterChromaFactor(m_colorInfo.chromaFactor);
+  m_colorAdjust.SetChromaFactor(m_colorInfo.chromaFactor);
   const int32_t innerColorCutoffRadius = GetInnerColorCutoffRadius(drawParams.maxRadius);
 
   for (int32_t radius = drawParams.maxRadius; radius > 1; --radius)
