@@ -15,6 +15,7 @@
 #include "utils/math/misc.h"
 #include "utils/math/paths.h"
 #include "utils/propagate_const.h"
+#include "utils/t_values.h"
 #include "utils/timer.h"
 #include "visual_fx/fx_helper.h"
 
@@ -35,7 +36,6 @@ public:
     uint32_t minDotDiameter;
     uint32_t maxDotDiameter;
     const IBitmapGetter& bitmapGetter;
-    const COLOR::ColorAdjustment& colorAdjustment;
   };
   struct Params
   {
@@ -98,6 +98,16 @@ private:
   void DrawNextCircle();
   void DrawNextCircleDots();
   void IncrementTs();
+
+  static constexpr uint32_t MIN_NUM_COLOR_ADJUSTMENT_STEPS = 10;
+  static constexpr uint32_t MAX_NUM_COLOR_ADJUSTMENT_STEPS = 500;
+  [[nodiscard]] auto GetRandomNumColorAdjustmentSteps() const noexcept -> uint32_t;
+  static constexpr float COLOR_ADJUSTMENT_STARTING_T = 0.5F;
+  UTILS::TValue m_colorAdjustmentT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
+                                   GetRandomNumColorAdjustmentSteps(), COLOR_ADJUSTMENT_STARTING_T};
+  static constexpr float GAMMA = 1.0F / 2.2F;
+  COLOR::ColorAdjustment m_colorAdjustment{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  auto UpdateColorAdjustment() noexcept -> void;
 
   [[nodiscard]] auto GetCurrentBrightness() const -> float;
   [[nodiscard]] auto GetDotBrightness(float brightness) const -> float;

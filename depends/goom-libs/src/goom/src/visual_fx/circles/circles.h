@@ -38,10 +38,6 @@ private:
   Point2dInt m_zoomMidpoint{};
   auto SetNewTargetPoints() -> void;
 
-  static constexpr float GAMMA = 1.0F / 2.2F;
-  const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
-                                             COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
-
   const uint32_t m_numCircles;
   std::vector<Circle> m_circles;
   [[nodiscard]] static auto GetCircles(const FxHelper& fxHelper,

@@ -31,12 +31,11 @@ Circles::Circles(const FxHelper& fxHelper,
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_bitmapGetter{fxHelper.GetGoomRand(), smallBitmaps},
     m_numCircles{numCircles},
-    m_circles{GetCircles(
-        fxHelper,
-        {LINE_DOT_DIAMETER, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER, m_bitmapGetter, m_colorAdjust},
-        GetPathParams(),
-        m_numCircles,
-        circleParams)}
+    m_circles{GetCircles(fxHelper,
+                         {LINE_DOT_DIAMETER, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER, m_bitmapGetter},
+                         GetPathParams(),
+                         m_numCircles,
+                         circleParams)}
 {
 }
 
