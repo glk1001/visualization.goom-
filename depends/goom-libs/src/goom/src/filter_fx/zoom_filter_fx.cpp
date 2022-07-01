@@ -83,7 +83,7 @@ private:
 
   uint64_t m_updateNum = 0;
 
-  FilterBufferColorInfo m_filterBufferColorInfo;
+  FilterBufferColorInfo m_filterBufferColorInfo{m_screenWidth, m_screenHeight};
   auto CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
 };
 
@@ -174,8 +174,7 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     m_screenHeight{goomInfo.GetScreenInfo().height},
     m_parallel{parallel},
     m_filterBuffersService{std::move(filterBuffersService)},
-    m_filterColorsService{std::move(filterColorsService)},
-    m_filterBufferColorInfo(m_screenWidth, m_screenHeight)
+    m_filterColorsService{std::move(filterColorsService)}
 {
 }
 

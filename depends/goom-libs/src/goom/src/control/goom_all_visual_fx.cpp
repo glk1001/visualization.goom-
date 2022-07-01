@@ -80,8 +80,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
         RED_LINE)},
     m_goomDraw{fxHelper.GetDraw()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_goomStateHandler{goomStateHandler},
-    m_visualFxColorMaps{fxHelper.GetGoomRand()}
+    m_goomStateHandler{goomStateHandler}
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([this](const GoomDrawables fx)
                                                       { ResetCurrentDrawBuffSettings(fx); });

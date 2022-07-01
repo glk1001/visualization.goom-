@@ -29,9 +29,6 @@ static constexpr float SINE_MAP_COLORS_WEIGHT       =  5.0F;
 
 Colorizer::Colorizer(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
-    m_colorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)},
-    m_mixerMap1Id{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_mixerMap2Id{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_colorModeWeights{
         m_goomRand,
         {

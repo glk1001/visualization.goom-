@@ -42,8 +42,8 @@ private:
   uint32_t m_updateNum = 0;
 
   // duree de la transition entre afficher les lignes ou pas
-  const float m_screenWidth;
-  const float m_screenHeight;
+  const float m_screenWidth{static_cast<float>(m_goomInfo.GetScreenInfo().width)};
+  const float m_screenHeight{static_cast<float>(m_goomInfo.GetScreenInfo().height)};
   int32_t m_stopLines = 0;
   int32_t m_drawLinesDuration = VISUAL_FX::LinesFx::MIN_LINE_DURATION;
   int32_t m_lineMode = VISUAL_FX::LinesFx::MIN_LINE_DURATION; // l'effet lineaire a dessiner

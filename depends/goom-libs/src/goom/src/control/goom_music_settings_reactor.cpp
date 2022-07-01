@@ -21,8 +21,7 @@ GoomMusicSettingsReactor::GoomMusicSettingsReactor(
     m_goomRand{goomRand},
     m_visualFx{visualFx},
     m_goomEvents{goomEvents},
-    m_filterSettingsService{filterSettingsService},
-    m_musicLinesReactor{m_goomInfo, m_visualFx, m_goomEvents}
+    m_filterSettingsService{filterSettingsService}
 {
 }
 

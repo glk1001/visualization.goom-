@@ -99,7 +99,7 @@ private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
 
-  Colorizer m_colorizer;
+  Colorizer m_colorizer{m_goomRand};
 
   propagate_const<std::unique_ptr<Fractal>> m_fractal{};
 
@@ -220,7 +220,6 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_colorizer{m_goomRand},
     m_fractal{std::make_unique<Fractal>(m_draw.GetScreenWidth(),
                                         m_draw.GetScreenHeight(),
                                         m_goomRand,

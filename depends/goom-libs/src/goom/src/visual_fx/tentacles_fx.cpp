@@ -71,10 +71,11 @@ private:
   };
   const Weights<Drivers> m_driverWeights;
   const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;
-  std::vector<propagate_const<std::unique_ptr<TentacleDriver>>> m_tentacleDrivers;
+  std::vector<propagate_const<std::unique_ptr<TentacleDriver>>> m_tentacleDrivers{
+      GetTentacleDrivers()};
   [[nodiscard]] auto GetTentacleDrivers() const
       -> std::vector<propagate_const<std::unique_ptr<TentacleDriver>>>;
-  TentacleDriver* m_currentTentacleDriver;
+  TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
   std::shared_ptr<const RandomColorMaps> m_weightedDominantColorMaps{};
@@ -178,9 +179,7 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper,
         LAYOUT2,
         LAYOUT3,
         LAYOUT4,
-    },
-    m_tentacleDrivers{GetTentacleDrivers()},
-    m_currentTentacleDriver{GetNextDriver()}
+    }
 {
   Expects(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());
   Ensures(m_currentTentacleDriver != nullptr);

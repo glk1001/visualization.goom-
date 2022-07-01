@@ -41,8 +41,12 @@ public:
 private:
   const size_t m_numDistinctChannels;
   const std::array<SampleArray, NUM_AUDIO_SAMPLES> m_sampleArrays;
-  const std::array<MinMaxValues, NUM_AUDIO_SAMPLES> m_minMaxSampleValues;
-  const MinMaxValues m_overallMinMaxSampleValues;
+  const std::array<MinMaxValues, NUM_AUDIO_SAMPLES> m_minMaxSampleValues{
+      GetMinMaxSampleValues(m_sampleArrays)};
+  static_assert(2 == NUM_AUDIO_SAMPLES);
+  const MinMaxValues m_overallMinMaxSampleValues{
+      std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
+      std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)};
   [[nodiscard]] static auto GetSampleArrays(const std::vector<float>& floatAudioData)
       -> std::array<SampleArray, NUM_AUDIO_SAMPLES>;
   [[nodiscard]] static auto GetMinMaxSampleValues(

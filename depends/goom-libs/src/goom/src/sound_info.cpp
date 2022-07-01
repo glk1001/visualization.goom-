@@ -10,6 +10,12 @@
 namespace GOOM
 {
 
+AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<float>& floatAudioData)
+  : m_numDistinctChannels{numSampleChannels}, m_sampleArrays{GetSampleArrays(floatAudioData)}
+{
+  Expects((0 < numSampleChannels) && (numSampleChannels <= 2));
+}
+
 auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
     -> std::array<SampleArray, NUM_AUDIO_SAMPLES>
 {
@@ -45,18 +51,6 @@ auto AudioSamples::GetMinMaxSampleValues(
   }
 
   return minMaxSampleValues;
-}
-
-AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<float>& floatAudioData)
-  : m_numDistinctChannels{numSampleChannels},
-    m_sampleArrays{GetSampleArrays(floatAudioData)},
-    m_minMaxSampleValues{GetMinMaxSampleValues(m_sampleArrays)},
-    m_overallMinMaxSampleValues{
-        std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
-        std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)}
-{
-  static_assert(2 == NUM_AUDIO_SAMPLES);
-  Expects((0 < numSampleChannels) && (numSampleChannels <= 2));
 }
 
 void SoundInfo::ProcessSample(const AudioSamples& samples)

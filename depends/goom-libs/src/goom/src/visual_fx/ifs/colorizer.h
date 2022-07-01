@@ -3,6 +3,7 @@
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 #include "color/random_color_maps_manager.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
@@ -45,11 +46,15 @@ public:
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
-  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps;
+
+  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{
+      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
-  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id;
+  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id{
+      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap1{};
-  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id;
+  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id{
+      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap2{};
   auto UpdateMixerMaps() -> void;
   mutable uint32_t m_countSinceColorMapChange = 0;

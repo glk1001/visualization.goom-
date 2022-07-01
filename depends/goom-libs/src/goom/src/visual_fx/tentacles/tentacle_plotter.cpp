@@ -2,7 +2,6 @@
 
 #include "draw/goom_draw.h"
 #include "point2d.h"
-#include "utils/math/misc.h"
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {
@@ -15,7 +14,6 @@ using STD20::pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::HALF_PI;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::U_HALF;
 
 // clang-format off
 static constexpr float MIN_DOT_SIZE01_WEIGHT    = 150.0F;
@@ -31,8 +29,6 @@ TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
                                  const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{draw},
     m_goomRand{goomRand},
-    m_halfScreenWidth{static_cast<int32_t>(U_HALF * m_draw.GetScreenWidth())},
-    m_halfScreenHeight{static_cast<int32_t>(U_HALF * m_draw.GetScreenHeight())},
     m_dotDrawer{
         m_draw,
         m_goomRand,

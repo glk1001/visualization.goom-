@@ -65,8 +65,10 @@ private:
 
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{};
-  COLOR::RandomColorMapsManager::ColorMapId m_mainColorMapID;
-  COLOR::RandomColorMapsManager::ColorMapId m_lowColorMapID;
+  COLOR::RandomColorMapsManager::ColorMapId m_mainColorMapID{
+      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
+  COLOR::RandomColorMapsManager::ColorMapId m_lowColorMapID{
+      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
   static constexpr float MIN_COLOR_SEGMENT_MIX_T = 0.4F;
   static constexpr float MAX_COLOR_SEGMENT_MIX_T = 1.0F;
   static constexpr float DEFAULT_COLOR_SEGMENT_MIX_T = 0.8F;

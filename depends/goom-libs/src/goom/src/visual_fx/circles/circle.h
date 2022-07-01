@@ -76,7 +76,8 @@ private:
   const Point2dInt m_circleCentreFixedTarget;
   Point2dInt m_circleCentreTarget{m_circleCentreFixedTarget};
   DotPaths m_dotPaths;
-  DotDiameters m_dotDiameters;
+  DotDiameters m_dotDiameters{m_goomRand, NUM_DOTS, m_helper.minDotDiameter,
+                              m_helper.maxDotDiameter};
   [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, float radius)
       -> std::vector<Point2dInt>;
 

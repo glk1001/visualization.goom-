@@ -60,13 +60,16 @@ private:
   const uint32_t m_width;
   const uint32_t m_height;
 
-  const std::array<size_t, NUM_X_REGIONS> m_xRegionBorders;
-  const std::array<size_t, NUM_Y_REGIONS> m_yRegionBorders;
+  const std::array<size_t, NUM_X_REGIONS> m_xRegionBorders{
+      GetRegionBorders<NUM_X_REGIONS>(m_width)};
+  const std::array<size_t, NUM_Y_REGIONS> m_yRegionBorders{
+      GetRegionBorders<NUM_Y_REGIONS>(m_height)};
   template<uint32_t numRegions>
   [[nodiscard]] static auto GetRegionBorders(uint32_t length) noexcept
       -> std::array<size_t, numRegions>;
 
-  std::vector<FilterBufferRowColorInfo> m_filterBufferRowColorInfoArray;
+  std::vector<FilterBufferRowColorInfo> m_filterBufferRowColorInfoArray{
+      GetFilterBufferRowColorInfoArray(m_height, m_xRegionBorders)};
   [[nodiscard]] static auto GetFilterBufferRowColorInfoArray(
       uint32_t height, const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept
       -> std::vector<FilterBufferRowColorInfo>;
@@ -78,7 +81,7 @@ private:
     size_t y1;
     size_t xRegionIndex;
   };
-  const std::array<RegionInfo, NUM_REGIONS> m_regionInfoArray;
+  const std::array<RegionInfo, NUM_REGIONS> m_regionInfoArray{GetRegionInfoArray(m_yRegionBorders)};
   [[nodiscard]] static auto GetRegionInfoArray(
       const std::array<size_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
       -> std::array<RegionInfo, NUM_REGIONS>;
@@ -95,12 +98,7 @@ private:
 
 inline FilterBufferColorInfo::FilterBufferColorInfo(const uint32_t width,
                                                     const uint32_t height) noexcept
-  : m_width{width},
-    m_height{height},
-    m_xRegionBorders{GetRegionBorders<NUM_X_REGIONS>(m_width)},
-    m_yRegionBorders{GetRegionBorders<NUM_Y_REGIONS>(m_height)},
-    m_filterBufferRowColorInfoArray{GetFilterBufferRowColorInfoArray(m_height, m_xRegionBorders)},
-    m_regionInfoArray{GetRegionInfoArray(m_yRegionBorders)}
+  : m_width{width}, m_height{height}
 {
   static_assert(UTILS::MATH::IsOdd(NUM_X_REGIONS));
   static_assert(UTILS::MATH::IsOdd(NUM_Y_REGIONS));

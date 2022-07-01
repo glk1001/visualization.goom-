@@ -32,8 +32,7 @@ DotPaths::DotPaths(const IGoomRand& goomRand,
     m_numDots{numDots},
     m_dotStartingPositions{std::move(dotStartingPositions)},
     m_target{dotTarget},
-    m_pathParams{dotPathParams},
-    m_dotPaths{GetNewDotPaths(m_dotStartingPositions)}
+    m_pathParams{dotPathParams}
 {
 }
 

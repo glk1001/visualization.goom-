@@ -205,7 +205,7 @@ inline auto CirclesFx::CirclesFxImpl::ApplyMultiple() noexcept -> void
 inline auto CirclesFx::CirclesFxImpl::UpdateAndDraw() noexcept -> void
 {
   m_blankTimer.Increment();
-  
+
   if (not m_blankTimer.Finished())
   {
     Expects(m_circles->HasPositionTJustHitStartBoundary());

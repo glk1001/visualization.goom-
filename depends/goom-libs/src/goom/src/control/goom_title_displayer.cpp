@@ -42,7 +42,7 @@ static constexpr int32_t OUTLINE_FONT_WIDTH = 4;
 // sample text for each font, then normalize with 'verdana' as 1.0.
 //
 // clang-format off
-const std::vector<GoomTitleDisplayer::FontInfo> GoomTitleDisplayer::S_FONT_INFO = {
+const std::vector<GoomTitleDisplayer::FontInfo> GoomTitleDisplayer::FONT_INFO = {
     {"AeroviasBrasilNF.ttf",   1.34F},
     {"AlexBrush-Regular.ttf",  1.25F},
     {"AvenueX-Regular.otf",    1.01F},
@@ -58,12 +58,12 @@ const std::vector<GoomTitleDisplayer::FontInfo> GoomTitleDisplayer::S_FONT_INFO 
 
 inline auto GoomTitleDisplayer::GetSelectedFontPath() const -> std::string
 {
-  return m_fontDirectory + PATH_SEP + S_FONT_INFO.at(m_fontInfoIndex).fontFilename;
+  return m_fontDirectory + PATH_SEP + FONT_INFO.at(m_fontInfoIndex).fontFilename;
 }
 
 inline auto GoomTitleDisplayer::GetSelectedFontSize() const -> int32_t
 {
-  const FontInfo& fontInfo = S_FONT_INFO.at(m_fontInfoIndex);
+  const FontInfo& fontInfo = FONT_INFO.at(m_fontInfoIndex);
   const auto maxFontSize = static_cast<int32_t>(
       (FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT * static_cast<float>(m_screenHeight)) *
       fontInfo.fontSizeNormalizeFactor);
@@ -77,12 +77,7 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
     m_textDraw{std::make_unique<TextDraw>(draw)},
     m_screenWidth{static_cast<int32_t>(draw.GetScreenWidth())},
     m_screenHeight{static_cast<int32_t>(draw.GetScreenHeight())},
-    m_fontDirectory{fontDirectory},
-    m_fontInfoIndex{m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(S_FONT_INFO.size()))},
-    m_textColorMap{&RandomColorMaps::GetRandomColorMap(m_goomRand)},
-    m_textOutlineColorMap{&RandomColorMaps::GetRandomColorMap(m_goomRand)},
-    m_charColorMap{
-        &RandomColorMaps::GetRandomColorMap(m_goomRand, COLOR::ColorMapGroup::DIVERGING_BLACK)}
+    m_fontDirectory{fontDirectory}
 {
   m_textDraw->SetFontFile(GetSelectedFontPath());
   m_textDraw->SetFontSize(GetSelectedFontSize());

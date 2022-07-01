@@ -35,7 +35,9 @@ private:
     Pixel color = BLACK_PIXEL;
     const Similitude* simi{};
   };
-  std::vector<std::vector<HitInfo>> m_hitInfo{};
+  std::vector<std::vector<HitInfo>> m_hitInfo{GetHitInfo(m_width, m_height)};
+  [[nodiscard]] static auto GetHitInfo(uint32_t width, uint32_t height) noexcept
+      -> std::vector<std::vector<HitInfo>>;
   uint32_t m_maxHitCount = 0;
   static constexpr size_t HITS_ESTIMATE = 1000;
   std::vector<IfsPoint> m_hits{};

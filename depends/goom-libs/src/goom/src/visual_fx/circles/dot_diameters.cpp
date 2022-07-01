@@ -12,8 +12,7 @@ DotDiameters::DotDiameters(const UTILS::MATH::IGoomRand& goomRand,
   : m_goomRand{goomRand},
     m_numDots{numDots},
     m_minDotDiameter{minDotDiameter + MIN_DIAMETER_EXTRA},
-    m_maxDotDiameter{maxDotDiameter},
-    m_dotDiameters{GetInitialDotDiameters(m_numDots, m_maxDotDiameter)}
+    m_maxDotDiameter{maxDotDiameter}
 {
   Expects(m_minDotDiameter <= m_maxDotDiameter);
   ChangeDotDiameters();

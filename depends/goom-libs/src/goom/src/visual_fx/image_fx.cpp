@@ -76,7 +76,7 @@ private:
   using ImageAsChunks = std::vector<ImageChunk>;
   const std::shared_ptr<ImageBitmap> m_image;
   const PluginInfo& m_goomInfo;
-  ImageAsChunks m_imageAsChunks;
+  ImageAsChunks m_imageAsChunks{SplitImageIntoChunks(*m_image, m_goomInfo)};
   std::vector<Point2dInt> m_startPositions;
   [[nodiscard]] static auto SplitImageIntoChunks(const ImageBitmap& imageBitmap,
                                                  const PluginInfo& goomInfo) -> ImageAsChunks;
@@ -489,10 +489,7 @@ inline auto ImageFx::ImageFxImpl::GetMappedColor(const Pixel& pixelColor) const 
 }
 
 ChunkedImage::ChunkedImage(std::shared_ptr<ImageBitmap> image, const PluginInfo& goomInfo) noexcept
-  : m_image{std::move(image)},
-    m_goomInfo{goomInfo},
-    m_imageAsChunks{SplitImageIntoChunks(*m_image, m_goomInfo)},
-    m_startPositions(m_imageAsChunks.size())
+  : m_image{std::move(image)}, m_goomInfo{goomInfo}, m_startPositions(m_imageAsChunks.size())
 {
 }
 

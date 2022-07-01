@@ -27,7 +27,7 @@ private:
   static constexpr uint32_t MIN_DIAMETER_EXTRA = 2;
   const uint32_t m_minDotDiameter;
   const uint32_t m_maxDotDiameter;
-  std::vector<uint32_t> m_dotDiameters;
+  std::vector<uint32_t> m_dotDiameters{GetInitialDotDiameters(m_numDots, m_maxDotDiameter)};
   [[nodiscard]] static auto GetInitialDotDiameters(uint32_t numDots, uint32_t maxDotDiameter)
       -> std::vector<uint32_t>;
 

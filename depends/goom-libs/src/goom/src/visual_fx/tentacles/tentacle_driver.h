@@ -83,12 +83,13 @@ private:
   static const IterationParams ITER_PARAM_GROUP3_FIRST;
   static const IterationParams ITER_PARAM_GROUP3_LAST;
   const std::vector<IterParamsGroup> m_iterParamsGroups;
-  std::vector<IterationParams> m_tentacleParams;
+  std::vector<IterationParams> m_tentacleParams{
+      GetTentacleParams(m_tentacleLayout.GetNumPoints(), m_iterParamsGroups)};
   [[nodiscard]] static auto GetTentacleParams(size_t numTentacles,
                                               const std::vector<IterParamsGroup>& iterParamsGroups)
       -> std::vector<IterationParams>;
 
-  std::vector<Tentacle3D> m_tentacles;
+  std::vector<Tentacle3D> m_tentacles{GetTentacles(m_goomRand, m_tentacleParams, m_tentacleLayout)};
   [[nodiscard]] static auto GetTentacles(const UTILS::MATH::IGoomRand& goomRand,
                                          const std::vector<IterationParams>& tentacleParams,
                                          const ITentacleLayout& tentacleLayout)

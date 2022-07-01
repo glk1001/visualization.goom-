@@ -134,8 +134,10 @@ public:
 
 private:
   IGoomDraw& m_draw;
-  GoomDrawToContainer m_drawToContainer;
-  GoomDrawToMany m_drawToMany;
+  GoomDrawToContainer m_drawToContainer{m_draw.GetScreenWidth(), m_draw.GetScreenHeight()};
+  GoomDrawToMany m_drawToMany{
+      m_draw.GetScreenWidth(), m_draw.GetScreenHeight(), {&m_draw, &m_drawToContainer}
+  };
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
@@ -143,10 +145,11 @@ private:
   std::shared_ptr<const RandomColorMaps> m_mainColorMaps{};
   std::shared_ptr<const RandomColorMaps> m_lowColorMaps{};
   bool m_allowMovingAwayFromCentre = false;
-  bool m_oscillatingShapePath;
+  bool m_oscillatingShapePath{m_goomRand.ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)};
   uint32_t m_numCapturedPrevShapesGroups = 0;
   static constexpr float PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
-  const BrightnessAttenuation m_prevShapesBrightnessAttenuation;
+  const BrightnessAttenuation m_prevShapesBrightnessAttenuation{
+      m_draw.GetScreenWidth(), m_draw.GetScreenHeight(), PREV_SHAPES_CUTOFF_BRIGHTNESS};
   [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
   bool m_prevShapesJitter = false;
   static constexpr int32_t PREV_SHAPES_JITTER_AMOUNT = 2;
@@ -155,14 +158,15 @@ private:
   std::vector<Tube> m_tubes{};
   static constexpr float ALL_JOIN_CENTRE_STEP = 0.001F;
   TValue m_allJoinCentreT{TValue::StepType::CONTINUOUS_REVERSIBLE, ALL_JOIN_CENTRE_STEP};
-  const Point2dInt m_screenMidpoint;
+  const Point2dInt m_screenMidpoint{U_HALF * m_draw.GetScreenWidth(),
+                                    U_HALF* m_draw.GetScreenHeight()};
   Point2dInt m_targetMiddlePos{0, 0};
   Point2dInt m_previousMiddlePos{0, 0};
   static constexpr uint32_t MIDDLE_POS_NUM_STEPS = 100;
   TValue m_middlePosT{TValue::StepType::SINGLE_CYCLE, MIDDLE_POS_NUM_STEPS, TValue::MAX_T_VALUE};
   [[nodiscard]] auto GetMiddlePos() const -> Point2dInt;
-  Timer m_allStayInCentreTimer;
-  Timer m_allStayAwayFromCentreTimer;
+  Timer m_allStayInCentreTimer{1};
+  Timer m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME};
   void IncrementAllJoinCentreT();
   [[nodiscard]] auto GetTransformedCentreVector(const uint32_t tubeId,
                                                 const Point2dInt& centre) const -> Vec2dInt;
@@ -170,9 +174,9 @@ private:
   static constexpr float JITTER_STEP = 0.1F;
   TValue m_shapeJitterT{TValue::StepType::CONTINUOUS_REVERSIBLE, JITTER_STEP};
 
-  Timer m_colorMapTimer;
-  Timer m_changedSpeedTimer;
-  Timer m_jitterTimer;
+  Timer m_colorMapTimer{m_goomRand.GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)};
+  Timer m_changedSpeedTimer{1};
+  Timer m_jitterTimer{1};
   void InitTubes();
   void InitPaths();
   void ResetTubes();
@@ -273,22 +277,11 @@ auto TubesFx::ApplyMultiple() noexcept -> void
 }
 
 TubesFx::TubeFxImpl::TubeFxImpl(const FxHelper& fxHelper,
-                               const SmallImageBitmaps& smallBitmaps) noexcept
+                                const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{fxHelper.GetDraw()},
-    m_drawToContainer{m_draw.GetScreenWidth(), m_draw.GetScreenHeight()},
-    m_drawToMany{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(), {&m_draw, &m_drawToContainer}},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_smallBitmaps{smallBitmaps},
-    m_oscillatingShapePath{m_goomRand.ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)},
-    m_prevShapesBrightnessAttenuation{m_draw.GetScreenWidth(), m_draw.GetScreenHeight(),
-                                      PREV_SHAPES_CUTOFF_BRIGHTNESS},
-    m_screenMidpoint{U_HALF * m_draw.GetScreenWidth(), U_HALF * m_draw.GetScreenHeight()},
-    m_allStayInCentreTimer{1},
-    m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME},
-    m_colorMapTimer{m_goomRand.GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)},
-    m_changedSpeedTimer{1},
-    m_jitterTimer{1}
+    m_smallBitmaps{smallBitmaps}
 {
 }
 

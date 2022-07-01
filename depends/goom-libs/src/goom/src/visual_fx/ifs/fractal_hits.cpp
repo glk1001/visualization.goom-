@@ -8,16 +8,22 @@ namespace GOOM::VISUAL_FX::IFS
 using COLOR::GetColorAverage;
 
 FractalHits::FractalHits(const uint32_t width, const uint32_t height) noexcept
-  : m_width{width}, m_height{height}, m_hitInfo(m_height)
+  : m_width{width}, m_height{height}
 {
-  for (auto& xHit : m_hitInfo)
-  {
-    xHit.resize(m_width);
-  }
   m_hits.reserve(HITS_ESTIMATE);
 }
 
 FractalHits::~FractalHits() noexcept = default;
+
+auto FractalHits::GetHitInfo(const uint32_t width, const uint32_t height) noexcept -> std::vector<std::vector<HitInfo>>
+{
+  std::vector<std::vector<HitInfo>> hitInfo(height);
+  for (auto& xHit : hitInfo)
+  {
+    xHit.resize(width);
+  }
+  return hitInfo;
+}
 
 void FractalHits::Reset()
 {

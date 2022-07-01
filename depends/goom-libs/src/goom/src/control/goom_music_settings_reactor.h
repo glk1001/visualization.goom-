@@ -55,7 +55,7 @@ private:
   using GoomEvent = GoomEvents::GoomEvent;
   const GoomEvents& m_goomEvents;
   FILTER_FX::FilterSettingsService& m_filterSettingsService;
-  GoomMusicLinesReactor m_musicLinesReactor;
+  GoomMusicLinesReactor m_musicLinesReactor{m_goomInfo, m_visualFx, m_goomEvents};
 
   static constexpr uint32_t NORMAL_UPDATE_LOCK_TIME = 50;
   static constexpr uint32_t REVERSE_SPEED_AND_STOP_SPEED_LOCK_TIME = 75;

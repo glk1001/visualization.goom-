@@ -28,8 +28,6 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
                        const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_tentacle{std::move(tentacle)},
-    m_mainColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
-    m_lowColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_headMainColor{headMainColor},
     m_headLowColor{headLowColor},
     m_head{head},

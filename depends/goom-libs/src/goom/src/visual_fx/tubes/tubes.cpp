@@ -182,26 +182,30 @@ public:
 
 private:
   const TubeData m_data;
-  propagate_const<std::unique_ptr<ShapeColorizer>> m_colorizer;
+  propagate_const<std::unique_ptr<ShapeColorizer>> m_colorizer{
+      std::make_unique<ShapeColorizer>(m_data, NUM_SHAPES_PER_TUBE, MAX_NUM_CIRCLES_IN_GROUP)};
   bool m_active = true;
   static constexpr float PATH_STEP = NML_CIRCLE_SPEED;
   static constexpr uint32_t SHAPE_T_DELAY_TIME = 10;
   static constexpr float T_AT_CENTRE = 0.5F;
   int32_t m_maxJitterOffset = 0;
-  propagate_const<std::unique_ptr<TubeParametricPath>> m_centrePath{};
+  propagate_const<std::unique_ptr<TubeParametricPath>> m_centrePath{
+      std::make_unique<TubeParametricPath>(
+          std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP))};
   TransformCentreFunc m_getTransformedCentre{};
   std::vector<Shape> m_shapes;
   [[nodiscard]] static auto GetInitialShapes(const TubeData& data,
                                              const OscillatingFunction::Params& pathParams)
       -> std::vector<Shape>;
 
-  Timer m_circleGroupTimer;
+  Timer m_circleGroupTimer{
+      m_data.goomRand.GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP)};
   Timer m_interiorShapeTimer{MAX_INTERIOR_SHAPES_TIME};
   Timer m_noBoundaryShapeTimer{MAX_NO_BOUNDARY_SHAPES_TIME};
   Timer m_hexDotShapeTimer{MAX_HEX_DOT_SHAPES_TIME, true};
   float m_hexLen = MIN_HEX_SIZE;
   [[nodiscard]] auto GetHexLen() const -> float;
-  uint32_t m_interiorShapeSize;
+  uint32_t m_interiorShapeSize{GetInteriorShapeSize(m_hexLen)};
   [[nodiscard]] auto GetInteriorShapeSize(float hexLen) const -> uint32_t;
 
   Timer m_lowColorTypeTimer{MAX_LOW_COLOR_TYPE_TIME};
@@ -420,15 +424,7 @@ static constexpr float LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
 
 Tube::TubeImpl::TubeImpl(const TubeData& data, const OscillatingFunction::Params& pathParams)
   : m_data{data},
-    m_colorizer{std::make_unique<ShapeColorizer>(data,
-                                                 NUM_SHAPES_PER_TUBE,
-                                                 MAX_NUM_CIRCLES_IN_GROUP)},
-    m_centrePath{std::make_unique<TubeParametricPath>(
-        std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP))},
     m_shapes{GetInitialShapes(m_data, pathParams)},
-    m_circleGroupTimer{
-        m_data.goomRand.GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP)},
-    m_interiorShapeSize{GetInteriorShapeSize(m_hexLen)},
     m_lowColorTypes{
         m_data.goomRand,
         {

@@ -49,7 +49,7 @@ private:
   UTILS::MATH::OscillatingFunction::Params m_pathParams;
 
   bool m_randomizePoints = false;
-  std::vector<UTILS::MATH::OscillatingPath> m_dotPaths;
+  std::vector<UTILS::MATH::OscillatingPath> m_dotPaths{GetNewDotPaths(m_dotStartingPositions)};
   [[nodiscard]] auto GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions)
       -> std::vector<UTILS::MATH::OscillatingPath>;
   [[nodiscard]] auto GetSmallRandomOffset() const -> Vec2dInt;

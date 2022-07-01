@@ -22,9 +22,7 @@ GoomMessageDisplayer::GoomMessageDisplayer(IGoomDraw& textOutput,
                                            const std::string& updateMessagesFontFile)
   : m_parallel{textOutput.GetParallel()},
     m_textOutput{textOutput},
-    m_updateMessagesFontFile{updateMessagesFontFile},
-    m_updateMessagesDisplayers{
-        GetUpdateMessagesDisplayers(DEFAULT_NUM_DISPLAYERS, m_textOutput, m_updateMessagesFontFile)}
+    m_updateMessagesFontFile{updateMessagesFontFile}
 {
 }
 

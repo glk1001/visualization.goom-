@@ -4,6 +4,7 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "tentacle3d.h"
+#include "utils/math/misc.h"
 
 namespace GOOM
 {
@@ -48,8 +49,10 @@ public:
 private:
   DRAW::IGoomDraw& m_draw;
   const UTILS::MATH::IGoomRand& m_goomRand;
-  const int32_t m_halfScreenWidth;
-  const int32_t m_halfScreenHeight;
+  const int32_t m_halfScreenWidth{
+      static_cast<int32_t>(UTILS::MATH::U_HALF * m_draw.GetScreenWidth())};
+  const int32_t m_halfScreenHeight{
+      static_cast<int32_t>(UTILS::MATH::U_HALF * m_draw.GetScreenHeight())};
 
   FX_UTILS::DotDrawer m_dotDrawer;
   static constexpr uint32_t MIN_STEPS_BETWEEN_NODES = 2;

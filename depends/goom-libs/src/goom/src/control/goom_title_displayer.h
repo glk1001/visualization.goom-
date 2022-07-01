@@ -1,8 +1,11 @@
 #pragma once
 
 #include "color/color_adjustment.h"
+#include "color/color_maps.h"
+#include "color/random_color_maps.h"
 #include "goom_graphic.h"
 #include "point2d.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/propagate_const.h"
 
 #include <cstdint>
@@ -16,16 +19,6 @@ namespace DRAW
 {
 class IGoomDraw;
 class TextDraw;
-}
-
-namespace COLOR
-{
-class IColorMap;
-}
-
-namespace UTILS::MATH
-{
-class IGoomRand;
 }
 
 namespace CONTROL
@@ -66,13 +59,17 @@ private:
     std::string fontFilename;
     float fontSizeNormalizeFactor;
   };
-  static const std::vector<FontInfo> S_FONT_INFO;
-  const size_t m_fontInfoIndex;
+  static const std::vector<FontInfo> FONT_INFO;
+  const size_t m_fontInfoIndex{
+      m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(FONT_INFO.size()))};
   [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
   [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;
-  const COLOR::IColorMap* m_textColorMap;
-  const COLOR::IColorMap* m_textOutlineColorMap;
-  const COLOR::IColorMap* m_charColorMap;
+
+  const COLOR::IColorMap* m_textColorMap{&COLOR::RandomColorMaps::GetRandomColorMap(m_goomRand)};
+  const COLOR::IColorMap* m_textOutlineColorMap{
+      &COLOR::RandomColorMaps::GetRandomColorMap(m_goomRand)};
+  const COLOR::IColorMap* m_charColorMap{&COLOR::RandomColorMaps::GetRandomColorMap(
+      m_goomRand, COLOR::ColorMapGroup::DIVERGING_BLACK)};
   void DrawText(const std::string& text);
   [[nodiscard]] auto GetColorT() const -> float;
   [[nodiscard]] auto GetFontCharColorMixT() const -> float;

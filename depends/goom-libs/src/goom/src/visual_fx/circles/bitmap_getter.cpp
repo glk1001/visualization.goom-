@@ -34,9 +34,8 @@ BitmapGetter::BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,
         {SmallImageBitmaps::ImageNames::RED_FLOWER,    IMAGE_NAMES_RED_FLOWER_WEIGHT},
         {SmallImageBitmaps::ImageNames::WHITE_FLOWER,  IMAGE_NAMES_WHITE_FLOWER_WEIGHT},
       }
-    },
-    // clang-format on
-    m_currentBitmapName{m_bitmapTypes.GetRandomWeighted()}
+    }
+// clang-format on
 {
 }
 

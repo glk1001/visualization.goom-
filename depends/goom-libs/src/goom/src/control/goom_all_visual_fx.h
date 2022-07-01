@@ -151,7 +151,7 @@ private:
   void ResetCurrentDrawBuffSettings(GoomDrawables fx);
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
 
-  VisualFxColorMaps m_visualFxColorMaps;
+  VisualFxColorMaps m_visualFxColorMaps{m_goomRand};
   UTILS::AdaptiveExposure m_adaptiveExposure{};
   bool m_doExposureControl = false;
   void UpdateZoomFilterLuminance();

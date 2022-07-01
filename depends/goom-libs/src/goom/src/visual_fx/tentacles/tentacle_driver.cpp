@@ -67,8 +67,6 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw,
         { m_goomRand, ITER_PARAM_GROUP2_FIRST, ITER_PARAM_GROUP2_LAST },
         { m_goomRand, ITER_PARAM_GROUP3_FIRST, ITER_PARAM_GROUP3_LAST },
     },
-    m_tentacleParams{GetTentacleParams(m_tentacleLayout.GetNumPoints(), m_iterParamsGroups)},
-    m_tentacles{GetTentacles(m_goomRand, m_tentacleParams, m_tentacleLayout)},
     m_tentaclePlotter{m_draw, m_goomRand, smallBitmaps}
 {
 }

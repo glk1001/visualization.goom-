@@ -74,7 +74,8 @@ private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
-  const Point2dInt m_screenMidpoint;
+  const Point2dInt m_screenMidpoint{U_HALF * m_goomInfo.GetScreenInfo().width,
+                                    U_HALF* m_goomInfo.GetScreenInfo().height};
 
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
@@ -92,7 +93,8 @@ private:
 
   std::array<std::shared_ptr<const RandomColorMaps>, NUM_DOT_TYPES> m_dotColorMapsList{};
   RandomColorMapsManager m_colorMapsManager{};
-  std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> m_colorMapIds;
+  std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> m_colorMapIds{
+      GetDefaultColorMapIds()};
   [[nodiscard]] auto GetDefaultColorMapIds() noexcept
       -> std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES>;
   std::array<bool, NUM_DOT_TYPES> m_usePrimaryColors{};
@@ -107,7 +109,7 @@ private:
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
   [[nodiscard]] auto GetMiddleColor() const -> Pixel;
 
-  const std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths;
+  const std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths{GetDotPaths(m_screenMidpoint)};
   [[nodiscard]] static auto GetDotPaths(const Point2dInt& centre)
       -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>;
 
@@ -189,8 +191,6 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
-    m_screenMidpoint{U_HALF * m_goomInfo.GetScreenInfo().width,
-                     U_HALF * m_goomInfo.GetScreenInfo().height},
     // clang-format off
     m_flowerDotTypes{
         m_goomRand,
@@ -200,10 +200,8 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
             {SmallImageBitmaps::ImageNames::RED_FLOWER,    IMAGE_NAMES_RED_FLOWER_WEIGHT},
             {SmallImageBitmaps::ImageNames::WHITE_FLOWER,  IMAGE_NAMES_WHITE_FLOWER_WEIGHT},
         }
-    },
-    // clang-format on
-    m_colorMapIds{GetDefaultColorMapIds()},
-    m_dotPaths{GetDotPaths(m_screenMidpoint)}
+    }
+// clang-format on
 {
 }
 

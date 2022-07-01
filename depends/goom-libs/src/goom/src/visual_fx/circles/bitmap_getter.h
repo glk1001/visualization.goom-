@@ -26,7 +26,8 @@ public:
 private:
   const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
   const UTILS::MATH::Weights<UTILS::GRAPHICS::SmallImageBitmaps::ImageNames> m_bitmapTypes;
-  UTILS::GRAPHICS::SmallImageBitmaps::ImageNames m_currentBitmapName;
+  UTILS::GRAPHICS::SmallImageBitmaps::ImageNames m_currentBitmapName{
+      m_bitmapTypes.GetRandomWeighted()};
 };
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

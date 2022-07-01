@@ -110,9 +110,11 @@ private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
 
-  std::shared_ptr<const RandomColorMaps> m_colorMaps;
+  std::shared_ptr<const RandomColorMaps> m_colorMaps{
+      RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
   RandomColorMapsManager m_colorMapsManager{};
-  RandomColorMapsManager::ColorMapId m_currentColorMapID;
+  RandomColorMapsManager::ColorMapId m_currentColorMapID{
+      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
@@ -288,8 +290,6 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_colorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)},
-    m_currentColorMapID{m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srceLineType{srceLineType},

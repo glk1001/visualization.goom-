@@ -12,11 +12,7 @@ using VISUAL_FX::LinesFx;
 GoomMusicLinesReactor::GoomMusicLinesReactor(const PluginInfo& goomInfo,
                                              GoomAllVisualFx& visualFx,
                                              const GoomEvents& goomEvents) noexcept
-  : m_goomInfo{goomInfo},
-    m_visualFx{visualFx},
-    m_goomEvents{goomEvents},
-    m_screenWidth{static_cast<float>(m_goomInfo.GetScreenInfo().width)},
-    m_screenHeight{static_cast<float>(m_goomInfo.GetScreenInfo().height)}
+  : m_goomInfo{goomInfo}, m_visualFx{visualFx}, m_goomEvents{goomEvents}
 {
 }
 
