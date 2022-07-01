@@ -31,6 +31,8 @@ public:
   auto Start() -> void;
   auto UpdateAndDraw() -> void;
 
+  [[nodiscard]] auto HasPositionTJustHitStartBoundary() const noexcept -> bool;
+
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   const PluginInfo& m_goomInfo;
@@ -57,6 +59,11 @@ private:
 inline auto Circles::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
   m_zoomMidpoint = zoomMidpoint;
+}
+
+inline auto Circles::HasPositionTJustHitStartBoundary() const noexcept -> bool
+{
+  return m_circles.front().HasPositionTJustHitStartBoundary();
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

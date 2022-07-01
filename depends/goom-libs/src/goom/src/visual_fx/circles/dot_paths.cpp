@@ -54,12 +54,8 @@ auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPosition
 
   for (size_t i = 0; i < m_numDots; ++i)
   {
-    static const std::vector<TValue::DelayPoint> delayPoints{
-        {0.0F,   DELAY_TIME_AT_EDGE},
-        {1.0F, DELAY_TIME_AT_CENTRE}
-    };
     auto positionT = std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                              DEFAULT_POSITION_STEPS, delayPoints, 0.0F);
+                                              DEFAULT_POSITION_STEPS);
     dotPaths.emplace_back(std::move(positionT), dotStartingPositions.at(i).ToFlt(),
                           m_target.ToFlt(), m_pathParams);
   }

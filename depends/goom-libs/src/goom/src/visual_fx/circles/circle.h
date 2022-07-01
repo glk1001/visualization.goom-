@@ -64,6 +64,7 @@ public:
   void UpdateAndDraw();
 
   [[nodiscard]] auto HasPositionTJustHitABoundary() const noexcept -> bool;
+  [[nodiscard]] auto HasPositionTJustHitStartBoundary() const noexcept -> bool;
   [[nodiscard]] auto GetCircleCentreFixedTarget() const noexcept -> Point2dInt;
   [[nodiscard]] auto GetLastDrawnCircleDots() const -> const std::vector<Point2dInt>&;
 
@@ -83,7 +84,7 @@ private:
   uint32_t m_dotAttributeOffset = 0;
   [[nodiscard]] auto IsSpecialUpdateNum() const -> bool;
   [[nodiscard]] auto IsSpecialLineUpdateNum() const -> bool;
-  static constexpr uint32_t BLANK_TIME = 40;
+  static constexpr uint32_t BLANK_TIME = 20;
   UTILS::Timer m_blankTimer{BLANK_TIME, true};
 
   void UpdateTime();
@@ -164,6 +165,11 @@ inline auto Circle::HasPositionTJustHitABoundary() const noexcept -> bool
 {
   return m_dotPaths.HasPositionTJustHitStartBoundary() or
          m_dotPaths.HasPositionTJustHitEndBoundary();
+}
+
+inline auto Circle::HasPositionTJustHitStartBoundary() const noexcept -> bool
+{
+  return m_dotPaths.HasPositionTJustHitStartBoundary();
 }
 
 inline auto Circle::GetCircleCentreFixedTarget() const noexcept -> Point2dInt

@@ -266,7 +266,7 @@ inline auto Circle::GetRandomNumColorAdjustmentSteps() const noexcept -> uint32_
 
 inline void Circle::DrawNextCircle()
 {
-  if (!m_blankTimer.Finished())
+  if (not m_blankTimer.Finished())
   {
     return;
   }
@@ -282,7 +282,7 @@ inline void Circle::IncrementTs()
   m_dotPaths.IncrementPositionT();
   m_dotAttributeOffset = ModIncrement(m_dotAttributeOffset, NUM_DOTS);
 
-  if ((!m_dotPaths.IsDelayed()) && m_dotPaths.HasPositionTJustHitStartBoundary())
+  if ((not m_dotPaths.IsDelayed()) && m_dotPaths.HasPositionTJustHitEndBoundary())
   {
     m_blankTimer.ResetToZero();
   }
