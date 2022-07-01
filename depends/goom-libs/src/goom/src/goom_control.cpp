@@ -116,6 +116,8 @@ private:
   const GoomRand m_goomRand{};
   GoomDrawToBuffer m_multiBufferDraw{m_goomInfo.GetScreenInfo().width,
                                      m_goomInfo.GetScreenInfo().height};
+  const FxHelper m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand};
+
   GoomImageBuffers m_imageBuffers{m_goomInfo.GetScreenInfo().width,
                                   m_goomInfo.GetScreenInfo().height};
   const std::string m_resourcesDirectory;
@@ -127,9 +129,10 @@ private:
   const SmallImageBitmaps m_smallBitmaps{m_resourcesDirectory};
   GoomEvents m_goomEvents{m_goomRand};
   GoomRandomStateHandler m_stateHandler{m_goomRand};
+
   GoomAllVisualFx m_visualFx{
       m_parallel,
-      FxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand},
+      m_fxHelper,
       m_smallBitmaps,
       m_resourcesDirectory,
       m_stateHandler,
@@ -143,6 +146,7 @@ private:
                                              m_normalizedCoordsConverter)),
       std::make_unique<FilterColorsService>()
   };
+
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
   GoomMusicSettingsReactor m_musicSettingsReactor{m_goomInfo, m_goomRand, m_visualFx, m_goomEvents,
                                                   m_filterSettingsService};
