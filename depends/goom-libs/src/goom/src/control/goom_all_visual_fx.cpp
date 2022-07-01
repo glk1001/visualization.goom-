@@ -298,8 +298,6 @@ void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
 
 void GoomAllVisualFx::ChangeLineColorMaps()
 {
-  m_visualFxColorMaps.ChangeRandomColorMaps();
-
   m_goomLine1->SetWeightedColorMaps(
       m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::LINES1));
   m_goomLine2->SetWeightedColorMaps(
