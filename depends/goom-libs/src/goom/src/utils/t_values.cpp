@@ -13,12 +13,8 @@ TValue::TValue(const TValue::StepType stepType,
                const float startingT) noexcept
   : m_stepType{stepType},
     m_stepSize{stepSize},
-    m_currentStep{m_stepSize},
     m_t{startingT},
-    m_currentPosition{(m_stepType == StepType::SINGLE_CYCLE) ? Boundaries::INSIDE
-                                                             : Boundaries::START},
-    m_delayPoints{},
-    m_currentDelayPoints{m_delayPoints}
+    m_delayPoints{}
 {
 }
 
@@ -28,10 +24,8 @@ TValue::TValue(const TValue::StepType stepType,
                const float startingT) noexcept
   : m_stepType{stepType},
     m_stepSize{stepSize},
-    m_currentStep{m_stepSize},
     m_t{startingT},
-    m_delayPoints{delayPoints},
-    m_currentDelayPoints{m_delayPoints}
+    m_delayPoints{delayPoints}
 {
   ValidateDelayPoints();
 }
@@ -41,10 +35,8 @@ TValue::TValue(const TValue::StepType stepType,
                const float startingT) noexcept
   : m_stepType{stepType},
     m_stepSize{1.0F / static_cast<float>(numSteps)},
-    m_currentStep{m_stepSize},
     m_t{startingT},
-    m_delayPoints{},
-    m_currentDelayPoints{m_delayPoints}
+    m_delayPoints{}
 {
 }
 
@@ -54,10 +46,8 @@ TValue::TValue(const TValue::StepType stepType,
                const float startingT) noexcept
   : m_stepType{stepType},
     m_stepSize{1.0F / static_cast<float>(numSteps)},
-    m_currentStep{m_stepSize},
     m_t{startingT},
-    m_delayPoints{delayPoints},
-    m_currentDelayPoints{m_delayPoints}
+    m_delayPoints{delayPoints}
 {
   ValidateDelayPoints();
 }

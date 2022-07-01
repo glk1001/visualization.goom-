@@ -64,11 +64,12 @@ public:
 private:
   const StepType m_stepType;
   float m_stepSize;
-  float m_currentStep;
+  float m_currentStep{m_stepSize};
   float m_t;
-  Boundaries m_currentPosition;
+  Boundaries m_currentPosition{(m_stepType == StepType::SINGLE_CYCLE) ? Boundaries::INSIDE
+                                                                      : Boundaries::START};
   const std::vector<DelayPoint> m_delayPoints;
-  std::vector<DelayPoint> m_currentDelayPoints;
+  std::vector<DelayPoint> m_currentDelayPoints{m_delayPoints};
   bool m_startedDelay = false;
   bool m_justFinishedDelay = false;
   uint32_t m_delayPointCount = 0;
@@ -76,6 +77,7 @@ private:
   [[nodiscard]] auto IsInThisDelayZone(const DelayPoint& delayPoint) const noexcept -> bool;
   [[nodiscard]] auto WeAreStartingDelayPoint() noexcept -> bool;
   auto ValidateDelayPoints() const noexcept -> void;
+
   auto SingleCycleIncrement() noexcept -> void;
   auto ContinuousRepeatableIncrement() noexcept -> void;
   auto ContinuousReversibleIncrement() noexcept -> void;
