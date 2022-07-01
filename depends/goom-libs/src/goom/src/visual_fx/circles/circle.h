@@ -110,6 +110,16 @@ private:
   static constexpr float GAMMA = 1.0F / 2.2F;
   COLOR::ColorAdjustment m_colorAdjustment{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
   auto UpdateColorAdjustment() noexcept -> void;
+  static constexpr float MIN_MIN_CHROMA_FACTOR =
+      0.5F * COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR;
+  static constexpr float MAX_MIN_CHROMA_FACTOR =
+      0.9F * COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR;
+  static constexpr float MIN_MAX_CHROMA_FACTOR =
+      1.0F * COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR;
+  static constexpr float MAX_MAX_CHROMA_FACTOR =
+      2.0F * COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR;
+  float m_minChromaFactor = m_goomRand.GetRandInRange(MIN_MIN_CHROMA_FACTOR, MAX_MIN_CHROMA_FACTOR);
+  float m_maxChromaFactor = m_goomRand.GetRandInRange(MIN_MAX_CHROMA_FACTOR, MAX_MAX_CHROMA_FACTOR);
 
   [[nodiscard]] auto GetCurrentBrightness() const -> float;
   [[nodiscard]] auto GetDotBrightness(float brightness) const -> float;

@@ -215,6 +215,8 @@ void Circle::SetWeightedColorMaps(const std::shared_ptr<const RandomColorMaps> w
   m_dotDrawer->SetWeightedColorMaps(*weightedMainMaps);
 
   m_colorAdjustmentT.SetNumSteps(GetRandomNumColorAdjustmentSteps());
+  m_minChromaFactor = m_goomRand.GetRandInRange(MIN_MIN_CHROMA_FACTOR, MAX_MIN_CHROMA_FACTOR);
+  m_maxChromaFactor = m_goomRand.GetRandInRange(MIN_MAX_CHROMA_FACTOR, MAX_MAX_CHROMA_FACTOR);
 }
 
 void Circle::SetMovingTargetPoint(const Point2dInt& movingTargetPoint, float lerpTFromFixedTarget)
@@ -251,10 +253,8 @@ inline auto Circle::UpdateColorAdjustment() noexcept -> void
 {
   m_colorAdjustmentT.Increment();
 
-  static constexpr float MIN_CHROMA_FACTOR = 0.5F * COLOR::ColorAdjustment::DECREASED_CHROMA_FACTOR;
-  static constexpr float MAX_CHROMA_FACTOR = 1.5F * COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR;
   m_colorAdjustment.SetChromaFactor(
-      STD20::lerp(MIN_CHROMA_FACTOR, MAX_CHROMA_FACTOR, m_colorAdjustmentT()));
+      STD20::lerp(m_minChromaFactor, m_maxChromaFactor, m_colorAdjustmentT()));
 }
 
 inline auto Circle::GetRandomNumColorAdjustmentSteps() const noexcept -> uint32_t
