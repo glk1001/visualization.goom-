@@ -6,8 +6,6 @@
 #include "goom_music_settings_reactor.h"
 #include "utils/name_value_pairs.h"
 
-#include <format>
-
 namespace GOOM::CONTROL
 {
 

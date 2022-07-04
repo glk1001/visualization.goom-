@@ -4,7 +4,6 @@
 #include "goom_all_visual_fx.h"
 #include "goom_events.h"
 #include "goom_lock.h"
-#include "goom_music_lines_reactor.h"
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -33,9 +32,6 @@ public:
 
   void ChangeZoomEffects();
   void ChangeFilterModeIfMusicChanges();
-  [[nodiscard]] auto CanDisplayLines() const -> bool;
-  void ChangeGoomLines();
-  void UpdateLineModes();
 
   // gros frein si la musique est calme
   void BigBreakIfMusicIsCalm();
@@ -55,7 +51,6 @@ private:
   using GoomEvent = GoomEvents::GoomEvent;
   const GoomEvents& m_goomEvents;
   FILTER_FX::FilterSettingsService& m_filterSettingsService;
-  GoomMusicLinesReactor m_musicLinesReactor{m_goomInfo, m_visualFx, m_goomEvents};
 
   static constexpr uint32_t NORMAL_UPDATE_LOCK_TIME = 50;
   static constexpr uint32_t REVERSE_SPEED_AND_STOP_SPEED_LOCK_TIME = 75;
@@ -96,8 +91,6 @@ inline void GoomMusicSettingsReactor::Start()
   m_updateNum = 0;
   m_timeInState = 0;
 
-  m_musicLinesReactor.Start();
-
   DoChangeState();
 }
 
@@ -106,18 +99,6 @@ inline void GoomMusicSettingsReactor::NewCycle()
   ++m_updateNum;
   ++m_timeInState;
   m_lock.Update();
-
-  m_musicLinesReactor.NewCycle();
-}
-
-inline auto GoomMusicSettingsReactor::CanDisplayLines() const -> bool
-{
-  return m_musicLinesReactor.CanDisplayLines();
-}
-
-inline void GoomMusicSettingsReactor::UpdateLineModes()
-{
-  m_musicLinesReactor.UpdateLineModes();
 }
 
 inline void GoomMusicSettingsReactor::BigBreakIfMusicIsCalm()
@@ -322,13 +303,6 @@ inline void GoomMusicSettingsReactor::DoChangeState()
   m_visualFx.ChangeAllFxColorMaps();
 
   m_timeInState = 0;
-
-  m_musicLinesReactor.ResetLineModes();
-}
-
-inline void GoomMusicSettingsReactor::ChangeGoomLines()
-{
-  m_musicLinesReactor.ChangeGoomLines();
 }
 
 } // namespace CONTROL

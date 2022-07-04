@@ -15,14 +15,14 @@
 #include "utils/name_value_pairs.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/fx_helper.h"
-#include "visual_fx_color_maps.h"
+#include "visual_fx/lines_fx.h"
 
+#include <array>
 #include <memory>
 
 namespace GOOM::CONTROL
 {
 
-using COLOR::GetBrighterColorInt;
 using COLOR::GetLuma;
 using COLOR::IColorMap;
 using CONTROL::GoomDrawables;
@@ -37,11 +37,6 @@ using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelper;
-using VISUAL_FX::LinesFx;
-
-static const Pixel RED_LINE = LinesFx::GetRedLineColor();
-static const Pixel GREEN_LINE = LinesFx::GetGreenLineColor();
-static const Pixel BLACK_LINE = LinesFx::GetBlackLineColor();
 
 static constexpr float SMALL_LUMA = 0.1F;
 
@@ -52,34 +47,14 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  IGoomStateHandler& goomStateHandler,
                                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept
-  : m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
+  : m_goomDraw{fxHelper.GetDraw()},
+    m_goomRand{fxHelper.GetGoomRand()},
+    m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelper, smallBitmaps, resourcesDirectory)},
     m_zoomFilterFx{std::make_unique<ZoomFilterFx>(parallel,
                                                   fxHelper.GetGoomInfo(),
                                                   std::move(filterBuffersService),
                                                   std::move(filterColorsService))},
-    m_goomLine1{std::make_unique<LinesFx>(
-        fxHelper,
-        smallBitmaps,
-        LinesFx::LineType::H_LINE,
-        static_cast<float>(fxHelper.GetGoomInfo().GetScreenInfo().height),
-        BLACK_LINE,
-        LinesFx::LineType::CIRCLE,
-        INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
-            static_cast<float>(fxHelper.GetGoomInfo().GetScreenInfo().height),
-        GREEN_LINE)},
-    m_goomLine2{std::make_unique<LinesFx>(
-        fxHelper,
-        smallBitmaps,
-        LinesFx::LineType::H_LINE,
-        0.0F,
-        BLACK_LINE,
-        LinesFx::LineType::CIRCLE,
-        INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
-            static_cast<float>(fxHelper.GetGoomInfo().GetScreenInfo().height),
-        RED_LINE)},
-    m_goomDraw{fxHelper.GetDraw()},
-    m_goomRand{fxHelper.GetGoomRand()},
     m_goomStateHandler{goomStateHandler}
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([this](const GoomDrawables fx)
@@ -90,9 +65,6 @@ GoomAllVisualFx::~GoomAllVisualFx() noexcept = default;
 
 void GoomAllVisualFx::Start()
 {
-  m_goomLine1->Start();
-  m_goomLine2->Start();
-
   m_allStandardVisualFx->Start();
   m_adaptiveExposure.Start();
   m_zoomFilterFx->Start();
@@ -103,9 +75,6 @@ void GoomAllVisualFx::Finish()
   m_allStandardVisualFx->Finish();
 
   m_zoomFilterFx->Finish();
-
-  m_goomLine1->Finish();
-  m_goomLine2->Finish();
 }
 
 void GoomAllVisualFx::ChangeState()
@@ -135,6 +104,8 @@ void GoomAllVisualFx::ChangeState()
   m_currentGoomDrawables = m_goomStateHandler.GetCurrentDrawables();
   m_allStandardVisualFx->SetCurrentGoomDrawables(m_currentGoomDrawables);
   m_allStandardVisualFx->ChangeShaderEffects();
+
+  m_allStandardVisualFx->GetLinesFx().ResetLineModes();
 
   m_allStandardVisualFx->ResumeFx();
 }
@@ -166,10 +137,6 @@ void GoomAllVisualFx::RefreshAllFx()
 
 inline void GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx)
 {
-  if (GoomDrawables::SHADER == fx)
-  {
-    return;
-  }
   m_resetDrawBuffSettings(GetCurrentBuffSettings(fx));
 }
 
@@ -185,7 +152,6 @@ inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) cons
 void GoomAllVisualFx::ChangeAllFxColorMaps()
 {
   m_allStandardVisualFx->ChangeColorMaps();
-  ChangeLineColorMaps();
 }
 
 void GoomAllVisualFx::ChangeDrawPixelBlend()
@@ -276,9 +242,9 @@ void GoomAllVisualFx::ApplyCurrentStateToSingleBuffer()
   m_allStandardVisualFx->ApplyCurrentStateToSingleBuffer();
 }
 
-void GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers()
+void GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData)
 {
-  m_allStandardVisualFx->ApplyCurrentStateToMultipleBuffers();
+  m_allStandardVisualFx->ApplyCurrentStateToMultipleBuffers(soundData);
 }
 
 auto GoomAllVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) -> void
@@ -286,39 +252,8 @@ auto GoomAllVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeV
   m_allStandardVisualFx->ApplyEndEffectIfNearEnd(timeValues);
 }
 
-void GoomAllVisualFx::DisplayGoomLines(const AudioSamples& soundData)
-{
-  Expects(IsCurrentlyDrawable(GoomDrawables::LINES));
-
-  m_goomLine2->SetLineColorPower(m_goomLine1->GetLineColorPower());
-
-  m_goomLine1->DrawLines(soundData.GetSample(0), soundData.GetSampleMinMax(0));
-  m_goomLine2->DrawLines(soundData.GetSample(1), soundData.GetSampleMinMax(1));
-}
-
-void GoomAllVisualFx::ChangeLineColorMaps()
-{
-  m_goomLine1->SetWeightedColorMaps(
-      m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::LINES1));
-  m_goomLine2->SetWeightedColorMaps(
-      m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::LINES2));
-}
-
 auto GoomAllVisualFx::GetCurrentColorMapsNames() const -> std::unordered_set<std::string>
 {
-  std::unordered_set<std::string> currentColorMapsNames{
-      m_allStandardVisualFx->GetActiveColorMapsNames()};
-
-  // TODO - clean this up.
-  for (const auto& colorMapsName : m_goomLine1->GetCurrentColorMapsNames())
-  {
-    currentColorMapsNames.emplace(colorMapsName);
-  }
-  for (const auto& colorMapsName : m_goomLine2->GetCurrentColorMapsNames())
-  {
-    currentColorMapsNames.emplace(colorMapsName);
-  }
-
   return m_allStandardVisualFx->GetActiveColorMapsNames();
 }
 

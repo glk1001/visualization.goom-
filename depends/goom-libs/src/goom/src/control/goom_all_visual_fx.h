@@ -5,13 +5,13 @@
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/zoom_filter_fx.h"
 #include "goom/spimpl.h"
+#include "goom_config.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
 #include "utils/adaptive_exposure.h"
 #include "utils/math/misc.h"
 #include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
-#include "visual_fx/lines_fx.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
@@ -27,16 +27,16 @@ class PixelBuffer;
 
 namespace UTILS
 {
+class Parallel;
+namespace GRAPHICS
+{
+class SmallImageBitmaps;
+}
 namespace MATH
 {
 class IGoomRand;
 }
-class Parallel;
-}
-namespace UTILS::GRAPHICS
-{
-class SmallImageBitmaps;
-}
+} // namespace UTILS
 
 namespace VISUAL_FX
 {
@@ -96,56 +96,27 @@ public:
   void RefreshAllFx();
 
   void ApplyCurrentStateToSingleBuffer();
-  void ApplyCurrentStateToMultipleBuffers();
+  void ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData);
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
 
   void UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings,
                             bool updateFilterEffects);
   void ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
-  [[nodiscard]] auto CanDisplayLines() const -> bool;
-  [[nodiscard]] auto IsScopeDrawable() const -> bool;
-  [[nodiscard]] auto IsFarScopeDrawable() const -> bool;
-  void DisplayGoomLines(const AudioSamples& soundData);
-  [[nodiscard]] auto CanResetDestGoomLines() const -> bool;
-  struct GoomLineSettings
-  {
-    struct Params
-    {
-      float line1{};
-      float line2{};
-    };
-    struct Colors
-    {
-      Pixel line1{};
-      Pixel line2{};
-    };
-    VISUAL_FX::LinesFx::LineType mode{};
-    float amplitude{};
-    Params params{};
-    Colors colors{};
-  };
-  void ResetDestGoomLines(const GoomLineSettings& lineSettings);
-  [[nodiscard]] auto GetGoomLine1RandomColor() const -> Pixel;
-  [[nodiscard]] auto GetGoomLine2RandomColor() const -> Pixel;
-
   [[nodiscard]] auto GetCurrentColorMapsNames() const -> std::unordered_set<std::string>;
   [[nodiscard]] auto GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs;
 
 private:
-  spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
-  std::experimental::propagate_const<std::unique_ptr<FILTER_FX::ZoomFilterFx>> m_zoomFilterFx;
-  std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::LinesFx>> m_goomLine1;
-  std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::LinesFx>> m_goomLine2;
   DRAW::IGoomDraw& m_goomDraw;
   const UTILS::MATH::IGoomRand& m_goomRand;
+  spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
+  std::experimental::propagate_const<std::unique_ptr<FILTER_FX::ZoomFilterFx>> m_zoomFilterFx;
 
   IGoomStateHandler& m_goomStateHandler;
   bool m_allowMultiThreadedStates = true;
   void ChangeState();
   void PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables);
   std::unordered_set<GoomDrawables> m_currentGoomDrawables{};
-  [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;
 
   ResetDrawBuffSettingsFunc m_resetDrawBuffSettings{};
   void ResetCurrentDrawBuffSettings(GoomDrawables fx);
@@ -156,10 +127,6 @@ private:
   bool m_doExposureControl = false;
   void UpdateZoomFilterLuminance();
   [[nodiscard]] auto GetCurrentBufferAverageLuminance() noexcept -> float;
-
-  static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
-  static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
-  void ChangeLineColorMaps();
 
   [[nodiscard]] static auto GetReverseColorAddBlendPixelPixelFunc()
       -> DRAW::IGoomDraw::BlendPixelFunc;
@@ -188,15 +155,6 @@ inline void GoomAllVisualFx::SetNextState()
 inline void GoomAllVisualFx::SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func)
 {
   m_resetDrawBuffSettings = func;
-}
-
-inline auto GoomAllVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawable) const -> bool
-{
-#if __cplusplus <= 201703L
-  return m_currentGoomDrawables.find(goomDrawable) != m_currentGoomDrawables.end();
-#else
-  return m_currentGoomDrawables.contains(goomDrawable);
-#endif
 }
 
 inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
@@ -257,44 +215,6 @@ inline auto GoomAllVisualFx::GetCurrentState() const -> GoomStates
 inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string_view
 {
   return GoomStateInfo::GetStateInfo(m_goomStateHandler.GetCurrentState()).name;
-}
-
-inline auto GoomAllVisualFx::CanDisplayLines() const -> bool
-{
-  return IsCurrentlyDrawable(GoomDrawables::LINES);
-}
-
-inline auto GoomAllVisualFx::IsScopeDrawable() const -> bool
-{
-  return IsCurrentlyDrawable(GoomDrawables::SCOPE);
-}
-
-inline auto GoomAllVisualFx::IsFarScopeDrawable() const -> bool
-{
-  return IsCurrentlyDrawable(GoomDrawables::FAR_SCOPE);
-}
-
-inline auto GoomAllVisualFx::CanResetDestGoomLines() const -> bool
-{
-  return m_goomLine1->CanResetDestLine() && m_goomLine2->CanResetDestLine();
-}
-
-inline void GoomAllVisualFx::ResetDestGoomLines(const GoomLineSettings& lineSettings)
-{
-  m_goomLine1->ResetDestLine(lineSettings.mode, lineSettings.params.line1, lineSettings.amplitude,
-                             lineSettings.colors.line1);
-  m_goomLine2->ResetDestLine(lineSettings.mode, lineSettings.params.line2, lineSettings.amplitude,
-                             lineSettings.colors.line2);
-}
-
-inline auto GoomAllVisualFx::GetGoomLine1RandomColor() const -> Pixel
-{
-  return m_goomLine1->GetRandomLineColor();
-}
-
-inline auto GoomAllVisualFx::GetGoomLine2RandomColor() const -> Pixel
-{
-  return m_goomLine2->GetRandomLineColor();
 }
 
 } // namespace CONTROL

@@ -8,6 +8,7 @@
 namespace GOOM
 {
 struct Point2dInt;
+class AudioSamples;
 
 namespace COLOR
 {
@@ -32,14 +33,25 @@ public:
   virtual auto Start() noexcept -> void = 0;
   virtual auto Finish() noexcept -> void = 0;
 
-  virtual auto Resume() noexcept -> void{/* default does nothing */};
-  virtual auto Suspend() noexcept -> void{/* default does nothing */};
+  virtual auto Resume() noexcept -> void
+  { /* default does nothing */
+  }
+  virtual auto Suspend() noexcept -> void
+  { /* default does nothing */
+  }
 
-  virtual auto Refresh() noexcept -> void{/* default does nothing */};
+  virtual auto Refresh() noexcept -> void
+  { /* default does nothing */
+  }
+
   virtual auto PostStateUpdate([[maybe_unused]] const bool wasActiveInPreviousState) noexcept
-      -> void{/* default does nothing */};
-  virtual auto SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint) noexcept
-      -> void{/* default does nothing */};
+      -> void
+  { /* default does nothing */
+  }
+
+  virtual auto SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint) noexcept -> void
+  { /* default does nothing */
+  }
 
   [[nodiscard]] virtual auto GetCurrentColorMapsNames() const noexcept
       -> std::vector<std::string> = 0;
@@ -51,12 +63,23 @@ public:
     std::shared_ptr<const COLOR::RandomColorMaps> extraColorMaps = nullptr;
   };
   virtual auto SetWeightedColorMaps(
-      [[maybe_unused]] const WeightedColorMaps& weightedColorMaps) noexcept
-      -> void{/* default does nothing */};
+      [[maybe_unused]] const WeightedColorMaps& weightedColorMaps) noexcept -> void
+  { /* default does nothing */
+  }
 
-  virtual auto ApplyNoDraw() noexcept -> void{/* default does nothing */};
-  virtual auto ApplySingle() noexcept -> void{/* default does nothing */};
-  virtual auto ApplyMultiple() noexcept -> void{/* default does nothing */};
+  virtual auto SetSoundData([[maybe_unused]] const AudioSamples& soundData) noexcept -> void
+  { /* default does nothing */
+  }
+
+  virtual auto ApplyNoDraw() noexcept -> void
+  { /* default does nothing */
+  }
+  virtual auto ApplySingle() noexcept -> void
+  { /* default does nothing */
+  }
+  virtual auto ApplyMultiple() noexcept -> void
+  { /* default does nothing */
+  }
 };
 
 } // namespace VISUAL_FX

@@ -15,19 +15,22 @@
 
 namespace GOOM
 {
+class AudioSamples;
 
 namespace UTILS
 {
 class Parallel;
-}
-namespace UTILS::GRAPHICS
+
+namespace GRAPHICS
 {
 class SmallImageBitmaps;
+}
 }
 
 namespace VISUAL_FX
 {
 class IVisualFx;
+class LinesFx;
 class ShaderFx;
 }
 
@@ -65,13 +68,13 @@ public:
   auto PostStateUpdate(const GoomDrawablesSet& oldGoomDrawables) -> void;
 
   auto ApplyCurrentStateToSingleBuffer() -> void;
-  auto ApplyCurrentStateToMultipleBuffers() -> void;
+  auto ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) -> void;
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
+
+  [[nodiscard]] auto GetLinesFx() noexcept -> VISUAL_FX::LinesFx&;
 
   auto ChangeShaderEffects() -> void;
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
-
-  [[nodiscard]] auto CanDraw(GoomDrawables goomDrawable) const -> bool;
 
 private:
   std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::ShaderFx>> m_shaderFx;
@@ -84,16 +87,17 @@ private:
                                             const std::string& resourcesDirectory)
       -> std::map<GoomDrawables, PropagateConstUniquePtr>;
   VisualFxColorMaps m_visualFxColorMaps;
-  auto ChangeDotsColorMaps() -> void;
-  auto ChangeShapesColorMaps() -> void;
-  auto ChangeStarsColorMaps() -> void;
+  auto ChangeDotsColorMaps() noexcept -> void;
+  auto ChangeLinesColorMaps() noexcept -> void;
+  auto ChangeShapesColorMaps() noexcept -> void;
+  auto ChangeStarsColorMaps() noexcept -> void;
 
   GoomDrawablesSet m_currentGoomDrawables{};
   [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;
   ResetCurrentDrawBuffSettingsFunc m_resetCurrentDrawBuffSettingsFunc{};
   auto ResetDrawBuffSettings(GoomDrawables fx) -> void;
 
-  auto ApplyStandardFxToMultipleBuffers() -> void;
+  auto ApplyStandardFxToMultipleBuffers(const AudioSamples& soundData) -> void;
   auto ApplyShaderToBothBuffersIfRequired() -> void;
 };
 
@@ -107,11 +111,6 @@ inline void AllStandardVisualFx::SetCurrentGoomDrawables(const GoomDrawablesSet&
   m_currentGoomDrawables = goomDrawablesSet;
 }
 
-inline auto AllStandardVisualFx::CanDraw(const GoomDrawables goomDrawable) const -> bool
-{
-  return m_drawablesMap.find(goomDrawable) != m_drawablesMap.end();
-}
-
 inline void AllStandardVisualFx::SetResetDrawBuffSettingsFunc(
     const ResetCurrentDrawBuffSettingsFunc& func)
 {
@@ -123,9 +122,10 @@ inline void AllStandardVisualFx::ResetDrawBuffSettings(const GoomDrawables fx)
   m_resetCurrentDrawBuffSettingsFunc(fx);
 }
 
-inline auto AllStandardVisualFx::ApplyCurrentStateToMultipleBuffers() -> void
+inline auto AllStandardVisualFx::ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData)
+    -> void
 {
-  ApplyStandardFxToMultipleBuffers();
+  ApplyStandardFxToMultipleBuffers(soundData);
   ApplyShaderToBothBuffersIfRequired();
 }
 

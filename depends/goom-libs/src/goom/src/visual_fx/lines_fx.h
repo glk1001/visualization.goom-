@@ -2,14 +2,15 @@
 
 #include "goom/spimpl.h"
 #include "goom_graphic.h"
-#include "sound_info.h"
+#include "goom_visual_fx.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
 namespace GOOM
 {
+
+class AudioSamples;
 
 namespace COLOR
 {
@@ -25,54 +26,28 @@ namespace VISUAL_FX
 {
 class FxHelper;
 
-class LinesFx
+class LinesFx : public IVisualFx
 {
 public:
-  enum class LineType
-  {
-    CIRCLE = 0, // (param = radius)
-    H_LINE, // (param = y)
-    V_LINE, // (param = x)
-    _num // must be last - gives number of enums
-  };
-
-  LinesFx() noexcept = delete;
+  static constexpr uint32_t NUM_LINES = 2;
 
   // construit un effet de line (une ligne horitontale pour commencer)
+  LinesFx() noexcept = delete;
   LinesFx(const FxHelper& fxHelper,
-          const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
-          LineType srceLineType,
-          float srceParam,
-          const Pixel& srceColor,
-          LineType destLineType,
-          float destParam,
-          const Pixel& destColor) noexcept;
+          const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetFxName() const noexcept -> std::string;
+  [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
-  void SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps);
-  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
 
-  auto Start() noexcept -> void;
-  auto Finish() noexcept -> void;
+  auto Start() noexcept -> void override;
+  auto Finish() noexcept -> void override;
 
-  [[nodiscard]] auto GetLineColorPower() const noexcept -> float;
-  auto SetLineColorPower(float val) noexcept -> void;
+  auto ResetLineModes() noexcept -> void;
 
-  static constexpr uint32_t MIN_LINE_DURATION = 80;
-  [[nodiscard]] auto CanResetDestLine() const noexcept -> bool;
-  auto ResetDestLine(LineType newLineType,
-                     float newParam,
-                     float newAmplitude,
-                     const Pixel& newColor) noexcept -> void;
-
-  auto DrawLines(const AudioSamples::SampleArray& soundData,
-                 const AudioSamples::MinMaxValues& soundMinMax) noexcept -> void;
-
-  [[nodiscard]] auto GetRandomLineColor() const -> Pixel;
-  [[nodiscard]] static auto GetBlackLineColor() -> Pixel;
-  [[nodiscard]] static auto GetGreenLineColor() -> Pixel;
-  [[nodiscard]] static auto GetRedLineColor() -> Pixel;
+  auto SetSoundData(const AudioSamples& soundData) noexcept -> void override;
+  auto ApplyMultiple() noexcept -> void override;
 
 private:
   class LinesImpl;

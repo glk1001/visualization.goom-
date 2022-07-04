@@ -35,7 +35,6 @@ add_library(goom
         src/control/goom_events.cpp
         src/control/goom_image_buffers.cpp
         src/control/goom_message_displayer.cpp
-        src/control/goom_music_lines_reactor.cpp
         src/control/goom_music_settings_reactor.cpp
         src/control/goom_random_state_handler.cpp
         src/control/goom_sound_events.cpp
@@ -127,6 +126,8 @@ add_library(goom
         src/visual_fx/ifs/ifs_types.h
         src/visual_fx/ifs/low_density_blurrer.cpp
         src/visual_fx/ifs/similitudes.cpp
+        src/visual_fx/lines/line_morph.cpp
+        src/visual_fx/lines/line_types.h
         src/visual_fx/shaders/high_contrast.cpp
         src/visual_fx/shapes/bezier_flower.cpp
         src/visual_fx/shapes/shape_parts.cpp

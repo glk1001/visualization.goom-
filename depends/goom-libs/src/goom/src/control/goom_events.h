@@ -2,7 +2,6 @@
 
 #include "utils/enumutils.h"
 #include "utils/math/goom_rand_base.h"
-#include "visual_fx/lines_fx.h"
 
 #include <array>
 
@@ -24,14 +23,6 @@ public:
     CHANGE_FILTER_MODE = 0,
     CHANGE_STATE,
     CHANGE_TO_MEGA_LENT_MODE,
-    CHANGE_LINE_CIRCLE_AMPLITUDE,
-    CHANGE_LINE_CIRCLE_PARAMS,
-    CHANGE_H_LINE_PARAMS,
-    CHANGE_V_LINE_PARAMS,
-    REDUCE_LINE_MODE,
-    UPDATE_LINE_MODE,
-    CHANGE_LINE_TO_BLACK,
-    CHANGE_GOOM_LINE,
     FILTER_REVERSE_ON,
     FILTER_REVERSE_OFF_AND_STOP_SPEED,
     FILTER_VITESSE_STOP_SPEED_MINUS1,
@@ -45,7 +36,6 @@ public:
   };
 
   [[nodiscard]] auto Happens(GoomEvent event) const -> bool;
-  [[nodiscard]] auto GetRandomLineTypeEvent() const -> VISUAL_FX::LinesFx::LineType;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
@@ -56,13 +46,7 @@ private:
     float probability;
   };
   const std::array<WeightedEvent, NUM_GOOM_EVENTS> m_weightedEvents;
-  const UTILS::MATH::Weights<VISUAL_FX::LinesFx::LineType> m_lineTypeWeights;
 };
-
-inline auto GoomEvents::GetRandomLineTypeEvent() const -> VISUAL_FX::LinesFx::LineType
-{
-  return m_lineTypeWeights.GetRandomWeighted();
-}
 
 } // namespace GOOM::CONTROL
 

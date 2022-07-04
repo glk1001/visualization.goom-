@@ -166,8 +166,7 @@ private:
 
   auto ApplyStateToSingleBufferPreZoom() -> void;
   auto ApplyZoomEffects() -> void;
-  auto ApplyStateToMultipleBuffersPostZoom() -> void;
-  auto DisplayLinesIfInAGoom(const AudioSamples& soundData) -> void;
+  auto ApplyStateToMultipleBuffersPostZoom(const AudioSamples& soundData) -> void;
   auto ApplyEndEffectIfNearEnd() -> void;
 
   auto UpdateFilterSettings() -> void;
@@ -517,9 +516,7 @@ inline auto GoomControl::GoomControlImpl::DrawAndZoom(const AudioSamples& soundD
 
   ApplyZoomEffects();
 
-  ApplyStateToMultipleBuffersPostZoom();
-
-  DisplayLinesIfInAGoom(soundData);
+  ApplyStateToMultipleBuffersPostZoom(soundData);
 
   ApplyEndEffectIfNearEnd();
 }
@@ -536,9 +533,10 @@ inline auto GoomControl::GoomControlImpl::ApplyStateToSingleBufferPreZoom() -> v
   m_visualFx.ApplyCurrentStateToSingleBuffer();
 }
 
-inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffersPostZoom() -> void
+inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffersPostZoom(
+    const AudioSamples& soundData) -> void
 {
-  m_visualFx.ApplyCurrentStateToMultipleBuffers();
+  m_visualFx.ApplyCurrentStateToMultipleBuffers(soundData);
 }
 
 inline auto GoomControl::GoomControlImpl::ApplyEndEffectIfNearEnd() -> void
@@ -588,25 +586,6 @@ inline auto GoomControl::GoomControlImpl::RotateBuffers() -> void
 {
   m_imageBuffers.RotateBuffers();
   m_multiBufferDraw.SetBuffers(GetCurrentBuffers());
-}
-
-inline auto GoomControl::GoomControlImpl::DisplayLinesIfInAGoom(const AudioSamples& soundData)
-    -> void
-{
-  // Gestion du Scope - Scope management
-  m_musicSettingsReactor.UpdateLineModes();
-
-  if (!m_musicSettingsReactor.CanDisplayLines())
-  {
-    return;
-  }
-  if (!m_visualFx.CanDisplayLines())
-  {
-    return;
-  }
-
-  m_visualFx.DisplayGoomLines(soundData);
-  m_musicSettingsReactor.ChangeGoomLines();
 }
 
 inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::string& message)

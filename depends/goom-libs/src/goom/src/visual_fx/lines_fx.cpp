@@ -1,191 +1,124 @@
-/*
- *  Goom
- *  Copyright (c) 2000-2003 iOS-software. All rights reserved.
- *
- *  - converted to C++17 2021-02-01 (glk)
- */
-
 #include "lines_fx.h"
 
 //#undef NO_LOGGING
 
-#include "color/color_adjustment.h"
-#include "color/color_maps.h"
 #include "color/color_utils.h"
-#include "color/random_color_maps.h"
-#include "color/random_color_maps_groups.h"
-#include "color/random_color_maps_manager.h"
-#include "draw/goom_draw.h"
 #include "fx_helper.h"
-#include "fx_utils/dot_drawer.h"
-#include "fx_utils/lines.h"
 #include "goom/logging.h"
 #include "goom/spimpl.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_plugin_info.h"
-#include "point2d.h"
+#include "lines/line_morph.h"
+#include "lines/line_types.h"
 #include "sound_info.h"
-#include "utils/enumutils.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
-#include <cmath>
-#include <cstdint>
-#include <memory>
-#include <stdexcept>
+#include <array>
 #include <vector>
 
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::ColorAdjustment;
-using COLOR::GetBrighterColor;
-using COLOR::GetLightenedColor;
 using COLOR::GetSimpleColor;
-using COLOR::IColorMap;
-using COLOR::RandomColorMaps;
-using COLOR::RandomColorMapsGroups;
-using COLOR::RandomColorMapsManager;
 using COLOR::SimpleColors;
-using COLOR::COLOR_DATA::ColorMapName;
-using DRAW::IGoomDraw;
-using DRAW::MultiplePixels;
-using FX_UTILS::DotDrawer;
-using FX_UTILS::DotSizes;
-using FX_UTILS::GetCircularLinePoints;
-using FX_UTILS::GetHorizontalLinePoints;
-using FX_UTILS::GetVerticalLinePoints;
-using FX_UTILS::LinePoint;
-using FX_UTILS::SmoothTheCircleJoinAtEnds;
+using LINES::LineMorph;
+using LINES::LineType;
 using UTILS::Logging;
-using UTILS::NUM;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::FloatsEqual;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::SMALL_FLOAT;
+using UTILS::MATH::Weights;
 
-static constexpr float MIN_MAX_NORMALIZED_PEAK = 100.0F;
-static constexpr float MAX_MAX_NORMALIZED_PEAK = 400.0F;
+static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
+static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
+
+static constexpr Pixel RED_LINE_COLOR = GetSimpleColor(SimpleColors::RED);
+static constexpr Pixel GREEN_LINE_COLOR = GetSimpleColor(SimpleColors::VERT);
+static constexpr Pixel BLACK_LINE_COLOR = GetSimpleColor(SimpleColors::BLACK);
+
+// clang-format off
+static constexpr float PROB_CHANGE_LINE_CIRCLE_AMPLITUDE = 0.05F;
+static constexpr float PROB_CHANGE_LINE_CIRCLE_PARAMS    = 0.08F;
+static constexpr float PROB_CHANGE_H_LINE_PARAMS         = 0.12F;
+static constexpr float PROB_CHANGE_V_LINE_PARAMS         = 0.10F;
+static constexpr float PROB_CHANGE_LINE_TO_BLACK         = 0.08F;
+static constexpr float PROB_REDUCE_LINE_MODE             = 0.03F;
+static constexpr float PROB_UPDATE_LINE_MODE             = 0.04F;
+static constexpr float PROB_CHANGE_GOOM_LINE             = 0.05F;
+static constexpr float PROB_NEAR_SCOPE                   = 0.01F;
+static constexpr float PROB_FAR_SCOPE                    = 0.01F;
+
+static constexpr float CIRCLE_LINE_TYPE_WEIGHT = 10.0F;
+static constexpr float H_LINE_LINE_TYPE_WEIGHT =  2.0F;
+static constexpr float V_LINE_LINE_TYPE_WEIGHT =  2.0F;
+// clang-format on
 
 class LinesFx::LinesImpl
 {
 public:
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
-  LinesImpl(const FxHelper& fxHelper,
-            const SmallImageBitmaps& smallBitmaps,
-            LineType srceLineType,
-            float srceParam,
-            const Pixel& srceColor,
-            LineType destLineType,
-            float destParam,
-            const Pixel& destColor);
+  LinesImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  void SetWeightedColorMaps(std::shared_ptr<const RandomColorMaps> weightedMaps);
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
-  void Start();
+  auto Start() noexcept -> void;
 
-  [[nodiscard]] auto GetLineColorPower() const -> float;
-  void SetLineColorPower(float val);
+  auto ResetLineModes() noexcept -> void;
 
-  [[nodiscard]] auto CanResetDestLine() const -> bool;
-  void ResetDestLine(LineType newLineType,
-                     float newParam,
-                     float newAmplitude,
-                     const Pixel& newColor);
+  auto SetSoundData(const AudioSamples& soundData) noexcept -> void;
+  auto ApplyMultiple() noexcept -> void;
 
-  void DrawLines(const AudioSamples::SampleArray& soundData,
-                 const AudioSamples::MinMaxValues& soundMinMax);
-
-  [[nodiscard]] auto GetRandomLineColor() const -> Pixel;
-  [[nodiscard]] static auto GetBlackLineColor() -> Pixel;
-  [[nodiscard]] static auto GetGreenLineColor() -> Pixel;
-  [[nodiscard]] static auto GetRedLineColor() -> Pixel;
+  [[nodiscard]] auto GetRandomLineColors() const noexcept -> std::array<Pixel, NUM_LINES>;
 
 private:
-  IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
-  const IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
 
-  std::shared_ptr<const RandomColorMaps> m_colorMaps{
-      RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
-  RandomColorMapsManager m_colorMapsManager{};
-  RandomColorMapsManager::ColorMapId m_currentColorMapID{
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
-  float m_currentBrightness = 1.0F;
+  static_assert(2 == NUM_LINES);
+  static constexpr std::array<uint32_t, NUM_LINES> SOUND_SAMPLE_NUM_TO_USE{0, 1};
+  const AudioSamples* m_soundData = nullptr;
+  std::array<LineMorph, NUM_LINES> m_lineMorphs;
+  [[nodiscard]] auto CanResetDestLines() const noexcept -> bool;
+  using LineParams = LINES::LineParams;
+  auto ResetDestLines(const std::array<LineParams, NUM_LINES>& newDestParams) noexcept -> void;
+  auto ResetLineColorPowers() noexcept -> void;
+  auto DrawLines() noexcept -> void;
 
-  static constexpr float GAMMA = 1.0F / 2.0F;
-  const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  const float m_screenWidth{static_cast<float>(m_goomInfo.GetScreenInfo().width)};
+  const float m_screenHeight{static_cast<float>(m_goomInfo.GetScreenInfo().height)};
+  uint32_t m_updateNum = 0;
+  int32_t m_drawLinesDuration = LineMorph::MIN_LINE_DURATION;
+  int32_t m_lineMode = LineMorph::MIN_LINE_DURATION; // l'effet lineaire a dessiner
+  uint32_t m_stopLines = 0;
+  const Weights<LineType> m_lineTypeWeights;
 
-  std::vector<LinePoint> m_srcePoints{};
-  std::vector<LinePoint> m_srcePointsCopy{};
-  LineType m_srceLineType;
-  const float m_srceParam;
-  std::vector<LinePoint> m_destPoints{};
-  LineType m_destLineType = LineType::CIRCLE;
-  float m_destParam;
-  static constexpr float LINE_LERP_FINISHED_VAL = 1.1F;
-  static constexpr float LINE_LERP_INC = 1.0F / static_cast<float>(MIN_LINE_DURATION - 1);
-  float m_lineLerpParam = 0.0F;
-  void MoveSrceLineCloserToDest();
-  [[nodiscard]] auto GetFreshLine(LineType lineType, float lineParam) const
-      -> std::vector<LinePoint>;
-
-  // pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera
-  Pixel m_srceColor = BLACK_PIXEL;
-  Pixel m_destColor = BLACK_PIXEL;
-  bool m_useLineColor = true;
-  float m_lineColorPower = 0.0F;
-  float m_lineColorPowerIncrement = 0.0F;
-  [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
-  [[nodiscard]] auto GetFinalLineColor(const Pixel& color) const -> Pixel;
-  void UpdateColorInfo();
-
-  // This factor gives the maximum height to the peaks of the audio samples lines.
-  // This value seems pleasing.
-  float m_maxNormalizedPeak = MIN_MAX_NORMALIZED_PEAK;
-
-  DotDrawer m_dotDrawer;
-  float m_newLinePeakAmplitude = 1.0F;
-  float m_linePeakAmplitude = 1.0F;
-  float m_audioRange = 0.0F;
-  float m_minAudioValue = 0.0F;
-  struct PointAndColor
-  {
-    Point2dInt point;
-    Pixel color;
-  };
-  [[nodiscard]] auto GetAudioPoints(const Pixel& lineColor,
-                                    const AudioSamples::SampleArray& audioData) const
-      -> std::vector<PointAndColor>;
-  [[nodiscard]] auto GetNextPointData(const LinePoint& pt,
-                                      const Pixel& mainColor,
-                                      const Pixel& randColor,
-                                      float dataVal) const -> PointAndColor;
-
-  [[nodiscard]] auto GetMainColor(const Pixel& lineColor, float t) const -> Pixel;
-  void DrawFlatLine(const Pixel& lineColor);
+  bool m_isNearScope = m_goomRand.ProbabilityOf(PROB_NEAR_SCOPE);
+  bool m_isFarScope = m_goomRand.ProbabilityOf(PROB_FAR_SCOPE);
+  auto UpdateScopes() noexcept -> void;
+  [[nodiscard]] auto CanDisplayLines() const noexcept -> bool;
+  auto ChangeGoomLines() noexcept -> void;
+  auto UpdateLineModes() noexcept -> void;
+  // arret demande
+  auto StopLinesIfRequested() noexcept -> void;
+  // arret aleatore.. changement de mode de ligne..
+  auto StopRandomLineChangeMode() noexcept -> void;
+  auto ResetGoomLines() noexcept -> void;
+  auto StopGoomLines() noexcept -> void;
+  [[nodiscard]] auto GetGoomLineResetSettings(uint32_t farVal) const noexcept
+      -> std::array<LineParams, NUM_LINES>;
+  [[nodiscard]] auto GetGoomLineStopSettings() const noexcept -> std::array<LineParams, NUM_LINES>;
+  [[nodiscard]] auto GetResetCircleLineSettings(uint32_t farVal) const noexcept
+      -> std::array<LineParams, NUM_LINES>;
+  [[nodiscard]] auto GetResetHorizontalLineSettings(uint32_t farVal) const noexcept
+      -> std::array<LineParams, NUM_LINES>;
+  [[nodiscard]] auto GetResetVerticalLineSettings(uint32_t farVal) const noexcept
+      -> std::array<LineParams, NUM_LINES>;
+  [[nodiscard]] auto GetResetLineColors(uint32_t farVal) const noexcept
+      -> std::array<Pixel, NUM_LINES>;
 };
 
-LinesFx::LinesFx(const FxHelper& fxHelper,
-                 const SmallImageBitmaps& smallBitmaps,
-                 const LineType srceLineType,
-                 const float srceParam,
-                 const Pixel& srceColor,
-                 const LineType destLineType,
-                 const float destParam,
-                 const Pixel& destColor) noexcept
-  : m_pimpl{spimpl::make_unique_impl<LinesImpl>(fxHelper,
-                                                smallBitmaps,
-                                                srceLineType,
-                                                srceParam,
-                                                srceColor,
-                                                destLineType,
-                                                destParam,
-                                                destColor)}
+LinesFx::LinesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_pimpl{spimpl::make_unique_impl<LinesImpl>(fxHelper, smallBitmaps)}
 {
 }
 
@@ -199,9 +132,10 @@ auto LinesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::stri
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-void LinesFx::SetWeightedColorMaps(const std::shared_ptr<const RandomColorMaps> weightedMaps)
+auto LinesFx::SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept
+    -> void
 {
-  m_pimpl->SetWeightedColorMaps(weightedMaps);
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
 }
 
 auto LinesFx::Start() noexcept -> void
@@ -214,422 +148,455 @@ auto LinesFx::Finish() noexcept -> void
   // nothing to do
 }
 
-auto LinesFx::GetBlackLineColor() -> Pixel
+auto LinesFx::ResetLineModes() noexcept -> void
 {
-  return LinesFx::LinesImpl::GetBlackLineColor();
+  m_pimpl->ResetLineModes();
 }
 
-auto LinesFx::GetGreenLineColor() -> Pixel
+auto LinesFx::SetSoundData(const AudioSamples& soundData) noexcept -> void
 {
-  return LinesFx::LinesImpl::GetGreenLineColor();
+  m_pimpl->SetSoundData(soundData);
 }
 
-auto LinesFx::GetRedLineColor() -> Pixel
+auto LinesFx::ApplyMultiple() noexcept -> void
 {
-  return LinesFx::LinesImpl::GetRedLineColor();
+  m_pimpl->ApplyMultiple();
 }
-
-auto LinesFx::GetRandomLineColor() const -> Pixel
-{
-  return m_pimpl->GetRandomLineColor();
-}
-
-auto LinesFx::GetLineColorPower() const noexcept -> float
-{
-  return m_pimpl->GetLineColorPower();
-}
-
-auto LinesFx::SetLineColorPower(const float val) noexcept -> void
-{
-  m_pimpl->SetLineColorPower(val);
-}
-
-auto LinesFx::CanResetDestLine() const noexcept -> bool
-{
-  return m_pimpl->CanResetDestLine();
-}
-
-auto LinesFx::ResetDestLine(const LineType newLineType,
-                            const float newParam,
-                            const float newAmplitude,
-                            const Pixel& newColor) noexcept -> void
-{
-  m_pimpl->ResetDestLine(newLineType, newParam, newAmplitude, newColor);
-}
-
-auto LinesFx::DrawLines(const AudioSamples::SampleArray& soundData,
-                        const AudioSamples::MinMaxValues& soundMinMax) noexcept -> void
-{
-  m_pimpl->DrawLines(soundData, soundMinMax);
-}
-
-// clang-format off
-static constexpr float MIN_DOT_SIZE01_WEIGHT = 100.0F;
-static constexpr float MIN_DOT_SIZE02_WEIGHT =  50.0F;
-static constexpr float MIN_DOT_SIZE03_WEIGHT =  20.0F;
-static constexpr float MIN_DOT_SIZE04_WEIGHT =  10.0F;
-
-static constexpr float NORMAL_DOT_SIZE01_WEIGHT = 50.0F;
-static constexpr float NORMAL_DOT_SIZE02_WEIGHT = 20.0F;
-static constexpr float NORMAL_DOT_SIZE03_WEIGHT = 20.0F;
-static constexpr float NORMAL_DOT_SIZE04_WEIGHT = 10.0F;
-static constexpr float NORMAL_DOT_SIZE05_WEIGHT = 10.0F;
-static constexpr float NORMAL_DOT_SIZE06_WEIGHT = 10.0F;
-static constexpr float NORMAL_DOT_SIZE07_WEIGHT = 10.0F;
-static constexpr float NORMAL_DOT_SIZE08_WEIGHT = 10.0F;
-// clang-format on
 
 LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
-                              const SmallImageBitmaps& smallBitmaps,
-                              const LineType srceLineType,
-                              const float srceParam,
-                              const Pixel& srceColor,
-                              const LineType destLineType,
-                              const float destParam,
-                              const Pixel& destColor)
-  : m_draw{fxHelper.GetDraw()},
-    m_goomInfo{fxHelper.GetGoomInfo()},
+                              const SmallImageBitmaps& smallBitmaps) noexcept
+  : m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
-    m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
-    m_srceLineType{srceLineType},
-    m_srceParam{srceParam},
-    m_destPoints(AudioSamples::AUDIO_SAMPLE_LEN),
-    m_destLineType{destLineType},
-    m_destParam{destParam},
-    m_srceColor{srceColor},
-    m_destColor{destColor},
-    m_dotDrawer{
-        m_draw,
-        m_goomRand,
-        smallBitmaps,
+    m_lineMorphs{
         // clang-format off
-        // min dot sizes
-        {
-            m_goomRand,
+        LineMorph{
+            fxHelper.GetDraw(),
+            fxHelper.GetGoomInfo(),
+            fxHelper.GetGoomRand(),
+            smallBitmaps,
             {
-                {DotSizes::DOT_SIZE01, MIN_DOT_SIZE01_WEIGHT},
-                {DotSizes::DOT_SIZE02, MIN_DOT_SIZE02_WEIGHT},
-                {DotSizes::DOT_SIZE03, MIN_DOT_SIZE03_WEIGHT},
-                {DotSizes::DOT_SIZE04, MIN_DOT_SIZE04_WEIGHT},
+                LineType::H_LINE,
+                static_cast<float>(fxHelper.GetGoomInfo().GetScreenInfo().height),
+                BLACK_LINE_COLOR,
+                1.0F
+            },
+            {
+                LineType::CIRCLE,
+                INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
+                    static_cast<float>(fxHelper.GetGoomInfo().GetScreenInfo().height),
+                GREEN_LINE_COLOR,
+                1.0F
             }
         },
-        // normal dot sizes
-        {
-            m_goomRand,
+        LineMorph{
+            fxHelper.GetDraw(),
+            fxHelper.GetGoomInfo(),
+            fxHelper.GetGoomRand(),
+            smallBitmaps,
             {
-                {DotSizes::DOT_SIZE01, NORMAL_DOT_SIZE01_WEIGHT},
-                {DotSizes::DOT_SIZE02, NORMAL_DOT_SIZE02_WEIGHT},
-                {DotSizes::DOT_SIZE03, NORMAL_DOT_SIZE03_WEIGHT},
-                {DotSizes::DOT_SIZE04, NORMAL_DOT_SIZE04_WEIGHT},
-                {DotSizes::DOT_SIZE05, NORMAL_DOT_SIZE05_WEIGHT},
-                {DotSizes::DOT_SIZE06, NORMAL_DOT_SIZE06_WEIGHT},
-                {DotSizes::DOT_SIZE07, NORMAL_DOT_SIZE07_WEIGHT},
-                {DotSizes::DOT_SIZE08, NORMAL_DOT_SIZE08_WEIGHT},
+                LineType::H_LINE,
+                0.0F,
+                BLACK_LINE_COLOR,
+                1.0F
+            },
+            {
+                LineType::CIRCLE,
+                INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
+                    static_cast<float>(fxHelper.GetGoomInfo().GetScreenInfo().height),
+                RED_LINE_COLOR,
+                1.0F
             }
         }
-        // clang-format on
+    },
+    m_lineTypeWeights{
+        m_goomRand,
+        {
+            { LineType::CIRCLE, CIRCLE_LINE_TYPE_WEIGHT },
+            { LineType::H_LINE, H_LINE_LINE_TYPE_WEIGHT },
+            { LineType::V_LINE, V_LINE_LINE_TYPE_WEIGHT },
+        }
     }
+// clang-format on
 {
 }
 
-auto LinesFx::LinesImpl::GetRandomColorMap() const -> const IColorMap&
+inline auto LinesFx::LinesImpl::Start() noexcept -> void
 {
-  Expects(m_colorMaps != nullptr);
-  return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
+  m_updateNum = 0;
+
+  std::for_each(begin(m_lineMorphs), end(m_lineMorphs), [](LineMorph& line) { line.Start(); });
 }
 
-void LinesFx::LinesImpl::Start()
+auto LinesFx::LinesImpl::GetCurrentColorMapsNames() const noexcept
+    -> std::vector<std::string>
 {
-  UpdateColorInfo();
-  m_srcePoints = GetFreshLine(m_srceLineType, m_srceParam);
-  m_srcePointsCopy = m_srcePoints;
-  ResetDestLine(m_destLineType, m_destParam, 1.0F, m_destColor);
-}
-
-auto LinesFx::LinesImpl::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
-{
-  return {m_colorMaps->GetColorMapsName()};
-}
-
-void LinesFx::LinesImpl::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps> weightedMaps)
-{
-  m_colorMaps = weightedMaps;
-  m_colorMapsManager.UpdateColorMapInfo(m_currentColorMapID,
-                                        {m_colorMaps, RandomColorMaps::ALL_COLOR_MAP_TYPES});
-}
-
-inline void LinesFx::LinesImpl::UpdateColorInfo()
-{
-  m_colorMapsManager.ChangeAllColorMapsNow();
-
-  static constexpr float PROB_USE_LINE_COLOR = 0.5F;
-  m_useLineColor = m_goomRand.ProbabilityOf(PROB_USE_LINE_COLOR);
-}
-
-inline auto LinesFx::LinesImpl::GetFreshLine(const LineType lineType, const float lineParam) const
-    -> std::vector<LinePoint>
-{
-  switch (lineType)
+  std::vector<std::string> allColorMapsNames{};
+  for (const auto& lineMorph : m_lineMorphs)
   {
-    case LineType::H_LINE:
-      return GetHorizontalLinePoints(AudioSamples::AUDIO_SAMPLE_LEN,
-                                     m_goomInfo.GetScreenInfo().width, lineParam);
-    case LineType::V_LINE:
-      return GetVerticalLinePoints(AudioSamples::AUDIO_SAMPLE_LEN,
-                                   m_goomInfo.GetScreenInfo().height, lineParam);
-    case LineType::CIRCLE:
-      return GetCircularLinePoints(AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo.GetScreenInfo().width,
-                                   m_goomInfo.GetScreenInfo().height, lineParam);
-    default:
-      throw std::logic_error("Unknown LineType enum.");
+    const std::vector<std::string> colorMapsNames = lineMorph.GetCurrentColorMapsNames();
+    for (const auto& mapsName : colorMapsNames)
+    {
+      allColorMapsNames.emplace_back(mapsName);
+    }
+  }
+  return allColorMapsNames;
+}
+
+inline auto LinesFx::LinesImpl::SetWeightedColorMaps(
+    const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
+  const uint32_t lineNum = weightedColorMaps.id;
+  Expects(lineNum < NUM_LINES);
+  m_lineMorphs.at(lineNum).SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
+}
+
+inline auto LinesFx::LinesImpl::CanResetDestLines() const noexcept -> bool
+{
+  return std::all_of(cbegin(m_lineMorphs), cend(m_lineMorphs),
+                     [](const LineMorph& line) { return line.CanResetDestLine(); });
+}
+
+inline auto LinesFx::LinesImpl::ResetDestLines(
+    const std::array<LineParams, NUM_LINES>& newDestParams) noexcept -> void
+{
+  for (size_t i = 0; i < NUM_LINES; ++i)
+  {
+    m_lineMorphs.at(i).ResetDestLine(newDestParams.at(i));
   }
 }
 
-void LinesFx::LinesImpl::MoveSrceLineCloserToDest()
+inline auto LinesFx::LinesImpl::ResetLineModes() noexcept -> void
 {
-  m_lineLerpParam += LINE_LERP_INC;
-  const float t = std::min(1.0F, m_lineLerpParam);
-  for (uint32_t i = 0; i < AudioSamples::AUDIO_SAMPLE_LEN; ++i)
+  if (not m_isNearScope)
   {
-    m_srcePoints[i].point = lerp(m_srcePointsCopy[i].point, m_destPoints[i].point, t);
-    m_srcePoints[i].angle = STD20::lerp(m_srcePointsCopy[i].angle, m_destPoints[i].angle, t);
+    static constexpr uint32_t SCOPE_RESET = 0xF000U & 5U;
+    m_stopLines = SCOPE_RESET;
   }
-  if (m_lineLerpParam >= 1.0F)
+  if (not m_isFarScope)
   {
-    m_srceLineType = m_destLineType;
-    static constexpr float MIN_BRIGHTNESS = 2.5F;
-    static constexpr float MAX_BRIGHTNESS = 4.0F;
-    m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+    m_stopLines = 0;
+    m_lineMode = m_drawLinesDuration;
   }
+}
 
-  assert(m_srceLineType != LineType::CIRCLE || m_lineLerpParam < 1.0F ||
-         (FloatsEqual(m_srcePoints[0].point.x,
-                      m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.x) &&
-          FloatsEqual(m_srcePoints[0].point.y,
-                      m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.y)));
-
-  static constexpr float COLOR_MIX_AMOUNT = 1.0F / 64.0F;
-  m_srceColor = IColorMap::GetColorMix(m_srceColor, m_destColor, COLOR_MIX_AMOUNT);
-
-  static constexpr float MIN_POW_INC = 0.03F;
-  static constexpr float MAX_POW_INC = 0.10F;
-  static constexpr float MIN_POWER = 1.1F;
-  static constexpr float MAX_POWER = 17.5F;
-  m_lineColorPower += m_lineColorPowerIncrement;
-  if (m_lineColorPower < MIN_POWER)
+inline auto LinesFx::LinesImpl::GetRandomLineColors() const noexcept -> std::array<Pixel, NUM_LINES>
+{
+  std::array<Pixel, NUM_LINES> colors{};
+  for (size_t i = 0; i < NUM_LINES; ++i)
   {
-    m_lineColorPower = MIN_POWER;
-    m_lineColorPowerIncrement = m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
+    colors.at(i) = m_lineMorphs.at(i).GetRandomLineColor();
   }
-  if (m_lineColorPower > MAX_POWER)
+  return colors;
+}
+
+inline auto LinesFx::LinesImpl::SetSoundData(const AudioSamples& soundData) noexcept -> void
+{
+  m_soundData = &soundData;
+}
+
+inline auto LinesFx::LinesImpl::ApplyMultiple() noexcept -> void
+{
+  ++m_updateNum;
+
+  UpdateScopes();
+  UpdateLineModes();
+
+  if (not CanDisplayLines())
   {
-    m_lineColorPower = MAX_POWER;
-    m_lineColorPowerIncrement = -m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
-  }
-
-  static constexpr float AMP_MIX_AMOUNT = 0.01F;
-  m_linePeakAmplitude = STD20::lerp(m_linePeakAmplitude, m_newLinePeakAmplitude, AMP_MIX_AMOUNT);
-}
-
-auto LinesFx::LinesImpl::CanResetDestLine() const -> bool
-{
-  return m_lineLerpParam > LINE_LERP_FINISHED_VAL;
-}
-
-void LinesFx::LinesImpl::ResetDestLine(const LineType newLineType,
-                                       const float newParam,
-                                       const float newAmplitude,
-                                       const Pixel& newColor)
-{
-  UpdateColorInfo();
-
-  m_destPoints = GetFreshLine(newLineType, m_destParam);
-  m_destLineType = newLineType;
-  m_destParam = newParam;
-  m_newLinePeakAmplitude = newAmplitude;
-  m_destColor = newColor;
-  m_lineLerpParam = 0.0;
-  static constexpr float MIN_BRIGHTNESS = 1.5F;
-  static constexpr float MAX_BRIGHTNESS = 3.0F;
-  m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
-  m_dotDrawer.ChangeDotSizes();
-  m_maxNormalizedPeak = m_goomRand.GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
-
-  m_srcePointsCopy = m_srcePoints;
-}
-
-inline auto LinesFx::LinesImpl::GetLineColorPower() const -> float
-{
-  return m_lineColorPower;
-}
-
-inline void LinesFx::LinesImpl::SetLineColorPower(const float val)
-{
-  m_lineColorPower = val;
-}
-
-
-inline auto LinesFx::LinesImpl::GetBlackLineColor() -> Pixel
-{
-  return GetSimpleColor(SimpleColors::BLACK);
-}
-
-inline auto LinesFx::LinesImpl::GetGreenLineColor() -> Pixel
-{
-  return GetSimpleColor(SimpleColors::VERT);
-}
-
-inline auto LinesFx::LinesImpl::GetRedLineColor() -> Pixel
-{
-  return GetSimpleColor(SimpleColors::RED);
-}
-
-auto LinesFx::LinesImpl::GetRandomLineColor() const -> Pixel
-{
-  if (constexpr float PROB_LINE_COLOR = 0.02F; m_goomRand.ProbabilityOf(PROB_LINE_COLOR))
-  {
-    return GetSimpleColor(static_cast<SimpleColors>(m_goomRand.GetNRand(NUM<SimpleColors>)));
-  }
-  return RandomColorMaps::GetRandomColor(m_goomRand, GetRandomColorMap(), 0.0F, 1.0F);
-}
-
-inline auto LinesFx::LinesImpl::GetFinalLineColor(const Pixel& color) const -> Pixel
-{
-  return GetLightenedColor(color, m_lineColorPower);
-}
-
-void LinesFx::LinesImpl::DrawLines(const AudioSamples::SampleArray& soundData,
-                                   const AudioSamples::MinMaxValues& soundMinMax)
-{
-  static constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
-  UNUSED_FOR_NDEBUG(LAST_POINT_INDEX);
-
-  Expects(m_srceLineType != LineType::CIRCLE || m_lineLerpParam < 1.0F ||
-          (FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) &&
-           FloatsEqual(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
-
-  const Pixel lineColor = GetFinalLineColor(m_srceColor);
-
-  m_audioRange = soundMinMax.maxVal - soundMinMax.minVal;
-  assert(m_audioRange >= 0.0F);
-  m_minAudioValue = soundMinMax.minVal;
-
-  if (m_audioRange < SMALL_FLOAT)
-  {
-    // No range - flatline audio
-    DrawFlatLine(lineColor);
-    MoveSrceLineCloserToDest();
     return;
   }
 
-  static constexpr uint8_t LINE_THICKNESS = 1;
-  const std::vector<PointAndColor> audioPoints = GetAudioPoints(lineColor, soundData);
+  ResetLineColorPowers();
+  DrawLines();
 
-  Point2dInt point1 = audioPoints[0].point;
-  Point2dInt point2{};
+  ChangeGoomLines();
+}
 
-  for (size_t i = 1; i < audioPoints.size(); ++i)
+inline auto LinesFx::LinesImpl::UpdateScopes() noexcept -> void
+{
+  static constexpr uint32_t NUM_UPDATES_BEFORE_SCOPE_CHANGE = 200;
+  if (0 == (m_updateNum % NUM_UPDATES_BEFORE_SCOPE_CHANGE))
   {
-    const PointAndColor& nextPointData = audioPoints[i];
+    m_isNearScope = m_goomRand.ProbabilityOf(PROB_NEAR_SCOPE);
+    m_isFarScope = m_goomRand.ProbabilityOf(PROB_FAR_SCOPE);
+  }
+}
 
-    point2 = nextPointData.point;
-    const MultiplePixels colors = {lineColor, nextPointData.color};
+inline auto LinesFx::LinesImpl::ResetLineColorPowers() noexcept -> void
+{
+  static_assert(2 == NUM_LINES);
+  m_lineMorphs.at(1).SetLineColorPower(m_lineMorphs.at(0).GetLineColorPower());
+}
 
-    m_draw.Line(point1, point2, colors, LINE_THICKNESS);
+inline auto LinesFx::LinesImpl::DrawLines() noexcept -> void
+{
+  Expects(m_soundData != nullptr);
 
-    static constexpr float DOT_BRIGHTNESS = 1.5F;
-    m_dotDrawer.DrawDot(point2, colors, DOT_BRIGHTNESS);
+  for (size_t i = 0; i < NUM_LINES; ++i)
+  {
+    m_lineMorphs.at(i).DrawLines(m_soundData->GetSample(SOUND_SAMPLE_NUM_TO_USE.at(i)),
+                                 m_soundData->GetSampleMinMax(SOUND_SAMPLE_NUM_TO_USE.at(i)));
+  }
+}
 
-    point1 = point2;
+auto LinesFx::LinesImpl::ChangeGoomLines() noexcept -> void
+{
+  if (not CanResetDestLines())
+  {
+    return;
   }
 
-  MoveSrceLineCloserToDest();
+  static constexpr uint32_t CHANGE_GOOM_LINE_CYCLES = 121;
+  static constexpr uint32_t GOOM_CYCLE_MOD_CHANGE = 9;
 
-  m_dotDrawer.ChangeDotSizes();
-}
-
-void LinesFx::LinesImpl::DrawFlatLine(const Pixel& lineColor)
-{
-  const LinePoint& pt0 = m_srcePoints[0];
-  const LinePoint& ptN = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
-  const MultiplePixels colors = {lineColor, lineColor};
-
-  m_draw.Line(pt0.point.ToInt(), ptN.point.ToInt(), colors, 1);
-}
-
-auto LinesFx::LinesImpl::GetAudioPoints(const Pixel& lineColor,
-                                        const AudioSamples::SampleArray& audioData) const
-    -> std::vector<PointAndColor>
-{
-  const Pixel randColor = GetRandomLineColor();
-
-  static constexpr float T_STEP = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
-  static constexpr float HALFWAY_T = 0.5F;
-  float currentTStep = T_STEP;
-  float t = 0.0;
-
-  std::vector<PointAndColor> audioPoints{};
-  audioPoints.reserve(audioData.size());
-
-  for (size_t i = 0; i < audioData.size(); ++i)
+  if ((GOOM_CYCLE_MOD_CHANGE == (m_updateNum % CHANGE_GOOM_LINE_CYCLES)) and
+      m_goomRand.ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
+      ((0 == m_lineMode) or (m_lineMode == m_drawLinesDuration)))
   {
-    audioPoints.emplace_back(
-        GetNextPointData(m_srcePoints[i], GetMainColor(lineColor, t), randColor, audioData[i]));
+    ResetGoomLines();
+  }
+}
 
-    if (t >= HALFWAY_T)
+inline auto LinesFx::LinesImpl::CanDisplayLines() const noexcept -> bool
+{
+  static constexpr uint32_t DISPLAY_LINES_GOOM_NUM = 5;
+
+  return ((m_lineMode != 0) or
+          (m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
+}
+
+inline auto LinesFx::LinesImpl::UpdateLineModes() noexcept -> void
+{
+  StopLinesIfRequested();
+  StopRandomLineChangeMode();
+}
+
+inline auto LinesFx::LinesImpl::StopLinesIfRequested() noexcept -> void
+{
+  static constexpr uint32_t LARGE_STOP_LINE = 0xF000;
+  if (((m_stopLines & LARGE_STOP_LINE) != 0) or (not m_isNearScope))
+  {
+    StopGoomLines();
+  }
+}
+
+inline auto LinesFx::LinesImpl::StopGoomLines() noexcept -> void
+{
+  if (not CanResetDestLines())
+  {
+    return;
+  }
+
+  ResetDestLines(GetGoomLineStopSettings());
+
+  static constexpr uint32_t STOP_MASK = 0x0FFF;
+  m_stopLines &= STOP_MASK;
+}
+
+inline auto LinesFx::LinesImpl::ResetGoomLines() noexcept -> void
+{
+  ResetDestLines(GetGoomLineResetSettings(m_stopLines));
+
+  if (m_stopLines > 0)
+  {
+    --m_stopLines;
+  }
+}
+
+auto LinesFx::LinesImpl::GetGoomLineStopSettings() const noexcept
+    -> std::array<LineParams, NUM_LINES>
+{
+  std::array<LineParams, NUM_LINES> lineParams = GetGoomLineResetSettings(1);
+  lineParams.at(0).color = BLACK_LINE_COLOR;
+  lineParams.at(1).color = BLACK_LINE_COLOR;
+  return lineParams;
+}
+
+auto LinesFx::LinesImpl::GetGoomLineResetSettings(const uint32_t farVal) const noexcept
+    -> std::array<LineParams, NUM_LINES>
+{
+  switch (m_lineTypeWeights.GetRandomWeighted())
+  {
+    case LineType::CIRCLE:
+      return GetResetCircleLineSettings(farVal);
+    case LineType::H_LINE:
+      return GetResetHorizontalLineSettings(farVal);
+    case LineType::V_LINE:
+      return GetResetVerticalLineSettings(farVal);
+    default:
+      FailFast();
+      return {};
+  }
+}
+
+auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const noexcept
+    -> std::array<LineParams, NUM_LINES>
+{
+  float amplitude;
+  float param1;
+  float param2;
+  const auto [line1Color, line2Color] = GetResetLineColors(farVal);
+
+  static constexpr float NEW_FAR_VAL_PARAM1 = 0.47F;
+  static constexpr float NEW_FAR_VAL_PARAM2 = 0.47F;
+
+  static constexpr float NEW_NON_FAR_VAL_PARAM1_FACTOR = 0.40F;
+  static constexpr float NEW_NON_FAR_VAL_PARAM2_FACTOR = 0.22F;
+  static constexpr float DEFAULT_NON_FAR_VAL_PARAM1_FACTOR = 0.35F;
+
+  static constexpr float NEW_FAR_VAL_AMPLITUDE = 0.8F;
+  static constexpr float NEW_NON_FAR_VAL_AMPLITUDE = 3.0F;
+  static constexpr float DEFAULT_AMPLITUDE = 1.0F;
+
+  if (farVal)
+  {
+    param1 = NEW_FAR_VAL_PARAM1;
+    param2 = NEW_FAR_VAL_PARAM2;
+    amplitude = NEW_FAR_VAL_AMPLITUDE;
+  }
+  else if (m_goomRand.ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_AMPLITUDE))
+  {
+    param1 = 0.0F;
+    param2 = 0.0F;
+    amplitude = NEW_NON_FAR_VAL_AMPLITUDE;
+  }
+  else if (m_goomRand.ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_PARAMS))
+  {
+    param1 = NEW_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
+    param2 = NEW_NON_FAR_VAL_PARAM2_FACTOR * m_screenHeight;
+    amplitude = DEFAULT_AMPLITUDE;
+  }
+  else
+  {
+    param1 = DEFAULT_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
+    param2 = param1;
+    amplitude = DEFAULT_AMPLITUDE;
+  }
+
+  return {
+      {{LineType::CIRCLE, param1, line1Color, amplitude},
+       {LineType::CIRCLE, param2, line2Color, amplitude}}
+  };
+}
+
+auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) const noexcept
+    -> std::array<LineParams, NUM_LINES>
+{
+  float amplitude;
+  float param1;
+  float param2;
+
+  const auto [line1Color, line2Color] = GetResetLineColors(farVal);
+
+  static constexpr float NEW_PARAM1_FACTOR = 1.0F / 7.0F;
+  static constexpr float NEW_PARAM2_FACTOR = 6.0F / 7.0F;
+  static constexpr float DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
+  static constexpr float DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
+
+  static constexpr float NEW_AMPLITUDE = 1.0F;
+  static constexpr float DEFAULT_AMPLITUDE = 2.0F;
+
+  if (m_goomRand.ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
+  {
+    param1 = NEW_PARAM1_FACTOR * m_screenHeight;
+    param2 = NEW_PARAM2_FACTOR * m_screenHeight;
+    amplitude = NEW_AMPLITUDE;
+  }
+  else
+  {
+    param1 = DEFAULT_PARAM1_FACTOR * m_screenHeight;
+    param2 = DEFAULT_PARAM2_FACTOR * m_screenHeight;
+    amplitude = DEFAULT_AMPLITUDE;
+  }
+
+  return {
+      {{LineType::H_LINE, param1, line1Color, amplitude},
+       {LineType::H_LINE, param2, line2Color, amplitude}}
+  };
+}
+
+auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) const noexcept
+    -> std::array<LineParams, NUM_LINES>
+{
+  float amplitude;
+  float param1;
+  float param2;
+
+  const auto [line1Color, line2Color] = GetResetLineColors(farVal);
+
+  static constexpr float NEW_PARAM1_FACTOR = 1.0F / 7.0F;
+  static constexpr float NEW_PARAM2_FACTOR = 6.0F / 7.0F;
+  static constexpr float DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
+  static constexpr float DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
+
+  static constexpr float NEW_AMPLITUDE = 1.0F;
+  static constexpr float DEFAULT_AMPLITUDE = 1.5F;
+
+  if (m_goomRand.ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
+  {
+    param1 = NEW_PARAM1_FACTOR * m_screenWidth;
+    param2 = NEW_PARAM2_FACTOR * m_screenWidth;
+    amplitude = NEW_AMPLITUDE;
+  }
+  else
+  {
+    param1 = DEFAULT_PARAM1_FACTOR * m_screenWidth;
+    param2 = DEFAULT_PARAM2_FACTOR * m_screenWidth;
+    amplitude = DEFAULT_AMPLITUDE;
+  }
+
+  return {
+      {{LineType::V_LINE, param1, line1Color, amplitude},
+       {LineType::V_LINE, param2, line2Color, amplitude}}
+  };
+}
+
+auto LinesFx::LinesImpl::GetResetLineColors(const uint32_t farVal) const noexcept
+    -> std::array<Pixel, NUM_LINES>
+{
+  if ((farVal != 0) and m_goomRand.ProbabilityOf(PROB_CHANGE_LINE_TO_BLACK))
+  {
+    return {BLACK_LINE_COLOR, BLACK_LINE_COLOR};
+  }
+
+  return GetRandomLineColors();
+}
+
+/* arret aleatore.. changement de mode de ligne..
+  */
+auto LinesFx::LinesImpl::StopRandomLineChangeMode() noexcept -> void
+{
+  static constexpr uint32_t DEC_LINE_MODE_CYCLES = 80;
+  static constexpr uint32_t UPDATE_LINE_MODE_CYCLES = 120;
+
+  if (m_lineMode != m_drawLinesDuration)
+  {
+    --m_lineMode;
+    if (-1 == m_lineMode)
     {
-      currentTStep = -T_STEP;
+      m_lineMode = 0;
     }
-    t += currentTStep;
   }
-
-  if ((m_srceLineType == LineType::CIRCLE) && (m_lineLerpParam >= 1.0F))
+  else if ((0 == (m_updateNum % DEC_LINE_MODE_CYCLES)) and
+           m_goomRand.ProbabilityOf(PROB_REDUCE_LINE_MODE) and (m_lineMode != 0))
   {
-    // This is a complete circle -- lerp the last few points to nicely join back to start.
-    static constexpr size_t NUM_POINTS_TO_LERP = 50;
-    SmoothTheCircleJoinAtEnds(audioPoints, NUM_POINTS_TO_LERP);
+    --m_lineMode;
   }
 
-  return audioPoints;
-}
-
-auto LinesFx::LinesImpl::GetNextPointData(const LinePoint& pt,
-                                          const Pixel& mainColor,
-                                          const Pixel& randColor,
-                                          const float dataVal) const -> PointAndColor
-{
-  Expects(m_goomInfo.GetSoundEvents().GetSoundInfo().GetAllTimesMinVolume() <=
-          (dataVal + SMALL_FLOAT));
-  Expects(m_minAudioValue <= (dataVal + SMALL_FLOAT));
-  Expects(dataVal <= ((m_minAudioValue + m_audioRange) + SMALL_FLOAT));
-
-  const float tData = (dataVal - m_minAudioValue) / m_audioRange;
-  assert((0.0F <= tData) && (tData <= 1.0F));
-
-  const float cosAngle = std::cos(pt.angle);
-  const float sinAngle = std::sin(pt.angle);
-  const float normalizedDataVal = m_maxNormalizedPeak * tData;
-  assert(normalizedDataVal >= 0.0F);
-  const Point2dInt nextPointData{
-      static_cast<int>(pt.point.x + (m_linePeakAmplitude * cosAngle * normalizedDataVal)),
-      static_cast<int>(pt.point.y + (m_linePeakAmplitude * sinAngle * normalizedDataVal))};
-
-  const float brightness = m_currentBrightness * tData;
-  const Pixel modColor =
-      m_colorAdjust.GetAdjustment(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
-
-  return {nextPointData, modColor};
-}
-
-inline auto LinesFx::LinesImpl::GetMainColor(const Pixel& lineColor, const float t) const -> Pixel
-{
-  if (m_useLineColor)
+  if ((0 == (m_updateNum % UPDATE_LINE_MODE_CYCLES)) and
+      m_goomRand.ProbabilityOf(PROB_UPDATE_LINE_MODE) and m_isNearScope)
   {
-    return lineColor;
+    if (0 == m_lineMode)
+    {
+      m_lineMode = m_drawLinesDuration;
+    }
+    else if ((m_lineMode == m_drawLinesDuration) and CanResetDestLines())
+    {
+      --m_lineMode;
+
+      ResetGoomLines();
+    }
   }
-  return m_colorMapsManager.GetColorMap(m_currentColorMapID).GetColor(t);
 }
 
 } // namespace GOOM::VISUAL_FX

@@ -5,7 +5,6 @@
 #include "goom/logging.h"
 #include "goom_config.h"
 #include "utils/enumutils.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <format>
 #include <map>
@@ -19,7 +18,6 @@ namespace GOOM::CONTROL
 using UTILS::EnumToString;
 using UTILS::Logging;
 using UTILS::NUM;
-using UTILS::MATH::IGoomRand;
 
 // clang-format off
 // TODO - When we get to use C++20 we can simplify things with
@@ -27,12 +25,9 @@ using UTILS::MATH::IGoomRand;
 static const std::map<GoomDrawables, BuffIntensityRange> DEFAULT_BUFF_INTENSITY_RANGES{
     {GoomDrawables::CIRCLES,   {0.50F, 0.80F}},
     {GoomDrawables::DOTS,      {0.30F, 0.50F}},
-    {GoomDrawables::FAR_SCOPE, {0.00F, 0.01F}},
     {GoomDrawables::IFS,       {0.40F, 0.70F}},
     {GoomDrawables::LINES,     {0.50F, 0.70F}},
     {GoomDrawables::IMAGE,     {0.05F, 0.30F}},
-    {GoomDrawables::SCOPE,     {0.00F, 0.01F}},
-    {GoomDrawables::SHADER,    {0.00F, 0.01F}},
     {GoomDrawables::SHAPES,    {0.50F, 0.80F}},
     {GoomDrawables::STARS,     {0.50F, 0.60F}},
     {GoomDrawables::TENTACLES, {0.30F, 0.50F}},
@@ -42,12 +37,9 @@ static const std::map<GoomDrawables, BuffIntensityRange> DEFAULT_BUFF_INTENSITY_
 static const std::map<GoomDrawables, bool> STATE_MULTI_THREADED{
   {GoomDrawables::CIRCLES,   false},
   {GoomDrawables::DOTS,      false},
-  {GoomDrawables::FAR_SCOPE, false},
   {GoomDrawables::IFS,       false},
   {GoomDrawables::LINES,     false},
   {GoomDrawables::IMAGE,     true},
-  {GoomDrawables::SCOPE,     false},
-  {GoomDrawables::SHADER,    false},
   {GoomDrawables::SHAPES,    false},
   {GoomDrawables::STARS,     false},
   {GoomDrawables::TENTACLES, false},
@@ -70,7 +62,7 @@ static const std::map<GoomStates, std::set<GoomDrawables>> STATE_DRAWABLES{
     {GoomStates::DOTS_IMAGE_STARS,            {GoomDrawables::DOTS, GoomDrawables::IMAGE,
                                                GoomDrawables::STARS}},
     {GoomStates::DOTS_LINES,                  {GoomDrawables::DOTS, GoomDrawables::LINES}},
-    {GoomStates::DOTS_LINES_STARS_TENTACLES,  {GoomDrawables::DOTS, GoomDrawables::LINES, 
+    {GoomStates::DOTS_LINES_STARS_TENTACLES,  {GoomDrawables::DOTS, GoomDrawables::LINES,
                                                GoomDrawables::STARS, GoomDrawables::TENTACLES}},
     {GoomStates::DOTS_LINES_TENTACLES_TUBES,  {GoomDrawables::DOTS, GoomDrawables::LINES,
                                                GoomDrawables::TENTACLES, GoomDrawables::TUBES}},

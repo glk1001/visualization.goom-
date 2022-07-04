@@ -68,12 +68,9 @@ enum class GoomDrawables
 {
   CIRCLES = 0,
   DOTS,
-  FAR_SCOPE,
   IFS,
   LINES,
   IMAGE,
-  SCOPE,
-  SHADER,
   SHAPES,
   STARS,
   TENTACLES,
