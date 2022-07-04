@@ -24,6 +24,7 @@ using UTILS::Logging;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::Fraction;
+using UTILS::MATH::U_HALF;
 
 class CirclesFx::CirclesFxImpl
 {
@@ -44,6 +45,11 @@ private:
 
   static constexpr uint32_t NUM_CIRCLES = 5;
   [[nodiscard]] auto GetCircleParams() const noexcept -> std::vector<Circle::Params>;
+  Point2dInt m_lastZoomMidpoint{
+      static_cast<int32_t>(U_HALF * m_fxHelper.GetDraw().GetScreenWidth()),
+      static_cast<int32_t>(U_HALF* m_fxHelper.GetDraw().GetScreenHeight())};
+  [[nodiscard]] auto GetCircleCentreStart(const Point2dInt& screenMidPoint) const noexcept
+      -> Point2dInt;
   [[nodiscard]] static auto GetCircleCentreTargets(const Point2dInt& screenMidPoint)
       -> std::array<Point2dInt, NUM_CIRCLES>;
   std::unique_ptr<Circles> m_circles{MakeCircles()};
@@ -53,11 +59,13 @@ private:
 
   bool m_resetCircles = false;
   WeightedColorMaps m_lastWeightedColorMaps{};
-  Point2dInt m_lastZoomMidpoint{};
   auto ResetCircles() noexcept -> void;
 
-  static constexpr uint32_t BLANK_TIME = 30;
-  Timer m_blankTimer{BLANK_TIME, true};
+  static constexpr uint32_t MIN_BLANK_AT_START_TIME = 5;
+  static constexpr uint32_t MAX_BLANK_AT_START_TIME = 30;
+  uint32_t m_blankAtStartTime =
+      m_fxHelper.GetGoomRand().GetRandInRange(MIN_BLANK_AT_START_TIME, MAX_BLANK_AT_START_TIME);
+  Timer m_blankAtStartTimer{m_blankAtStartTime, true};
 };
 
 CirclesFx::CirclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -136,13 +144,23 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams() const noexcept -> std::vector<C
   }
 
   const Point2dInt screenMidPoint = MidpointFromOrigin({screenInfo.width, screenInfo.height});
+  const Point2dInt circleCentreStart = GetCircleCentreStart(screenMidPoint);
   std::array<Point2dInt, NUM_CIRCLES> circleCentreTargets = GetCircleCentreTargets(screenMidPoint);
   for (size_t i = 0; i < NUM_CIRCLES; ++i)
   {
+    circleParams[i].circleCentreStart = circleCentreStart;
     circleParams[i].circleCentreTarget = circleCentreTargets.at(i);
   }
 
   return circleParams;
+}
+
+auto CirclesFx::CirclesFxImpl::GetCircleCentreStart(const Point2dInt& screenMidPoint) const noexcept
+    -> Point2dInt
+{
+  static constexpr float MAX_CLOSE_TO_ZOOM_POINT_T = 0.25F;
+  const float t = m_fxHelper.GetGoomRand().GetRandInRange(0.0F, MAX_CLOSE_TO_ZOOM_POINT_T);
+  return lerp(screenMidPoint, m_lastZoomMidpoint, t);
 }
 
 auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets(const Point2dInt& screenMidPoint)
@@ -178,6 +196,8 @@ inline auto CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
 
   m_circles->SetWeightedColorMaps(weightedColorMaps.mainColorMaps, weightedColorMaps.lowColorMaps);
 
+  m_blankAtStartTime =
+      m_fxHelper.GetGoomRand().GetRandInRange(MIN_BLANK_AT_START_TIME, MAX_BLANK_AT_START_TIME);
   m_lastWeightedColorMaps = weightedColorMaps;
   m_resetCircles = true;
 }
@@ -191,7 +211,7 @@ inline auto CirclesFx::CirclesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidp
 
 inline auto CirclesFx::CirclesFxImpl::Start() noexcept -> void
 {
-  m_blankTimer.SetToFinished();
+  m_blankAtStartTimer.SetToFinished();
 
   m_circles->Start();
 }
@@ -204,9 +224,9 @@ inline auto CirclesFx::CirclesFxImpl::ApplyMultiple() noexcept -> void
 
 inline auto CirclesFx::CirclesFxImpl::UpdateAndDraw() noexcept -> void
 {
-  m_blankTimer.Increment();
+  m_blankAtStartTimer.Increment();
 
-  if (not m_blankTimer.Finished())
+  if (not m_blankAtStartTimer.Finished())
   {
     Expects(m_circles->HasPositionTJustHitStartBoundary());
     return;
@@ -216,7 +236,7 @@ inline auto CirclesFx::CirclesFxImpl::UpdateAndDraw() noexcept -> void
 
   if (m_circles->HasPositionTJustHitStartBoundary())
   {
-    m_blankTimer.ResetToZero();
+    m_blankAtStartTimer.SetTimeLimit(m_blankAtStartTime);
   }
 }
 
@@ -227,7 +247,7 @@ inline auto CirclesFx::CirclesFxImpl::ResetCircles() noexcept -> void
     return;
   }
 
-  Expects(not m_blankTimer.Finished());
+  Expects(not m_blankAtStartTimer.Finished());
 
   m_circles = MakeCircles();
   m_circles->SetWeightedColorMaps(m_lastWeightedColorMaps.mainColorMaps,

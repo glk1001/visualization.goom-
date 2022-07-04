@@ -40,6 +40,7 @@ public:
   struct Params
   {
     float circleRadius;
+    Point2dInt circleCentreStart;
     Point2dInt circleCentreTarget;
   };
 
