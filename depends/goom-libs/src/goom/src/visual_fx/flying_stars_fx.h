@@ -3,7 +3,6 @@
 #include "goom/spimpl.h"
 #include "goom_visual_fx.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 

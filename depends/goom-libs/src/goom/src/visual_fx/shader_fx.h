@@ -4,8 +4,6 @@
 #include "goom_visual_fx.h"
 #include "utils/stopwatch.h"
 
-#include <memory>
-
 namespace GOOM
 {
 struct GoomShaderEffects;
