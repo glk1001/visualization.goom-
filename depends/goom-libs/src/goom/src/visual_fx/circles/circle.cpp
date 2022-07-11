@@ -357,7 +357,7 @@ inline auto Circle::GetDotBrightness(const float brightness) const noexcept -> f
   }
   if (IsEven(m_updateNum))
   {
-    static constexpr float BRIGHTNESS_INCREASE = 5.0F;
+    static constexpr float BRIGHTNESS_INCREASE = 10.0F;
     return BRIGHTNESS_INCREASE * brightness;
   }
   static constexpr float BRIGHTNESS_INCREASE = 1.5F;
@@ -418,7 +418,7 @@ inline auto Circle::GetFinalMainColor(const float brightness, const Pixel& mainC
 inline auto Circle::GetFinalLowColor(const float brightness, const Pixel& lowColor) const noexcept
     -> Pixel
 {
-  static constexpr float LOW_COLOR_BRIGHTNESS = 5.0F;
+  static constexpr float LOW_COLOR_BRIGHTNESS = 1.0F;
   return GetCorrectedColor(brightness * LOW_COLOR_BRIGHTNESS, lowColor);
 }
 
@@ -554,7 +554,7 @@ auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
   static constexpr int32_t INNER_COLOR_CUTOFF_RADIUS = 4;
 
   static constexpr float MIN_BRIGHTNESS = 1.0F;
-  static constexpr float MAX_BRIGHTNESS = 3.0F;
+  static constexpr float MAX_BRIGHTNESS = 30.0F;
   TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius)};
 
   // '> 1' means leave a little hole in the middle of the circles.
