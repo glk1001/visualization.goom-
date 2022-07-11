@@ -53,7 +53,7 @@ static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 
 
 // clang-format off
-static constexpr float CIRCLES_ONLY_WEIGHT                =    1.0F;
+static constexpr float CIRCLES_ONLY_WEIGHT                =   50.0F;
 static constexpr float CIRCLES_IFS_WEIGHT                 =  200.0F;
 static constexpr float CIRCLES_IMAGE_WEIGHT               =   50.0F;
 static constexpr float CIRCLES_IMAGE_STARS_WEIGHT         =  200.0F;
@@ -95,7 +95,7 @@ static constexpr float IMAGE_STARS_WEIGHT                 = 200.0F;
 static constexpr float IMAGE_TENTACLES_WEIGHT             =  70.0F;
 static constexpr float IMAGE_TUBES_WEIGHT                 = 200.0F;
 
-static constexpr float LINES_ONLY_WEIGHT                  =   1.0F;
+static constexpr float LINES_ONLY_WEIGHT                  = 100.0F;
 static constexpr float LINES_SHAPES_STARS_WEIGHT          = 200.0F;
 static constexpr float LINES_STARS_WEIGHT                 = 100.0F;
 static constexpr float LINES_TENTACLES_WEIGHT             = 200.0F;
