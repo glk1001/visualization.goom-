@@ -158,7 +158,7 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams() const noexcept -> std::vector<C
 auto CirclesFx::CirclesFxImpl::GetCircleCentreStart(const Point2dInt& screenMidPoint) const noexcept
     -> Point2dInt
 {
-  static constexpr float MAX_CLOSE_TO_ZOOM_POINT_T = 0.25F;
+  static constexpr float MAX_CLOSE_TO_ZOOM_POINT_T = 0.75F;
   const float t = m_fxHelper.GetGoomRand().GetRandInRange(0.0F, MAX_CLOSE_TO_ZOOM_POINT_T);
   return lerp(screenMidPoint, m_lastZoomMidpoint, t);
 }
