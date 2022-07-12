@@ -1,4 +1,6 @@
-FROM ubuntu:jammy
+FROM ubuntu:impish
+# Use ubuntu impish so we get python 3.9. There is a problem is with python 3.10 and sqlite3
+# which affects the Spotify plugin. See https://bbs.archlinux.org/viewtopic.php?id=272121
 
 ARG DEBIAN_FRONTEND=noninteractive
 
