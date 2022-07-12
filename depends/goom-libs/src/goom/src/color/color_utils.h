@@ -10,28 +10,36 @@
 namespace GOOM::COLOR
 {
 
-[[nodiscard]] auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel;
+[[nodiscard]] constexpr auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel;
 template<typename T>
-[[nodiscard]] auto GetColorAverage(size_t num, const T& colors) -> Pixel;
+[[nodiscard]] constexpr auto GetColorAverage(size_t num, const T& colors) -> Pixel;
 
-[[nodiscard]] auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel;
-[[nodiscard]] auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel;
-[[nodiscard]] auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel;
-[[nodiscard]] auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
-[[nodiscard]] auto GetBrighterColorInt(float brightness, const Pixel&) -> Pixel = delete;
+[[nodiscard]] constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel;
+[[nodiscard]] constexpr auto ColorChannelMultiply(PixelChannelType ch1, PixelChannelType ch2)
+    -> uint32_t;
+[[nodiscard]] constexpr auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel;
+[[nodiscard]] constexpr auto ColorChannelAdd(PixelChannelType ch1, PixelChannelType ch2)
+    -> uint32_t;
+[[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel;
 
+[[nodiscard]] constexpr auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
+[[nodiscard]] constexpr auto GetBrighterColorInt(float brightness, const Pixel&) -> Pixel = delete;
+[[nodiscard]] constexpr auto GetBrighterChannelColor(uint32_t brightness,
+                                                     PixelChannelType channelVal) -> uint32_t;
 [[nodiscard]] auto GetBrighterColor(float brightness, const Pixel& color) -> Pixel;
 [[nodiscard]] auto GetBrighterColor(uint32_t brightness, const Pixel&) -> Pixel = delete;
 
+[[nodiscard]] constexpr auto GetRgbColorChannelLerp(int32_t ch1, int32_t ch2, int32_t intT)
+    -> uint32_t;
+[[nodiscard]] constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t)
+    -> Pixel;
+
+[[nodiscard]] constexpr auto GetLuma(const Pixel& color) -> float;
+
+[[nodiscard]] constexpr auto IsCloseToBlack(const Pixel& color, uint32_t threshold = 10) -> bool;
+
 [[nodiscard]] auto GetLightenedColor(const Pixel& oldColor, float power) -> Pixel;
 [[nodiscard]] auto GetEvolvedColor(const Pixel& baseColor) -> Pixel;
-
-[[nodiscard]] auto GetRgbColorChannelLerp(int32_t ch1, int32_t ch2, int32_t intT) -> uint32_t;
-[[nodiscard]] auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -> Pixel;
-
-[[nodiscard]] auto GetLuma(const Pixel& color) -> float;
-
-[[nodiscard]] auto IsCloseToBlack(const Pixel& color, uint32_t threshold = 10) -> bool;
 
 enum class SimpleColors
 {
@@ -44,22 +52,10 @@ enum class SimpleColors
   BLACK,
   _num // unused, and marks the enum end
 };
-[[nodiscard]] auto GetSimpleColor(SimpleColors simpleColor) -> Pixel;
-
-[[nodiscard]] inline auto ColorChannelMultiply(const PixelChannelType ch1,
-                                               const PixelChannelType ch2) -> uint32_t
-{
-  return MultiplyColorChannels(ch1, ch2);
-}
-
-[[nodiscard]] inline auto ColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2)
-    -> uint32_t
-{
-  return static_cast<uint32_t>(ch1) + static_cast<uint32_t>(ch2);
-}
+[[nodiscard]] constexpr auto GetSimpleColor(SimpleColors simpleColor) -> Pixel;
 
 template<typename T>
-inline auto GetColorAverage(const size_t num, const T& colors) -> Pixel
+constexpr auto GetColorAverage(const size_t num, const T& colors) -> Pixel
 {
   Expects(num > 0);
 
@@ -84,7 +80,7 @@ inline auto GetColorAverage(const size_t num, const T& colors) -> Pixel
   return Pixel{newR, newG, newB, newA};
 }
 
-inline auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel
+constexpr auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel
 {
   const uint32_t newR = ColorChannelAdd(color1.R(), color2.R()) / 2;
   const uint32_t newG = ColorChannelAdd(color1.G(), color2.G()) / 2;
@@ -94,7 +90,7 @@ inline auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel
   return Pixel{newR, newG, newB, newA};
 }
 
-inline auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
+constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
 {
   const auto fgndR = static_cast<int>(fgnd.R());
   const auto fgndG = static_cast<int>(fgnd.G());
@@ -116,7 +112,7 @@ inline auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
   return Pixel{newR, newG, newB, newA};
 }
 
-inline auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel
+constexpr auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel
 {
   const uint32_t newR = ColorChannelMultiply(srce.R(), dest.R());
   const uint32_t newG = ColorChannelMultiply(srce.G(), dest.G());
@@ -126,7 +122,13 @@ inline auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel
   return Pixel{newR, newG, newB, newA};
 }
 
-inline auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
+constexpr auto ColorChannelMultiply(const PixelChannelType ch1, const PixelChannelType ch2)
+    -> uint32_t
+{
+  return MultiplyColorChannels(ch1, ch2);
+}
+
+constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
 {
   const uint32_t newR = ColorChannelAdd(color1.R(), color2.R());
   const uint32_t newG = ColorChannelAdd(color1.G(), color2.G());
@@ -136,14 +138,12 @@ inline auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
   return Pixel{newR, newG, newB, newA};
 }
 
-
-[[nodiscard]] inline auto GetBrighterChannelColor(const uint32_t brightness,
-                                                  const PixelChannelType channelVal) -> uint32_t
+constexpr auto ColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2) -> uint32_t
 {
-  return MultiplyChannelColorByScalar(brightness, channelVal);
+  return static_cast<uint32_t>(ch1) + static_cast<uint32_t>(ch2);
 }
 
-inline auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -> Pixel
+constexpr auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -> Pixel
 {
   const uint32_t newR = GetBrighterChannelColor(brightness, color.R());
   const uint32_t newG = GetBrighterChannelColor(brightness, color.G());
@@ -153,9 +153,15 @@ inline auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -
   return Pixel{newR, newG, newB, newA};
 }
 
+constexpr auto GetBrighterChannelColor(const uint32_t brightness, const PixelChannelType channelVal)
+    -> uint32_t
+{
+  return MultiplyChannelColorByScalar(brightness, channelVal);
+}
+
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
-  static constexpr float MAX_BRIGHTNESS = 50.0F;
+  constexpr float MAX_BRIGHTNESS = 50.0F;
   Expects((brightness >= 0.0F) && (brightness <= MAX_BRIGHTNESS));
   UNUSED_FOR_NDEBUG(MAX_BRIGHTNESS);
 
@@ -163,14 +169,14 @@ inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixe
   return GetBrighterColorInt(intBrightness, color);
 }
 
-inline auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, const int32_t intT)
+constexpr auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, const int32_t intT)
     -> uint32_t
 {
-  static constexpr auto MAX_COL_VAL_32 = static_cast<int32_t>(MAX_COLOR_VAL);
+  constexpr auto MAX_COL_VAL_32 = static_cast<int32_t>(MAX_COLOR_VAL);
   return static_cast<uint32_t>(((MAX_COL_VAL_32 * ch1) + (intT * (ch2 - ch1))) / MAX_COL_VAL_32);
 }
 
-inline auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -> Pixel
+constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -> Pixel
 {
   t = std::clamp(t, 0.0F, 1.0F);
   const auto intT = static_cast<int32_t>(t * static_cast<float>(MAX_COLOR_VAL));
@@ -192,7 +198,7 @@ inline auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -
   return Pixel{newR, newG, newB, newA};
 }
 
-inline auto IsCloseToBlack(const Pixel& color, const uint32_t threshold) -> bool
+constexpr auto IsCloseToBlack(const Pixel& color, const uint32_t threshold) -> bool
 {
   return (color.R() < threshold) && (color.G() < threshold) && (color.B() < threshold);
 }
@@ -208,21 +214,21 @@ static constexpr float LUMA_RED_COMPONENT = 0.2126F;
 static constexpr float LUMA_GREEN_COMPONENT = 0.7152F;
 static constexpr float LUMA_BLUE_COMPONENT = 0.0722F;
 
-inline auto GetLuma(const Pixel& color) -> float
+constexpr auto GetLuma(const Pixel& color) -> float
 {
   return (LUMA_RED_COMPONENT * color.RFlt()) + (LUMA_GREEN_COMPONENT * color.GFlt()) +
          (LUMA_BLUE_COMPONENT * color.BFlt());
 }
 
-inline auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
+constexpr auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
 {
-  static constexpr Pixel::RGB RED{230, 120, 18, MAX_ALPHA};
-  static constexpr Pixel::RGB ORANGE_J{120, 252, 18, MAX_ALPHA};
-  static constexpr Pixel::RGB ORANGE_V{160, 236, 40, MAX_ALPHA};
-  static constexpr Pixel::RGB BLEUBLANC{40, 220, 140, MAX_ALPHA};
-  static constexpr Pixel::RGB VERT{200, 80, 18, MAX_ALPHA};
-  static constexpr Pixel::RGB BLEU{250, 30, 80, MAX_ALPHA};
-  static constexpr Pixel::RGB BLACK{16, 16, 16, MAX_ALPHA};
+  constexpr Pixel::RGB RED{230, 120, 18, MAX_ALPHA};
+  constexpr Pixel::RGB ORANGE_J{120, 252, 18, MAX_ALPHA};
+  constexpr Pixel::RGB ORANGE_V{160, 236, 40, MAX_ALPHA};
+  constexpr Pixel::RGB BLEUBLANC{40, 220, 140, MAX_ALPHA};
+  constexpr Pixel::RGB VERT{200, 80, 18, MAX_ALPHA};
+  constexpr Pixel::RGB BLEU{250, 30, 80, MAX_ALPHA};
+  constexpr Pixel::RGB BLACK{16, 16, 16, MAX_ALPHA};
 
   switch (simpleColor)
   {
