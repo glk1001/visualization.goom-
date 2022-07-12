@@ -55,19 +55,21 @@ public:
   auto operator=(const Circle&) -> Circle& = delete;
   auto operator=(Circle&&) -> Circle& = delete;
 
-  void SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMainMaps,
-                            std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps);
-  void SetMovingTargetPoint(const Point2dInt& movingTargetPoint, float lerpTFromFixedTarget);
-  void SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams);
+  auto SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMainMaps,
+                            std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps) noexcept
+      -> void;
+  auto SetMovingTargetPoint(const Point2dInt& movingTargetPoint,
+                            float lerpTFromFixedTarget) noexcept -> void;
+  auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept -> void;
 
-  void Start();
-  void UpdatePositionSpeed(uint32_t newNumSteps);
-  void UpdateAndDraw();
+  auto Start() noexcept -> void;
+  auto UpdatePositionSpeed(uint32_t newNumSteps) noexcept -> void;
+  auto UpdateAndDraw() noexcept -> void;
 
   [[nodiscard]] auto HasPositionTJustHitABoundary() const noexcept -> bool;
   [[nodiscard]] auto HasPositionTJustHitStartBoundary() const noexcept -> bool;
   [[nodiscard]] auto GetCircleCentreFixedTarget() const noexcept -> Point2dInt;
-  [[nodiscard]] auto GetLastDrawnCircleDots() const -> const std::vector<Point2dInt>&;
+  [[nodiscard]] auto GetLastDrawnCircleDots() const noexcept -> const std::vector<Point2dInt>&;
 
 private:
   DRAW::IGoomDraw& m_draw;
@@ -79,28 +81,28 @@ private:
   DotPaths m_dotPaths;
   DotDiameters m_dotDiameters{m_goomRand, NUM_DOTS, m_helper.minDotDiameter,
                               m_helper.maxDotDiameter};
-  [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, float radius)
+  [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, float radius) noexcept
       -> std::vector<Point2dInt>;
 
   uint64_t m_updateNum = 0;
   uint32_t m_dotAttributeOffset = 0;
-  [[nodiscard]] auto IsSpecialUpdateNum() const -> bool;
-  [[nodiscard]] auto IsSpecialLineUpdateNum() const -> bool;
+  [[nodiscard]] auto IsSpecialUpdateNum() const noexcept -> bool;
+  [[nodiscard]] auto IsSpecialLineUpdateNum() const noexcept -> bool;
   static constexpr uint32_t BLANK_TIME = 20;
   UTILS::Timer m_blankTimer{BLANK_TIME, true};
 
-  void UpdateTime();
-  void ResetNumSteps();
-  void ResetCircleParams();
+  auto UpdateTime() noexcept -> void;
+  auto ResetNumSteps() noexcept -> void;
+  auto ResetCircleParams() noexcept -> void;
 
   static constexpr uint32_t NUM_DOTS = 30;
   static_assert(UTILS::MATH::IsEven(NUM_DOTS));
   std::vector<Point2dInt> m_lastDrawnDots{NUM_DOTS};
   uint32_t m_newNumSteps = 0;
 
-  void DrawNextCircle();
-  void DrawNextCircleDots();
-  void IncrementTs();
+  auto DrawNextCircle() noexcept -> void;
+  auto DrawNextCircleDots() noexcept -> void;
+  auto IncrementTs() noexcept -> void;
 
   static constexpr uint32_t MIN_NUM_COLOR_ADJUSTMENT_STEPS = 10;
   static constexpr uint32_t MAX_NUM_COLOR_ADJUSTMENT_STEPS = 500;
@@ -122,9 +124,9 @@ private:
   float m_minChromaFactor = m_goomRand.GetRandInRange(MIN_MIN_CHROMA_FACTOR, MAX_MIN_CHROMA_FACTOR);
   float m_maxChromaFactor = m_goomRand.GetRandInRange(MIN_MAX_CHROMA_FACTOR, MAX_MAX_CHROMA_FACTOR);
 
-  [[nodiscard]] auto GetCurrentBrightness() const -> float;
-  [[nodiscard]] auto GetDotBrightness(float brightness) const -> float;
-  [[nodiscard]] auto GetLineBrightness(float brightness) const -> float;
+  [[nodiscard]] auto GetCurrentBrightness() const noexcept -> float;
+  [[nodiscard]] auto GetDotBrightness(float brightness) const noexcept -> float;
+  [[nodiscard]] auto GetLineBrightness(float brightness) const noexcept -> float;
 
   class DotDrawer;
   std::experimental::propagate_const<std::unique_ptr<DotDrawer>> m_dotDrawer;
@@ -134,19 +136,19 @@ private:
   auto DrawLine(const Point2dInt& position1,
                 const Point2dInt& position2,
                 float lineBrightness,
-                float tLineColor) -> void;
+                float tLineColor) noexcept -> void;
   [[nodiscard]] auto DrawLineDots(const Point2dInt& position1,
                                   const Point2dInt& position2,
                                   float lineBrightness,
-                                  float tLineColor) -> float;
+                                  float tLineColor) noexcept -> float;
   auto DrawDot(uint32_t dotNum,
                const Point2dInt& pos,
                const Pixel& mainColor,
-               const Pixel& lowColor) -> void;
+               const Pixel& lowColor) noexcept -> void;
   auto DrawConnectingLine(const Point2dInt& position1,
                           const Point2dInt& position2,
                           float lineBrightness,
-                          float tDotColor) -> void;
+                          float tDotColor) noexcept -> void;
 
   std::shared_ptr<const COLOR::RandomColorMaps> m_mainColorMaps;
   std::shared_ptr<const COLOR::RandomColorMaps> m_lowColorMaps;
@@ -157,18 +159,23 @@ private:
   COLOR::ColorMapsGrid m_lowColorMapsGrid;
   static constexpr float DEFAULT_COLOR_GRID_MIX_T = 0.5F;
   float m_currentColorGridMixT = DEFAULT_COLOR_GRID_MIX_T;
-  [[nodiscard]] auto GetVerticalMainColorMaps() const -> std::vector<const COLOR::IColorMap*>;
-  [[nodiscard]] auto GetVerticalLowColorMaps() const -> std::vector<const COLOR::IColorMap*>;
-  [[nodiscard]] auto GetColorMixT(size_t colorIndex) const -> float;
-  [[nodiscard]] auto GetDotMainColors(float dotBrightness) const -> std::vector<Pixel>;
-  [[nodiscard]] auto GetDotLowColors(float dotBrightness) const -> std::vector<Pixel>;
+  [[nodiscard]] auto GetVerticalMainColorMaps() const noexcept
+      -> std::vector<const COLOR::IColorMap*>;
+  [[nodiscard]] auto GetVerticalLowColorMaps() const noexcept
+      -> std::vector<const COLOR::IColorMap*>;
+  [[nodiscard]] auto GetColorMixT(size_t colorIndex) const noexcept -> float;
+  [[nodiscard]] auto GetDotMainColors(float dotBrightness) const noexcept -> std::vector<Pixel>;
+  [[nodiscard]] auto GetDotLowColors(float dotBrightness) const noexcept -> std::vector<Pixel>;
 
-  [[nodiscard]] auto GetFinalMainColor(float brightness, const Pixel& mainColor) const -> Pixel;
-  [[nodiscard]] auto GetFinalLowColor(float brightness, const Pixel& lowColor) const -> Pixel;
-  [[nodiscard]] auto GetCorrectedColor(float brightness, const Pixel& color) const -> Pixel;
+  [[nodiscard]] auto GetFinalMainColor(float brightness, const Pixel& mainColor) const noexcept
+      -> Pixel;
+  [[nodiscard]] auto GetFinalLowColor(float brightness, const Pixel& lowColor) const noexcept
+      -> Pixel;
+  [[nodiscard]] auto GetCorrectedColor(float brightness, const Pixel& color) const noexcept
+      -> Pixel;
 };
 
-inline void Circle::UpdatePositionSpeed(const uint32_t newNumSteps)
+inline auto Circle::UpdatePositionSpeed(const uint32_t newNumSteps) noexcept -> void
 {
   m_newNumSteps = newNumSteps;
 }
@@ -189,7 +196,7 @@ inline auto Circle::GetCircleCentreFixedTarget() const noexcept -> Point2dInt
   return m_circleCentreFixedTarget;
 }
 
-inline auto Circle::GetLastDrawnCircleDots() const -> const std::vector<Point2dInt>&
+inline auto Circle::GetLastDrawnCircleDots() const noexcept -> const std::vector<Point2dInt>&
 {
   return m_lastDrawnDots;
 }

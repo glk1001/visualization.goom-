@@ -19,7 +19,6 @@ namespace GOOM::VISUAL_FX::CIRCLES
 using UTILS::Logging;
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::LerpedPath;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 
@@ -36,7 +35,7 @@ DotPaths::DotPaths(const IGoomRand& goomRand,
 {
 }
 
-auto DotPaths::SetTarget(const Point2dInt& target) -> void
+auto DotPaths::SetTarget(const Point2dInt& target) noexcept -> void
 {
   m_target = target;
   std::for_each(begin(m_dotPaths), end(m_dotPaths),
@@ -46,7 +45,7 @@ auto DotPaths::SetTarget(const Point2dInt& target) -> void
   m_randomizePoints = m_goomRand.ProbabilityOf(PROB_RANDOMIZE_POINTS);
 }
 
-auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions)
+auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions) noexcept
     -> std::vector<OscillatingPath>
 {
   std::vector<OscillatingPath> dotPaths{};
@@ -62,7 +61,7 @@ auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPosition
   return dotPaths;
 }
 
-auto DotPaths::GetNextDotPositions() const -> std::vector<Point2dInt>
+auto DotPaths::GetNextDotPositions() const noexcept -> std::vector<Point2dInt>
 {
   std::vector<Point2dInt> nextDotPositions(m_numDots);
   for (size_t i = 0; i < m_numDots; ++i)
@@ -76,7 +75,7 @@ auto DotPaths::GetNextDotPositions() const -> std::vector<Point2dInt>
   return nextDotPositions;
 }
 
-inline auto DotPaths::GetSmallRandomOffset() const -> Vec2dInt
+inline auto DotPaths::GetSmallRandomOffset() const noexcept -> Vec2dInt
 {
   static constexpr int32_t MIN_VARIATION = -5;
   static constexpr int32_t MAX_VARIATION = +5;

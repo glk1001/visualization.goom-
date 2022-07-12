@@ -11,11 +11,8 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using COLOR::GetBrighterColor;
 using COLOR::RandomColorMaps;
-using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 
@@ -26,7 +23,7 @@ static constexpr uint32_t MAX_DOT_DIAMETER = BitmapGetter::MAX_DOT_DIAMETER;
 Circles::Circles(const FxHelper& fxHelper,
                  const SmallImageBitmaps& smallBitmaps,
                  const uint32_t numCircles,
-                 const std::vector<Circle::Params>& circleParams)
+                 const std::vector<Circle::Params>& circleParams) noexcept
   : m_goomRand{fxHelper.GetGoomRand()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_bitmapGetter{fxHelper.GetGoomRand(), smallBitmaps},
@@ -43,7 +40,8 @@ auto Circles::GetCircles(const FxHelper& fxHelper,
                          const Circle::Helper& helper,
                          const OscillatingFunction::Params& pathParams,
                          const uint32_t numCircles,
-                         const std::vector<Circle::Params>& circleParams) -> std::vector<Circle>
+                         const std::vector<Circle::Params>& circleParams) noexcept
+    -> std::vector<Circle>
 {
   std::vector<Circle> circles{};
   circles.reserve(numCircles);
@@ -56,9 +54,9 @@ auto Circles::GetCircles(const FxHelper& fxHelper,
   return circles;
 }
 
-auto Circles::SetWeightedColorMaps(const std::shared_ptr<const RandomColorMaps> weightedMaps,
-                                   const std::shared_ptr<const RandomColorMaps> weightedLowMaps)
-    -> void
+auto Circles::SetWeightedColorMaps(
+    const std::shared_ptr<const RandomColorMaps> weightedMaps,
+    const std::shared_ptr<const RandomColorMaps> weightedLowMaps) noexcept -> void
 {
   std::for_each(begin(m_circles), end(m_circles),
                 [&weightedMaps, &weightedLowMaps](Circle& circle)
@@ -67,7 +65,7 @@ auto Circles::SetWeightedColorMaps(const std::shared_ptr<const RandomColorMaps> 
   m_bitmapGetter.ChangeCurrentBitmap();
 }
 
-auto Circles::SetNewTargetPoints() -> void
+auto Circles::SetNewTargetPoints() noexcept -> void
 {
   if (not m_circles.front().HasPositionTJustHitABoundary())
   {
@@ -95,12 +93,12 @@ inline auto Circles::GetCentreCircleTargetPoint() const noexcept -> Point2dInt
       .GetCircleCentreFixedTarget();
 }
 
-auto Circles::Start() -> void
+auto Circles::Start() noexcept -> void
 {
   std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.Start(); });
 }
 
-auto Circles::UpdateAndDraw() -> void
+auto Circles::UpdateAndDraw() noexcept -> void
 {
   SetNewTargetPoints();
   UpdateAndDrawCircles();
@@ -108,12 +106,12 @@ auto Circles::UpdateAndDraw() -> void
   UpdateCirclePathParams();
 }
 
-inline auto Circles::UpdateAndDrawCircles() -> void
+inline auto Circles::UpdateAndDrawCircles() noexcept -> void
 {
   std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.UpdateAndDraw(); });
 }
 
-auto Circles::UpdatePositionSpeed() -> void
+auto Circles::UpdatePositionSpeed() noexcept -> void
 {
   if (constexpr float PROB_NO_SPEED_CHANGE = 0.7F; m_goomRand.ProbabilityOf(PROB_NO_SPEED_CHANGE))
   {
@@ -129,7 +127,7 @@ auto Circles::UpdatePositionSpeed() -> void
                 [&newNumSteps](Circle& circle) { circle.UpdatePositionSpeed(newNumSteps); });
 }
 
-inline auto Circles::UpdateCirclePathParams() -> void
+inline auto Circles::UpdateCirclePathParams() noexcept -> void
 {
   if (m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() > 0)
   {
@@ -140,7 +138,7 @@ inline auto Circles::UpdateCirclePathParams() -> void
                 [this](Circle& circle) { circle.SetPathParams(GetPathParams()); });
 }
 
-inline auto Circles::GetPathParams() const -> OscillatingFunction::Params
+inline auto Circles::GetPathParams() const noexcept -> OscillatingFunction::Params
 {
   static constexpr float MIN_PATH_AMPLITUDE = 90.0F;
   static constexpr float MAX_PATH_AMPLITUDE = 110.0F;

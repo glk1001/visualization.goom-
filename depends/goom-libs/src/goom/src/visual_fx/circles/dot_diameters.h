@@ -16,9 +16,9 @@ public:
                uint32_t minDotDiameter,
                uint32_t maxDotDiameter) noexcept;
 
-  void ChangeDotDiameters();
+  auto ChangeDotDiameters() noexcept -> void;
 
-  [[nodiscard]] auto GetDotDiameters() const -> const std::vector<uint32_t>&;
+  [[nodiscard]] auto GetDotDiameters() const noexcept -> const std::vector<uint32_t>&;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
@@ -28,15 +28,16 @@ private:
   const uint32_t m_minDotDiameter;
   const uint32_t m_maxDotDiameter;
   std::vector<uint32_t> m_dotDiameters{GetInitialDotDiameters(m_numDots, m_maxDotDiameter)};
-  [[nodiscard]] static auto GetInitialDotDiameters(uint32_t numDots, uint32_t maxDotDiameter)
+  [[nodiscard]] static auto GetInitialDotDiameters(uint32_t numDots,
+                                                   uint32_t maxDotDiameter) noexcept
       -> std::vector<uint32_t>;
 
   static constexpr float PROB_FIXED_DIAMETER = 0.0F;
-  void ChangeToFixedDotDiameters();
-  void ChangeToVariableDotDiameters();
+  auto ChangeToFixedDotDiameters() noexcept -> void;
+  auto ChangeToVariableDotDiameters() noexcept -> void;
 };
 
-inline auto DotDiameters::GetDotDiameters() const -> const std::vector<uint32_t>&
+inline auto DotDiameters::GetDotDiameters() const noexcept -> const std::vector<uint32_t>&
 {
   return m_dotDiameters;
 }

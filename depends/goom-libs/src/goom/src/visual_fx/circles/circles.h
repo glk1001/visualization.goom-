@@ -21,15 +21,16 @@ public:
   Circles(const FxHelper& fxHelper,
           const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
           uint32_t numCircles,
-          const std::vector<Circle::Params>& circleParams);
+          const std::vector<Circle::Params>& circleParams) noexcept;
 
   auto SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps,
-                            std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps) -> void;
+                            std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps) noexcept
+      -> void;
 
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  auto Start() -> void;
-  auto UpdateAndDraw() -> void;
+  auto Start() noexcept -> void;
+  auto UpdateAndDraw() noexcept -> void;
 
   [[nodiscard]] auto HasPositionTJustHitStartBoundary() const noexcept -> bool;
 
@@ -38,7 +39,7 @@ private:
   const PluginInfo& m_goomInfo;
   BitmapGetter m_bitmapGetter;
   Point2dInt m_zoomMidpoint{};
-  auto SetNewTargetPoints() -> void;
+  auto SetNewTargetPoints() noexcept -> void;
 
   const uint32_t m_numCircles;
   std::vector<Circle> m_circles;
@@ -46,14 +47,14 @@ private:
                                        const Circle::Helper& helper,
                                        const UTILS::MATH::OscillatingFunction::Params& pathParams,
                                        uint32_t numCircles,
-                                       const std::vector<Circle::Params>& circleParams)
+                                       const std::vector<Circle::Params>& circleParams) noexcept
       -> std::vector<Circle>;
-  auto UpdatePositionSpeed() -> void;
-  auto UpdateAndDrawCircles() -> void;
+  auto UpdatePositionSpeed() noexcept -> void;
+  auto UpdateAndDrawCircles() noexcept -> void;
 
-  auto UpdateCirclePathParams() -> void;
+  auto UpdateCirclePathParams() noexcept -> void;
   [[nodiscard]] auto GetCentreCircleTargetPoint() const noexcept -> Point2dInt;
-  [[nodiscard]] auto GetPathParams() const -> UTILS::MATH::OscillatingFunction::Params;
+  [[nodiscard]] auto GetPathParams() const noexcept -> UTILS::MATH::OscillatingFunction::Params;
 };
 
 inline auto Circles::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void

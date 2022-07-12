@@ -17,7 +17,7 @@ public:
   auto operator=(const IBitmapGetter&) -> IBitmapGetter& = delete;
   auto operator=(IBitmapGetter&&) -> IBitmapGetter& = delete;
 
-  [[nodiscard]] virtual auto GetBitmap(size_t size) const
+  [[nodiscard]] virtual auto GetBitmap(size_t size) const noexcept
       -> const UTILS::GRAPHICS::ImageBitmap& = 0;
 };
 

@@ -21,28 +21,28 @@ public:
            const Point2dInt& dotTarget,
            const UTILS::MATH::OscillatingFunction::Params& dotPathParams) noexcept;
 
-  auto Reset() -> void;
-  auto SetTarget(const Point2dInt& target) -> void;
-  auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& params) -> void;
+  auto Reset() noexcept -> void;
+  auto SetTarget(const Point2dInt& target) noexcept -> void;
+  auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& params) noexcept -> void;
 
-  [[nodiscard]] auto GetPositionTRef() const -> const UTILS::TValue&;
+  [[nodiscard]] auto GetPositionTRef() const noexcept -> const UTILS::TValue&;
 
-  [[nodiscard]] auto GetPositionTNumSteps() const -> uint32_t;
-  auto SetPositionTNumSteps(uint32_t numSteps) -> void;
+  [[nodiscard]] auto GetPositionTNumSteps() const noexcept -> uint32_t;
+  auto SetPositionTNumSteps(uint32_t numSteps) noexcept -> void;
 
-  [[nodiscard]] auto HasPositionTJustHitStartBoundary() const -> bool;
-  [[nodiscard]] auto HasPositionTJustHitEndBoundary() const -> bool;
-  [[nodiscard]] auto IsDelayed() const -> bool;
+  [[nodiscard]] auto HasPositionTJustHitStartBoundary() const noexcept -> bool;
+  [[nodiscard]] auto HasPositionTJustHitEndBoundary() const noexcept -> bool;
+  [[nodiscard]] auto IsDelayed() const noexcept -> bool;
 
-  [[nodiscard]] auto GetPositionT() const -> float;
-  auto IncrementPositionT() -> void;
+  [[nodiscard]] auto GetPositionT() const noexcept -> float;
+  auto IncrementPositionT() noexcept -> void;
 
-  [[nodiscard]] auto GetNextDotPositions() const -> std::vector<Point2dInt>;
+  [[nodiscard]] auto GetNextDotPositions() const noexcept -> std::vector<Point2dInt>;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   const uint32_t m_numDots;
-  const std::vector<Point2dInt> m_dotStartingPositions;
+  std::vector<Point2dInt> m_dotStartingPositions;
   Point2dInt m_target;
 
   static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
@@ -50,60 +50,61 @@ private:
 
   bool m_randomizePoints = false;
   std::vector<UTILS::MATH::OscillatingPath> m_dotPaths{GetNewDotPaths(m_dotStartingPositions)};
-  [[nodiscard]] auto GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions)
+  [[nodiscard]] auto GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions) noexcept
       -> std::vector<UTILS::MATH::OscillatingPath>;
-  [[nodiscard]] auto GetSmallRandomOffset() const -> Vec2dInt;
+  [[nodiscard]] auto GetSmallRandomOffset() const noexcept -> Vec2dInt;
 };
 
-inline auto DotPaths::SetPathParams(const UTILS::MATH::OscillatingFunction::Params& params) -> void
+inline auto DotPaths::SetPathParams(const UTILS::MATH::OscillatingFunction::Params& params) noexcept
+    -> void
 {
   m_pathParams = params;
 }
 
-inline auto DotPaths::Reset() -> void
+inline auto DotPaths::Reset() noexcept -> void
 {
   std::for_each(begin(m_dotPaths), end(m_dotPaths),
                 [](UTILS::MATH::IPath& path) { path.Reset(0.0F); });
 }
 
-inline auto DotPaths::SetPositionTNumSteps(const uint32_t numSteps) -> void
+inline auto DotPaths::SetPositionTNumSteps(const uint32_t numSteps) noexcept -> void
 {
   std::for_each(begin(m_dotPaths), end(m_dotPaths),
                 [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
 }
 
-inline auto DotPaths::IncrementPositionT() -> void
+inline auto DotPaths::IncrementPositionT() noexcept -> void
 {
   std::for_each(begin(m_dotPaths), end(m_dotPaths),
                 [](UTILS::MATH::IPath& path) { path.IncrementT(); });
 }
 
-inline auto DotPaths::GetPositionTRef() const -> const UTILS::TValue&
+inline auto DotPaths::GetPositionTRef() const noexcept -> const UTILS::TValue&
 {
   return m_dotPaths.at(0).GetPositionT();
 }
 
-inline auto DotPaths::GetPositionTNumSteps() const -> uint32_t
+inline auto DotPaths::GetPositionTNumSteps() const noexcept -> uint32_t
 {
   return m_dotPaths.at(0).GetNumSteps();
 }
 
-inline auto DotPaths::HasPositionTJustHitStartBoundary() const -> bool
+inline auto DotPaths::HasPositionTJustHitStartBoundary() const noexcept -> bool
 {
   return m_dotPaths.at(0).GetPositionT().HasJustHitStartBoundary();
 }
 
-inline auto DotPaths::HasPositionTJustHitEndBoundary() const -> bool
+inline auto DotPaths::HasPositionTJustHitEndBoundary() const noexcept -> bool
 {
   return m_dotPaths.at(0).GetPositionT().HasJustHitEndBoundary();
 }
 
-inline auto DotPaths::IsDelayed() const -> bool
+inline auto DotPaths::IsDelayed() const noexcept -> bool
 {
   return m_dotPaths.at(0).GetPositionT().IsDelayed();
 }
 
-inline auto DotPaths::GetPositionT() const -> float
+inline auto DotPaths::GetPositionT() const noexcept -> float
 {
   return m_dotPaths.at(0).GetCurrentT();
 }

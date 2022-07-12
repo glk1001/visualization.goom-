@@ -7,9 +7,7 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
 
 // clang-format off
 static constexpr float IMAGE_NAMES_CIRCLE_WEIGHT        =  5.0F;
@@ -21,7 +19,7 @@ static constexpr float IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 10.0F;
 // clang-format on
 
 BitmapGetter::BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,
-                           const SmallImageBitmaps& smallBitmaps)
+                           const SmallImageBitmaps& smallBitmaps) noexcept
   : m_smallBitmaps{smallBitmaps},
     // clang-format off
     m_bitmapTypes{
@@ -39,13 +37,14 @@ BitmapGetter::BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,
 {
 }
 
-auto BitmapGetter::GetBitmap(const size_t size) const -> const UTILS::GRAPHICS::ImageBitmap&
+auto BitmapGetter::GetBitmap(const size_t size) const noexcept
+    -> const UTILS::GRAPHICS::ImageBitmap&
 {
   return m_smallBitmaps.GetImageBitmap(m_currentBitmapName,
                                        std::clamp(size, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER));
 }
 
-void BitmapGetter::ChangeCurrentBitmap()
+auto BitmapGetter::ChangeCurrentBitmap() noexcept -> void
 {
   m_currentBitmapName = m_bitmapTypes.GetRandomWeighted();
 }
