@@ -58,6 +58,7 @@ public:
   auto SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMainMaps,
                             std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps) noexcept
       -> void;
+  auto SetNewCircleCentreAndRadius(const Point2dInt& centre, float radius) noexcept -> void;
   auto SetMovingTargetPoint(const Point2dInt& movingTargetPoint,
                             float lerpTFromFixedTarget) noexcept -> void;
   auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept -> void;
@@ -68,6 +69,7 @@ public:
 
   [[nodiscard]] auto HasPositionTJustHitABoundary() const noexcept -> bool;
   [[nodiscard]] auto HasPositionTJustHitStartBoundary() const noexcept -> bool;
+  [[nodiscard]] auto HasPositionTJustHitEndBoundary() const noexcept -> bool;
   [[nodiscard]] auto GetCircleCentreFixedTarget() const noexcept -> Point2dInt;
   [[nodiscard]] auto GetLastDrawnCircleDots() const noexcept -> const std::vector<Point2dInt>&;
 
@@ -189,6 +191,11 @@ inline auto Circle::HasPositionTJustHitABoundary() const noexcept -> bool
 inline auto Circle::HasPositionTJustHitStartBoundary() const noexcept -> bool
 {
   return m_dotPaths.HasPositionTJustHitStartBoundary();
+}
+
+inline auto Circle::HasPositionTJustHitEndBoundary() const noexcept -> bool
+{
+  return m_dotPaths.HasPositionTJustHitEndBoundary();
 }
 
 inline auto Circle::GetCircleCentreFixedTarget() const noexcept -> Point2dInt

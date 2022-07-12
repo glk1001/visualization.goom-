@@ -22,6 +22,7 @@ public:
            const UTILS::MATH::OscillatingFunction::Params& dotPathParams) noexcept;
 
   auto Reset() noexcept -> void;
+  auto SetDotStartingPositions(std::vector<Point2dInt>&& dotStartingPositions) noexcept -> void;
   auto SetTarget(const Point2dInt& target) noexcept -> void;
   auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& params) noexcept -> void;
 

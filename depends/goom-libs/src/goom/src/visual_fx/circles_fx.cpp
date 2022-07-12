@@ -42,29 +42,40 @@ public:
 private:
   const FxHelper& m_fxHelper;
   const SmallImageBitmaps& m_smallBitmaps;
+  const uint32_t m_screenWidth = m_fxHelper.GetGoomInfo().GetScreenInfo().width;
+  const uint32_t m_screenHeight = m_fxHelper.GetGoomInfo().GetScreenInfo().height;
+  const Point2dInt m_screenMidPoint = MidpointFromOrigin({m_screenWidth, m_screenHeight});
 
   static constexpr uint32_t NUM_CIRCLES = 5;
-  [[nodiscard]] auto GetCircleParams() const noexcept -> std::vector<Circle::Params>;
+  Point2dInt m_lastCircleCentreStart{m_screenMidPoint};
   Point2dInt m_lastZoomMidpoint{
       static_cast<int32_t>(U_HALF * m_fxHelper.GetDraw().GetScreenWidth()),
       static_cast<int32_t>(U_HALF* m_fxHelper.GetDraw().GetScreenHeight())};
-  [[nodiscard]] auto GetCircleCentreStart(const Point2dInt& screenMidPoint) const noexcept
-      -> Point2dInt;
-  [[nodiscard]] static auto GetCircleCentreTargets(const Point2dInt& screenMidPoint)
-      -> std::array<Point2dInt, NUM_CIRCLES>;
   std::unique_ptr<Circles> m_circles{MakeCircles()};
   [[nodiscard]] auto MakeCircles() const noexcept -> std::unique_ptr<Circles>;
+  [[nodiscard]] auto GetCircleParams() const noexcept -> std::vector<Circle::Params>;
+  [[nodiscard]] auto GetCircleRadius0() const noexcept -> float;
+  [[nodiscard]] auto GetCircleRadiusReducer() const noexcept -> float;
+  [[nodiscard]] auto GetAllCirclesCentreStart() const noexcept -> Point2dInt;
+  [[nodiscard]] auto GetCircleCentreTargets() const -> std::array<Point2dInt, NUM_CIRCLES>;
 
   auto UpdateAndDraw() noexcept -> void;
 
-  bool m_resetCircles = false;
+  bool m_fullCirclesReset = false;
+  bool m_resetCircleCentreStarts = false;
   WeightedColorMaps m_lastWeightedColorMaps{};
+  static constexpr uint32_t LERP_TO_NEW_CIRCLE_CENTRE_TIME = 20;
+  Timer m_lerpToNewCircleCentreTimer{LERP_TO_NEW_CIRCLE_CENTRE_TIME, true};
+  Point2dInt m_newCircleCentreStart{m_lastCircleCentreStart};
+  float m_newRadius0 = 0.0F;
   auto ResetCircles() noexcept -> void;
+  auto CheckCircleCentreStartsReset() noexcept -> void;
+  auto CheckFullCirclesReset() noexcept -> void;
 
-  static constexpr uint32_t MIN_BLANK_AT_START_TIME = 5;
-  static constexpr uint32_t MAX_BLANK_AT_START_TIME = 30;
+  static constexpr uint32_t MIN_BLANK_AT_START_TIME = 1;
+  static constexpr uint32_t MAX_BLANK_AT_START_TIME = 5;
   uint32_t m_blankAtStartTime =
-      m_fxHelper.GetGoomRand().GetRandInRange(MIN_BLANK_AT_START_TIME, MAX_BLANK_AT_START_TIME);
+      m_fxHelper.GetGoomRand().GetRandInRange(MIN_BLANK_AT_START_TIME, MAX_BLANK_AT_START_TIME + 1);
   Timer m_blankAtStartTimer{m_blankAtStartTime, true};
 };
 
@@ -123,57 +134,66 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams() const noexcept -> std::vector<C
 {
   std::vector<Circle::Params> circleParams(NUM_CIRCLES);
 
-  const PluginInfo::Screen& screenInfo = m_fxHelper.GetGoomInfo().GetScreenInfo();
+  const float radiusReducer = GetCircleRadiusReducer();
 
-  static constexpr float MIN_RADIUS_REDUCER = 0.90F;
-  static constexpr float MAX_RADIUS_REDUCER = 1.01F;
-  const float radiusReducer =
-      m_fxHelper.GetGoomRand().GetRandInRange(MIN_RADIUS_REDUCER, MAX_RADIUS_REDUCER);
-
-  static constexpr float MIN_RADIUS_MARGIN = 10.0F;
-  static constexpr float MAX_RADIUS_MARGIN = 50.01F;
-  const float radiusMargin =
-      m_fxHelper.GetGoomRand().GetRandInRange(MIN_RADIUS_MARGIN, MAX_RADIUS_MARGIN);
-  const float maxRadius = 0.5F * static_cast<float>(std::min(screenInfo.width, screenInfo.height));
-  const float radius0 = maxRadius - radiusMargin;
-
-  circleParams[0].circleRadius = radius0;
+  circleParams[0].circleRadius = GetCircleRadius0();
   for (size_t i = 1; i < NUM_CIRCLES; ++i)
   {
     circleParams[i].circleRadius = radiusReducer * circleParams[i - 1].circleRadius;
   }
 
-  const Point2dInt screenMidPoint = MidpointFromOrigin({screenInfo.width, screenInfo.height});
-  const Point2dInt circleCentreStart = GetCircleCentreStart(screenMidPoint);
-  std::array<Point2dInt, NUM_CIRCLES> circleCentreTargets = GetCircleCentreTargets(screenMidPoint);
+  std::array<Point2dInt, NUM_CIRCLES> circleCentreTargets = GetCircleCentreTargets();
   for (size_t i = 0; i < NUM_CIRCLES; ++i)
   {
-    circleParams[i].circleCentreStart = circleCentreStart;
+    circleParams[i].circleCentreStart = m_lastCircleCentreStart;
     circleParams[i].circleCentreTarget = circleCentreTargets.at(i);
   }
 
   return circleParams;
 }
 
-auto CirclesFx::CirclesFxImpl::GetCircleCentreStart(const Point2dInt& screenMidPoint) const noexcept
-    -> Point2dInt
+inline auto CirclesFx::CirclesFxImpl::GetCircleRadius0() const noexcept -> float
+{
+  static constexpr float MIN_RADIUS_MARGIN = 10.0F;
+  static constexpr float MAX_RADIUS_MARGIN = 50.01F;
+  const float radiusMargin =
+      m_fxHelper.GetGoomRand().GetRandInRange(MIN_RADIUS_MARGIN, MAX_RADIUS_MARGIN);
+
+  const float maxRadius = 0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight));
+
+  return maxRadius - radiusMargin;
+}
+
+inline auto CirclesFx::CirclesFxImpl::GetCircleRadiusReducer() const noexcept -> float
+{
+  if (static constexpr float PROB_SAME_RADIUS = 0.6F;
+      m_fxHelper.GetGoomRand().ProbabilityOf(PROB_SAME_RADIUS))
+  {
+    return 1.0F;
+  }
+
+  static constexpr float MIN_RADIUS_REDUCER = 0.90F;
+  static constexpr float MAX_RADIUS_REDUCER = 1.01F;
+  return m_fxHelper.GetGoomRand().GetRandInRange(MIN_RADIUS_REDUCER, MAX_RADIUS_REDUCER);
+}
+
+auto CirclesFx::CirclesFxImpl::GetAllCirclesCentreStart() const noexcept -> Point2dInt
 {
   static constexpr float MAX_CLOSE_TO_ZOOM_POINT_T = 0.75F;
   const float t = m_fxHelper.GetGoomRand().GetRandInRange(0.0F, MAX_CLOSE_TO_ZOOM_POINT_T);
-  return lerp(screenMidPoint, m_lastZoomMidpoint, t);
+  return lerp(m_screenMidPoint, m_lastZoomMidpoint, t);
 }
 
-auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets(const Point2dInt& screenMidPoint)
-    -> std::array<Point2dInt, NUM_CIRCLES>
+auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets() const -> std::array<Point2dInt, NUM_CIRCLES>
 {
   std::array<Point2dInt, NUM_CIRCLES> circleCentreTargets{};
 
-  const int32_t width = 2 * screenMidPoint.x;
-  const int32_t height = 2 * screenMidPoint.y;
+  const int32_t width = 2 * m_screenMidPoint.x;
+  const int32_t height = 2 * m_screenMidPoint.y;
   static constexpr Fraction SMALL_FRAC{1, 10};
   static constexpr Fraction LARGE_FRAC = 1 - SMALL_FRAC;
-  static_assert(5 == NUM_CIRCLES);
-  circleCentreTargets[0] = screenMidPoint;
+  static_assert(5 == NUM_CIRCLES); // NOLINT
+  circleCentreTargets[0] = m_screenMidPoint;
   circleCentreTargets[1] = {SMALL_FRAC * width, SMALL_FRAC * height};
   circleCentreTargets[2] = {LARGE_FRAC * width, SMALL_FRAC * height};
   circleCentreTargets[3] = {LARGE_FRAC * width, LARGE_FRAC * height};
@@ -197,9 +217,12 @@ inline auto CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
   m_circles->SetWeightedColorMaps(weightedColorMaps.mainColorMaps, weightedColorMaps.lowColorMaps);
 
   m_blankAtStartTime =
-      m_fxHelper.GetGoomRand().GetRandInRange(MIN_BLANK_AT_START_TIME, MAX_BLANK_AT_START_TIME);
+      m_fxHelper.GetGoomRand().GetRandInRange(MIN_BLANK_AT_START_TIME, MAX_BLANK_AT_START_TIME + 1);
+
   m_lastWeightedColorMaps = weightedColorMaps;
-  m_resetCircles = true;
+  m_fullCirclesReset = true;
+  m_resetCircleCentreStarts = true;
+  m_lerpToNewCircleCentreTimer.SetToFinished();
 }
 
 inline auto CirclesFx::CirclesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept
@@ -242,7 +265,37 @@ inline auto CirclesFx::CirclesFxImpl::UpdateAndDraw() noexcept -> void
 
 inline auto CirclesFx::CirclesFxImpl::ResetCircles() noexcept -> void
 {
-  if ((not m_resetCircles) or (not m_circles->HasPositionTJustHitStartBoundary()))
+  CheckCircleCentreStartsReset();
+  CheckFullCirclesReset();
+}
+
+auto CirclesFx::CirclesFxImpl::CheckCircleCentreStartsReset() noexcept -> void
+{
+  if (m_resetCircleCentreStarts)
+  {
+    Expects(m_lerpToNewCircleCentreTimer.Finished());
+    m_lerpToNewCircleCentreTimer.ResetToZero();
+    m_newCircleCentreStart = GetAllCirclesCentreStart();
+    m_newRadius0 = GetCircleRadius0();
+    m_resetCircleCentreStarts = false;
+  }
+  if (not m_lerpToNewCircleCentreTimer.Finished())
+  {
+    const auto t = static_cast<float>(m_lerpToNewCircleCentreTimer.GetCurrentCount()) /
+                   static_cast<float>(m_lerpToNewCircleCentreTimer.GetTimeLimit());
+    m_lastCircleCentreStart = lerp(m_lastCircleCentreStart, m_newCircleCentreStart, t);
+    m_circles->SetNewCircleCentreAndRadius(m_lastCircleCentreStart, m_newRadius0);
+    m_lerpToNewCircleCentreTimer.Increment();
+  }
+}
+
+inline auto CirclesFx::CirclesFxImpl::CheckFullCirclesReset() noexcept -> void
+{
+  if (not m_fullCirclesReset)
+  {
+    return;
+  }
+  if (not m_circles->HasPositionTJustHitStartBoundary())
   {
     return;
   }
@@ -254,7 +307,10 @@ inline auto CirclesFx::CirclesFxImpl::ResetCircles() noexcept -> void
                                   m_lastWeightedColorMaps.lowColorMaps);
   m_circles->SetZoomMidpoint(m_lastZoomMidpoint);
   m_circles->Start();
-  m_resetCircles = false;
+  m_fullCirclesReset = false;
+
+  m_resetCircleCentreStarts = false;
+  m_lerpToNewCircleCentreTimer.SetToFinished();
 
   Ensures(m_circles->HasPositionTJustHitStartBoundary());
 }

@@ -219,6 +219,12 @@ auto Circle::SetWeightedColorMaps(
   m_maxChromaFactor = m_goomRand.GetRandInRange(MIN_MAX_CHROMA_FACTOR, MAX_MAX_CHROMA_FACTOR);
 }
 
+auto Circle::SetNewCircleCentreAndRadius(const Point2dInt& centre, const float radius) noexcept
+    -> void
+{
+  m_dotPaths.SetDotStartingPositions(GetDotStartingPositions(centre, radius));
+}
+
 auto Circle::SetMovingTargetPoint(const Point2dInt& movingTargetPoint,
                                   float lerpTFromFixedTarget) noexcept -> void
 {
@@ -366,12 +372,20 @@ inline auto Circle::GetDotBrightness(const float brightness) const noexcept -> f
 
 inline auto Circle::IsSpecialUpdateNum() const noexcept -> bool
 {
+  if (static constexpr float CLOSE_TO_START_T = 0.1F; m_dotPaths.GetPositionT() < CLOSE_TO_START_T)
+  {
+    return true;
+  }
   static constexpr uint64_t SPECIAL_UPDATE_MULTIPLE = 5;
   return 0 == (m_updateNum % SPECIAL_UPDATE_MULTIPLE);
 }
 
 inline auto Circle::IsSpecialLineUpdateNum() const noexcept -> bool
 {
+  if (static constexpr float CLOSE_TO_START_T = 0.1F; m_dotPaths.GetPositionT() < CLOSE_TO_START_T)
+  {
+    return true;
+  }
   static constexpr uint64_t LINE_UPDATE_MULTIPLE = 8;
   return 0 == (m_updateNum % LINE_UPDATE_MULTIPLE);
 }

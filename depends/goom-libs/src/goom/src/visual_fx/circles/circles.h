@@ -27,12 +27,14 @@ public:
                             std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps) noexcept
       -> void;
 
+  auto SetNewCircleCentreAndRadius(const Point2dInt& centre, float radius) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   auto Start() noexcept -> void;
   auto UpdateAndDraw() noexcept -> void;
 
   [[nodiscard]] auto HasPositionTJustHitStartBoundary() const noexcept -> bool;
+  [[nodiscard]] auto HasPositionTJustHitEndBoundary() const noexcept -> bool;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
@@ -57,6 +59,14 @@ private:
   [[nodiscard]] auto GetPathParams() const noexcept -> UTILS::MATH::OscillatingFunction::Params;
 };
 
+inline auto Circles::SetNewCircleCentreAndRadius(const Point2dInt& centre,
+                                                 const float radius) noexcept -> void
+{
+  std::for_each(begin(m_circles), end(m_circles),
+                [&centre, &radius](Circle& circle)
+                { circle.SetNewCircleCentreAndRadius(centre, radius); });
+}
+
 inline auto Circles::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
   m_zoomMidpoint = zoomMidpoint;
@@ -65,6 +75,11 @@ inline auto Circles::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept ->
 inline auto Circles::HasPositionTJustHitStartBoundary() const noexcept -> bool
 {
   return m_circles.front().HasPositionTJustHitStartBoundary();
+}
+
+inline auto Circles::HasPositionTJustHitEndBoundary() const noexcept -> bool
+{
+  return m_circles.front().HasPositionTJustHitEndBoundary();
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

@@ -224,13 +224,14 @@ public:
                       const Params& params) noexcept;
 
   auto SetParams(const Params& params) noexcept -> void;
+  auto SetStartPos(const Point2dFlt& startPos) noexcept -> void;
   auto SetEndPos(const Point2dFlt& endPos) noexcept -> void;
   auto SetAllowOscillatingPath(bool val) noexcept -> void;
 
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Point2dFlt m_startPos;
+  Point2dFlt m_startPos;
   Point2dFlt m_endPos;
   Params m_params;
   bool m_allowOscillatingPath = true;
@@ -319,6 +320,11 @@ inline auto OscillatingFunction::SetAllowOscillatingPath(const bool val) noexcep
 inline auto OscillatingFunction::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
+}
+
+inline auto OscillatingFunction::SetStartPos(const GOOM::Point2dFlt& startPos) noexcept -> void
+{
+  m_startPos = startPos;
 }
 
 inline auto OscillatingFunction::SetEndPos(const Point2dFlt& endPos) noexcept -> void

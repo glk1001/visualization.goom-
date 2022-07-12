@@ -35,6 +35,16 @@ DotPaths::DotPaths(const IGoomRand& goomRand,
 {
 }
 
+auto DotPaths::SetDotStartingPositions(std::vector<Point2dInt>&& dotStartingPositions) noexcept
+    -> void
+{
+  m_dotStartingPositions = std::move(dotStartingPositions);
+  for (size_t i = 0; i < m_numDots; ++i)
+  {
+    m_dotPaths.at(i).GetParametricFunction().SetStartPos(m_dotStartingPositions.at(i).ToFlt());
+  }
+}
+
 auto DotPaths::SetTarget(const Point2dInt& target) noexcept -> void
 {
   m_target = target;
