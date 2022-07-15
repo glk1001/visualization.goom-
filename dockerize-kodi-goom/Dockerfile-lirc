@@ -1,4 +1,6 @@
-FROM kodi-nightly:spotify
+ARG KODI_SPOTIFY_IMAGE
+
+FROM ${KODI_SPOTIFY_IMAGE}
 
 # Install lirc
 ARG LIRC_SEED="lirc/remote select Windows Media Center Transceivers/Remotes (all)"

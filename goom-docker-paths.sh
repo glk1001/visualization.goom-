@@ -35,10 +35,13 @@ if [[ ! -d "${KODI_DOCKER_RESOURCES_DIR}" ]]; then
 fi
 
 
-declare -r KODI_IMAGE_NAME="kodi-nightly:goom-dev"
+declare -r KODI_IMAGE_NAME="ubuntu-impish/kodi-matrix:goom-dev"
+declare -r KODI_CONTAINER_HOME_DIR="${HOME}/docker/kodi-matrix"
+declare -r REMOTE_KODI_HOME_DIR="${HOME}/Prj/Docker/kodi-matrix"
+
+#declare -r KODI_IMAGE_NAME="ubuntu-impish/kodi-nightly:goom-dev"
+#declare -r KODI_CONTAINER_HOME_DIR="${HOME}/docker/kodi-nightly"
+#declare -r REMOTE_KODI_HOME_DIR="${HOME}/Prj/Docker/kodi-nightly"
+
 declare -r KODI_CONTAINER_NAME="kodi_goom_dev"
-declare -r KODI_CONTAINER_HOME_DIR="${HOME}/docker/kodi-nightly"
 declare -r MUSIC_SHARE="/mnt/Music"
-
-
-declare -r REMOTE_KODI_HOME_DIR="${HOME}/Prj/Docker/kodi-nightly"

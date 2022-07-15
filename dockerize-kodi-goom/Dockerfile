@@ -1,4 +1,6 @@
-FROM kodi-nightly:lirc
+ARG KODI_LIRC_IMAGE
+
+FROM ${KODI_LIRC_IMAGE}
 
 # Make sure we have a 'libstdc++.so' compatible with our build tools.
 # Need this, for example, when building a Docker image with Ubuntu Impish but compiling goom on Ubuntu Jammy.

@@ -1,14 +1,16 @@
-FROM ubuntu:impish
-# Use ubuntu impish so we get python 3.9. There is a problem is with python 3.10 and sqlite3
-# which affects the Spotify plugin. See https://bbs.archlinux.org/viewtopic.php?id=272121
+ARG OS_TYPE
+ARG OS_TAG
+
+FROM ${OS_TYPE}:${OS_TAG}
 
 ARG DEBIAN_FRONTEND=noninteractive
-
 ARG TIME_ZONE=Australia/Melbourne
 
 # NOTE: For packages, we need 'kodi-eventclients-kodi-send' to shut down
 #       Kodi gracefully when it's container terminates.
 #       'psmisc' is needed for 'killall'.
+
+ARG KODI_PPA=""
 
 ARG KODI_ESSENTIAL_PACKAGES=" \
   ca-certificates             \
@@ -30,7 +32,7 @@ ARG KODI_PACKAGES="${KODI_ESSENTIAL_PACKAGES} ${KODI_EXTRA_PACKAGES}"
 RUN apt-get update                                                        && \
     apt-get install -y gpg-agent                                          && \
     apt-get install -y --no-install-recommends software-properties-common && \
-    add-apt-repository -y ppa:team-xbmc/xbmc-nightly                      && \
+    add-apt-repository -y ${KODI_PPA}                                     && \
     apt-get install -y --no-install-recommends ${KODI_PACKAGES}           && \
                                                                              \
     echo "${TIME_ZONE}" >/etc/timezone                                    && \
