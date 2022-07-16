@@ -248,8 +248,10 @@ private:
     void Include(const Vec2& span);
   };
 
+  // NOLINTBEGIN
   struct Spans
   {
+    ~Spans() noexcept;
     SpanArray stdSpans{};
     SpanArray outlineSpans{};
     size_t textIndexOfChar{};
@@ -258,6 +260,7 @@ private:
     int32_t bearingX{};
     int32_t bearingY{};
   };
+  // NOLINTEND
 
   std::vector<Spans> m_textSpans{};
   Rect m_textBoundingRect{};
@@ -402,6 +405,8 @@ TextDraw::TextDrawImpl::~TextDrawImpl() noexcept
 {
   (void)::FT_Done_FreeType(m_library);
 }
+
+TextDraw::TextDrawImpl::Spans::~Spans() noexcept = default;
 
 inline auto TextDraw::TextDrawImpl::GetAlignment() const -> TextAlignment
 {

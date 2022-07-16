@@ -52,6 +52,8 @@ TValue::TValue(const TValue::StepType stepType,
   ValidateDelayPoints();
 }
 
+TValue::~TValue() noexcept = default;
+
 auto TValue::ValidateDelayPoints() const noexcept -> void
 {
   float prevT0 = -1.0F;

@@ -33,6 +33,7 @@ public:
          uint32_t numSteps,
          const std::vector<DelayPoint>& delayPoints,
          float startingT = 0.0F) noexcept;
+  ~TValue() noexcept;
 
   [[nodiscard]] auto GetStepType() const noexcept -> StepType;
 

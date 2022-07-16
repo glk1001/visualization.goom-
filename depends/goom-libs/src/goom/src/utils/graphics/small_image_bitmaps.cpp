@@ -36,6 +36,8 @@ SmallImageBitmaps::SmallImageBitmaps(std::string resourcesDirectory)
   }
 }
 
+SmallImageBitmaps::~SmallImageBitmaps() noexcept = default;
+
 auto SmallImageBitmaps::GetImageBitmap(const ImageNames name, const size_t res) const
     -> const ImageBitmap&
 {

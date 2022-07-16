@@ -27,6 +27,12 @@ public:
   static constexpr size_t MAX_IMAGE_SIZE = 21;
 
   explicit SmallImageBitmaps(std::string resourcesDirectory);
+  SmallImageBitmaps(const SmallImageBitmaps&) noexcept = delete;
+  SmallImageBitmaps(SmallImageBitmaps&&) noexcept = delete;
+  ~SmallImageBitmaps() noexcept;
+  auto operator=(const SmallImageBitmaps&) noexcept -> SmallImageBitmaps& = delete;
+  auto operator=(SmallImageBitmaps&&) noexcept -> SmallImageBitmaps& = delete;
+
   auto GetImageBitmap(ImageNames name, size_t res) const -> const ImageBitmap&;
   // void AddImageBitmap(const std::string& name, size_t res);
 
