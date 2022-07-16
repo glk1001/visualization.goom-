@@ -56,7 +56,7 @@ x11docker --runasroot="service lircd start"           \
           --mount type=bind,source=/tmp/,target=/tmp/ \
           --rm                                        \
           --                                          \
-          ${KODI_IMAGE_NAME}
+          ${KODI_GOOM_IMAGE}
 
 echo "x11docker return code = $?"
 
