@@ -50,7 +50,8 @@ auto SmallImageBitmaps::GetImageBitmap(const ImageNames name, const size_t res) 
   return *m_bitmapImages.at(GetImageKey(name, imageRes));
 }
 
-auto SmallImageBitmaps::GetImageBitmapPtr(const ImageNames name, const size_t sizeOfImageSquare)
+auto SmallImageBitmaps::GetImageBitmapPtr(const ImageNames name,
+                                          const size_t sizeOfImageSquare) const
     -> std::unique_ptr<const ImageBitmap>
 {
   return std::make_unique<const ImageBitmap>(GetImageFilename(name, sizeOfImageSquare));
@@ -66,10 +67,8 @@ auto SmallImageBitmaps::GetImageFilename(const ImageNames name,
                                          const size_t sizeOfImageSquare) const -> std::string
 {
   const std::string imagesDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR;
-  std::string filename =
-      std20::format("{}/{}{:02}x{:02}.png", imagesDir, IMAGE_NAMES.at(static_cast<size_t>(name)),
-                    sizeOfImageSquare, sizeOfImageSquare);
-  return filename;
+  return std20::format("{}/{}{:02}x{:02}.png", imagesDir, IMAGE_NAMES.at(static_cast<size_t>(name)),
+                       sizeOfImageSquare, sizeOfImageSquare);
 }
 
 } // namespace GOOM::UTILS::GRAPHICS
