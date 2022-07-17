@@ -7,10 +7,6 @@ set(GOOM_ADDON_PREFIX "GOOM")
 
 option(ENABLE_TESTING "Enable unit testing" OFF)
 option(USE_MAGIC_ENUM "Use magic enum" OFF)
-option(IS_KODI_MATRIX "Compatible with kodi Matrix" OFF)
-if (IS_KODI_MATRIX)
-    add_definitions(-DKODI_MATRIX)
-endif ()
 
 set(GOOM_LIBS_TARGET_NAME "goom")
 set(GOOM_LIBS_RELDIR depends/goom-libs)
@@ -199,7 +195,6 @@ message(STATUS "Visualization.goom: C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\"
 message(STATUS "Visualization.goom: C++ compile features = \"${goom_addon_compile_features}\".")
 message(STATUS "Visualization.goom: C++ compile options = \"${goom_addon_compile_options}\".")
 message(STATUS "Visualization.goom: ENABLE_TESTING = \"${ENABLE_TESTING}\".")
-message(STATUS "Visualization.goom: IS_KODI_MATRIX = \"${IS_KODI_MATRIX}\".")
 message(STATUS "Visualization.goom: includes = \"${includes}\".")
 message(STATUS "Visualization.goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_INCLUDE_DIRS = \"${GOOM_INCLUDE_DIRS}\".")

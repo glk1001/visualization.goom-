@@ -39,13 +39,8 @@ using GOOM::UTILS::BufferView;
 using GOOM::UTILS::FindAndReplaceAll;
 #endif
 
-#ifdef KODI_MATRIX
-namespace KODI_ADDON = kodi;
-using AddonLogEnum = AddonLog;
-#else
 namespace KODI_ADDON = kodi::addon;
 using AddonLogEnum = ADDON_LOG;
-#endif
 
 #ifdef HAS_GL
 // TODO Figure out correct format here
