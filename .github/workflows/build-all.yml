@@ -125,3 +125,12 @@ jobs:
           CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} cmake \
                                                                   --build ${{ env.BUILD_DIR }} \
                                                                   --config ${{ matrix.config.build_type }}
+
+      # - name: Archive goom artifacts
+      #   if: startsWith(matrix.config.name, 'Windows')
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: build-archive
+      #     path: |
+      #       ${{ env.GOOM_DIR }}/${{ env.BUILD_DIR }}
+      #       retention-days: 5
