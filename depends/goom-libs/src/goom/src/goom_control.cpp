@@ -21,7 +21,6 @@
 #include "control/goom_music_settings_reactor.h"
 #include "control/goom_random_state_handler.h"
 #include "control/goom_sound_events.h"
-#include "control/goom_state_dump.h"
 #include "control/goom_state_monitor.h"
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
@@ -55,6 +54,13 @@
 #include <utility>
 #include <vector>
 
+#ifdef GOOM_DEBUG
+#define DO_GOOM_STATE_DUMP
+#endif
+#ifdef DO_GOOM_STATE_DUMP
+#include "control/goom_state_dump.h"
+#endif
+
 namespace GOOM
 {
 
@@ -65,7 +71,9 @@ using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
 using CONTROL::GoomSoundEvents;
+#ifdef DO_GOOM_STATE_DUMP
 using CONTROL::GoomStateDump;
+#endif
 using CONTROL::GoomStateMonitor;
 using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToBuffer;
@@ -144,17 +152,17 @@ private:
                                              m_resourcesDirectory,
                                              m_goomRand,
                                              m_normalizedCoordsConverter)),
-      std::make_unique<FilterColorsService>()
-  };
+      std::make_unique<FilterColorsService>()};
 
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
   GoomMusicSettingsReactor m_musicSettingsReactor{m_goomInfo, m_goomRand, m_visualFx, m_goomEvents,
                                                   m_filterSettingsService};
   const GoomStateMonitor m_goomStateMonitor{m_visualFx, m_musicSettingsReactor,
                                             m_filterSettingsService};
-  static constexpr bool DO_GOOM_STATE_DUMP = true;
+#ifdef DO_GOOM_STATE_DUMP
   propagate_const<std::unique_ptr<GoomStateDump>> m_goomStateDump{};
   std::string m_dumpDirectory{};
+#endif
   bool m_noZooms = false;
   uint32_t m_updateNum = 0;
 
@@ -190,10 +198,12 @@ private:
   GoomTitleDisplayer m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory()};
   GoomMessageDisplayer m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile()};
 
-  bool m_showGoomState = false;
+#ifdef DO_GOOM_STATE_DUMP
   auto StartGoomStateDump() -> void;
   auto UpdateGoomStateDump() -> void;
   auto FinishGoomStateDump() -> void;
+#endif
+  bool m_showGoomState = false;
   auto DisplayGoomState() -> void;
   [[nodiscard]] auto GetGoomTimeInfo() -> std::string;
   [[nodiscard]] auto GetFontDirectory() const -> std::string;
@@ -288,8 +298,6 @@ auto GoomControl::Update(const AudioSamples& audioSamples, const std::string& me
   m_pimpl->Update(audioSamples, message);
 }
 
-static constexpr bool DO_GOOM_STATE_DUMP = true;
-
 GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
                                               const uint32_t screenHeight,
                                               std::string resourcesDirectory)
@@ -332,10 +340,17 @@ inline auto GoomControl::GoomControlImpl::ShowGoomState(const bool value) -> voi
   m_showGoomState = value;
 }
 
+#ifdef DO_GOOM_STATE_DUMP
 inline auto GoomControl::GoomControlImpl::SetDumpDirectory(const std::string& dumpDirectory) -> void
 {
   m_dumpDirectory = dumpDirectory;
 }
+#else
+inline auto GoomControl::GoomControlImpl::SetDumpDirectory(
+    [[maybe_unused]] const std::string& dumpDirectory) -> void
+{
+}
+#endif
 
 inline auto GoomControl::GoomControlImpl::GetLastShaderEffects() const -> const GoomShaderEffects&
 {
@@ -357,7 +372,9 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
 
   m_visualFx.StartExposureControl();
 
+#ifdef DO_GOOM_STATE_DUMP
   StartGoomStateDump();
+#endif
 
   m_runningTimeStopwatch.SetUpperLimitOfTimeIntervalInMsSinceLastMarked(
       m_upperLimitOfTimeIntervalInMsSinceLastMarked);
@@ -375,43 +392,38 @@ inline auto GoomControl::GoomControlImpl::Finish() -> void
           m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs,
           m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
 
+#ifdef DO_GOOM_STATE_DUMP
   FinishGoomStateDump();
+#endif
 
   m_visualFx.Finish();
 }
 
+#ifdef DO_GOOM_STATE_DUMP
 inline auto GoomControl::GoomControlImpl::StartGoomStateDump() -> void
 {
-  if constexpr (GOOM::DO_GOOM_STATE_DUMP)
-  {
-    m_goomStateDump = std::make_unique<GoomStateDump>(
-        m_goomInfo, m_visualFx, m_musicSettingsReactor, m_filterSettingsService);
-    m_goomStateDump->Start();
-  }
+  m_goomStateDump = std::make_unique<GoomStateDump>(m_goomInfo, m_visualFx, m_musicSettingsReactor,
+                                                    m_filterSettingsService);
+  m_goomStateDump->Start();
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateGoomStateDump() -> void
 {
-  if constexpr (GOOM::DO_GOOM_STATE_DUMP)
-  {
-    m_goomStateDump->AddCurrentState();
-  }
+  m_goomStateDump->AddCurrentState();
 }
 
 inline auto GoomControl::GoomControlImpl::FinishGoomStateDump() -> void
 {
-  if constexpr (GOOM::DO_GOOM_STATE_DUMP)
+  if (m_dumpDirectory.empty())
   {
-    if (m_dumpDirectory.empty())
-    {
-      return;
-    }
-    m_goomStateDump->SetSongTitle(m_songInfo.title);
-    m_goomStateDump->SetGoomSeed(GetRandSeed());
-    m_goomStateDump->SetStopWatch(m_runningTimeStopwatch);
-    m_goomStateDump->DumpData(m_dumpDirectory);
+    return;
   }
+  m_goomStateDump->SetSongTitle(m_songInfo.title);
+  m_goomStateDump->SetGoomSeed(GetRandSeed());
+  m_goomStateDump->SetStopWatch(m_runningTimeStopwatch);
+  m_goomStateDump->DumpData(m_dumpDirectory);
 }
+#endif
 
 inline auto GoomControl::GoomControlImpl::GetFontDirectory() const -> std::string
 {
@@ -449,7 +461,9 @@ inline auto GoomControl::GoomControlImpl::Update(const AudioSamples& soundData,
   DisplayGoomState();
   DisplayTitleAndMessages(message);
 
+#ifdef DO_GOOM_STATE_DUMP
   UpdateGoomStateDump();
+#endif
 }
 
 inline auto GoomControl::GoomControlImpl::NewCycle() -> void
