@@ -29,6 +29,13 @@ IF (NOT KODI_ROOT_DIR)
     set(KODI_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 endif ()
 set(CMAKE_INSTALL_PREFIX ${KODI_ROOT_DIR}/xbmc/kodi-build/addons)
+if (IS_THIS_MAIN_CMAKE_SCRIPT)
+    set(KODI_BUILD_LIB_SEARCH_PATH "${CMAKE_BINARY_DIR}")
+else ()
+    # Hack - 'CMAKE_BINARY_DIR' points to a subdirectory below the parent build dir.
+    #        Not sure how to cleanly get the parent directory.
+    get_filename_component(KODI_BUILD_LIB_SEARCH_PATH "${CMAKE_BINARY_DIR}/../../.." DIRECTORY)
+endif ()
 
 set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -97,7 +104,10 @@ if (CORE_SYSTEM_NAME STREQUAL "osx")
 endif ()
 
 
-find_package(Kodi PATHS ${CMAKE_BINARY_DIR}/build/depends/lib/kodi NO_DEFAULT_PATH REQUIRED)
+if (NOT EXISTS ${KODI_BUILD_LIB_SEARCH_PATH})
+    message(FATAL_ERROR "Could not find kodi build lib directory \"${KODI_BUILD_LIB_SEARCH_PATH}\".")
+endif ()
+find_package(Kodi PATHS ${KODI_BUILD_LIB_SEARCH_PATH} NO_DEFAULT_PATH REQUIRED CONFIG)
 # Provides KODI_INCLUDE_DIR but it's out by one!
 set(KODI_FIXED_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
 
@@ -147,26 +157,28 @@ build_addon(${GOOM_TARGET_NAME} ${GOOM_ADDON_PREFIX} DEPLIBS)
 add_dependencies(${GOOM_TARGET_NAME} ${GOOM_LIBS_TARGET_NAME} vivid)
 
 
-# Move the external goom libs Dart file into the main build directory so CLion is happy.
-set(GOOM_LIBS_DART_DIR ${CMAKE_BINARY_DIR}/${GOOM_LIBS_RELDIR})
-add_custom_command(
-        TARGET ${GOOM_TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        ${GOOM_LIBS_DART_DIR}/DartConfiguration.tcl
-        ${CMAKE_BINARY_DIR}/DartConfiguration.tcl)
+if (ENABLE_TESTING)
+    # Move the external goom libs Dart file into the main build directory so CLion is happy.
+    set(GOOM_LIBS_DART_DIR ${CMAKE_BINARY_DIR}/${GOOM_LIBS_RELDIR})
+    add_custom_command(
+            TARGET ${GOOM_TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${GOOM_LIBS_DART_DIR}/DartConfiguration.tcl
+            ${CMAKE_BINARY_DIR}/DartConfiguration.tcl)
 
-# Force the build time into the compiled binaries.
-set(GOOM_BUILD_TIME_FILES
-        ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cpp
-        ${PROJECT_SOURCE_DIR}/src/build_time.cpp
-        )
-add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
-add_custom_command(TARGET goom_build_time
-        PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
-        COMMENT "Touching build files."
-        VERBATIM
-        )
+    # Force the build time into the compiled binaries.
+    set(GOOM_BUILD_TIME_FILES
+            ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cpp
+            ${PROJECT_SOURCE_DIR}/src/build_time.cpp
+            )
+    add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
+    add_custom_command(TARGET goom_build_time
+            PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
+            COMMENT "Touching build files."
+            VERBATIM
+            )
+endif ()
 
 
 include(CPack)
@@ -196,6 +208,7 @@ message(STATUS "Visualization.goom: C++ compile features = \"${goom_addon_compil
 message(STATUS "Visualization.goom: C++ compile options = \"${goom_addon_compile_options}\".")
 message(STATUS "Visualization.goom: ENABLE_TESTING = \"${ENABLE_TESTING}\".")
 message(STATUS "Visualization.goom: includes = \"${includes}\".")
+message(STATUS "Visualization.goom: IS_THIS_MAIN_CMAKE_SCRIPT = \"${IS_THIS_MAIN_CMAKE_SCRIPT}\".")
 message(STATUS "Visualization.goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_INCLUDE_DIRS = \"${GOOM_INCLUDE_DIRS}\".")
 message(STATUS "Visualization.goom: GOOM_BIN_LIBS = \"${GOOM_BIN_LIBS}\".")
@@ -203,5 +216,6 @@ message(STATUS "Visualization.goom: GOOM_BUILD_ARTIFACTS_DIR = \"${GOOM_BUILD_AR
 message(STATUS "Visualization.goom: GOOM_LIBS_DART_DIR = \"${GOOM_LIBS_DART_DIR}\".")
 message(STATUS "Visualization.goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_ROOT_DIR = \"${KODI_ROOT_DIR}\".")
+message(STATUS "Visualization.goom: KODI_BUILD_LIB_SEARCH_PATH = \"${KODI_BUILD_LIB_SEARCH_PATH}\".")
 message(STATUS "Visualization.goom: KODI_INCLUDE_DIR = \"${KODI_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_FIXED_INCLUDE_DIR = \"${KODI_FIXED_INCLUDE_DIR}\".")
