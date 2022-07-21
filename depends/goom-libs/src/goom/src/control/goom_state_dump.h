@@ -1,5 +1,9 @@
 #pragma once
 
+#include "goom_config.h"
+
+#ifdef DO_GOOM_STATE_DUMP
+
 #include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
 #include "goom_music_settings_reactor.h"
@@ -77,3 +81,5 @@ inline auto GoomStateDump::SetStopWatch(const UTILS::Stopwatch& stopwatch) noexc
 }
 
 } // namespace GOOM::CONTROL
+
+#endif // DO_GOOM_STATE_DUMP

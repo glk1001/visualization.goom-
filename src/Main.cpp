@@ -206,8 +206,6 @@ void CVisualizationGoom::StartLogging()
   };
   AddLogHandler("kodi-logger", s_fKodiLog);
   SetLogDoDateTime(false);
-  SetLogLevelForFiles(Logging::LogLevel::INFO);
-  //setLogLevelForFiles(Logging::LogLevel::debug);
   LogStart();
 }
 

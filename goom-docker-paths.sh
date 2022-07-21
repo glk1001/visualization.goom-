@@ -57,7 +57,7 @@ if [[ ! -f "${ADDON_XML}" ]]; then
   echo "ERROR: Could not find add-on xml file \"${ADDON_XML}\"."
   exit 1
 fi
-declare -r GOOM_VERSION=$(sed -n 's/^ *version="\([0-9][0-9].*\)"/\1/p' < "${ADDON_XML}")
+declare -r GOOM_VERSION=$(sed -n 's#.*version="\([0-9][0-9].*[\.0-9]\)".*#\1#p' < "${ADDON_XML}")
 
 if [[ "${GOOM_VERSION:0:2}" == "19" ]]; then
   declare -r KODI_VERSION=matrix

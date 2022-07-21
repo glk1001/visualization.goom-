@@ -42,7 +42,6 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
-#include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "utils/strutils.h"
 #include "visual_fx/fx_helper.h"
@@ -54,11 +53,9 @@
 #include <utility>
 #include <vector>
 
-#ifdef GOOM_DEBUG
-#define DO_GOOM_STATE_DUMP
-#endif
 #ifdef DO_GOOM_STATE_DUMP
 #include "control/goom_state_dump.h"
+#include "utils/propagate_const.h"
 #endif
 
 namespace GOOM
@@ -84,7 +81,9 @@ using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::FILTER_EFFECTS::CreateSpeedCoefficientsEffect;
+#ifdef DO_GOOM_STATE_DUMP
 using std::experimental::propagate_const;
+#endif
 using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::Stopwatch;

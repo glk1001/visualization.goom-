@@ -1,5 +1,7 @@
 #include "goom_state_dump.h"
 
+#ifdef DO_GOOM_STATE_DUMP
+
 #undef NO_LOGGING
 
 #include "filter_fx/filter_settings_service.h"
@@ -458,3 +460,5 @@ inline auto GoomStateDump::CumulativeState::GetGoomVolumes() const -> const std:
 }
 
 } // namespace GOOM::CONTROL
+
+#endif // DO_GOOM_STATE_DUMP

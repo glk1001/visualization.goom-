@@ -23,4 +23,5 @@ docker run --rm                                           \
                       ${CLION_ARG}                        \
                       --docker                            \
                       --compiler ${COMPILER}              \
-                      --build-type ${BUILD_TYPE}"
+                      --build-type ${BUILD_TYPE}          \
+                      --suffix ${BUILD_DIR_SUFFIX}"

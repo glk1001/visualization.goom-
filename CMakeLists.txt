@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 
 project(visualization.goom)
+
+message(STATUS "Cmake version = \"${CMAKE_VERSION}\"")
+message(STATUS "Cmake generator = \"${CMAKE_GENERATOR}\"")
 
 set(GOOM_TARGET_NAME "visualization.goom")
 set(GOOM_ADDON_PREFIX "GOOM")
@@ -11,13 +14,13 @@ option(USE_MAGIC_ENUM "Use magic enum" OFF)
 set(GOOM_LIBS_TARGET_NAME "goom")
 set(GOOM_LIBS_RELDIR depends/goom-libs)
 set(GOOM_LIBS_DIR ${PROJECT_SOURCE_DIR}/${GOOM_LIBS_RELDIR})
-set(GOOM_BUILD_ARTIFACTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/goom-libs-artifacts)
+set(GOOM_BUILD_ARTIFACTS_DIR ${CMAKE_BINARY_DIR}/goom-libs-artifacts)
 set(GOOM_INCLUDE_DIRS "${GOOM_LIBS_DIR}/src/goom/include")
 
 if (NOT WIN32)
     set(GOOM_BIN_LIBS
-            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/libgoom.a
-            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/libvivid.a)
+            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_BUILD_TYPE}/libgoom.a
+            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_BUILD_TYPE}/libvivid.a)
 else ()
     set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
     set(GOOM_BIN_LIBS
@@ -28,24 +31,19 @@ endif ()
 IF (NOT KODI_ROOT_DIR)
     set(KODI_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 endif ()
-set(CMAKE_INSTALL_PREFIX ${KODI_ROOT_DIR}/xbmc/kodi-build/addons)
 if (IS_THIS_MAIN_CMAKE_SCRIPT)
-    set(KODI_BUILD_LIB_SEARCH_PATH "${CMAKE_BINARY_DIR}")
+    set(GOOM_BUILD_DIR "${CMAKE_BINARY_DIR}")
 else ()
     # Hack - 'CMAKE_BINARY_DIR' points to a subdirectory below the parent build dir.
     #        Not sure how to cleanly get the parent directory.
-    get_filename_component(KODI_BUILD_LIB_SEARCH_PATH "${CMAKE_BINARY_DIR}/../../.." DIRECTORY)
+    set(GOOM_BUILD_DIR "${CMAKE_BINARY_DIR}/../../..")
+    cmake_path(NORMAL_PATH GOOM_BUILD_DIR OUTPUT_VARIABLE GOOM_BUILD_DIR)
 endif ()
-
+if (NOT EXISTS ${GOOM_BUILD_DIR})
+    message(FATAL_ERROR "Could not find goom build directory \"${GOOM_BUILD_DIR}\".")
+endif ()
+set(CMAKE_INSTALL_PREFIX ${KODI_ROOT_DIR}/xbmc/kodi-build/addons)
 set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
-
-
-include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
-
-CPMAddPackage("gh:g-truc/glm#0.9.9.8")
-set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
-
-CPMAddPackage("gh:fmtlib/fmt#8.0.1")
 
 
 if (NOT IS_THIS_MAIN_CMAKE_SCRIPT)
@@ -77,8 +75,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_INSTALL_MESSAGE LAZY)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SCRIPTS_PATH})
 
+include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
 include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
@@ -104,12 +103,12 @@ if (CORE_SYSTEM_NAME STREQUAL "osx")
 endif ()
 
 
-if (NOT EXISTS ${KODI_BUILD_LIB_SEARCH_PATH})
-    message(FATAL_ERROR "Could not find kodi build lib directory \"${KODI_BUILD_LIB_SEARCH_PATH}\".")
-endif ()
-find_package(Kodi PATHS ${KODI_BUILD_LIB_SEARCH_PATH} NO_DEFAULT_PATH REQUIRED CONFIG)
-# Provides KODI_INCLUDE_DIR but it's out by one!
-set(KODI_FIXED_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
+CPMAddPackage("gh:g-truc/glm#0.9.9.8")
+set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
+
+CPMAddPackage("gh:fmtlib/fmt#8.0.1")
+
+find_package(Kodi REQUIRED)
 
 if (NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
     find_package(OpenGl REQUIRED)
@@ -210,12 +209,13 @@ message(STATUS "Visualization.goom: ENABLE_TESTING = \"${ENABLE_TESTING}\".")
 message(STATUS "Visualization.goom: includes = \"${includes}\".")
 message(STATUS "Visualization.goom: IS_THIS_MAIN_CMAKE_SCRIPT = \"${IS_THIS_MAIN_CMAKE_SCRIPT}\".")
 message(STATUS "Visualization.goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
+message(STATUS "Visualization.goom: GOOM_BUILD_DIR = \"${GOOM_BUILD_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_INCLUDE_DIRS = \"${GOOM_INCLUDE_DIRS}\".")
 message(STATUS "Visualization.goom: GOOM_BIN_LIBS = \"${GOOM_BIN_LIBS}\".")
 message(STATUS "Visualization.goom: GOOM_BUILD_ARTIFACTS_DIR = \"${GOOM_BUILD_ARTIFACTS_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_LIBS_DART_DIR = \"${GOOM_LIBS_DART_DIR}\".")
 message(STATUS "Visualization.goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_ROOT_DIR = \"${KODI_ROOT_DIR}\".")
-message(STATUS "Visualization.goom: KODI_BUILD_LIB_SEARCH_PATH = \"${KODI_BUILD_LIB_SEARCH_PATH}\".")
+message(STATUS "Visualization.goom: KODI_CONFIG_DIR = \"${KODI_CONFIG_DIR}\".")
 message(STATUS "Visualization.goom: KODI_INCLUDE_DIR = \"${KODI_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_FIXED_INCLUDE_DIR = \"${KODI_FIXED_INCLUDE_DIR}\".")

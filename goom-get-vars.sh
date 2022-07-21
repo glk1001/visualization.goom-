@@ -31,6 +31,12 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -s|--suffix)
+      declare -r BUILD_DIR_SUFFIX=${2}
+      GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --suffix ${BUILD_DIR_SUFFIX}"
+      shift # past argument
+      shift # past value
+      ;;
     --docker)
       USING_DOCKER="yes"
       GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --docker"
@@ -102,6 +108,14 @@ else
 fi
 
 
+# Suffix
+if [[ "${BUILD_DIR_SUFFIX:-}" == "" ]]; then
+  echo "'BUILD_DIR_SUFFIX' must be specified."
+  echo
+  exit 1
+fi
+
+
 # Docker
 if [[ "${USING_DOCKER}" == "no" ]]; then
   declare DOCKER_PREFIX=""
@@ -129,7 +143,7 @@ fi
 
 # Build directory
 if [[ "${BUILD_DIRNAME:-}" == "" ]]; then
-  declare -r BUILD_DIRNAME=build-${CLION_PREFIX}${DOCKER_PREFIX}${C_COMPILER}-${C_BUILD_TYPE}
+  declare -r BUILD_DIRNAME=build-${CLION_PREFIX}${DOCKER_PREFIX}${C_COMPILER}-${C_BUILD_TYPE}-${BUILD_DIR_SUFFIX}
 fi
 if [[ ${BUILD_DIRNAME} != build* ]]; then
   echo "ERROR: Build dirname must start with \"build\". Not this: BUILD_DIRNAME = \"${BUILD_DIRNAME}\""

@@ -2,6 +2,8 @@
 
 #ifdef GOOM_DEBUG
 #undef NDEBUG
+
+#define DO_GOOM_STATE_DUMP
 #endif
 
 #define UNUSED_FOR_NDEBUG(x) ((void)(x))
