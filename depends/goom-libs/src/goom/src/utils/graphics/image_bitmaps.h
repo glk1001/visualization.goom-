@@ -11,14 +11,14 @@ class ImageBitmap
 {
 public:
   ImageBitmap() noexcept = default;
-  explicit ImageBitmap(std::string imageFilename);
+  explicit ImageBitmap(const std::string& imageFilename);
 
-  void Load(std::string imageFilename);
+  auto Load(const std::string& imageFilename) -> void;
 
-  [[nodiscard]] auto GetWidth() const -> uint32_t;
-  [[nodiscard]] auto GetHeight() const -> uint32_t;
+  [[nodiscard]] auto GetWidth() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetHeight() const noexcept -> uint32_t;
 
-  auto operator()(size_t x, size_t y) const -> Pixel;
+  auto operator()(size_t x, size_t y) const noexcept -> Pixel;
 
 private:
   struct RGB
@@ -33,26 +33,26 @@ private:
   using Buffer = std::vector<RGB>;
   Buffer m_buff{};
   std::string m_filename{};
-  void SetPixel(size_t x, size_t y, const RGB& pixel);
-  void Resize(size_t width, size_t height);
+  auto SetPixel(size_t x, size_t y, const RGB& pixel) noexcept -> void;
+  auto Resize(size_t width, size_t height) noexcept -> void;
 };
 
-inline ImageBitmap::ImageBitmap(std::string imageFilename)
+inline ImageBitmap::ImageBitmap(const std::string& imageFilename)
 {
-  Load(std::move(imageFilename));
+  Load(imageFilename);
 }
 
-inline auto ImageBitmap::GetWidth() const -> uint32_t
+inline auto ImageBitmap::GetWidth() const noexcept -> uint32_t
 {
   return m_width;
 }
 
-inline auto ImageBitmap::GetHeight() const -> uint32_t
+inline auto ImageBitmap::GetHeight() const noexcept -> uint32_t
 {
   return m_height;
 }
 
-inline auto ImageBitmap::operator()(const size_t x, const size_t y) const -> Pixel
+inline auto ImageBitmap::operator()(const size_t x, const size_t y) const noexcept -> Pixel
 {
   const RGB& pixel = m_buff.at((y * m_width) + x);
   return Pixel{{pixel.red, pixel.green, pixel.blue, pixel.alpha}};

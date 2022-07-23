@@ -26,7 +26,7 @@ public:
   static constexpr size_t MIN_IMAGE_SIZE = 3;
   static constexpr size_t MAX_IMAGE_SIZE = 21;
 
-  explicit SmallImageBitmaps(std::string resourcesDirectory);
+  explicit SmallImageBitmaps(const std::string& resourcesDirectory);
   SmallImageBitmaps(const SmallImageBitmaps&) noexcept = delete;
   SmallImageBitmaps(SmallImageBitmaps&&) noexcept = delete;
   ~SmallImageBitmaps() noexcept;

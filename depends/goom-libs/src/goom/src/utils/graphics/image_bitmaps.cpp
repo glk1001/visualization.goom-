@@ -17,21 +17,21 @@
 namespace GOOM::UTILS::GRAPHICS
 {
 
-void ImageBitmap::Resize(const size_t width, const size_t height)
+auto ImageBitmap::Resize(const size_t width, const size_t height) noexcept -> void
 {
   m_width = static_cast<uint32_t>(width);
   m_height = static_cast<uint32_t>(height);
   m_buff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
 }
 
-inline void ImageBitmap::SetPixel(const size_t x, const size_t y, const RGB& pixel)
+inline auto ImageBitmap::SetPixel(const size_t x, const size_t y, const RGB& pixel) noexcept -> void
 {
   m_buff.at((y * m_width) + x) = pixel;
 }
 
-void ImageBitmap::Load(std::string imageFilename)
+void ImageBitmap::Load(const std::string& imageFilename)
 {
-  m_filename = std::move(imageFilename);
+  m_filename = imageFilename;
 
   int width{};
   int height{};

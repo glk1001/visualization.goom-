@@ -10,7 +10,6 @@
 #include <array>
 #include <format>
 #include <string>
-#include <utility>
 
 namespace GOOM::UTILS::GRAPHICS
 {
@@ -21,8 +20,8 @@ const std::array<std::string, NUM<SmallImageBitmaps::ImageNames>> SmallImageBitm
     "circle", "sphere", "pink-flower", "red-flower", "orange-flower", "white-flower",
 };
 
-SmallImageBitmaps::SmallImageBitmaps(std::string resourcesDirectory)
-  : m_resourcesDirectory{std::move(resourcesDirectory)}
+SmallImageBitmaps::SmallImageBitmaps(const std::string& resourcesDirectory)
+  : m_resourcesDirectory{resourcesDirectory}
 {
   static constexpr size_t BY_TWO = 2;
   for (size_t res = MIN_IMAGE_SIZE; res <= MAX_IMAGE_SIZE; res += BY_TWO)

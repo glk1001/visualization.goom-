@@ -11,7 +11,9 @@
 namespace GOOM::UNIT_TESTS
 {
 
+#ifndef NDEBUG
 using Catch::Matchers::StartsWith;
+#endif
 using UTILS::MATH::RAND::GetRand;
 using UTILS::MATH::RAND::GetRandInRange;
 using UTILS::MATH::RAND::GetRandSeed;
@@ -94,15 +96,15 @@ TEST_CASE("repeatable random sequence")
   REQUIRE(fseq1 != fseq3);
 }
 
-template<typename valtype>
-auto GetMinMax(const size_t numLoop, const valtype& nMin, const valtype& nMax)
-    -> std::tuple<valtype, valtype>
+template<typename Valtype>
+auto GetMinMax(const size_t numLoop, const Valtype& nMin, const Valtype& nMax)
+    -> std::tuple<Valtype, Valtype>
 {
-  valtype min = std::numeric_limits<valtype>::max();
-  valtype max = std::numeric_limits<valtype>::min();
+  Valtype min = std::numeric_limits<Valtype>::max();
+  Valtype max = std::numeric_limits<Valtype>::min();
   for (size_t i = 0; i < numLoop; i++)
   {
-    valtype r = GetRandInRange(nMin, nMax);
+    Valtype r = GetRandInRange(nMin, nMax);
     if (r < min)
     {
       min = r;
@@ -120,92 +122,98 @@ TEST_CASE("uint32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr size_t numLoop = 100000;
+  static constexpr size_t NUM_LOOP = 100000;
 
-  static constexpr uint32_t nMin1 = 999;
-  static constexpr uint32_t nMax1 = 10001;
-  const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
-  REQUIRE(min1 == nMin1);
-  REQUIRE(max1 == nMax1 - 1);
+  static constexpr uint32_t N_MIN1 = 999;
+  static constexpr uint32_t N_MAX1 = 10001;
+  const auto [min1, max1] = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
+  REQUIRE(min1 == N_MIN1);
+  REQUIRE(max1 == N_MAX1 - 1);
 
-  static constexpr uint32_t nMin2 = 0;
-  static constexpr uint32_t nMax2 = 120;
-  const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
-  REQUIRE(min2 == nMin2);
-  REQUIRE(max2 == nMax2 - 1);
+  static constexpr uint32_t N_MIN2 = 0;
+  static constexpr uint32_t N_MAX2 = 120;
+  const auto [min2, max2] = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
+  REQUIRE(min2 == N_MIN2);
+  REQUIRE(max2 == N_MAX2 - 1);
 
   REQUIRE_NOTHROW(GetRandInRange(5U, 6U));
+#ifndef NDEBUG
   REQUIRE_THROWS_WITH(GetRandInRange(5U, 1U), StartsWith("uint n0"));
+#endif
 }
 
 TEST_CASE("int32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr size_t numLoop = 100000;
+  static constexpr size_t NUM_LOOP = 100000;
 
-  static constexpr int32_t nMin1 = -999;
-  static constexpr int32_t nMax1 = 10001;
-  const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
-  REQUIRE(min1 == nMin1);
-  REQUIRE(max1 == nMax1 - 1);
+  static constexpr int32_t N_MIN1 = -999;
+  static constexpr int32_t N_MAX1 = 10001;
+  const auto [min1, max1] = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
+  REQUIRE(min1 == N_MIN1);
+  REQUIRE(max1 == N_MAX1 - 1);
 
-  static constexpr int32_t nMin2 = -999;
-  static constexpr int32_t nMax2 = -50;
-  const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
-  REQUIRE(min2 == nMin2);
-  REQUIRE(max2 == nMax2 - 1);
+  static constexpr int32_t N_MIN2 = -999;
+  static constexpr int32_t N_MAX2 = -50;
+  const auto [min2, max2] = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
+  REQUIRE(min2 == N_MIN2);
+  REQUIRE(max2 == N_MAX2 - 1);
 
-  static constexpr int32_t nMin3 = 1;
-  static constexpr int32_t nMax3 = 999;
-  const auto [min3, max3] = GetMinMax(numLoop, nMin3, nMax3);
-  REQUIRE(min3 == nMin3);
-  REQUIRE(max3 == nMax3 - 1);
+  static constexpr int32_t N_MIN3 = 1;
+  static constexpr int32_t N_MAX3 = 999;
+  const auto [min3, max3] = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
+  REQUIRE(min3 == N_MIN3);
+  REQUIRE(max3 == N_MAX3 - 1);
 
-  static constexpr int32_t nMin4 = 0;
-  static constexpr int32_t nMax4 = 635;
-  const auto [min4, max4] = GetMinMax(numLoop, nMin4, nMax4);
-  REQUIRE(min4 == nMin4);
-  REQUIRE(max4 == nMax4 - 1);
+  static constexpr int32_t N_MIN4 = 0;
+  static constexpr int32_t N_MAX4 = 635;
+  const auto [min4, max4] = GetMinMax(NUM_LOOP, N_MIN4, N_MAX4);
+  REQUIRE(min4 == N_MIN4);
+  REQUIRE(max4 == N_MAX4 - 1);
 
   REQUIRE_NOTHROW(GetRandInRange(5, 6));
   REQUIRE_NOTHROW(GetRandInRange(-6, -5));
   REQUIRE_NOTHROW(GetRandInRange(-6, 10));
+#ifndef NDEBUG
   REQUIRE_THROWS_WITH(GetRandInRange(-5, -6), StartsWith("int n0"));
   REQUIRE_THROWS_WITH(GetRandInRange(5, 1), StartsWith("int n0"));
   REQUIRE_THROWS_WITH(GetRandInRange(5, -1), StartsWith("int n0"));
+#endif
 }
 
 TEST_CASE("float min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr size_t numLoop = 1000000;
+  static constexpr size_t NUM_LOOP = 1000000;
 
-  static constexpr float nMin1 = 0;
-  static constexpr float nMax1 = 1;
-  const auto [min1, max1] = GetMinMax(numLoop, nMin1, nMax1);
-  REQUIRE(std::fabs(min1 - nMin1) < 0.0001F);
-  REQUIRE(std::fabs(max1 - nMax1) < 0.0001F);
+  static constexpr float N_MIN1 = 0;
+  static constexpr float N_MAX1 = 1;
+  const auto [min1, max1] = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
+  REQUIRE(std::fabs(min1 - N_MIN1) < 0.0001F);
+  REQUIRE(std::fabs(max1 - N_MAX1) < 0.0001F);
 
-  static constexpr float nMin2 = -1;
-  static constexpr float nMax2 = 0;
-  const auto [min2, max2] = GetMinMax(numLoop, nMin2, nMax2);
-  REQUIRE(std::fabs(min2 - nMin2) < 0.0001F);
-  REQUIRE(std::fabs(max2 - nMax2) < 0.0001F);
+  static constexpr float N_MIN2 = -1;
+  static constexpr float N_MAX2 = 0;
+  const auto [min2, max2] = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
+  REQUIRE(std::fabs(min2 - N_MIN2) < 0.0001F);
+  REQUIRE(std::fabs(max2 - N_MAX2) < 0.0001F);
 
-  static constexpr float nMin3 = -10;
-  static constexpr float nMax3 = +10;
-  const auto [min3, max3] = GetMinMax(numLoop, nMin3, nMax3);
-  REQUIRE(std::fabs(min3 - nMin3) < 0.0001F);
-  REQUIRE(std::fabs(max3 - nMax3) < 0.0001F);
+  static constexpr float N_MIN3 = -10;
+  static constexpr float N_MAX3 = +10;
+  const auto [min3, max3] = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
+  REQUIRE(std::fabs(min3 - N_MIN3) < 0.0001F);
+  REQUIRE(std::fabs(max3 - N_MAX3) < 0.0001F);
 
   REQUIRE_NOTHROW(GetRandInRange(5.0F, 6.0F));
   REQUIRE_NOTHROW(GetRandInRange(-6.0F, -5.0F));
   REQUIRE_NOTHROW(GetRandInRange(-6.0F, 10.0F));
+#ifndef NDEBUG
   REQUIRE_THROWS_WITH(GetRandInRange(-5.0F, -6.0F), StartsWith("float x0"));
   REQUIRE_THROWS_WITH(GetRandInRange(5.0F, 1.0F), StartsWith("float x0"));
   REQUIRE_THROWS_WITH(GetRandInRange(5.0F, -1.0F), StartsWith("float x0"));
+#endif
 }
 
 } // namespace GOOM::UNIT_TESTS

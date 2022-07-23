@@ -31,7 +31,6 @@
 using GOOM::AudioSamples;
 using GOOM::GetCompilerVersion;
 using GOOM::GoomControl;
-using GOOM::Pixel;
 using GOOM::PixelBuffer;
 using GOOM::UTILS::Logging;
 #ifdef SAVE_AUDIO_BUFFERS
@@ -136,7 +135,7 @@ auto CVisualizationGoom::Start(const int numChannels,
 inline auto CVisualizationGoom::StartWithNoCatch(const int numChannels,
                                                  const int samplesPerSec,
                                                  const int bitsPerSample,
-                                                 const std::string songName) -> bool
+                                                 const std::string& songName) -> bool
 {
   return StartVis(numChannels, samplesPerSec, bitsPerSample, songName);
 }
@@ -144,7 +143,7 @@ inline auto CVisualizationGoom::StartWithNoCatch(const int numChannels,
 auto CVisualizationGoom::StartWithCatch(const int numChannels,
                                         const int samplesPerSec,
                                         const int bitsPerSample,
-                                        const std::string songName) -> bool
+                                        const std::string& songName) -> bool
 {
   try
   {
@@ -160,7 +159,7 @@ auto CVisualizationGoom::StartWithCatch(const int numChannels,
 inline auto CVisualizationGoom::StartVis(const int numChannels,
                                          [[maybe_unused]] const int samplesPerSec,
                                          [[maybe_unused]] const int bitsPerSample,
-                                         [[maybe_unused]] const std::string songName) -> bool
+                                         [[maybe_unused]] const std::string& songName) -> bool
 {
   StartLogging();
 
@@ -199,12 +198,12 @@ void CVisualizationGoom::SetNumChannels(const int numChannels)
 
 void CVisualizationGoom::StartLogging()
 {
-  static const auto s_fKodiLog = [](const Logging::LogLevel lvl, const std::string& msg)
+  static const auto s_KODI_LOGGER = [](const Logging::LogLevel lvl, const std::string& msg)
   {
     const auto kodiLvl = static_cast<AddonLogEnum>(static_cast<size_t>(lvl));
     kodi::Log(kodiLvl, msg.c_str());
   };
-  AddLogHandler("kodi-logger", s_fKodiLog);
+  AddLogHandler("kodi-logger", s_KODI_LOGGER);
   SetLogDoDateTime(false);
   LogStart();
 }
@@ -683,7 +682,7 @@ auto CVisualizationGoom::CreateGlTexture() -> bool
 #endif
   static constexpr GLint LEVEL = 0;
   static constexpr GLint BORDER = 0;
-  static constexpr void* const NULL_DATA = nullptr;
+  static constexpr const void* NULL_DATA = nullptr;
   glTexImage2D(GL_TEXTURE_2D, LEVEL, TEXTURE_SIZED_INTERNAL_FORMAT,
                static_cast<GLsizei>(m_textureWidth), static_cast<GLsizei>(m_textureHeight), BORDER,
                TEXTURE_FORMAT, TEXTURE_DATA_TYPE, NULL_DATA);
@@ -844,7 +843,7 @@ inline void CVisualizationGoom::RenderGlPBOPixelBuffer(const GOOM::PixelBuffer& 
   static constexpr GLint LEVEL = 0;
   static constexpr GLint X_OFFSET = 0;
   static constexpr GLint Y_OFFSET = 0;
-  static constexpr void* const NULL_PIXELS = nullptr;
+  static constexpr const void* NULL_PIXELS = nullptr;
   glTexSubImage2D(GL_TEXTURE_2D, LEVEL, X_OFFSET, Y_OFFSET, static_cast<GLsizei>(m_textureWidth),
                   static_cast<GLsizei>(m_textureHeight), TEXTURE_FORMAT, TEXTURE_DATA_TYPE,
                   NULL_PIXELS);
@@ -885,14 +884,14 @@ inline void CVisualizationGoom::SetGlShaderValues(
     glUniform1f(m_uTexContrastLoc, goomShaderEffects.contrast);
     glUniform1f(m_uTexContrastMinChannelValueLoc, goomShaderEffects.contrastMinChannelValue);
   }
-  static GLint m_time = 0;
-  ++m_time;
-  glUniform1i(m_uTimeLoc, m_time);
+  static GLint s_time = 0;
+  ++s_time;
+  glUniform1i(m_uTimeLoc, s_time);
 }
 
 #ifdef SAVE_AUDIO_BUFFERS
 
-[[nodiscard]] auto ReplaceIllegalFilenameChars(const std::string str) noexcept -> std::string
+[[nodiscard]] auto ReplaceIllegalFilenameChars(const std::string& str) noexcept -> std::string
 {
   std::string legalStr = str;
 

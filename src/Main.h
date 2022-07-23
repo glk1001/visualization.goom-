@@ -195,15 +195,15 @@ private:
   [[nodiscard]] auto StartWithCatch(int numChannels,
                                     int samplesPerSec,
                                     int bitsPerSample,
-                                    std::string songName) -> bool;
+                                    const std::string& songName) -> bool;
   [[nodiscard]] auto StartWithNoCatch(int numChannels,
                                       int samplesPerSec,
                                       int bitsPerSample,
-                                      std::string songName) -> bool;
+                                      const std::string& songName) -> bool;
   [[nodiscard]] auto StartVis(int numChannels,
                               int samplesPerSec,
                               int bitsPerSample,
-                              std::string songName) -> bool;
+                              const std::string& songName) -> bool;
 
   void StopWithCatch();
   void StopWithNoCatch();
