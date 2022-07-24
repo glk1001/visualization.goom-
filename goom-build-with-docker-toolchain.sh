@@ -19,4 +19,5 @@ docker run --rm                                             \
                     ${DOCKER_GOOM_DIR}/goom-build.sh        \
                       --docker                              \
                       --compiler ${COMPILER}                \
-                      --build-type ${BUILD_TYPE}"
+                      --build-type ${BUILD_TYPE}            \
+                      --suffix ${BUILD_DIR_SUFFIX}"

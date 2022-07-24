@@ -13,15 +13,22 @@ else
 fi
 
 declare -r REMOTE_HOST=$1
-declare -r REMOTE_KODI_HOME_DIR=$2
+declare -r REMOTE_KODI_BUILD_DIR=$2
+declare -r REMOTE_KODI_GOOM_DIR=${REMOTE_KODI_BUILD_DIR}/..
 
 if ! ping -q -c 2 ${REMOTE_HOST} ; then
-  echo "Could not connect to host \"${REMOTE_HOST}\"."
+  echo "Could not connect to remote host \"${REMOTE_HOST}\"."
   exit 1
 fi
 
 echo
-echo "Rsyncing \"${THIS_SCRIPT_PATH}/\" to \"${REMOTE_HOST}:${REMOTE_KODI_HOME_DIR}/\""
+echo "Rsyncing \"${THIS_SCRIPT_PATH}/../goom-docker-paths.sh\" to \"${REMOTE_HOST}:${REMOTE_KODI_GOOM_DIR}/\""
 echo
+ssh ${REMOTE_HOST} mkdir -p ${REMOTE_KODI_GOOM_DIR}
+rsync ${DRY_RUN} -avh "${THIS_SCRIPT_PATH}/../goom-docker-paths.sh" "${REMOTE_HOST}:${REMOTE_KODI_GOOM_DIR}/"
 
-rsync ${DRY_RUN} -avh --exclude=remote-copy-to.sh "${THIS_SCRIPT_PATH}/" "${REMOTE_HOST}:${REMOTE_KODI_HOME_DIR}/"
+echo
+echo "Rsyncing \"${THIS_SCRIPT_PATH}/\" to \"${REMOTE_HOST}:${REMOTE_KODI_BUILD_DIR}/\""
+echo
+ssh ${REMOTE_HOST} mkdir -p ${REMOTE_KODI_BUILD_DIR}
+rsync ${DRY_RUN} -avh --delete --exclude=remote-copy-to.sh "${THIS_SCRIPT_PATH}/" "${REMOTE_HOST}:${REMOTE_KODI_BUILD_DIR}/"

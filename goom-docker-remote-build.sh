@@ -8,18 +8,37 @@ declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 source "${THIS_SCRIPT_PATH}/goom-docker-paths.sh"
 
 
-if [[ "${1:-}" != "--no-cache" ]]; then
-  declare -r NO_CACHE=
-else
-  declare -r NO_CACHE="--no-cache"
-  shift
+declare EXTRA_ARGS=""
+declare REMOTE_HOST=""
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    --remote-host)
+      REMOTE_HOST=${2}
+      shift # past argument
+      shift # past value
+      ;;
+    *)
+      EXTRA_ARGS="${EXTRA_ARGS}${key} "
+      shift # past argument
+      ;;
+    *)
+  esac
+done
+
+set -- ${EXTRA_ARGS}
+unset EXTRA_ARGS
+
+
+if [[ "${REMOTE_HOST}" == "" ]] ; then
+  echo "Youd need to provide \"--remote-host\"."
+  exit 1
 fi
-
-declare REMOTE_HOST=$1
-
 if ! ping -q -c 2 ${REMOTE_HOST} ; then
-  echo "Could not connect to host \"${REMOTE_HOST}\"."
+  echo "Could not connect to remote host \"${REMOTE_HOST}\"."
   exit 1
 fi
 
-ssh ${REMOTE_HOST} "bash "${REMOTE_KODI_HOME_DIR}/build-all.sh" ${NO_CACHE} $@"
+ssh ${REMOTE_HOST} "bash "${REMOTE_KODI_BUILD_DIR}/build-all.sh" $@"

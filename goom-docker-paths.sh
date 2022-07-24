@@ -22,24 +22,6 @@ if [[ ! -d "${DOCKERIZE_KODI_DIR}" ]]; then
   exit 1
 fi
 
-declare -r KODI_BUILD_ROOT_DIR=$(realpath ${GOOM_DOCKER_PATHS_SCRIPT_PATH}/../xbmc/kodi-build/addons)
-
-declare -r KODI_BUILD_LIB_DIR=${KODI_BUILD_ROOT_DIR}/lib/addons/visualization.goom
-if [[ ! -d "${KODI_BUILD_LIB_DIR}" ]]; then
-  echo "ERROR: Could not find kodi build lib directory \"${KODI_BUILD_LIB_DIR}\"."
-  exit 1
-fi
-declare -r KODI_BUILD_SHARE_DIR=${KODI_BUILD_ROOT_DIR}/share/kodi/addons/visualization.goom
-if [[ ! -d "${KODI_BUILD_SHARE_DIR}" ]]; then
-  echo "ERROR: Could not find kodi build share directory \"${KODI_BUILD_SHARE_DIR}\"."
-  exit 1
-fi
-declare -r KODI_BUILD_RESOURCES_DIR=${KODI_BUILD_SHARE_DIR}/resources
-if [[ ! -d "${KODI_BUILD_RESOURCES_DIR}" ]]; then
-  echo "ERROR: Could not find kodi build resources directory \"${KODI_BUILD_RESOURCES_DIR}\"."
-  exit 1
-fi
-
 declare -r KODI_DOCKER_FILES_DIR=${GOOM_DOCKER_PATHS_SCRIPT_PATH}/dockerize-kodi-goom/files
 if [[ ! -d "${KODI_DOCKER_FILES_DIR}" ]]; then
   echo "ERROR: Could not find kodi docker files directory \"${KODI_DOCKER_FILES_DIR}\"."
@@ -70,7 +52,7 @@ fi
 
 declare -r KODI_IMAGE_OS_TYPE=ubuntu
 declare -r KODI_IMAGE_OS_TAG=impish
-# Use ubuntu impish so we get python 3.9. There is a problem is with python 3.10 and sqlite3
+# Use ubuntu impish so we get python 3.9. There is a problem with python 3.10 and sqlite3
 # which affects the Spotify plugin. See https://bbs.archlinux.org/viewtopic.php?id=272121
 
 declare -r KODI_IMAGE_NAME="${KODI_IMAGE_OS_TYPE}-${KODI_IMAGE_OS_TAG}/kodi-${KODI_VERSION}"
@@ -80,7 +62,9 @@ declare -r KODI_LIRC_IMAGE="${KODI_IMAGE_NAME}:lirc"
 declare -r KODI_GOOM_IMAGE="${KODI_IMAGE_NAME}:goom-dev"
 
 declare -r KODI_CONTAINER_HOME_DIR="${HOME}/docker/kodi-${KODI_VERSION}"
-declare -r REMOTE_KODI_HOME_DIR="${HOME}/Prj/Docker/kodi-${KODI_VERSION}"
 
 declare -r KODI_CONTAINER_NAME="kodi_goom_dev"
 declare -r MUSIC_SHARE="/mnt/Music"
+
+declare -r REMOTE_KODI_GOOM_DIR="${HOME}/Prj/github/xbmc/visualization.goom"
+declare -r REMOTE_KODI_BUILD_DIR="${REMOTE_KODI_GOOM_DIR}/dockerize-kodi-goom"

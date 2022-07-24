@@ -20,4 +20,5 @@ docker run --rm                                               \
                       --docker                                \
                       --compiler ${COMPILER}                  \
                       --build-type ${BUILD_TYPE}              \
+                      --suffix ${BUILD_DIR_SUFFIX}            \
                       --kodi-root-dir ${DOCKER_KODI_ROOT_DIR}"

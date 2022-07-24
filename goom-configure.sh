@@ -62,11 +62,12 @@ fi
 
 #cmake -D CMAKE_C_COMPILER=${C_COMPILER}
 #      -D CMAKE_CXX_COMPILER=${CPP_COMPILER}
-cmake -DIS_THIS_MAIN_CMAKE_SCRIPT=1 \
-      -DENABLE_TESTING=1            \
-      -DUSE_MAGIC_ENUM=1            \
-      -DOVERRIDE_PATHS=1            \
-      ${KODI_ROOT_DIR_OPTION}       \
+cmake -DIS_THIS_MAIN_CMAKE_SCRIPT=1    \
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+      -DENABLE_TESTING=1               \
+      -DUSE_MAGIC_ENUM=1               \
+      -DOVERRIDE_PATHS=1               \
+      ${KODI_ROOT_DIR_OPTION}          \
       ..
 
 echo
