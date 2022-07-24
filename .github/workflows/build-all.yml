@@ -1,7 +1,7 @@
 name: build goom-lib
 on:
   push:
-    branches: [goom_plus_plus_working]
+    branches: [master]
   pull_request:
     branches: []
 
