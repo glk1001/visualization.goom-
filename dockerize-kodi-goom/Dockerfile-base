@@ -11,6 +11,7 @@ ARG TIME_ZONE=Australia/Melbourne
 #       'psmisc' is needed for 'killall'.
 
 ARG KODI_PPA=""
+ARG END_OF_LIFE="no"
 
 ARG KODI_ESSENTIAL_PACKAGES=" \
   ca-certificates             \
@@ -29,7 +30,10 @@ ARG KODI_EXTRA_PACKAGES="     \
 
 ARG KODI_PACKAGES="${KODI_ESSENTIAL_PACKAGES} ${KODI_EXTRA_PACKAGES}"
 
-RUN apt-get update                                                        && \
+RUN if [ "${END_OF_LIFE}" = "yes" ] ; then                                   \
+      sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list ; \
+    fi                                                                    && \
+    apt-get update                                                        && \
     apt-get install -y gpg-agent                                          && \
     apt-get install -y --no-install-recommends software-properties-common && \
     add-apt-repository -y ${KODI_PPA}                                     && \

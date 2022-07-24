@@ -32,14 +32,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 
-if [[ "${IS_USER_ADDON}" == "yes" ]]; then
-  # Copying files to "/tmp" in Docker means the files will be lost when container starts.
-  # We want this for user addon files because they are seperately copied to the kodi home addons directory.
-  declare -r KODI_GOOM_LIB_DIR=/tmp
-  declare -r KODI_GOOM_ADDON_DIR=/tmp
+if [[ "${NO_CACHE}" != "" ]]; then
+  echo "Building \"${KODI_GOOM_IMAGE}\" with '--no-cache'..."
 else
-  declare -r KODI_GOOM_LIB_DIR=/usr/lib/x86_64-linux-gnu/kodi/addons/visualization.goom
-  declare -r KODI_GOOM_ADDON_DIR=/usr/share/kodi/addons/visualization.goom
+  echo "Building \"${KODI_GOOM_IMAGE}\"..."
 fi
 
 if [[ "${KODI_VERSION}" == "matrix" ]]; then
@@ -51,17 +47,28 @@ else
   exit 1
 fi
 
-if [[ "${NO_CACHE}" != "" ]]; then
-  echo "Building \"${KODI_GOOM_IMAGE}\" with '--no-cache'..."
+if [[ "${IS_USER_ADDON}" == "no" ]]; then
+  # Copy add-ons to Kodi system directories.
+  declare -r KODI_GOOM_LIB_DIR=/usr/lib/x86_64-linux-gnu/kodi/addons/visualization.goom
+  declare -r KODI_GOOM_ADDON_DIR=/usr/share/kodi/addons/visualization.goom
 else
-  echo "Building \"${KODI_GOOM_IMAGE}\"..."
+  # Copying files to "/tmp" in Docker means the files will be lost when the container starts.
+  # We want this for user add-on files because they are copied seperately to the Kodi home
+  # add-ons directory and we don't want them in the Kodi system directories.
+  declare -r KODI_GOOM_LIB_DIR=/tmp
+  declare -r KODI_GOOM_ADDON_DIR=/tmp
 fi
 
+if [[ "${KODI_IMAGE_OS_TAG}" != "impish" ]]; then
+  declare -r END_OF_LIFE="no"
+else
+  declare -r END_OF_LIFE="yes"
+fi
 
 cd "${THIS_SCRIPT_PATH}"
 
 declare -r BUILD_BASE_ARGS="--build-arg OS_TYPE=${KODI_IMAGE_OS_TYPE} --build-arg OS_TAG=${KODI_IMAGE_OS_TAG}\
-                            --build-arg KODI_PPA=${KODI_PPA}"
+                            --build-arg KODI_PPA=${KODI_PPA} --build-arg END_OF_LIFE=${END_OF_LIFE}"
 declare -r BUILD_SPOTIFY_ARGS="--build-arg KODI_BASE_IMAGE=${KODI_BASE_IMAGE}"
 declare -r BUILD_LIRC_ARGS="--build-arg KODI_SPOTIFY_IMAGE=${KODI_SPOTIFY_IMAGE}"
 declare -r BUILD_GOOM_ARGS="--build-arg KODI_LIRC_IMAGE=${KODI_LIRC_IMAGE} --build-arg GOOM_VERSION=${GOOM_VERSION}\
@@ -84,7 +91,7 @@ if [[ "${IS_USER_ADDON}" == "yes" ]]; then
   rsync -avh "${KODI_DOCKER_FILES_DIR}/addon.xml" "${CONTAINER_GOOM_ADDON_DIR}/addon.xml"
   echo
   echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/resources/\" to \"${CONTAINER_GOOM_ADDON_DIR}resources/\""
-  rsync --out-format="%n" --itemize-changes -a "${KODI_DOCKER_FILES_DIR}/resources/" "${CONTAINER_GOOM_ADDON_DIR}/resources/"
+  rsync --delete --out-format="%n" --itemize-changes -a "${KODI_DOCKER_FILES_DIR}/resources/" "${CONTAINER_GOOM_ADDON_DIR}/resources/"
 fi
 
 cd - >/dev/null
