@@ -62,6 +62,7 @@ public:
   auto SetMovingTargetPoint(const Point2dInt& movingTargetPoint,
                             float lerpTFromFixedTarget) noexcept -> void;
   auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept -> void;
+  auto SetBlankTime(uint32_t blankTime) noexcept -> void;
 
   auto Start() noexcept -> void;
   auto UpdatePositionSpeed(uint32_t newNumSteps) noexcept -> void;
@@ -90,8 +91,8 @@ private:
   uint32_t m_dotAttributeOffset = 0;
   [[nodiscard]] auto IsSpecialUpdateNum() const noexcept -> bool;
   [[nodiscard]] auto IsSpecialLineUpdateNum() const noexcept -> bool;
-  static constexpr uint32_t BLANK_TIME = 20;
-  UTILS::Timer m_blankTimer{BLANK_TIME, true};
+  static constexpr uint32_t DEFAULT_BLANK_TIME = 50;
+  UTILS::Timer m_blankTimer{DEFAULT_BLANK_TIME, true};
 
   auto UpdateTime() noexcept -> void;
   auto ResetNumSteps() noexcept -> void;

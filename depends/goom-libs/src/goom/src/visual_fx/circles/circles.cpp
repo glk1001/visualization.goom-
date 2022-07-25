@@ -63,6 +63,12 @@ auto Circles::SetWeightedColorMaps(
                 { circle.SetWeightedColorMaps(weightedMaps, weightedLowMaps); });
 
   m_bitmapGetter.ChangeCurrentBitmap();
+
+  static constexpr uint32_t MIN_BLANK_TIME = 30;
+  static constexpr uint32_t MAX_BLANK_TIME = 100;
+  const uint32_t newBlankTime = m_goomRand.GetRandInRange(MIN_BLANK_TIME, MAX_BLANK_TIME + 1);
+  std::for_each(begin(m_circles), end(m_circles),
+                [&newBlankTime](Circle& circle) { circle.SetBlankTime(newBlankTime); });
 }
 
 auto Circles::SetNewTargetPoints() noexcept -> void
@@ -72,7 +78,7 @@ auto Circles::SetNewTargetPoints() noexcept -> void
     return;
   }
 
-  const float lerpTFromFixedTarget = m_goomRand.GetRandInRange(0.0F, 0.5F);
+  const float lerpTFromFixedTarget = m_goomRand.GetRandInRange(0.0F, 0.7F);
 
   m_circles.front().SetMovingTargetPoint(GetCentreCircleTargetPoint(), lerpTFromFixedTarget);
 
@@ -119,7 +125,7 @@ auto Circles::UpdatePositionSpeed() noexcept -> void
   }
 
   static constexpr uint32_t MIN_POSITION_STEPS = 100;
-  static constexpr uint32_t MAX_POSITION_STEPS = 600;
+  static constexpr uint32_t MAX_POSITION_STEPS = 1000;
   const uint32_t newNumSteps = std::min(
       MIN_POSITION_STEPS + m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom(), MAX_POSITION_STEPS);
 

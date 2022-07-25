@@ -15,7 +15,7 @@ public:
   explicit Timer(uint32_t numCount, bool setToFinished = false) noexcept;
 
   [[nodiscard]] auto GetTimeLimit() const noexcept -> uint32_t;
-  auto SetTimeLimit(uint32_t val) noexcept -> void;
+  auto SetTimeLimit(uint32_t val, bool setToFinished = false) noexcept -> void;
   auto ResetToZero() noexcept -> void;
   auto SetToFinished() noexcept -> void;
 
@@ -84,10 +84,18 @@ inline auto Timer::GetTimeLimit() const noexcept -> uint32_t
   return m_numCount;
 }
 
-inline auto Timer::SetTimeLimit(const uint32_t val) noexcept -> void
+inline auto Timer::SetTimeLimit(const uint32_t val, const bool setToFinished) noexcept -> void
 {
   m_numCount = val;
-  m_count = 0;
+
+  if (setToFinished)
+  {
+    SetToFinished();
+  }
+  else
+  {
+    ResetToZero();
+  }
 }
 
 inline auto Timer::JustFinished() const noexcept -> bool

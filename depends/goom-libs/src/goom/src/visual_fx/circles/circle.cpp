@@ -220,6 +220,14 @@ auto Circle::SetWeightedColorMaps(
   m_maxChromaFactor = m_goomRand.GetRandInRange(MIN_MAX_CHROMA_FACTOR, MAX_MAX_CHROMA_FACTOR);
 }
 
+auto Circle::SetBlankTime(const uint32_t blankTime) noexcept -> void
+{
+  if (m_blankTimer.Finished())
+  {
+    m_blankTimer.SetTimeLimit(blankTime, true);
+  }
+}
+
 auto Circle::SetNewCircleCentreAndRadius(const Point2dInt& centre, const float radius) noexcept
     -> void
 {
