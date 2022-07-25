@@ -79,6 +79,7 @@ private:
   static constexpr float MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.1F;
   static constexpr float MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.9F;
   float m_outerCircleDotColorMix = MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T;
+  static constexpr float CIRCLE_DOT_MAIN_COLOR_BRIGHTNESS_FACTOR = 1.0F;
   static constexpr float CIRCLE_DOT_LOW_COLOR_BRIGHTNESS_FACTOR = 0.1F;
 
   auto DrawBitmapDot(const Point2dInt& position,
@@ -392,7 +393,7 @@ inline auto Circle::IsSpecialLineUpdateNum() const noexcept -> bool
 
 inline auto Circle::GetLineBrightness(const float brightness) const noexcept -> float
 {
-  static constexpr float BRIGHTNESS_INCREASE = 10.0F;
+  static constexpr float BRIGHTNESS_INCREASE = 5.0F;
   return IsSpecialUpdateNum() ? (BRIGHTNESS_INCREASE * brightness) : brightness;
 }
 
@@ -568,7 +569,7 @@ auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
   static constexpr int32_t INNER_COLOR_CUTOFF_RADIUS = 4;
 
   static constexpr float MIN_BRIGHTNESS = 1.0F;
-  static constexpr float MAX_BRIGHTNESS = 30.0F;
+  static constexpr float MAX_BRIGHTNESS = 10.0F;
   TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius)};
 
   // '> 1' means leave a little hole in the middle of the circles.
@@ -593,10 +594,10 @@ inline auto Circle::DotDrawer::GetCircleColors(const float brightness,
                                                const Pixel& mainColor,
                                                const Pixel& lowColor) noexcept -> MultiplePixels
 {
-  const Pixel finalMainColor = GetBrighterColor(brightness, mainColor);
-  const Pixel finalLowColor =
-      GetBrighterColor(CIRCLE_DOT_LOW_COLOR_BRIGHTNESS_FACTOR * brightness, lowColor);
-  return {finalMainColor, finalLowColor};
+  return {
+      GetBrighterColor(CIRCLE_DOT_MAIN_COLOR_BRIGHTNESS_FACTOR * brightness, mainColor),
+      GetBrighterColor(CIRCLE_DOT_LOW_COLOR_BRIGHTNESS_FACTOR * brightness, lowColor),
+  };
 }
 
 inline auto Circle::DotDrawer::GetCircleColorsWithInner(const float brightness,
@@ -606,13 +607,12 @@ inline auto Circle::DotDrawer::GetCircleColorsWithInner(const float brightness,
                                                         const float innerColorMix) noexcept
     -> MultiplePixels
 {
-  const Pixel finalMainColor =
-      GetBrighterColor(brightness, IColorMap::GetColorMix(mainColor, innerColor, innerColorMix));
-  const Pixel finalLowColor =
+  return {
+      GetBrighterColor(CIRCLE_DOT_MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
+                       IColorMap::GetColorMix(mainColor, innerColor, innerColorMix)),
       GetBrighterColor(CIRCLE_DOT_LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
-                       IColorMap::GetColorMix(lowColor, innerColor, innerColorMix));
-
-  return {finalMainColor, finalLowColor};
+                       IColorMap::GetColorMix(lowColor, innerColor, innerColorMix)),
+  };
 }
 
 auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& position,
@@ -669,8 +669,8 @@ inline auto Circle::DotDrawer::GetDotMixedColor(const size_t x,
     return mixedColor;
   }
 
-  static constexpr float DIFFERENT_COLOR_BRIGHTNESS = 5.0F;
-  static constexpr float SPECIAL_BRIGHTNESS = 5.0F;
+  static constexpr float DIFFERENT_COLOR_BRIGHTNESS = 2.0F;
+  static constexpr float SPECIAL_BRIGHTNESS = 2.0F;
 
   switch (m_decorationType)
   {
