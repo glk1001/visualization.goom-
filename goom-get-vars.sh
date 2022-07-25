@@ -3,10 +3,14 @@ if [[ "${THIS_SCRIPT_PATH}" == "" ]]; then
   exit 1
 fi
 
+source "${THIS_SCRIPT_PATH}/docker-toolchains/build-get-vars.sh"
+
 
 declare GOOM_VAR_CMD_LINE=""
 declare USING_DOCKER="no"
 declare USING_CLION="no"
+declare DOCKER_OS_TYPE="${DOCKER_BUILD_OS_TYPE}"
+declare DOCKER_OS_TAG="${DOCKER_BUILD_OS_TAG}"
 declare EXTRA_ARGS=""
 
 while [[ $# -gt 0 ]]; do
@@ -42,6 +46,18 @@ while [[ $# -gt 0 ]]; do
       GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --docker"
       shift # past argument
       ;;
+    --docker-os-type)
+      DOCKER_OS_TYPE=${2}
+      GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --docker-os-type ${DOCKER_OS_TYPE}"
+      shift # past argument
+      shift # past value
+      ;;
+    --docker-os-tag)
+      DOCKER_OS_TAG=${2}
+      GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --docker-os-tag ${DOCKER_OS_TAG}"
+      shift # past argument
+      shift # past value
+      ;;
     --clion)
       USING_CLION="yes"
       GOOM_VAR_CMD_LINE="${GOOM_VAR_CMD_LINE} --clion"
@@ -61,11 +77,10 @@ unset EXTRA_ARGS
 
 # Compilers
 if [[ "${COMPILER:-}" == "" ]]; then
-  echo "'COMPILER' must be specified."
+  echo "ERROR: 'COMPILER' must be specified."
   echo
   exit 1
 fi
-
 if [[ "${COMPILER}" == "gcc-11" ]]; then
   declare -r C_COMPILER=gcc-11
   declare -r CPP_COMPILER=g++-11
@@ -82,19 +97,17 @@ elif [[ "${COMPILER}" == "clang-15" ]]; then
   declare -r C_COMPILER=clang-15
   declare -r CPP_COMPILER=clang-15
 else
-  echo "Unknown compiler \"${COMPILER}\"."
+  echo "ERROR: Unknown compiler \"${COMPILER}\"."
   echo
   exit 1
 fi
-
 
 # Build type
 if [[ "${BUILD_TYPE:-}" == "" ]]; then
-  echo "'BUILD_TYPE' must be specified."
+  echo "ERROR: 'BUILD_TYPE' must be specified."
   echo
   exit 1
 fi
-
 if [[ "${BUILD_TYPE}" == "Debug" ]]; then
   declare -r C_BUILD_TYPE=Debug
 elif [[ "${BUILD_TYPE}" == "Release" ]]; then
@@ -102,19 +115,17 @@ elif [[ "${BUILD_TYPE}" == "Release" ]]; then
 elif [[ "${BUILD_TYPE}" == "RelWithDebInfo" ]]; then
   declare -r C_BUILD_TYPE=RelWithDebInfo
 else
-  echo "Unknown build type \"${BUILD_TYPE}\"."
+  echo "ERROR: Unknown build type \"${BUILD_TYPE}\"."
   echo
   exit 1
 fi
-
 
 # Suffix
 if [[ "${BUILD_DIR_SUFFIX:-}" == "" ]]; then
-  echo "'BUILD_DIR_SUFFIX' must be specified."
+  echo "ERROR: 'BUILD_DIR_SUFFIX' must be specified."
   echo
   exit 1
 fi
-
 
 # Docker
 if [[ "${USING_DOCKER}" == "no" ]]; then
@@ -123,15 +134,13 @@ else
   declare DOCKER_PREFIX="docker-"
 fi
 
-declare -r DOCKER_IMAGE=debian/cpp-env:1.1
-
 declare -r HOST_TIME_ZONE=$(cat /etc/timezone)
 declare -r HOST_CCACHE_DIR=${CCACHE_DIR}
 declare -r HOST_KODI_ROOT_DIR=$(realpath ${THIS_SCRIPT_PATH}/..)
 declare -r DOCKER_CCACHE_DIR=/tmp/ccache
-declare -r DOCKER_GOOM_DIR=/tmp/visualization.goom
 declare -r DOCKER_KODI_ROOT_DIR=/tmp/xbmc
-
+declare -r DOCKER_GOOM_BUILD_DIR=/tmp/visualization.goom
+declare -r DOCKER_BUILD_IMAGE="$(get_docker_build_final_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
 
 # Clion
 if [[ "${USING_CLION}" == "no" ]]; then
@@ -139,7 +148,6 @@ if [[ "${USING_CLION}" == "no" ]]; then
 else
   declare CLION_PREFIX="clion-"
 fi
-
 
 # Build directory
 if [[ "${BUILD_DIRNAME:-}" == "" ]]; then

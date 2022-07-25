@@ -33,15 +33,18 @@ if [[ ! -d "${MUSIC_SHARE}" ]]; then
   exit 1
 fi
 
+echo "Runing Goom using Docker image \"${KODI_GOOM_IMAGE}\"..."
+
 declare -r OLD_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)
 declare -r CORE_PATTERN="/tmp/core.%e.%p"
 echo
-echo "Setting linux 'core' pattern: \"${CORE_PATTERN}\""
+echo "Setting linux 'core' pattern: \"${CORE_PATTERN}\"."
 ulimit -c unlimited
 sudo /usr/sbin/sysctl -q -w kernel.core_pattern="${CORE_PATTERN}"
 
 echo
-x11docker --runasroot="service lircd start"           \
+x11docker -q                                          \
+          --runasroot="service lircd start"           \
           --name ${KODI_CONTAINER_NAME}               \
           --hostuser=${USER}                          \
           --network                                   \
@@ -61,3 +64,5 @@ x11docker --runasroot="service lircd start"           \
 echo "x11docker return code = $?"
 
 sudo /usr/sbin/sysctl -q -w kernel.core_pattern="${OLD_CORE_PATTERN}"
+
+echo

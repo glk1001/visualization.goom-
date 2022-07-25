@@ -15,6 +15,8 @@ function get_this_sourced_script_path()
 declare -r GOOM_DOCKER_PATHS_SCRIPT_NAME="goom-docker-paths.sh"
 declare -r GOOM_DOCKER_PATHS_SCRIPT_PATH=$(get_this_sourced_script_path)
 
+source "${GOOM_DOCKER_PATHS_SCRIPT_PATH}/dockerize-kodi-goom/goom-image-funcs.sh"
+
 
 declare KODI_IMAGE_OS_TYPE="ubuntu"
 declare KODI_IMAGE_OS_TAG="impish"
@@ -90,11 +92,8 @@ else
   exit 1
 fi
 
-declare -r KODI_IMAGE_NAME="${KODI_IMAGE_OS_TYPE}-${KODI_IMAGE_OS_TAG}/kodi-${KODI_VERSION}"
-declare -r KODI_BASE_IMAGE="${KODI_IMAGE_NAME}:base"
-declare -r KODI_SPOTIFY_IMAGE="${KODI_IMAGE_NAME}:spotify"
-declare -r KODI_LIRC_IMAGE="${KODI_IMAGE_NAME}:lirc"
-declare -r KODI_GOOM_IMAGE="${KODI_IMAGE_NAME}:goom-dev"
+declare -r KODI_IMAGE_NAME="$(get_kodi_image_name ${KODI_IMAGE_OS_TYPE} ${KODI_IMAGE_OS_TAG} ${KODI_VERSION})"
+declare -r KODI_GOOM_IMAGE="$(get_kodi_goom_image_name ${KODI_IMAGE_NAME})"
 
 declare -r KODI_CONTAINER_HOME_DIR="${HOME}/docker/kodi-${KODI_VERSION}"
 

@@ -28,8 +28,8 @@ directory is `'xbmc'`
 1. `cd docker-toolchains`
 1. `./build-all.sh`
 1. `cd ..`
-1. `./goom-configure-with-docker-toolchain.sh -c clang-15 --build-type RelWithDebInfo`
-1. `./goom-build-with-docker-toolchain.sh -c clang-15 --build-type RelWithDebInfo`
+1. `./goom-configure-with-docker-toolchain.sh -c clang-15 --build-type RelWithDebInfo --suffix nexus`
+1. `./goom-build-with-docker-toolchain.sh -c clang-15 --build-type RelWithDebInfo --suffix nexus`
 1. `./goom-docker-install-to.sh && ./goom-docker-build.sh`
 1. `cd ..`
 

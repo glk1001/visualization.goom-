@@ -5,7 +5,7 @@ set -e
 
 declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 
-source "$(realpath ${THIS_SCRIPT_PATH}/..)/goom-docker-paths.sh"
+source "${THIS_SCRIPT_PATH}/goom-image-funcs.sh"
 
 
 declare IS_USER_ADDON="no"
@@ -23,6 +23,36 @@ while [[ $# -gt 0 ]]; do
       IS_USER_ADDON="yes"
       shift # past argument
       ;;
+    --kodi-version)
+      declare -r KODI_VERSION=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --goom-version)
+      declare -r GOOM_VERSION=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --image-os)
+      declare -r KODI_IMAGE_OS_TYPE=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --image-os-version)
+      declare -r KODI_IMAGE_OS_TAG=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --container-home-dir)
+      declare -r KODI_CONTAINER_HOME_DIR=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --docker-files-dir)
+      declare -r KODI_DOCKER_FILES_DIR=$2
+      shift # past argument
+      shift # past value
+      ;;
     *)
       echo "ERROR: Unknown command line argument: $key"
       exit 1
@@ -31,12 +61,37 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-
-if [[ "${NO_CACHE}" != "" ]]; then
-  echo "Building \"${KODI_GOOM_IMAGE}\" with '--no-cache'..."
-else
-  echo "Building \"${KODI_GOOM_IMAGE}\"..."
+if [[ "${KODI_VERSION:-}" == "" ]]; then
+  echo "ERROR: Kodi version not specified."
+  exit 1
 fi
+if [[ "${GOOM_VERSION:-}" == "" ]]; then
+  echo "ERROR: Goom version not specified."
+  exit 1
+fi
+if [[ "${KODI_IMAGE_OS_TYPE:-}" == "" ]]; then
+  echo "ERROR: OS image type not specified."
+  exit 1
+fi
+if [[ "${KODI_IMAGE_OS_TAG:-}" == "" ]]; then
+  echo "ERROR: OS image tag not specified."
+  exit 1
+fi
+if [[ "${KODI_CONTAINER_HOME_DIR:-}" == "" ]]; then
+  echo "ERROR: Container home directory not specified."
+  exit 1
+fi
+if [[ "${KODI_DOCKER_FILES_DIR:-}" == "" ]]; then
+  echo "ERROR: Docker files directory not specified."
+  exit 1
+fi
+
+
+declare -r KODI_IMAGE_NAME="$(get_kodi_image_name ${KODI_IMAGE_OS_TYPE} ${KODI_IMAGE_OS_TAG} ${KODI_VERSION})"
+declare -r KODI_BASE_IMAGE="${KODI_IMAGE_NAME}:base"
+declare -r KODI_SPOTIFY_IMAGE="${KODI_IMAGE_NAME}:spotify"
+declare -r KODI_LIRC_IMAGE="${KODI_IMAGE_NAME}:lirc"
+declare -r KODI_GOOM_IMAGE="$(get_kodi_goom_image_name ${KODI_IMAGE_NAME})"
 
 if [[ "${KODI_VERSION}" == "matrix" ]]; then
   declare -r KODI_PPA="ppa:team-xbmc/ppa"
@@ -65,7 +120,16 @@ else
   declare -r END_OF_LIFE="yes"
 fi
 
-cd "${THIS_SCRIPT_PATH}"
+
+pushd "${THIS_SCRIPT_PATH}" > /dev/null
+
+if [[ "${NO_CACHE}" == "" ]]; then
+  echo "Building Goom Docker image \"${KODI_GOOM_IMAGE}\"..."
+  echo
+else
+  echo "Building Goom Docker image \"${KODI_GOOM_IMAGE}\" with \"${NO_CACHE}\"..."
+  echo
+fi
 
 declare -r BUILD_BASE_ARGS="--build-arg OS_TYPE=${KODI_IMAGE_OS_TYPE} --build-arg OS_TAG=${KODI_IMAGE_OS_TAG}\
                             --build-arg KODI_PPA=${KODI_PPA} --build-arg END_OF_LIFE=${END_OF_LIFE}"
@@ -79,9 +143,19 @@ docker build ${NO_CACHE} -t ${KODI_SPOTIFY_IMAGE} ${BUILD_SPOTIFY_ARGS} -f Docke
 docker build ${NO_CACHE} -t ${KODI_LIRC_IMAGE}    ${BUILD_LIRC_ARGS}    -f Dockerfile-lirc                 .
 docker build ${NO_CACHE} -t ${KODI_GOOM_IMAGE}    ${BUILD_GOOM_ARGS}    -f Dockerfile                      .
 
-if [[ "${IS_USER_ADDON}" == "yes" ]]; then
-  # Copy all the required goom addon files to kodi home directory used by the kodi goom container.
-  declare -r CONTAINER_GOOM_ADDON_DIR="${KODI_CONTAINER_HOME_DIR}/.kodi/addons/visualization.goom"
+
+declare -r CONTAINER_GOOM_ADDON_DIR="${KODI_CONTAINER_HOME_DIR}/.kodi/addons/visualization.goom"
+
+if [[ "${IS_USER_ADDON}" == "no" ]]; then
+  echo
+  echo "Installing the system goom add-on, so removing all user add-on files from \"${CONTAINER_GOOM_ADDON_DIR}\"..."
+  if [[ -d "${CONTAINER_GOOM_ADDON_DIR}" ]]; then
+    rm -r "${CONTAINER_GOOM_ADDON_DIR}"
+  fi
+else
+  echo
+  echo "Copying required goom user add-on files from \"${KODI_DOCKER_FILES_DIR}\" to \"${CONTAINER_GOOM_ADDON_DIR}\"..."
+
   mkdir -p "${CONTAINER_GOOM_ADDON_DIR}"
   echo
   echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/visualization.goom.so.${GOOM_VERSION}\" to \"${CONTAINER_GOOM_ADDON_DIR}\""
@@ -94,4 +168,9 @@ if [[ "${IS_USER_ADDON}" == "yes" ]]; then
   rsync --delete --out-format="%n" --itemize-changes -a "${KODI_DOCKER_FILES_DIR}/resources/" "${CONTAINER_GOOM_ADDON_DIR}/resources/"
 fi
 
-cd - >/dev/null
+
+popd > /dev/null
+
+echo
+echo "Sucessfully built \"${KODI_GOOM_IMAGE}\"."
+echo
