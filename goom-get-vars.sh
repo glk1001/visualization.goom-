@@ -5,9 +5,9 @@ fi
 
 
 declare GOOM_VAR_CMD_LINE=""
-declare EXTRA_ARGS=""
 declare USING_DOCKER="no"
 declare USING_CLION="no"
+declare EXTRA_ARGS=""
 
 while [[ $# -gt 0 ]]; do
   key="$1"

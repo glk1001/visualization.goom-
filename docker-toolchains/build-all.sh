@@ -12,7 +12,7 @@ declare -r CLANG_VER="15"
 declare -r BASE_IMAGE="${OS_TYPE}/cpp-env:base-${OS_TAG}"
 declare -r TOOLS_IMAGE="${OS_TYPE}/cpp-env:dev-tools-${OS_TAG}"
 declare -r CLANG_IMAGE="${OS_TYPE}/cpp-env:clang-${OS_TAG}"
-declare -r FINAL_IMAGE="${OS_TYPE}/cpp-env:1.1"
+declare -r FINAL_IMAGE="${OS_TYPE}/cpp-env:1.1-${OS_TAG}"
 
 if [[ "${1:-}" == "--no-cache" ]]; then
   echo "Building \"${FINAL_IMAGE}\" with '--no-cache'..."

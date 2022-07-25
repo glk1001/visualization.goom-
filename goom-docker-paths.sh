@@ -16,6 +16,46 @@ declare -r GOOM_DOCKER_PATHS_SCRIPT_NAME="goom-docker-paths.sh"
 declare -r GOOM_DOCKER_PATHS_SCRIPT_PATH=$(get_this_sourced_script_path)
 
 
+declare KODI_IMAGE_OS_TYPE="ubuntu"
+declare KODI_IMAGE_OS_TAG="impish"
+declare GOOM_DOCKER_PATHS_CMD_LINE=""
+declare EXTRA_ARGS=""
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    --image-os)
+      KODI_IMAGE_OS_TYPE=$2
+      shift # past argument
+      shift # past value
+      GOOM_DOCKER_PATHS_CMD_LINE="${GOOM_DOCKER_PATHS_CMD_LINE} --image-os ${KODI_IMAGE_OS_TYPE}"
+      ;;
+    --image-os-version)
+      KODI_IMAGE_OS_TAG=$2
+      shift # past argument
+      shift # past value
+      GOOM_DOCKER_PATHS_CMD_LINE="${GOOM_DOCKER_PATHS_CMD_LINE} --image-os-version ${KODI_IMAGE_OS_TAG}"
+      ;;
+    *)
+      EXTRA_ARGS="${EXTRA_ARGS}${key} "
+      shift # past argument
+      ;;
+    *)
+  esac
+done
+
+set -- ${EXTRA_ARGS}
+unset EXTRA_ARGS
+
+
+if [[ "${KODI_IMAGE_OS_TYPE}" == "ubuntu" && "${KODI_IMAGE_OS_TAG}" == "jammy" ]]; then
+  # On Ubuntu Jammy, there is a problem with python 3.10 and sqlite3 which affects the
+  # Spotify plugin. See https://bbs.archlinux.org/viewtopic.php?id=272121
+  echo "ERROR: Cannot build with Ubuntu Jammy - The Spotify plugin won't work with Sqlite3 and Python 3.10."
+  exit 1
+fi
+
 declare -r DOCKERIZE_KODI_DIR=${GOOM_DOCKER_PATHS_SCRIPT_PATH}/dockerize-kodi-goom
 if [[ ! -d "${DOCKERIZE_KODI_DIR}" ]]; then
   echo "ERROR: Could not find dockerize kodi directory \"${DOCKERIZE_KODI_DIR}\"."
@@ -49,11 +89,6 @@ else
   echo "ERROR: Unknown Goom version: \"${GOOM_VERSION}\" (from ${ADDON_XML})."
   exit 1
 fi
-
-declare -r KODI_IMAGE_OS_TYPE=ubuntu
-declare -r KODI_IMAGE_OS_TAG=impish
-# Use ubuntu impish so we get python 3.9. There is a problem with python 3.10 and sqlite3
-# which affects the Spotify plugin. See https://bbs.archlinux.org/viewtopic.php?id=272121
 
 declare -r KODI_IMAGE_NAME="${KODI_IMAGE_OS_TYPE}-${KODI_IMAGE_OS_TAG}/kodi-${KODI_VERSION}"
 declare -r KODI_BASE_IMAGE="${KODI_IMAGE_NAME}:base"
