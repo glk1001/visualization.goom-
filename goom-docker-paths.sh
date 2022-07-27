@@ -92,11 +92,8 @@ else
   exit 1
 fi
 
-declare -r KODI_IMAGE_NAME="$(get_kodi_image_name ${KODI_IMAGE_OS_TYPE} ${KODI_IMAGE_OS_TAG} ${KODI_VERSION})"
-declare -r KODI_GOOM_IMAGE="$(get_kodi_goom_image_name ${KODI_IMAGE_NAME})"
-
+declare -r KODI_GOOM_IMAGE="$(get_kodi_goom_image_name ${KODI_IMAGE_OS_TYPE} ${KODI_IMAGE_OS_TAG} ${KODI_VERSION})"
 declare -r KODI_CONTAINER_HOME_DIR="${HOME}/docker/kodi-${KODI_VERSION}"
-
 declare -r KODI_CONTAINER_NAME="kodi_goom_dev"
 declare -r MUSIC_SHARE="/mnt/Music"
 

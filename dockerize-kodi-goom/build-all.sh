@@ -87,11 +87,33 @@ if [[ "${KODI_DOCKER_FILES_DIR:-}" == "" ]]; then
 fi
 
 
-declare -r KODI_IMAGE_NAME="$(get_kodi_image_name ${KODI_IMAGE_OS_TYPE} ${KODI_IMAGE_OS_TAG} ${KODI_VERSION})"
-declare -r KODI_BASE_IMAGE="${KODI_IMAGE_NAME}:base"
-declare -r KODI_SPOTIFY_IMAGE="${KODI_IMAGE_NAME}:spotify"
-declare -r KODI_LIRC_IMAGE="${KODI_IMAGE_NAME}:lirc"
-declare -r KODI_GOOM_IMAGE="$(get_kodi_goom_image_name ${KODI_IMAGE_NAME})"
+function copy_user_addon_files()
+{
+  if [[ "${IS_USER_ADDON}" == "no" ]]; then
+    echo
+    echo "Installing the system goom add-on, so removing all user add-on files from \"${CONTAINER_GOOM_ADDON_DIR}\"..."
+    if [[ -d "${CONTAINER_GOOM_ADDON_DIR}" ]]; then
+        rm -r "${CONTAINER_GOOM_ADDON_DIR}"
+    fi
+  else
+    echo
+    echo "Copying required goom user add-on files from \"${KODI_DOCKER_FILES_DIR}\" to \"${CONTAINER_GOOM_ADDON_DIR}\"..."
+
+    mkdir -p "${CONTAINER_GOOM_ADDON_DIR}"
+    echo
+    echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/visualization.goom.so.${GOOM_VERSION}\" to \"${CONTAINER_GOOM_ADDON_DIR}\""
+    rsync -avh "${KODI_DOCKER_FILES_DIR}/visualization.goom.so.${GOOM_VERSION}" "${CONTAINER_GOOM_ADDON_DIR}"
+    echo
+    echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/addon.xml\" to \"${CONTAINER_GOOM_ADDON_DIR}\""
+    rsync -avh "${KODI_DOCKER_FILES_DIR}/addon.xml" "${CONTAINER_GOOM_ADDON_DIR}/addon.xml"
+    echo
+    echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/resources/\" to \"${CONTAINER_GOOM_ADDON_DIR}resources/\""
+    rsync --delete --out-format="%n" --itemize-changes -a "${KODI_DOCKER_FILES_DIR}/resources/" "${CONTAINER_GOOM_ADDON_DIR}/resources/"
+  fi
+}
+
+declare -r KODI_GOOM_IMAGE="$(get_kodi_goom_image_name ${KODI_IMAGE_OS_TYPE} ${KODI_IMAGE_OS_TAG} ${KODI_VERSION})"
+declare -r CONTAINER_GOOM_ADDON_DIR="${KODI_CONTAINER_HOME_DIR}/.kodi/addons/visualization.goom"
 
 if [[ "${KODI_VERSION}" == "matrix" ]]; then
   declare -r KODI_PPA="ppa:team-xbmc/ppa"
@@ -131,42 +153,17 @@ else
   echo
 fi
 
-declare -r BUILD_BASE_ARGS="--build-arg OS_TYPE=${KODI_IMAGE_OS_TYPE} --build-arg OS_TAG=${KODI_IMAGE_OS_TAG}\
-                            --build-arg KODI_PPA=${KODI_PPA} --build-arg END_OF_LIFE=${END_OF_LIFE}"
-declare -r BUILD_SPOTIFY_ARGS="--build-arg KODI_BASE_IMAGE=${KODI_BASE_IMAGE}"
-declare -r BUILD_LIRC_ARGS="--build-arg KODI_SPOTIFY_IMAGE=${KODI_SPOTIFY_IMAGE}"
-declare -r BUILD_GOOM_ARGS="--build-arg KODI_LIRC_IMAGE=${KODI_LIRC_IMAGE} --build-arg GOOM_VERSION=${GOOM_VERSION}\
-                            --build-arg KODI_GOOM_LIB_DIR=${KODI_GOOM_LIB_DIR} --build-arg KODI_GOOM_ADDON_DIR=${KODI_GOOM_ADDON_DIR}"
+declare -r BUILD_ARGS="--build-arg OS_TYPE=${KODI_IMAGE_OS_TYPE}             \
+                       --build-arg OS_TAG=${KODI_IMAGE_OS_TAG}               \
+                       --build-arg KODI_PPA=${KODI_PPA}                      \
+                       --build-arg END_OF_LIFE=${END_OF_LIFE}                \
+                       --build-arg GOOM_VERSION=${GOOM_VERSION}              \
+                       --build-arg KODI_GOOM_LIB_DIR=${KODI_GOOM_LIB_DIR}    \
+                       --build-arg KODI_GOOM_ADDON_DIR=${KODI_GOOM_ADDON_DIR}"
 
-docker build ${NO_CACHE} -t ${KODI_BASE_IMAGE}    ${BUILD_BASE_ARGS}    -f Dockerfile-base                 .
-docker build ${NO_CACHE} -t ${KODI_SPOTIFY_IMAGE} ${BUILD_SPOTIFY_ARGS} -f Dockerfile-spotify-dependencies .
-docker build ${NO_CACHE} -t ${KODI_LIRC_IMAGE}    ${BUILD_LIRC_ARGS}    -f Dockerfile-lirc                 .
-docker build ${NO_CACHE} -t ${KODI_GOOM_IMAGE}    ${BUILD_GOOM_ARGS}    -f Dockerfile                      .
+docker build ${NO_CACHE} -t ${KODI_GOOM_IMAGE} ${BUILD_ARGS} -f Dockerfile .
 
-
-declare -r CONTAINER_GOOM_ADDON_DIR="${KODI_CONTAINER_HOME_DIR}/.kodi/addons/visualization.goom"
-
-if [[ "${IS_USER_ADDON}" == "no" ]]; then
-  echo
-  echo "Installing the system goom add-on, so removing all user add-on files from \"${CONTAINER_GOOM_ADDON_DIR}\"..."
-  if [[ -d "${CONTAINER_GOOM_ADDON_DIR}" ]]; then
-    rm -r "${CONTAINER_GOOM_ADDON_DIR}"
-  fi
-else
-  echo
-  echo "Copying required goom user add-on files from \"${KODI_DOCKER_FILES_DIR}\" to \"${CONTAINER_GOOM_ADDON_DIR}\"..."
-
-  mkdir -p "${CONTAINER_GOOM_ADDON_DIR}"
-  echo
-  echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/visualization.goom.so.${GOOM_VERSION}\" to \"${CONTAINER_GOOM_ADDON_DIR}\""
-  rsync -avh "${KODI_DOCKER_FILES_DIR}/visualization.goom.so.${GOOM_VERSION}" "${CONTAINER_GOOM_ADDON_DIR}"
-  echo
-  echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/addon.xml\" to \"${CONTAINER_GOOM_ADDON_DIR}\""
-  rsync -avh "${KODI_DOCKER_FILES_DIR}/addon.xml" "${CONTAINER_GOOM_ADDON_DIR}/addon.xml"
-  echo
-  echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/resources/\" to \"${CONTAINER_GOOM_ADDON_DIR}resources/\""
-  rsync --delete --out-format="%n" --itemize-changes -a "${KODI_DOCKER_FILES_DIR}/resources/" "${CONTAINER_GOOM_ADDON_DIR}/resources/"
-fi
+copy_user_addon_files
 
 
 popd > /dev/null

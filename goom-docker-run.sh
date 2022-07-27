@@ -8,11 +8,30 @@ declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 source "${THIS_SCRIPT_PATH}/goom-docker-paths.sh"
 
 
-if [[ "${1:-}" != "" ]]; then
-  declare -r KODI_CONTAINER_HOME_DIR_TO_USE="${1}"
-else
-  declare -r KODI_CONTAINER_HOME_DIR_TO_USE="${KODI_CONTAINER_HOME_DIR}"
-fi
+declare KODI_CONTAINER_HOME_DIR_TO_USE="${KODI_CONTAINER_HOME_DIR}"
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    --kodi-home-dir)
+      declare KODI_CONTAINER_HOME_DIR_TO_USE=${2}
+      shift # past argument
+      shift # past value
+      ;;
+    --user-addon)
+      # Ignore
+      shift # past argument
+      ;;
+    *)
+      echo "Unknown option \"${key}\"."
+      echo
+      exit 1
+      ;;
+    *)    # unknown option
+  esac
+done
+
 
 if [[ ! -d "${KODI_CONTAINER_HOME_DIR_TO_USE}" ]]; then
   mkdir -p "${KODI_CONTAINER_HOME_DIR_TO_USE}"
@@ -42,6 +61,8 @@ echo "Setting linux 'core' pattern: \"${CORE_PATTERN}\"."
 ulimit -c unlimited
 sudo /usr/sbin/sysctl -q -w kernel.core_pattern="${CORE_PATTERN}"
 
+declare -r TIME_ZONE=$(readlink /etc/localtime | sed 's#.*/zoneinfo/##')
+
 echo
 x11docker -q                                          \
           --runasroot="service lircd start"           \
@@ -58,6 +79,7 @@ x11docker -q                                          \
           --ulimit core=-1                            \
           --mount type=bind,source=/tmp/,target=/tmp/ \
           --rm                                        \
+          -e "TZ=${TIME_ZONE}"                        \
           --                                          \
           ${KODI_GOOM_IMAGE}
 

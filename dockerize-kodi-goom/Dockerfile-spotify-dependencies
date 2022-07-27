@@ -1,8 +1,0 @@
-ARG KODI_BASE_IMAGE
-
-FROM ${KODI_BASE_IMAGE}
-
-# Install Spotify dependencies.
-RUN apt-get update                                               && \
-    apt-get install -y --no-install-recommends python3-requests  && \
-    apt-get clean
