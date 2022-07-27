@@ -41,31 +41,24 @@ done
 
 
 declare -r BUILD_CLANG_VER="15"
-
-declare -r BUILD_BASE_IMAGE="${DOCKER_OS_TYPE}-${DOCKER_OS_TAG}/cpp-env:base"
-declare -r BUILD_TOOLS_IMAGE="${DOCKER_OS_TYPE}-${DOCKER_OS_TAG}/cpp-env:dev-tools"
-declare -r BUILD_CLANG_IMAGE="${DOCKER_OS_TYPE}-${DOCKER_OS_TAG}/cpp-env:clang"
-declare -r BUILD_FINAL_IMAGE="$(get_docker_build_final_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
+declare -r BUILD_IMAGE="$(get_docker_build_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
 
 
 if [[ "${NO_CACHE}" == "" ]]; then
-  echo "Building \"${BUILD_FINAL_IMAGE}\"..."
+  echo "Building \"${BUILD_IMAGE}\"..."
   echo
 else
-  echo "Building \"${BUILD_FINAL_IMAGE}\" with \"${NO_CACHE}\"..."
+  echo "Building \"${BUILD_IMAGE}\" with \"${NO_CACHE}\"..."
   echo
 fi
 
 pushd "${THIS_SCRIPT_PATH}" > /dev/null
 
-declare -r BUILD_ARGS="--build-arg OS_TYPE=${DOCKER_OS_TYPE} --build-arg OS_TAG=${DOCKER_OS_TAG}"
+declare -r BUILD_ARGS="--build-arg OS_TYPE=${DOCKER_OS_TYPE} \
+                       --build-arg OS_TAG=${DOCKER_OS_TAG}   \
+                       --build-arg CLANG_VER=${BUILD_CLANG_VER} \
+                       --build-arg UID=$(id -u)"
 
-docker build ${NO_CACHE} ${BUILD_ARGS} -t ${BUILD_BASE_IMAGE}  -f Dockerfile-cpp-env-base      .
-docker build ${NO_CACHE} ${BUILD_ARGS} -t ${BUILD_TOOLS_IMAGE} -f Dockerfile-cpp-env-dev-tools .
-docker build ${NO_CACHE} ${BUILD_ARGS} \
-              --build-arg CLANG_VER=${BUILD_CLANG_VER} \
-              --build-arg UID=$(id -u) -t ${BUILD_CLANG_IMAGE} -f Dockerfile-cpp-env-clang     .
-
-docker tag ${BUILD_CLANG_IMAGE} ${BUILD_FINAL_IMAGE}
+docker build ${NO_CACHE} ${BUILD_ARGS} -t ${BUILD_IMAGE} -f Dockerfile .
 
 popd > /dev/null

@@ -140,7 +140,7 @@ declare -r HOST_KODI_ROOT_DIR=$(realpath ${THIS_SCRIPT_PATH}/..)
 declare -r DOCKER_CCACHE_DIR=/tmp/ccache
 declare -r DOCKER_KODI_ROOT_DIR=/tmp/xbmc
 declare -r DOCKER_GOOM_BUILD_DIR=/tmp/visualization.goom
-declare -r DOCKER_BUILD_IMAGE="$(get_docker_build_final_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
+declare -r DOCKER_BUILD_IMAGE="$(get_docker_build_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
 
 # Clion
 if [[ "${USING_CLION}" == "no" ]]; then
