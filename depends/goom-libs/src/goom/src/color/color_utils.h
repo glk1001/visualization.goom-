@@ -59,12 +59,12 @@ constexpr auto GetColorAverage(const size_t num, const T& colors) -> Pixel
 {
   Expects(num > 0);
 
-  uint32_t newR = 0;
-  uint32_t newG = 0;
-  uint32_t newB = 0;
-  uint32_t newA = 0;
+  auto newR = 0U;
+  auto newG = 0U;
+  auto newB = 0U;
+  auto newA = 0U;
 
-  for (size_t i = 0; i < num; ++i)
+  for (auto i = 0U; i < num; ++i)
   {
     newR += static_cast<uint32_t>(colors[i].R());
     newG += static_cast<uint32_t>(colors[i].G());
@@ -82,10 +82,10 @@ constexpr auto GetColorAverage(const size_t num, const T& colors) -> Pixel
 
 constexpr auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel
 {
-  const uint32_t newR = ColorChannelAdd(color1.R(), color2.R()) / 2;
-  const uint32_t newG = ColorChannelAdd(color1.G(), color2.G()) / 2;
-  const uint32_t newB = ColorChannelAdd(color1.B(), color2.B()) / 2;
-  const uint32_t newA = ColorChannelAdd(color1.A(), color2.A()) / 2;
+  const auto newR = ColorChannelAdd(color1.R(), color2.R()) / 2;
+  const auto newG = ColorChannelAdd(color1.G(), color2.G()) / 2;
+  const auto newB = ColorChannelAdd(color1.B(), color2.B()) / 2;
+  const auto newA = ColorChannelAdd(color1.A(), color2.A()) / 2;
 
   return Pixel{newR, newG, newB, newA};
 }
@@ -114,10 +114,10 @@ constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
 
 constexpr auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel
 {
-  const uint32_t newR = ColorChannelMultiply(srce.R(), dest.R());
-  const uint32_t newG = ColorChannelMultiply(srce.G(), dest.G());
-  const uint32_t newB = ColorChannelMultiply(srce.B(), dest.B());
-  const uint32_t newA = ColorChannelMultiply(srce.A(), dest.A());
+  const auto newR = ColorChannelMultiply(srce.R(), dest.R());
+  const auto newG = ColorChannelMultiply(srce.G(), dest.G());
+  const auto newB = ColorChannelMultiply(srce.B(), dest.B());
+  const auto newA = ColorChannelMultiply(srce.A(), dest.A());
 
   return Pixel{newR, newG, newB, newA};
 }
@@ -130,10 +130,10 @@ constexpr auto ColorChannelMultiply(const PixelChannelType ch1, const PixelChann
 
 constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
 {
-  const uint32_t newR = ColorChannelAdd(color1.R(), color2.R());
-  const uint32_t newG = ColorChannelAdd(color1.G(), color2.G());
-  const uint32_t newB = ColorChannelAdd(color1.B(), color2.B());
-  const uint32_t newA = ColorChannelAdd(color1.A(), color2.A());
+  const auto newR = ColorChannelAdd(color1.R(), color2.R());
+  const auto newG = ColorChannelAdd(color1.G(), color2.G());
+  const auto newB = ColorChannelAdd(color1.B(), color2.B());
+  const auto newA = ColorChannelAdd(color1.A(), color2.A());
 
   return Pixel{newR, newG, newB, newA};
 }
@@ -145,10 +145,10 @@ constexpr auto ColorChannelAdd(const PixelChannelType ch1, const PixelChannelTyp
 
 constexpr auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -> Pixel
 {
-  const uint32_t newR = GetBrighterChannelColor(brightness, color.R());
-  const uint32_t newG = GetBrighterChannelColor(brightness, color.G());
-  const uint32_t newB = GetBrighterChannelColor(brightness, color.B());
-  const uint32_t newA = color.A();
+  const auto newR = GetBrighterChannelColor(brightness, color.R());
+  const auto newG = GetBrighterChannelColor(brightness, color.G());
+  const auto newB = GetBrighterChannelColor(brightness, color.B());
+  const auto newA = color.A();
 
   return Pixel{newR, newG, newB, newA};
 }
@@ -161,7 +161,7 @@ constexpr auto GetBrighterChannelColor(const uint32_t brightness, const PixelCha
 
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
-  constexpr float MAX_BRIGHTNESS = 50.0F;
+  static constexpr auto MAX_BRIGHTNESS = 50.0F;
   Expects((brightness >= 0.0F) && (brightness <= MAX_BRIGHTNESS));
   UNUSED_FOR_NDEBUG(MAX_BRIGHTNESS);
 
@@ -190,10 +190,10 @@ constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t
   const auto color2Blue = static_cast<int32_t>(color2.B());
   const auto color2Alpha = static_cast<int32_t>(color2.A());
 
-  const uint32_t newR = GetRgbColorChannelLerp(color1Red, color2Red, intT);
-  const uint32_t newG = GetRgbColorChannelLerp(color1Green, color2Green, intT);
-  const uint32_t newB = GetRgbColorChannelLerp(color1Blue, color2Blue, intT);
-  const uint32_t newA = GetRgbColorChannelLerp(color1Alpha, color2Alpha, intT);
+  const auto newR = GetRgbColorChannelLerp(color1Red, color2Red, intT);
+  const auto newG = GetRgbColorChannelLerp(color1Green, color2Green, intT);
+  const auto newB = GetRgbColorChannelLerp(color1Blue, color2Blue, intT);
+  const auto newA = GetRgbColorChannelLerp(color1Alpha, color2Alpha, intT);
 
   return Pixel{newR, newG, newB, newA};
 }
@@ -210,9 +210,9 @@ constexpr auto IsCloseToBlack(const Pixel& color, const uint32_t threshold) -> b
 //
 //     Y = 0.2126 R + 0.7152 G + 0.0722 B
 //
-static constexpr float LUMA_RED_COMPONENT = 0.2126F;
-static constexpr float LUMA_GREEN_COMPONENT = 0.7152F;
-static constexpr float LUMA_BLUE_COMPONENT = 0.0722F;
+static constexpr auto LUMA_RED_COMPONENT = 0.2126F;
+static constexpr auto LUMA_GREEN_COMPONENT = 0.7152F;
+static constexpr auto LUMA_BLUE_COMPONENT = 0.0722F;
 
 constexpr auto GetLuma(const Pixel& color) -> float
 {
@@ -222,13 +222,13 @@ constexpr auto GetLuma(const Pixel& color) -> float
 
 constexpr auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
 {
-  constexpr Pixel::RGB RED{230, 120, 18, MAX_ALPHA};
-  constexpr Pixel::RGB ORANGE_J{120, 252, 18, MAX_ALPHA};
-  constexpr Pixel::RGB ORANGE_V{160, 236, 40, MAX_ALPHA};
-  constexpr Pixel::RGB BLEUBLANC{40, 220, 140, MAX_ALPHA};
-  constexpr Pixel::RGB VERT{200, 80, 18, MAX_ALPHA};
-  constexpr Pixel::RGB BLEU{250, 30, 80, MAX_ALPHA};
-  constexpr Pixel::RGB BLACK{16, 16, 16, MAX_ALPHA};
+  constexpr auto RED = Pixel::RGB{230, 120, 18, MAX_ALPHA};
+  constexpr auto ORANGE_J = Pixel::RGB{120, 252, 18, MAX_ALPHA};
+  constexpr auto ORANGE_V = Pixel::RGB{160, 236, 40, MAX_ALPHA};
+  constexpr auto BLEUBLANC = Pixel::RGB{40, 220, 140, MAX_ALPHA};
+  constexpr auto VERT = Pixel::RGB{200, 80, 18, MAX_ALPHA};
+  constexpr auto BLEU = Pixel::RGB{250, 30, 80, MAX_ALPHA};
+  constexpr auto BLACK = Pixel::RGB{16, 16, 16, MAX_ALPHA};
 
   switch (simpleColor)
   {

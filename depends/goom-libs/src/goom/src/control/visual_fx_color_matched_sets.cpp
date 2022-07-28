@@ -48,27 +48,27 @@ auto VisualFxColorMatchedSets::MakeColorMatchedSetsMap() const noexcept -> Color
 }
 
 // clang-format off
-static constexpr float RED_GREEN_STD_MAPS_WEIGHT            =   5.0F;
-static constexpr float RED_BLUE_STD_MAPS_WEIGHT             =   5.0F;
-static constexpr float YELLOW_BLUE_STD_MAPS_WEIGHT          =   5.0F;
-static constexpr float YELLOW_PURPLE_STD_MAPS_WEIGHT        =   5.0F;
-static constexpr float ORANGE_GREEN_STD_MAPS_WEIGHT         =   5.0F;
-static constexpr float ORANGE_PURPLE_STD_MAPS_WEIGHT        =   5.0F;
-static constexpr float ALL_ONLY_STD_MAPS_WEIGHT             =  20.0F;
-static constexpr float HEAT_ONLY_STD_MAPS_WEIGHT            =  35.0F;
-static constexpr float COLD_ONLY_STD_MAPS_WEIGHT            =  35.0F;
-static constexpr float DIVERGING_ONLY_STD_MAPS_WEIGHT       =  40.0F;
-static constexpr float DIVERGING_BLACK_ONLY_STD_MAPS_WEIGHT =  40.0F;
-static constexpr float WES_ANDERSON_ONLY_MAPS_WEIGHT        =  40.0F;
-static constexpr float PASTEL_ONLY_MAPS_WEIGHT              =  40.0F;
-static constexpr float COLOR_MATCHED_SET1_WEIGHT            =  90.0F;
-static constexpr float COLOR_MATCHED_SET2_WEIGHT            =  90.0F;
-static constexpr float COLOR_MATCHED_SET3_WEIGHT            =  90.0F;
-static constexpr float COLOR_MATCHED_SET4_WEIGHT            =  90.0F;
-static constexpr float COLOR_MATCHED_SET5_WEIGHT            =  90.0F;
-static constexpr float COLOR_MATCHED_SET6_WEIGHT            =  90.0F;
-static constexpr float COLOR_MATCHED_SET7_WEIGHT            =  90.0F;
-static constexpr float COLOR_MATCHED_SET8_WEIGHT            =  90.0F;
+static constexpr auto RED_GREEN_STD_MAPS_WEIGHT            =   5.0F;
+static constexpr auto RED_BLUE_STD_MAPS_WEIGHT             =   5.0F;
+static constexpr auto YELLOW_BLUE_STD_MAPS_WEIGHT          =   5.0F;
+static constexpr auto YELLOW_PURPLE_STD_MAPS_WEIGHT        =   5.0F;
+static constexpr auto ORANGE_GREEN_STD_MAPS_WEIGHT         =   5.0F;
+static constexpr auto ORANGE_PURPLE_STD_MAPS_WEIGHT        =   5.0F;
+static constexpr auto ALL_ONLY_STD_MAPS_WEIGHT             =  20.0F;
+static constexpr auto HEAT_ONLY_STD_MAPS_WEIGHT            =  35.0F;
+static constexpr auto COLD_ONLY_STD_MAPS_WEIGHT            =  35.0F;
+static constexpr auto DIVERGING_ONLY_STD_MAPS_WEIGHT       =  40.0F;
+static constexpr auto DIVERGING_BLACK_ONLY_STD_MAPS_WEIGHT =  40.0F;
+static constexpr auto WES_ANDERSON_ONLY_MAPS_WEIGHT        =  40.0F;
+static constexpr auto PASTEL_ONLY_MAPS_WEIGHT              =  40.0F;
+static constexpr auto COLOR_MATCHED_SET1_WEIGHT            =  90.0F;
+static constexpr auto COLOR_MATCHED_SET2_WEIGHT            =  90.0F;
+static constexpr auto COLOR_MATCHED_SET3_WEIGHT            =  90.0F;
+static constexpr auto COLOR_MATCHED_SET4_WEIGHT            =  90.0F;
+static constexpr auto COLOR_MATCHED_SET5_WEIGHT            =  90.0F;
+static constexpr auto COLOR_MATCHED_SET6_WEIGHT            =  90.0F;
+static constexpr auto COLOR_MATCHED_SET7_WEIGHT            =  90.0F;
+static constexpr auto COLOR_MATCHED_SET8_WEIGHT            =  90.0F;
 // clang-format on
 
 
@@ -117,9 +117,9 @@ auto VisualFxColorMatchedSets::GetNextRandomColorMatchedSet() const noexcept
 auto VisualFxColorMatchedSets::GetOneGroupColorMatchedSet(const Groups group) noexcept
     -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet{};
+  auto matchedSet = ColorMatchedSet{};
 
-  for (uint32_t i = 0; i < NUM<GoomEffect>; ++i)
+  for (auto i = 0U; i < NUM<GoomEffect>; ++i)
   {
     matchedSet.try_emplace(static_cast<GoomEffect>(i), group);
   }
@@ -136,14 +136,14 @@ auto VisualFxColorMatchedSets::GetTwoGroupsColorMatchedSet(const Groups group1,
                                                            const Groups group2) const noexcept
     -> ColorMatchedSet
 {
-  ColorMatchedSet matchedSet = GetOneGroupColorMatchedSet(group1);
+  auto matchedSet = GetOneGroupColorMatchedSet(group1);
 
   // Change every second map entry to 'func2'.
-  std::array<size_t, NUM<GoomEffect>> indexes{};
+  auto indexes = std::array<size_t, NUM<GoomEffect>>{};
   std::iota(begin(indexes), end(indexes), 0);
   m_goomRand.Shuffle(begin(indexes), end(indexes));
-  static constexpr size_t INC_BY_2 = 2;
-  for (size_t i = 0; i < NUM<GoomEffect>; i += INC_BY_2)
+  static constexpr auto INC_BY_2 = 2U;
+  for (auto i = 0U; i < NUM<GoomEffect>; i += INC_BY_2)
   {
     matchedSet.at(static_cast<GoomEffect>(indexes.at(i))) = group2;
   }

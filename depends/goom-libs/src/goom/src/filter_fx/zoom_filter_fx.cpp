@@ -215,9 +215,9 @@ inline auto ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
 
 auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams() const noexcept -> NameValuePairs
 {
-  static constexpr const char* PARAM_GROUP = "ZoomFilterFx";
+  static constexpr auto PARAM_GROUP = "ZoomFilterFx";
 
-  NameValuePairs nameValuePairs{GetPair(PARAM_GROUP, "tranLerpFactor", GetTranLerpFactor())};
+  auto nameValuePairs = NameValuePairs{GetPair(PARAM_GROUP, "tranLerpFactor", GetTranLerpFactor())};
 
   MoveNameValuePairs(m_filterColorsService->GetNameValueParams(PARAM_GROUP), nameValuePairs);
   MoveNameValuePairs(m_filterBuffersService->GetNameValueParams(PARAM_GROUP), nameValuePairs);
@@ -278,15 +278,14 @@ auto ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
   {
     const auto [destRowBegin, destRowEnd] = destBuff.GetRowIter(destY);
 
-    FilterBufferColorInfo::FilterBufferRowColorInfo& filterBufferRowColorInfo =
-        m_filterBufferColorInfo.GetRow(destY);
+    auto& filterBufferRowColorInfo = m_filterBufferColorInfo.GetRow(destY);
 
     filterBufferRowColorInfo.Reset();
-    uint32_t destPos = m_screenWidth * static_cast<uint32_t>(destY);
+    auto destPos = m_screenWidth * static_cast<uint32_t>(destY);
 
     for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
     {
-      const Pixel newColor = m_filterColorsService->GetNewColor(
+      const auto newColor = m_filterColorsService->GetNewColor(
           srceBuff, m_filterBuffersService->GetSourcePointInfo(destPos));
 
       filterBufferRowColorInfo.UpdateColor(newColor);

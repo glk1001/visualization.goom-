@@ -68,7 +68,7 @@ inline auto Transform2d::GetTransformedPoint(const Point2dInt& point) const -> P
 
 inline auto Transform2d::GetTransformedPoint(const Point2dFlt& point) const -> Point2dFlt
 {
-  Point2dFlt transformedPoint;
+  auto transformedPoint = Point2dFlt{};
 
   if (not m_rotationAngleSet)
   {

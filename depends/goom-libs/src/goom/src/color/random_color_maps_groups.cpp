@@ -20,7 +20,7 @@ namespace IMPL
 auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "AllMapsUnweighted";
+  static constexpr auto MAPS_NAME = "AllMapsUnweighted";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -39,17 +39,17 @@ auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept
 auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "AllStandardMaps";
+  static constexpr auto MAPS_NAME = "AllStandardMaps";
 
   // clang-format off
-  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
-  static constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
-  static constexpr float SEQUENTIAL2_WEIGHT                     = 1.0F;
-  static constexpr float CYCLIC_WEIGHT                          = 1.0F;
-  static constexpr float DIVERGING_WEIGHT                       = 1.0F;
-  static constexpr float DIVERGING_BLACK_WEIGHT                 = 1.0F;
-  static constexpr float QUALITATIVE_WEIGHT                     = 1.0F;
-  static constexpr float MISC_WEIGHT                            = 1.0F;
+  static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
+  static constexpr auto SEQUENTIAL_WEIGHT                      = 1.0F;
+  static constexpr auto SEQUENTIAL2_WEIGHT                     = 1.0F;
+  static constexpr auto CYCLIC_WEIGHT                          = 1.0F;
+  static constexpr auto DIVERGING_WEIGHT                       = 1.0F;
+  static constexpr auto DIVERGING_BLACK_WEIGHT                 = 1.0F;
+  static constexpr auto QUALITATIVE_WEIGHT                     = 1.0F;
+  static constexpr auto MISC_WEIGHT                            = 1.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -73,17 +73,17 @@ auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept
 
 auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "AllSlimMaps";
+  static constexpr auto MAPS_NAME = "AllSlimMaps";
 
   // clang-format off
-  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
-  static constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
-  static constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
-  static constexpr float CYCLIC_SLIM_WEIGHT                          = 1.0F;
-  static constexpr float DIVERGING_SLIM_WEIGHT                       = 1.0F;
-  static constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 = 1.0F;
-  static constexpr float QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
-  static constexpr float MISC_SLIM_WEIGHT                            = 1.0F;
+  static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
+  static constexpr auto SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
+  static constexpr auto SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
+  static constexpr auto CYCLIC_SLIM_WEIGHT                          = 1.0F;
+  static constexpr auto DIVERGING_SLIM_WEIGHT                       = 1.0F;
+  static constexpr auto DIVERGING_BLACK_SLIM_WEIGHT                 = 1.0F;
+  static constexpr auto QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
+  static constexpr auto MISC_SLIM_WEIGHT                            = 1.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -108,17 +108,17 @@ auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> std::shared_pt
 auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "MostlySequentialStandardMaps";
+  static constexpr auto MAPS_NAME = "MostlySequentialStandardMaps";
 
   // clang-format off
-  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
-  static constexpr float SEQUENTIAL_WEIGHT                      = 1.0F;
-  static constexpr float SEQUENTIAL2_WEIGHT                     = 1.0F;
-  static constexpr float CYCLIC_WEIGHT                          = 0.0F;
-  static constexpr float DIVERGING_WEIGHT                       = 0.0F;
-  static constexpr float DIVERGING_BLACK_WEIGHT                 = 0.0F;
-  static constexpr float QUALITATIVE_WEIGHT                     = 1.0F;
-  static constexpr float MISC_WEIGHT                            = 1.0F;
+  static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
+  static constexpr auto SEQUENTIAL_WEIGHT                      = 1.0F;
+  static constexpr auto SEQUENTIAL2_WEIGHT                     = 1.0F;
+  static constexpr auto CYCLIC_WEIGHT                          = 0.0F;
+  static constexpr auto DIVERGING_WEIGHT                       = 0.0F;
+  static constexpr auto DIVERGING_BLACK_WEIGHT                 = 0.0F;
+  static constexpr auto QUALITATIVE_WEIGHT                     = 1.0F;
+  static constexpr auto MISC_WEIGHT                            = 1.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -143,17 +143,17 @@ auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "MostlySequentialSlimMaps";
+  static constexpr auto MAPS_NAME = "MostlySequentialSlimMaps";
 
   // clang-format off
-  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
-  static constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
-  static constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
-  static constexpr float CYCLIC_SLIM_WEIGHT                          = 0.0F;
-  static constexpr float DIVERGING_SLIM_WEIGHT                       = 0.0F;
-  static constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 = 0.0F;
-  static constexpr float QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
-  static constexpr float MISC_SLIM_WEIGHT                            = 1.0F;
+  static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
+  static constexpr auto SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
+  static constexpr auto SEQUENTIAL2_SLIM_WEIGHT                     = 1.0F;
+  static constexpr auto CYCLIC_SLIM_WEIGHT                          = 0.0F;
+  static constexpr auto DIVERGING_SLIM_WEIGHT                       = 0.0F;
+  static constexpr auto DIVERGING_BLACK_SLIM_WEIGHT                 = 0.0F;
+  static constexpr auto QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
+  static constexpr auto MISC_SLIM_WEIGHT                            = 1.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -178,17 +178,17 @@ auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "SlightlyDivergingStandardMaps";
+  static constexpr auto MAPS_NAME = "SlightlyDivergingStandardMaps";
 
   // clang-format off
-  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 10.0F;
-  static constexpr float SEQUENTIAL_WEIGHT                      = 10.0F;
-  static constexpr float SEQUENTIAL2_WEIGHT                     = 10.0F;
-  static constexpr float CYCLIC_WEIGHT                          = 10.0F;
-  static constexpr float DIVERGING_WEIGHT                       = 20.0F;
-  static constexpr float DIVERGING_BLACK_WEIGHT                 =  1.0F;
-  static constexpr float QUALITATIVE_WEIGHT                     = 10.0F;
-  static constexpr float MISC_WEIGHT                            = 20.0F;
+  static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 10.0F;
+  static constexpr auto SEQUENTIAL_WEIGHT                      = 10.0F;
+  static constexpr auto SEQUENTIAL2_WEIGHT                     = 10.0F;
+  static constexpr auto CYCLIC_WEIGHT                          = 10.0F;
+  static constexpr auto DIVERGING_WEIGHT                       = 20.0F;
+  static constexpr auto DIVERGING_BLACK_WEIGHT                 =  1.0F;
+  static constexpr auto QUALITATIVE_WEIGHT                     = 10.0F;
+  static constexpr auto MISC_WEIGHT                            = 20.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -213,17 +213,17 @@ auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "SlightlyDivergingSlimMaps";
+  static constexpr auto MAPS_NAME = "SlightlyDivergingSlimMaps";
 
   // clang-format off
-  static constexpr float PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 10.0F;
-  static constexpr float SEQUENTIAL_SLIM_WEIGHT                      = 10.0F;
-  static constexpr float SEQUENTIAL2_SLIM_WEIGHT                     = 10.0F;
-  static constexpr float CYCLIC_SLIM_WEIGHT                          = 10.0F;
-  static constexpr float DIVERGING_SLIM_WEIGHT                       = 20.0F;
-  static constexpr float DIVERGING_BLACK_SLIM_WEIGHT                 =  1.0F;
-  static constexpr float QUALITATIVE_SLIM_WEIGHT                     = 10.0F;
-  static constexpr float MISC_SLIM_WEIGHT                            = 20.0F;
+  static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 10.0F;
+  static constexpr auto SEQUENTIAL_SLIM_WEIGHT                      = 10.0F;
+  static constexpr auto SEQUENTIAL2_SLIM_WEIGHT                     = 10.0F;
+  static constexpr auto CYCLIC_SLIM_WEIGHT                          = 10.0F;
+  static constexpr auto DIVERGING_SLIM_WEIGHT                       = 20.0F;
+  static constexpr auto DIVERGING_BLACK_SLIM_WEIGHT                 =  1.0F;
+  static constexpr auto QUALITATIVE_SLIM_WEIGHT                     = 10.0F;
+  static constexpr auto MISC_SLIM_WEIGHT                            = 20.0F;
 
   return std::make_shared<WeightedColorMaps>(
       goomRand,
@@ -248,7 +248,7 @@ auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "BlueStandardMaps";
+  static constexpr auto MAPS_NAME = "BlueStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -267,7 +267,7 @@ auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "RedStandardMaps";
+  static constexpr auto MAPS_NAME = "RedStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -286,7 +286,7 @@ auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "GreenStandardMaps";
+  static constexpr auto MAPS_NAME = "GreenStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -305,7 +305,7 @@ auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "YellowStandardMaps";
+  static constexpr auto MAPS_NAME = "YellowStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -324,7 +324,7 @@ auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "OrangeStandardMaps";
+  static constexpr auto MAPS_NAME = "OrangeStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -343,7 +343,7 @@ auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "PurpleStandardMaps";
+  static constexpr auto MAPS_NAME = "PurpleStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -362,7 +362,7 @@ auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "CitiesStandardMaps";
+  static constexpr auto MAPS_NAME = "CitiesStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -381,7 +381,7 @@ auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "SeasonsStandardMaps";
+  static constexpr auto MAPS_NAME = "SeasonsStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -400,7 +400,7 @@ auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "HeatStandardMaps";
+  static constexpr auto MAPS_NAME = "HeatStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -419,7 +419,7 @@ auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "ColdStandardMaps";
+  static constexpr auto MAPS_NAME = "ColdStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -438,7 +438,7 @@ auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "PastelStandardMaps";
+  static constexpr auto MAPS_NAME = "PastelStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -457,7 +457,7 @@ auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "DivergingBlackStandardMaps";
+  static constexpr auto MAPS_NAME = "DivergingBlackStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -476,7 +476,7 @@ auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr const char* MAPS_NAME = "WesAndersonMaps";
+  static constexpr auto MAPS_NAME = "WesAndersonMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(

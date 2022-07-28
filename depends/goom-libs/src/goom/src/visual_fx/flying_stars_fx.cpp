@@ -49,18 +49,17 @@ using UTILS::MATH::TWO_PI;
 using UTILS::MATH::Weights;
 
 // clang-format off
-static constexpr float COLOR_MAP_MODE_ONE_MAP_PER_ANGLE_WEIGHT      = 30.0F;
-static constexpr float COLOR_MAP_MODE_ONE_MAP_FOR_ALL_ANGLES_WEIGHT = 10.0F;
-static constexpr float COLOR_MAP_MODE_MEGA_RANDOM_WEIGHT            =  1.0F;
+static constexpr auto COLOR_MAP_MODE_ONE_MAP_PER_ANGLE_WEIGHT      = 30.0F;
+static constexpr auto COLOR_MAP_MODE_ONE_MAP_FOR_ALL_ANGLES_WEIGHT = 10.0F;
+static constexpr auto COLOR_MAP_MODE_MEGA_RANDOM_WEIGHT            =  1.0F;
 
-static constexpr float COLOR_MODE_MIX_COLORS_WEIGHT         = 30.0F;
-static constexpr float COLOR_MODE_REVERSE_MIX_COLORS_WEIGHT = 15.0F;
-static constexpr float COLOR_MODE_SIMILAR_LOW_COLORS_WEIGHT = 10.0F;
-static constexpr float COLOR_MODE_SINE_MIX_COLORS_WEIGHT    =  5.0F;
+static constexpr auto COLOR_MODE_MIX_COLORS_WEIGHT         = 30.0F;
+static constexpr auto COLOR_MODE_REVERSE_MIX_COLORS_WEIGHT = 15.0F;
+static constexpr auto COLOR_MODE_SIMILAR_LOW_COLORS_WEIGHT = 10.0F;
+static constexpr auto COLOR_MODE_SINE_MIX_COLORS_WEIGHT    =  5.0F;
 // clang-format on
 
-static const inline std::set<RandomColorMaps::ColorMapTypes> DEFAULT_COLOR_MAP_TYPES =
-    RandomColorMaps::ALL_COLOR_MAP_TYPES;
+static const inline auto DEFAULT_COLOR_MAP_TYPES = RandomColorMaps::ALL_COLOR_MAP_TYPES;
 
 class FlyingStarsFx::FlyingStarsImpl
 {
@@ -80,7 +79,7 @@ private:
   static constexpr uint32_t MAX_COUNT = 100;
   StarDrawer m_starDrawer;
 
-  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr auto GAMMA = 1.0F / 2.0F;
   const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
   [[nodiscard]] auto GetColorCorrection(float brightness, const Pixel& color) const noexcept
       -> Pixel;
@@ -118,10 +117,10 @@ private:
 
   static constexpr uint32_t MIN_NUM_STAR_CLUSTERS = 0;
   static constexpr uint32_t MAX_NUM_STAR_CLUSTERS = 3;
-  static constexpr float MAX_STAR_CLUSTER_WIDTH = 320.0F;
-  static constexpr float MAX_STAR_CLUSTER_HEIGHT = 200.0F;
+  static constexpr auto MAX_STAR_CLUSTER_WIDTH = 320.0F;
+  static constexpr auto MAX_STAR_CLUSTER_HEIGHT = 200.0F;
   // Why 320,200 ? Because the FX was developed on 320x200.
-  static constexpr float MIN_STAR_CLUSTER_HEIGHT = 50.0F;
+  static constexpr auto MIN_STAR_CLUSTER_HEIGHT = 50.0F;
   const float m_heightRatio =
       static_cast<float>(m_goomInfo.GetScreenInfo().height) / MAX_STAR_CLUSTER_HEIGHT;
   auto AddStarClusters() -> void;
@@ -280,7 +279,7 @@ auto FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents() noexcept -> void
 
   SoundEventOccurred();
 
-  if (static constexpr float PROB_CHANGE_MAPS_AND_MODES = 1.0F / 20.0F;
+  if (static constexpr auto PROB_CHANGE_MAPS_AND_MODES = 1.0F / 20.0F;
       m_goomRand.ProbabilityOf(PROB_CHANGE_MAPS_AND_MODES))
   {
     ChangeMapsAndModes();
@@ -301,7 +300,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::ChangeMapsAndModes() -> void
 
 auto FlyingStarsFx::FlyingStarsImpl::DrawStars() noexcept -> void
 {
-  const float speedFactor = m_goomRand.GetRandInRange(0.1F, 10.0F);
+  const auto speedFactor = m_goomRand.GetRandInRange(0.1F, 10.0F);
 
   for (auto& star : m_activeStars)
   {
@@ -323,13 +322,13 @@ inline auto FlyingStarsFx::FlyingStarsImpl::RemoveDeadStars() noexcept -> void
   m_activeStars.erase(std::remove_if(m_activeStars.begin(), m_activeStars.end(), isDead),
                       m_activeStars.end());
 #else
-  const size_t numRemoved = std::erase_if(m_activeStars, isDead);
+  const auto numRemoved = std::erase_if(m_activeStars, isDead);
 #endif
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const noexcept -> bool
 {
-  static constexpr int32_t DEAD_MARGIN = 64;
+  static constexpr auto DEAD_MARGIN = 64;
 
   if ((star.GetStartPos().x < -DEAD_MARGIN) ||
       (star.GetStartPos().x > static_cast<float>(m_goomInfo.GetScreenInfo().width + DEAD_MARGIN)))
@@ -356,13 +355,13 @@ inline auto FlyingStarsFx::FlyingStarsImpl::SoundEventOccurred() noexcept -> voi
 
 auto FlyingStarsFx::FlyingStarsImpl::AddStarClusters() -> void
 {
-  const uint32_t numStarClusters = m_goomRand.GetRandInRange(MIN_NUM_STAR_CLUSTERS, 2U);
-  const uint32_t totalNumActiveStars =
+  const auto numStarClusters = m_goomRand.GetRandInRange(MIN_NUM_STAR_CLUSTERS, 2U);
+  const auto totalNumActiveStars =
       m_goomRand.GetRandInRange(MIN_TOTAL_NUM_ACTIVE_STARS, MAX_TOTAL_NUM_ACTIVE_STARS + 1);
 
-  for (uint32_t i = 0; i < numStarClusters; ++i)
+  for (auto i = 0U; i < numStarClusters; ++i)
   {
-    IStarType& starType = *m_starTypesContainer.GetRandomStarType();
+    auto& starType = *m_starTypesContainer.GetRandomStarType();
 
     starType.UpdateWindAndGravity();
     starType.UpdateFixedColorMapNames();
@@ -384,7 +383,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::ChangeColorMapMode() noexcept -> voi
 auto FlyingStarsFx::FlyingStarsImpl::GetColorMapsSet(const IStarType& starType) const noexcept
     -> Star::ColorMapsSet
 {
-  if (constexpr float PROB_RANDOM_COLOR_MAPS = 0.5F;
+  if (static constexpr auto PROB_RANDOM_COLOR_MAPS = 0.5F;
       m_goomRand.ProbabilityOf(PROB_RANDOM_COLOR_MAPS))
   {
     return {
@@ -474,15 +473,15 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetFinalMixedColors(const float brig
                                                                 const float t) const noexcept
     -> MultiplePixels
 {
-  static constexpr float MIN_MIX = 0.2F;
-  static constexpr float MAX_MIX = 0.8F;
-  const float tMix = STD20::lerp(MIN_MIX, MAX_MIX, t);
-  const Pixel mixedMainColor =
+  static constexpr auto MIN_MIX = 0.2F;
+  static constexpr auto MAX_MIX = 0.8F;
+  const auto tMix = STD20::lerp(MIN_MIX, MAX_MIX, t);
+  const auto mixedMainColor =
       GetColorCorrection(brightness, IColorMap::GetColorMix(starColorSet.mainColor,
                                                             starColorSet.dominantMainColor, tMix));
-  const Pixel mixedLowColor = GetLightenedColor(
+  const auto mixedLowColor = GetLightenedColor(
       IColorMap::GetColorMix(starColorSet.lowColor, starColorSet.dominantLowColor, tMix), 10.0F);
-  const Pixel remixedLowColor =
+  const auto remixedLowColor =
       m_colorMode == ColorMode::SIMILAR_LOW_COLORS
           ? mixedLowColor
           : GetColorCorrection(brightness,
@@ -502,10 +501,10 @@ auto FlyingStarsFx::FlyingStarsImpl::AddStarCluster(const IStarType& starType,
                                                     const uint32_t totalNumActiveStars) noexcept
     -> void
 {
-  const IStarType::SetupParams starSetupParams = GetSetupParams(starType);
-  const uint32_t maxStarsInACluster = GetMaxStarsInACluster();
+  const auto starSetupParams = GetSetupParams(starType);
+  const auto maxStarsInACluster = GetMaxStarsInACluster();
 
-  for (uint32_t i = 0; i < maxStarsInACluster; ++i)
+  for (auto i = 0U; i < maxStarsInACluster; ++i)
   {
     if (m_activeStars.size() >= totalNumActiveStars)
     {
@@ -519,9 +518,9 @@ inline auto FlyingStarsFx::FlyingStarsImpl::AddStar(
     const IStarType& starType, const IStarType::SetupParams& setupParams) noexcept -> void
 {
   // LogInfo("startPos = {}, {}", setupParams.startPos.x, setupParams.startPos.y);
-  const float newStarPathAngle = starType.GetRandomizedStarPathAngle(setupParams.startPos);
+  const auto newStarPathAngle = starType.GetRandomizedStarPathAngle(setupParams.startPos);
 
-  Star& newStar = m_activeStars.emplace_back(GetNewStarParams(newStarPathAngle, setupParams));
+  auto& newStar = m_activeStars.emplace_back(GetNewStarParams(newStarPathAngle, setupParams));
 
   newStar.SetColorMapsSet(GetColorMapsSet(starType));
 }
@@ -530,18 +529,18 @@ auto FlyingStarsFx::FlyingStarsImpl::GetNewStarParams(
     const float starPathAngle, const IStarType::SetupParams& setupParams) const noexcept
     -> Star::Params
 {
-  const float starPathLength =
+  const auto starPathLength =
       setupParams.nominalPathLength * m_goomRand.GetRandInRange(0.01F, 2.0F);
-  static constexpr float LENGTH_OFFSET = -0.2F;
+  static constexpr auto LENGTH_OFFSET = -0.2F;
 
-  const auto initialPosition = Point2dFlt{setupParams.startPos.ToFlt()};
+  const auto initialPosition = setupParams.startPos.ToFlt();
   const auto initialVelocity = Vec2dFlt{starPathLength * std::cos(starPathAngle),
                                         LENGTH_OFFSET + (starPathLength * std::sin(starPathAngle))};
   const auto initialAcceleration = Vec2dFlt{setupParams.sideWind, setupParams.gravity};
   const auto initialAge =
-      float{m_goomRand.GetRandInRange(Star::MIN_INITIAL_AGE, Star::HALF_MAX_INITIAL_AGE)};
-  const auto initialVAge = float{std::max(Star::MIN_INITIAL_AGE, setupParams.vage)};
-  const auto maxAge = float{setupParams.maxStarAge};
+      m_goomRand.GetRandInRange(Star::MIN_INITIAL_AGE, Star::HALF_MAX_INITIAL_AGE);
+  const auto initialVAge = std::max(Star::MIN_INITIAL_AGE, setupParams.vage);
+  const auto maxAge = setupParams.maxStarAge;
 
   return {initialPosition, initialVelocity, initialAcceleration, initialAge, initialVAge, maxAge};
 }
@@ -563,17 +562,17 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetMaxStarsInACluster() const noexce
 auto FlyingStarsFx::FlyingStarsImpl::GetSetupParams(const IStarType& starType) const noexcept
     -> IStarType::SetupParams
 {
-  const float defaultPathLength =
+  const auto defaultPathLength =
       (1.0F + m_goomInfo.GetSoundEvents().GetGoomPower()) *
       (m_goomRand.GetRandInRange(MIN_STAR_CLUSTER_HEIGHT, MAX_STAR_CLUSTER_HEIGHT) /
        MAX_STAR_CLUSTER_WIDTH);
 
-  IStarType::SetupParams setupParams = starType.GetRandomizedSetupParams(defaultPathLength);
+  auto setupParams = starType.GetRandomizedSetupParams(defaultPathLength);
 
   setupParams.nominalPathLength *= m_heightRatio;
   if (m_goomInfo.GetSoundEvents().GetTimeSinceLastBigGoom() < 1)
   {
-    static constexpr float LENGTH_FACTOR = 1.5F;
+    static constexpr auto LENGTH_FACTOR = 1.5F;
     setupParams.nominalPathLength *= LENGTH_FACTOR;
   }
 

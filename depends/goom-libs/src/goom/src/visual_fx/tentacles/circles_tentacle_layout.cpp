@@ -20,8 +20,8 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
                                              const std::vector<uint32_t>& numCircleSamples,
                                              const float zConst)
 {
-  const size_t numCircles = numCircleSamples.size();
-  if (constexpr size_t MIN_NUM_CIRCLES = 2; numCircles < MIN_NUM_CIRCLES)
+  const auto numCircles = numCircleSamples.size();
+  if (static constexpr auto MIN_NUM_CIRCLES = 2; numCircles < MIN_NUM_CIRCLES)
   {
     throw std::logic_error(
         std20::format("There must be >= 2 circle sample numbers not {}.", numCircles));
@@ -38,31 +38,31 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
   const auto getSamplePoints = [&](const float radius, const size_t numSample,
                                    const float angleStart, const float angleFinish)
   {
-    const float angleStep = (angleFinish - angleStart) / static_cast<float>(numSample - 1);
-    float angle = angleStart;
-    for (size_t i = 0; i < numSample; ++i)
+    const auto angleStep = (angleFinish - angleStart) / static_cast<float>(numSample - 1);
+    auto angle = angleStart;
+    for (auto i = 0U; i < numSample; ++i)
     {
-      const float x = radius * std::cos(angle);
-      const float y = radius * std::sin(angle);
-      const V3dFlt point = {x, y, zConst};
+      const auto x = radius * std::cos(angle);
+      const auto y = radius * std::sin(angle);
+      const auto point = V3dFlt{x, y, zConst};
       m_points.push_back(point);
       angle += angleStep;
     }
   };
 
-  const float angleLeftStart = +HALF_PI;
-  const float angleLeftFinish = 1.5F * pi;
-  const float angleRightStart = -HALF_PI;
-  const float angleRightFinish = +HALF_PI;
+  const auto angleLeftStart = +HALF_PI;
+  const auto angleLeftFinish = 1.5F * pi;
+  const auto angleRightStart = -HALF_PI;
+  const auto angleRightFinish = +HALF_PI;
 
-  const float angleOffsetStart = 0.035F * pi;
-  const float angleOffsetFinish = 0.035F * pi;
-  const float offsetStep =
+  const auto angleOffsetStart = 0.035F * pi;
+  const auto angleOffsetFinish = 0.035F * pi;
+  const auto offsetStep =
       (angleOffsetStart - angleOffsetFinish) / static_cast<float>(numCircles - 1);
-  const float radiusStep = (radiusMax - radiusMin) / static_cast<float>(numCircles - 1);
+  const auto radiusStep = (radiusMax - radiusMin) / static_cast<float>(numCircles - 1);
 
-  float radius = radiusMax;
-  float angleOffset = angleOffsetStart;
+  auto radius = radiusMax;
+  auto angleOffset = angleOffsetStart;
   for (const auto numSample : numCircleSamples)
   {
     getSamplePoints(radius, U_HALF * numSample, angleLeftStart + angleOffset,

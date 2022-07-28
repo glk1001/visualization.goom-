@@ -86,10 +86,10 @@ struct channel_limits<float>
 
 using PixelChannelType = uint16_t;
 using PixelIntType = uint64_t;
-static constexpr uint32_t MAX_CHANNEL_VALUE_HDR = 30 * 1024;
+static constexpr auto MAX_CHANNEL_VALUE_HDR = 30U * 1024U;
 
-static constexpr PixelChannelType MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
-static constexpr PixelChannelType MAX_ALPHA = MAX_COLOR_VAL;
+static constexpr auto MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
+static constexpr auto MAX_ALPHA = MAX_COLOR_VAL;
 
 static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::max(),
               "Invalid MAX_CHANNEL_VALUE_HDR");
@@ -241,8 +241,9 @@ constexpr Pixel::Pixel(const uint32_t red,
 {
 }
 
-static inline constexpr Pixel BLACK_PIXEL{0U, 0U, 0U, MAX_ALPHA};
-static inline constexpr Pixel WHITE_PIXEL{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA};
+static inline constexpr auto BLACK_PIXEL = Pixel{0U, 0U, 0U, MAX_ALPHA};
+static inline constexpr auto WHITE_PIXEL =
+    Pixel{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA};
 
 constexpr auto MultiplyColorChannels(const PixelChannelType ch1,
                                      const PixelChannelType ch2) noexcept -> uint32_t
@@ -398,7 +399,7 @@ inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
   Expects(x < m_xMax);
   Expects(y < m_yMax);
 
-  const size_t xPos = (y * m_width) + x;
+  const auto xPos = (y * m_width) + x;
 
   // This is a serious hotspot so the following ugly access optimization
   // saves a few milliseconds per update.

@@ -56,7 +56,7 @@ TValue::~TValue() noexcept = default;
 
 auto TValue::ValidateDelayPoints() const noexcept -> void
 {
-  float prevT0 = -1.0F;
+  auto prevT0 = -1.0F;
   UNUSED_FOR_NDEBUG(prevT0);
 
   for (const auto& delayPoint : m_delayPoints)
@@ -198,7 +198,7 @@ auto TValue::SetStepSize(const float val) noexcept -> void
 {
   Expects(val >= 0.0F);
 
-  const float oldCurrentStep = m_currentStep;
+  const auto oldCurrentStep = m_currentStep;
 
   m_stepSize = val;
   m_currentStep = m_currentStep < 0.0F ? -m_stepSize : +m_stepSize;

@@ -13,6 +13,7 @@
 namespace GOOM::UTILS::TEXT
 {
 
+using namespace std::string_literals;
 using DRAW::TextDraw;
 using MATH::I_HALF;
 
@@ -24,9 +25,9 @@ auto GetLinesOfWords(const std::string& text, const uint32_t maxLineLength)
     return {text};
   }
 
-  const std::vector<std::string> words = StringSplit(text, " ");
-  std::vector<std::string> textLines{};
-  std::string str{};
+  const auto words = StringSplit(text, " ");
+  auto textLines = std::vector<std::string>{};
+  auto str = ""s;
 
   for (const auto& word : words)
   {
@@ -51,8 +52,8 @@ auto GetLeftAlignedPenForCentringStringAt(TextDraw& textDraw,
                                           const int32_t fontSize,
                                           const Point2dInt& centreAt) -> Point2dInt
 {
-  const int32_t oldFontSize = textDraw.GetFontSize();
-  const float oldCharSpacing = textDraw.GetCharSpacing();
+  const auto oldFontSize = textDraw.GetFontSize();
+  const auto oldCharSpacing = textDraw.GetCharSpacing();
 
   textDraw.SetFontSize(fontSize);
   textDraw.SetCharSpacing(0.0F);
@@ -60,11 +61,11 @@ auto GetLeftAlignedPenForCentringStringAt(TextDraw& textDraw,
 
   textDraw.Prepare();
 
-  const TextDraw::Rect strRect = textDraw.GetPreparedTextBoundingRect();
-  const int32_t bearingX = textDraw.GetBearingX();
-  const int32_t bearingY = textDraw.GetBearingY();
-  const int32_t textWidth = (strRect.xMax - strRect.xMin) + 1;
-  const int32_t textHeight = (strRect.yMax - strRect.yMin) + 1;
+  const auto strRect = textDraw.GetPreparedTextBoundingRect();
+  const auto bearingX = textDraw.GetBearingX();
+  const auto bearingY = textDraw.GetBearingY();
+  const auto textWidth = (strRect.xMax - strRect.xMin) + 1;
+  const auto textHeight = (strRect.yMax - strRect.yMin) + 1;
 
   LogInfo("font size = {}", textDraw.GetFontSize());
   LogInfo("charSpacing = {}", textDraw.GetCharSpacing());

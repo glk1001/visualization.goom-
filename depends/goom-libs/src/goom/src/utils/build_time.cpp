@@ -7,8 +7,8 @@ namespace GOOM::UTILS
 
 auto GetBuildTime() -> std::string
 {
-  static constexpr const char* BUILD_TIME = __DATE__ ", " __TIME__;
-  static constexpr const char* BUILD_TIME_FMT = "%b %d %Y, %H:%M:%S";
+  static constexpr auto BUILD_TIME = __DATE__ ", " __TIME__;
+  static constexpr auto BUILD_TIME_FMT = "%b %d %Y, %H:%M:%S";
   return GetStandardDateTimeString(BUILD_TIME, BUILD_TIME_FMT);
 }
 

@@ -53,19 +53,19 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
 
 // clang-format off
-static constexpr float MIN_DOT_SIZE01_WEIGHT = 100.0F;
-static constexpr float MIN_DOT_SIZE02_WEIGHT =  50.0F;
-static constexpr float MIN_DOT_SIZE03_WEIGHT =  20.0F;
-static constexpr float MIN_DOT_SIZE04_WEIGHT =  10.0F;
+static constexpr auto MIN_DOT_SIZE01_WEIGHT = 100.0F;
+static constexpr auto MIN_DOT_SIZE02_WEIGHT =  50.0F;
+static constexpr auto MIN_DOT_SIZE03_WEIGHT =  20.0F;
+static constexpr auto MIN_DOT_SIZE04_WEIGHT =  10.0F;
 
-static constexpr float NORMAL_DOT_SIZE01_WEIGHT = 50.0F;
-static constexpr float NORMAL_DOT_SIZE02_WEIGHT = 20.0F;
-static constexpr float NORMAL_DOT_SIZE03_WEIGHT = 20.0F;
-static constexpr float NORMAL_DOT_SIZE04_WEIGHT = 10.0F;
-static constexpr float NORMAL_DOT_SIZE05_WEIGHT = 10.0F;
-static constexpr float NORMAL_DOT_SIZE06_WEIGHT = 10.0F;
-static constexpr float NORMAL_DOT_SIZE07_WEIGHT = 10.0F;
-static constexpr float NORMAL_DOT_SIZE08_WEIGHT = 10.0F;
+static constexpr auto NORMAL_DOT_SIZE01_WEIGHT = 50.0F;
+static constexpr auto NORMAL_DOT_SIZE02_WEIGHT = 20.0F;
+static constexpr auto NORMAL_DOT_SIZE03_WEIGHT = 20.0F;
+static constexpr auto NORMAL_DOT_SIZE04_WEIGHT = 10.0F;
+static constexpr auto NORMAL_DOT_SIZE05_WEIGHT = 10.0F;
+static constexpr auto NORMAL_DOT_SIZE06_WEIGHT = 10.0F;
+static constexpr auto NORMAL_DOT_SIZE07_WEIGHT = 10.0F;
+static constexpr auto NORMAL_DOT_SIZE08_WEIGHT = 10.0F;
 // clang-format on
 
 LineMorph::LineMorph(IGoomDraw& draw,
@@ -149,7 +149,7 @@ inline auto LineMorph::UpdateColorInfo() noexcept -> void
 {
   m_colorMapsManager.ChangeAllColorMapsNow();
 
-  static constexpr float PROB_USE_LINE_COLOR = 0.5F;
+  static constexpr auto PROB_USE_LINE_COLOR = 0.5F;
   m_useLineColor = m_goomRand.ProbabilityOf(PROB_USE_LINE_COLOR);
 }
 
@@ -176,8 +176,8 @@ inline auto LineMorph::GetFreshLine(const LineType lineType, const float linePar
 auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
 {
   m_lineLerpParam += LINE_LERP_INC;
-  const float t = std::min(1.0F, m_lineLerpParam);
-  for (uint32_t i = 0; i < AudioSamples::AUDIO_SAMPLE_LEN; ++i)
+  const auto t = std::min(1.0F, m_lineLerpParam);
+  for (auto i = 0U; i < AudioSamples::AUDIO_SAMPLE_LEN; ++i)
   {
     m_srcePoints[i].point = lerp(m_srcePointsCopy[i].point, m_destPoints[i].point, t);
     m_srcePoints[i].angle = STD20::lerp(m_srcePointsCopy[i].angle, m_destPoints[i].angle, t);
@@ -185,8 +185,8 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   if (m_lineLerpParam >= 1.0F)
   {
     m_srceLineParams.lineType = m_destLineParams.lineType;
-    static constexpr float MIN_BRIGHTNESS = 2.5F;
-    static constexpr float MAX_BRIGHTNESS = 4.0F;
+    static constexpr auto MIN_BRIGHTNESS = 2.5F;
+    static constexpr auto MAX_BRIGHTNESS = 4.0F;
     m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
   }
 
@@ -196,14 +196,14 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
            FloatsEqual(m_srcePoints[0].point.y,
                        m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.y)));
 
-  static constexpr float COLOR_MIX_AMOUNT = 1.0F / 64.0F;
+  static constexpr auto COLOR_MIX_AMOUNT = 1.0F / 64.0F;
   m_srceLineParams.color =
       IColorMap::GetColorMix(m_srceLineParams.color, m_destLineParams.color, COLOR_MIX_AMOUNT);
 
-  static constexpr float MIN_POW_INC = 0.03F;
-  static constexpr float MAX_POW_INC = 0.10F;
-  static constexpr float MIN_POWER = 1.1F;
-  static constexpr float MAX_POWER = 17.5F;
+  static constexpr auto MIN_POW_INC = 0.03F;
+  static constexpr auto MAX_POW_INC = 0.10F;
+  static constexpr auto MIN_POWER = 1.1F;
+  static constexpr auto MAX_POWER = 17.5F;
   m_lineColorPower += m_lineColorPowerIncrement;
   if (m_lineColorPower < MIN_POWER)
   {
@@ -216,7 +216,7 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
     m_lineColorPowerIncrement = -m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
   }
 
-  static constexpr float AMP_MIX_AMOUNT = 0.01F;
+  static constexpr auto AMP_MIX_AMOUNT = 0.01F;
   m_srceLineParams.amplitude =
       STD20::lerp(m_srceLineParams.amplitude, m_destLineParams.amplitude, AMP_MIX_AMOUNT);
 }
@@ -230,8 +230,8 @@ auto LineMorph::ResetDestLine(const LineParams& newParams) noexcept -> void
 
   m_lineLerpParam = 0.0;
 
-  static constexpr float MIN_BRIGHTNESS = 1.5F;
-  static constexpr float MAX_BRIGHTNESS = 3.0F;
+  static constexpr auto MIN_BRIGHTNESS = 1.5F;
+  static constexpr auto MAX_BRIGHTNESS = 3.0F;
   m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
 
   m_dotDrawer.ChangeDotSizes();
@@ -243,7 +243,7 @@ auto LineMorph::ResetDestLine(const LineParams& newParams) noexcept -> void
 
 auto LineMorph::GetRandomLineColor() const noexcept -> Pixel
 {
-  if (constexpr float PROB_LINE_COLOR = 0.02F; m_goomRand.ProbabilityOf(PROB_LINE_COLOR))
+  if (static constexpr auto PROB_LINE_COLOR = 0.02F; m_goomRand.ProbabilityOf(PROB_LINE_COLOR))
   {
     return GetSimpleColor(static_cast<SimpleColors>(m_goomRand.GetNRand(NUM<SimpleColors>)));
   }
@@ -258,14 +258,14 @@ inline auto LineMorph::GetFinalLineColor(const Pixel& color) const noexcept -> P
 auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
                           const AudioSamples::MinMaxValues& soundMinMax) noexcept -> void
 {
-  static constexpr size_t LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
+  static constexpr auto LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
   UNUSED_FOR_NDEBUG(LAST_POINT_INDEX);
 
   Expects((m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
           (FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) and
            FloatsEqual(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
 
-  const Pixel lineColor = GetFinalLineColor(m_srceLineParams.color);
+  const auto lineColor = GetFinalLineColor(m_srceLineParams.color);
 
   m_audioRange = soundMinMax.maxVal - soundMinMax.minVal;
   assert(m_audioRange >= 0.0F);
@@ -279,22 +279,22 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
     return;
   }
 
-  static constexpr uint8_t LINE_THICKNESS = 1;
-  const std::vector<PointAndColor> audioPoints = GetAudioPoints(lineColor, soundData);
+  static constexpr auto LINE_THICKNESS = 1U;
+  const auto audioPoints = GetAudioPoints(lineColor, soundData);
 
-  Point2dInt point1 = audioPoints[0].point;
-  Point2dInt point2{};
+  auto point1 = audioPoints[0].point;
+  auto point2 = Point2dInt{};
 
-  for (size_t i = 1; i < audioPoints.size(); ++i)
+  for (auto i = 1U; i < audioPoints.size(); ++i)
   {
-    const PointAndColor& nextPointData = audioPoints[i];
+    const auto& nextPointData = audioPoints[i];
 
     point2 = nextPointData.point;
-    const MultiplePixels colors = {lineColor, nextPointData.color};
+    const auto colors = MultiplePixels{lineColor, nextPointData.color};
 
     m_draw.Line(point1, point2, colors, LINE_THICKNESS);
 
-    static constexpr float DOT_BRIGHTNESS = 1.5F;
+    static constexpr auto DOT_BRIGHTNESS = 1.5F;
     m_dotDrawer.DrawDot(point2, colors, DOT_BRIGHTNESS);
 
     point1 = point2;
@@ -307,9 +307,9 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
 
 auto LineMorph::DrawFlatLine(const Pixel& lineColor) noexcept -> void
 {
-  const LinePoint& pt0 = m_srcePoints[0];
-  const LinePoint& ptN = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
-  const MultiplePixels colors = {lineColor, lineColor};
+  const auto& pt0 = m_srcePoints[0];
+  const auto& ptN = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
+  const auto colors = MultiplePixels{lineColor, lineColor};
 
   m_draw.Line(pt0.point.ToInt(), ptN.point.ToInt(), colors, 1);
 }
@@ -318,17 +318,17 @@ auto LineMorph::GetAudioPoints(const Pixel& lineColor,
                                const AudioSamples::SampleArray& audioData) const noexcept
     -> std::vector<PointAndColor>
 {
-  const Pixel randColor = GetRandomLineColor();
+  const auto randColor = GetRandomLineColor();
 
-  static constexpr float T_STEP = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
-  static constexpr float HALFWAY_T = 0.5F;
-  float currentTStep = T_STEP;
-  float t = 0.0;
+  static constexpr auto T_STEP = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
+  static constexpr auto HALFWAY_T = 0.5F;
+  auto currentTStep = T_STEP;
+  auto t = 0.0F;
 
-  std::vector<PointAndColor> audioPoints{};
+  auto audioPoints = std::vector<PointAndColor>{};
   audioPoints.reserve(audioData.size());
 
-  for (size_t i = 0; i < audioData.size(); ++i)
+  for (auto i = 0U; i < audioData.size(); ++i)
   {
     audioPoints.emplace_back(
         GetNextPointData(m_srcePoints[i], GetMainColor(lineColor, t), randColor, audioData[i]));
@@ -343,7 +343,7 @@ auto LineMorph::GetAudioPoints(const Pixel& lineColor,
   if ((m_srceLineParams.lineType == LineType::CIRCLE) and (m_lineLerpParam >= 1.0F))
   {
     // This is a complete circle -- lerp the last few points to nicely join back to start.
-    static constexpr size_t NUM_POINTS_TO_LERP = 50;
+    static constexpr auto NUM_POINTS_TO_LERP = 50U;
     SmoothTheCircleJoinAtEnds(audioPoints, NUM_POINTS_TO_LERP);
   }
 
@@ -360,22 +360,22 @@ auto LineMorph::GetNextPointData(const LinePoint& linePoint,
   Expects(m_minAudioValue <= (dataVal + SMALL_FLOAT));
   Expects(dataVal <= ((m_minAudioValue + m_audioRange) + SMALL_FLOAT));
 
-  const float tData = (dataVal - m_minAudioValue) / m_audioRange;
+  const auto tData = (dataVal - m_minAudioValue) / m_audioRange;
   assert((0.0F <= tData) && (tData <= 1.0F));
 
-  const float cosAngle = std::cos(linePoint.angle);
-  const float sinAngle = std::sin(linePoint.angle);
-  const float normalizedDataVal = m_maxNormalizedPeak * tData;
+  const auto cosAngle = std::cos(linePoint.angle);
+  const auto sinAngle = std::sin(linePoint.angle);
+  const auto normalizedDataVal = m_maxNormalizedPeak * tData;
   assert(normalizedDataVal >= 0.0F);
   // TODO - Is 'm_srceLineParams.amplitude' the right abstraction level?
-  const Point2dInt nextPointData{
-      static_cast<int>(linePoint.point.x +
-                       (m_srceLineParams.amplitude * cosAngle * normalizedDataVal)),
-      static_cast<int>(linePoint.point.y +
-                       (m_srceLineParams.amplitude * sinAngle * normalizedDataVal))};
+  const auto nextPointData =
+      Point2dInt{static_cast<int32_t>(linePoint.point.x +
+                                      (m_srceLineParams.amplitude * cosAngle * normalizedDataVal)),
+                 static_cast<int32_t>(linePoint.point.y +
+                                      (m_srceLineParams.amplitude * sinAngle * normalizedDataVal))};
 
-  const float brightness = m_currentBrightness * tData;
-  const Pixel modColor =
+  const auto brightness = m_currentBrightness * tData;
+  const auto modColor =
       m_colorAdjust.GetAdjustment(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
 
   return {nextPointData, modColor};

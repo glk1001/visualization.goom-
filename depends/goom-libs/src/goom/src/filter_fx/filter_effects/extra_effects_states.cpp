@@ -13,16 +13,16 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::Timer;
 using UTILS::MATH::IGoomRand;
 
-static constexpr bool EXTRA_EFFECTS_TURNED_OFF = ALL_FILTER_EFFECTS_TURNED_OFF;
+static constexpr auto EXTRA_EFFECTS_TURNED_OFF = ALL_FILTER_EFFECTS_TURNED_OFF;
 
-static constexpr HypercosOverlay DEFAULT_HYPERCOS_OVERLAY = HypercosOverlay::NONE;
+static constexpr auto DEFAULT_HYPERCOS_OVERLAY = HypercosOverlay::NONE;
 
-static constexpr bool DEFAULT_BLOCKY_WAVY_EFFECT = false;
-static constexpr bool DEFAULT_IMAGE_VELOCITY_EFFECT = false;
-static constexpr bool DEFAULT_NOISE_EFFECT = false;
-static constexpr bool DEFAULT_PLANE_EFFECT = false;
-static constexpr bool DEFAULT_ROTATION_EFFECT = false;
-static constexpr bool DEFAULT_TAN_EFFECT = false;
+static constexpr auto DEFAULT_BLOCKY_WAVY_EFFECT = false;
+static constexpr auto DEFAULT_IMAGE_VELOCITY_EFFECT = false;
+static constexpr auto DEFAULT_NOISE_EFFECT = false;
+static constexpr auto DEFAULT_PLANE_EFFECT = false;
+static constexpr auto DEFAULT_ROTATION_EFFECT = false;
+static constexpr auto DEFAULT_TAN_EFFECT = false;
 
 class ExtraEffectsStates::EffectState
 {
@@ -190,7 +190,7 @@ inline auto ExtraEffectsStates::EffectState::UpdateState(const float probability
 
 inline auto ExtraEffectsStates::EffectState::SetState(const bool value) -> void
 {
-  const bool previouslyTurnedOn = m_turnedOn;
+  const auto previouslyTurnedOn = m_turnedOn;
   m_turnedOn = value;
 
   if (previouslyTurnedOn && m_turnedOn)

@@ -34,18 +34,18 @@ void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, uint32_t numPointsT
   Expects(numPointsToSmooth > 0);
   Expects(numPointsToSmooth < circlePoints.size());
 
-  const float tStep = 1.0F / static_cast<float>(numPointsToSmooth);
+  const auto tStep = 1.0F / static_cast<float>(numPointsToSmooth);
 
-  const size_t lastPointIndex = circlePoints.size() - 1;
-  const Point2dInt endDiff = circlePoints[0].point - Vec2dInt{circlePoints[lastPointIndex].point};
+  const auto lastPointIndex = circlePoints.size() - 1;
+  const auto endDiff = circlePoints[0].point - Vec2dInt{circlePoints[lastPointIndex].point};
   if ((0 == endDiff.x) && (0 == endDiff.y))
   {
     return;
   }
 
-  const size_t minIndexMinus1 = circlePoints.size() - numPointsToSmooth;
-  Vec2dInt diff{endDiff};
-  float t = 1.0F - tStep;
+  const auto minIndexMinus1 = circlePoints.size() - numPointsToSmooth;
+  auto diff = Vec2dInt{endDiff};
+  auto t = 1.0F - tStep;
   for (size_t i = lastPointIndex; i > minIndexMinus1; --i)
   {
     circlePoints[i].point.Translate(diff);

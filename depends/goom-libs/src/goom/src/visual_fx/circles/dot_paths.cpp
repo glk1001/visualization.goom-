@@ -39,7 +39,7 @@ auto DotPaths::SetDotStartingPositions(std::vector<Point2dInt>&& dotStartingPosi
     -> void
 {
   m_dotStartingPositions = std::move(dotStartingPositions);
-  for (size_t i = 0; i < m_numDots; ++i)
+  for (auto i = 0U; i < m_numDots; ++i)
   {
     m_dotPaths.at(i).GetParametricFunction().SetStartPos(m_dotStartingPositions.at(i).ToFlt());
   }
@@ -51,16 +51,16 @@ auto DotPaths::SetTarget(const Point2dInt& target) noexcept -> void
   std::for_each(begin(m_dotPaths), end(m_dotPaths),
                 [&target](OscillatingPath& path)
                 { path.GetParametricFunction().SetEndPos(target.ToFlt()); });
-  static constexpr float PROB_RANDOMIZE_POINTS = 0.3F;
+  static constexpr auto PROB_RANDOMIZE_POINTS = 0.3F;
   m_randomizePoints = m_goomRand.ProbabilityOf(PROB_RANDOMIZE_POINTS);
 }
 
 auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions) noexcept
     -> std::vector<OscillatingPath>
 {
-  std::vector<OscillatingPath> dotPaths{};
+  auto dotPaths = std::vector<OscillatingPath>{};
 
-  for (size_t i = 0; i < m_numDots; ++i)
+  for (auto i = 0U; i < m_numDots; ++i)
   {
     auto positionT = std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE,
                                               DEFAULT_POSITION_STEPS);
@@ -73,8 +73,8 @@ auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPosition
 
 auto DotPaths::GetNextDotPositions() const noexcept -> std::vector<Point2dInt>
 {
-  std::vector<Point2dInt> nextDotPositions(m_numDots);
-  for (size_t i = 0; i < m_numDots; ++i)
+  auto nextDotPositions = std::vector<Point2dInt>(m_numDots);
+  for (auto i = 0U; i < m_numDots; ++i)
   {
     nextDotPositions.at(i) = m_dotPaths.at(i).GetNextPoint();
     if (m_randomizePoints)
@@ -87,8 +87,8 @@ auto DotPaths::GetNextDotPositions() const noexcept -> std::vector<Point2dInt>
 
 inline auto DotPaths::GetSmallRandomOffset() const noexcept -> Vec2dInt
 {
-  static constexpr int32_t MIN_VARIATION = -5;
-  static constexpr int32_t MAX_VARIATION = +5;
+  static constexpr auto MIN_VARIATION = -5;
+  static constexpr auto MAX_VARIATION = +5;
   return {m_goomRand.GetRandInRange(MIN_VARIATION, MAX_VARIATION + 1),
           m_goomRand.GetRandInRange(MIN_VARIATION, MAX_VARIATION + 1)};
 }

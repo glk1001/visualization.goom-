@@ -9,7 +9,7 @@ namespace GOOM::UTILS
 
 inline auto GetTimeTAsString(const std::time_t timeT) noexcept -> std::string
 {
-  static constexpr size_t BUFF_SIZE = 100;
+  static constexpr auto BUFF_SIZE = 100U;
   struct tm buff
   {
   };

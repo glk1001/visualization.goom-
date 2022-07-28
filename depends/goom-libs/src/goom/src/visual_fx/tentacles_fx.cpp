@@ -58,8 +58,8 @@ private:
   const SmallImageBitmaps& m_smallBitmaps;
 
   static constexpr double PROJECTION_DISTANCE = 170.0;
-  static constexpr float CAMERA_DISTANCE = 8.0F;
-  static constexpr float ROTATION = 1.5F * pi;
+  static constexpr auto CAMERA_DISTANCE = 8.0F;
+  static constexpr auto ROTATION = 1.5F * pi;
   static constexpr size_t NUM_TENTACLE_DRIVERS = 4;
   enum class Drivers
   {
@@ -141,23 +141,23 @@ auto TentaclesFx::ApplyMultiple() noexcept -> void
 }
 
 // clang-format off
-static const CirclesTentacleLayout LAYOUT1{
+static const auto LAYOUT1 = CirclesTentacleLayout{
     10,  80, {16, 12,  8,  6, 4}, 0
 };
-static const CirclesTentacleLayout LAYOUT2{
+static const auto LAYOUT2 = CirclesTentacleLayout{
     10,  80, {20, 16, 12,  6, 4}, 0
 };
-static const CirclesTentacleLayout LAYOUT3{
+static const auto LAYOUT3 = CirclesTentacleLayout{
     10, 100, {30, 20, 14,  6, 4}, 0
 };
-static const CirclesTentacleLayout LAYOUT4{
+static const auto LAYOUT4 = CirclesTentacleLayout{
     10, 110, {36, 26, 20, 12, 6}, 0
 };
 
-static constexpr float DRIVERS_NUM0_WEIGHT =   5.0F;
-static constexpr float DRIVERS_NUM1_WEIGHT =  15.0F;
-static constexpr float DRIVERS_NUM2_WEIGHT =  15.0F;
-static constexpr float DRIVERS_NUM3_WEIGHT =   5.0F;
+static constexpr auto DRIVERS_NUM0_WEIGHT =   5.0F;
+static constexpr auto DRIVERS_NUM1_WEIGHT =  15.0F;
+static constexpr auto DRIVERS_NUM2_WEIGHT =  15.0F;
+static constexpr auto DRIVERS_NUM3_WEIGHT =   5.0F;
 // clang-format on
 
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper,
@@ -192,7 +192,7 @@ inline auto TentaclesFx::TentaclesImpl::Start() -> void
 
 inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 {
-  if (constexpr float PROB_NEW_DRIVER = 0.5F; m_goomRand.ProbabilityOf(PROB_NEW_DRIVER))
+  if (static constexpr auto PROB_NEW_DRIVER = 0.5F; m_goomRand.ProbabilityOf(PROB_NEW_DRIVER))
   {
     m_currentTentacleDriver = GetNextDriver();
   }
@@ -203,14 +203,14 @@ inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
     -> std::vector<propagate_const<std::unique_ptr<TentacleDriver>>>
 {
-  std::vector<propagate_const<std::unique_ptr<TentacleDriver>>> tentacleDrivers{};
-  for (size_t i = 0; i < NUM_TENTACLE_DRIVERS; ++i)
+  auto tentacleDrivers = std::vector<propagate_const<std::unique_ptr<TentacleDriver>>>{};
+  for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
   {
     tentacleDrivers.emplace_back(std::make_unique<TentacleDriver>(
         m_draw, m_goomRand, m_smallBitmaps, m_tentacleLayouts.at(i)));
   }
 
-  for (size_t i = 0; i < NUM_TENTACLE_DRIVERS; ++i)
+  for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
   {
     tentacleDrivers[i]->StartIterating();
     tentacleDrivers[i]->SetProjectionDistance(PROJECTION_DISTANCE);
@@ -230,7 +230,7 @@ inline auto TentaclesFx::TentaclesImpl::RefreshTentacles() -> void
 {
   Expects(m_currentTentacleDriver);
 
-  static constexpr float PROB_REVERSE_COLOR_MIX = 0.33F;
+  static constexpr auto PROB_REVERSE_COLOR_MIX = 0.33F;
   m_currentTentacleDriver->SetReverseColorMix(m_goomRand.ProbabilityOf(PROB_REVERSE_COLOR_MIX));
   m_currentTentacleDriver->TentaclesColorMapsChanged();
 }
@@ -288,7 +288,7 @@ inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
 {
   // Higher sound acceleration increases tentacle wave frequency.
   Expects(m_currentTentacleDriver);
-  const float tentacleWaveFreq =
+  const auto tentacleWaveFreq =
       m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration() < 0.3F
           ? 1.25F
           : (1.0F / (1.10F - m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration()));
@@ -313,11 +313,11 @@ auto TentaclesFx::TentaclesImpl::UpdateDominantColors() -> void
 {
   Expects(m_dominantColorMap != nullptr);
 
-  const Pixel newColor =
+  const auto newColor =
       RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);
-  static constexpr float COLOR_MIX_T = 0.70F;
+  static constexpr auto COLOR_MIX_T = 0.70F;
   m_dominantLowColor = IColorMap::GetColorMix(m_dominantLowColor, newColor, COLOR_MIX_T);
-  static constexpr float COLOR_POWER = 0.67F;
+  static constexpr auto COLOR_POWER = 0.67F;
   m_dominantColor = GetLightenedColor(m_dominantLowColor, COLOR_POWER);
 
   m_dominantDotColor = RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);

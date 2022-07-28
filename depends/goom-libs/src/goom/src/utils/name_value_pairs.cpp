@@ -12,7 +12,7 @@ namespace GOOM::UTILS
 
 [[nodiscard]] auto GetNameValuesString(const NameValuePairs& nameValuePairs) -> std::string
 {
-  std::vector<std::string> nameValueStrings{};
+  auto nameValueStrings = std::vector<std::string>{};
   std::transform(cbegin(nameValuePairs), cend(nameValuePairs), std::back_inserter(nameValueStrings),
                  [](const NameValuePair& pair) { return GetNameValueString(pair); });
   return StringJoin(nameValueStrings, "\n");

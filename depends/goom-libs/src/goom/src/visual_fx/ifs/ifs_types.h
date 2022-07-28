@@ -58,7 +58,7 @@ private:
 
 [[nodiscard]] inline auto MultByUnit(const Dbl x) -> Flt
 {
-  static constexpr int32_t UNIT = 1 << FIX;
+  static constexpr auto UNIT = 1 << FIX;
   return static_cast<Flt>(static_cast<Dbl>(UNIT) * x);
 }
 

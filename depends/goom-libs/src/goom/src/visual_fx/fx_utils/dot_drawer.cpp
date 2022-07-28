@@ -38,9 +38,9 @@ DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
 
 void DotDrawer::ChangeDotSizes()
 {
-  static constexpr size_t MAX_DOT_SIZE = 7;
+  static constexpr auto MAX_DOT_SIZE = 7U;
   m_currentDotSize = GetNextDotSize(MAX_DOT_SIZE);
-  static constexpr float PROB_BEADED_LOOK = 0.15F;
+  static constexpr auto PROB_BEADED_LOOK = 0.15F;
   m_beadedLook = m_goomRand.ProbabilityOf(PROB_BEADED_LOOK);
 }
 
@@ -48,7 +48,7 @@ void DotDrawer::DrawDot(const Point2dInt& pt,
                         const MultiplePixels& colors,
                         const float brightness)
 {
-  size_t dotSize = m_currentDotSize;
+  auto dotSize = m_currentDotSize;
   if (m_beadedLook)
   {
     dotSize = GetNextDotSize(MAX_IMAGE_DOT_SIZE);
@@ -66,8 +66,8 @@ void DotDrawer::DrawDot(const Point2dInt& pt,
                                                 [[maybe_unused]] const size_t y, const Pixel& bgnd)
   { return GetColorMultiply(bgnd, COLOR::GetBrighterColor(brightness, colors[1])); };
 
-  const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getColor1, getColor2};
-  const ImageBitmap& bitmap = GetImageBitmap(m_currentDotSize);
+  const auto getColors = std::vector<IGoomDraw::GetBitmapColorFunc>{getColor1, getColor2};
+  const auto& bitmap = GetImageBitmap(m_currentDotSize);
 
   m_goomDraw.Bitmap(pt, bitmap, getColors);
 }
@@ -75,7 +75,7 @@ void DotDrawer::DrawDot(const Point2dInt& pt,
 auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t
 {
   // clang-format off
-  static constexpr std::array<size_t, NUM<DotSizes>> DOT_SIZES = {{
+  static constexpr auto DOT_SIZES = std::array<size_t, NUM<DotSizes>>{{
       1,
       3,
       5,
@@ -87,7 +87,7 @@ auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t
   }};
   // clang-format on
 
-  if (constexpr size_t MAX_MIN_DOT_SIZE = 7; maxSize <= MAX_MIN_DOT_SIZE)
+  if (static constexpr auto MAX_MIN_DOT_SIZE = 7U; maxSize <= MAX_MIN_DOT_SIZE)
   {
     return DOT_SIZES.at(static_cast<size_t>(m_minDotSizes.GetRandomWeighted()));
   }

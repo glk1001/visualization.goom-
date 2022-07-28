@@ -19,7 +19,7 @@ GoomDrawToMany::GoomDrawToMany(const uint32_t screenWidth,
 
 auto GoomDrawToMany::GetPixel(const Point2dInt point) const -> Pixel
 {
-  const IGoomDraw* const draw = m_manyDraws[0];
+  const auto* const draw = m_manyDraws[0];
   return draw->GetPixel(point);
 }
 

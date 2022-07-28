@@ -9,11 +9,11 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using UTILS::MATH::TWO_PI;
 
-void BezierFlower::Draw(const Point2dInt& origin,
+auto BezierFlower::Draw(const Point2dInt& origin,
                         const uint32_t numPetals,
-                        const uint32_t petalOffset)
+                        const uint32_t petalOffset) -> void
 {
-  Bezier::Bezier<3> petal = GetBezierPetal(origin, petalOffset);
+  auto petal = GetBezierPetal(origin, petalOffset);
   const auto originX = static_cast<float>(origin.x);
   const auto originY = static_cast<float>(origin.y);
 
@@ -23,11 +23,11 @@ void BezierFlower::Draw(const Point2dInt& origin,
   m_bezierDrawer.SetDotColorFunc([this](const float t)
                                  { return m_petalColoring.GetCurrentDotColorMap().GetColor(t); });
 
-  const float angleStep = 1.0F / static_cast<float>(numPetals);
-  for (uint32_t i = 0; i < numPetals; ++i)
+  const auto angleStep = 1.0F / static_cast<float>(numPetals);
+  for (auto i = 0U; i < numPetals; ++i)
   {
     m_petalColoring.StartColoringPetal(i);
-    const float petalRotation = m_rotation + (angleStep * TWO_PI);
+    const auto petalRotation = m_rotation + (angleStep * TWO_PI);
     petal.rotate(petalRotation, {originX, originY});
     m_bezierDrawer.Draw(petal, 0.0F, 1.0F);
   }
@@ -40,7 +40,7 @@ inline auto BezierFlower::GetBezierPetal(const Point2dInt& origin, const uint32_
   const auto originY = static_cast<float>(origin.y);
   const auto fltOffset = static_cast<float>(offset);
 
-  const Bezier::Bezier<3> petal{
+  const auto petal = Bezier::Bezier<3>{
       {
        {originX, originY},
        {originX - fltOffset, originY - fltOffset},
@@ -56,12 +56,12 @@ void PetalColoring::SetNumPetals(const uint32_t numPetals)
 {
   m_numPetals = numPetals;
 
-  const RandomColorMaps randomColorMaps{m_goomRand};
+  const auto randomColorMaps = RandomColorMaps{m_goomRand};
 
   m_lineColorMaps.resize(m_numPetals, &randomColorMaps.GetRandomColorMap());
   m_dotColorMaps.resize(m_numPetals, &randomColorMaps.GetRandomColorMap());
 
-  for (size_t i = 0; i < numPetals; ++i)
+  for (auto i = 0U; i < numPetals; ++i)
   {
     if (0 == (i % 5))
     {

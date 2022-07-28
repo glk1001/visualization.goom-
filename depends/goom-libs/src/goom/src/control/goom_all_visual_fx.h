@@ -166,7 +166,7 @@ inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer&
 
 inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
 {
-  const float averageLuminanceToUse = GetCurrentBufferAverageLuminance();
+  const auto averageLuminanceToUse = GetCurrentBufferAverageLuminance();
   if (averageLuminanceToUse < UTILS::MATH::SMALL_FLOAT)
   {
     // No point trying to handle zero luminance.
@@ -185,19 +185,18 @@ inline auto GoomAllVisualFx::GetCurrentBufferAverageLuminance() noexcept -> floa
 {
   m_zoomFilterFx->GetLastFilterBufferColorInfo().CalculateLuminances();
 
-  const FILTER_FX::FilterBufferColorInfo& filterBufferColorInfo =
-      m_zoomFilterFx->GetLastFilterBufferColorInfo();
+  const auto& filterBufferColorInfo = m_zoomFilterFx->GetLastFilterBufferColorInfo();
 
-  const float maxRegionAverageLuminance = filterBufferColorInfo.GetMaxRegionAverageLuminance();
+  const auto maxRegionAverageLuminance = filterBufferColorInfo.GetMaxRegionAverageLuminance();
   if (maxRegionAverageLuminance < UTILS::MATH::SMALL_FLOAT)
   {
     return 0.0F;
   }
 
-  const float zoomPointRegionAverageLuminance =
+  const auto zoomPointRegionAverageLuminance =
       filterBufferColorInfo.GetRegionAverageLuminanceAtPoint(
           m_zoomFilterFx->GetFilterEffectsSettings().zoomMidpoint);
-  static constexpr float LUMINANCE_MIX = 0.5F;
+  static constexpr auto LUMINANCE_MIX = 0.5F;
 
   return STD20::lerp(zoomPointRegionAverageLuminance, maxRegionAverageLuminance, LUMINANCE_MIX);
 }

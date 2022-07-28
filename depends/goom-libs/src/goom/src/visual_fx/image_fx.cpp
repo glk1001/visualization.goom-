@@ -51,8 +51,8 @@ using UTILS::MATH::Sq;
 using UTILS::MATH::SqDistance;
 using UTILS::MATH::TWO_PI;
 
-static constexpr int32_t CHUNK_WIDTH = 4;
-static constexpr int32_t CHUNK_HEIGHT = 4;
+static constexpr auto CHUNK_WIDTH = 4;
+static constexpr auto CHUNK_HEIGHT = 4;
 using ChunkPixels = std::array<std::array<Pixel, CHUNK_WIDTH>, CHUNK_HEIGHT>;
 
 class ChunkedImage
@@ -235,22 +235,21 @@ inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
 
 inline auto ImageFx::ImageFxImpl::GetNewRandBrightnessFactor() const -> float
 {
-  static constexpr float MIN_FACTOR = 0.5F;
-  static constexpr float MAX_FACTOR = 2.0F;
-  const float maxRadiusSq = Sq(m_maxRadius);
+  static constexpr auto MIN_FACTOR = 0.5F;
+  static constexpr auto MAX_FACTOR = 2.0F;
+  const auto maxRadiusSq = Sq(m_maxRadius);
 
   return 1.0F / m_goomRand.GetRandInRange(MIN_FACTOR * maxRadiusSq, MAX_FACTOR * maxRadiusSq);
 }
 
 inline auto ImageFx::ImageFxImpl::Resume() -> void
 {
-  static constexpr float MIN_BRIGHTNESS = 0.1F;
+  static constexpr auto MIN_BRIGHTNESS = 0.1F;
   m_brightnessBase = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, 1.0F) * DEFAULT_BRIGHTNESS_BASE;
 }
 
 inline auto ImageFx::ImageFxImpl::Start() -> void
 {
-
   InitImage();
   ResetCurrentImage();
   ResetStartPositions();
@@ -260,7 +259,7 @@ inline auto ImageFx::ImageFxImpl::Start() -> void
 auto ImageFx::ImageFxImpl::InitImage() -> void
 {
   // clang-format off
-  static const std::array s_IMAGE_FILENAMES{
+  static const auto s_IMAGE_FILENAMES = std::array{
       "blossoms.jpg",
       "bokeh.jpg",
       "butterfly.jpg",
@@ -276,16 +275,15 @@ auto ImageFx::ImageFxImpl::InitImage() -> void
       "pretty-flowers.jpg",
   };
   // clang-format on
-  std::array<size_t, s_IMAGE_FILENAMES.size()> randImageIndexes{};
+  auto randImageIndexes = std::array<size_t, s_IMAGE_FILENAMES.size()>{};
   std::iota(randImageIndexes.begin(), randImageIndexes.end(), 0);
   m_goomRand.Shuffle(begin(randImageIndexes), end(randImageIndexes));
 
-  const std::string imageDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + "image_fx";
-  static constexpr size_t MAX_IMAGES = 5;
-  for (size_t i = 0; i < MAX_IMAGES; ++i)
+  const auto imageDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + "image_fx";
+  static constexpr auto MAX_IMAGES = 5U;
+  for (auto i = 0U; i < MAX_IMAGES; ++i)
   {
-    const std::string imageFilename =
-        imageDir + PATH_SEP + s_IMAGE_FILENAMES.at(randImageIndexes.at(i));
+    const auto imageFilename = imageDir + PATH_SEP + s_IMAGE_FILENAMES.at(randImageIndexes.at(i));
     m_images.emplace_back(
         std::make_unique<ChunkedImage>(std::make_shared<ImageBitmap>(imageFilename), m_goomInfo));
   }
@@ -299,21 +297,21 @@ inline auto ImageFx::ImageFxImpl::ResetCurrentImage() -> void
 
 auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
 {
-  static constexpr float MIN_RADIUS_FRACTION = 0.7F;
-  const float randMaxRadius = m_goomRand.GetRandInRange(MIN_RADIUS_FRACTION, 1.0F) * m_maxRadius;
+  static constexpr auto MIN_RADIUS_FRACTION = 0.7F;
+  const auto randMaxRadius = m_goomRand.GetRandInRange(MIN_RADIUS_FRACTION, 1.0F) * m_maxRadius;
 
-  const size_t numChunks = m_currentImage->GetNumChunks();
-  float radiusTheta = 0.0F;
-  const float radiusThetaStep = TWO_PI / static_cast<float>(numChunks);
+  const auto numChunks = m_currentImage->GetNumChunks();
+  auto radiusTheta = 0.0F;
+  const auto radiusThetaStep = TWO_PI / static_cast<float>(numChunks);
 
-  for (size_t i = 0; i < numChunks; ++i)
+  for (auto i = 0U; i < numChunks; ++i)
   {
-    static constexpr float SMALL_OFFSET = 0.4F;
-    const float maxRadiusAdj =
+    static constexpr auto SMALL_OFFSET = 0.4F;
+    const auto maxRadiusAdj =
         (1.0F - (SMALL_OFFSET * (1.0F + std::sin(radiusTheta)))) * randMaxRadius;
-    const float radius = m_goomRand.GetRandInRange(10.0F, maxRadiusAdj);
-    const float theta = m_goomRand.GetRandInRange(0.0F, TWO_PI);
-    const Point2dInt startPos =
+    const auto radius = m_goomRand.GetRandInRange(10.0F, maxRadiusAdj);
+    const auto theta = m_goomRand.GetRandInRange(0.0F, TWO_PI);
+    const auto startPos =
         m_screenCentre + Vec2dInt{static_cast<int32_t>((std::cos(theta) * radius)),
                                   static_cast<int32_t>((std::sin(theta) * radius))};
     m_currentImage->SetStartPosition(i, startPos);
@@ -324,18 +322,18 @@ auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
 
 inline auto ImageFx::ImageFxImpl::GetChunkFloatingStartPosition(const size_t i) const -> Point2dInt
 {
-  static constexpr float MARGIN = 20.0F;
-  static constexpr float MIN_RADIUS_FACTOR = 0.025F;
-  static constexpr float MAX_RADIUS_FACTOR = 0.5F;
+  static constexpr auto MARGIN = 20.0F;
+  static constexpr auto MIN_RADIUS_FACTOR = 0.025F;
+  static constexpr auto MAX_RADIUS_FACTOR = 0.5F;
   const auto aRadius = (m_goomRand.GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
                         static_cast<float>(m_availableWidth)) -
                        MARGIN;
   const auto bRadius = (m_goomRand.GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
                         static_cast<float>(m_availableHeight)) -
                        MARGIN;
-  const float theta =
+  const auto theta =
       (TWO_PI * static_cast<float>(i)) / static_cast<float>(m_currentImage->GetNumChunks());
-  const Point2dInt floatingStartPosition =
+  const auto floatingStartPosition =
       m_screenCentre + Vec2dInt{static_cast<int32_t>((std::cos(theta) * aRadius)),
                                 static_cast<int32_t>((std::sin(theta) * bRadius))};
   return floatingStartPosition;
@@ -359,18 +357,18 @@ inline auto ImageFx::ImageFxImpl::ApplyMultiple() -> void
 
 inline auto ImageFx::ImageFxImpl::DrawChunks() -> void
 {
-  static constexpr float IN_OUT_FACTOR = 0.02F;
-  const float inOutT = m_inOutT();
-  static constexpr float IN_OUT_CLOSE_TO_RESOLVED_IMAGE = 0.99F;
-  const float brightness =
+  static constexpr auto IN_OUT_FACTOR = 0.02F;
+  const auto inOutT = m_inOutT();
+  static constexpr auto IN_OUT_CLOSE_TO_RESOLVED_IMAGE = 0.99F;
+  const auto brightness =
       inOutT > IN_OUT_CLOSE_TO_RESOLVED_IMAGE ? 0.0F : m_brightnessBase + (IN_OUT_FACTOR * inOutT);
 
   const auto drawChunk = [this, &brightness](const size_t i)
   {
-    const Point2dInt nextStartPosition = GetNextChunkStartPosition(i);
-    const ChunkedImage::ImageChunk& imageChunk = m_currentImage->GetImageChunk(i);
-    const Point2dInt nextChunkPosition = GetNextChunkPosition(nextStartPosition, imageChunk);
-    const float adjustedBrightness = GetPositionAdjustedBrightness(brightness, nextChunkPosition);
+    const auto nextStartPosition = GetNextChunkStartPosition(i);
+    const auto& imageChunk = m_currentImage->GetImageChunk(i);
+    const auto nextChunkPosition = GetNextChunkPosition(nextStartPosition, imageChunk);
+    const auto adjustedBrightness = GetPositionAdjustedBrightness(brightness, nextChunkPosition);
     DrawChunk(nextChunkPosition, adjustedBrightness, imageChunk.pixels);
   };
 
@@ -403,7 +401,7 @@ inline auto ImageFx::ImageFxImpl::UpdateFloatingStartPositions() -> void
 
 inline auto ImageFx::ImageFxImpl::UpdateImageStartPositions() -> void
 {
-  const bool delayJustFinishing = m_inOutT.DelayJustFinishing();
+  const auto delayJustFinishing = m_inOutT.DelayJustFinishing();
 
   m_inOutT.Increment();
   m_inOutTSq = Sq(m_inOutT());
@@ -420,7 +418,7 @@ inline auto ImageFx::ImageFxImpl::UpdateImageStartPositions() -> void
 
 inline auto ImageFx::ImageFxImpl::GetNextChunkStartPosition(const size_t i) const -> Point2dInt
 {
-  const Point2dInt startPos =
+  const auto startPos =
       lerp(m_currentImage->GetStartPosition(i),
            m_floatingStartPosition + Vec2dInt{GetChunkFloatingStartPosition(i)}, m_floatingT());
   return startPos;
@@ -430,8 +428,7 @@ inline auto ImageFx::ImageFxImpl::GetNextChunkPosition(
     const Point2dInt& nextStartPosition, const ChunkedImage::ImageChunk& imageChunk) const
     -> Point2dInt
 {
-  const Point2dInt nextChunkPosition =
-      lerp(nextStartPosition, imageChunk.finalPosition, m_inOutT());
+  const auto nextChunkPosition = lerp(nextStartPosition, imageChunk.finalPosition, m_inOutT());
   return nextChunkPosition;
 }
 
@@ -440,12 +437,12 @@ auto ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
                                      const ChunkPixels& pixels) const -> void
 
 {
-  int32_t y = pos.y;
-  for (size_t i = 0; i < CHUNK_HEIGHT; ++i)
+  auto y = pos.y;
+  for (auto i = 0U; i < CHUNK_HEIGHT; ++i)
   {
-    const std::array<Pixel, CHUNK_WIDTH>& pixelRow = pixels[i];
+    const auto& pixelRow = pixels[i];
 
-    int32_t x = pos.x;
+    auto x = pos.x;
     for (const auto& xPixel : pixelRow)
     {
       if ((x < 0) || (x >= m_availableWidth))
@@ -456,7 +453,7 @@ auto ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
       {
         continue;
       }
-      const MultiplePixels pixelColors = GetPixelColors(xPixel, brightness);
+      const auto pixelColors = GetPixelColors(xPixel, brightness);
       m_draw.DrawPixels({x, y}, pixelColors);
 
       ++x;
@@ -469,10 +466,10 @@ auto ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
 inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
                                                  const float brightness) const -> MultiplePixels
 {
-  const Pixel mixedColor =
+  const auto mixedColor =
       IColorMap::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutTSq);
-  const Pixel color0 = GetBrighterColor(brightness, mixedColor);
-  const Pixel color1 = GetBrighterColor(0.5F * brightness, pixelColor);
+  const auto color0 = GetBrighterColor(brightness, mixedColor);
+  const auto color1 = GetBrighterColor(0.5F * brightness, pixelColor);
 
   if (m_pixelColorIsDominant)
   {
@@ -484,7 +481,7 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
 
 inline auto ImageFx::ImageFxImpl::GetMappedColor(const Pixel& pixelColor) const -> Pixel
 {
-  const float t = (pixelColor.RFlt() + pixelColor.GFlt() + pixelColor.BFlt()) / 3.0F;
+  const auto t = (pixelColor.RFlt() + pixelColor.GFlt() + pixelColor.BFlt()) / 3.0F;
   return m_currentColorMap->GetColor(t);
 }
 
@@ -516,24 +513,25 @@ inline auto ChunkedImage::SetStartPosition(const size_t i, const Point2dInt& pos
 auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap, const PluginInfo& goomInfo)
     -> ImageAsChunks
 {
-  ImageAsChunks imageAsChunks{};
+  auto imageAsChunks = ImageAsChunks{};
 
-  const Point2dInt centre{goomInfo.GetScreenInfo().width / 2, goomInfo.GetScreenInfo().height / 2};
-  const int32_t x0 = centre.x - static_cast<int32_t>(imageBitmap.GetWidth() / 2);
-  const int32_t y0 = centre.y - static_cast<int32_t>(imageBitmap.GetHeight() / 2);
+  const auto centre =
+      Point2dInt{goomInfo.GetScreenInfo().width / 2, goomInfo.GetScreenInfo().height / 2};
+  const auto x0 = centre.x - static_cast<int32_t>(imageBitmap.GetWidth() / 2);
+  const auto y0 = centre.y - static_cast<int32_t>(imageBitmap.GetHeight() / 2);
 
   assert(x0 >= 0);
   assert(y0 >= 0);
 
-  const int32_t numYChunks = static_cast<int32_t>(imageBitmap.GetHeight()) / CHUNK_HEIGHT;
-  const int32_t numXChunks = static_cast<int32_t>(imageBitmap.GetWidth()) / CHUNK_WIDTH;
-  int32_t y = y0;
-  int32_t yImage = 0;
-  for (int32_t yChunk = 0; yChunk < numYChunks; ++yChunk)
+  const auto numYChunks = static_cast<int32_t>(imageBitmap.GetHeight()) / CHUNK_HEIGHT;
+  const auto numXChunks = static_cast<int32_t>(imageBitmap.GetWidth()) / CHUNK_WIDTH;
+  auto y = y0;
+  auto yImage = 0;
+  for (auto yChunk = 0; yChunk < numYChunks; ++yChunk)
   {
-    int32_t x = x0;
-    int32_t xImage = 0;
-    for (int32_t xChunk = 0; xChunk < numXChunks; ++xChunk)
+    auto x = x0;
+    auto xImage = 0;
+    for (auto xChunk = 0; xChunk < numXChunks; ++xChunk)
     {
       ImageChunk imageChunk;
       imageChunk.finalPosition = {x, y};
@@ -555,10 +553,10 @@ auto ChunkedImage::SetImageChunkPixels(const ImageBitmap& imageBitmap,
                                        const int32_t xImage,
                                        ChunkedImage::ImageChunk& imageChunk) -> void
 {
-  for (size_t yPixel = 0; yPixel < CHUNK_HEIGHT; ++yPixel)
+  for (auto yPixel = 0U; yPixel < CHUNK_HEIGHT; ++yPixel)
   {
-    const size_t yImageChunkPos = static_cast<size_t>(yImage) + yPixel;
-    std::array<Pixel, CHUNK_WIDTH>& pixelRow = imageChunk.pixels.at(yPixel);
+    const auto yImageChunkPos = static_cast<size_t>(yImage) + yPixel;
+    auto& pixelRow = imageChunk.pixels.at(yPixel);
     for (size_t xPixel = 0; xPixel < CHUNK_WIDTH; ++xPixel)
     {
       pixelRow.at(xPixel) = imageBitmap(static_cast<size_t>(xImage) + xPixel, yImageChunkPos);

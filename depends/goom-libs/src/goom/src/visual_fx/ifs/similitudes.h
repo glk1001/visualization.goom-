@@ -158,11 +158,11 @@ inline auto Similitudes::GetSimiDepth() const -> uint32_t
 
 inline auto Similitudes::Transform(const Similitude& simi, const FltPoint& point0) const -> FltPoint
 {
-  const Flt x1 = DivByUnit((point0.x - simi.m_cx) * simi.m_r1);
-  const Flt y1 = DivByUnit((point0.y - simi.m_cy) * simi.m_r1);
+  const auto x1 = DivByUnit((point0.x - simi.m_cx) * simi.m_r1);
+  const auto y1 = DivByUnit((point0.y - simi.m_cy) * simi.m_r1);
 
-  const Flt x2 = DivByUnit((+x1 - simi.m_cx) * simi.m_r2);
-  const Flt y2 = DivByUnit((-y1 - simi.m_cy) * simi.m_r2);
+  const auto x2 = DivByUnit((+x1 - simi.m_cx) * simi.m_r2);
+  const auto y2 = DivByUnit((-y1 - simi.m_cy) * simi.m_r2);
 
   return m_currentIfsFunc(simi, x1, y1, x2, y2);
 }

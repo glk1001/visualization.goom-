@@ -10,8 +10,8 @@ using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
-static constexpr float DEFAULT_NOISE_FACTOR = 0.01F;
-static constexpr IGoomRand::NumberRange<float> NOISE_FACTOR_RANGE = {0.001F, 0.100F};
+static constexpr auto DEFAULT_NOISE_FACTOR = 0.01F;
+static constexpr auto NOISE_FACTOR_RANGE = IGoomRand::NumberRange<float>{0.001F, 0.100F};
 
 Noise::Noise(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand}, m_params{DEFAULT_NOISE_FACTOR}
@@ -25,7 +25,7 @@ auto Noise::SetRandomParams() -> void
 
 auto Noise::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
-  const std::string fullParamGroup = GetFullParamGroup({paramGroup, "noise"});
+  const auto fullParamGroup = GetFullParamGroup({paramGroup, "noise"});
   return {
       GetPair(fullParamGroup, "noise factor", m_params.noiseFactor),
   };

@@ -27,28 +27,28 @@ using UTILS::Logging;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::Weights;
 
-static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
-static constexpr float INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
+static constexpr auto INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
+static constexpr auto INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
 
-static constexpr Pixel RED_LINE_COLOR = GetSimpleColor(SimpleColors::RED);
-static constexpr Pixel GREEN_LINE_COLOR = GetSimpleColor(SimpleColors::VERT);
-static constexpr Pixel BLACK_LINE_COLOR = GetSimpleColor(SimpleColors::BLACK);
+static constexpr auto RED_LINE_COLOR = GetSimpleColor(SimpleColors::RED);
+static constexpr auto GREEN_LINE_COLOR = GetSimpleColor(SimpleColors::VERT);
+static constexpr auto BLACK_LINE_COLOR = GetSimpleColor(SimpleColors::BLACK);
 
 // clang-format off
-static constexpr float PROB_CHANGE_LINE_CIRCLE_AMPLITUDE = 0.05F;
-static constexpr float PROB_CHANGE_LINE_CIRCLE_PARAMS    = 0.08F;
-static constexpr float PROB_CHANGE_H_LINE_PARAMS         = 0.12F;
-static constexpr float PROB_CHANGE_V_LINE_PARAMS         = 0.10F;
-static constexpr float PROB_CHANGE_LINE_TO_BLACK         = 0.08F;
-static constexpr float PROB_REDUCE_LINE_MODE             = 0.03F;
-static constexpr float PROB_UPDATE_LINE_MODE             = 0.04F;
-static constexpr float PROB_CHANGE_GOOM_LINE             = 0.05F;
-static constexpr float PROB_NEAR_SCOPE                   = 0.01F;
-static constexpr float PROB_FAR_SCOPE                    = 0.01F;
+static constexpr auto PROB_CHANGE_LINE_CIRCLE_AMPLITUDE = 0.05F;
+static constexpr auto PROB_CHANGE_LINE_CIRCLE_PARAMS    = 0.08F;
+static constexpr auto PROB_CHANGE_H_LINE_PARAMS         = 0.12F;
+static constexpr auto PROB_CHANGE_V_LINE_PARAMS         = 0.10F;
+static constexpr auto PROB_CHANGE_LINE_TO_BLACK         = 0.08F;
+static constexpr auto PROB_REDUCE_LINE_MODE             = 0.03F;
+static constexpr auto PROB_UPDATE_LINE_MODE             = 0.04F;
+static constexpr auto PROB_CHANGE_GOOM_LINE             = 0.05F;
+static constexpr auto PROB_NEAR_SCOPE                   = 0.01F;
+static constexpr auto PROB_FAR_SCOPE                    = 0.01F;
 
-static constexpr float CIRCLE_LINE_TYPE_WEIGHT = 10.0F;
-static constexpr float H_LINE_LINE_TYPE_WEIGHT =  2.0F;
-static constexpr float V_LINE_LINE_TYPE_WEIGHT =  2.0F;
+static constexpr auto CIRCLE_LINE_TYPE_WEIGHT = 10.0F;
+static constexpr auto H_LINE_LINE_TYPE_WEIGHT =  2.0F;
+static constexpr auto V_LINE_LINE_TYPE_WEIGHT =  2.0F;
 // clang-format on
 
 class LinesFx::LinesImpl
@@ -230,10 +230,10 @@ inline auto LinesFx::LinesImpl::Start() noexcept -> void
 auto LinesFx::LinesImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  std::vector<std::string> allColorMapsNames{};
+  auto allColorMapsNames = std::vector<std::string>{};
   for (const auto& lineMorph : m_lineMorphs)
   {
-    const std::vector<std::string> colorMapsNames = lineMorph.GetCurrentColorMapsNames();
+    const auto colorMapsNames = lineMorph.GetCurrentColorMapsNames();
     for (const auto& mapsName : colorMapsNames)
     {
       allColorMapsNames.emplace_back(mapsName);
@@ -245,7 +245,7 @@ auto LinesFx::LinesImpl::GetCurrentColorMapsNames() const noexcept
 inline auto LinesFx::LinesImpl::SetWeightedColorMaps(
     const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  const uint32_t lineNum = weightedColorMaps.id;
+  const auto lineNum = weightedColorMaps.id;
   Expects(lineNum < NUM_LINES);
   m_lineMorphs.at(lineNum).SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
 }
@@ -259,7 +259,7 @@ inline auto LinesFx::LinesImpl::CanResetDestLines() const noexcept -> bool
 inline auto LinesFx::LinesImpl::ResetDestLines(
     const std::array<LineParams, NUM_LINES>& newDestParams) noexcept -> void
 {
-  for (size_t i = 0; i < NUM_LINES; ++i)
+  for (auto i = 0U; i < NUM_LINES; ++i)
   {
     m_lineMorphs.at(i).ResetDestLine(newDestParams.at(i));
   }
@@ -269,7 +269,7 @@ inline auto LinesFx::LinesImpl::ResetLineModes() noexcept -> void
 {
   if (not m_isNearScope)
   {
-    static constexpr uint32_t SCOPE_RESET = 0xF000U & 5U;
+    static constexpr auto SCOPE_RESET = 0xF000U & 5U;
     m_stopLines = SCOPE_RESET;
   }
   if (not m_isFarScope)
@@ -281,8 +281,8 @@ inline auto LinesFx::LinesImpl::ResetLineModes() noexcept -> void
 
 inline auto LinesFx::LinesImpl::GetRandomLineColors() const noexcept -> std::array<Pixel, NUM_LINES>
 {
-  std::array<Pixel, NUM_LINES> colors{};
-  for (size_t i = 0; i < NUM_LINES; ++i)
+  auto colors = std::array<Pixel, NUM_LINES>{};
+  for (auto i = 0U; i < NUM_LINES; ++i)
   {
     colors.at(i) = m_lineMorphs.at(i).GetRandomLineColor();
   }
@@ -314,7 +314,7 @@ inline auto LinesFx::LinesImpl::ApplyMultiple() noexcept -> void
 
 inline auto LinesFx::LinesImpl::UpdateScopes() noexcept -> void
 {
-  static constexpr uint32_t NUM_UPDATES_BEFORE_SCOPE_CHANGE = 200;
+  static constexpr auto NUM_UPDATES_BEFORE_SCOPE_CHANGE = 200U;
   if (0 == (m_updateNum % NUM_UPDATES_BEFORE_SCOPE_CHANGE))
   {
     m_isNearScope = m_goomRand.ProbabilityOf(PROB_NEAR_SCOPE);
@@ -332,7 +332,7 @@ inline auto LinesFx::LinesImpl::DrawLines() noexcept -> void
 {
   Expects(m_soundData != nullptr);
 
-  for (size_t i = 0; i < NUM_LINES; ++i)
+  for (auto i = 0U; i < NUM_LINES; ++i)
   {
     m_lineMorphs.at(i).DrawLines(m_soundData->GetSample(SOUND_SAMPLE_NUM_TO_USE.at(i)),
                                  m_soundData->GetSampleMinMax(SOUND_SAMPLE_NUM_TO_USE.at(i)));
@@ -346,8 +346,8 @@ auto LinesFx::LinesImpl::ChangeGoomLines() noexcept -> void
     return;
   }
 
-  static constexpr uint32_t CHANGE_GOOM_LINE_CYCLES = 121;
-  static constexpr uint32_t GOOM_CYCLE_MOD_CHANGE = 9;
+  static constexpr auto CHANGE_GOOM_LINE_CYCLES = 121U;
+  static constexpr auto GOOM_CYCLE_MOD_CHANGE = 9U;
 
   if ((GOOM_CYCLE_MOD_CHANGE == (m_updateNum % CHANGE_GOOM_LINE_CYCLES)) and
       m_goomRand.ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
@@ -359,7 +359,7 @@ auto LinesFx::LinesImpl::ChangeGoomLines() noexcept -> void
 
 inline auto LinesFx::LinesImpl::CanDisplayLines() const noexcept -> bool
 {
-  static constexpr uint32_t DISPLAY_LINES_GOOM_NUM = 5;
+  static constexpr auto DISPLAY_LINES_GOOM_NUM = 5U;
 
   return ((m_lineMode != 0) or
           (m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
@@ -373,7 +373,7 @@ inline auto LinesFx::LinesImpl::UpdateLineModes() noexcept -> void
 
 inline auto LinesFx::LinesImpl::StopLinesIfRequested() noexcept -> void
 {
-  static constexpr uint32_t LARGE_STOP_LINE = 0xF000;
+  static constexpr auto LARGE_STOP_LINE = 0xF000U;
   if (((m_stopLines & LARGE_STOP_LINE) != 0) or (not m_isNearScope))
   {
     StopGoomLines();
@@ -389,7 +389,7 @@ inline auto LinesFx::LinesImpl::StopGoomLines() noexcept -> void
 
   ResetDestLines(GetGoomLineStopSettings());
 
-  static constexpr uint32_t STOP_MASK = 0x0FFF;
+  static constexpr auto STOP_MASK = 0x0FFFU;
   m_stopLines &= STOP_MASK;
 }
 
@@ -406,7 +406,7 @@ inline auto LinesFx::LinesImpl::ResetGoomLines() noexcept -> void
 auto LinesFx::LinesImpl::GetGoomLineStopSettings() const noexcept
     -> std::array<LineParams, NUM_LINES>
 {
-  std::array<LineParams, NUM_LINES> lineParams = GetGoomLineResetSettings(1);
+  auto lineParams = GetGoomLineResetSettings(1);
   lineParams.at(0).color = BLACK_LINE_COLOR;
   lineParams.at(1).color = BLACK_LINE_COLOR;
   return lineParams;
@@ -437,16 +437,16 @@ auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const
   float param2;
   const auto [line1Color, line2Color] = GetResetLineColors(farVal);
 
-  static constexpr float NEW_FAR_VAL_PARAM1 = 0.47F;
-  static constexpr float NEW_FAR_VAL_PARAM2 = 0.47F;
+  static constexpr auto NEW_FAR_VAL_PARAM1 = 0.47F;
+  static constexpr auto NEW_FAR_VAL_PARAM2 = 0.47F;
 
-  static constexpr float NEW_NON_FAR_VAL_PARAM1_FACTOR = 0.40F;
-  static constexpr float NEW_NON_FAR_VAL_PARAM2_FACTOR = 0.22F;
-  static constexpr float DEFAULT_NON_FAR_VAL_PARAM1_FACTOR = 0.35F;
+  static constexpr auto NEW_NON_FAR_VAL_PARAM1_FACTOR = 0.40F;
+  static constexpr auto NEW_NON_FAR_VAL_PARAM2_FACTOR = 0.22F;
+  static constexpr auto DEFAULT_NON_FAR_VAL_PARAM1_FACTOR = 0.35F;
 
-  static constexpr float NEW_FAR_VAL_AMPLITUDE = 0.8F;
-  static constexpr float NEW_NON_FAR_VAL_AMPLITUDE = 3.0F;
-  static constexpr float DEFAULT_AMPLITUDE = 1.0F;
+  static constexpr auto NEW_FAR_VAL_AMPLITUDE = 0.8F;
+  static constexpr auto NEW_NON_FAR_VAL_AMPLITUDE = 3.0F;
+  static constexpr auto DEFAULT_AMPLITUDE = 1.0F;
 
   if (farVal)
   {
@@ -488,13 +488,13 @@ auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) c
 
   const auto [line1Color, line2Color] = GetResetLineColors(farVal);
 
-  static constexpr float NEW_PARAM1_FACTOR = 1.0F / 7.0F;
-  static constexpr float NEW_PARAM2_FACTOR = 6.0F / 7.0F;
-  static constexpr float DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
-  static constexpr float DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
+  static constexpr auto NEW_PARAM1_FACTOR = 1.0F / 7.0F;
+  static constexpr auto NEW_PARAM2_FACTOR = 6.0F / 7.0F;
+  static constexpr auto DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
+  static constexpr auto DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
 
-  static constexpr float NEW_AMPLITUDE = 1.0F;
-  static constexpr float DEFAULT_AMPLITUDE = 2.0F;
+  static constexpr auto NEW_AMPLITUDE = 1.0F;
+  static constexpr auto DEFAULT_AMPLITUDE = 2.0F;
 
   if (m_goomRand.ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
   {
@@ -524,13 +524,13 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
 
   const auto [line1Color, line2Color] = GetResetLineColors(farVal);
 
-  static constexpr float NEW_PARAM1_FACTOR = 1.0F / 7.0F;
-  static constexpr float NEW_PARAM2_FACTOR = 6.0F / 7.0F;
-  static constexpr float DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
-  static constexpr float DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
+  static constexpr auto NEW_PARAM1_FACTOR = 1.0F / 7.0F;
+  static constexpr auto NEW_PARAM2_FACTOR = 6.0F / 7.0F;
+  static constexpr auto DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
+  static constexpr auto DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
 
-  static constexpr float NEW_AMPLITUDE = 1.0F;
-  static constexpr float DEFAULT_AMPLITUDE = 1.5F;
+  static constexpr auto NEW_AMPLITUDE = 1.0F;
+  static constexpr auto DEFAULT_AMPLITUDE = 1.5F;
 
   if (m_goomRand.ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
   {
@@ -566,8 +566,8 @@ auto LinesFx::LinesImpl::GetResetLineColors(const uint32_t farVal) const noexcep
   */
 auto LinesFx::LinesImpl::StopRandomLineChangeMode() noexcept -> void
 {
-  static constexpr uint32_t DEC_LINE_MODE_CYCLES = 80;
-  static constexpr uint32_t UPDATE_LINE_MODE_CYCLES = 120;
+  static constexpr auto DEC_LINE_MODE_CYCLES = 80U;
+  static constexpr auto UPDATE_LINE_MODE_CYCLES = 120U;
 
   if (m_lineMode != m_drawLinesDuration)
   {

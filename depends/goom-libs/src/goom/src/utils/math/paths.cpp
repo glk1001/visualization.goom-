@@ -46,7 +46,7 @@ JoinedPaths::JoinedPaths(std::unique_ptr<TValue> positionT,
 
 auto JoinedPaths::SegmentPathTsAreAscending() const noexcept -> bool
 {
-  float prevTStart = -SMALL_FLOAT;
+  auto prevTStart = -SMALL_FLOAT;
 
   for (const auto& tStart : m_pathTStarts)
   {
@@ -68,15 +68,15 @@ auto JoinedPaths::SegmentPathTsAreValid() const noexcept -> bool
 
 auto JoinedPaths::AdjustSegmentStepSizes() noexcept -> void
 {
-  std::vector<float> tStartsWithSentinel{m_pathTStarts};
+  auto tStartsWithSentinel = std::vector<float>{m_pathTStarts};
   tStartsWithSentinel.push_back(1.0F);
 
-  float prevTStart = 0.0F;
+  auto prevTStart = 0.0F;
 
-  for (size_t i = 1; i < m_pathTStarts.size(); ++i)
+  for (auto i = 1U; i < m_pathTStarts.size(); ++i)
   {
-    const float stepSizeFactor = 1.0F / (tStartsWithSentinel[i] - prevTStart);
-    const float oldStepSize = m_subPaths[i]->GetStepSize();
+    const auto stepSizeFactor = 1.0F / (tStartsWithSentinel[i] - prevTStart);
+    const auto oldStepSize = m_subPaths[i]->GetStepSize();
     m_subPaths[i]->SetStepSize(stepSizeFactor * oldStepSize);
 
     prevTStart = tStartsWithSentinel[i];

@@ -26,7 +26,7 @@ GoomStateMonitor::GoomStateMonitor(const GoomAllVisualFx& visualFx,
 
 auto GoomStateMonitor::GetCurrentState() const -> std::string
 {
-  std::string message;
+  auto message = std::string{};
 
   message += GetNameValuesString(GetStateAndFilterModeNameValueParams()) + "\n";
   message += GetNameValuesString(GetShaderEffectsNameValueParams()) + "\n";
@@ -41,7 +41,7 @@ auto GoomStateMonitor::GetCurrentState() const -> std::string
 // TODO - clean this up.
 [[nodiscard]] auto GetString(const std::unordered_set<std::string>& theSet) noexcept -> std::string
 {
-  std::string str;
+  auto str = std::string{};
 
   for (const auto& val : theSet)
   {
@@ -54,7 +54,7 @@ auto GoomStateMonitor::GetCurrentState() const -> std::string
 
 auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::NameValuePairs
 {
-  static constexpr const char* PARAM_GROUP = "";
+  static constexpr auto PARAM_GROUP = "";
   return {
       GetPair(PARAM_GROUP, "State", m_visualFx.GetCurrentStateName()),
       GetPair(PARAM_GROUP, "Color Maps", GetString(m_visualFx.GetCurrentColorMapsNames())),
@@ -66,8 +66,8 @@ auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::Na
 
 auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameValuePairs
 {
-  static constexpr const char* PARAM_GROUP = "Shader";
-  const GoomShaderEffects& lastShaderEffects = m_visualFx.GetLastShaderEffects();
+  static constexpr auto PARAM_GROUP = "Shader";
+  const auto& lastShaderEffects = m_visualFx.GetLastShaderEffects();
   return {
       GetPair(PARAM_GROUP, "Exposure", m_visualFx.GetCurrentExposure()),
       GetPair(PARAM_GROUP, "Contrast", lastShaderEffects.contrast),
@@ -78,8 +78,8 @@ auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameVal
 
 inline auto GoomStateMonitor::GetFilterBufferValueParams() const -> UTILS::NameValuePairs
 {
-  static constexpr const char* PARAM_GROUP = "Filter Buffer";
-  const ZoomFilterBufferSettings& filterBufferSettings =
+  static constexpr auto PARAM_GROUP = "Filter Buffer";
+  const auto& filterBufferSettings =
       m_filterSettingsService.GetFilterSettings().filterBufferSettings;
   return {
       GetPair(PARAM_GROUP, "TranLerpIncrement", filterBufferSettings.tranLerpIncrement),
@@ -89,8 +89,8 @@ inline auto GoomStateMonitor::GetFilterBufferValueParams() const -> UTILS::NameV
 
 inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> UTILS::NameValuePairs
 {
-  static constexpr const char* PARAM_GROUP = "Filter Settings";
-  const ZoomFilterEffectsSettings& filterEffectsSettings =
+  static constexpr auto PARAM_GROUP = "Filter Settings";
+  const auto& filterEffectsSettings =
       m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
   return {
       GetPair(

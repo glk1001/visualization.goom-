@@ -33,13 +33,13 @@ void ImageBitmap::Load(const std::string& imageFilename)
 {
   m_filename = imageFilename;
 
-  int width{};
-  int height{};
-  int bpp{};
+  auto width = 0;
+  auto height = 0;
+  auto bpp = 0;
   uint8_t* rgbImage;
   try
   {
-    static constexpr int DESIRED_CHANNELS = 4;
+    static constexpr auto DESIRED_CHANNELS = 4;
     rgbImage = ::stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
   }
   catch (const std::exception& e)
@@ -60,19 +60,19 @@ void ImageBitmap::Load(const std::string& imageFilename)
                       width, height, bpp));
   }
 
-  const uint8_t* rgbPtr = rgbImage;
+  const auto* rgbPtr = rgbImage;
   Resize(static_cast<size_t>(width), static_cast<size_t>(height));
-  for (size_t y = 0; y < GetHeight(); ++y)
+  for (auto y = 0U; y < GetHeight(); ++y)
   {
-    for (size_t x = 0; x < GetWidth(); ++x)
+    for (auto x = 0U; x < GetWidth(); ++x)
     {
-      uint8_t blue = *rgbPtr;
+      auto blue = *rgbPtr;
       ++rgbPtr;
-      uint8_t green = *rgbPtr;
+      auto green = *rgbPtr;
       ++rgbPtr;
-      uint8_t red = *rgbPtr;
+      auto red = *rgbPtr;
       ++rgbPtr;
-      const uint8_t alpha = *rgbPtr;
+      const auto alpha = *rgbPtr;
       ++rgbPtr;
 
       if (0 == alpha)

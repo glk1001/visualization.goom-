@@ -11,7 +11,7 @@ namespace GOOM::CONTROL
 auto GoomImageBuffers::GetBuffs(const uint32_t width, const uint32_t height)
     -> std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS>
 {
-  std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS> buffs{};
+  auto buffs = std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS>{};
   for (auto& buff : buffs)
   {
     buff = std::make_unique<PixelBuffer>(width, height);

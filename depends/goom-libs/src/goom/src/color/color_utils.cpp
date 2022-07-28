@@ -22,7 +22,7 @@ inline auto Lighten(const PixelChannelType value, const float power) -> PixelCha
 
 auto GetLightenedColor(const Pixel& oldColor, const float power) -> Pixel
 {
-  Pixel pixel = oldColor;
+  auto pixel = oldColor;
 
   pixel.SetR(Lighten(pixel.R(), power));
   pixel.SetG(Lighten(pixel.G(), power));
@@ -49,15 +49,15 @@ auto GetLightenedColor(const Pixel& oldColor, const float power) -> Pixel
     PixelIntType intVal;
   };
 
-  const RGBColor srcColor{
+  const auto srcColor = RGBColor{
       {src.R(), src.G(), src.B(), src.A()}
   };
-  PixelIntType iMaskedSrc = srcColor.intVal & mask;
+  auto iMaskedSrc = srcColor.intVal & mask;
 
-  const RGBColor destColor{
+  const auto destColor = RGBColor{
       {dest.R(), dest.G(), dest.B(), dest.A()}
   };
-  const PixelIntType iMaskedDest = destColor.intVal & mask;
+  const auto iMaskedDest = destColor.intVal & mask;
 
   if ((iMaskedSrc != mask) && (iMaskedSrc < iMaskedDest))
   {
@@ -68,7 +68,7 @@ auto GetLightenedColor(const Pixel& oldColor, const float power) -> Pixel
     iMaskedSrc -= incr;
   }
 
-  const PixelIntType color = srcColor.intVal & (~mask);
+  const auto color = srcColor.intVal & (~mask);
 
   RGBColor finalColor;
   finalColor.intVal = (iMaskedSrc & mask) | color;
@@ -80,14 +80,14 @@ auto GetLightenedColor(const Pixel& oldColor, const float power) -> Pixel
 
 auto GetEvolvedColor(const Pixel& baseColor) -> Pixel
 {
-  Pixel newColor = baseColor;
+  auto newColor = baseColor;
 
   newColor = EvolvedColor(newColor, baseColor, 0xFFU, 0x01U);
   newColor = EvolvedColor(newColor, baseColor, 0xFF00U, 0x0100U);
   newColor = EvolvedColor(newColor, baseColor, 0xFF0000U, 0x010000U);
   newColor = EvolvedColor(newColor, baseColor, 0xFF000000U, 0x01000000U);
 
-  static constexpr float LIGHTENED_COLOR_POWER = (10.0F * 2.0F) + 2.0F;
+  static constexpr auto LIGHTENED_COLOR_POWER = (10.0F * 2.0F) + 2.0F;
   newColor = GetLightenedColor(newColor, LIGHTENED_COLOR_POWER);
 
   return newColor;

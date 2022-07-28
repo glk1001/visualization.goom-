@@ -12,100 +12,100 @@ using UTILS::MATH::IGoomRand;
 
 
 // For debugging:
-static constexpr bool USE_FORCED_GOOM_STATE =
+static constexpr auto USE_FORCED_GOOM_STATE =
     CONTROL::FORCE_GOOM_STATE_AND_ALL_FILTER_EFFECTS_TURNED_OFF;
 
-static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES_STAR_TENTACLES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TENTACLES_TUBES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TUBES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_ONLY;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_STARS;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_STARS_TENTACLES_TUBES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::DOTS_TENTACLES_TUBES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_IMAGE;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_LINES_STARS;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_ONLY;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_STARS;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_STARS_TENTACLES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES_TUBES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IFS_TUBES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_LINES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_LINES_STARS_TENTACLES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_ONLY;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_STARS;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_TENTACLES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::IMAGE_TUBES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_STARS;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::LINES_TENTACLES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::SHAPES_STARS_LINES;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::TENTACLES_ONLY;
-//static constexpr GoomStates FORCED_GOOM_STATE = GoomStates::TUBES_ONLY;
+static constexpr auto FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_LINES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_LINES_STAR_TENTACLES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TENTACLES_TUBES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TUBES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_STARS;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_STARS_TENTACLES_TUBES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_TENTACLES_TUBES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_IMAGE;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_LINES_STARS;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_STARS;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_STARS_TENTACLES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES_TUBES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TUBES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES_STARS_TENTACLES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_STARS;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_TENTACLES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_TUBES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_STARS;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_TENTACLES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_STARS_LINES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::TENTACLES_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::TUBES_ONLY;
 // End debugging
 
 
 // clang-format off
-static constexpr float CIRCLES_ONLY_WEIGHT                =   50.0F;
-static constexpr float CIRCLES_IFS_WEIGHT                 =  200.0F;
-static constexpr float CIRCLES_IMAGE_WEIGHT               =   50.0F;
-static constexpr float CIRCLES_IMAGE_STARS_WEIGHT         =  200.0F;
-static constexpr float CIRCLES_LINES_WEIGHT               =  200.0F;
-static constexpr float CIRCLES_STARS_TUBES_WEIGHT         =  100.0F;
-static constexpr float CIRCLES_TENTACLES_WEIGHT           =  200.0F;
+static constexpr auto CIRCLES_ONLY_WEIGHT                =   50.0F;
+static constexpr auto CIRCLES_IFS_WEIGHT                 =  200.0F;
+static constexpr auto CIRCLES_IMAGE_WEIGHT               =   50.0F;
+static constexpr auto CIRCLES_IMAGE_STARS_WEIGHT         =  200.0F;
+static constexpr auto CIRCLES_LINES_WEIGHT               =  200.0F;
+static constexpr auto CIRCLES_STARS_TUBES_WEIGHT         =  100.0F;
+static constexpr auto CIRCLES_TENTACLES_WEIGHT           =  200.0F;
 
-static constexpr float DOTS_IFS_WEIGHT                    = 200.0F;
-static constexpr float DOTS_IFS_STARS_WEIGHT              = 100.0F;
-static constexpr float DOTS_IMAGE_STARS_WEIGHT            =  50.0F;
-static constexpr float DOTS_LINES_WEIGHT                  =  50.0F;
-static constexpr float DOTS_LINES_STAR_TENTACLES_WEIGHT   =  40.0F;
-static constexpr float DOTS_LINES_TENTACLES_TUBES_WEIGHT  =  40.0F;
-static constexpr float DOTS_LINES_TUBES_WEIGHT            =  60.0F;
-static constexpr float DOTS_ONLY_WEIGHT                   =   1.0F;
-static constexpr float DOTS_STARS_WEIGHT                  = 100.0F;
-static constexpr float DOTS_STARS_TENTACLES_TUBES_WEIGHT  = 100.0F;
-static constexpr float DOTS_TENTACLES_TUBES_WEIGHT        = 200.0F;
+static constexpr auto DOTS_IFS_WEIGHT                    = 200.0F;
+static constexpr auto DOTS_IFS_STARS_WEIGHT              = 100.0F;
+static constexpr auto DOTS_IMAGE_STARS_WEIGHT            =  50.0F;
+static constexpr auto DOTS_LINES_WEIGHT                  =  50.0F;
+static constexpr auto DOTS_LINES_STAR_TENTACLES_WEIGHT   =  40.0F;
+static constexpr auto DOTS_LINES_TENTACLES_TUBES_WEIGHT  =  40.0F;
+static constexpr auto DOTS_LINES_TUBES_WEIGHT            =  60.0F;
+static constexpr auto DOTS_ONLY_WEIGHT                   =   1.0F;
+static constexpr auto DOTS_STARS_WEIGHT                  = 100.0F;
+static constexpr auto DOTS_STARS_TENTACLES_TUBES_WEIGHT  = 100.0F;
+static constexpr auto DOTS_TENTACLES_TUBES_WEIGHT        = 200.0F;
 
-static constexpr float IFS_IMAGE_WEIGHT                   = 100.0F;
-static constexpr float IFS_IMAGE_SHAPES_WEIGHT            = 100.0F;
-static constexpr float IFS_LINES_STARS_WEIGHT             = 200.0F;
-static constexpr float IFS_ONLY_WEIGHT                    = 100.0F;
-static constexpr float IFS_SHAPES_WEIGHT                  = 100.0F;
-static constexpr float IFS_STARS_WEIGHT                   = 200.0F;
-static constexpr float IFS_STARS_TENTACLES_WEIGHT         =  70.0F;
-static constexpr float IFS_TENTACLES_WEIGHT               =  70.0F;
-static constexpr float IFS_TENTACLES_TUBES_WEIGHT         =  70.0F;
-static constexpr float IFS_TUBES_WEIGHT                   = 200.0F;
+static constexpr auto IFS_IMAGE_WEIGHT                   = 100.0F;
+static constexpr auto IFS_IMAGE_SHAPES_WEIGHT            = 100.0F;
+static constexpr auto IFS_LINES_STARS_WEIGHT             = 200.0F;
+static constexpr auto IFS_ONLY_WEIGHT                    = 100.0F;
+static constexpr auto IFS_SHAPES_WEIGHT                  = 100.0F;
+static constexpr auto IFS_STARS_WEIGHT                   = 200.0F;
+static constexpr auto IFS_STARS_TENTACLES_WEIGHT         =  70.0F;
+static constexpr auto IFS_TENTACLES_WEIGHT               =  70.0F;
+static constexpr auto IFS_TENTACLES_TUBES_WEIGHT         =  70.0F;
+static constexpr auto IFS_TUBES_WEIGHT                   = 200.0F;
 
-static constexpr float IMAGE_LINES_WEIGHT                 = 100.0F;
-static constexpr float IMAGE_LINES_SHAPES_WEIGHT          = 100.0F;
-static constexpr float IMAGE_LINES_STARS_TENTACLES_WEIGHT = 100.0F;
-static constexpr float IMAGE_ONLY_WEIGHT                  =   1.0F;
-static constexpr float IMAGE_SHAPES_WEIGHT                = 100.0F;
-static constexpr float IMAGE_SHAPES_STARS_WEIGHT          = 100.0F;
-static constexpr float IMAGE_SHAPES_TUBES_WEIGHT          = 100.0F;
-static constexpr float IMAGE_STARS_WEIGHT                 = 200.0F;
-static constexpr float IMAGE_TENTACLES_WEIGHT             =  70.0F;
-static constexpr float IMAGE_TUBES_WEIGHT                 = 200.0F;
+static constexpr auto IMAGE_LINES_WEIGHT                 = 100.0F;
+static constexpr auto IMAGE_LINES_SHAPES_WEIGHT          = 100.0F;
+static constexpr auto IMAGE_LINES_STARS_TENTACLES_WEIGHT = 100.0F;
+static constexpr auto IMAGE_ONLY_WEIGHT                  =   1.0F;
+static constexpr auto IMAGE_SHAPES_WEIGHT                = 100.0F;
+static constexpr auto IMAGE_SHAPES_STARS_WEIGHT          = 100.0F;
+static constexpr auto IMAGE_SHAPES_TUBES_WEIGHT          = 100.0F;
+static constexpr auto IMAGE_STARS_WEIGHT                 = 200.0F;
+static constexpr auto IMAGE_TENTACLES_WEIGHT             =  70.0F;
+static constexpr auto IMAGE_TUBES_WEIGHT                 = 200.0F;
 
-static constexpr float LINES_ONLY_WEIGHT                  = 100.0F;
-static constexpr float LINES_SHAPES_STARS_WEIGHT          = 200.0F;
-static constexpr float LINES_STARS_WEIGHT                 = 100.0F;
-static constexpr float LINES_TENTACLES_WEIGHT             = 200.0F;
+static constexpr auto LINES_ONLY_WEIGHT                  = 100.0F;
+static constexpr auto LINES_SHAPES_STARS_WEIGHT          = 200.0F;
+static constexpr auto LINES_STARS_WEIGHT                 = 100.0F;
+static constexpr auto LINES_TENTACLES_WEIGHT             = 200.0F;
 
-static constexpr float SHAPES_ONLY_WEIGHT                 =   1.0F;
-static constexpr float SHAPES_STARS_WEIGHT                =  200.0F;
-static constexpr float SHAPES_TUBES_WEIGHT                =  200.0F;
-static constexpr float STARS_ONLY_WEIGHT                  =   1.0F;
-static constexpr float TENTACLES_ONLY_WEIGHT              =   1.0F;
-static constexpr float TUBES_ONLY_WEIGHT                  =   1.0F;
+static constexpr auto SHAPES_ONLY_WEIGHT                 =   1.0F;
+static constexpr auto SHAPES_STARS_WEIGHT                =  200.0F;
+static constexpr auto SHAPES_TUBES_WEIGHT                =  200.0F;
+static constexpr auto STARS_ONLY_WEIGHT                  =   1.0F;
+static constexpr auto TENTACLES_ONLY_WEIGHT              =   1.0F;
+static constexpr auto TUBES_ONLY_WEIGHT                  =   1.0F;
 // clang-format on
 
 

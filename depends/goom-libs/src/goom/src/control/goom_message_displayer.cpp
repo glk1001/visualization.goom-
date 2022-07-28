@@ -32,14 +32,14 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
     -> std::vector<TextDraw>
 {
 
-  const Pixel textColor = GetBrighterColor(10.0F, WHITE_PIXEL);
+  const auto textColor = GetBrighterColor(10.0F, WHITE_PIXEL);
   const auto getFontColor =
       [textColor]([[maybe_unused]] const size_t textIndexOfChar,
                   [[maybe_unused]] const Point2dInt point, [[maybe_unused]] const int32_t width,
                   [[maybe_unused]] const int32_t height) { return textColor; };
 
-  static constexpr uint8_t OUTLINE_GREY = 0xFA;
-  const Pixel outlineColor =
+  static constexpr auto OUTLINE_GREY = 0xFA;
+  const auto outlineColor =
       GetBrighterColor(2.0F, Pixel{
                                  {OUTLINE_GREY, OUTLINE_GREY, OUTLINE_GREY, MAX_ALPHA}
   });
@@ -48,11 +48,11 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
                      [[maybe_unused]] const Point2dInt point, [[maybe_unused]] const int32_t width,
                      [[maybe_unused]] const int32_t height) { return outlineColor; };
 
-  std::vector<TextDraw> updateMessagesDisplayers{};
+  auto updateMessagesDisplayers = std::vector<TextDraw>{};
 
-  for (size_t i = 0; i < numDisplayers; ++i)
+  for (auto i = 0U; i < numDisplayers; ++i)
   {
-    TextDraw& displayer = updateMessagesDisplayers.emplace_back(textOutput);
+    auto& displayer = updateMessagesDisplayers.emplace_back(textOutput);
 
     displayer.SetFontFile(updateMessagesFontFile);
     displayer.SetFontSize(MSG_FONT_SIZE);
@@ -73,7 +73,7 @@ void GoomMessageDisplayer::UpdateMessages(const std::vector<std::string>& msgLin
     return;
   }
 
-  const size_t numberOfLinesInMessage = msgLines.size();
+  const auto numberOfLinesInMessage = msgLines.size();
   if (numberOfLinesInMessage > m_updateMessagesDisplayers.size())
   {
     LogInfo("Changing number of displayers from {} to {}.", m_updateMessagesDisplayers.size(),
@@ -82,12 +82,12 @@ void GoomMessageDisplayer::UpdateMessages(const std::vector<std::string>& msgLin
         GetUpdateMessagesDisplayers(numberOfLinesInMessage, m_textOutput, m_updateMessagesFontFile);
   }
 
-  static constexpr int32_t VERTICAL_SPACING = 10;
-  static constexpr size_t LINE_HEIGHT = MSG_FONT_SIZE + VERTICAL_SPACING;
-  static constexpr int32_t X_POS = 30;
-  static constexpr int32_t Y_START = 10;
+  static constexpr auto VERTICAL_SPACING = 10;
+  static constexpr auto LINE_HEIGHT = MSG_FONT_SIZE + VERTICAL_SPACING;
+  static constexpr auto X_POS = 30;
+  static constexpr auto Y_START = 10;
 
-  const size_t totalMessagesHeight = 20 + (LINE_HEIGHT * numberOfLinesInMessage);
+  const auto totalMessagesHeight = 20U + (LINE_HEIGHT * numberOfLinesInMessage);
 
   const auto displayMessage =
       [this, &totalMessagesHeight, &numberOfLinesInMessage, &msgLines](const size_t i)

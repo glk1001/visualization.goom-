@@ -35,29 +35,29 @@ auto StarDrawer::DrawStar(const Star& star,
                           const float speedFactor,
                           const DrawFunc& drawFunc) noexcept -> void
 {
-  const float tAge = star.GetAge() / star.GetMaxAge();
-  static constexpr float EXTRA_T_AGE = 0.5F;
-  const float tAgeMax = std::min(tAge + EXTRA_T_AGE, 1.0F);
+  const auto tAge = star.GetAge() / star.GetMaxAge();
+  static constexpr auto EXTRA_T_AGE = 0.5F;
+  const auto tAgeMax = std::min(tAge + EXTRA_T_AGE, 1.0F);
 
-  const float brightness = GetBrightness(tAge);
-  const float partMultiplier = GetPartMultiplier();
+  const auto brightness = GetBrightness(tAge);
+  const auto partMultiplier = GetPartMultiplier();
   const auto [numParts, elementSize] = GetNumPartsAndElementSize(tAge);
 
-  TValue tAgePart{TValue::StepType::SINGLE_CYCLE, numParts};
-  const Point2dInt point0 = star.GetStartPos().ToInt();
+  auto tAgePart = TValue{TValue::StepType::SINGLE_CYCLE, numParts};
+  const auto point0 = star.GetStartPos().ToInt();
 
-  Point2dInt point1 = point0;
-  for (uint32_t j = 1; j <= numParts; ++j)
+  auto point1 = point0;
+  for (auto j = 1U; j <= numParts; ++j)
   {
     const auto thisPartFraction = static_cast<float>(j) / static_cast<float>(numParts);
-    const Vec2dFlt thisPartVelocity = partMultiplier * (thisPartFraction * star.GetVelocity());
-    const Vec2dFlt twistFrequency = speedFactor * thisPartVelocity;
+    const auto thisPartVelocity = partMultiplier * (thisPartFraction * star.GetVelocity());
+    const auto twistFrequency = speedFactor * thisPartVelocity;
 
-    const Point2dInt point2 = point0 - GetPointVelocity(twistFrequency, thisPartVelocity);
+    const auto point2 = point0 - GetPointVelocity(twistFrequency, thisPartVelocity);
 
-    const float t = STD20::lerp(tAge, tAgeMax, tAgePart());
-    const float thisPartBrightness = thisPartFraction * brightness;
-    const MultiplePixels thisPartColors = m_getMixedColorsFunc(thisPartBrightness, star, t);
+    const auto t = STD20::lerp(tAge, tAgeMax, tAgePart());
+    const auto thisPartBrightness = thisPartFraction * brightness;
+    const auto thisPartColors = m_getMixedColorsFunc(thisPartBrightness, star, t);
 
     drawFunc(point1, point2, elementSize, thisPartColors);
 
@@ -69,16 +69,16 @@ auto StarDrawer::DrawStar(const Star& star,
 inline auto StarDrawer::GetPointVelocity(const Vec2dFlt& twistFrequency,
                                          const Vec2dFlt& velocity) noexcept -> Vec2dInt
 {
-  static constexpr float HALF = 0.5F;
+  static constexpr auto HALF = 0.5F;
   return {static_cast<int32_t>(HALF * (1.0F + std::sin(twistFrequency.x)) * velocity.x),
           static_cast<int32_t>(HALF * (1.0F + std::cos(twistFrequency.y)) * velocity.y)};
 }
 
 inline auto StarDrawer::GetBrightness(const float tAge) noexcept -> float
 {
-  static constexpr float BRIGHTNESS_FACTOR = 10.0F;
-  static constexpr float BRIGHTNESS_MIN = 0.2F;
-  const float ageBrightness = (0.8F * std::fabs(0.10F - tAge)) / 0.25F;
+  static constexpr auto BRIGHTNESS_FACTOR = 10.0F;
+  static constexpr auto BRIGHTNESS_MIN = 0.2F;
+  const auto ageBrightness = (0.8F * std::fabs(0.10F - tAge)) / 0.25F;
 
   return BRIGHTNESS_FACTOR * (BRIGHTNESS_MIN + ageBrightness);
 }
@@ -95,7 +95,7 @@ inline auto StarDrawer::GetPartMultiplier() const noexcept -> float
 
 inline auto StarDrawer::GetMaxPartMultiplier() const noexcept -> float
 {
-  static constexpr float MAX_MULTIPLIER = 20.0F;
+  static constexpr auto MAX_MULTIPLIER = 20.0F;
 
   switch (m_drawMode)
   {
@@ -112,7 +112,7 @@ inline auto StarDrawer::GetMaxPartMultiplier() const noexcept -> float
 
 inline auto StarDrawer::GetLineMaxPartMultiplier() const noexcept -> float
 {
-  static constexpr float LINE_MAX_MULTIPLIER = 4.0F;
+  static constexpr auto LINE_MAX_MULTIPLIER = 4.0F;
 
   switch (m_drawMode)
   {
@@ -130,13 +130,13 @@ inline auto StarDrawer::GetLineMaxPartMultiplier() const noexcept -> float
 inline auto StarDrawer::GetNumPartsAndElementSize(float tAge) const noexcept
     -> std::pair<uint32_t, uint32_t>
 {
-  if (static constexpr float T_OLD_AGE = 0.95F; tAge > T_OLD_AGE)
+  if (static constexpr auto T_OLD_AGE = 0.95F; tAge > T_OLD_AGE)
   {
     return {m_currentMaxNumParts, m_goomRand.GetRandInRange(MIN_DOT_SIZE, MAX_DOT_SIZE + 1)};
   }
 
-  static constexpr uint32_t MIN_ELEMENT_SIZE = 1;
-  const uint32_t numParts =
+  static constexpr auto MIN_ELEMENT_SIZE = 1U;
+  const auto numParts =
       MIN_NUM_PARTS +
       static_cast<uint32_t>(
           std::lround((1.0F - tAge) * static_cast<float>(m_currentMaxNumParts - MIN_NUM_PARTS)));
@@ -172,8 +172,8 @@ inline auto StarDrawer::DrawParticleDot(const Point2dInt point1,
       [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
   { return GetColorMultiply(bgnd, colors[1]); };
 
-  const ImageBitmap& bitmap = GetImageBitmap(elementSize);
-  const std::vector<IGoomDraw::GetBitmapColorFunc> getColors{getMainColor, getLowColor};
+  const auto& bitmap = GetImageBitmap(elementSize);
+  const auto getColors = std::vector<IGoomDraw::GetBitmapColorFunc>{getMainColor, getLowColor};
   m_draw.Bitmap(point1, bitmap, getColors);
 }
 

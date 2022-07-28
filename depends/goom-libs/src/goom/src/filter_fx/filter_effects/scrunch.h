@@ -44,8 +44,8 @@ inline auto Scrunch::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                           [[maybe_unused]] const NormalizedCoords& coords) const
     -> Point2dFlt
 {
-  const float xSpeedCoeff = baseSpeedCoeffs.x + (m_params.xAmplitude * sqDistFromZero);
-  const float ySpeedCoeff = m_params.yAmplitude * xSpeedCoeff;
+  const auto xSpeedCoeff = baseSpeedCoeffs.x + (m_params.xAmplitude * sqDistFromZero);
+  const auto ySpeedCoeff = m_params.yAmplitude * xSpeedCoeff;
   return {xSpeedCoeff, ySpeedCoeff};
 }
 

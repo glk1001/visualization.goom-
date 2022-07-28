@@ -28,8 +28,7 @@ auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) 
     return GetBrighterColor(brightness, color);
   }
 
-  Pixel adjustedColor = color;
-
+  auto adjustedColor = color;
   if (m_doAlterChroma)
   {
     adjustedColor = GetAlteredChromaColor(m_chromaFactor, adjustedColor);
@@ -55,11 +54,11 @@ auto ColorAdjustment::GetAlteredChromaColor(float lchYFactor, const Pixel& color
     return color;
   }
 
-  const vivid::col8_t rgb8 = {color.R(), color.G(), color.B()};
-  vivid::lch_t lch = vivid::lch::fromSrgb(vivid::rgb::fromRgb8(rgb8));
-  static constexpr float MAX_LCH_Y = 140.0F;
+  const auto rgb8 = vivid::col8_t{color.R(), color.G(), color.B()};
+  auto lch = vivid::lch::fromSrgb(vivid::rgb::fromRgb8(rgb8));
+  static constexpr auto MAX_LCH_Y = 140.0F;
   lch.y = std::min(lch.y * lchYFactor, MAX_LCH_Y);
-  const vivid::col8_t newRgb8 = vivid::rgb8::fromRgb(vivid::srgb::fromLch(lch));
+  const auto newRgb8 = vivid::rgb8::fromRgb(vivid::srgb::fromLch(lch));
   return Pixel{
       {newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}
   };

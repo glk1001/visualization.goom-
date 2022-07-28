@@ -100,7 +100,7 @@ inline auto Stopwatch::MarkTimeNow() noexcept -> void
   auto newTimeElapsedInMs = static_cast<float>(
       std::chrono::duration_cast<std::chrono::milliseconds>(m_lastMarkedTime - m_startTime)
           .count());
-  float newTimeRemainingInMs = m_durationInMs - newTimeElapsedInMs;
+  auto newTimeRemainingInMs = m_durationInMs - newTimeElapsedInMs;
 
   if (not IsValidTimeIntervalSinceLastMarked(newTimeElapsedInMs - m_timeValues.timeElapsedInMs))
   {

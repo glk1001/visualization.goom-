@@ -244,7 +244,7 @@ inline ZoomFilterBuffers::CoordTransforms::CoordTransforms(
 inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
     const NormalizedCoords& normalizedPoint) const noexcept -> Point2dInt
 {
-  const Point2dFlt screenCoords =
+  const auto screenCoords =
       m_normalizedCoordsConverter.NormalizedToScreenCoordsFlt(normalizedPoint);
 
   // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
@@ -312,17 +312,15 @@ inline auto ZoomFilterBuffers::TransformBuffers::SetTranLerpFactor(const int32_t
 inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(
     const size_t buffPos) const noexcept -> Point2dInt
 {
-  bool isClipped = false;
+  auto isClipped = false;
   return GetSrceDestLerpBufferPoint(buffPos, isClipped);
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetSrceDestLerpBufferPoint(
     const size_t buffPos, bool& isClipped) const noexcept -> Point2dInt
 {
-  const int32_t x =
-      GetTranBuffLerpVal(m_tranXSrce[buffPos], m_tranXDest[buffPos], m_tranLerpFactor);
-  const int32_t y =
-      GetTranBuffLerpVal(m_tranYSrce[buffPos], m_tranYDest[buffPos], m_tranLerpFactor);
+  const auto x = GetTranBuffLerpVal(m_tranXSrce[buffPos], m_tranXDest[buffPos], m_tranLerpFactor);
+  const auto y = GetTranBuffLerpVal(m_tranYSrce[buffPos], m_tranYDest[buffPos], m_tranLerpFactor);
 
   if (x < 0)
   {

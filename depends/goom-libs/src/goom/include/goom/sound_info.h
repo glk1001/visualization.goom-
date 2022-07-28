@@ -90,8 +90,8 @@ private:
 
 constexpr auto AudioSamples::GetPositiveValue(const float audioValue) -> float
 {
-  constexpr float MIN_AUDIO_VALUE = -1.0F;
-  constexpr float MAX_AUDIO_VALUE = +1.0F;
+  constexpr auto MIN_AUDIO_VALUE = -1.0F;
+  constexpr auto MAX_AUDIO_VALUE = +1.0F;
   Expects(MIN_AUDIO_VALUE <= audioValue);
   Expects(audioValue <= MAX_AUDIO_VALUE);
 

@@ -154,7 +154,7 @@ inline auto StarDrawer::UpdateActualDrawElement() noexcept -> void
   }
   else
   {
-    static constexpr float PROB_CIRCLES = 0.5F;
+    static constexpr auto PROB_CIRCLES = 0.5F;
     m_currentActualDrawElement = m_goomRand.ProbabilityOf(PROB_CIRCLES) ? DrawElementTypes::CIRCLES
                                                                         : DrawElementTypes::LINES;
   }

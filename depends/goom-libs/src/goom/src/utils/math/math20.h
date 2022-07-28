@@ -11,7 +11,7 @@
 
 namespace STD20
 {
-static constexpr float pi = 3.14159265358979323846264F;
+static constexpr auto pi = 3.14159265358979323846264F;
 
 template<typename _Tp>
 constexpr _Tp midpoint(_Tp __a, _Tp __b) noexcept

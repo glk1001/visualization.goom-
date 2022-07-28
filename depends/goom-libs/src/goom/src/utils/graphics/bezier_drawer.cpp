@@ -17,25 +17,25 @@ inline auto BezierDrawer::GetImageBitmap(const size_t size) const -> const Image
 
 void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, const float colorT1)
 {
-  const float colorTStep = (colorT1 - colorT0) / static_cast<float>(m_numBezierSteps - 1);
+  const auto colorTStep = (colorT1 - colorT0) / static_cast<float>(m_numBezierSteps - 1);
 
-  const float tStep = 1.0F / static_cast<float>(m_numBezierSteps - 1);
-  float colorT = colorT0 + colorTStep;
-  float t = tStep;
-  Point2dInt point0 = {static_cast<int32_t>(bezier.valueAt(0.0F, 0)),
-                       static_cast<int32_t>(bezier.valueAt(0.0F, 1))};
+  const auto tStep = 1.0F / static_cast<float>(m_numBezierSteps - 1);
+  auto colorT = colorT0 + colorTStep;
+  auto t = tStep;
+  auto point0 = Point2dInt{static_cast<int32_t>(bezier.valueAt(0.0F, 0)),
+                           static_cast<int32_t>(bezier.valueAt(0.0F, 1))};
 
-  for (size_t i = 1; i < m_numBezierSteps; ++i)
+  for (auto i = 1U; i < m_numBezierSteps; ++i)
   {
-    const Point2dInt point1 = {static_cast<int32_t>(bezier.valueAt(t, 0)),
-                               static_cast<int32_t>(bezier.valueAt(t, 1))};
+    const auto point1 = Point2dInt{static_cast<int32_t>(bezier.valueAt(t, 0)),
+                                   static_cast<int32_t>(bezier.valueAt(t, 1))};
 
-    const Pixel lineColor = GetBrighterColor(10.F, m_lineColorFunc(colorT));
+    const auto lineColor = GetBrighterColor(10.F, m_lineColorFunc(colorT));
     m_goomDraw.Line(point0, point1, lineColor, m_lineThickness);
 
     if (0 == (i % m_dotEveryNumBezierSteps))
     {
-      const Pixel dotColor = GetBrighterColor(10.F, m_dotColorFunc(colorT));
+      const auto dotColor = GetBrighterColor(10.F, m_dotColorFunc(colorT));
       DrawDot(point1, m_dotDiameter, dotColor);
     }
 

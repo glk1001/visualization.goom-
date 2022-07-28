@@ -81,14 +81,14 @@ private:
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
   uint32_t m_numFlowersInRow = 0;
   const Weights<SmallImageBitmaps::ImageNames> m_flowerDotTypes;
-  [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;
+  [[nodiscard]] auto GetImageBitmap(uint32_t size) const -> const ImageBitmap&;
   void SetFlowerBitmap();
   void SetNonFlowerBitmap();
   void SetNextCurrentBitmapName();
   [[nodiscard]] auto ChangeDotColorsEvent() const -> bool;
 
-  static constexpr size_t MIN_DOT_SIZE = 5;
-  static constexpr size_t MAX_DOT_SIZE = 17;
+  static constexpr auto MIN_DOT_SIZE = 5U;
+  static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
   std::array<std::shared_ptr<const RandomColorMaps>, NUM_DOT_TYPES> m_dotColorMapsList{};
@@ -119,7 +119,7 @@ private:
 
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
 
-  static constexpr float GAMMA = 2.0F;
+  static constexpr auto GAMMA = 2.0F;
   const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 
@@ -179,10 +179,10 @@ auto GoomDotsFx::ApplyMultiple() noexcept -> void
 }
 
 // clang-format off
-static constexpr float IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 10.0F;
-static constexpr float IMAGE_NAMES_PINK_FLOWER_WEIGHT   =  5.0F;
-static constexpr float IMAGE_NAMES_RED_FLOWER_WEIGHT    = 10.0F;
-static constexpr float IMAGE_NAMES_WHITE_FLOWER_WEIGHT  =  5.0F;
+static constexpr auto IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 10.0F;
+static constexpr auto IMAGE_NAMES_PINK_FLOWER_WEIGHT   =  5.0F;
+static constexpr auto IMAGE_NAMES_RED_FLOWER_WEIGHT    = 10.0F;
+static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  =  5.0F;
 // clang-format on
 
 GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
@@ -208,7 +208,7 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
 auto GoomDotsFx::GoomDotsFxImpl::GetDefaultColorMapIds() noexcept
     -> std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES>
 {
-  std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> colorMapsIds{};
+  auto colorMapsIds = std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES>{};
 
   for (auto& colorMapsId : colorMapsIds)
   {
@@ -221,16 +221,19 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDefaultColorMapIds() noexcept
 auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
     -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>
 {
-  static constexpr HypotrochoidFunction::Params HYPOTROCHOID_PARAMS1{7.0F, 3.0F, 5.0F, 30.0F};
-  static constexpr HypotrochoidFunction::Params HYPOTROCHOID_PARAMS2{8.0F, 3.0F, 5.0F, 30.0F};
-  static constexpr HypotrochoidFunction::Params HYPOTROCHOID_PARAMS3{9.0F, 3.0F, 5.0F, 30.0F};
-  static constexpr LissajousFunction::Params LISSAJOUS_PATH_PARAMS{50.0F, 50.F, 3.0F, 2.0F};
-  static constexpr EpicycloidFunction::Params EPICYCLOID_PARAMS{5.1F, 1.0F, 30.0F};
+  static constexpr auto HYPOTROCHOID_PARAMS1 =
+      HypotrochoidFunction::Params{7.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr auto HYPOTROCHOID_PARAMS2 =
+      HypotrochoidFunction::Params{8.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr auto HYPOTROCHOID_PARAMS3 =
+      HypotrochoidFunction::Params{9.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr auto LISSAJOUS_PATH_PARAMS = LissajousFunction::Params{50.0F, 50.F, 3.0F, 2.0F};
+  static constexpr auto EPICYCLOID_PARAMS = EpicycloidFunction::Params{5.1F, 1.0F, 30.0F};
 
-  static constexpr TValue::StepType STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
-  static constexpr float HYPOTROCHOID_STEP_SIZE = 0.01F;
-  static constexpr float LISSAJOUS_STEP_SIZE = 0.01F;
-  static constexpr float EPICYCLOID_STEP_SIZE = 0.001F;
+  static constexpr auto STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
+  static constexpr auto HYPOTROCHOID_STEP_SIZE = 0.01F;
+  static constexpr auto LISSAJOUS_STEP_SIZE = 0.01F;
+  static constexpr auto EPICYCLOID_STEP_SIZE = 0.001F;
 
   auto hypotrochoidPositionT1 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
   auto hypotrochoidPositionT2 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
@@ -238,8 +241,8 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
   auto lissajousPositionT = std::make_unique<TValue>(STEP_TYPE, LISSAJOUS_STEP_SIZE);
   auto epicycloidPositionT = std::make_unique<TValue>(STEP_TYPE, EPICYCLOID_STEP_SIZE);
 
-  const Vec2dFlt centrePos{centre.ToFlt()};
-  static constexpr AngleParams DEFAULT_ANGLE_PARAMS{};
+  const auto centrePos = Vec2dFlt{centre.ToFlt()};
+  static constexpr auto DEFAULT_ANGLE_PARAMS = AngleParams{};
 
   return {
       {std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT1), centrePos,
@@ -257,7 +260,7 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
 
 inline auto GoomDotsFx::GoomDotsFxImpl::ChangeDotColorsEvent() const -> bool
 {
-  static constexpr float PROB_CHANGE_DOT_COLORS = 0.33F;
+  static constexpr auto PROB_CHANGE_DOT_COLORS = 0.33F;
   return m_goomRand.ProbabilityOf(PROB_CHANGE_DOT_COLORS);
 }
 
@@ -266,7 +269,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::Start()
   ChangeColors();
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::GetImageBitmap(const size_t size) const
+inline auto GoomDotsFx::GoomDotsFxImpl::GetImageBitmap(const uint32_t size) const
     -> const ImageBitmap&
 {
   return m_smallBitmaps.GetImageBitmap(m_currentBitmapName,
@@ -279,14 +282,14 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
 
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
-    static constexpr float PROB_USE_PRIMARY_COLOR = 0.5F;
+    static constexpr auto PROB_USE_PRIMARY_COLOR = 0.5F;
     usePrimaryColor = m_goomRand.ProbabilityOf(PROB_USE_PRIMARY_COLOR);
   }
 
-  static constexpr float PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
+  static constexpr auto PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
   m_currentlyUseSingleBufferOnly = m_goomRand.ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
 
-  static constexpr float PROB_USE_MIDDLE_COLOR = 0.05F;
+  static constexpr auto PROB_USE_MIDDLE_COLOR = 0.05F;
   m_useMiddleColor = m_goomRand.ProbabilityOf(PROB_USE_MIDDLE_COLOR);
   if (m_useMiddleColor)
   {
@@ -296,13 +299,13 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
 
 auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
 {
-  if (constexpr float PROB_PRIMARY_COLOR = 0.1F; m_goomRand.ProbabilityOf(PROB_PRIMARY_COLOR))
+  if (static constexpr auto PROB_PRIMARY_COLOR = 0.1F; m_goomRand.ProbabilityOf(PROB_PRIMARY_COLOR))
   {
     return GetDotPrimaryColor(m_goomRand.GetRandInRange(0U, NUM_DOT_TYPES));
   }
 
-  static constexpr float MIN_MIX_T = 0.1F;
-  static constexpr float MAX_MIX_T = 1.0F;
+  static constexpr auto MIN_MIX_T = 0.1F;
+  static constexpr auto MAX_MIX_T = 1.0F;
   return RandomColorMaps::GetRandomColor(
       m_goomRand,
       *m_dotColorMapsList[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
@@ -321,7 +324,7 @@ auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
 {
   Expects(weightedColorMaps.mainColorMaps != nullptr);
 
-  const uint32_t dotNum = weightedColorMaps.id;
+  const auto dotNum = weightedColorMaps.id;
 
   m_dotColorMapsList.at(dotNum) = weightedColorMaps.mainColorMaps;
   m_colorMapsManager.UpdateColorMapInfo(
@@ -358,30 +361,30 @@ inline void GoomDotsFx::GoomDotsFxImpl::ApplyMultiple()
 
 void GoomDotsFx::GoomDotsFxImpl::Update()
 {
-  uint32_t radius = MIN_DOT_SIZE / 2;
+  auto radius = MIN_DOT_SIZE / 2U;
   if ((0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
   {
     ChangeColors();
-    radius = m_goomRand.GetRandInRange(radius, static_cast<uint32_t>(S_HALF * MAX_DOT_SIZE) + 1);
+    radius = m_goomRand.GetRandInRange(radius, (U_HALF * MAX_DOT_SIZE) + 1);
     SetNextCurrentBitmapName();
   }
 
-  const float speedFactor = 0.35F * m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed();
-  //  const float largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
+  const auto speedFactor = 0.35F * m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed();
+  //  const auto largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
   const auto speedVarMult80Plus15 = static_cast<uint32_t>((speedFactor * 80.0F) + 15.0F);
 
-  const size_t speedVarMult80Plus15Div15 = speedVarMult80Plus15 / 15;
-  static constexpr float T_MIN = 0.1F;
-  static constexpr float T_MAX = 1.0F;
-  const float tStep = (T_MAX - T_MIN) / static_cast<float>(speedVarMult80Plus15Div15);
+  const auto speedVarMult80Plus15Div15 = speedVarMult80Plus15 / 15;
+  static constexpr auto T_MIN = 0.1F;
+  static constexpr auto T_MAX = 1.0F;
+  const auto tStep = (T_MAX - T_MIN) / static_cast<float>(speedVarMult80Plus15Div15);
 
-  float t = T_MIN;
-  for (uint32_t i = 1; i <= speedVarMult80Plus15Div15; ++i)
+  auto t = T_MIN;
+  for (auto i = 1U; i <= speedVarMult80Plus15Div15; ++i)
   {
-    for (size_t dotNum = 0; dotNum < NUM_DOT_TYPES; ++dotNum)
+    for (auto dotNum = 0U; dotNum < NUM_DOT_TYPES; ++dotNum)
     {
-      const Pixel dotColor = GetDotColor(dotNum, t);
-      const Point2dInt dotPosition = m_dotPaths.at(dotNum)->GetNextPoint();
+      const auto dotColor = GetDotColor(dotNum, t);
+      const auto dotPosition = m_dotPaths.at(dotNum)->GetNextPoint();
       m_dotPaths.at(dotNum)->IncrementT();
       DotFilter(dotColor, dotPosition, radius);
     }
@@ -403,7 +406,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const f
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) -> Pixel
 {
-  static const std::array s_PRIMARY_COLORS{
+  static const auto s_PRIMARY_COLORS = std::array{
       Pixel{255,   0,   0, 0},
       Pixel{  0, 255,   0, 0},
       Pixel{  0,   0, 255, 0},
@@ -415,7 +418,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) 
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
 {
-  static constexpr float PROB_MORE_FLOWERS = 1.0F / 50.0F;
+  static constexpr auto PROB_MORE_FLOWERS = 1.0F / 50.0F;
 
   if (m_numFlowersInRow > 0)
   {
@@ -445,7 +448,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetFlowerBitmap()
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetNonFlowerBitmap()
 {
-  static constexpr float PROB_SPHERE = 0.7F;
+  static constexpr auto PROB_SPHERE = 0.7F;
 
   if (m_goomRand.ProbabilityOf(PROB_SPHERE))
   {
@@ -461,7 +464,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
                                            const Point2dInt& dotPosition,
                                            const uint32_t radius)
 {
-  const uint32_t diameter = (2 * radius) + 1; // must be odd
+  const auto diameter = (2 * radius) + 1; // must be odd
   const auto screenWidthLessDiameter =
       static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - diameter);
   const auto screenHeightLessDiameter =
@@ -474,25 +477,25 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     return;
   }
 
-  static constexpr float BRIGHTNESS = 3.5F;
+  static constexpr auto BRIGHTNESS = 3.5F;
   const auto getColor1 = [this, &radius, &color](const size_t x, const size_t y, const Pixel& bgnd)
   {
     if (0 == bgnd.A())
     {
       return BLACK_PIXEL;
     }
-    const Pixel newColor =
+    const auto newColor =
         m_useMiddleColor && IsImagePointCloseToMiddle(x, y, radius) ? m_middleColor : color;
-    static constexpr float COLOR_MIX_T = 0.6F;
-    const Pixel mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
+    static constexpr auto COLOR_MIX_T = 0.6F;
+    const auto mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     return m_colorAdjust.GetAdjustment(BRIGHTNESS, mixedColor);
   };
   const auto getColor2 =
       [&getColor1]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
                    [[maybe_unused]] const Pixel& bgnd) { return getColor1(x, y, bgnd); };
 
-  if (const Point2dInt midPoint = {dotPosition.x + static_cast<int32_t>(radius),
-                                   dotPosition.y + static_cast<int32_t>(radius)};
+  if (const auto midPoint = Point2dInt{dotPosition.x + static_cast<int32_t>(radius),
+                                       dotPosition.y + static_cast<int32_t>(radius)};
       m_thereIsOneBuffer || m_currentlyUseSingleBufferOnly)
   {
     m_draw.Bitmap(midPoint, GetImageBitmap(diameter), getColor1);
@@ -507,16 +510,16 @@ inline auto GoomDotsFx::GoomDotsFxImpl::IsImagePointCloseToMiddle(const size_t x
                                                                   const size_t y,
                                                                   const uint32_t radius) -> bool
 {
-  const size_t margin = GetMargin(radius);
-  const size_t minVal = radius - margin;
-  const size_t maxVal = radius + margin;
+  const auto margin = GetMargin(radius);
+  const auto minVal = radius - margin;
+  const auto maxVal = radius + margin;
   return (minVal <= x) && (x <= maxVal) && (minVal <= y) && (y <= maxVal);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetMargin(const uint32_t radius) -> size_t
 {
-  static constexpr size_t SMALLEST_MARGIN = 2;
-  if (constexpr uint32_t SMALL_RADIUS = 7; radius < SMALL_RADIUS)
+  static constexpr auto SMALLEST_MARGIN = 2U;
+  if (static constexpr auto SMALL_RADIUS = 7U; radius < SMALL_RADIUS)
   {
     return SMALLEST_MARGIN;
   }

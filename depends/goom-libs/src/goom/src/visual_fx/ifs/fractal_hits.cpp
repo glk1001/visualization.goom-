@@ -17,7 +17,7 @@ FractalHits::~FractalHits() noexcept = default;
 
 auto FractalHits::GetHitInfo(const uint32_t width, const uint32_t height) noexcept -> std::vector<std::vector<HitInfo>>
 {
-  std::vector<std::vector<HitInfo>> hitInfo(height);
+  auto hitInfo = std::vector<std::vector<HitInfo>>(height);
   for (auto& xHit : hitInfo)
   {
     xHit.resize(width);
@@ -49,7 +49,7 @@ void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& sim
   const auto ux = static_cast<uint32_t>(x);
   const auto uy = static_cast<uint32_t>(y);
 
-  HitInfo& hitInfo = m_hitInfo[uy][ux];
+  auto& hitInfo = m_hitInfo[uy][ux];
 
   hitInfo.simi = &simi;
   hitInfo.color = GetColorAverage(hitInfo.color, simi.GetColor());
@@ -72,8 +72,8 @@ auto FractalHits::GetBuffer() -> const std::vector<IfsPoint>&
 
   for (const auto& hit : m_hits)
   {
-    IfsPoint updatedHit = hit;
-    const HitInfo& hitInfo = m_hitInfo[hit.GetY()][hit.GetX()];
+    auto updatedHit = hit;
+    const auto& hitInfo = m_hitInfo[hit.GetY()][hit.GetX()];
 
     updatedHit.SetCount(hitInfo.count);
     updatedHit.SetColor(hitInfo.color);

@@ -31,7 +31,7 @@ auto GoomDrawToBuffer::GetPixel(const Point2dInt point) const -> Pixel
 
 void GoomDrawToBuffer::DrawPixelsUnblended(const Point2dInt point, const MultiplePixels& colors)
 {
-  for (size_t i = 0; i < m_numBuffers; ++i)
+  for (auto i = 0U; i < m_numBuffers; ++i)
   {
     (*m_multipleBuffers[i])(static_cast<size_t>(point.x), static_cast<size_t>(point.y)) = colors[i];
   }
@@ -41,9 +41,9 @@ void GoomDrawToBuffer::DrawPixelsToDevice(const Point2dInt point,
                                           const MultiplePixels& colors,
                                           const uint32_t intBuffIntensity)
 {
-  for (size_t i = 0; i < m_numBuffers; ++i)
+  for (auto i = 0U; i < m_numBuffers; ++i)
   {
-    Pixel& pixel =
+    auto& pixel =
         (*m_multipleBuffers[i])(static_cast<size_t>(point.x), static_cast<size_t>(point.y));
     pixel = GetBlendedPixel(pixel, colors[i], intBuffIntensity);
   }

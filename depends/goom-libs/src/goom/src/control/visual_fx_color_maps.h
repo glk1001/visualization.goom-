@@ -57,12 +57,12 @@ inline auto VisualFxColorMaps::GetNextRandomColorMapsGroup(const GoomEffect goom
   //  const auto group = COLOR::RandomColorMapsGroups::Groups::PURPLE_STANDARD_MAPS;
   //  return randomColorMapsGroups.MakeRandomColorMapsGroup(group);
 
-  if (static constexpr float PROB_COMPLETELY_RANDOM = 0.05F;
+  if (static constexpr auto PROB_COMPLETELY_RANDOM = 0.05F;
       m_goomRand.ProbabilityOf(PROB_COMPLETELY_RANDOM))
   {
     return GetNextCompletelyRandomColorMapsGroup();
   }
-  if (static constexpr float PROB_WEIGHTED_COLOR_MAPS = 0.25F;
+  if (static constexpr auto PROB_WEIGHTED_COLOR_MAPS = 0.25F;
       m_goomRand.ProbabilityOf(PROB_WEIGHTED_COLOR_MAPS))
   {
     return m_visualFxWeightedColorMaps.GetCurrentRandomColorMapsGroup(goomEffect);

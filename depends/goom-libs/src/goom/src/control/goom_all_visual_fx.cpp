@@ -38,7 +38,7 @@ using UTILS::Stopwatch;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelper;
 
-static constexpr float SMALL_LUMA = 0.1F;
+static constexpr auto SMALL_LUMA = 0.1F;
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  const FxHelper& fxHelper,
@@ -81,10 +81,10 @@ void GoomAllVisualFx::ChangeState()
 {
   m_allStandardVisualFx->SuspendFx();
 
-  static constexpr size_t MAX_TRIES = 10;
-  const GoomStates oldState = m_goomStateHandler.GetCurrentState();
+  static constexpr auto MAX_TRIES = 10U;
+  const auto oldState = m_goomStateHandler.GetCurrentState();
 
-  for (size_t numTry = 0; numTry < MAX_TRIES; ++numTry)
+  for (auto numTry = 0U; numTry < MAX_TRIES; ++numTry)
   {
     m_goomStateHandler.ChangeToNextState();
 
@@ -142,10 +142,10 @@ inline void GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx
 
 inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const -> FXBuffSettings
 {
-  const float buffIntensity = m_goomRand.GetRandInRange(
+  const auto buffIntensity = m_goomRand.GetRandInRange(
       GoomStateInfo::GetBuffIntensityRange(m_goomStateHandler.GetCurrentState(), fx));
   // Careful here. > 1 reduces smearing.
-  static constexpr float INTENSITY_FACTOR = 1.0F;
+  static constexpr auto INTENSITY_FACTOR = 1.0F;
   return {INTENSITY_FACTOR * buffIntensity};
 }
 
@@ -184,14 +184,14 @@ auto GoomAllVisualFx::GetSameLumaBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
 {
   return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
   {
-    const float newColorLuma =
+    const auto newColorLuma =
         GetLuma(newColor) * (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
     if (newColorLuma < SMALL_LUMA)
     {
       return COLOR::GetColorAdd(oldColor, newColor);
     }
-    const float oldColorLuma = GetLuma(oldColor);
-    const float brightness = 1.0F + (oldColorLuma / newColorLuma);
+    const auto oldColorLuma = GetLuma(oldColor);
+    const auto brightness = 1.0F + (oldColorLuma / newColorLuma);
 
     const auto red = static_cast<uint32_t>(brightness * static_cast<float>(newColor.R()));
     const auto green = static_cast<uint32_t>(brightness * static_cast<float>(newColor.G()));
@@ -205,16 +205,16 @@ auto GoomAllVisualFx::GetSameLumaMixBlendPixelFunc() -> IGoomDraw::BlendPixelFun
 {
   return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
   {
-    const float newColorLuma =
+    const auto newColorLuma =
         GetLuma(newColor) * (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
     if (newColorLuma < SMALL_LUMA)
     {
       return COLOR::GetColorAdd(oldColor, newColor);
     }
-    const float oldColorLuma = GetLuma(oldColor);
-    const float brightness = 0.5F * (1.0F + (oldColorLuma / newColorLuma));
+    const auto oldColorLuma = GetLuma(oldColor);
+    const auto brightness = 0.5F * (1.0F + (oldColorLuma / newColorLuma));
 
-    const Pixel finalNewColor = IColorMap::GetColorMix(oldColor, newColor, 0.7F);
+    const auto finalNewColor = IColorMap::GetColorMix(oldColor, newColor, 0.7F);
     const auto red = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.R()));
     const auto green = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.G()));
     const auto blue = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.B()));

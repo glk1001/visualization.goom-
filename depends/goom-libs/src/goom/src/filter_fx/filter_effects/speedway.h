@@ -79,15 +79,15 @@ inline auto Speedway::GetMode0SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
                                                 const float sqDistFromZero,
                                                 const NormalizedCoords& coords) const -> Point2dFlt
 {
-  static constexpr float SQ_DIST_FACTOR = 0.01F;
-  float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (constexpr float PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  static constexpr auto SQ_DIST_FACTOR = 0.01F;
+  auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
+  if (constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
 
-  const float xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
-  const float ySpeedCoeff = m_params.yAmplitude * xSpeedCoeff;
+  const auto xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
+  const auto ySpeedCoeff = m_params.yAmplitude * xSpeedCoeff;
 
   return {xSpeedCoeff, ySpeedCoeff};
 }
@@ -96,18 +96,18 @@ inline auto Speedway::GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
                                                 const float sqDistFromZero,
                                                 const NormalizedCoords& coords) const -> Point2dFlt
 {
-  float xAdd = -1.0F;
+  auto xAdd = -1.0F;
 
-  static constexpr float PROB_RANDOM_X_ADD = 0.5F;
-  static constexpr float PROB_FLIP_X_ADD = 0.5F;
-  static constexpr float PROB_NEGATIVE_X_ADD = 0.5F;
+  static constexpr auto PROB_RANDOM_X_ADD = 0.5F;
+  static constexpr auto PROB_FLIP_X_ADD = 0.5F;
+  static constexpr auto PROB_NEGATIVE_X_ADD = 0.5F;
 
   if (m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
   {
-    static constexpr float MIN_NEGATIVE_X_ADD = -1.9F;
-    static constexpr float MAX_NEGATIVE_X_ADD = -0.5F;
-    static constexpr float MIN_POSITIVE_X_ADD = +0.5F;
-    static constexpr float MAX_POSITIVE_X_ADD = +1.9F;
+    static constexpr auto MIN_NEGATIVE_X_ADD = -1.9F;
+    static constexpr auto MAX_NEGATIVE_X_ADD = -0.5F;
+    static constexpr auto MIN_POSITIVE_X_ADD = +0.5F;
+    static constexpr auto MAX_POSITIVE_X_ADD = +1.9F;
     xAdd = m_goomRand.ProbabilityOf(PROB_NEGATIVE_X_ADD)
                ? m_goomRand.GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
                : m_goomRand.GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
@@ -117,13 +117,13 @@ inline auto Speedway::GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
     xAdd = -xAdd;
   }
 
-  const float xDiff = coords.GetX() - xAdd;
-  const float sign = xDiff < 0.0F ? -1.0F : +1.0F;
-  const float xWarp = 0.1F * (((sign * UTILS::MATH::Sq(xDiff)) / xAdd) + xAdd);
-  const float amplitude = (1.0F - sqDistFromZero) / 4.0F;
+  const auto xDiff = coords.GetX() - xAdd;
+  const auto sign = xDiff < 0.0F ? -1.0F : +1.0F;
+  const auto xWarp = 0.1F * (((sign * UTILS::MATH::Sq(xDiff)) / xAdd) + xAdd);
+  const auto amplitude = (1.0F - sqDistFromZero) / 4.0F;
 
-  const float xSpeedCoeff = amplitude * baseSpeedCoeffs.x * (m_params.xAmplitude * xWarp);
-  const float ySpeedCoeff = amplitude * m_params.yAmplitude * xSpeedCoeff;
+  const auto xSpeedCoeff = amplitude * baseSpeedCoeffs.x * (m_params.xAmplitude * xWarp);
+  const auto ySpeedCoeff = amplitude * m_params.yAmplitude * xSpeedCoeff;
 
   return {xSpeedCoeff, ySpeedCoeff};
 }
@@ -132,15 +132,15 @@ inline auto Speedway::GetMode2SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
                                                 const float sqDistFromZero,
                                                 const NormalizedCoords& coords) const -> Point2dFlt
 {
-  static constexpr float SQ_DIST_FACTOR = 0.01F;
-  float xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (constexpr float PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  static constexpr auto SQ_DIST_FACTOR = 0.01F;
+  auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
+  if (constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
 
-  const float xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
-  const float ySpeedCoeff = std::tan(0.01F * sqDistFromZero) * m_params.yAmplitude * xSpeedCoeff;
+  const auto xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
+  const auto ySpeedCoeff = std::tan(0.01F * sqDistFromZero) * m_params.yAmplitude * xSpeedCoeff;
 
   return {xSpeedCoeff, ySpeedCoeff};
 }

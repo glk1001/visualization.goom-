@@ -57,19 +57,19 @@ void GoomSoundEvents::CheckGoomRate()
   m_bigGoomLimit = BIG_GOOM_FACTOR * m_goomLimit;
 }
 
-static constexpr uint32_t NUM_GOOMS_IN_SHORT_CYCLE = 4;
-static constexpr float GOOM_LIMIT_SHORT_CYCLE_INCREMENT = 0.02F;
-static constexpr uint32_t NUM_GOOMS_IN_MEDIUM_CYCLE = 7;
-static constexpr float GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT = 0.03F;
-static constexpr uint32_t NUM_GOOMS_IN_LONG_CYCLE = 16;
-static constexpr float GOOM_LIMIT_LONG_CYCLE_INCREMENT = 0.04F;
+static constexpr auto NUM_GOOMS_IN_SHORT_CYCLE = 4U;
+static constexpr auto GOOM_LIMIT_SHORT_CYCLE_INCREMENT = 0.02F;
+static constexpr auto NUM_GOOMS_IN_MEDIUM_CYCLE = 7U;
+static constexpr auto GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT = 0.03F;
+static constexpr auto NUM_GOOMS_IN_LONG_CYCLE = 16U;
+static constexpr auto GOOM_LIMIT_LONG_CYCLE_INCREMENT = 0.04F;
 
 // Detection des nouveaux goom
 // Detection of new goom
 void GoomSoundEvents::UpdateGoomLimit()
 {
-  static constexpr float VERY_SLOW_SPEED = 0.01F;
-  static constexpr float GOOM_LIMIT_SLOW_SPEED_FACTOR = 0.91F;
+  static constexpr auto VERY_SLOW_SPEED = 0.01F;
+  static constexpr auto GOOM_LIMIT_SLOW_SPEED_FACTOR = 0.91F;
   if (m_soundInfo.GetSpeed() < VERY_SLOW_SPEED)
   {
     m_goomLimit *= GOOM_LIMIT_SLOW_SPEED_FACTOR;
@@ -91,12 +91,12 @@ void GoomSoundEvents::UpdateGoomLimit()
   }
   else if (0 == m_totalGoomsInCurrentCycle)
   {
-    static constexpr float GOOM_LIMIT_ACCELERATION_DECREMENT = 0.03F;
+    static constexpr auto GOOM_LIMIT_ACCELERATION_DECREMENT = 0.03F;
     m_goomLimit = m_maxAccelerationSinceLastReset - GOOM_LIMIT_ACCELERATION_DECREMENT;
   }
 
-  static constexpr float GOOM_LIMIT_TOO_BIG = 0.02F;
-  static constexpr float GOOM_LIMIT_TOO_BIG_DECREMENT = 0.02F;
+  static constexpr auto GOOM_LIMIT_TOO_BIG = 0.02F;
+  static constexpr auto GOOM_LIMIT_TOO_BIG_DECREMENT = 0.02F;
   if ((1 == m_totalGoomsInCurrentCycle) && (m_goomLimit > GOOM_LIMIT_TOO_BIG))
   {
     m_goomLimit -= GOOM_LIMIT_TOO_BIG_DECREMENT;
@@ -122,8 +122,7 @@ auto GoomSoundEvents::UpdateLastBigGoom() -> void
 
 inline void GoomSoundEvents::CheckSettledGoomLimits()
 {
-  static constexpr uint32_t NUM_UPDATES_TO_SETTLE = 5;
-  if (m_updateNum <= NUM_UPDATES_TO_SETTLE)
+  if (static constexpr auto NUM_UPDATES_TO_SETTLE = 5U; m_updateNum <= NUM_UPDATES_TO_SETTLE)
   {
     m_goomLimit = m_soundInfo.GetAcceleration() + GOOM_LIMIT_SHORT_CYCLE_INCREMENT;
     m_bigGoomLimit = BIG_GOOM_FACTOR * m_goomLimit;

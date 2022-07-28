@@ -55,7 +55,7 @@ void GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
                                              const MultiplePixels& colors,
                                              const uint32_t intBuffIntensity)
 {
-  ColorsList& colorsList = GetWriteableColorsList(point);
+  auto& colorsList = GetWriteableColorsList(point);
 
   if (colorsList.count == colorsList.colorsArray.size())
   {
@@ -63,7 +63,7 @@ void GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
   }
 
   // NOTE: Just save the first pixel in 'colors'. May need to improve this.
-  const Pixel newColor = GetBrighterColorInt(intBuffIntensity, colors[0]);
+  const auto newColor = GetBrighterColorInt(intBuffIntensity, colors[0]);
 
   colorsList.colorsArray[colorsList.count] = newColor;
   ++colorsList.count;
@@ -94,13 +94,13 @@ void GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& func) c
 {
   const auto runFunc = [&](const size_t i) {
     const auto& coords = m_orderedXYPixelList[i];
-    const ColorsList& colorsList = GetColorsList(coords);
+    const auto& colorsList = GetColorsList(coords);
     func(coords, colorsList);
   };
 
   // Start with the newest coords added.
   const auto maxIndex = static_cast<int32_t>(m_orderedXYPixelList.size() - 1);
-  for (int32_t i = maxIndex; i >= 0; --i)
+  for (auto i = maxIndex; i >= 0; --i)
   {
     runFunc(static_cast<size_t>(i));
   }

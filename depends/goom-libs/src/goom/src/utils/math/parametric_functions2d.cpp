@@ -90,10 +90,10 @@ auto HypotrochoidFunction::GetNumCusps(const float bigR, const float smallR) noe
 
 auto HypotrochoidFunction::GetPointAtAngle(const float angle) const noexcept -> Point2dFlt
 {
-  const float angleArg2 = (m_rDiff / m_params.smallR) * angle;
+  const auto angleArg2 = (m_rDiff / m_params.smallR) * angle;
 
-  const float x = +(m_rDiff * std::cos(angle)) + (m_params.height * std::cos(angleArg2));
-  const float y = -(m_rDiff * std::sin(angle)) + (m_params.height * std::sin(angleArg2));
+  const auto x = +(m_rDiff * std::cos(angle)) + (m_params.height * std::cos(angleArg2));
+  const auto y = -(m_rDiff * std::sin(angle)) + (m_params.height * std::sin(angleArg2));
 
   return (m_params.amplitude * Point2dFlt{x, y}) + m_centrePos;
 }
@@ -121,18 +121,18 @@ auto EpicycloidFunction::GetNumCusps([[maybe_unused]] const float k) noexcept ->
   }
 
   // k is irrational. Curve never closes, so return 'large' number.
-  static constexpr float LARGE_NUM_CUSPS = 20.0F;
+  static constexpr auto LARGE_NUM_CUSPS = 20.0F;
   return LARGE_NUM_CUSPS;
 }
 
 auto EpicycloidFunction::GetPointAtAngle(const float angle) const noexcept -> Point2dFlt
 {
-  const float angleArg2 = (m_params.k + 1.0F) * angle;
+  const auto angleArg2 = (m_params.k + 1.0F) * angle;
 
-  const float x = +(m_params.smallR * (m_params.k + 1.0F) * std::cos(angle)) -
-                  +(m_params.smallR * std::cos(angleArg2));
-  const float y = -(m_params.smallR * (m_params.k + 1.0F) * std::sin(angle)) +
-                  +(m_params.smallR * std::sin(angleArg2));
+  const auto x = +(m_params.smallR * (m_params.k + 1.0F) * std::cos(angle)) -
+                 +(m_params.smallR * std::cos(angleArg2));
+  const auto y = -(m_params.smallR * (m_params.k + 1.0F) * std::sin(angle)) +
+                 +(m_params.smallR * std::sin(angleArg2));
 
   return (m_params.amplitude * Point2dFlt{x, y}) + m_centrePos;
 }
@@ -150,10 +150,10 @@ SineFunction::SineFunction(const Point2dFlt& startPos,
 
 auto SineFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float y = 100.0F * std::sin(m_params.freq * TWO_PI * t);
-  const float x = m_distance * t;
+  const auto y = 100.0F * std::sin(m_params.freq * TWO_PI * t);
+  const auto x = m_distance * t;
 
-  Point2dFlt newPoint{x, y};
+  auto newPoint = Point2dFlt{x, y};
   newPoint.Rotate(m_rotateAngle);
 
   return (Point2dFlt{newPoint.x, (m_params.amplitude * newPoint.y)} + Vec2dFlt{m_startPos});
@@ -168,7 +168,7 @@ OscillatingFunction::OscillatingFunction(const Point2dFlt& startPos,
 
 auto OscillatingFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const Point2dFlt linearPoint = lerp(m_startPos, m_endPos, t);
+  const auto linearPoint = lerp(m_startPos, m_endPos, t);
 
   if (not m_allowOscillatingPath)
   {

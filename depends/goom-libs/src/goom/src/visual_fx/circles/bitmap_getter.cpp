@@ -10,12 +10,12 @@ namespace GOOM::VISUAL_FX::CIRCLES
 using UTILS::GRAPHICS::SmallImageBitmaps;
 
 // clang-format off
-static constexpr float IMAGE_NAMES_CIRCLE_WEIGHT        =  5.0F;
-static constexpr float IMAGE_NAMES_SPHERE_WEIGHT        =  5.0F;
-static constexpr float IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 20.0F;
-static constexpr float IMAGE_NAMES_PINK_FLOWER_WEIGHT   = 20.0F;
-static constexpr float IMAGE_NAMES_RED_FLOWER_WEIGHT    = 20.0F;
-static constexpr float IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 10.0F;
+static constexpr auto IMAGE_NAMES_CIRCLE_WEIGHT        =  5.0F;
+static constexpr auto IMAGE_NAMES_SPHERE_WEIGHT        =  5.0F;
+static constexpr auto IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 20.0F;
+static constexpr auto IMAGE_NAMES_PINK_FLOWER_WEIGHT   = 20.0F;
+static constexpr auto IMAGE_NAMES_RED_FLOWER_WEIGHT    = 20.0F;
+static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 10.0F;
 // clang-format on
 
 BitmapGetter::BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,

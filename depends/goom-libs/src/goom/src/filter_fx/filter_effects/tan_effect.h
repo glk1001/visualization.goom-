@@ -60,9 +60,9 @@ private:
 inline auto TanEffect::GetVelocity(const float sqDistFromZero,
                                    const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const float limit = m_params.limitingFactor * UTILS::MATH::HALF_PI;
-  const float tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::MATH::HALF_PI), -limit, +limit);
-  const float tanSqDist = GetTanSqDist(tanArg);
+  const auto limit = m_params.limitingFactor * UTILS::MATH::HALF_PI;
+  const auto tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::MATH::HALF_PI), -limit, +limit);
+  const auto tanSqDist = GetTanSqDist(tanArg);
   return {m_params.xAmplitude * tanSqDist * velocity.GetX(),
           m_params.yAmplitude * tanSqDist * velocity.GetY()};
 }

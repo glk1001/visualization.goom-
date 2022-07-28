@@ -17,10 +17,10 @@ auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, con
 {
   Expects(numPoints > 1);
 
-  std::vector<LinePoint> linePoints(numPoints);
+  auto linePoints = std::vector<LinePoint>(numPoints);
 
-  const float xStep = static_cast<float>(width - 1) / static_cast<float>(numPoints - 1);
-  float x = 0.0F;
+  const auto xStep = static_cast<float>(width - 1) / static_cast<float>(numPoints - 1);
+  auto x = 0.0F;
   for (auto& pt : linePoints)
   {
     pt.angle = HALF_PI;
@@ -38,10 +38,10 @@ auto GetVerticalLinePoints(const uint32_t numPoints, const uint32_t height, cons
 {
   Expects(numPoints > 1);
 
-  std::vector<LinePoint> linePoints(numPoints);
+  auto linePoints = std::vector<LinePoint>(numPoints);
 
-  const float yStep = static_cast<float>(height - 1) / static_cast<float>(numPoints - 1);
-  float y = 0.0F;
+  const auto yStep = static_cast<float>(height - 1) / static_cast<float>(numPoints - 1);
+  auto y = 0.0F;
   for (auto& pt : linePoints)
   {
     pt.angle = 0.0F;
@@ -56,7 +56,7 @@ auto GetVerticalLinePoints(const uint32_t numPoints, const uint32_t height, cons
 
 inline auto RoundToTwoDecimals(const double x) -> double
 {
-  static constexpr double TEN_TO_THE_TWO = 100.0;
+  static constexpr auto TEN_TO_THE_TWO = 100.0;
   return std::round(x * TEN_TO_THE_TWO) / TEN_TO_THE_TWO;
 }
 
@@ -67,14 +67,14 @@ auto GetCircularLinePoints(const uint32_t numPoints,
 {
   Expects(numPoints > 1);
 
-  std::vector<LinePoint> linePoint(numPoints);
+  auto linePoint = std::vector<LinePoint>(numPoints);
 
-  const double xCentre = 0.5 * static_cast<double>(width);
-  const double yCentre = 0.5 * static_cast<double>(height);
+  const auto xCentre = 0.5 * static_cast<double>(width);
+  const auto yCentre = 0.5 * static_cast<double>(height);
 
-  const double angleStep = static_cast<double>(TWO_PI) / static_cast<double>(numPoints - 1);
-  double angle = 0.0;
-  for (size_t i = 0; i < numPoints; ++i)
+  const auto angleStep = static_cast<double>(TWO_PI) / static_cast<double>(numPoints - 1);
+  auto angle = 0.0;
+  for (auto i = 0U; i < numPoints; ++i)
   {
     linePoint[i].angle = static_cast<float>(RoundToTwoDecimals(angle));
     linePoint[i].point.x = static_cast<float>(

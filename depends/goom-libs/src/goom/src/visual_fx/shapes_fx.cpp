@@ -143,12 +143,11 @@ ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
 
 auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>
 {
-  const std::array<Point2dInt, NUM_SHAPES> initialShapeZoomMidpoints =
-      GetShapeZoomMidpoints(m_screenMidPoint);
+  const auto initialShapeZoomMidpoints = GetShapeZoomMidpoints(m_screenMidPoint);
 
-  static constexpr int32_t SHAPE0_MIN_DOT_RADIUS = 10;
-  static constexpr int32_t SHAPE0_MAX_DOT_RADIUS = 20;
-  static constexpr uint32_t SHAPE0_MAX_NUM_PATHS = 6;
+  static constexpr auto SHAPE0_MIN_DOT_RADIUS = 10;
+  static constexpr auto SHAPE0_MAX_DOT_RADIUS = 20;
+  static constexpr auto SHAPE0_MAX_NUM_PATHS = 6U;
 
   return {
       {
@@ -189,7 +188,7 @@ inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
   Expects(weightedColorMaps.lowColorMaps != nullptr);
   Expects(weightedColorMaps.extraColorMaps != nullptr);
 
-  const uint32_t shapeNum = weightedColorMaps.id;
+  const auto shapeNum = weightedColorMaps.id;
   m_shapes.at(shapeNum).SetWeightedMainColorMaps(weightedColorMaps.mainColorMaps);
   m_shapes.at(shapeNum).SetWeightedLowColorMaps(weightedColorMaps.lowColorMaps);
   m_shapes.at(shapeNum).SetWeightedInnerColorMaps(weightedColorMaps.extraColorMaps);
@@ -197,23 +196,23 @@ inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
 {
-  if (static constexpr float PROB_UPDATE_NUM_INCREMENTS = 0.1F;
+  if (static constexpr auto PROB_UPDATE_NUM_INCREMENTS = 0.1F;
       m_goomRand.ProbabilityOf(PROB_UPDATE_NUM_INCREMENTS))
   {
     m_numIncrementsPerUpdate =
         m_goomRand.GetRandInRange(MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
   }
 
-  static constexpr float PROB_VARY_DOT_RADIUS = 0.1F;
-  const bool varyDotRadius = m_goomRand.ProbabilityOf(PROB_VARY_DOT_RADIUS);
+  static constexpr auto PROB_VARY_DOT_RADIUS = 0.1F;
+  const auto varyDotRadius = m_goomRand.ProbabilityOf(PROB_VARY_DOT_RADIUS);
   std::for_each(begin(m_shapes), end(m_shapes),
                 [&varyDotRadius](Shape& shape) { shape.SetVaryDotRadius(varyDotRadius); });
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> void
 {
-  const uint32_t newMinNumShapePathSteps = m_numIncrementsPerUpdate * MIN_NUM_SHAPE_PATH_STEPS;
-  const uint32_t newMaxNumShapePathSteps = m_numIncrementsPerUpdate * MAX_NUM_SHAPE_PATH_STEPS;
+  const auto newMinNumShapePathSteps = m_numIncrementsPerUpdate * MIN_NUM_SHAPE_PATH_STEPS;
+  const auto newMaxNumShapePathSteps = m_numIncrementsPerUpdate * MAX_NUM_SHAPE_PATH_STEPS;
   std::for_each(
       begin(m_shapes), end(m_shapes),
       [&newMinNumShapePathSteps, &newMaxNumShapePathSteps](Shape& shape)
@@ -222,11 +221,10 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> 
 
 inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
-  const Point2dInt adjustedZoomMidpoint = GetAdjustedZoomMidpoint(zoomMidpoint);
-  const std::array<Point2dInt, NUM_SHAPES> shapeZoomMidpoints =
-      GetShapeZoomMidpoints(adjustedZoomMidpoint);
+  const auto adjustedZoomMidpoint = GetAdjustedZoomMidpoint(zoomMidpoint);
+  const auto shapeZoomMidpoints = GetShapeZoomMidpoints(adjustedZoomMidpoint);
 
-  for (size_t i = 0; i < NUM_SHAPES; ++i)
+  for (auto i = 0U; i < NUM_SHAPES; ++i)
   {
     m_shapes.at(i).SetZoomMidpoint(shapeZoomMidpoints.at(i));
   }
@@ -239,8 +237,8 @@ auto ShapesFx::ShapesFxImpl::GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpo
 {
   const auto xMax = static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - 1);
   const auto yMax = static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - 1);
-  const int32_t xCutoff = xMax / 5;
-  const int32_t yCutoff = yMax / 5;
+  const auto xCutoff = xMax / 5;
+  const auto yCutoff = yMax / 5;
 
   return {
       std::clamp(zoomMidpoint.x, xCutoff, xMax - xCutoff),
@@ -262,16 +260,16 @@ auto ShapesFx::ShapesFxImpl::GetShapeZoomMidpoints(const Point2dInt& zoomMidpoin
 auto ShapesFx::ShapesFxImpl::GetRadialZoomMidpoints() const noexcept
     -> std::array<Point2dInt, NUM_SHAPES>
 {
-  std::array<Point2dInt, NUM_SHAPES> shapeZoomMidpoints{};
+  auto shapeZoomMidpoints = std::array<Point2dInt, NUM_SHAPES>{};
 
   shapeZoomMidpoints.at(0) = m_screenMidPoint;
 
   const auto radius = static_cast<float>(m_screenMidPoint.y) / 3.0F;
-  TValue angleStep{TValue::StepType::SINGLE_CYCLE, NUM_SHAPES - 1};
+  auto angleStep = TValue{TValue::StepType::SINGLE_CYCLE, NUM_SHAPES - 1};
 
-  for (size_t i = 1; i < NUM_SHAPES; ++i)
+  for (auto i = 1U; i < NUM_SHAPES; ++i)
   {
-    const float angle = STD20::lerp(0.0F, TWO_PI, angleStep());
+    const auto angle = STD20::lerp(0.0F, TWO_PI, angleStep());
     const Vec2dFlt radialOffset{radius * std::cos(angle), radius * std::sin(angle)};
 
     shapeZoomMidpoints.at(i) = m_screenMidPoint + radialOffset.ToInt();
@@ -285,15 +283,15 @@ auto ShapesFx::ShapesFxImpl::GetRadialZoomMidpoints() const noexcept
 auto ShapesFx::ShapesFxImpl::GetRandomZoomMidpoints(const Point2dInt& zoomMidpoint) const noexcept
     -> std::array<Point2dInt, NUM_SHAPES>
 {
-  std::array<Point2dInt, NUM_SHAPES> shapeZoomMidpoints{};
+  auto shapeZoomMidpoints = std::array<Point2dInt, NUM_SHAPES>{};
 
   shapeZoomMidpoints.at(0) = zoomMidpoint;
 
-  static constexpr int32_t MARGIN = 20;
-  const int32_t width = static_cast<int32_t>(m_goomInfo.GetScreenInfo().width) - MARGIN;
-  const int32_t height = static_cast<int32_t>(m_goomInfo.GetScreenInfo().height) - MARGIN;
+  static constexpr auto MARGIN = 20;
+  const auto width = static_cast<int32_t>(m_goomInfo.GetScreenInfo().width) - MARGIN;
+  const auto height = static_cast<int32_t>(m_goomInfo.GetScreenInfo().height) - MARGIN;
 
-  for (size_t i = 1; i < NUM_SHAPES; ++i)
+  for (auto i = 1U; i < NUM_SHAPES; ++i)
   {
     shapeZoomMidpoints.at(i) = {m_goomRand.GetRandInRange(MARGIN, width),
                                 m_goomRand.GetRandInRange(MARGIN, height)};
@@ -337,9 +335,9 @@ inline auto ShapesFx::ShapesFxImpl::SetShapeSpeeds() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapes() noexcept -> void
 {
-  const size_t numIncrements = GetNextNumIncrements();
+  const auto numIncrements = GetNextNumIncrements();
 
-  for (size_t i = 0; i < numIncrements; ++i)
+  for (auto i = 0U; i < numIncrements; ++i)
   {
     std::for_each(begin(m_shapes), end(m_shapes), [this](Shape& shape) { UpdateShape(shape); });
   }
@@ -347,8 +345,8 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapes() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::GetNextNumIncrements() const noexcept -> size_t
 {
-  static constexpr float T_CUTOFF = 0.75F;
-  float tDistanceFromBoundary =
+  static constexpr auto T_CUTOFF = 0.75F;
+  auto tDistanceFromBoundary =
       m_shapes.at(0).GetShapePart(0).GetFirstShapePathTDistanceFromClosestBoundary();
 
   if (tDistanceFromBoundary > T_CUTOFF)

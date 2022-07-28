@@ -279,7 +279,7 @@ inline auto ConditionalWeights<E>::GetRandomWeighted(const E& given) const noexc
     return m_unconditionalWeights.GetRandomWeighted();
   }
 
-  const Weights<E>& weights = iter->second;
+  const auto& weights = iter->second;
   return weights.GetRandomWeighted();
 }
 
@@ -289,11 +289,11 @@ auto ConditionalWeights<E>::GetConditionalWeightMap(
     const typename Weights<E>::EventWeightPairs& eventWeightPairs,
     const EventWeightMultiplierPairs& weightMultiplierPairs) noexcept -> std::map<E, Weights<E>>
 {
-  std::map<E, Weights<E>> conditionalWeights{};
+  auto conditionalWeights = std::map<E, Weights<E>>{};
   for (const auto& weightMultiplierPair : weightMultiplierPairs)
   {
-    const E& given = weightMultiplierPair.first;
-    const std::map<E, float>& multiplierPairs = weightMultiplierPair.second;
+    const auto& given = weightMultiplierPair.first;
+    const auto& multiplierPairs = weightMultiplierPair.second;
 
     typename Weights<E>::EventWeightPairs newEventWeightPairs = eventWeightPairs;
     for (auto& newEventWeightPair : newEventWeightPairs)

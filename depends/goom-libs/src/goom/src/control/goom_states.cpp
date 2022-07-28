@@ -22,7 +22,7 @@ using UTILS::NUM;
 // clang-format off
 // TODO - When we get to use C++20 we can simplify things with
 //        constexpr std::map.
-static const std::map<GoomDrawables, BuffIntensityRange> DEFAULT_BUFF_INTENSITY_RANGES{
+static const auto DEFAULT_BUFF_INTENSITY_RANGES = std::map<GoomDrawables, BuffIntensityRange>{
     {GoomDrawables::CIRCLES,   {0.50F, 0.80F}},
     {GoomDrawables::DOTS,      {0.30F, 0.50F}},
     {GoomDrawables::IFS,       {0.40F, 0.70F}},
@@ -34,7 +34,7 @@ static const std::map<GoomDrawables, BuffIntensityRange> DEFAULT_BUFF_INTENSITY_
     {GoomDrawables::TUBES,     {0.70F, 0.80F}},
 };
 
-static const std::map<GoomDrawables, bool> STATE_MULTI_THREADED{
+static const auto STATE_MULTI_THREADED = std::map<GoomDrawables, bool>{
   {GoomDrawables::CIRCLES,   false},
   {GoomDrawables::DOTS,      false},
   {GoomDrawables::IFS,       false},
@@ -46,7 +46,7 @@ static const std::map<GoomDrawables, bool> STATE_MULTI_THREADED{
   {GoomDrawables::TUBES,     false},
 };
 
-static const std::map<GoomStates, std::set<GoomDrawables>> STATE_DRAWABLES{
+static const auto STATE_DRAWABLES = std::map<GoomStates, std::set<GoomDrawables>>{
     {GoomStates::CIRCLES_ONLY,                {GoomDrawables::CIRCLES}},
     {GoomStates::CIRCLES_IFS,                 {GoomDrawables::CIRCLES, GoomDrawables::IFS}},
     {GoomStates::CIRCLES_IMAGE,               {GoomDrawables::CIRCLES, GoomDrawables::IMAGE}},
@@ -115,7 +115,7 @@ static const std::map<GoomStates, std::set<GoomDrawables>> STATE_DRAWABLES{
     {GoomStates::TUBES_ONLY,                  {GoomDrawables::TUBES}},
 };
 
-static const std::map<GoomStates, std::string_view> STATE_NAMES{
+static const auto STATE_NAMES = std::map<GoomStates, std::string_view>{
     {GoomStates::CIRCLES_ONLY,                "Circles Only"},
     {GoomStates::CIRCLES_IFS,                 "Circles and IFS"},
     {GoomStates::CIRCLES_IMAGE,               "Circles and Image"},
@@ -180,9 +180,9 @@ auto GoomStateInfo::GetStateInfoArray() noexcept -> StateInfoArray
   Expects(STATE_DRAWABLES.size() == NUM<GoomStates>);
   Expects(STATE_NAMES.size() == NUM<GoomStates>);
 
-  StateInfoArray statesArray{};
+  auto statesArray = StateInfoArray{};
 
-  for (size_t i = 0; i < NUM<GoomStates>; ++i)
+  for (auto i = 0U; i < NUM<GoomStates>; ++i)
   {
     const auto goomState = static_cast<GoomStates>(i);
     statesArray.at(i) = {STATE_NAMES.at(goomState), GetDrawablesInfo(goomState)};
@@ -193,7 +193,7 @@ auto GoomStateInfo::GetStateInfoArray() noexcept -> StateInfoArray
 
 auto GoomStateInfo::GetDrawablesInfo(const GoomStates goomState) -> std::vector<DrawableInfo>
 {
-  std::vector<DrawableInfo> drawablesInfo{};
+  auto drawablesInfo = std::vector<DrawableInfo>{};
 
   for (const auto& drawable : STATE_DRAWABLES.at(goomState))
   {
@@ -205,7 +205,7 @@ auto GoomStateInfo::GetDrawablesInfo(const GoomStates goomState) -> std::vector<
 
 auto GoomStateInfo::IsMultiThreaded(const GoomStates goomState) -> bool
 {
-  const std::set<GoomDrawables>& goomDrawables = STATE_DRAWABLES.at(goomState);
+  const auto& goomDrawables = STATE_DRAWABLES.at(goomState);
 
   for (const auto& goomDrawable : goomDrawables)
   {

@@ -61,7 +61,7 @@ inline auto DistanceField::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeff
                                                 [[maybe_unused]] const float sqDistFromZero,
                                                 const NormalizedCoords& coords) const -> Point2dFlt
 {
-  const float sqDistFromClosestPoint = GetClosestDistancePoint(coords).sqDistanceFromCoords;
+  const auto sqDistFromClosestPoint = GetClosestDistancePoint(coords).sqDistanceFromCoords;
 
   if (m_params.mode0)
   {

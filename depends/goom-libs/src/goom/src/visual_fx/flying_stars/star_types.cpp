@@ -31,7 +31,7 @@ IStarType::IStarType(const PluginInfo& goomInfo, const IGoomRand& goomRand) noex
 
 auto IStarType::UpdateWindAndGravity() noexcept -> void
 {
-  if (constexpr float PROB_NEW_WIND_AND_GRAVITY = 1.0F / 10.0F;
+  if (static constexpr auto PROB_NEW_WIND_AND_GRAVITY = 0.10F;
       not m_goomRand.ProbabilityOf(PROB_NEW_WIND_AND_GRAVITY))
   {
     return;
@@ -90,7 +90,7 @@ auto StarTypesContainer::SetWeightedLowColorMaps(
 
 auto StarTypesContainer::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
-  std::vector<std::string> colorMapsNames{};
+  auto colorMapsNames = std::vector<std::string>{};
 
   for (const auto& starType : m_starTypesList)
   {
@@ -114,33 +114,33 @@ auto FireworksStarType::GetRandomizedSetupParams(const float defaultPathLength) 
 {
   SetupParams setupParams;
 
-  const int32_t rSq = Sq(GetHalfHeight() / 2);
+  const auto rSq = Sq(GetHalfHeight() / 2);
   while (true)
   {
     setupParams.startPos = {
         static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetScreenInfo().width)),
         static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetScreenInfo().height)),
     };
-    const int32_t sqDist = SqDistance(setupParams.startPos, GetZoomMidpoint());
+    const auto sqDist = SqDistance(setupParams.startPos, GetZoomMidpoint());
     if (sqDist < rSq)
     {
       break;
     }
   }
 
-  static constexpr float LENGTH_FACTOR = 1.0F;
+  static constexpr auto LENGTH_FACTOR = 1.0F;
   setupParams.nominalPathLength = LENGTH_FACTOR * defaultPathLength;
   setupParams.vage = Star::MAX_INITIAL_AGE * (1.0F - GetGoomInfo().GetSoundEvents().GetGoomPower());
 
-  static constexpr float INITIAL_WIND_FACTOR = 0.1F;
+  static constexpr auto INITIAL_WIND_FACTOR = 0.1F;
   setupParams.sideWind =
       INITIAL_WIND_FACTOR * GetGoomRand().GetRandInRange(GetMinSideWind(), GetMaxSideWind());
 
-  static constexpr float INITIAL_GRAVITY_FACTOR = 0.4F;
+  static constexpr auto INITIAL_GRAVITY_FACTOR = 0.4F;
   setupParams.gravity =
       INITIAL_GRAVITY_FACTOR * GetGoomRand().GetRandInRange(GetMinGravity(), GetMaxGravity());
 
-  static constexpr float MAX_STAR_AGE_FACTOR = 2.0F / 3.0F;
+  static constexpr auto MAX_STAR_AGE_FACTOR = 2.0F / 3.0F;
   setupParams.maxStarAge =
       MAX_STAR_AGE_FACTOR * GetGoomRand().GetRandInRange(MIN_MAX_STAR_AGE, MAX_MAX_STAR_AGE);
 
@@ -150,8 +150,8 @@ auto FireworksStarType::GetRandomizedSetupParams(const float defaultPathLength) 
 auto FireworksStarType::GetRandomizedStarPathAngle(
     [[maybe_unused]] const Point2dInt& startPos) const noexcept -> float
 {
-  static constexpr float MIN_FIREWORKS_ANGLE = 0.0F;
-  static constexpr float MAX_FIREWORKS_ANGLE = TWO_PI;
+  static constexpr auto MIN_FIREWORKS_ANGLE = 0.0F;
+  static constexpr auto MAX_FIREWORKS_ANGLE = TWO_PI;
 
   return GetGoomRand().GetRandInRange(MIN_FIREWORKS_ANGLE, MAX_FIREWORKS_ANGLE);
 }
@@ -165,21 +165,21 @@ auto RainStarType::GetRandomizedSetupParams(const float defaultPathLength) const
   setupParams.startPos.x = GetGoomRand().GetRandInRange(
       x0, static_cast<int32_t>(GetGoomInfo().GetScreenInfo().width) - x0);
 
-  static constexpr int32_t MIN_Y = 3;
-  static constexpr int32_t MAX_Y = 63;
+  static constexpr auto MIN_Y = 3;
+  static constexpr auto MAX_Y = 63;
   setupParams.startPos.y = -GetGoomRand().GetRandInRange(MIN_Y, MAX_Y + 1);
 
-  static constexpr float LENGTH_FACTOR = 1.5F;
+  static constexpr auto LENGTH_FACTOR = 1.5F;
   setupParams.nominalPathLength = LENGTH_FACTOR * defaultPathLength;
 
-  static constexpr float INITIAL_VAGE = 0.002F;
+  static constexpr auto INITIAL_VAGE = 0.002F;
   setupParams.vage = INITIAL_VAGE;
 
-  static constexpr float INITIAL_WIND_FACTOR = 1.0F;
+  static constexpr auto INITIAL_WIND_FACTOR = 1.0F;
   setupParams.sideWind =
       INITIAL_WIND_FACTOR * GetGoomRand().GetRandInRange(GetMinSideWind(), GetMaxSideWind());
 
-  static constexpr float INITIAL_GRAVITY_FACTOR = 0.4F;
+  static constexpr auto INITIAL_GRAVITY_FACTOR = 0.4F;
   setupParams.gravity =
       INITIAL_GRAVITY_FACTOR * GetGoomRand().GetRandInRange(GetMinGravity(), GetMaxGravity());
 
@@ -190,13 +190,13 @@ auto RainStarType::GetRandomizedSetupParams(const float defaultPathLength) const
 
 auto RainStarType::GetRandomizedStarPathAngle(const Point2dInt& startPos) const noexcept -> float
 {
-  static constexpr float MIN_RAIN_ANGLE = 0.1F;
-  static constexpr float MAX_MIN_RAIN_ANGLE = THIRD_PI;
-  static constexpr float MAX_RAIN_ANGLE = pi - 0.1F;
+  static constexpr auto MIN_RAIN_ANGLE = 0.1F;
+  static constexpr auto MAX_MIN_RAIN_ANGLE = THIRD_PI;
+  static constexpr auto MAX_RAIN_ANGLE = pi - 0.1F;
 
-  const float xFactor = static_cast<float>(startPos.x) / GetXMax();
-  const float minAngle = STD20::lerp(MIN_RAIN_ANGLE, MAX_MIN_RAIN_ANGLE - 0.1F, 1.0F - xFactor);
-  const float maxAngle = STD20::lerp(MAX_MIN_RAIN_ANGLE + 0.1F, MAX_RAIN_ANGLE, xFactor);
+  const auto xFactor = static_cast<float>(startPos.x) / GetXMax();
+  const auto minAngle = STD20::lerp(MIN_RAIN_ANGLE, MAX_MIN_RAIN_ANGLE - 0.1F, 1.0F - xFactor);
+  const auto maxAngle = STD20::lerp(MAX_MIN_RAIN_ANGLE + 0.1F, MAX_RAIN_ANGLE, xFactor);
 
   return GetGoomRand().GetRandInRange(minAngle, maxAngle);
 }
@@ -206,24 +206,24 @@ auto FountainStarType::GetRandomizedSetupParams(const float defaultPathLength) c
 {
   SetupParams setupParams;
 
-  const int32_t x0 = GetHalfWidth() / 5;
+  const auto x0 = GetHalfWidth() / 5;
   setupParams.startPos.x = GetGoomRand().GetRandInRange(GetHalfWidth() - x0, GetHalfWidth() + x0);
 
-  static constexpr uint32_t MIN_Y = 3;
-  static constexpr uint32_t MAX_Y = 63;
+  static constexpr auto MIN_Y = 3U;
+  static constexpr auto MAX_Y = 63U;
   setupParams.startPos.y = static_cast<int32_t>(GetGoomInfo().GetScreenInfo().height +
                                                 GetGoomRand().GetRandInRange(MIN_Y, MAX_Y + 1));
 
   setupParams.nominalPathLength = 1.0F + defaultPathLength;
 
-  static constexpr float INITIAL_VAGE = 0.001F;
+  static constexpr auto INITIAL_VAGE = 0.001F;
   setupParams.vage = INITIAL_VAGE;
 
-  static constexpr float INITIAL_WIND_FACTOR = 1.0F;
+  static constexpr auto INITIAL_WIND_FACTOR = 1.0F;
   setupParams.sideWind =
       INITIAL_WIND_FACTOR * GetGoomRand().GetRandInRange(GetMinSideWind(), GetMaxSideWind());
 
-  static constexpr float INITIAL_GRAVITY_FACTOR = 1.0F;
+  static constexpr auto INITIAL_GRAVITY_FACTOR = 1.0F;
   setupParams.gravity =
       INITIAL_GRAVITY_FACTOR * GetGoomRand().GetRandInRange(GetMinGravity(), GetMaxGravity());
 
@@ -235,14 +235,14 @@ auto FountainStarType::GetRandomizedSetupParams(const float defaultPathLength) c
 auto FountainStarType::GetRandomizedStarPathAngle(const Point2dInt& startPos) const noexcept
     -> float
 {
-  static constexpr float MIN_FOUNTAIN_ANGLE = pi + 0.1F;
-  static constexpr float MAX_MIN_FOUNTAIN_ANGLE = pi + THIRD_PI;
-  static constexpr float MAX_FOUNTAIN_ANGLE = TWO_PI - 0.1F;
+  static constexpr auto MIN_FOUNTAIN_ANGLE = pi + 0.1F;
+  static constexpr auto MAX_MIN_FOUNTAIN_ANGLE = pi + THIRD_PI;
+  static constexpr auto MAX_FOUNTAIN_ANGLE = TWO_PI - 0.1F;
 
-  const float xFactor = static_cast<float>(startPos.x) / GetXMax();
-  const float minAngle =
+  const auto xFactor = static_cast<float>(startPos.x) / GetXMax();
+  const auto minAngle =
       STD20::lerp(MIN_FOUNTAIN_ANGLE, MAX_MIN_FOUNTAIN_ANGLE - 0.1F, 1.0F - xFactor);
-  const float maxAngle = STD20::lerp(MAX_MIN_FOUNTAIN_ANGLE + 0.1F, MAX_FOUNTAIN_ANGLE, xFactor);
+  const auto maxAngle = STD20::lerp(MAX_MIN_FOUNTAIN_ANGLE + 0.1F, MAX_FOUNTAIN_ANGLE, xFactor);
 
   return GetGoomRand().GetRandInRange(minAngle, maxAngle);
 }

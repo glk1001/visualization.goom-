@@ -41,7 +41,7 @@ auto RandomColorMapsManager::UpdateColorMapInfo(const ColorMapId id,
 
 auto RandomColorMapsManager::RandomizeColorMaps(const size_t id) noexcept -> void
 {
-  const ColorMapInfo& info = m_infoList.at(id);
+  const auto& info = m_infoList.at(id);
   m_colorMapPtrs.at(id) = info.colorMaps->GetRandomColorMapPtr(info.colorMapTypes);
 }
 

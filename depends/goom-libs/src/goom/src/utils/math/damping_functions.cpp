@@ -17,7 +17,7 @@ ExpDampingFunction::ExpDampingFunction(const double amplitude,
                                        const double yAtXMax)
   : m_amplitude{amplitude}
 {
-  if (constexpr double MIN_AMP = 0.00001; std::fabs(m_amplitude) < MIN_AMP)
+  if (constexpr auto MIN_AMP = 0.00001; std::fabs(m_amplitude) < MIN_AMP)
   {
     throw std::runtime_error(
         std20::format("abs(amplitude) should be >= {}, not {}.", MIN_AMP, m_amplitude));
@@ -32,10 +32,10 @@ ExpDampingFunction::ExpDampingFunction(const double amplitude,
     throw std::runtime_error(
         std20::format("yAtXMax should be > {} = amplitude, not {}.", m_amplitude, yAtXMax));
   }
-  const double y0 = (yAtStartToRise / m_amplitude) - 1.0;
-  const double y1 = (yAtXMax / m_amplitude) - 1.0;
-  const double logY0 = std::log(y0);
-  const double logY1 = std::log(y1);
+  const auto y0 = (yAtStartToRise / m_amplitude) - 1.0;
+  const auto y1 = (yAtXMax / m_amplitude) - 1.0;
+  const auto logY0 = std::log(y0);
+  const auto logY1 = std::log(y1);
   m_b = ((xToStartRise * logY1) - (xMax * logY0)) / (logY1 - logY0);
   m_k = logY1 / (xMax - m_b);
 }

@@ -165,7 +165,8 @@ inline auto Shape::GetFirstShapePathPositionT() const noexcept -> float
 
 inline auto Shape::SetShapeNumSteps() noexcept -> void
 {
-  if (constexpr float PROB_FIXED_NUM_STEPS = 0.95F; m_goomRand.ProbabilityOf(PROB_FIXED_NUM_STEPS))
+  if (static constexpr auto PROB_FIXED_NUM_STEPS = 0.95F;
+      m_goomRand.ProbabilityOf(PROB_FIXED_NUM_STEPS))
   {
     SetFixedShapeNumSteps();
   }

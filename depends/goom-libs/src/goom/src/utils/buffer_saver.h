@@ -123,7 +123,7 @@ inline auto BufferSaver<T, HeaderT>::HaveFinishedBufferRange() const -> bool
 template<class T, class HeaderT>
 void BufferSaver<T, HeaderT>::Write(const BufferView<T>& buffer, const bool binaryFormat)
 {
-  HeaderT ignore{};
+  auto ignore = HeaderT{};
   Write(ignore, buffer, binaryFormat);
 }
 
@@ -137,7 +137,7 @@ void BufferSaver<T, HeaderT>::Write(const HeaderT& header,
     return;
   }
 
-  const std::string filename = GetCurrentFilename();
+  const auto filename = GetCurrentFilename();
   if (binaryFormat)
   {
     WriteBinary(filename, m_currentBuffNum, header, buffer);
@@ -157,7 +157,7 @@ auto BufferSaver<T, HeaderT>::PeekHeader(HeaderT& header, bool binaryFormat) -> 
     return false;
   }
 
-  const std::string filename = GetCurrentFilename();
+  const auto filename = GetCurrentFilename();
   bool done;
   if (binaryFormat)
   {
@@ -177,7 +177,7 @@ void BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
                                           const HeaderT& header,
                                           const BufferView<T>& buffer)
 {
-  std::ofstream file(filename, std::ios::out | std::ios::binary);
+  auto file = std::ofstream{filename, std::ios::out | std::ios::binary};
   if (not file.good())
   {
     throw std::runtime_error(std20::format("Could not open file for writing: '{}'.", filename));
@@ -196,7 +196,7 @@ void BufferSaver<T, HeaderT>::WriteBinary(std::ostream& file,
     file.write(reinterpret_cast<const char*>(&header), sizeof(HeaderT));
   }
 
-  const size_t bufferLen = buffer.GetBufferLen();
+  const auto bufferLen = buffer.GetBufferLen();
   file.write(reinterpret_cast<const char*>(&tag), sizeof(tag));
   file.write(reinterpret_cast<const char*>(&bufferLen), sizeof(bufferLen));
   file.write(reinterpret_cast<const char*>(buffer.Data()),
@@ -206,7 +206,7 @@ void BufferSaver<T, HeaderT>::WriteBinary(std::ostream& file,
 template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::PeekHeaderBinary(const std::string& filename, HeaderT& header) -> bool
 {
-  std::ifstream file(filename, std::ios::in | std::ios::binary);
+  auto file = std::ifstream{filename, std::ios::in | std::ios::binary};
   if (not file.good())
   {
     return false;
@@ -231,7 +231,7 @@ template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::PeekHeaderFormatted(const std::string& filename,
                                                   [[maybe_unused]] HeaderT& header) -> bool
 {
-  std::ifstream file(filename, std::ios::in);
+  [[maybe_unused]] auto file = std::ifstream{filename, std::ios::in};
   return false;
 }
 
@@ -241,7 +241,7 @@ void BufferSaver<T, HeaderT>::WriteFormatted(const std::string& filename,
                                              const HeaderT& header,
                                              const BufferView<T>& buffer)
 {
-  std::ofstream file(filename, std::ios::out);
+  auto file = std::ofstream{filename, std::ios::out};
   WriteFormatted(file, tag, header, buffer);
 }
 
@@ -259,7 +259,7 @@ void BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
   file << "tag: " << tag << "\n";
   file << "bufferLen: " << buffer.GetBufferLen() << "\n";
   file << "bufferSize: " << (buffer.GetBufferLen() * sizeof(T)) << "\n";
-  for (size_t i = 0; i < buffer.GetBufferLen(); ++i)
+  for (auto i = 0U; i < buffer.GetBufferLen(); ++i)
   {
     //    file << std20::format("{:#018x}", buffer[i]);
     file << std20::format("{}", buffer[i]);

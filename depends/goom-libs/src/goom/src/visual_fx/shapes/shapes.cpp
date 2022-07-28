@@ -37,12 +37,12 @@ Shape::Shape(IGoomDraw& draw,
 
 auto Shape::GetInitialShapeParts(const Params& params) noexcept -> std::vector<ShapePart>
 {
-  std::vector<ShapePart> shapeParts{};
+  auto shapeParts = std::vector<ShapePart>{};
 
-  for (uint32_t i = 0; i < NUM_SHAPE_PARTS; ++i)
+  for (auto i = 0U; i < NUM_SHAPE_PARTS; ++i)
   {
-    static constexpr float T_MIN_MAX_LERP = 0.5F;
-    const ShapePart::Params shapePartParams{
+    static constexpr auto T_MIN_MAX_LERP = 0.5F;
+    const auto shapePartParams = ShapePart::Params{
         i,
         NUM_SHAPE_PARTS,
         params.minRadiusFraction,
@@ -95,8 +95,8 @@ auto Shape::AllColorMapsValid() const noexcept -> bool
 {
   for (const auto& shapePart : m_shapeParts)
   {
-    const size_t numShapePaths = shapePart.GetNumShapePaths();
-    for (size_t shapePathNum = 0; shapePathNum < numShapePaths; ++shapePathNum)
+    const auto numShapePaths = shapePart.GetNumShapePaths();
+    for (auto shapePathNum = 0U; shapePathNum < numShapePaths; ++shapePathNum)
     {
       assert(shapePart.GetShapePath(shapePathNum).GetColorInfo().mainColorMapId.IsSet());
       assert(shapePart.GetShapePath(shapePathNum).GetColorInfo().lowColorMapId.IsSet());
@@ -108,7 +108,7 @@ auto Shape::AllColorMapsValid() const noexcept -> bool
 
 auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
-  if (static constexpr float PROB_ACCEPT_NEW_MIDPOINT = 0.8F;
+  if (static constexpr auto PROB_ACCEPT_NEW_MIDPOINT = 0.8F;
       not m_goomRand.ProbabilityOf(PROB_ACCEPT_NEW_MIDPOINT))
   {
     return;
@@ -141,7 +141,7 @@ auto Shape::Start() noexcept -> void
 
 auto Shape::Draw() noexcept -> void
 {
-  const ShapePart::DrawParams shapePartParams{
+  const auto shapePartParams = ShapePart::DrawParams{
       GetBrightnessAttenuation(),
       FirstShapePathAtMeetingPoint(),
       m_varyDotRadius,
@@ -171,11 +171,11 @@ inline auto Shape::GetBrightnessAttenuation() const noexcept -> float
     return 1.0F;
   }
 
-  const float distanceFromOne =
+  const auto distanceFromOne =
       1.0F - GetShapePart(0).GetFirstShapePathTDistanceFromClosestBoundary();
 
-  const float minBrightness = 2.0F / static_cast<float>(GetTotalNumShapePaths());
-  static constexpr float EXPONENT = 25.0F;
+  const auto minBrightness = 2.0F / static_cast<float>(GetTotalNumShapePaths());
+  static constexpr auto EXPONENT = 25.0F;
   return STD20::lerp(1.0F, minBrightness, std::pow(distanceFromOne, EXPONENT));
 }
 
@@ -190,11 +190,11 @@ auto Shape::Update() noexcept -> void
 
 auto Shape::DoRandomChanges() noexcept -> void
 {
-  static constexpr float PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION = 0.5F;
-  const bool useEvenPartNumsForDirection =
+  static constexpr auto PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION = 0.5F;
+  const auto useEvenPartNumsForDirection =
       m_goomRand.ProbabilityOf(PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION);
 
-  if (static constexpr float PROB_CHANGE_CHROMA_STATE = 0.01F;
+  if (static constexpr auto PROB_CHANGE_CHROMA_STATE = 0.01F;
       m_goomRand.ProbabilityOf(PROB_CHANGE_CHROMA_STATE))
   {
     m_chromaChangeOnOffTimer.TryToChangeState();
@@ -211,7 +211,7 @@ auto Shape::DoRandomChanges() noexcept -> void
 auto Shape::SetFixedShapeNumSteps() noexcept -> void
 {
   m_fixedTMinMaxLerp = ShapePart::GetNewRandomMinMaxLerpT(m_goomRand, m_fixedTMinMaxLerp);
-  const float positionT = GetFirstShapePathPositionT();
+  const auto positionT = GetFirstShapePathPositionT();
 
   std::for_each(begin(m_shapeParts), end(m_shapeParts),
                 [this, &positionT](ShapePart& shapePart)
@@ -229,13 +229,13 @@ auto Shape::SetRandomShapeNumSteps() noexcept -> void
 
 auto Shape::GetTotalNumShapePaths() const noexcept -> uint32_t
 {
-  uint32_t total = 0;
+  auto total = 0U;
 
-  const size_t numShapeParts = GetNumShapeParts();
-  for (size_t i = 0; i < numShapeParts; ++i)
+  const auto numShapeParts = GetNumShapeParts();
+  for (auto i = 0U; i < numShapeParts; ++i)
   {
-    const size_t numShapePaths = m_shapeParts.at(i).GetNumShapePaths();
-    for (size_t j = 0; j < numShapePaths; ++j)
+    const auto numShapePaths = m_shapeParts.at(i).GetNumShapePaths();
+    for (auto j = 0U; j < numShapePaths; ++j)
     {
       ++total;
     }
@@ -253,7 +253,7 @@ inline auto Shape::StartChromaChangeOnOffTimer() noexcept -> void
 
 inline auto Shape::SetIncreasedChromaFactor() noexcept -> bool
 {
-  if (static constexpr float PROB_INCREASE_CHROMA_FACTOR = 0.9F;
+  if (static constexpr auto PROB_INCREASE_CHROMA_FACTOR = 0.9F;
       not m_goomRand.ProbabilityOf(PROB_INCREASE_CHROMA_FACTOR))
   {
     LogInfo("SetIncreasedChromaFactor - return false");
@@ -268,7 +268,7 @@ inline auto Shape::SetIncreasedChromaFactor() noexcept -> bool
 
 inline auto Shape::SetDecreasedChromaFactor() noexcept -> bool
 {
-  if (static constexpr float PROB_DECREASE_CHROMA_FACTOR = 0.2F;
+  if (static constexpr auto PROB_DECREASE_CHROMA_FACTOR = 0.2F;
       not m_goomRand.ProbabilityOf(PROB_DECREASE_CHROMA_FACTOR))
   {
     LogInfo("SetDecreasedChromaFactor - return false");

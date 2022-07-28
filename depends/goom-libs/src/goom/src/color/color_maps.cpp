@@ -62,7 +62,7 @@ RotatedColorMap::RotatedColorMap(const std::shared_ptr<const IColorMap>& cm,
 
 inline auto RotatedColorMap::GetColor(const float t) const -> Pixel
 {
-  float tNew = m_tRotatePoint + t;
+  auto tNew = m_tRotatePoint + t;
   if (tNew > 1.0F)
   {
     tNew = 1.0F - (tNew - 1.0F);
@@ -101,16 +101,16 @@ TintedColorMap::TintedColorMap(const std::shared_ptr<const IColorMap>& cm,
 
 auto TintedColorMap::GetColor(const float t) const -> Pixel
 {
-  const Pixel color = GetColorMap()->GetColor(t);
-  const vivid::col8_t rgb8 = {color.R(), color.G(), color.B()};
+  const auto color = GetColorMap()->GetColor(t);
+  const auto rgb8 = vivid::col8_t{color.R(), color.G(), color.B()};
 
-  static constexpr size_t SATURATION_INDEX = 1;
-  static constexpr size_t LIGHTNESS_INDEX = 2;
-  vivid::hsv_t hsv{vivid::rgb::fromRgb8(rgb8)};
+  static constexpr auto SATURATION_INDEX = 1;
+  static constexpr auto LIGHTNESS_INDEX = 2;
+  auto hsv = vivid::hsv_t{vivid::rgb::fromRgb8(rgb8)};
   hsv[SATURATION_INDEX] = m_saturation;
   hsv[LIGHTNESS_INDEX] = m_lightness;
 
-  const vivid::col8_t newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
+  const auto newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
   return Pixel{
       {newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}
   };
@@ -314,7 +314,7 @@ inline auto ColorMaps::ColorMapsImpl::GetColorMapNames(const ColorMapGroup group
 
 inline auto ColorMaps::ColorMapsImpl::GetPreBuiltColorMaps() -> const std::vector<PrebuiltColorMap>&
 {
-  static const std::vector<PrebuiltColorMap> s_PRE_BUILT_COLOR_MAPS{MakePrebuiltColorMaps()};
+  static const auto s_PRE_BUILT_COLOR_MAPS = MakePrebuiltColorMaps();
 
   return s_PRE_BUILT_COLOR_MAPS;
 }
@@ -323,7 +323,7 @@ auto ColorMaps::ColorMapsImpl::MakePrebuiltColorMaps() -> std::vector<PrebuiltCo
 {
   static_assert(NUM<ColorMapName> == COLOR_DATA::ALL_MAPS.size(), "Invalid allMaps size.");
 
-  std::vector<PrebuiltColorMap> preBuiltColorMaps{};
+  auto preBuiltColorMaps = std::vector<PrebuiltColorMap>{};
   preBuiltColorMaps.reserve(COLOR_DATA::ALL_MAPS.size());
 
   for (const auto& map : COLOR_DATA::ALL_MAPS)
@@ -341,14 +341,14 @@ inline auto ColorMaps::ColorMapsImpl::GetNumGroups() -> uint32_t
 
 inline auto ColorMaps::ColorMapsImpl::GetAllColorMapNames() -> const std::vector<ColorMapName>&
 {
-  static const std::vector<ColorMapName> s_ALL_COLOR_MAP_NAMES{MakeAllColorMapNames()};
+  static const auto s_ALL_COLOR_MAP_NAMES = MakeAllColorMapNames();
 
   return s_ALL_COLOR_MAP_NAMES;
 }
 
 auto ColorMaps::ColorMapsImpl::MakeAllColorMapNames() -> std::vector<ColorMapName>
 {
-  std::vector<ColorMapName> allColorMapNames{};
+  auto allColorMapNames = std::vector<ColorMapName>{};
   allColorMapNames.reserve(COLOR_DATA::ALL_MAPS.size());
 
   for (const auto& map : COLOR_DATA::ALL_MAPS)
@@ -361,14 +361,14 @@ auto ColorMaps::ColorMapsImpl::MakeAllColorMapNames() -> std::vector<ColorMapNam
 
 inline auto ColorMaps::ColorMapsImpl::GetColorGroupNames() -> const ColorGroupNamesArray&
 {
-  static const ColorGroupNamesArray s_COLOR_GROUP_NAMES{MakeColorGroupNames()};
+  static const auto s_COLOR_GROUP_NAMES = MakeColorGroupNames();
 
   return s_COLOR_GROUP_NAMES;
 }
 
 auto ColorMaps::ColorMapsImpl::MakeColorGroupNames() -> ColorGroupNamesArray
 {
-  ColorGroupNamesArray groups{};
+  auto groups = ColorGroupNamesArray{};
 
   at(groups, ColorMapGroup::ALL) = &GetAllColorMapNames();
 
@@ -419,7 +419,7 @@ inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName,
 
 inline auto PrebuiltColorMap::GetColor(const float t) const -> Pixel
 {
-  const vivid::col8_t rgb8 = vivid::rgb8::fromRgb(m_vividColorMap.at(t));
+  const auto rgb8 = vivid::col8_t{vivid::rgb8::fromRgb(m_vividColorMap.at(t))};
   return Pixel{
       {rgb8.r, rgb8.g, rgb8.b, MAX_ALPHA}
   };

@@ -25,27 +25,28 @@ ShapePath::ShapePath(IGoomDraw& draw,
 
 auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
 {
-  const Point2dInt point = GetNextPoint();
+  const auto point = GetNextPoint();
 
-  const ShapePathColors shapeColors = GetCurrentShapeColors();
-  const IColorMap& innerColorMap = m_colorMapsManager.GetColorMap(m_colorInfo.innerColorMapId);
+  const auto shapeColors = GetCurrentShapeColors();
+  const auto& innerColorMap = m_colorMapsManager.GetColorMap(m_colorInfo.innerColorMapId);
 
-  TValue innerColorT{TValue::StepType::SINGLE_CYCLE,
-                     static_cast<uint32_t>(drawParams.maxRadius - 1)};
+  auto innerColorT =
+      TValue{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius - 1)};
 
-  static constexpr float MIN_BRIGHTNESS = 0.5F;
-  static constexpr float MAX_BRIGHTNESS = 4.0F;
-  TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius)};
+  static constexpr auto MIN_BRIGHTNESS = 0.5F;
+  static constexpr auto MAX_BRIGHTNESS = 4.0F;
+  auto brightnessT =
+      TValue{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius)};
 
   m_colorAdjust.SetChromaFactor(m_colorInfo.chromaFactor);
-  const int32_t innerColorCutoffRadius = GetInnerColorCutoffRadius(drawParams.maxRadius);
+  const auto innerColorCutoffRadius = GetInnerColorCutoffRadius(drawParams.maxRadius);
 
-  for (int32_t radius = drawParams.maxRadius; radius > 1; --radius)
+  for (auto radius = drawParams.maxRadius; radius > 1; --radius)
   {
-    const float brightness = drawParams.brightnessAttenuation *
-                             STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
-    const Pixel innerColor = innerColorMap.GetColor(innerColorT());
-    const MultiplePixels colors =
+    const auto brightness = drawParams.brightnessAttenuation *
+                            STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
+    const auto innerColor = innerColorMap.GetColor(innerColorT());
+    const auto colors =
         GetColors(drawParams, radius, brightness, shapeColors, innerColorCutoffRadius, innerColor);
 
     m_draw.Circle(point, radius, colors);
@@ -57,8 +58,8 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
 
 inline auto ShapePath::GetInnerColorCutoffRadius(const int32_t maxRadius) noexcept -> int32_t
 {
-  static constexpr int32_t RADIUS_FRAC = 3;
-  static constexpr int32_t MIN_CUTOFF = 5;
+  static constexpr auto RADIUS_FRAC = 3;
+  static constexpr auto MIN_CUTOFF = 5;
   return std::max(MIN_CUTOFF, maxRadius / RADIUS_FRAC);
 }
 
@@ -87,9 +88,9 @@ auto ShapePath::GetColors(const DrawParams& drawParams,
              : GetColorsWithInner(brightness, shapeColors, innerColor, drawParams.innerColorMix);
 }
 
-static constexpr float MAIN_COLOR_BRIGHTNESS_FACTOR = 0.5F;
-static constexpr float LOW_COLOR_BRIGHTNESS_FACTOR = 0.5F;
-static constexpr float LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR = 7.0F;
+static constexpr auto MAIN_COLOR_BRIGHTNESS_FACTOR = 0.5F;
+static constexpr auto LOW_COLOR_BRIGHTNESS_FACTOR = 0.5F;
+static constexpr auto LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR = 7.0F;
 
 inline auto ShapePath::GetColorsWithoutInner(const float brightness,
                                              const ShapePathColors& shapeColors) const noexcept

@@ -123,8 +123,7 @@ inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
                                                      const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  const Point2dFlt speedCoeffs =
-      GetClampedSpeedCoeffs(GetXYSpeedCoefficients(sqDistFromZero, coords));
+  const auto speedCoeffs = GetClampedSpeedCoeffs(GetXYSpeedCoefficients(sqDistFromZero, coords));
   return {speedCoeffs.x * coords.GetX(), speedCoeffs.y * coords.GetY()};
 }
 
@@ -141,7 +140,7 @@ inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero
 
 inline auto ZoomVectorEffects::GetBaseSpeedCoefficients() const -> Point2dFlt
 {
-  const float speedCoeff =
+  const auto speedCoeff =
       (1.0F + m_filterEffectsSettings->vitesse.GetRelativeSpeed()) / SPEED_COEFF_DENOMINATOR;
   return {speedCoeff, speedCoeff};
 }

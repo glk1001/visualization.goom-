@@ -214,18 +214,18 @@ inline ISimplePath::ISimplePath(std::unique_ptr<TValue> positionT) noexcept
 
 inline auto ISimplePath::GetStartPos() const noexcept -> Point2dInt
 {
-  const float currentT = GetCurrentT();
+  const auto currentT = GetCurrentT();
   m_positionT->Reset(0.0F);
-  const Point2dInt startPos = GetNextPoint();
+  const auto startPos = GetNextPoint();
   m_positionT->Reset(currentT);
   return startPos;
 }
 
 inline auto ISimplePath::GetEndPos() const noexcept -> Point2dInt
 {
-  const float currentT = GetCurrentT();
+  const auto currentT = GetCurrentT();
   m_positionT->Reset(1.0F);
-  const Point2dInt startPos = GetNextPoint();
+  const auto startPos = GetNextPoint();
   m_positionT->Reset(currentT);
   return startPos;
 }

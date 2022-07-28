@@ -41,14 +41,12 @@ auto FilterZoomVector::GetNameValueParams([[maybe_unused]] const std::string& pa
 
 auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords
 {
+  const auto sqDistFromZero = SqDistance(coords.GetX(), coords.GetY());
 
-  const float sqDistFromZero = SqDistance(coords.GetX(), coords.GetY());
-
-  const NormalizedCoords baseVelocity =
-      m_zoomVectorEffects.GetSpeedCoeffVelocity(sqDistFromZero, coords);
-  const NormalizedCoords adjustedVelocity =
+  const auto baseVelocity = m_zoomVectorEffects.GetSpeedCoeffVelocity(sqDistFromZero, coords);
+  const auto adjustedVelocity =
       GetZoomEffectsAdjustedVelocity(sqDistFromZero, coords, baseVelocity);
-  const NormalizedCoords cleanedVelocity = m_zoomVectorEffects.GetCleanedVelocity(adjustedVelocity);
+  const auto cleanedVelocity = m_zoomVectorEffects.GetCleanedVelocity(adjustedVelocity);
 
   return coords - cleanedVelocity;
 }
@@ -58,7 +56,7 @@ auto FilterZoomVector::GetZoomEffectsAdjustedVelocity(const float sqDistFromZero
                                                       const NormalizedCoords& velocity) const
     -> NormalizedCoords
 {
-  NormalizedCoords newVelocity = velocity;
+  auto newVelocity = velocity;
 
   if (m_zoomVectorEffects.IsImageVelocityActive())
   {

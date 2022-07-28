@@ -33,10 +33,10 @@ void IGoomDraw::Bitmap(const Point2dInt centre,
   const auto bitmapWidth = static_cast<int>(bitmap.GetWidth());
   const auto bitmapHeight = static_cast<int>(bitmap.GetHeight());
 
-  int x0 = centre.x - (bitmapWidth / 2);
-  int y0 = centre.y - (bitmapHeight / 2);
-  int x1 = x0 + (bitmapWidth - 1);
-  int y1 = y0 + (bitmapHeight - 1);
+  auto x0 = centre.x - (bitmapWidth / 2);
+  auto y0 = centre.y - (bitmapHeight / 2);
+  auto x1 = x0 + (bitmapWidth - 1);
+  auto y1 = y0 + (bitmapHeight - 1);
 
   if ((x0 >= static_cast<int>(GetScreenWidth())) || (y0 >= static_cast<int>(GetScreenHeight())) ||
       (x1 < 0) || (y1 < 0))
@@ -66,33 +66,33 @@ void IGoomDraw::Bitmap(const Point2dInt centre,
   const auto setDestPixelRow =
       [this, &x0, &y0, &actualBitmapWidth, &bitmap, &getColors](const size_t yBitmap)
   {
-    const size_t numColors = getColors.size();
+    const auto numColors = getColors.size();
     const int yBuff = y0 + static_cast<int>(yBitmap);
-    for (size_t xBitmap = 0; xBitmap < actualBitmapWidth; ++xBitmap)
+    for (auto xBitmap = 0U; xBitmap < actualBitmapWidth; ++xBitmap)
     {
-      const Pixel bitmapColor = bitmap(xBitmap, yBitmap);
+      const auto bitmapColor = bitmap(xBitmap, yBitmap);
       if ((0 == bitmapColor.A()) || (bitmapColor.IsBlack()))
       {
         continue;
       }
-      MultiplePixels finalColors(numColors);
-      for (size_t i = 0; i < numColors; ++i)
+      auto finalColors = MultiplePixels(numColors);
+      for (auto i = 0U; i < numColors; ++i)
       {
         finalColors[i] = getColors[i](xBitmap, yBitmap, bitmapColor);
       }
-      const int xBuff = x0 + static_cast<int>(xBitmap);
+      const auto xBuff = x0 + static_cast<int>(xBitmap);
       DrawPixels({xBuff, yBuff}, finalColors);
     }
   };
 
-  static constexpr int32_t MIN_PARALLEL_BITMAP_WIDTH = 200;
-  if (bitmapWidth >= MIN_PARALLEL_BITMAP_WIDTH)
+  if (static constexpr auto MIN_PARALLEL_BITMAP_WIDTH = 200;
+      bitmapWidth >= MIN_PARALLEL_BITMAP_WIDTH)
   {
     GetParallel().ForLoop(actualBitmapHeight, setDestPixelRow);
   }
   else
   {
-    for (size_t yBitmap = 0; yBitmap < actualBitmapHeight; ++yBitmap)
+    for (auto yBitmap = 0U; yBitmap < actualBitmapHeight; ++yBitmap)
     {
       setDestPixelRow(yBitmap);
     }

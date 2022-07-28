@@ -6,7 +6,6 @@
 #include "utils/graphics/image_bitmaps.h"
 
 #include <cmath>
-#include <cstdint>
 #include <memory>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -26,7 +25,7 @@ ImageDisplacement::~ImageDisplacement() noexcept = default;
 auto ImageDisplacement::GetDisplacementVector(const NormalizedCoords& normalizedCoords) const
     -> Point2dFlt
 {
-  const Point2dInt imagePoint = NormalizedCoordsToImagePoint(normalizedCoords);
+  const auto imagePoint = NormalizedCoordsToImagePoint(normalizedCoords);
 
   if ((imagePoint.x < 0) || (imagePoint.x > m_xMax))
   {
@@ -37,7 +36,7 @@ auto ImageDisplacement::GetDisplacementVector(const NormalizedCoords& normalized
     return {0.0F, 0.0F};
   }
 
-  const Pixel color =
+  const auto color =
       (*m_imageBuffer)(static_cast<size_t>(imagePoint.x), static_cast<size_t>(imagePoint.y));
 
   return ColorToNormalizedDisplacement(color);
@@ -46,17 +45,17 @@ auto ImageDisplacement::GetDisplacementVector(const NormalizedCoords& normalized
 inline auto ImageDisplacement::NormalizedCoordsToImagePoint(
     const NormalizedCoords& normalizedCoords) const -> Point2dInt
 {
-  const NormalizedCoords normalizedZoom = m_zoomFactor * normalizedCoords;
+  const auto normalizedZoom = m_zoomFactor * normalizedCoords;
   return m_normalizedCoordsConverter.NormalizedToScreenCoordsFlt(normalizedZoom).ToInt();
 }
 
 inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color) const -> Point2dFlt
 {
-  const float normalizedDisplacementX =
+  const auto normalizedDisplacementX =
       NormalizedCoords::MAX_NORMALIZED_COORD * m_amplitude * (color.RFlt() - m_xColorCutoff);
-  const float normalizedDisplacementY =
+  const auto normalizedDisplacementY =
       NormalizedCoords::MAX_NORMALIZED_COORD * m_amplitude * (color.GFlt() - m_yColorCutoff);
-  //const float normalizedDisplacementY =
+  //const auto normalizedDisplacementY =
   //         (ProbabilityOfMInN(1, 2) ? color.GFlt() : color.BFlt()) - 0.5F;
 
   return {normalizedDisplacementX, normalizedDisplacementY};

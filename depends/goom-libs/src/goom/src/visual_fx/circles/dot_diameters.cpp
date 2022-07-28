@@ -22,7 +22,7 @@ auto DotDiameters::GetInitialDotDiameters(const uint32_t numDots,
                                           const uint32_t maxDotDiameter) noexcept
     -> std::vector<uint32_t>
 {
-  std::vector<uint32_t> diameters(numDots);
+  auto diameters = std::vector<uint32_t>(numDots);
   std::fill(begin(diameters), end(diameters), maxDotDiameter);
   return diameters;
 }
@@ -41,29 +41,27 @@ auto DotDiameters::ChangeDotDiameters() noexcept -> void
 
 auto DotDiameters::ChangeToFixedDotDiameters() noexcept -> void
 {
-  const uint32_t fixedDotDiameter =
-      m_goomRand.GetRandInRange(m_minDotDiameter, m_maxDotDiameter + 1);
+  const auto fixedDotDiameter = m_goomRand.GetRandInRange(m_minDotDiameter, m_maxDotDiameter + 1);
 
   std::fill(begin(m_dotDiameters), end(m_dotDiameters), fixedDotDiameter);
 }
 
 auto DotDiameters::ChangeToVariableDotDiameters() noexcept -> void
 {
-  const uint32_t smallDotDiameter =
-      m_goomRand.GetRandInRange(m_minDotDiameter, m_maxDotDiameter - 1);
+  const auto smallDotDiameter = m_goomRand.GetRandInRange(m_minDotDiameter, m_maxDotDiameter - 1);
 
-  static constexpr uint32_t INCREASED_DIAMETER = 3;
-  const uint32_t minLargerDotDiameter =
+  static constexpr auto INCREASED_DIAMETER = 3U;
+  const auto minLargerDotDiameter =
       std::min(m_maxDotDiameter, smallDotDiameter + INCREASED_DIAMETER);
-  const uint32_t largerDotDiameter =
+  const auto largerDotDiameter =
       m_goomRand.GetRandInRange(minLargerDotDiameter, m_maxDotDiameter + 1);
 
-  static constexpr uint32_t MIN_LARGER_DIAMETER_FREQ = 2;
-  static constexpr uint32_t MAX_LARGER_DIAMETER_FREQ = 5;
-  const size_t largerDiameterEvery =
+  static constexpr auto MIN_LARGER_DIAMETER_FREQ = 2U;
+  static constexpr auto MAX_LARGER_DIAMETER_FREQ = 5U;
+  const auto largerDiameterEvery =
       m_goomRand.GetRandInRange(MIN_LARGER_DIAMETER_FREQ, MAX_LARGER_DIAMETER_FREQ + 1);
 
-  for (size_t i = 1; i < m_numDots; ++i)
+  for (auto i = 1U; i < m_numDots; ++i)
   {
     m_dotDiameters.at(i) = 0 == (i % largerDiameterEvery) ? largerDotDiameter : smallDotDiameter;
   }

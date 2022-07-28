@@ -21,12 +21,12 @@ auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
 {
   Expects((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == floatAudioData.size());
 
-  std::array<SampleArray, NUM_AUDIO_SAMPLES> sampleArrays{};
+  auto sampleArrays = std::array<SampleArray, NUM_AUDIO_SAMPLES>{};
 
-  size_t fpos = 0;
+  auto fpos = 0U;
   for (size_t j = 0; j < AUDIO_SAMPLE_LEN; ++j)
   {
-    for (size_t i = 0; i < NUM_AUDIO_SAMPLES; ++i)
+    for (auto i = 0U; i < NUM_AUDIO_SAMPLES; ++i)
     {
       sampleArrays[i][j] = GetPositiveValue(floatAudioData[fpos]);
       ++fpos;
@@ -40,11 +40,11 @@ auto AudioSamples::GetMinMaxSampleValues(
     const std::array<SampleArray, NUM_AUDIO_SAMPLES>& sampleArrays)
     -> std::array<MinMaxValues, NUM_AUDIO_SAMPLES>
 {
-  std::array<MinMaxValues, NUM_AUDIO_SAMPLES> minMaxSampleValues{};
+  auto minMaxSampleValues = std::array<MinMaxValues, NUM_AUDIO_SAMPLES>{};
 
-  for (size_t i = 0; i < NUM_AUDIO_SAMPLES; ++i)
+  for (auto i = 0U; i < NUM_AUDIO_SAMPLES; ++i)
   {
-    const SampleArray& sampleArray = sampleArrays.at(i);
+    const auto& sampleArray = sampleArrays.at(i);
     const auto& [minVal, maxVal] = std::minmax_element(cbegin(sampleArray), cend(sampleArray));
     minMaxSampleValues.at(i).minVal = *minVal;
     minMaxSampleValues.at(i).maxVal = *maxVal;
@@ -57,10 +57,10 @@ void SoundInfo::ProcessSample(const AudioSamples& samples)
 {
   ++m_updateNum;
 
-  const float prevVolume = m_volume;
+  const auto prevVolume = m_volume;
   UpdateVolume(samples);
 
-  const float prevSpeed = m_speed;
+  const auto prevSpeed = m_speed;
   UpdateSpeed(prevVolume);
 
   UpdateAcceleration(prevSpeed);

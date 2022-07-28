@@ -94,7 +94,7 @@ inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
 {
   m_highContrast.UpdateHighContrast();
 
-  static constexpr float DEFAULT_EXPOSURE = 1.5F;
+  static constexpr auto DEFAULT_EXPOSURE = 1.5F;
   m_goomShaderEffects.exposure = DEFAULT_EXPOSURE;
   m_goomShaderEffects.contrast = m_highContrast.GetCurrentContrast();
   m_goomShaderEffects.contrastMinChannelValue = m_highContrast.GetCurrentContrastMinChannelValue();
@@ -113,15 +113,15 @@ inline auto ShaderFx::ShaderFxImpl::GetLastShaderEffects() const -> const GoomSh
 
 inline auto ShaderFx::ShaderFxImpl::FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void
 {
-  static constexpr float TIME_REMAINING_CUTOFF_IN_MS = 20000.0F;
+  static constexpr auto TIME_REMAINING_CUTOFF_IN_MS = 20000.0F;
 
   if (timeValues.timeRemainingInMs > TIME_REMAINING_CUTOFF_IN_MS)
   {
     return;
   }
 
-  static constexpr float BRING_FINAL_BLACK_FORWARD_MS = 1000.0F;
-  const float timeLeftAsFraction =
+  static constexpr auto BRING_FINAL_BLACK_FORWARD_MS = 1000.0F;
+  const auto timeLeftAsFraction =
       std::max(0.0F, timeValues.timeRemainingInMs - BRING_FINAL_BLACK_FORWARD_MS) /
       TIME_REMAINING_CUTOFF_IN_MS;
 

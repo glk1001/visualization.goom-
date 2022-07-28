@@ -23,10 +23,10 @@ const std::array<std::string, NUM<SmallImageBitmaps::ImageNames>> SmallImageBitm
 SmallImageBitmaps::SmallImageBitmaps(const std::string& resourcesDirectory)
   : m_resourcesDirectory{resourcesDirectory}
 {
-  static constexpr size_t BY_TWO = 2;
-  for (size_t res = MIN_IMAGE_SIZE; res <= MAX_IMAGE_SIZE; res += BY_TWO)
+  static constexpr auto BY_TWO = 2U;
+  for (auto res = MIN_IMAGE_SIZE; res <= MAX_IMAGE_SIZE; res += BY_TWO)
   {
-    for (size_t i = 0; i < NUM<ImageNames>; ++i)
+    for (auto i = 0U; i < NUM<ImageNames>; ++i)
     {
       const auto name = static_cast<ImageNames>(i);
       m_bitmapImages.try_emplace(GetImageKey(name, res), GetImageBitmapPtr(name, res));
@@ -40,10 +40,10 @@ SmallImageBitmaps::~SmallImageBitmaps() noexcept = default;
 auto SmallImageBitmaps::GetImageBitmap(const ImageNames name, const size_t res) const
     -> const ImageBitmap&
 {
-  size_t imageRes = res;
+  auto imageRes = res;
   if (IsEven(imageRes))
   {
-    static constexpr size_t MIN_EVEN_RES = 2;
+    static constexpr auto MIN_EVEN_RES = 2U;
     imageRes = (MIN_EVEN_RES == res) ? (res + 1) : (res - 1);
   }
   return *m_bitmapImages.at(GetImageKey(name, imageRes));
@@ -65,7 +65,7 @@ inline auto SmallImageBitmaps::GetImageKey(const ImageNames name, const size_t s
 auto SmallImageBitmaps::GetImageFilename(const ImageNames name,
                                          const size_t sizeOfImageSquare) const -> std::string
 {
-  const std::string imagesDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR;
+  const auto imagesDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR;
   return std20::format("{}/{}{:02}x{:02}.png", imagesDir, IMAGE_NAMES.at(static_cast<size_t>(name)),
                        sizeOfImageSquare, sizeOfImageSquare);
 }

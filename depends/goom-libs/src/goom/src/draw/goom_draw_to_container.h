@@ -71,7 +71,7 @@ inline auto GoomDrawToContainer::GetPixels(const Point2dInt point) const -> Mult
 
 inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt point) const -> Pixel
 {
-  const ColorsList& colorsList = GetColorsList(point);
+  const auto& colorsList = GetColorsList(point);
   if (0 == colorsList.count)
   {
     return BLACK_PIXEL;

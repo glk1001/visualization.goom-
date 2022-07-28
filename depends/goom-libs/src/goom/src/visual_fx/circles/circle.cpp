@@ -144,14 +144,14 @@ auto Circle::GetDotStartingPositions(const Point2dInt& centre, const float radiu
     -> std::vector<Point2dInt>
 {
   auto positionT = std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, NUM_DOTS);
-  const Vec2dFlt centrePos{centre.ToFlt()};
-  static constexpr AngleParams DEFAULT_ANGLE_PARAMS{};
+  const auto centrePos = Vec2dFlt{centre.ToFlt()};
+  static constexpr auto DEFAULT_ANGLE_PARAMS = AngleParams{};
   const auto path =
       std::make_unique<CirclePath>(std::move(positionT), centrePos, radius, DEFAULT_ANGLE_PARAMS);
 
-  std::vector<Point2dInt> dotStartingPositions{NUM_DOTS};
+  auto dotStartingPositions = std::vector<Point2dInt>(NUM_DOTS);
 
-  for (size_t i = 0; i < NUM_DOTS; ++i)
+  for (auto i = 0U; i < NUM_DOTS; ++i)
   {
     dotStartingPositions.at(i) = path->GetNextPoint();
 
@@ -168,10 +168,10 @@ inline auto Circle::GetColorMixT([[maybe_unused]] const size_t colorIndex) const
 
 auto Circle::GetVerticalMainColorMaps() const noexcept -> std::vector<const COLOR::IColorMap*>
 {
-  std::vector<const COLOR::IColorMap*> colorMaps(NUM_DOTS);
+  auto colorMaps = std::vector<const COLOR::IColorMap*>(NUM_DOTS);
 
   colorMaps.at(0) = &m_mainColorMaps->GetRandomColorMap();
-  for (size_t i = 1; i < NUM_DOTS; ++i)
+  for (auto i = 1U; i < NUM_DOTS; ++i)
   {
     colorMaps.at(i) = colorMaps.at(0);
   }
@@ -181,10 +181,10 @@ auto Circle::GetVerticalMainColorMaps() const noexcept -> std::vector<const COLO
 
 auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<const COLOR::IColorMap*>
 {
-  std::vector<const COLOR::IColorMap*> colorMaps(NUM_DOTS);
+  auto colorMaps = std::vector<const COLOR::IColorMap*>(NUM_DOTS);
 
   colorMaps.at(0) = &m_lowColorMaps->GetRandomColorMap();
-  for (size_t i = 1; i < NUM_DOTS; ++i)
+  for (auto i = 1U; i < NUM_DOTS; ++i)
   {
     colorMaps.at(i) = colorMaps.at(0);
   }
@@ -199,19 +199,19 @@ auto Circle::SetWeightedColorMaps(
   m_mainColorMaps = weightedMainMaps;
   m_lowColorMaps = weightedLowMaps;
 
-  const IColorMap& newMainColorMap = m_mainColorMaps->GetRandomColorMap();
+  const auto& newMainColorMap = m_mainColorMaps->GetRandomColorMap();
   m_mainColorMapsGrid.SetColorMaps(newMainColorMap, GetVerticalMainColorMaps());
-  const IColorMap& newLowColorMap = m_lowColorMaps->GetRandomColorMap();
+  const auto& newLowColorMap = m_lowColorMaps->GetRandomColorMap();
   m_lowColorMapsGrid.SetColorMaps(newLowColorMap, GetVerticalLowColorMaps());
   m_currentColorGridMixT = m_goomRand.GetRandInRange(0.0F, 1.0F);
 
   m_linesMainColorMap = &newMainColorMap;
   m_linesLowColorMap = &newLowColorMap;
-  static constexpr float PROB_SHOW_LINE = 0.5F;
+  static constexpr auto PROB_SHOW_LINE = 0.5F;
   m_showLine = m_goomRand.ProbabilityOf(PROB_SHOW_LINE);
 
   m_dotDiameters.ChangeDotDiameters();
-  static constexpr float PROB_ALTERNATE_MAIN_LOW_DOT_COLORS = 0.1F;
+  static constexpr auto PROB_ALTERNATE_MAIN_LOW_DOT_COLORS = 0.1F;
   m_alternateMainLowDotColors = m_goomRand.ProbabilityOf(PROB_ALTERNATE_MAIN_LOW_DOT_COLORS);
   m_dotDrawer->SetWeightedColorMaps(*weightedMainMaps);
 
@@ -329,23 +329,23 @@ inline auto Circle::ResetCircleParams() noexcept -> void
 
 auto Circle::DrawNextCircleDots() noexcept -> void
 {
-  const std::vector<Point2dInt> nextDotPositions = m_dotPaths.GetNextDotPositions();
+  const auto nextDotPositions = m_dotPaths.GetNextDotPositions();
 
-  const float brightness = GetCurrentBrightness();
-  const float dotBrightness = GetDotBrightness(brightness);
-  const float lineBrightness = GetLineBrightness(brightness);
-  const std::vector<Pixel> dotMainColors = GetDotMainColors(dotBrightness);
-  const std::vector<Pixel> dotLowColors = GetDotLowColors(dotBrightness);
+  const auto brightness = GetCurrentBrightness();
+  const auto dotBrightness = GetDotBrightness(brightness);
+  const auto lineBrightness = GetLineBrightness(brightness);
+  const auto dotMainColors = GetDotMainColors(dotBrightness);
+  const auto dotLowColors = GetDotLowColors(dotBrightness);
 
-  uint32_t iRotate = m_dotAttributeOffset;
-  float tLineColor = 0.0F;
-  Point2dInt prevDotPosition = nextDotPositions[NUM_DOTS - 1];
-  for (size_t i = 0; i < NUM_DOTS; ++i)
+  auto iRotate = m_dotAttributeOffset;
+  auto tLineColor = 0.0F;
+  auto prevDotPosition = nextDotPositions[NUM_DOTS - 1];
+  for (auto i = 0U; i < NUM_DOTS; ++i)
   {
-    const Point2dInt dotPosition = nextDotPositions.at(i);
-    const uint32_t dotDiameter = m_dotDiameters.GetDotDiameters().at(iRotate);
-    const Pixel dotMainColor = dotMainColors.at(iRotate);
-    const Pixel dotLowColor = dotLowColors.at(iRotate);
+    const auto dotPosition = nextDotPositions.at(i);
+    const auto dotDiameter = m_dotDiameters.GetDotDiameters().at(iRotate);
+    const auto dotMainColor = dotMainColors.at(iRotate);
+    const auto dotLowColor = dotLowColors.at(iRotate);
 
     m_dotDrawer->DrawDot(dotPosition, dotDiameter, dotMainColor, dotLowColor);
     DrawLine(prevDotPosition, dotPosition, lineBrightness, tLineColor);
@@ -359,55 +359,55 @@ auto Circle::DrawNextCircleDots() noexcept -> void
 
 inline auto Circle::GetCurrentBrightness() const noexcept -> float
 {
-  static constexpr float BRIGHTNESS_CUT = 0.001F;
-  static constexpr float T_NEAR_END = 0.8F;
+  static constexpr auto BRIGHTNESS_CUT = 0.001F;
+  static constexpr auto T_NEAR_END = 0.8F;
   return m_dotPaths.GetPositionT() < T_NEAR_END ? 1.0F : BRIGHTNESS_CUT;
 }
 
 inline auto Circle::GetDotBrightness(const float brightness) const noexcept -> float
 {
-  if (static constexpr float T_NEAR_START = 0.1F; m_dotPaths.GetPositionT() > T_NEAR_START)
+  if (static constexpr auto T_NEAR_START = 0.1F; m_dotPaths.GetPositionT() > T_NEAR_START)
   {
     return brightness;
   }
   if (IsEven(m_updateNum))
   {
-    static constexpr float BRIGHTNESS_INCREASE = 10.0F;
+    static constexpr auto BRIGHTNESS_INCREASE = 10.0F;
     return BRIGHTNESS_INCREASE * brightness;
   }
-  static constexpr float BRIGHTNESS_INCREASE = 1.5F;
+  static constexpr auto BRIGHTNESS_INCREASE = 1.5F;
   return BRIGHTNESS_INCREASE * brightness;
 }
 
 inline auto Circle::IsSpecialUpdateNum() const noexcept -> bool
 {
-  if (static constexpr float CLOSE_TO_START_T = 0.1F; m_dotPaths.GetPositionT() < CLOSE_TO_START_T)
+  if (static constexpr auto CLOSE_TO_START_T = 0.1F; m_dotPaths.GetPositionT() < CLOSE_TO_START_T)
   {
     return true;
   }
-  static constexpr uint64_t SPECIAL_UPDATE_MULTIPLE = 5;
+  static constexpr auto SPECIAL_UPDATE_MULTIPLE = 5U;
   return 0 == (m_updateNum % SPECIAL_UPDATE_MULTIPLE);
 }
 
 inline auto Circle::IsSpecialLineUpdateNum() const noexcept -> bool
 {
-  if (static constexpr float CLOSE_TO_START_T = 0.1F; m_dotPaths.GetPositionT() < CLOSE_TO_START_T)
+  if (static constexpr auto CLOSE_TO_START_T = 0.1F; m_dotPaths.GetPositionT() < CLOSE_TO_START_T)
   {
     return true;
   }
-  static constexpr uint64_t LINE_UPDATE_MULTIPLE = 8;
+  static constexpr auto LINE_UPDATE_MULTIPLE = 8U;
   return 0 == (m_updateNum % LINE_UPDATE_MULTIPLE);
 }
 
 inline auto Circle::GetLineBrightness(const float brightness) const noexcept -> float
 {
-  static constexpr float BRIGHTNESS_INCREASE = 5.0F;
+  static constexpr auto BRIGHTNESS_INCREASE = 5.0F;
   return IsSpecialUpdateNum() ? (BRIGHTNESS_INCREASE * brightness) : brightness;
 }
 
 inline auto Circle::GetDotMainColors(const float dotBrightness) const noexcept -> std::vector<Pixel>
 {
-  std::vector<Pixel> dotColors = m_mainColorMapsGrid.GetNextColors();
+  auto dotColors = m_mainColorMapsGrid.GetNextColors();
 
   for (auto& color : dotColors)
   {
@@ -419,9 +419,9 @@ inline auto Circle::GetDotMainColors(const float dotBrightness) const noexcept -
 
 inline auto Circle::GetDotLowColors(const float dotBrightness) const noexcept -> std::vector<Pixel>
 {
-  static constexpr float BRIGHTNESS_INCREASE = 1.1F;
+  static constexpr auto BRIGHTNESS_INCREASE = 1.1F;
 
-  std::vector<Pixel> dotColors = m_lowColorMapsGrid.GetNextColors();
+  auto dotColors = m_lowColorMapsGrid.GetNextColors();
 
   for (auto& color : dotColors)
   {
@@ -434,14 +434,14 @@ inline auto Circle::GetDotLowColors(const float dotBrightness) const noexcept ->
 inline auto Circle::GetFinalMainColor(const float brightness, const Pixel& mainColor) const noexcept
     -> Pixel
 {
-  static constexpr float MAIN_COLOR_BRIGHTNESS = 1.0F;
+  static constexpr auto MAIN_COLOR_BRIGHTNESS = 1.0F;
   return GetCorrectedColor(brightness * MAIN_COLOR_BRIGHTNESS, mainColor);
 }
 
 inline auto Circle::GetFinalLowColor(const float brightness, const Pixel& lowColor) const noexcept
     -> Pixel
 {
-  static constexpr float LOW_COLOR_BRIGHTNESS = 1.0F;
+  static constexpr auto LOW_COLOR_BRIGHTNESS = 1.0F;
   return GetCorrectedColor(brightness * LOW_COLOR_BRIGHTNESS, lowColor);
 }
 
@@ -456,7 +456,7 @@ inline auto Circle::DrawLine(const Point2dInt& position1,
                              const float lineBrightness,
                              const float tLineColor) noexcept -> void
 {
-  const float lastTDotColor = DrawLineDots(position1, position2, lineBrightness, tLineColor);
+  const auto lastTDotColor = DrawLineDots(position1, position2, lineBrightness, tLineColor);
   DrawConnectingLine(position1, position2, lineBrightness, lastTDotColor);
 }
 
@@ -465,21 +465,20 @@ inline auto Circle::DrawLineDots(const Point2dInt& position1,
                                  const float lineBrightness,
                                  const float tLineColor) noexcept -> float
 {
-  static constexpr uint32_t NUM_LINE_DOTS = 5;
+  static constexpr auto NUM_LINE_DOTS = 5U;
 
-  static constexpr float T_DOT_POS_STEP = 1.0F / static_cast<float>(NUM_LINE_DOTS);
-  float tDotPos = T_DOT_POS_STEP;
+  static constexpr auto T_DOT_POS_STEP = 1.0F / static_cast<float>(NUM_LINE_DOTS);
+  auto tDotPos = T_DOT_POS_STEP;
 
-  static constexpr float T_DOT_COLOR_STEP = T_LINE_COLOR_STEP / static_cast<float>(NUM_LINE_DOTS);
+  static constexpr auto T_DOT_COLOR_STEP = T_LINE_COLOR_STEP / static_cast<float>(NUM_LINE_DOTS);
 
-  float tDotColor = tLineColor + T_DOT_COLOR_STEP;
-  for (uint32_t i = 0; i < (NUM_LINE_DOTS - 1); ++i)
+  auto tDotColor = tLineColor + T_DOT_COLOR_STEP;
+  for (auto i = 0U; i < (NUM_LINE_DOTS - 1); ++i)
   {
-    const Point2dInt dotPos = lerp(position1, position2, tDotPos);
-    const Pixel mainColor =
+    const auto dotPos = lerp(position1, position2, tDotPos);
+    const auto mainColor =
         GetFinalMainColor(lineBrightness, m_linesMainColorMap->GetColor(tDotColor));
-    const Pixel lowColor =
-        GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
+    const auto lowColor = GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
 
     DrawDot(i, dotPos, mainColor, lowColor);
 
@@ -515,10 +514,10 @@ auto Circle::DrawConnectingLine(const Point2dInt& position1,
     return;
   }
 
-  static constexpr uint8_t LINE_THICKNESS = 1;
-  const Pixel mainColor =
+  static constexpr auto LINE_THICKNESS = 1U;
+  const auto mainColor =
       GetFinalMainColor(lineBrightness, m_linesMainColorMap->GetColor(tDotColor));
-  const Pixel lowColor = GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
+  const auto lowColor = GetFinalLowColor(lineBrightness, m_linesLowColorMap->GetColor(tDotColor));
 
   m_draw.Line(position1, position2, {mainColor, lowColor}, LINE_THICKNESS);
 }
@@ -545,7 +544,7 @@ inline auto Circle::DotDrawer::SetWeightedColorMaps(const RandomColorMaps& weigh
   m_differentColor = GetRandomDifferentColor(weightedMaps);
   m_outerCircleDotColorMap = &weightedMaps.GetRandomColorMap();
 
-  static constexpr float PROB_CIRCLES = 0.5F;
+  static constexpr auto PROB_CIRCLES = 0.5F;
   m_doCircleDotShapes = m_goomRand.ProbabilityOf(PROB_CIRCLES);
   m_outerCircleDotColorMix =
       m_goomRand.GetRandInRange(MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T, MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T);
@@ -573,23 +572,23 @@ auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
                                       const IColorMap& innerColorMap) noexcept -> void
 {
   const auto maxRadius = static_cast<int32_t>(diameter + 3) / 2;
-  TValue innerColorT{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)};
-  static constexpr int32_t INNER_COLOR_CUTOFF_RADIUS = 4;
+  auto innerColorT =
+      TValue{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)};
+  static constexpr auto INNER_COLOR_CUTOFF_RADIUS = 4;
 
-  static constexpr float MIN_BRIGHTNESS = 1.0F;
-  static constexpr float MAX_BRIGHTNESS = 10.0F;
-  TValue brightnessT{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius)};
+  static constexpr auto MIN_BRIGHTNESS = 1.0F;
+  static constexpr auto MAX_BRIGHTNESS = 10.0F;
+  auto brightnessT = TValue{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius)};
 
   // '> 1' means leave a little hole in the middle of the circles.
   for (int32_t radius = maxRadius; radius > 1; --radius)
   {
-    const float brightness = STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
-    const Pixel innerColor = innerColorMap.GetColor(innerColorT());
-    const MultiplePixels colors =
-        radius <= INNER_COLOR_CUTOFF_RADIUS
-            ? GetCircleColors(brightness, mainColor, lowColor)
-            : GetCircleColorsWithInner(brightness, mainColor, lowColor, innerColor,
-                                       m_outerCircleDotColorMix);
+    const auto brightness = STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
+    const auto innerColor = innerColorMap.GetColor(innerColorT());
+    const auto colors = radius <= INNER_COLOR_CUTOFF_RADIUS
+                            ? GetCircleColors(brightness, mainColor, lowColor)
+                            : GetCircleColorsWithInner(brightness, mainColor, lowColor, innerColor,
+                                                       m_outerCircleDotColorMix);
 
     m_draw.Circle(centre, radius, colors);
 
@@ -631,16 +630,16 @@ auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& position,
   const auto getMainColor =
       [this, &mainColor, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
   {
-    static constexpr float MAIN_COLOR_BRIGHTNESS = 1.0F;
-    const Pixel color = GetBrighterColor(MAIN_COLOR_BRIGHTNESS, mainColor);
+    static constexpr auto MAIN_COLOR_BRIGHTNESS = 1.0F;
+    const auto color = GetBrighterColor(MAIN_COLOR_BRIGHTNESS, mainColor);
     return GetDotMixedColor(x, y, diameter, bgnd, color, m_bgndMainColorMixT);
   };
 
   const auto getLowColor =
       [this, &lowColor, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
   {
-    static constexpr float LOW_COLOR_BRIGHTNESS = 2.0F;
-    const Pixel color = GetBrighterColor(LOW_COLOR_BRIGHTNESS, lowColor);
+    static constexpr auto LOW_COLOR_BRIGHTNESS = 2.0F;
+    const auto color = GetBrighterColor(LOW_COLOR_BRIGHTNESS, lowColor);
     return GetDotMixedColor(x, y, diameter, bgnd, color, m_bgndLowColorMixT);
   };
 
@@ -670,15 +669,15 @@ inline auto Circle::DotDrawer::GetDotMixedColor(const size_t x,
     return BLACK_PIXEL;
   }
 
-  const Pixel mixedColor = IColorMap::GetColorMix(bgnd, color, mixT);
+  const auto mixedColor = IColorMap::GetColorMix(bgnd, color, mixT);
 
   if (!IsSpecialPoint(x, y, diameter))
   {
     return mixedColor;
   }
 
-  static constexpr float DIFFERENT_COLOR_BRIGHTNESS = 2.0F;
-  static constexpr float SPECIAL_BRIGHTNESS = 2.0F;
+  static constexpr auto DIFFERENT_COLOR_BRIGHTNESS = 2.0F;
+  static constexpr auto SPECIAL_BRIGHTNESS = 2.0F;
 
   switch (m_decorationType)
   {
@@ -700,9 +699,9 @@ inline auto Circle::DotDrawer::IsSpecialPoint(const size_t x,
                                               const size_t y,
                                               const uint32_t diameter) noexcept -> bool
 {
-  if (static constexpr size_t EDGE_CUTOFF = 3;
-      (x <= EDGE_CUTOFF) || (x >= (diameter - EDGE_CUTOFF)) || (y <= EDGE_CUTOFF) ||
-      (y >= (diameter - EDGE_CUTOFF)))
+  if (static constexpr auto EDGE_CUTOFF = 3U; (x <= EDGE_CUTOFF) ||
+                                              (x >= (diameter - EDGE_CUTOFF)) ||
+                                              (y <= EDGE_CUTOFF) || (y >= (diameter - EDGE_CUTOFF)))
   {
     return false;
   }

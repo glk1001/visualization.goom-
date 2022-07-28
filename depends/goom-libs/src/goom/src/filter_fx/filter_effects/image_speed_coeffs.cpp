@@ -10,11 +10,11 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
-static constexpr IGoomRand::NumberRange<float> AMPLITUDE_RANGE = {0.0025F, 0.01000F};
-static constexpr IGoomRand::NumberRange<float> COLOR_CUTOFF_RANGE = {0.1F, 0.9F};
-static constexpr IGoomRand::NumberRange<float> ZOOM_FACTOR_RANGE = {0.10F, 1.0F};
+static constexpr auto AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.0025F, 0.01000F};
+static constexpr auto COLOR_CUTOFF_RANGE = IGoomRand::NumberRange<float>{0.1F, 0.9F};
+static constexpr auto ZOOM_FACTOR_RANGE = IGoomRand::NumberRange<float>{0.10F, 1.0F};
 
-static constexpr float PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
+static constexpr auto PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
 ImageSpeedCoefficients::ImageSpeedCoefficients(const std::string& resourcesDirectory,
                                                const IGoomRand& goomRand)
@@ -35,7 +35,7 @@ inline auto ImageSpeedCoefficients::DoSetRandomParams() -> void
 {
   m_imageDisplacementList.SetRandomImageDisplacement();
 
-  const float xColorCutoff = m_goomRand.GetRandInRange(COLOR_CUTOFF_RANGE);
+  const auto xColorCutoff = m_goomRand.GetRandInRange(COLOR_CUTOFF_RANGE);
 
   m_imageDisplacementList.SetParams({
       m_goomRand.GetRandInRange(AMPLITUDE_RANGE),
@@ -49,7 +49,7 @@ inline auto ImageSpeedCoefficients::DoSetRandomParams() -> void
 
 auto ImageSpeedCoefficients::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  static constexpr const char* PARAM_GROUP = "ImageSpeedCoeffs";
+  static constexpr auto PARAM_GROUP = "ImageSpeedCoeffs";
   return m_imageDisplacementList.GetNameValueParams(PARAM_GROUP);
 }
 

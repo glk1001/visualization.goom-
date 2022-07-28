@@ -205,7 +205,7 @@ inline auto ShapePart::ResetTs(const float val) noexcept -> void
 inline auto ShapePart::GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goomRand,
                                                const float oldTMinMaxLerp) noexcept -> float
 {
-  static constexpr float SMALL_OFFSET = 0.2F;
+  static constexpr auto SMALL_OFFSET = 0.2F;
   return goomRand.GetRandInRange(std::max(0.0F, -SMALL_OFFSET + oldTMinMaxLerp),
                                  std::min(1.0F, oldTMinMaxLerp + SMALL_OFFSET));
 }

@@ -61,7 +61,7 @@ auto AllStandardVisualFx::GetDrawablesMap(Parallel& parallel,
                                           const std::string& resourcesDirectory)
     -> std::map<GoomDrawables, PropagateConstUniquePtr>
 {
-  std::map<GoomDrawables, PropagateConstUniquePtr> drawablesMap{};
+  auto drawablesMap = std::map<GoomDrawables, PropagateConstUniquePtr>{};
 
   drawablesMap.emplace(GoomDrawables::CIRCLES, PropagateConstUniquePtr{std::make_unique<CirclesFx>(
                                                    fxHelper, smallBitmaps)});
@@ -159,7 +159,7 @@ auto AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawabl
   std::for_each(begin(m_currentGoomDrawables), end(m_currentGoomDrawables),
                 [this, &oldGoomDrawables](const auto currentlyDrawable)
                 {
-                  const bool wasActiveInPreviousState =
+                  const auto wasActiveInPreviousState =
                       oldGoomDrawables.find(currentlyDrawable) != oldGoomDrawables.end();
                   m_drawablesMap.at(currentlyDrawable)->PostStateUpdate(wasActiveInPreviousState);
                 });
@@ -167,7 +167,7 @@ auto AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawabl
 
 auto AllStandardVisualFx::GetActiveColorMapsNames() const -> std::unordered_set<std::string>
 {
-  std::unordered_set<std::string> activeColorMapsNames{};
+  auto activeColorMapsNames = std::unordered_set<std::string>{};
 
   for (const auto& [drawable, visualFx] : m_drawablesMap)
   {
@@ -185,7 +185,7 @@ auto AllStandardVisualFx::ApplyCurrentStateToSingleBuffer() -> void
   std::for_each(begin(m_drawablesMap), end(m_drawablesMap),
                 [this](auto& keyValue)
                 {
-                  IVisualFx& visualFx = *m_drawablesMap.at(keyValue.first);
+                  auto& visualFx = *m_drawablesMap.at(keyValue.first);
 
                   if (not IsCurrentlyDrawable(keyValue.first))
                   {
@@ -203,7 +203,7 @@ auto AllStandardVisualFx::ApplyStandardFxToMultipleBuffers(const AudioSamples& s
   std::for_each(begin(m_drawablesMap), end(m_drawablesMap),
                 [this, &soundData](auto& keyValue)
                 {
-                  IVisualFx& visualFx = *m_drawablesMap.at(keyValue.first);
+                  auto& visualFx = *m_drawablesMap.at(keyValue.first);
 
                   visualFx.SetSoundData(soundData);
 
@@ -273,11 +273,11 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
 
 auto AllStandardVisualFx::ChangeDotsColorMaps() noexcept -> void
 {
-  static constexpr uint32_t EXPECTED_NUM_DOT_TYPES =
-      1 + (static_cast<uint32_t>(GoomEffect::DOTS4) - static_cast<uint32_t>(GoomEffect::DOTS0));
+  static constexpr auto EXPECTED_NUM_DOT_TYPES =
+      1U + (static_cast<uint32_t>(GoomEffect::DOTS4) - static_cast<uint32_t>(GoomEffect::DOTS0));
   static_assert(GoomDotsFx::NUM_DOT_TYPES == EXPECTED_NUM_DOT_TYPES);
 
-  for (uint32_t i = 0; i < GoomDotsFx::NUM_DOT_TYPES; ++i)
+  for (auto i = 0U; i < GoomDotsFx::NUM_DOT_TYPES; ++i)
   {
     const auto dotEffect = static_cast<GoomEffect>(i + static_cast<uint32_t>(GoomEffect::DOTS0));
     m_drawablesMap.at(GoomDrawables::DOTS)
@@ -297,15 +297,15 @@ auto AllStandardVisualFx::ChangeLinesColorMaps() noexcept -> void
 
 auto AllStandardVisualFx::ChangeShapesColorMaps() noexcept -> void
 {
-  static constexpr uint32_t EXPECTED_NUM_SHAPES =
-      1 + ((static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) -
+  static constexpr auto EXPECTED_NUM_SHAPES =
+      1U + ((static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) -
             static_cast<uint32_t>(GoomEffect::SHAPES_MAIN)) /
-           3);
+           3U);
   static_assert(ShapesFx::NUM_SHAPES == EXPECTED_NUM_SHAPES);
 
-  for (uint32_t i = 0; i < ShapesFx::NUM_SHAPES; ++i)
+  for (auto i = 0U; i < ShapesFx::NUM_SHAPES; ++i)
   {
-    const uint32_t offsetFromZero = 3 * i;
+    const auto offsetFromZero = 3 * i;
     const auto goomEffectMain =
         static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) + offsetFromZero);
     const auto goomEffectLow =
@@ -322,15 +322,15 @@ auto AllStandardVisualFx::ChangeShapesColorMaps() noexcept -> void
 
 auto AllStandardVisualFx::ChangeStarsColorMaps() noexcept -> void
 {
-  static constexpr uint32_t EXPECTED_NUM_STAR_MODES =
-      1 + ((static_cast<uint32_t>(GoomEffect::STARS_LOW_FOUNTAIN) -
+  static constexpr auto EXPECTED_NUM_STAR_MODES =
+      1U + ((static_cast<uint32_t>(GoomEffect::STARS_LOW_FOUNTAIN) -
             static_cast<uint32_t>(GoomEffect::STARS_MAIN_FIREWORKS)) /
-           2);
+           2U);
   static_assert(StarTypesContainer::NUM_STAR_TYPES == EXPECTED_NUM_STAR_MODES);
 
-  for (uint32_t i = 0; i < StarTypesContainer::NUM_STAR_TYPES; ++i)
+  for (auto i = 0U; i < StarTypesContainer::NUM_STAR_TYPES; ++i)
   {
-    const uint32_t offsetFromZero = 3 * i;
+    const auto offsetFromZero = 3 * i;
     const auto goomEffectMain = static_cast<GoomEffect>(
         static_cast<uint32_t>(GoomEffect::STARS_MAIN_FIREWORKS) + offsetFromZero);
     const auto goomEffectLow = static_cast<GoomEffect>(

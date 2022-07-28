@@ -116,10 +116,10 @@ auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length) noexcept
   Expects(length > 0);
 
   static_assert(numRegions > 0);
-  const uint32_t regionSize = length / numRegions;
+  const auto regionSize = length / numRegions;
 
-  std::array<size_t, numRegions> regionBorders{};
-  size_t border = regionSize - 1;
+  auto regionBorders = std::array<size_t, numRegions>{};
+  auto border = regionSize - 1;
   for (auto& regionBorder : regionBorders)
   {
     regionBorder = border;
@@ -163,7 +163,7 @@ inline auto FilterBufferColorInfo::FilterBufferRowColorInfo::UpdateColor(
     return;
   }
 
-  Counts& regionCounts = m_xRegionCountsArray.at(m_currentXRegionIndex);
+  auto& regionCounts = m_xRegionCountsArray.at(m_currentXRegionIndex);
   ++regionCounts.numNonzeroInRow;
   regionCounts.sumRedInRow += color.R();
   regionCounts.sumGreenInRow += color.G();

@@ -13,7 +13,7 @@ auto FindAndReplaceAll(std::string& dataStr,
                        const std::string& searchStr,
                        const std::string& replaceStr) -> void
 {
-  size_t pos = dataStr.find(searchStr);
+  auto pos = dataStr.find(searchStr);
 
   while(pos != std::string::npos)
   {
@@ -30,7 +30,7 @@ auto bool_to_string(const bool value) -> std::string
 auto StringJoin(const std::vector<std::string>& strings, const std::string_view& delim)
     -> std::string
 {
-  std::string joinedStr{};
+  auto joinedStr = std::string{};
 
   for (auto str = cbegin(strings); str != cend(strings); ++str)
   {

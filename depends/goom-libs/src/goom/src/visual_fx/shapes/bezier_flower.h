@@ -37,9 +37,9 @@ public:
 
   [[nodiscard]] auto GetBezierDrawer() const -> const UTILS::GRAPHICS::BezierDrawer&;
 
-  void SetRotation(float rotation);
+  auto SetRotation(float rotation) -> void;
 
-  void Draw(const Point2dInt& origin, uint32_t numPetals, uint32_t petalOffset);
+  auto Draw(const Point2dInt& origin, uint32_t numPetals, uint32_t petalOffset) -> void;
 
 private:
   UTILS::GRAPHICS::BezierDrawer& m_bezierDrawer;
@@ -65,7 +65,7 @@ inline auto BezierFlower::GetBezierDrawer() const -> const UTILS::GRAPHICS::Bezi
   return m_bezierDrawer;
 }
 
-inline void BezierFlower::SetRotation(const float rotation)
+inline auto BezierFlower::SetRotation(const float rotation) -> void
 {
   m_rotation = rotation;
 }

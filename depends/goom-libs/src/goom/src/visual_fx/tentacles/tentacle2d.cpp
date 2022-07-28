@@ -83,7 +83,7 @@ void Tentacle2D::ValidateNumNodes() const
   }
 }
 
-static constexpr double SMALL_WEIGHT = 0.001;
+static constexpr auto SMALL_WEIGHT = 0.001;
 
 void Tentacle2D::ValidatePrevYWeight() const
 {
@@ -115,18 +115,18 @@ void Tentacle2D::StartIterating()
   m_startedIterating = true;
   m_iterNum = 0;
 
-  const double xStep = (m_xMax - m_xMin) / static_cast<double>(m_numNodes - 1);
+  const auto xStep = (m_xMax - m_xMin) / static_cast<double>(m_numNodes - 1);
 
   m_xVec.resize(m_numNodes);
   m_yVec.resize(m_numNodes);
   m_dampedYVec.resize(m_numNodes);
   m_dampingCache.resize(m_numNodes);
-  double x = m_xMin;
-  for (size_t i = 0; i < m_numNodes; ++i)
+  auto x = m_xMin;
+  for (auto i = 0U; i < m_numNodes; ++i)
   {
     m_dampingCache[i] = GetDamping(x);
     m_xVec[i] = x;
-    static constexpr double DEFAULT_Y_DAMPING_FACTOR = 0.1;
+    static constexpr auto DEFAULT_Y_DAMPING_FACTOR = 0.1;
     m_yVec[i] = DEFAULT_Y_DAMPING_FACTOR * m_dampingCache[i];
 
     x += xStep;
@@ -138,7 +138,7 @@ void Tentacle2D::Iterate()
   ++m_iterNum;
 
   m_yVec[0] = static_cast<double>(GetFirstY());
-  for (size_t i = 1; i < m_numNodes; ++i)
+  for (auto i = 1U; i < m_numNodes; ++i)
   {
     m_yVec[i] = static_cast<double>(GetNextY(i));
   }
@@ -148,24 +148,24 @@ void Tentacle2D::Iterate()
 
 void Tentacle2D::UpdateDampedValues(const std::vector<double>& yValues)
 {
-  static constexpr size_t NUM_SMOOTH_NODES = std::min(size_t(10), MIN_NUM_NODES);
+  static constexpr auto NUM_SMOOTH_NODES = std::min(size_t(10), MIN_NUM_NODES);
   const auto tSmooth = [](const double t)
   {
-    static constexpr double PARABOLA_COEFF = 2.0;
+    static constexpr auto PARABOLA_COEFF = 2.0;
     return t * (PARABOLA_COEFF - t);
   };
 
-  const double tStep = 1.0 / (NUM_SMOOTH_NODES - 1);
-  double tNext = tStep;
+  const auto tStep = 1.0 / (NUM_SMOOTH_NODES - 1);
+  auto tNext = tStep;
   m_dampedYVec[0] = 0.0;
-  for (size_t i = 1; i < NUM_SMOOTH_NODES; ++i)
+  for (auto i = 1U; i < NUM_SMOOTH_NODES; ++i)
   {
-    const double t = tSmooth(tNext);
+    const auto t = tSmooth(tNext);
     m_dampedYVec[i] = STD20::lerp(m_dampedYVec[i - 1], GetDampedVal(i, yValues[i]), t);
     tNext += tStep;
   }
 
-  for (size_t i = NUM_SMOOTH_NODES; i < m_numNodes; ++i)
+  for (auto i = NUM_SMOOTH_NODES; i < m_numNodes; ++i)
   {
     m_dampedYVec[i] = GetDampedVal(i, yValues[i]);
   }
@@ -178,8 +178,8 @@ inline auto Tentacle2D::GetFirstY() -> float
 
 inline auto Tentacle2D::GetNextY(const size_t nodeNum) -> float
 {
-  const double prevY = m_yVec[nodeNum - 1];
-  const double currentY = m_yVec[nodeNum];
+  const auto prevY = m_yVec[nodeNum - 1];
+  const auto currentY = m_yVec[nodeNum];
 
   return static_cast<float>((m_basePrevYWeight * prevY) + (m_baseCurrentYWeight * currentY));
 }
@@ -195,7 +195,7 @@ inline auto Tentacle2D::GetDampedVal(const size_t nodeNum, const double val) con
 
 auto Tentacle2D::GetDampedXAndYVectors() const -> const Tentacle2D::XAndYVectors&
 {
-  static constexpr size_t MIN_VEC_SIZE = 2;
+  static constexpr auto MIN_VEC_SIZE = 2U;
 
   if (m_xVec.size() < MIN_VEC_SIZE)
   {
@@ -221,7 +221,7 @@ auto Tentacle2D::GetDampedXAndYVectors() const -> const Tentacle2D::XAndYVectors
 auto Tentacle2D::CreateDampingFunc(const double prevYWeight, const double xMin, const double xMax)
     -> Tentacle2D::DampingFuncPtr
 {
-  if (constexpr double LINEAR_CUTOFF_WEIGHT = 0.6; prevYWeight < LINEAR_CUTOFF_WEIGHT)
+  if (static constexpr auto LINEAR_CUTOFF_WEIGHT = 0.6; prevYWeight < LINEAR_CUTOFF_WEIGHT)
   {
     return CreateLinearDampingFunc(xMin, xMax);
   }
@@ -231,10 +231,10 @@ auto Tentacle2D::CreateDampingFunc(const double prevYWeight, const double xMin, 
 auto Tentacle2D::CreateExpDampingFunc(const double xMin, const double xMax)
     -> Tentacle2D::DampingFuncPtr
 {
-  const double xRiseStart = xMin + (0.25 * xMax);
-  static constexpr double AMPLITUDE = 0.1;
-  static constexpr double DAMP_START = 5.0;
-  static constexpr double DAMP_MAX = 30.0;
+  const auto xRiseStart = xMin + (0.25 * xMax);
+  static constexpr auto AMPLITUDE = 0.1;
+  static constexpr auto DAMP_START = 5.0;
+  static constexpr auto DAMP_MAX = 30.0;
 
   return DampingFuncPtr{
       std::make_unique<ExpDampingFunction>(AMPLITUDE, xRiseStart, DAMP_START, xMax, DAMP_MAX)};
@@ -243,17 +243,17 @@ auto Tentacle2D::CreateExpDampingFunc(const double xMin, const double xMax)
 auto Tentacle2D::CreateLinearDampingFunc(const double xMin, const double xMax)
     -> Tentacle2D::DampingFuncPtr
 {
-  std::vector<std::tuple<double, double, DampingFuncPtr>> pieces{};
+  auto pieces = std::vector<std::tuple<double, double, DampingFuncPtr>>{};
 
-  static constexpr double FLAT_DAMPING_VALUE = 0.1;
-  const double flatXMin = xMin;
-  const double flatXMax = 0.1 * xMax;
+  static constexpr auto FLAT_DAMPING_VALUE = 0.1;
+  const auto flatXMin = xMin;
+  const auto flatXMax = 0.1 * xMax;
   pieces.emplace_back(flatXMin, flatXMax,
                       DampingFuncPtr{std::make_unique<FlatDampingFunction>(FLAT_DAMPING_VALUE)});
 
-  static constexpr float Y_SCALE = 30.0;
-  const double linearXMin = flatXMax;
-  const double linearXMax = 10.0 * xMax;
+  static constexpr auto Y_SCALE = 30.0;
+  const auto linearXMin = flatXMax;
+  const auto linearXMax = 10.0 * xMax;
   pieces.emplace_back(linearXMin, linearXMax,
                       DampingFuncPtr{std::make_unique<LinearDampingFunction>(
                           flatXMax, FLAT_DAMPING_VALUE, xMax, Y_SCALE)});

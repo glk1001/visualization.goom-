@@ -164,7 +164,7 @@ inline auto ZoomVectorEffects::GetMinVelocityVal(const float velocityVal) const 
 
 auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs nameValuePairs{};
+  auto nameValuePairs = NameValuePairs{};
 
   MoveNameValuePairs(GetHypercosNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetImageVelocityNameValueParams(), nameValuePairs);
@@ -190,7 +190,7 @@ inline auto ZoomVectorEffects::GetHypercosNameValueParams() const -> NameValuePa
 
 auto ZoomVectorEffects::GetImageVelocityNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs nameValuePairs{
+  auto nameValuePairs = NameValuePairs{
       GetPair(PARAM_GROUP, "imageVelocity", m_filterEffectsSettings->imageVelocityEffect)};
   if (m_filterEffectsSettings->imageVelocityEffect)
   {
@@ -201,8 +201,8 @@ auto ZoomVectorEffects::GetImageVelocityNameValueParams() const -> NameValuePair
 
 auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs nameValuePairs{
-      GetPair(PARAM_GROUP, "noiseEffect", m_filterEffectsSettings->noiseEffect)};
+  auto nameValuePairs =
+      NameValuePairs{GetPair(PARAM_GROUP, "noiseEffect", m_filterEffectsSettings->noiseEffect)};
   if (m_filterEffectsSettings->noiseEffect)
   {
     MoveNameValuePairs(m_theEffects.noise->GetNameValueParams(PARAM_GROUP), nameValuePairs);
@@ -212,8 +212,8 @@ auto ZoomVectorEffects::GetNoiseNameValueParams() const -> NameValuePairs
 
 auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs nameValuePairs{
-      GetPair(PARAM_GROUP, "planeEffect", m_filterEffectsSettings->planeEffect)};
+  auto nameValuePairs =
+      NameValuePairs{GetPair(PARAM_GROUP, "planeEffect", m_filterEffectsSettings->planeEffect)};
   if (m_filterEffectsSettings->planeEffect)
   {
     MoveNameValuePairs(m_theEffects.planes->GetNameValueParams(PARAM_GROUP), nameValuePairs);
@@ -223,8 +223,8 @@ auto ZoomVectorEffects::GetPlaneNameValueParams() const -> NameValuePairs
 
 auto ZoomVectorEffects::GetRotationNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs nameValuePairs{
-      GetPair(PARAM_GROUP, "rotation", m_filterEffectsSettings->rotationEffect)};
+  auto nameValuePairs =
+      NameValuePairs{GetPair(PARAM_GROUP, "rotation", m_filterEffectsSettings->rotationEffect)};
   if (m_filterEffectsSettings->rotationEffect)
   {
     MoveNameValuePairs(m_theEffects.rotation->GetNameValueParams(PARAM_GROUP), nameValuePairs);
@@ -234,8 +234,8 @@ auto ZoomVectorEffects::GetRotationNameValueParams() const -> NameValuePairs
 
 auto ZoomVectorEffects::GetTanEffectNameValueParams() const -> NameValuePairs
 {
-  NameValuePairs nameValuePairs{
-      GetPair(PARAM_GROUP, "tanEffect", m_filterEffectsSettings->tanEffect)};
+  auto nameValuePairs =
+      NameValuePairs{GetPair(PARAM_GROUP, "tanEffect", m_filterEffectsSettings->tanEffect)};
   if (m_filterEffectsSettings->tanEffect)
   {
     MoveNameValuePairs(m_theEffects.tanEffect->GetNameValueParams(PARAM_GROUP), nameValuePairs);

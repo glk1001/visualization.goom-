@@ -9,13 +9,13 @@
 namespace GOOM::UTILS::MATH
 {
 
-static constexpr float TWO_PI = 2.0F * STD20::pi;
-static constexpr float HALF_PI = 0.5F * STD20::pi;
-static constexpr float THIRD_PI = STD20::pi / 3.0F;
+static constexpr auto TWO_PI = 2.0F * STD20::pi;
+static constexpr auto HALF_PI = 0.5F * STD20::pi;
+static constexpr auto THIRD_PI = STD20::pi / 3.0F;
 
-static constexpr float DEGREES_90 = 90.0F;
-static constexpr float DEGREES_180 = 180.0F;
-static constexpr float DEGREES_360 = 360.0F;
+static constexpr auto DEGREES_90 = 90.0F;
+static constexpr auto DEGREES_180 = 180.0F;
+static constexpr auto DEGREES_360 = 360.0F;
 
 [[nodiscard]] constexpr auto ToRadians(const float degrees) -> float
 {
@@ -50,11 +50,11 @@ struct RationalNumber
 
 [[nodiscard]] inline auto FloatToIrreducibleFraction(const float fltVal) -> RationalNumber
 {
-  static constexpr double PRECISION = 10000000.0;
+  static constexpr auto PRECISION = 10000000.0;
 
   const auto dblVal = static_cast<double>(fltVal);
-  const double intVal = std::floor(dblVal);
-  const double fracVal = dblVal - intVal;
+  const auto intVal = std::floor(dblVal);
+  const auto fracVal = dblVal - intVal;
 
   const auto gcdVal = static_cast<int32_t>(
       Gcd(static_cast<int32_t>(std::lround(fracVal * PRECISION)), static_cast<int32_t>(PRECISION)));
@@ -62,7 +62,7 @@ struct RationalNumber
   const auto numerator = static_cast<int32_t>(std::lround(fracVal * PRECISION) / gcdVal);
   const auto denominator = static_cast<int32_t>(PRECISION) / gcdVal;
 
-  const bool isRational = denominator != static_cast<int32_t>(PRECISION);
+  const auto isRational = denominator != static_cast<int32_t>(PRECISION);
 
   return {(static_cast<int32_t>(intVal) * denominator) + numerator, denominator, isRational};
 }
@@ -79,7 +79,7 @@ template<typename T>
   return Sq(x) + Sq(y);
 }
 
-static constexpr float SMALL_FLOAT = 0.00001F;
+static constexpr auto SMALL_FLOAT = 0.00001F;
 
 [[nodiscard]] inline bool FloatsEqual(const float x,
                                       const float y,
@@ -134,18 +134,18 @@ private:
 };
 
 template<typename T>
-static constexpr Fraction<T> FRAC_HALF = Fraction<T>{T(1), T(2)};
+static constexpr auto FRAC_HALF = Fraction<T>{T(1), T(2)};
 static constexpr auto I_HALF = FRAC_HALF<int32_t>;
 static constexpr auto U_HALF = FRAC_HALF<uint32_t>;
 static constexpr auto S_HALF = FRAC_HALF<size_t>;
 
 template<typename T>
-constexpr Fraction<T> QUARTER = Fraction<T>{T(1), T(4)};
+static constexpr auto QUARTER = Fraction<T>{T(1), T(4)};
 static constexpr auto I_QUARTER = QUARTER<int32_t>;
 static constexpr auto U_QUARTER = QUARTER<uint32_t>;
 
 template<typename T>
-constexpr Fraction<T> THREE_QUARTERS = Fraction<T>{T(3), T(4)};
+static constexpr auto THREE_QUARTERS = Fraction<T>{T(3), T(4)};
 static constexpr auto I_THREE_QUARTERS = THREE_QUARTERS<int32_t>;
 static constexpr auto U_THREE_QUARTERS = THREE_QUARTERS<uint32_t>;
 
@@ -154,8 +154,8 @@ template<typename T>
 {
   return static_cast<float>(numerator) / static_cast<float>(denominator);
 }
-static constexpr float HALF = 1.0F / 2.0F;
-static constexpr float THIRD = 1.0F / 3.0F;
+static constexpr auto HALF = 1.0F / 2.0F;
+static constexpr auto THIRD = 1.0F / 3.0F;
 
 class RangeMapper
 {

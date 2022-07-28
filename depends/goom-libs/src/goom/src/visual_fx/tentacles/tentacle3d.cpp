@@ -18,7 +18,7 @@ using COLOR::RandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::MATH::IGoomRand;
 
-static constexpr float HEAD_X_MAX = 10.0F;
+static constexpr auto HEAD_X_MAX = 10.0F;
 
 Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
                        const Pixel& headMainColor,
@@ -59,7 +59,7 @@ void Tentacle3D::ColorMapsChanged()
   m_mainColorSegmentMixT =
       m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
 
-  static constexpr float PROB_LOW_MIX_SAME = 0.5F;
+  static constexpr auto PROB_LOW_MIX_SAME = 0.5F;
   m_lowColorSegmentMixT =
       m_goomRand.ProbabilityOf(PROB_LOW_MIX_SAME)
           ? m_mainColorSegmentMixT
@@ -77,9 +77,9 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
   }
 
   const auto [mixedMainColor, mixedLowColor] = GetMixedColors(nodeNum, mainColor, lowColor);
-  const Pixel mixedMainColorPixel = mixedMainColor;
-  const Pixel mixedLowColorPixel = mixedLowColor;
-  static constexpr float LOW_BRIGHTNESS_FACTOR = 1.8F;
+  const auto mixedMainColorPixel = mixedMainColor;
+  const auto mixedLowColorPixel = mixedLowColor;
+  static constexpr auto LOW_BRIGHTNESS_FACTOR = 1.8F;
   return std::make_pair(
       m_colorAdjust.GetAdjustment(brightness, mixedMainColorPixel),
       m_colorAdjust.GetAdjustment(LOW_BRIGHTNESS_FACTOR * brightness, mixedLowColorPixel));
@@ -94,21 +94,21 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
     return GetMixedHeadColors(nodeNum, mainColor, lowColor);
   }
 
-  float t = static_cast<float>(nodeNum + 1) / static_cast<float>(Get2DTentacle().GetNumNodes());
+  auto t = static_cast<float>(nodeNum + 1) / static_cast<float>(Get2DTentacle().GetNumNodes());
   if (m_reverseColorMix)
   {
     t = 1 - t;
   }
 
-  const Pixel segmentMainColor = m_colorMapsManager.GetColorMap(m_mainColorMapID).GetColor(t);
-  const Pixel segmentLowColor = m_colorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
-  const Pixel mixedMainColor =
+  const auto segmentMainColor = m_colorMapsManager.GetColorMap(m_mainColorMapID).GetColor(t);
+  const auto segmentLowColor = m_colorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
+  const auto mixedMainColor =
       GetFinalMixedColor(mainColor, segmentMainColor, m_mainColorSegmentMixT);
-  const Pixel mixedLowColor = GetFinalMixedColor(lowColor, segmentLowColor, m_lowColorSegmentMixT);
+  const auto mixedLowColor = GetFinalMixedColor(lowColor, segmentLowColor, m_lowColorSegmentMixT);
 
   if (std::abs(GetHead().x) < HEAD_X_MAX)
   {
-    const float brightnessCut = t * t;
+    const auto brightnessCut = t * t;
     return std::make_pair(GetBrighterColor(brightnessCut, mixedMainColor),
                           GetBrighterColor(brightnessCut, mixedLowColor));
   }
@@ -120,10 +120,10 @@ inline auto Tentacle3D::GetMixedHeadColors(const size_t nodeNum,
                                            const Pixel& mainColor,
                                            const Pixel& lowColor) const -> std::pair<Pixel, Pixel>
 {
-  const float t =
+  const auto t =
       0.5F * (1.0F + (static_cast<float>(nodeNum + 1) / static_cast<float>(GetNumHeadNodes() + 1)));
-  const Pixel mixedHeadMainColor = IColorMap::GetColorMix(m_headMainColor, mainColor, t);
-  const Pixel mixedHeadLowColor = IColorMap::GetColorMix(m_headLowColor, lowColor, t);
+  const auto mixedHeadMainColor = IColorMap::GetColorMix(m_headMainColor, mainColor, t);
+  const auto mixedHeadLowColor = IColorMap::GetColorMix(m_headLowColor, lowColor, t);
   return std::make_pair(mixedHeadMainColor, mixedHeadLowColor);
 }
 
@@ -137,20 +137,20 @@ inline auto Tentacle3D::GetFinalMixedColor(const Pixel& color,
 auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
 {
   const auto [xVec2D, yVec2D] = m_tentacle->GetDampedXAndYVectors();
-  const size_t n = xVec2D.size();
+  const auto n = xVec2D.size();
 
-  std::vector<V3dFlt> vec3d(n);
-  const float x0 = m_head.x;
-  const float y0 = m_head.y - static_cast<float>(yVec2D[0]);
-  const float z0 = m_head.z - static_cast<float>(xVec2D[0]);
-  float xStep = 0.0;
+  auto vec3d = std::vector<V3dFlt>(n);
+  const auto x0 = m_head.x;
+  const auto y0 = m_head.y - static_cast<float>(yVec2D[0]);
+  const auto z0 = m_head.z - static_cast<float>(xVec2D[0]);
+  auto xStep = 0.0F;
   if (std::abs(x0) < HEAD_X_MAX)
   {
-    const float xn = 0.1F * x0;
+    const auto xn = 0.1F * x0;
     xStep = (x0 - xn) / static_cast<float>(n);
   }
-  float x = x0;
-  for (size_t i = 0; i < n; ++i)
+  auto x = x0;
+  for (auto i = 0U; i < n; ++i)
   {
     vec3d[i].x = x;
     vec3d[i].z = z0 + static_cast<float>(xVec2D[i]);

@@ -28,7 +28,7 @@ auto RandomColorMaps::GetRandomColorMapName() const noexcept -> COLOR_DATA::Colo
 auto RandomColorMaps::GetRandomColorMapName(const ColorMapGroup colorMapGroup) const noexcept
     -> COLOR_DATA::ColorMapName
 {
-  const ColorMapNames& colorMapNames = GetColorMapNames(colorMapGroup);
+  const auto& colorMapNames = GetColorMapNames(colorMapGroup);
   return colorMapNames[m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(colorMapNames.size()))];
 }
 
@@ -76,7 +76,7 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap
     return colorMap;
   }
 
-  std::shared_ptr<const IColorMap> newColorMap = colorMap;
+  auto newColorMap = colorMap;
 
 #if __cplusplus <= 201703L
   if (types.find(ColorMapTypes::ROTATED_T) != types.end())

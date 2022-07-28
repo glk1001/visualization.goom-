@@ -17,14 +17,14 @@ using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
 
 // clang-format off
-static constexpr float MAP_COLORS_WEIGHT            = 20.0F;
-static constexpr float MEGA_MAP_COLOR_CHANGE_WEIGHT = 15.0F;
-static constexpr float MIX_COLORS_WEIGHT            = 20.0F;
-static constexpr float MEGA_MIX_COLOR_CHANGE_WEIGHT = 15.0F;
-static constexpr float REVERSE_MIX_COLORS_WEIGHT    = 20.0F;
-static constexpr float SINGLE_COLORS_WEIGHT         =  5.0F;
-static constexpr float SINE_MIX_COLORS_WEIGHT       =  5.0F;
-static constexpr float SINE_MAP_COLORS_WEIGHT       =  5.0F;
+static constexpr auto MAP_COLORS_WEIGHT            = 20.0F;
+static constexpr auto MEGA_MAP_COLOR_CHANGE_WEIGHT = 15.0F;
+static constexpr auto MIX_COLORS_WEIGHT            = 20.0F;
+static constexpr auto MEGA_MIX_COLOR_CHANGE_WEIGHT = 15.0F;
+static constexpr auto REVERSE_MIX_COLORS_WEIGHT    = 20.0F;
+static constexpr auto SINGLE_COLORS_WEIGHT         =  5.0F;
+static constexpr auto SINE_MIX_COLORS_WEIGHT       =  5.0F;
+static constexpr auto SINE_MAP_COLORS_WEIGHT       =  5.0F;
 // clang-format on
 
 Colorizer::Colorizer(const IGoomRand& goomRand)
@@ -56,11 +56,10 @@ auto Colorizer::SetWeightedColorMaps(
 
 auto Colorizer::UpdateMixerMaps() -> void
 {
-  static constexpr float PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
-  const std::set<RandomColorMaps::ColorMapTypes>& colorMapTypes =
-      m_goomRand.ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
-          ? RandomColorMaps::NO_COLOR_MAP_TYPES
-          : RandomColorMaps::ALL_COLOR_MAP_TYPES;
+  static constexpr auto PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
+  const auto& colorMapTypes = m_goomRand.ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
+                                  ? RandomColorMaps::NO_COLOR_MAP_TYPES
+                                  : RandomColorMaps::ALL_COLOR_MAP_TYPES;
 
   m_colorMapsManager.UpdateColorMapInfo(m_mixerMap1Id, {m_colorMaps, colorMapTypes});
   m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);
@@ -106,11 +105,11 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
                               const float tX,
                               const float tY) const -> Pixel
 {
-  const float logAlpha =
+  const auto logAlpha =
       m_maxHitCount <= 1 ? 1.0F : (std::log(static_cast<float>(hitCount)) / m_logMaxHitCount);
 
-  Pixel mixColor{};
-  float tBaseMix = 0.0F;
+  auto mixColor = Pixel{};
+  auto tBaseMix = 0.0F;
 
   switch (m_colorMode)
   {
@@ -149,7 +148,7 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
 
 auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const -> Pixel
 {
-  const Pixel nextColor =
+  const auto nextColor =
       IColorMap::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),
                              m_colorMapsManager.GetColorMap(m_mixerMap2Id).GetColor(tY), t);
   if (0 == m_countSinceColorMapChange)
@@ -157,10 +156,10 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
     return nextColor;
   }
 
-  const float tTransition = static_cast<float>(m_countSinceColorMapChange) /
-                            static_cast<float>(m_colorMapChangeCompleted);
+  const auto tTransition = static_cast<float>(m_countSinceColorMapChange) /
+                           static_cast<float>(m_colorMapChangeCompleted);
   --m_countSinceColorMapChange;
-  const Pixel prevNextColor =
+  const auto prevNextColor =
       IColorMap::GetColorMix(m_prevMixerMap1->GetColor(tX), m_prevMixerMap2->GetColor(tY), t);
   return IColorMap::GetColorMix(nextColor, prevNextColor, tTransition);
 }
@@ -172,20 +171,20 @@ inline auto Colorizer::GetMapColorsTBaseMix() const -> float
     return 1.0F - m_tAwayFromBaseColor;
   }
 
-  static constexpr float MIN_T_BASE_MIX = 0.3F;
-  static constexpr float MAX_T_BASE_MIX = 0.5F;
+  static constexpr auto MIN_T_BASE_MIX = 0.3F;
+  static constexpr auto MAX_T_BASE_MIX = 0.5F;
   return m_goomRand.GetRandInRange(MIN_T_BASE_MIX, MAX_T_BASE_MIX);
 }
 
 inline auto Colorizer::GetSineMixColor(const float tX, const float tY) const -> Pixel
 {
-  static constexpr float INITIAL_FREQ = 20.0F;
-  static constexpr float T_MIX_FACTOR = 0.5F;
-  static constexpr float Z_STEP = 0.1F;
-  static const float s_FREQ = INITIAL_FREQ;
-  static float s_z = 0.0F;
+  static constexpr auto INITIAL_FREQ = 20.0F;
+  static constexpr auto T_MIX_FACTOR = 0.5F;
+  static constexpr auto Z_STEP = 0.1F;
+  static const auto s_FREQ = INITIAL_FREQ;
+  static auto s_z = 0.0F;
 
-  const Pixel mixColor =
+  const auto mixColor =
       GetNextMixerMapColor(T_MIX_FACTOR * (1.0F + std::sin(s_FREQ * s_z)), tX, tY);
 
   s_z += Z_STEP;

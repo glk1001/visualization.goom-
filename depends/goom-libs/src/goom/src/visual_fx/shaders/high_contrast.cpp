@@ -45,8 +45,8 @@ void HighContrast::ChangeHighContrast()
   {
     m_highContrastT.Reset();
     m_highContrastOnTimer.ResetToZero();
-    static constexpr float MIN_CONTRAST_MIN_CHAN = -0.5F;
-    static constexpr float MAX_CONTRAST_MIN_CHAN = -0.2F;
+    static constexpr auto MIN_CONTRAST_MIN_CHAN = -0.5F;
+    static constexpr auto MAX_CONTRAST_MIN_CHAN = -0.2F;
     m_maxContrastMinChannelValue =
         m_goomRand.GetRandInRange(MIN_CONTRAST_MIN_CHAN, MAX_CONTRAST_MIN_CHAN);
   }
@@ -65,11 +65,11 @@ void HighContrast::UpdateHighContrast()
 
   if (!m_highContrastOnTimer.Finished())
   {
-    static constexpr float HIGH_CONTRAST = 1.01F;
+    static constexpr auto HIGH_CONTRAST = 1.01F;
     m_currentContrast = STD20::lerp(DEFAULT_CONTRAST, HIGH_CONTRAST, m_highContrastT());
     m_currentContrastMinChannelValue =
         STD20::lerp(0.0F, m_maxContrastMinChannelValue, m_highContrastT());
-    static constexpr float CONTRAST_BRIGHTNESS = 1.1F;
+    static constexpr auto CONTRAST_BRIGHTNESS = 1.1F;
     m_currentBrightness = STD20::lerp(DEFAULT_BRIGHTNESS, CONTRAST_BRIGHTNESS, m_highContrastT());
 
     return;

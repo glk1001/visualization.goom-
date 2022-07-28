@@ -264,23 +264,23 @@ inline auto LineFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 
 inline auto CircleFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float currentAngle =
+  const auto currentAngle =
       STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(currentAngle);
 }
 
 inline auto SpiralFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float radius = STD20::lerp(m_minRadius, m_maxRadius, t);
-  const float angle = m_angleFactor * t;
+  const auto radius = STD20::lerp(m_minRadius, m_maxRadius, t);
+  const auto angle = m_angleFactor * t;
   return GetSpiralPoint(radius, angle) + m_centrePos;
 }
 
 inline auto SpiralFunction::GetPointData(const float t) const noexcept -> PointData
 {
-  const float radius = STD20::lerp(m_minRadius, m_maxRadius, t);
-  const float angle = m_angleFactor * t;
-  const Point2dFlt point = GetSpiralPoint(radius, angle) + m_centrePos;
+  const auto radius = STD20::lerp(m_minRadius, m_maxRadius, t);
+  const auto angle = m_angleFactor * t;
+  const auto point = GetSpiralPoint(radius, angle) + m_centrePos;
 
   return {point, angle};
 }
@@ -293,21 +293,21 @@ inline auto SpiralFunction::GetSpiralPoint(const float radius, const float angle
 
 inline auto LissajousFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float currentAngle =
+  const auto currentAngle =
       STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(currentAngle);
 }
 
 inline auto HypotrochoidFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float currentAngle =
+  const auto currentAngle =
       STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(m_numCusps * currentAngle);
 }
 
 inline auto EpicycloidFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const float currentAngle =
+  const auto currentAngle =
       STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(m_numCusps * currentAngle);
 }

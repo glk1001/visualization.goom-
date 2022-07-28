@@ -54,7 +54,7 @@ inline auto ImageBitmap::GetHeight() const noexcept -> uint32_t
 
 inline auto ImageBitmap::operator()(const size_t x, const size_t y) const noexcept -> Pixel
 {
-  const RGB& pixel = m_buff.at((y * m_width) + x);
+  const auto& pixel = m_buff.at((y * m_width) + x);
   return Pixel{{pixel.red, pixel.green, pixel.blue, pixel.alpha}};
 }
 

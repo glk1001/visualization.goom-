@@ -116,7 +116,7 @@ inline auto FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpInc
                                                        const float tranLerpToMaxSwitchMult) noexcept
     -> void
 {
-  int32_t tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
+  auto tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
 
   if (tranLerpIncrement != 0)
   {

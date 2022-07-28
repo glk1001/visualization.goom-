@@ -13,7 +13,6 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
-#include <memory>
 #include <numeric>
 #include <vector>
 
@@ -51,12 +50,12 @@ auto ZoomFilterBuffers::Start() noexcept -> void
 
 auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const noexcept -> SourcePointInfo
 {
-  bool isClipped = false;
-  const Point2dInt tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
+  auto isClipped = false;
+  const auto tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
 
-  const Point2dInt srceScreenPoint = CoordTransforms::TranToScreenPoint(tranPoint);
-  const size_t xIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
-  const size_t yIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
+  const auto srceScreenPoint = CoordTransforms::TranToScreenPoint(tranPoint);
+  const auto xIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
+  const auto yIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
 
   return SourcePointInfo{srceScreenPoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex],
                          isClipped};
@@ -154,17 +153,17 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
   const auto doStripeLine = [this](const size_t y)
   {
     // Position of the pixel to compute in screen coordinates
-    const uint32_t yOffset = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
-    const uint32_t tranPosStart = yOffset * m_screenWidth;
+    const auto yOffset = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
+    const auto tranPosStart = yOffset * m_screenWidth;
 
-    NormalizedCoords normalizedCentredPoint = m_normalizedCoordsConverter.ScreenToNormalizedCoords(
-                                                  Point2dInt{0, static_cast<int32_t>(yOffset)}) -
-                                              m_normalizedMidPt;
+    auto normalizedCentredPoint = m_normalizedCoordsConverter.ScreenToNormalizedCoords(
+                                      Point2dInt{0, static_cast<int32_t>(yOffset)}) -
+                                  m_normalizedMidPt;
 
-    for (uint32_t x = 0; x < m_screenWidth; ++x)
+    for (auto x = 0U; x < m_screenWidth; ++x)
     {
-      const NormalizedCoords normalizedZoomPoint = m_getZoomPoint(normalizedCentredPoint);
-      const NormalizedCoords uncenteredZoomPoint = m_normalizedMidPt + normalizedZoomPoint;
+      const auto normalizedZoomPoint = m_getZoomPoint(normalizedCentredPoint);
+      const auto uncenteredZoomPoint = m_normalizedMidPt + normalizedZoomPoint;
 
       m_transformBuffers->SetTempBuffersTransformPoint(tranPosStart + x,
                                                        GetTranPoint(uncenteredZoomPoint));
@@ -174,7 +173,7 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
   };
 
   // Where (vertically) to stop generating the buffer stripe
-  const uint32_t tranBuffYLineEnd =
+  const auto tranBuffYLineEnd =
       std::min(m_screenHeight, m_tranBuffYLineStart + tranBuffStripeHeight);
 
   const auto numStripes = static_cast<size_t>(tranBuffYLineEnd - m_tranBuffYLineStart);
@@ -298,12 +297,12 @@ ZoomFilterBuffers::TransformBuffers::TransformBuffers(const uint32_t screenWidth
 
 auto ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity() noexcept -> void
 {
-  size_t i = 0;
-  for (int32_t y = 0; y < static_cast<int32_t>(m_screenHeight); ++y)
+  auto i = 0U;
+  for (auto y = 0; y < static_cast<int32_t>(m_screenHeight); ++y)
   {
-    for (int32_t x = 0; x < static_cast<int32_t>(m_screenWidth); ++x)
+    for (auto x = 0; x < static_cast<int32_t>(m_screenWidth); ++x)
     {
-      const Point2dInt tranPoint = CoordTransforms::ScreenToTranPoint({x, y});
+      const auto tranPoint = CoordTransforms::ScreenToTranPoint({x, y});
       m_tranXSrce[i] = tranPoint.x;
       m_tranYSrce[i] = tranPoint.y;
       ++i;
@@ -325,9 +324,9 @@ inline auto ZoomFilterBuffers::TransformBuffers::CopyAllDestTranToSrceTran() noe
 
 auto ZoomFilterBuffers::TransformBuffers::CopyUnlerpedDestTranToSrceTran() noexcept -> void
 {
-  for (size_t i = 0; i < m_bufferSize; ++i)
+  for (auto i = 0U; i < m_bufferSize; ++i)
   {
-    const Point2dInt tranPoint = GetSrceDestLerpBufferPoint(i);
+    const auto tranPoint = GetSrceDestLerpBufferPoint(i);
     m_tranXSrce[i] = tranPoint.x;
     m_tranYSrce[i] = tranPoint.y;
   }
@@ -373,11 +372,11 @@ inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const noexcept
 auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() noexcept
     -> FilterCoeff2dArray
 {
-  FilterCoeff2dArray precalculatedCoeffs{};
+  auto precalculatedCoeffs = FilterCoeff2dArray{};
 
-  for (uint32_t coeffH = 0; coeffH < DIM_FILTER_COEFFS; ++coeffH)
+  for (auto coeffH = 0U; coeffH < DIM_FILTER_COEFFS; ++coeffH)
   {
-    for (uint32_t coeffV = 0; coeffV < DIM_FILTER_COEFFS; ++coeffV)
+    for (auto coeffV = 0U; coeffV < DIM_FILTER_COEFFS; ++coeffV)
     {
       precalculatedCoeffs[coeffH][coeffV] = GetNeighborhoodCoeffArray(coeffH, coeffV);
     }
@@ -389,11 +388,11 @@ auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() noexc
 auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(
     const uint32_t coeffH, const uint32_t coeffV) noexcept -> NeighborhoodCoeffArray
 {
-  const uint32_t diffCoeffH = DIM_FILTER_COEFFS - coeffH;
-  const uint32_t diffCoeffV = DIM_FILTER_COEFFS - coeffV;
+  const auto diffCoeffH = DIM_FILTER_COEFFS - coeffH;
+  const auto diffCoeffV = DIM_FILTER_COEFFS - coeffV;
 
   // clang-format off
-  std::array<uint32_t, NUM_NEIGHBOR_COEFFS> coeffs = {
+  auto coeffs = std::array<uint32_t, NUM_NEIGHBOR_COEFFS>{
       diffCoeffH * diffCoeffV,
       coeffH * diffCoeffV,
       diffCoeffH * coeffV,
@@ -403,8 +402,8 @@ auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(
 
   // We want to decrement just one coefficient so that the sum of
   // coefficients equals 255. We'll choose the max coefficient.
-  const uint32_t maxCoeff = *std::max_element(cbegin(coeffs), cend(coeffs));
-  bool allZero = false;
+  const auto maxCoeff = *std::max_element(cbegin(coeffs), cend(coeffs));
+  auto allZero = false;
   if (0 == maxCoeff)
   {
     allZero = true;

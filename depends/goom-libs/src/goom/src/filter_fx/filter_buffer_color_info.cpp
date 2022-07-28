@@ -16,16 +16,16 @@ auto FilterBufferColorInfo::GetRegionInfoArray(
     const std::array<size_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
     -> std::array<RegionInfo, NUM_REGIONS>
 {
-  std::array<RegionInfo, NUM_REGIONS> regionRectArray{};
+  auto regionRectArray = std::array<RegionInfo, NUM_REGIONS>{};
 
-  size_t regionIndex = 0;
-  size_t y0 = 0;
+  auto regionIndex = 0UL;
+  auto y0 = 0UL;
   for (const auto& yBorder : yRegionBorders)
   {
-    const size_t y1 = yBorder;
+    const auto y1 = yBorder;
     assert(y0 <= y1);
 
-    for (size_t xRegionIndex = 0; xRegionIndex < NUM_X_REGIONS; ++xRegionIndex)
+    for (auto xRegionIndex = 0U; xRegionIndex < NUM_X_REGIONS; ++xRegionIndex)
     {
       regionRectArray.at(regionIndex) = {y0, y1, xRegionIndex};
       ++regionIndex;
@@ -43,10 +43,10 @@ auto FilterBufferColorInfo::GetFilterBufferRowColorInfoArray(
     const uint32_t height, const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept
     -> std::vector<FilterBufferRowColorInfo>
 {
-  std::vector<FilterBufferRowColorInfo> filterBufferRowColorInfo{};
+  auto filterBufferRowColorInfo = std::vector<FilterBufferRowColorInfo>{};
   filterBufferRowColorInfo.reserve(height);
 
-  for (size_t y = 0; y < height; ++y)
+  for (auto y = 0U; y < height; ++y)
   {
     filterBufferRowColorInfo.emplace_back(xRegionBorders);
   }
@@ -75,7 +75,7 @@ inline auto FilterBufferColorInfo::GetAverageLuminance(const Counts& totals) noe
 
 auto FilterBufferColorInfo::CalculateLuminances() noexcept -> void
 {
-  for (size_t i = 0; i < NUM_REGIONS; ++i)
+  for (auto i = 0U; i < NUM_REGIONS; ++i)
   {
     m_regionAverageLuminances.at(i) = GetRegionAverageLuminance(i);
   }
@@ -84,11 +84,11 @@ auto FilterBufferColorInfo::CalculateLuminances() noexcept -> void
 auto FilterBufferColorInfo::GetRegionAverageLuminance(const size_t regionIndex) const noexcept
     -> float
 {
-  const RegionInfo& regionInfo = m_regionInfoArray.at(regionIndex);
+  const auto& regionInfo = m_regionInfoArray.at(regionIndex);
 
-  Counts totals{};
+  auto totals = Counts{};
 
-  for (size_t y = regionInfo.y0; y <= regionInfo.y1; ++y)
+  for (auto y = regionInfo.y0; y <= regionInfo.y1; ++y)
   {
     const Counts& xRegionCounts =
         m_filterBufferRowColorInfoArray.at(y).GetXRegionCounts(regionInfo.xRegionIndex);
@@ -104,8 +104,8 @@ auto FilterBufferColorInfo::GetRegionAverageLuminance(const size_t regionIndex) 
 
 auto FilterBufferColorInfo::GetMaxRegionAverageLuminance() const noexcept -> float
 {
-  float maxAverageLuminance = 0.0F;
-  for (const float regionAverageLuminance : m_regionAverageLuminances)
+  auto maxAverageLuminance = 0.0F;
+  for (const auto regionAverageLuminance : m_regionAverageLuminances)
   {
     if (regionAverageLuminance > maxAverageLuminance)
     {
@@ -125,9 +125,9 @@ auto FilterBufferColorInfo::GetRegionAverageLuminanceAtPoint(const Point2dInt& p
 inline auto FilterBufferColorInfo::GetRegionIndexOfPoint(const Point2dInt& point) const noexcept
     -> size_t
 {
-  for (size_t regionIndex = 0; regionIndex < NUM_REGIONS; ++regionIndex)
+  for (auto regionIndex = 0U; regionIndex < NUM_REGIONS; ++regionIndex)
   {
-    const RegionInfo& regionInfo = m_regionInfoArray.at(regionIndex);
+    const auto& regionInfo = m_regionInfoArray.at(regionIndex);
     const auto y0 = static_cast<int32_t>(regionInfo.y0);
     const auto y1 = static_cast<int32_t>(regionInfo.y1);
 
@@ -153,11 +153,11 @@ inline auto FilterBufferColorInfo::IsInXRegion(const int32_t x,
 
 auto FilterBufferColorInfo::GetAverageLuminanceTest() const noexcept -> float
 {
-  Counts totals{};
+  auto totals = Counts{};
 
   for (const auto& filterBufferRowColorInfo : m_filterBufferRowColorInfoArray)
   {
-    const Counts regionTotals = filterBufferRowColorInfo.GetXRegionTotals();
+    const auto regionTotals = filterBufferRowColorInfo.GetXRegionTotals();
 
     totals.numNonzeroInRow += regionTotals.numNonzeroInRow;
     totals.sumRedInRow += regionTotals.sumRedInRow;
@@ -170,7 +170,7 @@ auto FilterBufferColorInfo::GetAverageLuminanceTest() const noexcept -> float
 
 auto FilterBufferColorInfo::FilterBufferRowColorInfo::GetXRegionTotals() const noexcept -> Counts
 {
-  Counts totals{};
+  auto totals = Counts{};
   for (const auto& regionCounts : m_xRegionCountsArray)
   {
     totals.numNonzeroInRow += regionCounts.numNonzeroInRow;

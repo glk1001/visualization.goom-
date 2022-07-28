@@ -107,7 +107,7 @@ inline auto Vitesse::GoSlowerBy(const int32_t val) -> void
 
 inline auto Vitesse::GetRelativeSpeed() const -> float
 {
-  const float speed = static_cast<float>(m_vitesse - MAX_VITESSE) / static_cast<float>(MAX_VITESSE);
+  const auto speed = static_cast<float>(m_vitesse - MAX_VITESSE) / static_cast<float>(MAX_VITESSE);
   return m_reverseVitesse ? -speed : +speed;
 }
 

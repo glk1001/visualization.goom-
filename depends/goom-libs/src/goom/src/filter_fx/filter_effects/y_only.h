@@ -59,7 +59,7 @@ inline auto YOnly::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                         [[maybe_unused]] const float sqDistFromZero,
                                         const NormalizedCoords& coords) const -> Point2dFlt
 {
-  const float xSpeedCoeff =
+  const auto xSpeedCoeff =
       baseSpeedCoeffs.x * m_params.xAmplitude * GetYOnlySpeedMultiplier(m_params.xEffect, coords);
   if (m_params.yEffect == YOnlyEffect::NONE)
   {

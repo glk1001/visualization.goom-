@@ -377,7 +377,7 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
 
   m_runningTimeStopwatch.SetUpperLimitOfTimeIntervalInMsSinceLastMarked(
       m_upperLimitOfTimeIntervalInMsSinceLastMarked);
-  static constexpr float START_TIME_DELAY_IN_MS = 457.0F;
+  static constexpr auto START_TIME_DELAY_IN_MS = 457.0F;
   m_runningTimeStopwatch.SetStartDelayAdjustInMs(START_TIME_DELAY_IN_MS);
   m_runningTimeStopwatch.StartNow();
 
@@ -483,7 +483,7 @@ inline auto GoomControl::GoomControlImpl::SetSongInfo(const SongInfo& songInfo) 
 
   m_songInfo = songInfo;
 
-  static constexpr uint32_t MS_PER_SECOND = 1000;
+  static constexpr auto MS_PER_SECOND = 1000U;
   m_runningTimeStopwatch.SetDuration(MS_PER_SECOND * m_songInfo.duration);
   m_runningTimeStopwatch.MarkTimeNow();
   m_runningTimeStopwatch.DoUpperLimitOfTimeIntervalCheck(true);
@@ -504,7 +504,7 @@ auto GoomControl::GoomControlImpl::UpdateTime() -> void
 
   m_runningTimeStopwatch.MarkTimeNow();
 
-  if (static constexpr float ACCURACY_CUTOFF_MS = 10000.0F;
+  if (static constexpr auto ACCURACY_CUTOFF_MS = 10000.0F;
       m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs < ACCURACY_CUTOFF_MS)
   {
     m_numUpdatesBetweenTimeChecks = 1;
@@ -616,8 +616,8 @@ inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::str
 
 inline auto GoomControl::GoomControlImpl::InitTitleDisplay() -> void
 {
-  const float xPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.050F : 0.085F;
-  const float yPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.130F : 0.300F;
+  const auto xPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.050F : 0.085F;
+  const auto yPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.130F : 0.300F;
   const auto xPos = static_cast<int>(xPosFraction * static_cast<float>(GetScreenWidth()));
   const auto yPos = static_cast<int>(yPosFraction * static_cast<float>(GetScreenHeight()));
 
@@ -645,7 +645,7 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 
   if (m_goomTitleDisplayer.IsFinalPhase())
   {
-    static constexpr float FINAL_TITLE_BUFF_INTENSITY = 0.2F;
+    static constexpr auto FINAL_TITLE_BUFF_INTENSITY = 0.2F;
     m_goomTextOutput.SetBuffIntensity(FINAL_TITLE_BUFF_INTENSITY);
     m_goomTextOutput.SetBuffers({&m_imageBuffers.GetP1()});
   }
@@ -685,7 +685,7 @@ auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
 
 inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() -> std::string
 {
-  const std::string timeLeftStr =
+  const auto timeLeftStr =
       not m_runningTimeStopwatch.AreTimesValid()
           ? "Time left: not valid!"
           : std20::format("Time left: {}  ({}%)",

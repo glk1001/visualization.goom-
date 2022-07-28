@@ -38,7 +38,7 @@ private:
 
 inline auto Noise::GetVelocity() const -> NormalizedCoords
 {
-  const float amp = m_params.noiseFactor / m_goomRand.GetRandInRange(NOISE_MIN, NOISE_MAX);
+  const auto amp = m_params.noiseFactor / m_goomRand.GetRandInRange(NOISE_MIN, NOISE_MAX);
   return {m_goomRand.GetRandInRange(-amp, +amp), m_goomRand.GetRandInRange(-amp, +amp)};
 }
 

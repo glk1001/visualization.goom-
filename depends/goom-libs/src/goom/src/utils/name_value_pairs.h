@@ -37,7 +37,7 @@ inline void MoveNameValuePairs(NameValuePairs&& nameValues, NameValuePairs& dest
 [[nodiscard]] inline auto GetFullParamGroup(const std::vector<std::string>& paramGroups)
     -> std::string
 {
-  std::string fullParamGroup{};
+  auto fullParamGroup = std::string{};
   for (auto str = cbegin(paramGroups); str != cend(paramGroups); ++str)
   {
     if (str != (cend(paramGroups) - 1))

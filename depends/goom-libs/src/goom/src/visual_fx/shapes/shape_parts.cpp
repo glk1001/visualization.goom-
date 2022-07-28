@@ -116,7 +116,7 @@ inline auto ShapePart::UpdateShapePathTransform(ShapePath& shapePath) const noex
 {
   auto& basePath = dynamic_cast<TransformedPath&>(shapePath.GetIPath());
 
-  Transform2d newTransform = basePath.GetTransform();
+  auto newTransform = basePath.GetTransform();
   newTransform.SetTranslation(Vec2dFlt{m_shapePathsTargetPoint.ToFlt()});
 
   basePath.SetTransform(newTransform);
@@ -136,19 +136,18 @@ inline auto ShapePart::GetTransform2d(const Vec2dFlt& targetPoint,
 
 auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
 {
-  const uint32_t numShapePaths =
-      m_goomRand.GetRandInRange(MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths + 1);
+  const auto numShapePaths = m_goomRand.GetRandInRange(MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths + 1);
 
-  static constexpr float MIN_MIN_SCALE = 0.9F;
-  static constexpr float MAX_MIN_SCALE = 1.0F;
-  static constexpr float MIN_MAX_SCALE = 1.0F + UTILS::MATH::SMALL_FLOAT;
-  static constexpr float MAX_MAX_SCALE = 1.5F;
-  static constexpr float PROB_SCALE_EQUALS_ONE = 0.9F;
-  const bool probScaleEqualsOne = m_goomRand.ProbabilityOf(PROB_SCALE_EQUALS_ONE);
+  static constexpr auto MIN_MIN_SCALE = 0.9F;
+  static constexpr auto MAX_MIN_SCALE = 1.0F;
+  static constexpr auto MIN_MAX_SCALE = 1.0F + UTILS::MATH::SMALL_FLOAT;
+  static constexpr auto MAX_MAX_SCALE = 1.5F;
+  static constexpr auto PROB_SCALE_EQUALS_ONE = 0.9F;
+  const auto probScaleEqualsOne = m_goomRand.ProbabilityOf(PROB_SCALE_EQUALS_ONE);
   const auto minScale =
-      float{probScaleEqualsOne ? 1.0F : m_goomRand.GetRandInRange(MIN_MIN_SCALE, MAX_MIN_SCALE)};
+      probScaleEqualsOne ? 1.0F : m_goomRand.GetRandInRange(MIN_MIN_SCALE, MAX_MIN_SCALE);
   const auto maxScale =
-      float{probScaleEqualsOne ? 1.0F : m_goomRand.GetRandInRange(MIN_MAX_SCALE, MAX_MAX_SCALE)};
+      probScaleEqualsOne ? 1.0F : m_goomRand.GetRandInRange(MIN_MAX_SCALE, MAX_MAX_SCALE);
 
   return GetShapePaths(numShapePaths, minScale, maxScale);
 }
@@ -158,22 +157,22 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
                               const float maxScale) noexcept -> std::vector<ShapePath>
 {
 
-  const Vec2dFlt targetPointFlt{m_shapePathsTargetPoint.ToFlt()};
+  const auto targetPointFlt = Vec2dFlt{m_shapePathsTargetPoint.ToFlt()};
 
-  static constexpr float MIN_ANGLE = 0.0F;
-  static constexpr float MAX_ANGLE = TWO_PI;
+  static constexpr auto MIN_ANGLE = 0.0F;
+  static constexpr auto MAX_ANGLE = TWO_PI;
   auto stepFraction = TValue{TValue::StepType::SINGLE_CYCLE, numShapePaths};
 
-  const auto radius = float{GetCircleRadius()};
-  const auto direction = CircleFunction::Direction{GetCircleDirection()};
-  const auto numSteps = uint32_t{m_shapePathsStepSpeed.GetCurrentNumSteps()};
+  const auto radius = GetCircleRadius();
+  const auto direction = GetCircleDirection();
+  const auto numSteps = m_shapePathsStepSpeed.GetCurrentNumSteps();
 
-  std::vector<ShapePath> shapePaths{};
+  auto shapePaths = std::vector<ShapePath>{};
 
-  for (uint32_t i = 0; i < numShapePaths; ++i)
+  for (auto i = 0U; i < numShapePaths; ++i)
   {
-    const auto rotate = float{STD20::lerp(MIN_ANGLE, MAX_ANGLE, stepFraction())};
-    const auto scale = float{STD20::lerp(minScale, maxScale, stepFraction())};
+    const auto rotate = STD20::lerp(MIN_ANGLE, MAX_ANGLE, stepFraction());
+    const auto scale = STD20::lerp(minScale, maxScale, stepFraction());
     const auto circlePath = GetCirclePath(radius, direction, numSteps);
 
     const auto newTransform = GetTransform2d(targetPointFlt, radius, scale, rotate);
@@ -183,7 +182,7 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 
     shapePaths.emplace_back(m_draw, basePath, m_colorMapsManager, colorInfo);
 
-    static constexpr int32_t CLOSE_ENOUGH = 4;
+    static constexpr auto CLOSE_ENOUGH = 4;
     UNUSED_FOR_NDEBUG(CLOSE_ENOUGH);
     if (SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) >
         CLOSE_ENOUGH)
@@ -223,8 +222,8 @@ inline auto ShapePart::GetCircleRadius() const noexcept -> float
 {
   const auto minDimension = static_cast<float>(
       std::min(m_goomInfo.GetScreenInfo().width, m_goomInfo.GetScreenInfo().height));
-  const auto minRadius = float{m_minRadiusFraction * minDimension};
-  const auto maxRadius = float{m_maxRadiusFraction * minDimension};
+  const auto minRadius = m_minRadiusFraction * minDimension;
+  const auto maxRadius = m_maxRadiusFraction * minDimension;
   const auto t = static_cast<float>(m_shapePartNum) / static_cast<float>(m_totalNumShapeParts - 1);
 
   return STD20::lerp(minRadius, maxRadius, t);
@@ -254,7 +253,7 @@ inline auto ShapePart::GetCirclePath(const float radius,
 
 inline auto ShapePart::GetCircleFunction(const ShapeFunctionParams& params) -> CircleFunction
 {
-  static constexpr Vec2dFlt CENTRE_POS{0.0F, 0.0F};
+  static constexpr auto CENTRE_POS = Vec2dFlt{0.0F, 0.0F};
 
   return {CENTRE_POS, params.radius, params.angleParams, params.direction};
 }
@@ -305,7 +304,7 @@ auto ShapePart::GetCurrentShapeDotRadius(const bool varyRadius) const noexcept -
     return m_minShapeDotRadius;
   }
 
-  const int32_t maxShapeDotRadius =
+  const auto maxShapeDotRadius =
       m_useExtremeMaxShapeDotRadius ? m_extremeMaxShapeDotRadius : m_maxShapeDotRadius;
 
   return STD20::lerp(m_minShapeDotRadius, maxShapeDotRadius, m_dotRadiusT());
@@ -323,7 +322,7 @@ auto ShapePart::GetFirstShapePathPositionT() const noexcept -> float
 
 auto ShapePart::GetFirstShapePathTDistanceFromClosestBoundary() const noexcept -> float
 {
-  const float positionT = GetFirstShapePathPositionT();
+  const auto positionT = GetFirstShapePathPositionT();
 
   if (positionT < UTILS::MATH::HALF)
   {
@@ -335,8 +334,8 @@ auto ShapePart::GetFirstShapePathTDistanceFromClosestBoundary() const noexcept -
 
 auto ShapePart::AreShapePathsCloseToMeeting() const noexcept -> bool
 {
-  static constexpr float T_MEETING_CUTOFF = 0.1F;
-  const float positionT = GetFirstShapePathPositionT();
+  static constexpr auto T_MEETING_CUTOFF = 0.1F;
+  const auto positionT = GetFirstShapePathPositionT();
 
   return (T_MEETING_CUTOFF > positionT) || (positionT > (1.0F - T_MEETING_CUTOFF));
 }
@@ -397,7 +396,7 @@ inline auto ShapePart::StartMegaColorChangeOnOffTimer() noexcept -> void
 
 inline auto ShapePart::SetMegaColorChangeOn() noexcept -> bool
 {
-  if (static constexpr float PROB_MEGA_COLOR_CHANGE_ON = 0.1F;
+  if (static constexpr auto PROB_MEGA_COLOR_CHANGE_ON = 0.1F;
       not m_goomRand.ProbabilityOf(PROB_MEGA_COLOR_CHANGE_ON))
   {
     return false;
@@ -408,7 +407,7 @@ inline auto ShapePart::SetMegaColorChangeOn() noexcept -> bool
 
 inline auto ShapePart::SetMegaColorChangeOff() noexcept -> bool
 {
-  if (static constexpr float PROB_MEGA_COLOR_CHANGE_OFF = 0.9F;
+  if (static constexpr auto PROB_MEGA_COLOR_CHANGE_OFF = 0.9F;
       not m_goomRand.ProbabilityOf(PROB_MEGA_COLOR_CHANGE_OFF))
   {
     return false;
@@ -421,7 +420,7 @@ inline auto ShapePart::ChangeAllColorMapsNow() noexcept -> void
 {
   m_colorMapsManager.ChangeAllColorMapsNow();
 
-  static constexpr float PROB_USE_EXTREME_MAX_DOT_RADIUS = 0.1F;
+  static constexpr auto PROB_USE_EXTREME_MAX_DOT_RADIUS = 0.1F;
   m_useExtremeMaxShapeDotRadius = m_goomRand.ProbabilityOf(PROB_USE_EXTREME_MAX_DOT_RADIUS);
 }
 
@@ -449,7 +448,7 @@ inline auto ShapePart::IncrementTs() noexcept -> void
 
 auto ShapePart::Draw(const DrawParams& drawParams) noexcept -> void
 {
-  const ShapePath::DrawParams shapePathParams{
+  const auto shapePathParams = ShapePath::DrawParams{
       drawParams.brightnessAttenuation,
       drawParams.firstShapePathAtMeetingPoint,
       GetMaxDotRadius(drawParams.varyDotRadius),
@@ -465,13 +464,13 @@ auto ShapePart::Draw(const DrawParams& drawParams) noexcept -> void
 
 inline auto ShapePart::GetMaxDotRadius(const bool varyRadius) const noexcept -> int32_t
 {
-  int32_t maxRadius = GetCurrentShapeDotRadius(varyRadius);
+  auto maxRadius = GetCurrentShapeDotRadius(varyRadius);
 
   if (AreShapePathsCloseToMeeting())
   {
-    const float tDistanceFromOne = GetFirstShapePathTDistanceFromClosestBoundary();
-    static constexpr float EXTRA_RADIUS = 10.0F;
-    static constexpr float EXPONENT = 10.0F;
+    const auto tDistanceFromOne = GetFirstShapePathTDistanceFromClosestBoundary();
+    static constexpr auto EXTRA_RADIUS = 10.0F;
+    static constexpr auto EXPONENT = 10.0F;
     maxRadius += static_cast<int32_t>(std::pow(tDistanceFromOne, EXPONENT) * EXTRA_RADIUS);
   }
 

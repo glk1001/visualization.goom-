@@ -50,34 +50,34 @@ using UTILS::MATH::TWO_PI;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
 
-static constexpr uint32_t NUM_SHAPES_PER_TUBE = 45;
+static constexpr auto NUM_SHAPES_PER_TUBE = 45U;
 // Strangely, 'NUM_SHAPES_PER_TUBE = 100' gives a small gap in
 // circle at 90 and 270 degrees.
 
-static constexpr float PROB_INTERIOR_SHAPE = 45.0F / 50.0F;
-static constexpr uint32_t MAX_INTERIOR_SHAPES_TIME = 500;
-static constexpr float PROB_NO_BOUNDARY_SHAPES = 10.0F / 50.0F;
-static constexpr uint32_t MAX_NO_BOUNDARY_SHAPES_TIME = 1;
-static constexpr float PROB_HEX_DOT_SHAPE = 1.0F / 50.0F;
-static constexpr uint32_t MAX_HEX_DOT_SHAPES_TIME = 100;
+static constexpr auto PROB_INTERIOR_SHAPE = 45.0F / 50.0F;
+static constexpr auto MAX_INTERIOR_SHAPES_TIME = 500U;
+static constexpr auto PROB_NO_BOUNDARY_SHAPES = 10.0F / 50.0F;
+static constexpr auto MAX_NO_BOUNDARY_SHAPES_TIME = 1U;
+static constexpr auto PROB_HEX_DOT_SHAPE = 1.0F / 50.0F;
+static constexpr auto MAX_HEX_DOT_SHAPES_TIME = 100U;
 
-static constexpr uint32_t MIN_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 6;
-static constexpr uint32_t MAX_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 3;
-static_assert(MIN_STRIPE_WIDTH > 0, "MIN_STRIPE_WIDTH must be > 0.");
+static constexpr auto MIN_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 6;
+static constexpr auto MAX_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 3;
+static_assert(MIN_STRIPE_WIDTH > 0);
 
-static constexpr uint32_t MIN_NUM_CIRCLES_IN_GROUP = 10;
-static constexpr uint32_t MAX_NUM_CIRCLES_IN_GROUP = 100;
+static constexpr auto MIN_NUM_CIRCLES_IN_GROUP = 10U;
+static constexpr auto MAX_NUM_CIRCLES_IN_GROUP = 100U;
 
-static constexpr float MIN_HEX_SIZE = 3.0F;
-static constexpr float MAX_HEX_SIZE = 9.0F;
+static constexpr auto MIN_HEX_SIZE = 3.0F;
+static constexpr auto MAX_HEX_SIZE = 9.0F;
 
-static constexpr float MIN_CIRCLE_SPEED = 0.0005F;
-static constexpr float NML_CIRCLE_SPEED = 0.005F;
-static constexpr float MAX_CIRCLE_SPEED = 0.008F;
+static constexpr auto MIN_CIRCLE_SPEED = 0.0005F;
+static constexpr auto NML_CIRCLE_SPEED = 0.005F;
+static constexpr auto MAX_CIRCLE_SPEED = 0.008F;
 
-static constexpr float MIN_CENTRE_SPEED = 0.0005F;
-static constexpr float NML_CENTRE_SPEED = 0.005F;
-static constexpr float MAX_CENTRE_SPEED = 0.05F;
+static constexpr auto MIN_CENTRE_SPEED = 0.0005F;
+static constexpr auto NML_CENTRE_SPEED = 0.005F;
+static constexpr auto MAX_CENTRE_SPEED = 0.05F;
 
 enum class LowColorTypes
 {
@@ -86,11 +86,11 @@ enum class LowColorTypes
   LIGHTENED_LOW_COLOR,
   _num // unused, and marks the enum end
 };
-static constexpr uint32_t MIN_LOW_COLOR_TYPE_TIME = 100;
-static constexpr uint32_t MAX_LOW_COLOR_TYPE_TIME = 1000;
+static constexpr auto MIN_LOW_COLOR_TYPE_TIME = 100U;
+static constexpr auto MAX_LOW_COLOR_TYPE_TIME = 1000U;
 
-static constexpr float OUTER_CIRCLE_BRIGHTNESS = 0.4F;
-static constexpr float LIGHTER_COLOR_POWER = 10.0F;
+static constexpr auto OUTER_CIRCLE_BRIGHTNESS = 0.4F;
+static constexpr auto LIGHTER_COLOR_POWER = 10.0F;
 
 class ShapeColorizer;
 
@@ -123,7 +123,7 @@ auto TubeParametricPath::GetClone() const noexcept -> std::unique_ptr<IPath>
 
 auto TubeParametricPath::GetNextPoint() const noexcept -> Point2dInt
 {
-  const Point2dInt point{
+  const auto point = Point2dInt{
       static_cast<int32_t>(
           std::round((m_b * std::cos(m_kX * GetCurrentT())) * std::cos(GetCurrentT()))),
       static_cast<int32_t>(
@@ -344,7 +344,7 @@ public:
 private:
   TubeData m_data;
 
-  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr auto GAMMA = 1.0F / 2.0F;
   const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
@@ -401,7 +401,7 @@ private:
                                                   const ShapeColors& colors1,
                                                   const ShapeColors& colors2,
                                                   float mixT) -> Pixel;
-  static constexpr float CUTOFF_BRIGHTNESS = 0.005F;
+  static constexpr auto CUTOFF_BRIGHTNESS = 0.005F;
   const BrightnessAttenuation m_brightnessAttenuation;
   [[nodiscard]] auto GetFinalColor(const Pixel& oldColor, const Pixel& color) const -> Pixel;
   [[nodiscard]] auto GetShapesOnlyColors(const LowColorTypes& lowColorType,
@@ -417,9 +417,9 @@ private:
 };
 
 // clang-format off
-static constexpr float TRUE_LOW_COLOR_WEIGHT      = 30.0F;
-static constexpr float MAIN_COLOR_WEIGHT          = 10.0F;
-static constexpr float LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
+static constexpr auto TRUE_LOW_COLOR_WEIGHT      = 30.0F;
+static constexpr auto MAIN_COLOR_WEIGHT          = 10.0F;
+static constexpr auto LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
 // clang-format on
 
 Tube::TubeImpl::TubeImpl(const TubeData& data, const OscillatingFunction::Params& pathParams)
@@ -440,31 +440,31 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
                                       const OscillatingFunction::Params& pathParams)
     -> std::vector<Shape>
 {
-  const Point2dInt middlePos{static_cast<int32_t>(U_HALF * data.screenWidth),
-                             static_cast<int32_t>(U_HALF * data.screenHeight)};
+  const auto middlePos = Point2dInt{static_cast<int32_t>(U_HALF * data.screenWidth),
+                                    static_cast<int32_t>(U_HALF * data.screenHeight)};
   const auto radius = (0.5F * static_cast<float>(std::min(data.screenWidth, data.screenHeight))) -
                       data.radiusEdgeOffset;
-  static constexpr float ANGLE_STEP = TWO_PI / static_cast<float>(NUM_SHAPES_PER_TUBE);
+  static constexpr auto ANGLE_STEP = TWO_PI / static_cast<float>(NUM_SHAPES_PER_TUBE);
 
-  std::vector<Shape> shapes(NUM_SHAPES_PER_TUBE);
+  auto shapes = std::vector<Shape>(NUM_SHAPES_PER_TUBE);
 
-  float angle = 0.0;
-  uint32_t shapeNum = 0;
+  auto angle = 0.0F;
+  auto shapeNum = 0U;
   for (auto& shape : shapes)
   {
-    const float cosAngle = std::cos(angle);
-    const float sinAngle = std::sin(angle);
-    const float xFrom = radius * cosAngle;
-    const float yFrom = radius * sinAngle;
-    const Point2dInt fromPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xFrom)),
-                                                    static_cast<int32_t>(std::round(yFrom))};
-    const float xTo = radius * std::cos(pi + angle);
-    const float yTo = radius * std::sin(pi + angle);
-    const Point2dInt toPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xTo)),
-                                                  static_cast<int32_t>(std::round(yTo))};
+    const auto cosAngle = std::cos(angle);
+    const auto sinAngle = std::sin(angle);
+    const auto xFrom = radius * cosAngle;
+    const auto yFrom = radius * sinAngle;
+    const auto fromPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xFrom)),
+                                              static_cast<int32_t>(std::round(yFrom))};
+    const auto xTo = radius * std::cos(pi + angle);
+    const auto yTo = radius * std::sin(pi + angle);
+    const auto toPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xTo)),
+                                            static_cast<int32_t>(std::round(yTo))};
 
     shape.shapeNum = shapeNum;
-    static const std::vector<TValue::DelayPoint> delayPoints{
+    static const auto delayPoints = std::vector<TValue::DelayPoint>{
         {       0.0F, SHAPE_T_DELAY_TIME},
         {T_AT_CENTRE, SHAPE_T_DELAY_TIME},
         {       1.0F, SHAPE_T_DELAY_TIME}
@@ -562,15 +562,15 @@ inline void Tube::TubeImpl::SetCentreSpeed(const float val)
 
 inline void Tube::TubeImpl::IncreaseCentreSpeed()
 {
-  const float factor = m_data.goomRand.GetRandInRange(1.01F, 10.0F);
-  const float newSpeed = std::min(MAX_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
+  const auto factor = m_data.goomRand.GetRandInRange(1.01F, 10.0F);
+  const auto newSpeed = std::min(MAX_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
 
 inline void Tube::TubeImpl::DecreaseCentreSpeed()
 {
-  const float factor = m_data.goomRand.GetRandInRange(0.1F, 0.99F);
-  const float newSpeed = std::min(MIN_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
+  const auto factor = m_data.goomRand.GetRandInRange(0.1F, 0.99F);
+  const auto newSpeed = std::min(MIN_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
 
@@ -603,23 +603,23 @@ inline void Tube::TubeImpl::SetCircleSpeed(const float val)
 
 inline void Tube::TubeImpl::IncreaseCircleSpeed()
 {
-  static constexpr float MIN_INCREASE_SPEED_FACTOR = 1.01F;
-  static constexpr float MAX_INCREASE_SPEED_FACTOR = 10.0F;
-  const float factor =
+  static constexpr auto MIN_INCREASE_SPEED_FACTOR = 1.01F;
+  static constexpr auto MAX_INCREASE_SPEED_FACTOR = 10.0F;
+  const auto factor =
       m_data.goomRand.GetRandInRange(MIN_INCREASE_SPEED_FACTOR, MAX_INCREASE_SPEED_FACTOR);
 
-  const float newSpeed = std::min(MAX_CIRCLE_SPEED, GetCircleSpeed() * factor);
+  const auto newSpeed = std::min(MAX_CIRCLE_SPEED, GetCircleSpeed() * factor);
   SetCircleSpeed(newSpeed);
 }
 
 inline void Tube::TubeImpl::DecreaseCircleSpeed()
 {
-  static constexpr float MIN_DECREASE_SPEED_FACTOR = 0.1F;
-  static constexpr float MAX_DECREASE_SPEED_FACTOR = 0.99F;
-  const float factor =
+  static constexpr auto MIN_DECREASE_SPEED_FACTOR = 0.1F;
+  static constexpr auto MAX_DECREASE_SPEED_FACTOR = 0.99F;
+  const auto factor =
       m_data.goomRand.GetRandInRange(MIN_DECREASE_SPEED_FACTOR, MAX_DECREASE_SPEED_FACTOR);
 
-  const float newSpeed = std::max(MIN_CIRCLE_SPEED, GetCircleSpeed() * factor);
+  const auto newSpeed = std::max(MIN_CIRCLE_SPEED, GetCircleSpeed() * factor);
   SetCircleSpeed(newSpeed);
 }
 
@@ -628,7 +628,7 @@ void Tube::TubeImpl::DrawShapes()
   m_hexLen = GetHexLen();
   m_interiorShapeSize = GetInteriorShapeSize(m_hexLen);
 
-  const Vec2dInt centreOffset = m_getTransformedCentre(m_data.tubeId, m_centrePath->GetNextPoint());
+  const auto centreOffset = m_getTransformedCentre(m_data.tubeId, m_centrePath->GetNextPoint());
   for (const auto& shape : m_shapes)
   {
     DrawShape(shape, centreOffset);
@@ -640,7 +640,7 @@ void Tube::TubeImpl::DrawShapes()
 
 inline auto Tube::TubeImpl::GetHexLen() const -> float
 {
-  const float hexSizeT = std::fabs(m_shapes[0].path->GetCurrentT() - T_AT_CENTRE) / T_AT_CENTRE;
+  const auto hexSizeT = std::fabs(m_shapes[0].path->GetCurrentT() - T_AT_CENTRE) / T_AT_CENTRE;
   return STD20::lerp(MIN_HEX_SIZE, MAX_HEX_SIZE, hexSizeT);
 }
 
@@ -688,20 +688,20 @@ inline void Tube::TubeImpl::UpdateTimers()
 
 inline auto Tube::TubeImpl::GetInteriorShapeSize(const float hexLen) const -> uint32_t
 {
-  static constexpr float MIN_SIZE_FACTOR = 0.5F;
-  static constexpr float MAX_SIZE_FACTOR = 1.3F;
+  static constexpr auto MIN_SIZE_FACTOR = 0.5F;
+  static constexpr auto MAX_SIZE_FACTOR = 1.3F;
   return static_cast<uint32_t>(
       std::round(m_data.goomRand.GetRandInRange(MIN_SIZE_FACTOR, MAX_SIZE_FACTOR) * hexLen));
 }
 
 void Tube::TubeImpl::DrawShape(const Shape& shape, const Vec2dInt& centreOffset) const
 {
-  const int32_t jitterXOffset = m_data.goomRand.GetRandInRange(0, m_maxJitterOffset + 1);
-  const int32_t jitterYOffset = jitterXOffset;
-  const Vec2dInt jitterOffset{jitterXOffset, jitterYOffset};
-  const Point2dInt shapeCentrePos = shape.path->GetNextPoint() + jitterOffset + centreOffset;
+  const auto jitterXOffset = m_data.goomRand.GetRandInRange(0, m_maxJitterOffset + 1);
+  const auto jitterYOffset = jitterXOffset;
+  const auto jitterOffset = Vec2dInt{jitterXOffset, jitterYOffset};
+  const auto shapeCentrePos = shape.path->GetNextPoint() + jitterOffset + centreOffset;
 
-  const ShapeColors allColors = m_colorizer->GetColors(
+  const auto allColors = m_colorizer->GetColors(
       m_currentLowColorType, static_cast<uint32_t>(m_circleGroupTimer.GetCurrentCount()), shape,
       shapeCentrePos);
 
@@ -710,7 +710,7 @@ void Tube::TubeImpl::DrawShape(const Shape& shape, const Vec2dInt& centreOffset)
     DrawHexOutline(shapeCentrePos, allColors, shape.lineThickness);
   }
 
-  static constexpr float MIN_HEX_LEN_FOR_INTERIOR = 2.0;
+  static constexpr auto MIN_HEX_LEN_FOR_INTERIOR = 2.0F;
   if ((!m_interiorShapeTimer.Finished()) && (m_hexLen > (MIN_HEX_LEN_FOR_INTERIOR + SMALL_FLOAT)))
   {
     DrawInteriorShape(shapeCentrePos, allColors);
@@ -722,24 +722,24 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
                                     const ShapeColors& allColors,
                                     const uint8_t lineThickness) const
 {
-  static constexpr uint32_t NUM_HEX_SIDES = 6;
-  static constexpr float ANGLE_STEP = THIRD_PI;
-  static constexpr float START_ANGLE = 2.0F * ANGLE_STEP;
-  const MultiplePixels lineColors{allColors.mainColor, allColors.lowColor};
-  const MultiplePixels outerCircleColors{allColors.outerCircleMainColor,
-                                         allColors.outerCircleLowColor};
-  const bool drawHexDot = !m_hexDotShapeTimer.Finished();
+  static constexpr auto NUM_HEX_SIDES = 6U;
+  static constexpr auto ANGLE_STEP = THIRD_PI;
+  static constexpr auto START_ANGLE = 2.0F * ANGLE_STEP;
+  const auto lineColors = MultiplePixels{allColors.mainColor, allColors.lowColor};
+  const auto outerCircleColors =
+      MultiplePixels{allColors.outerCircleMainColor, allColors.outerCircleLowColor};
+  const auto drawHexDot = !m_hexDotShapeTimer.Finished();
 
   // Start hex shape to right of centre position.
-  Point2dInt point1 = {static_cast<int32_t>(std::round(static_cast<float>(hexCentre.x) + m_hexLen)),
-                       hexCentre.y};
-  float angle = START_ANGLE;
+  auto point1 = Point2dInt{
+      static_cast<int32_t>(std::round(static_cast<float>(hexCentre.x) + m_hexLen)), hexCentre.y};
+  auto angle = START_ANGLE;
 
-  for (uint32_t i = 0; i < NUM_HEX_SIDES; ++i)
+  for (auto i = 0U; i < NUM_HEX_SIDES; ++i)
   {
-    const Point2dInt point2 = {
-        point1.x + static_cast<int32_t>(std::round(m_hexLen * std::cos(angle))),
-        point1.y + static_cast<int32_t>(std::round(m_hexLen * std::sin(angle)))};
+    const auto point2 =
+        Point2dInt{point1.x + static_cast<int32_t>(std::round(m_hexLen * std::cos(angle))),
+                   point1.y + static_cast<int32_t>(std::round(m_hexLen * std::sin(angle)))};
 
     m_data.drawFuncs.drawLine(point1, point2, lineColors, lineThickness);
     if (drawHexDot)
@@ -757,7 +757,7 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
 inline void Tube::TubeImpl::DrawInteriorShape(const Point2dInt& shapeCentrePos,
                                               const ShapeColors& allColors) const
 {
-  const MultiplePixels colors{allColors.innerMainColor, allColors.innerLowColor};
+  const auto colors = MultiplePixels{allColors.innerMainColor, allColors.innerLowColor};
   m_data.drawFuncs.drawSmallImage(shapeCentrePos, SmallImageBitmaps::ImageNames::SPHERE,
                                   m_interiorShapeSize, colors);
 }
@@ -765,22 +765,22 @@ inline void Tube::TubeImpl::DrawInteriorShape(const Point2dInt& shapeCentrePos,
 inline void Tube::TubeImpl::DrawOuterCircle(const Point2dInt& shapeCentrePos,
                                             const ShapeColors& allColors) const
 {
-  static constexpr float OUTER_CIRCLE_RADIUS_FACTOR = 1.5;
+  static constexpr auto OUTER_CIRCLE_RADIUS_FACTOR = 1.5F;
   const auto outerCircleRadius =
       static_cast<int32_t>(std::round(OUTER_CIRCLE_RADIUS_FACTOR * m_hexLen));
-  static constexpr uint8_t OUTER_CIRCLE_LINE_THICKNESS = 1;
-  const MultiplePixels outerCircleColors{allColors.outerCircleMainColor,
-                                         allColors.outerCircleLowColor};
+  static constexpr auto OUTER_CIRCLE_LINE_THICKNESS = 1U;
+  const auto outerCircleColors =
+      MultiplePixels{allColors.outerCircleMainColor, allColors.outerCircleLowColor};
   m_data.drawFuncs.drawCircle(shapeCentrePos, outerCircleRadius, outerCircleColors,
                               OUTER_CIRCLE_LINE_THICKNESS);
 }
 
 // clang-format off
-static constexpr float SHAPES_ONLY_WEIGHT                = 20.0F;
-static constexpr float STRIPED_SHAPES_ONLY_WEIGHT        = 10.0F;
-static constexpr float CIRCLES_ONLY_WEIGHT               = 20.0F;
-static constexpr float SHAPES_AND_CIRCLES_WEIGHT         =  5.0F;
-static constexpr float STRIPED_SHAPES_AND_CIRCLES_WEIGHT = 15.0F;
+static constexpr auto SHAPES_ONLY_WEIGHT                = 20.0F;
+static constexpr auto STRIPED_SHAPES_ONLY_WEIGHT        = 10.0F;
+static constexpr auto CIRCLES_ONLY_WEIGHT               = 20.0F;
+static constexpr auto SHAPES_AND_CIRCLES_WEIGHT         =  5.0F;
+static constexpr auto STRIPED_SHAPES_AND_CIRCLES_WEIGHT = 15.0F;
 // clang-format on
 
 ShapeColorizer::ShapeColorizer(const TubeData& data,
@@ -867,13 +867,13 @@ void ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
                                         std::vector<ShapeColors>* const oldColors,
                                         TValue* const t)
 {
-  const size_t numColorMaps = colorMaps->size();
+  const auto numColorMaps = colorMaps->size();
   Expects(numColorMaps == oldColors->size());
 
   m_outerCircleMainColorMap = &m_data.mainColorMaps->GetRandomColorMap();
   m_outerCircleLowColorMap = &m_data.lowColorMaps->GetRandomColorMap();
 
-  for (size_t i = 0; i < numColorMaps; ++i)
+  for (auto i = 0U; i < numColorMaps; ++i)
   {
     CopyColors((*colorMaps)[i], *t, &(*oldColors)[i]);
     ResetColorMaps(&(*colorMaps)[i]);
@@ -918,15 +918,16 @@ void ShapeColorizer::UpdateAllTValues()
 auto ShapeColorizer::GetBrightness(const Shape& shape, const Point2dInt& shapeCentrePos) const
     -> float
 {
-  static constexpr float MIN_BRIGHTNESS = 0.5F;
-  const float brightness =
+  static constexpr auto MIN_BRIGHTNESS = 0.5F;
+  const auto brightness =
       std::min(3.0F, m_data.brightnessFactor * m_brightnessAttenuation.GetPositionBrightness(
                                                    shapeCentrePos, MIN_BRIGHTNESS));
 
-  static constexpr float SMALL_T = 0.15F;
-  if (constexpr float HALFWAY_T = 0.5F; std::fabs(shape.path->GetCurrentT() - HALFWAY_T) < SMALL_T)
+  static constexpr auto SMALL_T = 0.15F;
+  if (static constexpr float HALFWAY_T = 0.5F;
+      std::fabs(shape.path->GetCurrentT() - HALFWAY_T) < SMALL_T)
   {
-    static constexpr float SMALL_T_BRIGHTNESS = 0.250F;
+    static constexpr auto SMALL_T_BRIGHTNESS = 0.250F;
     return SMALL_T_BRIGHTNESS * brightness;
   }
   return brightness;
@@ -937,7 +938,7 @@ auto ShapeColorizer::GetColors(const LowColorTypes lowColorType,
                                const Shape& shape,
                                const Point2dInt& shapeCentrePos) const -> ShapeColors
 {
-  const float brightness = GetBrightness(shape, shapeCentrePos);
+  const auto brightness = GetBrightness(shape, shapeCentrePos);
 
   switch (m_colorMapMixMode)
   {
@@ -958,7 +959,7 @@ inline auto ShapeColorizer::GetShapesOnlyColors(const LowColorTypes& lowColorTyp
                                                 const Shape& shape,
                                                 const float brightness) const -> ShapeColors
 {
-  const ShapeColors colors = GetShapeColors(GetShapeNumToUse(shape.shapeNum), brightness);
+  const auto colors = GetShapeColors(GetShapeNumToUse(shape.shapeNum), brightness);
   return {
       colors.mainColor,
       GetLowColor(lowColorType, colors),
@@ -973,7 +974,7 @@ inline auto ShapeColorizer::GetCirclesOnlyColors(const LowColorTypes& lowColorTy
                                                  const uint32_t circleNum,
                                                  const float brightness) const -> ShapeColors
 {
-  const ShapeColors colors = GetCircleColors(circleNum, brightness);
+  const auto colors = GetCircleColors(circleNum, brightness);
   return {
       colors.mainColor,
       GetLowColor(lowColorType, colors),
@@ -989,8 +990,8 @@ inline auto ShapeColorizer::GetShapesAndCirclesColors(const LowColorTypes& lowCo
                                                       const Shape& shape,
                                                       const float brightness) const -> ShapeColors
 {
-  const ShapeColors shapeColors = GetShapeColors(GetShapeNumToUse(shape.shapeNum), brightness);
-  const ShapeColors circleColors = GetCircleColors(circleNum, brightness);
+  const auto shapeColors = GetShapeColors(GetShapeNumToUse(shape.shapeNum), brightness);
+  const auto circleColors = GetCircleColors(circleNum, brightness);
 
   return {
       IColorMap::GetColorMix(shapeColors.mainColor, circleColors.mainColor, m_mixT()),
@@ -1039,15 +1040,15 @@ inline auto ShapeColorizer::GetLowMixedColor(const LowColorTypes colorType,
 {
   if (colorType == LowColorTypes::LIGHTENED_LOW_COLOR)
   {
-    const Pixel mixedColor = IColorMap::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
+    const auto mixedColor = IColorMap::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
     return GetLightenedColor(mixedColor, LIGHTER_COLOR_POWER);
   }
   if (colorType == LowColorTypes::MAIN_COLOR)
   {
-    const Pixel mixedColor = IColorMap::GetColorMix(colors1.mainColor, colors2.mainColor, mixT);
+    const auto mixedColor = IColorMap::GetColorMix(colors1.mainColor, colors2.mainColor, mixT);
     return mixedColor;
   }
-  const Pixel mixedColor = IColorMap::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
+  const auto mixedColor = IColorMap::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
   return mixedColor;
 }
 
@@ -1058,17 +1059,17 @@ inline auto ShapeColorizer::GetInnerLowMixedColor(const LowColorTypes colorType,
 {
   if (colorType == LowColorTypes::LIGHTENED_LOW_COLOR)
   {
-    const Pixel mixedColor =
+    const auto mixedColor =
         IColorMap::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
     return GetLightenedColor(mixedColor, LIGHTER_COLOR_POWER);
   }
   if (colorType == LowColorTypes::MAIN_COLOR)
   {
-    const Pixel mixedColor =
+    const auto mixedColor =
         IColorMap::GetColorMix(colors1.innerMainColor, colors2.innerMainColor, mixT);
     return mixedColor;
   }
-  const Pixel mixedColor =
+  const auto mixedColor =
       IColorMap::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
   return mixedColor;
 }
@@ -1100,17 +1101,17 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
                                const ShapeColors& oldShapeColors,
                                const float brightness) const -> ShapeColors
 {
-  const Pixel mainColor =
+  const auto mainColor =
       GetFinalColor(oldShapeColors.mainColor, shapeColorMaps.mainColorMap->GetColor(t()));
-  const Pixel lowColor =
+  const auto lowColor =
       GetFinalColor(oldShapeColors.lowColor, shapeColorMaps.lowColorMap->GetColor(t()));
-  const Pixel innerMainColor =
+  const auto innerMainColor =
       GetFinalColor(oldShapeColors.innerMainColor, shapeColorMaps.innerMainColorMap->GetColor(t()));
-  const Pixel innerLowColor =
+  const auto innerLowColor =
       GetFinalColor(oldShapeColors.innerLowColor, shapeColorMaps.innerLowColorMap->GetColor(t()));
-  const Pixel outerCircleMainColor = GetFinalColor(
+  const auto outerCircleMainColor = GetFinalColor(
       oldShapeColors.outerCircleMainColor, m_outerCircleMainColorMap->GetColor(m_outerCircleT()));
-  const Pixel outerCircleLowColor = GetFinalColor(
+  const auto outerCircleLowColor = GetFinalColor(
       oldShapeColors.outerCircleLowColor, m_outerCircleLowColorMap->GetColor(m_outerCircleT()));
 
   return {
@@ -1140,7 +1141,7 @@ auto BrightnessAttenuation::GetPositionBrightness(const Point2dInt& pos,
                                                   const float minBrightnessPastCutoff) const
     -> float
 {
-  const float distFromCentre = GetDistFromCentreFactor(pos);
+  const auto distFromCentre = GetDistFromCentreFactor(pos);
   return distFromCentre < DIST_SQ_CUTOFF ? m_cutoffBrightness
                                          : (minBrightnessPastCutoff + distFromCentre);
 }

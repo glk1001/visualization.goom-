@@ -14,7 +14,7 @@ namespace GOOM::UTILS
 {
 
 template<class E>
-static constexpr uint32_t NUM = static_cast<size_t>(E::_num);
+static constexpr auto NUM = static_cast<uint32_t>(E::_num);
 
 template<typename E>
 constexpr auto ToUType(E value) noexcept

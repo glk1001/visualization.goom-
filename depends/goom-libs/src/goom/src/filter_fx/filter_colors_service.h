@@ -54,9 +54,9 @@ inline auto FilterColorsService::SetBrightness(const float brightness) noexcept 
   //
   //  (c/x) * (m/n) = (c*m) / (x*n) = c / (x*n / m)
 
-  static constexpr uint32_t X = MAX_SUM_COEFFS;
-  static constexpr uint32_t N = channel_limits<uint32_t>::max();
-  const uint32_t m = std::max(1U, static_cast<uint32_t>(brightness * channel_limits<float>::max()));
+  static constexpr auto X = MAX_SUM_COEFFS;
+  static constexpr auto N = channel_limits<uint32_t>::max();
+  const auto m = std::max(1U, static_cast<uint32_t>(brightness * channel_limits<float>::max()));
 
   m_coeffsAndBrightnessDivisor = (X * N) / m;
 }
@@ -75,7 +75,7 @@ inline auto FilterColorsService::GetNewColor(
     const PixelBuffer& srceBuff,
     const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const noexcept -> Pixel
 {
-  const NeighborhoodPixelArray pixelNeighbours = srceBuff.Get4RHBNeighbours(
+  const auto pixelNeighbours = srceBuff.Get4RHBNeighbours(
       static_cast<size_t>(sourceInfo.screenPoint.x), static_cast<size_t>(sourceInfo.screenPoint.y));
 
   return GetFilteredColor(sourceInfo.coeffs, pixelNeighbours);
@@ -101,10 +101,10 @@ inline auto FilterColorsService::GetBlockyMixedColor(
   // The order col4, col3, col2, col1 gave a black tear - not so good.
 
   Expects(ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS == coeffs.val.size());
-  static constexpr size_t ALLOWED_NUM_NEIGHBORS = 4;
+  static constexpr auto ALLOWED_NUM_NEIGHBORS = 4U;
   static_assert(ALLOWED_NUM_NEIGHBORS == ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS);
 
-  const NeighborhoodPixelArray reorderedColors{colors[0], colors[2], colors[1], colors[3]};
+  const auto reorderedColors = NeighborhoodPixelArray{colors[0], colors[2], colors[1], colors[3]};
   return GetMixedColor(coeffs, reorderedColors);
 }
 
@@ -117,14 +117,14 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
     return BLACK_PIXEL;
   }
 
-  uint32_t multR = 0;
-  uint32_t multG = 0;
-  uint32_t multB = 0;
-  for (size_t i = 0; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; ++i)
+  auto multR = 0U;
+  auto multG = 0U;
+  auto multB = 0U;
+  for (auto i = 0U; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; ++i)
   {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
-    const uint32_t coeff = coeffs.val[i];
-    const Pixel color = colors[i];
+    const auto coeff = coeffs.val[i];
+    const auto color = colors[i];
     multR += static_cast<uint32_t>(color.R()) * coeff;
     multG += static_cast<uint32_t>(color.G()) * coeff;
     multB += static_cast<uint32_t>(color.B()) * coeff;

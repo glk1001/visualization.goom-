@@ -132,18 +132,18 @@ inline auto CirclesFx::CirclesFxImpl::MakeCircles() const noexcept -> std::uniqu
 
 auto CirclesFx::CirclesFxImpl::GetCircleParams() const noexcept -> std::vector<Circle::Params>
 {
-  std::vector<Circle::Params> circleParams(NUM_CIRCLES);
+  auto circleParams = std::vector<Circle::Params>(NUM_CIRCLES);
 
-  const float radiusReducer = GetCircleRadiusReducer();
+  const auto radiusReducer = GetCircleRadiusReducer();
 
   circleParams[0].circleRadius = GetCircleRadius0();
-  for (size_t i = 1; i < NUM_CIRCLES; ++i)
+  for (auto i = 1U; i < NUM_CIRCLES; ++i)
   {
     circleParams[i].circleRadius = radiusReducer * circleParams[i - 1].circleRadius;
   }
 
-  std::array<Point2dInt, NUM_CIRCLES> circleCentreTargets = GetCircleCentreTargets();
-  for (size_t i = 0; i < NUM_CIRCLES; ++i)
+  auto circleCentreTargets = GetCircleCentreTargets();
+  for (auto i = 0U; i < NUM_CIRCLES; ++i)
   {
     circleParams[i].circleCentreStart = m_lastCircleCentreStart;
     circleParams[i].circleCentreTarget = circleCentreTargets.at(i);
@@ -154,44 +154,44 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams() const noexcept -> std::vector<C
 
 inline auto CirclesFx::CirclesFxImpl::GetCircleRadius0() const noexcept -> float
 {
-  static constexpr float MIN_RADIUS_MARGIN = 10.0F;
-  static constexpr float MAX_RADIUS_MARGIN = 50.01F;
-  const float radiusMargin =
+  static constexpr auto MIN_RADIUS_MARGIN = 10.0F;
+  static constexpr auto MAX_RADIUS_MARGIN = 50.01F;
+  const auto radiusMargin =
       m_fxHelper.GetGoomRand().GetRandInRange(MIN_RADIUS_MARGIN, MAX_RADIUS_MARGIN);
 
-  const float maxRadius = 0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight));
+  const auto maxRadius = 0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight));
 
   return maxRadius - radiusMargin;
 }
 
 inline auto CirclesFx::CirclesFxImpl::GetCircleRadiusReducer() const noexcept -> float
 {
-  if (static constexpr float PROB_SAME_RADIUS = 0.6F;
+  if (static constexpr auto PROB_SAME_RADIUS = 0.6F;
       m_fxHelper.GetGoomRand().ProbabilityOf(PROB_SAME_RADIUS))
   {
     return 1.0F;
   }
 
-  static constexpr float MIN_RADIUS_REDUCER = 0.90F;
-  static constexpr float MAX_RADIUS_REDUCER = 1.01F;
+  static constexpr auto MIN_RADIUS_REDUCER = 0.90F;
+  static constexpr auto MAX_RADIUS_REDUCER = 1.01F;
   return m_fxHelper.GetGoomRand().GetRandInRange(MIN_RADIUS_REDUCER, MAX_RADIUS_REDUCER);
 }
 
 auto CirclesFx::CirclesFxImpl::GetAllCirclesCentreStart() const noexcept -> Point2dInt
 {
-  static constexpr float MAX_CLOSE_TO_ZOOM_POINT_T = 0.75F;
-  const float t = m_fxHelper.GetGoomRand().GetRandInRange(0.0F, MAX_CLOSE_TO_ZOOM_POINT_T);
+  static constexpr auto MAX_CLOSE_TO_ZOOM_POINT_T = 0.75F;
+  const auto t = m_fxHelper.GetGoomRand().GetRandInRange(0.0F, MAX_CLOSE_TO_ZOOM_POINT_T);
   return lerp(m_screenMidPoint, m_lastZoomMidpoint, t);
 }
 
 auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets() const -> std::array<Point2dInt, NUM_CIRCLES>
 {
-  std::array<Point2dInt, NUM_CIRCLES> circleCentreTargets{};
+  auto circleCentreTargets = std::array<Point2dInt, NUM_CIRCLES>{};
 
-  const int32_t width = 2 * m_screenMidPoint.x;
-  const int32_t height = 2 * m_screenMidPoint.y;
-  static constexpr Fraction SMALL_FRAC{1, 10};
-  static constexpr Fraction LARGE_FRAC = 1 - SMALL_FRAC;
+  const auto width = 2 * m_screenMidPoint.x;
+  const auto height = 2 * m_screenMidPoint.y;
+  static constexpr auto SMALL_FRAC = Fraction{1, 10};
+  static constexpr auto LARGE_FRAC = 1 - SMALL_FRAC;
   static_assert(5 == NUM_CIRCLES); // NOLINT
   circleCentreTargets[0] = m_screenMidPoint;
   circleCentreTargets[1] = {SMALL_FRAC * width, SMALL_FRAC * height};

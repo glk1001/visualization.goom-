@@ -91,7 +91,7 @@ inline auto Fractal::GetCurrentIfsPoints() -> const std::vector<IfsPoint>&
 {
   m_curHits->Reset();
   DrawFractal();
-  const std::vector<IfsPoint>& currentBuffer = m_curHits->GetBuffer();
+  const auto& currentBuffer = m_curHits->GetBuffer();
   std::swap(m_prevHits, m_curHits);
   return currentBuffer;
 }
@@ -111,18 +111,18 @@ inline auto Fractal::UpdateIterationCount() -> void
 
 auto Fractal::DrawFractal() -> void
 {
-  const std::vector<Similitude>& mainSimiGroup = m_similitudes.GetMainSimiGroup();
-  const size_t numSimis = m_similitudes.GetNumSimis();
+  const auto& mainSimiGroup = m_similitudes.GetMainSimiGroup();
+  const auto numSimis = m_similitudes.GetNumSimis();
 
-  for (size_t i = 0; i < numSimis; ++i)
+  for (auto i = 0U; i < numSimis; ++i)
   {
-    const FltPoint point0 = mainSimiGroup[i].GetCPoint();
+    const auto point0 = mainSimiGroup[i].GetCPoint();
 
-    for (size_t j = 0; j < numSimis; ++j)
+    for (auto j = 0U; j < numSimis; ++j)
     {
       if (i != j)
       {
-        const FltPoint point = m_similitudes.Transform(mainSimiGroup[j], point0);
+        const auto point = m_similitudes.Transform(mainSimiGroup[j], point0);
         Trace(m_similitudes.GetSimiDepth(), point);
       }
     }
@@ -131,19 +131,19 @@ auto Fractal::DrawFractal() -> void
 
 inline auto Fractal::UpdateMainSimis() -> void
 {
-  const Dbl uValue =
+  const auto uValue =
       static_cast<Dbl>(m_iterationCount * GetSpeed()) / static_cast<Dbl>(m_maxCountTimesSpeed);
   m_similitudes.UpdateMainSimis(uValue);
 }
 
 auto Fractal::Trace(const uint32_t curDepth, const FltPoint& point0) -> void
 {
-  const std::vector<Similitude>& mainSimiGroup = m_similitudes.GetMainSimiGroup();
-  const size_t numSimis = m_similitudes.GetNumSimis();
+  const auto& mainSimiGroup = m_similitudes.GetMainSimiGroup();
+  const auto numSimis = m_similitudes.GetNumSimis();
 
-  for (size_t i = 0; i < numSimis; ++i)
+  for (auto i = 0U; i < numSimis; ++i)
   {
-    const FltPoint point = m_similitudes.Transform(mainSimiGroup[i], point0);
+    const auto point = m_similitudes.Transform(mainSimiGroup[i], point0);
 
     UpdateHits(mainSimiGroup[i], point);
 
@@ -163,14 +163,14 @@ auto Fractal::Trace(const uint32_t curDepth, const FltPoint& point0) -> void
 inline auto Fractal::AreSimilarPoints(const FltPoint& point1, const FltPoint& point2) -> bool
 {
   // TODO What's going on here?
-  static constexpr Flt CUTOFF = 16;
+  static constexpr auto CUTOFF = 16;
   return (std::abs(point1.x - point2.x) < CUTOFF) || (std::abs(point1.y - point2.y) < CUTOFF);
 }
 
 inline auto Fractal::UpdateHits(const Similitude& simi, const FltPoint& point) -> void
 {
-  const int32_t x = m_halfWidth + DivBy2Units(point.x * m_halfWidth);
-  const int32_t y = m_halfHeight - DivBy2Units(point.y * m_halfHeight);
+  const auto x = m_halfWidth + DivBy2Units(point.x * m_halfWidth);
+  const auto y = m_halfHeight - DivBy2Units(point.y * m_halfHeight);
   m_curHits->AddHit(x, y, simi);
 }
 

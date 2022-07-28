@@ -25,13 +25,13 @@ ColorMapsGrid::ColorMapsGrid(const uint32_t width,
 
 auto ColorMapsGrid::GetNextColors() const -> ColorArray
 {
-  ColorArray nextColors(m_width);
+  auto nextColors = ColorArray(m_width);
 
-  TValue horizontalT{TValue::StepType::SINGLE_CYCLE, m_width};
-  for (size_t i = 0; i < m_width; ++i)
+  auto horizontalT = TValue{TValue::StepType::SINGLE_CYCLE, m_width};
+  for (auto i = 0U; i < m_width; ++i)
   {
-    const Pixel horizontalColor = m_horizontalColorMap->GetColor(horizontalT());
-    const Pixel verticalColor = m_verticalColorMaps.at(i)->GetColor(m_verticalT());
+    const auto horizontalColor = m_horizontalColorMap->GetColor(horizontalT());
+    const auto verticalColor = m_verticalColorMaps.at(i)->GetColor(m_verticalT());
     nextColors.at(i) = IColorMap::GetColorMix(horizontalColor, verticalColor, m_colorMixingT(i));
 
     horizontalT.Increment();

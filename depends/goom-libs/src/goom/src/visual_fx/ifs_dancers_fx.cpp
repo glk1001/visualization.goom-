@@ -117,10 +117,10 @@ private:
   auto Renew() -> void;
 
   // TODO Move to simi
-  static constexpr float T_MIX_STARTING_VALUE = 0.01F;
+  static constexpr auto T_MIX_STARTING_VALUE = 0.01F;
   TValue m_tMix{TValue::StepType::CONTINUOUS_REVERSIBLE, T_MIX_STARTING_VALUE};
-  static constexpr float POINT_BRIGHTNESS = 3.0F;
-  static constexpr float BITMAP_BRIGHTNESS = 2.0F;
+  static constexpr auto POINT_BRIGHTNESS = 3.0F;
+  static constexpr auto BITMAP_BRIGHTNESS = 2.0F;
   auto ChangeColorMaps() -> void;
   auto ChangeSpeed() -> void;
   auto DrawNextIfsPoints() -> void;
@@ -131,7 +131,7 @@ private:
   uint32_t m_lowDensityCount = MIN_DENSITY_COUNT;
   LowDensityBlurrer m_blurrer;
   static constexpr uint32_t BLUR_WIDTH = 3;
-  static constexpr float DEFAULT_LOW_DENSITY_BLUR_THRESHOLD = 0.99F;
+  static constexpr auto DEFAULT_LOW_DENSITY_BLUR_THRESHOLD = 0.99F;
   float m_lowDensityBlurThreshold = DEFAULT_LOW_DENSITY_BLUR_THRESHOLD;
   [[nodiscard]] auto BlurLowDensityColors(size_t numPoints,
                                           const std::vector<IfsPoint>& lowDensityPoints) const
@@ -207,12 +207,12 @@ auto IfsDancersFx::PostStateUpdate(const bool wasActiveInPreviousState) noexcept
 }
 
 // clang-format off
-static constexpr float BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT = 1000.0F;
-static constexpr float BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT   =    1.0F;
-static constexpr float BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT   =    1.0F;
-static constexpr float BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT     =    5.0F;
-static constexpr float BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT =    1.0F;
-static constexpr float BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT   =    5.0F;
+static constexpr auto BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT = 1000.0F;
+static constexpr auto BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT   =    1.0F;
+static constexpr auto BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT   =    1.0F;
+static constexpr auto BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT     =    5.0F;
+static constexpr auto BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT =    1.0F;
+static constexpr auto BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT   =    5.0F;
 // clang-format on
 
 IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
@@ -242,13 +242,13 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
 
 inline auto IfsDancersFx::IfsDancersFxImpl::MegaChangeColorMapEvent() const -> bool
 {
-  static constexpr float PROB_MEGA_CHANGE_COLOR_MAP_EVENT = 0.5F;
+  static constexpr auto PROB_MEGA_CHANGE_COLOR_MAP_EVENT = 0.5F;
   return m_goomRand.ProbabilityOf(PROB_MEGA_CHANGE_COLOR_MAP_EVENT);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() const -> bool
 {
-  static constexpr float PROB_IFS_RENEW_EVENT = 2.0F / 3.0F;
+  static constexpr auto PROB_IFS_RENEW_EVENT = 2.0F / 3.0F;
   return m_goomRand.ProbabilityOf(PROB_IFS_RENEW_EVENT);
 }
 
@@ -309,12 +309,12 @@ inline auto IfsDancersFx::IfsDancersFxImpl::Renew() -> void
 
 inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() -> void
 {
-  static constexpr float MIN_SPEED_AMP = 1.1F;
-  static constexpr float MAX_SPEED_AMP = 5.1F;
-  static constexpr float MAX_SPEED_WEIGHT = 10.0F;
-  const float speedAmp =
+  static constexpr auto MIN_SPEED_AMP = 1.1F;
+  static constexpr auto MAX_SPEED_AMP = 5.1F;
+  static constexpr auto MAX_SPEED_WEIGHT = 10.0F;
+  const auto speedAmp =
       std::min(m_goomRand.GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
-  const float accelFactor =
+  const auto accelFactor =
       1.0F / (1.1F - m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration());
 
   m_fractal->SetSpeed(std::max(1U, static_cast<uint32_t>(speedAmp * accelFactor)));
@@ -324,7 +324,7 @@ auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() -> void
 {
   m_colorizer.ChangeColorMaps();
   m_blurrer.SetColorMode(m_blurrerColorModeWeights.GetRandomWeighted());
-  static constexpr float SINGLE_COLOR_T = 0.5F;
+  static constexpr auto SINGLE_COLOR_T = 0.5F;
   m_blurrer.SetSingleColor(m_colorizer.GetColorMaps().GetRandomColorMap().GetColor(SINGLE_COLOR_T));
 }
 
@@ -349,7 +349,7 @@ auto IfsDancersFx::IfsDancersFxImpl::UpdateIfs() -> void
 
 auto IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay() -> void
 {
-  static constexpr int32_t BY_TWO = 2;
+  static constexpr auto BY_TWO = 2;
 
   --m_decayIfs;
   if (m_decayIfs > 0)
@@ -376,9 +376,9 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateIncr() -> void
 {
   if (m_ifsIncr <= 0)
   {
-    static constexpr int32_t NEW_RECAY_IFS = 5;
+    static constexpr auto NEW_RECAY_IFS = 5;
     m_recayIfs = NEW_RECAY_IFS;
-    static constexpr int32_t NEW_IFS_INCR = 11;
+    static constexpr auto NEW_IFS_INCR = 11;
     m_ifsIncr = NEW_IFS_INCR;
     Renew();
   }
@@ -388,7 +388,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateDecay() -> void
 {
   if ((m_ifsIncr > 0) && (m_decayIfs <= 0))
   {
-    static constexpr int32_t NEW_DECAY_IFS = 100;
+    static constexpr auto NEW_DECAY_IFS = 100;
     m_decayIfs = NEW_DECAY_IFS;
   }
 }
@@ -423,32 +423,32 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateCycle() -> void
 
 inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold() -> void
 {
-  static constexpr float PROB_HIGH_BLUR_THRESHOLD = 0.75F;
-  static constexpr float HIGH_BLUR_THRESHOLD = 0.99F;
-  static constexpr float LOW_BLUR_THRESHOLD = 0.40F;
+  static constexpr auto PROB_HIGH_BLUR_THRESHOLD = 0.75F;
+  static constexpr auto HIGH_BLUR_THRESHOLD = 0.99F;
+  static constexpr auto LOW_BLUR_THRESHOLD = 0.40F;
   m_lowDensityBlurThreshold =
       m_goomRand.ProbabilityOf(PROB_HIGH_BLUR_THRESHOLD) ? HIGH_BLUR_THRESHOLD : LOW_BLUR_THRESHOLD;
 }
 
 auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() -> void
 {
-  const std::vector<IfsPoint>& points = m_fractal->GetNextIfsPoints();
-  const uint32_t maxHitCount = m_fractal->GetMaxHitCount();
+  const auto& points = m_fractal->GetNextIfsPoints();
+  const auto maxHitCount = m_fractal->GetMaxHitCount();
 
   m_colorizer.SetMaxHitCount(maxHitCount);
 
-  const size_t numPoints = points.size();
-  const float tStep = (1 == numPoints) ? 0.0F : ((1.0F - 0.0F) / static_cast<float>(numPoints - 1));
-  float t = -tStep;
+  const auto numPoints = points.size();
+  const auto tStep = (1 == numPoints) ? 0.0F : ((1.0F - 0.0F) / static_cast<float>(numPoints - 1));
+  auto t = -tStep;
 
-  bool doneColorChange =
+  auto doneColorChange =
       (m_colorizer.GetColorMode() != IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE) &&
       (m_colorizer.GetColorMode() != IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE);
-  uint32_t maxLowDensityCount = 0;
-  uint32_t numSelectedPoints = 0;
-  std::vector<IfsPoint> lowDensityPoints{};
+  auto maxLowDensityCount = 0U;
+  auto numSelectedPoints = 0U;
+  auto lowDensityPoints = std::vector<IfsPoint>{};
 
-  for (size_t i = 0; i < numPoints; i += static_cast<size_t>(GetIfsIncr()))
+  for (auto i = 0U; i < numPoints; i += static_cast<uint32_t>(GetIfsIncr()))
   {
     t += tStep;
 
@@ -484,16 +484,16 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() -> void
   else
   {
     // Enough dense points to make blurring worthwhile.
-    if (constexpr float PROB_FIXED_MIX_FACTOR = 0.8F;
+    if (static constexpr auto PROB_FIXED_MIX_FACTOR = 0.8F;
         m_goomRand.ProbabilityOf(PROB_FIXED_MIX_FACTOR))
     {
-      static constexpr float FIXED_MIX_FACTOR = 0.98F;
+      static constexpr auto FIXED_MIX_FACTOR = 0.98F;
       m_blurrer.SetNeighbourMixFactor(FIXED_MIX_FACTOR);
     }
     else
     {
-      static constexpr float MIN_MIX_FACTOR = 0.9F;
-      static constexpr float MAX_MIX_FACTOR = 1.0F;
+      static constexpr auto MIN_MIX_FACTOR = 0.9F;
+      static constexpr auto MAX_MIX_FACTOR = 1.0F;
       m_blurrer.SetNeighbourMixFactor(m_goomRand.GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
     }
     m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
@@ -504,27 +504,27 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& ifsPoint,
                                                const float t,
                                                const float tMix) const -> void
 {
-  const Point2dInt point = {static_cast<int32_t>(ifsPoint.GetX()),
-                            static_cast<int32_t>(ifsPoint.GetY())};
+  const auto point =
+      Point2dInt{static_cast<int32_t>(ifsPoint.GetX()), static_cast<int32_t>(ifsPoint.GetY())};
 
   const auto tX = static_cast<float>(point.x) / static_cast<float>(m_draw.GetScreenWidth());
   const auto tY = static_cast<float>(point.y) / static_cast<float>(m_draw.GetScreenHeight());
 
-  if (const Pixel baseColor = ifsPoint.GetSimi()->GetColorMap()->GetColor(t);
+  if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap()->GetColor(t);
       nullptr == ifsPoint.GetSimi()->GetCurrentPointBitmap())
   {
-    const Pixel mixedColor =
+    const auto mixedColor =
         m_colorizer.GetMixedColor(baseColor, ifsPoint.GetCount(), POINT_BRIGHTNESS, tMix, tX, tY);
     m_draw.DrawPixels(point, {mixedColor, mixedColor});
   }
   else
   {
-    const Pixel mixedColor =
+    const auto mixedColor =
         m_colorizer.GetMixedColor(baseColor, ifsPoint.GetCount(), BITMAP_BRIGHTNESS, tMix, tX, tY);
     const auto getColor = [&mixedColor]([[maybe_unused]] const size_t x,
                                         [[maybe_unused]] const size_t y,
                                         [[maybe_unused]] const Pixel& bgnd) { return mixedColor; };
-    const ImageBitmap& bitmap{*ifsPoint.GetSimi()->GetCurrentPointBitmap()};
+    const auto& bitmap{*ifsPoint.GetSimi()->GetCurrentPointBitmap()};
     m_draw.Bitmap(point, bitmap, {getColor, getColor});
   }
 }
@@ -543,13 +543,13 @@ inline auto IfsDancersFx::IfsDancersFxImpl::BlurLowDensityColors(
 inline auto IfsDancersFx::IfsDancersFxImpl::SetLowDensityColors(
     const std::vector<IfsPoint>& points, const uint32_t maxLowDensityCount) const -> void
 {
-  const float logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
+  const auto logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
 
-  float t = 0.0F;
-  const float tStep = 1.0F / static_cast<float>(points.size());
+  auto t = 0.0F;
+  const auto tStep = 1.0F / static_cast<float>(points.size());
   for (const auto& point : points)
   {
-    const float logAlpha =
+    const auto logAlpha =
         point.GetCount() <= 1
             ? 1.0F
             : (std::log(static_cast<float>(point.GetCount())) / logMaxLowDensityCount);
@@ -569,15 +569,15 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() -> void
 
 inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const -> uint32_t
 {
-  static constexpr uint32_t NUM_WIDTHS = 3;
-  static constexpr uint32_t WIDTH_RANGE = (MAX_DENSITY_COUNT - MIN_DENSITY_COUNT) / NUM_WIDTHS;
-  static constexpr uint32_t DOUBLE_WIDTH_RANGE = 2 * WIDTH_RANGE;
+  static constexpr auto NUM_WIDTHS = 3U;
+  static constexpr auto WIDTH_RANGE = (MAX_DENSITY_COUNT - MIN_DENSITY_COUNT) / NUM_WIDTHS;
+  static constexpr auto DOUBLE_WIDTH_RANGE = 2 * WIDTH_RANGE;
 
-  static constexpr uint32_t LARGE_BLUR_WIDTH = 7;
-  static constexpr uint32_t MEDIUM_BLUR_WIDTH = 5;
-  static constexpr uint32_t SMALL_BLUR_WIDTH = 3;
+  static constexpr auto LARGE_BLUR_WIDTH = 7U;
+  static constexpr auto MEDIUM_BLUR_WIDTH = 5U;
+  static constexpr auto SMALL_BLUR_WIDTH = 3U;
 
-  uint32_t blurWidth = SMALL_BLUR_WIDTH;
+  auto blurWidth = SMALL_BLUR_WIDTH;
 
   if (m_lowDensityCount <= (MIN_DENSITY_COUNT + WIDTH_RANGE))
   {

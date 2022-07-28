@@ -187,20 +187,20 @@ inline auto NormalizedCoords::operator*=(const float scalar) -> NormalizedCoords
 inline auto operator+(const NormalizedCoords& coords1, const NormalizedCoords& coords2)
     -> NormalizedCoords
 {
-  NormalizedCoords coords3{coords1};
+  auto coords3 = coords1;
   return coords3 += coords2;
 }
 
 inline auto operator-(const NormalizedCoords& coords1, const NormalizedCoords& coords2)
     -> NormalizedCoords
 {
-  NormalizedCoords coords3{coords1};
+  auto coords3 = coords1;
   return coords3 -= coords2;
 }
 
 inline auto operator*(const float scalar, const NormalizedCoords& coords) -> NormalizedCoords
 {
-  NormalizedCoords coords1{coords};
+  auto coords1 = coords;
   return coords1 *= scalar;
 }
 
