@@ -41,4 +41,10 @@ if ! ping -q -c 2 ${REMOTE_HOST} ; then
   exit 1
 fi
 
-ssh ${REMOTE_HOST} "bash "${REMOTE_KODI_BUILD_DIR}/build-all.sh" $@"
+ssh ${REMOTE_HOST} "bash "${REMOTE_KODI_BUILD_DIR}/build-all.sh" --kodi-version ${KODI_VERSION} \
+                                                                 --goom-version ${GOOM_VERSION} \
+                                                                 --image-os ${KODI_IMAGE_OS_TYPE} \
+                                                                 --image-os-version ${KODI_IMAGE_OS_TAG} \
+                                                                 --container-home-dir ${KODI_CONTAINER_HOME_DIR} \
+                                                                 --docker-files-dir ${KODI_DOCKER_FILES_DIR} \
+                                                                 $@"

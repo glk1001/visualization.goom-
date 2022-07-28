@@ -1,9 +1,21 @@
-if [[ "${THIS_SCRIPT_PATH}" == "" ]]; then
-  echo "ERROR: 'THIS_SCRIPT_PATH' must be set."
-  exit 1
-fi
+function get_this_sourced_script_path()
+{
+  local dirname=""
+  for i in "${BASH_SOURCE[@]}"; do
+    dirname=$(dirname $i)
+    filename=$(basename $i)
+    if [[ "${filename}" == "${GOOM_GET_VARS_SCRIPT_NAME}" ]]; then
+      break
+    fi
+  done
 
-source "${THIS_SCRIPT_PATH}/docker-toolchains/build-get-vars.sh"
+  echo ${dirname}
+}
+
+declare -r GOOM_GET_VARS_SCRIPT_NAME="goom-get-vars.sh"
+declare -r GOOM_GET_VARS_SCRIPT_PATH=$(get_this_sourced_script_path)
+
+source "${GOOM_GET_VARS_SCRIPT_PATH}/docker-toolchains/build-get-vars.sh"
 
 
 declare GOOM_VAR_CMD_LINE=""
@@ -136,7 +148,7 @@ fi
 
 declare -r HOST_TIME_ZONE=$(cat /etc/timezone)
 declare -r HOST_CCACHE_DIR=${CCACHE_DIR}
-declare -r HOST_KODI_ROOT_DIR=$(realpath ${THIS_SCRIPT_PATH}/..)
+declare -r HOST_KODI_ROOT_DIR=$(realpath ${GOOM_GET_VARS_SCRIPT_PATH}/..)
 declare -r DOCKER_CCACHE_DIR=/tmp/ccache
 declare -r DOCKER_KODI_ROOT_DIR=/tmp/xbmc
 declare -r DOCKER_GOOM_BUILD_DIR=/tmp/visualization.goom

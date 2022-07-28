@@ -23,6 +23,10 @@ while [[ $# -gt 0 ]]; do
       # Ignore
       shift # past argument
       ;;
+    --no-cache)
+      # Ignore
+      shift # past argument
+      ;;
     *)
       echo "Unknown option \"${key}\"."
       echo
@@ -65,13 +69,13 @@ declare -r TIME_ZONE=$(readlink /etc/localtime | sed 's#.*/zoneinfo/##')
 
 echo
 x11docker -q                                          \
+          --share=${MUSIC_SHARE}                      \
           --runasroot="service lircd start"           \
           --name ${KODI_CONTAINER_NAME}               \
           --hostuser=${USER}                          \
           --network                                   \
           --pulseaudio                                \
           --gpu                                       \
-          --share=${MUSIC_SHARE}                      \
           --home=${KODI_CONTAINER_HOME_DIR_TO_USE}    \
           --                                          \
           --init                                      \
