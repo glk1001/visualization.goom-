@@ -14,8 +14,7 @@ auto FindAndReplaceAll(std::string& dataStr,
                        const std::string& replaceStr) -> void
 {
   auto pos = dataStr.find(searchStr);
-
-  while(pos != std::string::npos)
+  while (pos != std::string::npos)
   {
     dataStr.replace(pos, searchStr.size(), replaceStr);
     pos = dataStr.find(searchStr, pos + replaceStr.size());
@@ -50,7 +49,7 @@ auto StringSplit(const std::string& str, const std::string_view& delim) -> std::
   std::vector<std::string> vec;
   std::string token;
   std::string copyOfStr = str;
-  size_t pos;
+  auto pos = 0UL;
   while ((pos = copyOfStr.find(delim)) != std::string::npos)
   {
     token = copyOfStr.substr(0, pos);

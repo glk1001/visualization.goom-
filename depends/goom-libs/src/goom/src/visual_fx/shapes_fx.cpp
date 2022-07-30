@@ -27,7 +27,7 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using SHAPES::Shape;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
@@ -89,7 +89,7 @@ private:
   auto SetShapeSpeeds() noexcept -> void;
   auto UpdateShapePathMinMaxNumSteps() noexcept -> void;
   auto UpdateShapes() noexcept -> void;
-  auto UpdateShape(Shape& shape) noexcept -> void;
+  static auto UpdateShape(Shape& shape) noexcept -> void;
   [[nodiscard]] auto GetNextNumIncrements() const noexcept -> size_t;
 };
 
@@ -339,7 +339,7 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapes() noexcept -> void
 
   for (auto i = 0U; i < numIncrements; ++i)
   {
-    std::for_each(begin(m_shapes), end(m_shapes), [this](Shape& shape) { UpdateShape(shape); });
+    std::for_each(begin(m_shapes), end(m_shapes), [](Shape& shape) { UpdateShape(shape); });
   }
 }
 

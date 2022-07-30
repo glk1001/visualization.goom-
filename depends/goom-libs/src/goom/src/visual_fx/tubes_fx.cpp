@@ -40,7 +40,7 @@ using TUBES::BrightnessAttenuation;
 using TUBES::Tube;
 using TUBES::TubeData;
 using TUBES::TubeDrawFuncs;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;

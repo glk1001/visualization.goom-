@@ -72,12 +72,18 @@ private:
   float m_tAwayFromBaseColor = INITIAL_T_AWAY_FROM_BASE_COLOR; // in [0, 1]
   const UTILS::MATH::Weights<VISUAL_FX::IfsDancersFx::ColorMode> m_colorModeWeights;
   auto GetNextColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMode;
+  [[nodiscard]] auto GetMixedColorInfo(const Pixel& baseColor,
+                                       float brightness,
+                                       float logAlpha,
+                                       float tMix,
+                                       float tX,
+                                       float tY) const -> std::pair<Pixel, float>;
   [[nodiscard]] auto GetNextMixerMapColor(float t, float tX, float tY) const -> Pixel;
   [[nodiscard]] auto GetSineMixColor(float tX, float tY) const -> Pixel;
   [[nodiscard]] auto GetMapColorsTBaseMix() const -> float;
   [[nodiscard]] auto GetFinalMixedColor(const Pixel& baseColor,
-                                        const Pixel& mixColor,
-                                        float tBaseMix) const -> Pixel;
+                                        float tBaseMix,
+                                        const Pixel& mixColor) const -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
   const COLOR::ColorAdjustment m_colorAdjust{GAMMA,

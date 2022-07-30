@@ -8,7 +8,6 @@
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
-#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -16,7 +15,7 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingFunction;

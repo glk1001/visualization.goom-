@@ -158,15 +158,8 @@ auto BufferSaver<T, HeaderT>::PeekHeader(HeaderT& header, bool binaryFormat) -> 
   }
 
   const auto filename = GetCurrentFilename();
-  bool done;
-  if (binaryFormat)
-  {
-    done = PeekHeaderBinary(filename, header);
-  }
-  else
-  {
-    done = PeekHeaderFormatted(filename, header);
-  }
+  const auto done =
+      binaryFormat ? PeekHeaderBinary(filename, header) : PeekHeaderFormatted(filename, header);
 
   return done;
 }

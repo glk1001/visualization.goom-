@@ -11,7 +11,6 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using COLOR::ColorMapGroup;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
 using STD20::pi;

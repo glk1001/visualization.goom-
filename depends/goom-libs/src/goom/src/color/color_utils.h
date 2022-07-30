@@ -23,7 +23,8 @@ template<typename T>
 [[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel;
 
 [[nodiscard]] constexpr auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
-[[nodiscard]] constexpr auto GetBrighterColorInt(float brightness, const Pixel&) -> Pixel = delete;
+[[nodiscard, maybe_unused]] constexpr auto GetBrighterColorInt(float brightness, const Pixel&)
+    -> Pixel = delete;
 [[nodiscard]] constexpr auto GetBrighterChannelColor(uint32_t brightness,
                                                      PixelChannelType channelVal) -> uint32_t;
 [[nodiscard]] auto GetBrighterColor(float brightness, const Pixel& color) -> Pixel;

@@ -19,7 +19,7 @@
 namespace GOOM::FILTER_FX
 {
 
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::MATH::FloatsEqual;

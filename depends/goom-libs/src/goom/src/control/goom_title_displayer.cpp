@@ -3,7 +3,6 @@
 //#undef NO_LOGGING
 
 #include "color/color_maps.h"
-#include "color/color_utils.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "draw/text_draw.h"
@@ -21,13 +20,11 @@
 namespace GOOM::CONTROL
 {
 
-using COLOR::ColorMapGroup;
-using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::TextDraw;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::GetFltFraction;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;

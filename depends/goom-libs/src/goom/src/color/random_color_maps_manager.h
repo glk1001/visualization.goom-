@@ -16,7 +16,7 @@ namespace GOOM::COLOR
 class RandomColorMapsManager
 {
 public:
-  // NOLINTBEGIN
+  // NOLINTBEGIN: Stop gcc-12 'inline' warning
   struct ColorMapInfo
   {
     ~ColorMapInfo() noexcept;

@@ -32,33 +32,7 @@ inline auto ImageBitmap::SetPixel(const size_t x, const size_t y, const RGB& pix
 void ImageBitmap::Load(const std::string& imageFilename)
 {
   m_filename = imageFilename;
-
-  auto width = 0;
-  auto height = 0;
-  auto bpp = 0;
-  uint8_t* rgbImage;
-  try
-  {
-    static constexpr auto DESIRED_CHANNELS = 4;
-    rgbImage = ::stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
-  }
-  catch (const std::exception& e)
-  {
-    throw std::runtime_error(
-        std20::format(R"(Could not load image file "{}". Exception: "{}".)", m_filename, e.what()));
-  }
-
-  if (!rgbImage)
-  {
-    throw std::runtime_error(std20::format(R"(Could not load image file "{}".)", m_filename));
-  }
-
-  if ((0 == width) || (0 == height) || (0 == bpp))
-  {
-    throw std::runtime_error(
-        std20::format("Error loading image \"{}\". width = {}, height = {}, bpp = {}.", m_filename,
-                      width, height, bpp));
-  }
+  const auto [rgbImage, width, height, bpp] = GetRGBImage();
 
   const auto* rgbPtr = rgbImage;
   Resize(static_cast<size_t>(width), static_cast<size_t>(height));
@@ -87,6 +61,39 @@ void ImageBitmap::Load(const std::string& imageFilename)
   }
 
   ::stbi_image_free(rgbImage);
+}
+
+auto ImageBitmap::GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, int32_t>
+{
+  try
+  {
+    static constexpr auto DESIRED_CHANNELS = 4;
+
+    auto width  = 0;
+    auto height = 0;
+    auto bpp    = 0;
+    auto* rgbImage = ::stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
+    if (!rgbImage)
+    {
+      throw std::runtime_error(std20::format(R"(Could not load image file "{}".)", m_filename));
+    }
+    if ((0 == width) || (0 == height) || (0 == bpp))
+    {
+      throw std::runtime_error(
+          std20::format("Error loading image \"{}\". width = {}, height = {}, bpp = {}.",
+                        m_filename,
+                        width,
+                        height,
+                        bpp));
+    }
+
+    return {rgbImage, width, height, bpp};
+  }
+  catch (const std::exception& e)
+  {
+    throw std::runtime_error(
+        std20::format(R"(Could not load image file "{}". Exception: "{}".)", m_filename, e.what()));
+  }
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

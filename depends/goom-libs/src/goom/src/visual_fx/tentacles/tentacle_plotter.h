@@ -14,7 +14,7 @@ namespace DRAW
 class IGoomDraw;
 }
 
-namespace UTILS
+namespace UTILS::MATH
 {
 class IGoomRand;
 }

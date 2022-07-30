@@ -1,3 +1,5 @@
+// NOLINTBEGIN: Tricky logging code - need to improve
+
 #include "goom/logging.h"
 
 #include "date_utils.h"
@@ -138,3 +140,5 @@ auto Logging::DoFlush() -> void
 }
 
 } // namespace GOOM::UTILS
+
+// NOLINTEND

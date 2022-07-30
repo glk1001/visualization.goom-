@@ -20,7 +20,7 @@ namespace GOOM::VISUAL_FX
 
 using CIRCLES::Circle;
 using CIRCLES::Circles;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::Fraction;
@@ -192,7 +192,7 @@ auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets() const -> std::array<Poin
   const auto height = 2 * m_screenMidPoint.y;
   static constexpr auto SMALL_FRAC = Fraction{1, 10};
   static constexpr auto LARGE_FRAC = 1 - SMALL_FRAC;
-  static_assert(5 == NUM_CIRCLES); // NOLINT
+  static_assert(5 == NUM_CIRCLES);
   circleCentreTargets[0] = m_screenMidPoint;
   circleCentreTargets[1] = {SMALL_FRAC * width, SMALL_FRAC * height};
   circleCentreTargets[2] = {LARGE_FRAC * width, SMALL_FRAC * height};

@@ -36,7 +36,6 @@ using VISUAL_FX::FxHelper;
 using VISUAL_FX::GoomDotsFx;
 using VISUAL_FX::IfsDancersFx;
 using VISUAL_FX::ImageFx;
-using VISUAL_FX::IVisualFx;
 using VISUAL_FX::LinesFx;
 using VISUAL_FX::ShaderFx;
 using VISUAL_FX::ShapesFx;
@@ -273,7 +272,7 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
 
 auto AllStandardVisualFx::ChangeDotsColorMaps() noexcept -> void
 {
-  static constexpr auto EXPECTED_NUM_DOT_TYPES =
+  constexpr auto EXPECTED_NUM_DOT_TYPES =
       1U + (static_cast<uint32_t>(GoomEffect::DOTS4) - static_cast<uint32_t>(GoomEffect::DOTS0));
   static_assert(GoomDotsFx::NUM_DOT_TYPES == EXPECTED_NUM_DOT_TYPES);
 
@@ -297,10 +296,9 @@ auto AllStandardVisualFx::ChangeLinesColorMaps() noexcept -> void
 
 auto AllStandardVisualFx::ChangeShapesColorMaps() noexcept -> void
 {
-  static constexpr auto EXPECTED_NUM_SHAPES =
-      1U + ((static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) -
-            static_cast<uint32_t>(GoomEffect::SHAPES_MAIN)) /
-           3U);
+  constexpr auto EXPECTED_NUM_SHAPES = 1U + ((static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) -
+                                              static_cast<uint32_t>(GoomEffect::SHAPES_MAIN)) /
+                                             3U);
   static_assert(ShapesFx::NUM_SHAPES == EXPECTED_NUM_SHAPES);
 
   for (auto i = 0U; i < ShapesFx::NUM_SHAPES; ++i)
@@ -322,10 +320,10 @@ auto AllStandardVisualFx::ChangeShapesColorMaps() noexcept -> void
 
 auto AllStandardVisualFx::ChangeStarsColorMaps() noexcept -> void
 {
-  static constexpr auto EXPECTED_NUM_STAR_MODES =
+  constexpr auto EXPECTED_NUM_STAR_MODES =
       1U + ((static_cast<uint32_t>(GoomEffect::STARS_LOW_FOUNTAIN) -
-            static_cast<uint32_t>(GoomEffect::STARS_MAIN_FIREWORKS)) /
-           2U);
+             static_cast<uint32_t>(GoomEffect::STARS_MAIN_FIREWORKS)) /
+            2U);
   static_assert(StarTypesContainer::NUM_STAR_TYPES == EXPECTED_NUM_STAR_MODES);
 
   for (auto i = 0U; i < StarTypesContainer::NUM_STAR_TYPES; ++i)

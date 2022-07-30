@@ -16,7 +16,7 @@ namespace GOOM::CONTROL
 {
 
 using UTILS::EnumToString;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 
 // clang-format off

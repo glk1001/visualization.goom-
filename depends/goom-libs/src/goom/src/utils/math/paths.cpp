@@ -36,7 +36,7 @@ JoinedPaths::JoinedPaths(std::unique_ptr<TValue> positionT,
   : m_positionT{std::move(positionT)}, m_pathTStarts{pathTStarts}, m_subPaths{std::move(subPaths)}
 {
   Expects(not pathTStarts.empty());
-  Expects(pathTStarts.size() == subPaths.size());
+  Expects(pathTStarts.size() == m_subPaths.size());
 
   assert(SegmentPathTsAreAscending());
   assert(SegmentPathTsAreValid());

@@ -21,7 +21,7 @@ struct GoomShaderEffects
 };
 
 template<class T>
-struct channel_limits
+struct channel_limits // NOLINT(readability-identifier-naming)
 {
   [[nodiscard]] static constexpr auto min() noexcept -> T { return T(); }
   [[nodiscard]] static constexpr auto max() noexcept -> T { return T(); }
@@ -95,7 +95,7 @@ static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::ma
               "Invalid MAX_CHANNEL_VALUE_HDR");
 
 // TODO - maybe should be template: Pixel<uint8_t>, Pixel<uint16_t>
-class Pixel
+class Pixel // NOLINT: union hard to fix here
 {
 public:
   struct RGB
@@ -197,8 +197,8 @@ public:
   auto operator()(size_t x, size_t y) const noexcept -> const Pixel&;
   auto operator()(size_t x, size_t y) noexcept -> Pixel&;
 
-  using iterator = Buffer::iterator;
-  using const_iterator = Buffer::const_iterator;
+  using iterator       = Buffer::iterator; // NOLINT(readability-identifier-naming)
+  using const_iterator = Buffer::const_iterator; // NOLINT(readability-identifier-naming)
   [[nodiscard]] auto GetRowIter(size_t y) noexcept -> std::tuple<iterator, iterator>;
   [[nodiscard]] auto GetRowIter(size_t y) const noexcept
       -> std::tuple<const_iterator, const_iterator>;
@@ -260,47 +260,47 @@ constexpr auto MultiplyChannelColorByScalar(const uint32_t scalar,
 
 constexpr auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool
 {
-  return pixel1.m_color.intVal == pixel2.m_color.intVal;
+  return pixel1.m_color.intVal == pixel2.m_color.intVal; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::R() const noexcept -> PixelChannelType
 {
-  return m_color.channels.r;
+  return m_color.channels.r; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::SetR(const PixelChannelType val) noexcept -> void
 {
-  m_color.channels.r = val;
+  m_color.channels.r = val; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::G() const noexcept -> PixelChannelType
 {
-  return m_color.channels.g;
+  return m_color.channels.g; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::SetG(const PixelChannelType val) noexcept -> void
 {
-  m_color.channels.g = val;
+  m_color.channels.g = val; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::B() const noexcept -> PixelChannelType
 {
-  return m_color.channels.b;
+  return m_color.channels.b; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::SetB(const PixelChannelType val) noexcept -> void
 {
-  m_color.channels.b = val;
+  m_color.channels.b = val; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::A() const noexcept -> PixelChannelType
 {
-  return m_color.channels.a;
+  return m_color.channels.a; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::SetA(const PixelChannelType val) noexcept -> void
 {
-  m_color.channels.a = val;
+  m_color.channels.a = val; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::RFlt() const noexcept -> float
@@ -320,12 +320,12 @@ constexpr auto Pixel::BFlt() const noexcept -> float
 
 constexpr auto Pixel::Rgba() const noexcept -> PixelIntType
 {
-  return m_color.intVal;
+  return m_color.intVal; // NOLINT: union hard to fix here
 }
 
 constexpr auto Pixel::IsBlack() const noexcept -> bool
 {
-  return 0 == m_color.intVal;
+  return 0 == m_color.intVal; // NOLINT: union hard to fix here
 }
 
 inline auto PixelBuffer::GetWidth() const noexcept -> uint32_t

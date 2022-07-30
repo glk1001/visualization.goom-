@@ -33,6 +33,7 @@ private:
   using Buffer = std::vector<RGB>;
   Buffer m_buff{};
   std::string m_filename{};
+  [[nodiscard]] auto GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, int32_t>;
   auto SetPixel(size_t x, size_t y, const RGB& pixel) noexcept -> void;
   auto Resize(size_t width, size_t height) noexcept -> void;
 };

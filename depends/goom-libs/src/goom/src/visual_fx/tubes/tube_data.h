@@ -34,7 +34,7 @@ using DrawSmallImageFunc =
                        uint32_t size,
                        const DRAW::MultiplePixels& colors)>;
 
-// NOLINTBEGIN
+// NOLINTBEGIN: Stop gcc-12 'inline' warning
 struct TubeDrawFuncs
 {
   ~TubeDrawFuncs() noexcept;
@@ -44,7 +44,7 @@ struct TubeDrawFuncs
 };
 // NOLINTEND
 
-// NOLINTBEGIN
+// NOLINTBEGIN: Stop gcc-12 'inline' warning
 struct TubeData
 {
   ~TubeData() noexcept;

@@ -23,7 +23,7 @@ using COLOR::GetSimpleColor;
 using COLOR::SimpleColors;
 using LINES::LineMorph;
 using LINES::LineType;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::Weights;
 

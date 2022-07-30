@@ -1,3 +1,5 @@
+// NOLINTBEGIN: Tricky logging code - need to improve
+
 #pragma once
 
 #include <format>
@@ -159,3 +161,5 @@ auto Logging::Log(LogLevel lvl,
 
 
 } // namespace GOOM::UTILS
+
+// NOLINTEND

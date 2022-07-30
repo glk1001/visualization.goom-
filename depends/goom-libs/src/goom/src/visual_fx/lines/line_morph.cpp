@@ -45,7 +45,7 @@ using FX_UTILS::GetHorizontalLinePoints;
 using FX_UTILS::GetVerticalLinePoints;
 using FX_UTILS::LinePoint;
 using FX_UTILS::SmoothTheCircleJoinAtEnds;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::FloatsEqual;
@@ -283,13 +283,12 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
   const auto audioPoints = GetAudioPoints(lineColor, soundData);
 
   auto point1 = audioPoints[0].point;
-  auto point2 = Point2dInt{};
 
   for (auto i = 1U; i < audioPoints.size(); ++i)
   {
     const auto& nextPointData = audioPoints[i];
 
-    point2 = nextPointData.point;
+    const auto point2 = nextPointData.point;
     const auto colors = MultiplePixels{lineColor, nextPointData.color};
 
     m_draw.Line(point1, point2, colors, LINE_THICKNESS);

@@ -64,9 +64,9 @@ private:
       GetRegionBorders<NUM_X_REGIONS>(m_width)};
   const std::array<size_t, NUM_Y_REGIONS> m_yRegionBorders{
       GetRegionBorders<NUM_Y_REGIONS>(m_height)};
-  template<uint32_t numRegions>
+  template<uint32_t NumRegions>
   [[nodiscard]] static auto GetRegionBorders(uint32_t length) noexcept
-      -> std::array<size_t, numRegions>;
+      -> std::array<size_t, NumRegions>;
 
   std::vector<FilterBufferRowColorInfo> m_filterBufferRowColorInfoArray{
       GetFilterBufferRowColorInfoArray(m_height, m_xRegionBorders)};
@@ -109,16 +109,16 @@ inline auto FilterBufferColorInfo::GetRow(const size_t y) noexcept -> FilterBuff
   return m_filterBufferRowColorInfoArray[y];
 }
 
-template<uint32_t numRegions>
+template<uint32_t NumRegions>
 auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length) noexcept
-    -> std::array<size_t, numRegions>
+    -> std::array<size_t, NumRegions>
 {
   Expects(length > 0);
 
-  static_assert(numRegions > 0);
-  const auto regionSize = length / numRegions;
+  static_assert(NumRegions > 0);
+  const auto regionSize = length / NumRegions;
 
-  auto regionBorders = std::array<size_t, numRegions>{};
+  auto regionBorders = std::array<size_t, NumRegions>{};
   auto border = regionSize - 1;
   for (auto& regionBorder : regionBorders)
   {

@@ -16,9 +16,8 @@ namespace GOOM::VISUAL_FX
 {
 
 using SHADERS::HighContrast;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Stopwatch;
-using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
 
 class ShaderFx::ShaderFxImpl

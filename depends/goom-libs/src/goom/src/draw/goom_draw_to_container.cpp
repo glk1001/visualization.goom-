@@ -14,7 +14,7 @@ namespace GOOM::DRAW
 {
 
 using COLOR::GetBrighterColorInt;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
 GoomDrawToContainer::GoomDrawToContainer(const uint32_t screenWidth, const uint32_t screenHeight)
   : IGoomDraw{screenWidth, screenHeight}, m_xyPixelList(screenHeight)

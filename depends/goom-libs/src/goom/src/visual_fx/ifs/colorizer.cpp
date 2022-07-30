@@ -2,7 +2,6 @@
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
-#include "color/random_color_maps_groups.h"
 
 #include <cmath>
 
@@ -11,8 +10,6 @@ namespace GOOM::VISUAL_FX::IFS
 
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
-using COLOR::RandomColorMapsGroups;
-using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
 
@@ -108,42 +105,46 @@ auto Colorizer::GetMixedColor(const Pixel& baseColor,
   const auto logAlpha =
       m_maxHitCount <= 1 ? 1.0F : (std::log(static_cast<float>(hitCount)) / m_logMaxHitCount);
 
-  auto mixColor = Pixel{};
-  auto tBaseMix = 0.0F;
+  const auto [mixColor, tBaseMix] =
+      GetMixedColorInfo(baseColor, brightness, logAlpha, tMix, tX, tY);
 
+  return m_colorAdjust.GetAdjustment(brightness * logAlpha,
+                                     GetFinalMixedColor(baseColor, tBaseMix, mixColor));
+}
+
+auto Colorizer::GetMixedColorInfo(const Pixel& baseColor,
+                                  const float brightness,
+                                  const float logAlpha,
+                                  const float tMix,
+                                  const float tX,
+                                  const float tY) const -> std::pair<Pixel, float>
+{
   switch (m_colorMode)
   {
     case IfsDancersFx::ColorMode::MAP_COLORS:
     case IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE:
-      mixColor = GetNextMixerMapColor(brightness * logAlpha, tX, tY);
-      tBaseMix = GetMapColorsTBaseMix();
+      return {GetNextMixerMapColor(brightness * logAlpha, tX, tY), GetMapColorsTBaseMix()};
       break;
 
     case IfsDancersFx::ColorMode::MIX_COLORS:
     case IfsDancersFx::ColorMode::REVERSE_MIX_COLORS:
     case IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE:
-      mixColor = GetNextMixerMapColor(tMix, tX, tY);
-      tBaseMix = 1.0F - m_tAwayFromBaseColor;
+      return {GetNextMixerMapColor(tMix, tX, tY), 1.0F - m_tAwayFromBaseColor};
       break;
 
     case IfsDancersFx::ColorMode::SINGLE_COLORS:
-      mixColor = baseColor;
-      tBaseMix = 1.0F - m_tAwayFromBaseColor;
+      return {baseColor, 1.0F - m_tAwayFromBaseColor};
       break;
 
     case IfsDancersFx::ColorMode::SINE_MIX_COLORS:
     case IfsDancersFx::ColorMode::SINE_MAP_COLORS:
-      mixColor = GetSineMixColor(tX, tY);
-      tBaseMix = 1.0F - m_tAwayFromBaseColor;
+      return {GetSineMixColor(tX, tY), 1.0F - m_tAwayFromBaseColor};
       break;
 
     default:
-      throw std::logic_error("Unknown ColorMode");
+      FailFast();
+      return {};
   }
-
-  mixColor = GetFinalMixedColor(baseColor, mixColor, tBaseMix);
-
-  return m_colorAdjust.GetAdjustment(brightness * logAlpha, mixColor);
 }
 
 auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const -> Pixel
@@ -193,8 +194,8 @@ inline auto Colorizer::GetSineMixColor(const float tX, const float tY) const -> 
 }
 
 inline auto Colorizer::GetFinalMixedColor(const Pixel& baseColor,
-                                          const Pixel& mixColor,
-                                          const float tBaseMix) const -> Pixel
+                                          const float tBaseMix,
+                                          const Pixel& mixColor) const -> Pixel
 {
   if (m_colorMode == IfsDancersFx::ColorMode::REVERSE_MIX_COLORS)
   {

@@ -13,7 +13,6 @@
 #include <memory>
 #include <numeric>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::TENTACLES
@@ -24,7 +23,7 @@ using DRAW::IGoomDraw;
 using STD20::pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::S_HALF;
+using UTILS::MATH::U_HALF;
 
 const size_t TentacleDriver::CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400;
 
@@ -252,7 +251,7 @@ auto TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
       tentacle2D.SetXDimensions(xMin, newXMax);
       static constexpr auto NUM_NODE_FACTOR = 6U;
       tentacle.SetNumHeadNodes(std::max(NUM_NODE_FACTOR * Tentacle2D::MIN_NUM_NODES,
-                                        S_HALF * tentacle.Get2DTentacle().GetNumNodes()));
+                                        U_HALF * tentacle.Get2DTentacle().GetNumNodes()));
     }
   }
 }

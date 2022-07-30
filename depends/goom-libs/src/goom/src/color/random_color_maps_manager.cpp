@@ -12,7 +12,7 @@
 namespace GOOM::COLOR
 {
 
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
 RandomColorMapsManager::ColorMapInfo::~ColorMapInfo() noexcept = default;
 

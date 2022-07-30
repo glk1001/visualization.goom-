@@ -28,18 +28,16 @@ namespace GOOM::VISUAL_FX::TUBES
 {
 
 using COLOR::ColorAdjustment;
-using COLOR::GetBrighterColor;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::MultiplePixels;
 using std::experimental::propagate_const;
 using STD20::pi;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::ISimplePath;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
@@ -464,13 +462,14 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
                                             static_cast<int32_t>(std::round(yTo))};
 
     shape.shapeNum = shapeNum;
-    static const auto delayPoints = std::vector<TValue::DelayPoint>{
+    static const auto s_DELAY_POINTS = std::vector<TValue::DelayPoint>{
         {       0.0F, SHAPE_T_DELAY_TIME},
         {T_AT_CENTRE, SHAPE_T_DELAY_TIME},
         {       1.0F, SHAPE_T_DELAY_TIME}
     };
     auto shapeT =
-        std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP, delayPoints);
+        std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP,
+                                           s_DELAY_POINTS);
     shape.path = std::make_unique<OscillatingPath>(std::move(shapeT), fromPos.ToFlt(),
                                                    toPos.ToFlt(), pathParams);
 

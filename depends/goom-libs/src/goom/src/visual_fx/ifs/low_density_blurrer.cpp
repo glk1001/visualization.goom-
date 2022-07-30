@@ -17,7 +17,6 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
 using COLOR::IColorMap;
 using DRAW::IGoomDraw;
@@ -198,8 +197,7 @@ inline auto LowDensityBlurrer::GetBrightness() const -> float
   static constexpr auto NO_NEIGHBOUR_BRIGHTNESS = 1.5F;
   static constexpr auto NEIGHBOUR_BRIGHTNESS = 0.1F;
 
-  float brightness;
-
+  float brightness = 0.0F;
   switch (m_colorMode)
   {
     case BlurrerColorMode::SINGLE_NO_NEIGHBOURS:
@@ -213,7 +211,8 @@ inline auto LowDensityBlurrer::GetBrightness() const -> float
       brightness = NEIGHBOUR_BRIGHTNESS;
       break;
     default:
-      throw std::logic_error("Unexpected m_colorMode enum.");
+      FailFast();
+      break;
   }
 
   if (nullptr != m_currentImageBitmap)

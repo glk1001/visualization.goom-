@@ -52,12 +52,12 @@ auto GetLightenedColor(const Pixel& oldColor, const float power) -> Pixel
   const auto srcColor = RGBColor{
       {src.R(), src.G(), src.B(), src.A()}
   };
-  auto iMaskedSrc = srcColor.intVal & mask;
+  auto iMaskedSrc = srcColor.intVal & mask; // NOLINT: union hard to fix here
 
   const auto destColor = RGBColor{
       {dest.R(), dest.G(), dest.B(), dest.A()}
   };
-  const auto iMaskedDest = destColor.intVal & mask;
+  const auto iMaskedDest = destColor.intVal & mask; // NOLINT: union hard to fix here
 
   if ((iMaskedSrc != mask) && (iMaskedSrc < iMaskedDest))
   {
@@ -68,12 +68,13 @@ auto GetLightenedColor(const Pixel& oldColor, const float power) -> Pixel
     iMaskedSrc -= incr;
   }
 
-  const auto color = srcColor.intVal & (~mask);
+  const auto color = srcColor.intVal & (~mask); // NOLINT: union hard to fix here
 
   RGBColor finalColor;
-  finalColor.intVal = (iMaskedSrc & mask) | color;
+  finalColor.intVal = (iMaskedSrc & mask) | color; // NOLINT: union hard to fix here
 
   return Pixel{
+  // NOLINTNEXTLINE: union hard to fix here
       {finalColor.channels.r, finalColor.channels.g, finalColor.channels.b, finalColor.channels.a}
   };
 }

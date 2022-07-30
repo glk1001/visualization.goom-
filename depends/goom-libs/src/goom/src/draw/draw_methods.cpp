@@ -1,3 +1,5 @@
+// NOLINTBEGIN: Not my code
+
 #include "draw_methods.h"
 
 #include "color/color_utils.h"
@@ -636,3 +638,5 @@ void DrawMethods::DrawThickLine(int x0,
 }
 
 } // namespace GOOM::DRAW
+
+// NOLINTEND

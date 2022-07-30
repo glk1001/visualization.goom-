@@ -30,7 +30,7 @@ namespace FILTER_FX::FILTER_EFFECTS
 class ZoomVectorEffects
 {
 public:
-  // NOLINTBEGIN
+  // NOLINTBEGIN: Stop gcc-12 'inline' warning
   struct TheExtraEffects
   {
     ~TheExtraEffects() noexcept;

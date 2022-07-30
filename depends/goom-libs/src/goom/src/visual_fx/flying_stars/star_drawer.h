@@ -57,7 +57,7 @@ private:
   };
   // clang-format on
   DrawElementTypes m_requestedDrawElement = m_drawElementWeights.GetRandomWeighted();
-  DrawElementTypes m_currentActualDrawElement;
+  DrawElementTypes m_currentActualDrawElement{};
   auto UpdateActualDrawElement() noexcept -> void;
   enum class DrawModes
   {

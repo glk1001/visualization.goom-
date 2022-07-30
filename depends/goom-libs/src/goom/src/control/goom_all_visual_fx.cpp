@@ -31,7 +31,7 @@ using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterFx;
 using FILTER_FX::ZoomFilterSettings;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::Stopwatch;

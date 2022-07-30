@@ -27,8 +27,6 @@ public:
 
   // Return random integer in the range 0 <= n < n1.
   [[nodiscard]] virtual auto GetNRand(uint32_t n1) const noexcept -> uint32_t = 0;
-  // Return random integer in the range 0 <= n < randMax.
-  [[nodiscard]] virtual auto GetRand() const noexcept -> uint32_t = 0;
 
   // Return random number in the range n0 <= n < n1.
   template<typename T>
@@ -47,8 +45,6 @@ public:
   template<class RandomIt>
   void Shuffle(RandomIt first, RandomIt last) const noexcept;
 
-  // Return prob(m/n)
-  [[nodiscard]] virtual auto ProbabilityOfMInN(uint32_t m, uint32_t n) const noexcept -> bool = 0;
   [[nodiscard]] virtual auto ProbabilityOf(float x) const noexcept -> bool = 0;
 };
 

@@ -57,10 +57,10 @@ auto ColorAdjustment::GetAlteredChromaColor(float lchYFactor, const Pixel& color
   const auto rgb8 = vivid::col8_t{color.R(), color.G(), color.B()};
   auto lch = vivid::lch::fromSrgb(vivid::rgb::fromRgb8(rgb8));
   static constexpr auto MAX_LCH_Y = 140.0F;
-  lch.y = std::min(lch.y * lchYFactor, MAX_LCH_Y);
+  lch.y = std::min(lch.y * lchYFactor, MAX_LCH_Y); // NOLINT: union hard to fix here
   const auto newRgb8 = vivid::rgb8::fromRgb(vivid::srgb::fromLch(lch));
   return Pixel{
-      {newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}
+      {newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}  // NOLINT: union hard to fix here
   };
 }
 

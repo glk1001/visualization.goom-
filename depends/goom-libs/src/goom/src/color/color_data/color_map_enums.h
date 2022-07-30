@@ -11,7 +11,7 @@ namespace GOOM::COLOR::COLOR_DATA
 
 enum class ColorMapName
 {
-  _NULL = -1, // NOLINT
+  _NULL = -1, // NOLINT: Need special name here
   ACCENT, // = Accent_8
   ACCENT_3,
   ACCENT_4,

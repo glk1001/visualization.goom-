@@ -30,22 +30,18 @@ namespace GOOM::VISUAL_FX
 {
 
 using COLOR::ColorAdjustment;
-using COLOR::GetBrighterColor;
-using COLOR::GetColorMultiply;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
-using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using FLYING_STARS::IStarType;
 using FLYING_STARS::Star;
 using FLYING_STARS::StarDrawer;
 using FLYING_STARS::StarTypesContainer;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::TWO_PI;
 using UTILS::MATH::Weights;
 
 // clang-format off

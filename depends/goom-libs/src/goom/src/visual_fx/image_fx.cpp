@@ -40,7 +40,7 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Parallel;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;

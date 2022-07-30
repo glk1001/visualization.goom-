@@ -1,3 +1,5 @@
+// NOLINTBEGIN: Not my code
+
 #include "thread_pool.h"
 
 #include "goom_config.h"
@@ -115,3 +117,5 @@ void ThreadPool::ThreadLoop()
 }
 
 } // namespace GOOM::UTILS
+
+// NOLINTEND

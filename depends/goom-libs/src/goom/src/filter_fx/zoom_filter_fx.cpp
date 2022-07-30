@@ -38,7 +38,7 @@ namespace GOOM::FILTER_FX
 
 using std::experimental::propagate_const;
 using UTILS::GetPair;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;

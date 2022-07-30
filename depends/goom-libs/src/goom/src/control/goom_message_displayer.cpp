@@ -16,7 +16,7 @@ namespace GOOM::CONTROL
 using COLOR::GetBrighterColor;
 using DRAW::IGoomDraw;
 using DRAW::TextDraw;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
 GoomMessageDisplayer::GoomMessageDisplayer(IGoomDraw& textOutput,
                                            const std::string& updateMessagesFontFile)
@@ -77,7 +77,7 @@ void GoomMessageDisplayer::UpdateMessages(const std::vector<std::string>& msgLin
   if (numberOfLinesInMessage > m_updateMessagesDisplayers.size())
   {
     LogInfo("Changing number of displayers from {} to {}.", m_updateMessagesDisplayers.size(),
-            numberOfLinesInMessage);
+            numberOfLinesInMessage); // NOLINT
     m_updateMessagesDisplayers =
         GetUpdateMessagesDisplayers(numberOfLinesInMessage, m_textOutput, m_updateMessagesFontFile);
   }

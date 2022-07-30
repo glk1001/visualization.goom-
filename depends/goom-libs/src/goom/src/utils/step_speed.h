@@ -25,7 +25,7 @@ private:
   uint32_t m_minNumSteps;
   uint32_t m_maxNumSteps;
   float m_tMinMaxLerp;
-  uint32_t m_currentNumSteps;
+  uint32_t m_currentNumSteps = 0U;
   auto SetCurrentNumSteps() -> void;
 };
 

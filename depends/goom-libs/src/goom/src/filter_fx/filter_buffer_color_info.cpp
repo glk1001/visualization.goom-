@@ -3,8 +3,6 @@
 #include "color/color_utils.h"
 #include "goom_config.h"
 
-#include <format>
-
 namespace GOOM::FILTER_FX
 {
 

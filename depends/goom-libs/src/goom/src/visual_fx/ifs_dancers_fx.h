@@ -28,7 +28,7 @@ class IfsDancersFx : public IVisualFx
 public:
   enum class ColorMode
   {
-    _NULL = -1,
+    _NULL = -1, // NOLINT: Need special name here
     MAP_COLORS,
     MIX_COLORS,
     REVERSE_MIX_COLORS,

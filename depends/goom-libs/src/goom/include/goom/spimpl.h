@@ -1,3 +1,5 @@
+// NOLINTBEGIN: Not my code
+
 /*
     ====================================================================
     A Smart Pointer to IMPLementation (i.e. Smart PIMPL or just SPIMPL).
@@ -588,3 +590,4 @@ namespace std {
     };
 }
 
+// NOLINTEND

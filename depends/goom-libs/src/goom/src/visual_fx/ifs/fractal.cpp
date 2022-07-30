@@ -136,6 +136,7 @@ inline auto Fractal::UpdateMainSimis() -> void
   m_similitudes.UpdateMainSimis(uValue);
 }
 
+// https://glk.youtrack.cloud/issue/G-92
 auto Fractal::Trace(const uint32_t curDepth, const FltPoint& point0) -> void
 {
   const auto& mainSimiGroup = m_similitudes.GetMainSimiGroup();

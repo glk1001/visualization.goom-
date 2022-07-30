@@ -19,7 +19,7 @@ using COLOR::ColorAdjustment;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::IGoomRand;
 
 Shape::Shape(IGoomDraw& draw,

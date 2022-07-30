@@ -1,3 +1,5 @@
+// NOLINTBEGIN: Not my code
+
 #pragma once
 
 #include <condition_variable>
@@ -158,3 +160,4 @@ auto ThreadPool::ScheduleAndGetFuture(FuncT&& func, ArgsT&&... args)
 
 } // namespace GOOM::UTILS
 
+// NOLINTEND

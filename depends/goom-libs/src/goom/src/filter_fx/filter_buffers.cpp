@@ -2,10 +2,10 @@
 
 //#undef NO_LOGGING
 
-#include "goom/logging.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "logging.h"
 #include "normalized_coords.h"
 #include "point2d.h"
 #include "utils/parallel_utils.h"
@@ -19,7 +19,7 @@
 namespace GOOM::FILTER_FX
 {
 
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Parallel;
 
 ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
@@ -421,7 +421,7 @@ auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(
   }
 
   LogInfo("{:2}, {:2}:  {:3}, {:3}, {:3}, {:3} - sum: {:3}", coeffH, coeffV, coeffs[0], coeffs[1],
-          coeffs[2], coeffs[3], std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
+          coeffs[2], coeffs[3], std::accumulate(cbegin(coeffs), cend(coeffs), 0U)); // NOLINT
   Ensures(channel_limits<uint32_t>::max() == std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
 
   return {coeffs, allZero};

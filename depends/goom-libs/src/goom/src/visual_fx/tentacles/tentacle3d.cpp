@@ -15,7 +15,6 @@ namespace GOOM::VISUAL_FX::TENTACLES
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
-using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::MATH::IGoomRand;
 
 static constexpr auto HEAD_X_MAX = 10.0F;

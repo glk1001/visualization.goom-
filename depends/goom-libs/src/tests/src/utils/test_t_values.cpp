@@ -2,7 +2,6 @@
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 
-#include <string>
 #include <vector>
 
 namespace GOOM::UNIT_TESTS

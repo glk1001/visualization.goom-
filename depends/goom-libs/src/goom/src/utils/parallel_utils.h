@@ -1,3 +1,5 @@
+// NOLINTBEGIN: Not my code
+
 #pragma once
 
 #include "goom_config.h"
@@ -100,3 +102,5 @@ auto Parallel::ForLoop(const size_t numIters, const Callable loopFunc) noexcept 
 }
 
 } // namespace GOOM::UTILS
+
+// NOLINTEND

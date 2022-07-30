@@ -24,7 +24,7 @@ namespace GOOM::DRAW
 {
 
 using COLOR::GetColorBlend;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::I_HALF;
 
 #ifdef NO_FREETYPE_INSTALLED
@@ -248,7 +248,7 @@ private:
     void Include(const Vec2& span);
   };
 
-  // NOLINTBEGIN
+  // NOLINTBEGIN: Stop gcc-12 'inline' warning
   struct Spans
   {
     ~Spans() noexcept;
@@ -426,7 +426,7 @@ inline auto TextDraw::TextDrawImpl::GetFontFile() const -> const std::string&
 void TextDraw::TextDrawImpl::SetFontFile(const std::string& filename)
 {
   m_fontFilename = filename;
-  LogInfo("Setting font file '{}'.", m_fontFilename);
+  LogInfo("Setting font file '{}'.", m_fontFilename); // NOLINT
 
   auto fontFile = std::ifstream{m_fontFilename, std::ios::binary};
   if (!fontFile)
@@ -470,7 +470,7 @@ inline void TextDraw::TextDrawImpl::SetFontSize(const int32_t val)
   }
 
   m_fontSize = val;
-  LogInfo("Setting font size {}.", m_fontSize);
+  LogInfo("Setting font size {}.", m_fontSize); // NOLINT
   if (m_face)
   {
     SetFaceFontSize();
@@ -518,7 +518,7 @@ inline void TextDraw::TextDrawImpl::SetText(const std::string& str)
   }
 
   m_theText = str;
-  LogInfo("Setting font text '{}'.", m_theText);
+  LogInfo("Setting font text '{}'.", m_theText); // NOLINT
 }
 
 inline void TextDraw::TextDrawImpl::SetFontColorFunc(const FontColorFunc& func)
@@ -579,7 +579,7 @@ void TextDraw::TextDrawImpl::Prepare()
 
   LogInfo("Font bounding rectangle: {}, {}, {}, {}, m_textSpans.size = {}.",
           m_textBoundingRect.xMin, m_textBoundingRect.xMax, m_textBoundingRect.yMin,
-          m_textBoundingRect.yMax, m_textSpans.size());
+          m_textBoundingRect.yMax, m_textSpans.size()); // NOLINT
 }
 
 auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int
@@ -703,12 +703,12 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
   static constexpr auto MIN_PARALLEL_SPAN_ARRAY_SIZE = 20;
   if (m_useParallelRender && (spanArray.size() >= MIN_PARALLEL_SPAN_ARRAY_SIZE))
   {
-    LogInfo("WriteSpansToImage using parallel.");
+    LogInfo("WriteSpansToImage using parallel."); // NOLINT
     m_draw.GetParallel().ForLoop(spanArray.size(), writeSpan);
   }
   else
   {
-    LogInfo("WriteSpansToImage NOT using parallel.");
+    LogInfo("WriteSpansToImage NOT using parallel."); // NOLINT
     for (auto i = 0U; i < spanArray.size(); ++i)
     {
       writeSpan(i);

@@ -15,7 +15,6 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 using STD20::pi;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
-using UTILS::MATH::SqDistance;
 using UTILS::MATH::THIRD_PI;
 using UTILS::MATH::TWO_PI;
 using UTILS::MATH::U_HALF;

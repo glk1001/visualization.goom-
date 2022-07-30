@@ -1,7 +1,6 @@
 #include "catch2/catch.hpp"
 #include "utils/parallel_utils.h"
 
-#include <memory>
 #include <set>
 #include <thread>
 #include <vector>

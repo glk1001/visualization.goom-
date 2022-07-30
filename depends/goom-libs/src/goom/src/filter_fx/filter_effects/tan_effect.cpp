@@ -12,11 +12,10 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::Weights;
 
 static constexpr auto DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_ONLY;
 static constexpr auto DEFAULT_COT_MIX = 1.1F;
@@ -60,9 +59,9 @@ auto TanEffect::SetRandomParams() -> void
                               : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
   const auto limitingFactor = m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE);
 
-  LogInfo("tanType = {}, cotMix = {}", EnumToString(tanType), cotMix);
-  LogInfo("xAmplitude = {}, yAmplitude = {}", xAmplitude, yAmplitude);
-  LogInfo("limitingFactor = {}", limitingFactor);
+  LogInfo("tanType = {}, cotMix = {}", EnumToString(tanType), cotMix); // NOLINT
+  LogInfo("xAmplitude = {}, yAmplitude = {}", xAmplitude, yAmplitude); // NOLINT
+  LogInfo("limitingFactor = {}", limitingFactor); // NOLINT
 
   SetParams({tanType, cotMix, xAmplitude, yAmplitude, limitingFactor});
 }

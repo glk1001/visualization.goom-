@@ -31,27 +31,22 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::ColorAdjustment;
 using COLOR::ColorMapGroup;
-using COLOR::GetBrighterColor;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
-using UTILS::Logging;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::AngleParams;
 using UTILS::MATH::EpicycloidFunction;
 using UTILS::MATH::EpicycloidPath;
-using UTILS::MATH::Fraction;
-using UTILS::MATH::HALF;
 using UTILS::MATH::HypotrochoidFunction;
 using UTILS::MATH::HypotrochoidPath;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IPath;
 using UTILS::MATH::LissajousFunction;
 using UTILS::MATH::LissajousPath;
-using UTILS::MATH::S_HALF;
-using UTILS::MATH::THIRD;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
 

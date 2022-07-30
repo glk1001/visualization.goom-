@@ -28,7 +28,7 @@ auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
   {
     for (auto i = 0U; i < NUM_AUDIO_SAMPLES; ++i)
     {
-      sampleArrays[i][j] = GetPositiveValue(floatAudioData[fpos]);
+      sampleArrays.at(i).at(j) = GetPositiveValue(floatAudioData[fpos]);
       ++fpos;
     }
   }

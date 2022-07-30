@@ -14,10 +14,10 @@ class Tentacle2D
   using XAndYVectors = std::tuple<std::vector<double>&, std::vector<double>&>;
 
 public:
-  static constexpr size_t MIN_NUM_NODES = 10;
+  static constexpr uint32_t MIN_NUM_NODES = 10U;
 
-  Tentacle2D(size_t id,
-             size_t numNodes,
+  Tentacle2D(uint32_t id,
+             uint32_t numNodes,
              double xMin,
              double xMax,
              double yMin,
@@ -36,14 +36,14 @@ public:
   [[nodiscard]] auto GetXMax() const -> double;
   void SetXDimensions(double x0, double x1);
 
-  [[nodiscard]] auto GetNumNodes() const -> size_t;
+  [[nodiscard]] auto GetNumNodes() const -> uint32_t;
 
   void SetIterZeroYVal(double val);
   void SetIterZeroLerpFactor(double val);
   void SetDoDamping(bool val);
 
 private:
-  const size_t m_numNodes;
+  const uint32_t m_numNodes;
   double m_xMin = 0.0;
   double m_xMax = 0.0;
   double m_yMin = 0.0;
@@ -56,7 +56,7 @@ private:
   double m_iterZeroYVal = DEFAULT_ITER_ZERO_Y_VAL;
   static constexpr double DEFAULT_ITER_ZERO_LERP_FACTOR = 0.8;
   double m_iterZeroLerpFactor = DEFAULT_ITER_ZERO_LERP_FACTOR;
-  size_t m_iterNum = 0;
+  uint32_t m_iterNum = 0;
   bool m_startedIterating = false;
   std::vector<double> m_xVec{};
   std::vector<double> m_yVec{};
@@ -97,7 +97,7 @@ inline void Tentacle2D::SetIterZeroLerpFactor(const double val)
   m_iterZeroLerpFactor = val;
 }
 
-inline auto Tentacle2D::GetNumNodes() const -> size_t
+inline auto Tentacle2D::GetNumNodes() const -> uint32_t
 {
   return m_numNodes;
 }

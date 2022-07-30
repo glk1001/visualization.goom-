@@ -5,12 +5,14 @@
 //#define DO_GOOM_STATE_DUMP
 #endif
 
+// NOLINTBEGIN: Need special macros with these names.
 #define UNUSED_FOR_NDEBUG(x) ((void)(x))
 
 #include <cassert>
 #define Expects(cond) assert(cond)
 #define Ensures(cond) assert(cond)
-#define FailFast() assert(false) // NOLINT
+#define FailFast() assert(false)
+// NOLINTEND
 
 namespace GOOM
 {

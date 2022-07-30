@@ -12,8 +12,9 @@
 template<>
 struct magic_enum::customize::enum_range<GOOM::COLOR::COLOR_DATA::ColorMapName>
 {
-  inline static constexpr int min = -1;
-  inline static constexpr int max = GOOM::UTILS::NUM<GOOM::COLOR::COLOR_DATA::ColorMapName>;
+  static constexpr int min = -1; // NOLINT(readability-identifier-naming)
+  // NOLINTNEXTLINE(readability-identifier-naming)
+  static constexpr int max = GOOM::UTILS::NUM<GOOM::COLOR::COLOR_DATA::ColorMapName>;
 };
 #endif
 
@@ -120,32 +121,32 @@ public:
   auto operator=(const ColorMaps&) -> ColorMaps& = delete;
   auto operator=(ColorMaps&&) -> ColorMaps& = delete;
 
-  [[nodiscard]] auto GetNumColorMapNames() const -> uint32_t;
+  [[nodiscard]] static auto GetNumColorMapNames() -> uint32_t;
   using ColorMapNames = std::vector<COLOR_DATA::ColorMapName>;
-  [[nodiscard]] auto GetColorMapNames(ColorMapGroup cmg) const -> const ColorMapNames&;
+  [[nodiscard]] static auto GetColorMapNames(ColorMapGroup cmg) -> const ColorMapNames&;
 
-  [[nodiscard]] auto GetColorMap(COLOR_DATA::ColorMapName mapName) const -> const IColorMap&;
+  [[nodiscard]] static auto GetColorMap(COLOR_DATA::ColorMapName mapName) -> const IColorMap&;
 
-  [[nodiscard]] auto GetColorMapPtr(COLOR_DATA::ColorMapName mapName) const
+  [[nodiscard]] static auto GetColorMapPtr(COLOR_DATA::ColorMapName mapName)
       -> std::shared_ptr<const IColorMap>;
 
-  [[nodiscard]] auto GetRotatedColorMapPtr(COLOR_DATA::ColorMapName mapName,
-                                           float tRotatePoint) const
+  [[nodiscard]] static auto GetRotatedColorMapPtr(COLOR_DATA::ColorMapName mapName,
+                                           float tRotatePoint)
       -> std::shared_ptr<const IColorMap>;
-  [[nodiscard]] auto GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                           float tRotatePoint) const
+  [[nodiscard]] static auto GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
+                                           float tRotatePoint)
       -> std::shared_ptr<const IColorMap>;
 
-  [[nodiscard]] auto GetTintedColorMapPtr(COLOR_DATA::ColorMapName mapName,
+  [[nodiscard]] static auto GetTintedColorMapPtr(COLOR_DATA::ColorMapName mapName,
                                           float saturation,
-                                          float lightness) const
+                                          float lightness)
       -> std::shared_ptr<const IColorMap>;
-  [[nodiscard]] auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
+  [[nodiscard]] static auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
                                           float saturation,
-                                          float lightness) const
+                                          float lightness)
       -> std::shared_ptr<const IColorMap>;
 
-  [[nodiscard]] auto GetNumGroups() const -> uint32_t;
+  [[nodiscard]] static auto GetNumGroups() -> uint32_t;
 
 private:
   class ColorMapsImpl;

@@ -42,7 +42,7 @@ void SetRandSeed(const uint64_t seed)
 {
   randSeed = seed;
   xoshiroEng = GetRandSeed();
-  LogDebug("SetRandSeed: xoshiroEng = {}", GetRandSeed());
+  LogDebug("SetRandSeed: xoshiroEng = {}", GetRandSeed()); // NOLINT
 }
 
 inline auto RandXoshiroFunc(const uint32_t n0, const uint32_t n1) -> uint32_t

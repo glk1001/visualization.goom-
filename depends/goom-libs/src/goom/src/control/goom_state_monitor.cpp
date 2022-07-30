@@ -10,8 +10,6 @@ namespace GOOM::CONTROL
 {
 
 using FILTER_FX::FilterSettingsService;
-using FILTER_FX::ZoomFilterBufferSettings;
-using FILTER_FX::ZoomFilterEffectsSettings;
 using UTILS::GetNameValuesString;
 using UTILS::GetPair;
 

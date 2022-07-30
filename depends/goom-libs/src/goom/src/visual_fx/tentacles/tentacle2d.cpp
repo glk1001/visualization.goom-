@@ -16,8 +16,8 @@ using UTILS::MATH::FlatDampingFunction;
 using UTILS::MATH::LinearDampingFunction;
 using UTILS::MATH::PiecewiseDampingFunction;
 
-Tentacle2D::Tentacle2D([[maybe_unused]] const size_t id,
-                       const size_t numNodes,
+Tentacle2D::Tentacle2D([[maybe_unused]] const uint32_t id,
+                       const uint32_t numNodes,
                        const double xMin,
                        const double xMax,
                        const double yMin,
@@ -148,7 +148,7 @@ void Tentacle2D::Iterate()
 
 void Tentacle2D::UpdateDampedValues(const std::vector<double>& yValues)
 {
-  static constexpr auto NUM_SMOOTH_NODES = std::min(size_t(10), MIN_NUM_NODES);
+  static constexpr auto NUM_SMOOTH_NODES = std::min(10U, MIN_NUM_NODES);
   const auto tSmooth = [](const double t)
   {
     static constexpr auto PARABOLA_COEFF = 2.0;

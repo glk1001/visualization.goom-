@@ -58,13 +58,13 @@ template<typename T>
                            const T& paramValue) -> NameValuePair;
 
 template<typename T>
+// NOLINTNEXTLINE(readability-identifier-naming)
 [[nodiscard]] auto to_string(const T& value) -> std::string;
 
 
 template<typename T>
-auto GetPair(const std::string& paramGroup,
-             const std::string& paramName,
-             const T& paramValue) -> NameValuePair
+auto GetPair(const std::string& paramGroup, const std::string& paramName, const T& paramValue)
+    -> NameValuePair
 {
   return {paramGroup + "::" + paramName, to_string(paramValue)};
 }
