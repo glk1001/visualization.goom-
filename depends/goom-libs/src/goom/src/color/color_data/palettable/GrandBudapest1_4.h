@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> GRANDBUDAPEST1_4
-{
-  {   0.93333F,   0.68235F,   0.39608F },
-  {   0.98431F,   0.30980F,   0.33333F },
-  {   0.28235F,   0.07451F,   0.07451F },
-  {   0.80000F,   0.37255F,   0.15294F },
+inline const auto GRANDBUDAPEST1_4 = std::vector<vivid::srgb_t>{
+    {0.93333F, 0.68235F, 0.39608F},
+    {0.98431F, 0.30980F, 0.33333F},
+    {0.28235F, 0.07451F, 0.07451F},
+    {0.80000F, 0.37255F, 0.15294F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

@@ -7,23 +7,21 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> BATLOW_8
-{
-  {   0.00392F,   0.09804F,   0.34902F },
-  {   0.06667F,   0.24706F,   0.37647F },
-  {   0.18039F,   0.39216F,   0.36078F },
-  {   0.38431F,   0.47451F,   0.25490F },
-  {   0.63922F,   0.54118F,   0.18039F },
-  {   0.91373F,   0.60000F,   0.36863F },
-  {   0.99216F,   0.69412F,   0.67843F },
-  {   0.98039F,   0.80000F,   0.98039F },
+inline const auto BATLOW_8 = std::vector<vivid::srgb_t>{
+    {0.00392F, 0.09804F, 0.34902F},
+    {0.06667F, 0.24706F, 0.37647F},
+    {0.18039F, 0.39216F, 0.36078F},
+    {0.38431F, 0.47451F, 0.25490F},
+    {0.63922F, 0.54118F, 0.18039F},
+    {0.91373F, 0.60000F, 0.36863F},
+    {0.99216F, 0.69412F, 0.67843F},
+    {0.98039F, 0.80000F, 0.98039F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

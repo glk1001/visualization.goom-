@@ -7,24 +7,22 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> YLORBR_9
-{
-  {   1.00000F,   1.00000F,   0.89804F },
-  {   1.00000F,   0.96863F,   0.73725F },
-  {   0.99608F,   0.89020F,   0.56863F },
-  {   0.99608F,   0.76863F,   0.30980F },
-  {   0.99608F,   0.60000F,   0.16078F },
-  {   0.92549F,   0.43922F,   0.07843F },
-  {   0.80000F,   0.29804F,   0.00784F },
-  {   0.60000F,   0.20392F,   0.01569F },
-  {   0.40000F,   0.14510F,   0.02353F },
+inline const auto YLORBR_9 = std::vector<vivid::srgb_t>{
+    {1.00000F, 1.00000F, 0.89804F},
+    {1.00000F, 0.96863F, 0.73725F},
+    {0.99608F, 0.89020F, 0.56863F},
+    {0.99608F, 0.76863F, 0.30980F},
+    {0.99608F, 0.60000F, 0.16078F},
+    {0.92549F, 0.43922F, 0.07843F},
+    {0.80000F, 0.29804F, 0.00784F},
+    {0.60000F, 0.20392F, 0.01569F},
+    {0.40000F, 0.14510F, 0.02353F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

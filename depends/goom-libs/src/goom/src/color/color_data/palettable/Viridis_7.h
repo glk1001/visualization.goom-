@@ -7,22 +7,20 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> VIRIDIS_7
-{
-  {   0.26667F,   0.00392F,   0.32941F },
-  {   0.26667F,   0.22353F,   0.51373F },
-  {   0.19216F,   0.40784F,   0.55686F },
-  {   0.12941F,   0.56863F,   0.54902F },
-  {   0.20784F,   0.71765F,   0.47451F },
-  {   0.55686F,   0.83922F,   0.27059F },
-  {   0.99216F,   0.90588F,   0.14510F },
+inline const auto VIRIDIS_7 = std::vector<vivid::srgb_t>{
+    {0.26667F, 0.00392F, 0.32941F},
+    {0.26667F, 0.22353F, 0.51373F},
+    {0.19216F, 0.40784F, 0.55686F},
+    {0.12941F, 0.56863F, 0.54902F},
+    {0.20784F, 0.71765F, 0.47451F},
+    {0.55686F, 0.83922F, 0.27059F},
+    {0.99216F, 0.90588F, 0.14510F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

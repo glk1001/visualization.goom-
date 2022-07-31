@@ -7,22 +7,20 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> PURPLES_7
-{
-  {   0.94902F,   0.94118F,   0.96863F },
-  {   0.85490F,   0.85490F,   0.92157F },
-  {   0.73725F,   0.74118F,   0.86275F },
-  {   0.61961F,   0.60392F,   0.78431F },
-  {   0.50196F,   0.49020F,   0.72941F },
-  {   0.41569F,   0.31765F,   0.63922F },
-  {   0.29020F,   0.07843F,   0.52549F },
+inline const auto PURPLES_7 = std::vector<vivid::srgb_t>{
+    {0.94902F, 0.94118F, 0.96863F},
+    {0.85490F, 0.85490F, 0.92157F},
+    {0.73725F, 0.74118F, 0.86275F},
+    {0.61961F, 0.60392F, 0.78431F},
+    {0.50196F, 0.49020F, 0.72941F},
+    {0.41569F, 0.31765F, 0.63922F},
+    {0.29020F, 0.07843F, 0.52549F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

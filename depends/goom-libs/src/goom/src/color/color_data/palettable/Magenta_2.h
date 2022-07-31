@@ -7,17 +7,15 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> MAGENTA_2
-{
-  {   0.95294F,   0.79608F,   0.82745F },
-  {   0.42353F,   0.12941F,   0.40392F },
+inline const auto MAGENTA_2 = std::vector<vivid::srgb_t>{
+    {0.95294F, 0.79608F, 0.82745F},
+    {0.42353F, 0.12941F, 0.40392F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

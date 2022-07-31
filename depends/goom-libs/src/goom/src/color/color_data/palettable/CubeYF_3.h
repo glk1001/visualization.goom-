@@ -7,18 +7,16 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> CUBEYF_3
-{
-  {   0.48235F,   0.00784F,   0.56471F },
-  {   0.22353F,   0.72941F,   0.69412F },
-  {   0.81961F,   0.92157F,   0.35686F },
+inline const auto CUBEYF_3 = std::vector<vivid::srgb_t>{
+    {0.48235F, 0.00784F, 0.56471F},
+    {0.22353F, 0.72941F, 0.69412F},
+    {0.81961F, 0.92157F, 0.35686F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

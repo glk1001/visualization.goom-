@@ -7,18 +7,16 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> HAWAII_3
-{
-  {   0.54902F,   0.00784F,   0.45098F },
-  {   0.61176F,   0.58824F,   0.10980F },
-  {   0.70196F,   0.94902F,   0.99216F },
+inline const auto HAWAII_3 = std::vector<vivid::srgb_t>{
+    {0.54902F, 0.00784F, 0.45098F},
+    {0.61176F, 0.58824F, 0.10980F},
+    {0.70196F, 0.94902F, 0.99216F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

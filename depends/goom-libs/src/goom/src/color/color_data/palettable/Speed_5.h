@@ -7,20 +7,18 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> SPEED_5
-{
-  {   1.00000F,   0.99216F,   0.80392F },
-  {   0.78824F,   0.72941F,   0.27059F },
-  {   0.37255F,   0.57255F,   0.04706F },
-  {   0.04314F,   0.37647F,   0.17647F },
-  {   0.09020F,   0.13725F,   0.07451F },
+inline const auto SPEED_5 = std::vector<vivid::srgb_t>{
+    {1.00000F, 0.99216F, 0.80392F},
+    {0.78824F, 0.72941F, 0.27059F},
+    {0.37255F, 0.57255F, 0.04706F},
+    {0.04314F, 0.37647F, 0.17647F},
+    {0.09020F, 0.13725F, 0.07451F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> MENDL_4
-{
-  {   0.87059F,   0.55294F,   0.72549F },
-  {   0.72157F,   0.75294F,   0.96471F },
-  {   0.81176F,   0.57647F,   0.52941F },
-  {   0.36078F,   0.50196F,   0.80000F },
+inline const auto MENDL_4 = std::vector<vivid::srgb_t>{
+    {0.87059F, 0.55294F, 0.72549F},
+    {0.72157F, 0.75294F, 0.96471F},
+    {0.81176F, 0.57647F, 0.52941F},
+    {0.36078F, 0.50196F, 0.80000F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

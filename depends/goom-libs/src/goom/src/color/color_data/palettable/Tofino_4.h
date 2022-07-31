@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> TOFINO_4
-{
-  {   0.87059F,   0.85098F,   1.00000F },
-  {   0.15294F,   0.23529F,   0.39608F },
-  {   0.14118F,   0.30196F,   0.15686F },
-  {   0.85882F,   0.90196F,   0.60784F },
+inline const auto TOFINO_4 = std::vector<vivid::srgb_t>{
+    {0.87059F, 0.85098F, 1.00000F},
+    {0.15294F, 0.23529F, 0.39608F},
+    {0.14118F, 0.30196F, 0.15686F},
+    {0.85882F, 0.90196F, 0.60784F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

@@ -7,21 +7,19 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> GEYSER_6
-{
-  {   0.00000F,   0.50196F,   0.50196F },
-  {   0.43922F,   0.64314F,   0.58039F },
-  {   0.70588F,   0.78431F,   0.65882F },
-  {   0.92941F,   0.73333F,   0.54118F },
-  {   0.87059F,   0.54118F,   0.35294F },
-  {   0.79216F,   0.33725F,   0.17255F },
+inline const auto GEYSER_6 = std::vector<vivid::srgb_t>{
+    {0.00000F, 0.50196F, 0.50196F},
+    {0.43922F, 0.64314F, 0.58039F},
+    {0.70588F, 0.78431F, 0.65882F},
+    {0.92941F, 0.73333F, 0.54118F},
+    {0.87059F, 0.54118F, 0.35294F},
+    {0.79216F, 0.33725F, 0.17255F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

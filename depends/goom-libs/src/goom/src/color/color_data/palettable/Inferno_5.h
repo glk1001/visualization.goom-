@@ -7,20 +7,18 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> INFERNO_5
-{
-  {   0.00000F,   0.00000F,   0.01569F },
-  {   0.34118F,   0.06275F,   0.43137F },
-  {   0.73725F,   0.21569F,   0.32941F },
-  {   0.97647F,   0.54902F,   0.03922F },
-  {   0.98824F,   1.00000F,   0.64314F },
+inline const auto INFERNO_5 = std::vector<vivid::srgb_t>{
+    {0.00000F, 0.00000F, 0.01569F},
+    {0.34118F, 0.06275F, 0.43137F},
+    {0.73725F, 0.21569F, 0.32941F},
+    {0.97647F, 0.54902F, 0.03922F},
+    {0.98824F, 1.00000F, 0.64314F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

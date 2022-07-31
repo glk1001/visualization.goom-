@@ -3395,16 +3395,14 @@ const std::array<ColorNamePair, 1687> ALL_MAPS{{
   {ColorMapName::ZISSOU_5, &COLOR_DATA::ZISSOU_5},
 }};
 
-const std::vector<ColorMapName> PERC_UNIF_SEQUENTIAL_MAPS
-{
+const std::vector<ColorMapName> PERC_UNIF_SEQUENTIAL_MAPS{
     ColorMapName::CIVIDIS,
     ColorMapName::INFERNO,
     ColorMapName::MAGMA,
     ColorMapName::PLASMA,
     ColorMapName::VIRIDIS,
 };
-const std::vector<ColorMapName> SEQUENTIAL_MAPS
-{
+const std::vector<ColorMapName> SEQUENTIAL_MAPS{
     ColorMapName::ACTON_3,
     ColorMapName::ACTON_4,
     ColorMapName::ACTON_5,
@@ -4401,8 +4399,7 @@ const std::vector<ColorMapName> SEQUENTIAL_MAPS
     ColorMapName::YLORRD_8,
     ColorMapName::YLORRD_9,
 };
-const std::vector<ColorMapName> SEQUENTIAL2_MAPS
-{
+const std::vector<ColorMapName> SEQUENTIAL2_MAPS{
     ColorMapName::AFMHOT,
     ColorMapName::AUTUMN,
     ColorMapName::BINARY,
@@ -4420,8 +4417,7 @@ const std::vector<ColorMapName> SEQUENTIAL2_MAPS
     ColorMapName::WINTER,
     ColorMapName::WISTIA,
 };
-const std::vector<ColorMapName> DIVERGING_MAPS
-{
+const std::vector<ColorMapName> DIVERGING_MAPS{
     ColorMapName::ARMYROSE_2,
     ColorMapName::ARMYROSE_3,
     ColorMapName::ARMYROSE_4,
@@ -4906,8 +4902,7 @@ const std::vector<ColorMapName> DIVERGING_MAPS
     ColorMapName::VIK_19,
     ColorMapName::VIK_20,
 };
-const std::vector<ColorMapName> DIVERGING_BLACK_MAPS
-{
+const std::vector<ColorMapName> DIVERGING_BLACK_MAPS{
     ColorMapName::PINK_BLACK_GREEN_W3C,
     ColorMapName::RED_BLACK_BLUE,
     ColorMapName::RED_BLACK_GREEN,
@@ -4916,8 +4911,7 @@ const std::vector<ColorMapName> DIVERGING_BLACK_MAPS
     ColorMapName::YELLOW_BLACK_BLUE,
     ColorMapName::YELLOW_BLACK_SKY,
 };
-const std::vector<ColorMapName> QUALITATIVE_MAPS
-{
+const std::vector<ColorMapName> QUALITATIVE_MAPS{
     ColorMapName::ACCENT, // = Accent_8
     ColorMapName::ACCENT_3,
     ColorMapName::ACCENT_4,
@@ -5081,8 +5075,7 @@ const std::vector<ColorMapName> QUALITATIVE_MAPS
     ColorMapName::VIVID_10,
     ColorMapName::ZISSOU_5,
 };
-const std::vector<ColorMapName> MISC_MAPS
-{
+const std::vector<ColorMapName> MISC_MAPS{
     ColorMapName::BRG,
     ColorMapName::CMRMAP,
     ColorMapName::CUBEHELIX,
@@ -5100,22 +5093,19 @@ const std::vector<ColorMapName> MISC_MAPS
     ColorMapName::RAINBOW,
     ColorMapName::TERRAIN,
 };
-const std::vector<ColorMapName> CYCLIC_MAPS
-{
+const std::vector<ColorMapName> CYCLIC_MAPS{
     ColorMapName::HSV,
     ColorMapName::TWILIGHT,
     ColorMapName::TWILIGHT_SHIFTED,
 };
-const std::vector<ColorMapName> PERC_UNIF_SEQUENTIAL_SLIM_MAPS
-{
+const std::vector<ColorMapName> PERC_UNIF_SEQUENTIAL_SLIM_MAPS{
     ColorMapName::CIVIDIS,
     ColorMapName::INFERNO,
     ColorMapName::MAGMA,
     ColorMapName::PLASMA,
     ColorMapName::VIRIDIS,
 };
-const std::vector<ColorMapName> SEQUENTIAL_SLIM_MAPS
-{
+const std::vector<ColorMapName> SEQUENTIAL_SLIM_MAPS{
     ColorMapName::BLUES,
     ColorMapName::BUGN,
     ColorMapName::BUPU,
@@ -5135,8 +5125,7 @@ const std::vector<ColorMapName> SEQUENTIAL_SLIM_MAPS
     ColorMapName::YLORBR,
     ColorMapName::YLORRD,
 };
-const std::vector<ColorMapName> SEQUENTIAL2_SLIM_MAPS
-{
+const std::vector<ColorMapName> SEQUENTIAL2_SLIM_MAPS{
     ColorMapName::AFMHOT,
     ColorMapName::AUTUMN,
     ColorMapName::BINARY,
@@ -5154,8 +5143,7 @@ const std::vector<ColorMapName> SEQUENTIAL2_SLIM_MAPS
     ColorMapName::WINTER,
     ColorMapName::WISTIA,
 };
-const std::vector<ColorMapName> DIVERGING_SLIM_MAPS
-{
+const std::vector<ColorMapName> DIVERGING_SLIM_MAPS{
     ColorMapName::BRBG,
     ColorMapName::BWR,
     ColorMapName::COOLWARM,
@@ -5169,8 +5157,7 @@ const std::vector<ColorMapName> DIVERGING_SLIM_MAPS
     ColorMapName::SEISMIC,
     ColorMapName::SPECTRAL,
 };
-const std::vector<ColorMapName> DIVERGING_BLACK_SLIM_MAPS
-{
+const std::vector<ColorMapName> DIVERGING_BLACK_SLIM_MAPS{
     ColorMapName::PINK_BLACK_GREEN_W3C,
     ColorMapName::RED_BLACK_BLUE,
     ColorMapName::RED_BLACK_GREEN,
@@ -5179,8 +5166,7 @@ const std::vector<ColorMapName> DIVERGING_BLACK_SLIM_MAPS
     ColorMapName::YELLOW_BLACK_BLUE,
     ColorMapName::YELLOW_BLACK_SKY,
 };
-const std::vector<ColorMapName> QUALITATIVE_SLIM_MAPS
-{
+const std::vector<ColorMapName> QUALITATIVE_SLIM_MAPS{
     ColorMapName::ACCENT, // = Accent_8
     ColorMapName::DARK2, // = Dark2_8
     ColorMapName::PAIRED, // = Paired_12
@@ -5194,8 +5180,7 @@ const std::vector<ColorMapName> QUALITATIVE_SLIM_MAPS
     ColorMapName::TAB20B,
     ColorMapName::TAB20C,
 };
-const std::vector<ColorMapName> MISC_SLIM_MAPS
-{
+const std::vector<ColorMapName> MISC_SLIM_MAPS{
     ColorMapName::BRG,
     ColorMapName::CMRMAP,
     ColorMapName::CUBEHELIX,
@@ -5213,8 +5198,7 @@ const std::vector<ColorMapName> MISC_SLIM_MAPS
     ColorMapName::RAINBOW,
     ColorMapName::TERRAIN,
 };
-const std::vector<ColorMapName> CYCLIC_SLIM_MAPS
-{
+const std::vector<ColorMapName> CYCLIC_SLIM_MAPS{
     ColorMapName::HSV,
     ColorMapName::TWILIGHT,
     ColorMapName::TWILIGHT_SHIFTED,

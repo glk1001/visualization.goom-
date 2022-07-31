@@ -214,18 +214,16 @@ def write_cpp_header(cm: Colormap):
         f.write(f'{GENERATED_CODE_WARNING}\n')
         f.write('\n')
         f.write('#include "vivid/types.h"\n')
+        f.write('\n')
         f.write('#include <vector>\n')
         f.write('\n')
         write_namespace_begin(f)
         f.write('\n')
-        f.write('// clang-format off\n')
-        f.write(f'static const std::vector<vivid::srgb_t> {get_upper_cpp_name(cm.name)}\n')
-        f.write('{\n')
+        f.write(f'inline const auto {get_upper_cpp_name(cm.name)} = std::vector<vivid::srgb_t>{{\n')
         for i in range(cm.N):
             vals = cm(i)
-            f.write(f'  {{ {vals[0]:9.5f}F, {vals[1]:9.5f}F, {vals[2]:9.5f}F }},\n')
+            f.write(f'    {{{vals[0]:7.5f}F, {vals[1]:7.5f}F, {vals[2]:7.5f}F}},\n')
         f.write('};\n')
-        f.write('// clang-format on\n')
         f.write('\n')
         write_namespace_end(f)
 
@@ -240,7 +238,7 @@ def write_color_maps_enums_header(maps: List[str], dupl: Dict[str, str]):
         f.write('\n')
         f.write(f'enum class {MAPS_ENUM_NAME}\n')
         f.write('{\n')
-        f.write(f'  _NULL = -1, // NOLINT\n')
+        f.write(f'  _NULL = -1, // NOLINT: Need special name here\n')
         for m in maps:
             f.write(f'  {get_upper_cpp_name(m)},' + get_enum_line_end(m, dupl))
         f.write(f'  _num,\n')
@@ -311,8 +309,7 @@ def write_all_maps_cpp(color_map_grps: Dict[str, List[str]], used_mps: List[str]
         # Do the groups
         not_done_maps = copy.deepcopy(used_mps)
         for map_nm in color_map_grps:
-            f.write(f'const std::vector<{MAPS_ENUM_NAME}> {get_upper_cpp_name(map_nm)}_MAPS\n')
-            f.write('{\n')
+            f.write(f'const std::vector<{MAPS_ENUM_NAME}> {get_upper_cpp_name(map_nm)}_MAPS{{\n')
             sorted_map_names = sorted(color_map_grps[map_nm], key=cmap_name_key)
             for m in sorted_map_names:
                 if m not in used_mps:

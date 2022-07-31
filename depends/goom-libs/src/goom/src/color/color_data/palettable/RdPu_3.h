@@ -7,18 +7,16 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> RDPU_3
-{
-  {   0.99216F,   0.87843F,   0.86667F },
-  {   0.98039F,   0.62353F,   0.70980F },
-  {   0.77255F,   0.10588F,   0.54118F },
+inline const auto RDPU_3 = std::vector<vivid::srgb_t>{
+    {0.99216F, 0.87843F, 0.86667F},
+    {0.98039F, 0.62353F, 0.70980F},
+    {0.77255F, 0.10588F, 0.54118F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

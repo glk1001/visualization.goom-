@@ -7,22 +7,20 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> DAVOS_7
-{
-  {   0.00000F,   0.01961F,   0.29020F },
-  {   0.10980F,   0.24706F,   0.51373F },
-  {   0.26275F,   0.43922F,   0.61569F },
-  {   0.42353F,   0.55686F,   0.57647F },
-  {   0.60000F,   0.67843F,   0.53333F },
-  {   0.88235F,   0.89804F,   0.71373F },
-  {   0.99608F,   0.99608F,   0.99608F },
+inline const auto DAVOS_7 = std::vector<vivid::srgb_t>{
+    {0.00000F, 0.01961F, 0.29020F},
+    {0.10980F, 0.24706F, 0.51373F},
+    {0.26275F, 0.43922F, 0.61569F},
+    {0.42353F, 0.55686F, 0.57647F},
+    {0.60000F, 0.67843F, 0.53333F},
+    {0.88235F, 0.89804F, 0.71373F},
+    {0.99608F, 0.99608F, 0.99608F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

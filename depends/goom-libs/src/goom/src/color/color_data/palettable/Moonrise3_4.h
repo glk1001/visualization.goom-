@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> MOONRISE3_4
-{
-  {   0.94902F,   0.85490F,   0.32157F },
-  {   0.77255F,   0.61569F,   0.00000F },
-  {   0.79608F,   0.79608F,   0.78824F },
-  {   0.10588F,   0.11765F,   0.07843F },
+inline const auto MOONRISE3_4 = std::vector<vivid::srgb_t>{
+    {0.94902F, 0.85490F, 0.32157F},
+    {0.77255F, 0.61569F, 0.00000F},
+    {0.79608F, 0.79608F, 0.78824F},
+    {0.10588F, 0.11765F, 0.07843F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

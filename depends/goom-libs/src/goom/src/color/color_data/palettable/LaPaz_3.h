@@ -7,18 +7,16 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> LAPAZ_3
-{
-  {   0.10196F,   0.04706F,   0.39216F },
-  {   0.36078F,   0.54902F,   0.63922F },
-  {   0.99608F,   0.94902F,   0.95294F },
+inline const auto LAPAZ_3 = std::vector<vivid::srgb_t>{
+    {0.10196F, 0.04706F, 0.39216F},
+    {0.36078F, 0.54902F, 0.63922F},
+    {0.99608F, 0.94902F, 0.95294F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> DARJEELING1_4
-{
-  {   0.61961F,   0.59216F,   0.59216F },
-  {   0.76078F,   0.55686F,   0.00000F },
-  {   0.51373F,   0.40000F,   0.34902F },
-  {   0.61176F,   0.35294F,   0.20000F },
+inline const auto DARJEELING1_4 = std::vector<vivid::srgb_t>{
+    {0.61961F, 0.59216F, 0.59216F},
+    {0.76078F, 0.55686F, 0.00000F},
+    {0.51373F, 0.40000F, 0.34902F},
+    {0.61176F, 0.35294F, 0.20000F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

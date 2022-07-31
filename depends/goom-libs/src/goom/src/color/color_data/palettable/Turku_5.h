@@ -7,20 +7,18 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> TURKU_5
-{
-  {   0.00000F,   0.00000F,   0.00000F },
-  {   0.28627F,   0.28627F,   0.22745F },
-  {   0.57647F,   0.54902F,   0.35686F },
-  {   0.89412F,   0.66667F,   0.56078F },
-  {   1.00000F,   0.90196F,   0.90196F },
+inline const auto TURKU_5 = std::vector<vivid::srgb_t>{
+    {0.00000F, 0.00000F, 0.00000F},
+    {0.28627F, 0.28627F, 0.22745F},
+    {0.57647F, 0.54902F, 0.35686F},
+    {0.89412F, 0.66667F, 0.56078F},
+    {1.00000F, 0.90196F, 0.90196F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

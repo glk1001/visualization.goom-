@@ -7,18 +7,16 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> OLERON_3
-{
-  {   0.10196F,   0.14902F,   0.34902F },
-  {   0.10196F,   0.29804F,   0.00000F },
-  {   0.99216F,   0.99216F,   0.90196F },
+inline const auto OLERON_3 = std::vector<vivid::srgb_t>{
+    {0.10196F, 0.14902F, 0.34902F},
+    {0.10196F, 0.29804F, 0.00000F},
+    {0.99216F, 0.99216F, 0.90196F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

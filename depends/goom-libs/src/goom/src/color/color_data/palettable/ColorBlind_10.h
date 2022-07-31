@@ -7,25 +7,23 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> COLORBLIND_10
-{
-  {   0.00000F,   0.41961F,   0.64314F },
-  {   1.00000F,   0.50196F,   0.05490F },
-  {   0.67059F,   0.67059F,   0.67059F },
-  {   0.34902F,   0.34902F,   0.34902F },
-  {   0.37255F,   0.61961F,   0.81961F },
-  {   0.78431F,   0.32157F,   0.00000F },
-  {   0.53725F,   0.53725F,   0.53725F },
-  {   0.63529F,   0.78431F,   0.92549F },
-  {   1.00000F,   0.73725F,   0.47451F },
-  {   0.81176F,   0.81176F,   0.81176F },
+inline const auto COLORBLIND_10 = std::vector<vivid::srgb_t>{
+    {0.00000F, 0.41961F, 0.64314F},
+    {1.00000F, 0.50196F, 0.05490F},
+    {0.67059F, 0.67059F, 0.67059F},
+    {0.34902F, 0.34902F, 0.34902F},
+    {0.37255F, 0.61961F, 0.81961F},
+    {0.78431F, 0.32157F, 0.00000F},
+    {0.53725F, 0.53725F, 0.53725F},
+    {0.63529F, 0.78431F, 0.92549F},
+    {1.00000F, 0.73725F, 0.47451F},
+    {0.81176F, 0.81176F, 0.81176F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

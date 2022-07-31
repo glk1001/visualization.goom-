@@ -7,21 +7,19 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> IMOLA_6
-{
-  {   0.10196F,   0.20000F,   0.70196F },
-  {   0.17255F,   0.33333F,   0.63137F },
-  {   0.25882F,   0.45490F,   0.54510F },
-  {   0.41569F,   0.61569F,   0.47059F },
-  {   0.62353F,   0.82353F,   0.41961F },
-  {   1.00000F,   1.00000F,   0.40000F },
+inline const auto IMOLA_6 = std::vector<vivid::srgb_t>{
+    {0.10196F, 0.20000F, 0.70196F},
+    {0.17255F, 0.33333F, 0.63137F},
+    {0.25882F, 0.45490F, 0.54510F},
+    {0.41569F, 0.61569F, 0.47059F},
+    {0.62353F, 0.82353F, 0.41961F},
+    {1.00000F, 1.00000F, 0.40000F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

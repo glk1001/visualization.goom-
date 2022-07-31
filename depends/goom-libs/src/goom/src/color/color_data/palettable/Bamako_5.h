@@ -7,20 +7,18 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> BAMAKO_5
-{
-  {   0.00000F,   0.25098F,   0.29804F },
-  {   0.16863F,   0.35294F,   0.20392F },
-  {   0.38039F,   0.49412F,   0.07843F },
-  {   0.72549F,   0.64706F,   0.14510F },
-  {   1.00000F,   0.89804F,   0.60000F },
+inline const auto BAMAKO_5 = std::vector<vivid::srgb_t>{
+    {0.00000F, 0.25098F, 0.29804F},
+    {0.16863F, 0.35294F, 0.20392F},
+    {0.38039F, 0.49412F, 0.07843F},
+    {0.72549F, 0.64706F, 0.14510F},
+    {1.00000F, 0.89804F, 0.60000F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

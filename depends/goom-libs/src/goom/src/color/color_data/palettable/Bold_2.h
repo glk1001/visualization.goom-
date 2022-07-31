@@ -7,17 +7,15 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> BOLD_2
-{
-  {   0.49804F,   0.23529F,   0.55294F },
-  {   0.06667F,   0.64706F,   0.47451F },
+inline const auto BOLD_2 = std::vector<vivid::srgb_t>{
+    {0.49804F, 0.23529F, 0.55294F},
+    {0.06667F, 0.64706F, 0.47451F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

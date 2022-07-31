@@ -7,20 +7,18 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> ISLEOFDOGS1_5
-{
-  {   0.99608F,   0.77255F,   0.68627F },
-  {   0.68235F,   0.49412F,   0.44314F },
-  {   0.82353F,   0.40392F,   0.19608F },
-  {   0.19608F,   0.13725F,   0.13725F },
-  {   0.09412F,   0.07059F,   0.07451F },
+inline const auto ISLEOFDOGS1_5 = std::vector<vivid::srgb_t>{
+    {0.99608F, 0.77255F, 0.68627F},
+    {0.68235F, 0.49412F, 0.44314F},
+    {0.82353F, 0.40392F, 0.19608F},
+    {0.19608F, 0.13725F, 0.13725F},
+    {0.09412F, 0.07059F, 0.07451F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

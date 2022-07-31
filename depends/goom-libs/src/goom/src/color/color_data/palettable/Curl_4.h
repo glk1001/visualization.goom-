@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> CURL_4
-{
-  {   0.08235F,   0.11373F,   0.26667F },
-  {   0.49020F,   0.70196F,   0.56471F },
-  {   0.85882F,   0.54902F,   0.46667F },
-  {   0.20392F,   0.05098F,   0.20784F },
+inline const auto CURL_4 = std::vector<vivid::srgb_t>{
+    {0.08235F, 0.11373F, 0.26667F},
+    {0.49020F, 0.70196F, 0.56471F},
+    {0.85882F, 0.54902F, 0.46667F},
+    {0.20392F, 0.05098F, 0.20784F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

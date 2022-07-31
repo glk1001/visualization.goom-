@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> ACCENT_4
-{
-  {   0.49804F,   0.78824F,   0.49804F },
-  {   0.74510F,   0.68235F,   0.83137F },
-  {   0.99216F,   0.75294F,   0.52549F },
-  {   1.00000F,   1.00000F,   0.60000F },
+inline const auto ACCENT_4 = std::vector<vivid::srgb_t>{
+    {0.49804F, 0.78824F, 0.49804F},
+    {0.74510F, 0.68235F, 0.83137F},
+    {0.99216F, 0.75294F, 0.52549F},
+    {1.00000F, 1.00000F, 0.60000F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

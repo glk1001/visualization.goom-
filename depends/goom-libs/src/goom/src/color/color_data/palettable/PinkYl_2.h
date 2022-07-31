@@ -7,17 +7,15 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> PINKYL_2
-{
-  {   0.99608F,   0.96471F,   0.70980F },
-  {   0.88235F,   0.32549F,   0.51373F },
+inline const auto PINKYL_2 = std::vector<vivid::srgb_t>{
+    {0.99608F, 0.96471F, 0.70980F},
+    {0.88235F, 0.32549F, 0.51373F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

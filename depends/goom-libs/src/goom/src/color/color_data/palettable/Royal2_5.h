@@ -7,20 +7,18 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> ROYAL2_5
-{
-  {   0.76078F,   0.67059F,   0.72941F },
-  {   0.54902F,   0.23137F,   0.28627F },
-  {   0.71373F,   0.67451F,   0.65098F },
-  {   0.12941F,   0.12549F,   0.32549F },
-  {   0.81961F,   0.82745F,   0.83529F },
+inline const auto ROYAL2_5 = std::vector<vivid::srgb_t>{
+    {0.76078F, 0.67059F, 0.72941F},
+    {0.54902F, 0.23137F, 0.28627F},
+    {0.71373F, 0.67451F, 0.65098F},
+    {0.12941F, 0.12549F, 0.32549F},
+    {0.81961F, 0.82745F, 0.83529F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

@@ -7,17 +7,15 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> REDOR_2
-{
-  {   0.96471F,   0.82353F,   0.66275F },
-  {   0.69412F,   0.24706F,   0.39216F },
+inline const auto REDOR_2 = std::vector<vivid::srgb_t>{
+    {0.96471F, 0.82353F, 0.66275F},
+    {0.69412F, 0.24706F, 0.39216F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

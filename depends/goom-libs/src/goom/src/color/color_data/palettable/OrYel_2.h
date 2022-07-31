@@ -7,17 +7,15 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> ORYEL_2
-{
-  {   0.92549F,   0.85490F,   0.60392F },
-  {   0.93333F,   0.30196F,   0.35294F },
+inline const auto ORYEL_2 = std::vector<vivid::srgb_t>{
+    {0.92549F, 0.85490F, 0.60392F},
+    {0.93333F, 0.30196F, 0.35294F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

@@ -7,20 +7,18 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> TOKYO_5
-{
-  {   0.10196F,   0.05490F,   0.20392F },
-  {   0.46275F,   0.27451F,   0.42353F },
-  {   0.56471F,   0.52941F,   0.52549F },
-  {   0.63137F,   0.77255F,   0.60000F },
-  {   0.99608F,   0.99608F,   0.84706F },
+inline const auto TOKYO_5 = std::vector<vivid::srgb_t>{
+    {0.10196F, 0.05490F, 0.20392F},
+    {0.46275F, 0.27451F, 0.42353F},
+    {0.56471F, 0.52941F, 0.52549F},
+    {0.63137F, 0.77255F, 0.60000F},
+    {0.99608F, 0.99608F, 0.84706F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

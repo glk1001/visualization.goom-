@@ -7,21 +7,19 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> PHASE_6
-{
-  {   0.65882F,   0.47059F,   0.05098F },
-  {   0.86275F,   0.23529F,   0.42745F },
-  {   0.71373F,   0.29412F,   0.92941F },
-  {   0.23137F,   0.54902F,   0.79608F },
-  {   0.09804F,   0.60392F,   0.36863F },
-  {   0.65882F,   0.47059F,   0.05098F },
+inline const auto PHASE_6 = std::vector<vivid::srgb_t>{
+    {0.65882F, 0.47059F, 0.05098F},
+    {0.86275F, 0.23529F, 0.42745F},
+    {0.71373F, 0.29412F, 0.92941F},
+    {0.23137F, 0.54902F, 0.79608F},
+    {0.09804F, 0.60392F, 0.36863F},
+    {0.65882F, 0.47059F, 0.05098F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

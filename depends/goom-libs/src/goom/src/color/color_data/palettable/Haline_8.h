@@ -7,23 +7,21 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> HALINE_8
-{
-  {   0.16471F,   0.09412F,   0.42353F },
-  {   0.10588F,   0.22745F,   0.62745F },
-  {   0.08627F,   0.38824F,   0.55294F },
-  {   0.19216F,   0.50980F,   0.53333F },
-  {   0.27451F,   0.64314F,   0.51373F },
-  {   0.41176F,   0.76863F,   0.43529F },
-  {   0.72157F,   0.85882F,   0.37647F },
-  {   0.99216F,   0.93725F,   0.60392F },
+inline const auto HALINE_8 = std::vector<vivid::srgb_t>{
+    {0.16471F, 0.09412F, 0.42353F},
+    {0.10588F, 0.22745F, 0.62745F},
+    {0.08627F, 0.38824F, 0.55294F},
+    {0.19216F, 0.50980F, 0.53333F},
+    {0.27451F, 0.64314F, 0.51373F},
+    {0.41176F, 0.76863F, 0.43529F},
+    {0.72157F, 0.85882F, 0.37647F},
+    {0.99216F, 0.93725F, 0.60392F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

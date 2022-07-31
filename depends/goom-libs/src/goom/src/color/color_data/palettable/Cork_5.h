@@ -7,20 +7,18 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> CORK_5
-{
-  {   0.17255F,   0.10196F,   0.29804F },
-  {   0.34118F,   0.49412F,   0.65098F },
-  {   0.85882F,   0.90196F,   0.89804F },
-  {   0.41961F,   0.65882F,   0.43922F },
-  {   0.25882F,   0.30196F,   0.01176F },
+inline const auto CORK_5 = std::vector<vivid::srgb_t>{
+    {0.17255F, 0.10196F, 0.29804F},
+    {0.34118F, 0.49412F, 0.65098F},
+    {0.85882F, 0.90196F, 0.89804F},
+    {0.41961F, 0.65882F, 0.43922F},
+    {0.25882F, 0.30196F, 0.01176F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

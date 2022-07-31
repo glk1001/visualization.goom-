@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> LAJOLLA_4
-{
-  {   1.00000F,   1.00000F,   0.80000F },
-  {   0.92549F,   0.65882F,   0.33333F },
-  {   0.64706F,   0.27843F,   0.25882F },
-  {   0.10196F,   0.10196F,   0.00392F },
+inline const auto LAJOLLA_4 = std::vector<vivid::srgb_t>{
+    {1.00000F, 1.00000F, 0.80000F},
+    {0.92549F, 0.65882F, 0.33333F},
+    {0.64706F, 0.27843F, 0.25882F},
+    {0.10196F, 0.10196F, 0.00392F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> ROMA_4
-{
-  {   0.49804F,   0.09804F,   0.00000F },
-  {   0.85098F,   0.81176F,   0.42745F },
-  {   0.38039F,   0.74118F,   0.82745F },
-  {   0.10196F,   0.20000F,   0.60000F },
+inline const auto ROMA_4 = std::vector<vivid::srgb_t>{
+    {0.49804F, 0.09804F, 0.00000F},
+    {0.85098F, 0.81176F, 0.42745F},
+    {0.38039F, 0.74118F, 0.82745F},
+    {0.10196F, 0.20000F, 0.60000F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

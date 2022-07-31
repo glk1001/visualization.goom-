@@ -7,24 +7,22 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> DENSE_9
-{
-  {   0.90196F,   0.94510F,   0.94510F },
-  {   0.69412F,   0.83922F,   0.89020F },
-  {   0.52549F,   0.72549F,   0.89020F },
-  {   0.45098F,   0.59216F,   0.89412F },
-  {   0.47059F,   0.44314F,   0.83529F },
-  {   0.47059F,   0.30588F,   0.70196F },
-  {   0.43529F,   0.18039F,   0.52157F },
-  {   0.35294F,   0.09412F,   0.31765F },
-  {   0.21176F,   0.05490F,   0.14118F },
+inline const auto DENSE_9 = std::vector<vivid::srgb_t>{
+    {0.90196F, 0.94510F, 0.94510F},
+    {0.69412F, 0.83922F, 0.89020F},
+    {0.52549F, 0.72549F, 0.89020F},
+    {0.45098F, 0.59216F, 0.89412F},
+    {0.47059F, 0.44314F, 0.83529F},
+    {0.47059F, 0.30588F, 0.70196F},
+    {0.43529F, 0.18039F, 0.52157F},
+    {0.35294F, 0.09412F, 0.31765F},
+    {0.21176F, 0.05490F, 0.14118F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

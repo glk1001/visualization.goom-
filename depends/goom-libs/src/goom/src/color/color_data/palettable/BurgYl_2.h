@@ -7,17 +7,15 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> BURGYL_2
-{
-  {   0.98431F,   0.90196F,   0.77255F },
-  {   0.43922F,   0.15686F,   0.29020F },
+inline const auto BURGYL_2 = std::vector<vivid::srgb_t>{
+    {0.98431F, 0.90196F, 0.77255F},
+    {0.43922F, 0.15686F, 0.29020F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

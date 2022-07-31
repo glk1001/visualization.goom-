@@ -7,22 +7,20 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> OXY_7
-{
-  {   0.25098F,   0.01961F,   0.01961F },
-  {   0.52157F,   0.03922F,   0.04314F },
-  {   0.43529F,   0.43529F,   0.43137F },
-  {   0.60784F,   0.60392F,   0.60392F },
-  {   0.79608F,   0.79216F,   0.78824F },
-  {   0.92549F,   0.96078F,   0.30588F },
-  {   0.86667F,   0.68627F,   0.09804F },
+inline const auto OXY_7 = std::vector<vivid::srgb_t>{
+    {0.25098F, 0.01961F, 0.01961F},
+    {0.52157F, 0.03922F, 0.04314F},
+    {0.43529F, 0.43529F, 0.43137F},
+    {0.60784F, 0.60392F, 0.60392F},
+    {0.79608F, 0.79216F, 0.78824F},
+    {0.92549F, 0.96078F, 0.30588F},
+    {0.86667F, 0.68627F, 0.09804F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

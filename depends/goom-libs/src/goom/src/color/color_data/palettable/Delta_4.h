@@ -7,19 +7,17 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> DELTA_4
-{
-  {   0.06667F,   0.12549F,   0.25098F },
-  {   0.42353F,   0.70980F,   0.70196F },
-  {   0.66667F,   0.67451F,   0.12549F },
-  {   0.09020F,   0.13725F,   0.07451F },
+inline const auto DELTA_4 = std::vector<vivid::srgb_t>{
+    {0.06667F, 0.12549F, 0.25098F},
+    {0.42353F, 0.70980F, 0.70196F},
+    {0.66667F, 0.67451F, 0.12549F},
+    {0.09020F, 0.13725F, 0.07451F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

@@ -7,20 +7,18 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> PAIRED_5
-{
-  {   0.65098F,   0.80784F,   0.89020F },
-  {   0.12157F,   0.47059F,   0.70588F },
-  {   0.69804F,   0.87451F,   0.54118F },
-  {   0.20000F,   0.62745F,   0.17255F },
-  {   0.98431F,   0.60392F,   0.60000F },
+inline const auto PAIRED_5 = std::vector<vivid::srgb_t>{
+    {0.65098F, 0.80784F, 0.89020F},
+    {0.12157F, 0.47059F, 0.70588F},
+    {0.69804F, 0.87451F, 0.54118F},
+    {0.20000F, 0.62745F, 0.17255F},
+    {0.98431F, 0.60392F, 0.60000F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

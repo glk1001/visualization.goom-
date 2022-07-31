@@ -7,17 +7,15 @@
 // DO NOT EDIT!!
 
 #include "vivid/types.h"
+
 #include <vector>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// clang-format off
-static const std::vector<vivid::srgb_t> PRISM_2
-{
-  {   0.37255F,   0.27451F,   0.56471F },
-  {   0.11373F,   0.41176F,   0.58824F },
+inline const auto PRISM_2 = std::vector<vivid::srgb_t>{
+    {0.37255F, 0.27451F, 0.56471F},
+    {0.11373F, 0.41176F, 0.58824F},
 };
-// clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA
