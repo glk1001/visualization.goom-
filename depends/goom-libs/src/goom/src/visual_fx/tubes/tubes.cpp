@@ -52,12 +52,12 @@ static constexpr auto NUM_SHAPES_PER_TUBE = 45U;
 // Strangely, 'NUM_SHAPES_PER_TUBE = 100' gives a small gap in
 // circle at 90 and 270 degrees.
 
-static constexpr auto PROB_INTERIOR_SHAPE = 45.0F / 50.0F;
-static constexpr auto MAX_INTERIOR_SHAPES_TIME = 500U;
-static constexpr auto PROB_NO_BOUNDARY_SHAPES = 10.0F / 50.0F;
+static constexpr auto PROB_INTERIOR_SHAPE         = 45.0F / 50.0F;
+static constexpr auto MAX_INTERIOR_SHAPES_TIME    = 500U;
+static constexpr auto PROB_NO_BOUNDARY_SHAPES     = 10.0F / 50.0F;
 static constexpr auto MAX_NO_BOUNDARY_SHAPES_TIME = 1U;
-static constexpr auto PROB_HEX_DOT_SHAPE = 1.0F / 50.0F;
-static constexpr auto MAX_HEX_DOT_SHAPES_TIME = 100U;
+static constexpr auto PROB_HEX_DOT_SHAPE          = 1.0F / 50.0F;
+static constexpr auto MAX_HEX_DOT_SHAPES_TIME     = 100U;
 
 static constexpr auto MIN_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 6;
 static constexpr auto MAX_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 3;
@@ -88,7 +88,7 @@ static constexpr auto MIN_LOW_COLOR_TYPE_TIME = 100U;
 static constexpr auto MAX_LOW_COLOR_TYPE_TIME = 1000U;
 
 static constexpr auto OUTER_CIRCLE_BRIGHTNESS = 0.4F;
-static constexpr auto LIGHTER_COLOR_POWER = 10.0F;
+static constexpr auto LIGHTER_COLOR_POWER     = 10.0F;
 
 class ShapeColorizer;
 
@@ -101,12 +101,12 @@ public:
   [[nodiscard]] auto GetNextPoint() const noexcept -> Point2dInt override;
 
 private:
-  static constexpr float DEFAULT_B = 350.0F;
-  float m_b = DEFAULT_B;
+  static constexpr float DEFAULT_B   = 350.0F;
+  float m_b                          = DEFAULT_B;
   static constexpr float DEFAULT_K_X = 3.0F;
-  float m_kX = DEFAULT_K_X;
+  float m_kX                         = DEFAULT_K_X;
   static constexpr float DEFAULT_K_Y = 3.0F;
-  float m_kY = DEFAULT_K_Y;
+  float m_kY                         = DEFAULT_K_Y;
 };
 
 TubeParametricPath::TubeParametricPath(std::unique_ptr<TValue> positionT) noexcept
@@ -182,11 +182,11 @@ private:
   const TubeData m_data;
   propagate_const<std::unique_ptr<ShapeColorizer>> m_colorizer{
       std::make_unique<ShapeColorizer>(m_data, NUM_SHAPES_PER_TUBE, MAX_NUM_CIRCLES_IN_GROUP)};
-  bool m_active = true;
-  static constexpr float PATH_STEP = NML_CIRCLE_SPEED;
+  bool m_active                                = true;
+  static constexpr float PATH_STEP             = NML_CIRCLE_SPEED;
   static constexpr uint32_t SHAPE_T_DELAY_TIME = 10;
-  static constexpr float T_AT_CENTRE = 0.5F;
-  int32_t m_maxJitterOffset = 0;
+  static constexpr float T_AT_CENTRE           = 0.5F;
+  int32_t m_maxJitterOffset                    = 0;
   propagate_const<std::unique_ptr<TubeParametricPath>> m_centrePath{
       std::make_unique<TubeParametricPath>(
           std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP))};
@@ -359,7 +359,7 @@ private:
   static constexpr uint32_t NUM_OUTER_CIRCLE_COLOR_STEPS = 100;
   TValue m_outerCircleT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_OUTER_CIRCLE_COLOR_STEPS};
 
-  ColorMapMixMode m_colorMapMixMode = ColorMapMixMode::CIRCLES_ONLY;
+  ColorMapMixMode m_colorMapMixMode             = ColorMapMixMode::CIRCLES_ONLY;
   static constexpr uint32_t NUM_MIX_COLOR_STEPS = 1000;
   TValue m_mixT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MIX_COLOR_STEPS};
   const Weights<ColorMapMixMode> m_colorMapMixModes;
@@ -399,7 +399,7 @@ private:
                                                   const ShapeColors& colors1,
                                                   const ShapeColors& colors2,
                                                   float mixT) -> Pixel;
-  static constexpr auto CUTOFF_BRIGHTNESS = 0.005F;
+  static constexpr float CUTOFF_BRIGHTNESS = 0.005F;
   const BrightnessAttenuation m_brightnessAttenuation;
   [[nodiscard]] auto GetFinalColor(const Pixel& oldColor, const Pixel& color) const -> Pixel;
   [[nodiscard]] auto GetShapesOnlyColors(const LowColorTypes& lowColorType,
@@ -414,11 +414,9 @@ private:
                                                float brightness) const -> ShapeColors;
 };
 
-// clang-format off
 static constexpr auto TRUE_LOW_COLOR_WEIGHT      = 30.0F;
 static constexpr auto MAIN_COLOR_WEIGHT          = 10.0F;
 static constexpr auto LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
-// clang-format on
 
 Tube::TubeImpl::TubeImpl(const TubeData& data, const OscillatingFunction::Params& pathParams)
   : m_data{data},
@@ -446,32 +444,31 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
 
   auto shapes = std::vector<Shape>(NUM_SHAPES_PER_TUBE);
 
-  auto angle = 0.0F;
+  auto angle    = 0.0F;
   auto shapeNum = 0U;
   for (auto& shape : shapes)
   {
     const auto cosAngle = std::cos(angle);
     const auto sinAngle = std::sin(angle);
-    const auto xFrom = radius * cosAngle;
-    const auto yFrom = radius * sinAngle;
-    const auto fromPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xFrom)),
+    const auto xFrom    = radius * cosAngle;
+    const auto yFrom    = radius * sinAngle;
+    const auto fromPos  = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xFrom)),
                                               static_cast<int32_t>(std::round(yFrom))};
-    const auto xTo = radius * std::cos(pi + angle);
-    const auto yTo = radius * std::sin(pi + angle);
-    const auto toPos = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xTo)),
+    const auto xTo      = radius * std::cos(pi + angle);
+    const auto yTo      = radius * std::sin(pi + angle);
+    const auto toPos    = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xTo)),
                                             static_cast<int32_t>(std::round(yTo))};
 
-    shape.shapeNum = shapeNum;
+    shape.shapeNum                   = shapeNum;
     static const auto s_DELAY_POINTS = std::vector<TValue::DelayPoint>{
         {       0.0F, SHAPE_T_DELAY_TIME},
         {T_AT_CENTRE, SHAPE_T_DELAY_TIME},
         {       1.0F, SHAPE_T_DELAY_TIME}
     };
-    auto shapeT =
-        std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP,
-                                           s_DELAY_POINTS);
-    shape.path = std::make_unique<OscillatingPath>(std::move(shapeT), fromPos.ToFlt(),
-                                                   toPos.ToFlt(), pathParams);
+    auto shapeT = std::make_unique<TValue>(
+        TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP, s_DELAY_POINTS);
+    shape.path = std::make_unique<OscillatingPath>(
+        std::move(shapeT), fromPos.ToFlt(), toPos.ToFlt(), pathParams);
 
     angle += ANGLE_STEP;
     ++shapeNum;
@@ -561,14 +558,14 @@ inline void Tube::TubeImpl::SetCentreSpeed(const float val)
 
 inline void Tube::TubeImpl::IncreaseCentreSpeed()
 {
-  const auto factor = m_data.goomRand.GetRandInRange(1.01F, 10.0F);
+  const auto factor   = m_data.goomRand.GetRandInRange(1.01F, 10.0F);
   const auto newSpeed = std::min(MAX_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
 
 inline void Tube::TubeImpl::DecreaseCentreSpeed()
 {
-  const auto factor = m_data.goomRand.GetRandInRange(0.1F, 0.99F);
+  const auto factor   = m_data.goomRand.GetRandInRange(0.1F, 0.99F);
   const auto newSpeed = std::min(MIN_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
@@ -596,8 +593,8 @@ inline auto Tube::TubeImpl::GetCircleSpeed() const -> float
 
 inline void Tube::TubeImpl::SetCircleSpeed(const float val)
 {
-  std::for_each(begin(m_shapes), end(m_shapes),
-                [&val](Shape& shape) { shape.path->SetStepSize(val); });
+  std::for_each(
+      begin(m_shapes), end(m_shapes), [&val](Shape& shape) { shape.path->SetStepSize(val); });
 }
 
 inline void Tube::TubeImpl::IncreaseCircleSpeed()
@@ -624,7 +621,7 @@ inline void Tube::TubeImpl::DecreaseCircleSpeed()
 
 void Tube::TubeImpl::DrawShapes()
 {
-  m_hexLen = GetHexLen();
+  m_hexLen            = GetHexLen();
   m_interiorShapeSize = GetInteriorShapeSize(m_hexLen);
 
   const auto centreOffset = m_getTransformedCentre(m_data.tubeId, m_centrePath->GetNextPoint());
@@ -695,14 +692,16 @@ inline auto Tube::TubeImpl::GetInteriorShapeSize(const float hexLen) const -> ui
 
 void Tube::TubeImpl::DrawShape(const Shape& shape, const Vec2dInt& centreOffset) const
 {
-  const auto jitterXOffset = m_data.goomRand.GetRandInRange(0, m_maxJitterOffset + 1);
-  const auto jitterYOffset = jitterXOffset;
-  const auto jitterOffset = Vec2dInt{jitterXOffset, jitterYOffset};
+  const auto jitterXOffset  = m_data.goomRand.GetRandInRange(0, m_maxJitterOffset + 1);
+  const auto jitterYOffset  = jitterXOffset;
+  const auto jitterOffset   = Vec2dInt{jitterXOffset, jitterYOffset};
   const auto shapeCentrePos = shape.path->GetNextPoint() + jitterOffset + centreOffset;
 
-  const auto allColors = m_colorizer->GetColors(
-      m_currentLowColorType, static_cast<uint32_t>(m_circleGroupTimer.GetCurrentCount()), shape,
-      shapeCentrePos);
+  const auto allColors =
+      m_colorizer->GetColors(m_currentLowColorType,
+                             static_cast<uint32_t>(m_circleGroupTimer.GetCurrentCount()),
+                             shape,
+                             shapeCentrePos);
 
   if (m_noBoundaryShapeTimer.Finished())
   {
@@ -722,9 +721,9 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
                                     const uint8_t lineThickness) const
 {
   static constexpr auto NUM_HEX_SIDES = 6U;
-  static constexpr auto ANGLE_STEP = THIRD_PI;
-  static constexpr auto START_ANGLE = 2.0F * ANGLE_STEP;
-  const auto lineColors = MultiplePixels{allColors.mainColor, allColors.lowColor};
+  static constexpr auto ANGLE_STEP    = THIRD_PI;
+  static constexpr auto START_ANGLE   = 2.0F * ANGLE_STEP;
+  const auto lineColors               = MultiplePixels{allColors.mainColor, allColors.lowColor};
   const auto outerCircleColors =
       MultiplePixels{allColors.outerCircleMainColor, allColors.outerCircleLowColor};
   const auto drawHexDot = !m_hexDotShapeTimer.Finished();
@@ -744,8 +743,8 @@ void Tube::TubeImpl::DrawHexOutline(const Point2dInt& hexCentre,
     if (drawHexDot)
     {
       static constexpr uint32_t HEX_DOT_SIZE = 3;
-      m_data.drawFuncs.drawSmallImage(point2, SmallImageBitmaps::ImageNames::SPHERE, HEX_DOT_SIZE,
-                                      outerCircleColors);
+      m_data.drawFuncs.drawSmallImage(
+          point2, SmallImageBitmaps::ImageNames::SPHERE, HEX_DOT_SIZE, outerCircleColors);
     }
 
     angle += ANGLE_STEP;
@@ -757,8 +756,8 @@ inline void Tube::TubeImpl::DrawInteriorShape(const Point2dInt& shapeCentrePos,
                                               const ShapeColors& allColors) const
 {
   const auto colors = MultiplePixels{allColors.innerMainColor, allColors.innerLowColor};
-  m_data.drawFuncs.drawSmallImage(shapeCentrePos, SmallImageBitmaps::ImageNames::SPHERE,
-                                  m_interiorShapeSize, colors);
+  m_data.drawFuncs.drawSmallImage(
+      shapeCentrePos, SmallImageBitmaps::ImageNames::SPHERE, m_interiorShapeSize, colors);
 }
 
 inline void Tube::TubeImpl::DrawOuterCircle(const Point2dInt& shapeCentrePos,
@@ -770,17 +769,15 @@ inline void Tube::TubeImpl::DrawOuterCircle(const Point2dInt& shapeCentrePos,
   static constexpr auto OUTER_CIRCLE_LINE_THICKNESS = 1U;
   const auto outerCircleColors =
       MultiplePixels{allColors.outerCircleMainColor, allColors.outerCircleLowColor};
-  m_data.drawFuncs.drawCircle(shapeCentrePos, outerCircleRadius, outerCircleColors,
-                              OUTER_CIRCLE_LINE_THICKNESS);
+  m_data.drawFuncs.drawCircle(
+      shapeCentrePos, outerCircleRadius, outerCircleColors, OUTER_CIRCLE_LINE_THICKNESS);
 }
 
-// clang-format off
 static constexpr auto SHAPES_ONLY_WEIGHT                = 20.0F;
 static constexpr auto STRIPED_SHAPES_ONLY_WEIGHT        = 10.0F;
 static constexpr auto CIRCLES_ONLY_WEIGHT               = 20.0F;
-static constexpr auto SHAPES_AND_CIRCLES_WEIGHT         =  5.0F;
+static constexpr auto SHAPES_AND_CIRCLES_WEIGHT         = 05.0F;
 static constexpr auto STRIPED_SHAPES_AND_CIRCLES_WEIGHT = 15.0F;
-// clang-format on
 
 ShapeColorizer::ShapeColorizer(const TubeData& data,
                                const uint32_t numShapes,
@@ -870,7 +867,7 @@ void ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
   Expects(numColorMaps == oldColors->size());
 
   m_outerCircleMainColorMap = &m_data.mainColorMaps->GetRandomColorMap();
-  m_outerCircleLowColorMap = &m_data.lowColorMaps->GetRandomColorMap();
+  m_outerCircleLowColorMap  = &m_data.lowColorMaps->GetRandomColorMap();
 
   for (auto i = 0U; i < numColorMaps; ++i)
   {
@@ -882,22 +879,22 @@ void ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
 
 void ShapeColorizer::ResetColorMaps(ShapeColorMaps* const colorMaps) const
 {
-  colorMaps->mainColorMap = &m_data.mainColorMaps->GetRandomColorMap();
-  colorMaps->lowColorMap = &m_data.mainColorMaps->GetRandomColorMap();
+  colorMaps->mainColorMap      = &m_data.mainColorMaps->GetRandomColorMap();
+  colorMaps->lowColorMap       = &m_data.mainColorMaps->GetRandomColorMap();
   colorMaps->innerMainColorMap = &m_data.lowColorMaps->GetRandomColorMap();
-  colorMaps->innerLowColorMap = &m_data.lowColorMaps->GetRandomColorMap();
+  colorMaps->innerLowColorMap  = &m_data.lowColorMaps->GetRandomColorMap();
 }
 
 void ShapeColorizer::CopyColors(const ShapeColorMaps& colorMaps,
                                 const TValue& t,
                                 ShapeColors* const oldColors) const
 {
-  oldColors->mainColor = colorMaps.mainColorMap->GetColor(t());
-  oldColors->lowColor = colorMaps.lowColorMap->GetColor(t());
-  oldColors->innerMainColor = colorMaps.innerMainColorMap->GetColor(t());
-  oldColors->innerLowColor = colorMaps.innerLowColorMap->GetColor(t());
+  oldColors->mainColor            = colorMaps.mainColorMap->GetColor(t());
+  oldColors->lowColor             = colorMaps.lowColorMap->GetColor(t());
+  oldColors->innerMainColor       = colorMaps.innerMainColorMap->GetColor(t());
+  oldColors->innerLowColor        = colorMaps.innerLowColorMap->GetColor(t());
   oldColors->outerCircleMainColor = m_outerCircleMainColorMap->GetColor(t());
-  oldColors->outerCircleLowColor = m_outerCircleLowColorMap->GetColor(t());
+  oldColors->outerCircleLowColor  = m_outerCircleLowColorMap->GetColor(t());
 }
 
 inline void ShapeColorizer::ResetColorMixMode()
@@ -919,8 +916,9 @@ auto ShapeColorizer::GetBrightness(const Shape& shape, const Point2dInt& shapeCe
 {
   static constexpr auto MIN_BRIGHTNESS = 0.5F;
   const auto brightness =
-      std::min(3.0F, m_data.brightnessFactor * m_brightnessAttenuation.GetPositionBrightness(
-                                                   shapeCentrePos, MIN_BRIGHTNESS));
+      std::min(3.0F,
+               m_data.brightnessFactor *
+                   m_brightnessAttenuation.GetPositionBrightness(shapeCentrePos, MIN_BRIGHTNESS));
 
   static constexpr auto SMALL_T = 0.15F;
   if (static constexpr float HALFWAY_T = 0.5F;
@@ -989,7 +987,7 @@ inline auto ShapeColorizer::GetShapesAndCirclesColors(const LowColorTypes& lowCo
                                                       const Shape& shape,
                                                       const float brightness) const -> ShapeColors
 {
-  const auto shapeColors = GetShapeColors(GetShapeNumToUse(shape.shapeNum), brightness);
+  const auto shapeColors  = GetShapeColors(GetShapeNumToUse(shape.shapeNum), brightness);
   const auto circleColors = GetCircleColors(circleNum, brightness);
 
   return {
@@ -997,10 +995,10 @@ inline auto ShapeColorizer::GetShapesAndCirclesColors(const LowColorTypes& lowCo
       GetLowMixedColor(lowColorType, shapeColors, circleColors, m_mixT()),
       IColorMap::GetColorMix(shapeColors.innerMainColor, circleColors.innerMainColor, m_mixT()),
       GetInnerLowMixedColor(lowColorType, shapeColors, circleColors, m_mixT()),
-      IColorMap::GetColorMix(shapeColors.outerCircleMainColor, circleColors.outerCircleMainColor,
-                             m_mixT()),
-      IColorMap::GetColorMix(shapeColors.outerCircleLowColor, circleColors.outerCircleLowColor,
-                             m_mixT()),
+      IColorMap::GetColorMix(
+          shapeColors.outerCircleMainColor, circleColors.outerCircleMainColor, m_mixT()),
+      IColorMap::GetColorMix(
+          shapeColors.outerCircleLowColor, circleColors.outerCircleLowColor, m_mixT()),
   };
 }
 
@@ -1084,15 +1082,15 @@ inline auto ShapeColorizer::GetShapeNumToUse(const uint32_t shapeNum) const -> u
 inline auto ShapeColorizer::GetShapeColors(const uint32_t shapeNum, const float brightness) const
     -> ShapeColors
 {
-  return GetColors(m_shapeColorMaps[shapeNum], m_shapeColorsT, m_oldShapeColors[shapeNum],
-                   brightness);
+  return GetColors(
+      m_shapeColorMaps[shapeNum], m_shapeColorsT, m_oldShapeColors[shapeNum], brightness);
 }
 
 inline auto ShapeColorizer::GetCircleColors(const uint32_t circleNum, const float brightness) const
     -> ShapeColors
 {
-  return GetColors(m_circleColorMaps[circleNum], m_circleColorsT, m_oldCircleColors[circleNum],
-                   brightness);
+  return GetColors(
+      m_circleColorMaps[circleNum], m_circleColorsT, m_oldCircleColors[circleNum], brightness);
 }
 
 auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,

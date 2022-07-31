@@ -52,127 +52,118 @@ static constexpr auto FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 // End debugging
 
 
-// clang-format off
-static constexpr auto CIRCLES_ONLY_WEIGHT                =   50.0F;
-static constexpr auto CIRCLES_IFS_WEIGHT                 =  200.0F;
-static constexpr auto CIRCLES_IMAGE_WEIGHT               =   50.0F;
-static constexpr auto CIRCLES_IMAGE_STARS_WEIGHT         =  200.0F;
-static constexpr auto CIRCLES_LINES_WEIGHT               =  200.0F;
-static constexpr auto CIRCLES_STARS_TUBES_WEIGHT         =  100.0F;
-static constexpr auto CIRCLES_TENTACLES_WEIGHT           =  200.0F;
-
+static constexpr auto CIRCLES_ONLY_WEIGHT                = 050.0F;
+static constexpr auto CIRCLES_IFS_WEIGHT                 = 200.0F;
+static constexpr auto CIRCLES_IMAGE_WEIGHT               = 050.0F;
+static constexpr auto CIRCLES_IMAGE_STARS_WEIGHT         = 200.0F;
+static constexpr auto CIRCLES_LINES_WEIGHT               = 200.0F;
+static constexpr auto CIRCLES_STARS_TUBES_WEIGHT         = 100.0F;
+static constexpr auto CIRCLES_TENTACLES_WEIGHT           = 200.0F;
 static constexpr auto DOTS_IFS_WEIGHT                    = 200.0F;
 static constexpr auto DOTS_IFS_STARS_WEIGHT              = 100.0F;
-static constexpr auto DOTS_IMAGE_STARS_WEIGHT            =  50.0F;
-static constexpr auto DOTS_LINES_WEIGHT                  =  50.0F;
-static constexpr auto DOTS_LINES_STAR_TENTACLES_WEIGHT   =  40.0F;
-static constexpr auto DOTS_LINES_TENTACLES_TUBES_WEIGHT  =  40.0F;
-static constexpr auto DOTS_LINES_TUBES_WEIGHT            =  60.0F;
-static constexpr auto DOTS_ONLY_WEIGHT                   =   1.0F;
+static constexpr auto DOTS_IMAGE_STARS_WEIGHT            = 050.0F;
+static constexpr auto DOTS_LINES_WEIGHT                  = 050.0F;
+static constexpr auto DOTS_LINES_STAR_TENTACLES_WEIGHT   = 040.0F;
+static constexpr auto DOTS_LINES_TENTACLES_TUBES_WEIGHT  = 040.0F;
+static constexpr auto DOTS_LINES_TUBES_WEIGHT            = 060.0F;
+static constexpr auto DOTS_ONLY_WEIGHT                   = 001.0F;
 static constexpr auto DOTS_STARS_WEIGHT                  = 100.0F;
 static constexpr auto DOTS_STARS_TENTACLES_TUBES_WEIGHT  = 100.0F;
 static constexpr auto DOTS_TENTACLES_TUBES_WEIGHT        = 200.0F;
-
 static constexpr auto IFS_IMAGE_WEIGHT                   = 100.0F;
 static constexpr auto IFS_IMAGE_SHAPES_WEIGHT            = 100.0F;
 static constexpr auto IFS_LINES_STARS_WEIGHT             = 200.0F;
 static constexpr auto IFS_ONLY_WEIGHT                    = 100.0F;
 static constexpr auto IFS_SHAPES_WEIGHT                  = 100.0F;
 static constexpr auto IFS_STARS_WEIGHT                   = 200.0F;
-static constexpr auto IFS_STARS_TENTACLES_WEIGHT         =  70.0F;
-static constexpr auto IFS_TENTACLES_WEIGHT               =  70.0F;
-static constexpr auto IFS_TENTACLES_TUBES_WEIGHT         =  70.0F;
+static constexpr auto IFS_STARS_TENTACLES_WEIGHT         = 070.0F;
+static constexpr auto IFS_TENTACLES_WEIGHT               = 070.0F;
+static constexpr auto IFS_TENTACLES_TUBES_WEIGHT         = 070.0F;
 static constexpr auto IFS_TUBES_WEIGHT                   = 200.0F;
-
 static constexpr auto IMAGE_LINES_WEIGHT                 = 100.0F;
 static constexpr auto IMAGE_LINES_SHAPES_WEIGHT          = 100.0F;
 static constexpr auto IMAGE_LINES_STARS_TENTACLES_WEIGHT = 100.0F;
-static constexpr auto IMAGE_ONLY_WEIGHT                  =   1.0F;
+static constexpr auto IMAGE_ONLY_WEIGHT                  = 001.0F;
 static constexpr auto IMAGE_SHAPES_WEIGHT                = 100.0F;
 static constexpr auto IMAGE_SHAPES_STARS_WEIGHT          = 100.0F;
 static constexpr auto IMAGE_SHAPES_TUBES_WEIGHT          = 100.0F;
 static constexpr auto IMAGE_STARS_WEIGHT                 = 200.0F;
-static constexpr auto IMAGE_TENTACLES_WEIGHT             =  70.0F;
+static constexpr auto IMAGE_TENTACLES_WEIGHT             = 070.0F;
 static constexpr auto IMAGE_TUBES_WEIGHT                 = 200.0F;
-
 static constexpr auto LINES_ONLY_WEIGHT                  = 100.0F;
 static constexpr auto LINES_SHAPES_STARS_WEIGHT          = 200.0F;
 static constexpr auto LINES_STARS_WEIGHT                 = 100.0F;
 static constexpr auto LINES_TENTACLES_WEIGHT             = 200.0F;
-
-static constexpr auto SHAPES_ONLY_WEIGHT                 =   1.0F;
-static constexpr auto SHAPES_STARS_WEIGHT                =  200.0F;
-static constexpr auto SHAPES_TUBES_WEIGHT                =  200.0F;
-static constexpr auto STARS_ONLY_WEIGHT                  =   1.0F;
-static constexpr auto TENTACLES_ONLY_WEIGHT              =   1.0F;
-static constexpr auto TUBES_ONLY_WEIGHT                  =   1.0F;
-// clang-format on
+static constexpr auto SHAPES_ONLY_WEIGHT                 = 001.0F;
+static constexpr auto SHAPES_STARS_WEIGHT                = 200.0F;
+static constexpr auto SHAPES_TUBES_WEIGHT                = 200.0F;
+static constexpr auto STARS_ONLY_WEIGHT                  = 001.0F;
+static constexpr auto TENTACLES_ONLY_WEIGHT              = 001.0F;
+static constexpr auto TUBES_ONLY_WEIGHT                  = 001.0F;
 
 
 GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
-  // clang-format off
   : m_weightedStates{
         goomRand,
         {
-            {GoomStates::CIRCLES_ONLY, CIRCLES_ONLY_WEIGHT},
-            {GoomStates::CIRCLES_IFS, CIRCLES_IFS_WEIGHT},
-            {GoomStates::CIRCLES_IMAGE, CIRCLES_IMAGE_WEIGHT},
-            {GoomStates::CIRCLES_IMAGE_STARS, CIRCLES_IMAGE_STARS_WEIGHT},
-            {GoomStates::CIRCLES_LINES, CIRCLES_LINES_WEIGHT},
-            {GoomStates::CIRCLES_STARS_TUBES, CIRCLES_STARS_TUBES_WEIGHT},
-            {GoomStates::CIRCLES_TENTACLES, CIRCLES_TENTACLES_WEIGHT},
+          {GoomStates::CIRCLES_ONLY, CIRCLES_ONLY_WEIGHT},
+          {GoomStates::CIRCLES_IFS, CIRCLES_IFS_WEIGHT},
+          {GoomStates::CIRCLES_IMAGE, CIRCLES_IMAGE_WEIGHT},
+          {GoomStates::CIRCLES_IMAGE_STARS, CIRCLES_IMAGE_STARS_WEIGHT},
+          {GoomStates::CIRCLES_LINES, CIRCLES_LINES_WEIGHT},
+          {GoomStates::CIRCLES_STARS_TUBES, CIRCLES_STARS_TUBES_WEIGHT},
+          {GoomStates::CIRCLES_TENTACLES, CIRCLES_TENTACLES_WEIGHT},
 
-            {GoomStates::DOTS_IFS, DOTS_IFS_WEIGHT},
-            {GoomStates::DOTS_IFS_STARS, DOTS_IFS_STARS_WEIGHT},
-            {GoomStates::DOTS_IMAGE_STARS, DOTS_IMAGE_STARS_WEIGHT},
-            {GoomStates::DOTS_LINES, DOTS_LINES_WEIGHT},
-            {GoomStates::DOTS_LINES_STARS_TENTACLES, DOTS_LINES_STAR_TENTACLES_WEIGHT},
-            {GoomStates::DOTS_LINES_TENTACLES_TUBES, DOTS_LINES_TENTACLES_TUBES_WEIGHT},
-            {GoomStates::DOTS_LINES_TUBES, DOTS_LINES_TUBES_WEIGHT},
-            {GoomStates::DOTS_ONLY, DOTS_ONLY_WEIGHT},
-            {GoomStates::DOTS_STARS, DOTS_STARS_WEIGHT},
-            {GoomStates::DOTS_STARS_TENTACLES_TUBES, DOTS_STARS_TENTACLES_TUBES_WEIGHT},
-            {GoomStates::DOTS_TENTACLES_TUBES, DOTS_TENTACLES_TUBES_WEIGHT},
+          {GoomStates::DOTS_IFS, DOTS_IFS_WEIGHT},
+          {GoomStates::DOTS_IFS_STARS, DOTS_IFS_STARS_WEIGHT},
+          {GoomStates::DOTS_IMAGE_STARS, DOTS_IMAGE_STARS_WEIGHT},
+          {GoomStates::DOTS_LINES, DOTS_LINES_WEIGHT},
+          {GoomStates::DOTS_LINES_STARS_TENTACLES, DOTS_LINES_STAR_TENTACLES_WEIGHT},
+          {GoomStates::DOTS_LINES_TENTACLES_TUBES, DOTS_LINES_TENTACLES_TUBES_WEIGHT},
+          {GoomStates::DOTS_LINES_TUBES, DOTS_LINES_TUBES_WEIGHT},
+          {GoomStates::DOTS_ONLY, DOTS_ONLY_WEIGHT},
+          {GoomStates::DOTS_STARS, DOTS_STARS_WEIGHT},
+          {GoomStates::DOTS_STARS_TENTACLES_TUBES, DOTS_STARS_TENTACLES_TUBES_WEIGHT},
+          {GoomStates::DOTS_TENTACLES_TUBES, DOTS_TENTACLES_TUBES_WEIGHT},
 
-            {GoomStates::IFS_IMAGE, IFS_IMAGE_WEIGHT},
-            {GoomStates::IFS_IMAGE_SHAPES, IFS_IMAGE_SHAPES_WEIGHT},
-            {GoomStates::IFS_LINES_STARS, IFS_LINES_STARS_WEIGHT},
-            {GoomStates::IFS_ONLY, IFS_ONLY_WEIGHT},
-            {GoomStates::IFS_SHAPES, IFS_SHAPES_WEIGHT},
-            {GoomStates::IFS_STARS, IFS_STARS_WEIGHT},
-            {GoomStates::IFS_STARS_TENTACLES, IFS_STARS_TENTACLES_WEIGHT},
-            {GoomStates::IFS_TENTACLES, IFS_TENTACLES_WEIGHT},
-            {GoomStates::IFS_TENTACLES_TUBES, IFS_TENTACLES_TUBES_WEIGHT},
-            {GoomStates::IFS_TUBES, IFS_TUBES_WEIGHT},
+          {GoomStates::IFS_IMAGE, IFS_IMAGE_WEIGHT},
+          {GoomStates::IFS_IMAGE_SHAPES, IFS_IMAGE_SHAPES_WEIGHT},
+          {GoomStates::IFS_LINES_STARS, IFS_LINES_STARS_WEIGHT},
+          {GoomStates::IFS_ONLY, IFS_ONLY_WEIGHT},
+          {GoomStates::IFS_SHAPES, IFS_SHAPES_WEIGHT},
+          {GoomStates::IFS_STARS, IFS_STARS_WEIGHT},
+          {GoomStates::IFS_STARS_TENTACLES, IFS_STARS_TENTACLES_WEIGHT},
+          {GoomStates::IFS_TENTACLES, IFS_TENTACLES_WEIGHT},
+          {GoomStates::IFS_TENTACLES_TUBES, IFS_TENTACLES_TUBES_WEIGHT},
+          {GoomStates::IFS_TUBES, IFS_TUBES_WEIGHT},
 
-            {GoomStates::IMAGE_LINES, IMAGE_LINES_WEIGHT},
-            {GoomStates::IMAGE_LINES_SHAPES, IMAGE_LINES_SHAPES_WEIGHT},
-            {GoomStates::IMAGE_LINES_STARS_TENTACLES, IMAGE_LINES_STARS_TENTACLES_WEIGHT},
-            {GoomStates::IMAGE_ONLY, IMAGE_ONLY_WEIGHT},
-            {GoomStates::IMAGE_SHAPES, IMAGE_SHAPES_WEIGHT},
-            {GoomStates::IMAGE_SHAPES_STARS, IMAGE_SHAPES_STARS_WEIGHT},
-            {GoomStates::IMAGE_SHAPES_TUBES, IMAGE_SHAPES_TUBES_WEIGHT},
-            {GoomStates::IMAGE_STARS, IMAGE_STARS_WEIGHT},
-            {GoomStates::IMAGE_TENTACLES, IMAGE_TENTACLES_WEIGHT},
-            {GoomStates::IMAGE_TUBES, IMAGE_TUBES_WEIGHT},
+          {GoomStates::IMAGE_LINES, IMAGE_LINES_WEIGHT},
+          {GoomStates::IMAGE_LINES_SHAPES, IMAGE_LINES_SHAPES_WEIGHT},
+          {GoomStates::IMAGE_LINES_STARS_TENTACLES, IMAGE_LINES_STARS_TENTACLES_WEIGHT},
+          {GoomStates::IMAGE_ONLY, IMAGE_ONLY_WEIGHT},
+          {GoomStates::IMAGE_SHAPES, IMAGE_SHAPES_WEIGHT},
+          {GoomStates::IMAGE_SHAPES_STARS, IMAGE_SHAPES_STARS_WEIGHT},
+          {GoomStates::IMAGE_SHAPES_TUBES, IMAGE_SHAPES_TUBES_WEIGHT},
+          {GoomStates::IMAGE_STARS, IMAGE_STARS_WEIGHT},
+          {GoomStates::IMAGE_TENTACLES, IMAGE_TENTACLES_WEIGHT},
+          {GoomStates::IMAGE_TUBES, IMAGE_TUBES_WEIGHT},
 
-            {GoomStates::LINES_ONLY, LINES_ONLY_WEIGHT},
-            {GoomStates::LINES_SHAPES_STARS, LINES_SHAPES_STARS_WEIGHT},
-            {GoomStates::LINES_STARS, LINES_STARS_WEIGHT},
-            {GoomStates::LINES_TENTACLES, LINES_TENTACLES_WEIGHT},
+          {GoomStates::LINES_ONLY, LINES_ONLY_WEIGHT},
+          {GoomStates::LINES_SHAPES_STARS, LINES_SHAPES_STARS_WEIGHT},
+          {GoomStates::LINES_STARS, LINES_STARS_WEIGHT},
+          {GoomStates::LINES_TENTACLES, LINES_TENTACLES_WEIGHT},
 
-            {GoomStates::SHAPES_ONLY, SHAPES_ONLY_WEIGHT},
-            {GoomStates::SHAPES_STARS, SHAPES_STARS_WEIGHT},
-            {GoomStates::SHAPES_TUBES, SHAPES_TUBES_WEIGHT},
+          {GoomStates::SHAPES_ONLY, SHAPES_ONLY_WEIGHT},
+          {GoomStates::SHAPES_STARS, SHAPES_STARS_WEIGHT},
+          {GoomStates::SHAPES_TUBES, SHAPES_TUBES_WEIGHT},
 
-            {GoomStates::STARS_ONLY, STARS_ONLY_WEIGHT},
+          {GoomStates::STARS_ONLY, STARS_ONLY_WEIGHT},
 
-            {GoomStates::TENTACLES_ONLY, TENTACLES_ONLY_WEIGHT},
+          {GoomStates::TENTACLES_ONLY, TENTACLES_ONLY_WEIGHT},
 
-            {GoomStates::TUBES_ONLY, TUBES_ONLY_WEIGHT},
-        }
-    }
-// clang-format on
+          {GoomStates::TUBES_ONLY, TUBES_ONLY_WEIGHT},
+          }
+}
 {
   Ensures(m_weightedStates.GetNumElements() == NUM<GoomStates>);
 }

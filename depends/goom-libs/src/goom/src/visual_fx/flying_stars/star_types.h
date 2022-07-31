@@ -18,11 +18,11 @@ class IStarType
 {
 public:
   IStarType(const PluginInfo& goomInfo, const UTILS::MATH::IGoomRand& goomRand) noexcept;
-  IStarType(const IStarType&) noexcept = delete;
-  IStarType(IStarType&&) noexcept = delete;
-  virtual ~IStarType() noexcept = default;
+  IStarType(const IStarType&) noexcept                    = delete;
+  IStarType(IStarType&&) noexcept                         = delete;
+  virtual ~IStarType() noexcept                           = default;
   auto operator=(const IStarType&) noexcept -> IStarType& = delete;
-  auto operator=(IStarType&&) noexcept -> IStarType& = delete;
+  auto operator=(IStarType&&) noexcept -> IStarType&      = delete;
 
   struct SetupParams
   {
@@ -83,23 +83,23 @@ private:
   std::shared_ptr<const COLOR::RandomColorMaps> m_weightedLowColorMaps{
       COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
   COLOR::COLOR_DATA::ColorMapName m_fixedMainColorMapName = COLOR::COLOR_DATA::ColorMapName::_NULL;
-  COLOR::COLOR_DATA::ColorMapName m_fixedLowColorMapName = COLOR::COLOR_DATA::ColorMapName::_NULL;
+  COLOR::COLOR_DATA::ColorMapName m_fixedLowColorMapName  = COLOR::COLOR_DATA::ColorMapName::_NULL;
 
-  static constexpr float MIN_MIN_SIDE_WIND = -0.10F;
-  static constexpr float MAX_MIN_SIDE_WIND = -0.01F;
-  static constexpr float MIN_MAX_SIDE_WIND = +0.01F;
-  static constexpr float MAX_MAX_SIDE_WIND = +0.10F;
+  static constexpr float MIN_MIN_SIDE_WIND     = -0.10F;
+  static constexpr float MAX_MIN_SIDE_WIND     = -0.01F;
+  static constexpr float MIN_MAX_SIDE_WIND     = +0.01F;
+  static constexpr float MAX_MAX_SIDE_WIND     = +0.10F;
   static constexpr float DEFAULT_MIN_SIDE_WIND = 0.0F;
   static constexpr float DEFAULT_MAX_SIDE_WIND = 0.00001F;
-  float m_minSideWind = DEFAULT_MIN_SIDE_WIND;
-  float m_maxSideWind = DEFAULT_MAX_SIDE_WIND;
+  float m_minSideWind                          = DEFAULT_MIN_SIDE_WIND;
+  float m_maxSideWind                          = DEFAULT_MAX_SIDE_WIND;
 
   static constexpr float MIN_MIN_GRAVITY = +0.005F;
   static constexpr float MAX_MIN_GRAVITY = +0.010F;
   static constexpr float MIN_MAX_GRAVITY = +0.050F;
   static constexpr float MAX_MAX_GRAVITY = +0.090F;
-  float m_minGravity = MAX_MIN_GRAVITY;
-  float m_maxGravity = MAX_MAX_GRAVITY;
+  float m_minGravity                     = MAX_MIN_GRAVITY;
+  float m_maxGravity                     = MAX_MAX_GRAVITY;
 };
 
 class FireworksStarType : public IStarType
@@ -172,19 +172,17 @@ private:
     _num // unused, and marks the enum end
   };
   static_assert(UTILS::NUM<AvailableStarTypes> == (NUM_STAR_TYPES));
-  // clang-format off
-  static constexpr float STAR_TYPES_FIREWORKS_WEIGHT =  10.0F;
-  static constexpr float STAR_TYPES_FOUNTAIN_WEIGHT  =   7.0F;
-  static constexpr float STAR_TYPES_RAIN_WEIGHT      =   7.0F;
+  static constexpr float STAR_TYPES_FIREWORKS_WEIGHT = 10.0F;
+  static constexpr float STAR_TYPES_FOUNTAIN_WEIGHT  = 07.0F;
+  static constexpr float STAR_TYPES_RAIN_WEIGHT      = 07.0F;
   const UTILS::MATH::Weights<AvailableStarTypes> m_weightedStarTypes{
       m_goomRand,
       {
-          {AvailableStarTypes::FIREWORKS, STAR_TYPES_FIREWORKS_WEIGHT},
-          {AvailableStarTypes::FOUNTAIN,  STAR_TYPES_FOUNTAIN_WEIGHT},
-          {AvailableStarTypes::RAIN,      STAR_TYPES_RAIN_WEIGHT},
-      }
+        {AvailableStarTypes::FIREWORKS, STAR_TYPES_FIREWORKS_WEIGHT},
+        {AvailableStarTypes::FOUNTAIN, STAR_TYPES_FOUNTAIN_WEIGHT},
+        {AvailableStarTypes::RAIN, STAR_TYPES_RAIN_WEIGHT},
+        }
   };
-  // clang-format on
 };
 
 inline auto IStarType::GetWeightedMainColorMaps() const noexcept -> const COLOR::RandomColorMaps&

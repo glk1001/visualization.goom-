@@ -9,19 +9,16 @@ namespace GOOM::VISUAL_FX::CIRCLES
 
 using UTILS::GRAPHICS::SmallImageBitmaps;
 
-// clang-format off
-static constexpr auto IMAGE_NAMES_CIRCLE_WEIGHT        =  5.0F;
-static constexpr auto IMAGE_NAMES_SPHERE_WEIGHT        =  5.0F;
+static constexpr auto IMAGE_NAMES_CIRCLE_WEIGHT        = 05.0F;
+static constexpr auto IMAGE_NAMES_SPHERE_WEIGHT        = 05.0F;
 static constexpr auto IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 20.0F;
 static constexpr auto IMAGE_NAMES_PINK_FLOWER_WEIGHT   = 20.0F;
 static constexpr auto IMAGE_NAMES_RED_FLOWER_WEIGHT    = 20.0F;
 static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 10.0F;
-// clang-format on
 
 BitmapGetter::BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,
                            const SmallImageBitmaps& smallBitmaps) noexcept
   : m_smallBitmaps{smallBitmaps},
-    // clang-format off
     m_bitmapTypes{
       goomRand,
       {
@@ -33,7 +30,6 @@ BitmapGetter::BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,
         {SmallImageBitmaps::ImageNames::WHITE_FLOWER,  IMAGE_NAMES_WHITE_FLOWER_WEIGHT},
       }
     }
-// clang-format on
 {
 }
 

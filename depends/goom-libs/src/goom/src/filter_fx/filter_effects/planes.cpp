@@ -15,17 +15,15 @@ using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
 
-// clang-format off
-static constexpr auto SMALL_EFFECTS_RANGE               = IGoomRand::NumberRange<int32_t>{-2,  +2 + 1};
-static constexpr auto MEDIUM_EFFECTS_RANGE              = IGoomRand::NumberRange<int32_t>{-5,  +5 + 1};
-static constexpr auto LARGE_EFFECTS_RANGE               = IGoomRand::NumberRange<int32_t>{-7,  +7 + 1};
-static constexpr auto VERY_LARGE_EFFECTS_RANGE          = IGoomRand::NumberRange<int32_t>{-9,  +9 + 1};
-static constexpr auto VERY_LARGE_POSITIVE_EFFECTS_RANGE = IGoomRand::NumberRange<int32_t>{+5, +12 + 1};
+static constexpr auto SMALL_EFFECTS_RANGE          = IGoomRand::NumberRange<int32_t>{-2, +2 + 1};
+static constexpr auto MEDIUM_EFFECTS_RANGE         = IGoomRand::NumberRange<int32_t>{-5, +5 + 1};
+static constexpr auto LARGE_EFFECTS_RANGE          = IGoomRand::NumberRange<int32_t>{-7, +7 + 1};
+static constexpr auto VERY_LARGE_EFFECTS_RANGE     = IGoomRand::NumberRange<int32_t>{-9, +9 + 1};
+static constexpr auto VERY_LARGE_POS_EFFECTS_RANGE = IGoomRand::NumberRange<int32_t>{+5, +12 + 1};
 
 static constexpr auto PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE = 0.2F;
 static constexpr auto PROB_ZERO_VERTICAL_FOR_LARGE_RANGE        = 0.2F;
 static constexpr auto PROB_HORIZONTAL_OPPOSITE_TO_VERTICAL      = 0.9F;
-// clang-format on
 
 // H Plane:
 // @since June 2001
@@ -35,7 +33,7 @@ static constexpr auto HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE = IGoomRand
 // clang-format on
 
 static constexpr auto DEFAULT_HORIZONTAL_SWIRL_FREQ = 1.0F;
-static constexpr auto HORIZONTAL_SWIRL_FREQ_RANGE = IGoomRand::NumberRange<float>{0.1F, 30.01F};
+static constexpr auto HORIZONTAL_SWIRL_FREQ_RANGE   = IGoomRand::NumberRange<float>{0.1F, 30.01F};
 static constexpr auto DEFAULT_HORIZONTAL_SWIRL_AMPLITUDE = 1.0F;
 static constexpr auto HORIZONTAL_SWIRL_AMPLITUDE_RANGE =
     IGoomRand::NumberRange<float>{0.1F, 30.01F};
@@ -47,20 +45,19 @@ static constexpr auto VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = IGoomRand::N
 // clang-format on
 
 static constexpr auto DEFAULT_VERTICAL_SWIRL_FREQ = 1.0F;
-static constexpr auto VERTICAL_SWIRL_FREQ_RANGE = IGoomRand::NumberRange<float>{0.1F, 30.01F};
+static constexpr auto VERTICAL_SWIRL_FREQ_RANGE   = IGoomRand::NumberRange<float>{0.1F, 30.01F};
 static constexpr auto DEFAULT_VERTICAL_SWIRL_AMPLITUDE = 1.0F;
 static constexpr auto VERTICAL_SWIRL_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.1F, 30.01F};
 
-static constexpr auto PROB_PLANE_AMPLITUDES_EQUAL = 0.75F;
+static constexpr auto PROB_PLANE_AMPLITUDES_EQUAL       = 0.75F;
 static constexpr auto PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.5F;
-static constexpr auto PROB_MUCH_SPIRALLING = 0.2F;
-static constexpr auto PROB_NO_SWIRL = 0.95F;
-static constexpr auto PROB_SWIRL_AMPLITUDES_EQUAL = 0.7F;
-static constexpr auto PROB_SWIRL_FREQ_EQUAL = 0.7F;
+static constexpr auto PROB_MUCH_SPIRALLING              = 0.2F;
+static constexpr auto PROB_NO_SWIRL                     = 0.95F;
+static constexpr auto PROB_SWIRL_AMPLITUDES_EQUAL       = 0.7F;
+static constexpr auto PROB_SWIRL_FREQ_EQUAL             = 0.7F;
 
 Planes::Planes(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
-    // clang-format off
     m_params{
         {
             false, false,
@@ -90,14 +87,13 @@ Planes::Planes(const IGoomRand& goomRand) noexcept
           { PlaneEffectEvents::ZERO_EFFECTS,                                   2.0F },
       }
     }
-// clang-format on
 {
 }
 
 auto Planes::SetRandomParams(const Point2dInt& zoomMidpoint, const uint32_t screenWidth) -> void
 {
-  SetParams(GetRandomParams(m_goomRand, m_planeEffectWeights.GetRandomWeighted(), zoomMidpoint,
-                            screenWidth));
+  SetParams(GetRandomParams(
+      m_goomRand, m_planeEffectWeights.GetRandomWeighted(), zoomMidpoint, screenWidth));
 }
 
 auto Planes::GetRandomParams(const IGoomRand& goomRand,
@@ -129,7 +125,7 @@ auto Planes::GetRandomPlaneEffects(const IGoomRand& goomRand,
   if (0 == adjustedIntAmplitudes.x)
   {
     planeEffects.horizontalEffectActive = false;
-    planeEffects.amplitudes.x = 0.0F;
+    planeEffects.amplitudes.x           = 0.0F;
   }
   else
   {
@@ -139,7 +135,7 @@ auto Planes::GetRandomPlaneEffects(const IGoomRand& goomRand,
   if (0 == adjustedIntAmplitudes.y)
   {
     planeEffects.verticalEffectActive = false;
-    planeEffects.amplitudes.y = 0.0F;
+    planeEffects.amplitudes.y         = 0.0F;
   }
   else
   {
@@ -168,27 +164,27 @@ auto Planes::GetRandomIntAmplitudes(const IGoomRand& goomRand,
     case PlaneEffectEvents::MEDIUM_EFFECTS:
       intAmplitudes.y = goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
       intAmplitudes.x = goomRand.ProbabilityOf(PROB_HORIZONTAL_OPPOSITE_TO_VERTICAL)
-                           ? (-intAmplitudes.y + 1)
-                           : goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
+                            ? (-intAmplitudes.y + 1)
+                            : goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
       break;
     case PlaneEffectEvents::LARGE_EFFECTS:
       intAmplitudes.x = goomRand.GetRandInRange(LARGE_EFFECTS_RANGE);
       intAmplitudes.y = goomRand.ProbabilityOf(PROB_ZERO_VERTICAL_FOR_LARGE_RANGE)
-                           ? 0
-                           : goomRand.GetRandInRange(LARGE_EFFECTS_RANGE);
+                            ? 0
+                            : goomRand.GetRandInRange(LARGE_EFFECTS_RANGE);
       break;
     case PlaneEffectEvents::VERY_LARGE_EFFECTS:
       intAmplitudes.x = goomRand.ProbabilityOf(PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE)
-                           ? 0
-                           : goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
+                            ? 0
+                            : goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
       intAmplitudes.y = goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
       break;
     case PlaneEffectEvents::POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS:
-      intAmplitudes.y = goomRand.GetRandInRange(VERY_LARGE_POSITIVE_EFFECTS_RANGE);
+      intAmplitudes.y = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
       intAmplitudes.x = -intAmplitudes.y + 1;
       break;
     case PlaneEffectEvents::POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS:
-      intAmplitudes.x = goomRand.GetRandInRange(VERY_LARGE_POSITIVE_EFFECTS_RANGE);
+      intAmplitudes.x = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
       intAmplitudes.y = -intAmplitudes.x + 1;
       break;
     default:
@@ -232,9 +228,9 @@ auto Planes::GetRandomEffectMultipliers(const IGoomRand& goomRand, const bool mu
   }
   else
   {
-    effectMultipliers.y =
-        muchSpiralling ? goomRand.GetRandInRange(VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE)
-                       : goomRand.GetRandInRange(VERTICAL_EFFECTS_AMPLITUDE_RANGE);
+    effectMultipliers.y = muchSpiralling
+                              ? goomRand.GetRandInRange(VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE)
+                              : goomRand.GetRandInRange(VERTICAL_EFFECTS_AMPLITUDE_RANGE);
   }
 
   return effectMultipliers;
@@ -247,11 +243,11 @@ auto Planes::GetRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand,
 
   if (muchSpiralling || goomRand.ProbabilityOf(PROB_NO_SWIRL))
   {
-    swirlEffects.swirlType = PlaneSwirlType::NONE;
+    swirlEffects.swirlType     = PlaneSwirlType::NONE;
     swirlEffects.frequencies.x = 0.0F;
     swirlEffects.frequencies.y = 0.0F;
-    swirlEffects.amplitudes.x = 0.0F;
-    swirlEffects.amplitudes.y = 0.0F;
+    swirlEffects.amplitudes.x  = 0.0F;
+    swirlEffects.amplitudes.y  = 0.0F;
 
     return swirlEffects;
   }
@@ -358,13 +354,17 @@ auto Planes::GetNameValueParams(const std::string& paramGroup) const -> NameValu
 {
   const auto fullParamGroup = GetFullParamGroup({paramGroup, "planes"});
   return {
-      GetPair(fullParamGroup, "planeEffects.amplitudes",
+      GetPair(fullParamGroup,
+              "planeEffects.amplitudes",
               Point2dFlt{m_params.planeEffects.amplitudes.x, m_params.planeEffects.amplitudes.y}),
-      GetPair(fullParamGroup, "swirlEffects.swirlType",
+      GetPair(fullParamGroup,
+              "swirlEffects.swirlType",
               static_cast<int32_t>(m_params.swirlEffects.swirlType)),
-      GetPair(fullParamGroup, "swirlEffects.frequencies",
+      GetPair(fullParamGroup,
+              "swirlEffects.frequencies",
               Point2dFlt{m_params.swirlEffects.frequencies.x, m_params.swirlEffects.frequencies.y}),
-      GetPair(fullParamGroup, "swirlEffects.amplitudes",
+      GetPair(fullParamGroup,
+              "swirlEffects.amplitudes",
               Point2dFlt{m_params.swirlEffects.amplitudes.x, m_params.swirlEffects.amplitudes.y}),
   };
 }

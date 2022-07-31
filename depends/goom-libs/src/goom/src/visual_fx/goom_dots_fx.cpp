@@ -74,7 +74,7 @@ private:
 
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
-  uint32_t m_numFlowersInRow = 0;
+  uint32_t m_numFlowersInRow                   = 0;
   const Weights<SmallImageBitmaps::ImageNames> m_flowerDotTypes;
   [[nodiscard]] auto GetImageBitmap(uint32_t size) const -> const ImageBitmap&;
   void SetFlowerBitmap();
@@ -94,10 +94,10 @@ private:
       -> std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES>;
   std::array<bool, NUM_DOT_TYPES> m_usePrimaryColors{};
   Pixel m_middleColor{};
-  bool m_useSingleBuffer = true;
+  bool m_useSingleBuffer              = true;
   bool m_currentlyUseSingleBufferOnly = true;
-  bool m_thereIsOneBuffer = true;
-  bool m_useMiddleColor = true;
+  bool m_thereIsOneBuffer             = true;
+  bool m_useMiddleColor               = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
   [[nodiscard]] static auto GetDotPrimaryColor(size_t dotNum) -> Pixel;
   [[nodiscard]] static auto IsImagePointCloseToMiddle(size_t x, size_t y, uint32_t radius) -> bool;
@@ -173,12 +173,10 @@ auto GoomDotsFx::ApplyMultiple() noexcept -> void
   m_pimpl->ApplyMultiple();
 }
 
-// clang-format off
 static constexpr auto IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 10.0F;
-static constexpr auto IMAGE_NAMES_PINK_FLOWER_WEIGHT   =  5.0F;
+static constexpr auto IMAGE_NAMES_PINK_FLOWER_WEIGHT   = 05.0F;
 static constexpr auto IMAGE_NAMES_RED_FLOWER_WEIGHT    = 10.0F;
-static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  =  5.0F;
-// clang-format on
+static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 05.0F;
 
 GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
                                            const SmallImageBitmaps& smallBitmaps)
@@ -186,7 +184,6 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
     m_smallBitmaps{smallBitmaps},
-    // clang-format off
     m_flowerDotTypes{
         m_goomRand,
         {
@@ -196,7 +193,6 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
             {SmallImageBitmaps::ImageNames::WHITE_FLOWER,  IMAGE_NAMES_WHITE_FLOWER_WEIGHT},
         }
     }
-// clang-format on
 {
 }
 
@@ -223,33 +219,36 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
   static constexpr auto HYPOTROCHOID_PARAMS3 =
       HypotrochoidFunction::Params{9.0F, 3.0F, 5.0F, 30.0F};
   static constexpr auto LISSAJOUS_PATH_PARAMS = LissajousFunction::Params{50.0F, 50.F, 3.0F, 2.0F};
-  static constexpr auto EPICYCLOID_PARAMS = EpicycloidFunction::Params{5.1F, 1.0F, 30.0F};
+  static constexpr auto EPICYCLOID_PARAMS     = EpicycloidFunction::Params{5.1F, 1.0F, 30.0F};
 
-  static constexpr auto STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
+  static constexpr auto STEP_TYPE              = TValue::StepType::CONTINUOUS_REVERSIBLE;
   static constexpr auto HYPOTROCHOID_STEP_SIZE = 0.01F;
-  static constexpr auto LISSAJOUS_STEP_SIZE = 0.01F;
-  static constexpr auto EPICYCLOID_STEP_SIZE = 0.001F;
+  static constexpr auto LISSAJOUS_STEP_SIZE    = 0.01F;
+  static constexpr auto EPICYCLOID_STEP_SIZE   = 0.001F;
 
   auto hypotrochoidPositionT1 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
   auto hypotrochoidPositionT2 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
   auto hypotrochoidPositionT3 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
-  auto lissajousPositionT = std::make_unique<TValue>(STEP_TYPE, LISSAJOUS_STEP_SIZE);
-  auto epicycloidPositionT = std::make_unique<TValue>(STEP_TYPE, EPICYCLOID_STEP_SIZE);
+  auto lissajousPositionT     = std::make_unique<TValue>(STEP_TYPE, LISSAJOUS_STEP_SIZE);
+  auto epicycloidPositionT    = std::make_unique<TValue>(STEP_TYPE, EPICYCLOID_STEP_SIZE);
 
-  const auto centrePos = Vec2dFlt{centre.ToFlt()};
+  const auto centrePos                       = Vec2dFlt{centre.ToFlt()};
   static constexpr auto DEFAULT_ANGLE_PARAMS = AngleParams{};
 
   return {
-      {std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT1), centrePos,
-       DEFAULT_ANGLE_PARAMS, HYPOTROCHOID_PARAMS1),
-       std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT2), centrePos,
-       DEFAULT_ANGLE_PARAMS, HYPOTROCHOID_PARAMS2),
-       std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT3), centrePos,
-       DEFAULT_ANGLE_PARAMS, HYPOTROCHOID_PARAMS3),
-       std::make_unique<LissajousPath>(std::move(lissajousPositionT), centrePos,
-       DEFAULT_ANGLE_PARAMS, LISSAJOUS_PATH_PARAMS),
-       std::make_unique<EpicycloidPath>(std::move(epicycloidPositionT), centrePos,
-       DEFAULT_ANGLE_PARAMS, EPICYCLOID_PARAMS)}
+      {std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT1),
+       centrePos, DEFAULT_ANGLE_PARAMS,
+       HYPOTROCHOID_PARAMS1),
+       std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT2),
+       centrePos, DEFAULT_ANGLE_PARAMS,
+       HYPOTROCHOID_PARAMS2),
+       std::make_unique<HypotrochoidPath>(std::move(hypotrochoidPositionT3),
+       centrePos, DEFAULT_ANGLE_PARAMS,
+       HYPOTROCHOID_PARAMS3),
+       std::make_unique<LissajousPath>(
+       std::move(lissajousPositionT), centrePos, DEFAULT_ANGLE_PARAMS, LISSAJOUS_PATH_PARAMS),
+       std::make_unique<EpicycloidPath>(
+       std::move(epicycloidPositionT), centrePos, DEFAULT_ANGLE_PARAMS, EPICYCLOID_PARAMS)}
   };
 }
 
@@ -278,14 +277,14 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
     static constexpr auto PROB_USE_PRIMARY_COLOR = 0.5F;
-    usePrimaryColor = m_goomRand.ProbabilityOf(PROB_USE_PRIMARY_COLOR);
+    usePrimaryColor                              = m_goomRand.ProbabilityOf(PROB_USE_PRIMARY_COLOR);
   }
 
   static constexpr auto PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
   m_currentlyUseSingleBufferOnly = m_goomRand.ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
 
   static constexpr auto PROB_USE_MIDDLE_COLOR = 0.05F;
-  m_useMiddleColor = m_goomRand.ProbabilityOf(PROB_USE_MIDDLE_COLOR);
+  m_useMiddleColor                            = m_goomRand.ProbabilityOf(PROB_USE_MIDDLE_COLOR);
   if (m_useMiddleColor)
   {
     m_middleColor = GetMiddleColor();
@@ -305,7 +304,8 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
       m_goomRand,
       *m_dotColorMapsList[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
                                                    RandomColorMaps::ALL_COLOR_MAP_TYPES),
-      MIN_MIX_T, MAX_MIX_T);
+      MIN_MIX_T,
+      MAX_MIX_T);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetCurrentColorMapsNames() const noexcept
@@ -369,8 +369,8 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   const auto speedVarMult80Plus15 = static_cast<uint32_t>((speedFactor * 80.0F) + 15.0F);
 
   const auto speedVarMult80Plus15Div15 = speedVarMult80Plus15 / 15;
-  static constexpr auto T_MIN = 0.1F;
-  static constexpr auto T_MAX = 1.0F;
+  static constexpr auto T_MIN          = 0.1F;
+  static constexpr auto T_MAX          = 1.0F;
   const auto tStep = (T_MAX - T_MIN) / static_cast<float>(speedVarMult80Plus15Div15);
 
   auto t = T_MIN;
@@ -378,7 +378,7 @@ void GoomDotsFx::GoomDotsFxImpl::Update()
   {
     for (auto dotNum = 0U; dotNum < NUM_DOT_TYPES; ++dotNum)
     {
-      const auto dotColor = GetDotColor(dotNum, t);
+      const auto dotColor    = GetDotColor(dotNum, t);
       const auto dotPosition = m_dotPaths.at(dotNum)->GetNextPoint();
       m_dotPaths.at(dotNum)->IncrementT();
       DotFilter(dotColor, dotPosition, radius);
@@ -482,12 +482,13 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     const auto newColor =
         m_useMiddleColor && IsImagePointCloseToMiddle(x, y, radius) ? m_middleColor : color;
     static constexpr auto COLOR_MIX_T = 0.6F;
-    const auto mixedColor = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
+    const auto mixedColor             = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     return m_colorAdjust.GetAdjustment(BRIGHTNESS, mixedColor);
   };
-  const auto getColor2 =
-      [&getColor1]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y,
-                   [[maybe_unused]] const Pixel& bgnd) { return getColor1(x, y, bgnd); };
+  const auto getColor2 = [&getColor1]([[maybe_unused]] const size_t x,
+                                      [[maybe_unused]] const size_t y,
+                                      [[maybe_unused]] const Pixel& bgnd)
+  { return getColor1(x, y, bgnd); };
 
   if (const auto midPoint = Point2dInt{dotPosition.x + static_cast<int32_t>(radius),
                                        dotPosition.y + static_cast<int32_t>(radius)};

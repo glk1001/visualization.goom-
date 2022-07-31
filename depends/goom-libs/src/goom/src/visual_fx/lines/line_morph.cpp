@@ -52,11 +52,10 @@ using UTILS::MATH::FloatsEqual;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
 
-// clang-format off
 static constexpr auto MIN_DOT_SIZE01_WEIGHT = 100.0F;
-static constexpr auto MIN_DOT_SIZE02_WEIGHT =  50.0F;
-static constexpr auto MIN_DOT_SIZE03_WEIGHT =  20.0F;
-static constexpr auto MIN_DOT_SIZE04_WEIGHT =  10.0F;
+static constexpr auto MIN_DOT_SIZE02_WEIGHT = 050.0F;
+static constexpr auto MIN_DOT_SIZE03_WEIGHT = 020.0F;
+static constexpr auto MIN_DOT_SIZE04_WEIGHT = 010.0F;
 
 static constexpr auto NORMAL_DOT_SIZE01_WEIGHT = 50.0F;
 static constexpr auto NORMAL_DOT_SIZE02_WEIGHT = 20.0F;
@@ -66,7 +65,6 @@ static constexpr auto NORMAL_DOT_SIZE05_WEIGHT = 10.0F;
 static constexpr auto NORMAL_DOT_SIZE06_WEIGHT = 10.0F;
 static constexpr auto NORMAL_DOT_SIZE07_WEIGHT = 10.0F;
 static constexpr auto NORMAL_DOT_SIZE08_WEIGHT = 10.0F;
-// clang-format on
 
 LineMorph::LineMorph(IGoomDraw& draw,
                      const PluginInfo& goomInfo,
@@ -86,7 +84,6 @@ LineMorph::LineMorph(IGoomDraw& draw,
         m_draw,
         m_goomRand,
         smallBitmaps,
-        // clang-format off
         // min dot sizes
         {
             m_goomRand,
@@ -111,7 +108,6 @@ LineMorph::LineMorph(IGoomDraw& draw,
                 {DotSizes::DOT_SIZE08, NORMAL_DOT_SIZE08_WEIGHT},
             }
         }
-        // clang-format on
     }
 {
 }
@@ -126,7 +122,7 @@ auto LineMorph::Start() noexcept -> void
 {
   UpdateColorInfo();
 
-  m_srcePoints = GetFreshLine(m_srceLineParams.lineType, m_srceLineParams.param);
+  m_srcePoints     = GetFreshLine(m_srceLineParams.lineType, m_srceLineParams.param);
   m_srcePointsCopy = m_srcePoints;
 
   ResetDestLine(m_destLineParams);
@@ -150,7 +146,7 @@ inline auto LineMorph::UpdateColorInfo() noexcept -> void
   m_colorMapsManager.ChangeAllColorMapsNow();
 
   static constexpr auto PROB_USE_LINE_COLOR = 0.5F;
-  m_useLineColor = m_goomRand.ProbabilityOf(PROB_USE_LINE_COLOR);
+  m_useLineColor                            = m_goomRand.ProbabilityOf(PROB_USE_LINE_COLOR);
 }
 
 inline auto LineMorph::GetFreshLine(const LineType lineType, const float lineParam) const noexcept
@@ -159,14 +155,16 @@ inline auto LineMorph::GetFreshLine(const LineType lineType, const float linePar
   switch (lineType)
   {
     case LineType::H_LINE:
-      return GetHorizontalLinePoints(AudioSamples::AUDIO_SAMPLE_LEN,
-                                     m_goomInfo.GetScreenInfo().width, lineParam);
+      return GetHorizontalLinePoints(
+          AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo.GetScreenInfo().width, lineParam);
     case LineType::V_LINE:
-      return GetVerticalLinePoints(AudioSamples::AUDIO_SAMPLE_LEN,
-                                   m_goomInfo.GetScreenInfo().height, lineParam);
+      return GetVerticalLinePoints(
+          AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo.GetScreenInfo().height, lineParam);
     case LineType::CIRCLE:
-      return GetCircularLinePoints(AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo.GetScreenInfo().width,
-                                   m_goomInfo.GetScreenInfo().height, lineParam);
+      return GetCircularLinePoints(AudioSamples::AUDIO_SAMPLE_LEN,
+                                   m_goomInfo.GetScreenInfo().width,
+                                   m_goomInfo.GetScreenInfo().height,
+                                   lineParam);
     default:
       FailFast();
       return {};
@@ -184,7 +182,7 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   }
   if (m_lineLerpParam >= 1.0F)
   {
-    m_srceLineParams.lineType = m_destLineParams.lineType;
+    m_srceLineParams.lineType            = m_destLineParams.lineType;
     static constexpr auto MIN_BRIGHTNESS = 2.5F;
     static constexpr auto MAX_BRIGHTNESS = 4.0F;
     m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
@@ -202,17 +200,17 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
 
   static constexpr auto MIN_POW_INC = 0.03F;
   static constexpr auto MAX_POW_INC = 0.10F;
-  static constexpr auto MIN_POWER = 1.1F;
-  static constexpr auto MAX_POWER = 17.5F;
+  static constexpr auto MIN_POWER   = 1.1F;
+  static constexpr auto MAX_POWER   = 17.5F;
   m_lineColorPower += m_lineColorPowerIncrement;
   if (m_lineColorPower < MIN_POWER)
   {
-    m_lineColorPower = MIN_POWER;
+    m_lineColorPower          = MIN_POWER;
     m_lineColorPowerIncrement = m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
   }
   if (m_lineColorPower > MAX_POWER)
   {
-    m_lineColorPower = MAX_POWER;
+    m_lineColorPower          = MAX_POWER;
     m_lineColorPowerIncrement = -m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
   }
 
@@ -225,14 +223,14 @@ auto LineMorph::ResetDestLine(const LineParams& newParams) noexcept -> void
 {
   UpdateColorInfo();
 
-  m_destPoints = GetFreshLine(newParams.lineType, m_destLineParams.param);
+  m_destPoints     = GetFreshLine(newParams.lineType, m_destLineParams.param);
   m_destLineParams = newParams;
 
   m_lineLerpParam = 0.0;
 
   static constexpr auto MIN_BRIGHTNESS = 1.5F;
   static constexpr auto MAX_BRIGHTNESS = 3.0F;
-  m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+  m_currentBrightness                  = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
 
   m_dotDrawer.ChangeDotSizes();
 
@@ -280,7 +278,7 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
   }
 
   static constexpr auto LINE_THICKNESS = 1U;
-  const auto audioPoints = GetAudioPoints(lineColor, soundData);
+  const auto audioPoints               = GetAudioPoints(lineColor, soundData);
 
   auto point1 = audioPoints[0].point;
 
@@ -306,8 +304,8 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
 
 auto LineMorph::DrawFlatLine(const Pixel& lineColor) noexcept -> void
 {
-  const auto& pt0 = m_srcePoints[0];
-  const auto& ptN = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
+  const auto& pt0   = m_srcePoints[0];
+  const auto& ptN   = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
   const auto colors = MultiplePixels{lineColor, lineColor};
 
   m_draw.Line(pt0.point.ToInt(), ptN.point.ToInt(), colors, 1);
@@ -319,10 +317,10 @@ auto LineMorph::GetAudioPoints(const Pixel& lineColor,
 {
   const auto randColor = GetRandomLineColor();
 
-  static constexpr auto T_STEP = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
+  static constexpr auto T_STEP    = 1.0F / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
   static constexpr auto HALFWAY_T = 0.5F;
-  auto currentTStep = T_STEP;
-  auto t = 0.0F;
+  auto currentTStep               = T_STEP;
+  auto t                          = 0.0F;
 
   auto audioPoints = std::vector<PointAndColor>{};
   audioPoints.reserve(audioData.size());
@@ -362,8 +360,8 @@ auto LineMorph::GetNextPointData(const LinePoint& linePoint,
   const auto tData = (dataVal - m_minAudioValue) / m_audioRange;
   assert((0.0F <= tData) && (tData <= 1.0F));
 
-  const auto cosAngle = std::cos(linePoint.angle);
-  const auto sinAngle = std::sin(linePoint.angle);
+  const auto cosAngle          = std::cos(linePoint.angle);
+  const auto sinAngle          = std::sin(linePoint.angle);
   const auto normalizedDataVal = m_maxNormalizedPeak * tData;
   assert(normalizedDataVal >= 0.0F);
   // TODO - Is 'm_srceLineParams.amplitude' the right abstraction level?

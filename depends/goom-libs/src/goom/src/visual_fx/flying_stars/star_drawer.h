@@ -41,7 +41,6 @@ private:
     CIRCLES_AND_LINES,
     _num // unused, and marks the enum end
   };
-  // clang-format off
   static constexpr float DRAW_ELEMENT_TYPES_DOTS_WEIGHT              = 30.0F;
   static constexpr float DRAW_ELEMENT_TYPES_CIRCLES_WEIGHT           = 20.0F;
   static constexpr float DRAW_ELEMENT_TYPES_LINES_WEIGHT             = 10.0F;
@@ -49,13 +48,12 @@ private:
   const UTILS::MATH::Weights<DrawElementTypes> m_drawElementWeights{
       m_goomRand,
       {
-          {DrawElementTypes::DOTS, DRAW_ELEMENT_TYPES_DOTS_WEIGHT},
-          {DrawElementTypes::CIRCLES, DRAW_ELEMENT_TYPES_CIRCLES_WEIGHT},
-          {DrawElementTypes::LINES, DRAW_ELEMENT_TYPES_LINES_WEIGHT},
-          {DrawElementTypes::CIRCLES_AND_LINES, DRAW_ELEMENT_TYPES_CIRCLES_AND_LINES_WEIGHT},
-      }
+        {DrawElementTypes::DOTS, DRAW_ELEMENT_TYPES_DOTS_WEIGHT},
+        {DrawElementTypes::CIRCLES, DRAW_ELEMENT_TYPES_CIRCLES_WEIGHT},
+        {DrawElementTypes::LINES, DRAW_ELEMENT_TYPES_LINES_WEIGHT},
+        {DrawElementTypes::CIRCLES_AND_LINES, DRAW_ELEMENT_TYPES_CIRCLES_AND_LINES_WEIGHT},
+        }
   };
-  // clang-format on
   DrawElementTypes m_requestedDrawElement = m_drawElementWeights.GetRandomWeighted();
   DrawElementTypes m_currentActualDrawElement{};
   auto UpdateActualDrawElement() noexcept -> void;
@@ -66,24 +64,22 @@ private:
     MESSY,
     _num // unused, and marks the enum end
   };
-  // clang-format off
   static constexpr float DRAW_MODES_CLEAN_WEIGHT       = 20.0F;
   static constexpr float DRAW_MODES_SUPER_CLEAN_WEIGHT = 10.0F;
   static constexpr float DRAW_MODES_MESSY              = 30.0F;
   const UTILS::MATH::Weights<DrawModes> m_drawModeWeights{
       m_goomRand,
       {
-          {DrawModes::CLEAN, DRAW_MODES_CLEAN_WEIGHT},
-          {DrawModes::SUPER_CLEAN, DRAW_MODES_SUPER_CLEAN_WEIGHT},
-          {DrawModes::MESSY, DRAW_MODES_MESSY},
-      }
+        {DrawModes::CLEAN, DRAW_MODES_CLEAN_WEIGHT},
+        {DrawModes::SUPER_CLEAN, DRAW_MODES_SUPER_CLEAN_WEIGHT},
+        {DrawModes::MESSY, DRAW_MODES_MESSY},
+        }
   };
-  // clang-format on
-  DrawModes m_drawMode = m_drawModeWeights.GetRandomWeighted();
-  static constexpr uint32_t MIN_NUM_PARTS = 2;
-  static constexpr uint32_t MAX_NUM_PARTS = 10;
+  DrawModes m_drawMode                             = m_drawModeWeights.GetRandomWeighted();
+  static constexpr uint32_t MIN_NUM_PARTS          = 2;
+  static constexpr uint32_t MAX_NUM_PARTS          = 10;
   static constexpr uint32_t MAX_NUM_PARTS_FOR_LINE = 2;
-  uint32_t m_currentMaxNumParts = MAX_NUM_PARTS;
+  uint32_t m_currentMaxNumParts                    = MAX_NUM_PARTS;
   auto ChangeMaxNumParts() noexcept -> void;
 
   static constexpr uint32_t MIN_DOT_SIZE = 3;
@@ -98,12 +94,14 @@ private:
                                       uint32_t elementSize,
                                       const DRAW::MultiplePixels& colors)>;
   const std::map<DrawElementTypes, const DrawFunc> m_drawFuncs{
-      {DrawElementTypes::CIRCLES, [this](const Point2dInt point1,
+      {DrawElementTypes::CIRCLES,
+       [this](const Point2dInt point1,
        const Point2dInt point2,
        const uint32_t size,
        const DRAW::MultiplePixels& colors)
        { DrawParticleCircle(point1, point2, size, colors); }},
-      {DrawElementTypes::LINES, [this](const Point2dInt point1,
+      {DrawElementTypes::LINES,
+       [this](const Point2dInt point1,
        const Point2dInt point2,
        const uint32_t size,
        const DRAW::MultiplePixels& colors)
@@ -142,7 +140,7 @@ private:
 
 inline auto StarDrawer::ChangeDrawMode() noexcept -> void
 {
-  m_drawMode = m_drawModeWeights.GetRandomWeighted();
+  m_drawMode             = m_drawModeWeights.GetRandomWeighted();
   m_requestedDrawElement = m_drawElementWeights.GetRandomWeighted();
 }
 

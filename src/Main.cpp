@@ -67,7 +67,6 @@ static constexpr std::array<uint32_t, MAX_QUALITY + 1> HEIGHTS_BY_QUALITY{
 static constexpr const char* GOOM_ADDON_DATA_DIR =
     "special://userdata/addon_data/visualization.goom";
 
-// clang-format off
 CVisualizationGoom::CVisualizationGoom()
   : m_windowWidth{Width()},
     m_windowHeight{Height()},
@@ -85,7 +84,6 @@ CVisualizationGoom::CVisualizationGoom()
     ,
     m_usePixelBufferObjects{KODI_ADDON::GetSettingBoolean("use_pixel_buffer_objects")}
 #endif
-// clang-format on
 {
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Created CVisualizationGoom object.");
 }

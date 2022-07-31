@@ -18,13 +18,13 @@ using UTILS::MATH::IGoomRand;
 // applique une surcouche de hypercos effect
 // applies an overlay of hypercos effect
 static constexpr auto DEFAULT_OVERLAY = HypercosOverlay::NONE;
-static constexpr auto DEFAULT_EFFECT = Hypercos::HypercosEffect::NONE;
+static constexpr auto DEFAULT_EFFECT  = Hypercos::HypercosEffect::NONE;
 static constexpr auto DEFAULT_REVERSE = false;
 
-static constexpr auto X_DEFAULT_FREQ = 10.0F;
-static constexpr auto Y_DEFAULT_FREQ = 10.0F;
-static constexpr auto FREQ_RANGE = IGoomRand::NumberRange<float>{5.0F, 100.0F};
-static constexpr auto BIG_FREQ_RANGE = IGoomRand::NumberRange<float>{5.0F, 500.0F};
+static constexpr auto X_DEFAULT_FREQ      = 10.0F;
+static constexpr auto Y_DEFAULT_FREQ      = 10.0F;
+static constexpr auto FREQ_RANGE          = IGoomRand::NumberRange<float>{5.0F, 100.0F};
+static constexpr auto BIG_FREQ_RANGE      = IGoomRand::NumberRange<float>{5.0F, 500.0F};
 static constexpr auto VERY_BIG_FREQ_RANGE = IGoomRand::NumberRange<float>{30000.0F, 50000.0F};
 
 static constexpr auto X_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
@@ -34,9 +34,9 @@ static constexpr auto AMPLITUDE_RANGE =
 static constexpr auto BIG_AMPLITUDE_RANGE =
     IGoomRand::NumberRange<float>{0.1F * X_DEFAULT_AMPLITUDE, 10.1F * X_DEFAULT_AMPLITUDE};
 
-static constexpr auto PROB_FREQ_EQUAL = 0.5F;
-static constexpr auto PROB_REVERSE = 0.5F;
-static constexpr auto PROB_AMPLITUDE_EQUAL = 0.5F;
+static constexpr auto PROB_FREQ_EQUAL          = 0.5F;
+static constexpr auto PROB_REVERSE             = 0.5F;
+static constexpr auto PROB_AMPLITUDE_EQUAL     = 0.5F;
 static constexpr auto PROB_BIG_AMPLITUDE_RANGE = 0.2F;
 
 // clang-format off
@@ -49,19 +49,19 @@ static constexpr auto DEFAULT_PARAMS = Hypercos::Params{
     X_DEFAULT_AMPLITUDE,
     Y_DEFAULT_AMPLITUDE
 };
+// clang-format on
 
-static constexpr auto HYPERCOS_EFFECT_NONE_WEIGHT               =  0.0F;
+static constexpr auto HYPERCOS_EFFECT_NONE_WEIGHT               = 00.0F;
 static constexpr auto HYPERCOS_EFFECT_SIN_CURL_SWIRL_WEIGHT     = 15.0F;
 static constexpr auto HYPERCOS_EFFECT_COS_CURL_SWIRL_WEIGHT     = 15.0F;
 static constexpr auto HYPERCOS_EFFECT_SIN_COS_CURL_SWIRL_WEIGHT = 15.0F;
 static constexpr auto HYPERCOS_EFFECT_COS_SIN_CURL_SWIRL_WEIGHT = 15.0F;
-static constexpr auto HYPERCOS_EFFECT_SIN_TAN_CURL_SWIRL_WEIGHT =  5.0F;
-static constexpr auto HYPERCOS_EFFECT_COS_TAN_CURL_SWIRL_WEIGHT =  5.0F;
-static constexpr auto HYPERCOS_EFFECT_SIN_RECTANGULAR_WEIGHT    =  5.0F;
-static constexpr auto HYPERCOS_EFFECT_COS_RECTANGULAR_WEIGHT    =  5.0F;
+static constexpr auto HYPERCOS_EFFECT_SIN_TAN_CURL_SWIRL_WEIGHT = 05.0F;
+static constexpr auto HYPERCOS_EFFECT_COS_TAN_CURL_SWIRL_WEIGHT = 05.0F;
+static constexpr auto HYPERCOS_EFFECT_SIN_RECTANGULAR_WEIGHT    = 05.0F;
+static constexpr auto HYPERCOS_EFFECT_COS_RECTANGULAR_WEIGHT    = 05.0F;
 static constexpr auto HYPERCOS_EFFECT_SIN_OF_COS_SWIRL_WEIGHT   = 15.0F;
 static constexpr auto HYPERCOS_EFFECT_COS_OF_SIN_SWIRL_WEIGHT   = 15.0F;
-// clang-format on
 
 Hypercos::Hypercos(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
@@ -152,10 +152,8 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords) const -> NormalizedCo
   return GetVelocity(coords, m_params.effect, xFreqToUse, yFreqToUse);
 }
 
-auto Hypercos::GetVelocity(const NormalizedCoords& coords,
-                           const HypercosEffect effect,
-                           const float xFreqToUse,
-                           const float yFreqToUse) const -> NormalizedCoords
+auto Hypercos::GetVelocity(const NormalizedCoords& coords, const HypercosEffect effect,
+                           const float xFreqToUse, const float yFreqToUse) const -> NormalizedCoords
 {
   auto xVal = 0.0F;
   auto yVal = 0.0F;

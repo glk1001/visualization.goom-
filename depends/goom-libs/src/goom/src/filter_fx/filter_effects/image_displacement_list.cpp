@@ -12,7 +12,6 @@ using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
-// clang-format off
 const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
     "pattern1.jpg",
     "pattern2.jpg",
@@ -22,7 +21,6 @@ const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
     "chameleon-tail.jpg",
     "mountain_sunset.png",
 };
-// clang-format on
 
 ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirectory,
                                              const IGoomRand& goomRand)
@@ -73,7 +71,8 @@ auto ImageDisplacementList::GetNameValueParams(const std::string& paramGroup) co
       GetPair(paramGroup, "filename", IMAGE_FILENAMES[m_currentImageDisplacementIndex]),
       GetPair(paramGroup, "zoom factor", GetCurrentImageDisplacement().GetZoomFactor()),
       GetPair(paramGroup, "amplitude", GetCurrentImageDisplacement().GetAmplitude()),
-      GetPair(paramGroup, "cutoff",
+      GetPair(paramGroup,
+              "cutoff",
               Point2dFlt{GetCurrentImageDisplacement().GetXColorCutoff(),
                          GetCurrentImageDisplacement().GetYColorCutoff()}),
   };

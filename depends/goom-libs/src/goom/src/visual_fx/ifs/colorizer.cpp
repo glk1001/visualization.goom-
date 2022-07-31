@@ -13,16 +13,14 @@ using COLOR::RandomColorMaps;
 using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
 
-// clang-format off
 static constexpr auto MAP_COLORS_WEIGHT            = 20.0F;
 static constexpr auto MEGA_MAP_COLOR_CHANGE_WEIGHT = 15.0F;
 static constexpr auto MIX_COLORS_WEIGHT            = 20.0F;
 static constexpr auto MEGA_MIX_COLOR_CHANGE_WEIGHT = 15.0F;
 static constexpr auto REVERSE_MIX_COLORS_WEIGHT    = 20.0F;
-static constexpr auto SINGLE_COLORS_WEIGHT         =  5.0F;
-static constexpr auto SINE_MIX_COLORS_WEIGHT       =  5.0F;
-static constexpr auto SINE_MAP_COLORS_WEIGHT       =  5.0F;
-// clang-format on
+static constexpr auto SINGLE_COLORS_WEIGHT         = 05.0F;
+static constexpr auto SINE_MIX_COLORS_WEIGHT       = 05.0F;
+static constexpr auto SINE_MAP_COLORS_WEIGHT       = 05.0F;
 
 Colorizer::Colorizer(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
@@ -151,7 +149,8 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
 {
   const auto nextColor =
       IColorMap::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),
-                             m_colorMapsManager.GetColorMap(m_mixerMap2Id).GetColor(tY), t);
+                             m_colorMapsManager.GetColorMap(m_mixerMap2Id).GetColor(tY),
+                             t);
   if (0 == m_countSinceColorMapChange)
   {
     return nextColor;
@@ -181,9 +180,9 @@ inline auto Colorizer::GetSineMixColor(const float tX, const float tY) const -> 
 {
   static constexpr auto INITIAL_FREQ = 20.0F;
   static constexpr auto T_MIX_FACTOR = 0.5F;
-  static constexpr auto Z_STEP = 0.1F;
-  static const auto s_FREQ = INITIAL_FREQ;
-  static auto s_z = 0.0F;
+  static constexpr auto Z_STEP       = 0.1F;
+  static const auto s_FREQ           = INITIAL_FREQ;
+  static auto s_z                    = 0.0F;
 
   const auto mixColor =
       GetNextMixerMapColor(T_MIX_FACTOR * (1.0F + std::sin(s_FREQ * s_z)), tX, tY);

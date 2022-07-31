@@ -44,16 +44,14 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
-// clang-format off
 static constexpr auto COLOR_MAP_MODE_ONE_MAP_PER_ANGLE_WEIGHT      = 30.0F;
 static constexpr auto COLOR_MAP_MODE_ONE_MAP_FOR_ALL_ANGLES_WEIGHT = 10.0F;
-static constexpr auto COLOR_MAP_MODE_MEGA_RANDOM_WEIGHT            =  1.0F;
+static constexpr auto COLOR_MAP_MODE_MEGA_RANDOM_WEIGHT            = 01.0F;
 
 static constexpr auto COLOR_MODE_MIX_COLORS_WEIGHT         = 30.0F;
 static constexpr auto COLOR_MODE_REVERSE_MIX_COLORS_WEIGHT = 15.0F;
 static constexpr auto COLOR_MODE_SIMILAR_LOW_COLORS_WEIGHT = 10.0F;
-static constexpr auto COLOR_MODE_SINE_MIX_COLORS_WEIGHT    =  5.0F;
-// clang-format on
+static constexpr auto COLOR_MODE_SINE_MIX_COLORS_WEIGHT    = 05.0F;
 
 static const inline auto DEFAULT_COLOR_MAP_TYPES = RandomColorMaps::ALL_COLOR_MAP_TYPES;
 
@@ -71,7 +69,7 @@ public:
 private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
-  uint32_t m_counter = 0;
+  uint32_t m_counter                  = 0;
   static constexpr uint32_t MAX_COUNT = 100;
   StarDrawer m_starDrawer;
 
@@ -113,8 +111,8 @@ private:
 
   static constexpr uint32_t MIN_NUM_STAR_CLUSTERS = 0;
   static constexpr uint32_t MAX_NUM_STAR_CLUSTERS = 3;
-  static constexpr auto MAX_STAR_CLUSTER_WIDTH = 320.0F;
-  static constexpr auto MAX_STAR_CLUSTER_HEIGHT = 200.0F;
+  static constexpr auto MAX_STAR_CLUSTER_WIDTH    = 320.0F;
+  static constexpr auto MAX_STAR_CLUSTER_HEIGHT   = 200.0F;
   // Why 320,200 ? Because the FX was developed on 320x200.
   static constexpr auto MIN_STAR_CLUSTER_HEIGHT = 50.0F;
   const float m_heightRatio =
@@ -438,8 +436,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetLowColorMapName(
 
 auto FlyingStarsFx::FlyingStarsImpl::GetMixedColors(const float brightness,
                                                     const Star& star,
-                                                    const float t) const noexcept
-    -> MultiplePixels
+                                                    const float t) const noexcept -> MultiplePixels
 {
   Star::ColorSet starColorSet;
 
@@ -471,10 +468,10 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetFinalMixedColors(const float brig
 {
   static constexpr auto MIN_MIX = 0.2F;
   static constexpr auto MAX_MIX = 0.8F;
-  const auto tMix = STD20::lerp(MIN_MIX, MAX_MIX, t);
-  const auto mixedMainColor =
-      GetColorCorrection(brightness, IColorMap::GetColorMix(starColorSet.mainColor,
-                                                            starColorSet.dominantMainColor, tMix));
+  const auto tMix               = STD20::lerp(MIN_MIX, MAX_MIX, t);
+  const auto mixedMainColor     = GetColorCorrection(
+      brightness,
+      IColorMap::GetColorMix(starColorSet.mainColor, starColorSet.dominantMainColor, tMix));
   const auto mixedLowColor = GetLightenedColor(
       IColorMap::GetColorMix(starColorSet.lowColor, starColorSet.dominantLowColor, tMix), 10.0F);
   const auto remixedLowColor =
@@ -497,7 +494,7 @@ auto FlyingStarsFx::FlyingStarsImpl::AddStarCluster(const IStarType& starType,
                                                     const uint32_t totalNumActiveStars) noexcept
     -> void
 {
-  const auto starSetupParams = GetSetupParams(starType);
+  const auto starSetupParams    = GetSetupParams(starType);
   const auto maxStarsInACluster = GetMaxStarsInACluster();
 
   for (auto i = 0U; i < maxStarsInACluster; ++i)
@@ -529,14 +526,14 @@ auto FlyingStarsFx::FlyingStarsImpl::GetNewStarParams(
       setupParams.nominalPathLength * m_goomRand.GetRandInRange(0.01F, 2.0F);
   static constexpr auto LENGTH_OFFSET = -0.2F;
 
-  const auto initialPosition = setupParams.startPos.ToFlt();
-  const auto initialVelocity = Vec2dFlt{starPathLength * std::cos(starPathAngle),
+  const auto initialPosition     = setupParams.startPos.ToFlt();
+  const auto initialVelocity     = Vec2dFlt{starPathLength * std::cos(starPathAngle),
                                         LENGTH_OFFSET + (starPathLength * std::sin(starPathAngle))};
   const auto initialAcceleration = Vec2dFlt{setupParams.sideWind, setupParams.gravity};
   const auto initialAge =
       m_goomRand.GetRandInRange(Star::MIN_INITIAL_AGE, Star::HALF_MAX_INITIAL_AGE);
   const auto initialVAge = std::max(Star::MIN_INITIAL_AGE, setupParams.vage);
-  const auto maxAge = setupParams.maxStarAge;
+  const auto maxAge      = setupParams.maxStarAge;
 
   return {initialPosition, initialVelocity, initialAcceleration, initialAge, initialVAge, maxAge};
 }

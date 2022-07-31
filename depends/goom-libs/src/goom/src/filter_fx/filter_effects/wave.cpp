@@ -11,44 +11,42 @@ using UTILS::MATH::IGoomRand;
 
 static constexpr auto DEFAULT_WAVE_EFFECT = Wave::WaveEffect::WAVE_SIN_EFFECT;
 
-static constexpr auto DEFAULT_PERIODIC_FACTOR = 1.0F;
+static constexpr auto DEFAULT_PERIODIC_FACTOR         = 1.0F;
 static constexpr auto DEFAULT_SIN_COS_PERIODIC_FACTOR = 0.5F;
-static constexpr auto PERIODIC_FACTOR_RANGE = IGoomRand::NumberRange<float>{0.5F, 1.0F};
-static constexpr auto SIN_COS_PERIODIC_FACTOR_RANGE = IGoomRand::NumberRange<float>{0.1F, 0.9F};
+static constexpr auto PERIODIC_FACTOR_RANGE           = IGoomRand::NumberRange<float>{0.5F, 1.0F};
+static constexpr auto SIN_COS_PERIODIC_FACTOR_RANGE   = IGoomRand::NumberRange<float>{0.1F, 0.9F};
 
 static constexpr auto DEFAULT_FREQ_FACTOR = 20.0F;
-static constexpr auto FREQ_FACTOR_RANGE = IGoomRand::NumberRange<float>{1.0F, 50.0F};
+static constexpr auto FREQ_FACTOR_RANGE   = IGoomRand::NumberRange<float>{1.0F, 50.0F};
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.01F;
-static constexpr auto AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.001F, 0.25F};
+static constexpr auto AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.001F, 0.25F};
 
-static constexpr auto DEFAULT_REDUCER_COEFF = 1.0F;
-static constexpr auto REDUCER_COEFF_RANGE = IGoomRand::NumberRange<float>{0.95F, 1.5F};
+static constexpr auto DEFAULT_REDUCER_COEFF   = 1.0F;
+static constexpr auto REDUCER_COEFF_RANGE     = IGoomRand::NumberRange<float>{0.95F, 1.5F};
 static constexpr auto TAN_REDUCER_COEFF_RANGE = IGoomRand::NumberRange<float>{4.0F, 10.0F};
 
 // These give weird but interesting wave results
-static constexpr auto SMALL_FREQ_FACTOR_RANGE = IGoomRand::NumberRange<float>{0.001F, 0.1F};
-static constexpr auto BIG_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{1.0F, 50.0F};
+static constexpr auto SMALL_FREQ_FACTOR_RANGE   = IGoomRand::NumberRange<float>{0.001F, 0.1F};
+static constexpr auto BIG_AMPLITUDE_RANGE       = IGoomRand::NumberRange<float>{1.0F, 50.0F};
 static constexpr auto BIG_PERIODIC_FACTOR_RANGE = IGoomRand::NumberRange<float>{50.0F, 100.0F};
 static constexpr auto BIG_SIN_COS_PERIODIC_FACTOR_RANGE =
     IGoomRand::NumberRange<float>{10.0F, 90.0F};
 
-static constexpr auto PROB_ALLOW_STRANGE_WAVE_VALUES = 0.1F;
-static constexpr auto PROB_WAVE_XY_EFFECTS_EQUAL = 0.75F;
-static constexpr auto PROB_NO_PERIODIC_FACTOR = 0.2F;
+static constexpr auto PROB_ALLOW_STRANGE_WAVE_VALUES          = 0.1F;
+static constexpr auto PROB_WAVE_XY_EFFECTS_EQUAL              = 0.75F;
+static constexpr auto PROB_NO_PERIODIC_FACTOR                 = 0.2F;
 static constexpr auto PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT = 0.9F;
 
-// clang-format off
-static constexpr auto WAVE_SIN_EFFECT_WEIGHT      =  200.0F;
-static constexpr auto WAVE_COS_EFFECT_WEIGHT      =  200.0F;
-static constexpr auto WAVE_SIN_COS_EFFECT_WEIGHT  =  150.0F;
-static constexpr auto WAVE_TAN_EFFECT_WEIGHT      =  10.0F;
-static constexpr auto WAVE_TAN_SIN_EFFECT_WEIGHT  =  10.0F;
-static constexpr auto CWAVE_TAN_COS_EFFECT_WEIGHT =  10.0F;
-static constexpr auto WAVE_COT_EFFECT_WEIGHT      =   1.0F;
-static constexpr auto WAVE_COT_SIN_EFFECT_WEIGHT  =   1.0F;
-static constexpr auto WAVE_COT_COS_EFFECT_WEIGHT  =   1.0F;
-// clang-format on
+static constexpr auto WAVE_SIN_EFFECT_WEIGHT      = 200.0F;
+static constexpr auto WAVE_COS_EFFECT_WEIGHT      = 200.0F;
+static constexpr auto WAVE_SIN_COS_EFFECT_WEIGHT  = 150.0F;
+static constexpr auto WAVE_TAN_EFFECT_WEIGHT      = 010.0F;
+static constexpr auto WAVE_TAN_SIN_EFFECT_WEIGHT  = 010.0F;
+static constexpr auto CWAVE_TAN_COS_EFFECT_WEIGHT = 010.0F;
+static constexpr auto WAVE_COT_EFFECT_WEIGHT      = 001.0F;
+static constexpr auto WAVE_COT_SIN_EFFECT_WEIGHT  = 001.0F;
+static constexpr auto WAVE_COT_COS_EFFECT_WEIGHT  = 001.0F;
 
 
 Wave::Wave(const Modes mode, const IGoomRand& goomRand)
@@ -87,21 +85,23 @@ auto Wave::SetRandomParams() -> void
 
 auto Wave::SetMode0RandomParams() -> void
 {
-  SetWaveModeSettings(FREQ_FACTOR_RANGE, AMPLITUDE_RANGE, PERIODIC_FACTOR_RANGE,
-                      SIN_COS_PERIODIC_FACTOR_RANGE);
+  SetWaveModeSettings(
+      FREQ_FACTOR_RANGE, AMPLITUDE_RANGE, PERIODIC_FACTOR_RANGE, SIN_COS_PERIODIC_FACTOR_RANGE);
 }
 
 auto Wave::SetMode1RandomParams() -> void
 {
   if (m_goomRand.ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
   {
-    SetWaveModeSettings(SMALL_FREQ_FACTOR_RANGE, BIG_AMPLITUDE_RANGE, BIG_PERIODIC_FACTOR_RANGE,
+    SetWaveModeSettings(SMALL_FREQ_FACTOR_RANGE,
+                        BIG_AMPLITUDE_RANGE,
+                        BIG_PERIODIC_FACTOR_RANGE,
                         BIG_SIN_COS_PERIODIC_FACTOR_RANGE);
   }
   else
   {
-    SetWaveModeSettings(FREQ_FACTOR_RANGE, AMPLITUDE_RANGE, PERIODIC_FACTOR_RANGE,
-                        SIN_COS_PERIODIC_FACTOR_RANGE);
+    SetWaveModeSettings(
+        FREQ_FACTOR_RANGE, AMPLITUDE_RANGE, PERIODIC_FACTOR_RANGE, SIN_COS_PERIODIC_FACTOR_RANGE);
   }
 }
 
@@ -118,8 +118,8 @@ auto Wave::SetWaveModeSettings(const IGoomRand::NumberRange<float>& freqFactorRa
 
   const auto periodicFactor =
       GetPeriodicFactor(xWaveEffect, yWaveEffect, periodicFactorRange, sinCosPeriodicFactorRange);
-  const auto freqFactor = m_goomRand.GetRandInRange(freqFactorRange);
-  const auto amplitude = m_goomRand.GetRandInRange(amplitudeRange);
+  const auto freqFactor   = m_goomRand.GetRandInRange(freqFactorRange);
+  const auto amplitude    = m_goomRand.GetRandInRange(amplitudeRange);
   const auto reducerCoeff = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
 
   SetParams({xWaveEffect, yWaveEffect, freqFactor, amplitude, periodicFactor, reducerCoeff});
@@ -143,7 +143,8 @@ inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
     case WaveEffect::WAVE_COT_SIN_EFFECT:
     case WaveEffect::WAVE_COT_COS_EFFECT:
       return STD20::lerp(m_goomRand.GetRandInRange(TAN_REDUCER_COEFF_RANGE),
-                         m_goomRand.GetRandInRange(REDUCER_COEFF_RANGE), periodicFactor);
+                         m_goomRand.GetRandInRange(REDUCER_COEFF_RANGE),
+                         periodicFactor);
     default:
       throw std::logic_error("Unknown WaveEffect enum");
   }

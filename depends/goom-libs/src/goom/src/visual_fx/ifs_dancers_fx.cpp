@@ -93,7 +93,7 @@ public:
 private:
   static constexpr int32_t MIN_CYCLE_LENGTH = 1000;
   static constexpr int32_t MAX_CYCLE_LENGTH = 2000;
-  int32_t m_cycleLength = MIN_CYCLE_LENGTH;
+  int32_t m_cycleLength                     = MIN_CYCLE_LENGTH;
 
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
@@ -105,8 +105,8 @@ private:
 
   auto InitFractal() -> void;
 
-  int32_t m_cycle = 0;
-  int32_t m_ifsIncr = 1; // dessiner l'ifs (0 = non: > = increment)
+  int32_t m_cycle    = 0;
+  int32_t m_ifsIncr  = 1; // dessiner l'ifs (0 = non: > = increment)
   int32_t m_decayIfs = 0; // disparition de l'ifs
   int32_t m_recayIfs = 0; // dedisparition de l'ifs
   auto UpdateIncr() -> void;
@@ -119,7 +119,7 @@ private:
   // TODO Move to simi
   static constexpr auto T_MIX_STARTING_VALUE = 0.01F;
   TValue m_tMix{TValue::StepType::CONTINUOUS_REVERSIBLE, T_MIX_STARTING_VALUE};
-  static constexpr auto POINT_BRIGHTNESS = 3.0F;
+  static constexpr auto POINT_BRIGHTNESS  = 3.0F;
   static constexpr auto BITMAP_BRIGHTNESS = 2.0F;
   auto ChangeColorMaps() -> void;
   auto ChangeSpeed() -> void;
@@ -128,11 +128,11 @@ private:
 
   static constexpr uint32_t MAX_DENSITY_COUNT = 20;
   static constexpr uint32_t MIN_DENSITY_COUNT = 5;
-  uint32_t m_lowDensityCount = MIN_DENSITY_COUNT;
+  uint32_t m_lowDensityCount                  = MIN_DENSITY_COUNT;
   LowDensityBlurrer m_blurrer;
-  static constexpr uint32_t BLUR_WIDTH = 3;
+  static constexpr uint32_t BLUR_WIDTH                     = 3;
   static constexpr auto DEFAULT_LOW_DENSITY_BLUR_THRESHOLD = 0.99F;
-  float m_lowDensityBlurThreshold = DEFAULT_LOW_DENSITY_BLUR_THRESHOLD;
+  float m_lowDensityBlurThreshold                          = DEFAULT_LOW_DENSITY_BLUR_THRESHOLD;
   [[nodiscard]] auto BlurLowDensityColors(size_t numPoints,
                                           const std::vector<IfsPoint>& lowDensityPoints) const
       -> bool;
@@ -206,14 +206,12 @@ auto IfsDancersFx::PostStateUpdate(const bool wasActiveInPreviousState) noexcept
   m_pimpl->PostStateUpdate(wasActiveInPreviousState);
 }
 
-// clang-format off
-static constexpr auto BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT = 1000.0F;
-static constexpr auto BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT   =    1.0F;
-static constexpr auto BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT   =    1.0F;
-static constexpr auto BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT     =    5.0F;
-static constexpr auto BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT =    1.0F;
-static constexpr auto BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT   =    5.0F;
-// clang-format on
+static constexpr auto BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT = 999.0F;
+static constexpr auto BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT   = 001.0F;
+static constexpr auto BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT   = 001.0F;
+static constexpr auto BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT     = 005.0F;
+static constexpr auto BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT = 001.0F;
+static constexpr auto BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT   = 005.0F;
 
 IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
@@ -225,7 +223,6 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
                                         m_goomRand,
                                         smallBitmaps)},
     m_blurrer{m_draw, m_goomRand, BLUR_WIDTH, &m_colorizer, smallBitmaps},
-    // clang-format off
     m_blurrerColorModeWeights{
       m_goomRand,
       {
@@ -236,7 +233,6 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
         {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT},
         {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT},
     }}
-// clang-format on
 {
 }
 
@@ -309,8 +305,8 @@ inline auto IfsDancersFx::IfsDancersFxImpl::Renew() -> void
 
 inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() -> void
 {
-  static constexpr auto MIN_SPEED_AMP = 1.1F;
-  static constexpr auto MAX_SPEED_AMP = 5.1F;
+  static constexpr auto MIN_SPEED_AMP    = 1.1F;
+  static constexpr auto MAX_SPEED_AMP    = 5.1F;
   static constexpr auto MAX_SPEED_WEIGHT = 10.0F;
   const auto speedAmp =
       std::min(m_goomRand.GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
@@ -377,9 +373,9 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateIncr() -> void
   if (m_ifsIncr <= 0)
   {
     static constexpr auto NEW_RECAY_IFS = 5;
-    m_recayIfs = NEW_RECAY_IFS;
-    static constexpr auto NEW_IFS_INCR = 11;
-    m_ifsIncr = NEW_IFS_INCR;
+    m_recayIfs                          = NEW_RECAY_IFS;
+    static constexpr auto NEW_IFS_INCR  = 11;
+    m_ifsIncr                           = NEW_IFS_INCR;
     Renew();
   }
 }
@@ -389,7 +385,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateDecay() -> void
   if ((m_ifsIncr > 0) && (m_decayIfs <= 0))
   {
     static constexpr auto NEW_DECAY_IFS = 100;
-    m_decayIfs = NEW_DECAY_IFS;
+    m_decayIfs                          = NEW_DECAY_IFS;
   }
 }
 
@@ -411,7 +407,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateCycle() -> void
     return;
   }
 
-  m_cycle = 0;
+  m_cycle       = 0;
   m_cycleLength = m_goomRand.GetRandInRange(MIN_CYCLE_LENGTH, MAX_CYCLE_LENGTH + 1);
 
   UpdateLowDensityBlurThreshold();
@@ -424,29 +420,29 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateCycle() -> void
 inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold() -> void
 {
   static constexpr auto PROB_HIGH_BLUR_THRESHOLD = 0.75F;
-  static constexpr auto HIGH_BLUR_THRESHOLD = 0.99F;
-  static constexpr auto LOW_BLUR_THRESHOLD = 0.40F;
+  static constexpr auto HIGH_BLUR_THRESHOLD      = 0.99F;
+  static constexpr auto LOW_BLUR_THRESHOLD       = 0.40F;
   m_lowDensityBlurThreshold =
       m_goomRand.ProbabilityOf(PROB_HIGH_BLUR_THRESHOLD) ? HIGH_BLUR_THRESHOLD : LOW_BLUR_THRESHOLD;
 }
 
 auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() -> void
 {
-  const auto& points = m_fractal->GetNextIfsPoints();
+  const auto& points     = m_fractal->GetNextIfsPoints();
   const auto maxHitCount = m_fractal->GetMaxHitCount();
 
   m_colorizer.SetMaxHitCount(maxHitCount);
 
   const auto numPoints = points.size();
   const auto tStep = (1 == numPoints) ? 0.0F : ((1.0F - 0.0F) / static_cast<float>(numPoints - 1));
-  auto t = -tStep;
+  auto t           = -tStep;
 
   auto doneColorChange =
       (m_colorizer.GetColorMode() != IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE) &&
       (m_colorizer.GetColorMode() != IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE);
   auto maxLowDensityCount = 0U;
-  auto numSelectedPoints = 0U;
-  auto lowDensityPoints = std::vector<IfsPoint>{};
+  auto numSelectedPoints  = 0U;
+  auto lowDensityPoints   = std::vector<IfsPoint>{};
 
   for (auto i = 0U; i < numPoints; i += static_cast<uint32_t>(GetIfsIncr()))
   {
@@ -545,7 +541,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::SetLowDensityColors(
 {
   const auto logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
 
-  auto t = 0.0F;
+  auto t           = 0.0F;
   const auto tStep = 1.0F / static_cast<float>(points.size());
   for (const auto& point : points)
   {
@@ -569,13 +565,13 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() -> void
 
 inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const -> uint32_t
 {
-  static constexpr auto NUM_WIDTHS = 3U;
-  static constexpr auto WIDTH_RANGE = (MAX_DENSITY_COUNT - MIN_DENSITY_COUNT) / NUM_WIDTHS;
+  static constexpr auto NUM_WIDTHS         = 3U;
+  static constexpr auto WIDTH_RANGE        = (MAX_DENSITY_COUNT - MIN_DENSITY_COUNT) / NUM_WIDTHS;
   static constexpr auto DOUBLE_WIDTH_RANGE = 2 * WIDTH_RANGE;
 
-  static constexpr auto LARGE_BLUR_WIDTH = 7U;
+  static constexpr auto LARGE_BLUR_WIDTH  = 7U;
   static constexpr auto MEDIUM_BLUR_WIDTH = 5U;
-  static constexpr auto SMALL_BLUR_WIDTH = 3U;
+  static constexpr auto SMALL_BLUR_WIDTH  = 3U;
 
   auto blurWidth = SMALL_BLUR_WIDTH;
 

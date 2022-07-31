@@ -7,7 +7,6 @@ namespace GOOM::CONTROL
 
 using UTILS::MATH::IGoomRand;
 
-// clang-format off
 static constexpr auto CHANGE_FILTER_MODE_PROB                       = 0.05F;
 static constexpr auto CHANGE_STATE_PROB                             = 0.50F;
 static constexpr auto CHANGE_TO_MEGA_LENT_MODE_PROB                 = 1.0F / 700.F;
@@ -20,11 +19,9 @@ static constexpr auto FILTER_TOGGLE_ROTATION_PROB                   = 0.125F;
 static constexpr auto FILTER_INCREASE_ROTATION_PROB                 = 0.25F;
 static constexpr auto FILTER_DECREASE_ROTATION_PROB                 = 0.875F;
 static constexpr auto FILTER_STOP_ROTATION_PROB                     = 0.25F;
-// clang-format on
 
 GoomEvents::GoomEvents(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
-    // clang-format off
     m_weightedEvents{{
         { GoomEvent::CHANGE_FILTER_MODE,                       CHANGE_FILTER_MODE_PROB},
         { GoomEvent::CHANGE_STATE,                             CHANGE_STATE_PROB},
@@ -39,7 +36,6 @@ GoomEvents::GoomEvents(const IGoomRand& goomRand)
         { GoomEvent::FILTER_DECREASE_ROTATION,                 FILTER_DECREASE_ROTATION_PROB},
         { GoomEvent::FILTER_STOP_ROTATION,                     FILTER_STOP_ROTATION_PROB},
     }}
-// clang-format on
 {
 }
 

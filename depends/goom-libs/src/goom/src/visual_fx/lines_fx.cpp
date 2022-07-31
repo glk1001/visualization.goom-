@@ -30,11 +30,10 @@ using UTILS::MATH::Weights;
 static constexpr auto INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
 static constexpr auto INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
 
-static constexpr auto RED_LINE_COLOR = GetSimpleColor(SimpleColors::RED);
+static constexpr auto RED_LINE_COLOR   = GetSimpleColor(SimpleColors::RED);
 static constexpr auto GREEN_LINE_COLOR = GetSimpleColor(SimpleColors::VERT);
 static constexpr auto BLACK_LINE_COLOR = GetSimpleColor(SimpleColors::BLACK);
 
-// clang-format off
 static constexpr auto PROB_CHANGE_LINE_CIRCLE_AMPLITUDE = 0.05F;
 static constexpr auto PROB_CHANGE_LINE_CIRCLE_PARAMS    = 0.08F;
 static constexpr auto PROB_CHANGE_H_LINE_PARAMS         = 0.12F;
@@ -47,9 +46,8 @@ static constexpr auto PROB_NEAR_SCOPE                   = 0.01F;
 static constexpr auto PROB_FAR_SCOPE                    = 0.01F;
 
 static constexpr auto CIRCLE_LINE_TYPE_WEIGHT = 10.0F;
-static constexpr auto H_LINE_LINE_TYPE_WEIGHT =  2.0F;
-static constexpr auto V_LINE_LINE_TYPE_WEIGHT =  2.0F;
-// clang-format on
+static constexpr auto H_LINE_LINE_TYPE_WEIGHT = 02.0F;
+static constexpr auto V_LINE_LINE_TYPE_WEIGHT = 02.0F;
 
 class LinesFx::LinesImpl
 {
@@ -86,14 +84,14 @@ private:
 
   const float m_screenWidth{static_cast<float>(m_goomInfo.GetScreenInfo().width)};
   const float m_screenHeight{static_cast<float>(m_goomInfo.GetScreenInfo().height)};
-  uint32_t m_updateNum = 0;
+  uint32_t m_updateNum        = 0;
   int32_t m_drawLinesDuration = LineMorph::MIN_LINE_DURATION;
-  int32_t m_lineMode = LineMorph::MIN_LINE_DURATION; // l'effet lineaire a dessiner
-  uint32_t m_stopLines = 0;
+  int32_t m_lineMode          = LineMorph::MIN_LINE_DURATION; // l'effet lineaire a dessiner
+  uint32_t m_stopLines        = 0;
   const Weights<LineType> m_lineTypeWeights;
 
   bool m_isNearScope = m_goomRand.ProbabilityOf(PROB_NEAR_SCOPE);
-  bool m_isFarScope = m_goomRand.ProbabilityOf(PROB_FAR_SCOPE);
+  bool m_isFarScope  = m_goomRand.ProbabilityOf(PROB_FAR_SCOPE);
   auto UpdateScopes() noexcept -> void;
   [[nodiscard]] auto CanDisplayLines() const noexcept -> bool;
   auto ChangeGoomLines() noexcept -> void;
@@ -168,7 +166,6 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
   : m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
     m_lineMorphs{
-        // clang-format off
         LineMorph{
             fxHelper.GetDraw(),
             fxHelper.GetGoomInfo(),
@@ -216,7 +213,6 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
             { LineType::V_LINE, V_LINE_LINE_TYPE_WEIGHT },
         }
     }
-// clang-format on
 {
 }
 
@@ -227,8 +223,7 @@ inline auto LinesFx::LinesImpl::Start() noexcept -> void
   std::for_each(begin(m_lineMorphs), end(m_lineMorphs), [](LineMorph& line) { line.Start(); });
 }
 
-auto LinesFx::LinesImpl::GetCurrentColorMapsNames() const noexcept
-    -> std::vector<std::string>
+auto LinesFx::LinesImpl::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
   auto allColorMapsNames = std::vector<std::string>{};
   for (const auto& lineMorph : m_lineMorphs)
@@ -270,12 +265,12 @@ inline auto LinesFx::LinesImpl::ResetLineModes() noexcept -> void
   if (not m_isNearScope)
   {
     static constexpr auto SCOPE_RESET = 0xF000U & 5U;
-    m_stopLines = SCOPE_RESET;
+    m_stopLines                       = SCOPE_RESET;
   }
   if (not m_isFarScope)
   {
     m_stopLines = 0;
-    m_lineMode = m_drawLinesDuration;
+    m_lineMode  = m_drawLinesDuration;
   }
 }
 
@@ -318,7 +313,7 @@ inline auto LinesFx::LinesImpl::UpdateScopes() noexcept -> void
   if (0 == (m_updateNum % NUM_UPDATES_BEFORE_SCOPE_CHANGE))
   {
     m_isNearScope = m_goomRand.ProbabilityOf(PROB_NEAR_SCOPE);
-    m_isFarScope = m_goomRand.ProbabilityOf(PROB_FAR_SCOPE);
+    m_isFarScope  = m_goomRand.ProbabilityOf(PROB_FAR_SCOPE);
   }
 }
 
@@ -347,7 +342,7 @@ auto LinesFx::LinesImpl::ChangeGoomLines() noexcept -> void
   }
 
   static constexpr auto CHANGE_GOOM_LINE_CYCLES = 121U;
-  static constexpr auto GOOM_CYCLE_MOD_CHANGE = 9U;
+  static constexpr auto GOOM_CYCLE_MOD_CHANGE   = 9U;
 
   if ((GOOM_CYCLE_MOD_CHANGE == (m_updateNum % CHANGE_GOOM_LINE_CYCLES)) and
       m_goomRand.ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
@@ -406,7 +401,7 @@ inline auto LinesFx::LinesImpl::ResetGoomLines() noexcept -> void
 auto LinesFx::LinesImpl::GetGoomLineStopSettings() const noexcept
     -> std::array<LineParams, NUM_LINES>
 {
-  auto lineParams = GetGoomLineResetSettings(1);
+  auto lineParams        = GetGoomLineResetSettings(1);
   lineParams.at(0).color = BLACK_LINE_COLOR;
   lineParams.at(1).color = BLACK_LINE_COLOR;
   return lineParams;
@@ -440,36 +435,36 @@ auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const
   static constexpr auto NEW_FAR_VAL_PARAM1 = 0.47F;
   static constexpr auto NEW_FAR_VAL_PARAM2 = 0.47F;
 
-  static constexpr auto NEW_NON_FAR_VAL_PARAM1_FACTOR = 0.40F;
-  static constexpr auto NEW_NON_FAR_VAL_PARAM2_FACTOR = 0.22F;
+  static constexpr auto NEW_NON_FAR_VAL_PARAM1_FACTOR     = 0.40F;
+  static constexpr auto NEW_NON_FAR_VAL_PARAM2_FACTOR     = 0.22F;
   static constexpr auto DEFAULT_NON_FAR_VAL_PARAM1_FACTOR = 0.35F;
 
-  static constexpr auto NEW_FAR_VAL_AMPLITUDE = 0.8F;
+  static constexpr auto NEW_FAR_VAL_AMPLITUDE     = 0.8F;
   static constexpr auto NEW_NON_FAR_VAL_AMPLITUDE = 3.0F;
-  static constexpr auto DEFAULT_AMPLITUDE = 1.0F;
+  static constexpr auto DEFAULT_AMPLITUDE         = 1.0F;
 
   if (farVal)
   {
-    param1 = NEW_FAR_VAL_PARAM1;
-    param2 = NEW_FAR_VAL_PARAM2;
+    param1    = NEW_FAR_VAL_PARAM1;
+    param2    = NEW_FAR_VAL_PARAM2;
     amplitude = NEW_FAR_VAL_AMPLITUDE;
   }
   else if (m_goomRand.ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_AMPLITUDE))
   {
-    param1 = 0.0F;
-    param2 = 0.0F;
+    param1    = 0.0F;
+    param2    = 0.0F;
     amplitude = NEW_NON_FAR_VAL_AMPLITUDE;
   }
   else if (m_goomRand.ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_PARAMS))
   {
-    param1 = NEW_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
-    param2 = NEW_NON_FAR_VAL_PARAM2_FACTOR * m_screenHeight;
+    param1    = NEW_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
+    param2    = NEW_NON_FAR_VAL_PARAM2_FACTOR * m_screenHeight;
     amplitude = DEFAULT_AMPLITUDE;
   }
   else
   {
-    param1 = DEFAULT_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
-    param2 = param1;
+    param1    = DEFAULT_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
+    param2    = param1;
     amplitude = DEFAULT_AMPLITUDE;
   }
 
@@ -488,24 +483,24 @@ auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) c
 
   const auto [line1Color, line2Color] = GetResetLineColors(farVal);
 
-  static constexpr auto NEW_PARAM1_FACTOR = 1.0F / 7.0F;
-  static constexpr auto NEW_PARAM2_FACTOR = 6.0F / 7.0F;
+  static constexpr auto NEW_PARAM1_FACTOR     = 1.0F / 7.0F;
+  static constexpr auto NEW_PARAM2_FACTOR     = 6.0F / 7.0F;
   static constexpr auto DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
   static constexpr auto DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
 
-  static constexpr auto NEW_AMPLITUDE = 1.0F;
+  static constexpr auto NEW_AMPLITUDE     = 1.0F;
   static constexpr auto DEFAULT_AMPLITUDE = 2.0F;
 
   if (m_goomRand.ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
   {
-    param1 = NEW_PARAM1_FACTOR * m_screenHeight;
-    param2 = NEW_PARAM2_FACTOR * m_screenHeight;
+    param1    = NEW_PARAM1_FACTOR * m_screenHeight;
+    param2    = NEW_PARAM2_FACTOR * m_screenHeight;
     amplitude = NEW_AMPLITUDE;
   }
   else
   {
-    param1 = DEFAULT_PARAM1_FACTOR * m_screenHeight;
-    param2 = DEFAULT_PARAM2_FACTOR * m_screenHeight;
+    param1    = DEFAULT_PARAM1_FACTOR * m_screenHeight;
+    param2    = DEFAULT_PARAM2_FACTOR * m_screenHeight;
     amplitude = DEFAULT_AMPLITUDE;
   }
 
@@ -524,24 +519,24 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
 
   const auto [line1Color, line2Color] = GetResetLineColors(farVal);
 
-  static constexpr auto NEW_PARAM1_FACTOR = 1.0F / 7.0F;
-  static constexpr auto NEW_PARAM2_FACTOR = 6.0F / 7.0F;
+  static constexpr auto NEW_PARAM1_FACTOR     = 1.0F / 7.0F;
+  static constexpr auto NEW_PARAM2_FACTOR     = 6.0F / 7.0F;
   static constexpr auto DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
   static constexpr auto DEFAULT_PARAM2_FACTOR = 1.0F / 2.0F;
 
-  static constexpr auto NEW_AMPLITUDE = 1.0F;
+  static constexpr auto NEW_AMPLITUDE     = 1.0F;
   static constexpr auto DEFAULT_AMPLITUDE = 1.5F;
 
   if (m_goomRand.ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
   {
-    param1 = NEW_PARAM1_FACTOR * m_screenWidth;
-    param2 = NEW_PARAM2_FACTOR * m_screenWidth;
+    param1    = NEW_PARAM1_FACTOR * m_screenWidth;
+    param2    = NEW_PARAM2_FACTOR * m_screenWidth;
     amplitude = NEW_AMPLITUDE;
   }
   else
   {
-    param1 = DEFAULT_PARAM1_FACTOR * m_screenWidth;
-    param2 = DEFAULT_PARAM2_FACTOR * m_screenWidth;
+    param1    = DEFAULT_PARAM1_FACTOR * m_screenWidth;
+    param2    = DEFAULT_PARAM2_FACTOR * m_screenWidth;
     amplitude = DEFAULT_AMPLITUDE;
   }
 
@@ -566,7 +561,7 @@ auto LinesFx::LinesImpl::GetResetLineColors(const uint32_t farVal) const noexcep
   */
 auto LinesFx::LinesImpl::StopRandomLineChangeMode() noexcept -> void
 {
-  static constexpr auto DEC_LINE_MODE_CYCLES = 80U;
+  static constexpr auto DEC_LINE_MODE_CYCLES    = 80U;
   static constexpr auto UPDATE_LINE_MODE_CYCLES = 120U;
 
   if (m_lineMode != m_drawLinesDuration)
