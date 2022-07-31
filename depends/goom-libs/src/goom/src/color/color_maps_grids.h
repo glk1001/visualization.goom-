@@ -14,8 +14,8 @@ namespace GOOM::COLOR
 class ColorMapsGrid
 {
 public:
-  using ColorMapsArray = std::vector<const IColorMap*>;
-  using ColorArray = std::vector<Pixel>;
+  using ColorMapsArray   = std::vector<const IColorMap*>;
+  using ColorArray       = std::vector<Pixel>;
   using ColorMixingTFunc = std::function<float(size_t colorIndex)>;
 
   ColorMapsGrid(uint32_t width,
@@ -40,7 +40,7 @@ inline void ColorMapsGrid::SetColorMaps(const IColorMap& horizontalColorMap,
                                         const ColorMapsArray& verticalColorMaps)
 {
   m_horizontalColorMap = &horizontalColorMap;
-  m_verticalColorMaps = verticalColorMaps;
+  m_verticalColorMaps  = verticalColorMaps;
 }
 
 } // namespace GOOM::COLOR

@@ -12,7 +12,8 @@ using UTILS::GRAPHICS::ImageBitmap;
 IGoomDraw::IGoomDraw(const uint32_t screenWidth, const uint32_t screenHeight)
   : m_screenWidth{screenWidth},
     m_screenHeight{screenHeight},
-    m_drawMethods{m_screenWidth, m_screenHeight,
+    m_drawMethods{m_screenWidth,
+                  m_screenHeight,
                   [this](const int32_t x, const int32_t y, const MultiplePixels& newColors) {
                     DrawPixelsToDevice({x, y}, newColors);
                   }}
@@ -30,7 +31,7 @@ void IGoomDraw::Bitmap(const Point2dInt centre,
                        const ImageBitmap& bitmap,
                        const std::vector<GetBitmapColorFunc>& getColors)
 {
-  const auto bitmapWidth = static_cast<int>(bitmap.GetWidth());
+  const auto bitmapWidth  = static_cast<int>(bitmap.GetWidth());
   const auto bitmapHeight = static_cast<int>(bitmap.GetHeight());
 
   auto x0 = centre.x - (bitmapWidth / 2);
@@ -60,14 +61,14 @@ void IGoomDraw::Bitmap(const Point2dInt centre,
     y1 = static_cast<int>(GetScreenHeight() - 1);
   }
 
-  const auto actualBitmapWidth = static_cast<uint32_t>(x1 - x0) + 1;
+  const auto actualBitmapWidth  = static_cast<uint32_t>(x1 - x0) + 1;
   const auto actualBitmapHeight = static_cast<uint32_t>(y1 - y0) + 1;
 
   const auto setDestPixelRow =
       [this, &x0, &y0, &actualBitmapWidth, &bitmap, &getColors](const size_t yBitmap)
   {
     const auto numColors = getColors.size();
-    const int yBuff = y0 + static_cast<int>(yBitmap);
+    const int yBuff      = y0 + static_cast<int>(yBitmap);
     for (auto xBitmap = 0U; xBitmap < actualBitmapWidth; ++xBitmap)
     {
       const auto bitmapColor = bitmap(xBitmap, yBitmap);

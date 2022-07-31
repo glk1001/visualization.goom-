@@ -94,7 +94,7 @@ private:
   TheExtraEffects m_theEffects;
 
   static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
-  static constexpr float MIN_SPEED_COEFF = -4.01F;
+  static constexpr float MIN_SPEED_COEFF         = -4.01F;
 
   auto SetRandomHypercosOverlayEffects() -> void;
   auto SetRandomImageVelocityEffects() -> void;

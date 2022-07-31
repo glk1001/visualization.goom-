@@ -1,3 +1,5 @@
+// clang-format off
+
 #pragma once
 
 /*
@@ -217,3 +219,4 @@ using splitmix64 = splitmix_detail::splitmix64_base<0xff51afd7ed558ccdul,
 using splitmix32 = splitmix_detail::
     splitmix32_base<0x62a9d9ed799705f5ul, 0xcb24d0a5c88c35b3ul, 33, 28, splitmix64>;
 
+// clang-format on

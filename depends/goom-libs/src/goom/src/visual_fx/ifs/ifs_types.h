@@ -52,7 +52,7 @@ private:
   const uint32_t m_x;
   const uint32_t m_y;
   uint32_t m_count;
-  Pixel m_color = BLACK_PIXEL;
+  Pixel m_color            = BLACK_PIXEL;
   const Similitude* m_simi = nullptr;
 };
 

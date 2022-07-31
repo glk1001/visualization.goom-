@@ -154,7 +154,8 @@ auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapGroup colorMapGro
 auto RandomColorMaps::GetRandomTintedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap)
     const noexcept -> std::shared_ptr<const IColorMap>
 {
-  return GetTintedColorMapPtr(colorMap, m_goomRand.GetRandInRange(m_minSaturation, m_maxSaturation),
+  return GetTintedColorMapPtr(colorMap,
+                              m_goomRand.GetRandInRange(m_minSaturation, m_maxSaturation),
                               m_goomRand.GetRandInRange(m_minLightness, m_maxLightness));
 }
 

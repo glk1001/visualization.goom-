@@ -42,7 +42,7 @@ auto Shape::GetInitialShapeParts(const Params& params) noexcept -> std::vector<S
   for (auto i = 0U; i < NUM_SHAPE_PARTS; ++i)
   {
     static constexpr auto T_MIN_MAX_LERP = 0.5F;
-    const auto shapePartParams = ShapePart::Params{
+    const auto shapePartParams           = ShapePart::Params{
         i,
         NUM_SHAPE_PARTS,
         params.minRadiusFraction,
@@ -65,7 +65,8 @@ auto Shape::SetWeightedMainColorMaps(
     const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
 {
   Expects(AllColorMapsValid());
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [&weightedMaps](ShapePart& shapePart)
                 { shapePart.SetWeightedMainColorMaps(weightedMaps); });
   Ensures(AllColorMapsValid());
@@ -75,7 +76,8 @@ auto Shape::SetWeightedLowColorMaps(
     const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
 {
   Expects(AllColorMapsValid());
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [&weightedMaps](ShapePart& shapePart)
                 { shapePart.SetWeightedLowColorMaps(weightedMaps); });
   Ensures(AllColorMapsValid());
@@ -85,7 +87,8 @@ auto Shape::SetWeightedInnerColorMaps(
     const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
 {
   Expects(AllColorMapsValid());
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [&weightedMaps](ShapePart& shapePart)
                 { shapePart.SetWeightedInnerColorMaps(weightedMaps); });
   Ensures(AllColorMapsValid());
@@ -114,7 +117,8 @@ auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
     return;
   }
 
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [&zoomMidpoint](ShapePart& shapePart)
                 { shapePart.SetShapePathsTargetPoint(zoomMidpoint); });
 }
@@ -123,7 +127,8 @@ auto Shape::SetShapePathsMinMaxNumSteps(const uint32_t shapePathsMinNumSteps,
                                         const uint32_t shapePathsMaxNumSteps) noexcept -> void
 {
   std::for_each(
-      begin(m_shapeParts), end(m_shapeParts),
+      begin(m_shapeParts),
+      end(m_shapeParts),
       [&shapePathsMinNumSteps, &shapePathsMaxNumSteps](ShapePart& shapePart)
       { shapePart.SetShapePathsMinMaxNumSteps(shapePathsMinNumSteps, shapePathsMaxNumSteps); });
 }
@@ -133,8 +138,8 @@ auto Shape::Start() noexcept -> void
   SetFixedShapeNumSteps();
   StartChromaChangeOnOffTimer();
 
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
-                [](ShapePart& shapePart) { shapePart.Start(); });
+  std::for_each(
+      begin(m_shapeParts), end(m_shapeParts), [](ShapePart& shapePart) { shapePart.Start(); });
 
   Ensures(AllColorMapsValid());
 }
@@ -147,7 +152,8 @@ auto Shape::Draw() noexcept -> void
       m_varyDotRadius,
       GetCurrentMeetingPointColors(),
   };
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [&shapePartParams](ShapePart& shapePart) { shapePart.Draw(shapePartParams); });
 
   if (FirstShapePathAtMeetingPoint())
@@ -174,15 +180,15 @@ inline auto Shape::GetBrightnessAttenuation() const noexcept -> float
   const auto distanceFromOne =
       1.0F - GetShapePart(0).GetFirstShapePathTDistanceFromClosestBoundary();
 
-  const auto minBrightness = 2.0F / static_cast<float>(GetTotalNumShapePaths());
+  const auto minBrightness       = 2.0F / static_cast<float>(GetTotalNumShapePaths());
   static constexpr auto EXPONENT = 25.0F;
   return STD20::lerp(1.0F, minBrightness, std::pow(distanceFromOne, EXPONENT));
 }
 
 auto Shape::Update() noexcept -> void
 {
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
-                [](ShapePart& shapePart) { shapePart.Update(); });
+  std::for_each(
+      begin(m_shapeParts), end(m_shapeParts), [](ShapePart& shapePart) { shapePart.Update(); });
 
   m_chromaChangeOnOffTimer.Increment();
   LogInfo("Incremented chroma");
@@ -200,7 +206,8 @@ auto Shape::DoRandomChanges() noexcept -> void
     m_chromaChangeOnOffTimer.TryToChangeState();
   }
 
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [&useEvenPartNumsForDirection](ShapePart& shapePart)
                 {
                   shapePart.UseEvenShapePartNumsForDirection(useEvenPartNumsForDirection);
@@ -210,10 +217,11 @@ auto Shape::DoRandomChanges() noexcept -> void
 
 auto Shape::SetFixedShapeNumSteps() noexcept -> void
 {
-  m_fixedTMinMaxLerp = ShapePart::GetNewRandomMinMaxLerpT(m_goomRand, m_fixedTMinMaxLerp);
+  m_fixedTMinMaxLerp   = ShapePart::GetNewRandomMinMaxLerpT(m_goomRand, m_fixedTMinMaxLerp);
   const auto positionT = GetFirstShapePathPositionT();
 
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [this, &positionT](ShapePart& shapePart)
                 {
                   shapePart.UseFixedShapePathsNumSteps(m_fixedTMinMaxLerp);
@@ -223,7 +231,8 @@ auto Shape::SetFixedShapeNumSteps() noexcept -> void
 
 auto Shape::SetRandomShapeNumSteps() noexcept -> void
 {
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [](ShapePart& shapePart) { shapePart.UseRandomShapePathsNumSteps(); });
 }
 
@@ -259,7 +268,8 @@ inline auto Shape::SetIncreasedChromaFactor() noexcept -> bool
     LogInfo("SetIncreasedChromaFactor - return false");
     return false;
   }
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [](ShapePart& shapePart)
                 { shapePart.SetChromaFactor(ColorAdjustment::INCREASED_CHROMA_FACTOR); });
   LogInfo("SetIncreasedChromaFactor - return true");
@@ -274,7 +284,8 @@ inline auto Shape::SetDecreasedChromaFactor() noexcept -> bool
     LogInfo("SetDecreasedChromaFactor - return false");
     return false;
   }
-  std::for_each(begin(m_shapeParts), end(m_shapeParts),
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
                 [](ShapePart& shapePart)
                 { shapePart.SetChromaFactor(ColorAdjustment::DECREASED_CHROMA_FACTOR); });
   LogInfo("SetDecreasedChromaFactor - return true");

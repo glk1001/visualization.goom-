@@ -14,11 +14,11 @@ class Hypercos
 {
 public:
   explicit Hypercos(const UTILS::MATH::IGoomRand& goomRand) noexcept;
-  Hypercos(const Hypercos&) noexcept = delete;
-  Hypercos(Hypercos&&) noexcept = delete;
-  virtual ~Hypercos() noexcept = default;
+  Hypercos(const Hypercos&) noexcept           = delete;
+  Hypercos(Hypercos&&) noexcept                = delete;
+  virtual ~Hypercos() noexcept                 = default;
   auto operator=(const Hypercos&) -> Hypercos& = delete;
-  auto operator=(Hypercos&&) -> Hypercos& = delete;
+  auto operator=(Hypercos&&) -> Hypercos&      = delete;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 

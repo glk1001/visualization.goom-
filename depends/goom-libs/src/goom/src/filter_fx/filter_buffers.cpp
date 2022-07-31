@@ -50,15 +50,15 @@ auto ZoomFilterBuffers::Start() noexcept -> void
 
 auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const noexcept -> SourcePointInfo
 {
-  auto isClipped = false;
+  auto isClipped       = false;
   const auto tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
 
   const auto srceScreenPoint = CoordTransforms::TranToScreenPoint(tranPoint);
   const auto xIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
   const auto yIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
 
-  return SourcePointInfo{srceScreenPoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex],
-                         isClipped};
+  return SourcePointInfo{
+      srceScreenPoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex], isClipped};
 }
 
 inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos,
@@ -89,7 +89,7 @@ auto ZoomFilterBuffers::InitAllTranBuffers() noexcept -> void
   m_transformBuffers->CopyTempTranToDestTran();
 
   m_tranBuffYLineStart = 0;
-  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
+  m_tranBuffersState   = TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
 auto ZoomFilterBuffers::UpdateTranBuffers() noexcept -> void
@@ -118,7 +118,7 @@ auto ZoomFilterBuffers::ResetTranBuffers() noexcept -> void
 
   m_transformBuffers->SetTranLerpFactor(0);
   m_tranBuffYLineStart = 0;
-  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
+  m_tranBuffersState   = TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
 auto ZoomFilterBuffers::StartFreshTranBuffers() noexcept -> void
@@ -129,8 +129,8 @@ auto ZoomFilterBuffers::StartFreshTranBuffers() noexcept -> void
   }
 
   m_filterSettingsHaveChanged = false;
-  m_tranBuffYLineStart = 0;
-  m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
+  m_tranBuffYLineStart        = 0;
+  m_tranBuffersState          = TranBuffersState::TRAN_BUFFERS_READY;
 }
 
 inline auto ZoomFilterBuffers::FillTempTranBuffers() noexcept -> void
@@ -153,7 +153,7 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
   const auto doStripeLine = [this](const size_t y)
   {
     // Position of the pixel to compute in screen coordinates
-    const auto yOffset = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
+    const auto yOffset      = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
     const auto tranPosStart = yOffset * m_screenWidth;
 
     auto normalizedCentredPoint = m_normalizedCoordsConverter.ScreenToNormalizedCoords(
@@ -184,7 +184,7 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
 
   if (tranBuffYLineEnd >= m_screenHeight)
   {
-    m_tranBuffersState = TranBuffersState::RESET_TRAN_BUFFERS;
+    m_tranBuffersState   = TranBuffersState::RESET_TRAN_BUFFERS;
     m_tranBuffYLineStart = 0;
   }
 }
@@ -303,8 +303,8 @@ auto ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity() noexcept -> vo
     for (auto x = 0; x < static_cast<int32_t>(m_screenWidth); ++x)
     {
       const auto tranPoint = CoordTransforms::ScreenToTranPoint({x, y});
-      m_tranXSrce[i] = tranPoint.x;
-      m_tranYSrce[i] = tranPoint.y;
+      m_tranXSrce[i]       = tranPoint.x;
+      m_tranYSrce[i]       = tranPoint.y;
       ++i;
     }
   }
@@ -327,8 +327,8 @@ auto ZoomFilterBuffers::TransformBuffers::CopyUnlerpedDestTranToSrceTran() noexc
   for (auto i = 0U; i < m_bufferSize; ++i)
   {
     const auto tranPoint = GetSrceDestLerpBufferPoint(i);
-    m_tranXSrce[i] = tranPoint.x;
-    m_tranYSrce[i] = tranPoint.y;
+    m_tranXSrce[i]       = tranPoint.x;
+    m_tranYSrce[i]       = tranPoint.y;
   }
 }
 
@@ -403,7 +403,7 @@ auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(
   // We want to decrement just one coefficient so that the sum of
   // coefficients equals 255. We'll choose the max coefficient.
   const auto maxCoeff = *std::max_element(cbegin(coeffs), cend(coeffs));
-  auto allZero = false;
+  auto allZero        = false;
   if (0 == maxCoeff)
   {
     allZero = true;
@@ -420,8 +420,14 @@ auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(
     }
   }
 
-  LogInfo("{:2}, {:2}:  {:3}, {:3}, {:3}, {:3} - sum: {:3}", coeffH, coeffV, coeffs[0], coeffs[1],
-          coeffs[2], coeffs[3], std::accumulate(cbegin(coeffs), cend(coeffs), 0U)); // NOLINT
+  LogInfo("{:2}, {:2}:  {:3}, {:3}, {:3}, {:3} - sum: {:3}",
+          coeffH,
+          coeffV,
+          coeffs[0],
+          coeffs[1],
+          coeffs[2],
+          coeffs[3],
+          std::accumulate(cbegin(coeffs), cend(coeffs), 0U)); // NOLINT
   Ensures(channel_limits<uint32_t>::max() == std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
 
   return {coeffs, allZero};

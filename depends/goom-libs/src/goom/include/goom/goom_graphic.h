@@ -14,9 +14,9 @@ namespace GOOM
 
 struct GoomShaderEffects
 {
-  float exposure = 0.0F;
-  float brightness = 0.0F;
-  float contrast = 0.0F;
+  float exposure                = 0.0F;
+  float brightness              = 0.0F;
+  float contrast                = 0.0F;
   float contrastMinChannelValue = 0.0F; // negative gives interesting effects
 };
 
@@ -85,11 +85,12 @@ struct channel_limits<float>
 };
 
 using PixelChannelType = uint16_t;
-using PixelIntType = uint64_t;
+using PixelIntType     = uint64_t;
+
 static constexpr auto MAX_CHANNEL_VALUE_HDR = 30U * 1024U;
 
 static constexpr auto MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
-static constexpr auto MAX_ALPHA = MAX_COLOR_VAL;
+static constexpr auto MAX_ALPHA     = MAX_COLOR_VAL;
 
 static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::max(),
               "Invalid MAX_CHANNEL_VALUE_HDR");
@@ -100,9 +101,9 @@ class Pixel // NOLINT: union hard to fix here
 public:
   struct RGB
   {
-    PixelChannelType red = 0;
+    PixelChannelType red   = 0;
     PixelChannelType green = 0;
-    PixelChannelType blue = 0;
+    PixelChannelType blue  = 0;
     PixelChannelType alpha = MAX_ALPHA;
   };
 
@@ -168,7 +169,7 @@ private:
 struct FXBuffSettings
 {
   static constexpr float INITIAL_BUFF_INTENSITY = 0.5F;
-  float buffIntensity = INITIAL_BUFF_INTENSITY;
+  float buffIntensity                           = INITIAL_BUFF_INTENSITY;
 };
 
 class PixelBuffer
@@ -178,11 +179,11 @@ class PixelBuffer
 public:
   PixelBuffer() noexcept = default;
   PixelBuffer(uint32_t width, uint32_t height) noexcept;
-  PixelBuffer(const PixelBuffer&) = delete;
-  PixelBuffer(PixelBuffer&&) = delete;
+  PixelBuffer(const PixelBuffer&)                    = delete;
+  PixelBuffer(PixelBuffer&&)                         = delete;
   auto operator=(const PixelBuffer&) -> PixelBuffer& = delete;
-  auto operator=(PixelBuffer&&) -> PixelBuffer& = delete;
-  virtual ~PixelBuffer() noexcept = default;
+  auto operator=(PixelBuffer&&) -> PixelBuffer&      = delete;
+  virtual ~PixelBuffer() noexcept                    = default;
 
   auto Resize(size_t width, size_t height) noexcept -> void;
 
@@ -208,10 +209,10 @@ public:
       -> std::array<Pixel, NUM_NBRS>;
 
 private:
-  uint32_t m_width = 0;
+  uint32_t m_width  = 0;
   uint32_t m_height = 0;
-  uint32_t m_xMax = 0;
-  uint32_t m_yMax = 0;
+  uint32_t m_xMax   = 0;
+  uint32_t m_yMax   = 0;
   Buffer m_buff{};
 };
 

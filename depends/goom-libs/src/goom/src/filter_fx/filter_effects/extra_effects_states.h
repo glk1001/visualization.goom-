@@ -32,10 +32,10 @@ class ExtraEffectsStates
 public:
   explicit ExtraEffectsStates(const UTILS::MATH::IGoomRand& goomRand) noexcept;
   ExtraEffectsStates(const ExtraEffectsStates&) noexcept = delete;
-  ExtraEffectsStates(ExtraEffectsStates&&) noexcept = delete;
+  ExtraEffectsStates(ExtraEffectsStates&&) noexcept      = delete;
   ~ExtraEffectsStates() noexcept;
   auto operator=(const ExtraEffectsStates&) -> ExtraEffectsStates& = delete;
-  auto operator=(ExtraEffectsStates&&) -> ExtraEffectsStates& = delete;
+  auto operator=(ExtraEffectsStates&&) -> ExtraEffectsStates&      = delete;
 
   auto TurnPlaneEffectOn() -> void;
 

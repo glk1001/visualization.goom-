@@ -55,8 +55,8 @@ public:
   [[nodiscard]] auto GetSineMixColorSet() const noexcept -> ColorSet;
   [[nodiscard]] auto GetSimilarLowColorSet(float t) const noexcept -> ColorSet;
 
-  static constexpr float MIN_INITIAL_AGE = 1.0F - (99.0F / 100.0F);
-  static constexpr float MAX_INITIAL_AGE = 1.0F - (80.0F / 100.0F);
+  static constexpr float MIN_INITIAL_AGE      = 1.0F - (99.0F / 100.0F);
+  static constexpr float MAX_INITIAL_AGE      = 1.0F - (80.0F / 100.0F);
   static constexpr float HALF_MAX_INITIAL_AGE = 0.5F * MAX_INITIAL_AGE;
 
 private:

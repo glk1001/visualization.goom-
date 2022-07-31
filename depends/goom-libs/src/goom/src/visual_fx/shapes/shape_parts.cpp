@@ -41,8 +41,8 @@ ShapePart::ShapePart(IGoomDraw& draw,
     m_goomInfo{goomInfo},
     m_colorMapsManager{colorMapsManager},
     m_currentTMinMaxLerp{params.tMinMaxLerp},
-    m_shapePathsStepSpeed{params.shapePathsMinNumSteps, params.shapePathsMaxNumSteps,
-                          params.tMinMaxLerp},
+    m_shapePathsStepSpeed{
+        params.shapePathsMinNumSteps, params.shapePathsMaxNumSteps, params.tMinMaxLerp},
     m_minShapeDotRadius{params.minShapeDotRadius},
     m_maxShapeDotRadius{params.maxShapeDotRadius},
     m_shapePartNum{params.shapePartNum},
@@ -81,7 +81,7 @@ auto ShapePart::SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void
     return;
   }
 
-  m_needToUpdateTargetPoint = true;
+  m_needToUpdateTargetPoint  = true;
   m_newShapePathsTargetPoint = targetPoint;
 }
 
@@ -104,7 +104,8 @@ auto ShapePart::UpdateShapePathTargets() noexcept -> void
 
   m_shapePathsTargetPoint = m_newShapePathsTargetPoint;
 
-  std::for_each(begin(m_shapePaths), end(m_shapePaths),
+  std::for_each(begin(m_shapePaths),
+                end(m_shapePaths),
                 [this](ShapePath& shapePath) { UpdateShapePathTransform(shapePath); });
 
   ResetTs(0.0F);
@@ -138,12 +139,12 @@ auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
 {
   const auto numShapePaths = m_goomRand.GetRandInRange(MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths + 1);
 
-  static constexpr auto MIN_MIN_SCALE = 0.9F;
-  static constexpr auto MAX_MIN_SCALE = 1.0F;
-  static constexpr auto MIN_MAX_SCALE = 1.0F + UTILS::MATH::SMALL_FLOAT;
-  static constexpr auto MAX_MAX_SCALE = 1.5F;
+  static constexpr auto MIN_MIN_SCALE         = 0.9F;
+  static constexpr auto MAX_MIN_SCALE         = 1.0F;
+  static constexpr auto MIN_MAX_SCALE         = 1.0F + UTILS::MATH::SMALL_FLOAT;
+  static constexpr auto MAX_MAX_SCALE         = 1.5F;
   static constexpr auto PROB_SCALE_EQUALS_ONE = 0.9F;
-  const auto probScaleEqualsOne = m_goomRand.ProbabilityOf(PROB_SCALE_EQUALS_ONE);
+  const auto probScaleEqualsOne               = m_goomRand.ProbabilityOf(PROB_SCALE_EQUALS_ONE);
   const auto minScale =
       probScaleEqualsOne ? 1.0F : m_goomRand.GetRandInRange(MIN_MIN_SCALE, MAX_MIN_SCALE);
   const auto maxScale =
@@ -161,18 +162,18 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 
   static constexpr auto MIN_ANGLE = 0.0F;
   static constexpr auto MAX_ANGLE = TWO_PI;
-  auto stepFraction = TValue{TValue::StepType::SINGLE_CYCLE, numShapePaths};
+  auto stepFraction               = TValue{TValue::StepType::SINGLE_CYCLE, numShapePaths};
 
-  const auto radius = GetCircleRadius();
+  const auto radius    = GetCircleRadius();
   const auto direction = GetCircleDirection();
-  const auto numSteps = m_shapePathsStepSpeed.GetCurrentNumSteps();
+  const auto numSteps  = m_shapePathsStepSpeed.GetCurrentNumSteps();
 
   auto shapePaths = std::vector<ShapePath>{};
 
   for (auto i = 0U; i < numShapePaths; ++i)
   {
-    const auto rotate = STD20::lerp(MIN_ANGLE, MAX_ANGLE, stepFraction());
-    const auto scale = STD20::lerp(minScale, maxScale, stepFraction());
+    const auto rotate     = STD20::lerp(MIN_ANGLE, MAX_ANGLE, stepFraction());
+    const auto scale      = STD20::lerp(minScale, maxScale, stepFraction());
     const auto circlePath = GetCirclePath(radius, direction, numSteps);
 
     const auto newTransform = GetTransform2d(targetPointFlt, radius, scale, rotate);
@@ -187,11 +188,12 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
     if (SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) >
         CLOSE_ENOUGH)
     {
-      LogError("shapePaths.at({}).GetIPath().GetStartPos() = {}, {}", i,
+      LogError("shapePaths.at({}).GetIPath().GetStartPos() = {}, {}",
+               i,
                shapePaths.at(i).GetIPath().GetStartPos().x,
                shapePaths.at(i).GetIPath().GetStartPos().y);
-      LogError("m_shapesTargetPoint = {}, {}", m_shapePathsTargetPoint.x,
-               m_shapePathsTargetPoint.y);
+      LogError(
+          "m_shapesTargetPoint = {}, {}", m_shapePathsTargetPoint.x, m_shapePathsTargetPoint.y);
       LogError("targetPointFlt = {}, {}", targetPointFlt.x, targetPointFlt.y);
       LogError("radius = {}", radius);
       LogError("rotate = {}", rotate);
@@ -263,7 +265,8 @@ auto ShapePart::SetWeightedMainColorMaps(
 {
   m_colorInfo.mainColorMaps = weightedMaps;
 
-  std::for_each(begin(m_shapePaths), end(m_shapePaths),
+  std::for_each(begin(m_shapePaths),
+                end(m_shapePaths),
                 [this](ShapePath& shapePath)
                 { shapePath.UpdateMainColorInfo(m_colorInfo.mainColorMaps); });
 }
@@ -273,7 +276,8 @@ auto ShapePart::SetWeightedLowColorMaps(
 {
   m_colorInfo.lowColorMaps = weightedMaps;
 
-  std::for_each(begin(m_shapePaths), end(m_shapePaths),
+  std::for_each(begin(m_shapePaths),
+                end(m_shapePaths),
                 [this](ShapePath& shapePath)
                 { shapePath.UpdateLowColorInfo(m_colorInfo.lowColorMaps); });
 }
@@ -286,7 +290,8 @@ auto ShapePart::SetWeightedInnerColorMaps(
 
   m_colorInfo.innerColorMaps = weightedMaps;
 
-  std::for_each(begin(m_shapePaths), end(m_shapePaths),
+  std::for_each(begin(m_shapePaths),
+                end(m_shapePaths),
                 [this](ShapePath& shapePath)
                 { shapePath.UpdateInnerColorInfo(m_colorInfo.innerColorMaps); });
 }
@@ -335,7 +340,7 @@ auto ShapePart::GetFirstShapePathTDistanceFromClosestBoundary() const noexcept -
 auto ShapePart::AreShapePathsCloseToMeeting() const noexcept -> bool
 {
   static constexpr auto T_MEETING_CUTOFF = 0.1F;
-  const auto positionT = GetFirstShapePathPositionT();
+  const auto positionT                   = GetFirstShapePathPositionT();
 
   return (T_MEETING_CUTOFF > positionT) || (positionT > (1.0F - T_MEETING_CUTOFF));
 }
@@ -356,7 +361,8 @@ auto ShapePart::UseRandomShapePathsNumSteps() noexcept -> void
 
 auto ShapePart::SetShapePathsNumSteps() noexcept -> void
 {
-  std::for_each(begin(m_shapePaths), end(m_shapePaths),
+  std::for_each(begin(m_shapePaths),
+                end(m_shapePaths),
                 [this](ShapePath& path)
                 { path.SetNumSteps(m_shapePathsStepSpeed.GetCurrentNumSteps()); });
 
@@ -428,7 +434,8 @@ auto ShapePart::SetChromaFactor(const float val) noexcept -> void
 {
   m_chromaFactor = val;
 
-  std::for_each(begin(m_shapePaths), end(m_shapePaths),
+  std::for_each(begin(m_shapePaths),
+                end(m_shapePaths),
                 [&val](ShapePath& shapePath) { shapePath.SetChromaFactor(val); });
 }
 
@@ -468,9 +475,9 @@ inline auto ShapePart::GetMaxDotRadius(const bool varyRadius) const noexcept -> 
 
   if (AreShapePathsCloseToMeeting())
   {
-    const auto tDistanceFromOne = GetFirstShapePathTDistanceFromClosestBoundary();
+    const auto tDistanceFromOne        = GetFirstShapePathTDistanceFromClosestBoundary();
     static constexpr auto EXTRA_RADIUS = 10.0F;
-    static constexpr auto EXPONENT = 10.0F;
+    static constexpr auto EXPONENT     = 10.0F;
     maxRadius += static_cast<int32_t>(std::pow(tDistanceFromOne, EXPONENT) * EXTRA_RADIUS);
   }
 

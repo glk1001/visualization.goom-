@@ -129,10 +129,11 @@ private:
                                   m_goomInfo.GetScreenInfo().height};
   const std::string m_resourcesDirectory;
   const NormalizedCoordsConverter m_normalizedCoordsConverter{
-      m_goomInfo.GetScreenInfo().width, m_goomInfo.GetScreenInfo().height,
+      m_goomInfo.GetScreenInfo().width,
+      m_goomInfo.GetScreenInfo().height,
       ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL};
-  FilterSettingsService m_filterSettingsService{m_goomInfo, m_goomRand, m_resourcesDirectory,
-                                                CreateSpeedCoefficientsEffect};
+  FilterSettingsService m_filterSettingsService{
+      m_goomInfo, m_goomRand, m_resourcesDirectory, CreateSpeedCoefficientsEffect};
   const SmallImageBitmaps m_smallBitmaps{m_resourcesDirectory};
   GoomEvents m_goomEvents{m_goomRand};
   GoomRandomStateHandler m_stateHandler{m_goomRand};
@@ -154,15 +155,15 @@ private:
       std::make_unique<FilterColorsService>()};
 
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
-  GoomMusicSettingsReactor m_musicSettingsReactor{m_goomInfo, m_goomRand, m_visualFx, m_goomEvents,
-                                                  m_filterSettingsService};
-  const GoomStateMonitor m_goomStateMonitor{m_visualFx, m_musicSettingsReactor,
-                                            m_filterSettingsService};
+  GoomMusicSettingsReactor m_musicSettingsReactor{
+      m_goomInfo, m_goomRand, m_visualFx, m_goomEvents, m_filterSettingsService};
+  const GoomStateMonitor m_goomStateMonitor{
+      m_visualFx, m_musicSettingsReactor, m_filterSettingsService};
 #ifdef DO_GOOM_STATE_DUMP
   propagate_const<std::unique_ptr<GoomStateDump>> m_goomStateDump{};
   std::string m_dumpDirectory{};
 #endif
-  bool m_noZooms = false;
+  bool m_noZooms       = false;
   uint32_t m_updateNum = 0;
 
   auto NewCycle() -> void;
@@ -186,9 +187,9 @@ private:
   SongInfo m_songInfo{};
   Stopwatch m_runningTimeStopwatch{};
   static constexpr uint32_t DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS = 8;
-  uint32_t m_numUpdatesBetweenTimeChecks = DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS;
+  uint32_t m_numUpdatesBetweenTimeChecks            = DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS;
   static constexpr float UPDATE_TIME_ESTIMATE_IN_MS = 40.0F;
-  static constexpr float UPDATE_TIME_SAFETY_FACTOR = 10.0F;
+  static constexpr float UPDATE_TIME_SAFETY_FACTOR  = 10.0F;
   const float m_upperLimitOfTimeIntervalInMsSinceLastMarked =
       UPDATE_TIME_SAFETY_FACTOR *
       (static_cast<float>(m_numUpdatesBetweenTimeChecks) * UPDATE_TIME_ESTIMATE_IN_MS);
@@ -382,7 +383,7 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
   m_runningTimeStopwatch.StartNow();
 
   m_numUpdatesBetweenTimeChecks = DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS;
-  m_updateNum = 0;
+  m_updateNum                   = 0;
 }
 
 inline auto GoomControl::GoomControlImpl::Finish() -> void
@@ -401,8 +402,8 @@ inline auto GoomControl::GoomControlImpl::Finish() -> void
 #ifdef DO_GOOM_STATE_DUMP
 inline auto GoomControl::GoomControlImpl::StartGoomStateDump() -> void
 {
-  m_goomStateDump = std::make_unique<GoomStateDump>(m_goomInfo, m_visualFx, m_musicSettingsReactor,
-                                                    m_filterSettingsService);
+  m_goomStateDump = std::make_unique<GoomStateDump>(
+      m_goomInfo, m_visualFx, m_musicSettingsReactor, m_filterSettingsService);
   m_goomStateDump->Start();
 }
 
@@ -618,8 +619,8 @@ inline auto GoomControl::GoomControlImpl::InitTitleDisplay() -> void
 {
   const auto xPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.050F : 0.085F;
   const auto yPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.130F : 0.300F;
-  const auto xPos = static_cast<int>(xPosFraction * static_cast<float>(GetScreenWidth()));
-  const auto yPos = static_cast<int>(yPosFraction * static_cast<float>(GetScreenHeight()));
+  const auto xPos         = static_cast<int>(xPosFraction * static_cast<float>(GetScreenWidth()));
+  const auto yPos         = static_cast<int>(yPosFraction * static_cast<float>(GetScreenHeight()));
 
   m_goomTitleDisplayer.SetInitialPosition(xPos, yPos);
 }

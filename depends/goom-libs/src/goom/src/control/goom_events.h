@@ -12,11 +12,11 @@ class GoomEvents
 {
 public:
   explicit GoomEvents(const UTILS::MATH::IGoomRand& goomRand);
-  GoomEvents(const GoomEvents&) noexcept = delete;
-  GoomEvents(GoomEvents&&) noexcept = delete;
-  ~GoomEvents() = default;
+  GoomEvents(const GoomEvents&) noexcept           = delete;
+  GoomEvents(GoomEvents&&) noexcept                = delete;
+  ~GoomEvents()                                    = default;
   auto operator=(const GoomEvents&) -> GoomEvents& = delete;
-  auto operator=(GoomEvents&&) -> GoomEvents& = delete;
+  auto operator=(GoomEvents&&) -> GoomEvents&      = delete;
 
   enum class GoomEvent
   {

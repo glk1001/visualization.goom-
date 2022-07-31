@@ -11,7 +11,7 @@ namespace GOOM::VISUAL_FX::SHADERS
 class HighContrast
 {
 public:
-  static constexpr float DEFAULT_CONTRAST = 1.0F;
+  static constexpr float DEFAULT_CONTRAST   = 1.0F;
   static constexpr float DEFAULT_BRIGHTNESS = 1.0F;
 
   explicit HighContrast(const PluginInfo& goomInfo,
@@ -29,13 +29,13 @@ private:
   const PluginInfo& m_goomInfo;
   const UTILS::MATH::IGoomRand& m_goomRand;
 
-  float m_currentContrast = DEFAULT_CONTRAST;
-  float m_currentBrightness = DEFAULT_BRIGHTNESS;
+  float m_currentContrast                = DEFAULT_CONTRAST;
+  float m_currentBrightness              = DEFAULT_BRIGHTNESS;
   float m_currentContrastMinChannelValue = 0.0F;
-  float m_maxContrastMinChannelValue = 0.0F;
+  float m_maxContrastMinChannelValue     = 0.0F;
   void ResetValues();
 
-  static constexpr uint32_t NUM_HIGH_CONTRAST_ON_STEPS = 250;
+  static constexpr uint32_t NUM_HIGH_CONTRAST_ON_STEPS  = 250;
   static constexpr uint32_t HIGH_CONTRAST_ON_DELAY_TIME = 100;
   static constexpr uint32_t HIGH_CONTRAST_ON_TIME =
       (2 * NUM_HIGH_CONTRAST_ON_STEPS) + HIGH_CONTRAST_ON_DELAY_TIME;

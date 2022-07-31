@@ -33,10 +33,10 @@ class TextDraw::TextDrawImpl
 public:
   explicit TextDrawImpl(IGoomDraw& draw) noexcept;
   TextDrawImpl(const TextDrawImpl&) noexcept = delete;
-  TextDrawImpl(TextDrawImpl&&) noexcept = delete;
+  TextDrawImpl(TextDrawImpl&&) noexcept      = delete;
   ~TextDrawImpl() noexcept;
   auto operator=(const TextDrawImpl&) -> TextDrawImpl& = delete;
-  auto operator=(TextDrawImpl&&) -> TextDrawImpl& = delete;
+  auto operator=(TextDrawImpl&&) -> TextDrawImpl&      = delete;
 
   [[nodiscard]] auto GetAlignment() const -> TextAlignment;
   void SetAlignment(TextAlignment alignment);
@@ -174,10 +174,10 @@ class TextDraw::TextDrawImpl
 public:
   explicit TextDrawImpl(IGoomDraw& draw) noexcept;
   TextDrawImpl(const TextDrawImpl&) noexcept = delete;
-  TextDrawImpl(TextDrawImpl&&) noexcept = delete;
+  TextDrawImpl(TextDrawImpl&&) noexcept      = delete;
   ~TextDrawImpl() noexcept;
   auto operator=(const TextDrawImpl&) -> TextDrawImpl& = delete;
-  auto operator=(TextDrawImpl&&) -> TextDrawImpl& = delete;
+  auto operator=(TextDrawImpl&&) -> TextDrawImpl&      = delete;
 
   [[nodiscard]] auto GetAlignment() const -> TextAlignment;
   void SetAlignment(TextAlignment alignment);
@@ -208,15 +208,15 @@ public:
 private:
   IGoomDraw& m_draw;
   FT_Library m_library{};
-  static constexpr int32_t DEFAULT_FONT_SIZE = 100;
-  int32_t m_fontSize = DEFAULT_FONT_SIZE;
+  static constexpr int32_t DEFAULT_FONT_SIZE       = 100;
+  int32_t m_fontSize                               = DEFAULT_FONT_SIZE;
   static constexpr uint32_t DEFAULT_HORIZONTAL_RES = 90;
-  uint32_t m_horizontalResolution = DEFAULT_HORIZONTAL_RES;
-  static constexpr uint32_t DEFAULT_VERTICAL_RES = 90;
-  uint32_t m_verticalResolution = DEFAULT_VERTICAL_RES;
-  static constexpr float DEFAULT_OUTLINE_WIDTH = 3.0F;
-  float m_outlineWidth = DEFAULT_OUTLINE_WIDTH;
-  float m_charSpacing = 0.0F;
+  uint32_t m_horizontalResolution                  = DEFAULT_HORIZONTAL_RES;
+  static constexpr uint32_t DEFAULT_VERTICAL_RES   = 90;
+  uint32_t m_verticalResolution                    = DEFAULT_VERTICAL_RES;
+  static constexpr float DEFAULT_OUTLINE_WIDTH     = 3.0F;
+  float m_outlineWidth                             = DEFAULT_OUTLINE_WIDTH;
+  float m_charSpacing                              = 0.0F;
   std::string m_fontFilename{};
   std::vector<unsigned char> m_fontBuffer{};
   bool m_useParallelRender = true;
@@ -239,11 +239,11 @@ private:
   {
     RectImpl() noexcept = default;
     RectImpl(int32_t left, int32_t top, int32_t right, int32_t bottom) noexcept;
-    RectImpl(const RectImpl&) noexcept = default;
-    RectImpl(RectImpl&&) noexcept = default;
-    ~RectImpl() noexcept = default;
+    RectImpl(const RectImpl&) noexcept                   = default;
+    RectImpl(RectImpl&&) noexcept                        = default;
+    ~RectImpl() noexcept                                 = default;
     auto operator=(const RectImpl&) noexcept -> RectImpl = delete;
-    auto operator=(RectImpl&&) noexcept -> RectImpl = delete;
+    auto operator=(RectImpl&&) noexcept -> RectImpl      = delete;
 
     void Include(const Vec2& span);
   };
@@ -290,8 +290,7 @@ private:
 };
 #endif
 
-TextDraw::TextDraw(IGoomDraw& draw) noexcept
-  : m_pimpl{spimpl::make_unique_impl<TextDrawImpl>(draw)}
+TextDraw::TextDraw(IGoomDraw& draw) noexcept : m_pimpl{spimpl::make_unique_impl<TextDrawImpl>(draw)}
 {
 }
 
@@ -442,16 +441,19 @@ void TextDraw::TextDrawImpl::SetFontFile(const std::string& filename)
 
   // Create a face from a memory buffer.  Be sure not to delete the memory buffer
   // until we are done using that font as FreeType will reference it directly.
-  ::FT_New_Memory_Face(m_library, m_fontBuffer.data(), static_cast<FT_Long>(m_fontBuffer.size()), 0,
-                       &m_face);
+  ::FT_New_Memory_Face(
+      m_library, m_fontBuffer.data(), static_cast<FT_Long>(m_fontBuffer.size()), 0, &m_face);
 
   SetFaceFontSize();
 }
 
 inline void TextDraw::TextDrawImpl::SetFaceFontSize()
 {
-  if (::FT_Set_Char_Size(m_face, ToFreeTypeCoord(m_fontSize), ToFreeTypeCoord(m_fontSize),
-                         m_horizontalResolution, m_verticalResolution) != 0)
+  if (::FT_Set_Char_Size(m_face,
+                         ToFreeTypeCoord(m_fontSize),
+                         ToFreeTypeCoord(m_fontSize),
+                         m_horizontalResolution,
+                         m_verticalResolution) != 0)
   {
     throw std::logic_error(std20::format("Could not set face font size to {}.", m_fontSize));
   }
@@ -578,8 +580,11 @@ void TextDraw::TextDrawImpl::Prepare()
   m_textBoundingRect.yMax = yMax;
 
   LogInfo("Font bounding rectangle: {}, {}, {}, {}, m_textSpans.size = {}.",
-          m_textBoundingRect.xMin, m_textBoundingRect.xMax, m_textBoundingRect.yMin,
-          m_textBoundingRect.yMax, m_textSpans.size()); // NOLINT
+          m_textBoundingRect.xMin,
+          m_textBoundingRect.xMax,
+          m_textBoundingRect.yMin,
+          m_textBoundingRect.yMax,
+          m_textSpans.size()); // NOLINT
 }
 
 auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int
@@ -672,8 +677,8 @@ inline void TextDraw::TextDrawImpl::WriteGlyph(const Spans& spans,
                                                const int32_t yPen)
 {
   // Loop over the outline spans and just draw them into the image.
-  WriteSpansToImage(spans.outlineSpans, spans.rect, xPen, yPen, spans.textIndexOfChar,
-                    m_getOutlineFontColor);
+  WriteSpansToImage(
+      spans.outlineSpans, spans.rect, xPen, yPen, spans.textIndexOfChar, m_getOutlineFontColor);
 
   // Then loop over the regular glyph spans and blend them into the image.
   WriteSpansToImage(spans.stdSpans, spans.rect, xPen, yPen, spans.textIndexOfChar, m_getFontColor);
@@ -723,8 +728,8 @@ void TextDraw::TextDrawImpl::WriteXSpan(const Span& span,
                                         const size_t textIndexOfChar,
                                         const FontColorFunc& getColor)
 {
-  const auto xPos0 = xPen + (span.x - rect.xMin);
-  const auto xf0 = span.x - rect.xMin;
+  const auto xPos0    = xPen + (span.x - rect.xMin);
+  const auto xf0      = span.x - rect.xMin;
   const auto coverage = static_cast<uint8_t>(span.coverage);
   for (auto width = 0; width < span.width; ++width)
   {
@@ -734,8 +739,8 @@ void TextDraw::TextDrawImpl::WriteXSpan(const Span& span,
       continue;
     }
 
-    const auto pen = Point2dInt{xf0 + width, rect.Height() - (span.y - rect.yMin)};
-    const auto color = getColor(textIndexOfChar, pen, rect.Width(), rect.Height());
+    const auto pen       = Point2dInt{xf0 + width, rect.Height() - (span.y - rect.yMin)};
+    const auto color     = getColor(textIndexOfChar, pen, rect.Width(), rect.Height());
     const auto srceColor = Pixel{
         {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}
     };
@@ -779,9 +784,9 @@ void TextDraw::TextDrawImpl::RenderSpans(FT_Outline* const outline, SpanArray* c
 {
   auto params = FT_Raster_Params{};
   ::memset(&params, 0, sizeof(params));
-  params.flags = FT_RASTER_FLAG_AA | FT_RASTER_FLAG_DIRECT;
+  params.flags      = FT_RASTER_FLAG_AA | FT_RASTER_FLAG_DIRECT;
   params.gray_spans = RasterCallback;
-  params.user = spans;
+  params.user       = spans;
 
   ::FT_Outline_Render(m_library, outline, &params);
 }
@@ -789,8 +794,8 @@ void TextDraw::TextDrawImpl::RenderSpans(FT_Outline* const outline, SpanArray* c
 auto TextDraw::TextDrawImpl::GetSpans(const size_t textIndexOfChar) const -> Spans
 {
   const auto stdSpans = GetStdSpans();
-  const auto advance = ToStdPixelCoord(static_cast<int32_t>(m_face->glyph->advance.x)) +
-                          static_cast<int>(m_charSpacing * static_cast<float>(m_fontSize));
+  const auto advance  = ToStdPixelCoord(static_cast<int32_t>(m_face->glyph->advance.x)) +
+                       static_cast<int>(m_charSpacing * static_cast<float>(m_fontSize));
   const auto metrics = m_face->glyph->metrics;
   if (stdSpans.empty())
   {
@@ -831,8 +836,11 @@ auto TextDraw::TextDrawImpl::GetOutlineSpans() const -> SpanArray
   // Set up a stroker.
   FT_Stroker stroker{};
   ::FT_Stroker_New(m_library, &stroker);
-  ::FT_Stroker_Set(stroker, ToFreeTypeCoord(m_outlineWidth), FT_STROKER_LINECAP_ROUND,
-                   FT_STROKER_LINEJOIN_ROUND, 0);
+  ::FT_Stroker_Set(stroker,
+                   ToFreeTypeCoord(m_outlineWidth),
+                   FT_STROKER_LINECAP_ROUND,
+                   FT_STROKER_LINEJOIN_ROUND,
+                   0);
 
   auto* glyph = FT_Glyph{};
   if (::FT_Get_Glyph(m_face->glyph, &glyph) != 0)
@@ -851,7 +859,7 @@ auto TextDraw::TextDrawImpl::GetOutlineSpans() const -> SpanArray
 
   // Render the outline spans to the span list
   auto* const outline = &reinterpret_cast<FT_OutlineGlyph>(glyph)->outline;
-  auto outlineSpans = SpanArray{};
+  auto outlineSpans   = SpanArray{};
   RenderSpans(outline, &outlineSpans);
   if (outlineSpans.empty())
   {

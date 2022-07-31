@@ -76,11 +76,11 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
 {
   // SPEED_FACTOR is delicate. Too small and zooms don't happen often enough.
   static constexpr auto SPEED_FACTOR = 500.0F;
-  const auto goFasterVal = static_cast<int32_t>(std::lround(
+  const auto goFasterVal             = static_cast<int32_t>(std::lround(
       3.5F *
       std::log10(1.0F + (SPEED_FACTOR * m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed()))));
-  const auto newVitesse = Vitesse::STOP_SPEED - goFasterVal;
-  const auto oldVitesse = m_filterSettingsService.GetROVitesse().GetVitesse();
+  const auto newVitesse              = Vitesse::STOP_SPEED - goFasterVal;
+  const auto oldVitesse              = m_filterSettingsService.GetROVitesse().GetVitesse();
 
   if (newVitesse >= oldVitesse)
   {
@@ -88,9 +88,9 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
   }
 
   static constexpr auto VITESSE_CYCLES = 3U;
-  static constexpr auto FAST_SPEED = Vitesse::STOP_SPEED - 6;
-  static constexpr auto FASTER_SPEED = Vitesse::STOP_SPEED - 7;
-  static constexpr auto SLOW_SPEED = Vitesse::STOP_SPEED - 1;
+  static constexpr auto FAST_SPEED     = Vitesse::STOP_SPEED - 6;
+  static constexpr auto FASTER_SPEED   = Vitesse::STOP_SPEED - 7;
+  static constexpr auto SLOW_SPEED     = Vitesse::STOP_SPEED - 1;
   static constexpr auto OLD_TO_NEW_MIX = 0.4F;
 
   // on accelere
@@ -117,8 +117,8 @@ auto GoomMusicSettingsReactor::GetNameValueParams() const -> NameValuePairs
       GetPair(PARAM_GROUP, "vitesse", m_filterSettingsService.GetROVitesse().GetVitesse()),
       GetPair(PARAM_GROUP, "previousZoomSpeed", m_previousZoomSpeed),
       GetPair(PARAM_GROUP, "reverse", m_filterSettingsService.GetROVitesse().GetReverseVitesse()),
-      GetPair(PARAM_GROUP, "relative speed",
-              m_filterSettingsService.GetROVitesse().GetRelativeSpeed()),
+      GetPair(
+          PARAM_GROUP, "relative speed", m_filterSettingsService.GetROVitesse().GetRelativeSpeed()),
       GetPair(PARAM_GROUP, "updatesSinceLastChange", m_updatesSinceLastZoomEffectsChange),
   };
 }

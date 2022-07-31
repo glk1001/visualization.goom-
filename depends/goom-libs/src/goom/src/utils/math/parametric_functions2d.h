@@ -12,12 +12,12 @@ namespace GOOM::UTILS::MATH
 class IParametricFunction2d
 {
 public:
-  IParametricFunction2d() noexcept = default;
-  IParametricFunction2d(const IParametricFunction2d&) noexcept = default;
-  IParametricFunction2d(IParametricFunction2d&&) noexcept = default;
-  virtual ~IParametricFunction2d() noexcept = default;
+  IParametricFunction2d() noexcept                                       = default;
+  IParametricFunction2d(const IParametricFunction2d&) noexcept           = default;
+  IParametricFunction2d(IParametricFunction2d&&) noexcept                = default;
+  virtual ~IParametricFunction2d() noexcept                              = default;
   auto operator=(const IParametricFunction2d&) -> IParametricFunction2d& = delete;
-  auto operator=(IParametricFunction2d&&) -> IParametricFunction2d& = delete;
+  auto operator=(IParametricFunction2d&&) -> IParametricFunction2d&      = delete;
 
   [[nodiscard]] virtual auto GetPoint(float t) const noexcept -> Point2dFlt = 0;
 
@@ -59,7 +59,7 @@ private:
 struct AngleParams
 {
   float startAngleInRadians = 0.0F;
-  float endAngleInRadians = TWO_PI;
+  float endAngleInRadians   = TWO_PI;
 };
 
 class CircleFunction : public IParametricFunction2d
@@ -194,7 +194,7 @@ public:
   struct Params
   {
     float amplitude = 1.0;
-    float freq = 1.0;
+    float freq      = 1.0;
   };
 
   SineFunction(const Point2dFlt& startPos, const Point2dFlt& endPos, const Params& params) noexcept;
@@ -215,8 +215,8 @@ public:
   struct Params
   {
     float oscillatingAmplitude = 1.0;
-    float xOscillatingFreq = 1.0;
-    float yOscillatingFreq = 1.0;
+    float xOscillatingFreq     = 1.0;
+    float yOscillatingFreq     = 1.0;
   };
 
   OscillatingFunction(const Point2dFlt& startPos,
@@ -272,15 +272,15 @@ inline auto CircleFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 inline auto SpiralFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
   const auto radius = STD20::lerp(m_minRadius, m_maxRadius, t);
-  const auto angle = m_angleFactor * t;
+  const auto angle  = m_angleFactor * t;
   return GetSpiralPoint(radius, angle) + m_centrePos;
 }
 
 inline auto SpiralFunction::GetPointData(const float t) const noexcept -> PointData
 {
   const auto radius = STD20::lerp(m_minRadius, m_maxRadius, t);
-  const auto angle = m_angleFactor * t;
-  const auto point = GetSpiralPoint(radius, angle) + m_centrePos;
+  const auto angle  = m_angleFactor * t;
+  const auto point  = GetSpiralPoint(radius, angle) + m_centrePos;
 
   return {point, angle};
 }

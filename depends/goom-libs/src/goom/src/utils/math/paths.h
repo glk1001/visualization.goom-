@@ -15,17 +15,17 @@ namespace GOOM::UTILS::MATH
 class IPath
 {
 public:
-  IPath() noexcept = default;
-  IPath(const IPath&) noexcept = delete;
-  IPath(IPath&&) noexcept = default;
-  virtual ~IPath() noexcept = default;
+  IPath() noexcept                       = default;
+  IPath(const IPath&) noexcept           = delete;
+  IPath(IPath&&) noexcept                = default;
+  virtual ~IPath() noexcept              = default;
   auto operator=(const IPath&) -> IPath& = delete;
-  auto operator=(IPath&&) -> IPath& = delete;
+  auto operator=(IPath&&) -> IPath&      = delete;
 
   [[nodiscard]] virtual auto GetClone() const noexcept -> std::unique_ptr<IPath> = 0;
 
   [[nodiscard]] virtual auto GetStartPos() const noexcept -> Point2dInt = 0;
-  [[nodiscard]] virtual auto GetEndPos() const noexcept -> Point2dInt = 0;
+  [[nodiscard]] virtual auto GetEndPos() const noexcept -> Point2dInt   = 0;
 
   [[nodiscard]] virtual auto GetPositionT() const noexcept -> const TValue& = 0;
 
@@ -38,7 +38,7 @@ public:
   [[nodiscard]] auto GetCurrentT() const noexcept -> float;
   [[nodiscard]] auto IsStopped() const noexcept -> bool;
 
-  virtual auto IncrementT() noexcept -> void = 0;
+  virtual auto IncrementT() noexcept -> void   = 0;
   virtual auto Reset(float t) noexcept -> void = 0;
 
   [[nodiscard]] virtual auto GetNextPoint() const noexcept -> Point2dInt = 0;
@@ -52,11 +52,11 @@ class ISimplePath : public IPath
 {
 public:
   explicit ISimplePath(std::unique_ptr<TValue> positionT) noexcept;
-  ISimplePath(const ISimplePath&) noexcept = delete;
-  ISimplePath(ISimplePath&&) noexcept = default;
-  ~ISimplePath() noexcept override = default;
+  ISimplePath(const ISimplePath&) noexcept           = delete;
+  ISimplePath(ISimplePath&&) noexcept                = default;
+  ~ISimplePath() noexcept override                   = default;
   auto operator=(const ISimplePath&) -> ISimplePath& = delete;
-  auto operator=(ISimplePath&&) -> ISimplePath& = delete;
+  auto operator=(ISimplePath&&) -> ISimplePath&      = delete;
 
   [[nodiscard]] auto GetStartPos() const noexcept -> Point2dInt override;
   [[nodiscard]] auto GetEndPos() const noexcept -> Point2dInt override;
@@ -179,13 +179,13 @@ private:
   T m_parametricFunction;
 };
 
-using CirclePath = ParametricPath<CircleFunction>;
-using SpiralPath = ParametricPath<SpiralFunction>;
-using LissajousPath = ParametricPath<LissajousFunction>;
+using CirclePath       = ParametricPath<CircleFunction>;
+using SpiralPath       = ParametricPath<SpiralFunction>;
+using LissajousPath    = ParametricPath<LissajousFunction>;
 using HypotrochoidPath = ParametricPath<HypotrochoidFunction>;
-using EpicycloidPath = ParametricPath<EpicycloidFunction>;
-using SinePath = ParametricPath<SineFunction>;
-using OscillatingPath = ParametricPath<OscillatingFunction>;
+using EpicycloidPath   = ParametricPath<EpicycloidFunction>;
+using SinePath         = ParametricPath<SineFunction>;
+using OscillatingPath  = ParametricPath<OscillatingFunction>;
 
 inline auto IPath::GetNumSteps() const noexcept -> uint32_t
 {

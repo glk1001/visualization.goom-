@@ -105,13 +105,13 @@ TintedColorMap::TintedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
 auto TintedColorMap::GetColor(const float t) const -> Pixel
 {
   const auto color = GetColorMap()->GetColor(t);
-  const auto rgb8 = vivid::col8_t{color.R(), color.G(), color.B()};
+  const auto rgb8  = vivid::col8_t{color.R(), color.G(), color.B()};
 
   static constexpr auto SATURATION_INDEX = 1;
-  static constexpr auto LIGHTNESS_INDEX = 2;
-  auto hsv = vivid::hsv_t{vivid::rgb::fromRgb8(rgb8)};
-  hsv[SATURATION_INDEX] = m_saturation;
-  hsv[LIGHTNESS_INDEX] = m_lightness;
+  static constexpr auto LIGHTNESS_INDEX  = 2;
+  auto hsv                               = vivid::hsv_t{vivid::rgb::fromRgb8(rgb8)};
+  hsv[SATURATION_INDEX]                  = m_saturation;
+  hsv[LIGHTNESS_INDEX]                   = m_lightness;
 
   const auto newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
   return Pixel{
@@ -124,11 +124,11 @@ class PrebuiltColorMap : public IColorMap
 public:
   PrebuiltColorMap() noexcept = delete;
   PrebuiltColorMap(ColorMapName mapName, vivid::ColorMap colorMap) noexcept;
-  PrebuiltColorMap(const PrebuiltColorMap&) noexcept = delete;
-  PrebuiltColorMap(PrebuiltColorMap&&) noexcept = default;
-  ~PrebuiltColorMap() noexcept override = default;
+  PrebuiltColorMap(const PrebuiltColorMap&) noexcept           = delete;
+  PrebuiltColorMap(PrebuiltColorMap&&) noexcept                = default;
+  ~PrebuiltColorMap() noexcept override                        = default;
   auto operator=(const PrebuiltColorMap&) -> PrebuiltColorMap& = delete;
-  auto operator=(PrebuiltColorMap&&) -> PrebuiltColorMap& = delete;
+  auto operator=(PrebuiltColorMap&&) -> PrebuiltColorMap&      = delete;
 
   [[nodiscard]] auto GetNumStops() const -> size_t override { return m_vividColorMap.numStops(); }
   [[nodiscard]] auto GetMapName() const -> ColorMapName override { return m_mapName; }
@@ -145,10 +145,10 @@ class ColorMaps::ColorMapsImpl
 {
 public:
   ColorMapsImpl() noexcept;
-  ColorMapsImpl(const ColorMapsImpl&) noexcept = delete;
-  ColorMapsImpl(ColorMapsImpl&&) noexcept = delete;
-  virtual ~ColorMapsImpl() noexcept = default;
-  auto operator=(const ColorMapsImpl&) -> ColorMapsImpl& = delete;
+  ColorMapsImpl(const ColorMapsImpl&) noexcept             = delete;
+  ColorMapsImpl(ColorMapsImpl&&) noexcept                  = delete;
+  virtual ~ColorMapsImpl() noexcept                        = default;
+  auto operator=(const ColorMapsImpl&) -> ColorMapsImpl&   = delete;
   auto operator=(ColorMapsImpl&&) -> const ColorMapsImpl&& = delete;
 
   [[nodiscard]] static auto GetNumColorMapNames() -> uint32_t;
@@ -285,8 +285,8 @@ inline auto ColorMaps::ColorMapsImpl::GetTintedColorMapPtr(const ColorMapName ma
                                                            const float lightness)
     -> std::shared_ptr<const IColorMap>
 {
-  return std::make_shared<TintedColorMap>(MAKE_SHARED_ADDR(&GetColorMap(mapName)), saturation,
-                                          lightness);
+  return std::make_shared<TintedColorMap>(
+      MAKE_SHARED_ADDR(&GetColorMap(mapName)), saturation, lightness);
 }
 
 inline auto ColorMaps::ColorMapsImpl::GetTintedColorMapPtr(
@@ -374,39 +374,39 @@ auto ColorMaps::ColorMapsImpl::MakeColorGroupNames() -> ColorGroupNamesArray
 
   at(groups, ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL) =
       &COLOR_DATA::PERC_UNIF_SEQUENTIAL_MAPS;
-  at(groups, ColorMapGroup::SEQUENTIAL) = &COLOR_DATA::SEQUENTIAL_MAPS;
-  at(groups, ColorMapGroup::SEQUENTIAL2) = &COLOR_DATA::SEQUENTIAL2_MAPS;
-  at(groups, ColorMapGroup::CYCLIC) = &COLOR_DATA::CYCLIC_MAPS;
-  at(groups, ColorMapGroup::DIVERGING) = &COLOR_DATA::DIVERGING_MAPS;
+  at(groups, ColorMapGroup::SEQUENTIAL)      = &COLOR_DATA::SEQUENTIAL_MAPS;
+  at(groups, ColorMapGroup::SEQUENTIAL2)     = &COLOR_DATA::SEQUENTIAL2_MAPS;
+  at(groups, ColorMapGroup::CYCLIC)          = &COLOR_DATA::CYCLIC_MAPS;
+  at(groups, ColorMapGroup::DIVERGING)       = &COLOR_DATA::DIVERGING_MAPS;
   at(groups, ColorMapGroup::DIVERGING_BLACK) = &COLOR_DATA::DIVERGING_BLACK_MAPS;
-  at(groups, ColorMapGroup::QUALITATIVE) = &COLOR_DATA::QUALITATIVE_MAPS;
-  at(groups, ColorMapGroup::MISC) = &COLOR_DATA::MISC_MAPS;
+  at(groups, ColorMapGroup::QUALITATIVE)     = &COLOR_DATA::QUALITATIVE_MAPS;
+  at(groups, ColorMapGroup::MISC)            = &COLOR_DATA::MISC_MAPS;
 
   at(groups, ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM) =
       &COLOR_DATA::PERC_UNIF_SEQUENTIAL_SLIM_MAPS;
-  at(groups, ColorMapGroup::SEQUENTIAL_SLIM) = &COLOR_DATA::SEQUENTIAL_SLIM_MAPS;
-  at(groups, ColorMapGroup::SEQUENTIAL2_SLIM) = &COLOR_DATA::SEQUENTIAL2_SLIM_MAPS;
-  at(groups, ColorMapGroup::CYCLIC_SLIM) = &COLOR_DATA::CYCLIC_SLIM_MAPS;
-  at(groups, ColorMapGroup::DIVERGING_SLIM) = &COLOR_DATA::DIVERGING_SLIM_MAPS;
+  at(groups, ColorMapGroup::SEQUENTIAL_SLIM)      = &COLOR_DATA::SEQUENTIAL_SLIM_MAPS;
+  at(groups, ColorMapGroup::SEQUENTIAL2_SLIM)     = &COLOR_DATA::SEQUENTIAL2_SLIM_MAPS;
+  at(groups, ColorMapGroup::CYCLIC_SLIM)          = &COLOR_DATA::CYCLIC_SLIM_MAPS;
+  at(groups, ColorMapGroup::DIVERGING_SLIM)       = &COLOR_DATA::DIVERGING_SLIM_MAPS;
   at(groups, ColorMapGroup::DIVERGING_BLACK_SLIM) = &COLOR_DATA::DIVERGING_BLACK_SLIM_MAPS;
-  at(groups, ColorMapGroup::QUALITATIVE_SLIM) = &COLOR_DATA::QUALITATIVE_SLIM_MAPS;
-  at(groups, ColorMapGroup::MISC_SLIM) = &COLOR_DATA::MISC_SLIM_MAPS;
+  at(groups, ColorMapGroup::QUALITATIVE_SLIM)     = &COLOR_DATA::QUALITATIVE_SLIM_MAPS;
+  at(groups, ColorMapGroup::MISC_SLIM)            = &COLOR_DATA::MISC_SLIM_MAPS;
 
   at(groups, ColorMapGroup::WES_ANDERSON) = &COLOR_DATA::WES_ANDERSON_MAPS;
-  at(groups, ColorMapGroup::BLUES) = &COLOR_DATA::BLUE_MAPS;
-  at(groups, ColorMapGroup::REDS) = &COLOR_DATA::RED_MAPS;
-  at(groups, ColorMapGroup::GREENS) = &COLOR_DATA::GREEN_MAPS;
-  at(groups, ColorMapGroup::YELLOWS) = &COLOR_DATA::YELLOW_MAPS;
-  at(groups, ColorMapGroup::ORANGES) = &COLOR_DATA::ORANGE_MAPS;
-  at(groups, ColorMapGroup::PURPLES) = &COLOR_DATA::PURPLE_MAPS;
-  at(groups, ColorMapGroup::CITIES) = &COLOR_DATA::CITY_MAPS;
-  at(groups, ColorMapGroup::SEASONS) = &COLOR_DATA::SEASON_MAPS;
-  at(groups, ColorMapGroup::HEAT) = &COLOR_DATA::HEAT_MAPS;
-  at(groups, ColorMapGroup::COLD) = &COLOR_DATA::COLD_MAPS;
-  at(groups, ColorMapGroup::PASTEL) = &COLOR_DATA::PASTEL_MAPS;
+  at(groups, ColorMapGroup::BLUES)        = &COLOR_DATA::BLUE_MAPS;
+  at(groups, ColorMapGroup::REDS)         = &COLOR_DATA::RED_MAPS;
+  at(groups, ColorMapGroup::GREENS)       = &COLOR_DATA::GREEN_MAPS;
+  at(groups, ColorMapGroup::YELLOWS)      = &COLOR_DATA::YELLOW_MAPS;
+  at(groups, ColorMapGroup::ORANGES)      = &COLOR_DATA::ORANGE_MAPS;
+  at(groups, ColorMapGroup::PURPLES)      = &COLOR_DATA::PURPLE_MAPS;
+  at(groups, ColorMapGroup::CITIES)       = &COLOR_DATA::CITY_MAPS;
+  at(groups, ColorMapGroup::SEASONS)      = &COLOR_DATA::SEASON_MAPS;
+  at(groups, ColorMapGroup::HEAT)         = &COLOR_DATA::HEAT_MAPS;
+  at(groups, ColorMapGroup::COLD)         = &COLOR_DATA::COLD_MAPS;
+  at(groups, ColorMapGroup::PASTEL)       = &COLOR_DATA::PASTEL_MAPS;
 
-  Ensures(std::all_of(groups.cbegin(), groups.cend(),
-                      [](const auto& group) { return group != nullptr; }));
+  Ensures(std::all_of(
+      groups.cbegin(), groups.cend(), [](const auto& group) { return group != nullptr; }));
 
   return groups;
 }

@@ -62,8 +62,8 @@ void LowDensityBlurrer::SetColorMode(const BlurrerColorMode colorMode)
   m_colorMode = colorMode;
 
   static constexpr auto PROB_USE_BITMAPS = 0.1F;
-  const auto useBitmaps = m_goomRand.ProbabilityOf(PROB_USE_BITMAPS);
-  m_currentImageBitmap = GetImageBitmap(useBitmaps);
+  const auto useBitmaps                  = m_goomRand.ProbabilityOf(PROB_USE_BITMAPS);
+  m_currentImageBitmap                   = GetImageBitmap(useBitmaps);
 }
 
 auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const -> const ImageBitmap*
@@ -75,7 +75,7 @@ auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const -> const Ima
 
   static constexpr auto MIN_RES = 3U;
   static constexpr auto MAX_RES = 7U;
-  const auto res = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
+  const auto res                = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
 
   return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
 }
@@ -86,8 +86,8 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
   auto neighbours = MultiplePixels(static_cast<size_t>(m_width) * static_cast<size_t>(m_width));
   const auto logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
 
-  auto t = 0.0F;
-  const auto tStep = 1.0F / static_cast<float>(lowDensityPoints.size());
+  auto t               = 0.0F;
+  const auto tStep     = 1.0F / static_cast<float>(lowDensityPoints.size());
   const auto halfWidth = U_HALF * m_width;
   for (auto& point : lowDensityPoints)
   {
@@ -99,7 +99,7 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
       continue;
     }
 
-    auto n = 0U;
+    auto n      = 0U;
     auto neighY = static_cast<int32_t>(point.GetY() - (m_width / 2));
     for (auto i = 0U; i < m_width; ++i)
     {
@@ -134,9 +134,10 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
     }
     else
     {
-      const auto getColor =
-          [&point]([[maybe_unused]] const size_t xVal, [[maybe_unused]] const size_t yVal,
-                   [[maybe_unused]] const Pixel& bgnd) { return point.GetColor(); };
+      const auto getColor = [&point]([[maybe_unused]] const size_t xVal,
+                                     [[maybe_unused]] const size_t yVal,
+                                     [[maybe_unused]] const Pixel& bgnd)
+      { return point.GetColor(); };
       m_draw.Bitmap(pt, *m_currentImageBitmap, {getColor, getColor});
     }
   }
@@ -195,7 +196,7 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
 inline auto LowDensityBlurrer::GetBrightness() const -> float
 {
   static constexpr auto NO_NEIGHBOUR_BRIGHTNESS = 1.5F;
-  static constexpr auto NEIGHBOUR_BRIGHTNESS = 0.1F;
+  static constexpr auto NEIGHBOUR_BRIGHTNESS    = 0.1F;
 
   float brightness = 0.0F;
   switch (m_colorMode)
@@ -238,8 +239,8 @@ inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
   const auto baseAndNeighbourhoodMixedColor =
       IColorMap::GetColorMix(baseColor, neighbourhoodAverageColor, m_neighbourMixFactor);
 
-  return m_colorizer->GetMixedColor(baseAndNeighbourhoodMixedColor, point.GetCount(), brightness,
-                                    logAlpha, fx, fy);
+  return m_colorizer->GetMixedColor(
+      baseAndNeighbourhoodMixedColor, point.GetCount(), brightness, logAlpha, fx, fy);
 }
 
 } // namespace GOOM::VISUAL_FX::IFS

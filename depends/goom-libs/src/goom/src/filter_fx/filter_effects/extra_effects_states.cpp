@@ -17,12 +17,12 @@ static constexpr auto EXTRA_EFFECTS_TURNED_OFF = ALL_FILTER_EFFECTS_TURNED_OFF;
 
 static constexpr auto DEFAULT_HYPERCOS_OVERLAY = HypercosOverlay::NONE;
 
-static constexpr auto DEFAULT_BLOCKY_WAVY_EFFECT = false;
+static constexpr auto DEFAULT_BLOCKY_WAVY_EFFECT    = false;
 static constexpr auto DEFAULT_IMAGE_VELOCITY_EFFECT = false;
-static constexpr auto DEFAULT_NOISE_EFFECT = false;
-static constexpr auto DEFAULT_PLANE_EFFECT = false;
-static constexpr auto DEFAULT_ROTATION_EFFECT = false;
-static constexpr auto DEFAULT_TAN_EFFECT = false;
+static constexpr auto DEFAULT_NOISE_EFFECT          = false;
+static constexpr auto DEFAULT_PLANE_EFFECT          = false;
+static constexpr auto DEFAULT_ROTATION_EFFECT       = false;
+static constexpr auto DEFAULT_TAN_EFFECT            = false;
 
 class ExtraEffectsStates::EffectState
 {
@@ -75,12 +75,12 @@ auto ExtraEffectsStates::UpdateFilterSettingsFromStates(ZoomFilterSettings& filt
 {
   filterSettings.filterEffectsSettings.hypercosOverlay = m_hypercosOverlayEffect;
 
-  filterSettings.filterColorSettings.blockyWavy = m_blockyWavyEffect->IsTurnedOn();
+  filterSettings.filterColorSettings.blockyWavy            = m_blockyWavyEffect->IsTurnedOn();
   filterSettings.filterEffectsSettings.imageVelocityEffect = m_imageVelocityEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.noiseEffect = m_noiseEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.planeEffect = m_planeEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.rotationEffect = m_rotationEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.tanEffect = m_tanEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.noiseEffect         = m_noiseEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.planeEffect         = m_planeEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.rotationEffect      = m_rotationEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.tanEffect           = m_tanEffect->IsTurnedOn();
 }
 
 auto ExtraEffectsStates::TurnPlaneEffectOn() -> void
@@ -191,7 +191,7 @@ inline auto ExtraEffectsStates::EffectState::UpdateState(const float probability
 inline auto ExtraEffectsStates::EffectState::SetState(const bool value) -> void
 {
   const auto previouslyTurnedOn = m_turnedOn;
-  m_turnedOn = value;
+  m_turnedOn                    = value;
 
   if (previouslyTurnedOn && m_turnedOn)
   {

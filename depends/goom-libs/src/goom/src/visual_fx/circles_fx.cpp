@@ -42,8 +42,8 @@ public:
 private:
   const FxHelper& m_fxHelper;
   const SmallImageBitmaps& m_smallBitmaps;
-  const uint32_t m_screenWidth = m_fxHelper.GetGoomInfo().GetScreenInfo().width;
-  const uint32_t m_screenHeight = m_fxHelper.GetGoomInfo().GetScreenInfo().height;
+  const uint32_t m_screenWidth      = m_fxHelper.GetGoomInfo().GetScreenInfo().width;
+  const uint32_t m_screenHeight     = m_fxHelper.GetGoomInfo().GetScreenInfo().height;
   const Point2dInt m_screenMidPoint = MidpointFromOrigin({m_screenWidth, m_screenHeight});
 
   static constexpr uint32_t NUM_CIRCLES = 5;
@@ -61,7 +61,7 @@ private:
 
   auto UpdateAndDraw() noexcept -> void;
 
-  bool m_fullCirclesReset = false;
+  bool m_fullCirclesReset        = false;
   bool m_resetCircleCentreStarts = false;
   WeightedColorMaps m_lastWeightedColorMaps{};
   static constexpr uint32_t LERP_TO_NEW_CIRCLE_CENTRE_TIME = 20;
@@ -145,7 +145,7 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams() const noexcept -> std::vector<C
   auto circleCentreTargets = GetCircleCentreTargets();
   for (auto i = 0U; i < NUM_CIRCLES; ++i)
   {
-    circleParams[i].circleCentreStart = m_lastCircleCentreStart;
+    circleParams[i].circleCentreStart  = m_lastCircleCentreStart;
     circleParams[i].circleCentreTarget = circleCentreTargets.at(i);
   }
 
@@ -188,8 +188,8 @@ auto CirclesFx::CirclesFxImpl::GetCircleCentreTargets() const -> std::array<Poin
 {
   auto circleCentreTargets = std::array<Point2dInt, NUM_CIRCLES>{};
 
-  const auto width = 2 * m_screenMidPoint.x;
-  const auto height = 2 * m_screenMidPoint.y;
+  const auto width                 = 2 * m_screenMidPoint.x;
+  const auto height                = 2 * m_screenMidPoint.y;
   static constexpr auto SMALL_FRAC = Fraction{1, 10};
   static constexpr auto LARGE_FRAC = 1 - SMALL_FRAC;
   static_assert(5 == NUM_CIRCLES);
@@ -219,8 +219,8 @@ inline auto CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
   m_blankAtStartTime =
       m_fxHelper.GetGoomRand().GetRandInRange(MIN_BLANK_AT_START_TIME, MAX_BLANK_AT_START_TIME + 1);
 
-  m_lastWeightedColorMaps = weightedColorMaps;
-  m_fullCirclesReset = true;
+  m_lastWeightedColorMaps   = weightedColorMaps;
+  m_fullCirclesReset        = true;
   m_resetCircleCentreStarts = true;
   m_lerpToNewCircleCentreTimer.SetToFinished();
 }
@@ -275,8 +275,8 @@ auto CirclesFx::CirclesFxImpl::CheckCircleCentreStartsReset() noexcept -> void
   {
     Expects(m_lerpToNewCircleCentreTimer.Finished());
     m_lerpToNewCircleCentreTimer.ResetToZero();
-    m_newCircleCentreStart = GetAllCirclesCentreStart();
-    m_newRadius0 = GetCircleRadius0();
+    m_newCircleCentreStart    = GetAllCirclesCentreStart();
+    m_newRadius0              = GetCircleRadius0();
     m_resetCircleCentreStarts = false;
   }
   if (not m_lerpToNewCircleCentreTimer.Finished())

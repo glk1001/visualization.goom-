@@ -1,3 +1,4 @@
+// clang-format off
 // NOLINTBEGIN: Not my code
 
 /*
@@ -591,3 +592,4 @@ namespace std {
 }
 
 // NOLINTEND
+// clang-format on

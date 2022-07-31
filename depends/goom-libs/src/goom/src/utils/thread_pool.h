@@ -1,3 +1,4 @@
+// clang-format off
 // NOLINTBEGIN: Not my code
 
 #pragma once
@@ -161,3 +162,4 @@ auto ThreadPool::ScheduleAndGetFuture(FuncT&& func, ArgsT&&... args)
 } // namespace GOOM::UTILS
 
 // NOLINTEND
+// clang-format on

@@ -53,7 +53,7 @@ public:
   Circle(Circle&& other) noexcept;
   ~Circle() noexcept;
   auto operator=(const Circle&) -> Circle& = delete;
-  auto operator=(Circle&&) -> Circle& = delete;
+  auto operator=(Circle&&) -> Circle&      = delete;
 
   auto SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMainMaps,
                             std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps) noexcept
@@ -82,12 +82,12 @@ private:
   const Point2dInt m_circleCentreFixedTarget;
   Point2dInt m_circleCentreTarget{m_circleCentreFixedTarget};
   DotPaths m_dotPaths;
-  DotDiameters m_dotDiameters{m_goomRand, NUM_DOTS, m_helper.minDotDiameter,
-                              m_helper.maxDotDiameter};
+  DotDiameters m_dotDiameters{
+      m_goomRand, NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter};
   [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, float radius) noexcept
       -> std::vector<Point2dInt>;
 
-  uint64_t m_updateNum = 0;
+  uint64_t m_updateNum          = 0;
   uint32_t m_dotAttributeOffset = 0;
   [[nodiscard]] auto IsSpecialUpdateNum() const noexcept -> bool;
   [[nodiscard]] auto IsSpecialLineUpdateNum() const noexcept -> bool;
@@ -112,7 +112,8 @@ private:
   [[nodiscard]] auto GetRandomNumColorAdjustmentSteps() const noexcept -> uint32_t;
   static constexpr float COLOR_ADJUSTMENT_STARTING_T = 0.5F;
   UTILS::TValue m_colorAdjustmentT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                   GetRandomNumColorAdjustmentSteps(), COLOR_ADJUSTMENT_STARTING_T};
+                                   GetRandomNumColorAdjustmentSteps(),
+                                   COLOR_ADJUSTMENT_STARTING_T};
   static constexpr float GAMMA = 1.0F / 2.2F;
   COLOR::ColorAdjustment m_colorAdjustment{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
   auto UpdateColorAdjustment() noexcept -> void;
@@ -133,8 +134,8 @@ private:
 
   class DotDrawer;
   std::experimental::propagate_const<std::unique_ptr<DotDrawer>> m_dotDrawer;
-  bool m_alternateMainLowDotColors = false;
-  bool m_showLine = false;
+  bool m_alternateMainLowDotColors         = false;
+  bool m_showLine                          = false;
   static constexpr float T_LINE_COLOR_STEP = 1.0F / static_cast<float>(NUM_DOTS);
   auto DrawLine(const Point2dInt& position1,
                 const Point2dInt& position2,
@@ -161,7 +162,7 @@ private:
   COLOR::ColorMapsGrid m_mainColorMapsGrid;
   COLOR::ColorMapsGrid m_lowColorMapsGrid;
   static constexpr float DEFAULT_COLOR_GRID_MIX_T = 0.5F;
-  float m_currentColorGridMixT = DEFAULT_COLOR_GRID_MIX_T;
+  float m_currentColorGridMixT                    = DEFAULT_COLOR_GRID_MIX_T;
   [[nodiscard]] auto GetVerticalMainColorMaps() const noexcept
       -> std::vector<const COLOR::IColorMap*>;
   [[nodiscard]] auto GetVerticalLowColorMaps() const noexcept

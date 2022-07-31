@@ -35,40 +35,42 @@ CirclesTentacleLayout::CirclesTentacleLayout(const float radiusMin,
     }
   }
 
-  const auto getSamplePoints = [&](const float radius, const size_t numSample,
-                                   const float angleStart, const float angleFinish)
+  const auto getSamplePoints = [&](const float radius,
+                                   const size_t numSample,
+                                   const float angleStart,
+                                   const float angleFinish)
   {
     const auto angleStep = (angleFinish - angleStart) / static_cast<float>(numSample - 1);
-    auto angle = angleStart;
+    auto angle           = angleStart;
     for (auto i = 0U; i < numSample; ++i)
     {
-      const auto x = radius * std::cos(angle);
-      const auto y = radius * std::sin(angle);
+      const auto x     = radius * std::cos(angle);
+      const auto y     = radius * std::sin(angle);
       const auto point = V3dFlt{x, y, zConst};
       m_points.push_back(point);
       angle += angleStep;
     }
   };
 
-  const auto angleLeftStart = +HALF_PI;
-  const auto angleLeftFinish = 1.5F * pi;
-  const auto angleRightStart = -HALF_PI;
+  const auto angleLeftStart   = +HALF_PI;
+  const auto angleLeftFinish  = 1.5F * pi;
+  const auto angleRightStart  = -HALF_PI;
   const auto angleRightFinish = +HALF_PI;
 
-  const auto angleOffsetStart = 0.035F * pi;
+  const auto angleOffsetStart  = 0.035F * pi;
   const auto angleOffsetFinish = 0.035F * pi;
   const auto offsetStep =
       (angleOffsetStart - angleOffsetFinish) / static_cast<float>(numCircles - 1);
   const auto radiusStep = (radiusMax - radiusMin) / static_cast<float>(numCircles - 1);
 
-  auto radius = radiusMax;
+  auto radius      = radiusMax;
   auto angleOffset = angleOffsetStart;
   for (const auto numSample : numCircleSamples)
   {
-    getSamplePoints(radius, U_HALF * numSample, angleLeftStart + angleOffset,
-                    angleLeftFinish - angleOffset);
-    getSamplePoints(radius, U_HALF * numSample, angleRightStart + angleOffset,
-                    angleRightFinish - angleOffset);
+    getSamplePoints(
+        radius, U_HALF * numSample, angleLeftStart + angleOffset, angleLeftFinish - angleOffset);
+    getSamplePoints(
+        radius, U_HALF * numSample, angleRightStart + angleOffset, angleRightFinish - angleOffset);
 
     radius -= radiusStep;
     angleOffset -= offsetStep;

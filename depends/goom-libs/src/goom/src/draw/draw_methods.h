@@ -77,4 +77,3 @@ inline void DrawMethods::DrawPixels(const int32_t x,
 }
 
 } // namespace GOOM::DRAW
-

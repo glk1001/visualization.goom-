@@ -24,7 +24,7 @@ class IGoomRand;
 namespace VISUAL_FX::TUBES
 {
 
-using DrawLineFunc = std::function<void(
+using DrawLineFunc   = std::function<void(
     Point2dInt point1, Point2dInt point2, const DRAW::MultiplePixels& colors, uint8_t thickness)>;
 using DrawCircleFunc = std::function<void(
     Point2dInt point, int radius, const DRAW::MultiplePixels& colors, uint8_t thickness)>;

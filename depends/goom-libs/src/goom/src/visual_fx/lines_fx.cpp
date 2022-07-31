@@ -247,7 +247,8 @@ inline auto LinesFx::LinesImpl::SetWeightedColorMaps(
 
 inline auto LinesFx::LinesImpl::CanResetDestLines() const noexcept -> bool
 {
-  return std::all_of(cbegin(m_lineMorphs), cend(m_lineMorphs),
+  return std::all_of(cbegin(m_lineMorphs),
+                     cend(m_lineMorphs),
                      [](const LineMorph& line) { return line.CanResetDestLine(); });
 }
 

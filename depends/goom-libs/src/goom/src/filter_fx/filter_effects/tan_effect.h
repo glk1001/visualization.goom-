@@ -16,11 +16,11 @@ class TanEffect
 {
 public:
   explicit TanEffect(const UTILS::MATH::IGoomRand& goomRand);
-  TanEffect(const TanEffect&) noexcept = delete;
-  TanEffect(TanEffect&&) noexcept = delete;
-  virtual ~TanEffect() noexcept = default;
+  TanEffect(const TanEffect&) noexcept           = delete;
+  TanEffect(TanEffect&&) noexcept                = delete;
+  virtual ~TanEffect() noexcept                  = default;
   auto operator=(const TanEffect&) -> TanEffect& = delete;
-  auto operator=(TanEffect&&) -> TanEffect& = delete;
+  auto operator=(TanEffect&&) -> TanEffect&      = delete;
 
   virtual auto SetRandomParams() -> void;
 
@@ -60,7 +60,7 @@ private:
 inline auto TanEffect::GetVelocity(const float sqDistFromZero,
                                    const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const auto limit = m_params.limitingFactor * UTILS::MATH::HALF_PI;
+  const auto limit  = m_params.limitingFactor * UTILS::MATH::HALF_PI;
   const auto tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::MATH::HALF_PI), -limit, +limit);
   const auto tanSqDist = GetTanSqDist(tanArg);
   return {m_params.xAmplitude * tanSqDist * velocity.GetX(),

@@ -60,8 +60,8 @@ private:
   uint32_t m_numNodesBetweenDots = (MIN_STEPS_BETWEEN_NODES + MAX_STEPS_BETWEEN_NODES) / 2;
 
   float m_projectionDistance = 0.0F;
-  float m_tentacleAngle = 0.0F;
-  float m_cameraDistance = 0.0F;
+  float m_tentacleAngle      = 0.0F;
+  float m_cameraDistance     = 0.0F;
   V3dFlt m_cameraPosition{};
   Pixel m_dominantMainColor{};
   Pixel m_dominantLowColor{};
@@ -106,8 +106,8 @@ inline auto TentaclePlotter::SetDominantColors(const Pixel& dominantMainColor,
                                                const Pixel& dominantDotColor) -> void
 {
   m_dominantMainColor = dominantMainColor;
-  m_dominantLowColor = dominantLowColor;
-  m_dominantDotColor = dominantDotColor;
+  m_dominantLowColor  = dominantLowColor;
+  m_dominantDotColor  = dominantDotColor;
 }
 
 } // namespace VISUAL_FX::TENTACLES

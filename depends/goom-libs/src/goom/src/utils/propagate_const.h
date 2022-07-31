@@ -1,3 +1,5 @@
+// clang-format off
+
 /*
 
 Copyright (c) 2014-2018 Jonathan B. Coe
@@ -423,3 +425,5 @@ namespace std {
 }  // end namespace std
 
 #undef PROPAGATE_CONST_CONSTEXPR
+
+// clang-format on

@@ -44,12 +44,12 @@ public:
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
-  static constexpr int32_t MAX_TEXT_DISPLAY_TIME = 200;
+  static constexpr int32_t MAX_TEXT_DISPLAY_TIME      = 200;
   static constexpr int32_t TIME_TO_START_MIDDLE_PHASE = 100;
-  static constexpr int32_t TIME_TO_START_FINAL_PHASE = 50;
-  float m_xPos = 0.0F;
-  float m_yPos = 0.0F;
-  int32_t m_timeLeftOfTitleDisplay = MAX_TEXT_DISPLAY_TIME;
+  static constexpr int32_t TIME_TO_START_FINAL_PHASE  = 50;
+  float m_xPos                                        = 0.0F;
+  float m_yPos                                        = 0.0F;
+  int32_t m_timeLeftOfTitleDisplay                    = MAX_TEXT_DISPLAY_TIME;
   std::experimental::propagate_const<std::unique_ptr<DRAW::TextDraw>> m_textDraw;
   const int32_t m_screenWidth;
   const int32_t m_screenHeight;
@@ -103,8 +103,8 @@ private:
   [[nodiscard]] auto GetFinalPhaseFontSize(int32_t timeLeftOfTitleDisplay) const -> int32_t;
   static constexpr float INITIAL_PHASE_X_INCREMENT = 0.01F;
   static constexpr float INITIAL_PHASE_Y_INCREMENT = 0.0F;
-  static constexpr float MIDDLE_PHASE_X_INCREMENT = 1.0F;
-  static constexpr float MIDDLE_PHASE_Y_INCREMENT = 0.0F;
+  static constexpr float MIDDLE_PHASE_X_INCREMENT  = 1.0F;
+  static constexpr float MIDDLE_PHASE_Y_INCREMENT  = 0.0F;
   struct FinalPhaseIncrements
   {
     float xIncrement = 0.0F;

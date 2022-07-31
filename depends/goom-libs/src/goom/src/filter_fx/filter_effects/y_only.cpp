@@ -15,22 +15,26 @@ static constexpr auto Y_DEFAULT_EFFECT = YOnly::YOnlyEffect::NONE;
 
 static constexpr auto X_DEFAULT_FREQ_FACTOR = 1.0F;
 static constexpr auto Y_DEFAULT_FREQ_FACTOR = 10.0F;
-static constexpr auto X_FREQ_FACTOR_RANGE = IGoomRand::NumberRange<float>{-50.0F, +50.01F};
-static constexpr auto Y_FREQ_FACTOR_RANGE = IGoomRand::NumberRange<float>{-50.0F, +50.01F};
+static constexpr auto X_FREQ_FACTOR_RANGE   = IGoomRand::NumberRange<float>{-50.0F, +50.01F};
+static constexpr auto Y_FREQ_FACTOR_RANGE   = IGoomRand::NumberRange<float>{-50.0F, +50.01F};
 
 static constexpr auto X_DEFAULT_AMPLITUDE = 10.0F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 10.0F;
-static constexpr auto X_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.010F, 1.011F};
-static constexpr auto Y_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.010F, 1.011F};
+static constexpr auto X_AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.010F, 1.011F};
+static constexpr auto Y_AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.010F, 1.011F};
 
-static constexpr auto PROB_Y_ONLY_STRICT = 0.9F;
-static constexpr auto PROB_FREQ_EQUAL = 0.9F;
+static constexpr auto PROB_Y_ONLY_STRICT   = 0.9F;
+static constexpr auto PROB_FREQ_EQUAL      = 0.9F;
 static constexpr auto PROB_AMPLITUDE_EQUAL = 0.9F;
 
 YOnly::YOnly(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand}, m_params{X_DEFAULT_EFFECT,      Y_DEFAULT_EFFECT,
-                                   X_DEFAULT_FREQ_FACTOR, Y_DEFAULT_FREQ_FACTOR,
-                                   X_DEFAULT_AMPLITUDE,   Y_DEFAULT_AMPLITUDE}
+  : m_goomRand{goomRand},
+    m_params{X_DEFAULT_EFFECT,
+             Y_DEFAULT_EFFECT,
+             X_DEFAULT_FREQ_FACTOR,
+             Y_DEFAULT_FREQ_FACTOR,
+             X_DEFAULT_AMPLITUDE,
+             Y_DEFAULT_AMPLITUDE}
 {
 }
 

@@ -11,23 +11,23 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
 
-static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
+static constexpr auto DEFAULT_AMPLITUDE       = 0.1F;
 static constexpr auto X_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.501F};
 static constexpr auto Y_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.501F};
 
-static constexpr auto DEFAULT_SQ_DIST_MULT = 0.025F;
+static constexpr auto DEFAULT_SQ_DIST_MULT       = 0.025F;
 static constexpr auto X_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.051F};
 static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.051F};
 
-static constexpr auto DEFAULT_SQ_DIST_OFFSET = 0.05F;
+static constexpr auto DEFAULT_SQ_DIST_OFFSET       = 0.05F;
 static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.11F};
 static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.11F};
 
-static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 1.00F;
-static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL = 1.00F;
+static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 1.00F;
+static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL   = 1.00F;
 static constexpr auto PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 
-static constexpr auto PROB_MODE0 = 0.05F;
+static constexpr auto PROB_MODE0                  = 0.05F;
 static constexpr auto PROB_RANDOM_DISTANCE_POINTS = 0.3F;
 
 DistanceField::DistanceField(const IGoomRand& goomRand) noexcept
@@ -87,7 +87,13 @@ auto DistanceField::SetRandomParams() -> void
     }
   }
 
-  SetParams({mode0, xAmplitude, yAmplitude, xSqDistMult, ySqDistMult, xSqDistOffset, ySqDistOffset,
+  SetParams({mode0,
+             xAmplitude,
+             yAmplitude,
+             xSqDistMult,
+             ySqDistMult,
+             xSqDistOffset,
+             ySqDistOffset,
              distancePoints});
 }
 
@@ -96,7 +102,7 @@ auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) cons
 {
   static constexpr auto MAX_DISTANCE_SQ =
       2.0F * Sq(NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD);
-  auto minDistanceSq = MAX_DISTANCE_SQ;
+  auto minDistanceSq                   = MAX_DISTANCE_SQ;
   const NormalizedCoords* closestPoint = nullptr;
 
   for (const auto& distancePoint : m_params.distancePoints)
@@ -105,7 +111,7 @@ auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) cons
     if (distanceSq < minDistanceSq)
     {
       minDistanceSq = distanceSq;
-      closestPoint = &distancePoint;
+      closestPoint  = &distancePoint;
     }
   }
   Ensures(closestPoint != nullptr);

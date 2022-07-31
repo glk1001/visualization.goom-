@@ -50,17 +50,17 @@ private:
   GetColorFunc m_lineColorFunc{};
   GetColorFunc m_dotColorFunc{};
 
-  static constexpr uint8_t DEFAULT_LINE_THICKNESS = 1;
-  uint8_t m_lineThickness = DEFAULT_LINE_THICKNESS;
-  static constexpr size_t DEFAULT_NUM_BEZIER_STEPS = 50;
-  size_t m_numBezierSteps = DEFAULT_NUM_BEZIER_STEPS;
+  static constexpr uint8_t DEFAULT_LINE_THICKNESS            = 1;
+  uint8_t m_lineThickness                                    = DEFAULT_LINE_THICKNESS;
+  static constexpr size_t DEFAULT_NUM_BEZIER_STEPS           = 50;
+  size_t m_numBezierSteps                                    = DEFAULT_NUM_BEZIER_STEPS;
   static constexpr size_t DEFAULT_DOT_EVERY_NUM_BEZIER_STEPS = 10;
-  size_t m_dotEveryNumBezierSteps = DEFAULT_DOT_EVERY_NUM_BEZIER_STEPS;
+  size_t m_dotEveryNumBezierSteps                            = DEFAULT_DOT_EVERY_NUM_BEZIER_STEPS;
 
-  static constexpr size_t MIN_DOT_DIAMETER = 5;
-  static constexpr size_t MAX_DOT_DIAMETER = 21;
+  static constexpr size_t MIN_DOT_DIAMETER       = 5;
+  static constexpr size_t MAX_DOT_DIAMETER       = 21;
   static constexpr uint32_t DEFAULT_DOT_DIAMETER = 19;
-  uint32_t m_dotDiameter = DEFAULT_DOT_DIAMETER;
+  uint32_t m_dotDiameter                         = DEFAULT_DOT_DIAMETER;
   void DrawDot(Point2dInt centre, uint32_t diameter, const Pixel& color);
   SmallImageBitmaps::ImageNames m_currentBitmapName{SmallImageBitmaps::ImageNames::SPHERE};
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const ImageBitmap&;

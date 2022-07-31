@@ -20,7 +20,7 @@ constexpr _Tp midpoint(_Tp __a, _Tp __b) noexcept
   {
     using _Up = std::make_unsigned_t<_Tp>;
 
-    int __k = 1;
+    int __k  = 1;
     auto __m = static_cast<_Up>(__a);
     auto __M = static_cast<_Up>(__b);
     if (__a > __b)
@@ -35,8 +35,8 @@ constexpr _Tp midpoint(_Tp __a, _Tp __b) noexcept
   {
     constexpr _Tp __lo = std::numeric_limits<_Tp>::min() * 2;
     constexpr _Tp __hi = std::numeric_limits<_Tp>::max() / 2;
-    const _Tp __abs_a = __a < 0 ? -__a : __a;
-    const _Tp __abs_b = __b < 0 ? -__b : __b;
+    const _Tp __abs_a  = __a < 0 ? -__a : __a;
+    const _Tp __abs_b  = __b < 0 ? -__b : __b;
     if (__abs_a <= __hi && __abs_b <= __hi)
       return (__a + __b) / 2; // always correctly rounded
     if (__abs_a < __lo) // not safe to halve __a

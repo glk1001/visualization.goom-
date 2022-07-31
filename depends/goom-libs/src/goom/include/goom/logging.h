@@ -30,10 +30,10 @@ public:
 
   static auto GetLogger() -> Logging&;
   ~Logging();
-  Logging(const Logging&) = delete;
-  Logging(Logging&&) = delete;
+  Logging(const Logging&)                    = delete;
+  Logging(Logging&&)                         = delete;
   auto operator=(const Logging&) -> Logging& = delete;
-  auto operator=(Logging&&) -> Logging& = delete;
+  auto operator=(Logging&&) -> Logging&      = delete;
 
   auto SetLogFile(const std::string& logF) -> void;
   auto AddHandler(const std::string& name, const HandlerFunc& handlerFunc) -> void;
@@ -58,10 +58,10 @@ public:
 
 private:
   Logging() noexcept;
-  LogLevel m_cutoffFileLogLevel = LogLevel::INFO;
+  LogLevel m_cutoffFileLogLevel     = LogLevel::INFO;
   LogLevel m_cutoffHandlersLogLevel = LogLevel::INFO;
-  bool m_doDateTime = true;
-  bool m_doLogging = false;
+  bool m_doDateTime                 = true;
+  bool m_doLogging                  = false;
   std::string m_logFile{};
   std::vector<std::pair<std::string, HandlerFunc>> m_handlers{};
   std::vector<std::string> m_logEntries{};

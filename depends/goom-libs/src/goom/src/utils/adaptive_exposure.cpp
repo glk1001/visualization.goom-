@@ -9,7 +9,7 @@ namespace GOOM::UTILS
 
 void AdaptiveExposure::Start()
 {
-  m_updateNum = 0;
+  m_updateNum       = 0;
   m_currentExposure = INITIAL_EXPOSURE;
 }
 

@@ -15,9 +15,9 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 struct V3dFlt
 {
-  float x = 0.0;
-  float y = 0.0;
-  float z = 0.0;
+  float x     = 0.0;
+  float y     = 0.0;
+  float z     = 0.0;
   bool ignore = false;
 };
 
@@ -32,10 +32,10 @@ public:
              size_t numHeadNodes,
              const UTILS::MATH::IGoomRand& goomRand) noexcept;
   Tentacle3D(const Tentacle3D&) noexcept = delete;
-  Tentacle3D(Tentacle3D&&) noexcept = default;
+  Tentacle3D(Tentacle3D&&) noexcept      = default;
   ~Tentacle3D() noexcept;
   auto operator=(const Tentacle3D&) -> Tentacle3D& = delete;
-  auto operator=(Tentacle3D&&) -> Tentacle3D& = delete;
+  auto operator=(Tentacle3D&&) -> Tentacle3D&      = delete;
 
   auto Get2DTentacle() -> Tentacle2D& { return *m_tentacle; }
   [[nodiscard]] auto Get2DTentacle() const -> const Tentacle2D& { return *m_tentacle; }
@@ -69,13 +69,13 @@ private:
       m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
   COLOR::RandomColorMapsManager::ColorMapId m_lowColorMapID{
       m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
-  static constexpr float MIN_COLOR_SEGMENT_MIX_T = 0.4F;
-  static constexpr float MAX_COLOR_SEGMENT_MIX_T = 1.0F;
+  static constexpr float MIN_COLOR_SEGMENT_MIX_T     = 0.4F;
+  static constexpr float MAX_COLOR_SEGMENT_MIX_T     = 1.0F;
   static constexpr float DEFAULT_COLOR_SEGMENT_MIX_T = 0.8F;
-  float m_mainColorSegmentMixT = DEFAULT_COLOR_SEGMENT_MIX_T;
-  float m_lowColorSegmentMixT = DEFAULT_COLOR_SEGMENT_MIX_T;
-  bool m_reverseColorMix = false;
-  static constexpr float GAMMA = 1.0F / 2.0F;
+  float m_mainColorSegmentMixT                       = DEFAULT_COLOR_SEGMENT_MIX_T;
+  float m_lowColorSegmentMixT                        = DEFAULT_COLOR_SEGMENT_MIX_T;
+  bool m_reverseColorMix                             = false;
+  static constexpr float GAMMA                       = 1.0F / 2.0F;
   const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
                                              COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 

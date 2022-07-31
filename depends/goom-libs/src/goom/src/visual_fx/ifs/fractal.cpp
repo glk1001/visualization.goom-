@@ -62,7 +62,7 @@ auto Fractal::GetSpeed() const -> uint32_t
 auto Fractal::SetSpeed(const uint32_t val) -> void
 {
   m_prevSpeed = GetSpeed();
-  m_speed = val;
+  m_speed     = val;
   m_speedTransitionT.Reset();
 }
 
@@ -112,7 +112,7 @@ inline auto Fractal::UpdateIterationCount() -> void
 auto Fractal::DrawFractal() -> void
 {
   const auto& mainSimiGroup = m_similitudes.GetMainSimiGroup();
-  const auto numSimis = m_similitudes.GetNumSimis();
+  const auto numSimis       = m_similitudes.GetNumSimis();
 
   for (auto i = 0U; i < numSimis; ++i)
   {
@@ -140,7 +140,7 @@ inline auto Fractal::UpdateMainSimis() -> void
 auto Fractal::Trace(const uint32_t curDepth, const FltPoint& point0) -> void
 {
   const auto& mainSimiGroup = m_similitudes.GetMainSimiGroup();
-  const auto numSimis = m_similitudes.GetNumSimis();
+  const auto numSimis       = m_similitudes.GetNumSimis();
 
   for (auto i = 0U; i < numSimis; ++i)
   {

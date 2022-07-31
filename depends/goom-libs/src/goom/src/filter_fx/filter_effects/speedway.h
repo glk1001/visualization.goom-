@@ -80,7 +80,7 @@ inline auto Speedway::GetMode0SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
                                                 const NormalizedCoords& coords) const -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
-  auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
+  auto xAdd                            = SQ_DIST_FACTOR * sqDistFromZero;
   if (constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
@@ -98,8 +98,8 @@ inline auto Speedway::GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
 {
   auto xAdd = -1.0F;
 
-  static constexpr auto PROB_RANDOM_X_ADD = 0.5F;
-  static constexpr auto PROB_FLIP_X_ADD = 0.5F;
+  static constexpr auto PROB_RANDOM_X_ADD   = 0.5F;
+  static constexpr auto PROB_FLIP_X_ADD     = 0.5F;
   static constexpr auto PROB_NEGATIVE_X_ADD = 0.5F;
 
   if (m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
@@ -108,18 +108,18 @@ inline auto Speedway::GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
     static constexpr auto MAX_NEGATIVE_X_ADD = -0.5F;
     static constexpr auto MIN_POSITIVE_X_ADD = +0.5F;
     static constexpr auto MAX_POSITIVE_X_ADD = +1.9F;
-    xAdd = m_goomRand.ProbabilityOf(PROB_NEGATIVE_X_ADD)
-               ? m_goomRand.GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
-               : m_goomRand.GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
+    xAdd                                     = m_goomRand.ProbabilityOf(PROB_NEGATIVE_X_ADD)
+                                                   ? m_goomRand.GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
+                                                   : m_goomRand.GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
   }
   else if (m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
 
-  const auto xDiff = coords.GetX() - xAdd;
-  const auto sign = xDiff < 0.0F ? -1.0F : +1.0F;
-  const auto xWarp = 0.1F * (((sign * UTILS::MATH::Sq(xDiff)) / xAdd) + xAdd);
+  const auto xDiff     = coords.GetX() - xAdd;
+  const auto sign      = xDiff < 0.0F ? -1.0F : +1.0F;
+  const auto xWarp     = 0.1F * (((sign * UTILS::MATH::Sq(xDiff)) / xAdd) + xAdd);
   const auto amplitude = (1.0F - sqDistFromZero) / 4.0F;
 
   const auto xSpeedCoeff = amplitude * baseSpeedCoeffs.x * (m_params.xAmplitude * xWarp);
@@ -133,7 +133,7 @@ inline auto Speedway::GetMode2SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
                                                 const NormalizedCoords& coords) const -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
-  auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
+  auto xAdd                            = SQ_DIST_FACTOR * sqDistFromZero;
   if (constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;

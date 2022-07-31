@@ -10,8 +10,8 @@ using UTILS::MATH::IGoomRand;
 
 static constexpr auto X_DEFAULT_AMPLITUDE = 4.0F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 1.0F;
-static constexpr auto X_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{+01.0F, +08.0F};
-static constexpr auto Y_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{-10.0F, +10.0F};
+static constexpr auto X_AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{+01.0F, +08.0F};
+static constexpr auto Y_AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{-10.0F, +10.0F};
 
 static constexpr auto PROB_AMPLITUDE_EQUAL = 0.5F;
 

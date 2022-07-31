@@ -17,7 +17,7 @@ auto FilterBufferColorInfo::GetRegionInfoArray(
   auto regionRectArray = std::array<RegionInfo, NUM_REGIONS>{};
 
   auto regionIndex = 0UL;
-  auto y0 = 0UL;
+  auto y0          = 0UL;
   for (const auto& yBorder : yRegionBorders)
   {
     const auto y1 = yBorder;
@@ -126,8 +126,8 @@ inline auto FilterBufferColorInfo::GetRegionIndexOfPoint(const Point2dInt& point
   for (auto regionIndex = 0U; regionIndex < NUM_REGIONS; ++regionIndex)
   {
     const auto& regionInfo = m_regionInfoArray.at(regionIndex);
-    const auto y0 = static_cast<int32_t>(regionInfo.y0);
-    const auto y1 = static_cast<int32_t>(regionInfo.y1);
+    const auto y0          = static_cast<int32_t>(regionInfo.y0);
+    const auto y1          = static_cast<int32_t>(regionInfo.y1);
 
     if ((y0 <= point.y) && (point.y <= y1) && IsInXRegion(point.x, regionInfo.xRegionIndex))
     {

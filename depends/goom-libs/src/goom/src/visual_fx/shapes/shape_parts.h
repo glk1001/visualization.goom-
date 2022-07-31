@@ -42,11 +42,11 @@ public:
             const PluginInfo& goomInfo,
             COLOR::RandomColorMapsManager& colorMapsManager,
             const Params& params) noexcept;
-  ShapePart(const ShapePart&) noexcept = delete;
-  ShapePart(ShapePart&&) noexcept = default;
-  ~ShapePart() noexcept = default;
+  ShapePart(const ShapePart&) noexcept           = delete;
+  ShapePart(ShapePart&&) noexcept                = default;
+  ~ShapePart() noexcept                          = default;
   auto operator=(const ShapePart&) -> ShapePart& = delete;
-  auto operator=(ShapePart&&) -> ShapePart& = delete;
+  auto operator=(ShapePart&&) -> ShapePart&      = delete;
 
   auto SetWeightedMainColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
@@ -104,12 +104,12 @@ private:
   static constexpr int32_t EXTREME_MAX_DOT_RADIUS_MULTIPLIER = 5;
   const int32_t m_extremeMaxShapeDotRadius =
       EXTREME_MAX_DOT_RADIUS_MULTIPLIER * m_maxShapeDotRadius;
-  bool m_useExtremeMaxShapeDotRadius = false;
-  static constexpr uint32_t MIN_DOT_RADIUS_STEPS = 100;
-  static constexpr uint32_t MAX_DOT_RADIUS_STEPS = 200;
+  bool m_useExtremeMaxShapeDotRadius              = false;
+  static constexpr uint32_t MIN_DOT_RADIUS_STEPS  = 100;
+  static constexpr uint32_t MAX_DOT_RADIUS_STEPS  = 200;
   static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
-  UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_DOT_RADIUS_STEPS, MAX_DOT_RADIUS_STEPS,
-                                        INITIAL_DOT_RADIUS_SPEED};
+  UTILS::StepSpeed m_dotRadiusStepSpeed{
+      MIN_DOT_RADIUS_STEPS, MAX_DOT_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
   UTILS::TValue m_dotRadiusT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
                              m_dotRadiusStepSpeed.GetCurrentNumSteps()};
   [[nodiscard]] auto GetMaxDotRadius(bool varyRadius) const noexcept -> int32_t;
@@ -130,9 +130,9 @@ private:
 
   bool m_megaColorChangeMode = false;
   auto DoMegaColorChange() noexcept -> void;
-  static constexpr uint32_t MEGA_COLOR_CHANGE_ON_TIME = 100;
-  static constexpr uint32_t MEGA_COLOR_CHANGE_ON_FAILED_TIME = 10;
-  static constexpr uint32_t MEGA_COLOR_CHANGE_OFF_TIME = 1000;
+  static constexpr uint32_t MEGA_COLOR_CHANGE_ON_TIME         = 100;
+  static constexpr uint32_t MEGA_COLOR_CHANGE_ON_FAILED_TIME  = 10;
+  static constexpr uint32_t MEGA_COLOR_CHANGE_OFF_TIME        = 1000;
   static constexpr uint32_t MEGA_COLOR_CHANGE_OFF_FAILED_TIME = 20;
   UTILS::OnOffTimer m_megaColorChangeOnOffTimer{
       {
@@ -198,8 +198,8 @@ inline auto ShapePart::GetShapePath(const size_t shapePathNum) const noexcept ->
 
 inline auto ShapePart::ResetTs(const float val) noexcept -> void
 {
-  std::for_each(begin(m_shapePaths), end(m_shapePaths),
-                [&val](ShapePath& path) { path.ResetT(val); });
+  std::for_each(
+      begin(m_shapePaths), end(m_shapePaths), [&val](ShapePath& path) { path.ResetT(val); });
 }
 
 inline auto ShapePart::GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goomRand,

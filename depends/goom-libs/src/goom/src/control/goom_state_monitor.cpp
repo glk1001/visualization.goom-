@@ -57,15 +57,15 @@ auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::Na
       GetPair(PARAM_GROUP, "State", m_visualFx.GetCurrentStateName()),
       GetPair(PARAM_GROUP, "Color Maps", GetString(m_visualFx.GetCurrentColorMapsNames())),
       GetPair(PARAM_GROUP, "Filter Mode", m_filterSettingsService.GetCurrentFilterModeName()),
-      GetPair(PARAM_GROUP, "Previous Filter Mode",
-              m_filterSettingsService.GetPreviousFilterModeName()),
+      GetPair(
+          PARAM_GROUP, "Previous Filter Mode", m_filterSettingsService.GetPreviousFilterModeName()),
   };
 }
 
 auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameValuePairs
 {
   static constexpr auto PARAM_GROUP = "Shader";
-  const auto& lastShaderEffects = m_visualFx.GetLastShaderEffects();
+  const auto& lastShaderEffects     = m_visualFx.GetLastShaderEffects();
   return {
       GetPair(PARAM_GROUP, "Exposure", m_visualFx.GetCurrentExposure()),
       GetPair(PARAM_GROUP, "Contrast", lastShaderEffects.contrast),
@@ -92,7 +92,8 @@ inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> UTILS::
       m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
   return {
       GetPair(
-          PARAM_GROUP, "Middle",
+          PARAM_GROUP,
+          "Middle",
           Point2dInt{filterEffectsSettings.zoomMidpoint.x, filterEffectsSettings.zoomMidpoint.y}),
   };
 }

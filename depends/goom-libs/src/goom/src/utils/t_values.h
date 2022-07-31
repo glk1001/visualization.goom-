@@ -9,7 +9,7 @@ namespace GOOM::UTILS
 class TValue
 {
 public:
-  static constexpr float T_EPSILON = 1.0e-07F;
+  static constexpr float T_EPSILON   = 1.0e-07F;
   static constexpr float MAX_T_VALUE = 1.0F + T_EPSILON;
   struct DelayPoint
   {
@@ -34,10 +34,10 @@ public:
          const std::vector<DelayPoint>& delayPoints,
          float startingT = 0.0F) noexcept;
   TValue(const TValue&) noexcept = default;
-  TValue(TValue&&) noexcept = default;
+  TValue(TValue&&) noexcept      = default;
   ~TValue() noexcept;
   auto operator=(const TValue&) noexcept -> TValue& = delete;
-  auto operator=(TValue&&) noexcept -> TValue& = delete;
+  auto operator=(TValue&&) noexcept -> TValue&      = delete;
 
   [[nodiscard]] auto GetStepType() const noexcept -> StepType;
 
@@ -75,8 +75,8 @@ private:
                                                                       : Boundaries::START};
   const std::vector<DelayPoint> m_delayPoints;
   std::vector<DelayPoint> m_currentDelayPoints{m_delayPoints};
-  bool m_startedDelay = false;
-  bool m_justFinishedDelay = false;
+  bool m_startedDelay        = false;
+  bool m_justFinishedDelay   = false;
   uint32_t m_delayPointCount = 0;
   [[nodiscard]] auto IsInDelayZone() noexcept -> bool;
   [[nodiscard]] auto IsInThisDelayZone(const DelayPoint& delayPoint) const noexcept -> bool;
@@ -141,9 +141,9 @@ inline auto TValue::IsStopped() const noexcept -> bool
 
 inline auto TValue::Reset(const float t) noexcept -> void
 {
-  m_t = t;
-  m_currentStep = m_stepSize;
-  m_startedDelay = false;
+  m_t                 = t;
+  m_currentStep       = m_stepSize;
+  m_startedDelay      = false;
   m_justFinishedDelay = false;
 }
 

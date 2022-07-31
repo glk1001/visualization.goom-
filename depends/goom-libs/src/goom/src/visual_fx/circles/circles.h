@@ -62,7 +62,8 @@ private:
 inline auto Circles::SetNewCircleCentreAndRadius(const Point2dInt& centre,
                                                  const float radius) noexcept -> void
 {
-  std::for_each(begin(m_circles), end(m_circles),
+  std::for_each(begin(m_circles),
+                end(m_circles),
                 [&centre, &radius](Circle& circle)
                 { circle.SetNewCircleCentreAndRadius(centre, radius); });
 }

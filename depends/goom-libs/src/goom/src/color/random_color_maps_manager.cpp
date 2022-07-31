@@ -35,13 +35,13 @@ auto RandomColorMapsManager::AddColorMapInfo(
 auto RandomColorMapsManager::UpdateColorMapInfo(const ColorMapId id,
                                                 const ColorMapInfo& info) noexcept -> void
 {
-  m_infoList.at(id()) = info;
+  m_infoList.at(id())     = info;
   m_colorMapPtrs.at(id()) = info.colorMaps->GetRandomColorMapPtr(info.colorMapTypes);
 }
 
 auto RandomColorMapsManager::RandomizeColorMaps(const size_t id) noexcept -> void
 {
-  const auto& info = m_infoList.at(id);
+  const auto& info      = m_infoList.at(id);
   m_colorMapPtrs.at(id) = info.colorMaps->GetRandomColorMapPtr(info.colorMapTypes);
 }
 

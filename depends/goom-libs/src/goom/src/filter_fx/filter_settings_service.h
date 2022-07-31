@@ -57,10 +57,10 @@ public:
                         const std::string& resourcesDirectory,
                         const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect);
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
-  FilterSettingsService(FilterSettingsService&&) noexcept = delete;
+  FilterSettingsService(FilterSettingsService&&) noexcept      = delete;
   virtual ~FilterSettingsService() noexcept;
   auto operator=(const FilterSettingsService&) -> FilterSettingsService& = delete;
-  auto operator=(FilterSettingsService&&) -> FilterSettingsService& = delete;
+  auto operator=(FilterSettingsService&&) -> FilterSettingsService&      = delete;
 
   auto Start() -> void;
   auto NewCycle() -> void;
@@ -106,8 +106,8 @@ protected:
   virtual auto UpdateFilterSettingsFromExtraEffects() -> void;
 
 private:
-  ZoomFilterMode m_filterMode = ZoomFilterMode::NORMAL_MODE;
-  ZoomFilterMode m_previousFilterMode = ZoomFilterMode::NORMAL_MODE;
+  ZoomFilterMode m_filterMode             = ZoomFilterMode::NORMAL_MODE;
+  ZoomFilterMode m_previousFilterMode     = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
 
   auto SetRandomSettingsForNewFilterMode() -> void;
@@ -133,12 +133,12 @@ private:
       const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect)
       -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
 
-  static constexpr uint32_t DEFAULT_ZOOM_MID_X = 16;
-  static constexpr uint32_t DEFAULT_ZOOM_MID_Y = 1;
+  static constexpr uint32_t DEFAULT_ZOOM_MID_X     = 16;
+  static constexpr uint32_t DEFAULT_ZOOM_MID_Y     = 1;
   static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
-  static constexpr float DEFAULT_SWITCH_MULT = 29.0F / 30.0F;
-  static constexpr float DEFAULT_MAX_SPEED_COEFF = 2.01F;
-  static constexpr float MAX_MAX_SPEED_COEFF = 4.01F;
+  static constexpr float DEFAULT_SWITCH_MULT       = 29.0F / 30.0F;
+  static constexpr float DEFAULT_MAX_SPEED_COEFF   = 2.01F;
+  static constexpr float MAX_MAX_SPEED_COEFF       = 4.01F;
   ZoomFilterSettings m_filterSettings;
   const UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
 
@@ -238,7 +238,7 @@ inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode
   m_filterEffectsSettingsHaveChanged = true;
 
   m_previousFilterMode = m_filterMode;
-  m_filterMode = filterMode;
+  m_filterMode         = filterMode;
 
   SetRandomSettingsForNewFilterMode();
 }
@@ -248,7 +248,7 @@ inline auto FilterSettingsService::SetNewRandomFilter() -> void
   m_filterEffectsSettingsHaveChanged = true;
 
   m_previousFilterMode = m_filterMode;
-  m_filterMode = GetNewRandomMode();
+  m_filterMode         = GetNewRandomMode();
 
   SetRandomSettingsForNewFilterMode();
 }
@@ -259,7 +259,7 @@ inline auto FilterSettingsService::TurnOffRotation() -> void
   {
     return;
   }
-  m_filterEffectsSettingsHaveChanged = true;
+  m_filterEffectsSettingsHaveChanged                    = true;
   m_filterSettings.filterEffectsSettings.rotationEffect = false;
 }
 

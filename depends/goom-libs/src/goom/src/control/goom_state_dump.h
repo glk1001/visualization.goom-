@@ -25,10 +25,10 @@ public:
                 const GoomMusicSettingsReactor& musicSettingsReactor,
                 const FILTER_FX::FilterSettingsService& filterSettingsService) noexcept;
   GoomStateDump(const GoomStateDump&) noexcept = delete;
-  GoomStateDump(GoomStateDump&&) noexcept = delete;
+  GoomStateDump(GoomStateDump&&) noexcept      = delete;
   ~GoomStateDump() noexcept;
   auto operator=(const GoomStateDump&) -> GoomStateDump& = delete;
-  auto operator=(GoomStateDump&&) -> GoomStateDump& = delete;
+  auto operator=(GoomStateDump&&) -> GoomStateDump&      = delete;
 
   auto SetSongTitle(const std::string& songTitle) noexcept -> void;
   auto SetGoomSeed(uint64_t goomSeed) noexcept -> void;

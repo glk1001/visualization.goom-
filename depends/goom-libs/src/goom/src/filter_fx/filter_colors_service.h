@@ -35,7 +35,7 @@ private:
   FXBuffSettings m_buffSettings{};
 
   static constexpr uint32_t MAX_SUM_COEFFS = channel_limits<uint32_t>::max() + 1;
-  uint32_t m_coeffsAndBrightnessDivisor = MAX_SUM_COEFFS;
+  uint32_t m_coeffsAndBrightnessDivisor    = MAX_SUM_COEFFS;
 
   [[nodiscard]] auto GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
                                       const NeighborhoodPixelArray& pixels) const noexcept -> Pixel;
@@ -133,7 +133,9 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
   const auto newG = static_cast<PixelChannelType>(multG / m_coeffsAndBrightnessDivisor);
   const auto newB = static_cast<PixelChannelType>(multB / m_coeffsAndBrightnessDivisor);
 
-  return Pixel{Pixel::RGB{newR, newG, newB, MAX_ALPHA}};
+  return Pixel{
+      Pixel::RGB{newR, newG, newB, MAX_ALPHA}
+  };
 }
 
 } // namespace GOOM::FILTER_FX

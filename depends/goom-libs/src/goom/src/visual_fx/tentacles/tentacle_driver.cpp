@@ -87,7 +87,7 @@ auto TentacleDriver::GetTentacleParams(const size_t numTentacles,
                                        const std::vector<IterParamsGroup>& iterParamsGroups)
     -> std::vector<IterationParams>
 {
-  auto tentacleParams = std::vector<IterationParams>{};
+  auto tentacleParams        = std::vector<IterationParams>{};
   const auto numInParamGroup = numTentacles / iterParamsGroups.size();
 
   // IMPORTANT: Dividing the numTentacles into param groups makes the tentacle movements
@@ -95,7 +95,7 @@ auto TentacleDriver::GetTentacleParams(const size_t numTentacles,
   //            right. For the moment this seems best.
   const auto tStep = 1.0F / static_cast<float>(numInParamGroup - 1);
   auto paramsIndex = 0U;
-  auto t = 0.0F;
+  auto t           = 0.0F;
   tentacleParams.reserve(numTentacles);
   for (auto i = 0U; i < numTentacles; ++i)
   {
@@ -128,11 +128,14 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
 
     // To hide the annoying flapping tentacle head, make near the head very dark.
     static constexpr auto INITIAL_HEAD_POS = V3dFlt{0, 0, 0};
-    const auto headMainColor = Pixel{5, 5, 5, MAX_ALPHA};
-    const auto headLowColor = headMainColor;
-    auto tentacle =
-        Tentacle3D{std::move(tentacle2D),     headMainColor, headLowColor, INITIAL_HEAD_POS,
-                   Tentacle2D::MIN_NUM_NODES, goomRand};
+    const auto headMainColor               = Pixel{5, 5, 5, MAX_ALPHA};
+    const auto headLowColor                = headMainColor;
+    auto tentacle                          = Tentacle3D{std::move(tentacle2D),
+                               headMainColor,
+                               headLowColor,
+                               INITIAL_HEAD_POS,
+                               Tentacle2D::MIN_NUM_NODES,
+                               goomRand};
 
     tentacles.emplace_back(std::move(tentacle));
   }
@@ -145,14 +148,14 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
 auto TentacleDriver::IterParamsGroup::GetNextIterationParams(const float t) const
     -> TentacleDriver::IterationParams
 {
-  static constexpr auto MIN_NUM_NODES_FACTOR = 1.0F;
-  static constexpr auto MAX_NUM_NODES_FACTOR = 1.1F;
-  static constexpr auto MIN_PREV_Y_WEIGHT_FACTOR = 1.0F;
-  static constexpr auto MAX_PREV_Y_WEIGHT_FACTOR = 1.1F;
+  static constexpr auto MIN_NUM_NODES_FACTOR                 = 1.0F;
+  static constexpr auto MAX_NUM_NODES_FACTOR                 = 1.1F;
+  static constexpr auto MIN_PREV_Y_WEIGHT_FACTOR             = 1.0F;
+  static constexpr auto MAX_PREV_Y_WEIGHT_FACTOR             = 1.1F;
   static constexpr auto MIN_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR = 1.0F;
   static constexpr auto MAX_ITER_ZERO_Y_VAL_WAVE_FREQ_FACTOR = 1.1F;
-  static constexpr auto MIN_LENGTH = 1.0F;
-  static constexpr auto MAX_LENGTH_FACTOR = 1.1F;
+  static constexpr auto MIN_LENGTH                           = 1.0F;
+  static constexpr auto MAX_LENGTH_FACTOR                    = 1.1F;
 
   auto params = IterationParams{
       /* .numNodes = */
@@ -189,9 +192,14 @@ auto TentacleDriver::CreateNewTentacle2D(const IGoomRand& goomRand,
   const auto tent2dXMax = TENT2D_X_MIN + static_cast<double>(tentacleLen);
   assert(tent2dXMax >= 1.0);
 
-  auto tentacle =
-      std::make_unique<Tentacle2D>(id, params.numNodes, TENT2D_X_MIN, tent2dXMax, TENT2D_Y_MIN,
-                                   TENT2D_Y_MAX, params.prevYWeight, 1.0F - params.prevYWeight);
+  auto tentacle = std::make_unique<Tentacle2D>(id,
+                                               params.numNodes,
+                                               TENT2D_X_MIN,
+                                               tent2dXMax,
+                                               TENT2D_Y_MIN,
+                                               TENT2D_Y_MAX,
+                                               params.prevYWeight,
+                                               1.0F - params.prevYWeight);
 
   tentacle->SetDoDamping(true);
 
@@ -244,9 +252,9 @@ auto TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
     const auto& head = tentacle.GetHead();
     if (std::fabs(head.x) <= Tentacle3D::HEAD_SMALL_X)
     {
-      auto& tentacle2D = tentacle.Get2DTentacle();
-      const auto xMin = tentacle2D.GetXMin();
-      const auto xMax = tentacle2D.GetXMax();
+      auto& tentacle2D   = tentacle.Get2DTentacle();
+      const auto xMin    = tentacle2D.GetXMin();
+      const auto xMax    = tentacle2D.GetXMax();
       const auto newXMax = xMin + (1.0 * (xMax - xMin));
       tentacle2D.SetXDimensions(xMin, newXMax);
       static constexpr auto NUM_NODE_FACTOR = 6U;
@@ -304,7 +312,7 @@ auto TentacleDriver::Update() -> void
 
   for (auto i = 0U; i < m_tentacles.size(); ++i)
   {
-    auto& tentacle = m_tentacles[i];
+    auto& tentacle   = m_tentacles[i];
     auto& tentacle2D = tentacle.Get2DTentacle();
 
     const auto iterZeroYVal = m_tentacleParams[i].iterZeroYValWave.GetNext();

@@ -19,7 +19,7 @@ namespace GOOM::UTILS::GRAPHICS
 
 auto ImageBitmap::Resize(const size_t width, const size_t height) noexcept -> void
 {
-  m_width = static_cast<uint32_t>(width);
+  m_width  = static_cast<uint32_t>(width);
   m_height = static_cast<uint32_t>(height);
   m_buff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
 }
@@ -51,9 +51,9 @@ void ImageBitmap::Load(const std::string& imageFilename)
 
       if (0 == alpha)
       {
-        red = 0;
+        red   = 0;
         green = 0;
-        blue = 0;
+        blue  = 0;
       }
 
       SetPixel(x, y, RGB{/*.r = */ red, /*.g = */ green, /*.b = */ blue, /*.a = */ alpha});

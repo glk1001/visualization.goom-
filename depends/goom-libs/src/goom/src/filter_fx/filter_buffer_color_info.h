@@ -31,15 +31,15 @@ public:
 
   private:
     const std::array<size_t, NUM_X_REGIONS>& m_xRegionBorders;
-    size_t m_currentX = 0;
+    size_t m_currentX            = 0;
     size_t m_currentXRegionIndex = 0;
 
     struct Counts
     {
       uint32_t numNonzeroInRow = 0;
-      uint32_t sumRedInRow = 0;
-      uint32_t sumGreenInRow = 0;
-      uint32_t sumBlueInRow = 0;
+      uint32_t sumRedInRow     = 0;
+      uint32_t sumGreenInRow   = 0;
+      uint32_t sumBlueInRow    = 0;
     };
     std::array<Counts, NUM_X_REGIONS> m_xRegionCountsArray{};
     [[nodiscard]] auto GetXRegionTotals() const noexcept -> Counts;
@@ -119,7 +119,7 @@ auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length) noexcept
   const auto regionSize = length / NumRegions;
 
   auto regionBorders = std::array<size_t, NumRegions>{};
-  auto border = regionSize - 1;
+  auto border        = regionSize - 1;
   for (auto& regionBorder : regionBorders)
   {
     regionBorder = border;
@@ -143,15 +143,15 @@ inline FilterBufferColorInfo::FilterBufferRowColorInfo::FilterBufferRowColorInfo
 
 inline auto FilterBufferColorInfo::FilterBufferRowColorInfo::Reset() noexcept -> void
 {
-  m_currentX = 0;
+  m_currentX            = 0;
   m_currentXRegionIndex = 0;
 
   for (auto& regionCounts : m_xRegionCountsArray)
   {
     regionCounts.numNonzeroInRow = 0;
-    regionCounts.sumRedInRow = 0;
-    regionCounts.sumGreenInRow = 0;
-    regionCounts.sumBlueInRow = 0;
+    regionCounts.sumRedInRow     = 0;
+    regionCounts.sumGreenInRow   = 0;
+    regionCounts.sumBlueInRow    = 0;
   }
 }
 

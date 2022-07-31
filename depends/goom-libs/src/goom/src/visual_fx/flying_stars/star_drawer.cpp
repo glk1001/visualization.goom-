@@ -35,15 +35,15 @@ auto StarDrawer::DrawStar(const Star& star,
                           const float speedFactor,
                           const DrawFunc& drawFunc) noexcept -> void
 {
-  const auto tAge = star.GetAge() / star.GetMaxAge();
+  const auto tAge                   = star.GetAge() / star.GetMaxAge();
   static constexpr auto EXTRA_T_AGE = 0.5F;
-  const auto tAgeMax = std::min(tAge + EXTRA_T_AGE, 1.0F);
+  const auto tAgeMax                = std::min(tAge + EXTRA_T_AGE, 1.0F);
 
-  const auto brightness = GetBrightness(tAge);
-  const auto partMultiplier = GetPartMultiplier();
+  const auto brightness              = GetBrightness(tAge);
+  const auto partMultiplier          = GetPartMultiplier();
   const auto [numParts, elementSize] = GetNumPartsAndElementSize(tAge);
 
-  auto tAgePart = TValue{TValue::StepType::SINGLE_CYCLE, numParts};
+  auto tAgePart     = TValue{TValue::StepType::SINGLE_CYCLE, numParts};
   const auto point0 = star.GetStartPos().ToInt();
 
   auto point1 = point0;
@@ -51,13 +51,13 @@ auto StarDrawer::DrawStar(const Star& star,
   {
     const auto thisPartFraction = static_cast<float>(j) / static_cast<float>(numParts);
     const auto thisPartVelocity = partMultiplier * (thisPartFraction * star.GetVelocity());
-    const auto twistFrequency = speedFactor * thisPartVelocity;
+    const auto twistFrequency   = speedFactor * thisPartVelocity;
 
     const auto point2 = point0 - GetPointVelocity(twistFrequency, thisPartVelocity);
 
-    const auto t = STD20::lerp(tAge, tAgeMax, tAgePart());
+    const auto t                  = STD20::lerp(tAge, tAgeMax, tAgePart());
     const auto thisPartBrightness = thisPartFraction * brightness;
-    const auto thisPartColors = m_getMixedColorsFunc(thisPartBrightness, star, t);
+    const auto thisPartColors     = m_getMixedColorsFunc(thisPartBrightness, star, t);
 
     drawFunc(point1, point2, elementSize, thisPartColors);
 
@@ -77,8 +77,8 @@ inline auto StarDrawer::GetPointVelocity(const Vec2dFlt& twistFrequency,
 inline auto StarDrawer::GetBrightness(const float tAge) noexcept -> float
 {
   static constexpr auto BRIGHTNESS_FACTOR = 10.0F;
-  static constexpr auto BRIGHTNESS_MIN = 0.2F;
-  const auto ageBrightness = (0.8F * std::fabs(0.10F - tAge)) / 0.25F;
+  static constexpr auto BRIGHTNESS_MIN    = 0.2F;
+  const auto ageBrightness                = (0.8F * std::fabs(0.10F - tAge)) / 0.25F;
 
   return BRIGHTNESS_FACTOR * (BRIGHTNESS_MIN + ageBrightness);
 }
@@ -172,7 +172,7 @@ inline auto StarDrawer::DrawParticleDot(const Point2dInt point1,
       [&colors]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
   { return GetColorMultiply(bgnd, colors[1]); };
 
-  const auto& bitmap = GetImageBitmap(elementSize);
+  const auto& bitmap   = GetImageBitmap(elementSize);
   const auto getColors = std::vector<IGoomDraw::GetBitmapColorFunc>{getMainColor, getLowColor};
   m_draw.Bitmap(point1, bitmap, getColors);
 }

@@ -147,7 +147,7 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
 
   static constexpr auto SHAPE0_MIN_DOT_RADIUS = 10;
   static constexpr auto SHAPE0_MAX_DOT_RADIUS = 20;
-  static constexpr auto SHAPE0_MAX_NUM_PATHS = 6U;
+  static constexpr auto SHAPE0_MAX_NUM_PATHS  = 6U;
 
   return {
       {
@@ -155,9 +155,14 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
        m_goomRand,
        m_goomInfo,
        m_colorMapsManager,
-       {MIN_RADIUS_FRACTION, MAX_RADIUS_FRACTION, SHAPE0_MIN_DOT_RADIUS,
-       SHAPE0_MAX_DOT_RADIUS, SHAPE0_MAX_NUM_PATHS, initialShapeZoomMidpoints.at(0),
-       MIN_NUM_SHAPE_PATH_STEPS, MAX_NUM_SHAPE_PATH_STEPS}},
+       {MIN_RADIUS_FRACTION,
+       MAX_RADIUS_FRACTION,
+       SHAPE0_MIN_DOT_RADIUS,
+       SHAPE0_MAX_DOT_RADIUS,
+       SHAPE0_MAX_NUM_PATHS,
+       initialShapeZoomMidpoints.at(0),
+       MIN_NUM_SHAPE_PATH_STEPS,
+       MAX_NUM_SHAPE_PATH_STEPS}},
        /**
        Shape{m_goomRand,
        m_goomInfo,
@@ -204,8 +209,9 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
   }
 
   static constexpr auto PROB_VARY_DOT_RADIUS = 0.1F;
-  const auto varyDotRadius = m_goomRand.ProbabilityOf(PROB_VARY_DOT_RADIUS);
-  std::for_each(begin(m_shapes), end(m_shapes),
+  const auto varyDotRadius                   = m_goomRand.ProbabilityOf(PROB_VARY_DOT_RADIUS);
+  std::for_each(begin(m_shapes),
+                end(m_shapes),
                 [&varyDotRadius](Shape& shape) { shape.SetVaryDotRadius(varyDotRadius); });
 }
 
@@ -214,7 +220,8 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> 
   const auto newMinNumShapePathSteps = m_numIncrementsPerUpdate * MIN_NUM_SHAPE_PATH_STEPS;
   const auto newMaxNumShapePathSteps = m_numIncrementsPerUpdate * MAX_NUM_SHAPE_PATH_STEPS;
   std::for_each(
-      begin(m_shapes), end(m_shapes),
+      begin(m_shapes),
+      end(m_shapes),
       [&newMinNumShapePathSteps, &newMaxNumShapePathSteps](Shape& shape)
       { shape.SetShapePathsMinMaxNumSteps(newMinNumShapePathSteps, newMaxNumShapePathSteps); });
 }
@@ -222,7 +229,7 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> 
 inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
   const auto adjustedZoomMidpoint = GetAdjustedZoomMidpoint(zoomMidpoint);
-  const auto shapeZoomMidpoints = GetShapeZoomMidpoints(adjustedZoomMidpoint);
+  const auto shapeZoomMidpoints   = GetShapeZoomMidpoints(adjustedZoomMidpoint);
 
   for (auto i = 0U; i < NUM_SHAPES; ++i)
   {
@@ -235,8 +242,8 @@ inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoi
 auto ShapesFx::ShapesFxImpl::GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept
     -> Point2dInt
 {
-  const auto xMax = static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - 1);
-  const auto yMax = static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - 1);
+  const auto xMax    = static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - 1);
+  const auto yMax    = static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - 1);
   const auto xCutoff = xMax / 5;
   const auto yCutoff = yMax / 5;
 
@@ -265,7 +272,7 @@ auto ShapesFx::ShapesFxImpl::GetRadialZoomMidpoints() const noexcept
   shapeZoomMidpoints.at(0) = m_screenMidPoint;
 
   const auto radius = static_cast<float>(m_screenMidPoint.y) / 3.0F;
-  auto angleStep = TValue{TValue::StepType::SINGLE_CYCLE, NUM_SHAPES - 1};
+  auto angleStep    = TValue{TValue::StepType::SINGLE_CYCLE, NUM_SHAPES - 1};
 
   for (auto i = 1U; i < NUM_SHAPES; ++i)
   {
@@ -288,8 +295,8 @@ auto ShapesFx::ShapesFxImpl::GetRandomZoomMidpoints(const Point2dInt& zoomMidpoi
   shapeZoomMidpoints.at(0) = zoomMidpoint;
 
   static constexpr auto MARGIN = 20;
-  const auto width = static_cast<int32_t>(m_goomInfo.GetScreenInfo().width) - MARGIN;
-  const auto height = static_cast<int32_t>(m_goomInfo.GetScreenInfo().height) - MARGIN;
+  const auto width             = static_cast<int32_t>(m_goomInfo.GetScreenInfo().width) - MARGIN;
+  const auto height            = static_cast<int32_t>(m_goomInfo.GetScreenInfo().height) - MARGIN;
 
   for (auto i = 1U; i < NUM_SHAPES; ++i)
   {
@@ -304,7 +311,8 @@ inline auto ShapesFx::ShapesFxImpl::Start() noexcept -> void
 {
   UpdateShapeEffects();
 
-  std::for_each(begin(m_shapes), end(m_shapes),
+  std::for_each(begin(m_shapes),
+                end(m_shapes),
                 [](Shape& shape)
                 {
                   shape.SetFixedShapeNumSteps();

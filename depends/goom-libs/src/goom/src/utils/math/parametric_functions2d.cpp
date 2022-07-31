@@ -77,7 +77,7 @@ HypotrochoidFunction::HypotrochoidFunction(const Vec2dFlt& centrePos,
 
 auto HypotrochoidFunction::GetNumCusps(const float bigR, const float smallR) noexcept -> float
 {
-  const auto intBigR = static_cast<int32_t>(bigR + SMALL_FLOAT);
+  const auto intBigR   = static_cast<int32_t>(bigR + SMALL_FLOAT);
   const auto intSmallR = static_cast<int32_t>(smallR + SMALL_FLOAT);
 
   if ((0 == intBigR) || (0 == intSmallR))

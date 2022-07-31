@@ -96,7 +96,7 @@ inline auto Wave::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
 inline auto Wave::GetSpeedAdd(const float sqDistFromZero, const WaveEffect waveEffect) const
     -> float
 {
-  const auto angle = m_params.freqFactor * sqDistFromZero;
+  const auto angle   = m_params.freqFactor * sqDistFromZero;
   const auto reducer = std::exp(-m_params.reducerCoeff * sqDistFromZero);
   return reducer * m_params.amplitude * GetPeriodicPart(waveEffect, angle, m_params.periodicFactor);
 }

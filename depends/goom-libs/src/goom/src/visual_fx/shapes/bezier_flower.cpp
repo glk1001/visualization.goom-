@@ -13,7 +13,7 @@ auto BezierFlower::Draw(const Point2dInt& origin,
                         const uint32_t numPetals,
                         const uint32_t petalOffset) -> void
 {
-  auto petal = GetBezierPetal(origin, petalOffset);
+  auto petal         = GetBezierPetal(origin, petalOffset);
   const auto originX = static_cast<float>(origin.x);
   const auto originY = static_cast<float>(origin.y);
 
@@ -36,8 +36,8 @@ auto BezierFlower::Draw(const Point2dInt& origin,
 inline auto BezierFlower::GetBezierPetal(const Point2dInt& origin, const uint32_t offset)
     -> Bezier::Bezier<3>
 {
-  const auto originX = static_cast<float>(origin.x);
-  const auto originY = static_cast<float>(origin.y);
+  const auto originX   = static_cast<float>(origin.x);
+  const auto originY   = static_cast<float>(origin.y);
   const auto fltOffset = static_cast<float>(offset);
 
   const auto petal = Bezier::Bezier<3>{
@@ -66,7 +66,7 @@ void PetalColoring::SetNumPetals(const uint32_t numPetals)
     if (0 == (i % 5))
     {
       m_lineColorMaps[i] = &randomColorMaps.GetRandomColorMap();
-      m_dotColorMaps[i] = &randomColorMaps.GetRandomColorMap();
+      m_dotColorMaps[i]  = &randomColorMaps.GetRandomColorMap();
     }
   }
 }

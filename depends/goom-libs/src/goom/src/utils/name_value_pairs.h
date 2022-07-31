@@ -14,7 +14,7 @@
 namespace GOOM::UTILS
 {
 
-using NameValuePair = std::pair<std::string, std::string>;
+using NameValuePair  = std::pair<std::string, std::string>;
 using NameValuePairs = std::vector<NameValuePair>;
 
 [[nodiscard]] inline auto GetNameValueString(const NameValuePair& pair) -> std::string

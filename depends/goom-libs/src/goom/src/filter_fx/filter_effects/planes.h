@@ -14,11 +14,11 @@ class Planes
 {
 public:
   explicit Planes(const UTILS::MATH::IGoomRand& goomRand) noexcept;
-  Planes(const Planes&) noexcept = delete;
-  Planes(Planes&&) noexcept = delete;
-  virtual ~Planes() noexcept = default;
+  Planes(const Planes&) noexcept           = delete;
+  Planes(Planes&&) noexcept                = delete;
+  virtual ~Planes() noexcept               = default;
   auto operator=(const Planes&) -> Planes& = delete;
-  auto operator=(Planes&&) -> Planes& = delete;
+  auto operator=(Planes&&) -> Planes&      = delete;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
   [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;

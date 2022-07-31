@@ -79,9 +79,9 @@ public:
 
 private:
   static constexpr uint32_t INITIAL_NUM_UPDATES_ESTIMATE = 5 * 60 * 60 * 25;
-  static constexpr uint32_t EXTRA_NUM_UPDATES_ESTIMATE = 1 * 60 * 60 * 25;
-  uint32_t m_numUpdatesEstimate = INITIAL_NUM_UPDATES_ESTIMATE;
-  uint32_t m_updateNum = 0;
+  static constexpr uint32_t EXTRA_NUM_UPDATES_ESTIMATE   = 1 * 60 * 60 * 25;
+  uint32_t m_numUpdatesEstimate                          = INITIAL_NUM_UPDATES_ESTIMATE;
+  uint32_t m_updateNum                                   = 0;
 
   std::vector<uint32_t> m_updateTimesInMs{};
   std::vector<uint8_t> m_goomStates{};
@@ -128,8 +128,8 @@ auto GoomStateDump::Start() noexcept -> void
 
 auto GoomStateDump::AddCurrentState() noexcept -> void
 {
-  const auto timeNow = std::chrono::high_resolution_clock::now();
-  const Ms diff = std::chrono::duration_cast<Ms>(timeNow - m_prevTimeHiRes);
+  const auto timeNow          = std::chrono::high_resolution_clock::now();
+  const Ms diff               = std::chrono::duration_cast<Ms>(timeNow - m_prevTimeHiRes);
   const auto timeOfUpdateInMs = static_cast<uint32_t>(diff.count());
   m_cumulativeState->AddCurrentUpdateTime(timeOfUpdateInMs);
   m_prevTimeHiRes = timeNow;
@@ -167,7 +167,8 @@ auto GoomStateDump::DumpData(const std::string& directory) -> void
 {
   if (m_cumulativeState->GetNumUpdates() < MIN_TIMELINE_ELEMENTS_TO_DUMP)
   {
-    LogWarn("Not dumping. Too few goom updates: {} < {}.", m_cumulativeState->GetNumUpdates(),
+    LogWarn("Not dumping. Too few goom updates: {} < {}.",
+            m_cumulativeState->GetNumUpdates(),
             MIN_TIMELINE_ELEMENTS_TO_DUMP);
     return;
   }

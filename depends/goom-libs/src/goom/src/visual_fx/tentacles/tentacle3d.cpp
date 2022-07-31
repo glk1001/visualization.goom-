@@ -75,9 +75,9 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
     return GetMixedColors(nodeNum, mainColor, lowColor);
   }
 
-  const auto [mixedMainColor, mixedLowColor] = GetMixedColors(nodeNum, mainColor, lowColor);
-  const auto mixedMainColorPixel = mixedMainColor;
-  const auto mixedLowColorPixel = mixedLowColor;
+  const auto [mixedMainColor, mixedLowColor]  = GetMixedColors(nodeNum, mainColor, lowColor);
+  const auto mixedMainColorPixel              = mixedMainColor;
+  const auto mixedLowColorPixel               = mixedLowColor;
   static constexpr auto LOW_BRIGHTNESS_FACTOR = 1.8F;
   return std::make_pair(
       m_colorAdjust.GetAdjustment(brightness, mixedMainColorPixel),
@@ -85,8 +85,8 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
 }
 
 auto Tentacle3D::GetMixedColors(const size_t nodeNum,
-                                       const Pixel& mainColor,
-                                       const Pixel& lowColor) const -> std::pair<Pixel, Pixel>
+                                const Pixel& mainColor,
+                                const Pixel& lowColor) const -> std::pair<Pixel, Pixel>
 {
   if (nodeNum < GetNumHeadNodes())
   {
@@ -100,7 +100,7 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
   }
 
   const auto segmentMainColor = m_colorMapsManager.GetColorMap(m_mainColorMapID).GetColor(t);
-  const auto segmentLowColor = m_colorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
+  const auto segmentLowColor  = m_colorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
   const auto mixedMainColor =
       GetFinalMixedColor(mainColor, segmentMainColor, m_mainColorSegmentMixT);
   const auto mixedLowColor = GetFinalMixedColor(lowColor, segmentLowColor, m_lowColorSegmentMixT);
@@ -122,7 +122,7 @@ inline auto Tentacle3D::GetMixedHeadColors(const size_t nodeNum,
   const auto t =
       0.5F * (1.0F + (static_cast<float>(nodeNum + 1) / static_cast<float>(GetNumHeadNodes() + 1)));
   const auto mixedHeadMainColor = IColorMap::GetColorMix(m_headMainColor, mainColor, t);
-  const auto mixedHeadLowColor = IColorMap::GetColorMix(m_headLowColor, lowColor, t);
+  const auto mixedHeadLowColor  = IColorMap::GetColorMix(m_headLowColor, lowColor, t);
   return std::make_pair(mixedHeadMainColor, mixedHeadLowColor);
 }
 
@@ -136,17 +136,17 @@ inline auto Tentacle3D::GetFinalMixedColor(const Pixel& color,
 auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
 {
   const auto [xVec2D, yVec2D] = m_tentacle->GetDampedXAndYVectors();
-  const auto n = xVec2D.size();
+  const auto n                = xVec2D.size();
 
-  auto vec3d = std::vector<V3dFlt>(n);
+  auto vec3d    = std::vector<V3dFlt>(n);
   const auto x0 = m_head.x;
   const auto y0 = m_head.y - static_cast<float>(yVec2D[0]);
   const auto z0 = m_head.z - static_cast<float>(xVec2D[0]);
-  auto xStep = 0.0F;
+  auto xStep    = 0.0F;
   if (std::abs(x0) < HEAD_X_MAX)
   {
     const auto xn = 0.1F * x0;
-    xStep = (x0 - xn) / static_cast<float>(n);
+    xStep         = (x0 - xn) / static_cast<float>(n);
   }
   auto x = x0;
   for (auto i = 0U; i < n; ++i)

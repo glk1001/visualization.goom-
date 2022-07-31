@@ -31,8 +31,8 @@ public:
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
 private:
-  GoomShaderEffects m_goomShaderEffects{1.0F, HighContrast::DEFAULT_BRIGHTNESS,
-                                        HighContrast::DEFAULT_CONTRAST};
+  GoomShaderEffects m_goomShaderEffects{
+      1.0F, HighContrast::DEFAULT_BRIGHTNESS, HighContrast::DEFAULT_CONTRAST};
 
   HighContrast m_highContrast;
 
@@ -93,11 +93,11 @@ inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
 {
   m_highContrast.UpdateHighContrast();
 
-  static constexpr auto DEFAULT_EXPOSURE = 1.5F;
-  m_goomShaderEffects.exposure = DEFAULT_EXPOSURE;
-  m_goomShaderEffects.contrast = m_highContrast.GetCurrentContrast();
+  static constexpr auto DEFAULT_EXPOSURE      = 1.5F;
+  m_goomShaderEffects.exposure                = DEFAULT_EXPOSURE;
+  m_goomShaderEffects.contrast                = m_highContrast.GetCurrentContrast();
   m_goomShaderEffects.contrastMinChannelValue = m_highContrast.GetCurrentContrastMinChannelValue();
-  m_goomShaderEffects.brightness = m_highContrast.GetCurrentBrightness();
+  m_goomShaderEffects.brightness              = m_highContrast.GetCurrentBrightness();
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void

@@ -14,8 +14,8 @@ struct Vec2dFlt;
 
 struct Point2dInt
 {
-  int32_t x = 0;
-  int32_t y = 0;
+  int32_t x                       = 0;
+  int32_t y                       = 0;
   constexpr Point2dInt() noexcept = default;
   constexpr Point2dInt(int32_t xx, int32_t yy) noexcept;
   constexpr Point2dInt(uint32_t xx, uint32_t yy) noexcept;
@@ -46,8 +46,8 @@ struct Point2dInt
 
 struct Vec2dInt
 {
-  int32_t x = 0;
-  int32_t y = 0;
+  int32_t x                     = 0;
+  int32_t y                     = 0;
   constexpr Vec2dInt() noexcept = default;
   constexpr Vec2dInt(int32_t xx, int32_t yy) noexcept;
   constexpr Vec2dInt(uint32_t xx, uint32_t yy) noexcept;
@@ -66,8 +66,8 @@ struct Vec2dInt
 
 struct Point2dFlt
 {
-  float x = 0.0F;
-  float y = 0.0F;
+  float x                         = 0.0F;
+  float y                         = 0.0F;
   constexpr Point2dFlt() noexcept = default;
   constexpr Point2dFlt(float xx, float yy) noexcept;
   [[nodiscard]] auto ToInt() const noexcept -> Point2dInt;
@@ -93,8 +93,8 @@ struct Point2dFlt
 
 struct Vec2dFlt
 {
-  float x = 0.0F;
-  float y = 0.0F;
+  float x                       = 0.0F;
+  float y                       = 0.0F;
   constexpr Vec2dFlt() noexcept = default;
   constexpr Vec2dFlt(float xx, float yy) noexcept;
   constexpr explicit Vec2dFlt(const Point2dFlt& point) noexcept;
@@ -234,9 +234,9 @@ inline auto Point2dFlt::Rotate(const float angle) noexcept -> void
 {
   const float sinAngle = std::sin(angle);
   const float cosAngle = std::cos(angle);
-  const float xNext = (x * cosAngle) - (y * sinAngle);
-  y = (x * sinAngle) + (y * cosAngle);
-  x = xNext;
+  const float xNext    = (x * cosAngle) - (y * sinAngle);
+  y                    = (x * sinAngle) + (y * cosAngle);
+  x                    = xNext;
 }
 
 constexpr auto Point2dFlt::Scale(const float scalar) noexcept -> void

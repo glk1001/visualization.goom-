@@ -21,16 +21,16 @@ namespace VISUAL_FX
 class IVisualFx
 {
 public:
-  IVisualFx() noexcept = default;
-  IVisualFx(const IVisualFx&) noexcept = delete;
-  IVisualFx(IVisualFx&&) noexcept = delete;
-  virtual ~IVisualFx() noexcept = default;
+  IVisualFx() noexcept                           = default;
+  IVisualFx(const IVisualFx&) noexcept           = delete;
+  IVisualFx(IVisualFx&&) noexcept                = delete;
+  virtual ~IVisualFx() noexcept                  = default;
   auto operator=(const IVisualFx&) -> IVisualFx& = delete;
-  auto operator=(IVisualFx&&) -> IVisualFx& = delete;
+  auto operator=(IVisualFx&&) -> IVisualFx&      = delete;
 
   [[nodiscard]] virtual auto GetFxName() const noexcept -> std::string = 0;
 
-  virtual auto Start() noexcept -> void = 0;
+  virtual auto Start() noexcept -> void  = 0;
   virtual auto Finish() noexcept -> void = 0;
 
   virtual auto Resume() noexcept -> void
@@ -57,9 +57,9 @@ public:
       -> std::vector<std::string> = 0;
   struct WeightedColorMaps
   {
-    uint32_t id = 0;
-    std::shared_ptr<const COLOR::RandomColorMaps> mainColorMaps = nullptr;
-    std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps = nullptr;
+    uint32_t id                                                  = 0;
+    std::shared_ptr<const COLOR::RandomColorMaps> mainColorMaps  = nullptr;
+    std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps   = nullptr;
     std::shared_ptr<const COLOR::RandomColorMaps> extraColorMaps = nullptr;
   };
   virtual auto SetWeightedColorMaps(

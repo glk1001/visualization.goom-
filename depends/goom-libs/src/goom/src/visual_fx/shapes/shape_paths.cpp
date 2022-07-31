@@ -27,7 +27,7 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
 {
   const auto point = GetNextPoint();
 
-  const auto shapeColors = GetCurrentShapeColors();
+  const auto shapeColors    = GetCurrentShapeColors();
   const auto& innerColorMap = m_colorMapsManager.GetColorMap(m_colorInfo.innerColorMapId);
 
   auto innerColorT =
@@ -59,7 +59,7 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
 inline auto ShapePath::GetInnerColorCutoffRadius(const int32_t maxRadius) noexcept -> int32_t
 {
   static constexpr auto RADIUS_FRAC = 3;
-  static constexpr auto MIN_CUTOFF = 5;
+  static constexpr auto MIN_CUTOFF  = 5;
   return std::max(MIN_CUTOFF, maxRadius / RADIUS_FRAC);
 }
 
@@ -88,8 +88,8 @@ auto ShapePath::GetColors(const DrawParams& drawParams,
              : GetColorsWithInner(brightness, shapeColors, innerColor, drawParams.innerColorMix);
 }
 
-static constexpr auto MAIN_COLOR_BRIGHTNESS_FACTOR = 0.5F;
-static constexpr auto LOW_COLOR_BRIGHTNESS_FACTOR = 0.5F;
+static constexpr auto MAIN_COLOR_BRIGHTNESS_FACTOR              = 0.5F;
+static constexpr auto LOW_COLOR_BRIGHTNESS_FACTOR               = 0.5F;
 static constexpr auto LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR = 7.0F;
 
 inline auto ShapePath::GetColorsWithoutInner(const float brightness,

@@ -34,11 +34,11 @@ auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) 
     adjustedColor = GetAlteredChromaColor(m_chromaFactor, adjustedColor);
   }
 
-  const auto newR = static_cast<uint32_t>(std::round(
+  const auto newR     = static_cast<uint32_t>(std::round(
       channel_limits<float>::max() * std::pow(brightness * adjustedColor.RFlt(), m_gamma)));
-  const auto newG = static_cast<uint32_t>(std::round(
+  const auto newG     = static_cast<uint32_t>(std::round(
       channel_limits<float>::max() * std::pow(brightness * adjustedColor.GFlt(), m_gamma)));
-  const auto newB = static_cast<uint32_t>(std::round(
+  const auto newB     = static_cast<uint32_t>(std::round(
       channel_limits<float>::max() * std::pow(brightness * adjustedColor.BFlt(), m_gamma)));
   const uint32_t newA = color.A();
 
@@ -54,10 +54,10 @@ auto ColorAdjustment::GetAlteredChromaColor(float lchYFactor, const Pixel& color
     return color;
   }
 
-  const auto rgb8 = vivid::col8_t{color.R(), color.G(), color.B()};
-  auto lch = vivid::lch::fromSrgb(vivid::rgb::fromRgb8(rgb8));
+  const auto rgb8                 = vivid::col8_t{color.R(), color.G(), color.B()};
+  auto lch                        = vivid::lch::fromSrgb(vivid::rgb::fromRgb8(rgb8));
   static constexpr auto MAX_LCH_Y = 140.0F;
-  lch.y = std::min(lch.y * lchYFactor, MAX_LCH_Y); // NOLINT: union hard to fix here
+  lch.y              = std::min(lch.y * lchYFactor, MAX_LCH_Y); // NOLINT: union hard to fix here
   const auto newRgb8 = vivid::rgb8::fromRgb(vivid::srgb::fromLch(lch));
   return Pixel{
       {newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}  // NOLINT: union hard to fix here

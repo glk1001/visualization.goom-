@@ -24,25 +24,25 @@ auto Star::GetReversedMixColorSet(const float t) const noexcept -> ColorSet
 
 auto Star::GetSimilarLowColorSet(const float t) const noexcept -> ColorSet
 {
-  auto starColorSet = GetColorSet(t);
+  auto starColorSet             = GetColorSet(t);
   starColorSet.dominantLowColor = starColorSet.dominantMainColor;
   return starColorSet;
 }
 
 auto Star::GetSineMixColorSet() const noexcept -> ColorSet
 {
-  static constexpr auto FREQ = 20.0F;
+  static constexpr auto FREQ         = 20.0F;
   static constexpr auto T_MIX_FACTOR = 0.5F;
-  static constexpr auto Z_STEP = 0.1F;
-  static auto s_z = 0.0F;
+  static constexpr auto Z_STEP       = 0.1F;
+  static auto s_z                    = 0.0F;
 
   const auto tSin = T_MIX_FACTOR * (1.0F + std::sin(FREQ * s_z));
 
   ColorSet starColorSet;
-  starColorSet.mainColor = m_colorMapsSet.currentMainColorMap->GetColor(tSin);
-  starColorSet.lowColor = m_colorMapsSet.currentLowColorMap->GetColor(tSin);
+  starColorSet.mainColor         = m_colorMapsSet.currentMainColorMap->GetColor(tSin);
+  starColorSet.lowColor          = m_colorMapsSet.currentLowColorMap->GetColor(tSin);
   starColorSet.dominantMainColor = m_colorMapsSet.dominantMainColormap->GetColor(tSin);
-  starColorSet.dominantLowColor = m_colorMapsSet.dominantLowColormap->GetColor(tSin);
+  starColorSet.dominantLowColor  = m_colorMapsSet.dominantLowColormap->GetColor(tSin);
 
   s_z += Z_STEP;
 

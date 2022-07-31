@@ -88,12 +88,12 @@ private:
   [[nodiscard]] auto GetBrightnessAttenuation() const noexcept -> float;
 
   static constexpr float STARTING_FIXED_T_MIN_MAX_LERP = 0.5F;
-  float m_fixedTMinMaxLerp = STARTING_FIXED_T_MIN_MAX_LERP;
+  float m_fixedTMinMaxLerp                             = STARTING_FIXED_T_MIN_MAX_LERP;
   auto SetRandomShapeNumSteps() noexcept -> void;
 
-  static constexpr uint32_t CHROMA_INCREASED_TIME = 1000;
+  static constexpr uint32_t CHROMA_INCREASED_TIME        = 1000;
   static constexpr uint32_t CHROMA_INCREASED_FAILED_TIME = 20;
-  static constexpr uint32_t CHROMA_DECREASED_TIME = 500;
+  static constexpr uint32_t CHROMA_DECREASED_TIME        = 500;
   static constexpr uint32_t CHROMA_DECREASED_FAILED_TIME = 10;
   UTILS::OnOffTimer m_chromaChangeOnOffTimer{
       {

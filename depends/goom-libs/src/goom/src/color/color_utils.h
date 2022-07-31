@@ -179,16 +179,16 @@ constexpr auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, cons
 
 constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -> Pixel
 {
-  t = std::clamp(t, 0.0F, 1.0F);
+  t               = std::clamp(t, 0.0F, 1.0F);
   const auto intT = static_cast<int32_t>(t * static_cast<float>(MAX_COLOR_VAL));
 
-  const auto color1Red = static_cast<int32_t>(color1.R());
+  const auto color1Red   = static_cast<int32_t>(color1.R());
   const auto color1Green = static_cast<int32_t>(color1.G());
-  const auto color1Blue = static_cast<int32_t>(color1.B());
+  const auto color1Blue  = static_cast<int32_t>(color1.B());
   const auto color1Alpha = static_cast<int32_t>(color1.A());
-  const auto color2Red = static_cast<int32_t>(color2.R());
+  const auto color2Red   = static_cast<int32_t>(color2.R());
   const auto color2Green = static_cast<int32_t>(color2.G());
-  const auto color2Blue = static_cast<int32_t>(color2.B());
+  const auto color2Blue  = static_cast<int32_t>(color2.B());
   const auto color2Alpha = static_cast<int32_t>(color2.A());
 
   const auto newR = GetRgbColorChannelLerp(color1Red, color2Red, intT);
@@ -211,9 +211,9 @@ constexpr auto IsCloseToBlack(const Pixel& color, const uint32_t threshold) -> b
 //
 //     Y = 0.2126 R + 0.7152 G + 0.0722 B
 //
-static constexpr auto LUMA_RED_COMPONENT = 0.2126F;
+static constexpr auto LUMA_RED_COMPONENT   = 0.2126F;
 static constexpr auto LUMA_GREEN_COMPONENT = 0.7152F;
-static constexpr auto LUMA_BLUE_COMPONENT = 0.0722F;
+static constexpr auto LUMA_BLUE_COMPONENT  = 0.0722F;
 
 constexpr auto GetLuma(const Pixel& color) -> float
 {
@@ -223,13 +223,13 @@ constexpr auto GetLuma(const Pixel& color) -> float
 
 constexpr auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
 {
-  constexpr auto RED = Pixel::RGB{230, 120, 18, MAX_ALPHA};
-  constexpr auto ORANGE_J = Pixel::RGB{120, 252, 18, MAX_ALPHA};
-  constexpr auto ORANGE_V = Pixel::RGB{160, 236, 40, MAX_ALPHA};
+  constexpr auto RED       = Pixel::RGB{230, 120, 18, MAX_ALPHA};
+  constexpr auto ORANGE_J  = Pixel::RGB{120, 252, 18, MAX_ALPHA};
+  constexpr auto ORANGE_V  = Pixel::RGB{160, 236, 40, MAX_ALPHA};
   constexpr auto BLEUBLANC = Pixel::RGB{40, 220, 140, MAX_ALPHA};
-  constexpr auto VERT = Pixel::RGB{200, 80, 18, MAX_ALPHA};
-  constexpr auto BLEU = Pixel::RGB{250, 30, 80, MAX_ALPHA};
-  constexpr auto BLACK = Pixel::RGB{16, 16, 16, MAX_ALPHA};
+  constexpr auto VERT      = Pixel::RGB{200, 80, 18, MAX_ALPHA};
+  constexpr auto BLEU      = Pixel::RGB{250, 30, 80, MAX_ALPHA};
+  constexpr auto BLACK     = Pixel::RGB{16, 16, 16, MAX_ALPHA};
 
   switch (simpleColor)
   {

@@ -18,12 +18,12 @@ namespace GOOM::UTILS::MATH
 class IGoomRand
 {
 public:
-  IGoomRand() noexcept = default;
-  IGoomRand(const IGoomRand&) noexcept = delete;
-  IGoomRand(IGoomRand&&) noexcept = delete;
+  IGoomRand() noexcept                                    = default;
+  IGoomRand(const IGoomRand&) noexcept                    = delete;
+  IGoomRand(IGoomRand&&) noexcept                         = delete;
   auto operator=(const IGoomRand&) noexcept -> IGoomRand& = delete;
-  auto operator=(IGoomRand&&) noexcept -> IGoomRand& = delete;
-  virtual ~IGoomRand() noexcept = default;
+  auto operator=(IGoomRand&&) noexcept -> IGoomRand&      = delete;
+  virtual ~IGoomRand() noexcept                           = default;
 
   // Return random integer in the range 0 <= n < n1.
   [[nodiscard]] virtual auto GetNRand(uint32_t n1) const noexcept -> uint32_t = 0;
@@ -38,9 +38,9 @@ public:
   template<typename T>
   [[nodiscard]] auto GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T;
   [[nodiscard]] virtual auto GetRandInRange(uint32_t n0, uint32_t n1) const noexcept
-      -> uint32_t = 0;
+      -> uint32_t                                                                             = 0;
   [[nodiscard]] virtual auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t = 0;
-  [[nodiscard]] virtual auto GetRandInRange(float n0, float n1) const noexcept -> float = 0;
+  [[nodiscard]] virtual auto GetRandInRange(float n0, float n1) const noexcept -> float       = 0;
 
   template<class RandomIt>
   void Shuffle(RandomIt first, RandomIt last) const noexcept;
@@ -288,7 +288,7 @@ auto ConditionalWeights<E>::GetConditionalWeightMap(
   auto conditionalWeights = std::map<E, Weights<E>>{};
   for (const auto& weightMultiplierPair : weightMultiplierPairs)
   {
-    const auto& given = weightMultiplierPair.first;
+    const auto& given           = weightMultiplierPair.first;
     const auto& multiplierPairs = weightMultiplierPair.second;
 
     typename Weights<E>::EventWeightPairs newEventWeightPairs = eventWeightPairs;

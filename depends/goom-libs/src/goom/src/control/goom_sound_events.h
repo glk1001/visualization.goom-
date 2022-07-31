@@ -35,19 +35,19 @@ private:
 
   uint32_t m_updateNum = 0;
 
-  uint32_t m_totalGoomsInCurrentCycle = 0;
-  uint32_t m_timeSinceLastGoom = 0;
+  uint32_t m_totalGoomsInCurrentCycle             = 0;
+  uint32_t m_timeSinceLastGoom                    = 0;
   static constexpr uint32_t MAX_BIG_GOOM_DURATION = 100;
-  uint32_t m_timeSinceLastBigGoom = 0;
-  float m_goomPower = 0.0F;
+  uint32_t m_timeSinceLastBigGoom                 = 0;
+  float m_goomPower                               = 0.0F;
 
   static constexpr float GOOM_LIMIT_MIN = 0.0F;
   static constexpr float GOOM_LIMIT_MAX = 1.0F;
-  float m_goomLimit = 1.0F; // auto-updated limit of goom detection
+  float m_goomLimit                     = 1.0F; // auto-updated limit of goom detection
 
   static constexpr float BIG_GOOM_SPEED_LIMIT = 0.10F;
-  static constexpr float BIG_GOOM_FACTOR = 1.01F;
-  float m_bigGoomLimit = 1.0F;
+  static constexpr float BIG_GOOM_FACTOR      = 1.01F;
+  float m_bigGoomLimit                        = 1.0F;
 
   float m_maxAccelerationSinceLastReset = 0.0F;
 

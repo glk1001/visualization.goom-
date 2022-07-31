@@ -15,7 +15,7 @@ class AudioSamples
 {
 public:
   static constexpr size_t NUM_AUDIO_SAMPLES = 2;
-  static constexpr size_t AUDIO_SAMPLE_LEN = 512;
+  static constexpr size_t AUDIO_SAMPLE_LEN  = 512;
   [[nodiscard]] static constexpr auto GetPositiveValue(float audioValue) -> float;
 
   // AudioSample object: numSampleChannels = 1 or 2.
@@ -76,9 +76,9 @@ public:
 private:
   uint32_t m_updateNum = 0;
 
-  float m_volume = 0.0F;
+  float m_volume       = 0.0F;
   float m_acceleration = 0.0F;
-  float m_speed = 0.0F;
+  float m_speed        = 0.0F;
 
   float m_allTimesMaxVolume = std::numeric_limits<float>::min();
   float m_allTimesMinVolume = std::numeric_limits<float>::max();

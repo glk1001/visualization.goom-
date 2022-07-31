@@ -26,8 +26,8 @@ auto GetLinesOfWords(const std::string& text, const uint32_t maxLineLength)
   }
 
   const auto words = StringSplit(text, " ");
-  auto textLines = std::vector<std::string>{};
-  auto str = ""s;
+  auto textLines   = std::vector<std::string>{};
+  auto str         = ""s;
 
   for (const auto& word : words)
   {
@@ -52,7 +52,7 @@ auto GetLeftAlignedPenForCentringStringAt(TextDraw& textDraw,
                                           const int32_t fontSize,
                                           const Point2dInt& centreAt) -> Point2dInt
 {
-  const auto oldFontSize = textDraw.GetFontSize();
+  const auto oldFontSize    = textDraw.GetFontSize();
   const auto oldCharSpacing = textDraw.GetCharSpacing();
 
   textDraw.SetFontSize(fontSize);
@@ -61,10 +61,10 @@ auto GetLeftAlignedPenForCentringStringAt(TextDraw& textDraw,
 
   textDraw.Prepare();
 
-  const auto strRect = textDraw.GetPreparedTextBoundingRect();
-  const auto bearingX = textDraw.GetBearingX();
-  const auto bearingY = textDraw.GetBearingY();
-  const auto textWidth = (strRect.xMax - strRect.xMin) + 1;
+  const auto strRect    = textDraw.GetPreparedTextBoundingRect();
+  const auto bearingX   = textDraw.GetBearingX();
+  const auto bearingY   = textDraw.GetBearingY();
+  const auto textWidth  = (strRect.xMax - strRect.xMin) + 1;
   const auto textHeight = (strRect.yMax - strRect.yMin) + 1;
 
   LogInfo("font size = {}", textDraw.GetFontSize());
@@ -73,7 +73,8 @@ auto GetLeftAlignedPenForCentringStringAt(TextDraw& textDraw,
   LogInfo("text = {}", text);
   LogInfo("textWidth = {}, textHeight = {}", textWidth, textHeight);
   LogInfo("bearingX = {}, bearingY = {}", bearingX, bearingY);
-  LogInfo("centre pen = ({},{})", centreAt.x - (I_HALF * (textWidth - bearingX)),
+  LogInfo("centre pen = ({},{})",
+          centreAt.x - (I_HALF * (textWidth - bearingX)),
           centreAt.y - ((I_HALF * textHeight) - bearingY));
 
   textDraw.SetCharSpacing(oldCharSpacing);

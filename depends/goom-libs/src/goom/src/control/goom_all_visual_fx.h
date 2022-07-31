@@ -66,10 +66,10 @@ public:
                   std::unique_ptr<FILTER_FX::FilterBuffersService> filterBuffersService,
                   std::unique_ptr<FILTER_FX::FilterColorsService> filterColorsService) noexcept;
   GoomAllVisualFx(const GoomAllVisualFx&) noexcept = delete;
-  GoomAllVisualFx(GoomAllVisualFx&&) noexcept = delete;
+  GoomAllVisualFx(GoomAllVisualFx&&) noexcept      = delete;
   ~GoomAllVisualFx() noexcept;
   auto operator=(const GoomAllVisualFx&) noexcept -> GoomAllVisualFx& = delete;
-  auto operator=(GoomAllVisualFx&&) noexcept -> GoomAllVisualFx& = delete;
+  auto operator=(GoomAllVisualFx&&) noexcept -> GoomAllVisualFx&      = delete;
 
   void Start();
   void Finish();

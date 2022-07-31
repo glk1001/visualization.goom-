@@ -20,9 +20,9 @@ void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, co
   const auto colorTStep = (colorT1 - colorT0) / static_cast<float>(m_numBezierSteps - 1);
 
   const auto tStep = 1.0F / static_cast<float>(m_numBezierSteps - 1);
-  auto colorT = colorT0 + colorTStep;
-  auto t = tStep;
-  auto point0 = Point2dInt{static_cast<int32_t>(bezier.valueAt(0.0F, 0)),
+  auto colorT      = colorT0 + colorTStep;
+  auto t           = tStep;
+  auto point0      = Point2dInt{static_cast<int32_t>(bezier.valueAt(0.0F, 0)),
                            static_cast<int32_t>(bezier.valueAt(0.0F, 1))};
 
   for (auto i = 1U; i < m_numBezierSteps; ++i)

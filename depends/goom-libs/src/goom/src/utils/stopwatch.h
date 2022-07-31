@@ -28,8 +28,8 @@ public:
 
   struct TimeValues
   {
-    float timeElapsedInMs = 0.0F;
-    float timeRemainingInMs = 0.0F;
+    float timeElapsedInMs        = 0.0F;
+    float timeRemainingInMs      = 0.0F;
     float timeRemainingAsPercent = 0.0F;
   };
   [[nodiscard]] auto AreTimesValid() const noexcept -> bool;
@@ -44,8 +44,8 @@ private:
   float m_durationInMs = 0.0F;
   ChronoTimePoint m_startTime{};
   ChronoTimePoint m_lastMarkedTime{};
-  float m_startDelayAdjustInMs = 0.0F;
-  bool m_doUpperLimitOfTimeIntervalCheck = false;
+  float m_startDelayAdjustInMs                        = 0.0F;
+  bool m_doUpperLimitOfTimeIntervalCheck              = false;
   float m_upperLimitOfTimeIntervalInMsSinceLastMarked = std::numeric_limits<float>::max();
   [[nodiscard]] auto IsValidTimeIntervalSinceLastMarked(float timeIntervalInMs) const noexcept
       -> bool;
@@ -73,16 +73,16 @@ inline auto Stopwatch::SetDuration(const uint32_t durationInMs) noexcept -> void
   Expects(durationInMs > 0U);
 
   m_durationInMs = static_cast<float>(durationInMs);
-  m_valid = true;
+  m_valid        = true;
 }
 
 inline auto Stopwatch::StartNow() noexcept -> void
 {
   m_startTime = std::chrono::steady_clock::now() -
                 std::chrono::milliseconds(static_cast<int32_t>(m_startDelayAdjustInMs));
-  m_valid = m_durationInMs > 0;
-  m_timeValues.timeElapsedInMs = 0.0F;
-  m_timeValues.timeRemainingInMs = m_durationInMs;
+  m_valid                             = m_durationInMs > 0;
+  m_timeValues.timeElapsedInMs        = 0.0F;
+  m_timeValues.timeRemainingInMs      = m_durationInMs;
   m_timeValues.timeRemainingAsPercent = 100.0F;
 }
 
@@ -112,13 +112,13 @@ inline auto Stopwatch::MarkTimeNow() noexcept -> void
   if (newTimeElapsedInMs > m_durationInMs)
   {
     // Because we allow adjusting the start time, 'timeElapsed' maybe bigger than duration.
-    newTimeElapsedInMs = m_durationInMs;
+    newTimeElapsedInMs   = m_durationInMs;
     newTimeRemainingInMs = 0.0F;
   }
 
   Expects(newTimeElapsedInMs <= m_durationInMs);
-  m_timeValues.timeElapsedInMs = newTimeElapsedInMs;
-  m_timeValues.timeRemainingInMs = newTimeRemainingInMs;
+  m_timeValues.timeElapsedInMs        = newTimeElapsedInMs;
+  m_timeValues.timeRemainingInMs      = newTimeRemainingInMs;
   m_timeValues.timeRemainingAsPercent = (100.0F * m_timeValues.timeRemainingInMs) / m_durationInMs;
 }
 

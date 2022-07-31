@@ -22,8 +22,8 @@ FilterZoomVector::FilterZoomVector(
     const IGoomRand& goomRand,
     const NormalizedCoordsConverter& normalizedCoordsConverter,
     const ZoomVectorEffects::GetTheEffectsFunc& getTheExtraEffects) noexcept
-  : m_zoomVectorEffects{screenWidth, resourcesDirectory, goomRand, normalizedCoordsConverter,
-                        getTheExtraEffects}
+  : m_zoomVectorEffects{
+        screenWidth, resourcesDirectory, goomRand, normalizedCoordsConverter, getTheExtraEffects}
 {
 }
 

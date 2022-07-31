@@ -229,8 +229,8 @@ auto GoomStateInfo::GetBuffIntensityRange(const GoomStates goomState, const Goom
     }
   }
 
-  throw std::logic_error(std20::format("Could not find drawable {} for state {}.", EnumToString(fx),
-                                       EnumToString(goomState)));
+  throw std::logic_error(std20::format(
+      "Could not find drawable {} for state {}.", EnumToString(fx), EnumToString(goomState)));
 }
 
 } // namespace GOOM::CONTROL

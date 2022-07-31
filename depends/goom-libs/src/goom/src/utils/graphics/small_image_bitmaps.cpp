@@ -17,7 +17,12 @@ namespace GOOM::UTILS::GRAPHICS
 using MATH::IsEven;
 
 const std::array<std::string, NUM<SmallImageBitmaps::ImageNames>> SmallImageBitmaps::IMAGE_NAMES{
-    "circle", "sphere", "pink-flower", "red-flower", "orange-flower", "white-flower",
+    "circle",
+    "sphere",
+    "pink-flower",
+    "red-flower",
+    "orange-flower",
+    "white-flower",
 };
 
 SmallImageBitmaps::SmallImageBitmaps(const std::string& resourcesDirectory)
@@ -44,7 +49,7 @@ auto SmallImageBitmaps::GetImageBitmap(const ImageNames name, const size_t res) 
   if (IsEven(imageRes))
   {
     static constexpr auto MIN_EVEN_RES = 2U;
-    imageRes = (MIN_EVEN_RES == res) ? (res + 1) : (res - 1);
+    imageRes                           = (MIN_EVEN_RES == res) ? (res + 1) : (res - 1);
   }
   return *m_bitmapImages.at(GetImageKey(name, imageRes));
 }
@@ -66,8 +71,11 @@ auto SmallImageBitmaps::GetImageFilename(const ImageNames name,
                                          const size_t sizeOfImageSquare) const -> std::string
 {
   const auto imagesDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR;
-  return std20::format("{}/{}{:02}x{:02}.png", imagesDir, IMAGE_NAMES.at(static_cast<size_t>(name)),
-                       sizeOfImageSquare, sizeOfImageSquare);
+  return std20::format("{}/{}{:02}x{:02}.png",
+                       imagesDir,
+                       IMAGE_NAMES.at(static_cast<size_t>(name)),
+                       sizeOfImageSquare,
+                       sizeOfImageSquare);
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

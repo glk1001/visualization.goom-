@@ -56,7 +56,7 @@ private:
   TimerCounts m_timerCounts;
   Timer m_onTimer{m_timerCounts.numOnCount, true};
   Timer m_offTimer{m_timerCounts.numOffCount, true};
-  Action m_onAction = nullptr;
+  Action m_onAction  = nullptr;
   Action m_offAction = nullptr;
   enum class TimerState
   {
@@ -129,7 +129,7 @@ inline OnOffTimer::OnOffTimer(const TimerCounts& timerCounts) noexcept : m_timer
 
 inline auto OnOffTimer::SetActions(const Action& onAction, const Action& offAction) noexcept -> void
 {
-  m_onAction = onAction;
+  m_onAction  = onAction;
   m_offAction = offAction;
 }
 

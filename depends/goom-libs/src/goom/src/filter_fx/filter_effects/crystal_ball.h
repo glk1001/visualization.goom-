@@ -68,10 +68,16 @@ inline auto CrystalBall::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
                                               [[maybe_unused]] const NormalizedCoords& coords) const
     -> Point2dFlt
 {
-  return {GetSpeedCoefficient(baseSpeedCoeffs.x, sqDistFromZero, m_params.xAmplitude,
-                              m_params.xSqDistMult, m_params.xSqDistOffset),
-          GetSpeedCoefficient(baseSpeedCoeffs.y, sqDistFromZero, m_params.yAmplitude,
-                              m_params.ySqDistMult, m_params.ySqDistOffset)};
+  return {GetSpeedCoefficient(baseSpeedCoeffs.x,
+                              sqDistFromZero,
+                              m_params.xAmplitude,
+                              m_params.xSqDistMult,
+                              m_params.xSqDistOffset),
+          GetSpeedCoefficient(baseSpeedCoeffs.y,
+                              sqDistFromZero,
+                              m_params.yAmplitude,
+                              m_params.ySqDistMult,
+                              m_params.ySqDistOffset)};
 }
 
 inline auto CrystalBall::GetSpeedCoefficient(const float baseSpeedCoeff,

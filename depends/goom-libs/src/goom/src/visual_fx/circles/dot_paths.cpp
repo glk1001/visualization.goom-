@@ -47,11 +47,12 @@ auto DotPaths::SetDotStartingPositions(std::vector<Point2dInt>&& dotStartingPosi
 auto DotPaths::SetTarget(const Point2dInt& target) noexcept -> void
 {
   m_target = target;
-  std::for_each(begin(m_dotPaths), end(m_dotPaths),
+  std::for_each(begin(m_dotPaths),
+                end(m_dotPaths),
                 [&target](OscillatingPath& path)
                 { path.GetParametricFunction().SetEndPos(target.ToFlt()); });
   static constexpr auto PROB_RANDOMIZE_POINTS = 0.3F;
-  m_randomizePoints = m_goomRand.ProbabilityOf(PROB_RANDOMIZE_POINTS);
+  m_randomizePoints                           = m_goomRand.ProbabilityOf(PROB_RANDOMIZE_POINTS);
 }
 
 auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions) noexcept
@@ -61,10 +62,10 @@ auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPosition
 
   for (auto i = 0U; i < m_numDots; ++i)
   {
-    auto positionT = std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                              DEFAULT_POSITION_STEPS);
-    dotPaths.emplace_back(std::move(positionT), dotStartingPositions.at(i).ToFlt(),
-                          m_target.ToFlt(), m_pathParams);
+    auto positionT =
+        std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, DEFAULT_POSITION_STEPS);
+    dotPaths.emplace_back(
+        std::move(positionT), dotStartingPositions.at(i).ToFlt(), m_target.ToFlt(), m_pathParams);
   }
 
   return dotPaths;

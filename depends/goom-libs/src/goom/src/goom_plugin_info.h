@@ -20,11 +20,11 @@ public:
 
   PluginInfo() noexcept = delete;
   PluginInfo(uint32_t width, uint32_t height, const CONTROL::GoomSoundEvents& soundEvents) noexcept;
-  PluginInfo(const PluginInfo&) noexcept = delete;
-  PluginInfo(PluginInfo&&) noexcept = delete;
-  virtual ~PluginInfo() noexcept = default;
+  PluginInfo(const PluginInfo&) noexcept           = delete;
+  PluginInfo(PluginInfo&&) noexcept                = delete;
+  virtual ~PluginInfo() noexcept                   = default;
   auto operator=(const PluginInfo&) -> PluginInfo& = delete;
-  auto operator=(PluginInfo&&) -> PluginInfo& = delete;
+  auto operator=(PluginInfo&&) -> PluginInfo&      = delete;
 
   [[nodiscard]] auto GetScreenInfo() const -> const Screen&;
   [[nodiscard]] auto GetSoundEvents() const -> const CONTROL::GoomSoundEvents&;

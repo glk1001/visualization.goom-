@@ -1,3 +1,4 @@
+// clang-format off
 // NOLINTBEGIN: Not my code
 
 #pragma GCC system_header
@@ -9022,3 +9023,4 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 // NOLINTEND
+// clang-format on

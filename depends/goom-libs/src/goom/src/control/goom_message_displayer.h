@@ -32,7 +32,7 @@ private:
   DRAW::IGoomDraw& m_textOutput;
   const std::string m_updateMessagesFontFile;
 
-  static constexpr int32_t MSG_FONT_SIZE = 10;
+  static constexpr int32_t MSG_FONT_SIZE         = 10;
   static constexpr size_t DEFAULT_NUM_DISPLAYERS = 1;
   std::vector<DRAW::TextDraw> m_updateMessagesDisplayers{
       GetUpdateMessagesDisplayers(DEFAULT_NUM_DISPLAYERS, m_textOutput, m_updateMessagesFontFile)};
@@ -44,4 +44,3 @@ private:
 
 } // namespace CONTROL
 } // namespace GOOM
-

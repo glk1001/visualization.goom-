@@ -57,8 +57,8 @@ private:
 
   static constexpr size_t MIN_IMAGE_DOT_SIZE = 3;
   static constexpr size_t MAX_IMAGE_DOT_SIZE = 15;
-  size_t m_currentDotSize = MIN_IMAGE_DOT_SIZE;
-  bool m_beadedLook = false;
+  size_t m_currentDotSize                    = MIN_IMAGE_DOT_SIZE;
+  bool m_beadedLook                          = false;
   const UTILS::MATH::Weights<DotSizes> m_minDotSizes;
   const UTILS::MATH::Weights<DotSizes> m_normalDotSizes;
   [[nodiscard]] auto GetNextDotSize(size_t maxSize) const -> size_t;

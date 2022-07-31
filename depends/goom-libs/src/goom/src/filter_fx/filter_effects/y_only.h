@@ -66,8 +66,9 @@ inline auto YOnly::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
     return {xSpeedCoeff, xSpeedCoeff};
   }
 
-  return {xSpeedCoeff, baseSpeedCoeffs.y * m_params.yAmplitude *
-                           GetYOnlySpeedMultiplier(m_params.yEffect, coords)};
+  return {xSpeedCoeff,
+          baseSpeedCoeffs.y * m_params.yAmplitude *
+              GetYOnlySpeedMultiplier(m_params.yEffect, coords)};
 }
 
 inline auto YOnly::GetParams() const -> const Params&

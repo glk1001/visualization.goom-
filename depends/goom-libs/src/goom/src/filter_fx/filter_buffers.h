@@ -29,9 +29,9 @@ namespace FILTER_FX
 class ZoomFilterBuffers
 {
 public:
-  static constexpr int32_t DIM_FILTER_COEFFS = 16;
-  static constexpr size_t NUM_NEIGHBOR_COEFFS = 4;
-  using NeighborhoodPixelArray = std::array<Pixel, NUM_NEIGHBOR_COEFFS>;
+  static constexpr int32_t DIM_FILTER_COEFFS      = 16;
+  static constexpr size_t NUM_NEIGHBOR_COEFFS     = 4;
+  using NeighborhoodPixelArray                    = std::array<Pixel, NUM_NEIGHBOR_COEFFS>;
   static constexpr float MIN_SCREEN_COORD_ABS_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
   class CoordTransforms;
 
@@ -49,10 +49,10 @@ public:
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const ZoomPointFunc& zoomPointFunc) noexcept;
   ZoomFilterBuffers(const ZoomFilterBuffers&) noexcept = delete;
-  ZoomFilterBuffers(ZoomFilterBuffers&&) noexcept = delete;
+  ZoomFilterBuffers(ZoomFilterBuffers&&) noexcept      = delete;
   ~ZoomFilterBuffers() noexcept;
   auto operator=(const ZoomFilterBuffers&) noexcept -> ZoomFilterBuffers& = delete;
-  auto operator=(ZoomFilterBuffers&&) noexcept -> ZoomFilterBuffers& = delete;
+  auto operator=(ZoomFilterBuffers&&) noexcept -> ZoomFilterBuffers&      = delete;
 
   [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
   auto SetBuffMidpoint(const Point2dInt& val) noexcept -> void;
@@ -110,7 +110,7 @@ private:
   NormalizedCoords m_normalizedMidPt{0.0F, 0.0F};
   bool m_filterSettingsHaveChanged = false;
 
-  uint32_t m_tranBuffYLineStart = 0;
+  uint32_t m_tranBuffYLineStart       = 0;
   TranBuffersState m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
 
   std::vector<int32_t> m_firedec;
@@ -135,9 +135,9 @@ public:
       -> Point2dInt;
 
   // Use these consts for optimising multiplication, division, and mod, by DIM_FILTER_COEFFS.
-  static constexpr int32_t MAX_TRAN_LERP_VALUE = 0xFFFF;
+  static constexpr int32_t MAX_TRAN_LERP_VALUE         = 0xFFFF;
   static constexpr int32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
-  static constexpr int32_t DIM_FILTER_COEFFS_MOD_MASK = 0xF;
+  static constexpr int32_t DIM_FILTER_COEFFS_MOD_MASK  = 0xF;
 
   [[nodiscard]] static auto TranCoordToCoeffIndex(uint32_t tranCoord) noexcept -> uint32_t;
   [[nodiscard]] static auto TranToScreenPoint(const Point2dInt& tranPoint) noexcept -> Point2dInt;
@@ -259,7 +259,7 @@ inline auto ZoomFilterBuffers::GetBuffMidpoint() const noexcept -> Point2dInt
 
 inline auto ZoomFilterBuffers::SetBuffMidpoint(const Point2dInt& val) noexcept -> void
 {
-  m_buffMidpoint = val;
+  m_buffMidpoint    = val;
   m_normalizedMidPt = m_normalizedCoordsConverter.ScreenToNormalizedCoords(m_buffMidpoint);
 }
 

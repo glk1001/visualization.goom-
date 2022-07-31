@@ -64,20 +64,21 @@ inline auto DotPaths::SetPathParams(const UTILS::MATH::OscillatingFunction::Para
 
 inline auto DotPaths::Reset() noexcept -> void
 {
-  std::for_each(begin(m_dotPaths), end(m_dotPaths),
-                [](UTILS::MATH::IPath& path) { path.Reset(0.0F); });
+  std::for_each(
+      begin(m_dotPaths), end(m_dotPaths), [](UTILS::MATH::IPath& path) { path.Reset(0.0F); });
 }
 
 inline auto DotPaths::SetPositionTNumSteps(const uint32_t numSteps) noexcept -> void
 {
-  std::for_each(begin(m_dotPaths), end(m_dotPaths),
+  std::for_each(begin(m_dotPaths),
+                end(m_dotPaths),
                 [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
 }
 
 inline auto DotPaths::IncrementPositionT() noexcept -> void
 {
-  std::for_each(begin(m_dotPaths), end(m_dotPaths),
-                [](UTILS::MATH::IPath& path) { path.IncrementT(); });
+  std::for_each(
+      begin(m_dotPaths), end(m_dotPaths), [](UTILS::MATH::IPath& path) { path.IncrementT(); });
 }
 
 inline auto DotPaths::GetPositionTRef() const noexcept -> const UTILS::TValue&

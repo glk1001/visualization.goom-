@@ -57,9 +57,9 @@ private:
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
 
-  static constexpr double PROJECTION_DISTANCE = 170.0;
-  static constexpr auto CAMERA_DISTANCE = 8.0F;
-  static constexpr auto ROTATION = 1.5F * pi;
+  static constexpr double PROJECTION_DISTANCE  = 170.0;
+  static constexpr auto CAMERA_DISTANCE        = 8.0F;
+  static constexpr auto ROTATION               = 1.5F * pi;
   static constexpr size_t NUM_TENTACLE_DRIVERS = 4;
   enum class Drivers
   {
@@ -249,7 +249,7 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
   m_weightedDominantColorMaps = weightedColorMaps.mainColorMaps;
   m_dominantColorMap =
       m_weightedDominantColorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
-  m_dominantColor = RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);
+  m_dominantColor    = RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);
   m_dominantDotColor = RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);
   UpdateDominantColors();
 
@@ -305,8 +305,8 @@ inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
   m_timeWithThisDominantColor.ResetToZero();
 
   UpdateDominantColors();
-  m_currentTentacleDriver->SetDominantColors(m_dominantColor, m_dominantLowColor,
-                                             m_dominantDotColor);
+  m_currentTentacleDriver->SetDominantColors(
+      m_dominantColor, m_dominantLowColor, m_dominantDotColor);
 }
 
 auto TentaclesFx::TentaclesImpl::UpdateDominantColors() -> void
@@ -318,7 +318,7 @@ auto TentaclesFx::TentaclesImpl::UpdateDominantColors() -> void
   static constexpr auto COLOR_MIX_T = 0.70F;
   m_dominantLowColor = IColorMap::GetColorMix(m_dominantLowColor, newColor, COLOR_MIX_T);
   static constexpr auto COLOR_POWER = 0.67F;
-  m_dominantColor = GetLightenedColor(m_dominantLowColor, COLOR_POWER);
+  m_dominantColor                   = GetLightenedColor(m_dominantLowColor, COLOR_POWER);
 
   m_dominantDotColor = RandomColorMaps::GetRandomColor(m_goomRand, *m_dominantColorMap, 0.0F, 1.0F);
 }

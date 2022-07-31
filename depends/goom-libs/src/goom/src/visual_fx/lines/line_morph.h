@@ -81,15 +81,15 @@ private:
   LineParams m_destLineParams;
 
   static constexpr float LINE_LERP_FINISHED_VAL = 1.1F;
-  static constexpr float LINE_LERP_INC = 1.0F / static_cast<float>(MIN_LINE_DURATION - 1);
-  float m_lineLerpParam = 0.0F;
+  static constexpr float LINE_LERP_INC          = 1.0F / static_cast<float>(MIN_LINE_DURATION - 1);
+  float m_lineLerpParam                         = 0.0F;
   auto MoveSrceLineCloserToDest() noexcept -> void;
   [[nodiscard]] auto GetFreshLine(LineType lineType, float lineParam) const noexcept
       -> std::vector<FX_UTILS::LinePoint>;
 
   // pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera
-  bool m_useLineColor = true;
-  float m_lineColorPower = 0.0F;
+  bool m_useLineColor             = true;
+  float m_lineColorPower          = 0.0F;
   float m_lineColorPowerIncrement = 0.0F;
   [[nodiscard]] auto GetRandomColorMap() const noexcept -> const COLOR::IColorMap&;
   [[nodiscard]] auto GetFinalLineColor(const Pixel& color) const noexcept -> Pixel;
@@ -99,10 +99,10 @@ private:
   // This value seems pleasing.
   static constexpr float MIN_MAX_NORMALIZED_PEAK = 100.0F;
   static constexpr float MAX_MAX_NORMALIZED_PEAK = 400.0F;
-  float m_maxNormalizedPeak = MIN_MAX_NORMALIZED_PEAK;
+  float m_maxNormalizedPeak                      = MIN_MAX_NORMALIZED_PEAK;
 
   FX_UTILS::DotDrawer m_dotDrawer;
-  float m_audioRange = 0.0F;
+  float m_audioRange    = 0.0F;
   float m_minAudioValue = 0.0F;
   struct PointAndColor
   {

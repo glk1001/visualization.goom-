@@ -1,3 +1,4 @@
+// clang-format off
 // NOLINTBEGIN: Not my code
 
 #include "thread_pool.h"
@@ -7,6 +8,8 @@
 #include <functional>
 #include <thread>
 #include <utility>
+
+// clang-format off
 
 namespace GOOM::UTILS
 {
@@ -119,3 +122,4 @@ void ThreadPool::ThreadLoop()
 } // namespace GOOM::UTILS
 
 // NOLINTEND
+// clang-format on

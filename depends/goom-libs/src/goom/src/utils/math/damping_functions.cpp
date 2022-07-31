@@ -24,20 +24,20 @@ ExpDampingFunction::ExpDampingFunction(const double amplitude,
   }
   if (yAtStartToRise <= m_amplitude)
   {
-    throw std::runtime_error(std20::format("yAtStartToRise should be > {} = amplitude, not {}.",
-                                           m_amplitude, yAtStartToRise));
+    throw std::runtime_error(std20::format(
+        "yAtStartToRise should be > {} = amplitude, not {}.", m_amplitude, yAtStartToRise));
   }
   if (yAtXMax <= m_amplitude)
   {
     throw std::runtime_error(
         std20::format("yAtXMax should be > {} = amplitude, not {}.", m_amplitude, yAtXMax));
   }
-  const auto y0 = (yAtStartToRise / m_amplitude) - 1.0;
-  const auto y1 = (yAtXMax / m_amplitude) - 1.0;
+  const auto y0    = (yAtStartToRise / m_amplitude) - 1.0;
+  const auto y1    = (yAtXMax / m_amplitude) - 1.0;
   const auto logY0 = std::log(y0);
   const auto logY1 = std::log(y1);
-  m_b = ((xToStartRise * logY1) - (xMax * logY0)) / (logY1 - logY0);
-  m_k = logY1 / (xMax - m_b);
+  m_b              = ((xToStartRise * logY1) - (xMax * logY0)) / (logY1 - logY0);
+  m_k              = logY1 / (xMax - m_b);
 }
 
 auto ExpDampingFunction::operator()(const double x) -> double
@@ -101,7 +101,8 @@ SineWaveMultiplier::SineWaveMultiplier(const float frequency,
 auto SineWaveMultiplier::GetNext() -> float
 {
   const auto val =
-      static_cast<float>(m_rangeMapper(static_cast<double>(m_lower), static_cast<double>(m_upper),
+      static_cast<float>(m_rangeMapper(static_cast<double>(m_lower),
+                                       static_cast<double>(m_upper),
                                        static_cast<double>(std::sin(m_frequency * m_x))));
   m_x += m_piStepFrac * STD20::pi;
   return val;

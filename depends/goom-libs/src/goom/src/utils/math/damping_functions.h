@@ -12,12 +12,12 @@ namespace GOOM::UTILS::MATH
 class IDampingFunction
 {
 public:
-  IDampingFunction() noexcept = default;
-  IDampingFunction(const IDampingFunction&) noexcept = delete;
-  IDampingFunction(IDampingFunction&&) noexcept = delete;
-  virtual ~IDampingFunction() noexcept = default;
+  IDampingFunction() noexcept                                  = default;
+  IDampingFunction(const IDampingFunction&) noexcept           = delete;
+  IDampingFunction(IDampingFunction&&) noexcept                = delete;
+  virtual ~IDampingFunction() noexcept                         = default;
   auto operator=(const IDampingFunction&) -> IDampingFunction& = delete;
-  auto operator=(IDampingFunction&&) -> IDampingFunction& = delete;
+  auto operator=(IDampingFunction&&) -> IDampingFunction&      = delete;
 
   virtual auto operator()(double x) -> double = 0;
 };
@@ -36,8 +36,8 @@ public:
 
 private:
   const double m_amplitude = 1;
-  double m_k = 1;
-  double m_b = 1;
+  double m_k               = 1;
+  double m_b               = 1;
 };
 
 class FlatDampingFunction : public IDampingFunction
@@ -59,7 +59,7 @@ public:
   auto operator()(double x) -> double override;
 
 private:
-  const double m_m = 1;
+  const double m_m  = 1;
   const double m_x1 = 0;
   const double m_y1 = 1;
 };
@@ -79,12 +79,12 @@ private:
 class ISequenceFunction
 {
 public:
-  ISequenceFunction() noexcept = default;
-  ISequenceFunction(const ISequenceFunction&) noexcept = default;
-  ISequenceFunction(ISequenceFunction&&) noexcept = delete;
-  virtual ~ISequenceFunction() noexcept = default;
+  ISequenceFunction() noexcept                                            = default;
+  ISequenceFunction(const ISequenceFunction&) noexcept                    = default;
+  ISequenceFunction(ISequenceFunction&&) noexcept                         = delete;
+  virtual ~ISequenceFunction() noexcept                                   = default;
   auto operator=(const ISequenceFunction&) noexcept -> ISequenceFunction& = default;
-  auto operator=(ISequenceFunction&&) noexcept -> ISequenceFunction& = delete;
+  auto operator=(ISequenceFunction&&) noexcept -> ISequenceFunction&      = delete;
 
   virtual auto GetNext() -> float = 0;
 };

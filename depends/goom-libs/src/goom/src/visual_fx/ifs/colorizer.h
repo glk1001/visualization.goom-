@@ -57,17 +57,17 @@ private:
       m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap2{};
   auto UpdateMixerMaps() -> void;
-  mutable uint32_t m_countSinceColorMapChange = 0;
+  mutable uint32_t m_countSinceColorMapChange              = 0;
   static constexpr uint32_t MIN_COLOR_MAP_CHANGE_COMPLETED = 500;
   static constexpr uint32_t MAX_COLOR_MAP_CHANGE_COMPLETED = 1000;
-  uint32_t m_colorMapChangeCompleted = MIN_COLOR_MAP_CHANGE_COMPLETED;
+  uint32_t m_colorMapChangeCompleted                       = MIN_COLOR_MAP_CHANGE_COMPLETED;
 
   VISUAL_FX::IfsDancersFx::ColorMode m_colorMode = VISUAL_FX::IfsDancersFx::ColorMode::MAP_COLORS;
-  VISUAL_FX::IfsDancersFx::ColorMode m_forcedColorMode = VISUAL_FX::IfsDancersFx::ColorMode::_NULL;
-  uint32_t m_maxHitCount = 0;
-  float m_logMaxHitCount = 0.0;
-  static constexpr float MIN_T_AWAY_FROM_BASE_COLOR = 0.0F;
-  static constexpr float MAX_T_AWAY_FROM_BASE_COLOR = 0.4F;
+  VISUAL_FX::IfsDancersFx::ColorMode m_forcedColorMode  = VISUAL_FX::IfsDancersFx::ColorMode::_NULL;
+  uint32_t m_maxHitCount                                = 0;
+  float m_logMaxHitCount                                = 0.0;
+  static constexpr float MIN_T_AWAY_FROM_BASE_COLOR     = 0.0F;
+  static constexpr float MAX_T_AWAY_FROM_BASE_COLOR     = 0.4F;
   static constexpr float INITIAL_T_AWAY_FROM_BASE_COLOR = 0.0F;
   float m_tAwayFromBaseColor = INITIAL_T_AWAY_FROM_BASE_COLOR; // in [0, 1]
   const UTILS::MATH::Weights<VISUAL_FX::IfsDancersFx::ColorMode> m_colorModeWeights;
@@ -108,7 +108,7 @@ inline auto Colorizer::SetForcedColorMode(const VISUAL_FX::IfsDancersFx::ColorMo
 
 inline auto Colorizer::SetMaxHitCount(const uint32_t val) -> void
 {
-  m_maxHitCount = val;
+  m_maxHitCount    = val;
   m_logMaxHitCount = std::log(static_cast<float>(m_maxHitCount));
 }
 

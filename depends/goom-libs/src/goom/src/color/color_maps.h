@@ -24,14 +24,14 @@ namespace GOOM::COLOR
 class IColorMap
 {
 public:
-  IColorMap() noexcept = default;
-  IColorMap(const IColorMap&) noexcept = default;
-  IColorMap(IColorMap&&) noexcept = default;
-  virtual ~IColorMap() noexcept = default;
+  IColorMap() noexcept                           = default;
+  IColorMap(const IColorMap&) noexcept           = default;
+  IColorMap(IColorMap&&) noexcept                = default;
+  virtual ~IColorMap() noexcept                  = default;
   auto operator=(const IColorMap&) -> IColorMap& = delete;
-  auto operator=(IColorMap&&) -> IColorMap& = delete;
+  auto operator=(IColorMap&&) -> IColorMap&      = delete;
 
-  [[nodiscard]] virtual auto GetNumStops() const -> size_t = 0;
+  [[nodiscard]] virtual auto GetNumStops() const -> size_t                  = 0;
   [[nodiscard]] virtual auto GetMapName() const -> COLOR_DATA::ColorMapName = 0;
 
   [[nodiscard]] virtual auto GetColor(float t) const -> Pixel = 0;
@@ -47,11 +47,11 @@ class ColorMapWrapper : public IColorMap
 public:
   ColorMapWrapper() noexcept = delete;
   explicit ColorMapWrapper(std::shared_ptr<const IColorMap> colorMap) noexcept;
-  ColorMapWrapper(const ColorMapWrapper&) noexcept = delete;
-  ColorMapWrapper(ColorMapWrapper&&) noexcept = delete;
-  ~ColorMapWrapper() noexcept override = default;
+  ColorMapWrapper(const ColorMapWrapper&) noexcept           = delete;
+  ColorMapWrapper(ColorMapWrapper&&) noexcept                = delete;
+  ~ColorMapWrapper() noexcept override                       = default;
   auto operator=(const ColorMapWrapper&) -> ColorMapWrapper& = delete;
-  auto operator=(ColorMapWrapper&&) -> ColorMapWrapper& = delete;
+  auto operator=(ColorMapWrapper&&) -> ColorMapWrapper&      = delete;
 
   [[nodiscard]] auto GetNumStops() const -> size_t override;
   [[nodiscard]] auto GetMapName() const -> COLOR_DATA::ColorMapName override;
@@ -115,11 +115,11 @@ class ColorMaps
 {
 public:
   ColorMaps() noexcept;
-  ColorMaps(const ColorMaps&) noexcept = delete;
-  ColorMaps(ColorMaps&&) noexcept = delete;
-  virtual ~ColorMaps() noexcept = default;
+  ColorMaps(const ColorMaps&) noexcept           = delete;
+  ColorMaps(ColorMaps&&) noexcept                = delete;
+  virtual ~ColorMaps() noexcept                  = default;
   auto operator=(const ColorMaps&) -> ColorMaps& = delete;
-  auto operator=(ColorMaps&&) -> ColorMaps& = delete;
+  auto operator=(ColorMaps&&) -> ColorMaps&      = delete;
 
   [[nodiscard]] static auto GetNumColorMapNames() -> uint32_t;
   using ColorMapNames = std::vector<COLOR_DATA::ColorMapName>;
@@ -131,19 +131,19 @@ public:
       -> std::shared_ptr<const IColorMap>;
 
   [[nodiscard]] static auto GetRotatedColorMapPtr(COLOR_DATA::ColorMapName mapName,
-                                           float tRotatePoint)
+                                                  float tRotatePoint)
       -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] static auto GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                           float tRotatePoint)
+                                                  float tRotatePoint)
       -> std::shared_ptr<const IColorMap>;
 
   [[nodiscard]] static auto GetTintedColorMapPtr(COLOR_DATA::ColorMapName mapName,
-                                          float saturation,
-                                          float lightness)
+                                                 float saturation,
+                                                 float lightness)
       -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] static auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                          float saturation,
-                                          float lightness)
+                                                 float saturation,
+                                                 float lightness)
       -> std::shared_ptr<const IColorMap>;
 
   [[nodiscard]] static auto GetNumGroups() -> uint32_t;

@@ -56,4 +56,3 @@ inline void GoomLock::IncreaseLockTime(const uint32_t byAmount)
 }
 
 } // namespace GOOM::CONTROL
-

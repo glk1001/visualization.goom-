@@ -23,9 +23,9 @@ public:
 private:
   struct RGB
   {
-    uint8_t red = 0;
+    uint8_t red   = 0;
     uint8_t green = 0;
-    uint8_t blue = 0;
+    uint8_t blue  = 0;
     uint8_t alpha = 0;
   };
   uint32_t m_width{};
@@ -56,7 +56,9 @@ inline auto ImageBitmap::GetHeight() const noexcept -> uint32_t
 inline auto ImageBitmap::operator()(const size_t x, const size_t y) const noexcept -> Pixel
 {
   const auto& pixel = m_buff.at((y * m_width) + x);
-  return Pixel{{pixel.red, pixel.green, pixel.blue, pixel.alpha}};
+  return Pixel{
+      {pixel.red, pixel.green, pixel.blue, pixel.alpha}
+  };
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

@@ -14,11 +14,11 @@ class BufferView
 {
 public:
   BufferView(size_t buffLen, const T* buff) noexcept;
-  BufferView(const BufferView&) = delete;
-  BufferView(BufferView&&) noexcept = default;
+  BufferView(const BufferView&)                   = delete;
+  BufferView(BufferView&&) noexcept               = default;
   auto operator=(const BufferView&) -> BufferView = delete;
-  auto operator=(BufferView&&) -> BufferView = delete;
-  virtual ~BufferView() noexcept = default;
+  auto operator=(BufferView&&) -> BufferView      = delete;
+  virtual ~BufferView() noexcept                  = default;
 
   [[nodiscard]] auto Data() const -> const T*;
   auto operator[](size_t i) const -> const T&;
@@ -31,7 +31,7 @@ protected:
   void SetBuffer(size_t buffLen, const T* buff);
 
 private:
-  size_t m_buffLen = 0;
+  size_t m_buffLen  = 0;
   const T* m_buffer = nullptr;
 };
 
@@ -48,7 +48,7 @@ template<class T>
 void inline BufferView<T>::SetBuffer(size_t buffLen, const T* buff)
 {
   m_buffLen = buffLen;
-  m_buffer = buff;
+  m_buffer  = buff;
 }
 
 template<class T>

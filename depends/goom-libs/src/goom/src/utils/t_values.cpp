@@ -11,10 +11,7 @@ namespace GOOM::UTILS
 TValue::TValue(const TValue::StepType stepType,
                const float stepSize,
                const float startingT) noexcept
-  : m_stepType{stepType},
-    m_stepSize{stepSize},
-    m_t{startingT},
-    m_delayPoints{}
+  : m_stepType{stepType}, m_stepSize{stepSize}, m_t{startingT}, m_delayPoints{}
 {
 }
 
@@ -22,10 +19,7 @@ TValue::TValue(const TValue::StepType stepType,
                const float stepSize,
                const std::vector<DelayPoint>& delayPoints,
                const float startingT) noexcept
-  : m_stepType{stepType},
-    m_stepSize{stepSize},
-    m_t{startingT},
-    m_delayPoints{delayPoints}
+  : m_stepType{stepType}, m_stepSize{stepSize}, m_t{startingT}, m_delayPoints{delayPoints}
 {
   ValidateDelayPoints();
 }
@@ -171,7 +165,7 @@ inline auto TValue::IsInDelayZone() noexcept -> bool
     --m_delayPointCount;
     if (0 == m_delayPointCount)
     {
-      m_startedDelay = false;
+      m_startedDelay      = false;
       m_justFinishedDelay = true;
     }
     return true;
@@ -200,7 +194,7 @@ auto TValue::SetStepSize(const float val) noexcept -> void
 
   const auto oldCurrentStep = m_currentStep;
 
-  m_stepSize = val;
+  m_stepSize    = val;
   m_currentStep = m_currentStep < 0.0F ? -m_stepSize : +m_stepSize;
 
   if (((oldCurrentStep < 0.0F) && (m_currentStep > 0.0F)) ||

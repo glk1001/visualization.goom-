@@ -89,8 +89,10 @@ auto TentaclePlotter::Plot3D(const Tentacle3D& tentacle) -> void
   }
 }
 
-inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle, const size_t nodeNum,
-                                      const Point2dInt point1, const Point2dInt point2,
+inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
+                                      const size_t nodeNum,
+                                      const Point2dInt point1,
+                                      const Point2dInt point2,
                                       const float brightness) -> void
 {
   const auto colors = GetMixedColors(tentacle, brightness, nodeNum);
@@ -98,14 +100,16 @@ inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle, const size_t n
   DrawNodeDot(nodeNum, point2, colors);
 }
 
-inline auto TentaclePlotter::DrawNodeLine(const Point2dInt point1, const Point2dInt point2,
+inline auto TentaclePlotter::DrawNodeLine(const Point2dInt point1,
+                                          const Point2dInt point2,
                                           const MultiplePixels& colors) -> void
 {
   static constexpr auto THICKNESS = 1U;
   m_draw.Line(point1, point2, colors, THICKNESS);
 }
 
-inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum, const Point2dInt point,
+inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
+                                         const Point2dInt point,
                                          const MultiplePixels& colors) -> void
 {
   if ((nodeNum % m_numNodesBetweenDots) != 0)
@@ -164,8 +168,8 @@ auto TentaclePlotter::SetCameraPosition(const float cameraDistance, const float 
 }
 
 inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& points,
-                                                  const V3dFlt& translate, const float angle)
-    -> std::vector<V3dFlt>
+                                                  const V3dFlt& translate,
+                                                  const float angle) -> std::vector<V3dFlt>
 {
   const auto sinAngle = std::sin(angle);
   const auto cosAngle = std::cos(angle);
@@ -181,7 +185,8 @@ inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& poi
   return transformedPoints;
 }
 
-inline auto TentaclePlotter::GetMixedColors(const Tentacle3D& tentacle, const float brightness,
+inline auto TentaclePlotter::GetMixedColors(const Tentacle3D& tentacle,
+                                            const float brightness,
                                             const size_t nodeNum) const -> MultiplePixels
 {
   const auto [mainColor, lowColor] =
@@ -270,8 +275,10 @@ auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points
   return points2D;
 }
 
-inline auto TentaclePlotter::RotateAboutYAxis(const float sinAngle, const float cosAngle,
-                                              const V3dFlt& srcPoint, V3dFlt& destPoint) -> void
+inline auto TentaclePlotter::RotateAboutYAxis(const float sinAngle,
+                                              const float cosAngle,
+                                              const V3dFlt& srcPoint,
+                                              V3dFlt& destPoint) -> void
 {
   const auto srcX = srcPoint.x;
   const auto srcZ = srcPoint.z;

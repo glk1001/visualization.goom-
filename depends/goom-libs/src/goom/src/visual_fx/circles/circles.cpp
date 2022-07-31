@@ -17,8 +17,8 @@ using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 
 static constexpr auto LINE_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER;
-static constexpr auto MIN_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER + 4;
-static constexpr auto MAX_DOT_DIAMETER = BitmapGetter::MAX_DOT_DIAMETER;
+static constexpr auto MIN_DOT_DIAMETER  = BitmapGetter::MIN_DOT_DIAMETER + 4;
+static constexpr auto MAX_DOT_DIAMETER  = BitmapGetter::MAX_DOT_DIAMETER;
 
 Circles::Circles(const FxHelper& fxHelper,
                  const SmallImageBitmaps& smallBitmaps,
@@ -58,7 +58,8 @@ auto Circles::SetWeightedColorMaps(
     const std::shared_ptr<const RandomColorMaps> weightedMaps,
     const std::shared_ptr<const RandomColorMaps> weightedLowMaps) noexcept -> void
 {
-  std::for_each(begin(m_circles), end(m_circles),
+  std::for_each(begin(m_circles),
+                end(m_circles),
                 [&weightedMaps, &weightedLowMaps](Circle& circle)
                 { circle.SetWeightedColorMaps(weightedMaps, weightedLowMaps); });
 
@@ -67,7 +68,8 @@ auto Circles::SetWeightedColorMaps(
   static constexpr auto MIN_BLANK_TIME = 30U;
   static constexpr auto MAX_BLANK_TIME = 100U;
   const auto newBlankTime = m_goomRand.GetRandInRange(MIN_BLANK_TIME, MAX_BLANK_TIME + 1);
-  std::for_each(begin(m_circles), end(m_circles),
+  std::for_each(begin(m_circles),
+                end(m_circles),
                 [&newBlankTime](Circle& circle) { circle.SetBlankTime(newBlankTime); });
 }
 
@@ -82,7 +84,8 @@ auto Circles::SetNewTargetPoints() noexcept -> void
 
   m_circles.front().SetMovingTargetPoint(GetCentreCircleTargetPoint(), lerpTFromFixedTarget);
 
-  std::for_each(begin(m_circles) + 1, end(m_circles),
+  std::for_each(begin(m_circles) + 1,
+                end(m_circles),
                 [this, &lerpTFromFixedTarget](Circle& circle)
                 { circle.SetMovingTargetPoint(m_zoomMidpoint, lerpTFromFixedTarget); });
 }
@@ -127,10 +130,11 @@ auto Circles::UpdatePositionSpeed() noexcept -> void
 
   static constexpr auto MIN_POSITION_STEPS = 100U;
   static constexpr auto MAX_POSITION_STEPS = 1000U;
-  const auto newNumSteps = std::min(
+  const auto newNumSteps                   = std::min(
       MIN_POSITION_STEPS + m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom(), MAX_POSITION_STEPS);
 
-  std::for_each(begin(m_circles), end(m_circles),
+  std::for_each(begin(m_circles),
+                end(m_circles),
                 [&newNumSteps](Circle& circle) { circle.UpdatePositionSpeed(newNumSteps); });
 }
 
@@ -141,7 +145,8 @@ inline auto Circles::UpdateCirclePathParams() noexcept -> void
     return;
   }
 
-  std::for_each(begin(m_circles), end(m_circles),
+  std::for_each(begin(m_circles),
+                end(m_circles),
                 [this](Circle& circle) { circle.SetPathParams(GetPathParams()); });
 }
 
@@ -149,10 +154,10 @@ inline auto Circles::GetPathParams() const noexcept -> OscillatingFunction::Para
 {
   static constexpr auto MIN_PATH_AMPLITUDE = 90.0F;
   static constexpr auto MAX_PATH_AMPLITUDE = 110.0F;
-  static constexpr auto MIN_PATH_X_FREQ = 0.9F;
-  static constexpr auto MAX_PATH_X_FREQ = 2.0F;
-  static constexpr auto MIN_PATH_Y_FREQ = 0.9F;
-  static constexpr auto MAX_PATH_Y_FREQ = 2.0F;
+  static constexpr auto MIN_PATH_X_FREQ    = 0.9F;
+  static constexpr auto MAX_PATH_X_FREQ    = 2.0F;
+  static constexpr auto MIN_PATH_Y_FREQ    = 0.9F;
+  static constexpr auto MAX_PATH_Y_FREQ    = 2.0F;
 
   return {
       m_goomRand.GetRandInRange(MIN_PATH_AMPLITUDE, MAX_PATH_AMPLITUDE),

@@ -33,11 +33,11 @@ class IGoomDraw
 public:
   IGoomDraw() noexcept = delete;
   IGoomDraw(uint32_t screenWidth, uint32_t screenHeight);
-  IGoomDraw(const IGoomDraw&) noexcept = delete;
-  IGoomDraw(IGoomDraw&&) noexcept = delete;
-  virtual ~IGoomDraw() noexcept = default;
+  IGoomDraw(const IGoomDraw&) noexcept           = delete;
+  IGoomDraw(IGoomDraw&&) noexcept                = delete;
+  virtual ~IGoomDraw() noexcept                  = default;
   auto operator=(const IGoomDraw&) -> IGoomDraw& = delete;
-  auto operator=(IGoomDraw&&) -> IGoomDraw& = delete;
+  auto operator=(IGoomDraw&&) -> IGoomDraw&      = delete;
 
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
@@ -56,10 +56,7 @@ public:
   void Circle(Point2dInt point, int radius, const MultiplePixels& colors);
 
   void Line(Point2dInt point1, Point2dInt point2, const Pixel& color, uint8_t thickness);
-  void Line(Point2dInt point1,
-            Point2dInt point2,
-            const MultiplePixels& colors,
-            uint8_t thickness);
+  void Line(Point2dInt point1, Point2dInt point2, const MultiplePixels& colors, uint8_t thickness);
 
   using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& imageColor)>;
   void Bitmap(Point2dInt centre,
@@ -72,7 +69,7 @@ public:
   void DrawPixels(Point2dInt point, const MultiplePixels& colors);
   void DrawPixelsClipped(Point2dInt point, const MultiplePixels& colors);
 
-  [[nodiscard]] virtual auto GetPixel(Point2dInt point) const -> Pixel = 0;
+  [[nodiscard]] virtual auto GetPixel(Point2dInt point) const -> Pixel             = 0;
   virtual void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) = 0;
 
 protected:
@@ -98,7 +95,7 @@ private:
                                                const Pixel& newColor,
                                                uint32_t intBuffIntensity) -> Pixel;
   static constexpr float DEFAULT_BUFF_INTENSITY = 0.5F;
-  float m_buffIntensity = DEFAULT_BUFF_INTENSITY;
+  float m_buffIntensity                         = DEFAULT_BUFF_INTENSITY;
   uint32_t m_intBuffIntensity{};
   mutable GOOM::UTILS::Parallel m_parallel{-1}; // max cores - 1
 };

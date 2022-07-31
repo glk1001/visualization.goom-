@@ -38,22 +38,22 @@ public:
 
 private:
   friend class Similitudes;
-  Dbl m_dbl_cx = 0;
-  Dbl m_dbl_cy = 0;
-  Dbl m_dbl_r1 = 0;
-  Dbl m_dbl_r2 = 0;
-  Dbl m_dbl_A1 = 0;
-  Dbl m_dbl_A2 = 0;
-  Flt m_cx = 0;
-  Flt m_cy = 0;
-  Flt m_r1 = 0;
-  Flt m_r2 = 0;
-  Flt m_cosA1 = 0;
-  Flt m_sinA1 = 0;
-  Flt m_cosA2 = 0;
-  Flt m_sinA2 = 0;
-  const COLOR::IColorMap* m_colorMap = nullptr;
-  Pixel m_color = BLACK_PIXEL;
+  Dbl m_dbl_cx                                             = 0;
+  Dbl m_dbl_cy                                             = 0;
+  Dbl m_dbl_r1                                             = 0;
+  Dbl m_dbl_r2                                             = 0;
+  Dbl m_dbl_A1                                             = 0;
+  Dbl m_dbl_A2                                             = 0;
+  Flt m_cx                                                 = 0;
+  Flt m_cy                                                 = 0;
+  Flt m_r1                                                 = 0;
+  Flt m_r2                                                 = 0;
+  Flt m_cosA1                                              = 0;
+  Flt m_sinA1                                              = 0;
+  Flt m_cosA2                                              = 0;
+  Flt m_sinA2                                              = 0;
+  const COLOR::IColorMap* m_colorMap                       = nullptr;
+  Pixel m_color                                            = BLACK_PIXEL;
   const UTILS::GRAPHICS::ImageBitmap* m_currentPointBitmap = nullptr;
 };
 
@@ -63,10 +63,10 @@ public:
   Similitudes(const UTILS::MATH::IGoomRand& goomRand,
               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
   ~Similitudes() noexcept;
-  Similitudes(const Similitudes&) noexcept = default;
-  Similitudes(Similitudes&&) noexcept = default;
+  Similitudes(const Similitudes&) noexcept                    = default;
+  Similitudes(Similitudes&&) noexcept                         = default;
   auto operator=(const Similitudes&) noexcept -> Similitudes& = delete;
-  auto operator=(Similitudes&&) noexcept -> Similitudes& = delete;
+  auto operator=(Similitudes&&) noexcept -> Similitudes&      = delete;
 
   auto Init() -> void;
 
@@ -87,7 +87,7 @@ private:
   using SimiGroup = std::vector<Similitude>;
   SimiGroup m_mainSimiGroup{};
   static constexpr size_t NUM_EXTRA_SIMI_GROUPS = 4;
-  using ExtraSimiGroups = std::array<SimiGroup, NUM_EXTRA_SIMI_GROUPS>;
+  using ExtraSimiGroups                         = std::array<SimiGroup, NUM_EXTRA_SIMI_GROUPS>;
   ExtraSimiGroups m_extraSimiGroups{};
   uint32_t m_numSimis = 0;
   auto ResetSimiGroups() -> void;

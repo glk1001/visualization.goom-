@@ -82,7 +82,7 @@ void GoomAllVisualFx::ChangeState()
   m_allStandardVisualFx->SuspendFx();
 
   static constexpr auto MAX_TRIES = 10U;
-  const auto oldState = m_goomStateHandler.GetCurrentState();
+  const auto oldState             = m_goomStateHandler.GetCurrentState();
 
   for (auto numTry = 0U; numTry < MAX_TRIES; ++numTry)
   {
@@ -191,11 +191,11 @@ auto GoomAllVisualFx::GetSameLumaBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
       return COLOR::GetColorAdd(oldColor, newColor);
     }
     const auto oldColorLuma = GetLuma(oldColor);
-    const auto brightness = 1.0F + (oldColorLuma / newColorLuma);
+    const auto brightness   = 1.0F + (oldColorLuma / newColorLuma);
 
-    const auto red = static_cast<uint32_t>(brightness * static_cast<float>(newColor.R()));
+    const auto red   = static_cast<uint32_t>(brightness * static_cast<float>(newColor.R()));
     const auto green = static_cast<uint32_t>(brightness * static_cast<float>(newColor.G()));
-    const auto blue = static_cast<uint32_t>(brightness * static_cast<float>(newColor.B()));
+    const auto blue  = static_cast<uint32_t>(brightness * static_cast<float>(newColor.B()));
 
     return Pixel{red, green, blue, MAX_ALPHA};
   };
@@ -212,12 +212,12 @@ auto GoomAllVisualFx::GetSameLumaMixBlendPixelFunc() -> IGoomDraw::BlendPixelFun
       return COLOR::GetColorAdd(oldColor, newColor);
     }
     const auto oldColorLuma = GetLuma(oldColor);
-    const auto brightness = 0.5F * (1.0F + (oldColorLuma / newColorLuma));
+    const auto brightness   = 0.5F * (1.0F + (oldColorLuma / newColorLuma));
 
     const auto finalNewColor = IColorMap::GetColorMix(oldColor, newColor, 0.7F);
-    const auto red = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.R()));
+    const auto red   = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.R()));
     const auto green = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.G()));
-    const auto blue = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.B()));
+    const auto blue  = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.B()));
 
     return Pixel{red, green, blue, MAX_ALPHA};
   };

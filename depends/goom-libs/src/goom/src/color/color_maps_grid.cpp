@@ -31,7 +31,7 @@ auto ColorMapsGrid::GetNextColors() const -> ColorArray
   for (auto i = 0U; i < m_width; ++i)
   {
     const auto horizontalColor = m_horizontalColorMap->GetColor(horizontalT());
-    const auto verticalColor = m_verticalColorMaps.at(i)->GetColor(m_verticalT());
+    const auto verticalColor   = m_verticalColorMaps.at(i)->GetColor(m_verticalT());
     nextColors.at(i) = IColorMap::GetColorMix(horizontalColor, verticalColor, m_colorMixingT(i));
 
     horizontalT.Increment();

@@ -23,8 +23,8 @@ static constexpr auto PATH_SEP = "\\";
 static constexpr auto PATH_SEP = "/";
 #endif
 
-static constexpr auto FONTS_DIR = "fonts";
-static constexpr auto IMAGES_DIR = "images";
+static constexpr auto FONTS_DIR              = "fonts";
+static constexpr auto IMAGES_DIR             = "images";
 static constexpr auto IMAGE_DISPLACEMENT_DIR = "displacements";
 
 #ifdef WORDS_BIGENDIAN

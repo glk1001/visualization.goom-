@@ -26,7 +26,7 @@ class BufferSaver
 public:
   explicit BufferSaver(std::string filenamePrefix,
                        int64_t startBuffNum = 0,
-                       int64_t endBuffNum = 1000000);
+                       int64_t endBuffNum   = 1000000);
 
   [[nodiscard]] auto GetCurrentFilename() const -> std::string;
   [[nodiscard]] auto GetCurrentBufferNum() const -> int64_t;

@@ -16,10 +16,10 @@ public:
   GoomDrawToBuffer() noexcept = delete;
   GoomDrawToBuffer(uint32_t screenWidth, uint32_t screenHeight);
   GoomDrawToBuffer(const GoomDrawToBuffer&) noexcept = delete;
-  GoomDrawToBuffer(GoomDrawToBuffer&&) noexcept = delete;
+  GoomDrawToBuffer(GoomDrawToBuffer&&) noexcept      = delete;
   ~GoomDrawToBuffer() noexcept override;
   auto operator=(const GoomDrawToBuffer&) noexcept -> GoomDrawToBuffer& = delete;
-  auto operator=(GoomDrawToBuffer&&) noexcept -> GoomDrawToBuffer& = delete;
+  auto operator=(GoomDrawToBuffer&&) noexcept -> GoomDrawToBuffer&      = delete;
 
   void SetBuffers(const std::vector<PixelBuffer*>& buffs);
 

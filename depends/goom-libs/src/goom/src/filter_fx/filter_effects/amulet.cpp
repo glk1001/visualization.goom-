@@ -9,7 +9,7 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
 static constexpr auto DEFAULT_AMPLITUDE = 1.0F;
-static constexpr auto AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.1F, 1.51F};
+static constexpr auto AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.1F, 1.51F};
 
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 0.98F;
 

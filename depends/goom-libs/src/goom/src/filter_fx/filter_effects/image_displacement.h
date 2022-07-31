@@ -17,10 +17,10 @@ class ImageDisplacement
 public:
   ImageDisplacement(const std::string& imageFilename, const UTILS::MATH::IGoomRand& goomRand);
   ImageDisplacement(const ImageDisplacement&) noexcept = delete;
-  ImageDisplacement(ImageDisplacement&&) noexcept = default;
+  ImageDisplacement(ImageDisplacement&&) noexcept      = default;
   ~ImageDisplacement() noexcept;
   auto operator=(const ImageDisplacement&) noexcept -> ImageDisplacement& = delete;
-  auto operator=(ImageDisplacement&&) noexcept -> ImageDisplacement& = delete;
+  auto operator=(ImageDisplacement&&) noexcept -> ImageDisplacement&      = delete;
 
   [[nodiscard]] auto GetImageFilename() const -> std::string;
   [[nodiscard]] auto GetXColorCutoff() const -> float;
@@ -42,13 +42,14 @@ private:
   const int32_t m_xMax{static_cast<int32_t>(m_imageBuffer->GetWidth() - 1)};
   const int32_t m_yMax{static_cast<int32_t>(m_imageBuffer->GetHeight() - 1)};
   const NormalizedCoordsConverter m_normalizedCoordsConverter{
-      m_imageBuffer->GetWidth(), m_imageBuffer->GetHeight(),
+      m_imageBuffer->GetWidth(),
+      m_imageBuffer->GetHeight(),
       ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL};
-  float m_zoomFactor = 1.0F;
-  float m_amplitude = 1.0F;
+  float m_zoomFactor                    = 1.0F;
+  float m_amplitude                     = 1.0F;
   static constexpr float INITIAL_CUTOFF = 0.5F;
-  float m_xColorCutoff = INITIAL_CUTOFF;
-  float m_yColorCutoff = INITIAL_CUTOFF;
+  float m_xColorCutoff                  = INITIAL_CUTOFF;
+  float m_yColorCutoff                  = INITIAL_CUTOFF;
   [[nodiscard]] auto NormalizedCoordsToImagePoint(const NormalizedCoords& normalizedCoords) const
       -> Point2dInt;
   [[nodiscard]] auto ColorToNormalizedDisplacement(const Pixel& color) const -> Point2dFlt;

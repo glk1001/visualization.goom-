@@ -13,12 +13,12 @@ struct ZoomFilterEffectsSettings;
 class IZoomVector
 {
 public:
-  IZoomVector() noexcept = default;
-  IZoomVector(const IZoomVector&) noexcept = delete;
-  IZoomVector(IZoomVector&&) noexcept = delete;
-  virtual ~IZoomVector() noexcept = default;
+  IZoomVector() noexcept                             = default;
+  IZoomVector(const IZoomVector&) noexcept           = delete;
+  IZoomVector(IZoomVector&&) noexcept                = delete;
+  virtual ~IZoomVector() noexcept                    = default;
   auto operator=(const IZoomVector&) -> IZoomVector& = delete;
-  auto operator=(IZoomVector&&) -> IZoomVector& = delete;
+  auto operator=(IZoomVector&&) -> IZoomVector&      = delete;
 
   virtual auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
       -> void = 0;

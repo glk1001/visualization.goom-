@@ -17,10 +17,10 @@ public:
   GoomDrawToContainer() noexcept = delete;
   GoomDrawToContainer(uint32_t screenWidth, uint32_t screenHeight);
   GoomDrawToContainer(const GoomDrawToContainer&) noexcept = delete;
-  GoomDrawToContainer(GoomDrawToContainer&&) noexcept = delete;
+  GoomDrawToContainer(GoomDrawToContainer&&) noexcept      = delete;
   ~GoomDrawToContainer() noexcept override;
   auto operator=(const GoomDrawToContainer&) noexcept -> GoomDrawToContainer& = delete;
-  auto operator=(GoomDrawToContainer&&) noexcept -> GoomDrawToContainer& = delete;
+  auto operator=(GoomDrawToContainer&&) noexcept -> GoomDrawToContainer&      = delete;
 
   auto GetPixel(Point2dInt point) const -> Pixel override;
   void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) override;
@@ -28,7 +28,7 @@ public:
   auto GetPixels(Point2dInt point) const -> MultiplePixels;
 
   static constexpr size_t MAX_NUM_COLORS_LIST = 3;
-  using ColorsArray = std::array<Pixel, MAX_NUM_COLORS_LIST>;
+  using ColorsArray                           = std::array<Pixel, MAX_NUM_COLORS_LIST>;
   struct ColorsList
   {
     uint8_t count = 0;
@@ -79,8 +79,7 @@ inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt point) const
   return colorsList.colorsArray[static_cast<size_t>(colorsList.count - 1)];
 }
 
-inline auto GoomDrawToContainer::GetLastDrawnColors(const Point2dInt point) const
-    -> MultiplePixels
+inline auto GoomDrawToContainer::GetLastDrawnColors(const Point2dInt point) const -> MultiplePixels
 {
   return {GetLastDrawnColor(point), BLACK_PIXEL};
 }

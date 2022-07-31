@@ -30,7 +30,9 @@ FilterBuffersService::FilterBuffersService(
     const NormalizedCoordsConverter& normalizedCoordsConverter,
     std::unique_ptr<IZoomVector> zoomVector) noexcept
   : m_zoomVector{std::move(zoomVector)},
-    m_filterBuffers{parallel, goomInfo, normalizedCoordsConverter,
+    m_filterBuffers{parallel,
+                    goomInfo,
+                    normalizedCoordsConverter,
                     [this](const NormalizedCoords& normalizedCoords)
                     { return m_zoomVector->GetZoomPoint(normalizedCoords); }}
 {
@@ -46,7 +48,7 @@ auto FilterBuffersService::SetFilterBufferSettings(
 auto FilterBuffersService::SetFilterEffectsSettings(
     const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void
 {
-  m_nextFilterEffectsSettings = filterEffectsSettings;
+  m_nextFilterEffectsSettings    = filterEffectsSettings;
   m_pendingFilterEffectsSettings = true;
 }
 
@@ -120,15 +122,16 @@ inline auto FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpInc
 
   if (tranLerpIncrement != 0)
   {
-    tranLerpFactor = std::clamp(tranLerpFactor + tranLerpIncrement, 0,
-                                ZoomFilterBuffers::GetMaxTranLerpFactor());
+    tranLerpFactor = std::clamp(
+        tranLerpFactor + tranLerpIncrement, 0, ZoomFilterBuffers::GetMaxTranLerpFactor());
   }
 
   if (!FloatsEqual(tranLerpToMaxSwitchMult, 1.0F))
   {
     tranLerpFactor = static_cast<int32_t>(
         STD20::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
-                    static_cast<float>(tranLerpFactor), tranLerpToMaxSwitchMult));
+                    static_cast<float>(tranLerpFactor),
+                    tranLerpToMaxSwitchMult));
   }
 
   m_filterBuffers.SetTranLerpFactor(tranLerpFactor);

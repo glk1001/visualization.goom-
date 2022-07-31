@@ -19,7 +19,7 @@ GoomDrawToBuffer::~GoomDrawToBuffer() noexcept = default;
 void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
 {
   m_multipleBuffers = buffs;
-  m_numBuffers = m_multipleBuffers.size();
+  m_numBuffers      = m_multipleBuffers.size();
 }
 
 auto GoomDrawToBuffer::GetPixel(const Point2dInt point) const -> Pixel

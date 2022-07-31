@@ -115,8 +115,8 @@ void DrawMethods::DrawFilledCircle(const int32_t x0,
                                    const int32_t radius,
                                    const std::vector<Pixel>& colors)
 {
-  auto plotter = [&](const int x1, const int y1, const int x2,
-                     [[maybe_unused]] const int y2) -> void
+  auto plotter =
+      [&](const int x1, const int y1, const int x2, [[maybe_unused]] const int y2) -> void
   {
     Expects(y1 == y2);
     DrawHorizontalLine(x1, y1, x2, colors);
@@ -125,8 +125,8 @@ void DrawMethods::DrawFilledCircle(const int32_t x0,
   DrawBresenhamCircle(x0, y0, radius, plotter);
 }
 
-static constexpr int LINE_THICKNESS_MIDDLE = 0;
-static constexpr int LINE_THICKNESS_DRAW_CLOCKWISE = 1;
+static constexpr int LINE_THICKNESS_MIDDLE                = 0;
+static constexpr int LINE_THICKNESS_DRAW_CLOCKWISE        = 1;
 static constexpr int LINE_THICKNESS_DRAW_COUNTERCLOCKWISE = 2;
 
 void DrawMethods::DrawLine(const int32_t x1,
@@ -168,7 +168,7 @@ void DrawMethods::DrawWuLine(
   }
 
   std::vector<Pixel> tempColors = colors;
-  auto plot = [&](const int x, const int y, const float brightness) -> void
+  auto plot                     = [&](const int x, const int y, const float brightness) -> void
   {
     if ((static_cast<uint32_t>(x) >= m_screenWidth) || (static_cast<uint32_t>(y) >= m_screenHeight))
     {
@@ -193,8 +193,11 @@ void DrawMethods::DrawWuLine(
     }
   };
 
-  WuLine(static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(x2),
-         static_cast<float>(y2), plot);
+  WuLine(static_cast<float>(x1),
+         static_cast<float>(y1),
+         static_cast<float>(x2),
+         static_cast<float>(y2),
+         plot);
 }
 
 // The Xiaolin Wu anti-aliased draw line.
@@ -202,9 +205,9 @@ void DrawMethods::DrawWuLine(
 //
 void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot)
 {
-  const auto iPart = [](const float x) -> int { return static_cast<int>(std::floor(x)); };
+  const auto iPart  = [](const float x) -> int { return static_cast<int>(std::floor(x)); };
   const auto fRound = [](const float x) -> float { return std::round(x); };
-  const auto fPart = [](const float x) -> float { return x - std::floor(x); };
+  const auto fPart  = [](const float x) -> float { return x - std::floor(x); };
   const auto rFPart = [=](const float x) -> float { return 1 - fPart(x); };
 
   const bool steep = std::abs(y1 - y0) > std::abs(x1 - x0);
@@ -219,8 +222,8 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
     std::swap(y0, y1);
   }
 
-  const float dx = x1 - x0; // because of above swap, must be >= 0
-  const float dy = y1 - y0;
+  const float dx       = x1 - x0; // because of above swap, must be >= 0
+  const float dy       = y1 - y0;
   const float gradient = (dx < 0.001F) ? 1 : (dy / dx);
 
   int xpx11;
@@ -229,8 +232,8 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
     const float xEnd = fRound(x0);
     const float yEnd = y0 + (gradient * (xEnd - x0));
     const float xGap = rFPart(x0 + 0.5F);
-    xpx11 = static_cast<int>(xEnd);
-    const int ypx11 = iPart(yEnd);
+    xpx11            = static_cast<int>(xEnd);
+    const int ypx11  = iPart(yEnd);
     if (steep)
     {
       plot(ypx11, xpx11, rFPart(yEnd) * xGap);
@@ -249,8 +252,8 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
     const float xEnd = fRound(x1);
     const float yEnd = y1 + (gradient * (xEnd - x1));
     const float xGap = rFPart(x1 + 0.5F);
-    xpx12 = static_cast<int>(xEnd);
-    const int ypx12 = iPart(yEnd);
+    xpx12            = static_cast<int>(xEnd);
+    const int ypx12  = iPart(yEnd);
     if (steep)
     {
       plot(ypx12, xpx12, rFPart(yEnd) * xGap);
@@ -300,7 +303,7 @@ void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
  *  - pixels are drawn if LINE_OVERLAP_MINOR
  */
 
-static constexpr int LINE_OVERLAP_NONE = 0;
+static constexpr int LINE_OVERLAP_NONE  = 0;
 static constexpr int LINE_OVERLAP_MAJOR = 1;
 static constexpr int LINE_OVERLAP_MINOR = 2;
 
@@ -320,7 +323,7 @@ void DrawMethods::DrawLineOverlap(int x0,
   }
 
   std::vector<Pixel> tempColors = colors;
-  auto plot = [&](const int x, const int y) -> void
+  auto plot                     = [&](const int x, const int y) -> void
   {
     if ((static_cast<uint32_t>(x) >= m_screenWidth) || (static_cast<uint32_t>(y) >= m_screenHeight))
     {
@@ -360,7 +363,7 @@ void DrawMethods::DrawLineOverlap(int x0,
     if (deltaX < 0)
     {
       deltaX = -deltaX;
-      stepX = -1;
+      stepX  = -1;
     }
     else
     {
@@ -369,7 +372,7 @@ void DrawMethods::DrawLineOverlap(int x0,
     if (deltaY < 0)
     {
       deltaY = -deltaY;
-      stepY = -1;
+      stepY  = -1;
     }
     else
     {
@@ -484,8 +487,8 @@ void DrawMethods::DrawThickLine(int x0,
   if (deltaX < 0)
   {
     deltaX = -deltaX;
-    stepX = -1;
-    swap = !swap;
+    stepX  = -1;
+    swap   = !swap;
   }
   else
   {
@@ -494,8 +497,8 @@ void DrawMethods::DrawThickLine(int x0,
   if (deltaY < 0)
   {
     deltaY = -deltaY;
-    stepY = -1;
-    swap = !swap;
+    stepY  = -1;
+    swap   = !swap;
   }
   else
   {
@@ -523,7 +526,7 @@ void DrawMethods::DrawThickLine(int x0,
     if (swap)
     {
       drawStartAdjustCount = (thickness - 1) - drawStartAdjustCount;
-      stepY = -stepY;
+      stepY                = -stepY;
     }
     else
     {
@@ -599,7 +602,7 @@ void DrawMethods::DrawThickLine(int x0,
     else
     {
       drawStartAdjustCount = (thickness - 1) - drawStartAdjustCount;
-      stepY = -stepY;
+      stepY                = -stepY;
     }
     // adjust draw start point
     error = deltaXTimes2 - deltaY;

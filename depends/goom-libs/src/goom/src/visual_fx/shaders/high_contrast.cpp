@@ -22,10 +22,10 @@ void HighContrast::Start()
 
 inline void HighContrast::ResetValues()
 {
-  m_currentContrast = DEFAULT_CONTRAST;
-  m_currentBrightness = DEFAULT_BRIGHTNESS;
+  m_currentContrast                = DEFAULT_CONTRAST;
+  m_currentBrightness              = DEFAULT_BRIGHTNESS;
   m_currentContrastMinChannelValue = 0.0F;
-  m_maxContrastMinChannelValue = 0.0F;
+  m_maxContrastMinChannelValue     = 0.0F;
 }
 
 void HighContrast::ChangeHighContrast()

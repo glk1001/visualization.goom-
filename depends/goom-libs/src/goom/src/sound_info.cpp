@@ -44,8 +44,8 @@ auto AudioSamples::GetMinMaxSampleValues(
 
   for (auto i = 0U; i < NUM_AUDIO_SAMPLES; ++i)
   {
-    const auto& sampleArray = sampleArrays.at(i);
-    const auto& [minVal, maxVal] = std::minmax_element(cbegin(sampleArray), cend(sampleArray));
+    const auto& sampleArray         = sampleArrays.at(i);
+    const auto& [minVal, maxVal]    = std::minmax_element(cbegin(sampleArray), cend(sampleArray));
     minMaxSampleValues.at(i).minVal = *minVal;
     minMaxSampleValues.at(i).maxVal = *maxVal;
   }

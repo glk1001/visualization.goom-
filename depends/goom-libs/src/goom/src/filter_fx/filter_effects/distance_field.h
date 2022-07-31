@@ -70,10 +70,16 @@ inline auto DistanceField::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeff
   }
 
   return {
-      GetSpeedCoefficient(baseSpeedCoeffs.x, sqDistFromClosestPoint, m_params.xAmplitude,
-                          m_params.xSqDistMult, m_params.xSqDistOffset),
-      GetSpeedCoefficient(baseSpeedCoeffs.y, sqDistFromClosestPoint, m_params.yAmplitude,
-                          m_params.ySqDistMult, m_params.ySqDistOffset),
+      GetSpeedCoefficient(baseSpeedCoeffs.x,
+                          sqDistFromClosestPoint,
+                          m_params.xAmplitude,
+                          m_params.xSqDistMult,
+                          m_params.xSqDistOffset),
+      GetSpeedCoefficient(baseSpeedCoeffs.y,
+                          sqDistFromClosestPoint,
+                          m_params.yAmplitude,
+                          m_params.ySqDistMult,
+                          m_params.ySqDistOffset),
   };
 }
 

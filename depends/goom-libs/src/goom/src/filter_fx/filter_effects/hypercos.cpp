@@ -135,8 +135,13 @@ auto Hypercos::SetHypercosEffect(const HypercosOverlay overlay,
                               ? xAmplitude
                               : m_goomRand.GetRandInRange(amplitudeRange);
 
-  SetParams({overlay, m_hypercosOverlayWeights.GetRandomWeighted(), reverse, xFreq, yFreq,
-             xAmplitude, yAmplitude});
+  SetParams({overlay,
+             m_hypercosOverlayWeights.GetRandomWeighted(),
+             reverse,
+             xFreq,
+             yFreq,
+             xAmplitude,
+             yAmplitude});
 }
 
 inline auto Hypercos::GetFreqToUse(const float freq) const -> float
@@ -152,8 +157,10 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords) const -> NormalizedCo
   return GetVelocity(coords, m_params.effect, xFreqToUse, yFreqToUse);
 }
 
-auto Hypercos::GetVelocity(const NormalizedCoords& coords, const HypercosEffect effect,
-                           const float xFreqToUse, const float yFreqToUse) const -> NormalizedCoords
+auto Hypercos::GetVelocity(const NormalizedCoords& coords,
+                           const HypercosEffect effect,
+                           const float xFreqToUse,
+                           const float yFreqToUse) const -> NormalizedCoords
 {
   auto xVal = 0.0F;
   auto yVal = 0.0F;

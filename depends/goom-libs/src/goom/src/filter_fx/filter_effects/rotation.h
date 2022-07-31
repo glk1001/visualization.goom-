@@ -31,8 +31,8 @@ public:
   auto Reset() -> void;
 
 private:
-  bool m_toggle = false;
-  float m_multiplyFactor = 1.0F;
+  bool m_toggle                   = false;
+  float m_multiplyFactor          = 1.0F;
   AdjustmentType m_adjustmentType = AdjustmentType::NONE;
 };
 
@@ -40,11 +40,11 @@ class Rotation
 {
 public:
   explicit Rotation(const UTILS::MATH::IGoomRand& goomRand) noexcept;
-  Rotation(const Rotation&) noexcept = delete;
-  Rotation(Rotation&&) noexcept = delete;
-  virtual ~Rotation() noexcept = default;
+  Rotation(const Rotation&) noexcept           = delete;
+  Rotation(Rotation&&) noexcept                = delete;
+  virtual ~Rotation() noexcept                 = default;
   auto operator=(const Rotation&) -> Rotation& = delete;
-  auto operator=(Rotation&&) -> Rotation& = delete;
+  auto operator=(Rotation&&) -> Rotation&      = delete;
 
   virtual auto SetRandomParams() -> void;
   auto ApplyAdjustments(const RotationAdjustments& rotationAdjustments) -> void;
@@ -86,7 +86,7 @@ inline auto RotationAdjustments::IsToggle() const -> bool
 
 inline auto RotationAdjustments::Toggle(const AdjustmentType adjustmentType) -> void
 {
-  m_toggle = true;
+  m_toggle         = true;
   m_adjustmentType = adjustmentType;
 }
 
@@ -105,21 +105,21 @@ inline auto RotationAdjustments::SetMultiplyFactor(const float value,
 inline auto RotationAdjustments::Reset() -> void
 {
   m_adjustmentType = AdjustmentType::NONE;
-  m_toggle = false;
+  m_toggle         = false;
   m_multiplyFactor = 1.0F;
 }
 
 inline auto Rotation::GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  auto xRotateSpeed = m_params.xRotateSpeed;
-  auto yRotateSpeed = m_params.yRotateSpeed;
-  auto sinAngle = m_params.sinAngle;
+  auto xRotateSpeed   = m_params.xRotateSpeed;
+  auto yRotateSpeed   = m_params.yRotateSpeed;
+  auto sinAngle       = m_params.sinAngle;
   const auto cosAngle = m_params.cosAngle;
   if (m_params.xRotateSpeed < 0.0F)
   {
     xRotateSpeed = -xRotateSpeed;
     yRotateSpeed = -yRotateSpeed;
-    sinAngle = -sinAngle;
+    sinAngle     = -sinAngle;
   }
 
   return {xRotateSpeed * ((cosAngle * velocity.GetX()) - (sinAngle * velocity.GetY())),
