@@ -75,19 +75,19 @@ void GoomSoundEvents::UpdateGoomLimit()
     m_goomLimit *= GOOM_LIMIT_SLOW_SPEED_FACTOR;
   }
 
-  if (m_totalGoomsInCurrentCycle > NUM_GOOMS_IN_SHORT_CYCLE)
+  if (m_totalGoomsInCurrentCycle > NUM_GOOMS_IN_LONG_CYCLE)
   {
-    m_goomLimit += GOOM_LIMIT_SHORT_CYCLE_INCREMENT;
+    m_goomLimit *= 1.0F + GOOM_LIMIT_LONG_CYCLE_INCREMENT;
+    m_goomLimit += GOOM_LIMIT_LONG_CYCLE_INCREMENT;
   }
   else if (m_totalGoomsInCurrentCycle > NUM_GOOMS_IN_MEDIUM_CYCLE)
   {
     m_goomLimit *= 1.0F + GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT;
     m_goomLimit += GOOM_LIMIT_MEDIUM_CYCLE_INCREMENT;
   }
-  else if (m_totalGoomsInCurrentCycle > NUM_GOOMS_IN_LONG_CYCLE)
+  else if (m_totalGoomsInCurrentCycle > NUM_GOOMS_IN_SHORT_CYCLE)
   {
-    m_goomLimit *= 1.0F + GOOM_LIMIT_LONG_CYCLE_INCREMENT;
-    m_goomLimit += GOOM_LIMIT_LONG_CYCLE_INCREMENT;
+    m_goomLimit += GOOM_LIMIT_SHORT_CYCLE_INCREMENT;
   }
   else if (0 == m_totalGoomsInCurrentCycle)
   {
