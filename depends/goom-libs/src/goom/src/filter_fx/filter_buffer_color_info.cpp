@@ -11,13 +11,13 @@ using COLOR::LUMA_GREEN_COMPONENT;
 using COLOR::LUMA_RED_COMPONENT;
 
 auto FilterBufferColorInfo::GetRegionInfoArray(
-    const std::array<size_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
+    const std::array<uint32_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
     -> std::array<RegionInfo, NUM_REGIONS>
 {
   auto regionRectArray = std::array<RegionInfo, NUM_REGIONS>{};
 
-  auto regionIndex = 0UL;
-  auto y0          = 0UL;
+  auto regionIndex = 0U;
+  auto y0          = 0U;
   for (const auto& yBorder : yRegionBorders)
   {
     const auto y1 = yBorder;
@@ -38,7 +38,7 @@ auto FilterBufferColorInfo::GetRegionInfoArray(
 }
 
 auto FilterBufferColorInfo::GetFilterBufferRowColorInfoArray(
-    const uint32_t height, const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept
+    const uint32_t height, const std::array<uint32_t, NUM_X_REGIONS>& xRegionBorders) noexcept
     -> std::vector<FilterBufferRowColorInfo>
 {
   auto filterBufferRowColorInfo = std::vector<FilterBufferRowColorInfo>{};

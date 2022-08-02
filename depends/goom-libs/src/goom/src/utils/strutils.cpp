@@ -46,13 +46,16 @@ auto StringJoin(const std::vector<std::string>& strings, const std::string_view&
 auto StringSplit(const std::string& str, const std::string_view& delim) -> std::vector<std::string>
 {
 #if __cplusplus <= 201703L
-  std::vector<std::string> vec;
-  std::string token;
-  std::string copyOfStr = str;
-  auto pos = 0UL;
-  while ((pos = copyOfStr.find(delim)) != std::string::npos)
+  auto vec       = std::vector<std::string>{};
+  auto copyOfStr = str;
+  while (true)
   {
-    token = copyOfStr.substr(0, pos);
+    const auto pos = copyOfStr.find(delim);
+    if (pos == std::string::npos)
+    {
+      break;
+    }
+    const auto token = copyOfStr.substr(0, pos);
     copyOfStr.erase(0, pos + delim.length());
     vec.emplace_back(token);
   }

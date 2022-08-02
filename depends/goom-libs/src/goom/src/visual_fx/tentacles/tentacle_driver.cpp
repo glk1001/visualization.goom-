@@ -130,7 +130,8 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
     static constexpr auto INITIAL_HEAD_POS = V3dFlt{0, 0, 0};
     const auto headMainColor               = Pixel{5, 5, 5, MAX_ALPHA};
     const auto headLowColor                = headMainColor;
-    auto tentacle                          = Tentacle3D{std::move(tentacle2D),
+
+    auto tentacle = Tentacle3D{std::move(tentacle2D),
                                headMainColor,
                                headLowColor,
                                INITIAL_HEAD_POS,
@@ -159,7 +160,7 @@ auto TentacleDriver::IterParamsGroup::GetNextIterationParams(const float t) cons
 
   auto params = IterationParams{
       /* .numNodes = */
-      static_cast<size_t>(
+      static_cast<uint32_t>(
           goomRand.GetRandInRange(MIN_NUM_NODES_FACTOR, MAX_NUM_NODES_FACTOR) *
           STD20::lerp(static_cast<float>(first.numNodes), static_cast<float>(last.numNodes), t)),
       /* .prevYWeight = */
@@ -183,7 +184,7 @@ auto TentacleDriver::IterParamsGroup::GetNextIterationParams(const float t) cons
 }
 
 auto TentacleDriver::CreateNewTentacle2D(const IGoomRand& goomRand,
-                                         const size_t id,
+                                         const uint32_t id,
                                          const IterationParams& params)
     -> std::unique_ptr<Tentacle2D>
 {

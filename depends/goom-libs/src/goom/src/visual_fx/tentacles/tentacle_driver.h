@@ -63,7 +63,7 @@ private:
 
   struct IterationParams
   {
-    size_t numNodes;
+    uint32_t numNodes;
     float prevYWeight;
     float length;
     float iterZeroYValWaveFreq;
@@ -95,7 +95,7 @@ private:
                                          const ITentacleLayout& tentacleLayout)
       -> std::vector<Tentacle3D>;
   [[nodiscard]] static auto CreateNewTentacle2D(const UTILS::MATH::IGoomRand& goomRand,
-                                                size_t id,
+                                                uint32_t id,
                                                 const IterationParams& params)
       -> std::unique_ptr<Tentacle2D>;
   static auto UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,

@@ -10,6 +10,18 @@ namespace GOOM::UNIT_TESTS
 
 using namespace UTILS;
 
+TEST_CASE("FindAndReplaceAll")
+{
+  std::string str               = "hello Everyone out there. hello again and Hello again.";
+  const std::string expectedStr = "Hello Everyone out there. Hello again and Hello again.";
+
+  FindAndReplaceAll(str, "hello", "Hello");
+  REQUIRE(str == expectedStr);
+
+  FindAndReplaceAll(str, "zzz", "ZZZ");
+  REQUIRE(str == expectedStr);
+}
+
 TEST_CASE("StringJoin", "[StringJoin]")
 {
   REQUIRE("" == StringJoin({""}, ", "));
@@ -38,7 +50,7 @@ TEST_CASE("StringSplit", "[StringSplit]")
   REQUIRE(test2[0] == "line1: word1, word2");
   REQUIRE(test2[1] == "line2: word3, word4");
 
-  const std::string testString2 = "word1; word2; word3; word4";
+  const std::string testString2        = "word1; word2; word3; word4";
   const std::vector<std::string> test3 = StringSplit(testString2, "; ");
   REQUIRE(test3.size() == 4);
   REQUIRE(test3[0] == "word1");
@@ -46,7 +58,7 @@ TEST_CASE("StringSplit", "[StringSplit]")
   REQUIRE(test3[2] == "word3");
   REQUIRE(test3[3] == "word4");
 
-  const std::string testString3 = "word1 \nword2\nword3 \nword4 ";
+  const std::string testString3        = "word1 \nword2\nword3 \nword4 ";
   const std::vector<std::string> test4 = StringSplit(testString3, "\n");
   REQUIRE(test4.size() == 4);
   REQUIRE(test4[0] == "word1 ");

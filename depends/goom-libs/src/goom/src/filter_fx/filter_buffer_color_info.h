@@ -23,16 +23,16 @@ public:
   {
   public:
     explicit FilterBufferRowColorInfo(
-        const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept;
+        const std::array<uint32_t, NUM_X_REGIONS>& xRegionBorders) noexcept;
 
     auto Reset() noexcept -> void;
     auto UpdateColor(const Pixel& color) noexcept -> void;
     auto NextX() noexcept -> void;
 
   private:
-    const std::array<size_t, NUM_X_REGIONS>& m_xRegionBorders;
-    size_t m_currentX            = 0;
-    size_t m_currentXRegionIndex = 0;
+    const std::array<uint32_t, NUM_X_REGIONS>& m_xRegionBorders;
+    uint32_t m_currentX            = 0;
+    uint32_t m_currentXRegionIndex = 0;
 
     struct Counts
     {
@@ -60,30 +60,30 @@ private:
   const uint32_t m_width;
   const uint32_t m_height;
 
-  const std::array<size_t, NUM_X_REGIONS> m_xRegionBorders{
+  const std::array<uint32_t, NUM_X_REGIONS> m_xRegionBorders{
       GetRegionBorders<NUM_X_REGIONS>(m_width)};
-  const std::array<size_t, NUM_Y_REGIONS> m_yRegionBorders{
+  const std::array<uint32_t, NUM_Y_REGIONS> m_yRegionBorders{
       GetRegionBorders<NUM_Y_REGIONS>(m_height)};
   template<uint32_t NumRegions>
   [[nodiscard]] static auto GetRegionBorders(uint32_t length) noexcept
-      -> std::array<size_t, NumRegions>;
+      -> std::array<uint32_t, NumRegions>;
 
   std::vector<FilterBufferRowColorInfo> m_filterBufferRowColorInfoArray{
       GetFilterBufferRowColorInfoArray(m_height, m_xRegionBorders)};
   [[nodiscard]] static auto GetFilterBufferRowColorInfoArray(
-      uint32_t height, const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept
+      uint32_t height, const std::array<uint32_t, NUM_X_REGIONS>& xRegionBorders) noexcept
       -> std::vector<FilterBufferRowColorInfo>;
 
   static constexpr uint32_t NUM_REGIONS = NUM_X_REGIONS * NUM_Y_REGIONS;
   struct RegionInfo
   {
-    size_t y0;
-    size_t y1;
-    size_t xRegionIndex;
+    uint32_t y0;
+    uint32_t y1;
+    uint32_t xRegionIndex;
   };
   const std::array<RegionInfo, NUM_REGIONS> m_regionInfoArray{GetRegionInfoArray(m_yRegionBorders)};
   [[nodiscard]] static auto GetRegionInfoArray(
-      const std::array<size_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
+      const std::array<uint32_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
       -> std::array<RegionInfo, NUM_REGIONS>;
   [[nodiscard]] auto GetRegionIndexOfPoint(const Point2dInt& point) const noexcept -> size_t;
   [[nodiscard]] auto IsInXRegion(int32_t x, size_t xRegionIndex) const noexcept -> bool;
@@ -111,14 +111,14 @@ inline auto FilterBufferColorInfo::GetRow(const size_t y) noexcept -> FilterBuff
 
 template<uint32_t NumRegions>
 auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length) noexcept
-    -> std::array<size_t, NumRegions>
+    -> std::array<uint32_t, NumRegions>
 {
   Expects(length > 0);
 
   static_assert(NumRegions > 0);
   const auto regionSize = length / NumRegions;
 
-  auto regionBorders = std::array<size_t, NumRegions>{};
+  auto regionBorders = std::array<uint32_t, NumRegions>{};
   auto border        = regionSize - 1;
   for (auto& regionBorder : regionBorders)
   {
@@ -136,7 +136,7 @@ auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length) noexcept
 }
 
 inline FilterBufferColorInfo::FilterBufferRowColorInfo::FilterBufferRowColorInfo(
-    const std::array<size_t, NUM_X_REGIONS>& xRegionBorders) noexcept
+    const std::array<uint32_t, NUM_X_REGIONS>& xRegionBorders) noexcept
   : m_xRegionBorders{xRegionBorders}
 {
 }
