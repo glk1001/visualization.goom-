@@ -30,7 +30,7 @@ class ZoomFilterBuffers
 {
 public:
   static constexpr int32_t DIM_FILTER_COEFFS      = 16;
-  static constexpr size_t NUM_NEIGHBOR_COEFFS     = 4;
+  static constexpr uint32_t NUM_NEIGHBOR_COEFFS   = 4U;
   using NeighborhoodPixelArray                    = std::array<Pixel, NUM_NEIGHBOR_COEFFS>;
   static constexpr float MIN_SCREEN_COORD_ABS_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
   class CoordTransforms;
@@ -177,7 +177,7 @@ public:
   auto CopyDestTranToSrceTran() noexcept -> void;
   auto SetUpNextDestTran() noexcept -> void;
 
-  auto SetTempBuffersTransformPoint(uint32_t pos, const Point2dInt& transformPoint) noexcept
+  auto SetTempBuffersTransformPoint(uint32_t buffPos, const Point2dInt& transformPoint) noexcept
       -> void;
 
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;

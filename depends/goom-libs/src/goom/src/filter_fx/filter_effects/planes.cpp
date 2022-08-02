@@ -23,7 +23,8 @@ static constexpr auto VERY_LARGE_POS_EFFECTS_RANGE = IGoomRand::NumberRange<int3
 
 static constexpr auto PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE = 0.2F;
 static constexpr auto PROB_ZERO_VERTICAL_FOR_LARGE_RANGE        = 0.2F;
-static constexpr auto PROB_HORIZONTAL_OPPOSITE_TO_VERTICAL      = 0.9F;
+static constexpr auto PROB_OPPOSITES_FOR_SMALL_EFFECTS          = 0.1F;
+static constexpr auto PROB_OPPOSITES_FOR_MEDIUM_EFFECTS         = 0.9F;
 
 // H Plane:
 // @since June 2001
@@ -50,11 +51,19 @@ static constexpr auto DEFAULT_VERTICAL_SWIRL_AMPLITUDE = 1.0F;
 static constexpr auto VERTICAL_SWIRL_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.1F, 30.01F};
 
 static constexpr auto PROB_PLANE_AMPLITUDES_EQUAL       = 0.75F;
-static constexpr auto PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.5F;
-static constexpr auto PROB_MUCH_SPIRALLING              = 0.2F;
+static constexpr auto PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.50F;
+static constexpr auto PROB_MUCH_SPIRALLING              = 0.20F;
 static constexpr auto PROB_NO_SWIRL                     = 0.95F;
-static constexpr auto PROB_SWIRL_AMPLITUDES_EQUAL       = 0.7F;
-static constexpr auto PROB_SWIRL_FREQ_EQUAL             = 0.7F;
+static constexpr auto PROB_SWIRL_AMPLITUDES_EQUAL       = 0.70F;
+static constexpr auto PROB_SWIRL_FREQ_EQUAL             = 0.70F;
+
+static constexpr auto SMALL_PLANE_EFFECTS_WEIGHT                           = 1.0F;
+static constexpr auto MEDIUM_EFFECTS_WEIGHT                                = 4.0F;
+static constexpr auto LARGE_EFFECTS_WEIGHT                                 = 1.0F;
+static constexpr auto VERY_LARGE_EFFECTS_WEIGHT                            = 1.0F;
+static constexpr auto POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS_WEIGHT = 1.0F;
+static constexpr auto POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS_WEIGHT = 1.0F;
+static constexpr auto ZERO_EFFECTS_WEIGHT                                  = 2.0F;
 
 Planes::Planes(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
@@ -78,13 +87,13 @@ Planes::Planes(const IGoomRand& goomRand) noexcept
     m_planeEffectWeights{
       m_goomRand,
       {
-          { PlaneEffectEvents::SMALL_EFFECTS,                                  1.0F },
-          { PlaneEffectEvents::MEDIUM_EFFECTS,                                 4.0F },
-          { PlaneEffectEvents::LARGE_EFFECTS,                                  1.0F },
-          { PlaneEffectEvents::VERY_LARGE_EFFECTS,                             1.0F },
-          { PlaneEffectEvents::POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS,  1.0F },
-          { PlaneEffectEvents::POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS,  1.0F },
-          { PlaneEffectEvents::ZERO_EFFECTS,                                   2.0F },
+          { PlaneEffectEvents::SMALL_EFFECTS,                                 SMALL_PLANE_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::MEDIUM_EFFECTS,                                MEDIUM_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::LARGE_EFFECTS,                                 LARGE_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::VERY_LARGE_EFFECTS,                            VERY_LARGE_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS, POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::POS_HORIZONTAL_NEG_VERTICAL_VERY_LARGE_EFFECTS, POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::ZERO_EFFECTS,                                  ZERO_EFFECTS_WEIGHT },
       }
     }
 {
@@ -115,13 +124,19 @@ auto Planes::GetRandomPlaneEffects(const IGoomRand& goomRand,
                                    const uint32_t screenWidth) -> PlaneEffects
 {
   const auto intAmplitudes = GetRandomIntAmplitudes(goomRand, planeEffectsEvent);
-
   const auto adjustedIntAmplitudes =
       GetAdjustedIntAmplitudes(goomRand, intAmplitudes, zoomMidpoint, screenWidth);
 
   const auto effectMultipliers = GetRandomEffectMultipliers(goomRand, muchSpiralling);
 
+  return GetRandomPlaneEffects(adjustedIntAmplitudes, effectMultipliers);
+}
+
+inline auto Planes::GetRandomPlaneEffects(const IntAmplitudes& adjustedIntAmplitudes,
+                                          const Amplitudes& effectMultipliers) -> PlaneEffects
+{
   auto planeEffects = PlaneEffects{};
+
   if (0 == adjustedIntAmplitudes.x)
   {
     planeEffects.horizontalEffectActive = false;
@@ -159,12 +174,14 @@ auto Planes::GetRandomIntAmplitudes(const IGoomRand& goomRand,
       break;
     case PlaneEffectEvents::SMALL_EFFECTS:
       intAmplitudes.x = goomRand.GetRandInRange(SMALL_EFFECTS_RANGE);
-      intAmplitudes.y = goomRand.GetRandInRange(SMALL_EFFECTS_RANGE);
+      intAmplitudes.y = goomRand.ProbabilityOf(PROB_OPPOSITES_FOR_SMALL_EFFECTS)
+                            ? (-intAmplitudes.x + 1)
+                            : goomRand.GetRandInRange(SMALL_EFFECTS_RANGE);
       break;
     case PlaneEffectEvents::MEDIUM_EFFECTS:
-      intAmplitudes.y = goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
-      intAmplitudes.x = goomRand.ProbabilityOf(PROB_HORIZONTAL_OPPOSITE_TO_VERTICAL)
-                            ? (-intAmplitudes.y + 1)
+      intAmplitudes.x = goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
+      intAmplitudes.y = goomRand.ProbabilityOf(PROB_OPPOSITES_FOR_MEDIUM_EFFECTS)
+                            ? (-intAmplitudes.x + 1)
                             : goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
       break;
     case PlaneEffectEvents::LARGE_EFFECTS:
@@ -179,16 +196,16 @@ auto Planes::GetRandomIntAmplitudes(const IGoomRand& goomRand,
                             : goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
       intAmplitudes.y = goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
       break;
-    case PlaneEffectEvents::POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS:
+    case PlaneEffectEvents::POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS:
       intAmplitudes.y = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
       intAmplitudes.x = -intAmplitudes.y + 1;
       break;
-    case PlaneEffectEvents::POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS:
+    case PlaneEffectEvents::POS_HORIZONTAL_NEG_VERTICAL_VERY_LARGE_EFFECTS:
       intAmplitudes.x = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
       intAmplitudes.y = -intAmplitudes.x + 1;
       break;
     default:
-      throw std::logic_error("Unknown PlaneEffectEvents enum.");
+      FailFast();
   }
 
   return intAmplitudes;
@@ -239,61 +256,60 @@ auto Planes::GetRandomEffectMultipliers(const IGoomRand& goomRand, const bool mu
 auto Planes::GetRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand,
                                    const bool muchSpiralling) -> PlaneSwirlEffects
 {
-  auto swirlEffects = PlaneSwirlEffects{};
-
   if (muchSpiralling || goomRand.ProbabilityOf(PROB_NO_SWIRL))
   {
-    swirlEffects.swirlType     = PlaneSwirlType::NONE;
-    swirlEffects.frequencies.x = 0.0F;
-    swirlEffects.frequencies.y = 0.0F;
-    swirlEffects.amplitudes.x  = 0.0F;
-    swirlEffects.amplitudes.y  = 0.0F;
-
-    return swirlEffects;
+    return GetZeroSwirlEffects();
   }
+
+  return GetNonzeroRandomSwirlEffects(goomRand);
+}
+
+inline auto Planes::GetZeroSwirlEffects() -> PlaneSwirlEffects
+{
+  return {
+      PlaneSwirlType::NONE,
+      {0.0F, 0.0F},
+      {0.0F, 0.0F},
+  };
+}
+
+inline auto Planes::GetNonzeroRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand)
+    -> PlaneSwirlEffects
+{
+  auto swirlEffects = PlaneSwirlEffects{};
 
   swirlEffects.swirlType =
       static_cast<PlaneSwirlType>(goomRand.GetRandInRange(1U, NUM<PlaneSwirlType>));
 
   swirlEffects.frequencies.x = goomRand.GetRandInRange(HORIZONTAL_SWIRL_FREQ_RANGE);
-  if (goomRand.ProbabilityOf(PROB_SWIRL_FREQ_EQUAL))
-  {
-    swirlEffects.frequencies.y = swirlEffects.frequencies.x;
-  }
-  else
-  {
-    swirlEffects.frequencies.y = goomRand.GetRandInRange(VERTICAL_SWIRL_FREQ_RANGE);
-  }
+  swirlEffects.frequencies.y = goomRand.ProbabilityOf(PROB_SWIRL_FREQ_EQUAL)
+                                   ? swirlEffects.frequencies.x
+                                   : goomRand.GetRandInRange(VERTICAL_SWIRL_FREQ_RANGE);
 
   swirlEffects.amplitudes.x = goomRand.GetRandInRange(HORIZONTAL_SWIRL_AMPLITUDE_RANGE);
-  if (goomRand.ProbabilityOf(PROB_SWIRL_AMPLITUDES_EQUAL))
-  {
-    swirlEffects.amplitudes.y = swirlEffects.amplitudes.x;
-  }
-  else
-  {
-    swirlEffects.amplitudes.y = goomRand.GetRandInRange(VERTICAL_SWIRL_AMPLITUDE_RANGE);
-  }
+  swirlEffects.amplitudes.y = goomRand.ProbabilityOf(PROB_SWIRL_AMPLITUDES_EQUAL)
+                                  ? swirlEffects.amplitudes.x
+                                  : goomRand.GetRandInRange(VERTICAL_SWIRL_AMPLITUDE_RANGE);
 
   return swirlEffects;
 }
 
 auto Planes::GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float
 {
-  const auto coordValue = coords.GetY();
-  const auto coordSwirlOffset =
-      GetHorizontalSwirlOffsetFactor(coordValue) * m_params.swirlEffects.amplitudes.x;
+  const auto yCoordValue = coords.GetY();
+  const auto horizontalSwirlOffset =
+      m_params.swirlEffects.amplitudes.x * GetHorizontalSwirlOffsetFactor(yCoordValue);
 
-  return m_params.planeEffects.amplitudes.x * (coordValue + coordSwirlOffset);
+  return m_params.planeEffects.amplitudes.x * (yCoordValue + horizontalSwirlOffset);
 }
 
 auto Planes::GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float
 {
-  const auto coordValue = coords.GetX();
-  const auto coordSwirlOffset =
-      GetVerticalSwirlOffsetFactor(coordValue) * m_params.swirlEffects.amplitudes.y;
+  const auto xCoordValue = coords.GetX();
+  const auto verticalSwirlOffset =
+      m_params.swirlEffects.amplitudes.y * GetVerticalSwirlOffsetFactor(xCoordValue);
 
-  return m_params.planeEffects.amplitudes.y * (coordValue + coordSwirlOffset);
+  return m_params.planeEffects.amplitudes.y * (xCoordValue + verticalSwirlOffset);
 }
 
 auto Planes::GetHorizontalSwirlOffsetFactor(const float coordValue) const -> float
@@ -306,20 +322,21 @@ auto Planes::GetHorizontalSwirlOffsetFactor(const float coordValue) const -> flo
       return 0.0F;
     case PlaneSwirlType::SIN_CURL_SWIRL:
     case PlaneSwirlType::SIN_COS_CURL_SWIRL:
-      // 'sin' for horizontal
+      // 'sin' is for horizontal
       return std::sin(swirlFreq * coordValue);
     case PlaneSwirlType::COS_CURL_SWIRL:
     case PlaneSwirlType::COS_SIN_CURL_SWIRL:
-      // 'cos' for horizontal
+      // 'cos' is for horizontal
       return std::cos(swirlFreq * coordValue);
     case PlaneSwirlType::SIN_OF_COS_SWIRL:
-      // 'sin' for horizontal
+      // 'sin' is for horizontal
       return std::sin(pi * std::cos(swirlFreq * coordValue));
     case PlaneSwirlType::COS_OF_SIN_SWIRL:
-      // 'cos' for horizontal
+      // 'cos' is for horizontal
       return std::cos(pi * std::sin(swirlFreq * coordValue));
     default:
-      throw std::logic_error("Unknown horizontal plane swirl type");
+      FailFast();
+      return 0.0F;
   }
 }
 
@@ -333,20 +350,21 @@ auto Planes::GetVerticalSwirlOffsetFactor(const float coordValue) const -> float
       return 0.0F;
     case PlaneSwirlType::SIN_CURL_SWIRL:
     case PlaneSwirlType::SIN_COS_CURL_SWIRL:
-      // 'cos' for vertical
+      // 'cos' is for vertical
       return std::cos(swirlFreq * coordValue);
     case PlaneSwirlType::COS_CURL_SWIRL:
     case PlaneSwirlType::COS_SIN_CURL_SWIRL:
-      // 'sin' for vertical
+      // 'sin' is for vertical
       return std::sin(swirlFreq * coordValue);
     case PlaneSwirlType::SIN_OF_COS_SWIRL:
-      // 'cos' for vertical
+      // 'cos' is for vertical
       return std::cos(pi * std::cos(swirlFreq * coordValue));
     case PlaneSwirlType::COS_OF_SIN_SWIRL:
-      // 'sin' for vertical
+      // 'sin' is for vertical
       return std::sin(pi * std::sin(swirlFreq * coordValue));
     default:
-      throw std::logic_error("Unknown vertical plane swirl type");
+      FailFast();
+      return 0.0F;
   }
 }
 

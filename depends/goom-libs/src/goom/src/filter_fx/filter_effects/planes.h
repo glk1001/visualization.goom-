@@ -86,8 +86,8 @@ private:
     MEDIUM_EFFECTS,
     LARGE_EFFECTS,
     VERY_LARGE_EFFECTS,
-    POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS,
-    POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS,
+    POS_HORIZONTAL_NEG_VERTICAL_VERY_LARGE_EFFECTS,
+    POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS,
     _num // unused, and marks the enum end
   };
   const UTILS::MATH::Weights<PlaneEffectEvents> m_planeEffectWeights;
@@ -107,6 +107,9 @@ private:
     int32_t x;
     int32_t y;
   };
+  [[nodiscard]] static auto GetRandomPlaneEffects(const IntAmplitudes& adjustedIntAmplitudes,
+                                                  const Amplitudes& effectMultipliers)
+      -> PlaneEffects;
   [[nodiscard]] static auto GetRandomIntAmplitudes(const UTILS::MATH::IGoomRand& goomRand,
                                                    PlaneEffectEvents planeEffectsEvent)
       -> IntAmplitudes;
@@ -119,6 +122,9 @@ private:
 
   [[nodiscard]] static auto GetRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand,
                                                   bool muchSpiralling) -> PlaneSwirlEffects;
+  [[nodiscard]] static auto GetZeroSwirlEffects() -> PlaneSwirlEffects;
+  [[nodiscard]] static auto GetNonzeroRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand)
+      -> PlaneSwirlEffects;
   [[nodiscard]] auto GetHorizontalSwirlOffsetFactor(float coordValue) const -> float;
   [[nodiscard]] auto GetVerticalSwirlOffsetFactor(float coordValue) const -> float;
 };

@@ -175,13 +175,11 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
   // Where (vertically) to stop generating the buffer stripe
   const auto tranBuffYLineEnd =
       std::min(m_screenHeight, m_tranBuffYLineStart + tranBuffStripeHeight);
-
   const auto numStripes = static_cast<size_t>(tranBuffYLineEnd - m_tranBuffYLineStart);
 
   m_parallel.ForLoop(numStripes, doStripeLine);
 
   m_tranBuffYLineStart += tranBuffStripeHeight;
-
   if (tranBuffYLineEnd >= m_screenHeight)
   {
     m_tranBuffersState   = TranBuffersState::RESET_TRAN_BUFFERS;
@@ -357,10 +355,10 @@ inline auto ZoomFilterBuffers::TransformBuffers::SetUpNextDestTran() noexcept ->
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::SetTempBuffersTransformPoint(
-    const uint32_t pos, const Point2dInt& transformPoint) noexcept -> void
+    const uint32_t buffPos, const Point2dInt& transformPoint) noexcept -> void
 {
-  m_tranXTemp[pos] = transformPoint.x;
-  m_tranYTemp[pos] = transformPoint.y;
+  m_tranXTemp[buffPos] = transformPoint.x;
+  m_tranYTemp[buffPos] = transformPoint.y;
 }
 
 inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const noexcept
