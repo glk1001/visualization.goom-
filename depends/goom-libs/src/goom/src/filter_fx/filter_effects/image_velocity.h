@@ -18,7 +18,8 @@ public:
 
   auto SetRandomParams() -> void;
 
-  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> Point2dFlt;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
+                                 const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
@@ -28,9 +29,12 @@ private:
   ImageDisplacementList m_imageDisplacementList;
 };
 
-inline auto ImageVelocity::GetVelocity(const NormalizedCoords& coords) const -> Point2dFlt
+inline auto ImageVelocity::GetVelocity(const NormalizedCoords& coords,
+                                       const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords);
+  return velocity +
+         NormalizedCoords{
+             m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords)};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

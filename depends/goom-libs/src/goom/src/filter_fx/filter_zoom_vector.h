@@ -40,8 +40,9 @@ public:
 private:
   FILTER_EFFECTS::ZoomVectorEffects m_zoomVectorEffects;
 
-  [[nodiscard]] auto GetZoomEffectsAdjustedVelocity(float sqDistFromZero,
-                                                    const NormalizedCoords& coords,
+  [[nodiscard]] auto GetZoomPointVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
+  [[nodiscard]] auto GetZoomEffectsAdjustedVelocity(const NormalizedCoords& coords,
+                                                    float sqDistFromZero,
                                                     const NormalizedCoords& velocity) const
       -> NormalizedCoords;
 };

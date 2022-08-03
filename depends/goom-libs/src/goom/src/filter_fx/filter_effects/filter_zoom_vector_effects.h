@@ -63,18 +63,23 @@ public:
   [[nodiscard]] auto GetCleanedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto IsHypercosOverlayActive() const -> bool;
-  [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
+  [[nodiscard]] auto GetHypercosVelocity(const NormalizedCoords& coords,
+                                         const NormalizedCoords& velocity) const
+      -> NormalizedCoords;
 
   [[nodiscard]] auto IsImageVelocityActive() const -> bool;
-  [[nodiscard]] auto GetImageVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
+  [[nodiscard]] auto GetImageVelocity(const NormalizedCoords& coords,
+                                      const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto IsNoiseActive() const -> bool;
-  [[nodiscard]] auto GetNoiseVelocity() const -> NormalizedCoords;
+  [[nodiscard]] auto GetNoiseVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
-  [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float;
+  [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords,
+                                                const NormalizedCoords& velocity) const -> float;
   [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
-  [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float;
+  [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords,
+                                              const NormalizedCoords& velocity) const -> float;
 
   [[nodiscard]] auto IsRotationActive() const -> bool;
   [[nodiscard]] auto GetRotatedVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
@@ -169,10 +174,11 @@ inline auto ZoomVectorEffects::IsHypercosOverlayActive() const -> bool
   return m_filterEffectsSettings->hypercosOverlay != HypercosOverlay::NONE;
 }
 
-inline auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords) const
+inline auto ZoomVectorEffects::GetHypercosVelocity(const NormalizedCoords& coords,
+                                                   const NormalizedCoords& velocity) const
     -> NormalizedCoords
 {
-  return m_theEffects.hypercos->GetVelocity(coords);
+  return m_theEffects.hypercos->GetVelocity(coords, velocity);
 }
 
 inline auto ZoomVectorEffects::IsImageVelocityActive() const -> bool
@@ -180,10 +186,11 @@ inline auto ZoomVectorEffects::IsImageVelocityActive() const -> bool
   return m_filterEffectsSettings->imageVelocityEffect;
 }
 
-inline auto ZoomVectorEffects::GetImageVelocity(const NormalizedCoords& coords) const
+inline auto ZoomVectorEffects::GetImageVelocity(const NormalizedCoords& coords,
+                                                const NormalizedCoords& velocity) const
     -> NormalizedCoords
 {
-  return NormalizedCoords{m_theEffects.imageVelocity->GetVelocity(coords)};
+  return m_theEffects.imageVelocity->GetVelocity(coords, velocity);
 }
 
 inline auto ZoomVectorEffects::IsNoiseActive() const -> bool
@@ -191,9 +198,10 @@ inline auto ZoomVectorEffects::IsNoiseActive() const -> bool
   return m_filterEffectsSettings->noiseEffect;
 }
 
-inline auto ZoomVectorEffects::GetNoiseVelocity() const -> NormalizedCoords
+inline auto ZoomVectorEffects::GetNoiseVelocity(const NormalizedCoords& velocity) const
+    -> NormalizedCoords
 {
-  return m_theEffects.noise->GetVelocity();
+  return m_theEffects.noise->GetVelocity(velocity);
 }
 
 inline auto ZoomVectorEffects::IsHorizontalPlaneVelocityActive() const -> bool
@@ -201,10 +209,11 @@ inline auto ZoomVectorEffects::IsHorizontalPlaneVelocityActive() const -> bool
   return m_theEffects.planes->IsHorizontalPlaneVelocityActive();
 }
 
-inline auto ZoomVectorEffects::GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const
+inline auto ZoomVectorEffects::GetHorizontalPlaneVelocity(const NormalizedCoords& coords,
+                                                          const NormalizedCoords& velocity) const
     -> float
 {
-  return m_theEffects.planes->GetHorizontalPlaneVelocity(coords);
+  return m_theEffects.planes->GetHorizontalPlaneVelocity(coords, velocity);
 }
 
 inline auto ZoomVectorEffects::IsVerticalPlaneVelocityActive() const -> bool
@@ -212,10 +221,11 @@ inline auto ZoomVectorEffects::IsVerticalPlaneVelocityActive() const -> bool
   return m_theEffects.planes->IsVerticalPlaneVelocityActive();
 }
 
-inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords) const
+inline auto ZoomVectorEffects::GetVerticalPlaneVelocity(const NormalizedCoords& coords,
+                                                        const NormalizedCoords& velocity) const
     -> float
 {
-  return m_theEffects.planes->GetVerticalPlaneVelocity(coords);
+  return m_theEffects.planes->GetVerticalPlaneVelocity(coords, velocity);
 }
 
 inline auto ZoomVectorEffects::IsRotationActive() const -> bool

@@ -14,7 +14,7 @@ public:
 
   auto SetRandomParams() -> void;
 
-  [[nodiscard]] auto GetVelocity() const -> NormalizedCoords;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
@@ -36,10 +36,11 @@ private:
   Params m_params;
 };
 
-inline auto Noise::GetVelocity() const -> NormalizedCoords
+inline auto Noise::GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords
 {
   const auto amp = m_params.noiseFactor / m_goomRand.GetRandInRange(NOISE_MIN, NOISE_MAX);
-  return {m_goomRand.GetRandInRange(-amp, +amp), m_goomRand.GetRandInRange(-amp, +amp)};
+  return velocity + NormalizedCoords{m_goomRand.GetRandInRange(-amp, +amp),
+                                     m_goomRand.GetRandInRange(-amp, +amp)};
 }
 
 inline auto Noise::GetParams() const -> const Params&

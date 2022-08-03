@@ -149,12 +149,13 @@ inline auto Hypercos::GetFreqToUse(const float freq) const -> float
   return m_params.reverse ? -freq : +freq;
 }
 
-auto Hypercos::GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords
+auto Hypercos::GetVelocity(const NormalizedCoords& coords, const NormalizedCoords& velocity) const
+    -> NormalizedCoords
 {
   const auto xFreqToUse = GetFreqToUse(m_params.xFreq);
   const auto yFreqToUse = GetFreqToUse(m_params.yFreq);
 
-  return GetVelocity(coords, m_params.effect, xFreqToUse, yFreqToUse);
+  return velocity + GetVelocity(coords, m_params.effect, xFreqToUse, yFreqToUse);
 }
 
 auto Hypercos::GetVelocity(const NormalizedCoords& coords,

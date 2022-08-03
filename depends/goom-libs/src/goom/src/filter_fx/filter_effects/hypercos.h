@@ -20,7 +20,8 @@ public:
   auto operator=(const Hypercos&) -> Hypercos& = delete;
   auto operator=(Hypercos&&) -> Hypercos&      = delete;
 
-  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
+                                 const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;

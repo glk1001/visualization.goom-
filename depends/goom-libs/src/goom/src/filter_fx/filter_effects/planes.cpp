@@ -294,22 +294,25 @@ inline auto Planes::GetNonzeroRandomSwirlEffects(const UTILS::MATH::IGoomRand& g
   return swirlEffects;
 }
 
-auto Planes::GetHorizontalPlaneVelocity(const NormalizedCoords& coords) const -> float
+auto Planes::GetHorizontalPlaneVelocity(const NormalizedCoords& coords,
+                                        const NormalizedCoords& velocity) const -> float
 {
   const auto yCoordValue = coords.GetY();
   const auto horizontalSwirlOffset =
       m_params.swirlEffects.amplitudes.x * GetHorizontalSwirlOffsetFactor(yCoordValue);
 
-  return m_params.planeEffects.amplitudes.x * (yCoordValue + horizontalSwirlOffset);
+  return velocity.GetX() +
+         m_params.planeEffects.amplitudes.x * (yCoordValue + horizontalSwirlOffset);
 }
 
-auto Planes::GetVerticalPlaneVelocity(const NormalizedCoords& coords) const -> float
+auto Planes::GetVerticalPlaneVelocity(const NormalizedCoords& coords,
+                                      const NormalizedCoords& velocity) const -> float
 {
   const auto xCoordValue = coords.GetX();
   const auto verticalSwirlOffset =
       m_params.swirlEffects.amplitudes.y * GetVerticalSwirlOffsetFactor(xCoordValue);
 
-  return m_params.planeEffects.amplitudes.y * (xCoordValue + verticalSwirlOffset);
+  return velocity.GetY() + m_params.planeEffects.amplitudes.y * (xCoordValue + verticalSwirlOffset);
 }
 
 auto Planes::GetHorizontalSwirlOffsetFactor(const float coordValue) const -> float
