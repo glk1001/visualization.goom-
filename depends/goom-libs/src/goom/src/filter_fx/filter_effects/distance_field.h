@@ -16,9 +16,9 @@ public:
 
   auto SetRandomParams() -> void override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetSpeedCoefficients(const NormalizedCoords& coords,
                                           float sqDistFromZero,
-                                          const NormalizedCoords& coords) const
+                                          const Point2dFlt& baseSpeedCoeffs) const
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
@@ -57,9 +57,10 @@ private:
                                                 float sqDistOffset) -> float;
 };
 
-inline auto DistanceField::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+inline auto DistanceField::GetSpeedCoefficients(const NormalizedCoords& coords,
                                                 [[maybe_unused]] const float sqDistFromZero,
-                                                const NormalizedCoords& coords) const -> Point2dFlt
+                                                const Point2dFlt& baseSpeedCoeffs) const
+    -> Point2dFlt
 {
   const auto sqDistFromClosestPoint = GetClosestDistancePoint(coords).sqDistanceFromCoords;
 

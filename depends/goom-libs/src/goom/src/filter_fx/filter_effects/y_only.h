@@ -17,9 +17,9 @@ public:
 
   auto SetRandomParams() -> void override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetSpeedCoefficients(const NormalizedCoords& coords,
                                           float sqDistFromZero,
-                                          const NormalizedCoords& coords) const
+                                          const Point2dFlt& baseSpeedCoeffs) const
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
@@ -55,9 +55,9 @@ private:
                                              const NormalizedCoords& coords) const -> float;
 };
 
-inline auto YOnly::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+inline auto YOnly::GetSpeedCoefficients(const NormalizedCoords& coords,
                                         [[maybe_unused]] const float sqDistFromZero,
-                                        const NormalizedCoords& coords) const -> Point2dFlt
+                                        const Point2dFlt& baseSpeedCoeffs) const -> Point2dFlt
 {
   const auto xSpeedCoeff =
       baseSpeedCoeffs.x * m_params.xAmplitude * GetYOnlySpeedMultiplier(m_params.xEffect, coords);

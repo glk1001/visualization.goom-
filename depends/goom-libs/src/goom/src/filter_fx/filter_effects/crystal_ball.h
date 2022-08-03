@@ -21,9 +21,9 @@ public:
 
   auto SetRandomParams() -> void override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetSpeedCoefficients(const NormalizedCoords& coords,
                                           float sqDistFromZero,
-                                          const NormalizedCoords& coords) const
+                                          const Point2dFlt& baseSpeedCoeffs) const
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
@@ -63,10 +63,9 @@ private:
                                                 float sqDistOffset) -> float;
 };
 
-inline auto CrystalBall::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+inline auto CrystalBall::GetSpeedCoefficients([[maybe_unused]] const NormalizedCoords& coords,
                                               const float sqDistFromZero,
-                                              [[maybe_unused]] const NormalizedCoords& coords) const
-    -> Point2dFlt
+                                              const Point2dFlt& baseSpeedCoeffs) const -> Point2dFlt
 {
   return {GetSpeedCoefficient(baseSpeedCoeffs.x,
                               sqDistFromZero,

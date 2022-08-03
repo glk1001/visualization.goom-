@@ -19,9 +19,9 @@ public:
 
   virtual auto SetRandomParams() -> void = 0;
 
-  [[nodiscard]] virtual auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] virtual auto GetSpeedCoefficients(const NormalizedCoords& coords,
                                                   float sqDistFromZero,
-                                                  const NormalizedCoords& coords) const
+                                                  const Point2dFlt& baseSpeedCoeffs) const
       -> Point2dFlt = 0;
 
   [[nodiscard]] virtual auto GetSpeedCoefficientsEffectNameValueParams() const

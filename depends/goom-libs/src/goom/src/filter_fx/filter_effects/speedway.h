@@ -22,9 +22,9 @@ public:
 
   auto SetRandomParams() -> void override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetSpeedCoefficients(const NormalizedCoords& coords,
                                           float sqDistFromZero,
-                                          const NormalizedCoords& coords) const
+                                          const Point2dFlt& baseSpeedCoeffs) const
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
@@ -47,40 +47,45 @@ private:
   auto SetMode0RandomParams() -> void;
   auto SetMode1RandomParams() -> void;
   auto SetMode2RandomParams() -> void;
-  [[nodiscard]] auto GetMode0SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetMode0SpeedCoefficients(const NormalizedCoords& coords,
                                                float sqDistFromZero,
-                                               const NormalizedCoords& coords) const -> Point2dFlt;
-  [[nodiscard]] auto GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+                                               const Point2dFlt& baseSpeedCoeffs) const
+      -> Point2dFlt;
+  [[nodiscard]] auto GetMode1SpeedCoefficients(const NormalizedCoords& coords,
                                                float sqDistFromZero,
-                                               const NormalizedCoords& coords) const -> Point2dFlt;
-  [[nodiscard]] auto GetMode2SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+                                               const Point2dFlt& baseSpeedCoeffs) const
+      -> Point2dFlt;
+  [[nodiscard]] auto GetMode2SpeedCoefficients(const NormalizedCoords& coords,
                                                float sqDistFromZero,
-                                               const NormalizedCoords& coords) const -> Point2dFlt;
+                                               const Point2dFlt& baseSpeedCoeffs) const
+      -> Point2dFlt;
 };
 
-inline auto Speedway::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+inline auto Speedway::GetSpeedCoefficients(const NormalizedCoords& coords,
                                            const float sqDistFromZero,
-                                           const NormalizedCoords& coords) const -> Point2dFlt
+                                           const Point2dFlt& baseSpeedCoeffs) const -> Point2dFlt
 {
   switch (m_mode)
   {
     case Modes::MODE0:
-      return GetMode0SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
+      return GetMode0SpeedCoefficients(coords, sqDistFromZero, baseSpeedCoeffs);
     case Modes::MODE1:
-      return GetMode1SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
+      return GetMode1SpeedCoefficients(coords, sqDistFromZero, baseSpeedCoeffs);
     case Modes::MODE2:
-      return GetMode2SpeedCoefficients(baseSpeedCoeffs, sqDistFromZero, coords);
+      return GetMode2SpeedCoefficients(coords, sqDistFromZero, baseSpeedCoeffs);
     default:
       throw std::logic_error("Unexpected Modes enum.");
   }
 }
 
-inline auto Speedway::GetMode0SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+inline auto Speedway::GetMode0SpeedCoefficients(const NormalizedCoords& coords,
                                                 const float sqDistFromZero,
-                                                const NormalizedCoords& coords) const -> Point2dFlt
+                                                const Point2dFlt& baseSpeedCoeffs) const
+    -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
-  auto xAdd                            = SQ_DIST_FACTOR * sqDistFromZero;
+
+  auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
   if (constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
@@ -92,25 +97,26 @@ inline auto Speedway::GetMode0SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
   return {xSpeedCoeff, ySpeedCoeff};
 }
 
-inline auto Speedway::GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+inline auto Speedway::GetMode1SpeedCoefficients(const NormalizedCoords& coords,
                                                 const float sqDistFromZero,
-                                                const NormalizedCoords& coords) const -> Point2dFlt
+                                                const Point2dFlt& baseSpeedCoeffs) const
+    -> Point2dFlt
 {
-  auto xAdd = -1.0F;
-
   static constexpr auto PROB_RANDOM_X_ADD   = 0.5F;
   static constexpr auto PROB_FLIP_X_ADD     = 0.5F;
   static constexpr auto PROB_NEGATIVE_X_ADD = 0.5F;
 
+  auto xAdd = -1.0F;
   if (m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
   {
     static constexpr auto MIN_NEGATIVE_X_ADD = -1.9F;
     static constexpr auto MAX_NEGATIVE_X_ADD = -0.5F;
     static constexpr auto MIN_POSITIVE_X_ADD = +0.5F;
     static constexpr auto MAX_POSITIVE_X_ADD = +1.9F;
-    xAdd                                     = m_goomRand.ProbabilityOf(PROB_NEGATIVE_X_ADD)
-                                                   ? m_goomRand.GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
-                                                   : m_goomRand.GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
+
+    xAdd = m_goomRand.ProbabilityOf(PROB_NEGATIVE_X_ADD)
+               ? m_goomRand.GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
+               : m_goomRand.GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
   }
   else if (m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
@@ -128,12 +134,14 @@ inline auto Speedway::GetMode1SpeedCoefficients(const Point2dFlt& baseSpeedCoeff
   return {xSpeedCoeff, ySpeedCoeff};
 }
 
-inline auto Speedway::GetMode2SpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+inline auto Speedway::GetMode2SpeedCoefficients(const NormalizedCoords& coords,
                                                 const float sqDistFromZero,
-                                                const NormalizedCoords& coords) const -> Point2dFlt
+                                                const Point2dFlt& baseSpeedCoeffs) const
+    -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
-  auto xAdd                            = SQ_DIST_FACTOR * sqDistFromZero;
+
+  auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
   if (constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;

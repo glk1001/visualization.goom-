@@ -98,9 +98,6 @@ private:
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
   TheExtraEffects m_theEffects;
 
-  static constexpr float SPEED_COEFF_DENOMINATOR = 50.0F;
-  static constexpr float MIN_SPEED_COEFF         = -4.01F;
-
   auto SetRandomHypercosOverlayEffects() -> void;
   auto SetRandomImageVelocityEffects() -> void;
   auto SetRandomNoiseSettings() -> void;
@@ -128,8 +125,10 @@ inline auto ZoomVectorEffects::GetSpeedCoeffVelocity(const float sqDistFromZero,
                                                      const NormalizedCoords& coords) const
     -> NormalizedCoords
 {
-  const auto speedCoeffs = GetClampedSpeedCoeffs(GetXYSpeedCoefficients(sqDistFromZero, coords));
-  return {speedCoeffs.x * coords.GetX(), speedCoeffs.y * coords.GetY()};
+  const auto xySpeedCoeffs      = GetXYSpeedCoefficients(sqDistFromZero, coords);
+  const auto clampedSpeedCoeffs = GetClampedSpeedCoeffs(xySpeedCoeffs);
+
+  return {clampedSpeedCoeffs.x * coords.GetX(), clampedSpeedCoeffs.y * coords.GetY()};
 }
 
 inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero,
@@ -137,7 +136,7 @@ inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero
     -> Point2dFlt
 {
   return m_filterEffectsSettings->speedCoefficientsEffect->GetSpeedCoefficients(
-      GetBaseSpeedCoefficients(), sqDistFromZero, coords);
+      coords, sqDistFromZero, GetBaseSpeedCoefficients());
   // Amulet 2
   // vx = X * tan(dist);
   // vy = Y * tan(dist);
@@ -145,9 +144,11 @@ inline auto ZoomVectorEffects::GetXYSpeedCoefficients(const float sqDistFromZero
 
 inline auto ZoomVectorEffects::GetBaseSpeedCoefficients() const -> Point2dFlt
 {
-  const auto speedCoeff =
-      (1.0F + m_filterEffectsSettings->vitesse.GetRelativeSpeed()) / SPEED_COEFF_DENOMINATOR;
-  return {speedCoeff, speedCoeff};
+  static constexpr auto SPEED_COEFF_MULTIPLIER = 1.0F / 50.0F;
+  const auto baseSpeedCoeff =
+      SPEED_COEFF_MULTIPLIER * (1.0F + m_filterEffectsSettings->vitesse.GetRelativeSpeed());
+
+  return {baseSpeedCoeff, baseSpeedCoeff};
 }
 
 inline auto ZoomVectorEffects::GetClampedSpeedCoeffs(const Point2dFlt& speedCoeffs) const
@@ -158,7 +159,7 @@ inline auto ZoomVectorEffects::GetClampedSpeedCoeffs(const Point2dFlt& speedCoef
 
 inline auto ZoomVectorEffects::GetClampedSpeedCoeff(const float speedCoeff) const -> float
 {
-  if (speedCoeff < MIN_SPEED_COEFF)
+  if (static constexpr auto MIN_SPEED_COEFF = -4.01F; speedCoeff < MIN_SPEED_COEFF)
   {
     return MIN_SPEED_COEFF;
   }

@@ -21,9 +21,9 @@ public:
 
   auto SetRandomParams() -> void override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+  [[nodiscard]] auto GetSpeedCoefficients(const NormalizedCoords& coords,
                                           float sqDistFromZero,
-                                          const NormalizedCoords& coords) const
+                                          const Point2dFlt& baseSpeedCoeffs) const
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
@@ -82,10 +82,9 @@ private:
                                      float periodicFactor) const -> float;
 };
 
-inline auto Wave::GetSpeedCoefficients(const Point2dFlt& baseSpeedCoeffs,
+inline auto Wave::GetSpeedCoefficients([[maybe_unused]] const NormalizedCoords& coords,
                                        const float sqDistFromZero,
-                                       [[maybe_unused]] const NormalizedCoords& coords) const
-    -> Point2dFlt
+                                       const Point2dFlt& baseSpeedCoeffs) const -> Point2dFlt
 {
   const auto xSpeedCoeff = baseSpeedCoeffs.x + GetSpeedAdd(sqDistFromZero, m_params.xWaveEffect);
   const auto ySpeedCoeff = baseSpeedCoeffs.y + GetSpeedAdd(sqDistFromZero, m_params.yWaveEffect);
