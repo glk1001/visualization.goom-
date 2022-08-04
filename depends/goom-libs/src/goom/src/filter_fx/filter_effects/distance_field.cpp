@@ -12,22 +12,22 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
 
 static constexpr auto DEFAULT_AMPLITUDE       = 0.1F;
-static constexpr auto X_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.501F};
-static constexpr auto Y_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.501F};
+static constexpr auto X_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 1.11F};
+static constexpr auto Y_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 1.11F};
 
 static constexpr auto DEFAULT_SQ_DIST_MULT       = 0.025F;
 static constexpr auto X_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.051F};
 static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.051F};
 
 static constexpr auto DEFAULT_SQ_DIST_OFFSET       = 0.05F;
-static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.11F};
-static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.11F};
+static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 1.11F};
+static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 1.11F};
 
-static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 1.00F;
-static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL   = 1.00F;
-static constexpr auto PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
+static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 0.50F;
+static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL   = 0.50F;
+static constexpr auto PROB_XY_SQ_DIST_OFFSET_EQUAL = 0.50F;
 
-static constexpr auto PROB_MODE0                  = 0.05F;
+static constexpr auto PROB_MODE0                  = 0.7F;
 static constexpr auto PROB_RANDOM_DISTANCE_POINTS = 0.3F;
 
 DistanceField::DistanceField(const IGoomRand& goomRand) noexcept

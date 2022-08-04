@@ -25,7 +25,7 @@ static constexpr auto X_DEFAULT_FREQ      = 10.0F;
 static constexpr auto Y_DEFAULT_FREQ      = 10.0F;
 static constexpr auto FREQ_RANGE          = IGoomRand::NumberRange<float>{5.0F, 100.0F};
 static constexpr auto BIG_FREQ_RANGE      = IGoomRand::NumberRange<float>{5.0F, 500.0F};
-static constexpr auto VERY_BIG_FREQ_RANGE = IGoomRand::NumberRange<float>{30000.0F, 50000.0F};
+static constexpr auto VERY_BIG_FREQ_RANGE = IGoomRand::NumberRange<float>{1000.0F, 10000.0F};
 
 static constexpr auto X_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
@@ -114,10 +114,7 @@ auto Hypercos::SetMode2RandomParams() -> void
 
 auto Hypercos::SetMode3RandomParams() -> void
 {
-  const auto amplitudeRange =
-      m_goomRand.ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
-
-  SetHypercosEffect(HypercosOverlay::MODE3, VERY_BIG_FREQ_RANGE, amplitudeRange);
+  SetHypercosEffect(HypercosOverlay::MODE3, VERY_BIG_FREQ_RANGE, AMPLITUDE_RANGE);
 }
 
 auto Hypercos::SetHypercosEffect(const HypercosOverlay overlay,
