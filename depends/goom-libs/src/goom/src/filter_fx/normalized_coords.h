@@ -47,66 +47,102 @@ private:
 class NormalizedCoordsConverter
 {
 public:
-  NormalizedCoordsConverter(uint32_t width, uint32_t height, float minScreenCoordVal);
+  NormalizedCoordsConverter(uint32_t width,
+                            uint32_t height,
+                            float minScreenCoordVal,
+                            bool doNotScale = true);
 
   [[nodiscard]] auto ScreenToNormalizedCoords(const Point2dInt& screenCoords) const
       -> NormalizedCoords;
   [[nodiscard]] auto NormalizedToScreenCoordsFlt(const NormalizedCoords& normalizedCoords) const
       -> Point2dFlt;
-  [[nodiscard]] auto GetMinNormalizedCoordVal() const -> float;
+  [[nodiscard]] auto GetXMinNormalizedCoordVal() const -> float;
+  [[nodiscard]] auto GetYMinNormalizedCoordVal() const -> float;
 
   auto Inc(NormalizedCoords& normalizedCoords) const -> void;
   auto IncX(NormalizedCoords& normalizedCoords) const -> void;
   auto IncY(NormalizedCoords& normalizedCoords) const -> void;
 
 private:
-  const float m_ratioScreenToNormalizedCoord;
-  const float m_ratioNormalizedToScreenCoord;
-  const float m_minNormalizedCoordVal;
-  [[nodiscard]] auto ScreenToNormalizedCoord(int32_t screenCoord) const -> float;
-  [[nodiscard]] auto NormalizedToScreenCoordFlt(float normalizedCoord) const -> float;
+  const float m_xRatioScreenToNormalizedCoord;
+  const float m_yRatioScreenToNormalizedCoord;
+  const float m_xRatioNormalizedToScreenCoord;
+  const float m_yRatioNormalizedToScreenCoord;
+  const float m_xMinNormalizedCoordVal;
+  const float m_yMinNormalizedCoordVal;
+  [[nodiscard]] auto ScreenToNormalizedXCoord(int32_t screenCoord) const -> float;
+  [[nodiscard]] auto ScreenToNormalizedYCoord(int32_t screenCoord) const -> float;
+  [[nodiscard]] auto NormalizedToScreenXCoordFlt(float normalizedCoord) const -> float;
+  [[nodiscard]] auto NormalizedToScreenYCoordFlt(float normalizedCoord) const -> float;
 };
 
 inline NormalizedCoordsConverter::NormalizedCoordsConverter(const uint32_t width,
                                                             const uint32_t height,
-                                                            const float minScreenCoordVal)
-  : m_ratioScreenToNormalizedCoord{(NormalizedCoords::MAX_NORMALIZED_COORD -
-                                    NormalizedCoords::MIN_NORMALIZED_COORD) /
-                                   static_cast<float>(std::max(width, height) - 1)},
-    m_ratioNormalizedToScreenCoord{1.0F / m_ratioScreenToNormalizedCoord},
-    m_minNormalizedCoordVal{minScreenCoordVal * m_ratioScreenToNormalizedCoord}
+                                                            const float minScreenCoordVal,
+                                                            const bool doNotScale)
+  : m_xRatioScreenToNormalizedCoord{(NormalizedCoords::MAX_NORMALIZED_COORD -
+                                     NormalizedCoords::MIN_NORMALIZED_COORD) /
+                                    (doNotScale ? static_cast<float>(std::max(width, height) - 1)
+                                                : static_cast<float>(width - 1))},
+    m_yRatioScreenToNormalizedCoord{doNotScale ? m_xRatioScreenToNormalizedCoord
+                                               : (NormalizedCoords::MAX_NORMALIZED_COORD -
+                                                  NormalizedCoords::MIN_NORMALIZED_COORD) /
+                                                     static_cast<float>(height - 1)},
+    m_xRatioNormalizedToScreenCoord{1.0F / m_xRatioScreenToNormalizedCoord},
+    m_yRatioNormalizedToScreenCoord{1.0F / m_yRatioScreenToNormalizedCoord},
+    m_xMinNormalizedCoordVal{minScreenCoordVal * m_xRatioScreenToNormalizedCoord},
+    m_yMinNormalizedCoordVal{minScreenCoordVal * m_yRatioScreenToNormalizedCoord}
 {
 }
 
-inline auto NormalizedCoordsConverter::GetMinNormalizedCoordVal() const -> float
+inline auto NormalizedCoordsConverter::GetXMinNormalizedCoordVal() const -> float
 {
-  return m_minNormalizedCoordVal;
+  return m_xMinNormalizedCoordVal;
+}
+
+inline auto NormalizedCoordsConverter::GetYMinNormalizedCoordVal() const -> float
+{
+  return m_yMinNormalizedCoordVal;
 }
 
 inline auto NormalizedCoordsConverter::ScreenToNormalizedCoords(
     const Point2dInt& screenCoords) const -> NormalizedCoords
 {
-  return {ScreenToNormalizedCoord(screenCoords.x), ScreenToNormalizedCoord(screenCoords.y)};
+  return {ScreenToNormalizedXCoord(screenCoords.x), ScreenToNormalizedYCoord(screenCoords.y)};
 }
 
 inline auto NormalizedCoordsConverter::NormalizedToScreenCoordsFlt(
     const NormalizedCoords& normalizedCoords) const -> Point2dFlt
 {
-  return {NormalizedToScreenCoordFlt(normalizedCoords.m_fltCoords.x),
-          NormalizedToScreenCoordFlt(normalizedCoords.m_fltCoords.y)};
+  return {NormalizedToScreenXCoordFlt(normalizedCoords.m_fltCoords.x),
+          NormalizedToScreenYCoordFlt(normalizedCoords.m_fltCoords.y)};
 }
 
-inline auto NormalizedCoordsConverter::ScreenToNormalizedCoord(const int32_t screenCoord) const
+inline auto NormalizedCoordsConverter::ScreenToNormalizedXCoord(const int32_t screenCoord) const
     -> float
 {
   return NormalizedCoords::MIN_NORMALIZED_COORD +
-         (m_ratioScreenToNormalizedCoord * static_cast<float>(screenCoord));
+         (m_xRatioScreenToNormalizedCoord * static_cast<float>(screenCoord));
 }
 
-inline auto NormalizedCoordsConverter::NormalizedToScreenCoordFlt(const float normalizedCoord) const
+inline auto NormalizedCoordsConverter::ScreenToNormalizedYCoord(const int32_t screenCoord) const
     -> float
 {
-  return m_ratioNormalizedToScreenCoord *
+  return NormalizedCoords::MIN_NORMALIZED_COORD +
+         (m_yRatioScreenToNormalizedCoord * static_cast<float>(screenCoord));
+}
+
+inline auto NormalizedCoordsConverter::NormalizedToScreenXCoordFlt(
+    const float normalizedCoord) const -> float
+{
+  return m_xRatioNormalizedToScreenCoord *
+         (normalizedCoord - NormalizedCoords::MIN_NORMALIZED_COORD);
+}
+
+inline auto NormalizedCoordsConverter::NormalizedToScreenYCoordFlt(
+    const float normalizedCoord) const -> float
+{
+  return m_yRatioNormalizedToScreenCoord *
          (normalizedCoord - NormalizedCoords::MIN_NORMALIZED_COORD);
 }
 
@@ -118,12 +154,12 @@ inline auto NormalizedCoordsConverter::Inc(NormalizedCoords& normalizedCoords) c
 
 inline auto NormalizedCoordsConverter::IncX(NormalizedCoords& normalizedCoords) const -> void
 {
-  normalizedCoords.m_fltCoords.x += m_ratioScreenToNormalizedCoord;
+  normalizedCoords.m_fltCoords.x += m_xRatioScreenToNormalizedCoord;
 }
 
 inline auto NormalizedCoordsConverter::IncY(NormalizedCoords& normalizedCoords) const -> void
 {
-  normalizedCoords.m_fltCoords.y += m_ratioScreenToNormalizedCoord;
+  normalizedCoords.m_fltCoords.y += m_yRatioScreenToNormalizedCoord;
 }
 
 inline NormalizedCoords::NormalizedCoords(const Point2dFlt& alreadyNormalized) noexcept

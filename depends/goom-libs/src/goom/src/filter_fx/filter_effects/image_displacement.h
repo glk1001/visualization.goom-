@@ -44,7 +44,8 @@ private:
   const NormalizedCoordsConverter m_normalizedCoordsConverter{
       m_imageBuffer->GetWidth(),
       m_imageBuffer->GetHeight(),
-      ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL};
+      ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL,
+      false};
   float m_zoomFactor                    = 1.0F;
   float m_amplitude                     = 1.0F;
   static constexpr float INITIAL_CUTOFF = 0.5F;

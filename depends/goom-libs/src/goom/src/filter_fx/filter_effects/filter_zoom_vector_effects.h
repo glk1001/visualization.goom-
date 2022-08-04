@@ -105,7 +105,8 @@ private:
   auto SetRandomRotationSettings() -> void;
   auto SetRandomTanEffects() -> void;
 
-  [[nodiscard]] auto GetMinVelocityVal(float velocityVal) const -> float;
+  [[nodiscard]] auto GetMinVelocityVal(float velocityVal, float minNormalizedCoordVal) const
+      -> float;
   [[nodiscard]] auto GetXYSpeedCoefficients(float sqDistFromZero,
                                             const NormalizedCoords& coords) const -> Point2dFlt;
   [[nodiscard]] auto GetBaseSpeedCoefficients() const -> Point2dFlt;

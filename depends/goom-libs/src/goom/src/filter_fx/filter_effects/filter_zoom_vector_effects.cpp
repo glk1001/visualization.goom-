@@ -149,15 +149,17 @@ auto ZoomVectorEffects::SetRandomHypercosOverlayEffects() -> void
 auto ZoomVectorEffects::GetCleanedVelocity(const NormalizedCoords& velocity) const
     -> NormalizedCoords
 {
-  return {GetMinVelocityVal(velocity.GetX()), GetMinVelocityVal(velocity.GetY())};
+  return {
+      GetMinVelocityVal(velocity.GetX(), m_normalizedCoordsConverter.GetXMinNormalizedCoordVal()),
+      GetMinVelocityVal(velocity.GetY(), m_normalizedCoordsConverter.GetYMinNormalizedCoordVal())};
 }
 
-inline auto ZoomVectorEffects::GetMinVelocityVal(const float velocityVal) const -> float
+inline auto ZoomVectorEffects::GetMinVelocityVal(const float velocityVal,
+                                                 const float minNormalizedCoordVal) const -> float
 {
-  if (std::fabs(velocityVal) < m_normalizedCoordsConverter.GetMinNormalizedCoordVal())
+  if (std::fabs(velocityVal) < minNormalizedCoordVal)
   {
-    return velocityVal < 0.0F ? -m_normalizedCoordsConverter.GetMinNormalizedCoordVal()
-                              : +m_normalizedCoordsConverter.GetMinNormalizedCoordVal();
+    return velocityVal < 0.0F ? -minNormalizedCoordVal : +minNormalizedCoordVal;
   }
   return velocityVal;
 }
