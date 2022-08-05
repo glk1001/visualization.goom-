@@ -69,8 +69,8 @@ private:
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
-  const Point2dInt m_screenMidpoint{U_HALF * m_goomInfo.GetScreenInfo().width,
-                                    U_HALF* m_goomInfo.GetScreenInfo().height};
+  const Point2dInt m_screenMidpoint{U_HALF * m_goomInfo.GetScreenWidth(),
+                                    U_HALF* m_goomInfo.GetScreenHeight()};
 
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
@@ -461,9 +461,9 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
 {
   const auto diameter = (2 * radius) + 1; // must be odd
   const auto screenWidthLessDiameter =
-      static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - diameter);
+      static_cast<int32_t>(m_goomInfo.GetScreenWidth() - diameter);
   const auto screenHeightLessDiameter =
-      static_cast<int32_t>(m_goomInfo.GetScreenInfo().height - diameter);
+      static_cast<int32_t>(m_goomInfo.GetScreenHeight() - diameter);
 
   if ((dotPosition.x < static_cast<int32_t>(diameter)) ||
       (dotPosition.y < static_cast<int32_t>(diameter)) ||

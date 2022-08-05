@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_config.h"
+#include "goom_types.h"
 
 #include <array>
 #include <cstdint>
@@ -177,22 +178,22 @@ class PixelBuffer
   using Buffer = std::vector<Pixel>;
 
 public:
-  PixelBuffer() noexcept = default;
-  PixelBuffer(uint32_t width, uint32_t height) noexcept;
+  PixelBuffer() noexcept = delete;
+  PixelBuffer(const Dimensions& dimensions) noexcept;
   PixelBuffer(const PixelBuffer&)                    = delete;
   PixelBuffer(PixelBuffer&&)                         = delete;
   auto operator=(const PixelBuffer&) -> PixelBuffer& = delete;
   auto operator=(PixelBuffer&&) -> PixelBuffer&      = delete;
   virtual ~PixelBuffer() noexcept                    = default;
 
-  auto Resize(size_t width, size_t height) noexcept -> void;
+  auto Resize(const Dimensions& dimensions) noexcept -> void;
 
   [[nodiscard]] auto GetWidth() const noexcept -> uint32_t;
   [[nodiscard]] auto GetHeight() const noexcept -> uint32_t;
 
   auto Fill(const Pixel& pixel) noexcept -> void;
   auto CopyTo(PixelBuffer& pixelBuffer) const noexcept -> void;
-  [[nodiscard]] static auto GetIntBufferSize(uint32_t width, uint32_t height) noexcept -> size_t;
+  [[nodiscard]] static auto GetIntBufferSize(const Dimensions& dimensions) noexcept -> size_t;
   [[nodiscard]] auto GetIntBuff() const noexcept -> const PixelIntType*;
 
   auto operator()(size_t x, size_t y) const noexcept -> const Pixel&;
@@ -209,11 +210,11 @@ public:
       -> std::array<Pixel, NUM_NBRS>;
 
 private:
-  uint32_t m_width  = 0;
-  uint32_t m_height = 0;
-  uint32_t m_xMax   = 0;
-  uint32_t m_yMax   = 0;
-  Buffer m_buff{};
+  uint32_t m_width;
+  uint32_t m_height;
+  uint32_t m_xMax = m_width - 1;
+  uint32_t m_yMax = m_height - 1;
+  Buffer m_buff;
 };
 
 static_assert(sizeof(Pixel) == sizeof(PixelIntType), "Invalid Pixel size.");
@@ -344,10 +345,10 @@ inline auto PixelBuffer::Fill(const Pixel& pixel) noexcept -> void
   std::fill(m_buff.begin(), m_buff.end(), pixel);
 }
 
-inline auto PixelBuffer::GetIntBufferSize(const uint32_t width, const uint32_t height) noexcept
+inline auto PixelBuffer::GetIntBufferSize(const Dimensions& dimensions) noexcept
     -> size_t
 {
-  return static_cast<size_t>(width) * static_cast<size_t>(height) * sizeof(Pixel);
+  return static_cast<size_t>(dimensions.GetSize()) * sizeof(Pixel);
 }
 
 inline auto PixelBuffer::GetIntBuff() const noexcept -> const PixelIntType*

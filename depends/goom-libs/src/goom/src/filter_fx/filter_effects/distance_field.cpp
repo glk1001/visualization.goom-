@@ -1,6 +1,7 @@
 #include "distance_field.h"
 
 #include "goom_config.h"
+#include "goom_types.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
@@ -102,8 +103,8 @@ auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) cons
 {
   static constexpr auto MAX_DISTANCE_SQ =
       2.0F * Sq(NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD);
-  auto minDistanceSq                   = MAX_DISTANCE_SQ;
-  const NormalizedCoords* closestPoint = nullptr;
+  auto minDistanceSq       = MAX_DISTANCE_SQ;
+  const auto* closestPoint = Ptr<NormalizedCoords>{nullptr};
 
   for (const auto& distancePoint : m_params.distancePoints)
   {

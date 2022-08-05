@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_graphic.h"
+#include "goom_types.h"
 #include "normalized_coords.h"
 #include "point2d.h"
 #include "utils/propagate_const.h"
@@ -85,8 +86,7 @@ public:
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept -> SourcePointInfo;
 
 private:
-  const uint32_t m_screenWidth;
-  const uint32_t m_screenHeight;
+  const Dimensions m_dimensions;
   const NormalizedCoordsConverter& m_normalizedCoordsConverter;
   const std::unique_ptr<const CoordTransforms> m_coordTransforms{
       std::make_unique<CoordTransforms>(m_normalizedCoordsConverter)};
@@ -101,10 +101,10 @@ private:
   UTILS::Parallel& m_parallel;
   const ZoomPointFunc m_getZoomPoint;
   const Point2dInt m_maxTranPoint;
-  const uint32_t m_tranBuffStripeHeight{m_screenHeight / DIM_FILTER_COEFFS};
+  const uint32_t m_tranBuffStripeHeight{m_dimensions.GetHeight() / DIM_FILTER_COEFFS};
   class TransformBuffers;
   std::experimental::propagate_const<std::unique_ptr<TransformBuffers>> m_transformBuffers{
-      std::make_unique<TransformBuffers>(m_screenWidth, m_screenHeight, m_maxTranPoint)};
+      std::make_unique<TransformBuffers>(m_dimensions, m_maxTranPoint)};
 
   Point2dInt m_buffMidpoint{0, 0};
   NormalizedCoords m_normalizedMidPt{0.0F, 0.0F};
@@ -168,9 +168,7 @@ private:
 class ZoomFilterBuffers::TransformBuffers
 {
 public:
-  TransformBuffers(uint32_t screenWidth,
-                   uint32_t screenHeight,
-                   const Point2dInt& maxTranPoint) noexcept;
+  TransformBuffers(const Dimensions& m_dimensions, const Point2dInt& maxTranPoint) noexcept;
 
   auto SetSrceTranToIdentity() noexcept -> void;
   auto CopyTempTranToDestTran() noexcept -> void;
@@ -187,8 +185,7 @@ public:
       -> Point2dInt;
 
 private:
-  const uint32_t m_screenWidth;
-  const uint32_t m_screenHeight;
+  const Dimensions m_dimensions;
   const uint32_t m_bufferSize;
   const Point2dInt m_maxTranPointMinus1;
   std::vector<int32_t> m_tranXSrce{};

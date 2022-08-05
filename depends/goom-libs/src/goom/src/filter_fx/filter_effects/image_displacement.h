@@ -42,10 +42,10 @@ private:
   const int32_t m_xMax{static_cast<int32_t>(m_imageBuffer->GetWidth() - 1)};
   const int32_t m_yMax{static_cast<int32_t>(m_imageBuffer->GetHeight() - 1)};
   const NormalizedCoordsConverter m_normalizedCoordsConverter{
-      m_imageBuffer->GetWidth(),
-      m_imageBuffer->GetHeight(),
+      {m_imageBuffer->GetWidth(), m_imageBuffer->GetHeight()},
       ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL,
-      false};
+      false
+  };
   float m_zoomFactor                    = 1.0F;
   float m_amplitude                     = 1.0F;
   static constexpr float INITIAL_CUTOFF = 0.5F;

@@ -134,9 +134,9 @@ public:
 
 private:
   IGoomDraw& m_draw;
-  GoomDrawToContainer m_drawToContainer{m_draw.GetScreenWidth(), m_draw.GetScreenHeight()};
+  GoomDrawToContainer m_drawToContainer{m_draw.GetScreenDimensions()};
   GoomDrawToMany m_drawToMany{
-      m_draw.GetScreenWidth(), m_draw.GetScreenHeight(), {&m_draw, &m_drawToContainer}
+      m_draw.GetScreenDimensions(), {&m_draw, &m_drawToContainer}
   };
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;

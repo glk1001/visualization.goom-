@@ -22,9 +22,9 @@ using UTILS::MATH::U_HALF;
 IStarType::IStarType(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
   : m_goomInfo{goomInfo},
     m_goomRand{goomRand},
-    m_halfWidth{static_cast<int32_t>(U_HALF * goomInfo.GetScreenInfo().width)},
-    m_halfHeight{static_cast<int32_t>(U_HALF * goomInfo.GetScreenInfo().height)},
-    m_xMax{static_cast<float>(goomInfo.GetScreenInfo().width - 1)}
+    m_halfWidth{static_cast<int32_t>(U_HALF * goomInfo.GetScreenWidth())},
+    m_halfHeight{static_cast<int32_t>(U_HALF * goomInfo.GetScreenHeight())},
+    m_xMax{static_cast<float>(goomInfo.GetScreenWidth() - 1)}
 {
 }
 
@@ -117,8 +117,8 @@ auto FireworksStarType::GetRandomizedSetupParams(const float defaultPathLength) 
   while (true)
   {
     setupParams.startPos = {
-        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetScreenInfo().width)),
-        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetScreenInfo().height)),
+        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetScreenWidth())),
+        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetScreenHeight())),
     };
     const auto sqDist = SqDistance(setupParams.startPos, GetZoomMidpoint());
     if (sqDist < rSq)
@@ -160,9 +160,9 @@ auto RainStarType::GetRandomizedSetupParams(const float defaultPathLength) const
 {
   SetupParams setupParams;
 
-  const auto x0          = static_cast<int32_t>(GetGoomInfo().GetScreenInfo().width / 25);
+  const auto x0          = static_cast<int32_t>(GetGoomInfo().GetScreenWidth() / 25);
   setupParams.startPos.x = GetGoomRand().GetRandInRange(
-      x0, static_cast<int32_t>(GetGoomInfo().GetScreenInfo().width) - x0);
+      x0, static_cast<int32_t>(GetGoomInfo().GetScreenWidth()) - x0);
 
   static constexpr auto MIN_Y = 3;
   static constexpr auto MAX_Y = 63;
@@ -210,7 +210,7 @@ auto FountainStarType::GetRandomizedSetupParams(const float defaultPathLength) c
 
   static constexpr auto MIN_Y = 3U;
   static constexpr auto MAX_Y = 63U;
-  setupParams.startPos.y      = static_cast<int32_t>(GetGoomInfo().GetScreenInfo().height +
+  setupParams.startPos.y      = static_cast<int32_t>(GetGoomInfo().GetScreenHeight() +
                                                 GetGoomRand().GetRandInRange(MIN_Y, MAX_Y + 1));
 
   setupParams.nominalPathLength = 1.0F + defaultPathLength;

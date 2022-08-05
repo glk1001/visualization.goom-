@@ -42,8 +42,8 @@ public:
 private:
   const FxHelper& m_fxHelper;
   const SmallImageBitmaps& m_smallBitmaps;
-  const uint32_t m_screenWidth      = m_fxHelper.GetGoomInfo().GetScreenInfo().width;
-  const uint32_t m_screenHeight     = m_fxHelper.GetGoomInfo().GetScreenInfo().height;
+  const uint32_t m_screenWidth      = m_fxHelper.GetGoomInfo().GetScreenWidth();
+  const uint32_t m_screenHeight     = m_fxHelper.GetGoomInfo().GetScreenHeight();
   const Point2dInt m_screenMidPoint = MidpointFromOrigin({m_screenWidth, m_screenHeight});
 
   static constexpr uint32_t NUM_CIRCLES = 5;

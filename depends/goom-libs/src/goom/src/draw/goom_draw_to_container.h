@@ -2,6 +2,7 @@
 
 #include "goom_draw.h"
 #include "goom_graphic.h"
+#include "goom_types.h"
 #include "point2d.h"
 
 #include <array>
@@ -15,7 +16,7 @@ class GoomDrawToContainer : public IGoomDraw
 {
 public:
   GoomDrawToContainer() noexcept = delete;
-  GoomDrawToContainer(uint32_t screenWidth, uint32_t screenHeight);
+  explicit GoomDrawToContainer(const Dimensions& dimensions);
   GoomDrawToContainer(const GoomDrawToContainer&) noexcept = delete;
   GoomDrawToContainer(GoomDrawToContainer&&) noexcept      = delete;
   ~GoomDrawToContainer() noexcept override;

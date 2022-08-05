@@ -17,7 +17,10 @@ static constexpr uint32_t HEIGHT = 720;
 static const float MIN_COORD_VAL =
     (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) /
     static_cast<float>(WIDTH - 1);
-static const NormalizedCoordsConverter NORMALIZED_COORDS_CONVERTER{WIDTH, HEIGHT, MIN_COORD_VAL};
+static const NormalizedCoordsConverter NORMALIZED_COORDS_CONVERTER{
+    {WIDTH, HEIGHT},
+    MIN_COORD_VAL
+};
 
 inline auto ConvertToScreen(const float normalizedValue) -> int32_t
 {

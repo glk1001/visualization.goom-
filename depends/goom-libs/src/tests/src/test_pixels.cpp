@@ -114,11 +114,17 @@ TEST_CASE("PixelBuffers")
 {
   SECTION("PixelBuffer copy")
   {
-    PixelBuffer srceBuffer{WIDTH, HEIGHT};
+    PixelBuffer srceBuffer{{WIDTH, HEIGHT}};
+    REQUIRE(srceBuffer.GetWidth() == WIDTH);
+    REQUIRE(srceBuffer.GetHeight() == HEIGHT);
     const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
     srceBuffer.Fill(testPixel);
-    PixelBuffer destBuffer{WIDTH, HEIGHT};
+
+    PixelBuffer destBuffer{{WIDTH, HEIGHT}};
     srceBuffer.CopyTo(destBuffer);
+
+    REQUIRE(destBuffer.GetWidth() == WIDTH);
+    REQUIRE(destBuffer.GetHeight() == HEIGHT);
     REQUIRE(GetPixelCount(srceBuffer, testPixel) == GetPixelCount(destBuffer, testPixel));
   }
 
@@ -143,9 +149,9 @@ TEST_CASE("PixelBuffers")
     REQUIRE(std::count(intSrceBuff->cbegin(), intSrceBuff->cend(), intTestPixel) ==
     std::count(intDestBuff->cbegin(), intDestBuff->cend(), intTestPixel));
 
-    auto srceBuffer = std::make_unique<PixelBuffer>(WIDTH, HEIGHT);
+    auto srceBuffer = std::make_unique<PixelBuffer>(Dimensions{WIDTH, HEIGHT});
     srceBuffer->Fill(testPixel);
-    auto destBuffer = std::make_unique<PixelBuffer>(WIDTH, HEIGHT);
+    auto destBuffer = std::make_unique<PixelBuffer>(Dimensions{WIDTH, HEIGHT});
 
     startTime = high_resolution_clock::now();
     for (size_t i = 0; i < NUM_LOOPS; ++i)
@@ -166,7 +172,7 @@ TEST_CASE("PixelBuffers")
 
   SECTION("PixelBuffer Get4RHBNeighbours")
   {
-    PixelBuffer buffer{WIDTH, HEIGHT};
+    PixelBuffer buffer{{WIDTH, HEIGHT}};
     const Pixel testPixel1{{TEST_R+0, TEST_G+0, TEST_B+0}};
     const Pixel testPixel2{{TEST_R+1, TEST_G+1, TEST_B+1}};
     const Pixel testPixel3{{TEST_R+2, TEST_G+2, TEST_B+2}};
@@ -191,7 +197,7 @@ TEST_CASE("PixelBuffers")
   SECTION("PixelBuffer RowIter")
   {
     const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
-    PixelBuffer buffer{WIDTH, HEIGHT};
+    PixelBuffer buffer{{WIDTH, HEIGHT}};
     buffer.Fill(WHITE_PIXEL);
     static constexpr size_t Y = 10;
     for (size_t x = 0; x < WIDTH; ++x)

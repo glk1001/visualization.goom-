@@ -9,8 +9,8 @@
 namespace GOOM::DRAW
 {
 
-GoomDrawToBuffer::GoomDrawToBuffer(const uint32_t screenWidth, const uint32_t screenHeight)
-  : IGoomDraw{screenWidth, screenHeight}
+GoomDrawToBuffer::GoomDrawToBuffer(const Dimensions& dimensions)
+  : IGoomDraw{dimensions}
 {
 }
 

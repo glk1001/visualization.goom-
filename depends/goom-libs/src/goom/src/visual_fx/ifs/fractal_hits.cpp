@@ -7,21 +7,20 @@ namespace GOOM::VISUAL_FX::IFS
 
 using COLOR::GetColorAverage;
 
-FractalHits::FractalHits(const uint32_t width, const uint32_t height) noexcept
-  : m_width{width}, m_height{height}
+FractalHits::FractalHits(const Dimensions& dimensions) noexcept : m_dimensions{dimensions}
 {
   m_hits.reserve(HITS_ESTIMATE);
 }
 
 FractalHits::~FractalHits() noexcept = default;
 
-auto FractalHits::GetHitInfo(const uint32_t width, const uint32_t height) noexcept
+auto FractalHits::GetHitInfo(const Dimensions& dimensions) noexcept
     -> std::vector<std::vector<HitInfo>>
 {
-  auto hitInfo = std::vector<std::vector<HitInfo>>(height);
+  auto hitInfo = std::vector<std::vector<HitInfo>>(dimensions.GetHeight());
   for (auto& xHit : hitInfo)
   {
-    xHit.resize(width);
+    xHit.resize(dimensions.GetWidth());
   }
   return hitInfo;
 }
@@ -42,7 +41,7 @@ void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& sim
   {
     return;
   }
-  if ((static_cast<uint32_t>(x) >= m_width) || (static_cast<uint32_t>(y) >= m_height))
+  if ((x >= m_dimensions.GetIntWidth()) or (y >= m_dimensions.GetIntHeight()))
   {
     return;
   }

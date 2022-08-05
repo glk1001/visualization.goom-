@@ -20,6 +20,8 @@ endif ()
 
 add_library(goom
         STATIC
+        include/goom/goom_config.h
+        include/goom/goom_types.h
         src/color/color_data/color_data_maps.cpp
         src/color/color_data/extra_color_groups.cpp
         src/color/color_adjustment.cpp

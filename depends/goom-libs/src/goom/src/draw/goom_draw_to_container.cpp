@@ -6,6 +6,7 @@
 #include "goom/logging.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "goom_types.h"
 
 #include <cstdint>
 #include <vector>
@@ -16,12 +17,12 @@ namespace GOOM::DRAW
 using COLOR::GetBrighterColorInt;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
-GoomDrawToContainer::GoomDrawToContainer(const uint32_t screenWidth, const uint32_t screenHeight)
-  : IGoomDraw{screenWidth, screenHeight}, m_xyPixelList(screenHeight)
+GoomDrawToContainer::GoomDrawToContainer(const Dimensions& dimensions)
+  : IGoomDraw{dimensions}, m_xyPixelList(dimensions.GetHeight())
 {
   for (auto& xPixelList : m_xyPixelList)
   {
-    xPixelList.resize(screenWidth);
+    xPixelList.resize(dimensions.GetWidth());
   }
 }
 

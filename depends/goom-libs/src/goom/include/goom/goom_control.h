@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom_types.h"
 #include "spimpl.h"
 
 #include <cstdint>
@@ -19,7 +20,7 @@ public:
   static void SetRandSeed(uint64_t seed);
 
   GoomControl() noexcept = delete;
-  GoomControl(uint32_t width, uint32_t height, const std::string& resourcesDirectory);
+  GoomControl(const Dimensions& dimensions, const std::string& resourcesDirectory);
 
   enum class ShowTitleType
   {

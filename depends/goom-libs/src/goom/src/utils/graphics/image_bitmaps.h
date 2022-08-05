@@ -18,6 +18,9 @@ public:
   [[nodiscard]] auto GetWidth() const noexcept -> uint32_t;
   [[nodiscard]] auto GetHeight() const noexcept -> uint32_t;
 
+  [[nodiscard]] auto GetIntWidth() const noexcept -> int32_t;
+  [[nodiscard]] auto GetIntHeight() const noexcept -> int32_t;
+
   auto operator()(size_t x, size_t y) const noexcept -> Pixel;
 
 private:
@@ -51,6 +54,16 @@ inline auto ImageBitmap::GetWidth() const noexcept -> uint32_t
 inline auto ImageBitmap::GetHeight() const noexcept -> uint32_t
 {
   return m_height;
+}
+
+inline auto ImageBitmap::GetIntWidth() const noexcept -> int32_t
+{
+  return static_cast<int32_t>(m_width);
+}
+
+inline auto ImageBitmap::GetIntHeight() const noexcept -> int32_t
+{
+  return static_cast<int32_t>(m_height);
 }
 
 inline auto ImageBitmap::operator()(const size_t x, const size_t y) const noexcept -> Pixel

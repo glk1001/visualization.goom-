@@ -70,8 +70,8 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
                                        const std::string& fontDirectory)
   : m_goomRand{goomRand},
     m_textDraw{std::make_unique<TextDraw>(draw)},
-    m_screenWidth{static_cast<int32_t>(draw.GetScreenWidth())},
-    m_screenHeight{static_cast<int32_t>(draw.GetScreenHeight())},
+    m_screenWidth{draw.GetScreenDimensions().GetIntWidth()},
+    m_screenHeight{draw.GetScreenDimensions().GetIntHeight()},
     m_fontDirectory{fontDirectory}
 {
   m_textDraw->SetFontFile(GetSelectedFontPath());

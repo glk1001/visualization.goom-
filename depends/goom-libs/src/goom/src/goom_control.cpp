@@ -95,7 +95,7 @@ using VISUAL_FX::FxHelper;
 class GoomControl::GoomControlImpl
 {
 public:
-  GoomControlImpl(uint32_t screenWidth, uint32_t screenHeight, std::string resourcesDirectory);
+  GoomControlImpl(const Dimensions& dimensions, std::string resourcesDirectory);
 
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
@@ -121,38 +121,35 @@ private:
   GoomSoundEvents m_goomSoundEvents{m_soundInfo};
   PluginInfo m_goomInfo;
   const GoomRand m_goomRand{};
-  GoomDrawToBuffer m_multiBufferDraw{m_goomInfo.GetScreenInfo().width,
-                                     m_goomInfo.GetScreenInfo().height};
+  GoomDrawToBuffer m_multiBufferDraw{m_goomInfo.GetScreenDimensions()};
   const FxHelper m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand};
 
-  GoomImageBuffers m_imageBuffers{m_goomInfo.GetScreenInfo().width,
-                                  m_goomInfo.GetScreenInfo().height};
+  GoomImageBuffers m_imageBuffers{m_goomInfo.GetScreenDimensions()};
   const std::string m_resourcesDirectory;
   const NormalizedCoordsConverter m_normalizedCoordsConverter{
-      m_goomInfo.GetScreenInfo().width,
-      m_goomInfo.GetScreenInfo().height,
-      ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL};
+      {m_goomInfo.GetScreenWidth(), m_goomInfo.GetScreenHeight()},
+      ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL
+  };
   FilterSettingsService m_filterSettingsService{
       m_goomInfo, m_goomRand, m_resourcesDirectory, CreateSpeedCoefficientsEffect};
   const SmallImageBitmaps m_smallBitmaps{m_resourcesDirectory};
   GoomEvents m_goomEvents{m_goomRand};
   GoomRandomStateHandler m_stateHandler{m_goomRand};
 
-  GoomAllVisualFx m_visualFx{
-      m_parallel,
-      m_fxHelper,
-      m_smallBitmaps,
-      m_resourcesDirectory,
-      m_stateHandler,
-      std::make_unique<FilterBuffersService>(
-          m_parallel,
-          m_goomInfo,
-          m_normalizedCoordsConverter,
-          std::make_unique<FilterZoomVector>(m_goomInfo.GetScreenInfo().width,
-                                             m_resourcesDirectory,
-                                             m_goomRand,
-                                             m_normalizedCoordsConverter)),
-      std::make_unique<FilterColorsService>()};
+  GoomAllVisualFx m_visualFx{m_parallel,
+                             m_fxHelper,
+                             m_smallBitmaps,
+                             m_resourcesDirectory,
+                             m_stateHandler,
+                             std::make_unique<FilterBuffersService>(
+                                 m_parallel,
+                                 m_goomInfo,
+                                 m_normalizedCoordsConverter,
+                                 std::make_unique<FilterZoomVector>(m_goomInfo.GetScreenWidth(),
+                                                                    m_resourcesDirectory,
+                                                                    m_goomRand,
+                                                                    m_normalizedCoordsConverter)),
+                             std::make_unique<FilterColorsService>()};
 
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
   GoomMusicSettingsReactor m_musicSettingsReactor{
@@ -193,8 +190,7 @@ private:
   const float m_upperLimitOfTimeIntervalInMsSinceLastMarked =
       UPDATE_TIME_SAFETY_FACTOR *
       (static_cast<float>(m_numUpdatesBetweenTimeChecks) * UPDATE_TIME_ESTIMATE_IN_MS);
-  GoomDrawToBuffer m_goomTextOutput{m_goomInfo.GetScreenInfo().width,
-                                    m_goomInfo.GetScreenInfo().height};
+  GoomDrawToBuffer m_goomTextOutput{m_goomInfo.GetScreenDimensions()};
   GoomTitleDisplayer m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory()};
   GoomMessageDisplayer m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile()};
 
@@ -241,10 +237,8 @@ auto GoomControl::SetRandSeed(const uint64_t seed) -> void
   UTILS::MATH::RAND::SetRandSeed(seed);
 }
 
-GoomControl::GoomControl(const uint32_t width,
-                         const uint32_t height,
-                         const std::string& resourcesDirectory)
-  : m_pimpl{spimpl::make_unique_impl<GoomControlImpl>(width, height, resourcesDirectory)}
+GoomControl::GoomControl(const Dimensions& dimensions, const std::string& resourcesDirectory)
+  : m_pimpl{spimpl::make_unique_impl<GoomControlImpl>(dimensions, resourcesDirectory)}
 {
 }
 
@@ -298,25 +292,21 @@ auto GoomControl::Update(const AudioSamples& audioSamples, const std::string& me
   m_pimpl->Update(audioSamples, message);
 }
 
-GoomControl::GoomControlImpl::GoomControlImpl(const uint32_t screenWidth,
-                                              const uint32_t screenHeight,
+GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
                                               std::string resourcesDirectory)
-  : m_goomInfo{screenWidth, screenHeight, m_goomSoundEvents},
-    m_resourcesDirectory{std::move(resourcesDirectory)}
+  : m_goomInfo{dimensions, m_goomSoundEvents}, m_resourcesDirectory{std::move(resourcesDirectory)}
 {
-  Expects(screenWidth > 0);
-  Expects(screenHeight > 0);
   RotateBuffers();
 }
 
 inline auto GoomControl::GoomControlImpl::GetScreenWidth() const -> uint32_t
 {
-  return m_goomInfo.GetScreenInfo().width;
+  return m_goomInfo.GetScreenWidth();
 }
 
 inline auto GoomControl::GoomControlImpl::GetScreenHeight() const -> uint32_t
 {
-  return m_goomInfo.GetScreenInfo().height;
+  return m_goomInfo.GetScreenHeight();
 }
 
 inline auto GoomControl::GoomControlImpl::SetShowTitle(const ShowTitleType value) -> void

@@ -3,6 +3,7 @@
 #include "color/color_utils.h"
 #include "draw_methods.h"
 #include "goom_graphic.h"
+#include "goom_types.h"
 #include "point2d.h"
 #include "utils/parallel_utils.h"
 
@@ -32,15 +33,16 @@ class IGoomDraw
 
 public:
   IGoomDraw() noexcept = delete;
-  IGoomDraw(uint32_t screenWidth, uint32_t screenHeight);
+  explicit IGoomDraw(const Dimensions& dimensions);
   IGoomDraw(const IGoomDraw&) noexcept           = delete;
   IGoomDraw(IGoomDraw&&) noexcept                = delete;
   virtual ~IGoomDraw() noexcept                  = default;
   auto operator=(const IGoomDraw&) -> IGoomDraw& = delete;
   auto operator=(IGoomDraw&&) -> IGoomDraw&      = delete;
 
-  [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
-  [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
+  [[nodiscard]] auto GetScreenDimensions() const -> const Dimensions&;
+  [[nodiscard]] auto GetScreenWidth() const -> uint32_t ;
+  [[nodiscard]] auto GetScreenHeight() const -> uint32_t ;
 
   [[nodiscard]] auto GetParallel() const -> GOOM::UTILS::Parallel&;
 
@@ -85,8 +87,7 @@ protected:
                                   uint32_t intBuffIntensity) = 0;
 
 private:
-  const uint32_t m_screenWidth;
-  const uint32_t m_screenHeight;
+  const Dimensions m_dimensions;
   DrawMethods m_drawMethods;
   void DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors);
 
@@ -100,14 +101,19 @@ private:
   mutable GOOM::UTILS::Parallel m_parallel{-1}; // max cores - 1
 };
 
+inline auto IGoomDraw::GetScreenDimensions() const -> const Dimensions&
+{
+  return m_dimensions;
+}
+
 inline auto IGoomDraw::GetScreenWidth() const -> uint32_t
 {
-  return m_screenWidth;
+  return GetScreenDimensions().GetWidth();
 }
 
 inline auto IGoomDraw::GetScreenHeight() const -> uint32_t
 {
-  return m_screenHeight;
+  return GetScreenDimensions().GetHeight();
 }
 
 inline auto IGoomDraw::GetBuffIntensity() const -> float
@@ -201,8 +207,9 @@ inline void IGoomDraw::DrawPixels(const Point2dInt point, const MultiplePixels& 
 
 inline void IGoomDraw::DrawPixelsClipped(const Point2dInt point, const MultiplePixels& colors)
 {
-  if ((0 < point.x) || (0 < point.y) || (static_cast<uint32_t>(point.x) >= m_screenWidth) ||
-      (static_cast<uint32_t>(point.y) >= m_screenHeight))
+  if ((0 < point.x) or (0 < point.y) or
+      (static_cast<uint32_t>(point.x) >= m_dimensions.GetWidth()) or
+      (static_cast<uint32_t>(point.y) >= m_dimensions.GetHeight()))
   {
     return;
   }

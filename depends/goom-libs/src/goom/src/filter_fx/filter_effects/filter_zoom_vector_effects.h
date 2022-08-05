@@ -89,7 +89,7 @@ public:
                                           const NormalizedCoords& velocity) const
       -> NormalizedCoords;
 
-  static constexpr const char* PARAM_GROUP = "Zoom Effects";
+  static constexpr auto PARAM_GROUP = "Zoom Effects";
   [[nodiscard]] auto GetZoomEffectsNameValueParams() const -> UTILS::NameValuePairs;
 
 private:

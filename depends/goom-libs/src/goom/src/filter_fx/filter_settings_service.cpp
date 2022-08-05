@@ -463,8 +463,8 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                                  createSpeedCoefficientsEffect)
   : m_goomInfo{goomInfo},
     m_goomRand{goomRand},
-    m_screenMidpoint{U_HALF * m_goomInfo.GetScreenInfo().width,
-                     U_HALF * m_goomInfo.GetScreenInfo().height},
+    m_screenMidpoint{U_HALF * m_goomInfo.GetScreenWidth(),
+                     U_HALF * m_goomInfo.GetScreenHeight()},
     m_resourcesDirectory{resourcesDirectory},
     m_randomizedExtraEffects{std::make_unique<ExtraEffectsStates>(m_goomRand)},
     m_filterModeData{GetFilterModeData(m_goomRand,
@@ -710,11 +710,11 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
   {
     case ZoomMidpointEvents::BOTTOM_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          U_HALF * m_goomInfo.GetScreenInfo().width, m_goomInfo.GetScreenInfo().height - 1};
+          U_HALF * m_goomInfo.GetScreenWidth(), m_goomInfo.GetScreenHeight() - 1};
       break;
     case ZoomMidpointEvents::RIGHT_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint.x =
-          static_cast<int32_t>(m_goomInfo.GetScreenInfo().width - 1);
+          static_cast<int32_t>(m_goomInfo.GetScreenWidth() - 1);
       break;
     case ZoomMidpointEvents::LEFT_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint.x = 1;
@@ -724,13 +724,13 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
       break;
     case ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          U_QUARTER * m_goomInfo.GetScreenInfo().width,
-          U_QUARTER * m_goomInfo.GetScreenInfo().height};
+          U_QUARTER * m_goomInfo.GetScreenWidth(),
+          U_QUARTER * m_goomInfo.GetScreenHeight()};
       break;
     case ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          U_THREE_QUARTERS * m_goomInfo.GetScreenInfo().width,
-          U_THREE_QUARTERS * m_goomInfo.GetScreenInfo().height};
+          U_THREE_QUARTERS * m_goomInfo.GetScreenWidth(),
+          U_THREE_QUARTERS * m_goomInfo.GetScreenHeight()};
       break;
     default:
       throw std::logic_error("Unknown ZoomMidpointEvents enum.");

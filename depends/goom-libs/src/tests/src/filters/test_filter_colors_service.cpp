@@ -23,7 +23,7 @@ inline auto GetColor(const uint32_t red, const uint32_t green, const uint32_t bl
 TEST_CASE("FilterColorsService", "[FilterColorsService]")
 {
   FilterColorsService filterColorsService{};
-  PixelBuffer pixelBuffer{WIDTH, HEIGHT};
+  PixelBuffer pixelBuffer{{WIDTH, HEIGHT}};
 
   static constexpr uint32_t R1 = 50;
   static constexpr uint32_t G1 = 150;

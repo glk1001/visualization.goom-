@@ -101,7 +101,7 @@ auto FillDrawContainer(GoomDrawToContainer* const draw, const size_t numChanged)
 
 TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
 {
-  GoomDrawToContainer draw{WIDTH, HEIGHT};
+  GoomDrawToContainer draw{{WIDTH, HEIGHT}};
 
   draw.SetBuffIntensity(1.0F);
 
@@ -133,7 +133,7 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
 
 TEST_CASE("Test DrawMovingText to Container with Duplicates", "[GoomDrawToContainerDuplicates]")
 {
-  GoomDrawToContainer draw{WIDTH, HEIGHT};
+  GoomDrawToContainer draw{{WIDTH, HEIGHT}};
 
   draw.SetBuffIntensity(1.0F);
 
@@ -162,7 +162,7 @@ TEST_CASE("Test DrawMovingText to Container with Duplicates", "[GoomDrawToContai
 
 TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
 {
-  GoomDrawToContainer draw{WIDTH, HEIGHT};
+  GoomDrawToContainer draw{{WIDTH, HEIGHT}};
 
   draw.SetBuffIntensity(1.0F);
 

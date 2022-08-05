@@ -116,7 +116,7 @@ private:
   // Why 320,200 ? Because the FX was developed on 320x200.
   static constexpr auto MIN_STAR_CLUSTER_HEIGHT = 50.0F;
   const float m_heightRatio =
-      static_cast<float>(m_goomInfo.GetScreenInfo().height) / MAX_STAR_CLUSTER_HEIGHT;
+      static_cast<float>(m_goomInfo.GetScreenHeight()) / MAX_STAR_CLUSTER_HEIGHT;
   auto AddStarClusters() -> void;
   auto AddStarCluster(const IStarType& starType, uint32_t totalNumActiveStars) noexcept -> void;
   [[nodiscard]] auto GetMaxStarsInACluster() const noexcept -> uint32_t;
@@ -325,12 +325,12 @@ auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const noexcept
   static constexpr auto DEAD_MARGIN = 64;
 
   if ((star.GetStartPos().x < -DEAD_MARGIN) ||
-      (star.GetStartPos().x > static_cast<float>(m_goomInfo.GetScreenInfo().width + DEAD_MARGIN)))
+      (star.GetStartPos().x > static_cast<float>(m_goomInfo.GetScreenWidth() + DEAD_MARGIN)))
   {
     return true;
   }
   if ((star.GetStartPos().y < -DEAD_MARGIN) ||
-      (star.GetStartPos().y > static_cast<float>(m_goomInfo.GetScreenInfo().height + DEAD_MARGIN)))
+      (star.GetStartPos().y > static_cast<float>(m_goomInfo.GetScreenHeight() + DEAD_MARGIN)))
   {
     return true;
   }

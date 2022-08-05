@@ -36,7 +36,9 @@ static constexpr size_t HEIGHT = 70;
 static constexpr const char* RESOURCES_DIRECTORY = "";
 static const GoomRand GOOM_RAND{};
 static const NormalizedCoordsConverter NORMALIZED_COORDS_CONVERTER{
-    WIDTH, HEIGHT, ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL};
+    {WIDTH, HEIGHT},
+    ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL
+};
 
 const Point2dInt MID_PT = {static_cast<int32_t>(WIDTH) / 2, static_cast<int32_t>(HEIGHT) / 2};
 const Point2dInt CONST_ZOOM_VECTOR_COORDS_1 = {16, 40};
@@ -104,7 +106,7 @@ TEST_CASE("ZoomFilterBuffers Basic", "[ZoomFilterBuffers]")
   SoundInfo soundInfo{};
   GoomSoundEvents goomSoundEvents{soundInfo};
 
-  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
+  const PluginInfo goomInfo{{WIDTH, HEIGHT}, goomSoundEvents};
   TestZoomVector identityZoomVector{false};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo, NORMALIZED_COORDS_CONVERTER,
                                   [&](const NormalizedCoords& normalizedCoords)
@@ -187,7 +189,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
   SoundInfo soundInfo{};
   GoomSoundEvents goomSoundEvents{soundInfo};
 
-  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
+  const PluginInfo goomInfo{{WIDTH, HEIGHT}, goomSoundEvents};
   TestZoomVector constantZoomVector{true};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo, NORMALIZED_COORDS_CONVERTER,
                                   [&](const NormalizedCoords& normalizedCoords)
@@ -308,7 +310,7 @@ TEST_CASE("ZoomFilterBuffers Stripes", "[ZoomFilterBuffersStripes]")
   SoundInfo soundInfo{};
   GoomSoundEvents goomSoundEvents{soundInfo};
 
-  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
+  const PluginInfo goomInfo{{WIDTH, HEIGHT}, goomSoundEvents};
   TestZoomVector constantZoomVector{true};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo, NORMALIZED_COORDS_CONVERTER,
                                   [&](const NormalizedCoords& normalizedCoords)
@@ -424,7 +426,7 @@ TEST_CASE("ZoomFilterBuffers Clipping", "[ZoomFilterBuffersClipping]")
   SoundInfo soundInfo{};
   GoomSoundEvents goomSoundEvents{soundInfo};
 
-  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
+  const PluginInfo goomInfo{{WIDTH, HEIGHT}, goomSoundEvents};
   TestZoomVector constantZoomVector{true};
   ZoomFilterBuffers filterBuffers{parallel, goomInfo, NORMALIZED_COORDS_CONVERTER,
                                   [&](const NormalizedCoords& normalizedCoords)

@@ -20,8 +20,14 @@ public:
   {
   }
 
-  [[nodiscard]] auto GetScreenWidth() const -> uint32_t { return m_goomDraw.GetScreenWidth(); }
-  [[nodiscard]] auto GetScreenHeight() const -> uint32_t { return m_goomDraw.GetScreenHeight(); }
+  [[nodiscard]] auto GetScreenWidth() const -> uint32_t
+  {
+    return m_goomDraw.GetScreenWidth();
+  }
+  [[nodiscard]] auto GetScreenHeight() const -> uint32_t
+  {
+    return m_goomDraw.GetScreenHeight();
+  }
 
   using GetColorFunc = std::function<Pixel(float t)>;
   void SetLineColorFunc(const GetColorFunc& lineColorFunc) { m_lineColorFunc = lineColorFunc; };

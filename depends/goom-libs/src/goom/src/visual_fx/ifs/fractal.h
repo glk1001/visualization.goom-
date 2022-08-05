@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fractal_hits.h"
+#include "goom_types.h"
 #include "ifs_types.h"
 #include "similitudes.h"
 #include "utils/math/goom_rand_base.h"
@@ -29,8 +30,7 @@ namespace VISUAL_FX::IFS
 class Fractal
 {
 public:
-  Fractal(uint32_t screenWidth,
-          uint32_t screenHeight,
+  Fractal(const Dimensions& dimensions,
           const UTILS::MATH::IGoomRand& goomRand,
           const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_graphic.h"
+#include "goom_types.h"
 #include "ifs_types.h"
 #include "similitudes.h"
 
@@ -14,7 +15,7 @@ class FractalHits
 {
 public:
   FractalHits() noexcept = delete;
-  FractalHits(uint32_t width, uint32_t height) noexcept;
+  FractalHits(const Dimensions& dimensions) noexcept;
   ~FractalHits() noexcept;
   FractalHits(const FractalHits&) noexcept                    = default;
   FractalHits(FractalHits&&) noexcept                         = default;
@@ -27,16 +28,15 @@ public:
   [[nodiscard]] auto GetMaxHitCount() const -> uint32_t;
 
 private:
-  const uint32_t m_width;
-  const uint32_t m_height;
+  const Dimensions m_dimensions;
   struct HitInfo
   {
     uint32_t count = 0;
     Pixel color    = BLACK_PIXEL;
     const Similitude* simi{};
   };
-  std::vector<std::vector<HitInfo>> m_hitInfo{GetHitInfo(m_width, m_height)};
-  [[nodiscard]] static auto GetHitInfo(uint32_t width, uint32_t height) noexcept
+  std::vector<std::vector<HitInfo>> m_hitInfo{GetHitInfo(m_dimensions)};
+  [[nodiscard]] static auto GetHitInfo(const Dimensions& dimensions) noexcept
       -> std::vector<std::vector<HitInfo>>;
   uint32_t m_maxHitCount                = 0;
   static constexpr size_t HITS_ESTIMATE = 1000;

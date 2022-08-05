@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom_types.h"
 #include "point2d.h"
 #include "utils/math/misc.h"
 
@@ -47,8 +48,7 @@ private:
 class NormalizedCoordsConverter
 {
 public:
-  NormalizedCoordsConverter(uint32_t width,
-                            uint32_t height,
+  NormalizedCoordsConverter(const Dimensions& dimensions,
                             float minScreenCoordVal,
                             bool doNotScale = true);
 
@@ -76,18 +76,21 @@ private:
   [[nodiscard]] auto NormalizedToScreenYCoordFlt(float normalizedCoord) const -> float;
 };
 
-inline NormalizedCoordsConverter::NormalizedCoordsConverter(const uint32_t width,
-                                                            const uint32_t height,
+inline NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions& dimensions,
                                                             const float minScreenCoordVal,
                                                             const bool doNotScale)
   : m_xRatioScreenToNormalizedCoord{(NormalizedCoords::MAX_NORMALIZED_COORD -
                                      NormalizedCoords::MIN_NORMALIZED_COORD) /
-                                    (doNotScale ? static_cast<float>(std::max(width, height) - 1)
-                                                : static_cast<float>(width - 1))},
-    m_yRatioScreenToNormalizedCoord{doNotScale ? m_xRatioScreenToNormalizedCoord
-                                               : (NormalizedCoords::MAX_NORMALIZED_COORD -
-                                                  NormalizedCoords::MIN_NORMALIZED_COORD) /
-                                                     static_cast<float>(height - 1)},
+                                    (doNotScale
+                                         ? static_cast<float>(std::max(dimensions.GetWidth(),
+                                                                       dimensions.GetHeight()) -
+                                                              1)
+                                         : static_cast<float>(dimensions.GetWidth() - 1))},
+    m_yRatioScreenToNormalizedCoord{
+        doNotScale
+            ? m_xRatioScreenToNormalizedCoord
+            : (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) /
+                  static_cast<float>(dimensions.GetHeight() - 1)},
     m_xRatioNormalizedToScreenCoord{1.0F / m_xRatioScreenToNormalizedCoord},
     m_yRatioNormalizedToScreenCoord{1.0F / m_yRatioScreenToNormalizedCoord},
     m_xMinNormalizedCoordVal{minScreenCoordVal * m_xRatioScreenToNormalizedCoord},

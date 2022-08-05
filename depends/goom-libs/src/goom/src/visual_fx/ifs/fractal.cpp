@@ -15,16 +15,15 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;
 
-Fractal::Fractal(const uint32_t screenWidth,
-                 const uint32_t screenHeight,
+Fractal::Fractal(const Dimensions& dimensions,
                  const IGoomRand& goomRand,
                  const SmallImageBitmaps& smallBitmaps)
   : m_similitudes{goomRand, smallBitmaps},
     m_goomRand{goomRand},
-    m_halfWidth{static_cast<Flt>(U_HALF * (screenWidth - 1))},
-    m_halfHeight{static_cast<Flt>(U_HALF * (screenHeight - 1))},
-    m_hits1{screenWidth, screenHeight},
-    m_hits2{screenWidth, screenHeight}
+    m_halfWidth{static_cast<Flt>(U_HALF * (dimensions.GetWidth() - 1))},
+    m_halfHeight{static_cast<Flt>(U_HALF * (dimensions.GetHeight() - 1))},
+    m_hits1{dimensions},
+    m_hits2{dimensions}
 {
   m_speedTransitionT.Reset(TValue::MAX_T_VALUE);
 

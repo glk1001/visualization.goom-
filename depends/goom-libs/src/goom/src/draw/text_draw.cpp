@@ -626,7 +626,7 @@ void TextDraw::TextDrawImpl::Draw(const Point2dInt pen, Point2dInt& nextPen)
 
   for (const auto& span : m_textSpans)
   {
-    WriteGlyph(span, nextPen.x, static_cast<int>(m_draw.GetScreenHeight()) - nextPen.y);
+    WriteGlyph(span, nextPen.x, m_draw.GetScreenDimensions().GetIntHeight() - nextPen.y);
     nextPen.x += span.advance;
   }
 }
@@ -696,8 +696,8 @@ void TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
   {
     const auto& span = spanArray.at(i);
 
-    const auto yPos = static_cast<int>(m_draw.GetScreenHeight()) - (yPen + span.y);
-    if ((yPos < 0) || (yPos >= static_cast<int>(m_draw.GetScreenHeight())))
+    const auto yPos = m_draw.GetScreenDimensions().GetIntHeight() - (yPen + span.y);
+    if ((yPos < 0) or (yPos >= m_draw.GetScreenDimensions().GetIntHeight()))
     {
       return;
     }
@@ -734,7 +734,7 @@ void TextDraw::TextDrawImpl::WriteXSpan(const Span& span,
   for (auto width = 0; width < span.width; ++width)
   {
     const auto xPos = xPos0 + width;
-    if ((xPos < 0) || (xPos >= static_cast<int>(m_draw.GetScreenWidth())))
+    if ((xPos < 0) or (xPos >= m_draw.GetScreenDimensions().GetIntWidth()))
     {
       continue;
     }

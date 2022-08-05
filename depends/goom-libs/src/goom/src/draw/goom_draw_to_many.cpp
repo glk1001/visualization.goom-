@@ -2,6 +2,7 @@
 
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "goom_types.h"
 
 #include <cstdint>
 #include <vector>
@@ -9,10 +10,9 @@
 namespace GOOM::DRAW
 {
 
-GoomDrawToMany::GoomDrawToMany(const uint32_t screenWidth,
-                               const uint32_t screenHeight,
+GoomDrawToMany::GoomDrawToMany(const Dimensions& dimensions,
                                const std::vector<IGoomDraw*>& manyDraws)
-  : IGoomDraw{screenWidth, screenHeight}, m_manyDraws{manyDraws}
+  : IGoomDraw{dimensions}, m_manyDraws{manyDraws}
 {
   Expects(not manyDraws.empty());
 }

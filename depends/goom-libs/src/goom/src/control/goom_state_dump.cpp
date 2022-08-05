@@ -20,10 +20,7 @@ namespace GOOM::CONTROL
 
 using FILTER_FX::FilterSettingsService;
 using FILTER_FX::HypercosOverlay;
-using FILTER_FX::ZoomFilterColorSettings;
-using FILTER_FX::ZoomFilterEffectsSettings;
 using FILTER_FX::ZoomFilterMode;
-using FILTER_FX::ZoomFilterSettings;
 using UTILS::GetCurrentDateTimeAsString;
 using UTILS::Logging;
 
@@ -129,7 +126,7 @@ auto GoomStateDump::Start() noexcept -> void
 auto GoomStateDump::AddCurrentState() noexcept -> void
 {
   const auto timeNow          = std::chrono::high_resolution_clock::now();
-  const Ms diff               = std::chrono::duration_cast<Ms>(timeNow - m_prevTimeHiRes);
+  const auto diff             = std::chrono::duration_cast<Ms>(timeNow - m_prevTimeHiRes);
   const auto timeOfUpdateInMs = static_cast<uint32_t>(diff.count());
   m_cumulativeState->AddCurrentUpdateTime(timeOfUpdateInMs);
   m_prevTimeHiRes = timeNow;
@@ -137,12 +134,12 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   m_cumulativeState->AddCurrentGoomState(m_visualFx.GetCurrentState());
   m_cumulativeState->AddCurrentFilterMode(m_filterSettingsService.GetCurrentFilterMode());
 
-  const ZoomFilterSettings filterSettings = m_filterSettingsService.GetFilterSettings();
+  const auto filterSettings = m_filterSettingsService.GetFilterSettings();
 
-  const ZoomFilterColorSettings filterColorSettings = filterSettings.filterColorSettings;
+  const auto filterColorSettings = filterSettings.filterColorSettings;
   m_cumulativeState->AddCurrentBlockyWavyEffect(filterColorSettings.blockyWavy);
 
-  const ZoomFilterEffectsSettings filterEffectsSettings = filterSettings.filterEffectsSettings;
+  const auto filterEffectsSettings = filterSettings.filterEffectsSettings;
   m_cumulativeState->AddCurrentHypercosOverlay(filterEffectsSettings.hypercosOverlay);
   m_cumulativeState->AddCurrentImageVelocityEffect(filterEffectsSettings.imageVelocityEffect);
   m_cumulativeState->AddCurrentNoiseEffect(filterEffectsSettings.noiseEffect);
@@ -152,7 +149,7 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
 
   m_cumulativeState->AddBufferLerp(m_visualFx.GetZoomFilterFx().GetTranLerpFactor());
 
-  const GoomSoundEvents& goomSoundEvents = m_goomInfo.GetSoundEvents();
+  const auto& goomSoundEvents = m_goomInfo.GetSoundEvents();
   m_cumulativeState->AddCurrentTimeSinceLastGoom(goomSoundEvents.GetTimeSinceLastGoom());
   m_cumulativeState->AddCurrentTimeSinceLastBigGoom(goomSoundEvents.GetTimeSinceLastBigGoom());
   m_cumulativeState->AddCurrentTotalGoomsInCurrentCycle(
@@ -202,15 +199,15 @@ auto GoomStateDump::DumpData(const std::string& directory) -> void
 
 auto GoomStateDump::DumpSummary() const noexcept -> void
 {
-  static constexpr const char* SUMMARY_FILENAME = "summary.dat";
-  std::ofstream out{};
+  static constexpr auto SUMMARY_FILENAME = "summary.dat";
+  auto out = std::ofstream{};
   out.open(m_datedDirectory + "/" + SUMMARY_FILENAME, std::ofstream::out);
 
   out << "Song:       " << m_songTitle << "\n";
   out << "Date:       " << m_dateTime << "\n";
   out << "Seed:       " << m_goomSeed << "\n";
-  out << "Width:      " << m_goomInfo.GetScreenInfo().width << "\n";
-  out << "Height:     " << m_goomInfo.GetScreenInfo().height << "\n";
+  out << "Width:      " << m_goomInfo.GetScreenWidth() << "\n";
+  out << "Height:     " << m_goomInfo.GetScreenHeight() << "\n";
   out << "Start Time: " << m_stopwatch->GetStartTimeAsStr() << "\n";
   out << "Stop Time:  " << m_stopwatch->GetLastMarkedTimeAsStr() << "\n";
   out << "Act Dur:    " << m_stopwatch->GetActualDurationInMs() << "\n";
@@ -236,14 +233,14 @@ template<typename T>
 auto GoomStateDump::DumpDataArray(const std::string& filename,
                                   const std::vector<T>& dataArray) const noexcept -> void
 {
-  const uint32_t dataLen = m_cumulativeState->GetNumUpdates();
+  const auto dataLen = m_cumulativeState->GetNumUpdates();
   LogInfo("Dumping Goom state data ({} values) to \"{}\".", dataLen, filename);
 
-  static constexpr const char* EXT = ".dat";
-  std::ofstream out{};
+  static constexpr auto EXT = ".dat";
+  auto out = std::ofstream{};
   out.open(m_datedDirectory + "/" + filename + EXT, std::ofstream::out);
 
-  for (size_t i = 0; i < dataLen; ++i)
+  for (auto i = 0U; i < dataLen; ++i)
   {
     out << dataArray[i] << "\n";
   }

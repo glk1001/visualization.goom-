@@ -42,12 +42,14 @@ TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
   SoundInfo soundInfo{};
   GoomSoundEvents goomSoundEvents{soundInfo};
 
-  const PluginInfo goomInfo{WIDTH, HEIGHT, goomSoundEvents};
+  const PluginInfo goomInfo{{WIDTH, HEIGHT}, goomSoundEvents};
   const GoomRand goomRand{};
   FilterSettingsService filterSettingsService{goomInfo, goomRand, RESOURCES_DIRECTORY,
                                               CreateSpeedCoefficientsEffect};
   const NormalizedCoordsConverter normalizedCoordsConverter{
-      WIDTH, HEIGHT, ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL};
+      {WIDTH, HEIGHT},
+      ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL
+  };
   ZoomFilterFx zoomFilterFx{
       parallel, goomInfo,
       std::make_unique<FilterBuffersService>(

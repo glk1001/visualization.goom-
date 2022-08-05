@@ -1,6 +1,7 @@
 #pragma once
 
 #include "control/goom_sound_events.h"
+#include "goom_types.h"
 
 #include <cstdint>
 #include <memory>
@@ -11,39 +12,49 @@ namespace GOOM
 class PluginInfo
 {
 public:
-  struct Screen
-  {
-    uint32_t width;
-    uint32_t height;
-    uint32_t size; // == screen.height * screen.width.
-  };
-
   PluginInfo() noexcept = delete;
-  PluginInfo(uint32_t width, uint32_t height, const CONTROL::GoomSoundEvents& soundEvents) noexcept;
+  PluginInfo(const Dimensions& dimensions, const CONTROL::GoomSoundEvents& soundEvents) noexcept;
   PluginInfo(const PluginInfo&) noexcept           = delete;
   PluginInfo(PluginInfo&&) noexcept                = delete;
   virtual ~PluginInfo() noexcept                   = default;
   auto operator=(const PluginInfo&) -> PluginInfo& = delete;
   auto operator=(PluginInfo&&) -> PluginInfo&      = delete;
 
-  [[nodiscard]] auto GetScreenInfo() const -> const Screen&;
+  [[nodiscard]] auto GetScreenDimensions() const -> const Dimensions&;
+  [[nodiscard]] auto GetScreenWidth() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetScreenHeight() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetScreenSize() const noexcept -> uint32_t;
   [[nodiscard]] auto GetSoundEvents() const -> const CONTROL::GoomSoundEvents&;
 
 private:
-  const Screen m_screen;
+  const Dimensions m_dimensions;
   const CONTROL::GoomSoundEvents& m_soundEvents;
 };
 
-inline PluginInfo::PluginInfo(const uint32_t width,
-                              const uint32_t height,
+inline PluginInfo::PluginInfo(const Dimensions& dimensions,
                               const CONTROL::GoomSoundEvents& soundEvents) noexcept
-  : m_screen{width, height, width * height}, m_soundEvents{soundEvents}
+  : m_dimensions{dimensions}, m_soundEvents{soundEvents}
 {
 }
 
-inline auto PluginInfo::GetScreenInfo() const -> const PluginInfo::Screen&
+inline auto PluginInfo::GetScreenDimensions() const -> const Dimensions&
 {
-  return m_screen;
+  return m_dimensions;
+}
+
+inline auto PluginInfo::GetScreenWidth() const noexcept -> uint32_t
+{
+  return m_dimensions.GetWidth();
+}
+
+inline auto PluginInfo::GetScreenHeight() const noexcept -> uint32_t
+{
+  return m_dimensions.GetHeight();
+}
+
+inline auto PluginInfo::GetScreenSize() const noexcept -> uint32_t
+{
+  return m_dimensions.GetSize();
 }
 
 inline auto PluginInfo::GetSoundEvents() const -> const CONTROL::GoomSoundEvents&

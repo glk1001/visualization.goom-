@@ -9,11 +9,9 @@ namespace GOOM::DRAW
 
 using UTILS::GRAPHICS::ImageBitmap;
 
-IGoomDraw::IGoomDraw(const uint32_t screenWidth, const uint32_t screenHeight)
-  : m_screenWidth{screenWidth},
-    m_screenHeight{screenHeight},
-    m_drawMethods{m_screenWidth,
-                  m_screenHeight,
+IGoomDraw::IGoomDraw(const Dimensions& dimensions)
+  : m_dimensions{dimensions},
+    m_drawMethods{m_dimensions,
                   [this](const int32_t x, const int32_t y, const MultiplePixels& newColors) {
                     DrawPixelsToDevice({x, y}, newColors);
                   }}
@@ -31,16 +29,16 @@ void IGoomDraw::Bitmap(const Point2dInt centre,
                        const ImageBitmap& bitmap,
                        const std::vector<GetBitmapColorFunc>& getColors)
 {
-  const auto bitmapWidth  = static_cast<int>(bitmap.GetWidth());
-  const auto bitmapHeight = static_cast<int>(bitmap.GetHeight());
+  const auto bitmapWidth  = bitmap.GetIntWidth();
+  const auto bitmapHeight = bitmap.GetIntHeight();
 
   auto x0 = centre.x - (bitmapWidth / 2);
   auto y0 = centre.y - (bitmapHeight / 2);
   auto x1 = x0 + (bitmapWidth - 1);
   auto y1 = y0 + (bitmapHeight - 1);
 
-  if ((x0 >= static_cast<int>(GetScreenWidth())) || (y0 >= static_cast<int>(GetScreenHeight())) ||
-      (x1 < 0) || (y1 < 0))
+  if ((x0 >= m_dimensions.GetIntWidth()) or (y0 >= m_dimensions.GetIntHeight()) or (x1 < 0) or
+      (y1 < 0))
   {
     return;
   }
@@ -52,13 +50,13 @@ void IGoomDraw::Bitmap(const Point2dInt centre,
   {
     y0 = 0;
   }
-  if (x1 >= static_cast<int>(GetScreenWidth()))
+  if (x1 >= m_dimensions.GetIntWidth())
   {
-    x1 = static_cast<int>(GetScreenWidth() - 1);
+    x1 = m_dimensions.GetIntWidth() - 1;
   }
-  if (y1 >= static_cast<int>(GetScreenHeight()))
+  if (y1 >= m_dimensions.GetIntHeight())
   {
-    y1 = static_cast<int>(GetScreenHeight() - 1);
+    y1 = m_dimensions.GetIntHeight() - 1;
   }
 
   const auto actualBitmapWidth  = static_cast<uint32_t>(x1 - x0) + 1;

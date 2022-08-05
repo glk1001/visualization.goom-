@@ -218,8 +218,7 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_fractal{std::make_unique<Fractal>(m_draw.GetScreenWidth(),
-                                        m_draw.GetScreenHeight(),
+    m_fractal{std::make_unique<Fractal>(m_draw.GetScreenDimensions(),
                                         m_goomRand,
                                         smallBitmaps)},
     m_blurrer{m_draw, m_goomRand, BLUR_WIDTH, &m_colorizer, smallBitmaps},
@@ -449,7 +448,7 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() -> void
     t += tStep;
 
     if (const auto [x, y] = std::pair(points[i].GetX(), points[i].GetY());
-        (x >= m_goomInfo.GetScreenInfo().width) || (y >= m_goomInfo.GetScreenInfo().height))
+        (x >= m_goomInfo.GetScreenWidth()) or (y >= m_goomInfo.GetScreenHeight()))
     {
       continue;
     }

@@ -16,10 +16,9 @@ namespace GOOM::DRAW
 
 using COLOR::GetBrighterColor;
 
-DrawMethods::DrawMethods(const uint32_t screenWidth,
-                         const uint32_t screenHeight,
+DrawMethods::DrawMethods(const Dimensions& dimensions,
                          const DrawPixelsToDeviceFunc& func)
-  : m_screenWidth{screenWidth}, m_screenHeight{screenHeight}, m_drawPixelsToDevice{func}
+  : m_dimensions{dimensions}, m_drawPixelsToDevice{func}
 {
 }
 
@@ -76,13 +75,13 @@ void DrawMethods::DrawCircle(const int32_t x0,
 {
   auto plotter = [&](const int x1, const int y1, const int x2, const int y2) -> void
   {
-    if ((static_cast<uint32_t>(x1) >= m_screenWidth) ||
-        (static_cast<uint32_t>(y1) >= m_screenHeight))
+    if ((static_cast<uint32_t>(x1) >= m_dimensions.GetWidth()) ||
+        (static_cast<uint32_t>(y1) >= m_dimensions.GetHeight()))
     {
       return;
     }
-    if ((static_cast<uint32_t>(x2) >= m_screenWidth) ||
-        (static_cast<uint32_t>(y2) >= m_screenHeight))
+    if ((static_cast<uint32_t>(x2) >= m_dimensions.GetWidth()) ||
+        (static_cast<uint32_t>(y2) >= m_dimensions.GetHeight()))
     {
       return;
     }
@@ -160,9 +159,9 @@ void DrawMethods::DrawLine(const int32_t x1,
 void DrawMethods::DrawWuLine(
     const int x1, const int y1, const int x2, const int y2, const std::vector<Pixel>& colors)
 {
-  if ((y1 < 0) || (y2 < 0) || (x1 < 0) || (x2 < 0) || (y1 >= static_cast<int>(m_screenHeight)) ||
-      (y2 >= static_cast<int>(m_screenHeight)) || (x1 >= static_cast<int>(m_screenWidth)) ||
-      (x2 >= static_cast<int>(m_screenWidth)))
+  if ((y1 < 0) || (y2 < 0) || (x1 < 0) || (x2 < 0) || (y1 >= static_cast<int>(m_dimensions.GetHeight())) ||
+      (y2 >= static_cast<int>(m_dimensions.GetHeight())) || (x1 >= static_cast<int>(m_dimensions.GetWidth())) ||
+      (x2 >= static_cast<int>(m_dimensions.GetWidth())))
   {
     return;
   }
@@ -170,7 +169,7 @@ void DrawMethods::DrawWuLine(
   std::vector<Pixel> tempColors = colors;
   auto plot                     = [&](const int x, const int y, const float brightness) -> void
   {
-    if ((static_cast<uint32_t>(x) >= m_screenWidth) || (static_cast<uint32_t>(y) >= m_screenHeight))
+    if ((static_cast<uint32_t>(x) >= m_dimensions.GetWidth()) || (static_cast<uint32_t>(y) >= m_dimensions.GetHeight()))
     {
       return;
     }
@@ -315,9 +314,9 @@ void DrawMethods::DrawLineOverlap(int x0,
                                   const float brightness,
                                   const uint8_t overlap)
 {
-  if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) || (y0 >= static_cast<int>(m_screenHeight)) ||
-      (y1 >= static_cast<int>(m_screenHeight)) || (x0 >= static_cast<int>(m_screenWidth)) ||
-      (x1 >= static_cast<int>(m_screenWidth)))
+  if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) || (y0 >= static_cast<int>(m_dimensions.GetHeight())) ||
+      (y1 >= static_cast<int>(m_dimensions.GetHeight())) || (x0 >= static_cast<int>(m_dimensions.GetWidth())) ||
+      (x1 >= static_cast<int>(m_dimensions.GetWidth())))
   {
     return;
   }
@@ -325,7 +324,7 @@ void DrawMethods::DrawLineOverlap(int x0,
   std::vector<Pixel> tempColors = colors;
   auto plot                     = [&](const int x, const int y) -> void
   {
-    if ((static_cast<uint32_t>(x) >= m_screenWidth) || (static_cast<uint32_t>(y) >= m_screenHeight))
+    if ((static_cast<uint32_t>(x) >= m_dimensions.GetWidth()) || (static_cast<uint32_t>(y) >= m_dimensions.GetHeight()))
     {
       return;
     }
@@ -455,9 +454,9 @@ void DrawMethods::DrawThickLine(int x0,
                                 const uint8_t thickness,
                                 const uint8_t thicknessMode)
 {
-  if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) || (y0 >= static_cast<int>(m_screenHeight)) ||
-      (y1 >= static_cast<int>(m_screenHeight)) || (x0 >= static_cast<int>(m_screenWidth)) ||
-      (x1 >= static_cast<int>(m_screenWidth)))
+  if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) || (y0 >= static_cast<int>(m_dimensions.GetHeight())) ||
+      (y1 >= static_cast<int>(m_dimensions.GetHeight())) || (x0 >= static_cast<int>(m_dimensions.GetWidth())) ||
+      (x1 >= static_cast<int>(m_dimensions.GetWidth())))
   {
     return;
   }

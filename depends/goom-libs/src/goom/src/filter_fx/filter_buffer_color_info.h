@@ -3,6 +3,7 @@
 #include "color/color_utils.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "goom_types.h"
 #include "point2d.h"
 #include "utils/math/misc.h"
 
@@ -48,7 +49,7 @@ public:
     friend class FilterBufferColorInfo;
   };
 
-  FilterBufferColorInfo(uint32_t width, uint32_t height) noexcept;
+  explicit FilterBufferColorInfo(const Dimensions& dimensions) noexcept;
 
   [[nodiscard]] auto GetRow(size_t y) noexcept -> FilterBufferRowColorInfo&;
   auto CalculateLuminances() noexcept -> void;
@@ -57,19 +58,18 @@ public:
       -> float;
 
 private:
-  const uint32_t m_width;
-  const uint32_t m_height;
+  const Dimensions m_dimensions;
 
   const std::array<uint32_t, NUM_X_REGIONS> m_xRegionBorders{
-      GetRegionBorders<NUM_X_REGIONS>(m_width)};
+      GetRegionBorders<NUM_X_REGIONS>(m_dimensions.GetWidth())};
   const std::array<uint32_t, NUM_Y_REGIONS> m_yRegionBorders{
-      GetRegionBorders<NUM_Y_REGIONS>(m_height)};
+      GetRegionBorders<NUM_Y_REGIONS>(m_dimensions.GetHeight())};
   template<uint32_t NumRegions>
   [[nodiscard]] static auto GetRegionBorders(uint32_t length) noexcept
       -> std::array<uint32_t, NumRegions>;
 
   std::vector<FilterBufferRowColorInfo> m_filterBufferRowColorInfoArray{
-      GetFilterBufferRowColorInfoArray(m_height, m_xRegionBorders)};
+      GetFilterBufferRowColorInfoArray(m_dimensions.GetHeight(), m_xRegionBorders)};
   [[nodiscard]] static auto GetFilterBufferRowColorInfoArray(
       uint32_t height, const std::array<uint32_t, NUM_X_REGIONS>& xRegionBorders) noexcept
       -> std::vector<FilterBufferRowColorInfo>;
@@ -96,9 +96,8 @@ private:
   [[nodiscard]] auto GetAverageLuminanceTest() const noexcept -> float;
 };
 
-inline FilterBufferColorInfo::FilterBufferColorInfo(const uint32_t width,
-                                                    const uint32_t height) noexcept
-  : m_width{width}, m_height{height}
+inline FilterBufferColorInfo::FilterBufferColorInfo(const Dimensions& dimensions) noexcept
+  : m_dimensions{dimensions}
 {
   static_assert(UTILS::MATH::IsOdd(NUM_X_REGIONS));
   static_assert(UTILS::MATH::IsOdd(NUM_Y_REGIONS));

@@ -26,14 +26,13 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
                                      const PluginInfo& goomInfo,
                                      const NormalizedCoordsConverter& normalizedCoordsConverter,
                                      const ZoomPointFunc& zoomPointFunc) noexcept
-  : m_screenWidth{goomInfo.GetScreenInfo().width},
-    m_screenHeight{goomInfo.GetScreenInfo().height},
+  : m_dimensions{goomInfo.GetScreenDimensions()},
     m_normalizedCoordsConverter{normalizedCoordsConverter},
     m_parallel{parallel},
     m_getZoomPoint{zoomPointFunc},
     m_maxTranPoint{CoordTransforms::ScreenToTranPoint(
-        {static_cast<int32_t>(m_screenWidth - 1), static_cast<int32_t>(m_screenHeight - 1)})},
-    m_firedec(m_screenHeight)
+        {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1})},
+    m_firedec(m_dimensions.GetHeight())
 {
   Expects(DIM_FILTER_COEFFS == static_cast<int32_t>(std::lround(
                                    std::pow(2, CoordTransforms::DIM_FILTER_COEFFS_DIV_SHIFT))));
@@ -135,7 +134,7 @@ auto ZoomFilterBuffers::StartFreshTranBuffers() noexcept -> void
 
 inline auto ZoomFilterBuffers::FillTempTranBuffers() noexcept -> void
 {
-  DoNextTempTranBuffersStripe(m_screenHeight);
+  DoNextTempTranBuffersStripe(m_dimensions.GetHeight());
 }
 
 /*
@@ -154,13 +153,13 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
   {
     // Position of the pixel to compute in screen coordinates
     const auto yOffset      = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
-    const auto tranPosStart = yOffset * m_screenWidth;
+    const auto tranPosStart = yOffset * m_dimensions.GetWidth();
 
     auto normalizedCentredPoint = m_normalizedCoordsConverter.ScreenToNormalizedCoords(
                                       Point2dInt{0, static_cast<int32_t>(yOffset)}) -
                                   m_normalizedMidPt;
 
-    for (auto x = 0U; x < m_screenWidth; ++x)
+    for (auto x = 0U; x < m_dimensions.GetWidth(); ++x)
     {
       const auto normalizedZoomPoint = m_getZoomPoint(normalizedCentredPoint);
       const auto uncenteredZoomPoint = m_normalizedMidPt + normalizedZoomPoint;
@@ -174,13 +173,13 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
 
   // Where (vertically) to stop generating the buffer stripe
   const auto tranBuffYLineEnd =
-      std::min(m_screenHeight, m_tranBuffYLineStart + tranBuffStripeHeight);
+      std::min(m_dimensions.GetHeight(), m_tranBuffYLineStart + tranBuffStripeHeight);
   const auto numStripes = static_cast<size_t>(tranBuffYLineEnd - m_tranBuffYLineStart);
 
   m_parallel.ForLoop(numStripes, doStripeLine);
 
   m_tranBuffYLineStart += tranBuffStripeHeight;
-  if (tranBuffYLineEnd >= m_screenHeight)
+  if (tranBuffYLineEnd >= m_dimensions.GetHeight())
   {
     m_tranBuffersState   = TranBuffersState::RESET_TRAN_BUFFERS;
     m_tranBuffYLineStart = 0;
@@ -277,12 +276,10 @@ auto ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer() noexcept -> void
   *************************/
 }
 
-ZoomFilterBuffers::TransformBuffers::TransformBuffers(const uint32_t screenWidth,
-                                                      const uint32_t screenHeight,
+ZoomFilterBuffers::TransformBuffers::TransformBuffers(const Dimensions& dimensions,
                                                       const Point2dInt& maxTranPoint) noexcept
-  : m_screenWidth{screenWidth},
-    m_screenHeight{screenHeight},
-    m_bufferSize{m_screenWidth * m_screenHeight},
+  : m_dimensions{dimensions},
+    m_bufferSize{m_dimensions.GetSize()},
     m_maxTranPointMinus1{maxTranPoint - Vec2dInt{1, 1}},
     m_tranXSrce(m_bufferSize),
     m_tranYSrce(m_bufferSize),
@@ -296,9 +293,9 @@ ZoomFilterBuffers::TransformBuffers::TransformBuffers(const uint32_t screenWidth
 auto ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity() noexcept -> void
 {
   auto i = 0U;
-  for (auto y = 0; y < static_cast<int32_t>(m_screenHeight); ++y)
+  for (auto y = 0; y < m_dimensions.GetIntHeight(); ++y)
   {
-    for (auto x = 0; x < static_cast<int32_t>(m_screenWidth); ++x)
+    for (auto x = 0; x < m_dimensions.GetIntWidth(); ++x)
     {
       const auto tranPoint = CoordTransforms::ScreenToTranPoint({x, y});
       m_tranXSrce[i]       = tranPoint.x;

@@ -2,6 +2,7 @@
 
 #include "goom_draw.h"
 #include "goom_graphic.h"
+#include "goom_types.h"
 #include "point2d.h"
 
 #include <cstdint>
@@ -14,8 +15,7 @@ class GoomDrawToMany : public IGoomDraw
 {
 public:
   GoomDrawToMany() noexcept = delete;
-  GoomDrawToMany(uint32_t screenWidth,
-                 uint32_t screenHeight,
+  GoomDrawToMany(const Dimensions& dimensions,
                  const std::vector<IGoomDraw*>& manyDraws);
 
   auto GetPixel(Point2dInt point) const -> Pixel override;

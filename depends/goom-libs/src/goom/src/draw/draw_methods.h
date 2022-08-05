@@ -2,6 +2,7 @@
 
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "goom_types.h"
 
 #include <cstdint>
 #include <functional>
@@ -16,7 +17,7 @@ using DrawPixelsToDeviceFunc =
 class DrawMethods
 {
 public:
-  DrawMethods(uint32_t screenWidth, uint32_t screenHeight, const DrawPixelsToDeviceFunc& func);
+  DrawMethods(const Dimensions& dimensions, const DrawPixelsToDeviceFunc& func);
 
   void DrawCircle(int32_t x0, int32_t y0, int32_t radius, const Pixel& color);
   void DrawCircle(int32_t x0, int32_t y0, int32_t radius, const std::vector<Pixel>& colors);
@@ -34,8 +35,7 @@ public:
   void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& newColors);
 
 private:
-  const uint32_t m_screenWidth;
-  const uint32_t m_screenHeight;
+  const Dimensions m_dimensions;
   const DrawPixelsToDeviceFunc m_drawPixelsToDevice;
 
   using PlotCirclePointsFunc = std::function<void(int32_t x1, int32_t y1, int32_t x2, int32_t y2)>;
@@ -70,8 +70,8 @@ inline void DrawMethods::DrawPixels(const int32_t x,
 {
   Expects(x >= 0);
   Expects(y >= 0);
-  Expects(static_cast<uint32_t>(x) < m_screenWidth);
-  Expects(static_cast<uint32_t>(y) < m_screenHeight);
+  Expects(static_cast<uint32_t>(x) < m_dimensions.GetWidth());
+  Expects(static_cast<uint32_t>(y) < m_dimensions.GetHeight());
 
   m_drawPixelsToDevice(x, y, newColors);
 }

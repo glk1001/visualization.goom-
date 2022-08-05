@@ -24,6 +24,7 @@
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "goom_types.h"
 #include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
 #include "utils/propagate_const.h"
@@ -74,8 +75,7 @@ public:
   [[nodiscard]] auto GetNameValueParams() const noexcept -> NameValuePairs;
 
 private:
-  const uint32_t m_screenWidth;
-  const uint32_t m_screenHeight;
+  const Dimensions m_dimensions;
   Parallel& m_parallel;
 
   propagate_const<std::unique_ptr<FilterBuffersService>> m_filterBuffersService;
@@ -83,7 +83,7 @@ private:
 
   uint64_t m_updateNum = 0;
 
-  FilterBufferColorInfo m_filterBufferColorInfo{m_screenWidth, m_screenHeight};
+  FilterBufferColorInfo m_filterBufferColorInfo{m_dimensions};
   auto CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
 };
 
@@ -170,8 +170,7 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     const PluginInfo& goomInfo,
     std::unique_ptr<FilterBuffersService> filterBuffersService,
     std::unique_ptr<FilterColorsService> filterColorsService) noexcept
-  : m_screenWidth{goomInfo.GetScreenInfo().width},
-    m_screenHeight{goomInfo.GetScreenInfo().height},
+  : m_dimensions{goomInfo.GetScreenDimensions()},
     m_parallel{parallel},
     m_filterBuffersService{std::move(filterBuffersService)},
     m_filterColorsService{std::move(filterColorsService)}
@@ -281,7 +280,7 @@ auto ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
     auto& filterBufferRowColorInfo = m_filterBufferColorInfo.GetRow(destY);
 
     filterBufferRowColorInfo.Reset();
-    auto destPos = m_screenWidth * static_cast<uint32_t>(destY);
+    auto destPos = m_dimensions.GetWidth() * static_cast<uint32_t>(destY);
 
     for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
     {
@@ -296,7 +295,7 @@ auto ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
     }
   };
 
-  m_parallel.ForLoop(m_screenHeight, setDestPixelRow);
+  m_parallel.ForLoop(m_dimensions.GetHeight(), setDestPixelRow);
 }
 
 } // namespace GOOM::FILTER_FX
