@@ -4,6 +4,7 @@
 #include "filter_fx/speed_coefficients_effect.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -34,6 +35,8 @@ public:
   {
     float xAmplitude;
     float yAmplitude;
+    float tFreq;
+    bool flipY;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -86,7 +89,7 @@ inline auto Speedway::GetMode0SpeedCoefficients(const NormalizedCoords& coords,
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
   auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
@@ -102,31 +105,31 @@ inline auto Speedway::GetMode1SpeedCoefficients(const NormalizedCoords& coords,
                                                 const Point2dFlt& baseSpeedCoeffs) const
     -> Point2dFlt
 {
-  static constexpr auto PROB_RANDOM_X_ADD   = 0.5F;
-  static constexpr auto PROB_FLIP_X_ADD     = 0.5F;
-  static constexpr auto PROB_NEGATIVE_X_ADD = 0.5F;
-
   auto xAdd = -1.0F;
-  if (m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
+  if (static constexpr auto PROB_RANDOM_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
   {
-    static constexpr auto MIN_NEGATIVE_X_ADD = -1.9F;
-    static constexpr auto MAX_NEGATIVE_X_ADD = -0.5F;
-    static constexpr auto MIN_POSITIVE_X_ADD = +0.5F;
-    static constexpr auto MAX_POSITIVE_X_ADD = +1.9F;
+    static constexpr auto MIN_NEGATIVE_X_ADD  = -1.9F;
+    static constexpr auto MAX_NEGATIVE_X_ADD  = -0.5F;
+    static constexpr auto MIN_POSITIVE_X_ADD  = +0.5F;
+    static constexpr auto MAX_POSITIVE_X_ADD  = +1.9F;
+    static constexpr auto PROB_NEGATIVE_X_ADD = 0.5F;
 
     xAdd = m_goomRand.ProbabilityOf(PROB_NEGATIVE_X_ADD)
                ? m_goomRand.GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
                : m_goomRand.GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
   }
-  else if (m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  else if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
 
+  static constexpr auto X_WARP_MULTIPLIER    = 0.1F;
+  static constexpr auto AMPLITUDE_MULTIPLIER = 0.25F;
+
   const auto xDiff     = coords.GetX() - xAdd;
   const auto sign      = xDiff < 0.0F ? -1.0F : +1.0F;
-  const auto xWarp     = 0.1F * (((sign * UTILS::MATH::Sq(xDiff)) / xAdd) + xAdd);
-  const auto amplitude = (1.0F - sqDistFromZero) / 4.0F;
+  const auto xWarp     = X_WARP_MULTIPLIER * (xAdd + ((sign * UTILS::MATH::Sq(xDiff)) / xAdd));
+  const auto amplitude = AMPLITUDE_MULTIPLIER * (1.0F - sqDistFromZero);
 
   const auto xSpeedCoeff = amplitude * baseSpeedCoeffs.x * (m_params.xAmplitude * xWarp);
   const auto ySpeedCoeff = amplitude * m_params.yAmplitude * xSpeedCoeff;
@@ -142,7 +145,7 @@ inline auto Speedway::GetMode2SpeedCoefficients(const NormalizedCoords& coords,
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
   auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
@@ -150,7 +153,19 @@ inline auto Speedway::GetMode2SpeedCoefficients(const NormalizedCoords& coords,
   const auto xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
   const auto ySpeedCoeff = std::tan(0.01F * sqDistFromZero) * m_params.yAmplitude * xSpeedCoeff;
 
-  return {xSpeedCoeff, ySpeedCoeff};
+  const auto t = std::sin(m_params.tFreq * sqDistFromZero);
+  if (m_params.flipY)
+  {
+    return {
+        STD20::lerp(ySpeedCoeff, xSpeedCoeff, t),
+        -STD20::lerp(xSpeedCoeff, ySpeedCoeff, t),
+    };
+  }
+
+  return {
+      STD20::lerp(ySpeedCoeff, xSpeedCoeff, t),
+      STD20::lerp(xSpeedCoeff, ySpeedCoeff, t),
+  };
 }
 
 inline auto Speedway::GetParams() const -> const Params&
