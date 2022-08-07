@@ -1,7 +1,7 @@
 #pragma once
 
-#include "filter_effects/extra_effects_states.h"
-#include "filter_effects/rotation.h"
+#include "after_effects/after_effects_states.h"
+#include "after_effects/rotation.h"
 #include "filter_settings.h"
 #include "speed_coefficients_effect.h"
 #include "utils/enum_utils.h"
@@ -49,12 +49,12 @@ class FilterSettingsService
 public:
   using CreateSpeedCoefficientsEffectFunc = std::function<std::shared_ptr<ISpeedCoefficientsEffect>(
       ZoomFilterMode filterMode,
-      const UTILS::MATH::IGoomRand& goomRand,
+      const GOOM::UTILS::MATH::IGoomRand& goomRand,
       const std::string& resourcesDirectory)>;
   // TODO - Visual Studio doesn't like a trailing return type in above function definition.
 
   FilterSettingsService(const GOOM::PluginInfo& goomInfo,
-                        const UTILS::MATH::IGoomRand& goomRand,
+                        const GOOM::UTILS::MATH::IGoomRand& goomRand,
                         const std::string& resourcesDirectory,
                         const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect);
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
@@ -98,7 +98,7 @@ protected:
   void SetFilterMode(ZoomFilterMode filterMode);
   [[nodiscard]] auto GetFilterSettings() -> ZoomFilterSettings&;
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
-  [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
+  [[nodiscard]] auto GetGoomRand() const -> const GOOM::UTILS::MATH::IGoomRand&;
   virtual auto SetDefaultSettings() -> void;
   virtual auto SetRandomZoomMidpoint() -> void;
   virtual auto SetFilterModeExtraEffects() -> void;
@@ -114,23 +114,23 @@ private:
   auto SetRandomSettingsForNewFilterMode() -> void;
 
   const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
   const std::string m_resourcesDirectory;
-  std::experimental::propagate_const<std::unique_ptr<FILTER_EFFECTS::ExtraEffectsStates>>
+  std::experimental::propagate_const<std::unique_ptr<AFTER_EFFECTS::AfterEffectsStates>>
       m_randomizedExtraEffects;
 
   struct ZoomFilterModeInfo
   {
     std::string_view name;
     std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
-    FILTER_EFFECTS::ExtraEffectsProbabilities extraEffectsProbabilities;
-    UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
+    AFTER_EFFECTS::AfterEffectsProbabilities extraEffectsProbabilities;
+    GOOM::UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
   };
-  using FilterModeEnumMap = UTILS::RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
+  using FilterModeEnumMap = GOOM::UTILS::RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
   FilterModeEnumMap m_filterModeData;
   [[nodiscard]] static auto GetFilterModeData(
-      const UTILS::MATH::IGoomRand& goomRand,
+      const GOOM::UTILS::MATH::IGoomRand& goomRand,
       const std::string& resourcesDirectory,
       const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect) -> FilterModeEnumMap;
 
@@ -141,7 +141,7 @@ private:
   static constexpr float DEFAULT_MAX_SPEED_COEFF   = 2.01F;
   static constexpr float MAX_MAX_SPEED_COEFF       = 4.01F;
   ZoomFilterSettings m_filterSettings;
-  const UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
+  const GOOM::UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
 
   bool m_filterEffectsSettingsHaveChanged = false;
 
@@ -158,7 +158,7 @@ private:
     BOTTOM_RIGHT_QUARTER_MID_POINT,
     _num // unused, and marks the enum end
   };
-  const UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
+  const GOOM::UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
   [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
   auto SetAnyRandomZoomMidpoint(bool allowEdgePoints) -> void;
   [[nodiscard]] auto GetWeightRandomMidPoint(bool allowEdgePoints) const -> ZoomMidpointEvents;
@@ -201,7 +201,7 @@ inline auto FilterSettingsService::GetPluginInfo() const -> const PluginInfo&
   return m_goomInfo;
 }
 
-inline auto FilterSettingsService::GetGoomRand() const -> const UTILS::MATH::IGoomRand&
+inline auto FilterSettingsService::GetGoomRand() const -> const GOOM::UTILS::MATH::IGoomRand&
 {
   return m_goomRand;
 }
@@ -256,35 +256,35 @@ inline auto FilterSettingsService::SetNewRandomFilter() -> void
 
 inline auto FilterSettingsService::TurnOffRotation() -> void
 {
-  if (!m_filterSettings.filterEffectsSettings.rotationEffect)
+  if (!m_filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect)
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged                    = true;
-  m_filterSettings.filterEffectsSettings.rotationEffect = false;
+  m_filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect = false;
 }
 
 inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
 {
-  if (!m_filterSettings.filterEffectsSettings.rotationEffect)
+  if (!m_filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect)
   {
     return;
   }
   m_filterEffectsSettingsHaveChanged = true;
   m_filterSettings.filterEffectsSettings.rotationAdjustments.SetMultiplyFactor(
-      factor, FILTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
+      factor, AFTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
 inline auto FilterSettingsService::ToggleRotationDirection() -> void
 {
-  if (!m_filterSettings.filterEffectsSettings.rotationEffect)
+  if (!m_filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect)
   {
     return;
   }
 
   m_filterEffectsSettingsHaveChanged = true;
   m_filterSettings.filterEffectsSettings.rotationAdjustments.Toggle(
-      FILTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
+      AFTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
 inline auto FilterSettingsService::SetTranLerpIncrement(const int32_t value) -> void

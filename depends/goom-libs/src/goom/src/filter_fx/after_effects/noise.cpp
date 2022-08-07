@@ -2,7 +2,7 @@
 
 #include "utils/name_value_pairs.h"
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 using UTILS::GetFullParamGroup;
@@ -31,4 +31,4 @@ auto Noise::GetNameValueParams(const std::string& paramGroup) const -> NameValue
   };
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

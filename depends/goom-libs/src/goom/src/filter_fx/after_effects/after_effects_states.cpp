@@ -1,4 +1,4 @@
-#include "extra_effects_states.h"
+#include "after_effects_states.h"
 
 #include "filter_fx/filter_consts.h"
 #include "filter_fx/filter_settings.h"
@@ -7,16 +7,15 @@
 
 #include <memory>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 using UTILS::Timer;
 using UTILS::MATH::IGoomRand;
 
-static constexpr auto EXTRA_EFFECTS_TURNED_OFF = ALL_FILTER_EFFECTS_TURNED_OFF;
+static constexpr auto AFTER_EFFECTS_TURNED_OFF = ALL_FILTER_EFFECTS_TURNED_OFF;
 
-static constexpr auto DEFAULT_HYPERCOS_OVERLAY = HypercosOverlay::NONE;
-
+static constexpr auto DEFAULT_HYPERCOS_OVERLAY      = HypercosOverlay::NONE;
 static constexpr auto DEFAULT_BLOCKY_WAVY_EFFECT    = false;
 static constexpr auto DEFAULT_IMAGE_VELOCITY_EFFECT = false;
 static constexpr auto DEFAULT_NOISE_EFFECT          = false;
@@ -24,7 +23,7 @@ static constexpr auto DEFAULT_PLANE_EFFECT          = false;
 static constexpr auto DEFAULT_ROTATION_EFFECT       = false;
 static constexpr auto DEFAULT_TAN_EFFECT            = false;
 
-class ExtraEffectsStates::EffectState
+class AfterEffectsStates::EffectState
 {
 public:
   EffectState(const IGoomRand& goomRand,
@@ -47,7 +46,7 @@ private:
   bool m_pendingOffTimerReset = false;
 };
 
-ExtraEffectsStates::ExtraEffectsStates(const IGoomRand& goomRand) noexcept
+AfterEffectsStates::AfterEffectsStates(const IGoomRand& goomRand) noexcept
   : m_hypercosOverlayEffect{DEFAULT_HYPERCOS_OVERLAY},
     m_blockyWavyEffect{std::make_unique<EffectState>(goomRand,
                                                      DEFAULT_BLOCKY_WAVY_EFFECT,
@@ -68,24 +67,25 @@ ExtraEffectsStates::ExtraEffectsStates(const IGoomRand& goomRand) noexcept
 {
 }
 
-ExtraEffectsStates::~ExtraEffectsStates() noexcept = default;
+AfterEffectsStates::~AfterEffectsStates() noexcept = default;
 
-auto ExtraEffectsStates::UpdateFilterSettingsFromStates(ZoomFilterSettings& filterSettings) const
+auto AfterEffectsStates::UpdateFilterSettingsFromStates(ZoomFilterSettings& filterSettings) const
     -> void
 {
-  filterSettings.filterEffectsSettings.hypercosOverlay = m_hypercosOverlayEffect;
-
-  filterSettings.filterColorSettings.blockyWavy            = m_blockyWavyEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.imageVelocityEffect = m_imageVelocityEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.noiseEffect         = m_noiseEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.planeEffect         = m_planeEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.rotationEffect      = m_rotationEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.tanEffect           = m_tanEffect->IsTurnedOn();
+  filterSettings.filterColorSettings.blockyWavy = m_blockyWavyEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.afterEffectsFlags.hypercosOverlay = m_hypercosOverlayEffect;
+  filterSettings.filterEffectsSettings.afterEffectsFlags.imageVelocityEffect =
+      m_imageVelocityEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.afterEffectsFlags.noiseEffect = m_noiseEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.afterEffectsFlags.planeEffect = m_planeEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect =
+      m_rotationEffect->IsTurnedOn();
+  filterSettings.filterEffectsSettings.afterEffectsFlags.tanEffect = m_tanEffect->IsTurnedOn();
 }
 
-auto ExtraEffectsStates::TurnPlaneEffectOn() -> void
+auto AfterEffectsStates::TurnPlaneEffectOn() -> void
 {
-  if constexpr (EXTRA_EFFECTS_TURNED_OFF)
+  if constexpr (AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
@@ -93,14 +93,14 @@ auto ExtraEffectsStates::TurnPlaneEffectOn() -> void
   m_planeEffect->SetState(true);
 }
 
-auto ExtraEffectsStates::SetDefaults() -> void
+auto AfterEffectsStates::SetDefaults() -> void
 {
   m_hypercosOverlayEffect = DEFAULT_HYPERCOS_OVERLAY;
 }
 
-auto ExtraEffectsStates::UpdateTimers() -> void
+auto AfterEffectsStates::UpdateTimers() -> void
 {
-  if constexpr (EXTRA_EFFECTS_TURNED_OFF)
+  if constexpr (AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
@@ -113,11 +113,11 @@ auto ExtraEffectsStates::UpdateTimers() -> void
   m_tanEffect->UpdateTimer();
 }
 
-auto ExtraEffectsStates::ResetAllStates(const HypercosOverlay value,
-                                        const ExtraEffectsProbabilities& effectsProbabilities)
+auto AfterEffectsStates::ResetAllStates(const HypercosOverlay value,
+                                        const AfterEffectsProbabilities& effectsProbabilities)
     -> void
 {
-  if constexpr (EXTRA_EFFECTS_TURNED_OFF)
+  if constexpr (AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
@@ -127,10 +127,10 @@ auto ExtraEffectsStates::ResetAllStates(const HypercosOverlay value,
   ResetStandardStates(effectsProbabilities);
 }
 
-auto ExtraEffectsStates::ResetStandardStates(const ExtraEffectsProbabilities& effectsProbabilities)
+auto AfterEffectsStates::ResetStandardStates(const AfterEffectsProbabilities& effectsProbabilities)
     -> void
 {
-  if constexpr (EXTRA_EFFECTS_TURNED_OFF)
+  if constexpr (AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
@@ -143,9 +143,9 @@ auto ExtraEffectsStates::ResetStandardStates(const ExtraEffectsProbabilities& ef
   m_tanEffect->UpdateState(effectsProbabilities.tanEffectProbability);
 }
 
-auto ExtraEffectsStates::CheckForPendingOffTimers() -> void
+auto AfterEffectsStates::CheckForPendingOffTimers() -> void
 {
-  if constexpr (EXTRA_EFFECTS_TURNED_OFF)
+  if constexpr (AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
@@ -158,7 +158,7 @@ auto ExtraEffectsStates::CheckForPendingOffTimers() -> void
   m_tanEffect->CheckPendingOffTimerReset();
 }
 
-inline ExtraEffectsStates::EffectState::EffectState(const UTILS::MATH::IGoomRand& goomRand,
+inline AfterEffectsStates::EffectState::EffectState(const UTILS::MATH::IGoomRand& goomRand,
                                                     const bool defaultValue,
                                                     const float probabilityOfEffectRepeated,
                                                     const uint32_t effectOffTime) noexcept
@@ -169,12 +169,12 @@ inline ExtraEffectsStates::EffectState::EffectState(const UTILS::MATH::IGoomRand
 {
 }
 
-inline auto ExtraEffectsStates::EffectState::UpdateTimer() -> void
+inline auto AfterEffectsStates::EffectState::UpdateTimer() -> void
 {
   m_offTimer.Increment();
 }
 
-inline auto ExtraEffectsStates::EffectState::UpdateState(const float probabilityOfEffect) -> void
+inline auto AfterEffectsStates::EffectState::UpdateState(const float probabilityOfEffect) -> void
 {
   if (!m_offTimer.Finished())
   {
@@ -188,7 +188,7 @@ inline auto ExtraEffectsStates::EffectState::UpdateState(const float probability
   SetState(m_goomRand.ProbabilityOf(probabilityOfEffect));
 }
 
-inline auto ExtraEffectsStates::EffectState::SetState(const bool value) -> void
+inline auto AfterEffectsStates::EffectState::SetState(const bool value) -> void
 {
   const auto previouslyTurnedOn = m_turnedOn;
   m_turnedOn                    = value;
@@ -203,7 +203,7 @@ inline auto ExtraEffectsStates::EffectState::SetState(const bool value) -> void
   }
 }
 
-inline auto ExtraEffectsStates::EffectState::CheckPendingOffTimerReset() -> void
+inline auto AfterEffectsStates::EffectState::CheckPendingOffTimerReset() -> void
 {
   if (!m_pendingOffTimerReset)
   {
@@ -215,9 +215,9 @@ inline auto ExtraEffectsStates::EffectState::CheckPendingOffTimerReset() -> void
   m_pendingOffTimerReset = false;
 }
 
-inline auto ExtraEffectsStates::EffectState::IsTurnedOn() const -> bool
+inline auto AfterEffectsStates::EffectState::IsTurnedOn() const -> bool
 {
   return m_turnedOn;
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

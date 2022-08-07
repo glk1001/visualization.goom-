@@ -1,20 +1,21 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
-#include "image_displacement_list.h"
+#include "filter_fx/utils/image_displacement_list.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
 #include <string>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 class ImageVelocity
 {
 public:
-  ImageVelocity(const std::string& resourcesDirectory, const UTILS::MATH::IGoomRand& goomRand);
+  ImageVelocity(const GOOM::UTILS::MATH::IGoomRand& goomRand,
+                const std::string& resourcesDirectory);
 
   auto SetRandomParams() -> void;
 
@@ -22,11 +23,11 @@ public:
                                  const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+      -> GOOM::UTILS::NameValuePairs;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  ImageDisplacementList m_imageDisplacementList;
+  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  UTILS::ImageDisplacementList m_imageDisplacementList;
 };
 
 inline auto ImageVelocity::GetVelocity(const NormalizedCoords& coords,
@@ -37,4 +38,4 @@ inline auto ImageVelocity::GetVelocity(const NormalizedCoords& coords,
              m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords)};
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

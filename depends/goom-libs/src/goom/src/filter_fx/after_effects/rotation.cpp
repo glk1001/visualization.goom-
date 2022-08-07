@@ -6,7 +6,7 @@
 #include <cmath>
 #include <string>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 using STD20::pi;
@@ -62,4 +62,4 @@ auto Rotation::GetNameValueParams(const std::string& paramGroup) const -> NameVa
   };
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

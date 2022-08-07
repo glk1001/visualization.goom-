@@ -12,7 +12,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 class Amulet : public ISpeedCoefficientsEffect
 {
 public:
-  explicit Amulet(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Amulet(const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void override;
 
@@ -22,7 +22,7 @@ public:
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
-      -> UTILS::NameValuePairs override;
+      -> GOOM::UTILS::NameValuePairs override;
 
   struct Params
   {
@@ -35,7 +35,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
 };
 

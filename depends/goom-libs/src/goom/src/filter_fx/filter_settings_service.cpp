@@ -1,7 +1,7 @@
 #include "filter_settings_service.h"
 
+#include "after_effects/after_effects_states.h"
 #include "filter_consts.h"
-#include "filter_effects/extra_effects_states.h"
 #include "filter_settings.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
@@ -14,10 +14,9 @@
 namespace GOOM::FILTER_FX
 {
 
-using FILTER_EFFECTS::ExtraEffectsProbabilities;
-using FILTER_EFFECTS::ExtraEffectsStates;
-using FILTER_EFFECTS::RotationAdjustments;
-using UTILS::EnumMap;
+using AFTER_EFFECTS::AfterEffectsProbabilities;
+using AFTER_EFFECTS::AfterEffectsStates;
+using AFTER_EFFECTS::RotationAdjustments;
 using UTILS::NUM;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
@@ -200,7 +199,7 @@ static constexpr auto WAVE0_PROB_PLANE_EFFECT = 1.0F;
 static constexpr auto WAVE1_PROB_PLANE_EFFECT = 1.0F;
 
 // clang-format off
-inline const auto EFFECTS_PROBABILITIES = std::map<ZoomFilterMode, ExtraEffectsProbabilities>{
+inline const auto EFFECTS_PROBABILITIES = std::map<ZoomFilterMode, AfterEffectsProbabilities>{
   { ZoomFilterMode::AMULET_MODE, {
       DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
       DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
@@ -466,21 +465,23 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
     m_screenMidpoint{U_HALF * m_goomInfo.GetScreenWidth(),
                      U_HALF * m_goomInfo.GetScreenHeight()},
     m_resourcesDirectory{resourcesDirectory},
-    m_randomizedExtraEffects{std::make_unique<ExtraEffectsStates>(m_goomRand)},
+    m_randomizedExtraEffects{std::make_unique<AfterEffectsStates>(m_goomRand)},
     m_filterModeData{GetFilterModeData(m_goomRand,
                                        m_resourcesDirectory,
                                        createSpeedCoefficientsEffect)},
     m_filterSettings{{Vitesse{},
-         HypercosOverlay::NONE,
          DEFAULT_MAX_SPEED_COEFF,
          nullptr,
          RotationAdjustments{},
          {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
-         false,
-         false,
-         false,
-         false,
-         false},
+         {
+           HypercosOverlay::NONE,
+           false,
+           false,
+           false,
+           false,
+           false}
+          },
         {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
     },
     m_weightedFilterEvents{
@@ -709,8 +710,8 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
   switch (GetWeightRandomMidPoint(allowEdgePoints))
   {
     case ZoomMidpointEvents::BOTTOM_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          U_HALF * m_goomInfo.GetScreenWidth(), m_goomInfo.GetScreenHeight() - 1};
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {U_HALF * m_goomInfo.GetScreenWidth(),
+                                                             m_goomInfo.GetScreenHeight() - 1};
       break;
     case ZoomMidpointEvents::RIGHT_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint.x =
@@ -724,8 +725,7 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
       break;
     case ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          U_QUARTER * m_goomInfo.GetScreenWidth(),
-          U_QUARTER * m_goomInfo.GetScreenHeight()};
+          U_QUARTER * m_goomInfo.GetScreenWidth(), U_QUARTER * m_goomInfo.GetScreenHeight()};
       break;
     case ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {

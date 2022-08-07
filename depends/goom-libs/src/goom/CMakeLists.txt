@@ -55,26 +55,28 @@ add_library(goom
         src/draw/goom_draw_to_container.cpp
         src/draw/goom_draw_to_many.cpp
         src/draw/text_draw.cpp
+        src/filter_fx/after_effects/after_effects.cpp
+        src/filter_fx/after_effects/after_effects_states.cpp
+        src/filter_fx/after_effects/hypercos.cpp
+        src/filter_fx/after_effects/image_velocity.cpp
+        src/filter_fx/after_effects/noise.cpp
+        src/filter_fx/after_effects/planes.cpp
+        src/filter_fx/after_effects/rotation.cpp
+        src/filter_fx/after_effects/tan_effect.cpp
+        src/filter_fx/after_effects/zoom_vector_after_effects.cpp
         src/filter_fx/filter_effects/amulet.cpp
         src/filter_fx/filter_effects/crystal_ball.cpp
         src/filter_fx/filter_effects/distance_field.cpp
-        src/filter_fx/filter_effects/extra_effects_states.cpp
-        src/filter_fx/filter_effects/filter_zoom_vector_effects.cpp
-        src/filter_fx/filter_effects/hypercos.cpp
-        src/filter_fx/filter_effects/image_displacement.cpp
-        src/filter_fx/filter_effects/image_displacement_list.cpp
         src/filter_fx/filter_effects/image_speed_coeffs.cpp
-        src/filter_fx/filter_effects/image_velocity.cpp
-        src/filter_fx/filter_effects/noise.cpp
-        src/filter_fx/filter_effects/planes.cpp
-        src/filter_fx/filter_effects/rotation.cpp
         src/filter_fx/filter_effects/scrunch.cpp
         src/filter_fx/filter_effects/simple_speed_coefficients_effect.h
         src/filter_fx/filter_effects/speed_coefficients_effect_factory.cpp
         src/filter_fx/filter_effects/speedway.cpp
-        src/filter_fx/filter_effects/tan_effect.cpp
         src/filter_fx/filter_effects/wave.cpp
         src/filter_fx/filter_effects/y_only.cpp
+        src/filter_fx/filter_effects/zoom_vector_effects.cpp
+        src/filter_fx/utils/image_displacement.cpp
+        src/filter_fx/utils/image_displacement_list.cpp
         src/filter_fx/filter_consts.h
         src/filter_fx/filter_buffer_color_info.cpp
         src/filter_fx/filter_buffers.cpp

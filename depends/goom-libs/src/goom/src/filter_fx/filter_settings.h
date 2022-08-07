@@ -1,6 +1,6 @@
 #pragma once
 
-#include "filter_effects/rotation.h"
+#include "after_effects/rotation.h"
 #include "goom/goom_graphic.h"
 #include "point2d.h"
 
@@ -67,19 +67,23 @@ class ISpeedCoefficientsEffect;
 struct ZoomFilterEffectsSettings
 {
   Vitesse vitesse;
-  HypercosOverlay hypercosOverlay;
 
   float maxSpeedCoeff;
   std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect;
-  FILTER_EFFECTS::RotationAdjustments rotationAdjustments;
+  AFTER_EFFECTS::RotationAdjustments rotationAdjustments;
 
   Point2dInt zoomMidpoint; // milieu de l'effet
 
-  bool imageVelocityEffect;
-  bool noiseEffect; // ajoute un bruit a la transformation
-  bool planeEffect;
-  bool rotationEffect;
-  bool tanEffect;
+  struct AfterEffectsFlags
+  {
+    HypercosOverlay hypercosOverlay;
+    bool imageVelocityEffect;
+    bool noiseEffect; // ajoute un bruit a la transformation
+    bool planeEffect;
+    bool rotationEffect;
+    bool tanEffect;
+  };
+  AfterEffectsFlags afterEffectsFlags;
 };
 
 struct ZoomFilterSettings

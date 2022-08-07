@@ -9,13 +9,13 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 class TanEffect
 {
 public:
-  explicit TanEffect(const UTILS::MATH::IGoomRand& goomRand);
+  explicit TanEffect(const GOOM::UTILS::MATH::IGoomRand& goomRand);
   TanEffect(const TanEffect&) noexcept           = delete;
   TanEffect(TanEffect&&) noexcept                = delete;
   virtual ~TanEffect() noexcept                  = default;
@@ -28,7 +28,7 @@ public:
       -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+      -> GOOM::UTILS::NameValuePairs;
 
   enum class TanType
   {
@@ -51,17 +51,18 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
-  const UTILS::MATH::Weights<TanType> m_tanEffectWeights;
+  const GOOM::UTILS::MATH::Weights<TanType> m_tanEffectWeights;
   [[nodiscard]] auto GetTanSqDist(float tanArg) const -> float;
 };
 
 inline auto TanEffect::GetVelocity(const float sqDistFromZero,
                                    const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const auto limit  = m_params.limitingFactor * UTILS::MATH::HALF_PI;
-  const auto tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::MATH::HALF_PI), -limit, +limit);
+  const auto limit = m_params.limitingFactor * GOOM::UTILS::MATH::HALF_PI;
+  const auto tanArg =
+      std::clamp(std::fmod(sqDistFromZero, GOOM::UTILS::MATH::HALF_PI), -limit, +limit);
   const auto tanSqDist = GetTanSqDist(tanArg);
   return {m_params.xAmplitude * tanSqDist * velocity.GetX(),
           m_params.yAmplitude * tanSqDist * velocity.GetY()};
@@ -74,9 +75,9 @@ inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
     case TanType::TAN_ONLY:
       return std::tan(tanArg);
     case TanType::COT_ONLY:
-      return std::tan(UTILS::MATH::HALF_PI - tanArg);
+      return std::tan(GOOM::UTILS::MATH::HALF_PI - tanArg);
     case TanType::COT_MIX:
-      return std::tan((m_params.cotMix * UTILS::MATH::HALF_PI) - tanArg);
+      return std::tan((m_params.cotMix * GOOM::UTILS::MATH::HALF_PI) - tanArg);
     default:
       throw std::logic_error("Unknown TanType enum.");
   }
@@ -92,4 +93,4 @@ inline auto TanEffect::SetParams(const Params& params) -> void
   m_params = params;
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

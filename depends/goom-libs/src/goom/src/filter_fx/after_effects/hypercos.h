@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 class Hypercos
@@ -87,4 +87,4 @@ inline auto Hypercos::SetParams(const Params& params) -> void
   m_params = params;
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

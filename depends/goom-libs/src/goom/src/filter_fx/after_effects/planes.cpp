@@ -5,7 +5,7 @@
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 using STD20::pi;
@@ -390,4 +390,4 @@ auto Planes::GetNameValueParams(const std::string& paramGroup) const -> NameValu
   };
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

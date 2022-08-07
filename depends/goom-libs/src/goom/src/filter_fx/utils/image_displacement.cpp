@@ -8,11 +8,11 @@
 #include <cmath>
 #include <memory>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::UTILS
 {
 
-using UTILS::GRAPHICS::ImageBitmap;
-using UTILS::MATH::IGoomRand;
+using GOOM::UTILS::GRAPHICS::ImageBitmap;
+using GOOM::UTILS::MATH::IGoomRand;
 
 ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
                                      [[maybe_unused]] const IGoomRand& goomRand)
@@ -61,4 +61,4 @@ inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color)
   return {normalizedDisplacementX, normalizedDisplacementY};
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::UTILS

@@ -5,12 +5,12 @@
 
 #include <cstdint>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::UTILS
 {
 
-using UTILS::GetPair;
-using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using GOOM::UTILS::GetPair;
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::IGoomRand;
 
 const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
     "pattern1.jpg",
@@ -78,4 +78,4 @@ auto ImageDisplacementList::GetNameValueParams(const std::string& paramGroup) co
   };
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::UTILS

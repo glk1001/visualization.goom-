@@ -8,14 +8,14 @@
 #include <string>
 #include <vector>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::UTILS
 {
 
 class ImageDisplacementList
 {
 public:
   ImageDisplacementList(const std::string& resourcesDirectory,
-                        const UTILS::MATH::IGoomRand& goomRand);
+                        const GOOM::UTILS::MATH::IGoomRand& goomRand);
 
   struct Params
   {
@@ -28,7 +28,7 @@ public:
   auto SetParams(const Params& params) -> void;
   auto SetRandomImageDisplacement() -> void;
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+      -> GOOM::UTILS::NameValuePairs;
 
   [[nodiscard]] auto GetCurrentImageDisplacement() const -> const ImageDisplacement&;
   [[nodiscard]] auto GetCurrentImageDisplacement() -> ImageDisplacement&;
@@ -38,7 +38,7 @@ private:
 
   std::vector<ImageDisplacement> m_imageDisplacements{};
   const std::string m_resourcesDirectory;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   size_t m_currentImageDisplacementIndex = 0;
   [[nodiscard]] auto GetImageFilename(const std::string& imageFilename) const -> std::string;
 };
@@ -53,4 +53,4 @@ inline auto ImageDisplacementList::GetCurrentImageDisplacement() -> ImageDisplac
   return m_imageDisplacements[m_currentImageDisplacementIndex];
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::UTILS

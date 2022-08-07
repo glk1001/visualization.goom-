@@ -1,6 +1,6 @@
 #pragma once
 
-#include "filter_effects/filter_zoom_vector_effects.h"
+#include "filter_effects/zoom_vector_effects.h"
 #include "normalized_coords.h"
 #include "utils/name_value_pairs.h"
 #include "zoom_vector.h"
@@ -8,15 +8,12 @@
 #include <cstdint>
 #include <memory>
 
-namespace GOOM
-{
-
-namespace UTILS::MATH
+namespace GOOM::UTILS::MATH
 {
 class IGoomRand;
 }
 
-namespace FILTER_FX
+namespace GOOM::FILTER_FX
 {
 
 class FilterZoomVector : public IZoomVector
@@ -24,10 +21,10 @@ class FilterZoomVector : public IZoomVector
 public:
   FilterZoomVector(uint32_t screenWidth,
                    const std::string& resourcesDirectory,
-                   const UTILS::MATH::IGoomRand& goomRand,
+                   const GOOM::UTILS::MATH::IGoomRand& goomRand,
                    const NormalizedCoordsConverter& normalizedCoordsConverter,
-                   const FILTER_EFFECTS::ZoomVectorEffects::GetTheEffectsFunc& getTheExtraEffects =
-                       FILTER_EFFECTS::ZoomVectorEffects::GetStandardExtraEffects) noexcept;
+                   const FILTER_EFFECTS::ZoomVectorEffects::GetAfterEffectsFunc& getAfterEffects =
+                       FILTER_EFFECTS::ZoomVectorEffects::GetStandardAfterEffects) noexcept;
 
   auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) -> void override;
 
@@ -35,17 +32,11 @@ public:
       -> NormalizedCoords override;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs override;
+      -> GOOM::UTILS::NameValuePairs override;
 
 private:
   FILTER_EFFECTS::ZoomVectorEffects m_zoomVectorEffects;
-
   [[nodiscard]] auto GetZoomPointVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
-  [[nodiscard]] auto GetZoomEffectsAdjustedVelocity(const NormalizedCoords& coords,
-                                                    float sqDistFromZero,
-                                                    const NormalizedCoords& velocity) const
-      -> NormalizedCoords;
 };
 
-} // namespace FILTER_FX
-} // namespace GOOM
+} // namespace GOOM::FILTER_FX

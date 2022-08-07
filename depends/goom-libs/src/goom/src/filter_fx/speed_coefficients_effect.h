@@ -25,7 +25,7 @@ public:
       -> Point2dFlt = 0;
 
   [[nodiscard]] virtual auto GetSpeedCoefficientsEffectNameValueParams() const
-      -> UTILS::NameValuePairs = 0;
+      -> GOOM::UTILS::NameValuePairs = 0;
 };
 
 } // namespace GOOM::FILTER_FX

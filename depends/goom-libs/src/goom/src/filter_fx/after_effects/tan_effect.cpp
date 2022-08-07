@@ -6,7 +6,7 @@
 #include "utils/enum_utils.h"
 #include "utils/name_value_pairs.h"
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 using UTILS::EnumToString;
@@ -76,4 +76,4 @@ auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameV
   };
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

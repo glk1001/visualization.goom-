@@ -7,13 +7,13 @@
 
 #include <string>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 class Planes
 {
 public:
-  explicit Planes(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Planes(const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
   Planes(const Planes&) noexcept           = delete;
   Planes(Planes&&) noexcept                = delete;
   virtual ~Planes() noexcept               = default;
@@ -29,7 +29,7 @@ public:
                                               const NormalizedCoords& velocity) const -> float;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+      -> GOOM::UTILS::NameValuePairs;
 
   virtual auto SetRandomParams(const Point2dInt& zoomMidpoint, uint32_t screenWidth) -> void;
 
@@ -79,7 +79,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   enum class PlaneEffectEvents
   {
@@ -92,14 +92,14 @@ private:
     POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS,
     _num // unused, and marks the enum end
   };
-  const UTILS::MATH::Weights<PlaneEffectEvents> m_planeEffectWeights;
+  const GOOM::UTILS::MATH::Weights<PlaneEffectEvents> m_planeEffectWeights;
 
-  [[nodiscard]] static auto GetRandomParams(const UTILS::MATH::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetRandomParams(const GOOM::UTILS::MATH::IGoomRand& goomRand,
                                             PlaneEffectEvents planeEffectsEvent,
                                             const Point2dInt& zoomMidpoint,
                                             uint32_t screenWidth) -> Params;
 
-  [[nodiscard]] static auto GetRandomPlaneEffects(const UTILS::MATH::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetRandomPlaneEffects(const GOOM::UTILS::MATH::IGoomRand& goomRand,
                                                   PlaneEffectEvents planeEffectsEvent,
                                                   bool muchSpiralling,
                                                   const Point2dInt& zoomMidpoint,
@@ -112,21 +112,21 @@ private:
   [[nodiscard]] static auto GetRandomPlaneEffects(const IntAmplitudes& adjustedIntAmplitudes,
                                                   const Amplitudes& effectMultipliers)
       -> PlaneEffects;
-  [[nodiscard]] static auto GetRandomIntAmplitudes(const UTILS::MATH::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetRandomIntAmplitudes(const GOOM::UTILS::MATH::IGoomRand& goomRand,
                                                    PlaneEffectEvents planeEffectsEvent)
       -> IntAmplitudes;
-  [[nodiscard]] static auto GetAdjustedIntAmplitudes(const UTILS::MATH::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetAdjustedIntAmplitudes(const GOOM::UTILS::MATH::IGoomRand& goomRand,
                                                      const IntAmplitudes& intAmplitudes,
                                                      const Point2dInt& zoomMidpoint,
                                                      uint32_t screenWidth) -> IntAmplitudes;
-  [[nodiscard]] static auto GetRandomEffectMultipliers(const UTILS::MATH::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetRandomEffectMultipliers(const GOOM::UTILS::MATH::IGoomRand& goomRand,
                                                        bool muchSpiralling) -> Amplitudes;
 
-  [[nodiscard]] static auto GetRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetRandomSwirlEffects(const GOOM::UTILS::MATH::IGoomRand& goomRand,
                                                   bool muchSpiralling) -> PlaneSwirlEffects;
   [[nodiscard]] static auto GetZeroSwirlEffects() -> PlaneSwirlEffects;
-  [[nodiscard]] static auto GetNonzeroRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand)
-      -> PlaneSwirlEffects;
+  [[nodiscard]] static auto GetNonzeroRandomSwirlEffects(
+      const GOOM::UTILS::MATH::IGoomRand& goomRand) -> PlaneSwirlEffects;
   [[nodiscard]] auto GetHorizontalSwirlOffsetFactor(float coordValue) const -> float;
   [[nodiscard]] auto GetVerticalSwirlOffsetFactor(float coordValue) const -> float;
 };
@@ -151,4 +151,4 @@ inline auto Planes::SetParams(const Params& params) -> void
   m_params = params;
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

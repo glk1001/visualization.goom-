@@ -21,7 +21,7 @@ public:
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
-      -> UTILS::NameValuePairs override;
+      -> GOOM::UTILS::NameValuePairs override;
 };
 
 inline auto SimpleSpeedCoefficientsEffect::GetSpeedCoefficients(
@@ -38,9 +38,9 @@ inline auto SimpleSpeedCoefficientsEffect::SetRandomParams() -> void
 }
 
 inline auto SimpleSpeedCoefficientsEffect::GetSpeedCoefficientsEffectNameValueParams() const
-    -> UTILS::NameValuePairs
+    -> GOOM::UTILS::NameValuePairs
 {
-  return UTILS::NameValuePairs();
+  return GOOM::UTILS::NameValuePairs();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

@@ -9,13 +9,13 @@
 #include <memory>
 #include <stdexcept>
 
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::UTILS
 {
 
 class ImageDisplacement
 {
 public:
-  ImageDisplacement(const std::string& imageFilename, const UTILS::MATH::IGoomRand& goomRand);
+  ImageDisplacement(const std::string& imageFilename, const GOOM::UTILS::MATH::IGoomRand& goomRand);
   ImageDisplacement(const ImageDisplacement&) noexcept = delete;
   ImageDisplacement(ImageDisplacement&&) noexcept      = default;
   ~ImageDisplacement() noexcept;
@@ -37,7 +37,7 @@ public:
       -> Point2dFlt;
 
 private:
-  std::unique_ptr<UTILS::GRAPHICS::ImageBitmap> m_imageBuffer;
+  std::unique_ptr<GOOM::UTILS::GRAPHICS::ImageBitmap> m_imageBuffer;
   const std::string m_imageFilename;
   const int32_t m_xMax{static_cast<int32_t>(m_imageBuffer->GetWidth() - 1)};
   const int32_t m_yMax{static_cast<int32_t>(m_imageBuffer->GetHeight() - 1)};
@@ -106,4 +106,4 @@ inline auto ImageDisplacement::SetAmplitude(const float value) -> void
   m_amplitude = value;
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+} // namespace GOOM::FILTER_FX::UTILS

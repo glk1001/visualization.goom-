@@ -168,7 +168,7 @@ private:
 class ZoomFilterBuffers::TransformBuffers
 {
 public:
-  TransformBuffers(const Dimensions& m_dimensions, const Point2dInt& maxTranPoint) noexcept;
+  TransformBuffers(const Dimensions& dimensions, const Point2dInt& maxTranPoint) noexcept;
 
   auto SetSrceTranToIdentity() noexcept -> void;
   auto CopyTempTranToDestTran() noexcept -> void;

@@ -17,7 +17,7 @@ public:
     MODE0,
     MODE1
   };
-  explicit CrystalBall(Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit CrystalBall(Modes mode, const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void override;
 
@@ -27,7 +27,7 @@ public:
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
-      -> UTILS::NameValuePairs override;
+      -> GOOM::UTILS::NameValuePairs override;
 
   struct Params
   {
@@ -45,16 +45,16 @@ protected:
 
 private:
   const Modes m_mode;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   auto SetMode0RandomParams() -> void;
   auto SetMode1RandomParams() -> void;
-  auto SetRandomParams(const UTILS::MATH::IGoomRand::NumberRange<float>& xAmplitudeRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& yAmplitudeRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistMultRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistMultRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistOffsetRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistOffsetRange)
+  auto SetRandomParams(const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& xAmplitudeRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& yAmplitudeRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistMultRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistMultRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistOffsetRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistOffsetRange)
       -> void;
   [[nodiscard]] static auto GetSpeedCoefficient(float baseSpeedCoeff,
                                                 float sqDistFromZero,

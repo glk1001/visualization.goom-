@@ -28,7 +28,7 @@ public:
       const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const noexcept -> Pixel;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
-      -> UTILS::NameValuePairs;
+      -> GOOM::UTILS::NameValuePairs;
 
 private:
   bool m_blockyWavy = false;

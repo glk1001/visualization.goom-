@@ -2,7 +2,7 @@
 
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/speed_coefficients_effect.h"
-#include "image_displacement_list.h"
+#include "filter_fx/utils/image_displacement_list.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -16,7 +16,7 @@ class ImageSpeedCoefficients : public ISpeedCoefficientsEffect
 {
 public:
   ImageSpeedCoefficients(const std::string& resourcesDirectory,
-                         const UTILS::MATH::IGoomRand& goomRand);
+                         const GOOM::UTILS::MATH::IGoomRand& goomRand);
 
   auto SetRandomParams() -> void override;
 
@@ -26,11 +26,11 @@ public:
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
-      -> UTILS::NameValuePairs override;
+      -> GOOM::UTILS::NameValuePairs override;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  ImageDisplacementList m_imageDisplacementList;
+  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  UTILS::ImageDisplacementList m_imageDisplacementList;
   auto DoSetRandomParams() -> void;
 };
 

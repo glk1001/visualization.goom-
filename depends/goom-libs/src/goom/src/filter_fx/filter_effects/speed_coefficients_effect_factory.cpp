@@ -17,7 +17,7 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-using UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::IGoomRand;
 
 auto CreateSpeedCoefficientsEffect(const ZoomFilterMode filterMode,
                                    const IGoomRand& goomRand,

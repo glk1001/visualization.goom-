@@ -7,8 +7,8 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::IGoomRand;
 
 static constexpr auto AMPLITUDE_RANGE    = IGoomRand::NumberRange<float>{0.0025F, 0.01000F};
 static constexpr auto COLOR_CUTOFF_RANGE = IGoomRand::NumberRange<float>{0.1F, 0.9F};
