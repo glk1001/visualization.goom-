@@ -3,13 +3,13 @@
 #include "goom_graphic.h"
 #include "goom_states.h"
 #include "point2d.h"
+#include "utils/enum_utils.h"
 #include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/shader_fx.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
-#include <map>
 #include <memory>
 #include <unordered_set>
 
@@ -80,12 +80,12 @@ private:
   std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::ShaderFx>> m_shaderFx;
   using PropagateConstUniquePtr =
       std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::IVisualFx>>;
-  std::map<GoomDrawables, PropagateConstUniquePtr> m_drawablesMap;
+  UTILS::EnumMap<GoomDrawables, PropagateConstUniquePtr> m_drawablesMap;
   [[nodiscard]] static auto GetDrawablesMap(UTILS::Parallel& parallel,
                                             const VISUAL_FX::FxHelper& fxHelper,
                                             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                                             const std::string& resourcesDirectory)
-      -> std::map<GoomDrawables, PropagateConstUniquePtr>;
+      -> UTILS::EnumMap<GoomDrawables, PropagateConstUniquePtr>;
   VisualFxColorMaps m_visualFxColorMaps;
   auto ChangeDotsColorMaps() noexcept -> void;
   auto ChangeLinesColorMaps() noexcept -> void;

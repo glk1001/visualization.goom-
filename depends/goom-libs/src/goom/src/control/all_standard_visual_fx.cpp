@@ -20,6 +20,7 @@
 #include "visual_fx/tubes_fx.h"
 #include "visual_fx_color_maps.h"
 
+#include <algorithm>
 #include <memory>
 
 namespace GOOM::CONTROL
@@ -58,46 +59,29 @@ auto AllStandardVisualFx::GetDrawablesMap(Parallel& parallel,
                                           const FxHelper& fxHelper,
                                           const SmallImageBitmaps& smallBitmaps,
                                           const std::string& resourcesDirectory)
-    -> std::map<GoomDrawables, PropagateConstUniquePtr>
+    -> UTILS::EnumMap<GoomDrawables, PropagateConstUniquePtr>
 {
-  auto drawablesMap = std::map<GoomDrawables, PropagateConstUniquePtr>{};
-
-  drawablesMap.emplace(
-      GoomDrawables::CIRCLES,
-      PropagateConstUniquePtr{std::make_unique<CirclesFx>(fxHelper, smallBitmaps)});
-  drawablesMap.emplace(
-      GoomDrawables::DOTS,
-      PropagateConstUniquePtr{std::make_unique<GoomDotsFx>(fxHelper, smallBitmaps)});
-  drawablesMap.emplace(
-      GoomDrawables::IFS,
-      PropagateConstUniquePtr{std::make_unique<IfsDancersFx>(fxHelper, smallBitmaps)});
-  drawablesMap.emplace(
-      GoomDrawables::IMAGE,
-      PropagateConstUniquePtr{std::make_unique<ImageFx>(parallel, fxHelper, resourcesDirectory)});
-  drawablesMap.emplace(GoomDrawables::LINES,
-                       PropagateConstUniquePtr{std::make_unique<LinesFx>(fxHelper, smallBitmaps)});
-  drawablesMap.emplace(GoomDrawables::SHAPES,
-                       PropagateConstUniquePtr{std::make_unique<ShapesFx>(fxHelper)});
-  drawablesMap.emplace(
-      GoomDrawables::STARS,
-      PropagateConstUniquePtr{std::make_unique<FlyingStarsFx>(fxHelper, smallBitmaps)});
-  drawablesMap.emplace(
-      GoomDrawables::TENTACLES,
-      PropagateConstUniquePtr{std::make_unique<TentaclesFx>(fxHelper, smallBitmaps)});
-  drawablesMap.emplace(GoomDrawables::TUBES,
-                       PropagateConstUniquePtr{std::make_unique<TubesFx>(fxHelper, smallBitmaps)});
-
-  return drawablesMap;
+  return UTILS::EnumMap<GoomDrawables, PropagateConstUniquePtr>{{{
+      {GoomDrawables::CIRCLES, std::make_unique<CirclesFx>(fxHelper, smallBitmaps)},
+      {GoomDrawables::DOTS, std::make_unique<GoomDotsFx>(fxHelper, smallBitmaps)},
+      {GoomDrawables::IFS, std::make_unique<IfsDancersFx>(fxHelper, smallBitmaps)},
+      {GoomDrawables::IMAGE, std::make_unique<ImageFx>(parallel, fxHelper, resourcesDirectory)},
+      {GoomDrawables::LINES, std::make_unique<LinesFx>(fxHelper, smallBitmaps)},
+      {GoomDrawables::SHAPES, std::make_unique<ShapesFx>(fxHelper)},
+      {GoomDrawables::STARS, std::make_unique<FlyingStarsFx>(fxHelper, smallBitmaps)},
+      {GoomDrawables::TENTACLES, std::make_unique<TentaclesFx>(fxHelper, smallBitmaps)},
+      {GoomDrawables::TUBES, std::make_unique<TubesFx>(fxHelper, smallBitmaps)},
+  }}};
 }
 
 auto AllStandardVisualFx::GetLinesFx() noexcept -> VISUAL_FX::LinesFx&
 {
-  return *dynamic_cast<LinesFx*>(m_drawablesMap.at(GoomDrawables::LINES).get());
+  return *dynamic_cast<LinesFx*>(m_drawablesMap[GoomDrawables::LINES].get());
 }
 
 auto AllStandardVisualFx::SetSingleBufferDots(const bool val) -> void
 {
-  dynamic_cast<GoomDotsFx*>(m_drawablesMap.at(GoomDrawables::DOTS).get())->SetSingleBufferDots(val);
+  dynamic_cast<GoomDotsFx*>(m_drawablesMap[GoomDrawables::DOTS].get())->SetSingleBufferDots(val);
 }
 
 inline auto AllStandardVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawable) const -> bool
@@ -111,15 +95,12 @@ inline auto AllStandardVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDra
 
 auto AllStandardVisualFx::Start() -> void
 {
-  std::for_each(
-      begin(m_drawablesMap), end(m_drawablesMap), [](auto& keyValue) { keyValue.second->Start(); });
+  std::for_each(begin(m_drawablesMap), end(m_drawablesMap), [](auto& value) { value->Start(); });
 }
 
 auto AllStandardVisualFx::Finish() -> void
 {
-  std::for_each(begin(m_drawablesMap),
-                end(m_drawablesMap),
-                [](auto& keyValue) { keyValue.second->Finish(); });
+  std::for_each(begin(m_drawablesMap), end(m_drawablesMap), [](auto& value) { value->Finish(); });
 }
 
 auto AllStandardVisualFx::RefreshAllFx() -> void
@@ -127,7 +108,7 @@ auto AllStandardVisualFx::RefreshAllFx() -> void
   std::for_each(begin(m_currentGoomDrawables),
                 end(m_currentGoomDrawables),
                 [this](const auto currentlyDrawable)
-                { m_drawablesMap.at(currentlyDrawable)->Refresh(); });
+                { m_drawablesMap[currentlyDrawable]->Refresh(); });
 }
 
 auto AllStandardVisualFx::SuspendFx() -> void
@@ -135,7 +116,7 @@ auto AllStandardVisualFx::SuspendFx() -> void
   std::for_each(begin(m_currentGoomDrawables),
                 end(m_currentGoomDrawables),
                 [this](const auto currentlyDrawable)
-                { m_drawablesMap.at(currentlyDrawable)->Suspend(); });
+                { m_drawablesMap[currentlyDrawable]->Suspend(); });
 }
 
 auto AllStandardVisualFx::ResumeFx() -> void
@@ -143,7 +124,7 @@ auto AllStandardVisualFx::ResumeFx() -> void
   std::for_each(begin(m_currentGoomDrawables),
                 end(m_currentGoomDrawables),
                 [this](const auto currentlyDrawable)
-                { m_drawablesMap.at(currentlyDrawable)->Resume(); });
+                { m_drawablesMap[currentlyDrawable]->Resume(); });
 }
 
 auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
@@ -151,7 +132,7 @@ auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> voi
   std::for_each(begin(m_currentGoomDrawables),
                 end(m_currentGoomDrawables),
                 [this, &zoomMidpoint](const auto currentlyDrawable)
-                { m_drawablesMap.at(currentlyDrawable)->SetZoomMidpoint(zoomMidpoint); });
+                { m_drawablesMap[currentlyDrawable]->SetZoomMidpoint(zoomMidpoint); });
 }
 
 auto AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawables) -> void
@@ -162,7 +143,7 @@ auto AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawabl
                 {
                   const auto wasActiveInPreviousState =
                       oldGoomDrawables.find(currentlyDrawable) != oldGoomDrawables.end();
-                  m_drawablesMap.at(currentlyDrawable)->PostStateUpdate(wasActiveInPreviousState);
+                  m_drawablesMap[currentlyDrawable]->PostStateUpdate(wasActiveInPreviousState);
                 });
 }
 
@@ -170,7 +151,7 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() const -> std::unordered_set<
 {
   auto activeColorMapsNames = std::unordered_set<std::string>{};
 
-  for (const auto& [drawable, visualFx] : m_drawablesMap)
+  for (const auto& visualFx : m_drawablesMap)
   {
     for (const auto& colorMapsName : visualFx->GetCurrentColorMapsNames())
     {
@@ -183,40 +164,44 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() const -> std::unordered_set<
 
 auto AllStandardVisualFx::ApplyCurrentStateToSingleBuffer() -> void
 {
-  std::for_each(begin(m_drawablesMap),
-                end(m_drawablesMap),
-                [this](auto& keyValue)
-                {
-                  auto& visualFx = *m_drawablesMap.at(keyValue.first);
+  const auto drawablesKeys = m_drawablesMap.keys();
 
-                  if (not IsCurrentlyDrawable(keyValue.first))
+  std::for_each(begin(drawablesKeys),
+                end(drawablesKeys),
+                [this](auto& key)
+                {
+                  auto& visualFx = *m_drawablesMap[key];
+
+                  if (not IsCurrentlyDrawable(key))
                   {
                     visualFx.ApplyNoDraw();
                     return;
                   }
 
-                  ResetDrawBuffSettings(keyValue.first);
+                  ResetDrawBuffSettings(key);
                   visualFx.ApplySingle();
                 });
 }
 
 auto AllStandardVisualFx::ApplyStandardFxToMultipleBuffers(const AudioSamples& soundData) -> void
 {
-  std::for_each(begin(m_drawablesMap),
-                end(m_drawablesMap),
-                [this, &soundData](auto& keyValue)
+  const auto drawablesKeys = m_drawablesMap.keys();
+
+  std::for_each(begin(drawablesKeys),
+                end(drawablesKeys),
+                [this, &soundData](auto& key)
                 {
-                  auto& visualFx = *m_drawablesMap.at(keyValue.first);
+                  auto& visualFx = *m_drawablesMap[key];
 
                   visualFx.SetSoundData(soundData);
 
-                  if (not IsCurrentlyDrawable(keyValue.first))
+                  if (not IsCurrentlyDrawable(key))
                   {
                     visualFx.ApplyNoDraw();
                     return;
                   }
 
-                  ResetDrawBuffSettings(keyValue.first);
+                  ResetDrawBuffSettings(key);
                   visualFx.ApplyMultiple();
                 });
 }
@@ -245,19 +230,18 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
 {
   m_visualFxColorMaps.ChangeRandomColorMaps();
 
-  m_drawablesMap.at(GoomDrawables::CIRCLES)
-      ->SetWeightedColorMaps(
-          {0,
-           m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::CIRCLES_MAIN),
-           m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::CIRCLES_LOW)});
+  m_drawablesMap[GoomDrawables::CIRCLES]->SetWeightedColorMaps(
+      {0,
+       m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::CIRCLES_MAIN),
+       m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::CIRCLES_LOW)});
 
   ChangeDotsColorMaps();
 
-  m_drawablesMap.at(GoomDrawables::IFS)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::IFS)});
+  m_drawablesMap[GoomDrawables::IFS]->SetWeightedColorMaps(
+      {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::IFS)});
 
-  m_drawablesMap.at(GoomDrawables::IMAGE)
-      ->SetWeightedColorMaps({0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::IMAGE)});
+  m_drawablesMap[GoomDrawables::IMAGE]->SetWeightedColorMaps(
+      {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::IMAGE)});
 
   ChangeLinesColorMaps();
 
@@ -265,14 +249,13 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
 
   ChangeStarsColorMaps();
 
-  m_drawablesMap.at(GoomDrawables::TENTACLES)
-      ->SetWeightedColorMaps(
-          {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TENTACLES)});
+  m_drawablesMap[GoomDrawables::TENTACLES]->SetWeightedColorMaps(
+      {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TENTACLES)});
 
-  m_drawablesMap.at(GoomDrawables::TUBES)
-      ->SetWeightedColorMaps({0,
-                              m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TUBE_MAIN),
-                              m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TUBE_LOW)});
+  m_drawablesMap[GoomDrawables::TUBES]->SetWeightedColorMaps(
+      {0,
+       m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TUBE_MAIN),
+       m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TUBE_LOW)});
 }
 
 auto AllStandardVisualFx::ChangeDotsColorMaps() noexcept -> void
@@ -284,19 +267,17 @@ auto AllStandardVisualFx::ChangeDotsColorMaps() noexcept -> void
   for (auto i = 0U; i < GoomDotsFx::NUM_DOT_TYPES; ++i)
   {
     const auto dotEffect = static_cast<GoomEffect>(i + static_cast<uint32_t>(GoomEffect::DOTS0));
-    m_drawablesMap.at(GoomDrawables::DOTS)
-        ->SetWeightedColorMaps({i, m_visualFxColorMaps.GetCurrentRandomColorMaps(dotEffect)});
+    m_drawablesMap[GoomDrawables::DOTS]->SetWeightedColorMaps(
+        {i, m_visualFxColorMaps.GetCurrentRandomColorMaps(dotEffect)});
   }
 }
 
 auto AllStandardVisualFx::ChangeLinesColorMaps() noexcept -> void
 {
-  m_drawablesMap.at(GoomDrawables::LINES)
-      ->SetWeightedColorMaps(
-          {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::LINES1)});
-  m_drawablesMap.at(GoomDrawables::LINES)
-      ->SetWeightedColorMaps(
-          {1, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::LINES2)});
+  m_drawablesMap[GoomDrawables::LINES]->SetWeightedColorMaps(
+      {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::LINES1)});
+  m_drawablesMap[GoomDrawables::LINES]->SetWeightedColorMaps(
+      {1, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::LINES2)});
 }
 
 auto AllStandardVisualFx::ChangeShapesColorMaps() noexcept -> void
@@ -316,11 +297,11 @@ auto AllStandardVisualFx::ChangeShapesColorMaps() noexcept -> void
     const auto goomEffectInner =
         static_cast<GoomEffect>(static_cast<uint32_t>(GoomEffect::SHAPES_INNER) + offsetFromZero);
 
-    m_drawablesMap.at(GoomDrawables::SHAPES)
-        ->SetWeightedColorMaps({i,
-                                m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectMain),
-                                m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectLow),
-                                m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectInner)});
+    m_drawablesMap[GoomDrawables::SHAPES]->SetWeightedColorMaps(
+        {i,
+         m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectMain),
+         m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectLow),
+         m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectInner)});
   }
 }
 
@@ -340,10 +321,10 @@ auto AllStandardVisualFx::ChangeStarsColorMaps() noexcept -> void
     const auto goomEffectLow = static_cast<GoomEffect>(
         static_cast<uint32_t>(GoomEffect::STARS_LOW_FIREWORKS) + offsetFromZero);
 
-    m_drawablesMap.at(GoomDrawables::STARS)
-        ->SetWeightedColorMaps({i,
-                                m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectMain),
-                                m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectLow)});
+    m_drawablesMap[GoomDrawables::STARS]->SetWeightedColorMaps(
+        {i,
+         m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectMain),
+         m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectLow)});
   }
 }
 
