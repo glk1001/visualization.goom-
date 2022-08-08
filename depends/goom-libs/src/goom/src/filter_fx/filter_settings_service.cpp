@@ -17,6 +17,7 @@ namespace GOOM::FILTER_FX
 using FILTER_EFFECTS::ExtraEffectsProbabilities;
 using FILTER_EFFECTS::ExtraEffectsStates;
 using FILTER_EFFECTS::RotationAdjustments;
+using UTILS::EnumMap;
 using UTILS::NUM;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
@@ -430,20 +431,19 @@ inline const auto HYPERCOS_WEIGHTS = std::map<ZoomFilterMode, ModeWeights>{
 auto FilterSettingsService::GetFilterModeData(
     const IGoomRand& goomRand,
     const std::string& resourcesDirectory,
-    const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect)
-    -> std::map<ZoomFilterMode, ZoomFilterModeInfo>
+    const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect) -> FilterModeEnumMap
 {
   Expects(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
   Expects(EFFECTS_PROBABILITIES.size() == NUM<ZoomFilterMode>);
   Expects(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
 
-  auto filterMap = std::map<ZoomFilterMode, ZoomFilterModeInfo>{};
+  auto filterModeVec = std::vector<FilterModeEnumMap::KeyValue>{};
 
   for (auto i = 0U; i < NUM<ZoomFilterMode>; ++i)
   {
     const auto filterMode = static_cast<ZoomFilterMode>(i);
 
-    filterMap.try_emplace(
+    filterModeVec.emplace_back(
         filterMode,
         ZoomFilterModeInfo{
             FILTER_MODE_NAMES.at(filterMode),
@@ -453,7 +453,7 @@ auto FilterSettingsService::GetFilterModeData(
     });
   }
 
-  return filterMap;
+  return FilterModeEnumMap::Make(std::move(filterModeVec));
 }
 
 FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
@@ -553,7 +553,7 @@ auto FilterSettingsService::Start() -> void
 inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
     -> std::shared_ptr<ISpeedCoefficientsEffect>&
 {
-  return m_filterModeData.at(m_filterMode).speedCoefficientsEffect;
+  return m_filterModeData[m_filterMode].speedCoefficientsEffect;
 }
 
 auto FilterSettingsService::NewCycle() -> void
@@ -594,14 +594,14 @@ inline auto FilterSettingsService::SetFilterModeExtraEffects() -> void
 
 auto FilterSettingsService::ResetRandomExtraEffects() -> void
 {
-  const auto& modeInfo = m_filterModeData.at(m_filterMode);
+  const auto& modeInfo = m_filterModeData[m_filterMode];
   m_randomizedExtraEffects->ResetStandardStates(modeInfo.extraEffectsProbabilities);
   m_filterEffectsSettingsHaveChanged = true;
 }
 
 inline auto FilterSettingsService::SetRandomizedExtraEffects() -> void
 {
-  const auto& modeInfo = m_filterModeData.at(m_filterMode);
+  const auto& modeInfo = m_filterModeData[m_filterMode];
 
   m_randomizedExtraEffects->ResetAllStates(modeInfo.hypercosWeights.GetRandomWeighted(),
                                            modeInfo.extraEffectsProbabilities);

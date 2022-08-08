@@ -4,11 +4,11 @@
 #include "filter_effects/rotation.h"
 #include "filter_settings.h"
 #include "speed_coefficients_effect.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/propagate_const.h"
 
 #include <functional>
-#include <map>
 #include <memory>
 #include <string_view>
 
@@ -16,8 +16,9 @@ namespace GOOM
 {
 class Pixel;
 class PluginInfo;
+}
 
-namespace FILTER_FX
+namespace GOOM::FILTER_FX
 {
 
 enum class ZoomFilterMode
@@ -121,17 +122,17 @@ private:
 
   struct ZoomFilterModeInfo
   {
-    const std::string_view name;
+    std::string_view name;
     std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
-    const FILTER_EFFECTS::ExtraEffectsProbabilities extraEffectsProbabilities;
-    const UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
+    FILTER_EFFECTS::ExtraEffectsProbabilities extraEffectsProbabilities;
+    UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
   };
-  std::map<ZoomFilterMode, ZoomFilterModeInfo> m_filterModeData;
+  using FilterModeEnumMap = UTILS::RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
+  FilterModeEnumMap m_filterModeData;
   [[nodiscard]] static auto GetFilterModeData(
       const UTILS::MATH::IGoomRand& goomRand,
       const std::string& resourcesDirectory,
-      const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect)
-      -> std::map<ZoomFilterMode, ZoomFilterModeInfo>;
+      const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect) -> FilterModeEnumMap;
 
   static constexpr uint32_t DEFAULT_ZOOM_MID_X     = 16;
   static constexpr uint32_t DEFAULT_ZOOM_MID_Y     = 1;
@@ -177,7 +178,7 @@ inline auto FilterSettingsService::GetCurrentFilterMode() const -> ZoomFilterMod
 
 inline auto FilterSettingsService::GetCurrentFilterModeName() const -> const std::string_view&
 {
-  return m_filterModeData.at(m_filterMode).name;
+  return m_filterModeData[m_filterMode].name;
 }
 
 inline auto FilterSettingsService::GetPreviousFilterMode() const -> ZoomFilterMode
@@ -187,7 +188,7 @@ inline auto FilterSettingsService::GetPreviousFilterMode() const -> ZoomFilterMo
 
 inline auto FilterSettingsService::GetPreviousFilterModeName() const -> const std::string_view&
 {
-  return m_filterModeData.at(m_previousFilterMode).name;
+  return m_filterModeData[m_previousFilterMode].name;
 }
 
 inline auto FilterSettingsService::GetFilterSettings() -> ZoomFilterSettings&
@@ -311,5 +312,4 @@ inline auto FilterSettingsService::SetTranLerpToMaxDefaultSwitchMult() -> void
   SetTranLerpToMaxSwitchMult(DEFAULT_SWITCH_MULT);
 }
 
-} // namespace FILTER_FX
-} // namespace GOOM
+} // namespace GOOM::FILTER_FX
