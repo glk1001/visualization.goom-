@@ -1,7 +1,7 @@
 #pragma once
 
 #include "goom_config.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <array>
@@ -102,15 +102,15 @@ public:
   [[nodiscard]] static auto IsMultiThreaded(GoomStates goomState) -> bool;
 
 private:
-  using StateInfoArray = std::array<StateInfo, UTILS::NUM<GoomStates>>;
-  static const StateInfoArray STATE_INFO_ARRAY;
-  [[nodiscard]] static auto GetStateInfoArray() noexcept -> StateInfoArray;
+  using StateInfoMap = UTILS::EnumMap<GoomStates, StateInfo>;
+  static const StateInfoMap STATE_INFO_MAP;
+  [[nodiscard]] static auto GetStateInfoMap() noexcept -> StateInfoMap;
   [[nodiscard]] static auto GetDrawablesInfo(GoomStates goomState) -> std::vector<DrawableInfo>;
 };
 
 inline auto GoomStateInfo::GetStateInfo(const GoomStates goomState) -> const StateInfo&
 {
-  return STATE_INFO_ARRAY.at(UTILS::ToUType(goomState));
+  return STATE_INFO_MAP[goomState];
 }
 
 } // namespace GOOM::CONTROL
