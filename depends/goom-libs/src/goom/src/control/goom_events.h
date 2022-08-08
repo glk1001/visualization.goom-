@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <array>

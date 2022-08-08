@@ -1,6 +1,6 @@
 #include "hypercos.h"
 
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 

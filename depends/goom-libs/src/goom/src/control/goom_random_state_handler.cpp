@@ -2,7 +2,7 @@
 
 #include "control/state_and_filter_consts.h"
 #include "goom_config.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 
 namespace GOOM::CONTROL
 {

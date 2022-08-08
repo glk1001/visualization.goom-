@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/graphics/image_bitmaps.h"
 
 #include <array>

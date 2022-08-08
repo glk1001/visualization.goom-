@@ -4,7 +4,7 @@
 
 #include "goom/goom_config.h"
 #include "goom/logging.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/math/misc.h"
 
 #include <array>

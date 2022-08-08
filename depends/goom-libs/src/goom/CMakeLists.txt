@@ -99,10 +99,12 @@ add_library(goom
         src/utils/math/transform2d.h
         src/utils/text/drawable_text.cpp
         src/utils/adaptive_exposure.cpp
+        src/utils/array_utils.h
         src/utils/build_time.cpp
         src/utils/buffer_saver.h
         src/utils/buffer_view.h
         src/utils/date_utils.cpp
+        src/utils/enum_utils.h
         src/utils/logging.cpp
         src/utils/name_value_pairs.cpp
         src/utils/propagate_const.h

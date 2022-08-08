@@ -1,6 +1,6 @@
 #include "y_only.h"
 
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

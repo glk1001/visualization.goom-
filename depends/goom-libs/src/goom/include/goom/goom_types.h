@@ -7,7 +7,7 @@
 namespace GOOM
 {
 
-template <typename T>
+template<typename T>
 using Ptr = T*;
 
 class Dimensions
@@ -29,7 +29,7 @@ private:
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 constexpr Dimensions::Dimensions(const uint32_t width, const uint32_t height) noexcept
-: m_width{width}, m_height{height}
+  : m_width{width}, m_height{height}
 {
   Expects(width > 0);
   Expects(height > 0);

@@ -2,7 +2,7 @@
 
 #include "goom_config.h"
 #include "misc.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 
 #include <array>
 #include <cstdint>

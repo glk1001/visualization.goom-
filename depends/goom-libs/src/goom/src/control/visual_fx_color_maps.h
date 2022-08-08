@@ -3,7 +3,7 @@
 #include "color/random_color_maps.h"
 #include "goom_config.h"
 #include "goom_effects.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "visual_fx_color_matched_sets.h"
 #include "visual_fx_weighted_color_maps.h"

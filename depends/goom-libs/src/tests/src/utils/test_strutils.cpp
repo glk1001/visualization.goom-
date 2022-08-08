@@ -1,5 +1,5 @@
 #include "catch2/catch.hpp"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/strutils.h"
 
 #include <string>

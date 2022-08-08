@@ -1,7 +1,7 @@
 #include "visual_fx_color_matched_sets.h"
 
 #include "color/random_color_maps_groups.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <array>

@@ -2,7 +2,7 @@
 
 #include "color_data/color_map_enums.h"
 #include "goom/goom_graphic.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 
 #include <cstdint>
 #include <memory>

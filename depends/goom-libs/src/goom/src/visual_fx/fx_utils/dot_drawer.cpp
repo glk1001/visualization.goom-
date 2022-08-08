@@ -2,7 +2,7 @@
 
 #include "draw/goom_draw.h"
 #include "point2d.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"

@@ -9,7 +9,7 @@
 #include "goom/goom_graphic.h"
 #include "goom_config.h"
 #include "logging.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 
 #include <algorithm>
 #include <format>

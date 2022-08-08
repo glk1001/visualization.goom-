@@ -3,7 +3,7 @@
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
-#include "utils/enumutils.h"
+#include "utils/enum_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/circles_fx.h"

@@ -22,6 +22,7 @@ add_executable(${GOOM_LIB_TESTS_NAME}
         src/utils/math/test_goom_rand.cpp
         src/utils/math/test_misc.cpp
         src/utils/math/test_randutils.cpp
+        src/utils/test_enum_utils.cpp
         src/utils/test_parallel_utils.cpp
         src/utils/test_strutils.cpp
         src/utils/test_t_values.cpp
