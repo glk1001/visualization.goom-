@@ -3,9 +3,9 @@
 #include "color/random_color_maps_groups.h"
 #include "goom_config.h"
 #include "goom_effects.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
-#include <map>
 #include <memory>
 
 namespace GOOM::CONTROL
@@ -23,7 +23,7 @@ public:
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
 
-  using ColorMatchedSet = std::map<GoomEffect, COLOR::RandomColorMapsGroups::Groups>;
+  using ColorMatchedSet = UTILS::EnumMap<GoomEffect, COLOR::RandomColorMapsGroups::Groups>;
   enum class ColorMatchedSets
   {
     RED_GREEN_STD_MAPS,
@@ -49,7 +49,7 @@ private:
     COLOR_MATCHED_SET8,
     _num // unused, and marks the enum end
   };
-  using ColorMatchedSetsMap = std::map<ColorMatchedSets, ColorMatchedSet>;
+  using ColorMatchedSetsMap = UTILS::EnumMap<ColorMatchedSets, ColorMatchedSet>;
   [[nodiscard]] auto MakeColorMatchedSetsMap() const noexcept -> ColorMatchedSetsMap;
   const ColorMatchedSetsMap m_colorMatchedSetsMap{MakeColorMatchedSetsMap()};
 
@@ -59,6 +59,8 @@ private:
 
   [[nodiscard]] static auto GetOneGroupColorMatchedSet(
       COLOR::RandomColorMapsGroups::Groups group) noexcept -> ColorMatchedSet;
+  [[nodiscard]] static auto GetOneGroupArray(COLOR::RandomColorMapsGroups::Groups group)
+      -> std::array<ColorMatchedSet::KeyValue, UTILS::NUM<GoomEffect>>;
   [[nodiscard]] auto GetTwoGroupsColorMatchedSet(
       COLOR::RandomColorMapsGroups::Groups group1,
       COLOR::RandomColorMapsGroups::Groups group2) const noexcept -> ColorMatchedSet;
@@ -84,7 +86,7 @@ inline auto VisualFxColorMatchedSets::SetNextRandomColorMatchedSet() noexcept ->
 inline auto VisualFxColorMatchedSets::GetCurrentRandomColorMapsGroup(
     const GoomEffect goomEffect) const noexcept -> COLOR::RandomColorMapsGroups::Groups
 {
-  return (*m_currentColorMatchedSet).at(goomEffect);
+  return (*m_currentColorMatchedSet)[goomEffect];
 }
 
 } // namespace GOOM::CONTROL
