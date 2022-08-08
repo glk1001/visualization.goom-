@@ -1,47 +1,43 @@
 #include "visual_fx_weighted_color_maps.h"
 
-#include "utils/math/goom_rand_base.h"
-
 namespace GOOM::CONTROL
 {
 
 using COLOR::RandomColorMapsGroups;
 using UTILS::MATH::IGoomRand;
-
 using Groups = RandomColorMapsGroups::Groups;
 
 VisualFxWeightedColorMaps::VisualFxWeightedColorMaps(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
-    m_goomEffectsWeightedColorMaps{
-        {GoomEffect::CIRCLES_MAIN, GetCirclesMainWeightedGroups(m_goomRand)},
-        {GoomEffect::CIRCLES_LOW, GetCirclesLowWeightedGroups(m_goomRand)},
-        {GoomEffect::DOTS0, GetDots0WeightedGroups(m_goomRand)},
-        {GoomEffect::DOTS1, GetDots1WeightedGroups(m_goomRand)},
-        {GoomEffect::DOTS2, GetDots2WeightedGroups(m_goomRand)},
-        {GoomEffect::DOTS3, GetDots3WeightedGroups(m_goomRand)},
-        {GoomEffect::DOTS4, GetDots4WeightedGroups(m_goomRand)},
-        {GoomEffect::IFS, GetIfsWeightedGroups(m_goomRand)},
-        {GoomEffect::IMAGE, GetImageWeightedGroups(m_goomRand)},
-        {GoomEffect::LINES1, GetLines1WeightedGroups(m_goomRand)},
-        {GoomEffect::LINES2, GetLines2WeightedGroups(m_goomRand)},
-        {GoomEffect::SHAPES_MAIN, GetShapesMainWeightedGroups(m_goomRand)},
-        {GoomEffect::SHAPES_LOW, GetShapesLowWeightedGroups(m_goomRand)},
-        {GoomEffect::SHAPES_INNER, GetShapesInnerWeightedGroups(m_goomRand)},
-        {GoomEffect::STARS_MAIN_FIREWORKS, GetStarsMainFireworksWeightedGroups(m_goomRand)},
-        {GoomEffect::STARS_LOW_FIREWORKS, GetStarsLowFireworksWeightedGroups(m_goomRand)},
-        {GoomEffect::STARS_MAIN_RAIN, GetStarsMainRainWeightedGroups(m_goomRand)},
-        {GoomEffect::STARS_LOW_RAIN, GetStarsLowRainWeightedGroups(m_goomRand)},
-        {GoomEffect::STARS_MAIN_FOUNTAIN, GetStarsMainFountainWeightedGroups(m_goomRand)},
-        {GoomEffect::STARS_LOW_FOUNTAIN, GetStarsLowFountainWeightedGroups(m_goomRand)},
-        {GoomEffect::TENTACLES, GetTentaclesWeightedGroups(m_goomRand)},
-        {GoomEffect::TUBE_MAIN, GetTubesMainWeightedGroups(m_goomRand)},
-        {GoomEffect::TUBE_LOW, GetTubesLowWeightedGroups(m_goomRand)},
-    }
+    m_goomEffectsWeightedColorMaps{{{
+        {GoomEffect::CIRCLES_MAIN, GetCirclesMainGroups()},
+        {GoomEffect::CIRCLES_LOW, GetCirclesLowGroups()},
+        {GoomEffect::DOTS0, GetDots0Groups()},
+        {GoomEffect::DOTS1, GetDots1Groups()},
+        {GoomEffect::DOTS2, GetDots2Groups()},
+        {GoomEffect::DOTS3, GetDots3Groups()},
+        {GoomEffect::DOTS4, GetDots4Groups()},
+        {GoomEffect::IFS, GetIfsGroups()},
+        {GoomEffect::IMAGE, GetImageGroups()},
+        {GoomEffect::LINES1, GetLines1Groups()},
+        {GoomEffect::LINES2, GetLines2Groups()},
+        {GoomEffect::SHAPES_MAIN, GetShapesMainGroups()},
+        {GoomEffect::SHAPES_LOW, GetShapesLowGroups()},
+        {GoomEffect::SHAPES_INNER, GetShapesInnerGroups()},
+        {GoomEffect::STARS_MAIN_FIREWORKS, GetStarsMainFireworksGroups()},
+        {GoomEffect::STARS_LOW_FIREWORKS, GetStarsLowFireworksGroups()},
+        {GoomEffect::STARS_MAIN_RAIN, GetStarsMainRainGroups()},
+        {GoomEffect::STARS_LOW_RAIN, GetStarsLowRainGroups()},
+        {GoomEffect::STARS_MAIN_FOUNTAIN, GetStarsMainFountainGroups()},
+        {GoomEffect::STARS_LOW_FOUNTAIN, GetStarsLowFountainGroups()},
+        {GoomEffect::TENTACLES, GetTentaclesGroups()},
+        {GoomEffect::TUBE_MAIN, GetTubesMainGroups()},
+        {GoomEffect::TUBE_LOW, GetTubesLowGroups()},
+    }}}
 {
 }
 
-auto VisualFxWeightedColorMaps::GetCirclesMainWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetCirclesMainGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -65,7 +61,7 @@ auto VisualFxWeightedColorMaps::GetCirclesMainWeightedGroups(const IGoomRand& go
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -91,8 +87,7 @@ auto VisualFxWeightedColorMaps::GetCirclesMainWeightedGroups(const IGoomRand& go
   };
 }
 
-auto VisualFxWeightedColorMaps::GetCirclesLowWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetCirclesLowGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -116,7 +111,7 @@ auto VisualFxWeightedColorMaps::GetCirclesLowWeightedGroups(const IGoomRand& goo
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -142,7 +137,7 @@ auto VisualFxWeightedColorMaps::GetCirclesLowWeightedGroups(const IGoomRand& goo
   };
 }
 
-auto VisualFxWeightedColorMaps::GetDots0WeightedGroups(const IGoomRand& goomRand) -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetDots0Groups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -166,7 +161,7 @@ auto VisualFxWeightedColorMaps::GetDots0WeightedGroups(const IGoomRand& goomRand
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -192,7 +187,7 @@ auto VisualFxWeightedColorMaps::GetDots0WeightedGroups(const IGoomRand& goomRand
   };
 }
 
-auto VisualFxWeightedColorMaps::GetDots1WeightedGroups(const IGoomRand& goomRand) -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetDots1Groups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -216,7 +211,7 @@ auto VisualFxWeightedColorMaps::GetDots1WeightedGroups(const IGoomRand& goomRand
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -242,7 +237,7 @@ auto VisualFxWeightedColorMaps::GetDots1WeightedGroups(const IGoomRand& goomRand
   };
 }
 
-auto VisualFxWeightedColorMaps::GetDots2WeightedGroups(const IGoomRand& goomRand) -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetDots2Groups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -266,7 +261,7 @@ auto VisualFxWeightedColorMaps::GetDots2WeightedGroups(const IGoomRand& goomRand
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -292,7 +287,7 @@ auto VisualFxWeightedColorMaps::GetDots2WeightedGroups(const IGoomRand& goomRand
   };
 }
 
-auto VisualFxWeightedColorMaps::GetDots3WeightedGroups(const IGoomRand& goomRand) -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetDots3Groups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -316,7 +311,7 @@ auto VisualFxWeightedColorMaps::GetDots3WeightedGroups(const IGoomRand& goomRand
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -342,7 +337,7 @@ auto VisualFxWeightedColorMaps::GetDots3WeightedGroups(const IGoomRand& goomRand
   };
 }
 
-auto VisualFxWeightedColorMaps::GetDots4WeightedGroups(const IGoomRand& goomRand) -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetDots4Groups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -366,7 +361,7 @@ auto VisualFxWeightedColorMaps::GetDots4WeightedGroups(const IGoomRand& goomRand
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -392,7 +387,7 @@ auto VisualFxWeightedColorMaps::GetDots4WeightedGroups(const IGoomRand& goomRand
   };
 }
 
-auto VisualFxWeightedColorMaps::GetIfsWeightedGroups(const IGoomRand& goomRand) -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetIfsGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -416,7 +411,7 @@ auto VisualFxWeightedColorMaps::GetIfsWeightedGroups(const IGoomRand& goomRand) 
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -442,7 +437,7 @@ auto VisualFxWeightedColorMaps::GetIfsWeightedGroups(const IGoomRand& goomRand) 
   };
 }
 
-auto VisualFxWeightedColorMaps::GetImageWeightedGroups(const IGoomRand& goomRand) -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetImageGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -466,7 +461,7 @@ auto VisualFxWeightedColorMaps::GetImageWeightedGroups(const IGoomRand& goomRand
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -492,7 +487,7 @@ auto VisualFxWeightedColorMaps::GetImageWeightedGroups(const IGoomRand& goomRand
   };
 }
 
-auto VisualFxWeightedColorMaps::GetLines1WeightedGroups(const IGoomRand& goomRand) -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetLines1Groups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -516,7 +511,7 @@ auto VisualFxWeightedColorMaps::GetLines1WeightedGroups(const IGoomRand& goomRan
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -542,7 +537,7 @@ auto VisualFxWeightedColorMaps::GetLines1WeightedGroups(const IGoomRand& goomRan
   };
 }
 
-auto VisualFxWeightedColorMaps::GetLines2WeightedGroups(const IGoomRand& goomRand) -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetLines2Groups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -566,7 +561,7 @@ auto VisualFxWeightedColorMaps::GetLines2WeightedGroups(const IGoomRand& goomRan
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -592,8 +587,7 @@ auto VisualFxWeightedColorMaps::GetLines2WeightedGroups(const IGoomRand& goomRan
   };
 }
 
-auto VisualFxWeightedColorMaps::GetShapesMainWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetShapesMainGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -617,7 +611,7 @@ auto VisualFxWeightedColorMaps::GetShapesMainWeightedGroups(const IGoomRand& goo
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -643,8 +637,7 @@ auto VisualFxWeightedColorMaps::GetShapesMainWeightedGroups(const IGoomRand& goo
   };
 }
 
-auto VisualFxWeightedColorMaps::GetShapesLowWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetShapesLowGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -668,7 +661,7 @@ auto VisualFxWeightedColorMaps::GetShapesLowWeightedGroups(const IGoomRand& goom
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -694,8 +687,7 @@ auto VisualFxWeightedColorMaps::GetShapesLowWeightedGroups(const IGoomRand& goom
   };
 }
 
-auto VisualFxWeightedColorMaps::GetShapesInnerWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetShapesInnerGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -719,7 +711,7 @@ auto VisualFxWeightedColorMaps::GetShapesInnerWeightedGroups(const IGoomRand& go
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -745,8 +737,7 @@ auto VisualFxWeightedColorMaps::GetShapesInnerWeightedGroups(const IGoomRand& go
   };
 }
 
-auto VisualFxWeightedColorMaps::GetStarsMainFireworksWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetStarsMainFireworksGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -770,7 +761,7 @@ auto VisualFxWeightedColorMaps::GetStarsMainFireworksWeightedGroups(const IGoomR
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -796,8 +787,7 @@ auto VisualFxWeightedColorMaps::GetStarsMainFireworksWeightedGroups(const IGoomR
   };
 }
 
-auto VisualFxWeightedColorMaps::GetStarsLowFireworksWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetStarsLowFireworksGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -821,7 +811,7 @@ auto VisualFxWeightedColorMaps::GetStarsLowFireworksWeightedGroups(const IGoomRa
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -847,8 +837,7 @@ auto VisualFxWeightedColorMaps::GetStarsLowFireworksWeightedGroups(const IGoomRa
   };
 }
 
-auto VisualFxWeightedColorMaps::GetStarsMainRainWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetStarsMainRainGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -872,7 +861,7 @@ auto VisualFxWeightedColorMaps::GetStarsMainRainWeightedGroups(const IGoomRand& 
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -898,8 +887,7 @@ auto VisualFxWeightedColorMaps::GetStarsMainRainWeightedGroups(const IGoomRand& 
   };
 }
 
-auto VisualFxWeightedColorMaps::GetStarsLowRainWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetStarsLowRainGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -923,7 +911,7 @@ auto VisualFxWeightedColorMaps::GetStarsLowRainWeightedGroups(const IGoomRand& g
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -949,8 +937,7 @@ auto VisualFxWeightedColorMaps::GetStarsLowRainWeightedGroups(const IGoomRand& g
   };
 }
 
-auto VisualFxWeightedColorMaps::GetStarsMainFountainWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetStarsMainFountainGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -974,7 +961,7 @@ auto VisualFxWeightedColorMaps::GetStarsMainFountainWeightedGroups(const IGoomRa
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -1000,8 +987,7 @@ auto VisualFxWeightedColorMaps::GetStarsMainFountainWeightedGroups(const IGoomRa
   };
 }
 
-auto VisualFxWeightedColorMaps::GetStarsLowFountainWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetStarsLowFountainGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -1025,7 +1011,7 @@ auto VisualFxWeightedColorMaps::GetStarsLowFountainWeightedGroups(const IGoomRan
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -1051,8 +1037,7 @@ auto VisualFxWeightedColorMaps::GetStarsLowFountainWeightedGroups(const IGoomRan
   };
 }
 
-auto VisualFxWeightedColorMaps::GetTentaclesWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetTentaclesGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -1076,7 +1061,7 @@ auto VisualFxWeightedColorMaps::GetTentaclesWeightedGroups(const IGoomRand& goom
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -1102,8 +1087,7 @@ auto VisualFxWeightedColorMaps::GetTentaclesWeightedGroups(const IGoomRand& goom
   };
 }
 
-auto VisualFxWeightedColorMaps::GetTubesMainWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetTubesMainGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -1127,7 +1111,7 @@ auto VisualFxWeightedColorMaps::GetTubesMainWeightedGroups(const IGoomRand& goom
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
@@ -1153,8 +1137,7 @@ auto VisualFxWeightedColorMaps::GetTubesMainWeightedGroups(const IGoomRand& goom
   };
 }
 
-auto VisualFxWeightedColorMaps::GetTubesLowWeightedGroups(const IGoomRand& goomRand)
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetTubesLowGroups() const noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -1178,7 +1161,7 @@ auto VisualFxWeightedColorMaps::GetTubesLowWeightedGroups(const IGoomRand& goomR
   static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
 
   return {
-      goomRand,
+      m_goomRand,
       {
         {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
         {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
