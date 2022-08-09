@@ -64,8 +64,7 @@ public:
       -> void;
   auto UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings) noexcept
       -> void;
-  auto UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings) noexcept
-      -> void;
+  auto UpdateFilterColorSettings(bool blockyWavy) noexcept -> void;
 
   auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
   auto SetZoomFilterBrightness(float brightness) noexcept -> void;
@@ -138,10 +137,9 @@ auto ZoomFilterFx::UpdateFilterBufferSettings(
   m_pimpl->UpdateFilterBufferSettings(filterBufferSettings);
 }
 
-auto ZoomFilterFx::UpdateFilterColorSettings(
-    const ZoomFilterColorSettings& filterColorSettings) noexcept -> void
+auto ZoomFilterFx::UpdateFilterColorSettings(const bool blockyWavy) noexcept -> void
 {
-  m_pimpl->UpdateFilterColorSettings(filterColorSettings);
+  m_pimpl->UpdateFilterColorSettings(blockyWavy);
 }
 
 auto ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept
@@ -200,10 +198,10 @@ inline auto ZoomFilterFx::ZoomFilterImpl::UpdateFilterEffectsSettings(
   m_filterBuffersService->SetFilterEffectsSettings(filterEffectsSettings);
 }
 
-inline auto ZoomFilterFx::ZoomFilterImpl::UpdateFilterColorSettings(
-    const ZoomFilterColorSettings& filterColorSettings) noexcept -> void
+inline auto ZoomFilterFx::ZoomFilterImpl::UpdateFilterColorSettings(const bool blockyWavy) noexcept
+    -> void
 {
-  m_filterColorsService->SetBlockyWavy(filterColorSettings.blockyWavy);
+  m_filterColorsService->SetBlockyWavy(blockyWavy);
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(

@@ -99,8 +99,7 @@ public:
   void ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData);
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
 
-  void UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings,
-                            bool updateFilterEffects);
+  void UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings);
   void ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const -> std::unordered_set<std::string>;

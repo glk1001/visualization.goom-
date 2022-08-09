@@ -38,8 +38,7 @@ auto ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filte
   m_filterEffectsSettings = &filterEffectsSettings;
   m_filterEffectsSettings->speedCoefficientsEffect->SetRandomParams();
 
-  m_zoomVectorAfterEffects.SetAfterEffectsSettings(m_filterEffectsSettings->afterEffectsFlags,
-                                                   m_filterEffectsSettings->rotationAdjustments,
+  m_zoomVectorAfterEffects.SetAfterEffectsSettings(m_filterEffectsSettings->afterEffectsSettings,
                                                    m_filterEffectsSettings->zoomMidpoint);
 }
 

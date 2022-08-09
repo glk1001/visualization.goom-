@@ -223,16 +223,16 @@ auto GoomAllVisualFx::GetSameLumaMixBlendPixelFunc() -> IGoomDraw::BlendPixelFun
   };
 }
 
-void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings,
-                                           const bool updateFilterEffects)
+void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings)
 {
-  if (updateFilterEffects)
+  if (filterSettings.filterEffectsSettingsHaveChanged)
   {
     m_zoomFilterFx->UpdateFilterEffectsSettings(filterSettings.filterEffectsSettings);
   }
 
   m_zoomFilterFx->UpdateFilterBufferSettings(filterSettings.filterBufferSettings);
-  m_zoomFilterFx->UpdateFilterColorSettings(filterSettings.filterColorSettings);
+  m_zoomFilterFx->UpdateFilterColorSettings(
+      filterSettings.filterEffectsSettings.afterEffectsSettings.blockyWavy);
 
   m_allStandardVisualFx->SetZoomMidpoint(filterSettings.filterEffectsSettings.zoomMidpoint);
 }

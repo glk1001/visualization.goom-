@@ -1,6 +1,7 @@
 #pragma once
 
-#include "filter_fx/filter_settings.h"
+#include "rotation.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <memory>
@@ -13,14 +14,43 @@ class IGoomRand;
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
+enum class HypercosOverlay
+{
+  NONE,
+  MODE0,
+  MODE1,
+  MODE2,
+  MODE3,
+  _num // unused, and marks the enum end
+};
+
+struct AfterEffectsSettings
+{
+  bool blockyWavy;
+
+  HypercosOverlay hypercosOverlay;
+  bool imageVelocityEffect;
+  bool noiseEffect; // ajoute un bruit a la transformation
+  bool planeEffect;
+  bool rotationEffect;
+  bool tanEffect;
+
+  RotationAdjustments rotationAdjustments;
+};
+
 struct AfterEffectsProbabilities
 {
-  float blockWavyProbability;
-  float imageVelocityProbability;
-  float noiseProbability;
-  float planeProbability;
-  float rotateProbability;
-  float tanEffectProbability;
+  GOOM::UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
+  struct Probabilities
+  {
+    float blockWavyProbability;
+    float imageVelocityProbability;
+    float noiseProbability;
+    float planeProbability;
+    float rotateProbability;
+    float tanEffectProbability;
+  };
+  Probabilities probabilities;
 };
 
 class AfterEffectsStates
@@ -37,11 +67,10 @@ public:
 
   auto SetDefaults() -> void;
   auto UpdateTimers() -> void;
-  auto ResetAllStates(HypercosOverlay value, const AfterEffectsProbabilities& effectsProbabilities)
-      -> void;
+  auto ResetAllStates(const AfterEffectsProbabilities& effectsProbabilities) -> void;
   auto ResetStandardStates(const AfterEffectsProbabilities& effectsProbabilities) -> void;
   auto CheckForPendingOffTimers() -> void;
-  auto UpdateFilterSettingsFromStates(ZoomFilterSettings& filterSettings) const -> void;
+  auto UpdateFilterSettingsFromStates(AfterEffectsSettings& afterEffectsSettings) const -> void;
 
 private:
   HypercosOverlay m_hypercosOverlayEffect;

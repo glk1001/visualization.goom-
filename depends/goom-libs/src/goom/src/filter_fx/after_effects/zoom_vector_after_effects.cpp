@@ -21,13 +21,12 @@ ZoomVectorAfterEffects::ZoomVectorAfterEffects(const uint32_t screenWidth,
 }
 
 auto ZoomVectorAfterEffects::SetAfterEffectsSettings(
-    const ZoomFilterEffectsSettings::AfterEffectsFlags& afterEffectsFlags,
-    RotationAdjustments rotationAdjustments,
-    const Point2dInt& zoomMidpoint) noexcept -> void
+    const AfterEffectsSettings& afterEffectsSettings, const Point2dInt& zoomMidpoint) noexcept
+    -> void
 {
-  m_afterEffectsFlags   = afterEffectsFlags;
-  m_rotationAdjustments = rotationAdjustments;
-  m_zoomMidpoint        = zoomMidpoint;
+  m_afterEffectsSettings = afterEffectsSettings;
+  m_rotationAdjustments  = afterEffectsSettings.rotationAdjustments; // TODO Fix this
+  m_zoomMidpoint         = zoomMidpoint;
 
   SetRandomHypercosOverlayEffects();
   SetRandomImageVelocityEffects();
@@ -44,27 +43,27 @@ auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
 {
   auto newVelocity = velocity;
 
-  if (m_afterEffectsFlags.imageVelocityEffect)
+  if (m_afterEffectsSettings.imageVelocityEffect)
   {
     newVelocity = m_afterEffects.GetImageVelocity().GetVelocity(coords, newVelocity);
   }
 
-  if (m_afterEffectsFlags.rotationEffect)
+  if (m_afterEffectsSettings.rotationEffect)
   {
     newVelocity = m_afterEffects.GetRotation().GetVelocity(newVelocity);
   }
 
-  if (m_afterEffectsFlags.tanEffect)
+  if (m_afterEffectsSettings.tanEffect)
   {
     newVelocity = m_afterEffects.GetTanEffect().GetVelocity(sqDistFromZero, newVelocity);
   }
 
-  if (m_afterEffectsFlags.noiseEffect)
+  if (m_afterEffectsSettings.noiseEffect)
   {
     newVelocity = m_afterEffects.GetNoise().GetVelocity(velocity);
   }
 
-  if (m_afterEffectsFlags.hypercosOverlay != HypercosOverlay::NONE)
+  if (m_afterEffectsSettings.hypercosOverlay != HypercosOverlay::NONE)
   {
     newVelocity = m_afterEffects.GetHypercos().GetVelocity(coords, newVelocity);
   }
@@ -93,7 +92,7 @@ auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
 
 auto ZoomVectorAfterEffects::SetRandomHypercosOverlayEffects() noexcept -> void
 {
-  switch (m_afterEffectsFlags.hypercosOverlay)
+  switch (m_afterEffectsSettings.hypercosOverlay)
   {
     case HypercosOverlay::NONE:
       m_afterEffects.GetHypercos().SetDefaultParams();
@@ -117,7 +116,7 @@ auto ZoomVectorAfterEffects::SetRandomHypercosOverlayEffects() noexcept -> void
 
 inline auto ZoomVectorAfterEffects::SetRandomImageVelocityEffects() noexcept -> void
 {
-  if (not m_afterEffectsFlags.imageVelocityEffect)
+  if (not m_afterEffectsSettings.imageVelocityEffect)
   {
     return;
   }
@@ -127,7 +126,7 @@ inline auto ZoomVectorAfterEffects::SetRandomImageVelocityEffects() noexcept -> 
 
 inline auto ZoomVectorAfterEffects::SetRandomNoiseSettings() noexcept -> void
 {
-  if (not m_afterEffectsFlags.noiseEffect)
+  if (not m_afterEffectsSettings.noiseEffect)
   {
     return;
   }
@@ -137,7 +136,7 @@ inline auto ZoomVectorAfterEffects::SetRandomNoiseSettings() noexcept -> void
 
 inline auto ZoomVectorAfterEffects::SetRandomPlaneEffects() noexcept -> void
 {
-  if (not m_afterEffectsFlags.planeEffect)
+  if (not m_afterEffectsSettings.planeEffect)
   {
     return;
   }
@@ -147,7 +146,7 @@ inline auto ZoomVectorAfterEffects::SetRandomPlaneEffects() noexcept -> void
 
 inline auto ZoomVectorAfterEffects::SetRandomRotationSettings() noexcept -> void
 {
-  if (not m_afterEffectsFlags.rotationEffect)
+  if (not m_afterEffectsSettings.rotationEffect)
   {
     return;
   }
@@ -173,7 +172,7 @@ inline auto ZoomVectorAfterEffects::SetRandomRotationSettings() noexcept -> void
 
 inline auto ZoomVectorAfterEffects::SetRandomTanEffects() noexcept -> void
 {
-  if (not m_afterEffectsFlags.tanEffect)
+  if (not m_afterEffectsSettings.tanEffect)
   {
     return;
   }
@@ -203,8 +202,8 @@ inline auto ZoomVectorAfterEffects::GetHypercosNameValueParams() const noexcept 
 auto ZoomVectorAfterEffects::GetImageVelocityNameValueParams() const noexcept -> NameValuePairs
 {
   auto nameValuePairs = NameValuePairs{
-      GetPair(PARAM_GROUP, "imageVelocity", m_afterEffectsFlags.imageVelocityEffect)};
-  if (m_afterEffectsFlags.imageVelocityEffect)
+      GetPair(PARAM_GROUP, "imageVelocity", m_afterEffectsSettings.imageVelocityEffect)};
+  if (m_afterEffectsSettings.imageVelocityEffect)
   {
     MoveNameValuePairs(m_afterEffects.GetImageVelocity().GetNameValueParams(PARAM_GROUP),
                        nameValuePairs);
@@ -215,8 +214,8 @@ auto ZoomVectorAfterEffects::GetImageVelocityNameValueParams() const noexcept ->
 auto ZoomVectorAfterEffects::GetNoiseNameValueParams() const noexcept -> NameValuePairs
 {
   auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP, "noiseEffect", m_afterEffectsFlags.noiseEffect)};
-  if (m_afterEffectsFlags.noiseEffect)
+      NameValuePairs{GetPair(PARAM_GROUP, "noiseEffect", m_afterEffectsSettings.noiseEffect)};
+  if (m_afterEffectsSettings.noiseEffect)
   {
     MoveNameValuePairs(m_afterEffects.GetNoise().GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
@@ -226,8 +225,8 @@ auto ZoomVectorAfterEffects::GetNoiseNameValueParams() const noexcept -> NameVal
 auto ZoomVectorAfterEffects::GetPlaneNameValueParams() const noexcept -> NameValuePairs
 {
   auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP, "planeEffect", m_afterEffectsFlags.planeEffect)};
-  if (m_afterEffectsFlags.planeEffect)
+      NameValuePairs{GetPair(PARAM_GROUP, "planeEffect", m_afterEffectsSettings.planeEffect)};
+  if (m_afterEffectsSettings.planeEffect)
   {
     MoveNameValuePairs(m_afterEffects.GetPlanes().GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
@@ -237,8 +236,8 @@ auto ZoomVectorAfterEffects::GetPlaneNameValueParams() const noexcept -> NameVal
 auto ZoomVectorAfterEffects::GetRotationNameValueParams() const noexcept -> NameValuePairs
 {
   auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP, "rotation", m_afterEffectsFlags.rotationEffect)};
-  if (m_afterEffectsFlags.rotationEffect)
+      NameValuePairs{GetPair(PARAM_GROUP, "rotation", m_afterEffectsSettings.rotationEffect)};
+  if (m_afterEffectsSettings.rotationEffect)
   {
     MoveNameValuePairs(m_afterEffects.GetRotation().GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
@@ -248,8 +247,8 @@ auto ZoomVectorAfterEffects::GetRotationNameValueParams() const noexcept -> Name
 auto ZoomVectorAfterEffects::GetTanEffectNameValueParams() const noexcept -> NameValuePairs
 {
   auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP, "tanEffect", m_afterEffectsFlags.tanEffect)};
-  if (m_afterEffectsFlags.tanEffect)
+      NameValuePairs{GetPair(PARAM_GROUP, "tanEffect", m_afterEffectsSettings.tanEffect)};
+  if (m_afterEffectsSettings.tanEffect)
   {
     MoveNameValuePairs(m_afterEffects.GetTanEffect().GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }

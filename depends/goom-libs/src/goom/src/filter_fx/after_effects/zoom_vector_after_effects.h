@@ -1,7 +1,7 @@
 #pragma once
 
 #include "filter_fx/after_effects/after_effects.h"
-#include "filter_fx/filter_settings.h"
+#include "filter_fx/after_effects/after_effects_states.h"
 #include "filter_fx/normalized_coords.h"
 #include "point2d.h"
 #include "utils/name_value_pairs.h"
@@ -16,10 +16,8 @@ class ZoomVectorAfterEffects
 public:
   ZoomVectorAfterEffects(uint32_t screenWidth, AfterEffects&& afterEffects) noexcept;
 
-  auto SetAfterEffectsSettings(
-      const ZoomFilterEffectsSettings::AfterEffectsFlags& afterEffectsFlags,
-      RotationAdjustments rotationAdjustments,
-      const Point2dInt& zoomMidpoint) noexcept -> void;
+  auto SetAfterEffectsSettings(const AfterEffectsSettings& afterEffectsSettings,
+                               const Point2dInt& zoomMidpoint) noexcept -> void;
 
   [[nodiscard]] auto GetAfterEffectsVelocity(const NormalizedCoords& coords,
                                              float sqDistFromZero,
@@ -32,7 +30,7 @@ public:
 private:
   const uint32_t m_screenWidth;
   AfterEffects m_afterEffects;
-  ZoomFilterEffectsSettings::AfterEffectsFlags m_afterEffectsFlags{};
+  AfterEffectsSettings m_afterEffectsSettings{};
   RotationAdjustments m_rotationAdjustments{};
   Point2dInt m_zoomMidpoint{};
 

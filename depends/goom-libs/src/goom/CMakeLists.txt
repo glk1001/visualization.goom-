@@ -83,6 +83,7 @@ add_library(goom
         src/filter_fx/filter_buffers_service.cpp
         src/filter_fx/filter_colors_service.cpp
         src/filter_fx/filter_settings_service.cpp
+        src/filter_fx/filter_speed.h
         src/filter_fx/filter_zoom_vector.cpp
         src/filter_fx/normalized_coords.h
         src/filter_fx/speed_coefficients_effect.h

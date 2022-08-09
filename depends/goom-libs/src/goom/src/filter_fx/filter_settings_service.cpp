@@ -16,7 +16,9 @@ namespace GOOM::FILTER_FX
 
 using AFTER_EFFECTS::AfterEffectsProbabilities;
 using AFTER_EFFECTS::AfterEffectsStates;
+using AFTER_EFFECTS::HypercosOverlay;
 using AFTER_EFFECTS::RotationAdjustments;
+using UTILS::EnumMap;
 using UTILS::NUM;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
@@ -149,26 +151,26 @@ inline const auto WAVE_MODE1_MULTIPLIERS = std::map<ZoomFilterMode, float>{
     {ZoomFilterMode::WAVE_MODE1, 0.0F},
 };
 
-inline const auto FILTER_MODE_NAMES = std::map<ZoomFilterMode, std::string_view>{
-    {            ZoomFilterMode::AMULET_MODE,              "Amulet"},
-    {     ZoomFilterMode::CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0"},
-    {     ZoomFilterMode::CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1"},
-    {    ZoomFilterMode::DISTANCE_FIELD_MODE,      "Distance Field"},
-    {         ZoomFilterMode::HYPERCOS_MODE0,     "Hypercos Mode 0"},
-    {         ZoomFilterMode::HYPERCOS_MODE1,     "Hypercos Mode 1"},
-    {         ZoomFilterMode::HYPERCOS_MODE2,     "Hypercos Mode 2"},
-    {         ZoomFilterMode::HYPERCOS_MODE3,     "Hypercos Mode 3"},
-    {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,  "Image Displacement"},
-    {            ZoomFilterMode::NORMAL_MODE,              "Normal"},
-    {           ZoomFilterMode::SCRUNCH_MODE,             "Scrunch"},
-    {         ZoomFilterMode::SPEEDWAY_MODE0,     "Speedway Mode 0"},
-    {         ZoomFilterMode::SPEEDWAY_MODE1,     "Speedway Mode 1"},
-    {         ZoomFilterMode::SPEEDWAY_MODE2,     "Speedway Mode 2"},
-    {             ZoomFilterMode::WATER_MODE,               "Water"},
-    {             ZoomFilterMode::WAVE_MODE0,         "Wave Mode 0"},
-    {             ZoomFilterMode::WAVE_MODE1,         "Wave Mode 1"},
-    {            ZoomFilterMode::Y_ONLY_MODE,              "Y Only"},
-};
+static constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
+    {ZoomFilterMode::AMULET_MODE, "Amulet"},
+    {ZoomFilterMode::CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0"},
+    {ZoomFilterMode::CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1"},
+    {ZoomFilterMode::DISTANCE_FIELD_MODE, "Distance Field"},
+    {ZoomFilterMode::HYPERCOS_MODE0, "Hypercos Mode 0"},
+    {ZoomFilterMode::HYPERCOS_MODE1, "Hypercos Mode 1"},
+    {ZoomFilterMode::HYPERCOS_MODE2, "Hypercos Mode 2"},
+    {ZoomFilterMode::HYPERCOS_MODE3, "Hypercos Mode 3"},
+    {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, "Image Displacement"},
+    {ZoomFilterMode::NORMAL_MODE, "Normal"},
+    {ZoomFilterMode::SCRUNCH_MODE, "Scrunch"},
+    {ZoomFilterMode::SPEEDWAY_MODE0, "Speedway Mode 0"},
+    {ZoomFilterMode::SPEEDWAY_MODE1, "Speedway Mode 1"},
+    {ZoomFilterMode::SPEEDWAY_MODE2, "Speedway Mode 2"},
+    {ZoomFilterMode::WATER_MODE, "Water"},
+    {ZoomFilterMode::WAVE_MODE0, "Wave Mode 0"},
+    {ZoomFilterMode::WAVE_MODE1, "Wave Mode 1"},
+    {ZoomFilterMode::Y_ONLY_MODE, "Y Only"},
+}}};
 
 static constexpr auto AMULET_PROB_ROTATE             = PROB_HIGH;
 static constexpr auto CRYSTAL_BALL0_PROB_ROTATE      = PROB_HIGH;
@@ -199,177 +201,200 @@ static constexpr auto WAVE0_PROB_PLANE_EFFECT = 1.0F;
 static constexpr auto WAVE1_PROB_PLANE_EFFECT = 1.0F;
 
 // clang-format off
-inline const auto EFFECTS_PROBABILITIES = std::map<ZoomFilterMode, AfterEffectsProbabilities>{
-  { ZoomFilterMode::AMULET_MODE, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      AMULET_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::CRYSTAL_BALL_MODE0, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      CRYSTAL_BALL0_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::CRYSTAL_BALL_MODE1, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      CRYSTAL_BALL1_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::DISTANCE_FIELD_MODE, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      DISTANCE_FIELD_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::HYPERCOS_MODE0, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      HYPERCOS0_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::HYPERCOS_MODE1, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      HYPERCOS1_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::HYPERCOS_MODE2, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      HYPERCOS2_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::HYPERCOS_MODE3, {
-    DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-    DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-    DEFAULT_PROB_NOISE_EFFECT,
-    DEFAULT_PROB_PLANE_EFFECT,
-    HYPERCOS3_PROB_ROTATE,
-    DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      IMAGE_DISPLACEMENT_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::NORMAL_MODE, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      NORMAL_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::SCRUNCH_MODE, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      SCRUNCH_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::SPEEDWAY_MODE0, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      SPEEDWAY0_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::SPEEDWAY_MODE1, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      SPEEDWAY1_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::SPEEDWAY_MODE2, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      SPEEDWAY2_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::WATER_MODE, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      WATER_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::WAVE_MODE0, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      WAVE0_PROB_PLANE_EFFECT,
-      WAVE0_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::WAVE_MODE1, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      WAVE1_PROB_PLANE_EFFECT,
-      WAVE1_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-  { ZoomFilterMode::Y_ONLY_MODE, {
-      DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-      DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-      DEFAULT_PROB_NOISE_EFFECT,
-      DEFAULT_PROB_PLANE_EFFECT,
-      Y_ONLY_PROB_ROTATE,
-      DEFAULT_PROB_TAN_EFFECT
-    }
-  },
-};
+static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
+                                                      AfterEffectsProbabilities::Probabilities>{{{
+    { ZoomFilterMode::AMULET_MODE,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            AMULET_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::CRYSTAL_BALL_MODE0,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            CRYSTAL_BALL0_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::CRYSTAL_BALL_MODE1,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            CRYSTAL_BALL1_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::DISTANCE_FIELD_MODE,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            DISTANCE_FIELD_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::HYPERCOS_MODE0,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            HYPERCOS0_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::HYPERCOS_MODE1,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            HYPERCOS1_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::HYPERCOS_MODE2,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            HYPERCOS2_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::HYPERCOS_MODE3,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            HYPERCOS3_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            IMAGE_DISPLACEMENT_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::NORMAL_MODE,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            NORMAL_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::SCRUNCH_MODE,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            SCRUNCH_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::SPEEDWAY_MODE0,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            SPEEDWAY0_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::SPEEDWAY_MODE1,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            SPEEDWAY1_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::SPEEDWAY_MODE2,
+        {
+          DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+          DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+          DEFAULT_PROB_NOISE_EFFECT,
+          DEFAULT_PROB_PLANE_EFFECT,
+          SPEEDWAY2_PROB_ROTATE,
+          DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::WATER_MODE,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            WATER_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::WAVE_MODE0,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            WAVE0_PROB_PLANE_EFFECT,
+            WAVE0_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::WAVE_MODE1,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            WAVE1_PROB_PLANE_EFFECT,
+            WAVE1_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::Y_ONLY_MODE,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            Y_ONLY_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+}}};
 // clang-format on
 
 using Hyp         = HypercosOverlay;
 using ModeWeights = std::vector<std::pair<HypercosOverlay, float>>;
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winline"
+#endif
 // clang-format off
-inline const auto HYPERCOS_WEIGHTS = std::map<ZoomFilterMode, ModeWeights>{
+inline const auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
   { ZoomFilterMode::AMULET_MODE,
     {{ {Hyp::NONE, 20.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
   },
@@ -424,8 +449,11 @@ inline const auto HYPERCOS_WEIGHTS = std::map<ZoomFilterMode, ModeWeights>{
   { ZoomFilterMode::Y_ONLY_MODE,
     {{ {Hyp::NONE, 10.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
   },
-};
+}}};
 // clang-format on
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 auto FilterSettingsService::GetFilterModeData(
     const IGoomRand& goomRand,
@@ -445,10 +473,10 @@ auto FilterSettingsService::GetFilterModeData(
     filterModeVec.emplace_back(
         filterMode,
         ZoomFilterModeInfo{
-            FILTER_MODE_NAMES.at(filterMode),
+            FILTER_MODE_NAMES[filterMode],
             createSpeedCoefficientsEffect(filterMode, goomRand, resourcesDirectory),
-            EFFECTS_PROBABILITIES.at(filterMode),
-            Weights<Hyp>{goomRand, HYPERCOS_WEIGHTS.at(filterMode)},
+            {Weights<Hyp>{goomRand, HYPERCOS_WEIGHTS[filterMode]},
+                                                        EFFECTS_PROBABILITIES[filterMode]},
     });
   }
 
@@ -465,23 +493,28 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
     m_screenMidpoint{U_HALF * m_goomInfo.GetScreenWidth(),
                      U_HALF * m_goomInfo.GetScreenHeight()},
     m_resourcesDirectory{resourcesDirectory},
-    m_randomizedExtraEffects{std::make_unique<AfterEffectsStates>(m_goomRand)},
+    m_randomizedAfterEffects{std::make_unique<AfterEffectsStates>(m_goomRand)},
     m_filterModeData{GetFilterModeData(m_goomRand,
                                        m_resourcesDirectory,
                                        createSpeedCoefficientsEffect)},
-    m_filterSettings{{Vitesse{},
-         DEFAULT_MAX_SPEED_COEFF,
-         nullptr,
-         RotationAdjustments{},
-         {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
-         {
-           HypercosOverlay::NONE,
-           false,
-           false,
-           false,
-           false,
-           false}
-          },
+    m_filterSettings{
+        false,
+        {
+           Vitesse{},
+           DEFAULT_MAX_SPEED_COEFF,
+           nullptr,
+           {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
+           {
+               false,
+               HypercosOverlay::NONE,
+               false,
+               false,
+               false,
+               false,
+               false,
+               RotationAdjustments{},
+            }
+        },
         {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
     },
     m_weightedFilterEvents{
@@ -559,15 +592,15 @@ inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
 
 auto FilterSettingsService::NewCycle() -> void
 {
-  m_randomizedExtraEffects->UpdateTimers();
+  m_randomizedAfterEffects->UpdateTimers();
 }
 
 auto FilterSettingsService::NotifyUpdatedFilterEffectsSettings() -> void
 {
-  m_filterEffectsSettingsHaveChanged = false;
+  m_filterSettings.filterEffectsSettingsHaveChanged = false;
 
   m_filterModeAtLastUpdate = m_filterMode;
-  m_randomizedExtraEffects->CheckForPendingOffTimers();
+  m_randomizedAfterEffects->CheckForPendingOffTimers();
 }
 
 auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
@@ -584,7 +617,7 @@ auto FilterSettingsService::SetDefaultSettings() -> void
   m_filterSettings.filterEffectsSettings.zoomMidpoint            = m_screenMidpoint;
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
-  m_randomizedExtraEffects->SetDefaults();
+  m_randomizedAfterEffects->SetDefaults();
 }
 
 inline auto FilterSettingsService::SetFilterModeExtraEffects() -> void
@@ -596,19 +629,18 @@ inline auto FilterSettingsService::SetFilterModeExtraEffects() -> void
 auto FilterSettingsService::ResetRandomExtraEffects() -> void
 {
   const auto& modeInfo = m_filterModeData[m_filterMode];
-  m_randomizedExtraEffects->ResetStandardStates(modeInfo.extraEffectsProbabilities);
-  m_filterEffectsSettingsHaveChanged = true;
+  m_randomizedAfterEffects->ResetStandardStates(modeInfo.afterEffectsProbabilities);
+  m_filterSettings.filterEffectsSettingsHaveChanged = true;
 }
 
 inline auto FilterSettingsService::SetRandomizedExtraEffects() -> void
 {
   const auto& modeInfo = m_filterModeData[m_filterMode];
 
-  m_randomizedExtraEffects->ResetAllStates(modeInfo.hypercosWeights.GetRandomWeighted(),
-                                           modeInfo.extraEffectsProbabilities);
+  m_randomizedAfterEffects->ResetAllStates(modeInfo.afterEffectsProbabilities);
 
-  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetMultiplyFactor(
-      modeInfo.extraEffectsProbabilities.rotateProbability,
+  m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationAdjustments.SetMultiplyFactor(
+      modeInfo.afterEffectsProbabilities.probabilities.rotateProbability,
       RotationAdjustments::AdjustmentType::AFTER_RANDOM);
 }
 
@@ -619,7 +651,7 @@ auto FilterSettingsService::SetWaveModeExtraEffects() -> void
     return;
   }
 
-  m_randomizedExtraEffects->TurnPlaneEffectOn();
+  m_randomizedAfterEffects->TurnPlaneEffectOn();
 
   auto& filterEffectsSettings = m_filterSettings.filterEffectsSettings;
   filterEffectsSettings.vitesse.SetReverseVitesse(m_goomRand.ProbabilityOf(PROB_REVERSE_SPEED));
@@ -632,8 +664,9 @@ auto FilterSettingsService::SetWaveModeExtraEffects() -> void
 
 inline auto FilterSettingsService::UpdateFilterSettingsFromExtraEffects() -> void
 {
-  m_filterEffectsSettingsHaveChanged = true;
-  m_randomizedExtraEffects->UpdateFilterSettingsFromStates(m_filterSettings);
+  m_filterSettings.filterEffectsSettingsHaveChanged = true;
+  m_randomizedAfterEffects->UpdateFilterSettingsFromStates(
+      m_filterSettings.filterEffectsSettings.afterEffectsSettings);
 }
 
 auto FilterSettingsService::SetMaxSpeedCoeff() -> void
@@ -733,7 +766,7 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
           U_THREE_QUARTERS * m_goomInfo.GetScreenHeight()};
       break;
     default:
-      throw std::logic_error("Unknown ZoomMidpointEvents enum.");
+      FailFast();
   }
 }
 

@@ -80,7 +80,7 @@ inline auto FilterBuffersService::UpdateZoomVectorFilterEffectsSettings() noexce
 {
   m_zoomVector->SetFilterSettings(m_currentFilterEffectsSettings);
 
-  m_currentFilterEffectsSettings.rotationAdjustments.Reset();
+  m_currentFilterEffectsSettings.afterEffectsSettings.rotationAdjustments.Reset();
 }
 
 auto FilterBuffersService::UpdateTranBuffers() noexcept -> void

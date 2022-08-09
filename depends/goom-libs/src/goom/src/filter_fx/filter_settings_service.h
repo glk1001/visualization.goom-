@@ -67,7 +67,6 @@ public:
   auto NewCycle() -> void;
 
   auto NotifyUpdatedFilterEffectsSettings() -> void;
-  [[nodiscard]] auto HaveEffectsSettingsChangedSinceLastUpdate() const -> bool;
   [[nodiscard]] auto HasFilterModeChangedSinceLastUpdate() const -> bool;
 
   [[nodiscard]] auto GetCurrentFilterMode() const -> ZoomFilterMode;
@@ -79,18 +78,17 @@ public:
   [[nodiscard]] auto GetROVitesse() const -> const Vitesse&;
   [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
 
+  auto SetNewRandomFilter() -> void;
+
   auto ChangeMilieu() -> void;
   auto ResetRandomExtraEffects() -> void;
   auto TurnOffRotation() -> void;
   auto MultiplyRotation(float factor) -> void;
   auto ToggleRotationDirection() -> void;
 
-  auto SetNewRandomFilter() -> void;
-
   auto SetTranLerpIncrement(int32_t value) -> void;
   auto SetDefaultTranLerpIncrement() -> void;
   auto MultiplyTranLerpIncrement(int32_t factor) -> void;
-
   auto SetTranLerpToMaxSwitchMult(float value) -> void;
   auto SetTranLerpToMaxDefaultSwitchMult() -> void;
 
@@ -107,25 +105,23 @@ protected:
   virtual auto UpdateFilterSettingsFromExtraEffects() -> void;
 
 private:
-  ZoomFilterMode m_filterMode             = ZoomFilterMode::NORMAL_MODE;
-  ZoomFilterMode m_previousFilterMode     = ZoomFilterMode::NORMAL_MODE;
-  ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
-
-  auto SetRandomSettingsForNewFilterMode() -> void;
-
   const PluginInfo& m_goomInfo;
   const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
   const std::string m_resourcesDirectory;
   std::experimental::propagate_const<std::unique_ptr<AFTER_EFFECTS::AfterEffectsStates>>
-      m_randomizedExtraEffects;
+      m_randomizedAfterEffects;
+
+  ZoomFilterMode m_filterMode             = ZoomFilterMode::NORMAL_MODE;
+  ZoomFilterMode m_previousFilterMode     = ZoomFilterMode::NORMAL_MODE;
+  ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
+  auto SetRandomSettingsForNewFilterMode() -> void;
 
   struct ZoomFilterModeInfo
   {
     std::string_view name;
     std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
-    AFTER_EFFECTS::AfterEffectsProbabilities extraEffectsProbabilities;
-    GOOM::UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
+    AFTER_EFFECTS::AfterEffectsProbabilities afterEffectsProbabilities;
   };
   using FilterModeEnumMap = GOOM::UTILS::RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
   FilterModeEnumMap m_filterModeData;
@@ -142,11 +138,9 @@ private:
   static constexpr float MAX_MAX_SPEED_COEFF       = 4.01F;
   ZoomFilterSettings m_filterSettings;
   const GOOM::UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
-
-  bool m_filterEffectsSettingsHaveChanged = false;
-
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
+  auto SetMaxSpeedCoeff() -> void;
 
   enum class ZoomMidpointEvents
   {
@@ -163,7 +157,6 @@ private:
   auto SetAnyRandomZoomMidpoint(bool allowEdgePoints) -> void;
   [[nodiscard]] auto GetWeightRandomMidPoint(bool allowEdgePoints) const -> ZoomMidpointEvents;
   [[nodiscard]] static auto IsEdgeMidPoint(ZoomMidpointEvents midPointEvent) -> bool;
-  auto SetMaxSpeedCoeff() -> void;
 };
 
 inline auto FilterSettingsService::GetFilterSettings() const -> const ZoomFilterSettings&
@@ -206,11 +199,6 @@ inline auto FilterSettingsService::GetGoomRand() const -> const GOOM::UTILS::MAT
   return m_goomRand;
 }
 
-inline auto FilterSettingsService::HaveEffectsSettingsChangedSinceLastUpdate() const -> bool
-{
-  return m_filterEffectsSettingsHaveChanged;
-}
-
 inline auto FilterSettingsService::HasFilterModeChangedSinceLastUpdate() const -> bool
 {
   return m_filterModeAtLastUpdate != m_filterMode;
@@ -223,20 +211,20 @@ inline auto FilterSettingsService::GetROVitesse() const -> const Vitesse&
 
 inline auto FilterSettingsService::GetRWVitesse() -> Vitesse&
 {
-  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettingsHaveChanged = true;
   return m_filterSettings.filterEffectsSettings.vitesse;
 }
 
 inline auto FilterSettingsService::ChangeMilieu() -> void
 {
-  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettingsHaveChanged = true;
   SetMaxSpeedCoeff();
   SetRandomZoomMidpoint();
 }
 
 inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode) -> void
 {
-  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettingsHaveChanged = true;
 
   m_previousFilterMode = m_filterMode;
   m_filterMode         = filterMode;
@@ -246,7 +234,7 @@ inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode
 
 inline auto FilterSettingsService::SetNewRandomFilter() -> void
 {
-  m_filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettingsHaveChanged = true;
 
   m_previousFilterMode = m_filterMode;
   m_filterMode         = GetNewRandomMode();
@@ -256,34 +244,34 @@ inline auto FilterSettingsService::SetNewRandomFilter() -> void
 
 inline auto FilterSettingsService::TurnOffRotation() -> void
 {
-  if (!m_filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect)
+  if (!m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationEffect)
   {
     return;
   }
-  m_filterEffectsSettingsHaveChanged                    = true;
-  m_filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect = false;
+  m_filterSettings.filterEffectsSettingsHaveChanged                          = true;
+  m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationEffect = false;
 }
 
 inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
 {
-  if (!m_filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect)
+  if (!m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationEffect)
   {
     return;
   }
-  m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotationAdjustments.SetMultiplyFactor(
+  m_filterSettings.filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationAdjustments.SetMultiplyFactor(
       factor, AFTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
 inline auto FilterSettingsService::ToggleRotationDirection() -> void
 {
-  if (!m_filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect)
+  if (!m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationEffect)
   {
     return;
   }
 
-  m_filterEffectsSettingsHaveChanged = true;
-  m_filterSettings.filterEffectsSettings.rotationAdjustments.Toggle(
+  m_filterSettings.filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationAdjustments.Toggle(
       AFTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 

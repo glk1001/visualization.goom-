@@ -35,4 +35,4 @@ auto GetStandardAfterEffects(const IGoomRand& goomRand, const std::string& resou
   };
 }
 
-} // GOOM::FILTER_FX::AFTER_EFFECTS
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS

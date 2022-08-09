@@ -26,7 +26,6 @@ class FilterBuffersService;
 class FilterColorsService;
 struct ZoomFilterBufferSettings;
 struct ZoomFilterEffectsSettings;
-struct ZoomFilterColorSettings;
 
 class ZoomFilterFx
 {
@@ -49,8 +48,7 @@ public:
       -> void;
   auto UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings) noexcept
       -> void;
-  auto UpdateFilterColorSettings(const ZoomFilterColorSettings& filterColorSettings) noexcept
-      -> void;
+  auto UpdateFilterColorSettings(bool blockyWavy) noexcept -> void;
 
   auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
   auto SetZoomFilterBrightness(float brightness) noexcept -> void;

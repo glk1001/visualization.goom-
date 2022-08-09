@@ -1,7 +1,6 @@
 #include "after_effects_states.h"
 
 #include "filter_fx/filter_consts.h"
-#include "filter_fx/filter_settings.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/timer.h"
 
@@ -69,18 +68,16 @@ AfterEffectsStates::AfterEffectsStates(const IGoomRand& goomRand) noexcept
 
 AfterEffectsStates::~AfterEffectsStates() noexcept = default;
 
-auto AfterEffectsStates::UpdateFilterSettingsFromStates(ZoomFilterSettings& filterSettings) const
-    -> void
+auto AfterEffectsStates::UpdateFilterSettingsFromStates(
+    AfterEffectsSettings& afterEffectsSettings) const -> void
 {
-  filterSettings.filterColorSettings.blockyWavy = m_blockyWavyEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.afterEffectsFlags.hypercosOverlay = m_hypercosOverlayEffect;
-  filterSettings.filterEffectsSettings.afterEffectsFlags.imageVelocityEffect =
-      m_imageVelocityEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.afterEffectsFlags.noiseEffect = m_noiseEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.afterEffectsFlags.planeEffect = m_planeEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.afterEffectsFlags.rotationEffect =
-      m_rotationEffect->IsTurnedOn();
-  filterSettings.filterEffectsSettings.afterEffectsFlags.tanEffect = m_tanEffect->IsTurnedOn();
+  afterEffectsSettings.blockyWavy          = m_blockyWavyEffect->IsTurnedOn();
+  afterEffectsSettings.hypercosOverlay     = m_hypercosOverlayEffect;
+  afterEffectsSettings.imageVelocityEffect = m_imageVelocityEffect->IsTurnedOn();
+  afterEffectsSettings.noiseEffect         = m_noiseEffect->IsTurnedOn();
+  afterEffectsSettings.planeEffect         = m_planeEffect->IsTurnedOn();
+  afterEffectsSettings.rotationEffect      = m_rotationEffect->IsTurnedOn();
+  afterEffectsSettings.tanEffect           = m_tanEffect->IsTurnedOn();
 }
 
 auto AfterEffectsStates::TurnPlaneEffectOn() -> void
@@ -113,8 +110,7 @@ auto AfterEffectsStates::UpdateTimers() -> void
   m_tanEffect->UpdateTimer();
 }
 
-auto AfterEffectsStates::ResetAllStates(const HypercosOverlay value,
-                                        const AfterEffectsProbabilities& effectsProbabilities)
+auto AfterEffectsStates::ResetAllStates(const AfterEffectsProbabilities& effectsProbabilities)
     -> void
 {
   if constexpr (AFTER_EFFECTS_TURNED_OFF)
@@ -122,7 +118,7 @@ auto AfterEffectsStates::ResetAllStates(const HypercosOverlay value,
     return;
   }
 
-  m_hypercosOverlayEffect = value;
+  m_hypercosOverlayEffect = effectsProbabilities.hypercosWeights.GetRandomWeighted();
 
   ResetStandardStates(effectsProbabilities);
 }
@@ -135,12 +131,12 @@ auto AfterEffectsStates::ResetStandardStates(const AfterEffectsProbabilities& ef
     return;
   }
 
-  m_blockyWavyEffect->UpdateState(effectsProbabilities.blockWavyProbability);
-  m_imageVelocityEffect->UpdateState(effectsProbabilities.imageVelocityProbability);
-  m_noiseEffect->UpdateState(effectsProbabilities.noiseProbability);
-  m_planeEffect->UpdateState(effectsProbabilities.planeProbability);
-  m_rotationEffect->UpdateState(effectsProbabilities.rotateProbability);
-  m_tanEffect->UpdateState(effectsProbabilities.tanEffectProbability);
+  m_blockyWavyEffect->UpdateState(effectsProbabilities.probabilities.blockWavyProbability);
+  m_imageVelocityEffect->UpdateState(effectsProbabilities.probabilities.imageVelocityProbability);
+  m_noiseEffect->UpdateState(effectsProbabilities.probabilities.noiseProbability);
+  m_planeEffect->UpdateState(effectsProbabilities.probabilities.planeProbability);
+  m_rotationEffect->UpdateState(effectsProbabilities.probabilities.rotateProbability);
+  m_tanEffect->UpdateState(effectsProbabilities.probabilities.tanEffectProbability);
 }
 
 auto AfterEffectsStates::CheckForPendingOffTimers() -> void
