@@ -16,7 +16,7 @@ static constexpr auto DEFAULT_T_FREQ      = 1.0F;
 static constexpr auto T_FREQ_RANGE        = IGoomRand::NumberRange<float>{1.0F, 50.0F};
 
 static constexpr auto PROB_AMPLITUDE_EQUAL = 0.5F;
-static constexpr auto PROB_FLIP_Y          = 0.5F;
+static constexpr auto PROB_FLIP_Y          = 0.0F;
 
 Speedway::Speedway(const Modes mode, const IGoomRand& goomRand) noexcept
   : m_mode{mode},

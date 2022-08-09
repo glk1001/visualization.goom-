@@ -13,28 +13,39 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
 
 static constexpr auto DEFAULT_AMPLITUDE       = 0.1F;
-static constexpr auto X_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 1.11F};
-static constexpr auto Y_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 1.11F};
+static constexpr auto X_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.501F};
+static constexpr auto Y_AMPLITUDE_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.501F};
+static constexpr auto X_AMPLITUDE_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.20F, 1.01F};
+static constexpr auto Y_AMPLITUDE_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.20F, 1.01F};
+static constexpr auto X_AMPLITUDE_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.50F, 1.51F};
+static constexpr auto Y_AMPLITUDE_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.50F, 1.51F};
 
 static constexpr auto DEFAULT_SQ_DIST_MULT       = 0.025F;
 static constexpr auto X_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.051F};
 static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.051F};
+static constexpr auto X_SQ_DIST_MULT_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.02F, 0.051F};
+static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.02F, 0.051F};
+static constexpr auto X_SQ_DIST_MULT_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.02F, 0.051F};
+static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.02F, 0.051F};
 
 static constexpr auto DEFAULT_SQ_DIST_OFFSET       = 0.05F;
-static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 1.11F};
-static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 1.11F};
+static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.11F};
+static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.11F};
+static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.10F, 0.75F};
+static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.10F, 0.75F};
+static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.30F, 1.51F};
+static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.30F, 1.51F};
 
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 0.50F;
 static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL   = 0.50F;
 static constexpr auto PROB_XY_SQ_DIST_OFFSET_EQUAL = 0.50F;
 
-static constexpr auto PROB_MODE0                  = 0.7F;
 static constexpr auto PROB_RANDOM_DISTANCE_POINTS = 0.3F;
 
-DistanceField::DistanceField(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
-    m_params{false,
-             DEFAULT_AMPLITUDE,
+DistanceField::DistanceField(Modes mode, const IGoomRand& goomRand) noexcept
+  : m_mode{mode},
+    m_goomRand{goomRand},
+    m_params{DEFAULT_AMPLITUDE,
              DEFAULT_AMPLITUDE,
              DEFAULT_SQ_DIST_MULT,
              DEFAULT_SQ_DIST_MULT,
@@ -44,25 +55,89 @@ DistanceField::DistanceField(const IGoomRand& goomRand) noexcept
 {
 }
 
-auto DistanceField::SetRandomParams() -> void
+auto DistanceField::SetRandomParams() noexcept -> void
 {
-  const auto mode0 = m_goomRand.ProbabilityOf(PROB_MODE0);
+  if (m_mode == Modes::MODE0)
+  {
+    SetMode0RandomParams();
+  }
+  else if (m_mode == Modes::MODE1)
+  {
+    SetMode1RandomParams();
+  }
+  else
+  {
+    SetMode2RandomParams();
+  }
+}
 
-  const auto xAmplitude = m_goomRand.GetRandInRange(X_AMPLITUDE_RANGE_MODE0);
+auto DistanceField::SetMode0RandomParams() noexcept -> void
+{
+  SetRandomParams(X_AMPLITUDE_RANGE_MODE0,
+                  Y_AMPLITUDE_RANGE_MODE0,
+                  X_SQ_DIST_MULT_RANGE_MODE0,
+                  Y_SQ_DIST_MULT_RANGE_MODE0,
+                  X_SQ_DIST_OFFSET_RANGE_MODE0,
+                  Y_SQ_DIST_OFFSET_RANGE_MODE0,
+                  GetDistancePoints());
+}
+
+auto DistanceField::SetMode1RandomParams() noexcept -> void
+{
+  SetRandomParams(X_AMPLITUDE_RANGE_MODE1,
+                  Y_AMPLITUDE_RANGE_MODE1,
+                  X_SQ_DIST_MULT_RANGE_MODE1,
+                  Y_SQ_DIST_MULT_RANGE_MODE1,
+                  X_SQ_DIST_OFFSET_RANGE_MODE1,
+                  Y_SQ_DIST_OFFSET_RANGE_MODE1,
+                  GetDistancePoints());
+}
+
+auto DistanceField::SetMode2RandomParams() noexcept -> void
+{
+  SetRandomParams(X_AMPLITUDE_RANGE_MODE2,
+                  Y_AMPLITUDE_RANGE_MODE2,
+                  X_SQ_DIST_MULT_RANGE_MODE2,
+                  Y_SQ_DIST_MULT_RANGE_MODE2,
+                  X_SQ_DIST_OFFSET_RANGE_MODE2,
+                  Y_SQ_DIST_OFFSET_RANGE_MODE2,
+                  GetDistancePoints());
+}
+
+auto DistanceField::SetRandomParams(const IGoomRand::NumberRange<float>& xAmplitudeRange,
+                                    const IGoomRand::NumberRange<float>& yAmplitudeRange,
+                                    const IGoomRand::NumberRange<float>& xSqDistMultRange,
+                                    const IGoomRand::NumberRange<float>& ySqDistMultRange,
+                                    const IGoomRand::NumberRange<float>& xSqDistOffsetRange,
+                                    const IGoomRand::NumberRange<float>& ySqDistOffsetRange,
+                                    std::vector<NormalizedCoords>&& distancePoints) noexcept -> void
+{
+  const auto xAmplitude = m_goomRand.GetRandInRange(xAmplitudeRange);
   const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
                               ? xAmplitude
-                              : m_goomRand.GetRandInRange(Y_AMPLITUDE_RANGE_MODE0);
+                              : m_goomRand.GetRandInRange(yAmplitudeRange);
 
-  const auto xSqDistMult = m_goomRand.GetRandInRange(X_SQ_DIST_MULT_RANGE_MODE0);
+  const auto xSqDistMult = m_goomRand.GetRandInRange(xSqDistMultRange);
   const auto ySqDistMult = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_MULT_EQUAL)
                                ? xSqDistMult
-                               : m_goomRand.GetRandInRange(Y_SQ_DIST_MULT_RANGE_MODE0);
+                               : m_goomRand.GetRandInRange(ySqDistMultRange);
 
-  const auto xSqDistOffset = m_goomRand.GetRandInRange(X_SQ_DIST_OFFSET_RANGE_MODE0);
+  const auto xSqDistOffset = m_goomRand.GetRandInRange(xSqDistOffsetRange);
   const auto ySqDistOffset = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_OFFSET_EQUAL)
                                  ? xSqDistOffset
-                                 : m_goomRand.GetRandInRange(Y_SQ_DIST_OFFSET_RANGE_MODE0);
+                                 : m_goomRand.GetRandInRange(ySqDistOffsetRange);
 
+  SetParams({xAmplitude,
+             yAmplitude,
+             xSqDistMult,
+             ySqDistMult,
+             xSqDistOffset,
+             ySqDistOffset,
+             distancePoints});
+}
+
+auto DistanceField::GetDistancePoints() const noexcept -> std::vector<NormalizedCoords>
+{
   auto distancePoints = std::vector<NormalizedCoords>{};
 
   static constexpr auto NUM_DISTANCE_POINTS = 4U;
@@ -88,17 +163,10 @@ auto DistanceField::SetRandomParams() -> void
     }
   }
 
-  SetParams({mode0,
-             xAmplitude,
-             yAmplitude,
-             xSqDistMult,
-             ySqDistMult,
-             xSqDistOffset,
-             ySqDistOffset,
-             distancePoints});
+  return distancePoints;
 }
 
-auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) const
+auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) const noexcept
     -> RelativeDistancePoint
 {
   static constexpr auto MAX_DISTANCE_SQ =
@@ -120,7 +188,7 @@ auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) cons
   return {minDistanceSq, *closestPoint};
 }
 
-auto DistanceField::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto DistanceField::GetSpeedCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return {};
 }

@@ -32,8 +32,12 @@ auto CreateSpeedCoefficientsEffect(const ZoomFilterMode filterMode,
       return std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0, goomRand);
     case ZoomFilterMode::CRYSTAL_BALL_MODE1:
       return std::make_shared<CrystalBall>(CrystalBall::Modes::MODE1, goomRand);
-    case ZoomFilterMode::DISTANCE_FIELD_MODE:
-      return std::make_shared<DistanceField>(goomRand);
+    case ZoomFilterMode::DISTANCE_FIELD_MODE0:
+      return std::make_shared<DistanceField>(DistanceField::Modes::MODE0, goomRand);
+    case ZoomFilterMode::DISTANCE_FIELD_MODE1:
+      return std::make_shared<DistanceField>(DistanceField::Modes::MODE1, goomRand);
+    case ZoomFilterMode::DISTANCE_FIELD_MODE2:
+      return std::make_shared<DistanceField>(DistanceField::Modes::MODE2, goomRand);
     case ZoomFilterMode::HYPERCOS_MODE0:
     case ZoomFilterMode::HYPERCOS_MODE1:
     case ZoomFilterMode::HYPERCOS_MODE2:

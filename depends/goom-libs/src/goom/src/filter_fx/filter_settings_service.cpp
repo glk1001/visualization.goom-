@@ -35,7 +35,9 @@ static constexpr auto USE_FORCED_FILTER_MODE = ALL_FILTER_EFFECTS_TURNED_OFF;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
 //static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::CRYSTAL_BALL_MODE1;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE1;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE2;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE0;
 //static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE1;
 //static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE2;
@@ -66,7 +68,9 @@ static constexpr auto PROB_REVERSE_SPEED          = 0.5F;
 static constexpr auto AMULET_MODE_WEIGHT             = 10.0F;
 static constexpr auto CRYSTAL_BALL_MODE0_WEIGHT      = 04.0F;
 static constexpr auto CRYSTAL_BALL_MODE1_WEIGHT      = 02.0F;
-static constexpr auto DISTANCE_FIELD_MODE_WEIGHT     = 08.0F;
+static constexpr auto DISTANCE_FIELD_MODE0_WEIGHT    = 03.0F;
+static constexpr auto DISTANCE_FIELD_MODE1_WEIGHT    = 03.0F;
+static constexpr auto DISTANCE_FIELD_MODE2_WEIGHT    = 03.0F;
 static constexpr auto HYPERCOS_MODE0_WEIGHT          = 08.0F;
 static constexpr auto HYPERCOS_MODE1_WEIGHT          = 04.0F;
 static constexpr auto HYPERCOS_MODE2_WEIGHT          = 02.0F;
@@ -101,7 +105,9 @@ inline const auto CRYSTAL_BALL_MODE1_MULTIPLIERS = std::map<ZoomFilterMode, floa
 };
 inline const auto NORMAL_MODE_MULTIPLIERS = std::map<ZoomFilterMode, float>{
     {        ZoomFilterMode::NORMAL_MODE, 1.0F},
-    {ZoomFilterMode::DISTANCE_FIELD_MODE, 2.0F},
+    {ZoomFilterMode::DISTANCE_FIELD_MODE0, 2.0F},
+    {ZoomFilterMode::DISTANCE_FIELD_MODE0, 2.0F},
+    {ZoomFilterMode::DISTANCE_FIELD_MODE0, 2.0F},
 };
 inline const auto HYPERCOS_MODE0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
     {ZoomFilterMode::HYPERCOS_MODE0, 0.0F},
@@ -155,7 +161,9 @@ static constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_vi
     {ZoomFilterMode::AMULET_MODE, "Amulet"},
     {ZoomFilterMode::CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0"},
     {ZoomFilterMode::CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1"},
-    {ZoomFilterMode::DISTANCE_FIELD_MODE, "Distance Field"},
+    {ZoomFilterMode::DISTANCE_FIELD_MODE0, "Distance Field Mode 0"},
+    {ZoomFilterMode::DISTANCE_FIELD_MODE1, "Distance Field Mode 1"},
+    {ZoomFilterMode::DISTANCE_FIELD_MODE2, "Distance Field Mode 2"},
     {ZoomFilterMode::HYPERCOS_MODE0, "Hypercos Mode 0"},
     {ZoomFilterMode::HYPERCOS_MODE1, "Hypercos Mode 1"},
     {ZoomFilterMode::HYPERCOS_MODE2, "Hypercos Mode 2"},
@@ -175,7 +183,9 @@ static constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_vi
 static constexpr auto AMULET_PROB_ROTATE             = PROB_HIGH;
 static constexpr auto CRYSTAL_BALL0_PROB_ROTATE      = PROB_HIGH;
 static constexpr auto CRYSTAL_BALL1_PROB_ROTATE      = PROB_HIGH;
-static constexpr auto DISTANCE_FIELD_PROB_ROTATE     = PROB_HIGH;
+static constexpr auto DISTANCE_FIELD0_PROB_ROTATE    = PROB_HIGH;
+static constexpr auto DISTANCE_FIELD1_PROB_ROTATE    = PROB_HIGH;
+static constexpr auto DISTANCE_FIELD2_PROB_ROTATE    = PROB_HIGH;
 static constexpr auto HYPERCOS0_PROB_ROTATE          = PROB_LOW;
 static constexpr auto HYPERCOS1_PROB_ROTATE          = PROB_LOW;
 static constexpr auto HYPERCOS2_PROB_ROTATE          = PROB_LOW;
@@ -233,13 +243,33 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_TAN_EFFECT
         }
     },
-    { ZoomFilterMode::DISTANCE_FIELD_MODE,
+    { ZoomFilterMode::DISTANCE_FIELD_MODE0,
         {
             DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
             DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
-            DISTANCE_FIELD_PROB_ROTATE,
+            DISTANCE_FIELD0_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::DISTANCE_FIELD_MODE1,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            DISTANCE_FIELD1_PROB_ROTATE,
+            DEFAULT_PROB_TAN_EFFECT
+        }
+    },
+    { ZoomFilterMode::DISTANCE_FIELD_MODE2,
+        {
+            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
+            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
+            DEFAULT_PROB_NOISE_EFFECT,
+            DEFAULT_PROB_PLANE_EFFECT,
+            DISTANCE_FIELD2_PROB_ROTATE,
             DEFAULT_PROB_TAN_EFFECT
         }
     },
@@ -404,7 +434,13 @@ inline const auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
   { ZoomFilterMode::CRYSTAL_BALL_MODE1,
     {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0,  1.0F}, {Hyp::MODE1, 99.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
   },
-  { ZoomFilterMode::DISTANCE_FIELD_MODE,
+  { ZoomFilterMode::DISTANCE_FIELD_MODE0,
+    {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::DISTANCE_FIELD_MODE1,
+    {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
+  },
+  { ZoomFilterMode::DISTANCE_FIELD_MODE2,
     {{ {Hyp::NONE,  5.0F}, {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
   },
   { ZoomFilterMode::HYPERCOS_MODE0,
@@ -523,7 +559,9 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
             {ZoomFilterMode::AMULET_MODE,             AMULET_MODE_WEIGHT},
             {ZoomFilterMode::CRYSTAL_BALL_MODE0,      CRYSTAL_BALL_MODE0_WEIGHT},
             {ZoomFilterMode::CRYSTAL_BALL_MODE1,      CRYSTAL_BALL_MODE1_WEIGHT},
-            {ZoomFilterMode::DISTANCE_FIELD_MODE,     DISTANCE_FIELD_MODE_WEIGHT},
+            {ZoomFilterMode::DISTANCE_FIELD_MODE0,    DISTANCE_FIELD_MODE0_WEIGHT},
+            {ZoomFilterMode::DISTANCE_FIELD_MODE1,    DISTANCE_FIELD_MODE1_WEIGHT},
+            {ZoomFilterMode::DISTANCE_FIELD_MODE2,    DISTANCE_FIELD_MODE2_WEIGHT},
             {ZoomFilterMode::HYPERCOS_MODE0,          HYPERCOS_MODE0_WEIGHT},
             {ZoomFilterMode::HYPERCOS_MODE1,          HYPERCOS_MODE1_WEIGHT},
             {ZoomFilterMode::HYPERCOS_MODE2,          HYPERCOS_MODE2_WEIGHT},

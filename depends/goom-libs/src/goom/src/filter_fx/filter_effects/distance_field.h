@@ -12,21 +12,26 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 class DistanceField : public ISpeedCoefficientsEffect
 {
 public:
-  explicit DistanceField(const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
+  enum class Modes
+  {
+    MODE0,
+    MODE1,
+    MODE2
+  };
+  explicit DistanceField(Modes mode, const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  auto SetRandomParams() -> void override;
+  auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetSpeedCoefficients(const NormalizedCoords& coords,
                                           float sqDistFromZero,
-                                          const Point2dFlt& baseSpeedCoeffs) const
+                                          const Point2dFlt& baseSpeedCoeffs) const noexcept
       -> Point2dFlt override;
 
-  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const noexcept
       -> GOOM::UTILS::NameValuePairs override;
 
   struct Params
   {
-    bool mode0;
     float xAmplitude;
     float yAmplitude;
     float xSqDistMult;
@@ -35,12 +40,13 @@ public:
     float ySqDistOffset;
     std::vector<NormalizedCoords> distancePoints;
   };
-  [[nodiscard]] auto GetParams() const -> const Params&;
+  [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
 protected:
-  auto SetParams(const Params& params) -> void;
+  auto SetParams(const Params& params) noexcept -> void;
 
 private:
+  const Modes m_mode;
   const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   struct RelativeDistancePoint
@@ -48,23 +54,34 @@ private:
     float sqDistanceFromCoords;
     const NormalizedCoords& distancePoint;
   };
-  [[nodiscard]] auto GetClosestDistancePoint(const NormalizedCoords& coords) const
+  auto SetMode0RandomParams() noexcept -> void;
+  auto SetMode1RandomParams() noexcept -> void;
+  auto SetMode2RandomParams() noexcept -> void;
+  auto SetRandomParams(const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& xAmplitudeRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& yAmplitudeRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistMultRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistMultRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistOffsetRange,
+                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistOffsetRange,
+                       std::vector<NormalizedCoords>&& distancePoints) noexcept -> void;
+  [[nodiscard]] auto GetDistancePoints() const noexcept -> std::vector<NormalizedCoords>;
+  [[nodiscard]] auto GetClosestDistancePoint(const NormalizedCoords& coords) const noexcept
       -> RelativeDistancePoint;
   [[nodiscard]] static auto GetSpeedCoefficient(float baseSpeedCoeff,
                                                 float sqDistFromZero,
                                                 float amplitude,
                                                 float sqDistMult,
-                                                float sqDistOffset) -> float;
+                                                float sqDistOffset) noexcept -> float;
 };
 
 inline auto DistanceField::GetSpeedCoefficients(const NormalizedCoords& coords,
                                                 [[maybe_unused]] const float sqDistFromZero,
-                                                const Point2dFlt& baseSpeedCoeffs) const
+                                                const Point2dFlt& baseSpeedCoeffs) const noexcept
     -> Point2dFlt
 {
   const auto sqDistFromClosestPoint = GetClosestDistancePoint(coords).sqDistanceFromCoords;
 
-  if (m_params.mode0)
+  if (m_mode == Modes::MODE0)
   {
     return {baseSpeedCoeffs.x + (m_params.xAmplitude * sqDistFromClosestPoint),
             baseSpeedCoeffs.y + (m_params.yAmplitude * sqDistFromClosestPoint)};
@@ -88,17 +105,17 @@ inline auto DistanceField::GetSpeedCoefficient(const float baseSpeedCoeff,
                                                const float sqDistFromZero,
                                                const float amplitude,
                                                const float sqDistMult,
-                                               const float sqDistOffset) -> float
+                                               const float sqDistOffset) noexcept -> float
 {
   return baseSpeedCoeff - (amplitude * ((sqDistMult * sqDistFromZero) - sqDistOffset));
 }
 
-inline auto DistanceField::GetParams() const -> const Params&
+inline auto DistanceField::GetParams() const noexcept -> const Params&
 {
   return m_params;
 }
 
-inline auto DistanceField::SetParams(const Params& params) -> void
+inline auto DistanceField::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
 }
