@@ -27,7 +27,30 @@ StarDrawer::StarDrawer(IGoomDraw& draw,
   : m_draw{draw},
     m_goomRand{goomRand},
     m_smallBitmaps{smallBitmaps},
-    m_getMixedColorsFunc{getMixedColorsFunc}
+    m_getMixedColorsFunc{getMixedColorsFunc},
+    m_drawFuncs{{{
+        {DrawElementTypes::CIRCLES,
+         [this](const Point2dInt point1,
+                const Point2dInt point2,
+                const uint32_t size,
+                const DRAW::MultiplePixels& colors)
+         { DrawParticleCircle(point1, point2, size, colors); }},
+        {DrawElementTypes::LINES,
+         [this](const Point2dInt point1,
+                const Point2dInt point2,
+                const uint32_t size,
+                const DRAW::MultiplePixels& colors)
+         { DrawParticleLine(point1, point2, size, colors); }},
+        {DrawElementTypes::DOTS,
+         [this](const Point2dInt point1,
+                const Point2dInt point2,
+                const uint32_t size,
+                const DRAW::MultiplePixels& colors)
+         { DrawParticleDot(point1, point2, size, colors); }},
+        {DrawElementTypes::CIRCLES_AND_LINES,
+         [](const Point2dInt, const Point2dInt, const uint32_t, const DRAW::MultiplePixels&)
+         { FailFast(); }},
+    }}}
 {
 }
 

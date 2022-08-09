@@ -2,12 +2,12 @@
 
 #include "draw/goom_draw.h"
 #include "stars.h"
+#include "utils/enum_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <functional>
-#include <map>
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
@@ -93,28 +93,7 @@ private:
                                       Point2dInt point2,
                                       uint32_t elementSize,
                                       const DRAW::MultiplePixels& colors)>;
-  const std::map<DrawElementTypes, const DrawFunc> m_drawFuncs{
-      {DrawElementTypes::CIRCLES,
-       [this](const Point2dInt point1,
-       const Point2dInt point2,
-       const uint32_t size,
-       const DRAW::MultiplePixels& colors)
-       { DrawParticleCircle(point1, point2, size, colors); }},
-      {DrawElementTypes::LINES,
-       [this](const Point2dInt point1,
-       const Point2dInt point2,
-       const uint32_t size,
-       const DRAW::MultiplePixels& colors)
-       { DrawParticleLine(point1, point2, size, colors); }},
-      {
-       DrawElementTypes::DOTS,
-       [this](const Point2dInt point1,
-       const Point2dInt point2,
-       const uint32_t size,
-       const DRAW::MultiplePixels& colors)
-          { DrawParticleDot(point1, point2, size, colors); },
-       }
-  };
+  const UTILS::EnumMap<DrawElementTypes, DrawFunc> m_drawFuncs;
   auto DrawStar(const Star& star, float speedFactor, const DrawFunc& drawFunc) noexcept -> void;
   [[nodiscard]] auto GetNumPartsAndElementSize(float tAge) const noexcept
       -> std::pair<uint32_t, uint32_t>;
@@ -169,7 +148,7 @@ inline auto StarDrawer::DrawStar(const Star& star, const float speedFactor) noex
 {
   UpdateActualDrawElement();
   ChangeMaxNumParts();
-  DrawStar(star, speedFactor, m_drawFuncs.at(m_currentActualDrawElement));
+  DrawStar(star, speedFactor, m_drawFuncs[m_currentActualDrawElement]);
 }
 
 } //namespace GOOM::VISUAL_FX::FLYING_STARS
