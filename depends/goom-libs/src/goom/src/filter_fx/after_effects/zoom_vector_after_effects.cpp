@@ -34,6 +34,7 @@ auto ZoomVectorAfterEffects::SetAfterEffectsSettings(
   SetRandomPlaneEffects();
   SetRandomRotationSettings();
   SetRandomTanEffects();
+  SetRandomXYLerpEffects();
 }
 
 auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
@@ -46,6 +47,11 @@ auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
   if (m_afterEffectsSettings.imageVelocityEffect)
   {
     newVelocity = m_afterEffects.GetImageVelocity().GetVelocity(coords, newVelocity);
+  }
+
+  if (m_afterEffectsSettings.xyLerpEffect)
+  {
+    newVelocity = m_afterEffects.GetXYLerpEffect().GetVelocity(sqDistFromZero, newVelocity);
   }
 
   if (m_afterEffectsSettings.rotationEffect)
@@ -180,6 +186,16 @@ inline auto ZoomVectorAfterEffects::SetRandomTanEffects() noexcept -> void
   m_afterEffects.GetTanEffect().SetRandomParams();
 }
 
+inline auto ZoomVectorAfterEffects::SetRandomXYLerpEffects() noexcept -> void
+{
+  if (not m_afterEffectsSettings.xyLerpEffect)
+  {
+    return;
+  }
+
+  m_afterEffects.GetXYLerpEffect().SetRandomParams();
+}
+
 auto ZoomVectorAfterEffects::GetZoomEffectsNameValueParams() const noexcept -> NameValuePairs
 {
   auto nameValuePairs = NameValuePairs{};
@@ -190,6 +206,7 @@ auto ZoomVectorAfterEffects::GetZoomEffectsNameValueParams() const noexcept -> N
   MoveNameValuePairs(GetPlaneNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetRotationNameValueParams(), nameValuePairs);
   MoveNameValuePairs(GetTanEffectNameValueParams(), nameValuePairs);
+  MoveNameValuePairs(GetXYLerpEffectNameValueParams(), nameValuePairs);
 
   return nameValuePairs;
 }
@@ -239,7 +256,8 @@ auto ZoomVectorAfterEffects::GetRotationNameValueParams() const noexcept -> Name
       NameValuePairs{GetPair(PARAM_GROUP, "rotation", m_afterEffectsSettings.rotationEffect)};
   if (m_afterEffectsSettings.rotationEffect)
   {
-    MoveNameValuePairs(m_afterEffects.GetRotation().GetNameValueParams(PARAM_GROUP), nameValuePairs);
+    MoveNameValuePairs(m_afterEffects.GetRotation().GetNameValueParams(PARAM_GROUP),
+                       nameValuePairs);
   }
   return nameValuePairs;
 }
@@ -250,7 +268,21 @@ auto ZoomVectorAfterEffects::GetTanEffectNameValueParams() const noexcept -> Nam
       NameValuePairs{GetPair(PARAM_GROUP, "tanEffect", m_afterEffectsSettings.tanEffect)};
   if (m_afterEffectsSettings.tanEffect)
   {
-    MoveNameValuePairs(m_afterEffects.GetTanEffect().GetNameValueParams(PARAM_GROUP), nameValuePairs);
+    MoveNameValuePairs(m_afterEffects.GetTanEffect().GetNameValueParams(PARAM_GROUP),
+                       nameValuePairs);
+  }
+  return nameValuePairs;
+}
+
+auto ZoomVectorAfterEffects::GetXYLerpEffectNameValueParams() const noexcept
+    -> GOOM::UTILS::NameValuePairs
+{
+  auto nameValuePairs =
+      NameValuePairs{GetPair(PARAM_GROUP, "xyLerpEffect", m_afterEffectsSettings.xyLerpEffect)};
+  if (m_afterEffectsSettings.xyLerpEffect)
+  {
+    MoveNameValuePairs(m_afterEffects.GetXYLerpEffect().GetNameValueParams(PARAM_GROUP),
+                       nameValuePairs);
   }
   return nameValuePairs;
 }

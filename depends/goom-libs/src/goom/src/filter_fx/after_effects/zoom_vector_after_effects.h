@@ -52,6 +52,9 @@ private:
 
   auto SetRandomTanEffects() noexcept -> void;
   [[nodiscard]] auto GetTanEffectNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
+
+  auto SetRandomXYLerpEffects() noexcept -> void;
+  [[nodiscard]] auto GetXYLerpEffectNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
 };
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

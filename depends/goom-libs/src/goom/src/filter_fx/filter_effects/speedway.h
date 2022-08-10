@@ -35,8 +35,6 @@ public:
   {
     float xAmplitude;
     float yAmplitude;
-    float tFreq;
-    bool flipY;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -153,19 +151,7 @@ inline auto Speedway::GetMode2SpeedCoefficients(const NormalizedCoords& coords,
   const auto xSpeedCoeff = baseSpeedCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
   const auto ySpeedCoeff = std::tan(0.01F * sqDistFromZero) * m_params.yAmplitude * xSpeedCoeff;
 
-  const auto t = std::sin(m_params.tFreq * sqDistFromZero);
-  if (m_params.flipY)
-  {
-    return {
-        STD20::lerp(ySpeedCoeff, xSpeedCoeff, t),
-        -STD20::lerp(xSpeedCoeff, ySpeedCoeff, t),
-    };
-  }
-
-  return {
-      STD20::lerp(ySpeedCoeff, xSpeedCoeff, t),
-      STD20::lerp(xSpeedCoeff, ySpeedCoeff, t),
-  };
+  return {xSpeedCoeff, ySpeedCoeff};
 }
 
 inline auto Speedway::GetParams() const -> const Params&

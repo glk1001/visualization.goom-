@@ -63,6 +63,7 @@ add_library(goom
         src/filter_fx/after_effects/planes.cpp
         src/filter_fx/after_effects/rotation.cpp
         src/filter_fx/after_effects/tan_effect.cpp
+        src/filter_fx/after_effects/xy_lerp_effect.cpp
         src/filter_fx/after_effects/zoom_vector_after_effects.cpp
         src/filter_fx/filter_effects/amulet.cpp
         src/filter_fx/filter_effects/crystal_ball.cpp

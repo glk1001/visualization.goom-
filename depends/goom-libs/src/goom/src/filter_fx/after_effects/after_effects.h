@@ -6,6 +6,7 @@
 #include "filter_fx/after_effects/planes.h"
 #include "filter_fx/after_effects/rotation.h"
 #include "filter_fx/after_effects/tan_effect.h"
+#include "filter_fx/after_effects/xy_lerp_effect.h"
 #include "utils/propagate_const.h"
 
 #include <memory>
@@ -21,7 +22,8 @@ public:
                std::unique_ptr<Noise>&& noise,
                std::unique_ptr<Planes>&& planes,
                std::unique_ptr<Rotation>&& rotation,
-               std::unique_ptr<TanEffect>&& tanEffect) noexcept;
+               std::unique_ptr<TanEffect>&& tanEffect,
+               std::unique_ptr<XYLerpEffect>&& xyLerpEffect) noexcept;
   AfterEffects() noexcept                    = delete;
   AfterEffects(const AfterEffects&) noexcept = delete;
   AfterEffects(AfterEffects&&) noexcept      = default;
@@ -41,6 +43,8 @@ public:
   [[nodiscard]] auto GetRotation() noexcept -> Rotation&;
   [[nodiscard]] auto GetTanEffect() const noexcept -> const TanEffect&;
   [[nodiscard]] auto GetTanEffect() noexcept -> TanEffect&;
+  [[nodiscard]] auto GetXYLerpEffect() const noexcept -> const XYLerpEffect&;
+  [[nodiscard]] auto GetXYLerpEffect() noexcept -> XYLerpEffect&;
 
 private:
   std::experimental::propagate_const<std::unique_ptr<Hypercos>> m_hypercos;
@@ -49,6 +53,7 @@ private:
   std::experimental::propagate_const<std::unique_ptr<Planes>> m_planes;
   std::experimental::propagate_const<std::unique_ptr<Rotation>> m_rotation;
   std::experimental::propagate_const<std::unique_ptr<TanEffect>> m_tanEffect;
+  std::experimental::propagate_const<std::unique_ptr<XYLerpEffect>> m_xyLerpEffect;
 };
 
 [[nodiscard]] auto GetStandardAfterEffects(const GOOM::UTILS::MATH::IGoomRand& goomRand,
@@ -112,6 +117,16 @@ inline auto AfterEffects::GetTanEffect() const noexcept -> const TanEffect&
 inline auto AfterEffects::GetTanEffect() noexcept -> TanEffect&
 {
   return *m_tanEffect;
+}
+
+inline auto AfterEffects::GetXYLerpEffect() const noexcept -> const XYLerpEffect&
+{
+  return *m_xyLerpEffect;
+}
+
+inline auto AfterEffects::GetXYLerpEffect() noexcept -> XYLerpEffect&
+{
+  return *m_xyLerpEffect;
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

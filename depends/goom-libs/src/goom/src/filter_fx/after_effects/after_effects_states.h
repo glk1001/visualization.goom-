@@ -34,6 +34,7 @@ struct AfterEffectsSettings
   bool planeEffect;
   bool rotationEffect;
   bool tanEffect;
+  bool xyLerpEffect;
 
   RotationAdjustments rotationAdjustments;
 };
@@ -49,6 +50,7 @@ struct AfterEffectsProbabilities
     float planeProbability;
     float rotateProbability;
     float tanEffectProbability;
+    float xyLerpEffectProbability;
   };
   Probabilities probabilities;
 };
@@ -100,6 +102,10 @@ private:
   static constexpr float PROB_REPEAT_TAN_EFFECT = 0.1F;
   static constexpr uint32_t TAN_EFFECT_OFF_TIME = 100;
   std::unique_ptr<EffectState> m_tanEffect;
+
+  static constexpr float PROB_REPEAT_XY_LERP_EFFECT = 0.1F;
+  static constexpr uint32_t XY_LERP_EFFECT_OFF_TIME = 100;
+  std::unique_ptr<EffectState> m_xyLerpEffect;
 };
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

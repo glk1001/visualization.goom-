@@ -21,6 +21,7 @@ static constexpr auto DEFAULT_NOISE_EFFECT          = false;
 static constexpr auto DEFAULT_PLANE_EFFECT          = false;
 static constexpr auto DEFAULT_ROTATION_EFFECT       = false;
 static constexpr auto DEFAULT_TAN_EFFECT            = false;
+static constexpr auto DEFAULT_XY_LERP_EFFECT        = false;
 
 class AfterEffectsStates::EffectState
 {
@@ -62,7 +63,9 @@ AfterEffectsStates::AfterEffectsStates(const IGoomRand& goomRand) noexcept
     m_rotationEffect{std::make_unique<EffectState>(
         goomRand, DEFAULT_ROTATION_EFFECT, PROB_REPEAT_ROTATION_EFFECT, ROTATION_EFFECT_OFF_TIME)},
     m_tanEffect{std::make_unique<EffectState>(
-        goomRand, DEFAULT_TAN_EFFECT, PROB_REPEAT_TAN_EFFECT, TAN_EFFECT_OFF_TIME)}
+        goomRand, DEFAULT_TAN_EFFECT, PROB_REPEAT_TAN_EFFECT, TAN_EFFECT_OFF_TIME)},
+    m_xyLerpEffect{std::make_unique<EffectState>(
+        goomRand, DEFAULT_XY_LERP_EFFECT, PROB_REPEAT_XY_LERP_EFFECT, XY_LERP_EFFECT_OFF_TIME)}
 {
 }
 
@@ -78,6 +81,7 @@ auto AfterEffectsStates::UpdateFilterSettingsFromStates(
   afterEffectsSettings.planeEffect         = m_planeEffect->IsTurnedOn();
   afterEffectsSettings.rotationEffect      = m_rotationEffect->IsTurnedOn();
   afterEffectsSettings.tanEffect           = m_tanEffect->IsTurnedOn();
+  afterEffectsSettings.xyLerpEffect        = m_xyLerpEffect->IsTurnedOn();
 }
 
 auto AfterEffectsStates::TurnPlaneEffectOn() -> void
@@ -108,6 +112,7 @@ auto AfterEffectsStates::UpdateTimers() -> void
   m_planeEffect->UpdateTimer();
   m_rotationEffect->UpdateTimer();
   m_tanEffect->UpdateTimer();
+  m_xyLerpEffect->UpdateTimer();
 }
 
 auto AfterEffectsStates::ResetAllStates(const AfterEffectsProbabilities& effectsProbabilities)
@@ -137,6 +142,7 @@ auto AfterEffectsStates::ResetStandardStates(const AfterEffectsProbabilities& ef
   m_planeEffect->UpdateState(effectsProbabilities.probabilities.planeProbability);
   m_rotationEffect->UpdateState(effectsProbabilities.probabilities.rotateProbability);
   m_tanEffect->UpdateState(effectsProbabilities.probabilities.tanEffectProbability);
+  m_xyLerpEffect->UpdateState(effectsProbabilities.probabilities.xyLerpEffectProbability);
 }
 
 auto AfterEffectsStates::CheckForPendingOffTimers() -> void
@@ -152,6 +158,7 @@ auto AfterEffectsStates::CheckForPendingOffTimers() -> void
   m_planeEffect->CheckPendingOffTimerReset();
   m_rotationEffect->CheckPendingOffTimerReset();
   m_tanEffect->CheckPendingOffTimerReset();
+  m_xyLerpEffect->CheckPendingOffTimerReset();
 }
 
 inline AfterEffectsStates::EffectState::EffectState(const UTILS::MATH::IGoomRand& goomRand,

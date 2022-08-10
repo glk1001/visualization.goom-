@@ -43,11 +43,11 @@ static constexpr auto USE_FORCED_FILTER_MODE = ALL_FILTER_EFFECTS_TURNED_OFF;
 //static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE2;
 //static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE3;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
+static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
 //static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::SCRUNCH_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
-static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE2;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE2;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE1;
 //static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::WATER_MODE;
@@ -206,6 +206,7 @@ static constexpr auto DEFAULT_PROB_IMAGE_VELOCITY_EFFECT = 0.1F;
 static constexpr auto DEFAULT_PROB_NOISE_EFFECT          = 0.1F;
 static constexpr auto DEFAULT_PROB_PLANE_EFFECT          = 0.8F;
 static constexpr auto DEFAULT_PROB_TAN_EFFECT            = 0.2F;
+static constexpr auto DEFAULT_PROB_XY_LERP_EFFECT        = 1.0F;
 
 static constexpr auto WAVE0_PROB_PLANE_EFFECT = 1.0F;
 static constexpr auto WAVE1_PROB_PLANE_EFFECT = 1.0F;
@@ -220,7 +221,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             AMULET_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::CRYSTAL_BALL_MODE0,
@@ -230,7 +232,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             CRYSTAL_BALL0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::CRYSTAL_BALL_MODE1,
@@ -240,7 +243,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             CRYSTAL_BALL1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::DISTANCE_FIELD_MODE0,
@@ -250,7 +254,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             DISTANCE_FIELD0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::DISTANCE_FIELD_MODE1,
@@ -260,7 +265,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             DISTANCE_FIELD1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::DISTANCE_FIELD_MODE2,
@@ -270,7 +276,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             DISTANCE_FIELD2_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::HYPERCOS_MODE0,
@@ -280,7 +287,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             HYPERCOS0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::HYPERCOS_MODE1,
@@ -290,7 +298,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             HYPERCOS1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::HYPERCOS_MODE2,
@@ -300,7 +309,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             HYPERCOS2_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::HYPERCOS_MODE3,
@@ -310,7 +320,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             HYPERCOS3_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,
@@ -320,7 +331,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             IMAGE_DISPLACEMENT_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::NORMAL_MODE,
@@ -330,7 +342,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             NORMAL_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::SCRUNCH_MODE,
@@ -340,7 +353,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             SCRUNCH_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::SPEEDWAY_MODE0,
@@ -350,7 +364,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             SPEEDWAY0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::SPEEDWAY_MODE1,
@@ -360,7 +375,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             SPEEDWAY1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::SPEEDWAY_MODE2,
@@ -370,7 +386,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
           DEFAULT_PROB_NOISE_EFFECT,
           DEFAULT_PROB_PLANE_EFFECT,
           SPEEDWAY2_PROB_ROTATE,
-          DEFAULT_PROB_TAN_EFFECT
+          DEFAULT_PROB_TAN_EFFECT,
+          DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::WATER_MODE,
@@ -380,7 +397,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             WATER_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::WAVE_MODE0,
@@ -390,7 +408,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             WAVE0_PROB_PLANE_EFFECT,
             WAVE0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::WAVE_MODE1,
@@ -400,7 +419,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             WAVE1_PROB_PLANE_EFFECT,
             WAVE1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
     { ZoomFilterMode::Y_ONLY_MODE,
@@ -410,7 +430,8 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
             DEFAULT_PROB_NOISE_EFFECT,
             DEFAULT_PROB_PLANE_EFFECT,
             Y_ONLY_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT
+            DEFAULT_PROB_TAN_EFFECT,
+            DEFAULT_PROB_XY_LERP_EFFECT,
         }
     },
 }}};
@@ -543,6 +564,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
            {
                false,
                HypercosOverlay::NONE,
+               false,
                false,
                false,
                false,

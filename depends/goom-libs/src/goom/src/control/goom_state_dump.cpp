@@ -45,6 +45,7 @@ public:
   void AddCurrentPlaneEffect(bool value);
   void AddCurrentRotationEffect(bool value);
   void AddCurrentTanEffect(bool value);
+  void AddCurrentXYLerpEffect(bool value);
 
   void AddBufferLerp(int32_t value);
 
@@ -65,6 +66,7 @@ public:
   [[nodiscard]] auto GetPlaneEffects() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetRotationEffects() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetTanEffects() const -> const std::vector<uint8_t>&;
+  [[nodiscard]] auto GetXYLerpEffects() const -> const std::vector<uint8_t>&;
 
   [[nodiscard]] auto GetBufferLerps() const -> const std::vector<int32_t>&;
 
@@ -90,6 +92,7 @@ private:
   std::vector<uint8_t> m_planeEffects{};
   std::vector<uint8_t> m_rotationEffects{};
   std::vector<uint8_t> m_tanEffects{};
+  std::vector<uint8_t> m_xyLerpEffects{};
 
   std::vector<int32_t> m_bufferLerps{};
 
@@ -146,6 +149,7 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   m_cumulativeState->AddCurrentPlaneEffect(filterEffectsSettings.planeEffect);
   m_cumulativeState->AddCurrentRotationEffect(filterEffectsSettings.rotationEffect);
   m_cumulativeState->AddCurrentTanEffect(filterEffectsSettings.tanEffect);
+  m_cumulativeState->AddCurrentXYLerpEffect(filterEffectsSettings.xyLerpEffect);
 
   m_cumulativeState->AddBufferLerp(m_visualFx.GetZoomFilterFx().GetTranLerpFactor());
 
@@ -187,6 +191,7 @@ auto GoomStateDump::DumpData(const std::string& directory) -> void
   DumpDataArray("plane_effects", m_cumulativeState->GetPlaneEffects());
   DumpDataArray("rotation_effects", m_cumulativeState->GetRotationEffects());
   DumpDataArray("tan_effects", m_cumulativeState->GetTanEffects());
+  DumpDataArray("xyLerp_effects", m_cumulativeState->GetXYLerpEffects());
 
   DumpDataArray("buffer_lerps", m_cumulativeState->GetBufferLerps());
 
@@ -270,6 +275,7 @@ void GoomStateDump::CumulativeState::Reserve()
   m_planeEffects.reserve(m_numUpdatesEstimate);
   m_rotationEffects.reserve(m_numUpdatesEstimate);
   m_tanEffects.reserve(m_numUpdatesEstimate);
+  m_xyLerpEffects.reserve(m_numUpdatesEstimate);
 }
 
 inline void GoomStateDump::CumulativeState::IncrementUpdateNum()
@@ -337,6 +343,11 @@ inline void GoomStateDump::CumulativeState::AddBufferLerp(const int32_t value)
 inline void GoomStateDump::CumulativeState::AddCurrentTanEffect(const bool value)
 {
   m_tanEffects.push_back(static_cast<uint8_t>(value));
+}
+
+inline void GoomStateDump::CumulativeState::AddCurrentXYLerpEffect(const bool value)
+{
+  m_xyLerpEffects.push_back(static_cast<uint8_t>(value));
 }
 
 inline void GoomStateDump::CumulativeState::AddCurrentTimeSinceLastGoom(const uint32_t value)
@@ -427,6 +438,11 @@ inline auto GoomStateDump::CumulativeState::GetBufferLerps() const -> const std:
 inline auto GoomStateDump::CumulativeState::GetTanEffects() const -> const std::vector<uint8_t>&
 {
   return m_tanEffects;
+}
+
+inline auto GoomStateDump::CumulativeState::GetXYLerpEffects() const -> const std::vector<uint8_t>&
+{
+  return m_xyLerpEffects;
 }
 
 inline auto GoomStateDump::CumulativeState::GetTimesSinceLastGoom() const
