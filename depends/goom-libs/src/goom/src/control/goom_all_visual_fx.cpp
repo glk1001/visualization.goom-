@@ -31,6 +31,7 @@ using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterFx;
 using FILTER_FX::ZoomFilterSettings;
+using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
@@ -232,7 +233,8 @@ void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSetti
 
   m_zoomFilterFx->UpdateFilterBufferSettings(filterSettings.filterBufferSettings);
   m_zoomFilterFx->UpdateFilterColorSettings(
-      filterSettings.filterEffectsSettings.afterEffectsSettings.blockyWavy);
+      filterSettings.filterEffectsSettings.afterEffectsSettings
+          .active[AfterEffectsTypes::BLOCK_WAVY]);
 
   m_allStandardVisualFx->SetZoomMidpoint(filterSettings.filterEffectsSettings.zoomMidpoint);
 }

@@ -66,7 +66,7 @@ inline auto XYLerpEffect::GetFlipYProbability(const Modes mode) -> float
 
 auto XYLerpEffect::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
-  const auto fullParamGroup = GetFullParamGroup({paramGroup, "tan effect"});
+  const auto fullParamGroup = GetFullParamGroup({paramGroup, "xy lerp effect"});
   return {
       GetPair(fullParamGroup, "mode", EnumToString(m_params.mode)),
       GetPair(fullParamGroup, "tFreq", m_params.tFreq),

@@ -21,8 +21,8 @@ ZoomVectorAfterEffects::ZoomVectorAfterEffects(const uint32_t screenWidth,
 }
 
 auto ZoomVectorAfterEffects::SetAfterEffectsSettings(
-    const AfterEffectsSettings& afterEffectsSettings, const Point2dInt& zoomMidpoint) noexcept
-    -> void
+    const AfterEffectsStates::AfterEffectsSettings& afterEffectsSettings,
+    const Point2dInt& zoomMidpoint) noexcept -> void
 {
   m_afterEffectsSettings = afterEffectsSettings;
   m_rotationAdjustments  = afterEffectsSettings.rotationAdjustments; // TODO Fix this
@@ -44,27 +44,27 @@ auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
 {
   auto newVelocity = velocity;
 
-  if (m_afterEffectsSettings.imageVelocityEffect)
+  if (m_afterEffectsSettings.active[AfterEffectsTypes::IMAGE_VELOCITY])
   {
     newVelocity = m_afterEffects.GetImageVelocity().GetVelocity(coords, newVelocity);
   }
 
-  if (m_afterEffectsSettings.xyLerpEffect)
+  if (m_afterEffectsSettings.active[AfterEffectsTypes::XY_LERP_EFFECT])
   {
     newVelocity = m_afterEffects.GetXYLerpEffect().GetVelocity(sqDistFromZero, newVelocity);
   }
 
-  if (m_afterEffectsSettings.rotationEffect)
+  if (m_afterEffectsSettings.active[AfterEffectsTypes::ROTATION])
   {
     newVelocity = m_afterEffects.GetRotation().GetVelocity(newVelocity);
   }
 
-  if (m_afterEffectsSettings.tanEffect)
+  if (m_afterEffectsSettings.active[AfterEffectsTypes::TAN_EFFECT])
   {
     newVelocity = m_afterEffects.GetTanEffect().GetVelocity(sqDistFromZero, newVelocity);
   }
 
-  if (m_afterEffectsSettings.noiseEffect)
+  if (m_afterEffectsSettings.active[AfterEffectsTypes::NOISE])
   {
     newVelocity = m_afterEffects.GetNoise().GetVelocity(velocity);
   }
@@ -122,7 +122,7 @@ auto ZoomVectorAfterEffects::SetRandomHypercosOverlayEffects() noexcept -> void
 
 inline auto ZoomVectorAfterEffects::SetRandomImageVelocityEffects() noexcept -> void
 {
-  if (not m_afterEffectsSettings.imageVelocityEffect)
+  if (not m_afterEffectsSettings.active[AfterEffectsTypes::IMAGE_VELOCITY])
   {
     return;
   }
@@ -132,7 +132,7 @@ inline auto ZoomVectorAfterEffects::SetRandomImageVelocityEffects() noexcept -> 
 
 inline auto ZoomVectorAfterEffects::SetRandomNoiseSettings() noexcept -> void
 {
-  if (not m_afterEffectsSettings.noiseEffect)
+  if (not m_afterEffectsSettings.active[AfterEffectsTypes::NOISE])
   {
     return;
   }
@@ -142,7 +142,7 @@ inline auto ZoomVectorAfterEffects::SetRandomNoiseSettings() noexcept -> void
 
 inline auto ZoomVectorAfterEffects::SetRandomPlaneEffects() noexcept -> void
 {
-  if (not m_afterEffectsSettings.planeEffect)
+  if (not m_afterEffectsSettings.active[AfterEffectsTypes::PLANES])
   {
     return;
   }
@@ -152,7 +152,7 @@ inline auto ZoomVectorAfterEffects::SetRandomPlaneEffects() noexcept -> void
 
 inline auto ZoomVectorAfterEffects::SetRandomRotationSettings() noexcept -> void
 {
-  if (not m_afterEffectsSettings.rotationEffect)
+  if (not m_afterEffectsSettings.active[AfterEffectsTypes::ROTATION])
   {
     return;
   }
@@ -178,7 +178,7 @@ inline auto ZoomVectorAfterEffects::SetRandomRotationSettings() noexcept -> void
 
 inline auto ZoomVectorAfterEffects::SetRandomTanEffects() noexcept -> void
 {
-  if (not m_afterEffectsSettings.tanEffect)
+  if (not m_afterEffectsSettings.active[AfterEffectsTypes::TAN_EFFECT])
   {
     return;
   }
@@ -188,7 +188,7 @@ inline auto ZoomVectorAfterEffects::SetRandomTanEffects() noexcept -> void
 
 inline auto ZoomVectorAfterEffects::SetRandomXYLerpEffects() noexcept -> void
 {
-  if (not m_afterEffectsSettings.xyLerpEffect)
+  if (not m_afterEffectsSettings.active[AfterEffectsTypes::XY_LERP_EFFECT])
   {
     return;
   }
@@ -218,72 +218,84 @@ inline auto ZoomVectorAfterEffects::GetHypercosNameValueParams() const noexcept 
 
 auto ZoomVectorAfterEffects::GetImageVelocityNameValueParams() const noexcept -> NameValuePairs
 {
-  auto nameValuePairs = NameValuePairs{
-      GetPair(PARAM_GROUP, "imageVelocity", m_afterEffectsSettings.imageVelocityEffect)};
-  if (m_afterEffectsSettings.imageVelocityEffect)
+  const auto isActive = m_afterEffectsSettings.active[AfterEffectsTypes::IMAGE_VELOCITY];
+  auto nameValuePairs = NameValuePairs{GetPair(PARAM_GROUP, "imageVelocity", isActive)};
+
+  if (isActive)
   {
     MoveNameValuePairs(m_afterEffects.GetImageVelocity().GetNameValueParams(PARAM_GROUP),
                        nameValuePairs);
   }
+
   return nameValuePairs;
 }
 
 auto ZoomVectorAfterEffects::GetNoiseNameValueParams() const noexcept -> NameValuePairs
 {
-  auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP, "noiseEffect", m_afterEffectsSettings.noiseEffect)};
-  if (m_afterEffectsSettings.noiseEffect)
+  const auto isActive = m_afterEffectsSettings.active[AfterEffectsTypes::NOISE];
+  auto nameValuePairs = NameValuePairs{GetPair(PARAM_GROUP, "noiseEffect", isActive)};
+
+  if (isActive)
   {
     MoveNameValuePairs(m_afterEffects.GetNoise().GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
+
   return nameValuePairs;
 }
 
 auto ZoomVectorAfterEffects::GetPlaneNameValueParams() const noexcept -> NameValuePairs
 {
-  auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP, "planeEffect", m_afterEffectsSettings.planeEffect)};
-  if (m_afterEffectsSettings.planeEffect)
+  const auto isActive = m_afterEffectsSettings.active[AfterEffectsTypes::PLANES];
+  auto nameValuePairs = NameValuePairs{GetPair(PARAM_GROUP, "planeEffect", isActive)};
+
+  if (isActive)
   {
     MoveNameValuePairs(m_afterEffects.GetPlanes().GetNameValueParams(PARAM_GROUP), nameValuePairs);
   }
+
   return nameValuePairs;
 }
 
 auto ZoomVectorAfterEffects::GetRotationNameValueParams() const noexcept -> NameValuePairs
 {
-  auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP, "rotation", m_afterEffectsSettings.rotationEffect)};
-  if (m_afterEffectsSettings.rotationEffect)
+  const auto isActive = m_afterEffectsSettings.active[AfterEffectsTypes::ROTATION];
+  auto nameValuePairs = NameValuePairs{GetPair(PARAM_GROUP, "rotation", isActive)};
+
+  if (isActive)
   {
     MoveNameValuePairs(m_afterEffects.GetRotation().GetNameValueParams(PARAM_GROUP),
                        nameValuePairs);
   }
+
   return nameValuePairs;
 }
 
 auto ZoomVectorAfterEffects::GetTanEffectNameValueParams() const noexcept -> NameValuePairs
 {
-  auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP, "tanEffect", m_afterEffectsSettings.tanEffect)};
-  if (m_afterEffectsSettings.tanEffect)
+  const auto isActive = m_afterEffectsSettings.active[AfterEffectsTypes::TAN_EFFECT];
+  auto nameValuePairs = NameValuePairs{GetPair(PARAM_GROUP, "tanEffect", isActive)};
+
+  if (isActive)
   {
     MoveNameValuePairs(m_afterEffects.GetTanEffect().GetNameValueParams(PARAM_GROUP),
                        nameValuePairs);
   }
+
   return nameValuePairs;
 }
 
 auto ZoomVectorAfterEffects::GetXYLerpEffectNameValueParams() const noexcept
     -> GOOM::UTILS::NameValuePairs
 {
-  auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP, "xyLerpEffect", m_afterEffectsSettings.xyLerpEffect)};
-  if (m_afterEffectsSettings.xyLerpEffect)
+  const auto isActive = m_afterEffectsSettings.active[AfterEffectsTypes::XY_LERP_EFFECT];
+  auto nameValuePairs = NameValuePairs{GetPair(PARAM_GROUP, "xyLerpEffect", isActive)};
+
+  if (isActive)
   {
     MoveNameValuePairs(m_afterEffects.GetXYLerpEffect().GetNameValueParams(PARAM_GROUP),
                        nameValuePairs);
   }
+
   return nameValuePairs;
 }
 

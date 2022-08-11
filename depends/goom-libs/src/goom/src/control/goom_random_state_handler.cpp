@@ -7,13 +7,12 @@
 namespace GOOM::CONTROL
 {
 
+using CONTROL::USE_FORCED_GOOM_STATE;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
 
 
 // For debugging:
-static constexpr auto USE_FORCED_GOOM_STATE =
-    CONTROL::FORCE_GOOM_STATE_AND_ALL_FILTER_EFFECTS_TURNED_OFF;
 
 static constexpr auto FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
@@ -49,6 +48,7 @@ static constexpr auto FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::TENTACLES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::TUBES_ONLY;
+
 // End debugging
 
 

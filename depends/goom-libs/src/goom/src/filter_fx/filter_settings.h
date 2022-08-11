@@ -27,7 +27,7 @@ struct ZoomFilterEffectsSettings
 
   Point2dInt zoomMidpoint; // milieu de l'effet
 
-  AFTER_EFFECTS::AfterEffectsSettings afterEffectsSettings;
+  AFTER_EFFECTS::AfterEffectsStates::AfterEffectsSettings afterEffectsSettings;
 };
 
 struct ZoomFilterSettings

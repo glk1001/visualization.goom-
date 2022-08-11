@@ -16,7 +16,7 @@ class ZoomVectorAfterEffects
 public:
   ZoomVectorAfterEffects(uint32_t screenWidth, AfterEffects&& afterEffects) noexcept;
 
-  auto SetAfterEffectsSettings(const AfterEffectsSettings& afterEffectsSettings,
+  auto SetAfterEffectsSettings(const AfterEffectsStates::AfterEffectsSettings& afterEffectsSettings,
                                const Point2dInt& zoomMidpoint) noexcept -> void;
 
   [[nodiscard]] auto GetAfterEffectsVelocity(const NormalizedCoords& coords,
@@ -30,7 +30,7 @@ public:
 private:
   const uint32_t m_screenWidth;
   AfterEffects m_afterEffects;
-  AfterEffectsSettings m_afterEffectsSettings{};
+  AfterEffectsStates::AfterEffectsSettings m_afterEffectsSettings{};
   RotationAdjustments m_rotationAdjustments{};
   Point2dInt m_zoomMidpoint{};
 

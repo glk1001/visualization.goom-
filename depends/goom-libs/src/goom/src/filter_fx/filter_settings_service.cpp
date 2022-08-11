@@ -14,8 +14,8 @@
 namespace GOOM::FILTER_FX
 {
 
-using AFTER_EFFECTS::AfterEffectsProbabilities;
 using AFTER_EFFECTS::AfterEffectsStates;
+using AFTER_EFFECTS::AfterEffectsTypes;
 using AFTER_EFFECTS::HypercosOverlay;
 using AFTER_EFFECTS::RotationAdjustments;
 using UTILS::EnumMap;
@@ -29,29 +29,37 @@ using UTILS::MATH::Weights;
 
 
 // For debugging:
-static constexpr auto USE_FORCED_FILTER_MODE = ALL_FILTER_EFFECTS_TURNED_OFF;
-//static constexpr auto USE_FORCED_FILTER_MODE = true;
 
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
-//static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::CRYSTAL_BALL_MODE1;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE2;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE0;
-//static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE1;
-//static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE2;
-//static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::HYPERCOS_MODE3;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE1;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
 static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
-//static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::SCRUNCH_MODE;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE2;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE1;
-//static constexpr auto FORCED_FILTER_MODE ZoomFilterMode::WATER_MODE;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WATER_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
+
+//static constexpr auto FORCED_AFTER_EFFECTS_MODE = AfterEffectsTypes::BLOCK_WAVY;
+//static constexpr auto FORCED_AFTER_EFFECTS_MODE = AfterEffectsTypes::HYPERCOS;
+//static constexpr auto FORCED_AFTER_EFFECTS_MODE = AfterEffectsTypes::IMAGE_VELOCITY;
+//static constexpr auto FORCED_AFTER_EFFECTS_MODE = AfterEffectsTypes::NOISE;
+//static constexpr auto FORCED_AFTER_EFFECTS_MODE = AfterEffectsTypes::PLANES;
+//static constexpr auto FORCED_AFTER_EFFECTS_MODE = AfterEffectsTypes::ROTATION;
+//static constexpr auto FORCED_AFTER_EFFECTS_MODE = AfterEffectsTypes::TAN_EFFECT;
+static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::XY_LERP_EFFECT;
+
 // End debugging
 
 
@@ -104,7 +112,7 @@ inline const auto CRYSTAL_BALL_MODE1_MULTIPLIERS = std::map<ZoomFilterMode, floa
     {ZoomFilterMode::CRYSTAL_BALL_MODE1, 0.0F},
 };
 inline const auto NORMAL_MODE_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-    {        ZoomFilterMode::NORMAL_MODE, 1.0F},
+    {         ZoomFilterMode::NORMAL_MODE, 1.0F},
     {ZoomFilterMode::DISTANCE_FIELD_MODE0, 2.0F},
     {ZoomFilterMode::DISTANCE_FIELD_MODE0, 2.0F},
     {ZoomFilterMode::DISTANCE_FIELD_MODE0, 2.0F},
@@ -202,240 +210,353 @@ static constexpr auto WAVE1_PROB_ROTATE              = PROB_HIGH;
 static constexpr auto Y_ONLY_PROB_ROTATE             = PROB_HALF;
 
 static constexpr auto DEFAULT_PROB_BLOCKY_WAVY_EFFECT    = 0.3F;
+static constexpr auto DEFAULT_PROB_HYPERCOS_EFFECT       = 0.2F;
 static constexpr auto DEFAULT_PROB_IMAGE_VELOCITY_EFFECT = 0.1F;
 static constexpr auto DEFAULT_PROB_NOISE_EFFECT          = 0.1F;
 static constexpr auto DEFAULT_PROB_PLANE_EFFECT          = 0.8F;
 static constexpr auto DEFAULT_PROB_TAN_EFFECT            = 0.2F;
-static constexpr auto DEFAULT_PROB_XY_LERP_EFFECT        = 1.0F;
+static constexpr auto DEFAULT_PROB_XY_LERP_EFFECT        = 0.3F;
 
 static constexpr auto WAVE0_PROB_PLANE_EFFECT = 1.0F;
 static constexpr auto WAVE1_PROB_PLANE_EFFECT = 1.0F;
 
 // clang-format off
 static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
-                                                      AfterEffectsProbabilities::Probabilities>{{{
+                                                      EnumMap<AfterEffectsTypes, float>>{{{
     { ZoomFilterMode::AMULET_MODE,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            AMULET_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, AMULET_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::CRYSTAL_BALL_MODE0,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            CRYSTAL_BALL0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, CRYSTAL_BALL0_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::CRYSTAL_BALL_MODE1,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            CRYSTAL_BALL1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, CRYSTAL_BALL1_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::DISTANCE_FIELD_MODE0,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            DISTANCE_FIELD0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, DISTANCE_FIELD0_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::DISTANCE_FIELD_MODE1,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            DISTANCE_FIELD1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, DISTANCE_FIELD1_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::DISTANCE_FIELD_MODE2,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            DISTANCE_FIELD2_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, DISTANCE_FIELD2_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::HYPERCOS_MODE0,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            HYPERCOS0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, HYPERCOS0_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::HYPERCOS_MODE1,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            HYPERCOS1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, HYPERCOS1_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::HYPERCOS_MODE2,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            HYPERCOS2_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, HYPERCOS2_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::HYPERCOS_MODE3,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            HYPERCOS3_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, HYPERCOS3_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            IMAGE_DISPLACEMENT_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, IMAGE_DISPLACEMENT_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::NORMAL_MODE,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            NORMAL_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, NORMAL_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::SCRUNCH_MODE,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            SCRUNCH_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, SCRUNCH_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::SPEEDWAY_MODE0,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            SPEEDWAY0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, SPEEDWAY0_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::SPEEDWAY_MODE1,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            SPEEDWAY1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, SPEEDWAY1_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::SPEEDWAY_MODE2,
-        {
-          DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-          DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-          DEFAULT_PROB_NOISE_EFFECT,
-          DEFAULT_PROB_PLANE_EFFECT,
-          SPEEDWAY2_PROB_ROTATE,
-          DEFAULT_PROB_TAN_EFFECT,
-          DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, SPEEDWAY2_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::WATER_MODE,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            WATER_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, WATER_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::WAVE_MODE0,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            WAVE0_PROB_PLANE_EFFECT,
-            WAVE0_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, WAVE0_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, WAVE0_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::WAVE_MODE1,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            WAVE1_PROB_PLANE_EFFECT,
-            WAVE1_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, WAVE1_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, WAVE1_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
     { ZoomFilterMode::Y_ONLY_MODE,
-        {
-            DEFAULT_PROB_BLOCKY_WAVY_EFFECT,
-            DEFAULT_PROB_IMAGE_VELOCITY_EFFECT,
-            DEFAULT_PROB_NOISE_EFFECT,
-            DEFAULT_PROB_PLANE_EFFECT,
-            Y_ONLY_PROB_ROTATE,
-            DEFAULT_PROB_TAN_EFFECT,
-            DEFAULT_PROB_XY_LERP_EFFECT,
-        }
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, Y_ONLY_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
     },
 }}};
 // clang-format on
+
+static constexpr auto DEFAULT_AFTER_EFFECTS_STATES = EnumMap<AfterEffectsTypes, bool>{{{
+    {AfterEffectsTypes::BLOCK_WAVY, false},
+    {AfterEffectsTypes::HYPERCOS, false},
+    {AfterEffectsTypes::IMAGE_VELOCITY, false},
+    {AfterEffectsTypes::NOISE, false},
+    {AfterEffectsTypes::PLANES, false},
+    {AfterEffectsTypes::ROTATION, false},
+    {AfterEffectsTypes::TAN_EFFECT, false},
+    {AfterEffectsTypes::XY_LERP_EFFECT, false},
+}}};
+
+static constexpr auto DEFAULT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffectsTypes, float>{{{
+    {AfterEffectsTypes::BLOCK_WAVY, 0.0F},
+    {AfterEffectsTypes::HYPERCOS, 0.0F},
+    {AfterEffectsTypes::IMAGE_VELOCITY, 0.0F},
+    {AfterEffectsTypes::NOISE, 0.0F},
+    {AfterEffectsTypes::PLANES, 0.0F},
+    {AfterEffectsTypes::ROTATION, 0.0F},
+    {AfterEffectsTypes::TAN_EFFECT, 0.0F},
+    {AfterEffectsTypes::XY_LERP_EFFECT, 0.0F},
+}}};
+
+static constexpr auto DEFAULT_REPEAT_AFTER_EFFECTS_PROBABILITIES =
+    EnumMap<AfterEffectsTypes, float>{{{
+        {AfterEffectsTypes::BLOCK_WAVY, 0.9F},
+        {AfterEffectsTypes::HYPERCOS, 0.9F},
+        {AfterEffectsTypes::IMAGE_VELOCITY, 0.9F},
+        {AfterEffectsTypes::NOISE, 0.0F},
+        {AfterEffectsTypes::PLANES, 0.3F},
+        {AfterEffectsTypes::ROTATION, 0.0F},
+        {AfterEffectsTypes::TAN_EFFECT, 0.1F},
+        {AfterEffectsTypes::XY_LERP_EFFECT, 0.1F},
+    }}};
+static constexpr auto ZERO_REPEAT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffectsTypes, float>{{{
+    {AfterEffectsTypes::BLOCK_WAVY, 0.0F},
+    {AfterEffectsTypes::HYPERCOS, 0.0F},
+    {AfterEffectsTypes::IMAGE_VELOCITY, 0.0F},
+    {AfterEffectsTypes::NOISE, 0.0F},
+    {AfterEffectsTypes::PLANES, 0.0F},
+    {AfterEffectsTypes::ROTATION, 0.0F},
+    {AfterEffectsTypes::TAN_EFFECT, 0.0F},
+    {AfterEffectsTypes::XY_LERP_EFFECT, 0.0F},
+}}};
+
+static constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES = EnumMap<AfterEffectsTypes, uint32_t>{{{
+    {AfterEffectsTypes::BLOCK_WAVY, 100U},
+    {AfterEffectsTypes::HYPERCOS, 100U},
+    {AfterEffectsTypes::IMAGE_VELOCITY, 100U},
+    {AfterEffectsTypes::NOISE, 100U},
+    {AfterEffectsTypes::PLANES, 100U},
+    {AfterEffectsTypes::ROTATION, 0U},
+    {AfterEffectsTypes::TAN_EFFECT, 100U},
+    {AfterEffectsTypes::XY_LERP_EFFECT, 100U},
+}}};
+
+constexpr auto GetAfterEffectsProbability(const ZoomFilterMode filterMode)
+    -> EnumMap<AfterEffectsTypes, float>
+{
+  if constexpr (USE_FORCED_AFTER_EFFECT)
+  {
+    auto forcedProbabilities                       = DEFAULT_AFTER_EFFECTS_PROBABILITIES;
+    forcedProbabilities[FORCED_AFTER_EFFECTS_TYPE] = 1.0F;
+    return forcedProbabilities;
+  }
+
+  return EFFECTS_PROBABILITIES[filterMode];
+}
+
+constexpr auto GetRepeatAfterEffectsProbability() -> EnumMap<AfterEffectsTypes, float>
+{
+  if constexpr (USE_FORCED_AFTER_EFFECT)
+  {
+    auto forcedRepeatProbabilities                       = ZERO_REPEAT_AFTER_EFFECTS_PROBABILITIES;
+    forcedRepeatProbabilities[FORCED_AFTER_EFFECTS_TYPE] = 1.0F;
+    return forcedRepeatProbabilities;
+  }
+
+  return DEFAULT_REPEAT_AFTER_EFFECTS_PROBABILITIES;
+}
+
+constexpr auto GetAfterEffectsOffTime() -> EnumMap<AfterEffectsTypes, uint32_t>
+{
+  if constexpr (USE_FORCED_AFTER_EFFECT)
+  {
+    auto forcedOffTimes                       = DEFAULT_AFTER_EFFECTS_OFF_TIMES;
+    forcedOffTimes[FORCED_AFTER_EFFECTS_TYPE] = 0;
+    return forcedOffTimes;
+  }
+
+  return DEFAULT_AFTER_EFFECTS_OFF_TIMES;
+}
 
 using Hyp         = HypercosOverlay;
 using ModeWeights = std::vector<std::pair<HypercosOverlay, float>>;
@@ -533,7 +654,7 @@ auto FilterSettingsService::GetFilterModeData(
             FILTER_MODE_NAMES[filterMode],
             createSpeedCoefficientsEffect(filterMode, goomRand, resourcesDirectory),
             {Weights<Hyp>{goomRand, HYPERCOS_WEIGHTS[filterMode]},
-                                                        EFFECTS_PROBABILITIES[filterMode]},
+                                                        GetAfterEffectsProbability(filterMode)},
     });
   }
 
@@ -550,7 +671,10 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
     m_screenMidpoint{U_HALF * m_goomInfo.GetScreenWidth(),
                      U_HALF * m_goomInfo.GetScreenHeight()},
     m_resourcesDirectory{resourcesDirectory},
-    m_randomizedAfterEffects{std::make_unique<AfterEffectsStates>(m_goomRand)},
+    m_randomizedAfterEffects{
+        std::make_unique<AfterEffectsStates>(m_goomRand,
+                                             GetRepeatAfterEffectsProbability(),
+                                             GetAfterEffectsOffTime())},
     m_filterModeData{GetFilterModeData(m_goomRand,
                                        m_resourcesDirectory,
                                        createSpeedCoefficientsEffect)},
@@ -562,14 +686,8 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
            nullptr,
            {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
            {
-               false,
                HypercosOverlay::NONE,
-               false,
-               false,
-               false,
-               false,
-               false,
-               false,
+               DEFAULT_AFTER_EFFECTS_STATES,
                RotationAdjustments{},
             }
         },
@@ -700,7 +818,7 @@ inline auto FilterSettingsService::SetRandomizedExtraEffects() -> void
   m_randomizedAfterEffects->ResetAllStates(modeInfo.afterEffectsProbabilities);
 
   m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationAdjustments.SetMultiplyFactor(
-      modeInfo.afterEffectsProbabilities.probabilities.rotateProbability,
+      modeInfo.afterEffectsProbabilities.probabilities[AfterEffectsTypes::ROTATION],
       RotationAdjustments::AdjustmentType::AFTER_RANDOM);
 }
 

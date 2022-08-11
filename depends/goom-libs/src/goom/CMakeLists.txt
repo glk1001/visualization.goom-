@@ -57,6 +57,7 @@ add_library(goom
         src/draw/text_draw.cpp
         src/filter_fx/after_effects/after_effects.cpp
         src/filter_fx/after_effects/after_effects_states.cpp
+        src/filter_fx/after_effects/after_effects_types.h
         src/filter_fx/after_effects/hypercos.cpp
         src/filter_fx/after_effects/image_velocity.cpp
         src/filter_fx/after_effects/noise.cpp

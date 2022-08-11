@@ -123,7 +123,7 @@ private:
   {
     std::string_view name;
     std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
-    AFTER_EFFECTS::AfterEffectsProbabilities afterEffectsProbabilities;
+    AFTER_EFFECTS::AfterEffectsStates::AfterEffectsProbabilities afterEffectsProbabilities;
   };
   using FilterModeEnumMap = GOOM::UTILS::RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
   FilterModeEnumMap m_filterModeData;
@@ -246,17 +246,20 @@ inline auto FilterSettingsService::SetNewRandomFilter() -> void
 
 inline auto FilterSettingsService::TurnOffRotation() -> void
 {
-  if (!m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationEffect)
+  if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
+              .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
   {
     return;
   }
-  m_filterSettings.filterEffectsSettingsHaveChanged                          = true;
-  m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationEffect = false;
+  m_filterSettings.filterEffectsSettingsHaveChanged = true;
+  m_filterSettings.filterEffectsSettings.afterEffectsSettings
+      .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION] = false;
 }
 
 inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
 {
-  if (!m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationEffect)
+  if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
+           .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
   {
     return;
   }
@@ -267,7 +270,8 @@ inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
 
 inline auto FilterSettingsService::ToggleRotationDirection() -> void
 {
-  if (!m_filterSettings.filterEffectsSettings.afterEffectsSettings.rotationEffect)
+  if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
+           .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
   {
     return;
   }

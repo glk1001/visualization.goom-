@@ -12,16 +12,14 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 using UTILS::Timer;
 using UTILS::MATH::IGoomRand;
 
-static constexpr auto AFTER_EFFECTS_TURNED_OFF = ALL_FILTER_EFFECTS_TURNED_OFF;
-
-static constexpr auto DEFAULT_HYPERCOS_OVERLAY      = HypercosOverlay::NONE;
-static constexpr auto DEFAULT_BLOCKY_WAVY_EFFECT    = false;
-static constexpr auto DEFAULT_IMAGE_VELOCITY_EFFECT = false;
-static constexpr auto DEFAULT_NOISE_EFFECT          = false;
-static constexpr auto DEFAULT_PLANE_EFFECT          = false;
-static constexpr auto DEFAULT_ROTATION_EFFECT       = false;
-static constexpr auto DEFAULT_TAN_EFFECT            = false;
-static constexpr auto DEFAULT_XY_LERP_EFFECT        = false;
+static constexpr auto DEFAULT_BLOCKY_WAVY_EFFECT      = false;
+static constexpr auto DEFAULT_HYPERCOS_OVERLAY_EFFECT = false;
+static constexpr auto DEFAULT_IMAGE_VELOCITY_EFFECT   = false;
+static constexpr auto DEFAULT_NOISE_EFFECT            = false;
+static constexpr auto DEFAULT_PLANE_EFFECT            = false;
+static constexpr auto DEFAULT_ROTATION_EFFECT         = false;
+static constexpr auto DEFAULT_TAN_EFFECT              = false;
+static constexpr auto DEFAULT_XY_LERP_EFFECT          = false;
 
 class AfterEffectsStates::EffectState
 {
@@ -46,26 +44,45 @@ private:
   bool m_pendingOffTimerReset = false;
 };
 
-AfterEffectsStates::AfterEffectsStates(const IGoomRand& goomRand) noexcept
-  : m_hypercosOverlayEffect{DEFAULT_HYPERCOS_OVERLAY},
-    m_blockyWavyEffect{std::make_unique<EffectState>(goomRand,
-                                                     DEFAULT_BLOCKY_WAVY_EFFECT,
-                                                     PROB_REPEAT_BLOCKY_WAVY_EFFECT,
-                                                     BLOCKY_WAVY_EFFECT_OFF_TIME)},
-    m_imageVelocityEffect{std::make_unique<EffectState>(goomRand,
-                                                        DEFAULT_IMAGE_VELOCITY_EFFECT,
-                                                        PROB_REPEAT_IMAGE_VELOCITY_EFFECT,
-                                                        IMAGE_VELOCITY_EFFECT_OFF_TIME)},
-    m_noiseEffect{std::make_unique<EffectState>(
-        goomRand, DEFAULT_NOISE_EFFECT, PROB_REPEAT_NOISE_EFFECT, NOISE_EFFECT_OFF_TIME)},
-    m_planeEffect{std::make_unique<EffectState>(
-        goomRand, DEFAULT_PLANE_EFFECT, PROB_REPEAT_PLANE_EFFECT, PLANE_EFFECT_OFF_TIME)},
-    m_rotationEffect{std::make_unique<EffectState>(
-        goomRand, DEFAULT_ROTATION_EFFECT, PROB_REPEAT_ROTATION_EFFECT, ROTATION_EFFECT_OFF_TIME)},
-    m_tanEffect{std::make_unique<EffectState>(
-        goomRand, DEFAULT_TAN_EFFECT, PROB_REPEAT_TAN_EFFECT, TAN_EFFECT_OFF_TIME)},
-    m_xyLerpEffect{std::make_unique<EffectState>(
-        goomRand, DEFAULT_XY_LERP_EFFECT, PROB_REPEAT_XY_LERP_EFFECT, XY_LERP_EFFECT_OFF_TIME)}
+AfterEffectsStates::AfterEffectsStates(const IGoomRand& goomRand,
+                                       const AfterEffectsProbabilityMap& repeatProbabilities,
+                                       const AfterEffectsOffTimeMap& offTimes) noexcept
+  : m_blockyWavyEffect{std::make_unique<EffectState>(
+        goomRand,
+        DEFAULT_BLOCKY_WAVY_EFFECT,
+        repeatProbabilities[AfterEffectsTypes::BLOCK_WAVY],
+        offTimes[AfterEffectsTypes::BLOCK_WAVY])},
+    m_hypercosOverlayEffect{
+        std::make_unique<EffectState>(goomRand,
+                                      DEFAULT_HYPERCOS_OVERLAY_EFFECT,
+                                      repeatProbabilities[AfterEffectsTypes::HYPERCOS],
+                                      offTimes[AfterEffectsTypes::HYPERCOS])},
+    m_imageVelocityEffect{
+        std::make_unique<EffectState>(goomRand,
+                                      DEFAULT_IMAGE_VELOCITY_EFFECT,
+                                      repeatProbabilities[AfterEffectsTypes::IMAGE_VELOCITY],
+                                      offTimes[AfterEffectsTypes::IMAGE_VELOCITY])},
+    m_noiseEffect{std::make_unique<EffectState>(goomRand,
+                                                DEFAULT_NOISE_EFFECT,
+                                                repeatProbabilities[AfterEffectsTypes::NOISE],
+                                                offTimes[AfterEffectsTypes::NOISE])},
+    m_planeEffect{std::make_unique<EffectState>(goomRand,
+                                                DEFAULT_PLANE_EFFECT,
+                                                repeatProbabilities[AfterEffectsTypes::PLANES],
+                                                offTimes[AfterEffectsTypes::PLANES])},
+    m_rotationEffect{std::make_unique<EffectState>(goomRand,
+                                                   DEFAULT_ROTATION_EFFECT,
+                                                   repeatProbabilities[AfterEffectsTypes::ROTATION],
+                                                   offTimes[AfterEffectsTypes::ROTATION])},
+    m_tanEffect{std::make_unique<EffectState>(goomRand,
+                                              DEFAULT_TAN_EFFECT,
+                                              repeatProbabilities[AfterEffectsTypes::TAN_EFFECT],
+                                              offTimes[AfterEffectsTypes::TAN_EFFECT])},
+    m_xyLerpEffect{
+        std::make_unique<EffectState>(goomRand,
+                                      DEFAULT_XY_LERP_EFFECT,
+                                      repeatProbabilities[AfterEffectsTypes::XY_LERP_EFFECT],
+                                      offTimes[AfterEffectsTypes::XY_LERP_EFFECT])}
 {
 }
 
@@ -74,19 +91,22 @@ AfterEffectsStates::~AfterEffectsStates() noexcept = default;
 auto AfterEffectsStates::UpdateFilterSettingsFromStates(
     AfterEffectsSettings& afterEffectsSettings) const -> void
 {
-  afterEffectsSettings.blockyWavy          = m_blockyWavyEffect->IsTurnedOn();
-  afterEffectsSettings.hypercosOverlay     = m_hypercosOverlayEffect;
-  afterEffectsSettings.imageVelocityEffect = m_imageVelocityEffect->IsTurnedOn();
-  afterEffectsSettings.noiseEffect         = m_noiseEffect->IsTurnedOn();
-  afterEffectsSettings.planeEffect         = m_planeEffect->IsTurnedOn();
-  afterEffectsSettings.rotationEffect      = m_rotationEffect->IsTurnedOn();
-  afterEffectsSettings.tanEffect           = m_tanEffect->IsTurnedOn();
-  afterEffectsSettings.xyLerpEffect        = m_xyLerpEffect->IsTurnedOn();
+  afterEffectsSettings.hypercosOverlay = m_hypercosOverlay;
+
+  afterEffectsSettings.active[AfterEffectsTypes::BLOCK_WAVY] = m_blockyWavyEffect->IsTurnedOn();
+  afterEffectsSettings.active[AfterEffectsTypes::HYPERCOS] = m_hypercosOverlayEffect->IsTurnedOn();
+  afterEffectsSettings.active[AfterEffectsTypes::IMAGE_VELOCITY] =
+      m_imageVelocityEffect->IsTurnedOn();
+  afterEffectsSettings.active[AfterEffectsTypes::NOISE]          = m_noiseEffect->IsTurnedOn();
+  afterEffectsSettings.active[AfterEffectsTypes::PLANES]         = m_planeEffect->IsTurnedOn();
+  afterEffectsSettings.active[AfterEffectsTypes::ROTATION]       = m_rotationEffect->IsTurnedOn();
+  afterEffectsSettings.active[AfterEffectsTypes::TAN_EFFECT]     = m_tanEffect->IsTurnedOn();
+  afterEffectsSettings.active[AfterEffectsTypes::XY_LERP_EFFECT] = m_xyLerpEffect->IsTurnedOn();
 }
 
 auto AfterEffectsStates::TurnPlaneEffectOn() -> void
 {
-  if constexpr (AFTER_EFFECTS_TURNED_OFF)
+  if constexpr (ALL_AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
@@ -96,17 +116,18 @@ auto AfterEffectsStates::TurnPlaneEffectOn() -> void
 
 auto AfterEffectsStates::SetDefaults() -> void
 {
-  m_hypercosOverlayEffect = DEFAULT_HYPERCOS_OVERLAY;
+  m_hypercosOverlay = HypercosOverlay::NONE;
 }
 
 auto AfterEffectsStates::UpdateTimers() -> void
 {
-  if constexpr (AFTER_EFFECTS_TURNED_OFF)
+  if constexpr (ALL_AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
 
   m_blockyWavyEffect->UpdateTimer();
+  m_hypercosOverlayEffect->UpdateTimer();
   m_imageVelocityEffect->UpdateTimer();
   m_noiseEffect->UpdateTimer();
   m_planeEffect->UpdateTimer();
@@ -118,12 +139,12 @@ auto AfterEffectsStates::UpdateTimers() -> void
 auto AfterEffectsStates::ResetAllStates(const AfterEffectsProbabilities& effectsProbabilities)
     -> void
 {
-  if constexpr (AFTER_EFFECTS_TURNED_OFF)
+  if constexpr (ALL_AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
 
-  m_hypercosOverlayEffect = effectsProbabilities.hypercosWeights.GetRandomWeighted();
+  m_hypercosOverlay = effectsProbabilities.hypercosWeights.GetRandomWeighted();
 
   ResetStandardStates(effectsProbabilities);
 }
@@ -131,28 +152,43 @@ auto AfterEffectsStates::ResetAllStates(const AfterEffectsProbabilities& effects
 auto AfterEffectsStates::ResetStandardStates(const AfterEffectsProbabilities& effectsProbabilities)
     -> void
 {
-  if constexpr (AFTER_EFFECTS_TURNED_OFF)
+  if constexpr (ALL_AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
 
-  m_blockyWavyEffect->UpdateState(effectsProbabilities.probabilities.blockWavyProbability);
-  m_imageVelocityEffect->UpdateState(effectsProbabilities.probabilities.imageVelocityProbability);
-  m_noiseEffect->UpdateState(effectsProbabilities.probabilities.noiseProbability);
-  m_planeEffect->UpdateState(effectsProbabilities.probabilities.planeProbability);
-  m_rotationEffect->UpdateState(effectsProbabilities.probabilities.rotateProbability);
-  m_tanEffect->UpdateState(effectsProbabilities.probabilities.tanEffectProbability);
-  m_xyLerpEffect->UpdateState(effectsProbabilities.probabilities.xyLerpEffectProbability);
+  m_blockyWavyEffect->UpdateState(
+      effectsProbabilities.probabilities[AfterEffectsTypes::BLOCK_WAVY]);
+  m_hypercosOverlayEffect->UpdateState(
+      effectsProbabilities.probabilities[AfterEffectsTypes::HYPERCOS]);
+  m_imageVelocityEffect->UpdateState(
+      effectsProbabilities.probabilities[AfterEffectsTypes::IMAGE_VELOCITY]);
+  m_noiseEffect->UpdateState(effectsProbabilities.probabilities[AfterEffectsTypes::NOISE]);
+  m_planeEffect->UpdateState(effectsProbabilities.probabilities[AfterEffectsTypes::PLANES]);
+  m_rotationEffect->UpdateState(effectsProbabilities.probabilities[AfterEffectsTypes::ROTATION]);
+  m_tanEffect->UpdateState(effectsProbabilities.probabilities[AfterEffectsTypes::TAN_EFFECT]);
+  m_xyLerpEffect->UpdateState(
+      effectsProbabilities.probabilities[AfterEffectsTypes::XY_LERP_EFFECT]);
+
+  if (HypercosOverlay::NONE == m_hypercosOverlay)
+  {
+    m_hypercosOverlayEffect->SetState(false);
+  }
+  if (not m_hypercosOverlayEffect->IsTurnedOn())
+  {
+    m_hypercosOverlay = HypercosOverlay::NONE;
+  }
 }
 
 auto AfterEffectsStates::CheckForPendingOffTimers() -> void
 {
-  if constexpr (AFTER_EFFECTS_TURNED_OFF)
+  if constexpr (ALL_AFTER_EFFECTS_TURNED_OFF)
   {
     return;
   }
 
   m_blockyWavyEffect->CheckPendingOffTimerReset();
+  m_hypercosOverlayEffect->CheckPendingOffTimerReset();
   m_imageVelocityEffect->CheckPendingOffTimerReset();
   m_noiseEffect->CheckPendingOffTimerReset();
   m_planeEffect->CheckPendingOffTimerReset();
@@ -179,7 +215,7 @@ inline auto AfterEffectsStates::EffectState::UpdateTimer() -> void
 
 inline auto AfterEffectsStates::EffectState::UpdateState(const float probabilityOfEffect) -> void
 {
-  if (!m_offTimer.Finished())
+  if (not m_offTimer.Finished())
   {
     return;
   }
@@ -200,7 +236,7 @@ inline auto AfterEffectsStates::EffectState::SetState(const bool value) -> void
   {
     m_turnedOn = m_goomRand.ProbabilityOf(m_probabilityOfEffectRepeated);
   }
-  if (previouslyTurnedOn && (!m_turnedOn))
+  if (previouslyTurnedOn && (not m_turnedOn))
   {
     m_pendingOffTimerReset = true;
   }
@@ -208,7 +244,7 @@ inline auto AfterEffectsStates::EffectState::SetState(const bool value) -> void
 
 inline auto AfterEffectsStates::EffectState::CheckPendingOffTimerReset() -> void
 {
-  if (!m_pendingOffTimerReset)
+  if (not m_pendingOffTimerReset)
   {
     return;
   }
