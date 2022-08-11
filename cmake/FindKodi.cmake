@@ -17,9 +17,7 @@ if (NOT KODI_CONFIG_DIR)
     message(FATAL_ERROR "Could not find \"KodiConfig.cmake\" under goom build directory.")
 endif ()
 
-set(CMAKE_FIND_DEBUG_MODE TRUE)
 find_package(Kodi PATHS "${KODI_CONFIG_DIR}" NO_DEFAULT_PATH REQUIRED CONFIG)
-set(CMAKE_FIND_DEBUG_MODE FALSE)
 
 # Provides KODI_INCLUDE_DIR but it's out by one!
 set(KODI_FIXED_INCLUDE_DIR ${KODI_INCLUDE_DIR}/..)
