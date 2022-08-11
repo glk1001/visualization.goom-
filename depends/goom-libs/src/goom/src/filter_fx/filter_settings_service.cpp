@@ -210,12 +210,12 @@ static constexpr auto WAVE1_PROB_ROTATE              = PROB_HIGH;
 static constexpr auto Y_ONLY_PROB_ROTATE             = PROB_HALF;
 
 static constexpr auto DEFAULT_PROB_BLOCKY_WAVY_EFFECT    = 0.3F;
-static constexpr auto DEFAULT_PROB_HYPERCOS_EFFECT       = 0.2F;
+static constexpr auto DEFAULT_PROB_HYPERCOS_EFFECT       = 0.9F;
 static constexpr auto DEFAULT_PROB_IMAGE_VELOCITY_EFFECT = 0.1F;
 static constexpr auto DEFAULT_PROB_NOISE_EFFECT          = 0.1F;
-static constexpr auto DEFAULT_PROB_PLANE_EFFECT          = 0.8F;
+static constexpr auto DEFAULT_PROB_PLANE_EFFECT          = 0.7F;
 static constexpr auto DEFAULT_PROB_TAN_EFFECT            = 0.2F;
-static constexpr auto DEFAULT_PROB_XY_LERP_EFFECT        = 0.3F;
+static constexpr auto DEFAULT_PROB_XY_LERP_EFFECT        = 0.2F;
 
 static constexpr auto WAVE0_PROB_PLANE_EFFECT = 1.0F;
 static constexpr auto WAVE1_PROB_PLANE_EFFECT = 1.0F;
