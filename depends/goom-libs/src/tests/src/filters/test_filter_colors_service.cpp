@@ -1,7 +1,7 @@
 #include "catch2/catch.hpp"
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_colors_service.h"
-#include "goom/goom_graphic.h"
+#include "goom_graphic.h"
 
 #include <array>
 #include <numeric>

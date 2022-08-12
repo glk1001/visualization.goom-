@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goom/goom_graphic.h"
 #include "goom_config.h"
+#include "goom_graphic.h"
 
 #include <algorithm>
 #include <cmath>
@@ -166,8 +166,10 @@ inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixe
   Expects((brightness >= 0.0F) && (brightness <= MAX_BRIGHTNESS));
   UNUSED_FOR_NDEBUG(MAX_BRIGHTNESS);
 
-  const auto intBrightness = static_cast<uint32_t>(std::round((brightness * 256.0F) + 0.0001F));
-  return GetBrighterColorInt(intBrightness, color);
+  static constexpr auto MAX_COLOR_VALUE = 256.0F;
+  static constexpr auto SMALL_VALUE     = 0.0001F;
+  return GetBrighterColorInt(
+      static_cast<uint32_t>(std::round((brightness * MAX_COLOR_VALUE) + SMALL_VALUE)), color);
 }
 
 constexpr auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, const int32_t intT)
@@ -177,10 +179,10 @@ constexpr auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, cons
   return static_cast<uint32_t>(((MAX_COL_VAL_32 * ch1) + (intT * (ch2 - ch1))) / MAX_COL_VAL_32);
 }
 
-constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t) -> Pixel
+constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, const float t) -> Pixel
 {
-  t               = std::clamp(t, 0.0F, 1.0F);
-  const auto intT = static_cast<int32_t>(t * static_cast<float>(MAX_COLOR_VAL));
+  const auto intT =
+      static_cast<int32_t>(std::clamp(t, 0.0F, 1.0F) * static_cast<float>(MAX_COLOR_VAL));
 
   const auto color1Red   = static_cast<int32_t>(color1.R());
   const auto color1Green = static_cast<int32_t>(color1.G());

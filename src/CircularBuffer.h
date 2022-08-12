@@ -64,7 +64,8 @@ public:
       }
 
       std::copy(cbegin(m_buffer) + static_cast<std::ptrdiff_t>(m_readPtr),
-                cbegin(m_buffer) + static_cast<std::ptrdiff_t>(m_readPtr + delta), dest);
+                cbegin(m_buffer) + static_cast<std::ptrdiff_t>(m_readPtr + delta),
+                dest);
 
       dest += delta;
       done += delta;
@@ -96,7 +97,7 @@ public:
 private:
   const size_t m_size;
   std::vector<T> m_buffer;
-  size_t m_readPtr = 0;
+  size_t m_readPtr  = 0;
   size_t m_writePtr = 0;
-  size_t m_used = 0;
+  size_t m_used     = 0;
 };

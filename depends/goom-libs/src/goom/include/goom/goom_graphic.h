@@ -179,7 +179,7 @@ class PixelBuffer
 
 public:
   PixelBuffer() noexcept = delete;
-  PixelBuffer(const Dimensions& dimensions) noexcept;
+  explicit PixelBuffer(const Dimensions& dimensions) noexcept;
   PixelBuffer(const PixelBuffer&)                    = delete;
   PixelBuffer(PixelBuffer&&)                         = delete;
   auto operator=(const PixelBuffer&) -> PixelBuffer& = delete;
@@ -345,8 +345,7 @@ inline auto PixelBuffer::Fill(const Pixel& pixel) noexcept -> void
   std::fill(m_buff.begin(), m_buff.end(), pixel);
 }
 
-inline auto PixelBuffer::GetIntBufferSize(const Dimensions& dimensions) noexcept
-    -> size_t
+inline auto PixelBuffer::GetIntBufferSize(const Dimensions& dimensions) noexcept -> size_t
 {
   return static_cast<size_t>(dimensions.GetSize()) * sizeof(Pixel);
 }
@@ -425,10 +424,12 @@ inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
   };
   std::array<Pixel, NUM_NBRS> neighbours;
 
+  // NOLINTBEGIN: Optimization
   *reinterpret_cast<TwoPixels*>(&(neighbours[0])) =
       *reinterpret_cast<const TwoPixels*>(&(m_buff[xPos]));
   *reinterpret_cast<TwoPixels*>(&(neighbours[2])) =
       *reinterpret_cast<const TwoPixels*>(&(m_buff[xPos + m_width]));
+  // NOLINTEND
 
   return neighbours;
 }

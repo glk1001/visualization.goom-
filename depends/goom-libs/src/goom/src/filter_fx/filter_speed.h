@@ -46,7 +46,7 @@ constexpr auto Vitesse::SetDefault() noexcept -> void
 constexpr auto Vitesse::GetVitesse() const noexcept -> int32_t
 {
   return m_vitesse;
-};
+}
 
 constexpr auto Vitesse::SetVitesse(const int32_t val) noexcept -> void
 {

@@ -150,7 +150,7 @@ inline auto StarDrawer::GetLineMaxPartMultiplier() const noexcept -> float
   }
 }
 
-inline auto StarDrawer::GetNumPartsAndElementSize(float tAge) const noexcept
+inline auto StarDrawer::GetNumPartsAndElementSize(const float tAge) const noexcept
     -> std::pair<uint32_t, uint32_t>
 {
   if (static constexpr auto T_OLD_AGE = 0.95F; tAge > T_OLD_AGE)

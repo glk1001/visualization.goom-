@@ -23,18 +23,19 @@ static constexpr auto FILTER_STOP_ROTATION_PROB                     = 0.25F;
 GoomEvents::GoomEvents(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
     m_weightedEvents{{
-        { GoomEvent::CHANGE_FILTER_MODE,                       CHANGE_FILTER_MODE_PROB},
-        { GoomEvent::CHANGE_STATE,                             CHANGE_STATE_PROB},
-        { GoomEvent::CHANGE_TO_MEGA_LENT_MODE,                 CHANGE_TO_MEGA_LENT_MODE_PROB},
-        { GoomEvent::FILTER_REVERSE_ON,                        FILTER_REVERSE_ON_PROB},
-        { GoomEvent::FILTER_REVERSE_OFF_AND_STOP_SPEED,        FILTER_REVERSE_OFF_AND_STOP_SPEED_PROB},
-        { GoomEvent::FILTER_VITESSE_STOP_SPEED_MINUS1,         FILTER_VITESSE_STOP_SPEED_MINUS1_PROB},
-        { GoomEvent::FILTER_VITESSE_STOP_SPEED,                FILTER_VITESSE_STOP_SPEED_PROB},
-        { GoomEvent::FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE, FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE_PROB},
-        { GoomEvent::FILTER_TOGGLE_ROTATION,                   FILTER_TOGGLE_ROTATION_PROB},
-        { GoomEvent::FILTER_INCREASE_ROTATION,                 FILTER_INCREASE_ROTATION_PROB},
-        { GoomEvent::FILTER_DECREASE_ROTATION,                 FILTER_DECREASE_ROTATION_PROB},
-        { GoomEvent::FILTER_STOP_ROTATION,                     FILTER_STOP_ROTATION_PROB},
+        { GoomEvent::CHANGE_FILTER_MODE,                CHANGE_FILTER_MODE_PROB},
+        { GoomEvent::CHANGE_STATE,                      CHANGE_STATE_PROB},
+        { GoomEvent::CHANGE_TO_MEGA_LENT_MODE,          CHANGE_TO_MEGA_LENT_MODE_PROB},
+        { GoomEvent::FILTER_REVERSE_ON,                 FILTER_REVERSE_ON_PROB},
+        { GoomEvent::FILTER_REVERSE_OFF_AND_STOP_SPEED, FILTER_REVERSE_OFF_AND_STOP_SPEED_PROB},
+        { GoomEvent::FILTER_VITESSE_STOP_SPEED_MINUS1,  FILTER_VITESSE_STOP_SPEED_MINUS1_PROB},
+        { GoomEvent::FILTER_VITESSE_STOP_SPEED,         FILTER_VITESSE_STOP_SPEED_PROB},
+        { GoomEvent::FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE,
+                                                     FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE_PROB},
+        { GoomEvent::FILTER_TOGGLE_ROTATION,            FILTER_TOGGLE_ROTATION_PROB},
+        { GoomEvent::FILTER_INCREASE_ROTATION,          FILTER_INCREASE_ROTATION_PROB},
+        { GoomEvent::FILTER_DECREASE_ROTATION,          FILTER_DECREASE_ROTATION_PROB},
+        { GoomEvent::FILTER_STOP_ROTATION,              FILTER_STOP_ROTATION_PROB},
     }}
 {
 }

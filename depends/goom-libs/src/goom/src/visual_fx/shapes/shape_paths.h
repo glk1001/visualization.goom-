@@ -171,7 +171,7 @@ inline auto ShapePath::UpdateInnerColorInfo(
                                         {innerColorMaps, COLOR_MAP_TYPES});
 }
 
-inline auto ShapePath::SetChromaFactor(float val) noexcept -> void
+inline auto ShapePath::SetChromaFactor(const float val) noexcept -> void
 {
   m_colorInfo.chromaFactor = val;
 }

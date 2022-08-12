@@ -15,7 +15,7 @@ class FractalHits
 {
 public:
   FractalHits() noexcept = delete;
-  FractalHits(const Dimensions& dimensions) noexcept;
+  explicit FractalHits(const Dimensions& dimensions) noexcept;
   ~FractalHits() noexcept;
   FractalHits(const FractalHits&) noexcept                    = default;
   FractalHits(FractalHits&&) noexcept                         = default;

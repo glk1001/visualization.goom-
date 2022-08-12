@@ -4,10 +4,10 @@
 //#undef NO_LOGGING
 
 #include "color/color_utils.h"
-#include "goom/logging.h"
-#include "goom/spimpl.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
+#include "logging.h"
+#include "spimpl.h"
 #include "utils/math/misc.h"
 
 #include <codecvt>
@@ -235,7 +235,7 @@ private:
   struct Span;
   using SpanArray = std::vector<Span>;
 
-  struct RectImpl : Rect
+  struct RectImpl : public Rect
   {
     RectImpl() noexcept = default;
     RectImpl(int32_t left, int32_t top, int32_t right, int32_t bottom) noexcept;
@@ -473,7 +473,7 @@ inline void TextDraw::TextDrawImpl::SetFontSize(const int32_t val)
 
   m_fontSize = val;
   LogInfo("Setting font size {}.", m_fontSize); // NOLINT
-  if (m_face)
+  if (m_face != nullptr)
   {
     SetFaceFontSize();
   }
@@ -535,7 +535,7 @@ inline void TextDraw::TextDrawImpl::SetOutlineFontColorFunc(const FontColorFunc&
 
 void TextDraw::TextDrawImpl::Prepare()
 {
-  if (!m_face)
+  if (m_face == nullptr)
   {
     throw std::logic_error("Font face has not been set.");
   }
@@ -546,7 +546,7 @@ void TextDraw::TextDrawImpl::Prepare()
   auto yMin = std::numeric_limits<int32_t>::max();
   auto yMax = 0;
 
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv{};
   const std::u32string utf32Text = conv.from_bytes(m_theText);
 
   for (auto i = 0U; i < utf32Text.size(); ++i)

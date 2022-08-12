@@ -48,10 +48,10 @@ class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,
 public:
   CVisualizationGoom();
   CVisualizationGoom(const CVisualizationGoom&) noexcept = delete;
-  CVisualizationGoom(CVisualizationGoom&&) noexcept = delete;
+  CVisualizationGoom(CVisualizationGoom&&) noexcept      = delete;
   ~CVisualizationGoom() override;
   auto operator=(const CVisualizationGoom&) -> CVisualizationGoom& = delete;
-  auto operator=(CVisualizationGoom&&) -> CVisualizationGoom& = delete;
+  auto operator=(CVisualizationGoom&&) -> CVisualizationGoom&      = delete;
 
   [[nodiscard]] auto Start(int numChannels,
                            int samplesPerSec,
@@ -101,9 +101,9 @@ private:
   const size_t m_goomBufferLen;
   const size_t m_goomBufferSize;
 
-  size_t m_numChannels = 0;
-  size_t m_audioBufferLen = 0;
-  uint32_t m_audioBufferNum = 0;
+  size_t m_numChannels                                        = 0;
+  size_t m_audioBufferLen                                     = 0;
+  uint32_t m_audioBufferNum                                   = 0;
   static constexpr uint32_t MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6;
 
   const GOOM::GoomControl::ShowTitleType m_showTitle;
@@ -113,8 +113,8 @@ private:
   const GLint m_componentsPerTexel = 2;
 #endif
   static constexpr int32_t NUM_VERTICES_IN_TRIANGLE = 3;
-  static constexpr int32_t NUM_TRIANGLES = 2;
-  const int32_t m_numVertices = NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE;
+  static constexpr int32_t NUM_TRIANGLES            = 2;
+  const int32_t m_numVertices                       = NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE;
   const std::vector<GLfloat> m_quadData;
   [[nodiscard]] static auto GetGlQuadData(int32_t width, int32_t height, int32_t xPos, int32_t yPos)
       -> std::vector<GLfloat>;
@@ -130,18 +130,18 @@ private:
   std::array<GLuint, G_NUM_PBOS> m_pboIds{};
   std::array<uint8_t*, G_NUM_PBOS> m_pboGoomBuffer{};
   size_t m_currentPboIndex = 0;
-  GLuint m_vaoObject = 0;
+  GLuint m_vaoObject       = 0;
 #endif
   glm::mat4 m_projModelMatrix{};
-  GLuint m_vertexVBO = 0;
-  GLint m_uProjModelMatLoc = -1;
-  GLint m_aPositionLoc = -1;
-  GLint m_aTexCoordsLoc = -1;
-  GLint m_uTexExposureLoc = -1;
-  GLint m_uTexBrightnessLoc = -1;
-  GLint m_uTexContrastLoc = -1;
+  GLuint m_vertexVBO                     = 0;
+  GLint m_uProjModelMatLoc               = -1;
+  GLint m_aPositionLoc                   = -1;
+  GLint m_aTexCoordsLoc                  = -1;
+  GLint m_uTexExposureLoc                = -1;
+  GLint m_uTexBrightnessLoc              = -1;
+  GLint m_uTexContrastLoc                = -1;
   GLint m_uTexContrastMinChannelValueLoc = -1;
-  GLint m_uTimeLoc = -1;
+  GLint m_uTimeLoc                       = -1;
 
   // The Goom object
   std::unique_ptr<GOOM::GoomControl> m_goomControl{};

@@ -14,6 +14,7 @@
 
 #undef NO_LOGGING
 
+#include "compiler_versions.h"
 #include "control/goom_all_visual_fx.h"
 #include "control/goom_events.h"
 #include "control/goom_image_buffers.h"
@@ -31,13 +32,12 @@
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
-#include "goom/compiler_versions.h"
-#include "goom/logging.h"
-#include "goom/spimpl.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goom_version.h"
+#include "logging.h"
+#include "spimpl.h"
 #include "utils/build_time.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand.h"

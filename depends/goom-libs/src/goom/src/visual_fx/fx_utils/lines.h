@@ -29,7 +29,7 @@ void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, uint32_t numPointsT
 
 
 template<typename T>
-void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, uint32_t numPointsToSmooth)
+void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, const uint32_t numPointsToSmooth)
 {
   Expects(numPointsToSmooth > 0);
   Expects(numPointsToSmooth < circlePoints.size());

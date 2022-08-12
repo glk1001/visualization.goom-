@@ -109,7 +109,7 @@ auto VisualFxColorMatchedSets::GetNextRandomColorMatchedSet() const noexcept
   return m_colorMatchedSetsMap[m_colorMatchedSetsWeights.GetRandomWeighted()];
 }
 
-// TODO: CLion is giving false positives for unreachable functions.
+// TODO(glk): CLion is giving false positives for unreachable functions.
 // For example, 'GetOneGroupColorMatchedSet'.
 auto VisualFxColorMatchedSets::GetOneGroupColorMatchedSet(const Groups group) noexcept
     -> ColorMatchedSet

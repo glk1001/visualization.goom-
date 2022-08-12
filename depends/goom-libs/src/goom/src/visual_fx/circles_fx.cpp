@@ -4,8 +4,8 @@
 
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
-#include "goom/spimpl.h"
 #include "logging.h"
+#include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/misc.h"
 #include "utils/timer.h"

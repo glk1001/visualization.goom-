@@ -19,12 +19,12 @@
 #include "filter_buffer_color_info.h"
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
-#include "goom/logging.h"
-#include "goom/spimpl.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goom_types.h"
+#include "logging.h"
+#include "spimpl.h"
 #include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
 #include "utils/propagate_const.h"
@@ -212,7 +212,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::UpdateFilterBufferSettings(
 
 auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams() const noexcept -> NameValuePairs
 {
-  static constexpr auto PARAM_GROUP = "ZoomFilterFx";
+  static constexpr auto* PARAM_GROUP = "ZoomFilterFx";
 
   auto nameValuePairs = NameValuePairs{GetPair(PARAM_GROUP, "tranLerpFactor", GetTranLerpFactor())};
 

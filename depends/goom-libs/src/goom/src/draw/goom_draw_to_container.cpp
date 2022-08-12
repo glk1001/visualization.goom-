@@ -3,10 +3,10 @@
 //#undef NO_LOGGING
 
 #include "color/color_utils.h"
-#include "goom/logging.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_types.h"
+#include "logging.h"
 
 #include <cstdint>
 #include <vector>

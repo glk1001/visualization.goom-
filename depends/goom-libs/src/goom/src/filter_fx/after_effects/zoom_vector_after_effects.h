@@ -24,7 +24,7 @@ public:
                                              const NormalizedCoords& velocity) const noexcept
       -> NormalizedCoords;
 
-  static constexpr auto PARAM_GROUP = "After Effects";
+  static constexpr auto* PARAM_GROUP = "After Effects";
   [[nodiscard]] auto GetZoomEffectsNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
 
 private:

@@ -6,8 +6,8 @@
 #include "color_data/color_map_enums.h"
 #include "color_data/extra_color_groups.h"
 #include "color_utils.h"
-#include "goom/goom_graphic.h"
 #include "goom_config.h"
+#include "goom_graphic.h"
 #include "logging.h"
 #include "utils/enum_utils.h"
 
@@ -68,7 +68,7 @@ inline auto RotatedColorMap::GetColor(const float t) const -> Pixel
   {
     tNew = 1.0F - (tNew - 1.0F);
   }
-  return GetColorMap()->GetColor(tNew);
+  return GetColorMap().GetColor(tNew);
 }
 
 class TintedColorMap : public ColorMapWrapper
@@ -104,14 +104,15 @@ TintedColorMap::TintedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
 
 auto TintedColorMap::GetColor(const float t) const -> Pixel
 {
-  const auto color = GetColorMap()->GetColor(t);
+  const auto color = GetColorMap().GetColor(t);
   const auto rgb8  = vivid::col8_t{color.R(), color.G(), color.B()};
 
   static constexpr auto SATURATION_INDEX = 1;
   static constexpr auto LIGHTNESS_INDEX  = 2;
-  auto hsv                               = vivid::hsv_t{vivid::rgb::fromRgb8(rgb8)};
-  hsv[SATURATION_INDEX]                  = m_saturation;
-  hsv[LIGHTNESS_INDEX]                   = m_lightness;
+
+  auto hsv              = vivid::hsv_t{vivid::rgb::fromRgb8(rgb8)};
+  hsv[SATURATION_INDEX] = m_saturation;
+  hsv[LIGHTNESS_INDEX]  = m_lightness;
 
   const auto newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
   return Pixel{

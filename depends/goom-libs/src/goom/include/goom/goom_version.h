@@ -6,11 +6,11 @@
 namespace GOOM
 {
 
-static constexpr auto GOOM_VER_NAME        = "Goom++ Library";
-static constexpr auto GOOM_VER_DESCRIPTION = "Goom++ Initial Release";
-static constexpr auto GOOM_VER_MAJOR       = 1;
-static constexpr auto GOOM_VER_MINOR       = 0;
-static constexpr auto GOOM_VER_REVISION    = 0;
+static constexpr auto* GOOM_VER_NAME        = "Goom++ Library";
+static constexpr auto* GOOM_VER_DESCRIPTION = "Goom++ Initial Release";
+static constexpr auto GOOM_VER_MAJOR        = 1;
+static constexpr auto GOOM_VER_MINOR        = 0;
+static constexpr auto GOOM_VER_REVISION     = 0;
 
 struct VersionInfoInt
 {

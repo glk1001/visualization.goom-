@@ -20,7 +20,7 @@ namespace IMPL
 auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "AllMapsUnweighted";
+  static constexpr auto* MAPS_NAME = "AllMapsUnweighted";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -39,7 +39,7 @@ auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept
 auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "AllStandardMaps";
+  static constexpr auto* MAPS_NAME = "AllStandardMaps";
 
   static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
   static constexpr auto SEQUENTIAL_WEIGHT                      = 1.0F;
@@ -50,22 +50,22 @@ auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept
   static constexpr auto QUALITATIVE_WEIGHT                     = 1.0F;
   static constexpr auto MISC_WEIGHT                            = 1.0F;
 
-  // TODO - Investigate clang-format issue with this.
+  // TODO(glk) - Investigate clang-format issue with this.
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
       goomRand,
       Weights<ColorMapGroup>{
-          goomRand,
-          {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL,                      SEQUENTIAL_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL2,                     SEQUENTIAL2_WEIGHT},
-              {ColorMapGroup::CYCLIC,                          CYCLIC_WEIGHT},
-              {ColorMapGroup::DIVERGING,                       DIVERGING_WEIGHT},
-              {ColorMapGroup::DIVERGING_BLACK,                 DIVERGING_BLACK_WEIGHT},
-              {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
-              {ColorMapGroup::MISC,                            MISC_WEIGHT},
-          }
+        goomRand,
+        {
+          {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
+          {ColorMapGroup::SEQUENTIAL,                      SEQUENTIAL_WEIGHT},
+          {ColorMapGroup::SEQUENTIAL2,                     SEQUENTIAL2_WEIGHT},
+          {ColorMapGroup::CYCLIC,                          CYCLIC_WEIGHT},
+          {ColorMapGroup::DIVERGING,                       DIVERGING_WEIGHT},
+          {ColorMapGroup::DIVERGING_BLACK,                 DIVERGING_BLACK_WEIGHT},
+          {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
+          {ColorMapGroup::MISC,                            MISC_WEIGHT},
+        }
       },
       MAPS_NAME
   );
@@ -74,7 +74,7 @@ auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept
 
 auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "AllSlimMaps";
+  static constexpr auto* MAPS_NAME = "AllSlimMaps";
 
   static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
   static constexpr auto SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
@@ -91,14 +91,15 @@ auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> std::shared_pt
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL_SLIM,                      SEQUENTIAL_SLIM_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL2_SLIM,                     SEQUENTIAL2_SLIM_WEIGHT},
-              {ColorMapGroup::CYCLIC_SLIM,                          CYCLIC_SLIM_WEIGHT},
-              {ColorMapGroup::DIVERGING_SLIM,                       DIVERGING_SLIM_WEIGHT},
-              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 DIVERGING_BLACK_SLIM_WEIGHT},
-              {ColorMapGroup::QUALITATIVE_SLIM,                     QUALITATIVE_SLIM_WEIGHT},
-              {ColorMapGroup::MISC_SLIM,                            MISC_SLIM_WEIGHT},
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM,
+                                                       PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL_SLIM,         SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL2_SLIM,        SEQUENTIAL2_SLIM_WEIGHT},
+              {ColorMapGroup::CYCLIC_SLIM,             CYCLIC_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_SLIM,          DIVERGING_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_BLACK_SLIM,    DIVERGING_BLACK_SLIM_WEIGHT},
+              {ColorMapGroup::QUALITATIVE_SLIM,        QUALITATIVE_SLIM_WEIGHT},
+              {ColorMapGroup::MISC_SLIM,               MISC_SLIM_WEIGHT},
           }
       },
       MAPS_NAME
@@ -109,7 +110,7 @@ auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> std::shared_pt
 auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "MostlySequentialStandardMaps";
+  static constexpr auto* MAPS_NAME = "MostlySequentialStandardMaps";
 
   static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 1.0F;
   static constexpr auto SEQUENTIAL_WEIGHT                      = 1.0F;
@@ -124,17 +125,17 @@ auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
   return std::make_shared<WeightedColorMaps>(
       goomRand,
       Weights<ColorMapGroup>{
-          goomRand,
-          {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL,                      SEQUENTIAL_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL2,                     SEQUENTIAL2_WEIGHT},
-              {ColorMapGroup::CYCLIC,                          CYCLIC_WEIGHT},
-              {ColorMapGroup::DIVERGING,                       DIVERGING_WEIGHT},
-              {ColorMapGroup::DIVERGING_BLACK,                 DIVERGING_BLACK_WEIGHT},
-              {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
-              {ColorMapGroup::MISC,                            MISC_WEIGHT},
-          }
+        goomRand,
+        {
+          {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
+          {ColorMapGroup::SEQUENTIAL,                      SEQUENTIAL_WEIGHT},
+          {ColorMapGroup::SEQUENTIAL2,                     SEQUENTIAL2_WEIGHT},
+          {ColorMapGroup::CYCLIC,                          CYCLIC_WEIGHT},
+          {ColorMapGroup::DIVERGING,                       DIVERGING_WEIGHT},
+          {ColorMapGroup::DIVERGING_BLACK,                 DIVERGING_BLACK_WEIGHT},
+          {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
+          {ColorMapGroup::MISC,                            MISC_WEIGHT},
+        }
       },
       MAPS_NAME
   );
@@ -144,7 +145,7 @@ auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "MostlySequentialSlimMaps";
+  static constexpr auto* MAPS_NAME = "MostlySequentialSlimMaps";
 
   static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 1.0F;
   static constexpr auto SEQUENTIAL_SLIM_WEIGHT                      = 1.0F;
@@ -161,14 +162,15 @@ auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL_SLIM,                      SEQUENTIAL_SLIM_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL2_SLIM,                     SEQUENTIAL2_SLIM_WEIGHT},
-              {ColorMapGroup::CYCLIC_SLIM,                          CYCLIC_SLIM_WEIGHT},
-              {ColorMapGroup::DIVERGING_SLIM,                       DIVERGING_SLIM_WEIGHT},
-              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 DIVERGING_BLACK_SLIM_WEIGHT},
-              {ColorMapGroup::QUALITATIVE_SLIM,                     QUALITATIVE_SLIM_WEIGHT},
-              {ColorMapGroup::MISC_SLIM,                            MISC_SLIM_WEIGHT},
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM,
+                                                       PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL_SLIM,         SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL2_SLIM,        SEQUENTIAL2_SLIM_WEIGHT},
+              {ColorMapGroup::CYCLIC_SLIM,             CYCLIC_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_SLIM,          DIVERGING_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_BLACK_SLIM,    DIVERGING_BLACK_SLIM_WEIGHT},
+              {ColorMapGroup::QUALITATIVE_SLIM,        QUALITATIVE_SLIM_WEIGHT},
+              {ColorMapGroup::MISC_SLIM,               MISC_SLIM_WEIGHT},
           }
       },
       MAPS_NAME
@@ -179,7 +181,7 @@ auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "SlightlyDivergingStandardMaps";
+  static constexpr auto* MAPS_NAME = "SlightlyDivergingStandardMaps";
 
   static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT = 10.0F;
   static constexpr auto SEQUENTIAL_WEIGHT                      = 10.0F;
@@ -194,17 +196,17 @@ auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
   return std::make_shared<WeightedColorMaps>(
       goomRand,
       Weights<ColorMapGroup>{
-          goomRand,
-          {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL,                      SEQUENTIAL_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL2,                     SEQUENTIAL2_WEIGHT},
-              {ColorMapGroup::CYCLIC,                          CYCLIC_WEIGHT},
-              {ColorMapGroup::DIVERGING,                       DIVERGING_WEIGHT},
-              {ColorMapGroup::DIVERGING_BLACK,                 DIVERGING_BLACK_WEIGHT},
-              {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
-              {ColorMapGroup::MISC,                            MISC_WEIGHT},
-          }
+        goomRand,
+        {
+          {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL, PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
+          {ColorMapGroup::SEQUENTIAL,                      SEQUENTIAL_WEIGHT},
+          {ColorMapGroup::SEQUENTIAL2,                     SEQUENTIAL2_WEIGHT},
+          {ColorMapGroup::CYCLIC,                          CYCLIC_WEIGHT},
+          {ColorMapGroup::DIVERGING,                       DIVERGING_WEIGHT},
+          {ColorMapGroup::DIVERGING_BLACK,                 DIVERGING_BLACK_WEIGHT},
+          {ColorMapGroup::QUALITATIVE,                     QUALITATIVE_WEIGHT},
+          {ColorMapGroup::MISC,                            MISC_WEIGHT},
+        }
       },
       MAPS_NAME
   );
@@ -214,7 +216,7 @@ auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "SlightlyDivergingSlimMaps";
+  static constexpr auto* MAPS_NAME = "SlightlyDivergingSlimMaps";
 
   static constexpr auto PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT = 10.0F;
   static constexpr auto SEQUENTIAL_SLIM_WEIGHT                      = 10.0F;
@@ -231,14 +233,15 @@ auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
       Weights<ColorMapGroup>{
           goomRand,
           {
-              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM, PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL_SLIM,                      SEQUENTIAL_SLIM_WEIGHT},
-              {ColorMapGroup::SEQUENTIAL2_SLIM,                     SEQUENTIAL2_SLIM_WEIGHT},
-              {ColorMapGroup::CYCLIC_SLIM,                          CYCLIC_SLIM_WEIGHT},
-              {ColorMapGroup::DIVERGING_SLIM,                       DIVERGING_SLIM_WEIGHT},
-              {ColorMapGroup::DIVERGING_BLACK_SLIM,                 DIVERGING_BLACK_SLIM_WEIGHT},
-              {ColorMapGroup::QUALITATIVE_SLIM,                     QUALITATIVE_SLIM_WEIGHT},
-              {ColorMapGroup::MISC_SLIM,                            MISC_SLIM_WEIGHT},
+              {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM,
+                                                       PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL_SLIM,         SEQUENTIAL_SLIM_WEIGHT},
+              {ColorMapGroup::SEQUENTIAL2_SLIM,        SEQUENTIAL2_SLIM_WEIGHT},
+              {ColorMapGroup::CYCLIC_SLIM,             CYCLIC_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_SLIM,          DIVERGING_SLIM_WEIGHT},
+              {ColorMapGroup::DIVERGING_BLACK_SLIM,    DIVERGING_BLACK_SLIM_WEIGHT},
+              {ColorMapGroup::QUALITATIVE_SLIM,        QUALITATIVE_SLIM_WEIGHT},
+              {ColorMapGroup::MISC_SLIM,               MISC_SLIM_WEIGHT},
           }
       },
       MAPS_NAME
@@ -249,7 +252,7 @@ auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "BlueStandardMaps";
+  static constexpr auto* MAPS_NAME = "BlueStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -268,7 +271,7 @@ auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "RedStandardMaps";
+  static constexpr auto* MAPS_NAME = "RedStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -287,7 +290,7 @@ auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "GreenStandardMaps";
+  static constexpr auto* MAPS_NAME = "GreenStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -306,7 +309,7 @@ auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "YellowStandardMaps";
+  static constexpr auto* MAPS_NAME = "YellowStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -325,7 +328,7 @@ auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "OrangeStandardMaps";
+  static constexpr auto* MAPS_NAME = "OrangeStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -344,7 +347,7 @@ auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "PurpleStandardMaps";
+  static constexpr auto* MAPS_NAME = "PurpleStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -363,7 +366,7 @@ auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "CitiesStandardMaps";
+  static constexpr auto* MAPS_NAME = "CitiesStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -382,7 +385,7 @@ auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "SeasonsStandardMaps";
+  static constexpr auto* MAPS_NAME = "SeasonsStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -401,7 +404,7 @@ auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "HeatStandardMaps";
+  static constexpr auto* MAPS_NAME = "HeatStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -420,7 +423,7 @@ auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "ColdStandardMaps";
+  static constexpr auto* MAPS_NAME = "ColdStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -439,7 +442,7 @@ auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "PastelStandardMaps";
+  static constexpr auto* MAPS_NAME = "PastelStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -458,7 +461,7 @@ auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "DivergingBlackStandardMaps";
+  static constexpr auto* MAPS_NAME = "DivergingBlackStandardMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -477,7 +480,7 @@ auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
 auto MakeSharedWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
     -> std::shared_ptr<RandomColorMaps>
 {
-  static constexpr auto MAPS_NAME = "WesAndersonMaps";
+  static constexpr auto* MAPS_NAME = "WesAndersonMaps";
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
@@ -501,8 +504,8 @@ RandomColorMapsGroups::RandomColorMapsGroups(const IGoomRand& goomRand) noexcept
 {
 }
 
-auto RandomColorMapsGroups::MakeRandomColorMapsGroup(Groups randomColorMapsGroup) const noexcept
-    -> std::shared_ptr<RandomColorMaps>
+auto RandomColorMapsGroups::MakeRandomColorMapsGroup(
+    const Groups randomColorMapsGroup) const noexcept -> std::shared_ptr<RandomColorMaps>
 {
   switch (randomColorMapsGroup)
   {

@@ -111,16 +111,17 @@ inline auto RotationAdjustments::Reset() -> void
 
 inline auto Rotation::GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  auto xRotateSpeed   = m_params.xRotateSpeed;
-  auto yRotateSpeed   = m_params.yRotateSpeed;
-  auto sinAngle       = m_params.sinAngle;
-  const auto cosAngle = m_params.cosAngle;
+  auto xRotateSpeed = m_params.xRotateSpeed;
+  auto yRotateSpeed = m_params.yRotateSpeed;
+  auto sinAngle     = m_params.sinAngle;
   if (m_params.xRotateSpeed < 0.0F)
   {
     xRotateSpeed = -xRotateSpeed;
     yRotateSpeed = -yRotateSpeed;
     sinAngle     = -sinAngle;
   }
+
+  const auto cosAngle = m_params.cosAngle;
 
   return {xRotateSpeed * ((cosAngle * velocity.GetX()) - (sinAngle * velocity.GetY())),
           yRotateSpeed * ((sinAngle * velocity.GetX()) + (cosAngle * velocity.GetY()))};

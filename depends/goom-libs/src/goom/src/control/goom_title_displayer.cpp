@@ -352,11 +352,11 @@ auto GoomTitleDisplayer::GetCharSpacing() const -> float
     return 0.0F;
   }
 
-  static constexpr auto SPACE_FACTOR = 0.056F;
-  const auto timeGone                = static_cast<float>(
+  const auto timeGone = static_cast<float>(
       m_timeLeftOfTitleDisplay <= 0 ? TIME_TO_START_MIDDLE_PHASE
-                                                   : (TIME_TO_START_MIDDLE_PHASE - m_timeLeftOfTitleDisplay));
+                                    : (TIME_TO_START_MIDDLE_PHASE - m_timeLeftOfTitleDisplay));
 
+  static constexpr auto SPACE_FACTOR = 0.056F;
   return SPACE_FACTOR * timeGone;
 }
 

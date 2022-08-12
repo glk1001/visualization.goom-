@@ -1,7 +1,7 @@
 #pragma once
 
 #include "color_data/color_map_enums.h"
-#include "goom/goom_graphic.h"
+#include "goom_graphic.h"
 #include "utils/enum_utils.h"
 
 #include <cstdint>
@@ -58,7 +58,7 @@ public:
   [[nodiscard]] auto GetColor(float t) const -> Pixel override;
 
 protected:
-  [[nodiscard]] auto GetColorMap() const -> std::shared_ptr<const IColorMap> { return m_colorMap; }
+  [[nodiscard]] auto GetColorMap() const -> const IColorMap& { return *m_colorMap; }
 
 private:
   const std::shared_ptr<const IColorMap> m_colorMap;

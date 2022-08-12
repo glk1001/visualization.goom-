@@ -1,6 +1,6 @@
 #include "image_displacement_list.h"
 
-#include "goom/goom_config.h"
+#include "goom_config.h"
 #include "utils/name_value_pairs.h"
 
 #include <cstdint>

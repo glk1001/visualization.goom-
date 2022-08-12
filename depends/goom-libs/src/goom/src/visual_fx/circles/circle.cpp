@@ -241,7 +241,7 @@ auto Circle::SetNewCircleCentreAndRadius(const Point2dInt& centre, const float r
 }
 
 auto Circle::SetMovingTargetPoint(const Point2dInt& movingTargetPoint,
-                                  float lerpTFromFixedTarget) noexcept -> void
+                                  const float lerpTFromFixedTarget) noexcept -> void
 {
   m_circleCentreTarget = lerp(m_circleCentreFixedTarget, movingTargetPoint, lerpTFromFixedTarget);
 }

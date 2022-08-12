@@ -1,9 +1,9 @@
 #pragma once
 
 #include "draw/goom_draw.h"
-#include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "point2d.h"
+#include "spimpl.h"
 #include "tube_data.h"
 #include "utils/math/paths.h"
 #include "utils/timer.h"

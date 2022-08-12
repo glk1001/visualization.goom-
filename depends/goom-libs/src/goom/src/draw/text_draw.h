@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goom/spimpl.h"
 #include "point2d.h"
+#include "spimpl.h"
 
 #include <cstdint>
 #include <functional>

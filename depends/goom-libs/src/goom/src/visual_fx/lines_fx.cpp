@@ -4,13 +4,13 @@
 
 #include "color/color_utils.h"
 #include "fx_helper.h"
-#include "goom/logging.h"
-#include "goom/spimpl.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "lines/line_morph.h"
 #include "lines/line_types.h"
+#include "logging.h"
 #include "sound_info.h"
+#include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
 
 #include <array>

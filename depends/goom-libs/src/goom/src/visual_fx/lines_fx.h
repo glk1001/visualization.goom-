@@ -1,8 +1,8 @@
 #pragma once
 
-#include "goom/spimpl.h"
 #include "goom_graphic.h"
 #include "goom_visual_fx.h"
+#include "spimpl.h"
 
 #include <string>
 #include <vector>

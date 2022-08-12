@@ -4,9 +4,9 @@
 
 #include "color/color_utils.h"
 #include "fx_helper.h"
-#include "goom/spimpl.h"
 #include "logging.h"
 #include "shaders/high_contrast.h"
+#include "spimpl.h"
 #include "utils/math/misc.h"
 #include "utils/stopwatch.h"
 

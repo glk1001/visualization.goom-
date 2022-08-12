@@ -5,8 +5,8 @@
 #endif
 
 #include "catch2/catch.hpp"
-#include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
+#include "goom_config.h"
+#include "goom_graphic.h"
 #include "utils/math/misc.h"
 
 #include <chrono>

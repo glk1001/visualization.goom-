@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goom/spimpl.h"
+#include "spimpl.h"
 #include "utils/name_value_pairs.h"
 
 #include <cstdint>

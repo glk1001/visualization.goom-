@@ -36,7 +36,7 @@ auto GoomStateMonitor::GetCurrentState() const -> std::string
   return message;
 }
 
-// TODO - clean this up.
+// TODO(glk) - clean this up.
 [[nodiscard]] auto GetString(const std::unordered_set<std::string>& theSet) noexcept -> std::string
 {
   auto str = std::string{};
@@ -52,7 +52,7 @@ auto GoomStateMonitor::GetCurrentState() const -> std::string
 
 auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::NameValuePairs
 {
-  static constexpr auto PARAM_GROUP = "";
+  static constexpr auto* PARAM_GROUP = "";
   return {
       GetPair(PARAM_GROUP, "State", m_visualFx.GetCurrentStateName()),
       GetPair(PARAM_GROUP, "Color Maps", GetString(m_visualFx.GetCurrentColorMapsNames())),
@@ -64,7 +64,7 @@ auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::Na
 
 auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameValuePairs
 {
-  static constexpr auto PARAM_GROUP = "Shader";
+  static constexpr auto* PARAM_GROUP = "Shader";
   const auto& lastShaderEffects     = m_visualFx.GetLastShaderEffects();
   return {
       GetPair(PARAM_GROUP, "Exposure", m_visualFx.GetCurrentExposure()),
@@ -76,7 +76,7 @@ auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameVal
 
 inline auto GoomStateMonitor::GetFilterBufferValueParams() const -> UTILS::NameValuePairs
 {
-  static constexpr auto PARAM_GROUP = "Filter Buffer";
+  static constexpr auto* PARAM_GROUP = "Filter Buffer";
   const auto& filterBufferSettings =
       m_filterSettingsService.GetFilterSettings().filterBufferSettings;
   return {
@@ -87,7 +87,7 @@ inline auto GoomStateMonitor::GetFilterBufferValueParams() const -> UTILS::NameV
 
 inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> UTILS::NameValuePairs
 {
-  static constexpr auto PARAM_GROUP = "Filter Settings";
+  static constexpr auto* PARAM_GROUP = "Filter Settings";
   const auto& filterEffectsSettings =
       m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
   return {

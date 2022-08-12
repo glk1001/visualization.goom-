@@ -34,10 +34,12 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
         {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1})},
     m_firedec(m_dimensions.GetHeight())
 {
+  static constexpr auto SQ = 2;
+  UNUSED_FOR_NDEBUG(SQ);
   Expects(DIM_FILTER_COEFFS == static_cast<int32_t>(std::lround(
-                                   std::pow(2, CoordTransforms::DIM_FILTER_COEFFS_DIV_SHIFT))));
+                                   std::pow(SQ, CoordTransforms::DIM_FILTER_COEFFS_DIV_SHIFT))));
   Expects(CoordTransforms::MAX_TRAN_LERP_VALUE ==
-          static_cast<int32_t>(std::lround(std::pow(2, DIM_FILTER_COEFFS))) - 1);
+          static_cast<int32_t>(std::lround(std::pow(SQ, DIM_FILTER_COEFFS)) - 1));
 }
 
 ZoomFilterBuffers::~ZoomFilterBuffers() noexcept = default;

@@ -49,7 +49,7 @@ inline auto ImageSpeedCoefficients::DoSetRandomParams() -> void
 
 auto ImageSpeedCoefficients::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  static constexpr auto PARAM_GROUP = "ImageSpeedCoeffs";
+  static constexpr auto* PARAM_GROUP = "ImageSpeedCoeffs";
   return m_imageDisplacementList.GetNameValueParams(PARAM_GROUP);
 }
 

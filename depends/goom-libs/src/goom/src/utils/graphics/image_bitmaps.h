@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goom/goom_graphic.h"
+#include "goom_graphic.h"
 
 #include <cstdint>
 

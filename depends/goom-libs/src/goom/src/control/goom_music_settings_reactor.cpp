@@ -112,7 +112,7 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
 
 auto GoomMusicSettingsReactor::GetNameValueParams() const -> NameValuePairs
 {
-  static constexpr auto PARAM_GROUP = "Music Settings";
+  static constexpr auto* PARAM_GROUP = "Music Settings";
   return {
       GetPair(PARAM_GROUP, "vitesse", m_filterSettingsService.GetROVitesse().GetVitesse()),
       GetPair(PARAM_GROUP, "previousZoomSpeed", m_previousZoomSpeed),
