@@ -81,10 +81,10 @@ inline auto XYLerpEffect::GetVelocity([[maybe_unused]] const float sqDistFromZer
 inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoords& velocity) const
     -> float
 {
-  static constexpr auto MODE2_OFFSET = 5.5F;
-  static constexpr auto MODE2_FREQ   = 2.0F;
-  static constexpr auto MODE3_MIN_FACTOR = 0.95F;
-  static constexpr auto MODE3_MAX_FACTOR = 1.05F;
+  static constexpr auto MODE2_OFFSET     = 5.5F;
+  static constexpr auto MODE2_FREQ       = 2.0F;
+  static constexpr auto MODE3_MIN_FACTOR = 0.99F;
+  static constexpr auto MODE3_MAX_FACTOR = 1.01F;
 
   switch (m_params.mode)
   {
