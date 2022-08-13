@@ -154,8 +154,8 @@ auto CirclesFx::CirclesFxImpl::GetCircleParams() const noexcept -> std::vector<C
 
 inline auto CirclesFx::CirclesFxImpl::GetCircleRadius0() const noexcept -> float
 {
-  static constexpr auto MIN_RADIUS_MARGIN = 10.0F;
-  static constexpr auto MAX_RADIUS_MARGIN = 50.01F;
+  static constexpr auto MIN_RADIUS_MARGIN = 50.0F;
+  static constexpr auto MAX_RADIUS_MARGIN = 150.01F;
   const auto radiusMargin =
       m_fxHelper.GetGoomRand().GetRandInRange(MIN_RADIUS_MARGIN, MAX_RADIUS_MARGIN);
 
