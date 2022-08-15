@@ -140,22 +140,31 @@ static constexpr auto U_HALF    = FRAC_HALF<uint32_t>;
 static constexpr auto S_HALF    = FRAC_HALF<size_t>;
 
 template<typename T>
-static constexpr auto QUARTER   = Fraction<T>{T(1), T(4)};
-static constexpr auto I_QUARTER = QUARTER<int32_t>;
-static constexpr auto U_QUARTER = QUARTER<uint32_t>;
+static constexpr auto FRAC_QUARTER = Fraction<T>{T(1), T(4)};
+static constexpr auto I_QUARTER    = FRAC_QUARTER<int32_t>;
+static constexpr auto U_QUARTER    = FRAC_QUARTER<uint32_t>;
 
 template<typename T>
-static constexpr auto THREE_QUARTERS   = Fraction<T>{T(3), T(4)};
-static constexpr auto I_THREE_QUARTERS = THREE_QUARTERS<int32_t>;
-static constexpr auto U_THREE_QUARTERS = THREE_QUARTERS<uint32_t>;
+static constexpr auto FRAC_THREE_QUARTERS = Fraction<T>{T(3), T(4)};
+static constexpr auto I_THREE_QUARTERS    = FRAC_THREE_QUARTERS<int32_t>;
+static constexpr auto U_THREE_QUARTERS    = FRAC_THREE_QUARTERS<uint32_t>;
 
 template<typename T>
-[[nodiscard]] inline auto GetFltFraction(const T numerator, const T denominator) -> float
+static constexpr auto FRAC_THIRD = Fraction<T>{T(1), T(3)};
+static constexpr auto I_THIRD    = FRAC_THIRD<int32_t>;
+static constexpr auto U_THIRD    = FRAC_THIRD<uint32_t>;
+
+template<typename T>
+static constexpr auto FRAC_FIFTH = Fraction<T>{T(1), T(5)};
+static constexpr auto I_FIFTH    = FRAC_FIFTH<int32_t>;
+static constexpr auto U_FIFTH    = FRAC_FIFTH<uint32_t>;
+
+template<typename T>
+[[nodiscard]] constexpr auto GetFltFraction(const T numerator, const T denominator) -> float
 {
   return static_cast<float>(numerator) / static_cast<float>(denominator);
 }
-static constexpr auto HALF  = 1.0F / 2.0F;
-static constexpr auto THIRD = 1.0F / 3.0F;
+static constexpr auto HALF = 1.0F / 2.0F;
 
 class RangeMapper
 {

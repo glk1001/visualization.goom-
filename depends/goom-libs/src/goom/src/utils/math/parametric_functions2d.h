@@ -231,12 +231,14 @@ public:
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
+  bool m_allowOscillatingPath = true;
+  Params m_params;
   Point2dFlt m_startPos;
   Point2dFlt m_endPos;
-  Params m_params;
-  bool m_allowOscillatingPath = true;
+  [[nodiscard]] auto GetAdjustedStartPos(const Point2dFlt& startPos) const noexcept -> Point2dFlt;
   [[nodiscard]] auto GetOscillatingPoint(const Point2dFlt& linearPoint, float t) const noexcept
       -> Point2dFlt;
+  [[nodiscard]] auto GetOscillatingOffset(float t) const noexcept -> Vec2dFlt;
 };
 
 template<class T>
@@ -324,7 +326,7 @@ inline auto OscillatingFunction::SetParams(const Params& params) noexcept -> voi
 
 inline auto OscillatingFunction::SetStartPos(const GOOM::Point2dFlt& startPos) noexcept -> void
 {
-  m_startPos = startPos;
+  m_startPos = GetAdjustedStartPos(startPos);
 }
 
 inline auto OscillatingFunction::SetEndPos(const Point2dFlt& endPos) noexcept -> void

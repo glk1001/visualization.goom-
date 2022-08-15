@@ -114,7 +114,7 @@ private:
 
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
 
-  static constexpr auto GAMMA = 2.0F;
+  static constexpr auto GAMMA = 2.2F;  // Cancel the shader gamma
   const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 

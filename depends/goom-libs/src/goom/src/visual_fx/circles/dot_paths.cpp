@@ -23,60 +23,72 @@ using UTILS::MATH::OscillatingPath;
 
 DotPaths::DotPaths(const IGoomRand& goomRand,
                    const uint32_t numDots,
-                   std::vector<Point2dInt>&& dotStartingPositions,
-                   const Point2dInt& dotTarget,
-                   const OscillatingFunction::Params& dotPathParams) noexcept
+                   DotStartsToAndFrom&& dotStartsToAndFrom,
+                   const DotTargetsToAndFrom& dotTargetsToAndFrom,
+                   const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept
   : m_goomRand{goomRand},
     m_numDots{numDots},
-    m_dotStartingPositions{std::move(dotStartingPositions)},
-    m_target{dotTarget},
-    m_pathParams{dotPathParams}
+    m_dotStartsToAndFrom{std::move(dotStartsToAndFrom)},
+    m_dotTargetsToAndFrom{dotTargetsToAndFrom},
+    m_dotPathParamsToAndFrom{dotPathParamsToAndFrom}
 {
 }
 
-auto DotPaths::SetDotStartingPositions(std::vector<Point2dInt>&& dotStartingPositions) noexcept
-    -> void
-{
-  m_dotStartingPositions = std::move(dotStartingPositions);
-  for (auto i = 0U; i < m_numDots; ++i)
-  {
-    m_dotPaths.at(i).GetParametricFunction().SetStartPos(m_dotStartingPositions.at(i).ToFlt());
-  }
-}
+DotPaths::~DotPaths() noexcept = default;
 
-auto DotPaths::SetTarget(const Point2dInt& target) noexcept -> void
+auto DotPaths::GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noexcept
+    -> DotPathsToAndFrom
 {
-  m_target = target;
-  std::for_each(begin(m_dotPaths),
-                end(m_dotPaths),
-                [&target](OscillatingPath& path)
-                { path.GetParametricFunction().SetEndPos(target.ToFlt()); });
-  static constexpr auto PROB_RANDOMIZE_POINTS = 0.3F;
-  m_randomizePoints                           = m_goomRand.ProbabilityOf(PROB_RANDOMIZE_POINTS);
-}
-
-auto DotPaths::GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions) noexcept
-    -> std::vector<OscillatingPath>
-{
-  auto dotPaths = std::vector<OscillatingPath>{};
+  auto dotPathsToAndFrom = DotPathsToAndFrom{};
 
   for (auto i = 0U; i < m_numDots; ++i)
   {
-    auto positionT =
-        std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, DEFAULT_POSITION_STEPS);
-    dotPaths.emplace_back(
-        std::move(positionT), dotStartingPositions.at(i).ToFlt(), m_target.ToFlt(), m_pathParams);
+    dotPathsToAndFrom.dotPathToTarget.emplace_back(
+        std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS),
+        dotStartsToAndFrom.dotStartingPositionsToTarget.at(i).ToFlt(),
+        m_dotTargetsToAndFrom.dotTargetPositionToTarget.ToFlt(),
+        m_dotPathParamsToAndFrom.dotPathParamsToTarget);
+    dotPathsToAndFrom.dotPathFromTarget.emplace_back(
+        std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS),
+        m_dotTargetsToAndFrom.dotTargetPositionFromTarget.ToFlt(),
+        dotStartsToAndFrom.dotStartingPositionsFromTarget.at(i).ToFlt(),
+        m_dotPathParamsToAndFrom.dotPathParamsFromTarget);
   }
 
-  return dotPaths;
+  return dotPathsToAndFrom;
+}
+
+auto DotPaths::MakeToDotPathsSameAsFromDotPaths() noexcept -> void
+{
+  m_dotPathsToAndFrom.dotPathToTarget.clear();
+  for (auto i = 0U; i < m_numDots; ++i)
+  {
+    m_dotPathsToAndFrom.dotPathToTarget.emplace_back(
+        std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE,
+                                 m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNumSteps()),
+        m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNextPoint().ToFlt(),
+        m_dotTargetsToAndFrom.dotTargetPositionFromTarget.ToFlt(),
+        m_dotPathParamsToAndFrom.dotPathParamsToTarget);
+  }
 }
 
 auto DotPaths::GetNextDotPositions() const noexcept -> std::vector<Point2dInt>
 {
+  if (m_direction == Direction::TO_TARGET)
+  {
+    return GetNextDotPositions(m_dotPathsToAndFrom.dotPathToTarget);
+  }
+
+  return GetNextDotPositions(m_dotPathsToAndFrom.dotPathFromTarget);
+}
+
+auto DotPaths::GetNextDotPositions(const std::vector<UTILS::MATH::OscillatingPath>& dotPath)
+    const noexcept -> std::vector<Point2dInt>
+{
   auto nextDotPositions = std::vector<Point2dInt>(m_numDots);
   for (auto i = 0U; i < m_numDots; ++i)
   {
-    nextDotPositions.at(i) = m_dotPaths.at(i).GetNextPoint();
+    nextDotPositions.at(i) = dotPath.at(i).GetNextPoint();
     if (m_randomizePoints)
     {
       nextDotPositions.at(i).Translate(GetSmallRandomOffset());

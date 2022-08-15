@@ -25,6 +25,10 @@ namespace DRAW
 
 using MultiplePixels = std::vector<Pixel>;
 
+[[nodiscard]] auto ReversePixels(const MultiplePixels& colors) noexcept -> MultiplePixels;
+[[nodiscard]] auto GetMainColor(const MultiplePixels& colors) noexcept -> Pixel;
+[[nodiscard]] auto GetLowColor(const MultiplePixels& colors) noexcept -> Pixel;
+
 class IGoomDraw
 {
   // Use the following to check it's efficient to pass Point2dInts by value.
@@ -100,6 +104,21 @@ private:
   uint32_t m_intBuffIntensity{};
   mutable GOOM::UTILS::Parallel m_parallel{-1}; // max cores - 1
 };
+
+inline auto ReversePixels(const MultiplePixels& colors) noexcept -> MultiplePixels
+{
+  return {colors.at(1), colors.at(0)};
+}
+
+inline auto GetMainColor(const MultiplePixels& colors) noexcept -> Pixel
+{
+  return colors.at(0);
+}
+
+inline auto GetLowColor(const MultiplePixels& colors) noexcept -> Pixel
+{
+  return colors.at(1);
+}
 
 inline auto IGoomDraw::GetScreenDimensions() const -> const Dimensions&
 {

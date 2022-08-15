@@ -162,31 +162,39 @@ auto SineFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 OscillatingFunction::OscillatingFunction(const Point2dFlt& startPos,
                                          const Point2dFlt& endPos,
                                          const Params& params) noexcept
-  : m_startPos{startPos}, m_endPos{endPos}, m_params{params}
+  : m_params{params}, m_startPos{GetAdjustedStartPos(startPos)}, m_endPos{endPos}
 {
 }
 
 auto OscillatingFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
   const auto linearPoint = lerp(m_startPos, m_endPos, t);
-
-  if (not m_allowOscillatingPath)
-  {
-    return linearPoint;
-  }
-
   return GetOscillatingPoint(linearPoint, t);
 }
 
 inline auto OscillatingFunction::GetOscillatingPoint(const Point2dFlt& linearPoint,
                                                      const float t) const noexcept -> Point2dFlt
 {
+  return linearPoint + GetOscillatingOffset(t);
+}
+
+inline auto OscillatingFunction::GetOscillatingOffset(const float t) const noexcept -> Vec2dFlt
+{
+  if (not m_allowOscillatingPath)
+  {
+    return {0, 0};
+  }
+
   return {
-      linearPoint.x +
-          (m_params.oscillatingAmplitude * std::cos(m_params.xOscillatingFreq * t * TWO_PI)),
-      linearPoint.y +
-          (m_params.oscillatingAmplitude * std::sin(m_params.yOscillatingFreq * t * TWO_PI)),
+      m_params.oscillatingAmplitude * std::cos(m_params.xOscillatingFreq * t * TWO_PI),
+      m_params.oscillatingAmplitude * std::sin(m_params.yOscillatingFreq * t * TWO_PI),
   };
+}
+
+auto OscillatingFunction::GetAdjustedStartPos(const Point2dFlt& startPos) const noexcept
+    -> Point2dFlt
+{
+  return startPos - GetOscillatingOffset(0.0F);
 }
 
 } // namespace GOOM::UTILS::MATH

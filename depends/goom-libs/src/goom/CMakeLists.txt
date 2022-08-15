@@ -121,6 +121,7 @@ add_library(goom
         src/visual_fx/circles/bitmap_getter_base.h
         src/visual_fx/circles/bitmap_getter.cpp
         src/visual_fx/circles/circle.cpp
+        src/visual_fx/circles/circle_params_builder.cpp
         src/visual_fx/circles/circles.cpp
         src/visual_fx/circles/dot_diameters.cpp
         src/visual_fx/circles/dot_paths.cpp

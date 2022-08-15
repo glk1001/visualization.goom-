@@ -15,16 +15,42 @@ namespace GOOM::VISUAL_FX::CIRCLES
 class DotPaths
 {
 public:
+  struct DotStartsToAndFrom
+  {
+    std::vector<Point2dInt> dotStartingPositionsFromTarget;
+    std::vector<Point2dInt> dotStartingPositionsToTarget;
+  };
+  struct DotTargetsToAndFrom
+  {
+    Point2dInt dotTargetPositionToTarget;
+    Point2dInt dotTargetPositionFromTarget;
+  };
+  struct DotPathParamsToAndFrom
+  {
+    UTILS::MATH::OscillatingFunction::Params dotPathParamsToTarget;
+    UTILS::MATH::OscillatingFunction::Params dotPathParamsFromTarget;
+  };
+
   DotPaths(const UTILS::MATH::IGoomRand& goomRand,
            uint32_t numDots,
-           std::vector<Point2dInt>&& dotStartingPositions,
-           const Point2dInt& dotTarget,
-           const UTILS::MATH::OscillatingFunction::Params& dotPathParams) noexcept;
+           DotStartsToAndFrom&& dotStartsToAndFrom,
+           const DotTargetsToAndFrom& dotTargetsToAndFrom,
+           const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept;
+  DotPaths(const DotPaths&) = delete;
+  DotPaths(DotPaths&&)      = default;
+  ~DotPaths() noexcept;
+  auto operator=(const DotPaths&) noexcept -> DotPaths& = delete;
+  auto operator=(DotPaths&&) noexcept -> DotPaths&      = delete;
 
-  auto Reset() noexcept -> void;
-  auto SetDotStartingPositions(std::vector<Point2dInt>&& dotStartingPositions) noexcept -> void;
-  auto SetTarget(const Point2dInt& target) noexcept -> void;
-  auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& params) noexcept -> void;
+  enum class Direction
+  {
+    TO_TARGET,
+    FROM_TARGET,
+  };
+  [[nodiscard]] auto GetCurrentDirection() const noexcept -> Direction;
+  auto ChangeDirectionWithToTargetFixup(Direction newDirection) noexcept -> void;
+  auto ChangeDirection(Direction newDirection) noexcept -> void;
+  auto SetPathParams(const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept -> void;
 
   [[nodiscard]] auto GetPositionTRef() const noexcept -> const UTILS::TValue&;
 
@@ -33,7 +59,8 @@ public:
 
   [[nodiscard]] auto HasPositionTJustHitStartBoundary() const noexcept -> bool;
   [[nodiscard]] auto HasPositionTJustHitEndBoundary() const noexcept -> bool;
-  [[nodiscard]] auto IsDelayed() const noexcept -> bool;
+  [[nodiscard]] auto IsCloseToStartBoundary(float distance) const noexcept -> bool;
+  [[nodiscard]] auto IsCloseToEndBoundary(float distance) const noexcept -> bool;
 
   [[nodiscard]] auto GetPositionT() const noexcept -> float;
   auto IncrementPositionT() noexcept -> void;
@@ -43,72 +70,208 @@ public:
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   const uint32_t m_numDots;
-  std::vector<Point2dInt> m_dotStartingPositions;
-  Point2dInt m_target;
+  DotStartsToAndFrom m_dotStartsToAndFrom;
+  DotTargetsToAndFrom m_dotTargetsToAndFrom;
 
   static constexpr uint32_t DEFAULT_POSITION_STEPS = 100;
-  UTILS::MATH::OscillatingFunction::Params m_pathParams;
+  DotPathParamsToAndFrom m_dotPathParamsToAndFrom;
 
   bool m_randomizePoints = false;
-  std::vector<UTILS::MATH::OscillatingPath> m_dotPaths{GetNewDotPaths(m_dotStartingPositions)};
-  [[nodiscard]] auto GetNewDotPaths(const std::vector<Point2dInt>& dotStartingPositions) noexcept
-      -> std::vector<UTILS::MATH::OscillatingPath>;
+  struct DotPathsToAndFrom
+  {
+    std::vector<UTILS::MATH::OscillatingPath> dotPathToTarget;
+    std::vector<UTILS::MATH::OscillatingPath> dotPathFromTarget;
+  };
+  DotPathsToAndFrom m_dotPathsToAndFrom{GetNewDotPaths(m_dotStartsToAndFrom)};
+  [[nodiscard]] auto GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noexcept
+      -> DotPathsToAndFrom;
+  auto MakeToDotPathsSameAsFromDotPaths() noexcept -> void;
+  [[nodiscard]] auto GetNextDotPositions(const std::vector<UTILS::MATH::OscillatingPath>& dotPath)
+      const noexcept -> std::vector<Point2dInt>;
+  Direction m_direction = Direction::TO_TARGET;
+  bool m_changeDirectionPending = false;
+  static auto IncrementPositionT(std::vector<UTILS::MATH::OscillatingPath>& paths) noexcept -> void;
+  [[nodiscard]] auto GetStepSize() const noexcept -> float;
+  auto CheckReverse(Direction currentDirection,
+                    const std::vector<UTILS::MATH::OscillatingPath>& paths) noexcept -> void;
+  [[nodiscard]] static auto GetOppositeDirection(Direction direction) noexcept -> Direction;
   [[nodiscard]] auto GetSmallRandomOffset() const noexcept -> Vec2dInt;
 };
 
-inline auto DotPaths::SetPathParams(const UTILS::MATH::OscillatingFunction::Params& params) noexcept
+inline auto DotPaths::SetPathParams(const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept
     -> void
 {
-  m_pathParams = params;
-}
-
-inline auto DotPaths::Reset() noexcept -> void
-{
-  std::for_each(
-      begin(m_dotPaths), end(m_dotPaths), [](UTILS::MATH::IPath& path) { path.Reset(0.0F); });
+  m_dotPathParamsToAndFrom = dotPathParamsToAndFrom;
 }
 
 inline auto DotPaths::SetPositionTNumSteps(const uint32_t numSteps) noexcept -> void
 {
-  std::for_each(begin(m_dotPaths),
-                end(m_dotPaths),
+  std::for_each(begin(m_dotPathsToAndFrom.dotPathToTarget),
+                end(m_dotPathsToAndFrom.dotPathToTarget),
+                [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
+
+  std::for_each(begin(m_dotPathsToAndFrom.dotPathFromTarget),
+                end(m_dotPathsToAndFrom.dotPathFromTarget),
                 [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
 }
 
 inline auto DotPaths::IncrementPositionT() noexcept -> void
 {
-  std::for_each(
-      begin(m_dotPaths), end(m_dotPaths), [](UTILS::MATH::IPath& path) { path.IncrementT(); });
+  if (m_direction == Direction::TO_TARGET)
+  {
+    IncrementPositionT(m_dotPathsToAndFrom.dotPathToTarget);
+    CheckReverse(Direction::TO_TARGET, m_dotPathsToAndFrom.dotPathToTarget);
+  }
+  else
+  {
+    IncrementPositionT(m_dotPathsToAndFrom.dotPathFromTarget);
+    CheckReverse(Direction::FROM_TARGET, m_dotPathsToAndFrom.dotPathFromTarget);
+  }
+}
+
+inline auto DotPaths::IncrementPositionT(std::vector<UTILS::MATH::OscillatingPath>& paths) noexcept
+    -> void
+{
+  if (paths.front().IsStopped())
+  {
+    return;
+  }
+  std::for_each(begin(paths), end(paths), [](UTILS::MATH::IPath& path) { path.IncrementT(); });
+}
+
+inline auto DotPaths::CheckReverse(const Direction currentDirection,
+                                   const std::vector<UTILS::MATH::OscillatingPath>& paths) noexcept
+    -> void
+{
+  if (not paths.front().IsStopped())
+  {
+    return;
+  }
+  if (not m_changeDirectionPending)
+  {
+    m_changeDirectionPending = true;
+    return;
+  }
+
+  ChangeDirectionWithToTargetFixup(GetOppositeDirection(currentDirection));
+
+  m_changeDirectionPending = false;
+}
+
+inline auto DotPaths::GetCurrentDirection() const noexcept -> Direction
+{
+  return m_direction;
+}
+
+inline auto DotPaths::ChangeDirectionWithToTargetFixup(const Direction newDirection) noexcept
+    -> void
+{
+  if (newDirection == Direction::TO_TARGET)
+  {
+    MakeToDotPathsSameAsFromDotPaths();
+  }
+  ChangeDirection(newDirection);
+}
+
+inline auto DotPaths::ChangeDirection(const Direction newDirection) noexcept -> void
+{
+  m_direction = newDirection;
+
+  std::for_each(begin(m_dotPathsToAndFrom.dotPathToTarget),
+                end(m_dotPathsToAndFrom.dotPathToTarget),
+                [](UTILS::MATH::IPath& path)
+                {
+                  path.Reset(0.0F);
+                  path.IncrementT();
+                });
+
+  std::for_each(begin(m_dotPathsToAndFrom.dotPathFromTarget),
+                end(m_dotPathsToAndFrom.dotPathFromTarget),
+                [](UTILS::MATH::IPath& path)
+                {
+                  path.Reset(0.0F);
+                  path.IncrementT();
+                });
+}
+
+inline auto DotPaths::GetOppositeDirection(const Direction direction) noexcept -> Direction
+{
+  if (direction == Direction::TO_TARGET)
+  {
+    return Direction::FROM_TARGET;
+  }
+
+  return Direction::TO_TARGET;
 }
 
 inline auto DotPaths::GetPositionTRef() const noexcept -> const UTILS::TValue&
 {
-  return m_dotPaths.at(0).GetPositionT();
+  if (m_direction == Direction::TO_TARGET)
+  {
+    return m_dotPathsToAndFrom.dotPathToTarget.front().GetPositionT();
+  }
+
+  return m_dotPathsToAndFrom.dotPathFromTarget.front().GetPositionT();
 }
 
 inline auto DotPaths::GetPositionTNumSteps() const noexcept -> uint32_t
 {
-  return m_dotPaths.at(0).GetNumSteps();
+  if (m_direction == Direction::TO_TARGET)
+  {
+    return m_dotPathsToAndFrom.dotPathToTarget.front().GetNumSteps();
+  }
+
+  return m_dotPathsToAndFrom.dotPathFromTarget.front().GetNumSteps();
 }
 
 inline auto DotPaths::HasPositionTJustHitStartBoundary() const noexcept -> bool
 {
-  return m_dotPaths.at(0).GetPositionT().HasJustHitStartBoundary();
+  return IsCloseToStartBoundary(GetStepSize() - UTILS::MATH::SMALL_FLOAT);
 }
 
 inline auto DotPaths::HasPositionTJustHitEndBoundary() const noexcept -> bool
 {
-  return m_dotPaths.at(0).GetPositionT().HasJustHitEndBoundary();
+  return IsCloseToEndBoundary(GetStepSize() - UTILS::MATH::SMALL_FLOAT);
 }
 
-inline auto DotPaths::IsDelayed() const noexcept -> bool
+inline auto DotPaths::GetStepSize() const noexcept -> float
 {
-  return m_dotPaths.at(0).GetPositionT().IsDelayed();
+  if (m_direction == Direction::TO_TARGET)
+  {
+    return m_dotPathsToAndFrom.dotPathToTarget.front().GetStepSize();
+  }
+
+  return m_dotPathsToAndFrom.dotPathFromTarget.front().GetStepSize();
+}
+
+inline auto DotPaths::IsCloseToStartBoundary(const float distance) const noexcept -> bool
+{
+  if (m_direction == Direction::TO_TARGET)
+  {
+    return m_dotPathsToAndFrom.dotPathToTarget.front().GetPositionT()() < distance;
+  }
+
+  return m_dotPathsToAndFrom.dotPathFromTarget.front().GetPositionT()() > (1.0F - distance);
+}
+
+inline auto DotPaths::IsCloseToEndBoundary(const float distance) const noexcept -> bool
+{
+  if (m_direction == Direction::TO_TARGET)
+  {
+    return m_dotPathsToAndFrom.dotPathToTarget.front().GetPositionT()() > (1.0F - distance);
+  }
+
+  return m_dotPathsToAndFrom.dotPathFromTarget.front().GetPositionT()() < distance;
 }
 
 inline auto DotPaths::GetPositionT() const noexcept -> float
 {
-  return m_dotPaths.at(0).GetCurrentT();
+  if (m_direction == Direction::TO_TARGET)
+  {
+    return m_dotPathsToAndFrom.dotPathToTarget.front().GetPositionT()();
+  }
+
+  return m_dotPathsToAndFrom.dotPathFromTarget.front().GetPositionT()();
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
