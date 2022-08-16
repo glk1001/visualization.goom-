@@ -46,8 +46,8 @@ using AddonLogEnum   = ADDON_LOG;
 #ifdef HAS_GL
 // TODO Figure out correct format here
 //      - GL_BGRA looks good but why?
-//static constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
-static constexpr GLenum TEXTURE_FORMAT               = GL_BGRA;
+//static constexpr GLenum TEXTURE_FORMAT = GL_BGRA;
+static constexpr GLenum TEXTURE_FORMAT               = GL_RGBA;
 static constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
 #else
 static constexpr GLenum TEXTURE_FORMAT = GL_RGBA;
