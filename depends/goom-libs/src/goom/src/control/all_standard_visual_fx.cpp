@@ -150,7 +150,9 @@ auto AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawabl
 auto AllStandardVisualFx::GetActiveColorMapsNames() const -> std::unordered_set<std::string>
 {
   auto activeColorMapsNames = std::unordered_set<std::string>{};
+  activeColorMapsNames.emplace(std::string{"N/A"});
 
+  /**
   for (const auto& visualFx : m_drawablesMap)
   {
     for (const auto& colorMapsName : visualFx->GetCurrentColorMapsNames())
@@ -158,6 +160,7 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() const -> std::unordered_set<
       activeColorMapsNames.emplace(colorMapsName);
     }
   }
+   **/
 
   return activeColorMapsNames;
 }

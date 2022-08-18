@@ -6,6 +6,7 @@
 #include "fx_helper.h"
 #include "logging.h"
 #include "shaders/high_contrast.h"
+#include "shaders/rgb_bgr_lerper.h"
 #include "spimpl.h"
 #include "utils/math/misc.h"
 #include "utils/stopwatch.h"
@@ -16,6 +17,7 @@ namespace GOOM::VISUAL_FX
 {
 
 using SHADERS::HighContrast;
+using SHADERS::RgbBgrLerper;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Stopwatch;
 using UTILS::MATH::Sq;
@@ -32,9 +34,10 @@ public:
 
 private:
   GoomShaderEffects m_goomShaderEffects{
-      1.0F, HighContrast::DEFAULT_BRIGHTNESS, HighContrast::DEFAULT_CONTRAST};
+      1.0F, HighContrast::DEFAULT_BRIGHTNESS, HighContrast::DEFAULT_CONTRAST, 0.0F};
 
   HighContrast m_highContrast;
+  RgbBgrLerper m_rgbBgrLerper;
 
   auto FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void;
 };
@@ -80,7 +83,8 @@ auto ShaderFx::GetLastShaderEffects() const -> const GoomShaderEffects&
 }
 
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
-  : m_highContrast{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()}
+  : m_highContrast{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()},
+    m_rgbBgrLerper{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()}
 {
 }
 
@@ -92,12 +96,15 @@ inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
 inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
 {
   m_highContrast.UpdateHighContrast();
+  m_rgbBgrLerper.Update();
 
   static constexpr auto DEFAULT_EXPOSURE      = 1.5F;
   m_goomShaderEffects.exposure                = DEFAULT_EXPOSURE;
   m_goomShaderEffects.contrast                = m_highContrast.GetCurrentContrast();
   m_goomShaderEffects.contrastMinChannelValue = m_highContrast.GetCurrentContrastMinChannelValue();
   m_goomShaderEffects.brightness              = m_highContrast.GetCurrentBrightness();
+  m_goomShaderEffects.rgbBgrLerpT             = m_rgbBgrLerper.GetLerpT();
+  m_goomShaderEffects.colorIndexes            = m_rgbBgrLerper.GetColorIndexes();
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void

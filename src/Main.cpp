@@ -629,7 +629,10 @@ void CVisualizationGoom::OnCompiledAndLinked()
   m_uTexBrightnessLoc              = glGetUniformLocation(ProgramHandle(), "u_texBrightness");
   m_uTexContrastLoc                = glGetUniformLocation(ProgramHandle(), "u_texContrast");
   m_uTexContrastMinChannelValueLoc = glGetUniformLocation(ProgramHandle(), "u_texContrastMinChan");
-  m_uTimeLoc                       = glGetUniformLocation(ProgramHandle(), "u_time");
+  m_uTexRgbBgrLerpTLoc             = glGetUniformLocation(ProgramHandle(), "u_texRgbBgrLerpT");
+  m_uTexColorIndexesLoc            = glGetUniformLocation(ProgramHandle(), "u_texColorIndexes");
+
+  m_uTimeLoc = glGetUniformLocation(ProgramHandle(), "u_time");
 }
 
 auto CVisualizationGoom::OnEnabled() -> bool
@@ -920,6 +923,14 @@ inline void CVisualizationGoom::SetGlShaderValues(const GoomShaderEffects& goomS
     glUniform1f(m_uTexContrastLoc, goomShaderEffects.contrast);
     glUniform1f(m_uTexContrastMinChannelValueLoc, goomShaderEffects.contrastMinChannelValue);
   }
+
+  glUniform1f(m_uTexRgbBgrLerpTLoc, goomShaderEffects.rgbBgrLerpT);
+
+  const glm::uvec3 colorIndexes{goomShaderEffects.colorIndexes.at(0),
+                                goomShaderEffects.colorIndexes.at(1),
+                                goomShaderEffects.colorIndexes.at(2)};
+  glUniform3uiv(m_uTexColorIndexesLoc, 1, glm::value_ptr(colorIndexes));
+
   static GLint s_time = 0;
   ++s_time;
   glUniform1i(m_uTimeLoc, s_time);

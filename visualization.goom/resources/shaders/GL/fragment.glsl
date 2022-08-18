@@ -492,6 +492,8 @@ uniform float u_texExposure;
 uniform float u_texBrightness;
 uniform float u_texContrast;
 uniform float u_texContrastMinChan;
+uniform float u_texRgbBgrLerpT;
+uniform uvec3 u_texColorIndexes;
 uniform int u_time;
 in vec2 texCoords;
 
@@ -540,9 +542,36 @@ void main()
 
   // Pre Tone Map Color effects
 
+/**
+  vec2 u_resolution = textureSize(texBuffer, 0);
+  vec2 st = gl_FragCoord.xy/u_resolution.xy;
+  float distFromCentre = pow(((st.x - 0.5) * (st.x - 0.5)) + ((st.y - 0.5) * (st.y - 0.5)), 0.25);
+  vec3 pct = vec3(1.0);
+  if (u_texRgbBgrLerpT < 0.05)
+  {
+    pct = vec3(0.0);
+  }
+  else if (u_texRgbBgrLerpT > 0.95)
+  {
+    pct = vec3(1.0);
+  }
+  else
+  {
+    float tDist = 2.0 * (0.7 - distFromCentre);
+    pct.r = (1.0 - tDist) * u_texRgbBgrLerpT;
+    pct.b = pct.r;
+  }
+**/
+
+  vec3 pct = vec3(u_texRgbBgrLerpT, u_texRgbBgrLerpT, u_texRgbBgrLerpT);
+  vec3 shuffled_hdrColor = vec3(hdrColor[u_texColorIndexes[0]],
+                                hdrColor[u_texColorIndexes[1]],
+                                hdrColor[u_texColorIndexes[2]]);
+  hdrColor = mix(hdrColor, shuffled_hdrColor, pct);
+
   // 'Chromatic Increase' - https://github.com/gurki/vivid
   vec3 lch = rgb_to_lch(hdrColor);
-  lch.y = min(lch.y * 2.f, 140.0);
+  lch.y = min(lch.y * 2.0F, 140.0);
   vec3 mapped = lch_to_rgb(lch);
 
   if (toneMapType == NO_TONE_MAP)

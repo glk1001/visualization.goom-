@@ -65,12 +65,19 @@ auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::Na
 auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "Shader";
-  const auto& lastShaderEffects     = m_visualFx.GetLastShaderEffects();
+  const auto& lastShaderEffects      = m_visualFx.GetLastShaderEffects();
   return {
       GetPair(PARAM_GROUP, "Exposure", m_visualFx.GetCurrentExposure()),
       GetPair(PARAM_GROUP, "Contrast", lastShaderEffects.contrast),
       GetPair(PARAM_GROUP, "MinChan", lastShaderEffects.contrastMinChannelValue),
       GetPair(PARAM_GROUP, "Brightness", lastShaderEffects.brightness),
+      GetPair(PARAM_GROUP, "RgbBgrLerpT", lastShaderEffects.rgbBgrLerpT),
+      GetPair(PARAM_GROUP,
+              "RgbBgrLerpT",
+              std20::format("[{},{},{}]",
+                            lastShaderEffects.colorIndexes.at(0),
+                            lastShaderEffects.colorIndexes.at(1),
+                            lastShaderEffects.colorIndexes.at(2))),
   };
 }
 
