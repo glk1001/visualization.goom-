@@ -45,7 +45,7 @@ private:
   static constexpr float GOOM_LIMIT_MAX = 1.0F;
   float m_goomLimit                     = 1.0F; // auto-updated limit of goom detection
 
-  static constexpr float BIG_GOOM_SPEED_LIMIT = 0.10F;
+  static constexpr float BIG_GOOM_SPEED_LIMIT = 0.60F;
   static constexpr float BIG_GOOM_FACTOR      = 1.01F;
   float m_bigGoomLimit                        = 1.0F;
 
