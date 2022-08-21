@@ -217,8 +217,8 @@ static constexpr auto DEFAULT_PROB_PLANE_EFFECT          = 0.7F;
 static constexpr auto DEFAULT_PROB_TAN_EFFECT            = 0.2F;
 static constexpr auto DEFAULT_PROB_XY_LERP_EFFECT        = 0.2F;
 
-static constexpr auto WAVE0_PROB_PLANE_EFFECT = 1.0F;
-static constexpr auto WAVE1_PROB_PLANE_EFFECT = 1.0F;
+static constexpr auto WAVE0_PROB_PLANE_EFFECT = 0.8F;
+static constexpr auto WAVE1_PROB_PLANE_EFFECT = 0.8F;
 
 // clang-format off
 static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
@@ -491,12 +491,12 @@ static constexpr auto DEFAULT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffects
 static constexpr auto DEFAULT_REPEAT_AFTER_EFFECTS_PROBABILITIES =
     EnumMap<AfterEffectsTypes, float>{{{
         {AfterEffectsTypes::BLOCK_WAVY, 0.9F},
-        {AfterEffectsTypes::HYPERCOS, 0.9F},
-        {AfterEffectsTypes::IMAGE_VELOCITY, 0.9F},
+        {AfterEffectsTypes::HYPERCOS, 0.5F},
+        {AfterEffectsTypes::IMAGE_VELOCITY, 0.8F},
         {AfterEffectsTypes::NOISE, 0.0F},
-        {AfterEffectsTypes::PLANES, 0.3F},
+        {AfterEffectsTypes::PLANES, 0.0F},
         {AfterEffectsTypes::ROTATION, 0.0F},
-        {AfterEffectsTypes::TAN_EFFECT, 0.1F},
+        {AfterEffectsTypes::TAN_EFFECT, 0.0F},
         {AfterEffectsTypes::XY_LERP_EFFECT, 0.1F},
     }}};
 static constexpr auto ZERO_REPEAT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffectsTypes, float>{{{
