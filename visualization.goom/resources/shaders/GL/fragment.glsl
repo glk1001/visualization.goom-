@@ -503,7 +503,7 @@ void main()
 {
   //#define toneMapType EXPOSURE_TONE_MAP
   //#define toneMapType UCHIMURA_TONE_MAP
-  #define toneMapType   LOTTES_TONE_MAP
+  #define toneMapType LOTTES_TONE_MAP
   //#define toneMapType ACES_TONE_MAP
   //#define toneMapType UNCHARTED2_TONE_MAP
   //#define toneMapType REINHARD2_TONE_MAP
@@ -511,7 +511,7 @@ void main()
 
   // Brightness factor after gamma correction
   float A = 1.0;
-  const float gamma = 2.2;
+  float gamma = 2.2;
 
   vec2 uvTex = texCoords;
   vec3 hdrColor = texture(texBuffer, uvTex).rgb;
@@ -557,6 +557,10 @@ void main()
   lch.y = min(lch.y * 2.0F, 140.0);
   vec3 mapped = lch_to_rgb(lch);
 
+  // Hue shift
+  //const float PI = 3.14;
+  //mapped = hueShift(mapped, 1.5 * PI);
+
   // Tone mapping
   #if (toneMapType == NO_TONE_MAP)
   {
@@ -564,54 +568,56 @@ void main()
   }
   #elif (toneMapType == UCHIMURA_TONE_MAP)
   {
+    gamma = 1.7;
     const float exposureMultiplier = 2.0;
     mapped = uchimura(exposureMultiplier * u_texExposure * mapped);
-    A = 5.0;
+    A = 7.0;
   }
   #elif (toneMapType == LOTTES_TONE_MAP)
   {
+    gamma = 2.2;
     const float exposureMultiplier = 2.0;
     mapped = lottes(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
   #elif (toneMapType == ACES_TONE_MAP)
   {
+    gamma = 2.3;
     const float exposureMultiplier = 2.0;
     mapped = aces(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
   #elif (toneMapType == UNCHARTED2_TONE_MAP)
   {
-    const float exposureMultiplier = 5.0;
+    gamma = 2.2;
+    const float exposureMultiplier = 2.0;
     mapped = uncharted2Tonemap(exposureMultiplier * u_texExposure * mapped);
-    A = 5.0;
+    A = 7.0;
   }
   #elif (toneMapType == REINHARD2_TONE_MAP)
   {
+    gamma = 1.7;
     const float exposureMultiplier = 2.0;
     mapped = reinhard2(exposureMultiplier * u_texExposure * mapped);
-    A = 5.0;
+    A = 7.0;
   }
   #elif (toneMapType == UNREAL_TONE_MAP)
   {
-    const float exposureMultiplier = 3.0;
-    mapped = reinhard2(exposureMultiplier * u_texExposure * mapped);
-    A = 5.0;
+    gamma = 1.1;
+    const float exposureMultiplier = 2.0;
+    mapped = unreal(exposureMultiplier * u_texExposure * mapped);
+    A = 6.0;
   }
   #elif (toneMapType == EXPOSURE_TONE_MAP)
   {
     // Exposure tone mapping
     //const float exposure = 30.0;
     //mapped = vec3(1.0) - exp(-hdrColor * exposure);
-    const float exposureMultiplier = 1.0;
+    const float exposureMultiplier = 2.0;
     mapped = vec3(1.0) - exp(-mapped * exposureMultiplier * u_texExposure);
     A = 5.0;
   }
   #endif
-
-  // Color effects
-  // hue shift doesn't seem to be working???
-  // mapped = hueShift(mapped, 1.5);
 
   //const float contrast = 1.0;
   //mapped = max((contrast * (mapped - 0.5)) + 0.5, -0.0);
