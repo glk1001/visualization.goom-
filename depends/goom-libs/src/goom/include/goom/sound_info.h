@@ -66,9 +66,11 @@ public:
 
   // Speed of the sound [0..1]
   [[nodiscard]] auto GetSpeed() const -> float;
+  static constexpr auto SPEED_MIDPOINT = 0.5F;
 
   // Acceleration of the sound [0..1]
   [[nodiscard]] auto GetAcceleration() const -> float;
+  static constexpr auto ACCELERATION_MIDPOINT = 0.5F;
 
   [[nodiscard]] auto GetAllTimesMaxVolume() const -> float;
   [[nodiscard]] auto GetAllTimesMinVolume() const -> float;

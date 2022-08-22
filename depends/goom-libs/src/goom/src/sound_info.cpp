@@ -62,7 +62,6 @@ void SoundInfo::ProcessSample(const AudioSamples& samples)
 
   const auto prevSpeed = m_speed;
   UpdateSpeed(prevVolume);
-
   UpdateAcceleration(prevSpeed);
 }
 
