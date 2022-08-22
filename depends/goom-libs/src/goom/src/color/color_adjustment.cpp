@@ -34,13 +34,18 @@ auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) 
     adjustedColor = GetAlteredChromaColor(m_chromaFactor, adjustedColor);
   }
 
+  if (not m_doAlterGamma)
+  {
+    return GetBrighterColor(brightness, adjustedColor);
+  }
+
   const auto newR = static_cast<uint32_t>(std::round(
       channel_limits<float>::max() * std::pow(brightness * adjustedColor.RFlt(), m_gamma)));
   const auto newG = static_cast<uint32_t>(std::round(
       channel_limits<float>::max() * std::pow(brightness * adjustedColor.GFlt(), m_gamma)));
   const auto newB = static_cast<uint32_t>(std::round(
       channel_limits<float>::max() * std::pow(brightness * adjustedColor.BFlt(), m_gamma)));
-  const auto newA = color.A();
+  const auto newA = adjustedColor.A();
 
   return Pixel{newR, newG, newB, newA};
 }

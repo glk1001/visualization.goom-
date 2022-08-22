@@ -342,7 +342,7 @@ public:
 private:
   TubeData m_data;
 
-  static constexpr auto GAMMA = 1.0F / 2.0F;
+  static constexpr auto GAMMA = 1.0F;
   const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
