@@ -142,7 +142,8 @@ private:
   GLint m_uTexContrastLoc                = -1;
   GLint m_uTexContrastMinChannelValueLoc = -1;
   GLint m_uTexRgbBgrLerpTLoc             = -1;
-  GLint m_uTexColorIndexesLoc            = -1;
+  GLint m_uTexSrceColorIndexesLoc        = -1;
+  GLint m_uTexDestColorIndexesLoc        = -1;
   GLint m_uTimeLoc                       = -1;
 
   // The Goom object

@@ -104,7 +104,8 @@ inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
   m_goomShaderEffects.contrastMinChannelValue = m_highContrast.GetCurrentContrastMinChannelValue();
   m_goomShaderEffects.brightness              = m_highContrast.GetCurrentBrightness();
   m_goomShaderEffects.rgbBgrLerpT             = m_rgbBgrLerper.GetLerpT();
-  m_goomShaderEffects.colorIndexes            = m_rgbBgrLerper.GetColorIndexes();
+  m_goomShaderEffects.srceColorIndexes        = m_rgbBgrLerper.GetSrceColorIndexes();
+  m_goomShaderEffects.destColorIndexes        = m_rgbBgrLerper.GetDestColorIndexes();
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void

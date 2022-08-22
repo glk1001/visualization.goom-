@@ -11,7 +11,7 @@
 
 
 // ***********************
-// Tone mapping
+// Tone mappings
 
 // Reinhard
 vec3 reinhard(vec3 x) {
@@ -493,20 +493,21 @@ uniform float u_texBrightness;
 uniform float u_texContrast;
 uniform float u_texContrastMinChan;
 uniform float u_texRgbBgrLerpT;
-uniform uvec3 u_texColorIndexes;
+uniform uvec3 u_texSrceColorIndexes;
+uniform uvec3 u_texDestColorIndexes;
 uniform int u_time;
 in vec2 texCoords;
 
 
 void main()
 {
-  //const int toneMapType = EXPOSURE_TONE_MAP;
-  //const int toneMapType = UCHIMURA_TONE_MAP;
-  const int toneMapType = LOTTES_TONE_MAP;
-  //const int toneMapType = ACES_TONE_MAP;
-  //const int toneMapType = UNCHARTED2_TONE_MAP;
-  //const int toneMapType = REINHARD2_TONE_MAP;
-  //const int toneMapType = UNREAL_TONE_MAP;
+  //#define toneMapType EXPOSURE_TONE_MAP
+  //#define toneMapType UCHIMURA_TONE_MAP
+  #define toneMapType   LOTTES_TONE_MAP
+  //#define toneMapType ACES_TONE_MAP
+  //#define toneMapType UNCHARTED2_TONE_MAP
+  //#define toneMapType REINHARD2_TONE_MAP
+  //#define toneMapType UNREAL_TONE_MAP
 
   // Brightness factor after gamma correction
   float A = 1.0;
@@ -540,81 +541,64 @@ void main()
 **/
 
 
-  // Pre Tone Map Color effects
+  // Pre tone mapping color effects
 
-/**
-  vec2 u_resolution = textureSize(texBuffer, 0);
-  vec2 st = gl_FragCoord.xy/u_resolution.xy;
-  float distFromCentre = pow(((st.x - 0.5) * (st.x - 0.5)) + ((st.y - 0.5) * (st.y - 0.5)), 0.25);
-  vec3 pct = vec3(1.0);
-  if (u_texRgbBgrLerpT < 0.05)
-  {
-    pct = vec3(0.0);
-  }
-  else if (u_texRgbBgrLerpT > 0.95)
-  {
-    pct = vec3(1.0);
-  }
-  else
-  {
-    float tDist = 2.0 * (0.7 - distFromCentre);
-    pct.r = (1.0 - tDist) * u_texRgbBgrLerpT;
-    pct.b = pct.r;
-  }
-**/
-
-  vec3 pct = vec3(u_texRgbBgrLerpT, u_texRgbBgrLerpT, u_texRgbBgrLerpT);
-  vec3 shuffled_hdrColor = vec3(hdrColor[u_texColorIndexes[0]],
-                                hdrColor[u_texColorIndexes[1]],
-                                hdrColor[u_texColorIndexes[2]]);
-  hdrColor = mix(hdrColor, shuffled_hdrColor, pct);
+  // Shuffle colors
+  vec3 srceHdrColor = vec3(hdrColor[u_texSrceColorIndexes[0]],
+                           hdrColor[u_texSrceColorIndexes[1]],
+                           hdrColor[u_texSrceColorIndexes[2]]);
+  vec3 destHdrColor = vec3(hdrColor[u_texDestColorIndexes[0]],
+                           hdrColor[u_texDestColorIndexes[1]],
+                           hdrColor[u_texDestColorIndexes[2]]);
+  hdrColor = mix(srceHdrColor, destHdrColor, u_texRgbBgrLerpT);
 
   // 'Chromatic Increase' - https://github.com/gurki/vivid
   vec3 lch = rgb_to_lch(hdrColor);
   lch.y = min(lch.y * 2.0F, 140.0);
   vec3 mapped = lch_to_rgb(lch);
 
-  if (toneMapType == NO_TONE_MAP)
+  // Tone mapping
+  #if (toneMapType == NO_TONE_MAP)
   {
     A = 5.0;
   }
-  else if (toneMapType == UCHIMURA_TONE_MAP)
+  #elif (toneMapType == UCHIMURA_TONE_MAP)
   {
     const float exposureMultiplier = 2.0;
     mapped = uchimura(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
-  else if (toneMapType == LOTTES_TONE_MAP)
+  #elif (toneMapType == LOTTES_TONE_MAP)
   {
     const float exposureMultiplier = 2.0;
     mapped = lottes(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
-  else if (toneMapType == ACES_TONE_MAP)
+  #elif (toneMapType == ACES_TONE_MAP)
   {
     const float exposureMultiplier = 2.0;
     mapped = aces(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
-  else if (toneMapType == UNCHARTED2_TONE_MAP)
+  #elif (toneMapType == UNCHARTED2_TONE_MAP)
   {
     const float exposureMultiplier = 5.0;
     mapped = uncharted2Tonemap(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
-  else if (toneMapType == REINHARD2_TONE_MAP)
+  #elif (toneMapType == REINHARD2_TONE_MAP)
   {
     const float exposureMultiplier = 2.0;
     mapped = reinhard2(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
-  else if (toneMapType == UNREAL_TONE_MAP)
+  #elif (toneMapType == UNREAL_TONE_MAP)
   {
     const float exposureMultiplier = 3.0;
     mapped = reinhard2(exposureMultiplier * u_texExposure * mapped);
     A = 5.0;
   }
-  else if (toneMapType == EXPOSURE_TONE_MAP)
+  #elif (toneMapType == EXPOSURE_TONE_MAP)
   {
     // Exposure tone mapping
     //const float exposure = 30.0;
@@ -623,6 +607,7 @@ void main()
     mapped = vec3(1.0) - exp(-mapped * exposureMultiplier * u_texExposure);
     A = 5.0;
   }
+  #endif
 
   // Color effects
   // hue shift doesn't seem to be working???

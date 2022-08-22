@@ -11,7 +11,10 @@ using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
 RgbBgrLerper::RgbBgrLerper(const PluginInfo& goomInfo,
                            const UTILS::MATH::IGoomRand& goomRand) noexcept
-  : m_goomInfo{goomInfo}, m_goomRand{goomRand}, m_colorIndexes{0, 1, 2}
+  : m_goomInfo{goomInfo},
+    m_goomRand{goomRand},
+    m_srceColorIndexes{0, 1, 2},
+    m_destColorIndexes{m_srceColorIndexes}
 {
 }
 
@@ -32,31 +35,29 @@ auto RgbBgrLerper::Update() noexcept -> void
   {
     m_lerpT.SetNumSteps(
         m_goomRand.GetRandInRange(MIN_NUM_LERP_ON_STEPS, MAX_NUM_LERP_ON_STEPS + 1));
-    LogInfo("LerpT = {}. m_currentT = {}. Reset lerpT steps to {}",
+    LogInfo("LerpT = {}. Reset lerpT steps to {}",
             m_lerpT(),
-            m_currentT,
             m_lerpT.GetNumSteps());
 
-    m_goomRand.Shuffle(begin(m_colorIndexes), end(m_colorIndexes));
+    m_goomRand.Shuffle(begin(m_destColorIndexes), end(m_destColorIndexes));
     LogInfo("Reset m_colorIndexes = [{},{},{}].",
-            m_colorIndexes.at(0),
-            m_colorIndexes.at(1),
-            m_colorIndexes.at(2));
+            m_destColorIndexes.at(0),
+            m_destColorIndexes.at(1),
+            m_destColorIndexes.at(2));
   }
 
-  m_currentT = m_lerpT();
   m_lerpT.Increment();
 
-  if (m_lerpT.HasJustHitStartBoundary() or m_lerpT.HasJustHitEndBoundary())
+  if (m_lerpT.IsStopped())
   {
     m_lerpOffTimer.SetTimeLimit(
         m_goomRand.GetRandInRange(MIN_LERP_OFF_TIME, MAX_LERP_OFF_TIME + 1));
-    LogInfo("LerpT = {}. m_currentT = {}. Set off timer {}",
+    LogInfo("LerpT = {}. Set off timer {}",
             m_lerpT(),
-            m_currentT,
             m_lerpOffTimer.GetTimeLimit());
 
-    m_currentT = m_lerpT.HasJustHitStartBoundary() ? 0.0F : 1.0F;
+    m_lerpT.Reset(0.0F);
+    m_srceColorIndexes = m_destColorIndexes;
   }
 }
 

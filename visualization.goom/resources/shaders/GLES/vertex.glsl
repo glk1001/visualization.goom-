@@ -1,11 +1,10 @@
-#version 100
+#version 300 es
 
-varying vec2 texCoords;
+out vec2 texCoords;
 
 uniform mat4 u_projModelMat;
-
-attribute vec2 in_position;
-attribute vec2 in_texCoords;
+in vec2 in_position;
+in vec2 in_texCoords;
 
 void main()
 {
