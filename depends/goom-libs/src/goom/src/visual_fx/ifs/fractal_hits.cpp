@@ -27,12 +27,15 @@ auto FractalHits::GetHitInfo(const Dimensions& dimensions) noexcept
 
 void FractalHits::Reset()
 {
-  m_maxHitCount = 0;
-  m_hits.clear();
-  for (auto& xHit : m_hitInfo)
+  for (const auto& hit : m_hits)
   {
-    std::fill(xHit.begin(), xHit.end(), HitInfo{0, BLACK_PIXEL});
+    auto& hitInfo = m_hitInfo[hit.GetY()][hit.GetX()];
+    hitInfo.count = 0;
+    hitInfo.color = BLACK_PIXEL;
   }
+
+  m_hits.clear();
+  m_maxHitCount = 0;
 }
 
 void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& simi)

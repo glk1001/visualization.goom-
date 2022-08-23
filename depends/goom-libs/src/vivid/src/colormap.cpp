@@ -42,13 +42,14 @@ srgb_t ColorMap::at( const float t ) const
     const size_t steps = stops_.size() - 1;
     const float s = glm::clamp( t, 0.f, 1.f );
     const float sf = s * static_cast<float>(steps);
-    const size_t k = size_t( glm::floor( sf ) );
+    const float sFloor = glm::floor( sf );
+    const auto k = static_cast<size_t>( sFloor );
 
     if ( k + 1 == stops_.size() ) {
         return stops_.back();
     }
 
-    const auto u = std::fmod( sf, 1.f );
+    const auto u = sf - sFloor;
 
     switch ( interpolation )
     {
