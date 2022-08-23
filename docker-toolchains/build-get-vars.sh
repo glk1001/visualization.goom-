@@ -7,4 +7,4 @@ function get_docker_build_image()
 }
 
 declare -r DOCKER_BUILD_OS_TYPE=debian
-declare -r DOCKER_BUILD_OS_TAG=bookworm
+declare -r DOCKER_BUILD_OS_TAG=sid
