@@ -6,6 +6,7 @@
 #include "utils/name_value_pairs.h"
 #include "utils/timer.h"
 
+#include <libdivide.h>
 #include <string>
 
 namespace GOOM::FILTER_FX
@@ -35,7 +36,7 @@ private:
   FXBuffSettings m_buffSettings{};
 
   static constexpr uint32_t MAX_SUM_COEFFS = channel_limits<uint32_t>::max() + 1;
-  uint32_t m_coeffsAndBrightnessDivisor    = MAX_SUM_COEFFS;
+  libdivide::divider<uint32_t> m_coeffsAndBrightnessFastDivisor{MAX_SUM_COEFFS};
 
   [[nodiscard]] auto GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
                                       const NeighborhoodPixelArray& pixels) const noexcept -> Pixel;
@@ -58,7 +59,7 @@ inline auto FilterColorsService::SetBrightness(const float brightness) noexcept 
   static constexpr auto N = channel_limits<uint32_t>::max();
   const auto m = std::max(1U, static_cast<uint32_t>(brightness * channel_limits<float>::max()));
 
-  m_coeffsAndBrightnessDivisor = (X * N) / m;
+  m_coeffsAndBrightnessFastDivisor = libdivide::divider<uint32_t>{(X * N) / m};
 }
 
 inline auto FilterColorsService::SetBlockyWavy(const bool val) noexcept -> void
@@ -129,9 +130,10 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
     multG += static_cast<uint32_t>(color.G()) * coeff;
     multB += static_cast<uint32_t>(color.B()) * coeff;
   }
-  const auto newR = static_cast<PixelChannelType>(multR / m_coeffsAndBrightnessDivisor);
-  const auto newG = static_cast<PixelChannelType>(multG / m_coeffsAndBrightnessDivisor);
-  const auto newB = static_cast<PixelChannelType>(multB / m_coeffsAndBrightnessDivisor);
+
+  const auto newR = static_cast<PixelChannelType>(multR / m_coeffsAndBrightnessFastDivisor);
+  const auto newG = static_cast<PixelChannelType>(multG / m_coeffsAndBrightnessFastDivisor);
+  const auto newB = static_cast<PixelChannelType>(multB / m_coeffsAndBrightnessFastDivisor);
 
   return Pixel{
       Pixel::RGB{newR, newG, newB, MAX_ALPHA}

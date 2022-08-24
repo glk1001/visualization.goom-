@@ -19,13 +19,13 @@ set(GOOM_INCLUDE_DIRS "${GOOM_LIBS_DIR}/src/goom/include")
 
 if (NOT WIN32)
     set(GOOM_BIN_LIBS
-            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_BUILD_TYPE}/libgoom.a
-            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_BUILD_TYPE}/libvivid.a)
+        ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_BUILD_TYPE}/libgoom.a
+        ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_BUILD_TYPE}/libvivid.a)
 else ()
     set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
     set(GOOM_BIN_LIBS
-            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_CONFIGURATION_TYPES}/goom.lib
-            ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_CONFIGURATION_TYPES}/vivid.lib)
+        ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_CONFIGURATION_TYPES}/goom.lib
+        ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_CONFIGURATION_TYPES}/vivid.lib)
 endif ()
 
 IF (NOT KODI_ROOT_DIR)
@@ -56,13 +56,13 @@ else ()
     else ()
         message(STATUS "In config mode: Executing kodi addons cmake.")
         execute_process(COMMAND cmake
-                -D ADDONS_TO_BUILD=${GOOM_TARGET_NAME}
-                -D ADDON_SRC_PREFIX=${KODI_ROOT_DIR}
-                -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-                -D PACKAGE_ZIP=1
-                ${KODI_ROOT_DIR}/xbmc/cmake/addons
-                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                RESULT_VARIABLE CMAKE_RESULT)
+                        -D ADDONS_TO_BUILD=${GOOM_TARGET_NAME}
+                        -D ADDON_SRC_PREFIX=${KODI_ROOT_DIR}
+                        -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                        -D PACKAGE_ZIP=1
+                        ${KODI_ROOT_DIR}/xbmc/cmake/addons
+                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                        RESULT_VARIABLE CMAKE_RESULT)
         if (NOT CMAKE_RESULT EQUAL "0")
             message(FATAL_ERROR "cmake kodi-addons failed.")
         endif ()
@@ -128,14 +128,14 @@ get_project_warnings(PROJECT_WARNINGS)
 add_compile_options(${PROJECT_WARNINGS})
 
 include_directories(${GOOM_LIBS_DIR}
-        ${GOOM_INCLUDE_DIRS}
-        SYSTEM ${GOOM_LIBS_DIR}/src/vivid/include
-        SYSTEM ${GOOM_LIBS_DIR}/lib/fmt/include
-        SYSTEM ${fmt_SOURCE_DIR}/include
-        SYSTEM ${GLM_INCLUDE_DIR}
-        SYSTEM ${KODI_INCLUDE_DIR}
-        SYSTEM ${KODI_FIXED_INCLUDE_DIR}
-        )
+                    ${GOOM_INCLUDE_DIRS}
+                    SYSTEM ${GOOM_LIBS_DIR}/src/vivid/include
+                    SYSTEM ${GOOM_LIBS_DIR}/lib/fmt/include
+                    SYSTEM ${fmt_SOURCE_DIR}/include
+                    SYSTEM ${GLM_INCLUDE_DIR}
+                    SYSTEM ${KODI_INCLUDE_DIR}
+                    SYSTEM ${KODI_FIXED_INCLUDE_DIR}
+                    )
 
 set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp src/build_time.cpp)
 set(${GOOM_ADDON_PREFIX}_HEADERS src/CircularBuffer.h src/Main.h src/build_time.h)
@@ -167,16 +167,16 @@ if (ENABLE_TESTING)
 
     # Force the build time into the compiled binaries.
     set(GOOM_BUILD_TIME_FILES
-            ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cpp
-            ${PROJECT_SOURCE_DIR}/src/build_time.cpp
-            )
+        ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cpp
+        ${PROJECT_SOURCE_DIR}/src/build_time.cpp
+        )
     add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
     add_custom_command(TARGET goom_build_time
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
-            COMMENT "Touching build files."
-            VERBATIM
-            )
+                       PRE_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
+                       COMMENT "Touching build files."
+                       VERBATIM
+                       )
 endif ()
 
 
