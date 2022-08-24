@@ -35,6 +35,7 @@ protected:
 private:
   size_t m_numBuffers = 0;
   std::vector<PixelBuffer*> m_multipleBuffers{};
+  PixelBuffer* m_multipleBuffer0{};
 };
 
 } // namespace GOOM::DRAW

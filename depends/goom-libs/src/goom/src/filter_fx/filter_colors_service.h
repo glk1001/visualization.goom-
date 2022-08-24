@@ -75,8 +75,8 @@ inline auto FilterColorsService::GetNewColor(
     const PixelBuffer& srceBuff,
     const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const noexcept -> Pixel
 {
-  const auto pixelNeighbours = srceBuff.Get4RHBNeighbours(
-      static_cast<size_t>(sourceInfo.screenPoint.x), static_cast<size_t>(sourceInfo.screenPoint.y));
+  const auto pixelNeighbours =
+      srceBuff.Get4RHBNeighbours(sourceInfo.screenPoint.x, sourceInfo.screenPoint.y);
 
   return GetFilteredColor(sourceInfo.coeffs, pixelNeighbours);
 }

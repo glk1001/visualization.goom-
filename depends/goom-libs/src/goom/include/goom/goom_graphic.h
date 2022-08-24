@@ -99,7 +99,7 @@ static constexpr auto MAX_ALPHA     = MAX_COLOR_VAL;
 static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::max(),
               "Invalid MAX_CHANNEL_VALUE_HDR");
 
-// TODO - maybe should be template: Pixel<uint8_t>, Pixel<uint16_t>
+// TODO(glk) - maybe should be template: Pixel<uint8_t>, Pixel<uint16_t>
 class Pixel // NOLINT: union hard to fix here
 {
 public:
@@ -199,8 +199,16 @@ public:
   [[nodiscard]] static auto GetIntBufferSize(const Dimensions& dimensions) noexcept -> size_t;
   [[nodiscard]] auto GetIntBuff() const noexcept -> const PixelIntType*;
 
-  auto operator()(size_t x, size_t y) const noexcept -> const Pixel&;
-  auto operator()(size_t x, size_t y) noexcept -> Pixel&;
+  [[nodiscard]] auto operator()(size_t x, size_t y) const noexcept -> const Pixel&;
+  [[nodiscard]] auto operator()(int32_t x, int32_t y) const noexcept -> const Pixel&;
+  [[nodiscard]] auto operator()(size_t x, size_t y) noexcept -> Pixel&;
+  [[nodiscard]] auto operator()(int32_t x, int32_t y) noexcept -> Pixel&;
+
+  // Fastest access.
+  [[nodiscard]] auto GetBuffPos(size_t x, size_t y) const noexcept -> size_t;
+  [[nodiscard]] auto GetBuffPos(int32_t x, int32_t y) const noexcept -> size_t;
+  [[nodiscard]] auto GetPixel(size_t buffPos) const noexcept -> const Pixel&;
+  [[nodiscard]] auto GetPixel(size_t buffPos) noexcept -> Pixel&;
 
   using iterator       = Buffer::iterator; // NOLINT(readability-identifier-naming)
   using const_iterator = Buffer::const_iterator; // NOLINT(readability-identifier-naming)
@@ -210,6 +218,8 @@ public:
 
   static constexpr size_t NUM_NBRS = 4;
   [[nodiscard]] auto Get4RHBNeighbours(size_t x, size_t y) const noexcept
+      -> std::array<Pixel, NUM_NBRS>;
+  [[nodiscard]] auto Get4RHBNeighbours(int32_t x, int32_t y) const noexcept
       -> std::array<Pixel, NUM_NBRS>;
 
 private:
@@ -365,19 +375,49 @@ inline auto PixelBuffer::CopyTo(PixelBuffer& pixelBuffer) const noexcept -> void
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) const noexcept -> const Pixel&
 {
-#ifdef GOOM_DEBUG
-  return m_buff.at((y * m_width) + x);
-#else
-  return m_buff[(y * m_width) + x];
-#endif
+  return GetPixel(GetBuffPos(x, y));
+}
+
+inline auto PixelBuffer::operator()(const int32_t x, const int32_t y) const noexcept -> const Pixel&
+{
+  return GetPixel(GetBuffPos(x, y));
 }
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) noexcept -> Pixel&
 {
+  return GetPixel(GetBuffPos(x, y));
+}
+
+inline auto PixelBuffer::operator()(const int32_t x, const int32_t y) noexcept -> Pixel&
+{
+  return GetPixel(GetBuffPos(x, y));
+}
+
+inline auto PixelBuffer::GetBuffPos(const size_t x, const size_t y) const noexcept -> size_t
+{
+  return (y * m_width) + x;
+}
+
+inline auto PixelBuffer::GetBuffPos(const int32_t x, const int32_t y) const noexcept -> size_t
+{
+  return (static_cast<size_t>(y) * m_width) + static_cast<size_t>(x);
+}
+
+inline auto PixelBuffer::GetPixel(const size_t buffPos) const noexcept -> const Pixel&
+{
 #ifdef GOOM_DEBUG
-  return m_buff.at((y * m_width) + x);
+  return m_buff.at(buffPos);
 #else
-  return m_buff[(y * m_width) + x];
+  return m_buff[buffPos];
+#endif
+}
+
+inline auto PixelBuffer::GetPixel(const size_t buffPos) noexcept -> Pixel&
+{
+#ifdef GOOM_DEBUG
+  return m_buff.at(buffPos);
+#else
+  return m_buff[buffPos];
 #endif
 }
 
@@ -395,6 +435,12 @@ inline auto PixelBuffer::GetRowIter(const size_t y) const noexcept
   const auto rowPos = static_cast<int32_t>(y * m_width);
   return std::make_tuple(m_buff.begin() + rowPos,
                          m_buff.begin() + rowPos + static_cast<int32_t>(m_width));
+}
+
+inline auto PixelBuffer::Get4RHBNeighbours(const int32_t x, const int32_t y) const noexcept
+    -> std::array<Pixel, NUM_NBRS>
+{
+  return Get4RHBNeighbours(static_cast<size_t>(x), static_cast<size_t>(y));
 }
 
 inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const noexcept
