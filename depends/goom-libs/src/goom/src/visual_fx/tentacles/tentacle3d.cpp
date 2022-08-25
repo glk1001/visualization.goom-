@@ -2,6 +2,7 @@
 
 #include "color/color_maps.h"
 #include "color/color_utils.h"
+#include "draw/goom_draw.h"
 #include "tentacle2d.h"
 #include "utils/math/misc.h"
 
@@ -15,42 +16,45 @@ namespace GOOM::VISUAL_FX::TENTACLES
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
+using DRAW::GetLowColor;
+using DRAW::GetMainColor;
+using DRAW::MultiplePixels;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Sq;
 
-static constexpr auto HEAD_X_MAX = 10.0F;
+static constexpr auto PROB_LOW_MIX_SAME      = 0.5F;
+static constexpr auto MAIN_BRIGHTNESS_FACTOR = 0.5F;
+static constexpr auto LOW_BRIGHTNESS_FACTOR  = 1.0F;
 
 Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-                       const Pixel& headMainColor,
-                       const Pixel& headLowColor,
-                       const V3dFlt& head,
-                       const size_t numHeadNodes,
+                       const MultiplePixels& startColors,
+                       const size_t numStartNodes,
                        const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_tentacle{std::move(tentacle)},
-    m_headMainColor{headMainColor},
-    m_headLowColor{headLowColor},
-    m_head{head},
-    m_numHeadNodes{numHeadNodes}
+    m_startColors{startColors},
+    m_numStartNodes{numStartNodes}
 {
 }
 
 Tentacle3D::~Tentacle3D() noexcept = default;
 
-void Tentacle3D::SetWeightedColorMaps(
-    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps)
+auto Tentacle3D::SetWeightedColorMaps(
+    const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_colorMaps = weightedMaps;
+  m_mainColorMaps = weightedColorMaps.mainColorMaps;
+  m_lowColorMaps  = weightedColorMaps.lowColorMaps;
 
   m_colorMapsManager.UpdateColorMapInfo(m_mainColorMapID,
-                                        {m_colorMaps, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+                                        {m_mainColorMaps, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
   m_colorMapsManager.UpdateColorMapInfo(m_lowColorMapID,
-                                        {m_colorMaps, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+                                        {m_lowColorMaps, RandomColorMaps::ALL_COLOR_MAP_TYPES});
 
-  ColorMapsChanged();
+  ChangeColorMaps();
 }
 
-void Tentacle3D::ColorMapsChanged()
+auto Tentacle3D::ChangeColorMaps() -> void
 {
   m_colorMapsManager.ChangeColorMapNow(m_mainColorMapID);
   m_colorMapsManager.ChangeColorMapNow(m_lowColorMapID);
@@ -58,7 +62,6 @@ void Tentacle3D::ColorMapsChanged()
   m_mainColorSegmentMixT =
       m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
 
-  static constexpr auto PROB_LOW_MIX_SAME = 0.5F;
   m_lowColorSegmentMixT =
       m_goomRand.ProbabilityOf(PROB_LOW_MIX_SAME)
           ? m_mainColorSegmentMixT
@@ -66,96 +69,117 @@ void Tentacle3D::ColorMapsChanged()
 }
 
 auto Tentacle3D::GetMixedColors(const size_t nodeNum,
-                                const Pixel& mainColor,
-                                const Pixel& lowColor,
-                                const float brightness) const -> std::pair<Pixel, Pixel>
+                                const MultiplePixels& dominantColors,
+                                const float brightness) const -> MultiplePixels
 {
-  if (nodeNum < GetNumHeadNodes())
+  if (nodeNum < GetNumStartNodes())
   {
-    return GetMixedColors(nodeNum, mainColor, lowColor);
+    return GetMixedColors(nodeNum, dominantColors);
   }
 
-  const auto [mixedMainColor, mixedLowColor]  = GetMixedColors(nodeNum, mainColor, lowColor);
-  const auto mixedMainColorPixel              = mixedMainColor;
-  const auto mixedLowColorPixel               = mixedLowColor;
-  static constexpr auto LOW_BRIGHTNESS_FACTOR = 1.8F;
-  return std::make_pair(
-      m_colorAdjust.GetAdjustment(brightness, mixedMainColorPixel),
-      m_colorAdjust.GetAdjustment(LOW_BRIGHTNESS_FACTOR * brightness, mixedLowColorPixel));
+  const auto mixedColors = GetMixedColors(nodeNum, dominantColors);
+
+  return {
+      m_colorAdjust.GetAdjustment(MAIN_BRIGHTNESS_FACTOR * brightness, GetMainColor(mixedColors)),
+      m_colorAdjust.GetAdjustment(LOW_BRIGHTNESS_FACTOR * brightness, GetLowColor(mixedColors))};
 }
 
-auto Tentacle3D::GetMixedColors(const size_t nodeNum,
-                                const Pixel& mainColor,
-                                const Pixel& lowColor) const -> std::pair<Pixel, Pixel>
+auto Tentacle3D::GetMixedColors(const size_t nodeNum, const MultiplePixels& dominantColors) const
+    -> MultiplePixels
 {
-  if (nodeNum < GetNumHeadNodes())
+  if (nodeNum < GetNumStartNodes())
   {
-    return GetMixedHeadColors(nodeNum, mainColor, lowColor);
+    return GetMixedStartColors(nodeNum, dominantColors);
   }
 
-  auto t = static_cast<float>(nodeNum + 1) / static_cast<float>(Get2DTentacle().GetNumNodes());
-  if (m_reverseColorMix)
+  static constexpr auto REPEAT_FREQUENCY = 3U;
+  const auto nodeGroupSize               = Get2DTentacle().GetNumNodes() / REPEAT_FREQUENCY;
+  const auto t =
+      static_cast<float>(nodeNum % nodeGroupSize) / static_cast<float>(nodeGroupSize - 1);
+  const auto mainSegmentColor = m_colorMapsManager.GetColorMap(m_mainColorMapID).GetColor(t);
+  const auto lowSegmentColor  = m_colorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
+
+  auto mixedColors = MultiplePixels{
+      IColorMap::GetColorMix(
+          GetMainColor(dominantColors), mainSegmentColor, m_mainColorSegmentMixT),
+      IColorMap::GetColorMix(GetLowColor(dominantColors), lowSegmentColor, m_lowColorSegmentMixT)};
+
+  if (static constexpr auto T_CUT_OFF = 0.9F;
+      (std::abs(GetStartPos().x) <= START_SMALL_X) or (t > T_CUT_OFF))
   {
-    t = 1 - t;
+    const auto brightnessCut = Sq(t);
+    return {GetBrighterColor(brightnessCut, GetMainColor(mixedColors)),
+            GetBrighterColor(brightnessCut, GetLowColor(mixedColors))};
   }
 
-  const auto segmentMainColor = m_colorMapsManager.GetColorMap(m_mainColorMapID).GetColor(t);
-  const auto segmentLowColor  = m_colorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
-  const auto mixedMainColor =
-      GetFinalMixedColor(mainColor, segmentMainColor, m_mainColorSegmentMixT);
-  const auto mixedLowColor = GetFinalMixedColor(lowColor, segmentLowColor, m_lowColorSegmentMixT);
-
-  if (std::abs(GetHead().x) < HEAD_X_MAX)
-  {
-    const auto brightnessCut = t * t;
-    return std::make_pair(GetBrighterColor(brightnessCut, mixedMainColor),
-                          GetBrighterColor(brightnessCut, mixedLowColor));
-  }
-
-  return std::make_pair(mixedMainColor, mixedLowColor);
+  return mixedColors;
 }
 
-inline auto Tentacle3D::GetMixedHeadColors(const size_t nodeNum,
-                                           const Pixel& mainColor,
-                                           const Pixel& lowColor) const -> std::pair<Pixel, Pixel>
+inline auto Tentacle3D::GetMixedStartColors(size_t nodeNum,
+                                            const MultiplePixels& dominantColors) const
+    -> MultiplePixels
 {
   const auto t =
-      0.5F * (1.0F + (static_cast<float>(nodeNum + 1) / static_cast<float>(GetNumHeadNodes() + 1)));
-  const auto mixedHeadMainColor = IColorMap::GetColorMix(m_headMainColor, mainColor, t);
-  const auto mixedHeadLowColor  = IColorMap::GetColorMix(m_headLowColor, lowColor, t);
-  return std::make_pair(mixedHeadMainColor, mixedHeadLowColor);
+      0.5F *
+      (1.0F + (static_cast<float>(nodeNum + 1) / static_cast<float>(GetNumStartNodes() + 1)));
+
+  return {IColorMap::GetColorMix(GetMainColor(m_startColors), GetMainColor(dominantColors), t),
+          IColorMap::GetColorMix(GetLowColor(m_startColors), GetLowColor(dominantColors), t)};
 }
 
-inline auto Tentacle3D::GetFinalMixedColor(const Pixel& color,
-                                           const Pixel& segmentColor,
-                                           const float t) const -> Pixel
+auto Tentacle3D::SetStartPosOffset(const V3dFlt& val) noexcept -> void
 {
-  return IColorMap::GetColorMix(color, segmentColor, t);
+  m_previousStartPosOffset = GetCurrentStartPostOffset();
+  m_startPosOffset         = val;
+  m_startPosOffsetT.Reset();
 }
 
-auto Tentacle3D::GetVertices() const -> std::vector<V3dFlt>
+auto Tentacle3D::SetEndPosOffset(const V3dFlt& val) noexcept -> void
 {
-  const auto [xVec2D, yVec2D] = m_tentacle->GetDampedXAndYVectors();
-  const auto n                = xVec2D.size();
+  m_previousEndPosOffset = GetCurrentEndPostOffset();
+  m_endPosOffset         = val;
+  m_endPosOffsetT.Reset();
+}
 
-  auto vec3d    = std::vector<V3dFlt>(n);
-  const auto x0 = m_head.x;
-  const auto y0 = m_head.y - static_cast<float>(yVec2D[0]);
-  const auto z0 = m_head.z - static_cast<float>(xVec2D[0]);
-  auto xStep    = 0.0F;
-  if (std::abs(x0) < HEAD_X_MAX)
-  {
-    const auto xn = 0.1F * x0;
-    xStep         = (x0 - xn) / static_cast<float>(n);
-  }
+inline auto Tentacle3D::GetCurrentStartPostOffset() const noexcept -> V3dFlt
+{
+  return lerp(m_previousStartPosOffset, m_startPosOffset, m_startPosOffsetT());
+}
+
+inline auto Tentacle3D::GetCurrentEndPostOffset() const noexcept -> V3dFlt
+{
+  return lerp(m_previousEndPosOffset, m_endPosOffset, m_endPosOffsetT());
+}
+
+auto Tentacle3D::GetTentacleVertices() const -> std::vector<V3dFlt>
+{
+  const auto& [xVec2D, yVec2D] = m_tentacle->GetDampedXAndYVectors();
+
+  const auto n = xVec2D.size();
+  auto vec3d   = std::vector<V3dFlt>(n);
+
+  const auto startPosOffset = GetCurrentStartPostOffset();
+  const auto endPosOffset   = GetCurrentEndPostOffset();
+
+  const auto x0 = m_startPos.x + startPosOffset.x;
+  const auto xn = m_endPos.x + endPosOffset.x;
+  const auto y0 = m_startPos.y + startPosOffset.y - static_cast<float>(yVec2D[0]);
+  const auto yn = m_endPos.y + endPosOffset.y - static_cast<float>(yVec2D[0]);
+  const auto z0 = m_startPos.z - static_cast<float>(xVec2D[0]);
+
+  const auto xStep = (xn - x0) / static_cast<float>(n - 1);
+  const auto yStep = (yn - y0) / static_cast<float>(n - 1);
+
   auto x = x0;
+  auto y = y0;
   for (auto i = 0U; i < n; ++i)
   {
     vec3d[i].x = x;
+    vec3d[i].y = y + static_cast<float>(yVec2D[i]);
     vec3d[i].z = z0 + static_cast<float>(xVec2D[i]);
-    vec3d[i].y = y0 + static_cast<float>(yVec2D[i]);
 
-    x -= xStep;
+    x += xStep;
+    y += yStep;
   }
 
   return vec3d;

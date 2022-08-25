@@ -40,9 +40,8 @@ public:
 
   auto SetProjectionDistance(float value) -> void;
   auto SetCameraPosition(float cameraDistance, float tentacleAngle) -> void;
-  auto SetDominantColors(const Pixel& dominantMainColor,
-                         const Pixel& dominantLowColor,
-                         const Pixel& dominantDotColor) -> void;
+  auto SetDominantColors(const DRAW::MultiplePixels& dominantColors, const Pixel& dominantDotColor)
+      -> void;
 
   auto Plot3D(const Tentacle3D& tentacle) -> void;
 
@@ -63,8 +62,7 @@ private:
   float m_tentacleAngle      = 0.0F;
   float m_cameraDistance     = 0.0F;
   V3dFlt m_cameraPosition{};
-  Pixel m_dominantMainColor{};
-  Pixel m_dominantLowColor{};
+  DRAW::MultiplePixels m_dominantColors{};
   Pixel m_dominantDotColor{};
 
   auto DrawNode(const Tentacle3D& tentacle,
@@ -76,12 +74,9 @@ private:
       -> void;
   auto DrawNodeDot(size_t nodeNum, Point2dInt point, const DRAW::MultiplePixels& colors) -> void;
 
-  [[nodiscard]] auto GetMixedColors(const Tentacle3D& tentacle,
-                                    float brightness,
-                                    size_t nodeNum) const -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetBrightness(const Tentacle3D& tentacle) const -> float;
   [[nodiscard]] auto GetBrightnessCut(const Tentacle3D& tentacle) const -> float;
-  [[nodiscard]] auto Get2DTentaclePoints(const Tentacle3D& tentacle) const
+  [[nodiscard]] auto Get2DProjectedTentaclePoints(const Tentacle3D& tentacle) const
       -> std::vector<Point2dInt>;
   [[nodiscard]] auto GetTentacleAngleAboutY(const Tentacle3D& tentacle) const -> float;
   [[nodiscard]] static auto GetTransformedPoints(const std::vector<V3dFlt>& points,
@@ -101,12 +96,10 @@ inline auto TentaclePlotter::SetProjectionDistance(const float value) -> void
   m_projectionDistance = value;
 }
 
-inline auto TentaclePlotter::SetDominantColors(const Pixel& dominantMainColor,
-                                               const Pixel& dominantLowColor,
+inline auto TentaclePlotter::SetDominantColors(const DRAW::MultiplePixels& dominantColors,
                                                const Pixel& dominantDotColor) -> void
 {
-  m_dominantMainColor = dominantMainColor;
-  m_dominantLowColor  = dominantLowColor;
+  m_dominantColors    = dominantColors;
   m_dominantDotColor  = dominantDotColor;
 }
 

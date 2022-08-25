@@ -24,7 +24,12 @@ class FxHelper;
 
 class TentaclesFx : public IVisualFx
 {
+  static constexpr auto DOMINANT_COLOR_TYPE = 0U;
+  static constexpr auto NORMAL_COLOR_TYPE   = 1U;
+
 public:
+  static constexpr uint32_t NUM_TENTACLE_COLOR_TYPES = NORMAL_COLOR_TYPE + 1;
+
   TentaclesFx() noexcept = delete;
   TentaclesFx(const FxHelper& fxHelper,
               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
@@ -33,6 +38,8 @@ public:
 
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
+
+  auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void override;
 
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;

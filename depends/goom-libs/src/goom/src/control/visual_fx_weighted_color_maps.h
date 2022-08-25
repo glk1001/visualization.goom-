@@ -45,7 +45,10 @@ private:
   [[nodiscard]] auto GetStarsLowRainGroups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetStarsMainFountainGroups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetStarsLowFountainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetTentaclesGroups() const noexcept -> WeightedGroups;
+  [[nodiscard]] auto GetTentaclesDominantMainGroups() const noexcept -> WeightedGroups;
+  [[nodiscard]] auto GetTentaclesDominantLowGroups() const noexcept -> WeightedGroups;
+  [[nodiscard]] auto GetTentaclesMainGroups() const noexcept -> WeightedGroups;
+  [[nodiscard]] auto GetTentaclesLowGroups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetTubesMainGroups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetTubesLowGroups() const noexcept -> WeightedGroups;
 };

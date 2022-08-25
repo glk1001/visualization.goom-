@@ -91,6 +91,7 @@ private:
   auto ChangeLinesColorMaps() noexcept -> void;
   auto ChangeShapesColorMaps() noexcept -> void;
   auto ChangeStarsColorMaps() noexcept -> void;
+  auto ChangeTentaclesColorMaps() noexcept -> void;
 
   GoomDrawablesSet m_currentGoomDrawables{};
   [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;

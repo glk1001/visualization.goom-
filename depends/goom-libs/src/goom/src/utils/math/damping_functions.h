@@ -86,7 +86,8 @@ public:
   auto operator=(const ISequenceFunction&) noexcept -> ISequenceFunction& = default;
   auto operator=(ISequenceFunction&&) noexcept -> ISequenceFunction&      = delete;
 
-  virtual auto GetNext() -> float = 0;
+  virtual auto Increment() noexcept -> void = 0;
+  [[nodiscard]] virtual auto GetNext() const noexcept -> float = 0;
 };
 
 class SineWaveMultiplier : public ISequenceFunction
@@ -94,21 +95,18 @@ class SineWaveMultiplier : public ISequenceFunction
 public:
   SineWaveMultiplier(float frequency, float lower, float upper, float x0) noexcept;
 
-  auto GetNext() -> float override;
+  auto Increment() noexcept -> void override;
+  [[nodiscard]] auto GetNext() const noexcept -> float override;
 
-  void SetX0(const float x0) { m_x = x0; }
-  [[nodiscard]] auto GetFrequency() const -> float { return m_frequency; }
-  void SetFrequency(const float val) { m_frequency = val; }
+  auto SetX0(float x0) noexcept -> void;
+  [[nodiscard]] auto GetFrequency() const noexcept -> float;
+  auto SetFrequency(float val) noexcept -> void;
 
-  [[nodiscard]] auto GetLower() const -> float { return m_lower; }
-  [[nodiscard]] auto GetUpper() const -> float { return m_upper; }
-  void SetRange(const float lwr, const float upr)
-  {
-    m_lower = lwr;
-    m_upper = upr;
-  }
+  [[nodiscard]] auto GetLower() const noexcept -> float;
+  [[nodiscard]] auto GetUpper() const noexcept -> float;
+  auto SetRange(float lwr, float upr) noexcept -> void;
 
-  void SetPiStepFrac(const float val) { m_piStepFrac = val; }
+  auto SetPiStepFrac(float val) noexcept -> void;
 
 private:
   RangeMapper m_rangeMapper;
@@ -118,5 +116,41 @@ private:
   float m_piStepFrac;
   float m_x;
 };
+
+inline auto SineWaveMultiplier::SetX0(const float x0) noexcept -> void
+{
+  m_x = x0;
+}
+
+inline auto SineWaveMultiplier::GetFrequency() const noexcept -> float
+{
+  return m_frequency;
+}
+
+inline auto SineWaveMultiplier::SetFrequency(const float val) noexcept -> void
+{
+  m_frequency = val;
+}
+
+inline auto SineWaveMultiplier::GetLower() const noexcept -> float
+{
+  return m_lower;
+}
+
+inline auto SineWaveMultiplier::GetUpper() const noexcept -> float
+{
+  return m_upper;
+}
+
+inline auto SineWaveMultiplier::SetRange(const float lwr, const float upr) noexcept -> void
+{
+  m_lower = lwr;
+  m_upper = upr;
+}
+
+inline auto SineWaveMultiplier::SetPiStepFrac(const float val) noexcept -> void
+{
+  m_piStepFrac = val;
+}
 
 } // namespace GOOM::UTILS::MATH

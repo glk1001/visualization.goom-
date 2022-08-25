@@ -252,8 +252,7 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
 
   ChangeStarsColorMaps();
 
-  m_drawablesMap[GoomDrawables::TENTACLES]->SetWeightedColorMaps(
-      {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::TENTACLES)});
+  ChangeTentaclesColorMaps();
 
   m_drawablesMap[GoomDrawables::TUBES]->SetWeightedColorMaps(
       {0,
@@ -263,7 +262,7 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
 
 auto AllStandardVisualFx::ChangeDotsColorMaps() noexcept -> void
 {
-  constexpr auto EXPECTED_NUM_DOT_TYPES =
+  static constexpr auto EXPECTED_NUM_DOT_TYPES =
       1U + (static_cast<uint32_t>(GoomEffect::DOTS4) - static_cast<uint32_t>(GoomEffect::DOTS0));
   static_assert(GoomDotsFx::NUM_DOT_TYPES == EXPECTED_NUM_DOT_TYPES);
 
@@ -285,9 +284,10 @@ auto AllStandardVisualFx::ChangeLinesColorMaps() noexcept -> void
 
 auto AllStandardVisualFx::ChangeShapesColorMaps() noexcept -> void
 {
-  constexpr auto EXPECTED_NUM_SHAPES = 1U + ((static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) -
-                                              static_cast<uint32_t>(GoomEffect::SHAPES_MAIN)) /
-                                             3U);
+  static constexpr auto EXPECTED_NUM_SHAPES =
+      1U + ((static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) -
+             static_cast<uint32_t>(GoomEffect::SHAPES_MAIN)) /
+            3U);
   static_assert(ShapesFx::NUM_SHAPES == EXPECTED_NUM_SHAPES);
 
   for (auto i = 0U; i < ShapesFx::NUM_SHAPES; ++i)
@@ -310,7 +310,7 @@ auto AllStandardVisualFx::ChangeShapesColorMaps() noexcept -> void
 
 auto AllStandardVisualFx::ChangeStarsColorMaps() noexcept -> void
 {
-  constexpr auto EXPECTED_NUM_STAR_MODES =
+  static constexpr auto EXPECTED_NUM_STAR_MODES =
       1U + ((static_cast<uint32_t>(GoomEffect::STARS_LOW_FOUNTAIN) -
              static_cast<uint32_t>(GoomEffect::STARS_MAIN_FIREWORKS)) /
             2U);
@@ -325,6 +325,29 @@ auto AllStandardVisualFx::ChangeStarsColorMaps() noexcept -> void
         static_cast<uint32_t>(GoomEffect::STARS_LOW_FIREWORKS) + offsetFromZero);
 
     m_drawablesMap[GoomDrawables::STARS]->SetWeightedColorMaps(
+        {i,
+         m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectMain),
+         m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectLow)});
+  }
+}
+
+auto AllStandardVisualFx::ChangeTentaclesColorMaps() noexcept -> void
+{
+  static constexpr auto EXPECTED_NUM_TENTACLE_MODES =
+      1U + ((static_cast<uint32_t>(GoomEffect::TENTACLES_LOW) -
+             static_cast<uint32_t>(GoomEffect::TENTACLES_DOMINANT_MAIN)) /
+            2);
+  static_assert(TentaclesFx::NUM_TENTACLE_COLOR_TYPES == EXPECTED_NUM_TENTACLE_MODES);
+
+  for (auto i = 0U; i < TentaclesFx::NUM_TENTACLE_COLOR_TYPES; ++i)
+  {
+    const auto offsetFromZero = 2 * i;
+    const auto goomEffectMain = static_cast<GoomEffect>(
+        static_cast<uint32_t>(GoomEffect::TENTACLES_DOMINANT_MAIN) + offsetFromZero);
+    const auto goomEffectLow = static_cast<GoomEffect>(
+        static_cast<uint32_t>(GoomEffect::TENTACLES_DOMINANT_LOW) + offsetFromZero);
+
+    m_drawablesMap[GoomDrawables::TENTACLES]->SetWeightedColorMaps(
         {i,
          m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectMain),
          m_visualFxColorMaps.GetCurrentRandomColorMaps(goomEffectLow)});

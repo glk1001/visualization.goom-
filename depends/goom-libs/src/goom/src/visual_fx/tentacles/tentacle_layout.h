@@ -17,8 +17,9 @@ public:
   auto operator=(const ITentacleLayout&) -> ITentacleLayout& = delete;
   auto operator=(ITentacleLayout&&) -> ITentacleLayout&      = delete;
 
-  [[nodiscard]] virtual auto GetNumPoints() const -> size_t                  = 0;
-  [[nodiscard]] virtual auto GetPoints() const -> const std::vector<V3dFlt>& = 0;
+  [[nodiscard]] virtual auto GetNumPoints() const -> size_t                       = 0;
+  [[nodiscard]] virtual auto GetStartPoints() const -> const std::vector<V3dFlt>& = 0;
+  [[nodiscard]] virtual auto GetEndPoints() const -> const std::vector<V3dFlt>&   = 0;
 };
 
 } // namespace GOOM::VISUAL_FX::TENTACLES
