@@ -80,7 +80,7 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap
   auto newColorMap = colorMap;
 
 #if __cplusplus <= 201703L
-  if (types.find(ColorMapTypes::ROTATED_T) != types.end())
+  if (types.find(ColorMapTypes::ROTATED_T) != cend(types))
 #else
   if (types.contains(ColorMapTypes::ROTATED_T))
 #endif
@@ -88,7 +88,7 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap
     newColorMap = GetRandomRotatedColorMapPtr(newColorMap);
   }
 #if __cplusplus <= 201703L
-  if (types.find(ColorMapTypes::SHADES) != types.end())
+  if (types.find(ColorMapTypes::SHADES) != cend(types))
 #else
   if (types.contains(ColorMapTypes::SHADES))
 #endif

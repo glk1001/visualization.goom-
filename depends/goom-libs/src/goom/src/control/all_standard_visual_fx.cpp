@@ -87,7 +87,7 @@ auto AllStandardVisualFx::SetSingleBufferDots(const bool val) -> void
 inline auto AllStandardVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawable) const -> bool
 {
 #if __cplusplus <= 201703L
-  return m_currentGoomDrawables.find(goomDrawable) != m_currentGoomDrawables.end();
+  return m_currentGoomDrawables.find(goomDrawable) != cend(m_currentGoomDrawables);
 #else
   return m_currentGoomDrawables.contains(goomDrawable);
 #endif
@@ -142,7 +142,7 @@ auto AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawabl
                 [this, &oldGoomDrawables](const auto currentlyDrawable)
                 {
                   const auto wasActiveInPreviousState =
-                      oldGoomDrawables.find(currentlyDrawable) != oldGoomDrawables.end();
+                      oldGoomDrawables.find(currentlyDrawable) != cend(oldGoomDrawables);
                   m_drawablesMap[currentlyDrawable]->PostStateUpdate(wasActiveInPreviousState);
                 });
 }

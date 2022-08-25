@@ -181,7 +181,7 @@ inline auto TValue::WeAreStartingDelayPoint() noexcept -> bool
     if (IsInThisDelayZone(delayZone))
     {
       m_delayPointCount = delayZone.delayTime;
-      m_currentDelayPoints.erase(m_currentDelayPoints.begin());
+      m_currentDelayPoints.erase(begin(m_currentDelayPoints));
       return true;
     }
   }

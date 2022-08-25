@@ -221,7 +221,7 @@ auto TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
                                            const ITentacleLayout& tentacleLayout) -> void
 {
   auto sortedLongestFirst = std::vector<size_t>(tentacles.size());
-  std::iota(sortedLongestFirst.begin(), sortedLongestFirst.end(), 0);
+  std::iota(begin(sortedLongestFirst), end(sortedLongestFirst), 0);
   const auto compareByLength = [&](const size_t id1, const size_t id2)
   {
     const auto len1 = tentacles[id1].Get2DTentacle().GetLength();
@@ -229,7 +229,7 @@ auto TentacleDriver::UpdateTentaclesLayout(std::vector<Tentacle3D>& tentacles,
     // Sort by longest first.
     return len1 > len2;
   };
-  std::sort(sortedLongestFirst.begin(), sortedLongestFirst.end(), compareByLength);
+  std::sort(begin(sortedLongestFirst), end(sortedLongestFirst), compareByLength);
 
   for (auto i = 0U; i < tentacles.size(); ++i)
   {

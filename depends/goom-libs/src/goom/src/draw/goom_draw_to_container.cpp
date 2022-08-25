@@ -78,8 +78,8 @@ void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKee
 {
   Expects(numToKeep <= m_orderedXYPixelList.size());
 
-  const auto eraseFrom = m_orderedXYPixelList.begin();
-  const auto eraseTo   = m_orderedXYPixelList.begin() +
+  const auto eraseFrom = cbegin(m_orderedXYPixelList);
+  const auto eraseTo   = cbegin(m_orderedXYPixelList) +
                        static_cast<std::ptrdiff_t>(m_orderedXYPixelList.size() - numToKeep);
 
   for (auto coords = eraseFrom; coords != eraseTo; ++coords)

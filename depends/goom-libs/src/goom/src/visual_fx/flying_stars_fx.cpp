@@ -313,8 +313,8 @@ inline auto FlyingStarsFx::FlyingStarsImpl::RemoveDeadStars() noexcept -> void
 {
   const auto isDead = [&](const Star& star) { return IsStarDead(star); };
 #if __cplusplus <= 201703L
-  m_activeStars.erase(std::remove_if(m_activeStars.begin(), m_activeStars.end(), isDead),
-                      m_activeStars.end());
+  m_activeStars.erase(std::remove_if(begin(m_activeStars), end(m_activeStars), isDead),
+                      end(m_activeStars));
 #else
   const auto numRemoved = std::erase_if(m_activeStars, isDead);
 #endif

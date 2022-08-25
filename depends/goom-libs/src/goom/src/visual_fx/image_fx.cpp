@@ -275,7 +275,7 @@ auto ImageFx::ImageFxImpl::InitImage() -> void
       "pretty-flowers.jpg",
   };
   auto randImageIndexes = std::array<size_t, s_IMAGE_FILENAMES.size()>{};
-  std::iota(randImageIndexes.begin(), randImageIndexes.end(), 0);
+  std::iota(begin(randImageIndexes), end(randImageIndexes), 0);
   m_goomRand.Shuffle(begin(randImageIndexes), end(randImageIndexes));
 
   const auto imageDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + "image_fx";

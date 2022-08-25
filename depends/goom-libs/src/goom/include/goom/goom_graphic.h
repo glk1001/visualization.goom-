@@ -355,7 +355,7 @@ inline auto PixelBuffer::GetHeight() const noexcept -> uint32_t
 
 inline auto PixelBuffer::Fill(const Pixel& pixel) noexcept -> void
 {
-  std::fill(m_buff.begin(), m_buff.end(), pixel);
+  std::fill(begin(m_buff), end(m_buff), pixel);
 }
 
 inline auto PixelBuffer::GetIntBufferSize(const Dimensions& dimensions) noexcept -> size_t
@@ -425,16 +425,16 @@ inline auto PixelBuffer::GetRowIter(const size_t y) noexcept
     -> std::tuple<PixelBuffer::iterator, PixelBuffer::iterator>
 {
   const auto rowPos = static_cast<int32_t>(y * m_width);
-  return std::make_tuple(m_buff.begin() + rowPos,
-                         m_buff.begin() + rowPos + static_cast<int32_t>(m_width));
+  return std::make_tuple(begin(m_buff) + rowPos,
+                         begin(m_buff) + rowPos + static_cast<int32_t>(m_width));
 }
 
 inline auto PixelBuffer::GetRowIter(const size_t y) const noexcept
     -> std::tuple<PixelBuffer::const_iterator, PixelBuffer::const_iterator>
 {
   const auto rowPos = static_cast<int32_t>(y * m_width);
-  return std::make_tuple(m_buff.begin() + rowPos,
-                         m_buff.begin() + rowPos + static_cast<int32_t>(m_width));
+  return std::make_tuple(cbegin(m_buff) + rowPos,
+                         cbegin(m_buff) + rowPos + static_cast<int32_t>(m_width));
 }
 
 inline auto PixelBuffer::Get4RHBNeighbours(const int32_t x, const int32_t y) const noexcept
