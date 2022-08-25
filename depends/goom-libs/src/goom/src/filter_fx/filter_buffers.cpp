@@ -283,81 +283,61 @@ ZoomFilterBuffers::TransformBuffers::TransformBuffers(const Dimensions& dimensio
   : m_dimensions{dimensions},
     m_bufferSize{m_dimensions.GetSize()},
     m_maxTranPointMinus1{maxTranPoint - Vec2dInt{1, 1}},
-    m_tranXSrce(m_bufferSize),
-    m_tranYSrce(m_bufferSize),
-    m_tranXDest(m_bufferSize),
-    m_tranYDest(m_bufferSize),
-    m_tranXTemp(m_bufferSize),
-    m_tranYTemp(m_bufferSize)
+    m_tranSrce(m_bufferSize),
+    m_tranDest(m_bufferSize),
+    m_tranTemp(m_bufferSize)
 {
 }
 
 auto ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity() noexcept -> void
 {
-  auto i = 0U;
+  auto buffPos = 0U;
   for (auto y = 0; y < m_dimensions.GetIntHeight(); ++y)
   {
     for (auto x = 0; x < m_dimensions.GetIntWidth(); ++x)
     {
-      const auto tranPoint = CoordTransforms::ScreenToTranPoint({x, y});
-      m_tranXSrce[i]       = tranPoint.x;
-      m_tranYSrce[i]       = tranPoint.y;
-      ++i;
+      m_tranSrce[buffPos] = CoordTransforms::ScreenToTranPoint({x, y});
+      ++buffPos;
     }
   }
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::CopyTempTranToDestTran() noexcept -> void
 {
-  std::copy(m_tranXTemp.begin(), m_tranXTemp.end(), m_tranXDest.begin());
-  std::copy(m_tranYTemp.begin(), m_tranYTemp.end(), m_tranYDest.begin());
-}
-
-inline auto ZoomFilterBuffers::TransformBuffers::CopyAllDestTranToSrceTran() noexcept -> void
-{
-  std::copy(m_tranXDest.begin(), m_tranXDest.end(), m_tranXSrce.begin());
-  std::copy(m_tranYDest.begin(), m_tranYDest.end(), m_tranYSrce.begin());
-}
-
-auto ZoomFilterBuffers::TransformBuffers::CopyUnlerpedDestTranToSrceTran() noexcept -> void
-{
-  for (auto i = 0U; i < m_bufferSize; ++i)
-  {
-    const auto tranPoint = GetSrceDestLerpBufferPoint(i);
-    m_tranXSrce[i]       = tranPoint.x;
-    m_tranYSrce[i]       = tranPoint.y;
-  }
+  std::copy(cbegin(m_tranTemp), cend(m_tranTemp), begin(m_tranDest));
 }
 
 auto ZoomFilterBuffers::TransformBuffers::CopyDestTranToSrceTran() noexcept -> void
 {
   // sauvegarde de l'etat actuel dans la nouvelle source
-  // Save the current state in the source buffs.
+  // Save the current state in the source buff.
   if (0 == GetTranLerpFactor())
   {
     // Nothing to do: tran srce == tran dest.
   }
   else if (GetTranLerpFactor() == CoordTransforms::MAX_TRAN_LERP_VALUE)
   {
-    CopyAllDestTranToSrceTran();
+    std::copy(cbegin(m_tranDest), cend(m_tranDest), begin(m_tranSrce));
   }
   else
   {
-    CopyUnlerpedDestTranToSrceTran();
+    // Lerp and copy the dest buff to the source buff.
+    for (auto buffPos = 0U; buffPos < m_bufferSize; ++buffPos)
+    {
+      m_tranSrce[buffPos] = GetSrceDestLerpBufferPoint(buffPos);
+    }
   }
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::SetUpNextDestTran() noexcept -> void
 {
-  std::swap(m_tranXDest, m_tranXTemp);
-  std::swap(m_tranYDest, m_tranYTemp);
+  std::swap(m_tranDest, m_tranTemp);
 }
 
 inline auto ZoomFilterBuffers::TransformBuffers::SetTempBuffersTransformPoint(
     const uint32_t buffPos, const Point2dInt& transformPoint) noexcept -> void
 {
-  m_tranXTemp[buffPos] = transformPoint.x;
-  m_tranYTemp[buffPos] = transformPoint.y;
+  m_tranTemp[buffPos] = transformPoint;
 }
 
 inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const noexcept
