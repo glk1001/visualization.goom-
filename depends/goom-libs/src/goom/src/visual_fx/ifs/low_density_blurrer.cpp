@@ -39,17 +39,15 @@ LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
 {
 }
 
-void LowDensityBlurrer::SetWidth(const uint32_t val)
+auto LowDensityBlurrer::SetWidth(const uint32_t val) noexcept -> void
 {
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4389) // '==' mismatch. Not sure why?
+#pragma warning(disable : 4389) // '!=' mismatch. Not sure why?
 #endif
-  if (static constexpr auto VALID_WIDTHS = std::array{3, 5, 7};
-      std::find(cbegin(VALID_WIDTHS), cend(VALID_WIDTHS), val) == cend(VALID_WIDTHS))
-  {
-    throw std::logic_error(std20::format("Invalid blur width {}.", val));
-  }
+  static constexpr auto VALID_WIDTHS = std::array{3, 5, 7};
+  UNUSED_FOR_NDEBUG(VALID_WIDTHS);
+  Expects(std::find(cbegin(VALID_WIDTHS), cend(VALID_WIDTHS), val) != cend(VALID_WIDTHS));
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -57,16 +55,15 @@ void LowDensityBlurrer::SetWidth(const uint32_t val)
   m_width = val;
 }
 
-void LowDensityBlurrer::SetColorMode(const BlurrerColorMode colorMode)
+auto LowDensityBlurrer::SetColorMode(const BlurrerColorMode colorMode) noexcept -> void
 {
   m_colorMode = colorMode;
 
   static constexpr auto PROB_USE_BITMAPS = 0.1F;
-  const auto useBitmaps                  = m_goomRand.ProbabilityOf(PROB_USE_BITMAPS);
-  m_currentImageBitmap                   = GetImageBitmap(useBitmaps);
+  m_currentImageBitmap = GetImageBitmap(m_goomRand.ProbabilityOf(PROB_USE_BITMAPS));
 }
 
-auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const -> const ImageBitmap*
+auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const noexcept -> const ImageBitmap*
 {
   if (!useBitmaps)
   {
@@ -75,20 +72,27 @@ auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const -> const Ima
 
   static constexpr auto MIN_RES = 3U;
   static constexpr auto MAX_RES = 7U;
-  const auto res                = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
+  const auto bitmapRes          = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
 
-  return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
+  return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, bitmapRes);
 }
 
-void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
-                               const uint32_t maxLowDensityCount) const
+auto LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
+                               const uint32_t maxLowDensityCount) const noexcept -> void
 {
-  auto neighbours = MultiplePixels(static_cast<size_t>(m_width) * static_cast<size_t>(m_width));
+  SetPointColors(lowDensityPoints, maxLowDensityCount);
+  DrawPoints(lowDensityPoints);
+}
+
+inline auto LowDensityBlurrer::SetPointColors(std::vector<IfsPoint>& lowDensityPoints,
+                                              const uint32_t maxLowDensityCount) const noexcept
+    -> void
+{
   const auto logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
 
-  auto t               = 0.0F;
   const auto tStep     = 1.0F / static_cast<float>(lowDensityPoints.size());
   const auto halfWidth = U_HALF * m_width;
+  auto t               = 0.0F;
   for (auto& point : lowDensityPoints)
   {
     if ((point.GetX() < halfWidth) || (point.GetY() < halfWidth) ||
@@ -99,54 +103,70 @@ void LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
       continue;
     }
 
-    auto n      = 0U;
-    auto neighY = static_cast<int32_t>(point.GetY() - (m_width / 2));
-    for (auto i = 0U; i < m_width; ++i)
-    {
-      auto neighX = static_cast<int32_t>(point.GetX() - (m_width / 2));
-      for (auto j = 0U; j < m_width; ++j)
-      {
-        neighbours[n] = m_draw.GetPixel({neighX, neighY});
-        ++n;
-        ++neighX;
-      }
-      ++neighY;
-    }
-
-    SetPointColor(point, t, logMaxLowDensityCount, neighbours);
+    point.SetColor(GetPointColor(point, t, GetNeighbours(point), logMaxLowDensityCount));
 
     t += tStep;
   }
+}
 
-  for (const auto& point : lowDensityPoints)
+auto LowDensityBlurrer::GetNeighbours(const IfsPoint& point) const noexcept -> std::vector<Pixel>
+{
+  auto neighbours = std::vector<Pixel>(static_cast<size_t>(m_width) * static_cast<size_t>(m_width));
+
+  const auto neighX0 = static_cast<int32_t>(point.GetX() - (m_width / 2));
+  auto neighY        = static_cast<int32_t>(point.GetY() - (m_width / 2));
+  auto n             = 0U;
+
+  for (auto i = 0U; i < m_width; ++i)
   {
-    if (0 == point.GetCount())
+    auto neighX = neighX0;
+    for (auto j = 0U; j < m_width; ++j)
     {
-      continue;
+      neighbours[n] = m_draw.GetPixel({neighX, neighY});
+      ++n;
+      ++neighX;
     }
+    ++neighY;
+  }
 
-    if (const auto pt =
-            Point2dInt{static_cast<int32_t>(point.GetX()), static_cast<int32_t>(point.GetY())};
-        nullptr == m_currentImageBitmap)
-    {
-      const auto colors = MultiplePixels{point.GetColor(), point.GetColor()};
-      m_draw.DrawPixels(pt, colors);
-    }
-    else
-    {
-      const auto getColor = [&point]([[maybe_unused]] const size_t xVal,
-                                     [[maybe_unused]] const size_t yVal,
-                                     [[maybe_unused]] const Pixel& bgnd)
-      { return point.GetColor(); };
-      m_draw.Bitmap(pt, *m_currentImageBitmap, {getColor, getColor});
-    }
+  return neighbours;
+}
+
+inline auto LowDensityBlurrer::DrawPoints(
+    const std::vector<IfsPoint>& lowDensityPoints) const noexcept -> void
+{
+  std::for_each(cbegin(lowDensityPoints),
+                cend(lowDensityPoints),
+                [this](const auto& point)
+                {
+                  if (point.GetCount() != 0)
+                  {
+                    DrawPoint(point);
+                  }
+                });
+}
+
+inline auto LowDensityBlurrer::DrawPoint(const IfsPoint& point) const noexcept -> void
+{
+  const auto pt = Point2dInt{point.GetX(), point.GetY()};
+
+  if (nullptr == m_currentImageBitmap)
+  {
+    m_draw.DrawPixels(pt, MultiplePixels{point.GetColor(), point.GetColor()});
+  }
+  else
+  {
+    const auto getColor = [&point]([[maybe_unused]] const size_t xVal,
+                                   [[maybe_unused]] const size_t yVal,
+                                   [[maybe_unused]] const Pixel& bgnd) { return point.GetColor(); };
+    m_draw.Bitmap(pt, *m_currentImageBitmap, {getColor, getColor});
   }
 }
 
-void LowDensityBlurrer::SetPointColor(IfsPoint& point,
+auto LowDensityBlurrer::GetPointColor(const IfsPoint& point,
                                       const float t,
-                                      const float logMaxLowDensityCount,
-                                      const MultiplePixels& neighbours) const
+                                      const std::vector<Pixel>& neighbours,
+                                      const float logMaxLowDensityCount) const noexcept -> Pixel
 {
   const auto logAlpha =
       point.GetCount() <= 1
@@ -155,48 +175,49 @@ void LowDensityBlurrer::SetPointColor(IfsPoint& point,
 
   const auto brightness = GetBrightness();
 
+  Pixel pointColor{};
   switch (m_colorMode)
   {
     case BlurrerColorMode::SINGLE_NO_NEIGHBOURS:
-      point.SetColor(m_singleColor);
+      pointColor = m_singleColor;
       break;
     case BlurrerColorMode::SINGLE_WITH_NEIGHBOURS:
-      point.SetColor(IColorMap::GetColorMix(
-          m_singleColor, GetColorAverage(neighbours.size(), neighbours), m_neighbourMixFactor));
+      pointColor = IColorMap::GetColorMix(
+          m_singleColor, GetColorAverage(neighbours.size(), neighbours), m_neighbourMixFactor);
       break;
     case BlurrerColorMode::SIMI_NO_NEIGHBOURS:
-      point.SetColor(point.GetSimi()->GetColor());
+      pointColor = point.GetSimi()->GetColor();
       break;
     case BlurrerColorMode::SIMI_WITH_NEIGHBOURS:
     {
       const auto simiColor = point.GetSimi()->GetColor();
       const auto mixedPointColor =
           GetMixedPointColor(simiColor, point, neighbours, brightness, logAlpha);
-      point.SetColor(mixedPointColor);
+      pointColor = mixedPointColor;
       break;
     }
     case BlurrerColorMode::SMOOTH_NO_NEIGHBOURS:
-      point.SetColor(point.GetSimi()->GetColorMap()->GetColor(t));
+      pointColor = point.GetSimi()->GetColorMap()->GetColor(t);
       break;
     case BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS:
     {
       const auto simiSmoothColor = point.GetSimi()->GetColorMap()->GetColor(t);
       const auto mixedPointColor =
           GetMixedPointColor(simiSmoothColor, point, neighbours, brightness, logAlpha);
-      point.SetColor(mixedPointColor);
+      pointColor = mixedPointColor;
       break;
     }
     default:
       break;
   }
 
-  point.SetColor(m_colorAdjust.GetAdjustment(brightness * logAlpha, point.GetColor()));
+  return m_colorAdjust.GetAdjustment(brightness * logAlpha, pointColor);
 }
 
-inline auto LowDensityBlurrer::GetBrightness() const -> float
+inline auto LowDensityBlurrer::GetBrightness() const noexcept -> float
 {
   static constexpr auto NO_NEIGHBOUR_BRIGHTNESS = 1.5F;
-  static constexpr auto NEIGHBOUR_BRIGHTNESS    = 0.1F;
+  static constexpr auto NEIGHBOUR_BRIGHTNESS    = 3.1F;
 
   float brightness = 0.0F;
   switch (m_colorMode)
@@ -227,9 +248,9 @@ inline auto LowDensityBlurrer::GetBrightness() const -> float
 
 inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
                                                   const IfsPoint& point,
-                                                  const MultiplePixels& neighbours,
+                                                  const std::vector<Pixel>& neighbours,
                                                   const float brightness,
-                                                  const float logAlpha) const -> Pixel
+                                                  const float logAlpha) const noexcept -> Pixel
 {
   const auto fx = static_cast<float>(point.GetX()) / static_cast<float>(m_draw.GetScreenWidth());
   const auto fy = static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetScreenHeight());

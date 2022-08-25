@@ -52,15 +52,16 @@ public:
                     const Colorizer* colorizer,
                     const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetWidth() const -> uint32_t;
-  void SetWidth(uint32_t val);
+  [[nodiscard]] auto GetWidth() const noexcept -> uint32_t;
+  auto SetWidth(uint32_t val) noexcept -> void;
 
-  void SetColorMode(BlurrerColorMode colorMode);
-  void SetSingleColor(const Pixel& color);
+  auto SetColorMode(BlurrerColorMode colorMode) noexcept -> void;
+  auto SetSingleColor(const Pixel& color) noexcept -> void;
 
-  void SetNeighbourMixFactor(float neighbourMixFactor);
+  auto SetNeighbourMixFactor(float neighbourMixFactor) noexcept -> void;
 
-  void DoBlur(std::vector<IfsPoint>& lowDensityPoints, uint32_t maxLowDensityCount) const;
+  auto DoBlur(std::vector<IfsPoint>& lowDensityPoints, uint32_t maxLowDensityCount) const noexcept
+      -> void;
 
 private:
   DRAW::IGoomDraw& m_draw;
@@ -73,33 +74,40 @@ private:
   BlurrerColorMode m_colorMode{};
   Pixel m_singleColor{};
 
-  [[nodiscard]] auto GetImageBitmap(bool useBitmaps) const -> const UTILS::GRAPHICS::ImageBitmap*;
-  [[nodiscard]] auto GetBrightness() const -> float;
-  void SetPointColor(IfsPoint& point,
-                     float t,
-                     float logMaxLowDensityCount,
-                     const DRAW::MultiplePixels& neighbours) const;
+  auto SetPointColors(std::vector<IfsPoint>& lowDensityPoints,
+                      uint32_t maxLowDensityCount) const noexcept -> void;
+  auto DrawPoints(const std::vector<IfsPoint>& lowDensityPoints) const noexcept -> void;
+  auto DrawPoint(const IfsPoint& point) const noexcept -> void;
+  [[nodiscard]] auto GetImageBitmap(bool useBitmaps) const noexcept
+      -> const UTILS::GRAPHICS::ImageBitmap*;
+  [[nodiscard]] auto GetBrightness() const noexcept -> float;
+  [[nodiscard]] auto GetNeighbours(const IfsPoint& point) const noexcept -> std::vector<Pixel>;
+  [[nodiscard]] auto GetPointColor(const IfsPoint& point,
+                                   float t,
+                                   const std::vector<Pixel>& neighbours,
+                                   float logMaxLowDensityCount) const noexcept -> Pixel;
   [[nodiscard]] auto GetMixedPointColor(const Pixel& baseColor,
                                         const IfsPoint& point,
-                                        const DRAW::MultiplePixels& neighbours,
+                                        const std::vector<Pixel>& neighbours,
                                         float brightness,
-                                        float logAlpha) const -> Pixel;
+                                        float logAlpha) const noexcept -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
   const COLOR::ColorAdjustment m_colorAdjust{GAMMA};
 };
 
-inline auto LowDensityBlurrer::GetWidth() const -> uint32_t
+inline auto LowDensityBlurrer::GetWidth() const noexcept -> uint32_t
 {
   return m_width;
 }
 
-inline void LowDensityBlurrer::SetSingleColor(const Pixel& color)
+inline auto LowDensityBlurrer::SetSingleColor(const Pixel& color) noexcept -> void
 {
   m_singleColor = color;
 }
 
-inline void LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFactor)
+inline auto LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFactor) noexcept
+    -> void
 {
   m_neighbourMixFactor = neighbourMixFactor;
 }

@@ -110,13 +110,12 @@ private:
   int32_t m_decayIfs = 0; // disparition de l'ifs
   int32_t m_recayIfs = 0; // dedisparition de l'ifs
   auto UpdateIncr() -> void;
-  [[nodiscard]] auto GetIfsIncr() const -> int;
   auto UpdateCycle() -> void;
   auto UpdateDecay() -> void;
   auto UpdateDecayAndRecay() -> void;
   auto Renew() -> void;
 
-  // TODO Move to simi
+  // TODO(glk) Move to simi
   static constexpr auto T_MIX_STARTING_VALUE = 0.01F;
   TValue m_tMix{TValue::StepType::CONTINUOUS_REVERSIBLE, T_MIX_STARTING_VALUE};
   static constexpr auto POINT_BRIGHTNESS  = 3.0F;
@@ -124,20 +123,26 @@ private:
   auto ChangeColorMaps() -> void;
   auto ChangeSpeed() -> void;
   auto DrawNextIfsPoints() -> void;
-  auto DrawPoint(const IfsPoint& ifsPoint, float t, float tMix) const -> void;
+  auto DrawPoint(float t, const IfsPoint& ifsPoint, float tMix) const -> void;
 
-  static constexpr uint32_t MAX_DENSITY_COUNT = 20;
-  static constexpr uint32_t MIN_DENSITY_COUNT = 5;
-  uint32_t m_lowDensityCount                  = MIN_DENSITY_COUNT;
+  static constexpr float PROB_DRAW_LOW_DENSITY_POINTS = 0.1F;
+  bool m_drawLowDensityPoints                         = false;
+  static constexpr uint32_t MAX_DENSITY_COUNT         = 20;
+  static constexpr uint32_t MIN_DENSITY_COUNT         = 5;
+  uint32_t m_lowDensityCount                          = MIN_DENSITY_COUNT;
   LowDensityBlurrer m_blurrer;
   static constexpr uint32_t BLUR_WIDTH                     = 3;
   static constexpr auto DEFAULT_LOW_DENSITY_BLUR_THRESHOLD = 0.99F;
   float m_lowDensityBlurThreshold                          = DEFAULT_LOW_DENSITY_BLUR_THRESHOLD;
-  [[nodiscard]] auto BlurLowDensityColors(size_t numPoints,
-                                          const std::vector<IfsPoint>& lowDensityPoints) const
-      -> bool;
-  auto SetLowDensityColors(const std::vector<IfsPoint>& points, uint32_t maxLowDensityCount) const
+  auto DrawLowDensityPoints(size_t numPointsAlreadyDrawn, const std::vector<IfsPoint>& points)
       -> void;
+  [[nodiscard]] auto BlurTheLowDensityPoints(size_t numPointsAlreadyDrawn,
+                                             const std::vector<IfsPoint>& lowDensityPoints) const
+      -> bool;
+  auto DrawLowDensityPointsWithoutBlur(const std::vector<IfsPoint>& lowDensityPoints,
+                                       uint32_t maxLowDensityCount) const -> void;
+  auto DrawLowDensityPointsWithBlur(std::vector<IfsPoint>& lowDensityPoints,
+                                    uint32_t maxLowDensityCount) -> void;
   auto UpdateLowDensityBlurThreshold() -> void;
   [[nodiscard]] auto GetNewBlurWidth() const -> uint32_t;
 
@@ -318,9 +323,16 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() -> void
 auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() -> void
 {
   m_colorizer.ChangeColorMaps();
-  m_blurrer.SetColorMode(m_blurrerColorModeWeights.GetRandomWeighted());
-  static constexpr auto SINGLE_COLOR_T = 0.5F;
-  m_blurrer.SetSingleColor(m_colorizer.GetColorMaps().GetRandomColorMap().GetColor(SINGLE_COLOR_T));
+
+  m_drawLowDensityPoints = m_goomRand.ProbabilityOf(PROB_DRAW_LOW_DENSITY_POINTS);
+
+  if (m_drawLowDensityPoints)
+  {
+    m_blurrer.SetColorMode(m_blurrerColorModeWeights.GetRandomWeighted());
+    static constexpr auto SINGLE_COLOR_T = 0.5F;
+    m_blurrer.SetSingleColor(
+        m_colorizer.GetColorMaps().GetRandomColorMap().GetColor(SINGLE_COLOR_T));
+  }
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::ApplyNoDraw() -> void
@@ -332,7 +344,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ApplyNoDraw() -> void
 auto IfsDancersFx::IfsDancersFxImpl::UpdateIfs() -> void
 {
   UpdateDecayAndRecay();
-  if (GetIfsIncr() <= 0)
+  if (m_ifsIncr <= 0)
   {
     return;
   }
@@ -388,16 +400,12 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateDecay() -> void
   }
 }
 
-inline auto IfsDancersFx::IfsDancersFxImpl::GetIfsIncr() const -> int
-{
-  return m_ifsIncr;
-}
-
 inline auto IfsDancersFx::IfsDancersFxImpl::UpdateCycle() -> void
 {
-  // TODO: trouver meilleur soluce pour increment (mettre le code de gestion de l'ifs
-  //       dans ce fichier)
-  //       find the best solution for increment (put the management code of the ifs in this file)
+  // TODO(glk): trouver meilleur soluce pour increment (mettre le code de gestion de l'ifs
+  //            dans ce fichier)
+  //            find the best solution for increment (put the management code of the ifs
+  //            in this file)
   m_tMix.Increment();
 
   ++m_cycle;
@@ -427,11 +435,9 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold() -> v
 
 auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() -> void
 {
-  const auto& points     = m_fractal->GetNextIfsPoints();
-  const auto maxHitCount = m_fractal->GetMaxHitCount();
+  m_colorizer.SetMaxHitCount(m_fractal->GetMaxHitCount());
 
-  m_colorizer.SetMaxHitCount(maxHitCount);
-
+  const auto& points   = m_fractal->GetNextIfsPoints();
   const auto numPoints = points.size();
   const auto tStep = (1 == numPoints) ? 0.0F : ((1.0F - 0.0F) / static_cast<float>(numPoints - 1));
   auto t           = -tStep;
@@ -439,64 +445,30 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() -> void
   auto doneColorChange =
       (m_colorizer.GetColorMode() != IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE) &&
       (m_colorizer.GetColorMode() != IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE);
-  auto maxLowDensityCount = 0U;
-  auto numSelectedPoints  = 0U;
-  auto lowDensityPoints   = std::vector<IfsPoint>{};
+  auto numPointsDrawn = 0U;
 
-  for (auto i = 0U; i < numPoints; i += static_cast<uint32_t>(GetIfsIncr()))
+  for (auto i = 0U; i < numPoints; i += static_cast<uint32_t>(m_ifsIncr))
   {
+    const auto& point = points[i];
+
     t += tStep;
 
-    if (const auto [x, y] = std::pair(points[i].GetX(), points[i].GetY());
-        (x >= m_goomInfo.GetScreenWidth()) or (y >= m_goomInfo.GetScreenHeight()))
-    {
-      continue;
-    }
-
-    if ((!doneColorChange) && MegaChangeColorMapEvent())
+    if ((not doneColorChange) and MegaChangeColorMapEvent())
     {
       ChangeColorMaps();
       doneColorChange = true;
     }
 
-    ++numSelectedPoints;
-    DrawPoint(points[i], t, m_tMix());
+    DrawPoint(t, point, m_tMix());
 
-    if (points[i].GetCount() <= m_lowDensityCount)
-    {
-      lowDensityPoints.emplace_back(points[i]);
-      if (maxLowDensityCount < points[i].GetCount())
-      {
-        maxLowDensityCount = points[i].GetCount();
-      }
-    }
+    ++numPointsDrawn;
   }
 
-  if (!BlurLowDensityColors(numSelectedPoints, lowDensityPoints))
-  {
-    SetLowDensityColors(lowDensityPoints, maxLowDensityCount);
-  }
-  else
-  {
-    // Enough dense points to make blurring worthwhile.
-    if (static constexpr auto PROB_FIXED_MIX_FACTOR = 0.8F;
-        m_goomRand.ProbabilityOf(PROB_FIXED_MIX_FACTOR))
-    {
-      static constexpr auto FIXED_MIX_FACTOR = 0.98F;
-      m_blurrer.SetNeighbourMixFactor(FIXED_MIX_FACTOR);
-    }
-    else
-    {
-      static constexpr auto MIN_MIX_FACTOR = 0.9F;
-      static constexpr auto MAX_MIX_FACTOR = 1.0F;
-      m_blurrer.SetNeighbourMixFactor(m_goomRand.GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
-    }
-    m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
-  }
+  DrawLowDensityPoints(numPointsDrawn, points);
 }
 
-auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& ifsPoint,
-                                               const float t,
+auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
+                                               const IfsPoint& ifsPoint,
                                                const float tMix) const -> void
 {
   const auto point =
@@ -524,35 +496,93 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const IfsPoint& ifsPoint,
   }
 }
 
-inline auto IfsDancersFx::IfsDancersFxImpl::BlurLowDensityColors(
-    const size_t numPoints, const std::vector<IfsPoint>& lowDensityPoints) const -> bool
+inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPoints(
+    const size_t numPointsAlreadyDrawn, const std::vector<IfsPoint>& points) -> void
 {
-  if (0 == numPoints)
+  if (not m_drawLowDensityPoints)
+  {
+    return;
+  }
+
+  const auto numPoints = points.size();
+  auto maxLowDensityCount = 0U;
+  auto lowDensityPoints   = std::vector<IfsPoint>{};
+
+  for (auto i = 0U; i < numPoints; i += static_cast<uint32_t>(m_ifsIncr))
+  {
+    const auto& point = points[i];
+
+    if (point.GetCount() > m_lowDensityCount)
+    {
+      continue;
+    }
+
+    lowDensityPoints.emplace_back(point);
+
+    if (maxLowDensityCount < point.GetCount())
+    {
+      maxLowDensityCount = point.GetCount();
+    }
+  }
+
+  if (BlurTheLowDensityPoints(numPointsAlreadyDrawn, lowDensityPoints))
+  {
+    DrawLowDensityPointsWithBlur(lowDensityPoints, maxLowDensityCount);
+  }
+  else
+  {
+    DrawLowDensityPointsWithoutBlur(lowDensityPoints, maxLowDensityCount);
+  }
+}
+
+inline auto IfsDancersFx::IfsDancersFxImpl::BlurTheLowDensityPoints(
+    const size_t numPointsAlreadyDrawn, const std::vector<IfsPoint>& lowDensityPoints) const -> bool
+{
+  if (0 == numPointsAlreadyDrawn)
   {
     return false;
   }
-  return (static_cast<float>(lowDensityPoints.size()) / static_cast<float>(numPoints)) >
+  return (static_cast<float>(lowDensityPoints.size()) / static_cast<float>(numPointsAlreadyDrawn)) >
          m_lowDensityBlurThreshold;
 }
 
-inline auto IfsDancersFx::IfsDancersFxImpl::SetLowDensityColors(
-    const std::vector<IfsPoint>& points, const uint32_t maxLowDensityCount) const -> void
+inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithoutBlur(
+    const std::vector<IfsPoint>& lowDensityPoints, const uint32_t maxLowDensityCount) const -> void
 {
   const auto logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
 
   auto t           = 0.0F;
-  const auto tStep = 1.0F / static_cast<float>(points.size());
-  for (const auto& point : points)
+  const auto tStep = 1.0F / static_cast<float>(lowDensityPoints.size());
+  for (const auto& point : lowDensityPoints)
   {
     const auto logAlpha =
         point.GetCount() <= 1
             ? 1.0F
             : (std::log(static_cast<float>(point.GetCount())) / logMaxLowDensityCount);
 
-    DrawPoint(point, t, logAlpha);
+    DrawPoint(t, point, logAlpha);
 
     t += tStep;
   }
+}
+
+inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
+    std::vector<IfsPoint>& lowDensityPoints, const uint32_t maxLowDensityCount) -> void
+{
+  if (static constexpr auto PROB_FIXED_MIX_FACTOR = 0.8F;
+      m_goomRand.ProbabilityOf(PROB_FIXED_MIX_FACTOR))
+  {
+    static constexpr auto FIXED_MIX_FACTOR = 0.98F;
+    m_blurrer.SetNeighbourMixFactor(FIXED_MIX_FACTOR);
+  }
+  else
+  {
+    static constexpr auto MIN_MIX_FACTOR = 0.9F;
+    static constexpr auto MAX_MIX_FACTOR = 1.0F;
+    m_blurrer.SetNeighbourMixFactor(m_goomRand.GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
+  }
+
+  m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() -> void

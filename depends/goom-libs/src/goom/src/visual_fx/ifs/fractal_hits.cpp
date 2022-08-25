@@ -31,7 +31,6 @@ void FractalHits::Reset()
   {
     auto& hitInfo = m_hitInfo[hit.GetY()][hit.GetX()];
     hitInfo.count = 0;
-    hitInfo.color = BLACK_PIXEL;
   }
 
   m_hits.clear();
@@ -40,7 +39,7 @@ void FractalHits::Reset()
 
 void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& simi)
 {
-  if ((x < 0) || (y < 0))
+  if ((x < 0) or (y < 0))
   {
     return;
   }
@@ -54,16 +53,20 @@ void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& sim
 
   auto& hitInfo = m_hitInfo[uy][ux];
 
-  hitInfo.simi  = &simi;
-  hitInfo.color = GetColorAverage(hitInfo.color, simi.GetColor());
   ++hitInfo.count;
   if (hitInfo.count > m_maxHitCount)
   {
     m_maxHitCount = hitInfo.count;
   }
 
-  if (1 == hitInfo.count)
+  hitInfo.simi  = &simi;
+  if (hitInfo.count > 1)
   {
+    hitInfo.color = GetColorAverage(hitInfo.color, simi.GetColor());
+  }
+  else
+  {
+    hitInfo.color = simi.GetColor();
     m_hits.emplace_back(ux, uy, 1);
   }
 }

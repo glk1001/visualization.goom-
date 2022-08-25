@@ -24,7 +24,7 @@ public:
 
   void SetBuffers(const std::vector<PixelBuffer*>& buffs);
 
-  auto GetPixel(Point2dInt point) const -> Pixel override;
+  [[nodiscard]] auto GetPixel(Point2dInt point) const -> Pixel override;
   void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) override;
 
 protected:

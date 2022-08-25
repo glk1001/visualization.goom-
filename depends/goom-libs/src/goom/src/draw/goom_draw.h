@@ -45,8 +45,8 @@ public:
   auto operator=(IGoomDraw&&) -> IGoomDraw&      = delete;
 
   [[nodiscard]] auto GetScreenDimensions() const -> const Dimensions&;
-  [[nodiscard]] auto GetScreenWidth() const -> uint32_t ;
-  [[nodiscard]] auto GetScreenHeight() const -> uint32_t ;
+  [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
+  [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
 
   [[nodiscard]] auto GetParallel() const -> GOOM::UTILS::Parallel&;
 

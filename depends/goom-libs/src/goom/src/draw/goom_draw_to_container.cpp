@@ -28,7 +28,7 @@ GoomDrawToContainer::GoomDrawToContainer(const Dimensions& dimensions)
 
 GoomDrawToContainer::~GoomDrawToContainer() noexcept = default;
 
-void GoomDrawToContainer::ClearAll()
+auto GoomDrawToContainer::ClearAll() -> void
 {
   m_orderedXYPixelList.clear();
 
@@ -46,15 +46,15 @@ inline auto GoomDrawToContainer::GetWriteableColorsList(const Point2dInt point) 
   return m_xyPixelList.at(static_cast<size_t>(point.y)).at(static_cast<size_t>(point.x));
 }
 
-void GoomDrawToContainer::DrawPixelsUnblended([[maybe_unused]] const Point2dInt point,
-                                              [[maybe_unused]] const MultiplePixels& colors)
+auto GoomDrawToContainer::DrawPixelsUnblended([[maybe_unused]] const Point2dInt point,
+                                              [[maybe_unused]] const MultiplePixels& colors) -> void
 {
   throw std::logic_error("GoomDrawToContainer::DrawPixelsUnblended not implemented.");
 }
 
-void GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
+auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
                                              const MultiplePixels& colors,
-                                             const uint32_t intBuffIntensity)
+                                             const uint32_t intBuffIntensity) -> void
 {
   auto& colorsList = GetWriteableColorsList(point);
 
@@ -74,7 +74,7 @@ void GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
   }
 }
 
-void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKeep)
+auto GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKeep) -> void
 {
   Expects(numToKeep <= m_orderedXYPixelList.size());
 
@@ -91,7 +91,7 @@ void GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKee
   m_orderedXYPixelList.resize(numToKeep);
 }
 
-void GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& func) const
+auto GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& func) const -> void
 {
   const auto runFunc = [&](const size_t i)
   {

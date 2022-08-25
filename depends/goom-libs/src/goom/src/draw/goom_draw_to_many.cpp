@@ -19,11 +19,11 @@ GoomDrawToMany::GoomDrawToMany(const Dimensions& dimensions,
 
 auto GoomDrawToMany::GetPixel(const Point2dInt point) const -> Pixel
 {
-  const auto* const draw = m_manyDraws[0];
-  return draw->GetPixel(point);
+  return m_manyDraws[0]->GetPixel(point);
 }
 
-void GoomDrawToMany::DrawPixelsUnblended(const Point2dInt point, const MultiplePixels& colors)
+auto GoomDrawToMany::DrawPixelsUnblended(const Point2dInt point, const MultiplePixels& colors)
+    -> void
 {
   for (auto* const draw : m_manyDraws)
   {
@@ -31,9 +31,9 @@ void GoomDrawToMany::DrawPixelsUnblended(const Point2dInt point, const MultipleP
   }
 }
 
-void GoomDrawToMany::DrawPixelsToDevice(const Point2dInt point,
+auto GoomDrawToMany::DrawPixelsToDevice(const Point2dInt point,
                                         const MultiplePixels& colors,
-                                        [[maybe_unused]] const uint32_t intBuffIntensity)
+                                        [[maybe_unused]] const uint32_t intBuffIntensity) -> void
 {
   for (auto* const draw : m_manyDraws)
   {

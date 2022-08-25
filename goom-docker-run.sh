@@ -56,7 +56,7 @@ if [[ ! -d "${MUSIC_SHARE}" ]]; then
   exit 1
 fi
 
-echo "Runing Goom using Docker image \"${KODI_GOOM_IMAGE}\"..."
+echo "Running Goom using Docker image \"${KODI_GOOM_IMAGE}\"..."
 
 declare -r OLD_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)
 declare -r CORE_PATTERN="/tmp/core.%e.%p"

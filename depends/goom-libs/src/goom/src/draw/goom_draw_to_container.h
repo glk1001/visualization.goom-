@@ -23,10 +23,10 @@ public:
   auto operator=(const GoomDrawToContainer&) noexcept -> GoomDrawToContainer& = delete;
   auto operator=(GoomDrawToContainer&&) noexcept -> GoomDrawToContainer&      = delete;
 
-  auto GetPixel(Point2dInt point) const -> Pixel override;
-  void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) override;
+  [[nodiscard]] auto GetPixel(Point2dInt point) const -> Pixel override;
+  auto DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) -> void override;
 
-  auto GetPixels(Point2dInt point) const -> MultiplePixels;
+  [[nodiscard]] auto GetPixels(Point2dInt point) const -> MultiplePixels;
 
   static constexpr size_t MAX_NUM_COLORS_LIST = 3;
   using ColorsArray                           = std::array<Pixel, MAX_NUM_COLORS_LIST>;
@@ -42,15 +42,14 @@ public:
 
   using CoordsFunc = std::function<void(Point2dInt point, const ColorsList& colorsList)>;
   // NOTE: 'func' must be thread-safe.
-  void IterateChangedCoordsNewToOld(const CoordsFunc& func) const;
+  auto IterateChangedCoordsNewToOld(const CoordsFunc& func) const -> void;
 
-  void ResizeChangedCoordsKeepingNewest(size_t numToKeep);
-  void ClearAll();
+  auto ResizeChangedCoordsKeepingNewest(size_t numToKeep) -> void;
+  auto ClearAll() -> void;
 
 protected:
-  void DrawPixelsToDevice(Point2dInt point,
-                          const MultiplePixels& colors,
-                          uint32_t intBuffIntensity) override;
+  auto DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors, uint32_t intBuffIntensity)
+      -> void override;
 
 private:
   std::vector<std::vector<ColorsList>> m_xyPixelList{};

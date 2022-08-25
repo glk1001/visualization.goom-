@@ -63,24 +63,24 @@ void IGoomDraw::Bitmap(const Point2dInt centre,
   const auto actualBitmapHeight = static_cast<uint32_t>(y1 - y0) + 1;
 
   const auto setDestPixelRow =
-      [this, &x0, &y0, &actualBitmapWidth, &bitmap, &getColors](const size_t yBitmap)
+      [this, &x0, &y0, &actualBitmapWidth, &bitmap, &getColors](const size_t bitmapY)
   {
     const auto numColors = getColors.size();
-    const int yBuff      = y0 + static_cast<int>(yBitmap);
-    for (auto xBitmap = 0U; xBitmap < actualBitmapWidth; ++xBitmap)
+    const int buffY      = y0 + static_cast<int>(bitmapY);
+    auto finalColors     = MultiplePixels(numColors);
+    for (auto bitmapX = 0U; bitmapX < actualBitmapWidth; ++bitmapX)
     {
-      const auto bitmapColor = bitmap(xBitmap, yBitmap);
+      const auto bitmapColor = bitmap(bitmapX, bitmapY);
       if ((0 == bitmapColor.A()) || (bitmapColor.IsBlack()))
       {
         continue;
       }
-      auto finalColors = MultiplePixels(numColors);
       for (auto i = 0U; i < numColors; ++i)
       {
-        finalColors[i] = getColors[i](xBitmap, yBitmap, bitmapColor);
+        finalColors[i] = getColors[i](bitmapX, bitmapY, bitmapColor);
       }
-      const auto xBuff = x0 + static_cast<int>(xBitmap);
-      DrawPixels({xBuff, yBuff}, finalColors);
+      const auto buffX = x0 + static_cast<int>(bitmapX);
+      DrawPixels({buffX, buffY}, finalColors);
     }
   };
 
