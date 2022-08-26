@@ -47,7 +47,7 @@ auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) 
       channel_limits<float>::max() * std::pow(brightness * adjustedColor.BFlt(), m_gamma)));
   const auto newA = adjustedColor.A();
 
-  return Pixel{newR, newG, newB, newA};
+  return MakePixel(newR, newG, newB, newA);
 }
 
 auto ColorAdjustment::GetAlteredChromaColor(float lchYFactor, const Pixel& color) -> Pixel

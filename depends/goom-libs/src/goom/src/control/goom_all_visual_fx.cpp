@@ -198,7 +198,7 @@ auto GoomAllVisualFx::GetSameLumaBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
     const auto green = static_cast<uint32_t>(brightness * static_cast<float>(newColor.G()));
     const auto blue  = static_cast<uint32_t>(brightness * static_cast<float>(newColor.B()));
 
-    return Pixel{red, green, blue, MAX_ALPHA};
+    return MakePixel(red, green, blue, MAX_ALPHA);
   };
 }
 
@@ -220,7 +220,7 @@ auto GoomAllVisualFx::GetSameLumaMixBlendPixelFunc() -> IGoomDraw::BlendPixelFun
     const auto green = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.G()));
     const auto blue  = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.B()));
 
-    return Pixel{red, green, blue, MAX_ALPHA};
+    return MakePixel(red, green, blue, MAX_ALPHA);
   };
 }
 

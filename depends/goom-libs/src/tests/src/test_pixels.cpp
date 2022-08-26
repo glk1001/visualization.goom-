@@ -33,7 +33,7 @@ TEST_CASE("Pixels")
 {
   SECTION("Pixel RGB")
   {
-    const Pixel pixel{{TEST_R, TEST_G, TEST_B}};
+    static constexpr auto pixel = Pixel{{TEST_R, TEST_G, TEST_B}};
     REQUIRE(FloatsEqual(static_cast<float>(TEST_R) / channel_limits<float>::max(), pixel.RFlt()));
     REQUIRE(FloatsEqual(static_cast<float>(TEST_G) / channel_limits<float>::max(), pixel.GFlt()));
     REQUIRE(FloatsEqual(static_cast<float>(TEST_B) / channel_limits<float>::max(), pixel.BFlt()));
@@ -44,7 +44,7 @@ TEST_CASE("Pixels")
     static constexpr uint32_t GREEN = 200;
     static constexpr uint32_t BLUE = MAX_CHANNEL_VALUE_HDR + 10;
     static constexpr uint32_t ALPHA = 256;
-    const Pixel pixel{RED, GREEN, BLUE, ALPHA};
+    static constexpr auto pixel = MakePixel(RED, GREEN, BLUE, ALPHA);
     REQUIRE(pixel.R() == RED);
     REQUIRE(pixel.G() == GREEN);
     REQUIRE(pixel.B() == MAX_CHANNEL_VALUE_HDR);
@@ -52,7 +52,7 @@ TEST_CASE("Pixels")
   }
   SECTION("Pixel Set")
   {
-    Pixel pixel{{TEST_R, TEST_G, TEST_B}};
+    auto pixel = Pixel{{TEST_R, TEST_G, TEST_B}};
     pixel.SetA(1);
     REQUIRE(1 == pixel.A());
     pixel.SetR(10);
@@ -64,39 +64,39 @@ TEST_CASE("Pixels")
   }
   SECTION("Pixel ==")
   {
-    const Pixel pixel1{{TEST_R, TEST_G, TEST_B}};
-    const Pixel pixel2{pixel1};
-    const Pixel pixel3{{TEST_R + 1, TEST_G, TEST_B}};
+    static constexpr auto pixel1 = Pixel{{TEST_R, TEST_G, TEST_B}};
+    static constexpr auto pixel2 = Pixel{pixel1};
+    static constexpr auto pixel3 = Pixel{{TEST_R + 1, TEST_G, TEST_B}};
     REQUIRE(pixel1 == pixel2);
     REQUIRE(!(pixel1 == pixel3));
-    const Pixel pixelBlack{
+    static constexpr auto pixelBlack = Pixel{
         {0, 0, 0, 255}
     };
     REQUIRE(pixelBlack == BLACK_PIXEL);
-    const Pixel pixelWhite{{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA}};
+    static constexpr auto pixelWhite = Pixel{{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA}};
     REQUIRE(pixelWhite == WHITE_PIXEL);
   }
   SECTION("Pixel Multiply Scalar")
   {
-    const Pixel pixel{{TEST_R, TEST_G, TEST_B}};
-    const uint32_t rChannel = pixel.R();
+    static constexpr auto pixel = Pixel{{TEST_R, TEST_G, TEST_B}};
+    static constexpr auto rChannel = pixel.R();
     static constexpr uint32_t SCALAR = 32;
     REQUIRE(MultiplyChannelColorByScalar(SCALAR, pixel.R()) ==
             ((SCALAR * rChannel) / MAX_COLOR_VAL));
   }
   SECTION("Pixel Multiply Channels")
   {
-    const Pixel pixel{{TEST_R, TEST_G, TEST_B}};
-    const uint32_t rChannel = pixel.R();
-    const uint32_t gChannel = pixel.G();
-    const uint32_t rgProduct = rChannel * gChannel;
+    static constexpr auto pixel = Pixel{{TEST_R, TEST_G, TEST_B}};
+    static constexpr auto rChannel = pixel.R();
+    static constexpr auto gChannel = pixel.G();
+    static constexpr auto rgProduct = rChannel * gChannel;
     REQUIRE(MultiplyColorChannels(pixel.R(), pixel.G()) == rgProduct / MAX_COLOR_VAL);
   }
 }
 
 auto GetPixelCount(const PixelBuffer& buffer, const Pixel& pixel) -> uint32_t
 {
-  uint32_t count = 0;
+  auto count = 0U;
   for (size_t y = 0; y < HEIGHT; ++y)
   {
     for (size_t x = 0; x < WIDTH; ++x)
@@ -114,13 +114,13 @@ TEST_CASE("PixelBuffers")
 {
   SECTION("PixelBuffer copy")
   {
-    PixelBuffer srceBuffer{{WIDTH, HEIGHT}};
+    auto srceBuffer = PixelBuffer{{WIDTH, HEIGHT}};
     REQUIRE(srceBuffer.GetWidth() == WIDTH);
     REQUIRE(srceBuffer.GetHeight() == HEIGHT);
-    const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
+    static constexpr auto testPixel = Pixel{{TEST_R, TEST_G, TEST_B}};
     srceBuffer.Fill(testPixel);
 
-    PixelBuffer destBuffer{{WIDTH, HEIGHT}};
+    auto destBuffer = PixelBuffer{{WIDTH, HEIGHT}};
     srceBuffer.CopyTo(destBuffer);
 
     REQUIRE(destBuffer.GetWidth() == WIDTH);
@@ -131,15 +131,15 @@ TEST_CASE("PixelBuffers")
   SECTION("PixelBuffer copy time")
   {
     static constexpr size_t NUM_LOOPS = 100;
-    const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
+    static constexpr auto testPixel = Pixel{{TEST_R, TEST_G, TEST_B}};
 
     auto intSrceBuff = std::make_unique<std::vector<PixelIntType>>(WIDTH * HEIGHT);
-    const PixelIntType intTestPixel = testPixel.Rgba();
+    const auto intTestPixel = testPixel.Rgba();
     std::fill(intSrceBuff->begin(), intSrceBuff->end(), intTestPixel);
     auto intDestBuff = std::make_unique<std::vector<PixelIntType>>(WIDTH * HEIGHT);
 
     auto startTime = high_resolution_clock::now();
-    for (size_t i = 0; i < NUM_LOOPS; ++i)
+    for (auto i = 0U; i < NUM_LOOPS; ++i)
     {
       std::memmove(intDestBuff->data(), intSrceBuff->data(), WIDTH * HEIGHT * sizeof(PixelIntType));
     }
@@ -154,7 +154,7 @@ TEST_CASE("PixelBuffers")
     auto destBuffer = std::make_unique<PixelBuffer>(Dimensions{WIDTH, HEIGHT});
 
     startTime = high_resolution_clock::now();
-    for (size_t i = 0; i < NUM_LOOPS; ++i)
+    for (auto i = 0U; i < NUM_LOOPS; ++i)
     {
       srceBuffer->CopyTo(*destBuffer);
     }
@@ -172,11 +172,11 @@ TEST_CASE("PixelBuffers")
 
   SECTION("PixelBuffer Get4RHBNeighbours")
   {
-    PixelBuffer buffer{{WIDTH, HEIGHT}};
-    const Pixel testPixel1{{TEST_R+0, TEST_G+0, TEST_B+0}};
-    const Pixel testPixel2{{TEST_R+1, TEST_G+1, TEST_B+1}};
-    const Pixel testPixel3{{TEST_R+2, TEST_G+2, TEST_B+2}};
-    const Pixel testPixel4{{TEST_R+3, TEST_G+3, TEST_B+3}};
+    auto buffer = PixelBuffer{{WIDTH, HEIGHT}};
+    static constexpr auto testPixel1 = Pixel{{TEST_R+0, TEST_G+0, TEST_B+0}};
+    static constexpr auto testPixel2 = Pixel{{TEST_R+1, TEST_G+1, TEST_B+1}};
+    static constexpr auto testPixel3 = Pixel{{TEST_R+2, TEST_G+2, TEST_B+2}};
+    static constexpr auto testPixel4 = Pixel{{TEST_R+3, TEST_G+3, TEST_B+3}};
     buffer.Fill(WHITE_PIXEL);
 
     static constexpr size_t X = 20;
@@ -186,7 +186,7 @@ TEST_CASE("PixelBuffers")
     buffer(X, Y+1) = testPixel3;
     buffer(X+1, Y+1) = testPixel4;
 
-    const std::array<Pixel, 4> pixel4RHBNeighbours = buffer.Get4RHBNeighbours(X, Y);
+    const auto pixel4RHBNeighbours = buffer.Get4RHBNeighbours(X, Y);
 
     REQUIRE(testPixel1 == pixel4RHBNeighbours[0]);
     REQUIRE(testPixel2 == pixel4RHBNeighbours[1]);
@@ -196,11 +196,11 @@ TEST_CASE("PixelBuffers")
 
   SECTION("PixelBuffer RowIter")
   {
-    const Pixel testPixel{{TEST_R, TEST_G, TEST_B}};
-    PixelBuffer buffer{{WIDTH, HEIGHT}};
+    static constexpr auto testPixel = Pixel{{TEST_R, TEST_G, TEST_B}};
+    auto buffer = PixelBuffer{{WIDTH, HEIGHT}};
     buffer.Fill(WHITE_PIXEL);
     static constexpr size_t Y = 10;
-    for (size_t x = 0; x < WIDTH; ++x)
+    for (auto x = 0U; x < WIDTH; ++x)
     {
       buffer(x, Y) = testPixel;
     }

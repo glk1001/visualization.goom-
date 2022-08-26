@@ -24,6 +24,7 @@ using DRAW::MultiplePixels;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Sq;
 using UTILS::MATH::U_HALF;
 
 LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
@@ -53,6 +54,7 @@ auto LowDensityBlurrer::SetWidth(const uint32_t val) noexcept -> void
 #endif
 
   m_width = val;
+  m_widthSquared = Sq(static_cast<size_t>(m_width));
 }
 
 auto LowDensityBlurrer::SetColorMode(const BlurrerColorMode colorMode) noexcept -> void
@@ -111,7 +113,7 @@ inline auto LowDensityBlurrer::SetPointColors(std::vector<IfsPoint>& lowDensityP
 
 auto LowDensityBlurrer::GetNeighbours(const IfsPoint& point) const noexcept -> std::vector<Pixel>
 {
-  auto neighbours = std::vector<Pixel>(static_cast<size_t>(m_width) * static_cast<size_t>(m_width));
+  auto neighbours = std::vector<Pixel>(m_widthSquared);
 
   const auto neighX0 = static_cast<int32_t>(point.GetX() - (m_width / 2));
   auto neighY        = static_cast<int32_t>(point.GetY() - (m_width / 2));

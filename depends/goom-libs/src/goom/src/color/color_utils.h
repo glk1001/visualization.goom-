@@ -31,7 +31,7 @@ template<typename T>
 [[nodiscard]] auto GetBrighterColor(uint32_t brightness, const Pixel&) -> Pixel = delete;
 
 [[nodiscard]] constexpr auto GetRgbColorChannelLerp(int32_t ch1, int32_t ch2, int32_t intT)
-    -> uint32_t;
+    -> PixelChannelType;
 [[nodiscard]] constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t)
     -> Pixel;
 
@@ -78,15 +78,18 @@ constexpr auto GetColorAverage(const size_t num, const T& colors) -> Pixel
   newB /= static_cast<uint32_t>(num);
   newA /= static_cast<uint32_t>(num);
 
-  return Pixel{newR, newG, newB, newA};
+  return Pixel{static_cast<PixelChannelType>(newR),
+               static_cast<PixelChannelType>(newG),
+               static_cast<PixelChannelType>(newB),
+               static_cast<PixelChannelType>(newA)};
 }
 
 constexpr auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel
 {
-  const auto newR = ColorChannelAdd(color1.R(), color2.R()) / 2;
-  const auto newG = ColorChannelAdd(color1.G(), color2.G()) / 2;
-  const auto newB = ColorChannelAdd(color1.B(), color2.B()) / 2;
-  const auto newA = ColorChannelAdd(color1.A(), color2.A()) / 2;
+  const auto newR = static_cast<PixelChannelType>(ColorChannelAdd(color1.R(), color2.R()) / 2);
+  const auto newG = static_cast<PixelChannelType>(ColorChannelAdd(color1.G(), color2.G()) / 2);
+  const auto newB = static_cast<PixelChannelType>(ColorChannelAdd(color1.B(), color2.B()) / 2);
+  const auto newA = static_cast<PixelChannelType>(ColorChannelAdd(color1.A(), color2.A()) / 2);
 
   return Pixel{newR, newG, newB, newA};
 }
@@ -102,23 +105,24 @@ constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
   const auto bgndB = static_cast<int>(bgnd.B());
   const auto bgndA = static_cast<int>(bgnd.A());
 
-  const auto newR =
-      static_cast<uint32_t>(bgndR + ((fgndA * (fgndR - bgndR)) / channel_limits<int32_t>::max()));
-  const auto newG =
-      static_cast<uint32_t>(bgndG + ((fgndA * (fgndG - bgndG)) / channel_limits<int32_t>::max()));
-  const auto newB =
-      static_cast<uint32_t>(bgndB + ((fgndA * (fgndB - bgndB)) / channel_limits<int32_t>::max()));
-  const auto newA = static_cast<uint32_t>(std::min(channel_limits<int32_t>::max(), fgndA + bgndA));
+  const auto newR = static_cast<PixelChannelType>(
+      bgndR + ((fgndA * (fgndR - bgndR)) / channel_limits<int32_t>::max()));
+  const auto newG = static_cast<PixelChannelType>(
+      bgndG + ((fgndA * (fgndG - bgndG)) / channel_limits<int32_t>::max()));
+  const auto newB = static_cast<PixelChannelType>(
+      bgndB + ((fgndA * (fgndB - bgndB)) / channel_limits<int32_t>::max()));
+  const auto newA =
+      static_cast<PixelChannelType>(std::min(channel_limits<int32_t>::max(), fgndA + bgndA));
 
   return Pixel{newR, newG, newB, newA};
 }
 
 constexpr auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel
 {
-  const auto newR = ColorChannelMultiply(srce.R(), dest.R());
-  const auto newG = ColorChannelMultiply(srce.G(), dest.G());
-  const auto newB = ColorChannelMultiply(srce.B(), dest.B());
-  const auto newA = ColorChannelMultiply(srce.A(), dest.A());
+  const auto newR = static_cast<PixelChannelType>(ColorChannelMultiply(srce.R(), dest.R()));
+  const auto newG = static_cast<PixelChannelType>(ColorChannelMultiply(srce.G(), dest.G()));
+  const auto newB = static_cast<PixelChannelType>(ColorChannelMultiply(srce.B(), dest.B()));
+  const auto newA = static_cast<PixelChannelType>(ColorChannelMultiply(srce.A(), dest.A()));
 
   return Pixel{newR, newG, newB, newA};
 }
@@ -136,7 +140,7 @@ constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
   const auto newB = ColorChannelAdd(color1.B(), color2.B());
   const auto newA = ColorChannelAdd(color1.A(), color2.A());
 
-  return Pixel{newR, newG, newB, newA};
+  return MakePixel(newR, newG, newB, newA);
 }
 
 constexpr auto ColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2) -> uint32_t
@@ -151,7 +155,7 @@ constexpr auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color
   const auto newB = GetBrighterChannelColor(brightness, color.B());
   const auto newA = color.A();
 
-  return Pixel{newR, newG, newB, newA};
+  return MakePixel(newR, newG, newB, newA);
 }
 
 constexpr auto GetBrighterChannelColor(const uint32_t brightness, const PixelChannelType channelVal)
@@ -173,10 +177,11 @@ inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixe
 }
 
 constexpr auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, const int32_t intT)
-    -> uint32_t
+    -> PixelChannelType
 {
   constexpr auto MAX_COL_VAL_32 = static_cast<int32_t>(MAX_COLOR_VAL);
-  return static_cast<uint32_t>(((MAX_COL_VAL_32 * ch1) + (intT * (ch2 - ch1))) / MAX_COL_VAL_32);
+  const auto lerpVal = ((MAX_COL_VAL_32 * ch1) + (intT * (ch2 - ch1))) / MAX_COL_VAL_32;
+  return static_cast<PixelChannelType>(lerpVal);
 }
 
 constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, const float t) -> Pixel

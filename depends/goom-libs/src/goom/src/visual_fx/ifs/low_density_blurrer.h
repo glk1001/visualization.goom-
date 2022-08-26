@@ -3,6 +3,7 @@
 #include "color/color_adjustment.h"
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
+#include "utils/math/misc.h"
 
 #include <cstdint>
 #include <vector>
@@ -67,6 +68,7 @@ private:
   DRAW::IGoomDraw& m_draw;
   const UTILS::MATH::IGoomRand& m_goomRand;
   uint32_t m_width;
+  size_t m_widthSquared = UTILS::MATH::Sq(static_cast<size_t>(m_width));
   const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
   const UTILS::GRAPHICS::ImageBitmap* m_currentImageBitmap{};
   const Colorizer* const m_colorizer;

@@ -105,15 +105,18 @@ class Pixel // NOLINT: union hard to fix here
 public:
   struct RGB
   {
-    PixelChannelType red   = 0;
-    PixelChannelType green = 0;
-    PixelChannelType blue  = 0;
+    PixelChannelType red   = 0U;
+    PixelChannelType green = 0U;
+    PixelChannelType blue  = 0U;
     PixelChannelType alpha = MAX_ALPHA;
   };
 
   constexpr Pixel() noexcept;
   constexpr explicit Pixel(const RGB& color) noexcept;
-  constexpr Pixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept;
+  constexpr Pixel(PixelChannelType red,
+                  PixelChannelType green,
+                  PixelChannelType blue,
+                  PixelChannelType alpha) noexcept;
 
   [[nodiscard]] constexpr auto R() const noexcept -> PixelChannelType;
   [[nodiscard]] constexpr auto G() const noexcept -> PixelChannelType;
@@ -163,6 +166,11 @@ private:
   };
   Color m_color{};
 };
+
+[[nodiscard]] constexpr auto MakePixel(uint32_t red,
+                                       uint32_t green,
+                                       uint32_t blue,
+                                       uint32_t alpha) noexcept -> Pixel;
 
 [[nodiscard]] constexpr auto MultiplyColorChannels(PixelChannelType ch1,
                                                    PixelChannelType ch2) noexcept -> uint32_t;
@@ -243,17 +251,42 @@ constexpr Pixel::Pixel(const RGB& color) noexcept
 {
 }
 
-constexpr Pixel::Pixel(const uint32_t red,
-                       const uint32_t green,
-                       const uint32_t blue,
-                       const uint32_t alpha) noexcept
+constexpr Pixel::Pixel(const PixelChannelType red,
+                       const PixelChannelType green,
+                       const PixelChannelType blue,
+                       const PixelChannelType alpha) noexcept
   : m_color{
-        {static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, red)),
-         static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, green)),
-         static_cast<PixelChannelType>(std::min(MAX_CHANNEL_VALUE_HDR, blue)),
-         static_cast<PixelChannelType>(std::min(static_cast<uint32_t>(MAX_ALPHA), alpha))}
+        {red, green, blue, alpha}
 }
 {
+}
+
+constexpr auto MakePixel(uint32_t red,
+                         uint32_t green,
+                         uint32_t blue,
+                         uint32_t alpha) noexcept -> Pixel
+{
+  if (red > MAX_CHANNEL_VALUE_HDR)
+  {
+    red = MAX_CHANNEL_VALUE_HDR;
+  }
+  if (green > MAX_CHANNEL_VALUE_HDR)
+  {
+    green = MAX_CHANNEL_VALUE_HDR;
+  }
+  if (blue > MAX_CHANNEL_VALUE_HDR)
+  {
+    blue = MAX_CHANNEL_VALUE_HDR;
+  }
+  if (alpha > MAX_ALPHA)
+  {
+    alpha = MAX_ALPHA;
+  }
+
+  return Pixel{static_cast<PixelChannelType>(red),
+               static_cast<PixelChannelType>(green),
+               static_cast<PixelChannelType>(blue),
+               static_cast<PixelChannelType>(alpha)};
 }
 
 static inline constexpr auto BLACK_PIXEL = Pixel{0U, 0U, 0U, MAX_ALPHA};
