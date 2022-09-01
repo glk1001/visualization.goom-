@@ -74,11 +74,11 @@ private:
   [[nodiscard]] auto GetColorT() const -> float;
   [[nodiscard]] auto GetFontCharColorMixT() const -> float;
   [[nodiscard]] auto GetTextBrightness() const -> float;
-  [[nodiscard]] auto GetFinalInteriorColor(float fontColorT,
-                                           float fontCharColorMixT,
-                                           Point2dInt point,
-                                           int32_t charWidth,
-                                           int32_t charHeight) const -> Pixel;
+  [[nodiscard]] auto GetInteriorColor(float fontColorT,
+                                      float fontCharColorMixT,
+                                      Point2dInt point,
+                                      int32_t charWidth,
+                                      int32_t charHeight) const -> Pixel;
   [[nodiscard]] auto GetInitialPhaseInteriorColor(float fontColorT) const -> Pixel;
   [[nodiscard]] auto GetMiddlePhaseInteriorColor(float fontColorT,
                                                  float fontCharColorMixT,
@@ -89,10 +89,10 @@ private:
                                                 Point2dInt point,
                                                 int32_t charWidth,
                                                 int32_t charHeight) const -> Pixel;
-  [[nodiscard]] auto GetFinalOutlineColor(float fontColorT,
-                                          float fontCharColorMixT,
-                                          int32_t x,
-                                          int32_t charWidth) const -> Pixel;
+  [[nodiscard]] auto GetOutlineColor(float fontColorT,
+                                     float fontCharColorMixT,
+                                     int32_t x,
+                                     int32_t charWidth) const -> Pixel;
 
   [[nodiscard]] auto GetCharSpacing() const -> float;
   void UpdateColorMaps();

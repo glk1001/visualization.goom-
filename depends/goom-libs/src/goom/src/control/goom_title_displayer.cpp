@@ -32,8 +32,19 @@ using UTILS::MATH::TWO_PI;
 using UTILS::TEXT::GetLeftAlignedPenForCentringStringAt;
 using UTILS::TEXT::GetLinesOfWords;
 
+static constexpr auto INITIAL_PHASE_T_MIX   = 0.1F;
+static constexpr auto BASE_BRIGHTNESS       = 9.0F;
+static constexpr auto MAX_BRIGHTNESS_FACTOR = 2.0F;
+
+static constexpr auto MAX_LINE_LENGTH                     = 40U;
 static constexpr auto FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT = 0.05F;
+static constexpr auto MAX_FONT_SIZE_MULTIPLIER            = 10.0F;
+static constexpr auto SPACE_FACTOR                        = 0.056F;
 static constexpr auto OUTLINE_FONT_WIDTH                  = 4;
+static constexpr auto TIME_TO_START_FINAL_SOLID_COLOR     = 10;
+static constexpr auto FINAL_PHASE_MIX_FACTOR              = 0.2F;
+static constexpr auto FINAL_PHASE_INTERIOR_COLOR          = Pixel{210U, 210U, 210U, 255U};
+static constexpr auto FINAL_PHASE_OUTLINE_COLOR           = Pixel{20U, 20U, 20U, 255U};
 
 // To normalize: turn on logging in TextDraw, get width of prepared text for a
 // sample text for each font, then normalize with 'verdana' as 1.0.
@@ -142,7 +153,6 @@ inline void GoomTitleDisplayer::SetFinalPhaseColorMaps()
 inline auto GoomTitleDisplayer::GetFinalPhaseFontSize(const int32_t timeLeftOfTitleDisplay) const
     -> int32_t
 {
-  static constexpr auto MAX_FONT_SIZE_MULTIPLIER = 10.0F;
   const auto fractionOfTimeLeft = GetFltFraction(timeLeftOfTitleDisplay, TIME_TO_START_FINAL_PHASE);
   const auto t                  = 1.0F - std::pow(fractionOfTimeLeft, 0.7F);
   const auto fontSizeMultiplier = STD20::lerp(1.0F, MAX_FONT_SIZE_MULTIPLIER, t);
@@ -184,8 +194,8 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
                                 const int32_t width,
                                 const int32_t height)
   {
-    const auto finalColor = GetFinalInteriorColor(colorT, fontCharColorMixT, point, width, height);
-    return m_textColorAdjust.GetAdjustment(textBrightness, finalColor);
+    const auto color = GetInteriorColor(colorT, fontCharColorMixT, point, width, height);
+    return m_textColorAdjust.GetAdjustment(textBrightness, color);
   };
 
   const auto getOutlineFontColor = [this, &colorT, &textBrightness, &fontCharColorMixT](
@@ -194,8 +204,8 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
                                        [[maybe_unused]] const int32_t width,
                                        [[maybe_unused]] const int32_t height)
   {
-    const auto finalColor = GetFinalOutlineColor(colorT, fontCharColorMixT, point.x, width);
-    return m_textColorAdjust.GetAdjustment(textBrightness, finalColor);
+    const auto color = GetOutlineColor(colorT, fontCharColorMixT, point.x, width);
+    return m_textColorAdjust.GetAdjustment(textBrightness, color);
   };
 
   const auto charSpacing = GetCharSpacing();
@@ -211,10 +221,9 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
     m_textDraw->Draw(point);
   };
 
-  static constexpr auto MAX_LINE_LENGTH = 40U;
-  const auto textStrings                = GetLinesOfWords(text, MAX_LINE_LENGTH);
-  const auto lineSpacing                = m_textDraw->GetFontSize() + m_textDraw->GetLineSpacing();
-  auto y                                = static_cast<int32_t>(std::round(m_yPos));
+  const auto textStrings = GetLinesOfWords(text, MAX_LINE_LENGTH);
+  const auto lineSpacing = m_textDraw->GetFontSize() + m_textDraw->GetLineSpacing();
+  auto y                 = static_cast<int32_t>(std::round(m_yPos));
   for (const auto& str : textStrings)
   {
     drawStr(str, {static_cast<int32_t>(std::round(m_xPos)), y});
@@ -222,11 +231,11 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
   }
 }
 
-inline auto GoomTitleDisplayer::GetFinalInteriorColor(const float fontColorT,
-                                                      const float fontCharColorMixT,
-                                                      const Point2dInt point,
-                                                      const int32_t charWidth,
-                                                      const int32_t charHeight) const -> Pixel
+inline auto GoomTitleDisplayer::GetInteriorColor(const float fontColorT,
+                                                 const float fontCharColorMixT,
+                                                 const Point2dInt point,
+                                                 const int32_t charWidth,
+                                                 const int32_t charHeight) const -> Pixel
 {
   if (IsInitialPhase())
   {
@@ -261,32 +270,45 @@ inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(const float fontColo
   return IColorMap::GetColorMix(fontColor, charColor, fontCharColorMixT);
 }
 
-inline auto GoomTitleDisplayer::GetFinalPhaseInteriorColor(
-    [[maybe_unused]] const float fontCharColorMixT,
-    const Point2dInt point,
-    const int32_t charWidth,
-    const int32_t charHeight) const -> Pixel
+inline auto GoomTitleDisplayer::GetFinalPhaseInteriorColor(const float fontCharColorMixT,
+                                                           const Point2dInt point,
+                                                           const int32_t charWidth,
+                                                           const int32_t charHeight) const -> Pixel
 {
-  const auto tX                    = GetFltFraction(point.x, charWidth);
-  const auto tY                    = GetFltFraction(point.y, charHeight);
-  const auto t                     = tX * tY;
-  const auto tReverse              = (1.0F - tX) * (1.0F - tY);
-  static constexpr auto FREQ       = 15.0F * TWO_PI;
-  const auto fontColor             = m_textColorMap->GetColor(std::sin(FREQ * t));
-  const auto charColor             = m_charColorMap->GetColor(std::sin(FREQ * tReverse));
-  static constexpr auto MIX_FACTOR = 0.5F;
-  const auto finalColorMixT        = MIX_FACTOR;
+  const auto fontColor  = m_textColorMap->GetColor(fontCharColorMixT);
+  const auto charColor1 = m_charColorMap->GetColor(GetFltFraction(point.x, charWidth));
+  const auto charColor2 = m_textOutlineColorMap->GetColor(GetFltFraction(point.y, charHeight));
+  static constexpr auto CHAR_COLOR_MIX = 0.8F;
+  const auto charColor  = IColorMap::GetColorMix(charColor1, charColor2, CHAR_COLOR_MIX);
+  const auto finalColor = IColorMap::GetColorMix(fontColor, charColor, fontCharColorMixT);
 
-  return IColorMap::GetColorMix(fontColor, charColor, finalColorMixT);
+  if (m_timeLeftOfTitleDisplay > TIME_TO_START_FINAL_SOLID_COLOR)
+  {
+    return finalColor;
+  }
+
+  const auto tLeft = m_timeLeftOfTitleDisplay <= 0
+                         ? 0.0F
+                         : static_cast<float>(m_timeLeftOfTitleDisplay) /
+                               static_cast<float>(TIME_TO_START_FINAL_SOLID_COLOR);
+
+  const auto tMix = FINAL_PHASE_MIX_FACTOR + (tLeft * (1.0F - FINAL_PHASE_MIX_FACTOR));
+
+  return IColorMap::GetColorMix(FINAL_PHASE_INTERIOR_COLOR, finalColor, tMix);
 }
 
-inline auto GoomTitleDisplayer::GetFinalOutlineColor(const float fontColorT,
-                                                     const float fontCharColorMixT,
-                                                     const int32_t x,
-                                                     const int32_t charWidth) const -> Pixel
+inline auto GoomTitleDisplayer::GetOutlineColor(float fontColorT,
+                                                float fontCharColorMixT,
+                                                int32_t x,
+                                                int32_t charWidth) const -> Pixel
 {
+  if (IsFinalPhase())
+  {
+    return FINAL_PHASE_OUTLINE_COLOR;
+  }
+
   const auto outlineFontColor =
-      (!IsMiddlePhase()) ? WHITE_PIXEL : m_textOutlineColorMap->GetColor(fontColorT);
+      (not IsMiddlePhase()) ? WHITE_PIXEL : m_textOutlineColorMap->GetColor(fontColorT);
 
   const auto charColor = m_textOutlineColorMap->GetColor(GetFltFraction(x, charWidth));
   return IColorMap::GetColorMix(outlineFontColor, charColor, fontCharColorMixT);
@@ -304,8 +326,6 @@ inline auto GoomTitleDisplayer::GetColorT() const -> float
 
 inline auto GoomTitleDisplayer::GetTextBrightness() const -> float
 {
-  static constexpr auto BASE_BRIGHTNESS = 10.0F;
-
   if (IsInitialPhase())
   {
     return BASE_BRIGHTNESS;
@@ -315,7 +335,6 @@ inline auto GoomTitleDisplayer::GetTextBrightness() const -> float
     return BASE_BRIGHTNESS;
   }
 
-  static constexpr auto MAX_BRIGHTNESS_FACTOR = 2.0F;
   if (m_timeLeftOfTitleDisplay <= 0)
   {
     return BASE_BRIGHTNESS * MAX_BRIGHTNESS_FACTOR;
@@ -330,7 +349,6 @@ inline auto GoomTitleDisplayer::GetFontCharColorMixT() const -> float
 {
   if (IsInitialPhase())
   {
-    static constexpr auto INITIAL_PHASE_T_MIX = 0.1F;
     return INITIAL_PHASE_T_MIX;
   }
   if (IsMiddlePhase())
@@ -356,7 +374,6 @@ auto GoomTitleDisplayer::GetCharSpacing() const -> float
       m_timeLeftOfTitleDisplay <= 0 ? TIME_TO_START_MIDDLE_PHASE
                                     : (TIME_TO_START_MIDDLE_PHASE - m_timeLeftOfTitleDisplay));
 
-  static constexpr auto SPACE_FACTOR = 0.056F;
   return SPACE_FACTOR * timeGone;
 }
 
