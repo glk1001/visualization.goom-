@@ -72,6 +72,8 @@ private:
   std::vector<double> m_dampingCache{};
   XAndYVectors m_dampedVectors{std::ref(m_xVec), std::ref(m_dampedYVec)};
   std::unique_ptr<UTILS::MATH::IDampingFunction> m_dampingFunc;
+  auto InitVectors() noexcept -> void;
+  auto DoSomeInitialIterations() noexcept -> void;
 
   [[nodiscard]] auto GetFirstY() -> float;
   [[nodiscard]] auto GetNextY(size_t nodeNum) -> float;

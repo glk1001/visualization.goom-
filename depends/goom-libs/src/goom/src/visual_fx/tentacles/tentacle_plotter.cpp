@@ -12,26 +12,16 @@ using DRAW::MultiplePixels;
 using FX_UTILS::DotSizes;
 using STD20::pi;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::HALF_PI;
 using UTILS::MATH::IGoomRand;
 
-static constexpr auto BRIGHTNESS                                = 3.0F;
-static constexpr auto BRIGHTNESS_DISTANCE_CUTOFF                = 30.F;
-static constexpr auto DOT_BRIGHTNESS                            = 1.5F;
-static constexpr auto FAR_AWAY_DISTANCE                         = 50.0F;
-static constexpr auto MIN_RAND_BRIGHTNESS                       = 0.1F;
-static constexpr auto MAX_RAND_BRIGHTNESS                       = 0.3F;
-static constexpr auto AT_START_HEAD_CLOSE_CAMERA_BRIGHTNESS_CUT = 0.5F;
-static constexpr auto AT_START_HEAD_BRIGHTNESS_CUT              = 0.2F;
-static constexpr auto NORMAL_BRIGHTNESS_CUT                     = 1.0F;
+static constexpr auto BRIGHTNESS                   = 3.0F;
+static constexpr auto DOT_BRIGHTNESS               = 1.5F;
+static constexpr auto AT_START_HEAD_BRIGHTNESS_CUT = 0.2F;
+static constexpr auto NORMAL_BRIGHTNESS_CUT        = 1.0F;
 
 static constexpr auto COORD_IGNORE_VAL   = -666;
 static constexpr auto START_CUTOFF       = 10.0F;
 static constexpr auto ANGLE_ADJ_FRACTION = 0.05F;
-
-static constexpr auto CAMERA_Z_OFFSET     = -3.0F;
-static constexpr auto ANGLE_FACTOR        = 1.0F / 4.3F;
-static constexpr auto CAMERA_Y_POS_FACTOR = 2.0F;
 
 static constexpr auto MIN_DOT_SIZE01_WEIGHT    = 150.0F;
 static constexpr auto MIN_DOT_SIZE02_WEIGHT    = 050.0F;
@@ -82,14 +72,24 @@ auto TentaclePlotter::ChangeNumNodesBetweenDots() -> void
 auto TentaclePlotter::Plot3D(const Tentacle3D& tentacle) -> void
 {
   const auto brightness = GetBrightness(tentacle);
-  const auto points2D   = Get2DProjectedTentaclePoints(tentacle);
+  const auto points3D   = tentacle.GetTentacleVertices();
 
-  for (auto nodeNum = 0U; nodeNum < (points2D.size() - 1); ++nodeNum)
+  PlotPoints(tentacle, brightness, points3D);
+}
+
+inline auto TentaclePlotter::PlotPoints(const Tentacle3D& tentacle,
+                                        const float brightness,
+                                        const std::vector<V3dFlt>& points3D) -> void
+{
+  const auto points2D  = Get2DProjectedTentaclePoints(tentacle, points3D);
+  const auto numPoints = points2D.size();
+
+  for (auto nodeNum = 0U; nodeNum < (numPoints - 1); ++nodeNum)
   {
     const auto point1 = points2D[nodeNum];
     const auto point2 = points2D[nodeNum + 1];
 
-    if (((point1.x == COORD_IGNORE_VAL) and (point1.y == COORD_IGNORE_VAL)) ||
+    if (((point1.x == COORD_IGNORE_VAL) and (point1.y == COORD_IGNORE_VAL)) or
         ((point2.x == COORD_IGNORE_VAL) and (point2.y == COORD_IGNORE_VAL)))
     {
       continue;
@@ -140,19 +140,19 @@ inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
   m_dotDrawer.DrawDot(point, dotColors, DOT_BRIGHTNESS);
 }
 
-auto TentaclePlotter::Get2DProjectedTentaclePoints(const Tentacle3D& tentacle) const
+auto TentaclePlotter::Get2DProjectedTentaclePoints(const Tentacle3D& tentacle,
+                                                   const std::vector<V3dFlt>& points3D) const
     -> std::vector<Point2dInt>
 {
-  const auto vertices          = tentacle.GetTentacleVertices();
   const auto angleAboutY       = GetTentacleAngleAboutY(tentacle);
-  const auto transformedPoints = GetTransformedPoints(vertices, m_cameraPosition, pi - angleAboutY);
+  const auto transformedPoints = GetTransformedPoints(points3D, m_cameraPosition, pi - angleAboutY);
 
   return GetPerspectiveProjection(transformedPoints);
 }
 
-inline auto TentaclePlotter::GetTentacleAngleAboutY(const Tentacle3D& tentacle) const -> float
+inline auto TentaclePlotter::GetTentacleAngleAboutY(const Tentacle3D& tentacle) -> float
 {
-  auto angleAboutY = m_tentacleAngle;
+  auto angleAboutY = TENTACLE_ANGLE;
 
   if ((-START_CUTOFF < tentacle.GetStartPos().x) && (tentacle.GetStartPos().x < 0.0F))
   {
@@ -166,25 +166,14 @@ inline auto TentaclePlotter::GetTentacleAngleAboutY(const Tentacle3D& tentacle) 
   return angleAboutY;
 }
 
-auto TentaclePlotter::SetCameraPosition(const float cameraDistance, const float tentacleAngle)
-    -> void
-{
-  m_tentacleAngle  = tentacleAngle;
-  m_cameraDistance = cameraDistance;
-
-  m_cameraPosition = {0.0F, 0.0F, CAMERA_Z_OFFSET}; // TODO(glk) ????????????????????????????????
-  m_cameraPosition.z += m_cameraDistance;
-  m_cameraPosition.y += CAMERA_Y_POS_FACTOR * std::sin(-ANGLE_FACTOR * (m_tentacleAngle - HALF_PI));
-}
-
-inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& points,
+inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& points3D,
                                                   const V3dFlt& translate,
                                                   const float angle) -> std::vector<V3dFlt>
 {
   const auto sinAngle = std::sin(angle);
   const auto cosAngle = std::cos(angle);
 
-  auto transformedPoints = points;
+  auto transformedPoints = points3D;
 
   for (auto& transformedPoint : transformedPoints)
   {
@@ -195,34 +184,16 @@ inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& poi
   return transformedPoints;
 }
 
-inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) const -> float
+inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) -> float
 {
-  // Faraway tentacles get smaller and draw_line adds them together making them look
-  // very white and over-exposed. If we reduce the brightness, then all the combined
-  // tentacles look less bright and white and more colors show through.
-
-  const auto brightnessCut = GetBrightnessCut(tentacle);
-
-  if (m_cameraDistance <= BRIGHTNESS_DISTANCE_CUTOFF)
-  {
-    return brightnessCut * BRIGHTNESS;
-  }
-
-  const auto farAwayBrightness = FAR_AWAY_DISTANCE / m_cameraDistance;
-  const auto randBrightness = m_goomRand.GetRandInRange(MIN_RAND_BRIGHTNESS, MAX_RAND_BRIGHTNESS);
-
-  return brightnessCut * std::max(randBrightness, farAwayBrightness);
+  return BRIGHTNESS * GetBrightnessCut(tentacle);
 }
 
-inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) const -> float
+inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) -> float
 {
+  return NORMAL_BRIGHTNESS_CUT;
   if (std::abs(tentacle.GetStartPos().x) < Tentacle3D::START_SMALL_X)
   {
-    if (static constexpr auto CLOSE_CAMERA_DISTANCE = 8.0F;
-        m_cameraDistance < CLOSE_CAMERA_DISTANCE)
-    {
-      return AT_START_HEAD_CLOSE_CAMERA_BRIGHTNESS_CUT;
-    }
     return AT_START_HEAD_BRIGHTNESS_CUT;
   }
   return NORMAL_BRIGHTNESS_CUT;
@@ -231,36 +202,26 @@ inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) const 
 auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
     -> std::vector<Point2dInt>
 {
-  auto points2D = std::vector<Point2dInt>(points3D.size());
+  static constexpr auto MIN_Z = 2.0F;
 
-  const auto xProj0 =
-      points3D[0].ignore or (points3D[0].z <= 2)
-          ? 1
-          : static_cast<int32_t>((m_projectionDistance * points3D[0].x) / points3D[0].z);
-  const auto xProjN =
-      points3D[points3D.size() - 1].ignore or (points3D[points3D.size() - 1].z <= 2)
-          ? 1
-          : static_cast<int32_t>((m_projectionDistance * points3D[points3D.size() - 1].x) /
-                                 points3D[points3D.size() - 1].z);
+  const auto numPoints = points3D.size();
+  auto points2D        = std::vector<Point2dInt>(numPoints);
 
-  const auto xSpread = std::min(1.0F, std::abs(static_cast<float>(xProj0 - xProjN)) / 10.0F);
-
-  for (auto i = 0U; i < points3D.size(); ++i)
+  for (auto i = 0U; i < numPoints; ++i)
   {
-    static constexpr auto MIN_Z = 2.0F;
-    if ((not points3D[i].ignore) and (points3D[i].z > MIN_Z))
-    {
-      const auto xProj =
-          static_cast<int32_t>((xSpread * m_projectionDistance * points3D[i].x) / points3D[i].z);
-      const auto yProj =
-          static_cast<int32_t>((xSpread * m_projectionDistance * points3D[i].y) / points3D[i].z);
-      points2D[i].x = xProj + m_halfScreenWidth;
-      points2D[i].y = -yProj + m_halfScreenHeight;
-    }
-    else
+    if (points3D[i].z <= MIN_Z)
     {
       points2D[i].x = COORD_IGNORE_VAL;
       points2D[i].y = COORD_IGNORE_VAL;
+    }
+    else
+    {
+      const auto perspectiveFactor = PROJECTION_DISTANCE / points3D[i].z;
+
+      const auto xProj = static_cast<int32_t>(perspectiveFactor * points3D[i].x);
+      const auto yProj = static_cast<int32_t>(perspectiveFactor * points3D[i].y);
+
+      points2D[i] = Point2dInt{xProj, -yProj} + m_screenMidPoint;
     }
   }
 

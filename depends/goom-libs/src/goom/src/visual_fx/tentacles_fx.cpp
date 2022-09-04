@@ -28,13 +28,11 @@ using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using std::experimental::propagate_const;
-using STD20::pi;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
 using UTILS::NUM;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::HALF_PI;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
@@ -59,9 +57,6 @@ private:
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
 
-  static constexpr double PROJECTION_DISTANCE = 170.0;
-  static constexpr auto CAMERA_DISTANCE       = 8.0F;
-  static constexpr auto ROTATION              = 1.5F * pi;
   enum class Drivers
   {
     NUM0 = 0,
@@ -146,24 +141,24 @@ auto TentaclesFx::ApplyMultiple() noexcept -> void
   m_pimpl->Update();
 }
 
-// clang-format off
-static const auto LAYOUT1 = CirclesTentacleLayout{
-    {10.0F,  80.0F}, {5.0F, 60.0F}, {16, 12,  8,  6, 4}
-};
-static const auto LAYOUT2 = CirclesTentacleLayout{
-    {10.0F,  80.0F}, {5.0F, 50.0F}, {20, 16, 12,  6, 4}
-};
-static const auto LAYOUT3 = CirclesTentacleLayout{
-    {10.0F, 100.0F}, {5.0F, 80.0F}, {30, 20, 14,  6, 4}
-};
-static const auto LAYOUT4 = CirclesTentacleLayout{
-    {10.0F, 110.0F}, {5.0F, 90.0F}, {36, 26, 20, 12, 6}
-};
-// clang-format on
+static constexpr auto LAYOUT0_START_RADIUS = 80.0F;
+static constexpr auto LAYOUT1_START_RADIUS = 80.0F;
+static constexpr auto LAYOUT2_START_RADIUS = 100.0F;
+static constexpr auto LAYOUT3_START_RADIUS = 110.0F;
 
-static constexpr auto DRIVERS_NUM0_WEIGHT = 05.0F;
-static constexpr auto DRIVERS_NUM1_WEIGHT = 15.0F;
-static constexpr auto DRIVERS_NUM2_WEIGHT = 15.0F;
+static constexpr auto LAYOUT0_END_RADIUS = 100.0F;
+static constexpr auto LAYOUT1_END_RADIUS = 100.0F;
+static constexpr auto LAYOUT2_END_RADIUS = 120.0F;
+static constexpr auto LAYOUT3_END_RADIUS = 130.0F;
+
+static constexpr auto LAYOUT0_NUM_POINTS = 20U;
+static constexpr auto LAYOUT1_NUM_POINTS = 30U;
+static constexpr auto LAYOUT2_NUM_POINTS = 40U;
+static constexpr auto LAYOUT3_NUM_POINTS = 50U;
+
+static constexpr auto DRIVERS_NUM0_WEIGHT = 50.0F;
+static constexpr auto DRIVERS_NUM1_WEIGHT = 30.0F;
+static constexpr auto DRIVERS_NUM2_WEIGHT = 10.0F;
 static constexpr auto DRIVERS_NUM3_WEIGHT = 05.0F;
 
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper,
@@ -180,12 +175,12 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper,
           {Drivers::NUM2, DRIVERS_NUM2_WEIGHT},
           {Drivers::NUM3, DRIVERS_NUM3_WEIGHT},
       }},
-    m_tentacleLayouts{
-        LAYOUT1,
-        LAYOUT2,
-        LAYOUT3,
-        LAYOUT4,
-    }
+    m_tentacleLayouts{{
+        {LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_POINTS},
+        {LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_POINTS},
+        {LAYOUT2_START_RADIUS, LAYOUT2_END_RADIUS, LAYOUT2_NUM_POINTS},
+        {LAYOUT3_START_RADIUS, LAYOUT3_END_RADIUS, LAYOUT3_NUM_POINTS},
+    }}
 {
   Expects(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());
   Ensures(m_currentTentacleDriver != nullptr);
@@ -223,8 +218,6 @@ auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
   {
     tentacleDrivers[i]->StartIterating();
-    tentacleDrivers[i]->SetProjectionDistance(PROJECTION_DISTANCE);
-    tentacleDrivers[i]->SetCameraPosition(CAMERA_DISTANCE, HALF_PI - ROTATION);
   }
 
   return tentacleDrivers;

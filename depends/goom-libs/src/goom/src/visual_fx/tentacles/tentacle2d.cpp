@@ -78,9 +78,16 @@ auto Tentacle2D::StartIterating() -> void
 {
   ValidateSettings();
 
+  InitVectors();
+
   m_startedIterating = true;
   m_iterNum          = 0;
 
+  DoSomeInitialIterations();
+}
+
+auto Tentacle2D::InitVectors() noexcept -> void
+{
   m_xVec.resize(m_numNodes);
   m_yVec.resize(m_numNodes);
   m_dampedYVec.resize(m_numNodes);
@@ -97,6 +104,15 @@ auto Tentacle2D::StartIterating() -> void
     m_yVec[i]         = DEFAULT_Y_DAMPING_FACTOR * m_dampingCache[i];
 
     x += xStep;
+  }
+}
+
+inline auto Tentacle2D::DoSomeInitialIterations() noexcept -> void
+{
+  static constexpr auto NUM_START_ITERATIONS = 50U;
+  for (auto i = 0U; i < NUM_START_ITERATIONS; ++i)
+  {
+    Iterate();
   }
 }
 

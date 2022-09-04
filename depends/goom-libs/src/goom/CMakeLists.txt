@@ -146,7 +146,6 @@ add_library(goom
             src/visual_fx/shapes/shapes.cpp
             src/visual_fx/tentacles/circles_tentacle_layout.cpp
             src/visual_fx/tentacles/tentacle_driver.cpp
-            src/visual_fx/tentacles/tentacle_layout.h
             src/visual_fx/tentacles/tentacle_plotter.cpp
             src/visual_fx/tentacles/tentacle2d.cpp
             src/visual_fx/tentacles/tentacle3d.cpp

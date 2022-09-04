@@ -1,6 +1,7 @@
 #pragma once
 
 #include "draw/goom_draw.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <vector>
@@ -48,7 +49,11 @@ public:
 
   void ChangeDotSizes();
 
-  void DrawDot(const Point2dInt& pt, const DRAW::MultiplePixels& colors, float brightness);
+  void DrawDot(const Point2dInt& point, const DRAW::MultiplePixels& colors, float brightness);
+  void DrawDot(DotSizes dotSize,
+               const Point2dInt& point,
+               const DRAW::MultiplePixels& colors,
+               float brightness);
 
 private:
   DRAW::IGoomDraw& m_goomDraw;
@@ -63,6 +68,22 @@ private:
   const UTILS::MATH::Weights<DotSizes> m_normalDotSizes;
   [[nodiscard]] auto GetNextDotSize(size_t maxSize) const -> size_t;
   [[nodiscard]] auto GetImageBitmap(size_t size) const -> const UTILS::GRAPHICS::ImageBitmap&;
+
+  void DrawDot(size_t dotSize,
+               const Point2dInt& point,
+               const DRAW::MultiplePixels& colors,
+               float brightness);
+
+  static constexpr UTILS::EnumMap<DotSizes, uint32_t> INT_DOT_SIZE{{{
+      {DotSizes::DOT_SIZE01, 1U},
+      {DotSizes::DOT_SIZE02, 3U},
+      {DotSizes::DOT_SIZE03, 5U},
+      {DotSizes::DOT_SIZE04, 7U},
+      {DotSizes::DOT_SIZE05, 9U},
+      {DotSizes::DOT_SIZE06, 11U},
+      {DotSizes::DOT_SIZE07, 13U},
+      {DotSizes::DOT_SIZE08, 15U},
+  }}};
 };
 
 } // namespace VISUAL_FX::FX_UTILS

@@ -38,8 +38,6 @@ public:
   auto ChangeNumNodesBetweenDots() -> void;
   auto ChangeDotSizes() -> void;
 
-  auto SetProjectionDistance(float value) -> void;
-  auto SetCameraPosition(float cameraDistance, float tentacleAngle) -> void;
   auto SetDominantColors(const DRAW::MultiplePixels& dominantColors, const Pixel& dominantDotColor)
       -> void;
 
@@ -48,20 +46,20 @@ public:
 private:
   DRAW::IGoomDraw& m_draw;
   const UTILS::MATH::IGoomRand& m_goomRand;
-  const int32_t m_halfScreenWidth{
-      static_cast<int32_t>(UTILS::MATH::U_HALF * m_draw.GetScreenWidth())};
-  const int32_t m_halfScreenHeight{
-      static_cast<int32_t>(UTILS::MATH::U_HALF * m_draw.GetScreenHeight())};
+  const Vec2dInt m_screenMidPoint{
+      MidpointFromOrigin({m_draw.GetScreenWidth(), m_draw.GetScreenHeight()})};
 
   FX_UTILS::DotDrawer m_dotDrawer;
   static constexpr uint32_t MIN_STEPS_BETWEEN_NODES = 2;
   static constexpr uint32_t MAX_STEPS_BETWEEN_NODES = 11;
   uint32_t m_numNodesBetweenDots = (MIN_STEPS_BETWEEN_NODES + MAX_STEPS_BETWEEN_NODES) / 2;
 
-  float m_projectionDistance = 0.0F;
-  float m_tentacleAngle      = 0.0F;
-  float m_cameraDistance     = 0.0F;
-  V3dFlt m_cameraPosition{};
+  static constexpr auto PROJECTION_DISTANCE = 170.0F;
+  static constexpr auto TENTACLE_ANGLE      = -1.0F * STD20::pi;
+  static constexpr auto CAMERA_X_OFFSET     = 0.0F;
+  static constexpr auto CAMERA_Y_OFFSET     = 0.0F;
+  static constexpr auto CAMERA_Z_OFFSET     = 20.0F;
+  const V3dFlt m_cameraPosition{CAMERA_X_OFFSET, CAMERA_Y_OFFSET, CAMERA_Z_OFFSET};
   DRAW::MultiplePixels m_dominantColors{};
   Pixel m_dominantDotColor{};
 
@@ -74,12 +72,15 @@ private:
       -> void;
   auto DrawNodeDot(size_t nodeNum, Point2dInt point, const DRAW::MultiplePixels& colors) -> void;
 
-  [[nodiscard]] auto GetBrightness(const Tentacle3D& tentacle) const -> float;
-  [[nodiscard]] auto GetBrightnessCut(const Tentacle3D& tentacle) const -> float;
-  [[nodiscard]] auto Get2DProjectedTentaclePoints(const Tentacle3D& tentacle) const
+  auto PlotPoints(const Tentacle3D& tentacle, float brightness, const std::vector<V3dFlt>& points3D)
+      -> void;
+  [[nodiscard]] static auto GetBrightness(const Tentacle3D& tentacle) -> float;
+  [[nodiscard]] static auto GetBrightnessCut(const Tentacle3D& tentacle) -> float;
+  [[nodiscard]] auto Get2DProjectedTentaclePoints(const Tentacle3D& tentacle,
+                                                  const std::vector<V3dFlt>& points3D) const
       -> std::vector<Point2dInt>;
-  [[nodiscard]] auto GetTentacleAngleAboutY(const Tentacle3D& tentacle) const -> float;
-  [[nodiscard]] static auto GetTransformedPoints(const std::vector<V3dFlt>& points,
+  [[nodiscard]] static auto GetTentacleAngleAboutY(const Tentacle3D& tentacle) -> float;
+  [[nodiscard]] static auto GetTransformedPoints(const std::vector<V3dFlt>& points3D,
                                                  const V3dFlt& translate,
                                                  float angle) -> std::vector<V3dFlt>;
   [[nodiscard]] auto GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
@@ -91,16 +92,11 @@ private:
   static auto Translate(const V3dFlt& vAdd, V3dFlt& vInOut) -> void;
 };
 
-inline auto TentaclePlotter::SetProjectionDistance(const float value) -> void
-{
-  m_projectionDistance = value;
-}
-
 inline auto TentaclePlotter::SetDominantColors(const DRAW::MultiplePixels& dominantColors,
                                                const Pixel& dominantDotColor) -> void
 {
-  m_dominantColors    = dominantColors;
-  m_dominantDotColor  = dominantDotColor;
+  m_dominantColors   = dominantColors;
+  m_dominantDotColor = dominantDotColor;
 }
 
 } // namespace VISUAL_FX::TENTACLES

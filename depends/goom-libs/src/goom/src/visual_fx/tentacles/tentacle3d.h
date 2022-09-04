@@ -18,10 +18,9 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 struct V3dFlt
 {
-  float x     = 0.0;
-  float y     = 0.0;
-  float z     = 0.0;
-  bool ignore = false;
+  float x = 0.0;
+  float y = 0.0;
+  float z = 0.0;
 };
 constexpr auto lerp(const V3dFlt& point1, const V3dFlt& point2, float t) noexcept -> V3dFlt;
 

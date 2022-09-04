@@ -1,43 +1,27 @@
 #pragma once
 
 #include "tentacle3d.h"
-#include "tentacle_layout.h"
 
 #include <vector>
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {
 
-class CirclesTentacleLayout : public ITentacleLayout
+class CirclesTentacleLayout
 {
 public:
-  struct RadiusMinMax
-  {
-    float min;
-    float max;
-  };
+  CirclesTentacleLayout(float startRadius, float endRadius, uint32_t numPoints) noexcept;
 
-  CirclesTentacleLayout(const RadiusMinMax& startRadii,
-                        const RadiusMinMax& endRadii,
-                        const std::vector<uint32_t>& numCircleSamples) noexcept;
-
-  // Order of points is outer circle to inner.
-  [[nodiscard]] auto GetNumPoints() const noexcept -> size_t override;
-  [[nodiscard]] auto GetStartPoints() const noexcept -> const std::vector<V3dFlt>& override;
-  [[nodiscard]] auto GetEndPoints() const noexcept -> const std::vector<V3dFlt>& override;
+  [[nodiscard]] auto GetNumPoints() const noexcept -> size_t;
+  [[nodiscard]] auto GetStartPoints() const noexcept -> const std::vector<V3dFlt>&;
+  [[nodiscard]] auto GetEndPoints() const noexcept -> const std::vector<V3dFlt>&;
 
 private:
   const std::vector<V3dFlt> m_startPoints;
   const std::vector<V3dFlt> m_endPoints;
 
-  [[nodiscard]] static auto GetSamplePoints(const RadiusMinMax& radii,
-                                            const std::vector<uint32_t>& numCircleSamples) noexcept
+  [[nodiscard]] static auto GetSamplePoints(float radius, uint32_t numPoints) noexcept
       -> std::vector<V3dFlt>;
-  static auto AddSamplePoints(std::vector<V3dFlt>& pointsVec,
-                              float radius,
-                              size_t numSample,
-                              float angleStart,
-                              float angleFinish) noexcept -> void;
 };
 
 inline auto CirclesTentacleLayout::GetNumPoints() const noexcept -> size_t
