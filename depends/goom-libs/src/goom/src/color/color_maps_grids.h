@@ -14,33 +14,43 @@ namespace GOOM::COLOR
 class ColorMapsGrid
 {
 public:
-  using ColorMapsArray   = std::vector<const IColorMap*>;
-  using ColorArray       = std::vector<Pixel>;
-  using ColorMixingTFunc = std::function<float(size_t colorIndex)>;
+  using ColorMixingTFunc = std::function<float(float tX, float tY)>;
 
-  ColorMapsGrid(uint32_t width,
-                const IColorMap& horizontalColorMap,
+  ColorMapsGrid(const std::vector<const IColorMap*>& horizontalColorMaps,
                 const UTILS::TValue& verticalT,
-                const ColorMapsArray& verticalColorMaps,
+                const std::vector<const IColorMap*>& verticalColorMaps,
                 const ColorMixingTFunc& colorMixingTFunc) noexcept;
+  ColorMapsGrid(const ColorMapsGrid&) noexcept = delete;
+  ColorMapsGrid(ColorMapsGrid&&) noexcept      = default;
+  ~ColorMapsGrid() noexcept;
+  auto operator=(const ColorMapsGrid&) noexcept = delete;
+  auto operator=(ColorMapsGrid&&) noexcept      = delete;
 
-  void SetColorMaps(const IColorMap& horizontalColorMap, const ColorMapsArray& verticalColorMaps);
+  void SetColorMaps(const std::vector<const IColorMap*>& horizontalColorMaps,
+                    const std::vector<const IColorMap*>& verticalColorMaps);
 
-  [[nodiscard]] auto GetNextColors() const -> ColorArray;
+  [[nodiscard]] auto GetCurrentHorizontalLineColors() const -> std::vector<Pixel>;
 
 private:
-  const uint32_t m_width;
-  const IColorMap* m_horizontalColorMap;
-  ColorMapsArray m_verticalColorMaps;
-  const ColorMixingTFunc m_colorMixingT;
+  std::vector<const IColorMap*> m_horizontalColorMaps;
+  float m_maxHorizontalLineIndex = static_cast<float>(m_horizontalColorMaps.size() - 1);
+  std::vector<const IColorMap*> m_verticalColorMaps;
+  uint32_t m_width = static_cast<uint32_t>(m_verticalColorMaps.size());
+
   const UTILS::TValue& m_verticalT;
+  const ColorMixingTFunc m_colorMixingT;
+
+  [[nodiscard]] auto GetCurrentHorizontalLineIndex() const -> size_t;
 };
 
-inline void ColorMapsGrid::SetColorMaps(const IColorMap& horizontalColorMap,
-                                        const ColorMapsArray& verticalColorMaps)
+inline void ColorMapsGrid::SetColorMaps(const std::vector<const IColorMap*>& horizontalColorMaps,
+                                        const std::vector<const IColorMap*>& verticalColorMaps)
 {
-  m_horizontalColorMap = &horizontalColorMap;
-  m_verticalColorMaps  = verticalColorMaps;
+  m_horizontalColorMaps    = horizontalColorMaps;
+  m_maxHorizontalLineIndex = static_cast<float>(m_horizontalColorMaps.size() - 1);
+
+  m_verticalColorMaps = verticalColorMaps;
+  m_width             = static_cast<uint32_t>(m_verticalColorMaps.size());
 }
 
 } // namespace GOOM::COLOR

@@ -2,42 +2,49 @@
 #include "goom_config.h"
 #include "utils/t_values.h"
 
-#include <cstdint>
+#include <cmath>
 
 namespace GOOM::COLOR
 {
 
 using UTILS::TValue;
 
-ColorMapsGrid::ColorMapsGrid(const uint32_t width,
-                             const IColorMap& horizontalColorMap,
+ColorMapsGrid::ColorMapsGrid(const std::vector<const IColorMap*>& horizontalColorMaps,
                              const UTILS::TValue& verticalT,
-                             const ColorMapsArray& verticalColorMaps,
+                             const std::vector<const IColorMap*>& verticalColorMaps,
                              const ColorMixingTFunc& colorMixingTFunc) noexcept
-  : m_width{width},
-    m_horizontalColorMap{&horizontalColorMap},
+  : m_horizontalColorMaps{horizontalColorMaps},
     m_verticalColorMaps{verticalColorMaps},
-    m_colorMixingT{colorMixingTFunc},
-    m_verticalT{verticalT}
+    m_verticalT{verticalT},
+    m_colorMixingT{colorMixingTFunc}
 {
-  Expects(width == static_cast<uint32_t>(verticalColorMaps.size()));
 }
 
-auto ColorMapsGrid::GetNextColors() const -> ColorArray
-{
-  auto nextColors = ColorArray(m_width);
+ColorMapsGrid::~ColorMapsGrid() noexcept = default;
 
-  auto horizontalT = TValue{TValue::StepType::SINGLE_CYCLE, m_width};
+auto ColorMapsGrid::GetCurrentHorizontalLineColors() const -> std::vector<Pixel>
+{
+  auto nextColors = std::vector<Pixel>(m_width);
+
+  const auto* horizontalColorMap = m_horizontalColorMaps.at(GetCurrentHorizontalLineIndex());
+  auto horizontalT               = TValue{TValue::StepType::SINGLE_CYCLE, m_width};
+
   for (auto i = 0U; i < m_width; ++i)
   {
-    const auto horizontalColor = m_horizontalColorMap->GetColor(horizontalT());
+    const auto horizontalColor = horizontalColorMap->GetColor(horizontalT());
     const auto verticalColor   = m_verticalColorMaps.at(i)->GetColor(m_verticalT());
-    nextColors.at(i) = IColorMap::GetColorMix(horizontalColor, verticalColor, m_colorMixingT(i));
+    const auto mixT            = m_colorMixingT(horizontalT(), m_verticalT());
+    nextColors.at(i)           = IColorMap::GetColorMix(horizontalColor, verticalColor, mixT);
 
     horizontalT.Increment();
   }
 
   return nextColors;
+}
+
+inline auto ColorMapsGrid::GetCurrentHorizontalLineIndex() const -> size_t
+{
+  return static_cast<size_t>(std::lround(m_verticalT() * m_maxHorizontalLineIndex));
 }
 
 } // namespace GOOM::COLOR

@@ -194,7 +194,8 @@ auto Circle::GetDotStartingPositions(const Point2dInt& centre, const float radiu
   return dotStartingPositions;
 }
 
-inline auto Circle::GetColorMixT([[maybe_unused]] const size_t colorIndex) const noexcept -> float
+inline auto Circle::GetColorMixT([[maybe_unused]] const float tX,
+                                 [[maybe_unused]] const float tY) const noexcept -> float
 {
   return m_currentColorGridMixT;
 }
@@ -219,26 +220,36 @@ inline auto Circle::UpdateNumDifferentGridMaps() noexcept -> void
 
 inline auto Circle::GetMainColorMapsGrid() const noexcept -> COLOR::ColorMapsGrid
 {
-  return {NUM_DOTS,
-          m_mainColorMaps->GetRandomColorMap(),
+  return {GetHorizontalMainColorMaps(),
           m_dotPaths.GetPositionTRef(),
           GetVerticalMainColorMaps(),
-          [this](const size_t i) { return GetColorMixT(i); }};
+          [this](const float tX, const float tY) { return GetColorMixT(tX, tY); }};
 }
 
 inline auto Circle::GetLowColorMapsGrid() const noexcept -> COLOR::ColorMapsGrid
 {
-  return {NUM_DOTS,
-          m_lowColorMaps->GetRandomColorMap(),
+  return {GetHorizontalLowColorMaps(),
           m_dotPaths.GetPositionTRef(),
           GetVerticalLowColorMaps(),
-          [this](const size_t i) { return GetColorMixT(i); }};
+          [this](const float tX, const float tY) { return GetColorMixT(tX, tY); }};
+}
+
+inline auto Circle::GetHorizontalMainColorMaps() const noexcept
+    -> std::vector<const COLOR::IColorMap*>
+{
+  return {&m_mainColorMaps->GetRandomColorMap()};
 }
 
 inline auto Circle::GetVerticalMainColorMaps() const noexcept
     -> std::vector<const COLOR::IColorMap*>
 {
   return GetAllDotColorMaps(*m_mainColorMaps);
+}
+
+inline auto Circle::GetHorizontalLowColorMaps() const noexcept
+    -> std::vector<const COLOR::IColorMap*>
+{
+  return {&m_lowColorMaps->GetRandomColorMap()};
 }
 
 inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<const COLOR::IColorMap*>
@@ -313,13 +324,11 @@ auto Circle::SetWeightedColorMaps(
 
   UpdateNumDifferentGridMaps();
   m_currentColorGridMixT = m_goomRand.GetRandInRange(MIN_COLOR_GRID_MIX_T, MAX_COLOR_GRID_MIX_T);
-  const auto& newMainColorMap = m_mainColorMaps->GetRandomColorMap();
-  m_mainColorMapsGrid.SetColorMaps(newMainColorMap, GetVerticalMainColorMaps());
-  const auto& newLowColorMap = m_lowColorMaps->GetRandomColorMap();
-  m_lowColorMapsGrid.SetColorMaps(newLowColorMap, GetVerticalLowColorMaps());
+  m_mainColorMapsGrid.SetColorMaps(GetHorizontalMainColorMaps(), GetVerticalMainColorMaps());
+  m_lowColorMapsGrid.SetColorMaps(GetHorizontalLowColorMaps(), GetVerticalLowColorMaps());
 
-  m_linesMainColorMap = &newMainColorMap;
-  m_linesLowColorMap  = &newLowColorMap;
+  m_linesMainColorMap = GetHorizontalMainColorMaps().at(0);
+  m_linesLowColorMap  = GetHorizontalLowColorMaps().at(0);
 
   static constexpr auto PROB_SHOW_LINE = 0.5F;
   m_showLine                           = m_goomRand.ProbabilityOf(PROB_SHOW_LINE);
@@ -419,7 +428,8 @@ auto Circle::DrawNextCircleDots() noexcept -> void
 
 inline auto Circle::GetAllDotColors() const noexcept -> AllDotColors
 {
-  return {m_mainColorMapsGrid.GetNextColors(), m_lowColorMapsGrid.GetNextColors()};
+  return {m_mainColorMapsGrid.GetCurrentHorizontalLineColors(),
+          m_lowColorMapsGrid.GetCurrentHorizontalLineColors()};
 }
 
 inline auto Circle::GetSingleDotColors(const uint32_t dotNum,

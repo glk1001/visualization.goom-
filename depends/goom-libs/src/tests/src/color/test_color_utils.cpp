@@ -88,6 +88,23 @@ TEST_CASE("Colors are brightened", "[color-bright]")
   REQUIRE(cb.B() == 0);
 }
 
+TEST_CASE("Color Lerp")
+{
+  static constexpr auto LERP_T1   = 0.5F;
+  const auto lerpedColor1         = GetRgbColorLerp(BLACK_PIXEL, WHITE_PIXEL, LERP_T1);
+  const auto expectedLerpedColor1 = std::lround(LERP_T1 * static_cast<float>(MAX_COLOR_VAL));
+  REQUIRE(lerpedColor1.R() == expectedLerpedColor1);
+  REQUIRE(lerpedColor1.G() == expectedLerpedColor1);
+  REQUIRE(lerpedColor1.B() == expectedLerpedColor1);
+
+  static constexpr auto LERP_T2   = 0.333333F;
+  const auto lerpedColor2         = GetRgbColorLerp(BLACK_PIXEL, WHITE_PIXEL, LERP_T2);
+  const auto expectedLerpedColor2 = std::lround(LERP_T2 * static_cast<float>(MAX_COLOR_VAL));
+  REQUIRE(lerpedColor2.R() == expectedLerpedColor2);
+  REQUIRE(lerpedColor2.G() == expectedLerpedColor2);
+  REQUIRE(lerpedColor2.B() == expectedLerpedColor2);
+}
+
 TEST_CASE("Lighten", "[color-lighten]")
 {
 #if __cplusplus <= 201703L

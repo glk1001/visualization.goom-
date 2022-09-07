@@ -166,14 +166,18 @@ private:
   auto UpdateNumDifferentGridMaps() noexcept -> void;
   [[nodiscard]] auto GetMainColorMapsGrid() const noexcept -> COLOR::ColorMapsGrid;
   [[nodiscard]] auto GetLowColorMapsGrid() const noexcept -> COLOR::ColorMapsGrid;
+  [[nodiscard]] auto GetHorizontalMainColorMaps() const noexcept
+      -> std::vector<const COLOR::IColorMap*>;
   [[nodiscard]] auto GetVerticalMainColorMaps() const noexcept
+      -> std::vector<const COLOR::IColorMap*>;
+  [[nodiscard]] auto GetHorizontalLowColorMaps() const noexcept
       -> std::vector<const COLOR::IColorMap*>;
   [[nodiscard]] auto GetVerticalLowColorMaps() const noexcept
       -> std::vector<const COLOR::IColorMap*>;
   [[nodiscard]] auto GetAllDotColorMaps(const COLOR::RandomColorMaps& baseRandomColorMaps)
       const noexcept -> std::vector<const COLOR::IColorMap*>;
 
-  [[nodiscard]] auto GetColorMixT(size_t colorIndex) const noexcept -> float;
+  [[nodiscard]] auto GetColorMixT(float tX, float tY) const noexcept -> float;
   struct AllDotColors
   {
     std::vector<Pixel> mainColors;

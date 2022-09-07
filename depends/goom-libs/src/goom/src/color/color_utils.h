@@ -32,7 +32,7 @@ template<typename T>
 
 [[nodiscard]] constexpr auto GetRgbColorChannelLerp(int32_t ch1, int32_t ch2, int32_t intT)
     -> PixelChannelType;
-[[nodiscard]] constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t)
+[[nodiscard]] inline auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t)
     -> Pixel;
 
 [[nodiscard]] constexpr auto GetLuma(const Pixel& color) -> float;
@@ -180,14 +180,14 @@ constexpr auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, cons
     -> PixelChannelType
 {
   constexpr auto MAX_COL_VAL_32 = static_cast<int32_t>(MAX_COLOR_VAL);
-  const auto lerpVal = ((MAX_COL_VAL_32 * ch1) + (intT * (ch2 - ch1))) / MAX_COL_VAL_32;
+  const auto lerpVal            = ((MAX_COL_VAL_32 * ch1) + (intT * (ch2 - ch1))) / MAX_COL_VAL_32;
   return static_cast<PixelChannelType>(lerpVal);
 }
 
-constexpr auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, const float t) -> Pixel
+inline auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, const float t) -> Pixel
 {
-  const auto intT =
-      static_cast<int32_t>(std::clamp(t, 0.0F, 1.0F) * static_cast<float>(MAX_COLOR_VAL));
+  const auto intT = static_cast<int32_t>(
+      std::lround(std::clamp(t, 0.0F, 1.0F) * static_cast<float>(MAX_COLOR_VAL)));
 
   const auto color1Red   = static_cast<int32_t>(color1.R());
   const auto color1Green = static_cast<int32_t>(color1.G());
