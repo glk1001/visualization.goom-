@@ -19,9 +19,9 @@ struct GoomShaderEffects
   float brightness              = 0.0F;
   float contrast                = 0.0F;
   float contrastMinChannelValue = 0.0F; // negative gives interesting effects
-  float rgbBgrLerpT             = 0.0F;
-  std::array<uint32_t, 3> srceColorIndexes{};
-  std::array<uint32_t, 3> destColorIndexes{};
+  float hueShiftLerpT           = 0.0F;
+  float srceHueShift            = 0.0F;
+  float destHueShift            = 0.0F;
 };
 
 template<class T>

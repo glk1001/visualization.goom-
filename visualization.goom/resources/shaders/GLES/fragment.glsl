@@ -269,6 +269,21 @@ vec3 lch_to_rgb(vec3 color)
   return rgb;
 }
 
+
+vec3 GetHueShift(vec3 color, float hue)
+{
+  const vec3 k = vec3(0.57735, 0.57735, 0.57735);
+  float cosAngle = cos(hue);
+  float sinAngle = sin(hue);
+  return vec3((color * cosAngle) +
+              (sinAngle * cross(k, color)) +
+              ((1.0 - cosAngle) * dot(k, color) * k));
+}
+
+
+// ***********************
+// Input/Output variables
+
 out vec4 fragColor;
 
 uniform sampler2D texBuffer;
@@ -276,9 +291,9 @@ uniform float u_texExposure;
 uniform float u_texBrightness;
 uniform float u_texContrast;
 uniform float u_texContrastMinChan;
-uniform float u_texRgbBgrLerpT;
-uniform uvec3 u_texSrceColorIndexes;
-uniform uvec3 u_texDestColorIndexes;
+uniform float u_texHueShiftLerpT;
+uniform float u_texSrceHueShift;
+uniform float u_texDestHueShift;
 uniform int u_time;
 in vec2 texCoords;
 
@@ -291,14 +306,10 @@ void main()
 
   // Pre tone mapping color effects
 
-  // Shuffle colors
-  vec3 srceHdrColor = vec3(hdrColor[u_texSrceColorIndexes[0]],
-                           hdrColor[u_texSrceColorIndexes[1]],
-                           hdrColor[u_texSrceColorIndexes[2]]);
-  vec3 destHdrColor = vec3(hdrColor[u_texDestColorIndexes[0]],
-                           hdrColor[u_texDestColorIndexes[1]],
-                           hdrColor[u_texDestColorIndexes[2]]);
-  hdrColor = mix(srceHdrColor, destHdrColor, u_texRgbBgrLerpT);
+
+  // Hue shift
+  float hueShift = mix(u_texSrceHueShift, u_texDestHueShift, u_texHueShiftLerpT);
+  hdrColor = GetHueShift(hdrColor, hueShift);
 
   // 'Chromatic Increase' - https://github.com/gurki/vivid
   vec3 lch = rgb_to_lch(hdrColor);

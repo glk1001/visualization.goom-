@@ -71,16 +71,9 @@ auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameVal
       GetPair(PARAM_GROUP, "Contrast", lastShaderEffects.contrast),
       GetPair(PARAM_GROUP, "MinChan", lastShaderEffects.contrastMinChannelValue),
       GetPair(PARAM_GROUP, "Brightness", lastShaderEffects.brightness),
-      GetPair(PARAM_GROUP, "RgbBgrLerpT", lastShaderEffects.rgbBgrLerpT),
-      GetPair(PARAM_GROUP,
-              "Colors",
-              std20::format("[{},{},{}] -> [{},{},{}]",
-                            lastShaderEffects.srceColorIndexes.at(0),
-                            lastShaderEffects.srceColorIndexes.at(1),
-                            lastShaderEffects.srceColorIndexes.at(2),
-                            lastShaderEffects.destColorIndexes.at(0),
-                            lastShaderEffects.destColorIndexes.at(1),
-                            lastShaderEffects.destColorIndexes.at(2))),
+      GetPair(PARAM_GROUP, "hueShiftLerpT", lastShaderEffects.hueShiftLerpT),
+      GetPair(PARAM_GROUP, "srceHueShift", lastShaderEffects.srceHueShift),
+      GetPair(PARAM_GROUP, "destHueShift", lastShaderEffects.destHueShift),
   };
 }
 

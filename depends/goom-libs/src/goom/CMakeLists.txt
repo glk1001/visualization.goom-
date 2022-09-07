@@ -139,7 +139,7 @@ add_library(goom
             src/visual_fx/lines/line_morph.cpp
             src/visual_fx/lines/line_types.h
             src/visual_fx/shaders/high_contrast.cpp
-            src/visual_fx/shaders/rgb_bgr_lerper.cpp
+            src/visual_fx/shaders/hue_shift_lerper.cpp
             src/visual_fx/shapes/bezier_flower.cpp
             src/visual_fx/shapes/shape_parts.cpp
             src/visual_fx/shapes/shape_paths.cpp

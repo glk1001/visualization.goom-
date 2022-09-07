@@ -6,7 +6,7 @@
 #include "fx_helper.h"
 #include "logging.h"
 #include "shaders/high_contrast.h"
-#include "shaders/rgb_bgr_lerper.h"
+#include "shaders/hue_shift_lerper.h"
 #include "spimpl.h"
 #include "utils/math/misc.h"
 #include "utils/stopwatch.h"
@@ -17,7 +17,7 @@ namespace GOOM::VISUAL_FX
 {
 
 using SHADERS::HighContrast;
-using SHADERS::RgbBgrLerper;
+using SHADERS::HueShiftLerper;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Stopwatch;
 using UTILS::MATH::Sq;
@@ -37,7 +37,7 @@ private:
       1.0F, HighContrast::DEFAULT_BRIGHTNESS, HighContrast::DEFAULT_CONTRAST, 0.0F};
 
   HighContrast m_highContrast;
-  RgbBgrLerper m_rgbBgrLerper;
+  HueShiftLerper m_hueShiftLerper;
 
   auto FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void;
 };
@@ -84,7 +84,7 @@ auto ShaderFx::GetLastShaderEffects() const -> const GoomShaderEffects&
 
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
   : m_highContrast{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()},
-    m_rgbBgrLerper{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()}
+    m_hueShiftLerper{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()}
 {
 }
 
@@ -96,16 +96,16 @@ inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
 inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
 {
   m_highContrast.UpdateHighContrast();
-  m_rgbBgrLerper.Update();
+  m_hueShiftLerper.Update();
 
   static constexpr auto DEFAULT_EXPOSURE      = 1.5F;
   m_goomShaderEffects.exposure                = DEFAULT_EXPOSURE;
   m_goomShaderEffects.contrast                = m_highContrast.GetCurrentContrast();
   m_goomShaderEffects.contrastMinChannelValue = m_highContrast.GetCurrentContrastMinChannelValue();
   m_goomShaderEffects.brightness              = m_highContrast.GetCurrentBrightness();
-  m_goomShaderEffects.rgbBgrLerpT             = m_rgbBgrLerper.GetLerpT();
-  m_goomShaderEffects.srceColorIndexes        = m_rgbBgrLerper.GetSrceColorIndexes();
-  m_goomShaderEffects.destColorIndexes        = m_rgbBgrLerper.GetDestColorIndexes();
+  m_goomShaderEffects.hueShiftLerpT           = m_hueShiftLerper.GetLerpT();
+  m_goomShaderEffects.srceHueShift            = m_hueShiftLerper.GetSrceHueShift();
+  m_goomShaderEffects.destHueShift            = m_hueShiftLerper.GetDestHueShift();
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void
