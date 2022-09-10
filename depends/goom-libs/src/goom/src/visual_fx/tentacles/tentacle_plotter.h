@@ -4,7 +4,6 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "tentacle3d.h"
-#include "utils/math/misc.h"
 
 namespace GOOM
 {
@@ -35,6 +34,8 @@ public:
                   const UTILS::MATH::IGoomRand& goomRand,
                   const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
+  [[nodiscard]] auto GetCameraPosition() const noexcept -> V3dFlt;
+
   auto ChangeNumNodesBetweenDots() -> void;
   auto ChangeDotSizes() -> void;
 
@@ -54,8 +55,6 @@ private:
   static constexpr uint32_t MAX_STEPS_BETWEEN_NODES = 11;
   uint32_t m_numNodesBetweenDots = (MIN_STEPS_BETWEEN_NODES + MAX_STEPS_BETWEEN_NODES) / 2;
 
-  static constexpr auto PROJECTION_DISTANCE = 170.0F;
-  static constexpr auto TENTACLE_ANGLE      = -1.0F * STD20::pi;
   static constexpr auto CAMERA_X_OFFSET     = 0.0F;
   static constexpr auto CAMERA_Y_OFFSET     = 0.0F;
   static constexpr auto CAMERA_Z_OFFSET     = 20.0F;
@@ -76,21 +75,14 @@ private:
       -> void;
   [[nodiscard]] static auto GetBrightness(const Tentacle3D& tentacle) -> float;
   [[nodiscard]] static auto GetBrightnessCut(const Tentacle3D& tentacle) -> float;
-  [[nodiscard]] auto Get2DProjectedTentaclePoints(const Tentacle3D& tentacle,
-                                                  const std::vector<V3dFlt>& points3D) const
-      -> std::vector<Point2dInt>;
-  [[nodiscard]] static auto GetTentacleAngleAboutY(const Tentacle3D& tentacle) -> float;
-  [[nodiscard]] static auto GetTransformedPoints(const std::vector<V3dFlt>& points3D,
-                                                 const V3dFlt& translate,
-                                                 float angle) -> std::vector<V3dFlt>;
   [[nodiscard]] auto GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
       -> std::vector<Point2dInt>;
-  static auto RotateAboutYAxis(float sinAngle,
-                               float cosAngle,
-                               const V3dFlt& srcPoint,
-                               V3dFlt& destPoint) -> void;
-  static auto Translate(const V3dFlt& vAdd, V3dFlt& vInOut) -> void;
 };
+
+inline auto TentaclePlotter::GetCameraPosition() const noexcept -> V3dFlt
+{
+  return m_cameraPosition;
+}
 
 inline auto TentaclePlotter::SetDominantColors(const DRAW::MultiplePixels& dominantColors,
                                                const Pixel& dominantDotColor) -> void

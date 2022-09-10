@@ -22,6 +22,7 @@ struct V3dFlt
   float y = 0.0;
   float z = 0.0;
 };
+constexpr auto operator+(const V3dFlt& point1, const V3dFlt& point2) noexcept -> V3dFlt;
 constexpr auto lerp(const V3dFlt& point1, const V3dFlt& point2, float t) noexcept -> V3dFlt;
 
 class Tentacle3D
@@ -147,6 +148,15 @@ inline auto Tentacle3D::Update() noexcept -> void
 {
   m_startPosOffsetT.Increment();
   m_endPosOffsetT.Increment();
+}
+
+constexpr auto operator+(const V3dFlt& point1, const V3dFlt& point2) noexcept -> V3dFlt
+{
+  return {
+      point1.x + point2.x,
+      point1.y + point2.y,
+      point1.z + point2.z,
+  };
 }
 
 constexpr auto lerp(const V3dFlt& point1, const V3dFlt& point2, const float t) noexcept -> V3dFlt

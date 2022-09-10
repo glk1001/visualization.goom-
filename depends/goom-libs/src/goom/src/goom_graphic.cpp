@@ -18,6 +18,8 @@ PixelBuffer::PixelBuffer(const Dimensions& dimensions) noexcept
 {
 }
 
+PixelBuffer::~PixelBuffer() noexcept = default;
+
 auto PixelBuffer::Resize(const Dimensions& dimensions) noexcept -> void
 {
   m_width  = dimensions.GetWidth();

@@ -195,7 +195,7 @@ public:
   PixelBuffer(PixelBuffer&&)                         = delete;
   auto operator=(const PixelBuffer&) -> PixelBuffer& = delete;
   auto operator=(PixelBuffer&&) -> PixelBuffer&      = delete;
-  virtual ~PixelBuffer() noexcept                    = default;
+  ~PixelBuffer() noexcept;
 
   auto Resize(const Dimensions& dimensions) noexcept -> void;
 

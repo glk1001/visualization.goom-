@@ -1,8 +1,11 @@
 #include "tentacle_driver.h"
 
+//#undef NO_LOGGING
+
 #include "color/color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
+#include "logging.h"
 #include "tentacle3d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
@@ -17,6 +20,7 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
@@ -30,12 +34,12 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
       4.1F,
   };
   constexpr auto CORRESPONDING_BASE_Y_WEIGHTS = std::array{
-      0.65F,
+      0.60F,
+      0.70F,
       0.75F,
       0.80F,
-      0.85F,
   };
-  constexpr auto HIGHEST_BASE_Y_WEIGHT = 0.90F;
+  constexpr auto HIGHEST_BASE_Y_WEIGHT = 0.85F;
 
   for (auto i = 0U; i < FREQUENCIES.size(); ++i)
   {
@@ -67,8 +71,8 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw,
     m_goomRand{goomRand},
     m_tentacleLayout{tentacleLayout},
     m_tentacleParams{NUM_TENTACLE_NODES, TENTACLE_LENGTH, 1.0F, ITER_ZERO_Y_VAL_WAVE_ZERO_START},
-    m_tentacles{GetTentacles(m_goomRand, m_tentacleParams, m_tentacleLayout)},
-    m_tentaclePlotter{m_draw, m_goomRand, smallBitmaps}
+    m_tentaclePlotter{m_draw, m_goomRand, smallBitmaps},
+    m_tentacles{GetTentacles()}
 {
 }
 
@@ -81,26 +85,25 @@ auto TentacleDriver::SetWeightedColorMaps(
                 { tentacle.SetWeightedColorMaps(weightedColorMaps); });
 }
 
-auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
-                                  const IterationParams& tentacleParams,
-                                  const CirclesTentacleLayout& tentacleLayout)
-    -> std::vector<Tentacle3D>
+auto TentacleDriver::GetTentacles() const noexcept -> std::vector<Tentacle3D>
 {
   // To hide the annoying flapping tentacle head, make near the start very dark.
   const auto startColors = MultiplePixels{START_MAIN_COLOR, START_MAIN_COLOR};
 
   auto tentacles = std::vector<Tentacle3D>{};
 
-  tentacles.reserve(tentacleLayout.GetNumPoints());
-  for (auto i = 0U; i < tentacleLayout.GetNumPoints(); ++i)
+  tentacles.reserve(m_tentacleLayout.GetNumPoints());
+  for (auto i = 0U; i < m_tentacleLayout.GetNumPoints(); ++i)
   {
-    auto tentacle2D = CreateNewTentacle2D(tentacleParams);
+    auto tentacle2D = CreateNewTentacle2D();
 
     auto tentacle =
-        Tentacle3D{std::move(tentacle2D), startColors, Tentacle2D::MIN_NUM_NODES, goomRand};
+        Tentacle3D{std::move(tentacle2D), startColors, Tentacle2D::MIN_NUM_NODES, m_goomRand};
 
-    tentacle.SetStartPos(tentacleLayout.GetStartPoints().at(i));
-    tentacle.SetEndPos(tentacleLayout.GetEndPoints().at(i));
+    tentacle.SetStartPos(m_tentaclePlotter.GetCameraPosition() +
+                         m_tentacleLayout.GetStartPoints().at(i));
+    tentacle.SetEndPos(m_tentaclePlotter.GetCameraPosition() +
+                       m_tentacleLayout.GetEndPoints().at(i));
 
     tentacles.emplace_back(std::move(tentacle));
   }
@@ -108,10 +111,9 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
   return tentacles;
 }
 
-auto TentacleDriver::CreateNewTentacle2D(const IterationParams& params)
-    -> std::unique_ptr<Tentacle2D>
+auto TentacleDriver::CreateNewTentacle2D() const noexcept -> std::unique_ptr<Tentacle2D>
 {
-  const auto tentacleLen = params.length;
+  const auto tentacleLen = m_tentacleParams.length;
   Ensures(tentacleLen >= 1.0F);
   const auto tent2dXMax = TENT2D_X_MIN + static_cast<double>(tentacleLen);
   Ensures(tent2dXMax >= 1.0);
@@ -120,9 +122,9 @@ auto TentacleDriver::CreateNewTentacle2D(const IterationParams& params)
       {TENT2D_X_MIN,   tent2dXMax},
       {TENT2D_Y_MIN, TENT2D_Y_MAX},
   };
-  const auto baseYWeights = GetMatchingBaseYWeights(params.iterZeroYValWaveFreq);
+  const auto baseYWeights = GetMatchingBaseYWeights(m_tentacleParams.iterZeroYValWaveFreq);
 
-  return std::make_unique<Tentacle2D>(params.numNodes, dimensions, baseYWeights);
+  return std::make_unique<Tentacle2D>(m_tentacleParams.numNodes, dimensions, baseYWeights);
 }
 
 auto TentacleDriver::StartIterating() -> void
@@ -156,42 +158,55 @@ auto TentacleDriver::CheckForTimerEvents() -> void
   UpdateTentaclePlotter();
 }
 
-inline auto TentacleDriver::UpdateTentaclePlotter() -> void
-{
-  m_tentaclePlotter.ChangeDotSizes();
-  m_tentaclePlotter.ChangeNumNodesBetweenDots();
-}
-
 auto TentacleDriver::ChangeTentacleColorMaps() -> void
 {
   std::for_each(
       begin(m_tentacles), end(m_tentacles), [](auto& tentacle) { tentacle.ChangeColorMaps(); });
 }
 
-auto TentacleDriver::SetAllTentaclesStartCentrePos(const Point2dInt& val) noexcept -> void
+inline auto TentacleDriver::UpdateTentaclePlotter() -> void
 {
-  static constexpr auto CLOSE_TO_SCREEN_CENTRE_T = 0.2F;
-  const auto acceptableCentrePos =
-      lerp(Point2dInt{0, 0}, val - Vec2dInt{m_screenMidpoint}, CLOSE_TO_SCREEN_CENTRE_T);
-  const V3dFlt allCentrePos = {
-      static_cast<float>(acceptableCentrePos.x), static_cast<float>(acceptableCentrePos.y), 0.0F};
-
-  std::for_each(begin(m_tentacles),
-                end(m_tentacles),
-                [&allCentrePos](auto& tentacle) { tentacle.SetStartPosOffset(allCentrePos); });
+  m_tentaclePlotter.ChangeDotSizes();
+  m_tentaclePlotter.ChangeNumNodesBetweenDots();
 }
 
 auto TentacleDriver::SetAllTentaclesEndCentrePos(const Point2dInt& val) noexcept -> void
 {
-  static constexpr auto CLOSE_TO_SCREEN_CENTRE_T = 0.2F;
-  const auto acceptableCentrePos =
-      lerp(Point2dInt{0, 0}, val - Vec2dInt{m_screenMidpoint}, CLOSE_TO_SCREEN_CENTRE_T);
-  const V3dFlt allCentrePos = {
-      static_cast<float>(acceptableCentrePos.x), static_cast<float>(acceptableCentrePos.y), 0.0F};
-
   std::for_each(begin(m_tentacles),
                 end(m_tentacles),
-                [&allCentrePos](auto& tentacle) { tentacle.SetEndPosOffset(allCentrePos); });
+                [this, &val](auto& tentacle)
+                { tentacle.SetEndPosOffset(GetAdjustedCentrePos(val)); });
+}
+
+inline auto TentacleDriver::GetAdjustedCentrePos(const Point2dInt& val) const noexcept -> V3dFlt
+{
+  static constexpr auto CLOSE_TO_SCREEN_CENTRE_T = 0.5F;
+  const auto acceptableCentrePos =
+      lerp(Point2dInt{0, 0},
+           GetPerspectiveAdjustedEndCentrePos(val) - Vec2dInt{m_screenMidpoint},
+           CLOSE_TO_SCREEN_CENTRE_T);
+
+  return {
+      static_cast<float>(acceptableCentrePos.x), static_cast<float>(acceptableCentrePos.y), 0.0F};
+}
+
+auto TentacleDriver::GetPerspectiveAdjustedEndCentrePos(
+    const Point2dInt& requestedCentrePos) const noexcept -> Point2dInt
+{
+  if (requestedCentrePos != m_screenMidpoint)
+  {
+    return requestedCentrePos;
+  }
+
+  const auto xOffset = m_goomRand.GetRandInRange(m_minPerspectiveAdjustmentOffset,
+                                                 m_maxPerspectiveAdjustmentOffset + 1);
+  const auto yOffset = m_goomRand.GetRandInRange(m_minPerspectiveAdjustmentOffset,
+                                                 m_maxPerspectiveAdjustmentOffset + 1);
+
+  const auto xOffsetSign = m_goomRand.ProbabilityOf(0.5F) ? -1 : +1;
+  const auto yOffsetSign = m_goomRand.ProbabilityOf(0.5F) ? -1 : +1;
+
+  return requestedCentrePos + Vec2dInt{xOffsetSign * xOffset, yOffsetSign * yOffset};
 }
 
 auto TentacleDriver::Update() -> void

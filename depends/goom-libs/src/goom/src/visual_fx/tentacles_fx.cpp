@@ -1,11 +1,14 @@
 #include "tentacles_fx.h"
 
+//#undef NO_LOGGING
+
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
+#include "logging.h"
 #include "spimpl.h"
 #include "tentacles/circles_tentacle_layout.h"
 #include "tentacles/tentacle_driver.h"
@@ -30,6 +33,7 @@ using DRAW::MultiplePixels;
 using std::experimental::propagate_const;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -154,7 +158,7 @@ static constexpr auto LAYOUT3_END_RADIUS = 130.0F;
 static constexpr auto LAYOUT0_NUM_POINTS = 20U;
 static constexpr auto LAYOUT1_NUM_POINTS = 30U;
 static constexpr auto LAYOUT2_NUM_POINTS = 40U;
-static constexpr auto LAYOUT3_NUM_POINTS = 50U;
+static constexpr auto LAYOUT3_NUM_POINTS = 150U;
 
 static constexpr auto DRIVERS_NUM0_WEIGHT = 50.0F;
 static constexpr auto DRIVERS_NUM1_WEIGHT = 30.0F;

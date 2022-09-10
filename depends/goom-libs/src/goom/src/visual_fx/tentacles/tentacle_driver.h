@@ -44,8 +44,10 @@ public:
 
   auto StartIterating() -> void;
 
-  auto SetAllTentaclesStartCentrePos(const Point2dInt& val) noexcept -> void;
   auto SetAllTentaclesEndCentrePos(const Point2dInt& val) noexcept -> void;
+  [[nodiscard]] auto GetAdjustedCentrePos(const Point2dInt& val) const noexcept -> V3dFlt;
+  [[nodiscard]] auto GetPerspectiveAdjustedEndCentrePos(
+      const Point2dInt& requestedCentrePos) const noexcept -> Point2dInt;
 
   auto MultiplyIterZeroYValWaveFreq(float value) -> void;
   auto SetDominantColorMaps(const std::shared_ptr<const COLOR::IColorMap>& dominantMainColorMap,
@@ -74,20 +76,17 @@ private:
     UTILS::MATH::SineWaveMultiplier iterZeroYValWave;
   };
   IterationParams m_tentacleParams;
+  TentaclePlotter m_tentaclePlotter;
 
   std::vector<Tentacle3D> m_tentacles;
-  [[nodiscard]] static auto GetTentacles(const UTILS::MATH::IGoomRand& goomRand,
-                                         const IterationParams& tentacleParams,
-                                         const CirclesTentacleLayout& tentacleLayout)
-      -> std::vector<Tentacle3D>;
-  [[nodiscard]] static auto CreateNewTentacle2D(const IterationParams& params)
-      -> std::unique_ptr<Tentacle2D>;
+  [[nodiscard]] auto GetTentacles() const noexcept -> std::vector<Tentacle3D>;
+  [[nodiscard]] auto CreateNewTentacle2D() const noexcept -> std::unique_ptr<Tentacle2D>;
+  const int32_t m_minPerspectiveAdjustmentOffset = m_screenMidpoint.y / 10;
+  const int32_t m_maxPerspectiveAdjustmentOffset = m_screenMidpoint.y / 5;
 
-  size_t m_updateNum                                                     = 0;
+  size_t m_updateNum                                                     = 0U;
   static constexpr size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400U;
   auto CheckForTimerEvents() -> void;
-
-  TentaclePlotter m_tentaclePlotter;
   auto UpdateTentaclePlotter() -> void;
 };
 

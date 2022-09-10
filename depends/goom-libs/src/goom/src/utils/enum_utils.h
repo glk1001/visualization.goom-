@@ -7,6 +7,7 @@
 #include <array>
 #include <cstdint>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #ifndef NO_MAGIC_ENUM_AVAILABLE
@@ -30,6 +31,8 @@ template<typename E, typename T>
 class EnumMap
 {
 public:
+  static_assert(std::is_enum_v<E>);
+
   struct KeyValue
   {
     E key; // NOLINT(misc-non-private-member-variables-in-classes)
@@ -67,6 +70,7 @@ template<typename E, typename T>
 class RuntimeEnumMap
 {
 public:
+  static_assert(std::is_enum_v<E>);
   using KeyValue = typename EnumMap<E, T>::KeyValue;
 
   RuntimeEnumMap() = delete;
@@ -204,18 +208,22 @@ inline auto RuntimeEnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -
 template<class E>
 auto EnumToString(const E value) -> std::string
 {
+  static_assert(std::is_enum_v<E>);
   return std::to_string(static_cast<int>(value));
 }
 #else
 template<class E>
 auto EnumToString(const E value) -> std::string
 {
+  static_assert(std::is_enum_v<E>);
   return std::string(magic_enum::enum_name(value));
 }
 
 template<class E>
 auto StringToEnum(const std::string& eStr) -> E
 {
+  static_assert(std::is_enum_v<E>);
+
   if (const auto val = magic_enum::enum_cast<E>(eStr); val)
   {
     return *val;

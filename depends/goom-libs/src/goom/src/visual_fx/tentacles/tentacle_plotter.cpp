@@ -1,7 +1,11 @@
 #include "tentacle_plotter.h"
 
+//#undef NO_LOGGING
+
 #include "draw/goom_draw.h"
+#include "logging.h"
 #include "point2d.h"
+#include "utils/math/misc.h"
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {
@@ -11,17 +15,17 @@ using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using FX_UTILS::DotSizes;
 using STD20::pi;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 
 static constexpr auto BRIGHTNESS                   = 3.0F;
 static constexpr auto DOT_BRIGHTNESS               = 1.5F;
-static constexpr auto AT_START_HEAD_BRIGHTNESS_CUT = 0.2F;
 static constexpr auto NORMAL_BRIGHTNESS_CUT        = 1.0F;
+static constexpr auto AT_START_HEAD_BRIGHTNESS_CUT = 0.2F;
 
-static constexpr auto COORD_IGNORE_VAL   = -666;
-static constexpr auto START_CUTOFF       = 10.0F;
-static constexpr auto ANGLE_ADJ_FRACTION = 0.05F;
+static constexpr auto COORD_IGNORE_VAL    = -666;
+static constexpr auto PROJECTION_DISTANCE = 170.0F;
 
 static constexpr auto MIN_DOT_SIZE01_WEIGHT    = 150.0F;
 static constexpr auto MIN_DOT_SIZE02_WEIGHT    = 050.0F;
@@ -81,7 +85,7 @@ inline auto TentaclePlotter::PlotPoints(const Tentacle3D& tentacle,
                                         const float brightness,
                                         const std::vector<V3dFlt>& points3D) -> void
 {
-  const auto points2D  = Get2DProjectedTentaclePoints(tentacle, points3D);
+  const auto points2D  = GetPerspectiveProjection(points3D);
   const auto numPoints = points2D.size();
 
   for (auto nodeNum = 0U; nodeNum < (numPoints - 1); ++nodeNum)
@@ -140,50 +144,6 @@ inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
   m_dotDrawer.DrawDot(point, dotColors, DOT_BRIGHTNESS);
 }
 
-auto TentaclePlotter::Get2DProjectedTentaclePoints(const Tentacle3D& tentacle,
-                                                   const std::vector<V3dFlt>& points3D) const
-    -> std::vector<Point2dInt>
-{
-  const auto angleAboutY       = GetTentacleAngleAboutY(tentacle);
-  const auto transformedPoints = GetTransformedPoints(points3D, m_cameraPosition, pi - angleAboutY);
-
-  return GetPerspectiveProjection(transformedPoints);
-}
-
-inline auto TentaclePlotter::GetTentacleAngleAboutY(const Tentacle3D& tentacle) -> float
-{
-  auto angleAboutY = TENTACLE_ANGLE;
-
-  if ((-START_CUTOFF < tentacle.GetStartPos().x) && (tentacle.GetStartPos().x < 0.0F))
-  {
-    angleAboutY -= ANGLE_ADJ_FRACTION * pi;
-  }
-  else if ((0.0F <= tentacle.GetStartPos().x) && (tentacle.GetStartPos().x < START_CUTOFF))
-  {
-    angleAboutY += ANGLE_ADJ_FRACTION * pi;
-  }
-
-  return angleAboutY;
-}
-
-inline auto TentaclePlotter::GetTransformedPoints(const std::vector<V3dFlt>& points3D,
-                                                  const V3dFlt& translate,
-                                                  const float angle) -> std::vector<V3dFlt>
-{
-  const auto sinAngle = std::sin(angle);
-  const auto cosAngle = std::cos(angle);
-
-  auto transformedPoints = points3D;
-
-  for (auto& transformedPoint : transformedPoints)
-  {
-    RotateAboutYAxis(sinAngle, cosAngle, transformedPoint, transformedPoint);
-    Translate(translate, transformedPoint);
-  }
-
-  return transformedPoints;
-}
-
 inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) -> float
 {
   return BRIGHTNESS * GetBrightnessCut(tentacle);
@@ -226,25 +186,6 @@ auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points
   }
 
   return points2D;
-}
-
-inline auto TentaclePlotter::RotateAboutYAxis(const float sinAngle,
-                                              const float cosAngle,
-                                              const V3dFlt& srcPoint,
-                                              V3dFlt& destPoint) -> void
-{
-  const auto srcX = srcPoint.x;
-  const auto srcZ = srcPoint.z;
-  destPoint.x     = (srcX * cosAngle) - (srcZ * sinAngle);
-  destPoint.z     = (srcX * sinAngle) + (srcZ * cosAngle);
-  destPoint.y     = srcPoint.y;
-}
-
-inline auto TentaclePlotter::Translate(const V3dFlt& vAdd, V3dFlt& vInOut) -> void
-{
-  vInOut.x += vAdd.x;
-  vInOut.y += vAdd.y;
-  vInOut.z += vAdd.z;
 }
 
 } // namespace GOOM::VISUAL_FX::TENTACLES
