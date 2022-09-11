@@ -282,8 +282,10 @@ auto ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
 
     for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
     {
-      const auto newColor = m_filterColorsService->GetNewColor(
-          srceBuff, m_filterBuffersService->GetSourcePointInfo(destPos));
+      const auto srcePointInfo = m_filterBuffersService->GetSourcePointInfo(destPos);
+      const auto srcePointNeighbours =
+          srceBuff.Get4RHBNeighbours(srcePointInfo.screenPoint.x, srcePointInfo.screenPoint.y);
+      const auto newColor = m_filterColorsService->GetNewColor(srcePointInfo, srcePointNeighbours);
 
       filterBufferRowColorInfo.UpdateColor(newColor);
       *destRowBuff = newColor;

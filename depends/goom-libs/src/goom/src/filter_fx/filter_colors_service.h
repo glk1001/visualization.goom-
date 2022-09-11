@@ -25,8 +25,9 @@ public:
   using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
 
   [[nodiscard]] auto GetNewColor(
-      const PixelBuffer& srceBuff,
-      const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const noexcept -> Pixel;
+      const ZoomFilterBuffers::SourcePointInfo& sourcePointInfo,
+      const std::array<Pixel, PixelBuffer::NUM_NBRS>& sourcePointNeighbours) const noexcept
+      -> Pixel;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> GOOM::UTILS::NameValuePairs;
@@ -73,13 +74,10 @@ inline void FilterColorsService::SetBuffSettings(const FXBuffSettings& settings)
 }
 
 inline auto FilterColorsService::GetNewColor(
-    const PixelBuffer& srceBuff,
-    const ZoomFilterBuffers::SourcePointInfo& sourceInfo) const noexcept -> Pixel
+    const ZoomFilterBuffers::SourcePointInfo& sourcePointInfo,
+    const std::array<Pixel, PixelBuffer::NUM_NBRS>& sourcePointNeighbours) const noexcept -> Pixel
 {
-  const auto pixelNeighbours =
-      srceBuff.Get4RHBNeighbours(sourceInfo.screenPoint.x, sourceInfo.screenPoint.y);
-
-  return GetFilteredColor(sourceInfo.coeffs, pixelNeighbours);
+  return GetFilteredColor(sourcePointInfo.coeffs, sourcePointNeighbours);
 }
 
 inline auto FilterColorsService::GetFilteredColor(

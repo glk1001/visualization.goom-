@@ -261,10 +261,8 @@ constexpr Pixel::Pixel(const PixelChannelType red,
 {
 }
 
-constexpr auto MakePixel(uint32_t red,
-                         uint32_t green,
-                         uint32_t blue,
-                         uint32_t alpha) noexcept -> Pixel
+constexpr auto MakePixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept
+    -> Pixel
 {
   if (red > MAX_CHANNEL_VALUE_HDR)
   {
