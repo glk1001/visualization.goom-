@@ -239,12 +239,12 @@ inline ZoomFilterBuffers::CoordTransforms::CoordTransforms(
 inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
     const NormalizedCoords& normalizedPoint) const noexcept -> Point2dInt
 {
-  const auto screenCoords =
+  const auto screenCoordsFlt =
       m_normalizedCoordsConverter.NormalizedToScreenCoordsFlt(normalizedPoint);
 
   // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
-  return {static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.x))),
-          static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoords.y)))};
+  return {static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoordsFlt.x))),
+          static_cast<int32_t>(std::lround(ScreenToTranCoord(screenCoordsFlt.y)))};
 }
 
 inline auto ZoomFilterBuffers::GetBuffMidpoint() const noexcept -> Point2dInt

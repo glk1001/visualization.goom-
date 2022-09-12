@@ -42,25 +42,23 @@ auto ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filte
                                                    m_filterEffectsSettings->zoomMidpoint);
 }
 
-auto ZoomVectorEffects::GetCleanedVelocity(const NormalizedCoords& velocity) const
-    -> NormalizedCoords
+auto ZoomVectorEffects::GetCleanedCoords(const NormalizedCoords& coords) const -> NormalizedCoords
 {
-  return {
-      GetMinVelocityVal(velocity.GetX(), m_normalizedCoordsConverter.GetXMinNormalizedCoordVal()),
-      GetMinVelocityVal(velocity.GetY(), m_normalizedCoordsConverter.GetYMinNormalizedCoordVal())};
+  return {GetMinCoordVal(coords.GetX(), m_normalizedCoordsConverter.GetXMinNormalizedCoordVal()),
+          GetMinCoordVal(coords.GetY(), m_normalizedCoordsConverter.GetYMinNormalizedCoordVal())};
 }
 
-inline auto ZoomVectorEffects::GetMinVelocityVal(const float velocityVal,
-                                                 const float minNormalizedCoordVal) -> float
+inline auto ZoomVectorEffects::GetMinCoordVal(const float coordVal,
+                                              const float minNormalizedCoordVal) -> float
 {
-  if (std::fabs(velocityVal) < minNormalizedCoordVal)
+  if (std::fabs(coordVal) < minNormalizedCoordVal)
   {
-    return velocityVal < 0.0F ? -minNormalizedCoordVal : +minNormalizedCoordVal;
+    return coordVal < 0.0F ? -minNormalizedCoordVal : +minNormalizedCoordVal;
   }
-  return velocityVal;
+  return coordVal;
 }
 
-auto ZoomVectorEffects::GetSpeedCoefficientsNameValueParams() const -> NameValuePairs
+auto ZoomVectorEffects::GetZoomCoefficientsNameValueParams() const -> NameValuePairs
 {
   return m_filterEffectsSettings->speedCoefficientsEffect
       ->GetSpeedCoefficientsEffectNameValueParams();

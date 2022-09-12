@@ -1,6 +1,9 @@
 #include "filter_zoom_vector.h"
 
+//#undef NO_LOGGING
+
 #include "filter_effects/zoom_vector_effects.h"
+#include "logging.h"
 #include "normalized_coords.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -12,6 +15,7 @@ namespace GOOM::FILTER_FX
 {
 
 using FILTER_EFFECTS::ZoomVectorEffects;
+using GOOM::UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using GOOM::UTILS::NameValuePairs;
 using GOOM::UTILS::MATH::IGoomRand;
 using GOOM::UTILS::MATH::SqDistance;
@@ -41,20 +45,18 @@ auto FilterZoomVector::GetNameValueParams([[maybe_unused]] const std::string& pa
 
 auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords
 {
-  return coords - GetZoomPointVelocity(coords);
-}
-
-inline auto FilterZoomVector::GetZoomPointVelocity(const NormalizedCoords& coords) const
-    -> NormalizedCoords
-{
   const auto sqDistFromZero = SqDistance(coords.GetX(), coords.GetY());
 
-  const auto baseVelocity = m_zoomVectorEffects.GetSpeedCoeffVelocity(sqDistFromZero, coords);
+  const auto zoomCoefficients = m_zoomVectorEffects.GetZoomCoefficients(coords, sqDistFromZero);
+  const auto zoomFactor       = 1.0F - zoomCoefficients;
+  const auto zoomPoint        = zoomFactor * coords;
 
-  const auto adjustedVelocity =
-      m_zoomVectorEffects.GetAfterEffectsVelocity(coords, sqDistFromZero, baseVelocity);
+  const auto zoomVelocity = coords - zoomPoint;
+  const auto afterEffectsVelocity =
+      m_zoomVectorEffects.GetAfterEffectsVelocity(coords, sqDistFromZero, zoomVelocity);
+  const auto afterEffectsZoomPoint = zoomPoint - afterEffectsVelocity;
 
-  return m_zoomVectorEffects.GetCleanedVelocity(adjustedVelocity);
+  return m_zoomVectorEffects.GetCleanedCoords(afterEffectsZoomPoint);
 }
 
 } // namespace GOOM::FILTER_FX

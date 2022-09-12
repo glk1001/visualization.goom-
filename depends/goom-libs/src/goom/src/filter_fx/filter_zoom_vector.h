@@ -36,7 +36,6 @@ public:
 
 private:
   FILTER_EFFECTS::ZoomVectorEffects m_zoomVectorEffects;
-  [[nodiscard]] auto GetZoomPointVelocity(const NormalizedCoords& coords) const -> NormalizedCoords;
 };
 
 } // namespace GOOM::FILTER_FX

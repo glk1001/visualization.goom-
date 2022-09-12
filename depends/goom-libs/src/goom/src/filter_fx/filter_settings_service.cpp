@@ -851,13 +851,13 @@ auto FilterSettingsService::SetMaxSpeedCoeff() -> void
 {
   static constexpr auto MIN_SPEED_FACTOR = 0.5F;
   static constexpr auto MAX_SPEED_FACTOR = 1.0F;
-  m_filterSettings.filterEffectsSettings.maxSpeedCoeff =
+  m_filterSettings.filterEffectsSettings.maxZoomCoeff =
       m_goomRand.GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_SPEED_COEFF;
 }
 
 auto FilterSettingsService::SetRandomZoomMidpoint() -> void
 {
-  if (IsZoomMidpointInTheMiddle())
+  if (ALL_AFTER_EFFECTS_TURNED_OFF or IsZoomMidpointInTheMiddle())
   {
     m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
     return;

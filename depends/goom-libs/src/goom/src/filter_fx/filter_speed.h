@@ -1,5 +1,7 @@
 #pragma once
 
+#include "goom_config.h"
+
 #include <algorithm>
 #include <cstdint>
 
@@ -50,7 +52,9 @@ constexpr auto Vitesse::GetVitesse() const noexcept -> int32_t
 
 constexpr auto Vitesse::SetVitesse(const int32_t val) noexcept -> void
 {
-  m_vitesse = std::clamp(val, FASTEST_SPEED, STOP_SPEED);
+  Expects(FASTEST_SPEED <= val);
+  Expects(val <= STOP_SPEED);
+  m_vitesse = val;
 }
 
 constexpr auto Vitesse::GetReverseVitesse() const noexcept -> bool
@@ -65,12 +69,12 @@ constexpr auto Vitesse::SetReverseVitesse(const bool val) noexcept -> void
 
 constexpr auto Vitesse::ToggleReverseVitesse() noexcept -> void
 {
-  m_reverseVitesse = !m_reverseVitesse;
+  m_reverseVitesse = not m_reverseVitesse;
 }
 
 constexpr auto Vitesse::GoSlowerBy(const int32_t val) noexcept -> void
 {
-  SetVitesse(m_vitesse + val);
+  SetVitesse(std::clamp(m_vitesse + val, FASTEST_SPEED, STOP_SPEED));
 }
 
 constexpr auto Vitesse::GetRelativeSpeed() const noexcept -> float
