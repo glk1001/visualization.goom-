@@ -91,6 +91,7 @@ ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
 inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
 {
   m_highContrast.ChangeHighContrast();
+  m_hueShiftLerper.ChangeHue();
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void

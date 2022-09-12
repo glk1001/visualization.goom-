@@ -24,7 +24,7 @@ auto HueShiftLerper::Update() noexcept -> void
   m_lerpOffTimer.Increment();
   if (not m_lerpOffTimer.Finished())
   {
-    if (not RestartLerp())
+    if (not CanRestartLerp())
     {
       return;
     }
@@ -34,30 +34,55 @@ auto HueShiftLerper::Update() noexcept -> void
   Expects(m_lerpOffTimer.Finished());
   if (m_lerpOffTimer.JustFinished())
   {
-    m_lerpT.SetNumSteps(
-        m_goomRand.GetRandInRange(MIN_NUM_LERP_ON_STEPS, MAX_NUM_LERP_ON_STEPS + 1));
-    LogInfo("LerpT = {}. Reset lerpT steps to {}", m_lerpT(), m_lerpT.GetNumSteps());
-
-    static constexpr auto MAX_CHANGE = TWO_PI;
-    m_destHueShift =
-        std::fmod(m_srceHueShift + m_goomRand.GetRandInRange(0.0F, MAX_CHANGE), TWO_PI);
-    LogInfo("Reset m_destHueShift = {}.", m_destHueShift);
+    RestartLerpWithNewDestHue();
   }
 
   m_lerpT.Increment();
-
   if (m_lerpT.IsStopped())
   {
-    m_lerpOffTimer.SetTimeLimit(
-        m_goomRand.GetRandInRange(MIN_LERP_OFF_TIME, MAX_LERP_OFF_TIME + 1));
-    LogInfo("LerpT = {}. Set off timer {}", m_lerpT(), m_lerpOffTimer.GetTimeLimit());
-
-    m_lerpT.Reset(0.0F);
-    m_srceHueShift = m_destHueShift;
+    StopLerpAndSetHueShiftOff();
   }
 }
 
-inline auto HueShiftLerper::RestartLerp() const noexcept -> bool
+auto HueShiftLerper::RestartLerpWithNewDestHue() noexcept -> void
+{
+  RestartLerp();
+  SetNewDestHue();
+}
+
+inline auto HueShiftLerper::RestartLerp() noexcept -> void
+{
+  if (m_fastLerpChange)
+  {
+    m_lerpT.SetNumSteps(
+        m_goomRand.GetRandInRange(MIN_FAST_NUM_LERP_ON_STEPS, MAX_FAST_NUM_LERP_ON_STEPS + 1));
+  }
+  else
+  {
+    m_lerpT.SetNumSteps(
+        m_goomRand.GetRandInRange(MIN_NUM_LERP_ON_STEPS, MAX_NUM_LERP_ON_STEPS + 1));
+  }
+
+  LogInfo("LerpT = {}. Reset lerpT steps to {}", m_lerpT(), m_lerpT.GetNumSteps());
+}
+
+inline auto HueShiftLerper::SetNewDestHue() noexcept -> void
+{
+  static constexpr auto MAX_CHANGE = TWO_PI;
+  m_destHueShift = std::fmod(m_srceHueShift + m_goomRand.GetRandInRange(0.0F, MAX_CHANGE), TWO_PI);
+  LogInfo("Reset m_destHueShift = {}.", m_destHueShift);
+}
+
+inline auto HueShiftLerper::StopLerpAndSetHueShiftOff() noexcept -> void
+{
+  m_lerpOffTimer.SetTimeLimit(m_goomRand.GetRandInRange(MIN_LERP_OFF_TIME, MAX_LERP_OFF_TIME + 1));
+  LogInfo("LerpT = {}. Set off timer {}", m_lerpT(), m_lerpOffTimer.GetTimeLimit());
+
+  m_lerpT.Reset(0.0F);
+  m_srceHueShift = m_destHueShift;
+}
+
+inline auto HueShiftLerper::CanRestartLerp() const noexcept -> bool
 {
   if (static constexpr float PROB_RESTART_LERP_AFTER_BIG_GOOM = 0.5F;
       m_goomRand.ProbabilityOf(PROB_RESTART_LERP_AFTER_BIG_GOOM) and
