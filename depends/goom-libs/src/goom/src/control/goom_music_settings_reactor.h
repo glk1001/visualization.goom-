@@ -64,7 +64,7 @@ private:
 
   static constexpr int32_t MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
   int32_t m_updatesSinceLastZoomEffectsChange = 0; // nombre de Cycle Depuis Dernier Changement
-  int32_t m_previousZoomSpeed                 = FILTER_FX::Vitesse::DEFAULT_VITESSE + 1;
+  uint32_t m_previousZoomSpeed                = FILTER_FX::Vitesse::DEFAULT_VITESSE + 1;
 
   static constexpr uint32_t MAX_NUM_STATE_SELECTIONS_BLOCKED = 3;
   uint32_t m_stateSelectionBlocker                           = MAX_NUM_STATE_SELECTIONS_BLOCKED;

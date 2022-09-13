@@ -20,7 +20,6 @@ using AFTER_EFFECTS::HypercosOverlay;
 using AFTER_EFFECTS::RotationAdjustments;
 using UTILS::EnumMap;
 using UTILS::NUM;
-using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::U_QUARTER;
@@ -836,7 +835,7 @@ auto FilterSettingsService::SetWaveModeExtraEffects() -> void
   if (m_goomRand.ProbabilityOf(PROB_CHANGE_SPEED))
   {
     filterEffectsSettings.vitesse.SetVitesse(
-        I_HALF * (filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE));
+        U_HALF * (filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE));
   }
 }
 

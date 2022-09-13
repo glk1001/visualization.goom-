@@ -16,17 +16,17 @@ namespace GOOM::FILTER_FX
 //   super fast ... 0 = forward quickly.
 class Vitesse
 {
-  static constexpr int32_t MAX_VITESSE = 128;
+  static constexpr uint32_t MAX_VITESSE = 128;
 
 public:
-  static constexpr int32_t STOP_SPEED      = MAX_VITESSE;
-  static constexpr int32_t FASTEST_SPEED   = 0;
-  static constexpr int32_t DEFAULT_VITESSE = 127;
+  static constexpr uint32_t STOP_SPEED      = MAX_VITESSE;
+  static constexpr uint32_t FASTEST_SPEED   = 0;
+  static constexpr uint32_t DEFAULT_VITESSE = 127;
 
-  [[nodiscard]] constexpr auto GetVitesse() const noexcept -> int32_t;
-  constexpr auto SetVitesse(int32_t val) noexcept -> void;
+  [[nodiscard]] constexpr auto GetVitesse() const noexcept -> uint32_t;
+  constexpr auto SetVitesse(uint32_t val) noexcept -> void;
   constexpr auto SetDefault() noexcept -> void;
-  constexpr auto GoSlowerBy(int32_t val) noexcept -> void;
+  constexpr auto GoSlowerBy(uint32_t val) noexcept -> void;
 
   [[nodiscard]] constexpr auto GetReverseVitesse() const noexcept -> bool;
   constexpr auto SetReverseVitesse(bool val) noexcept -> void;
@@ -35,7 +35,7 @@ public:
   [[nodiscard]] constexpr auto GetRelativeSpeed() const noexcept -> float;
 
 private:
-  int32_t m_vitesse     = DEFAULT_VITESSE;
+  uint32_t m_vitesse    = DEFAULT_VITESSE;
   bool m_reverseVitesse = true;
 };
 
@@ -43,18 +43,6 @@ constexpr auto Vitesse::SetDefault() noexcept -> void
 {
   m_vitesse        = DEFAULT_VITESSE;
   m_reverseVitesse = true;
-}
-
-constexpr auto Vitesse::GetVitesse() const noexcept -> int32_t
-{
-  return m_vitesse;
-}
-
-constexpr auto Vitesse::SetVitesse(const int32_t val) noexcept -> void
-{
-  Expects(FASTEST_SPEED <= val);
-  Expects(val <= STOP_SPEED);
-  m_vitesse = val;
 }
 
 constexpr auto Vitesse::GetReverseVitesse() const noexcept -> bool
@@ -72,14 +60,29 @@ constexpr auto Vitesse::ToggleReverseVitesse() noexcept -> void
   m_reverseVitesse = not m_reverseVitesse;
 }
 
-constexpr auto Vitesse::GoSlowerBy(const int32_t val) noexcept -> void
+constexpr auto Vitesse::GetVitesse() const noexcept -> uint32_t
+{
+  return m_vitesse;
+}
+
+constexpr auto Vitesse::SetVitesse(const uint32_t val) noexcept -> void
+{
+  Expects(FASTEST_SPEED <= val);
+  Expects(val <= STOP_SPEED);
+  m_vitesse = val;
+}
+
+constexpr auto Vitesse::GoSlowerBy(const uint32_t val) noexcept -> void
 {
   SetVitesse(std::clamp(m_vitesse + val, FASTEST_SPEED, STOP_SPEED));
 }
 
 constexpr auto Vitesse::GetRelativeSpeed() const noexcept -> float
 {
-  const auto speed = static_cast<float>(m_vitesse - MAX_VITESSE) / static_cast<float>(MAX_VITESSE);
+  const auto speed =
+      static_cast<float>(static_cast<int32_t>(m_vitesse) - static_cast<int32_t>(MAX_VITESSE)) /
+      static_cast<float>(MAX_VITESSE);
+
   return m_reverseVitesse ? -speed : +speed;
 }
 

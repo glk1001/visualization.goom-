@@ -46,7 +46,8 @@ auto GoomMusicSettingsReactor::ChangeZoomEffects() -> void
     m_updatesSinceLastZoomEffectsChange = 0;
     m_filterSettingsService.SetDefaultTranLerpIncrement();
 
-    auto diff = m_filterSettingsService.GetROVitesse().GetVitesse() - m_previousZoomSpeed;
+    auto diff = static_cast<int32_t>(m_filterSettingsService.GetROVitesse().GetVitesse()) -
+                static_cast<int32_t>(m_previousZoomSpeed);
     if (diff < 0)
     {
       diff = -diff;
@@ -76,7 +77,7 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
 {
   // SPEED_FACTOR is delicate. Too small and zooms don't happen often enough.
   static constexpr auto SPEED_FACTOR = 500.0F;
-  const auto goFasterVal             = static_cast<int32_t>(std::lround(
+  const auto goFasterVal             = static_cast<uint32_t>(std::lround(
       3.5F *
       std::log10(1.0F + (SPEED_FACTOR * m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed()))));
   const auto newVitesse              = Vitesse::STOP_SPEED - goFasterVal;
@@ -103,7 +104,8 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
   }
   else
   {
-    m_filterSettingsService.GetRWVitesse().SetVitesse(static_cast<int32_t>(std::lround(STD20::lerp(
+    // TODO(glk) - Use int lerp here
+    m_filterSettingsService.GetRWVitesse().SetVitesse(static_cast<uint32_t>(std::lround(STD20::lerp(
         static_cast<float>(oldVitesse), static_cast<float>(newVitesse), OLD_TO_NEW_MIX))));
   }
 
