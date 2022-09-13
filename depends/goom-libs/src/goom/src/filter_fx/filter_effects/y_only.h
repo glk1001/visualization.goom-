@@ -1,7 +1,7 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/speed_coefficients_effect.h"
+#include "filter_fx/zoom_in_coefficients_effect.h"
 #include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
@@ -10,19 +10,19 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-class YOnly : public ISpeedCoefficientsEffect
+class YOnly : public IZoomInCoefficientsEffect
 {
 public:
   explicit YOnly(const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const NormalizedCoords& coords,
-                                          float sqDistFromZero,
-                                          const Point2dFlt& baseSpeedCoeffs) const
+  [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
+                                           float sqDistFromZero,
+                                           const Point2dFlt& baseZoomInCoeffs) const
       -> Point2dFlt override;
 
-  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> GOOM::UTILS::NameValuePairs override;
 
   enum class YOnlyEffect
@@ -51,24 +51,24 @@ protected:
 private:
   const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
-  [[nodiscard]] auto GetYOnlySpeedMultiplier(YOnlyEffect effect,
-                                             const NormalizedCoords& coords) const -> float;
+  [[nodiscard]] auto GetYOnlyZoomInMultiplier(YOnlyEffect effect,
+                                              const NormalizedCoords& coords) const -> float;
 };
 
-inline auto YOnly::GetSpeedCoefficients(const NormalizedCoords& coords,
-                                        [[maybe_unused]] const float sqDistFromZero,
-                                        const Point2dFlt& baseSpeedCoeffs) const -> Point2dFlt
+inline auto YOnly::GetZoomInCoefficients(const NormalizedCoords& coords,
+                                         [[maybe_unused]] float sqDistFromZero,
+                                         const Point2dFlt& baseZoomInCoeffs) const -> Point2dFlt
 {
-  const auto xSpeedCoeff =
-      baseSpeedCoeffs.x * m_params.xAmplitude * GetYOnlySpeedMultiplier(m_params.xEffect, coords);
+  const auto xZoomInCoeff =
+      baseZoomInCoeffs.x * m_params.xAmplitude * GetYOnlyZoomInMultiplier(m_params.xEffect, coords);
   if (m_params.yEffect == YOnlyEffect::NONE)
   {
-    return {xSpeedCoeff, xSpeedCoeff};
+    return {xZoomInCoeff, xZoomInCoeff};
   }
 
-  return {xSpeedCoeff,
-          baseSpeedCoeffs.y * m_params.yAmplitude *
-              GetYOnlySpeedMultiplier(m_params.yEffect, coords)};
+  return {xZoomInCoeff,
+          baseZoomInCoeffs.y * m_params.yAmplitude *
+              GetYOnlyZoomInMultiplier(m_params.yEffect, coords)};
 }
 
 inline auto YOnly::GetParams() const -> const Params&

@@ -40,9 +40,9 @@ auto ZoomVectorAfterEffects::SetAfterEffectsSettings(
 auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
     const NormalizedCoords& coords,
     const float sqDistFromZero,
-    const NormalizedCoords& zoomVelocity) const noexcept -> NormalizedCoords
+    const NormalizedCoords& zoomInVelocity) const noexcept -> NormalizedCoords
 {
-  auto newVelocity = zoomVelocity;
+  auto newVelocity = zoomInVelocity;
 
   if (m_afterEffectsSettings.active[AfterEffectsTypes::IMAGE_VELOCITY])
   {
@@ -93,7 +93,7 @@ auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
       velocity = {-2.0F * xNormalized + velocity.x, -2.0F * yNormalized + velocity.y};
   **/
 
-  return newVelocity - zoomVelocity;
+  return newVelocity - zoomInVelocity;
 }
 
 auto ZoomVectorAfterEffects::SetRandomHypercosOverlayEffects() noexcept -> void

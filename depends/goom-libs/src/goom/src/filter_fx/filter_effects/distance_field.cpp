@@ -188,7 +188,7 @@ auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) cons
   return {minDistanceSq, *closestPoint};
 }
 
-auto DistanceField::GetSpeedCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
+auto DistanceField::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return {};
 }

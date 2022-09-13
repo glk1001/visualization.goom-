@@ -68,7 +68,7 @@ auto Speedway::SetMode2RandomParams() -> void
   SetParams({xAmplitude, yAmplitude});
 }
 
-auto Speedway::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto Speedway::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
   return NameValuePairs();
 }

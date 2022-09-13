@@ -69,13 +69,13 @@ add_library(goom
             src/filter_fx/filter_effects/amulet.cpp
             src/filter_fx/filter_effects/crystal_ball.cpp
             src/filter_fx/filter_effects/distance_field.cpp
-            src/filter_fx/filter_effects/image_speed_coeffs.cpp
+            src/filter_fx/filter_effects/image_zoom_in_coeffs.cpp
             src/filter_fx/filter_effects/scrunch.cpp
-            src/filter_fx/filter_effects/simple_speed_coefficients_effect.h
-            src/filter_fx/filter_effects/speed_coefficients_effect_factory.cpp
             src/filter_fx/filter_effects/speedway.cpp
+            src/filter_fx/filter_effects/uniform_zoom_in_coefficients_effect.h
             src/filter_fx/filter_effects/wave.cpp
             src/filter_fx/filter_effects/y_only.cpp
+            src/filter_fx/filter_effects/zoom_in_coefficients_effect_factory.cpp
             src/filter_fx/filter_effects/zoom_vector_effects.cpp
             src/filter_fx/utils/image_displacement.cpp
             src/filter_fx/utils/image_displacement_list.cpp
@@ -88,7 +88,7 @@ add_library(goom
             src/filter_fx/filter_speed.h
             src/filter_fx/filter_zoom_vector.cpp
             src/filter_fx/normalized_coords.h
-            src/filter_fx/speed_coefficients_effect.h
+            src/filter_fx/zoom_in_coefficients_effect.h
             src/filter_fx/zoom_filter_fx.cpp
             src/utils/graphics/bezier_drawer.cpp
             src/utils/graphics/image_bitmaps.cpp

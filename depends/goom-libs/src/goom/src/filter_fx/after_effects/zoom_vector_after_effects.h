@@ -21,7 +21,7 @@ public:
 
   [[nodiscard]] auto GetAfterEffectsVelocity(const NormalizedCoords& coords,
                                              float sqDistFromZero,
-                                             const NormalizedCoords& zoomVelocity) const noexcept
+                                             const NormalizedCoords& zoomInVelocity) const noexcept
       -> NormalizedCoords;
 
   static constexpr auto* PARAM_GROUP = "After Effects";

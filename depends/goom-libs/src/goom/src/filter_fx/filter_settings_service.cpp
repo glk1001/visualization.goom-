@@ -101,7 +101,7 @@ static constexpr auto CENTRE_MID_POINT_WEIGHT               = 18.0F;
 static constexpr auto TOP_LEFT_QUARTER_MID_POINT_WEIGHT     = 10.0F;
 static constexpr auto BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
 
-// TODO - When we get to use C++20, then replace the below 'inline consts' with 'static constexpr'.
+// TODO(glk) - When we get to use C++20, replace the below 'inline consts' with 'static constexpr'.
 
 inline const auto CRYSTAL_BALL_MODE0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
     {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
@@ -636,7 +636,7 @@ inline const auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
 auto FilterSettingsService::GetFilterModeData(
     const IGoomRand& goomRand,
     const std::string& resourcesDirectory,
-    const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect) -> FilterModeEnumMap
+    const CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect) -> FilterModeEnumMap
 {
   Expects(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
   Expects(EFFECTS_PROBABILITIES.size() == NUM<ZoomFilterMode>);
@@ -652,7 +652,7 @@ auto FilterSettingsService::GetFilterModeData(
         filterMode,
         ZoomFilterModeInfo{
             FILTER_MODE_NAMES[filterMode],
-            createSpeedCoefficientsEffect(filterMode, goomRand, resourcesDirectory),
+            createZoomInCoefficientsEffect(filterMode, goomRand, resourcesDirectory),
             {Weights<Hyp>{goomRand, HYPERCOS_WEIGHTS[filterMode]},
                                                         GetAfterEffectsProbability(filterMode)},
     });
@@ -664,8 +664,8 @@ auto FilterSettingsService::GetFilterModeData(
 FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                              const IGoomRand& goomRand,
                                              const std::string& resourcesDirectory,
-                                             const CreateSpeedCoefficientsEffectFunc&
-                                                 createSpeedCoefficientsEffect)
+                                             const CreateZoomInCoefficientsEffectFunc&
+                                                 createZoomInCoefficientsEffect)
   : m_goomInfo{goomInfo},
     m_goomRand{goomRand},
     m_screenMidpoint{U_HALF * m_goomInfo.GetScreenWidth(),
@@ -677,12 +677,12 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                              GetAfterEffectsOffTime())},
     m_filterModeData{GetFilterModeData(m_goomRand,
                                        m_resourcesDirectory,
-                                       createSpeedCoefficientsEffect)},
+                                       createZoomInCoefficientsEffect)},
     m_filterSettings{
         false,
         {
            Vitesse{},
-           DEFAULT_MAX_SPEED_COEFF,
+           DEFAULT_MAX_ZOOM_IN_COEFF,
            nullptr,
            {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
            {
@@ -762,10 +762,10 @@ auto FilterSettingsService::Start() -> void
   SetNewRandomFilter();
 }
 
-inline auto FilterSettingsService::GetSpeedCoefficientsEffect()
-    -> std::shared_ptr<ISpeedCoefficientsEffect>&
+inline auto FilterSettingsService::GetZoomInCoefficientsEffect()
+    -> std::shared_ptr<IZoomInCoefficientsEffect>&
 {
-  return m_filterModeData[m_filterMode].speedCoefficientsEffect;
+  return m_filterModeData[m_filterMode].zoomInCoefficientsEffect;
 }
 
 auto FilterSettingsService::NewCycle() -> void
@@ -791,7 +791,7 @@ auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
 
 auto FilterSettingsService::SetDefaultSettings() -> void
 {
-  m_filterSettings.filterEffectsSettings.speedCoefficientsEffect = GetSpeedCoefficientsEffect();
+  m_filterSettings.filterEffectsSettings.zoomInCoefficientsEffect = GetZoomInCoefficientsEffect();
   m_filterSettings.filterEffectsSettings.zoomMidpoint            = m_screenMidpoint;
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
@@ -847,12 +847,12 @@ inline auto FilterSettingsService::UpdateFilterSettingsFromExtraEffects() -> voi
       m_filterSettings.filterEffectsSettings.afterEffectsSettings);
 }
 
-auto FilterSettingsService::SetMaxSpeedCoeff() -> void
+auto FilterSettingsService::SetMaxZoomInCoeff() -> void
 {
   static constexpr auto MIN_SPEED_FACTOR = 0.5F;
   static constexpr auto MAX_SPEED_FACTOR = 1.0F;
   m_filterSettings.filterEffectsSettings.maxZoomCoeff =
-      m_goomRand.GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_SPEED_COEFF;
+      m_goomRand.GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_ZOOM_IN_COEFF;
 }
 
 auto FilterSettingsService::SetRandomZoomMidpoint() -> void

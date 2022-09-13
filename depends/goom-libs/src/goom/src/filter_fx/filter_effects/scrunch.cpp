@@ -26,7 +26,7 @@ auto Scrunch::SetRandomParams() -> void
   SetParams({xAmplitude, yAmplitude});
 }
 
-auto Scrunch::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto Scrunch::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
   return NameValuePairs();
 }

@@ -2,7 +2,7 @@
 #include "control/goom_sound_events.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_colors_service.h"
-#include "filter_fx/filter_effects/speed_coefficients_effect_factory.h"
+#include "filter_fx/filter_effects/zoom_in_coefficients_effect_factory.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_zoom_vector.h"
@@ -27,7 +27,7 @@ using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::ZoomFilterBufferSettings;
 using FILTER_FX::ZoomFilterFx;
-using FILTER_FX::FILTER_EFFECTS::CreateSpeedCoefficientsEffect;
+using FILTER_FX::FILTER_EFFECTS::CreateZoomInCoefficientsEffect;
 using UTILS::Parallel;
 using UTILS::MATH::GoomRand;
 
@@ -44,8 +44,8 @@ TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
 
   const PluginInfo goomInfo{{WIDTH, HEIGHT}, goomSoundEvents};
   const GoomRand goomRand{};
-  FilterSettingsService filterSettingsService{goomInfo, goomRand, RESOURCES_DIRECTORY,
-                                              CreateSpeedCoefficientsEffect};
+  FilterSettingsService filterSettingsService{
+      goomInfo, goomRand, RESOURCES_DIRECTORY, CreateZoomInCoefficientsEffect};
   const NormalizedCoordsConverter normalizedCoordsConverter{
       {WIDTH, HEIGHT},
       ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL

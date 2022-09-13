@@ -28,7 +28,7 @@ public:
 
   auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) -> void override;
 
-  [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const
+  [[nodiscard]] auto GetZoomInPoint(const NormalizedCoords& coords) const
       -> NormalizedCoords override;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const

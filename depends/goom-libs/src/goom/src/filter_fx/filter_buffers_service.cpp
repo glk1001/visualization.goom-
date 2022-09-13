@@ -8,10 +8,10 @@
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
-#include "speed_coefficients_effect.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
+#include "zoom_in_coefficients_effect.h"
 #include "zoom_vector.h"
 
 #include <cstdint>
@@ -34,7 +34,7 @@ FilterBuffersService::FilterBuffersService(
                     goomInfo,
                     normalizedCoordsConverter,
                     [this](const NormalizedCoords& normalizedCoords)
-                    { return m_zoomVector->GetZoomPoint(normalizedCoords); }}
+                    { return m_zoomVector->GetZoomInPoint(normalizedCoords); }}
 {
 }
 
@@ -61,7 +61,7 @@ auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) con
 auto FilterBuffersService::Start() noexcept -> void
 {
   m_currentFilterEffectsSettings = m_nextFilterEffectsSettings;
-  Expects(m_currentFilterEffectsSettings.speedCoefficientsEffect != nullptr);
+  Expects(m_currentFilterEffectsSettings.zoomInCoefficientsEffect != nullptr);
 
   UpdateFilterEffectsSettings();
 

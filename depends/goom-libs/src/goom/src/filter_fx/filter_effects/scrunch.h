@@ -1,7 +1,7 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/speed_coefficients_effect.h"
+#include "filter_fx/zoom_in_coefficients_effect.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -9,19 +9,19 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-class Scrunch : public ISpeedCoefficientsEffect
+class Scrunch : public IZoomInCoefficientsEffect
 {
 public:
   explicit Scrunch(const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const NormalizedCoords& coords,
-                                          float sqDistFromZero,
-                                          const Point2dFlt& baseSpeedCoeffs) const
+  [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
+                                           float sqDistFromZero,
+                                           const Point2dFlt& baseZoomInCoeffs) const
       -> Point2dFlt override;
 
-  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> GOOM::UTILS::NameValuePairs override;
 
   struct Params
@@ -39,13 +39,13 @@ private:
   Params m_params;
 };
 
-inline auto Scrunch::GetSpeedCoefficients([[maybe_unused]] const NormalizedCoords& coords,
-                                          const float sqDistFromZero,
-                                          const Point2dFlt& baseSpeedCoeffs) const -> Point2dFlt
+inline auto Scrunch::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
+                                           float sqDistFromZero,
+                                           const Point2dFlt& baseZoomInCoeffs) const -> Point2dFlt
 {
-  const auto xSpeedCoeff = baseSpeedCoeffs.x + (m_params.xAmplitude * sqDistFromZero);
-  const auto ySpeedCoeff = m_params.yAmplitude * xSpeedCoeff;
-  return {xSpeedCoeff, ySpeedCoeff};
+  const auto xZoomInCoeff = baseZoomInCoeffs.x + (m_params.xAmplitude * sqDistFromZero);
+  const auto yZoomInCoeff = m_params.yAmplitude * xZoomInCoeff;
+  return {xZoomInCoeff, yZoomInCoeff};
 }
 
 inline auto Scrunch::GetParams() const -> const Params&

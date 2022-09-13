@@ -28,7 +28,7 @@ auto Amulet::SetRandomParams() -> void
   SetParams({xAmplitude, yAmplitude});
 }
 
-auto Amulet::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto Amulet::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
   return NameValuePairs();
 }

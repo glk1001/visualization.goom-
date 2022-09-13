@@ -1,4 +1,4 @@
-#include "image_speed_coeffs.h"
+#include "image_zoom_in_coeffs.h"
 
 #include "utils/name_value_pairs.h"
 
@@ -16,8 +16,8 @@ static constexpr auto ZOOM_FACTOR_RANGE  = IGoomRand::NumberRange<float>{0.10F, 
 
 static constexpr auto PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
-ImageSpeedCoefficients::ImageSpeedCoefficients(const std::string& resourcesDirectory,
-                                               const IGoomRand& goomRand)
+ImageZoomInCoefficients::ImageZoomInCoefficients(const std::string& resourcesDirectory,
+                                                 const IGoomRand& goomRand)
   : m_goomRand{goomRand}, m_imageDisplacementList{resourcesDirectory, m_goomRand}
 {
   if (!resourcesDirectory.empty())
@@ -26,12 +26,12 @@ ImageSpeedCoefficients::ImageSpeedCoefficients(const std::string& resourcesDirec
   }
 }
 
-auto ImageSpeedCoefficients::SetRandomParams() -> void
+auto ImageZoomInCoefficients::SetRandomParams() -> void
 {
   DoSetRandomParams();
 }
 
-inline auto ImageSpeedCoefficients::DoSetRandomParams() -> void
+inline auto ImageZoomInCoefficients::DoSetRandomParams() -> void
 {
   m_imageDisplacementList.SetRandomImageDisplacement();
 
@@ -47,9 +47,9 @@ inline auto ImageSpeedCoefficients::DoSetRandomParams() -> void
   });
 }
 
-auto ImageSpeedCoefficients::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto ImageZoomInCoefficients::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
-  static constexpr auto* PARAM_GROUP = "ImageSpeedCoeffs";
+  static constexpr auto* PARAM_GROUP = "ImageZoomInCoeffs";
   return m_imageDisplacementList.GetNameValueParams(PARAM_GROUP);
 }
 

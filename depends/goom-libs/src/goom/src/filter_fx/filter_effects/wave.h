@@ -1,7 +1,7 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/speed_coefficients_effect.h"
+#include "filter_fx/zoom_in_coefficients_effect.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -9,7 +9,7 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-class Wave : public ISpeedCoefficientsEffect
+class Wave : public IZoomInCoefficientsEffect
 {
 public:
   enum class Modes
@@ -21,12 +21,12 @@ public:
 
   auto SetRandomParams() -> void override;
 
-  [[nodiscard]] auto GetSpeedCoefficients(const NormalizedCoords& coords,
-                                          float sqDistFromZero,
-                                          const Point2dFlt& baseSpeedCoeffs) const
+  [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
+                                           float sqDistFromZero,
+                                           const Point2dFlt& baseZoomInCoeffs) const
       -> Point2dFlt override;
 
-  [[nodiscard]] auto GetSpeedCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> GOOM::UTILS::NameValuePairs override;
 
   enum class WaveEffect
@@ -68,7 +68,7 @@ private:
       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange,
       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) -> void;
-  [[nodiscard]] auto GetSpeedAdd(float sqDistFromZero, WaveEffect waveEffect) const -> float;
+  [[nodiscard]] auto GetZoomInAdd(float sqDistFromZero, WaveEffect waveEffect) const -> float;
   [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
                                             float angle,
                                             float periodicFactor) -> float;
@@ -83,17 +83,17 @@ private:
                                      float periodicFactor) const -> float;
 };
 
-inline auto Wave::GetSpeedCoefficients([[maybe_unused]] const NormalizedCoords& coords,
-                                       const float sqDistFromZero,
-                                       const Point2dFlt& baseSpeedCoeffs) const -> Point2dFlt
+inline auto Wave::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
+                                        float sqDistFromZero,
+                                        const Point2dFlt& baseZoomInCoeffs) const -> Point2dFlt
 {
-  const auto xSpeedCoeff = baseSpeedCoeffs.x + GetSpeedAdd(sqDistFromZero, m_params.xWaveEffect);
-  const auto ySpeedCoeff = baseSpeedCoeffs.y + GetSpeedAdd(sqDistFromZero, m_params.yWaveEffect);
+  const auto xZoomInCoeff = baseZoomInCoeffs.x + GetZoomInAdd(sqDistFromZero, m_params.xWaveEffect);
+  const auto yZoomInCoeff = baseZoomInCoeffs.y + GetZoomInAdd(sqDistFromZero, m_params.yWaveEffect);
 
-  return {xSpeedCoeff, ySpeedCoeff};
+  return {xZoomInCoeff, yZoomInCoeff};
 }
 
-inline auto Wave::GetSpeedAdd(const float sqDistFromZero, const WaveEffect waveEffect) const
+inline auto Wave::GetZoomInAdd(const float sqDistFromZero, const WaveEffect waveEffect) const
     -> float
 {
   const auto angle   = m_params.freqFactor * sqDistFromZero;

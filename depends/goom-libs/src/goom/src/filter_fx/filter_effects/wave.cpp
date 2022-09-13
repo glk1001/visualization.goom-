@@ -204,7 +204,7 @@ auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
   }
 }
 
-auto Wave::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto Wave::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
   return NameValuePairs();
 }

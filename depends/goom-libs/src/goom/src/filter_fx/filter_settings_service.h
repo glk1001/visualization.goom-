@@ -3,10 +3,10 @@
 #include "after_effects/after_effects_states.h"
 #include "after_effects/rotation.h"
 #include "filter_settings.h"
-#include "speed_coefficients_effect.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/propagate_const.h"
+#include "zoom_in_coefficients_effect.h"
 
 #include <functional>
 #include <memory>
@@ -49,16 +49,17 @@ enum class ZoomFilterMode
 class FilterSettingsService
 {
 public:
-  using CreateSpeedCoefficientsEffectFunc = std::function<std::shared_ptr<ISpeedCoefficientsEffect>(
-      ZoomFilterMode filterMode,
-      const GOOM::UTILS::MATH::IGoomRand& goomRand,
-      const std::string& resourcesDirectory)>;
-  // TODO - Visual Studio doesn't like a trailing return type in above function definition.
+  using CreateZoomInCoefficientsEffectFunc =
+      std::function<std::shared_ptr<IZoomInCoefficientsEffect>(
+          ZoomFilterMode filterMode,
+          const GOOM::UTILS::MATH::IGoomRand& goomRand,
+          const std::string& resourcesDirectory)>;
+  // TODO(glk) - Visual Studio doesn't like a trailing return type in above function definition.
 
   FilterSettingsService(const GOOM::PluginInfo& goomInfo,
                         const GOOM::UTILS::MATH::IGoomRand& goomRand,
                         const std::string& resourcesDirectory,
-                        const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect);
+                        const CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect);
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
   FilterSettingsService(FilterSettingsService&&) noexcept      = delete;
   virtual ~FilterSettingsService() noexcept;
@@ -122,7 +123,7 @@ private:
   struct ZoomFilterModeInfo
   {
     std::string_view name;
-    std::shared_ptr<ISpeedCoefficientsEffect> speedCoefficientsEffect{};
+    std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect{};
     AFTER_EFFECTS::AfterEffectsStates::AfterEffectsProbabilities afterEffectsProbabilities;
   };
   using FilterModeEnumMap = GOOM::UTILS::RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
@@ -130,19 +131,20 @@ private:
   [[nodiscard]] static auto GetFilterModeData(
       const GOOM::UTILS::MATH::IGoomRand& goomRand,
       const std::string& resourcesDirectory,
-      const CreateSpeedCoefficientsEffectFunc& createSpeedCoefficientsEffect) -> FilterModeEnumMap;
+      const CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect)
+      -> FilterModeEnumMap;
 
   static constexpr uint32_t DEFAULT_ZOOM_MID_X     = 16;
   static constexpr uint32_t DEFAULT_ZOOM_MID_Y     = 1;
   static constexpr int DEFAULT_TRAN_LERP_INCREMENT = 0x7f;
   static constexpr float DEFAULT_SWITCH_MULT       = 29.0F / 30.0F;
-  static constexpr float DEFAULT_MAX_SPEED_COEFF   = 2.01F;
-  static constexpr float MAX_MAX_SPEED_COEFF       = 4.01F;
+  static constexpr float DEFAULT_MAX_ZOOM_IN_COEFF = 2.01F;
+  static constexpr float MAX_MAX_ZOOM_IN_COEFF     = 4.01F;
   ZoomFilterSettings m_filterSettings;
   const GOOM::UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
-  [[nodiscard]] auto GetSpeedCoefficientsEffect() -> std::shared_ptr<ISpeedCoefficientsEffect>&;
-  auto SetMaxSpeedCoeff() -> void;
+  [[nodiscard]] auto GetZoomInCoefficientsEffect() -> std::shared_ptr<IZoomInCoefficientsEffect>&;
+  auto SetMaxZoomInCoeff() -> void;
 
   enum class ZoomMidpointEvents
   {
@@ -220,7 +222,7 @@ inline auto FilterSettingsService::GetRWVitesse() -> Vitesse&
 inline auto FilterSettingsService::ChangeMilieu() -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
-  SetMaxSpeedCoeff();
+  SetMaxZoomInCoeff();
   SetRandomZoomMidpoint();
 }
 
@@ -259,7 +261,7 @@ inline auto FilterSettingsService::TurnOffRotation() -> void
 inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
 {
   if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
-           .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
+              .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
   {
     return;
   }
@@ -271,7 +273,7 @@ inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
 inline auto FilterSettingsService::ToggleRotationDirection() -> void
 {
   if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
-           .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
+              .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
   {
     return;
   }

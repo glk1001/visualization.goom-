@@ -28,7 +28,7 @@
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_colors_service.h"
-#include "filter_fx/filter_effects/speed_coefficients_effect_factory.h"
+#include "filter_fx/filter_effects/zoom_in_coefficients_effect_factory.h"
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
@@ -80,7 +80,7 @@ using FILTER_FX::FilterSettingsService;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::ZoomFilterBuffers;
-using FILTER_FX::FILTER_EFFECTS::CreateSpeedCoefficientsEffect;
+using FILTER_FX::FILTER_EFFECTS::CreateZoomInCoefficientsEffect;
 #ifdef DO_GOOM_STATE_DUMP
 using std::experimental::propagate_const;
 #endif
@@ -131,7 +131,7 @@ private:
       ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL
   };
   FilterSettingsService m_filterSettingsService{
-      m_goomInfo, m_goomRand, m_resourcesDirectory, CreateSpeedCoefficientsEffect};
+      m_goomInfo, m_goomRand, m_resourcesDirectory, CreateZoomInCoefficientsEffect};
   const SmallImageBitmaps m_smallBitmaps{m_resourcesDirectory};
   GoomEvents m_goomEvents{m_goomRand};
   GoomRandomStateHandler m_stateHandler{m_goomRand};

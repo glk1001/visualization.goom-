@@ -43,20 +43,20 @@ auto FilterZoomVector::GetNameValueParams([[maybe_unused]] const std::string& pa
   return m_zoomVectorEffects.GetZoomEffectsNameValueParams();
 }
 
-auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords
+auto FilterZoomVector::GetZoomInPoint(const NormalizedCoords& coords) const -> NormalizedCoords
 {
   const auto sqDistFromZero = SqDistance(coords.GetX(), coords.GetY());
 
-  const auto zoomCoefficients = m_zoomVectorEffects.GetZoomCoefficients(coords, sqDistFromZero);
-  const auto zoomFactor       = 1.0F - zoomCoefficients;
-  const auto zoomPoint        = zoomFactor * coords;
+  const auto zoomInCoeffs = m_zoomVectorEffects.GetZoomInCoefficients(coords, sqDistFromZero);
+  const auto zoomInFactor = 1.0F - zoomInCoeffs;
+  const auto zoomInPoint  = zoomInFactor * coords;
 
-  const auto zoomVelocity = coords - zoomPoint;
+  const auto zoomInVelocity = coords - zoomInPoint;
   const auto afterEffectsVelocity =
-      m_zoomVectorEffects.GetAfterEffectsVelocity(coords, sqDistFromZero, zoomVelocity);
-  const auto afterEffectsZoomPoint = zoomPoint - afterEffectsVelocity;
+      m_zoomVectorEffects.GetAfterEffectsVelocity(coords, sqDistFromZero, zoomInVelocity);
+  const auto afterEffectsZoomInPoint = zoomInPoint - afterEffectsVelocity;
 
-  return m_zoomVectorEffects.GetCleanedCoords(afterEffectsZoomPoint);
+  return m_zoomVectorEffects.GetCleanedCoords(afterEffectsZoomInPoint);
 }
 
 } // namespace GOOM::FILTER_FX

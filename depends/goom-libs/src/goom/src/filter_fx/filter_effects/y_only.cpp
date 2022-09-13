@@ -60,7 +60,7 @@ auto YOnly::SetRandomParams() -> void
   SetParams({xEffect, yEffect, xFreqFactor, yFreqFactor, xAmplitude, yAmplitude});
 }
 
-auto YOnly::GetYOnlySpeedMultiplier(const YOnlyEffect effect, const NormalizedCoords& coords) const
+auto YOnly::GetYOnlyZoomInMultiplier(const YOnlyEffect effect, const NormalizedCoords& coords) const
     -> float
 {
   switch (effect)
@@ -83,7 +83,7 @@ auto YOnly::GetYOnlySpeedMultiplier(const YOnlyEffect effect, const NormalizedCo
   }
 }
 
-auto YOnly::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto YOnly::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
   return NameValuePairs();
 }

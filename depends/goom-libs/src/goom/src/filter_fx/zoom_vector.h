@@ -23,7 +23,7 @@ public:
   virtual auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
       -> void = 0;
 
-  virtual auto GetZoomPoint(const NormalizedCoords& coords) const -> NormalizedCoords = 0;
+  virtual auto GetZoomInPoint(const NormalizedCoords& coords) const -> NormalizedCoords = 0;
 
   [[nodiscard]] virtual auto GetNameValueParams(const std::string& paramGroup) const
       -> GOOM::UTILS::NameValuePairs = 0;

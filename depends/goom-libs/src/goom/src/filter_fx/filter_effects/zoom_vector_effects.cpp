@@ -36,7 +36,7 @@ auto ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filte
     -> void
 {
   m_filterEffectsSettings = &filterEffectsSettings;
-  m_filterEffectsSettings->speedCoefficientsEffect->SetRandomParams();
+  m_filterEffectsSettings->zoomInCoefficientsEffect->SetRandomParams();
 
   m_zoomVectorAfterEffects.SetAfterEffectsSettings(m_filterEffectsSettings->afterEffectsSettings,
                                                    m_filterEffectsSettings->zoomMidpoint);
@@ -58,10 +58,10 @@ inline auto ZoomVectorEffects::GetMinCoordVal(const float coordVal,
   return coordVal;
 }
 
-auto ZoomVectorEffects::GetZoomCoefficientsNameValueParams() const -> NameValuePairs
+auto ZoomVectorEffects::GetZoomInCoeffsNameValueParams() const -> NameValuePairs
 {
-  return m_filterEffectsSettings->speedCoefficientsEffect
-      ->GetSpeedCoefficientsEffectNameValueParams();
+  return m_filterEffectsSettings->zoomInCoefficientsEffect
+      ->GetZoomInCoefficientsEffectNameValueParams();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

@@ -99,7 +99,7 @@ auto CrystalBall::SetRandomParams(const IGoomRand::NumberRange<float>& xAmplitud
   SetParams({xAmplitude, yAmplitude, xSqDistMult, ySqDistMult, xSqDistOffset, ySqDistOffset});
 }
 
-auto CrystalBall::GetSpeedCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto CrystalBall::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
 {
   return NameValuePairs{};
 }
