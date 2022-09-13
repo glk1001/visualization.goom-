@@ -80,32 +80,31 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
   const auto goFasterVal             = static_cast<uint32_t>(std::lround(
       3.5F *
       std::log10(1.0F + (SPEED_FACTOR * m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed()))));
-  const auto newVitesse              = Vitesse::STOP_SPEED - goFasterVal;
-  const auto oldVitesse              = m_filterSettingsService.GetROVitesse().GetVitesse();
 
-  if (newVitesse >= oldVitesse)
+  auto& filterVitesse   = m_filterSettingsService.GetRWVitesse();
+  const auto newVitesse = Vitesse::GetFasterBy(Vitesse::STOP_SPEED, goFasterVal);
+  if (filterVitesse.IsFasterThan(newVitesse))
   {
+    // Current speed is faster than new one. Nothing to do.
     return;
   }
 
-  static constexpr auto VITESSE_CYCLES = 3U;
-  static constexpr auto FAST_SPEED     = Vitesse::STOP_SPEED - 6;
-  static constexpr auto FASTER_SPEED   = Vitesse::STOP_SPEED - 7;
-  static constexpr auto SLOW_SPEED     = Vitesse::STOP_SPEED - 1;
-  static constexpr auto OLD_TO_NEW_MIX = 0.4F;
+  const auto oldVitesse = filterVitesse.GetVitesse();
 
   // on accelere
-  if (((newVitesse < FASTER_SPEED) && (oldVitesse < FAST_SPEED) &&
-       (0 == (m_updateNum % VITESSE_CYCLES))) ||
+  if (static constexpr auto VITESSE_CYCLES = 3U;
+      (Vitesse::IsFasterThan(oldVitesse, Vitesse::FASTER_SPEED) and
+       Vitesse::IsFasterThan(newVitesse, Vitesse::EVEN_FASTER_SPEED) and
+       (0 == (m_updateNum % VITESSE_CYCLES))) or
       m_goomEvents.Happens(GoomEvent::FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE))
   {
-    m_filterSettingsService.GetRWVitesse().SetVitesse(SLOW_SPEED);
-    m_filterSettingsService.GetRWVitesse().ToggleReverseVitesse();
+    filterVitesse.SetVitesse(Vitesse::SLOWEST_SPEED);
+    filterVitesse.ToggleReverseVitesse();
   }
   else
   {
-    m_filterSettingsService.GetRWVitesse().SetVitesse(
-        STD20::lerp(oldVitesse, newVitesse, OLD_TO_NEW_MIX));
+    static constexpr auto OLD_TO_NEW_SPEED_MIX = 0.4F;
+    filterVitesse.SetVitesse(STD20::lerp(oldVitesse, newVitesse, OLD_TO_NEW_SPEED_MIX));
   }
 
   m_lock.IncreaseLockTime(CHANGE_VITESSE_LOCK_TIME_INCREASE);

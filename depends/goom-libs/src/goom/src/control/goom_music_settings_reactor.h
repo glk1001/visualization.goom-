@@ -64,7 +64,7 @@ private:
 
   static constexpr int32_t MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
   int32_t m_updatesSinceLastZoomEffectsChange = 0; // nombre de Cycle Depuis Dernier Changement
-  uint32_t m_previousZoomSpeed                = FILTER_FX::Vitesse::DEFAULT_SPEED + 1;
+  uint32_t m_previousZoomSpeed                = FILTER_FX::Vitesse::STOP_SPEED;
 
   static constexpr uint32_t MAX_NUM_STATE_SELECTIONS_BLOCKED = 3;
   uint32_t m_stateSelectionBlocker                           = MAX_NUM_STATE_SELECTIONS_BLOCKED;
@@ -103,12 +103,11 @@ inline auto GoomMusicSettingsReactor::NewCycle() -> void
 
 inline auto GoomMusicSettingsReactor::BigBreakIfMusicIsCalm() -> void
 {
-  static constexpr auto CALM_SPEED   = 0.05F;
-  static constexpr auto CALM_CYCLES  = 16U;
-  static constexpr auto CALM_VITESSE = FILTER_FX::Vitesse::STOP_SPEED - 4;
+  static constexpr auto CALM_SOUND_SPEED = 0.3F;
+  static constexpr auto CALM_CYCLES      = 16U;
 
-  if ((m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed() < CALM_SPEED) &&
-      (m_filterSettingsService.GetROVitesse().GetVitesse() < CALM_VITESSE) &&
+  if ((m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed() < CALM_SOUND_SPEED) and
+      (m_filterSettingsService.GetROVitesse().IsFasterThan(FILTER_FX::Vitesse::CALM_SPEED)) and
       (0 == (m_updateNum % CALM_CYCLES)))
   {
     BigBreak();
@@ -117,7 +116,7 @@ inline auto GoomMusicSettingsReactor::BigBreakIfMusicIsCalm() -> void
 
 inline auto GoomMusicSettingsReactor::BigBreak() -> void
 {
-  static constexpr auto SLOWER_BY = 3;
+  static constexpr auto SLOWER_BY = 3U;
   m_filterSettingsService.GetRWVitesse().GoSlowerBy(SLOWER_BY);
 
   m_visualFx.ChangeAllFxColorMaps();
@@ -171,12 +170,11 @@ inline auto GoomMusicSettingsReactor::ChangeRotation() -> void
 inline auto GoomMusicSettingsReactor::RegularlyLowerTheSpeed() -> void
 {
   static constexpr auto LOWER_SPEED_CYCLES = 73U;
-  static constexpr auto FAST_SPEED         = FILTER_FX::Vitesse::STOP_SPEED - 5;
 
   if ((0 == (m_updateNum % LOWER_SPEED_CYCLES)) &&
-      (m_filterSettingsService.GetROVitesse().GetVitesse() < FAST_SPEED))
+      (m_filterSettingsService.GetROVitesse().IsFasterThan(FILTER_FX::Vitesse::FAST_SPEED)))
   {
-    m_filterSettingsService.GetRWVitesse().GoSlowerBy(1);
+    m_filterSettingsService.GetRWVitesse().GoSlowerBy(1U);
   }
 }
 
@@ -230,7 +228,7 @@ inline auto GoomMusicSettingsReactor::MegaLentUpdate() -> void
   m_lock.IncreaseLockTime(MEGA_LENT_LOCK_TIME_INCREASE);
 
   m_visualFx.ChangeAllFxColorMaps();
-  m_filterSettingsService.GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::SLOW_SPEED);
+  m_filterSettingsService.GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::SLOWEST_SPEED);
   m_filterSettingsService.SetDefaultTranLerpIncrement();
   m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
 }
@@ -247,7 +245,7 @@ inline auto GoomMusicSettingsReactor::ChangeSpeedReverse() -> void
       m_goomEvents.Happens(GoomEvent::FILTER_REVERSE_OFF_AND_STOP_SPEED))
   {
     m_filterSettingsService.GetRWVitesse().SetReverseVitesse(false);
-    m_filterSettingsService.GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::SLOWISH_SPEED);
+    m_filterSettingsService.GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::SLOW_SPEED);
     m_lock.SetLockTime(REVERSE_SPEED_AND_STOP_SPEED_LOCK_TIME);
   }
   if (m_goomEvents.Happens(GoomEvent::FILTER_REVERSE_ON))
@@ -261,7 +259,7 @@ inline auto GoomMusicSettingsReactor::ChangeStopSpeeds() -> void
 {
   if (m_goomEvents.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED_MINUS1))
   {
-    m_filterSettingsService.GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::SLOW_SPEED);
+    m_filterSettingsService.GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::SLOWEST_SPEED);
   }
   else if (m_goomEvents.Happens(GoomEvent::FILTER_VITESSE_STOP_SPEED))
   {
