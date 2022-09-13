@@ -19,14 +19,14 @@ class Vitesse
   static constexpr uint32_t MAX_VITESSE = 128;
 
 public:
-  static constexpr uint32_t STOP_SPEED        = MAX_VITESSE;
-  static constexpr uint32_t SLOWEST_SPEED     = STOP_SPEED - 1U;
-  static constexpr uint32_t SLOW_SPEED        = STOP_SPEED - 2U;
-  static constexpr uint32_t CALM_SPEED        = STOP_SPEED - 4U;
-  static constexpr uint32_t FAST_SPEED        = STOP_SPEED - 5U;
-  static constexpr uint32_t FASTER_SPEED      = STOP_SPEED - 6U;
-  static constexpr uint32_t EVEN_FASTER_SPEED = STOP_SPEED - 7U;
-  static constexpr uint32_t MAXIMUM_SPEED     = 0;
+  static constexpr uint32_t STOP_SPEED        = 0U;
+  static constexpr uint32_t SLOWEST_SPEED     = STOP_SPEED + 1U;
+  static constexpr uint32_t SLOW_SPEED        = STOP_SPEED + 2U;
+  static constexpr uint32_t CALM_SPEED        = STOP_SPEED + 4U;
+  static constexpr uint32_t FAST_SPEED        = STOP_SPEED + 5U;
+  static constexpr uint32_t FASTER_SPEED      = STOP_SPEED + 6U;
+  static constexpr uint32_t EVEN_FASTER_SPEED = STOP_SPEED + 7U;
+  static constexpr uint32_t MAXIMUM_SPEED     = MAX_VITESSE;
   static constexpr uint32_t DEFAULT_SPEED     = SLOWEST_SPEED;
 
   [[nodiscard]] constexpr auto GetVitesse() const noexcept -> uint32_t;
@@ -34,6 +34,8 @@ public:
   constexpr auto SetDefault() noexcept -> void;
   constexpr auto GoSlowerBy(uint32_t amount) noexcept -> void;
   [[nodiscard]] constexpr static auto GetFasterBy(uint32_t speed, uint32_t amount) noexcept
+      -> uint32_t;
+  [[nodiscard]] constexpr static auto GetSlowerBy(uint32_t speed, uint32_t amount) noexcept
       -> uint32_t;
 
   [[nodiscard]] constexpr auto GetReverseVitesse() const noexcept -> bool;
@@ -90,25 +92,37 @@ constexpr auto Vitesse::SetVitesse(const uint32_t val) noexcept -> void
 
 constexpr auto Vitesse::GoSlowerBy(const uint32_t amount) noexcept -> void
 {
-  // TODO(glk) - fix: counterintuitive
-  SetVitesse(std::clamp(m_vitesse + amount, MAXIMUM_SPEED, STOP_SPEED));
+  if (amount > m_vitesse)
+  {
+    m_vitesse = STOP_SPEED;
+    return;
+  }
+  m_vitesse -= amount;
+
+  Ensures(not IsFasterThan(m_vitesse, MAXIMUM_SPEED));
+  Ensures(not IsSlowerThan(m_vitesse, STOP_SPEED));
 }
 
 constexpr auto Vitesse::GetFasterBy(const uint32_t speed, const uint32_t amount) noexcept
     -> uint32_t
 {
-  // TODO(glk) - fix: counterintuitive
-  if (amount > speed)
+  return std::min(speed + amount, MAXIMUM_SPEED);
+}
+
+constexpr auto Vitesse::GetSlowerBy(const uint32_t speed, const uint32_t amount) noexcept
+    -> uint32_t
+{
+  if (amount >= speed)
   {
-    return MAXIMUM_SPEED;
+    return STOP_SPEED;
   }
-  return std::clamp(speed - amount, MAXIMUM_SPEED, STOP_SPEED);
+  return speed - amount;
 }
 
 constexpr auto Vitesse::IsFasterThan(const uint32_t speed, const uint32_t otherSpeed) noexcept
     -> bool
 {
-  return speed < otherSpeed; // TODO(glk) - fix: counterintuitive
+  return speed > otherSpeed;
 }
 
 constexpr auto Vitesse::IsFasterThan(const uint32_t otherSpeed) const noexcept -> bool
@@ -119,7 +133,7 @@ constexpr auto Vitesse::IsFasterThan(const uint32_t otherSpeed) const noexcept -
 constexpr auto Vitesse::IsSlowerThan(const uint32_t speed, const uint32_t otherSpeed) noexcept
     -> bool
 {
-  return speed > otherSpeed; // TODO(glk) - fix: counterintuitive
+  return speed < otherSpeed;
 }
 
 constexpr auto Vitesse::IsSlowerThan(const uint32_t otherSpeed) const noexcept -> bool
@@ -129,11 +143,9 @@ constexpr auto Vitesse::IsSlowerThan(const uint32_t otherSpeed) const noexcept -
 
 constexpr auto Vitesse::GetRelativeSpeed() const noexcept -> float
 {
-  const auto speed =
-      static_cast<float>(static_cast<int32_t>(m_vitesse) - static_cast<int32_t>(MAX_VITESSE)) /
-      static_cast<float>(MAX_VITESSE);
+  const auto relativeSpeed = static_cast<float>(m_vitesse) / static_cast<float>(MAX_VITESSE);
 
-  return m_reverseVitesse ? -speed : +speed;
+  return m_reverseVitesse ? -relativeSpeed : +relativeSpeed;
 }
 
 } // namespace GOOM::FILTER_FX
