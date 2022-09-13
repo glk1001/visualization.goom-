@@ -835,7 +835,7 @@ auto FilterSettingsService::SetWaveModeExtraEffects() -> void
   if (m_goomRand.ProbabilityOf(PROB_CHANGE_SPEED))
   {
     filterEffectsSettings.vitesse.SetVitesse(
-        U_HALF * (filterEffectsSettings.vitesse.GetVitesse() + Vitesse::DEFAULT_VITESSE));
+        U_HALF * (Vitesse::DEFAULT_SPEED + filterEffectsSettings.vitesse.GetVitesse()));
   }
 }
 

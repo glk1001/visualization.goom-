@@ -19,9 +19,11 @@ class Vitesse
   static constexpr uint32_t MAX_VITESSE = 128;
 
 public:
-  static constexpr uint32_t STOP_SPEED      = MAX_VITESSE;
   static constexpr uint32_t FASTEST_SPEED   = 0;
-  static constexpr uint32_t DEFAULT_VITESSE = 127;
+  static constexpr uint32_t STOP_SPEED      = MAX_VITESSE;
+  static constexpr uint32_t SLOW_SPEED      = STOP_SPEED - 1;
+  static constexpr uint32_t SLOWISH_SPEED   = SLOW_SPEED - 1;
+  static constexpr uint32_t DEFAULT_SPEED   = SLOW_SPEED;
 
   [[nodiscard]] constexpr auto GetVitesse() const noexcept -> uint32_t;
   constexpr auto SetVitesse(uint32_t val) noexcept -> void;
@@ -35,13 +37,13 @@ public:
   [[nodiscard]] constexpr auto GetRelativeSpeed() const noexcept -> float;
 
 private:
-  uint32_t m_vitesse    = DEFAULT_VITESSE;
+  uint32_t m_vitesse    = DEFAULT_SPEED;
   bool m_reverseVitesse = true;
 };
 
 constexpr auto Vitesse::SetDefault() noexcept -> void
 {
-  m_vitesse        = DEFAULT_VITESSE;
+  m_vitesse        = DEFAULT_SPEED;
   m_reverseVitesse = true;
 }
 

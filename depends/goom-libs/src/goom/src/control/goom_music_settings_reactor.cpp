@@ -104,9 +104,8 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
   }
   else
   {
-    // TODO(glk) - Use int lerp here
-    m_filterSettingsService.GetRWVitesse().SetVitesse(static_cast<uint32_t>(std::lround(STD20::lerp(
-        static_cast<float>(oldVitesse), static_cast<float>(newVitesse), OLD_TO_NEW_MIX))));
+    m_filterSettingsService.GetRWVitesse().SetVitesse(
+        STD20::lerp(oldVitesse, newVitesse, OLD_TO_NEW_MIX));
   }
 
   m_lock.IncreaseLockTime(CHANGE_VITESSE_LOCK_TIME_INCREASE);
