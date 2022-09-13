@@ -682,6 +682,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
         {
            Vitesse{},
            DEFAULT_MAX_ZOOM_IN_COEFF,
+           DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER,
            nullptr,
            {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
            {
@@ -791,7 +792,7 @@ auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
 auto FilterSettingsService::SetDefaultSettings() -> void
 {
   m_filterSettings.filterEffectsSettings.zoomInCoefficientsEffect = GetZoomInCoefficientsEffect();
-  m_filterSettings.filterEffectsSettings.zoomMidpoint            = m_screenMidpoint;
+  m_filterSettings.filterEffectsSettings.zoomMidpoint             = m_screenMidpoint;
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
   m_randomizedAfterEffects->SetDefaults();
@@ -850,8 +851,21 @@ auto FilterSettingsService::SetMaxZoomInCoeff() -> void
 {
   static constexpr auto MIN_SPEED_FACTOR = 0.5F;
   static constexpr auto MAX_SPEED_FACTOR = 1.0F;
-  m_filterSettings.filterEffectsSettings.maxZoomCoeff =
+  m_filterSettings.filterEffectsSettings.maxZoomInCoeff =
       m_goomRand.GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_ZOOM_IN_COEFF;
+}
+
+auto FilterSettingsService::SetBaseZoomInCoeffFactorMultiplier() noexcept -> void
+{
+  if (static constexpr auto PROB_CALM_DOWN = 0.9F; m_goomRand.ProbabilityOf(PROB_CALM_DOWN))
+  {
+    m_filterSettings.filterEffectsSettings.baseZoomInCoeffFactorMultiplier = 1.0F;
+    return;
+  }
+
+  static constexpr auto MULTIPLIER_RANGE = IGoomRand::NumberRange<float>{1.0F, 10.0F};
+  m_filterSettings.filterEffectsSettings.baseZoomInCoeffFactorMultiplier =
+      m_goomRand.GetRandInRange(MULTIPLIER_RANGE);
 }
 
 auto FilterSettingsService::SetRandomZoomMidpoint() -> void

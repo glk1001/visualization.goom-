@@ -22,7 +22,8 @@ struct ZoomFilterEffectsSettings
 {
   Vitesse vitesse;
 
-  float maxZoomCoeff;
+  float maxZoomInCoeff;
+  float baseZoomInCoeffFactorMultiplier;
   std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect;
 
   Point2dInt zoomMidpoint; // milieu de l'effet

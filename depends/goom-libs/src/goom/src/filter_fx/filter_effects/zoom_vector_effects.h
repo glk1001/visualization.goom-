@@ -50,6 +50,9 @@ private:
   const NormalizedCoordsConverter& m_normalizedCoordsConverter;
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
   AFTER_EFFECTS::ZoomVectorAfterEffects m_zoomVectorAfterEffects;
+  static constexpr float DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR = 0.02F;
+  float m_baseZoomInCoeffFactor = DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR;
+  auto SetBaseZoomInCoeffFactor(float multiplier) noexcept -> void;
 
   [[nodiscard]] auto GetBaseZoomInCoeffs() const -> Point2dFlt;
   [[nodiscard]] auto GetClampedZoomInCoeffs(const Point2dFlt& zoomCoeffs) const -> Point2dFlt;
@@ -70,18 +73,16 @@ inline auto ZoomVectorEffects::GetZoomInCoefficients(const NormalizedCoords& coo
   return GetClampedZoomInCoeffs(zoomCoeffs);
 }
 
+inline auto ZoomVectorEffects::SetBaseZoomInCoeffFactor(const float multiplier) noexcept -> void
+{
+  Expects(multiplier > 0.0F);
+  m_baseZoomInCoeffFactor = multiplier * DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR;
+}
+
 inline auto ZoomVectorEffects::GetBaseZoomInCoeffs() const -> Point2dFlt
 {
-//#define NEW_WAY
-#ifdef NEW_WAY
-  static constexpr auto ZOOM_IN_COEFF_MULTIPLIER = 50.0F / 50.0F;
   const auto baseZoomCoeff =
-      1.0F - (ZOOM_IN_COEFF_MULTIPLIER * m_filterEffectsSettings->vitesse.GetRelativeSpeed());
-#else
-  static constexpr auto ZOOM_IN_COEFF_MULTIPLIER = 1.0F / 50.0F;
-  const auto baseZoomCoeff =
-      ZOOM_IN_COEFF_MULTIPLIER * (1.0F + m_filterEffectsSettings->vitesse.GetRelativeSpeed());
-#endif
+      m_baseZoomInCoeffFactor * (1.0F + m_filterEffectsSettings->vitesse.GetRelativeSpeed());
 
   return {baseZoomCoeff, baseZoomCoeff};
 }
@@ -98,9 +99,9 @@ inline auto ZoomVectorEffects::GetClampedZoomInCoeff(const float zoomCoeff) cons
   {
     return MIN_ZOOM_COEFF;
   }
-  if (zoomCoeff > m_filterEffectsSettings->maxZoomCoeff)
+  if (zoomCoeff > m_filterEffectsSettings->maxZoomInCoeff)
   {
-    return m_filterEffectsSettings->maxZoomCoeff;
+    return m_filterEffectsSettings->maxZoomInCoeff;
   }
   return zoomCoeff;
 }
@@ -111,17 +112,6 @@ inline auto ZoomVectorEffects::GetAfterEffectsVelocity(const NormalizedCoords& c
     -> NormalizedCoords
 {
   return m_zoomVectorAfterEffects.GetAfterEffectsVelocity(coords, sqDistFromZero, zoomInVelocity);
-}
-
-inline auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> GOOM::UTILS::NameValuePairs
-{
-  auto nameValuePairs = GOOM::UTILS::NameValuePairs{};
-
-  GOOM::UTILS::MoveNameValuePairs(GetZoomInCoeffsNameValueParams(), nameValuePairs);
-  GOOM::UTILS::MoveNameValuePairs(m_zoomVectorAfterEffects.GetZoomEffectsNameValueParams(),
-                                  nameValuePairs);
-
-  return nameValuePairs;
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS
