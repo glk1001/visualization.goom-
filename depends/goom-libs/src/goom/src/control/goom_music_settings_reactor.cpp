@@ -75,25 +75,28 @@ auto GoomMusicSettingsReactor::ChangeZoomEffects() -> void
 
 auto GoomMusicSettingsReactor::ChangeVitesse() -> void
 {
-  // SPEED_FACTOR is delicate. Too small and zooms don't happen often enough.
-  const auto soundSpeed                   = m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed();
-  static constexpr auto SPEED_FACTOR      = 10.0F;
-  static constexpr auto SPEED_DIFF_FACTOR = 10.0F;
-  static constexpr auto HALF_SPEED_DIFF_FACTOR = 0.5F * SPEED_DIFF_FACTOR;
+  const auto soundSpeed = m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed();
 
-  const auto goFasterVal = static_cast<uint32_t>(std::lround(
-      SPEED_FACTOR * std::log10(HALF_SPEED_DIFF_FACTOR +
-                                (SPEED_DIFF_FACTOR * (soundSpeed - SoundInfo::SPEED_MIDPOINT)))));
+  static constexpr auto MIN_USABLE_SOUND_SPEED = SoundInfo::SPEED_MIDPOINT - 0.1F;
+  static constexpr auto MAX_USABLE_SOUND_SPEED = SoundInfo::SPEED_MIDPOINT + 0.1F;
+  const auto usableRelativeSoundSpeed =
+      (std::clamp(soundSpeed, MIN_USABLE_SOUND_SPEED, MAX_USABLE_SOUND_SPEED) -
+       MIN_USABLE_SOUND_SPEED) /
+      (MAX_USABLE_SOUND_SPEED - MIN_USABLE_SOUND_SPEED);
 
-  auto& filterVitesse   = m_filterSettingsService.GetRWVitesse();
-  const auto newVitesse = Vitesse::GetFasterBy(Vitesse::STOP_SPEED, goFasterVal);
-  if (filterVitesse.IsFasterThan(newVitesse))
+  static constexpr auto MAX_SPEED_CHANGE = 10U;
+  const auto newSpeedVal = STD20::lerp(0U, MAX_SPEED_CHANGE, usableRelativeSoundSpeed);
+
+  auto& filterVitesse = m_filterSettingsService.GetRWVitesse();
+
+  const auto oldVitesse = filterVitesse.GetVitesse();
+  const auto newVitesse = Vitesse::GetFasterBy(Vitesse::STOP_SPEED, newSpeedVal);
+
+  if (Vitesse::IsFasterThan(oldVitesse, newVitesse))
   {
     // Current speed is faster than new one. Nothing to do.
     return;
   }
-
-  const auto oldVitesse = filterVitesse.GetVitesse();
 
   // on accelere
   if (static constexpr auto VITESSE_CYCLES = 3U;
