@@ -33,6 +33,7 @@ public:
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const GetAfterEffectsFunc& getAfterEffects) noexcept;
 
+  static constexpr float RAW_BASE_ZOOM_IN_COEFF_FACTOR = 0.02F;
   auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) -> void;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
@@ -50,8 +51,7 @@ private:
   const NormalizedCoordsConverter& m_normalizedCoordsConverter;
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
   AFTER_EFFECTS::ZoomVectorAfterEffects m_zoomVectorAfterEffects;
-  static constexpr float DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR = 0.02F;
-  float m_baseZoomInCoeffFactor = DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR;
+  float m_baseZoomInCoeffFactor = RAW_BASE_ZOOM_IN_COEFF_FACTOR;
   auto SetBaseZoomInCoeffFactor(float multiplier) noexcept -> void;
 
   [[nodiscard]] auto GetBaseZoomInCoeffs() const -> Point2dFlt;
@@ -76,7 +76,7 @@ inline auto ZoomVectorEffects::GetZoomInCoefficients(const NormalizedCoords& coo
 inline auto ZoomVectorEffects::SetBaseZoomInCoeffFactor(const float multiplier) noexcept -> void
 {
   Expects(multiplier > 0.0F);
-  m_baseZoomInCoeffFactor = multiplier * DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR;
+  m_baseZoomInCoeffFactor = multiplier * RAW_BASE_ZOOM_IN_COEFF_FACTOR;
 }
 
 inline auto ZoomVectorEffects::GetBaseZoomInCoeffs() const -> Point2dFlt

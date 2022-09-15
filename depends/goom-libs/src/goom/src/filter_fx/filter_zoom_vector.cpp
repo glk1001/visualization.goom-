@@ -3,6 +3,7 @@
 //#undef NO_LOGGING
 
 #include "filter_effects/zoom_vector_effects.h"
+#include "goom_config.h"
 #include "logging.h"
 #include "normalized_coords.h"
 #include "utils/math/misc.h"

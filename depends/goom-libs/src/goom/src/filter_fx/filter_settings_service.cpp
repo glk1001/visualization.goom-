@@ -857,13 +857,14 @@ auto FilterSettingsService::SetMaxZoomInCoeff() -> void
 
 auto FilterSettingsService::SetBaseZoomInCoeffFactorMultiplier() noexcept -> void
 {
-  if (static constexpr auto PROB_CALM_DOWN = 0.9F; m_goomRand.ProbabilityOf(PROB_CALM_DOWN))
+  if (static constexpr auto PROB_CALM_DOWN = 0.8F; m_goomRand.ProbabilityOf(PROB_CALM_DOWN))
   {
     m_filterSettings.filterEffectsSettings.baseZoomInCoeffFactorMultiplier = 1.0F;
     return;
   }
 
-  static constexpr auto MULTIPLIER_RANGE = IGoomRand::NumberRange<float>{1.0F, 10.0F};
+  // TODO(glk) Lerp between old and new?
+  static constexpr auto MULTIPLIER_RANGE = IGoomRand::NumberRange<float>{0.1F, 5.0F};
   m_filterSettings.filterEffectsSettings.baseZoomInCoeffFactorMultiplier =
       m_goomRand.GetRandInRange(MULTIPLIER_RANGE);
 }

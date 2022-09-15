@@ -8,16 +8,8 @@
 namespace GOOM::FILTER_FX
 {
 
-// 128 = vitesse nule...
-// 256 = en arriere
-//   hyper vite.. * * 0 = en avant hype vite.
-// 128 = zero speed
-// 256 = reverse
-//   super fast ... 0 = forward quickly.
 class Vitesse
 {
-  static constexpr uint32_t MAX_VITESSE = 128;
-
 public:
   static constexpr uint32_t STOP_SPEED        = 0U;
   static constexpr uint32_t SLOWEST_SPEED     = STOP_SPEED + 1U;
@@ -26,7 +18,7 @@ public:
   static constexpr uint32_t FAST_SPEED        = STOP_SPEED + 5U;
   static constexpr uint32_t FASTER_SPEED      = STOP_SPEED + 6U;
   static constexpr uint32_t EVEN_FASTER_SPEED = STOP_SPEED + 7U;
-  static constexpr uint32_t MAXIMUM_SPEED     = MAX_VITESSE;
+  static constexpr uint32_t MAXIMUM_SPEED     = STOP_SPEED + 10U;
   static constexpr uint32_t DEFAULT_SPEED     = SLOWEST_SPEED;
 
   [[nodiscard]] constexpr auto GetVitesse() const noexcept -> uint32_t;
@@ -143,7 +135,7 @@ constexpr auto Vitesse::IsSlowerThan(const uint32_t otherSpeed) const noexcept -
 
 constexpr auto Vitesse::GetRelativeSpeed() const noexcept -> float
 {
-  const auto relativeSpeed = static_cast<float>(m_vitesse) / static_cast<float>(MAX_VITESSE);
+  const auto relativeSpeed = static_cast<float>(m_vitesse) / static_cast<float>(MAXIMUM_SPEED);
 
   return m_reverseVitesse ? -relativeSpeed : +relativeSpeed;
 }
