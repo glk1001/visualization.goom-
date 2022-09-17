@@ -30,18 +30,18 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
       {WIDTH, HEIGHT}
   };
 
-  static constexpr auto R1 = 50U;
-  static constexpr auto G1 = 150U;
-  static constexpr auto B1 = 200U;
-  static constexpr auto R2 = 80U;
-  static constexpr auto G2 = 120U;
-  static constexpr auto B2 = 50U;
-  static constexpr auto R3 = 120U;
-  static constexpr auto G3 = 200U;
-  static constexpr auto B3 = 150U;
-  static constexpr auto R4 = 120U;
-  static constexpr auto G4 = 200U;
-  static constexpr auto B4 = 60U;
+  static constexpr auto RED1   = 50U;
+  static constexpr auto GREEN1 = 150U;
+  static constexpr auto BLUE1  = 200U;
+  static constexpr auto RED2   = 80U;
+  static constexpr auto GREEN2 = 120U;
+  static constexpr auto BLUE2  = 50U;
+  static constexpr auto RED3   = 120U;
+  static constexpr auto GREEN3 = 200U;
+  static constexpr auto BLUE3  = 150U;
+  static constexpr auto RED4   = 120U;
+  static constexpr auto GREEN4 = 200U;
+  static constexpr auto BLUE4  = 60U;
 
   static constexpr auto MAX_SUM_COEFF = channel_limits<uint32_t>::max() + 1U;
 
@@ -63,20 +63,20 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
         coeffs, false
     };
 
-    pixelBuffer(X, Y)         = GetColor(R1, G1, B1);
-    pixelBuffer(X + 1, Y)     = GetColor(R2, G2, B2);
-    pixelBuffer(X, Y + 1)     = GetColor(R3, G3, B3);
-    pixelBuffer(X + 1, Y + 1) = GetColor(R4, G4, B4);
+    pixelBuffer(X, Y)         = GetColor(RED1, GREEN1, BLUE1);
+    pixelBuffer(X + 1, Y)     = GetColor(RED2, GREEN2, BLUE2);
+    pixelBuffer(X, Y + 1)     = GetColor(RED3, GREEN3, BLUE3);
+    pixelBuffer(X + 1, Y + 1) = GetColor(RED4, GREEN4, BLUE4);
 
-    const auto expectedR =
-        (coeffs.val[0] * R1 + coeffs.val[1] * R2 + coeffs.val[2] * R3 + coeffs.val[3] * R4) /
-        MAX_SUM_COEFF;
-    const auto expectedG =
-        (coeffs.val[0] * G1 + coeffs.val[1] * G2 + coeffs.val[2] * G3 + coeffs.val[3] * G4) /
-        MAX_SUM_COEFF;
-    const auto expectedB =
-        (coeffs.val[0] * B1 + coeffs.val[1] * B2 + coeffs.val[2] * B3 + coeffs.val[3] * B4) /
-        MAX_SUM_COEFF;
+    const auto expectedR = (coeffs.val[0] * RED1 + coeffs.val[1] * RED2 + coeffs.val[2] * RED3 +
+                            coeffs.val[3] * RED4) /
+                           MAX_SUM_COEFF;
+    const auto expectedG = (coeffs.val[0] * GREEN1 + coeffs.val[1] * GREEN2 +
+                            coeffs.val[2] * GREEN3 + coeffs.val[3] * GREEN4) /
+                           MAX_SUM_COEFF;
+    const auto expectedB = (coeffs.val[0] * BLUE1 + coeffs.val[1] * BLUE2 + coeffs.val[2] * BLUE3 +
+                            coeffs.val[3] * BLUE4) /
+                           MAX_SUM_COEFF;
 
     const auto expectedColor = GetColor(expectedR, expectedG, expectedB);
     const auto pixelNeighbours =
