@@ -2,6 +2,7 @@
 
 #include "after_effects/after_effects_states.h"
 #include "filter_consts.h"
+#include "filter_effects/zoom_vector_effects.h"
 #include "filter_settings.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
@@ -18,13 +19,14 @@ using AFTER_EFFECTS::AfterEffectsStates;
 using AFTER_EFFECTS::AfterEffectsTypes;
 using AFTER_EFFECTS::HypercosOverlay;
 using AFTER_EFFECTS::RotationAdjustments;
-using UTILS::EnumMap;
-using UTILS::NUM;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::U_HALF;
-using UTILS::MATH::U_QUARTER;
-using UTILS::MATH::U_THREE_QUARTERS;
-using UTILS::MATH::Weights;
+using FILTER_EFFECTS::ZoomVectorEffects;
+using GOOM::UTILS::EnumMap;
+using GOOM::UTILS::NUM;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::U_HALF;
+using GOOM::UTILS::MATH::U_QUARTER;
+using GOOM::UTILS::MATH::U_THREE_QUARTERS;
+using GOOM::UTILS::MATH::Weights;
 
 
 // For debugging:
@@ -865,6 +867,24 @@ auto FilterSettingsService::SetBaseZoomInCoeffFactorMultiplier() noexcept -> voi
 
   // TODO(glk) Lerp between old and new?
   static constexpr auto MULTIPLIER_RANGE = IGoomRand::NumberRange<float>{0.1F, 5.0F};
+
+  static_assert(
+      ZoomVectorEffects::MIN_ALLOWED_BASE_ZOOM_IN_COEFF <=
+      ZoomVectorEffects::GetBaseZoomInCoeff(
+          MULTIPLIER_RANGE.min * ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, -1.0F));
+  static_assert(
+      ZoomVectorEffects::MIN_ALLOWED_BASE_ZOOM_IN_COEFF <=
+      ZoomVectorEffects::GetBaseZoomInCoeff(
+          MULTIPLIER_RANGE.max * ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, -1.0F));
+  static_assert(
+      ZoomVectorEffects::MAX_ALLOWED_BASE_ZOOM_IN_COEFF >=
+      ZoomVectorEffects::GetBaseZoomInCoeff(
+          MULTIPLIER_RANGE.min * ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, +1.0F));
+  static_assert(
+      ZoomVectorEffects::MAX_ALLOWED_BASE_ZOOM_IN_COEFF >=
+      ZoomVectorEffects::GetBaseZoomInCoeff(
+          MULTIPLIER_RANGE.max * ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, +1.0F));
+
   m_filterSettings.filterEffectsSettings.baseZoomInCoeffFactorMultiplier =
       m_goomRand.GetRandInRange(MULTIPLIER_RANGE);
 }

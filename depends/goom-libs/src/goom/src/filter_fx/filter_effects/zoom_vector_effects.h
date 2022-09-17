@@ -20,6 +20,12 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 class ZoomVectorEffects
 {
 public:
+  static constexpr auto MIN_ALLOWED_BASE_ZOOM_IN_COEFF = 0.0F;
+  static constexpr auto MAX_ALLOWED_BASE_ZOOM_IN_COEFF = 0.5F;
+  static constexpr auto RAW_BASE_ZOOM_IN_COEFF_FACTOR  = 0.02F;
+  [[nodiscard]] static constexpr auto GetBaseZoomInCoeff(float baseZoomInCoeffFactor,
+                                                         float relativeSpeed) -> float;
+
   using GetAfterEffectsFunc = std::function<auto(const GOOM::UTILS::MATH::IGoomRand& goomRand,
                                                  const std::string& resourcesDirectory)
                                                 ->AFTER_EFFECTS::AfterEffects>;
@@ -33,7 +39,6 @@ public:
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const GetAfterEffectsFunc& getAfterEffects) noexcept;
 
-  static constexpr float RAW_BASE_ZOOM_IN_COEFF_FACTOR = 0.02F;
   auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) -> void;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
@@ -76,16 +81,37 @@ inline auto ZoomVectorEffects::GetZoomInCoefficients(const NormalizedCoords& coo
 inline auto ZoomVectorEffects::SetBaseZoomInCoeffFactor(const float multiplier) noexcept -> void
 {
   Expects(multiplier > 0.0F);
+
   m_baseZoomInCoeffFactor = multiplier * RAW_BASE_ZOOM_IN_COEFF_FACTOR;
+
+  Ensures(GetBaseZoomInCoeff(m_baseZoomInCoeffFactor,
+                             m_filterEffectsSettings->vitesse.GetRelativeSpeed()) <=
+          MAX_ALLOWED_BASE_ZOOM_IN_COEFF);
 }
 
 inline auto ZoomVectorEffects::GetBaseZoomInCoeffs() const -> Point2dFlt
 {
-  const auto baseZoomCoeff =
-      m_baseZoomInCoeffFactor * (1.0F + m_filterEffectsSettings->vitesse.GetRelativeSpeed());
+  const auto baseZoomCoeff = GetBaseZoomInCoeff(
+      m_baseZoomInCoeffFactor, m_filterEffectsSettings->vitesse.GetRelativeSpeed());
+
+  Ensures(MIN_ALLOWED_BASE_ZOOM_IN_COEFF <= baseZoomCoeff);
+  Ensures(baseZoomCoeff <= MAX_ALLOWED_BASE_ZOOM_IN_COEFF);
 
   return {baseZoomCoeff, baseZoomCoeff};
 }
+
+constexpr auto ZoomVectorEffects::GetBaseZoomInCoeff(const float baseZoomInCoeffFactor,
+                                                     const float relativeSpeed) -> float
+{
+  return baseZoomInCoeffFactor * (1.0F + relativeSpeed);
+}
+
+static_assert(
+    ZoomVectorEffects::MIN_ALLOWED_BASE_ZOOM_IN_COEFF <=
+    ZoomVectorEffects::GetBaseZoomInCoeff(ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, -1.0F));
+static_assert(
+    ZoomVectorEffects::MAX_ALLOWED_BASE_ZOOM_IN_COEFF >=
+    ZoomVectorEffects::GetBaseZoomInCoeff(ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, +1.0F));
 
 inline auto ZoomVectorEffects::GetClampedZoomInCoeffs(const Point2dFlt& zoomCoeffs) const
     -> Point2dFlt
