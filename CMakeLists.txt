@@ -106,7 +106,7 @@ endif ()
 CPMAddPackage("gh:g-truc/glm#0.9.9.8")
 set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
-CPMAddPackage("gh:fmtlib/fmt#8.0.1")
+CPMAddPackage("gh:fmtlib/fmt#9.1.0")
 
 find_package(Kodi REQUIRED)
 

@@ -87,7 +87,7 @@ inline BufferSaver<T, HeaderT>::BufferSaver(std::string filenamePrefix,
 template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::GetCurrentFilename() const -> std::string
 {
-  return std20::format(m_filenamePrefix + "_{:05}", m_currentBuffNum);
+  return std20::format("{}_{:05}", m_filenamePrefix, m_currentBuffNum);
 }
 
 template<class T, class HeaderT>

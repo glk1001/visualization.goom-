@@ -164,17 +164,17 @@ auto CVisualizationGoom::StartWithCatch(const int numChannels,
   }
 }
 
-inline auto CVisualizationGoom::StartVis(const int numChannels,
-                                         [[maybe_unused]] const int samplesPerSec,
-                                         [[maybe_unused]] const int bitsPerSample,
-                                         [[maybe_unused]] const std::string& songName) -> bool
+auto CVisualizationGoom::StartVis(const int numChannels,
+                                  [[maybe_unused]] const int samplesPerSec,
+                                  [[maybe_unused]] const int bitsPerSample,
+                                  [[maybe_unused]] const std::string& songName) -> bool
 {
   StartLogging();
 
   LogInfo("CVisualizationGoom: Texture width, height = {}, {}.", m_textureWidth, m_textureHeight);
 #ifdef HAS_GL
   LogInfo("CVisualizationGoom: Supported GLSL version is {}.",
-          glGetString(GL_SHADING_LANGUAGE_VERSION));
+          reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 #endif
 
   SetNumChannels(numChannels);
@@ -315,7 +315,7 @@ auto CVisualizationGoom::InitGoomController() -> bool
   m_goomControl->SetShowTitle(m_showTitle);
 
   // Goom will use same random sequence if following is uncommented:
-  // GoomControl::setRandSeed(1);
+  //GoomControl::SetRandSeed(1);
   m_goomControl->Start();
 
   return true;

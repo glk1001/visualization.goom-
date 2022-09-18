@@ -103,7 +103,7 @@ else ()
 endif ()
 
 if (NOT DEFINED fmt_SOURCE_DIR)
-    CPMAddPackage("gh:fmtlib/fmt#8.0.1")
+    CPMAddPackage("gh:fmtlib/fmt#9.1.0")
 endif ()
 
 # CPMAddPackage has trouble with 'magic_enum' on Windows. So turn off by default.
