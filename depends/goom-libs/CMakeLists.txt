@@ -123,10 +123,6 @@ else ()
     endif ()
 endif ()
 
-if (ENABLE_TESTING)
-    find_package(Catch2 REQUIRED)
-endif ()
-
 
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_ID = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")

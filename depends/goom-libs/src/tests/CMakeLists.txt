@@ -63,7 +63,7 @@ set_target_properties(${GOOM_LIB_TESTS_NAME}
                       CXX_STANDARD ${CPP_STANDARD}
                       )
 
-catch_discover_tests(${GOOM_LIB_TESTS_NAME})
+#catch_discover_tests(${GOOM_LIB_TESTS_NAME})
 add_test(NAME ${GOOM_LIB_TESTS_NAME}
          COMMAND ${GOOM_LIB_TESTS_NAME})
 

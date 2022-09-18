@@ -108,6 +108,13 @@ set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
 CPMAddPackage("gh:fmtlib/fmt#9.1.0")
 
+if (ENABLE_TESTING)
+    CPMAddPackage(NAME Catch2 GITHUB_REPOSITORY catchorg/Catch2 VERSION 3.1.0
+                  OPTIONS WARNINGS_AS_ERRORS "Catch2 v3 has warnings" OFF)
+
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/_deps/catch2-src/extras")
+endif ()
+
 find_package(Kodi REQUIRED)
 
 if (NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
