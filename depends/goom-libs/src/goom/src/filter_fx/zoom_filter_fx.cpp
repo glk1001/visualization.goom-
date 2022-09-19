@@ -57,7 +57,7 @@ public:
 
   auto Start() noexcept -> void;
 
-  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
 
   [[nodiscard]] auto GetFilterEffectsSettings() const noexcept -> const ZoomFilterEffectsSettings&;
   auto UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept
@@ -115,7 +115,7 @@ auto ZoomFilterFx::Finish() noexcept -> void
   // No finish actions required
 }
 
-auto ZoomFilterFx::GetTranLerpFactor() const noexcept -> int32_t
+auto ZoomFilterFx::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_pimpl->GetTranLerpFactor();
 }
@@ -181,7 +181,7 @@ inline auto ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& 
   m_filterColorsService->SetBuffSettings(settings);
 }
 
-inline auto ZoomFilterFx::ZoomFilterImpl::GetTranLerpFactor() const noexcept -> int32_t
+inline auto ZoomFilterFx::ZoomFilterImpl::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_filterBuffersService->GetTranLerpFactor();
 }

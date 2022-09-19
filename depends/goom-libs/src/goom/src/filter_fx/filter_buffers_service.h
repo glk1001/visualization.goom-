@@ -38,10 +38,10 @@ public:
   auto SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings) noexcept
       -> void;
 
-  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
 
   auto UpdateTranBuffers() noexcept -> void;
-  auto UpdateTranLerpFactor(int32_t tranLerpIncrement, float tranLerpToMaxSwitchMult) noexcept
+  auto UpdateTranLerpFactor(uint32_t tranLerpIncrement, float tranLerpToMaxSwitchMult) noexcept
       -> void;
 
   using SourcePointInfo = ZoomFilterBuffers::SourcePointInfo;
@@ -76,7 +76,7 @@ inline auto FilterBuffersService::GetSourcePointInfo(const size_t buffPos) const
   return m_filterBuffers.GetSourcePointInfo(buffPos);
 }
 
-inline auto FilterBuffersService::GetTranLerpFactor() const noexcept -> int32_t
+inline auto FilterBuffersService::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_filterBuffers.GetTranLerpFactor();
 }

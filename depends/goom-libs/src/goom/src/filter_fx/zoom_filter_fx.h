@@ -41,7 +41,7 @@ public:
   auto Start() noexcept -> void;
   auto Finish() noexcept -> void;
 
-  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
 
   [[nodiscard]] auto GetFilterEffectsSettings() const noexcept -> const ZoomFilterEffectsSettings&;
   auto UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept

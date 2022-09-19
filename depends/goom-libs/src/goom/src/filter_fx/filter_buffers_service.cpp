@@ -114,21 +114,21 @@ auto FilterBuffersService::StartFreshTranBuffers() noexcept -> void
   m_pendingFilterEffectsSettings = false;
 }
 
-inline auto FilterBuffersService::UpdateTranLerpFactor(const int32_t tranLerpIncrement,
+inline auto FilterBuffersService::UpdateTranLerpFactor(const uint32_t tranLerpIncrement,
                                                        const float tranLerpToMaxSwitchMult) noexcept
     -> void
 {
   auto tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
 
-  if (tranLerpIncrement != 0)
+  if (tranLerpIncrement != 0U)
   {
-    tranLerpFactor = std::clamp(
-        tranLerpFactor + tranLerpIncrement, 0, ZoomFilterBuffers::GetMaxTranLerpFactor());
+    tranLerpFactor =
+        std::min(tranLerpFactor + tranLerpIncrement, ZoomFilterBuffers::GetMaxTranLerpFactor());
   }
 
-  if (!FloatsEqual(tranLerpToMaxSwitchMult, 1.0F))
+  if (not FloatsEqual(tranLerpToMaxSwitchMult, 1.0F))
   {
-    tranLerpFactor = static_cast<int32_t>(
+    tranLerpFactor = static_cast<uint32_t>(
         STD20::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
                     static_cast<float>(tranLerpFactor),
                     tranLerpToMaxSwitchMult));

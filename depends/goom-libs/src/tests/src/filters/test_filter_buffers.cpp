@@ -214,7 +214,7 @@ TEST_CASE("ZoomFilterBuffers Basic")
   SECTION("Correct Lerped ZoomBufferTranPoint")
   {
     static constexpr auto T_LERP = 0.5F;
-    const auto tranLerpFactor    = static_cast<int32_t>(
+    const auto tranLerpFactor    = static_cast<uint32_t>(
         std::round(T_LERP * static_cast<float>(filterBuffers.GetMaxTranLerpFactor())));
 
     filterBuffers.SetTranLerpFactor(tranLerpFactor);
@@ -309,7 +309,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
     REQUIRE(MID_PT == filterBuffers.GetBuffMidpoint());
 
     static constexpr float T_LERP = 0.5F;
-    const auto tranLerpFactor     = static_cast<int32_t>(
+    const auto tranLerpFactor     = static_cast<uint32_t>(
         std::round(T_LERP * static_cast<float>(filterBuffers.GetMaxTranLerpFactor())));
 
     filterBuffers.SetTranLerpFactor(tranLerpFactor);

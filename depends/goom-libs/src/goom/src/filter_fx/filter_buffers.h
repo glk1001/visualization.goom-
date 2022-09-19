@@ -24,7 +24,9 @@ namespace UTILS
 class Parallel;
 }
 
-namespace FILTER_FX
+}
+
+namespace GOOM::FILTER_FX
 {
 
 class ZoomFilterBuffers
@@ -58,9 +60,9 @@ public:
   [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
   auto SetBuffMidpoint(const Point2dInt& val) noexcept -> void;
 
-  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
-  auto SetTranLerpFactor(int32_t val) noexcept -> void;
-  [[nodiscard]] static auto GetMaxTranLerpFactor() noexcept -> int32_t;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
+  auto SetTranLerpFactor(uint32_t val) noexcept -> void;
+  [[nodiscard]] static auto GetMaxTranLerpFactor() noexcept -> uint32_t;
 
   [[nodiscard]] auto GetTranBuffYLineStart() const noexcept -> uint32_t;
 
@@ -135,9 +137,9 @@ public:
       -> Point2dInt;
 
   // Use these consts for optimising multiplication, division, and mod, by DIM_FILTER_COEFFS.
-  static constexpr int32_t MAX_TRAN_LERP_VALUE         = 0xFFFF;
-  static constexpr int32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
-  static constexpr int32_t DIM_FILTER_COEFFS_MOD_MASK  = 0xF;
+  static constexpr uint32_t MAX_TRAN_LERP_VALUE         = 0xFFFF;
+  static constexpr uint32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
+  static constexpr uint32_t DIM_FILTER_COEFFS_MOD_MASK  = 0xF;
 
   [[nodiscard]] static auto TranCoordToCoeffIndex(uint32_t tranCoord) noexcept -> uint32_t;
   [[nodiscard]] static auto TranToScreenPoint(const Point2dInt& tranPoint) noexcept -> Point2dInt;
@@ -151,7 +153,7 @@ private:
 class ZoomFilterBuffers::FilterCoefficients
 {
 public:
-  FilterCoefficients() = default; // Android does not like 'noexcept'
+  FilterCoefficients() = default;
 
   using FilterCoeff2dArray =
       std::array<std::array<NeighborhoodCoeffArray, DIM_FILTER_COEFFS>, DIM_FILTER_COEFFS>;
@@ -178,8 +180,8 @@ public:
   auto SetTempBuffersTransformPoint(uint32_t buffPos, const Point2dInt& transformPoint) noexcept
       -> void;
 
-  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> int32_t;
-  auto SetTranLerpFactor(int32_t val) noexcept -> void;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
+  auto SetTranLerpFactor(uint32_t val) noexcept -> void;
 
   [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos, bool& isClipped) const noexcept
       -> Point2dInt;
@@ -191,15 +193,15 @@ private:
   std::vector<Point2dInt> m_tranSrce;
   std::vector<Point2dInt> m_tranDest;
   std::vector<Point2dInt> m_tranTemp;
-  int32_t m_tranLerpFactor = 0;
+  uint32_t m_tranLerpFactor = 0U;
 
   [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos) const noexcept -> Point2dInt;
   [[nodiscard]] static auto GetTranBuffLerpPoint(Point2dInt srcePoint,
                                                  Point2dInt destPoint,
-                                                 int32_t t) noexcept -> Point2dInt;
+                                                 uint32_t t) noexcept -> Point2dInt;
   [[nodiscard]] static auto GetTranBuffLerpVal(int32_t srceBuffVal,
                                                int32_t destBuffVal,
-                                               int32_t t) noexcept -> int32_t;
+                                               uint32_t t) noexcept -> int32_t;
   [[nodiscard]] auto GetClampedXVal(int32_t x) const noexcept -> int32_t;
   [[nodiscard]] auto GetClampedYVal(int32_t y) const noexcept -> int32_t;
 };
@@ -263,17 +265,17 @@ inline auto ZoomFilterBuffers::GetTranBuffersState() const noexcept -> TranBuffe
   return m_tranBuffersState;
 }
 
-inline auto ZoomFilterBuffers::GetTranLerpFactor() const noexcept -> int32_t
+inline auto ZoomFilterBuffers::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_transformBuffers->GetTranLerpFactor();
 }
 
-inline auto ZoomFilterBuffers::GetMaxTranLerpFactor() noexcept -> int32_t
+inline auto ZoomFilterBuffers::GetMaxTranLerpFactor() noexcept -> uint32_t
 {
   return CoordTransforms::MAX_TRAN_LERP_VALUE;
 }
 
-inline auto ZoomFilterBuffers::SetTranLerpFactor(const int32_t val) noexcept -> void
+inline auto ZoomFilterBuffers::SetTranLerpFactor(const uint32_t val) noexcept -> void
 {
   m_transformBuffers->SetTranLerpFactor(val);
 }
@@ -293,12 +295,12 @@ inline auto ZoomFilterBuffers::GetTranBuffYLineStart() const noexcept -> uint32_
   return m_tranBuffYLineStart;
 }
 
-inline auto ZoomFilterBuffers::TransformBuffers::GetTranLerpFactor() const noexcept -> int32_t
+inline auto ZoomFilterBuffers::TransformBuffers::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_tranLerpFactor;
 }
 
-inline auto ZoomFilterBuffers::TransformBuffers::SetTranLerpFactor(const int32_t val) noexcept
+inline auto ZoomFilterBuffers::TransformBuffers::SetTranLerpFactor(const uint32_t val) noexcept
     -> void
 {
   m_tranLerpFactor = val;
@@ -356,7 +358,7 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetClampedYVal(const int32_t y)
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpPoint(const Point2dInt srcePoint,
                                                                       const Point2dInt destPoint,
-                                                                      const int32_t t) noexcept
+                                                                      const uint32_t t) noexcept
     -> Point2dInt
 {
   return {GetTranBuffLerpVal(srcePoint.x, destPoint.x, t),
@@ -365,7 +367,7 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpPoint(const Poin
 
 inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_t srceBuffVal,
                                                                     const int32_t destBuffVal,
-                                                                    const int32_t t) noexcept
+                                                                    const uint32_t t) noexcept
     -> int32_t
 {
   // IMPORTANT: Looking at this mathematically I can't see that the '>> DIM_FILTER_COEFFS'
@@ -374,8 +376,9 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
   //            '/ (MAX_TRAN_LERP_VALUE - 1)'  which was better with the artifacts in
   //            the centre but may have produced other artifacts.
 
-  return srceBuffVal + ((t * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);
+  return srceBuffVal +
+         ((static_cast<int32_t>(t) * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);
 }
 
-} // namespace FILTER_FX
-} // namespace GOOM
+} // namespace GOOM::FILTER_FX
+

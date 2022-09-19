@@ -55,7 +55,8 @@ auto GoomMusicSettingsReactor::ChangeZoomEffects() -> void
 
     if (static constexpr auto DIFF_CUT = 2; diff > DIFF_CUT)
     {
-      m_filterSettingsService.MultiplyTranLerpIncrement((diff + DIFF_CUT) / DIFF_CUT);
+      m_filterSettingsService.MultiplyTranLerpIncrement(
+          static_cast<uint32_t>((diff + DIFF_CUT) / DIFF_CUT));
     }
     m_previousZoomSpeed = m_filterSettingsService.GetROVitesse().GetVitesse();
     m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);

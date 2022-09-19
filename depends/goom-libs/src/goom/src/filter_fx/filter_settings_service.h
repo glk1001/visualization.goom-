@@ -89,9 +89,9 @@ public:
   auto MultiplyRotation(float factor) -> void;
   auto ToggleRotationDirection() -> void;
 
-  auto SetTranLerpIncrement(int32_t value) -> void;
+  auto SetTranLerpIncrement(uint32_t value) -> void;
   auto SetDefaultTranLerpIncrement() -> void;
-  auto MultiplyTranLerpIncrement(int32_t factor) -> void;
+  auto MultiplyTranLerpIncrement(uint32_t factor) -> void;
   auto SetTranLerpToMaxSwitchMult(float value) -> void;
   auto SetTranLerpToMaxDefaultSwitchMult() -> void;
 
@@ -136,7 +136,7 @@ private:
 
   static constexpr uint32_t DEFAULT_ZOOM_MID_X                        = 16;
   static constexpr uint32_t DEFAULT_ZOOM_MID_Y                        = 1;
-  static constexpr int DEFAULT_TRAN_LERP_INCREMENT                    = 0x7f;
+  static constexpr uint32_t DEFAULT_TRAN_LERP_INCREMENT               = 0x7fU;
   static constexpr float DEFAULT_SWITCH_MULT                          = 29.0F / 30.0F;
   static constexpr float DEFAULT_MAX_ZOOM_IN_COEFF                    = 2.01F;
   static constexpr float DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
@@ -286,7 +286,7 @@ inline auto FilterSettingsService::ToggleRotationDirection() -> void
       AFTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
-inline auto FilterSettingsService::SetTranLerpIncrement(const int32_t value) -> void
+inline auto FilterSettingsService::SetTranLerpIncrement(const uint32_t value) -> void
 {
   m_filterSettings.filterBufferSettings.tranLerpIncrement = value;
 }
@@ -296,7 +296,7 @@ inline auto FilterSettingsService::SetDefaultTranLerpIncrement() -> void
   SetTranLerpIncrement(DEFAULT_TRAN_LERP_INCREMENT);
 }
 
-inline auto FilterSettingsService::MultiplyTranLerpIncrement(const int32_t factor) -> void
+inline auto FilterSettingsService::MultiplyTranLerpIncrement(const uint32_t factor) -> void
 {
   m_filterSettings.filterBufferSettings.tranLerpIncrement *= factor;
 }
