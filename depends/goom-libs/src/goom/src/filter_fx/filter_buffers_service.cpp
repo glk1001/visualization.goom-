@@ -128,10 +128,8 @@ inline auto FilterBuffersService::UpdateTranLerpFactor(const uint32_t tranLerpIn
 
   if (not FloatsEqual(tranLerpToMaxSwitchMult, 1.0F))
   {
-    tranLerpFactor = static_cast<uint32_t>(
-        STD20::lerp(static_cast<float>(ZoomFilterBuffers::GetMaxTranLerpFactor()),
-                    static_cast<float>(tranLerpFactor),
-                    tranLerpToMaxSwitchMult));
+    tranLerpFactor = STD20::lerp(
+        ZoomFilterBuffers::GetMaxTranLerpFactor(), tranLerpFactor, tranLerpToMaxSwitchMult);
   }
 
   m_filterBuffers.SetTranLerpFactor(tranLerpFactor);
