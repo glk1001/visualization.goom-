@@ -38,8 +38,6 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
   UNUSED_FOR_NDEBUG(SQR);
   Expects(DIM_FILTER_COEFFS == static_cast<int32_t>(std::lround(
                                    std::pow(SQR, CoordTransforms::DIM_FILTER_COEFFS_DIV_SHIFT))));
-  Expects(CoordTransforms::MAX_TRAN_LERP_VALUE ==
-          static_cast<int32_t>(std::lround(std::pow(SQR, DIM_FILTER_COEFFS)) - 1));
 }
 
 ZoomFilterBuffers::~ZoomFilterBuffers() noexcept = default;

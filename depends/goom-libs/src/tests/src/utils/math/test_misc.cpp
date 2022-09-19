@@ -9,6 +9,7 @@ namespace GOOM::UNIT_TESTS
 using UTILS::MATH::FloatToIrreducibleFraction;
 using UTILS::MATH::Gcd;
 using UTILS::MATH::Lcm;
+using UTILS::MATH::PowerOf2;
 using UTILS::MATH::RationalNumber;
 
 TEST_CASE("Gcd")
@@ -27,6 +28,21 @@ TEST_CASE("Lcm")
 
   REQUIRE(Lcm(21, 6) == 42);
   REQUIRE(Lcm(6, 21) == 42);
+}
+
+TEST_CASE("PowerOf2")
+{
+  REQUIRE(PowerOf2(0) == 1);
+  REQUIRE(PowerOf2(0U) == 1U);
+
+  REQUIRE(PowerOf2(1U) == 2U);
+  REQUIRE(PowerOf2(1U) == 2U);
+
+  REQUIRE(PowerOf2(4) == 16);
+  REQUIRE(PowerOf2(4U) == 16U);
+
+  REQUIRE(PowerOf2(16) == 65536);
+  REQUIRE(PowerOf2(16U) == 65536U);
 }
 
 TEST_CASE("Frac")

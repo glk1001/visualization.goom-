@@ -522,9 +522,7 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
         NORMALIZED_COORDS_CONVERTER.NormalizedToScreenCoordsFlt(
             (ZOOM_IN_FACTOR1 * (TEST_SRCE_NML_COORDS - NORMALIZED_MID_PT)) + NORMALIZED_MID_PT);
     // TODO(glk) - Note truncation here. Is this an issue with 'tran' int32_t buffers?
-    const auto expectedZoomedInSrcePoint =
-        Point2dInt{static_cast<int32_t>(expectedZoomedInSrcePointFlt.x),
-                   static_cast<int32_t>(expectedZoomedInSrcePointFlt.y)};
+    const auto expectedZoomedInSrcePoint = expectedZoomedInSrcePointFlt.ToInt();
     const auto srcePoint = GetSourcePoint(filterBuffers, GetBuffPos(TEST_X, TEST_Y));
     UNSCOPED_INFO("expectedZoomedInSrcePoint.x = " << expectedZoomedInSrcePoint.x);
     UNSCOPED_INFO("expectedZoomedInSrcePoint.y = " << expectedZoomedInSrcePoint.y);

@@ -137,9 +137,7 @@ public:
       -> Point2dInt;
 
   // Use these consts for optimising multiplication, division, and mod, by DIM_FILTER_COEFFS.
-  static constexpr uint32_t MAX_TRAN_LERP_VALUE         = 0xFFFF;
   static constexpr uint32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
-  static constexpr uint32_t DIM_FILTER_COEFFS_MOD_MASK  = 0xF;
 
   [[nodiscard]] static auto TranCoordToCoeffIndex(uint32_t tranCoord) noexcept -> uint32_t;
   [[nodiscard]] static auto TranToScreenPoint(const Point2dInt& tranPoint) noexcept -> Point2dInt;
@@ -148,6 +146,13 @@ public:
 
 private:
   const NormalizedCoordsConverter& m_normalizedCoordsConverter;
+
+  // Use these consts for optimising multiplication, division, and mod, by DIM_FILTER_COEFFS.
+  static constexpr uint32_t MAX_TRAN_LERP_EXP          = 16U;
+  static constexpr uint32_t MAX_TRAN_LERP_VALUE        = UTILS::MATH::PowerOf2(MAX_TRAN_LERP_EXP);
+  static constexpr uint32_t DIM_FILTER_COEFFS_MOD_MASK = 0xF;
+  friend auto ZoomFilterBuffers::GetMaxTranLerpFactor() noexcept -> uint32_t;
+  friend class ZoomFilterBuffers::TransformBuffers;
 };
 
 class ZoomFilterBuffers::FilterCoefficients
@@ -206,12 +211,6 @@ private:
   [[nodiscard]] auto GetClampedYVal(int32_t y) const noexcept -> int32_t;
 };
 
-inline auto ZoomFilterBuffers::CoordTransforms::TranCoordToCoeffIndex(
-    const uint32_t tranCoord) noexcept -> uint32_t
-{
-  return tranCoord & DIM_FILTER_COEFFS_MOD_MASK;
-}
-
 inline auto ZoomFilterBuffers::CoordTransforms::TranToScreenPoint(
     const Point2dInt& tranPoint) noexcept -> Point2dInt
 {
@@ -236,6 +235,12 @@ inline ZoomFilterBuffers::CoordTransforms::CoordTransforms(
     const NormalizedCoordsConverter& normalizedCoordsConverter) noexcept
   : m_normalizedCoordsConverter{normalizedCoordsConverter}
 {
+}
+
+inline auto ZoomFilterBuffers::CoordTransforms::TranCoordToCoeffIndex(
+    const uint32_t tranCoord) noexcept -> uint32_t
+{
+  return tranCoord & DIM_FILTER_COEFFS_MOD_MASK;
 }
 
 inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
@@ -370,15 +375,8 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
                                                                     const uint32_t t) noexcept
     -> int32_t
 {
-  // IMPORTANT: Looking at this mathematically I can't see that the '>> DIM_FILTER_COEFFS'
-  //            should be there. Surely it should be '/ MAX_TRAN_LERP_VALUE' - but with this,
-  //            slight static artifacts appear in the centre of the image. I also tried
-  //            '/ (MAX_TRAN_LERP_VALUE - 1)'  which was better with the artifacts in
-  //            the centre but may have produced other artifacts.
-
-  return srceBuffVal +
-         ((static_cast<int32_t>(t) * (destBuffVal - srceBuffVal)) >> DIM_FILTER_COEFFS);
+  return srceBuffVal + ((static_cast<int32_t>(t) * (destBuffVal - srceBuffVal)) >>
+                        CoordTransforms::MAX_TRAN_LERP_EXP);
 }
 
 } // namespace GOOM::FILTER_FX
-

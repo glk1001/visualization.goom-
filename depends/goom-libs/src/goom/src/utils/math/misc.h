@@ -79,6 +79,17 @@ template<typename T>
   return Sq(x) + Sq(y);
 }
 
+template<typename T>
+[[nodiscard]] constexpr auto PowerOf2(const T n) -> T
+{
+  auto val = static_cast<T>(1);
+  for (auto i = static_cast<T>(1); i <= n; ++i)
+  {
+    val *= 2;
+  }
+  return val;
+}
+
 static constexpr auto SMALL_FLOAT = 0.00001F;
 
 [[nodiscard]] inline bool FloatsEqual(const float x,
