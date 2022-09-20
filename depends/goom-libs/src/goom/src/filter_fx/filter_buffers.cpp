@@ -2,23 +2,21 @@
 
 //#undef NO_LOGGING
 
+#include "filter_utils/zoom_coord_transforms.h"
 #include "goom_config.h"
-#include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "logging.h"
 #include "normalized_coords.h"
 #include "point2d.h"
 #include "utils/parallel_utils.h"
 
-#include <array>
 #include <cmath>
 #include <cstdint>
-#include <numeric>
-#include <vector>
 
 namespace GOOM::FILTER_FX
 {
 
+using FILTER_UTILS::ZoomCoordTransforms;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Parallel;
 
@@ -30,8 +28,6 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
     m_normalizedCoordsConverter{normalizedCoordsConverter},
     m_parallel{parallel},
     m_getZoomPoint{zoomPointFunc},
-    m_maxTranPoint{CoordTransforms::ScreenToTranPoint(
-        {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1})},
     m_firedec(m_dimensions.GetHeight())
 {
 }
@@ -48,17 +44,17 @@ auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const noexcept 
   auto isClipped       = false;
   const auto tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
 
-  const auto srceScreenPoint = CoordTransforms::TranToScreenPoint(tranPoint);
-  const auto [xIndex, yIndex] = CoordTransforms::TranCoordToCoeffIndexes(tranPoint);
+  const auto srceScreenPoint  = ZoomCoordTransforms::TranToScreenPoint(tranPoint);
+  const auto [xIndex, yIndex] = ZoomCoordTransforms::TranCoordToZoomCoeffIndexes(tranPoint);
 
   return SourcePointInfo{
-      srceScreenPoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex], isClipped};
+      srceScreenPoint, m_precalculatedCoeffs.GetCoeffs()[xIndex][yIndex], isClipped};
 }
 
 inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos,
                                                       bool& isClipped) const noexcept -> Point2dInt
 {
-  return m_transformBuffers->GetSrceDestLerpBufferPoint(buffPos, isClipped);
+  return m_transformBuffers.GetSrceDestLerpBufferPoint(buffPos, isClipped);
 }
 
 auto ZoomFilterBuffers::HaveFilterSettingsChanged() const noexcept -> bool
@@ -79,8 +75,8 @@ auto ZoomFilterBuffers::InitAllTranBuffers() noexcept -> void
 
   FillTempTranBuffers();
 
-  m_transformBuffers->SetSrceTranToIdentity();
-  m_transformBuffers->CopyTempTranToDestTran();
+  m_transformBuffers.SetSrceTranToIdentity();
+  m_transformBuffers.CopyTempTranToDestTran();
 
   m_tranBuffYLineStart = 0;
   m_tranBuffersState   = TranBuffersState::START_FRESH_TRAN_BUFFERS;
@@ -107,17 +103,17 @@ auto ZoomFilterBuffers::UpdateTranBuffers() noexcept -> void
 // generation du buffer de transform
 auto ZoomFilterBuffers::ResetTranBuffers() noexcept -> void
 {
-  m_transformBuffers->CopyDestTranToSrceTran();
-  m_transformBuffers->SetUpNextDestTran();
+  m_transformBuffers.CopyDestTranToSrceTran();
+  m_transformBuffers.SetUpNextDestTran();
 
-  m_transformBuffers->SetTranLerpFactor(0);
+  m_transformBuffers.SetTranLerpFactor(0);
   m_tranBuffYLineStart = 0;
   m_tranBuffersState   = TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
 auto ZoomFilterBuffers::StartFreshTranBuffers() noexcept -> void
 {
-  if (!m_filterSettingsHaveChanged)
+  if (not m_filterSettingsHaveChanged)
   {
     return;
   }
@@ -159,8 +155,8 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
       const auto normalizedZoomPoint = m_getZoomPoint(normalizedCentredPoint);
       const auto uncenteredZoomPoint = m_normalizedMidPt + normalizedZoomPoint;
 
-      m_transformBuffers->SetTempBuffersTransformPoint(tranPosStart + x,
-                                                       GetTranPoint(uncenteredZoomPoint));
+      m_transformBuffers.SetTempBuffersTransformPoint(tranPosStart + x,
+                                                      GetTranPoint(uncenteredZoomPoint));
 
       m_normalizedCoordsConverter.IncX(normalizedCentredPoint);
     }
@@ -184,7 +180,7 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
 inline auto ZoomFilterBuffers::GetTranPoint(const NormalizedCoords& normalized) const noexcept
     -> Point2dInt
 {
-  return m_coordTransforms->NormalizedToTranPoint(normalized);
+  return m_coordTransforms.NormalizedToTranPoint(normalized);
 
   /**
   int32_t tranX = NormalizedToTranPoint(xNormalised);
@@ -269,138 +265,6 @@ auto ZoomFilterBuffers::GenerateWaterFxHorizontalBuffer() noexcept -> void
     }
   }
   *************************/
-}
-
-ZoomFilterBuffers::TransformBuffers::TransformBuffers(const Dimensions& dimensions,
-                                                      const Point2dInt& maxTranPoint) noexcept
-  : m_dimensions{dimensions},
-    m_bufferSize{m_dimensions.GetSize()},
-    m_maxTranPointMinus1{maxTranPoint - Vec2dInt{1, 1}},
-    m_tranSrce(m_bufferSize),
-    m_tranDest(m_bufferSize),
-    m_tranTemp(m_bufferSize)
-{
-}
-
-auto ZoomFilterBuffers::TransformBuffers::SetSrceTranToIdentity() noexcept -> void
-{
-  auto buffPos = 0U;
-  for (auto y = 0; y < m_dimensions.GetIntHeight(); ++y)
-  {
-    for (auto x = 0; x < m_dimensions.GetIntWidth(); ++x)
-    {
-      m_tranSrce[buffPos] = CoordTransforms::ScreenToTranPoint({x, y});
-      ++buffPos;
-    }
-  }
-}
-
-inline auto ZoomFilterBuffers::TransformBuffers::CopyTempTranToDestTran() noexcept -> void
-{
-  std::copy(cbegin(m_tranTemp), cend(m_tranTemp), begin(m_tranDest));
-}
-
-auto ZoomFilterBuffers::TransformBuffers::CopyDestTranToSrceTran() noexcept -> void
-{
-  // sauvegarde de l'etat actuel dans la nouvelle source
-  // Save the current state in the source buff.
-  if (0 == GetTranLerpFactor())
-  {
-    // Nothing to do: tran srce == tran dest.
-  }
-  else if (GetTranLerpFactor() == CoordTransforms::MAX_TRAN_LERP_VALUE)
-  {
-    std::copy(cbegin(m_tranDest), cend(m_tranDest), begin(m_tranSrce));
-  }
-  else
-  {
-    // Lerp and copy the dest buff to the source buff.
-    for (auto buffPos = 0U; buffPos < m_bufferSize; ++buffPos)
-    {
-      m_tranSrce[buffPos] = GetSrceDestLerpBufferPoint(buffPos);
-    }
-  }
-}
-
-inline auto ZoomFilterBuffers::TransformBuffers::SetUpNextDestTran() noexcept -> void
-{
-  std::swap(m_tranDest, m_tranTemp);
-}
-
-inline auto ZoomFilterBuffers::TransformBuffers::SetTempBuffersTransformPoint(
-    const uint32_t buffPos, const Point2dInt& transformPoint) noexcept -> void
-{
-  m_tranTemp[buffPos] = transformPoint;
-}
-
-inline auto ZoomFilterBuffers::FilterCoefficients::GetCoeffs() const noexcept
-    -> const FilterCoeff2dArray&
-{
-  return m_precalculatedCoeffs;
-}
-
-auto ZoomFilterBuffers::FilterCoefficients::GetPrecalculatedCoefficients() noexcept
-    -> FilterCoeff2dArray
-{
-  auto precalculatedCoeffs = FilterCoeff2dArray{};
-
-  for (auto coeffH = 0U; coeffH < DIM_FILTER_COEFFS; ++coeffH)
-  {
-    for (auto coeffV = 0U; coeffV < DIM_FILTER_COEFFS; ++coeffV)
-    {
-      precalculatedCoeffs[coeffH][coeffV] = GetNeighborhoodCoeffArray(coeffH, coeffV);
-    }
-  }
-
-  return precalculatedCoeffs;
-}
-
-auto ZoomFilterBuffers::FilterCoefficients::GetNeighborhoodCoeffArray(
-    const uint32_t coeffH, const uint32_t coeffV) noexcept -> NeighborhoodCoeffArray
-{
-  const auto diffCoeffH = DIM_FILTER_COEFFS - coeffH;
-  const auto diffCoeffV = DIM_FILTER_COEFFS - coeffV;
-
-  // clang-format off
-  auto coeffs = std::array<uint32_t, NUM_NEIGHBOR_COEFFS>{
-      diffCoeffH * diffCoeffV,
-      coeffH * diffCoeffV,
-      diffCoeffH * coeffV,
-      coeffH * coeffV
-  };
-  // clang-format on
-
-  // We want to decrement just one coefficient so that the sum of
-  // coefficients equals 255. We'll choose the max coefficient.
-  const auto maxCoeff = *std::max_element(cbegin(coeffs), cend(coeffs));
-  auto allZero        = false;
-  if (0 == maxCoeff)
-  {
-    allZero = true;
-  }
-  else
-  {
-    for (auto& coeff : coeffs)
-    {
-      if (maxCoeff == coeff)
-      {
-        --coeff;
-        break;
-      }
-    }
-  }
-
-  LogInfo("{:2}, {:2}:  {:3}, {:3}, {:3}, {:3} - sum: {:3}",
-          coeffH,
-          coeffV,
-          coeffs[0],
-          coeffs[1],
-          coeffs[2],
-          coeffs[3],
-          std::accumulate(cbegin(coeffs), cend(coeffs), 0U)); // NOLINT
-  Ensures(channel_limits<uint32_t>::max() == std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
-
-  return {coeffs, allZero};
 }
 
 } // namespace GOOM::FILTER_FX

@@ -1,6 +1,7 @@
 #include "catch2/catch.hpp"
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_colors_service.h"
+#include "filter_fx/filter_utils/zoom_filter_coefficients.h"
 #include "goom_graphic.h"
 
 #include <array>
@@ -11,6 +12,7 @@ namespace GOOM::UNIT_TESTS
 
 using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterBuffers;
+using FILTER_FX::FILTER_UTILS::ZoomFilterCoefficients;
 
 static constexpr size_t WIDTH  = 120;
 static constexpr size_t HEIGHT = 70;
@@ -45,7 +47,7 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
 
   static constexpr auto MAX_SUM_COEFF = channel_limits<uint32_t>::max() + 1U;
 
-  const auto coeffs = ZoomFilterBuffers::NeighborhoodCoeffArray{
+  const auto coeffs = ZoomFilterCoefficients::NeighborhoodCoeffArray{
       {50, 60, 70, 76},
       false
   };

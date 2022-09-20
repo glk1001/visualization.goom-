@@ -27,6 +27,7 @@ using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::ZoomFilterEffectsSettings;
+using FILTER_FX::FILTER_UTILS::ZoomCoordTransforms;
 using UTILS::Parallel;
 using UTILS::MATH::GoomRand;
 
@@ -97,8 +98,7 @@ auto TestZoomVector::GetZoomInPoint(const NormalizedCoords& coords) const noexce
   return (1.0F - m_zoomInCoeff) * coords;
 }
 
-using CoordTransforms = ZoomFilterBuffers::CoordTransforms;
-const CoordTransforms COORD_TRANSFORMS{NORMALIZED_COORDS_CONVERTER};
+const ZoomCoordTransforms COORD_TRANSFORMS{NORMALIZED_COORDS_CONVERTER};
 
 auto GetSourcePoint(const ZoomFilterBuffers& filterBuffers, const size_t buffPos) -> Point2dInt
 {
@@ -289,7 +289,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
     UNSCOPED_INFO("expectedTranPoint.x = " << expectedTranPoint.x);
     UNSCOPED_INFO("expectedTranPoint.y = " << expectedTranPoint.y);
 
-    const auto expectedSrcePoint = CoordTransforms::TranToScreenPoint(expectedTranPoint);
+    const auto expectedSrcePoint = ZoomCoordTransforms::TranToScreenPoint(expectedTranPoint);
     UNSCOPED_INFO("expectedSrcePoint.x = " << expectedSrcePoint.x);
     UNSCOPED_INFO("expectedSrcePoint.y = " << expectedSrcePoint.y);
 
@@ -340,7 +340,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
         UNSCOPED_INFO("expectedTranPoint.x = " << expectedTranPoint.x);
         UNSCOPED_INFO("expectedTranPoint.y = " << expectedTranPoint.y);
 
-        const auto expectedScreenPoint = CoordTransforms::TranToScreenPoint(expectedTranPoint);
+        const auto expectedScreenPoint = ZoomCoordTransforms::TranToScreenPoint(expectedTranPoint);
         UNSCOPED_INFO("expectedScreenPoint.x = " << expectedScreenPoint.x);
         UNSCOPED_INFO("expectedScreenPoint.y = " << expectedScreenPoint.y);
 
@@ -425,7 +425,7 @@ TEST_CASE("ZoomFilterBuffers Stripes")
     const auto expectedSrceTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(
         normalizedMidPt +
         NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1));
-    const auto expectedSrcePoint = CoordTransforms::TranToScreenPoint(expectedSrceTranPoint);
+    const auto expectedSrcePoint = ZoomCoordTransforms::TranToScreenPoint(expectedSrceTranPoint);
     UNSCOPED_INFO("expectedSrceTranPoint.x = " << expectedSrceTranPoint.x);
     UNSCOPED_INFO("expectedSrceTranPoint.y = " << expectedSrceTranPoint.y);
     UNSCOPED_INFO("expectedSrcePoint.x = " << expectedSrcePoint.x);
@@ -445,7 +445,7 @@ TEST_CASE("ZoomFilterBuffers Stripes")
     REQUIRE(filterBuffers.GetMaxTranLerpFactor() == filterBuffers.GetTranLerpFactor());
     const auto expectedDestTranPoint =
         COORD_TRANSFORMS.NormalizedToTranPoint(normalizedMidPt + NML_CONST_ZOOM_VECTOR_COORDS2);
-    const auto expectedDestPoint = CoordTransforms::TranToScreenPoint(expectedDestTranPoint);
+    const auto expectedDestPoint = ZoomCoordTransforms::TranToScreenPoint(expectedDestTranPoint);
     UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
     UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());
     UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_2.x = " << NML_CONST_ZOOM_VECTOR_COORDS2.GetX());

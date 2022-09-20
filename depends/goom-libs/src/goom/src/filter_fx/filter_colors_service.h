@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filter_buffers.h"
+#include "filter_utils/zoom_filter_coefficients.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "utils/name_value_pairs.h"
@@ -21,8 +22,8 @@ public:
   auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
   auto SetBlockyWavy(bool val) noexcept -> void;
 
-  using NeighborhoodCoeffArray = ZoomFilterBuffers::NeighborhoodCoeffArray;
-  using NeighborhoodPixelArray = ZoomFilterBuffers::NeighborhoodPixelArray;
+  using NeighborhoodCoeffArray = FILTER_UTILS::ZoomFilterCoefficients::NeighborhoodCoeffArray;
+  using NeighborhoodPixelArray = FILTER_UTILS::ZoomFilterCoefficients::NeighborhoodPixelArray;
 
   [[nodiscard]] auto GetNewColor(
       const ZoomFilterBuffers::SourcePointInfo& sourcePointInfo,
@@ -99,9 +100,9 @@ inline auto FilterColorsService::GetBlockyMixedColor(
   // Changing the color order gives a strange blocky, wavy look.
   // The order col4, col3, col2, col1 gave a black tear - not so good.
 
-  Expects(ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS == coeffs.val.size());
+  Expects(FILTER_UTILS::ZoomFilterCoefficients::NUM_NEIGHBOR_COEFFS == coeffs.val.size());
   static constexpr auto ALLOWED_NUM_NEIGHBORS = 4U;
-  static_assert(ALLOWED_NUM_NEIGHBORS == ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS);
+  static_assert(ALLOWED_NUM_NEIGHBORS == FILTER_UTILS::ZoomFilterCoefficients::NUM_NEIGHBOR_COEFFS);
 
   const auto reorderedColors = NeighborhoodPixelArray{colors[0], colors[2], colors[1], colors[3]};
   return GetMixedColor(coeffs, reorderedColors);
@@ -119,7 +120,7 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
   auto multR = 0U;
   auto multG = 0U;
   auto multB = 0U;
-  for (auto i = 0U; i < ZoomFilterBuffers::NUM_NEIGHBOR_COEFFS; ++i)
+  for (auto i = 0U; i < FILTER_UTILS::ZoomFilterCoefficients::NUM_NEIGHBOR_COEFFS; ++i)
   {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
     const auto coeff = coeffs.val[i];
