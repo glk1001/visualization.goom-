@@ -375,8 +375,16 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
                                                                     const uint32_t t) noexcept
     -> int32_t
 {
-  return srceBuffVal + ((static_cast<int32_t>(t) * (destBuffVal - srceBuffVal)) >>
-                        CoordTransforms::MAX_TRAN_LERP_EXP);
+  const auto diff = destBuffVal - srceBuffVal;
+  const auto numerator = (srceBuffVal << CoordTransforms::MAX_TRAN_LERP_EXP) +
+                            (static_cast<int32_t>(t) * diff);
+  const auto result = numerator >> CoordTransforms::MAX_TRAN_LERP_EXP;
+  if (const auto mod = numerator & static_cast<int32_t>(CoordTransforms::MAX_TRAN_LERP_VALUE - 1U);
+      mod >= static_cast<int32_t>(CoordTransforms::MAX_TRAN_LERP_VALUE / 2))
+  {
+    return static_cast<int32_t>(result) + 1;
+  }
+  return static_cast<int32_t>(result);
 }
 
 } // namespace GOOM::FILTER_FX
