@@ -34,10 +34,6 @@ ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,
         {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1})},
     m_firedec(m_dimensions.GetHeight())
 {
-  static constexpr auto SQR = 2;
-  UNUSED_FOR_NDEBUG(SQR);
-  Expects(DIM_FILTER_COEFFS == static_cast<int32_t>(std::lround(
-                                   std::pow(SQR, CoordTransforms::DIM_FILTER_COEFFS_DIV_SHIFT))));
 }
 
 ZoomFilterBuffers::~ZoomFilterBuffers() noexcept = default;
@@ -53,8 +49,7 @@ auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const noexcept 
   const auto tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
 
   const auto srceScreenPoint = CoordTransforms::TranToScreenPoint(tranPoint);
-  const auto xIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.x));
-  const auto yIndex = CoordTransforms::TranCoordToCoeffIndex(static_cast<uint32_t>(tranPoint.y));
+  const auto [xIndex, yIndex] = CoordTransforms::TranCoordToCoeffIndexes(tranPoint);
 
   return SourcePointInfo{
       srceScreenPoint, m_precalculatedCoeffs->GetCoeffs()[xIndex][yIndex], isClipped};

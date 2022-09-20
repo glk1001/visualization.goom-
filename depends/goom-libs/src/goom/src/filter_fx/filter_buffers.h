@@ -24,7 +24,7 @@ namespace UTILS
 class Parallel;
 }
 
-}
+} // namespace GOOM
 
 namespace GOOM::FILTER_FX
 {
@@ -32,7 +32,8 @@ namespace GOOM::FILTER_FX
 class ZoomFilterBuffers
 {
 public:
-  static constexpr int32_t DIM_FILTER_COEFFS      = 16;
+  static constexpr uint32_t DIM_FILTER_COEFFS_EXP = 4U;
+  static constexpr uint32_t DIM_FILTER_COEFFS     = UTILS::MATH::PowerOf2(DIM_FILTER_COEFFS_EXP);
   static constexpr uint32_t NUM_NEIGHBOR_COEFFS   = 4U;
   using NeighborhoodPixelArray                    = std::array<Pixel, NUM_NEIGHBOR_COEFFS>;
   static constexpr float MIN_SCREEN_COORD_ABS_VAL = 1.0F / static_cast<float>(DIM_FILTER_COEFFS);
@@ -136,10 +137,8 @@ public:
   [[nodiscard]] auto NormalizedToTranPoint(const NormalizedCoords& normalizedPoint) const noexcept
       -> Point2dInt;
 
-  // Use these consts for optimising multiplication, division, and mod, by DIM_FILTER_COEFFS.
-  static constexpr uint32_t DIM_FILTER_COEFFS_DIV_SHIFT = 4;
-
-  [[nodiscard]] static auto TranCoordToCoeffIndex(uint32_t tranCoord) noexcept -> uint32_t;
+  [[nodiscard]] static auto TranCoordToCoeffIndexes(const Point2dInt& tranPoint) noexcept
+      -> std::pair<uint32_t, uint32_t>;
   [[nodiscard]] static auto TranToScreenPoint(const Point2dInt& tranPoint) noexcept -> Point2dInt;
   [[nodiscard]] static auto ScreenToTranPoint(const Point2dInt& screenPoint) noexcept -> Point2dInt;
   [[nodiscard]] static auto ScreenToTranCoord(float screenCoord) noexcept -> uint32_t;
@@ -158,8 +157,6 @@ private:
 class ZoomFilterBuffers::FilterCoefficients
 {
 public:
-  FilterCoefficients() = default;
-
   using FilterCoeff2dArray =
       std::array<std::array<NeighborhoodCoeffArray, DIM_FILTER_COEFFS>, DIM_FILTER_COEFFS>;
   [[nodiscard]] auto GetCoeffs() const noexcept -> const FilterCoeff2dArray&;
@@ -214,14 +211,13 @@ private:
 inline auto ZoomFilterBuffers::CoordTransforms::TranToScreenPoint(
     const Point2dInt& tranPoint) noexcept -> Point2dInt
 {
-  return {tranPoint.x >> DIM_FILTER_COEFFS_DIV_SHIFT, tranPoint.y >> DIM_FILTER_COEFFS_DIV_SHIFT};
+  return {tranPoint.x >> DIM_FILTER_COEFFS_EXP, tranPoint.y >> DIM_FILTER_COEFFS_EXP};
 }
 
 inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranPoint(
     const Point2dInt& screenPoint) noexcept -> Point2dInt
 {
-  return {screenPoint.x << DIM_FILTER_COEFFS_DIV_SHIFT,
-          screenPoint.y << DIM_FILTER_COEFFS_DIV_SHIFT};
+  return {screenPoint.x << DIM_FILTER_COEFFS_EXP, screenPoint.y << DIM_FILTER_COEFFS_EXP};
 }
 
 inline auto ZoomFilterBuffers::CoordTransforms::ScreenToTranCoord(const float screenCoord) noexcept
@@ -237,10 +233,11 @@ inline ZoomFilterBuffers::CoordTransforms::CoordTransforms(
 {
 }
 
-inline auto ZoomFilterBuffers::CoordTransforms::TranCoordToCoeffIndex(
-    const uint32_t tranCoord) noexcept -> uint32_t
+inline auto ZoomFilterBuffers::CoordTransforms::TranCoordToCoeffIndexes(
+    const Point2dInt& tranPoint) noexcept -> std::pair<uint32_t, uint32_t>
 {
-  return tranCoord & DIM_FILTER_COEFFS_MOD_MASK;
+  return {static_cast<uint32_t>(tranPoint.x) & DIM_FILTER_COEFFS_MOD_MASK,
+          static_cast<uint32_t>(tranPoint.y) & DIM_FILTER_COEFFS_MOD_MASK};
 }
 
 inline auto ZoomFilterBuffers::CoordTransforms::NormalizedToTranPoint(
@@ -380,9 +377,9 @@ inline auto ZoomFilterBuffers::TransformBuffers::GetTranBuffLerpVal(const int32_
   if (const auto mod = numerator & static_cast<int32_t>(CoordTransforms::MAX_TRAN_LERP_VALUE - 1U);
       mod >= static_cast<int32_t>(CoordTransforms::MAX_TRAN_LERP_VALUE / 2))
   {
-    return static_cast<int32_t>(result) + 1;
+    return result + 1;
   }
-  return static_cast<int32_t>(result);
+  return result;
 }
 
 } // namespace GOOM::FILTER_FX
