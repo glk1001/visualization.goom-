@@ -2,7 +2,7 @@
 
 //#undef NO_LOGGING
 
-#include "goom/logging.h"
+#include "logging.h"
 #include "goom_config.h"
 
 namespace GOOM::UTILS

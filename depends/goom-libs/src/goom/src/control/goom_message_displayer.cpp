@@ -4,7 +4,7 @@
 
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
-#include "goom/logging.h"
+#include "logging.h"
 #include "goom_graphic.h"
 #include "point2d.h"
 

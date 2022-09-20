@@ -5,7 +5,7 @@
 #undef NO_LOGGING
 
 #include "filter_fx/filter_settings_service.h"
-#include "goom/logging.h"
+#include "logging.h"
 #include "goom_all_visual_fx.h"
 #include "goom_graphic.h"
 #include "goom_music_settings_reactor.h"

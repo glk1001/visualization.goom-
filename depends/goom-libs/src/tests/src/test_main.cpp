@@ -4,7 +4,7 @@
 #undef NO_LOGGING
 
 #include "catch2/catch.hpp"
-#include "goom/logging.h"
+#include "logging.h"
 
 #include <iostream>
 #include <ostream>

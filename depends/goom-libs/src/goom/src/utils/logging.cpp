@@ -1,6 +1,6 @@
 // NOLINTBEGIN: Tricky logging code - need to improve
 
-#include "goom/logging.h"
+#include "logging.h"
 
 #include "date_utils.h"
 

@@ -4,7 +4,7 @@
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
-#include "goom/logging.h"
+#include "logging.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"

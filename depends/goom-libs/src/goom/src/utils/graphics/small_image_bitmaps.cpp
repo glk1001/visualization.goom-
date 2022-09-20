@@ -2,8 +2,8 @@
 
 //#undef NO_LOGGING
 
-#include "goom/goom_config.h"
-#include "goom/logging.h"
+#include "goom_config.h"
+#include "logging.h"
 #include "utils/enum_utils.h"
 #include "utils/math/misc.h"
 

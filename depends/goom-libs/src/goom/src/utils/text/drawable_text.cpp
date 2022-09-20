@@ -3,7 +3,7 @@
 //#undef NO_LOGGING
 
 #include "draw/text_draw.h"
-#include "goom/logging.h"
+#include "logging.h"
 #include "point2d.h"
 #include "utils/strutils.h"
 

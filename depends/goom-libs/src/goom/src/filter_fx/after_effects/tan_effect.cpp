@@ -2,7 +2,7 @@
 
 // #undef NO_LOGGING
 
-#include "goom/logging.h"
+#include "logging.h"
 #include "utils/enum_utils.h"
 #include "utils/name_value_pairs.h"
 
