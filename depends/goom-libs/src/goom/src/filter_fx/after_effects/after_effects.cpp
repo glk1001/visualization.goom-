@@ -3,7 +3,7 @@
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
-using GOOM::UTILS::MATH::IGoomRand;
+using UTILS::MATH::IGoomRand;
 
 AfterEffects::AfterEffects(std::unique_ptr<Hypercos>&& hypercos,
                            std::unique_ptr<ImageVelocity>&& imageVelocity,

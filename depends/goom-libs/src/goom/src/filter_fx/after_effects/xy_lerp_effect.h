@@ -15,7 +15,7 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 class XYLerpEffect
 {
 public:
-  explicit XYLerpEffect(const GOOM::UTILS::MATH::IGoomRand& goomRand);
+  explicit XYLerpEffect(const UTILS::MATH::IGoomRand& goomRand);
   XYLerpEffect(const XYLerpEffect&) noexcept           = delete;
   XYLerpEffect(XYLerpEffect&&) noexcept                = delete;
   virtual ~XYLerpEffect() noexcept                     = default;
@@ -28,7 +28,7 @@ public:
       -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> GOOM::UTILS::NameValuePairs;
+      -> UTILS::NameValuePairs;
 
   enum class Modes
   {
@@ -52,8 +52,8 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
-  const GOOM::UTILS::MATH::Weights<Modes> m_modeWeights;
+  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::Weights<Modes> m_modeWeights;
   Params m_params;
   [[nodiscard]] auto GetT(float sqDistFromZero, const NormalizedCoords& velocity) const -> float;
   [[nodiscard]] static auto GetFlipYProbability(Modes mode) -> float;
@@ -100,7 +100,7 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoord
                       m_goomRand.GetRandInRange(MODE3_MIN_FACTOR, MODE3_MAX_FACTOR));
     case Modes::MODE4:
       return -(2.0F / STD20::pi) *
-             std::atan(std::tan(GOOM::UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));
+             std::atan(std::tan(UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));
     case Modes::MODE5:
       return std::abs(std::atan2(velocity.GetY(), velocity.GetX()) / STD20::pi);
     default:

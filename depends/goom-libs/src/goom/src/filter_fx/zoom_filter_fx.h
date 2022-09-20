@@ -31,7 +31,7 @@ class ZoomFilterFx
 {
 public:
   ZoomFilterFx() noexcept = delete;
-  ZoomFilterFx(GOOM::UTILS::Parallel& parallel,
+  ZoomFilterFx(UTILS::Parallel& parallel,
                const PluginInfo& goomInfo,
                std::unique_ptr<FilterBuffersService> filterBuffersService,
                std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
@@ -55,7 +55,7 @@ public:
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const noexcept -> const FilterBufferColorInfo&;
   [[nodiscard]] auto GetLastFilterBufferColorInfo() noexcept -> FilterBufferColorInfo&;
 
-  [[nodiscard]] auto GetNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
   class ZoomFilterImpl;

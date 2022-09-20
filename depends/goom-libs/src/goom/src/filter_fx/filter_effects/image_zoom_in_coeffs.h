@@ -1,7 +1,7 @@
 #pragma once
 
+#include "filter_fx/filter_utils/image_displacement_list.h"
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/utils/image_displacement_list.h"
 #include "filter_fx/zoom_in_coefficients_effect.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
@@ -30,7 +30,7 @@ public:
 
 private:
   const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
-  UTILS::ImageDisplacementList m_imageDisplacementList;
+  FILTER_UTILS::ImageDisplacementList m_imageDisplacementList;
   auto DoSetRandomParams() -> void;
 };
 

@@ -39,7 +39,7 @@ private:
 class Rotation
 {
 public:
-  explicit Rotation(const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Rotation(const UTILS::MATH::IGoomRand& goomRand) noexcept;
   Rotation(const Rotation&) noexcept           = delete;
   Rotation(Rotation&&) noexcept                = delete;
   virtual ~Rotation() noexcept                 = default;
@@ -52,7 +52,7 @@ public:
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> GOOM::UTILS::NameValuePairs;
+      -> UTILS::NameValuePairs;
 
   struct Params
   {
@@ -67,7 +67,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
 
   auto Multiply(float factor) -> void;

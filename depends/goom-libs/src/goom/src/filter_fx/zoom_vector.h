@@ -26,7 +26,7 @@ public:
   virtual auto GetZoomInPoint(const NormalizedCoords& coords) const -> NormalizedCoords = 0;
 
   [[nodiscard]] virtual auto GetNameValueParams(const std::string& paramGroup) const
-      -> GOOM::UTILS::NameValuePairs = 0;
+      -> UTILS::NameValuePairs = 0;
 };
 
 } // namespace GOOM::FILTER_FX

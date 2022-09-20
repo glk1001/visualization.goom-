@@ -26,16 +26,16 @@ public:
   [[nodiscard]] static constexpr auto GetBaseZoomInCoeff(float baseZoomInCoeffFactor,
                                                          float relativeSpeed) -> float;
 
-  using GetAfterEffectsFunc = std::function<auto(const GOOM::UTILS::MATH::IGoomRand& goomRand,
+  using GetAfterEffectsFunc = std::function<auto(const UTILS::MATH::IGoomRand& goomRand,
                                                  const std::string& resourcesDirectory)
                                                 ->AFTER_EFFECTS::AfterEffects>;
-  [[nodiscard]] static auto GetStandardAfterEffects(const GOOM::UTILS::MATH::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetStandardAfterEffects(const UTILS::MATH::IGoomRand& goomRand,
                                                     const std::string& resourcesDirectory)
       -> AFTER_EFFECTS::AfterEffects;
 
   ZoomVectorEffects(uint32_t screenWidth,
                     const std::string& resourcesDirectory,
-                    const GOOM::UTILS::MATH::IGoomRand& goomRand,
+                    const UTILS::MATH::IGoomRand& goomRand,
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const GetAfterEffectsFunc& getAfterEffects) noexcept;
 
@@ -50,7 +50,7 @@ public:
                                              const NormalizedCoords& zoomInVelocity) const
       -> NormalizedCoords;
 
-  [[nodiscard]] auto GetZoomEffectsNameValueParams() const -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetZoomEffectsNameValueParams() const -> UTILS::NameValuePairs;
 
 private:
   const NormalizedCoordsConverter& m_normalizedCoordsConverter;
@@ -64,7 +64,7 @@ private:
   [[nodiscard]] auto GetClampedZoomInCoeff(float zoomCoeff) const -> float;
   [[nodiscard]] static auto GetMinCoordVal(float coordVal, float minNormalizedCoordVal) -> float;
 
-  [[nodiscard]] auto GetZoomInCoeffsNameValueParams() const -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetZoomInCoeffsNameValueParams() const -> UTILS::NameValuePairs;
 };
 
 inline auto ZoomVectorEffects::GetZoomInCoefficients(const NormalizedCoords& coords,

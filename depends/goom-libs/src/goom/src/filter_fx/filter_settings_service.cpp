@@ -20,13 +20,13 @@ using AFTER_EFFECTS::AfterEffectsTypes;
 using AFTER_EFFECTS::HypercosOverlay;
 using AFTER_EFFECTS::RotationAdjustments;
 using FILTER_EFFECTS::ZoomVectorEffects;
-using GOOM::UTILS::EnumMap;
-using GOOM::UTILS::NUM;
-using GOOM::UTILS::MATH::IGoomRand;
-using GOOM::UTILS::MATH::U_HALF;
-using GOOM::UTILS::MATH::U_QUARTER;
-using GOOM::UTILS::MATH::U_THREE_QUARTERS;
-using GOOM::UTILS::MATH::Weights;
+using UTILS::EnumMap;
+using UTILS::NUM;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::U_HALF;
+using UTILS::MATH::U_QUARTER;
+using UTILS::MATH::U_THREE_QUARTERS;
+using UTILS::MATH::Weights;
 
 
 // For debugging:

@@ -56,7 +56,7 @@ private:
   std::experimental::propagate_const<std::unique_ptr<XYLerpEffect>> m_xyLerpEffect;
 };
 
-[[nodiscard]] auto GetStandardAfterEffects(const GOOM::UTILS::MATH::IGoomRand& goomRand,
+[[nodiscard]] auto GetStandardAfterEffects(const UTILS::MATH::IGoomRand& goomRand,
                                            const std::string& resourcesDirectory) -> AfterEffects;
 
 inline auto AfterEffects::GetHypercos() const noexcept -> const Hypercos&

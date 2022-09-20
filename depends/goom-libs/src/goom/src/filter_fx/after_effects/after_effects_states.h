@@ -29,9 +29,9 @@ enum class HypercosOverlay
 class AfterEffectsStates
 {
 public:
-  using AfterEffectsActiveMap      = GOOM::UTILS::EnumMap<AfterEffectsTypes, bool>;
-  using AfterEffectsOffTimeMap     = GOOM::UTILS::EnumMap<AfterEffectsTypes, uint32_t>;
-  using AfterEffectsProbabilityMap = GOOM::UTILS::EnumMap<AfterEffectsTypes, float>;
+  using AfterEffectsActiveMap      = UTILS::EnumMap<AfterEffectsTypes, bool>;
+  using AfterEffectsOffTimeMap     = UTILS::EnumMap<AfterEffectsTypes, uint32_t>;
+  using AfterEffectsProbabilityMap = UTILS::EnumMap<AfterEffectsTypes, float>;
 
   struct AfterEffectsSettings
   {
@@ -42,11 +42,11 @@ public:
   };
   struct AfterEffectsProbabilities
   {
-    GOOM::UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
+    UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
     AfterEffectsProbabilityMap probabilities;
   };
 
-  AfterEffectsStates(const GOOM::UTILS::MATH::IGoomRand& goomRand,
+  AfterEffectsStates(const UTILS::MATH::IGoomRand& goomRand,
                      const AfterEffectsProbabilityMap& repeatProbabilities,
                      const AfterEffectsOffTimeMap& offTimes) noexcept;
   AfterEffectsStates(const AfterEffectsStates&) noexcept = delete;

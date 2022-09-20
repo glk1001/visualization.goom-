@@ -12,10 +12,10 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using AFTER_EFFECTS::AfterEffects;
-using GOOM::UTILS::GetFullParamGroup;
-using GOOM::UTILS::GetPair;
-using GOOM::UTILS::NameValuePairs;
-using GOOM::UTILS::MATH::IGoomRand;
+using UTILS::GetFullParamGroup;
+using UTILS::GetPair;
+using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
 
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const std::string& resourcesDirectory,
@@ -63,17 +63,17 @@ inline auto ZoomVectorEffects::GetMinCoordVal(const float coordVal,
   return coordVal;
 }
 
-auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> GOOM::UTILS::NameValuePairs
+auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> UTILS::NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "ZoomEffects";
 
-  auto nameValuePairs = GOOM::UTILS::NameValuePairs{
+  auto nameValuePairs = UTILS::NameValuePairs{
       GetPair(PARAM_GROUP, "coeffFactor", m_baseZoomInCoeffFactor),
   };
 
-  GOOM::UTILS::MoveNameValuePairs(GetZoomInCoeffsNameValueParams(), nameValuePairs);
-  GOOM::UTILS::MoveNameValuePairs(m_zoomVectorAfterEffects.GetZoomEffectsNameValueParams(),
-                                  nameValuePairs);
+  UTILS::MoveNameValuePairs(GetZoomInCoeffsNameValueParams(), nameValuePairs);
+  UTILS::MoveNameValuePairs(m_zoomVectorAfterEffects.GetZoomEffectsNameValueParams(),
+                            nameValuePairs);
 
   return nameValuePairs;
 }

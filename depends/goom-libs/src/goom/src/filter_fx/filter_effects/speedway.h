@@ -19,7 +19,7 @@ public:
     MODE1,
     MODE2,
   };
-  Speedway(Modes mode, const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
+  Speedway(Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void override;
 
@@ -29,7 +29,7 @@ public:
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
-      -> GOOM::UTILS::NameValuePairs override;
+      -> UTILS::NameValuePairs override;
 
   struct Params
   {
@@ -43,7 +43,7 @@ protected:
 
 private:
   const Modes m_mode;
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   auto SetMode0RandomParams() -> void;
   auto SetMode1RandomParams() -> void;
@@ -126,7 +126,7 @@ inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
 
   const auto xDiff = coords.GetX() - xAdd;
   const auto sign  = xDiff < 0.0F ? -1.0F : +1.0F;
-  const auto xWarp = X_WARP_MULTIPLIER * (xAdd + ((sign * GOOM::UTILS::MATH::Sq(xDiff)) / xAdd));
+  const auto xWarp     = X_WARP_MULTIPLIER * (xAdd + ((sign * UTILS::MATH::Sq(xDiff)) / xAdd));
   const auto amplitude = AMPLITUDE_MULTIPLIER * (1.0F - sqDistFromZero);
 
   const auto xZoomInCoeff = amplitude * baseZoomInCoeffs.x * (m_params.xAmplitude * xWarp);

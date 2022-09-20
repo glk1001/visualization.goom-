@@ -52,12 +52,12 @@ public:
   using CreateZoomInCoefficientsEffectFunc =
       std::function<std::shared_ptr<IZoomInCoefficientsEffect>(
           ZoomFilterMode filterMode,
-          const GOOM::UTILS::MATH::IGoomRand& goomRand,
+          const UTILS::MATH::IGoomRand& goomRand,
           const std::string& resourcesDirectory)>;
   // TODO(glk) - Visual Studio doesn't like a trailing return type in above function definition.
 
   FilterSettingsService(const GOOM::PluginInfo& goomInfo,
-                        const GOOM::UTILS::MATH::IGoomRand& goomRand,
+                        const UTILS::MATH::IGoomRand& goomRand,
                         const std::string& resourcesDirectory,
                         const CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect);
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
@@ -99,7 +99,7 @@ protected:
   void SetFilterMode(ZoomFilterMode filterMode);
   [[nodiscard]] auto GetFilterSettings() -> ZoomFilterSettings&;
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
-  [[nodiscard]] auto GetGoomRand() const -> const GOOM::UTILS::MATH::IGoomRand&;
+  [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
   virtual auto SetDefaultSettings() -> void;
   virtual auto SetRandomZoomMidpoint() -> void;
   virtual auto SetFilterModeExtraEffects() -> void;
@@ -109,7 +109,7 @@ protected:
 
 private:
   const PluginInfo& m_goomInfo;
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint;
   const std::string m_resourcesDirectory;
   std::experimental::propagate_const<std::unique_ptr<AFTER_EFFECTS::AfterEffectsStates>>
@@ -126,10 +126,10 @@ private:
     std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect{};
     AFTER_EFFECTS::AfterEffectsStates::AfterEffectsProbabilities afterEffectsProbabilities;
   };
-  using FilterModeEnumMap = GOOM::UTILS::RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
+  using FilterModeEnumMap = UTILS::RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
   FilterModeEnumMap m_filterModeData;
   [[nodiscard]] static auto GetFilterModeData(
-      const GOOM::UTILS::MATH::IGoomRand& goomRand,
+      const UTILS::MATH::IGoomRand& goomRand,
       const std::string& resourcesDirectory,
       const CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect)
       -> FilterModeEnumMap;
@@ -142,7 +142,7 @@ private:
   static constexpr float DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
   static constexpr float MAX_MAX_ZOOM_IN_COEFF                        = 4.01F;
   ZoomFilterSettings m_filterSettings;
-  const GOOM::UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
+  const UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetZoomInCoefficientsEffect() -> std::shared_ptr<IZoomInCoefficientsEffect>&;
   auto SetMaxZoomInCoeff() -> void;
@@ -158,7 +158,7 @@ private:
     BOTTOM_RIGHT_QUARTER_MID_POINT,
     _num // unused, and marks the enum end
   };
-  const GOOM::UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
+  const UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
   [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
   auto SetAnyRandomZoomMidpoint(bool allowEdgePoints) -> void;
   [[nodiscard]] auto GetWeightRandomMidPoint(bool allowEdgePoints) const -> ZoomMidpointEvents;
@@ -200,7 +200,7 @@ inline auto FilterSettingsService::GetPluginInfo() const -> const PluginInfo&
   return m_goomInfo;
 }
 
-inline auto FilterSettingsService::GetGoomRand() const -> const GOOM::UTILS::MATH::IGoomRand&
+inline auto FilterSettingsService::GetGoomRand() const -> const UTILS::MATH::IGoomRand&
 {
   return m_goomRand;
 }

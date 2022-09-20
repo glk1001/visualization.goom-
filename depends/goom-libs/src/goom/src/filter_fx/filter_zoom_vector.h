@@ -21,7 +21,7 @@ class FilterZoomVector : public IZoomVector
 public:
   FilterZoomVector(uint32_t screenWidth,
                    const std::string& resourcesDirectory,
-                   const GOOM::UTILS::MATH::IGoomRand& goomRand,
+                   const UTILS::MATH::IGoomRand& goomRand,
                    const NormalizedCoordsConverter& normalizedCoordsConverter,
                    const FILTER_EFFECTS::ZoomVectorEffects::GetAfterEffectsFunc& getAfterEffects =
                        FILTER_EFFECTS::ZoomVectorEffects::GetStandardAfterEffects) noexcept;
@@ -32,7 +32,7 @@ public:
       -> NormalizedCoords override;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> GOOM::UTILS::NameValuePairs override;
+      -> UTILS::NameValuePairs override;
 
 private:
   FILTER_EFFECTS::ZoomVectorEffects m_zoomVectorEffects;

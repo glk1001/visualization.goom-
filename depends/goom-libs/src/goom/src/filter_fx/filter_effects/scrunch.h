@@ -12,7 +12,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 class Scrunch : public IZoomInCoefficientsEffect
 {
 public:
-  explicit Scrunch(const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Scrunch(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void override;
 
@@ -22,7 +22,7 @@ public:
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
-      -> GOOM::UTILS::NameValuePairs override;
+      -> UTILS::NameValuePairs override;
 
   struct Params
   {
@@ -35,7 +35,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
 };
 

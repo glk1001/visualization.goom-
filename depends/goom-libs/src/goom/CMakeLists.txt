@@ -77,8 +77,8 @@ add_library(goom
             src/filter_fx/filter_effects/y_only.cpp
             src/filter_fx/filter_effects/zoom_in_coefficients_effect_factory.cpp
             src/filter_fx/filter_effects/zoom_vector_effects.cpp
-            src/filter_fx/utils/image_displacement.cpp
-            src/filter_fx/utils/image_displacement_list.cpp
+            src/filter_fx/filter_utils/image_displacement.cpp
+            src/filter_fx/filter_utils/image_displacement_list.cpp
             src/filter_fx/filter_consts.h
             src/filter_fx/filter_buffer_color_info.cpp
             src/filter_fx/filter_buffers.cpp

@@ -10,14 +10,14 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 class Noise
 {
 public:
-  explicit Noise(const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Noise(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> GOOM::UTILS::NameValuePairs;
+      -> UTILS::NameValuePairs;
 
   struct Params
   {
@@ -29,7 +29,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
   static constexpr float NOISE_MAX = 120.0F;

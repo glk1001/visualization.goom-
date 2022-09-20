@@ -25,7 +25,7 @@ public:
       -> NormalizedCoords;
 
   static constexpr auto* PARAM_GROUP = "After Effects";
-  [[nodiscard]] auto GetZoomEffectsNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
   const uint32_t m_screenWidth;
@@ -35,26 +35,25 @@ private:
   Point2dInt m_zoomMidpoint{};
 
   auto SetRandomHypercosOverlayEffects() noexcept -> void;
-  [[nodiscard]] auto GetHypercosNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetHypercosNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
   auto SetRandomImageVelocityEffects() noexcept -> void;
-  [[nodiscard]] auto GetImageVelocityNameValueParams() const noexcept
-      -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetImageVelocityNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
   auto SetRandomNoiseSettings() noexcept -> void;
-  [[nodiscard]] auto GetNoiseNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNoiseNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
   auto SetRandomPlaneEffects() noexcept -> void;
-  [[nodiscard]] auto GetPlaneNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetPlaneNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
   auto SetRandomRotationSettings() noexcept -> void;
-  [[nodiscard]] auto GetRotationNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetRotationNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
   auto SetRandomTanEffects() noexcept -> void;
-  [[nodiscard]] auto GetTanEffectNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetTanEffectNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
   auto SetRandomXYLerpEffects() noexcept -> void;
-  [[nodiscard]] auto GetXYLerpEffectNameValueParams() const noexcept -> GOOM::UTILS::NameValuePairs;
+  [[nodiscard]] auto GetXYLerpEffectNameValueParams() const noexcept -> UTILS::NameValuePairs;
 };
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

@@ -18,7 +18,7 @@ public:
     MODE1,
     MODE2
   };
-  explicit DistanceField(Modes mode, const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit DistanceField(Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -28,7 +28,7 @@ public:
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
-      -> GOOM::UTILS::NameValuePairs override;
+      -> UTILS::NameValuePairs override;
 
   struct Params
   {
@@ -47,7 +47,7 @@ protected:
 
 private:
   const Modes m_mode;
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   struct RelativeDistancePoint
   {
@@ -57,12 +57,12 @@ private:
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;
   auto SetMode2RandomParams() noexcept -> void;
-  auto SetRandomParams(const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& xAmplitudeRange,
-                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& yAmplitudeRange,
-                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistMultRange,
-                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistMultRange,
-                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistOffsetRange,
-                       const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistOffsetRange,
+  auto SetRandomParams(const UTILS::MATH::IGoomRand::NumberRange<float>& xAmplitudeRange,
+                       const UTILS::MATH::IGoomRand::NumberRange<float>& yAmplitudeRange,
+                       const UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistMultRange,
+                       const UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistMultRange,
+                       const UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistOffsetRange,
+                       const UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistOffsetRange,
                        std::vector<NormalizedCoords>&& distancePoints) noexcept -> void;
   [[nodiscard]] auto GetDistancePoints() const noexcept -> std::vector<NormalizedCoords>;
   [[nodiscard]] auto GetClosestDistancePoint(const NormalizedCoords& coords) const noexcept

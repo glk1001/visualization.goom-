@@ -10,9 +10,9 @@
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
-using GOOM::UTILS::GetPair;
-using GOOM::UTILS::MoveNameValuePairs;
-using GOOM::UTILS::NameValuePairs;
+using UTILS::GetPair;
+using UTILS::MoveNameValuePairs;
+using UTILS::NameValuePairs;
 
 ZoomVectorAfterEffects::ZoomVectorAfterEffects(const uint32_t screenWidth,
                                                AfterEffects&& afterEffects) noexcept
@@ -285,7 +285,7 @@ auto ZoomVectorAfterEffects::GetTanEffectNameValueParams() const noexcept -> Nam
 }
 
 auto ZoomVectorAfterEffects::GetXYLerpEffectNameValueParams() const noexcept
-    -> GOOM::UTILS::NameValuePairs
+    -> UTILS::NameValuePairs
 {
   const auto isActive = m_afterEffectsSettings.active[AfterEffectsTypes::XY_LERP_EFFECT];
   auto nameValuePairs = NameValuePairs{GetPair(PARAM_GROUP, "xyLerpEffect", isActive)};

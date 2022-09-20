@@ -13,7 +13,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 class YOnly : public IZoomInCoefficientsEffect
 {
 public:
-  explicit YOnly(const GOOM::UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit YOnly(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void override;
 
@@ -23,7 +23,7 @@ public:
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
-      -> GOOM::UTILS::NameValuePairs override;
+      -> UTILS::NameValuePairs override;
 
   enum class YOnlyEffect
   {
@@ -49,7 +49,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   [[nodiscard]] auto GetYOnlyZoomInMultiplier(YOnlyEffect effect,
                                               const NormalizedCoords& coords) const -> float;

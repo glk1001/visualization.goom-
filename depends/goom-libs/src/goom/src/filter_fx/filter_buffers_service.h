@@ -24,7 +24,7 @@ namespace FILTER_FX
 class FilterBuffersService
 {
 public:
-  FilterBuffersService(GOOM::UTILS::Parallel& parallel,
+  FilterBuffersService(UTILS::Parallel& parallel,
                        const PluginInfo& goomInfo,
                        const NormalizedCoordsConverter& normalizedCoordsConverter,
                        std::unique_ptr<IZoomVector> zoomVector) noexcept;
@@ -48,7 +48,7 @@ public:
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept -> SourcePointInfo;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
-      -> GOOM::UTILS::NameValuePairs;
+      -> UTILS::NameValuePairs;
 
 private:
   std::unique_ptr<IZoomVector> m_zoomVector;

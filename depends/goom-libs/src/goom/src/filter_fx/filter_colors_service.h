@@ -30,7 +30,7 @@ public:
       -> Pixel;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
-      -> GOOM::UTILS::NameValuePairs;
+      -> UTILS::NameValuePairs;
 
 private:
   bool m_blockyWavy = false;

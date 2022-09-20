@@ -17,7 +17,7 @@ public:
     MODE0,
     MODE1
   };
-  Wave(Modes mode, const GOOM::UTILS::MATH::IGoomRand& goomRand);
+  Wave(Modes mode, const UTILS::MATH::IGoomRand& goomRand);
 
   auto SetRandomParams() -> void override;
 
@@ -27,7 +27,7 @@ public:
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
-      -> GOOM::UTILS::NameValuePairs override;
+      -> UTILS::NameValuePairs override;
 
   enum class WaveEffect
   {
@@ -58,16 +58,16 @@ protected:
 
 private:
   const Modes m_mode;
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
-  const GOOM::UTILS::MATH::Weights<WaveEffect> m_weightedEffects;
+  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::Weights<WaveEffect> m_weightedEffects;
   Params m_params;
   auto SetMode0RandomParams() -> void;
   auto SetMode1RandomParams() -> void;
   auto SetWaveModeSettings(
-      const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& freqFactorRange,
-      const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange,
-      const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
-      const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) -> void;
+      const UTILS::MATH::IGoomRand::NumberRange<float>& freqFactorRange,
+      const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange,
+      const UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
+      const UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) -> void;
   [[nodiscard]] auto GetZoomInAdd(float sqDistFromZero, WaveEffect waveEffect) const -> float;
   [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
                                             float angle,
@@ -75,9 +75,8 @@ private:
   [[nodiscard]] auto GetPeriodicFactor(
       WaveEffect xWaveEffect,
       WaveEffect yWaveEffect,
-      const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
-      const GOOM::UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) const
-      -> float;
+      const UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
+      const UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) const -> float;
   [[nodiscard]] auto GetReducerCoeff(WaveEffect xWaveEffect,
                                      WaveEffect yWaveEffect,
                                      float periodicFactor) const -> float;

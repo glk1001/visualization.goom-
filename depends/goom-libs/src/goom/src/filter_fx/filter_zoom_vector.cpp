@@ -16,10 +16,10 @@ namespace GOOM::FILTER_FX
 {
 
 using FILTER_EFFECTS::ZoomVectorEffects;
-using GOOM::UTILS::Logging; // NOLINT(misc-unused-using-decls)
-using GOOM::UTILS::NameValuePairs;
-using GOOM::UTILS::MATH::IGoomRand;
-using GOOM::UTILS::MATH::SqDistance;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
+using UTILS::NameValuePairs;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::SqDistance;
 
 FilterZoomVector::FilterZoomVector(
     const uint32_t screenWidth,
