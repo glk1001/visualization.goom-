@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 
-declare -r BUILD_CLANG_VER="16"
+declare -r BUILD_CLANG_VER="15"
 declare -r BUILD_IMAGE="$(get_docker_build_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
 
 
