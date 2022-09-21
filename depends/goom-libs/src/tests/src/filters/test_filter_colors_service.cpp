@@ -12,7 +12,7 @@ namespace GOOM::UNIT_TESTS
 
 using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterBuffers;
-using FILTER_FX::FILTER_UTILS::ZoomFilterCoefficients;
+using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray;
 
 static constexpr size_t WIDTH  = 120;
 static constexpr size_t HEIGHT = 70;
@@ -47,12 +47,11 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
 
   static constexpr auto MAX_SUM_COEFF = channel_limits<uint32_t>::max() + 1U;
 
-  const auto coeffs = ZoomFilterCoefficients::NeighborhoodCoeffArray{
-      {50, 60, 70, 76},
-      false
+  const auto coeffs = NeighborhoodCoeffArray{
+      {50, 60, 70, 76}
   };
-  REQUIRE(MAX_SUM_COEFF == std::accumulate(cbegin(coeffs.val), cend(coeffs.val), 0U));
-  REQUIRE(4 == coeffs.val.size());
+  REQUIRE(MAX_SUM_COEFF == std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
+  REQUIRE(4 == coeffs.size());
   // GCC Won't link with this:  REQUIRE(PixelBuffer::NUM_NBRS == coeffs.val.size());
 
   SECTION("Correct new color")
@@ -62,7 +61,7 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
 
     const auto sourcePointInfo = ZoomFilterBuffers::SourcePointInfo{
         {static_cast<int32_t>(X), static_cast<int32_t>(Y)},
-        coeffs, false
+        &coeffs, false
     };
 
     pixelBuffer(X, Y)         = GetColor(RED1, GREEN1, BLUE1);
@@ -70,15 +69,14 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
     pixelBuffer(X, Y + 1)     = GetColor(RED3, GREEN3, BLUE3);
     pixelBuffer(X + 1, Y + 1) = GetColor(RED4, GREEN4, BLUE4);
 
-    const auto expectedR = (coeffs.val[0] * RED1 + coeffs.val[1] * RED2 + coeffs.val[2] * RED3 +
-                            coeffs.val[3] * RED4) /
-                           MAX_SUM_COEFF;
-    const auto expectedG = (coeffs.val[0] * GREEN1 + coeffs.val[1] * GREEN2 +
-                            coeffs.val[2] * GREEN3 + coeffs.val[3] * GREEN4) /
-                           MAX_SUM_COEFF;
-    const auto expectedB = (coeffs.val[0] * BLUE1 + coeffs.val[1] * BLUE2 + coeffs.val[2] * BLUE3 +
-                            coeffs.val[3] * BLUE4) /
-                           MAX_SUM_COEFF;
+    const auto expectedR =
+        (coeffs[0] * RED1 + coeffs[1] * RED2 + coeffs[2] * RED3 + coeffs[3] * RED4) / MAX_SUM_COEFF;
+    const auto expectedG =
+        (coeffs[0] * GREEN1 + coeffs[1] * GREEN2 + coeffs[2] * GREEN3 + coeffs[3] * GREEN4) /
+        MAX_SUM_COEFF;
+    const auto expectedB =
+        (coeffs[0] * BLUE1 + coeffs[1] * BLUE2 + coeffs[2] * BLUE3 + coeffs[3] * BLUE4) /
+        MAX_SUM_COEFF;
 
     const auto expectedColor = GetColor(expectedR, expectedG, expectedB);
     const auto pixelNeighbours =

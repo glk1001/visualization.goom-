@@ -3,6 +3,7 @@
 //#undef NO_LOGGING
 
 #include "filter_utils/zoom_coord_transforms.h"
+#include "filter_utils/zoom_filter_coefficients.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "logging.h"
@@ -17,6 +18,7 @@ namespace GOOM::FILTER_FX
 {
 
 using FILTER_UTILS::ZoomCoordTransforms;
+using FILTER_UTILS::ZOOM_FILTER_COEFFS::PRECALCULATED_COEFF_PTRS;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Parallel;
 
@@ -47,8 +49,7 @@ auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const noexcept 
   const auto srceScreenPoint  = ZoomCoordTransforms::TranToScreenPoint(tranPoint);
   const auto [xIndex, yIndex] = ZoomCoordTransforms::TranCoordToZoomCoeffIndexes(tranPoint);
 
-  return SourcePointInfo{
-      srceScreenPoint, m_precalculatedCoeffs.GetCoeffs()[xIndex][yIndex], isClipped};
+  return SourcePointInfo{srceScreenPoint, PRECALCULATED_COEFF_PTRS[xIndex][yIndex], isClipped};
 }
 
 inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos,

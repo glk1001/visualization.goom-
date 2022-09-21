@@ -22,8 +22,8 @@ public:
   auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
   auto SetBlockyWavy(bool val) noexcept -> void;
 
-  using NeighborhoodCoeffArray = FILTER_UTILS::ZoomFilterCoefficients::NeighborhoodCoeffArray;
-  using NeighborhoodPixelArray = FILTER_UTILS::ZoomFilterCoefficients::NeighborhoodPixelArray;
+  using NeighborhoodCoeffArray = FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray;
+  using NeighborhoodPixelArray = FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodPixelArray;
 
   [[nodiscard]] auto GetNewColor(
       const ZoomFilterBuffers::SourcePointInfo& sourcePointInfo,
@@ -78,7 +78,7 @@ inline auto FilterColorsService::GetNewColor(
     const ZoomFilterBuffers::SourcePointInfo& sourcePointInfo,
     const std::array<Pixel, PixelBuffer::NUM_NBRS>& sourcePointNeighbours) const noexcept -> Pixel
 {
-  return GetFilteredColor(sourcePointInfo.coeffs, sourcePointNeighbours);
+  return GetFilteredColor(*sourcePointInfo.coeffs, sourcePointNeighbours);
 }
 
 inline auto FilterColorsService::GetFilteredColor(
@@ -100,9 +100,9 @@ inline auto FilterColorsService::GetBlockyMixedColor(
   // Changing the color order gives a strange blocky, wavy look.
   // The order col4, col3, col2, col1 gave a black tear - not so good.
 
-  Expects(FILTER_UTILS::ZoomFilterCoefficients::NUM_NEIGHBOR_COEFFS == coeffs.val.size());
+  Expects(FILTER_UTILS::ZOOM_FILTER_COEFFS::NUM_NEIGHBOR_COEFFS == coeffs.size());
   static constexpr auto ALLOWED_NUM_NEIGHBORS = 4U;
-  static_assert(ALLOWED_NUM_NEIGHBORS == FILTER_UTILS::ZoomFilterCoefficients::NUM_NEIGHBOR_COEFFS);
+  static_assert(ALLOWED_NUM_NEIGHBORS == FILTER_UTILS::ZOOM_FILTER_COEFFS::NUM_NEIGHBOR_COEFFS);
 
   const auto reorderedColors = NeighborhoodPixelArray{colors[0], colors[2], colors[1], colors[3]};
   return GetMixedColor(coeffs, reorderedColors);
@@ -112,18 +112,13 @@ inline auto FilterColorsService::GetMixedColor(const NeighborhoodCoeffArray& coe
                                                const NeighborhoodPixelArray& colors) const noexcept
     -> Pixel
 {
-  if (coeffs.isZero)
-  {
-    return BLACK_PIXEL;
-  }
-
   auto multR = 0U;
   auto multG = 0U;
   auto multB = 0U;
-  for (auto i = 0U; i < FILTER_UTILS::ZoomFilterCoefficients::NUM_NEIGHBOR_COEFFS; ++i)
+  for (auto i = 0U; i < FILTER_UTILS::ZOOM_FILTER_COEFFS::NUM_NEIGHBOR_COEFFS; ++i)
   {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
-    const auto coeff = coeffs.val[i];
+    const auto coeff = coeffs[i];
     const auto color = colors[i];
     multR += static_cast<uint32_t>(color.R()) * coeff;
     multG += static_cast<uint32_t>(color.G()) * coeff;

@@ -38,29 +38,30 @@ inline ZoomCoordTransforms::ZoomCoordTransforms(
 inline auto ZoomCoordTransforms::TranToScreenPoint(const Point2dInt& tranPoint) noexcept
     -> Point2dInt
 {
-  return {tranPoint.x >> ZoomFilterCoefficients::DIM_FILTER_COEFFS_EXP,
-          tranPoint.y >> ZoomFilterCoefficients::DIM_FILTER_COEFFS_EXP};
+  // Note: Truncation here but seems OK. Trying to round adds about 2ms.
+  return {tranPoint.x >> ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS_EXP,
+          tranPoint.y >> ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS_EXP};
 }
 
 inline auto ZoomCoordTransforms::ScreenToTranPoint(const Point2dInt& screenPoint) noexcept
     -> Point2dInt
 {
-  return {screenPoint.x << ZoomFilterCoefficients::DIM_FILTER_COEFFS_EXP,
-          screenPoint.y << ZoomFilterCoefficients::DIM_FILTER_COEFFS_EXP};
+  return {screenPoint.x << ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS_EXP,
+          screenPoint.y << ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS_EXP};
 }
 
 inline auto ZoomCoordTransforms::ScreenToTranCoord(const float screenCoord) noexcept -> uint32_t
 {
   // IMPORTANT: Without 'lround' a faint cross artifact appears in the centre of the screen.
   return static_cast<uint32_t>(
-      std::lround(screenCoord * static_cast<float>(ZoomFilterCoefficients::DIM_FILTER_COEFFS)));
+      std::lround(screenCoord * static_cast<float>(ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS)));
 }
 
 inline auto ZoomCoordTransforms::TranCoordToZoomCoeffIndexes(const Point2dInt& tranPoint) noexcept
     -> std::pair<uint32_t, uint32_t>
 {
-  return {static_cast<uint32_t>(tranPoint.x) & ZoomFilterCoefficients::DIM_FILTER_COEFFS_MOD_MASK,
-          static_cast<uint32_t>(tranPoint.y) & ZoomFilterCoefficients::DIM_FILTER_COEFFS_MOD_MASK};
+  return {static_cast<uint32_t>(tranPoint.x) & ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS_MOD_MASK,
+          static_cast<uint32_t>(tranPoint.y) & ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS_MOD_MASK};
 }
 
 inline auto ZoomCoordTransforms::NormalizedToTranPoint(

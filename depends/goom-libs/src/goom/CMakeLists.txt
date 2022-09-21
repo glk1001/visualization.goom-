@@ -80,8 +80,8 @@ add_library(goom
             src/filter_fx/filter_utils/image_displacement.cpp
             src/filter_fx/filter_utils/image_displacement_list.cpp
             src/filter_fx/filter_utils/zoom_coord_transforms.h
-            src/filter_fx/filter_utils/zoom_filter_coefficients.cpp
-	    src/filter_fx/filter_utils/zoom_transform_buffers.cpp
+            src/filter_fx/filter_utils/zoom_filter_coefficients.h
+            src/filter_fx/filter_utils/zoom_transform_buffers.cpp
             src/filter_fx/filter_consts.h
             src/filter_fx/filter_buffer_color_info.cpp
             src/filter_fx/filter_buffers.cpp

@@ -32,7 +32,7 @@ class ZoomFilterBuffers
 {
 public:
   static constexpr float MIN_SCREEN_COORD_ABS_VAL =
-      1.0F / static_cast<float>(FILTER_UTILS::ZoomFilterCoefficients::DIM_FILTER_COEFFS);
+      1.0F / static_cast<float>(FILTER_UTILS::ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS);
 
   enum class TranBuffersState
   {
@@ -73,7 +73,7 @@ public:
   struct SourcePointInfo
   {
     Point2dInt screenPoint;
-    FILTER_UTILS::ZoomFilterCoefficients::NeighborhoodCoeffArray coeffs;
+    const FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray* coeffs;
     bool isClipped;
   };
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept -> SourcePointInfo;
@@ -82,7 +82,6 @@ private:
   const Dimensions m_dimensions;
   const NormalizedCoordsConverter& m_normalizedCoordsConverter;
   const FILTER_UTILS::ZoomCoordTransforms m_coordTransforms{m_normalizedCoordsConverter};
-  const FILTER_UTILS::ZoomFilterCoefficients m_precalculatedCoeffs{};
 
   [[nodiscard]] auto GetMaxTranX() const noexcept -> uint32_t;
   [[nodiscard]] auto GetMaxTranY() const noexcept -> uint32_t;
@@ -92,7 +91,7 @@ private:
   const Point2dInt m_maxTranPoint = FILTER_UTILS::ZoomCoordTransforms::ScreenToTranPoint(
       {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1});
   const uint32_t m_tranBuffStripeHeight =
-      m_dimensions.GetHeight() / FILTER_UTILS::ZoomFilterCoefficients::DIM_FILTER_COEFFS;
+      m_dimensions.GetHeight() / FILTER_UTILS::ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS;
   FILTER_UTILS::ZoomTransformBuffers m_transformBuffers{m_dimensions, m_maxTranPoint};
 
   Point2dInt m_buffMidpoint          = {0, 0};
