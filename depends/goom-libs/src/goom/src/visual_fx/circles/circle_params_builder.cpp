@@ -103,7 +103,7 @@ auto CircleParamsBuilder::GetReducingCircleRadii(const float mainCircleRadius) c
 
 inline auto CircleParamsBuilder::GetCircleRadiusReducer() const noexcept -> float
 {
-  static constexpr auto MIN_RADIUS_REDUCER = 0.40F;
+  static constexpr auto MIN_RADIUS_REDUCER = 0.60F;
   static constexpr auto MAX_RADIUS_REDUCER = 1.01F;
   return m_fxHelper.GetGoomRand().GetRandInRange(MIN_RADIUS_REDUCER, MAX_RADIUS_REDUCER);
 }
@@ -129,15 +129,18 @@ inline auto CircleParamsBuilder::GetFourCornersCircleRadii(
 inline auto CircleParamsBuilder::GetCircleCentreStarts(const float mainCircleRadius) const noexcept
     -> std::vector<Point2dInt>
 {
-  if (m_circleStartMode == CircleStartModes::SAME_RADIUS)
+  switch (m_circleStartMode)
   {
-    return GetAllSameCircleCentreStarts(mainCircleRadius);
+    case CircleStartModes::SAME_RADIUS:
+      return GetAllSameCircleCentreStarts(mainCircleRadius);
+    case CircleStartModes::REDUCING_RADIUS:
+      return GetReducingRadiusCircleCentreStarts(mainCircleRadius);
+    case CircleStartModes::FOUR_CORNERED_IN_MAIN:
+      return GetFourCornersCircleCentreStarts(mainCircleRadius);
+    default:
+      FailFast();
+      return {};
   }
-  if (m_circleStartMode == CircleStartModes::REDUCING_RADIUS)
-  {
-    return GetReducingRadiusCircleCentreStarts(mainCircleRadius);
-  }
-  return GetFourCornersCircleCentreStarts(mainCircleRadius);
 }
 
 inline auto CircleParamsBuilder::GetAllSameCircleCentreStarts(
@@ -163,19 +166,15 @@ inline auto CircleParamsBuilder::GetFourCornersCircleCentreStarts(
 
   const auto innerCircleRadius = HALF * mainCircleRadius;
   const auto offset =
-      static_cast<int32_t>(std::round(std::sin(0.5F * UTILS::MATH::HALF_PI) * innerCircleRadius));
+      static_cast<int32_t>(m_fxHelper.GetGoomRand().GetRandInRange(0.5F, 1.0F) * innerCircleRadius);
 
   auto circleCentreStarts = std::vector<Point2dInt>(m_numCircles);
 
   circleCentreStarts.at(0) = m_mainCircleCentreStart;
-  circleCentreStarts.at(1) = {m_mainCircleCentreStart.x - offset,
-                              m_mainCircleCentreStart.y - offset};
-  circleCentreStarts.at(2) = {m_mainCircleCentreStart.x + offset,
-                              m_mainCircleCentreStart.y - offset};
-  circleCentreStarts.at(3) = {m_mainCircleCentreStart.x - offset,
-                              m_mainCircleCentreStart.y + offset};
-  circleCentreStarts.at(4) = {m_mainCircleCentreStart.x + offset,
-                              m_mainCircleCentreStart.y + offset};
+  circleCentreStarts.at(1) = {m_mainCircleCentreStart.x, m_mainCircleCentreStart.y - offset};
+  circleCentreStarts.at(2) = {m_mainCircleCentreStart.x + offset, m_mainCircleCentreStart.y};
+  circleCentreStarts.at(3) = {m_mainCircleCentreStart.x, m_mainCircleCentreStart.y + offset};
+  circleCentreStarts.at(4) = {m_mainCircleCentreStart.x - offset, m_mainCircleCentreStart.y};
 
   return circleCentreStarts;
 }
