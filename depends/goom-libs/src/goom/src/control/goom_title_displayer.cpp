@@ -28,7 +28,6 @@ using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::GetFltFraction;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::TWO_PI;
 using UTILS::TEXT::GetLeftAlignedPenForCentringStringAt;
 using UTILS::TEXT::GetLinesOfWords;
 
@@ -44,7 +43,6 @@ static constexpr auto OUTLINE_FONT_WIDTH                  = 4;
 static constexpr auto TIME_TO_START_FINAL_SOLID_COLOR     = 10;
 static constexpr auto FINAL_PHASE_MIX_FACTOR              = 0.2F;
 static constexpr auto FINAL_PHASE_INTERIOR_COLOR          = Pixel{210U, 210U, 210U, 255U};
-static constexpr auto FINAL_PHASE_OUTLINE_COLOR           = Pixel{20U, 20U, 20U, 255U};
 
 // To normalize: turn on logging in TextDraw, get width of prepared text for a
 // sample text for each font, then normalize with 'verdana' as 1.0.
@@ -304,7 +302,7 @@ inline auto GoomTitleDisplayer::GetOutlineColor(float fontColorT,
 {
   if (IsFinalPhase())
   {
-    return FINAL_PHASE_OUTLINE_COLOR;
+    return m_textOutlineColorMap->GetColor(fontColorT);
   }
 
   const auto outlineFontColor =
