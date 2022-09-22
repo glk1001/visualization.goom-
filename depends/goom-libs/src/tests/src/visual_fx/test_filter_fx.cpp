@@ -56,7 +56,7 @@ TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
           parallel, goomInfo, normalizedCoordsConverter,
           std::make_unique<FilterZoomVector>(WIDTH, RESOURCES_DIRECTORY, goomRand,
                                              normalizedCoordsConverter)),
-      std::make_unique<FilterColorsService>()};
+      std::make_unique<FilterColorsService>(goomRand)};
 
   SECTION("Correct initial lerp factor") { REQUIRE(0 == zoomFilterFx.GetTranLerpFactor()); }
   SECTION("Correct lerp factor after an increment")

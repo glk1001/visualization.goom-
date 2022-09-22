@@ -3,6 +3,7 @@
 #include "filter_fx/filter_colors_service.h"
 #include "filter_fx/filter_utils/zoom_filter_coefficients.h"
 #include "goom_graphic.h"
+#include "utils/math/goom_rand.h"
 
 #include <array>
 #include <numeric>
@@ -13,9 +14,11 @@ namespace GOOM::UNIT_TESTS
 using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray;
+using UTILS::MATH::GoomRand;
 
 static constexpr size_t WIDTH  = 120;
 static constexpr size_t HEIGHT = 70;
+static const auto GOOM_RAND    = GoomRand{};
 
 inline auto GetColor(const PixelChannelType red,
                      const PixelChannelType green,
@@ -26,7 +29,7 @@ inline auto GetColor(const PixelChannelType red,
 
 TEST_CASE("FilterColorsService", "[FilterColorsService]")
 {
-  auto filterColorsService = FilterColorsService{};
+  auto filterColorsService = FilterColorsService{GOOM_RAND};
 
   auto pixelBuffer = PixelBuffer{
       {WIDTH, HEIGHT}

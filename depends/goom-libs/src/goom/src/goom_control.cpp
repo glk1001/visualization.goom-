@@ -149,7 +149,7 @@ private:
                                                                     m_resourcesDirectory,
                                                                     m_goomRand,
                                                                     m_normalizedCoordsConverter)),
-                             std::make_unique<FilterColorsService>()};
+                             std::make_unique<FilterColorsService>(m_goomRand)};
 
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
   GoomMusicSettingsReactor m_musicSettingsReactor{

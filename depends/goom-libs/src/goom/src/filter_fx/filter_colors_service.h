@@ -4,6 +4,7 @@
 #include "filter_utils/zoom_filter_coefficients.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 #include "utils/timer.h"
 
@@ -16,7 +17,7 @@ namespace GOOM::FILTER_FX
 class FilterColorsService
 {
 public:
-  FilterColorsService() noexcept = default;
+  FilterColorsService(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetBrightness(float brightness) noexcept -> void;
   auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
@@ -34,8 +35,13 @@ public:
       -> UTILS::NameValuePairs;
 
 private:
+  const UTILS::MATH::IGoomRand& m_goomRand;
   bool m_blockyWavy = false;
   FXBuffSettings m_buffSettings{};
+
+  static constexpr auto ALLOWED_NUM_NEIGHBORS = 4U;
+  static_assert(ALLOWED_NUM_NEIGHBORS == FILTER_UTILS::ZOOM_FILTER_COEFFS::NUM_NEIGHBOR_COEFFS);
+  std::array<uint32_t, ALLOWED_NUM_NEIGHBORS> m_reorderedColorIndexes{0, 1, 2, 3};
 
   static constexpr uint32_t MAX_SUM_COEFFS = channel_limits<uint32_t>::max() + 1;
   libdivide::divider<uint32_t> m_coeffsAndBrightnessFastDivisor{MAX_SUM_COEFFS};
@@ -48,6 +54,11 @@ private:
                                          const NeighborhoodPixelArray& colors) const noexcept
       -> Pixel;
 };
+
+inline FilterColorsService::FilterColorsService(const UTILS::MATH::IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand}
+{
+}
 
 inline auto FilterColorsService::SetBrightness(const float brightness) noexcept -> void
 {
@@ -67,6 +78,11 @@ inline auto FilterColorsService::SetBrightness(const float brightness) noexcept 
 inline auto FilterColorsService::SetBlockyWavy(const bool val) noexcept -> void
 {
   m_blockyWavy = val;
+
+  if (m_blockyWavy)
+  {
+    m_goomRand.Shuffle(begin(m_reorderedColorIndexes), end(m_reorderedColorIndexes));
+  }
 }
 
 inline void FilterColorsService::SetBuffSettings(const FXBuffSettings& settings) noexcept
@@ -97,14 +113,13 @@ inline auto FilterColorsService::GetBlockyMixedColor(
     const NeighborhoodCoeffArray& coeffs, const NeighborhoodPixelArray& colors) const noexcept
     -> Pixel
 {
-  // Changing the color order gives a strange blocky, wavy look.
-  // The order col4, col3, col2, col1 gave a black tear - not so good.
+  // Changing the color order gives a strange blocky, wavy look when zooming in.
 
-  Expects(FILTER_UTILS::ZOOM_FILTER_COEFFS::NUM_NEIGHBOR_COEFFS == coeffs.size());
-  static constexpr auto ALLOWED_NUM_NEIGHBORS = 4U;
-  static_assert(ALLOWED_NUM_NEIGHBORS == FILTER_UTILS::ZOOM_FILTER_COEFFS::NUM_NEIGHBOR_COEFFS);
+  const auto reorderedColors = NeighborhoodPixelArray{colors[m_reorderedColorIndexes[0]],
+                                                      colors[m_reorderedColorIndexes[1]],
+                                                      colors[m_reorderedColorIndexes[2]],
+                                                      colors[m_reorderedColorIndexes[3]]};
 
-  const auto reorderedColors = NeighborhoodPixelArray{colors[0], colors[2], colors[1], colors[3]};
   return GetMixedColor(coeffs, reorderedColors);
 }
 
