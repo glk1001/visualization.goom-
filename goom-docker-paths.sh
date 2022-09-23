@@ -51,13 +51,6 @@ set -- ${EXTRA_ARGS}
 unset EXTRA_ARGS
 
 
-if [[ "${KODI_IMAGE_OS_TYPE}" == "ubuntu" && "${KODI_IMAGE_OS_TAG}" == "jammy" ]]; then
-  # On Ubuntu Jammy, there is a problem with python 3.10 and sqlite3 which affects the
-  # Spotify plugin. See https://bbs.archlinux.org/viewtopic.php?id=272121
-  echo "ERROR: Cannot build with Ubuntu Jammy - The Spotify plugin won't work with Sqlite3 and Python 3.10."
-  exit 1
-fi
-
 declare -r DOCKERIZE_KODI_DIR=${GOOM_DOCKER_PATHS_SCRIPT_PATH}/dockerize-kodi-goom
 if [[ ! -d "${DOCKERIZE_KODI_DIR}" ]]; then
   echo "ERROR: Could not find dockerize kodi directory \"${DOCKERIZE_KODI_DIR}\"."

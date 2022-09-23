@@ -389,7 +389,7 @@ void CVisualizationGoom::ExitWorkerThread()
 //-- AudioData ----------------------------------------------------------------
 // Called by Kodi to pass new audio data to the vis
 //-----------------------------------------------------------------------------
-void CVisualizationGoom::AudioData(const float* const audioData, size_t audioDataLength)
+void CVisualizationGoom::AudioData(const float* const audioData, const size_t audioDataLength)
 {
   if (!m_started)
   {
