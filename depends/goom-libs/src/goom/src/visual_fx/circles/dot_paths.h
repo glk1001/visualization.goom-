@@ -53,6 +53,8 @@ public:
   auto SetPathParams(const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept -> void;
 
   [[nodiscard]] auto GetPositionTRef() const noexcept -> const UTILS::TValue&;
+  [[nodiscard]] auto HasUpdatedDotPathsToAndFrom() const noexcept -> bool;
+  auto ResetUpdatedDotPathsToAndFromFlag() noexcept -> void;
 
   [[nodiscard]] auto GetPositionTNumSteps() const noexcept -> uint32_t;
   auto SetPositionTNumSteps(uint32_t numSteps) noexcept -> void;
@@ -83,6 +85,7 @@ private:
     std::vector<UTILS::MATH::OscillatingPath> dotPathFromTarget;
   };
   DotPathsToAndFrom m_dotPathsToAndFrom{GetNewDotPaths(m_dotStartsToAndFrom)};
+  bool m_updatedDotPathsToAndFrom = false;
   [[nodiscard]] auto GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noexcept
       -> DotPathsToAndFrom;
   auto MakeToDotPathsSameAsFromDotPaths() noexcept -> void;
@@ -212,6 +215,16 @@ inline auto DotPaths::GetPositionTRef() const noexcept -> const UTILS::TValue&
   }
 
   return m_dotPathsToAndFrom.dotPathFromTarget.front().GetPositionT();
+}
+
+inline auto DotPaths::HasUpdatedDotPathsToAndFrom() const noexcept -> bool
+{
+  return m_updatedDotPathsToAndFrom;
+}
+
+inline auto DotPaths::ResetUpdatedDotPathsToAndFromFlag() noexcept -> void
+{
+  m_updatedDotPathsToAndFrom = false;
 }
 
 inline auto DotPaths::GetPositionTNumSteps() const noexcept -> uint32_t

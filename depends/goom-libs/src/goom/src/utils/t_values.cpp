@@ -2,8 +2,8 @@
 
 //#undef NO_LOGGING
 
-#include "logging.h"
 #include "goom_config.h"
+#include "logging.h"
 
 namespace GOOM::UTILS
 {
@@ -88,6 +88,8 @@ inline auto TValue::SingleCycleIncrement() noexcept -> void
     return;
   }
   m_t += m_currentStep;
+
+  Ensures(m_t >= 0.0F);
 }
 
 inline auto TValue::ContinuousRepeatableIncrement() noexcept -> void
@@ -191,6 +193,7 @@ inline auto TValue::WeAreStartingDelayPoint() noexcept -> bool
 auto TValue::SetStepSize(const float val) noexcept -> void
 {
   Expects(val >= 0.0F);
+  Expects((m_stepType != StepType::SINGLE_CYCLE) or (m_currentStep >= 0.0F));
 
   const auto oldCurrentStep = m_currentStep;
 

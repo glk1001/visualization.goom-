@@ -194,6 +194,13 @@ private:
 inline auto Circle::IncrementTs() noexcept -> void
 {
   m_dotPaths.IncrementPositionT();
+
+  if (m_dotPaths.HasUpdatedDotPathsToAndFrom())
+  {
+    m_mainColorMapsGrid.SetVerticalT(m_dotPaths.GetPositionTRef());
+    m_lowColorMapsGrid.SetVerticalT(m_dotPaths.GetPositionTRef());
+    m_dotPaths.ResetUpdatedDotPathsToAndFromFlag();
+  }
 }
 
 inline auto Circle::UpdatePositionSpeed(const uint32_t newNumSteps) noexcept -> void

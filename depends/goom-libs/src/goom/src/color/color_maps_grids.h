@@ -26,8 +26,9 @@ public:
   auto operator=(const ColorMapsGrid&) noexcept = delete;
   auto operator=(ColorMapsGrid&&) noexcept      = delete;
 
-  void SetColorMaps(const std::vector<const IColorMap*>& horizontalColorMaps,
-                    const std::vector<const IColorMap*>& verticalColorMaps);
+  auto SetVerticalT(const UTILS::TValue& val) noexcept -> void;
+  auto SetColorMaps(const std::vector<const IColorMap*>& horizontalColorMaps,
+                    const std::vector<const IColorMap*>& verticalColorMaps) noexcept -> void;
 
   [[nodiscard]] auto GetCurrentHorizontalLineColors() const -> std::vector<Pixel>;
 
@@ -37,14 +38,20 @@ private:
   std::vector<const IColorMap*> m_verticalColorMaps;
   uint32_t m_width = static_cast<uint32_t>(m_verticalColorMaps.size());
 
-  const UTILS::TValue& m_verticalT;
+  const UTILS::TValue* m_verticalT;
   const ColorMixingTFunc m_colorMixingT;
 
   [[nodiscard]] auto GetCurrentHorizontalLineIndex() const -> size_t;
 };
 
-inline void ColorMapsGrid::SetColorMaps(const std::vector<const IColorMap*>& horizontalColorMaps,
-                                        const std::vector<const IColorMap*>& verticalColorMaps)
+inline auto ColorMapsGrid::SetVerticalT(const UTILS::TValue& val) noexcept -> void
+{
+  m_verticalT = &val;
+}
+
+inline auto ColorMapsGrid::SetColorMaps(
+    const std::vector<const IColorMap*>& horizontalColorMaps,
+    const std::vector<const IColorMap*>& verticalColorMaps) noexcept -> void
 {
   m_horizontalColorMaps    = horizontalColorMaps;
   m_maxHorizontalLineIndex = static_cast<float>(m_horizontalColorMaps.size() - 1);

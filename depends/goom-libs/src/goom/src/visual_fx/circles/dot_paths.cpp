@@ -4,7 +4,6 @@
 
 #include "logging.h"
 #include "point2d.h"
-#include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
@@ -18,7 +17,6 @@ namespace GOOM::VISUAL_FX::CIRCLES
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 
 DotPaths::DotPaths(const IGoomRand& goomRand,
@@ -70,6 +68,8 @@ auto DotPaths::MakeToDotPathsSameAsFromDotPaths() noexcept -> void
         m_dotTargetsToAndFrom.dotTargetPositionFromTarget.ToFlt(),
         m_dotPathParamsToAndFrom.dotPathParamsToTarget);
   }
+
+  m_updatedDotPathsToAndFrom = true;
 }
 
 auto DotPaths::GetNextDotPositions() const noexcept -> std::vector<Point2dInt>
