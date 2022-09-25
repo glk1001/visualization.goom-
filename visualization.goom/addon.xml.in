@@ -7,7 +7,7 @@
         <license>GPL-2.0-or-later</license>
         <source>https://github.com/xbmc/visualization.goom</source>
         <website>https://github.com/glk1001/glk1001.github.io</website>
-        <news>v20.0.1 (2022-07-25)
+        <news>v20.1.1 (2022-09-25)
             - [new] Goom re-written in C++17 with new effects and much different color handling (richer and more vivid). See 'Preview' for some example images.
         </news>
         <assets>
