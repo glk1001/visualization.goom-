@@ -19,7 +19,7 @@ source "${GOOM_DOCKER_PATHS_SCRIPT_PATH}/dockerize-kodi-goom/goom-image-funcs.sh
 
 
 declare KODI_IMAGE_OS_TYPE="ubuntu"
-declare KODI_IMAGE_OS_TAG="impish"
+declare KODI_IMAGE_OS_TAG="jammy"
 declare GOOM_DOCKER_PATHS_CMD_LINE=""
 declare EXTRA_ARGS=""
 
