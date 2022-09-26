@@ -36,7 +36,6 @@ public:
   TentacleDriver() noexcept = delete;
   TentacleDriver(DRAW::IGoomDraw& draw,
                  const UTILS::MATH::IGoomRand& goomRand,
-                 const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                  const CirclesTentacleLayout& tentacleLayout) noexcept;
 
   auto SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void;
@@ -51,8 +50,7 @@ public:
 
   auto MultiplyIterZeroYValWaveFreq(float value) -> void;
   auto SetDominantColorMaps(const std::shared_ptr<const COLOR::IColorMap>& dominantMainColorMap,
-                            const std::shared_ptr<const COLOR::IColorMap>& dominantLowColorMap,
-                            const std::shared_ptr<const COLOR::IColorMap>& dominantDotColorMap)
+                            const std::shared_ptr<const COLOR::IColorMap>& dominantLowColorMap)
       -> void;
 
   auto Update() -> void;
@@ -66,7 +64,6 @@ private:
 
   std::shared_ptr<const COLOR::IColorMap> m_dominantMainColorMap{};
   std::shared_ptr<const COLOR::IColorMap> m_dominantLowColorMap{};
-  std::shared_ptr<const COLOR::IColorMap> m_dominantDotColorMap{};
 
   struct IterationParams
   {
@@ -87,17 +84,14 @@ private:
   size_t m_updateNum                                                     = 0U;
   static constexpr size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400U;
   auto CheckForTimerEvents() -> void;
-  auto UpdateTentaclePlotter() -> void;
 };
 
 inline auto TentacleDriver::SetDominantColorMaps(
     const std::shared_ptr<const COLOR::IColorMap>& dominantMainColorMap,
-    const std::shared_ptr<const COLOR::IColorMap>& dominantLowColorMap,
-    const std::shared_ptr<const COLOR::IColorMap>& dominantDotColorMap) -> void
+    const std::shared_ptr<const COLOR::IColorMap>& dominantLowColorMap) -> void
 {
   m_dominantMainColorMap = dominantMainColorMap;
   m_dominantLowColorMap  = dominantLowColorMap;
-  m_dominantDotColorMap  = dominantDotColorMap;
 }
 
 } // namespace GOOM::VISUAL_FX::TENTACLES

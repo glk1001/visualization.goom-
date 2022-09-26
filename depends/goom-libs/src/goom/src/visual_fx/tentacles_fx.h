@@ -13,10 +13,6 @@ namespace COLOR
 {
 class RandomColorMaps;
 }
-namespace UTILS::GRAPHICS
-{
-class SmallImageBitmaps;
-}
 
 namespace VISUAL_FX
 {
@@ -31,8 +27,7 @@ public:
   static constexpr uint32_t NUM_TENTACLE_COLOR_TYPES = NORMAL_COLOR_TYPE + 1;
 
   TentaclesFx() noexcept = delete;
-  TentaclesFx(const FxHelper& fxHelper,
-              const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
+  explicit TentaclesFx(const FxHelper& fxHelper) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 

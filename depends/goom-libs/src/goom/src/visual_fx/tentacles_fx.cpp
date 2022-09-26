@@ -13,10 +13,8 @@
 #include "tentacles/circles_tentacle_layout.h"
 #include "tentacles/tentacle_driver.h"
 #include "utils/enum_utils.h"
-#include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
-#include "utils/propagate_const.h"
 #include "utils/timer.h"
 
 #include <array>
@@ -30,20 +28,18 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using std::experimental::propagate_const;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 using UTILS::Timer;
-using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
 class TentaclesFx::TentaclesImpl
 {
 public:
-  TentaclesImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
+  explicit TentaclesImpl(const FxHelper& fxHelper);
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
@@ -59,7 +55,6 @@ private:
   IGoomDraw& m_draw;
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
-  const SmallImageBitmaps& m_smallBitmaps;
 
   enum class Drivers
   {
@@ -72,10 +67,8 @@ private:
   static constexpr size_t NUM_TENTACLE_DRIVERS = NUM<Drivers>;
   const Weights<Drivers> m_driverWeights;
   const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;
-  std::vector<propagate_const<std::unique_ptr<TentacleDriver>>> m_tentacleDrivers{
-      GetTentacleDrivers()};
-  [[nodiscard]] auto GetTentacleDrivers() const
-      -> std::vector<propagate_const<std::unique_ptr<TentacleDriver>>>;
+  std::vector<TentacleDriver> m_tentacleDrivers{GetTentacleDrivers()};
+  [[nodiscard]] auto GetTentacleDrivers() const -> std::vector<TentacleDriver>;
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
@@ -83,7 +76,6 @@ private:
   std::shared_ptr<const RandomColorMaps> m_weightedDominantLowColorMaps{};
   std::shared_ptr<const IColorMap> m_dominantMainColorMap{};
   std::shared_ptr<const IColorMap> m_dominantLowColorMap{};
-  std::shared_ptr<const IColorMap> m_dominantDotColorMap{};
   auto ChangeDominantColor() -> void;
 
   static constexpr uint32_t MAX_TIME_FOR_DOMINANT_COLOR = 100;
@@ -95,8 +87,8 @@ private:
   auto UpdateTentacleWaveFrequency() -> void;
 };
 
-TentaclesFx::TentaclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_pimpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelper, smallBitmaps)}
+TentaclesFx::TentaclesFx(const FxHelper& fxHelper) noexcept
+  : m_pimpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelper)}
 {
 }
 
@@ -165,12 +157,10 @@ static constexpr auto DRIVERS_NUM1_WEIGHT = 30.0F;
 static constexpr auto DRIVERS_NUM2_WEIGHT = 10.0F;
 static constexpr auto DRIVERS_NUM3_WEIGHT = 05.0F;
 
-TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper,
-                                          const SmallImageBitmaps& smallBitmaps)
+TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_smallBitmaps{smallBitmaps},
     m_driverWeights{
       m_goomRand,
       {
@@ -209,19 +199,17 @@ inline auto TentaclesFx::TentaclesImpl::Resume() -> void
   RefreshTentacles();
 }
 
-auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
-    -> std::vector<propagate_const<std::unique_ptr<TentacleDriver>>>
+auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const -> std::vector<TentacleDriver>
 {
-  auto tentacleDrivers = std::vector<propagate_const<std::unique_ptr<TentacleDriver>>>{};
+  auto tentacleDrivers = std::vector<TentacleDriver>{};
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    tentacleDrivers.emplace_back(std::make_unique<TentacleDriver>(
-        m_draw, m_goomRand, m_smallBitmaps, m_tentacleLayouts.at(i)));
+    tentacleDrivers.emplace_back(m_draw, m_goomRand, m_tentacleLayouts.at(i));
   }
 
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    tentacleDrivers[i]->StartIterating();
+    tentacleDrivers[i].StartIterating();
   }
 
   return tentacleDrivers;
@@ -230,7 +218,7 @@ auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const
 inline auto TentaclesFx::TentaclesImpl::GetNextDriver() -> TentacleDriver*
 {
   const auto driverIndex = static_cast<size_t>(m_driverWeights.GetRandomWeighted());
-  return m_tentacleDrivers[driverIndex].get();
+  return &m_tentacleDrivers[driverIndex];
 }
 
 inline auto TentaclesFx::TentaclesImpl::RefreshTentacles() -> void
@@ -260,7 +248,7 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     std::for_each(begin(m_tentacleDrivers),
                   end(m_tentacleDrivers),
                   [&weightedColorMaps](auto& driver)
-                  { driver->SetWeightedColorMaps(weightedColorMaps); });
+                  { driver.SetWeightedColorMaps(weightedColorMaps); });
   }
   else if (weightedColorMaps.id == DOMINANT_COLOR_TYPE)
   {
@@ -271,9 +259,6 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     m_weightedDominantLowColorMaps = weightedColorMaps.lowColorMaps;
     m_dominantLowColorMap =
         m_weightedDominantLowColorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
-
-    m_dominantDotColorMap =
-        m_weightedDominantMainColorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
   }
   else
   {
@@ -287,7 +272,7 @@ inline auto TentaclesFx::TentaclesImpl::SetZoomMidpoint(const Point2dInt& zoomMi
   std::for_each(begin(m_tentacleDrivers),
                 end(m_tentacleDrivers),
                 [&zoomMidpoint](auto& driver)
-                { driver->SetAllTentaclesEndCentrePos(zoomMidpoint); });
+                { driver.SetAllTentaclesEndCentrePos(zoomMidpoint); });
 }
 
 inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
@@ -299,8 +284,7 @@ inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
 
   m_timeWithThisDominantColor.ResetToZero();
 
-  m_currentTentacleDriver->SetDominantColorMaps(
-      m_dominantMainColorMap, m_dominantLowColorMap, m_dominantDotColorMap);
+  m_currentTentacleDriver->SetDominantColorMaps(m_dominantMainColorMap, m_dominantLowColorMap);
 }
 
 inline auto TentaclesFx::TentaclesImpl::Update() -> void

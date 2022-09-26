@@ -69,7 +69,7 @@ auto AllStandardVisualFx::GetDrawablesMap(Parallel& parallel,
       {GoomDrawables::LINES, std::make_unique<LinesFx>(fxHelper, smallBitmaps)},
       {GoomDrawables::SHAPES, std::make_unique<ShapesFx>(fxHelper)},
       {GoomDrawables::STARS, std::make_unique<FlyingStarsFx>(fxHelper, smallBitmaps)},
-      {GoomDrawables::TENTACLES, std::make_unique<TentaclesFx>(fxHelper, smallBitmaps)},
+      {GoomDrawables::TENTACLES, std::make_unique<TentaclesFx>(fxHelper)},
       {GoomDrawables::TUBES, std::make_unique<TubesFx>(fxHelper, smallBitmaps)},
   }}};
 }
@@ -150,7 +150,7 @@ auto AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawabl
 auto AllStandardVisualFx::GetActiveColorMapsNames() const -> std::unordered_set<std::string>
 {
   auto activeColorMapsNames = std::unordered_set<std::string>{};
-  activeColorMapsNames.emplace(std::string{"N/A"});
+  activeColorMapsNames.emplace("N/A");
 
   /**
   for (const auto& visualFx : m_drawablesMap)

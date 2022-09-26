@@ -10,66 +10,19 @@
 namespace GOOM::VISUAL_FX::TENTACLES
 {
 
-using COLOR::IColorMap;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using FX_UTILS::DotSizes;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
-using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
 
 static constexpr auto BRIGHTNESS                   = 3.0F;
-static constexpr auto DOT_BRIGHTNESS               = 1.5F;
 static constexpr auto NORMAL_BRIGHTNESS_CUT        = 1.0F;
 static constexpr auto AT_START_HEAD_BRIGHTNESS_CUT = 0.2F;
 
 static constexpr auto COORD_IGNORE_VAL    = -666;
 static constexpr auto PROJECTION_DISTANCE = 170.0F;
 
-static constexpr auto MIN_DOT_SIZE01_WEIGHT    = 150.0F;
-static constexpr auto MIN_DOT_SIZE02_WEIGHT    = 050.0F;
-static constexpr auto NORMAL_DOT_SIZE01_WEIGHT = 80.0F;
-static constexpr auto NORMAL_DOT_SIZE02_WEIGHT = 20.0F;
-static constexpr auto NORMAL_DOT_SIZE03_WEIGHT = 10.0F;
-
-TentaclePlotter::TentaclePlotter(IGoomDraw& draw,
-                                 const IGoomRand& goomRand,
-                                 const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{draw},
-    m_goomRand{goomRand},
-    m_dotDrawer{
-        m_draw,
-        m_goomRand,
-        smallBitmaps,
-          {
-              m_goomRand,
-              {
-                  {DotSizes::DOT_SIZE01, MIN_DOT_SIZE01_WEIGHT},
-                  {DotSizes::DOT_SIZE02, MIN_DOT_SIZE02_WEIGHT},
-              }
-          },
-          {
-              m_goomRand,
-              {
-                  {DotSizes::DOT_SIZE01, NORMAL_DOT_SIZE01_WEIGHT},
-                  {DotSizes::DOT_SIZE02, NORMAL_DOT_SIZE02_WEIGHT},
-                  {DotSizes::DOT_SIZE03, NORMAL_DOT_SIZE03_WEIGHT},
-              }
-          }
-    }
+TentaclePlotter::TentaclePlotter(IGoomDraw& draw) noexcept : m_draw{draw}
 {
-  m_dotDrawer.ChangeDotSizes();
-}
-
-auto TentaclePlotter::ChangeDotSizes() -> void
-{
-  m_dotDrawer.ChangeDotSizes();
-}
-
-auto TentaclePlotter::ChangeNumNodesBetweenDots() -> void
-{
-  m_numNodesBetweenDots =
-      m_goomRand.GetRandInRange(MIN_STEPS_BETWEEN_NODES, MAX_STEPS_BETWEEN_NODES + 1U);
 }
 
 auto TentaclePlotter::Plot3D(const Tentacle3D& tentacle) -> void
@@ -115,7 +68,6 @@ inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
   const auto colors = tentacle.GetMixedColors(nodeNum, m_dominantColors, brightness);
 
   DrawNodeLine(point1, point2, colors);
-  DrawNodeDot(nodeNum, point2, colors);
 }
 
 inline auto TentaclePlotter::DrawNodeLine(const Point2dInt point1,
@@ -124,23 +76,6 @@ inline auto TentaclePlotter::DrawNodeLine(const Point2dInt point1,
 {
   static constexpr auto THICKNESS = 1U;
   m_draw.Line(point1, point2, colors, THICKNESS);
-}
-
-inline auto TentaclePlotter::DrawNodeDot(const size_t nodeNum,
-                                         const Point2dInt point,
-                                         const MultiplePixels& colors) -> void
-{
-  if ((nodeNum % m_numNodesBetweenDots) != 0)
-  {
-    return;
-  }
-
-  const auto dotColors = MultiplePixels{
-      IColorMap::GetColorMix(colors[0], m_dominantDotColor, 0.5F),
-      IColorMap::GetColorMix(colors.at(1), m_dominantDotColor, 0.5F),
-  };
-
-  m_dotDrawer.DrawDot(point, dotColors, DOT_BRIGHTNESS);
 }
 
 inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) -> float

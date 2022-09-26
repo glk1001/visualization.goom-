@@ -21,7 +21,6 @@ using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
-using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 
 constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D::BaseYWeights
@@ -63,13 +62,12 @@ static const auto ITER_ZERO_Y_VAL_WAVE_ZERO_START =
 
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
                                const IGoomRand& goomRand,
-                               const SmallImageBitmaps& smallBitmaps,
                                const CirclesTentacleLayout& tentacleLayout) noexcept
   : m_draw{draw},
     m_goomRand{goomRand},
     m_tentacleLayout{tentacleLayout},
     m_tentacleParams{NUM_TENTACLE_NODES, TENTACLE_LENGTH, 1.0F, ITER_ZERO_Y_VAL_WAVE_ZERO_START},
-    m_tentaclePlotter{m_draw, m_goomRand, smallBitmaps},
+    m_tentaclePlotter{m_draw},
     m_tentacles{GetTentacles()}
 {
 }
@@ -149,19 +147,12 @@ auto TentacleDriver::CheckForTimerEvents() -> void
   }
 
   ChangeTentacleColorMaps();
-  UpdateTentaclePlotter();
 }
 
 auto TentacleDriver::ChangeTentacleColorMaps() -> void
 {
   std::for_each(
       begin(m_tentacles), end(m_tentacles), [](auto& tentacle) { tentacle.ChangeColorMaps(); });
-}
-
-inline auto TentacleDriver::UpdateTentaclePlotter() -> void
-{
-  m_tentaclePlotter.ChangeDotSizes();
-  m_tentaclePlotter.ChangeNumNodesBetweenDots();
 }
 
 auto TentacleDriver::SetAllTentaclesEndCentrePos(const Point2dInt& val) noexcept -> void
@@ -225,8 +216,7 @@ auto TentacleDriver::Update() -> void
     tentacle2D.Iterate();
 
     m_tentaclePlotter.SetDominantColors(
-        {m_dominantMainColorMap->GetColor(colorT()), m_dominantLowColorMap->GetColor(colorT())},
-        m_dominantDotColorMap->GetColor(colorT()));
+        {m_dominantMainColorMap->GetColor(colorT()), m_dominantLowColorMap->GetColor(colorT())});
 
     m_tentaclePlotter.Plot3D(tentacle);
 
