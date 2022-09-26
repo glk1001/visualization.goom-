@@ -155,9 +155,9 @@ static constexpr auto LAYOUT1_END_RADIUS = 100.0F;
 static constexpr auto LAYOUT2_END_RADIUS = 120.0F;
 static constexpr auto LAYOUT3_END_RADIUS = 130.0F;
 
-static constexpr auto LAYOUT0_NUM_POINTS = 20U;
-static constexpr auto LAYOUT1_NUM_POINTS = 30U;
-static constexpr auto LAYOUT2_NUM_POINTS = 40U;
+static constexpr auto LAYOUT0_NUM_POINTS = 40U;
+static constexpr auto LAYOUT1_NUM_POINTS = 50U;
+static constexpr auto LAYOUT2_NUM_POINTS = 70U;
 static constexpr auto LAYOUT3_NUM_POINTS = 150U;
 
 static constexpr auto DRIVERS_NUM0_WEIGHT = 50.0F;
