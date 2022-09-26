@@ -61,4 +61,7 @@ declare -r BUILD_ARGS="--build-arg OS_TYPE=${DOCKER_OS_TYPE} \
 
 docker build ${NO_CACHE} ${BUILD_ARGS} -t ${BUILD_IMAGE} -f Dockerfile .
 
+docker system prune -f
+
 popd > /dev/null
+

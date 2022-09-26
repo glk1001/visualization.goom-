@@ -163,6 +163,8 @@ declare -r BUILD_ARGS="--build-arg OS_TYPE=${KODI_IMAGE_OS_TYPE}             \
 
 docker build ${NO_CACHE} -t ${KODI_GOOM_IMAGE} ${BUILD_ARGS} -f Dockerfile .
 
+docker system prune -f
+
 copy_user_addon_files
 
 

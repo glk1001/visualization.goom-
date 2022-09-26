@@ -56,6 +56,9 @@ if [[ ! -d "${MUSIC_SHARE}" ]]; then
   exit 1
 fi
 
+declare -r IREXEC_CAPTURES=${KODI_CONTAINER_HOME_DIR_TO_USE}/temp/irexec.out
+rm -f "${IREXEC_CAPTURES}"
+
 echo "Running Goom using Docker image \"${KODI_GOOM_IMAGE}\"..."
 
 declare -r OLD_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)
@@ -82,7 +85,6 @@ x11docker -q                                          \
           --privileged                                \
           --ulimit core=-1                            \
           --mount type=bind,source=/tmp/,target=/tmp/ \
-          --rm                                        \
           -e "TZ=${TIME_ZONE}"                        \
           --                                          \
           ${KODI_GOOM_IMAGE}
