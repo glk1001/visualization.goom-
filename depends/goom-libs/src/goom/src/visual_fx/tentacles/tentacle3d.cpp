@@ -27,13 +27,9 @@ static constexpr auto MAIN_BRIGHTNESS_FACTOR = 0.5F;
 static constexpr auto LOW_BRIGHTNESS_FACTOR  = 1.0F;
 
 Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-                       const MultiplePixels& startColors,
-                       const size_t numStartNodes,
                        const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
-    m_tentacle{std::move(tentacle)},
-    m_startColors{startColors},
-    m_numStartNodes{numStartNodes}
+    m_tentacle{std::move(tentacle)}
 {
 }
 
@@ -72,11 +68,6 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
                                 const MultiplePixels& dominantColors,
                                 const float brightness) const -> MultiplePixels
 {
-  if (nodeNum < GetNumStartNodes())
-  {
-    return GetMixedColors(nodeNum, dominantColors);
-  }
-
   const auto mixedColors = GetMixedColors(nodeNum, dominantColors);
 
   return {
@@ -87,11 +78,6 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
 auto Tentacle3D::GetMixedColors(const size_t nodeNum, const MultiplePixels& dominantColors) const
     -> MultiplePixels
 {
-  if (nodeNum < GetNumStartNodes())
-  {
-    return GetMixedStartColors(nodeNum, dominantColors);
-  }
-
   static constexpr auto REPEAT_FREQUENCY = 3U;
   const auto nodeGroupSize               = Get2DTentacle().GetNumNodes() / REPEAT_FREQUENCY;
   const auto t =
@@ -113,25 +99,6 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum, const MultiplePixels& domi
   }
 
   return mixedColors;
-}
-
-inline auto Tentacle3D::GetMixedStartColors(size_t nodeNum,
-                                            const MultiplePixels& dominantColors) const
-    -> MultiplePixels
-{
-  const auto t =
-      0.5F *
-      (1.0F + (static_cast<float>(nodeNum + 1) / static_cast<float>(GetNumStartNodes() + 1)));
-
-  return {IColorMap::GetColorMix(GetMainColor(m_startColors), GetMainColor(dominantColors), t),
-          IColorMap::GetColorMix(GetLowColor(m_startColors), GetLowColor(dominantColors), t)};
-}
-
-auto Tentacle3D::SetStartPosOffset(const V3dFlt& val) noexcept -> void
-{
-  m_previousStartPosOffset = GetCurrentStartPostOffset();
-  m_startPosOffset         = val;
-  m_startPosOffsetT.Reset();
 }
 
 auto Tentacle3D::SetEndPosOffset(const V3dFlt& val) noexcept -> void

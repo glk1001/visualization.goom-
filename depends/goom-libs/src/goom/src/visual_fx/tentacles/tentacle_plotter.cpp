@@ -14,7 +14,6 @@ using COLOR::IColorMap;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using FX_UTILS::DotSizes;
-using STD20::pi;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;

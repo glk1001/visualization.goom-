@@ -2,7 +2,6 @@
 
 //#undef NO_LOGGING
 
-#include "color/color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "logging.h"
@@ -57,7 +56,6 @@ static constexpr auto TENT2D_Y_MIN          = 0.065736;
 static constexpr auto TENT2D_Y_MAX          = 10000.0;
 static constexpr auto TENTACLE_LENGTH       = 120.0F;
 static constexpr auto NUM_TENTACLE_NODES    = 100U;
-static constexpr auto START_MAIN_COLOR      = Pixel{5, 5, 5, MAX_ALPHA};
 static constexpr auto ITER_ZERO_LERP_FACTOR = 0.9F;
 
 static const auto ITER_ZERO_Y_VAL_WAVE_ZERO_START =
@@ -87,9 +85,6 @@ auto TentacleDriver::SetWeightedColorMaps(
 
 auto TentacleDriver::GetTentacles() const noexcept -> std::vector<Tentacle3D>
 {
-  // To hide the annoying flapping tentacle head, make near the start very dark.
-  const auto startColors = MultiplePixels{START_MAIN_COLOR, START_MAIN_COLOR};
-
   auto tentacles = std::vector<Tentacle3D>{};
 
   tentacles.reserve(m_tentacleLayout.GetNumPoints());
@@ -97,8 +92,7 @@ auto TentacleDriver::GetTentacles() const noexcept -> std::vector<Tentacle3D>
   {
     auto tentacle2D = CreateNewTentacle2D();
 
-    auto tentacle =
-        Tentacle3D{std::move(tentacle2D), startColors, Tentacle2D::MIN_NUM_NODES, m_goomRand};
+    auto tentacle = Tentacle3D{std::move(tentacle2D), m_goomRand};
 
     tentacle.SetStartPos(m_tentaclePlotter.GetCameraPosition() +
                          m_tentacleLayout.GetStartPoints().at(i));

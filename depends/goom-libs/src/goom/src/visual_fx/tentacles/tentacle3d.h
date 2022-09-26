@@ -30,8 +30,6 @@ class Tentacle3D
 public:
   Tentacle3D() noexcept = delete;
   Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-             const DRAW::MultiplePixels& startColors,
-             size_t numStartNodes,
              const UTILS::MATH::IGoomRand& goomRand) noexcept;
   Tentacle3D(const Tentacle3D&) noexcept = delete;
   Tentacle3D(Tentacle3D&&) noexcept      = default;
@@ -52,13 +50,9 @@ public:
   static constexpr float START_SMALL_X = 10.0F;
   [[nodiscard]] auto GetStartPos() const -> const V3dFlt&;
   auto SetStartPos(const V3dFlt& val) noexcept -> void;
-  auto SetStartPosOffset(const V3dFlt& val) noexcept -> void;
 
   auto SetEndPos(const V3dFlt& val) noexcept -> void;
   auto SetEndPosOffset(const V3dFlt& val) noexcept -> void;
-
-  [[nodiscard]] auto GetNumStartNodes() const -> size_t;
-  auto SetNumStartNodes(size_t val) -> void;
 
   [[nodiscard]] auto GetTentacleVertices() const -> std::vector<V3dFlt>;
   auto Update() noexcept -> void;
@@ -85,8 +79,6 @@ private:
   const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
                                              COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
-  DRAW::MultiplePixels m_startColors;
-  size_t m_numStartNodes;
   V3dFlt m_startPos{};
   V3dFlt m_startPosOffset{};
   V3dFlt m_previousStartPosOffset{};
@@ -103,9 +95,6 @@ private:
 
   [[nodiscard]] auto GetMixedColors(size_t nodeNum,
                                     const DRAW::MultiplePixels& dominantColors) const
-      -> DRAW::MultiplePixels;
-  [[nodiscard]] auto GetMixedStartColors(size_t nodeNum,
-                                         const DRAW::MultiplePixels& dominantColors) const
       -> DRAW::MultiplePixels;
 };
 
@@ -132,16 +121,6 @@ inline auto Tentacle3D::SetStartPos(const V3dFlt& val) noexcept -> void
 inline auto Tentacle3D::SetEndPos(const V3dFlt& val) noexcept -> void
 {
   m_endPos = val;
-}
-
-inline auto Tentacle3D::GetNumStartNodes() const -> size_t
-{
-  return m_numStartNodes;
-}
-
-inline auto Tentacle3D::SetNumStartNodes(const size_t val) -> void
-{
-  m_numStartNodes = val;
 }
 
 inline auto Tentacle3D::Update() noexcept -> void
