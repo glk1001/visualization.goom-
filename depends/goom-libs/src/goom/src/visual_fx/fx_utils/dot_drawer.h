@@ -4,6 +4,7 @@
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
+#include <cstdint>
 #include <vector>
 
 namespace GOOM
@@ -47,32 +48,35 @@ public:
             const UTILS::MATH::Weights<DotSizes>& minDotSizes,
             const UTILS::MATH::Weights<DotSizes>& normalDotSizes) noexcept;
 
-  void ChangeDotSizes();
+  auto ChangeDotSizes() noexcept -> void;
 
-  void DrawDot(const Point2dInt& point, const DRAW::MultiplePixels& colors, float brightness);
-  void DrawDot(DotSizes dotSize,
+  auto DrawDot(const Point2dInt& point,
+               const DRAW::MultiplePixels& colors,
+               float brightness) noexcept -> void;
+  auto DrawDot(DotSizes dotSize,
                const Point2dInt& point,
                const DRAW::MultiplePixels& colors,
-               float brightness);
+               float brightness) noexcept -> void;
 
 private:
   DRAW::IGoomDraw& m_goomDraw;
   const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   const GOOM::UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
 
-  static constexpr size_t MIN_IMAGE_DOT_SIZE = 3;
-  static constexpr size_t MAX_IMAGE_DOT_SIZE = 15;
-  size_t m_currentDotSize                    = MIN_IMAGE_DOT_SIZE;
-  bool m_beadedLook                          = false;
+  static constexpr uint32_t MIN_IMAGE_DOT_SIZE = 3;
+  static constexpr uint32_t MAX_IMAGE_DOT_SIZE = 15;
+  uint32_t m_currentDotSize                    = MIN_IMAGE_DOT_SIZE;
+  bool m_beadedLook                            = false;
   const UTILS::MATH::Weights<DotSizes> m_minDotSizes;
   const UTILS::MATH::Weights<DotSizes> m_normalDotSizes;
-  [[nodiscard]] auto GetNextDotSize(size_t maxSize) const -> size_t;
-  [[nodiscard]] auto GetImageBitmap(size_t size) const -> const UTILS::GRAPHICS::ImageBitmap&;
+  [[nodiscard]] auto GetNextDotSize(uint32_t maxSize) const noexcept -> uint32_t;
+  [[nodiscard]] auto GetImageBitmap(uint32_t size) const noexcept
+      -> const UTILS::GRAPHICS::ImageBitmap&;
 
-  void DrawDot(size_t dotSize,
+  auto DrawDot(uint32_t dotSize,
                const Point2dInt& point,
                const DRAW::MultiplePixels& colors,
-               float brightness);
+               float brightness) noexcept -> void;
 
   static constexpr UTILS::EnumMap<DotSizes, uint32_t> INT_DOT_SIZE{{{
       {DotSizes::DOT_SIZE01, 1U},

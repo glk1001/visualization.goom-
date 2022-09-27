@@ -34,7 +34,7 @@ DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
   static_assert(MAX_IMAGE_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 }
 
-void DotDrawer::ChangeDotSizes()
+auto DotDrawer::ChangeDotSizes() noexcept -> void
 {
   static constexpr auto MAX_DOT_SIZE     = 7U;
   m_currentDotSize                       = GetNextDotSize(MAX_DOT_SIZE);
@@ -42,27 +42,27 @@ void DotDrawer::ChangeDotSizes()
   m_beadedLook                           = m_goomRand.ProbabilityOf(PROB_BEADED_LOOK);
 }
 
-void DotDrawer::DrawDot(const DotSizes dotSize,
+auto DotDrawer::DrawDot(const DotSizes dotSize,
                         const Point2dInt& point,
                         const DRAW::MultiplePixels& colors,
-                        const float brightness)
+                        const float brightness) noexcept -> void
 {
   DrawDot(INT_DOT_SIZE[dotSize], point, colors, brightness);
 }
 
-void DotDrawer::DrawDot(const Point2dInt& point,
+auto DotDrawer::DrawDot(const Point2dInt& point,
                         const MultiplePixels& colors,
-                        const float brightness)
+                        const float brightness) noexcept -> void
 {
   const auto dotSize = not m_beadedLook ? m_currentDotSize : GetNextDotSize(MAX_IMAGE_DOT_SIZE);
 
   DrawDot(dotSize, point, colors, brightness);
 }
 
-inline void DotDrawer::DrawDot(size_t dotSize,
+inline auto DotDrawer::DrawDot(uint32_t dotSize,
                                const Point2dInt& point,
                                const MultiplePixels& colors,
-                               const float brightness)
+                               const float brightness) noexcept -> void
 {
   if (dotSize <= 1)
   {
@@ -85,7 +85,7 @@ inline void DotDrawer::DrawDot(size_t dotSize,
   m_goomDraw.Bitmap(point, bitmap, getColors);
 }
 
-auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t
+auto DotDrawer::GetNextDotSize(const uint32_t maxSize) const noexcept -> uint32_t
 {
   if (static constexpr auto MAX_MIN_DOT_SIZE = 7U; maxSize <= MAX_MIN_DOT_SIZE)
   {
@@ -94,7 +94,7 @@ auto DotDrawer::GetNextDotSize(const size_t maxSize) const -> size_t
   return INT_DOT_SIZE[m_normalDotSizes.GetRandomWeighted()];
 }
 
-inline auto DotDrawer::GetImageBitmap(const size_t size) const -> const ImageBitmap&
+inline auto DotDrawer::GetImageBitmap(const uint32_t size) const noexcept -> const ImageBitmap&
 {
   return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
                                        std::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
