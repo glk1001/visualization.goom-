@@ -62,6 +62,8 @@ auto Tentacle3D::ChangeColorMaps() -> void
       m_goomRand.ProbabilityOf(PROB_LOW_MIX_SAME)
           ? m_mainColorSegmentMixT
           : m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
+
+  m_nodeGroupSize = m_goomRand.GetRandInRange(Tentacle2D::MIN_NUM_NODES, m_tentacle->GetNumNodes());
 }
 
 auto Tentacle3D::GetMixedColors(const size_t nodeNum,
@@ -78,10 +80,8 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum,
 auto Tentacle3D::GetMixedColors(const size_t nodeNum, const MultiplePixels& dominantColors) const
     -> MultiplePixels
 {
-  static constexpr auto REPEAT_FREQUENCY = 3U;
-  const auto nodeGroupSize               = Get2DTentacle().GetNumNodes() / REPEAT_FREQUENCY;
   const auto t =
-      static_cast<float>(nodeNum % nodeGroupSize) / static_cast<float>(nodeGroupSize - 1);
+      static_cast<float>(nodeNum % m_nodeGroupSize) / static_cast<float>(m_nodeGroupSize - 1);
   const auto mainSegmentColor = m_colorMapsManager.GetColorMap(m_mainColorMapID).GetColor(t);
   const auto lowSegmentColor  = m_colorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
 

@@ -68,6 +68,7 @@ private:
       m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
   COLOR::RandomColorMapsManager::ColorMapId m_lowColorMapID{
       m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
+  uint32_t m_nodeGroupSize = m_tentacle->GetNumNodes();
 
   static constexpr float MIN_COLOR_SEGMENT_MIX_T     = 0.7F;
   static constexpr float MAX_COLOR_SEGMENT_MIX_T     = 1.0F;

@@ -153,6 +153,9 @@ auto TentacleDriver::ChangeTentacleColorMaps() -> void
 {
   std::for_each(
       begin(m_tentacles), end(m_tentacles), [](auto& tentacle) { tentacle.ChangeColorMaps(); });
+
+  m_tentacleGroupSize =
+      m_goomRand.GetRandInRange(MIN_TENTACLE_GROUP_SIZE, static_cast<uint32_t>(m_tentacles.size()));
 }
 
 auto TentacleDriver::SetAllTentaclesEndCentrePos(const Point2dInt& val) noexcept -> void
@@ -200,7 +203,7 @@ auto TentacleDriver::Update() -> void
 
   CheckForTimerEvents();
 
-  auto colorT = TValue{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(m_tentacles.size())};
+  auto colorT = TValue{TValue::StepType::SINGLE_CYCLE, m_tentacleGroupSize};
 
   for (auto i = 0U; i < m_tentacles.size(); ++i)
   {

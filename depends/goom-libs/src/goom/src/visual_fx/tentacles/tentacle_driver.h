@@ -78,8 +78,10 @@ private:
   std::vector<Tentacle3D> m_tentacles;
   [[nodiscard]] auto GetTentacles() const noexcept -> std::vector<Tentacle3D>;
   [[nodiscard]] auto CreateNewTentacle2D() const noexcept -> std::unique_ptr<Tentacle2D>;
-  const int32_t m_minPerspectiveAdjustmentOffset = m_screenMidpoint.y / 10;
-  const int32_t m_maxPerspectiveAdjustmentOffset = m_screenMidpoint.y / 5;
+  const int32_t m_minPerspectiveAdjustmentOffset    = m_screenMidpoint.y / 10;
+  const int32_t m_maxPerspectiveAdjustmentOffset    = m_screenMidpoint.y / 5;
+  uint32_t m_tentacleGroupSize                      = static_cast<uint32_t>(m_tentacles.size());
+  static constexpr uint32_t MIN_TENTACLE_GROUP_SIZE = 10U;
 
   size_t m_updateNum                                                     = 0U;
   static constexpr size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400U;
