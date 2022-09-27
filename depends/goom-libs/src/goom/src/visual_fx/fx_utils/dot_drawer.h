@@ -67,6 +67,7 @@ private:
   static constexpr uint32_t MAX_IMAGE_DOT_SIZE = 15;
   uint32_t m_currentDotSize                    = MIN_IMAGE_DOT_SIZE;
   bool m_beadedLook                            = false;
+  uint32_t m_maxBeadedDotSize                  = MAX_IMAGE_DOT_SIZE;
   const UTILS::MATH::Weights<DotSizes> m_minDotSizes;
   const UTILS::MATH::Weights<DotSizes> m_normalDotSizes;
   [[nodiscard]] auto GetNextDotSize(uint32_t maxSize) const noexcept -> uint32_t;
@@ -88,6 +89,8 @@ private:
       {DotSizes::DOT_SIZE07, 13U},
       {DotSizes::DOT_SIZE08, 15U},
   }}};
+  static_assert(INT_DOT_SIZE[static_cast<DotSizes>(UTILS::NUM<DotSizes> - 1)] <=
+                MAX_IMAGE_DOT_SIZE);
 };
 
 } // namespace VISUAL_FX::FX_UTILS
