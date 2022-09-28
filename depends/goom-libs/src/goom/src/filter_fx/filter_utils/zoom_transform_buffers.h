@@ -142,12 +142,13 @@ inline auto ZoomTransformBuffers::GetTranBuffLerpVal(const int32_t srceBuffVal,
                                                      const int32_t destBuffVal,
                                                      const uint32_t t) noexcept -> int32_t
 {
-  const auto diff      = destBuffVal - srceBuffVal;
-  const auto numerator = (srceBuffVal << MAX_TRAN_LERP_EXP) + (static_cast<int32_t>(t) * diff);
-  const auto result    = numerator >> MAX_TRAN_LERP_EXP;
+  const auto diff      = static_cast<int64_t>(destBuffVal - srceBuffVal);
+  const auto numerator = static_cast<int64_t>(t) * diff;
+  const auto result =
+      static_cast<int32_t>(static_cast<int64_t>(srceBuffVal) + (numerator >> MAX_TRAN_LERP_EXP));
 
-  if (const auto mod = numerator & static_cast<int32_t>(MAX_TRAN_LERP_VALUE - 1U);
-      mod >= static_cast<int32_t>(MAX_TRAN_LERP_VALUE / 2))
+  if (const auto mod = numerator & static_cast<int64_t>(MAX_TRAN_LERP_VALUE - 1U);
+      mod >= static_cast<int64_t>(MAX_TRAN_LERP_VALUE / 2))
   {
     return result + 1;
   }

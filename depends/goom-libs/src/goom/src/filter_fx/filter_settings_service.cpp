@@ -31,7 +31,7 @@ using UTILS::MATH::Weights;
 
 // For debugging:
 
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
+static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
@@ -42,7 +42,7 @@ using UTILS::MATH::Weights;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
-static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
