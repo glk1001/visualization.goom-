@@ -142,10 +142,10 @@ static constexpr auto LAYOUT1_START_RADIUS = 80.0F;
 static constexpr auto LAYOUT2_START_RADIUS = 100.0F;
 static constexpr auto LAYOUT3_START_RADIUS = 110.0F;
 
-static constexpr auto LAYOUT0_END_RADIUS = 100.0F;
-static constexpr auto LAYOUT1_END_RADIUS = 100.0F;
-static constexpr auto LAYOUT2_END_RADIUS = 120.0F;
-static constexpr auto LAYOUT3_END_RADIUS = 130.0F;
+static constexpr auto LAYOUT0_END_RADIUS = 80.0F;
+static constexpr auto LAYOUT1_END_RADIUS = 80.0F;
+static constexpr auto LAYOUT2_END_RADIUS = 100.0F;
+static constexpr auto LAYOUT3_END_RADIUS = 110.0F;
 
 static constexpr auto LAYOUT0_NUM_POINTS = 40U;
 static constexpr auto LAYOUT1_NUM_POINTS = 50U;
