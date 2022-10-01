@@ -53,9 +53,6 @@ static constexpr auto CONST_ZOOM_VECTOR_COORDS_1 = Point2dInt{16, 40};
 static constexpr auto CONST_ZOOM_VECTOR_COORDS_2 = Point2dInt{32, 52};
 static constexpr auto DUMMY_COORDS               = Point2dInt{14, 38};
 
-static constexpr auto NORMALIZED_MID_PT =
-    NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(MID_PT);
-
 static const auto MAX_TRAN_POINT = ZoomCoordTransforms::ScreenToTranPoint({WIDTH - 1, HEIGHT - 1});
 static const auto MID_TRAN_POINT = ZoomCoordTransforms::ScreenToTranPoint(MID_PT);
 
