@@ -52,8 +52,8 @@ auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const noexcept 
   return SourcePointInfo{srceScreenPoint, PRECALCULATED_COEFF_PTRS[xIndex][yIndex], isClipped};
 }
 
-inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos,
-                                                      bool& isClipped) const noexcept -> Point2dInt
+auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos, bool& isClipped) const noexcept
+    -> Point2dInt
 {
   return m_transformBuffers.GetSrceDestLerpBufferPoint(buffPos, isClipped);
 }

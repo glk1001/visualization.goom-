@@ -35,6 +35,19 @@ public:
   [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos, bool& isClipped) const noexcept
       -> Point2dInt;
 
+  [[nodiscard]] static auto GetTranBuffLerpPoint(Point2dInt srcePoint,
+                                                 Point2dInt destPoint,
+                                                 uint32_t t) noexcept -> Point2dInt;
+
+  [[nodiscard]] auto GetTranSrce(const size_t buffPos) const noexcept -> Point2dInt
+  {
+    return m_tranSrce[buffPos];
+  }
+  [[nodiscard]] auto GetTranDest(const size_t buffPos) const noexcept -> Point2dInt
+  {
+    return m_tranDest[buffPos];
+  }
+
 private:
   const Dimensions m_dimensions;
   const uint32_t m_bufferSize = m_dimensions.GetSize();
@@ -45,9 +58,6 @@ private:
   uint32_t m_tranLerpFactor = 0U;
 
   [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos) const noexcept -> Point2dInt;
-  [[nodiscard]] static auto GetTranBuffLerpPoint(Point2dInt srcePoint,
-                                                 Point2dInt destPoint,
-                                                 uint32_t t) noexcept -> Point2dInt;
   [[nodiscard]] static auto GetTranBuffLerpVal(int32_t srceBuffVal,
                                                int32_t destBuffVal,
                                                uint32_t t) noexcept -> int32_t;

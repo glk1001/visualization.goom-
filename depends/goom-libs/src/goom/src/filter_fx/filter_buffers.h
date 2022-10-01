@@ -78,10 +78,19 @@ public:
   };
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept -> SourcePointInfo;
 
+  [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos, bool& isClipped) const noexcept
+      -> Point2dInt;
+
+  [[nodiscard]] auto GetTransformBuffers() const noexcept
+      -> const FILTER_UTILS::ZoomTransformBuffers&
+  {
+    return m_transformBuffers;
+  }
+
 private:
   const Dimensions m_dimensions;
   const NormalizedCoordsConverter& m_normalizedCoordsConverter;
-  const FILTER_UTILS::ZoomCoordTransforms m_coordTransforms{m_normalizedCoordsConverter};
+  const FILTER_UTILS::ZoomCoordTransforms m_coordTransforms{m_dimensions};
 
   [[nodiscard]] auto GetMaxTranX() const noexcept -> uint32_t;
   [[nodiscard]] auto GetMaxTranY() const noexcept -> uint32_t;
@@ -90,8 +99,12 @@ private:
   const ZoomPointFunc m_getZoomPoint;
   const Point2dInt m_maxTranPoint = FILTER_UTILS::ZoomCoordTransforms::ScreenToTranPoint(
       {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1});
-  const uint32_t m_tranBuffStripeHeight =
-      m_dimensions.GetHeight() / FILTER_UTILS::ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS;
+  // 'NUM_STRIPE_GROUPS' controls how many updates before all stripes, and therefore,
+  // all the tran buffer is filled. We use stripes to spread the buffer update load
+  // over a number of updates. Too few and performance suffers periodically for a
+  // number of updates; too many, and performance suffers overall.
+  static constexpr uint32_t NUM_STRIPE_GROUPS = 16U;
+  const uint32_t m_tranBuffStripeHeight       = m_dimensions.GetHeight() / NUM_STRIPE_GROUPS;
   FILTER_UTILS::ZoomTransformBuffers m_transformBuffers{m_dimensions, m_maxTranPoint};
 
   Point2dInt m_buffMidpoint          = {0, 0};
@@ -109,8 +122,6 @@ private:
   auto FillTempTranBuffers() noexcept -> void;
   auto DoNextTempTranBuffersStripe(uint32_t tranBuffStripeHeight) noexcept -> void;
   auto GenerateWaterFxHorizontalBuffer() noexcept -> void;
-  [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos, bool& isClipped) const noexcept
-      -> Point2dInt;
   [[nodiscard]] auto GetTranPoint(const NormalizedCoords& normalized) const noexcept -> Point2dInt;
 };
 

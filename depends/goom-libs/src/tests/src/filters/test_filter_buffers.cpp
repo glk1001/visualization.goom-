@@ -28,6 +28,7 @@ using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::ZoomFilterEffectsSettings;
 using FILTER_FX::FILTER_UTILS::ZoomCoordTransforms;
+using FILTER_FX::FILTER_UTILS::ZoomTransformBuffers;
 using UTILS::Parallel;
 using UTILS::MATH::GoomRand;
 
@@ -106,7 +107,9 @@ auto TestZoomVector::GetZoomInPoint(const NormalizedCoords& coords) const noexce
   return (1.0F - m_zoomInCoeff) * coords;
 }
 
-const ZoomCoordTransforms COORD_TRANSFORMS{NORMALIZED_COORDS_CONVERTER};
+const ZoomCoordTransforms COORD_TRANSFORMS{
+    {WIDTH, HEIGHT}
+};
 
 auto GetSourcePoint(const ZoomFilterBuffers& filterBuffers, const size_t buffPos) -> Point2dInt
 {
@@ -263,7 +266,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
 
   static constexpr auto DUMMY_NML_COORDS =
       NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(DUMMY_COORDS);
-  static constexpr auto NML_CONST_ZOOM_VECTOR_COORDS1 =
+  static constexpr auto NML_CONST_ZOOM_VECTOR_COORDS_1 =
       NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1);
 
   SECTION("Correct Dest ZoomBufferTranPoint")
@@ -277,14 +280,14 @@ TEST_CASE("ZoomFilterBuffers Calculations")
 
     // tranPoint comes solely from the dest Zoom buffer which because we are using a
     // const ZoomVectorFunc, returns a const normalized value
-    UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_1.x = " << NML_CONST_ZOOM_VECTOR_COORDS1.GetX());
-    UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_1.y = " << NML_CONST_ZOOM_VECTOR_COORDS1.GetY());
+    UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_1.x = " << NML_CONST_ZOOM_VECTOR_COORDS_1.GetX());
+    UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_1.y = " << NML_CONST_ZOOM_VECTOR_COORDS_1.GetY());
     UNSCOPED_INFO("GetZoomInPoint(DUMMY_NML_COORDS).x = "
                   << constantZoomVector.GetZoomInPoint(DUMMY_NML_COORDS).GetX());
     UNSCOPED_INFO("GetZoomInPoint(DUMMY_NML_COORDS).y = "
                   << constantZoomVector.GetZoomInPoint(DUMMY_NML_COORDS).GetY());
     REQUIRE(
-        NML_CONST_ZOOM_VECTOR_COORDS1.Equals(constantZoomVector.GetZoomInPoint(DUMMY_NML_COORDS)));
+        NML_CONST_ZOOM_VECTOR_COORDS_1.Equals(constantZoomVector.GetZoomInPoint(DUMMY_NML_COORDS)));
     const auto normalizedMidPt =
         NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(filterBuffers.GetBuffMidpoint());
     const auto expectedNmlCoord1 = NormalizedCoords{
@@ -319,6 +322,47 @@ TEST_CASE("ZoomFilterBuffers Calculations")
     }
   }
 
+  SECTION("Correct Srce/Dest Points")
+  {
+    REQUIRE(CONST_ZOOM_VECTOR_COORDS_1 == constantZoomVector.GetConstCoords());
+    REQUIRE(MID_PT == filterBuffers.GetBuffMidpoint());
+
+    for (auto y = 0; y < static_cast<int32_t>(HEIGHT); ++y)
+    {
+      for (auto x = 0; x < static_cast<int32_t>(WIDTH); ++x)
+      {
+        REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS_1.Equals(
+            constantZoomVector.GetZoomInPoint(DUMMY_NML_COORDS)));
+
+        const auto codeSrceTranPoint =
+            filterBuffers.GetTransformBuffers().GetTranSrce(GetBuffPos(x, y));
+        UNSCOPED_INFO("codeSrceTranPoint.x = " << codeSrceTranPoint.x);
+        UNSCOPED_INFO("codeSrceTranPoint.y = " << codeSrceTranPoint.y);
+        const auto expectedSrceTranPoint = COORD_TRANSFORMS.ScreenToTranPoint({x, y});
+        UNSCOPED_INFO("expectedSrceTranPoint.x = " << expectedSrceTranPoint.x);
+        UNSCOPED_INFO("expectedSrceTranPoint.y = " << expectedSrceTranPoint.y);
+        REQUIRE(codeSrceTranPoint == expectedSrceTranPoint);
+
+        const auto codeDestTranPoint =
+            filterBuffers.GetTransformBuffers().GetTranDest(GetBuffPos(x, y));
+        UNSCOPED_INFO("codeDestTranPoint.x = " << codeDestTranPoint.x);
+        UNSCOPED_INFO("codeDestTranPoint.y = " << codeDestTranPoint.y);
+        const auto normalizedMidPt =
+            NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(filterBuffers.GetBuffMidpoint());
+        UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().x = " << filterBuffers.GetBuffMidpoint().x);
+        UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().y = " << filterBuffers.GetBuffMidpoint().y);
+        UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
+        UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());
+        const auto expectedDestTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(
+            normalizedMidPt + NormalizedCoords{NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(
+                                  CONST_ZOOM_VECTOR_COORDS_1)});
+        UNSCOPED_INFO("expectedDestTranPoint.x = " << expectedDestTranPoint.x);
+        UNSCOPED_INFO("expectedDestTranPoint.y = " << expectedDestTranPoint.y);
+        REQUIRE(codeDestTranPoint == expectedDestTranPoint);
+      }
+    }
+  }
+
   SECTION("Correct Srce/Dest ZoomBufferTranPoint")
   {
     REQUIRE(CONST_ZOOM_VECTOR_COORDS_1 == constantZoomVector.GetConstCoords());
@@ -336,25 +380,48 @@ TEST_CASE("ZoomFilterBuffers Calculations")
       for (auto x = 0; x < static_cast<int32_t>(WIDTH); ++x)
       {
         // tranPoint comes from halfway between srce and dest Zoom buffer.
-        REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS1.Equals(
+        REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS_1.Equals(
             constantZoomVector.GetZoomInPoint(DUMMY_NML_COORDS)));
-        const auto normalizedSrcePt =
-            NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(Point2dInt{x, y});
-        const auto expectedSrceTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(normalizedSrcePt);
+
+        const auto codeSrceTranPoint =
+            filterBuffers.GetTransformBuffers().GetTranSrce(GetBuffPos(x, y));
+        UNSCOPED_INFO("codeSrceTranPoint.x = " << codeSrceTranPoint.x);
+        UNSCOPED_INFO("codeSrceTranPoint.y = " << codeSrceTranPoint.y);
+        const auto expectedSrceTranPoint = COORD_TRANSFORMS.ScreenToTranPoint({x, y});
+        UNSCOPED_INFO("expectedSrceTranPoint.x = " << expectedSrceTranPoint.x);
+        UNSCOPED_INFO("expectedSrceTranPoint.y = " << expectedSrceTranPoint.y);
+
         const auto normalizedMidPt =
             NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(filterBuffers.GetBuffMidpoint());
         UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().x = " << filterBuffers.GetBuffMidpoint().x);
         UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().y = " << filterBuffers.GetBuffMidpoint().y);
         UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
         UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());
+        const auto codeDestTranPoint =
+            filterBuffers.GetTransformBuffers().GetTranDest(GetBuffPos(x, y));
+        UNSCOPED_INFO("codeDestTranPoint.x = " << codeDestTranPoint.x);
+        UNSCOPED_INFO("codeDestTranPoint.y = " << codeDestTranPoint.y);
         const auto expectedDestTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(
             normalizedMidPt + NormalizedCoords{NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(
                                   CONST_ZOOM_VECTOR_COORDS_1)});
+        UNSCOPED_INFO("expectedDestTranPoint.x = " << expectedDestTranPoint.x);
+        UNSCOPED_INFO("expectedDestTranPoint.y = " << expectedDestTranPoint.y);
+
+        bool isClipped = false;
+        const auto codeClippedTranPoint =
+            filterBuffers.GetZoomBufferTranPoint(GetBuffPos(x, y), isClipped);
+        UNSCOPED_INFO("codeClippedTranPoint.x = " << codeClippedTranPoint.x);
+        UNSCOPED_INFO("codeClippedTranPoint.y = " << codeClippedTranPoint.y);
+        const auto calculatedUnclippedTranPoint = ZoomTransformBuffers::GetTranBuffLerpPoint(
+            expectedSrceTranPoint, expectedDestTranPoint, tranLerpFactor);
+        UNSCOPED_INFO("calculatedUnclippedTranPoint.x = " << calculatedUnclippedTranPoint.x);
+        UNSCOPED_INFO("calculatedUnclippedTranPoint.y = " << calculatedUnclippedTranPoint.y);
         const auto expectedUnclippedTranPoint =
             Point2dInt{STD20::lerp(expectedSrceTranPoint.x, expectedDestTranPoint.x, T_LERP),
                        STD20::lerp(expectedSrceTranPoint.y, expectedDestTranPoint.y, T_LERP)};
         UNSCOPED_INFO("expectedUnclippedTranPoint.x = " << expectedUnclippedTranPoint.x);
         UNSCOPED_INFO("expectedUnclippedTranPoint.y = " << expectedUnclippedTranPoint.y);
+
         const auto expectedTranPoint =
             Point2dInt{std::clamp(expectedUnclippedTranPoint.x, 0, MAX_TRAN_POINT.x),
                        std::clamp(expectedUnclippedTranPoint.y, 0, MAX_TRAN_POINT.y)};

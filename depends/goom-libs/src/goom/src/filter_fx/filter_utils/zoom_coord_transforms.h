@@ -13,7 +13,7 @@ namespace GOOM::FILTER_FX::FILTER_UTILS
 class ZoomCoordTransforms
 {
 public:
-  explicit ZoomCoordTransforms(const NormalizedCoordsConverter& normalizedCoordsConverter) noexcept;
+  explicit ZoomCoordTransforms(const Dimensions& screenDimensions) noexcept;
 
   [[nodiscard]] static auto TranCoordToZoomCoeffIndexes(const Point2dInt& tranPoint) noexcept
       -> std::pair<uint32_t, uint32_t>;
@@ -25,13 +25,16 @@ public:
   [[nodiscard]] static auto ScreenToTranPoint(const Point2dInt& screenPoint) noexcept -> Point2dInt;
 
 private:
-  const NormalizedCoordsConverter& m_normalizedCoordsConverter;
+  const NormalizedCoordsConverter m_normalizedCoordsConverter;
   [[nodiscard]] static auto ScreenToTranCoord(float screenCoord) noexcept -> uint32_t;
 };
 
-inline ZoomCoordTransforms::ZoomCoordTransforms(
-    const NormalizedCoordsConverter& normalizedCoordsConverter) noexcept
-  : m_normalizedCoordsConverter{normalizedCoordsConverter}
+inline ZoomCoordTransforms::ZoomCoordTransforms(const Dimensions& screenDimensions) noexcept
+  : m_normalizedCoordsConverter{
+        {screenDimensions.GetWidth() << ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS_EXP,
+         screenDimensions.GetWidth() << ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS_EXP},
+        1.0F / static_cast<float>(ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS)
+}
 {
 }
 
@@ -67,10 +70,7 @@ inline auto ZoomCoordTransforms::TranCoordToZoomCoeffIndexes(const Point2dInt& t
 inline auto ZoomCoordTransforms::NormalizedToTranPoint(
     const NormalizedCoords& normalizedPoint) const noexcept -> Point2dInt
 {
-  const auto screenCoordsFlt =
-      m_normalizedCoordsConverter.NormalizedToScreenCoordsFlt(normalizedPoint);
-
-  return {ScreenToTranCoord(screenCoordsFlt.x), ScreenToTranCoord(screenCoordsFlt.y)};
+  return m_normalizedCoordsConverter.NormalizedToScreenCoordsFlt(normalizedPoint).ToInt();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_UTILS
