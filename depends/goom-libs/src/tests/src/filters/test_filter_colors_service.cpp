@@ -13,6 +13,7 @@ namespace GOOM::UNIT_TESTS
 
 using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterBuffers;
+using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::MAX_SUM_COEFFS;
 using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray;
 using UTILS::MATH::GoomRand;
 
@@ -20,9 +21,9 @@ static constexpr size_t WIDTH  = 120;
 static constexpr size_t HEIGHT = 70;
 static const auto GOOM_RAND    = GoomRand{};
 
-inline auto GetColor(const PixelChannelType red,
-                     const PixelChannelType green,
-                     const PixelChannelType blue) -> GOOM::Pixel
+constexpr auto GetColor(const PixelChannelType red,
+                        const PixelChannelType green,
+                        const PixelChannelType blue) -> GOOM::Pixel
 {
   return Pixel{red, green, blue, MAX_ALPHA};
 }
@@ -48,13 +49,14 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
   static constexpr auto GREEN4 = 200U;
   static constexpr auto BLUE4  = 60U;
 
-  static constexpr auto MAX_SUM_COEFF = channel_limits<uint32_t>::max() + 1U;
-
-  const auto coeffs = NeighborhoodCoeffArray{
-      {50, 60, 70, 76}
+  static constexpr auto COEFFS = NeighborhoodCoeffArray{
+      {(50 * MAX_SUM_COEFFS) / (MAX_COLOR_VAL + 1),
+       (60 * MAX_SUM_COEFFS) / (MAX_COLOR_VAL + 1),
+       (70 * MAX_SUM_COEFFS) / (MAX_COLOR_VAL + 1),
+       (76 * MAX_SUM_COEFFS) / (MAX_COLOR_VAL + 1)}
   };
-  REQUIRE(MAX_SUM_COEFF == std::accumulate(cbegin(coeffs), cend(coeffs), 0U));
-  REQUIRE(4 == coeffs.size());
+  REQUIRE(MAX_SUM_COEFFS == std::accumulate(cbegin(COEFFS), cend(COEFFS), 0U));
+  REQUIRE(4 == COEFFS.size());
   // GCC Won't link with this:  REQUIRE(PixelBuffer::NUM_NBRS == coeffs.val.size());
 
   SECTION("Correct new color")
@@ -62,9 +64,9 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
     static constexpr auto X = 5;
     static constexpr auto Y = 5;
 
-    const auto sourcePointInfo = ZoomFilterBuffers::SourcePointInfo{
+    static constexpr auto SOURCE_POINT_INFO = ZoomFilterBuffers::SourcePointInfo{
         {static_cast<int32_t>(X), static_cast<int32_t>(Y)},
-        &coeffs, false
+        &COEFFS, false
     };
 
     pixelBuffer(X, Y)         = GetColor(RED1, GREEN1, BLUE1);
@@ -72,23 +74,24 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
     pixelBuffer(X, Y + 1)     = GetColor(RED3, GREEN3, BLUE3);
     pixelBuffer(X + 1, Y + 1) = GetColor(RED4, GREEN4, BLUE4);
 
-    const auto expectedR =
-        (coeffs[0] * RED1 + coeffs[1] * RED2 + coeffs[2] * RED3 + coeffs[3] * RED4) / MAX_SUM_COEFF;
-    const auto expectedG =
-        (coeffs[0] * GREEN1 + coeffs[1] * GREEN2 + coeffs[2] * GREEN3 + coeffs[3] * GREEN4) /
-        MAX_SUM_COEFF;
-    const auto expectedB =
-        (coeffs[0] * BLUE1 + coeffs[1] * BLUE2 + coeffs[2] * BLUE3 + coeffs[3] * BLUE4) /
-        MAX_SUM_COEFF;
+    static constexpr auto EXPECTED_R =
+        (COEFFS[0] * RED1 + COEFFS[1] * RED2 + COEFFS[2] * RED3 + COEFFS[3] * RED4) /
+        MAX_SUM_COEFFS;
+    static constexpr auto EXPECTED_G =
+        (COEFFS[0] * GREEN1 + COEFFS[1] * GREEN2 + COEFFS[2] * GREEN3 + COEFFS[3] * GREEN4) /
+        MAX_SUM_COEFFS;
+    static constexpr auto EXPECTED_B =
+        (COEFFS[0] * BLUE1 + COEFFS[1] * BLUE2 + COEFFS[2] * BLUE3 + COEFFS[3] * BLUE4) /
+        MAX_SUM_COEFFS;
 
-    const auto expectedColor = GetColor(expectedR, expectedG, expectedB);
-    const auto pixelNeighbours =
-        pixelBuffer.Get4RHBNeighbours(sourcePointInfo.screenPoint.x, sourcePointInfo.screenPoint.y);
-    const auto newColor = filterColorsService.GetNewColor(sourcePointInfo, pixelNeighbours);
+    static constexpr auto EXPECTED_COLOR = GetColor(EXPECTED_R, EXPECTED_G, EXPECTED_B);
+    const auto pixelNeighbours = pixelBuffer.Get4RHBNeighbours(SOURCE_POINT_INFO.screenPoint.x,
+                                                               SOURCE_POINT_INFO.screenPoint.y);
+    const auto newColor = filterColorsService.GetNewColor(SOURCE_POINT_INFO, pixelNeighbours);
 
-    UNSCOPED_INFO("expectedColor = " << expectedColor.ToString());
+    UNSCOPED_INFO("expectedColor = " << EXPECTED_COLOR.ToString());
     UNSCOPED_INFO("newColor = " << newColor.ToString());
-    REQUIRE(expectedColor == newColor);
+    REQUIRE(EXPECTED_COLOR == newColor);
   }
 }
 

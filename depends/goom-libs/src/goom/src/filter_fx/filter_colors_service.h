@@ -43,8 +43,7 @@ private:
   static_assert(ALLOWED_NUM_NEIGHBORS == FILTER_UTILS::ZOOM_FILTER_COEFFS::NUM_NEIGHBOR_COEFFS);
   std::array<uint32_t, ALLOWED_NUM_NEIGHBORS> m_reorderedColorIndexes{0, 1, 2, 3};
 
-  static constexpr uint32_t MAX_SUM_COEFFS = channel_limits<uint32_t>::max() + 1;
-  libdivide::divider<uint32_t> m_coeffsAndBrightnessFastDivisor{MAX_SUM_COEFFS};
+  libdivide::divider<uint32_t> m_coeffsAndBrightnessFastDivisor{FILTER_UTILS::ZOOM_FILTER_COEFFS::MAX_SUM_COEFFS};
 
   [[nodiscard]] auto GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
                                       const NeighborhoodPixelArray& pixels) const noexcept -> Pixel;
@@ -68,7 +67,7 @@ inline auto FilterColorsService::SetBrightness(const float brightness) noexcept 
   //
   //  (c/x) * (m/n) = (c*m) / (x*n) = c / (x*n / m)
 
-  static constexpr auto X = MAX_SUM_COEFFS;
+  static constexpr auto X = FILTER_UTILS::ZOOM_FILTER_COEFFS::MAX_SUM_COEFFS;
   static constexpr auto N = channel_limits<uint32_t>::max();
   const auto m = std::max(1U, static_cast<uint32_t>(brightness * channel_limits<float>::max()));
 

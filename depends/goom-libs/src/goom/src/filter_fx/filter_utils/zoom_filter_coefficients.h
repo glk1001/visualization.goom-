@@ -11,9 +11,10 @@
 namespace GOOM::FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS
 {
 
-static constexpr auto DIM_FILTER_COEFFS_EXP = 4U;
-static constexpr auto DIM_FILTER_COEFFS     = GOOM::UTILS::MATH::PowerOf2(DIM_FILTER_COEFFS_EXP);
+static constexpr auto DIM_FILTER_COEFFS_EXP = 6U;
+static constexpr auto DIM_FILTER_COEFFS     = UTILS::MATH::PowerOf2(DIM_FILTER_COEFFS_EXP);
 static constexpr auto DIM_FILTER_COEFFS_MOD_MASK = DIM_FILTER_COEFFS - 1U;
+static constexpr auto MAX_SUM_COEFFS = UTILS::MATH::Sq(DIM_FILTER_COEFFS);
 static constexpr auto NUM_NEIGHBOR_COEFFS        = 4U;
 
 using NeighborhoodPixelArray = std::array<Pixel, NUM_NEIGHBOR_COEFFS>;
@@ -38,20 +39,6 @@ constexpr auto GetNeighborhoodCoeffArray(const uint32_t coeffH, const uint32_t c
   };
   // clang-format on
 
-  // We want to decrement just one coefficient so that the sum of
-  // coefficients equals 255. We'll choose the max coefficient.
-  const auto maxCoeff = *std::max_element(cbegin(coeffs), cend(coeffs));
-  Ensures(maxCoeff > 0);
-
-  for (auto& coeff : coeffs)
-  {
-    if (maxCoeff == coeff)
-    {
-      --coeff;
-      break;
-    }
-  }
-
   // Get the sum and check it.
   // TODO(glk) - Can use std::accumulate with C++20.
   // Ensures(std::accumulate(cbegin(coeffs), cend(coeffs), 0U) == channel_limits<uint32_t>::max());
@@ -61,7 +48,7 @@ constexpr auto GetNeighborhoodCoeffArray(const uint32_t coeffH, const uint32_t c
     coeffsSum += coeff;
   }
   UNUSED_FOR_NDEBUG(coeffsSum);
-  Ensures(coeffsSum == channel_limits<uint32_t>::max());
+  Ensures(coeffsSum == MAX_SUM_COEFFS);
 
   /**
   LogInfo("{:2}, {:2}:  {:3}, {:3}, {:3}, {:3} - sum: {:3}",
