@@ -11,7 +11,7 @@
 namespace GOOM::FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS
 {
 
-static constexpr auto DIM_FILTER_COEFFS_EXP = 6U;
+static constexpr auto DIM_FILTER_COEFFS_EXP = 4U;
 static constexpr auto DIM_FILTER_COEFFS     = UTILS::MATH::PowerOf2(DIM_FILTER_COEFFS_EXP);
 static constexpr auto DIM_FILTER_COEFFS_MOD_MASK = DIM_FILTER_COEFFS - 1U;
 static constexpr auto MAX_SUM_COEFFS = UTILS::MATH::Sq(DIM_FILTER_COEFFS);
