@@ -7,6 +7,10 @@
 namespace GOOM
 {
 
+namespace UTILS::MATH
+{
+class IGoomRand;
+}
 namespace DRAW
 {
 class IGoomDraw;
@@ -19,23 +23,25 @@ class TentaclePlotter
 {
 public:
   TentaclePlotter() noexcept = delete;
-  explicit TentaclePlotter(DRAW::IGoomDraw& draw) noexcept;
+  TentaclePlotter(DRAW::IGoomDraw& draw, const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  [[nodiscard]] auto GetCameraPosition() const noexcept -> V3dFlt;
+  auto UpdateCameraPosition() noexcept -> void;
+  auto SetDominantColors(const DRAW::MultiplePixels& dominantColors) noexcept -> void;
 
-  auto SetDominantColors(const DRAW::MultiplePixels& dominantColors) -> void;
-
-  auto Plot3D(const Tentacle3D& tentacle) -> void;
+  auto Plot3D(const Tentacle3D& tentacle) noexcept -> void;
 
 private:
   DRAW::IGoomDraw& m_draw;
+  const UTILS::MATH::IGoomRand& m_goomRand;
   const Vec2dInt m_screenMidPoint{
       MidpointFromOrigin({m_draw.GetScreenWidth(), m_draw.GetScreenHeight()})};
 
-  static constexpr auto CAMERA_X_OFFSET     = 0.0F;
-  static constexpr auto CAMERA_Y_OFFSET     = 0.0F;
-  static constexpr auto CAMERA_Z_OFFSET     = 20.0F;
-  const V3dFlt m_cameraPosition{CAMERA_X_OFFSET, CAMERA_Y_OFFSET, CAMERA_Z_OFFSET};
+  static constexpr auto MIN_CAMERA_X_OFFSET = -10.0F;
+  static constexpr auto MAX_CAMERA_X_OFFSET = +10.0F;
+  static constexpr auto MIN_CAMERA_Y_OFFSET = -10.0F;
+  static constexpr auto MAX_CAMERA_Y_OFFSET = +10.0F;
+  static constexpr auto CAMERA_Z_OFFSET     = +20.0F;
+  V3dFlt m_cameraPosition{0.0F, 0.0F, CAMERA_Z_OFFSET};
   DRAW::MultiplePixels m_dominantColors{};
 
   auto DrawNode(const Tentacle3D& tentacle,
@@ -54,12 +60,15 @@ private:
       -> std::vector<Point2dInt>;
 };
 
-inline auto TentaclePlotter::GetCameraPosition() const noexcept -> V3dFlt
+inline auto TentaclePlotter::UpdateCameraPosition() noexcept -> void
 {
-  return m_cameraPosition;
+  m_cameraPosition = {m_goomRand.GetRandInRange(MIN_CAMERA_X_OFFSET, MAX_CAMERA_X_OFFSET + 1U),
+                      m_goomRand.GetRandInRange(MIN_CAMERA_Y_OFFSET, MAX_CAMERA_Y_OFFSET + 1U),
+                      m_cameraPosition.z};
 }
 
-inline auto TentaclePlotter::SetDominantColors(const DRAW::MultiplePixels& dominantColors) -> void
+inline auto TentaclePlotter::SetDominantColors(const DRAW::MultiplePixels& dominantColors) noexcept
+    -> void
 {
   m_dominantColors = dominantColors;
 }

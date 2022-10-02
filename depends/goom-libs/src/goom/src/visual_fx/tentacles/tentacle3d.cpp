@@ -108,25 +108,19 @@ auto Tentacle3D::SetEndPosOffset(const V3dFlt& val) noexcept -> void
   m_endPosOffsetT.Reset();
 }
 
-inline auto Tentacle3D::GetCurrentStartPostOffset() const noexcept -> V3dFlt
-{
-  return lerp(m_previousStartPosOffset, m_startPosOffset, m_startPosOffsetT());
-}
-
 inline auto Tentacle3D::GetCurrentEndPostOffset() const noexcept -> V3dFlt
 {
   return lerp(m_previousEndPosOffset, m_endPosOffset, m_endPosOffsetT());
 }
 
-auto Tentacle3D::GetTentacleVertices() const -> std::vector<V3dFlt>
+auto Tentacle3D::GetTentacleVertices(const V3dFlt& startPosOffset) const -> std::vector<V3dFlt>
 {
   const auto& [xVec2D, yVec2D] = m_tentacle->GetDampedXAndYVectors();
 
   const auto n = xVec2D.size();
   auto vec3d   = std::vector<V3dFlt>(n);
 
-  const auto startPosOffset = GetCurrentStartPostOffset();
-  const auto endPosOffset   = GetCurrentEndPostOffset();
+  const auto endPosOffset = GetCurrentEndPostOffset();
 
   const auto x0 = m_startPos.x + startPosOffset.x;
   const auto xn = m_endPos.x + endPosOffset.x;

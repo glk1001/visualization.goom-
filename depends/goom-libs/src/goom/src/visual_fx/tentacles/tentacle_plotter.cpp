@@ -5,6 +5,7 @@
 #include "draw/goom_draw.h"
 #include "logging.h"
 #include "point2d.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
 namespace GOOM::VISUAL_FX::TENTACLES
@@ -12,6 +13,7 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
+using UTILS::MATH::IGoomRand;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
 static constexpr auto BRIGHTNESS                   = 3.0F;
@@ -21,14 +23,15 @@ static constexpr auto AT_START_HEAD_BRIGHTNESS_CUT = 0.2F;
 static constexpr auto COORD_IGNORE_VAL    = -666;
 static constexpr auto PROJECTION_DISTANCE = 170.0F;
 
-TentaclePlotter::TentaclePlotter(IGoomDraw& draw) noexcept : m_draw{draw}
+TentaclePlotter::TentaclePlotter(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
+  : m_draw{draw}, m_goomRand{goomRand}
 {
 }
 
-auto TentaclePlotter::Plot3D(const Tentacle3D& tentacle) -> void
+auto TentaclePlotter::Plot3D(const Tentacle3D& tentacle) noexcept -> void
 {
   const auto brightness = GetBrightness(tentacle);
-  const auto points3D   = tentacle.GetTentacleVertices();
+  const auto points3D   = tentacle.GetTentacleVertices(m_cameraPosition);
 
   PlotPoints(tentacle, brightness, points3D);
 }

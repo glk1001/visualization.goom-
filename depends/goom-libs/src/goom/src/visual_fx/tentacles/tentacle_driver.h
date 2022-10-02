@@ -44,9 +44,11 @@ public:
   auto StartIterating() -> void;
 
   auto SetAllTentaclesEndCentrePos(const Point2dInt& val) noexcept -> void;
-  [[nodiscard]] auto GetAdjustedCentrePos(const Point2dInt& val) const noexcept -> V3dFlt;
-  [[nodiscard]] auto GetPerspectiveAdjustedEndCentrePos(
+  [[nodiscard]] auto GetAcceptableCentrePosOffset(
       const Point2dInt& requestedCentrePos) const noexcept -> Point2dInt;
+  [[nodiscard]] static auto GetNewRadiusCentrePosOffset(
+      float radiusScale, const V3dFlt& endPosFlt, const Point2dInt& oldCentreEndPosOffset) noexcept
+      -> V3dFlt;
 
   auto MultiplyIterZeroYValWaveFreq(float value) -> void;
   auto SetDominantColorMaps(const std::shared_ptr<const COLOR::IColorMap>& dominantMainColorMap,
@@ -60,7 +62,6 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint =
       MidpointFromOrigin({m_draw.GetScreenWidth(), m_draw.GetScreenHeight()});
-  const CirclesTentacleLayout& m_tentacleLayout;
 
   std::shared_ptr<const COLOR::IColorMap> m_dominantMainColorMap{};
   std::shared_ptr<const COLOR::IColorMap> m_dominantLowColorMap{};
@@ -76,12 +77,14 @@ private:
   TentaclePlotter m_tentaclePlotter;
 
   std::vector<Tentacle3D> m_tentacles;
-  [[nodiscard]] auto GetTentacles() const noexcept -> std::vector<Tentacle3D>;
+  [[nodiscard]] auto GetTentacles(const CirclesTentacleLayout& tentacleLayout) const noexcept
+      -> std::vector<Tentacle3D>;
   [[nodiscard]] auto CreateNewTentacle2D() const noexcept -> std::unique_ptr<Tentacle2D>;
-  const int32_t m_minPerspectiveAdjustmentOffset    = m_screenMidpoint.y / 10;
-  const int32_t m_maxPerspectiveAdjustmentOffset    = m_screenMidpoint.y / 5;
   uint32_t m_tentacleGroupSize                      = static_cast<uint32_t>(m_tentacles.size());
   static constexpr uint32_t MIN_TENTACLE_GROUP_SIZE = 10U;
+
+  static constexpr float MIN_RADIUS_FACTOR = 0.5F;
+  static constexpr float MAX_RADIUS_FACTOR = 1.0F;
 
   size_t m_updateNum                                                     = 0U;
   static constexpr size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400U;

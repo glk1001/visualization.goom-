@@ -47,14 +47,16 @@ public:
                                     const DRAW::MultiplePixels& dominantColors,
                                     float brightness) const -> DRAW::MultiplePixels;
 
+  // NOTE: All positions are relative to a zero origin.
   static constexpr float START_SMALL_X = 10.0F;
   [[nodiscard]] auto GetStartPos() const -> const V3dFlt&;
   auto SetStartPos(const V3dFlt& val) noexcept -> void;
 
+  [[nodiscard]] auto GetEndPos() const -> const V3dFlt&;
   auto SetEndPos(const V3dFlt& val) noexcept -> void;
   auto SetEndPosOffset(const V3dFlt& val) noexcept -> void;
 
-  [[nodiscard]] auto GetTentacleVertices() const -> std::vector<V3dFlt>;
+  [[nodiscard]] auto GetTentacleVertices(const V3dFlt& startPosOffset) const -> std::vector<V3dFlt>;
   auto Update() noexcept -> void;
 
 private:
@@ -81,17 +83,13 @@ private:
                                              COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   V3dFlt m_startPos{};
-  V3dFlt m_startPosOffset{};
-  V3dFlt m_previousStartPosOffset{};
   V3dFlt m_endPos{};
   V3dFlt m_endPosOffset{};
   V3dFlt m_previousEndPosOffset{};
 
   static constexpr uint32_t NUM_POS_OFFSET_STEPS = 100;
-  UTILS::TValue m_startPosOffsetT{UTILS::TValue::StepType::SINGLE_CYCLE, NUM_POS_OFFSET_STEPS};
   UTILS::TValue m_endPosOffsetT{UTILS::TValue::StepType::SINGLE_CYCLE, NUM_POS_OFFSET_STEPS};
 
-  [[nodiscard]] auto GetCurrentStartPostOffset() const noexcept -> V3dFlt;
   [[nodiscard]] auto GetCurrentEndPostOffset() const noexcept -> V3dFlt;
 
   [[nodiscard]] auto GetMixedColors(size_t nodeNum,
@@ -119,6 +117,11 @@ inline auto Tentacle3D::SetStartPos(const V3dFlt& val) noexcept -> void
   m_startPos = val;
 }
 
+inline auto Tentacle3D::GetEndPos() const -> const V3dFlt&
+{
+  return m_endPos;
+}
+
 inline auto Tentacle3D::SetEndPos(const V3dFlt& val) noexcept -> void
 {
   m_endPos = val;
@@ -126,7 +129,6 @@ inline auto Tentacle3D::SetEndPos(const V3dFlt& val) noexcept -> void
 
 inline auto Tentacle3D::Update() noexcept -> void
 {
-  m_startPosOffsetT.Increment();
   m_endPosOffsetT.Increment();
 }
 

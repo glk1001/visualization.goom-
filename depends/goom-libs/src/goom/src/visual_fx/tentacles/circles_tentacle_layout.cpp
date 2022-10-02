@@ -18,12 +18,14 @@ static constexpr auto ANGLE_FINISH   = ANGLE_START + TWO_PI;
 CirclesTentacleLayout::CirclesTentacleLayout(const float startRadius,
                                              const float endRadius,
                                              const uint32_t numPoints) noexcept
-  : m_startPoints{GetSamplePoints(startRadius, numPoints)},
-    m_endPoints{GetSamplePoints(endRadius, numPoints)}
+  : m_startPoints{GetCirclePoints(startRadius, numPoints)},
+    m_endPoints{GetCirclePoints(endRadius, numPoints)},
+    m_startRadius{startRadius},
+    m_endRadius{endRadius}
 {
 }
 
-auto CirclesTentacleLayout::GetSamplePoints(const float radius, const uint32_t numPoints) noexcept
+auto CirclesTentacleLayout::GetCirclePoints(float radius, uint32_t numPoints) noexcept
     -> std::vector<V3dFlt>
 {
   auto pointsVec = std::vector<V3dFlt>{};
