@@ -8,8 +8,6 @@
 #include <cstdint>
 #include <format>
 #include <map>
-#include <stdexcept>
-#include <type_traits>
 #include <vector>
 
 namespace GOOM::UTILS::MATH
@@ -52,7 +50,12 @@ template<class E>
 class Weights
 {
 public:
-  using EventWeightPairs = std::vector<std::pair<E, float>>;
+  struct KeyValue
+  {
+    E key;
+    float weight;
+  };
+  using EventWeightPairs = std::vector<KeyValue>;
 
   Weights(const IGoomRand& goomRand, const EventWeightPairs& weights) noexcept;
 
@@ -80,8 +83,12 @@ template<class E>
 class ConditionalWeights
 {
 public:
-  // Array of pairs: 'given' enum and corresponding array of weight multipliers.
-  using EventWeightMultiplierPairs = std::vector<std::pair<E, std::map<E, float>>>;
+  struct KeyValue
+  {
+    E key;
+    std::map<E, float> weightMultipliers;
+  };
+  using EventWeightMultiplierPairs = std::vector<KeyValue>;
 
   ConditionalWeights(const IGoomRand& goomRand,
                      const typename Weights<E>::EventWeightPairs& eventWeightPairs,
@@ -119,10 +126,8 @@ inline auto IGoomRand::GetRandInRange(const NumberRange<T>& numberRange) const n
 template<class RandomIt>
 inline void IGoomRand::Shuffle(RandomIt first, RandomIt last) const noexcept
 {
-  using DiffType = typename std::iterator_traits<RandomIt>::difference_type;
-
-  const DiffType n = last - first;
-  for (DiffType i = n - 1; i > 0; --i)
+  const auto n = last - first;
+  for (auto i = n - 1; i > 0; --i)
   {
     std::swap(first[i], first[GetRandInRange(0, static_cast<int32_t>(i + 1))]);
   }
@@ -150,10 +155,10 @@ inline auto Weights<E>::GetWeights(const EventWeightPairs& eventWeightPairs) noe
 template<class E>
 inline auto Weights<E>::GetSumOfWeights(const EventWeightPairs& eventWeightPairs) noexcept -> float
 {
-  float sumOfWeights = 0.0F;
+  auto sumOfWeights = 0.0F;
   for (const auto& eventWeightPair : eventWeightPairs)
   {
-    sumOfWeights += eventWeightPair.second;
+    sumOfWeights += eventWeightPair.weight;
   }
   return sumOfWeights - SMALL_FLOAT;
 }
@@ -167,7 +172,7 @@ inline auto Weights<E>::GetNumElements() const noexcept -> size_t
 template<class E>
 inline auto Weights<E>::GetWeight(const E& enumClass) const noexcept -> float
 {
-  for (size_t i = 0; i < m_weights.size(); ++i)
+  for (auto i = 0U; i < m_weights.size(); ++i)
   {
     if (static_cast<E>(i) == enumClass)
     {
@@ -193,13 +198,13 @@ inline auto Weights<E>::GetRandomWeighted() const noexcept -> E
 template<class E>
 inline auto Weights<E>::GetRandomWeighted(const E& given) const noexcept -> E
 {
-  const float sumOfWeights = (given == E::_num)
-                                 ? m_sumOfWeights
-                                 : (m_sumOfWeights - m_weights[static_cast<size_t>(given)]);
+  const auto sumOfWeights = (given == E::_num)
+                                ? m_sumOfWeights
+                                : (m_sumOfWeights - m_weights[static_cast<size_t>(given)]);
 
-  float randVal = m_goomRand.GetRandInRange(0.0F, sumOfWeights);
+  auto randVal = m_goomRand.GetRandInRange(0.0F, sumOfWeights);
 
-  for (size_t i = 0; i < m_weights.size(); ++i)
+  for (auto i = 0U; i < m_weights.size(); ++i)
   {
     if (static_cast<E>(i) == given)
     {
@@ -286,19 +291,16 @@ auto ConditionalWeights<E>::GetConditionalWeightMap(
     const EventWeightMultiplierPairs& weightMultiplierPairs) noexcept -> std::map<E, Weights<E>>
 {
   auto conditionalWeights = std::map<E, Weights<E>>{};
-  for (const auto& weightMultiplierPair : weightMultiplierPairs)
+  for (const auto& [given, multiplierPairs] : weightMultiplierPairs)
   {
-    const auto& given           = weightMultiplierPair.first;
-    const auto& multiplierPairs = weightMultiplierPair.second;
-
     typename Weights<E>::EventWeightPairs newEventWeightPairs = eventWeightPairs;
     for (auto& newEventWeightPair : newEventWeightPairs)
     {
-      if (multiplierPairs.find(newEventWeightPair.first) == cend(multiplierPairs))
+      if (multiplierPairs.find(newEventWeightPair.key) == cend(multiplierPairs))
       {
         continue;
       }
-      newEventWeightPair.second *= multiplierPairs.at(newEventWeightPair.first);
+      newEventWeightPair.weight *= multiplierPairs.at(newEventWeightPair.key);
     }
 
     conditionalWeights.emplace(given, Weights<E>{goomRand, newEventWeightPairs});

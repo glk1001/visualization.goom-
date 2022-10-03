@@ -10,7 +10,9 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
+#include <array>
 #include <stdexcept>
+#include <vector>
 
 namespace GOOM::FILTER_FX
 {
@@ -525,7 +527,7 @@ static constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES = EnumMap<AfterEffectsType
     {AfterEffectsTypes::XY_LERP_EFFECT, 100U},
 }}};
 
-constexpr auto GetAfterEffectsProbability(const ZoomFilterMode filterMode)
+[[nodiscard]] constexpr auto GetAfterEffectsProbability(const ZoomFilterMode filterMode)
     -> EnumMap<AfterEffectsTypes, float>
 {
   if constexpr (USE_FORCED_AFTER_EFFECT)
@@ -538,7 +540,7 @@ constexpr auto GetAfterEffectsProbability(const ZoomFilterMode filterMode)
   return EFFECTS_PROBABILITIES[filterMode];
 }
 
-constexpr auto GetRepeatAfterEffectsProbability() -> EnumMap<AfterEffectsTypes, float>
+[[nodiscard]] constexpr auto GetRepeatAfterEffectsProbability() -> EnumMap<AfterEffectsTypes, float>
 {
   if constexpr (USE_FORCED_AFTER_EFFECT)
   {
@@ -550,7 +552,7 @@ constexpr auto GetRepeatAfterEffectsProbability() -> EnumMap<AfterEffectsTypes, 
   return DEFAULT_REPEAT_AFTER_EFFECTS_PROBABILITIES;
 }
 
-constexpr auto GetAfterEffectsOffTime() -> EnumMap<AfterEffectsTypes, uint32_t>
+[[nodiscard]] constexpr auto GetAfterEffectsOffTime() -> EnumMap<AfterEffectsTypes, uint32_t>
 {
   if constexpr (USE_FORCED_AFTER_EFFECT)
   {
@@ -562,120 +564,157 @@ constexpr auto GetAfterEffectsOffTime() -> EnumMap<AfterEffectsTypes, uint32_t>
   return DEFAULT_AFTER_EFFECTS_OFF_TIMES;
 }
 
-using Hyp         = HypercosOverlay;
-using ModeWeights = std::vector<std::pair<HypercosOverlay, float>>;
+// TODO(glk) - Can make this 'constexpr' with C++20.
 
-[[nodiscard]] static auto GetHypercosWeights() noexcept -> EnumMap<ZoomFilterMode, ModeWeights>
+[[nodiscard]] static auto GetHypercosWeights(const ZoomFilterMode filterMode) noexcept
+    -> std::vector<Weights<HypercosOverlay>::KeyValue>
 {
-  static constexpr auto FORCED_HYPERCOS =
+  constexpr auto FORCED_HYPERCOS =
       USE_FORCED_AFTER_EFFECT and (FORCED_AFTER_EFFECTS_TYPE == AfterEffectsTypes::HYPERCOS);
 
-  static constexpr auto AMULET_HYPERCOS_NONE_WEIGHT         = FORCED_HYPERCOS ? 0.0F : 20.0F;
-  static constexpr auto CRYSTAL_BALL_HYPERCOS_NONE_WEIGHT   = FORCED_HYPERCOS ? 0.0F : 5.0F;
-  static constexpr auto DISTANCE_FIELD_HYPERCOS_NONE_WEIGHT = FORCED_HYPERCOS ? 0.0F : 5.0F;
-  static constexpr auto HYPERCOS_HYPERCOS_NONE_WEIGHT       = FORCED_HYPERCOS ? 0.0F : 1.0F;
-  static constexpr auto IMAGE_DISP_HYPERCOS_NONE_WEIGHT     = FORCED_HYPERCOS ? 0.0F : 10.0F;
-  static constexpr auto NORMAL_HYPERCOS_NONE_WEIGHT         = FORCED_HYPERCOS ? 0.0F : 10.0F;
-  static constexpr auto SCRUNCH_HYPERCOS_NONE_WEIGHT        = FORCED_HYPERCOS ? 0.0F : 10.0F;
-  static constexpr auto SPEEDWAY_HYPERCOS_NONE_WEIGHT       = FORCED_HYPERCOS ? 0.0F : 10.0F;
-  static constexpr auto WATER_HYPERCOS_NONE_WEIGHT          = FORCED_HYPERCOS ? 0.0F : 10.0F;
-  static constexpr auto WAVE_HYPERCOS_NONE_WEIGHT           = FORCED_HYPERCOS ? 0.0F : 10.0F;
-  static constexpr auto Y_ONLY_HYPERCOS_NONE_WEIGHT         = FORCED_HYPERCOS ? 0.0F : 10.0F;
+  using Hyp         = HypercosOverlay;
+  using ModeWeights = std::array<Weights<HypercosOverlay>::KeyValue, NUM<HypercosOverlay>>;
 
-  // clang-format off
-  return EnumMap<ZoomFilterMode, ModeWeights>{{{
-    { ZoomFilterMode::AMULET_MODE,
-      {{ {Hyp::NONE, AMULET_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE0,
-      {{ {Hyp::NONE,  CRYSTAL_BALL_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::CRYSTAL_BALL_MODE1,
-      {{ {Hyp::NONE,  CRYSTAL_BALL_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  1.0F}, {Hyp::MODE1, 99.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::DISTANCE_FIELD_MODE0,
-      {{ {Hyp::NONE,  CRYSTAL_BALL_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::DISTANCE_FIELD_MODE1,
-      {{ {Hyp::NONE,  DISTANCE_FIELD_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::DISTANCE_FIELD_MODE2,
-      {{ {Hyp::NONE,  DISTANCE_FIELD_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0, 10.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::HYPERCOS_MODE0,
-      {{ {Hyp::NONE,  HYPERCOS_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  2.0F}, {Hyp::MODE2,  2.0F}, {Hyp::MODE3,  2.0F} }}
-    },
-    { ZoomFilterMode::HYPERCOS_MODE1,
-      {{ {Hyp::NONE,  HYPERCOS_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  2.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  2.0F}, {Hyp::MODE3,  2.0F} }}
-    },
-    { ZoomFilterMode::HYPERCOS_MODE2,
-      {{ {Hyp::NONE,  HYPERCOS_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  2.0F}, {Hyp::MODE1,  2.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  2.0F} }}
-    },
-    { ZoomFilterMode::HYPERCOS_MODE3,
-      {{ {Hyp::NONE,  HYPERCOS_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  2.0F}, {Hyp::MODE1,  2.0F}, {Hyp::MODE2,  2.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::IMAGE_DISPLACEMENT_MODE,
-      {{ {Hyp::NONE, IMAGE_DISP_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::NORMAL_MODE,
-      {{ {Hyp::NONE, NORMAL_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  0.0F} }}
-    },
-    { ZoomFilterMode::SCRUNCH_MODE,
-      {{ {Hyp::NONE, SCRUNCH_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::SPEEDWAY_MODE0,
-      {{ {Hyp::NONE, SPEEDWAY_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::SPEEDWAY_MODE1,
-      {{ {Hyp::NONE, SPEEDWAY_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::SPEEDWAY_MODE2,
-      {{ {Hyp::NONE, SPEEDWAY_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::WATER_MODE,
-      {{ {Hyp::NONE, WATER_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::WAVE_MODE0,
-      {{ {Hyp::NONE, WAVE_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  5.0F}, {Hyp::MODE1,  1.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::WAVE_MODE1,
-      {{ {Hyp::NONE, WAVE_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
-    { ZoomFilterMode::Y_ONLY_MODE,
-      {{ {Hyp::NONE, Y_ONLY_HYPERCOS_NONE_WEIGHT},
-         {Hyp::MODE0,  1.0F}, {Hyp::MODE1,  5.0F}, {Hyp::MODE2,  1.0F}, {Hyp::MODE3,  1.0F} }}
-    },
+  constexpr auto AMULET_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 20.0F},
+       {Hyp::MODE0, 1.0F},
+       {Hyp::MODE1, 5.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto CRYSTAL_BALL0_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
+       {Hyp::MODE0, 10.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto CRYSTAL_BALL1_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
+       {Hyp::MODE0, 1.0F},
+       {Hyp::MODE1, 99.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto DISTANCE_FIELD_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
+       {Hyp::MODE0, 10.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto HYPERCOS0_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
+       {Hyp::MODE0, 1.0F},
+       {Hyp::MODE1, 2.0F},
+       {Hyp::MODE2, 2.0F},
+       {Hyp::MODE3, 2.0F}}
+  };
+  constexpr auto HYPERCOS1_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
+       {Hyp::MODE0, 2.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 2.0F},
+       {Hyp::MODE3, 2.0F}}
+  };
+  constexpr auto HYPERCOS2_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
+       {Hyp::MODE0, 2.0F},
+       {Hyp::MODE1, 2.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 2.0F}}
+  };
+  constexpr auto HYPERCOS3_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
+       {Hyp::MODE0, 2.0F},
+       {Hyp::MODE1, 2.0F},
+       {Hyp::MODE2, 2.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 1.0F},
+       {Hyp::MODE1, 5.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto NORMAL_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 5.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 0.0F}}
+  };
+  constexpr auto SCRUNCH_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 1.0F},
+       {Hyp::MODE1, 5.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto SPEEDWAY_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 5.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto WATER_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 1.0F},
+       {Hyp::MODE1, 5.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto WAVE0_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 5.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto WAVE1_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 1.0F},
+       {Hyp::MODE1, 5.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto Y_ONLY_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 1.0F},
+       {Hyp::MODE1, 5.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 1.0F}}
+  };
+
+  constexpr auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
+      {ZoomFilterMode::AMULET_MODE, AMULET_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::CRYSTAL_BALL_MODE0, CRYSTAL_BALL0_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::CRYSTAL_BALL_MODE1, CRYSTAL_BALL1_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::DISTANCE_FIELD_MODE0, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::DISTANCE_FIELD_MODE1, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::DISTANCE_FIELD_MODE2, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::HYPERCOS_MODE0, HYPERCOS0_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::HYPERCOS_MODE1, HYPERCOS1_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::HYPERCOS_MODE2, HYPERCOS2_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::HYPERCOS_MODE3, HYPERCOS3_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::NORMAL_MODE, NORMAL_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::SCRUNCH_MODE, SCRUNCH_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::SPEEDWAY_MODE0, SPEEDWAY_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::SPEEDWAY_MODE1, SPEEDWAY_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::SPEEDWAY_MODE2, SPEEDWAY_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::WATER_MODE, WATER_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::WAVE_MODE0, WAVE0_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::WAVE_MODE1, WAVE1_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::Y_ONLY_MODE, Y_ONLY_HYPERCOS_WEIGHTS},
   }}};
-  // clang-format on
-}
+  Expects(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Winline"
-#endif
-inline const auto HYPERCOS_WEIGHTS = GetHypercosWeights();
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  return std::vector<Weights<HypercosOverlay>::KeyValue>{cbegin(HYPERCOS_WEIGHTS[filterMode]),
+                                                         cend(HYPERCOS_WEIGHTS[filterMode])};
+}
 
 auto FilterSettingsService::GetFilterModeData(
     const IGoomRand& goomRand,
@@ -684,7 +723,6 @@ auto FilterSettingsService::GetFilterModeData(
 {
   Expects(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
   Expects(EFFECTS_PROBABILITIES.size() == NUM<ZoomFilterMode>);
-  Expects(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
 
   auto filterModeVec = std::vector<FilterModeEnumMap::KeyValue>{};
 
@@ -697,7 +735,7 @@ auto FilterSettingsService::GetFilterModeData(
         ZoomFilterModeInfo{
             FILTER_MODE_NAMES[filterMode],
             createZoomInCoefficientsEffect(filterMode, goomRand, resourcesDirectory),
-            {Weights<Hyp>{goomRand, HYPERCOS_WEIGHTS[filterMode]},
+            {Weights<HypercosOverlay>{goomRand, GetHypercosWeights(filterMode)},
                                                         GetAfterEffectsProbability(filterMode)},
     });
   }
