@@ -25,7 +25,7 @@ class AfterEffectsStates::EffectState
 {
 public:
   EffectState(const IGoomRand& goomRand,
-              bool defaultValue,
+              bool turnedOn,
               float probabilityOfEffectRepeated,
               uint32_t effectOffTime) noexcept;
 
@@ -170,6 +170,7 @@ auto AfterEffectsStates::ResetStandardStates(const AfterEffectsProbabilities& ef
   m_xyLerpEffect->UpdateState(
       effectsProbabilities.probabilities[AfterEffectsTypes::XY_LERP_EFFECT]);
 
+  // TODO(glk) - sort out this hypercos special case hack.
   if (HypercosOverlay::NONE == m_hypercosOverlay)
   {
     m_hypercosOverlayEffect->SetState(false);
@@ -198,12 +199,12 @@ auto AfterEffectsStates::CheckForPendingOffTimers() -> void
 }
 
 inline AfterEffectsStates::EffectState::EffectState(const UTILS::MATH::IGoomRand& goomRand,
-                                                    const bool defaultValue,
+                                                    const bool turnedOn,
                                                     const float probabilityOfEffectRepeated,
                                                     const uint32_t effectOffTime) noexcept
   : m_goomRand{goomRand},
     m_probabilityOfEffectRepeated{probabilityOfEffectRepeated},
-    m_turnedOn{defaultValue},
+    m_turnedOn{turnedOn},
     m_offTimer{effectOffTime, true}
 {
 }

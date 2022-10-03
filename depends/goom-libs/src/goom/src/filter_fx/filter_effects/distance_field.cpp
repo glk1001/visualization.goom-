@@ -33,8 +33,8 @@ static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<floa
 static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.11F};
 static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.10F, 0.75F};
 static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.10F, 0.75F};
-static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.30F, 1.51F};
-static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.30F, 1.51F};
+static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.30F, 1.00F};
+static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.30F, 1.00F};
 
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 0.50F;
 static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL   = 0.50F;
