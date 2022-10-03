@@ -147,7 +147,7 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
     const auto yOffset      = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
     const auto tranPosStart = yOffset * m_dimensions.GetWidth();
 
-    auto normalizedCentredPoint = m_normalizedCoordsConverter.ScreenToNormalizedCoords(
+    auto normalizedCentredPoint = m_normalizedCoordsConverter.OtherToNormalizedCoords(
                                       Point2dInt{0, static_cast<int32_t>(yOffset)}) -
                                   m_normalizedMidPt;
 

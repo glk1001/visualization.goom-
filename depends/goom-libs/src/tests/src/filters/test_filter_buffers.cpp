@@ -102,7 +102,7 @@ auto TestZoomVector::GetZoomInPoint(const NormalizedCoords& coords) const noexce
 {
   if (m_returnConst)
   {
-    return NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(m_constCoords);
+    return NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(m_constCoords);
   }
   return (1.0F - m_zoomInCoeff) * coords;
 }
@@ -170,7 +170,7 @@ TEST_CASE("ZoomFilterBuffers Basic")
   filterBuffers.Start();
 
   static constexpr auto DUMMY_NML_COORDS =
-      NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(DUMMY_COORDS);
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(DUMMY_COORDS);
 
   SECTION("Correct Starting TranBuffersState")
   {
@@ -265,9 +265,9 @@ TEST_CASE("ZoomFilterBuffers Calculations")
   filterBuffers.Start();
 
   static constexpr auto DUMMY_NML_COORDS =
-      NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(DUMMY_COORDS);
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(DUMMY_COORDS);
   static constexpr auto NML_CONST_ZOOM_VECTOR_COORDS_1 =
-      NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1);
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1);
 
   SECTION("Correct Dest ZoomBufferTranPoint")
   {
@@ -289,9 +289,9 @@ TEST_CASE("ZoomFilterBuffers Calculations")
     REQUIRE(
         NML_CONST_ZOOM_VECTOR_COORDS_1.Equals(constantZoomVector.GetZoomInPoint(DUMMY_NML_COORDS)));
     const auto normalizedMidPt =
-        NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(filterBuffers.GetBuffMidpoint());
+        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBuffMidpoint());
     const auto expectedNmlCoord1 = NormalizedCoords{
-        NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1)};
+        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1)};
     const auto expectedUnclippedTranPoint =
         COORD_TRANSFORMS.NormalizedToTranPoint(normalizedMidPt + expectedNmlCoord1);
     const auto expectedTranPoint =
@@ -348,13 +348,13 @@ TEST_CASE("ZoomFilterBuffers Calculations")
         UNSCOPED_INFO("codeDestTranPoint.x = " << codeDestTranPoint.x);
         UNSCOPED_INFO("codeDestTranPoint.y = " << codeDestTranPoint.y);
         const auto normalizedMidPt =
-            NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(filterBuffers.GetBuffMidpoint());
+            NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBuffMidpoint());
         UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().x = " << filterBuffers.GetBuffMidpoint().x);
         UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().y = " << filterBuffers.GetBuffMidpoint().y);
         UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
         UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());
         const auto expectedDestTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(
-            normalizedMidPt + NormalizedCoords{NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(
+            normalizedMidPt + NormalizedCoords{NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(
                                   CONST_ZOOM_VECTOR_COORDS_1)});
         UNSCOPED_INFO("expectedDestTranPoint.x = " << expectedDestTranPoint.x);
         UNSCOPED_INFO("expectedDestTranPoint.y = " << expectedDestTranPoint.y);
@@ -392,7 +392,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
         UNSCOPED_INFO("expectedSrceTranPoint.y = " << expectedSrceTranPoint.y);
 
         const auto normalizedMidPt =
-            NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(filterBuffers.GetBuffMidpoint());
+            NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBuffMidpoint());
         UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().x = " << filterBuffers.GetBuffMidpoint().x);
         UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().y = " << filterBuffers.GetBuffMidpoint().y);
         UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
@@ -402,7 +402,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
         UNSCOPED_INFO("codeDestTranPoint.x = " << codeDestTranPoint.x);
         UNSCOPED_INFO("codeDestTranPoint.y = " << codeDestTranPoint.y);
         const auto expectedDestTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(
-            normalizedMidPt + NormalizedCoords{NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(
+            normalizedMidPt + NormalizedCoords{NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(
                                   CONST_ZOOM_VECTOR_COORDS_1)});
         UNSCOPED_INFO("expectedDestTranPoint.x = " << expectedDestTranPoint.x);
         UNSCOPED_INFO("expectedDestTranPoint.y = " << expectedDestTranPoint.y);
@@ -469,11 +469,11 @@ TEST_CASE("ZoomFilterBuffers Stripes")
   filterBuffers.Start();
 
   static constexpr auto DUMMY_NML_COORDS =
-      NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(DUMMY_COORDS);
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(DUMMY_COORDS);
   static constexpr auto NML_CONST_ZOOM_VECTOR_COORDS1 =
-      NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1);
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1);
   static constexpr auto NML_CONST_ZOOM_VECTOR_COORDS2 =
-      NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_2);
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_2);
 
   SECTION("ZoomBuffer Stripe")
   {
@@ -505,14 +505,14 @@ TEST_CASE("ZoomFilterBuffers Stripes")
     REQUIRE(MID_PT == filterBuffers.GetBuffMidpoint());
 
     const auto normalizedMidPt =
-        NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(filterBuffers.GetBuffMidpoint());
+        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBuffMidpoint());
 
     // Get srce buffer points - should be all CONST_ZOOM_VECTOR_COORDS_1
     filterBuffers.SetTranLerpFactor(0);
     REQUIRE(0 == filterBuffers.GetTranLerpFactor());
     const auto expectedSrceTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(
         normalizedMidPt +
-        NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1));
+        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1));
     const auto expectedUnclippedSrcePoint =
         ZoomCoordTransforms::TranToScreenPoint(expectedSrceTranPoint);
     const auto expectedSrcePoint =
@@ -574,7 +574,7 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
   static_assert((0 <= TEST_X) && (TEST_X < WIDTH), "Invalid X");
   static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
   static constexpr auto TEST_SRCE_NML_COORDS =
-      NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(TEST_SRCE_POINT);
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(TEST_SRCE_POINT);
 
   auto parallel        = Parallel{-1};
   auto soundInfo       = SoundInfo{};
@@ -663,9 +663,9 @@ TEST_CASE("ZoomFilterBuffers Clipping")
   filterBuffers.Start();
 
   static constexpr auto DUMMY_NML_COORDS =
-      NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(DUMMY_COORDS);
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(DUMMY_COORDS);
   static constexpr auto NML_CONST_ZOOM_VECTOR_COORDS1 =
-      NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1);
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1);
 
   SECTION("Clipped ZoomBufferTranPoint")
   {
@@ -686,10 +686,10 @@ TEST_CASE("ZoomFilterBuffers Clipping")
     REQUIRE(
         NML_CONST_ZOOM_VECTOR_COORDS1.Equals(constantZoomVector.GetZoomInPoint(DUMMY_NML_COORDS)));
     const auto normalizedMidPt =
-        NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(filterBuffers.GetBuffMidpoint());
+        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBuffMidpoint());
     const auto expectedTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(
         normalizedMidPt +
-        NORMALIZED_COORDS_CONVERTER.ScreenToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1));
+        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1));
     // Because mid-point is zero, the trans point is negative and therefore clipped.
     REQUIRE(expectedTranPoint.x < 0);
     REQUIRE(expectedTranPoint.y < 0);

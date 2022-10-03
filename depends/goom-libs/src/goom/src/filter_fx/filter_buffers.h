@@ -133,7 +133,7 @@ inline auto ZoomFilterBuffers::GetBuffMidpoint() const noexcept -> Point2dInt
 inline auto ZoomFilterBuffers::SetBuffMidpoint(const Point2dInt& val) noexcept -> void
 {
   m_buffMidpoint    = val;
-  m_normalizedMidPt = m_normalizedCoordsConverter.ScreenToNormalizedCoords(m_buffMidpoint);
+  m_normalizedMidPt = m_normalizedCoordsConverter.OtherToNormalizedCoords(m_buffMidpoint);
 }
 
 inline auto ZoomFilterBuffers::GetTranBuffersState() const noexcept -> TranBuffersState

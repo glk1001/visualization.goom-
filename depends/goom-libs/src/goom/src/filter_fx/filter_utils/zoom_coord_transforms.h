@@ -70,7 +70,7 @@ inline auto ZoomCoordTransforms::TranCoordToZoomCoeffIndexes(const Point2dInt& t
 inline auto ZoomCoordTransforms::NormalizedToTranPoint(
     const NormalizedCoords& normalizedPoint) const noexcept -> Point2dInt
 {
-  return m_normalizedCoordsConverter.NormalizedToScreenCoordsFlt(normalizedPoint).ToInt();
+  return m_normalizedCoordsConverter.NormalizedToOtherCoordsFlt(normalizedPoint).ToInt();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_UTILS

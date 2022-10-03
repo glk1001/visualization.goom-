@@ -53,13 +53,13 @@ private:
 class NormalizedCoordsConverter
 {
 public:
-  constexpr NormalizedCoordsConverter(const Dimensions& dimensions,
-                                      float minScreenCoordVal,
+  constexpr NormalizedCoordsConverter(const Dimensions& otherDimensions,
+                                      float minOtherCoordVal,
                                       bool doNotScale = true) noexcept;
 
-  [[nodiscard]] constexpr auto ScreenToNormalizedCoords(
-      const Point2dInt& screenCoords) const noexcept -> NormalizedCoords;
-  [[nodiscard]] constexpr auto NormalizedToScreenCoordsFlt(
+  [[nodiscard]] constexpr auto OtherToNormalizedCoords(const Point2dInt& otherCoords) const noexcept
+      -> NormalizedCoords;
+  [[nodiscard]] constexpr auto NormalizedToOtherCoordsFlt(
       const NormalizedCoords& normalizedCoords) const noexcept -> Point2dFlt;
   [[nodiscard]] constexpr auto GetXMinNormalizedCoordVal() const noexcept -> float;
   [[nodiscard]] constexpr auto GetYMinNormalizedCoordVal() const noexcept -> float;
@@ -69,41 +69,39 @@ public:
   constexpr auto IncY(NormalizedCoords& normalizedCoords) const noexcept -> void;
 
 private:
-  const float m_xRatioScreenToNormalizedCoord;
-  const float m_yRatioScreenToNormalizedCoord;
-  const float m_xRatioNormalizedToScreenCoord;
-  const float m_yRatioNormalizedToScreenCoord;
+  const float m_xRatioOtherToNormalizedCoord;
+  const float m_yRatioOtherToNormalizedCoord;
+  const float m_xRatioNormalizedToOtherCoord;
+  const float m_yRatioNormalizedToOtherCoord;
   const float m_xMinNormalizedCoordVal;
   const float m_yMinNormalizedCoordVal;
-  [[nodiscard]] constexpr auto ScreenToNormalizedXCoord(int32_t screenCoord) const noexcept
+  [[nodiscard]] constexpr auto OtherToNormalizedXCoord(int32_t otherCoord) const noexcept -> float;
+  [[nodiscard]] constexpr auto OtherToNormalizedYCoord(int32_t otherCoord) const noexcept -> float;
+  [[nodiscard]] constexpr auto NormalizedToOtherXCoordFlt(float normalizedCoord) const noexcept
       -> float;
-  [[nodiscard]] constexpr auto ScreenToNormalizedYCoord(int32_t screenCoord) const noexcept
-      -> float;
-  [[nodiscard]] constexpr auto NormalizedToScreenXCoordFlt(float normalizedCoord) const noexcept
-      -> float;
-  [[nodiscard]] constexpr auto NormalizedToScreenYCoordFlt(float normalizedCoord) const noexcept
+  [[nodiscard]] constexpr auto NormalizedToOtherYCoordFlt(float normalizedCoord) const noexcept
       -> float;
 };
 
-constexpr NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions& dimensions,
-                                                               const float minScreenCoordVal,
+constexpr NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions& otherDimensions,
+                                                               const float minOtherCoordVal,
                                                                const bool doNotScale) noexcept
-  : m_xRatioScreenToNormalizedCoord{(NormalizedCoords::MAX_NORMALIZED_COORD -
-                                     NormalizedCoords::MIN_NORMALIZED_COORD) /
-                                    (doNotScale
-                                         ? static_cast<float>(std::max(dimensions.GetWidth(),
-                                                                       dimensions.GetHeight()) -
-                                                              1)
-                                         : static_cast<float>(dimensions.GetWidth() - 1))},
-    m_yRatioScreenToNormalizedCoord{
+  : m_xRatioOtherToNormalizedCoord{(NormalizedCoords::MAX_NORMALIZED_COORD -
+                                    NormalizedCoords::MIN_NORMALIZED_COORD) /
+                                   (doNotScale
+                                        ? static_cast<float>(std::max(otherDimensions.GetWidth(),
+                                                                      otherDimensions.GetHeight()) -
+                                                             1)
+                                        : static_cast<float>(otherDimensions.GetWidth() - 1))},
+    m_yRatioOtherToNormalizedCoord{
         doNotScale
-            ? m_xRatioScreenToNormalizedCoord
+            ? m_xRatioOtherToNormalizedCoord
             : (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) /
-                  static_cast<float>(dimensions.GetHeight() - 1)},
-    m_xRatioNormalizedToScreenCoord{1.0F / m_xRatioScreenToNormalizedCoord},
-    m_yRatioNormalizedToScreenCoord{1.0F / m_yRatioScreenToNormalizedCoord},
-    m_xMinNormalizedCoordVal{minScreenCoordVal * m_xRatioScreenToNormalizedCoord},
-    m_yMinNormalizedCoordVal{minScreenCoordVal * m_yRatioScreenToNormalizedCoord}
+                  static_cast<float>(otherDimensions.GetHeight() - 1)},
+    m_xRatioNormalizedToOtherCoord{1.0F / m_xRatioOtherToNormalizedCoord},
+    m_yRatioNormalizedToOtherCoord{1.0F / m_yRatioOtherToNormalizedCoord},
+    m_xMinNormalizedCoordVal{minOtherCoordVal * m_xRatioOtherToNormalizedCoord},
+    m_yMinNormalizedCoordVal{minOtherCoordVal * m_yRatioOtherToNormalizedCoord}
 {
 }
 
@@ -117,44 +115,44 @@ constexpr auto NormalizedCoordsConverter::GetYMinNormalizedCoordVal() const noex
   return m_yMinNormalizedCoordVal;
 }
 
-constexpr auto NormalizedCoordsConverter::ScreenToNormalizedCoords(
-    const Point2dInt& screenCoords) const noexcept -> NormalizedCoords
+constexpr auto NormalizedCoordsConverter::OtherToNormalizedCoords(
+    const Point2dInt& otherCoords) const noexcept -> NormalizedCoords
 {
-  return {ScreenToNormalizedXCoord(screenCoords.x), ScreenToNormalizedYCoord(screenCoords.y)};
+  return {OtherToNormalizedXCoord(otherCoords.x), OtherToNormalizedYCoord(otherCoords.y)};
 }
 
-constexpr auto NormalizedCoordsConverter::NormalizedToScreenCoordsFlt(
+constexpr auto NormalizedCoordsConverter::NormalizedToOtherCoordsFlt(
     const NormalizedCoords& normalizedCoords) const noexcept -> Point2dFlt
 {
-  return {NormalizedToScreenXCoordFlt(normalizedCoords.m_fltCoords.x),
-          NormalizedToScreenYCoordFlt(normalizedCoords.m_fltCoords.y)};
+  return {NormalizedToOtherXCoordFlt(normalizedCoords.m_fltCoords.x),
+          NormalizedToOtherYCoordFlt(normalizedCoords.m_fltCoords.y)};
 }
 
-constexpr auto NormalizedCoordsConverter::ScreenToNormalizedXCoord(
-    const int32_t screenCoord) const noexcept -> float
+constexpr auto NormalizedCoordsConverter::OtherToNormalizedXCoord(
+    const int32_t otherCoord) const noexcept -> float
 {
   return NormalizedCoords::MIN_NORMALIZED_COORD +
-         (m_xRatioScreenToNormalizedCoord * static_cast<float>(screenCoord));
+         (m_xRatioOtherToNormalizedCoord * static_cast<float>(otherCoord));
 }
 
-constexpr auto NormalizedCoordsConverter::ScreenToNormalizedYCoord(
-    const int32_t screenCoord) const noexcept -> float
+constexpr auto NormalizedCoordsConverter::OtherToNormalizedYCoord(
+    const int32_t otherCoord) const noexcept -> float
 {
   return NormalizedCoords::MIN_NORMALIZED_COORD +
-         (m_yRatioScreenToNormalizedCoord * static_cast<float>(screenCoord));
+         (m_yRatioOtherToNormalizedCoord * static_cast<float>(otherCoord));
 }
 
-constexpr auto NormalizedCoordsConverter::NormalizedToScreenXCoordFlt(
+constexpr auto NormalizedCoordsConverter::NormalizedToOtherXCoordFlt(
     const float normalizedCoord) const noexcept -> float
 {
-  return m_xRatioNormalizedToScreenCoord *
+  return m_xRatioNormalizedToOtherCoord *
          (normalizedCoord - NormalizedCoords::MIN_NORMALIZED_COORD);
 }
 
-constexpr auto NormalizedCoordsConverter::NormalizedToScreenYCoordFlt(
+constexpr auto NormalizedCoordsConverter::NormalizedToOtherYCoordFlt(
     const float normalizedCoord) const noexcept -> float
 {
-  return m_yRatioNormalizedToScreenCoord *
+  return m_yRatioNormalizedToOtherCoord *
          (normalizedCoord - NormalizedCoords::MIN_NORMALIZED_COORD);
 }
 
@@ -168,13 +166,13 @@ constexpr auto NormalizedCoordsConverter::Inc(NormalizedCoords& normalizedCoords
 constexpr auto NormalizedCoordsConverter::IncX(NormalizedCoords& normalizedCoords) const noexcept
     -> void
 {
-  normalizedCoords.m_fltCoords.x += m_xRatioScreenToNormalizedCoord;
+  normalizedCoords.m_fltCoords.x += m_xRatioOtherToNormalizedCoord;
 }
 
 constexpr auto NormalizedCoordsConverter::IncY(NormalizedCoords& normalizedCoords) const noexcept
     -> void
 {
-  normalizedCoords.m_fltCoords.y += m_yRatioScreenToNormalizedCoord;
+  normalizedCoords.m_fltCoords.y += m_yRatioOtherToNormalizedCoord;
 }
 
 constexpr NormalizedCoords::NormalizedCoords(const Point2dFlt& alreadyNormalized) noexcept
