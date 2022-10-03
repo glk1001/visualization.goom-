@@ -151,11 +151,14 @@ private:
   enum class ZoomMidpointEvents
   {
     BOTTOM_MID_POINT,
-    RIGHT_MID_POINT,
+    TOP_MID_POINT,
     LEFT_MID_POINT,
+    RIGHT_MID_POINT,
     CENTRE_MID_POINT,
+    BOTTOM_LEFT_QUARTER_MID_POINT,
     TOP_LEFT_QUARTER_MID_POINT,
     BOTTOM_RIGHT_QUARTER_MID_POINT,
+    TOP_RIGHT_QUARTER_MID_POINT,
     _num // unused, and marks the enum end
   };
   const UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;

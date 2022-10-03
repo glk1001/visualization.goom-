@@ -53,13 +53,13 @@ using UTILS::MATH::Weights;
 static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
 
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::BLOCK_WAVY;
-static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::HYPERCOS;
+//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::HYPERCOS;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::IMAGE_VELOCITY;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::NOISE;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::PLANES;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::ROTATION;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::TAN_EFFECT;
-//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::XY_LERP_EFFECT;
+static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::XY_LERP_EFFECT;
 
 // End debugging
 
@@ -96,10 +96,13 @@ static constexpr auto WATER_MODE_WEIGHT              = 00.0F;
 static constexpr auto Y_ONLY_MODE_WEIGHT             = 05.0F;
 
 static constexpr auto BOTTOM_MID_POINT_WEIGHT               = 03.0F;
-static constexpr auto RIGHT_MID_POINT_WEIGHT                = 02.0F;
+static constexpr auto TOP_MID_POINT_WEIGHT                  = 03.0F;
 static constexpr auto LEFT_MID_POINT_WEIGHT                 = 02.0F;
+static constexpr auto RIGHT_MID_POINT_WEIGHT                = 02.0F;
 static constexpr auto CENTRE_MID_POINT_WEIGHT               = 18.0F;
 static constexpr auto TOP_LEFT_QUARTER_MID_POINT_WEIGHT     = 10.0F;
+static constexpr auto TOP_RIGHT_QUARTER_MID_POINT_WEIGHT    = 10.0F;
+static constexpr auto BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT  = 10.0F;
 static constexpr auto BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
 
 // TODO(glk) - When we get to use C++20, replace the below 'inline consts' with 'static constexpr'.
@@ -775,15 +778,20 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
         },
     },
     m_zoomMidpointWeights{
-        m_goomRand,
-        {
-            {ZoomMidpointEvents::BOTTOM_MID_POINT,               BOTTOM_MID_POINT_WEIGHT},
-            {ZoomMidpointEvents::RIGHT_MID_POINT,                RIGHT_MID_POINT_WEIGHT},
-            {ZoomMidpointEvents::LEFT_MID_POINT,                 LEFT_MID_POINT_WEIGHT},
-            {ZoomMidpointEvents::CENTRE_MID_POINT,               CENTRE_MID_POINT_WEIGHT},
-            {ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT,     TOP_LEFT_QUARTER_MID_POINT_WEIGHT},
-            {ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT, BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT},
-        }
+      m_goomRand,
+      {
+          {ZoomMidpointEvents::BOTTOM_MID_POINT,            BOTTOM_MID_POINT_WEIGHT},
+          {ZoomMidpointEvents::TOP_MID_POINT,               TOP_MID_POINT_WEIGHT},
+          {ZoomMidpointEvents::LEFT_MID_POINT,              LEFT_MID_POINT_WEIGHT},
+          {ZoomMidpointEvents::RIGHT_MID_POINT,             RIGHT_MID_POINT_WEIGHT},
+          {ZoomMidpointEvents::CENTRE_MID_POINT,            CENTRE_MID_POINT_WEIGHT},
+          {ZoomMidpointEvents::BOTTOM_LEFT_QUARTER_MID_POINT,
+                                                            BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT},
+          {ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT,  TOP_LEFT_QUARTER_MID_POINT_WEIGHT},
+          {ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT,
+                                                            BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT},
+          {ZoomMidpointEvents::TOP_RIGHT_QUARTER_MID_POINT, TOP_RIGHT_QUARTER_MID_POINT_WEIGHT},
+      }
     }
 {
 }
@@ -986,6 +994,7 @@ auto FilterSettingsService::GetWeightRandomMidPoint(const bool allowEdgePoints) 
 inline auto FilterSettingsService::IsEdgeMidPoint(const ZoomMidpointEvents midPointEvent) -> bool
 {
   return (midPointEvent == ZoomMidpointEvents::BOTTOM_MID_POINT) ||
+         (midPointEvent == ZoomMidpointEvents::TOP_MID_POINT) ||
          (midPointEvent == ZoomMidpointEvents::RIGHT_MID_POINT) ||
          (midPointEvent == ZoomMidpointEvents::LEFT_MID_POINT);
 }
@@ -996,17 +1005,26 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
   {
     case ZoomMidpointEvents::BOTTOM_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {U_HALF * m_goomInfo.GetScreenWidth(),
-                                                             m_goomInfo.GetScreenHeight() - 1};
+                                                             m_goomInfo.GetScreenHeight() - 2U};
       break;
-    case ZoomMidpointEvents::RIGHT_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint.x =
-          static_cast<int32_t>(m_goomInfo.GetScreenWidth() - 1);
+    case ZoomMidpointEvents::TOP_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {U_HALF * m_goomInfo.GetScreenWidth(),
+                                                             1U};
       break;
     case ZoomMidpointEvents::LEFT_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint.x = 1;
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {1U,
+                                                             U_HALF * m_goomInfo.GetScreenHeight()};
+      break;
+    case ZoomMidpointEvents::RIGHT_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {m_goomInfo.GetScreenWidth() - 2U,
+                                                             U_HALF * m_goomInfo.GetScreenHeight()};
       break;
     case ZoomMidpointEvents::CENTRE_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
+      break;
+    case ZoomMidpointEvents::BOTTOM_LEFT_QUARTER_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          U_QUARTER * m_goomInfo.GetScreenWidth(), U_THREE_QUARTERS * m_goomInfo.GetScreenHeight()};
       break;
     case ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
@@ -1016,6 +1034,10 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
           U_THREE_QUARTERS * m_goomInfo.GetScreenWidth(),
           U_THREE_QUARTERS * m_goomInfo.GetScreenHeight()};
+      break;
+    case ZoomMidpointEvents::TOP_RIGHT_QUARTER_MID_POINT:
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          U_THREE_QUARTERS * m_goomInfo.GetScreenWidth(), U_QUARTER * m_goomInfo.GetScreenHeight()};
       break;
     default:
       FailFast();
