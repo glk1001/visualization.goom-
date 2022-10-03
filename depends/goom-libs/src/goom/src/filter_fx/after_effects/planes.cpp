@@ -29,20 +29,23 @@ static constexpr auto PROB_OPPOSITES_FOR_MEDIUM_EFFECTS         = 0.9F;
 // H Plane:
 // @since June 2001
 // clang-format off
-static constexpr auto HORIZONTAL_EFFECTS_MULTIPLIER_RANGE            = IGoomRand::NumberRange<float>{0.0015F, 0.0035F};
-static constexpr auto HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE = IGoomRand::NumberRange<float>{0.0015F, 0.0351F};
+static constexpr auto
+  HORIZONTAL_EFFECTS_MULTIPLIER_RANGE            = IGoomRand::NumberRange<float>{0.0015F, 0.0035F};
+static constexpr auto
+  HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE = IGoomRand::NumberRange<float>{0.0015F, 0.0351F};
 // clang-format on
 
 static constexpr auto DEFAULT_HORIZONTAL_SWIRL_FREQ = 1.0F;
-static constexpr auto HORIZONTAL_SWIRL_FREQ_RANGE   = IGoomRand::NumberRange<float>{0.1F, 30.01F};
+static constexpr auto HORIZONTAL_SWIRL_FREQ_RANGE   = IGoomRand::NumberRange<float>{0.1F, 5.01F};
 static constexpr auto DEFAULT_HORIZONTAL_SWIRL_AMPLITUDE = 1.0F;
-static constexpr auto HORIZONTAL_SWIRL_AMPLITUDE_RANGE =
-    IGoomRand::NumberRange<float>{0.1F, 30.01F};
+static constexpr auto HORIZONTAL_SWIRL_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.1F, 5.01F};
 
 // V Plane:
 // clang-format off
-static constexpr auto VERTICAL_EFFECTS_AMPLITUDE_RANGE            = IGoomRand::NumberRange<float>{0.0015F, 0.0035F};
-static constexpr auto VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.0015F, 0.0351F};
+static constexpr auto
+  VERTICAL_EFFECTS_AMPLITUDE_RANGE            = IGoomRand::NumberRange<float>{0.0015F, 0.0035F};
+static constexpr auto
+  VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = IGoomRand::NumberRange<float>{0.0015F, 0.0351F};
 // clang-format on
 
 static constexpr auto DEFAULT_VERTICAL_SWIRL_FREQ = 1.0F;
@@ -87,13 +90,15 @@ Planes::Planes(const IGoomRand& goomRand) noexcept
     m_planeEffectWeights{
       m_goomRand,
       {
-          { PlaneEffectEvents::SMALL_EFFECTS,                                 SMALL_PLANE_EFFECTS_WEIGHT },
-          { PlaneEffectEvents::MEDIUM_EFFECTS,                                MEDIUM_EFFECTS_WEIGHT },
-          { PlaneEffectEvents::LARGE_EFFECTS,                                 LARGE_EFFECTS_WEIGHT },
-          { PlaneEffectEvents::VERY_LARGE_EFFECTS,                            VERY_LARGE_EFFECTS_WEIGHT },
-          { PlaneEffectEvents::POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS, POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS_WEIGHT },
-          { PlaneEffectEvents::POS_HORIZONTAL_NEG_VERTICAL_VERY_LARGE_EFFECTS, POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS_WEIGHT },
-          { PlaneEffectEvents::ZERO_EFFECTS,                                  ZERO_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::ZERO_EFFECTS,       ZERO_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::SMALL_EFFECTS,      SMALL_PLANE_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::MEDIUM_EFFECTS,     MEDIUM_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::LARGE_EFFECTS,      LARGE_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::VERY_LARGE_EFFECTS, VERY_LARGE_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS,
+                                             POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS_WEIGHT },
+          { PlaneEffectEvents::POS_HORIZONTAL_NEG_VERTICAL_VERY_LARGE_EFFECTS,
+                                             POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS_WEIGHT },
       }
     }
 {

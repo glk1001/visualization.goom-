@@ -44,7 +44,7 @@ using UTILS::MATH::Weights;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
+static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
@@ -52,16 +52,16 @@ using UTILS::MATH::Weights;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WATER_MODE;
-static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
 
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::BLOCK_WAVY;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::HYPERCOS;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::IMAGE_VELOCITY;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::NOISE;
-//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::PLANES;
+static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::PLANES;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::ROTATION;
 //static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::TAN_EFFECT;
-static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::XY_LERP_EFFECT;
+//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::XY_LERP_EFFECT;
 
 // End debugging
 

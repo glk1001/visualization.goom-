@@ -99,11 +99,6 @@ private:
                                             const Point2dInt& zoomMidpoint,
                                             uint32_t screenWidth) -> Params;
 
-  [[nodiscard]] static auto GetRandomPlaneEffects(const UTILS::MATH::IGoomRand& goomRand,
-                                                  PlaneEffectEvents planeEffectsEvent,
-                                                  bool muchSpiralling,
-                                                  const Point2dInt& zoomMidpoint,
-                                                  uint32_t screenWidth) -> PlaneEffects;
   struct IntAmplitudes
   {
     int32_t x;
@@ -112,6 +107,11 @@ private:
   [[nodiscard]] static auto GetRandomPlaneEffects(const IntAmplitudes& adjustedIntAmplitudes,
                                                   const Amplitudes& effectMultipliers)
       -> PlaneEffects;
+  [[nodiscard]] static auto GetRandomPlaneEffects(const UTILS::MATH::IGoomRand& goomRand,
+                                                  PlaneEffectEvents planeEffectsEvent,
+                                                  bool muchSpiralling,
+                                                  const Point2dInt& zoomMidpoint,
+                                                  uint32_t screenWidth) -> PlaneEffects;
   [[nodiscard]] static auto GetRandomIntAmplitudes(const UTILS::MATH::IGoomRand& goomRand,
                                                    PlaneEffectEvents planeEffectsEvent)
       -> IntAmplitudes;
@@ -122,9 +122,9 @@ private:
   [[nodiscard]] static auto GetRandomEffectMultipliers(const UTILS::MATH::IGoomRand& goomRand,
                                                        bool muchSpiralling) -> Amplitudes;
 
+  [[nodiscard]] static auto GetZeroSwirlEffects() -> PlaneSwirlEffects;
   [[nodiscard]] static auto GetRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand,
                                                   bool muchSpiralling) -> PlaneSwirlEffects;
-  [[nodiscard]] static auto GetZeroSwirlEffects() -> PlaneSwirlEffects;
   [[nodiscard]] static auto GetNonzeroRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand)
       -> PlaneSwirlEffects;
   [[nodiscard]] auto GetHorizontalSwirlOffsetFactor(float coordValue) const -> float;
