@@ -27,6 +27,11 @@ public:
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs override;
 
+  enum class AngleEffect
+  {
+    ATAN,
+    SQ_DIST
+  };
   enum class WaveEffect
   {
     WAVE_SIN_EFFECT,
@@ -44,6 +49,8 @@ public:
   {
     WaveEffect xWaveEffect;
     WaveEffect yWaveEffect;
+    AngleEffect angleEffect;
+    float sqDistPower;
     float freqFactor;
     float amplitude;
     float periodicFactor;
@@ -66,7 +73,8 @@ private:
       const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange,
       const UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
       const UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) -> void;
-  [[nodiscard]] auto GetZoomInAdd(float sqDistFromZero, WaveEffect waveEffect) const -> float;
+  [[nodiscard]] auto GetZoomInAdd(WaveEffect waveEffect, float angle, float reducer) const -> float;
+  [[nodiscard]] auto GetAngle(float sqDistFromZero, const NormalizedCoords& coords) const -> float;
   [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
                                             float angle,
                                             float periodicFactor) -> float;
@@ -80,23 +88,36 @@ private:
                                      float periodicFactor) const -> float;
 };
 
-inline auto Wave::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
-                                        const float sqDistFromZero) const -> Point2dFlt
+inline auto Wave::GetZoomInCoefficients(const NormalizedCoords& coords, float sqDistFromZero) const
+    -> Point2dFlt
 {
+  const auto angle   = GetAngle(sqDistFromZero, coords);
+  const auto reducer = std::exp(-m_params.reducerCoeff * sqDistFromZero);
+
   const auto xZoomInCoeff =
-      GetBaseZoomInCoeffs().x + GetZoomInAdd(sqDistFromZero, m_params.xWaveEffect);
+      GetBaseZoomInCoeffs().x + GetZoomInAdd(m_params.xWaveEffect, angle, reducer);
   const auto yZoomInCoeff =
-      GetBaseZoomInCoeffs().y + GetZoomInAdd(sqDistFromZero, m_params.yWaveEffect);
+      GetBaseZoomInCoeffs().y + GetZoomInAdd(m_params.yWaveEffect, angle, reducer);
 
   return {xZoomInCoeff, yZoomInCoeff};
 }
 
-inline auto Wave::GetZoomInAdd(const float sqDistFromZero, const WaveEffect waveEffect) const
+inline auto Wave::GetAngle(const float sqDistFromZero, const NormalizedCoords& coords) const
     -> float
 {
-  const auto angle   = m_params.freqFactor * sqDistFromZero;
-  const auto reducer = std::exp(-m_params.reducerCoeff * sqDistFromZero);
-  return reducer * m_params.amplitude * GetPeriodicPart(waveEffect, angle, m_params.periodicFactor);
+  if (m_params.angleEffect == AngleEffect::SQ_DIST)
+  {
+    return std::pow(sqDistFromZero, m_params.sqDistPower);
+  }
+  return std::atan2(coords.GetY(), coords.GetX());
+}
+
+inline auto Wave::GetZoomInAdd(const WaveEffect waveEffect,
+                               const float angle,
+                               const float reducer) const -> float
+{
+  return reducer * m_params.amplitude *
+         GetPeriodicPart(waveEffect, m_params.freqFactor * angle, m_params.periodicFactor);
 }
 
 inline auto Wave::GetParams() const -> const Params&
