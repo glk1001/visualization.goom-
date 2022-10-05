@@ -2,6 +2,7 @@
 
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "utils/graphics/pixel_utils.h"
 
 #include <algorithm>
 #include <cmath>
@@ -18,8 +19,8 @@ template<typename T>
 [[nodiscard]] constexpr auto ColorChannelMultiply(PixelChannelType ch1, PixelChannelType ch2)
     -> uint32_t;
 [[nodiscard]] constexpr auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel;
-[[nodiscard]] constexpr auto GetColorChannelAdd(const PixelChannelType ch1,
-                                                const PixelChannelType ch2) -> uint32_t;
+[[nodiscard]] constexpr auto GetColorChannelAdd(PixelChannelType ch1, PixelChannelType ch2)
+    -> uint32_t;
 [[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel;
 
 [[nodiscard]] constexpr auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
@@ -130,7 +131,7 @@ constexpr auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel
 constexpr auto ColorChannelMultiply(const PixelChannelType ch1, const PixelChannelType ch2)
     -> uint32_t
 {
-  return MultiplyColorChannels(ch1, ch2);
+  return UTILS::GRAPHICS::MultiplyColorChannels(ch1, ch2);
 }
 
 constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
@@ -140,7 +141,7 @@ constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
   const auto newB = GetColorChannelAdd(color1.B(), color2.B());
   const auto newA = GetColorChannelAdd(color1.A(), color2.A());
 
-  return MakePixel(newR, newG, newB, newA);
+  return UTILS::GRAPHICS::MakePixel(newR, newG, newB, newA);
 }
 
 constexpr auto GetColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2)
@@ -156,13 +157,13 @@ constexpr auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color
   const auto newB = GetBrighterChannelColor(brightness, color.B());
   const auto newA = color.A();
 
-  return MakePixel(newR, newG, newB, newA);
+  return UTILS::GRAPHICS::MakePixel(newR, newG, newB, newA);
 }
 
 constexpr auto GetBrighterChannelColor(const uint32_t brightness, const PixelChannelType channelVal)
     -> uint32_t
 {
-  return MultiplyChannelColorByScalar(brightness, channelVal);
+  return UTILS::GRAPHICS::MultiplyChannelColorByScalar(brightness, channelVal);
 }
 
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel

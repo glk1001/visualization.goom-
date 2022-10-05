@@ -2,6 +2,7 @@
 
 #include "color_utils.h"
 #include "goom_config.h"
+#include "utils/graphics/pixel_utils.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -17,6 +18,7 @@
 namespace GOOM::COLOR
 {
 
+using UTILS::GRAPHICS::MakePixel;
 using UTILS::MATH::FloatsEqual;
 
 auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) const -> Pixel

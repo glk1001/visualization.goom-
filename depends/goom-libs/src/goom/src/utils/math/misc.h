@@ -90,6 +90,23 @@ template<typename T>
   return val;
 }
 
+template<typename T>
+[[nodiscard]] constexpr auto Log2(const T n) -> T
+{
+  Expects(n > 0);
+
+  auto log2 = static_cast<T>(0);
+  auto m = n;
+  while (m >= static_cast<T>(2))
+  {
+    m = m >> 1U;
+    log2++;
+  }
+  Ensures(n == PowerOf2(log2));
+
+  return log2;
+}
+
 static constexpr auto SMALL_FLOAT = 0.00001F;
 
 [[nodiscard]] inline bool FloatsEqual(const float x,
@@ -145,28 +162,28 @@ private:
 };
 
 template<typename T>
-static constexpr auto FRAC_HALF = Fraction<T>{T(1), T(2)};
+static constexpr auto FRAC_HALF = Fraction<T>{static_cast<T>(1), static_cast<T>(2)};
 static constexpr auto I_HALF    = FRAC_HALF<int32_t>;
 static constexpr auto U_HALF    = FRAC_HALF<uint32_t>;
 static constexpr auto S_HALF    = FRAC_HALF<size_t>;
 
 template<typename T>
-static constexpr auto FRAC_QUARTER = Fraction<T>{T(1), T(4)};
+static constexpr auto FRAC_QUARTER = Fraction<T>{static_cast<T>(1), static_cast<T>(4)};
 static constexpr auto I_QUARTER    = FRAC_QUARTER<int32_t>;
 static constexpr auto U_QUARTER    = FRAC_QUARTER<uint32_t>;
 
 template<typename T>
-static constexpr auto FRAC_THREE_QUARTERS = Fraction<T>{T(3), T(4)};
+static constexpr auto FRAC_THREE_QUARTERS = Fraction<T>{static_cast<T>(3), static_cast<T>(4)};
 static constexpr auto I_THREE_QUARTERS    = FRAC_THREE_QUARTERS<int32_t>;
 static constexpr auto U_THREE_QUARTERS    = FRAC_THREE_QUARTERS<uint32_t>;
 
 template<typename T>
-static constexpr auto FRAC_THIRD = Fraction<T>{T(1), T(3)};
+static constexpr auto FRAC_THIRD = Fraction<T>{static_cast<T>(1), static_cast<T>(3)};
 static constexpr auto I_THIRD    = FRAC_THIRD<int32_t>;
 static constexpr auto U_THIRD    = FRAC_THIRD<uint32_t>;
 
 template<typename T>
-static constexpr auto FRAC_FIFTH = Fraction<T>{T(1), T(5)};
+static constexpr auto FRAC_FIFTH = Fraction<T>{static_cast<T>(1), static_cast<T>(5)};
 static constexpr auto I_FIFTH    = FRAC_FIFTH<int32_t>;
 static constexpr auto U_FIFTH    = FRAC_FIFTH<uint32_t>;
 

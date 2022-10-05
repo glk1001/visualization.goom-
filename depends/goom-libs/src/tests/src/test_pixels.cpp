@@ -7,6 +7,7 @@
 #include "catch2/catch.hpp"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "utils/graphics/pixel_utils.h"
 #include "utils/math/misc.h"
 
 #include <chrono>
@@ -18,6 +19,9 @@
 namespace GOOM::UNIT_TESTS
 {
 
+using UTILS::GRAPHICS::MakePixel;
+using UTILS::GRAPHICS::MultiplyChannelColorByScalar;
+using UTILS::GRAPHICS::MultiplyColorChannels;
 using UTILS::MATH::FloatsEqual;
 using namespace std::chrono_literals;
 using std::chrono::high_resolution_clock;

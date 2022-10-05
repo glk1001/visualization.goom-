@@ -5,6 +5,7 @@
 #include "goom_graphic.h"
 #include "goom_types.h"
 #include "point2d.h"
+#include "utils/graphics/pixel_utils.h"
 #include "utils/parallel_utils.h"
 
 #include <cmath>
@@ -147,9 +148,9 @@ inline auto IGoomDraw::GetBuffIntensity() const noexcept -> float
 
 inline auto IGoomDraw::SetBuffIntensity(const float val) noexcept -> void
 {
-  m_buffIntensity = val;
-  m_intBuffIntensity =
-      static_cast<uint32_t>(std::round(channel_limits<float>::max() * m_buffIntensity));
+  m_buffIntensity    = val;
+  m_intBuffIntensity = static_cast<uint32_t>(std::round(
+      static_cast<float>(UTILS::GRAPHICS::CHANNEL_COLOR_SCALAR_DIVISOR) * m_buffIntensity));
 }
 
 inline auto IGoomDraw::GetIntBuffIntensity() const noexcept -> uint32_t

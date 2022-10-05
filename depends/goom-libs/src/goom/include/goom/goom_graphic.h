@@ -167,17 +167,6 @@ private:
   Color m_color{};
 };
 
-[[nodiscard]] constexpr auto MakePixel(uint32_t red,
-                                       uint32_t green,
-                                       uint32_t blue,
-                                       uint32_t alpha) noexcept -> Pixel;
-
-[[nodiscard]] constexpr auto MultiplyColorChannels(PixelChannelType ch1,
-                                                   PixelChannelType ch2) noexcept -> uint32_t;
-[[nodiscard]] constexpr auto MultiplyChannelColorByScalar(uint32_t scalar,
-                                                          PixelChannelType channelVal) noexcept
-    -> uint32_t;
-
 struct FXBuffSettings
 {
   static constexpr float INITIAL_BUFF_INTENSITY = 0.5F;
@@ -261,48 +250,9 @@ constexpr Pixel::Pixel(const PixelChannelType red,
 {
 }
 
-constexpr auto MakePixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept
-    -> Pixel
-{
-  if (red > MAX_CHANNEL_VALUE_HDR)
-  {
-    red = MAX_CHANNEL_VALUE_HDR;
-  }
-  if (green > MAX_CHANNEL_VALUE_HDR)
-  {
-    green = MAX_CHANNEL_VALUE_HDR;
-  }
-  if (blue > MAX_CHANNEL_VALUE_HDR)
-  {
-    blue = MAX_CHANNEL_VALUE_HDR;
-  }
-  if (alpha > MAX_ALPHA)
-  {
-    alpha = MAX_ALPHA;
-  }
-
-  return Pixel{static_cast<PixelChannelType>(red),
-               static_cast<PixelChannelType>(green),
-               static_cast<PixelChannelType>(blue),
-               static_cast<PixelChannelType>(alpha)};
-}
-
 static inline constexpr auto BLACK_PIXEL = Pixel{0U, 0U, 0U, MAX_ALPHA};
 static inline constexpr auto WHITE_PIXEL =
     Pixel{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA};
-
-constexpr auto MultiplyColorChannels(const PixelChannelType ch1,
-                                     const PixelChannelType ch2) noexcept -> uint32_t
-{
-  return (static_cast<uint32_t>(ch1) * static_cast<uint32_t>(ch2)) /
-         channel_limits<uint32_t>::max();
-}
-
-constexpr auto MultiplyChannelColorByScalar(const uint32_t scalar,
-                                            const PixelChannelType channelVal) noexcept -> uint32_t
-{
-  return (scalar * static_cast<uint32_t>(channelVal)) / channel_limits<uint32_t>::max();
-}
 
 constexpr auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool
 {

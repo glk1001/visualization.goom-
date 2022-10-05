@@ -1,6 +1,7 @@
 #include "catch2/catch.hpp"
 #include "color/color_utils.h"
 #include "goom_graphic.h"
+#include "utils/graphics/pixel_utils.h"
 
 #include <algorithm>
 
@@ -14,6 +15,7 @@ using COLOR::GetColorChannelAdd;
 using COLOR::GetEvolvedColor;
 using COLOR::GetLightenedColor;
 using COLOR::GetRgbColorLerp;
+using GOOM::UTILS::GRAPHICS::CHANNEL_COLOR_SCALAR_DIVISOR;
 
 TEST_CASE("Test max channels")
 {
@@ -51,10 +53,12 @@ TEST_CASE("Colors are added")
 
 TEST_CASE("Color channels are brightened")
 {
-  REQUIRE(GetBrighterChannelColor(100, 2) == 100 * 2 / 255);
-  REQUIRE(GetBrighterChannelColor(11, 20) == 11 * 20 / 255);
-  REQUIRE(GetBrighterChannelColor(0, 20) == 0);
-  REQUIRE(GetBrighterChannelColor(100, 20) == std::clamp(0U, 100U * 20U / 255U, 255U));
+  REQUIRE(GetBrighterChannelColor(100U, 2U) == (100U * 2U) / CHANNEL_COLOR_SCALAR_DIVISOR);
+  REQUIRE(GetBrighterChannelColor(11U, 20U) == (11U * 20U) / CHANNEL_COLOR_SCALAR_DIVISOR);
+  REQUIRE(GetBrighterChannelColor(0U, 20U) == 0U);
+  REQUIRE(
+      GetBrighterChannelColor(100U, 20U) ==
+      std::clamp(0U, (100U * 20U) / CHANNEL_COLOR_SCALAR_DIVISOR, CHANNEL_COLOR_SCALAR_DIVISOR));
 }
 
 TEST_CASE("Colors are brightened")

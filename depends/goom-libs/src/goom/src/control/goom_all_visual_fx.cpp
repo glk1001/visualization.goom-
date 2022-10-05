@@ -12,6 +12,7 @@
 #include "goom_plugin_info.h"
 #include "logging.h"
 #include "sound_info.h"
+#include "utils/graphics/pixel_utils.h"
 #include "utils/name_value_pairs.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/fx_helper.h"
@@ -36,6 +37,7 @@ using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
+using UTILS::GRAPHICS::MakePixel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelper;
 
