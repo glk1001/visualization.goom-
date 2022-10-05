@@ -17,7 +17,7 @@ namespace GOOM::DRAW
 using COLOR::GetBrighterColorInt;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
-GoomDrawToContainer::GoomDrawToContainer(const Dimensions& dimensions)
+GoomDrawToContainer::GoomDrawToContainer(const Dimensions& dimensions) noexcept
   : IGoomDraw{dimensions}, m_xyPixelList(dimensions.GetHeight())
 {
   for (auto& xPixelList : m_xyPixelList)
@@ -28,7 +28,7 @@ GoomDrawToContainer::GoomDrawToContainer(const Dimensions& dimensions)
 
 GoomDrawToContainer::~GoomDrawToContainer() noexcept = default;
 
-auto GoomDrawToContainer::ClearAll() -> void
+auto GoomDrawToContainer::ClearAll() noexcept -> void
 {
   m_orderedXYPixelList.clear();
 
@@ -41,20 +41,22 @@ auto GoomDrawToContainer::ClearAll() -> void
   }
 }
 
-inline auto GoomDrawToContainer::GetWriteableColorsList(const Point2dInt point) -> ColorsList&
+inline auto GoomDrawToContainer::GetWriteableColorsList(const Point2dInt point) noexcept
+    -> ColorsList&
 {
   return m_xyPixelList.at(static_cast<size_t>(point.y)).at(static_cast<size_t>(point.x));
 }
 
-auto GoomDrawToContainer::DrawPixelsUnblended([[maybe_unused]] const Point2dInt point,
-                                              [[maybe_unused]] const MultiplePixels& colors) -> void
+auto GoomDrawToContainer::DrawPixelsUnblended(
+    [[maybe_unused]] const Point2dInt point, [[maybe_unused]] const MultiplePixels& colors) noexcept
+    -> void
 {
-  throw std::logic_error("GoomDrawToContainer::DrawPixelsUnblended not implemented.");
+  FailFast();
 }
 
 auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
                                              const MultiplePixels& colors,
-                                             const uint32_t intBuffIntensity) -> void
+                                             const uint32_t intBuffIntensity) noexcept -> void
 {
   auto& colorsList = GetWriteableColorsList(point);
 
@@ -74,7 +76,7 @@ auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
   }
 }
 
-auto GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKeep) -> void
+auto GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKeep) noexcept -> void
 {
   Expects(numToKeep <= m_orderedXYPixelList.size());
 
@@ -91,7 +93,8 @@ auto GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKee
   m_orderedXYPixelList.resize(numToKeep);
 }
 
-auto GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& func) const -> void
+auto GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& func) const noexcept
+    -> void
 {
   const auto runFunc = [&](const size_t i)
   {

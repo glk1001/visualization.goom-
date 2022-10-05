@@ -16,26 +16,25 @@ namespace GOOM::DRAW
 
 using COLOR::GetBrighterColor;
 
-DrawMethods::DrawMethods(const Dimensions& dimensions,
-                         const DrawPixelsToDeviceFunc& func)
+DrawMethods::DrawMethods(const Dimensions& dimensions, const DrawPixelsToDeviceFunc& func) noexcept
   : m_dimensions{dimensions}, m_drawPixelsToDevice{func}
 {
 }
 
-void DrawMethods::DrawCircle(const int32_t x0,
+auto DrawMethods::DrawCircle(const int32_t x0,
                              const int32_t y0,
                              const int32_t radius,
-                             const Pixel& color)
+                             const Pixel& color) noexcept -> void
 {
   const std::vector<Pixel> colors{color};
   DrawCircle(x0, y0, radius, colors);
 }
 
 // Function for circle-generation using Bresenham's algorithm
-void DrawMethods::DrawBresenhamCircle(const int32_t x0,
+auto DrawMethods::DrawBresenhamCircle(const int32_t x0,
                                       const int32_t y0,
                                       const int32_t radius,
-                                      const PlotCirclePointsFunc& plotter)
+                                      const PlotCirclePointsFunc& plotter) noexcept -> void
 {
   const auto drawCircle8 = [&](const int xc, int const yc, const int x, const int y)
   {
@@ -68,12 +67,12 @@ void DrawMethods::DrawBresenhamCircle(const int32_t x0,
   }
 }
 
-void DrawMethods::DrawCircle(const int32_t x0,
+auto DrawMethods::DrawCircle(const int32_t x0,
                              const int32_t y0,
                              const int32_t radius,
-                             const std::vector<Pixel>& colors)
+                             const std::vector<Pixel>& colors) noexcept -> void
 {
-  auto plotter = [&](const int x1, const int y1, const int x2, const int y2) -> void
+  auto plotter = [this, &colors](const int x1, const int y1, const int x2, const int y2)
   {
     if ((static_cast<uint32_t>(x1) >= m_dimensions.GetWidth()) ||
         (static_cast<uint32_t>(y1) >= m_dimensions.GetHeight()))
@@ -96,10 +95,10 @@ void DrawMethods::DrawCircle(const int32_t x0,
   DrawBresenhamCircle(x0, y0, radius, plotter);
 }
 
-void DrawMethods::DrawHorizontalLine(const int x1,
+auto DrawMethods::DrawHorizontalLine(const int x1,
                                      const int y,
                                      const int x2,
-                                     const std::vector<Pixel>& colors)
+                                     const std::vector<Pixel>& colors) noexcept -> void
 {
   const int xEnd = x1 == x2 ? x1 : x2;
   for (int x = x1; x <= xEnd; ++x)
@@ -109,13 +108,13 @@ void DrawMethods::DrawHorizontalLine(const int x1,
 }
 
 
-void DrawMethods::DrawFilledCircle(const int32_t x0,
+auto DrawMethods::DrawFilledCircle(const int32_t x0,
                                    const int32_t y0,
                                    const int32_t radius,
-                                   const std::vector<Pixel>& colors)
+                                   const std::vector<Pixel>& colors) noexcept -> void
 {
   auto plotter =
-      [&](const int x1, const int y1, const int x2, [[maybe_unused]] const int y2) -> void
+      [this, &colors](const int x1, const int y1, const int x2, [[maybe_unused]] const int y2)
   {
     Expects(y1 == y2);
     DrawHorizontalLine(x1, y1, x2, colors);
@@ -128,23 +127,23 @@ static constexpr int LINE_THICKNESS_MIDDLE                = 0;
 static constexpr int LINE_THICKNESS_DRAW_CLOCKWISE        = 1;
 static constexpr int LINE_THICKNESS_DRAW_COUNTERCLOCKWISE = 2;
 
-void DrawMethods::DrawLine(const int32_t x1,
+auto DrawMethods::DrawLine(const int32_t x1,
                            const int32_t y1,
                            const int32_t x2,
                            const int32_t y2,
                            const Pixel& color,
-                           const uint8_t thickness)
+                           const uint8_t thickness) noexcept -> void
 {
   const std::vector<Pixel> colors{color};
   DrawLine(x1, y1, x2, y2, colors, thickness);
 }
 
-void DrawMethods::DrawLine(const int32_t x1,
+auto DrawMethods::DrawLine(const int32_t x1,
                            const int32_t y1,
                            const int32_t x2,
                            const int32_t y2,
                            const std::vector<Pixel>& colors,
-                           const uint8_t thickness)
+                           const uint8_t thickness) noexcept -> void
 {
   if (1 == thickness)
   {
@@ -156,20 +155,26 @@ void DrawMethods::DrawLine(const int32_t x1,
   }
 }
 
-void DrawMethods::DrawWuLine(
-    const int x1, const int y1, const int x2, const int y2, const std::vector<Pixel>& colors)
+auto DrawMethods::DrawWuLine(const int x1,
+                             const int y1,
+                             const int x2,
+                             const int y2,
+                             const std::vector<Pixel>& colors) noexcept -> void
 {
-  if ((y1 < 0) || (y2 < 0) || (x1 < 0) || (x2 < 0) || (y1 >= static_cast<int>(m_dimensions.GetHeight())) ||
-      (y2 >= static_cast<int>(m_dimensions.GetHeight())) || (x1 >= static_cast<int>(m_dimensions.GetWidth())) ||
+  if ((y1 < 0) || (y2 < 0) || (x1 < 0) || (x2 < 0) ||
+      (y1 >= static_cast<int>(m_dimensions.GetHeight())) ||
+      (y2 >= static_cast<int>(m_dimensions.GetHeight())) ||
+      (x1 >= static_cast<int>(m_dimensions.GetWidth())) ||
       (x2 >= static_cast<int>(m_dimensions.GetWidth())))
   {
     return;
   }
 
   std::vector<Pixel> tempColors = colors;
-  auto plot                     = [&](const int x, const int y, const float brightness) -> void
+  auto plot = [this, &colors, &tempColors](const int x, const int y, const float brightness)
   {
-    if ((static_cast<uint32_t>(x) >= m_dimensions.GetWidth()) || (static_cast<uint32_t>(y) >= m_dimensions.GetHeight()))
+    if ((static_cast<uint32_t>(x) >= m_dimensions.GetWidth()) ||
+        (static_cast<uint32_t>(y) >= m_dimensions.GetHeight()))
     {
       return;
     }
@@ -202,12 +207,13 @@ void DrawMethods::DrawWuLine(
 // The Xiaolin Wu anti-aliased draw line.
 // From https://rosettacode.org/wiki/Xiaolin_Wu%27s_line_algorithm#C.2B.2B
 //
-void DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot)
+auto DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot) noexcept
+    -> void
 {
-  const auto iPart  = [](const float x) -> int { return static_cast<int>(std::floor(x)); };
-  const auto fRound = [](const float x) -> float { return std::round(x); };
-  const auto fPart  = [](const float x) -> float { return x - std::floor(x); };
-  const auto rFPart = [=](const float x) -> float { return 1 - fPart(x); };
+  const auto iPart  = [](const float x) { return static_cast<int>(std::floor(x)); };
+  const auto fRound = [](const float x) { return std::round(x); };
+  const auto fPart  = [](const float x) { return x - std::floor(x); };
+  const auto rFPart = [=](const float x) { return 1 - fPart(x); };
 
   const bool steep = std::abs(y1 - y0) > std::abs(x1 - x0);
   if (steep)
@@ -306,25 +312,28 @@ static constexpr int LINE_OVERLAP_NONE  = 0;
 static constexpr int LINE_OVERLAP_MAJOR = 1;
 static constexpr int LINE_OVERLAP_MINOR = 2;
 
-void DrawMethods::DrawLineOverlap(int x0,
+auto DrawMethods::DrawLineOverlap(int x0,
                                   int y0,
                                   const int x1,
                                   const int y1,
                                   const std::vector<Pixel>& colors,
                                   const float brightness,
-                                  const uint8_t overlap)
+                                  const uint8_t overlap) noexcept -> void
 {
-  if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) || (y0 >= static_cast<int>(m_dimensions.GetHeight())) ||
-      (y1 >= static_cast<int>(m_dimensions.GetHeight())) || (x0 >= static_cast<int>(m_dimensions.GetWidth())) ||
+  if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) ||
+      (y0 >= static_cast<int>(m_dimensions.GetHeight())) ||
+      (y1 >= static_cast<int>(m_dimensions.GetHeight())) ||
+      (x0 >= static_cast<int>(m_dimensions.GetWidth())) ||
       (x1 >= static_cast<int>(m_dimensions.GetWidth())))
   {
     return;
   }
 
   std::vector<Pixel> tempColors = colors;
-  auto plot                     = [&](const int x, const int y) -> void
+  auto plot                     = [&](const int x, const int y)
   {
-    if ((static_cast<uint32_t>(x) >= m_dimensions.GetWidth()) || (static_cast<uint32_t>(y) >= m_dimensions.GetHeight()))
+    if ((static_cast<uint32_t>(x) >= m_dimensions.GetWidth()) ||
+        (static_cast<uint32_t>(y) >= m_dimensions.GetHeight()))
     {
       return;
     }
@@ -446,16 +455,18 @@ void DrawMethods::DrawLineOverlap(int x0,
  *   LINE_THICKNESS_DRAW_COUNTERCLOCKWISE
  */
 
-void DrawMethods::DrawThickLine(int x0,
+auto DrawMethods::DrawThickLine(int x0,
                                 int y0,
                                 int x1,
                                 int y1,
                                 const std::vector<Pixel>& colors,
                                 const uint8_t thickness,
-                                const uint8_t thicknessMode)
+                                const uint8_t thicknessMode) noexcept -> void
 {
-  if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) || (y0 >= static_cast<int>(m_dimensions.GetHeight())) ||
-      (y1 >= static_cast<int>(m_dimensions.GetHeight())) || (x0 >= static_cast<int>(m_dimensions.GetWidth())) ||
+  if ((y0 < 0) || (y1 < 0) || (x0 < 0) || (x1 < 0) ||
+      (y0 >= static_cast<int>(m_dimensions.GetHeight())) ||
+      (y1 >= static_cast<int>(m_dimensions.GetHeight())) ||
+      (x0 >= static_cast<int>(m_dimensions.GetWidth())) ||
       (x1 >= static_cast<int>(m_dimensions.GetWidth())))
   {
     return;

@@ -18,8 +18,8 @@ template<typename T>
 [[nodiscard]] constexpr auto ColorChannelMultiply(PixelChannelType ch1, PixelChannelType ch2)
     -> uint32_t;
 [[nodiscard]] constexpr auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel;
-[[nodiscard]] constexpr auto ColorChannelAdd(PixelChannelType ch1, PixelChannelType ch2)
-    -> uint32_t;
+[[nodiscard]] constexpr auto GetColorChannelAdd(const PixelChannelType ch1,
+                                                const PixelChannelType ch2) -> uint32_t;
 [[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel;
 
 [[nodiscard]] constexpr auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
@@ -86,10 +86,10 @@ constexpr auto GetColorAverage(const size_t num, const T& colors) -> Pixel
 
 constexpr auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel
 {
-  const auto newR = static_cast<PixelChannelType>(ColorChannelAdd(color1.R(), color2.R()) / 2);
-  const auto newG = static_cast<PixelChannelType>(ColorChannelAdd(color1.G(), color2.G()) / 2);
-  const auto newB = static_cast<PixelChannelType>(ColorChannelAdd(color1.B(), color2.B()) / 2);
-  const auto newA = static_cast<PixelChannelType>(ColorChannelAdd(color1.A(), color2.A()) / 2);
+  const auto newR = static_cast<PixelChannelType>(GetColorChannelAdd(color1.R(), color2.R()) / 2);
+  const auto newG = static_cast<PixelChannelType>(GetColorChannelAdd(color1.G(), color2.G()) / 2);
+  const auto newB = static_cast<PixelChannelType>(GetColorChannelAdd(color1.B(), color2.B()) / 2);
+  const auto newA = static_cast<PixelChannelType>(GetColorChannelAdd(color1.A(), color2.A()) / 2);
 
   return Pixel{newR, newG, newB, newA};
 }
@@ -135,15 +135,16 @@ constexpr auto ColorChannelMultiply(const PixelChannelType ch1, const PixelChann
 
 constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
 {
-  const auto newR = ColorChannelAdd(color1.R(), color2.R());
-  const auto newG = ColorChannelAdd(color1.G(), color2.G());
-  const auto newB = ColorChannelAdd(color1.B(), color2.B());
-  const auto newA = ColorChannelAdd(color1.A(), color2.A());
+  const auto newR = GetColorChannelAdd(color1.R(), color2.R());
+  const auto newG = GetColorChannelAdd(color1.G(), color2.G());
+  const auto newB = GetColorChannelAdd(color1.B(), color2.B());
+  const auto newA = GetColorChannelAdd(color1.A(), color2.A());
 
   return MakePixel(newR, newG, newB, newA);
 }
 
-constexpr auto ColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2) -> uint32_t
+constexpr auto GetColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2)
+    -> uint32_t
 {
   return static_cast<uint32_t>(ch1) + static_cast<uint32_t>(ch2);
 }

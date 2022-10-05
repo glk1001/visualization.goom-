@@ -7,9 +7,15 @@
 namespace GOOM::UNIT_TESTS
 {
 
-using namespace COLOR;
+using COLOR::GetBrighterChannelColor;
+using COLOR::GetBrighterColor;
+using COLOR::GetColorAdd;
+using COLOR::GetColorChannelAdd;
+using COLOR::GetEvolvedColor;
+using COLOR::GetLightenedColor;
+using COLOR::GetRgbColorLerp;
 
-TEST_CASE("Test max channels", "[channels-max]")
+TEST_CASE("Test max channels")
 {
   REQUIRE(channel_limits<uint8_t>::min() == 0);
   REQUIRE(channel_limits<uint8_t>::max() == 255);
@@ -21,38 +27,29 @@ TEST_CASE("Test max channels", "[channels-max]")
   REQUIRE(channel_limits<float>::max() == 255.0F);
 }
 
-TEST_CASE("Color channels are added", "[color-channel-add]")
+TEST_CASE("Color channels are added")
 {
-  REQUIRE(ColorChannelAdd(100, 120) == 220);
-  REQUIRE(ColorChannelAdd(200, 120) == 320);
-  REQUIRE(ColorChannelAdd(0, 120) == 120);
-  REQUIRE(ColorChannelAdd(0, 0) == 0);
+  REQUIRE(GetColorChannelAdd(100, 120) == 220);
+  REQUIRE(GetColorChannelAdd(200, 120) == 320);
+  REQUIRE(GetColorChannelAdd(0, 120) == 120);
+  REQUIRE(GetColorChannelAdd(0, 0) == 0);
 }
 
-TEST_CASE("Colors are added", "[color-add]")
+TEST_CASE("Colors are added")
 {
-#if __cplusplus <= 201703L
-  const Pixel c1{
+  static constexpr auto COLOR1 = Pixel{
       {100, 50, 20}
   };
-  const Pixel c2{
+  static constexpr auto COLOR2 = Pixel{
       {120, 250, 70}
   };
-#else
-  const Pixel c1{
-      {.r = 100, .g = 50, .b = 20}
-  };
-  const Pixel c2{
-      {.r = 120, .g = 250, .b = 70}
-  };
-#endif
-  const Pixel c3 = GetColorAdd(c1, c2);
-  REQUIRE(static_cast<uint32_t>(c3.R()) == 220);
-  REQUIRE(static_cast<uint32_t>(c3.G()) == 300);
-  REQUIRE(static_cast<uint32_t>(c3.B()) == 90);
+  static constexpr auto COLOR3 = GetColorAdd(COLOR1, COLOR2);
+  REQUIRE(static_cast<uint32_t>(COLOR3.R()) == 220);
+  REQUIRE(static_cast<uint32_t>(COLOR3.G()) == 300);
+  REQUIRE(static_cast<uint32_t>(COLOR3.B()) == 90);
 }
 
-TEST_CASE("Color channels are brightened", "[color-channel-bright]")
+TEST_CASE("Color channels are brightened")
 {
   REQUIRE(GetBrighterChannelColor(100, 2) == 100 * 2 / 255);
   REQUIRE(GetBrighterChannelColor(11, 20) == 11 * 20 / 255);
@@ -60,32 +57,26 @@ TEST_CASE("Color channels are brightened", "[color-channel-bright]")
   REQUIRE(GetBrighterChannelColor(100, 20) == std::clamp(0U, 100U * 20U / 255U, 255U));
 }
 
-TEST_CASE("Colors are brightened", "[color-bright]")
+TEST_CASE("Colors are brightened")
 {
-#if __cplusplus <= 201703L
-  const Pixel c{
+  static constexpr auto COLOR = Pixel{
       {100, 50, 20}
   };
-#else
-  const Pixel c{
-      {.r = 100, .g = 50, .b = 20}
-  };
-#endif
 
-  Pixel cb = GetBrighterColor(1.0F, c);
-  REQUIRE(cb.R() == 100);
-  REQUIRE(cb.G() == 50);
-  REQUIRE(cb.B() == 20);
+  auto brighterColor = GetBrighterColor(1.0F, COLOR);
+  REQUIRE(brighterColor.R() == 100);
+  REQUIRE(brighterColor.G() == 50);
+  REQUIRE(brighterColor.B() == 20);
 
-  cb = GetBrighterColor(0.5F, c);
-  REQUIRE(cb.R() == 50);
-  REQUIRE(cb.G() == 25);
-  REQUIRE(cb.B() == 10);
+  brighterColor = GetBrighterColor(0.5F, COLOR);
+  REQUIRE(brighterColor.R() == 50);
+  REQUIRE(brighterColor.G() == 25);
+  REQUIRE(brighterColor.B() == 10);
 
-  cb = GetBrighterColor(0.01F, c);
-  REQUIRE(cb.R() == 1);
-  REQUIRE(cb.G() == 0);
-  REQUIRE(cb.B() == 0);
+  brighterColor = GetBrighterColor(0.01F, COLOR);
+  REQUIRE(brighterColor.R() == 1);
+  REQUIRE(brighterColor.G() == 0);
+  REQUIRE(brighterColor.B() == 0);
 }
 
 TEST_CASE("Color Lerp")
@@ -105,115 +96,97 @@ TEST_CASE("Color Lerp")
   REQUIRE(lerpedColor2.B() == expectedLerpedColor2);
 }
 
-TEST_CASE("Lighten", "[color-lighten]")
+TEST_CASE("Lighten")
 {
-#if __cplusplus <= 201703L
-  const Pixel c{
+  static constexpr auto COLOR = Pixel{
       {100, 0, 0}
   };
-#else
-  const Pixel c{
-      {.r = 100, .g = 0, .b = 0}
-  };
-#endif
 
-  const Pixel cl = GetLightenedColor(c, 10.0);
-  REQUIRE(static_cast<uint32_t>(cl.R()) == 50);
-  REQUIRE(static_cast<uint32_t>(cl.G()) == 0);
-  REQUIRE(static_cast<uint32_t>(cl.B()) == 0);
+  const Pixel lightenedColor = GetLightenedColor(COLOR, 10.0);
+  REQUIRE(static_cast<uint32_t>(lightenedColor.R()) == 50);
+  REQUIRE(static_cast<uint32_t>(lightenedColor.G()) == 0);
+  REQUIRE(static_cast<uint32_t>(lightenedColor.B()) == 0);
 }
 
-TEST_CASE("Lightened color", "[color-half-lightened]")
+TEST_CASE("Lightened color")
 {
-#if __cplusplus <= 201703L
-  const Pixel c{
+  static constexpr auto COLOR = Pixel{
       {100, 50, 20}
   };
-#else
-  const Pixel c{
-      {.r = 100, .g = 50, .b = 20}
-  };
-#endif
 
-  Pixel cl = GetLightenedColor(c, 0.5);
-  REQUIRE(cl.R() == 0);
-  REQUIRE(cl.G() == 0);
-  REQUIRE(cl.B() == 0);
+  auto lightenedColor = GetLightenedColor(COLOR, 0.5);
+  REQUIRE(lightenedColor.R() == 0);
+  REQUIRE(lightenedColor.G() == 0);
+  REQUIRE(lightenedColor.B() == 0);
 
-  cl = GetLightenedColor(c, 1.0);
-  REQUIRE(cl.R() == 0);
-  REQUIRE(cl.G() == 0);
-  REQUIRE(cl.B() == 0);
+  lightenedColor = GetLightenedColor(COLOR, 1.0);
+  REQUIRE(lightenedColor.R() == 0);
+  REQUIRE(lightenedColor.G() == 0);
+  REQUIRE(lightenedColor.B() == 0);
 
-  cl = GetLightenedColor(c, 2.0);
-  REQUIRE(cl.R() == 15);
-  REQUIRE(cl.G() == 7);
-  REQUIRE(cl.B() == 3);
+  lightenedColor = GetLightenedColor(COLOR, 2.0);
+  REQUIRE(lightenedColor.R() == 15);
+  REQUIRE(lightenedColor.G() == 7);
+  REQUIRE(lightenedColor.B() == 3);
 
-  cl = GetLightenedColor(c, 5.0);
-  REQUIRE(cl.R() == 34);
-  REQUIRE(cl.G() == 17);
-  REQUIRE(cl.B() == 6);
+  lightenedColor = GetLightenedColor(COLOR, 5.0);
+  REQUIRE(lightenedColor.R() == 34);
+  REQUIRE(lightenedColor.G() == 17);
+  REQUIRE(lightenedColor.B() == 6);
 
-  cl = GetLightenedColor(c, 10.0);
-  REQUIRE(cl.R() == 50);
-  REQUIRE(cl.G() == 25);
-  REQUIRE(cl.B() == 10);
+  lightenedColor = GetLightenedColor(COLOR, 10.0);
+  REQUIRE(lightenedColor.R() == 50);
+  REQUIRE(lightenedColor.G() == 25);
+  REQUIRE(lightenedColor.B() == 10);
 
-  const Pixel c2 = WHITE_PIXEL;
-  cl = GetLightenedColor(c2, 1.0);
-  REQUIRE(cl.R() == 0);
-  REQUIRE(cl.G() == 0);
-  REQUIRE(cl.B() == 0);
+  const Pixel color2 = WHITE_PIXEL;
+  lightenedColor     = GetLightenedColor(color2, 1.0);
+  REQUIRE(lightenedColor.R() == 0);
+  REQUIRE(lightenedColor.G() == 0);
+  REQUIRE(lightenedColor.B() == 0);
 
-  cl = GetLightenedColor(c2, 2.0);
-  REQUIRE(cl.R() == 38);
-  REQUIRE(cl.G() == 38);
-  REQUIRE(cl.B() == 38);
+  lightenedColor = GetLightenedColor(color2, 2.0);
+  REQUIRE(lightenedColor.R() == 38);
+  REQUIRE(lightenedColor.G() == 38);
+  REQUIRE(lightenedColor.B() == 38);
 
-  cl = GetLightenedColor(c2, 5.0);
-  REQUIRE(cl.R() == 89);
-  REQUIRE(cl.G() == 89);
-  REQUIRE(cl.B() == 89);
+  lightenedColor = GetLightenedColor(color2, 5.0);
+  REQUIRE(lightenedColor.R() == 89);
+  REQUIRE(lightenedColor.G() == 89);
+  REQUIRE(lightenedColor.B() == 89);
 
-  cl = GetLightenedColor(c2, 10.0);
-  REQUIRE(cl.R() == 127);
-  REQUIRE(cl.G() == 127);
-  REQUIRE(cl.B() == 127);
+  lightenedColor = GetLightenedColor(color2, 10.0);
+  REQUIRE(lightenedColor.R() == 127);
+  REQUIRE(lightenedColor.G() == 127);
+  REQUIRE(lightenedColor.B() == 127);
 }
 
-TEST_CASE("Evolved color", "[color-evolve]")
+TEST_CASE("Evolved color")
 {
-#if __cplusplus <= 201703L
-  const Pixel c{
+  static constexpr auto COLOR = Pixel{
       {100, 50, 20}
   };
-#else
-  const Pixel c{
-      {.r = 100, .g = 50, .b = 20}
-  };
-#endif
-  Pixel cl;
+  auto evolvedColor = Pixel{};
 
-  cl = GetEvolvedColor(c);
-  REQUIRE(cl.R() == 67);
-  REQUIRE(cl.G() == 33);
-  REQUIRE(cl.B() == 13);
+  evolvedColor = GetEvolvedColor(COLOR);
+  REQUIRE(evolvedColor.R() == 67);
+  REQUIRE(evolvedColor.G() == 33);
+  REQUIRE(evolvedColor.B() == 13);
 
-  cl = GetEvolvedColor(cl);
-  REQUIRE(cl.R() == 44);
-  REQUIRE(cl.G() == 22);
-  REQUIRE(cl.B() == 8);
+  evolvedColor = GetEvolvedColor(evolvedColor);
+  REQUIRE(evolvedColor.R() == 44);
+  REQUIRE(evolvedColor.G() == 22);
+  REQUIRE(evolvedColor.B() == 8);
 
-  cl = GetEvolvedColor(cl);
-  REQUIRE(cl.R() == 29);
-  REQUIRE(cl.G() == 14);
-  REQUIRE(cl.B() == 5);
+  evolvedColor = GetEvolvedColor(evolvedColor);
+  REQUIRE(evolvedColor.R() == 29);
+  REQUIRE(evolvedColor.G() == 14);
+  REQUIRE(evolvedColor.B() == 5);
 
-  cl = GetEvolvedColor(cl);
-  REQUIRE(cl.R() == 19);
-  REQUIRE(cl.G() == 9);
-  REQUIRE(cl.B() == 3);
+  evolvedColor = GetEvolvedColor(evolvedColor);
+  REQUIRE(evolvedColor.R() == 19);
+  REQUIRE(evolvedColor.G() == 9);
+  REQUIRE(evolvedColor.B() == 3);
 }
 
 } // namespace GOOM::UNIT_TESTS

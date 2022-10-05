@@ -9,13 +9,13 @@
 namespace GOOM::DRAW
 {
 
-GoomDrawToBuffer::GoomDrawToBuffer(const Dimensions& dimensions) : IGoomDraw{dimensions}
+GoomDrawToBuffer::GoomDrawToBuffer(const Dimensions& dimensions) noexcept : IGoomDraw{dimensions}
 {
 }
 
 GoomDrawToBuffer::~GoomDrawToBuffer() noexcept = default;
 
-void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
+auto GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs) noexcept -> void
 {
   Expects(buffs.size() > 0);
   m_multipleBuffers = buffs;
@@ -23,14 +23,15 @@ void GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs)
   m_numBuffers      = m_multipleBuffers.size();
 }
 
-auto GoomDrawToBuffer::GetPixel(const Point2dInt point) const -> Pixel
+auto GoomDrawToBuffer::GetPixel(const Point2dInt point) const noexcept -> Pixel
 {
   Expects(not m_multipleBuffers.empty());
   Expects(m_multipleBuffer0 != nullptr);
   return (*m_multipleBuffer0)(point.x, point.y);
 }
 
-void GoomDrawToBuffer::DrawPixelsUnblended(const Point2dInt point, const MultiplePixels& colors)
+auto GoomDrawToBuffer::DrawPixelsUnblended(const Point2dInt point,
+                                           const MultiplePixels& colors) noexcept -> void
 {
   const auto buffPos = m_multipleBuffer0->GetBuffPos(point.x, point.y);
 
@@ -40,9 +41,9 @@ void GoomDrawToBuffer::DrawPixelsUnblended(const Point2dInt point, const Multipl
   }
 }
 
-void GoomDrawToBuffer::DrawPixelsToDevice(const Point2dInt point,
+auto GoomDrawToBuffer::DrawPixelsToDevice(const Point2dInt point,
                                           const MultiplePixels& colors,
-                                          const uint32_t intBuffIntensity)
+                                          const uint32_t intBuffIntensity) noexcept -> void
 {
   const auto buffPos = m_multipleBuffer0->GetBuffPos(point.x, point.y);
 

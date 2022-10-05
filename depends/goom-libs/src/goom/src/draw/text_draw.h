@@ -28,27 +28,27 @@ public:
     CENTER,
     RIGHT
   };
-  [[nodiscard]] auto GetAlignment() const -> TextAlignment;
-  void SetAlignment(TextAlignment alignment);
+  [[nodiscard]] auto GetAlignment() const noexcept -> TextAlignment;
+  auto SetAlignment(TextAlignment alignment) noexcept -> void;
 
-  [[nodiscard]] auto GetFontSize() const -> int32_t;
-  void SetFontSize(int32_t val);
-  [[nodiscard]] auto GetLineSpacing() const -> int32_t;
-  void SetOutlineWidth(float val);
-  [[nodiscard]] auto GetCharSpacing() const -> float;
-  void SetCharSpacing(float val);
-  [[nodiscard]] auto GetFontFile() const -> const std::string&;
-  void SetFontFile(const std::string& filename);
+  [[nodiscard]] auto GetFontSize() const noexcept -> int32_t;
+  auto SetFontSize(int32_t val) -> void;
+  [[nodiscard]] auto GetLineSpacing() const noexcept -> int32_t;
+  auto SetOutlineWidth(float val) noexcept -> void;
+  [[nodiscard]] auto GetCharSpacing() const noexcept -> float;
+  auto SetCharSpacing(float val) noexcept -> void;
+  [[nodiscard]] auto GetFontFile() const noexcept -> const std::string&;
+  auto SetFontFile(const std::string& filename) -> void;
 
   using FontColorFunc =
       std::function<Pixel(size_t textIndexOfChar, Point2dInt pen, int32_t width, int32_t height)>;
-  void SetFontColorFunc(const FontColorFunc& func);
-  void SetOutlineFontColorFunc(const FontColorFunc& func);
+  auto SetFontColorFunc(const FontColorFunc& func) noexcept -> void;
+  auto SetOutlineFontColorFunc(const FontColorFunc& func) noexcept -> void;
 
-  void SetParallelRender(bool val);
+  auto SetParallelRender(bool val) noexcept -> void;
 
-  void SetText(const std::string& str);
-  void Prepare();
+  auto SetText(const std::string& str) noexcept -> void;
+  auto Prepare() -> void;
 
   struct Rect
   {
@@ -56,15 +56,15 @@ public:
     int32_t xMax{};
     int32_t yMin{};
     int32_t yMax{};
-    [[nodiscard]] auto Width() const -> int32_t { return (xMax - xMin) + 1; }
-    [[nodiscard]] auto Height() const -> int32_t { return (yMax - yMin) + 1; }
+    [[nodiscard]] auto Width() const noexcept -> int32_t { return (xMax - xMin) + 1; }
+    [[nodiscard]] auto Height() const noexcept -> int32_t { return (yMax - yMin) + 1; }
   };
-  [[nodiscard]] auto GetPreparedTextBoundingRect() const -> Rect;
-  [[nodiscard]] auto GetBearingX() const -> int;
-  [[nodiscard]] auto GetBearingY() const -> int;
+  [[nodiscard]] auto GetPreparedTextBoundingRect() const noexcept -> Rect;
+  [[nodiscard]] auto GetBearingX() const noexcept -> int;
+  [[nodiscard]] auto GetBearingY() const noexcept -> int;
 
-  void Draw(Point2dInt pen);
-  void Draw(Point2dInt pen, Point2dInt& nextPen);
+  auto Draw(Point2dInt pen) -> void;
+  auto Draw(Point2dInt pen, Point2dInt& nextPen) -> void;
 
 private:
   class TextDrawImpl;

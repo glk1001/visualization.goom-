@@ -9,7 +9,7 @@ namespace GOOM::DRAW
 
 using UTILS::GRAPHICS::ImageBitmap;
 
-IGoomDraw::IGoomDraw(const Dimensions& dimensions)
+IGoomDraw::IGoomDraw(const Dimensions& dimensions) noexcept
   : m_dimensions{dimensions},
     m_drawMethods{m_dimensions,
                   [this](const int32_t x, const int32_t y, const MultiplePixels& newColors) {
@@ -20,14 +20,15 @@ IGoomDraw::IGoomDraw(const Dimensions& dimensions)
   SetDefaultBlendPixelFunc();
 }
 
-inline void IGoomDraw::DrawPixelsToDevice(const Point2dInt point, const MultiplePixels& colors)
+inline auto IGoomDraw::DrawPixelsToDevice(const Point2dInt point,
+                                          const MultiplePixels& colors) noexcept -> void
 {
   DrawPixelsToDevice(point, colors, GetIntBuffIntensity());
 }
 
-void IGoomDraw::Bitmap(const Point2dInt centre,
+auto IGoomDraw::Bitmap(const Point2dInt centre,
                        const ImageBitmap& bitmap,
-                       const std::vector<GetBitmapColorFunc>& getColors)
+                       const std::vector<GetBitmapColorFunc>& getColors) noexcept -> void
 {
   const auto bitmapWidth  = bitmap.GetIntWidth();
   const auto bitmapHeight = bitmap.GetIntHeight();

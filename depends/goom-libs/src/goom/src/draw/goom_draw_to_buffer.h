@@ -15,22 +15,23 @@ class GoomDrawToBuffer : public IGoomDraw
 {
 public:
   GoomDrawToBuffer() noexcept = delete;
-  explicit GoomDrawToBuffer(const Dimensions& dimensions);
+  explicit GoomDrawToBuffer(const Dimensions& dimensions) noexcept;
   GoomDrawToBuffer(const GoomDrawToBuffer&) noexcept = delete;
   GoomDrawToBuffer(GoomDrawToBuffer&&) noexcept      = delete;
   ~GoomDrawToBuffer() noexcept override;
   auto operator=(const GoomDrawToBuffer&) noexcept -> GoomDrawToBuffer& = delete;
   auto operator=(GoomDrawToBuffer&&) noexcept -> GoomDrawToBuffer&      = delete;
 
-  void SetBuffers(const std::vector<PixelBuffer*>& buffs);
+  auto SetBuffers(const std::vector<PixelBuffer*>& buffs) noexcept -> void;
 
-  [[nodiscard]] auto GetPixel(Point2dInt point) const -> Pixel override;
-  void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) override;
+  [[nodiscard]] auto GetPixel(Point2dInt point) const noexcept -> Pixel override;
+  auto DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) noexcept
+      -> void override;
 
 protected:
-  void DrawPixelsToDevice(Point2dInt point,
+  auto DrawPixelsToDevice(Point2dInt point,
                           const MultiplePixels& colors,
-                          uint32_t intBuffIntensity) override;
+                          uint32_t intBuffIntensity) noexcept -> void override;
 
 private:
   size_t m_numBuffers = 0;

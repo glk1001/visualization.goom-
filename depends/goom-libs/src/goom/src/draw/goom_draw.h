@@ -37,68 +37,73 @@ class IGoomDraw
 
 public:
   IGoomDraw() noexcept = delete;
-  explicit IGoomDraw(const Dimensions& dimensions);
+  explicit IGoomDraw(const Dimensions& dimensions) noexcept;
   IGoomDraw(const IGoomDraw&) noexcept           = delete;
   IGoomDraw(IGoomDraw&&) noexcept                = delete;
   virtual ~IGoomDraw() noexcept                  = default;
   auto operator=(const IGoomDraw&) -> IGoomDraw& = delete;
   auto operator=(IGoomDraw&&) -> IGoomDraw&      = delete;
 
-  [[nodiscard]] auto GetScreenDimensions() const -> const Dimensions&;
-  [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
-  [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
+  [[nodiscard]] auto GetScreenDimensions() const noexcept -> const Dimensions&;
+  [[nodiscard]] auto GetScreenWidth() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetScreenHeight() const noexcept -> uint32_t;
 
-  [[nodiscard]] auto GetParallel() const -> GOOM::UTILS::Parallel&;
+  [[nodiscard]] auto GetParallel() const noexcept -> GOOM::UTILS::Parallel&;
 
-  [[nodiscard]] auto GetBuffIntensity() const -> float;
-  void SetBuffIntensity(float val);
+  [[nodiscard]] auto GetBuffIntensity() const noexcept -> float;
+  auto SetBuffIntensity(float val) noexcept -> void;
 
   using BlendPixelFunc =
       std::function<Pixel(const Pixel& oldColor, const Pixel& newColor, uint32_t intBuffIntensity)>;
-  void SetBlendPixelFunc(const BlendPixelFunc& func);
-  void SetDefaultBlendPixelFunc();
+  auto SetBlendPixelFunc(const BlendPixelFunc& func) noexcept -> void;
+  auto SetDefaultBlendPixelFunc() noexcept -> void;
 
-  void Circle(Point2dInt point, int radius, const Pixel& color);
-  void Circle(Point2dInt point, int radius, const MultiplePixels& colors);
+  auto Circle(Point2dInt point, int radius, const Pixel& color) noexcept -> void;
+  auto Circle(Point2dInt point, int radius, const MultiplePixels& colors) noexcept -> void;
 
-  void Line(Point2dInt point1, Point2dInt point2, const Pixel& color, uint8_t thickness);
-  void Line(Point2dInt point1, Point2dInt point2, const MultiplePixels& colors, uint8_t thickness);
+  auto Line(Point2dInt point1, Point2dInt point2, const Pixel& color, uint8_t thickness) noexcept
+      -> void;
+  auto Line(Point2dInt point1,
+            Point2dInt point2,
+            const MultiplePixels& colors,
+            uint8_t thickness) noexcept -> void;
 
   using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& imageColor)>;
-  void Bitmap(Point2dInt centre,
+  auto Bitmap(Point2dInt centre,
               const UTILS::GRAPHICS::ImageBitmap& bitmap,
-              const GetBitmapColorFunc& getColor);
-  void Bitmap(Point2dInt centre,
+              const GetBitmapColorFunc& getColor) noexcept -> void;
+  auto Bitmap(Point2dInt centre,
               const UTILS::GRAPHICS::ImageBitmap& bitmap,
-              const std::vector<GetBitmapColorFunc>& getColors);
+              const std::vector<GetBitmapColorFunc>& getColors) noexcept -> void;
 
-  void DrawPixels(Point2dInt point, const MultiplePixels& colors);
-  void DrawPixelsClipped(Point2dInt point, const MultiplePixels& colors);
+  auto DrawPixels(Point2dInt point, const MultiplePixels& colors) noexcept -> void;
+  auto DrawPixelsClipped(Point2dInt point, const MultiplePixels& colors) noexcept -> void;
 
-  [[nodiscard]] virtual auto GetPixel(Point2dInt point) const -> Pixel             = 0;
-  virtual void DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) = 0;
+  [[nodiscard]] virtual auto GetPixel(Point2dInt point) const noexcept -> Pixel = 0;
+  virtual auto DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) noexcept
+      -> void = 0;
 
 protected:
-  [[nodiscard]] auto GetIntBuffIntensity() const -> uint32_t;
+  [[nodiscard]] auto GetIntBuffIntensity() const noexcept -> uint32_t;
 
   // Use the following to set the final pixel in the buffer.
   [[nodiscard]] auto GetBlendedPixel(const Pixel& oldColor,
                                      const Pixel& newColor,
-                                     uint32_t intBuffIntensity) const -> Pixel;
+                                     uint32_t intBuffIntensity) const noexcept -> Pixel;
 
-  virtual void DrawPixelsToDevice(Point2dInt point,
+  virtual auto DrawPixelsToDevice(Point2dInt point,
                                   const MultiplePixels& colors,
-                                  uint32_t intBuffIntensity) = 0;
+                                  uint32_t intBuffIntensity) noexcept -> void = 0;
 
 private:
   const Dimensions m_dimensions;
   DrawMethods m_drawMethods;
-  void DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors);
+  auto DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors) noexcept -> void;
 
   BlendPixelFunc m_blendPixelFunc{};
   [[nodiscard]] static auto ColorAddBlendPixel(const Pixel& oldColor,
                                                const Pixel& newColor,
-                                               uint32_t intBuffIntensity) -> Pixel;
+                                               uint32_t intBuffIntensity) noexcept -> Pixel;
   static constexpr float DEFAULT_BUFF_INTENSITY = 0.5F;
   float m_buffIntensity                         = DEFAULT_BUFF_INTENSITY;
   uint32_t m_intBuffIntensity{};
@@ -120,44 +125,44 @@ inline auto GetLowColor(const MultiplePixels& colors) noexcept -> Pixel
   return colors.at(1);
 }
 
-inline auto IGoomDraw::GetScreenDimensions() const -> const Dimensions&
+inline auto IGoomDraw::GetScreenDimensions() const noexcept -> const Dimensions&
 {
   return m_dimensions;
 }
 
-inline auto IGoomDraw::GetScreenWidth() const -> uint32_t
+inline auto IGoomDraw::GetScreenWidth() const noexcept -> uint32_t
 {
   return GetScreenDimensions().GetWidth();
 }
 
-inline auto IGoomDraw::GetScreenHeight() const -> uint32_t
+inline auto IGoomDraw::GetScreenHeight() const noexcept -> uint32_t
 {
   return GetScreenDimensions().GetHeight();
 }
 
-inline auto IGoomDraw::GetBuffIntensity() const -> float
+inline auto IGoomDraw::GetBuffIntensity() const noexcept -> float
 {
   return m_buffIntensity;
 }
 
-inline void IGoomDraw::SetBuffIntensity(const float val)
+inline auto IGoomDraw::SetBuffIntensity(const float val) noexcept -> void
 {
   m_buffIntensity = val;
   m_intBuffIntensity =
       static_cast<uint32_t>(std::round(channel_limits<float>::max() * m_buffIntensity));
 }
 
-inline auto IGoomDraw::GetIntBuffIntensity() const -> uint32_t
+inline auto IGoomDraw::GetIntBuffIntensity() const noexcept -> uint32_t
 {
   return m_intBuffIntensity;
 }
 
-inline void IGoomDraw::SetBlendPixelFunc(const BlendPixelFunc& func)
+inline auto IGoomDraw::SetBlendPixelFunc(const BlendPixelFunc& func) noexcept -> void
 {
   m_blendPixelFunc = func;
 }
 
-inline void IGoomDraw::SetDefaultBlendPixelFunc()
+inline auto IGoomDraw::SetDefaultBlendPixelFunc() noexcept -> void
 {
   m_blendPixelFunc =
       [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
@@ -166,65 +171,68 @@ inline void IGoomDraw::SetDefaultBlendPixelFunc()
 
 inline auto IGoomDraw::GetBlendedPixel(const Pixel& oldColor,
                                        const Pixel& newColor,
-                                       const uint32_t intBuffIntensity) const -> Pixel
+                                       const uint32_t intBuffIntensity) const noexcept -> Pixel
 {
   return m_blendPixelFunc(oldColor, newColor, intBuffIntensity);
 }
 
 inline auto IGoomDraw::ColorAddBlendPixel(const Pixel& oldColor,
                                           const Pixel& newColor,
-                                          const uint32_t intBuffIntensity) -> Pixel
+                                          const uint32_t intBuffIntensity) noexcept -> Pixel
 {
   return COLOR::GetColorAdd(oldColor, COLOR::GetBrighterColorInt(intBuffIntensity, newColor));
 }
 
-inline auto IGoomDraw::GetParallel() const -> GOOM::UTILS::Parallel&
+inline auto IGoomDraw::GetParallel() const noexcept -> GOOM::UTILS::Parallel&
 {
   return m_parallel;
 }
 
-inline void IGoomDraw::Circle(const Point2dInt point, const int radius, const Pixel& color)
+inline auto IGoomDraw::Circle(const Point2dInt point, const int radius, const Pixel& color) noexcept
+    -> void
 {
   Circle(point, radius, MultiplePixels{color});
 }
 
-inline void IGoomDraw::Circle(const Point2dInt point,
+inline auto IGoomDraw::Circle(const Point2dInt point,
                               const int radius,
-                              const MultiplePixels& colors)
+                              const MultiplePixels& colors) noexcept -> void
 {
   m_drawMethods.DrawCircle(point.x, point.y, radius, colors);
 }
 
-inline void IGoomDraw::Line(const Point2dInt point1,
+inline auto IGoomDraw::Line(const Point2dInt point1,
                             const Point2dInt point2,
                             const Pixel& color,
-                            const uint8_t thickness)
+                            const uint8_t thickness) noexcept -> void
 {
   Line(point1, point2, MultiplePixels{color}, thickness);
 }
 
-inline void IGoomDraw::Line(const Point2dInt point1,
+inline auto IGoomDraw::Line(const Point2dInt point1,
                             const Point2dInt point2,
                             const MultiplePixels& colors,
-                            const uint8_t thickness)
+                            const uint8_t thickness) noexcept -> void
 {
   m_drawMethods.DrawLine(point1.x, point1.y, point2.x, point2.y, colors, thickness);
 }
 
-inline void IGoomDraw::Bitmap(const Point2dInt centre,
+inline auto IGoomDraw::Bitmap(const Point2dInt centre,
                               const UTILS::GRAPHICS::ImageBitmap& bitmap,
-                              const GetBitmapColorFunc& getColor)
+                              const GetBitmapColorFunc& getColor) noexcept -> void
 {
   // WARNING undefined behaviour - GCC 11 does not like passing just '{getColor}'.
   Bitmap(centre, bitmap, std::vector<GetBitmapColorFunc>{getColor});
 }
 
-inline void IGoomDraw::DrawPixels(const Point2dInt point, const MultiplePixels& colors)
+inline auto IGoomDraw::DrawPixels(const Point2dInt point, const MultiplePixels& colors) noexcept
+    -> void
 {
   m_drawMethods.DrawPixels(point.x, point.y, colors);
 }
 
-inline void IGoomDraw::DrawPixelsClipped(const Point2dInt point, const MultiplePixels& colors)
+inline auto IGoomDraw::DrawPixelsClipped(const Point2dInt point,
+                                         const MultiplePixels& colors) noexcept -> void
 {
   if ((0 < point.x) or (0 < point.y) or
       (static_cast<uint32_t>(point.x) >= m_dimensions.GetWidth()) or

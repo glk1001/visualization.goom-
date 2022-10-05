@@ -17,56 +17,66 @@ using DrawPixelsToDeviceFunc =
 class DrawMethods
 {
 public:
-  DrawMethods(const Dimensions& dimensions, const DrawPixelsToDeviceFunc& func);
+  DrawMethods(const Dimensions& dimensions, const DrawPixelsToDeviceFunc& func) noexcept;
 
-  void DrawCircle(int32_t x0, int32_t y0, int32_t radius, const Pixel& color);
-  void DrawCircle(int32_t x0, int32_t y0, int32_t radius, const std::vector<Pixel>& colors);
-  void DrawFilledCircle(int32_t x0, int32_t y0, int32_t radius, const std::vector<Pixel>& colors);
+  auto DrawCircle(int32_t x0, int32_t y0, int32_t radius, const Pixel& color) noexcept -> void;
+  auto DrawCircle(int32_t x0, int32_t y0, int32_t radius, const std::vector<Pixel>& colors) noexcept
+      -> void;
+  auto DrawFilledCircle(int32_t x0,
+                        int32_t y0,
+                        int32_t radius,
+                        const std::vector<Pixel>& colors) noexcept -> void;
 
-  void DrawLine(
-      int32_t x1, int32_t y1, int32_t x2, int32_t y2, const Pixel& color, uint8_t thickness);
-  void DrawLine(int32_t x1,
+  auto DrawLine(int32_t x1,
+                int32_t y1,
+                int32_t x2,
+                int32_t y2,
+                const Pixel& color,
+                uint8_t thickness) noexcept -> void;
+  auto DrawLine(int32_t x1,
                 int32_t y1,
                 int32_t x2,
                 int32_t y2,
                 const std::vector<Pixel>& colors,
-                uint8_t thickness);
+                uint8_t thickness) noexcept -> void;
 
-  void DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& newColors);
+  auto DrawPixels(int32_t x, int32_t y, const std::vector<Pixel>& newColors) noexcept -> void;
 
 private:
   const Dimensions m_dimensions;
   const DrawPixelsToDeviceFunc m_drawPixelsToDevice;
 
   using PlotCirclePointsFunc = std::function<void(int32_t x1, int32_t y1, int32_t x2, int32_t y2)>;
-  static void DrawBresenhamCircle(int32_t x0,
+  static auto DrawBresenhamCircle(int32_t x0,
                                   int32_t y0,
                                   int32_t radius,
-                                  const PlotCirclePointsFunc& plotter);
+                                  const PlotCirclePointsFunc& plotter) noexcept -> void;
 
-  void DrawHorizontalLine(int x1, int y, int x2, const std::vector<Pixel>& colors);
-  void DrawThickLine(int x0,
+  auto DrawHorizontalLine(int x1, int y, int x2, const std::vector<Pixel>& colors) noexcept -> void;
+  auto DrawThickLine(int x0,
                      int y0,
                      int x1,
                      int y1,
                      const std::vector<Pixel>& colors,
                      uint8_t thickness,
-                     uint8_t thicknessMode);
-  void DrawLineOverlap(int x0,
+                     uint8_t thicknessMode) noexcept -> void;
+  auto DrawLineOverlap(int x0,
                        int y0,
                        int x1,
                        int y1,
                        const std::vector<Pixel>& colors,
                        float brightness,
-                       uint8_t overlap);
-  void DrawWuLine(int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors);
+                       uint8_t overlap) noexcept -> void;
+  auto DrawWuLine(int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors) noexcept
+      -> void;
   using PlotPointFunc = const std::function<void(int x, int y, float brightness)>;
-  static void WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot);
+  static auto WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot) noexcept
+      -> void;
 };
 
-inline void DrawMethods::DrawPixels(const int32_t x,
+inline auto DrawMethods::DrawPixels(const int32_t x,
                                     const int32_t y,
-                                    const std::vector<Pixel>& newColors)
+                                    const std::vector<Pixel>& newColors) noexcept -> void
 {
   Expects(x >= 0);
   Expects(y >= 0);
