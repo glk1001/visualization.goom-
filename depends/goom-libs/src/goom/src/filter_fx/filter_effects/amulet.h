@@ -17,9 +17,7 @@ public:
   auto SetRandomParams() -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero,
-                                           const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt override;
+                                           float sqDistFromZero) const -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs override;
@@ -40,11 +38,10 @@ private:
 };
 
 inline auto Amulet::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
-                                          float sqDistFromZero,
-                                          const Point2dFlt& baseZoomInCoeffs) const -> Point2dFlt
+                                          const float sqDistFromZero) const -> Point2dFlt
 {
-  return {baseZoomInCoeffs.x + (m_params.xAmplitude * sqDistFromZero),
-          baseZoomInCoeffs.y + (m_params.yAmplitude * sqDistFromZero)};
+  return {GetBaseZoomInCoeffs().x + (m_params.xAmplitude * sqDistFromZero),
+          GetBaseZoomInCoeffs().y + (m_params.yAmplitude * sqDistFromZero)};
   //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
 }
 

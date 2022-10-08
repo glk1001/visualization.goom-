@@ -23,8 +23,7 @@ public:
   auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero,
-                                           const Point2dFlt& baseZoomInCoeffs) const noexcept
+                                           float sqDistFromZero) const noexcept
       -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
@@ -74,26 +73,25 @@ private:
                                                  float sqDistOffset) noexcept -> float;
 };
 
-inline auto DistanceField::GetZoomInCoefficients(const NormalizedCoords& coords,
-                                                 [[maybe_unused]] float sqDistFromZero,
-                                                 const Point2dFlt& baseZoomInCoeffs) const noexcept
+inline auto DistanceField::GetZoomInCoefficients(
+    const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const noexcept
     -> Point2dFlt
 {
   const auto sqDistFromClosestPoint = GetClosestDistancePoint(coords).sqDistanceFromCoords;
 
   if (m_mode == Modes::MODE0)
   {
-    return {baseZoomInCoeffs.x + (m_params.xAmplitude * sqDistFromClosestPoint),
-            baseZoomInCoeffs.y + (m_params.yAmplitude * sqDistFromClosestPoint)};
+    return {GetBaseZoomInCoeffs().x + (m_params.xAmplitude * sqDistFromClosestPoint),
+            GetBaseZoomInCoeffs().y + (m_params.yAmplitude * sqDistFromClosestPoint)};
   }
 
   return {
-      GetZoomInCoefficient(baseZoomInCoeffs.x,
+      GetZoomInCoefficient(GetBaseZoomInCoeffs().x,
                            sqDistFromClosestPoint,
                            m_params.xAmplitude,
                            m_params.xSqDistMult,
                            m_params.xSqDistOffset),
-      GetZoomInCoefficient(baseZoomInCoeffs.y,
+      GetZoomInCoefficient(GetBaseZoomInCoeffs().y,
                            sqDistFromClosestPoint,
                            m_params.yAmplitude,
                            m_params.ySqDistMult,

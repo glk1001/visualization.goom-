@@ -22,9 +22,7 @@ public:
   auto SetRandomParams() -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero,
-                                           const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt override;
+                                           float sqDistFromZero) const -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs override;
@@ -83,11 +81,12 @@ private:
 };
 
 inline auto Wave::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
-                                        float sqDistFromZero,
-                                        const Point2dFlt& baseZoomInCoeffs) const -> Point2dFlt
+                                        const float sqDistFromZero) const -> Point2dFlt
 {
-  const auto xZoomInCoeff = baseZoomInCoeffs.x + GetZoomInAdd(sqDistFromZero, m_params.xWaveEffect);
-  const auto yZoomInCoeff = baseZoomInCoeffs.y + GetZoomInAdd(sqDistFromZero, m_params.yWaveEffect);
+  const auto xZoomInCoeff =
+      GetBaseZoomInCoeffs().x + GetZoomInAdd(sqDistFromZero, m_params.xWaveEffect);
+  const auto yZoomInCoeff =
+      GetBaseZoomInCoeffs().y + GetZoomInAdd(sqDistFromZero, m_params.yWaveEffect);
 
   return {xZoomInCoeff, yZoomInCoeff};
 }

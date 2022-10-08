@@ -24,9 +24,7 @@ public:
   auto SetRandomParams() -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero,
-                                           const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt override;
+                                           float sqDistFromZero) const -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs override;
@@ -49,40 +47,31 @@ private:
   auto SetMode1RandomParams() -> void;
   auto SetMode2RandomParams() -> void;
   [[nodiscard]] auto GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
-                                                float sqDistFromZero,
-                                                const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt;
+                                                float sqDistFromZero) const -> Point2dFlt;
   [[nodiscard]] auto GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
-                                                float sqDistFromZero,
-                                                const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt;
+                                                float sqDistFromZero) const -> Point2dFlt;
   [[nodiscard]] auto GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
-                                                float sqDistFromZero,
-                                                const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt;
+                                                float sqDistFromZero) const -> Point2dFlt;
 };
 
 inline auto Speedway::GetZoomInCoefficients(const NormalizedCoords& coords,
-                                            float sqDistFromZero,
-                                            const Point2dFlt& baseZoomInCoeffs) const -> Point2dFlt
+                                            const float sqDistFromZero) const -> Point2dFlt
 {
   switch (m_mode)
   {
     case Modes::MODE0:
-      return GetMode0ZoomInCoefficients(coords, sqDistFromZero, baseZoomInCoeffs);
+      return GetMode0ZoomInCoefficients(coords, sqDistFromZero);
     case Modes::MODE1:
-      return GetMode1ZoomInCoefficients(coords, sqDistFromZero, baseZoomInCoeffs);
+      return GetMode1ZoomInCoefficients(coords, sqDistFromZero);
     case Modes::MODE2:
-      return GetMode2ZoomInCoefficients(coords, sqDistFromZero, baseZoomInCoeffs);
+      return GetMode2ZoomInCoefficients(coords, sqDistFromZero);
     default:
       throw std::logic_error("Unexpected Modes enum.");
   }
 }
 
 inline auto Speedway::GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero,
-                                                 const Point2dFlt& baseZoomInCoeffs) const
-    -> Point2dFlt
+                                                 const float sqDistFromZero) const -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
@@ -92,16 +81,15 @@ inline auto Speedway::GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
     xAdd = -xAdd;
   }
 
-  const auto xZoomInCoeff = baseZoomInCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
+  const auto xZoomInCoeff =
+      GetBaseZoomInCoeffs().x * (m_params.xAmplitude * (coords.GetY() + xAdd));
   const auto yZoomInCoeff = m_params.yAmplitude * xZoomInCoeff;
 
   return {xZoomInCoeff, yZoomInCoeff};
 }
 
 inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero,
-                                                 const Point2dFlt& baseZoomInCoeffs) const
-    -> Point2dFlt
+                                                 const float sqDistFromZero) const -> Point2dFlt
 {
   auto xAdd = -1.0F;
   if (static constexpr auto PROB_RANDOM_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
@@ -129,16 +117,14 @@ inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
   const auto xWarp     = X_WARP_MULTIPLIER * (xAdd + ((sign * UTILS::MATH::Sq(xDiff)) / xAdd));
   const auto amplitude = AMPLITUDE_MULTIPLIER * (1.0F - sqDistFromZero);
 
-  const auto xZoomInCoeff = amplitude * baseZoomInCoeffs.x * (m_params.xAmplitude * xWarp);
+  const auto xZoomInCoeff = amplitude * GetBaseZoomInCoeffs().x * (m_params.xAmplitude * xWarp);
   const auto yZoomInCoeff = amplitude * m_params.yAmplitude * xZoomInCoeff;
 
   return {xZoomInCoeff, yZoomInCoeff};
 }
 
 inline auto Speedway::GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero,
-                                                 const Point2dFlt& baseZoomInCoeffs) const
-    -> Point2dFlt
+                                                 const float sqDistFromZero) const -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
@@ -148,7 +134,8 @@ inline auto Speedway::GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
     xAdd = -xAdd;
   }
 
-  const auto xZoomInCoeff = baseZoomInCoeffs.x * (m_params.xAmplitude * (coords.GetY() + xAdd));
+  const auto xZoomInCoeff =
+      GetBaseZoomInCoeffs().x * (m_params.xAmplitude * (coords.GetY() + xAdd));
   const auto yZoomInCoeff = std::tan(0.01F * sqDistFromZero) * m_params.yAmplitude * xZoomInCoeff;
 
   return {xZoomInCoeff, yZoomInCoeff};

@@ -18,9 +18,7 @@ public:
   auto SetRandomParams() -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero,
-                                           const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt override;
+                                           float sqDistFromZero) const -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs override;
@@ -56,18 +54,18 @@ private:
 };
 
 inline auto YOnly::GetZoomInCoefficients(const NormalizedCoords& coords,
-                                         [[maybe_unused]] float sqDistFromZero,
-                                         const Point2dFlt& baseZoomInCoeffs) const -> Point2dFlt
+                                         [[maybe_unused]] const float sqDistFromZero) const
+    -> Point2dFlt
 {
-  const auto xZoomInCoeff =
-      baseZoomInCoeffs.x * m_params.xAmplitude * GetYOnlyZoomInMultiplier(m_params.xEffect, coords);
+  const auto xZoomInCoeff = GetBaseZoomInCoeffs().x * m_params.xAmplitude *
+                            GetYOnlyZoomInMultiplier(m_params.xEffect, coords);
   if (m_params.yEffect == YOnlyEffect::NONE)
   {
     return {xZoomInCoeff, xZoomInCoeff};
   }
 
   return {xZoomInCoeff,
-          baseZoomInCoeffs.y * m_params.yAmplitude *
+          GetBaseZoomInCoeffs().y * m_params.yAmplitude *
               GetYOnlyZoomInMultiplier(m_params.yEffect, coords)};
 }
 

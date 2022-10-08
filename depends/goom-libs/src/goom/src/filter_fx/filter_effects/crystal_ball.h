@@ -22,9 +22,7 @@ public:
   auto SetRandomParams() -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero,
-                                           const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt override;
+                                           float sqDistFromZero) const -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> UTILS::NameValuePairs override;
@@ -64,16 +62,14 @@ private:
 };
 
 inline auto CrystalBall::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
-                                               float sqDistFromZero,
-                                               const Point2dFlt& baseZoomInCoeffs) const
-    -> Point2dFlt
+                                               const float sqDistFromZero) const -> Point2dFlt
 {
-  return {GetZoomInCoefficient(baseZoomInCoeffs.x,
+  return {GetZoomInCoefficient(GetBaseZoomInCoeffs().x,
                                sqDistFromZero,
                                m_params.xAmplitude,
                                m_params.xSqDistMult,
                                m_params.xSqDistOffset),
-          GetZoomInCoefficient(baseZoomInCoeffs.y,
+          GetZoomInCoefficient(GetBaseZoomInCoeffs().y,
                                sqDistFromZero,
                                m_params.yAmplitude,
                                m_params.ySqDistMult,

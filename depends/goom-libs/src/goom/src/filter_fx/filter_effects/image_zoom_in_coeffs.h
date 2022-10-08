@@ -21,9 +21,7 @@ public:
   auto SetRandomParams() -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero,
-                                           const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt override;
+                                           float sqDistFromZero) const -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> GOOM::UTILS::NameValuePairs override;
@@ -35,9 +33,7 @@ private:
 };
 
 inline auto ImageZoomInCoefficients::GetZoomInCoefficients(
-    const NormalizedCoords& coords,
-    [[maybe_unused]] float sqDistFromZero,
-    [[maybe_unused]] const Point2dFlt& baseZoomInCoeffs) const -> Point2dFlt
+    const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const -> Point2dFlt
 {
   return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords);
 }

@@ -16,9 +16,7 @@ public:
   auto SetRandomParams() -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero,
-                                           const Point2dFlt& baseZoomInCoeffs) const
-      -> Point2dFlt override;
+                                           float sqDistFromZero) const -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
       -> GOOM::UTILS::NameValuePairs override;
@@ -26,10 +24,9 @@ public:
 
 inline auto UniformZoomInCoefficientsEffect::GetZoomInCoefficients(
     [[maybe_unused]] const NormalizedCoords& coords,
-    [[maybe_unused]] float sqDistFromZero,
-    const Point2dFlt& baseZoomInCoeffs) const -> Point2dFlt
+    [[maybe_unused]] const float sqDistFromZero) const -> Point2dFlt
 {
-  return baseZoomInCoeffs;
+  return GetBaseZoomInCoeffs();
 }
 
 inline auto UniformZoomInCoefficientsEffect::SetRandomParams() -> void

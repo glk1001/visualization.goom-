@@ -58,8 +58,8 @@ private:
   AFTER_EFFECTS::ZoomVectorAfterEffects m_zoomVectorAfterEffects;
   float m_baseZoomInCoeffFactor = RAW_BASE_ZOOM_IN_COEFF_FACTOR;
   auto SetBaseZoomInCoeffFactor(float multiplier) noexcept -> void;
+  auto SetBaseZoomInCoeffs() noexcept -> void;
 
-  [[nodiscard]] auto GetBaseZoomInCoeffs() const -> Point2dFlt;
   [[nodiscard]] auto GetClampedZoomInCoeffs(const Point2dFlt& zoomCoeffs) const -> Point2dFlt;
   [[nodiscard]] auto GetClampedZoomInCoeff(float zoomCoeff) const -> float;
   [[nodiscard]] static auto GetMinCoordVal(float coordVal, float minNormalizedCoordVal) -> float;
@@ -71,7 +71,7 @@ inline auto ZoomVectorEffects::GetZoomInCoefficients(const NormalizedCoords& coo
                                                      const float sqDistFromZero) const -> Point2dFlt
 {
   const auto zoomCoeffs = m_filterEffectsSettings->zoomInCoefficientsEffect->GetZoomInCoefficients(
-      coords, sqDistFromZero, GetBaseZoomInCoeffs());
+      coords, sqDistFromZero);
   // Amulet 2
   // vx = X * tan(dist);
   // vy = Y * tan(dist);
@@ -87,17 +87,21 @@ inline auto ZoomVectorEffects::SetBaseZoomInCoeffFactor(const float multiplier) 
   Ensures(GetBaseZoomInCoeff(m_baseZoomInCoeffFactor,
                              m_filterEffectsSettings->vitesse.GetRelativeSpeed()) <=
           MAX_ALLOWED_BASE_ZOOM_IN_COEFF);
+
+  SetBaseZoomInCoeffs();
 }
 
-inline auto ZoomVectorEffects::GetBaseZoomInCoeffs() const -> Point2dFlt
+inline auto ZoomVectorEffects::SetBaseZoomInCoeffs() noexcept -> void
 {
+  // TODO(glk) Does GetRelativeSpeed change in between this setter use?
   const auto baseZoomCoeff = GetBaseZoomInCoeff(
       m_baseZoomInCoeffFactor, m_filterEffectsSettings->vitesse.GetRelativeSpeed());
 
   Ensures(MIN_ALLOWED_BASE_ZOOM_IN_COEFF <= baseZoomCoeff);
   Ensures(baseZoomCoeff <= MAX_ALLOWED_BASE_ZOOM_IN_COEFF);
 
-  return {baseZoomCoeff, baseZoomCoeff};
+  m_filterEffectsSettings->zoomInCoefficientsEffect->SetBaseZoomInCoeffs(
+      {baseZoomCoeff, baseZoomCoeff});
 }
 
 constexpr auto ZoomVectorEffects::GetBaseZoomInCoeff(const float baseZoomInCoeffFactor,
