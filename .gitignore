@@ -30,11 +30,11 @@ obj-x86_64-linux-gnu/
 # gedit
 *~
 
-# CLion
-/.idea
-
 # clion
 .idea/
+
+# python
+__pycache__/
 
 # to prevent add after a "git format-patch VALUE" and "git add ." call
 /*.patch
