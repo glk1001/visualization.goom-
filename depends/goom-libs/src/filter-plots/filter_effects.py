@@ -9,7 +9,7 @@ class FilterEffectFunction(ABC):
         self.base_zoom_coeffs = complex(0, 0)
 
     @abstractmethod
-    def f(self, z: np.ndarray, sq_dist_from_zero: np.ndarray):
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
         pass
 
 
@@ -17,7 +17,7 @@ class IdentityZoom(FilterEffectFunction):
     def __init__(self):
         super().__init__('Identity Zoom')
 
-    def f(self, z: np.ndarray, sq_dist_from_zero: np.ndarray):
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
         return self.base_zoom_coeffs
 
 
@@ -26,9 +26,9 @@ class Amulet(FilterEffectFunction):
         super().__init__('Amulet')
         self.amplitude = 0.9
 
-    def f(self, z: np.ndarray, sq_dist_from_zero: np.ndarray):
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
         # angle = np.sin(1.0/np.log(abs(np.arctan2(np.imag(z), np.real(z)))))
-        return self.base_zoom_coeffs + (self.amplitude * sq_dist_from_zero)
+        return self.base_zoom_coeffs + (self.amplitude * absolute_sq_z * (1 + 1j))
 
 
 class Wave(FilterEffectFunction):
@@ -39,11 +39,11 @@ class Wave(FilterEffectFunction):
         self.periodic_factor = 10
         self.reducer_coeff = 0.001
 
-    def f(self, z: np.ndarray, sq_dist_from_zero: np.ndarray):
-        angle = self.freq_factor * sq_dist_from_zero
-        reducer = np.exp(-self.reducer_coeff * sq_dist_from_zero)
-        return self.base_zoom_coeffs + (
-                reducer * self.amplitude * self.periodic_factor * self.f_angle(angle))
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        reducer = np.exp(-self.reducer_coeff * absolute_sq_z)
+        full_factor = reducer * self.amplitude * self.periodic_factor
+        angle = self.freq_factor * absolute_sq_z
+        return self.base_zoom_coeffs + (full_factor * self.f_angle(angle) * (1 + 1j))
 
     @abstractmethod
     def f_angle(self, angle: np.ndarray):
@@ -72,8 +72,8 @@ class Scrunch(FilterEffectFunction):
         self.x_amplitude = 0.1
         self.y_amplitude = 3.0
 
-    def f(self, z: np.ndarray, sq_dist_from_zero: np.ndarray):
-        x_zoom_in_coeff = self.base_zoom_coeffs.real + (self.x_amplitude * sq_dist_from_zero)
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        x_zoom_in_coeff = self.base_zoom_coeffs.real + (self.x_amplitude * absolute_sq_z)
         y_zoom_in_coeff = self.y_amplitude * x_zoom_in_coeff
         return x_zoom_in_coeff + (y_zoom_in_coeff * 1.0j)
 
@@ -83,5 +83,14 @@ class StrangeSine(FilterEffectFunction):
         super().__init__("Strange Sine")
         self.amplitude = 0.1
 
-    def f(self, z: np.ndarray, sq_dist_from_zero: np.ndarray):
-        return self.base_zoom_coeffs + (self.amplitude * np.sin(z ** 3) / z)
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        return self.base_zoom_coeffs + ((self.amplitude * np.sin(z ** 3)) / z)
+
+
+class Power(FilterEffectFunction):
+    def __init__(self):
+        super().__init__("Power")
+        self.amplitude = 0.1
+
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        return self.base_zoom_coeffs + z**6 + 1
