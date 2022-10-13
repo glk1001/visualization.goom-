@@ -78,19 +78,42 @@ class Scrunch(FilterEffectFunction):
         return x_zoom_in_coeff + (y_zoom_in_coeff * 1.0j)
 
 
+class YOnly(FilterEffectFunction):
+    def __init__(self):
+        super().__init__('Y Only')
+        self.x_freq_factor = 10.1
+        self.y_freq_factor = 20.0
+        self.x_amplitude = 1.0
+        self.y_amplitude = 10.0
+
+    def get_y_only_zoom_in_multiplier(self, z: np.ndarray):
+        return np.sin(self.x_freq_factor * z.real) * np.cos(self.y_freq_factor * z.imag)
+
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        x_zoom_in_coeff = self.base_zoom_coeffs.real * self.x_amplitude * \
+                          self.get_y_only_zoom_in_multiplier(z)
+
+        # return x_zoom_in_coeff + x_zoom_in_coeff * 1.0j
+
+        return x_zoom_in_coeff + (
+                    self.base_zoom_coeffs.imag * self.y_amplitude *
+                    self.get_y_only_zoom_in_multiplier(z)) * 1.0j
+
+
 class StrangeSine(FilterEffectFunction):
     def __init__(self):
         super().__init__("Strange Sine")
         self.amplitude = 0.1
+        self.factor = 0.01
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
-        return self.base_zoom_coeffs + ((self.amplitude * np.sin(z ** 3)) / z)
+        return self.base_zoom_coeffs + ((self.amplitude * np.sin(z ** 3)) / (self.factor*z))
 
 
 class Power(FilterEffectFunction):
     def __init__(self):
         super().__init__("Power")
-        self.amplitude = 0.1
+        self.amplitude = 0.001
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
-        return self.base_zoom_coeffs + z**6 + 1
+        return self.base_zoom_coeffs + z ** 6 + 1

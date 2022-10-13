@@ -19,16 +19,24 @@ class CombinedEffects:
         # return np.clip(fz, -2.0, +2.0)
 
     def f_zoom(self, z: np.ndarray):
+        # print(f'z.shape = {z.shape}')
+
         absolute_sq_z = np.absolute(z) ** 2
 
-        # base_zoom_coeffs = -0.1 + -0.1j
-        base_zoom_coeffs = 0 + 0j
+        base_zoom_coeffs = 0.1 + 0.1j
+        # base_zoom_coeffs = -1 + -1j
+        # base_zoom_coeffs = -0.1 + -0.5j
+        # base_zoom_coeffs = 0 + 0j
+
         self.f_filter_effect.base_zoom_coeffs = base_zoom_coeffs
         self.f_after_effect.base_zoom_coeffs = base_zoom_coeffs
 
         zoom_in_coeffs = self.f_filter_effect.f(z, absolute_sq_z)
         # return zoom_in_coeffs
+
         zoom_in_factor = 1.0 + 1.0j - zoom_in_coeffs
+        # zoom_in_factor = zoom_in_coeffs
+
         zoom_in_point = (zoom_in_factor.real * z.real) + (zoom_in_factor.imag * z.imag) * 1.0j
         # return zoom_in_point
 
