@@ -20,21 +20,21 @@ static constexpr auto Y_AMPLITUDE_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.
 static constexpr auto X_AMPLITUDE_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.50F, 1.51F};
 static constexpr auto Y_AMPLITUDE_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.50F, 1.51F};
 
-static constexpr auto DEFAULT_SQ_DIST_MULT       = 0.025F;
-static constexpr auto X_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.051F};
-static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.051F};
-static constexpr auto X_SQ_DIST_MULT_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.02F, 0.051F};
-static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.02F, 0.051F};
-static constexpr auto X_SQ_DIST_MULT_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.02F, 0.051F};
-static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.02F, 0.051F};
+static constexpr auto DEFAULT_SQ_DIST_MULT       = 0.5F;
+static constexpr auto X_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.0F, 0.01F};
+static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.0F, 0.01F};
+static constexpr auto X_SQ_DIST_MULT_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.5F, 2.01F};
+static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.5F, 2.01F};
+static constexpr auto X_SQ_DIST_MULT_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.5F, 3.01F};
+static constexpr auto Y_SQ_DIST_MULT_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.5F, 3.01F};
 
-static constexpr auto DEFAULT_SQ_DIST_OFFSET       = 0.05F;
-static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.11F};
-static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.01F, 0.11F};
-static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.10F, 0.75F};
-static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.10F, 0.75F};
-static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.30F, 1.00F};
-static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.30F, 1.00F};
+static constexpr auto DEFAULT_SQ_DIST_OFFSET       = 0.1F;
+static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.0F, 0.01F};
+static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE0 = IGoomRand::NumberRange<float>{0.0F, 0.01F};
+static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.1F, 1.01F};
+static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE1 = IGoomRand::NumberRange<float>{0.1F, 1.01F};
+static constexpr auto X_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.3F, 2.01F};
+static constexpr auto Y_SQ_DIST_OFFSET_RANGE_MODE2 = IGoomRand::NumberRange<float>{0.3F, 2.01F};
 
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 0.50F;
 static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL   = 0.50F;
@@ -142,14 +142,16 @@ auto DistanceField::GetDistancePoints() const noexcept -> std::vector<Normalized
 
   static constexpr auto NUM_DISTANCE_POINTS = 4U;
 
+  static constexpr auto Y_SHRINK_FACTOR = 0.67F;
+
   if (!m_goomRand.ProbabilityOf(PROB_RANDOM_DISTANCE_POINTS))
   {
     static constexpr auto HALF_MIN_COORD = 0.5F * NormalizedCoords::MIN_NORMALIZED_COORD;
     static constexpr auto HALF_MAX_COORD = 0.5F * NormalizedCoords::MAX_NORMALIZED_COORD;
-    distancePoints.emplace_back(HALF_MIN_COORD, HALF_MIN_COORD);
-    distancePoints.emplace_back(HALF_MAX_COORD, HALF_MIN_COORD);
-    distancePoints.emplace_back(HALF_MIN_COORD, HALF_MAX_COORD);
-    distancePoints.emplace_back(HALF_MAX_COORD, HALF_MAX_COORD);
+    distancePoints.emplace_back(HALF_MIN_COORD, Y_SHRINK_FACTOR * HALF_MIN_COORD);
+    distancePoints.emplace_back(HALF_MAX_COORD, Y_SHRINK_FACTOR * HALF_MIN_COORD);
+    distancePoints.emplace_back(HALF_MIN_COORD, Y_SHRINK_FACTOR * HALF_MAX_COORD);
+    distancePoints.emplace_back(HALF_MAX_COORD, Y_SHRINK_FACTOR * HALF_MAX_COORD);
   }
   else
   {
@@ -159,7 +161,7 @@ auto DistanceField::GetDistancePoints() const noexcept -> std::vector<Normalized
     {
       distancePoints.emplace_back(
           m_goomRand.GetRandInRange(MIN_DISTANCE_COORD, MAX_DISTANCE_COORD),
-          m_goomRand.GetRandInRange(MIN_DISTANCE_COORD, MAX_DISTANCE_COORD));
+          Y_SHRINK_FACTOR * m_goomRand.GetRandInRange(MIN_DISTANCE_COORD, MAX_DISTANCE_COORD));
     }
   }
 

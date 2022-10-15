@@ -105,7 +105,7 @@ inline auto DistanceField::GetZoomInCoefficient(const float baseZoomInCoeff,
                                                 const float sqDistMult,
                                                 const float sqDistOffset) noexcept -> float
 {
-  return baseZoomInCoeff - (amplitude * ((sqDistMult * sqDistFromZero) - sqDistOffset));
+  return baseZoomInCoeff + (amplitude * ((sqDistMult * sqDistFromZero) - sqDistOffset));
 }
 
 inline auto DistanceField::GetParams() const noexcept -> const Params&
