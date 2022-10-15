@@ -60,27 +60,33 @@ def get_remapped_image(img_remap, img, wid, hgt):
 def get_combined_effects() -> CombinedEffects:
     identity_zoom_filter_effect = filter_effects.IdentityZoom()
     amulet_filter_effect = filter_effects.Amulet()
+    distance_field_filter_effect = filter_effects.DistanceField()
+    scrunch_filter_effect = filter_effects.Scrunch()
+    speedway_filter_effect = filter_effects.Speedway()
     wave_sine_filter_effect = filter_effects.WaveSine()
     wave_tan_filter_effect = filter_effects.WaveTan()
-    scrunch_filter_effect = filter_effects.Scrunch()
     y_only_filter_effect = filter_effects.YOnly()
     strange_sine_filter_effect = filter_effects.StrangeSine()
     power_filter_effect = filter_effects.Power()
 
     zero_after_effect = after_effects.Zero()
     tan_after_effect = after_effects.Tan()
+    xy_lerp_after_effect = after_effects.XYLerp()
 
-    filter_effect = identity_zoom_filter_effect
+    # filter_effect = identity_zoom_filter_effect
     # filter_effect = amulet_filter_effect
+    # filter_effect = distance_field_filter_effect
+    # filter_effect = scrunch_filter_effect
+    # filter_effect = speedway_filter_effect
+    # filter_effect = y_only_filter_effect
     # filter_effect = wave_sine_filter_effect
     # filter_effect = wave_tan_filter_effect
-    # filter_effect = scrunch_filter_effect
-    # filter_effect = y_only_filter_effect
-    # filter_effect = strange_sine_filter_effect
+    filter_effect = strange_sine_filter_effect
     # filter_effect = power_filter_effect
 
     after_effect = zero_after_effect
     # after_effect = tan_after_effect
+    # after_effect = xy_lerp_after_effect
 
     return CombinedEffects(filter_effect, after_effect)
 
