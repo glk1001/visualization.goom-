@@ -36,15 +36,14 @@ public:
     MODE1,
     MODE2,
     MODE3,
-    MODE4,
-    MODE5,
     _num // unused, and marks the enum end
   };
   struct Params
   {
     Modes mode;
     float tFreq;
-    bool flipY;
+    float ySign;
+    bool flipXY;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -64,18 +63,15 @@ inline auto XYLerpEffect::GetVelocity([[maybe_unused]] const float sqDistFromZer
 {
   const auto t = GetT(sqDistFromZero, velocity);
 
-  if (m_params.flipY)
+  const auto xVelocity = STD20::lerp(velocity.GetX(), velocity.GetY(), t);
+  const auto yVelocity = STD20::lerp(velocity.GetY(), velocity.GetX(), t);
+
+  if (m_params.flipXY)
   {
-    return {
-        +STD20::lerp(velocity.GetX(), velocity.GetY(), t),
-        -STD20::lerp(velocity.GetY(), velocity.GetX(), t),
-    };
+    return {yVelocity, m_params.ySign * xVelocity};
   }
 
-  return {
-      STD20::lerp(velocity.GetX(), velocity.GetY(), t),
-      STD20::lerp(velocity.GetY(), velocity.GetX(), t),
-  };
+  return {xVelocity, m_params.ySign * yVelocity};
 }
 
 inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoords& velocity) const
@@ -89,19 +85,15 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoord
   switch (m_params.mode)
   {
     case Modes::MODE0:
-      return 0.0F;
-    case Modes::MODE1:
-      return 1.0F;
-    case Modes::MODE2:
       return std::cos((m_params.tFreq * sqDistFromZero) +
                       (MODE2_OFFSET + std::sin(MODE2_FREQ * sqDistFromZero)));
-    case Modes::MODE3:
+    case Modes::MODE1:
       return std::cos((m_params.tFreq * sqDistFromZero) *
                       m_goomRand.GetRandInRange(MODE3_MIN_FACTOR, MODE3_MAX_FACTOR));
-    case Modes::MODE4:
+    case Modes::MODE2:
       return -(2.0F / STD20::pi) *
              std::atan(std::tan(UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));
-    case Modes::MODE5:
+    case Modes::MODE3:
       return std::abs(std::atan2(velocity.GetY(), velocity.GetX()) / STD20::pi);
     default:
       FailFast();

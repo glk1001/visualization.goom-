@@ -17,12 +17,11 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
-static constexpr auto DEFAULT_T_FREQ = 1.0F;
-static constexpr auto T_FREQ_RANGE   = IGoomRand::NumberRange<float>{1.0F, 50.0F};
-static constexpr auto PROB_FLIP_Y    = 0.5F;
+static constexpr auto DEFAULT_T_FREQ   = 1.0F;
+static constexpr auto T_FREQ_RANGE     = IGoomRand::NumberRange<float>{1.0F, 40.0F};
+static constexpr auto PROB_FLIP_Y_SIGN = 0.5F;
+static constexpr auto PROB_FLIP_XY     = 0.5F;
 
-static constexpr auto MODE0_WEIGHT = 01.0F;
-static constexpr auto MODE1_WEIGHT = 01.0F;
 static constexpr auto MODE2_WEIGHT = 10.0F;
 static constexpr auto MODE3_WEIGHT = 10.0F;
 static constexpr auto MODE4_WEIGHT = 10.0F;
@@ -33,15 +32,13 @@ XYLerpEffect::XYLerpEffect(const IGoomRand& goomRand)
     m_modeWeights{
         m_goomRand,
         {
-            {Modes::MODE0, MODE0_WEIGHT},
-            {Modes::MODE1, MODE1_WEIGHT},
-            {Modes::MODE2, MODE2_WEIGHT},
-            {Modes::MODE3, MODE3_WEIGHT},
-            {Modes::MODE4, MODE4_WEIGHT},
-            {Modes::MODE5, MODE5_WEIGHT},
+            {Modes::MODE0, MODE2_WEIGHT},
+            {Modes::MODE1, MODE3_WEIGHT},
+            {Modes::MODE2, MODE4_WEIGHT},
+            {Modes::MODE3, MODE5_WEIGHT},
         }
     },
-    m_params{Modes::MODE0, DEFAULT_T_FREQ, false}
+    m_params{Modes::MODE0, DEFAULT_T_FREQ, +1.0F, false}
 {
 }
 
@@ -49,9 +46,10 @@ auto XYLerpEffect::SetRandomParams() -> void
 {
   const auto mode  = m_modeWeights.GetRandomWeighted();
   const auto tFreq = m_goomRand.GetRandInRange(T_FREQ_RANGE);
-  const auto flipY = m_goomRand.ProbabilityOf(GetFlipYProbability(mode));
+  const auto ySign  = m_goomRand.ProbabilityOf(PROB_FLIP_Y_SIGN) ? -1.0F : +1.0F;
+  const auto flipXY = m_goomRand.ProbabilityOf(GetFlipYProbability(mode));
 
-  SetParams({mode, tFreq, flipY});
+  SetParams({mode, tFreq, ySign, flipXY});
 }
 
 inline auto XYLerpEffect::GetFlipYProbability(const Modes mode) -> float
@@ -61,7 +59,7 @@ inline auto XYLerpEffect::GetFlipYProbability(const Modes mode) -> float
     return 0.0F;
   }
 
-  return PROB_FLIP_Y;
+  return PROB_FLIP_XY;
 }
 
 auto XYLerpEffect::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
@@ -70,7 +68,8 @@ auto XYLerpEffect::GetNameValueParams(const std::string& paramGroup) const -> Na
   return {
       GetPair(fullParamGroup, "mode", EnumToString(m_params.mode)),
       GetPair(fullParamGroup, "tFreq", m_params.tFreq),
-      GetPair(fullParamGroup, "flipXY", m_params.flipY),
+      GetPair(fullParamGroup, "ySign", m_params.ySign),
+      GetPair(fullParamGroup, "flipXY", m_params.flipXY),
   };
 }
 
