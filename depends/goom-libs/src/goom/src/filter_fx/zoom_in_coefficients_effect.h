@@ -28,6 +28,7 @@ public:
       -> GOOM::UTILS::NameValuePairs = 0;
 
 protected:
+  static constexpr auto* PARAM_GROUP = "Zoom Coeffs";
   [[nodiscard]] auto GetBaseZoomInCoeffs() const noexcept -> const Point2dFlt&;
 
 private:

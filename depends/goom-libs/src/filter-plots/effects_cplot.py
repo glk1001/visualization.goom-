@@ -70,6 +70,7 @@ def get_combined_effects() -> CombinedEffects:
     scrunch_filter_effect = filter_effects.Scrunch()
     speedway_filter_effect = filter_effects.Speedway()
     y_only_filter_effect = filter_effects.YOnly()
+    exp_reciprocal_filter_effect = filter_effects.ExpReciprocal()
     mobius_filter_effect = filter_effects.Mobius()
     power_filter_effect = filter_effects.Power()
     sine_filter_effect = filter_effects.Sine()
@@ -87,7 +88,8 @@ def get_combined_effects() -> CombinedEffects:
     # filter_effect = wave_sine_filter_effect
     # filter_effect = wave_tan_filter_effect
     # filter_effect = y_only_filter_effect
-    filter_effect = mobius_filter_effect
+    filter_effect = exp_reciprocal_filter_effect
+    # filter_effect = mobius_filter_effect
     # filter_effect = power_filter_effect
     # filter_effect = sine_filter_effect
     # filter_effect = strange_sine_filter_effect

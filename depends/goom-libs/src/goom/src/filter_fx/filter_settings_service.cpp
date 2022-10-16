@@ -39,6 +39,7 @@ using UTILS::MATH::Weights;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE2;
+static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::EXP_RECIPROCAL_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
@@ -82,6 +83,7 @@ static constexpr auto CRYSTAL_BALL_MODE1_WEIGHT      = 02.0F;
 static constexpr auto DISTANCE_FIELD_MODE0_WEIGHT    = 03.0F;
 static constexpr auto DISTANCE_FIELD_MODE1_WEIGHT    = 03.0F;
 static constexpr auto DISTANCE_FIELD_MODE2_WEIGHT    = 02.0F;
+static constexpr auto EXP_RECIPROCAL_MODE_WEIGHT     = 10.0F;
 static constexpr auto HYPERCOS_MODE0_WEIGHT          = 08.0F;
 static constexpr auto HYPERCOS_MODE1_WEIGHT          = 04.0F;
 static constexpr auto HYPERCOS_MODE2_WEIGHT          = 02.0F;
@@ -178,6 +180,7 @@ static constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_vi
     {ZoomFilterMode::DISTANCE_FIELD_MODE0, "Distance Field Mode 0"},
     {ZoomFilterMode::DISTANCE_FIELD_MODE1, "Distance Field Mode 1"},
     {ZoomFilterMode::DISTANCE_FIELD_MODE2, "Distance Field Mode 2"},
+    {ZoomFilterMode::EXP_RECIPROCAL_MODE, "Exp Reciprocal"},
     {ZoomFilterMode::HYPERCOS_MODE0, "Hypercos Mode 0"},
     {ZoomFilterMode::HYPERCOS_MODE1, "Hypercos Mode 1"},
     {ZoomFilterMode::HYPERCOS_MODE2, "Hypercos Mode 2"},
@@ -200,6 +203,7 @@ static constexpr auto CRYSTAL_BALL1_PROB_ROTATE      = PROB_HIGH;
 static constexpr auto DISTANCE_FIELD0_PROB_ROTATE    = PROB_HIGH;
 static constexpr auto DISTANCE_FIELD1_PROB_ROTATE    = PROB_HIGH;
 static constexpr auto DISTANCE_FIELD2_PROB_ROTATE    = PROB_HIGH;
+static constexpr auto EXP_RECIPROCAL_PROB_ROTATE     = PROB_LOW;
 static constexpr auto HYPERCOS0_PROB_ROTATE          = PROB_LOW;
 static constexpr auto HYPERCOS1_PROB_ROTATE          = PROB_LOW;
 static constexpr auto HYPERCOS2_PROB_ROTATE          = PROB_LOW;
@@ -297,6 +301,18 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
           {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
           {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
           {AfterEffectsTypes::ROTATION, DISTANCE_FIELD2_PROB_ROTATE},
+          {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
+          {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
+      }}}
+    },
+    { ZoomFilterMode::EXP_RECIPROCAL_MODE,
+      EnumMap<AfterEffectsTypes, float>{{{
+          {AfterEffectsTypes::BLOCK_WAVY, DEFAULT_PROB_BLOCKY_WAVY_EFFECT},
+          {AfterEffectsTypes::HYPERCOS, DEFAULT_PROB_HYPERCOS_EFFECT},
+          {AfterEffectsTypes::IMAGE_VELOCITY, DEFAULT_PROB_IMAGE_VELOCITY_EFFECT},
+          {AfterEffectsTypes::NOISE, DEFAULT_PROB_NOISE_EFFECT},
+          {AfterEffectsTypes::PLANES, DEFAULT_PROB_PLANE_EFFECT},
+          {AfterEffectsTypes::ROTATION, EXP_RECIPROCAL_PROB_ROTATE},
           {AfterEffectsTypes::TAN_EFFECT, DEFAULT_PROB_TAN_EFFECT},
           {AfterEffectsTypes::XY_LERP_EFFECT, DEFAULT_PROB_XY_LERP_EFFECT},
       }}}
@@ -603,6 +619,13 @@ static constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES = EnumMap<AfterEffectsType
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
+  constexpr auto EXP_RECIPROCAL_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 5.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 0.0F}}
+  };
   constexpr auto HYPERCOS0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
        {Hyp::MODE0, 1.0F},
@@ -695,6 +718,7 @@ static constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES = EnumMap<AfterEffectsType
       {ZoomFilterMode::DISTANCE_FIELD_MODE0, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::DISTANCE_FIELD_MODE1, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::DISTANCE_FIELD_MODE2, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::EXP_RECIPROCAL_MODE, EXP_RECIPROCAL_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::HYPERCOS_MODE0, HYPERCOS0_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::HYPERCOS_MODE1, HYPERCOS1_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::HYPERCOS_MODE2, HYPERCOS2_HYPERCOS_WEIGHTS},
@@ -785,6 +809,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
             {ZoomFilterMode::DISTANCE_FIELD_MODE0,    DISTANCE_FIELD_MODE0_WEIGHT},
             {ZoomFilterMode::DISTANCE_FIELD_MODE1,    DISTANCE_FIELD_MODE1_WEIGHT},
             {ZoomFilterMode::DISTANCE_FIELD_MODE2,    DISTANCE_FIELD_MODE2_WEIGHT},
+            {ZoomFilterMode::EXP_RECIPROCAL_MODE,     EXP_RECIPROCAL_MODE_WEIGHT},
             {ZoomFilterMode::HYPERCOS_MODE0,          HYPERCOS_MODE0_WEIGHT},
             {ZoomFilterMode::HYPERCOS_MODE1,          HYPERCOS_MODE1_WEIGHT},
             {ZoomFilterMode::HYPERCOS_MODE2,          HYPERCOS_MODE2_WEIGHT},

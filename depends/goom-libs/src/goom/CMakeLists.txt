@@ -70,6 +70,7 @@ add_library(goom
             src/filter_fx/common_types.h
             src/filter_fx/filter_effects/crystal_ball.cpp
             src/filter_fx/filter_effects/distance_field.cpp
+            src/filter_fx/filter_effects/exp_reciprocal.cpp
             src/filter_fx/filter_effects/image_zoom_in_coeffs.cpp
             src/filter_fx/filter_effects/scrunch.cpp
             src/filter_fx/filter_effects/speedway.cpp

@@ -3,6 +3,7 @@
 #include "amulet.h"
 #include "crystal_ball.h"
 #include "distance_field.h"
+#include "exp_reciprocal.h"
 #include "filter_fx/filter_settings_service.h"
 #include "image_zoom_in_coeffs.h"
 #include "scrunch.h"
@@ -38,6 +39,8 @@ auto CreateZoomInCoefficientsEffect(ZoomFilterMode filterMode,
       return std::make_shared<DistanceField>(DistanceField::Modes::MODE1, goomRand);
     case ZoomFilterMode::DISTANCE_FIELD_MODE2:
       return std::make_shared<DistanceField>(DistanceField::Modes::MODE2, goomRand);
+    case ZoomFilterMode::EXP_RECIPROCAL_MODE:
+      return std::make_shared<ExpReciprocal>(goomRand);
     case ZoomFilterMode::HYPERCOS_MODE0:
     case ZoomFilterMode::HYPERCOS_MODE1:
     case ZoomFilterMode::HYPERCOS_MODE2:

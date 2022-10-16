@@ -8,6 +8,7 @@
 
 namespace GOOM::UTILS::MATH
 {
+static constexpr auto HALF = 1.0F / 2.0F;
 
 static constexpr auto TWO_PI   = 2.0F * STD20::pi;
 static constexpr auto HALF_PI  = 0.5F * STD20::pi;
@@ -107,6 +108,12 @@ template<typename T>
   return log2;
 }
 
+[[nodiscard]] constexpr auto GetSawTooth(const float t, const float period) -> float
+{
+  const auto tDivPeriod = t / period;
+  return HALF + (tDivPeriod - std::floor(HALF + tDivPeriod));
+}
+
 static constexpr auto SMALL_FLOAT = 0.00001F;
 
 [[nodiscard]] inline bool FloatsEqual(const float x,
@@ -192,7 +199,6 @@ template<typename T>
 {
   return static_cast<float>(numerator) / static_cast<float>(denominator);
 }
-static constexpr auto HALF = 1.0F / 2.0F;
 
 class RangeMapper
 {

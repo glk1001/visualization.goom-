@@ -140,7 +140,7 @@ class DistanceField(FilterEffectFunction):
                                  amplitude: float) -> np.ndarray:
         return base_zoom_in_coeff + (
                 amplitude * (
-                    (self.sq_dist_mult * sq_dist_from_closest_point) - self.sq_dist_offset))
+                (self.sq_dist_mult * sq_dist_from_closest_point) - self.sq_dist_offset))
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray) -> np.ndarray:
         get_closest_distance_point_func = np.vectorize(self.get_closest_distance_point)
@@ -173,12 +173,25 @@ class Mobius(FilterEffectFunction):
     def __init__(self):
         super().__init__("Mobius")
         self.a = +1.0
-        self.b = -1.0
+        self.b = +1.0
         self.c = +1.0
-        self.d = +1.0
+        self.d = -1.0
+        self.amplitude = 0.1
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
-        return self.base_zoom_coeffs + (self.a * z + self.b) / (self.c * z + self.d)
+        return self.base_zoom_coeffs + self.amplitude * (
+                    (self.a * z + self.b) / (self.c * z + self.d))
+
+
+class ExpReciprocal(FilterEffectFunction):
+    def __init__(self):
+        super().__init__("Exp Reciprocal")
+        self.amplitude = 0.1
+        self.factor = 2.0
+        self.offset = complex(0.0, 0.0)
+
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        return self.base_zoom_coeffs + (self.amplitude * np.exp(1.0 / ((self.factor*(z + self.offset))**2)))
 
 
 class Sine(FilterEffectFunction):
@@ -186,9 +199,12 @@ class Sine(FilterEffectFunction):
         super().__init__("Sine")
         self.amplitude = 0.1
         self.freq = 2.0
+        self.offset = complex(0, 0)
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
-        return self.base_zoom_coeffs + (self.amplitude * np.sin(self.freq * z))
+        freq_factor = 2
+        angle = freq_factor * absolute_sq_z
+        return self.base_zoom_coeffs + (self.amplitude * np.sin(angle) * np.sin(self.freq * (z + self.offset)))
 
 
 class StrangeSine(FilterEffectFunction):
