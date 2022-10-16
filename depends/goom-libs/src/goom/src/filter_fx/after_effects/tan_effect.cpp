@@ -2,6 +2,7 @@
 
 // #undef NO_LOGGING
 
+#include "filter_fx/common_types.h"
 #include "logging.h"
 #include "utils/enum_utils.h"
 #include "utils/name_value_pairs.h"
@@ -33,7 +34,7 @@ static constexpr auto LIMITING_FACTOR_RANGE   = IGoomRand::NumberRange<float>{0.
 
 TanEffect::TanEffect(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
-    m_params{DEFAULT_TAN_TYPE, DEFAULT_COT_MIX, DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE,
+    m_params{DEFAULT_TAN_TYPE, DEFAULT_COT_MIX, {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
              DEFAULT_LIMITING_FACTOR},
     m_tanEffectWeights{
       m_goomRand,
@@ -62,7 +63,10 @@ auto TanEffect::SetRandomParams() -> void
   LogInfo("xAmplitude = {}, yAmplitude = {}", xAmplitude, yAmplitude); // NOLINT
   LogInfo("limitingFactor = {}", limitingFactor); // NOLINT
 
-  SetParams({tanType, cotMix, xAmplitude, yAmplitude, limitingFactor});
+  SetParams({
+      tanType, cotMix, {xAmplitude, yAmplitude},
+        limitingFactor
+  });
 }
 
 auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
@@ -71,7 +75,7 @@ auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameV
   return {
       GetPair(fullParamGroup, "tan type", EnumToString(m_params.tanType)),
       GetPair(fullParamGroup, "cot mix", m_params.cotMix),
-      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.xAmplitude, m_params.yAmplitude}),
+      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
       GetPair(fullParamGroup, "limiting factor", m_params.limitingFactor),
   };
 }

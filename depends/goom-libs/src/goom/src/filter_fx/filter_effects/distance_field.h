@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_in_coefficients_effect.h"
 #include "point2d.h"
@@ -31,12 +32,9 @@ public:
 
   struct Params
   {
-    float xAmplitude;
-    float yAmplitude;
-    float xSqDistMult;
-    float ySqDistMult;
-    float xSqDistOffset;
-    float ySqDistOffset;
+    Amplitude amplitude;
+    SqDistMult sqDistMult;
+    SqDistOffset sqDistOffset;
     std::vector<NormalizedCoords> distancePoints;
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
@@ -56,12 +54,9 @@ private:
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;
   auto SetMode2RandomParams() noexcept -> void;
-  auto SetRandomParams(const UTILS::MATH::IGoomRand::NumberRange<float>& xAmplitudeRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& yAmplitudeRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistMultRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistMultRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistOffsetRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistOffsetRange,
+  auto SetRandomParams(const AmplitudeRange& amplitudeRange,
+                       const SqDistMultRange& sqDistMultRange,
+                       const SqDistOffsetRange& sqDistOffsetRange,
                        std::vector<NormalizedCoords>&& distancePoints) noexcept -> void;
   [[nodiscard]] auto GetDistancePoints() const noexcept -> std::vector<NormalizedCoords>;
   [[nodiscard]] auto GetClosestDistancePoint(const NormalizedCoords& coords) const noexcept
@@ -81,21 +76,21 @@ inline auto DistanceField::GetZoomInCoefficients(
 
   if (m_mode == Modes::MODE0)
   {
-    return {GetBaseZoomInCoeffs().x + (m_params.xAmplitude * sqDistFromClosestPoint),
-            GetBaseZoomInCoeffs().y + (m_params.yAmplitude * sqDistFromClosestPoint)};
+    return {GetBaseZoomInCoeffs().x + (m_params.amplitude.x * sqDistFromClosestPoint),
+            GetBaseZoomInCoeffs().y + (m_params.amplitude.y * sqDistFromClosestPoint)};
   }
 
   return {
       GetZoomInCoefficient(GetBaseZoomInCoeffs().x,
                            sqDistFromClosestPoint,
-                           m_params.xAmplitude,
-                           m_params.xSqDistMult,
-                           m_params.xSqDistOffset),
+                           m_params.amplitude.x,
+                           m_params.sqDistMult.x,
+                           m_params.sqDistOffset.x),
       GetZoomInCoefficient(GetBaseZoomInCoeffs().y,
                            sqDistFromClosestPoint,
-                           m_params.yAmplitude,
-                           m_params.ySqDistMult,
-                           m_params.ySqDistOffset),
+                           m_params.amplitude.y,
+                           m_params.sqDistMult.y,
+                           m_params.sqDistOffset.y),
   };
 }
 

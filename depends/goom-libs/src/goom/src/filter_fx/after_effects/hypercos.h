@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/normalized_coords.h"
 #include "utils/math/goom_rand_base.h"
@@ -53,10 +54,8 @@ public:
     HypercosOverlay overlay;
     HypercosEffect effect;
     bool reverse;
-    float xFreq;
-    float yFreq;
-    float xAmplitude;
-    float yAmplitude;
+    FrequencyFactor frequencyFactor;
+    Amplitude amplitude;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -72,9 +71,8 @@ private:
                          const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange) -> void;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
                                  HypercosEffect effect,
-                                 float xFreqToUse,
-                                 float yFreqToUse) const -> NormalizedCoords;
-  [[nodiscard]] auto GetFreqToUse(float freq) const -> float;
+                                 const FrequencyFactor& frequencyFactorToUse) const -> NormalizedCoords;
+  [[nodiscard]] auto GetFrequencyFactorToUse(float frequencyFactor) const -> float;
 };
 
 inline auto Hypercos::GetParams() const -> const Params&

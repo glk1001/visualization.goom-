@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_in_coefficients_effect.h"
 #include "point2d.h"
@@ -29,12 +30,9 @@ public:
 
   struct Params
   {
-    float xAmplitude;
-    float yAmplitude;
-    float xSqDistMult;
-    float ySqDistMult;
-    float xSqDistOffset;
-    float ySqDistOffset;
+    Amplitude amplitude;
+    SqDistMult sqDistMult;
+    SqDistOffset sqDistOffset;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -47,13 +45,9 @@ private:
   Params m_params;
   auto SetMode0RandomParams() -> void;
   auto SetMode1RandomParams() -> void;
-  auto SetRandomParams(const UTILS::MATH::IGoomRand::NumberRange<float>& xAmplitudeRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& yAmplitudeRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistMultRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistMultRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& xSqDistOffsetRange,
-                       const UTILS::MATH::IGoomRand::NumberRange<float>& ySqDistOffsetRange)
-      -> void;
+  auto SetRandomParams(const AmplitudeRange& amplitudeRange,
+                       const SqDistMultRange& sqDistMultRange,
+                       const SqDistOffsetRange& sqDistOffsetRange) -> void;
   [[nodiscard]] static auto GetZoomInCoefficient(float baseZoomInCoeff,
                                                  float sqDistFromZero,
                                                  float amplitude,
@@ -66,14 +60,14 @@ inline auto CrystalBall::GetZoomInCoefficients([[maybe_unused]] const Normalized
 {
   return {GetZoomInCoefficient(GetBaseZoomInCoeffs().x,
                                sqDistFromZero,
-                               m_params.xAmplitude,
-                               m_params.xSqDistMult,
-                               m_params.xSqDistOffset),
+                               m_params.amplitude.x,
+                               m_params.sqDistMult.x,
+                               m_params.sqDistOffset.x),
           GetZoomInCoefficient(GetBaseZoomInCoeffs().y,
                                sqDistFromZero,
-                               m_params.yAmplitude,
-                               m_params.ySqDistMult,
-                               m_params.ySqDistOffset)};
+                               m_params.amplitude.y,
+                               m_params.sqDistMult.y,
+                               m_params.sqDistOffset.y)};
 }
 
 inline auto CrystalBall::GetZoomInCoefficient(const float baseZoomInCoeff,

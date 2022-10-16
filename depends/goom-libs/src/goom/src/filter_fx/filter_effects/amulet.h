@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_in_coefficients_effect.h"
 #include "point2d.h"
@@ -24,8 +25,7 @@ public:
 
   struct Params
   {
-    float xAmplitude;
-    float yAmplitude;
+    Amplitude amplitude;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -40,8 +40,8 @@ private:
 inline auto Amulet::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
                                           const float sqDistFromZero) const -> Point2dFlt
 {
-  return {GetBaseZoomInCoeffs().x + (m_params.xAmplitude * sqDistFromZero),
-          GetBaseZoomInCoeffs().y + (m_params.yAmplitude * sqDistFromZero)};
+  return {GetBaseZoomInCoeffs().x + (m_params.amplitude.x * sqDistFromZero),
+          GetBaseZoomInCoeffs().y + (m_params.amplitude.y * sqDistFromZero)};
   //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
 }
 

@@ -1,5 +1,6 @@
 #include "planes.h"
 
+#include "filter_fx/common_types.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -128,134 +129,134 @@ auto Planes::GetRandomPlaneEffects(const IGoomRand& goomRand,
                                    const Point2dInt& zoomMidpoint,
                                    const uint32_t screenWidth) -> PlaneEffects
 {
-  const auto intAmplitudes = GetRandomIntAmplitudes(goomRand, planeEffectsEvent);
+  const auto intAmplitudes = GetRandomIntAmplitude(goomRand, planeEffectsEvent);
   const auto adjustedIntAmplitudes =
-      GetAdjustedIntAmplitudes(goomRand, intAmplitudes, zoomMidpoint, screenWidth);
+      GetAdjustedIntAmplitude(goomRand, intAmplitudes, zoomMidpoint, screenWidth);
 
-  const auto effectMultipliers = GetRandomEffectMultipliers(goomRand, muchSpiralling);
+  const auto effectMultipliers = GetRandomEffectMultiplier(goomRand, muchSpiralling);
 
   return GetRandomPlaneEffects(adjustedIntAmplitudes, effectMultipliers);
 }
 
-inline auto Planes::GetRandomPlaneEffects(const IntAmplitudes& adjustedIntAmplitudes,
-                                          const Amplitudes& effectMultipliers) -> PlaneEffects
+inline auto Planes::GetRandomPlaneEffects(const IntAmplitude& adjustedIntAmplitude,
+                                          const Amplitude& effectMultiplier) -> PlaneEffects
 {
   auto planeEffects = PlaneEffects{};
 
-  if (0 == adjustedIntAmplitudes.x)
+  if (0 == adjustedIntAmplitude.x)
   {
     planeEffects.horizontalEffectActive = false;
-    planeEffects.amplitudes.x           = 0.0F;
+    planeEffects.amplitude.x            = 0.0F;
   }
   else
   {
     planeEffects.horizontalEffectActive = true;
-    planeEffects.amplitudes.x = effectMultipliers.x * static_cast<float>(adjustedIntAmplitudes.x);
+    planeEffects.amplitude.x = effectMultiplier.x * static_cast<float>(adjustedIntAmplitude.x);
   }
-  if (0 == adjustedIntAmplitudes.y)
+  if (0 == adjustedIntAmplitude.y)
   {
     planeEffects.verticalEffectActive = false;
-    planeEffects.amplitudes.y         = 0.0F;
+    planeEffects.amplitude.y          = 0.0F;
   }
   else
   {
     planeEffects.verticalEffectActive = true;
-    planeEffects.amplitudes.y = effectMultipliers.y * static_cast<float>(adjustedIntAmplitudes.y);
+    planeEffects.amplitude.y = effectMultiplier.y * static_cast<float>(adjustedIntAmplitude.y);
   }
 
   return planeEffects;
 }
 
-auto Planes::GetRandomIntAmplitudes(const IGoomRand& goomRand,
-                                    const PlaneEffectEvents planeEffectsEvent) -> IntAmplitudes
+auto Planes::GetRandomIntAmplitude(const IGoomRand& goomRand, PlaneEffectEvents planeEffectsEvent)
+    -> IntAmplitude
 {
-  auto intAmplitudes = IntAmplitudes{};
+  auto intAmplitude = IntAmplitude{};
 
   switch (planeEffectsEvent)
   {
     case PlaneEffectEvents::ZERO_EFFECTS:
-      intAmplitudes.x = 0;
-      intAmplitudes.y = 0;
+      intAmplitude.x = 0;
+      intAmplitude.y = 0;
       break;
     case PlaneEffectEvents::SMALL_EFFECTS:
-      intAmplitudes.x = goomRand.GetRandInRange(SMALL_EFFECTS_RANGE);
-      intAmplitudes.y = goomRand.ProbabilityOf(PROB_OPPOSITES_FOR_SMALL_EFFECTS)
-                            ? (-intAmplitudes.x + 1)
-                            : goomRand.GetRandInRange(SMALL_EFFECTS_RANGE);
+      intAmplitude.x = goomRand.GetRandInRange(SMALL_EFFECTS_RANGE);
+      intAmplitude.y = goomRand.ProbabilityOf(PROB_OPPOSITES_FOR_SMALL_EFFECTS)
+                           ? (-intAmplitude.x + 1)
+                           : goomRand.GetRandInRange(SMALL_EFFECTS_RANGE);
       break;
     case PlaneEffectEvents::MEDIUM_EFFECTS:
-      intAmplitudes.x = goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
-      intAmplitudes.y = goomRand.ProbabilityOf(PROB_OPPOSITES_FOR_MEDIUM_EFFECTS)
-                            ? (-intAmplitudes.x + 1)
-                            : goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
+      intAmplitude.x = goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
+      intAmplitude.y = goomRand.ProbabilityOf(PROB_OPPOSITES_FOR_MEDIUM_EFFECTS)
+                           ? (-intAmplitude.x + 1)
+                           : goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
       break;
     case PlaneEffectEvents::LARGE_EFFECTS:
-      intAmplitudes.x = goomRand.GetRandInRange(LARGE_EFFECTS_RANGE);
-      intAmplitudes.y = goomRand.ProbabilityOf(PROB_ZERO_VERTICAL_FOR_LARGE_RANGE)
-                            ? 0
-                            : goomRand.GetRandInRange(LARGE_EFFECTS_RANGE);
+      intAmplitude.x = goomRand.GetRandInRange(LARGE_EFFECTS_RANGE);
+      intAmplitude.y = goomRand.ProbabilityOf(PROB_ZERO_VERTICAL_FOR_LARGE_RANGE)
+                           ? 0
+                           : goomRand.GetRandInRange(LARGE_EFFECTS_RANGE);
       break;
     case PlaneEffectEvents::VERY_LARGE_EFFECTS:
-      intAmplitudes.x = goomRand.ProbabilityOf(PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE)
-                            ? 0
-                            : goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
-      intAmplitudes.y = goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
+      intAmplitude.x = goomRand.ProbabilityOf(PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE)
+                           ? 0
+                           : goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
+      intAmplitude.y = goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
       break;
     case PlaneEffectEvents::POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS:
-      intAmplitudes.y = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
-      intAmplitudes.x = -intAmplitudes.y + 1;
+      intAmplitude.y = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
+      intAmplitude.x = -intAmplitude.y + 1;
       break;
     case PlaneEffectEvents::POS_HORIZONTAL_NEG_VERTICAL_VERY_LARGE_EFFECTS:
-      intAmplitudes.x = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
-      intAmplitudes.y = -intAmplitudes.x + 1;
+      intAmplitude.x = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
+      intAmplitude.y = -intAmplitude.x + 1;
       break;
     default:
       FailFast();
   }
 
-  return intAmplitudes;
+  return intAmplitude;
 }
 
-auto Planes::GetAdjustedIntAmplitudes(const IGoomRand& goomRand,
-                                      const IntAmplitudes& intAmplitudes,
-                                      const Point2dInt& zoomMidpoint,
-                                      const uint32_t screenWidth) -> IntAmplitudes
+auto Planes::GetAdjustedIntAmplitude(const IGoomRand& goomRand,
+                                     const IntAmplitude& intAmplitude,
+                                     const Point2dInt& zoomMidpoint,
+                                     uint32_t screenWidth) -> IntAmplitude
 {
-  auto adjustedIntAmplitudes = intAmplitudes;
+  auto adjustedIntAmplitude = intAmplitude;
 
   if ((1 == zoomMidpoint.x) || (zoomMidpoint.x == static_cast<int32_t>(screenWidth - 1)))
   {
-    adjustedIntAmplitudes.y = 0;
+    adjustedIntAmplitude.y = 0;
     if (goomRand.ProbabilityOf(PROB_ZERO_HORIZONTAL_PLANE_EFFECT))
     {
-      adjustedIntAmplitudes.x = 0;
+      adjustedIntAmplitude.x = 0;
     }
   }
 
-  return adjustedIntAmplitudes;
+  return adjustedIntAmplitude;
 }
 
-auto Planes::GetRandomEffectMultipliers(const IGoomRand& goomRand, const bool muchSpiralling)
-    -> Amplitudes
+auto Planes::GetRandomEffectMultiplier(const IGoomRand& goomRand, const bool muchSpiralling)
+    -> Amplitude
 {
-  auto effectMultipliers = Amplitudes{};
+  auto effectMultiplier = Amplitude{};
 
-  effectMultipliers.x =
-      muchSpiralling ? goomRand.GetRandInRange(HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE)
-                     : goomRand.GetRandInRange(HORIZONTAL_EFFECTS_MULTIPLIER_RANGE);
+  effectMultiplier.x = muchSpiralling
+                           ? goomRand.GetRandInRange(HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE)
+                           : goomRand.GetRandInRange(HORIZONTAL_EFFECTS_MULTIPLIER_RANGE);
 
   if (goomRand.ProbabilityOf(PROB_PLANE_AMPLITUDES_EQUAL))
   {
-    effectMultipliers.y = effectMultipliers.x;
+    effectMultiplier.y = effectMultiplier.x;
   }
   else
   {
-    effectMultipliers.y = muchSpiralling
-                              ? goomRand.GetRandInRange(VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE)
-                              : goomRand.GetRandInRange(VERTICAL_EFFECTS_AMPLITUDE_RANGE);
+    effectMultiplier.y = muchSpiralling
+                             ? goomRand.GetRandInRange(VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE)
+                             : goomRand.GetRandInRange(VERTICAL_EFFECTS_AMPLITUDE_RANGE);
   }
 
-  return effectMultipliers;
+  return effectMultiplier;
 }
 
 auto Planes::GetRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand,
@@ -286,15 +287,15 @@ inline auto Planes::GetNonzeroRandomSwirlEffects(const UTILS::MATH::IGoomRand& g
   swirlEffects.swirlType =
       static_cast<PlaneSwirlType>(goomRand.GetRandInRange(1U, NUM<PlaneSwirlType>));
 
-  swirlEffects.frequencies.x = goomRand.GetRandInRange(HORIZONTAL_SWIRL_FREQ_RANGE);
-  swirlEffects.frequencies.y = goomRand.ProbabilityOf(PROB_SWIRL_FREQ_EQUAL)
-                                   ? swirlEffects.frequencies.x
-                                   : goomRand.GetRandInRange(VERTICAL_SWIRL_FREQ_RANGE);
+  swirlEffects.frequencyFactor.x = goomRand.GetRandInRange(HORIZONTAL_SWIRL_FREQ_RANGE);
+  swirlEffects.frequencyFactor.y = goomRand.ProbabilityOf(PROB_SWIRL_FREQ_EQUAL)
+                                       ? swirlEffects.frequencyFactor.x
+                                       : goomRand.GetRandInRange(VERTICAL_SWIRL_FREQ_RANGE);
 
-  swirlEffects.amplitudes.x = goomRand.GetRandInRange(HORIZONTAL_SWIRL_AMPLITUDE_RANGE);
-  swirlEffects.amplitudes.y = goomRand.ProbabilityOf(PROB_SWIRL_AMPLITUDES_EQUAL)
-                                  ? swirlEffects.amplitudes.x
-                                  : goomRand.GetRandInRange(VERTICAL_SWIRL_AMPLITUDE_RANGE);
+  swirlEffects.amplitude.x = goomRand.GetRandInRange(HORIZONTAL_SWIRL_AMPLITUDE_RANGE);
+  swirlEffects.amplitude.y = goomRand.ProbabilityOf(PROB_SWIRL_AMPLITUDES_EQUAL)
+                                 ? swirlEffects.amplitude.x
+                                 : goomRand.GetRandInRange(VERTICAL_SWIRL_AMPLITUDE_RANGE);
 
   return swirlEffects;
 }
@@ -304,10 +305,10 @@ auto Planes::GetHorizontalPlaneVelocity(const NormalizedCoords& coords,
 {
   const auto yCoordValue = coords.GetY();
   const auto horizontalSwirlOffset =
-      m_params.swirlEffects.amplitudes.x * GetHorizontalSwirlOffsetFactor(yCoordValue);
+      m_params.swirlEffects.amplitude.x * GetHorizontalSwirlOffsetFactor(yCoordValue);
 
   return velocity.GetX() +
-         m_params.planeEffects.amplitudes.x * (yCoordValue + horizontalSwirlOffset);
+         m_params.planeEffects.amplitude.x * (yCoordValue + horizontalSwirlOffset);
 }
 
 auto Planes::GetVerticalPlaneVelocity(const NormalizedCoords& coords,
@@ -315,14 +316,14 @@ auto Planes::GetVerticalPlaneVelocity(const NormalizedCoords& coords,
 {
   const auto xCoordValue = coords.GetX();
   const auto verticalSwirlOffset =
-      m_params.swirlEffects.amplitudes.y * GetVerticalSwirlOffsetFactor(xCoordValue);
+      m_params.swirlEffects.amplitude.y * GetVerticalSwirlOffsetFactor(xCoordValue);
 
-  return velocity.GetY() + m_params.planeEffects.amplitudes.y * (xCoordValue + verticalSwirlOffset);
+  return velocity.GetY() + m_params.planeEffects.amplitude.y * (xCoordValue + verticalSwirlOffset);
 }
 
 auto Planes::GetHorizontalSwirlOffsetFactor(const float coordValue) const -> float
 {
-  const auto swirlFreq = m_params.swirlEffects.frequencies.x;
+  const auto swirlFreq = m_params.swirlEffects.frequencyFactor.x;
 
   switch (m_params.swirlEffects.swirlType)
   {
@@ -350,7 +351,7 @@ auto Planes::GetHorizontalSwirlOffsetFactor(const float coordValue) const -> flo
 
 auto Planes::GetVerticalSwirlOffsetFactor(const float coordValue) const -> float
 {
-  const auto swirlFreq = m_params.swirlEffects.frequencies.y;
+  const auto swirlFreq = m_params.swirlEffects.frequencyFactor.y;
 
   switch (m_params.swirlEffects.swirlType)
   {
@@ -382,16 +383,17 @@ auto Planes::GetNameValueParams(const std::string& paramGroup) const -> NameValu
   return {
       GetPair(fullParamGroup,
               "planeEffects.amplitudes",
-              Point2dFlt{m_params.planeEffects.amplitudes.x, m_params.planeEffects.amplitudes.y}),
+              Point2dFlt{m_params.planeEffects.amplitude.x, m_params.planeEffects.amplitude.y}),
       GetPair(fullParamGroup,
               "swirlEffects.swirlType",
               static_cast<int32_t>(m_params.swirlEffects.swirlType)),
       GetPair(fullParamGroup,
               "swirlEffects.frequencies",
-              Point2dFlt{m_params.swirlEffects.frequencies.x, m_params.swirlEffects.frequencies.y}),
+              Point2dFlt{m_params.swirlEffects.frequencyFactor.x,
+                         m_params.swirlEffects.frequencyFactor.y}),
       GetPair(fullParamGroup,
               "swirlEffects.amplitudes",
-              Point2dFlt{m_params.swirlEffects.amplitudes.x, m_params.swirlEffects.amplitudes.y}),
+              Point2dFlt{m_params.swirlEffects.amplitude.x, m_params.swirlEffects.amplitude.y}),
   };
 }
 

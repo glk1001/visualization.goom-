@@ -1,7 +1,9 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_in_coefficients_effect.h"
+#include "goom_config.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -31,8 +33,7 @@ public:
 
   struct Params
   {
-    float xAmplitude;
-    float yAmplitude;
+    Amplitude amplitude;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -66,7 +67,8 @@ inline auto Speedway::GetZoomInCoefficients(const NormalizedCoords& coords,
     case Modes::MODE2:
       return GetMode2ZoomInCoefficients(coords, sqDistFromZero);
     default:
-      throw std::logic_error("Unexpected Modes enum.");
+      FailFast();
+      return {};
   }
 }
 
@@ -82,8 +84,8 @@ inline auto Speedway::GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
   }
 
   const auto xZoomInCoeff =
-      GetBaseZoomInCoeffs().x * (m_params.xAmplitude * (coords.GetY() + xAdd));
-  const auto yZoomInCoeff = m_params.yAmplitude * xZoomInCoeff;
+      GetBaseZoomInCoeffs().x * (m_params.amplitude.x * (coords.GetY() + xAdd));
+  const auto yZoomInCoeff = m_params.amplitude.y * xZoomInCoeff;
 
   return {xZoomInCoeff, yZoomInCoeff};
 }
@@ -112,13 +114,13 @@ inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
   static constexpr auto X_WARP_MULTIPLIER    = 0.1F;
   static constexpr auto AMPLITUDE_MULTIPLIER = 0.25F;
 
-  const auto xDiff = coords.GetX() - xAdd;
-  const auto sign  = xDiff < 0.0F ? -1.0F : +1.0F;
+  const auto xDiff     = coords.GetX() - xAdd;
+  const auto sign      = xDiff < 0.0F ? -1.0F : +1.0F;
   const auto xWarp     = X_WARP_MULTIPLIER * (xAdd + ((sign * UTILS::MATH::Sq(xDiff)) / xAdd));
   const auto amplitude = AMPLITUDE_MULTIPLIER * (1.0F - sqDistFromZero);
 
-  const auto xZoomInCoeff = amplitude * GetBaseZoomInCoeffs().x * (m_params.xAmplitude * xWarp);
-  const auto yZoomInCoeff = amplitude * m_params.yAmplitude * xZoomInCoeff;
+  const auto xZoomInCoeff = amplitude * GetBaseZoomInCoeffs().x * (m_params.amplitude.x * xWarp);
+  const auto yZoomInCoeff = amplitude * m_params.amplitude.y * xZoomInCoeff;
 
   return {xZoomInCoeff, yZoomInCoeff};
 }
@@ -135,8 +137,8 @@ inline auto Speedway::GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
   }
 
   const auto xZoomInCoeff =
-      GetBaseZoomInCoeffs().x * (m_params.xAmplitude * (coords.GetY() + xAdd));
-  const auto yZoomInCoeff = std::tan(0.01F * sqDistFromZero) * m_params.yAmplitude * xZoomInCoeff;
+      GetBaseZoomInCoeffs().x * (m_params.amplitude.x * (coords.GetY() + xAdd));
+  const auto yZoomInCoeff = std::tan(0.01F * sqDistFromZero) * m_params.amplitude.y * xZoomInCoeff;
 
   return {xZoomInCoeff, yZoomInCoeff};
 }

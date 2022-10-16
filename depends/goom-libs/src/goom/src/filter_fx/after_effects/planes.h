@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
@@ -46,27 +47,17 @@ public:
     COS_OF_SIN_SWIRL,
     _num // unused, and marks the enum end
   };
-  struct Frequencies
-  {
-    float x;
-    float y;
-  };
-  struct Amplitudes
-  {
-    float x;
-    float y;
-  };
   struct PlaneEffects
   {
     bool horizontalEffectActive;
     bool verticalEffectActive;
-    Amplitudes amplitudes;
+    Amplitude amplitude;
   };
   struct PlaneSwirlEffects
   {
     PlaneSwirlType swirlType;
-    Frequencies frequencies;
-    Amplitudes amplitudes;
+    FrequencyFactor frequencyFactor;
+    Amplitude amplitude;
   };
   struct Params
   {
@@ -99,28 +90,23 @@ private:
                                             const Point2dInt& zoomMidpoint,
                                             uint32_t screenWidth) -> Params;
 
-  struct IntAmplitudes
-  {
-    int32_t x;
-    int32_t y;
-  };
-  [[nodiscard]] static auto GetRandomPlaneEffects(const IntAmplitudes& adjustedIntAmplitudes,
-                                                  const Amplitudes& effectMultipliers)
+  [[nodiscard]] static auto GetRandomPlaneEffects(const IntAmplitude& adjustedIntAmplitude,
+                                                  const Amplitude& effectMultiplier)
       -> PlaneEffects;
   [[nodiscard]] static auto GetRandomPlaneEffects(const UTILS::MATH::IGoomRand& goomRand,
                                                   PlaneEffectEvents planeEffectsEvent,
                                                   bool muchSpiralling,
                                                   const Point2dInt& zoomMidpoint,
                                                   uint32_t screenWidth) -> PlaneEffects;
-  [[nodiscard]] static auto GetRandomIntAmplitudes(const UTILS::MATH::IGoomRand& goomRand,
-                                                   PlaneEffectEvents planeEffectsEvent)
-      -> IntAmplitudes;
-  [[nodiscard]] static auto GetAdjustedIntAmplitudes(const UTILS::MATH::IGoomRand& goomRand,
-                                                     const IntAmplitudes& intAmplitudes,
-                                                     const Point2dInt& zoomMidpoint,
-                                                     uint32_t screenWidth) -> IntAmplitudes;
-  [[nodiscard]] static auto GetRandomEffectMultipliers(const UTILS::MATH::IGoomRand& goomRand,
-                                                       bool muchSpiralling) -> Amplitudes;
+  [[nodiscard]] static auto GetRandomIntAmplitude(const UTILS::MATH::IGoomRand& goomRand,
+                                                  PlaneEffectEvents planeEffectsEvent)
+      -> IntAmplitude;
+  [[nodiscard]] static auto GetAdjustedIntAmplitude(const UTILS::MATH::IGoomRand& goomRand,
+                                                    const IntAmplitude& intAmplitude,
+                                                    const Point2dInt& zoomMidpoint,
+                                                    uint32_t screenWidth) -> IntAmplitude;
+  [[nodiscard]] static auto GetRandomEffectMultiplier(const UTILS::MATH::IGoomRand& goomRand,
+                                                      bool muchSpiralling) -> Amplitude;
 
   [[nodiscard]] static auto GetZeroSwirlEffects() -> PlaneSwirlEffects;
   [[nodiscard]] static auto GetRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand,

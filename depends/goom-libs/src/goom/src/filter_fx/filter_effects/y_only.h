@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_in_coefficients_effect.h"
 #include "point2d.h"
@@ -32,14 +33,16 @@ public:
     X_COS_Y_COS,
     _num // unused, and marks the enum end
   };
-  struct Params
+  struct YOnlyXYEffect
   {
     YOnlyEffect xEffect;
     YOnlyEffect yEffect;
-    float xFreqFactor;
-    float yFreqFactor;
-    float xAmplitude;
-    float yAmplitude;
+  };
+  struct Params
+  {
+    YOnlyXYEffect xyEffect;
+    FrequencyFactor frequencyFactor;
+    Amplitude amplitude;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -57,16 +60,16 @@ inline auto YOnly::GetZoomInCoefficients(const NormalizedCoords& coords,
                                          [[maybe_unused]] const float sqDistFromZero) const
     -> Point2dFlt
 {
-  const auto xZoomInCoeff = GetBaseZoomInCoeffs().x * m_params.xAmplitude *
-                            GetYOnlyZoomInMultiplier(m_params.xEffect, coords);
-  if (m_params.yEffect == YOnlyEffect::NONE)
+  const auto xZoomInCoeff = GetBaseZoomInCoeffs().x * m_params.amplitude.x *
+                            GetYOnlyZoomInMultiplier(m_params.xyEffect.xEffect, coords);
+  if (m_params.xyEffect.yEffect == YOnlyEffect::NONE)
   {
     return {xZoomInCoeff, xZoomInCoeff};
   }
 
   return {xZoomInCoeff,
-          GetBaseZoomInCoeffs().y * m_params.yAmplitude *
-              GetYOnlyZoomInMultiplier(m_params.yEffect, coords)};
+          GetBaseZoomInCoeffs().y * m_params.amplitude.y *
+              GetYOnlyZoomInMultiplier(m_params.xyEffect.yEffect, coords)};
 }
 
 inline auto YOnly::GetParams() const -> const Params&

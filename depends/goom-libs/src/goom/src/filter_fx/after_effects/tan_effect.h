@@ -1,6 +1,9 @@
 #pragma once
 
+#include "goom_config.h"
+#include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
+#include "goom_config.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -41,8 +44,7 @@ public:
   {
     TanType tanType;
     float cotMix;
-    float xAmplitude;
-    float yAmplitude;
+    Amplitude amplitude;
     float limitingFactor;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
@@ -63,8 +65,8 @@ inline auto TanEffect::GetVelocity(const float sqDistFromZero,
   const auto limit  = m_params.limitingFactor * UTILS::MATH::HALF_PI;
   const auto tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::MATH::HALF_PI), -limit, +limit);
   const auto tanSqDist = GetTanSqDist(tanArg);
-  return {m_params.xAmplitude * tanSqDist * velocity.GetX(),
-          m_params.yAmplitude * tanSqDist * velocity.GetY()};
+  return {m_params.amplitude.x * tanSqDist * velocity.GetX(),
+          m_params.amplitude.y * tanSqDist * velocity.GetY()};
 }
 
 inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
@@ -78,7 +80,8 @@ inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
     case TanType::COT_MIX:
       return std::tan((m_params.cotMix * UTILS::MATH::HALF_PI) - tanArg);
     default:
-      throw std::logic_error("Unknown TanType enum.");
+      FailFast();
+      return 0.0F;
   }
 }
 

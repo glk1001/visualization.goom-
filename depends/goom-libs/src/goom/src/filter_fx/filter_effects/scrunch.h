@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_in_coefficients_effect.h"
 #include "point2d.h"
@@ -24,8 +25,7 @@ public:
 
   struct Params
   {
-    float xAmplitude;
-    float yAmplitude;
+    Amplitude amplitude;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -40,8 +40,8 @@ private:
 inline auto Scrunch::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
                                            const float sqDistFromZero) const -> Point2dFlt
 {
-  const auto xZoomInCoeff = GetBaseZoomInCoeffs().x + (m_params.xAmplitude * sqDistFromZero);
-  const auto yZoomInCoeff = m_params.yAmplitude * xZoomInCoeff;
+  const auto xZoomInCoeff = GetBaseZoomInCoeffs().x + (m_params.amplitude.x * sqDistFromZero);
+  const auto yZoomInCoeff = m_params.amplitude.y * xZoomInCoeff;
   return {xZoomInCoeff, yZoomInCoeff};
 }
 
