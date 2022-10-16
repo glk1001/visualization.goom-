@@ -139,7 +139,8 @@ class DistanceField(FilterEffectFunction):
                                  sq_dist_from_closest_point: np.ndarray,
                                  amplitude: float) -> np.ndarray:
         return base_zoom_in_coeff + (
-                amplitude * ((self.sq_dist_mult * sq_dist_from_closest_point) - self.sq_dist_offset))
+                amplitude * (
+                    (self.sq_dist_mult * sq_dist_from_closest_point) - self.sq_dist_offset))
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray) -> np.ndarray:
         get_closest_distance_point_func = np.vectorize(self.get_closest_distance_point)
@@ -166,6 +167,28 @@ class Speedway(FilterEffectFunction):
         y_zoom_in_coeff = self.y_amplitude * x_zoom_in_coeff
 
         return x_zoom_in_coeff + y_zoom_in_coeff * 1.0j
+
+
+class Mobius(FilterEffectFunction):
+    def __init__(self):
+        super().__init__("Mobius")
+        self.a = +1.0
+        self.b = -1.0
+        self.c = +1.0
+        self.d = +1.0
+
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        return self.base_zoom_coeffs + (self.a * z + self.b) / (self.c * z + self.d)
+
+
+class Sine(FilterEffectFunction):
+    def __init__(self):
+        super().__init__("Sine")
+        self.amplitude = 0.1
+        self.freq = 2.0
+
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        return self.base_zoom_coeffs + (self.amplitude * np.sin(self.freq * z))
 
 
 class StrangeSine(FilterEffectFunction):

@@ -66,8 +66,10 @@ def get_combined_effects() -> CombinedEffects:
     wave_sine_filter_effect = filter_effects.WaveSine()
     wave_tan_filter_effect = filter_effects.WaveTan()
     y_only_filter_effect = filter_effects.YOnly()
-    strange_sine_filter_effect = filter_effects.StrangeSine()
+    mobius_filter_effect = filter_effects.Mobius()
     power_filter_effect = filter_effects.Power()
+    sine_filter_effect = filter_effects.Sine()
+    strange_sine_filter_effect = filter_effects.StrangeSine()
 
     zero_after_effect = after_effects.Zero()
     tan_after_effect = after_effects.Tan()
@@ -81,8 +83,10 @@ def get_combined_effects() -> CombinedEffects:
     # filter_effect = y_only_filter_effect
     # filter_effect = wave_sine_filter_effect
     # filter_effect = wave_tan_filter_effect
-    filter_effect = strange_sine_filter_effect
+    filter_effect = mobius_filter_effect
     # filter_effect = power_filter_effect
+    # filter_effect = sine_filter_effect
+    # filter_effect = strange_sine_filter_effect
 
     after_effect = zero_after_effect
     # after_effect = tan_after_effect
