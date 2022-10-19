@@ -52,28 +52,6 @@ auto FilterZoomVector::GetZoomInPoint(const NormalizedCoords& coords) const -> N
   const auto zoomInFactor = 1.0F - zoomInCoeffs;
   const auto zoomInPoint  = zoomInFactor * coords;
 
-  if (sqDistFromZero < 0.1F)
-  {
-    LogInfo("coords = ({},{}, zoomInPoint = ({},{}))",
-            coords.GetX(),
-            coords.GetY(),
-            zoomInPoint.GetX(),
-            zoomInPoint.GetY());
-    LogInfo("coords = ({},{}, zoomInCoeffs = ({},{}))",
-            coords.GetX(),
-            coords.GetY(),
-            zoomInCoeffs.x,
-            zoomInCoeffs.y);
-  }
-  if (std::isnan(zoomInPoint.GetX()) or std::isnan(zoomInPoint.GetY()))
-  {
-    LogInfo("coords = ({},{}, zoomInPoint = ({},{}))",
-            coords.GetX(),
-            coords.GetY(),
-            zoomInPoint.GetX(),
-            zoomInPoint.GetY());
-  }
-
   const auto zoomInVelocity = coords - zoomInPoint;
   const auto afterEffectsVelocity =
       m_zoomVectorEffects.GetAfterEffectsVelocity(coords, sqDistFromZero, zoomInVelocity);

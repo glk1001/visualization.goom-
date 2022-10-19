@@ -95,8 +95,8 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
     return GetBaseZoomInCoeffs();
   }
 
-  using FltCalcType         = long double;
-  static constexpr auto ONE = static_cast<FltCalcType>(1.0);
+  using FltCalcType         = double;
+  static constexpr auto ONE = static_cast<FltCalcType>(1.0F);
 
   const auto zOffset = std::complex<FltCalcType>{};
   const auto z       = static_cast<FltCalcType>(m_params.magnify) *
@@ -114,19 +114,10 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
   }
 
   const auto phase                  = std::polar(ONE, std::arg(fz));
-  static constexpr auto MIN_LOG_ARG = static_cast<FltCalcType>(1.5);
+  static constexpr auto MIN_LOG_ARG = static_cast<FltCalcType>(1.5F);
   const auto inverseLogSqDistFromZero =
       ONE / std::log(MIN_LOG_ARG + static_cast<FltCalcType>(sqDistFromZero));
 
-  if (std::isnan(phase.real()) or std::isnan(phase.imag()))
-  {
-    LogInfo("coords = ({},{}, phase = ({},{}), absFz = {}",
-            coords.GetX(),
-            coords.GetY(),
-            phase.real(),
-            phase.imag(),
-            absSqFz);
-  }
   const auto realPart = static_cast<float>(
       inverseLogSqDistFromZero * (static_cast<FltCalcType>(m_params.amplitude.x) * phase.real()));
   const auto imagPart = static_cast<float>(
@@ -134,25 +125,11 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
 
   if (not m_params.useModulusContours and not m_params.usePhaseContours)
   {
-    if (sqDistFromZero < 0.1F)
-    {
-      LogInfo("coords = ({},{}, fz = ({},{}))", coords.GetX(), coords.GetY(), fz.real(), fz.imag());
-      LogInfo("coords = ({},{}, phase = ({},{}))",
-              coords.GetX(),
-              coords.GetY(),
-              phase.real(),
-              phase.imag());
-      LogInfo("coords = ({},{}, ZoomInCoeffs = ({},{}))",
-              coords.GetX(),
-              coords.GetY(),
-              GetBaseZoomInCoeffs().x + realPart,
-              GetBaseZoomInCoeffs().y + imagPart);
-    }
     return {GetBaseZoomInCoeffs().x + realPart, GetBaseZoomInCoeffs().y + imagPart};
   }
 
   static constexpr auto MAX_ABS_SQ_FZ = static_cast<FltCalcType>(std::numeric_limits<float>::max());
-  static constexpr auto MAX_LOG_VAL   = static_cast<FltCalcType>(1000.0);
+  static constexpr auto MAX_LOG_VAL   = static_cast<FltCalcType>(1000.0F);
   const auto logAbsSqFz               = absSqFz > MAX_ABS_SQ_FZ ? MAX_LOG_VAL : std::log(absSqFz);
 
   const auto sawtoothLogAbsFz =

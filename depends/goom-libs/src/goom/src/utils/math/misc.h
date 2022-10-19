@@ -108,7 +108,7 @@ template<typename T>
   return log2;
 }
 
-[[nodiscard]] constexpr auto GetSawTooth(const float t, const float period) -> float
+[[nodiscard]] inline auto GetSawTooth(const float t, const float period) -> float
 {
   const auto tDivPeriod = t / period;
   return HALF + (tDivPeriod - std::floor(HALF + tDivPeriod));
