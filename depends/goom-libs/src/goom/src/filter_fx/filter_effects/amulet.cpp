@@ -18,7 +18,7 @@ Amulet::Amulet(const IGoomRand& goomRand) noexcept
 {
 }
 
-auto Amulet::SetRandomParams() -> void
+auto Amulet::SetRandomParams() noexcept -> void
 {
   const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
   const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
@@ -28,7 +28,7 @@ auto Amulet::SetRandomParams() -> void
   SetParams({xAmplitude, yAmplitude});
 }
 
-auto Amulet::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto Amulet::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

@@ -54,7 +54,7 @@ CrystalBall::CrystalBall(const Modes mode, const IGoomRand& goomRand) noexcept
 {
 }
 
-auto CrystalBall::SetRandomParams() -> void
+auto CrystalBall::SetRandomParams() noexcept -> void
 {
   if (m_mode == Modes::MODE0)
   {
@@ -66,19 +66,19 @@ auto CrystalBall::SetRandomParams() -> void
   }
 }
 
-auto CrystalBall::SetMode0RandomParams() -> void
+auto CrystalBall::SetMode0RandomParams() noexcept -> void
 {
   SetRandomParams(AMPLITUDE_RANGE_MODE0, SQ_DIST_MULT_RANGE_MODE0, SQ_DIST_OFFSET_RANGE_MODE0);
 }
 
-auto CrystalBall::SetMode1RandomParams() -> void
+auto CrystalBall::SetMode1RandomParams() noexcept -> void
 {
   SetRandomParams(AMPLITUDE_RANGE_MODE1, SQ_DIST_MULT_RANGE_MODE1, SQ_DIST_OFFSET_RANGE_MODE1);
 }
 
 auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
                                   const SqDistMultRange& sqDistMultRange,
-                                  const SqDistOffsetRange& sqDistOffsetRange) -> void
+                                  const SqDistOffsetRange& sqDistOffsetRange) noexcept -> void
 {
   const auto xAmplitude = m_goomRand.GetRandInRange(amplitudeRange.xRange);
   const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
@@ -102,7 +102,7 @@ auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
   });
 }
 
-auto CrystalBall::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto CrystalBall::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs{};
 }

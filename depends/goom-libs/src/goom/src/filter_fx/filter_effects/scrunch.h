@@ -15,22 +15,23 @@ class Scrunch : public IZoomInCoefficientsEffect
 public:
   explicit Scrunch(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  auto SetRandomParams() -> void override;
+  auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const -> Point2dFlt override;
+                                           float sqDistFromZero) const noexcept
+      -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
   struct Params
   {
     Amplitude amplitude;
   };
-  [[nodiscard]] auto GetParams() const -> const Params&;
+  [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
 protected:
-  auto SetParams(const Params& params) -> void;
+  auto SetParams(const Params& params) noexcept -> void;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
@@ -38,19 +39,19 @@ private:
 };
 
 inline auto Scrunch::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
-                                           const float sqDistFromZero) const -> Point2dFlt
+                                           const float sqDistFromZero) const noexcept -> Point2dFlt
 {
   const auto xZoomInCoeff = GetBaseZoomInCoeffs().x + (m_params.amplitude.x * sqDistFromZero);
   const auto yZoomInCoeff = m_params.amplitude.y * xZoomInCoeff;
   return {xZoomInCoeff, yZoomInCoeff};
 }
 
-inline auto Scrunch::GetParams() const -> const Params&
+inline auto Scrunch::GetParams() const noexcept -> const Params&
 {
   return m_params;
 }
 
-inline auto Scrunch::SetParams(const Params& params) -> void
+inline auto Scrunch::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
 }

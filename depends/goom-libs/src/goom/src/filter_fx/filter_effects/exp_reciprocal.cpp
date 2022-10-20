@@ -56,7 +56,7 @@ ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
 {
 }
 
-auto ExpReciprocal::SetRandomParams() -> void
+auto ExpReciprocal::SetRandomParams() noexcept -> void
 {
   const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
   const auto yAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
@@ -88,7 +88,7 @@ auto ExpReciprocal::SetRandomParams() -> void
 }
 
 auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
-                                          const float sqDistFromZero) const -> Point2dFlt
+                                          const float sqDistFromZero) const noexcept -> Point2dFlt
 {
   if (sqDistFromZero < UTILS::MATH::SMALL_FLOAT)
   {
@@ -145,7 +145,7 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
   return {GetBaseZoomInCoeffs().x + enhancedRealPart, GetBaseZoomInCoeffs().y + enhancedImagPart};
 }
 
-auto ExpReciprocal::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto ExpReciprocal::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "exp reciprocal"});
   return {

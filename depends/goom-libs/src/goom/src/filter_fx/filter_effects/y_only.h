@@ -16,12 +16,13 @@ class YOnly : public IZoomInCoefficientsEffect
 public:
   explicit YOnly(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  auto SetRandomParams() -> void override;
+  auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const -> Point2dFlt override;
+                                           float sqDistFromZero) const noexcept
+      -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
   enum class YOnlyEffect
@@ -44,20 +45,21 @@ public:
     FrequencyFactor frequencyFactor;
     Amplitude amplitude;
   };
-  [[nodiscard]] auto GetParams() const -> const Params&;
+  [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
 protected:
-  auto SetParams(const Params& params) -> void;
+  auto SetParams(const Params& params) noexcept -> void;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   [[nodiscard]] auto GetYOnlyZoomInMultiplier(YOnlyEffect effect,
-                                              const NormalizedCoords& coords) const -> float;
+                                              const NormalizedCoords& coords) const noexcept
+      -> float;
 };
 
 inline auto YOnly::GetZoomInCoefficients(const NormalizedCoords& coords,
-                                         [[maybe_unused]] const float sqDistFromZero) const
+                                         [[maybe_unused]] const float sqDistFromZero) const noexcept
     -> Point2dFlt
 {
   const auto xZoomInCoeff = GetBaseZoomInCoeffs().x * m_params.amplitude.x *
@@ -72,12 +74,12 @@ inline auto YOnly::GetZoomInCoefficients(const NormalizedCoords& coords,
               GetYOnlyZoomInMultiplier(m_params.xyEffect.yEffect, coords)};
 }
 
-inline auto YOnly::GetParams() const -> const Params&
+inline auto YOnly::GetParams() const noexcept -> const Params&
 {
   return m_params;
 }
 
-inline auto YOnly::SetParams(const Params& params) -> void
+inline auto YOnly::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
 }

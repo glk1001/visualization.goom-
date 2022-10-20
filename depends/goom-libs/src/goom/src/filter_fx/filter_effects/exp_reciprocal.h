@@ -17,12 +17,13 @@ class ExpReciprocal : public IZoomInCoefficientsEffect
 public:
   explicit ExpReciprocal(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  auto SetRandomParams() -> void override;
+  auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const -> Point2dFlt override;
+                                           float sqDistFromZero) const noexcept
+      -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
   struct Params
@@ -36,22 +37,22 @@ public:
     float sawtoothModulusPeriod;
     float sawtoothPhasePeriod;
   };
-  [[nodiscard]] auto GetParams() const -> const Params&;
+  [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
 protected:
-  auto SetParams(const Params& params) -> void;
+  auto SetParams(const Params& params) noexcept -> void;
 
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
 };
 
-inline auto ExpReciprocal::GetParams() const -> const Params&
+inline auto ExpReciprocal::GetParams() const noexcept -> const Params&
 {
   return m_params;
 }
 
-inline void ExpReciprocal::SetParams(const Params& params)
+inline void ExpReciprocal::SetParams(const Params& params) noexcept
 {
   m_params = params;
 }

@@ -1,5 +1,6 @@
 #include "speedway.h"
 
+#include "goom_config.h"
 #include "filter_fx/common_types.h"
 #include "utils/name_value_pairs.h"
 
@@ -23,7 +24,7 @@ Speedway::Speedway(const Modes mode, const IGoomRand& goomRand) noexcept
 {
 }
 
-auto Speedway::SetRandomParams() -> void
+auto Speedway::SetRandomParams() noexcept -> void
 {
   switch (m_mode)
   {
@@ -37,11 +38,11 @@ auto Speedway::SetRandomParams() -> void
       SetMode2RandomParams();
       break;
     default:
-      throw std::logic_error("Unexpected Modes enum.");
+      FailFast();
   }
 }
 
-auto Speedway::SetMode0RandomParams() -> void
+auto Speedway::SetMode0RandomParams() noexcept -> void
 {
   const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE.xRange);
   const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL) ? +1.0F : -1.0F;
@@ -49,7 +50,7 @@ auto Speedway::SetMode0RandomParams() -> void
   SetParams({xAmplitude, yAmplitude});
 }
 
-auto Speedway::SetMode1RandomParams() -> void
+auto Speedway::SetMode1RandomParams() noexcept -> void
 {
   const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE.xRange);
   const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
@@ -59,7 +60,7 @@ auto Speedway::SetMode1RandomParams() -> void
   SetParams({xAmplitude, yAmplitude});
 }
 
-auto Speedway::SetMode2RandomParams() -> void
+auto Speedway::SetMode2RandomParams() noexcept -> void
 {
   const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE.xRange);
   const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
@@ -69,7 +70,7 @@ auto Speedway::SetMode2RandomParams() -> void
   SetParams({xAmplitude, yAmplitude});
 }
 
-auto Speedway::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto Speedway::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

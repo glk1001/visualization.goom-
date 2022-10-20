@@ -26,12 +26,12 @@ ImageZoomInCoefficients::ImageZoomInCoefficients(const std::string& resourcesDir
   }
 }
 
-auto ImageZoomInCoefficients::SetRandomParams() -> void
+auto ImageZoomInCoefficients::SetRandomParams() noexcept -> void
 {
   DoSetRandomParams();
 }
 
-inline auto ImageZoomInCoefficients::DoSetRandomParams() -> void
+inline auto ImageZoomInCoefficients::DoSetRandomParams() noexcept -> void
 {
   m_imageDisplacementList.SetRandomImageDisplacement();
 
@@ -47,7 +47,8 @@ inline auto ImageZoomInCoefficients::DoSetRandomParams() -> void
   });
 }
 
-auto ImageZoomInCoefficients::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto ImageZoomInCoefficients::GetZoomInCoefficientsEffectNameValueParams() const noexcept
+    -> NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "ImageZoomInCoeffs";
   return m_imageDisplacementList.GetNameValueParams(PARAM_GROUP);

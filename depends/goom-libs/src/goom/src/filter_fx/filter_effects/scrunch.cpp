@@ -21,7 +21,7 @@ Scrunch::Scrunch(const IGoomRand& goomRand) noexcept
 {
 }
 
-auto Scrunch::SetRandomParams() -> void
+auto Scrunch::SetRandomParams() noexcept -> void
 {
   const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE.xRange);
   const auto yAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE.yRange);
@@ -29,7 +29,7 @@ auto Scrunch::SetRandomParams() -> void
   SetParams({xAmplitude, yAmplitude});
 }
 
-auto Scrunch::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto Scrunch::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

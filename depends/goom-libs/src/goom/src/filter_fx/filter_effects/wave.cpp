@@ -1,6 +1,6 @@
 #include "wave.h"
 
-#include "utils/enum_utils.h"
+#include "goom_config.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -82,7 +82,7 @@ Wave::Wave(const Modes mode, const IGoomRand& goomRand)
 {
 }
 
-auto Wave::SetRandomParams() -> void
+auto Wave::SetRandomParams() noexcept -> void
 {
   if (m_mode == Modes::MODE0)
   {
@@ -94,13 +94,13 @@ auto Wave::SetRandomParams() -> void
   }
 }
 
-auto Wave::SetMode0RandomParams() -> void
+auto Wave::SetMode0RandomParams() noexcept -> void
 {
   SetWaveModeSettings(
       FREQ_FACTOR_RANGE, AMPLITUDE_RANGE, PERIODIC_FACTOR_RANGE, SIN_COS_PERIODIC_FACTOR_RANGE);
 }
 
-auto Wave::SetMode1RandomParams() -> void
+auto Wave::SetMode1RandomParams() noexcept -> void
 {
   if (m_goomRand.ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
   {
@@ -116,11 +116,11 @@ auto Wave::SetMode1RandomParams() -> void
   }
 }
 
-auto Wave::SetWaveModeSettings(const IGoomRand::NumberRange<float>& freqFactorRange,
-                               const IGoomRand::NumberRange<float>& amplitudeRange,
-                               const IGoomRand::NumberRange<float>& periodicFactorRange,
-                               const IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange)
-    -> void
+auto Wave::SetWaveModeSettings(
+    const IGoomRand::NumberRange<float>& freqFactorRange,
+    const IGoomRand::NumberRange<float>& amplitudeRange,
+    const IGoomRand::NumberRange<float>& periodicFactorRange,
+    const IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) noexcept -> void
 {
   const auto waveEffectsEqual = m_goomRand.ProbabilityOf(PROB_WAVE_XY_EFFECTS_EQUAL);
 
@@ -150,7 +150,7 @@ auto Wave::SetWaveModeSettings(const IGoomRand::NumberRange<float>& freqFactorRa
 
 inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
                                   [[maybe_unused]] const WaveEffect yWaveEffect,
-                                  const float periodicFactor) const -> float
+                                  const float periodicFactor) const noexcept -> float
 {
   switch (xWaveEffect)
   {
@@ -169,7 +169,8 @@ inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
                          m_goomRand.GetRandInRange(REDUCER_COEFF_RANGE),
                          periodicFactor);
     default:
-      throw std::logic_error("Unknown WaveEffect enum");
+      FailFast();
+      return 0.0F;
   }
 }
 
@@ -177,7 +178,7 @@ inline auto Wave::GetPeriodicFactor(
     const WaveEffect xWaveEffect,
     const WaveEffect yWaveEffect,
     const IGoomRand::NumberRange<float>& periodicFactorRange,
-    const IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) const -> float
+    const IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) const noexcept -> float
 {
   if (m_goomRand.ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
   {
@@ -198,7 +199,7 @@ inline auto Wave::GetPeriodicFactor(
 
 auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
                            const float angle,
-                           const float periodicFactor) -> float
+                           const float periodicFactor) noexcept -> float
 {
   switch (waveEffect)
   {
@@ -223,11 +224,12 @@ auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
       return periodicFactor *
              STD20::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::cos(angle), periodicFactor);
     default:
-      throw std::logic_error("Unknown WaveEffect enum");
+      FailFast();
+      return 0.0F;
   }
 }
 
-auto Wave::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto Wave::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

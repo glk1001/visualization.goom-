@@ -43,7 +43,7 @@ YOnly::YOnly(const IGoomRand& goomRand) noexcept
 {
 }
 
-auto YOnly::SetRandomParams() -> void
+auto YOnly::SetRandomParams() noexcept -> void
 {
   const auto xEffect = static_cast<YOnlyEffect>(
       m_goomRand.GetRandInRange(static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect>));
@@ -69,8 +69,8 @@ auto YOnly::SetRandomParams() -> void
   });
 }
 
-auto YOnly::GetYOnlyZoomInMultiplier(const YOnlyEffect effect, const NormalizedCoords& coords) const
-    -> float
+auto YOnly::GetYOnlyZoomInMultiplier(const YOnlyEffect effect,
+                                     const NormalizedCoords& coords) const noexcept -> float
 {
   switch (effect)
   {
@@ -92,7 +92,7 @@ auto YOnly::GetYOnlyZoomInMultiplier(const YOnlyEffect effect, const NormalizedC
   }
 }
 
-auto YOnly::GetZoomInCoefficientsEffectNameValueParams() const -> NameValuePairs
+auto YOnly::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

@@ -12,7 +12,6 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using AFTER_EFFECTS::AfterEffects;
-using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
@@ -28,14 +27,14 @@ ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
 }
 
 auto ZoomVectorEffects::GetStandardAfterEffects(const IGoomRand& goomRand,
-                                                const std::string& resourcesDirectory)
+                                                const std::string& resourcesDirectory) noexcept
     -> AfterEffects
 {
   return AFTER_EFFECTS::GetStandardAfterEffects(goomRand, resourcesDirectory);
 }
 
-auto ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
-    -> void
+auto ZoomVectorEffects::SetFilterSettings(
+    const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void
 {
   m_filterEffectsSettings = &filterEffectsSettings;
 
@@ -47,14 +46,15 @@ auto ZoomVectorEffects::SetFilterSettings(const ZoomFilterEffectsSettings& filte
                                                    m_filterEffectsSettings->zoomMidpoint);
 }
 
-auto ZoomVectorEffects::GetCleanedCoords(const NormalizedCoords& coords) const -> NormalizedCoords
+auto ZoomVectorEffects::GetCleanedCoords(const NormalizedCoords& coords) const noexcept
+    -> NormalizedCoords
 {
   return {GetMinCoordVal(coords.GetX(), m_normalizedCoordsConverter.GetXMinNormalizedCoordVal()),
           GetMinCoordVal(coords.GetY(), m_normalizedCoordsConverter.GetYMinNormalizedCoordVal())};
 }
 
 inline auto ZoomVectorEffects::GetMinCoordVal(const float coordVal,
-                                              const float minNormalizedCoordVal) -> float
+                                              const float minNormalizedCoordVal) noexcept -> float
 {
   if (std::fabs(coordVal) < minNormalizedCoordVal)
   {
@@ -63,7 +63,7 @@ inline auto ZoomVectorEffects::GetMinCoordVal(const float coordVal,
   return coordVal;
 }
 
-auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> UTILS::NameValuePairs
+auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "ZoomEffects";
 
@@ -78,7 +78,7 @@ auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const -> UTILS::NameValu
   return nameValuePairs;
 }
 
-auto ZoomVectorEffects::GetZoomInCoeffsNameValueParams() const -> NameValuePairs
+auto ZoomVectorEffects::GetZoomInCoeffsNameValueParams() const noexcept -> NameValuePairs
 {
   return m_filterEffectsSettings->zoomInCoefficientsEffect
       ->GetZoomInCoefficientsEffectNameValueParams();

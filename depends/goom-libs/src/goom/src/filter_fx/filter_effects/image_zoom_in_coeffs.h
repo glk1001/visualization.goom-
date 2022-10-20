@@ -18,22 +18,24 @@ public:
   ImageZoomInCoefficients(const std::string& resourcesDirectory,
                           const GOOM::UTILS::MATH::IGoomRand& goomRand);
 
-  auto SetRandomParams() -> void override;
+  auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const -> Point2dFlt override;
+                                           float sqDistFromZero) const noexcept
+      -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
       -> GOOM::UTILS::NameValuePairs override;
 
 private:
   const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
   FILTER_UTILS::ImageDisplacementList m_imageDisplacementList;
-  auto DoSetRandomParams() -> void;
+  auto DoSetRandomParams() noexcept -> void;
 };
 
 inline auto ImageZoomInCoefficients::GetZoomInCoefficients(
-    const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const -> Point2dFlt
+    const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const noexcept
+    -> Point2dFlt
 {
   return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords);
 }

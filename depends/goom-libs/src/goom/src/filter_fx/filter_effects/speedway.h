@@ -23,40 +23,41 @@ public:
   };
   Speedway(Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  auto SetRandomParams() -> void override;
+  auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const -> Point2dFlt override;
+                                           float sqDistFromZero) const noexcept
+      -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
   struct Params
   {
     Amplitude amplitude;
   };
-  [[nodiscard]] auto GetParams() const -> const Params&;
+  [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
 protected:
-  auto SetParams(const Params& params) -> void;
+  auto SetParams(const Params& params) noexcept -> void;
 
 private:
   const Modes m_mode;
   const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
-  auto SetMode0RandomParams() -> void;
-  auto SetMode1RandomParams() -> void;
-  auto SetMode2RandomParams() -> void;
+  auto SetMode0RandomParams() noexcept -> void;
+  auto SetMode1RandomParams() noexcept -> void;
+  auto SetMode2RandomParams() noexcept -> void;
   [[nodiscard]] auto GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
-                                                float sqDistFromZero) const -> Point2dFlt;
+                                                float sqDistFromZero) const noexcept -> Point2dFlt;
   [[nodiscard]] auto GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
-                                                float sqDistFromZero) const -> Point2dFlt;
+                                                float sqDistFromZero) const noexcept -> Point2dFlt;
   [[nodiscard]] auto GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
-                                                float sqDistFromZero) const -> Point2dFlt;
+                                                float sqDistFromZero) const noexcept -> Point2dFlt;
 };
 
 inline auto Speedway::GetZoomInCoefficients(const NormalizedCoords& coords,
-                                            const float sqDistFromZero) const -> Point2dFlt
+                                            const float sqDistFromZero) const noexcept -> Point2dFlt
 {
   switch (m_mode)
   {
@@ -73,7 +74,8 @@ inline auto Speedway::GetZoomInCoefficients(const NormalizedCoords& coords,
 }
 
 inline auto Speedway::GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero) const -> Point2dFlt
+                                                 const float sqDistFromZero) const noexcept
+    -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
@@ -91,7 +93,8 @@ inline auto Speedway::GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
 }
 
 inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero) const -> Point2dFlt
+                                                 const float sqDistFromZero) const noexcept
+    -> Point2dFlt
 {
   auto xAdd = -1.0F;
   if (static constexpr auto PROB_RANDOM_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
@@ -126,7 +129,8 @@ inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
 }
 
 inline auto Speedway::GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero) const -> Point2dFlt
+                                                 const float sqDistFromZero) const noexcept
+    -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
@@ -143,12 +147,12 @@ inline auto Speedway::GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
   return {xZoomInCoeff, yZoomInCoeff};
 }
 
-inline auto Speedway::GetParams() const -> const Params&
+inline auto Speedway::GetParams() const noexcept -> const Params&
 {
   return m_params;
 }
 
-inline auto Speedway::SetParams(const Params& params) -> void
+inline auto Speedway::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
 }

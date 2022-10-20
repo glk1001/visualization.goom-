@@ -13,29 +13,30 @@ class UniformZoomInCoefficientsEffect : public IZoomInCoefficientsEffect
 public:
   UniformZoomInCoefficientsEffect() noexcept = default;
 
-  auto SetRandomParams() -> void override;
+  auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const -> Point2dFlt override;
+                                           float sqDistFromZero) const noexcept
+      -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const
+  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
       -> GOOM::UTILS::NameValuePairs override;
 };
 
 inline auto UniformZoomInCoefficientsEffect::GetZoomInCoefficients(
     [[maybe_unused]] const NormalizedCoords& coords,
-    [[maybe_unused]] const float sqDistFromZero) const -> Point2dFlt
+    [[maybe_unused]] const float sqDistFromZero) const noexcept -> Point2dFlt
 {
   return GetBaseZoomInCoeffs();
 }
 
-inline auto UniformZoomInCoefficientsEffect::SetRandomParams() -> void
+inline auto UniformZoomInCoefficientsEffect::SetRandomParams() noexcept -> void
 {
   // do nothing
 }
 
-inline auto UniformZoomInCoefficientsEffect::GetZoomInCoefficientsEffectNameValueParams() const
-    -> GOOM::UTILS::NameValuePairs
+inline auto UniformZoomInCoefficientsEffect::GetZoomInCoefficientsEffectNameValueParams()
+    const noexcept -> GOOM::UTILS::NameValuePairs
 {
   return GOOM::UTILS::NameValuePairs();
 }
