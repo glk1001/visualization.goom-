@@ -1,5 +1,6 @@
 #include "image_zoom_in_coeffs.h"
 
+#include "goom_config.h"
 #include "utils/name_value_pairs.h"
 
 #include <string>
@@ -29,6 +30,8 @@ ImageZoomInCoefficients::ImageZoomInCoefficients(const std::string& resourcesDir
 auto ImageZoomInCoefficients::SetRandomParams() noexcept -> void
 {
   DoSetRandomParams();
+
+  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 inline auto ImageZoomInCoefficients::DoSetRandomParams() noexcept -> void

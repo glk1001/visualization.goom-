@@ -1,6 +1,7 @@
 #include "scrunch.h"
 
 #include "filter_fx/common_types.h"
+#include "goom_config.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -27,6 +28,8 @@ auto Scrunch::SetRandomParams() noexcept -> void
   const auto yAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE.yRange);
 
   SetParams({xAmplitude, yAmplitude});
+
+  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto Scrunch::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs

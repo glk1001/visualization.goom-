@@ -2,9 +2,8 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as pyplot
 import numpy as np
 
-import after_effects
-import filter_effects
-from all_effects import CombinedEffects
+import select_effects
+from all_effects import CombinedEffects, Viewport
 
 
 def get_effects_map(wid, hgt):
@@ -58,41 +57,12 @@ def get_remapped_image(img_remap, img, wid, hgt):
 
 
 def get_combined_effects() -> CombinedEffects:
-    identity_zoom_filter_effect = filter_effects.IdentityZoom()
-    amulet_filter_effect = filter_effects.Amulet()
-    distance_field_filter_effect = filter_effects.DistanceField()
-    scrunch_filter_effect = filter_effects.Scrunch()
-    speedway_filter_effect = filter_effects.Speedway()
-    wave_sine_filter_effect = filter_effects.WaveSine()
-    wave_tan_filter_effect = filter_effects.WaveTan()
-    y_only_filter_effect = filter_effects.YOnly()
-    mobius_filter_effect = filter_effects.Mobius()
-    power_filter_effect = filter_effects.Power()
-    sine_filter_effect = filter_effects.Sine()
-    strange_sine_filter_effect = filter_effects.StrangeSine()
+    viewport = Viewport()
+    # viewport = Viewport(-0, -0, 2.1, 2.1)
 
-    zero_after_effect = after_effects.Zero()
-    tan_after_effect = after_effects.Tan()
-    xy_lerp_after_effect = after_effects.XYLerp()
+    filter_effect, after_effect = select_effects.get_effects()
 
-    # filter_effect = identity_zoom_filter_effect
-    # filter_effect = amulet_filter_effect
-    # filter_effect = distance_field_filter_effect
-    # filter_effect = scrunch_filter_effect
-    # filter_effect = speedway_filter_effect
-    # filter_effect = y_only_filter_effect
-    # filter_effect = wave_sine_filter_effect
-    # filter_effect = wave_tan_filter_effect
-    filter_effect = mobius_filter_effect
-    # filter_effect = power_filter_effect
-    # filter_effect = sine_filter_effect
-    # filter_effect = strange_sine_filter_effect
-
-    after_effect = zero_after_effect
-    # after_effect = tan_after_effect
-    # after_effect = xy_lerp_after_effect
-
-    return CombinedEffects(filter_effect, after_effect)
+    return CombinedEffects(viewport, filter_effect, after_effect)
 
 
 if __name__ == "__main__":

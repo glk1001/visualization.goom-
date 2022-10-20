@@ -18,6 +18,7 @@ public:
   explicit ExpReciprocal(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
+  [[nodiscard]] auto GetZoomInCoefficientsViewport() const noexcept -> Viewport override;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
                                            float sqDistFromZero) const noexcept
@@ -28,9 +29,9 @@ public:
 
   struct Params
   {
+    Viewport viewport;
     Amplitude amplitude;
-    std::complex<float> rotate;
-    float magnify;
+    std::complex<float> magnifyAndRotate;
     float reciprocalExponent;
     bool useModulusContours;
     bool usePhaseContours;
@@ -46,6 +47,11 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
 };
+
+inline auto ExpReciprocal::GetZoomInCoefficientsViewport() const noexcept -> Viewport
+{
+  return m_params.viewport;
+}
 
 inline auto ExpReciprocal::GetParams() const noexcept -> const Params&
 {

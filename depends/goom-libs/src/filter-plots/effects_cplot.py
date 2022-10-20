@@ -3,9 +3,8 @@ import matplotlib
 import numpy as np
 from matplotlib.axes import Axes
 
-import after_effects
-import filter_effects
-from all_effects import CombinedEffects
+import select_effects
+from all_effects import CombinedEffects, Viewport, X_MIN, X_MAX, Y_MIN, Y_MAX
 
 
 def format_complex_coord(the_combined_effects: CombinedEffects, x: float, y: float):
@@ -33,17 +32,12 @@ def plot_the_effects(the_combined_effects: CombinedEffects):
     matplotlib.pyplot.figure(figsize=(10.0, 10.0), dpi=100)
     matplotlib.pyplot.title(the_combined_effects.get_name())
 
-    x_min = -2.1
-    x_max = -x_min
-    y_min = +x_min
-    y_max = -y_min
-
     # plt = cplot.riemann_sphere(f)
 
     plt = cplot.plot(
             lambda z: the_combined_effects.f(z),
-            (x_min, x_max, 1000),
-            (y_min, y_max, 1000),
+            (X_MIN, X_MAX, 1000),
+            (Y_MIN, Y_MAX, 1000),
             abs_scaling=lambda x: 1.15 * x / (x + 1),
             contours_abs=2.0,  # None,  # 2.0,
             # contours_arg=(-np.pi / 2, 0, np.pi / 2, np.pi),
@@ -62,43 +56,12 @@ def plot_the_effects(the_combined_effects: CombinedEffects):
 
 
 def get_combined_effects() -> CombinedEffects:
-    identity_zoom_filter_effect = filter_effects.IdentityZoom()
-    amulet_filter_effect = filter_effects.Amulet()
-    distance_field_filter_effect = filter_effects.DistanceField()
-    wave_sine_filter_effect = filter_effects.WaveSine()
-    wave_tan_filter_effect = filter_effects.WaveTan()
-    scrunch_filter_effect = filter_effects.Scrunch()
-    speedway_filter_effect = filter_effects.Speedway()
-    y_only_filter_effect = filter_effects.YOnly()
-    exp_reciprocal_filter_effect = filter_effects.ExpReciprocal()
-    mobius_filter_effect = filter_effects.Mobius()
-    power_filter_effect = filter_effects.Power()
-    sine_filter_effect = filter_effects.Sine()
-    strange_sine_filter_effect = filter_effects.StrangeSine()
+    viewport = Viewport()
+    # viewport = Viewport(-0, -0, 2.1, 2.1)
 
-    zero_after_effect = after_effects.Zero()
-    tan_after_effect = after_effects.Tan()
-    xy_lerp_after_effect = after_effects.XYLerp()
+    filter_effect, after_effect = select_effects.get_effects()
 
-    # filter_effect = identity_zoom_filter_effect
-    # filter_effect = amulet_filter_effect
-    # filter_effect = distance_field_filter_effect
-    # filter_effect = scrunch_filter_effect
-    # filter_effect = speedway_filter_effect
-    # filter_effect = wave_sine_filter_effect
-    # filter_effect = wave_tan_filter_effect
-    # filter_effect = y_only_filter_effect
-    filter_effect = exp_reciprocal_filter_effect
-    # filter_effect = mobius_filter_effect
-    # filter_effect = power_filter_effect
-    # filter_effect = sine_filter_effect
-    # filter_effect = strange_sine_filter_effect
-
-    after_effect = zero_after_effect
-    # after_effect = tan_after_effect
-    # after_effect = xy_lerp_after_effect
-
-    return CombinedEffects(filter_effect, after_effect)
+    return CombinedEffects(viewport, filter_effect, after_effect)
 
 
 if __name__ == "__main__":

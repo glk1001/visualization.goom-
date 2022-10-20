@@ -2,6 +2,7 @@
 
 #include "after_effects/after_effects_states.h"
 #include "filter_speed.h"
+#include "normalized_coords.h"
 #include "point2d.h"
 
 #include <cstdint>
@@ -16,6 +17,7 @@ struct ZoomFilterBufferSettings
 {
   uint32_t tranLerpIncrement;
   float tranLerpToMaxSwitchMult;
+  Viewport filterEffectViewport;
 };
 
 struct ZoomFilterEffectsSettings

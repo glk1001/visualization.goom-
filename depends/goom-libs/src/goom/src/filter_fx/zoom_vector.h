@@ -20,12 +20,14 @@ public:
   auto operator=(const IZoomVector&) -> IZoomVector& = delete;
   auto operator=(IZoomVector&&) -> IZoomVector&      = delete;
 
-  virtual auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
+  virtual auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept
       -> void = 0;
 
-  virtual auto GetZoomInPoint(const NormalizedCoords& coords) const -> NormalizedCoords = 0;
+  virtual auto GetZoomInPoint(const NormalizedCoords& coords,
+                              const NormalizedCoords& filterViewportCoords) const noexcept
+      -> NormalizedCoords = 0;
 
-  [[nodiscard]] virtual auto GetNameValueParams(const std::string& paramGroup) const
+  [[nodiscard]] virtual auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> UTILS::NameValuePairs = 0;
 };
 

@@ -67,6 +67,8 @@ auto YOnly::SetRandomParams() noexcept -> void
       {xFreqFactor, yFreqFactor},
       { xAmplitude,  yAmplitude}
   });
+
+  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto YOnly::GetYOnlyZoomInMultiplier(const YOnlyEffect effect,

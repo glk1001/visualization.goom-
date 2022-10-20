@@ -103,6 +103,7 @@ protected:
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
   virtual auto SetDefaultSettings() -> void;
   virtual auto SetRandomZoomMidpoint() -> void;
+  virtual auto SetFilterModeRandomViewport() -> void;
   virtual auto SetFilterModeExtraEffects() -> void;
   virtual auto SetRandomizedExtraEffects() -> void;
   virtual auto SetWaveModeExtraEffects() -> void;
@@ -137,6 +138,7 @@ private:
 
   static constexpr uint32_t DEFAULT_ZOOM_MID_X                        = 16;
   static constexpr uint32_t DEFAULT_ZOOM_MID_Y                        = 1;
+  static constexpr Viewport DEFAULT_FILTER_VIEWPORT                   = Viewport{};
   static constexpr uint32_t DEFAULT_TRAN_LERP_INCREMENT               = 0x7fU;
   static constexpr float DEFAULT_SWITCH_MULT                          = 29.0F / 30.0F;
   static constexpr float DEFAULT_MAX_ZOOM_IN_COEFF                    = 2.01F;
@@ -233,6 +235,14 @@ inline auto FilterSettingsService::ChangeMilieu() -> void
   SetRandomZoomMidpoint();
 }
 
+inline auto FilterSettingsService::SetMaxZoomInCoeff() -> void
+{
+  static constexpr auto MIN_SPEED_FACTOR = 0.5F;
+  static constexpr auto MAX_SPEED_FACTOR = 1.0F;
+  m_filterSettings.filterEffectsSettings.maxZoomInCoeff =
+      m_goomRand.GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_ZOOM_IN_COEFF;
+}
+
 inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode) -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
@@ -251,6 +261,15 @@ inline auto FilterSettingsService::SetNewRandomFilter() -> void
   m_filterMode         = GetNewRandomMode();
 
   SetRandomSettingsForNewFilterMode();
+}
+
+inline auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
+{
+  SetDefaultSettings();
+  SetRandomZoomMidpoint();
+  SetFilterModeRandomViewport();
+  SetFilterModeExtraEffects();
+  UpdateFilterSettingsFromExtraEffects();
 }
 
 inline auto FilterSettingsService::TurnOffRotation() -> void

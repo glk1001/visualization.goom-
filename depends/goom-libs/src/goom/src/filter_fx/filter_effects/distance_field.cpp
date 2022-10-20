@@ -139,6 +139,8 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
       {xSqDistOffset, ySqDistOffset},
       distancePoints
   });
+
+  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto DistanceField::GetDistancePoints() const noexcept -> std::vector<NormalizedCoords>
@@ -151,8 +153,8 @@ auto DistanceField::GetDistancePoints() const noexcept -> std::vector<Normalized
 
   if (!m_goomRand.ProbabilityOf(PROB_RANDOM_DISTANCE_POINTS))
   {
-    static constexpr auto HALF_MIN_COORD = 0.5F * NormalizedCoords::MIN_NORMALIZED_COORD;
-    static constexpr auto HALF_MAX_COORD = 0.5F * NormalizedCoords::MAX_NORMALIZED_COORD;
+    static constexpr auto HALF_MIN_COORD = 0.5F * NormalizedCoords::MIN_COORD;
+    static constexpr auto HALF_MAX_COORD = 0.5F * NormalizedCoords::MAX_COORD;
     distancePoints.emplace_back(HALF_MIN_COORD, Y_SHRINK_FACTOR * HALF_MIN_COORD);
     distancePoints.emplace_back(HALF_MAX_COORD, Y_SHRINK_FACTOR * HALF_MIN_COORD);
     distancePoints.emplace_back(HALF_MIN_COORD, Y_SHRINK_FACTOR * HALF_MAX_COORD);
@@ -160,8 +162,8 @@ auto DistanceField::GetDistancePoints() const noexcept -> std::vector<Normalized
   }
   else
   {
-    static constexpr auto MIN_DISTANCE_COORD = 0.95F * NormalizedCoords::MIN_NORMALIZED_COORD;
-    static constexpr auto MAX_DISTANCE_COORD = 0.95F * NormalizedCoords::MAX_NORMALIZED_COORD;
+    static constexpr auto MIN_DISTANCE_COORD = 0.95F * NormalizedCoords::MIN_COORD;
+    static constexpr auto MAX_DISTANCE_COORD = 0.95F * NormalizedCoords::MAX_COORD;
     for (auto i = 0U; i < NUM_DISTANCE_POINTS; ++i)
     {
       distancePoints.emplace_back(
@@ -176,8 +178,7 @@ auto DistanceField::GetDistancePoints() const noexcept -> std::vector<Normalized
 auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) const noexcept
     -> RelativeDistancePoint
 {
-  static constexpr auto MAX_DISTANCE_SQ =
-      2.0F * Sq(NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD);
+  static constexpr auto MAX_DISTANCE_SQ = 2.0F * Sq(NormalizedCoords::COORD_WIDTH);
   auto minDistanceSq       = MAX_DISTANCE_SQ;
   const auto* closestPoint = Ptr<NormalizedCoords>{nullptr};
 

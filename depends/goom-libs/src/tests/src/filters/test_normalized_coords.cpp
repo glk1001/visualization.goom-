@@ -15,8 +15,7 @@ using UTILS::MATH::FloatsEqual;
 static constexpr uint32_t WIDTH  = 1280U;
 static constexpr uint32_t HEIGHT = 720U;
 static constexpr float MIN_COORD_VAL =
-    (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) /
-    static_cast<float>(WIDTH - 1);
+    (NormalizedCoords::COORD_WIDTH) / static_cast<float>(WIDTH - 1);
 static constexpr NormalizedCoordsConverter NORMALIZED_COORDS_CONVERTER{
     {WIDTH, HEIGHT},
     MIN_COORD_VAL
@@ -26,20 +25,19 @@ constexpr auto ConvertToScreen(const float normalizedValue) -> int32_t
 {
   return static_cast<int32_t>(
       static_cast<float>(WIDTH - 1) *
-      ((normalizedValue - NormalizedCoords::MIN_NORMALIZED_COORD) /
-       (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD)));
+      ((normalizedValue - NormalizedCoords::MIN_COORD) / (NormalizedCoords::COORD_WIDTH)));
 }
 
-TEST_CASE("Normalized Coords Values", "[CoordsValues]")
+TEST_CASE("Normalized Coords Values")
 {
   SECTION("Min coords")
   {
     static constexpr auto COORDS =
         NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{0, 0});
     UNSCOPED_INFO("coords.GetX() = " << COORDS.GetX());
-    REQUIRE(FloatsEqual(COORDS.GetX(), NormalizedCoords::MIN_NORMALIZED_COORD));
+    REQUIRE(FloatsEqual(COORDS.GetX(), NormalizedCoords::MIN_COORD));
     UNSCOPED_INFO("coords.GetY() = " << COORDS.GetY());
-    REQUIRE(FloatsEqual(COORDS.GetY(), NormalizedCoords::MIN_NORMALIZED_COORD));
+    REQUIRE(FloatsEqual(COORDS.GetY(), NormalizedCoords::MIN_COORD));
 
     const auto screenCoords =
         NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS).ToInt();
@@ -54,11 +52,10 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
     static constexpr auto COORDS =
         NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{WIDTH - 1U, HEIGHT - 1U});
     UNSCOPED_INFO("coords.GetX() = " << COORDS.GetX());
-    REQUIRE(FloatsEqual(COORDS.GetX(), NormalizedCoords::MAX_NORMALIZED_COORD));
+    REQUIRE(FloatsEqual(COORDS.GetX(), NormalizedCoords::MAX_COORD));
     static constexpr auto MAX_Y =
-        NormalizedCoords::MIN_NORMALIZED_COORD +
-        (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) *
-            (static_cast<float>(HEIGHT) / static_cast<float>(WIDTH));
+        NormalizedCoords::MIN_COORD +
+        (NormalizedCoords::COORD_WIDTH) * (static_cast<float>(HEIGHT) / static_cast<float>(WIDTH));
     UNSCOPED_INFO("coords.GetY() = " << COORDS.GetY());
     UNSCOPED_INFO("maxY = " << MAX_Y);
     REQUIRE(FloatsEqual(COORDS.GetY(), MAX_Y, MIN_COORD_VAL));
@@ -105,34 +102,21 @@ TEST_CASE("Normalized Coords Values", "[CoordsValues]")
   }
 }
 
-TEST_CASE("Normalized Coords Increments", "[CoordsIncrements]")
+TEST_CASE("Normalized Coords Increment")
 {
-  SECTION("Inc")
-  {
-    auto coords = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{0, 0});
-    NORMALIZED_COORDS_CONVERTER.Inc(coords);
-    UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
-    REQUIRE(FloatsEqual(coords.GetX(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));
-    UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
-    REQUIRE(FloatsEqual(coords.GetY(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));
-  }
   SECTION("IncX")
   {
     auto coords = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{0, 0});
-    NORMALIZED_COORDS_CONVERTER.IncX(coords);
+    REQUIRE(FloatsEqual(coords.GetX(), NormalizedCoords::MIN_COORD));
+    REQUIRE(FloatsEqual(coords.GetY(), NormalizedCoords::MIN_COORD));
+    static constexpr auto STEP_SIZE = 0.11F;
+    coords.IncX(STEP_SIZE);
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
-    REQUIRE(FloatsEqual(coords.GetX(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));
-  }
-  SECTION("IncY")
-  {
-    auto coords = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{0, 0});
-    NORMALIZED_COORDS_CONVERTER.IncY(coords);
-    UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
-    REQUIRE(FloatsEqual(coords.GetY(), NormalizedCoords::MIN_NORMALIZED_COORD + MIN_COORD_VAL));
+    REQUIRE(FloatsEqual(coords.GetX(), NormalizedCoords::MIN_COORD + STEP_SIZE));
   }
 }
 
-TEST_CASE("Normalized Coords Operations", "[CoordsOperations]")
+TEST_CASE("Normalized Coords Operations", )
 {
   SECTION("Plus")
   {

@@ -32,29 +32,33 @@ FilterZoomVector::FilterZoomVector(
 {
 }
 
-auto FilterZoomVector::SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings)
-    -> void
+auto FilterZoomVector::SetFilterSettings(
+    const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void
 {
   m_zoomVectorEffects.SetFilterSettings(filterEffectsSettings);
 }
 
-auto FilterZoomVector::GetNameValueParams([[maybe_unused]] const std::string& paramGroup) const
-    -> NameValuePairs
+auto FilterZoomVector::GetNameValueParams(
+    [[maybe_unused]] const std::string& paramGroup) const noexcept -> NameValuePairs
 {
   return m_zoomVectorEffects.GetZoomEffectsNameValueParams();
 }
 
-auto FilterZoomVector::GetZoomInPoint(const NormalizedCoords& coords) const -> NormalizedCoords
+auto FilterZoomVector::GetZoomInPoint(const NormalizedCoords& coords,
+                                      const NormalizedCoords& filterViewportCoords) const noexcept
+    -> NormalizedCoords
 {
-  const auto sqDistFromZero = SqDistance(coords.GetX(), coords.GetY());
-
-  const auto zoomInCoeffs = m_zoomVectorEffects.GetZoomInCoefficients(coords, sqDistFromZero);
+  const auto absSqFilterViewportCoords =
+      SqDistance(filterViewportCoords.GetX(), filterViewportCoords.GetY());
+  const auto zoomInCoeffs =
+      m_zoomVectorEffects.GetZoomInCoefficients(filterViewportCoords, absSqFilterViewportCoords);
   const auto zoomInFactor = 1.0F - zoomInCoeffs;
   const auto zoomInPoint  = zoomInFactor * coords;
 
   const auto zoomInVelocity = coords - zoomInPoint;
+  const auto absSqCoords    = SqDistance(coords.GetX(), coords.GetY());
   const auto afterEffectsVelocity =
-      m_zoomVectorEffects.GetAfterEffectsVelocity(coords, sqDistFromZero, zoomInVelocity);
+      m_zoomVectorEffects.GetAfterEffectsVelocity(coords, absSqCoords, zoomInVelocity);
   const auto afterEffectsZoomInPoint = zoomInPoint - afterEffectsVelocity;
 
   return m_zoomVectorEffects.GetCleanedCoords(afterEffectsZoomInPoint);

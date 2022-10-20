@@ -141,25 +141,34 @@ auto ZoomFilterBuffers::DoNextTempTranBuffersStripe(const uint32_t tranBuffStrip
 {
   Expects(m_tranBuffersState == TranBuffersState::TRAN_BUFFERS_READY);
 
-  const auto doStripeLine = [this](const size_t y)
+  const auto screenWidth                  = m_dimensions.GetWidth();
+  const auto screenSpan                   = static_cast<float>(screenWidth - 1);
+  const auto sourceCoordsStepSize         = NormalizedCoords::COORD_WIDTH / screenSpan;
+  const auto sourceViewportCoordsStepSize = m_filterViewport.GetViewportWidth() / screenSpan;
+
+  const auto doStripeLine =
+      [this, &screenWidth, &sourceCoordsStepSize, &sourceViewportCoordsStepSize](const size_t y)
   {
-    // Position of the pixel to compute in screen coordinates
-    const auto yOffset      = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
-    const auto tranPosStart = yOffset * m_dimensions.GetWidth();
+    // Y-position of the first stripe pixel to compute in screen coordinates.
+    const auto yScreenCoord = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
+    auto tranBufferPos      = yScreenCoord * screenWidth;
 
-    auto normalizedCentredPoint = m_normalizedCoordsConverter.OtherToNormalizedCoords(
-                                      Point2dInt{0, static_cast<int32_t>(yOffset)}) -
-                                  m_normalizedMidPt;
+    auto centredSourceCoords =
+        m_normalizedCoordsConverter.OtherToNormalizedCoords(Point2dInt{0U, yScreenCoord}) -
+        m_normalizedMidpoint;
+    auto centredSourceViewportCoords = m_filterViewport.GetViewportCoords(centredSourceCoords);
 
-    for (auto x = 0U; x < m_dimensions.GetWidth(); ++x)
+    for (auto x = 0U; x < screenWidth; ++x)
     {
-      const auto normalizedZoomPoint = m_getZoomPoint(normalizedCentredPoint);
-      const auto uncenteredZoomPoint = m_normalizedMidPt + normalizedZoomPoint;
+      const auto zoomCoords = m_getZoomPoint(centredSourceCoords, centredSourceViewportCoords);
+      const auto uncenteredZoomCoords = m_normalizedMidpoint + zoomCoords;
 
-      m_transformBuffers.SetTempBuffersTransformPoint(tranPosStart + x,
-                                                      GetTranPoint(uncenteredZoomPoint));
+      m_transformBuffers.SetTempBuffersTransformPoint(tranBufferPos,
+                                                      GetTranPoint(uncenteredZoomCoords));
 
-      m_normalizedCoordsConverter.IncX(normalizedCentredPoint);
+      centredSourceCoords.IncX(sourceCoordsStepSize);
+      centredSourceViewportCoords.IncX(sourceViewportCoordsStepSize);
+      ++tranBufferPos;
     }
   };
 

@@ -1,6 +1,7 @@
 #include "crystal_ball.h"
 
 #include "filter_fx/common_types.h"
+#include "goom_config.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -100,6 +101,8 @@ auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
       {  xSqDistMult,   ySqDistMult},
       {xSqDistOffset, ySqDistOffset}
   });
+
+  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto CrystalBall::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs

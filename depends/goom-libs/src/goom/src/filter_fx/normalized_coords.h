@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom_config.h"
 #include "goom_types.h"
 #include "point2d.h"
 #include "utils/math/misc.h"
@@ -15,8 +16,9 @@ class NormalizedCoords
 public:
   // IMPORTANT: Max coord must be 2.0F - other filter functions
   //            implicitly depend on this.
-  static constexpr float MAX_NORMALIZED_COORD = 2.0F;
-  static constexpr float MIN_NORMALIZED_COORD = -MAX_NORMALIZED_COORD;
+  static constexpr auto MIN_COORD   = -2.0F;
+  static constexpr auto MAX_COORD   = -MIN_COORD;
+  static constexpr auto COORD_WIDTH = MAX_COORD - MIN_COORD;
 
   constexpr explicit NormalizedCoords(const Point2dFlt& alreadyNormalized) noexcept;
   constexpr NormalizedCoords(float xAlreadyNormalized, float yAlreadyNormalized) noexcept;
@@ -25,6 +27,8 @@ public:
   [[nodiscard]] constexpr auto GetY() const noexcept -> float;
   constexpr auto SetX(float xNormalized) noexcept -> void;
   constexpr auto SetY(float yNormalized) noexcept -> void;
+
+  constexpr auto IncX(float val) noexcept -> void;
 
   constexpr auto operator+=(const NormalizedCoords& other) noexcept -> NormalizedCoords&;
   constexpr auto operator-=(const NormalizedCoords& other) noexcept -> NormalizedCoords&;
@@ -64,10 +68,6 @@ public:
   [[nodiscard]] constexpr auto GetXMinNormalizedCoordVal() const noexcept -> float;
   [[nodiscard]] constexpr auto GetYMinNormalizedCoordVal() const noexcept -> float;
 
-  constexpr auto Inc(NormalizedCoords& normalizedCoords) const noexcept -> void;
-  constexpr auto IncX(NormalizedCoords& normalizedCoords) const noexcept -> void;
-  constexpr auto IncY(NormalizedCoords& normalizedCoords) const noexcept -> void;
-
 private:
   const float m_xRatioOtherToNormalizedCoord;
   const float m_yRatioOtherToNormalizedCoord;
@@ -83,21 +83,40 @@ private:
       -> float;
 };
 
+class Viewport
+{
+public:
+  constexpr Viewport() noexcept;
+  constexpr Viewport(const NormalizedCoords& coords0, const NormalizedCoords& coords1) noexcept;
+
+  [[nodiscard]] constexpr auto GetViewportCoords(const NormalizedCoords& coords) const noexcept
+      -> NormalizedCoords;
+
+  [[nodiscard]] constexpr auto GetViewportWidth() const noexcept -> float;
+
+private:
+  static constexpr auto WORLD_WIDTH  = NormalizedCoords::COORD_WIDTH;
+  static constexpr auto WORLD_HEIGHT = WORLD_WIDTH;
+  float m_xOffset;
+  float m_yOffset;
+  float m_xScale;
+  float m_yScale;
+  float m_viewportWidth;
+};
+
 constexpr NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions& otherDimensions,
                                                                const float minOtherCoordVal,
                                                                const bool doNotScale) noexcept
-  : m_xRatioOtherToNormalizedCoord{(NormalizedCoords::MAX_NORMALIZED_COORD -
-                                    NormalizedCoords::MIN_NORMALIZED_COORD) /
+  : m_xRatioOtherToNormalizedCoord{(NormalizedCoords::COORD_WIDTH) /
                                    (doNotScale
                                         ? static_cast<float>(std::max(otherDimensions.GetWidth(),
                                                                       otherDimensions.GetHeight()) -
                                                              1)
                                         : static_cast<float>(otherDimensions.GetWidth() - 1))},
-    m_yRatioOtherToNormalizedCoord{
-        doNotScale
-            ? m_xRatioOtherToNormalizedCoord
-            : (NormalizedCoords::MAX_NORMALIZED_COORD - NormalizedCoords::MIN_NORMALIZED_COORD) /
-                  static_cast<float>(otherDimensions.GetHeight() - 1)},
+    m_yRatioOtherToNormalizedCoord{doNotScale
+                                       ? m_xRatioOtherToNormalizedCoord
+                                       : (NormalizedCoords::COORD_WIDTH) /
+                                             static_cast<float>(otherDimensions.GetHeight() - 1)},
     m_xRatioNormalizedToOtherCoord{1.0F / m_xRatioOtherToNormalizedCoord},
     m_yRatioNormalizedToOtherCoord{1.0F / m_yRatioOtherToNormalizedCoord},
     m_xMinNormalizedCoordVal{minOtherCoordVal * m_xRatioOtherToNormalizedCoord},
@@ -131,48 +150,27 @@ constexpr auto NormalizedCoordsConverter::NormalizedToOtherCoordsFlt(
 constexpr auto NormalizedCoordsConverter::OtherToNormalizedXCoord(
     const int32_t otherCoord) const noexcept -> float
 {
-  return NormalizedCoords::MIN_NORMALIZED_COORD +
+  return NormalizedCoords::MIN_COORD +
          (m_xRatioOtherToNormalizedCoord * static_cast<float>(otherCoord));
 }
 
 constexpr auto NormalizedCoordsConverter::OtherToNormalizedYCoord(
     const int32_t otherCoord) const noexcept -> float
 {
-  return NormalizedCoords::MIN_NORMALIZED_COORD +
+  return NormalizedCoords::MIN_COORD +
          (m_yRatioOtherToNormalizedCoord * static_cast<float>(otherCoord));
 }
 
 constexpr auto NormalizedCoordsConverter::NormalizedToOtherXCoordFlt(
     const float normalizedCoord) const noexcept -> float
 {
-  return m_xRatioNormalizedToOtherCoord *
-         (normalizedCoord - NormalizedCoords::MIN_NORMALIZED_COORD);
+  return m_xRatioNormalizedToOtherCoord * (normalizedCoord - NormalizedCoords::MIN_COORD);
 }
 
 constexpr auto NormalizedCoordsConverter::NormalizedToOtherYCoordFlt(
     const float normalizedCoord) const noexcept -> float
 {
-  return m_yRatioNormalizedToOtherCoord *
-         (normalizedCoord - NormalizedCoords::MIN_NORMALIZED_COORD);
-}
-
-constexpr auto NormalizedCoordsConverter::Inc(NormalizedCoords& normalizedCoords) const noexcept
-    -> void
-{
-  IncX(normalizedCoords);
-  IncY(normalizedCoords);
-}
-
-constexpr auto NormalizedCoordsConverter::IncX(NormalizedCoords& normalizedCoords) const noexcept
-    -> void
-{
-  normalizedCoords.m_fltCoords.x += m_xRatioOtherToNormalizedCoord;
-}
-
-constexpr auto NormalizedCoordsConverter::IncY(NormalizedCoords& normalizedCoords) const noexcept
-    -> void
-{
-  normalizedCoords.m_fltCoords.y += m_yRatioOtherToNormalizedCoord;
+  return m_yRatioNormalizedToOtherCoord * (normalizedCoord - NormalizedCoords::MIN_COORD);
 }
 
 constexpr NormalizedCoords::NormalizedCoords(const Point2dFlt& alreadyNormalized) noexcept
@@ -204,6 +202,11 @@ constexpr auto NormalizedCoords::SetX(const float xNormalized) noexcept -> void
 constexpr auto NormalizedCoords::SetY(const float yNormalized) noexcept -> void
 {
   m_fltCoords.y = yNormalized;
+}
+
+constexpr auto NormalizedCoords::IncX(const float val) noexcept -> void
+{
+  m_fltCoords.x += val;
 }
 
 inline auto NormalizedCoords::Equals(const NormalizedCoords& other) const noexcept -> bool
@@ -266,6 +269,41 @@ constexpr auto GetSqDistance(const NormalizedCoords& coords1,
                              const NormalizedCoords& coords2) noexcept -> float
 {
   return UTILS::MATH::SqDistance(coords1.GetX() - coords2.GetX(), coords1.GetY() - coords2.GetY());
+}
+
+constexpr Viewport::Viewport() noexcept
+  : Viewport{
+        {NormalizedCoords::MIN_COORD, NormalizedCoords::MIN_COORD},
+        {NormalizedCoords::MAX_COORD, NormalizedCoords::MAX_COORD}
+}
+{
+}
+
+constexpr Viewport::Viewport(const NormalizedCoords& coords0,
+                             const NormalizedCoords& coords1) noexcept
+  : m_xOffset{UTILS::MATH::HALF * (coords0.GetX() + coords1.GetX())},
+    m_yOffset{UTILS::MATH::HALF * (coords0.GetY() + coords1.GetY())},
+    m_xScale{(coords1.GetX() - coords0.GetX()) / WORLD_WIDTH},
+    m_yScale{(coords1.GetY() - coords0.GetY()) / WORLD_HEIGHT},
+    m_viewportWidth{m_xScale * WORLD_WIDTH}
+{
+  Expects(NormalizedCoords::MIN_COORD <= coords0.GetX());
+  Expects(NormalizedCoords::MIN_COORD <= coords0.GetY());
+  Expects(coords0.GetX() < coords1.GetX());
+  Expects(coords0.GetY() < coords1.GetY());
+  Expects(coords1.GetX() <= NormalizedCoords::MAX_COORD);
+  Expects(coords1.GetY() <= NormalizedCoords::MAX_COORD);
+}
+
+constexpr auto Viewport::GetViewportCoords(const NormalizedCoords& coords) const noexcept
+    -> NormalizedCoords
+{
+  return {m_xOffset + (m_xScale * coords.GetX()), m_yOffset + (m_yScale * coords.GetY())};
+}
+
+constexpr auto Viewport::GetViewportWidth() const noexcept -> float
+{
+  return m_viewportWidth;
 }
 
 } // namespace GOOM::FILTER_FX

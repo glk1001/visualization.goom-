@@ -4,9 +4,9 @@
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
-#include "logging.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
+#include "logging.h"
 #include "normalized_coords.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -30,17 +30,21 @@ FilterBuffersService::FilterBuffersService(
     const NormalizedCoordsConverter& normalizedCoordsConverter,
     std::unique_ptr<IZoomVector> zoomVector) noexcept
   : m_zoomVector{std::move(zoomVector)},
-    m_filterBuffers{parallel,
-                    goomInfo,
-                    normalizedCoordsConverter,
-                    [this](const NormalizedCoords& normalizedCoords)
-                    { return m_zoomVector->GetZoomInPoint(normalizedCoords); }}
+    m_filterBuffers{
+        parallel,
+        goomInfo,
+        normalizedCoordsConverter,
+        [this](const NormalizedCoords& normalizedCoords,
+               const NormalizedCoords& normalizedFilterViewportCoords)
+        { return m_zoomVector->GetZoomInPoint(normalizedCoords, normalizedFilterViewportCoords); }}
 {
 }
 
 auto FilterBuffersService::SetFilterBufferSettings(
     const ZoomFilterBufferSettings& filterBufferSettings) noexcept -> void
 {
+  m_filterBuffers.SetFilterViewport(filterBufferSettings.filterEffectViewport);
+
   UpdateTranLerpFactor(filterBufferSettings.tranLerpIncrement,
                        filterBufferSettings.tranLerpToMaxSwitchMult);
 }

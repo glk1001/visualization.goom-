@@ -41,7 +41,9 @@ public:
     TRAN_BUFFERS_READY,
   };
 
-  using ZoomPointFunc = std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords)>;
+  using ZoomPointFunc =
+      std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords,
+                                     const NormalizedCoords& normalizedFilterViewportCoords)>;
 
   ZoomFilterBuffers(UTILS::Parallel& parallel,
                     const PluginInfo& goomInfo,
@@ -55,6 +57,9 @@ public:
 
   [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
   auto SetBuffMidpoint(const Point2dInt& val) noexcept -> void;
+
+  [[nodiscard]] auto GetFilterViewport() const noexcept -> Viewport;
+  auto SetFilterViewport(const Viewport& val) noexcept -> void;
 
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
   auto SetTranLerpFactor(uint32_t val) noexcept -> void;
@@ -107,9 +112,10 @@ private:
   const uint32_t m_tranBuffStripeHeight       = m_dimensions.GetHeight() / NUM_STRIPE_GROUPS;
   FILTER_UTILS::ZoomTransformBuffers m_transformBuffers{m_dimensions, m_maxTranPoint};
 
-  Point2dInt m_buffMidpoint          = {0, 0};
-  NormalizedCoords m_normalizedMidPt = {0.0F, 0.0F};
-  bool m_filterSettingsHaveChanged   = false;
+  Point2dInt m_buffMidpoint             = {0, 0};
+  NormalizedCoords m_normalizedMidpoint = {0.0F, 0.0F};
+  Viewport m_filterViewport             = Viewport{};
+  bool m_filterSettingsHaveChanged      = false;
 
   uint32_t m_tranBuffYLineStart       = 0;
   TranBuffersState m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
@@ -132,8 +138,18 @@ inline auto ZoomFilterBuffers::GetBuffMidpoint() const noexcept -> Point2dInt
 
 inline auto ZoomFilterBuffers::SetBuffMidpoint(const Point2dInt& val) noexcept -> void
 {
-  m_buffMidpoint    = val;
-  m_normalizedMidPt = m_normalizedCoordsConverter.OtherToNormalizedCoords(m_buffMidpoint);
+  m_buffMidpoint       = val;
+  m_normalizedMidpoint = m_normalizedCoordsConverter.OtherToNormalizedCoords(m_buffMidpoint);
+}
+
+inline auto ZoomFilterBuffers::GetFilterViewport() const noexcept -> Viewport
+{
+  return m_filterViewport;
+}
+
+inline auto ZoomFilterBuffers::SetFilterViewport(const Viewport& val) noexcept -> void
+{
+  m_filterViewport = val;
 }
 
 inline auto ZoomFilterBuffers::GetTranBuffersState() const noexcept -> TranBuffersState

@@ -17,14 +17,16 @@ public:
   auto operator=(const IZoomInCoefficientsEffect&) -> IZoomInCoefficientsEffect& = default;
   auto operator=(IZoomInCoefficientsEffect&&) -> IZoomInCoefficientsEffect&      = default;
 
-  virtual auto SetRandomParams() -> void = 0;
+  virtual auto SetRandomParams() noexcept -> void = 0;
+  [[nodiscard]] virtual auto GetZoomInCoefficientsViewport() const noexcept -> Viewport;
 
   auto SetBaseZoomInCoeffs(const Point2dFlt& baseZoomInCoeffs) noexcept -> void;
 
   [[nodiscard]] virtual auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                                   float sqDistFromZero) const -> Point2dFlt = 0;
+                                                   float sqDistFromZero) const noexcept
+      -> Point2dFlt = 0;
 
-  [[nodiscard]] virtual auto GetZoomInCoefficientsEffectNameValueParams() const
+  [[nodiscard]] virtual auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
       -> GOOM::UTILS::NameValuePairs = 0;
 
 protected:
@@ -34,6 +36,11 @@ protected:
 private:
   Point2dFlt m_baseZoomInCoeffs{};
 };
+
+inline auto IZoomInCoefficientsEffect::GetZoomInCoefficientsViewport() const noexcept -> Viewport
+{
+  return Viewport{};
+}
 
 inline auto IZoomInCoefficientsEffect::GetBaseZoomInCoeffs() const noexcept -> const Point2dFlt&
 {

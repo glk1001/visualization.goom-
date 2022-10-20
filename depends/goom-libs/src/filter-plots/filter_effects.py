@@ -180,7 +180,7 @@ class Mobius(FilterEffectFunction):
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
         return self.base_zoom_coeffs + self.amplitude * (
-                    (self.a * z + self.b) / (self.c * z + self.d))
+                (self.a * z + self.b) / (self.c * z + self.d))
 
 
 class ExpReciprocal(FilterEffectFunction):
@@ -188,23 +188,26 @@ class ExpReciprocal(FilterEffectFunction):
         super().__init__("Exp Reciprocal")
         self.amplitude = 0.1
         self.factor = 2.0
+        self.recipr_exp = 3.0
         self.offset = complex(0.0, 0.0)
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
-        return self.base_zoom_coeffs + (self.amplitude * np.exp(1.0 / ((self.factor*(z + self.offset))**2)))
+        return self.base_zoom_coeffs + (self.amplitude * np.exp(
+            1.0 / ((self.factor * (z + self.offset)) ** self.recipr_exp)))
 
 
 class Sine(FilterEffectFunction):
     def __init__(self):
         super().__init__("Sine")
         self.amplitude = 0.1
-        self.freq = 2.0
+        self.freq = 12.0
         self.offset = complex(0, 0)
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
         freq_factor = 2
         angle = freq_factor * absolute_sq_z
-        return self.base_zoom_coeffs + (self.amplitude * np.sin(angle) * np.sin(self.freq * (z + self.offset)))
+        return self.base_zoom_coeffs + (
+                    self.amplitude * np.sin(angle) * np.sin(self.freq * (z + self.offset)))
 
 
 class StrangeSine(FilterEffectFunction):
@@ -224,3 +227,29 @@ class Power(FilterEffectFunction):
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
         return self.base_zoom_coeffs + z ** 6 + 1
+
+
+class MandelbrotSet(FilterEffectFunction):
+    def __init__(self):
+        super().__init__("Mandelbrot Set")
+        self.amplitude = 4.0
+        self.max_iterations: int = 20
+        self.escape_radius: float = 2.0
+
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        return self.base_zoom_coeffs + self.amplitude * self.stability(z, smooth=True, clamp=True) * z
+
+    def stability(self, c: np.ndarray, smooth=False, clamp=True) -> np.ndarray:
+        get_escape_count_func = np.vectorize(self.escape_count)
+        value = get_escape_count_func(c, smooth) / self.max_iterations
+        return np.clip(value, 0.0, 1.0)
+
+    def escape_count(self, c: complex, smooth=False) -> int | float:
+        z = 0
+        for iteration in range(self.max_iterations):
+            z = z ** 2 + c
+            if np.absolute(z) > self.escape_radius:
+                if smooth:
+                    return iteration + 1.0 - np.log(np.log(abs(z))) / np.log(2)
+                return iteration
+        return self.max_iterations

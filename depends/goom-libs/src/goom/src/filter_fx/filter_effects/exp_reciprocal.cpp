@@ -2,6 +2,7 @@
 
 //#undef NO_LOGGING
 
+#include "filter_fx/normalized_coords.h"
 #include "logging.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -21,14 +22,14 @@ using UTILS::MATH::GetSawTooth;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::TWO_PI;
 
+static constexpr auto DEFAULT_VIEWPORT = Viewport{};
+
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.01F, 0.11F};
 
-static constexpr auto DEFAULT_ROTATE = std::complex{0.0F, 0.0F};
-static constexpr auto ROTATE_RANGE   = IGoomRand::NumberRange<float>{0.0F, TWO_PI};
-
-static constexpr auto DEFAULT_MAGNIFY = 1.0F;
-static constexpr auto MAGNIFY_RANGE   = IGoomRand::NumberRange<float>{0.95F, 1.05F};
+static constexpr auto DEFAULT_MAGNIFY_AND_ROTATE = std::complex{0.0F, 0.0F};
+static constexpr auto ROTATE_RANGE               = IGoomRand::NumberRange<float>{0.0F, TWO_PI};
+static constexpr auto MAGNIFY_RANGE              = IGoomRand::NumberRange<float>{0.95F, 1.05F};
 
 static constexpr auto DEFAULT_RECIPROCAL_EXPONENT = 3.0F;
 static constexpr auto RECIPROCAL_EXPONENT_RANGE   = IGoomRand::NumberRange<uint32_t>{3, 6};
@@ -44,9 +45,9 @@ static constexpr auto SAWTOOTH_PHASE_PERIOD_RANGE     = IGoomRand::NumberRange<f
 ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_params{
+        DEFAULT_VIEWPORT,
         {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-        DEFAULT_ROTATE,
-        DEFAULT_MAGNIFY,
+        DEFAULT_MAGNIFY_AND_ROTATE,
         DEFAULT_RECIPROCAL_EXPONENT,
         false,
         false,
@@ -58,6 +59,11 @@ ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
 
 auto ExpReciprocal::SetRandomParams() noexcept -> void
 {
+  const auto viewport = Viewport{
+      {0.0F, 0.0F},
+      {1.0F, 1.0F}
+  };
+
   const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
   const auto yAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
 
@@ -76,9 +82,9 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
       not usePhaseContours ? 1.0F : m_goomRand.GetRandInRange(SAWTOOTH_PHASE_PERIOD_RANGE);
 
   SetParams({
+      viewport,
       {xAmplitude, yAmplitude},
-      rotate,
-      magnify,
+      magnify * rotate,
       reciprocalExponent,
       useModulusContours,
       usePhaseContours,
@@ -90,6 +96,8 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
 auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
                                           const float sqDistFromZero) const noexcept -> Point2dFlt
 {
+  Expects(GetZoomInCoefficientsViewport().GetViewportWidth() != NormalizedCoords::COORD_WIDTH);
+
   if (sqDistFromZero < UTILS::MATH::SMALL_FLOAT)
   {
     return GetBaseZoomInCoeffs();
@@ -99,8 +107,7 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
   static constexpr auto ONE = static_cast<FltCalcType>(1.0F);
 
   const auto zOffset = std::complex<FltCalcType>{};
-  const auto z       = static_cast<FltCalcType>(m_params.magnify) *
-                 static_cast<std::complex<FltCalcType>>(m_params.rotate) *
+  const auto z       = static_cast<std::complex<FltCalcType>>(m_params.magnifyAndRotate) *
                  (std::complex{static_cast<FltCalcType>(coords.GetX()),
                                static_cast<FltCalcType>(coords.GetY())} +
                   zOffset);
@@ -150,8 +157,9 @@ auto ExpReciprocal::GetZoomInCoefficientsEffectNameValueParams() const noexcept 
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "exp reciprocal"});
   return {
       GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
-      GetPair(fullParamGroup, "rotate", Point2dFlt{m_params.rotate.real(), m_params.rotate.imag()}),
-      GetPair(fullParamGroup, "magnify", m_params.magnify),
+      GetPair(fullParamGroup,
+              "magnify/rotate",
+              Point2dFlt{m_params.magnifyAndRotate.real(), m_params.magnifyAndRotate.imag()}),
       GetPair(fullParamGroup, "recipr exp", m_params.reciprocalExponent),
       GetPair(fullParamGroup, "sawtoothModulusPeriod", m_params.sawtoothModulusPeriod),
       GetPair(fullParamGroup, "sawtoothPhasePeriod", m_params.sawtoothPhasePeriod),

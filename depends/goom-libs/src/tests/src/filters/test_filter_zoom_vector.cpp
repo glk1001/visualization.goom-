@@ -12,7 +12,6 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
-#include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand.h"
 #include "utils/math/misc.h"
@@ -24,7 +23,6 @@ namespace GOOM::UNIT_TESTS
 {
 
 using FILTER_FX::FilterZoomVector;
-using FILTER_FX::IZoomInCoefficientsEffect;
 using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::Vitesse;
@@ -115,8 +113,10 @@ TEST_CASE("FilterZoomVector")
     const auto expectedZoomInPoint = zoomInFactor * coords;
 
     filterZoomVector.SetFilterSettings(filterSettings);
-    REQUIRE(filterZoomVector.GetZoomInPoint(coords).GetX() == Approx(expectedZoomInPoint.GetX()));
-    REQUIRE(filterZoomVector.GetZoomInPoint(coords).GetY() == Approx(expectedZoomInPoint.GetY()));
+    REQUIRE(filterZoomVector.GetZoomInPoint(coords, coords).GetX() ==
+            Approx(expectedZoomInPoint.GetX()));
+    REQUIRE(filterZoomVector.GetZoomInPoint(coords, coords).GetY() ==
+            Approx(expectedZoomInPoint.GetY()));
   }
 
   SECTION("Non-zero Speed")
@@ -147,7 +147,7 @@ TEST_CASE("FilterZoomVector")
         UNSCOPED_INFO("zoomInFactor = " << zoomInFactor);
 
         filterZoomVector.SetFilterSettings(filterSettings);
-        const auto zoomInPoint = filterZoomVector.GetZoomInPoint(coords);
+        const auto zoomInPoint = filterZoomVector.GetZoomInPoint(coords, coords);
         REQUIRE(zoomInPoint.GetX() == Approx(expectedZoomInPoint.GetX()));
         REQUIRE(zoomInPoint.GetY() == Approx(expectedZoomInPoint.GetY()));
       }

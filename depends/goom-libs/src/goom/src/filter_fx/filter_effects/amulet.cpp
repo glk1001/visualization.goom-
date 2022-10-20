@@ -1,5 +1,6 @@
 #include "amulet.h"
 
+#include "goom_config.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -26,6 +27,8 @@ auto Amulet::SetRandomParams() noexcept -> void
                               : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
 
   SetParams({xAmplitude, yAmplitude});
+
+  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto Amulet::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs

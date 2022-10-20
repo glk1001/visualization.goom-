@@ -26,12 +26,14 @@ public:
                    const FILTER_EFFECTS::ZoomVectorEffects::GetAfterEffectsFunc& getAfterEffects =
                        FILTER_EFFECTS::ZoomVectorEffects::GetStandardAfterEffects) noexcept;
 
-  auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) -> void override;
+  auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept
+      -> void override;
 
-  [[nodiscard]] auto GetZoomInPoint(const NormalizedCoords& coords) const
+  [[nodiscard]] auto GetZoomInPoint(const NormalizedCoords& coords,
+                                    const NormalizedCoords& filterViewportCoords) const noexcept
       -> NormalizedCoords override;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> UTILS::NameValuePairs override;
 
 private:

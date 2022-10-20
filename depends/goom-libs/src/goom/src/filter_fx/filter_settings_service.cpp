@@ -50,7 +50,7 @@ static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::EXP_RECIPROCAL_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE2;
-static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE0;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WATER_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
@@ -798,7 +798,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                RotationAdjustments{},
             }
         },
-        {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
+        {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT, DEFAULT_FILTER_VIEWPORT},
     },
     m_weightedFilterEvents{
         m_goomRand,
@@ -894,24 +894,23 @@ auto FilterSettingsService::NotifyUpdatedFilterEffectsSettings() -> void
   m_randomizedAfterEffects->CheckForPendingOffTimers();
 }
 
-auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
-{
-  SetDefaultSettings();
-  SetRandomZoomMidpoint();
-  SetFilterModeExtraEffects();
-  UpdateFilterSettingsFromExtraEffects();
-}
-
 auto FilterSettingsService::SetDefaultSettings() -> void
 {
   m_filterSettings.filterEffectsSettings.zoomInCoefficientsEffect = GetZoomInCoefficientsEffect();
   m_filterSettings.filterEffectsSettings.zoomMidpoint             = m_screenMidpoint;
+  m_filterSettings.filterBufferSettings.filterEffectViewport      = Viewport{};
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
   m_randomizedAfterEffects->SetDefaults();
 }
 
-inline auto FilterSettingsService::SetFilterModeExtraEffects() -> void
+auto FilterSettingsService::SetFilterModeRandomViewport() -> void
+{
+  m_filterSettings.filterBufferSettings.filterEffectViewport =
+      m_filterModeData[m_filterMode].zoomInCoefficientsEffect->GetZoomInCoefficientsViewport();
+}
+
+auto FilterSettingsService::SetFilterModeExtraEffects() -> void
 {
   SetRandomizedExtraEffects();
   SetWaveModeExtraEffects();
@@ -924,7 +923,7 @@ auto FilterSettingsService::ResetRandomExtraEffects() -> void
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
 }
 
-inline auto FilterSettingsService::SetRandomizedExtraEffects() -> void
+auto FilterSettingsService::SetRandomizedExtraEffects() -> void
 {
   const auto& modeInfo = m_filterModeData[m_filterMode];
 
@@ -953,19 +952,11 @@ auto FilterSettingsService::SetWaveModeExtraEffects() -> void
   }
 }
 
-inline auto FilterSettingsService::UpdateFilterSettingsFromExtraEffects() -> void
+auto FilterSettingsService::UpdateFilterSettingsFromExtraEffects() -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
   m_randomizedAfterEffects->UpdateFilterSettingsFromStates(
       m_filterSettings.filterEffectsSettings.afterEffectsSettings);
-}
-
-auto FilterSettingsService::SetMaxZoomInCoeff() -> void
-{
-  static constexpr auto MIN_SPEED_FACTOR = 0.5F;
-  static constexpr auto MAX_SPEED_FACTOR = 1.0F;
-  m_filterSettings.filterEffectsSettings.maxZoomInCoeff =
-      m_goomRand.GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_ZOOM_IN_COEFF;
 }
 
 auto FilterSettingsService::SetBaseZoomInCoeffFactorMultiplier() noexcept -> void

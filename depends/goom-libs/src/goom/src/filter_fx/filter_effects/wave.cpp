@@ -146,6 +146,8 @@ auto Wave::SetWaveModeSettings(
              amplitude,
              periodicFactor,
              reducerCoeff});
+
+  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,

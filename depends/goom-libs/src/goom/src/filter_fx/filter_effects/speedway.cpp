@@ -68,6 +68,8 @@ auto Speedway::SetMode2RandomParams() noexcept -> void
                               : m_goomRand.GetRandInRange(AMPLITUDE_RANGE.yRange);
 
   SetParams({xAmplitude, yAmplitude});
+
+  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto Speedway::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
