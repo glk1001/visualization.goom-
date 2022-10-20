@@ -14,7 +14,7 @@ class Tentacle2D
   using XAndYVectors = std::pair<std::vector<double>&, std::vector<double>&>;
 
 public:
-  static constexpr uint32_t MIN_NUM_NODES = 10U;
+  static constexpr uint32_t MIN_NUM_NODES = 5U;
 
   struct LinearDimensions
   {

@@ -50,9 +50,9 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
   return {HIGHEST_BASE_Y_WEIGHT, 1.0F - HIGHEST_BASE_Y_WEIGHT};
 }
 
-static constexpr auto TENT2D_X_MIN          = 0.0;
-static constexpr auto TENT2D_Y_MIN          = 0.065736;
-static constexpr auto TENT2D_Y_MAX          = 10000.0;
+static constexpr auto TENTACLE_2D_X_MIN     = 0.0;
+static constexpr auto TENTACLE_2D_Y_MIN     = 0.065736;
+static constexpr auto TENTACLE_2D_Y_MAX     = 10000.0;
 static constexpr auto TENTACLE_LENGTH       = 120.0F;
 static constexpr auto NUM_TENTACLE_NODES    = 100U;
 static constexpr auto ITER_ZERO_LERP_FACTOR = 0.9F;
@@ -103,16 +103,22 @@ auto TentacleDriver::GetTentacles(const CirclesTentacleLayout& tentacleLayout) c
 
 auto TentacleDriver::CreateNewTentacle2D() const noexcept -> std::unique_ptr<Tentacle2D>
 {
-  const auto tentacleLen = m_tentacleParams.length;
+  const auto tentacleLen = m_tentacleParams.length * m_goomRand.GetRandInRange(1.0F, 1.1F);
   Ensures(tentacleLen >= 1.0F);
-  const auto tent2dXMax = TENT2D_X_MIN + static_cast<double>(tentacleLen);
+  const auto tent2dXMax = TENTACLE_2D_X_MIN + static_cast<double>(tentacleLen);
   Ensures(tent2dXMax >= 1.0);
 
   const auto dimensions = Tentacle2D::Dimensions{
-      {TENT2D_X_MIN,   tent2dXMax},
-      {TENT2D_Y_MIN, TENT2D_Y_MAX},
+      {TENTACLE_2D_X_MIN,        tent2dXMax},
+      {TENTACLE_2D_Y_MIN, TENTACLE_2D_Y_MAX},
   };
-  const auto baseYWeights = GetMatchingBaseYWeights(m_tentacleParams.iterZeroYValWaveFreq);
+
+  static constexpr auto MIN_BASE_Y_WEIGHT_FACTOR = 0.8F;
+  static constexpr auto MAX_BASE_Y_WEIGHT_FACTOR = 1.1F;
+  auto baseYWeights = GetMatchingBaseYWeights(m_tentacleParams.iterZeroYValWaveFreq);
+  baseYWeights.previous *=
+      m_goomRand.GetRandInRange(MIN_BASE_Y_WEIGHT_FACTOR, MAX_BASE_Y_WEIGHT_FACTOR);
+  baseYWeights.current = 1.0F - baseYWeights.previous;
 
   return std::make_unique<Tentacle2D>(m_tentacleParams.numNodes, dimensions, baseYWeights);
 }
