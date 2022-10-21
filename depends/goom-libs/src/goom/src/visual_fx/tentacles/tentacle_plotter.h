@@ -40,7 +40,7 @@ private:
   static constexpr auto MAX_CAMERA_X_OFFSET = +10.0F;
   static constexpr auto MIN_CAMERA_Y_OFFSET = -10.0F;
   static constexpr auto MAX_CAMERA_Y_OFFSET = +10.0F;
-  static constexpr auto CAMERA_Z_OFFSET     = +20.0F;
+  static constexpr auto CAMERA_Z_OFFSET     = -1.0F;
   V3dFlt m_cameraPosition{0.0F, 0.0F, CAMERA_Z_OFFSET};
   DRAW::MultiplePixels m_dominantColors{};
 

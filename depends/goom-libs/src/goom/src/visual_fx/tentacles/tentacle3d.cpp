@@ -90,10 +90,12 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum, const MultiplePixels& domi
           GetMainColor(dominantColors), mainSegmentColor, m_mainColorSegmentMixT),
       IColorMap::GetColorMix(GetLowColor(dominantColors), lowSegmentColor, m_lowColorSegmentMixT)};
 
-  if (static constexpr auto T_CUT_OFF = 0.9F;
-      (std::abs(GetStartPos().x) <= START_SMALL_X) or (t > T_CUT_OFF))
+  const auto fracFinished =
+      static_cast<float>(nodeNum) / static_cast<float>(Get2DTentacle().GetNumNodes());
+  if (static constexpr auto T_CUT_OFF = 0.7F;
+      (std::abs(GetStartPos().x) <= START_SMALL_X) or (fracFinished > T_CUT_OFF))
   {
-    const auto brightnessCut = Sq(t);
+    const auto brightnessCut = 0.8F * Sq(Sq(t));
     return {GetBrighterColor(brightnessCut, GetMainColor(mixedColors)),
             GetBrighterColor(brightnessCut, GetLowColor(mixedColors))};
   }
@@ -126,7 +128,7 @@ auto Tentacle3D::GetTentacleVertices(const V3dFlt& startPosOffset) const -> std:
   const auto xn = m_endPos.x + endPosOffset.x;
   const auto y0 = m_startPos.y + startPosOffset.y - static_cast<float>(yVec2D[0]);
   const auto yn = m_endPos.y + endPosOffset.y - static_cast<float>(yVec2D[0]);
-  const auto z0 = m_startPos.z - static_cast<float>(xVec2D[0]);
+  const auto z0 = m_startPos.z + startPosOffset.z - static_cast<float>(xVec2D[0]);
 
   const auto xStep = (xn - x0) / static_cast<float>(n - 1);
   const auto yStep = (yn - y0) / static_cast<float>(n - 1);
