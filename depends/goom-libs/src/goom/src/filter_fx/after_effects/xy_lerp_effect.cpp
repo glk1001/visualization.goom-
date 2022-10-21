@@ -15,27 +15,26 @@ using UTILS::EnumToString;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::Weights;
 
 static constexpr auto DEFAULT_T_FREQ   = 1.0F;
-static constexpr auto T_FREQ_RANGE     = IGoomRand::NumberRange<float>{1.0F, 40.0F};
+static constexpr auto T_FREQ_RANGE     = IGoomRand::NumberRange<float>{1.0F, 10.0F};
 static constexpr auto PROB_FLIP_Y_SIGN = 0.5F;
 static constexpr auto PROB_FLIP_XY     = 0.5F;
 
+static constexpr auto MODE0_WEIGHT = 10.0F;
+static constexpr auto MODE1_WEIGHT = 10.0F;
 static constexpr auto MODE2_WEIGHT = 10.0F;
-static constexpr auto MODE3_WEIGHT = 10.0F;
-static constexpr auto MODE4_WEIGHT = 10.0F;
-static constexpr auto MODE5_WEIGHT = 10.0F;
+static constexpr auto MODE3_WEIGHT = 10000000000.0F;
 
 XYLerpEffect::XYLerpEffect(const IGoomRand& goomRand)
   : m_goomRand{goomRand},
     m_modeWeights{
         m_goomRand,
         {
-            {Modes::MODE0, MODE2_WEIGHT},
-            {Modes::MODE1, MODE3_WEIGHT},
-            {Modes::MODE2, MODE4_WEIGHT},
-            {Modes::MODE3, MODE5_WEIGHT},
+            {Modes::MODE0, MODE0_WEIGHT},
+            {Modes::MODE1, MODE1_WEIGHT},
+            {Modes::MODE2, MODE2_WEIGHT},
+            {Modes::MODE3, MODE3_WEIGHT},
         }
     },
     m_params{Modes::MODE0, DEFAULT_T_FREQ, +1.0F, false}

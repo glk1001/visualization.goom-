@@ -77,24 +77,24 @@ inline auto XYLerpEffect::GetVelocity([[maybe_unused]] const float sqDistFromZer
 inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoords& velocity) const
     -> float
 {
-  static constexpr auto MODE2_OFFSET     = 5.5F;
-  static constexpr auto MODE2_FREQ       = 2.0F;
-  static constexpr auto MODE3_MIN_FACTOR = 0.99F;
-  static constexpr auto MODE3_MAX_FACTOR = 1.01F;
+  static constexpr auto MODE0_OFFSET     = 5.5F;
+  static constexpr auto MODE0_FREQ       = 2.0F;
+  static constexpr auto MODE1_MIN_FACTOR = 0.99F;
+  static constexpr auto MODE1_MAX_FACTOR = 1.01F;
 
   switch (m_params.mode)
   {
     case Modes::MODE0:
       return std::cos((m_params.tFreq * sqDistFromZero) +
-                      (MODE2_OFFSET + std::sin(MODE2_FREQ * sqDistFromZero)));
+                      (MODE0_OFFSET + std::sin(MODE0_FREQ * sqDistFromZero)));
     case Modes::MODE1:
       return std::cos((m_params.tFreq * sqDistFromZero) *
-                      m_goomRand.GetRandInRange(MODE3_MIN_FACTOR, MODE3_MAX_FACTOR));
+                      m_goomRand.GetRandInRange(MODE1_MIN_FACTOR, MODE1_MAX_FACTOR));
     case Modes::MODE2:
-      return -(2.0F / UTILS::MATH::PI) *
+      return -(1.0F / UTILS::MATH::HALF_PI) *
              std::atan(std::tan(UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));
     case Modes::MODE3:
-      return std::abs(std::atan2(velocity.GetY(), velocity.GetX()) / UTILS::MATH::PI);
+      return (1.0F / UTILS::MATH::HALF_PI) * std::abs(std::atan2(velocity.GetY(), velocity.GetX()));
     default:
       FailFast();
       return 0.0F;
