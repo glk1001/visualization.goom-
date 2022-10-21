@@ -51,8 +51,8 @@ static constexpr auto SQ_DIST_OFFSET_RANGE_MODE1 = SqDistOffsetRange{
     {0.1F, 1.01F},
 };
 static constexpr auto SQ_DIST_OFFSET_RANGE_MODE2 = SqDistOffsetRange{
-    {0.3F, 2.01F},
-    {0.3F, 2.01F},
+    {0.3F, 1.11F},
+    {0.3F, 1.11F},
 };
 
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 0.50F;
