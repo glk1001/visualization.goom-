@@ -14,6 +14,7 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 
 using STD20::pi;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::PI;
 using UTILS::MATH::Sq;
 using UTILS::MATH::THIRD_PI;
 using UTILS::MATH::TWO_PI;
@@ -226,10 +227,10 @@ auto FireworksStarType::GetRandomizedStarPathAngle(
 
 auto RainStarType::GetRandomizedStarPathAngle(const Point2dInt& startPos) const noexcept -> float
 {
-  static constexpr auto MIN_ANGLE     = 0.05F * pi;
+  static constexpr auto MIN_ANGLE     = 0.05F * PI;
   static constexpr auto MAX_MIN_ANGLE = THIRD_PI;
-  static constexpr auto MIN_MAX_ANGLE = MAX_MIN_ANGLE + (0.1F * pi);
-  static constexpr auto MAX_ANGLE     = pi - MIN_ANGLE;
+  static constexpr auto MIN_MAX_ANGLE = MAX_MIN_ANGLE + (0.1F * PI);
+  static constexpr auto MAX_ANGLE     = PI - MIN_ANGLE;
 
   const auto tLerp    = std::fabs((0.5F * GetXMax()) - static_cast<float>(startPos.x)) / GetXMax();
   const auto minAngle = STD20::lerp(MIN_ANGLE, MAX_MIN_ANGLE, tLerp);
@@ -241,10 +242,10 @@ auto RainStarType::GetRandomizedStarPathAngle(const Point2dInt& startPos) const 
 auto FountainStarType::GetRandomizedStarPathAngle(const Point2dInt& startPos) const noexcept
     -> float
 {
-  static constexpr auto MIN_ANGLE     = 1.05F * pi;
-  static constexpr auto MAX_MIN_ANGLE = pi + THIRD_PI;
-  static constexpr auto MIN_MAX_ANGLE = MAX_MIN_ANGLE + (0.1F * pi);
-  static constexpr auto MAX_ANGLE     = TWO_PI - (MIN_ANGLE - pi);
+  static constexpr auto MIN_ANGLE     = 1.05F * PI;
+  static constexpr auto MAX_MIN_ANGLE = PI + THIRD_PI;
+  static constexpr auto MIN_MAX_ANGLE = MAX_MIN_ANGLE + (0.1F * PI);
+  static constexpr auto MAX_ANGLE     = TWO_PI - (MIN_ANGLE - PI);
 
   const auto tLerp    = std::fabs((0.5F * GetXMax()) - static_cast<float>(startPos.x)) / GetXMax();
   const auto minAngle = STD20::lerp(MIN_ANGLE, MAX_MIN_ANGLE, tLerp);

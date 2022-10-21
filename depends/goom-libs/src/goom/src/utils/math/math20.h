@@ -11,7 +11,9 @@
 
 namespace STD20
 {
-static constexpr auto pi = 3.14159265358979323846264F;
+template<typename T>
+inline constexpr auto pi_v = static_cast<T>(3.14159265358979323846264);
+inline constexpr double pi = pi_v<double>;
 
 template<typename _Tp>
 constexpr _Tp midpoint(_Tp __a, _Tp __b) noexcept

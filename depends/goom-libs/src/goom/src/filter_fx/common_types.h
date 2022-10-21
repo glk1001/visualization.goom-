@@ -5,16 +5,14 @@
 namespace GOOM::FILTER_FX
 {
 
-struct Amplitude
+template<typename T>
+struct Amplitude_t
 {
-  float x;
-  float y;
+  T x;
+  T y;
 };
-struct IntAmplitude
-{
-  int32_t x;
-  int32_t y;
-};
+using Amplitude    = Amplitude_t<float>;
+using IntAmplitude = Amplitude_t<int32_t>;
 struct FrequencyFactor
 {
   float x;

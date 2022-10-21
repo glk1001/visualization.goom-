@@ -41,6 +41,7 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::ISimplePath;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
+using UTILS::MATH::PI;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
 using UTILS::MATH::THIRD_PI;
@@ -454,8 +455,8 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
     const auto yFrom    = radius * sinAngle;
     const auto fromPos  = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xFrom)),
                                               static_cast<int32_t>(std::round(yFrom))};
-    const auto xTo      = radius * std::cos(pi + angle);
-    const auto yTo      = radius * std::sin(pi + angle);
+    const auto xTo      = radius * std::cos(PI + angle);
+    const auto yTo      = radius * std::sin(PI + angle);
     const auto toPos    = middlePos + Vec2dInt{static_cast<int32_t>(std::round(xTo)),
                                             static_cast<int32_t>(std::round(yTo))};
 

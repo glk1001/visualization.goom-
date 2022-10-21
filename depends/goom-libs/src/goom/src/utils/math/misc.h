@@ -8,15 +8,16 @@
 
 namespace GOOM::UTILS::MATH
 {
-static constexpr auto HALF = 1.0F / 2.0F;
+inline constexpr auto HALF = 1.0F / 2.0F;
 
-static constexpr auto TWO_PI   = 2.0F * STD20::pi;
-static constexpr auto HALF_PI  = 0.5F * STD20::pi;
-static constexpr auto THIRD_PI = STD20::pi / 3.0F;
+inline constexpr auto PI       = STD20::pi_v<float>;
+inline constexpr auto TWO_PI   = 2.0F * PI;
+inline constexpr auto HALF_PI  = 0.5F * PI;
+inline constexpr auto THIRD_PI = PI / 3.0F;
 
-static constexpr auto DEGREES_90  = 90.0F;
-static constexpr auto DEGREES_180 = 180.0F;
-static constexpr auto DEGREES_360 = 360.0F;
+inline constexpr auto DEGREES_90  = 90.0F;
+inline constexpr auto DEGREES_180 = 180.0F;
+inline constexpr auto DEGREES_360 = 360.0F;
 
 [[nodiscard]] constexpr auto ToRadians(const float degrees) -> float
 {
@@ -97,7 +98,7 @@ template<typename T>
   Expects(n > 0);
 
   auto log2 = static_cast<T>(0);
-  auto m = n;
+  auto m    = n;
   while (m >= static_cast<T>(2))
   {
     m = m >> 1U;
@@ -114,7 +115,7 @@ template<typename T>
   return HALF + (tDivPeriod - std::floor(HALF + tDivPeriod));
 }
 
-static constexpr auto SMALL_FLOAT = 0.00001F;
+inline constexpr auto SMALL_FLOAT = 0.00001F;
 
 [[nodiscard]] inline bool FloatsEqual(const float x,
                                       const float y,
@@ -169,30 +170,30 @@ private:
 };
 
 template<typename T>
-static constexpr auto FRAC_HALF = Fraction<T>{static_cast<T>(1), static_cast<T>(2)};
-static constexpr auto I_HALF    = FRAC_HALF<int32_t>;
-static constexpr auto U_HALF    = FRAC_HALF<uint32_t>;
-static constexpr auto S_HALF    = FRAC_HALF<size_t>;
+inline constexpr auto FRAC_HALF = Fraction<T>{static_cast<T>(1), static_cast<T>(2)};
+inline constexpr auto I_HALF    = FRAC_HALF<int32_t>;
+inline constexpr auto U_HALF    = FRAC_HALF<uint32_t>;
+inline constexpr auto S_HALF    = FRAC_HALF<size_t>;
 
 template<typename T>
-static constexpr auto FRAC_QUARTER = Fraction<T>{static_cast<T>(1), static_cast<T>(4)};
-static constexpr auto I_QUARTER    = FRAC_QUARTER<int32_t>;
-static constexpr auto U_QUARTER    = FRAC_QUARTER<uint32_t>;
+inline constexpr auto FRAC_QUARTER = Fraction<T>{static_cast<T>(1), static_cast<T>(4)};
+inline constexpr auto I_QUARTER    = FRAC_QUARTER<int32_t>;
+inline constexpr auto U_QUARTER    = FRAC_QUARTER<uint32_t>;
 
 template<typename T>
-static constexpr auto FRAC_THREE_QUARTERS = Fraction<T>{static_cast<T>(3), static_cast<T>(4)};
-static constexpr auto I_THREE_QUARTERS    = FRAC_THREE_QUARTERS<int32_t>;
-static constexpr auto U_THREE_QUARTERS    = FRAC_THREE_QUARTERS<uint32_t>;
+inline constexpr auto FRAC_THREE_QUARTERS = Fraction<T>{static_cast<T>(3), static_cast<T>(4)};
+inline constexpr auto I_THREE_QUARTERS    = FRAC_THREE_QUARTERS<int32_t>;
+inline constexpr auto U_THREE_QUARTERS    = FRAC_THREE_QUARTERS<uint32_t>;
 
 template<typename T>
-static constexpr auto FRAC_THIRD = Fraction<T>{static_cast<T>(1), static_cast<T>(3)};
-static constexpr auto I_THIRD    = FRAC_THIRD<int32_t>;
-static constexpr auto U_THIRD    = FRAC_THIRD<uint32_t>;
+inline constexpr auto FRAC_THIRD = Fraction<T>{static_cast<T>(1), static_cast<T>(3)};
+inline constexpr auto I_THIRD    = FRAC_THIRD<int32_t>;
+inline constexpr auto U_THIRD    = FRAC_THIRD<uint32_t>;
 
 template<typename T>
-static constexpr auto FRAC_FIFTH = Fraction<T>{static_cast<T>(1), static_cast<T>(5)};
-static constexpr auto I_FIFTH    = FRAC_FIFTH<int32_t>;
-static constexpr auto U_FIFTH    = FRAC_FIFTH<uint32_t>;
+inline constexpr auto FRAC_FIFTH = Fraction<T>{static_cast<T>(1), static_cast<T>(5)};
+inline constexpr auto I_FIFTH    = FRAC_FIFTH<int32_t>;
+inline constexpr auto U_FIFTH    = FRAC_FIFTH<uint32_t>;
 
 template<typename T>
 [[nodiscard]] constexpr auto GetFltFraction(const T numerator, const T denominator) -> float

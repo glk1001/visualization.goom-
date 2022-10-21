@@ -19,17 +19,17 @@ using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
 
 static constexpr auto DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_ONLY;
-static constexpr auto DEFAULT_COT_MIX  = 1.1F;
+static constexpr auto DEFAULT_COT_MIX  = static_cast<TanEffect::FltCalcType>(1.1L);
 static constexpr auto COT_MIX_RANGE    = IGoomRand::NumberRange<float>{0.6F, 1.6F};
 static constexpr auto TAN_ONLY_WEIGHT  = 500.0F;
 static constexpr auto COT_ONLY_WEIGHT  = 1.0F;
 static constexpr auto COT_MIX_WEIGHT   = 50.0F;
 
-static constexpr auto DEFAULT_AMPLITUDE        = 1.0F;
+static constexpr auto DEFAULT_AMPLITUDE        = static_cast<TanEffect::FltCalcType>(1.0L);
 static constexpr auto AMPLITUDE_RANGE          = IGoomRand::NumberRange<float>{0.10F, 1.11F};
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 1.00F;
 
-static constexpr auto DEFAULT_LIMITING_FACTOR = 0.75F;
+static constexpr auto DEFAULT_LIMITING_FACTOR = static_cast<TanEffect::FltCalcType>(0.75L);
 static constexpr auto LIMITING_FACTOR_RANGE   = IGoomRand::NumberRange<float>{0.10F, 0.85F};
 
 TanEffect::TanEffect(const IGoomRand& goomRand)
@@ -50,14 +50,16 @@ TanEffect::TanEffect(const IGoomRand& goomRand)
 auto TanEffect::SetRandomParams() -> void
 {
   const auto tanType = m_tanEffectWeights.GetRandomWeighted();
-  const auto cotMix  = m_goomRand.GetRandInRange(COT_MIX_RANGE);
+  const auto cotMix  = static_cast<FltCalcType>(m_goomRand.GetRandInRange(COT_MIX_RANGE));
 
-  const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
-                              ? xAmplitude
-                              : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+  const auto xAmplitude = static_cast<FltCalcType>(m_goomRand.GetRandInRange(AMPLITUDE_RANGE));
+  const auto yAmplitude =
+      m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+          ? xAmplitude
+          : static_cast<FltCalcType>(m_goomRand.GetRandInRange(AMPLITUDE_RANGE));
 
-  const auto limitingFactor = m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE);
+  const auto limitingFactor =
+      static_cast<FltCalcType>(m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE));
 
   LogInfo("tanType = {}, cotMix = {}", EnumToString(tanType), cotMix); // NOLINT
   LogInfo("xAmplitude = {}, yAmplitude = {}", xAmplitude, yAmplitude); // NOLINT
@@ -75,7 +77,10 @@ auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameV
   return {
       GetPair(fullParamGroup, "tan type", EnumToString(m_params.tanType)),
       GetPair(fullParamGroup, "cot mix", m_params.cotMix),
-      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
+      GetPair(fullParamGroup,
+              "amplitude",
+              Point2dFlt{static_cast<float>(m_params.amplitude.x),
+                         static_cast<float>(m_params.amplitude.y)}),
       GetPair(fullParamGroup, "limiting factor", m_params.limitingFactor),
   };
 }

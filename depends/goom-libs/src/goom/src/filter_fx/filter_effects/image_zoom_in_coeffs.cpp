@@ -53,8 +53,8 @@ inline auto ImageZoomInCoefficients::DoSetRandomParams() noexcept -> void
 auto ImageZoomInCoefficients::GetZoomInCoefficientsEffectNameValueParams() const noexcept
     -> NameValuePairs
 {
-  static constexpr auto* PARAM_GROUP = "ImageZoomInCoeffs";
-  return m_imageDisplacementList.GetNameValueParams(PARAM_GROUP);
+  static constexpr auto* IMAGE_PARAM_GROUP = "ImageZoomInCoeffs";
+  return m_imageDisplacementList.GetNameValueParams(IMAGE_PARAM_GROUP);
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

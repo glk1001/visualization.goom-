@@ -43,7 +43,7 @@ CheckOptions:
   - { key: readability-identifier-naming.ClassCase,                         value: CamelCase }
   - { key: readability-identifier-naming.ConstexprVariableCase,             value: UPPER_CASE }
   - { key: readability-identifier-naming.ConstexprVariablePrefix,           value: '' }
-  - { key: readability-identifier-naming.ConstexprVariableIgnoredRegexp,    value: 'pi' }
+  - { key: readability-identifier-naming.ConstexprVariableIgnoredRegexp,    value: 'pi|PI' }
   - { key: readability-identifier-naming.ConstexprFunctionIgnoredRegexp,    value: 'lerp' }
   - { key: readability-identifier-naming.ConstantMemberCase,                value: camelBack }
   - { key: readability-identifier-naming.ConstantMemberPrefix,              value: 'm_' }

@@ -91,10 +91,10 @@ struct channel_limits<float>
 using PixelChannelType = uint16_t;
 using PixelIntType     = uint64_t;
 
-static constexpr auto MAX_CHANNEL_VALUE_HDR = 30U * 1024U;
+inline constexpr auto MAX_CHANNEL_VALUE_HDR = 30U * 1024U;
 
-static constexpr auto MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
-static constexpr auto MAX_ALPHA     = MAX_COLOR_VAL;
+inline constexpr auto MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
+inline constexpr auto MAX_ALPHA     = MAX_COLOR_VAL;
 
 static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::max(),
               "Invalid MAX_CHANNEL_VALUE_HDR");

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "goom_config.h"
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
@@ -40,12 +39,13 @@ public:
     COT_MIX,
     _num // unused, and marks the enum end
   };
+  using FltCalcType = double;
   struct Params
   {
     TanType tanType;
-    float cotMix;
-    Amplitude amplitude;
-    float limitingFactor;
+    FltCalcType cotMix;
+    Amplitude_t<FltCalcType> amplitude;
+    FltCalcType limitingFactor;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -56,32 +56,34 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   const UTILS::MATH::Weights<TanType> m_tanEffectWeights;
-  [[nodiscard]] auto GetTanSqDist(float tanArg) const -> float;
+  static constexpr auto HALF_PI = static_cast<FltCalcType>(UTILS::MATH::HALF_PI);
+  [[nodiscard]] auto GetTanSqDist(FltCalcType tanArg) const -> FltCalcType;
 };
 
 inline auto TanEffect::GetVelocity(const float sqDistFromZero,
                                    const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const auto limit  = m_params.limitingFactor * UTILS::MATH::HALF_PI;
-  const auto tanArg = std::clamp(std::fmod(sqDistFromZero, UTILS::MATH::HALF_PI), -limit, +limit);
+  const auto limit = m_params.limitingFactor * HALF_PI;
+  const auto tanArg =
+      static_cast<FltCalcType>(std::clamp(std::fmod(sqDistFromZero, HALF_PI), -limit, +limit));
   const auto tanSqDist = GetTanSqDist(tanArg);
-  return {m_params.amplitude.x * tanSqDist * velocity.GetX(),
-          m_params.amplitude.y * tanSqDist * velocity.GetY()};
+  return {static_cast<float>(m_params.amplitude.x * tanSqDist) * velocity.GetX(),
+          static_cast<float>(m_params.amplitude.y * tanSqDist) * velocity.GetY()};
 }
 
-inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
+inline auto TanEffect::GetTanSqDist(const FltCalcType tanArg) const -> FltCalcType
 {
   switch (m_params.tanType)
   {
     case TanType::TAN_ONLY:
       return std::tan(tanArg);
     case TanType::COT_ONLY:
-      return std::tan(UTILS::MATH::HALF_PI - tanArg);
+      return std::tan(HALF_PI - tanArg);
     case TanType::COT_MIX:
-      return std::tan((m_params.cotMix * UTILS::MATH::HALF_PI) - tanArg);
+      return std::tan((m_params.cotMix * HALF_PI) - tanArg);
     default:
       FailFast();
-      return 0.0F;
+      return static_cast<FltCalcType>(0.0L);
   }
 }
 

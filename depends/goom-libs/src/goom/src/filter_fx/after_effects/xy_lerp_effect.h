@@ -91,10 +91,10 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoord
       return std::cos((m_params.tFreq * sqDistFromZero) *
                       m_goomRand.GetRandInRange(MODE3_MIN_FACTOR, MODE3_MAX_FACTOR));
     case Modes::MODE2:
-      return -(2.0F / STD20::pi) *
+      return -(2.0F / UTILS::MATH::PI) *
              std::atan(std::tan(UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));
     case Modes::MODE3:
-      return std::abs(std::atan2(velocity.GetY(), velocity.GetX()) / STD20::pi);
+      return std::abs(std::atan2(velocity.GetY(), velocity.GetX()) / UTILS::MATH::PI);
     default:
       FailFast();
       return 0.0F;

@@ -1,5 +1,7 @@
 #include "damping_functions.h"
 
+#include "misc.h"
+
 #include <cmath>
 #include <format>
 #include <memory>
@@ -9,6 +11,8 @@
 
 namespace GOOM::UTILS::MATH
 {
+
+using UTILS::MATH::PI;
 
 ExpDampingFunction::ExpDampingFunction(const double amplitude,
                                        const double xToStartRise,
@@ -100,7 +104,7 @@ SineWaveMultiplier::SineWaveMultiplier(const float frequency,
 
 auto SineWaveMultiplier::Increment() noexcept -> void
 {
-  m_x += m_piStepFrac * STD20::pi;
+  m_x += m_piStepFrac * PI;
 }
 
 auto SineWaveMultiplier::GetNext() const noexcept -> float

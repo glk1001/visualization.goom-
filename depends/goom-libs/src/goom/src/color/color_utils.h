@@ -220,9 +220,9 @@ constexpr auto IsCloseToBlack(const Pixel& color, const uint32_t threshold) -> b
 //
 //     Y = 0.2126 R + 0.7152 G + 0.0722 B
 //
-static constexpr auto LUMA_RED_COMPONENT   = 0.2126F;
-static constexpr auto LUMA_GREEN_COMPONENT = 0.7152F;
-static constexpr auto LUMA_BLUE_COMPONENT  = 0.0722F;
+inline constexpr auto LUMA_RED_COMPONENT   = 0.2126F;
+inline constexpr auto LUMA_GREEN_COMPONENT = 0.7152F;
+inline constexpr auto LUMA_BLUE_COMPONENT  = 0.0722F;
 
 constexpr auto GetLuma(const Pixel& color) -> float
 {
