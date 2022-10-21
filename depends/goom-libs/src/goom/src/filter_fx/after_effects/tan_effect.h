@@ -39,13 +39,12 @@ public:
     COT_MIX,
     _num // unused, and marks the enum end
   };
-  using FltCalcType = double;
   struct Params
   {
     TanType tanType;
-    FltCalcType cotMix;
-    Amplitude_t<FltCalcType> amplitude;
-    FltCalcType limitingFactor;
+    float cotMix;
+    Amplitude amplitude;
+    float limitingFactor;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 
@@ -56,22 +55,21 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
   const UTILS::MATH::Weights<TanType> m_tanEffectWeights;
-  static constexpr auto HALF_PI = static_cast<FltCalcType>(UTILS::MATH::HALF_PI);
-  [[nodiscard]] auto GetTanSqDist(FltCalcType tanArg) const -> FltCalcType;
+  static constexpr auto HALF_PI = UTILS::MATH::HALF_PI;
+  [[nodiscard]] auto GetTanSqDist(float tanArg) const -> float;
 };
 
 inline auto TanEffect::GetVelocity(const float sqDistFromZero,
                                    const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const auto limit = m_params.limitingFactor * HALF_PI;
-  const auto tanArg =
-      static_cast<FltCalcType>(std::clamp(std::fmod(sqDistFromZero, HALF_PI), -limit, +limit));
+  const auto limit  = m_params.limitingFactor * HALF_PI;
+  const auto tanArg = std::clamp(std::fmod(sqDistFromZero, HALF_PI), -limit, +limit);
   const auto tanSqDist = GetTanSqDist(tanArg);
-  return {static_cast<float>(m_params.amplitude.x * tanSqDist) * velocity.GetX(),
-          static_cast<float>(m_params.amplitude.y * tanSqDist) * velocity.GetY()};
+  return {m_params.amplitude.x * tanSqDist * velocity.GetX(),
+          m_params.amplitude.y * tanSqDist * velocity.GetY()};
 }
 
-inline auto TanEffect::GetTanSqDist(const FltCalcType tanArg) const -> FltCalcType
+inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
 {
   switch (m_params.tanType)
   {
@@ -83,7 +81,7 @@ inline auto TanEffect::GetTanSqDist(const FltCalcType tanArg) const -> FltCalcTy
       return std::tan((m_params.cotMix * HALF_PI) - tanArg);
     default:
       FailFast();
-      return static_cast<FltCalcType>(0.0L);
+      return 0.0F;
   }
 }
 
