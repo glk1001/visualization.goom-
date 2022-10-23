@@ -3,6 +3,7 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "tentacle3d.h"
+#include "utils/graphics/line_clipper.h"
 
 namespace GOOM
 {
@@ -33,8 +34,13 @@ public:
 private:
   DRAW::IGoomDraw& m_draw;
   const UTILS::MATH::IGoomRand& m_goomRand;
-  const Vec2dInt m_screenMidPoint{
-      MidpointFromOrigin({m_draw.GetScreenWidth(), m_draw.GetScreenHeight()})};
+  const Vec2dFlt m_screenMidPoint{
+      MidpointFromOrigin({m_draw.GetScreenWidth(), m_draw.GetScreenHeight()}).ToFlt()};
+  const UTILS::GRAPHICS::LineClipper m_lineClipper{
+      {0.0F,
+       0.0F, static_cast<float>(m_draw.GetScreenWidth() - 1),
+       static_cast<float>(m_draw.GetScreenHeight() - 1)}
+  };
 
   static constexpr auto MIN_CAMERA_X_OFFSET = -10.0F;
   static constexpr auto MAX_CAMERA_X_OFFSET = +10.0F;
@@ -46,18 +52,16 @@ private:
 
   auto DrawNode(const Tentacle3D& tentacle,
                 size_t nodeNum,
-                Point2dInt point1,
-                Point2dInt point2,
+                const Point2dInt& point1,
+                const Point2dInt& point2,
                 float brightness) -> void;
-  auto DrawNodeLine(Point2dInt point1, Point2dInt point2, const DRAW::MultiplePixels& colors)
-      -> void;
 
   auto PlotPoints(const Tentacle3D& tentacle, float brightness, const std::vector<V3dFlt>& points3D)
       -> void;
   [[nodiscard]] static auto GetBrightness(const Tentacle3D& tentacle) -> float;
   [[nodiscard]] static auto GetBrightnessCut(const Tentacle3D& tentacle) -> float;
   [[nodiscard]] auto GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
-      -> std::vector<Point2dInt>;
+      -> std::vector<Point2dFlt>;
 };
 
 inline auto TentaclePlotter::UpdateCameraPosition() noexcept -> void

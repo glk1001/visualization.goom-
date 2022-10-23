@@ -5,6 +5,7 @@
 #include "draw/goom_draw.h"
 #include "logging.h"
 #include "point2d.h"
+#include "utils/graphics/line_clipper.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
@@ -13,14 +14,16 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using UTILS::MATH::IGoomRand;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
+using UTILS::GRAPHICS::LineClipper;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::SMALL_FLOAT;
 
 static constexpr auto BRIGHTNESS                   = 3.0F;
 static constexpr auto NORMAL_BRIGHTNESS_CUT        = 1.0F;
 static constexpr auto AT_START_HEAD_BRIGHTNESS_CUT = 0.2F;
 
-static constexpr auto COORD_IGNORE_VAL    = -666;
+static constexpr auto COORD_IGNORE_VAL    = -1000.0F;
 static constexpr auto PROJECTION_DISTANCE = 170.0F;
 
 TentaclePlotter::TentaclePlotter(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
@@ -45,14 +48,22 @@ inline auto TentaclePlotter::PlotPoints(const Tentacle3D& tentacle,
 
   for (auto nodeNum = 0U; nodeNum < (numPoints - 1); ++nodeNum)
   {
-    const auto point1 = points2D[nodeNum];
-    const auto point2 = points2D[nodeNum + 1];
+    const auto pointFlt1 = points2D[nodeNum];
+    const auto pointFlt2 = points2D[nodeNum + 1];
 
-    if (((point1.x == COORD_IGNORE_VAL) and (point1.y == COORD_IGNORE_VAL)) or
-        ((point2.x == COORD_IGNORE_VAL) and (point2.y == COORD_IGNORE_VAL)))
+    if ((pointFlt1.x <= COORD_IGNORE_VAL) or (pointFlt2.x <= COORD_IGNORE_VAL))
     {
       continue;
     }
+
+    const auto clippedLine = m_lineClipper.GetClippedLine({pointFlt1, pointFlt2});
+    if (clippedLine.clipResult == LineClipper::ClipResult::REJECTED)
+    {
+      continue;
+    }
+
+    const auto point1 = clippedLine.line.point1.ToInt();
+    const auto point2 = clippedLine.line.point2.ToInt();
     if ((point1.x == point2.x) and (point1.y == point2.y))
     {
       continue;
@@ -64,19 +75,12 @@ inline auto TentaclePlotter::PlotPoints(const Tentacle3D& tentacle,
 
 inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
                                       const size_t nodeNum,
-                                      const Point2dInt point1,
-                                      const Point2dInt point2,
+                                      const Point2dInt& point1,
+                                      const Point2dInt& point2,
                                       const float brightness) -> void
 {
   const auto colors = tentacle.GetMixedColors(nodeNum, m_dominantColors, brightness);
 
-  DrawNodeLine(point1, point2, colors);
-}
-
-inline auto TentaclePlotter::DrawNodeLine(const Point2dInt point1,
-                                          const Point2dInt point2,
-                                          const MultiplePixels& colors) -> void
-{
   static constexpr auto THICKNESS = 1U;
   m_draw.Line(point1, point2, colors, THICKNESS);
 }
@@ -97,28 +101,28 @@ inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) -> flo
 }
 
 auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
-    -> std::vector<Point2dInt>
+    -> std::vector<Point2dFlt>
 {
   static constexpr auto MIN_Z = 2.0F;
 
   const auto numPoints = points3D.size();
-  auto points2D        = std::vector<Point2dInt>(numPoints);
+  auto points2D        = std::vector<Point2dFlt>(numPoints);
 
   for (auto i = 0U; i < numPoints; ++i)
   {
     if (points3D[i].z <= MIN_Z)
     {
-      points2D[i].x = COORD_IGNORE_VAL;
-      points2D[i].y = COORD_IGNORE_VAL;
+      points2D[i].x = COORD_IGNORE_VAL - SMALL_FLOAT;
+      points2D[i].y = COORD_IGNORE_VAL - SMALL_FLOAT;
     }
     else
     {
       const auto perspectiveFactor = PROJECTION_DISTANCE / points3D[i].z;
 
-      const auto xProj = static_cast<int32_t>(perspectiveFactor * points3D[i].x);
-      const auto yProj = static_cast<int32_t>(perspectiveFactor * points3D[i].y);
+      const auto xProj = perspectiveFactor * points3D[i].x;
+      const auto yProj = perspectiveFactor * points3D[i].y;
 
-      points2D[i] = Point2dInt{xProj, -yProj} + m_screenMidPoint;
+      points2D[i] = Point2dFlt{xProj, -yProj} + m_screenMidPoint;
     }
   }
 

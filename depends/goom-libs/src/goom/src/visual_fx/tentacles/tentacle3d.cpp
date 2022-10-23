@@ -1,8 +1,11 @@
 #include "tentacle3d.h"
 
+//#undef NO_LOGGING
+
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
+#include "logging.h"
 #include "tentacle2d.h"
 #include "utils/math/misc.h"
 
@@ -19,6 +22,7 @@ using COLOR::RandomColorMaps;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;
 using DRAW::MultiplePixels;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
 
@@ -26,10 +30,8 @@ static constexpr auto PROB_LOW_MIX_SAME      = 0.5F;
 static constexpr auto MAIN_BRIGHTNESS_FACTOR = 0.5F;
 static constexpr auto LOW_BRIGHTNESS_FACTOR  = 1.0F;
 
-Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-                       const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
-    m_tentacle{std::move(tentacle)}
+Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle, const IGoomRand& goomRand) noexcept
+  : m_goomRand{goomRand}, m_tentacle{std::move(tentacle)}
 {
 }
 
@@ -126,9 +128,9 @@ auto Tentacle3D::GetTentacleVertices(const V3dFlt& startPosOffset) const -> std:
 
   const auto x0 = m_startPos.x + startPosOffset.x;
   const auto xn = m_endPos.x + endPosOffset.x;
-  const auto y0 = m_startPos.y + startPosOffset.y - static_cast<float>(yVec2D[0]);
-  const auto yn = m_endPos.y + endPosOffset.y - static_cast<float>(yVec2D[0]);
-  const auto z0 = m_startPos.z + startPosOffset.z - static_cast<float>(xVec2D[0]);
+  const auto y0 = m_startPos.y + startPosOffset.y + static_cast<float>(yVec2D[0]);
+  const auto yn = m_endPos.y + endPosOffset.y + static_cast<float>(yVec2D[0]);
+  const auto z0 = m_startPos.z + startPosOffset.z + static_cast<float>(xVec2D[0]);
 
   const auto xStep = (xn - x0) / static_cast<float>(n - 1);
   const auto yStep = (yn - y0) / static_cast<float>(n - 1);

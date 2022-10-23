@@ -97,6 +97,7 @@ add_library(goom
             src/filter_fx/zoom_filter_fx.cpp
             src/utils/graphics/bezier_drawer.cpp
             src/utils/graphics/image_bitmaps.cpp
+            src/utils/graphics/line_clipper.h
             src/utils/graphics/pixel_utils.h
             src/utils/graphics/small_image_bitmaps.cpp
             src/utils/math/damping_functions.cpp
