@@ -28,6 +28,7 @@ public:
 
   auto UpdateCameraPosition() noexcept -> void;
   auto SetDominantColors(const DRAW::MultiplePixels& dominantColors) noexcept -> void;
+  auto SetTentacleLineThickness(uint8_t lineThickness) noexcept -> void;
 
   auto Plot3D(const Tentacle3D& tentacle) noexcept -> void;
 
@@ -49,6 +50,7 @@ private:
   static constexpr auto CAMERA_Z_OFFSET     = -1.0F;
   V3dFlt m_cameraPosition{0.0F, 0.0F, CAMERA_Z_OFFSET};
   DRAW::MultiplePixels m_dominantColors{};
+  uint8_t m_lineThickness{1U};
 
   auto DrawNode(const Tentacle3D& tentacle,
                 size_t nodeNum,
@@ -75,6 +77,11 @@ inline auto TentaclePlotter::SetDominantColors(const DRAW::MultiplePixels& domin
     -> void
 {
   m_dominantColors = dominantColors;
+}
+
+inline auto TentaclePlotter::SetTentacleLineThickness(const uint8_t lineThickness) noexcept -> void
+{
+  m_lineThickness = lineThickness;
 }
 
 } // namespace VISUAL_FX::TENTACLES

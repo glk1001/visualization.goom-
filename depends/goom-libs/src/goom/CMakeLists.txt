@@ -55,6 +55,7 @@ add_library(goom
             src/draw/goom_draw_to_container.cpp
             src/draw/goom_draw_to_many.cpp
             src/draw/text_draw.cpp
+            src/draw/thick_lines.cpp
             src/filter_fx/after_effects/after_effects.cpp
             src/filter_fx/after_effects/after_effects_states.cpp
             src/filter_fx/after_effects/after_effects_types.h

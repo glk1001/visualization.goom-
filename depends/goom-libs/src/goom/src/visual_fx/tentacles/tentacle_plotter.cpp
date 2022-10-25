@@ -81,8 +81,7 @@ inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
 {
   const auto colors = tentacle.GetMixedColors(nodeNum, m_dominantColors, brightness);
 
-  static constexpr auto THICKNESS = 1U;
-  m_draw.Line(point1, point2, colors, THICKNESS);
+  m_draw.Line(point1, point2, colors, m_lineThickness);
 }
 
 inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) -> float

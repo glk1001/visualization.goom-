@@ -89,6 +89,12 @@ private:
   size_t m_updateNum                                                     = 0U;
   static constexpr size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400U;
   auto CheckForTimerEvents() -> void;
+
+  auto IterateTentacle(Tentacle2D& tentacle2D) const noexcept -> void;
+  auto SetTentaclePlotterAttributes(uint32_t tentacleNum, const UTILS::TValue& colorT) noexcept
+      -> void;
+  bool m_useThickLines = true;
+  [[nodiscard]] auto GetLineThickness(uint32_t tentacleNum) const noexcept -> uint8_t;
 };
 
 inline auto TentacleDriver::SetDominantColorMaps(

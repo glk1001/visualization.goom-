@@ -52,24 +52,22 @@ private:
                                   int32_t radius,
                                   const PlotCirclePointsFunc& plotter) noexcept -> void;
 
-  auto DrawHorizontalLine(int x1, int y, int x2, const std::vector<Pixel>& colors) noexcept -> void;
-  auto DrawThickLine(int x0,
-                     int y0,
-                     int x1,
-                     int y1,
+  auto DrawHorizontalLine(int32_t x1,
+                          int32_t y,
+                          int32_t x2,
+                          const std::vector<Pixel>& colors) noexcept -> void;
+  auto DrawThickLine(int32_t x1,
+                     int32_t y1,
+                     int32_t x2,
+                     int32_t y2,
                      const std::vector<Pixel>& colors,
-                     uint8_t thickness,
-                     uint8_t thicknessMode) noexcept -> void;
-  auto DrawLineOverlap(int x0,
-                       int y0,
-                       int x1,
-                       int y1,
-                       const std::vector<Pixel>& colors,
-                       float brightness,
-                       uint8_t overlap) noexcept -> void;
-  auto DrawWuLine(int x1, int y1, int x2, int y2, const std::vector<Pixel>& colors) noexcept
-      -> void;
-  using PlotPointFunc = const std::function<void(int x, int y, float brightness)>;
+                     uint8_t thickness) noexcept -> void;
+  auto DrawWuLine(int32_t x1,
+                  int32_t y1,
+                  int32_t x2,
+                  int32_t y2,
+                  const std::vector<Pixel>& colors) noexcept -> void;
+  using PlotPointFunc = const std::function<void(int32_t x, int32_t y, float brightness)>;
   static auto WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot) noexcept
       -> void;
 };

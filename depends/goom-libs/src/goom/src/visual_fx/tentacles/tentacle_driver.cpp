@@ -162,6 +162,9 @@ auto TentacleDriver::ChangeTentacleColorMaps() -> void
 
   m_tentacleGroupSize =
       m_goomRand.GetRandInRange(MIN_TENTACLE_GROUP_SIZE, static_cast<uint32_t>(m_tentacles.size()));
+
+  static constexpr auto PROB_THICK_LINES = 0.9F;
+  m_useThickLines                        = m_goomRand.ProbabilityOf(PROB_THICK_LINES);
 }
 
 auto TentacleDriver::SetAllTentaclesEndCentrePos(const Point2dInt& val) noexcept -> void
@@ -222,15 +225,9 @@ auto TentacleDriver::Update() -> void
     auto& tentacle2D = tentacle.Get2DTentacle();
 
     tentacle.Update();
+    IterateTentacle(tentacle2D);
 
-    const auto iterZeroYVal = m_tentacleParams.iterZeroYValWave.GetNext();
-    tentacle2D.SetIterZeroLerpFactor(static_cast<double>(ITER_ZERO_LERP_FACTOR));
-    tentacle2D.SetIterZeroYVal(static_cast<double>(iterZeroYVal));
-
-    tentacle2D.Iterate();
-
-    m_tentaclePlotter.SetDominantColors(
-        {m_dominantMainColorMap->GetColor(colorT()), m_dominantLowColorMap->GetColor(colorT())});
+    SetTentaclePlotterAttributes(i, colorT);
 
     m_tentaclePlotter.Plot3D(tentacle);
 
@@ -238,6 +235,51 @@ auto TentacleDriver::Update() -> void
   }
 
   m_tentacleParams.iterZeroYValWave.Increment();
+}
+
+inline auto TentacleDriver::IterateTentacle(Tentacle2D& tentacle2D) const noexcept -> void
+{
+  const auto iterZeroYVal = m_tentacleParams.iterZeroYValWave.GetNext();
+  tentacle2D.SetIterZeroLerpFactor(static_cast<double>(ITER_ZERO_LERP_FACTOR));
+  tentacle2D.SetIterZeroYVal(static_cast<double>(iterZeroYVal));
+
+  tentacle2D.Iterate();
+}
+
+inline auto TentacleDriver::SetTentaclePlotterAttributes(const uint32_t tentacleNum,
+                                                         const UTILS::TValue& colorT) noexcept
+    -> void
+{
+  m_tentaclePlotter.SetDominantColors(
+      {m_dominantMainColorMap->GetColor(colorT()), m_dominantLowColorMap->GetColor(colorT())});
+
+  m_tentaclePlotter.SetTentacleLineThickness(GetLineThickness(tentacleNum));
+}
+
+inline auto TentacleDriver::GetLineThickness(const uint32_t tentacleNum) const noexcept -> uint8_t
+{
+  if (not m_useThickLines)
+  {
+    return 1U;
+  }
+
+  //const auto lineThickness = static_cast<uint8_t>(0 == tentacleNum % 5 ? 3U : 1U);
+
+  static constexpr auto MAX_THICKNESS       = 3U;
+  static constexpr auto TWICE_MAX_THICKNESS = 2U * MAX_THICKNESS;
+
+  auto lineThickness = static_cast<uint8_t>(1U + (tentacleNum % TWICE_MAX_THICKNESS));
+  if (lineThickness <= MAX_THICKNESS)
+  {
+    return lineThickness;
+  }
+
+  lineThickness = TWICE_MAX_THICKNESS - lineThickness;
+  if (0 == lineThickness)
+  {
+    lineThickness = 1U;
+  }
+  return lineThickness;
 }
 
 } // namespace GOOM::VISUAL_FX::TENTACLES
