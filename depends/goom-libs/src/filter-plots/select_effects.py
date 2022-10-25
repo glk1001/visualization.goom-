@@ -21,13 +21,14 @@ def get_effects() -> Tuple[FilterEffectFunction, AfterEffectFunction]:
     power_filter_effect = filter_effects.Power()
     sine_filter_effect = filter_effects.Sine()
     strange_sine_filter_effect = filter_effects.StrangeSine()
+    manual_plugin_filter_effect = filter_effects.ManualPlugin()
 
     zero_after_effect = after_effects.Zero()
     tan_after_effect = after_effects.Tan()
     xy_lerp_after_effect = after_effects.XYLerp()
 
     # filter_effect = identity_zoom_filter_effect
-    filter_effect = amulet_filter_effect
+    # filter_effect = amulet_filter_effect
     # filter_effect = distance_field_filter_effect
     # filter_effect = scrunch_filter_effect
     # filter_effect = speedway_filter_effect
@@ -40,6 +41,7 @@ def get_effects() -> Tuple[FilterEffectFunction, AfterEffectFunction]:
     # filter_effect = power_filter_effect
     # filter_effect = sine_filter_effect
     # filter_effect = strange_sine_filter_effect
+    filter_effect = manual_plugin_filter_effect
 
     after_effect = zero_after_effect
     # after_effect = tan_after_effect

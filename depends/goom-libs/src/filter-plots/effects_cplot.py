@@ -25,6 +25,23 @@ def format_complex_coord(the_combined_effects: CombinedEffects, x: float, y: flo
     return info
 
 
+def get_saw_tooth(t: np.ndarray, period: float) -> np.ndarray:
+    HALF = 0.5
+    t_div_period = t / period
+    return HALF + (t_div_period - np.floor(HALF + t_div_period))
+
+
+def get_triangle(t: np.ndarray, period: float) -> np.ndarray:
+    def get_triangle_single(t_val: float, period_val: float) -> float:
+        res = t_val % period_val
+        if t_val < period_val / 2.0:
+            return res
+        return period_val - res
+
+    get_triangle_func = np.vectorize(get_triangle_single)
+    return get_triangle_func(t, period)
+
+
 def plot_the_effects(the_combined_effects: CombinedEffects):
     def format_coord(x: float, y: float):
         return format_complex_coord(combined_effects, x, y)
@@ -38,7 +55,9 @@ def plot_the_effects(the_combined_effects: CombinedEffects):
             lambda z: the_combined_effects.f(z),
             (X_MIN, X_MAX, 1000),
             (Y_MIN, Y_MAX, 1000),
-            abs_scaling=lambda x: 1.15 * x / (x + 1),
+            # abs_scaling=lambda x: 1.1 * x/(1 + x),
+            # abs_scaling=lambda x: get_saw_tooth(x, 2.0),
+            abs_scaling=lambda x: get_triangle(x, 2.0),
             contours_abs=2.0,  # None,  # 2.0,
             # contours_arg=(-np.pi / 2, 0, np.pi / 2, np.pi),
             emphasize_abs_contour_1=True,

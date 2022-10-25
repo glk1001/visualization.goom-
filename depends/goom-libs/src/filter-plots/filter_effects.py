@@ -193,7 +193,7 @@ class ExpReciprocal(FilterEffectFunction):
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
         return self.base_zoom_coeffs + (self.amplitude * np.exp(
-            1.0 / ((self.factor * (z + self.offset)) ** self.recipr_exp)))
+                1.0 / ((self.factor * (z + self.offset)) ** self.recipr_exp)))
 
 
 class Sine(FilterEffectFunction):
@@ -204,10 +204,12 @@ class Sine(FilterEffectFunction):
         self.offset = complex(0, 0)
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        //t = 0.1
+        //return np.cos(t + z ** 2) - np.sin(t + 1.0 + z ** 4)
         freq_factor = 2
         angle = freq_factor * absolute_sq_z
         return self.base_zoom_coeffs + (
-                    self.amplitude * np.sin(angle) * np.sin(self.freq * (z + self.offset)))
+                self.amplitude * np.sin(angle) * np.sin(self.freq * (z + self.offset)))
 
 
 class StrangeSine(FilterEffectFunction):
@@ -237,7 +239,8 @@ class MandelbrotSet(FilterEffectFunction):
         self.escape_radius: float = 2.0
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
-        return self.base_zoom_coeffs + self.amplitude * self.stability(z, smooth=True, clamp=True) * z
+        return self.base_zoom_coeffs + self.amplitude * self.stability(z, smooth=True,
+                                                                       clamp=True) * z
 
     def stability(self, c: np.ndarray, smooth=False, clamp=True) -> np.ndarray:
         get_escape_count_func = np.vectorize(self.escape_count)
@@ -253,3 +256,12 @@ class MandelbrotSet(FilterEffectFunction):
                     return iteration + 1.0 - np.log(np.log(abs(z))) / np.log(2)
                 return iteration
         return self.max_iterations
+
+
+class ManualPlugin(FilterEffectFunction):
+    def __init__(self):
+        super().__init__("Manual Plugin")
+
+    def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
+        return self.base_zoom_coeffs + (z ** 2 - 1.0) * (z + 2.0 - 1.0j) * 2.0 / (
+                    z ** 2 + 2.0 - 2.0 * 1.0j)
