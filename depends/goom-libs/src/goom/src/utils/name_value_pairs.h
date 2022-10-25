@@ -1,5 +1,6 @@
 #pragma once
 
+#include "format_utils.h"
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "strutils.h"
@@ -96,19 +97,19 @@ inline auto to_string(const bool& value) -> std::string
 template<>
 inline auto to_string(const Pixel& value) -> std::string
 {
-  return value.ToString();
+  return fmt_rgba("{}", value);
 }
 
 template<>
 inline auto to_string(const Point2dInt& value) -> std::string
 {
-  return std20::format("({}, {})", value.x, value.y);
+  return fmt_pt("{}", value);
 }
 
 template<>
 inline auto to_string(const Point2dFlt& value) -> std::string
 {
-  return std20::format("({}, {})", value.x, value.y);
+  return fmt_pt("{:.2f}", value);
 }
 
 } // namespace GOOM::UTILS

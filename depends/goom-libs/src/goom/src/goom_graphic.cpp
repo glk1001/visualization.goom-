@@ -1,15 +1,7 @@
 #include "goom_graphic.h"
 
-#include <format>
-#include <string>
-
 namespace GOOM
 {
-
-auto Pixel::ToString() const -> std::string
-{
-  return std20::format("({}, {}, {}, {})", R(), G(), B(), A());
-}
 
 PixelBuffer::PixelBuffer(const Dimensions& dimensions) noexcept
   : m_width{dimensions.GetWidth()},

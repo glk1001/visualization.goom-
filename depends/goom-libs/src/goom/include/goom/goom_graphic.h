@@ -134,8 +134,6 @@ public:
 
   [[nodiscard]] constexpr auto Rgba() const noexcept -> PixelIntType;
 
-  [[nodiscard]] auto ToString() const -> std::string;
-
   [[nodiscard]] constexpr auto IsBlack() const noexcept -> bool;
 
   constexpr friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool;

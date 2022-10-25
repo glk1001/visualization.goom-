@@ -3,6 +3,7 @@
 #include "filter_fx/filter_colors_service.h"
 #include "filter_fx/filter_utils/zoom_filter_coefficients.h"
 #include "goom_graphic.h"
+#include "utils/format_utils.h"
 #include "utils/math/goom_rand.h"
 
 #include <array>
@@ -15,6 +16,7 @@ using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::MAX_SUM_COEFFS;
 using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray;
+using UTILS::fmt_rgba;
 using UTILS::MATH::GoomRand;
 
 static constexpr size_t WIDTH  = 120;
@@ -89,8 +91,8 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
                                                                SOURCE_POINT_INFO.screenPoint.y);
     const auto newColor = filterColorsService.GetNewColor(SOURCE_POINT_INFO, pixelNeighbours);
 
-    UNSCOPED_INFO("expectedColor = " << EXPECTED_COLOR.ToString());
-    UNSCOPED_INFO("newColor = " << newColor.ToString());
+    UNSCOPED_INFO("expectedColor = " << fmt_rgba("{}", EXPECTED_COLOR));
+    UNSCOPED_INFO("newColor = " << fmt_rgba("{}", newColor));
     REQUIRE(EXPECTED_COLOR == newColor);
   }
 }
