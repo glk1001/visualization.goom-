@@ -43,6 +43,7 @@ private:
        static_cast<float>(m_draw.GetScreenHeight() - 1)}
   };
 
+  static constexpr auto PROJECTION_DISTANCE = 170.0F;
   static constexpr auto MIN_CAMERA_X_OFFSET = -10.0F;
   static constexpr auto MAX_CAMERA_X_OFFSET = +10.0F;
   static constexpr auto MIN_CAMERA_Y_OFFSET = -10.0F;
@@ -52,18 +53,20 @@ private:
   DRAW::MultiplePixels m_dominantColors{};
   uint8_t m_lineThickness{1U};
 
-  auto DrawNode(const Tentacle3D& tentacle,
-                size_t nodeNum,
-                const Point2dInt& point1,
-                const Point2dInt& point2,
-                float brightness) -> void;
-
   auto PlotPoints(const Tentacle3D& tentacle, float brightness, const std::vector<V3dFlt>& points3D)
       -> void;
   [[nodiscard]] static auto GetBrightness(const Tentacle3D& tentacle) -> float;
   [[nodiscard]] static auto GetBrightnessCut(const Tentacle3D& tentacle) -> float;
+  struct Line2DInt
+  {
+    Point2dInt point1;
+    Point2dInt point2;
+  };
+  auto DrawNode(const Tentacle3D& tentacle, float t, const Line2DInt& line, float brightness)
+      -> void;
   [[nodiscard]] auto GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const
-      -> std::vector<Point2dFlt>;
+      -> std::vector<Line2DInt>;
+  [[nodiscard]] auto GetPerspectivePoint(const V3dFlt& point3D) const -> Point2dFlt;
 };
 
 inline auto TentaclePlotter::UpdateCameraPosition() noexcept -> void

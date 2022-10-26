@@ -64,26 +64,22 @@ auto Tentacle3D::ChangeColorMaps() -> void
       m_goomRand.ProbabilityOf(PROB_LOW_MIX_SAME)
           ? m_mainColorSegmentMixT
           : m_goomRand.GetRandInRange(MIN_COLOR_SEGMENT_MIX_T, MAX_COLOR_SEGMENT_MIX_T);
-
-  m_nodeGroupSize = m_goomRand.GetRandInRange(Tentacle2D::MIN_NUM_NODES, m_tentacle->GetNumNodes());
 }
 
-auto Tentacle3D::GetMixedColors(const size_t nodeNum,
+auto Tentacle3D::GetMixedColors(const float t,
                                 const MultiplePixels& dominantColors,
                                 const float brightness) const -> MultiplePixels
 {
-  const auto mixedColors = GetMixedColors(nodeNum, dominantColors);
+  const auto mixedColors = GetMixedColors(t, dominantColors);
 
   return {
       m_colorAdjust.GetAdjustment(MAIN_BRIGHTNESS_FACTOR * brightness, GetMainColor(mixedColors)),
       m_colorAdjust.GetAdjustment(LOW_BRIGHTNESS_FACTOR * brightness, GetLowColor(mixedColors))};
 }
 
-auto Tentacle3D::GetMixedColors(const size_t nodeNum, const MultiplePixels& dominantColors) const
+auto Tentacle3D::GetMixedColors(const float t, const MultiplePixels& dominantColors) const
     -> MultiplePixels
 {
-  const auto t =
-      static_cast<float>(nodeNum % m_nodeGroupSize) / static_cast<float>(m_nodeGroupSize - 1);
   const auto mainSegmentColor = m_colorMapsManager.GetColorMap(m_mainColorMapID).GetColor(t);
   const auto lowSegmentColor  = m_colorMapsManager.GetColorMap(m_lowColorMapID).GetColor(t);
 
@@ -92,10 +88,8 @@ auto Tentacle3D::GetMixedColors(const size_t nodeNum, const MultiplePixels& domi
           GetMainColor(dominantColors), mainSegmentColor, m_mainColorSegmentMixT),
       IColorMap::GetColorMix(GetLowColor(dominantColors), lowSegmentColor, m_lowColorSegmentMixT)};
 
-  const auto fracFinished =
-      static_cast<float>(nodeNum) / static_cast<float>(Get2DTentacle().GetNumNodes());
   if (static constexpr auto T_CUT_OFF = 0.7F;
-      (std::abs(GetStartPos().x) <= START_SMALL_X) or (fracFinished > T_CUT_OFF))
+      (std::abs(GetStartPos().x) <= START_SMALL_X) or (t > T_CUT_OFF))
   {
     const auto brightnessCut = 0.8F * Sq(Sq(t));
     return {GetBrighterColor(brightnessCut, GetMainColor(mixedColors)),

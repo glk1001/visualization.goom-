@@ -43,7 +43,7 @@ public:
   auto SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto ChangeColorMaps() -> void;
 
-  [[nodiscard]] auto GetMixedColors(size_t nodeNum,
+  [[nodiscard]] auto GetMixedColors(float t,
                                     const DRAW::MultiplePixels& dominantColors,
                                     float brightness) const -> DRAW::MultiplePixels;
 
@@ -70,7 +70,6 @@ private:
       m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
   COLOR::RandomColorMapsManager::ColorMapId m_lowColorMapID{
       m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
-  uint32_t m_nodeGroupSize = m_tentacle->GetNumNodes();
 
   static constexpr float MIN_COLOR_SEGMENT_MIX_T     = 0.7F;
   static constexpr float MAX_COLOR_SEGMENT_MIX_T     = 1.0F;
@@ -92,8 +91,7 @@ private:
 
   [[nodiscard]] auto GetCurrentEndPostOffset() const noexcept -> V3dFlt;
 
-  [[nodiscard]] auto GetMixedColors(size_t nodeNum,
-                                    const DRAW::MultiplePixels& dominantColors) const
+  [[nodiscard]] auto GetMixedColors(float t, const DRAW::MultiplePixels& dominantColors) const
       -> DRAW::MultiplePixels;
 };
 
