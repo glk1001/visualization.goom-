@@ -115,6 +115,12 @@ template<typename T>
   return HALF + (tDivPeriod - std::floor(HALF + tDivPeriod));
 }
 
+[[nodiscard]] inline auto GetTriangle(const float t, const float period) -> float
+{
+  const auto remainder = std::fmod(t, period);
+  return t < (HALF * period) ? remainder : (period - remainder);
+}
+
 inline constexpr auto SMALL_FLOAT = 0.00001F;
 
 [[nodiscard]] inline bool FloatsEqual(const float x,

@@ -18,7 +18,7 @@ using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
-using UTILS::MATH::GetSawTooth;
+using UTILS::MATH::GetTriangle;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::TWO_PI;
 
@@ -140,11 +140,11 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
   const auto logAbsSqFz               = absSqFz > MAX_ABS_SQ_FZ ? MAX_LOG_VAL : std::log(absSqFz);
 
   const auto sawtoothLogAbsFz =
-      GetSawTooth(static_cast<float>(logAbsSqFz), m_params.sawtoothModulusPeriod);
+      GetTriangle(static_cast<float>(logAbsSqFz), m_params.sawtoothModulusPeriod);
   const auto sawtoothPhaseReal =
-      GetSawTooth(static_cast<float>(phase.real()), m_params.sawtoothPhasePeriod);
+      GetTriangle(static_cast<float>(phase.real()), m_params.sawtoothPhasePeriod);
   const auto sawtoothPhaseImag =
-      GetSawTooth(static_cast<float>(phase.imag()), m_params.sawtoothPhasePeriod);
+      GetTriangle(static_cast<float>(phase.imag()), m_params.sawtoothPhasePeriod);
 
   const auto enhancedRealPart = sawtoothLogAbsFz * sawtoothPhaseReal * static_cast<float>(realPart);
   const auto enhancedImagPart = sawtoothLogAbsFz * sawtoothPhaseImag * static_cast<float>(imagPart);
