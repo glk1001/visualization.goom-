@@ -48,10 +48,14 @@ private:
   static constexpr auto MAX_CAMERA_X_OFFSET = +10.0F;
   static constexpr auto MIN_CAMERA_Y_OFFSET = -10.0F;
   static constexpr auto MAX_CAMERA_Y_OFFSET = +10.0F;
-  static constexpr auto CAMERA_Z_OFFSET     = -1.0F;
-  V3dFlt m_cameraPosition{0.0F, 0.0F, CAMERA_Z_OFFSET};
+  static constexpr auto MIN_CAMERA_Z_OFFSET = +01.0F; // Don't make this any smaller
+  static constexpr auto MAX_CAMERA_Z_OFFSET = +10.1F;
+  static_assert(MIN_CAMERA_X_OFFSET < MAX_CAMERA_X_OFFSET);
+  static_assert(MIN_CAMERA_Y_OFFSET < MAX_CAMERA_Y_OFFSET);
+  static_assert(MIN_CAMERA_Z_OFFSET < MAX_CAMERA_Z_OFFSET);
+  V3dFlt m_cameraPosition{0.0F, 0.0F, MIN_CAMERA_Z_OFFSET};
   DRAW::MultiplePixels m_dominantColors{};
-  uint8_t m_lineThickness{1U};
+  uint8_t m_lineThickness = 1U;
 
   auto PlotPoints(const Tentacle3D& tentacle, float brightness, const std::vector<V3dFlt>& points3D)
       -> void;
@@ -71,9 +75,9 @@ private:
 
 inline auto TentaclePlotter::UpdateCameraPosition() noexcept -> void
 {
-  m_cameraPosition = {m_goomRand.GetRandInRange(MIN_CAMERA_X_OFFSET, MAX_CAMERA_X_OFFSET + 1U),
-                      m_goomRand.GetRandInRange(MIN_CAMERA_Y_OFFSET, MAX_CAMERA_Y_OFFSET + 1U),
-                      m_cameraPosition.z};
+  m_cameraPosition = {m_goomRand.GetRandInRange(MIN_CAMERA_X_OFFSET, MAX_CAMERA_X_OFFSET),
+                      m_goomRand.GetRandInRange(MIN_CAMERA_Y_OFFSET, MAX_CAMERA_Y_OFFSET),
+                      m_goomRand.GetRandInRange(MIN_CAMERA_Z_OFFSET, MAX_CAMERA_Z_OFFSET)};
 }
 
 inline auto TentaclePlotter::SetDominantColors(const DRAW::MultiplePixels& dominantColors) noexcept

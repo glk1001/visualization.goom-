@@ -318,7 +318,7 @@ inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
   const auto tentacleWaveFreqMultiplier =
       m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration() <
               SoundInfo::ACCELERATION_MIDPOINT
-          ? 1.0F
+          ? 0.95F
           : (1.0F / (1.1F - m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration()));
   m_currentTentacleDriver->MultiplyIterZeroYValWaveFreq(tentacleWaveFreqMultiplier);
 }

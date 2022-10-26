@@ -6,6 +6,7 @@
 #include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
+#include "point2d.h"
 #include "tentacle2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
@@ -49,11 +50,11 @@ public:
 
   // NOTE: All positions are relative to a zero origin.
   static constexpr float START_SMALL_X = 10.0F;
-  [[nodiscard]] auto GetStartPos() const -> const V3dFlt&;
-  auto SetStartPos(const V3dFlt& val) noexcept -> void;
+  [[nodiscard]] auto GetStartPos() const -> const Point2dFlt&;
+  auto SetStartPos(const Point2dFlt& val) noexcept -> void;
 
-  [[nodiscard]] auto GetEndPos() const -> const V3dFlt&;
-  auto SetEndPos(const V3dFlt& val) noexcept -> void;
+  [[nodiscard]] auto GetEndPos() const -> const Point2dFlt&;
+  auto SetEndPos(const Point2dFlt& val) noexcept -> void;
   auto SetEndPosOffset(const V3dFlt& val) noexcept -> void;
 
   [[nodiscard]] auto GetTentacleVertices(const V3dFlt& startPosOffset) const -> std::vector<V3dFlt>;
@@ -81,8 +82,10 @@ private:
   const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
                                              COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
-  V3dFlt m_startPos{};
-  V3dFlt m_endPos{};
+  // Need this z start value to remove the flat lines for some tentacle starts.
+  static constexpr auto Z_START_POS = -10.0F;
+  Point2dFlt m_startPos{};
+  Point2dFlt m_endPos{};
   V3dFlt m_endPosOffset{};
   V3dFlt m_previousEndPosOffset{};
 
@@ -105,22 +108,22 @@ inline auto Tentacle3D::Get2DTentacle() const -> const Tentacle2D&
   return *m_tentacle;
 }
 
-inline auto Tentacle3D::GetStartPos() const -> const V3dFlt&
+inline auto Tentacle3D::GetStartPos() const -> const Point2dFlt&
 {
   return m_startPos;
 }
 
-inline auto Tentacle3D::SetStartPos(const V3dFlt& val) noexcept -> void
+inline auto Tentacle3D::SetStartPos(const Point2dFlt& val) noexcept -> void
 {
   m_startPos = val;
 }
 
-inline auto Tentacle3D::GetEndPos() const -> const V3dFlt&
+inline auto Tentacle3D::GetEndPos() const -> const Point2dFlt&
 {
   return m_endPos;
 }
 
-inline auto Tentacle3D::SetEndPos(const V3dFlt& val) noexcept -> void
+inline auto Tentacle3D::SetEndPos(const Point2dFlt& val) noexcept -> void
 {
   m_endPos = val;
 }

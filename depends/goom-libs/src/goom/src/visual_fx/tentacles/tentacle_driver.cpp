@@ -23,14 +23,19 @@ using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 
+static constexpr auto MIN_FREQUENCY = 1.0F;
+static constexpr auto MAX_FREQUENCY = 3.1F;
+
 constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D::BaseYWeights
 {
   constexpr auto FREQUENCIES = std::array{
-      1.1F,
-      2.1F,
+      1.0F,
+      1.7F,
+      2.3F,
       3.1F,
-      4.1F,
   };
+  static_assert(FREQUENCIES.front() == MIN_FREQUENCY);
+  static_assert(FREQUENCIES.back() == MAX_FREQUENCY);
   constexpr auto CORRESPONDING_BASE_Y_WEIGHTS = std::array{
       0.60F,
       0.70F,
@@ -134,7 +139,8 @@ auto TentacleDriver::StartIterating() -> void
 
 auto TentacleDriver::MultiplyIterZeroYValWaveFreq(const float value) -> void
 {
-  const auto newFreq = value * m_tentacleParams.iterZeroYValWaveFreq;
+  const auto newFreq =
+      std::clamp(value * m_tentacleParams.iterZeroYValWaveFreq, MIN_FREQUENCY, MAX_FREQUENCY);
   m_tentacleParams.iterZeroYValWave.SetFrequency(newFreq);
 
   for (auto i = 0U; i < m_tentacles.size(); ++i)
@@ -192,7 +198,7 @@ inline auto TentacleDriver::GetAcceptableCentrePosOffset(
 }
 
 auto TentacleDriver::GetNewRadiusCentrePosOffset(const float radiusScale,
-                                                 const V3dFlt& endPosFlt,
+                                                 const Point2dFlt& endPosFlt,
                                                  const Point2dInt& oldCentreEndPosOffset) noexcept
     -> V3dFlt
 {

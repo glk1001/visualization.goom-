@@ -47,8 +47,9 @@ public:
   [[nodiscard]] auto GetAcceptableCentrePosOffset(
       const Point2dInt& requestedCentrePos) const noexcept -> Point2dInt;
   [[nodiscard]] static auto GetNewRadiusCentrePosOffset(
-      float radiusScale, const V3dFlt& endPosFlt, const Point2dInt& oldCentreEndPosOffset) noexcept
-      -> V3dFlt;
+      float radiusScale,
+      const Point2dFlt& endPosFlt,
+      const Point2dInt& oldCentreEndPosOffset) noexcept -> V3dFlt;
 
   auto MultiplyIterZeroYValWaveFreq(float value) -> void;
   auto SetDominantColorMaps(const std::shared_ptr<const COLOR::IColorMap>& dominantMainColorMap,

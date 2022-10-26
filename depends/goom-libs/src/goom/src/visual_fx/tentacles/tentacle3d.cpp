@@ -115,8 +115,8 @@ auto Tentacle3D::GetTentacleVertices(const V3dFlt& startPosOffset) const -> std:
 {
   const auto& [xVec2D, yVec2D] = m_tentacle->GetDampedXAndYVectors();
 
-  const auto n = xVec2D.size();
-  auto vec3d   = std::vector<V3dFlt>(n);
+  const auto numPoints = xVec2D.size();
+  auto vec3d           = std::vector<V3dFlt>(numPoints);
 
   const auto endPosOffset = GetCurrentEndPostOffset();
 
@@ -124,14 +124,14 @@ auto Tentacle3D::GetTentacleVertices(const V3dFlt& startPosOffset) const -> std:
   const auto xn = m_endPos.x + endPosOffset.x;
   const auto y0 = m_startPos.y + startPosOffset.y + static_cast<float>(yVec2D[0]);
   const auto yn = m_endPos.y + endPosOffset.y + static_cast<float>(yVec2D[0]);
-  const auto z0 = m_startPos.z + startPosOffset.z + static_cast<float>(xVec2D[0]);
+  const auto z0 = Z_START_POS + startPosOffset.z + static_cast<float>(xVec2D[0]);
 
-  const auto xStep = (xn - x0) / static_cast<float>(n - 1);
-  const auto yStep = (yn - y0) / static_cast<float>(n - 1);
+  const auto xStep = (xn - x0) / static_cast<float>(numPoints - 1);
+  const auto yStep = (yn - y0) / static_cast<float>(numPoints - 1);
 
   auto x = x0;
   auto y = y0;
-  for (auto i = 0U; i < n; ++i)
+  for (auto i = 0U; i < numPoints; ++i)
   {
     vec3d[i].x = x;
     vec3d[i].y = y + static_cast<float>(yVec2D[i]);

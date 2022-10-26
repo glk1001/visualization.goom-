@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tentacle3d.h"
+#include "point2d.h"
 
 #include <cstdint>
 #include <vector>
@@ -15,18 +15,18 @@ public:
 
   [[nodiscard]] auto GetNumPoints() const noexcept -> uint32_t;
 
-  [[nodiscard]] auto GetStartPoints() const noexcept -> const std::vector<V3dFlt>&;
-  [[nodiscard]] auto GetEndPoints() const noexcept -> const std::vector<V3dFlt>&;
+  [[nodiscard]] auto GetStartPoints() const noexcept -> const std::vector<Point2dFlt>&;
+  [[nodiscard]] auto GetEndPoints() const noexcept -> const std::vector<Point2dFlt>&;
 
   [[nodiscard]] auto GetStartRadius() const noexcept -> float;
   [[nodiscard]] auto GetEndRadius() const noexcept -> float;
 
   [[nodiscard]] static auto GetCirclePoints(float radius, uint32_t numPoints) noexcept
-      -> std::vector<V3dFlt>;
+      -> std::vector<Point2dFlt>;
 
 private:
-  const std::vector<V3dFlt> m_startPoints;
-  const std::vector<V3dFlt> m_endPoints;
+  const std::vector<Point2dFlt> m_startPoints;
+  const std::vector<Point2dFlt> m_endPoints;
   const float m_startRadius;
   const float m_endRadius;
 };
@@ -36,12 +36,12 @@ inline auto CirclesTentacleLayout::GetNumPoints() const noexcept -> uint32_t
   return static_cast<uint32_t>(m_startPoints.size());
 }
 
-inline auto CirclesTentacleLayout::GetStartPoints() const noexcept -> const std::vector<V3dFlt>&
+inline auto CirclesTentacleLayout::GetStartPoints() const noexcept -> const std::vector<Point2dFlt>&
 {
   return m_startPoints;
 }
 
-inline auto CirclesTentacleLayout::GetEndPoints() const noexcept -> const std::vector<V3dFlt>&
+inline auto CirclesTentacleLayout::GetEndPoints() const noexcept -> const std::vector<Point2dFlt>&
 {
   return m_endPoints;
 }
