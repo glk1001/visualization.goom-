@@ -3,6 +3,7 @@
 #include "../goom_visual_fx.h"
 #include "circles_tentacle_layout.h"
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "point2d.h"
@@ -66,6 +67,10 @@ private:
 
   std::shared_ptr<const COLOR::IColorMap> m_dominantMainColorMap{};
   std::shared_ptr<const COLOR::IColorMap> m_dominantLowColorMap{};
+  COLOR::RandomColorMapsGroups m_randomColorMapsGroups{m_goomRand};
+  auto SetAllSameWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept
+      -> void;
+  auto SetAllDifferentWeightedColorMaps() noexcept -> void;
 
   struct IterationParams
   {
@@ -81,16 +86,12 @@ private:
   [[nodiscard]] auto GetTentacles(const CirclesTentacleLayout& tentacleLayout) const noexcept
       -> std::vector<Tentacle3D>;
   [[nodiscard]] auto CreateNewTentacle2D() const noexcept -> std::unique_ptr<Tentacle2D>;
-  uint32_t m_tentacleGroupSize                      = static_cast<uint32_t>(m_tentacles.size());
-  static constexpr uint32_t MIN_TENTACLE_GROUP_SIZE = 10U;
-
-  static constexpr float MIN_RADIUS_FACTOR = 0.5F;
-  static constexpr float MAX_RADIUS_FACTOR = 1.0F;
+  uint32_t m_tentacleGroupSize = static_cast<uint32_t>(m_tentacles.size());
 
   size_t m_updateNum                                                     = 0U;
-  static constexpr size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400U;
   auto CheckForTimerEvents() -> void;
 
+  auto UpdateAndDrawTentacles() noexcept -> void;
   auto IterateTentacle(Tentacle2D& tentacle2D) const noexcept -> void;
   auto SetTentaclePlotterAttributes(uint32_t tentacleNum, const UTILS::TValue& colorT) noexcept
       -> void;

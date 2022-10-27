@@ -11,9 +11,9 @@ namespace GOOM::VISUAL_FX::TENTACLES
 class CirclesTentacleLayout
 {
 public:
-  CirclesTentacleLayout(float startRadius, float endRadius, uint32_t numPoints) noexcept;
+  CirclesTentacleLayout(float startRadius, float endRadius, uint32_t numTentacles) noexcept;
 
-  [[nodiscard]] auto GetNumPoints() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetNumTentacles() const noexcept -> uint32_t;
 
   [[nodiscard]] auto GetStartPoints() const noexcept -> const std::vector<Point2dFlt>&;
   [[nodiscard]] auto GetEndPoints() const noexcept -> const std::vector<Point2dFlt>&;
@@ -31,7 +31,7 @@ private:
   const float m_endRadius;
 };
 
-inline auto CirclesTentacleLayout::GetNumPoints() const noexcept -> uint32_t
+inline auto CirclesTentacleLayout::GetNumTentacles() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(m_startPoints.size());
 }

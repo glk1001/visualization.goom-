@@ -147,10 +147,10 @@ static constexpr auto LAYOUT1_END_RADIUS = 20.0F;
 static constexpr auto LAYOUT2_END_RADIUS = 20.0F;
 static constexpr auto LAYOUT3_END_RADIUS = 20.0F;
 
-static constexpr auto LAYOUT0_NUM_POINTS = 40U;
-static constexpr auto LAYOUT1_NUM_POINTS = 50U;
-static constexpr auto LAYOUT2_NUM_POINTS = 70U;
-static constexpr auto LAYOUT3_NUM_POINTS = 150U;
+static constexpr auto LAYOUT0_NUM_TENTACLES = 40U;
+static constexpr auto LAYOUT1_NUM_TENTACLES = 50U;
+static constexpr auto LAYOUT2_NUM_TENTACLES = 70U;
+static constexpr auto LAYOUT3_NUM_TENTACLES = 150U;
 
 static constexpr auto DRIVERS_NUM0_WEIGHT = 50.0F;
 static constexpr auto DRIVERS_NUM1_WEIGHT = 30.0F;
@@ -170,10 +170,10 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
           {Drivers::NUM3, DRIVERS_NUM3_WEIGHT},
       }},
     m_tentacleLayouts{{
-        {LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_POINTS},
-        {LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_POINTS},
-        {LAYOUT2_START_RADIUS, LAYOUT2_END_RADIUS, LAYOUT2_NUM_POINTS},
-        {LAYOUT3_START_RADIUS, LAYOUT3_END_RADIUS, LAYOUT3_NUM_POINTS},
+        {LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_TENTACLES},
+        {LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_TENTACLES},
+        {LAYOUT2_START_RADIUS, LAYOUT2_END_RADIUS, LAYOUT2_NUM_TENTACLES},
+        {LAYOUT3_START_RADIUS, LAYOUT3_END_RADIUS, LAYOUT3_NUM_TENTACLES},
     }}
 {
   Expects(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());

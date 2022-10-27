@@ -2,6 +2,7 @@
 
 //#undef NO_LOGGING
 
+#include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "logging.h"
@@ -22,9 +23,29 @@ using DRAW::MultiplePixels;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::SineWaveMultiplier;
 
-static constexpr auto MIN_FREQUENCY = 1.0F;
-static constexpr auto MAX_FREQUENCY = 3.1F;
+static constexpr size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400U;
+
+static constexpr auto MIN_RADIUS_FACTOR       = 0.5F;
+static constexpr auto MAX_RADIUS_FACTOR       = 1.0F;
+static constexpr auto MIN_TENTACLE_GROUP_SIZE = 10U;
+static constexpr auto TENTACLE_2D_X_MIN       = 0.0;
+static constexpr auto TENTACLE_2D_Y_MIN       = 0.065736;
+static constexpr auto TENTACLE_2D_Y_MAX       = 10000.0;
+static constexpr auto TENTACLE_LENGTH         = 120.0F;
+static constexpr auto NUM_TENTACLE_NODES      = 100U;
+static constexpr auto MAX_LINE_THICKNESS      = 3U;
+static constexpr auto PROB_THICK_LINES        = 0.9F;
+static constexpr auto PROB_MAX_RANDOM_COLORS  = 0.8F;
+
+static constexpr auto MIN_SINE_FREQUENCY       = 1.0F;
+static constexpr auto MAX_SINE_FREQUENCY       = 3.1F;
+static constexpr auto MIN_BASE_Y_WEIGHT_FACTOR = 0.8F;
+static constexpr auto MAX_BASE_Y_WEIGHT_FACTOR = 1.1F;
+static constexpr auto ITER_ZERO_LERP_FACTOR    = 0.9F;
+static const auto ITER_ZERO_Y_VAL_WAVE_ZERO_START =
+    SineWaveMultiplier{MIN_SINE_FREQUENCY, -20.0F, +20.0F, 0.0F};
 
 constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D::BaseYWeights
 {
@@ -34,8 +55,8 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
       2.3F,
       3.1F,
   };
-  static_assert(FREQUENCIES.front() == MIN_FREQUENCY);
-  static_assert(FREQUENCIES.back() == MAX_FREQUENCY);
+  static_assert(FREQUENCIES.front() == MIN_SINE_FREQUENCY);
+  static_assert(FREQUENCIES.back() == MAX_SINE_FREQUENCY);
   constexpr auto CORRESPONDING_BASE_Y_WEIGHTS = std::array{
       0.60F,
       0.70F,
@@ -55,22 +76,13 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
   return {HIGHEST_BASE_Y_WEIGHT, 1.0F - HIGHEST_BASE_Y_WEIGHT};
 }
 
-static constexpr auto TENTACLE_2D_X_MIN     = 0.0;
-static constexpr auto TENTACLE_2D_Y_MIN     = 0.065736;
-static constexpr auto TENTACLE_2D_Y_MAX     = 10000.0;
-static constexpr auto TENTACLE_LENGTH       = 120.0F;
-static constexpr auto NUM_TENTACLE_NODES    = 100U;
-static constexpr auto ITER_ZERO_LERP_FACTOR = 0.9F;
-
-static const auto ITER_ZERO_Y_VAL_WAVE_ZERO_START =
-    UTILS::MATH::SineWaveMultiplier{1.0F, -20.0F, +20.0F, 0.0F};
-
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
                                const IGoomRand& goomRand,
                                const CirclesTentacleLayout& tentacleLayout) noexcept
   : m_draw{draw},
     m_goomRand{goomRand},
-    m_tentacleParams{NUM_TENTACLE_NODES, TENTACLE_LENGTH, 1.0F, ITER_ZERO_Y_VAL_WAVE_ZERO_START},
+    m_tentacleParams{
+        NUM_TENTACLE_NODES, TENTACLE_LENGTH, MIN_SINE_FREQUENCY, ITER_ZERO_Y_VAL_WAVE_ZERO_START},
     m_tentaclePlotter{m_draw, m_goomRand},
     m_tentacles{GetTentacles(tentacleLayout)}
 {
@@ -79,19 +91,48 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw,
 auto TentacleDriver::SetWeightedColorMaps(
     const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
+  if (m_goomRand.ProbabilityOf(PROB_MAX_RANDOM_COLORS))
+  {
+    SetAllDifferentWeightedColorMaps();
+  }
+  else
+  {
+    SetAllSameWeightedColorMaps(weightedColorMaps);
+  }
+}
+
+inline auto TentacleDriver::SetAllSameWeightedColorMaps(
+    const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
   std::for_each(begin(m_tentacles),
                 end(m_tentacles),
                 [&weightedColorMaps](auto& tentacle)
                 { tentacle.SetWeightedColorMaps(weightedColorMaps); });
 }
 
+inline auto TentacleDriver::SetAllDifferentWeightedColorMaps() noexcept -> void
+{
+  std::for_each(begin(m_tentacles),
+                end(m_tentacles),
+                [this](auto& tentacle)
+                {
+                  static constexpr auto MAX_COLOR_MAPS_GROUP =
+                      COLOR::RandomColorMapsGroups::Groups::ALL_STANDARD_MAPS;
+                  const auto colorMapsGroup =
+                      m_randomColorMapsGroups.MakeRandomColorMapsGroup(MAX_COLOR_MAPS_GROUP);
+                  tentacle.SetWeightedColorMaps({0, colorMapsGroup, colorMapsGroup, nullptr});
+                });
+}
+
 auto TentacleDriver::GetTentacles(const CirclesTentacleLayout& tentacleLayout) const noexcept
     -> std::vector<Tentacle3D>
 {
-  auto tentacles = std::vector<Tentacle3D>{};
+  const auto numTentacles = tentacleLayout.GetNumTentacles();
 
-  tentacles.reserve(tentacleLayout.GetNumPoints());
-  for (auto i = 0U; i < tentacleLayout.GetNumPoints(); ++i)
+  auto tentacles = std::vector<Tentacle3D>{};
+  tentacles.reserve(numTentacles);
+
+  for (auto i = 0U; i < numTentacles; ++i)
   {
     auto tentacle2D = CreateNewTentacle2D();
 
@@ -118,8 +159,6 @@ auto TentacleDriver::CreateNewTentacle2D() const noexcept -> std::unique_ptr<Ten
       {TENTACLE_2D_Y_MIN, TENTACLE_2D_Y_MAX},
   };
 
-  static constexpr auto MIN_BASE_Y_WEIGHT_FACTOR = 0.8F;
-  static constexpr auto MAX_BASE_Y_WEIGHT_FACTOR = 1.1F;
   auto baseYWeights = GetMatchingBaseYWeights(m_tentacleParams.iterZeroYValWaveFreq);
   baseYWeights.previous *=
       m_goomRand.GetRandInRange(MIN_BASE_Y_WEIGHT_FACTOR, MAX_BASE_Y_WEIGHT_FACTOR);
@@ -139,8 +178,8 @@ auto TentacleDriver::StartIterating() -> void
 
 auto TentacleDriver::MultiplyIterZeroYValWaveFreq(const float value) -> void
 {
-  const auto newFreq =
-      std::clamp(value * m_tentacleParams.iterZeroYValWaveFreq, MIN_FREQUENCY, MAX_FREQUENCY);
+  const auto newFreq = std::clamp(
+      value * m_tentacleParams.iterZeroYValWaveFreq, MIN_SINE_FREQUENCY, MAX_SINE_FREQUENCY);
   m_tentacleParams.iterZeroYValWave.SetFrequency(newFreq);
 
   for (auto i = 0U; i < m_tentacles.size(); ++i)
@@ -169,8 +208,7 @@ auto TentacleDriver::ChangeTentacleColorMaps() -> void
   m_tentacleGroupSize =
       m_goomRand.GetRandInRange(MIN_TENTACLE_GROUP_SIZE, static_cast<uint32_t>(m_tentacles.size()));
 
-  static constexpr auto PROB_THICK_LINES = 0.9F;
-  m_useThickLines                        = m_goomRand.ProbabilityOf(PROB_THICK_LINES);
+  m_useThickLines = m_goomRand.ProbabilityOf(PROB_THICK_LINES);
 }
 
 auto TentacleDriver::SetAllTentaclesEndCentrePos(const Point2dInt& val) noexcept -> void
@@ -223,6 +261,13 @@ auto TentacleDriver::Update() -> void
 
   CheckForTimerEvents();
 
+  UpdateAndDrawTentacles();
+
+  m_tentacleParams.iterZeroYValWave.Increment();
+}
+
+auto TentacleDriver::UpdateAndDrawTentacles() noexcept -> void
+{
   auto colorT = TValue{TValue::StepType::SINGLE_CYCLE, m_tentacleGroupSize};
 
   for (auto i = 0U; i < m_tentacles.size(); ++i)
@@ -239,8 +284,6 @@ auto TentacleDriver::Update() -> void
 
     colorT.Increment();
   }
-
-  m_tentacleParams.iterZeroYValWave.Increment();
 }
 
 inline auto TentacleDriver::IterateTentacle(Tentacle2D& tentacle2D) const noexcept -> void
@@ -269,13 +312,10 @@ inline auto TentacleDriver::GetLineThickness(const uint32_t tentacleNum) const n
     return 1U;
   }
 
-  //const auto lineThickness = static_cast<uint8_t>(0 == tentacleNum % 5 ? 3U : 1U);
-
-  static constexpr auto MAX_THICKNESS       = 3U;
-  static constexpr auto TWICE_MAX_THICKNESS = 2U * MAX_THICKNESS;
+  static constexpr auto TWICE_MAX_THICKNESS = 2U * MAX_LINE_THICKNESS;
 
   auto lineThickness = static_cast<uint8_t>(1U + (tentacleNum % TWICE_MAX_THICKNESS));
-  if (lineThickness <= MAX_THICKNESS)
+  if (lineThickness <= MAX_LINE_THICKNESS)
   {
     return lineThickness;
   }

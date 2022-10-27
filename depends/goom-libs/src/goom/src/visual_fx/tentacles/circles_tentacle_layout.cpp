@@ -16,9 +16,9 @@ static constexpr auto ANGLE_FINISH = ANGLE_START + TWO_PI;
 
 CirclesTentacleLayout::CirclesTentacleLayout(const float startRadius,
                                              const float endRadius,
-                                             const uint32_t numPoints) noexcept
-  : m_startPoints{GetCirclePoints(startRadius, numPoints)},
-    m_endPoints{GetCirclePoints(endRadius, numPoints)},
+                                             const uint32_t numTentacles) noexcept
+  : m_startPoints{GetCirclePoints(startRadius, numTentacles)},
+    m_endPoints{GetCirclePoints(endRadius, numTentacles)},
     m_startRadius{startRadius},
     m_endRadius{endRadius}
 {
