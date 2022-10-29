@@ -34,38 +34,43 @@ static constexpr auto MAGNIFY_RANGE              = IGoomRand::NumberRange<float>
 static constexpr auto DEFAULT_RECIPROCAL_EXPONENT = 3.0F;
 static constexpr auto RECIPROCAL_EXPONENT_RANGE   = IGoomRand::NumberRange<uint32_t>{3, 6};
 
-static constexpr auto PROB_USE_MODULUS_CONTOURS = 0.25F;
-static constexpr auto PROB_USE_PHASE_CONTOURS   = 0.25F;
+static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
+static constexpr auto MODULATOR_PERIOD_RANGE   = IGoomRand::NumberRange<float>{1.0F, 100.0F};
 
-static constexpr auto DEFAULT_SAWTOOTH_MODULUS_PERIOD = 0.5F;
-static constexpr auto DEFAULT_SAWTOOTH_PHASE_PERIOD   = 0.5F;
-static constexpr auto SAWTOOTH_MODULUS_PERIOD_RANGE   = IGoomRand::NumberRange<float>{0.1F, 1.1F};
-static constexpr auto SAWTOOTH_PHASE_PERIOD_RANGE     = IGoomRand::NumberRange<float>{0.1F, 1.1F};
+static constexpr auto PROB_AMPLITUDES_EQUAL       = 0.95F;
+static constexpr auto PROB_NO_INVERSE_SQUARE      = 0.90F;
+static constexpr auto PROB_USE_MODULATOR_CONTOURS = 0.30F;
+
+static constexpr auto VIEWPORT_RECTANGLES = std::array{
+    Viewport::Rectangle{{-1.99F, -1.99F}, {1.99F, 1.99F}},
+    Viewport::Rectangle{{-1.00F, -1.00F}, {1.00F, 1.00F}},
+};
 
 ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
   : m_goomRand{goomRand},
     m_params{
         DEFAULT_VIEWPORT,
         {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+        true,
         DEFAULT_MAGNIFY_AND_ROTATE,
         DEFAULT_RECIPROCAL_EXPONENT,
         false,
-        false,
-        DEFAULT_SAWTOOTH_MODULUS_PERIOD,
-        DEFAULT_SAWTOOTH_PHASE_PERIOD
+        DEFAULT_MODULATOR_PERIOD,
     }
 {
 }
 
 auto ExpReciprocal::SetRandomParams() noexcept -> void
 {
-  const auto viewport = Viewport{
-      {0.0F, 0.0F},
-      {1.0F, 1.0F}
-  };
+  const auto viewport = Viewport{VIEWPORT_RECTANGLES.at(
+      m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(VIEWPORT_RECTANGLES.size())))};
 
   const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+  const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDES_EQUAL)
+                              ? xAmplitude
+                              : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+
+  const auto noInverseSquare = m_goomRand.ProbabilityOf(PROB_NO_INVERSE_SQUARE);
 
   const auto rotate  = std::polar(1.0F, m_goomRand.GetRandInRange(ROTATE_RANGE));
   const auto magnify = m_goomRand.GetRandInRange(MAGNIFY_RANGE);
@@ -73,23 +78,18 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
   const auto reciprocalExponent =
       static_cast<float>(m_goomRand.GetRandInRange(RECIPROCAL_EXPONENT_RANGE));
 
-  const auto useModulusContours = m_goomRand.ProbabilityOf(PROB_USE_MODULUS_CONTOURS);
-  const auto usePhaseContours   = m_goomRand.ProbabilityOf(PROB_USE_PHASE_CONTOURS);
-
-  const auto sawtoothModulusPeriod =
-      not useModulusContours ? 1.0F : m_goomRand.GetRandInRange(SAWTOOTH_MODULUS_PERIOD_RANGE);
-  const auto sawtoothPhasePeriod =
-      not usePhaseContours ? 1.0F : m_goomRand.GetRandInRange(SAWTOOTH_PHASE_PERIOD_RANGE);
+  const auto useModulatorContours = m_goomRand.ProbabilityOf(PROB_USE_MODULATOR_CONTOURS);
+  const auto modulatorPeriod =
+      not useModulatorContours ? 0.0F : m_goomRand.GetRandInRange(MODULATOR_PERIOD_RANGE);
 
   SetParams({
       viewport,
       {xAmplitude, yAmplitude},
+      noInverseSquare,
       magnify * rotate,
       reciprocalExponent,
-      useModulusContours,
-      usePhaseContours,
-      sawtoothModulusPeriod,
-      sawtoothPhasePeriod
+      useModulatorContours,
+      modulatorPeriod,
   });
 }
 
@@ -102,9 +102,6 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
   {
     return GetBaseZoomInCoeffs();
   }
-
-  using FltCalcType         = double;
-  static constexpr auto ONE = static_cast<FltCalcType>(1.0F);
 
   const auto zOffset = std::complex<FltCalcType>{};
   const auto z       = static_cast<std::complex<FltCalcType>>(m_params.magnifyAndRotate) *
@@ -120,49 +117,65 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
     return GetBaseZoomInCoeffs();
   }
 
-  const auto phase                  = std::polar(ONE, std::arg(fz));
+  const auto phase = GetAdjustedPhase(fz, sqDistFromZero);
+
+  if (not m_params.useModulatorContours)
+  {
+    return {GetBaseZoomInCoeffs().x + static_cast<float>(phase.real()),
+            GetBaseZoomInCoeffs().y + static_cast<float>(phase.imag())};
+  }
+
+  const auto modulatedPhase = GetModulatedPhase(phase, absSqFz);
+
+  return {GetBaseZoomInCoeffs().x + static_cast<float>(modulatedPhase.real()),
+          GetBaseZoomInCoeffs().y + static_cast<float>(modulatedPhase.imag())};
+}
+
+inline auto ExpReciprocal::GetAdjustedPhase(const std::complex<FltCalcType>& fz,
+                                            const float sqDistFromZero) const noexcept
+    -> std::complex<FltCalcType>
+{
+  const auto phase = std::polar(ONE, std::arg(fz));
+
+  const auto realPhasePart = static_cast<FltCalcType>(m_params.amplitude.x) * phase.real();
+  const auto imagPhasePart = static_cast<FltCalcType>(m_params.amplitude.y) * phase.imag();
+
+  if (m_params.noInverseSquare)
+  {
+    return {realPhasePart, imagPhasePart};
+  }
+
   static constexpr auto MIN_LOG_ARG = static_cast<FltCalcType>(1.5F);
   const auto inverseLogSqDistFromZero =
       ONE / std::log(MIN_LOG_ARG + static_cast<FltCalcType>(sqDistFromZero));
 
-  const auto realPart = static_cast<float>(
-      inverseLogSqDistFromZero * (static_cast<FltCalcType>(m_params.amplitude.x) * phase.real()));
-  const auto imagPart = static_cast<float>(
-      inverseLogSqDistFromZero * (static_cast<FltCalcType>(m_params.amplitude.y) * phase.imag()));
+  return {inverseLogSqDistFromZero * realPhasePart, inverseLogSqDistFromZero * imagPhasePart};
+}
 
-  if (not m_params.useModulusContours and not m_params.usePhaseContours)
-  {
-    return {GetBaseZoomInCoeffs().x + realPart, GetBaseZoomInCoeffs().y + imagPart};
-  }
-
+inline auto ExpReciprocal::GetModulatedPhase(const std::complex<FltCalcType>& phase,
+                                             const FltCalcType absSqFz) const noexcept
+    -> std::complex<FltCalcType>
+{
   static constexpr auto MAX_ABS_SQ_FZ = static_cast<FltCalcType>(std::numeric_limits<float>::max());
   static constexpr auto MAX_LOG_VAL   = static_cast<FltCalcType>(1000.0F);
   const auto logAbsSqFz               = absSqFz > MAX_ABS_SQ_FZ ? MAX_LOG_VAL : std::log(absSqFz);
 
-  const auto sawtoothLogAbsFz =
-      GetTriangle(static_cast<float>(logAbsSqFz), m_params.sawtoothModulusPeriod);
-  const auto sawtoothPhaseReal =
-      GetTriangle(static_cast<float>(phase.real()), m_params.sawtoothPhasePeriod);
-  const auto sawtoothPhaseImag =
-      GetTriangle(static_cast<float>(phase.imag()), m_params.sawtoothPhasePeriod);
+  const auto logAbsFzModulator = static_cast<FltCalcType>(
+      GetTriangle(static_cast<float>(logAbsSqFz), m_params.modulatorPeriod));
 
-  const auto enhancedRealPart = sawtoothLogAbsFz * sawtoothPhaseReal * static_cast<float>(realPart);
-  const auto enhancedImagPart = sawtoothLogAbsFz * sawtoothPhaseImag * static_cast<float>(imagPart);
-
-  return {GetBaseZoomInCoeffs().x + enhancedRealPart, GetBaseZoomInCoeffs().y + enhancedImagPart};
+  return logAbsFzModulator * phase;
 }
 
 auto ExpReciprocal::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "exp reciprocal"});
   return {
+      GetPair(fullParamGroup, "recipr exp", m_params.reciprocalExponent),
       GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
       GetPair(fullParamGroup,
               "magnify/rotate",
               Point2dFlt{m_params.magnifyAndRotate.real(), m_params.magnifyAndRotate.imag()}),
-      GetPair(fullParamGroup, "recipr exp", m_params.reciprocalExponent),
-      GetPair(fullParamGroup, "sawtoothModulusPeriod", m_params.sawtoothModulusPeriod),
-      GetPair(fullParamGroup, "sawtoothPhasePeriod", m_params.sawtoothPhasePeriod),
+      GetPair(fullParamGroup, "modulatorPeriod", m_params.modulatorPeriod),
   };
 }
 

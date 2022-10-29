@@ -86,8 +86,14 @@ private:
 class Viewport
 {
 public:
+  struct Rectangle
+  {
+    NormalizedCoords bottomLeft;
+    NormalizedCoords topRight;
+  };
+
   constexpr Viewport() noexcept;
-  constexpr Viewport(const NormalizedCoords& coords0, const NormalizedCoords& coords1) noexcept;
+  explicit constexpr Viewport(const Rectangle& viewportRectangle) noexcept;
 
   [[nodiscard]] constexpr auto GetViewportCoords(const NormalizedCoords& coords) const noexcept
       -> NormalizedCoords;
@@ -273,26 +279,29 @@ constexpr auto GetSqDistance(const NormalizedCoords& coords1,
 
 constexpr Viewport::Viewport() noexcept
   : Viewport{
-        {NormalizedCoords::MIN_COORD, NormalizedCoords::MIN_COORD},
-        {NormalizedCoords::MAX_COORD, NormalizedCoords::MAX_COORD}
+        {{NormalizedCoords::MIN_COORD, NormalizedCoords::MIN_COORD},
+         {NormalizedCoords::MAX_COORD, NormalizedCoords::MAX_COORD}}
 }
 {
 }
 
-constexpr Viewport::Viewport(const NormalizedCoords& coords0,
-                             const NormalizedCoords& coords1) noexcept
-  : m_xOffset{UTILS::MATH::HALF * (coords0.GetX() + coords1.GetX())},
-    m_yOffset{UTILS::MATH::HALF * (coords0.GetY() + coords1.GetY())},
-    m_xScale{(coords1.GetX() - coords0.GetX()) / WORLD_WIDTH},
-    m_yScale{(coords1.GetY() - coords0.GetY()) / WORLD_HEIGHT},
+constexpr Viewport::Viewport(const Rectangle& viewportRectangle) noexcept
+  : m_xOffset{UTILS::MATH::HALF *
+              (viewportRectangle.bottomLeft.GetX() + viewportRectangle.topRight.GetX())},
+    m_yOffset{UTILS::MATH::HALF *
+              (viewportRectangle.bottomLeft.GetY() + viewportRectangle.topRight.GetY())},
+    m_xScale{(viewportRectangle.topRight.GetX() - viewportRectangle.bottomLeft.GetX()) /
+             WORLD_WIDTH},
+    m_yScale{(viewportRectangle.topRight.GetY() - viewportRectangle.bottomLeft.GetY()) /
+             WORLD_HEIGHT},
     m_viewportWidth{m_xScale * WORLD_WIDTH}
 {
-  Expects(NormalizedCoords::MIN_COORD <= coords0.GetX());
-  Expects(NormalizedCoords::MIN_COORD <= coords0.GetY());
-  Expects(coords0.GetX() < coords1.GetX());
-  Expects(coords0.GetY() < coords1.GetY());
-  Expects(coords1.GetX() <= NormalizedCoords::MAX_COORD);
-  Expects(coords1.GetY() <= NormalizedCoords::MAX_COORD);
+  Expects(NormalizedCoords::MIN_COORD <= viewportRectangle.bottomLeft.GetX());
+  Expects(NormalizedCoords::MIN_COORD <= viewportRectangle.bottomLeft.GetY());
+  Expects(viewportRectangle.bottomLeft.GetX() < viewportRectangle.topRight.GetX());
+  Expects(viewportRectangle.bottomLeft.GetY() < viewportRectangle.topRight.GetY());
+  Expects(viewportRectangle.topRight.GetX() <= NormalizedCoords::MAX_COORD);
+  Expects(viewportRectangle.topRight.GetY() <= NormalizedCoords::MAX_COORD);
 }
 
 constexpr auto Viewport::GetViewportCoords(const NormalizedCoords& coords) const noexcept

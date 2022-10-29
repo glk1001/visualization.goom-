@@ -75,8 +75,8 @@ def plot_the_effects(the_combined_effects: CombinedEffects):
 
 
 def get_combined_effects() -> CombinedEffects:
-    viewport = Viewport()
-    # viewport = Viewport(-0, -0, 2.1, 2.1)
+    # viewport = Viewport()
+    viewport = Viewport(-0.5, -0.5, 0.5, 0.5)
 
     filter_effect, after_effect = select_effects.get_effects()
 

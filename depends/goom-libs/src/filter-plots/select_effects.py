@@ -35,13 +35,13 @@ def get_effects() -> Tuple[FilterEffectFunction, AfterEffectFunction]:
     # filter_effect = wave_sine_filter_effect
     # filter_effect = wave_tan_filter_effect
     # filter_effect = y_only_filter_effect
-    # filter_effect = exp_reciprocal_filter_effect
+    filter_effect = exp_reciprocal_filter_effect
     # filter_effect = mandelbrot_set_filter_effect
     # filter_effect = mobius_filter_effect
     # filter_effect = power_filter_effect
     # filter_effect = sine_filter_effect
     # filter_effect = strange_sine_filter_effect
-    filter_effect = manual_plugin_filter_effect
+    # filter_effect = manual_plugin_filter_effect
 
     after_effect = zero_after_effect
     # after_effect = tan_after_effect

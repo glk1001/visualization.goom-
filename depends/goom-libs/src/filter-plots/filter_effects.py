@@ -1,3 +1,4 @@
+import math
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -187,13 +188,20 @@ class ExpReciprocal(FilterEffectFunction):
     def __init__(self):
         super().__init__("Exp Reciprocal")
         self.amplitude = 0.1
-        self.factor = 2.0
+        self.factor = 1.0
         self.recipr_exp = 3.0
         self.offset = complex(0.0, 0.0)
+        rotate_angle = 0.9 * 2.0 * math.pi
+        self.rotate = math.cos(rotate_angle) + math.sin(rotate_angle) * 1.0J
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
-        return self.base_zoom_coeffs + (self.amplitude * np.exp(
-                1.0 / ((self.factor * (z + self.offset)) ** self.recipr_exp)))
+        fz = np.exp(
+                1.0 / ((self.factor * self.rotate * (z + self.offset)) ** self.recipr_exp))
+        fz_arg = np.angle(fz)
+        fz_norm = np.absolute(fz) ** 2
+        phase = np.cos(fz_arg) + np.sin(fz_arg) * 1.0j
+        inv_log_abs_sq_z = 1.0 / np.log(1.5 + absolute_sq_z)
+        return self.base_zoom_coeffs + inv_log_abs_sq_z * self.amplitude * phase
 
 
 class Sine(FilterEffectFunction):
@@ -204,8 +212,8 @@ class Sine(FilterEffectFunction):
         self.offset = complex(0, 0)
 
     def f(self, z: np.ndarray, absolute_sq_z: np.ndarray):
-        //t = 0.1
-        //return np.cos(t + z ** 2) - np.sin(t + 1.0 + z ** 4)
+        #t = 0.1
+        #return np.cos(t + z ** 2) - np.sin(t + 1.0 + z ** 4)
         freq_factor = 2
         angle = freq_factor * absolute_sq_z
         return self.base_zoom_coeffs + (

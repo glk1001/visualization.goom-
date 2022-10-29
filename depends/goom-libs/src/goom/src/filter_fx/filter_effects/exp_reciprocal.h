@@ -31,12 +31,11 @@ public:
   {
     Viewport viewport;
     Amplitude amplitude;
+    bool noInverseSquare;
     std::complex<float> magnifyAndRotate;
     float reciprocalExponent;
-    bool useModulusContours;
-    bool usePhaseContours;
-    float sawtoothModulusPeriod;
-    float sawtoothPhasePeriod;
+    bool useModulatorContours;
+    float modulatorPeriod;
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
@@ -46,6 +45,14 @@ protected:
 private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   Params m_params;
+  using FltCalcType         = double;
+  static constexpr auto ONE = static_cast<FltCalcType>(1.0F);
+  [[nodiscard]] auto GetAdjustedPhase(const std::complex<FltCalcType>& fz,
+                                      float sqDistFromZero) const noexcept
+      -> std::complex<FltCalcType>;
+  [[nodiscard]] auto GetModulatedPhase(const std::complex<FltCalcType>& phase,
+                                       FltCalcType absSqFz) const noexcept
+      -> std::complex<FltCalcType>;
 };
 
 inline auto ExpReciprocal::GetZoomInCoefficientsViewport() const noexcept -> Viewport
