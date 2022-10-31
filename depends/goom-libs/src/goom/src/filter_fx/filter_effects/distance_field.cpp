@@ -1,74 +1,88 @@
 #include "distance_field.h"
 
+//#undef NO_LOGGING
+
 #include "filter_fx/common_types.h"
 #include "goom_config.h"
 #include "goom_types.h"
+#include "logging.h"
+#include "utils/enum_utils.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
+
+#include <algorithm>
+#include <limits>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
+using UTILS::EnumToString;
+using UTILS::GetFullParamGroup;
+using UTILS::GetPair;
+using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
+using UTILS::MATH::HALF;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::IsEven;
 using UTILS::MATH::Sq;
+using UTILS::MATH::U_HALF;
+
+static const auto DEFAULT_GRID_POINT_ARRAY      = DistanceField::GridPointsWithCentres{};
+static const auto DEFAULT_GRID_POINT_CENTRE_MAP = DistanceField::GridPointMap{};
+
+static constexpr auto DEFAULT_GRID_WIDTH     = 4U;
+static constexpr auto GRID_WIDTH_RANGE_MODE0 = IGoomRand::NumberRange<uint32_t>{4U, 16U};
+static constexpr auto GRID_WIDTH_RANGE_MODE1 = IGoomRand::NumberRange<uint32_t>{16U, 32U};
+static constexpr auto GRID_WIDTH_RANGE_MODE2 = IGoomRand::NumberRange<uint32_t>{32U, 64U};
+
+static constexpr auto DEFAULT_GRID_TYPE = DistanceField::GridType::FULL;
+static constexpr auto DEFAULT_GRID_SCALE =
+    static_cast<float>(DEFAULT_GRID_WIDTH) / NormalizedCoords::COORD_WIDTH;
+static constexpr auto DEFAULT_CELL_CENTRE = HALF / DEFAULT_GRID_SCALE;
 
 static constexpr auto DEFAULT_AMPLITUDE     = 0.1F;
 static constexpr auto AMPLITUDE_RANGE_MODE0 = AmplitudeRange{
-    {0.01F, 0.501F},
-    {0.01F, 0.501F},
+    {0.05F, 1.101F},
+    {0.05F, 1.101F},
 };
 static constexpr auto AMPLITUDE_RANGE_MODE1 = AmplitudeRange{
-    {0.20F, 1.01F},
-    {0.20F, 1.01F},
+    {0.50F, 2.01F},
+    {0.50F, 2.01F},
 };
 static constexpr auto AMPLITUDE_RANGE_MODE2 = AmplitudeRange{
-    {0.50F, 1.51F},
-    {0.50F, 1.51F},
+    {0.70F, 3.01F},
+    {0.70F, 3.01F},
 };
+static constexpr auto FULL_AMPLITUDE_FACTOR            = 2.0F;
+static constexpr auto PARTIAL_DIAMOND_AMPLITUDE_FACTOR = 0.1F;
 
-static constexpr auto DEFAULT_SQ_DIST_MULT     = 0.5F;
-static constexpr auto SQ_DIST_MULT_RANGE_MODE0 = SqDistMultRange{
-    {0.0F, 0.01F},
-    {0.0F, 0.01F},
-};
-static constexpr auto SQ_DIST_MULT_RANGE_MODE1 = SqDistMultRange{
-    {0.5F, 2.01F},
-    {0.5F, 2.01F},
-};
-static constexpr auto SQ_DIST_MULT_RANGE_MODE2 = SqDistMultRange{
-    {0.5F, 3.01F},
-    {0.5F, 3.01F},
-};
+static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 0.50F;
+static constexpr auto PROB_RANDOM_CENTRE       = 0.1F;
 
-static constexpr auto DEFAULT_SQ_DIST_OFFSET     = 0.1F;
-static constexpr auto SQ_DIST_OFFSET_RANGE_MODE0 = SqDistOffsetRange{
-    {0.0F, 0.01F},
-    {0.0F, 0.01F},
-};
-static constexpr auto SQ_DIST_OFFSET_RANGE_MODE1 = SqDistOffsetRange{
-    {0.1F, 1.01F},
-    {0.1F, 1.01F},
-};
-static constexpr auto SQ_DIST_OFFSET_RANGE_MODE2 = SqDistOffsetRange{
-    {0.3F, 1.11F},
-    {0.3F, 1.11F},
-};
-
-static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 0.50F;
-static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL   = 0.50F;
-static constexpr auto PROB_XY_SQ_DIST_OFFSET_EQUAL = 0.50F;
-
-static constexpr auto PROB_RANDOM_DISTANCE_POINTS = 0.3F;
+static constexpr auto GRID_TYPE_FULL_WEIGHT            = 100.0F;
+static constexpr auto GRID_TYPE_PARTIAL_X_WEIGHT       = 10.0F;
+static constexpr auto GRID_TYPE_PARTIAL_DIAMOND_WEIGHT = 10.0F;
+static constexpr auto GRID_TYPE_PARTIAL_RANDOM_WEIGHT  = 10.0F;
 
 DistanceField::DistanceField(const Modes mode, const IGoomRand& goomRand) noexcept
   : m_mode{mode},
     m_goomRand{goomRand},
+    m_weightedEffects{
+        goomRand,
+        {
+            {    GridType::FULL,        GRID_TYPE_FULL_WEIGHT},
+            {    GridType::PARTIAL_X,   GRID_TYPE_PARTIAL_X_WEIGHT},
+            {GridType::PARTIAL_DIAMOND, GRID_TYPE_PARTIAL_DIAMOND_WEIGHT},
+            {GridType::PARTIAL_RANDOM,  GRID_TYPE_PARTIAL_RANDOM_WEIGHT},
+        }
+    },
     m_params{
-        {DEFAULT_AMPLITUDE,      DEFAULT_AMPLITUDE},
-        {DEFAULT_SQ_DIST_MULT,   DEFAULT_SQ_DIST_MULT},
-        {DEFAULT_SQ_DIST_OFFSET, DEFAULT_SQ_DIST_OFFSET},
-        {}
+        {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+        DEFAULT_GRID_TYPE,
+        DEFAULT_GRID_WIDTH,
+        DEFAULT_GRID_SCALE,
+        DEFAULT_CELL_CENTRE,
+        {DEFAULT_GRID_POINT_ARRAY, DEFAULT_GRID_POINT_CENTRE_MAP},
     }
 {
 }
@@ -91,114 +105,316 @@ auto DistanceField::SetRandomParams() noexcept -> void
 
 auto DistanceField::SetMode0RandomParams() noexcept -> void
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE0,
-                  SQ_DIST_MULT_RANGE_MODE0,
-                  SQ_DIST_OFFSET_RANGE_MODE0,
-                  GetDistancePoints());
+  SetRandomParams(AMPLITUDE_RANGE_MODE0, GRID_WIDTH_RANGE_MODE0);
 }
 
 auto DistanceField::SetMode1RandomParams() noexcept -> void
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE1,
-                  SQ_DIST_MULT_RANGE_MODE1,
-                  SQ_DIST_OFFSET_RANGE_MODE1,
-                  GetDistancePoints());
+  SetRandomParams(AMPLITUDE_RANGE_MODE1, GRID_WIDTH_RANGE_MODE1);
 }
 
 auto DistanceField::SetMode2RandomParams() noexcept -> void
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE2,
-                  SQ_DIST_MULT_RANGE_MODE2,
-                  SQ_DIST_OFFSET_RANGE_MODE2,
-                  GetDistancePoints());
+  SetRandomParams(AMPLITUDE_RANGE_MODE2, GRID_WIDTH_RANGE_MODE2);
 }
 
 auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
-                                    const SqDistMultRange& sqDistMultRange,
-                                    const SqDistOffsetRange& sqDistOffsetRange,
-                                    std::vector<NormalizedCoords>&& distancePoints) noexcept -> void
+                                    const GridWidthRange& gridWidthRange) noexcept -> void
+{
+  const auto gridType   = m_weightedEffects.GetRandomWeighted();
+  const auto gridWidth  = GetGridWidth(gridType, gridWidthRange);
+  const auto gridScale  = static_cast<float>(gridWidth) / NormalizedCoords::COORD_WIDTH;
+  const auto cellCentre = HALF / gridScale;
+  const auto gridArrays = GetGridsArray(gridType, gridWidth);
+
+  const auto amplitude = GetAmplitude(amplitudeRange, gridType, gridWidth, gridArrays);
+
+  SetParams({
+      amplitude,
+      gridType,
+      static_cast<int32_t>(gridWidth - 1),
+      gridScale,
+      cellCentre,
+      gridArrays,
+  });
+
+  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+}
+
+auto DistanceField::GetGridWidth(const GridType gridType,
+                                 const GridWidthRange& gridWidthRange) const noexcept -> uint32_t
+{
+  const auto gridWidth = m_goomRand.GetRandInRange(gridWidthRange);
+
+  if ((gridType == GridType::PARTIAL_DIAMOND) and IsEven(gridWidth))
+  {
+    return gridWidth + 1;
+  }
+
+  return gridWidth;
+}
+
+auto DistanceField::GetGridsArray(const GridType gridType, const uint32_t gridWidth) const noexcept
+    -> Params::GridArrays
+{
+  if (gridType == GridType::FULL)
+  {
+    return {DEFAULT_GRID_POINT_ARRAY, DEFAULT_GRID_POINT_CENTRE_MAP};
+  }
+
+  const auto gridPointArray      = GetGridPointsWithCentres(gridType, gridWidth);
+  const auto gridPointCentresMap = GetGridPointCentresMap(gridWidth, gridPointArray);
+
+  return {gridPointArray, gridPointCentresMap};
+}
+
+auto DistanceField::GetGridPointsWithCentres(const GridType gridType,
+                                             const uint32_t gridWidth) const noexcept
+    -> GridPointsWithCentres
+{
+  if (gridType == GridType::PARTIAL_X)
+  {
+    return GetGridPointXArray(gridWidth);
+  }
+  if (gridType == GridType::PARTIAL_DIAMOND)
+  {
+    return GetGridPointDiamondArray(gridWidth);
+  }
+  if (gridType == GridType::PARTIAL_RANDOM)
+  {
+    return GetGridPointRandomArray(gridWidth);
+  }
+
+  FailFast();
+  return {};
+}
+
+auto DistanceField::GetGridPointXArray(const uint32_t gridWidth) noexcept -> GridPointsWithCentres
+{
+  auto gridPointArray = GridPointsWithCentres{};
+
+  for (auto y = 0U; y < gridWidth; ++y)
+  {
+    gridPointArray.emplace_back(y, y);
+    gridPointArray.emplace_back(y, gridWidth - y - 1);
+  }
+
+  return gridPointArray;
+}
+
+auto DistanceField::GetGridPointDiamondArray(const uint32_t gridWidth) noexcept
+    -> GridPointsWithCentres
+{
+  auto gridPointArray = GridPointsWithCentres{};
+
+  gridPointArray.emplace_back(0U, U_HALF * gridWidth - 1);
+  gridPointArray.emplace_back(U_HALF * gridWidth - 1, gridWidth - 1);
+  gridPointArray.emplace_back(gridWidth - 1, U_HALF * gridWidth - 1);
+  gridPointArray.emplace_back(U_HALF * gridWidth - 1, 0U);
+
+  return gridPointArray;
+}
+
+auto DistanceField::GetGridPointRandomArray(const uint32_t gridWidth) const noexcept
+    -> GridPointsWithCentres
+{
+  auto gridPointArray = GridPointsWithCentres{};
+
+  for (auto y = 0U; y < gridWidth; ++y)
+  {
+    for (auto x = 0U; x < gridWidth; ++x)
+    {
+      if (m_goomRand.ProbabilityOf(PROB_RANDOM_CENTRE))
+      {
+        gridPointArray.emplace_back(x, y);
+      }
+    }
+  }
+
+  return gridPointArray;
+}
+
+auto DistanceField::GetGridPointCentresMap(
+    const uint32_t gridWidth, const GridPointsWithCentres& gridPointsWithCentres) noexcept
+    -> GridPointMap
+{
+  auto gridPointCentresMap = GridPointMap(gridWidth);
+
+  for (auto y = 0U; y < gridWidth; ++y)
+  {
+    gridPointCentresMap[y].resize(gridWidth);
+    for (auto x = 0U; x < gridWidth; ++x)
+    {
+      gridPointCentresMap[y][x] = FindNearestGridPointsWithCentres({x, y}, gridPointsWithCentres);
+    }
+  }
+
+  return gridPointCentresMap;
+}
+
+inline auto DistanceField::FindNearestGridPointsWithCentres(
+    const Point2dInt& gridPoint, const GridPointsWithCentres& gridPointsWithCentres) noexcept
+    -> GridCentresList
+{
+  auto minDistancePoints = GridCentresList{};
+  auto minDistanceSq     = std::numeric_limits<int32_t>::max();
+
+  for (const auto& centrePoint : gridPointsWithCentres)
+  {
+    const auto distanceSq = SqDistance(gridPoint, centrePoint);
+    if (distanceSq < minDistanceSq)
+    {
+      minDistanceSq     = distanceSq;
+      minDistancePoints = GridCentresList{1, centrePoint};
+    }
+    else if (distanceSq == minDistanceSq)
+    {
+      minDistancePoints.emplace_back(centrePoint);
+    }
+  }
+
+  Ensures(not minDistancePoints.empty());
+
+  return minDistancePoints;
+}
+
+inline auto DistanceField::GetAmplitude(const AmplitudeRange& amplitudeRange,
+                                        const GridType gridType,
+                                        const uint32_t gridWidth,
+                                        const Params::GridArrays& gridArrays) const noexcept
+    -> Amplitude
 {
   const auto xAmplitude = m_goomRand.GetRandInRange(amplitudeRange.xRange);
   const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
                               ? xAmplitude
                               : m_goomRand.GetRandInRange(amplitudeRange.yRange);
 
-  const auto xSqDistMult = m_goomRand.GetRandInRange(sqDistMultRange.xRange);
-  const auto ySqDistMult = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_MULT_EQUAL)
-                               ? xSqDistMult
-                               : m_goomRand.GetRandInRange(sqDistMultRange.yRange);
+  const auto amplitudeFactor = GetAmplitudeFactor(gridType, gridWidth, gridArrays);
 
-  const auto xSqDistOffset = m_goomRand.GetRandInRange(sqDistOffsetRange.xRange);
-  const auto ySqDistOffset = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_OFFSET_EQUAL)
-                                 ? xSqDistOffset
-                                 : m_goomRand.GetRandInRange(sqDistOffsetRange.yRange);
-
-  SetParams({
-      {   xAmplitude,    yAmplitude},
-      {  xSqDistMult,   ySqDistMult},
-      {xSqDistOffset, ySqDistOffset},
-      distancePoints
-  });
-
-  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+  return {amplitudeFactor * xAmplitude, amplitudeFactor * yAmplitude};
 }
 
-auto DistanceField::GetDistancePoints() const noexcept -> std::vector<NormalizedCoords>
+inline auto DistanceField::GetAmplitudeFactor(const GridType gridType,
+                                              const uint32_t gridWidth,
+                                              const Params::GridArrays& gridArrays) noexcept
+    -> float
 {
-  auto distancePoints = std::vector<NormalizedCoords>{};
-
-  static constexpr auto NUM_DISTANCE_POINTS = 4U;
-
-  static constexpr auto Y_SHRINK_FACTOR = 0.67F;
-
-  if (!m_goomRand.ProbabilityOf(PROB_RANDOM_DISTANCE_POINTS))
+  if (gridType == GridType::PARTIAL_DIAMOND)
   {
-    static constexpr auto HALF_MIN_COORD = 0.5F * NormalizedCoords::MIN_COORD;
-    static constexpr auto HALF_MAX_COORD = 0.5F * NormalizedCoords::MAX_COORD;
-    distancePoints.emplace_back(HALF_MIN_COORD, Y_SHRINK_FACTOR * HALF_MIN_COORD);
-    distancePoints.emplace_back(HALF_MAX_COORD, Y_SHRINK_FACTOR * HALF_MIN_COORD);
-    distancePoints.emplace_back(HALF_MIN_COORD, Y_SHRINK_FACTOR * HALF_MAX_COORD);
-    distancePoints.emplace_back(HALF_MAX_COORD, Y_SHRINK_FACTOR * HALF_MAX_COORD);
+    return PARTIAL_DIAMOND_AMPLITUDE_FACTOR;
   }
-  else
+  if (gridType == GridType::PARTIAL_X)
   {
-    static constexpr auto MIN_DISTANCE_COORD = 0.95F * NormalizedCoords::MIN_COORD;
-    static constexpr auto MAX_DISTANCE_COORD = 0.95F * NormalizedCoords::MAX_COORD;
-    for (auto i = 0U; i < NUM_DISTANCE_POINTS; ++i)
+    return 1.0F + std::log2(static_cast<float>(gridWidth));
+  }
+  if (gridType == GridType::PARTIAL_RANDOM)
+  {
+    return std::log2(static_cast<float>(gridArrays.gridPointsWithCentres.size()));
+  }
+
+  return FULL_AMPLITUDE_FACTOR * std::log2(static_cast<float>(gridWidth));
+}
+
+auto DistanceField::GetDistanceSquaredFromClosestPoint(const NormalizedCoords& point) const noexcept
+    -> float
+{
+  const auto gridPoint = GetCorrespondingGridPoint(point);
+
+  if (m_params.gridType == GridType::FULL)
+  {
+    const auto normalizedGridCentre = GetNormalizedGridPointCentre(gridPoint);
+    return GetSqDistance(point, normalizedGridCentre);
+  }
+
+  const auto gridPointsWithCentres = GetNearsetGridPointsWithCentres(gridPoint);
+  const auto normalizedGridCentres = GetNormalizedGridPointCentres(gridPointsWithCentres);
+
+  return GetMinDistanceSquared(point, normalizedGridCentres);
+}
+
+inline auto DistanceField::GetCorrespondingGridPoint(const NormalizedCoords& point) const noexcept
+    -> Point2dInt
+{
+  const auto x = static_cast<int32_t>(
+      std::floor(m_params.gridScale * (point.GetX() - NormalizedCoords::MIN_COORD)));
+  const auto y = static_cast<int32_t>(
+      std::floor(m_params.gridScale * (point.GetY() - NormalizedCoords::MIN_COORD)));
+
+  return {std::clamp(x, 0, m_params.gridMax), std::clamp(y, 0, m_params.gridMax)};
+}
+
+inline auto DistanceField::GetNearsetGridPointsWithCentres(
+    const Point2dInt& gridPoint) const noexcept -> GridCentresList
+{
+  if (m_params.gridType == GridType::FULL)
+  {
+    return GridCentresList{1, gridPoint};
+  }
+
+  const auto x = static_cast<uint32_t>(gridPoint.x);
+  const auto y = static_cast<uint32_t>(gridPoint.y);
+
+  return m_params.gridArrays.gridPointCentresMap.at(y).at(x);
+}
+
+inline auto DistanceField::GetNormalizedGridPointCentres(
+    const GridCentresList& gridPointsWithCentres) const noexcept -> std::vector<NormalizedCoords>
+{
+  auto normalizedCentres = std::vector<NormalizedCoords>{};
+
+  for (const auto& gridPoint : gridPointsWithCentres)
+  {
+    normalizedCentres.emplace_back(GetNormalizedGridPointCentre(gridPoint));
+  }
+
+  return normalizedCentres;
+}
+
+inline auto DistanceField::GetNormalizedGridPointCentre(
+    const Point2dInt& gridPointWithCentre) const noexcept -> NormalizedCoords
+{
+  return {(NormalizedCoords::MIN_COORD +
+           (static_cast<float>(gridPointWithCentre.x) / m_params.gridScale)) +
+              m_params.cellCentre,
+          (NormalizedCoords::MIN_COORD +
+           (static_cast<float>(gridPointWithCentre.y) / m_params.gridScale)) +
+              m_params.cellCentre};
+}
+
+inline auto DistanceField::GetMinDistanceSquared(
+    const NormalizedCoords& point, const std::vector<NormalizedCoords>& centres) noexcept -> float
+{
+  static constexpr auto MAX_DISTANCE_SQUARED = 1.0F + (2.0F * Sq(NormalizedCoords::COORD_WIDTH));
+  auto minDistanceSquared                    = MAX_DISTANCE_SQUARED;
+
+  for (const auto& centre : centres)
+  {
+    const auto distanceSquared = GetSqDistance(point, centre);
+    if (distanceSquared < minDistanceSquared)
     {
-      distancePoints.emplace_back(
-          m_goomRand.GetRandInRange(MIN_DISTANCE_COORD, MAX_DISTANCE_COORD),
-          Y_SHRINK_FACTOR * m_goomRand.GetRandInRange(MIN_DISTANCE_COORD, MAX_DISTANCE_COORD));
+      minDistanceSquared = distanceSquared;
     }
   }
 
-  return distancePoints;
-}
+  Ensures(minDistanceSquared < MAX_DISTANCE_SQUARED);
 
-auto DistanceField::GetClosestDistancePoint(const NormalizedCoords& coords) const noexcept
-    -> RelativeDistancePoint
-{
-  static constexpr auto MAX_DISTANCE_SQ = 2.0F * Sq(NormalizedCoords::COORD_WIDTH);
-  auto minDistanceSq       = MAX_DISTANCE_SQ;
-  const auto* closestPoint = Ptr<NormalizedCoords>{nullptr};
-
-  for (const auto& distancePoint : m_params.distancePoints)
-  {
-    const auto distanceSq = GetSqDistance(coords, distancePoint);
-    if (distanceSq < minDistanceSq)
-    {
-      minDistanceSq = distanceSq;
-      closestPoint  = &distancePoint;
-    }
-  }
-  Ensures(closestPoint != nullptr);
-
-  return {minDistanceSq, *closestPoint};
+  return minDistanceSquared;
 }
 
 auto DistanceField::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
-  return {};
+  const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "Dist Field"});
+  const auto gridWidth      = m_params.gridMax + 1;
+  return {
+      GetPair(fullParamGroup, "GridType", EnumToString(m_params.gridType)),
+      GetPair(fullParamGroup, "GridWidth", gridWidth),
+      GetPair(fullParamGroup,
+              "Grid Centres",
+              m_params.gridType == GridType::FULL
+                  ? static_cast<size_t>(Sq(gridWidth))
+                  : m_params.gridArrays.gridPointsWithCentres.size()),
+      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
+  };
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

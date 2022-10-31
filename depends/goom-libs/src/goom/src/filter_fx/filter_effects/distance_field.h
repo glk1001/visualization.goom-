@@ -30,12 +30,30 @@ public:
   [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
+  enum class GridType
+  {
+    FULL,
+    PARTIAL_X,
+    PARTIAL_DIAMOND,
+    PARTIAL_RANDOM,
+    _num // unused, and marks the enum end
+  };
+  using GridPointsWithCentres = std::vector<Point2dInt>;
+  using GridCentresList       = std::vector<Point2dInt>;
+  using GridPointMap          = std::vector<std::vector<GridCentresList>>;
   struct Params
   {
     Amplitude amplitude;
-    SqDistMult sqDistMult;
-    SqDistOffset sqDistOffset;
-    std::vector<NormalizedCoords> distancePoints;
+    GridType gridType;
+    int32_t gridMax;
+    float gridScale;
+    float cellCentre;
+    struct GridArrays
+    {
+      GridPointsWithCentres gridPointsWithCentres;
+      GridPointMap gridPointCentresMap;
+    };
+    GridArrays gridArrays;
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
@@ -45,62 +63,66 @@ protected:
 private:
   const Modes m_mode;
   const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::Weights<GridType> m_weightedEffects;
+
   Params m_params;
-  struct RelativeDistancePoint
-  {
-    float sqDistanceFromCoords;
-    const NormalizedCoords& distancePoint;
-  };
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;
   auto SetMode2RandomParams() noexcept -> void;
+
+  using GridWidthRange = UTILS::MATH::IGoomRand::NumberRange<uint32_t>;
   auto SetRandomParams(const AmplitudeRange& amplitudeRange,
-                       const SqDistMultRange& sqDistMultRange,
-                       const SqDistOffsetRange& sqDistOffsetRange,
-                       std::vector<NormalizedCoords>&& distancePoints) noexcept -> void;
-  [[nodiscard]] auto GetDistancePoints() const noexcept -> std::vector<NormalizedCoords>;
-  [[nodiscard]] auto GetClosestDistancePoint(const NormalizedCoords& coords) const noexcept
-      -> RelativeDistancePoint;
-  [[nodiscard]] static auto GetZoomInCoefficient(float baseZoomInCoeff,
-                                                 float sqDistFromZero,
-                                                 float amplitude,
-                                                 float sqDistMult,
-                                                 float sqDistOffset) noexcept -> float;
+                       const GridWidthRange& gridWidthRange) noexcept -> void;
+  [[nodiscard]] auto GetGridWidth(GridType gridType,
+                                  const GridWidthRange& gridWidthRange) const noexcept -> uint32_t;
+  [[nodiscard]] auto GetGridsArray(GridType gridType, uint32_t gridWidth) const noexcept
+      -> Params::GridArrays;
+  [[nodiscard]] auto GetGridPointsWithCentres(GridType gridType, uint32_t gridWidth) const noexcept
+      -> GridPointsWithCentres;
+  [[nodiscard]] static auto GetGridPointCentresMap(
+      uint32_t gridWidth, const GridPointsWithCentres& gridPointsWithCentres) noexcept
+      -> GridPointMap;
+  [[nodiscard]] static auto FindNearestGridPointsWithCentres(
+      const Point2dInt& gridPoint, const GridPointsWithCentres& gridPointsWithCentres) noexcept
+      -> GridCentresList;
+  [[nodiscard]] static auto GetGridPointXArray(uint32_t gridWidth) noexcept
+      -> GridPointsWithCentres;
+  [[nodiscard]] static auto GetGridPointDiamondArray(uint32_t gridWidth) noexcept
+      -> GridPointsWithCentres;
+  [[nodiscard]] auto GetGridPointRandomArray(uint32_t gridWidth) const noexcept
+      -> GridPointsWithCentres;
+  [[nodiscard]] auto GetAmplitude(const AmplitudeRange& amplitudeRange,
+                                  GridType gridType,
+                                  uint32_t gridWidth,
+                                  const Params::GridArrays& gridArrays) const noexcept -> Amplitude;
+  [[nodiscard]] static auto GetAmplitudeFactor(GridType gridType,
+                                               uint32_t gridWidth,
+                                               const Params::GridArrays& gridArrays) noexcept
+      -> float;
+
+  [[nodiscard]] auto GetDistanceSquaredFromClosestPoint(
+      const NormalizedCoords& point) const noexcept -> float;
+  [[nodiscard]] auto GetCorrespondingGridPoint(const NormalizedCoords& point) const noexcept
+      -> Point2dInt;
+  [[nodiscard]] auto GetNearsetGridPointsWithCentres(const Point2dInt& gridPoint) const noexcept
+      -> GridCentresList;
+  [[nodiscard]] auto GetNormalizedGridPointCentres(
+      const GridCentresList& gridPointsWithCentres) const noexcept -> std::vector<NormalizedCoords>;
+  [[nodiscard]] auto GetNormalizedGridPointCentre(
+      const Point2dInt& gridPointWithCentre) const noexcept -> NormalizedCoords;
+  [[nodiscard]] static auto GetMinDistanceSquared(
+      const NormalizedCoords& point, const std::vector<NormalizedCoords>& centres) noexcept
+      -> float;
 };
 
 inline auto DistanceField::GetZoomInCoefficients(
     const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const noexcept
     -> Point2dFlt
 {
-  const auto sqDistFromClosestPoint = GetClosestDistancePoint(coords).sqDistanceFromCoords;
+  const auto sqDistFromClosestPoint = GetDistanceSquaredFromClosestPoint(coords);
 
-  if (m_mode == Modes::MODE0)
-  {
-    return {GetBaseZoomInCoeffs().x + (m_params.amplitude.x * sqDistFromClosestPoint),
-            GetBaseZoomInCoeffs().y + (m_params.amplitude.y * sqDistFromClosestPoint)};
-  }
-
-  return {
-      GetZoomInCoefficient(GetBaseZoomInCoeffs().x,
-                           sqDistFromClosestPoint,
-                           m_params.amplitude.x,
-                           m_params.sqDistMult.x,
-                           m_params.sqDistOffset.x),
-      GetZoomInCoefficient(GetBaseZoomInCoeffs().y,
-                           sqDistFromClosestPoint,
-                           m_params.amplitude.y,
-                           m_params.sqDistMult.y,
-                           m_params.sqDistOffset.y),
-  };
-}
-
-inline auto DistanceField::GetZoomInCoefficient(const float baseZoomInCoeff,
-                                                const float sqDistFromZero,
-                                                const float amplitude,
-                                                const float sqDistMult,
-                                                const float sqDistOffset) noexcept -> float
-{
-  return baseZoomInCoeff + (amplitude * ((sqDistMult * sqDistFromZero) - sqDistOffset));
+  return {GetBaseZoomInCoeffs().x + (m_params.amplitude.x * sqDistFromClosestPoint),
+          GetBaseZoomInCoeffs().y + (m_params.amplitude.y * sqDistFromClosestPoint)};
 }
 
 inline auto DistanceField::GetParams() const noexcept -> const Params&
