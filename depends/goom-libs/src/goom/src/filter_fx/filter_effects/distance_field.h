@@ -35,6 +35,7 @@ public:
     FULL,
     PARTIAL_X,
     PARTIAL_DIAMOND,
+    PARTIAL_SQUARE,
     PARTIAL_RANDOM,
     _num // unused, and marks the enum end
   };
@@ -88,6 +89,8 @@ private:
   [[nodiscard]] static auto GetGridPointXArray(uint32_t gridWidth) noexcept
       -> GridPointsWithCentres;
   [[nodiscard]] static auto GetGridPointDiamondArray(uint32_t gridWidth) noexcept
+      -> GridPointsWithCentres;
+  [[nodiscard]] static auto GetGridPointSquareArray(uint32_t gridWidth) noexcept
       -> GridPointsWithCentres;
   [[nodiscard]] auto GetGridPointRandomArray(uint32_t gridWidth) const noexcept
       -> GridPointsWithCentres;

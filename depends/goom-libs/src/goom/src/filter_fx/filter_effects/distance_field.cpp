@@ -55,6 +55,7 @@ static constexpr auto AMPLITUDE_RANGE_MODE2 = AmplitudeRange{
 };
 static constexpr auto FULL_AMPLITUDE_FACTOR            = 2.0F;
 static constexpr auto PARTIAL_DIAMOND_AMPLITUDE_FACTOR = 0.1F;
+static constexpr auto PARTIAL_SQUARE_AMPLITUDE_FACTOR = 0.1F;
 
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 0.50F;
 static constexpr auto PROB_RANDOM_CENTRE       = 0.1F;
@@ -62,6 +63,7 @@ static constexpr auto PROB_RANDOM_CENTRE       = 0.1F;
 static constexpr auto GRID_TYPE_FULL_WEIGHT            = 100.0F;
 static constexpr auto GRID_TYPE_PARTIAL_X_WEIGHT       = 10.0F;
 static constexpr auto GRID_TYPE_PARTIAL_DIAMOND_WEIGHT = 10.0F;
+static constexpr auto GRID_TYPE_PARTIAL_SQUARE_WEIGHT  = 10000000.0F;
 static constexpr auto GRID_TYPE_PARTIAL_RANDOM_WEIGHT  = 10.0F;
 
 DistanceField::DistanceField(const Modes mode, const IGoomRand& goomRand) noexcept
@@ -73,6 +75,7 @@ DistanceField::DistanceField(const Modes mode, const IGoomRand& goomRand) noexce
             {    GridType::FULL,        GRID_TYPE_FULL_WEIGHT},
             {    GridType::PARTIAL_X,   GRID_TYPE_PARTIAL_X_WEIGHT},
             {GridType::PARTIAL_DIAMOND, GRID_TYPE_PARTIAL_DIAMOND_WEIGHT},
+            {GridType::PARTIAL_SQUARE,  GRID_TYPE_PARTIAL_SQUARE_WEIGHT},
             {GridType::PARTIAL_RANDOM,  GRID_TYPE_PARTIAL_RANDOM_WEIGHT},
         }
     },
@@ -180,6 +183,10 @@ auto DistanceField::GetGridPointsWithCentres(const GridType gridType,
   {
     return GetGridPointDiamondArray(gridWidth);
   }
+  if (gridType == GridType::PARTIAL_SQUARE)
+  {
+    return GetGridPointSquareArray(gridWidth);
+  }
   if (gridType == GridType::PARTIAL_RANDOM)
   {
     return GetGridPointRandomArray(gridWidth);
@@ -211,6 +218,28 @@ auto DistanceField::GetGridPointDiamondArray(const uint32_t gridWidth) noexcept
   gridPointArray.emplace_back(U_HALF * gridWidth - 1, gridWidth - 1);
   gridPointArray.emplace_back(gridWidth - 1, U_HALF * gridWidth - 1);
   gridPointArray.emplace_back(U_HALF * gridWidth - 1, 0U);
+
+  return gridPointArray;
+}
+
+auto DistanceField::GetGridPointSquareArray(const uint32_t gridWidth) noexcept
+    -> GridPointsWithCentres
+{
+  auto gridPointArray = GridPointsWithCentres{};
+
+  const auto start = gridWidth <= 2U ? 0U : 1U;
+  const auto finish = gridWidth <= 2U ? gridWidth : gridWidth - 1;
+
+  for (auto y = start; y < finish; ++y)
+  {
+    gridPointArray.emplace_back(0U, y);
+    gridPointArray.emplace_back(gridWidth - 1, y);
+  }
+  for (auto x = start + 1U; x < finish - 1U; ++x)
+  {
+    gridPointArray.emplace_back(x, 0U);
+    gridPointArray.emplace_back(x, gridWidth - 1);
+  }
 
   return gridPointArray;
 }
@@ -299,13 +328,17 @@ inline auto DistanceField::GetAmplitudeFactor(const GridType gridType,
                                               const Params::GridArrays& gridArrays) noexcept
     -> float
 {
+  if (gridType == GridType::PARTIAL_X)
+  {
+    return 1.0F + std::log2(static_cast<float>(gridWidth));
+  }
   if (gridType == GridType::PARTIAL_DIAMOND)
   {
     return PARTIAL_DIAMOND_AMPLITUDE_FACTOR;
   }
-  if (gridType == GridType::PARTIAL_X)
+  if (gridType == GridType::PARTIAL_SQUARE)
   {
-    return 1.0F + std::log2(static_cast<float>(gridWidth));
+    return PARTIAL_SQUARE_AMPLITUDE_FACTOR;
   }
   if (gridType == GridType::PARTIAL_RANDOM)
   {
