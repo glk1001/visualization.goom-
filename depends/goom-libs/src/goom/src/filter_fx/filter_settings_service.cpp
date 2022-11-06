@@ -910,6 +910,11 @@ auto FilterSettingsService::SetFilterModeRandomViewport() -> void
       m_filterModeData[m_filterMode].zoomInCoefficientsEffect->GetZoomInCoefficientsViewport();
 }
 
+auto FilterSettingsService::SetFilterModeRandomEffects() -> void
+{
+  m_filterSettings.filterEffectsSettings.zoomInCoefficientsEffect->SetRandomParams();
+}
+
 auto FilterSettingsService::SetFilterModeExtraEffects() -> void
 {
   SetRandomizedExtraEffects();

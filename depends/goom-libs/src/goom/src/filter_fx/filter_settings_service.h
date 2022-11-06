@@ -104,6 +104,7 @@ protected:
   virtual auto SetDefaultSettings() -> void;
   virtual auto SetRandomZoomMidpoint() -> void;
   virtual auto SetFilterModeRandomViewport() -> void;
+  virtual auto SetFilterModeRandomEffects() -> void;
   virtual auto SetFilterModeExtraEffects() -> void;
   virtual auto SetRandomizedExtraEffects() -> void;
   virtual auto SetWaveModeExtraEffects() -> void;
@@ -267,6 +268,7 @@ inline auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
 {
   SetDefaultSettings();
   SetRandomZoomMidpoint();
+  SetFilterModeRandomEffects();
   SetFilterModeRandomViewport();
   SetFilterModeExtraEffects();
   UpdateFilterSettingsFromExtraEffects();
