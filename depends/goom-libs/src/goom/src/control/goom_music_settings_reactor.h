@@ -136,7 +136,9 @@ inline auto GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges() -> void
 inline auto GoomMusicSettingsReactor::ChangeFilterMode() -> void
 {
   m_filterSettingsService.SetNewRandomFilter();
+  m_visualFx.UpdateFilterSettings(std::as_const(m_filterSettingsService).GetFilterSettings());
   m_visualFx.RefreshAllFx();
+  m_filterSettingsService.NotifyUpdatedFilterEffectsSettings();
 }
 
 inline auto GoomMusicSettingsReactor::ChangeFilterExtraSettings() -> void

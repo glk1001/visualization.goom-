@@ -350,12 +350,13 @@ inline auto GoomControl::GoomControlImpl::GetLastShaderEffects() const -> const 
 inline auto GoomControl::GoomControlImpl::Start() -> void
 {
   m_filterSettingsService.Start();
-  UpdateFilterSettings();
 
   m_visualFx.SetAllowMultiThreadedStates(false);
   m_visualFx.SetResetDrawBuffSettingsFunc([this](const FXBuffSettings& settings)
                                           { ResetDrawBuffSettings(settings); });
   m_visualFx.ChangeAllFxColorMaps();
+
+  UpdateFilterSettings();
   m_visualFx.Start();
 
   m_musicSettingsReactor.Start();
