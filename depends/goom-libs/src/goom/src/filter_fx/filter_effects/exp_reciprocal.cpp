@@ -39,11 +39,13 @@ static constexpr auto MODULATOR_PERIOD_RANGE   = IGoomRand::NumberRange<float>{1
 
 static constexpr auto PROB_AMPLITUDES_EQUAL       = 0.95F;
 static constexpr auto PROB_NO_INVERSE_SQUARE      = 0.90F;
-static constexpr auto PROB_USE_MODULATOR_CONTOURS = 0.30F;
+static constexpr auto PROB_USE_MODULATOR_CONTOURS = 0.01F;
 
 static constexpr auto VIEWPORT_RECTANGLES = std::array{
     Viewport::Rectangle{{-1.99F, -1.99F}, {1.99F, 1.99F}},
     Viewport::Rectangle{{-1.00F, -1.00F}, {1.00F, 1.00F}},
+    Viewport::Rectangle{    {0.5F, 0.5F},   {2.0F, 2.0F}},
+    Viewport::Rectangle{ {0.30F, -0.10F}, {0.70F, 0.10F}},
 };
 
 ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
