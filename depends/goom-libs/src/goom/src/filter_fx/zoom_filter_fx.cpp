@@ -73,6 +73,10 @@ public:
 
   [[nodiscard]] auto GetNameValueParams() const noexcept -> NameValuePairs;
 
+  [[nodiscard]] auto GetFilterBuffersService() noexcept -> FilterBuffersService&;
+
+  auto CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
+
 private:
   const Dimensions m_dimensions;
   Parallel& m_parallel;
@@ -83,7 +87,6 @@ private:
   uint64_t m_updateNum = 0;
 
   FilterBufferColorInfo m_filterBufferColorInfo{m_dimensions};
-  auto CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
 };
 
 ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
@@ -103,6 +106,16 @@ auto ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings) noexcept -> v
 auto ZoomFilterFx::GetNameValueParams() const noexcept -> NameValuePairs
 {
   return m_pimpl->GetNameValueParams();
+}
+
+auto ZoomFilterFx::GetFilterBuffersService() noexcept -> FilterBuffersService&
+{
+  return m_pimpl->GetFilterBuffersService();
+}
+
+auto ZoomFilterFx::CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void
+{
+  m_pimpl->CZoom(srceBuff, destBuff);
 }
 
 auto ZoomFilterFx::Start() noexcept -> void
@@ -220,6 +233,12 @@ auto ZoomFilterFx::ZoomFilterImpl::GetNameValueParams() const noexcept -> NameVa
   MoveNameValuePairs(m_filterBuffersService->GetNameValueParams(PARAM_GROUP), nameValuePairs);
 
   return nameValuePairs;
+}
+
+inline auto ZoomFilterFx::ZoomFilterImpl::GetFilterBuffersService() noexcept
+    -> FilterBuffersService&
+{
+  return *m_filterBuffersService;
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::Start() noexcept -> void

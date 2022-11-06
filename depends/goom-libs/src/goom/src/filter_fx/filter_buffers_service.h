@@ -39,6 +39,7 @@ public:
       -> void;
 
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetFilterBuffers() noexcept -> ZoomFilterBuffers&;
 
   auto UpdateTranBuffers() noexcept -> void;
   auto UpdateTranLerpFactor(uint32_t tranLerpIncrement, float tranLerpToMaxSwitchMult) noexcept
@@ -79,6 +80,11 @@ inline auto FilterBuffersService::GetSourcePointInfo(const size_t buffPos) const
 inline auto FilterBuffersService::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_filterBuffers.GetTranLerpFactor();
+}
+
+inline auto FilterBuffersService::GetFilterBuffers() noexcept -> ZoomFilterBuffers&
+{
+  return m_filterBuffers;
 }
 
 } // namespace FILTER_FX

@@ -57,6 +57,10 @@ public:
 
   [[nodiscard]] auto GetNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
+protected:
+  [[nodiscard]] auto GetFilterBuffersService() noexcept -> FilterBuffersService&;
+  auto CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
+
 private:
   class ZoomFilterImpl;
   spimpl::unique_impl_ptr<ZoomFilterImpl> m_pimpl;
