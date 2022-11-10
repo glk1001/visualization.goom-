@@ -204,14 +204,13 @@ enable_sanitizers(goom)
 
 set_target_properties(goom
                       PROPERTIES
-                      CXX_STANDARD ${CPP_STANDARD}
                       POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
                       )
 
 get_target_property(goom_compile_options goom COMPILE_OPTIONS)
 get_target_property(goom_compile_features goom COMPILE_FEATURES)
 
-message(STATUS "Goom: C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Goom: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Goom: C++ compile features = \"${goom_compile_features}\".")
 message(STATUS "Goom: C++ compile options = \"${goom_compile_options}\".")
 message(STATUS "Goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")

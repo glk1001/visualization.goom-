@@ -41,7 +41,7 @@ else ()
 endif ()
 
 
-set(CPP_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -136,7 +136,7 @@ message(STATUS "Goom-libs: CMAKE_LIBRARY_OUTPUT_DIRECTORY = \"${CMAKE_LIBRARY_OU
 message(STATUS "Goom-libs: CMAKE_ARCHIVE_OUTPUT_DIRECTORY = \"${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}\".")
 message(STATUS "Goom-libs: CMAKE_LIBRARY_OUTPUT_DIRECTORY = \"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\".")
 message(STATUS "Goom-libs: CMAKE_RUNTIME_OUTPUT_DIRECTORY = \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\".")
-message(STATUS "Goom-libs: C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Goom-libs: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Goom-libs: C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
 message(STATUS "Goom-libs: C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")
 message(STATUS "Goom-libs: ENABLE_TESTING = \"${ENABLE_TESTING}\".")

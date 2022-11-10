@@ -70,7 +70,7 @@ else ()
 endif ()
 
 
-set(CPP_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -130,7 +130,6 @@ else ()
 endif ()
 
 
-set(CMAKE_CXX_STANDARD ${CPP_STANDARD})
 get_project_warnings(PROJECT_WARNINGS)
 add_compile_options(${PROJECT_WARNINGS})
 
@@ -207,7 +206,7 @@ message(STATUS "Visualization.goom: CMAKE_BINARY_DIR   = \"${CMAKE_BINARY_DIR}\"
 message(STATUS "Visualization.goom: CMAKE_MODULE_PATH = \"${CMAKE_MODULE_PATH}\".")
 message(STATUS "Visualization.goom: CMAKE_SCRIPTS_PATH = \"${CMAKE_SCRIPTS_PATH}\".")
 message(STATUS "Visualization.goom: CMAKE_INSTALL_PREFIX = \"${CMAKE_INSTALL_PREFIX}\".")
-message(STATUS "Visualization.goom: C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Visualization.goom: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Visualization.goom: C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
 message(STATUS "Visualization.goom: C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")
 message(STATUS "Visualization.goom: C++ compile features = \"${goom_addon_compile_features}\".")

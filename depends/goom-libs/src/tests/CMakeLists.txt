@@ -59,11 +59,6 @@ set_project_warnings(${GOOM_LIB_TESTS_NAME})
 enable_sanitizers(${GOOM_LIB_TESTS_NAME})
 configure_linker(${GOOM_LIB_TESTS_NAME})
 
-set_target_properties(${GOOM_LIB_TESTS_NAME}
-                      PROPERTIES
-                      CXX_STANDARD ${CPP_STANDARD}
-                      )
-
 #catch_discover_tests(${GOOM_LIB_TESTS_NAME})
 add_test(NAME ${GOOM_LIB_TESTS_NAME}
          COMMAND ${GOOM_LIB_TESTS_NAME})
@@ -72,7 +67,7 @@ get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} COMPILE_OPTION
 get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} COMPILE_FEATURES)
 get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} LINK_OPTIONS)
 
-message(STATUS "Goom Lib Tests: C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Goom Lib Tests: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Goom Lib Tests: C++ compile features = \"${${GOOM_LIB_TESTS_NAME}_compile_features}\".")
 message(STATUS "Goom Lib Tests: C++ compile options = \"${${GOOM_LIB_TESTS_NAME}_compile_options}\".")
 message(STATUS "Goom Lib Tests: C++ link options = \"${${GOOM_LIB_TESTS_NAME}_link_options}\".")

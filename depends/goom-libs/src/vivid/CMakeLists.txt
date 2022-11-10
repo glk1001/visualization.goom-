@@ -74,7 +74,6 @@ enable_sanitizers(${PROJECT_NAME})
 
 set_target_properties( ${PROJECT_NAME}
     PROPERTIES
-        CXX_STANDARD ${CPP_STANDARD}
         POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
 )
 
@@ -88,7 +87,7 @@ endif()
 get_target_property(vivid_compile_options  vivid COMPILE_OPTIONS)
 get_target_property(vivid_compile_features vivid COMPILE_FEATURES)
 
-message(STATUS "Vivid: C++ standard = \"${CPP_STANDARD}\".")
+message(STATUS "Vivid: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Vivid: C++ compile features = \"${vivid_compile_features}\".")
 message(STATUS "Vivid: C++ compile options = \"${vivid_compile_options}\".")
 message(STATUS "Vivid: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
