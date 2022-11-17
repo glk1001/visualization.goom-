@@ -26,6 +26,8 @@ namespace DRAW
 
 using MultiplePixels = std::vector<Pixel>;
 
+[[nodiscard]] auto MakePixels(const Pixel& mainColor, const Pixel& lowColor) noexcept
+    -> MultiplePixels;
 [[nodiscard]] auto ReversePixels(const MultiplePixels& colors) noexcept -> MultiplePixels;
 [[nodiscard]] auto GetMainColor(const MultiplePixels& colors) noexcept -> Pixel;
 [[nodiscard]] auto GetLowColor(const MultiplePixels& colors) noexcept -> Pixel;
@@ -110,6 +112,11 @@ private:
   uint32_t m_intBuffIntensity{};
   mutable GOOM::UTILS::Parallel m_parallel{-1}; // max cores - 1
 };
+
+inline auto MakePixels(const Pixel& mainColor, const Pixel& lowColor) noexcept -> MultiplePixels
+{
+  return {mainColor, lowColor};
+}
 
 inline auto ReversePixels(const MultiplePixels& colors) noexcept -> MultiplePixels
 {

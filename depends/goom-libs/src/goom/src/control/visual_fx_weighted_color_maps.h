@@ -36,6 +36,8 @@ private:
   [[nodiscard]] auto GetImageGroups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetLines1Groups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetLines2Groups() const noexcept -> WeightedGroups;
+  [[nodiscard]] auto GetLSystemMainGroups() const noexcept -> WeightedGroups;
+  [[nodiscard]] auto GetLSystemLowGroups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetShapesMainGroups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetShapesLowGroups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetShapesInnerGroups() const noexcept -> WeightedGroups;

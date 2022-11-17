@@ -14,6 +14,8 @@ enum class GoomEffect
   DOTS4,
   IFS,
   IMAGE,
+  L_SYSTEM_MAIN,
+  L_SYSTEM_LOW,
   LINES1,
   LINES2,
   SHAPES_MAIN,

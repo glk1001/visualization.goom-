@@ -5,6 +5,9 @@ project(Goom LANGUAGES CXX)
 if (NOT GLM_INCLUDE_DIR)
     message(FATAL_ERROR "\"GLM_INCLUDE_DIR\" must be defined.")
 endif ()
+if (NOT LSys_SOURCE_DIR)
+    message(FATAL_ERROR "\"LSys_SOURCE_DIR\" must be defined.")
+endif ()
 
 if (WIN32)
     add_definitions(-D_WIN32PC)
@@ -165,6 +168,7 @@ add_library(goom
             src/visual_fx/goom_visual_fx.h
             src/visual_fx/ifs_dancers_fx.cpp
             src/visual_fx/image_fx.cpp
+            src/visual_fx/l_system_fx.cpp
             src/visual_fx/lines_fx.cpp
             src/visual_fx/shader_fx.cpp
             src/visual_fx/shapes_fx.cpp
@@ -188,6 +192,7 @@ target_include_directories(goom
 
 target_include_directories(goom
                            SYSTEM PRIVATE
+                           ${LSys_SOURCE_DIR}/src
                            ${GOOM_LIBS_DIR}/src/bezier/include
                            ${GOOM_LIBS_DIR}/src/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
@@ -201,6 +206,45 @@ target_include_directories(goom
 set_project_warnings(goom)
 enable_sanitizers(goom)
 
+
+set(MSVC_WARNINGS_OFF_FOR_LSYS
+    "/w" # turn off all warnings
+    )
+set(CLANG_WARNINGS_OFF_FOR_LSYS
+    -Wno-extra
+    -Wno-conversion
+    -Wno-sign-conversion
+    -Wno-old-style-cast
+    -Wno-implicit-fallthrough
+    -Wno-register
+    -Wno-write-strings
+    -Wno-unused-function
+    )
+set(GCC_WARNINGS_OFF_FOR_LSYS
+    ${CLANG_WARNINGS_OFF_FOR_LSYS}
+    -Wno-pedantic
+    -Wno-useless-cast
+    )
+
+if (MSVC)
+    set(SOME_WARNINGS_OFF_FOR_LSYS "${MSVC_WARNINGS_OFF_FOR_LSYS}")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    set(SOME_WARNINGS_OFF_FOR_LSYS "${CLANG_WARNINGS_OFF_FOR_LSYS}")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(SOME_WARNINGS_OFF_FOR_LSYS "${GCC_WARNINGS_OFF_FOR_LSYS}")
+endif ()
+STRING(REPLACE ";" " " SOME_WARNINGS_OFF_FOR_LSYS "${SOME_WARNINGS_OFF_FOR_LSYS}")
+
+set_source_files_properties(
+        ${LSys_SOURCE_DIR}/src/lexer.cpp
+        ${LSys_SOURCE_DIR}/src/name.cpp
+        ${LSys_SOURCE_DIR}/src/options.cpp
+        ${LSys_SOURCE_DIR}/src/parser.cpp
+        PROPERTIES
+        COMPILE_FLAGS "${SOME_WARNINGS_OFF_FOR_LSYS}"
+)
+
+
 set_target_properties(goom
                       PROPERTIES
                       POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
@@ -212,6 +256,7 @@ get_target_property(goom_compile_features goom COMPILE_FEATURES)
 message(STATUS "Goom: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Goom: C++ compile features = \"${goom_compile_features}\".")
 message(STATUS "Goom: C++ compile options = \"${goom_compile_options}\".")
+message(STATUS "Goom: SOME_WARNINGS_OFF_FOR_LSYS = \"${SOME_WARNINGS_OFF_FOR_LSYS}\".")
 message(STATUS "Goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom: THIRD_PARTY_INCLUDE_DIR = \"${THIRD_PARTY_INCLUDE_DIR}\".")

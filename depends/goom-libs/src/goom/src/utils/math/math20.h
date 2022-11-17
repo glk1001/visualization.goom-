@@ -74,6 +74,7 @@ template<typename _Fp>
 {
   return __lerp(__a, __b, __t);
 }
+
 [[nodiscard]] constexpr auto lerp(const double __a, const double __b, const double __t) noexcept
     -> double
 {

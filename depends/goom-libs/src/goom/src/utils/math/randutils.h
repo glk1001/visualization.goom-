@@ -28,6 +28,7 @@ void RestoreRandState(std::istream& file);
 [[nodiscard]] auto GetRandInRange(int32_t n0, int32_t n1) -> int32_t;
 // Return random float in the range x0 <= n <= x1.
 [[nodiscard]] auto GetRandInRange(float x0, float x1) -> float;
+[[nodiscard]] auto GetRandInRange(double x0, double x1) -> double;
 template<typename T>
 struct NumberRange
 {

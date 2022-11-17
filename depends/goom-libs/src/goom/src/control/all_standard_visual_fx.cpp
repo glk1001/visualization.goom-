@@ -13,6 +13,7 @@
 #include "visual_fx/goom_dots_fx.h"
 #include "visual_fx/ifs_dancers_fx.h"
 #include "visual_fx/image_fx.h"
+#include "visual_fx/l_system_fx.h"
 #include "visual_fx/lines_fx.h"
 #include "visual_fx/shader_fx.h"
 #include "visual_fx/shapes_fx.h"
@@ -38,6 +39,7 @@ using VISUAL_FX::GoomDotsFx;
 using VISUAL_FX::IfsDancersFx;
 using VISUAL_FX::ImageFx;
 using VISUAL_FX::LinesFx;
+using VISUAL_FX::LSystemFx;
 using VISUAL_FX::ShaderFx;
 using VISUAL_FX::ShapesFx;
 using VISUAL_FX::TentaclesFx;
@@ -66,6 +68,8 @@ auto AllStandardVisualFx::GetDrawablesMap(Parallel& parallel,
       {GoomDrawables::DOTS, std::make_unique<GoomDotsFx>(fxHelper, smallBitmaps)},
       {GoomDrawables::IFS, std::make_unique<IfsDancersFx>(fxHelper, smallBitmaps)},
       {GoomDrawables::IMAGE, std::make_unique<ImageFx>(parallel, fxHelper, resourcesDirectory)},
+      {GoomDrawables::L_SYSTEM,
+       std::make_unique<LSystemFx>(fxHelper, smallBitmaps, resourcesDirectory)},
       {GoomDrawables::LINES, std::make_unique<LinesFx>(fxHelper, smallBitmaps)},
       {GoomDrawables::SHAPES, std::make_unique<ShapesFx>(fxHelper)},
       {GoomDrawables::STARS, std::make_unique<FlyingStarsFx>(fxHelper, smallBitmaps)},
@@ -245,6 +249,11 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
 
   m_drawablesMap[GoomDrawables::IMAGE]->SetWeightedColorMaps(
       {0, m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::IMAGE)});
+
+  m_drawablesMap[GoomDrawables::L_SYSTEM]->SetWeightedColorMaps(
+      {0,
+       m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::L_SYSTEM_MAIN),
+       m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::L_SYSTEM_LOW)});
 
   ChangeLinesColorMaps();
 

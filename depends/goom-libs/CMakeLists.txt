@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 
 project(visualization.goom.lib)
 
+# set(LSys_SOURCE_DIR "/home/greg/Prj/github/LSys")
+
 if (NOT DEFINED GOOM_BUILD_ARTIFACTS_DIR)
     set(GOOM_BUILD_ARTIFACTS_DIR "${CMAKE_BINARY_DIR}")
 endif ()
@@ -13,7 +15,7 @@ if (NOT DEFINED GOOM_LIBS_DIR)
 endif ()
 
 if (WIN32)
-    # 'GENERATOR_IS_MULTI_CONFIG' does seem reliable for Visual Studio, so we use this string
+    # 'GENERATOR_IS_MULTI_CONFIG' does not seem reliable for Visual Studio, so we use this string
     # matching hack.
     string(TOLOWER "${CMAKE_GENERATOR}" CMAKE_GENERATOR_LOWER)
     message("CMAKE_GENERATOR_LOWER = \"${CMAKE_GENERATOR_LOWER}\".")
@@ -93,6 +95,14 @@ if (NOT DEFINED GLM_INCLUDE_DIR)
     CPMAddPackage("gh:g-truc/glm#0.9.9.8")
     set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 endif ()
+if (NOT DEFINED LSys_SOURCE_DIR)
+    CPMAddPackage(NAME "LSys"
+                  GITHUB_REPOSITORY "glk1001/LSys"
+                  GIT_TAG "master"
+                  FORCE True
+                  DOWNLOAD_ONLY True)
+endif ()
+
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message(WARNING "Freetype on Windows is too hard to install - disabling Freetype.")

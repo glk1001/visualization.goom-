@@ -39,6 +39,7 @@ public:
       -> uint32_t                                                                             = 0;
   [[nodiscard]] virtual auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t = 0;
   [[nodiscard]] virtual auto GetRandInRange(float n0, float n1) const noexcept -> float       = 0;
+  [[nodiscard]] virtual auto GetRandInRange(double n0, double n1) const noexcept -> double    = 0;
 
   template<class RandomIt>
   void Shuffle(RandomIt first, RandomIt last) const noexcept;

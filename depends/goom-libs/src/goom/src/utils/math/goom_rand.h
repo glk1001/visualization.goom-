@@ -16,6 +16,7 @@ public:
   [[nodiscard]] auto GetRandInRange(uint32_t n0, uint32_t n1) const noexcept -> uint32_t override;
   [[nodiscard]] auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t override;
   [[nodiscard]] auto GetRandInRange(float n0, float n1) const noexcept -> float override;
+  [[nodiscard]] auto GetRandInRange(double n0, double n1) const noexcept -> double override;
 
   [[nodiscard]] auto ProbabilityOf(float x) const noexcept -> bool override;
 };
@@ -37,6 +38,11 @@ inline auto GoomRand::GetRandInRange(const int32_t n0, const int32_t n1) const n
 }
 
 inline auto GoomRand::GetRandInRange(const float n0, const float n1) const noexcept -> float
+{
+  return RAND::GetRandInRange(n0, n1);
+}
+
+inline auto GoomRand::GetRandInRange(const double n0, const double n1) const noexcept -> double
 {
   return RAND::GetRandInRange(n0, n1);
 }

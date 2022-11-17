@@ -119,6 +119,12 @@ if (ENABLE_TESTING)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/_deps/catch2-src/extras")
 endif ()
 
+CPMAddPackage(NAME "LSys"
+              GITHUB_REPOSITORY "glk1001/LSys"
+              GIT_TAG "master"
+              FORCE True
+              DOWNLOAD_ONLY True)
+
 find_package(Kodi REQUIRED)
 
 if (NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))

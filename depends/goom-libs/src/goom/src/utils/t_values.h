@@ -238,7 +238,8 @@ inline auto IncrementedValue<T>::PeekNext() const noexcept -> T
 template<typename T>
 inline auto IncrementedValue<T>::GetValue(const float t) const noexcept -> T
 {
-  return STD20::lerp(m_value1, m_value2, t);
+  using STD20::lerp; // Include STD20 for candidate lerps.
+  return lerp(m_value1, m_value2, t);
 }
 
 template<typename T>
