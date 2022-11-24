@@ -1,3 +1,5 @@
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 #include "text_draw.h"
 
 //#define NO_FREETYPE_INSTALLED
@@ -232,7 +234,7 @@ private:
 
   [[nodiscard]] static constexpr auto ToStdPixelCoord(int32_t freeTypeCoord) noexcept -> int;
   [[nodiscard]] static constexpr auto ToFreeTypeCoord(int32_t stdPixelCoord) noexcept -> int;
-  [[nodiscard]] static constexpr auto ToFreeTypeCoord(float stdPixelCoord) noexcept -> int;
+  [[nodiscard]] static auto ToFreeTypeCoord(float stdPixelCoord) noexcept -> int;
   struct Vec2;
   struct Span;
   using SpanArray = std::vector<Span>;
@@ -753,7 +755,7 @@ constexpr auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const int32_t stdPixelCoo
   return stdPixelCoord * FREE_TYPE_UNITS_PER_PIXEL;
 }
 
-constexpr auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const float stdPixelCoord) noexcept
+inline auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const float stdPixelCoord) noexcept
     -> int32_t
 {
   return static_cast<int32_t>(
