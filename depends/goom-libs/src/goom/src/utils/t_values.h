@@ -1,5 +1,8 @@
 #pragma once
 
+#include "goom_config.h"
+#include "math/misc.h"
+
 #include <cstdint>
 #include <vector>
 
@@ -90,6 +93,35 @@ private:
   auto HandleBoundary(float continueValue, float stepSign) noexcept -> void;
 };
 
+template<typename T>
+class IncrementedValue
+{
+public:
+  IncrementedValue(const T& value1,
+                   const T& value2,
+                   TValue::StepType stepType,
+                   uint32_t numSteps) noexcept;
+
+  auto SetValue1(const T& value1) noexcept -> void;
+  auto SetValue2(const T& value2) noexcept -> void;
+  auto SetValues(const T& value1, float value2) noexcept -> void;
+
+  [[nodiscard]] auto operator()() const noexcept -> const T&;
+  auto Increment() noexcept -> void;
+
+  [[nodiscard]] auto PeekNext() const noexcept -> T;
+
+  [[nodiscard]] auto GetT() const noexcept -> const TValue&;
+  auto ResetT(float t = 0.0) noexcept -> void;
+
+private:
+  T m_value1;
+  T m_value2;
+  TValue m_t;
+  T m_currentValue = m_value1;
+  [[nodiscard]] auto GetValue(float t) const noexcept -> T;
+};
+
 inline auto TValue::GetStepType() const noexcept -> StepType
 {
   return m_stepType;
@@ -151,6 +183,75 @@ inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const noexce
 {
   return (((delayPoint.t0 - m_stepSize) + T_EPSILON) < m_t) &&
          (m_t < ((delayPoint.t0 + m_stepSize) - T_EPSILON));
+}
+
+template<typename T>
+inline IncrementedValue<T>::IncrementedValue(const T& value1,
+                                             const T& value2,
+                                             const TValue::StepType stepType,
+                                             const uint32_t numSteps) noexcept
+  : m_value1{value1}, m_value2{value2}, m_t{stepType, numSteps}
+{
+  Expects(numSteps > 0U);
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::SetValue1(const T& value1) noexcept -> void
+{
+  m_value1 = value1;
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::SetValue2(const T& value2) noexcept -> void
+{
+  m_value2 = value2;
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::SetValues(const T& value1, const float value2) noexcept -> void
+{
+  m_value1 = value1;
+  m_value2 = value2;
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::operator()() const noexcept -> const T&
+{
+  return m_currentValue;
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::Increment() noexcept -> void
+{
+  m_t.Increment();
+  m_currentValue = GetValue(m_t());
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::PeekNext() const noexcept -> T
+{
+  auto tCopy = m_t;
+  tCopy.Increment();
+  return GetValue(tCopy());
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::GetValue(const float t) const noexcept -> T
+{
+  return STD20::lerp(m_value1, m_value2, t);
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::GetT() const noexcept -> const TValue&
+{
+  return m_t;
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::ResetT(const float t) noexcept -> void
+{
+  m_t.Reset(t);
+  m_currentValue = GetValue(m_t());
 }
 
 } // namespace GOOM::UTILS

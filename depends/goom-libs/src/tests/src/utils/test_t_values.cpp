@@ -7,15 +7,16 @@
 namespace GOOM::UNIT_TESTS
 {
 
+using UTILS::IncrementedValue;
 using UTILS::TValue;
 using UTILS::MATH::SMALL_FLOAT;
 
 TEST_CASE("TValue SINGLE_CYCLE")
 {
-  static constexpr uint32_t NUM_STEPS = 10;
-  TValue tValue{TValue::StepType::SINGLE_CYCLE, NUM_STEPS};
+  static constexpr auto NUM_STEPS = 10U;
+  auto tValue                     = TValue{TValue::StepType::SINGLE_CYCLE, NUM_STEPS};
 
-  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
   // Zero steps
@@ -34,10 +35,10 @@ TEST_CASE("TValue SINGLE_CYCLE")
 
 TEST_CASE("TValue CONTINUOUS_REPEATABLE")
 {
-  static constexpr uint32_t NUM_STEPS = 10;
-  TValue tValue{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS};
+  static constexpr auto NUM_STEPS = 10U;
+  auto tValue                     = TValue{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS};
 
-  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
   // Zero steps
@@ -48,7 +49,7 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE")
   REQUIRE(tValue() == Approx(STEP_SIZE));
 
   // Step till 1.0
-  for (size_t i = 1; i < NUM_STEPS; ++i)
+  for (auto i = 1U; i < NUM_STEPS; ++i)
   {
     tValue.Increment();
   }
@@ -61,10 +62,10 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE")
 
 TEST_CASE("TValue CONTINUOUS_REVERSIBLE")
 {
-  static constexpr uint32_t NUM_STEPS = 10;
-  TValue tValue{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
+  static constexpr auto NUM_STEPS = 10U;
+  auto tValue                     = TValue{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
 
-  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
   // Zero steps
@@ -75,7 +76,7 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE")
   REQUIRE(tValue() == Approx(STEP_SIZE));
 
   // Step till 1.0
-  for (size_t i = 1; i < NUM_STEPS; ++i)
+  for (auto i = 1U; i < NUM_STEPS; ++i)
   {
     tValue.Increment();
   }
@@ -86,7 +87,7 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE")
   REQUIRE(tValue() == Approx(1.0F - STEP_SIZE));
 
   // Keep going down
-  for (size_t i = 1; i < NUM_STEPS; ++i)
+  for (auto i = 1U; i < NUM_STEPS; ++i)
   {
     tValue.Increment();
   }
@@ -115,7 +116,7 @@ void GotoDownToValue(const float t, TValue& tValue)
 
 void CheckIsDelayed(TValue& tValue, const uint32_t delayTime, const float delayT)
 {
-  for (size_t i = 0; i < delayTime; ++i)
+  for (auto i = 0U; i < delayTime; ++i)
   {
     INFO("i: " << i << ", delayTime = " << delayTime << ", delayT = " << delayT);
 
@@ -133,16 +134,18 @@ void CheckIsDelayed(TValue& tValue, const uint32_t delayTime, const float delayT
 
 TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
 {
-  static constexpr uint32_t NUM_STEPS = 10;
-  static constexpr uint32_t T_DELAY_TIME = 6;
-  static constexpr float MID_DELAY_T = 0.5F;
-  TValue tValue{TValue::StepType::CONTINUOUS_REPEATABLE,
-                NUM_STEPS,
-                {{0.0F, T_DELAY_TIME}, {MID_DELAY_T, T_DELAY_TIME}, {1.0F, T_DELAY_TIME}}};
+  static constexpr auto NUM_STEPS    = 10U;
+  static constexpr auto T_DELAY_TIME = 6U;
+  static constexpr auto MID_DELAY_T  = 0.5F;
+  auto tValue                        = TValue{
+      TValue::StepType::CONTINUOUS_REPEATABLE,
+      NUM_STEPS,
+                             {{0.0F, T_DELAY_TIME}, {MID_DELAY_T, T_DELAY_TIME}, {1.0F, T_DELAY_TIME}}
+  };
   REQUIRE((NUM_STEPS % 2) == 0);
   REQUIRE((T_DELAY_TIME % 2) == 0);
 
-  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
 
   // Zero steps
@@ -162,8 +165,8 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
   REQUIRE(!tValue.IsDelayed());
 
   // Normal incrementing up
-  float val = MID_DELAY_T;
-  for (size_t i = 0; i < NUM_STEPS / 2; ++i)
+  auto val = MID_DELAY_T;
+  for (auto i = 0U; i < NUM_STEPS / 2; ++i)
   {
     tValue.Increment();
     val += STEP_SIZE;
@@ -183,17 +186,19 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
 
 TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
 {
-  static constexpr uint32_t NUM_STEPS = 10;
-  static constexpr uint32_t T_DELAY_TIME = 6;
-  static constexpr float MID_DELAY_T = 0.5F;
-  TValue tValue{TValue::StepType::CONTINUOUS_REVERSIBLE,
-                NUM_STEPS,
-                {{0.0F, T_DELAY_TIME}, {MID_DELAY_T, T_DELAY_TIME}, {1.0F, T_DELAY_TIME}}};
+  static constexpr auto NUM_STEPS    = 10U;
+  static constexpr auto T_DELAY_TIME = 6U;
+  static constexpr auto MID_DELAY_T  = 0.5F;
+  auto tValue                        = TValue{
+      TValue::StepType::CONTINUOUS_REVERSIBLE,
+      NUM_STEPS,
+                             {{0.0F, T_DELAY_TIME}, {MID_DELAY_T, T_DELAY_TIME}, {1.0F, T_DELAY_TIME}}
+  };
   REQUIRE((NUM_STEPS % 2) == 0);
   REQUIRE((T_DELAY_TIME % 2) == 0);
   REQUIRE(tValue() == Approx(0.0F));
 
-  static constexpr float STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
   REQUIRE(tValue.GetCurrentStep() > 0.0F);
 
@@ -211,8 +216,8 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
   REQUIRE(!tValue.IsDelayed());
 
   // Normal incrementing
-  float val = MID_DELAY_T;
-  for (size_t i = 0; i < NUM_STEPS / 2; ++i)
+  auto val = MID_DELAY_T;
+  for (auto i = 0U; i < NUM_STEPS / 2; ++i)
   {
     tValue.Increment();
     val += STEP_SIZE;
@@ -239,7 +244,7 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
 
   // Normal incrementing - going down
   val = MID_DELAY_T;
-  for (size_t i = 0; i < NUM_STEPS / 2; ++i)
+  for (auto i = 0U; i < NUM_STEPS / 2; ++i)
   {
     tValue.Increment();
     val -= STEP_SIZE;
@@ -259,6 +264,116 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
   tValue.Increment();
   REQUIRE(tValue.GetCurrentStep() > 0.0F);
   REQUIRE(tValue() == Approx(STEP_SIZE));
+}
+
+TEST_CASE("IncrementedValue SINGLE_CYCLE")
+{
+  static constexpr auto MIN_VALUE = -5.0F;
+  static constexpr auto MAX_VALUE = +15.0F;
+  static constexpr auto NUM_STEPS = 10U;
+  auto value = IncrementedValue{MIN_VALUE, MAX_VALUE, TValue::StepType::SINGLE_CYCLE, NUM_STEPS};
+
+  static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  REQUIRE(value.GetT().GetStepSize() == Approx(STEP_SIZE));
+
+  // Zero steps
+  REQUIRE(value() == Approx(MIN_VALUE));
+
+  // One step
+  value.Increment();
+  REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
+
+  // Peek
+  const auto nextValue = value.PeekNext();
+  REQUIRE(nextValue == Approx(MIN_VALUE + ((2.0F * STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
+  REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
+
+  for (auto i = 1U; i < NUM_STEPS; ++i)
+  {
+    value.Increment();
+  }
+  REQUIRE(value() == Approx(MAX_VALUE).margin(SMALL_FLOAT));
+}
+
+TEST_CASE("IncrementedValue CONTINUOUS_REPEATABLE")
+{
+  static constexpr auto MIN_VALUE = -5.0F;
+  static constexpr auto MAX_VALUE = +15.0F;
+  static constexpr auto NUM_STEPS = 10U;
+  auto value =
+      IncrementedValue{MIN_VALUE, MAX_VALUE, TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS};
+
+  static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  REQUIRE(value.GetT().GetStepSize() == Approx(STEP_SIZE));
+
+  // Zero steps
+  REQUIRE(value() == Approx(MIN_VALUE));
+
+  // One step
+  value.Increment();
+  REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
+
+  // Peek
+  const auto nextValue = value.PeekNext();
+  REQUIRE(nextValue == Approx(MIN_VALUE + ((2.0F * STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
+  REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
+
+  // Step till MAX_VALUE
+  for (auto i = 1U; i < NUM_STEPS; ++i)
+  {
+    value.Increment();
+  }
+  REQUIRE(value() == Approx(MAX_VALUE));
+
+  // Should go back to start
+  value.Increment();
+  REQUIRE(value() == Approx(MIN_VALUE));
+}
+
+TEST_CASE("IncrementedValue CONTINUOUS_REVERSIBLE")
+{
+  static constexpr auto MIN_VALUE = -5.0F;
+  static constexpr auto MAX_VALUE = +15.0F;
+  static constexpr auto NUM_STEPS = 10U;
+  auto value =
+      IncrementedValue{MIN_VALUE, MAX_VALUE, TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
+
+  static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
+  REQUIRE(value.GetT().GetStepSize() == Approx(STEP_SIZE));
+
+  // Zero steps
+  REQUIRE(value() == Approx(MIN_VALUE));
+
+  // One step
+  value.Increment();
+  REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
+
+  // Peek
+  const auto nextValue = value.PeekNext();
+  REQUIRE(nextValue == Approx(MIN_VALUE + ((2.0F * STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
+  REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
+
+  // Step till MAX_VALUE
+  for (auto i = 1U; i < NUM_STEPS; ++i)
+  {
+    value.Increment();
+  }
+  REQUIRE(value() == Approx(MAX_VALUE));
+
+  // Back down
+  value.Increment();
+  REQUIRE(value() == Approx(MIN_VALUE + ((1.0F - STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
+
+  // Keep going down
+  for (auto i = 1U; i < NUM_STEPS; ++i)
+  {
+    value.Increment();
+  }
+  REQUIRE(value() == Approx(MIN_VALUE).margin(SMALL_FLOAT));
+
+  // Back up
+  value.Increment();
+  REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
 }
 
 } // namespace GOOM::UNIT_TESTS

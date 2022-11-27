@@ -214,7 +214,7 @@ auto TValue::GetNumSteps() const noexcept -> uint32_t
 
 auto TValue::SetNumSteps(const uint32_t val) noexcept -> void
 {
-  Expects(val != 0U);
+  Expects(val > 0U);
 
   SetStepSize(1.0F / static_cast<float>(val));
 }
