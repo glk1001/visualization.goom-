@@ -35,6 +35,7 @@ using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using DRAW::ReversePixels;
 using UTILS::EnumMap;
+using UTILS::IncrementedValue;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 using UTILS::TValue;
@@ -633,23 +634,25 @@ auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
       TValue{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)};
   static constexpr auto INNER_COLOR_CUTOFF_RADIUS = 4;
 
-  auto brightnessT = TValue{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius)};
   const auto minBrightness = m_globalBrightnessFactor * DOT_INSIDE_MIN_BRIGHTNESS_FACTOR;
   const auto maxBrightness = m_globalBrightnessFactor * DOT_INSIDE_MAX_BRIGHTNESS_FACTOR;
+  auto brightness          = IncrementedValue{minBrightness,
+                                     maxBrightness,
+                                     TValue::StepType::SINGLE_CYCLE,
+                                     static_cast<uint32_t>(maxRadius)};
 
   // '> 1' means leave a little hole in the middle of the circles.
   for (auto radius = maxRadius; radius > 1; --radius)
   {
-    const auto brightness = STD20::lerp(minBrightness, maxBrightness, brightnessT());
     const auto innerColor = innerColorMap.GetColor(innerColorT());
     const auto circleColors =
         radius <= INNER_COLOR_CUTOFF_RADIUS
-            ? GetCircleColors(brightness, colors)
-            : GetCircleColorsWithInner(brightness, colors, innerColor, m_outerCircleDotColorMix);
+            ? GetCircleColors(brightness(), colors)
+            : GetCircleColorsWithInner(brightness(), colors, innerColor, m_outerCircleDotColorMix);
 
     m_draw.Circle(centre, radius, circleColors);
 
-    brightnessT.Increment();
+    brightness.Increment();
     innerColorT.Increment();
   }
 }

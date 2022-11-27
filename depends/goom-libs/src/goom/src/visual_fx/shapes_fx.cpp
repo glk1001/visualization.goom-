@@ -27,6 +27,7 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using SHAPES::Shape;
+using UTILS::IncrementedValue;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Timer;
 using UTILS::TValue;
@@ -182,7 +183,7 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
 inline auto ShapesFx::ShapesFxImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  // TODO -- fix this
+  // TODO(glk) -- fix this
   return {};
 }
 
@@ -271,17 +272,19 @@ auto ShapesFx::ShapesFxImpl::GetRadialZoomMidpoints() const noexcept
 
   shapeZoomMidpoints.at(0) = m_screenMidPoint;
 
-  const auto radius = static_cast<float>(m_screenMidPoint.y) / 3.0F;
-  auto angleStep    = TValue{TValue::StepType::SINGLE_CYCLE, NUM_SHAPES - 1};
-
-  for (auto i = 1U; i < NUM_SHAPES; ++i)
+  if constexpr (NUM_SHAPES > 1U)
   {
-    const auto angle = STD20::lerp(0.0F, TWO_PI, angleStep());
-    const Vec2dFlt radialOffset{radius * std::cos(angle), radius * std::sin(angle)};
+    const auto radius = static_cast<float>(m_screenMidPoint.y) / 3.0F;
+    auto angle = IncrementedValue{0.0F, TWO_PI, TValue::StepType::SINGLE_CYCLE, NUM_SHAPES - 1};
 
-    shapeZoomMidpoints.at(i) = m_screenMidPoint + radialOffset.ToInt();
+    for (auto i = 1U; i < NUM_SHAPES; ++i)
+    {
+      const Vec2dFlt radialOffset{radius * std::cos(angle()), radius * std::sin(angle())};
 
-    angleStep.Increment();
+      shapeZoomMidpoints.at(i) = m_screenMidPoint + radialOffset.ToInt();
+
+      angle.Increment();
+    }
   }
 
   return shapeZoomMidpoints;

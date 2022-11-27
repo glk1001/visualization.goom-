@@ -15,6 +15,7 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 using COLOR::GetColorMultiply;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
+using UTILS::IncrementedValue;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -66,7 +67,7 @@ auto StarDrawer::DrawStar(const Star& star,
   const auto partMultiplier          = GetPartMultiplier();
   const auto [numParts, elementSize] = GetNumPartsAndElementSize(tAge);
 
-  auto tAgePart     = TValue{TValue::StepType::SINGLE_CYCLE, numParts};
+  auto tAgeMix      = IncrementedValue{tAge, tAgeMax, TValue::StepType::SINGLE_CYCLE, numParts};
   const auto point0 = star.GetStartPos().ToInt();
 
   auto point1 = point0;
@@ -78,14 +79,13 @@ auto StarDrawer::DrawStar(const Star& star,
 
     const auto point2 = point0 - GetPointVelocity(twistFrequency, thisPartVelocity);
 
-    const auto t                  = STD20::lerp(tAge, tAgeMax, tAgePart());
     const auto thisPartBrightness = thisPartFraction * brightness;
-    const auto thisPartColors     = m_getMixedColorsFunc(thisPartBrightness, star, t);
+    const auto thisPartColors     = m_getMixedColorsFunc(thisPartBrightness, star, tAgeMix());
 
     drawFunc(point1, point2, elementSize, thisPartColors);
 
     point1 = point2;
-    tAgePart.Increment();
+    tAgeMix.Increment();
   }
 }
 
