@@ -30,8 +30,7 @@ class Tentacle3D
 {
 public:
   Tentacle3D() noexcept = delete;
-  Tentacle3D(std::unique_ptr<Tentacle2D> tentacle,
-             const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  Tentacle3D(std::unique_ptr<Tentacle2D> tentacle, const UTILS::MATH::IGoomRand& goomRand) noexcept;
   Tentacle3D(const Tentacle3D&) noexcept = delete;
   Tentacle3D(Tentacle3D&&) noexcept      = default;
   ~Tentacle3D() noexcept;

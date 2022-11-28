@@ -25,8 +25,8 @@ template<typename TPoint>
 
 [[nodiscard]] inline auto fmt_rgb_f(const char* const fmtStr, const Pixel& pixel)
 {
-  const auto *const bestFmtStr = std::string(fmtStr) == "{}" ? "{:.2f}" : fmtStr;
-  const auto format = std20::format("({}, {}, {})", bestFmtStr, bestFmtStr, bestFmtStr);
+  const auto* const bestFmtStr = std::string(fmtStr) == "{}" ? "{:.2f}" : fmtStr;
+  const auto format            = std20::format("({}, {}, {})", bestFmtStr, bestFmtStr, bestFmtStr);
   return fmt::vformat(format, std20::make_format_args(pixel.RFlt(), pixel.GFlt(), pixel.BFlt()));
 }
 

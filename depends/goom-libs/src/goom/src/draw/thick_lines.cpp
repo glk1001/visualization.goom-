@@ -101,8 +101,8 @@ auto DrawVariableThicknessLine(const PlotPointFunc& plot,
   }
 
   auto swapLeftRightWidthFuncs = false;
-  int32_t pxStep = 0;
-  int32_t pyStep = 0;
+  int32_t pxStep               = 0;
+  int32_t pyStep               = 0;
   switch (xStep + (yStep * 4))
   {
     case -1 + (-1 * 4):

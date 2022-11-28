@@ -108,8 +108,7 @@ private:
   const IGoomRand& m_goomRand;
   const std::string m_resourcesDirectory;
 
-  const int32_t m_availableWidth{
-      static_cast<int32_t>(m_goomInfo.GetScreenWidth() - CHUNK_WIDTH)};
+  const int32_t m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenWidth() - CHUNK_WIDTH)};
   const int32_t m_availableHeight{
       static_cast<int32_t>(m_goomInfo.GetScreenHeight() - CHUNK_HEIGHT)};
   const Point2dInt m_screenCentre{I_HALF * m_availableWidth, I_HALF* m_availableHeight};
@@ -514,10 +513,9 @@ auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap, const Pl
 {
   auto imageAsChunks = ImageAsChunks{};
 
-  const auto centre =
-      Point2dInt{goomInfo.GetScreenWidth() / 2, goomInfo.GetScreenHeight() / 2};
-  const auto x0 = centre.x - static_cast<int32_t>(imageBitmap.GetWidth() / 2);
-  const auto y0 = centre.y - static_cast<int32_t>(imageBitmap.GetHeight() / 2);
+  const auto centre = Point2dInt{goomInfo.GetScreenWidth() / 2, goomInfo.GetScreenHeight() / 2};
+  const auto x0     = centre.x - static_cast<int32_t>(imageBitmap.GetWidth() / 2);
+  const auto y0     = centre.y - static_cast<int32_t>(imageBitmap.GetHeight() / 2);
 
   assert(x0 >= 0);
   assert(y0 >= 0);

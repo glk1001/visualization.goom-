@@ -31,7 +31,7 @@ public:
 private:
   float m_gamma;
   float m_chromaFactor;
-  bool m_doAlterGamma = not UTILS::MATH::FloatsEqual(1.0F, m_gamma);
+  bool m_doAlterGamma  = not UTILS::MATH::FloatsEqual(1.0F, m_gamma);
   bool m_doAlterChroma = not UTILS::MATH::FloatsEqual(1.0F, m_chromaFactor);
   static constexpr float DEFAULT_GAMMA_BRIGHTNESS_THRESHOLD = 0.01F;
   float m_ignoreThreshold                                   = DEFAULT_GAMMA_BRIGHTNESS_THRESHOLD;
@@ -59,7 +59,7 @@ inline auto ColorAdjustment::GetGamma() const -> float
 
 inline auto ColorAdjustment::SetGamma(const float val) -> void
 {
-  m_gamma = val;
+  m_gamma        = val;
   m_doAlterGamma = not UTILS::MATH::FloatsEqual(1.0F, m_gamma);
 }
 

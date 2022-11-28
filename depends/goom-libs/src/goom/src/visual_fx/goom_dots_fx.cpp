@@ -114,7 +114,7 @@ private:
 
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
 
-  static constexpr auto GAMMA = 2.2F;  // Cancel the shader gamma
+  static constexpr auto GAMMA = 2.2F; // Cancel the shader gamma
   const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 
@@ -459,9 +459,8 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
                                            const Point2dInt& dotPosition,
                                            const uint32_t radius)
 {
-  const auto diameter = (2 * radius) + 1; // must be odd
-  const auto screenWidthLessDiameter =
-      static_cast<int32_t>(m_goomInfo.GetScreenWidth() - diameter);
+  const auto diameter                = (2 * radius) + 1; // must be odd
+  const auto screenWidthLessDiameter = static_cast<int32_t>(m_goomInfo.GetScreenWidth() - diameter);
   const auto screenHeightLessDiameter =
       static_cast<int32_t>(m_goomInfo.GetScreenHeight() - diameter);
 

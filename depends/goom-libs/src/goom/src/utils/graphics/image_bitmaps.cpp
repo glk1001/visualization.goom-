@@ -31,7 +31,7 @@ inline auto ImageBitmap::SetPixel(const size_t x, const size_t y, const RGB& pix
 
 void ImageBitmap::Load(const std::string& imageFilename)
 {
-  m_filename = imageFilename;
+  m_filename                                = imageFilename;
   const auto [rgbImage, width, height, bpp] = GetRGBImage();
 
   const auto* rgbPtr = rgbImage;
@@ -69,9 +69,9 @@ auto ImageBitmap::GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, 
   {
     static constexpr auto DESIRED_CHANNELS = 4;
 
-    auto width  = 0;
-    auto height = 0;
-    auto bpp    = 0;
+    auto width     = 0;
+    auto height    = 0;
+    auto bpp       = 0;
     auto* rgbImage = ::stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
     if (!rgbImage)
     {

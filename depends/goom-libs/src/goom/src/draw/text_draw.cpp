@@ -755,8 +755,7 @@ constexpr auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const int32_t stdPixelCoo
   return stdPixelCoord * FREE_TYPE_UNITS_PER_PIXEL;
 }
 
-inline auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const float stdPixelCoord) noexcept
-    -> int32_t
+inline auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const float stdPixelCoord) noexcept -> int32_t
 {
   return static_cast<int32_t>(
       std::lround(stdPixelCoord * static_cast<float>(FREE_TYPE_UNITS_PER_PIXEL)));

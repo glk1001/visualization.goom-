@@ -86,7 +86,7 @@ public:
   auto operator=(const ISequenceFunction&) noexcept -> ISequenceFunction& = default;
   auto operator=(ISequenceFunction&&) noexcept -> ISequenceFunction&      = delete;
 
-  virtual auto Increment() noexcept -> void = 0;
+  virtual auto Increment() noexcept -> void                    = 0;
   [[nodiscard]] virtual auto GetNext() const noexcept -> float = 0;
 };
 

@@ -9,9 +9,9 @@
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
+using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::EnumToString;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
@@ -43,8 +43,8 @@ XYLerpEffect::XYLerpEffect(const IGoomRand& goomRand)
 
 auto XYLerpEffect::SetRandomParams() -> void
 {
-  const auto mode  = m_modeWeights.GetRandomWeighted();
-  const auto tFreq = m_goomRand.GetRandInRange(T_FREQ_RANGE);
+  const auto mode   = m_modeWeights.GetRandomWeighted();
+  const auto tFreq  = m_goomRand.GetRandInRange(T_FREQ_RANGE);
   const auto ySign  = m_goomRand.ProbabilityOf(PROB_FLIP_Y_SIGN) ? -1.0F : +1.0F;
   const auto flipXY = m_goomRand.ProbabilityOf(GetFlipYProbability(mode));
 

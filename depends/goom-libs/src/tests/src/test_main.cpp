@@ -15,9 +15,8 @@ using GOOM::UTILS::Logging;
 auto main(int argc, char* argv[]) -> int
 {
   // global setup...
-  const auto f_console_log = [](Logging::LogLevel, const std::string& s) {
-    std::clog << s << std::endl;
-  };
+  const auto f_console_log = [](Logging::LogLevel, const std::string& s)
+  { std::clog << s << std::endl; };
   AddLogHandler("console-log", f_console_log);
   SetLogLevel(Logging::LogLevel::INFO);
   SetLogLevelForFiles(Logging::LogLevel::INFO);

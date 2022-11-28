@@ -91,7 +91,7 @@ private:
   auto MakeToDotPathsSameAsFromDotPaths() noexcept -> void;
   [[nodiscard]] auto GetNextDotPositions(const std::vector<UTILS::MATH::OscillatingPath>& dotPath)
       const noexcept -> std::vector<Point2dInt>;
-  Direction m_direction = Direction::TO_TARGET;
+  Direction m_direction         = Direction::TO_TARGET;
   bool m_changeDirectionPending = false;
   static auto IncrementPositionT(std::vector<UTILS::MATH::OscillatingPath>& paths) noexcept -> void;
   [[nodiscard]] auto GetStepSize() const noexcept -> float;

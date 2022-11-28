@@ -26,7 +26,7 @@ enum class Events
 };
 using EventCounts = std::array<uint32_t, NUM<Events>>;
 
-static constexpr size_t NUM_LOOPS = 10000000;
+static constexpr size_t NUM_LOOPS     = 10000000;
 static constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
 [[nodiscard]] static auto GetWeightedCounts(const Weights<Events>& weights) -> EventCounts
@@ -83,8 +83,8 @@ TEST_CASE("Weighted Events")
       const double countFraction = fEventCount / DBL_NUM_LOOPS;
       const double eventFraction = fEventWeight / sumOfWeights;
 
-      UNSCOPED_INFO(std20::format("i = {}, countFraction = {}, eventFraction = {}", i,
-                                  countFraction, eventFraction));
+      UNSCOPED_INFO(std20::format(
+          "i = {}, countFraction = {}, eventFraction = {}", i, countFraction, eventFraction));
       REQUIRE(countFraction == Approx(eventFraction).epsilon(0.005));
     }
   }
@@ -102,8 +102,8 @@ TEST_CASE("Weighted Events")
     const ConditionalWeights<Events>::EventWeightMultiplierPairs weightMultipliers = {
         {GIVEN_EVENT, event3WeightMultipliers}
     };
-    const ConditionalWeights<Events> conditionalWeightedEvents{goomRand, weightPairs,
-                                                               weightMultipliers};
+    const ConditionalWeights<Events> conditionalWeightedEvents{
+        goomRand, weightPairs, weightMultipliers};
     const auto conditionalSumOfWeights =
         static_cast<double>(conditionalWeightedEvents.GetSumOfWeights(GIVEN_EVENT));
     static constexpr double EXPECTED_SUM_FOR_GIVEN = 5.0 + 2.0 * 10.0 + 6.0;
@@ -114,7 +114,7 @@ TEST_CASE("Weighted Events")
 
     for (size_t i = 0; i < NUM<Events>; ++i)
     {
-      const auto fConditionalEventCount = static_cast<double>(conditionalEventCounts.at(i));
+      const auto fConditionalEventCount     = static_cast<double>(conditionalEventCounts.at(i));
       const double conditionalCountFraction = fConditionalEventCount / DBL_NUM_LOOPS;
 
       UNSCOPED_INFO(std20::format("i:{}, fConditionalEventCount = {}", i, fConditionalEventCount));
@@ -125,10 +125,14 @@ TEST_CASE("Weighted Events")
       const auto fConditionalEventWeight = static_cast<double>(
           conditionalWeightedEvents.GetWeight(GIVEN_EVENT, static_cast<Events>(i)));
       const double conditionalEventFraction = fConditionalEventWeight / conditionalSumOfWeights;
-      UNSCOPED_INFO(std20::format("i:{}, fConditionalEventWeight({}) = {}", i,
-                                  EnumToString(GIVEN_EVENT), fConditionalEventWeight));
-      UNSCOPED_INFO(std20::format("i:{}, conditionalSumOfWeights({}) = {}", i,
-                                  EnumToString(GIVEN_EVENT), conditionalSumOfWeights));
+      UNSCOPED_INFO(std20::format("i:{}, fConditionalEventWeight({}) = {}",
+                                  i,
+                                  EnumToString(GIVEN_EVENT),
+                                  fConditionalEventWeight));
+      UNSCOPED_INFO(std20::format("i:{}, conditionalSumOfWeights({}) = {}",
+                                  i,
+                                  EnumToString(GIVEN_EVENT),
+                                  conditionalSumOfWeights));
       UNSCOPED_INFO(
           std20::format("i:{}, conditionalEventFraction = {}", i, conditionalEventFraction));
 

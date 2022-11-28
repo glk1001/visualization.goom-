@@ -88,7 +88,7 @@ private:
   [[nodiscard]] auto CreateNewTentacle2D() const noexcept -> std::unique_ptr<Tentacle2D>;
   uint32_t m_tentacleGroupSize = static_cast<uint32_t>(m_tentacles.size());
 
-  size_t m_updateNum                                                     = 0U;
+  size_t m_updateNum = 0U;
   auto CheckForTimerEvents() -> void;
 
   auto UpdateAndDrawTentacles() noexcept -> void;

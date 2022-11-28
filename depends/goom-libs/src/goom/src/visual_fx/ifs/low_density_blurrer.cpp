@@ -53,7 +53,7 @@ auto LowDensityBlurrer::SetWidth(const uint32_t val) noexcept -> void
 #pragma warning(pop)
 #endif
 
-  m_width = val;
+  m_width        = val;
   m_widthSquared = Sq(static_cast<size_t>(m_width));
 }
 

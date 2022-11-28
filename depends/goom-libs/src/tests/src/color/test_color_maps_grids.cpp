@@ -85,7 +85,7 @@ inline const auto VERTICAL_BASE_COLORS = std::vector<Pixel>{
     Pixel{           0U,            0U, MAX_COLOR_VAL, MAX_ALPHA},
 };
 
-}
+} // namespace
 
 TEST_CASE("Test GetCurrentHorizontalLineColors")
 {

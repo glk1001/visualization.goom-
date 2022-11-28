@@ -6,7 +6,7 @@
 namespace GOOM::DRAW
 {
 
-using PlotPointFunc = std::function<void(int32_t x, int32_t y)>;
+using PlotPointFunc    = std::function<void(int32_t x, int32_t y)>;
 using GetLineWidthFunc = std::function<double(int32_t pointNum, int32_t lineLength)>;
 
 auto DrawVariableThicknessLine(const PlotPointFunc& plot,

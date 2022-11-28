@@ -504,7 +504,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPoints(
     return;
   }
 
-  const auto numPoints = points.size();
+  const auto numPoints    = points.size();
   auto maxLowDensityCount = 0U;
   auto lowDensityPoints   = std::vector<IfsPoint>{};
 

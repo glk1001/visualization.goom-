@@ -234,10 +234,10 @@ auto DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
   int32_t xpx11;
   float interY;
   {
-    const float xEnd = fRound(x0);
-    const float yEnd = y0 + (gradient * (xEnd - x0));
-    const float xGap = rFPart(x0 + 0.5F);
-    xpx11            = static_cast<int>(xEnd);
+    const float xEnd    = fRound(x0);
+    const float yEnd    = y0 + (gradient * (xEnd - x0));
+    const float xGap    = rFPart(x0 + 0.5F);
+    xpx11               = static_cast<int>(xEnd);
     const int32_t ypx11 = iPart(yEnd);
     if (steep)
     {
@@ -254,10 +254,10 @@ auto DrawMethods::WuLine(float x0, float y0, float x1, float y1, const PlotPoint
 
   int32_t xpx12;
   {
-    const float xEnd = fRound(x1);
-    const float yEnd = y1 + (gradient * (xEnd - x1));
-    const float xGap = rFPart(x1 + 0.5F);
-    xpx12            = static_cast<int>(xEnd);
+    const float xEnd    = fRound(x1);
+    const float yEnd    = y1 + (gradient * (xEnd - x1));
+    const float xGap    = rFPart(x1 + 0.5F);
+    xpx12               = static_cast<int>(xEnd);
     const int32_t ypx12 = iPart(yEnd);
     if (steep)
     {

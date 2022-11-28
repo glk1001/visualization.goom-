@@ -4,9 +4,7 @@ namespace GOOM
 {
 
 PixelBuffer::PixelBuffer(const Dimensions& dimensions) noexcept
-  : m_width{dimensions.GetWidth()},
-    m_height{dimensions.GetHeight()},
-    m_buff(dimensions.GetSize())
+  : m_width{dimensions.GetWidth()}, m_height{dimensions.GetHeight()}, m_buff(dimensions.GetSize())
 {
 }
 

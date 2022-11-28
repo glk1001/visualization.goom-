@@ -5,10 +5,10 @@
 #undef NO_LOGGING
 
 #include "filter_fx/filter_settings_service.h"
-#include "logging.h"
 #include "goom_all_visual_fx.h"
 #include "goom_graphic.h"
 #include "goom_music_settings_reactor.h"
+#include "logging.h"
 #include "utils/date_utils.h"
 
 #include <filesystem>
@@ -205,7 +205,7 @@ auto GoomStateDump::DumpData(const std::string& directory) -> void
 auto GoomStateDump::DumpSummary() const noexcept -> void
 {
   static constexpr auto SUMMARY_FILENAME = "summary.dat";
-  auto out = std::ofstream{};
+  auto out                               = std::ofstream{};
   out.open(m_datedDirectory + "/" + SUMMARY_FILENAME, std::ofstream::out);
 
   out << "Song:       " << m_songTitle << "\n";
@@ -242,7 +242,7 @@ auto GoomStateDump::DumpDataArray(const std::string& filename,
   LogInfo("Dumping Goom state data ({} values) to \"{}\".", dataLen, filename);
 
   static constexpr auto EXT = ".dat";
-  auto out = std::ofstream{};
+  auto out                  = std::ofstream{};
   out.open(m_datedDirectory + "/" + filename + EXT, std::ofstream::out);
 
   for (auto i = 0U; i < dataLen; ++i)

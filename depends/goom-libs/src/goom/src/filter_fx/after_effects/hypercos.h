@@ -71,7 +71,8 @@ private:
                          const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange) -> void;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
                                  HypercosEffect effect,
-                                 const FrequencyFactor& frequencyFactorToUse) const -> NormalizedCoords;
+                                 const FrequencyFactor& frequencyFactorToUse) const
+      -> NormalizedCoords;
   [[nodiscard]] auto GetFrequencyFactorToUse(float frequencyFactor) const -> float;
 };
 

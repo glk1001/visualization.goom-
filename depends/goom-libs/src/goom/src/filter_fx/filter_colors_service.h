@@ -43,7 +43,8 @@ private:
   static_assert(ALLOWED_NUM_NEIGHBORS == FILTER_UTILS::ZOOM_FILTER_COEFFS::NUM_NEIGHBOR_COEFFS);
   std::array<uint32_t, ALLOWED_NUM_NEIGHBORS> m_reorderedColorIndexes{0, 1, 2, 3};
 
-  libdivide::divider<uint32_t> m_coeffsAndBrightnessFastDivisor{FILTER_UTILS::ZOOM_FILTER_COEFFS::MAX_SUM_COEFFS};
+  libdivide::divider<uint32_t> m_coeffsAndBrightnessFastDivisor{
+      FILTER_UTILS::ZOOM_FILTER_COEFFS::MAX_SUM_COEFFS};
 
   [[nodiscard]] auto GetFilteredColor(const NeighborhoodCoeffArray& coeffs,
                                       const NeighborhoodPixelArray& pixels) const noexcept -> Pixel;

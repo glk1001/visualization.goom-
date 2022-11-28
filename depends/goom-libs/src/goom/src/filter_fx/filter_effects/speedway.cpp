@@ -1,7 +1,7 @@
 #include "speedway.h"
 
-#include "goom_config.h"
 #include "filter_fx/common_types.h"
+#include "goom_config.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

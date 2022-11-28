@@ -59,7 +59,7 @@ void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& sim
     m_maxHitCount = hitInfo.count;
   }
 
-  hitInfo.simi  = &simi;
+  hitInfo.simi = &simi;
   if (hitInfo.count > 1)
   {
     hitInfo.color = GetColorAverage(hitInfo.color, simi.GetColor());

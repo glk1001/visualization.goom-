@@ -8,9 +8,9 @@ namespace GOOM::UNIT_TESTS
 {
 
 using UTILS::EnumMap;
-using UTILS::RuntimeEnumMap;
 using UTILS::EnumToString;
 using UTILS::NUM;
+using UTILS::RuntimeEnumMap;
 using UTILS::StringToEnum;
 
 TEST_CASE("EnumMap")

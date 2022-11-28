@@ -106,7 +106,7 @@ inline auto Tentacle2D::SetIterZeroLerpFactor(const double val) -> void
 inline auto Tentacle2D::SetBaseYWeights(const BaseYWeights& val) -> void
 {
   m_basePreviousYWeight = static_cast<double>(val.previous);
-  m_baseCurrentYWeight = static_cast<double>(val.current);
+  m_baseCurrentYWeight  = static_cast<double>(val.current);
 }
 
 inline auto Tentacle2D::GetNumNodes() const -> uint32_t

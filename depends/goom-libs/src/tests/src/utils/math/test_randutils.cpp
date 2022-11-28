@@ -65,7 +65,7 @@ TEST_CASE("repeatable random sequence")
   std::vector<float> fseq1(1000);
   for (size_t i = 0; i < 1000; i++)
   {
-    seq1[i] = GetRand();
+    seq1[i]  = GetRand();
     fseq1[i] = GetRandInRange(0.0F, 1.0F);
   }
 
@@ -75,7 +75,7 @@ TEST_CASE("repeatable random sequence")
   std::vector<float> fseq2(1000);
   for (size_t i = 0; i < 1000; i++)
   {
-    seq2[i] = GetRand();
+    seq2[i]  = GetRand();
     fseq2[i] = GetRandInRange(0.0F, 1.0F);
   }
 
@@ -85,7 +85,7 @@ TEST_CASE("repeatable random sequence")
   std::vector<float> fseq3(1000);
   for (size_t i = 0; i < 1000; i++)
   {
-    seq3[i] = GetRand();
+    seq3[i]  = GetRand();
     fseq3[i] = GetRandInRange(0.0F, 1.0F);
   }
 
@@ -126,13 +126,13 @@ TEST_CASE("uint32_t min max get random")
 
   static constexpr uint32_t N_MIN1 = 999;
   static constexpr uint32_t N_MAX1 = 10001;
-  const auto [min1, max1] = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
+  const auto [min1, max1]          = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
   REQUIRE(min1 == N_MIN1);
   REQUIRE(max1 == N_MAX1 - 1);
 
   static constexpr uint32_t N_MIN2 = 0;
   static constexpr uint32_t N_MAX2 = 120;
-  const auto [min2, max2] = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
+  const auto [min2, max2]          = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
   REQUIRE(min2 == N_MIN2);
   REQUIRE(max2 == N_MAX2 - 1);
 
@@ -150,25 +150,25 @@ TEST_CASE("int32_t min max get random")
 
   static constexpr int32_t N_MIN1 = -999;
   static constexpr int32_t N_MAX1 = 10001;
-  const auto [min1, max1] = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
+  const auto [min1, max1]         = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
   REQUIRE(min1 == N_MIN1);
   REQUIRE(max1 == N_MAX1 - 1);
 
   static constexpr int32_t N_MIN2 = -999;
   static constexpr int32_t N_MAX2 = -50;
-  const auto [min2, max2] = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
+  const auto [min2, max2]         = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
   REQUIRE(min2 == N_MIN2);
   REQUIRE(max2 == N_MAX2 - 1);
 
   static constexpr int32_t N_MIN3 = 1;
   static constexpr int32_t N_MAX3 = 999;
-  const auto [min3, max3] = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
+  const auto [min3, max3]         = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
   REQUIRE(min3 == N_MIN3);
   REQUIRE(max3 == N_MAX3 - 1);
 
   static constexpr int32_t N_MIN4 = 0;
   static constexpr int32_t N_MAX4 = 635;
-  const auto [min4, max4] = GetMinMax(NUM_LOOP, N_MIN4, N_MAX4);
+  const auto [min4, max4]         = GetMinMax(NUM_LOOP, N_MIN4, N_MAX4);
   REQUIRE(min4 == N_MIN4);
   REQUIRE(max4 == N_MAX4 - 1);
 
@@ -190,19 +190,19 @@ TEST_CASE("float min max get random")
 
   static constexpr float N_MIN1 = 0;
   static constexpr float N_MAX1 = 1;
-  const auto [min1, max1] = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
+  const auto [min1, max1]       = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
   REQUIRE(std::fabs(min1 - N_MIN1) < 0.0001F);
   REQUIRE(std::fabs(max1 - N_MAX1) < 0.0001F);
 
   static constexpr float N_MIN2 = -1;
   static constexpr float N_MAX2 = 0;
-  const auto [min2, max2] = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
+  const auto [min2, max2]       = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
   REQUIRE(std::fabs(min2 - N_MIN2) < 0.0001F);
   REQUIRE(std::fabs(max2 - N_MAX2) < 0.0001F);
 
   static constexpr float N_MIN3 = -10;
   static constexpr float N_MAX3 = +10;
-  const auto [min3, max3] = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
+  const auto [min3, max3]       = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
   REQUIRE(std::fabs(min3 - N_MIN3) < 0.0001F);
   REQUIRE(std::fabs(max3 - N_MAX3) < 0.0001F);
 
