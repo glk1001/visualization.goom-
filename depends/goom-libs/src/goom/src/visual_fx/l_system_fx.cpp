@@ -71,12 +71,6 @@ struct BoundingBox2d
   GOOM::Point2dFlt min;
   GOOM::Point2dFlt max;
 };
-struct PolygonInfo
-{
-  std::vector<L_SYSTEM::Vector> polygon;
-  int color;
-  float lineWidth;
-};
 
 class LSystemFx::LSystemFxImpl
 {
@@ -140,7 +134,7 @@ private:
   auto SetupLSysModel(const LSystemFile& lSystemFile) -> void;
   auto SetNewLSysInterpreter() noexcept -> void;
   auto RestartLSysInterpreter() noexcept -> void;
-  [[nodiscard]] auto ResetDefaultInterpreterParams() noexcept -> bool;
+  auto ResetDefaultInterpreterParams() noexcept -> void;
   [[nodiscard]] auto GetNextLSystemFile() const noexcept -> LSystemFile;
   [[nodiscard]] auto GetLSystemDirectory() const noexcept -> std::string;
   GraphicsGenerator::DrawFuncs m_drawFuncs;
@@ -205,22 +199,11 @@ private:
   auto IncrementTs() noexcept -> void;
 
   auto DrawLSystem() noexcept -> void;
-  auto DrawCachedLSystem() noexcept -> void;
-  auto DrawInterpretedLSystem() noexcept -> void;
   [[nodiscard]] auto DrawLSystemBatch() noexcept -> bool;
-  bool m_cachedPolygonsReady = false;
-  std::vector<PolygonInfo> m_cachedPolygons{};
-  auto DrawAndCacheLine(const L_SYSTEM::Vector& point1,
-                        const L_SYSTEM::Vector& point2,
-                        int color,
-                        float lineWidth) noexcept -> void;
   auto DrawLine(const L_SYSTEM::Vector& point1,
                 const L_SYSTEM::Vector& point2,
                 int color,
                 float lineWidth) noexcept -> void;
-  auto DrawAndCachePolygon(const std::vector<L_SYSTEM::Vector>& polygon,
-                           int color,
-                           float lineWidth) noexcept -> void;
   auto DrawPolygon(const std::vector<L_SYSTEM::Vector>& polygon,
                    int color,
                    float lineWidth) noexcept -> void;
@@ -559,11 +542,11 @@ auto LSystemFx::LSystemFxImpl::SetupLSysModel(const LSystemFile& lSystemFile) ->
                                const L_SYSTEM::Vector& point2,
                                const int color,
                                const float lineWidth)
-  { DrawAndCacheLine(point1, point2, color, lineWidth); };
+  { DrawLine(point1, point2, color, lineWidth); };
   const auto drawPolygon = [this](const std::vector<L_SYSTEM::Vector>& polygon,
                                   [[maybe_unused]] const int color,
                                   const float lineWidth)
-  { DrawAndCachePolygon(polygon, color, lineWidth); };
+  { DrawPolygon(polygon, color, lineWidth); };
 
   m_drawFuncs = {drawLine, drawPolygon};
 
@@ -601,23 +584,7 @@ inline auto LSystemFx::LSystemFxImpl::SetNewLSysInterpreter() noexcept -> void
   RestartLSysInterpreter();
 }
 
-inline auto LSystemFx::LSystemFxImpl::RestartLSysInterpreter() noexcept -> void
-{
-  if (not ResetDefaultInterpreterParams())
-  {
-    m_cachedPolygonsReady = not m_cachedPolygons.empty();
-    m_cachedPolygons.shrink_to_fit();
-    return;
-  }
-
-  LogInfo("Reset default params. Emptying cached data.");
-  m_cachedPolygonsReady = false;
-  m_cachedPolygons.clear();
-  m_cachedPolygons.reserve(m_moduleList->size());
-  m_LSysInterpreter->Start(*m_moduleList);
-}
-
-inline auto LSystemFx::LSystemFxImpl::ResetDefaultInterpreterParams() noexcept -> bool
+inline auto LSystemFx::LSystemFxImpl::ResetDefaultInterpreterParams() noexcept -> void
 {
   if (static constexpr auto PROB_CHANGE_ROTATE_DIRECTION = 0.001F;
       m_goomRand.ProbabilityOf(PROB_CHANGE_ROTATE_DIRECTION))
@@ -625,10 +592,8 @@ inline auto LSystemFx::LSystemFxImpl::ResetDefaultInterpreterParams() noexcept -
     m_rotateSign = -m_rotateSign;
   }
 
-  static constexpr auto PROB_NEW_DEFAULT_PARAMS = 0.5F;
-  const bool resetDefaultParams                 = m_goomRand.ProbabilityOf(PROB_NEW_DEFAULT_PARAMS);
-
-  if (resetDefaultParams)
+  if (static constexpr auto PROB_NEW_DEFAULT_PARAMS = 0.5F;
+      m_goomRand.ProbabilityOf(PROB_NEW_DEFAULT_PARAMS))
   {
     m_defaultInterpreterParams = {
         m_goomRand.GetRandInRange(0.0F, DEGREES_360),
@@ -638,37 +603,15 @@ inline auto LSystemFx::LSystemFxImpl::ResetDefaultInterpreterParams() noexcept -
   }
 
   m_LSysInterpreter->SetDefaults(m_defaultInterpreterParams);
+}
 
-  return resetDefaultParams;
+inline auto LSystemFx::LSystemFxImpl::RestartLSysInterpreter() noexcept -> void
+{
+  ResetDefaultInterpreterParams();
+  m_LSysInterpreter->Start(*m_moduleList);
 }
 
 inline auto LSystemFx::LSystemFxImpl::DrawLSystem() noexcept -> void
-{
-  LogInfo("Start draw L-System.");
-
-  if (m_cachedPolygonsReady)
-  {
-    DrawCachedLSystem();
-  }
-  else
-  {
-    DrawInterpretedLSystem();
-  }
-}
-
-inline auto LSystemFx::LSystemFxImpl::DrawCachedLSystem() noexcept -> void
-{
-  LogInfo("Start L-System cached draw. Num polygons = {}.", m_cachedPolygons.size());
-
-  for (const auto& polygonInfo : m_cachedPolygons)
-  {
-    DrawPolygon(polygonInfo.polygon, polygonInfo.color, polygonInfo.lineWidth);
-  }
-
-  RestartLSysInterpreter();
-}
-
-inline auto LSystemFx::LSystemFxImpl::DrawInterpretedLSystem() noexcept -> void
 {
   LogInfo("Start L-System interpreted draw. Num modules = {}.", m_moduleList->size());
 
@@ -694,19 +637,6 @@ inline auto LSystemFx::LSystemFxImpl::DrawLSystemBatch() noexcept -> bool
   return true;
 }
 
-inline auto LSystemFx::LSystemFxImpl::DrawAndCacheLine(const L_SYSTEM::Vector& point1,
-                                                       const L_SYSTEM::Vector& point2,
-                                                       const int color,
-                                                       const float lineWidth) noexcept -> void
-{
-  m_cachedPolygons.emplace_back(PolygonInfo{
-      std::vector<L_SYSTEM::Vector>{point1, point2},
-      color, lineWidth
-  });
-
-  DrawLine(point1, point2, color, lineWidth);
-}
-
 inline auto LSystemFx::LSystemFxImpl::DrawLine(const L_SYSTEM::Vector& point1,
                                                const L_SYSTEM::Vector& point2,
                                                [[maybe_unused]] const int color,
@@ -715,15 +645,6 @@ inline auto LSystemFx::LSystemFxImpl::DrawLine(const L_SYSTEM::Vector& point1,
   const auto iLineWidth = static_cast<uint8_t>(std::clamp(0.5F * lineWidth, 1.0F, 5.0F));
 
   DrawJoinedVertices({GetPoint3dFlt(point1), GetPoint3dFlt(point2)}, iLineWidth);
-}
-
-inline auto LSystemFx::LSystemFxImpl::DrawAndCachePolygon(
-    const std::vector<L_SYSTEM::Vector>& polygon, const int color, const float lineWidth) noexcept
-    -> void
-{
-  m_cachedPolygons.emplace_back(PolygonInfo{polygon, color, lineWidth});
-
-  DrawPolygon(polygon, color, lineWidth);
 }
 
 inline auto LSystemFx::LSystemFxImpl::DrawPolygon(const std::vector<L_SYSTEM::Vector>& polygon,
