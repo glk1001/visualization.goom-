@@ -53,7 +53,7 @@ static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0;
-static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1;
+//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WATER_MODE;
 //static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
 

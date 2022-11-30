@@ -2,6 +2,7 @@ ADDR
 Aerovias
 atan
 bgnd
+bnds
 blocky
 blurrer
 Brasil
@@ -46,6 +47,7 @@ lerped
 lerper
 lerps
 lround
+LSYS
 luminances
 mult
 NBRS
@@ -53,6 +55,7 @@ noisify
 NOLINTBEGIN
 NOLINTEND
 pbos
+pentaplexity
 ptrs
 pragma
 pragmas

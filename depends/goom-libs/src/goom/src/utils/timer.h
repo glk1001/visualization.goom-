@@ -143,6 +143,7 @@ inline auto OnOffTimer::StartOnTimer() noexcept -> void
 
   m_timerState = TimerState::ON_TIMER_ACTIVE;
   m_onTimer.ResetToZero();
+  m_onAction();
 
   Ensures(not m_onTimer.Finished());
   Ensures(m_offTimer.Finished());
@@ -158,6 +159,7 @@ inline auto OnOffTimer::StartOffTimer() noexcept -> void
 
   m_timerState = TimerState::OFF_TIMER_ACTIVE;
   m_offTimer.ResetToZero();
+  m_offAction();
 
   Ensures(not m_offTimer.Finished());
   Ensures(m_onTimer.Finished());

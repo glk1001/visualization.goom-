@@ -148,6 +148,11 @@ add_library(goom
             src/visual_fx/ifs/similitudes.cpp
             src/visual_fx/lines/line_morph.cpp
             src/visual_fx/lines/line_types.h
+            src/visual_fx/l_systems/l_system.cpp
+            src/visual_fx/l_systems/lsys_colors.cpp
+            src/visual_fx/l_systems/lsys_draw.cpp
+            src/visual_fx/l_systems/lsys_geom.cpp
+            src/visual_fx/l_systems/lsys_paths.cpp
             src/visual_fx/shaders/high_contrast.cpp
             src/visual_fx/shaders/hue_shift_lerper.cpp
             src/visual_fx/shapes/bezier_flower.cpp
@@ -192,11 +197,11 @@ target_include_directories(goom
 
 target_include_directories(goom
                            SYSTEM PRIVATE
-                           ${LSys_SOURCE_DIR}/src
                            ${GOOM_LIBS_DIR}/src/bezier/include
                            ${GOOM_LIBS_DIR}/src/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
                            ${GOOM_LIBS_DIR}/lib/fmt/include
+                           ${LSys_SOURCE_DIR}/include
                            ${fmt_SOURCE_DIR}/include
                            ${magic_enum_INCLUDE_DIR}
                            ${FREETYPE_INCLUDE_DIRS}
@@ -205,45 +210,6 @@ target_include_directories(goom
 
 set_project_warnings(goom)
 enable_sanitizers(goom)
-
-
-set(MSVC_WARNINGS_OFF_FOR_LSYS
-    "/w" # turn off all warnings
-    )
-set(CLANG_WARNINGS_OFF_FOR_LSYS
-    -Wno-extra
-    -Wno-conversion
-    -Wno-sign-conversion
-    -Wno-old-style-cast
-    -Wno-implicit-fallthrough
-    -Wno-register
-    -Wno-write-strings
-    -Wno-unused-function
-    )
-set(GCC_WARNINGS_OFF_FOR_LSYS
-    ${CLANG_WARNINGS_OFF_FOR_LSYS}
-    -Wno-pedantic
-    -Wno-useless-cast
-    )
-
-if (MSVC)
-    set(SOME_WARNINGS_OFF_FOR_LSYS "${MSVC_WARNINGS_OFF_FOR_LSYS}")
-elseif (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-    set(SOME_WARNINGS_OFF_FOR_LSYS "${CLANG_WARNINGS_OFF_FOR_LSYS}")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(SOME_WARNINGS_OFF_FOR_LSYS "${GCC_WARNINGS_OFF_FOR_LSYS}")
-endif ()
-STRING(REPLACE ";" " " SOME_WARNINGS_OFF_FOR_LSYS "${SOME_WARNINGS_OFF_FOR_LSYS}")
-
-set_source_files_properties(
-        ${LSys_SOURCE_DIR}/src/lexer.cpp
-        ${LSys_SOURCE_DIR}/src/name.cpp
-        ${LSys_SOURCE_DIR}/src/options.cpp
-        ${LSys_SOURCE_DIR}/src/parser.cpp
-        PROPERTIES
-        COMPILE_FLAGS "${SOME_WARNINGS_OFF_FOR_LSYS}"
-)
-
 
 set_target_properties(goom
                       PROPERTIES
@@ -258,6 +224,7 @@ message(STATUS "Goom: C++ compile features = \"${goom_compile_features}\".")
 message(STATUS "Goom: C++ compile options = \"${goom_compile_options}\".")
 message(STATUS "Goom: SOME_WARNINGS_OFF_FOR_LSYS = \"${SOME_WARNINGS_OFF_FOR_LSYS}\".")
 message(STATUS "Goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
+message(STATUS "Goom: LSys_SOURCE_DIR = \"${LSys_SOURCE_DIR}\".")
 message(STATUS "Goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom: THIRD_PARTY_INCLUDE_DIR = \"${THIRD_PARTY_INCLUDE_DIR}\".")
 message(STATUS "Goom: FREETYPE_INCLUDE_DIRS = \"${FREETYPE_INCLUDE_DIRS}\".")

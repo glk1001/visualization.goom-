@@ -97,14 +97,20 @@ template<typename T>
 class IncrementedValue
 {
 public:
+  IncrementedValue(TValue::StepType stepType, uint32_t numSteps) noexcept;
   IncrementedValue(const T& value1,
                    const T& value2,
                    TValue::StepType stepType,
                    uint32_t numSteps) noexcept;
 
+  [[nodiscard]] auto GetValue1() const noexcept -> const T&;
+  [[nodiscard]] auto GetValue2() const noexcept -> const T&;
+
   auto SetValue1(const T& value1) noexcept -> void;
   auto SetValue2(const T& value2) noexcept -> void;
-  auto SetValues(const T& value1, float value2) noexcept -> void;
+  auto SetValues(const T& value1, const T& value2) noexcept -> void;
+  auto SetNumSteps(uint32_t val) noexcept -> void;
+  auto ReverseValues() noexcept -> void;
 
   [[nodiscard]] auto operator()() const noexcept -> const T&;
   auto Increment() noexcept -> void;
@@ -120,6 +126,7 @@ private:
   TValue m_t;
   T m_currentValue = m_value1;
   [[nodiscard]] auto GetValue(float t) const noexcept -> T;
+  [[nodiscard]] static auto LerpValues(const T& val1, const T& val2, const float t) noexcept -> T;
 };
 
 inline auto TValue::GetStepType() const noexcept -> StepType
@@ -186,6 +193,14 @@ inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const noexce
 }
 
 template<typename T>
+inline IncrementedValue<T>::IncrementedValue(const TValue::StepType stepType,
+                                             const uint32_t numSteps) noexcept
+  : m_value1{}, m_value2{}, m_t{stepType, numSteps}
+{
+  Expects(numSteps > 0U);
+}
+
+template<typename T>
 inline IncrementedValue<T>::IncrementedValue(const T& value1,
                                              const T& value2,
                                              const TValue::StepType stepType,
@@ -193,6 +208,18 @@ inline IncrementedValue<T>::IncrementedValue(const T& value1,
   : m_value1{value1}, m_value2{value2}, m_t{stepType, numSteps}
 {
   Expects(numSteps > 0U);
+}
+
+template<typename T>
+auto IncrementedValue<T>::GetValue1() const noexcept -> const T&
+{
+  return m_value1;
+}
+
+template<typename T>
+auto IncrementedValue<T>::GetValue2() const noexcept -> const T&
+{
+  return m_value2;
 }
 
 template<typename T>
@@ -208,10 +235,22 @@ inline auto IncrementedValue<T>::SetValue2(const T& value2) noexcept -> void
 }
 
 template<typename T>
-inline auto IncrementedValue<T>::SetValues(const T& value1, const float value2) noexcept -> void
+inline auto IncrementedValue<T>::SetValues(const T& value1, const T& value2) noexcept -> void
 {
   m_value1 = value1;
   m_value2 = value2;
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::ReverseValues() noexcept -> void
+{
+  std::swap(m_value1, m_value2);
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::SetNumSteps(uint32_t val) noexcept -> void
+{
+  m_t.SetNumSteps(val);
 }
 
 template<typename T>
@@ -238,8 +277,15 @@ inline auto IncrementedValue<T>::PeekNext() const noexcept -> T
 template<typename T>
 inline auto IncrementedValue<T>::GetValue(const float t) const noexcept -> T
 {
+  return LerpValues(m_value1, m_value2, t);
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::LerpValues(const T& val1, const T& val2, const float t) noexcept
+    -> T
+{
   using STD20::lerp; // Include STD20 for candidate lerps.
-  return lerp(m_value1, m_value2, t);
+  return lerp(val1, val2, t);
 }
 
 template<typename T>

@@ -123,7 +123,8 @@ CPMAddPackage(NAME "LSys"
               GITHUB_REPOSITORY "glk1001/LSys"
               GIT_TAG "master"
               FORCE True
-              DOWNLOAD_ONLY True)
+              )
+set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
 
 find_package(Kodi REQUIRED)
 
@@ -164,7 +165,7 @@ else ()
     MESSAGE(STATUS "Goom: GOOM_DEBUG turned on.")
 endif ()
 
-list(APPEND DEPLIBS ${GOOM_BIN_LIBS})
+list(APPEND DEPLIBS ${GOOM_BIN_LIBS} LSys::lib)
 
 add_subdirectory(${GOOM_LIBS_RELDIR})
 

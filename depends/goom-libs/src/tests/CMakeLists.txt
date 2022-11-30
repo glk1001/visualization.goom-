@@ -34,6 +34,7 @@ add_executable(${GOOM_LIB_TESTS_NAME}
 target_link_libraries(${GOOM_LIB_TESTS_NAME}
                       PRIVATE
                       goom
+                      LSys::lib
                       vivid
                       freetype
                       Catch2::Catch2
