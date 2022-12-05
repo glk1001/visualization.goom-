@@ -30,8 +30,8 @@ using UTILS::MATH::Weights;
 static constexpr auto INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
 static constexpr auto INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
 
-static constexpr auto RED_LINE_COLOR   = GetSimpleColor(SimpleColors::RED);
-static constexpr auto GREEN_LINE_COLOR = GetSimpleColor(SimpleColors::VERT);
+static constexpr auto RED_LINE_COLOR   = GetSimpleColor(SimpleColors::TANGO);
+static constexpr auto GREEN_LINE_COLOR = GetSimpleColor(SimpleColors::SHAMROCK);
 static constexpr auto BLACK_LINE_COLOR = GetSimpleColor(SimpleColors::BLACK);
 
 static constexpr auto PROB_CHANGE_LINE_CIRCLE_AMPLITUDE = 0.05F;

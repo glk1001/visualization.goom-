@@ -31,8 +31,10 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::ColorAdjustment;
 using COLOR::ColorMapGroup;
+using COLOR::GetSimpleColor;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
+using COLOR::SimpleColors;
 using DRAW::IGoomDraw;
 using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
@@ -401,12 +403,12 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const f
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) -> Pixel
 {
-  static const auto s_PRIMARY_COLORS = std::array{
-      Pixel{255,   0,   0, 0},
-      Pixel{  0, 255,   0, 0},
-      Pixel{  0,   0, 255, 0},
-      Pixel{255, 255,   0, 0},
-      Pixel{  0, 255, 255, 0},
+  static constexpr auto s_PRIMARY_COLORS = std::array{
+      GetSimpleColor(SimpleColors::PURE_RED),
+      GetSimpleColor(SimpleColors::PURE_LIME),
+      GetSimpleColor(SimpleColors::PURE_BLUE),
+      GetSimpleColor(SimpleColors::PURE_YELLOW),
+      GetSimpleColor(SimpleColors::PURE_AQUA),
   };
   return s_PRIMARY_COLORS.at(dotNum);
 }

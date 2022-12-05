@@ -2,6 +2,7 @@
 
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "utils/enum_utils.h"
 #include "utils/graphics/pixel_utils.h"
 
 #include <algorithm>
@@ -45,12 +46,21 @@ template<typename T>
 
 enum class SimpleColors
 {
-  BLEUBLANC = 0,
-  RED,
-  ORANGE_V,
-  ORANGE_J,
-  VERT,
-  BLEU,
+  PURE_RED,
+  PURE_LIME,
+  PURE_BLUE,
+  PURE_YELLOW,
+  PURE_AQUA,
+  PURE_MAGENTA,
+  TORCH_RED,
+  ORANGE,
+  PIZAZZ,
+  TANGO,
+  TIA_MARIA,
+  SHAMROCK,
+  CURIOUS_BLUE,
+  LIGHT_ORCHID,
+  GOLDEN_BELL,
   BLACK,
   _num // unused, and marks the enum end
 };
@@ -232,34 +242,26 @@ constexpr auto GetLuma(const Pixel& color) -> float
 
 constexpr auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
 {
-  constexpr auto RED       = Pixel::RGB{230, 120, 18, MAX_ALPHA};
-  constexpr auto ORANGE_J  = Pixel::RGB{120, 252, 18, MAX_ALPHA};
-  constexpr auto ORANGE_V  = Pixel::RGB{160, 236, 40, MAX_ALPHA};
-  constexpr auto BLEUBLANC = Pixel::RGB{40, 220, 140, MAX_ALPHA};
-  constexpr auto VERT      = Pixel::RGB{200, 80, 18, MAX_ALPHA};
-  constexpr auto BLEU      = Pixel::RGB{250, 30, 80, MAX_ALPHA};
-  constexpr auto BLACK     = Pixel::RGB{16, 16, 16, MAX_ALPHA};
+  constexpr auto SIMPLE_COLORS_MAP = UTILS::EnumMap<SimpleColors, Pixel>{{{
+      {SimpleColors::PURE_RED, Pixel{255, 0, 0, MAX_ALPHA}},
+      {SimpleColors::PURE_LIME, Pixel{0, 255, 0, MAX_ALPHA}},
+      {SimpleColors::PURE_BLUE, Pixel{0, 0, 255, MAX_ALPHA}},
+      {SimpleColors::PURE_YELLOW, Pixel{255, 255, 0, MAX_ALPHA}},
+      {SimpleColors::PURE_AQUA, Pixel{0, 255, 255, MAX_ALPHA}},
+      {SimpleColors::PURE_MAGENTA, Pixel{255, 0, 255, MAX_ALPHA}},
+      {SimpleColors::TORCH_RED, Pixel{250, 30, 80, MAX_ALPHA}},
+      {SimpleColors::ORANGE, Pixel{255, 165, 0, MAX_ALPHA}},
+      {SimpleColors::PIZAZZ, Pixel{255, 140, 0, MAX_ALPHA}},
+      {SimpleColors::TANGO, Pixel{230, 120, 18, MAX_ALPHA}},
+      {SimpleColors::TIA_MARIA, Pixel{200, 80, 18, MAX_ALPHA}},
+      {SimpleColors::SHAMROCK, Pixel{40, 220, 140, MAX_ALPHA}},
+      {SimpleColors::CURIOUS_BLUE, Pixel{40, 140, 220, MAX_ALPHA}},
+      {SimpleColors::LIGHT_ORCHID, Pixel{220, 140, 220, MAX_ALPHA}},
+      {SimpleColors::GOLDEN_BELL, Pixel{220, 140, 20, MAX_ALPHA}},
+      {SimpleColors::BLACK, Pixel{16, 16, 16, MAX_ALPHA}},
+  }}};
 
-  switch (simpleColor)
-  {
-    case SimpleColors::RED:
-      return Pixel{RED};
-    case SimpleColors::ORANGE_J:
-      return Pixel{ORANGE_J};
-    case SimpleColors::ORANGE_V:
-      return Pixel{ORANGE_V};
-    case SimpleColors::BLEUBLANC:
-      return Pixel{BLEUBLANC};
-    case SimpleColors::VERT:
-      return Pixel{VERT};
-    case SimpleColors::BLEU:
-      return Pixel{BLEU};
-    case SimpleColors::BLACK:
-      return Pixel{BLACK};
-    default:
-      FailFast();
-      return Pixel{BLACK};
-  }
+  return SIMPLE_COLORS_MAP[simpleColor];
 }
 
 } // namespace GOOM::COLOR
