@@ -30,7 +30,10 @@ endif ()
 
 IF (NOT KODI_ROOT_DIR)
     set(KODI_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
+else()
+    get_filename_component(KODI_ROOT_DIR "${KODI_ROOT_DIR}" ABSOLUTE)
 endif ()
+
 if (IS_THIS_MAIN_CMAKE_SCRIPT)
     set(GOOM_BUILD_DIR "${CMAKE_BINARY_DIR}")
 else ()
@@ -64,6 +67,7 @@ else ()
                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                         RESULT_VARIABLE CMAKE_RESULT)
         if (NOT CMAKE_RESULT EQUAL "0")
+            file(REMOVE "${CMAKE_BINARY_DIR}/CMakeCache.txt")
             message(FATAL_ERROR "cmake kodi-addons failed.")
         endif ()
     endif ()
