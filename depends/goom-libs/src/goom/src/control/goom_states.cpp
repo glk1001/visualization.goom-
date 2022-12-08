@@ -21,7 +21,7 @@ using UTILS::NUM;
 
 static constexpr auto DEFAULT_BUFF_INTENSITY_RANGES = EnumMap<GoomDrawables, BuffIntensityRange>{{{
     {GoomDrawables::CIRCLES, {0.50F, 0.80F}},
-    {GoomDrawables::DOTS, {0.30F, 0.50F}},
+    {GoomDrawables::DOTS, {0.40F, 0.70F}},
     {GoomDrawables::IFS, {0.40F, 0.70F}},
     {GoomDrawables::LINES, {0.50F, 0.70F}},
     {GoomDrawables::IMAGE, {0.05F, 0.30F}},
