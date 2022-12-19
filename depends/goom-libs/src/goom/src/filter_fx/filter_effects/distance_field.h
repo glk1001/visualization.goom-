@@ -35,7 +35,6 @@ public:
     FULL,
     PARTIAL_X,
     PARTIAL_DIAMOND,
-    PARTIAL_MODULUS,
     PARTIAL_RANDOM,
     _num // unused, and marks the enum end
   };
@@ -49,7 +48,6 @@ public:
     int32_t gridMax;
     float gridScale;
     float cellCentre;
-    uint32_t modulus;
     struct GridArrays
     {
       GridPointsWithCentres gridPointsWithCentres;
@@ -75,9 +73,7 @@ private:
   using GridWidthRange = UTILS::MATH::IGoomRand::NumberRange<uint32_t>;
   auto SetRandomParams(const AmplitudeRange& amplitudeRange,
                        const GridWidthRange& gridWidthRange) noexcept -> void;
-  [[nodiscard]] auto GetModulus(GridType gridType) const noexcept -> uint32_t;
   [[nodiscard]] auto GetGridWidth(GridType gridType,
-                                  uint32_t modulus,
                                   const GridWidthRange& gridWidthRange) const noexcept -> uint32_t;
   [[nodiscard]] auto GetGridsArray(GridType gridType, uint32_t gridWidth) const noexcept
       -> Params::GridArrays;
@@ -93,9 +89,9 @@ private:
       -> GridPointsWithCentres;
   [[nodiscard]] static auto GetGridPointDiamondArray(uint32_t gridWidth) noexcept
       -> GridPointsWithCentres;
-  [[nodiscard]] static auto GetGridPointModulusArray(uint32_t gridWidth) noexcept
-      -> GridPointsWithCentres;
   [[nodiscard]] auto GetGridPointRandomArray(uint32_t gridWidth) const noexcept
+      -> GridPointsWithCentres;
+  [[nodiscard]] auto TryGetGridPointRandomArray(uint32_t gridWidth) const noexcept
       -> GridPointsWithCentres;
   [[nodiscard]] auto GetAmplitude(const AmplitudeRange& amplitudeRange,
                                   GridType gridType,
