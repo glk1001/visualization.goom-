@@ -61,7 +61,9 @@ private:
 
   uint32_t m_updateNum = 0;
 
-  static constexpr int32_t MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
+  static constexpr int32_t MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
+  static constexpr int32_t MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 400;
+  int32_t m_maxTimeBetweenZoomEffectsChange   = MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE;
   int32_t m_updatesSinceLastZoomEffectsChange = 0; // nombre de Cycle Depuis Dernier Changement
   uint32_t m_previousZoomSpeed                = FILTER_FX::Vitesse::STOP_SPEED;
 
@@ -137,12 +139,16 @@ inline auto GoomMusicSettingsReactor::BigBreak() -> void
 
 inline auto GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges() -> void
 {
-  if (((0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom()) or
-       (m_updatesSinceLastZoomEffectsChange > MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE)) and
-      m_goomRand.ProbabilityOf(PROB_CHANGE_FILTER_MODE))
+  if (m_updatesSinceLastZoomEffectsChange <= m_maxTimeBetweenZoomEffectsChange)
   {
-    ChangeFilterMode();
+    if ((m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() > 0) or
+        (not m_goomRand.ProbabilityOf(PROB_CHANGE_FILTER_MODE)))
+    {
+      return;
+    }
   }
+
+  ChangeFilterMode();
 }
 
 inline auto GoomMusicSettingsReactor::ChangeFilterMode() -> void
@@ -232,6 +238,9 @@ inline auto GoomMusicSettingsReactor::BigNormalUpdate() -> void
   ChangeVitesse();
   ChangeTranBufferSwitchValues();
   m_visualFx.ChangeAllFxColorMaps();
+
+  m_maxTimeBetweenZoomEffectsChange = m_goomRand.GetRandInRange(
+      MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE, MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE + 1);
 
   static constexpr auto PROB_SINGLE_BUFFER_DOTS = 1.0F / 20.0F;
   m_visualFx.SetSingleBufferDots(m_goomRand.ProbabilityOf(PROB_SINGLE_BUFFER_DOTS));

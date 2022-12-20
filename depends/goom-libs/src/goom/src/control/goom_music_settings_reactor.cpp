@@ -27,7 +27,7 @@ auto GoomMusicSettingsReactor::ChangeZoomEffects() -> void
 {
   if (not m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
   {
-    if (m_updatesSinceLastZoomEffectsChange > MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE)
+    if (m_updatesSinceLastZoomEffectsChange > m_maxTimeBetweenZoomEffectsChange)
     {
       m_updatesSinceLastZoomEffectsChange = 0;
 
