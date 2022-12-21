@@ -20,7 +20,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 
 using GOOM::UTILS::MATH::IGoomRand;
 
-auto CreateZoomInCoefficientsEffect(ZoomFilterMode filterMode,
+auto CreateZoomInCoefficientsEffect(const ZoomFilterMode filterMode,
                                     const IGoomRand& goomRand,
                                     const std::string& resourcesDirectory)
     -> std::shared_ptr<IZoomInCoefficientsEffect>
@@ -60,10 +60,14 @@ auto CreateZoomInCoefficientsEffect(ZoomFilterMode filterMode,
       return std::make_shared<Speedway>(Speedway::Modes::MODE2, goomRand);
     case ZoomFilterMode::WATER_MODE:
       return std::make_shared<UniformZoomInCoefficientsEffect>();
-    case ZoomFilterMode::WAVE_MODE0:
-      return std::make_shared<Wave>(Wave::Modes::MODE0, goomRand);
-    case ZoomFilterMode::WAVE_MODE1:
-      return std::make_shared<Wave>(Wave::Modes::MODE1, goomRand);
+    case ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0:
+      return std::make_shared<Wave>(Wave::Modes::SQ_DIST_ANGLE_EFFECT_MODE0, goomRand);
+    case ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1:
+      return std::make_shared<Wave>(Wave::Modes::SQ_DIST_ANGLE_EFFECT_MODE1, goomRand);
+    case ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0:
+      return std::make_shared<Wave>(Wave::Modes::ATAN_ANGLE_EFFECT_MODE0, goomRand);
+    case ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1:
+      return std::make_shared<Wave>(Wave::Modes::ATAN_ANGLE_EFFECT_MODE1, goomRand);
     case ZoomFilterMode::Y_ONLY_MODE:
       return std::make_shared<YOnly>(goomRand);
     default:

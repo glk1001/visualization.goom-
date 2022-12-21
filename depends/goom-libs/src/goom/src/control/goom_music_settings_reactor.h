@@ -139,13 +139,11 @@ inline auto GoomMusicSettingsReactor::BigBreak() -> void
 
 inline auto GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges() -> void
 {
-  if (m_updatesSinceLastZoomEffectsChange <= m_maxTimeBetweenZoomEffectsChange)
+  if ((m_updatesSinceLastZoomEffectsChange <= m_maxTimeBetweenZoomEffectsChange) and
+      ((m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() > 0) or
+       (not m_goomRand.ProbabilityOf(PROB_CHANGE_FILTER_MODE))))
   {
-    if ((m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() > 0) or
-        (not m_goomRand.ProbabilityOf(PROB_CHANGE_FILTER_MODE)))
-    {
-      return;
-    }
+    return;
   }
 
   ChangeFilterMode();
@@ -261,9 +259,8 @@ inline auto GoomMusicSettingsReactor::ChangeSpeedReverse() -> void
   // Retablir le zoom avant.
   // Restore zoom in.
 
-  static constexpr auto REVERSE_VITESSE_CYCLES = 13U;
-
-  if ((m_filterSettingsService.GetROVitesse().GetReverseVitesse()) and
+  if (static constexpr auto REVERSE_VITESSE_CYCLES = 13U;
+      (m_filterSettingsService.GetROVitesse().GetReverseVitesse()) and
       ((m_updateNum % REVERSE_VITESSE_CYCLES) != 0) and
       m_goomRand.ProbabilityOf(PROB_FILTER_REVERSE_OFF_AND_STOP_SPEED))
   {

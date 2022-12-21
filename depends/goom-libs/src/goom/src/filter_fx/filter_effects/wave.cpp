@@ -41,7 +41,6 @@ static constexpr auto PROB_ALLOW_STRANGE_WAVE_VALUES          = 0.1F;
 static constexpr auto PROB_WAVE_XY_EFFECTS_EQUAL              = 0.75F;
 static constexpr auto PROB_NO_PERIODIC_FACTOR                 = 0.2F;
 static constexpr auto PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT = 0.9F;
-static constexpr auto PROB_ATAN_ANGLE_EFFECT                  = 0.5F;
 
 static constexpr auto WAVE_SIN_EFFECT_WEIGHT      = 200.0F;
 static constexpr auto WAVE_COS_EFFECT_WEIGHT      = 200.0F;
@@ -84,39 +83,85 @@ Wave::Wave(const Modes mode, const IGoomRand& goomRand)
 
 auto Wave::SetRandomParams() noexcept -> void
 {
-  if (m_mode == Modes::MODE0)
+  switch (m_mode)
   {
-    SetMode0RandomParams();
-  }
-  else
-  {
-    SetMode1RandomParams();
+    case Modes::SQ_DIST_ANGLE_EFFECT_MODE0:
+      SetSqDistAngleEffectMode0RandomParams();
+      break;
+    case Modes::SQ_DIST_ANGLE_EFFECT_MODE1:
+      SetSqDistAngleEffectMode1RandomParams();
+      break;
+    case Modes::ATAN_ANGLE_EFFECT_MODE0:
+      SetAtanAngleEffectMode0RandomParams();
+      break;
+    case Modes::ATAN_ANGLE_EFFECT_MODE1:
+      SetAtanAngleEffectMode1RandomParams();
+      break;
+    default:
+      FailFast();
   }
 }
 
-auto Wave::SetMode0RandomParams() noexcept -> void
+auto Wave::SetSqDistAngleEffectMode0RandomParams() noexcept -> void
 {
-  SetWaveModeSettings(
-      FREQ_FACTOR_RANGE, AMPLITUDE_RANGE, PERIODIC_FACTOR_RANGE, SIN_COS_PERIODIC_FACTOR_RANGE);
+  SetWaveModeSettings(AngleEffect::SQ_DIST,
+                      FREQ_FACTOR_RANGE,
+                      AMPLITUDE_RANGE,
+                      PERIODIC_FACTOR_RANGE,
+                      SIN_COS_PERIODIC_FACTOR_RANGE);
 }
 
-auto Wave::SetMode1RandomParams() noexcept -> void
+auto Wave::SetSqDistAngleEffectMode1RandomParams() noexcept -> void
 {
   if (m_goomRand.ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
   {
-    SetWaveModeSettings(SMALL_FREQ_FACTOR_RANGE,
+    SetWaveModeSettings(AngleEffect::SQ_DIST,
+                        SMALL_FREQ_FACTOR_RANGE,
                         BIG_AMPLITUDE_RANGE,
                         BIG_PERIODIC_FACTOR_RANGE,
                         BIG_SIN_COS_PERIODIC_FACTOR_RANGE);
   }
   else
   {
-    SetWaveModeSettings(
-        FREQ_FACTOR_RANGE, AMPLITUDE_RANGE, PERIODIC_FACTOR_RANGE, SIN_COS_PERIODIC_FACTOR_RANGE);
+    SetWaveModeSettings(AngleEffect::SQ_DIST,
+                        FREQ_FACTOR_RANGE,
+                        AMPLITUDE_RANGE,
+                        PERIODIC_FACTOR_RANGE,
+                        SIN_COS_PERIODIC_FACTOR_RANGE);
+  }
+}
+
+auto Wave::SetAtanAngleEffectMode0RandomParams() noexcept -> void
+{
+  SetWaveModeSettings(AngleEffect::ATAN,
+                      FREQ_FACTOR_RANGE,
+                      AMPLITUDE_RANGE,
+                      PERIODIC_FACTOR_RANGE,
+                      SIN_COS_PERIODIC_FACTOR_RANGE);
+}
+
+auto Wave::SetAtanAngleEffectMode1RandomParams() noexcept -> void
+{
+  if (m_goomRand.ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
+  {
+    SetWaveModeSettings(AngleEffect::ATAN,
+                        SMALL_FREQ_FACTOR_RANGE,
+                        BIG_AMPLITUDE_RANGE,
+                        BIG_PERIODIC_FACTOR_RANGE,
+                        BIG_SIN_COS_PERIODIC_FACTOR_RANGE);
+  }
+  else
+  {
+    SetWaveModeSettings(AngleEffect::ATAN,
+                        FREQ_FACTOR_RANGE,
+                        AMPLITUDE_RANGE,
+                        PERIODIC_FACTOR_RANGE,
+                        SIN_COS_PERIODIC_FACTOR_RANGE);
   }
 }
 
 auto Wave::SetWaveModeSettings(
+    const AngleEffect angleEffect,
     const IGoomRand::NumberRange<float>& freqFactorRange,
     const IGoomRand::NumberRange<float>& amplitudeRange,
     const IGoomRand::NumberRange<float>& periodicFactorRange,
@@ -127,9 +172,6 @@ auto Wave::SetWaveModeSettings(
   const auto xWaveEffect = m_weightedEffects.GetRandomWeighted();
   const auto yWaveEffect = waveEffectsEqual ? xWaveEffect : m_weightedEffects.GetRandomWeighted();
 
-  const auto angleEffect = m_goomRand.ProbabilityOf(PROB_ATAN_ANGLE_EFFECT)
-                               ? Wave::AngleEffect::ATAN
-                               : Wave::AngleEffect::SQ_DIST;
   const auto sqDistPower = m_goomRand.GetRandInRange(SQ_DIST_POWER_RANGE);
 
   const auto periodicFactor =

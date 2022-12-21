@@ -336,6 +336,7 @@ inline auto GoomControl::GoomControlImpl::SetDumpDirectory(const std::string& du
 inline auto GoomControl::GoomControlImpl::SetDumpDirectory(
     [[maybe_unused]] const std::string& dumpDirectory) -> void
 {
+// #define not set
 }
 #endif
 

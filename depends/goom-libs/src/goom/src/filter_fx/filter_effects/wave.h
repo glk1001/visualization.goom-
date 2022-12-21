@@ -14,8 +14,10 @@ class Wave : public IZoomInCoefficientsEffect
 public:
   enum class Modes
   {
-    MODE0,
-    MODE1
+    SQ_DIST_ANGLE_EFFECT_MODE0,
+    SQ_DIST_ANGLE_EFFECT_MODE1,
+    ATAN_ANGLE_EFFECT_MODE0,
+    ATAN_ANGLE_EFFECT_MODE1,
   };
   Wave(Modes mode, const UTILS::MATH::IGoomRand& goomRand);
 
@@ -67,9 +69,12 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
   const UTILS::MATH::Weights<WaveEffect> m_weightedEffects;
   Params m_params;
-  auto SetMode0RandomParams() noexcept -> void;
-  auto SetMode1RandomParams() noexcept -> void;
+  auto SetSqDistAngleEffectMode0RandomParams() noexcept -> void;
+  auto SetSqDistAngleEffectMode1RandomParams() noexcept -> void;
+  auto SetAtanAngleEffectMode0RandomParams() noexcept -> void;
+  auto SetAtanAngleEffectMode1RandomParams() noexcept -> void;
   auto SetWaveModeSettings(
+      AngleEffect angleEffect,
       const UTILS::MATH::IGoomRand::NumberRange<float>& freqFactorRange,
       const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange,
       const UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
@@ -93,7 +98,7 @@ private:
 };
 
 inline auto Wave::GetZoomInCoefficients(const NormalizedCoords& coords,
-                                        float sqDistFromZero) const noexcept -> Point2dFlt
+                                        const float sqDistFromZero) const noexcept -> Point2dFlt
 {
   const auto angle   = GetAngle(sqDistFromZero, coords);
   const auto reducer = std::exp(-m_params.reducerCoeff * sqDistFromZero);
