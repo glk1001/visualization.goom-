@@ -15,19 +15,17 @@ GoomMusicSettingsReactor::GoomMusicSettingsReactor(
     const PluginInfo& goomInfo,
     const IGoomRand& goomRand,
     GoomAllVisualFx& visualFx,
-    const GoomEvents& goomEvents,
     FilterSettingsService& filterSettingsService) noexcept
   : m_goomInfo{goomInfo},
     m_goomRand{goomRand},
     m_visualFx{visualFx},
-    m_goomEvents{goomEvents},
     m_filterSettingsService{filterSettingsService}
 {
 }
 
 auto GoomMusicSettingsReactor::ChangeZoomEffects() -> void
 {
-  if (!m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
+  if (not m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
   {
     if (m_updatesSinceLastZoomEffectsChange > MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE)
     {
@@ -62,7 +60,7 @@ auto GoomMusicSettingsReactor::ChangeZoomEffects() -> void
     m_filterSettingsService.SetTranLerpToMaxSwitchMult(1.0F);
 
     static constexpr auto NUM_CYCLES_BEFORE_LERP_CHANGE = 2U;
-    if ((0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom()) &&
+    if ((0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom()) and
         (m_goomInfo.GetSoundEvents().GetTotalGoomsInCurrentCycle() < NUM_CYCLES_BEFORE_LERP_CHANGE))
     {
       m_filterSettingsService.SetTranLerpIncrement(0);
@@ -104,7 +102,7 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
       (Vitesse::IsFasterThan(oldVitesse, Vitesse::FASTER_SPEED) and
        Vitesse::IsFasterThan(newVitesse, Vitesse::EVEN_FASTER_SPEED) and
        (0 == (m_updateNum % VITESSE_CYCLES))) or
-      m_goomEvents.Happens(GoomEvent::FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE))
+      m_goomRand.ProbabilityOf(PROB_FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE))
   {
     filterVitesse.SetVitesse(Vitesse::SLOWEST_SPEED);
     filterVitesse.ToggleReverseVitesse();

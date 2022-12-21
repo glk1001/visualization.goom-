@@ -16,7 +16,6 @@
 
 #include "compiler_versions.h"
 #include "control/goom_all_visual_fx.h"
-#include "control/goom_events.h"
 #include "control/goom_image_buffers.h"
 #include "control/goom_message_displayer.h"
 #include "control/goom_music_settings_reactor.h"
@@ -62,7 +61,6 @@ namespace GOOM
 {
 
 using CONTROL::GoomAllVisualFx;
-using CONTROL::GoomEvents;
 using CONTROL::GoomImageBuffers;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
@@ -133,7 +131,6 @@ private:
   FilterSettingsService m_filterSettingsService{
       m_goomInfo, m_goomRand, m_resourcesDirectory, CreateZoomInCoefficientsEffect};
   const SmallImageBitmaps m_smallBitmaps{m_resourcesDirectory};
-  GoomEvents m_goomEvents{m_goomRand};
   GoomRandomStateHandler m_stateHandler{m_goomRand};
 
   GoomAllVisualFx m_visualFx{m_parallel,
@@ -153,7 +150,7 @@ private:
 
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
   GoomMusicSettingsReactor m_musicSettingsReactor{
-      m_goomInfo, m_goomRand, m_visualFx, m_goomEvents, m_filterSettingsService};
+      m_goomInfo, m_goomRand, m_visualFx, m_filterSettingsService};
   const GoomStateMonitor m_goomStateMonitor{
       m_visualFx, m_musicSettingsReactor, m_filterSettingsService};
 #ifdef DO_GOOM_STATE_DUMP
