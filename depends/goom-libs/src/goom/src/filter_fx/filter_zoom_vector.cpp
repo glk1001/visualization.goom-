@@ -1,10 +1,10 @@
-#include "filter_zoom_vector.h"
-
 //#undef NO_LOGGING
+
+#include "filter_zoom_vector.h"
 
 #include "filter_effects/zoom_vector_effects.h"
 #include "goom_config.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "normalized_coords.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -16,7 +16,6 @@ namespace GOOM::FILTER_FX
 {
 
 using FILTER_EFFECTS::ZoomVectorEffects;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SqDistance;

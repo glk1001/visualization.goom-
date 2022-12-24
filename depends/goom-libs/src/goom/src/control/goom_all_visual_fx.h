@@ -22,6 +22,7 @@
 namespace GOOM
 {
 class AudioSamples;
+class GoomLogger;
 class PluginInfo;
 class PixelBuffer;
 
@@ -108,6 +109,7 @@ public:
 private:
   DRAW::IGoomDraw& m_goomDraw;
   const UTILS::MATH::IGoomRand& m_goomRand;
+  GoomLogger& m_goomLogger;
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
   std::experimental::propagate_const<std::unique_ptr<FILTER_FX::ZoomFilterFx>> m_zoomFilterFx;
 

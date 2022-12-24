@@ -1,10 +1,10 @@
-#include "shader_fx.h"
-
 //#undef NO_LOGGING
+
+#include "shader_fx.h"
 
 #include "color/color_utils.h"
 #include "fx_helper.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "shaders/high_contrast.h"
 #include "shaders/hue_shift_lerper.h"
 #include "spimpl.h"
@@ -18,7 +18,6 @@ namespace GOOM::VISUAL_FX
 
 using SHADERS::HighContrast;
 using SHADERS::HueShiftLerper;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Stopwatch;
 using UTILS::MATH::Sq;
 

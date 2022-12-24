@@ -1,11 +1,11 @@
-#include "tentacle3d.h"
-
 //#undef NO_LOGGING
+
+#include "tentacle3d.h"
 
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "tentacle2d.h"
 #include "utils/math/misc.h"
 
@@ -22,7 +22,6 @@ using COLOR::RandomColorMaps;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;
 using DRAW::MultiplePixels;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Sq;
 

@@ -1,8 +1,8 @@
-#include "dot_paths.h"
-
 //#undef NO_LOGGING
 
-#include "logging.h"
+#include "dot_paths.h"
+
+#include "goom_logger.h"
 #include "point2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
@@ -14,7 +14,6 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingPath;

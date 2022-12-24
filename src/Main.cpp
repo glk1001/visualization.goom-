@@ -6,15 +6,15 @@
  *  See LICENSE.md for more information.
  */
 
-#include "Main.h"
-
 #undef NO_LOGGING
+
+#include "Main.h"
 
 #include "build_time.h"
 #include "goom/compiler_versions.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/logging.h"
+#include "goom/goom_logger.h"
 #include "goom/sound_info.h"
 #ifdef SAVE_AUDIO_BUFFERS
 #include "src/goom/src/utils/strutils.h"
@@ -32,9 +32,9 @@ using GOOM::AudioSamples;
 using GOOM::Dimensions;
 using GOOM::GetCompilerVersion;
 using GOOM::GoomControl;
+using GOOM::GoomLogger;
 using GOOM::GoomShaderEffects;
 using GOOM::PixelBuffer;
-using GOOM::UTILS::Logging;
 #ifdef SAVE_AUDIO_BUFFERS
 using GOOM::UTILS::BufferView;
 using GOOM::UTILS::FindAndReplaceAll;
@@ -171,9 +171,9 @@ auto CVisualizationGoom::StartVis(const int numChannels,
 {
   StartLogging();
 
-  LogInfo("CVisualizationGoom: Texture width, height = {}, {}.", m_textureWidth, m_textureHeight);
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Texture width, height = {}, {}.", m_textureWidth, m_textureHeight);
 #ifdef HAS_GL
-  LogInfo("CVisualizationGoom: Supported GLSL version is {}.",
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Supported GLSL version is {}.",
           reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 #endif
 
@@ -206,14 +206,14 @@ void CVisualizationGoom::SetNumChannels(const int numChannels)
 
 void CVisualizationGoom::StartLogging()
 {
-  static const auto s_KODI_LOGGER = [](const Logging::LogLevel lvl, const std::string& msg)
+  static const auto s_KODI_LOGGER = [](const GoomLogger::LogLevel lvl, const std::string& msg)
   {
     const auto kodiLvl = static_cast<AddonLogEnum>(static_cast<size_t>(lvl));
     kodi::Log(kodiLvl, msg.c_str());
   };
-  AddLogHandler("kodi-logger", s_KODI_LOGGER);
-  SetLogDoDateTime(false);
-  LogStart();
+  AddLogHandler(*m_goomLogger, "kodi-logger", s_KODI_LOGGER);
+  SetShowDateTime(*m_goomLogger, false);
+  LogStart(*m_goomLogger);
 }
 
 void CVisualizationGoom::StartActiveQueue()
@@ -239,7 +239,7 @@ void CVisualizationGoom::Stop()
 {
   if (!m_started)
   {
-    LogWarn("CVisualizationGoom: Not started - skipping this.");
+    LogWarn(*m_goomLogger, "CVisualizationGoom: Not started - skipping this.");
     return;
   }
 
@@ -269,7 +269,7 @@ void CVisualizationGoom::StopWithCatch()
 
 inline void CVisualizationGoom::StopVis()
 {
-  LogInfo("CVisualizationGoom: Visualization stopping.");
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Visualization stopping.");
   m_started = false;
 
   StopGoomProcessBuffersThread();
@@ -279,6 +279,8 @@ inline void CVisualizationGoom::StopVis()
   DeinitGl();
 
   m_audioBufferNum = 0;
+
+  LogStop(*m_goomLogger);
 }
 
 inline auto GetGoomVisualizationBuildTime() -> std::string
@@ -294,20 +296,21 @@ auto CVisualizationGoom::InitGoomController() -> bool
     return true;
   }
 
-  LogInfo("CVisualizationGoom: Initializing goom controller.");
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Initializing goom controller.");
   m_goomControl = std::make_unique<GoomControl>(Dimensions{m_textureWidth, m_textureHeight},
-                                                KODI_ADDON::GetAddonPath("resources"));
+                                                KODI_ADDON::GetAddonPath("resources"),
+                                                *m_goomLogger);
   if (!m_goomControl)
   {
     HandleError("Goom controller could not be initialized!");
     return false;
   }
 
-  LogInfo("CVisualizationGoom: Goom: {}.", GoomControl::GetGoomVersionInfo());
-  LogInfo("CVisualizationGoom: Compiler: {}.", GetCompilerVersion());
-  LogInfo("CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
-  LogInfo("Goom Library: Compiler: {}.", GoomControl::GetCompilerVersion());
-  LogInfo("Goom Library: Build Time: {}.", GoomControl::GetGoomLibBuildTime());
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Goom: {}.", GoomControl::GetGoomVersionInfo());
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Compiler: {}.", GetCompilerVersion());
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
+  LogInfo(*m_goomLogger, "Goom Library: Compiler: {}.", GoomControl::GetCompilerVersion());
+  LogInfo(*m_goomLogger, "Goom Library: Build Time: {}.", GoomControl::GetGoomLibBuildTime());
 
   m_goomControl->ShowGoomState(KODI_ADDON::GetSettingBoolean("show_goom_state"));
   m_goomControl->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
@@ -331,7 +334,7 @@ void CVisualizationGoom::DeinitGoomController()
 
   m_goomControl->Finish();
   m_goomControl.reset();
-  LogInfo("CVisualizationGoom: Uninitialized goom controller.");
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Uninitialized goom controller.");
 }
 
 auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& track) -> bool
@@ -346,8 +349,8 @@ auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& trac
   const std::string currentSongName =
       artist.empty() ? track.GetTitle() : artist + " - " + track.GetTitle();
 
-  LogInfo("Current Song Title = '{}'", currentSongName);
-  LogInfo("Genre = '{}', Duration = {}", track.GetGenre(), track.GetDuration());
+  LogInfo(*m_goomLogger, "Current Song Title = '{}'", currentSongName);
+  LogInfo(*m_goomLogger, "Genre = '{}', Duration = {}", track.GetGenre(), track.GetDuration());
 
   m_goomControl->SetSongInfo(
       {currentSongName, track.GetGenre(), static_cast<uint32_t>(track.GetDuration())});
@@ -362,13 +365,13 @@ auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& trac
 void CVisualizationGoom::StartGoomProcessBuffersThread()
 {
 
-  LogInfo("CVisualizationGoom: Starting goom process buffers thread.");
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Starting goom process buffers thread.");
   m_workerThread = std::thread(&CVisualizationGoom::Process, this);
 }
 
 void CVisualizationGoom::StopGoomProcessBuffersThread()
 {
-  LogInfo("CVisualizationGoom: Stopping goom process buffers thread.");
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Stopping goom process buffers thread.");
 
   ExitWorkerThread();
 
@@ -376,7 +379,7 @@ void CVisualizationGoom::StopGoomProcessBuffersThread()
   {
     m_workerThread.join();
   }
-  LogInfo("CVisualizationGoom: Goom process buffers thread stopped.");
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Goom process buffers thread stopped.");
 }
 
 void CVisualizationGoom::ExitWorkerThread()
@@ -401,7 +404,7 @@ void CVisualizationGoom::AudioData(const float* const audioData, const size_t au
 
   if (1 == m_audioBufferNum)
   {
-    LogInfo("CVisualizationGoom: Starting audio data processing.");
+    LogInfo(*m_goomLogger, "CVisualizationGoom: Starting audio data processing.");
     StartGoomProcessBuffersThread();
   }
 
@@ -485,7 +488,8 @@ void CVisualizationGoom::ProcessVis()
     const size_t read = m_audioBuffer.Read(floatAudioData.data(), m_audioBufferLen);
     if (read != m_audioBufferLen)
     {
-      LogWarn("CVisualizationGoom: Num read audio length {} != {} = expected audio data length - "
+      LogWarn(*m_goomLogger,
+              "CVisualizationGoom: Num read audio length {} != {} = expected audio data length - "
               "skipping this.",
               read,
               m_audioBufferLen);
@@ -607,7 +611,7 @@ auto CVisualizationGoom::InitGlShaders() -> bool
 
   if (!LoadShaderFiles(vertexShaderFile, fragmentShaderFile))
   {
-    LogError("CVisualizationGoom: Failed to load GL shaders.");
+    LogError(*m_goomLogger, "CVisualizationGoom: Failed to load GL shaders.");
     return false;
   }
 
@@ -686,7 +690,7 @@ auto CVisualizationGoom::CreateGlTexture() -> bool
   glGenTextures(1, &m_textureId);
   if (0 == m_textureId)
   {
-    LogError("CVisualizationGoom: Could not do glGenTextures.");
+    LogError(*m_goomLogger, "CVisualizationGoom: Could not do glGenTextures.");
     return false;
   }
 
@@ -715,7 +719,7 @@ auto CVisualizationGoom::CreateGlTexture() -> bool
   glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef HAS_GL
-  LogInfo("CVisualizationGoom: Using pixel buffer objects.");
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Using pixel buffer objects.");
   return SetupGlPixelBufferObjects();
 #else
   return true;
@@ -727,7 +731,7 @@ auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
 {
   if (!m_usePixelBufferObjects)
   {
-    LogInfo("CVisualizationGoom: Not using pixel buffer objects.");
+    LogInfo(*m_goomLogger, "CVisualizationGoom: Not using pixel buffer objects.");
     return true;
   }
 
@@ -772,7 +776,7 @@ void CVisualizationGoom::Render()
 {
   if (!m_started)
   {
-    LogWarn("CVisualizationGoom: Goom not started - skipping this.");
+    LogWarn(*m_goomLogger, "CVisualizationGoom: Goom not started - skipping this.");
     return;
   }
   if (m_audioBufferNum < MIN_AUDIO_BUFFERS_BEFORE_STARTING)
@@ -790,7 +794,7 @@ void CVisualizationGoom::Render()
   }
   catch (const std::exception& e)
   {
-    LogError("CVisualizationGoom: Goom render failed: {}", e.what());
+    LogError(*m_goomLogger, "CVisualizationGoom: Goom render failed: {}", e.what());
   }
 }
 

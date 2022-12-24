@@ -1,9 +1,9 @@
-#include "exp_reciprocal.h"
-
 //#undef NO_LOGGING
 
+#include "exp_reciprocal.h"
+
 #include "filter_fx/normalized_coords.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
@@ -16,7 +16,6 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::MATH::GetTriangle;
 using UTILS::MATH::IGoomRand;

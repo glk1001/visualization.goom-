@@ -1,9 +1,11 @@
 #pragma once
 
+#include "goom_logger.h"
 #include "goom_types.h"
 #include "spimpl.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace GOOM
@@ -19,8 +21,12 @@ public:
   static auto GetRandSeed() -> uint64_t;
   static void SetRandSeed(uint64_t seed);
 
+  static auto MakeGoomLogger() noexcept -> std::unique_ptr<GoomLogger>;
+
   GoomControl() noexcept = delete;
-  GoomControl(const Dimensions& dimensions, const std::string& resourcesDirectory);
+  GoomControl(const Dimensions& dimensions,
+              const std::string& resourcesDirectory,
+              GoomLogger& goomLogger);
 
   enum class ShowTitleType
   {
@@ -61,6 +67,7 @@ public:
 private:
   class GoomControlImpl;
   spimpl::unique_impl_ptr<GoomControlImpl> m_pimpl;
+  friend class GoomControlLogger;
 };
 
 } // namespace GOOM

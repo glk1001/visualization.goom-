@@ -4,28 +4,34 @@
 #undef NO_LOGGING
 
 #include "catch2/catch.hpp"
-#include "logging.h"
+#include "goom_control.h"
+#include "goom_logger.h"
 
 #include <iostream>
 #include <ostream>
 #include <string>
 
-using GOOM::UTILS::Logging;
+using GOOM::GoomControl;
+using GOOM::GoomLogger;
 
 auto main(int argc, char* argv[]) -> int
 {
   // global setup...
-  const auto f_console_log = [](Logging::LogLevel, const std::string& s)
+  auto goomLogger          = GoomControl::MakeGoomLogger();
+  const auto f_console_log = [](GoomLogger::LogLevel, const std::string& s)
   { std::clog << s << std::endl; };
-  AddLogHandler("console-log", f_console_log);
-  SetLogLevel(Logging::LogLevel::INFO);
-  SetLogLevelForFiles(Logging::LogLevel::INFO);
-  LogStart();
-  LogInfo("Start unit tests...");
+  AddLogHandler(*goomLogger, "console-log", f_console_log);
+  SetLogLevel(*goomLogger, GoomLogger::LogLevel::INFO);
+  SetLogLevelForFiles(*goomLogger, GoomLogger::LogLevel::INFO);
+  LogStart(*goomLogger);
+
+  LogInfo(*goomLogger, "Start unit tests...");
 
   int result = Catch::Session().run(argc, argv);
 
   // global clean-up...
+
+  LogStop(*goomLogger);
 
   return result;
 }

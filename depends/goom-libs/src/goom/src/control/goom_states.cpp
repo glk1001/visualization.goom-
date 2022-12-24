@@ -1,9 +1,9 @@
-#include "goom_states.h"
-
 //#undef NO_LOGGING
 
+#include "goom_states.h"
+
 #include "goom_config.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "utils/enum_utils.h"
 
 #include <format>
@@ -16,7 +16,6 @@ namespace GOOM::CONTROL
 
 using UTILS::EnumMap;
 using UTILS::EnumToString;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 
 static constexpr auto DEFAULT_BUFF_INTENSITY_RANGES = EnumMap<GoomDrawables, BuffIntensityRange>{{{

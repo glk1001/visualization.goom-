@@ -2,6 +2,7 @@
 
 #include "goom_draw.h"
 #include "goom_graphic.h"
+#include "goom_logger.h"
 #include "goom_types.h"
 #include "point2d.h"
 
@@ -15,7 +16,7 @@ class GoomDrawToBuffer : public IGoomDraw
 {
 public:
   GoomDrawToBuffer() noexcept = delete;
-  explicit GoomDrawToBuffer(const Dimensions& dimensions) noexcept;
+  GoomDrawToBuffer(const Dimensions& dimensions, GoomLogger& goomLogger) noexcept;
   GoomDrawToBuffer(const GoomDrawToBuffer&) noexcept = delete;
   GoomDrawToBuffer(GoomDrawToBuffer&&) noexcept      = delete;
   ~GoomDrawToBuffer() noexcept override;
@@ -34,6 +35,7 @@ protected:
                           uint32_t intBuffIntensity) noexcept -> void override;
 
 private:
+  GoomLogger& m_goomLogger;
   size_t m_numBuffers = 0;
   std::vector<PixelBuffer*> m_multipleBuffers{};
   PixelBuffer* m_multipleBuffer0{};

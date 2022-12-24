@@ -1,9 +1,9 @@
-#include "drawable_text.h"
-
 //#undef NO_LOGGING
 
+#include "drawable_text.h"
+
 #include "draw/text_draw.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "point2d.h"
 #include "utils/strutils.h"
 

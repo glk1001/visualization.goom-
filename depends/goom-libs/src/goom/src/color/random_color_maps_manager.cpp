@@ -1,9 +1,9 @@
-#include "random_color_maps_manager.h"
-
 //#undef NO_LOGGING
 
+#include "random_color_maps_manager.h"
+
 #include "goom_config.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "random_color_maps_groups.h"
 
 #include <cstdint>
@@ -11,8 +11,6 @@
 
 namespace GOOM::COLOR
 {
-
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
 RandomColorMapsManager::ColorMapInfo::~ColorMapInfo() noexcept = default;
 

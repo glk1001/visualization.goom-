@@ -118,7 +118,6 @@ add_library(goom
             src/utils/date_utils.cpp
             src/utils/enum_utils.h
             src/utils/format_utils.h
-            src/utils/logging.cpp
             src/utils/name_value_pairs.cpp
             src/utils/propagate_const.h
             src/utils/step_speed.h
@@ -173,9 +172,10 @@ add_library(goom
             src/visual_fx/tubes_fx.cpp
             src/goom_control.cpp
             src/goom_graphic.cpp
+            src/goom_logger.cpp
             src/goom_version.cpp
             src/sound_info.cpp
-            )
+            include/goom/goom_logger.h)
 
 target_include_directories(goom
                            PUBLIC

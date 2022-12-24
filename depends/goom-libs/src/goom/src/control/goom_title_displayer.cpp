@@ -1,6 +1,6 @@
-#include "goom_title_displayer.h"
-
 //#undef NO_LOGGING
+
+#include "goom_title_displayer.h"
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
@@ -8,7 +8,7 @@
 #include "draw/text_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/text/drawable_text.h"
@@ -24,7 +24,6 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::TextDraw;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::GetFltFraction;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;

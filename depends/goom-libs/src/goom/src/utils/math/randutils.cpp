@@ -1,8 +1,8 @@
-#include "randutils.h"
-
 //#undef NO_LOGGING
 
-#include "logging.h"
+#include "randutils.h"
+
+#include "goom_logger.h"
 #include "splitmix.hpp"
 #include "utils/math/misc.h"
 #include "xoshiro.hpp"

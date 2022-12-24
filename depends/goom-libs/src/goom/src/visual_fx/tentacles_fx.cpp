@@ -1,14 +1,14 @@
-#include "tentacles_fx.h"
-
 //#undef NO_LOGGING
+
+#include "tentacles_fx.h"
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom_config.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
-#include "logging.h"
 #include "spimpl.h"
 #include "tentacles/circles_tentacle_layout.h"
 #include "tentacles/tentacle_driver.h"
@@ -30,7 +30,6 @@ using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 using UTILS::Timer;
 using UTILS::MATH::IGoomRand;

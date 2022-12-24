@@ -1,6 +1,6 @@
-#include "goom_dots_fx.h"
-
 //#undef NO_LOGGING
+
+#include "goom_dots_fx.h"
 
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
@@ -10,8 +10,8 @@
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom_graphic.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
-#include "logging.h"
 #include "point2d.h"
 #include "spimpl.h"
 #include "utils/graphics/image_bitmaps.h"
@@ -36,7 +36,6 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::SimpleColors;
 using DRAW::IGoomDraw;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;

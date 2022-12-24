@@ -1,9 +1,9 @@
-#include "tan_effect.h"
-
 // #undef NO_LOGGING
 
+#include "tan_effect.h"
+
 #include "filter_fx/common_types.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "utils/enum_utils.h"
 #include "utils/name_value_pairs.h"
 
@@ -13,7 +13,6 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;

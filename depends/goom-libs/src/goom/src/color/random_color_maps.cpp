@@ -1,11 +1,11 @@
-#include "random_color_maps.h"
-
 //#undef NO_LOGGING
+
+#include "random_color_maps.h"
 
 #include "color_data/color_map_enums.h"
 #include "color_maps.h"
 #include "goom_graphic.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -16,7 +16,6 @@ namespace GOOM::COLOR
 {
 
 using COLOR_DATA::ColorMapName;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;

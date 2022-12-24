@@ -1,11 +1,11 @@
-#include "distance_field.h"
-
 //#undef NO_LOGGING
+
+#include "distance_field.h"
 
 #include "filter_fx/common_types.h"
 #include "goom_config.h"
+#include "goom_logger.h"
 #include "goom_types.h"
-#include "logging.h"
 #include "utils/enum_utils.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -19,7 +19,6 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::MATH::HALF;
 using UTILS::MATH::IGoomRand;

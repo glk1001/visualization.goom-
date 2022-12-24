@@ -1,15 +1,16 @@
+//#undef NO_LOGGING
+
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 #include "text_draw.h"
 
 //#define NO_FREETYPE_INSTALLED
-//#undef NO_LOGGING
 
 #include "color/color_utils.h"
 #include "goom_config.h"
 #include "goom_draw.h"
 #include "goom_graphic.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "spimpl.h"
 #include "utils/math/misc.h"
 
@@ -28,7 +29,6 @@ namespace GOOM::DRAW
 {
 
 using COLOR::GetColorBlend;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::I_HALF;
 
 #ifdef NO_FREETYPE_INSTALLED
@@ -701,12 +701,10 @@ auto TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
   static constexpr auto MIN_PARALLEL_SPAN_ARRAY_SIZE = 20;
   if (m_useParallelRender && (spanArray.size() >= MIN_PARALLEL_SPAN_ARRAY_SIZE))
   {
-    LogInfo("WriteSpansToImage using parallel."); // NOLINT
     m_draw.GetParallel().ForLoop(spanArray.size(), writeSpan);
   }
   else
   {
-    LogInfo("WriteSpansToImage NOT using parallel."); // NOLINT
     for (auto i = 0U; i < spanArray.size(); ++i)
     {
       writeSpan(i);

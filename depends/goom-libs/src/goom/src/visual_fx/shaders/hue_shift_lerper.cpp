@@ -1,8 +1,8 @@
-#include "hue_shift_lerper.h"
-
 //#undef NO_LOGGING
 
-#include "logging.h"
+#include "hue_shift_lerper.h"
+
+#include "goom_logger.h"
 #include "utils/math/misc.h"
 
 #include <cmath>
@@ -10,7 +10,6 @@
 namespace GOOM::VISUAL_FX::SHADERS
 {
 
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::TWO_PI;
 
 HueShiftLerper::HueShiftLerper(const PluginInfo& goomInfo,

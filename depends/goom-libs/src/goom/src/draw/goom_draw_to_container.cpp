@@ -1,12 +1,12 @@
-#include "goom_draw_to_container.h"
-
 //#undef NO_LOGGING
+
+#include "goom_draw_to_container.h"
 
 #include "color/color_utils.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "goom_logger.h"
 #include "goom_types.h"
-#include "logging.h"
 
 #include <cstdint>
 #include <vector>
@@ -15,7 +15,6 @@ namespace GOOM::DRAW
 {
 
 using COLOR::GetBrighterColorInt;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
 GoomDrawToContainer::GoomDrawToContainer(const Dimensions& dimensions) noexcept
   : IGoomDraw{dimensions}, m_xyPixelList(dimensions.GetHeight())

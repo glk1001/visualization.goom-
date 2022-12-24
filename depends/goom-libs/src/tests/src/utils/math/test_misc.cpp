@@ -1,7 +1,7 @@
 #undef NO_LOGGING
 
 #include "catch2/catch.hpp"
-#include "logging.h"
+#include "goom_logger.h"
 #include "utils/math/misc.h"
 
 #include <cstdint>
@@ -9,7 +9,6 @@
 namespace GOOM::UNIT_TESTS
 {
 
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::FloatToIrreducibleFraction;
 using UTILS::MATH::Gcd;
 using UTILS::MATH::Lcm;

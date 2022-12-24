@@ -1,6 +1,6 @@
-#include "color_maps.h"
-
 //#undef NO_LOGGING
+
+#include "color_maps.h"
 
 #include "color_data/color_data_maps.h"
 #include "color_data/color_map_enums.h"
@@ -8,7 +8,7 @@
 #include "color_utils.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "utils/enum_utils.h"
 
 #include <algorithm>
@@ -29,7 +29,6 @@ namespace GOOM::COLOR
 {
 
 using COLOR_DATA::ColorMapName;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 
 class RotatedColorMap : public ColorMapWrapper

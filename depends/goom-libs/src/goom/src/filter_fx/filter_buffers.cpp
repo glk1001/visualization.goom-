@@ -1,12 +1,12 @@
-#include "filter_buffers.h"
-
 //#undef NO_LOGGING
+
+#include "filter_buffers.h"
 
 #include "filter_utils/zoom_coord_transforms.h"
 #include "filter_utils/zoom_filter_coefficients.h"
 #include "goom_config.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
-#include "logging.h"
 #include "normalized_coords.h"
 #include "point2d.h"
 #include "utils/parallel_utils.h"
@@ -19,7 +19,6 @@ namespace GOOM::FILTER_FX
 
 using FILTER_UTILS::ZoomCoordTransforms;
 using FILTER_UTILS::ZOOM_FILTER_COEFFS::PRECALCULATED_COEFF_PTRS;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Parallel;
 
 ZoomFilterBuffers::ZoomFilterBuffers(Parallel& parallel,

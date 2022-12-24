@@ -1,9 +1,9 @@
-#include "tentacle_plotter.h"
-
 //#undef NO_LOGGING
 
+#include "tentacle_plotter.h"
+
 #include "draw/goom_draw.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "point2d.h"
 #include "utils/graphics/line_clipper.h"
 #include "utils/math/goom_rand_base.h"
@@ -15,7 +15,6 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::GRAPHICS::LineClipper;
 using UTILS::MATH::IGoomRand;

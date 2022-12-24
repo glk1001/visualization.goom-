@@ -1,9 +1,9 @@
-#include "circles_fx.h"
-
 //#undef NO_LOGGING
 
+#include "circles_fx.h"
+
 #include "fx_helper.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/misc.h"
@@ -22,7 +22,6 @@ using CIRCLES::Circle;
 using CIRCLES::CircleParamsBuilder;
 using CIRCLES::Circles;
 using CIRCLES::DotPaths;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::OscillatingFunction;

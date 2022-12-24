@@ -1,12 +1,12 @@
-#include "shape_parts.h"
-
 //#undef NO_LOGGING
+
+#include "shape_parts.h"
 
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
 #include "color/random_color_maps_manager.h"
 #include "goom_config.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "point2d.h"
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
@@ -19,7 +19,6 @@ namespace GOOM::VISUAL_FX::SHAPES
 using COLOR::RandomColorMapsGroups;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::MATH::AngleParams;
 using UTILS::MATH::CircleFunction;

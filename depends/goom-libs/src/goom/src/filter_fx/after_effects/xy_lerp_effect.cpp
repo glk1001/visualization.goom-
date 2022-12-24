@@ -1,8 +1,8 @@
-#include "xy_lerp_effect.h"
-
 // #undef NO_LOGGING
 
-#include "logging.h"
+#include "xy_lerp_effect.h"
+
+#include "goom_logger.h"
 #include "utils/enum_utils.h"
 #include "utils/name_value_pairs.h"
 
@@ -12,7 +12,6 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 

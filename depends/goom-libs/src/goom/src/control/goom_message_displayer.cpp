@@ -1,11 +1,11 @@
-#include "goom_message_displayer.h"
-
 //#undef NO_LOGGING
+
+#include "goom_message_displayer.h"
 
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "point2d.h"
 
 #include <vector>
@@ -16,7 +16,6 @@ namespace GOOM::CONTROL
 using COLOR::GetBrighterColor;
 using DRAW::IGoomDraw;
 using DRAW::TextDraw;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 
 GoomMessageDisplayer::GoomMessageDisplayer(IGoomDraw& textOutput,
                                            const std::string& updateMessagesFontFile)

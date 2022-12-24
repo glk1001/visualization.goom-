@@ -1,14 +1,14 @@
-#include "lines_fx.h"
-
 //#undef NO_LOGGING
+
+#include "lines_fx.h"
 
 #include "color/color_utils.h"
 #include "fx_helper.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "goom_logger.h"
 #include "lines/line_morph.h"
 #include "lines/line_types.h"
-#include "logging.h"
 #include "sound_info.h"
 #include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -23,7 +23,6 @@ using COLOR::GetSimpleColor;
 using COLOR::SimpleColors;
 using LINES::LineMorph;
 using LINES::LineType;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::Weights;
 

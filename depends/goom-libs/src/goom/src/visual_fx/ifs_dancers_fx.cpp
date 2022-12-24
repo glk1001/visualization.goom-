@@ -32,19 +32,19 @@
  *              that onto the screen, to reduce flicker.
  */
 
-#include "ifs_dancers_fx.h"
-
 //#undef NO_LOGGING
+
+#include "ifs_dancers_fx.h"
 
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom_graphic.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "ifs/colorizer.h"
 #include "ifs/fractal.h"
 #include "ifs/low_density_blurrer.h"
-#include "logging.h"
 #include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
@@ -68,7 +68,6 @@ using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
 using std::experimental::propagate_const;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;

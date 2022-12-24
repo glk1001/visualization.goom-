@@ -1,12 +1,12 @@
-#include "filter_buffers_service.h"
-
 //#undef NO_LOGGING
+
+#include "filter_buffers_service.h"
 
 #include "filter_buffers.h"
 #include "filter_settings.h"
 #include "goom_config.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
-#include "logging.h"
 #include "normalized_coords.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -19,7 +19,6 @@
 namespace GOOM::FILTER_FX
 {
 
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::MATH::FloatsEqual;

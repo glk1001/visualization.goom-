@@ -1,9 +1,9 @@
-#include "color_maps_grids.h"
-
 //#undef NO_LOGGING
 
+#include "color_maps_grids.h"
+
 #include "goom_config.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "utils/t_values.h"
 
 #include <cmath>
@@ -11,7 +11,6 @@
 namespace GOOM::COLOR
 {
 
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 
 ColorMapsGrid::ColorMapsGrid(const std::vector<const IColorMap*>& horizontalColorMaps,

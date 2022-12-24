@@ -1,8 +1,8 @@
+#undef NO_LOGGING
+
 #include "goom_state_dump.h"
 
 #ifdef DO_GOOM_STATE_DUMP
-
-#undef NO_LOGGING
 
 #include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
@@ -22,7 +22,6 @@ using FILTER_FX::FilterSettingsService;
 using FILTER_FX::HypercosOverlay;
 using FILTER_FX::ZoomFilterMode;
 using UTILS::GetCurrentDateTimeAsString;
-using UTILS::Logging;
 
 class GoomStateDump::CumulativeState
 {

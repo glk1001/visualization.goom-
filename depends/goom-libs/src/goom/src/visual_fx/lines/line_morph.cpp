@@ -5,9 +5,9 @@
  *  - converted to C++17 2021-02-01 (glk)
  */
 
-#include "line_morph.h"
-
 //#undef NO_LOGGING
+
+#include "line_morph.h"
 
 #include "color/color_maps.h"
 #include "color/color_utils.h"
@@ -15,8 +15,8 @@
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
-#include "logging.h"
 #include "point2d.h"
 #include "sound_info.h"
 #include "utils/enum_utils.h"
@@ -45,7 +45,6 @@ using FX_UTILS::GetHorizontalLinePoints;
 using FX_UTILS::GetVerticalLinePoints;
 using FX_UTILS::LinePoint;
 using FX_UTILS::SmoothTheCircleJoinAtEnds;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::FloatsEqual;

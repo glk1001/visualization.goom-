@@ -1,14 +1,14 @@
-#include "shapes_fx.h"
+//#undef NO_LOGGING
 
-#undef NO_LOGGING
+#include "shapes_fx.h"
 
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom_config.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
-#include "logging.h"
 #include "point2d.h"
 #include "shapes/shapes.h"
 #include "spimpl.h"
@@ -28,7 +28,6 @@ using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using SHAPES::Shape;
 using UTILS::IncrementedValue;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;

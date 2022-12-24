@@ -1,6 +1,6 @@
-#include "tubes.h"
-
 //#undef NO_LOGGING
+
+#include "tubes.h"
 
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
@@ -8,7 +8,7 @@
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "point2d.h"
 #include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -34,7 +34,6 @@ using COLOR::RandomColorMaps;
 using DRAW::MultiplePixels;
 using std::experimental::propagate_const;
 using STD20::pi;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;

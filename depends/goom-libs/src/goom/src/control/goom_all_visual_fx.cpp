@@ -1,6 +1,6 @@
-#include "goom_all_visual_fx.h"
-
 //#undef NO_LOGGING
+
+#include "goom_all_visual_fx.h"
 
 #include "all_standard_visual_fx.h"
 #include "color/color_maps.h"
@@ -9,8 +9,8 @@
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_colors_service.h"
 #include "goom_config.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
-#include "logging.h"
 #include "sound_info.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/name_value_pairs.h"
@@ -33,7 +33,6 @@ using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterFx;
 using FILTER_FX::ZoomFilterSettings;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
@@ -52,6 +51,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept
   : m_goomDraw{fxHelper.GetDraw()},
     m_goomRand{fxHelper.GetGoomRand()},
+    m_goomLogger{fxHelper.GetGoomLogger()},
     m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelper, smallBitmaps, resourcesDirectory)},
     m_zoomFilterFx{std::make_unique<ZoomFilterFx>(parallel,

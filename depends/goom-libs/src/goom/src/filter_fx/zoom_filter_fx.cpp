@@ -12,18 +12,18 @@
  *  - converted to C++17 2021-02-01 (glk)
  */
 
-#include "zoom_filter_fx.h"
-
 //#undef NO_LOGGING
+
+#include "zoom_filter_fx.h"
 
 #include "filter_buffer_color_info.h"
 #include "filter_buffers_service.h"
 #include "filter_colors_service.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "goom_types.h"
-#include "logging.h"
 #include "spimpl.h"
 #include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
@@ -39,7 +39,6 @@ namespace GOOM::FILTER_FX
 
 using std::experimental::propagate_const;
 using UTILS::GetPair;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;

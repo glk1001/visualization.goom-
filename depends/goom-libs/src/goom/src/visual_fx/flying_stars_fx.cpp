@@ -1,6 +1,6 @@
-#include "flying_stars_fx.h"
-
 //#undef NO_LOGGING
+
+#include "flying_stars_fx.h"
 
 #include "color/color_adjustment.h"
 #include "color/color_data/color_map_enums.h"
@@ -12,8 +12,8 @@
 #include "flying_stars/stars.h"
 #include "fx_helper.h"
 #include "goom_config.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
-#include "logging.h"
 #include "point2d.h"
 #include "spimpl.h"
 #include "utils/graphics/image_bitmaps.h"
@@ -39,7 +39,6 @@ using FLYING_STARS::IStarType;
 using FLYING_STARS::Star;
 using FLYING_STARS::StarDrawer;
 using FLYING_STARS::StarTypesContainer;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;

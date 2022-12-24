@@ -1,6 +1,6 @@
-#include "circle.h"
-
 //#undef NO_LOGGING
+
+#include "circle.h"
 
 #include "color/color_maps.h"
 #include "color/color_utils.h"
@@ -9,7 +9,7 @@
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
@@ -36,7 +36,6 @@ using DRAW::MultiplePixels;
 using DRAW::ReversePixels;
 using UTILS::EnumMap;
 using UTILS::IncrementedValue;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::NUM;
 using UTILS::TValue;
 using UTILS::MATH::AngleParams;

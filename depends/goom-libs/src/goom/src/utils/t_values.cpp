@@ -1,9 +1,9 @@
-#include "t_values.h"
-
 //#undef NO_LOGGING
 
+#include "t_values.h"
+
 #include "goom_config.h"
-#include "logging.h"
+#include "goom_logger.h"
 
 namespace GOOM::UTILS
 {

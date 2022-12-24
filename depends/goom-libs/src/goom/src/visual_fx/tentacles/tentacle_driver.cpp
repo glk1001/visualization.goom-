@@ -1,11 +1,11 @@
-#include "tentacle_driver.h"
-
 //#undef NO_LOGGING
+
+#include "tentacle_driver.h"
 
 #include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "tentacle3d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
@@ -20,7 +20,6 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SineWaveMultiplier;

@@ -1,13 +1,13 @@
-#include "shapes.h"
-
 //#undef NO_LOGGING
+
+#include "shapes.h"
 
 #include "color/color_adjustment.h"
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_manager.h"
 #include "goom_config.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
-#include "logging.h"
 #include "point2d.h"
 #include "shape_parts.h"
 #include "utils/math/goom_rand_base.h"
@@ -19,7 +19,6 @@ using COLOR::ColorAdjustment;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::MATH::IGoomRand;
 
 Shape::Shape(IGoomDraw& draw,
@@ -191,7 +190,6 @@ auto Shape::Update() noexcept -> void
       begin(m_shapeParts), end(m_shapeParts), [](ShapePart& shapePart) { shapePart.Update(); });
 
   m_chromaChangeOnOffTimer.Increment();
-  LogInfo("Incremented chroma");
 }
 
 auto Shape::DoRandomChanges() noexcept -> void
@@ -265,14 +263,12 @@ inline auto Shape::SetIncreasedChromaFactor() noexcept -> bool
   if (static constexpr auto PROB_INCREASE_CHROMA_FACTOR = 0.9F;
       not m_goomRand.ProbabilityOf(PROB_INCREASE_CHROMA_FACTOR))
   {
-    LogInfo("SetIncreasedChromaFactor - return false");
     return false;
   }
   std::for_each(begin(m_shapeParts),
                 end(m_shapeParts),
                 [](ShapePart& shapePart)
                 { shapePart.SetChromaFactor(ColorAdjustment::INCREASED_CHROMA_FACTOR); });
-  LogInfo("SetIncreasedChromaFactor - return true");
   return true;
 }
 
@@ -281,14 +277,12 @@ inline auto Shape::SetDecreasedChromaFactor() noexcept -> bool
   if (static constexpr auto PROB_DECREASE_CHROMA_FACTOR = 0.2F;
       not m_goomRand.ProbabilityOf(PROB_DECREASE_CHROMA_FACTOR))
   {
-    LogInfo("SetDecreasedChromaFactor - return false");
     return false;
   }
   std::for_each(begin(m_shapeParts),
                 end(m_shapeParts),
                 [](ShapePart& shapePart)
                 { shapePart.SetChromaFactor(ColorAdjustment::DECREASED_CHROMA_FACTOR); });
-  LogInfo("SetDecreasedChromaFactor - return true");
   return true;
 }
 

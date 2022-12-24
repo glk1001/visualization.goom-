@@ -1,9 +1,9 @@
-#include "circles.h"
-
 //#undef NO_LOGGING
 
+#include "circles.h"
+
 #include "color/random_color_maps.h"
-#include "logging.h"
+#include "goom_logger.h"
 #include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -15,7 +15,6 @@ namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 using COLOR::RandomColorMaps;
-using UTILS::Logging; // NOLINT(misc-unused-using-decls)
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;

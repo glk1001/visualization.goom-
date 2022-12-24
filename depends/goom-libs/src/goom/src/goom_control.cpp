@@ -10,9 +10,9 @@
  *
  */
 
-#include "goom_control.h"
-
 #undef NO_LOGGING
+
+#include "goom_control.h"
 
 #include "compiler_versions.h"
 #include "control/goom_all_visual_fx.h"
@@ -33,9 +33,9 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "goom_version.h"
-#include "logging.h"
 #include "spimpl.h"
 #include "utils/build_time.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -82,7 +82,6 @@ using FILTER_FX::FILTER_EFFECTS::CreateZoomInCoefficientsEffect;
 #ifdef DO_GOOM_STATE_DUMP
 using std::experimental::propagate_const;
 #endif
-using UTILS::Logging;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::StringSplit;
@@ -90,13 +89,32 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
 using VISUAL_FX::FxHelper;
 
+class GoomControlLogger : public GoomLogger
+{
+public:
+  using GoomLogger::GoomLogger;
+
+  auto StartGoomControl(const GoomControl::GoomControlImpl* goomControl) noexcept -> void;
+  auto StopGoomControl() noexcept -> void;
+
+  [[nodiscard]] auto CanLog() const -> bool override;
+
+private:
+  const GoomControl::GoomControlImpl* m_goomControl;
+  static constexpr auto MIN_UPDATE_NUM_TO_LOG = 160U;
+  static constexpr auto MAX_UPDATE_NUM_TO_LOG = 170U;
+};
+
 class GoomControl::GoomControlImpl
 {
 public:
-  GoomControlImpl(const Dimensions& dimensions, std::string resourcesDirectory);
+  GoomControlImpl(const Dimensions& dimensions,
+                  const std::string& resourcesDirectory,
+                  GoomLogger& goomLogger);
 
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
+  [[nodiscard]] auto GetUpdateNum() const -> uint32_t;
 
   auto SetShowTitle(ShowTitleType value) -> void;
 
@@ -118,12 +136,13 @@ private:
   SoundInfo m_soundInfo{};
   GoomSoundEvents m_goomSoundEvents{m_soundInfo};
   PluginInfo m_goomInfo;
+  const std::string m_resourcesDirectory;
+  GoomControlLogger& m_goomLogger;
   const GoomRand m_goomRand{};
-  GoomDrawToBuffer m_multiBufferDraw{m_goomInfo.GetScreenDimensions()};
-  const FxHelper m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand};
+  GoomDrawToBuffer m_multiBufferDraw{m_goomInfo.GetScreenDimensions(), m_goomLogger};
+  const FxHelper m_fxHelper;
 
   GoomImageBuffers m_imageBuffers{m_goomInfo.GetScreenDimensions()};
-  const std::string m_resourcesDirectory;
   const NormalizedCoordsConverter m_normalizedCoordsConverter{
       {m_goomInfo.GetScreenWidth(), m_goomInfo.GetScreenHeight()},
       ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL
@@ -187,7 +206,7 @@ private:
   const float m_upperLimitOfTimeIntervalInMsSinceLastMarked =
       UPDATE_TIME_SAFETY_FACTOR *
       (static_cast<float>(m_numUpdatesBetweenTimeChecks) * UPDATE_TIME_ESTIMATE_IN_MS);
-  GoomDrawToBuffer m_goomTextOutput{m_goomInfo.GetScreenDimensions()};
+  GoomDrawToBuffer m_goomTextOutput{m_goomInfo.GetScreenDimensions(), m_goomLogger};
   GoomTitleDisplayer m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory()};
   GoomMessageDisplayer m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile()};
 
@@ -230,12 +249,13 @@ auto GoomControl::GetRandSeed() -> uint64_t
 
 auto GoomControl::SetRandSeed(const uint64_t seed) -> void
 {
-  LogDebug("Set goom seed = {}.", seed);
   UTILS::MATH::RAND::SetRandSeed(seed);
 }
 
-GoomControl::GoomControl(const Dimensions& dimensions, const std::string& resourcesDirectory)
-  : m_pimpl{spimpl::make_unique_impl<GoomControlImpl>(dimensions, resourcesDirectory)}
+GoomControl::GoomControl(const Dimensions& dimensions,
+                         const std::string& resourcesDirectory,
+                         GoomLogger& goomLogger)
+  : m_pimpl{spimpl::make_unique_impl<GoomControlImpl>(dimensions, resourcesDirectory, goomLogger)}
 {
 }
 
@@ -289,9 +309,37 @@ auto GoomControl::Update(const AudioSamples& audioSamples, const std::string& me
   m_pimpl->Update(audioSamples, message);
 }
 
+auto GoomControlLogger::StartGoomControl(const GoomControl::GoomControlImpl* goomControl) noexcept
+    -> void
+{
+  m_goomControl = goomControl;
+}
+
+auto GoomControlLogger::StopGoomControl() noexcept -> void
+{
+  Flush();
+  m_goomControl = nullptr;
+}
+
+auto GoomControlLogger::CanLog() const -> bool
+{
+  return ((m_goomControl == nullptr) or
+          (MIN_UPDATE_NUM_TO_LOG <= (m_goomControl->GetUpdateNum()) and
+           (m_goomControl->GetUpdateNum() <= MAX_UPDATE_NUM_TO_LOG)));
+}
+
+auto GoomControl::MakeGoomLogger() noexcept -> std::unique_ptr<GoomLogger>
+{
+  return std::make_unique<GoomControlLogger>();
+}
+
 GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
-                                              std::string resourcesDirectory)
-  : m_goomInfo{dimensions, m_goomSoundEvents}, m_resourcesDirectory{std::move(resourcesDirectory)}
+                                              const std::string& resourcesDirectory,
+                                              GoomLogger& goomLogger)
+  : m_goomInfo{dimensions, m_goomSoundEvents},
+    m_resourcesDirectory{resourcesDirectory},
+    m_goomLogger{dynamic_cast<GoomControlLogger&>(goomLogger)},
+    m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand, m_goomLogger}
 {
   RotateBuffers();
 }
@@ -304,6 +352,11 @@ inline auto GoomControl::GoomControlImpl::GetScreenWidth() const -> uint32_t
 inline auto GoomControl::GoomControlImpl::GetScreenHeight() const -> uint32_t
 {
   return m_goomInfo.GetScreenHeight();
+}
+
+inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint32_t
+{
+  return m_updateNum;
 }
 
 inline auto GoomControl::GoomControlImpl::SetShowTitle(const ShowTitleType value) -> void
@@ -336,7 +389,7 @@ inline auto GoomControl::GoomControlImpl::SetDumpDirectory(const std::string& du
 inline auto GoomControl::GoomControlImpl::SetDumpDirectory(
     [[maybe_unused]] const std::string& dumpDirectory) -> void
 {
-// #define not set
+  // #define not set
 }
 #endif
 
@@ -347,6 +400,8 @@ inline auto GoomControl::GoomControlImpl::GetLastShaderEffects() const -> const 
 
 inline auto GoomControl::GoomControlImpl::Start() -> void
 {
+  m_goomLogger.StartGoomControl(this);
+
   m_filterSettingsService.Start();
 
   m_visualFx.SetAllowMultiThreadedStates(false);
@@ -377,7 +432,8 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
 
 inline auto GoomControl::GoomControlImpl::Finish() -> void
 {
-  LogInfo("Stopping now. Time remaining = {}, {}%%",
+  LogInfo(m_goomLogger,
+          "Stopping now. Time remaining = {}, {}%%",
           m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs,
           m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
 
@@ -386,6 +442,8 @@ inline auto GoomControl::GoomControlImpl::Finish() -> void
 #endif
 
   m_visualFx.Finish();
+
+  m_goomLogger.StopGoomControl();
 }
 
 #ifdef DO_GOOM_STATE_DUMP

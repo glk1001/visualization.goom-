@@ -14,6 +14,7 @@
 #include "goom/goom_config.h"
 #include "goom/goom_control.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_logger.h"
 #include "goom/sound_info.h"
 #ifdef SAVE_AUDIO_BUFFERS
 #include "src/goom/src/utils/buffer_saver.h"
@@ -148,6 +149,7 @@ private:
 
   // The Goom object
   std::unique_ptr<GOOM::GoomControl> m_goomControl{};
+  std::unique_ptr<GOOM::GoomLogger> m_goomLogger = GOOM::GoomControl::MakeGoomLogger();
 
   // Audio buffer storage
   static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
@@ -162,7 +164,7 @@ private:
   std::condition_variable m_wait{};
 
   void SetNumChannels(int numChannels);
-  static void StartLogging();
+  void StartLogging();
   [[nodiscard]] auto InitGoomController() -> bool;
   void DeinitGoomController();
   void StartGoomProcessBuffersThread();
