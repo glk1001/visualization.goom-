@@ -12,6 +12,7 @@
 #include "utils/math/misc.h"
 #include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
+#include "utils/t_values.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
@@ -53,6 +54,61 @@ struct ZoomFilterSettings;
 
 namespace CONTROL
 {
+
+class PixelBlender
+{
+public:
+  explicit PixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+
+  auto Update() noexcept -> void;
+  auto ChangePixelBlendFunc() noexcept -> void;
+  [[nodiscard]] auto GetCurrentPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc;
+
+private:
+  const UTILS::MATH::IGoomRand& m_goomRand;
+  enum class PixelBlendType
+  {
+    ADD,
+    REVERSE_ADD,
+    MULTIPLY,
+    LUMA_MIX,
+    _num // unused, and marks the enum end
+  };
+  static constexpr float ADD_WEIGHT         = 50.0F;
+  static constexpr float REVERSE_ADD_WEIGHT = 3.0F;
+  static constexpr float MULTIPLY_WEIGHT    = 3.0F;
+  static constexpr float LUMA_MIX_WEIGHT    = 3.0F;
+  const UTILS::MATH::Weights<PixelBlendType> m_pixelBlendTypeWeights{
+      m_goomRand,
+      {
+        {PixelBlendType::ADD, ADD_WEIGHT},
+        {PixelBlendType::REVERSE_ADD, REVERSE_ADD_WEIGHT},
+        {PixelBlendType::MULTIPLY, MULTIPLY_WEIGHT},
+        {PixelBlendType::LUMA_MIX, LUMA_MIX_WEIGHT},
+        }
+  };
+  PixelBlendType m_currentPixelBlendType                   = PixelBlendType::ADD;
+  DRAW::IGoomDraw::BlendPixelFunc m_currentBlendPixelFunc  = GetColorAddBlendPixelFunc();
+  DRAW::IGoomDraw::BlendPixelFunc m_previousBlendPixelFunc = GetColorAddBlendPixelFunc();
+  static constexpr auto MAX_BLEND_STEPS                    = 500U;
+  static constexpr auto MIN_BLEND_STEPS                    = 50U;
+  UTILS::TValue m_blendT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, MIN_BLEND_STEPS};
+  [[nodiscard]] auto GetPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] auto GetColorAddBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] auto GetLerpedBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] auto GetReverseColorAddBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] auto GetColorMultiplyBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
+  static constexpr auto MAX_LUMA_MIX_T = 1.0F;
+  static constexpr auto MIN_LUMA_MIX_T = 0.3F;
+  float m_lumaMixT                     = MIN_LUMA_MIX_T;
+  [[nodiscard]] auto GetSameLumaMixBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
+};
+
+inline auto PixelBlender::Update() noexcept -> void
+{
+  m_blendT.Increment();
+}
+
 class AllStandardVisualFx;
 
 class GoomAllVisualFx
@@ -72,36 +128,36 @@ public:
   auto operator=(const GoomAllVisualFx&) noexcept -> GoomAllVisualFx& = delete;
   auto operator=(GoomAllVisualFx&&) noexcept -> GoomAllVisualFx&      = delete;
 
-  void Start();
-  void Finish();
+  auto Start() -> void;
+  auto Finish() -> void;
 
   auto SetAllowMultiThreadedStates(bool val) -> void;
 
   [[nodiscard]] auto GetZoomFilterFx() const -> const FILTER_FX::ZoomFilterFx&;
 
-  void SetNextState();
+  auto SetNextState() -> void;
   [[nodiscard]] auto GetCurrentState() const -> GoomStates;
   [[nodiscard]] auto GetCurrentStateName() const -> std::string_view;
 
-  void SetSingleBufferDots(bool value);
+  auto SetSingleBufferDots(bool value) -> void;
 
-  void StartExposureControl();
+  auto StartExposureControl() -> void;
   [[nodiscard]] auto GetCurrentExposure() const -> float;
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
 
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
-  void SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func);
+  auto SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func) -> void;
 
-  void ChangeAllFxColorMaps();
-  void ChangeDrawPixelBlend();
-  void RefreshAllFx();
+  auto ChangeAllFxColorMaps() -> void;
+  auto ChangeDrawPixelBlend() -> void;
+  auto RefreshAllFx() -> void;
 
-  void ApplyCurrentStateToSingleBuffer();
-  void ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData);
+  auto ApplyCurrentStateToSingleBuffer() -> void;
+  auto ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) -> void;
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
 
-  void UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings);
-  void ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff);
+  auto UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings) -> void;
+  auto ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) -> void;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const -> std::unordered_set<std::string>;
   [[nodiscard]] auto GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs;
@@ -115,24 +171,21 @@ private:
 
   IGoomStateHandler& m_goomStateHandler;
   bool m_allowMultiThreadedStates = true;
-  void ChangeState();
-  void PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables);
+  auto ChangeState() -> void;
+  auto PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables) -> void;
   std::unordered_set<GoomDrawables> m_currentGoomDrawables{};
 
   ResetDrawBuffSettingsFunc m_resetDrawBuffSettings{};
-  void ResetCurrentDrawBuffSettings(GoomDrawables fx);
+  auto ResetCurrentDrawBuffSettings(GoomDrawables fx) -> void;
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
 
   VisualFxColorMaps m_visualFxColorMaps{m_goomRand};
   UTILS::AdaptiveExposure m_adaptiveExposure{};
   bool m_doExposureControl = false;
-  void UpdateZoomFilterLuminance();
+  auto UpdateZoomFilterLuminance() -> void;
   [[nodiscard]] auto GetCurrentBufferAverageLuminance() noexcept -> float;
 
-  [[nodiscard]] static auto GetReverseColorAddBlendPixelPixelFunc()
-      -> DRAW::IGoomDraw::BlendPixelFunc;
-  [[nodiscard]] static auto GetSameLumaBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
-  [[nodiscard]] static auto GetSameLumaMixBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
+  PixelBlender m_pixelBlender{m_goomRand};
 };
 
 inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) -> void
@@ -145,7 +198,7 @@ inline auto GoomAllVisualFx::GetZoomFilterFx() const -> const FILTER_FX::ZoomFil
   return *m_zoomFilterFx;
 }
 
-inline void GoomAllVisualFx::SetNextState()
+inline auto GoomAllVisualFx::SetNextState() -> void
 {
   ChangeState();
   ChangeAllFxColorMaps();
@@ -153,19 +206,21 @@ inline void GoomAllVisualFx::SetNextState()
   PostStateUpdate(m_currentGoomDrawables);
 }
 
-inline void GoomAllVisualFx::SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func)
+inline auto GoomAllVisualFx::SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func)
+    -> void
 {
   m_resetDrawBuffSettings = func;
 }
 
-inline void GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff)
+inline auto GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) -> void
 {
   m_zoomFilterFx->ZoomFilterFastRgb(srceBuff, destBuff);
 
   UpdateZoomFilterLuminance();
+  m_pixelBlender.Update();
 }
 
-inline void GoomAllVisualFx::UpdateZoomFilterLuminance()
+inline auto GoomAllVisualFx::UpdateZoomFilterLuminance() -> void
 {
   const auto averageLuminanceToUse = GetCurrentBufferAverageLuminance();
   if (averageLuminanceToUse < UTILS::MATH::SMALL_FLOAT)

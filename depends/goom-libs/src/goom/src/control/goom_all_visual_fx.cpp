@@ -24,8 +24,13 @@
 namespace GOOM::CONTROL
 {
 
+using COLOR::GetBrighterColor;
+using COLOR::GetBrighterColorInt;
+using COLOR::GetColorAdd;
+using COLOR::GetColorMultiply;
 using COLOR::GetLuma;
 using COLOR::IColorMap;
+using COLOR::IsCloseToBlack;
 using CONTROL::GoomDrawables;
 using DRAW::IGoomDraw;
 using FILTER_FX::FilterBuffersService;
@@ -41,6 +46,114 @@ using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelper;
 
 static constexpr auto SMALL_LUMA = 0.1F;
+
+PixelBlender::PixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept : m_goomRand{goomRand}
+{
+}
+
+auto PixelBlender::ChangePixelBlendFunc() noexcept -> void
+{
+  m_lumaMixT               = m_goomRand.GetRandInRange(MIN_LUMA_MIX_T, MAX_LUMA_MIX_T);
+  m_previousBlendPixelFunc = m_currentBlendPixelFunc;
+  m_currentPixelBlendType  = m_pixelBlendTypeWeights.GetRandomWeighted();
+  m_currentBlendPixelFunc  = GetPixelBlendFunc();
+  m_blendT.SetNumSteps(m_goomRand.GetRandInRange(MIN_BLEND_STEPS, MAX_BLEND_STEPS + 1U));
+  m_blendT.Reset();
+}
+
+auto PixelBlender::GetPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc
+{
+  switch (m_currentPixelBlendType)
+  {
+    case PixelBlendType::ADD:
+      return GetColorAddBlendPixelFunc();
+    case PixelBlendType::REVERSE_ADD:
+      return GetReverseColorAddBlendPixelFunc();
+    case PixelBlendType::MULTIPLY:
+      return GetColorMultiplyBlendPixelFunc();
+    case PixelBlendType::LUMA_MIX:
+      return GetSameLumaMixBlendPixelFunc();
+    default:
+      FailFast();
+  }
+}
+
+auto PixelBlender::GetCurrentPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc
+{
+  if (m_currentPixelBlendType == PixelBlendType::ADD)
+  {
+    return GetColorAddBlendPixelFunc();
+  }
+  return GetLerpedBlendPixelFunc();
+}
+
+auto PixelBlender::GetColorAddBlendPixelFunc() const -> IGoomDraw::BlendPixelFunc
+{
+  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  { return GetColorAdd(oldColor, GetBrighterColorInt(intBuffIntensity, newColor)); };
+}
+
+auto PixelBlender::GetLerpedBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc
+{
+  return [this](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  {
+    return COLOR::GetRgbColorLerp(m_previousBlendPixelFunc(oldColor, newColor, intBuffIntensity),
+                                  m_currentBlendPixelFunc(oldColor, newColor, intBuffIntensity),
+                                  m_blendT());
+  };
+}
+
+auto PixelBlender::GetReverseColorAddBlendPixelFunc() const -> IGoomDraw::BlendPixelFunc
+{
+  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  {
+    if (IsCloseToBlack(newColor))
+    {
+      return oldColor;
+    }
+    return GetColorAdd(GetBrighterColorInt(intBuffIntensity, oldColor), newColor);
+  };
+}
+
+auto PixelBlender::GetColorMultiplyBlendPixelFunc() const -> IGoomDraw::BlendPixelFunc
+{
+  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  {
+    if (IsCloseToBlack(oldColor))
+    {
+      return newColor;
+    }
+    return GetColorAdd(GetColorMultiply(oldColor, newColor),
+                       GetBrighterColorInt(intBuffIntensity, newColor));
+  };
+}
+
+auto PixelBlender::GetSameLumaMixBlendPixelFunc() const -> IGoomDraw::BlendPixelFunc
+{
+  return [this](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  {
+    const auto newColorLuma = GetLuma(newColor);
+    if (newColorLuma < SMALL_LUMA)
+    {
+      return GetColorAdd(oldColor, newColor);
+    }
+
+    const auto oldColorLuma = GetLuma(oldColor);
+    if (oldColorLuma < SMALL_LUMA)
+    {
+      return GetColorAdd(oldColor, newColor);
+    }
+
+    const auto buffIntensity =
+        (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
+
+    const auto brightness = (oldColorLuma + (buffIntensity * newColorLuma)) /
+                            STD20::lerp(oldColorLuma, newColorLuma, m_lumaMixT);
+
+    const auto finalNewColor = IColorMap::GetColorMix(oldColor, newColor, m_lumaMixT);
+    return GetBrighterColor(brightness, finalNewColor);
+  };
+}
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  const FxHelper& fxHelper,
@@ -66,21 +179,23 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
 
 GoomAllVisualFx::~GoomAllVisualFx() noexcept = default;
 
-void GoomAllVisualFx::Start()
+auto GoomAllVisualFx::Start() -> void
 {
+  ChangeDrawPixelBlend();
+
   m_allStandardVisualFx->Start();
   m_adaptiveExposure.Start();
   m_zoomFilterFx->Start();
 }
 
-void GoomAllVisualFx::Finish()
+auto GoomAllVisualFx::Finish() -> void
 {
   m_allStandardVisualFx->Finish();
 
   m_zoomFilterFx->Finish();
 }
 
-void GoomAllVisualFx::ChangeState()
+auto GoomAllVisualFx::ChangeState() -> void
 {
   m_allStandardVisualFx->SuspendFx();
 
@@ -113,7 +228,7 @@ void GoomAllVisualFx::ChangeState()
   m_allStandardVisualFx->ResumeFx();
 }
 
-void GoomAllVisualFx::StartExposureControl()
+auto GoomAllVisualFx::StartExposureControl() -> void
 {
   m_doExposureControl = true;
 }
@@ -123,22 +238,23 @@ auto GoomAllVisualFx::GetLastShaderEffects() const -> const GoomShaderEffects&
   return m_allStandardVisualFx->GetLastShaderEffects();
 }
 
-void GoomAllVisualFx::SetSingleBufferDots(const bool value)
+auto GoomAllVisualFx::SetSingleBufferDots(const bool value) -> void
 {
   m_allStandardVisualFx->SetSingleBufferDots(value);
 }
 
-void GoomAllVisualFx::PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables)
+auto GoomAllVisualFx::PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables)
+    -> void
 {
   m_allStandardVisualFx->PostStateUpdate(oldGoomDrawables);
 }
 
-void GoomAllVisualFx::RefreshAllFx()
+auto GoomAllVisualFx::RefreshAllFx() -> void
 {
   m_allStandardVisualFx->RefreshAllFx();
 }
 
-inline void GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx)
+inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx) -> void
 {
   m_resetDrawBuffSettings(GetCurrentBuffSettings(fx));
 }
@@ -152,81 +268,18 @@ inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) cons
   return {INTENSITY_FACTOR * buffIntensity};
 }
 
-void GoomAllVisualFx::ChangeAllFxColorMaps()
+auto GoomAllVisualFx::ChangeAllFxColorMaps() -> void
 {
   m_allStandardVisualFx->ChangeColorMaps();
 }
 
-void GoomAllVisualFx::ChangeDrawPixelBlend()
+auto GoomAllVisualFx::ChangeDrawPixelBlend() -> void
 {
-  if (m_goomRand.ProbabilityOf(1.0F))
-  {
-    m_goomDraw.SetDefaultBlendPixelFunc();
-  }
-  else if (m_goomRand.ProbabilityOf(0.0F))
-  {
-    m_goomDraw.SetBlendPixelFunc(GetSameLumaBlendPixelFunc());
-  }
-  else if (m_goomRand.ProbabilityOf(0.0F))
-  {
-    m_goomDraw.SetBlendPixelFunc(GetSameLumaMixBlendPixelFunc());
-  }
-  else
-  {
-    m_goomDraw.SetBlendPixelFunc(GetReverseColorAddBlendPixelPixelFunc());
-  }
+  m_pixelBlender.ChangePixelBlendFunc();
+  m_goomDraw.SetBlendPixelFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
 }
 
-auto GoomAllVisualFx::GetReverseColorAddBlendPixelPixelFunc() -> IGoomDraw::BlendPixelFunc
-{
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  { return COLOR::GetColorAdd(COLOR::GetBrighterColorInt(intBuffIntensity, oldColor), newColor); };
-}
-
-auto GoomAllVisualFx::GetSameLumaBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
-{
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  {
-    const auto newColorLuma =
-        GetLuma(newColor) * (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
-    if (newColorLuma < SMALL_LUMA)
-    {
-      return COLOR::GetColorAdd(oldColor, newColor);
-    }
-    const auto oldColorLuma = GetLuma(oldColor);
-    const auto brightness   = 1.0F + (oldColorLuma / newColorLuma);
-
-    const auto red   = static_cast<uint32_t>(brightness * static_cast<float>(newColor.R()));
-    const auto green = static_cast<uint32_t>(brightness * static_cast<float>(newColor.G()));
-    const auto blue  = static_cast<uint32_t>(brightness * static_cast<float>(newColor.B()));
-
-    return MakePixel(red, green, blue, MAX_ALPHA);
-  };
-}
-
-auto GoomAllVisualFx::GetSameLumaMixBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
-{
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  {
-    const auto newColorLuma =
-        GetLuma(newColor) * (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
-    if (newColorLuma < SMALL_LUMA)
-    {
-      return COLOR::GetColorAdd(oldColor, newColor);
-    }
-    const auto oldColorLuma = GetLuma(oldColor);
-    const auto brightness   = 0.5F * (1.0F + (oldColorLuma / newColorLuma));
-
-    const auto finalNewColor = IColorMap::GetColorMix(oldColor, newColor, 0.7F);
-    const auto red   = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.R()));
-    const auto green = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.G()));
-    const auto blue  = static_cast<uint32_t>(brightness * static_cast<float>(finalNewColor.B()));
-
-    return MakePixel(red, green, blue, MAX_ALPHA);
-  };
-}
-
-void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings)
+auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings) -> void
 {
   if (filterSettings.filterEffectsSettingsHaveChanged)
   {
@@ -241,12 +294,12 @@ void GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSetti
   m_allStandardVisualFx->SetZoomMidpoint(filterSettings.filterEffectsSettings.zoomMidpoint);
 }
 
-void GoomAllVisualFx::ApplyCurrentStateToSingleBuffer()
+auto GoomAllVisualFx::ApplyCurrentStateToSingleBuffer() -> void
 {
   m_allStandardVisualFx->ApplyCurrentStateToSingleBuffer();
 }
 
-void GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData)
+auto GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) -> void
 {
   m_allStandardVisualFx->ApplyCurrentStateToMultipleBuffers(soundData);
 }

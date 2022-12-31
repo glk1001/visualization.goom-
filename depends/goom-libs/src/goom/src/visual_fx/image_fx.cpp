@@ -120,7 +120,7 @@ private:
   const IColorMap* m_currentColorMap{&GetRandomColorMap()};
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
   bool m_pixelColorIsDominant                    = false;
-  static constexpr float DEFAULT_BRIGHTNESS_BASE = 0.1F;
+  static constexpr float DEFAULT_BRIGHTNESS_BASE = 0.2F;
   float m_brightnessBase                         = DEFAULT_BRIGHTNESS_BASE;
 
   std::vector<std::unique_ptr<ChunkedImage>> m_images{};
