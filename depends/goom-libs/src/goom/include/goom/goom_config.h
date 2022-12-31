@@ -6,7 +6,7 @@
 #endif
 
 // NOLINTBEGIN: Need special macros with these names.
-#define UNUSED_FOR_NDEBUG(x) ((void)(x))
+#define USED_FOR_DEBUGGING(x) ((void)(x))
 
 #include <cassert>
 #define Expects(cond) assert(cond)

@@ -1,4 +1,4 @@
-#undef NO_LOGGING
+//#undef NO_LOGGING
 
 #include "goom_draw_to_buffer.h"
 
@@ -15,6 +15,7 @@ namespace GOOM::DRAW
 GoomDrawToBuffer::GoomDrawToBuffer(const Dimensions& dimensions, GoomLogger& goomLogger) noexcept
   : IGoomDraw{dimensions}, m_goomLogger{goomLogger}
 {
+  USED_FOR_DEBUGGING(m_goomLogger);
 }
 
 GoomDrawToBuffer::~GoomDrawToBuffer() noexcept = default;
@@ -54,26 +55,7 @@ auto GoomDrawToBuffer::DrawPixelsToDevice(const Point2dInt point,
   for (auto i = 0U; i < m_numBuffers; ++i)
   {
     auto& pixel = m_multipleBuffers[i]->GetPixel(buffPos);
-    if (750 < point.x and point.x < 850 and 400 < point.y and point.y < 550)
-    {
-      LogInfo(m_goomLogger,
-              "point = {},{}, pixel = {},{},{}; newColor = {},{},{}, intBuffIntensity = {}",
-              point.x,
-              point.y,
-              pixel.R(),
-              pixel.G(),
-              pixel.B(),
-              colors[i].R(),
-              colors[i].G(),
-              colors[i].B(),
-              intBuffIntensity);
-    }
     pixel       = GetBlendedPixel(pixel, colors[i], intBuffIntensity);
-    if (750 < point.x and point.x < 850 and 400 < point.y and point.y < 550)
-    {
-      LogInfo(m_goomLogger, "point = {},{}, blended pixel = {},{},{}",
-              point.x, point.y, pixel.R(), pixel.G(), pixel.B());
-    }
   }
 }
 

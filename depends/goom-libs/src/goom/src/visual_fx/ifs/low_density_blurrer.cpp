@@ -47,7 +47,7 @@ auto LowDensityBlurrer::SetWidth(const uint32_t val) noexcept -> void
 #pragma warning(disable : 4389) // '!=' mismatch. Not sure why?
 #endif
   static constexpr auto VALID_WIDTHS = std::array{3, 5, 7};
-  UNUSED_FOR_NDEBUG(VALID_WIDTHS);
+  USED_FOR_DEBUGGING(VALID_WIDTHS);
   Expects(std::find(cbegin(VALID_WIDTHS), cend(VALID_WIDTHS), val) != cend(VALID_WIDTHS));
 #ifdef _MSC_VER
 #pragma warning(pop)

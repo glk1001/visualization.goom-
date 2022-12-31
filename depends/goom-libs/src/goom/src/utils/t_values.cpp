@@ -51,7 +51,7 @@ TValue::~TValue() noexcept = default;
 auto TValue::ValidateDelayPoints() const noexcept -> void
 {
   auto prevT0 = -1.0F;
-  UNUSED_FOR_NDEBUG(prevT0);
+  USED_FOR_DEBUGGING(prevT0);
 
   for (const auto& delayPoint : m_delayPoints)
   {

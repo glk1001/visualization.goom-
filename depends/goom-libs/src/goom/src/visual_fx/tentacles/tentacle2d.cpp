@@ -44,7 +44,7 @@ inline auto Tentacle2D::ValidateSettings() const -> void
   Expects(m_numNodes >= MIN_NUM_NODES);
   Expects(m_basePreviousYWeight > SMALL_WEIGHT);
   Expects(m_baseCurrentYWeight > SMALL_WEIGHT);
-  UNUSED_FOR_NDEBUG(SMALL_WEIGHT);
+  USED_FOR_DEBUGGING(SMALL_WEIGHT);
 }
 
 auto Tentacle2D::SetXDimensions(const LinearDimensions& xDimensions) -> void

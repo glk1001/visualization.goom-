@@ -256,7 +256,7 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
                           const AudioSamples::MinMaxValues& soundMinMax) noexcept -> void
 {
   static constexpr auto LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
-  UNUSED_FOR_NDEBUG(LAST_POINT_INDEX);
+  USED_FOR_DEBUGGING(LAST_POINT_INDEX);
 
   Expects((m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
           (FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) and

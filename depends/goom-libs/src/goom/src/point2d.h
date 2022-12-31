@@ -73,8 +73,12 @@ struct Point2dFlt
   [[nodiscard]] auto ToInt() const noexcept -> Point2dInt;
   constexpr auto Translate(const Vec2dFlt& vec) noexcept -> void;
   constexpr auto Translate(float scalar) noexcept -> void;
+  constexpr auto TranslateX(float xAmount) noexcept -> void;
+  constexpr auto TranslateY(float yAmount) noexcept -> void;
   constexpr auto Scale(float scalar) noexcept -> void;
+  constexpr auto Scale(float xScalar, float yScalar) noexcept -> void;
   auto Rotate(float angle) noexcept -> void;
+  constexpr auto Rotate(float sinAngle, float cosAngle) noexcept -> void;
 };
 
 [[nodiscard]] constexpr auto operator+(const Point2dFlt& point, const Vec2dFlt& vec) noexcept
@@ -232,19 +236,40 @@ constexpr auto Point2dFlt::Translate(const float scalar) noexcept -> void
   y += scalar;
 }
 
+constexpr auto Point2dFlt::TranslateX(const float xAmount) noexcept -> void
+{
+  x += xAmount;
+}
+
+constexpr auto Point2dFlt::TranslateY(const float yAmount) noexcept -> void
+{
+  y += yAmount;
+}
+
 inline auto Point2dFlt::Rotate(const float angle) noexcept -> void
 {
   const float sinAngle = std::sin(angle);
   const float cosAngle = std::cos(angle);
-  const float xNext    = (x * cosAngle) - (y * sinAngle);
-  y                    = (x * sinAngle) + (y * cosAngle);
-  x                    = xNext;
+  Rotate(sinAngle, cosAngle);
+}
+
+constexpr auto Point2dFlt::Rotate(const float sinAngle, float const cosAngle) noexcept -> void
+{
+  const float xNext = (x * cosAngle) - (y * sinAngle);
+  y                 = (x * sinAngle) + (y * cosAngle);
+  x                 = xNext;
 }
 
 constexpr auto Point2dFlt::Scale(const float scalar) noexcept -> void
 {
   x *= scalar;
   y *= scalar;
+}
+
+constexpr auto Point2dFlt::Scale(const float xScalar, const float yScalar) noexcept -> void
+{
+  x *= xScalar;
+  y *= yScalar;
 }
 
 constexpr auto operator+(const Point2dFlt& point, const Vec2dFlt& vec) noexcept -> Point2dFlt

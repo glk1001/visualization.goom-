@@ -47,8 +47,7 @@ public:
   auto SetHandlersLogLevel(LogLevel lvl) -> void;
 
   [[nodiscard]] virtual auto CanLog() const -> bool;
-  auto Log(LogLevel lvl, int lineNum, const std::string& funcName, const std::string& msg)
-      -> void;
+  auto Log(LogLevel lvl, int lineNum, const std::string& funcName, const std::string& msg) -> void;
   template<typename... Args>
   auto Log(LogLevel lvl,
            int lineNum,

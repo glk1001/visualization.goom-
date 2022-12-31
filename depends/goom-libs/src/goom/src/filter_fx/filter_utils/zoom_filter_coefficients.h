@@ -47,7 +47,7 @@ constexpr auto GetNeighborhoodCoeffArray(const uint32_t coeffH, const uint32_t c
   {
     coeffsSum += coeff;
   }
-  UNUSED_FOR_NDEBUG(coeffsSum);
+  USED_FOR_DEBUGGING(coeffsSum);
   Ensures(coeffsSum == MAX_SUM_COEFFS);
 
   /**
