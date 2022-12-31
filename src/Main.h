@@ -14,7 +14,6 @@
 #include "goom/goom_config.h"
 #include "goom/goom_control.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_logger.h"
 #include "goom/sound_info.h"
 #ifdef SAVE_AUDIO_BUFFERS
 #include "src/goom/src/utils/buffer_saver.h"
@@ -37,10 +36,15 @@
 #include <thread>
 #include <vector>
 
-// TODO Fix this properly!
+// TODO(glk) Fix this properly!
 #if !defined(ATTRIBUTE_HIDDEN)
 #define ATTRIBUTE_HIDDEN
 #endif
+
+namespace GOOM
+{
+class GoomLogger;
+}
 
 class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,
                                             public kodi::addon::CInstanceVisualization,
@@ -107,7 +111,10 @@ private:
   uint32_t m_audioBufferNum                                   = 0;
   static constexpr uint32_t MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6;
 
+  // The Goom object
   const GOOM::GoomControl::ShowTitleType m_showTitle;
+  std::unique_ptr<GOOM::GoomControl> m_goomControl{};
+  std::unique_ptr<GOOM::GoomLogger> m_goomLogger;
 
   const GLint m_componentsPerVertex = 2;
 #ifdef HAS_GL
@@ -146,10 +153,6 @@ private:
   GLint m_uTexSrceHueShiftLoc            = -1;
   GLint m_uTexDestHueShiftLoc            = -1;
   GLint m_uTimeLoc                       = -1;
-
-  // The Goom object
-  std::unique_ptr<GOOM::GoomControl> m_goomControl{};
-  std::unique_ptr<GOOM::GoomLogger> m_goomLogger = GOOM::GoomControl::MakeGoomLogger();
 
   // Audio buffer storage
   static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *

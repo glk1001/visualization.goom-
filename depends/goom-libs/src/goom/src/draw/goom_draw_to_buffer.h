@@ -2,14 +2,18 @@
 
 #include "goom_draw.h"
 #include "goom_graphic.h"
-#include "goom_logger.h"
 #include "goom_types.h"
 #include "point2d.h"
 
 #include <cstdint>
 #include <vector>
 
-namespace GOOM::DRAW
+namespace GOOM
+{
+
+class GoomLogger;
+
+namespace DRAW
 {
 
 class GoomDrawToBuffer : public IGoomDraw
@@ -41,4 +45,5 @@ private:
   PixelBuffer* m_multipleBuffer0{};
 };
 
-} // namespace GOOM::DRAW
+} // namespace DRAW
+} // namespace GOOM

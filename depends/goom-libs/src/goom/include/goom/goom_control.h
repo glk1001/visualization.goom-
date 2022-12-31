@@ -1,6 +1,5 @@
 #pragma once
 
-#include "goom_logger.h"
 #include "goom_types.h"
 #include "spimpl.h"
 
@@ -12,18 +11,16 @@ namespace GOOM
 {
 
 class AudioSamples;
+class GoomLogger;
 class PixelBuffer;
 struct GoomShaderEffects;
 
 class GoomControl
 {
 public:
-  static auto GetRandSeed() -> uint64_t;
-  static void SetRandSeed(uint64_t seed);
+  [[nodiscard]] static auto MakeGoomLogger() noexcept -> std::unique_ptr<GoomLogger>;
 
-  static auto MakeGoomLogger() noexcept -> std::unique_ptr<GoomLogger>;
-
-  GoomControl() noexcept = delete;
+  GoomControl() = delete;
   GoomControl(const Dimensions& dimensions,
               const std::string& resourcesDirectory,
               GoomLogger& goomLogger);
@@ -47,22 +44,14 @@ public:
   };
   auto SetSongInfo(const SongInfo& songInfo) -> void;
 
-  auto SetScreenBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
-  auto NoZooms(bool value) -> void;
-  auto ShowGoomState(bool value) -> void;
+  auto SetNoZooms(bool value) -> void;
+  auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
-  /*
-   * Update the next goom buffer.
-   *
-   */
-  auto Update(const AudioSamples& audioSamples, const std::string& message = "") -> void;
+  auto SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
+  auto UpdateGoomBuffer(const AudioSamples& audioSamples, const std::string& message = "") -> void;
 
   [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
-
-  [[nodiscard]] static auto GetCompilerVersion() -> std::string;
-  [[nodiscard]] static auto GetGoomVersionInfo() -> std::string;
-  [[nodiscard]] static auto GetGoomLibBuildTime() -> std::string;
 
 private:
   class GoomControlImpl;

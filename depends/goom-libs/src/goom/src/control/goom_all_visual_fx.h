@@ -111,6 +111,7 @@ inline auto PixelBlender::Update() noexcept -> void
 
 class AllStandardVisualFx;
 
+// NOLINTBEGIN: Stop gcc-12 'inline' warning
 class GoomAllVisualFx
 {
 public:
@@ -122,45 +123,41 @@ public:
                   IGoomStateHandler& goomStateHandler,
                   std::unique_ptr<FILTER_FX::FilterBuffersService> filterBuffersService,
                   std::unique_ptr<FILTER_FX::FilterColorsService> filterColorsService) noexcept;
-  GoomAllVisualFx(const GoomAllVisualFx&) noexcept = delete;
-  GoomAllVisualFx(GoomAllVisualFx&&) noexcept      = delete;
-  ~GoomAllVisualFx() noexcept;
-  auto operator=(const GoomAllVisualFx&) noexcept -> GoomAllVisualFx& = delete;
-  auto operator=(GoomAllVisualFx&&) noexcept -> GoomAllVisualFx&      = delete;
+  ~GoomAllVisualFx() noexcept; // Need this to stop gcc-12 'inline' warning
 
-  auto Start() -> void;
-  auto Finish() -> void;
+  auto Start() noexcept -> void;
+  auto Finish() noexcept -> void;
 
-  auto SetAllowMultiThreadedStates(bool val) -> void;
+  auto SetAllowMultiThreadedStates(bool val) noexcept -> void;
 
-  [[nodiscard]] auto GetZoomFilterFx() const -> const FILTER_FX::ZoomFilterFx&;
+  [[nodiscard]] auto GetZoomFilterFx() const noexcept -> const FILTER_FX::ZoomFilterFx&;
 
-  auto SetNextState() -> void;
-  [[nodiscard]] auto GetCurrentState() const -> GoomStates;
-  [[nodiscard]] auto GetCurrentStateName() const -> std::string_view;
+  auto SetNextState() noexcept -> void;
+  [[nodiscard]] auto GetCurrentState() const noexcept -> GoomStates;
+  [[nodiscard]] auto GetCurrentStateName() const noexcept -> std::string_view;
 
-  auto SetSingleBufferDots(bool value) -> void;
+  auto SetSingleBufferDots(bool value) noexcept -> void;
 
-  auto StartExposureControl() -> void;
-  [[nodiscard]] auto GetCurrentExposure() const -> float;
-  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
+  auto StartExposureControl() noexcept -> void;
+  [[nodiscard]] auto GetCurrentExposure() const noexcept -> float;
+  [[nodiscard]] auto GetLastShaderEffects() const noexcept -> const GoomShaderEffects&;
 
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
-  auto SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func) -> void;
+  auto SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func) noexcept -> void;
 
-  auto ChangeAllFxColorMaps() -> void;
-  auto ChangeDrawPixelBlend() -> void;
-  auto RefreshAllFx() -> void;
+  auto ChangeAllFxColorMaps() noexcept -> void;
+  auto ChangeDrawPixelBlend() noexcept -> void;
+  auto RefreshAllFx() noexcept -> void;
 
-  auto ApplyCurrentStateToSingleBuffer() -> void;
-  auto ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) -> void;
-  auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
+  auto ApplyCurrentStateToSingleBuffer() noexcept -> void;
+  auto ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) noexcept -> void;
+  auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) noexcept -> void;
 
-  auto UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings) -> void;
-  auto ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) -> void;
+  auto UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings) noexcept -> void;
+  auto ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
 
-  [[nodiscard]] auto GetCurrentColorMapsNames() const -> std::unordered_set<std::string>;
-  [[nodiscard]] auto GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::unordered_set<std::string>;
+  [[nodiscard]] auto GetZoomFilterFxNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
   DRAW::IGoomDraw& m_goomDraw;
@@ -171,34 +168,35 @@ private:
 
   IGoomStateHandler& m_goomStateHandler;
   bool m_allowMultiThreadedStates = true;
-  auto ChangeState() -> void;
-  auto PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables) -> void;
+  auto ChangeState() noexcept -> void;
+  auto PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables) noexcept -> void;
   std::unordered_set<GoomDrawables> m_currentGoomDrawables{};
 
   ResetDrawBuffSettingsFunc m_resetDrawBuffSettings{};
-  auto ResetCurrentDrawBuffSettings(GoomDrawables fx) -> void;
-  [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const -> FXBuffSettings;
+  auto ResetCurrentDrawBuffSettings(GoomDrawables fx) noexcept -> void;
+  [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const noexcept -> FXBuffSettings;
 
   VisualFxColorMaps m_visualFxColorMaps{m_goomRand};
   UTILS::AdaptiveExposure m_adaptiveExposure{};
   bool m_doExposureControl = false;
-  auto UpdateZoomFilterLuminance() -> void;
+  auto UpdateZoomFilterLuminance() noexcept -> void;
   [[nodiscard]] auto GetCurrentBufferAverageLuminance() noexcept -> float;
 
   PixelBlender m_pixelBlender{m_goomRand};
 };
+// NOLINTEND: Stop gcc-12 'inline' warning
 
-inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) -> void
+inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) noexcept -> void
 {
   m_allowMultiThreadedStates = val;
 }
 
-inline auto GoomAllVisualFx::GetZoomFilterFx() const -> const FILTER_FX::ZoomFilterFx&
+inline auto GoomAllVisualFx::GetZoomFilterFx() const noexcept -> const FILTER_FX::ZoomFilterFx&
 {
   return *m_zoomFilterFx;
 }
 
-inline auto GoomAllVisualFx::SetNextState() -> void
+inline auto GoomAllVisualFx::SetNextState() noexcept -> void
 {
   ChangeState();
   ChangeAllFxColorMaps();
@@ -206,13 +204,14 @@ inline auto GoomAllVisualFx::SetNextState() -> void
   PostStateUpdate(m_currentGoomDrawables);
 }
 
-inline auto GoomAllVisualFx::SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func)
-    -> void
+inline auto GoomAllVisualFx::SetResetDrawBuffSettingsFunc(
+    const ResetDrawBuffSettingsFunc& func) noexcept -> void
 {
   m_resetDrawBuffSettings = func;
 }
 
-inline auto GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) -> void
+inline auto GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept
+    -> void
 {
   m_zoomFilterFx->ZoomFilterFastRgb(srceBuff, destBuff);
 
@@ -220,7 +219,7 @@ inline auto GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer&
   m_pixelBlender.Update();
 }
 
-inline auto GoomAllVisualFx::UpdateZoomFilterLuminance() -> void
+inline auto GoomAllVisualFx::UpdateZoomFilterLuminance() noexcept -> void
 {
   const auto averageLuminanceToUse = GetCurrentBufferAverageLuminance();
   if (averageLuminanceToUse < UTILS::MATH::SMALL_FLOAT)
@@ -257,17 +256,17 @@ inline auto GoomAllVisualFx::GetCurrentBufferAverageLuminance() noexcept -> floa
   return STD20::lerp(zoomPointRegionAverageLuminance, maxRegionAverageLuminance, LUMINANCE_MIX);
 }
 
-inline auto GoomAllVisualFx::GetCurrentExposure() const -> float
+inline auto GoomAllVisualFx::GetCurrentExposure() const noexcept -> float
 {
   return m_adaptiveExposure.GetCurrentExposure();
 }
 
-inline auto GoomAllVisualFx::GetCurrentState() const -> GoomStates
+inline auto GoomAllVisualFx::GetCurrentState() const noexcept -> GoomStates
 {
   return m_goomStateHandler.GetCurrentState();
 }
 
-inline auto GoomAllVisualFx::GetCurrentStateName() const -> std::string_view
+inline auto GoomAllVisualFx::GetCurrentStateName() const noexcept -> std::string_view
 {
   return GoomStateInfo::GetStateInfo(m_goomStateHandler.GetCurrentState()).name;
 }

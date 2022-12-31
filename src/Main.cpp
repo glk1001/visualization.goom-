@@ -15,6 +15,7 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
+#include "goom/goom_utils.h"
 #include "goom/sound_info.h"
 #ifdef SAVE_AUDIO_BUFFERS
 #include "src/goom/src/utils/strutils.h"
@@ -31,6 +32,9 @@
 using GOOM::AudioSamples;
 using GOOM::Dimensions;
 using GOOM::GetCompilerVersion;
+using GOOM::GetGoomLibBuildTime;
+using GOOM::GetGoomLibCompilerVersion;
+using GOOM::GetGoomLibVersionInfo;
 using GOOM::GoomControl;
 using GOOM::GoomLogger;
 using GOOM::GoomShaderEffects;
@@ -44,8 +48,8 @@ namespace KODI_ADDON = kodi::addon;
 using AddonLogEnum   = ADDON_LOG;
 
 #ifdef HAS_GL
-// TODO Figure out correct format here
-//      - GL_BGRA looks good but why?
+// TODO(glk) Figure out correct format here
+//           - GL_BGRA looks good but why?
 //static constexpr GLenum TEXTURE_FORMAT = GL_BGRA;
 static constexpr GLenum TEXTURE_FORMAT               = GL_RGBA;
 static constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
@@ -89,6 +93,7 @@ CVisualizationGoom::CVisualizationGoom()
     m_goomBufferLen{static_cast<size_t>(m_textureWidth * m_textureHeight)},
     m_goomBufferSize{PixelBuffer::GetIntBufferSize({m_textureWidth, m_textureHeight})},
     m_showTitle{static_cast<GoomControl::ShowTitleType>(KODI_ADDON::GetSettingInt("show_title"))},
+    m_goomLogger{GoomControl::MakeGoomLogger()},
     m_quadData{GetGlQuadData(m_windowWidth, m_windowHeight, m_windowXPos, m_windowYPos)}
 #ifdef HAS_GL
     ,
@@ -171,9 +176,13 @@ auto CVisualizationGoom::StartVis(const int numChannels,
 {
   StartLogging();
 
-  LogInfo(*m_goomLogger, "CVisualizationGoom: Texture width, height = {}, {}.", m_textureWidth, m_textureHeight);
+  LogInfo(*m_goomLogger,
+          "CVisualizationGoom: Texture width, height = {}, {}.",
+          m_textureWidth,
+          m_textureHeight);
 #ifdef HAS_GL
-  LogInfo(*m_goomLogger, "CVisualizationGoom: Supported GLSL version is {}.",
+  LogInfo(*m_goomLogger,
+          "CVisualizationGoom: Supported GLSL version is {}.",
           reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 #endif
 
@@ -306,13 +315,13 @@ auto CVisualizationGoom::InitGoomController() -> bool
     return false;
   }
 
-  LogInfo(*m_goomLogger, "CVisualizationGoom: Goom: {}.", GoomControl::GetGoomVersionInfo());
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Goom: {}.", GetGoomLibVersionInfo());
   LogInfo(*m_goomLogger, "CVisualizationGoom: Compiler: {}.", GetCompilerVersion());
   LogInfo(*m_goomLogger, "CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
-  LogInfo(*m_goomLogger, "Goom Library: Compiler: {}.", GoomControl::GetCompilerVersion());
-  LogInfo(*m_goomLogger, "Goom Library: Build Time: {}.", GoomControl::GetGoomLibBuildTime());
+  LogInfo(*m_goomLogger, "Goom Library: Compiler: {}.", GetGoomLibCompilerVersion());
+  LogInfo(*m_goomLogger, "Goom Library: Build Time: {}.", GetGoomLibBuildTime());
 
-  m_goomControl->ShowGoomState(KODI_ADDON::GetSettingBoolean("show_goom_state"));
+  m_goomControl->SetShowGoomState(KODI_ADDON::GetSettingBoolean("show_goom_state"));
   m_goomControl->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
       std::string(GOOM_ADDON_DATA_DIR) + GOOM::PATH_SEP + "goom_dumps"));
   m_goomControl->SetShowTitle(m_showTitle);
@@ -537,8 +546,8 @@ inline void CVisualizationGoom::UpdateGoomBuffer(const std::vector<float>& float
                                                  PixelBufferData& pixelBufferData)
 {
   const AudioSamples audioData{m_numChannels, floatAudioData};
-  m_goomControl->SetScreenBuffer(pixelBufferData.pixelBuffer);
-  m_goomControl->Update(audioData);
+  m_goomControl->SetGoomBuffer(pixelBufferData.pixelBuffer);
+  m_goomControl->UpdateGoomBuffer(audioData);
   pixelBufferData.goomShaderEffects = m_goomControl->GetLastShaderEffects();
 
 #ifdef SAVE_AUDIO_BUFFERS

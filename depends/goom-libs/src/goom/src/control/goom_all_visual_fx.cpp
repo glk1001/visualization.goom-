@@ -41,7 +41,6 @@ using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
-using UTILS::GRAPHICS::MakePixel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelper;
 
@@ -179,7 +178,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
 
 GoomAllVisualFx::~GoomAllVisualFx() noexcept = default;
 
-auto GoomAllVisualFx::Start() -> void
+auto GoomAllVisualFx::Start() noexcept -> void
 {
   ChangeDrawPixelBlend();
 
@@ -188,14 +187,14 @@ auto GoomAllVisualFx::Start() -> void
   m_zoomFilterFx->Start();
 }
 
-auto GoomAllVisualFx::Finish() -> void
+auto GoomAllVisualFx::Finish() noexcept -> void
 {
   m_allStandardVisualFx->Finish();
 
   m_zoomFilterFx->Finish();
 }
 
-auto GoomAllVisualFx::ChangeState() -> void
+auto GoomAllVisualFx::ChangeState() noexcept -> void
 {
   m_allStandardVisualFx->SuspendFx();
 
@@ -228,38 +227,39 @@ auto GoomAllVisualFx::ChangeState() -> void
   m_allStandardVisualFx->ResumeFx();
 }
 
-auto GoomAllVisualFx::StartExposureControl() -> void
+auto GoomAllVisualFx::StartExposureControl() noexcept -> void
 {
   m_doExposureControl = true;
 }
 
-auto GoomAllVisualFx::GetLastShaderEffects() const -> const GoomShaderEffects&
+auto GoomAllVisualFx::GetLastShaderEffects() const noexcept -> const GoomShaderEffects&
 {
   return m_allStandardVisualFx->GetLastShaderEffects();
 }
 
-auto GoomAllVisualFx::SetSingleBufferDots(const bool value) -> void
+auto GoomAllVisualFx::SetSingleBufferDots(const bool value) noexcept -> void
 {
   m_allStandardVisualFx->SetSingleBufferDots(value);
 }
 
-auto GoomAllVisualFx::PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables)
-    -> void
+auto GoomAllVisualFx::PostStateUpdate(
+    const std::unordered_set<GoomDrawables>& oldGoomDrawables) noexcept -> void
 {
   m_allStandardVisualFx->PostStateUpdate(oldGoomDrawables);
 }
 
-auto GoomAllVisualFx::RefreshAllFx() -> void
+auto GoomAllVisualFx::RefreshAllFx() noexcept -> void
 {
   m_allStandardVisualFx->RefreshAllFx();
 }
 
-inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx) -> void
+inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx) noexcept -> void
 {
   m_resetDrawBuffSettings(GetCurrentBuffSettings(fx));
 }
 
-inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const -> FXBuffSettings
+inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const noexcept
+    -> FXBuffSettings
 {
   const auto buffIntensity = m_goomRand.GetRandInRange(
       GoomStateInfo::GetBuffIntensityRange(m_goomStateHandler.GetCurrentState(), fx));
@@ -268,18 +268,19 @@ inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) cons
   return {INTENSITY_FACTOR * buffIntensity};
 }
 
-auto GoomAllVisualFx::ChangeAllFxColorMaps() -> void
+auto GoomAllVisualFx::ChangeAllFxColorMaps() noexcept -> void
 {
   m_allStandardVisualFx->ChangeColorMaps();
 }
 
-auto GoomAllVisualFx::ChangeDrawPixelBlend() -> void
+auto GoomAllVisualFx::ChangeDrawPixelBlend() noexcept -> void
 {
   m_pixelBlender.ChangePixelBlendFunc();
   m_goomDraw.SetBlendPixelFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
 }
 
-auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings) -> void
+auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings) noexcept
+    -> void
 {
   if (filterSettings.filterEffectsSettingsHaveChanged)
   {
@@ -294,27 +295,29 @@ auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSetti
   m_allStandardVisualFx->SetZoomMidpoint(filterSettings.filterEffectsSettings.zoomMidpoint);
 }
 
-auto GoomAllVisualFx::ApplyCurrentStateToSingleBuffer() -> void
+auto GoomAllVisualFx::ApplyCurrentStateToSingleBuffer() noexcept -> void
 {
   m_allStandardVisualFx->ApplyCurrentStateToSingleBuffer();
 }
 
-auto GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) -> void
+auto GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) noexcept
+    -> void
 {
   m_allStandardVisualFx->ApplyCurrentStateToMultipleBuffers(soundData);
 }
 
-auto GoomAllVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) -> void
+auto GoomAllVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) noexcept
+    -> void
 {
   m_allStandardVisualFx->ApplyEndEffectIfNearEnd(timeValues);
 }
 
-auto GoomAllVisualFx::GetCurrentColorMapsNames() const -> std::unordered_set<std::string>
+auto GoomAllVisualFx::GetCurrentColorMapsNames() const noexcept -> std::unordered_set<std::string>
 {
   return m_allStandardVisualFx->GetActiveColorMapsNames();
 }
 
-auto GoomAllVisualFx::GetZoomFilterFxNameValueParams() const -> NameValuePairs
+auto GoomAllVisualFx::GetZoomFilterFxNameValueParams() const noexcept -> NameValuePairs
 {
   return m_zoomFilterFx->GetNameValueParams();
 }
