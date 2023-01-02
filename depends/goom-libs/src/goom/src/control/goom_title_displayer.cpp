@@ -5,7 +5,7 @@
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
-#include "draw/text_draw.h"
+#include "draw/shape_drawers/text_drawer.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
@@ -23,7 +23,7 @@ namespace GOOM::CONTROL
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
-using DRAW::TextDraw;
+using DRAW::SHAPE_DRAWERS::TextDrawer;
 using UTILS::MATH::GetFltFraction;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
@@ -77,15 +77,15 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
                                        const IGoomRand& goomRand,
                                        const std::string& fontDirectory)
   : m_goomRand{goomRand},
-    m_textDraw{std::make_unique<TextDraw>(draw)},
-    m_screenWidth{draw.GetScreenDimensions().GetIntWidth()},
-    m_screenHeight{draw.GetScreenDimensions().GetIntHeight()},
+    m_textDrawer{std::make_unique<TextDrawer>(draw)},
+    m_screenWidth{draw.GetDimensions().GetIntWidth()},
+    m_screenHeight{draw.GetDimensions().GetIntHeight()},
     m_fontDirectory{fontDirectory}
 {
-  m_textDraw->SetFontFile(GetSelectedFontPath());
-  m_textDraw->SetFontSize(GetSelectedFontSize());
-  m_textDraw->SetOutlineWidth(OUTLINE_FONT_WIDTH);
-  m_textDraw->SetAlignment(TextDraw::TextAlignment::LEFT);
+  m_textDrawer->SetFontFile(GetSelectedFontPath());
+  m_textDrawer->SetFontSize(GetSelectedFontSize());
+  m_textDrawer->SetOutlineWidth(OUTLINE_FONT_WIDTH);
+  m_textDrawer->SetAlignment(TextDrawer::TextAlignment::LEFT);
 }
 
 void GoomTitleDisplayer::DrawMovingText(const std::string& title)
@@ -124,7 +124,7 @@ inline void GoomTitleDisplayer::UpdateFontSize()
 
   if (m_timeLeftOfTitleDisplay < TIME_TO_START_FINAL_PHASE)
   {
-    m_textDraw->SetFontSize(GetFinalPhaseFontSize(m_timeLeftOfTitleDisplay));
+    m_textDrawer->SetFontSize(GetFinalPhaseFontSize(m_timeLeftOfTitleDisplay));
   }
 }
 
@@ -167,7 +167,7 @@ inline auto GoomTitleDisplayer::GetFinalPhaseCentrePenPos(const std::string& str
 {
   const auto screenCentre = Point2dInt{I_HALF * m_screenWidth, I_HALF * m_screenHeight};
   const auto fontSize     = GetFinalPhaseFontSize(0);
-  return GetLeftAlignedPenForCentringStringAt(*m_textDraw, str, fontSize, screenCentre).ToFlt();
+  return GetLeftAlignedPenForCentringStringAt(*m_textDrawer, str, fontSize, screenCentre).ToFlt();
 }
 
 void GoomTitleDisplayer::DrawText(const std::string& text)
@@ -210,16 +210,16 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
   const auto drawStr = [this, &charSpacing, &getFontColor, &getOutlineFontColor](
                            const std::string& str, const Point2dInt point)
   {
-    m_textDraw->SetText(str);
-    m_textDraw->SetFontColorFunc(getFontColor);
-    m_textDraw->SetOutlineFontColorFunc(getOutlineFontColor);
-    m_textDraw->SetCharSpacing(charSpacing);
-    m_textDraw->Prepare();
-    m_textDraw->Draw(point);
+    m_textDrawer->SetText(str);
+    m_textDrawer->SetFontColorFunc(getFontColor);
+    m_textDrawer->SetOutlineFontColorFunc(getOutlineFontColor);
+    m_textDrawer->SetCharSpacing(charSpacing);
+    m_textDrawer->Prepare();
+    m_textDrawer->Draw(point);
   };
 
   const auto textStrings = GetLinesOfWords(text, MAX_LINE_LENGTH);
-  const auto lineSpacing = m_textDraw->GetFontSize() + m_textDraw->GetLineSpacing();
+  const auto lineSpacing = m_textDrawer->GetFontSize() + m_textDrawer->GetLineSpacing();
   auto y                 = static_cast<int32_t>(std::round(m_yPos));
   for (const auto& str : textStrings)
   {

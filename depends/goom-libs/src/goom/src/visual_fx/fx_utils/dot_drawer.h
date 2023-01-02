@@ -1,6 +1,7 @@
 #pragma once
 
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/bitmap_drawer.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -59,9 +60,10 @@ public:
                float brightness) noexcept -> void;
 
 private:
-  DRAW::IGoomDraw& m_goomDraw;
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
-  const GOOM::UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
+  DRAW::IGoomDraw& m_draw;
+  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer{m_draw};
+  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
 
   static constexpr uint32_t MIN_IMAGE_DOT_SIZE = 3;
   static constexpr uint32_t MAX_IMAGE_DOT_SIZE = 15;

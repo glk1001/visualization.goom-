@@ -38,6 +38,8 @@
 
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/bitmap_drawer.h"
+#include "draw/shape_drawers/pixel_drawer.h"
 #include "fx_helper.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
@@ -62,6 +64,8 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using DRAW::SHAPE_DRAWERS::BitmapDrawer;
+using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using IFS::BlurrerColorMode;
 using IFS::Colorizer;
 using IFS::Fractal;
@@ -95,6 +99,8 @@ private:
   int32_t m_cycleLength                     = MIN_CYCLE_LENGTH;
 
   IGoomDraw& m_draw;
+  BitmapDrawer m_bitmapDrawer{m_draw};
+  PixelDrawer m_pixelDrawer{m_draw};
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
 
@@ -122,7 +128,7 @@ private:
   auto ChangeColorMaps() -> void;
   auto ChangeSpeed() -> void;
   auto DrawNextIfsPoints() -> void;
-  auto DrawPoint(float t, const IfsPoint& ifsPoint, float tMix) const -> void;
+  auto DrawPoint(float t, const IfsPoint& ifsPoint, float tMix) -> void;
 
   static constexpr float PROB_DRAW_LOW_DENSITY_POINTS = 0.1F;
   bool m_drawLowDensityPoints                         = false;
@@ -139,7 +145,7 @@ private:
                                              const std::vector<IfsPoint>& lowDensityPoints) const
       -> bool;
   auto DrawLowDensityPointsWithoutBlur(const std::vector<IfsPoint>& lowDensityPoints,
-                                       uint32_t maxLowDensityCount) const -> void;
+                                       uint32_t maxLowDensityCount) -> void;
   auto DrawLowDensityPointsWithBlur(std::vector<IfsPoint>& lowDensityPoints,
                                     uint32_t maxLowDensityCount) -> void;
   auto UpdateLowDensityBlurThreshold() -> void;
@@ -210,31 +216,31 @@ auto IfsDancersFx::PostStateUpdate(const bool wasActiveInPreviousState) noexcept
   m_pimpl->PostStateUpdate(wasActiveInPreviousState);
 }
 
-static constexpr auto BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT = 999.0F;
-static constexpr auto BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT   = 001.0F;
-static constexpr auto BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT   = 001.0F;
-static constexpr auto BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT     = 005.0F;
-static constexpr auto BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT = 001.0F;
-static constexpr auto BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT   = 005.0F;
+static constexpr auto BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WGT = 999.0F;
+static constexpr auto BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WGT   = 001.0F;
+static constexpr auto BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WGT   = 001.0F;
+static constexpr auto BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WGT     = 005.0F;
+static constexpr auto BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WGT = 001.0F;
+static constexpr auto BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WGT   = 005.0F;
 
 IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
   : m_draw{fxHelper.GetDraw()},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
-    m_fractal{std::make_unique<Fractal>(m_draw.GetScreenDimensions(),
+    m_fractal{std::make_unique<Fractal>(m_draw.GetDimensions(),
                                         m_goomRand,
                                         smallBitmaps)},
     m_blurrer{m_draw, m_goomRand, BLUR_WIDTH, &m_colorizer, smallBitmaps},
     m_blurrerColorModeWeights{
       m_goomRand,
       {
-        {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WEIGHT},
-        {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WEIGHT},
-        {BlurrerColorMode::SIMI_WITH_NEIGHBOURS,   BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WEIGHT},
-        {BlurrerColorMode::SIMI_NO_NEIGHBOURS,     BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WEIGHT},
-        {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WEIGHT},
-        {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WEIGHT},
+        {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WGT},
+        {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WGT},
+        {BlurrerColorMode::SIMI_WITH_NEIGHBOURS,   BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WGT},
+        {BlurrerColorMode::SIMI_NO_NEIGHBOURS,     BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WGT},
+        {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WGT},
+        {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WGT},
     }}
 {
 }
@@ -367,7 +373,7 @@ auto IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay() -> void
     m_ifsIncr = 0;
   }
 
-  if (m_recayIfs)
+  if (m_recayIfs != 0)
   {
     m_ifsIncr -= BY_TWO;
     --m_recayIfs;
@@ -468,20 +474,22 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() -> void
 
 auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
                                                const IfsPoint& ifsPoint,
-                                               const float tMix) const -> void
+                                               const float tMix) -> void
 {
   const auto point =
       Point2dInt{static_cast<int32_t>(ifsPoint.GetX()), static_cast<int32_t>(ifsPoint.GetY())};
 
-  const auto tX = static_cast<float>(point.x) / static_cast<float>(m_draw.GetScreenWidth());
-  const auto tY = static_cast<float>(point.y) / static_cast<float>(m_draw.GetScreenHeight());
+  const auto tX =
+      static_cast<float>(point.x) / static_cast<float>(m_draw.GetDimensions().GetWidth());
+  const auto tY =
+      static_cast<float>(point.y) / static_cast<float>(m_draw.GetDimensions().GetHeight());
 
   if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap()->GetColor(t);
       nullptr == ifsPoint.GetSimi()->GetCurrentPointBitmap())
   {
     const auto mixedColor =
         m_colorizer.GetMixedColor(baseColor, ifsPoint.GetCount(), POINT_BRIGHTNESS, tMix, tX, tY);
-    m_draw.DrawPixels(point, {mixedColor, mixedColor});
+    m_pixelDrawer.DrawPixels(point, {mixedColor, mixedColor});
   }
   else
   {
@@ -491,7 +499,7 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
                                         [[maybe_unused]] const size_t y,
                                         [[maybe_unused]] const Pixel& bgnd) { return mixedColor; };
     const auto& bitmap{*ifsPoint.GetSimi()->GetCurrentPointBitmap()};
-    m_draw.Bitmap(point, bitmap, {getColor, getColor});
+    m_bitmapDrawer.Bitmap(point, bitmap, {getColor, getColor});
   }
 }
 
@@ -546,7 +554,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::BlurTheLowDensityPoints(
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithoutBlur(
-    const std::vector<IfsPoint>& lowDensityPoints, const uint32_t maxLowDensityCount) const -> void
+    const std::vector<IfsPoint>& lowDensityPoints, const uint32_t maxLowDensityCount) -> void
 {
   const auto logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
 

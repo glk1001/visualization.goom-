@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace GOOM::DRAW
+namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
 using PlotPointFunc    = std::function<void(int32_t x, int32_t y)>;
@@ -17,4 +17,4 @@ auto DrawVariableThicknessLine(const PlotPointFunc& plot,
                                GetLineWidthFunc getLeftWidth,
                                GetLineWidthFunc getRightWidth) noexcept -> void;
 
-} // namespace GOOM::DRAW
+} // namespace GOOM::DRAW::SHAPE_DRAWERS

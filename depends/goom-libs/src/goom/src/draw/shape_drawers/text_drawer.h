@@ -1,5 +1,6 @@
 #pragma once
 
+#include "draw/goom_draw.h"
 #include "point2d.h"
 #include "spimpl.h"
 
@@ -13,15 +14,13 @@ namespace GOOM
 
 class Pixel;
 
-namespace DRAW
+namespace DRAW::SHAPE_DRAWERS
 {
 
-class IGoomDraw;
-
-class TextDraw
+class TextDrawer
 {
 public:
-  explicit TextDraw(IGoomDraw& draw) noexcept;
+  explicit TextDrawer(IGoomDraw& draw) noexcept;
 
   enum class TextAlignment
   {
@@ -68,9 +67,9 @@ public:
   auto Draw(Point2dInt pen, Point2dInt& nextPen) -> void;
 
 private:
-  class TextDrawImpl;
-  spimpl::unique_impl_ptr<TextDrawImpl> m_pimpl;
+  class TextDrawerImpl;
+  spimpl::unique_impl_ptr<TextDrawerImpl> m_pimpl;
 };
 
-} // namespace DRAW
+} // namespace DRAW::SHAPE_DRAWERS
 } // namespace GOOM

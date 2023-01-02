@@ -8,6 +8,7 @@
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/bitmap_drawer.h"
 #include "fx_helper.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
@@ -36,6 +37,7 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::SimpleColors;
 using DRAW::IGoomDraw;
+using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -67,6 +69,7 @@ public:
 
 private:
   IGoomDraw& m_draw;
+  BitmapDrawer m_bitmapDrawer{m_draw};
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
@@ -402,14 +405,14 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const f
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) -> Pixel
 {
-  static constexpr auto s_PRIMARY_COLORS = std::array{
+  static constexpr auto S_PRIMARY_COLORS = std::array{
       GetSimpleColor(SimpleColors::PURE_RED),
       GetSimpleColor(SimpleColors::PURE_LIME),
       GetSimpleColor(SimpleColors::PURE_BLUE),
       GetSimpleColor(SimpleColors::PURE_YELLOW),
       GetSimpleColor(SimpleColors::PURE_AQUA),
   };
-  return s_PRIMARY_COLORS.at(dotNum);
+  return S_PRIMARY_COLORS.at(dotNum);
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
@@ -494,11 +497,11 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
                                        dotPosition.y + static_cast<int32_t>(radius)};
       m_thereIsOneBuffer || m_currentlyUseSingleBufferOnly)
   {
-    m_draw.Bitmap(midPoint, GetImageBitmap(diameter), getColor1);
+    m_bitmapDrawer.Bitmap(midPoint, GetImageBitmap(diameter), getColor1);
   }
   else
   {
-    m_draw.Bitmap(midPoint, GetImageBitmap(diameter), {getColor1, getColor2});
+    m_bitmapDrawer.Bitmap(midPoint, GetImageBitmap(diameter), {getColor1, getColor2});
   }
 }
 

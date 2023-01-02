@@ -8,6 +8,7 @@
 #include "dot_diameters.h"
 #include "dot_paths.h"
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/line_drawer.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "point2d.h"
@@ -80,6 +81,7 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
+  DRAW::SHAPE_DRAWERS::LineDrawer m_lineDrawer{m_draw};
   const PluginInfo& m_goomInfo;
   const UTILS::MATH::IGoomRand& m_goomRand;
   const Helper m_helper;

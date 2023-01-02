@@ -15,6 +15,7 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 using COLOR::GetColorMultiply;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
+using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using UTILS::IncrementedValue;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
@@ -172,7 +173,7 @@ inline auto StarDrawer::DrawParticleCircle(const Point2dInt point1,
                                            const uint32_t elementSize,
                                            const MultiplePixels& colors) noexcept -> void
 {
-  m_draw.Circle(point1, static_cast<int>(elementSize), colors);
+  m_circleDrawer.DrawCircle(point1, static_cast<int>(elementSize), colors);
 }
 
 inline auto StarDrawer::DrawParticleLine(const Point2dInt point1,
@@ -180,7 +181,7 @@ inline auto StarDrawer::DrawParticleLine(const Point2dInt point1,
                                          const uint32_t elementSize,
                                          const MultiplePixels& colors) noexcept -> void
 {
-  m_draw.Line(point1, point2, colors, static_cast<uint8_t>(elementSize));
+  m_lineDrawer.DrawLine(point1, point2, colors, static_cast<uint8_t>(elementSize));
 }
 
 inline auto StarDrawer::DrawParticleDot(const Point2dInt point1,
@@ -196,8 +197,8 @@ inline auto StarDrawer::DrawParticleDot(const Point2dInt point1,
   { return GetColorMultiply(bgnd, colors[1]); };
 
   const auto& bitmap   = GetImageBitmap(elementSize);
-  const auto getColors = std::vector<IGoomDraw::GetBitmapColorFunc>{getMainColor, getLowColor};
-  m_draw.Bitmap(point1, bitmap, getColors);
+  const auto getColors = std::vector<BitmapDrawer::GetBitmapColorFunc>{getMainColor, getLowColor};
+  m_bitmapDrawer.Bitmap(point1, bitmap, getColors);
 }
 
 inline auto StarDrawer::GetImageBitmap(const uint32_t size) const noexcept -> const ImageBitmap&

@@ -2,7 +2,7 @@
 
 #include "drawable_text.h"
 
-#include "draw/text_draw.h"
+#include "draw/shape_drawers/text_drawer.h"
 #include "goom_logger.h"
 #include "point2d.h"
 #include "utils/strutils.h"
@@ -14,7 +14,7 @@ namespace GOOM::UTILS::TEXT
 {
 
 using namespace std::string_literals;
-using DRAW::TextDraw;
+using DRAW::SHAPE_DRAWERS::TextDrawer;
 using MATH::I_HALF;
 
 auto GetLinesOfWords(const std::string& text, const uint32_t maxLineLength)
@@ -47,29 +47,29 @@ auto GetLinesOfWords(const std::string& text, const uint32_t maxLineLength)
   return textLines;
 }
 
-auto GetLeftAlignedPenForCentringStringAt(TextDraw& textDraw,
+auto GetLeftAlignedPenForCentringStringAt(TextDrawer& textDrawer,
                                           const std::string& text,
                                           const int32_t fontSize,
                                           const Point2dInt& centreAt) -> Point2dInt
 {
-  const auto oldFontSize    = textDraw.GetFontSize();
-  const auto oldCharSpacing = textDraw.GetCharSpacing();
+  const auto oldFontSize    = textDrawer.GetFontSize();
+  const auto oldCharSpacing = textDrawer.GetCharSpacing();
 
-  textDraw.SetFontSize(fontSize);
-  textDraw.SetCharSpacing(0.0F);
-  textDraw.SetText(text);
+  textDrawer.SetFontSize(fontSize);
+  textDrawer.SetCharSpacing(0.0F);
+  textDrawer.SetText(text);
 
-  textDraw.Prepare();
+  textDrawer.Prepare();
 
-  const auto strRect    = textDraw.GetPreparedTextBoundingRect();
-  const auto bearingX   = textDraw.GetBearingX();
-  const auto bearingY   = textDraw.GetBearingY();
+  const auto strRect    = textDrawer.GetPreparedTextBoundingRect();
+  const auto bearingX   = textDrawer.GetBearingX();
+  const auto bearingY   = textDrawer.GetBearingY();
   const auto textWidth  = (strRect.xMax - strRect.xMin) + 1;
   const auto textHeight = (strRect.yMax - strRect.yMin) + 1;
 
-  LogInfo("font size = {}", textDraw.GetFontSize());
-  LogInfo("charSpacing = {}", textDraw.GetCharSpacing());
-  LogInfo("alignment = {}", textDraw.GetAlignment());
+  LogInfo("font size = {}", textDrawer.GetFontSize());
+  LogInfo("charSpacing = {}", textDrawer.GetCharSpacing());
+  LogInfo("alignment = {}", textDrawer.GetAlignment());
   LogInfo("text = {}", text);
   LogInfo("textWidth = {}, textHeight = {}", textWidth, textHeight);
   LogInfo("bearingX = {}, bearingY = {}", bearingX, bearingY);
@@ -77,8 +77,8 @@ auto GetLeftAlignedPenForCentringStringAt(TextDraw& textDraw,
           centreAt.x - (I_HALF * (textWidth - bearingX)),
           centreAt.y - ((I_HALF * textHeight) - bearingY));
 
-  textDraw.SetCharSpacing(oldCharSpacing);
-  textDraw.SetFontSize(oldFontSize);
+  textDrawer.SetCharSpacing(oldCharSpacing);
+  textDrawer.SetFontSize(oldFontSize);
 
   return {centreAt.x - (I_HALF * (textWidth - bearingX)),
           centreAt.y - ((I_HALF * textHeight) - bearingY)};

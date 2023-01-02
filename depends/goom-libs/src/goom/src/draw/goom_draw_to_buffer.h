@@ -5,12 +5,10 @@
 #include "goom_types.h"
 #include "point2d.h"
 
-#include <cstdint>
 #include <vector>
 
 namespace GOOM
 {
-
 class GoomLogger;
 
 namespace DRAW
@@ -21,9 +19,9 @@ class GoomDrawToBuffer : public IGoomDraw
 public:
   GoomDrawToBuffer() noexcept = delete;
   GoomDrawToBuffer(const Dimensions& dimensions, GoomLogger& goomLogger) noexcept;
-  GoomDrawToBuffer(const GoomDrawToBuffer&) noexcept = delete;
-  GoomDrawToBuffer(GoomDrawToBuffer&&) noexcept      = delete;
-  ~GoomDrawToBuffer() noexcept override;
+  GoomDrawToBuffer(const GoomDrawToBuffer&) noexcept                    = delete;
+  GoomDrawToBuffer(GoomDrawToBuffer&&) noexcept                         = delete;
+  ~GoomDrawToBuffer() noexcept override                                 = default;
   auto operator=(const GoomDrawToBuffer&) noexcept -> GoomDrawToBuffer& = delete;
   auto operator=(GoomDrawToBuffer&&) noexcept -> GoomDrawToBuffer&      = delete;
 
@@ -34,9 +32,7 @@ public:
       -> void override;
 
 protected:
-  auto DrawPixelsToDevice(Point2dInt point,
-                          const MultiplePixels& colors,
-                          uint32_t intBuffIntensity) noexcept -> void override;
+  auto DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors) noexcept -> void override;
 
 private:
   GoomLogger& m_goomLogger;

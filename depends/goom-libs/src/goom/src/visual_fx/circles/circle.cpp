@@ -7,6 +7,8 @@
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/bitmap_drawer.h"
+#include "draw/shape_drawers/circle_drawer.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
@@ -34,6 +36,8 @@ using DRAW::GetMainColor;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using DRAW::ReversePixels;
+using DRAW::SHAPE_DRAWERS::BitmapDrawer;
+using DRAW::SHAPE_DRAWERS::CircleDrawer;
 using UTILS::EnumMap;
 using UTILS::IncrementedValue;
 using UTILS::NUM;
@@ -78,7 +82,9 @@ public:
       -> void;
 
 private:
-  DRAW::IGoomDraw& m_draw;
+  IGoomDraw& m_draw;
+  BitmapDrawer m_bitmapDrawer{m_draw};
+  CircleDrawer m_circleDrawer{m_draw};
   const IGoomRand& m_goomRand;
   const Helper& m_helper;
   float m_globalBrightnessFactor = 1.0F;
@@ -573,7 +579,7 @@ auto Circle::DrawConnectingLine(const Point2dInt& position1,
   LogInfo("corrected lowColor = {},{},{}", lowColor.R(), lowColor.G(), lowColor.B());
 
 
-  m_draw.Line(position1, position2, {mainColor, lowColor}, LINE_THICKNESS);
+  m_lineDrawer.DrawLine(position1, position2, {mainColor, lowColor}, LINE_THICKNESS);
 }
 
 Circle::DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
@@ -649,7 +655,7 @@ auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
             ? GetCircleColors(brightness(), colors)
             : GetCircleColorsWithInner(brightness(), colors, innerColor, m_outerCircleDotColorMix);
 
-    m_draw.Circle(centre, radius, circleColors);
+    m_circleDrawer.DrawCircle(centre, radius, circleColors);
 
     brightness.Increment();
     innerColorT.Increment();
@@ -692,7 +698,8 @@ auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& position,
       [this, &colors, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
   { return GetDotMixedColor(x, y, diameter, bgnd, GetLowColor(colors), m_bgndLowColorMixT); };
 
-  m_draw.Bitmap(position, m_helper.bitmapGetter.GetBitmap(diameter), {getMainColor, getLowColor});
+  m_bitmapDrawer.Bitmap(
+      position, m_helper.bitmapGetter.GetBitmap(diameter), {getMainColor, getLowColor});
 }
 
 inline auto Circle::DotDrawer::GetRandomDecorationType() const noexcept -> DecorationType

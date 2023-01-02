@@ -7,6 +7,10 @@
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
 #include "draw/goom_draw_to_many.h"
+#include "draw/shape_drawers/bitmap_drawer.h"
+#include "draw/shape_drawers/circle_drawer.h"
+#include "draw/shape_drawers/line_drawer.h"
+#include "draw/shape_drawers/pixel_drawer.h"
 #include "fx_helper.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
@@ -36,6 +40,10 @@ using DRAW::GoomDrawToContainer;
 using DRAW::GoomDrawToMany;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
+using DRAW::SHAPE_DRAWERS::BitmapDrawer;
+using DRAW::SHAPE_DRAWERS::CircleDrawer;
+using DRAW::SHAPE_DRAWERS::LineDrawer;
+using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using TUBES::BrightnessAttenuation;
 using TUBES::Tube;
 using TUBES::TubeData;
@@ -133,10 +141,17 @@ public:
 
 private:
   IGoomDraw& m_draw;
-  GoomDrawToContainer m_drawToContainer{m_draw.GetScreenDimensions()};
+  GoomDrawToContainer m_drawToContainer{m_draw.GetDimensions()};
   GoomDrawToMany m_drawToMany{
-      m_draw.GetScreenDimensions(), {&m_draw, &m_drawToContainer}
+      m_draw.GetDimensions(), {&m_draw, &m_drawToContainer}
   };
+  BitmapDrawer m_bitmapDrawer{m_draw};
+  BitmapDrawer m_bitmapToManyDrawer{m_drawToMany};
+  CircleDrawer m_circleDrawer{m_draw};
+  CircleDrawer m_circleToManyDrawer{m_drawToMany};
+  LineDrawer m_lineDrawer{m_draw};
+  LineDrawer m_lineToManyDrawer{m_drawToMany};
+  PixelDrawer m_pixelDrawer{m_draw};
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   const SmallImageBitmaps& m_smallBitmaps;
@@ -147,8 +162,9 @@ private:
   bool m_oscillatingShapePath{m_goomRand.ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)};
   uint32_t m_numCapturedPrevShapesGroups               = 0;
   static constexpr float PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
-  const BrightnessAttenuation m_prevShapesBrightnessAttenuation{
-      m_draw.GetScreenWidth(), m_draw.GetScreenHeight(), PREV_SHAPES_CUTOFF_BRIGHTNESS};
+  const BrightnessAttenuation m_prevShapesBrightnessAttenuation{m_draw.GetDimensions().GetWidth(),
+                                                                m_draw.GetDimensions().GetHeight(),
+                                                                PREV_SHAPES_CUTOFF_BRIGHTNESS};
   [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
   bool m_prevShapesJitter                                   = false;
   static constexpr int32_t PREV_SHAPES_JITTER_AMOUNT        = 2;
@@ -157,8 +173,8 @@ private:
   std::vector<Tube> m_tubes{};
   static constexpr float ALL_JOIN_CENTRE_STEP = 0.001F;
   TValue m_allJoinCentreT{TValue::StepType::CONTINUOUS_REVERSIBLE, ALL_JOIN_CENTRE_STEP};
-  const Point2dInt m_screenMidpoint{U_HALF * m_draw.GetScreenWidth(),
-                                    U_HALF* m_draw.GetScreenHeight()};
+  const Point2dInt m_screenMidpoint{U_HALF * m_draw.GetDimensions().GetWidth(),
+                                    U_HALF* m_draw.GetDimensions().GetHeight()};
   Point2dInt m_targetMiddlePos{0, 0};
   Point2dInt m_previousMiddlePos{0, 0};
   static constexpr uint32_t MIDDLE_POS_NUM_STEPS = 100U;
@@ -167,8 +183,8 @@ private:
   Timer m_allStayInCentreTimer{1};
   Timer m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME};
   auto IncrementAllJoinCentreT() -> void;
-  [[nodiscard]] auto GetTransformedCentreVector(const uint32_t tubeId,
-                                                const Point2dInt& centre) const -> Vec2dInt;
+  [[nodiscard]] auto GetTransformedCentreVector(uint32_t tubeId, const Point2dInt& centre) const
+      -> Vec2dInt;
 
   static constexpr float JITTER_STEP = 0.1F;
   TValue m_shapeJitterT{TValue::StepType::CONTINUOUS_REVERSIBLE, JITTER_STEP};
@@ -222,7 +238,7 @@ private:
   [[nodiscard]] auto GetImageBitmap(SmallImageBitmaps::ImageNames imageName, size_t size) const
       -> const ImageBitmap&;
   static auto GetSimpleColorFuncs(const MultiplePixels& colors)
-      -> std::vector<IGoomDraw::GetBitmapColorFunc>;
+      -> std::vector<BitmapDrawer::GetBitmapColorFunc>;
 };
 
 TubesFx::TubesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -389,8 +405,8 @@ auto TubesFx::TubeFxImpl::InitTubes() -> void
 
   const auto mainTubeData = TubeData{MAIN_TUBE_INDEX,
                                      drawToManyFuncs,
-                                     m_draw.GetScreenWidth(),
-                                     m_draw.GetScreenHeight(),
+                                     m_draw.GetDimensions().GetWidth(),
+                                     m_draw.GetDimensions().GetHeight(),
                                      m_goomRand,
                                      m_mainColorMaps,
                                      m_lowColorMaps,
@@ -402,8 +418,8 @@ auto TubesFx::TubeFxImpl::InitTubes() -> void
   {
     const auto tubeData = TubeData{i,
                                    drawToOneFuncs,
-                                   m_draw.GetScreenWidth(),
-                                   m_draw.GetScreenHeight(),
+                                   m_draw.GetDimensions().GetWidth(),
+                                   m_draw.GetDimensions().GetHeight(),
                                    m_goomRand,
                                    m_mainColorMaps,
                                    m_lowColorMaps,
@@ -427,7 +443,7 @@ inline auto TubesFx::TubeFxImpl::DrawLineToOne(const Point2dInt point1,
                                                const MultiplePixels& colors,
                                                const uint8_t thickness) -> void
 {
-  m_draw.Line(point1, point2, colors, thickness);
+  m_lineDrawer.DrawLine(point1, point2, colors, thickness);
 }
 
 inline auto TubesFx::TubeFxImpl::DrawLineToMany(const Point2dInt point1,
@@ -435,7 +451,7 @@ inline auto TubesFx::TubeFxImpl::DrawLineToMany(const Point2dInt point1,
                                                 const MultiplePixels& colors,
                                                 const uint8_t thickness) -> void
 {
-  m_drawToMany.Line(point1, point2, colors, thickness);
+  m_lineToManyDrawer.DrawLine(point1, point2, colors, thickness);
 }
 
 inline auto TubesFx::TubeFxImpl::DrawCircleToOne(const Point2dInt point,
@@ -443,7 +459,7 @@ inline auto TubesFx::TubeFxImpl::DrawCircleToOne(const Point2dInt point,
                                                  const MultiplePixels& colors,
                                                  [[maybe_unused]] const uint8_t thickness) -> void
 {
-  m_draw.Circle(point, radius, colors);
+  m_circleDrawer.DrawCircle(point, radius, colors);
 }
 
 inline auto TubesFx::TubeFxImpl::DrawCircleToMany(const Point2dInt point,
@@ -451,7 +467,7 @@ inline auto TubesFx::TubeFxImpl::DrawCircleToMany(const Point2dInt point,
                                                   const MultiplePixels& colors,
                                                   [[maybe_unused]] const uint8_t thickness) -> void
 {
-  m_drawToMany.Circle(point, radius, colors);
+  m_circleToManyDrawer.DrawCircle(point, radius, colors);
 }
 
 inline auto TubesFx::TubeFxImpl::DrawImageToOne(const Point2dInt point,
@@ -459,7 +475,7 @@ inline auto TubesFx::TubeFxImpl::DrawImageToOne(const Point2dInt point,
                                                 const uint32_t size,
                                                 const MultiplePixels& colors) -> void
 {
-  m_draw.Bitmap(
+  m_bitmapDrawer.Bitmap(
       point, GetImageBitmap(imageName, static_cast<size_t>(size)), GetSimpleColorFuncs(colors));
 }
 
@@ -469,12 +485,12 @@ inline auto TubesFx::TubeFxImpl::DrawImageToMany(const Point2dInt point,
                                                  const MultiplePixels& colors) -> void
 {
   //m_drawToContainer.Bitmap(x, y, GetImageBitmap(imageName, size), GetSimpleColorFuncs(colors));
-  m_drawToMany.Bitmap(
+  m_bitmapToManyDrawer.Bitmap(
       point, GetImageBitmap(imageName, static_cast<size_t>(size)), GetSimpleColorFuncs(colors));
 }
 
 inline auto TubesFx::TubeFxImpl::GetSimpleColorFuncs(const MultiplePixels& colors)
-    -> std::vector<IGoomDraw::GetBitmapColorFunc>
+    -> std::vector<BitmapDrawer::GetBitmapColorFunc>
 {
   const auto getColor1 = [&colors]([[maybe_unused]] const size_t x,
                                    [[maybe_unused]] const size_t y,
@@ -660,8 +676,8 @@ auto TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups() -> void
                                       : m_goomRand.GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT,
                                                                   PREV_SHAPES_JITTER_AMOUNT + 1);
         const auto newPoint =
-            Point2dInt{GetClipped(point.x + jitterAmount, m_draw.GetScreenWidth() - 1),
-                       GetClipped(point.y + jitterAmount, m_draw.GetScreenHeight() - 1)};
+            Point2dInt{GetClipped(point.x + jitterAmount, m_draw.GetDimensions().GetWidth() - 1),
+                       GetClipped(point.y + jitterAmount, m_draw.GetDimensions().GetHeight() - 1)};
 
         const auto avColor                      = GetAverageColor(colorsList);
         static constexpr auto BRIGHTNESS_FACTOR = 0.1F;
@@ -669,7 +685,7 @@ auto TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups() -> void
         const auto newColor0                    = GetBrighterColor(brightness, avColor);
 
         // IMPORTANT - Best results come from putting color in second buffer.
-        m_draw.DrawPixels(newPoint, {BLACK_PIXEL, newColor0});
+        m_pixelDrawer.DrawPixels(newPoint, {BLACK_PIXEL, newColor0});
       });
 }
 

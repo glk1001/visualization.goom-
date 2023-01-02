@@ -5,7 +5,6 @@
 #include "goom_types.h"
 #include "point2d.h"
 
-#include <cstdint>
 #include <vector>
 
 namespace GOOM::DRAW
@@ -22,9 +21,7 @@ public:
       -> void override;
 
 protected:
-  auto DrawPixelsToDevice(Point2dInt point,
-                          const MultiplePixels& colors,
-                          uint32_t intBuffIntensity) noexcept -> void override;
+  auto DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors) noexcept -> void override;
 
 private:
   const std::vector<IGoomDraw*> m_manyDraws;

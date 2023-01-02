@@ -1,13 +1,13 @@
 // NOLINTBEGIN: Not my code
 
-#include "thick_lines.h"
+#include "line_draw_thick.h"
 
 #include "goom_config.h"
 
 #include <cmath>
 #include <cstdint>
 
-namespace GOOM::DRAW
+namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
 static void DrawXVariableThicknessLine(const PlotPointFunc& plot,
@@ -446,6 +446,6 @@ static void DrawYVariableThicknessLine(const PlotPointFunc& plot,
   }
 }
 
-} // namespace GOOM::DRAW
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
 
 // NOLINTEND

@@ -1,34 +1,21 @@
-#include "goom_draw.h"
+#include "bitmap_drawer.h"
 
+#include "goom_config.h"
+#include "goom_graphic.h"
+#include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 
 #include <cstdint>
+#include <vector>
 
-namespace GOOM::DRAW
+namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
 using UTILS::GRAPHICS::ImageBitmap;
 
-IGoomDraw::IGoomDraw(const Dimensions& dimensions) noexcept
-  : m_dimensions{dimensions},
-    m_drawMethods{m_dimensions,
-                  [this](const int32_t x, const int32_t y, const MultiplePixels& newColors) {
-                    DrawPixelsToDevice({x, y}, newColors);
-                  }}
-{
-  SetBuffIntensity(m_buffIntensity);
-  SetDefaultBlendPixelFunc();
-}
-
-inline auto IGoomDraw::DrawPixelsToDevice(const Point2dInt point,
-                                          const MultiplePixels& colors) noexcept -> void
-{
-  DrawPixelsToDevice(point, colors, GetIntBuffIntensity());
-}
-
-auto IGoomDraw::Bitmap(const Point2dInt centre,
-                       const ImageBitmap& bitmap,
-                       const std::vector<GetBitmapColorFunc>& getColors) noexcept -> void
+auto BitmapDrawer::Bitmap(const Point2dInt centre,
+                          const ImageBitmap& bitmap,
+                          const std::vector<GetBitmapColorFunc>& getColors) noexcept -> void
 {
   const auto bitmapWidth  = bitmap.GetIntWidth();
   const auto bitmapHeight = bitmap.GetIntHeight();
@@ -38,11 +25,12 @@ auto IGoomDraw::Bitmap(const Point2dInt centre,
   auto x1 = x0 + (bitmapWidth - 1);
   auto y1 = y0 + (bitmapHeight - 1);
 
-  if ((x0 >= m_dimensions.GetIntWidth()) or (y0 >= m_dimensions.GetIntHeight()) or (x1 < 0) or
-      (y1 < 0))
+  if ((x0 >= m_draw.GetDimensions().GetIntWidth()) or
+      (y0 >= m_draw.GetDimensions().GetIntHeight()) or (x1 < 0) or (y1 < 0))
   {
     return;
   }
+
   if (x0 < 0)
   {
     x0 = 0;
@@ -51,13 +39,13 @@ auto IGoomDraw::Bitmap(const Point2dInt centre,
   {
     y0 = 0;
   }
-  if (x1 >= m_dimensions.GetIntWidth())
+  if (x1 >= m_draw.GetDimensions().GetIntWidth())
   {
-    x1 = m_dimensions.GetIntWidth() - 1;
+    x1 = m_draw.GetDimensions().GetIntWidth() - 1;
   }
-  if (y1 >= m_dimensions.GetIntHeight())
+  if (y1 >= m_draw.GetDimensions().GetIntHeight())
   {
-    y1 = m_dimensions.GetIntHeight() - 1;
+    y1 = m_draw.GetDimensions().GetIntHeight() - 1;
   }
 
   const auto actualBitmapWidth  = static_cast<uint32_t>(x1 - x0) + 1;
@@ -68,7 +56,7 @@ auto IGoomDraw::Bitmap(const Point2dInt centre,
   {
     const auto numColors = getColors.size();
     const int buffY      = y0 + static_cast<int>(bitmapY);
-    auto finalColors     = MultiplePixels(numColors);
+    auto finalColors     = std::vector<Pixel>(numColors);
     for (auto bitmapX = 0U; bitmapX < actualBitmapWidth; ++bitmapX)
     {
       const auto bitmapColor = bitmap(bitmapX, bitmapY);
@@ -81,14 +69,14 @@ auto IGoomDraw::Bitmap(const Point2dInt centre,
         finalColors[i] = getColors[i](bitmapX, bitmapY, bitmapColor);
       }
       const auto buffX = x0 + static_cast<int>(bitmapX);
-      DrawPixels({buffX, buffY}, finalColors);
+      m_draw.DrawPixels({buffX, buffY}, finalColors);
     }
   };
 
   if (static constexpr auto MIN_PARALLEL_BITMAP_WIDTH = 200;
       bitmapWidth >= MIN_PARALLEL_BITMAP_WIDTH)
   {
-    GetParallel().ForLoop(actualBitmapHeight, setDestPixelRow);
+    m_parallel.ForLoop(actualBitmapHeight, setDestPixelRow);
   }
   else
   {
@@ -99,4 +87,4 @@ auto IGoomDraw::Bitmap(const Point2dInt centre,
   }
 }
 
-} // namespace GOOM::DRAW
+} // namespace GOOM::DRAW::SHAPE_DRAWERS

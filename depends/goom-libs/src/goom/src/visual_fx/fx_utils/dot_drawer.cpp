@@ -1,6 +1,7 @@
 #include "dot_drawer.h"
 
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/bitmap_drawer.h"
 #include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/graphics/image_bitmaps.h"
@@ -11,9 +12,10 @@
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 
+using COLOR::GetBrighterColor;
 using COLOR::GetColorMultiply;
-using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
+using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using UTILS::NUM;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -25,7 +27,7 @@ DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
                      const SmallImageBitmaps& smallBitmaps,
                      const Weights<DotSizes>& minDotSizes,
                      const Weights<DotSizes>& normalDotSizes) noexcept
-  : m_goomDraw{draw},
+  : m_draw{draw},
     m_goomRand{goomRand},
     m_smallBitmaps{smallBitmaps},
     m_minDotSizes{minDotSizes},
@@ -75,17 +77,17 @@ inline auto DotDrawer::DrawDot(const uint32_t dotSize,
   const auto getColor1 = [&brightness, &colors]([[maybe_unused]] const size_t x,
                                                 [[maybe_unused]] const size_t y,
                                                 const Pixel& bgnd)
-  { return GetColorMultiply(bgnd, COLOR::GetBrighterColor(brightness, colors[0])); };
+  { return GetColorMultiply(bgnd, GetBrighterColor(brightness, colors[0])); };
 
   const auto getColor2 = [&brightness, &colors]([[maybe_unused]] const size_t x,
                                                 [[maybe_unused]] const size_t y,
                                                 const Pixel& bgnd)
-  { return GetColorMultiply(bgnd, COLOR::GetBrighterColor(brightness, colors[1])); };
+  { return GetColorMultiply(bgnd, GetBrighterColor(brightness, colors[1])); };
 
-  const auto getColors = std::vector<IGoomDraw::GetBitmapColorFunc>{getColor1, getColor2};
+  const auto getColors = std::vector<BitmapDrawer::GetBitmapColorFunc>{getColor1, getColor2};
   const auto& bitmap   = GetImageBitmap(dotSize);
 
-  m_goomDraw.Bitmap(point, bitmap, getColors);
+  m_bitmapDrawer.Bitmap(point, bitmap, getColors);
 }
 
 auto DotDrawer::GetNextDotSize(const uint32_t maxSize) const noexcept -> uint32_t

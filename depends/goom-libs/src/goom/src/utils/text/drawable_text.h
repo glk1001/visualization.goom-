@@ -1,6 +1,6 @@
 #pragma once
 
-#include "draw/text_draw.h"
+#include "draw/shape_drawers/text_drawer.h"
 #include "point2d.h"
 
 #include <cstdint>
@@ -13,7 +13,7 @@ namespace GOOM::UTILS::TEXT
 [[nodiscard]] auto GetLinesOfWords(const std::string& text, uint32_t maxLineLength)
     -> std::vector<std::string>;
 
-[[nodiscard]] auto GetLeftAlignedPenForCentringStringAt(DRAW::TextDraw& textDraw,
+[[nodiscard]] auto GetLeftAlignedPenForCentringStringAt(DRAW::SHAPE_DRAWERS::TextDrawer& textDrawer,
                                                         const std::string& text,
                                                         int32_t fontSize,
                                                         const Point2dInt& centreAt) -> Point2dInt;

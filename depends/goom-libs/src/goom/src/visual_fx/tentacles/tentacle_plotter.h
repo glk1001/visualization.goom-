@@ -1,5 +1,7 @@
 #pragma once
 
+#include "draw/goom_draw.h"
+#include "draw/shape_drawers/line_drawer.h"
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "tentacle3d.h"
@@ -11,10 +13,6 @@ namespace GOOM
 namespace UTILS::MATH
 {
 class IGoomRand;
-}
-namespace DRAW
-{
-class IGoomDraw;
 }
 
 namespace VISUAL_FX::TENTACLES
@@ -34,14 +32,16 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
+  DRAW::SHAPE_DRAWERS::LineDrawer m_lineDrawer{m_draw};
   const UTILS::MATH::IGoomRand& m_goomRand;
   const Vec2dFlt m_screenMidPoint{
-      MidpointFromOrigin({m_draw.GetScreenWidth(), m_draw.GetScreenHeight()}).ToFlt()};
-  const UTILS::GRAPHICS::LineClipper m_lineClipper{
-      {0.0F,
-       0.0F, static_cast<float>(m_draw.GetScreenWidth() - 1),
-       static_cast<float>(m_draw.GetScreenHeight() - 1)}
-  };
+      MidpointFromOrigin({m_draw.GetDimensions().GetWidth(), m_draw.GetDimensions().GetHeight()})
+          .ToFlt()};
+  uint8_t m_lineThickness = 1U;
+
+  using LineClipper = UTILS::GRAPHICS::LineClipper;
+  LineClipper m_lineClipper{GetLineClipRectangle()};
+  [[nodiscard]] auto GetLineClipRectangle() const noexcept -> LineClipper::ClipRectangle;
 
   static constexpr auto PROJECTION_DISTANCE = 170.0F;
   static constexpr auto MIN_CAMERA_X_OFFSET = -10.0F;
@@ -55,7 +55,6 @@ private:
   static_assert(MIN_CAMERA_Z_OFFSET < MAX_CAMERA_Z_OFFSET);
   V3dFlt m_cameraPosition{0.0F, 0.0F, MIN_CAMERA_Z_OFFSET};
   DRAW::MultiplePixels m_dominantColors{};
-  uint8_t m_lineThickness = 1U;
 
   auto PlotPoints(const Tentacle3D& tentacle, float brightness, const std::vector<V3dFlt>& points3D)
       -> void;
@@ -84,11 +83,6 @@ inline auto TentaclePlotter::SetDominantColors(const DRAW::MultiplePixels& domin
     -> void
 {
   m_dominantColors = dominantColors;
-}
-
-inline auto TentaclePlotter::SetTentacleLineThickness(const uint8_t lineThickness) noexcept -> void
-{
-  m_lineThickness = lineThickness;
 }
 
 } // namespace VISUAL_FX::TENTACLES

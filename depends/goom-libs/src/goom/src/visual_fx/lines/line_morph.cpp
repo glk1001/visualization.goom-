@@ -288,7 +288,7 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
     const auto point2 = nextPointData.point;
     const auto colors = MultiplePixels{lineColor, nextPointData.color};
 
-    m_draw.Line(point1, point2, colors, LINE_THICKNESS);
+    m_lineDrawer.DrawLine(point1, point2, colors, LINE_THICKNESS);
 
     static constexpr auto DOT_BRIGHTNESS = 1.5F;
     m_dotDrawer.DrawDot(point2, colors, DOT_BRIGHTNESS);
@@ -307,7 +307,7 @@ auto LineMorph::DrawFlatLine(const Pixel& lineColor) noexcept -> void
   const auto& ptN   = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
   const auto colors = MultiplePixels{lineColor, lineColor};
 
-  m_draw.Line(pt0.point.ToInt(), ptN.point.ToInt(), colors, 1);
+  m_lineDrawer.DrawLine(pt0.point.ToInt(), ptN.point.ToInt(), colors, 1);
 }
 
 auto LineMorph::GetAudioPoints(const Pixel& lineColor,
@@ -363,7 +363,7 @@ auto LineMorph::GetNextPointData(const LinePoint& linePoint,
   const auto sinAngle          = std::sin(linePoint.angle);
   const auto normalizedDataVal = m_maxNormalizedPeak * tData;
   assert(normalizedDataVal >= 0.0F);
-  // TODO - Is 'm_srceLineParams.amplitude' the right abstraction level?
+  // TODO(glk) - Is 'm_srceLineParams.amplitude' the right abstraction level?
   const auto nextPointData =
       Point2dInt{static_cast<int32_t>(linePoint.point.x +
                                       (m_srceLineParams.amplitude * cosAngle * normalizedDataVal)),

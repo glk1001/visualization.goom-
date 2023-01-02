@@ -18,7 +18,10 @@ namespace GOOM
 namespace DRAW
 {
 class IGoomDraw;
-class TextDraw;
+namespace SHAPE_DRAWERS
+{
+class TextDrawer;
+}
 }
 
 namespace CONTROL
@@ -50,7 +53,7 @@ private:
   float m_xPos                                        = 0.0F;
   float m_yPos                                        = 0.0F;
   int32_t m_timeLeftOfTitleDisplay                    = MAX_TEXT_DISPLAY_TIME;
-  std::experimental::propagate_const<std::unique_ptr<DRAW::TextDraw>> m_textDraw;
+  std::experimental::propagate_const<std::unique_ptr<DRAW::SHAPE_DRAWERS::TextDrawer>> m_textDrawer;
   const int32_t m_screenWidth;
   const int32_t m_screenHeight;
   const std::string m_fontDirectory;

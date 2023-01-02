@@ -51,13 +51,17 @@ add_library(goom
             src/control/visual_fx_color_maps.h
             src/control/visual_fx_color_matched_sets.cpp
             src/control/visual_fx_weighted_color_maps.cpp
-            src/draw/draw_methods.cpp
-            src/draw/goom_draw.cpp
+            src/draw/shape_drawers/bitmap_drawer.cpp
+            src/draw/shape_drawers/circle_drawer.cpp
+            src/draw/shape_drawers/drawer_utils.h
+            src/draw/shape_drawers/line_draw_thick.cpp
+            src/draw/shape_drawers/line_drawer.cpp
+            src/draw/shape_drawers/pixel_drawer.h
+            src/draw/shape_drawers/text_drawer.cpp
+            src/draw/goom_draw.h
             src/draw/goom_draw_to_buffer.cpp
             src/draw/goom_draw_to_container.cpp
             src/draw/goom_draw_to_many.cpp
-            src/draw/text_draw.cpp
-            src/draw/thick_lines.cpp
             src/filter_fx/after_effects/after_effects.cpp
             src/filter_fx/after_effects/after_effects_states.cpp
             src/filter_fx/after_effects/after_effects_types.h

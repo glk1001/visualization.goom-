@@ -49,7 +49,7 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
     const auto colors =
         GetColors(drawParams, radius, brightness, shapeColors, innerColorCutoffRadius, innerColor);
 
-    m_draw.Circle(point, radius, colors);
+    m_circleDrawer.DrawCircle(point, radius, colors);
 
     brightnessT.Increment();
     innerColorT.Increment();

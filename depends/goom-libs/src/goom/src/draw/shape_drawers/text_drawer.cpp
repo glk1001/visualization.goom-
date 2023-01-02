@@ -1,18 +1,21 @@
+// NOLINTBEGIN: Not my code
+
 //#undef NO_LOGGING
 
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
-#include "text_draw.h"
+#include "text_drawer.h"
 
 //#define NO_FREETYPE_INSTALLED
 
 #include "color/color_utils.h"
+#include "draw/goom_draw.h"
 #include "goom_config.h"
-#include "goom_draw.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
 #include "spimpl.h"
 #include "utils/math/misc.h"
+#include "utils/parallel_utils.h"
 
 #include <codecvt>
 #include <format>
@@ -25,22 +28,22 @@
 #include FT_STROKER_H
 #endif
 
-namespace GOOM::DRAW
+namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
 using COLOR::GetColorBlend;
 using UTILS::MATH::I_HALF;
 
 #ifdef NO_FREETYPE_INSTALLED
-class TextDraw::TextDrawImpl
+class TextDrawer::TextDrawerImpl
 {
 public:
-  explicit TextDrawImpl(IGoomDraw& draw) noexcept;
-  TextDrawImpl(const TextDrawImpl&) noexcept = delete;
-  TextDrawImpl(TextDrawImpl&&) noexcept      = delete;
-  ~TextDrawImpl() noexcept;
-  auto operator=(const TextDrawImpl&) -> TextDrawImpl& = delete;
-  auto operator=(TextDrawImpl&&) -> TextDrawImpl&      = delete;
+  explicit TextDrawerImpl(IGoomDraw& draw) noexcept;
+  TextDrawerImpl(const TextDrawerImpl&) noexcept = delete;
+  TextDrawerImpl(TextDrawerImpl&&) noexcept      = delete;
+  ~TextDrawerImpl() noexcept;
+  auto operator=(const TextDrawerImpl&) -> TextDrawerImpl& = delete;
+  auto operator=(TextDrawerImpl&&) -> TextDrawerImpl&      = delete;
 
   [[nodiscard]] auto GetAlignment() const noexcept -> TextAlignment;
   auto SetAlignment(TextAlignment alignment) noexcept -> void;
@@ -72,99 +75,100 @@ private:
   std::string m_fontFilename{};
 };
 
-TextDraw::TextDrawImpl::TextDrawImpl(IGoomDraw&) noexcept
+TextDrawer::TextDrawerImpl::TextDrawerImpl(IGoomDraw&) noexcept
 {
 }
 
-TextDraw::TextDrawImpl::~TextDrawImpl() noexcept
+TextDrawer::TextDrawerImpl::~TextDrawerImpl() noexcept
 {
 }
 
-auto TextDraw::TextDrawImpl::GetAlignment() const noexcept -> TextAlignment
+auto TextDrawer::TextDrawerImpl::GetAlignment() const noexcept -> TextAlignment
 {
   return TextAlignment::LEFT;
 }
 
-auto TextDraw::TextDrawImpl::SetAlignment(const TextAlignment) noexcept -> void
+auto TextDrawer::TextDrawerImpl::SetAlignment(const TextAlignment) noexcept -> void
 {
 }
 
-auto TextDraw::TextDrawImpl::GetFontFile() const noexcept -> const std::string&
+auto TextDrawer::TextDrawerImpl::GetFontFile() const noexcept -> const std::string&
 {
   return m_fontFilename;
 }
 
-auto TextDraw::TextDrawImpl::SetFontFile(const std::string& filename) noexcept -> void
+auto TextDrawer::TextDrawerImpl::SetFontFile(const std::string& filename) noexcept -> void
 {
   m_fontFilename = filename;
 }
 
-auto TextDraw::TextDrawImpl::GetFontSize() const noexcept -> int32_t
+auto TextDrawer::TextDrawerImpl::GetFontSize() const noexcept -> int32_t
 {
   return 0;
 }
 
-auto TextDraw::TextDrawImpl::SetFontSize(const int32_t) noexcept -> void
+auto TextDrawer::TextDrawerImpl::SetFontSize(const int32_t) noexcept -> void
 {
 }
 
-auto TextDraw::TextDrawImpl::GetLineSpacing() const noexcept -> int32_t
+auto TextDrawer::TextDrawerImpl::GetLineSpacing() const noexcept -> int32_t
 {
   return 0;
 }
 
-auto TextDraw::TextDrawImpl::SetOutlineWidth(const float) noexcept -> void
+auto TextDrawer::TextDrawerImpl::SetOutlineWidth(const float) noexcept -> void
 {
 }
 
-inline auto TextDraw::TextDrawImpl::GetCharSpacing() const noexcept -> float
+inline auto TextDrawer::TextDrawerImpl::GetCharSpacing() const noexcept -> float
 {
   return 0.0F;
 }
 
-auto TextDraw::TextDrawImpl::SetCharSpacing(const float) noexcept -> void
+auto TextDrawer::TextDrawerImpl::SetCharSpacing(const float) noexcept -> void
 {
 }
 
-auto TextDraw::TextDrawImpl::SetParallelRender(const bool) noexcept -> void
+auto TextDrawer::TextDrawerImpl::SetParallelRender(const bool) noexcept -> void
 {
 }
 
-auto TextDraw::TextDrawImpl::SetText(const std::string&) noexcept -> void
+auto TextDrawer::TextDrawerImpl::SetText(const std::string&) noexcept -> void
 {
 }
 
-auto TextDraw::TextDrawImpl::SetFontColorFunc(const FontColorFunc&) noexcept -> void
+auto TextDrawer::TextDrawerImpl::SetFontColorFunc(const FontColorFunc&) noexcept -> void
 {
 }
 
-auto TextDraw::TextDrawImpl::SetOutlineFontColorFunc(const FontColorFunc&) noexcept -> void
+auto TextDrawer::TextDrawerImpl::SetOutlineFontColorFunc(const FontColorFunc&) noexcept -> void
 {
 }
 
-auto TextDraw::TextDrawImpl::Prepare() noexcept -> void
+auto TextDrawer::TextDrawerImpl::Prepare() noexcept -> void
 {
 }
 
-inline auto TextDraw::TextDrawImpl::Draw(const Point2dInt) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt) noexcept -> void
 {
 }
 
-auto TextDraw::TextDrawImpl::Draw(const Point2dInt, Point2dInt&) noexcept -> void
+auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt, Point2dInt&) noexcept -> void
 {
 }
 
-inline auto TextDraw::TextDrawImpl::GetPreparedTextBoundingRect() const noexcept -> TextDraw::Rect
+inline auto TextDrawer::TextDrawerImpl::GetPreparedTextBoundingRect() const noexcept
+    -> TextDrawer::Rect
 {
   return Rect{};
 }
 
-inline auto TextDraw::TextDrawImpl::GetBearingX() const noexcept -> int32_t
+inline auto TextDrawer::TextDrawerImpl::GetBearingX() const noexcept -> int32_t
 {
   return 1;
 }
 
-inline auto TextDraw::TextDrawImpl::GetBearingY() const noexcept -> int32_t
+inline auto TextDrawer::TextDrawerImpl::GetBearingY() const noexcept -> int32_t
 {
   return 1;
 }
@@ -173,15 +177,15 @@ inline auto TextDraw::TextDrawImpl::GetBearingY() const noexcept -> int32_t
 #ifndef NO_FREETYPE_INSTALLED
 static constexpr auto FREE_TYPE_UNITS_PER_PIXEL = 64;
 
-class TextDraw::TextDrawImpl
+class TextDrawer::TextDrawerImpl
 {
 public:
-  explicit TextDrawImpl(IGoomDraw& draw) noexcept;
-  TextDrawImpl(const TextDrawImpl&) noexcept = delete;
-  TextDrawImpl(TextDrawImpl&&) noexcept      = delete;
-  ~TextDrawImpl() noexcept;
-  auto operator=(const TextDrawImpl&) -> TextDrawImpl& = delete;
-  auto operator=(TextDrawImpl&&) -> TextDrawImpl&      = delete;
+  explicit TextDrawerImpl(IGoomDraw& draw) noexcept;
+  TextDrawerImpl(const TextDrawerImpl&) noexcept = delete;
+  TextDrawerImpl(TextDrawerImpl&&) noexcept      = delete;
+  ~TextDrawerImpl() noexcept;
+  auto operator=(const TextDrawerImpl&) -> TextDrawerImpl& = delete;
+  auto operator=(TextDrawerImpl&&) -> TextDrawerImpl&      = delete;
 
   [[nodiscard]] auto GetAlignment() const noexcept -> TextAlignment;
   auto SetAlignment(TextAlignment alignment) noexcept -> void;
@@ -211,6 +215,7 @@ public:
 
 private:
   IGoomDraw& m_draw;
+  UTILS::Parallel m_parallel{-1}; // max cores - 1
   FT_Library m_library{};
   static constexpr int32_t DEFAULT_FONT_SIZE       = 100;
   int32_t m_fontSize                               = DEFAULT_FONT_SIZE;
@@ -292,137 +297,138 @@ private:
 };
 #endif
 
-TextDraw::TextDraw(IGoomDraw& draw) noexcept : m_pimpl{spimpl::make_unique_impl<TextDrawImpl>(draw)}
+TextDrawer::TextDrawer(IGoomDraw& draw) noexcept
+  : m_pimpl{spimpl::make_unique_impl<TextDrawerImpl>(draw)}
 {
 }
 
-auto TextDraw::GetAlignment() const noexcept -> TextAlignment
+auto TextDrawer::GetAlignment() const noexcept -> TextAlignment
 {
   return m_pimpl->GetAlignment();
 }
 
-auto TextDraw::SetAlignment(const TextAlignment alignment) noexcept -> void
+auto TextDrawer::SetAlignment(const TextAlignment alignment) noexcept -> void
 {
   m_pimpl->SetAlignment(alignment);
 }
 
-auto TextDraw::GetFontFile() const noexcept -> const std::string&
+auto TextDrawer::GetFontFile() const noexcept -> const std::string&
 {
   return m_pimpl->GetFontFile();
 }
 
-auto TextDraw::SetFontFile(const std::string& filename) -> void
+auto TextDrawer::SetFontFile(const std::string& filename) -> void
 {
   m_pimpl->SetFontFile(filename);
 }
 
-auto TextDraw::GetFontSize() const noexcept -> int32_t
+auto TextDrawer::GetFontSize() const noexcept -> int32_t
 {
   return m_pimpl->GetFontSize();
 }
 
-auto TextDraw::SetFontSize(const int32_t val) -> void
+auto TextDrawer::SetFontSize(const int32_t val) -> void
 {
   m_pimpl->SetFontSize(val);
 }
 
-auto TextDraw::GetLineSpacing() const noexcept -> int32_t
+auto TextDrawer::GetLineSpacing() const noexcept -> int32_t
 {
   return m_pimpl->GetLineSpacing();
 }
 
-auto TextDraw::SetOutlineWidth(const float val) noexcept -> void
+auto TextDrawer::SetOutlineWidth(const float val) noexcept -> void
 {
   m_pimpl->SetOutlineWidth(val);
 }
 
-auto TextDraw::GetCharSpacing() const noexcept -> float
+auto TextDrawer::GetCharSpacing() const noexcept -> float
 {
   return m_pimpl->GetCharSpacing();
 }
 
-auto TextDraw::SetCharSpacing(const float val) noexcept -> void
+auto TextDrawer::SetCharSpacing(const float val) noexcept -> void
 {
   m_pimpl->SetCharSpacing(val);
 }
 
-auto TextDraw::SetParallelRender(const bool val) noexcept -> void
+auto TextDrawer::SetParallelRender(const bool val) noexcept -> void
 {
   m_pimpl->SetParallelRender(val);
 }
 
-auto TextDraw::SetText(const std::string& str) noexcept -> void
+auto TextDrawer::SetText(const std::string& str) noexcept -> void
 {
   m_pimpl->SetText(str);
 }
 
-auto TextDraw::SetFontColorFunc(const FontColorFunc& func) noexcept -> void
+auto TextDrawer::SetFontColorFunc(const FontColorFunc& func) noexcept -> void
 {
   m_pimpl->SetFontColorFunc(func);
 }
 
-auto TextDraw::SetOutlineFontColorFunc(const FontColorFunc& func) noexcept -> void
+auto TextDrawer::SetOutlineFontColorFunc(const FontColorFunc& func) noexcept -> void
 {
   m_pimpl->SetOutlineFontColorFunc(func);
 }
 
-auto TextDraw::Prepare() -> void
+auto TextDrawer::Prepare() -> void
 {
   m_pimpl->Prepare();
 }
 
-auto TextDraw::GetPreparedTextBoundingRect() const noexcept -> TextDraw::Rect
+auto TextDrawer::GetPreparedTextBoundingRect() const noexcept -> TextDrawer::Rect
 {
   return m_pimpl->GetPreparedTextBoundingRect();
 }
 
-auto TextDraw::GetBearingX() const noexcept -> int32_t
+auto TextDrawer::GetBearingX() const noexcept -> int32_t
 {
   return m_pimpl->GetBearingX();
 }
 
-auto TextDraw::GetBearingY() const noexcept -> int32_t
+auto TextDrawer::GetBearingY() const noexcept -> int32_t
 {
   return m_pimpl->GetBearingY();
 }
 
-auto TextDraw::Draw(const Point2dInt pen) -> void
+auto TextDrawer::Draw(const Point2dInt pen) -> void
 {
   m_pimpl->Draw(pen);
 }
 
-auto TextDraw::Draw(const Point2dInt pen, Point2dInt& nextPen) -> void
+auto TextDrawer::Draw(const Point2dInt pen, Point2dInt& nextPen) -> void
 {
   m_pimpl->Draw(pen, nextPen);
 }
 
 #ifndef NO_FREETYPE_INSTALLED
-TextDraw::TextDrawImpl::TextDrawImpl(IGoomDraw& draw) noexcept : m_draw{draw}
+TextDrawer::TextDrawerImpl::TextDrawerImpl(IGoomDraw& draw) noexcept : m_draw{draw}
 {
   ::FT_Init_FreeType(&m_library);
 }
 
-TextDraw::TextDrawImpl::~TextDrawImpl() noexcept
+TextDrawer::TextDrawerImpl::~TextDrawerImpl() noexcept
 {
   ::FT_Done_FreeType(m_library);
 }
 
-inline auto TextDraw::TextDrawImpl::GetAlignment() const noexcept -> TextAlignment
+inline auto TextDrawer::TextDrawerImpl::GetAlignment() const noexcept -> TextAlignment
 {
   return m_textAlignment;
 }
 
-inline auto TextDraw::TextDrawImpl::SetAlignment(const TextAlignment alignment) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::SetAlignment(const TextAlignment alignment) noexcept -> void
 {
   m_textAlignment = alignment;
 }
 
-inline auto TextDraw::TextDrawImpl::GetFontFile() const noexcept -> const std::string&
+inline auto TextDrawer::TextDrawerImpl::GetFontFile() const noexcept -> const std::string&
 {
   return m_fontFilename;
 }
 
-auto TextDraw::TextDrawImpl::SetFontFile(const std::string& filename) -> void
+auto TextDrawer::TextDrawerImpl::SetFontFile(const std::string& filename) -> void
 {
   m_fontFilename = filename;
   LogInfo("Setting font file '{}'.", m_fontFilename); // NOLINT
@@ -447,7 +453,7 @@ auto TextDraw::TextDrawImpl::SetFontFile(const std::string& filename) -> void
   SetFaceFontSize();
 }
 
-inline auto TextDraw::TextDrawImpl::SetFaceFontSize() -> void
+inline auto TextDrawer::TextDrawerImpl::SetFaceFontSize() -> void
 {
   if (::FT_Set_Char_Size(m_face,
                          ToFreeTypeCoord(m_fontSize),
@@ -459,12 +465,12 @@ inline auto TextDraw::TextDrawImpl::SetFaceFontSize() -> void
   }
 }
 
-inline auto TextDraw::TextDrawImpl::GetFontSize() const noexcept -> int32_t
+inline auto TextDrawer::TextDrawerImpl::GetFontSize() const noexcept -> int32_t
 {
   return m_fontSize;
 }
 
-inline auto TextDraw::TextDrawImpl::SetFontSize(const int32_t val) -> void
+inline auto TextDrawer::TextDrawerImpl::SetFontSize(const int32_t val) -> void
 {
   Expects(val > 0);
 
@@ -476,36 +482,36 @@ inline auto TextDraw::TextDrawImpl::SetFontSize(const int32_t val) -> void
   }
 }
 
-inline auto TextDraw::TextDrawImpl::GetLineSpacing() const noexcept -> int32_t
+inline auto TextDrawer::TextDrawerImpl::GetLineSpacing() const noexcept -> int32_t
 {
   return m_face->height / static_cast<FT_Short>(FREE_TYPE_UNITS_PER_PIXEL);
 }
 
-inline auto TextDraw::TextDrawImpl::SetOutlineWidth(const float val) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::SetOutlineWidth(const float val) noexcept -> void
 {
   Expects(val > 0.0F);
 
   m_outlineWidth = val;
 }
 
-inline auto TextDraw::TextDrawImpl::GetCharSpacing() const noexcept -> float
+inline auto TextDrawer::TextDrawerImpl::GetCharSpacing() const noexcept -> float
 {
   return m_charSpacing;
 }
 
-inline auto TextDraw::TextDrawImpl::SetCharSpacing(const float val) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::SetCharSpacing(const float val) noexcept -> void
 {
   Expects(val >= 0.0F);
 
   m_charSpacing = val;
 }
 
-inline auto TextDraw::TextDrawImpl::SetParallelRender(const bool val) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::SetParallelRender(const bool val) noexcept -> void
 {
   m_useParallelRender = val;
 }
 
-inline auto TextDraw::TextDrawImpl::SetText(const std::string& str) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::SetText(const std::string& str) noexcept -> void
 {
   Expects(not str.empty());
 
@@ -513,18 +519,18 @@ inline auto TextDraw::TextDrawImpl::SetText(const std::string& str) noexcept -> 
   LogInfo("Setting font text '{}'.", m_theText); // NOLINT
 }
 
-inline auto TextDraw::TextDrawImpl::SetFontColorFunc(const FontColorFunc& func) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::SetFontColorFunc(const FontColorFunc& func) noexcept -> void
 {
   m_getFontColor = func;
 }
 
-inline auto TextDraw::TextDrawImpl::SetOutlineFontColorFunc(const FontColorFunc& func) noexcept
+inline auto TextDrawer::TextDrawerImpl::SetOutlineFontColorFunc(const FontColorFunc& func) noexcept
     -> void
 {
   m_getOutlineFontColor = func;
 }
 
-auto TextDraw::TextDrawImpl::Prepare() -> void
+auto TextDrawer::TextDrawerImpl::Prepare() -> void
 {
   Expects(m_face != nullptr);
 
@@ -575,7 +581,7 @@ auto TextDraw::TextDrawImpl::Prepare() -> void
           m_textSpans.size()); // NOLINT
 }
 
-auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int
+auto TextDrawer::TextDrawerImpl::GetStartXPen(const int32_t xPen) const -> int
 {
   switch (m_textAlignment)
   {
@@ -591,18 +597,18 @@ auto TextDraw::TextDrawImpl::GetStartXPen(const int32_t xPen) const -> int
   }
 }
 
-inline auto TextDraw::TextDrawImpl::GetStartYPen(const int32_t yPen) noexcept -> int
+inline auto TextDrawer::TextDrawerImpl::GetStartYPen(const int32_t yPen) noexcept -> int
 {
   return yPen;
 }
 
-inline auto TextDraw::TextDrawImpl::Draw(const Point2dInt pen) -> void
+inline auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt pen) -> void
 {
   auto nextPoint = Point2dInt{};
   Draw(pen, nextPoint);
 }
 
-auto TextDraw::TextDrawImpl::Draw(const Point2dInt pen, Point2dInt& nextPen) -> void
+auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt pen, Point2dInt& nextPen) -> void
 {
   Expects(not m_textSpans.empty());
 
@@ -611,23 +617,23 @@ auto TextDraw::TextDrawImpl::Draw(const Point2dInt pen, Point2dInt& nextPen) -> 
 
   for (const auto& span : m_textSpans)
   {
-    WriteGlyph(span, nextPen.x, m_draw.GetScreenDimensions().GetIntHeight() - nextPen.y);
+    WriteGlyph(span, nextPen.x, m_draw.GetDimensions().GetIntHeight() - nextPen.y);
     nextPen.x += span.advance;
   }
 }
 
 // A horizontal pixel span generated by the FreeType renderer.
-struct TextDraw::TextDrawImpl::Vec2
+struct TextDrawer::TextDrawerImpl::Vec2
 {
   Vec2(const int32_t xVal, const int32_t yVal) noexcept : x{xVal}, y{yVal} {}
   int32_t x;
   int32_t y;
 };
 
-inline TextDraw::TextDrawImpl::RectImpl::RectImpl(const int32_t left,
-                                                  const int32_t top,
-                                                  const int32_t right,
-                                                  const int32_t bottom) noexcept
+inline TextDrawer::TextDrawerImpl::RectImpl::RectImpl(const int32_t left,
+                                                      const int32_t top,
+                                                      const int32_t right,
+                                                      const int32_t bottom) noexcept
 {
   xMin = left;
   xMax = right;
@@ -635,7 +641,7 @@ inline TextDraw::TextDrawImpl::RectImpl::RectImpl(const int32_t left,
   yMax = bottom;
 }
 
-inline auto TextDraw::TextDrawImpl::RectImpl::Include(const Vec2& span) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::RectImpl::Include(const Vec2& span) noexcept -> void
 {
   xMin = std::min(xMin, span.x);
   yMin = std::min(yMin, span.y);
@@ -643,7 +649,7 @@ inline auto TextDraw::TextDrawImpl::RectImpl::Include(const Vec2& span) noexcept
   yMax = std::max(yMax, span.y);
 }
 
-struct TextDraw::TextDrawImpl::Span
+struct TextDrawer::TextDrawerImpl::Span
 {
   Span(const int32_t xVal,
        const int32_t yVal,
@@ -660,9 +666,9 @@ struct TextDraw::TextDrawImpl::Span
 };
 
 // Render the specified character as a colored glyph with a colored outline.
-inline auto TextDraw::TextDrawImpl::WriteGlyph(const Spans& spans,
-                                               const int32_t xPen,
-                                               const int32_t yPen) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::WriteGlyph(const Spans& spans,
+                                                   const int32_t xPen,
+                                                   const int32_t yPen) noexcept -> void
 {
   // Loop over the outline spans and just draw them into the image.
   WriteSpansToImage(
@@ -672,20 +678,20 @@ inline auto TextDraw::TextDrawImpl::WriteGlyph(const Spans& spans,
   WriteSpansToImage(spans.stdSpans, spans.rect, xPen, yPen, spans.textIndexOfChar, m_getFontColor);
 }
 
-auto TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
-                                               const RectImpl& rect,
-                                               const int32_t xPen,
-                                               const int32_t yPen,
-                                               const size_t textIndexOfChar,
-                                               const FontColorFunc& getColor) noexcept -> void
+auto TextDrawer::TextDrawerImpl::WriteSpansToImage(const SpanArray& spanArray,
+                                                   const RectImpl& rect,
+                                                   const int32_t xPen,
+                                                   const int32_t yPen,
+                                                   const size_t textIndexOfChar,
+                                                   const FontColorFunc& getColor) noexcept -> void
 {
   const auto writeSpan =
       [this, &spanArray, &xPen, &yPen, &rect, &getColor, &textIndexOfChar](const size_t i)
   {
     const auto& span = spanArray.at(i);
 
-    const auto yPos = m_draw.GetScreenDimensions().GetIntHeight() - (yPen + span.y);
-    if ((yPos < 0) or (yPos >= m_draw.GetScreenDimensions().GetIntHeight()))
+    const auto yPos = m_draw.GetDimensions().GetIntHeight() - (yPen + span.y);
+    if ((yPos < 0) or (yPos >= m_draw.GetDimensions().GetIntHeight()))
     {
       return;
     }
@@ -696,7 +702,7 @@ auto TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
   static constexpr auto MIN_PARALLEL_SPAN_ARRAY_SIZE = 20;
   if (m_useParallelRender && (spanArray.size() >= MIN_PARALLEL_SPAN_ARRAY_SIZE))
   {
-    m_draw.GetParallel().ForLoop(spanArray.size(), writeSpan);
+    m_parallel.ForLoop(spanArray.size(), writeSpan);
   }
   else
   {
@@ -707,12 +713,12 @@ auto TextDraw::TextDrawImpl::WriteSpansToImage(const SpanArray& spanArray,
   }
 }
 
-auto TextDraw::TextDrawImpl::WriteXSpan(const Span& span,
-                                        const RectImpl& rect,
-                                        const int32_t xPen,
-                                        const int32_t yPos,
-                                        const size_t textIndexOfChar,
-                                        const FontColorFunc& getColor) noexcept -> void
+auto TextDrawer::TextDrawerImpl::WriteXSpan(const Span& span,
+                                            const RectImpl& rect,
+                                            const int32_t xPen,
+                                            const int32_t yPos,
+                                            const size_t textIndexOfChar,
+                                            const FontColorFunc& getColor) noexcept -> void
 {
   const auto xPos0    = xPen + (span.x - rect.xMin);
   const auto xf0      = span.x - rect.xMin;
@@ -720,7 +726,7 @@ auto TextDraw::TextDrawImpl::WriteXSpan(const Span& span,
   for (auto width = 0; width < span.width; ++width)
   {
     const auto xPos = xPos0 + width;
-    if ((xPos < 0) or (xPos >= m_draw.GetScreenDimensions().GetIntWidth()))
+    if ((xPos < 0) or (xPos >= m_draw.GetDimensions().GetIntWidth()))
     {
       continue;
     }
@@ -736,29 +742,30 @@ auto TextDraw::TextDrawImpl::WriteXSpan(const Span& span,
   }
 }
 
-constexpr auto TextDraw::TextDrawImpl::ToStdPixelCoord(const int32_t freeTypeCoord) noexcept
+constexpr auto TextDrawer::TextDrawerImpl::ToStdPixelCoord(const int32_t freeTypeCoord) noexcept
     -> int32_t
 {
   return freeTypeCoord / FREE_TYPE_UNITS_PER_PIXEL;
 }
 
-constexpr auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const int32_t stdPixelCoord) noexcept
+constexpr auto TextDrawer::TextDrawerImpl::ToFreeTypeCoord(const int32_t stdPixelCoord) noexcept
     -> int32_t
 {
   return stdPixelCoord * FREE_TYPE_UNITS_PER_PIXEL;
 }
 
-inline auto TextDraw::TextDrawImpl::ToFreeTypeCoord(const float stdPixelCoord) noexcept -> int32_t
+inline auto TextDrawer::TextDrawerImpl::ToFreeTypeCoord(const float stdPixelCoord) noexcept
+    -> int32_t
 {
   return static_cast<int32_t>(
       std::lround(stdPixelCoord * static_cast<float>(FREE_TYPE_UNITS_PER_PIXEL)));
 }
 
 // Each time the renderer calls us back we just push another span entry on our list.
-auto TextDraw::TextDrawImpl::RasterCallback(const int32_t y,
-                                            const int32_t count,
-                                            const FT_Span* const spans,
-                                            void* const user) noexcept -> void
+auto TextDrawer::TextDrawerImpl::RasterCallback(const int32_t y,
+                                                const int32_t count,
+                                                const FT_Span* const spans,
+                                                void* const user) noexcept -> void
 {
   auto* const userSpans = static_cast<SpanArray*>(user);
   for (auto i = 0; i < count; ++i)
@@ -768,8 +775,8 @@ auto TextDraw::TextDrawImpl::RasterCallback(const int32_t y,
 }
 
 // Set up the raster parameters and render the outline.
-auto TextDraw::TextDrawImpl::RenderSpans(FT_Outline* const outline,
-                                         SpanArray* const spans) const noexcept -> void
+auto TextDrawer::TextDrawerImpl::RenderSpans(FT_Outline* const outline,
+                                             SpanArray* const spans) const noexcept -> void
 {
   auto params = FT_Raster_Params{};
   ::memset(&params, 0, sizeof(params));
@@ -780,7 +787,7 @@ auto TextDraw::TextDrawImpl::RenderSpans(FT_Outline* const outline,
   ::FT_Outline_Render(m_library, outline, &params);
 }
 
-auto TextDraw::TextDrawImpl::GetSpans(const size_t textIndexOfChar) const -> Spans
+auto TextDrawer::TextDrawerImpl::GetSpans(const size_t textIndexOfChar) const -> Spans
 {
   const auto stdSpans = GetStdSpans();
   const auto advance  = ToStdPixelCoord(static_cast<int32_t>(m_face->glyph->advance.x)) +
@@ -811,7 +818,7 @@ auto TextDraw::TextDrawImpl::GetSpans(const size_t textIndexOfChar) const -> Spa
   };
 }
 
-inline auto TextDraw::TextDrawImpl::GetStdSpans() const noexcept -> SpanArray
+inline auto TextDrawer::TextDrawerImpl::GetStdSpans() const noexcept -> SpanArray
 {
   auto spans = SpanArray{};
 
@@ -820,7 +827,7 @@ inline auto TextDraw::TextDrawImpl::GetStdSpans() const noexcept -> SpanArray
   return spans;
 }
 
-auto TextDraw::TextDrawImpl::GetOutlineSpans() const -> SpanArray
+auto TextDrawer::TextDrawerImpl::GetOutlineSpans() const -> SpanArray
 {
   // Set up a stroker.
   FT_Stroker stroker{};
@@ -862,23 +869,24 @@ auto TextDraw::TextDrawImpl::GetOutlineSpans() const -> SpanArray
   return outlineSpans;
 }
 
-inline auto TextDraw::TextDrawImpl::GetPreparedTextBoundingRect() const noexcept -> TextDraw::Rect
+inline auto TextDrawer::TextDrawerImpl::GetPreparedTextBoundingRect() const noexcept
+    -> TextDrawer::Rect
 {
   return m_textBoundingRect;
 }
 
-inline auto TextDraw::TextDrawImpl::GetBearingX() const noexcept -> int32_t
+inline auto TextDrawer::TextDrawerImpl::GetBearingX() const noexcept -> int32_t
 {
   return m_textSpans.front().bearingX;
 }
 
-inline auto TextDraw::TextDrawImpl::GetBearingY() const noexcept -> int32_t
+inline auto TextDrawer::TextDrawerImpl::GetBearingY() const noexcept -> int32_t
 {
   return m_textSpans.front().bearingY;
 }
 
-auto TextDraw::TextDrawImpl::GetBoundingRect(const SpanArray& stdSpans,
-                                             const SpanArray& outlineSpans) noexcept -> RectImpl
+auto TextDrawer::TextDrawerImpl::GetBoundingRect(const SpanArray& stdSpans,
+                                                 const SpanArray& outlineSpans) noexcept -> RectImpl
 {
   auto rect =
       RectImpl{stdSpans.front().x, stdSpans.front().y, stdSpans.front().x, stdSpans.front().y};
@@ -898,4 +906,6 @@ auto TextDraw::TextDrawImpl::GetBoundingRect(const SpanArray& stdSpans,
 }
 #endif
 
-} // namespace GOOM::DRAW
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+// NOLINTEND: Not my code

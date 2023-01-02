@@ -4,7 +4,6 @@
 #include "goom_graphic.h"
 #include "goom_types.h"
 
-#include <cstdint>
 #include <vector>
 
 namespace GOOM::DRAW
@@ -32,9 +31,7 @@ auto GoomDrawToMany::DrawPixelsUnblended(const Point2dInt point,
 }
 
 auto GoomDrawToMany::DrawPixelsToDevice(const Point2dInt point,
-                                        const MultiplePixels& colors,
-                                        [[maybe_unused]] const uint32_t intBuffIntensity) noexcept
-    -> void
+                                        const MultiplePixels& colors) noexcept -> void
 {
   for (auto* const draw : m_manyDraws)
   {

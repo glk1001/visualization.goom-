@@ -1,6 +1,7 @@
 #pragma once
 
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/line_drawer.h"
 #include "lsys_colors.h"
 #include "lsys_geom.h"
 #include "point2d.h"
@@ -36,6 +37,7 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
+  DRAW::SHAPE_DRAWERS::LineDrawer m_lineDrawer{m_draw};
   const LSysGeometry& m_lSysGeometry;
   LSysColors& m_lSysColors;
   const float m_lineWidthFactor;
@@ -45,12 +47,6 @@ private:
   auto DrawJoinedVertices(const std::vector<::LSYS::Point3dFlt>& vertices,
                           uint32_t lSysColor,
                           uint8_t lineWidth) noexcept -> void;
-  static constexpr auto NUM_LINE_CHUNKS = 1U;
-  auto DrawChunkedLine(const Point2dFlt& point1,
-                       const Point2dFlt& point2,
-                       uint32_t copyNum,
-                       uint32_t lSysColor,
-                       uint8_t lineWidth) noexcept -> void;
   [[nodiscard]] static auto GetPerspectiveProjection(
       const std::vector<::LSYS::Point3dFlt>& points3d) noexcept -> std::vector<Point2dFlt>;
   [[nodiscard]] static auto GetPolygon3dFlt(const std::vector<::LSYS::Vector>& polygon) noexcept

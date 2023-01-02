@@ -6,7 +6,6 @@
 #include "goom_graphic.h"
 #include "goom_logger.h"
 
-#include <cstdint>
 #include <vector>
 
 namespace GOOM::DRAW
@@ -17,8 +16,6 @@ GoomDrawToBuffer::GoomDrawToBuffer(const Dimensions& dimensions, GoomLogger& goo
 {
   USED_FOR_DEBUGGING(m_goomLogger);
 }
-
-GoomDrawToBuffer::~GoomDrawToBuffer() noexcept = default;
 
 auto GoomDrawToBuffer::SetBuffers(const std::vector<PixelBuffer*>& buffs) noexcept -> void
 {
@@ -47,15 +44,14 @@ auto GoomDrawToBuffer::DrawPixelsUnblended(const Point2dInt point,
 }
 
 auto GoomDrawToBuffer::DrawPixelsToDevice(const Point2dInt point,
-                                          const MultiplePixels& colors,
-                                          const uint32_t intBuffIntensity) noexcept -> void
+                                          const MultiplePixels& colors) noexcept -> void
 {
   const auto buffPos = m_multipleBuffer0->GetBuffPos(point.x, point.y);
 
   for (auto i = 0U; i < m_numBuffers; ++i)
   {
     auto& pixel = m_multipleBuffers[i]->GetPixel(buffPos);
-    pixel       = GetBlendedPixel(pixel, colors[i], intBuffIntensity);
+    pixel       = GetBlendedPixel(pixel, colors[i], GetIntBuffIntensity());
   }
 }
 

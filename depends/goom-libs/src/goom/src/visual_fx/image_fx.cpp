@@ -8,6 +8,7 @@
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/pixel_drawer.h"
 #include "fx_helper.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
@@ -40,6 +41,7 @@ using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
+using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using UTILS::Parallel;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
@@ -103,6 +105,7 @@ public:
 private:
   Parallel& m_parallel;
   IGoomDraw& m_draw;
+  PixelDrawer m_pixelDrawer{m_draw};
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
   const std::string m_resourcesDirectory;
@@ -136,7 +139,7 @@ private:
   auto DrawChunks() -> void;
   [[nodiscard]] auto GetPositionAdjustedBrightness(float brightness,
                                                    const Point2dInt& position) const -> float;
-  auto DrawChunk(const Point2dInt& pos, float brightness, const ChunkPixels& pixels) const -> void;
+  auto DrawChunk(const Point2dInt& pos, float brightness, const ChunkPixels& pixels) -> void;
   [[nodiscard]] auto GetNextChunkStartPosition(size_t i) const -> Point2dInt;
   [[nodiscard]] auto GetNextChunkPosition(const Point2dInt& nextStartPosition,
                                           const ChunkedImage::ImageChunk& imageChunk) const
@@ -431,7 +434,7 @@ inline auto ImageFx::ImageFxImpl::GetNextChunkPosition(
 
 auto ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
                                      const float brightness,
-                                     const ChunkPixels& pixels) const -> void
+                                     const ChunkPixels& pixels) -> void
 
 {
   auto y = pos.y;
@@ -451,7 +454,7 @@ auto ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
         continue;
       }
       const auto pixelColors = GetPixelColors(xPixel, brightness);
-      m_draw.DrawPixels({x, y}, pixelColors);
+      m_pixelDrawer.DrawPixels({x, y}, pixelColors);
 
       ++x;
     }

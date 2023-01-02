@@ -17,9 +17,9 @@ class GoomDrawToContainer : public IGoomDraw
 public:
   GoomDrawToContainer() noexcept = delete;
   explicit GoomDrawToContainer(const Dimensions& dimensions) noexcept;
-  GoomDrawToContainer(const GoomDrawToContainer&) noexcept = delete;
-  GoomDrawToContainer(GoomDrawToContainer&&) noexcept      = delete;
-  ~GoomDrawToContainer() noexcept override;
+  GoomDrawToContainer(const GoomDrawToContainer&) noexcept                    = delete;
+  GoomDrawToContainer(GoomDrawToContainer&&) noexcept                         = delete;
+  ~GoomDrawToContainer() noexcept override                                    = default;
   auto operator=(const GoomDrawToContainer&) noexcept -> GoomDrawToContainer& = delete;
   auto operator=(GoomDrawToContainer&&) noexcept -> GoomDrawToContainer&      = delete;
 
@@ -49,9 +49,7 @@ public:
   auto ClearAll() noexcept -> void;
 
 protected:
-  auto DrawPixelsToDevice(Point2dInt point,
-                          const MultiplePixels& colors,
-                          uint32_t intBuffIntensity) noexcept -> void override;
+  auto DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors) noexcept -> void override;
 
 private:
   std::vector<std::vector<ColorsList>> m_xyPixelList{};

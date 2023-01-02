@@ -63,7 +63,7 @@ private:
   DRAW::IGoomDraw& m_draw;
   const UTILS::MATH::IGoomRand& m_goomRand;
   const Point2dInt m_screenMidpoint =
-      MidpointFromOrigin({m_draw.GetScreenWidth(), m_draw.GetScreenHeight()});
+      MidpointFromOrigin({m_draw.GetDimensions().GetWidth(), m_draw.GetDimensions().GetHeight()});
 
   std::shared_ptr<const COLOR::IColorMap> m_dominantMainColorMap{};
   std::shared_ptr<const COLOR::IColorMap> m_dominantLowColorMap{};

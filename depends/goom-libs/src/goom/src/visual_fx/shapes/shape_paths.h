@@ -3,6 +3,7 @@
 #include "color/color_adjustment.h"
 #include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/circle_drawer.h"
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "utils/math/paths.h"
@@ -66,6 +67,7 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
+  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer{m_draw};
   std::experimental::propagate_const<std::shared_ptr<UTILS::MATH::IPath>> m_path;
   COLOR::RandomColorMapsManager& m_colorMapsManager;
 

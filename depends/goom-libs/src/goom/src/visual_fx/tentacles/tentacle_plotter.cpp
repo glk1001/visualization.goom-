@@ -16,7 +16,6 @@ namespace GOOM::VISUAL_FX::TENTACLES
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using UTILS::TValue;
-using UTILS::GRAPHICS::LineClipper;
 using UTILS::MATH::IGoomRand;
 
 static constexpr auto BRIGHTNESS                   = 3.0F;
@@ -58,7 +57,7 @@ inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
 {
   const auto colors = tentacle.GetMixedColors(t, m_dominantColors, brightness);
 
-  m_draw.Line(line.point1, line.point2, colors, m_lineThickness);
+  m_lineDrawer.DrawLine(line.point1, line.point2, colors, m_lineThickness);
 }
 
 inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) -> float
@@ -74,6 +73,21 @@ inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) -> flo
     return AT_START_HEAD_BRIGHTNESS_CUT;
   }
   return NORMAL_BRIGHTNESS_CUT;
+}
+
+auto TentaclePlotter::SetTentacleLineThickness(const uint8_t lineThickness) noexcept -> void
+{
+  m_lineThickness = lineThickness;
+  m_lineClipper.SetClipRectangle(GetLineClipRectangle());
+}
+
+inline auto TentaclePlotter::GetLineClipRectangle() const noexcept -> LineClipper::ClipRectangle
+{
+  const auto clipMargin = m_lineThickness + 1U;
+  return {clipMargin,
+          clipMargin,
+          m_draw.GetDimensions().GetWidth() - clipMargin,
+          m_draw.GetDimensions().GetHeight() - clipMargin};
 }
 
 auto TentaclePlotter::GetPerspectiveProjection(const std::vector<V3dFlt>& points3D) const

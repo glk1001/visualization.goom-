@@ -65,80 +65,30 @@ auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices,
 
   const auto points2d = GetPerspectiveProjection(vertices);
 
-  //LogInfo("numVertices = {}", numVertices);
-  auto point2d0 = points2d.at(0);
+  auto point2d1 = points2d.at(0);
   for (auto i = 1U; i < numVertices; ++i)
   {
-    const auto point0 = point2d0;
-    const auto point1 = points2d.at(i);
-
-    //LogInfo("point0 = ({}, {}), point1 = ({}, {})", point0.x, point0.y, point1.x, point1.y);
+    const auto point1 = point2d1;
+    const auto point2 = points2d.at(i);
 
     for (auto copyNum = 0U; copyNum < m_numLSysCopies; ++copyNum)
     {
-      const auto tPoint0 = m_lSysGeometry.GetTransformedPoint(point0, copyNum);
       const auto tPoint1 = m_lSysGeometry.GetTransformedPoint(point1, copyNum);
+      const auto tPoint2 = m_lSysGeometry.GetTransformedPoint(point2, copyNum);
 
-      /**
-      LogInfo("copyNum = {}, tPoint0 = ({}, {}), tPoint1 = ({}, {})",
-              copyNum,
-              tPoint0.x,
-              tPoint0.y,
-              tPoint1.x,
-              tPoint1.y);
-              **/
-
-      // TODO(Glk) put in transform
-      /**
-      tPoint0.x = static_cast<float>(m_goomInfo.GetScreenWidth() - 1) - tPoint0.x;
-      tPoint1.x = static_cast<float>(m_goomInfo.GetScreenWidth() - 1) - tPoint1.x;
-      tPoint0.y = static_cast<float>(m_goomInfo.GetScreenHeight() - 1) - tPoint0.y;
-      tPoint1.y = static_cast<float>(m_goomInfo.GetScreenHeight() - 1) - tPoint1.y;
-       **/
-
-      DrawChunkedLine(tPoint0, tPoint1, copyNum, lSysColor, lineWidth);
-
-      //LogInfo("m_currentColorTs.at({}) = {}", copyNum, m_currentColorTs.at(copyNum)());
+      m_lineDrawer.DrawLine(tPoint1.ToInt(),
+                            tPoint2.ToInt(),
+                            m_lSysColors.GetColors(copyNum, lSysColor, lineWidth),
+                            lineWidth);
     }
 
     m_lSysColors.IncrementColorTs();
 
-    point2d0 = points2d.at(i);
+    point2d1 = points2d.at(i);
   }
 }
 
-inline auto LSysDraw::DrawChunkedLine(const Point2dFlt& point1,
-                                      const Point2dFlt& point2,
-                                      const uint32_t copyNum,
-                                      const uint32_t lSysColor,
-                                      const uint8_t lineWidth) noexcept -> void
-{
-  if constexpr (1U == NUM_LINE_CHUNKS)
-  {
-    m_draw.Line(point1.ToInt(),
-                point2.ToInt(),
-                m_lSysColors.GetColors(copyNum, lSysColor, lineWidth),
-                lineWidth);
-    return;
-  }
-
-  auto pointOnLine =
-      IncrementedValue{point1, point2, TValue::StepType::SINGLE_CYCLE, NUM_LINE_CHUNKS};
-
-  for (auto i = 0U; i < NUM_LINE_CHUNKS; ++i)
-  {
-    const auto tempPoint1 = pointOnLine();
-    pointOnLine.Increment();
-    const auto tempPoint2 = pointOnLine();
-
-    m_draw.Line(tempPoint1.ToInt(),
-                tempPoint2.ToInt(),
-                m_lSysColors.GetColors(copyNum, lSysColor, lineWidth),
-                lineWidth);
-  }
-}
-
-auto LSysDraw::GetPerspectiveProjection(const std::vector<Point3dFlt>& points3d) noexcept
+inline auto LSysDraw::GetPerspectiveProjection(const std::vector<Point3dFlt>& points3d) noexcept
     -> std::vector<Point2dFlt>
 {
   const auto numPoints = points3d.size();

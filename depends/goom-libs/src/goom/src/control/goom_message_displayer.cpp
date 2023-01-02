@@ -15,20 +15,18 @@ namespace GOOM::CONTROL
 
 using COLOR::GetBrighterColor;
 using DRAW::IGoomDraw;
-using DRAW::TextDraw;
+using DRAW::SHAPE_DRAWERS::TextDrawer;
 
 GoomMessageDisplayer::GoomMessageDisplayer(IGoomDraw& textOutput,
                                            const std::string& updateMessagesFontFile)
-  : m_parallel{textOutput.GetParallel()},
-    m_textOutput{textOutput},
-    m_updateMessagesFontFile{updateMessagesFontFile}
+  : m_textOutput{textOutput}, m_updateMessagesFontFile{updateMessagesFontFile}
 {
 }
 
 auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayers,
                                                        IGoomDraw& textOutput,
                                                        const std::string& updateMessagesFontFile)
-    -> std::vector<TextDraw>
+    -> std::vector<TextDrawer>
 {
 
   const auto textColor    = GetBrighterColor(10.0F, WHITE_PIXEL);
@@ -50,7 +48,7 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
                                                   [[maybe_unused]] const int32_t height)
   { return outlineColor; };
 
-  auto updateMessagesDisplayers = std::vector<TextDraw>{};
+  auto updateMessagesDisplayers = std::vector<TextDrawer>{};
 
   for (auto i = 0U; i < numDisplayers; ++i)
   {
@@ -59,7 +57,7 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
     displayer.SetFontFile(updateMessagesFontFile);
     displayer.SetFontSize(MSG_FONT_SIZE);
     displayer.SetOutlineWidth(1);
-    displayer.SetAlignment(TextDraw::TextAlignment::LEFT);
+    displayer.SetAlignment(TextDrawer::TextAlignment::LEFT);
     displayer.SetFontColorFunc(getFontColor);
     displayer.SetOutlineFontColorFunc(getOutlineFontColor);
     displayer.SetParallelRender(false);

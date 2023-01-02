@@ -18,13 +18,15 @@ class LineClipper
 public:
   struct ClipRectangle
   {
-    float xMin;
-    float yMin;
-    float xMax;
-    float yMax;
+    uint32_t xMin;
+    uint32_t yMin;
+    uint32_t xMax;
+    uint32_t yMax;
   };
 
   explicit constexpr LineClipper(const ClipRectangle& clipRectangle) noexcept;
+
+  constexpr auto SetClipRectangle(const ClipRectangle& clipRectangle) noexcept -> void;
 
   enum class ClipResult
   {
@@ -41,7 +43,15 @@ public:
   [[nodiscard]] constexpr auto GetClippedLine(const LineFlt& line) const -> ClippedLine;
 
 private:
-  ClipRectangle m_clipRectangle;
+  struct FltClipRectangle
+  {
+    float xMin;
+    float yMin;
+    float xMax;
+    float yMax;
+    explicit constexpr FltClipRectangle(const ClipRectangle& clipRectangle) noexcept;
+  };
+  FltClipRectangle m_clipRectangle;
 
   // The region codes relative to the clip rectangle.
   static constexpr auto INSIDE = static_cast<uint32_t>(0b0000);
@@ -58,9 +68,23 @@ private:
   [[nodiscard]] static constexpr auto GetYIntercept(float x, const LineFlt& line) -> float;
 };
 
+constexpr LineClipper::FltClipRectangle::FltClipRectangle(
+    const ClipRectangle& clipRectangle) noexcept
+  : xMin{static_cast<float>(clipRectangle.xMin)},
+    yMin{static_cast<float>(clipRectangle.yMin)},
+    xMax{static_cast<float>(clipRectangle.xMax)},
+    yMax{static_cast<float>(clipRectangle.yMax)}
+{
+}
+
 constexpr LineClipper::LineClipper(const ClipRectangle& clipRectangle) noexcept
   : m_clipRectangle{clipRectangle}
 {
+}
+
+constexpr auto LineClipper::SetClipRectangle(const ClipRectangle& clipRectangle) noexcept -> void
+{
+  m_clipRectangle = FltClipRectangle{clipRectangle};
 }
 
 constexpr auto LineClipper::GetClippedLine(const LineFlt& line) const -> ClippedLine

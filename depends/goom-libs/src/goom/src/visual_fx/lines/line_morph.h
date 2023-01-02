@@ -8,6 +8,7 @@
 #include "color/random_color_maps_groups.h"
 #include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/line_drawer.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
@@ -59,6 +60,7 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
+  DRAW::SHAPE_DRAWERS::LineDrawer m_lineDrawer{m_draw};
   const PluginInfo& m_goomInfo;
   const UTILS::MATH::IGoomRand& m_goomRand;
 

@@ -2,6 +2,8 @@
 
 #include "color/color_adjustment.h"
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/bitmap_drawer.h"
+#include "draw/shape_drawers/pixel_drawer.h"
 #include "goom_graphic.h"
 #include "utils/math/misc.h"
 
@@ -10,11 +12,6 @@
 
 namespace GOOM
 {
-
-namespace DRAW
-{
-class IGoomDraw;
-}
 
 namespace UTILS::GRAPHICS
 {
@@ -61,11 +58,13 @@ public:
 
   auto SetNeighbourMixFactor(float neighbourMixFactor) noexcept -> void;
 
-  auto DoBlur(std::vector<IfsPoint>& lowDensityPoints, uint32_t maxLowDensityCount) const noexcept
+  auto DoBlur(std::vector<IfsPoint>& lowDensityPoints, uint32_t maxLowDensityCount) noexcept
       -> void;
 
 private:
   DRAW::IGoomDraw& m_draw;
+  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer{m_draw};
+  DRAW::SHAPE_DRAWERS::PixelDrawer m_pixelDrawer{m_draw};
   const UTILS::MATH::IGoomRand& m_goomRand;
   uint32_t m_width;
   size_t m_widthSquared = UTILS::MATH::Sq(static_cast<size_t>(m_width));
@@ -78,8 +77,8 @@ private:
 
   auto SetPointColors(std::vector<IfsPoint>& lowDensityPoints,
                       uint32_t maxLowDensityCount) const noexcept -> void;
-  auto DrawPoints(const std::vector<IfsPoint>& lowDensityPoints) const noexcept -> void;
-  auto DrawPoint(const IfsPoint& point) const noexcept -> void;
+  auto DrawPoints(const std::vector<IfsPoint>& lowDensityPoints) noexcept -> void;
+  auto DrawPoint(const IfsPoint& point) noexcept -> void;
   [[nodiscard]] auto GetImageBitmap(bool useBitmaps) const noexcept
       -> const UTILS::GRAPHICS::ImageBitmap*;
   [[nodiscard]] auto GetBrightness() const noexcept -> float;

@@ -1,11 +1,8 @@
-//#undef NO_LOGGING
-
 #include "goom_draw_to_container.h"
 
 #include "color/color_utils.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_logger.h"
 #include "goom_types.h"
 
 #include <cstdint>
@@ -24,8 +21,6 @@ GoomDrawToContainer::GoomDrawToContainer(const Dimensions& dimensions) noexcept
     xPixelList.resize(dimensions.GetWidth());
   }
 }
-
-GoomDrawToContainer::~GoomDrawToContainer() noexcept = default;
 
 auto GoomDrawToContainer::ClearAll() noexcept -> void
 {
@@ -54,8 +49,7 @@ auto GoomDrawToContainer::DrawPixelsUnblended(
 }
 
 auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
-                                             const MultiplePixels& colors,
-                                             const uint32_t intBuffIntensity) noexcept -> void
+                                             const MultiplePixels& colors) noexcept -> void
 {
   auto& colorsList = GetWriteableColorsList(point);
 
@@ -65,7 +59,7 @@ auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
   }
 
   // NOTE: Just save the first pixel in 'colors'. May need to improve this.
-  const auto newColor = GetBrighterColorInt(intBuffIntensity, colors[0]);
+  const auto newColor = GetBrighterColorInt(GetIntBuffIntensity(), colors[0]);
 
   colorsList.colorsArray[colorsList.count] = newColor;
   ++colorsList.count;

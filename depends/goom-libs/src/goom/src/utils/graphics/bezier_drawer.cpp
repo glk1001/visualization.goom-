@@ -1,6 +1,8 @@
 #include "bezier_drawer.h"
 
 #include "color/color_utils.h"
+#include "draw/shape_drawers/bitmap_drawer.h"
+#include "draw/shape_drawers/line_drawer.h"
 #include "image_bitmaps.h"
 #include "point2d.h"
 
@@ -8,6 +10,8 @@ namespace GOOM::UTILS::GRAPHICS
 {
 
 using COLOR::GetBrighterColor;
+using DRAW::SHAPE_DRAWERS::BitmapDrawer;
+using DRAW::SHAPE_DRAWERS::LineDrawer;
 
 inline auto BezierDrawer::GetImageBitmap(const size_t size) const -> const ImageBitmap&
 {
@@ -17,6 +21,8 @@ inline auto BezierDrawer::GetImageBitmap(const size_t size) const -> const Image
 
 void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, const float colorT1)
 {
+  auto lineDrawer = LineDrawer{m_draw};
+
   const auto colorTStep = (colorT1 - colorT0) / static_cast<float>(m_numBezierSteps - 1);
 
   const auto tStep = 1.0F / static_cast<float>(m_numBezierSteps - 1);
@@ -31,7 +37,7 @@ void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, co
                                    static_cast<int32_t>(bezier.valueAt(t, 1))};
 
     const auto lineColor = GetBrighterColor(10.F, m_lineColorFunc(colorT));
-    m_goomDraw.Line(point0, point1, lineColor, m_lineThickness);
+    lineDrawer.DrawLine(point0, point1, lineColor, m_lineThickness);
 
     if (0 == (i % m_dotEveryNumBezierSteps))
     {
@@ -57,7 +63,8 @@ void BezierDrawer::DrawDot(const Point2dInt centre, const uint32_t diameter, con
     return color;
   };
 
-  m_goomDraw.Bitmap(centre, GetImageBitmap(diameter), getColor);
+  auto bitmapDrawer = BitmapDrawer{m_draw};
+  bitmapDrawer.Bitmap(centre, GetImageBitmap(diameter), getColor);
 }
 
 } // namespace GOOM::UTILS::GRAPHICS
