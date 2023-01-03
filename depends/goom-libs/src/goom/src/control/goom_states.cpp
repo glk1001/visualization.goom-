@@ -107,10 +107,6 @@ static constexpr auto STATE_NAMES = EnumMap<GoomStates, std::string_view>{{{
     {GoomStates::TUBES_ONLY, "Tubes Only"},
 }}};
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Winline"
-#endif
 // clang-format off
 static const auto STATE_DRAWABLES = EnumMap<GoomStates, std::set<GoomDrawables>>{{{
     {GoomStates::CIRCLES_ONLY,                {GoomDrawables::CIRCLES}},
@@ -211,9 +207,6 @@ auto GoomStateInfo::GetStateInfoMap() noexcept -> StateInfoMap
 
   return StateInfoMap::Make(std::move(statesArray));
 }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
 
 const GoomStateInfo::StateInfoMap GoomStateInfo::STATE_INFO_MAP = GetStateInfoMap();
 

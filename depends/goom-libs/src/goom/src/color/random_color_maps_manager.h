@@ -16,14 +16,11 @@ namespace GOOM::COLOR
 class RandomColorMapsManager
 {
 public:
-  // NOLINTBEGIN: Stop gcc-12 'inline' warning
   struct ColorMapInfo
   {
-    ~ColorMapInfo() noexcept;
     std::shared_ptr<const RandomColorMaps> colorMaps{};
     std::set<RandomColorMaps::ColorMapTypes> colorMapTypes{};
   };
-  // NOLINTEND
 
   class ColorMapId
   {

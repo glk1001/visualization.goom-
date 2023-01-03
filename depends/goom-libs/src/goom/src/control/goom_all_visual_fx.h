@@ -111,7 +111,6 @@ inline auto PixelBlender::Update() noexcept -> void
 
 class AllStandardVisualFx;
 
-// NOLINTBEGIN: Stop gcc-12 'inline' warning
 class GoomAllVisualFx
 {
 public:
@@ -123,7 +122,6 @@ public:
                   IGoomStateHandler& goomStateHandler,
                   std::unique_ptr<FILTER_FX::FilterBuffersService> filterBuffersService,
                   std::unique_ptr<FILTER_FX::FilterColorsService> filterColorsService) noexcept;
-  ~GoomAllVisualFx() noexcept; // Need this to stop gcc-12 'inline' warning
 
   auto Start() noexcept -> void;
   auto Finish() noexcept -> void;
@@ -184,7 +182,6 @@ private:
 
   PixelBlender m_pixelBlender{m_goomRand};
 };
-// NOLINTEND: Stop gcc-12 'inline' warning
 
 inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) noexcept -> void
 {

@@ -93,7 +93,6 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
 
   static constexpr auto DEFAULT_BOUNDS_EXPAND_FACTOR = 2.0F;
-  // NOLINTBEGIN: Stop gcc-12 'inline' warning
   struct LSysModelSet
   {
     ::LSYS::Properties lSysProperties{};
@@ -102,7 +101,6 @@ private:
     float lSystemYScale = 1.0F;
     std::unique_ptr<::LSYS::LSysModel> lSysModel{};
     LSysModelSet(LSysModelSet&&) = default;
-    ~LSysModelSet();
   };
   // NOLINTEND
   std::unique_ptr<::LSYS::List<::LSYS::Module>> m_lSysModuleList{};

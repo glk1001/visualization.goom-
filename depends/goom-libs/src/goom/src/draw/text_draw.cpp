@@ -252,10 +252,8 @@ private:
     auto Include(const Vec2& span) noexcept -> void;
   };
 
-  // NOLINTBEGIN: Stop gcc-12 'inline' warning
   struct Spans
   {
-    ~Spans() noexcept;
     SpanArray stdSpans{};
     SpanArray outlineSpans{};
     size_t textIndexOfChar{};
@@ -264,7 +262,6 @@ private:
     int32_t bearingX{};
     int32_t bearingY{};
   };
-  // NOLINTEND
 
   std::vector<Spans> m_textSpans{};
   Rect m_textBoundingRect{};
@@ -409,8 +406,6 @@ TextDraw::TextDrawImpl::~TextDrawImpl() noexcept
 {
   ::FT_Done_FreeType(m_library);
 }
-
-TextDraw::TextDrawImpl::Spans::~Spans() noexcept = default;
 
 inline auto TextDraw::TextDrawImpl::GetAlignment() const noexcept -> TextAlignment
 {

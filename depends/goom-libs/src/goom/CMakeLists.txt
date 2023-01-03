@@ -164,7 +164,7 @@ add_library(goom
             src/visual_fx/tentacles/tentacle_plotter.cpp
             src/visual_fx/tentacles/tentacle2d.cpp
             src/visual_fx/tentacles/tentacle3d.cpp
-            src/visual_fx/tubes/tube_data.cpp
+            src/visual_fx/tubes/tube_data.h
             src/visual_fx/tubes/tubes.cpp
             src/visual_fx/circles_fx.cpp
             src/visual_fx/flying_stars_fx.cpp

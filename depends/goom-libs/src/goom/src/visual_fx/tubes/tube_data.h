@@ -34,20 +34,15 @@ using DrawSmallImageFunc =
                        uint32_t size,
                        const DRAW::MultiplePixels& colors)>;
 
-// NOLINTBEGIN: Stop gcc-12 'inline' warning
 struct TubeDrawFuncs
 {
-  ~TubeDrawFuncs() noexcept;
   DrawLineFunc drawLine;
   DrawCircleFunc drawCircle;
   DrawSmallImageFunc drawSmallImage;
 };
-// NOLINTEND
 
-// NOLINTBEGIN: Stop gcc-12 'inline' warning
 struct TubeData
 {
-  ~TubeData() noexcept;
   uint32_t tubeId;
   TubeDrawFuncs drawFuncs;
   uint32_t screenWidth;
@@ -58,7 +53,6 @@ struct TubeData
   float radiusEdgeOffset;
   float brightnessFactor;
 };
-// NOLINTEND
 
 } // namespace VISUAL_FX::TUBES
 } // namespace GOOM

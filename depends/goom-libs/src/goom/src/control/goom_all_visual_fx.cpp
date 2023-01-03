@@ -176,8 +176,6 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                                       { ResetCurrentDrawBuffSettings(fx); });
 }
 
-GoomAllVisualFx::~GoomAllVisualFx() noexcept = default;
-
 auto GoomAllVisualFx::Start() noexcept -> void
 {
   ChangeDrawPixelBlend();

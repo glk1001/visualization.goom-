@@ -56,8 +56,6 @@ using ::LSYS::Point3dFlt;
 using ::LSYS::Properties;
 using ::LSYS::Value;
 
-LSystem::LSysModelSet::~LSysModelSet() = default;
-
 LSystem::LSystem(DRAW::IGoomDraw& draw,
                  const PluginInfo& goomInfo,
                  const UTILS::MATH::IGoomRand& goomRand,
