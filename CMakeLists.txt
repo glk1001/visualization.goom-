@@ -28,9 +28,9 @@ else ()
         ${GOOM_BUILD_ARTIFACTS_DIR}/lib/${CMAKE_CONFIGURATION_TYPES}/vivid.lib)
 endif ()
 
-IF (NOT KODI_ROOT_DIR)
+if (NOT KODI_ROOT_DIR)
     set(KODI_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
-else()
+else ()
     get_filename_component(KODI_ROOT_DIR "${KODI_ROOT_DIR}" ABSOLUTE)
 endif ()
 
@@ -154,8 +154,15 @@ include_directories(${GOOM_LIBS_DIR}
                     SYSTEM ${KODI_FIXED_INCLUDE_DIR}
                     )
 
-set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp src/build_time.cpp)
-set(${GOOM_ADDON_PREFIX}_HEADERS src/CircularBuffer.h src/Main.h src/build_time.h)
+set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp
+    src/build_time.cpp
+    src/shader_with_effects.cpp
+    src/kodi_shader_with_effects.cpp)
+set(${GOOM_ADDON_PREFIX}_HEADERS src/Main.h
+    src/CircularBuffer.h
+    src/build_time.h
+    src/shader_with_effects.h
+    src/kodi_shader_with_effects.h)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_CMAKE_BUILD_TYPE)
 if (UPPER_CMAKE_BUILD_TYPE STREQUAL "RELEASE")

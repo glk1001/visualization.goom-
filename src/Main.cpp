@@ -17,17 +17,20 @@
 #include "goom/goom_logger.h"
 #include "goom/goom_utils.h"
 #include "goom/sound_info.h"
+#include "kodi_shader_with_effects.h"
+
 #ifdef SAVE_AUDIO_BUFFERS
 #include "src/goom/src/utils/strutils.h"
 #endif
 
 #include <cstddef>
-#ifdef SAVE_AUDIO_BUFFERS
-#include <filesystem>
-#endif
 #include <format>
 #include <kodi/Filesystem.h>
 #include <memory>
+
+#ifdef SAVE_AUDIO_BUFFERS
+#include <filesystem>
+#endif
 
 using GOOM::AudioSamples;
 using GOOM::Dimensions;
@@ -38,7 +41,9 @@ using GOOM::GetGoomLibVersionInfo;
 using GOOM::GoomControl;
 using GOOM::GoomLogger;
 using GOOM::GoomShaderEffects;
+using GOOM::KodiShaderWithEffects;
 using GOOM::PixelBuffer;
+using GOOM::PixelChannelType;
 #ifdef SAVE_AUDIO_BUFFERS
 using GOOM::UTILS::BufferView;
 using GOOM::UTILS::FindAndReplaceAll;
@@ -86,19 +91,26 @@ CVisualizationGoom::CVisualizationGoom()
     m_windowHeight{Height()},
     m_windowXPos{X()},
     m_windowYPos{Y()},
-    m_textureWidth{WIDTHS_BY_QUALITY.at(
-        static_cast<size_t>(std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt("quality"))))},
-    m_textureHeight{HEIGHTS_BY_QUALITY.at(
-        static_cast<size_t>(std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt("quality"))))},
-    m_goomBufferLen{static_cast<size_t>(m_textureWidth * m_textureHeight)},
-    m_goomBufferSize{PixelBuffer::GetIntBufferSize({m_textureWidth, m_textureHeight})},
+    m_textureBufferDimensions{WIDTHS_BY_QUALITY.at(static_cast<size_t>(
+                                  std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt("quality")))),
+                              HEIGHTS_BY_QUALITY.at(static_cast<size_t>(
+                                  std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt("quality"))))},
+    m_goomBufferLen{
+        static_cast<size_t>(m_textureBufferDimensions.width * m_textureBufferDimensions.height)},
+    m_textureBufferSize{PixelBuffer::GetIntBufferSize(
+        {m_textureBufferDimensions.width, m_textureBufferDimensions.height})},
     m_showTitle{static_cast<GoomControl::ShowTitleType>(KODI_ADDON::GetSettingInt("show_title"))},
     m_goomLogger{GoomControl::MakeGoomLogger()},
     m_quadData{GetGlQuadData(m_windowWidth, m_windowHeight, m_windowXPos, m_windowYPos)}
 #ifdef HAS_GL
     ,
-    m_usePixelBufferObjects{KODI_ADDON::GetSettingBoolean("use_pixel_buffer_objects")}
+    m_usePixelBufferObjects{KODI_ADDON::GetSettingBoolean("use_pixel_buffer_objects")},
 #endif
+    m_glShader{std::make_unique<KodiShaderWithEffects>(
+        *this,
+        KODI_ADDON::GetAddonPath("resources/shaders/" GL_TYPE_STRING),
+        glm::ortho(
+            0.0F, static_cast<float>(m_windowWidth), 0.0F, static_cast<float>(m_windowHeight)))}
 {
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Created CVisualizationGoom object.");
 }
@@ -113,7 +125,7 @@ CVisualizationGoom::~CVisualizationGoom()
   LogStop(*m_goomLogger);
 }
 
-void CVisualizationGoom::HandleError(const std::string& errorMsg)
+auto CVisualizationGoom::HandleError(const std::string& errorMsg) -> void
 {
   const std::string fullMsg = std20::format("CVisualizationGoom: {}", errorMsg);
 
@@ -179,8 +191,8 @@ auto CVisualizationGoom::StartVis(const int numChannels,
 
   LogInfo(*m_goomLogger,
           "CVisualizationGoom: Texture width, height = {}, {}.",
-          m_textureWidth,
-          m_textureHeight);
+          m_textureBufferDimensions.width,
+          m_textureBufferDimensions.height);
 #ifdef HAS_GL
   LogInfo(*m_goomLogger,
           "CVisualizationGoom: Supported GLSL version is {}.",
@@ -188,33 +200,24 @@ auto CVisualizationGoom::StartVis(const int numChannels,
 #endif
 
   SetNumChannels(numChannels);
-  StartActiveQueue();
+  StartActivePixelBufferDataQueue();
 
-  if (!InitGl())
-  {
-    HandleError("Could not initialize OpenGL.");
-    return false;
-  }
-
-  if (!InitGoomController())
-  {
-    HandleError("Could not initialize Goom Controller.");
-    return false;
-  }
+  InitGl();
+  InitGoomController();
 
   m_started = true;
 
   return true;
 }
 
-void CVisualizationGoom::SetNumChannels(const int numChannels)
+auto CVisualizationGoom::SetNumChannels(const int numChannels) -> void
 {
   m_numChannels    = static_cast<size_t>(numChannels);
   m_audioBufferLen = m_numChannels * AudioSamples::AUDIO_SAMPLE_LEN;
   m_audioBufferNum = 0;
 }
 
-void CVisualizationGoom::StartLogging()
+auto CVisualizationGoom::StartLogging() -> void
 {
   static const auto s_KODI_LOGGER = [](const GoomLogger::LogLevel lvl, const std::string& msg)
   {
@@ -226,26 +229,26 @@ void CVisualizationGoom::StartLogging()
   LogStart(*m_goomLogger);
 }
 
-void CVisualizationGoom::StartActiveQueue()
+auto CVisualizationGoom::StartActivePixelBufferDataQueue() -> void
 {
   // Make one initial frame in black
-  PixelBufferData initialBufferData{MakePixelBufferData()};
+  const PixelBufferData initialBufferData{MakePixelBufferData()};
   initialBufferData.pixelBuffer->Fill(GOOM::BLACK_PIXEL);
-  m_activeQueue.push(initialBufferData);
+  m_activePixelBufferDataQueue.push(initialBufferData);
 }
 
 inline auto CVisualizationGoom::MakePixelBufferData() const -> PixelBufferData
 {
   PixelBufferData pixelBufferData;
-  pixelBufferData.pixelBuffer =
-      std::make_shared<PixelBuffer>(Dimensions{m_textureWidth, m_textureHeight});
+  pixelBufferData.pixelBuffer = std::make_shared<PixelBuffer>(
+      Dimensions{m_textureBufferDimensions.width, m_textureBufferDimensions.height});
   return pixelBufferData;
 }
 
 //-- Stop ---------------------------------------------------------------------
 // Called when the visualisation is closed by Kodi
 //-----------------------------------------------------------------------------
-void CVisualizationGoom::Stop()
+auto CVisualizationGoom::Stop() -> void
 {
   if (!m_started)
   {
@@ -260,12 +263,12 @@ void CVisualizationGoom::Stop()
 #endif
 }
 
-inline void CVisualizationGoom::StopWithNoCatch()
+inline auto CVisualizationGoom::StopWithNoCatch() -> void
 {
   StopVis();
 }
 
-void CVisualizationGoom::StopWithCatch()
+auto CVisualizationGoom::StopWithCatch() -> void
 {
   try
   {
@@ -277,7 +280,7 @@ void CVisualizationGoom::StopWithCatch()
   }
 }
 
-inline void CVisualizationGoom::StopVis()
+inline auto CVisualizationGoom::StopVis() -> void
 {
   LogInfo(*m_goomLogger, "CVisualizationGoom: Visualization stopping.");
   m_started = false;
@@ -298,23 +301,18 @@ inline auto GetGoomVisualizationBuildTime() -> std::string
   return GetBuildTime();
 }
 
-auto CVisualizationGoom::InitGoomController() -> bool
+auto CVisualizationGoom::InitGoomController() -> void
 {
   if (m_goomControl)
   {
-    HandleError("Goom controller already initialized!");
-    return true;
+    throw std::runtime_error("CVisualizationGoom: Goom controller already initialized!");
   }
 
   LogInfo(*m_goomLogger, "CVisualizationGoom: Initializing goom controller.");
-  m_goomControl = std::make_unique<GoomControl>(Dimensions{m_textureWidth, m_textureHeight},
-                                                KODI_ADDON::GetAddonPath("resources"),
-                                                *m_goomLogger);
-  if (!m_goomControl)
-  {
-    HandleError("Goom controller could not be initialized!");
-    return false;
-  }
+  m_goomControl = std::make_unique<GoomControl>(
+      Dimensions{m_textureBufferDimensions.width, m_textureBufferDimensions.height},
+      KODI_ADDON::GetAddonPath("resources"),
+      *m_goomLogger);
 
   LogInfo(*m_goomLogger, "CVisualizationGoom: Goom: {}.", GetGoomLibVersionInfo());
   LogInfo(*m_goomLogger, "CVisualizationGoom: Compiler: {}.", GetCompilerVersion());
@@ -327,14 +325,12 @@ auto CVisualizationGoom::InitGoomController() -> bool
       std::string(GOOM_ADDON_DATA_DIR) + GOOM::PATH_SEP + "goom_dumps"));
   m_goomControl->SetShowTitle(m_showTitle);
 
-  // Goom will use same random sequence if following is uncommented:
+  // Goom will use same random sequence each time if the following is uncommented:
   //GoomControl::SetRandSeed(1);
   m_goomControl->Start();
-
-  return true;
 }
 
-void CVisualizationGoom::DeinitGoomController()
+auto CVisualizationGoom::DeinitGoomController() -> void
 {
   if (!m_goomControl)
   {
@@ -372,14 +368,14 @@ auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& trac
   return true;
 }
 
-void CVisualizationGoom::StartGoomProcessBuffersThread()
+auto CVisualizationGoom::StartGoomProcessBuffersThread() -> void
 {
 
   LogInfo(*m_goomLogger, "CVisualizationGoom: Starting goom process buffers thread.");
   m_workerThread = std::thread(&CVisualizationGoom::Process, this);
 }
 
-void CVisualizationGoom::StopGoomProcessBuffersThread()
+auto CVisualizationGoom::StopGoomProcessBuffersThread() -> void
 {
   LogInfo(*m_goomLogger, "CVisualizationGoom: Stopping goom process buffers thread.");
 
@@ -392,7 +388,7 @@ void CVisualizationGoom::StopGoomProcessBuffersThread()
   LogInfo(*m_goomLogger, "CVisualizationGoom: Goom process buffers thread stopped.");
 }
 
-void CVisualizationGoom::ExitWorkerThread()
+auto CVisualizationGoom::ExitWorkerThread() -> void
 {
   const std::unique_lock lock(m_mutex);
   m_workerThreadExit = true;
@@ -402,7 +398,8 @@ void CVisualizationGoom::ExitWorkerThread()
 //-- AudioData ----------------------------------------------------------------
 // Called by Kodi to pass new audio data to the vis
 //-----------------------------------------------------------------------------
-void CVisualizationGoom::AudioData(const float* const audioData, const size_t audioDataLength)
+auto CVisualizationGoom::AudioData(const float* const audioData, const size_t audioDataLength)
+    -> void
 {
   if (!m_started)
   {
@@ -434,26 +431,26 @@ inline auto CVisualizationGoom::GetNextActivePixelBufferData() -> PixelBufferDat
   PixelBufferData pixelBufferData{};
 
   const std::scoped_lock lk(m_mutex);
-  if (m_activeQueue.empty())
+  if (m_activePixelBufferDataQueue.empty())
   {
     NoActiveBufferAvailable();
   }
   else
   {
-    pixelBufferData = m_activeQueue.front();
-    m_activeQueue.pop();
+    pixelBufferData = m_activePixelBufferDataQueue.front();
+    m_activePixelBufferDataQueue.pop();
   }
 
   return pixelBufferData;
 }
 
-inline void CVisualizationGoom::PushUsedPixels(const PixelBufferData& pixelBufferData)
+inline auto CVisualizationGoom::PushUsedPixels(const PixelBufferData& pixelBufferData) -> void
 {
   const std::scoped_lock lk(m_mutex);
-  m_storedQueue.push(pixelBufferData);
+  m_storedPixelBufferDataQueue.push(pixelBufferData);
 }
 
-void CVisualizationGoom::Process()
+auto CVisualizationGoom::Process() -> void
 {
 #ifdef GOOM_DEBUG
   ProcessWithNoCatch();
@@ -462,12 +459,12 @@ void CVisualizationGoom::Process()
 #endif
 }
 
-inline void CVisualizationGoom::ProcessWithNoCatch()
+inline auto CVisualizationGoom::ProcessWithNoCatch() -> void
 {
   ProcessVis();
 }
 
-inline void CVisualizationGoom::ProcessWithCatch()
+inline auto CVisualizationGoom::ProcessWithCatch() -> void
 {
   try
   {
@@ -479,7 +476,7 @@ inline void CVisualizationGoom::ProcessWithCatch()
   }
 }
 
-void CVisualizationGoom::ProcessVis()
+auto CVisualizationGoom::ProcessVis() -> void
 {
   std::vector<float> floatAudioData(m_audioBufferLen);
 
@@ -495,8 +492,8 @@ void CVisualizationGoom::ProcessVis()
     {
       m_wait.wait(lk);
     }
-    const size_t read = m_audioBuffer.Read(floatAudioData.data(), m_audioBufferLen);
-    if (read != m_audioBufferLen)
+    if (const size_t read = m_audioBuffer.Read(floatAudioData.data(), m_audioBufferLen);
+        read != m_audioBufferLen)
     {
       LogWarn(*m_goomLogger,
               "CVisualizationGoom: Num read audio length {} != {} = expected audio data length - "
@@ -514,7 +511,7 @@ void CVisualizationGoom::ProcessVis()
     }
 
     lk.lock();
-    if (m_activeQueue.size() > MAX_ACTIVE_QUEUE_LENGTH)
+    if (m_activePixelBufferDataQueue.size() > MAX_ACTIVE_QUEUE_LENGTH)
     {
       // Too far behind, skip this audio data.
       SkippedAudioData();
@@ -524,27 +521,27 @@ void CVisualizationGoom::ProcessVis()
 
     PixelBufferData pixelBufferData;
     lk.lock();
-    if (m_storedQueue.empty())
+    if (m_storedPixelBufferDataQueue.empty())
     {
       pixelBufferData = MakePixelBufferData();
     }
     else
     {
-      pixelBufferData = m_storedQueue.front();
-      m_storedQueue.pop();
+      pixelBufferData = m_storedPixelBufferDataQueue.front();
+      m_storedPixelBufferDataQueue.pop();
     }
     lk.unlock();
 
     UpdateGoomBuffer(floatAudioData, pixelBufferData);
 
     lk.lock();
-    m_activeQueue.push(pixelBufferData);
+    m_activePixelBufferDataQueue.push(pixelBufferData);
     lk.unlock();
   }
 }
 
-inline void CVisualizationGoom::UpdateGoomBuffer(const std::vector<float>& floatAudioData,
-                                                 PixelBufferData& pixelBufferData)
+inline auto CVisualizationGoom::UpdateGoomBuffer(const std::vector<float>& floatAudioData,
+                                                 PixelBufferData& pixelBufferData) -> void
 {
   const AudioSamples audioData{m_numChannels, floatAudioData};
   m_goomControl->SetGoomBuffer(pixelBufferData.pixelBuffer);
@@ -556,27 +553,35 @@ inline void CVisualizationGoom::UpdateGoomBuffer(const std::vector<float>& float
 #endif
 }
 
-auto CVisualizationGoom::InitGl() -> bool
+inline auto CVisualizationGoom::InitGl() -> void
 {
-  if (!InitGlShaders())
-  {
-    HandleError("Failed to initialize GL shaders.");
-    return false;
-  }
+  LogDebug(*m_goomLogger, "Start InitGl.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
-  if (!InitGlObjects())
-  {
-    HandleError("Could not initialize GL objects.");
-    return false;
-  }
+  LogDebug(
+      *m_goomLogger, "GL_VERSION  : {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+  LogDebug(
+      *m_goomLogger, "GL_VENDOR   : {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+  LogDebug(
+      *m_goomLogger, "GL_RENDERER : {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  LogDebug(*m_goomLogger,
+           "GLSL VERSION: {}",
+           reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
-  return true;
+  InitGlShaders();
+  InitGlObjects();
+
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish InitGl.");
 }
 
-void CVisualizationGoom::DeinitGl()
+auto CVisualizationGoom::DeinitGl() -> void
 {
-  glDeleteTextures(1, &m_textureId);
-  m_textureId = 0;
+  if (0 != m_textureId)
+  {
+    glDeleteTextures(1, &m_textureId);
+    m_textureId = 0;
+  }
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glDeleteBuffers(1, &m_vertexVBO);
@@ -613,163 +618,156 @@ auto CVisualizationGoom::GetGlQuadData(const int32_t width,
   // clang-format on
 }
 
-auto CVisualizationGoom::InitGlShaders() -> bool
+auto CVisualizationGoom::InitGlShaders() -> void
 {
-  const std::string shaderSubdir       = "resources/shaders/" GL_TYPE_STRING;
-  const std::string vertexShaderFile   = KODI_ADDON::GetAddonPath(shaderSubdir + "/vertex.glsl");
-  const std::string fragmentShaderFile = KODI_ADDON::GetAddonPath(shaderSubdir + "/fragment.glsl");
+  LogDebug(*m_goomLogger, "Start InitGlShaders.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
-  if (!LoadShaderFiles(vertexShaderFile, fragmentShaderFile))
-  {
-    LogError(*m_goomLogger, "CVisualizationGoom: Failed to load GL shaders.");
-    return false;
-  }
+  CompileAndLinkShaders();
 
-  if (!CompileAndLink())
-  {
-    HandleError("Failed to compile GL shaders.");
-    return false;
-  }
-
-  return true;
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish InitGlShaders.");
 }
 
-void CVisualizationGoom::OnCompiledAndLinked()
+auto CVisualizationGoom::InitGlShaderVariables() -> void
 {
-  m_uProjModelMatLoc               = glGetUniformLocation(ProgramHandle(), "u_projModelMat");
-  m_aPositionLoc                   = glGetAttribLocation(ProgramHandle(), "in_position");
-  m_aTexCoordsLoc                  = glGetAttribLocation(ProgramHandle(), "in_texCoords");
-  m_uTexExposureLoc                = glGetUniformLocation(ProgramHandle(), "u_texExposure");
-  m_uTexBrightnessLoc              = glGetUniformLocation(ProgramHandle(), "u_texBrightness");
-  m_uTexContrastLoc                = glGetUniformLocation(ProgramHandle(), "u_texContrast");
-  m_uTexContrastMinChannelValueLoc = glGetUniformLocation(ProgramHandle(), "u_texContrastMinChan");
-  m_uTexHueShiftLerpTLoc           = glGetUniformLocation(ProgramHandle(), "u_texHueShiftLerpT");
-  m_uTexSrceHueShiftLoc            = glGetUniformLocation(ProgramHandle(), "u_texSrceHueShift");
-  m_uTexDestHueShiftLoc            = glGetUniformLocation(ProgramHandle(), "u_texDestHueShift");
-
-  m_uTimeLoc = glGetUniformLocation(ProgramHandle(), "u_time");
+  m_aPositionLoc  = glGetAttribLocation(m_glShader->GetProgramHandle(), "in_position");
+  m_aTexCoordsLoc = glGetAttribLocation(m_glShader->GetProgramHandle(), "in_texCoords");
 }
 
-auto CVisualizationGoom::OnEnabled() -> bool
+auto CVisualizationGoom::InitGlObjects() -> void
 {
-  glUniformMatrix4fv(m_uProjModelMatLoc, 1, GL_FALSE, glm::value_ptr(m_projModelMatrix));
-  return true;
-}
-
-auto CVisualizationGoom::InitGlObjects() -> bool
-{
-  m_projModelMatrix =
-      glm::ortho(0.0F, static_cast<float>(Width()), 0.0F, static_cast<float>(Height()));
+  LogDebug(*m_goomLogger, "Start InitGlObjects.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
   InitGlVertexAttributes();
 
-  return CreateGlTexture();
+  CreateGlTexture();
+
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish InitGlObjects.");
 }
 
-void CVisualizationGoom::InitGlVertexAttributes()
+auto CVisualizationGoom::InitGlVertexAttributes() -> void
 {
+  LogDebug(*m_goomLogger, "Start InitGlVertexAttributes.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+
 #ifdef HAS_GL
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glDeleteBuffers(1, &m_vertexVBO);
+
   glGenVertexArrays(1, &m_vaoObject);
   glBindVertexArray(m_vaoObject);
   glGenBuffers(1, &m_vertexVBO);
   glBindBuffer(GL_ARRAY_BUFFER, m_vertexVBO);
+
   glEnableVertexAttribArray(static_cast<GLuint>(m_aPositionLoc));
-  glEnableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
   glVertexAttribPointer(
       static_cast<GLuint>(m_aPositionLoc), m_componentsPerVertex, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glEnableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
   glVertexAttribPointer(
       static_cast<GLuint>(m_aTexCoordsLoc),
       m_componentsPerTexel,
       GL_FLOAT,
       GL_FALSE,
       0,
-      reinterpret_cast<GLvoid*>(
-          (static_cast<size_t>(m_numVertices * m_componentsPerVertex) * sizeof(GLfloat))));
+      reinterpret_cast<GLvoid*>(static_cast<size_t>(m_numVertices * m_componentsPerVertex) *
+                                sizeof(GLfloat)));
+
   glBufferData(GL_ARRAY_BUFFER,
                static_cast<GLsizeiptr>(m_quadData.size() * sizeof(GLfloat)),
                m_quadData.data(),
                GL_STATIC_DRAW);
+
   glBindVertexArray(0);
 #endif
+
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish InitGlVertexAttributes.");
 }
 
-auto CVisualizationGoom::CreateGlTexture() -> bool
+auto CVisualizationGoom::CreateGlTexture() -> void
 {
+  LogDebug(*m_goomLogger, "Start CreateGlTexture.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+
   glGenTextures(1, &m_textureId);
   if (0 == m_textureId)
   {
-    LogError(*m_goomLogger, "CVisualizationGoom: Could not do glGenTextures.");
-    return false;
+    throw std::runtime_error("Could not create GL texture.");
   }
 
   glClear(GL_COLOR_BUFFER_BIT);
 
   glBindTexture(GL_TEXTURE_2D, m_textureId);
+
+  // Optional texture parameters
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  // Required texture parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 #ifdef HAS_GL
+  //TODO(glk) Is this worth using?
   glGenerateMipmap(GL_TEXTURE_2D);
 #endif
+
   static constexpr GLint LEVEL           = 0;
   static constexpr GLint BORDER          = 0;
   static constexpr const void* NULL_DATA = nullptr;
   glTexImage2D(GL_TEXTURE_2D,
                LEVEL,
                TEXTURE_SIZED_INTERNAL_FORMAT,
-               static_cast<GLsizei>(m_textureWidth),
-               static_cast<GLsizei>(m_textureHeight),
+               static_cast<GLsizei>(m_textureBufferDimensions.width),
+               static_cast<GLsizei>(m_textureBufferDimensions.height),
                BORDER,
                TEXTURE_FORMAT,
                TEXTURE_DATA_TYPE,
                NULL_DATA);
+
   glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef HAS_GL
-  LogInfo(*m_goomLogger, "CVisualizationGoom: Using pixel buffer objects.");
-  return SetupGlPixelBufferObjects();
-#else
-  return true;
+  AllocateGlTextureBuffers();
 #endif
+
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish CreateGlTexture.");
 }
 
 #ifdef HAS_GL
-auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
+auto CVisualizationGoom::AllocateGlTextureBuffers() -> void
 {
-  if (!m_usePixelBufferObjects)
+  if (not m_usePixelBufferObjects)
   {
     LogInfo(*m_goomLogger, "CVisualizationGoom: Not using pixel buffer objects.");
-    return true;
+    return;
   }
 
   m_currentPboIndex = 0;
 
-  glGenBuffers(G_NUM_PBOS, m_pboIds.data());
+  glGenBuffers(NUM_PBOS, m_pboIds.data());
 
-  for (size_t i = 0; i < G_NUM_PBOS; ++i)
+  for (auto i = 0U; i < NUM_PBOS; ++i)
   {
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(i));
-    glBufferData(
-        GL_PIXEL_UNPACK_BUFFER, static_cast<GLsizeiptr>(m_goomBufferSize), nullptr, GL_STREAM_DRAW);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(i));
-    glBufferData(
-        GL_PIXEL_UNPACK_BUFFER, static_cast<GLsizeiptr>(m_goomBufferSize), nullptr, GL_STREAM_DRAW);
-    m_pboGoomBuffer.at(i) =
-        static_cast<uint8_t*>(glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY));
-    if (!m_pboGoomBuffer.at(i))
+    glBufferData(GL_PIXEL_UNPACK_BUFFER,
+                 static_cast<GLsizeiptr>(m_textureBufferSize),
+                 nullptr,
+                 GL_STREAM_DRAW);
+
+    m_pboMappedBuffer.at(i) =
+        static_cast<PixelChannelType*>(glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY));
+    if (nullptr == m_pboMappedBuffer.at(i))
     {
-      HandleError(std20::format("Could not do glMapBuffer for pbo {}.", i));
-      return false;
+      throw std::runtime_error(std20::format("Could not allocate mapped buffer for pbo {}.", i));
     }
+
+    glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
   }
-
-  glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
-  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-
-  return true;
 }
 #endif
 
@@ -777,14 +775,9 @@ auto CVisualizationGoom::SetupGlPixelBufferObjects() -> bool
 // Called once per frame. Do all rendering here.
 //-----------------------------------------------------------------------------
 
-auto CVisualizationGoom::IsDirty() -> bool
+auto CVisualizationGoom::Render() -> void
 {
-  return true; //!m_worker.RequestsQueueEmpty();
-}
-
-void CVisualizationGoom::Render()
-{
-  if (!m_started)
+  if (not m_started)
   {
     LogWarn(*m_goomLogger, "CVisualizationGoom: Goom not started - skipping this.");
     return;
@@ -808,7 +801,7 @@ void CVisualizationGoom::Render()
   }
 }
 
-inline void CVisualizationGoom::InitVertexAttributes() const
+inline auto CVisualizationGoom::InitVertexAttributes() const -> void
 {
 #ifdef HAS_GL
   glBindVertexArray(m_vaoObject);
@@ -826,7 +819,7 @@ inline void CVisualizationGoom::InitVertexAttributes() const
 #endif
 }
 
-inline void CVisualizationGoom::DeinitVertexAttributes() const
+inline auto CVisualizationGoom::DeinitVertexAttributes() const -> void
 {
 #ifdef HAS_GL
   glBindVertexArray(0);
@@ -836,52 +829,59 @@ inline void CVisualizationGoom::DeinitVertexAttributes() const
 #endif
 }
 
-inline void CVisualizationGoom::DrawGlTexture()
+inline auto CVisualizationGoom::DrawGlTexture() -> void
 {
   // Setup texture.
   glDisable(GL_BLEND);
+  glEnable(GL_TEXTURE_2D);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_textureId);
 
-  const PixelBufferData pixelBufferData = GetNextActivePixelBufferData();
-  if (pixelBufferData.pixelBuffer != nullptr)
-  {
-    RenderGlPixelBuffer(*pixelBufferData.pixelBuffer);
-    PushUsedPixels(pixelBufferData);
-  }
+  EnableShaderProgram();
 
-  EnableShader();
-  if (pixelBufferData.pixelBuffer != nullptr)
-  {
-    SetGlShaderValues(pixelBufferData.goomShaderEffects);
-  }
+  RenderGlTextureBuffer();
+
   glDrawArrays(GL_TRIANGLE_FAN, 0, NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE);
-  DisableShader();
 
+  DisableShaderProgram();
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glDisable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
 }
 
-inline void CVisualizationGoom::RenderGlPixelBuffer(const PixelBuffer& pixelBuffer)
+inline auto CVisualizationGoom::RenderGlTextureBuffer() -> void
+{
+  const auto pixelBufferData = GetNextActivePixelBufferData();
+  if (nullptr == pixelBufferData.pixelBuffer)
+  {
+    return;
+  }
+
+  RenderGlTextureBuffer(*pixelBufferData.pixelBuffer);
+  SetGlShaderValues(pixelBufferData.goomShaderEffects);
+  PushUsedPixels(pixelBufferData);
+}
+
+inline auto CVisualizationGoom::RenderGlTextureBuffer(const PixelBuffer& pixelBuffer) -> void
 {
 #ifdef HAS_GL
   if (m_usePixelBufferObjects)
   {
-    RenderGlPBOPixelBuffer(pixelBuffer);
+    RenderGlPboTextureBuffer(pixelBuffer);
   }
   else
 #endif
   {
-    RenderGlNormalPixelBuffer(pixelBuffer);
+    RenderGlNormalTextureBuffer(pixelBuffer);
   }
 }
 
 #ifdef HAS_GL
-inline void CVisualizationGoom::RenderGlPBOPixelBuffer(const PixelBuffer& pixelBuffer)
+inline auto CVisualizationGoom::RenderGlPboTextureBuffer(const PixelBuffer& pixelBuffer) -> void
 {
-  m_currentPboIndex         = (m_currentPboIndex + 1) % G_NUM_PBOS;
-  const size_t nextPboIndex = (m_currentPboIndex + 1) % G_NUM_PBOS;
-
-  // Bind to current PBO and send pixels to texture object.
+  LogDebug(*m_goomLogger, "Send to texture.");
+  m_currentPboIndex = (m_currentPboIndex + 1) % NUM_PBOS;
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(m_currentPboIndex));
 
   static constexpr GLint LEVEL             = 0;
@@ -892,22 +892,22 @@ inline void CVisualizationGoom::RenderGlPBOPixelBuffer(const PixelBuffer& pixelB
                   LEVEL,
                   X_OFFSET,
                   Y_OFFSET,
-                  static_cast<GLsizei>(m_textureWidth),
-                  static_cast<GLsizei>(m_textureHeight),
+                  static_cast<GLsizei>(m_textureBufferDimensions.width),
+                  static_cast<GLsizei>(m_textureBufferDimensions.height),
                   TEXTURE_FORMAT,
                   TEXTURE_DATA_TYPE,
                   NULL_PIXELS);
 
-  // Bind to next PBO and update data directly on the mapped buffer.
+  // Update data directly on the mapped buffer.
+  const size_t nextPboIndex = (m_currentPboIndex + 1) % NUM_PBOS;
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(nextPboIndex));
-  std::memcpy(m_pboGoomBuffer.at(nextPboIndex), pixelBuffer.GetIntBuff(), m_goomBufferSize);
-
-  glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
+  std::memcpy(m_pboMappedBuffer.at(nextPboIndex), pixelBuffer.GetIntBuff(), m_textureBufferSize);
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 }
 #endif
 
-inline void CVisualizationGoom::RenderGlNormalPixelBuffer(const PixelBuffer& pixelBuffer) const
+inline auto CVisualizationGoom::RenderGlNormalTextureBuffer(const PixelBuffer& pixelBuffer) const
+    -> void
 {
   static constexpr GLint LEVEL    = 0;
   static constexpr GLint X_OFFSET = 0;
@@ -916,36 +916,34 @@ inline void CVisualizationGoom::RenderGlNormalPixelBuffer(const PixelBuffer& pix
                   LEVEL,
                   X_OFFSET,
                   Y_OFFSET,
-                  static_cast<GLsizei>(m_textureWidth),
-                  static_cast<GLsizei>(m_textureHeight),
+                  static_cast<GLsizei>(m_textureBufferDimensions.width),
+                  static_cast<GLsizei>(m_textureBufferDimensions.height),
                   TEXTURE_FORMAT,
                   TEXTURE_DATA_TYPE,
                   pixelBuffer.GetIntBuff());
 }
 
-inline void CVisualizationGoom::SetGlShaderValues(const GoomShaderEffects& goomShaderEffects) const
+inline auto CVisualizationGoom::SetGlShaderValues(const GoomShaderEffects& goomShaderEffects) const
+    -> void
 {
-  if (goomShaderEffects.exposure > 0.0F)
-  {
-    glUniform1f(m_uTexExposureLoc, goomShaderEffects.exposure);
-  }
-  if (goomShaderEffects.brightness >= 0.0F)
-  {
-    glUniform1f(m_uTexBrightnessLoc, goomShaderEffects.brightness);
-  }
-  if (goomShaderEffects.contrast > 0.0F)
-  {
-    glUniform1f(m_uTexContrastLoc, goomShaderEffects.contrast);
-    glUniform1f(m_uTexContrastMinChannelValueLoc, goomShaderEffects.contrastMinChannelValue);
-  }
+  dynamic_cast<const KodiShaderWithEffects*>(m_glShader.get())->SetShaderEffects(goomShaderEffects);
+}
 
-  glUniform1f(m_uTexHueShiftLerpTLoc, goomShaderEffects.hueShiftLerpT);
-  glUniform1f(m_uTexSrceHueShiftLoc, goomShaderEffects.srceHueShift);
-  glUniform1f(m_uTexDestHueShiftLoc, goomShaderEffects.destHueShift);
+inline auto CVisualizationGoom::EnableShaderProgram() -> void
+{
+  m_glShader->EnableShader();
+}
 
-  static GLint s_time = 0;
-  ++s_time;
-  glUniform1i(m_uTimeLoc, s_time);
+inline auto CVisualizationGoom::DisableShaderProgram() -> void
+{
+  m_glShader->DisableShader();
+}
+
+inline auto CVisualizationGoom::CompileAndLinkShaders() -> void
+{
+  m_glShader->CreateGlShaders();
+
+  InitGlShaderVariables();
 }
 
 #ifdef SAVE_AUDIO_BUFFERS

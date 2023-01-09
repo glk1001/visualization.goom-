@@ -41,9 +41,16 @@
 #define ATTRIBUTE_HIDDEN
 #endif
 
+struct BufferDimensions
+{
+  uint32_t width;
+  uint32_t height;
+};
+
 namespace GOOM
 {
 class GoomLogger;
+class ShaderStrategy;
 }
 
 class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,
@@ -62,15 +69,10 @@ public:
                            int samplesPerSec,
                            int bitsPerSample,
                            const std::string& songName) -> bool override;
-  void Stop() override;
-  [[nodiscard]] auto IsDirty() -> bool override;
-  void Render() override;
-  void AudioData(const float* audioData, size_t audioDataLength) override;
+  auto Stop() -> void override;
+  auto Render() -> void override;
+  auto AudioData(const float* audioData, size_t audioDataLength) -> void override;
   [[nodiscard]] auto UpdateTrack(const kodi::addon::VisualizationTrack& track) -> bool override;
-
-  // kodi::gui::gl::CShaderProgram
-  void OnCompiledAndLinked() override;
-  [[nodiscard]] auto OnEnabled() -> bool override;
 
 protected:
   static constexpr size_t MAX_ACTIVE_QUEUE_LENGTH = 20;
@@ -84,16 +86,14 @@ protected:
   [[nodiscard]] auto GetGoomControl() const -> const GOOM::GoomControl& { return *m_goomControl; };
   [[nodiscard]] auto GetGoomControl() -> GOOM::GoomControl& { return *m_goomControl; };
   [[nodiscard]] auto AudioBufferLen() const -> size_t { return m_audioBufferLen; };
-  [[nodiscard]] auto TexWidth() const -> uint32_t { return m_textureWidth; };
-  [[nodiscard]] auto TexHeight() const -> uint32_t { return m_textureHeight; };
   [[nodiscard]] auto GoomBufferLen() const -> size_t { return m_goomBufferLen; };
   [[nodiscard]] auto NumChannels() const -> size_t { return m_numChannels; };
-  virtual void NoActiveBufferAvailable() {}
-  virtual void AudioDataQueueTooBig() {}
-  virtual void SkippedAudioData() {}
-  virtual void AudioDataIncorrectReadLength() {}
-  virtual void UpdateGoomBuffer(const std::vector<float>& floatAudioData,
-                                PixelBufferData& pixelBufferData);
+  virtual auto NoActiveBufferAvailable() -> void {}
+  virtual auto AudioDataQueueTooBig() -> void {}
+  virtual auto SkippedAudioData() -> void {}
+  virtual auto AudioDataIncorrectReadLength() -> void {}
+  virtual auto UpdateGoomBuffer(const std::vector<float>& floatAudioData,
+                                PixelBufferData& pixelBufferData) -> void;
 
 private:
   const int32_t m_windowWidth;
@@ -101,10 +101,9 @@ private:
   const int32_t m_windowXPos;
   const int32_t m_windowYPos;
 
-  const uint32_t m_textureWidth;
-  const uint32_t m_textureHeight;
+  const BufferDimensions m_textureBufferDimensions;
   const size_t m_goomBufferLen;
-  const size_t m_goomBufferSize;
+  const size_t m_textureBufferSize;
 
   size_t m_numChannels                                        = 0;
   size_t m_audioBufferLen                                     = 0;
@@ -132,27 +131,18 @@ private:
   const bool m_usePixelBufferObjects;
   // Note: 'true' is supposed to give better performance, but it's not obvious.
   // And when 'true', there may be issues with screen refreshes when changing windows in Kodi.
-  [[nodiscard]] auto SetupGlPixelBufferObjects() -> bool;
-  void RenderGlPBOPixelBuffer(const GOOM::PixelBuffer& pixelBuffer);
-  static constexpr int32_t G_NUM_PBOS = 3;
-  std::array<GLuint, G_NUM_PBOS> m_pboIds{};
-  std::array<uint8_t*, G_NUM_PBOS> m_pboGoomBuffer{};
+  static constexpr int32_t NUM_PBOS = 3;
+  std::array<GLuint, NUM_PBOS> m_pboIds{};
+  std::array<GOOM::PixelChannelType*, NUM_PBOS> m_pboMappedBuffer{};
   size_t m_currentPboIndex = 0;
   GLuint m_vaoObject       = 0;
+  auto AllocateGlTextureBuffers() -> void;
+  auto RenderGlPboTextureBuffer(const GOOM::PixelBuffer& pixelBuffer) -> void;
 #endif
-  glm::mat4 m_projModelMatrix{};
-  GLuint m_vertexVBO                     = 0;
-  GLint m_uProjModelMatLoc               = -1;
-  GLint m_aPositionLoc                   = -1;
-  GLint m_aTexCoordsLoc                  = -1;
-  GLint m_uTexExposureLoc                = -1;
-  GLint m_uTexBrightnessLoc              = -1;
-  GLint m_uTexContrastLoc                = -1;
-  GLint m_uTexContrastMinChannelValueLoc = -1;
-  GLint m_uTexHueShiftLerpTLoc           = -1;
-  GLint m_uTexSrceHueShiftLoc            = -1;
-  GLint m_uTexDestHueShiftLoc            = -1;
-  GLint m_uTimeLoc                       = -1;
+  GLuint m_vertexVBO    = 0;
+  GLint m_aPositionLoc  = -1;
+  GLint m_aTexCoordsLoc = -1;
+  std::unique_ptr<GOOM::ShaderStrategy> m_glShader;
 
   // Audio buffer storage
   static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
@@ -166,36 +156,41 @@ private:
   std::mutex m_mutex{};
   std::condition_variable m_wait{};
 
-  void SetNumChannels(int numChannels);
-  void StartLogging();
-  [[nodiscard]] auto InitGoomController() -> bool;
-  void DeinitGoomController();
-  void StartGoomProcessBuffersThread();
-  void StopGoomProcessBuffersThread();
-  void ExitWorkerThread();
-  void Process();
+  auto SetNumChannels(int numChannels) -> void;
+  auto StartLogging() -> void;
+  auto InitGoomController() -> void;
+  auto DeinitGoomController() -> void;
+  auto StartGoomProcessBuffersThread() -> void;
+  auto StopGoomProcessBuffersThread() -> void;
+  auto ExitWorkerThread() -> void;
+  auto Process() -> void;
   [[nodiscard]] auto GetNextActivePixelBufferData() -> PixelBufferData;
-  void PushUsedPixels(const PixelBufferData& pixelBufferData);
+  auto PushUsedPixels(const PixelBufferData& pixelBufferData) -> void;
 
-  [[nodiscard]] auto InitGl() -> bool;
-  void DeinitGl();
-  [[nodiscard]] auto InitGlShaders() -> bool;
-  [[nodiscard]] auto InitGlObjects() -> bool;
-  void InitGlVertexAttributes();
-  void InitVertexAttributes() const;
-  void DeinitVertexAttributes() const;
-  [[nodiscard]] auto CreateGlTexture() -> bool;
-  void DrawGlTexture();
-  void RenderGlPixelBuffer(const GOOM::PixelBuffer& pixelBuffer);
-  void RenderGlNormalPixelBuffer(const GOOM::PixelBuffer& pixelBuffer) const;
-  void SetGlShaderValues(const GOOM::GoomShaderEffects& goomShaderEffects) const;
+  auto InitGl() -> void;
+  auto DeinitGl() -> void;
+  auto InitGlShaders() -> void;
+  auto InitGlObjects() -> void;
+  auto InitGlShaderVariables() -> void;
+  auto InitGlVertexAttributes() -> void;
+  auto InitVertexAttributes() const -> void;
+  auto DeinitVertexAttributes() const -> void;
+  auto CreateGlTexture() -> void;
+  auto DrawGlTexture() -> void;
+  auto RenderGlTextureBuffer() -> void;
+  auto RenderGlTextureBuffer(const GOOM::PixelBuffer& pixelBuffer) -> void;
+  auto RenderGlNormalTextureBuffer(const GOOM::PixelBuffer& pixelBuffer) const -> void;
+  auto SetGlShaderValues(const GOOM::GoomShaderEffects& goomShaderEffects) const -> void;
+  auto EnableShaderProgram() -> void;
+  auto DisableShaderProgram() -> void;
+  auto CompileAndLinkShaders() -> void;
 
   [[nodiscard]] auto MakePixelBufferData() const -> PixelBufferData;
-  // Screen frames storage: m_activeQueue for next view and m_storedQueue to
-  // use on next goom update.
-  std::queue<PixelBufferData> m_activeQueue{};
-  std::queue<PixelBufferData> m_storedQueue{};
-  void StartActiveQueue();
+  // Screen frames storage: active queue for next view and stored queue to
+  // use for the next goom update.
+  std::queue<PixelBufferData> m_activePixelBufferDataQueue{};
+  std::queue<PixelBufferData> m_storedPixelBufferDataQueue{};
+  auto StartActivePixelBufferDataQueue() -> void;
 
   // Start flag to know init was OK
   bool m_started = false;
@@ -213,13 +208,13 @@ private:
                               int bitsPerSample,
                               const std::string& songName) -> bool;
 
-  void StopWithCatch();
-  void StopWithNoCatch();
-  void StopVis();
+  auto StopWithCatch() -> void;
+  auto StopWithNoCatch() -> void;
+  auto StopVis() -> void;
 
-  void ProcessWithCatch();
-  void ProcessWithNoCatch();
-  void ProcessVis();
+  auto ProcessWithCatch() -> void;
+  auto ProcessWithNoCatch() -> void;
+  auto ProcessVis() -> void;
 
 #ifdef SAVE_AUDIO_BUFFERS
   using AudioBufferWriter = GOOM::UTILS::BufferSaver<float>;
@@ -229,5 +224,5 @@ private:
   auto SaveAudioBuffer(const std::vector<float>& floatAudioData) -> void;
 #endif
 
-  static void HandleError(const std::string& errorMsg);
+  static auto HandleError(const std::string& errorMsg) -> void;
 };
