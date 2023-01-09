@@ -2,6 +2,7 @@
 
 #include "date_utils.h"
 #include "goom_config.h"
+#include "utils/enum_utils.h"
 
 #include <format>
 #include <memory>
@@ -12,7 +13,15 @@
 namespace GOOM
 {
 
+using UTILS::EnumMap;
 using UTILS::GetCurrentDateTimeAsString;
+
+static constexpr auto LOG_LEVEL_STR = EnumMap<GoomLogger::LogLevel, const char*>{{{
+    {GoomLogger::LogLevel::DEBUG, "Debug"},
+    {GoomLogger::LogLevel::INFO, "Info"},
+    {GoomLogger::LogLevel::WARN, "Warn"},
+    {GoomLogger::LogLevel::L_ERROR, "Error"},
+}}};
 
 GoomLogger::GoomLogger() noexcept
 {
@@ -48,7 +57,7 @@ auto GoomLogger::Log(const LogLevel lvl,
     return;
   }
 
-  const auto mainMsg = std::string{funcName + ":" + std::to_string(lineNum) + ":" + msg};
+  const auto mainMsg = GetLogPrefix(lvl, lineNum, funcName) + ":" + msg;
   const auto logMsg =
       std::string{not m_showDateTime ? mainMsg : ((GetCurrentDateTimeAsString() + ":") + mainMsg)};
 
@@ -63,6 +72,13 @@ auto GoomLogger::Log(const LogLevel lvl,
       handler.second(lvl, logMsg);
     }
   }
+}
+
+auto GoomLogger::GetLogPrefix(const LogLevel lvl,
+                              const int lineNum,
+                              const std::string& funcName) const -> std::string
+{
+  return std20::format("{}:{}:{}", funcName, lineNum, LOG_LEVEL_STR[lvl]);
 }
 
 auto GoomLogger::Start() -> void

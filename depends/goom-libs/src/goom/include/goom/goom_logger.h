@@ -22,7 +22,8 @@ public:
     INFO,
     WARN,
     // TODO(glk) Make others use 'L_' (MSCV build issue)
-    L_ERROR
+    L_ERROR,
+    _num // unused, and marks the enum end
   };
   using HandlerFunc = std::function<void(const LogLevel, const std::string&)>;
 
@@ -57,6 +58,9 @@ public:
 
 protected:
   GoomLogger() noexcept;
+  [[nodiscard]] virtual auto GetLogPrefix(LogLevel lvl,
+                                          int lineNum,
+                                          const std::string& funcName) const -> std::string;
 
 private:
   LogLevel m_cutoffFileLogLevel     = LogLevel::INFO;
