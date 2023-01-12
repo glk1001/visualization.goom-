@@ -73,8 +73,8 @@ public:
 
   [[nodiscard]] auto GetLinesFx() noexcept -> VISUAL_FX::LinesFx&;
 
-  auto ChangeShaderEffects() -> void;
-  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
+  auto ChangeShaderVariables() -> void;
+  [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 
 private:
   std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::ShaderFx>> m_shaderFx;

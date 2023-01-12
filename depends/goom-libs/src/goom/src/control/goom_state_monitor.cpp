@@ -27,7 +27,7 @@ auto GoomStateMonitor::GetCurrentState() const -> std::string
   auto message = std::string{};
 
   message += GetNameValuesString(GetStateAndFilterModeNameValueParams()) + "\n";
-  message += GetNameValuesString(GetShaderEffectsNameValueParams()) + "\n";
+  message += GetNameValuesString(GetShaderVariablesNameValueParams()) + "\n";
   message += GetNameValuesString(GetMusicSettingsNameValueParams()) + "\n";
   message += GetNameValuesString(GetFilterBufferValueParams()) + "\n";
   message += GetNameValuesString(GetZoomFilterFxNameValueParams()) + "\n";
@@ -62,18 +62,18 @@ auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::Na
   };
 }
 
-auto GoomStateMonitor::GetShaderEffectsNameValueParams() const -> UTILS::NameValuePairs
+auto GoomStateMonitor::GetShaderVariablesNameValueParams() const -> UTILS::NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "Shader";
-  const auto& lastShaderEffects      = m_visualFx.GetLastShaderEffects();
+  const auto& lastShaderVariables    = m_visualFx.GetLastShaderVariables();
   return {
       GetPair(PARAM_GROUP, "Exposure", m_visualFx.GetCurrentExposure()),
-      GetPair(PARAM_GROUP, "Contrast", lastShaderEffects.contrast),
-      GetPair(PARAM_GROUP, "MinChan", lastShaderEffects.contrastMinChannelValue),
-      GetPair(PARAM_GROUP, "Brightness", lastShaderEffects.brightness),
-      GetPair(PARAM_GROUP, "hueShiftLerpT", lastShaderEffects.hueShiftLerpT),
-      GetPair(PARAM_GROUP, "srceHueShift", lastShaderEffects.srceHueShift),
-      GetPair(PARAM_GROUP, "destHueShift", lastShaderEffects.destHueShift),
+      GetPair(PARAM_GROUP, "Contrast", lastShaderVariables.contrast),
+      GetPair(PARAM_GROUP, "MinChan", lastShaderVariables.contrastMinChannelValue),
+      GetPair(PARAM_GROUP, "Brightness", lastShaderVariables.brightness),
+      GetPair(PARAM_GROUP, "hueShiftLerpT", lastShaderVariables.hueShiftLerpT),
+      GetPair(PARAM_GROUP, "srceHueShift", lastShaderVariables.srceHueShift),
+      GetPair(PARAM_GROUP, "destHueShift", lastShaderVariables.destHueShift),
   };
 }
 

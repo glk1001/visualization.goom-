@@ -37,7 +37,7 @@ public:
   void Write(const BufferView<T>& buffer, bool binaryFormat);
   void Write(const HeaderT& header, const BufferView<T>& buffer, bool binaryFormat);
 
-  [[nodiscard]] auto PeekHeader(HeaderT& header, bool binaryFormat) -> bool;
+  [[nodiscard]] auto PeekHeader(HeaderT& header, bool binaryFormat) const -> bool;
 
   static void WriteBinary(const std::string& filename,
                           int64_t tag,
@@ -150,7 +150,7 @@ void BufferSaver<T, HeaderT>::Write(const HeaderT& header,
 }
 
 template<class T, class HeaderT>
-auto BufferSaver<T, HeaderT>::PeekHeader(HeaderT& header, bool binaryFormat) -> bool
+auto BufferSaver<T, HeaderT>::PeekHeader(HeaderT& header, bool binaryFormat) const -> bool
 {
   if ((m_currentBuffNum < m_startBuffNum) || (m_currentBuffNum > m_endBuffNum))
   {

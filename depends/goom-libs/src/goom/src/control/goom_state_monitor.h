@@ -25,7 +25,7 @@ private:
   const FILTER_FX::FilterSettingsService& m_filterSettingsService;
 
   [[nodiscard]] auto GetStateAndFilterModeNameValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetShaderEffectsNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetShaderVariablesNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetFilterBufferValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetFilterEffectsNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetMusicSettingsNameValueParams() const -> UTILS::NameValuePairs;

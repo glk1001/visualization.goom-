@@ -138,7 +138,7 @@ public:
 
   auto StartExposureControl() noexcept -> void;
   [[nodiscard]] auto GetCurrentExposure() const noexcept -> float;
-  [[nodiscard]] auto GetLastShaderEffects() const noexcept -> const GoomShaderEffects&;
+  [[nodiscard]] auto GetLastShaderVariables() const noexcept -> const GoomShaderVariables&;
 
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
   auto SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func) noexcept -> void;

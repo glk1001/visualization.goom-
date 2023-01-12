@@ -126,7 +126,7 @@ public:
   auto SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
   auto UpdateGoomBuffer(const AudioSamples& soundData, const std::string& message) -> void;
 
-  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
+  [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 
 private:
   Parallel m_parallel{-1}; // max cores - 1
@@ -276,9 +276,9 @@ auto GoomControl::UpdateGoomBuffer(const AudioSamples& audioSamples, const std::
   m_pimpl->UpdateGoomBuffer(audioSamples, message);
 }
 
-auto GoomControl::GetLastShaderEffects() const -> const GoomShaderEffects&
+auto GoomControl::GetLastShaderVariables() const -> const GoomShaderVariables&
 {
-  return m_pimpl->GetLastShaderEffects();
+  return m_pimpl->GetLastShaderVariables();
 }
 
 auto GoomControlLogger::StartGoomControl(const GoomControl::GoomControlImpl* goomControl) noexcept
@@ -365,9 +365,10 @@ inline auto GoomControl::GoomControlImpl::SetDumpDirectory(
 }
 #endif
 
-inline auto GoomControl::GoomControlImpl::GetLastShaderEffects() const -> const GoomShaderEffects&
+inline auto GoomControl::GoomControlImpl::GetLastShaderVariables() const
+    -> const GoomShaderVariables&
 {
-  return m_visualFx.GetLastShaderEffects();
+  return m_visualFx.GetLastShaderVariables();
 }
 
 inline auto GoomControl::GoomControlImpl::Start() -> void

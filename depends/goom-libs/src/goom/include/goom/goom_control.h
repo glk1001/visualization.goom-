@@ -13,7 +13,7 @@ namespace GOOM
 class AudioSamples;
 class GoomLogger;
 class PixelBuffer;
-struct GoomShaderEffects;
+struct GoomShaderVariables;
 
 class GoomControl
 {
@@ -51,7 +51,7 @@ public:
   auto SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
   auto UpdateGoomBuffer(const AudioSamples& audioSamples, const std::string& message = "") -> void;
 
-  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
+  [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 
 private:
   class GoomControlImpl;

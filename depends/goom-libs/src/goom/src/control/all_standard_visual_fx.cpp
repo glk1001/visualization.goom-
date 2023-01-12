@@ -223,14 +223,14 @@ auto AllStandardVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& t
   m_shaderFx->ApplyEndEffect(timeValues);
 }
 
-auto AllStandardVisualFx::ChangeShaderEffects() -> void
+auto AllStandardVisualFx::ChangeShaderVariables() -> void
 {
   m_shaderFx->ChangeEffects();
 }
 
-auto AllStandardVisualFx::GetLastShaderEffects() const -> const GoomShaderEffects&
+auto AllStandardVisualFx::GetLastShaderVariables() const -> const GoomShaderVariables&
 {
-  return m_shaderFx->GetLastShaderEffects();
+  return m_shaderFx->GetLastShaderVariables();
 }
 
 auto AllStandardVisualFx::ChangeColorMaps() -> void

@@ -156,13 +156,18 @@ include_directories(${GOOM_LIBS_DIR}
 
 set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp
     src/build_time.cpp
+    src/gl_renderer.cpp
     src/shader_with_effects.cpp
     src/kodi_shader_with_effects.cpp)
 set(${GOOM_ADDON_PREFIX}_HEADERS src/Main.h
     src/CircularBuffer.h
     src/build_time.h
+    src/gl_render_types.h
+    src/gl_renderer.h
     src/shader_with_effects.h
     src/kodi_shader_with_effects.h)
+
+add_definitions(-DIS_KODI_BUILD)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_CMAKE_BUILD_TYPE)
 if (UPPER_CMAKE_BUILD_TYPE STREQUAL "RELEASE")

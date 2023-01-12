@@ -6,7 +6,7 @@
 namespace GOOM
 {
 
-struct GoomShaderEffects;
+struct GoomShaderVariables;
 
 using GLuint = unsigned int;
 using GLint  = int;
@@ -21,7 +21,7 @@ public:
   auto InitShaderVariables() noexcept -> void;
   auto InitProjModelMatrix() noexcept -> void;
 
-  auto SetShaderEffects(const GoomShaderEffects& goomShaderEffects) const noexcept -> void;
+  auto SetShaderVariables(const GoomShaderVariables& goomShaderVariables) const noexcept -> void;
 
 private:
   GLuint m_prog = 0;

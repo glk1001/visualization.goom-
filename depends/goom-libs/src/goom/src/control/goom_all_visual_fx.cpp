@@ -218,7 +218,7 @@ auto GoomAllVisualFx::ChangeState() noexcept -> void
 
   m_currentGoomDrawables = m_goomStateHandler.GetCurrentDrawables();
   m_allStandardVisualFx->SetCurrentGoomDrawables(m_currentGoomDrawables);
-  m_allStandardVisualFx->ChangeShaderEffects();
+  m_allStandardVisualFx->ChangeShaderVariables();
 
   m_allStandardVisualFx->GetLinesFx().ResetLineModes();
 
@@ -230,9 +230,9 @@ auto GoomAllVisualFx::StartExposureControl() noexcept -> void
   m_doExposureControl = true;
 }
 
-auto GoomAllVisualFx::GetLastShaderEffects() const noexcept -> const GoomShaderEffects&
+auto GoomAllVisualFx::GetLastShaderVariables() const noexcept -> const GoomShaderVariables&
 {
-  return m_allStandardVisualFx->GetLastShaderEffects();
+  return m_allStandardVisualFx->GetLastShaderVariables();
 }
 
 auto GoomAllVisualFx::SetSingleBufferDots(const bool value) noexcept -> void

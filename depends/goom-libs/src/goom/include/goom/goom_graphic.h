@@ -13,7 +13,7 @@
 namespace GOOM
 {
 
-struct GoomShaderEffects
+struct GoomShaderVariables
 {
   float exposure                = 0.0F;
   float brightness              = 0.0F;

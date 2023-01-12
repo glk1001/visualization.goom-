@@ -6,7 +6,7 @@
 
 namespace GOOM
 {
-struct GoomShaderEffects;
+struct GoomShaderVariables;
 
 namespace VISUAL_FX
 {
@@ -27,7 +27,7 @@ public:
   auto ApplyMultiple() noexcept -> void override;
   auto ApplyEndEffect(const UTILS::Stopwatch::TimeValues& timeValues) noexcept -> void;
 
-  [[nodiscard]] auto GetLastShaderEffects() const -> const GoomShaderEffects&;
+  [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override
   {
