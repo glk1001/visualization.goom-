@@ -2,6 +2,7 @@
 
 #include "gl_renderer.h"
 
+#include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 
 #include <array>

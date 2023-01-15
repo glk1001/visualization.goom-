@@ -1,6 +1,7 @@
 #pragma once
 
 #include "control/goom_sound_events.h"
+#include "goom_config.h"
 #include "goom_types.h"
 
 #include <cstdint>
@@ -35,6 +36,8 @@ inline PluginInfo::PluginInfo(const Dimensions& dimensions,
                               const CONTROL::GoomSoundEvents& soundEvents) noexcept
   : m_dimensions{dimensions}, m_soundEvents{soundEvents}
 {
+  Expects(dimensions.GetWidth() > 0);
+  Expects(dimensions.GetHeight() > 0);
 }
 
 inline auto PluginInfo::GetScreenDimensions() const -> const Dimensions&

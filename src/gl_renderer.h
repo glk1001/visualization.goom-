@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gl_render_types.h"
+#include "goom/goom_graphic.h"
 #include "goom/spimpl.h"
 
 namespace GOOM

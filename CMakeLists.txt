@@ -93,7 +93,8 @@ include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*MSVC")
-    option(WARNINGS_AS_ERRORS "MSVC: Problems with glm 'type_quat.hpp' and kodi 'StringUtils.h'" OFF)
+    option(WARNINGS_AS_ERRORS
+           "MSVC: Problems with glm 'type_quat.hpp' and kodi 'StringUtils.h'" OFF)
     set(POS_INDEP_CODE "OFF")
 else ()
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
@@ -157,6 +158,7 @@ include_directories(${GOOM_LIBS_DIR}
 set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp
     src/build_time.cpp
     src/gl_renderer.cpp
+    src/goom_buffer_producer.cpp
     src/shader_with_effects.cpp
     src/kodi_shader_with_effects.cpp)
 set(${GOOM_ADDON_PREFIX}_HEADERS src/Main.h
@@ -164,9 +166,12 @@ set(${GOOM_ADDON_PREFIX}_HEADERS src/Main.h
     src/build_time.h
     src/gl_render_types.h
     src/gl_renderer.h
+    src/goom_buffer_producer.h
     src/shader_with_effects.h
     src/kodi_shader_with_effects.h)
 
+# Let the Goom code know we're building from Kodi. There are
+# Kodi headers that need to be included only when building for Kodi.
 add_definitions(-DIS_KODI_BUILD)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_CMAKE_BUILD_TYPE)
@@ -217,11 +222,13 @@ get_target_property(goom_addon_compile_features ${GOOM_TARGET_NAME} COMPILE_FEAT
 
 message(STATUS "Visualization.goom: CORE_SYSTEM_NAME = \"${CORE_SYSTEM_NAME}\".")
 message(STATUS "Visualization.goom: CMAKE_CXX_COMPILER_ID = \"${CMAKE_CXX_COMPILER_ID}\".")
-message(STATUS "Visualization.goom: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
+message(STATUS
+        "Visualization.goom: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
 message(STATUS "Visualization.goom: CMAKE_BUILD_TYPE = \"${CMAKE_BUILD_TYPE}\".")
 message(STATUS "Visualization.goom: WARNINGS_AS_ERRORS = \"${WARNINGS_AS_ERRORS}\".")
 if (WIN32)
-    message(STATUS "Visualization.goom: CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION = \"${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}\".")
+    message(STATUS "Visualization.goom: CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION ="
+            " \"${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}\".")
 endif ()
 message(STATUS "Visualization.goom: CMAKE_SOURCE_DIR   = \"${CMAKE_SOURCE_DIR}\".")
 message(STATUS "Visualization.goom: PROJECT_SOURCE_DIR = \"${PROJECT_SOURCE_DIR}\".")

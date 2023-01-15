@@ -178,8 +178,10 @@ constexpr auto GetBrighterChannelColor(const uint32_t brightness, const PixelCha
 
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
+  static constexpr auto MIN_BRIGHTNESS = 0.0F;
+  Expects(brightness >= MIN_BRIGHTNESS);
   static constexpr auto MAX_BRIGHTNESS = 50.0F;
-  Expects((brightness >= 0.0F) && (brightness <= MAX_BRIGHTNESS));
+  Expects(brightness <= MAX_BRIGHTNESS);
   USED_FOR_DEBUGGING(MAX_BRIGHTNESS);
 
   static constexpr auto MAX_COLOR_VALUE = 256.0F;
