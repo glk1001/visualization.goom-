@@ -1,28 +1,25 @@
 #pragma once
 
+#include "filter_buffer_stripes.h"
 #include "filter_utils/zoom_coord_transforms.h"
 #include "filter_utils/zoom_filter_coefficients.h"
 #include "filter_utils/zoom_transform_buffers.h"
-#include "goom_graphic.h"
 #include "goom_types.h"
 #include "normalized_coords.h"
 #include "point2d.h"
 
-#include <cmath>
 #include <cstdint>
 #include <functional>
 #include <vector>
 
 namespace GOOM
 {
-
 class PluginInfo;
 
 namespace UTILS
 {
 class Parallel;
 }
-
 } // namespace GOOM
 
 namespace GOOM::FILTER_FX
@@ -49,11 +46,6 @@ public:
                     const PluginInfo& goomInfo,
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const ZoomPointFunc& zoomPointFunc) noexcept;
-  ZoomFilterBuffers(const ZoomFilterBuffers&) noexcept = delete;
-  ZoomFilterBuffers(ZoomFilterBuffers&&) noexcept      = delete;
-  ~ZoomFilterBuffers() noexcept;
-  auto operator=(const ZoomFilterBuffers&) noexcept -> ZoomFilterBuffers& = delete;
-  auto operator=(ZoomFilterBuffers&&) noexcept -> ZoomFilterBuffers&      = delete;
 
   [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
   auto SetBuffMidpoint(const Point2dInt& val) noexcept -> void;
@@ -65,9 +57,9 @@ public:
   auto SetTranLerpFactor(uint32_t val) noexcept -> void;
   [[nodiscard]] static auto GetMaxTranLerpFactor() noexcept -> uint32_t;
 
-  [[nodiscard]] auto GetTranBuffYLineStart() const noexcept -> uint32_t;
-
   auto Start() noexcept -> void;
+
+  [[nodiscard]] auto GetTranBuffYLineStart() const noexcept -> uint32_t;
 
   auto NotifyFilterSettingsHaveChanged() noexcept -> void;
   [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
@@ -87,69 +79,51 @@ public:
       -> Point2dInt;
 
   [[nodiscard]] auto GetTransformBuffers() const noexcept
-      -> const FILTER_UTILS::ZoomTransformBuffers&
-  {
-    return m_transformBuffers;
-  }
+      -> const FILTER_UTILS::ZoomTransformBuffers&;
 
 private:
   const Dimensions m_dimensions;
-  const NormalizedCoordsConverter& m_normalizedCoordsConverter;
-  const FILTER_UTILS::ZoomCoordTransforms m_coordTransforms{m_dimensions};
+  ZoomFilterBufferStripes m_filterBufferStripes;
+
+  using ZoomCoordTransforms       = FILTER_UTILS::ZoomCoordTransforms;
+  const Point2dInt m_maxTranPoint = ZoomCoordTransforms::ScreenToTranPoint(
+      {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1});
+  FILTER_UTILS::ZoomTransformBuffers m_transformBuffers{m_dimensions, m_maxTranPoint};
+
+  bool m_filterSettingsHaveChanged    = false;
+  TranBuffersState m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
 
   [[nodiscard]] auto GetMaxTranX() const noexcept -> uint32_t;
   [[nodiscard]] auto GetMaxTranY() const noexcept -> uint32_t;
 
-  UTILS::Parallel& m_parallel;
-  const ZoomPointFunc m_getZoomPoint;
-  const Point2dInt m_maxTranPoint = FILTER_UTILS::ZoomCoordTransforms::ScreenToTranPoint(
-      {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1});
-  // 'NUM_STRIPE_GROUPS' controls how many updates before all stripes, and therefore,
-  // all the tran buffer is filled. We use stripes to spread the buffer update load
-  // over a number of updates. Too few and performance suffers periodically for a
-  // number of updates; too many, and performance suffers overall.
-  static constexpr uint32_t NUM_STRIPE_GROUPS = 16U;
-  const uint32_t m_tranBuffStripeHeight       = m_dimensions.GetHeight() / NUM_STRIPE_GROUPS;
-  FILTER_UTILS::ZoomTransformBuffers m_transformBuffers{m_dimensions, m_maxTranPoint};
-
-  Point2dInt m_buffMidpoint             = {0, 0};
-  NormalizedCoords m_normalizedMidpoint = {0.0F, 0.0F};
-  Viewport m_filterViewport             = Viewport{};
-  bool m_filterSettingsHaveChanged      = false;
-
-  uint32_t m_tranBuffYLineStart       = 0;
-  TranBuffersState m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
-
-  std::vector<int32_t> m_firedec;
-
   auto InitAllTranBuffers() noexcept -> void;
   auto StartFreshTranBuffers() noexcept -> void;
   auto ResetTranBuffers() noexcept -> void;
-  auto FillTempTranBuffers() noexcept -> void;
-  auto DoNextTempTranBuffersStripe(uint32_t tranBuffStripeHeight) noexcept -> void;
+  auto UpdateNextTempTranBufferStripe() noexcept -> void;
+  auto FillTempTranBuffer() noexcept -> void;
   auto GenerateWaterFxHorizontalBuffer() noexcept -> void;
-  [[nodiscard]] auto GetTranPoint(const NormalizedCoords& normalized) const noexcept -> Point2dInt;
+
+  std::vector<int32_t> m_firedec;
 };
 
 inline auto ZoomFilterBuffers::GetBuffMidpoint() const noexcept -> Point2dInt
 {
-  return m_buffMidpoint;
+  return m_filterBufferStripes.GetBuffMidpoint();
 }
 
 inline auto ZoomFilterBuffers::SetBuffMidpoint(const Point2dInt& val) noexcept -> void
 {
-  m_buffMidpoint       = val;
-  m_normalizedMidpoint = m_normalizedCoordsConverter.OtherToNormalizedCoords(m_buffMidpoint);
+  m_filterBufferStripes.SetBuffMidpoint(val);
 }
 
 inline auto ZoomFilterBuffers::GetFilterViewport() const noexcept -> Viewport
 {
-  return m_filterViewport;
+  return m_filterBufferStripes.GetFilterViewport();
 }
 
 inline auto ZoomFilterBuffers::SetFilterViewport(const Viewport& val) noexcept -> void
 {
-  m_filterViewport = val;
+  m_filterBufferStripes.SetFilterViewport(val);
 }
 
 inline auto ZoomFilterBuffers::GetTranBuffersState() const noexcept -> TranBuffersState
@@ -172,6 +146,22 @@ inline auto ZoomFilterBuffers::SetTranLerpFactor(const uint32_t val) noexcept ->
   m_transformBuffers.SetTranLerpFactor(val);
 }
 
+inline auto ZoomFilterBuffers::HaveFilterSettingsChanged() const noexcept -> bool
+{
+  return m_filterSettingsHaveChanged;
+}
+
+inline auto ZoomFilterBuffers::NotifyFilterSettingsHaveChanged() noexcept -> void
+{
+  m_filterSettingsHaveChanged = true;
+}
+
+inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos,
+                                                      bool& isClipped) const noexcept -> Point2dInt
+{
+  return m_transformBuffers.GetSrceDestLerpBufferPoint(buffPos, isClipped);
+}
+
 inline auto ZoomFilterBuffers::GetMaxTranX() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(m_maxTranPoint.x);
@@ -184,7 +174,27 @@ inline auto ZoomFilterBuffers::GetMaxTranY() const noexcept -> uint32_t
 
 inline auto ZoomFilterBuffers::GetTranBuffYLineStart() const noexcept -> uint32_t
 {
-  return m_tranBuffYLineStart;
+  return m_filterBufferStripes.GetTranBuffYLineStart();
+}
+
+inline auto ZoomFilterBuffers::GetTransformBuffers() const noexcept
+    -> const FILTER_UTILS::ZoomTransformBuffers&
+{
+  return m_transformBuffers;
+}
+
+inline auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const noexcept
+    -> SourcePointInfo
+{
+  using FILTER_UTILS::ZOOM_FILTER_COEFFS::PRECALCULATED_COEFF_PTRS;
+
+  auto isClipped       = false;
+  const auto tranPoint = GetZoomBufferTranPoint(buffPos, isClipped);
+
+  const auto srceScreenPoint  = ZoomCoordTransforms::TranToScreenPoint(tranPoint);
+  const auto [xIndex, yIndex] = ZoomCoordTransforms::TranCoordToZoomCoeffIndexes(tranPoint);
+
+  return SourcePointInfo{srceScreenPoint, PRECALCULATED_COEFF_PTRS[xIndex][yIndex], isClipped};
 }
 
 } // namespace GOOM::FILTER_FX

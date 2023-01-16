@@ -14,8 +14,7 @@ ZoomTransformBuffers::ZoomTransformBuffers(const Dimensions& dimensions,
   : m_dimensions{dimensions},
     m_maxTranPointMinus1{maxTranPoint - Vec2dInt{1, 1}},
     m_tranSrce(m_bufferSize),
-    m_tranDest(m_bufferSize),
-    m_tranTemp(m_bufferSize)
+    m_tranDest(m_bufferSize)
 {
 }
 
@@ -35,7 +34,7 @@ auto ZoomTransformBuffers::SetSrceTranToIdentity() noexcept -> void
 auto ZoomTransformBuffers::CopyDestTranToSrceTran() noexcept -> void
 {
   // sauvegarde de l'etat actuel dans la nouvelle source
-  // Save the current state in the source buff.
+  // Save the current overall buffer state to the source buffer.
   if (0 == GetTranLerpFactor())
   {
     // Nothing to do: tran srce == tran dest.
@@ -46,7 +45,7 @@ auto ZoomTransformBuffers::CopyDestTranToSrceTran() noexcept -> void
   }
   else
   {
-    // Lerp and copy the dest buff to the source buff.
+    // Lerp and copy the dest buffer to the source buffer.
     for (auto buffPos = 0U; buffPos < m_bufferSize; ++buffPos)
     {
       m_tranSrce[buffPos] = GetSrceDestLerpBufferPoint(buffPos);

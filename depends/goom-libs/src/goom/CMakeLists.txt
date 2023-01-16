@@ -90,6 +90,7 @@ add_library(goom
             src/filter_fx/filter_consts.h
             src/filter_fx/filter_buffer_color_info.cpp
             src/filter_fx/filter_buffers.cpp
+            src/filter_fx/filter_buffer_stripes.cpp
             src/filter_fx/filter_buffers_service.cpp
             src/filter_fx/filter_colors_service.cpp
             src/filter_fx/filter_settings_service.cpp

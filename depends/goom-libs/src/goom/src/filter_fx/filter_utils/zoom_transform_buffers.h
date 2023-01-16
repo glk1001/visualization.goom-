@@ -22,12 +22,11 @@ public:
   ZoomTransformBuffers(const Dimensions& dimensions, const Point2dInt& maxTranPoint) noexcept;
 
   auto SetSrceTranToIdentity() noexcept -> void;
-  auto CopyTempTranToDestTran() noexcept -> void;
   auto CopyDestTranToSrceTran() noexcept -> void;
-  auto SetUpNextDestTran() noexcept -> void;
+  auto SwapDestTran(std::vector<Point2dInt>& otherTran) noexcept -> void;
 
-  auto SetTempBuffersTransformPoint(uint32_t buffPos, const Point2dInt& transformPoint) noexcept
-      -> void;
+  [[nodiscard]] auto GetTranSrce(size_t buffPos) const noexcept -> Point2dInt;
+  [[nodiscard]] auto GetTranDest(size_t buffPos) const noexcept -> Point2dInt;
 
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
   auto SetTranLerpFactor(uint32_t val) noexcept -> void;
@@ -39,22 +38,12 @@ public:
                                                  Point2dInt destPoint,
                                                  uint32_t t) noexcept -> Point2dInt;
 
-  [[nodiscard]] auto GetTranSrce(const size_t buffPos) const noexcept -> Point2dInt
-  {
-    return m_tranSrce[buffPos];
-  }
-  [[nodiscard]] auto GetTranDest(const size_t buffPos) const noexcept -> Point2dInt
-  {
-    return m_tranDest[buffPos];
-  }
-
 private:
   const Dimensions m_dimensions;
   const uint32_t m_bufferSize = m_dimensions.GetSize();
   const Point2dInt m_maxTranPointMinus1;
   std::vector<Point2dInt> m_tranSrce;
   std::vector<Point2dInt> m_tranDest;
-  std::vector<Point2dInt> m_tranTemp;
   uint32_t m_tranLerpFactor = 0U;
 
   [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos) const noexcept -> Point2dInt;
@@ -65,20 +54,19 @@ private:
   [[nodiscard]] auto GetClampedYVal(int32_t y) const noexcept -> int32_t;
 };
 
-inline auto ZoomTransformBuffers::CopyTempTranToDestTran() noexcept -> void
+inline auto ZoomTransformBuffers::GetTranSrce(const size_t buffPos) const noexcept -> Point2dInt
 {
-  std::copy(cbegin(m_tranTemp), cend(m_tranTemp), begin(m_tranDest));
+  return m_tranSrce[buffPos];
 }
 
-inline auto ZoomTransformBuffers::SetUpNextDestTran() noexcept -> void
+inline auto ZoomTransformBuffers::GetTranDest(const size_t buffPos) const noexcept -> Point2dInt
 {
-  std::swap(m_tranDest, m_tranTemp);
+  return m_tranDest[buffPos];
 }
 
-inline auto ZoomTransformBuffers::SetTempBuffersTransformPoint(
-    const uint32_t buffPos, const Point2dInt& transformPoint) noexcept -> void
+inline auto ZoomTransformBuffers::SwapDestTran(std::vector<Point2dInt>& otherTran) noexcept -> void
 {
-  m_tranTemp[buffPos] = transformPoint;
+  std::swap(m_tranDest, otherTran);
 }
 
 inline auto ZoomTransformBuffers::GetTranLerpFactor() const noexcept -> uint32_t
