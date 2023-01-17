@@ -25,9 +25,9 @@ using FILTER_FX::FilterSettingsService;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::Viewport;
-using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::ZoomFilterBufferSettings;
 using FILTER_FX::ZoomFilterFx;
+using FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL;
 using FILTER_FX::FILTER_EFFECTS::CreateZoomInCoefficientsEffect;
 using UTILS::Parallel;
 using UTILS::MATH::GoomRand;
@@ -40,19 +40,19 @@ static constexpr const char* RESOURCES_DIRECTORY = "";
 TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
 {
   Parallel parallel{-1};
-  SoundInfo soundInfo{};
-  GoomSoundEvents goomSoundEvents{soundInfo};
+  const SoundInfo soundInfo{};
+  const GoomSoundEvents goomSoundEvents{soundInfo};
 
   const PluginInfo goomInfo{
       {WIDTH, HEIGHT},
       goomSoundEvents
   };
   const GoomRand goomRand{};
-  FilterSettingsService filterSettingsService{
+  const FilterSettingsService filterSettingsService{
       goomInfo, goomRand, RESOURCES_DIRECTORY, CreateZoomInCoefficientsEffect};
   const NormalizedCoordsConverter normalizedCoordsConverter{
       {WIDTH, HEIGHT},
-      ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL
+      MIN_SCREEN_COORD_ABS_VAL
   };
   ZoomFilterFx zoomFilterFx{
       parallel,

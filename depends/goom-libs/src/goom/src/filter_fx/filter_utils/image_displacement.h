@@ -43,7 +43,7 @@ private:
   const int32_t m_yMax{static_cast<int32_t>(m_imageBuffer->GetHeight() - 1)};
   const NormalizedCoordsConverter m_normalizedCoordsConverter{
       {m_imageBuffer->GetWidth(), m_imageBuffer->GetHeight()},
-      ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL,
+      FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL,
       false
   };
   float m_zoomFactor                    = 1.0F;

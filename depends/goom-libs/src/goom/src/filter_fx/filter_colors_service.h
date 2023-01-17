@@ -17,7 +17,7 @@ namespace GOOM::FILTER_FX
 class FilterColorsService
 {
 public:
-  FilterColorsService(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit FilterColorsService(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetBrightness(float brightness) noexcept -> void;
   auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
@@ -27,7 +27,7 @@ public:
   using NeighborhoodPixelArray = FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodPixelArray;
 
   [[nodiscard]] auto GetNewColor(
-      const ZoomFilterBuffers::SourcePointInfo& sourcePointInfo,
+      const FILTER_BUFFERS::SourcePointInfo& sourcePointInfo,
       const std::array<Pixel, PixelBuffer::NUM_NBRS>& sourcePointNeighbours) const noexcept
       -> Pixel;
 
@@ -91,7 +91,7 @@ inline void FilterColorsService::SetBuffSettings(const FXBuffSettings& settings)
 }
 
 inline auto FilterColorsService::GetNewColor(
-    const ZoomFilterBuffers::SourcePointInfo& sourcePointInfo,
+    const FILTER_BUFFERS::SourcePointInfo& sourcePointInfo,
     const std::array<Pixel, PixelBuffer::NUM_NBRS>& sourcePointNeighbours) const noexcept -> Pixel
 {
   return GetFilteredColor(*sourcePointInfo.coeffs, sourcePointNeighbours);

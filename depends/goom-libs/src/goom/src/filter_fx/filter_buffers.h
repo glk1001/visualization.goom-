@@ -1,36 +1,41 @@
 #pragma once
 
-#include "filter_buffer_stripes.h"
 #include "filter_utils/zoom_coord_transforms.h"
 #include "filter_utils/zoom_filter_coefficients.h"
 #include "filter_utils/zoom_transform_buffers.h"
+#include "goom_plugin_info.h"
 #include "goom_types.h"
-#include "normalized_coords.h"
 #include "point2d.h"
 
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <vector>
-
-namespace GOOM
-{
-class PluginInfo;
-
-namespace UTILS
-{
-class Parallel;
-}
-} // namespace GOOM
 
 namespace GOOM::FILTER_FX
 {
 
+namespace FILTER_BUFFERS
+{
+inline constexpr float MIN_SCREEN_COORD_ABS_VAL =
+    1.0F / static_cast<float>(FILTER_UTILS::ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS);
+
+struct SourcePointInfo
+{
+  Point2dInt screenPoint;
+  const FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray* coeffs;
+  bool isClipped;
+};
+} // namespace FILTER_BUFFERS
+
+template<class FilterStriper>
 class ZoomFilterBuffers
 {
-public:
-  static constexpr float MIN_SCREEN_COORD_ABS_VAL =
-      1.0F / static_cast<float>(FILTER_UTILS::ZOOM_FILTER_COEFFS::DIM_FILTER_COEFFS);
+  using ZoomTransformBuffers = FILTER_UTILS::ZoomTransformBuffers;
+  using ZoomCoordTransforms  = FILTER_UTILS::ZoomCoordTransforms;
+  using SourcePointInfo      = FILTER_BUFFERS::SourcePointInfo;
 
+public:
   enum class TranBuffersState
   {
     START_FRESH_TRAN_BUFFERS,
@@ -38,14 +43,8 @@ public:
     TRAN_BUFFERS_READY,
   };
 
-  using ZoomPointFunc =
-      std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords,
-                                     const NormalizedCoords& normalizedFilterViewportCoords)>;
-
-  ZoomFilterBuffers(UTILS::Parallel& parallel,
-                    const PluginInfo& goomInfo,
-                    const NormalizedCoordsConverter& normalizedCoordsConverter,
-                    const ZoomPointFunc& zoomPointFunc) noexcept;
+  ZoomFilterBuffers(const PluginInfo& goomInfo,
+                    std::unique_ptr<FilterStriper> filterStriper) noexcept;
 
   [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
   auto SetBuffMidpoint(const Point2dInt& val) noexcept -> void;
@@ -60,35 +59,24 @@ public:
   auto Start() noexcept -> void;
 
   [[nodiscard]] auto GetTranBuffYLineStart() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetTransformBuffers() const noexcept -> const ZoomTransformBuffers&;
 
   auto NotifyFilterSettingsHaveChanged() noexcept -> void;
   [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
   auto UpdateTranBuffers() noexcept -> void;
   [[nodiscard]] auto GetTranBuffersState() const noexcept -> TranBuffersState;
-
-  struct SourcePointInfo
-  {
-    Point2dInt screenPoint;
-    const FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray* coeffs;
-    bool isClipped;
-  };
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept -> SourcePointInfo;
-
   [[nodiscard]] auto GetZoomBufferTranPoint(size_t buffPos, bool& isClipped) const noexcept
       -> Point2dInt;
 
-  [[nodiscard]] auto GetTransformBuffers() const noexcept
-      -> const FILTER_UTILS::ZoomTransformBuffers&;
-
 private:
   const Dimensions m_dimensions;
-  ZoomFilterBufferStripes m_filterBufferStripes;
+  std::unique_ptr<FilterStriper> m_filterStriper;
 
-  using ZoomCoordTransforms       = FILTER_UTILS::ZoomCoordTransforms;
   const Point2dInt m_maxTranPoint = ZoomCoordTransforms::ScreenToTranPoint(
       {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1});
-  FILTER_UTILS::ZoomTransformBuffers m_transformBuffers{m_dimensions, m_maxTranPoint};
+  ZoomTransformBuffers m_transformBuffers{m_dimensions, m_maxTranPoint};
 
   bool m_filterSettingsHaveChanged    = false;
   TranBuffersState m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
@@ -106,85 +94,114 @@ private:
   std::vector<int32_t> m_firedec;
 };
 
-inline auto ZoomFilterBuffers::GetBuffMidpoint() const noexcept -> Point2dInt
+template<class FilterStriper>
+ZoomFilterBuffers<FilterStriper>::ZoomFilterBuffers(
+    const PluginInfo& goomInfo, std::unique_ptr<FilterStriper> filterStriper) noexcept
+  : m_dimensions{goomInfo.GetScreenDimensions()},
+    m_filterStriper{std::move(filterStriper)},
+    m_firedec(m_dimensions.GetHeight())
 {
-  return m_filterBufferStripes.GetBuffMidpoint();
 }
 
-inline auto ZoomFilterBuffers::SetBuffMidpoint(const Point2dInt& val) noexcept -> void
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetBuffMidpoint() const noexcept -> Point2dInt
 {
-  m_filterBufferStripes.SetBuffMidpoint(val);
+  return m_filterStriper->GetBuffMidpoint();
 }
 
-inline auto ZoomFilterBuffers::GetFilterViewport() const noexcept -> Viewport
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::SetBuffMidpoint(const Point2dInt& val) noexcept
+    -> void
 {
-  return m_filterBufferStripes.GetFilterViewport();
+  m_filterStriper->SetBuffMidpoint(val);
 }
 
-inline auto ZoomFilterBuffers::SetFilterViewport(const Viewport& val) noexcept -> void
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetFilterViewport() const noexcept -> Viewport
 {
-  m_filterBufferStripes.SetFilterViewport(val);
+  return m_filterStriper->GetFilterViewport();
 }
 
-inline auto ZoomFilterBuffers::GetTranBuffersState() const noexcept -> TranBuffersState
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::SetFilterViewport(const Viewport& val) noexcept
+    -> void
+{
+  m_filterStriper->SetFilterViewport(val);
+}
+
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetTranBuffersState() const noexcept
+    -> TranBuffersState
 {
   return m_tranBuffersState;
 }
 
-inline auto ZoomFilterBuffers::GetTranLerpFactor() const noexcept -> uint32_t
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_transformBuffers.GetTranLerpFactor();
 }
 
-inline auto ZoomFilterBuffers::GetMaxTranLerpFactor() noexcept -> uint32_t
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetMaxTranLerpFactor() noexcept -> uint32_t
 {
-  return FILTER_UTILS::ZoomTransformBuffers::MAX_TRAN_LERP_VALUE;
+  return ZoomTransformBuffers::MAX_TRAN_LERP_VALUE;
 }
 
-inline auto ZoomFilterBuffers::SetTranLerpFactor(const uint32_t val) noexcept -> void
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::SetTranLerpFactor(const uint32_t val) noexcept -> void
 {
   m_transformBuffers.SetTranLerpFactor(val);
 }
 
-inline auto ZoomFilterBuffers::HaveFilterSettingsChanged() const noexcept -> bool
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::HaveFilterSettingsChanged() const noexcept -> bool
 {
   return m_filterSettingsHaveChanged;
 }
 
-inline auto ZoomFilterBuffers::NotifyFilterSettingsHaveChanged() noexcept -> void
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::NotifyFilterSettingsHaveChanged() noexcept -> void
 {
   m_filterSettingsHaveChanged = true;
 }
 
-inline auto ZoomFilterBuffers::GetZoomBufferTranPoint(const size_t buffPos,
-                                                      bool& isClipped) const noexcept -> Point2dInt
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetZoomBufferTranPoint(const size_t buffPos,
+                                                                     bool& isClipped) const noexcept
+    -> Point2dInt
 {
   return m_transformBuffers.GetSrceDestLerpBufferPoint(buffPos, isClipped);
 }
 
-inline auto ZoomFilterBuffers::GetMaxTranX() const noexcept -> uint32_t
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetMaxTranX() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(m_maxTranPoint.x);
 }
 
-inline auto ZoomFilterBuffers::GetMaxTranY() const noexcept -> uint32_t
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetMaxTranY() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(m_maxTranPoint.y);
 }
 
-inline auto ZoomFilterBuffers::GetTranBuffYLineStart() const noexcept -> uint32_t
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetTranBuffYLineStart() const noexcept -> uint32_t
 {
-  return m_filterBufferStripes.GetTranBuffYLineStart();
+  return m_filterStriper->GetTranBuffYLineStart();
 }
 
-inline auto ZoomFilterBuffers::GetTransformBuffers() const noexcept
-    -> const FILTER_UTILS::ZoomTransformBuffers&
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBuffers() const noexcept
+    -> const ZoomTransformBuffers&
 {
   return m_transformBuffers;
 }
 
-inline auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const noexcept
-    -> SourcePointInfo
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::GetSourcePointInfo(
+    const size_t buffPos) const noexcept -> SourcePointInfo
 {
   using FILTER_UTILS::ZOOM_FILTER_COEFFS::PRECALCULATED_COEFF_PTRS;
 
@@ -194,7 +211,146 @@ inline auto ZoomFilterBuffers::GetSourcePointInfo(const size_t buffPos) const no
   const auto srceScreenPoint  = ZoomCoordTransforms::TranToScreenPoint(tranPoint);
   const auto [xIndex, yIndex] = ZoomCoordTransforms::TranCoordToZoomCoeffIndexes(tranPoint);
 
-  return SourcePointInfo{srceScreenPoint, PRECALCULATED_COEFF_PTRS[xIndex][yIndex], isClipped};
+  return {srceScreenPoint, PRECALCULATED_COEFF_PTRS[xIndex][yIndex], isClipped};
+}
+
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::Start() noexcept -> void
+{
+  InitAllTranBuffers();
+}
+
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::InitAllTranBuffers() noexcept -> void
+{
+  m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
+  m_filterStriper->ResetStripes();
+
+  GenerateWaterFxHorizontalBuffer();
+
+  FillTempTranBuffer();
+
+  m_transformBuffers.SetSrceTranToIdentity();
+  m_transformBuffers.SwapDestTran(m_filterStriper->GetTranBuffer());
+
+  m_filterStriper->ResetStripes();
+  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
+}
+
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::UpdateTranBuffers() noexcept -> void
+{
+  if (m_tranBuffersState == TranBuffersState::RESET_TRAN_BUFFERS)
+  {
+    ResetTranBuffers();
+  }
+  else if (m_tranBuffersState == TranBuffersState::START_FRESH_TRAN_BUFFERS)
+  {
+    StartFreshTranBuffers();
+  }
+  else
+  {
+    UpdateNextTempTranBufferStripe();
+  }
+}
+
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::StartFreshTranBuffers() noexcept -> void
+{
+  if (not m_filterSettingsHaveChanged)
+  {
+    return;
+  }
+
+  m_filterSettingsHaveChanged = false;
+  m_filterStriper->ResetStripes();
+  m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
+}
+
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::ResetTranBuffers() noexcept -> void
+{
+  m_transformBuffers.CopyDestTranToSrceTran();
+  m_transformBuffers.SwapDestTran(m_filterStriper->GetTranBuffer());
+
+  m_transformBuffers.SetTranLerpFactor(0);
+  m_filterStriper->ResetStripes();
+  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
+}
+
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::UpdateNextTempTranBufferStripe() noexcept -> void
+{
+  m_filterStriper->UpdateNextStripe();
+  if (m_filterStriper->GetTranBuffYLineStart() == 0)
+  {
+    m_tranBuffersState = TranBuffersState::RESET_TRAN_BUFFERS;
+  }
+}
+
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::FillTempTranBuffer() noexcept -> void
+{
+  m_filterStriper->UpdateAllStripes();
+}
+
+template<class FilterStriper>
+auto ZoomFilterBuffers<FilterStriper>::GenerateWaterFxHorizontalBuffer() noexcept -> void
+{
+  /*****************
+  int32_t decc = m_goomRand.GetRandInRange(-4, +4);
+  int32_t spdc = m_goomRand.GetRandInRange(-4, +4);
+  int32_t accel = m_goomRand.GetRandInRange(-4, +4);
+
+  for (size_t loopv = m_screenHeight; loopv != 0;)
+  {
+    --loopv;
+    m_firedec[loopv] = decc;
+    decc += spdc / 10;
+    spdc += m_goomRand.GetRandInRange(-2, +3);
+
+    if (decc > 4)
+    {
+      spdc -= 1;
+    }
+    if (decc < -4)
+    {
+      spdc += 1;
+    }
+
+    if (spdc > 30)
+    {
+      spdc = (spdc - static_cast<int32_t>(m_goomRand.GetNRand(3))) + (accel / 10);
+    }
+    if (spdc < -30)
+    {
+      spdc = spdc + static_cast<int32_t>(m_goomRand.GetNRand(3)) + (accel / 10);
+    }
+
+    if ((decc > 8) && (spdc > 1))
+    {
+      spdc -= m_goomRand.GetRandInRange(-2, +1);
+    }
+    if ((decc < -8) && (spdc < -1))
+    {
+      spdc += static_cast<int32_t>(m_goomRand.GetNRand(3)) + 2;
+    }
+    if ((decc > 8) || (decc < -8))
+    {
+      decc = (decc * 8) / 9;
+    }
+
+    accel += m_goomRand.GetRandInRange(-1, +2);
+    if (accel > 20)
+    {
+      accel -= 2;
+    }
+    if (accel < -20)
+    {
+      accel += 2;
+    }
+  }
+  *************************/
 }
 
 } // namespace GOOM::FILTER_FX

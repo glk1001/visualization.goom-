@@ -1,6 +1,6 @@
 //#undef NO_LOGGING
 
-#include "filter_buffer_stripes.h"
+#include "filter_buffer_striper.h"
 
 #include "goom_config.h"
 #include "goom_logger.h"
@@ -17,7 +17,7 @@ namespace GOOM::FILTER_FX
 
 using UTILS::Parallel;
 
-ZoomFilterBufferStripes::ZoomFilterBufferStripes(
+ZoomFilterBufferStriper::ZoomFilterBufferStriper(
     Parallel& parallel,
     const PluginInfo& goomInfo,
     const NormalizedCoordsConverter& normalizedCoordsConverter,
@@ -30,12 +30,12 @@ ZoomFilterBufferStripes::ZoomFilterBufferStripes(
 {
 }
 
-auto ZoomFilterBufferStripes::ResetStripes() noexcept -> void
+auto ZoomFilterBufferStriper::ResetStripes() noexcept -> void
 {
   m_tranBuffYLineStart = 0;
 }
 
-inline auto ZoomFilterBufferStripes::GetTranPoint(const NormalizedCoords& normalized) const noexcept
+inline auto ZoomFilterBufferStriper::GetTranPoint(const NormalizedCoords& normalized) const noexcept
     -> Point2dInt
 {
   return m_coordTransforms.NormalizedToTranPoint(normalized);
@@ -48,7 +48,7 @@ inline auto ZoomFilterBufferStripes::GetTranPoint(const NormalizedCoords& normal
  * Translation (-data->middleX, -data->middleY)
  * Homothetie (Center : 0,0   Coeff : 2/data->screenWidth)
  */
-auto ZoomFilterBufferStripes::DoNextStripe(const uint32_t tranBuffStripeHeight) noexcept -> void
+auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) noexcept -> void
 {
   const auto screenWidth                  = m_dimensions.GetWidth();
   const auto screenSpan                   = static_cast<float>(screenWidth - 1);
@@ -80,7 +80,7 @@ auto ZoomFilterBufferStripes::DoNextStripe(const uint32_t tranBuffStripeHeight) 
     }
   };
 
-  // Where (vertically) to stop generating the buffer stripe
+  // Where (vertically) to stop generating the buffer stripe.
   const auto tranBuffYLineEnd =
       std::min(m_dimensions.GetHeight(), m_tranBuffYLineStart + tranBuffStripeHeight);
   const auto numStripes = static_cast<size_t>(tranBuffYLineEnd - m_tranBuffYLineStart);

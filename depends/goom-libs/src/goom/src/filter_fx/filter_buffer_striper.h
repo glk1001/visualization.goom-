@@ -15,27 +15,25 @@
 
 namespace GOOM
 {
-
 class PluginInfo;
 
 namespace UTILS
 {
 class Parallel;
 }
-
 } // namespace GOOM
 
 namespace GOOM::FILTER_FX
 {
 
-class ZoomFilterBufferStripes
+class ZoomFilterBufferStriper
 {
 public:
   using ZoomPointFunc =
       std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords,
                                      const NormalizedCoords& normalizedFilterViewportCoords)>;
 
-  ZoomFilterBufferStripes(UTILS::Parallel& parallel,
+  ZoomFilterBufferStriper(UTILS::Parallel& parallel,
                           const PluginInfo& goomInfo,
                           const NormalizedCoordsConverter& normalizedCoordsConverter,
                           const ZoomPointFunc& zoomPointFunc) noexcept;
@@ -65,8 +63,9 @@ private:
   Point2dInt m_buffMidpoint             = {0, 0};
   NormalizedCoords m_normalizedMidpoint = {0.0F, 0.0F};
   Viewport m_filterViewport             = Viewport{};
+
   // 'NUM_STRIPE_GROUPS' controls how many updates before all stripes, and therefore,
-  // all the tran buffer, is filled. We use stripes to spread the buffer update load
+  // all of the tran buffer, is filled. We use stripes to spread the buffer update load
   // over a number of updates. Too few and performance suffers periodically for a
   // number of updates; too many, and performance suffers overall.
   static constexpr auto NUM_STRIPE_GROUPS = 16U;
@@ -78,45 +77,45 @@ private:
   [[nodiscard]] auto GetTranPoint(const NormalizedCoords& normalized) const noexcept -> Point2dInt;
 };
 
-inline auto ZoomFilterBufferStripes::GetTranBuffYLineStart() const noexcept -> uint32_t
+inline auto ZoomFilterBufferStriper::GetTranBuffYLineStart() const noexcept -> uint32_t
 {
   return m_tranBuffYLineStart;
 }
 
-inline auto ZoomFilterBufferStripes::GetBuffMidpoint() const noexcept -> Point2dInt
+inline auto ZoomFilterBufferStriper::GetTranBuffer() noexcept -> std::vector<Point2dInt>&
+{
+  return m_tranBuffer;
+}
+
+inline auto ZoomFilterBufferStriper::GetBuffMidpoint() const noexcept -> Point2dInt
 {
   return m_buffMidpoint;
 }
 
-inline auto ZoomFilterBufferStripes::SetBuffMidpoint(const Point2dInt& val) noexcept -> void
+inline auto ZoomFilterBufferStriper::SetBuffMidpoint(const Point2dInt& val) noexcept -> void
 {
   m_buffMidpoint       = val;
   m_normalizedMidpoint = m_normalizedCoordsConverter.OtherToNormalizedCoords(m_buffMidpoint);
 }
 
-inline auto ZoomFilterBufferStripes::GetFilterViewport() const noexcept -> Viewport
+inline auto ZoomFilterBufferStriper::GetFilterViewport() const noexcept -> Viewport
 {
   return m_filterViewport;
 }
 
-inline auto ZoomFilterBufferStripes::SetFilterViewport(const Viewport& val) noexcept -> void
+inline auto ZoomFilterBufferStriper::SetFilterViewport(const Viewport& val) noexcept -> void
 {
   m_filterViewport = val;
 }
 
-inline auto ZoomFilterBufferStripes::UpdateAllStripes() noexcept -> void
+inline auto ZoomFilterBufferStriper::UpdateAllStripes() noexcept -> void
 {
   DoNextStripe(m_dimensions.GetHeight());
 }
 
-inline auto ZoomFilterBufferStripes::UpdateNextStripe() noexcept -> void
+inline auto ZoomFilterBufferStriper::UpdateNextStripe() noexcept -> void
 {
   DoNextStripe(m_tranBuffStripeHeight);
-}
-
-inline auto ZoomFilterBufferStripes::GetTranBuffer() noexcept -> std::vector<Point2dInt>&
-{
-  return m_tranBuffer;
 }
 
 } // namespace GOOM::FILTER_FX

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_buffer_striper.h"
 #include "filter_buffers.h"
 #include "filter_settings.h"
 #include "utils/name_value_pairs.h"
@@ -23,6 +24,8 @@ namespace FILTER_FX
 
 class FilterBuffersService
 {
+  using FilterBuffers = ZoomFilterBuffers<ZoomFilterBufferStriper>;
+
 public:
   FilterBuffersService(UTILS::Parallel& parallel,
                        const PluginInfo& goomInfo,
@@ -39,21 +42,21 @@ public:
       -> void;
 
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
-  [[nodiscard]] auto GetFilterBuffers() noexcept -> ZoomFilterBuffers&;
+  [[nodiscard]] auto GetFilterBuffers() noexcept -> FilterBuffers&;
 
   auto UpdateTranBuffers() noexcept -> void;
   auto UpdateTranLerpFactor(uint32_t tranLerpIncrement, float tranLerpToMaxSwitchMult) noexcept
       -> void;
 
-  using SourcePointInfo = ZoomFilterBuffers::SourcePointInfo;
-  [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept -> SourcePointInfo;
+  [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept
+      -> FILTER_BUFFERS::SourcePointInfo;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> UTILS::NameValuePairs;
 
 private:
   std::unique_ptr<IZoomVector> m_zoomVector;
-  ZoomFilterBuffers m_filterBuffers;
+  FilterBuffers m_filterBuffers;
 
   ZoomFilterEffectsSettings m_currentFilterEffectsSettings{};
   ZoomFilterEffectsSettings m_nextFilterEffectsSettings{};
@@ -72,7 +75,7 @@ inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexce
 }
 
 inline auto FilterBuffersService::GetSourcePointInfo(const size_t buffPos) const noexcept
-    -> SourcePointInfo
+    -> FILTER_BUFFERS::SourcePointInfo
 {
   return m_filterBuffers.GetSourcePointInfo(buffPos);
 }
@@ -82,7 +85,7 @@ inline auto FilterBuffersService::GetTranLerpFactor() const noexcept -> uint32_t
   return m_filterBuffers.GetTranLerpFactor();
 }
 
-inline auto FilterBuffersService::GetFilterBuffers() noexcept -> ZoomFilterBuffers&
+inline auto FilterBuffersService::GetFilterBuffers() noexcept -> FilterBuffers&
 {
   return m_filterBuffers;
 }

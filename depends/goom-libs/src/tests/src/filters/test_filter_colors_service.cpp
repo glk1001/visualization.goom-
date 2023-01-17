@@ -13,7 +13,7 @@ namespace GOOM::UNIT_TESTS
 {
 
 using FILTER_FX::FilterColorsService;
-using FILTER_FX::ZoomFilterBuffers;
+using FILTER_FX::FILTER_BUFFERS::SourcePointInfo;
 using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::MAX_SUM_COEFFS;
 using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray;
 using UTILS::fmt_rgba;
@@ -66,7 +66,7 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
     static constexpr auto X = 5;
     static constexpr auto Y = 5;
 
-    static constexpr auto SOURCE_POINT_INFO = ZoomFilterBuffers::SourcePointInfo{
+    static constexpr auto SOURCE_POINT_INFO = SourcePointInfo{
         {static_cast<int32_t>(X), static_cast<int32_t>(Y)},
         &COEFFS, false
     };

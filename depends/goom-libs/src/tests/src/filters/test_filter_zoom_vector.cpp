@@ -26,11 +26,11 @@ using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::Vitesse;
-using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::ZoomFilterEffectsSettings;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using FILTER_FX::AFTER_EFFECTS::HypercosOverlay;
 using FILTER_FX::AFTER_EFFECTS::RotationAdjustments;
+using FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL;
 using FILTER_FX::FILTER_EFFECTS::UniformZoomInCoefficientsEffect;
 using FILTER_FX::FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::EnumMap;
@@ -42,7 +42,7 @@ static constexpr const char* RESOURCES_DIRECTORY = "";
 static const GoomRand GOOM_RAND{};
 static const NormalizedCoordsConverter NORMALIZED_COORDS_CONVERTER{
     {WIDTH, HEIGHT},
-    ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL
+    MIN_SCREEN_COORD_ABS_VAL
 };
 
 namespace

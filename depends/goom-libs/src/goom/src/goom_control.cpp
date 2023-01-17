@@ -74,7 +74,6 @@ using FILTER_FX::FilterColorsService;
 using FILTER_FX::FilterSettingsService;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
-using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::FILTER_EFFECTS::CreateZoomInCoefficientsEffect;
 #ifdef DO_GOOM_STATE_DUMP
 using std::experimental::propagate_const;
@@ -150,7 +149,7 @@ private:
   GoomRandomStateHandler m_stateHandler{m_goomRand};
   const NormalizedCoordsConverter m_normalizedCoordsConverter{
       {m_goomInfo.GetScreenWidth(), m_goomInfo.GetScreenHeight()},
-      ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL
+      FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL
   };
   GoomAllVisualFx m_visualFx{m_parallel,
                              m_fxHelper,

@@ -25,6 +25,7 @@ BraceWrapping:
   AfterEnum: true
   AfterStruct: true
   SplitEmptyFunction: false
+#BreakAfterAttributes: Always
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Allman
 BreakBeforeTernaryOperators: true

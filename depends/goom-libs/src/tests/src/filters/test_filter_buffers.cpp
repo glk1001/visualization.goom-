@@ -4,6 +4,7 @@
 
 #include "catch2/catch.hpp"
 #include "control/goom_sound_events.h"
+#include "filter_fx/filter_buffer_striper.h"
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/filter_zoom_vector.h"
@@ -26,11 +27,15 @@ using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::ZoomFilterBuffers;
+using FILTER_FX::ZoomFilterBufferStriper;
 using FILTER_FX::ZoomFilterEffectsSettings;
+using FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL;
 using FILTER_FX::FILTER_UTILS::ZoomCoordTransforms;
 using FILTER_FX::FILTER_UTILS::ZoomTransformBuffers;
 using UTILS::Parallel;
 using UTILS::MATH::GoomRand;
+
+using FilterBuffers = ZoomFilterBuffers<ZoomFilterBufferStriper>;
 
 //#define LARGE_SCREEN_TEST
 static constexpr auto LARGE_WIDTH  = 3840U;
@@ -46,7 +51,7 @@ static constexpr auto* RESOURCES_DIRECTORY        = "";
 static const auto GOOM_RAND                       = GoomRand{};
 static constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
     {WIDTH, HEIGHT},
-    ZoomFilterBuffers::MIN_SCREEN_COORD_ABS_VAL
+    MIN_SCREEN_COORD_ABS_VAL
 };
 
 static constexpr auto MID_PT                     = MidpointFromOrigin({WIDTH, HEIGHT});
@@ -113,18 +118,18 @@ const ZoomCoordTransforms COORD_TRANSFORMS{
     {WIDTH, HEIGHT}
 };
 
-auto GetSourcePoint(const ZoomFilterBuffers& filterBuffers, const size_t buffPos) -> Point2dInt
+auto GetSourcePoint(const FilterBuffers& filterBuffers, const size_t buffPos) -> Point2dInt
 {
   return filterBuffers.GetSourcePointInfo(buffPos).screenPoint;
 }
 
-auto FullyUpdateDestBuffer(ZoomFilterBuffers& filterBuffers) noexcept -> void
+auto FullyUpdateDestBuffer(FilterBuffers& filterBuffers) noexcept -> void
 {
-  REQUIRE(ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
+  REQUIRE(FilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
           filterBuffers.GetTranBuffersState());
 
   filterBuffers.UpdateTranBuffers();
-  REQUIRE(ZoomFilterBuffers::TranBuffersState::TRAN_BUFFERS_READY ==
+  REQUIRE(FilterBuffers::TranBuffersState::TRAN_BUFFERS_READY ==
           filterBuffers.GetTranBuffersState());
 
   filterBuffers.UpdateTranBuffers();
@@ -136,7 +141,7 @@ auto FullyUpdateDestBuffer(ZoomFilterBuffers& filterBuffers) noexcept -> void
       break;
     }
   }
-  REQUIRE(ZoomFilterBuffers::TranBuffersState::RESET_TRAN_BUFFERS ==
+  REQUIRE(FilterBuffers::TranBuffersState::RESET_TRAN_BUFFERS ==
           filterBuffers.GetTranBuffersState());
 
   filterBuffers.UpdateTranBuffers();
@@ -160,13 +165,15 @@ TEST_CASE("ZoomFilterBuffers Basic")
       {WIDTH, HEIGHT},
       goomSoundEvents
   };
-  auto identityZoomVector = TestZoomVector{false};
-  auto filterBuffers      = ZoomFilterBuffers{
+  auto identityZoomVector  = TestZoomVector{false};
+  auto filterBufferStriper = std::make_unique<ZoomFilterBufferStriper>(
       parallel,
       goomInfo,
       NORMALIZED_COORDS_CONVERTER,
-      [&](const NormalizedCoords& normalizedCoords, const NormalizedCoords& viewportCoords)
-      { return identityZoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); }};
+      [&identityZoomVector](const NormalizedCoords& normalizedCoords,
+                            const NormalizedCoords& viewportCoords)
+      { return identityZoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); });
+  auto filterBuffers = FilterBuffers{goomInfo, std::move(filterBufferStriper)};
 
   filterBuffers.SetBuffMidpoint(MID_PT);
   filterBuffers.Start();
@@ -176,7 +183,7 @@ TEST_CASE("ZoomFilterBuffers Basic")
 
   SECTION("Correct Starting TranBuffersState")
   {
-    REQUIRE(ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
+    REQUIRE(FilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
             filterBuffers.GetTranBuffersState());
   }
   SECTION("Correct Starting BuffYLineStart")
@@ -258,13 +265,15 @@ TEST_CASE("ZoomFilterBuffers Calculations")
       {WIDTH, HEIGHT},
       goomSoundEvents
   };
-  auto constantZoomVector = TestZoomVector{true};
-  auto filterBuffers      = ZoomFilterBuffers{
+  auto constantZoomVector  = TestZoomVector{true};
+  auto filterBufferStriper = std::make_unique<ZoomFilterBufferStriper>(
       parallel,
       goomInfo,
       NORMALIZED_COORDS_CONVERTER,
-      [&](const NormalizedCoords& normalizedCoords, const NormalizedCoords& viewportCoords)
-      { return constantZoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); }};
+      [&constantZoomVector](const NormalizedCoords& normalizedCoords,
+                            const NormalizedCoords& viewportCoords)
+      { return constantZoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); });
+  auto filterBuffers = FilterBuffers{goomInfo, std::move(filterBufferStriper)};
 
   filterBuffers.SetBuffMidpoint(MID_PT);
   filterBuffers.Start();
@@ -462,13 +471,15 @@ TEST_CASE("ZoomFilterBuffers Stripes")
       {WIDTH, HEIGHT},
       goomSoundEvents
   };
-  auto constantZoomVector = TestZoomVector{true};
-  auto filterBuffers      = ZoomFilterBuffers{
+  auto constantZoomVector  = TestZoomVector{true};
+  auto filterBufferStriper = std::make_unique<ZoomFilterBufferStriper>(
       parallel,
       goomInfo,
       NORMALIZED_COORDS_CONVERTER,
-      [&](const NormalizedCoords& normalizedCoords, const NormalizedCoords& viewportCoords)
-      { return constantZoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); }};
+      [&constantZoomVector](const NormalizedCoords& normalizedCoords,
+                            const NormalizedCoords& viewportCoords)
+      { return constantZoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); });
+  auto filterBuffers = FilterBuffers{goomInfo, std::move(filterBufferStriper)};
 
   filterBuffers.SetBuffMidpoint(MID_PT);
   filterBuffers.Start();
@@ -482,7 +493,7 @@ TEST_CASE("ZoomFilterBuffers Stripes")
 
   SECTION("ZoomBuffer Stripe")
   {
-    REQUIRE(ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
+    REQUIRE(FilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
             filterBuffers.GetTranBuffersState());
     REQUIRE(not filterBuffers.HaveFilterSettingsChanged());
 
@@ -502,7 +513,7 @@ TEST_CASE("ZoomFilterBuffers Stripes")
     filterBuffers.NotifyFilterSettingsHaveChanged();
     REQUIRE(filterBuffers.HaveFilterSettingsChanged());
     FullyUpdateDestBuffer(filterBuffers);
-    REQUIRE(ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
+    REQUIRE(FilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
             filterBuffers.GetTranBuffersState());
     REQUIRE(0 == filterBuffers.GetTranLerpFactor());
     REQUIRE(0 == filterBuffers.GetTranBuffYLineStart());
@@ -589,13 +600,15 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
       {WIDTH, HEIGHT},
       goomSoundEvents
   };
-  auto zoomVector    = TestZoomVector{false};
-  auto filterBuffers = ZoomFilterBuffers{
+  auto zoomVector          = TestZoomVector{false};
+  auto filterBufferStriper = std::make_unique<ZoomFilterBufferStriper>(
       parallel,
       goomInfo,
       NORMALIZED_COORDS_CONVERTER,
-      [&](const NormalizedCoords& normalizedCoords, const NormalizedCoords& viewportCoords)
-      { return zoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); }};
+      [&zoomVector](const NormalizedCoords& normalizedCoords,
+                    const NormalizedCoords& viewportCoords)
+      { return zoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); });
+  auto filterBuffers = FilterBuffers{goomInfo, std::move(filterBufferStriper)};
 
   filterBuffers.SetBuffMidpoint(MID_PT);
   filterBuffers.Start();
@@ -620,7 +633,7 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
     filterBuffers.NotifyFilterSettingsHaveChanged();
     REQUIRE(filterBuffers.HaveFilterSettingsChanged());
     FullyUpdateDestBuffer(filterBuffers);
-    REQUIRE(ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
+    REQUIRE(FilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
             filterBuffers.GetTranBuffersState());
     filterBuffers.SetTranLerpFactor(filterBuffers.GetMaxTranLerpFactor());
     REQUIRE(filterBuffers.GetMaxTranLerpFactor() == filterBuffers.GetTranLerpFactor());
@@ -658,13 +671,15 @@ TEST_CASE("ZoomFilterBuffers Clipping")
       {WIDTH, HEIGHT},
       goomSoundEvents
   };
-  auto constantZoomVector = TestZoomVector{true};
-  auto filterBuffers      = ZoomFilterBuffers{
+  auto constantZoomVector  = TestZoomVector{true};
+  auto filterBufferStriper = std::make_unique<ZoomFilterBufferStriper>(
       parallel,
       goomInfo,
       NORMALIZED_COORDS_CONVERTER,
-      [&](const NormalizedCoords& normalizedCoords, const NormalizedCoords& viewportCoords)
-      { return constantZoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); }};
+      [&constantZoomVector](const NormalizedCoords& normalizedCoords,
+                            const NormalizedCoords& viewportCoords)
+      { return constantZoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); });
+  auto filterBuffers = FilterBuffers{goomInfo, std::move(filterBufferStriper)};
 
   filterBuffers.SetBuffMidpoint({0, 0});
   filterBuffers.Start();

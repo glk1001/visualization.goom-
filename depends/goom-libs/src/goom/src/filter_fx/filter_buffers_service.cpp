@@ -2,6 +2,7 @@
 
 #include "filter_buffers_service.h"
 
+#include "filter_buffer_striper.h"
 #include "filter_buffers.h"
 #include "filter_settings.h"
 #include "goom_config.h"
@@ -29,13 +30,16 @@ FilterBuffersService::FilterBuffersService(
     const NormalizedCoordsConverter& normalizedCoordsConverter,
     std::unique_ptr<IZoomVector> zoomVector) noexcept
   : m_zoomVector{std::move(zoomVector)},
-    m_filterBuffers{
-        parallel,
-        goomInfo,
-        normalizedCoordsConverter,
-        [this](const NormalizedCoords& normalizedCoords,
-               const NormalizedCoords& normalizedFilterViewportCoords)
-        { return m_zoomVector->GetZoomInPoint(normalizedCoords, normalizedFilterViewportCoords); }}
+    m_filterBuffers{goomInfo,
+                    std::make_unique<ZoomFilterBufferStriper>(
+                        parallel,
+                        goomInfo,
+                        normalizedCoordsConverter,
+                        [this](const NormalizedCoords& normalizedCoords,
+                               const NormalizedCoords& normalizedFilterViewportCoords) {
+                          return m_zoomVector->GetZoomInPoint(normalizedCoords,
+                                                              normalizedFilterViewportCoords);
+                        })}
 {
 }
 
@@ -99,7 +103,7 @@ auto FilterBuffersService::UpdateTranBuffers() noexcept -> void
 inline auto FilterBuffersService::AreStartingFreshTranBuffers() const noexcept -> bool
 {
   return m_filterBuffers.GetTranBuffersState() ==
-         ZoomFilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS;
+         FilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS;
 }
 
 auto FilterBuffersService::StartFreshTranBuffers() noexcept -> void
@@ -126,13 +130,13 @@ inline auto FilterBuffersService::UpdateTranLerpFactor(const uint32_t tranLerpIn
   if (tranLerpIncrement != 0U)
   {
     tranLerpFactor =
-        std::min(tranLerpFactor + tranLerpIncrement, ZoomFilterBuffers::GetMaxTranLerpFactor());
+        std::min(tranLerpFactor + tranLerpIncrement, FilterBuffers::GetMaxTranLerpFactor());
   }
 
   if (not FloatsEqual(tranLerpToMaxSwitchMult, 1.0F))
   {
-    tranLerpFactor = STD20::lerp(
-        ZoomFilterBuffers::GetMaxTranLerpFactor(), tranLerpFactor, tranLerpToMaxSwitchMult);
+    tranLerpFactor =
+        STD20::lerp(FilterBuffers::GetMaxTranLerpFactor(), tranLerpFactor, tranLerpToMaxSwitchMult);
   }
 
   m_filterBuffers.SetTranLerpFactor(tranLerpFactor);
