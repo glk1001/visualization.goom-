@@ -571,7 +571,6 @@ auto Circle::DrawConnectingLine(const Point2dInt& position1,
     return;
   }
 
-  static constexpr auto LINE_THICKNESS = 1U;
   const auto mainColor = GetCorrectedColor(LINE_MAIN_COLOR_BRIGHTNESS_FACTOR * lineBrightness,
                                            m_linesMainColorMap->GetColor(tDotColor));
   const auto lowColor  = GetCorrectedColor(LINE_LOW_COLOR_BRIGHTNESS_FACTOR * lineBrightness,
@@ -579,7 +578,7 @@ auto Circle::DrawConnectingLine(const Point2dInt& position1,
   LogInfo("corrected lowColor = {},{},{}", lowColor.R(), lowColor.G(), lowColor.B());
 
 
-  m_lineDrawer.DrawLine(position1, position2, {mainColor, lowColor}, LINE_THICKNESS);
+  m_lineDrawer.DrawLine(position1, position2, {mainColor, lowColor});
 }
 
 Circle::DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,

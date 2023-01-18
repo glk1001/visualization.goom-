@@ -709,7 +709,8 @@ void Tube::TubeImpl::DrawShape(const Shape& shape, const Vec2dInt& centreOffset)
   }
 
   static constexpr auto MIN_HEX_LEN_FOR_INTERIOR = 2.0F;
-  if ((!m_interiorShapeTimer.Finished()) && (m_hexLen > (MIN_HEX_LEN_FOR_INTERIOR + SMALL_FLOAT)))
+  if ((not m_interiorShapeTimer.Finished()) and
+      (m_hexLen > (MIN_HEX_LEN_FOR_INTERIOR + SMALL_FLOAT)))
   {
     DrawInteriorShape(shapeCentrePos, allColors);
     DrawOuterCircle(shapeCentrePos, allColors);

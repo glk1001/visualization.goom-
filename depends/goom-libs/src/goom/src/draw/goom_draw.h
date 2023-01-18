@@ -50,6 +50,7 @@ public:
   auto SetDefaultBlendPixelFunc() noexcept -> void;
 
   auto DrawPixels(Point2dInt point, const MultiplePixels& colors) noexcept -> void;
+  auto DrawClippedPixels(Point2dInt point, const MultiplePixels& colors) noexcept -> void;
 
   [[nodiscard]] virtual auto GetPixel(Point2dInt point) const noexcept -> Pixel = 0;
   virtual auto DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) noexcept
@@ -158,6 +159,18 @@ inline auto IGoomDraw::DrawPixels(Point2dInt point, const MultiplePixels& colors
   Expects(point.y >= 0);
   Expects(point.x < m_dimensions.GetIntWidth());
   Expects(point.y < m_dimensions.GetIntHeight());
+
+  DrawPixelsToDevice(point, colors);
+}
+
+inline auto IGoomDraw::DrawClippedPixels(Point2dInt point, const MultiplePixels& colors) noexcept
+    -> void
+{
+  if ((point.x < 0) or (point.y < 0) or (point.x >= m_dimensions.GetIntWidth()) or
+      (point.y >= m_dimensions.GetIntHeight()))
+  {
+    return;
+  }
 
   DrawPixelsToDevice(point, colors);
 }

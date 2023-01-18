@@ -81,7 +81,7 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
-  DRAW::SHAPE_DRAWERS::LineDrawer m_lineDrawer{m_draw};
+  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{m_draw};
   const PluginInfo& m_goomInfo;
   const UTILS::MATH::IGoomRand& m_goomRand;
   const Helper m_helper;

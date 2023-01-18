@@ -37,7 +37,7 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
-  DRAW::SHAPE_DRAWERS::LineDrawer m_lineDrawer{m_draw};
+  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{m_draw};
   const LSysGeometry& m_lSysGeometry;
   LSysColors& m_lSysColors;
   const float m_lineWidthFactor;
@@ -45,8 +45,12 @@ private:
 
   static constexpr auto MAX_LINE_WIDTH = 5.0F;
   auto DrawJoinedVertices(const std::vector<::LSYS::Point3dFlt>& vertices,
-                          uint32_t lSysColor,
-                          uint8_t lineWidth) noexcept -> void;
+                          uint32_t lSysColor) noexcept -> void;
+  static constexpr auto NUM_LINE_CHUNKS = 1U;
+  auto DrawChunkedLine(const Point2dFlt& point1,
+                       const Point2dFlt& point2,
+                       uint32_t copyNum,
+                       uint32_t lSysColor) noexcept -> void;
   [[nodiscard]] static auto GetPerspectiveProjection(
       const std::vector<::LSYS::Point3dFlt>& points3d) noexcept -> std::vector<Point2dFlt>;
   [[nodiscard]] static auto GetPolygon3dFlt(const std::vector<::LSYS::Vector>& polygon) noexcept

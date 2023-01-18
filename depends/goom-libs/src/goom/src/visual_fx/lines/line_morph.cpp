@@ -276,8 +276,7 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
     return;
   }
 
-  static constexpr auto LINE_THICKNESS = 1U;
-  const auto audioPoints               = GetAudioPoints(lineColor, soundData);
+  const auto audioPoints = GetAudioPoints(lineColor, soundData);
 
   auto point1 = audioPoints[0].point;
 
@@ -288,7 +287,7 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
     const auto point2 = nextPointData.point;
     const auto colors = MultiplePixels{lineColor, nextPointData.color};
 
-    m_lineDrawer.DrawLine(point1, point2, colors, LINE_THICKNESS);
+    m_lineDrawer.DrawLine(point1, point2, colors);
 
     static constexpr auto DOT_BRIGHTNESS = 1.5F;
     m_dotDrawer.DrawDot(point2, colors, DOT_BRIGHTNESS);
@@ -307,7 +306,7 @@ auto LineMorph::DrawFlatLine(const Pixel& lineColor) noexcept -> void
   const auto& ptN   = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
   const auto colors = MultiplePixels{lineColor, lineColor};
 
-  m_lineDrawer.DrawLine(pt0.point.ToInt(), ptN.point.ToInt(), colors, 1);
+  m_lineDrawer.DrawLine(pt0.point.ToInt(), ptN.point.ToInt(), colors);
 }
 
 auto LineMorph::GetAudioPoints(const Pixel& lineColor,

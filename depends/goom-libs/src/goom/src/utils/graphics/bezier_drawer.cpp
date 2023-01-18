@@ -11,7 +11,7 @@ namespace GOOM::UTILS::GRAPHICS
 
 using COLOR::GetBrighterColor;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
-using DRAW::SHAPE_DRAWERS::LineDrawer;
+using DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
 
 inline auto BezierDrawer::GetImageBitmap(const size_t size) const -> const ImageBitmap&
 {
@@ -21,7 +21,8 @@ inline auto BezierDrawer::GetImageBitmap(const size_t size) const -> const Image
 
 void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, const float colorT1)
 {
-  auto lineDrawer = LineDrawer{m_draw};
+  auto lineDrawer = LineDrawerClippedEndPoints{m_draw};
+  lineDrawer.SetLineThickness(m_lineThickness);
 
   const auto colorTStep = (colorT1 - colorT0) / static_cast<float>(m_numBezierSteps - 1);
 
@@ -37,7 +38,7 @@ void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, co
                                    static_cast<int32_t>(bezier.valueAt(t, 1))};
 
     const auto lineColor = GetBrighterColor(10.F, m_lineColorFunc(colorT));
-    lineDrawer.DrawLine(point0, point1, lineColor, m_lineThickness);
+    lineDrawer.DrawLine(point0, point1, lineColor);
 
     if (0 == (i % m_dotEveryNumBezierSteps))
     {

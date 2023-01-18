@@ -181,7 +181,8 @@ inline auto StarDrawer::DrawParticleLine(const Point2dInt point1,
                                          const uint32_t elementSize,
                                          const MultiplePixels& colors) noexcept -> void
 {
-  m_lineDrawer.DrawLine(point1, point2, colors, static_cast<uint8_t>(elementSize));
+  m_lineDrawer.SetLineThickness(static_cast<uint8_t>(elementSize));
+  m_lineDrawer.DrawLine(point1, point2, colors);
 }
 
 inline auto StarDrawer::DrawParticleDot(const Point2dInt point1,

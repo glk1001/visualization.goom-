@@ -47,11 +47,11 @@ public:
   auto SetProbabilityOfSimpleColors(float probability) noexcept -> void;
   auto SetGlobalBrightness(float globalBrightness) noexcept -> void;
   auto ChangeColors() noexcept -> void;
+  auto SetLineWidth(uint8_t lineWidth) noexcept -> void;
 
-  [[nodiscard]] auto GetColors(uint32_t colorNum,
-                               uint32_t lSysColor,
-                               uint8_t lineWidth) const noexcept -> DRAW::MultiplePixels;
-  [[nodiscard]] auto GetBrightness(float baseBrightness, uint32_t lSysColor) const noexcept
+  [[nodiscard]] auto GetColors(uint32_t colorNum, uint32_t lSysColor) const noexcept
+      -> DRAW::MultiplePixels;
+  [[nodiscard]] static auto GetBrightness(float baseBrightness, uint32_t lSysColor) noexcept
       -> float;
   [[nodiscard]] auto GetColorNumToUse(uint32_t givenColorNum, uint32_t lSysColor) const noexcept
       -> uint32_t;
@@ -63,6 +63,7 @@ private:
   const UTILS::MATH::IGoomRand& m_goomRand;
 
   float m_globalBrightness = 1.0F;
+  uint8_t m_lineWidth      = 1U;
 
   // TODO(glk) Mix these color maps with the LSys ones.
   std::shared_ptr<const COLOR::RandomColorMaps> m_mainColorMaps{};
@@ -115,6 +116,11 @@ inline auto LSysColors::SetProbabilityOfSimpleColors(const float probability) no
 inline auto LSysColors::SetGlobalBrightness(float globalBrightness) noexcept -> void
 {
   m_globalBrightness = globalBrightness;
+}
+
+inline auto LSysColors::SetLineWidth(const uint8_t lineWidth) noexcept -> void
+{
+  m_lineWidth = lineWidth;
 }
 
 inline auto LSysColors::GetCurrentColorTs() const noexcept -> const std::vector<UTILS::TValue>&

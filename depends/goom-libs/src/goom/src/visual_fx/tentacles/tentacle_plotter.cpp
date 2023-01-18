@@ -57,7 +57,7 @@ inline auto TentaclePlotter::DrawNode(const Tentacle3D& tentacle,
 {
   const auto colors = tentacle.GetMixedColors(t, m_dominantColors, brightness);
 
-  m_lineDrawer.DrawLine(line.point1, line.point2, colors, m_lineThickness);
+  m_lineDrawer.DrawLine(line.point1, line.point2, colors);
 }
 
 inline auto TentaclePlotter::GetBrightness(const Tentacle3D& tentacle) -> float
@@ -78,6 +78,7 @@ inline auto TentaclePlotter::GetBrightnessCut(const Tentacle3D& tentacle) -> flo
 auto TentaclePlotter::SetTentacleLineThickness(const uint8_t lineThickness) noexcept -> void
 {
   m_lineThickness = lineThickness;
+  m_lineDrawer.SetLineThickness(m_lineThickness);
   m_lineClipper.SetClipRectangle(GetLineClipRectangle());
 }
 

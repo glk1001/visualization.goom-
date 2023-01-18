@@ -7,7 +7,7 @@
 #include <cmath>
 #include <cstdint>
 
-namespace GOOM::DRAW::SHAPE_DRAWERS
+namespace GOOM::DRAW::SHAPE_DRAWERS::THICK_LINES
 {
 
 static void DrawXVariableThicknessLine(const PlotPointFunc& plot,
@@ -446,6 +446,6 @@ static void DrawYVariableThicknessLine(const PlotPointFunc& plot,
   }
 }
 
-} // namespace GOOM::DRAW::SHAPE_DRAWERS
+} // namespace GOOM::DRAW::SHAPE_DRAWERS::THICK_LINES
 
 // NOLINTEND

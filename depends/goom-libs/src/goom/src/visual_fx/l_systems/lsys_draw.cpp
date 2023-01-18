@@ -42,8 +42,10 @@ auto LSysDraw::DrawLine(const ::LSYS::Vector& point1,
 {
   const auto iLineWidth =
       static_cast<uint8_t>(std::clamp(m_lineWidthFactor * lineWidth, 1.0F, MAX_LINE_WIDTH));
+  m_lineDrawer.SetLineThickness(iLineWidth);
+  m_lSysColors.SetLineWidth(iLineWidth);
 
-  DrawJoinedVertices({GetPoint3dFlt(point1), GetPoint3dFlt(point2)}, lSysColor, iLineWidth);
+  DrawJoinedVertices({GetPoint3dFlt(point1), GetPoint3dFlt(point2)}, lSysColor);
 }
 
 auto LSysDraw::DrawPolygon(const std::vector<::LSYS::Vector>& polygon,
@@ -52,13 +54,14 @@ auto LSysDraw::DrawPolygon(const std::vector<::LSYS::Vector>& polygon,
 {
   const auto iLineWidth =
       static_cast<uint8_t>(std::clamp(m_lineWidthFactor * lineWidth, 1.0F, MAX_LINE_WIDTH));
+  m_lineDrawer.SetLineThickness(iLineWidth);
+  m_lSysColors.SetLineWidth(iLineWidth);
 
-  DrawJoinedVertices(GetPolygon3dFlt(polygon), lSysColor, iLineWidth);
+  DrawJoinedVertices(GetPolygon3dFlt(polygon), lSysColor);
 }
 
 auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices,
-                                  const uint32_t lSysColor,
-                                  const uint8_t lineWidth) noexcept -> void
+                                  const uint32_t lSysColor) noexcept -> void
 {
   const auto numVertices = vertices.size();
   Expects(numVertices > 1);

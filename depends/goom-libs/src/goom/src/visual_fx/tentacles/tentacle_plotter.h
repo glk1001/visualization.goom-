@@ -32,8 +32,8 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
-  DRAW::SHAPE_DRAWERS::LineDrawer m_lineDrawer{m_draw};
   const UTILS::MATH::IGoomRand& m_goomRand;
+  DRAW::SHAPE_DRAWERS::LineDrawer m_lineDrawer{m_draw};
   const Vec2dFlt m_screenMidPoint{
       MidpointFromOrigin({m_draw.GetDimensions().GetWidth(), m_draw.GetDimensions().GetHeight()})
           .ToFlt()};

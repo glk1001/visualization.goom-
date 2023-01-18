@@ -42,7 +42,7 @@ using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using DRAW::SHAPE_DRAWERS::CircleDrawer;
-using DRAW::SHAPE_DRAWERS::LineDrawer;
+using DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using TUBES::BrightnessAttenuation;
 using TUBES::Tube;
@@ -149,8 +149,8 @@ private:
   BitmapDrawer m_bitmapToManyDrawer{m_drawToMany};
   CircleDrawer m_circleDrawer{m_draw};
   CircleDrawer m_circleToManyDrawer{m_drawToMany};
-  LineDrawer m_lineDrawer{m_draw};
-  LineDrawer m_lineToManyDrawer{m_drawToMany};
+  LineDrawerClippedEndPoints m_lineDrawer{m_draw};
+  LineDrawerClippedEndPoints m_lineToManyDrawer{m_drawToMany};
   PixelDrawer m_pixelDrawer{m_draw};
   const PluginInfo& m_goomInfo;
   const IGoomRand& m_goomRand;
@@ -443,7 +443,8 @@ inline auto TubesFx::TubeFxImpl::DrawLineToOne(const Point2dInt point1,
                                                const MultiplePixels& colors,
                                                const uint8_t thickness) -> void
 {
-  m_lineDrawer.DrawLine(point1, point2, colors, thickness);
+  m_lineDrawer.SetLineThickness(thickness);
+  m_lineDrawer.DrawLine(point1, point2, colors);
 }
 
 inline auto TubesFx::TubeFxImpl::DrawLineToMany(const Point2dInt point1,
@@ -451,7 +452,8 @@ inline auto TubesFx::TubeFxImpl::DrawLineToMany(const Point2dInt point1,
                                                 const MultiplePixels& colors,
                                                 const uint8_t thickness) -> void
 {
-  m_lineToManyDrawer.DrawLine(point1, point2, colors, thickness);
+  m_lineToManyDrawer.SetLineThickness(thickness);
+  m_lineToManyDrawer.DrawLine(point1, point2, colors);
 }
 
 inline auto TubesFx::TubeFxImpl::DrawCircleToOne(const Point2dInt point,

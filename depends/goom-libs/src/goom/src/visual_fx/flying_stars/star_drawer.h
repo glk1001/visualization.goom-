@@ -34,7 +34,7 @@ private:
   DRAW::IGoomDraw& m_draw;
   DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer{m_draw};
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer{m_draw};
-  DRAW::SHAPE_DRAWERS::LineDrawer m_lineDrawer{m_draw};
+  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{m_draw};
   const UTILS::MATH::IGoomRand& m_goomRand;
   const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
   const GetMixedColorsFunc m_getMixedColorsFunc;

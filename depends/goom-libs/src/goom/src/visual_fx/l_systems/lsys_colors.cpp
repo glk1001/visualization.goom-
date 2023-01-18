@@ -1,5 +1,7 @@
 #include "lsys_colors.h"
 
+#include "utils/math/misc.h"
+
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
@@ -10,6 +12,7 @@ using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::MakePixels;
 using DRAW::MultiplePixels;
 using UTILS::TValue;
+using UTILS::MATH::HALF;
 using UTILS::MATH::IGoomRand;
 
 LSysColors::LSysColors(const IGoomRand& goomRand) noexcept : m_goomRand{goomRand}
@@ -132,9 +135,8 @@ auto LSysColors::IncrementColorTs() noexcept -> void
                 [](auto& colorT) { colorT.Increment(); });
 }
 
-auto LSysColors::GetColors(const uint32_t colorNum,
-                           const uint32_t lSysColor,
-                           const uint8_t lineWidth) const noexcept -> MultiplePixels
+auto LSysColors::GetColors(const uint32_t colorNum, const uint32_t lSysColor) const noexcept
+    -> MultiplePixels
 {
   static constexpr auto MAIN_BRIGHTNESS = 1.0F;
   static constexpr auto LOW_BRIGHTNESS  = 2.5F;
@@ -147,7 +149,7 @@ auto LSysColors::GetColors(const uint32_t colorNum,
 
   static constexpr auto LINE_WIDTH_CUTOFF = 5U;
 
-  if (m_useSimpleColors and (lineWidth <= LINE_WIDTH_CUTOFF))
+  if (m_useSimpleColors and (m_lineWidth <= LINE_WIDTH_CUTOFF))
   {
     const auto color     = m_simpleColorGet(colorNumToUse, colorT);
     const auto mainColor = m_colorAdjust.GetAdjustment(mainBrightness, color);
@@ -156,7 +158,7 @@ auto LSysColors::GetColors(const uint32_t colorNum,
     return MakePixels(mainColor, lowColor);
   }
 
-  if (lineWidth <= LINE_WIDTH_CUTOFF)
+  if (m_lineWidth <= LINE_WIDTH_CUTOFF)
   {
     const auto mainColor = m_colorAdjust.GetAdjustment(
         mainBrightness, m_currentMainColorMaps.at(colorNumToUse)->GetColor(colorT));
@@ -173,10 +175,10 @@ auto LSysColors::GetColors(const uint32_t colorNum,
   return MakePixels(mainColor, lowColor);
 }
 
-inline auto LSysColors::GetBrightness(const float baseBrightness,
-                                      const uint32_t lSysColor) const noexcept -> float
+inline auto LSysColors::GetBrightness(const float baseBrightness, const uint32_t lSysColor) noexcept
+    -> float
 {
-  return lSysColor != 1U ? baseBrightness : (0.5F * baseBrightness);
+  return lSysColor != 1U ? baseBrightness : (HALF * baseBrightness);
 }
 
 inline auto LSysColors::GetColorNumToUse(const uint32_t givenColorNum,

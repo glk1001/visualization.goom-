@@ -55,6 +55,7 @@ add_library(goom
             src/draw/shape_drawers/circle_drawer.cpp
             src/draw/shape_drawers/drawer_utils.h
             src/draw/shape_drawers/line_draw_thick.cpp
+            src/draw/shape_drawers/line_draw_wu.cpp
             src/draw/shape_drawers/line_drawer.cpp
             src/draw/shape_drawers/pixel_drawer.h
             src/draw/shape_drawers/text_drawer.cpp
