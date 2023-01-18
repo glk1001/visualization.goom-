@@ -107,7 +107,8 @@ auto PixelBlender::GetReverseColorAddBlendPixelFunc() -> IGoomDraw::BlendPixelFu
   {
     if (IsCloseToBlack(newColor))
     {
-      return oldColor;
+      static constexpr auto BRIGHTNESS_FOR_OLD = 1.2F;
+      return GetBrighterColor(BRIGHTNESS_FOR_OLD, oldColor);
     }
     return GetColorAdd(GetBrighterColorInt(intBuffIntensity, oldColor), newColor);
   };
