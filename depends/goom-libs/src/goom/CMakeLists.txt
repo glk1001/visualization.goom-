@@ -120,6 +120,7 @@ add_library(goom
             src/utils/buffer_saver.h
             src/utils/buffer_view.h
             src/utils/date_utils.cpp
+            src/utils/debugging_logger.cpp
             src/utils/enum_utils.h
             src/utils/format_utils.h
             src/utils/name_value_pairs.cpp

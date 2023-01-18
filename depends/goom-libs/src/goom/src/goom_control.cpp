@@ -35,6 +35,7 @@
 #include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "spimpl.h"
+#include "utils/debugging_logger.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
@@ -372,6 +373,8 @@ inline auto GoomControl::GoomControlImpl::GetLastShaderVariables() const
 
 inline auto GoomControl::GoomControlImpl::Start() -> void
 {
+  UTILS::SetGoomLogger(m_goomLogger);
+
   m_goomLogger.StartGoomControl(this);
 
   m_filterSettingsService.Start();
