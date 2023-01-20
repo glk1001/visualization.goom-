@@ -79,7 +79,7 @@ declare -r GOOM_VERSION=$(sed -n 's#.*version="\([0-9][0-9].*[\.0-9]\)".*#\1#p' 
 if [[ "${GOOM_VERSION:0:2}" == "19" ]]; then
   declare -r KODI_VERSION=matrix
 elif [[ "${GOOM_VERSION:0:2}" == "20" ]]; then
-  declare -r KODI_VERSION=nightly
+  declare -r KODI_VERSION=nexus
 else
   echo "ERROR: Unknown Goom version: \"${GOOM_VERSION}\" (from ${ADDON_XML})."
   exit 1

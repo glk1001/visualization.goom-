@@ -115,7 +115,7 @@ function copy_user_addon_files()
 declare -r KODI_GOOM_IMAGE="$(get_kodi_goom_image_name ${KODI_IMAGE_OS_TYPE} ${KODI_IMAGE_OS_TAG} ${KODI_VERSION})"
 declare -r CONTAINER_GOOM_ADDON_DIR="${KODI_CONTAINER_HOME_DIR}/.kodi/addons/visualization.goom"
 
-if [[ "${KODI_VERSION}" == "matrix" ]]; then
+if [[ "${KODI_VERSION}" == "nexus" ]]; then
   declare -r KODI_PPA="ppa:team-xbmc/ppa"
 elif [[ "${KODI_VERSION}" == "nightly" ]]; then
   declare -r KODI_PPA="ppa:team-xbmc/xbmc-nightly"

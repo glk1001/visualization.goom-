@@ -110,6 +110,7 @@ CVisualizationGoom::CVisualizationGoom()
 CVisualizationGoom::~CVisualizationGoom()
 {
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Destroyed CVisualizationGoom object.");
+  LogStop(*m_goomLogger);
 }
 
 void CVisualizationGoom::HandleError(const std::string& errorMsg)
