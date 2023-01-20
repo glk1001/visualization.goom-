@@ -1,10 +1,11 @@
 #pragma once
 
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/line_drawer.h"
+#include "draw/shape_drawers/line_drawer_noisy_pixels.h"
 #include "lsys_colors.h"
 #include "lsys_geom.h"
 #include "point2d.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <lsys/parsed_model.h>
@@ -18,6 +19,7 @@ class LSysDraw
 {
 public:
   LSysDraw(DRAW::IGoomDraw& draw,
+           const UTILS::MATH::IGoomRand& goomRand,
            const LSysGeometry& lSysGeometry,
            LSysColors& lSysColors,
            float lineWidthFactor) noexcept;
@@ -37,7 +39,8 @@ public:
 
 private:
   DRAW::IGoomDraw& m_draw;
-  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{m_draw};
+  const UTILS::MATH::IGoomRand& m_goomRand;
+  DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels m_lineDrawer{m_draw, m_goomRand};
   const LSysGeometry& m_lSysGeometry;
   LSysColors& m_lSysColors;
   const float m_lineWidthFactor;

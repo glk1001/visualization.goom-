@@ -15,18 +15,23 @@ namespace GOOM::VISUAL_FX::L_SYSTEM
 using DRAW::MultiplePixels;
 using UTILS::IncrementedValue;
 using UTILS::TValue;
+using UTILS::MATH::IGoomRand;
 
 using ::LSYS::Point3dFlt;
 
 LSysDraw::LSysDraw(DRAW::IGoomDraw& draw,
+                   const IGoomRand& goomRand,
                    const LSysGeometry& lSysGeometry,
                    LSysColors& lSysColors,
                    const float lineWidthFactor) noexcept
   : m_draw{draw},
+    m_goomRand{goomRand},
     m_lSysGeometry{lSysGeometry},
     m_lSysColors{lSysColors},
     m_lineWidthFactor{lineWidthFactor}
 {
+  m_lineDrawer.SetNoiseRadius(5);
+  m_lineDrawer.SetNumNoisePixelsPerPixel(5);
 }
 
 auto LSysDraw::SetNumLSysCopies(const uint32_t numLSysCopies) noexcept -> void

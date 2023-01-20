@@ -102,7 +102,7 @@ LSystem::LSystem(DRAW::IGoomDraw& draw,
     m_lSysGeometry{goomRand,
                    m_lSysModelSet.lSystemXScale * lSystemFile.overrides.xScale,
                    m_lSysModelSet.lSystemYScale * lSystemFile.overrides.yScale},
-    m_lSysDraw{draw, m_lSysGeometry, m_lSysColors, lSystemFile.overrides.lineWidthFactor}
+    m_lSysDraw{draw, goomRand, m_lSysGeometry, m_lSysColors, lSystemFile.overrides.lineWidthFactor}
 {
 }
 
