@@ -1,6 +1,6 @@
 #pragma once
 
-#include "drawer_types.h"
+#include "../goom_draw.h"
 #include "goom_config.h"
 #include "goom_types.h"
 #include "point2d.h"
@@ -10,21 +10,40 @@
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
-class PixelPlotter
+auto BrightenColors(float brightness, std::vector<Pixel>& colors) -> void;
+
+class PixelDrawerNoClipping
 {
 public:
-  explicit PixelPlotter(PixelDrawerFunc pixelDrawer) noexcept;
+  explicit PixelDrawerNoClipping(IGoomDraw& draw) noexcept : m_draw{draw} {}
 
-  auto SetColors(const std::vector<Pixel>& colors) noexcept -> void;
-  auto SetBrightness(float brightness) noexcept -> void;
-
-  auto PlotPoint(const Point2dInt& point0) noexcept -> void;
+  auto DrawPixels(const Point2dInt& point,
+                  const float brightness,
+                  std::vector<Pixel> colors) noexcept -> void
+  {
+    BrightenColors(brightness, colors);
+    m_draw.DrawPixels(point, colors);
+  }
 
 private:
-  PixelDrawerFunc m_pixelDrawer;
-  float m_brightness = 1.0F;
-  const std::vector<Pixel>* m_colors{};
-  std::vector<Pixel> m_tempColors{};
+  IGoomDraw& m_draw;
+};
+
+class PixelDrawerWithClipping
+{
+public:
+  explicit PixelDrawerWithClipping(IGoomDraw& draw) noexcept : m_draw{draw} {}
+
+  auto DrawPixels(const Point2dInt& point,
+                  [[maybe_unused]] const float brightness,
+                  std::vector<Pixel> colors) noexcept -> void
+  {
+    BrightenColors(brightness, colors);
+    m_draw.DrawClippedPixels(point, colors);
+  }
+
+private:
+  IGoomDraw& m_draw;
 };
 
 class ClipTester
@@ -50,39 +69,6 @@ private:
   ClipRect m_clipRect;
   [[nodiscard]] auto GetClipRect(int32_t clipMargin) const noexcept -> ClipRect;
 };
-
-inline PixelPlotter::PixelPlotter(PixelDrawerFunc pixelDrawer) noexcept
-  : m_pixelDrawer{std::move(pixelDrawer)}
-{
-}
-
-inline auto PixelPlotter::SetColors(const std::vector<Pixel>& colors) noexcept -> void
-{
-  m_colors = &colors;
-  m_tempColors.resize(m_colors->size());
-}
-
-inline auto PixelPlotter::SetBrightness(const float brightness) noexcept -> void
-{
-  m_brightness = brightness;
-}
-
-inline auto PixelPlotter::PlotPoint(const Point2dInt& point) noexcept -> void
-{
-  //TODO(glk) Why this tolerance test?
-  if (static constexpr auto TOLERANCE = 0.001F; m_brightness >= (1.0F - TOLERANCE))
-  {
-    m_pixelDrawer(point, *m_colors);
-  }
-  else
-  {
-    for (auto i = 0U; i < m_colors->size(); ++i)
-    {
-      m_tempColors[i] = COLOR::GetBrighterColor(m_brightness, (*m_colors)[i]);
-    }
-    m_pixelDrawer(point, m_tempColors);
-  }
-}
 
 inline ClipTester::ClipTester(const Dimensions& screenDimensions, const int32_t clipMargin) noexcept
   : m_screenDimensions{screenDimensions}, m_clipRect{GetClipRect(clipMargin)}
@@ -111,6 +97,14 @@ inline auto ClipTester::IsOutside(const Point2dInt& point) const noexcept
 {
   return (point.x < m_clipRect.x0) or (point.y < m_clipRect.y0) or (point.x > m_clipRect.x1) or
          (point.y > m_clipRect.y1);
+}
+
+inline auto BrightenColors(const float brightness, std::vector<Pixel>& colors) -> void
+{
+  for (auto& color : colors)
+  {
+    color = COLOR::GetBrighterColor(brightness, color);
+  }
 }
 
 } // namespace GOOM::DRAW::SHAPE_DRAWERS

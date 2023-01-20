@@ -1,10 +1,11 @@
 #pragma once
 
 #include "draw/goom_draw.h"
-#include "drawer_types.h"
 #include "drawer_utils.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "line_draw_thick.h"
+#include "line_draw_wu.h"
 #include "point2d.h"
 
 #include <vector>
@@ -12,10 +13,13 @@
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
+template<class DrawPixelPolicy>
 class LineDrawer
 {
 public:
-  explicit LineDrawer(PixelDrawerFunc pixelDrawer) noexcept;
+  explicit LineDrawer(DrawPixelPolicy&& drawPixelPolicy) noexcept;
+
+  [[nodiscard]] auto GetDrawPixelPolicy() noexcept -> DrawPixelPolicy&;
 
   [[nodiscard]] auto GetLineThickness() const noexcept -> uint8_t;
   auto SetLineThickness(uint8_t thickness) noexcept -> void;
@@ -27,7 +31,7 @@ public:
                 const std::vector<Pixel>& colors) noexcept -> void;
 
 private:
-  PixelPlotter m_plotPixel;
+  DrawPixelPolicy m_drawPixel;
   uint8_t m_thickness = 1U;
 
   auto DrawWuLine(const Point2dInt& point1,
@@ -53,7 +57,7 @@ public:
                 const std::vector<Pixel>& colors) noexcept -> void;
 
 private:
-  LineDrawer m_lineDrawer;
+  LineDrawer<PixelDrawerNoClipping> m_lineDrawer;
 };
 
 class LineDrawerClippedEndPoints
@@ -71,14 +75,13 @@ public:
 
 private:
   Dimensions m_dimensions;
-  LineDrawer m_lineDrawer;
+  LineDrawer<PixelDrawerWithClipping> m_lineDrawer;
   ClipTester m_clipTester{m_dimensions, GetClipMargin()};
   [[nodiscard]] auto GetClipMargin() const noexcept -> int32_t;
 };
 
 inline LineDrawerNoClippedEndPoints::LineDrawerNoClippedEndPoints(IGoomDraw& draw) noexcept
-  : m_lineDrawer{[&draw](const Point2dInt& point, const MultiplePixels& colors)
-                 { draw.DrawClippedPixels(point, colors); }}
+  : m_lineDrawer{PixelDrawerNoClipping{draw}}
 {
 }
 
@@ -103,9 +106,7 @@ inline auto LineDrawerNoClippedEndPoints::DrawLine(const Point2dInt& point1,
 }
 
 inline LineDrawerClippedEndPoints::LineDrawerClippedEndPoints(IGoomDraw& draw) noexcept
-  : m_dimensions{draw.GetDimensions()},
-    m_lineDrawer{[&draw](const Point2dInt& point, const MultiplePixels& colors)
-                 { draw.DrawPixels(point, colors); }}
+  : m_dimensions{draw.GetDimensions()}, m_lineDrawer{PixelDrawerWithClipping{draw}}
 {
 }
 
@@ -147,27 +148,92 @@ inline auto LineDrawerClippedEndPoints::DrawLine(const Point2dInt& point1,
   m_lineDrawer.DrawLine(point1, point2, colors);
 }
 
-inline LineDrawer::LineDrawer(PixelDrawerFunc pixelDrawer) noexcept
-  : m_plotPixel{std::move(pixelDrawer)}
+template<class DrawPixelPolicy>
+inline LineDrawer<DrawPixelPolicy>::LineDrawer(DrawPixelPolicy&& drawPixelPolicy) noexcept
+  : m_drawPixel{std::move(drawPixelPolicy)}
 {
 }
 
-inline auto LineDrawer::GetLineThickness() const noexcept -> uint8_t
+template<class DrawPixelPolicy>
+inline auto LineDrawer<DrawPixelPolicy>::GetDrawPixelPolicy() noexcept -> DrawPixelPolicy&
+{
+  return m_drawPixel;
+}
+
+template<class DrawPixelPolicy>
+inline auto LineDrawer<DrawPixelPolicy>::GetLineThickness() const noexcept -> uint8_t
 {
   return m_thickness;
 }
 
-inline auto LineDrawer::SetLineThickness(const uint8_t thickness) noexcept -> void
+template<class DrawPixelPolicy>
+inline auto LineDrawer<DrawPixelPolicy>::SetLineThickness(const uint8_t thickness) noexcept -> void
 {
   Expects(thickness >= 1U);
   m_thickness = thickness;
 }
 
-inline auto LineDrawer::DrawLine(const Point2dInt& point1,
-                                 const Point2dInt& point2,
-                                 const Pixel& color) noexcept -> void
+template<class DrawPixelPolicy>
+inline auto LineDrawer<DrawPixelPolicy>::DrawLine(const Point2dInt& point1,
+                                                  const Point2dInt& point2,
+                                                  const Pixel& color) noexcept -> void
 {
   DrawLine(point1, point2, std::vector<Pixel>{color});
+}
+
+template<class DrawPixelPolicy>
+inline auto LineDrawer<DrawPixelPolicy>::DrawLine(const Point2dInt& point1,
+                                                  const Point2dInt& point2,
+                                                  const std::vector<Pixel>& colors) noexcept -> void
+{
+  if (1 == m_thickness)
+  {
+    DrawWuLine(point1, point2, colors);
+  }
+  else
+  {
+    DrawThickLine(point1, point2, colors);
+  }
+}
+
+template<class DrawPixelPolicy>
+inline auto LineDrawer<DrawPixelPolicy>::DrawWuLine(const Point2dInt& point1,
+                                                    const Point2dInt& point2,
+                                                    const std::vector<Pixel>& colors) noexcept
+    -> void
+{
+  Expects(1 == m_thickness);
+
+  const auto plot = [this, &colors](const Point2dInt& point, const float brightness)
+  { m_drawPixel.DrawPixels(point, brightness, colors); };
+
+  WU_LINES::WuLine(static_cast<float>(point1.x),
+                   static_cast<float>(point1.y),
+                   static_cast<float>(point2.x),
+                   static_cast<float>(point2.y),
+                   plot);
+}
+
+template<class DrawPixelPolicy>
+inline auto LineDrawer<DrawPixelPolicy>::DrawThickLine(const Point2dInt& point1,
+                                                       const Point2dInt& point2,
+                                                       const std::vector<Pixel>& colors) noexcept
+    -> void
+{
+  Expects(m_thickness > 1);
+
+  const auto brightness = (0.8F * 2.0F) / static_cast<float>(m_thickness);
+
+  const auto plot = [this, &brightness, &colors](const int32_t x, const int32_t y) {
+    m_drawPixel.DrawPixels({x, y}, brightness, colors);
+  };
+
+  const auto getWidth =
+      [this]([[maybe_unused]] const int32_t pointNum, [[maybe_unused]] const int32_t lineLength)
+  { return static_cast<double>(m_thickness); };
+
+  THICK_LINES::DrawVariableThicknessLine(
+      plot, point1.x, point1.y, point2.x, point2.y, getWidth, getWidth);
 }
 
 } // namespace GOOM::DRAW::SHAPE_DRAWERS
