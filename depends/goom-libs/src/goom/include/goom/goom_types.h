@@ -10,6 +10,13 @@ namespace GOOM
 template<typename T>
 using Ptr = T*;
 
+template<typename T>
+struct MinMaxValues
+{
+  T minValue;
+  T maxValue;
+};
+
 class Dimensions
 {
 public:
