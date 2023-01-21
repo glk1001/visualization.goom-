@@ -29,6 +29,8 @@ template<typename T>
     -> Pixel = delete;
 [[nodiscard]] constexpr auto GetBrighterChannelColor(uint32_t brightness,
                                                      PixelChannelType channelVal) -> uint32_t;
+inline constexpr auto MIN_BRIGHTNESS = 0.0F;
+inline constexpr auto MAX_BRIGHTNESS = 50.0F;
 [[nodiscard]] auto GetBrighterColor(float brightness, const Pixel& color) -> Pixel;
 [[nodiscard]] auto GetBrighterColor(uint32_t brightness, const Pixel&) -> Pixel = delete;
 
@@ -178,9 +180,7 @@ constexpr auto GetBrighterChannelColor(const uint32_t brightness, const PixelCha
 
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel
 {
-  static constexpr auto MIN_BRIGHTNESS = 0.0F;
   Expects(brightness >= MIN_BRIGHTNESS);
-  static constexpr auto MAX_BRIGHTNESS = 50.0F;
   Expects(brightness <= MAX_BRIGHTNESS);
   USED_FOR_DEBUGGING(MAX_BRIGHTNESS);
 

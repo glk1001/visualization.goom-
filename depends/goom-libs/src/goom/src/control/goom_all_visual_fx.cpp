@@ -10,7 +10,6 @@
 #include "filter_fx/filter_colors_service.h"
 #include "goom_config.h"
 #include "goom_logger.h"
-#include "goom_plugin_info.h"
 #include "sound_info.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/name_value_pairs.h"
@@ -86,7 +85,7 @@ auto PixelBlender::GetCurrentPixelBlendFunc() const noexcept -> DRAW::IGoomDraw:
   return GetLerpedBlendPixelFunc();
 }
 
-auto PixelBlender::GetColorAddBlendPixelFunc() const -> IGoomDraw::BlendPixelFunc
+auto PixelBlender::GetColorAddBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
 {
   return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
   { return GetColorAdd(oldColor, GetBrighterColorInt(intBuffIntensity, newColor)); };
@@ -102,7 +101,7 @@ auto PixelBlender::GetLerpedBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixe
   };
 }
 
-auto PixelBlender::GetReverseColorAddBlendPixelFunc() const -> IGoomDraw::BlendPixelFunc
+auto PixelBlender::GetReverseColorAddBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
 {
   return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
   {
@@ -114,7 +113,7 @@ auto PixelBlender::GetReverseColorAddBlendPixelFunc() const -> IGoomDraw::BlendP
   };
 }
 
-auto PixelBlender::GetColorMultiplyBlendPixelFunc() const -> IGoomDraw::BlendPixelFunc
+auto PixelBlender::GetColorMultiplyBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
 {
   return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
   {
@@ -143,11 +142,11 @@ auto PixelBlender::GetSameLumaMixBlendPixelFunc() const -> IGoomDraw::BlendPixel
       return GetColorAdd(oldColor, newColor);
     }
 
-    const auto buffIntensity =
-        (static_cast<float>(intBuffIntensity) / channel_limits<float>::max());
+    const auto buffIntensity = static_cast<float>(intBuffIntensity) / channel_limits<float>::max();
 
-    const auto brightness = (oldColorLuma + (buffIntensity * newColorLuma)) /
-                            STD20::lerp(oldColorLuma, newColorLuma, m_lumaMixT);
+    const auto brightness = std::min((oldColorLuma + (buffIntensity * newColorLuma)) /
+                                         STD20::lerp(oldColorLuma, newColorLuma, m_lumaMixT),
+                                     COLOR::MAX_BRIGHTNESS);
 
     const auto finalNewColor = IColorMap::GetColorMix(oldColor, newColor, m_lumaMixT);
     return GetBrighterColor(brightness, finalNewColor);

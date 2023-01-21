@@ -94,10 +94,10 @@ private:
   static constexpr auto MIN_BLEND_STEPS                    = 50U;
   UTILS::TValue m_blendT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, MIN_BLEND_STEPS};
   [[nodiscard]] auto GetPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc;
-  [[nodiscard]] auto GetColorAddBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] static auto GetColorAddBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
   [[nodiscard]] auto GetLerpedBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
-  [[nodiscard]] auto GetReverseColorAddBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
-  [[nodiscard]] auto GetColorMultiplyBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] static auto GetReverseColorAddBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] static auto GetColorMultiplyBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
   static constexpr auto MAX_LUMA_MIX_T = 1.0F;
   static constexpr auto MIN_LUMA_MIX_T = 0.3F;
   float m_lumaMixT                     = MIN_LUMA_MIX_T;
