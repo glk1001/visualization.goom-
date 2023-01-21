@@ -3,6 +3,7 @@
 #include "goom_config.h"
 #include "math/misc.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <vector>
 
@@ -126,7 +127,7 @@ private:
   TValue m_t;
   T m_currentValue = m_value1;
   [[nodiscard]] auto GetValue(float t) const noexcept -> T;
-  [[nodiscard]] static auto LerpValues(const T& val1, const T& val2, const float t) noexcept -> T;
+  [[nodiscard]] static auto LerpValues(const T& val1, const T& val2, float t) noexcept -> T;
 };
 
 inline auto TValue::GetStepType() const noexcept -> StepType
@@ -281,9 +282,10 @@ inline auto IncrementedValue<T>::GetValue(const float t) const noexcept -> T
 }
 
 template<typename T>
-inline auto IncrementedValue<T>::LerpValues(const T& val1, const T& val2, const float t) noexcept
-    -> T
+inline auto IncrementedValue<T>::LerpValues(const T& val1, const T& val2, float t) noexcept -> T
 {
+  t = std::clamp(t, 0.0F, 1.0F);
+
   using STD20::lerp; // Include STD20 for candidate lerps.
   return lerp(val1, val2, t);
 }
