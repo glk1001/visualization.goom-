@@ -19,8 +19,6 @@
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
-#include <cmath>
-#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -146,7 +144,7 @@ Circle::Circle(const FxHelper& fxHelper,
                const Params& circleParams,
                const OscillatingFunction::Params& pathParams) noexcept
   : m_draw{fxHelper.GetDraw()},
-    m_lineDrawer{m_draw, fxHelper.GetGoomRand()},
+    m_lineDrawer{m_draw, fxHelper.GetGoomRand(), 5U, 5U},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
     m_helper{helper},
@@ -174,8 +172,6 @@ Circle::Circle(const FxHelper& fxHelper,
     }
 {
   UpdateRotatingColorMaps();
-  m_lineDrawer.SetNoiseRadius(5);
-  m_lineDrawer.SetNumNoisePixelsPerPixel(5);
 }
 
 Circle::Circle(Circle&&) noexcept = default;

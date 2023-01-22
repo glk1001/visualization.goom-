@@ -19,6 +19,7 @@ class LineDrawer
 public:
   explicit LineDrawer(DrawPixelPolicy&& drawPixelPolicy) noexcept;
 
+  [[nodiscard]] auto GetDrawPixelPolicy() const noexcept -> const DrawPixelPolicy&;
   [[nodiscard]] auto GetDrawPixelPolicy() noexcept -> DrawPixelPolicy&;
 
   [[nodiscard]] auto GetLineThickness() const noexcept -> uint8_t;
@@ -57,7 +58,7 @@ public:
                 const std::vector<Pixel>& colors) noexcept -> void;
 
 private:
-  LineDrawer<PixelDrawerNoClipping> m_lineDrawer;
+  LineDrawer<PixelDrawerWithClipping> m_lineDrawer;
 };
 
 class LineDrawerClippedEndPoints
@@ -75,13 +76,13 @@ public:
 
 private:
   Dimensions m_dimensions;
-  LineDrawer<PixelDrawerWithClipping> m_lineDrawer;
+  LineDrawer<PixelDrawerNoClipping> m_lineDrawer;
   ClipTester m_clipTester{m_dimensions, GetClipMargin()};
   [[nodiscard]] auto GetClipMargin() const noexcept -> int32_t;
 };
 
 inline LineDrawerNoClippedEndPoints::LineDrawerNoClippedEndPoints(IGoomDraw& draw) noexcept
-  : m_lineDrawer{PixelDrawerNoClipping{draw}}
+  : m_lineDrawer{PixelDrawerWithClipping{draw}}
 {
 }
 
@@ -106,7 +107,7 @@ inline auto LineDrawerNoClippedEndPoints::DrawLine(const Point2dInt& point1,
 }
 
 inline LineDrawerClippedEndPoints::LineDrawerClippedEndPoints(IGoomDraw& draw) noexcept
-  : m_dimensions{draw.GetDimensions()}, m_lineDrawer{PixelDrawerWithClipping{draw}}
+  : m_dimensions{draw.GetDimensions()}, m_lineDrawer{PixelDrawerNoClipping{draw}}
 {
 }
 
@@ -152,6 +153,13 @@ template<class DrawPixelPolicy>
 inline LineDrawer<DrawPixelPolicy>::LineDrawer(DrawPixelPolicy&& drawPixelPolicy) noexcept
   : m_drawPixel{std::move(drawPixelPolicy)}
 {
+}
+
+template<class DrawPixelPolicy>
+inline auto LineDrawer<DrawPixelPolicy>::GetDrawPixelPolicy() const noexcept
+    -> const DrawPixelPolicy&
+{
+  return m_drawPixel;
 }
 
 template<class DrawPixelPolicy>

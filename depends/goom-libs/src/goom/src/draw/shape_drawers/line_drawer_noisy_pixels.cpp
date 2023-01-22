@@ -14,8 +14,10 @@ using UTILS::MATH::IGoomRand;
 
 
 LineDrawerNoisyPixels::NoisyPixelDrawer::NoisyPixelDrawer(IGoomDraw& draw,
-                                                          const IGoomRand& goomRand) noexcept
-  : m_draw{draw}, m_goomRand{goomRand}
+                                                          const IGoomRand& goomRand,
+                                                          const uint8_t noiseRadius,
+                                                          const uint8_t numNoisePixels) noexcept
+  : m_draw{draw}, m_goomRand{goomRand}, m_noiseRadius{noiseRadius}, m_numNoisePixels{numNoisePixels}
 {
 }
 
@@ -23,13 +25,17 @@ auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPixels(const Point2dInt& point
                                                          const float brightness,
                                                          MultiplePixels colors) noexcept -> void
 {
-  BrightenColors(m_brightnessReducer * brightness, colors);
+  Expects(m_useMainColorsForNoise or (not m_noiseColors.empty()));
 
-  if (0 == m_noiseRadius)
+  BrightenColors(brightness, colors);
+  m_draw.DrawClippedPixels(point, colors);
+
+  if (not m_useMainColorsForNoise)
   {
-    m_draw.DrawClippedPixels(point, colors);
-    return;
+    colors = m_noiseColors;
   }
+
+  BrightenColors(m_overallBrightnessFactor * brightness, colors);
 
   for (auto i = 0; i < m_numNoisePixels; ++i)
   {
@@ -42,8 +48,11 @@ auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPixels(const Point2dInt& point
 }
 
 // clang-format off
-LineDrawerNoisyPixels::LineDrawerNoisyPixels(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
-  : m_lineDrawer{NoisyPixelDrawer{draw, goomRand}}
+LineDrawerNoisyPixels::LineDrawerNoisyPixels(IGoomDraw& draw,
+                                             const IGoomRand& goomRand,
+                                             const uint8_t noiseRadius,
+                                             const uint8_t numNoisePixels) noexcept
+  : m_lineDrawer{NoisyPixelDrawer{draw, goomRand, noiseRadius, numNoisePixels}}
 {
 }
 // clang-format on

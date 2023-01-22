@@ -1,11 +1,9 @@
 #pragma once
 
-#include "draw/goom_draw.h"
-#include "draw/shape_drawers/line_drawer_noisy_pixels.h"
+#include "draw/shape_drawers/line_drawer_with_effects.h"
 #include "lsys_colors.h"
 #include "lsys_geom.h"
 #include "point2d.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <lsys/parsed_model.h>
@@ -18,13 +16,12 @@ namespace GOOM::VISUAL_FX::L_SYSTEM
 class LSysDraw
 {
 public:
-  LSysDraw(DRAW::IGoomDraw& draw,
-           const UTILS::MATH::IGoomRand& goomRand,
-           const LSysGeometry& lSysGeometry,
+  LSysDraw(const LSysGeometry& lSysGeometry,
            LSysColors& lSysColors,
            float lineWidthFactor) noexcept;
 
   auto SetNumLSysCopies(uint32_t numLSysCopies) noexcept -> void;
+  auto SetLineDrawer(DRAW::SHAPE_DRAWERS::ILineDrawerWithEffects& lineDrawer) noexcept -> void;
 
   auto DrawLine(const ::LSYS::Vector& point1,
                 const ::LSYS::Vector& point2,
@@ -38,22 +35,15 @@ public:
       -> Point2dFlt;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels m_lineDrawer{m_draw, m_goomRand};
   const LSysGeometry& m_lSysGeometry;
   LSysColors& m_lSysColors;
   const float m_lineWidthFactor;
   uint32_t m_numLSysCopies = 1U;
+  DRAW::SHAPE_DRAWERS::ILineDrawerWithEffects* m_lineDrawer{};
 
   static constexpr auto MAX_LINE_WIDTH = 5.0F;
   auto DrawJoinedVertices(const std::vector<::LSYS::Point3dFlt>& vertices,
                           uint32_t lSysColor) noexcept -> void;
-  static constexpr auto NUM_LINE_CHUNKS = 1U;
-  auto DrawChunkedLine(const Point2dFlt& point1,
-                       const Point2dFlt& point2,
-                       uint32_t copyNum,
-                       uint32_t lSysColor) noexcept -> void;
   [[nodiscard]] static auto GetPerspectiveProjection(
       const std::vector<::LSYS::Point3dFlt>& points3d) noexcept -> std::vector<Point2dFlt>;
   [[nodiscard]] static auto GetPolygon3dFlt(const std::vector<::LSYS::Vector>& polygon) noexcept
@@ -61,5 +51,11 @@ private:
   [[nodiscard]] static auto GetPoint3dFlt(const ::LSYS::Vector& point) noexcept
       -> ::LSYS::Point3dFlt;
 };
+
+inline auto LSysDraw::SetLineDrawer(
+    DRAW::SHAPE_DRAWERS::ILineDrawerWithEffects& lineDrawer) noexcept -> void
+{
+  m_lineDrawer = &lineDrawer;
+}
 
 } // namespace GOOM::VISUAL_FX::L_SYSTEM

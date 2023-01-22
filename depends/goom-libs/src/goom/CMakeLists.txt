@@ -59,6 +59,7 @@ add_library(goom
             src/draw/shape_drawers/line_drawer.cpp
             src/draw/shape_drawers/line_drawer_moving_noise.cpp
             src/draw/shape_drawers/line_drawer_noisy_pixels.cpp
+            src/draw/shape_drawers/line_drawer_with_effects.h
             src/draw/shape_drawers/pixel_drawer.h
             src/draw/shape_drawers/text_drawer.cpp
             src/draw/goom_draw.h
@@ -162,6 +163,7 @@ add_library(goom
             src/visual_fx/l_systems/lsys_draw.cpp
             src/visual_fx/l_systems/lsys_geom.cpp
             src/visual_fx/l_systems/lsys_paths.cpp
+            src/visual_fx/l_systems/line_drawer_manager.cpp
             src/visual_fx/shaders/high_contrast.cpp
             src/visual_fx/shaders/hue_shift_lerper.cpp
             src/visual_fx/shapes/bezier_flower.cpp

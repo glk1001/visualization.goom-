@@ -17,6 +17,12 @@ struct MinMaxValues
   T maxValue;
 };
 
+template<typename T>
+constexpr auto GetAverage(const MinMaxValues<T> minMaxValues) noexcept -> T
+{
+  return (minMaxValues.minValue + minMaxValues.maxValue) / static_cast<T>(2);
+}
+
 class Dimensions
 {
 public:

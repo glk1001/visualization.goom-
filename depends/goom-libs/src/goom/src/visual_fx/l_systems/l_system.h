@@ -3,6 +3,7 @@
 #include "../goom_visual_fx.h"
 #include "draw/goom_draw.h"
 #include "goom_plugin_info.h"
+#include "line_drawer_manager.h"
 #include "lsys_colors.h"
 #include "lsys_draw.h"
 #include "lsys_geom.h"
@@ -91,6 +92,8 @@ public:
 private:
   const PluginInfo& m_goomInfo;
   const UTILS::MATH::IGoomRand& m_goomRand;
+  LineDrawerManager m_lineDrawerManager;
+  auto SwitchLineDrawers() -> void;
 
   static constexpr auto DEFAULT_BOUNDS_EXPAND_FACTOR = 2.0F;
   struct LSysModelSet
@@ -100,9 +103,7 @@ private:
     float lSystemXScale = 1.0F;
     float lSystemYScale = 1.0F;
     std::unique_ptr<::LSYS::LSysModel> lSysModel{};
-    LSysModelSet(LSysModelSet&&) = default;
   };
-  // NOLINTEND
   std::unique_ptr<::LSYS::List<::LSYS::Module>> m_lSysModuleList{};
   LSysModelSet m_lSysModelSet;
   [[nodiscard]] auto GetLSysModelSet(const std::string& lSysDirectory,
@@ -185,6 +186,13 @@ inline auto LSystem::SetWeightedColorMaps(
 inline auto LSystem::ChangeColors() noexcept -> void
 {
   m_lSysColors.ChangeColors();
+  SwitchLineDrawers();
+}
+
+inline auto LSystem::SwitchLineDrawers() -> void
+{
+  m_lineDrawerManager.SwitchLineDrawers();
+  m_lSysDraw.SetLineDrawer(m_lineDrawerManager.GetLineDrawer());
 }
 
 inline auto LSystem::GetPathStart() const noexcept -> const Point2dInt&

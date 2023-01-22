@@ -2,7 +2,6 @@
 
 //#undef NO_LOGGING
 
-#include "draw/goom_draw.h"
 #include "goom_logger.h"
 #include "lsys_colors.h"
 #include "lsys_geom.h"
@@ -15,23 +14,14 @@ namespace GOOM::VISUAL_FX::L_SYSTEM
 using DRAW::MultiplePixels;
 using UTILS::IncrementedValue;
 using UTILS::TValue;
-using UTILS::MATH::IGoomRand;
 
 using ::LSYS::Point3dFlt;
 
-LSysDraw::LSysDraw(DRAW::IGoomDraw& draw,
-                   const IGoomRand& goomRand,
-                   const LSysGeometry& lSysGeometry,
+LSysDraw::LSysDraw(const LSysGeometry& lSysGeometry,
                    LSysColors& lSysColors,
                    const float lineWidthFactor) noexcept
-  : m_draw{draw},
-    m_goomRand{goomRand},
-    m_lSysGeometry{lSysGeometry},
-    m_lSysColors{lSysColors},
-    m_lineWidthFactor{lineWidthFactor}
+  : m_lSysGeometry{lSysGeometry}, m_lSysColors{lSysColors}, m_lineWidthFactor{lineWidthFactor}
 {
-  m_lineDrawer.SetNoiseRadius(5);
-  m_lineDrawer.SetNumNoisePixelsPerPixel(5);
 }
 
 auto LSysDraw::SetNumLSysCopies(const uint32_t numLSysCopies) noexcept -> void
@@ -45,9 +35,11 @@ auto LSysDraw::DrawLine(const ::LSYS::Vector& point1,
                         const uint32_t lSysColor,
                         const float lineWidth) noexcept -> void
 {
+  Expects(m_lineDrawer != nullptr);
+
   const auto iLineWidth =
       static_cast<uint8_t>(std::clamp(m_lineWidthFactor * lineWidth, 1.0F, MAX_LINE_WIDTH));
-  m_lineDrawer.SetLineThickness(iLineWidth);
+  m_lineDrawer->SetLineThickness(iLineWidth);
   m_lSysColors.SetLineWidth(iLineWidth);
 
   DrawJoinedVertices({GetPoint3dFlt(point1), GetPoint3dFlt(point2)}, lSysColor);
@@ -57,16 +49,18 @@ auto LSysDraw::DrawPolygon(const std::vector<::LSYS::Vector>& polygon,
                            const uint32_t lSysColor,
                            const float lineWidth) noexcept -> void
 {
+  Expects(m_lineDrawer != nullptr);
+
   const auto iLineWidth =
       static_cast<uint8_t>(std::clamp(m_lineWidthFactor * lineWidth, 1.0F, MAX_LINE_WIDTH));
-  m_lineDrawer.SetLineThickness(iLineWidth);
+  m_lineDrawer->SetLineThickness(iLineWidth);
   m_lSysColors.SetLineWidth(iLineWidth);
 
   DrawJoinedVertices(GetPolygon3dFlt(polygon), lSysColor);
 }
 
-auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices,
-                                  const uint32_t lSysColor) noexcept -> void
+inline auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices,
+                                         const uint32_t lSysColor) noexcept -> void
 {
   const auto numVertices = vertices.size();
   Expects(numVertices > 1);
@@ -84,10 +78,8 @@ auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices,
       const auto tPoint1 = m_lSysGeometry.GetTransformedPoint(point1, copyNum);
       const auto tPoint2 = m_lSysGeometry.GetTransformedPoint(point2, copyNum);
 
-      m_lineDrawer.DrawLine(tPoint1.ToInt(),
-                            tPoint2.ToInt(),
-                            m_lSysColors.GetColors(copyNum, lSysColor, lineWidth),
-                            lineWidth);
+      m_lineDrawer->DrawLine(
+          tPoint1.ToInt(), tPoint2.ToInt(), m_lSysColors.GetColors(copyNum, lSysColor));
     }
 
     m_lSysColors.IncrementColorTs();

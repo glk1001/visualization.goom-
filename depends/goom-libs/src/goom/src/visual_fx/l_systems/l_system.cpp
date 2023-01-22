@@ -98,11 +98,12 @@ LSystem::LSystem(DRAW::IGoomDraw& draw,
                  const LSystemFile& lSystemFile) noexcept
   : m_goomInfo{goomInfo},
     m_goomRand{goomRand},
+    m_lineDrawerManager{draw, goomRand},
     m_lSysModelSet{GetLSysModelSet(lSystemDirectory, lSystemFile)},
     m_lSysGeometry{goomRand,
                    m_lSysModelSet.lSystemXScale * lSystemFile.overrides.xScale,
                    m_lSysModelSet.lSystemYScale * lSystemFile.overrides.yScale},
-    m_lSysDraw{draw, goomRand, m_lSysGeometry, m_lSysColors, lSystemFile.overrides.lineWidthFactor}
+    m_lSysDraw{m_lSysGeometry, m_lSysColors, lSystemFile.overrides.lineWidthFactor}
 {
 }
 
@@ -114,11 +115,17 @@ auto LSystem::GetLSysDrawFuncs() noexcept -> GraphicsGenerator::DrawFuncs
                                const ::LSYS::Vector& point2,
                                const uint32_t lSysColor,
                                const float lineWidth)
-  { m_lSysDraw.DrawLine(point1, point2, lSysColor, lineWidth); };
+  {
+    m_lSysDraw.DrawLine(point1, point2, lSysColor, lineWidth);
+    m_lineDrawerManager.Update();
+  };
   const auto drawPolygon = [this](const std::vector<::LSYS::Vector>& polygon,
                                   const uint32_t lSysColor,
                                   const float lineWidth)
-  { m_lSysDraw.DrawPolygon(polygon, lSysColor, lineWidth); };
+  {
+    m_lSysDraw.DrawPolygon(polygon, lSysColor, lineWidth);
+    m_lineDrawerManager.Update();
+  };
 
   return {drawLine, drawPolygon};
 }
@@ -233,6 +240,7 @@ auto LSystem::InitNextLSysInterpreter() -> void
                                 m_lSysModelSet.lSysOverrides.maxNumLSysCopies + 1U);
 
   m_lSysDraw.SetNumLSysCopies(numLSysCopies);
+  SwitchLineDrawers();
 
   m_lSysGeometry.SetNumLSysCopies(numLSysCopies);
   m_lSysGeometry.SetVerticalMoveMaxMin(m_lSysModelSet.lSysOverrides.verticalMoveMin,
