@@ -27,6 +27,7 @@ public:
   };
   using HandlerFunc = std::function<void(const LogLevel, const std::string&)>;
 
+  GoomLogger() noexcept;
   GoomLogger(const GoomLogger&) = delete;
   GoomLogger(GoomLogger&&)      = delete;
   virtual ~GoomLogger() noexcept;
@@ -57,7 +58,6 @@ public:
            const Args&... args) -> void;
 
 protected:
-  GoomLogger() noexcept;
   [[nodiscard]] virtual auto GetLogPrefix(LogLevel lvl,
                                           int lineNum,
                                           const std::string& funcName) const -> std::string;
