@@ -84,6 +84,7 @@ static constexpr auto STATE_NAMES = EnumMap<GoomStates, std::string_view>{{{
     {GoomStates::IMAGE_LINES_SHAPES, "Image, Lines and Shapes"},
     {GoomStates::IMAGE_LINES_STARS_TENTACLES, "Im, Li, S, Te"},
     {GoomStates::IMAGE_SHAPES, "Image and Shapes"},
+    {GoomStates::IMAGE_SHAPES_L_SYSTEM, "Image, Shapes and L"},
     {GoomStates::IMAGE_SHAPES_STARS, "Image, Shapes and Stars"},
     {GoomStates::IMAGE_SHAPES_TUBES, "Image, Shapes and tubes"},
     {GoomStates::IMAGE_STARS, "Image and Stars"},
@@ -103,7 +104,6 @@ static constexpr auto STATE_NAMES = EnumMap<GoomStates, std::string_view>{{{
     {GoomStates::SHAPES_TUBES, "Shapes and Tubes"},
     {GoomStates::STARS_ONLY, "Stars Only"},
     {GoomStates::TENTACLES_ONLY, "Tentacles Only"},
-    {GoomStates::TENTACLES_L_SYSTEM, "Tentacles and L"},
     {GoomStates::TUBES_ONLY, "Tubes Only"},
 }}};
 
@@ -164,6 +164,8 @@ static const auto STATE_DRAWABLES = EnumMap<GoomStates, std::set<GoomDrawables>>
                                                GoomDrawables::STARS, GoomDrawables::TENTACLES}},
     {GoomStates::IMAGE_ONLY,                  {GoomDrawables::IMAGE}},
     {GoomStates::IMAGE_SHAPES,                {GoomDrawables::IMAGE, GoomDrawables::SHAPES}},
+    {GoomStates::IMAGE_SHAPES_L_SYSTEM,       {GoomDrawables::IMAGE, GoomDrawables::SHAPES,
+                                               GoomDrawables::L_SYSTEM}},
     {GoomStates::IMAGE_SHAPES_STARS,          {GoomDrawables::IMAGE, GoomDrawables::SHAPES,
                                                GoomDrawables::STARS}},
     {GoomStates::IMAGE_SHAPES_TUBES,          {GoomDrawables::IMAGE, GoomDrawables::SHAPES,
@@ -184,7 +186,6 @@ static const auto STATE_DRAWABLES = EnumMap<GoomStates, std::set<GoomDrawables>>
     {GoomStates::SHAPES_TUBES,                {GoomDrawables::SHAPES, GoomDrawables::TUBES}},
     {GoomStates::STARS_ONLY,                  {GoomDrawables::STARS}},
     {GoomStates::TENTACLES_ONLY,              {GoomDrawables::TENTACLES}},
-    {GoomStates::TENTACLES_L_SYSTEM,          {GoomDrawables::TENTACLES, GoomDrawables::L_SYSTEM}},
     {GoomStates::TUBES_ONLY,                  {GoomDrawables::TUBES}},
 }}};
 // clang-format on

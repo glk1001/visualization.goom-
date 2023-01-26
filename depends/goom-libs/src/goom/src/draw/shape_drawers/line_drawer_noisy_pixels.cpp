@@ -27,8 +27,16 @@ auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPixels(const Point2dInt& point
 {
   Expects(m_useMainColorsForNoise or (not m_noiseColors.empty()));
 
-  BrightenColors(brightness, colors);
-  m_draw.DrawClippedPixels(point, colors);
+  if (m_useMainPointWithoutNoise or (0 == m_noiseRadius))
+  {
+    BrightenColors(brightness, colors);
+    m_draw.DrawClippedPixels(point, colors);
+
+    if (0 == m_noiseRadius)
+    {
+      return;
+    }
+  }
 
   if (not m_useMainColorsForNoise)
   {

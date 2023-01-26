@@ -178,7 +178,8 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
                            /*.maxDefaultDistanceFactor =*/3.01F,
                            /*.minDefaultTurnAngleInDegreesFactor =*/0.1F,
                            /*.maxDefaultTurnAngleInDegreesFactor =*/1.0F,
-                           /*.probabilityOfSimpleColors =*/0.05F,
+                           /*.probabilityOfSimpleColors =*/0.75F,
+                           /*.probabilityOfNoise =*/0.95F,
                            /*.namedArgs = */ {},
                            }},
       LSystem::LSystemFile{"bourke_pentaplexity",
@@ -202,6 +203,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
                            /*.minDefaultTurnAngleInDegreesFactor =*/1.0F,
                            /*.maxDefaultTurnAngleInDegreesFactor =*/1.00001F,
                            /*.probabilityOfSimpleColors =*/0.8F,
+                           /*.probabilityOfNoise =*/0.95F,
                            /*.namedArgs = */ {},
                            }},
       LSystem::LSystemFile{       "honda_tree_b",
@@ -225,6 +227,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
                            /*.minDefaultTurnAngleInDegreesFactor =*/1.0F,
                            /*.maxDefaultTurnAngleInDegreesFactor =*/1.01F,
                            /*.probabilityOfSimpleColors =*/0.8F,
+                           /*.probabilityOfNoise =*/0.95F,
                            /*.namedArgs = */
                            {
                            {"r2", 0.7F, 0.9F},
@@ -254,6 +257,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
                            /*.minDefaultTurnAngleInDegreesFactor =*/1.0F,
                            /*.maxDefaultTurnAngleInDegreesFactor =*/1.01F,
                            /*.probabilityOfSimpleColors =*/0.8F,
+                           /*.probabilityOfNoise =*/0.0F, // too slow with noise
                            /*.namedArgs = */
                            {
                            {"lr", 1.109F, 1.209F},

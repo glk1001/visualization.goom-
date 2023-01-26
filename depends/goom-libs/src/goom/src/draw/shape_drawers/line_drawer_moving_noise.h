@@ -46,6 +46,7 @@ public:
   auto SetBrightnessFactor(float brightnessFactor) noexcept -> void;
   auto SetNoiseColors(const MultiplePixels& colors) noexcept -> void;
   auto SetUseMainColorsForNoise(bool value) noexcept -> void;
+  auto SetUseMainPointWithoutNoise(bool useMainPointWithoutNoise) noexcept -> void;
 
   auto IncrementNoise() noexcept -> void;
 
@@ -83,6 +84,12 @@ inline auto LineDrawerMovingNoise::SetNoiseColors(const MultiplePixels& colors) 
 inline auto LineDrawerMovingNoise::SetUseMainColorsForNoise(const bool value) noexcept -> void
 {
   m_lineDrawer.SetUseMainColorsForNoise(value);
+}
+
+inline auto LineDrawerMovingNoise::SetUseMainPointWithoutNoise(
+    const bool useMainPointWithoutNoise) noexcept -> void
+{
+  m_lineDrawer.SetUseMainPointWithoutNoise(useMainPointWithoutNoise);
 }
 
 inline auto LineDrawerMovingNoise::GetCurrentNoiseRadius() const noexcept -> uint8_t

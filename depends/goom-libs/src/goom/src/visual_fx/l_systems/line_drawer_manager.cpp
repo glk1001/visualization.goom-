@@ -35,12 +35,18 @@ LineDrawerManager::LineDrawerManager(IGoomDraw& draw, const IGoomRand& goomRand)
         }
     }
 {
+  m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetUseMainPointWithoutNoise(false);
 }
 // clang-format on
 
 auto LineDrawerManager::SwitchLineDrawers() noexcept -> void
 {
-  switch (m_switchLineDrawerWeights.GetRandomWeighted())
+  SwitchLineDrawers(m_switchLineDrawerWeights.GetRandomWeighted());
+}
+
+auto LineDrawerManager::SwitchLineDrawers(SwitchLineDrawerType forceType) noexcept -> void
+{
+  switch (forceType)
   {
     case SwitchLineDrawerType::CONST:
     {

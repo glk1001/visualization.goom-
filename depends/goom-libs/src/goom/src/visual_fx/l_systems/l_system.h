@@ -54,6 +54,7 @@ public:
       float minDefaultTurnAngleInDegreesFactor;
       float maxDefaultTurnAngleInDegreesFactor;
       float probabilityOfSimpleColors;
+      float probabilityOfNoise;
       struct NamedArg
       {
         const char* name;
@@ -191,7 +192,15 @@ inline auto LSystem::ChangeColors() noexcept -> void
 
 inline auto LSystem::SwitchLineDrawers() -> void
 {
-  m_lineDrawerManager.SwitchLineDrawers();
+  if (m_goomRand.ProbabilityOf(m_lSysModelSet.lSysOverrides.probabilityOfNoise))
+  {
+    m_lineDrawerManager.SwitchLineDrawers();
+  }
+  else
+  {
+    m_lineDrawerManager.SwitchLineDrawers(LineDrawerManager::SwitchLineDrawerType::NONE);
+  }
+
   m_lSysDraw.SetLineDrawer(m_lineDrawerManager.GetLineDrawer());
 }
 

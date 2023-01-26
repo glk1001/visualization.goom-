@@ -18,6 +18,16 @@ public:
   [[nodiscard]] auto GetLineDrawer() noexcept -> ILineDrawerWithEffects&;
 
   auto SwitchLineDrawers() noexcept -> void;
+
+  enum class SwitchLineDrawerType
+  {
+    CONST,
+    MOVING,
+    NONE,
+    _num // must be last - gives number of enums
+  };
+  auto SwitchLineDrawers(SwitchLineDrawerType forceType) noexcept -> void;
+
   auto Update() noexcept -> void;
 
 private:
@@ -31,13 +41,6 @@ private:
   static constexpr auto NUM_NUM_MOVING_NOISE_PIXEL_STEPS = 10000U;
   LineDrawerWithMovingNoiseEffect m_lineDrawerWithMovingNoiseEffect;
 
-  enum SwitchLineDrawerType
-  {
-    CONST,
-    MOVING,
-    NONE,
-    _num // must be last - gives number of enums
-  };
   const UTILS::MATH::Weights<SwitchLineDrawerType> m_switchLineDrawerWeights;
 
   ILineDrawerWithEffects* m_lineDrawer = &m_lineDrawerWithMovingNoiseEffect;

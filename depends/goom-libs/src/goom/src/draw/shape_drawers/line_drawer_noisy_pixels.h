@@ -31,6 +31,7 @@ public:
   auto SetBrightnessFactor(float brightnessFactor) noexcept -> void;
   auto SetNoiseColors(const MultiplePixels& colors) noexcept -> void;
   auto SetUseMainColorsForNoise(bool value) noexcept -> void;
+  auto SetUseMainPointWithoutNoise(bool useMainPointWithoutNoise) noexcept -> void;
 
   auto DrawLine(const Point2dInt& point1, const Point2dInt& point2, const Pixel& color) noexcept
       -> void;
@@ -50,6 +51,7 @@ private:
     auto SetBrightnessFactor(float brightnessFactor) noexcept -> void;
     auto SetNoiseColors(const MultiplePixels& colors) noexcept -> void;
     auto SetUseMainColorsForNoise(bool useMainColorsForNoise) noexcept -> void;
+    auto SetUseMainPointWithoutNoise(bool useMainPointWithoutNoise) noexcept -> void;
 
     [[nodiscard]] auto GetNoiseRadius() const noexcept -> uint8_t;
     auto SetNoiseRadius(uint8_t noiseRadius) noexcept -> void;
@@ -69,6 +71,7 @@ private:
     float m_brightnessFactor        = 1.0F;
     float m_overallBrightnessFactor = 1.0F;
     bool m_useMainColorsForNoise    = true;
+    bool m_useMainPointWithoutNoise = true;
     MultiplePixels m_noiseColors{};
   };
 
@@ -94,6 +97,12 @@ inline auto LineDrawerNoisyPixels::SetNoiseColors(const MultiplePixels& colors) 
 inline auto LineDrawerNoisyPixels::SetUseMainColorsForNoise(const bool value) noexcept -> void
 {
   m_lineDrawer.GetDrawPixelPolicy().SetUseMainColorsForNoise(value);
+}
+
+inline auto LineDrawerNoisyPixels::SetUseMainPointWithoutNoise(
+    const bool useMainPointWithoutNoise) noexcept -> void
+{
+  m_lineDrawer.GetDrawPixelPolicy().SetUseMainPointWithoutNoise(useMainPointWithoutNoise);
 }
 
 inline auto LineDrawerNoisyPixels::GetNoiseRadius() const noexcept -> uint8_t
@@ -148,6 +157,12 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetUseMainColorsForNoise(
     const bool useMainColorsForNoise) noexcept -> void
 {
   m_useMainColorsForNoise = useMainColorsForNoise;
+}
+
+inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetUseMainPointWithoutNoise(
+    const bool useMainPointWithoutNoise) noexcept -> void
+{
+  m_useMainPointWithoutNoise = useMainPointWithoutNoise;
 }
 
 inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::GetNoiseRadius() const noexcept -> uint8_t
