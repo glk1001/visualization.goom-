@@ -2,6 +2,7 @@
 
 #include "t_values.h"
 
+#include "debugging_logger.h"
 #include "goom_config.h"
 #include "goom_logger.h"
 
@@ -13,6 +14,9 @@ TValue::TValue(const TValue::StepType stepType,
                const float startingT) noexcept
   : m_stepType{stepType}, m_stepSize{stepSize}, m_t{startingT}, m_delayPoints{}
 {
+  Expects(stepSize > 0.0F);
+  Expects(startingT >= MIN_T_VALUE);
+  Expects(startingT <= MAX_T_VALUE);
 }
 
 TValue::TValue(const TValue::StepType stepType,
@@ -21,6 +25,9 @@ TValue::TValue(const TValue::StepType stepType,
                const float startingT) noexcept
   : m_stepType{stepType}, m_stepSize{stepSize}, m_t{startingT}, m_delayPoints{delayPoints}
 {
+  Expects(stepSize > 0.0F);
+  Expects(startingT >= MIN_T_VALUE);
+  Expects(startingT <= MAX_T_VALUE);
   ValidateDelayPoints();
 }
 
@@ -32,6 +39,9 @@ TValue::TValue(const TValue::StepType stepType,
     m_t{startingT},
     m_delayPoints{}
 {
+  Expects(numSteps > 0U);
+  Expects(startingT >= MIN_T_VALUE);
+  Expects(startingT <= MAX_T_VALUE);
 }
 
 TValue::TValue(const TValue::StepType stepType,
@@ -43,6 +53,9 @@ TValue::TValue(const TValue::StepType stepType,
     m_t{startingT},
     m_delayPoints{delayPoints}
 {
+  Expects(numSteps > 0U);
+  Expects(startingT >= MIN_T_VALUE);
+  Expects(startingT <= MAX_T_VALUE);
   ValidateDelayPoints();
 }
 
@@ -83,13 +96,15 @@ auto TValue::Increment() noexcept -> void
 
 inline auto TValue::SingleCycleIncrement() noexcept -> void
 {
-  if (m_t > (1.0F + T_EPSILON))
+  if (m_t >= MAX_T_VALUE)
   {
+    m_t = MAX_T_VALUE;
     return;
   }
   m_t += m_currentStep;
 
-  Ensures(m_t >= 0.0F);
+  Ensures(not std::isnan(m_t));
+  Ensures(m_t >= MIN_T_VALUE);
 }
 
 inline auto TValue::ContinuousRepeatableIncrement() noexcept -> void
@@ -99,17 +114,29 @@ inline auto TValue::ContinuousRepeatableIncrement() noexcept -> void
     return;
   }
 
-  m_t += m_currentStep;
-
-  if (m_t > (1.0F + T_EPSILON))
+  if (Boundaries::END == m_currentPosition)
   {
-    m_currentPosition = Boundaries::END;
-    HandleBoundary(0.0F, +1.0F);
+    HandleBoundary(MIN_T_VALUE, POSITIVE_SIGN);
+    m_currentPosition = Boundaries::START;
   }
   else
   {
-    m_currentPosition = Boundaries::INSIDE;
+    m_t += m_currentStep;
+
+    if (m_t >= MAX_T_VALUE)
+    {
+      m_currentPosition = Boundaries::END;
+      m_t               = MAX_T_VALUE;
+    }
+    else
+    {
+      m_currentPosition = Boundaries::INSIDE;
+    }
   }
+
+  Ensures(not std::isnan(m_t));
+  Ensures(m_t >= MIN_T_VALUE);
+  Ensures(m_t <= MAX_T_VALUE);
 }
 
 inline auto TValue::ContinuousReversibleIncrement() noexcept -> void
@@ -121,31 +148,39 @@ inline auto TValue::ContinuousReversibleIncrement() noexcept -> void
 
   m_t += m_currentStep;
 
-  if ((m_t <= 0.0F) || (m_t >= 1.0F))
+  if ((m_t <= MIN_T_VALUE) or (m_t >= MAX_T_VALUE))
   {
     m_currentDelayPoints = m_delayPoints;
   }
 
   CheckContinuousReversibleBoundary();
+
+  Ensures(not std::isnan(m_t));
+  Ensures(m_t >= MIN_T_VALUE);
+  Ensures(m_t <= MAX_T_VALUE);
 }
 
 inline auto TValue::CheckContinuousReversibleBoundary() noexcept -> void
 {
-  if (m_t > (1.0F + T_EPSILON))
+  if (Boundaries::END == m_currentPosition)
   {
-    m_currentPosition = Boundaries::END;
-    HandleBoundary(1.0F, -1.0F);
-    m_t += m_currentStep;
-  }
-  else if (m_t < (0.0F - T_EPSILON))
-  {
-    m_currentPosition = Boundaries::START;
-    HandleBoundary(0.0F, +1.0F);
-    m_t += m_currentStep;
-  }
-  else
-  {
+    HandleBoundary(MAX_T_VALUE - m_stepSize, NEGATIVE_SIGN);
     m_currentPosition = Boundaries::INSIDE;
+  }
+  else if (Boundaries::START == m_currentPosition)
+  {
+    HandleBoundary(MIN_T_VALUE + m_stepSize, POSITIVE_SIGN);
+    m_currentPosition = Boundaries::INSIDE;
+  }
+  else if (m_t >= MAX_T_VALUE)
+  {
+    m_t               = MAX_T_VALUE;
+    m_currentPosition = Boundaries::END;
+  }
+  else if (m_t <= MIN_T_VALUE)
+  {
+    m_t               = MIN_T_VALUE;
+    m_currentPosition = Boundaries::START;
   }
 }
 
@@ -157,7 +192,7 @@ inline auto TValue::IsInDelayZone() noexcept -> bool
     return false;
   }
 
-  if ((!m_startedDelay) && WeAreStartingDelayPoint())
+  if ((not m_startedDelay) and WeAreStartingDelayPoint())
   {
     m_startedDelay = true;
   }
@@ -192,7 +227,7 @@ inline auto TValue::WeAreStartingDelayPoint() noexcept -> bool
 
 auto TValue::SetStepSize(const float val) noexcept -> void
 {
-  Expects(val >= 0.0F);
+  Expects(val > 0.0F);
   Expects((m_stepType != StepType::SINGLE_CYCLE) or (m_currentStep >= 0.0F));
 
   const auto oldCurrentStep = m_currentStep;
@@ -200,8 +235,8 @@ auto TValue::SetStepSize(const float val) noexcept -> void
   m_stepSize    = val;
   m_currentStep = m_currentStep < 0.0F ? -m_stepSize : +m_stepSize;
 
-  if (((oldCurrentStep < 0.0F) && (m_currentStep > 0.0F)) ||
-      ((oldCurrentStep > 0.0F) && (m_currentStep < 0.0F)))
+  if (((oldCurrentStep < 0.0F) and (m_currentStep > 0.0F)) or
+      ((oldCurrentStep > 0.0F) and (m_currentStep < 0.0F)))
   {
     m_currentDelayPoints = m_delayPoints;
   }
@@ -227,12 +262,12 @@ inline auto TValue::HandleBoundary(const float continueValue, const float stepSi
   if (stepSign < 0.0F)
   {
     m_currentStep = -m_stepSize;
-    assert(m_currentStep < 0.0F);
+    Ensures(m_currentStep < 0.0F);
   }
   else
   {
     m_currentStep = +m_stepSize;
-    assert(m_currentStep > 0.0F);
+    Ensures(m_currentStep > 0.0F);
   }
 
   m_currentDelayPoints = m_delayPoints;

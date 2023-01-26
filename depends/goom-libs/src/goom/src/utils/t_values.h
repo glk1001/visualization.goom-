@@ -13,8 +13,8 @@ namespace GOOM::UTILS
 class TValue
 {
 public:
-  static constexpr float T_EPSILON   = 1.0e-07F;
-  static constexpr float MAX_T_VALUE = 1.0F + T_EPSILON;
+  static constexpr float MIN_T_VALUE = 0.0F;
+  static constexpr float MAX_T_VALUE = 1.0F;
   struct DelayPoint
   {
     float t0;
@@ -53,12 +53,7 @@ public:
 
   auto operator()() const noexcept -> float;
 
-  enum class Boundaries
-  {
-    START,
-    INSIDE,
-    END
-  };
+  [[nodiscard]] auto IsInsideBoundary() const noexcept -> bool;
   [[nodiscard]] auto HasJustHitStartBoundary() const noexcept -> bool;
   [[nodiscard]] auto HasJustHitEndBoundary() const noexcept -> bool;
 
@@ -74,14 +69,24 @@ private:
   const StepType m_stepType;
   float m_stepSize;
   float m_currentStep{m_stepSize};
+  static constexpr auto POSITIVE_SIGN = +1.0F;
+  static constexpr auto NEGATIVE_SIGN = -1.0F;
   float m_t;
-  Boundaries m_currentPosition{(m_stepType == StepType::SINGLE_CYCLE) ? Boundaries::INSIDE
-                                                                      : Boundaries::START};
+
+  enum class Boundaries
+  {
+    START,
+    INSIDE,
+    END
+  };
+  Boundaries m_currentPosition = Boundaries::INSIDE;
+
   const std::vector<DelayPoint> m_delayPoints;
   std::vector<DelayPoint> m_currentDelayPoints{m_delayPoints};
-  bool m_startedDelay        = false;
-  bool m_justFinishedDelay   = false;
-  uint32_t m_delayPointCount = 0;
+  bool m_startedDelay              = false;
+  bool m_justFinishedDelay         = false;
+  uint32_t m_delayPointCount       = 0;
+  static constexpr float T_EPSILON = 1.0e-07F;
   [[nodiscard]] auto IsInDelayZone() noexcept -> bool;
   [[nodiscard]] auto IsInThisDelayZone(const DelayPoint& delayPoint) const noexcept -> bool;
   [[nodiscard]] auto WeAreStartingDelayPoint() noexcept -> bool;
@@ -92,6 +97,7 @@ private:
   auto ContinuousReversibleIncrement() noexcept -> void;
   auto CheckContinuousReversibleBoundary() noexcept -> void;
   auto HandleBoundary(float continueValue, float stepSign) noexcept -> void;
+  auto UpdateCurrentPositionAndStep() -> void;
 };
 
 template<typename T>
@@ -120,6 +126,7 @@ public:
 
   [[nodiscard]] auto GetT() const noexcept -> const TValue&;
   auto ResetT(float t = 0.0) noexcept -> void;
+  auto ResetCurrentValue(const T& newValue) noexcept -> void;
 
 private:
   T m_value1;
@@ -128,6 +135,9 @@ private:
   T m_currentValue = m_value1;
   [[nodiscard]] auto GetValue(float t) const noexcept -> T;
   [[nodiscard]] static auto LerpValues(const T& val1, const T& val2, float t) noexcept -> T;
+  [[nodiscard]] static auto clamp(const T& val, const T& val1, const T& val2) noexcept -> T;
+  [[nodiscard]] static auto GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
+      -> float;
 };
 
 inline auto TValue::GetStepType() const noexcept -> StepType
@@ -143,6 +153,11 @@ inline auto TValue::GetStepSize() const noexcept -> float
 inline auto TValue::operator()() const noexcept -> float
 {
   return m_t;
+}
+
+inline auto TValue::IsInsideBoundary() const noexcept -> bool
+{
+  return m_currentPosition == Boundaries::INSIDE;
 }
 
 inline auto TValue::HasJustHitStartBoundary() const noexcept -> bool
@@ -181,10 +196,49 @@ inline auto TValue::IsStopped() const noexcept -> bool
 
 inline auto TValue::Reset(const float t) noexcept -> void
 {
+  Expects(not std::isnan(t));
+
   m_t                 = t;
-  m_currentStep       = m_stepSize;
   m_startedDelay      = false;
   m_justFinishedDelay = false;
+
+  UpdateCurrentPositionAndStep();
+}
+
+inline auto TValue::UpdateCurrentPositionAndStep() -> void
+{
+  if (StepType::SINGLE_CYCLE == m_stepType)
+  {
+    m_currentPosition = Boundaries::INSIDE;
+  }
+  else if (StepType::CONTINUOUS_REPEATABLE == m_stepType)
+  {
+    if (m_t >= MAX_T_VALUE)
+    {
+      m_currentPosition = Boundaries::END;
+    }
+    else
+    {
+      m_currentPosition = Boundaries::INSIDE;
+    }
+  }
+  else
+  {
+    if (m_t >= MAX_T_VALUE)
+    {
+      m_currentPosition = Boundaries::END;
+      m_currentStep     = -m_stepSize;
+    }
+    else if (m_t <= MIN_T_VALUE)
+    {
+      m_currentPosition = Boundaries::START;
+      m_currentStep     = +m_stepSize;
+    }
+    else
+    {
+      m_currentPosition = Boundaries::INSIDE;
+    }
+  }
 }
 
 inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const noexcept -> bool
@@ -227,12 +281,14 @@ template<typename T>
 inline auto IncrementedValue<T>::SetValue1(const T& value1) noexcept -> void
 {
   m_value1 = value1;
+  ResetCurrentValue(m_currentValue);
 }
 
 template<typename T>
 inline auto IncrementedValue<T>::SetValue2(const T& value2) noexcept -> void
 {
   m_value2 = value2;
+  ResetCurrentValue(m_currentValue);
 }
 
 template<typename T>
@@ -240,16 +296,18 @@ inline auto IncrementedValue<T>::SetValues(const T& value1, const T& value2) noe
 {
   m_value1 = value1;
   m_value2 = value2;
+  ResetCurrentValue(m_currentValue);
 }
 
 template<typename T>
 inline auto IncrementedValue<T>::ReverseValues() noexcept -> void
 {
   std::swap(m_value1, m_value2);
+  ResetCurrentValue(m_currentValue);
 }
 
 template<typename T>
-inline auto IncrementedValue<T>::SetNumSteps(uint32_t val) noexcept -> void
+inline auto IncrementedValue<T>::SetNumSteps(const uint32_t val) noexcept -> void
 {
   m_t.SetNumSteps(val);
 }
@@ -284,10 +342,27 @@ inline auto IncrementedValue<T>::GetValue(const float t) const noexcept -> T
 template<typename T>
 inline auto IncrementedValue<T>::LerpValues(const T& val1, const T& val2, float t) noexcept -> T
 {
-  t = std::clamp(t, 0.0F, 1.0F);
-
   using STD20::lerp; // Include STD20 for candidate lerps.
   return lerp(val1, val2, t);
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::clamp(const T& val, const T& val1, const T& val2) noexcept -> T
+{
+  using std::clamp; // Include std for candidate clamps.
+  return clamp(val, val1, val2);
+}
+
+template<typename T>
+inline auto IncrementedValue<T>::GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
+    -> float
+{
+  if (std::fabs(static_cast<float>(val2) - static_cast<float>(val1)) < MATH::SMALL_FLOAT)
+  {
+    return 0.0F;
+  }
+  return ((static_cast<float>(val) - static_cast<float>(val1)) /
+          (static_cast<float>(val2) - static_cast<float>(val1)));
 }
 
 template<typename T>
@@ -301,6 +376,13 @@ inline auto IncrementedValue<T>::ResetT(const float t) noexcept -> void
 {
   m_t.Reset(t);
   m_currentValue = GetValue(m_t());
+}
+
+template<typename T>
+auto IncrementedValue<T>::ResetCurrentValue(const T& newValue) noexcept -> void
+{
+  const auto newClampedValue = clamp(newValue, m_value1, m_value2);
+  ResetT(GetMatchingT(newClampedValue, m_value1, m_value2));
 }
 
 } // namespace GOOM::UTILS

@@ -7,11 +7,11 @@
 #include "goom_plugin_info.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/misc.h"
 #include "utils/t_values.h"
 
 #include <lsys/graphics_generator.h>
 #include <lsys/interpret.h>
-#include <lsys/l_sys_model.h>
 #include <lsys/list.h>
 #include <lsys/module.h>
 #include <lsys/parsed_model.h>
@@ -20,6 +20,8 @@
 
 namespace GOOM::UTILS
 {
+using MATH::SMALL_FLOAT;
+
 using DefaultParams = ::LSYS::Interpreter::DefaultParams;
 
 template<>
@@ -34,15 +36,51 @@ inline auto IncrementedValue<DefaultParams>::LerpValues(const DefaultParams& val
   };
 }
 
+template<>
+inline auto IncrementedValue<DefaultParams>::GetMatchingT(const DefaultParams& val,
+                                                          const DefaultParams& val1,
+                                                          const DefaultParams& val2) noexcept
+    -> float
+{
+  if (std::fabs(static_cast<float>(val2.turnAngleInDegrees) -
+                static_cast<float>(val1.turnAngleInDegrees)) > SMALL_FLOAT)
+  {
+    return (
+        (static_cast<float>(val.turnAngleInDegrees) - static_cast<float>(val1.turnAngleInDegrees)) /
+        (static_cast<float>(val2.turnAngleInDegrees) -
+         static_cast<float>(val1.turnAngleInDegrees)));
+  }
+  if (std::fabs(static_cast<float>(val2.width) - static_cast<float>(val1.width)) > SMALL_FLOAT)
+  {
+    return ((static_cast<float>(val.width) - static_cast<float>(val1.width)) /
+            (static_cast<float>(val2.width) - static_cast<float>(val1.width)));
+  }
+  if (std::fabs(static_cast<float>(val2.distance) - static_cast<float>(val1.distance)) >
+      SMALL_FLOAT)
+  {
+    return ((static_cast<float>(val.distance) - static_cast<float>(val1.distance)) /
+            (static_cast<float>(val2.distance) - static_cast<float>(val1.distance)));
+  }
+  return 0.0F;
+}
+
+template<>
+inline auto IncrementedValue<DefaultParams>::clamp(const DefaultParams& val,
+                                                   const DefaultParams& val1,
+                                                   const DefaultParams& val2) noexcept
+    -> DefaultParams
+{
+  return {std::clamp(val.turnAngleInDegrees, val1.turnAngleInDegrees, val2.turnAngleInDegrees),
+          std::clamp(val.width, val1.width, val2.width),
+          std::clamp(val.distance, val1.distance, val2.distance)};
+}
+
 } // namespace GOOM::UTILS
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
-using UTILS::IncrementedValue;
-using UTILS::TValue;
-using UTILS::MATH::DEGREES_360;
-using UTILS::MATH::ToRadians;
+using UTILS::MATH::IGoomRand;
 
 using ::LSYS::BoundingBox3d;
 using ::LSYS::GetBoundingBox3d;
@@ -50,15 +88,12 @@ using ::LSYS::GetFinalProperties;
 using ::LSYS::GraphicsGenerator;
 using ::LSYS::Interpreter;
 using ::LSYS::List;
-using ::LSYS::LSysModel;
 using ::LSYS::Module;
-using ::LSYS::Point3dFlt;
-using ::LSYS::Properties;
 using ::LSYS::Value;
 
 LSystem::LSystem(DRAW::IGoomDraw& draw,
                  const PluginInfo& goomInfo,
-                 const UTILS::MATH::IGoomRand& goomRand,
+                 const IGoomRand& goomRand,
                  const std::string& lSystemDirectory,
                  const LSystemFile& lSystemFile) noexcept
   : m_goomInfo{goomInfo},
