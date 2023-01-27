@@ -136,15 +136,15 @@ auto TentaclesFx::ApplyMultiple() noexcept -> void
   m_pimpl->Update();
 }
 
-static constexpr auto LAYOUT0_START_RADIUS = 80.0F;
-static constexpr auto LAYOUT1_START_RADIUS = 80.0F;
-static constexpr auto LAYOUT2_START_RADIUS = 100.0F;
-static constexpr auto LAYOUT3_START_RADIUS = 110.0F;
+static constexpr auto LAYOUT0_START_RADIUS = 380.0F;
+static constexpr auto LAYOUT1_START_RADIUS = 380.0F;
+static constexpr auto LAYOUT2_START_RADIUS = 400.0F;
+static constexpr auto LAYOUT3_START_RADIUS = 410.0F;
 
-static constexpr auto LAYOUT0_END_RADIUS = 20.0F;
-static constexpr auto LAYOUT1_END_RADIUS = 20.0F;
-static constexpr auto LAYOUT2_END_RADIUS = 20.0F;
-static constexpr auto LAYOUT3_END_RADIUS = 20.0F;
+static constexpr auto LAYOUT0_END_RADIUS = 120.0F;
+static constexpr auto LAYOUT1_END_RADIUS = 120.0F;
+static constexpr auto LAYOUT2_END_RADIUS = 120.0F;
+static constexpr auto LAYOUT3_END_RADIUS = 120.0F;
 
 static constexpr auto LAYOUT0_NUM_TENTACLES = 40U;
 static constexpr auto LAYOUT1_NUM_TENTACLES = 50U;
@@ -270,8 +270,7 @@ inline auto TentaclesFx::TentaclesImpl::SetZoomMidpoint(const Point2dInt& zoomMi
 {
   std::for_each(begin(m_tentacleDrivers),
                 end(m_tentacleDrivers),
-                [&zoomMidpoint](auto& driver)
-                { driver.SetAllTentaclesEndCentrePos(zoomMidpoint); });
+                [&zoomMidpoint](auto& driver) { driver.SetTentaclesEndCentrePos(zoomMidpoint); });
 }
 
 inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void

@@ -109,6 +109,28 @@ template<typename T>
   return log2;
 }
 
+template<typename T>
+constexpr auto IntPower(T base, uint32_t exp) noexcept -> T
+{
+  auto result = static_cast<T>(1);
+
+  while (true)
+  {
+    if (exp & 1U)
+    {
+      result *= base;
+    }
+    exp >>= 1U;
+    if (not exp)
+    {
+      break;
+    }
+    base *= base;
+  }
+
+  return result;
+}
+
 [[nodiscard]] inline auto GetSawTooth(const float t, const float period) -> float
 {
   const auto tDivPeriod = t / period;

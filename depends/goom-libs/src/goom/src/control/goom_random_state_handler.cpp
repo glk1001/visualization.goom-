@@ -14,7 +14,7 @@ using UTILS::MATH::IGoomRand;
 
 // For debugging:
 
-static constexpr auto FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
@@ -32,7 +32,7 @@ static constexpr auto FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_STARS;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_STARS_TENTACLES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES_TUBES;
+static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES_TUBES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TUBES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES_STARS_TENTACLES;
@@ -43,7 +43,7 @@ static constexpr auto FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_STARS;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_TENTACLES;
-static constexpr auto FORCED_GOOM_STATE = GoomStates::L_SYSTEM_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::L_SYSTEM_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_STARS_LINES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
@@ -106,7 +106,6 @@ static constexpr auto SHAPES_STARS_WEIGHT                 = 200.0F;
 static constexpr auto SHAPES_TUBES_WEIGHT                 = 200.0F;
 static constexpr auto STARS_ONLY_WEIGHT                   = 001.0F;
 static constexpr auto TENTACLES_ONLY_WEIGHT               = 001.0F;
-static constexpr auto TENTACLES_L_SYSTEM_WEIGHT           = 001.0F;
 static constexpr auto TUBES_ONLY_WEIGHT                   = 001.0F;
 
 

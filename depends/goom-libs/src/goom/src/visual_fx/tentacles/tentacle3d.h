@@ -1,15 +1,8 @@
 #pragma once
 
-#include "../goom_visual_fx.h"
-#include "color/color_adjustment.h"
-#include "color/random_color_maps.h"
-#include "color/random_color_maps_manager.h"
-#include "draw/goom_draw.h"
-#include "goom_graphic.h"
+#include "goom_config.h"
 #include "point2d.h"
 #include "tentacle2d.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/t_values.h"
 
 #include <memory>
 #include <vector>
@@ -30,22 +23,12 @@ class Tentacle3D
 {
 public:
   Tentacle3D() noexcept = delete;
-  Tentacle3D(std::unique_ptr<Tentacle2D> tentacle, const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Tentacle3D(std::unique_ptr<Tentacle2D> tentacle) noexcept;
   Tentacle3D(const Tentacle3D&) noexcept = delete;
   Tentacle3D(Tentacle3D&&) noexcept      = default;
   ~Tentacle3D() noexcept;
   auto operator=(const Tentacle3D&) -> Tentacle3D& = delete;
   auto operator=(Tentacle3D&&) -> Tentacle3D&      = delete;
-
-  auto Get2DTentacle() -> Tentacle2D&;
-  [[nodiscard]] auto Get2DTentacle() const -> const Tentacle2D&;
-
-  auto SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void;
-  auto ChangeColorMaps() -> void;
-
-  [[nodiscard]] auto GetMixedColors(float t,
-                                    const DRAW::MultiplePixels& dominantColors,
-                                    float brightness) const -> DRAW::MultiplePixels;
 
   // NOTE: All positions are relative to a zero origin.
   static constexpr float START_SMALL_X = 10.0F;
@@ -54,58 +37,22 @@ public:
 
   [[nodiscard]] auto GetEndPos() const -> const Point2dFlt&;
   auto SetEndPos(const Point2dFlt& val) noexcept -> void;
-  auto SetEndPosOffset(const V3dFlt& val) noexcept -> void;
+  auto SetEndPosOffset(const V3dFlt& endPosOffset) noexcept -> void;
 
+  auto SetIterZeroYVal(float value) -> void;
+  auto SetBaseYWeights(const Tentacle2D::BaseYWeights& value) -> void;
+  auto StartIterating() -> void;
+
+  auto Iterate() -> void;
   [[nodiscard]] auto GetTentacleVertices(const V3dFlt& startPosOffset) const -> std::vector<V3dFlt>;
-  auto Update() noexcept -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
   std::unique_ptr<Tentacle2D> m_tentacle;
 
-  COLOR::RandomColorMapsManager m_colorMapsManager{};
-  std::shared_ptr<const COLOR::RandomColorMaps> m_mainColorMaps{};
-  std::shared_ptr<const COLOR::RandomColorMaps> m_lowColorMaps{};
-  COLOR::RandomColorMapsManager::ColorMapId m_mainColorMapID{
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
-  COLOR::RandomColorMapsManager::ColorMapId m_lowColorMapID{
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
-
-  static constexpr float MIN_COLOR_SEGMENT_MIX_T     = 0.7F;
-  static constexpr float MAX_COLOR_SEGMENT_MIX_T     = 1.0F;
-  static constexpr float DEFAULT_COLOR_SEGMENT_MIX_T = 0.9F;
-  float m_mainColorSegmentMixT                       = DEFAULT_COLOR_SEGMENT_MIX_T;
-  float m_lowColorSegmentMixT                        = DEFAULT_COLOR_SEGMENT_MIX_T;
-
-  static constexpr float GAMMA = 0.8F;
-  const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
-                                             COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
-
-  // Need this z start value to remove the flat lines for some tentacle starts.
-  static constexpr auto Z_START_POS = -10.0F;
   Point2dFlt m_startPos{};
   Point2dFlt m_endPos{};
   V3dFlt m_endPosOffset{};
-  V3dFlt m_previousEndPosOffset{};
-
-  static constexpr uint32_t NUM_POS_OFFSET_STEPS = 100;
-  UTILS::TValue m_endPosOffsetT{UTILS::TValue::StepType::SINGLE_CYCLE, NUM_POS_OFFSET_STEPS};
-
-  [[nodiscard]] auto GetCurrentEndPostOffset() const noexcept -> V3dFlt;
-
-  [[nodiscard]] auto GetMixedColors(float t, const DRAW::MultiplePixels& dominantColors) const
-      -> DRAW::MultiplePixels;
 };
-
-inline auto Tentacle3D::Get2DTentacle() -> Tentacle2D&
-{
-  return *m_tentacle;
-}
-
-inline auto Tentacle3D::Get2DTentacle() const -> const Tentacle2D&
-{
-  return *m_tentacle;
-}
 
 inline auto Tentacle3D::GetStartPos() const -> const Point2dFlt&
 {
@@ -127,9 +74,24 @@ inline auto Tentacle3D::SetEndPos(const Point2dFlt& val) noexcept -> void
   m_endPos = val;
 }
 
-inline auto Tentacle3D::Update() noexcept -> void
+inline auto Tentacle3D::SetIterZeroYVal(const float value) -> void
 {
-  m_endPosOffsetT.Increment();
+  m_tentacle->SetIterZeroYVal(static_cast<double>(value));
+}
+
+inline auto Tentacle3D::SetBaseYWeights(const Tentacle2D::BaseYWeights& value) -> void
+{
+  m_tentacle->SetBaseYWeights(value);
+}
+
+inline auto Tentacle3D::StartIterating() -> void
+{
+  m_tentacle->StartIterating();
+}
+
+inline auto Tentacle3D::Iterate() -> void
+{
+  m_tentacle->Iterate();
 }
 
 constexpr auto operator+(const V3dFlt& point1, const V3dFlt& point2) noexcept -> V3dFlt

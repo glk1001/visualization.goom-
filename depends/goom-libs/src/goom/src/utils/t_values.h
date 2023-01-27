@@ -109,6 +109,10 @@ public:
                    const T& value2,
                    TValue::StepType stepType,
                    uint32_t numSteps) noexcept;
+  IncrementedValue(const T& value1,
+                   const T& value2,
+                   TValue::StepType stepType,
+                   float stepSize) noexcept;
 
   [[nodiscard]] auto GetValue1() const noexcept -> const T&;
   [[nodiscard]] auto GetValue2() const noexcept -> const T&;
@@ -263,6 +267,16 @@ inline IncrementedValue<T>::IncrementedValue(const T& value1,
   : m_value1{value1}, m_value2{value2}, m_t{stepType, numSteps}
 {
   Expects(numSteps > 0U);
+}
+
+template<typename T>
+inline IncrementedValue<T>::IncrementedValue(const T& value1,
+                                             const T& value2,
+                                             const TValue::StepType stepType,
+                                             const float stepSize) noexcept
+  : m_value1{value1}, m_value2{value2}, m_t{stepType, stepSize}
+{
+  Expects(stepSize > 0.0F);
 }
 
 template<typename T>

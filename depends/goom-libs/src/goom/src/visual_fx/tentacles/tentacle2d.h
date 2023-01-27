@@ -40,9 +40,9 @@ public:
   auto Iterate() -> void;
 
   auto SetXDimensions(const LinearDimensions& xDimensions) -> void;
-  auto SetIterZeroYVal(double val) -> void;
-  auto SetIterZeroLerpFactor(double val) -> void;
-  auto SetBaseYWeights(const BaseYWeights& val) -> void;
+  auto SetIterZeroYVal(double value) -> void;
+  auto SetIterZeroLerpFactor(double value) -> void;
+  auto SetBaseYWeights(const BaseYWeights& value) -> void;
 
   [[nodiscard]] auto GetDampedXAndYVectors() const -> const XAndYVectors&;
 
@@ -52,7 +52,8 @@ public:
   [[nodiscard]] auto GetXMax() const -> double;
 
 private:
-  const uint32_t m_numNodes;
+  const uint32_t m_numRequestedNodes;
+  const uint32_t m_numActualNodes;
   Dimensions m_dimensions;
 
   double m_basePreviousYWeight;
@@ -68,10 +69,13 @@ private:
 
   std::vector<double> m_xVec{};
   std::vector<double> m_yVec{};
+  std::vector<double> m_dampedXVec{};
   std::vector<double> m_dampedYVec{};
   std::vector<double> m_dampingCache{};
-  XAndYVectors m_dampedVectors{std::ref(m_xVec), std::ref(m_dampedYVec)};
+  static constexpr auto NUM_IGNORE_FIRST_VALS = 10U;
+  XAndYVectors m_dampedVectors{std::ref(m_dampedXVec), std::ref(m_dampedYVec)};
   std::unique_ptr<UTILS::MATH::IDampingFunction> m_dampingFunc;
+  [[nodiscard]] auto GetDampingFuncValue(double x) noexcept -> double;
   auto InitVectors() noexcept -> void;
   auto DoSomeInitialIterations() noexcept -> void;
 
@@ -81,37 +85,33 @@ private:
   auto ValidateSettings() const -> void;
 
   auto UpdateDampedValues() -> void;
-  [[nodiscard]] auto GetDampedVal(size_t nodeNum, double val) const -> double;
+  [[nodiscard]] auto GetDampedValue(size_t nodeNum, double value) const -> double;
 
   using DampingFuncPtr = std::unique_ptr<UTILS::MATH::IDampingFunction>;
-  [[nodiscard]] static auto CreateDampingFunc(double prevYWeight,
-                                              const LinearDimensions& xDimensions)
-      -> DampingFuncPtr;
-  [[nodiscard]] static auto CreateExpDampingFunc(const LinearDimensions& xDimensions)
-      -> DampingFuncPtr;
-  [[nodiscard]] static auto CreateLinearDampingFunc(const LinearDimensions& xDimensions)
-      -> DampingFuncPtr;
+  [[nodiscard]] auto CreateDampingFunc() const noexcept -> DampingFuncPtr;
+  [[nodiscard]] auto CreateExpDampingFunc() const noexcept -> DampingFuncPtr;
+  [[nodiscard]] auto CreateLinearDampingFunc() const noexcept -> DampingFuncPtr;
 };
 
-inline auto Tentacle2D::SetIterZeroYVal(const double val) -> void
+inline auto Tentacle2D::SetIterZeroYVal(const double value) -> void
 {
-  m_iterZeroYVal = val;
+  m_iterZeroYVal = value;
 }
 
-inline auto Tentacle2D::SetIterZeroLerpFactor(const double val) -> void
+inline auto Tentacle2D::SetIterZeroLerpFactor(const double value) -> void
 {
-  m_iterZeroLerpFactor = val;
+  m_iterZeroLerpFactor = value;
 }
 
-inline auto Tentacle2D::SetBaseYWeights(const BaseYWeights& val) -> void
+inline auto Tentacle2D::SetBaseYWeights(const BaseYWeights& value) -> void
 {
-  m_basePreviousYWeight = static_cast<double>(val.previous);
-  m_baseCurrentYWeight  = static_cast<double>(val.current);
+  m_basePreviousYWeight = static_cast<double>(value.previous);
+  m_baseCurrentYWeight  = static_cast<double>(value.current);
 }
 
 inline auto Tentacle2D::GetNumNodes() const -> uint32_t
 {
-  return m_numNodes;
+  return m_numRequestedNodes;
 }
 
 inline auto Tentacle2D::GetTentacleLength() const -> double
