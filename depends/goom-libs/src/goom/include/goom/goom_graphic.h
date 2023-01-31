@@ -136,7 +136,7 @@ public:
 
   [[nodiscard]] constexpr auto IsBlack() const noexcept -> bool;
 
-  constexpr friend auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool;
+  friend constexpr auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool;
 
 private:
 #ifdef COLOR_BGRA

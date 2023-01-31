@@ -25,7 +25,10 @@ BraceWrapping:
   AfterEnum: true
   AfterStruct: true
   SplitEmptyFunction: false
-#BreakAfterAttributes: Always
+# Not sure if I want break after [[nodiscard]].
+# If 'Always' or 'Leave', clang-format-16 also breaks
+# '[[nodiscard]] auto operator()' after both nodiscard and auto.
+##BreakAfterAttributes: Never
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Allman
 BreakBeforeTernaryOperators: true
