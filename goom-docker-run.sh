@@ -78,6 +78,7 @@ x11docker -q                                          \
           --hostuser=${USER}                          \
           --network                                   \
           --pulseaudio                                \
+          --xauth=trusted                             \
           --gpu                                       \
           --home=${KODI_CONTAINER_HOME_DIR_TO_USE}    \
           --                                          \
