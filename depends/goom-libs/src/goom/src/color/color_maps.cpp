@@ -12,7 +12,6 @@
 #include "utils/enum_utils.h"
 
 #include <algorithm>
-#include <format>
 #include <vector>
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -41,23 +40,15 @@ public:
 private:
   static constexpr float MIN_ROTATE_POINT = 0.0F;
   static constexpr float MAX_ROTATE_POINT = 1.0F;
-  const float m_tRotatePoint;
+  float m_tRotatePoint;
 };
 
 RotatedColorMap::RotatedColorMap(const std::shared_ptr<const IColorMap>& cm,
                                  const float tRotatePoint)
   : ColorMapWrapper{cm}, m_tRotatePoint{tRotatePoint}
 {
-  if (tRotatePoint < MIN_ROTATE_POINT)
-  {
-    throw std::logic_error(
-        std20::format("Invalid rotate point {} < {}.", tRotatePoint, MIN_ROTATE_POINT));
-  }
-  if (tRotatePoint > MAX_ROTATE_POINT)
-  {
-    throw std::logic_error(
-        std20::format("Invalid rotate point {} > {}.", tRotatePoint, MAX_ROTATE_POINT));
-  }
+  Expects(tRotatePoint >= MIN_ROTATE_POINT);
+  Expects(tRotatePoint <= MAX_ROTATE_POINT);
 }
 
 inline auto RotatedColorMap::GetColor(const float t) const -> Pixel
@@ -65,7 +56,7 @@ inline auto RotatedColorMap::GetColor(const float t) const -> Pixel
   auto tNew = m_tRotatePoint + t;
   if (tNew > 1.0F)
   {
-    tNew = 1.0F - (tNew - 1.0F);
+    tNew = tNew - 1.0F;
   }
   return GetColorMap().GetColor(tNew);
 }
@@ -82,8 +73,8 @@ public:
 private:
   static constexpr float MIN_LIGHTNESS = 0.1F;
   static constexpr float MAX_LIGHTNESS = 1.0F;
-  const float m_saturation;
-  const float m_lightness;
+  float m_saturation;
+  float m_lightness;
 };
 
 TintedColorMap::TintedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
@@ -91,14 +82,8 @@ TintedColorMap::TintedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
                                const float lightness)
   : ColorMapWrapper{colorMap}, m_saturation{saturation}, m_lightness{lightness}
 {
-  if (lightness < MIN_LIGHTNESS)
-  {
-    throw std::logic_error(std20::format("Invalid lightness {} < {}.", lightness, MIN_LIGHTNESS));
-  }
-  if (lightness > MAX_LIGHTNESS)
-  {
-    throw std::logic_error(std20::format("Invalid lightness {} > {}.", lightness, MAX_LIGHTNESS));
-  }
+  Expects(lightness >= MIN_LIGHTNESS);
+  Expects(lightness <= MAX_LIGHTNESS);
 }
 
 auto TintedColorMap::GetColor(const float t) const -> Pixel

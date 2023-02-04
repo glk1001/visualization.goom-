@@ -182,6 +182,7 @@ inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixe
 {
   Expects(brightness >= MIN_BRIGHTNESS);
   Expects(brightness <= MAX_BRIGHTNESS);
+  USED_FOR_DEBUGGING(MIN_BRIGHTNESS);
   USED_FOR_DEBUGGING(MAX_BRIGHTNESS);
 
   static constexpr auto MAX_COLOR_VALUE = 256.0F;
