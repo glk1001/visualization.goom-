@@ -84,5 +84,5 @@ private:
   std::unique_ptr<PixelBufferGetter> m_pixelBufferGetter;
   auto DoRender() noexcept -> void;
 
-  static auto HandleError(const std::string& errorMsg) -> void;
+  auto HandleError(const std::string& errorMsg) const -> void;
 };

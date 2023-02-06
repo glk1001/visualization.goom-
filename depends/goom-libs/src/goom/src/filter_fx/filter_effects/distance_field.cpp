@@ -236,6 +236,7 @@ auto DistanceField::GetGridPointRandomArray(const uint32_t gridWidth) const noex
   }
 
   FailFast();
+  return GridPointsWithCentres{};
 }
 
 auto DistanceField::TryGetGridPointRandomArray(const uint32_t gridWidth) const noexcept

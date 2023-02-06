@@ -292,12 +292,21 @@ auto GoomControlLogger::StopGoomControl() noexcept -> void
   m_goomControl = nullptr;
 }
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4296)
+#endif
+
 auto GoomControlLogger::CanLog() const -> bool
 {
   return ((m_goomControl == nullptr) or
-          (MIN_UPDATE_NUM_TO_LOG <= (m_goomControl->GetUpdateNum()) and
+          ((MIN_UPDATE_NUM_TO_LOG <= m_goomControl->GetUpdateNum()) and
            (m_goomControl->GetUpdateNum() <= MAX_UPDATE_NUM_TO_LOG)));
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 auto GoomControl::MakeGoomLogger() noexcept -> std::unique_ptr<GoomLogger>
 {

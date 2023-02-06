@@ -116,14 +116,14 @@ auto LSystem::GetLSysDrawFuncs() noexcept -> GraphicsGenerator::DrawFuncs
                                const uint32_t lSysColor,
                                const float lineWidth)
   {
-    m_lSysDraw.DrawLine(point1, point2, lSysColor, lineWidth);
+    m_lSysDraw.DrawLine(lSysColor, point1, point2, lineWidth);
     m_lineDrawerManager.Update();
   };
   const auto drawPolygon = [this](const std::vector<::LSYS::Vector>& polygon,
                                   const uint32_t lSysColor,
                                   const float lineWidth)
   {
-    m_lSysDraw.DrawPolygon(polygon, lSysColor, lineWidth);
+    m_lSysDraw.DrawPolygon(lSysColor, polygon, lineWidth);
     m_lineDrawerManager.Update();
   };
 

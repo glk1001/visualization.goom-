@@ -6,14 +6,11 @@
 #include "lsys_colors.h"
 #include "lsys_geom.h"
 #include "point2d.h"
-#include "utils/t_values.h"
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
 using DRAW::MultiplePixels;
-using UTILS::IncrementedValue;
-using UTILS::TValue;
 
 using ::LSYS::Point3dFlt;
 
@@ -30,9 +27,9 @@ auto LSysDraw::SetNumLSysCopies(const uint32_t numLSysCopies) noexcept -> void
   m_numLSysCopies = numLSysCopies;
 }
 
-auto LSysDraw::DrawLine(const ::LSYS::Vector& point1,
+auto LSysDraw::DrawLine(const uint32_t lSysColor,
+                        const ::LSYS::Vector& point1,
                         const ::LSYS::Vector& point2,
-                        const uint32_t lSysColor,
                         const float lineWidth) noexcept -> void
 {
   Expects(m_lineDrawer != nullptr);
@@ -45,8 +42,8 @@ auto LSysDraw::DrawLine(const ::LSYS::Vector& point1,
   DrawJoinedVertices({GetPoint3dFlt(point1), GetPoint3dFlt(point2)}, lSysColor);
 }
 
-auto LSysDraw::DrawPolygon(const std::vector<::LSYS::Vector>& polygon,
-                           const uint32_t lSysColor,
+auto LSysDraw::DrawPolygon(const uint32_t lSysColor,
+                           const std::vector<::LSYS::Vector>& polygon,
                            const float lineWidth) noexcept -> void
 {
   Expects(m_lineDrawer != nullptr);
@@ -63,15 +60,16 @@ inline auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices
                                          const uint32_t lSysColor) noexcept -> void
 {
   const auto numVertices = vertices.size();
-  Expects(numVertices > 1);
+  Expects(numVertices >= 2);
 
   const auto points2d = GetPerspectiveProjection(vertices);
+  Expects(points2d.size() == numVertices);
 
-  auto point2d1 = points2d.at(0);
-  for (auto i = 1U; i < numVertices; ++i)
+  const auto numPointsMinus1 = numVertices - 1;
+  for (auto i = 0U; i < numPointsMinus1; ++i)
   {
-    const auto point1 = point2d1;
-    const auto point2 = points2d.at(i);
+    const auto point1 = points2d[i];
+    const auto point2 = points2d[i + 1];
 
     for (auto copyNum = 0U; copyNum < m_numLSysCopies; ++copyNum)
     {
@@ -83,8 +81,6 @@ inline auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices
     }
 
     m_lSysColors.IncrementColorTs();
-
-    point2d1 = points2d.at(i);
   }
 }
 

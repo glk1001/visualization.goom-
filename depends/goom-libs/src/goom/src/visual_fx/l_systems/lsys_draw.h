@@ -23,13 +23,13 @@ public:
   auto SetNumLSysCopies(uint32_t numLSysCopies) noexcept -> void;
   auto SetLineDrawer(DRAW::SHAPE_DRAWERS::ILineDrawerWithEffects& lineDrawer) noexcept -> void;
 
-  auto DrawLine(const ::LSYS::Vector& point1,
+  auto DrawLine(const uint32_t lSysColor,
+                const ::LSYS::Vector& point1,
                 const ::LSYS::Vector& point2,
-                uint32_t lSysColor,
-                float lineWidth) noexcept -> void;
-  auto DrawPolygon(const std::vector<::LSYS::Vector>& polygon,
-                   uint32_t lSysColor,
-                   float lineWidth) noexcept -> void;
+                const float lineWidth) noexcept -> void;
+  auto DrawPolygon(const uint32_t lSysColor,
+                   const std::vector<::LSYS::Vector>& polygon,
+                   const float lineWidth) noexcept -> void;
 
   [[nodiscard]] static auto GetPerspectivePoint(const ::LSYS::Point3dFlt& point3d) noexcept
       -> Point2dFlt;

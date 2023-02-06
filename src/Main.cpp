@@ -189,14 +189,14 @@ CVisualizationGoom::~CVisualizationGoom()
   LogStop(*m_goomLogger);
 }
 
-auto CVisualizationGoom::HandleError(const std::string& errorMsg) -> void
+auto CVisualizationGoom::HandleError(const std::string& errorMsg) const -> void
 {
   const auto fullMsg = std20::format("CVisualizationGoom: {}", errorMsg);
 
 #ifdef GOOM_DEBUG
   throw std::runtime_error(fullMsg);
 #else
-  LogError(fullMsg);
+  LogError(*m_goomLogger, fullMsg);
 #endif
 }
 

@@ -73,6 +73,7 @@ auto PixelBlender::GetPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendP
       return GetSameLumaMixBlendPixelFunc();
     default:
       FailFast();
+      return nullptr;
   }
 }
 
