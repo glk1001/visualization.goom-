@@ -11,14 +11,11 @@ jobs:
       matrix:
         include:
         - name: "Debian package test"
-          os: ubuntu-20.04
-          CC: gcc-10
-          CXX: g++-10
+          os: ubuntu-22.04
+          CC: gcc-12
+          CXX: g++-12
           DEBIAN_BUILD: true
-        #- os: ubuntu-20.04
-          #CC: gcc
-          #CXX: g++
-        #- os: ubuntu-20.04
+        #- os: ubuntu-22.04
           #CC: clang
           #CXX: clang++
         #- os: macos-11

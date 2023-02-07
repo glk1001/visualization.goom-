@@ -6,8 +6,8 @@ on:
     branches: []
 
 env:
-  CLANG_VERSION: 14
-  GCC_VERSION: 11
+  CLANG_VERSION: 15
+  GCC_VERSION: 12
 
 jobs:
   build:
