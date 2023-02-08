@@ -112,15 +112,16 @@ inline auto TentaclePlotter::GetPerspectivePoint(const V3dFlt& point3D) const ->
 inline auto TentaclePlotter::GetLines3D(const std::vector<V3dFlt>& points3D)
     -> std::vector<Line3DFlt>
 {
-  const auto numPoints = points3D.size();
-
-  auto lines3D     = std::vector<Line3DFlt>{};
-  auto point3DFlt1 = points3D[0];
-  for (auto i = 1U; i < numPoints; ++i)
+  auto lines3D = std::vector<Line3DFlt>{};
+  if (points3D.size() < 2)
   {
-    const auto point3DFlt2 = points3D[i];
-    lines3D.emplace_back(Line3DFlt{point3DFlt1, point3DFlt2});
-    point3DFlt1 = point3DFlt2;
+    return lines3D;
+  }
+
+  const auto numPointsMinus1 = points3D.size() - 1;
+  for (auto i = 0U; i < numPointsMinus1; ++i)
+  {
+    lines3D.emplace_back(Line3DFlt{points3D[i], points3D[i + 1]});
   }
 
   return lines3D;
