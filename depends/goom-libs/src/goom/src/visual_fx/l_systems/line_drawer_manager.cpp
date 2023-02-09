@@ -11,9 +11,11 @@ using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::LineDrawerMovingNoise;
 using UTILS::MATH::IGoomRand;
 
-static constexpr auto SWITCH_LINE_DRAWER_TYPE_CONST_WEIGHT  = 0.3F;
-static constexpr auto SWITCH_LINE_DRAWER_TYPE_MOVING_WEIGHT = 0.4F;
-static constexpr auto SWITCH_LINE_DRAWER_TYPE_NONE_WEIGHT   = 0.3F;
+static constexpr auto LINE_BRIGHTNESS_FACTOR = 2.0F;
+
+static constexpr auto SWITCH_LINE_DRAWER_TYPE_CONST_WEIGHT  = 0.4F;
+static constexpr auto SWITCH_LINE_DRAWER_TYPE_MOVING_WEIGHT = 0.5F;
+static constexpr auto SWITCH_LINE_DRAWER_TYPE_NONE_WEIGHT   = 0.1F;
 
 // clang-format off
 LineDrawerManager::LineDrawerManager(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
@@ -36,6 +38,7 @@ LineDrawerManager::LineDrawerManager(IGoomDraw& draw, const IGoomRand& goomRand)
     }
 {
   m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetUseMainPointWithoutNoise(false);
+  m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetBrightnessFactor(LINE_BRIGHTNESS_FACTOR);
 }
 // clang-format on
 
@@ -52,27 +55,22 @@ auto LineDrawerManager::SwitchLineDrawers(SwitchLineDrawerType forceType) noexce
     {
       const auto currentNoiseRadius =
           m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().GetCurrentNoiseRadius();
-      m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetMinMaxNoiseRadius(
-          {currentNoiseRadius, currentNoiseRadius});
       const auto currentNumNoisePixelsPerPixel =
           m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().GetCurrentNumNoisePixelsPerPixel();
-      m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetNumNoisePixelsPerPixel(
+      m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetMinMaxNoiseValues(
+          {currentNoiseRadius, currentNoiseRadius},
           {currentNumNoisePixelsPerPixel, currentNumNoisePixelsPerPixel});
       break;
     }
     case SwitchLineDrawerType::NONE:
     {
-      m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetMinMaxNoiseRadius({0U, 0U});
-      m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetNumNoisePixelsPerPixel({1U, 1U});
+      m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetMinMaxNoiseValues({0U, 0U}, {1U, 1U});
       break;
     }
     case SwitchLineDrawerType::MOVING:
     {
-      m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetMinMaxNoiseRadius(
-          MIN_MAX_MOVING_NOISE_RADIUS);
-
-      m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetMinMaxNumNoisePixelsPerPixel(
-          MIN_MAX_NUM_MOVING_NOISE_PIXELS);
+      m_lineDrawerWithMovingNoiseEffect.GetLineDrawer().SetMinMaxNoiseValues(
+          MIN_MAX_MOVING_NOISE_RADIUS, MIN_MAX_NUM_MOVING_NOISE_PIXELS);
       break;
     }
     default:

@@ -144,7 +144,7 @@ Circle::Circle(const FxHelper& fxHelper,
                const Params& circleParams,
                const OscillatingFunction::Params& pathParams) noexcept
   : m_draw{fxHelper.GetDraw()},
-    m_lineDrawer{m_draw, fxHelper.GetGoomRand(), 5U, 5U},
+    m_lineDrawer{m_draw, fxHelper.GetGoomRand(), {5U, 5U}},
     m_goomInfo{fxHelper.GetGoomInfo()},
     m_goomRand{fxHelper.GetGoomRand()},
     m_helper{helper},

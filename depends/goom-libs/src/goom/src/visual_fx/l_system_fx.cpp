@@ -160,7 +160,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
   auto lSysFileList = std::vector{
       LSystem::LSystemFile{        "bourke_bush",
                            {
-                           /*.minNumLSysCopies =*/1U,
+                           /*.minNumLSysCopies =*/2U,
                            /*.maxNumLSysCopies =*/5U,
                            /*.minMaxGen =*/3U,
                            /*.maxMaxGen =*/3U,
@@ -209,7 +209,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
       LSystem::LSystemFile{       "honda_tree_b",
                            {
                            /*.minNumLSysCopies =*/2U,
-                           /*.maxNumLSysCopies =*/8U,
+                           /*.maxNumLSysCopies =*/5U,
                            /*.minMaxGen =*/5U,
                            /*.maxMaxGen =*/10U,
                            /*.lineWidthFactor =*/1.0F,

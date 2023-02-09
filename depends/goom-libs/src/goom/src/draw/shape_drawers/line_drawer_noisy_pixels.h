@@ -7,6 +7,7 @@
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -16,17 +17,17 @@ namespace GOOM::DRAW::SHAPE_DRAWERS
 class LineDrawerNoisyPixels
 {
 public:
+  struct NoiseParams
+  {
+    uint8_t noiseRadius;
+    uint8_t numNoisePixelsPerPixel;
+  };
+
   LineDrawerNoisyPixels(IGoomDraw& draw,
                         const UTILS::MATH::IGoomRand& goomRand,
-                        uint8_t noiseRadius,
-                        uint8_t numNoisePixels) noexcept;
+                        const NoiseParams& noiseParams) noexcept;
 
-  [[nodiscard]] auto GetNoiseRadius() const noexcept -> uint8_t;
-  auto SetNoiseRadius(uint8_t noiseRadius) noexcept -> void;
-
-  [[nodiscard]] auto GetNumNoisePixelsPerPixel() const noexcept -> uint8_t;
-  auto SetNumNoisePixelsPerPixel(uint8_t numNoisePixels) noexcept -> void;
-
+  auto SetNoiseParams(const NoiseParams& noiseParams) noexcept -> void;
   auto SetLineThickness(uint8_t thickness) noexcept -> void;
   auto SetBrightnessFactor(float brightnessFactor) noexcept -> void;
   auto SetNoiseColors(const MultiplePixels& colors) noexcept -> void;
@@ -45,19 +46,13 @@ private:
   public:
     NoisyPixelDrawer(IGoomDraw& draw,
                      const UTILS::MATH::IGoomRand& goomRand,
-                     uint8_t noiseRadius,
-                     uint8_t numNoisePixels) noexcept;
+                     const NoiseParams& noiseParams) noexcept;
 
+    auto SetNoiseParams(const NoiseParams& noiseParams) noexcept -> void;
     auto SetBrightnessFactor(float brightnessFactor) noexcept -> void;
     auto SetNoiseColors(const MultiplePixels& colors) noexcept -> void;
     auto SetUseMainColorsForNoise(bool useMainColorsForNoise) noexcept -> void;
     auto SetUseMainPointWithoutNoise(bool useMainPointWithoutNoise) noexcept -> void;
-
-    [[nodiscard]] auto GetNoiseRadius() const noexcept -> uint8_t;
-    auto SetNoiseRadius(uint8_t noiseRadius) noexcept -> void;
-
-    [[nodiscard]] auto GetNumNoisePixelsPerPixel() const noexcept -> uint8_t;
-    auto SetNumNoisePixelsPerPixel(uint8_t numNoisePixels) noexcept -> void;
 
     auto DrawPixels(const Point2dInt& point, float brightness, MultiplePixels colors) noexcept
         -> void;
@@ -65,14 +60,33 @@ private:
   private:
     IGoomDraw& m_draw;
     const UTILS::MATH::IGoomRand& m_goomRand;
-    int32_t m_noiseRadius           = 0;
-    int32_t m_numNoisePixels        = 1;
     float m_brightnessReducer       = 1.0F;
     float m_brightnessFactor        = 1.0F;
     float m_overallBrightnessFactor = 1.0F;
     bool m_useMainColorsForNoise    = true;
     bool m_useMainPointWithoutNoise = true;
     MultiplePixels m_noiseColors{};
+
+    int32_t m_noiseRadius;
+    int32_t m_numNoisePixelsPerPixel;
+    static constexpr auto PROB_PURE_NOISE = 0.5F;
+    bool m_usePureNoise                   = m_goomRand.ProbabilityOf(PROB_PURE_NOISE);
+    auto SetBrightnessValues() noexcept -> void;
+    auto DrawMainPoint(const Point2dInt& point, float brightness, MultiplePixels& colors) noexcept
+        -> void;
+    auto DrawNoisePoints(const Point2dInt& point, float brightness, MultiplePixels& colors) noexcept
+        -> void;
+    auto DrawPureNoisePoints(const Point2dInt& point, const MultiplePixels& colors) noexcept
+        -> void;
+
+    using NoisePerPixelList                         = std::vector<int32_t>;
+    static constexpr auto NUM_NOISE_PER_PIXEL_LISTS = 5U;
+    std::array<NoisePerPixelList, NUM_NOISE_PER_PIXEL_LISTS> m_noisePerPixelList;
+    uint32_t m_currentNoisePerPixelIndex = 0U;
+    auto SetNoisePerPixel() noexcept -> void;
+    auto IncrementCurrentNoisePerPixelIndex() noexcept -> void;
+    auto DrawPatternedNoisePoints(const Point2dInt& point, const MultiplePixels& colors) noexcept
+        -> void;
   };
 
   LineDrawer<NoisyPixelDrawer> m_lineDrawer;
@@ -105,25 +119,9 @@ inline auto LineDrawerNoisyPixels::SetUseMainPointWithoutNoise(
   m_lineDrawer.GetDrawPixelPolicy().SetUseMainPointWithoutNoise(useMainPointWithoutNoise);
 }
 
-inline auto LineDrawerNoisyPixels::GetNoiseRadius() const noexcept -> uint8_t
+inline auto LineDrawerNoisyPixels::SetNoiseParams(const NoiseParams& noiseParams) noexcept -> void
 {
-  return m_lineDrawer.GetDrawPixelPolicy().GetNoiseRadius();
-}
-
-inline auto LineDrawerNoisyPixels::SetNoiseRadius(const uint8_t noiseRadius) noexcept -> void
-{
-  m_lineDrawer.GetDrawPixelPolicy().SetNoiseRadius(noiseRadius);
-}
-
-inline auto LineDrawerNoisyPixels::GetNumNoisePixelsPerPixel() const noexcept -> uint8_t
-{
-  return m_lineDrawer.GetDrawPixelPolicy().GetNumNoisePixelsPerPixel();
-}
-
-inline auto LineDrawerNoisyPixels::SetNumNoisePixelsPerPixel(const uint8_t numNoisePixels) noexcept
-    -> void
-{
-  m_lineDrawer.GetDrawPixelPolicy().SetNumNoisePixelsPerPixel(numNoisePixels);
+  m_lineDrawer.GetDrawPixelPolicy().SetNoiseParams(noiseParams);
 }
 
 inline auto LineDrawerNoisyPixels::DrawLine(const Point2dInt& point1,
@@ -165,29 +163,28 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetUseMainPointWithoutNoise
   m_useMainPointWithoutNoise = useMainPointWithoutNoise;
 }
 
-inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::GetNoiseRadius() const noexcept -> uint8_t
+inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetNoiseParams(
+    const NoiseParams& noiseParams) noexcept -> void
 {
-  return static_cast<uint8_t>(m_noiseRadius);
+  if ((noiseParams.noiseRadius == m_noiseRadius) and
+      (noiseParams.numNoisePixelsPerPixel == m_numNoisePixelsPerPixel))
+  {
+    return;
+  }
+
+  Expects(noiseParams.numNoisePixelsPerPixel >= 1U);
+
+  m_noiseRadius            = noiseParams.noiseRadius;
+  m_numNoisePixelsPerPixel = noiseParams.numNoisePixelsPerPixel;
+  m_usePureNoise           = m_goomRand.ProbabilityOf(PROB_PURE_NOISE);
+
+  SetBrightnessValues();
+  SetNoisePerPixel();
 }
 
-inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetNoiseRadius(
-    const uint8_t noiseRadius) noexcept -> void
+inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetBrightnessValues() noexcept -> void
 {
-  m_noiseRadius = noiseRadius;
-}
-
-inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::GetNumNoisePixelsPerPixel() const noexcept
-    -> uint8_t
-{
-  return static_cast<uint8_t>(m_numNoisePixels);
-}
-
-inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetNumNoisePixelsPerPixel(
-    const uint8_t numNoisePixels) noexcept -> void
-{
-  Expects(numNoisePixels >= 1U);
-  m_numNoisePixels          = numNoisePixels;
-  m_brightnessReducer       = 1.0F / static_cast<float>(m_numNoisePixels);
+  m_brightnessReducer       = 1.0F / static_cast<float>(m_numNoisePixelsPerPixel);
   m_overallBrightnessFactor = m_brightnessFactor * m_brightnessReducer;
 }
 

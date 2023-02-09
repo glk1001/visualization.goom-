@@ -28,18 +28,11 @@ public:
   [[nodiscard]] auto GetCurrentNoiseRadius() const noexcept -> uint8_t;
   auto SetCurrentNoiseRadius(uint8_t noiseRadius) noexcept -> void;
 
-  auto SetMinNoiseRadius(uint8_t minNoiseRadius) noexcept -> void;
-  auto SetMaxNoiseRadius(uint8_t maxNoiseRadius) noexcept -> void;
-  auto SetMinMaxNoiseRadius(const MinMaxValues<uint8_t>& minMaxNoiseRadius) noexcept -> void;
-
   [[nodiscard]] auto GetCurrentNumNoisePixelsPerPixel() const noexcept -> uint8_t;
   auto SetCurrentNumNoisePixelsPerPixel(uint8_t numNoisePixelsPerPixel) noexcept -> void;
 
-  auto SetMinNumNoisePixelsPerPixel(uint8_t minNumNoisePixels) noexcept -> void;
-  auto SetMaxNumNoisePixelsPerPixel(uint8_t maxNumNoisePixels) noexcept -> void;
-  auto SetMinMaxNumNoisePixelsPerPixel(
-      const MinMaxValues<uint8_t>& minMaxNumNoisePixelsPerPixel) noexcept -> void;
-  auto SetNumNoisePixelsPerPixel(const MinMaxValues<uint8_t>& minMaxNumNoisePixels) noexcept
+  auto SetMinMaxNoiseValues(const MinMaxValues<uint8_t>& minMaxNoiseRadius,
+                            const MinMaxValues<uint8_t>& minMaxNumNoisePixelsPerPixel) noexcept
       -> void;
 
   auto SetLineThickness(uint8_t thickness) noexcept -> void;
@@ -102,22 +95,13 @@ inline auto LineDrawerMovingNoise::SetCurrentNoiseRadius(const uint8_t noiseRadi
   m_noiseRadius.ResetCurrentValue(noiseRadius);
 }
 
-inline auto LineDrawerMovingNoise::SetMinNoiseRadius(const uint8_t minNoiseRadius) noexcept -> void
-{
-  m_noiseRadius.SetValue1(minNoiseRadius);
-  UpdateLineDrawerNoise();
-}
-
-inline auto LineDrawerMovingNoise::SetMaxNoiseRadius(const uint8_t maxNoiseRadius) noexcept -> void
-{
-  m_noiseRadius.SetValue2(maxNoiseRadius);
-  UpdateLineDrawerNoise();
-}
-
-inline auto LineDrawerMovingNoise::SetMinMaxNoiseRadius(
-    const MinMaxValues<uint8_t>& minMaxNoiseRadius) noexcept -> void
+inline auto LineDrawerMovingNoise::SetMinMaxNoiseValues(
+    const MinMaxValues<uint8_t>& minMaxNoiseRadius,
+    const MinMaxValues<uint8_t>& minMaxNumNoisePixelsPerPixel) noexcept -> void
 {
   m_noiseRadius.SetValues(minMaxNoiseRadius.minValue, minMaxNoiseRadius.maxValue);
+  m_numNoisePixelsPerPixel.SetValues(minMaxNumNoisePixelsPerPixel.minValue,
+                                     minMaxNumNoisePixelsPerPixel.maxValue);
   UpdateLineDrawerNoise();
 }
 
@@ -132,34 +116,6 @@ inline auto LineDrawerMovingNoise::SetCurrentNumNoisePixelsPerPixel(
   m_numNoisePixelsPerPixel.ResetCurrentValue(numNoisePixelsPerPixel);
 }
 
-inline auto LineDrawerMovingNoise::SetMinNumNoisePixelsPerPixel(
-    const uint8_t minNumNoisePixels) noexcept -> void
-{
-  m_numNoisePixelsPerPixel.SetValue1(minNumNoisePixels);
-  UpdateLineDrawerNoise();
-}
-
-inline auto LineDrawerMovingNoise::SetMaxNumNoisePixelsPerPixel(
-    const uint8_t maxNumNoisePixels) noexcept -> void
-{
-  m_numNoisePixelsPerPixel.SetValue2(maxNumNoisePixels);
-  UpdateLineDrawerNoise();
-}
-
-inline auto LineDrawerMovingNoise::SetMinMaxNumNoisePixelsPerPixel(
-    const MinMaxValues<uint8_t>& minMaxNumNoisePixelsPerPixel) noexcept -> void
-{
-  m_numNoisePixelsPerPixel.SetValues(minMaxNumNoisePixelsPerPixel.minValue,
-                                     minMaxNumNoisePixelsPerPixel.maxValue);
-}
-
-inline auto LineDrawerMovingNoise::SetNumNoisePixelsPerPixel(
-    const MinMaxValues<uint8_t>& minMaxNumNoisePixels) noexcept -> void
-{
-  m_numNoisePixelsPerPixel.SetValues(minMaxNumNoisePixels.minValue, minMaxNumNoisePixels.maxValue);
-  UpdateLineDrawerNoise();
-}
-
 inline auto LineDrawerMovingNoise::IncrementNoise() noexcept -> void
 {
   m_noiseRadius.Increment();
@@ -169,8 +125,7 @@ inline auto LineDrawerMovingNoise::IncrementNoise() noexcept -> void
 
 inline auto LineDrawerMovingNoise::UpdateLineDrawerNoise() noexcept -> void
 {
-  m_lineDrawer.SetNoiseRadius(m_noiseRadius());
-  m_lineDrawer.SetNumNoisePixelsPerPixel(m_numNoisePixelsPerPixel());
+  m_lineDrawer.SetNoiseParams({m_noiseRadius(), m_numNoisePixelsPerPixel()});
 }
 
 inline auto LineDrawerMovingNoise::DrawLine(const Point2dInt& point1,
