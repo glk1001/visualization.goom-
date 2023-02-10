@@ -109,16 +109,16 @@ private:
   [[nodiscard]] static auto GetBrightness(float tAge) noexcept -> float;
   [[nodiscard]] static auto GetPointVelocity(const Vec2dFlt& twistFrequency,
                                              const Vec2dFlt& velocity) noexcept -> Vec2dInt;
-  auto DrawParticleCircle(Point2dInt point1,
-                          Point2dInt point2,
+  auto DrawParticleCircle(const Point2dInt& point1,
+                          const Point2dInt& point2,
                           uint32_t elementSize,
                           const DRAW::MultiplePixels& colors) noexcept -> void;
-  auto DrawParticleLine(Point2dInt point1,
-                        Point2dInt point2,
+  auto DrawParticleLine(const Point2dInt& point1,
+                        const Point2dInt& point2,
                         uint32_t elementSize,
                         const DRAW::MultiplePixels& colors) noexcept -> void;
-  auto DrawParticleDot(Point2dInt point1,
-                       Point2dInt point2,
+  auto DrawParticleDot(const Point2dInt& point1,
+                       const Point2dInt& point2,
                        uint32_t elementSize,
                        const DRAW::MultiplePixels& colors) noexcept -> void;
 };

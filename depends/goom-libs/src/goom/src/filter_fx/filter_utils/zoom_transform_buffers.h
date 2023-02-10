@@ -34,8 +34,8 @@ public:
   [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos, bool& isClipped) const noexcept
       -> Point2dInt;
 
-  [[nodiscard]] static auto GetTranBuffLerpPoint(Point2dInt srcePoint,
-                                                 Point2dInt destPoint,
+  [[nodiscard]] static auto GetTranBuffLerpPoint(const Point2dInt& srcePoint,
+                                                 const Point2dInt& destPoint,
                                                  uint32_t t) noexcept -> Point2dInt;
 
 private:
@@ -128,8 +128,8 @@ inline auto ZoomTransformBuffers::GetClampedYVal(const int32_t y) const noexcept
   return std::clamp(y, 0, m_maxTranPointMinus1.y);
 }
 
-inline auto ZoomTransformBuffers::GetTranBuffLerpPoint(const Point2dInt srcePoint,
-                                                       const Point2dInt destPoint,
+inline auto ZoomTransformBuffers::GetTranBuffLerpPoint(const Point2dInt& srcePoint,
+                                                       const Point2dInt& destPoint,
                                                        const uint32_t t) noexcept -> Point2dInt
 {
   return {GetTranBuffLerpVal(srcePoint.x, destPoint.x, t),

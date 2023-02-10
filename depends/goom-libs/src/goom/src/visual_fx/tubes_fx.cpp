@@ -211,27 +211,27 @@ private:
   auto ChangeSpeedForHigherVolumes(Tube& tube) -> void;
   auto ChangeJitterOffsets(Tube& tube) -> void;
 
-  auto DrawLineToOne(Point2dInt point1,
-                     Point2dInt point2,
+  auto DrawLineToOne(const Point2dInt& point1,
+                     const Point2dInt& point2,
                      const MultiplePixels& colors,
                      uint8_t thickness) -> void;
-  auto DrawCircleToOne(Point2dInt point,
+  auto DrawCircleToOne(const Point2dInt& point,
                        int radius,
                        const MultiplePixels& colors,
                        uint8_t thickness) -> void;
-  auto DrawImageToOne(Point2dInt point,
+  auto DrawImageToOne(const Point2dInt& point,
                       SmallImageBitmaps::ImageNames imageName,
                       uint32_t size,
                       const MultiplePixels& colors) -> void;
-  auto DrawLineToMany(Point2dInt point1,
-                      Point2dInt point2,
+  auto DrawLineToMany(const Point2dInt& point1,
+                      const Point2dInt& point2,
                       const MultiplePixels& colors,
                       uint8_t thickness) -> void;
-  auto DrawCircleToMany(Point2dInt point,
+  auto DrawCircleToMany(const Point2dInt& point,
                         int radius,
                         const MultiplePixels& colors,
                         uint8_t thickness) -> void;
-  auto DrawImageToMany(Point2dInt point,
+  auto DrawImageToMany(const Point2dInt& point,
                        SmallImageBitmaps::ImageNames imageName,
                        uint32_t size,
                        const MultiplePixels& colors) -> void;
@@ -375,29 +375,29 @@ auto TubesFx::TubeFxImpl::InitTubes() -> void
   Expects(m_lowColorMaps != nullptr);
 
   const auto drawToOneFuncs = TubeDrawFuncs{
-      [this](const Point2dInt point1,
-             const Point2dInt point2,
+      [this](const Point2dInt& point1,
+             const Point2dInt& point2,
              const MultiplePixels& colors,
              const uint8_t thickness) { DrawLineToOne(point1, point2, colors, thickness); },
-      [this](const Point2dInt point,
+      [this](const Point2dInt& point,
              const int radius,
              const MultiplePixels& colors,
              const uint8_t thickness) { DrawCircleToOne(point, radius, colors, thickness); },
-      [this](const Point2dInt point,
+      [this](const Point2dInt& point,
              const SmallImageBitmaps::ImageNames imageName,
              const uint32_t size,
              const MultiplePixels& colors) { DrawImageToOne(point, imageName, size, colors); },
   };
   const auto drawToManyFuncs = TubeDrawFuncs{
-      [this](const Point2dInt point1,
-             const Point2dInt point2,
+      [this](const Point2dInt& point1,
+             const Point2dInt& point2,
              const MultiplePixels& colors,
              const uint8_t thickness) { DrawLineToMany(point1, point2, colors, thickness); },
-      [this](const Point2dInt point,
+      [this](const Point2dInt& point,
              const int radius,
              const MultiplePixels& colors,
              const uint8_t thickness) { DrawCircleToMany(point, radius, colors, thickness); },
-      [this](const Point2dInt point,
+      [this](const Point2dInt& point,
              const SmallImageBitmaps::ImageNames imageName,
              const uint32_t size,
              const MultiplePixels& colors) { DrawImageToMany(point, imageName, size, colors); },
@@ -438,8 +438,8 @@ auto TubesFx::TubeFxImpl::InitTubes() -> void
   InitPaths();
 }
 
-inline auto TubesFx::TubeFxImpl::DrawLineToOne(const Point2dInt point1,
-                                               const Point2dInt point2,
+inline auto TubesFx::TubeFxImpl::DrawLineToOne(const Point2dInt& point1,
+                                               const Point2dInt& point2,
                                                const MultiplePixels& colors,
                                                const uint8_t thickness) -> void
 {
@@ -447,8 +447,8 @@ inline auto TubesFx::TubeFxImpl::DrawLineToOne(const Point2dInt point1,
   m_lineDrawer.DrawLine(point1, point2, colors);
 }
 
-inline auto TubesFx::TubeFxImpl::DrawLineToMany(const Point2dInt point1,
-                                                const Point2dInt point2,
+inline auto TubesFx::TubeFxImpl::DrawLineToMany(const Point2dInt& point1,
+                                                const Point2dInt& point2,
                                                 const MultiplePixels& colors,
                                                 const uint8_t thickness) -> void
 {
@@ -456,7 +456,7 @@ inline auto TubesFx::TubeFxImpl::DrawLineToMany(const Point2dInt point1,
   m_lineToManyDrawer.DrawLine(point1, point2, colors);
 }
 
-inline auto TubesFx::TubeFxImpl::DrawCircleToOne(const Point2dInt point,
+inline auto TubesFx::TubeFxImpl::DrawCircleToOne(const Point2dInt& point,
                                                  const int radius,
                                                  const MultiplePixels& colors,
                                                  [[maybe_unused]] const uint8_t thickness) -> void
@@ -464,7 +464,7 @@ inline auto TubesFx::TubeFxImpl::DrawCircleToOne(const Point2dInt point,
   m_circleDrawer.DrawCircle(point, radius, colors);
 }
 
-inline auto TubesFx::TubeFxImpl::DrawCircleToMany(const Point2dInt point,
+inline auto TubesFx::TubeFxImpl::DrawCircleToMany(const Point2dInt& point,
                                                   const int radius,
                                                   const MultiplePixels& colors,
                                                   [[maybe_unused]] const uint8_t thickness) -> void
@@ -472,7 +472,7 @@ inline auto TubesFx::TubeFxImpl::DrawCircleToMany(const Point2dInt point,
   m_circleToManyDrawer.DrawCircle(point, radius, colors);
 }
 
-inline auto TubesFx::TubeFxImpl::DrawImageToOne(const Point2dInt point,
+inline auto TubesFx::TubeFxImpl::DrawImageToOne(const Point2dInt& point,
                                                 const SmallImageBitmaps::ImageNames imageName,
                                                 const uint32_t size,
                                                 const MultiplePixels& colors) -> void
@@ -481,7 +481,7 @@ inline auto TubesFx::TubeFxImpl::DrawImageToOne(const Point2dInt point,
       point, GetImageBitmap(imageName, static_cast<size_t>(size)), GetSimpleColorFuncs(colors));
 }
 
-inline auto TubesFx::TubeFxImpl::DrawImageToMany(const Point2dInt point,
+inline auto TubesFx::TubeFxImpl::DrawImageToMany(const Point2dInt& point,
                                                  const SmallImageBitmaps::ImageNames imageName,
                                                  const uint32_t size,
                                                  const MultiplePixels& colors) -> void
@@ -671,7 +671,7 @@ auto TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups() -> void
   using ColorsList                 = GoomDrawToContainer::ColorsList;
 
   m_drawToContainer.IterateChangedCoordsNewToOld(
-      [this, &brightnessAttenuation](const Point2dInt point, const ColorsList& colorsList)
+      [this, &brightnessAttenuation](const Point2dInt& point, const ColorsList& colorsList)
       {
         const auto jitterAmount = !m_prevShapesJitter
                                       ? 0

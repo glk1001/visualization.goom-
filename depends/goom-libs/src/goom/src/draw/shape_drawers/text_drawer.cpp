@@ -15,14 +15,14 @@
 #include "goom_logger.h"
 #include "spimpl.h"
 #include "utils/math/misc.h"
+
+#ifndef NO_FREETYPE_INSTALLED
 #include "utils/parallel_utils.h"
 
 #include <codecvt>
 #include <format>
 #include <fstream>
 #include <locale>
-
-#ifndef NO_FREETYPE_INSTALLED
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_STROKER_H
@@ -68,8 +68,8 @@ public:
   [[nodiscard]] auto GetBearingX() const noexcept -> int;
   [[nodiscard]] auto GetBearingY() const noexcept -> int;
 
-  auto Draw(Point2dInt pen) noexcept -> void;
-  auto Draw(Point2dInt pen, Point2dInt& nextPen) noexcept -> void;
+  auto Draw(const Point2dInt& pen) noexcept -> void;
+  auto Draw(const Point2dInt& pen, Point2dInt& nextPen) noexcept -> void;
 
 private:
   std::string m_fontFilename{};
@@ -149,11 +149,11 @@ auto TextDrawer::TextDrawerImpl::Prepare() noexcept -> void
 {
 }
 
-inline auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt) noexcept -> void
+inline auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt&) noexcept -> void
 {
 }
 
-auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt, Point2dInt&) noexcept -> void
+auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt&, Point2dInt&) noexcept -> void
 {
 }
 
@@ -210,8 +210,8 @@ public:
   [[nodiscard]] auto GetBearingX() const noexcept -> int;
   [[nodiscard]] auto GetBearingY() const noexcept -> int;
 
-  auto Draw(Point2dInt pen) -> void;
-  auto Draw(Point2dInt pen, Point2dInt& nextPen) -> void;
+  auto Draw(const Point2dInt& pen) -> void;
+  auto Draw(const Point2dInt& pen, Point2dInt& nextPen) -> void;
 
 private:
   IGoomDraw& m_draw;
@@ -392,12 +392,12 @@ auto TextDrawer::GetBearingY() const noexcept -> int32_t
   return m_pimpl->GetBearingY();
 }
 
-auto TextDrawer::Draw(const Point2dInt pen) -> void
+auto TextDrawer::Draw(const Point2dInt& pen) -> void
 {
   m_pimpl->Draw(pen);
 }
 
-auto TextDrawer::Draw(const Point2dInt pen, Point2dInt& nextPen) -> void
+auto TextDrawer::Draw(const Point2dInt& pen, Point2dInt& nextPen) -> void
 {
   m_pimpl->Draw(pen, nextPen);
 }
@@ -602,13 +602,13 @@ inline auto TextDrawer::TextDrawerImpl::GetStartYPen(const int32_t yPen) noexcep
   return yPen;
 }
 
-inline auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt pen) -> void
+inline auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt& pen) -> void
 {
   auto nextPoint = Point2dInt{};
   Draw(pen, nextPoint);
 }
 
-auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt pen, Point2dInt& nextPen) -> void
+auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt& pen, Point2dInt& nextPen) -> void
 {
   Expects(not m_textSpans.empty());
 

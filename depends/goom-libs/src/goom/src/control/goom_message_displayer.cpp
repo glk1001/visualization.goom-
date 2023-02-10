@@ -31,7 +31,7 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
 
   const auto textColor    = GetBrighterColor(10.0F, WHITE_PIXEL);
   const auto getFontColor = [textColor]([[maybe_unused]] const size_t textIndexOfChar,
-                                        [[maybe_unused]] const Point2dInt point,
+                                        [[maybe_unused]] const Point2dInt& point,
                                         [[maybe_unused]] const int32_t width,
                                         [[maybe_unused]] const int32_t height)
   { return textColor; };
@@ -43,7 +43,7 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
                            {OUTLINE_GREY, OUTLINE_GREY, OUTLINE_GREY, MAX_ALPHA}
   });
   const auto getOutlineFontColor = [outlineColor]([[maybe_unused]] const size_t textIndexOfChar,
-                                                  [[maybe_unused]] const Point2dInt point,
+                                                  [[maybe_unused]] const Point2dInt& point,
                                                   [[maybe_unused]] const int32_t width,
                                                   [[maybe_unused]] const int32_t height)
   { return outlineColor; };

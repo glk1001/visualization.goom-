@@ -32,20 +32,20 @@ StarDrawer::StarDrawer(IGoomDraw& draw,
     m_getMixedColorsFunc{getMixedColorsFunc},
     m_drawFuncs{{{
         {DrawElementTypes::CIRCLES,
-         [this](const Point2dInt point1,
-                const Point2dInt point2,
+         [this](const Point2dInt& point1,
+                const Point2dInt& point2,
                 const uint32_t size,
                 const DRAW::MultiplePixels& colors)
          { DrawParticleCircle(point1, point2, size, colors); }},
         {DrawElementTypes::LINES,
-         [this](const Point2dInt point1,
-                const Point2dInt point2,
+         [this](const Point2dInt& point1,
+                const Point2dInt& point2,
                 const uint32_t size,
                 const DRAW::MultiplePixels& colors)
          { DrawParticleLine(point1, point2, size, colors); }},
         {DrawElementTypes::DOTS,
-         [this](const Point2dInt point1,
-                const Point2dInt point2,
+         [this](const Point2dInt& point1,
+                const Point2dInt& point2,
                 const uint32_t size,
                 const DRAW::MultiplePixels& colors)
          { DrawParticleDot(point1, point2, size, colors); }},
@@ -168,16 +168,16 @@ inline auto StarDrawer::GetNumPartsAndElementSize(const float tAge) const noexce
   return {numParts, MIN_ELEMENT_SIZE};
 }
 
-inline auto StarDrawer::DrawParticleCircle(const Point2dInt point1,
-                                           [[maybe_unused]] const Point2dInt point2,
+inline auto StarDrawer::DrawParticleCircle(const Point2dInt& point1,
+                                           [[maybe_unused]] const Point2dInt& point2,
                                            const uint32_t elementSize,
                                            const MultiplePixels& colors) noexcept -> void
 {
   m_circleDrawer.DrawCircle(point1, static_cast<int>(elementSize), colors);
 }
 
-inline auto StarDrawer::DrawParticleLine(const Point2dInt point1,
-                                         const Point2dInt point2,
+inline auto StarDrawer::DrawParticleLine(const Point2dInt& point1,
+                                         const Point2dInt& point2,
                                          const uint32_t elementSize,
                                          const MultiplePixels& colors) noexcept -> void
 {
@@ -185,8 +185,8 @@ inline auto StarDrawer::DrawParticleLine(const Point2dInt point1,
   m_lineDrawer.DrawLine(point1, point2, colors);
 }
 
-inline auto StarDrawer::DrawParticleDot(const Point2dInt point1,
-                                        [[maybe_unused]] const Point2dInt point2,
+inline auto StarDrawer::DrawParticleDot(const Point2dInt& point1,
+                                        [[maybe_unused]] const Point2dInt& point2,
                                         const uint32_t elementSize,
                                         const MultiplePixels& colors) noexcept -> void
 {

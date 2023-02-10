@@ -29,11 +29,6 @@ struct MultiplePixels
 
 class IGoomDraw
 {
-  // TODO(glk) Is this a good idea?
-  // Use the following to check it's efficient to pass Point2dInts by value.
-  static constexpr size_t MAX_NUM_VOID_PTRS = 3;
-  static_assert(sizeof(Point2dInt) < (MAX_NUM_VOID_PTRS * sizeof(void*)));
-
 public:
   IGoomDraw() noexcept = delete;
   explicit IGoomDraw(const Dimensions& dimensions) noexcept;

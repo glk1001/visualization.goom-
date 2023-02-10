@@ -27,10 +27,10 @@ public:
   explicit BitmapDrawer(IGoomDraw& draw) noexcept;
 
   using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& imageColor)>;
-  auto Bitmap(Point2dInt centre,
+  auto Bitmap(const Point2dInt& centre,
               const UTILS::GRAPHICS::ImageBitmap& bitmap,
               const GetBitmapColorFunc& getColor) noexcept -> void;
-  auto Bitmap(Point2dInt centre,
+  auto Bitmap(const Point2dInt& centre,
               const UTILS::GRAPHICS::ImageBitmap& bitmap,
               const std::vector<GetBitmapColorFunc>& getColors) noexcept -> void;
 
@@ -43,7 +43,7 @@ inline BitmapDrawer::BitmapDrawer(IGoomDraw& draw) noexcept : m_draw{draw}
 {
 }
 
-inline auto BitmapDrawer::Bitmap(Point2dInt centre,
+inline auto BitmapDrawer::Bitmap(const Point2dInt& centre,
                                  const UTILS::GRAPHICS::ImageBitmap& bitmap,
                                  const GetBitmapColorFunc& getColor) noexcept -> void
 {

@@ -33,9 +33,9 @@ public:
   [[nodiscard]] auto GetNumChangedCoords() const noexcept -> size_t;
   [[nodiscard]] auto GetChangedCoordsList() const noexcept -> const std::vector<Point2dInt>&;
   // IMPORTANT: The above is ordered from oldest to newest.
-  [[nodiscard]] auto GetColorsList(Point2dInt point) const noexcept -> const ColorsList&;
+  [[nodiscard]] auto GetColorsList(const Point2dInt& point) const noexcept -> const ColorsList&;
 
-  using CoordsFunc = std::function<void(Point2dInt point, const ColorsList& colorsList)>;
+  using CoordsFunc = std::function<void(const Point2dInt& point, const ColorsList& colorsList)>;
   // NOTE: 'func' must be thread-safe.
   auto IterateChangedCoordsNewToOld(const CoordsFunc& func) const noexcept -> void;
 
@@ -49,9 +49,9 @@ protected:
 private:
   std::vector<std::vector<ColorsList>> m_xyPixelList{};
   std::vector<Point2dInt> m_orderedXYPixelList{};
-  [[nodiscard]] auto GetWriteableColorsList(Point2dInt point) noexcept -> ColorsList&;
-  [[nodiscard]] auto GetLastDrawnColor(Point2dInt point) const noexcept -> Pixel;
-  [[nodiscard]] auto GetLastDrawnColors(Point2dInt point) const noexcept -> MultiplePixels;
+  [[nodiscard]] auto GetWriteableColorsList(const Point2dInt& point) noexcept -> ColorsList&;
+  [[nodiscard]] auto GetLastDrawnColor(const Point2dInt& point) const noexcept -> Pixel;
+  [[nodiscard]] auto GetLastDrawnColors(const Point2dInt& point) const noexcept -> MultiplePixels;
 };
 
 inline auto GoomDrawToContainer::GetPixel(const Point2dInt& point) const noexcept -> Pixel
@@ -64,7 +64,7 @@ inline auto GoomDrawToContainer::GetPixels(const Point2dInt& point) const noexce
   return GetLastDrawnColors(point);
 }
 
-inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt point) const noexcept -> Pixel
+inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt& point) const noexcept -> Pixel
 {
   const auto& colorsList = GetColorsList(point);
   if (0 == colorsList.count)
@@ -74,13 +74,13 @@ inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt point) const
   return colorsList.colorsArray[static_cast<size_t>(colorsList.count - 1)];
 }
 
-inline auto GoomDrawToContainer::GetLastDrawnColors(const Point2dInt point) const noexcept
+inline auto GoomDrawToContainer::GetLastDrawnColors(const Point2dInt& point) const noexcept
     -> MultiplePixels
 {
   return {GetLastDrawnColor(point), BLACK_PIXEL};
 }
 
-inline auto GoomDrawToContainer::GetColorsList(const Point2dInt point) const noexcept
+inline auto GoomDrawToContainer::GetColorsList(const Point2dInt& point) const noexcept
     -> const ColorsList&
 {
   return m_xyPixelList.at(static_cast<size_t>(point.y)).at(static_cast<size_t>(point.x));

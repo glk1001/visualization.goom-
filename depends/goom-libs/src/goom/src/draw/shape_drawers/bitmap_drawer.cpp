@@ -13,7 +13,7 @@ namespace GOOM::DRAW::SHAPE_DRAWERS
 
 using UTILS::GRAPHICS::ImageBitmap;
 
-auto BitmapDrawer::Bitmap(const Point2dInt centre,
+auto BitmapDrawer::Bitmap(const Point2dInt& centre,
                           const ImageBitmap& bitmap,
                           const std::vector<GetBitmapColorFunc>& getColors) noexcept -> void
 {

@@ -187,7 +187,7 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
 
   const auto getFontColor = [this, &colorT, &textBrightness, &fontCharColorMixT](
                                 [[maybe_unused]] const size_t textIndexOfChar,
-                                const Point2dInt point,
+                                const Point2dInt& point,
                                 const int32_t width,
                                 const int32_t height)
   {
@@ -197,7 +197,7 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
 
   const auto getOutlineFontColor = [this, &colorT, &textBrightness, &fontCharColorMixT](
                                        [[maybe_unused]] const size_t textIndexOfChar,
-                                       const Point2dInt point,
+                                       const Point2dInt& point,
                                        [[maybe_unused]] const int32_t width,
                                        [[maybe_unused]] const int32_t height)
   {
@@ -208,7 +208,7 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
   const auto charSpacing = GetCharSpacing();
 
   const auto drawStr = [this, &charSpacing, &getFontColor, &getOutlineFontColor](
-                           const std::string& str, const Point2dInt point)
+                           const std::string& str, const Point2dInt& point)
   {
     m_textDrawer->SetText(str);
     m_textDrawer->SetFontColorFunc(getFontColor);
@@ -230,7 +230,7 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
 
 inline auto GoomTitleDisplayer::GetInteriorColor(const float fontColorT,
                                                  const float fontCharColorMixT,
-                                                 const Point2dInt point,
+                                                 const Point2dInt& point,
                                                  const int32_t charWidth,
                                                  const int32_t charHeight) const -> Pixel
 {
@@ -254,7 +254,7 @@ inline auto GoomTitleDisplayer::GetInitialPhaseInteriorColor(const float fontCol
 
 inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(const float fontColorT,
                                                             const float fontCharColorMixT,
-                                                            const Point2dInt point,
+                                                            const Point2dInt& point,
                                                             const int32_t charWidth,
                                                             const int32_t charHeight) const -> Pixel
 {
@@ -268,7 +268,7 @@ inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(const float fontColo
 }
 
 inline auto GoomTitleDisplayer::GetFinalPhaseInteriorColor(const float fontCharColorMixT,
-                                                           const Point2dInt point,
+                                                           const Point2dInt& point,
                                                            const int32_t charWidth,
                                                            const int32_t charHeight) const -> Pixel
 {

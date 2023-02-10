@@ -52,7 +52,7 @@ void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, co
   }
 }
 
-void BezierDrawer::DrawDot(const Point2dInt centre, const uint32_t diameter, const Pixel& color)
+void BezierDrawer::DrawDot(const Point2dInt& centre, const uint32_t diameter, const Pixel& color)
 {
   const auto getColor =
       [&color]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)

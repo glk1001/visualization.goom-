@@ -31,7 +31,7 @@ auto GoomDrawToContainer::ClearAll() noexcept -> void
   }
 }
 
-inline auto GoomDrawToContainer::GetWriteableColorsList(const Point2dInt point) noexcept
+inline auto GoomDrawToContainer::GetWriteableColorsList(const Point2dInt& point) noexcept
     -> ColorsList&
 {
   return m_xyPixelList.at(static_cast<size_t>(point.y)).at(static_cast<size_t>(point.x));

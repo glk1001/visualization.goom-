@@ -66,7 +66,7 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
   REQUIRE(draw.GetNumChangedCoords() == expectedPixels.size());
 
   std::vector<PixelInfo> changedPixels{};
-  const auto emplaceCoords = [&](const Point2dInt point, const ColorsList& colorsList)
+  const auto emplaceCoords = [&](const Point2dInt& point, const ColorsList& colorsList)
   {
     changedPixels.emplace_back(PixelInfo{
         point, {colorsList.colorsArray[0], BLACK_PIXEL}
@@ -85,9 +85,9 @@ auto FillDrawContainer(GoomDrawToContainer* const draw, const size_t numChanged)
   // Add some changed coords - '1' is old, 'numChanged' is new.
   for (size_t i = 1; i <= numChanged; ++i)
   {
-    const Point2dInt point = {static_cast<int32_t>(i), static_cast<int32_t>(i)};
-    const auto chan0       = static_cast<PixelChannelType>(i);
-    const auto chan1       = static_cast<PixelChannelType>(i + 1);
+    const auto point = Point2dInt{static_cast<int32_t>(i), static_cast<int32_t>(i)};
+    const auto chan0 = static_cast<PixelChannelType>(i);
+    const auto chan1 = static_cast<PixelChannelType>(i + 1);
     const Pixel color0{
         {chan0, chan0, chan0, 255U}
     };

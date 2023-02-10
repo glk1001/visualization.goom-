@@ -14,7 +14,7 @@ public:
   explicit PixelDrawer(IGoomDraw& draw) noexcept;
 
   auto DrawPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept -> void;
-  auto DrawPixelsClipped(Point2dInt point, const MultiplePixels& colors) noexcept -> void;
+  auto DrawPixelsClipped(const Point2dInt& point, const MultiplePixels& colors) noexcept -> void;
 
 private:
   IGoomDraw& m_draw;
@@ -31,7 +31,7 @@ inline auto PixelDrawer::DrawPixels(const Point2dInt& point, const MultiplePixel
   m_draw.DrawPixels(point, colors);
 }
 
-inline auto PixelDrawer::DrawPixelsClipped(const Point2dInt point,
+inline auto PixelDrawer::DrawPixelsClipped(const Point2dInt& point,
                                            const MultiplePixels& colors) noexcept -> void
 {
   if (m_clipTester.IsOutside(point))

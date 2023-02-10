@@ -63,8 +63,8 @@ public:
   [[nodiscard]] auto GetBearingX() const noexcept -> int;
   [[nodiscard]] auto GetBearingY() const noexcept -> int;
 
-  auto Draw(Point2dInt pen) -> void;
-  auto Draw(Point2dInt pen, Point2dInt& nextPen) -> void;
+  auto Draw(const Point2dInt& pen) -> void;
+  auto Draw(const Point2dInt& pen, Point2dInt& nextPen) -> void;
 
 private:
   class TextDrawerImpl;

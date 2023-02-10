@@ -79,17 +79,17 @@ private:
   [[nodiscard]] auto GetTextBrightness() const -> float;
   [[nodiscard]] auto GetInteriorColor(float fontColorT,
                                       float fontCharColorMixT,
-                                      Point2dInt point,
+                                      const Point2dInt& point,
                                       int32_t charWidth,
                                       int32_t charHeight) const -> Pixel;
   [[nodiscard]] auto GetInitialPhaseInteriorColor(float fontColorT) const -> Pixel;
   [[nodiscard]] auto GetMiddlePhaseInteriorColor(float fontColorT,
                                                  float fontCharColorMixT,
-                                                 Point2dInt point,
+                                                 const Point2dInt& point,
                                                  int32_t charWidth,
                                                  int32_t charHeight) const -> Pixel;
   [[nodiscard]] auto GetFinalPhaseInteriorColor(float fontCharColorMixT,
-                                                Point2dInt point,
+                                                const Point2dInt& point,
                                                 int32_t charWidth,
                                                 int32_t charHeight) const -> Pixel;
   [[nodiscard]] auto GetOutlineColor(float fontColorT,
