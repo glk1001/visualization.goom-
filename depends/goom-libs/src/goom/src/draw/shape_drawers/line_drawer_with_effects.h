@@ -7,8 +7,6 @@
 #include "line_drawer_noisy_pixels.h"
 #include "point2d.h"
 
-#include <vector>
-
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
@@ -26,7 +24,7 @@ public:
 
   virtual auto DrawLine(const Point2dInt& point1,
                         const Point2dInt& point2,
-                        const std::vector<Pixel>& colors) noexcept -> void = 0;
+                        const MultiplePixels& colors) noexcept -> void = 0;
 };
 
 template<class LineDrawerPolicy>
@@ -42,7 +40,7 @@ public:
 
   auto DrawLine(const Point2dInt& point1,
                 const Point2dInt& point2,
-                const std::vector<Pixel>& colors) noexcept -> void override;
+                const MultiplePixels& colors) noexcept -> void override;
 
 private:
   LineDrawerPolicy m_lineDrawer;
@@ -76,8 +74,9 @@ inline auto LineDrawerWithEffects<LineDrawerPolicy>::SetLineThickness(
 }
 
 template<class LineDrawerPolicy>
-inline auto LineDrawerWithEffects<LineDrawerPolicy>::DrawLine(
-    const Point2dInt& point1, const Point2dInt& point2, const std::vector<Pixel>& colors) noexcept
+inline auto LineDrawerWithEffects<LineDrawerPolicy>::DrawLine(const Point2dInt& point1,
+                                                              const Point2dInt& point2,
+                                                              const MultiplePixels& colors) noexcept
     -> void
 {
   m_lineDrawer.DrawLine(point1, point2, colors);

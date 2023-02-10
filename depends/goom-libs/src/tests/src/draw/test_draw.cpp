@@ -44,20 +44,19 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
     REQUIRE(coords.point.x == point.x);
     REQUIRE(coords.point.y == point.y);
 
-    REQUIRE(coords.colors.size() == colors.size());
     INFO(std20::format("coords.colors[{}] = ({}, {}, {}, {}), colors[{}] = ({}, {}, {}, {})",
                        0,
-                       coords.colors[0].R(),
-                       coords.colors[0].G(),
-                       coords.colors[0].B(),
-                       coords.colors[0].A(),
+                       coords.colors.color1.R(),
+                       coords.colors.color1.G(),
+                       coords.colors.color1.B(),
+                       coords.colors.color1.A(),
                        0,
-                       colors[0].R(),
-                       colors[0].G(),
-                       colors[0].B(),
-                       colors[0].A()));
-    REQUIRE(coords.colors[0] == colors[0]);
-    REQUIRE(coords.colors[1] == BLACK_PIXEL);
+                       colors.color1.R(),
+                       colors.color1.G(),
+                       colors.color1.B(),
+                       colors.color1.A()));
+    REQUIRE(coords.colors.color1 == colors.color1);
+    REQUIRE(coords.colors.color2 == BLACK_PIXEL);
   }
 }
 
@@ -87,21 +86,21 @@ auto FillDrawContainer(GoomDrawToContainer* const draw, const size_t numChanged)
   for (size_t i = 1; i <= numChanged; ++i)
   {
     const Point2dInt point = {static_cast<int32_t>(i), static_cast<int32_t>(i)};
-    const auto c0          = static_cast<PixelChannelType>(i);
-    const auto c1          = static_cast<PixelChannelType>(i + 1);
+    const auto chan0       = static_cast<PixelChannelType>(i);
+    const auto chan1       = static_cast<PixelChannelType>(i + 1);
     const Pixel color0{
-        {c0, c0, c0, 255U}
+        {chan0, chan0, chan0, 255U}
     };
     const Pixel color1{
-        {c1, c1, c1, 0U}
+        {chan1, chan1, chan1, 0U}
     };
     const MultiplePixels colors{color0, color1};
 
     pixelsNewToOld.emplace_back(PixelInfo{point, colors});
 
     draw->DrawPixels(point, colors);
-    REQUIRE(draw->GetPixels(point)[0] == color0);
-    REQUIRE(draw->GetPixels(point)[1] == BLACK_PIXEL);
+    REQUIRE(draw->GetPixels(point).color1 == color0);
+    REQUIRE(draw->GetPixels(point).color2 == BLACK_PIXEL);
   }
   std::reverse(begin(pixelsNewToOld), end(pixelsNewToOld));
 
@@ -126,10 +125,10 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
   std::vector<PixelInfo> pixelsNewToOld      = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
 
   int32_t i = NUM_CHANGED_COORDS;
-  for (const auto& p : pixelsNewToOld)
+  for (const auto& pixelInfo : pixelsNewToOld)
   {
-    REQUIRE(p.point.x == i);
-    REQUIRE(p.point.y == i);
+    REQUIRE(pixelInfo.point.x == i);
+    REQUIRE(pixelInfo.point.y == i);
     --i;
   }
 
@@ -139,10 +138,10 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
   draw.ResizeChangedCoordsKeepingNewest(NEW_SIZE);
   pixelsNewToOld.resize(NEW_SIZE);
   i = NUM_CHANGED_COORDS;
-  for (const auto& p : pixelsNewToOld)
+  for (const auto& pixelInfo : pixelsNewToOld)
   {
-    REQUIRE(p.point.x == i);
-    REQUIRE(p.point.y == i);
+    REQUIRE(pixelInfo.point.x == i);
+    REQUIRE(pixelInfo.point.y == i);
     --i;
   }
   CheckContainer(draw, pixelsNewToOld);

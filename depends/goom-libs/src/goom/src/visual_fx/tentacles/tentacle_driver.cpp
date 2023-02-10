@@ -22,6 +22,7 @@ namespace GOOM::VISUAL_FX::TENTACLES
 {
 
 using COLOR::ColorMaps;
+using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;
@@ -354,15 +355,9 @@ inline auto TentacleDriver::IterateTentacle(Tentacle3D& tentacle) const noexcept
 }
 
 [[nodiscard]] inline auto GetBrighterColors(const float brightness,
-                                            const DRAW::MultiplePixels& colors) noexcept
-    -> DRAW::MultiplePixels
+                                            const MultiplePixels& colors) noexcept -> MultiplePixels
 {
-  auto newColors = colors;
-  for (auto& newColor : newColors)
-  {
-    newColor = COLOR::GetBrighterColor(brightness, newColor);
-  }
-  return newColors;
+  return {GetBrighterColor(brightness, colors.color1), GetBrighterColor(brightness, colors.color2)};
 }
 
 auto TentacleDriver::GetMixedColors(const float dominantT,

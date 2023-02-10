@@ -15,19 +15,13 @@ namespace GOOM::DRAW
 class GoomDrawToContainer : public IGoomDraw
 {
 public:
-  GoomDrawToContainer() noexcept = delete;
   explicit GoomDrawToContainer(const Dimensions& dimensions) noexcept;
-  GoomDrawToContainer(const GoomDrawToContainer&) noexcept                    = delete;
-  GoomDrawToContainer(GoomDrawToContainer&&) noexcept                         = delete;
-  ~GoomDrawToContainer() noexcept override                                    = default;
-  auto operator=(const GoomDrawToContainer&) noexcept -> GoomDrawToContainer& = delete;
-  auto operator=(GoomDrawToContainer&&) noexcept -> GoomDrawToContainer&      = delete;
 
-  [[nodiscard]] auto GetPixel(Point2dInt point) const noexcept -> Pixel override;
-  auto DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) noexcept
+  [[nodiscard]] auto GetPixel(const Point2dInt& point) const noexcept -> Pixel override;
+  auto DrawPixelsUnblended(const Point2dInt& point, const MultiplePixels& colors) noexcept
       -> void override;
 
-  [[nodiscard]] auto GetPixels(Point2dInt point) const noexcept -> MultiplePixels;
+  [[nodiscard]] auto GetPixels(const Point2dInt& point) const noexcept -> MultiplePixels;
 
   static constexpr size_t MAX_NUM_COLORS_LIST = 3;
   using ColorsArray                           = std::array<Pixel, MAX_NUM_COLORS_LIST>;
@@ -49,7 +43,8 @@ public:
   auto ClearAll() noexcept -> void;
 
 protected:
-  auto DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors) noexcept -> void override;
+  auto DrawPixelsToDevice(const Point2dInt& point, const MultiplePixels& colors) noexcept
+      -> void override;
 
 private:
   std::vector<std::vector<ColorsList>> m_xyPixelList{};
@@ -59,12 +54,12 @@ private:
   [[nodiscard]] auto GetLastDrawnColors(Point2dInt point) const noexcept -> MultiplePixels;
 };
 
-inline auto GoomDrawToContainer::GetPixel(const Point2dInt point) const noexcept -> Pixel
+inline auto GoomDrawToContainer::GetPixel(const Point2dInt& point) const noexcept -> Pixel
 {
   return GetLastDrawnColor(point);
 }
 
-inline auto GoomDrawToContainer::GetPixels(const Point2dInt point) const noexcept -> MultiplePixels
+inline auto GoomDrawToContainer::GetPixels(const Point2dInt& point) const noexcept -> MultiplePixels
 {
   return GetLastDrawnColors(point);
 }

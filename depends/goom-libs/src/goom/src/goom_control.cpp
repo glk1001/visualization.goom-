@@ -68,7 +68,8 @@ using CONTROL::GoomStateDump;
 #endif
 using CONTROL::GoomStateMonitor;
 using CONTROL::GoomTitleDisplayer;
-using DRAW::GoomDrawToBuffer;
+using DRAW::GoomDrawToSingleBuffer;
+using DRAW::GoomDrawToTwoBuffers;
 using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterColorsService;
 using FILTER_FX::FilterSettingsService;
@@ -135,7 +136,7 @@ private:
   const std::string m_resourcesDirectory;
   GoomControlLogger& m_goomLogger;
   const GoomRand m_goomRand{};
-  GoomDrawToBuffer m_multiBufferDraw{m_goomInfo.GetScreenDimensions(), m_goomLogger};
+  GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetScreenDimensions(), m_goomLogger};
   const FxHelper m_fxHelper;
 
   bool m_noZooms       = false;
@@ -184,10 +185,9 @@ private:
 
   auto UpdateBuffers() -> void;
   auto RotateBuffers() -> void;
-  [[nodiscard]] auto GetCurrentBuffers() const -> std::vector<PixelBuffer*>;
 
   Stopwatch m_runningTimeStopwatch{};
-  static constexpr uint32_t DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS = 8;
+  static constexpr auto DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS = 8U;
   uint32_t m_numUpdatesBetweenTimeChecks            = DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS;
   static constexpr float UPDATE_TIME_ESTIMATE_IN_MS = 40.0F;
   static constexpr float UPDATE_TIME_SAFETY_FACTOR  = 10.0F;
@@ -211,7 +211,7 @@ private:
 
   SongInfo m_songInfo{};
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
-  GoomDrawToBuffer m_goomTextOutput{m_goomInfo.GetScreenDimensions(), m_goomLogger};
+  GoomDrawToSingleBuffer m_goomTextOutput{m_goomInfo.GetScreenDimensions(), m_goomLogger};
   GoomTitleDisplayer m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory()};
   GoomMessageDisplayer m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile()};
   [[nodiscard]] auto GetMessagesFontFile() const -> std::string;
@@ -465,11 +465,6 @@ inline auto GoomControl::GoomControlImpl::GetMessagesFontFile() const -> std::st
   return GetFontDirectory() + PATH_SEP + "verdana.ttf";
 }
 
-inline auto GoomControl::GoomControlImpl::GetCurrentBuffers() const -> std::vector<PixelBuffer*>
-{
-  return {&m_imageBuffers.GetP1(), &m_imageBuffers.GetP2()};
-}
-
 inline auto GoomControl::GoomControlImpl::UpdateGoomBuffer(const AudioSamples& soundData,
                                                            const std::string& message) -> void
 {
@@ -627,7 +622,7 @@ inline auto GoomControl::GoomControlImpl::UpdateBuffers() -> void
 inline auto GoomControl::GoomControlImpl::RotateBuffers() -> void
 {
   m_imageBuffers.RotateBuffers();
-  m_multiBufferDraw.SetBuffers(GetCurrentBuffers());
+  m_multiBufferDraw.SetBuffers(m_imageBuffers.GetP1(), m_imageBuffers.GetP2());
 }
 
 inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::string& message)
@@ -662,7 +657,7 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 
   if (m_showTitle == ShowTitleType::ALWAYS)
   {
-    m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
+    m_goomTextOutput.SetBuffer(m_imageBuffers.GetOutputBuff());
     m_goomTitleDisplayer.DrawStaticText(m_songInfo.title);
     return;
   }
@@ -676,11 +671,11 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
   {
     static constexpr auto FINAL_TITLE_BUFF_INTENSITY = 0.2F;
     m_goomTextOutput.SetBuffIntensity(FINAL_TITLE_BUFF_INTENSITY);
-    m_goomTextOutput.SetBuffers({&m_imageBuffers.GetP1()});
+    m_goomTextOutput.SetBuffer(m_imageBuffers.GetP1());
   }
   else
   {
-    m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
+    m_goomTextOutput.SetBuffer(m_imageBuffers.GetOutputBuff());
   }
   m_goomTitleDisplayer.DrawMovingText(m_songInfo.title);
 }
@@ -695,7 +690,7 @@ auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -
     return;
   }
 
-  m_goomTextOutput.SetBuffers({&m_imageBuffers.GetOutputBuff()});
+  m_goomTextOutput.SetBuffer(m_imageBuffers.GetOutputBuff());
 
   m_messageDisplayer.UpdateMessages(StringSplit(messages, "\n"));
 }

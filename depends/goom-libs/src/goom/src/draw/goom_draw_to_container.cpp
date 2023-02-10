@@ -2,11 +2,7 @@
 
 #include "color/color_utils.h"
 #include "goom_config.h"
-#include "goom_graphic.h"
 #include "goom_types.h"
-
-#include <cstdint>
-#include <vector>
 
 namespace GOOM::DRAW
 {
@@ -42,13 +38,13 @@ inline auto GoomDrawToContainer::GetWriteableColorsList(const Point2dInt point) 
 }
 
 auto GoomDrawToContainer::DrawPixelsUnblended(
-    [[maybe_unused]] const Point2dInt point, [[maybe_unused]] const MultiplePixels& colors) noexcept
-    -> void
+    [[maybe_unused]] const Point2dInt& point,
+    [[maybe_unused]] const MultiplePixels& colors) noexcept -> void
 {
   FailFast();
 }
 
-auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
+auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt& point,
                                              const MultiplePixels& colors) noexcept -> void
 {
   auto& colorsList = GetWriteableColorsList(point);
@@ -59,7 +55,7 @@ auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt point,
   }
 
   // NOTE: Just save the first pixel in 'colors'. May need to improve this.
-  const auto newColor = GetBrighterColorInt(GetIntBuffIntensity(), colors[0]);
+  const auto newColor = GetBrighterColorInt(GetIntBuffIntensity(), colors.color1);
 
   colorsList.colorsArray[colorsList.count] = newColor;
   ++colorsList.count;

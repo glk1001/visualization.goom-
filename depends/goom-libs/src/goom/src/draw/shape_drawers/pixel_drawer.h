@@ -3,10 +3,7 @@
 #include "draw/goom_draw.h"
 #include "drawer_utils.h"
 #include "goom_config.h"
-#include "goom_graphic.h"
 #include "point2d.h"
-
-#include <vector>
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
@@ -16,7 +13,7 @@ class PixelDrawer
 public:
   explicit PixelDrawer(IGoomDraw& draw) noexcept;
 
-  auto DrawPixels(const Point2dInt& point, const std::vector<Pixel>& colors) noexcept -> void;
+  auto DrawPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept -> void;
   auto DrawPixelsClipped(Point2dInt point, const MultiplePixels& colors) noexcept -> void;
 
 private:
@@ -28,8 +25,8 @@ inline PixelDrawer::PixelDrawer(IGoomDraw& draw) noexcept : m_draw{draw}
 {
 }
 
-inline auto PixelDrawer::DrawPixels(const Point2dInt& point,
-                                    const std::vector<Pixel>& colors) noexcept -> void
+inline auto PixelDrawer::DrawPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept
+    -> void
 {
   m_draw.DrawPixels(point, colors);
 }

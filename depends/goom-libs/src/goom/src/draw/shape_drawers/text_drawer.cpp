@@ -738,7 +738,8 @@ auto TextDrawer::TextDrawerImpl::WriteXSpan(const Span& span,
     };
     const auto destColor = m_draw.GetPixel({xPos, yPos});
 
-    m_draw.DrawPixelsUnblended({xPos, yPos}, {GetColorBlend(srceColor, destColor)});
+    const auto blendedColor = GetColorBlend(srceColor, destColor);
+    m_draw.DrawPixelsUnblended({xPos, yPos}, {blendedColor, blendedColor});
   }
 }
 

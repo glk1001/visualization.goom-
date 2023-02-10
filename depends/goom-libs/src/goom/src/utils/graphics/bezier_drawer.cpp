@@ -38,7 +38,7 @@ void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, co
                                    static_cast<int32_t>(bezier.valueAt(t, 1))};
 
     const auto lineColor = GetBrighterColor(10.F, m_lineColorFunc(colorT));
-    lineDrawer.DrawLine(point0, point1, lineColor);
+    lineDrawer.DrawLine(point0, point1, {lineColor, lineColor});
 
     if (0 == (i % m_dotEveryNumBezierSteps))
     {
@@ -65,7 +65,7 @@ void BezierDrawer::DrawDot(const Point2dInt centre, const uint32_t diameter, con
   };
 
   auto bitmapDrawer = BitmapDrawer{m_draw};
-  bitmapDrawer.Bitmap(centre, GetImageBitmap(diameter), getColor);
+  bitmapDrawer.Bitmap(centre, GetImageBitmap(diameter), {getColor, getColor});
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

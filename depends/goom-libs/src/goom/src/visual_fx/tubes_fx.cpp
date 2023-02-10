@@ -496,10 +496,10 @@ inline auto TubesFx::TubeFxImpl::GetSimpleColorFuncs(const MultiplePixels& color
 {
   const auto getColor1 = [&colors]([[maybe_unused]] const size_t x,
                                    [[maybe_unused]] const size_t y,
-                                   [[maybe_unused]] const Pixel& bgnd) { return colors[0]; };
+                                   [[maybe_unused]] const Pixel& bgnd) { return colors.color1; };
   const auto getColor2 = [&colors]([[maybe_unused]] const size_t x,
                                    [[maybe_unused]] const size_t y,
-                                   [[maybe_unused]] const Pixel& bgnd) { return colors[1]; };
+                                   [[maybe_unused]] const Pixel& bgnd) { return colors.color2; };
   return {getColor1, getColor2};
 }
 

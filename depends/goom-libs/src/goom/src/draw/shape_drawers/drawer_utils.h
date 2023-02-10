@@ -10,16 +10,15 @@
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
-auto BrightenColors(float brightness, std::vector<Pixel>& colors) -> void;
+auto BrightenColors(float brightness, MultiplePixels& colors) -> void;
 
 class PixelDrawerNoClipping
 {
 public:
   explicit PixelDrawerNoClipping(IGoomDraw& draw) noexcept : m_draw{draw} {}
 
-  auto DrawPixels(const Point2dInt& point,
-                  const float brightness,
-                  std::vector<Pixel> colors) noexcept -> void
+  auto DrawPixels(const Point2dInt& point, const float brightness, MultiplePixels colors) noexcept
+      -> void
   {
     BrightenColors(brightness, colors);
     m_draw.DrawPixels(point, colors);
@@ -36,7 +35,7 @@ public:
 
   auto DrawPixels(const Point2dInt& point,
                   [[maybe_unused]] const float brightness,
-                  std::vector<Pixel> colors) noexcept -> void
+                  MultiplePixels colors) noexcept -> void
   {
     BrightenColors(brightness, colors);
     m_draw.DrawClippedPixels(point, colors);
@@ -99,12 +98,10 @@ inline auto ClipTester::IsOutside(const Point2dInt& point) const noexcept
          (point.y > m_clipRect.y1);
 }
 
-inline auto BrightenColors(const float brightness, std::vector<Pixel>& colors) -> void
+inline auto BrightenColors(const float brightness, MultiplePixels& colors) -> void
 {
-  for (auto& color : colors)
-  {
-    color = COLOR::GetBrighterColor(brightness, color);
-  }
+  colors.color1 = COLOR::GetBrighterColor(brightness, colors.color1);
+  colors.color2 = COLOR::GetBrighterColor(brightness, colors.color2);
 }
 
 } // namespace GOOM::DRAW::SHAPE_DRAWERS

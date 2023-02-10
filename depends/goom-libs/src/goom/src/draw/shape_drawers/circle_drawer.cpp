@@ -1,5 +1,6 @@
 #include "circle_drawer.h"
 
+#include "draw/goom_draw.h"
 #include "drawer_utils.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
@@ -13,7 +14,7 @@ namespace GOOM::DRAW::SHAPE_DRAWERS
 
 auto CircleDrawer::DrawCircle(const Point2dInt& centre,
                               const int32_t radius,
-                              const std::vector<Pixel>& colors) noexcept -> void
+                              const MultiplePixels& colors) noexcept -> void
 {
   if (ClipTester{m_draw.GetDimensions(), radius}.IsOutside(centre))
   {
@@ -35,7 +36,7 @@ auto CircleDrawer::DrawCircle(const Point2dInt& centre,
 
 auto CircleDrawer::DrawFilledCircle(const Point2dInt& centre,
                                     const int32_t radius,
-                                    const std::vector<Pixel>& colors) noexcept -> void
+                                    const MultiplePixels& colors) noexcept -> void
 {
   if (ClipTester{m_draw.GetDimensions(), radius}.IsOutside(centre))
   {
@@ -54,7 +55,7 @@ auto CircleDrawer::DrawFilledCircle(const Point2dInt& centre,
 auto CircleDrawer::DrawHorizontalLine(const int32_t x1,
                                       const int32_t y,
                                       const int32_t x2,
-                                      const std::vector<Pixel>& colors) noexcept -> void
+                                      const MultiplePixels& colors) noexcept -> void
 {
   const auto xEnd = x1 == x2 ? x1 : x2;
   for (int32_t x = x1; x <= xEnd; ++x)

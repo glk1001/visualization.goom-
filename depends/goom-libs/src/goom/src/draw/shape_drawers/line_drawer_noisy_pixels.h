@@ -34,11 +34,9 @@ public:
   auto SetUseMainColorsForNoise(bool value) noexcept -> void;
   auto SetUseMainPointWithoutNoise(bool useMainPointWithoutNoise) noexcept -> void;
 
-  auto DrawLine(const Point2dInt& point1, const Point2dInt& point2, const Pixel& color) noexcept
-      -> void;
   auto DrawLine(const Point2dInt& point1,
                 const Point2dInt& point2,
-                const std::vector<Pixel>& colors) noexcept -> void;
+                const MultiplePixels& colors) noexcept -> void;
 
 private:
   class NoisyPixelDrawer
@@ -126,14 +124,7 @@ inline auto LineDrawerNoisyPixels::SetNoiseParams(const NoiseParams& noiseParams
 
 inline auto LineDrawerNoisyPixels::DrawLine(const Point2dInt& point1,
                                             const Point2dInt& point2,
-                                            const Pixel& color) noexcept -> void
-{
-  DrawLine(point1, point2, std::vector<Pixel>{color});
-}
-
-inline auto LineDrawerNoisyPixels::DrawLine(const Point2dInt& point1,
-                                            const Point2dInt& point2,
-                                            const std::vector<Pixel>& colors) noexcept -> void
+                                            const MultiplePixels& colors) noexcept -> void
 {
   m_lineDrawer.DrawLine(point1, point2, colors);
 }

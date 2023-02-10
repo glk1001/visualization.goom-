@@ -16,12 +16,12 @@ GoomDrawToMany::GoomDrawToMany(const Dimensions& dimensions,
   Expects(not manyDraws.empty());
 }
 
-auto GoomDrawToMany::GetPixel(const Point2dInt point) const noexcept -> Pixel
+auto GoomDrawToMany::GetPixel(const Point2dInt& point) const noexcept -> Pixel
 {
   return m_manyDraws[0]->GetPixel(point);
 }
 
-auto GoomDrawToMany::DrawPixelsUnblended(const Point2dInt point,
+auto GoomDrawToMany::DrawPixelsUnblended(const Point2dInt& point,
                                          const MultiplePixels& colors) noexcept -> void
 {
   for (auto* const draw : m_manyDraws)
@@ -30,7 +30,7 @@ auto GoomDrawToMany::DrawPixelsUnblended(const Point2dInt point,
   }
 }
 
-auto GoomDrawToMany::DrawPixelsToDevice(const Point2dInt point,
+auto GoomDrawToMany::DrawPixelsToDevice(const Point2dInt& point,
                                         const MultiplePixels& colors) noexcept -> void
 {
   for (auto* const draw : m_manyDraws)

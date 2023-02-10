@@ -71,8 +71,6 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawMainPoint(const Point2d
 inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawNoisePoints(
     const Point2dInt& point, const float brightness, MultiplePixels& colors) noexcept -> void
 {
-  Expects(m_useMainColorsForNoise or (not m_noiseColors.empty()));
-
   if (not m_useMainColorsForNoise)
   {
     colors = m_noiseColors;

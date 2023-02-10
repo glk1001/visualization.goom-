@@ -16,12 +16,13 @@ public:
   GoomDrawToMany() noexcept = delete;
   GoomDrawToMany(const Dimensions& dimensions, const std::vector<IGoomDraw*>& manyDraws) noexcept;
 
-  [[nodiscard]] auto GetPixel(Point2dInt point) const noexcept -> Pixel override;
-  auto DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) noexcept
+  [[nodiscard]] auto GetPixel(const Point2dInt& point) const noexcept -> Pixel override;
+  auto DrawPixelsUnblended(const Point2dInt& point, const MultiplePixels& colors) noexcept
       -> void override;
 
 protected:
-  auto DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors) noexcept -> void override;
+  auto DrawPixelsToDevice(const Point2dInt& point, const MultiplePixels& colors) noexcept
+      -> void override;
 
 private:
   const std::vector<IGoomDraw*> m_manyDraws;

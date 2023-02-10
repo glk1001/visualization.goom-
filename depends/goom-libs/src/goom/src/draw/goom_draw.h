@@ -15,7 +15,11 @@
 namespace GOOM::DRAW
 {
 
-using MultiplePixels = std::vector<Pixel>;
+struct MultiplePixels
+{
+  Pixel color1;
+  Pixel color2;
+};
 
 [[nodiscard]] auto MakePixels(const Pixel& mainColor, const Pixel& lowColor) noexcept
     -> MultiplePixels;
@@ -52,8 +56,8 @@ public:
   auto DrawPixels(Point2dInt point, const MultiplePixels& colors) noexcept -> void;
   auto DrawClippedPixels(Point2dInt point, const MultiplePixels& colors) noexcept -> void;
 
-  [[nodiscard]] virtual auto GetPixel(Point2dInt point) const noexcept -> Pixel = 0;
-  virtual auto DrawPixelsUnblended(Point2dInt point, const MultiplePixels& colors) noexcept
+  [[nodiscard]] virtual auto GetPixel(const Point2dInt& point) const noexcept -> Pixel = 0;
+  virtual auto DrawPixelsUnblended(const Point2dInt& point, const MultiplePixels& colors) noexcept
       -> void = 0;
 
 protected:
@@ -64,7 +68,7 @@ protected:
                                      const Pixel& newColor,
                                      uint32_t intBuffIntensity) const noexcept -> Pixel;
 
-  virtual auto DrawPixelsToDevice(Point2dInt point, const MultiplePixels& colors) noexcept
+  virtual auto DrawPixelsToDevice(const Point2dInt& point, const MultiplePixels& colors) noexcept
       -> void = 0;
 
 private:
@@ -92,17 +96,17 @@ inline auto MakePixels(const Pixel& mainColor, const Pixel& lowColor) noexcept -
 
 inline auto ReversePixels(const MultiplePixels& colors) noexcept -> MultiplePixels
 {
-  return {colors.at(1), colors.at(0)};
+  return {colors.color2, colors.color1};
 }
 
 inline auto GetMainColor(const MultiplePixels& colors) noexcept -> Pixel
 {
-  return colors.at(0);
+  return colors.color1;
 }
 
 inline auto GetLowColor(const MultiplePixels& colors) noexcept -> Pixel
 {
-  return colors.at(1);
+  return colors.color2;
 }
 
 inline auto IGoomDraw::GetDimensions() const noexcept -> const Dimensions&

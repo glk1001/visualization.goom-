@@ -25,11 +25,9 @@ public:
   [[nodiscard]] auto GetLineThickness() const noexcept -> uint8_t;
   auto SetLineThickness(uint8_t thickness) noexcept -> void;
 
-  auto DrawLine(const Point2dInt& point1, const Point2dInt& point2, const Pixel& color) noexcept
-      -> void;
   auto DrawLine(const Point2dInt& point1,
                 const Point2dInt& point2,
-                const std::vector<Pixel>& colors) noexcept -> void;
+                const MultiplePixels& colors) noexcept -> void;
 
 private:
   DrawPixelPolicy m_drawPixel;
@@ -37,11 +35,11 @@ private:
 
   auto DrawWuLine(const Point2dInt& point1,
                   const Point2dInt& point2,
-                  const std::vector<Pixel>& colors) noexcept -> void;
+                  const MultiplePixels& colors) noexcept -> void;
 
   auto DrawThickLine(const Point2dInt& point1,
                      const Point2dInt& point2,
-                     const std::vector<Pixel>& colors) noexcept -> void;
+                     const MultiplePixels& colors) noexcept -> void;
 };
 
 class LineDrawerNoClippedEndPoints
@@ -51,11 +49,9 @@ public:
 
   auto SetLineThickness(uint8_t thickness) noexcept -> void;
 
-  auto DrawLine(const Point2dInt& point1, const Point2dInt& point2, const Pixel& color) noexcept
-      -> void;
   auto DrawLine(const Point2dInt& point1,
                 const Point2dInt& point2,
-                const std::vector<Pixel>& colors) noexcept -> void;
+                const MultiplePixels& colors) noexcept -> void;
 
 private:
   LineDrawer<PixelDrawerWithClipping> m_lineDrawer;
@@ -68,11 +64,9 @@ public:
 
   auto SetLineThickness(uint8_t thickness) noexcept -> void;
 
-  auto DrawLine(const Point2dInt& point1, const Point2dInt& point2, const Pixel& color) noexcept
-      -> void;
   auto DrawLine(const Point2dInt& point1,
                 const Point2dInt& point2,
-                const std::vector<Pixel>& colors) noexcept -> void;
+                const MultiplePixels& colors) noexcept -> void;
 
 private:
   Dimensions m_dimensions;
@@ -93,15 +87,7 @@ inline auto LineDrawerNoClippedEndPoints::SetLineThickness(const uint8_t thickne
 
 inline auto LineDrawerNoClippedEndPoints::DrawLine(const Point2dInt& point1,
                                                    const Point2dInt& point2,
-                                                   const Pixel& color) noexcept -> void
-{
-  DrawLine(point1, point2, std::vector<Pixel>{color});
-}
-
-inline auto LineDrawerNoClippedEndPoints::DrawLine(const Point2dInt& point1,
-                                                   const Point2dInt& point2,
-                                                   const std::vector<Pixel>& colors) noexcept
-    -> void
+                                                   const MultiplePixels& colors) noexcept -> void
 {
   m_lineDrawer.DrawLine(point1, point2, colors);
 }
@@ -132,14 +118,7 @@ inline auto LineDrawerClippedEndPoints::GetClipMargin() const noexcept -> int32_
 
 inline auto LineDrawerClippedEndPoints::DrawLine(const Point2dInt& point1,
                                                  const Point2dInt& point2,
-                                                 const Pixel& color) noexcept -> void
-{
-  DrawLine(point1, point2, std::vector<Pixel>{color});
-}
-
-inline auto LineDrawerClippedEndPoints::DrawLine(const Point2dInt& point1,
-                                                 const Point2dInt& point2,
-                                                 const std::vector<Pixel>& colors) noexcept -> void
+                                                 const MultiplePixels& colors) noexcept -> void
 {
   if (m_clipTester.IsOutside(point1) or m_clipTester.IsOutside(point2))
   {
@@ -184,15 +163,7 @@ inline auto LineDrawer<DrawPixelPolicy>::SetLineThickness(const uint8_t thicknes
 template<class DrawPixelPolicy>
 inline auto LineDrawer<DrawPixelPolicy>::DrawLine(const Point2dInt& point1,
                                                   const Point2dInt& point2,
-                                                  const Pixel& color) noexcept -> void
-{
-  DrawLine(point1, point2, std::vector<Pixel>{color});
-}
-
-template<class DrawPixelPolicy>
-inline auto LineDrawer<DrawPixelPolicy>::DrawLine(const Point2dInt& point1,
-                                                  const Point2dInt& point2,
-                                                  const std::vector<Pixel>& colors) noexcept -> void
+                                                  const MultiplePixels& colors) noexcept -> void
 {
   if (1 == m_thickness)
   {
@@ -207,8 +178,7 @@ inline auto LineDrawer<DrawPixelPolicy>::DrawLine(const Point2dInt& point1,
 template<class DrawPixelPolicy>
 inline auto LineDrawer<DrawPixelPolicy>::DrawWuLine(const Point2dInt& point1,
                                                     const Point2dInt& point2,
-                                                    const std::vector<Pixel>& colors) noexcept
-    -> void
+                                                    const MultiplePixels& colors) noexcept -> void
 {
   Expects(1 == m_thickness);
 
@@ -225,7 +195,7 @@ inline auto LineDrawer<DrawPixelPolicy>::DrawWuLine(const Point2dInt& point1,
 template<class DrawPixelPolicy>
 inline auto LineDrawer<DrawPixelPolicy>::DrawThickLine(const Point2dInt& point1,
                                                        const Point2dInt& point2,
-                                                       const std::vector<Pixel>& colors) noexcept
+                                                       const MultiplePixels& colors) noexcept
     -> void
 {
   Expects(m_thickness > 1);

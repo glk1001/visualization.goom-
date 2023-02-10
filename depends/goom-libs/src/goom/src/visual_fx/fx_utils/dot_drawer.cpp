@@ -3,11 +3,9 @@
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "point2d.h"
-#include "utils/enum_utils.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
@@ -77,12 +75,12 @@ inline auto DotDrawer::DrawDot(const uint32_t dotSize,
   const auto getColor1 = [&brightness, &colors]([[maybe_unused]] const size_t x,
                                                 [[maybe_unused]] const size_t y,
                                                 const Pixel& bgnd)
-  { return GetColorMultiply(bgnd, GetBrighterColor(brightness, colors[0])); };
+  { return GetColorMultiply(bgnd, GetBrighterColor(brightness, colors.color1)); };
 
   const auto getColor2 = [&brightness, &colors]([[maybe_unused]] const size_t x,
                                                 [[maybe_unused]] const size_t y,
                                                 const Pixel& bgnd)
-  { return GetColorMultiply(bgnd, GetBrighterColor(brightness, colors[1])); };
+  { return GetColorMultiply(bgnd, GetBrighterColor(brightness, colors.color2)); };
 
   const auto getColors = std::vector<BitmapDrawer::GetBitmapColorFunc>{getColor1, getColor2};
   const auto& bitmap   = GetImageBitmap(dotSize);
