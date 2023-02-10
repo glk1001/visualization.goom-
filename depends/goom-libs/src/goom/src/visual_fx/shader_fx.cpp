@@ -98,9 +98,9 @@ inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
   m_highContrast.UpdateHighContrast();
   m_hueShiftLerper.Update();
 
-  static constexpr auto DEFAULT_EXPOSURE      = 1.5F;
-  m_goomShaderVariables.exposure              = DEFAULT_EXPOSURE;
-  m_goomShaderVariables.contrast              = m_highContrast.GetCurrentContrast();
+  static constexpr auto DEFAULT_EXPOSURE = 1.5F;
+  m_goomShaderVariables.exposure         = DEFAULT_EXPOSURE;
+  m_goomShaderVariables.contrast         = m_highContrast.GetCurrentContrast();
   m_goomShaderVariables.contrastMinChannelValue =
       m_highContrast.GetCurrentContrastMinChannelValue();
   m_goomShaderVariables.brightness    = m_highContrast.GetCurrentBrightness();

@@ -22,8 +22,8 @@
 #include <codecvt>
 #include <format>
 #include <fstream>
-#include <locale>
 #include <ft2build.h>
+#include <locale>
 #include FT_FREETYPE_H
 #include FT_STROKER_H
 #endif

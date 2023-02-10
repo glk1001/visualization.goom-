@@ -93,8 +93,7 @@ template<typename _Fp>
       std::round(STD20::lerp(static_cast<float>(a), static_cast<float>(b), t)));
 }
 
-[[nodiscard]] inline auto lerp(const uint8_t a, const uint8_t b, const float t) noexcept
-    -> uint8_t
+[[nodiscard]] inline auto lerp(const uint8_t a, const uint8_t b, const float t) noexcept -> uint8_t
 {
   return static_cast<uint8_t>(
       std::round(STD20::lerp(static_cast<float>(a), static_cast<float>(b), t)));

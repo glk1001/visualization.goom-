@@ -92,10 +92,12 @@ auto HypotrochoidFunction::GetPointAtAngle(const float angle) const noexcept -> 
 {
   const auto angleArg2 = (m_rDiff / m_params.smallR) * angle;
 
-  const auto x = +(m_rDiff * std::cos(angle)) + (m_params.height * std::cos(angleArg2));
-  const auto y = -(m_rDiff * std::sin(angle)) + (m_params.height * std::sin(angleArg2));
+  const auto point = Point2dFlt{
+      +(m_rDiff * std::cos(angle)) + (m_params.height * std::cos(angleArg2)),
+      -(m_rDiff * std::sin(angle)) + (m_params.height * std::sin(angleArg2)),
+  };
 
-  return (m_params.amplitude * Point2dFlt{x, y}) + m_centrePos;
+  return (m_params.amplitude * point) + m_centrePos;
 }
 
 EpicycloidFunction::EpicycloidFunction(const Vec2dFlt& centrePos,
@@ -129,12 +131,14 @@ auto EpicycloidFunction::GetPointAtAngle(const float angle) const noexcept -> Po
 {
   const auto angleArg2 = (m_params.k + 1.0F) * angle;
 
-  const auto x = +(m_params.smallR * (m_params.k + 1.0F) * std::cos(angle)) -
-                 +(m_params.smallR * std::cos(angleArg2));
-  const auto y = -(m_params.smallR * (m_params.k + 1.0F) * std::sin(angle)) +
-                 +(m_params.smallR * std::sin(angleArg2));
+  const auto point = Point2dFlt{
+      +(m_params.smallR * (m_params.k + 1.0F) * std::cos(angle)) -
+          +(m_params.smallR * std::cos(angleArg2)),
+      -(m_params.smallR * (m_params.k + 1.0F) * std::sin(angle)) +
+          +(m_params.smallR * std::sin(angleArg2)),
+  };
 
-  return (m_params.amplitude * Point2dFlt{x, y}) + m_centrePos;
+  return (m_params.amplitude * point) + m_centrePos;
 }
 
 SineFunction::SineFunction(const Point2dFlt& startPos,
