@@ -35,7 +35,7 @@ public:
       -> UTILS::NameValuePairs;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   bool m_blockyWavy = false;
   FXBuffSettings m_buffSettings{};
 
@@ -56,7 +56,7 @@ private:
 };
 
 inline FilterColorsService::FilterColorsService(const UTILS::MATH::IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand}
+  : m_goomRand{&goomRand}
 {
 }
 
@@ -81,7 +81,7 @@ inline auto FilterColorsService::SetBlockyWavy(const bool val) noexcept -> void
 
   if (m_blockyWavy)
   {
-    m_goomRand.Shuffle(begin(m_reorderedColorIndexes), end(m_reorderedColorIndexes));
+    m_goomRand->Shuffle(begin(m_reorderedColorIndexes), end(m_reorderedColorIndexes));
   }
 }
 

@@ -63,9 +63,9 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
-  const UTILS::MATH::Weights<HypercosEffect> m_hypercosOverlayWeights;
+  UTILS::MATH::Weights<HypercosEffect> m_hypercosOverlayWeights;
   auto SetHypercosEffect(HypercosOverlay overlay,
                          const UTILS::MATH::IGoomRand::NumberRange<float>& freqRange,
                          const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange) -> void;

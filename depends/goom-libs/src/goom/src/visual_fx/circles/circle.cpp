@@ -68,6 +68,10 @@ static constexpr auto MAX_NUM_ROTATING_COLORS               = 2U;
 static constexpr auto CLOSE_TO_START_T                      = 0.1F;
 static constexpr auto CLOSE_TO_END_T                        = 0.2F;
 
+static constexpr auto PROB_SHOW_LINE                     = 0.5F;
+static constexpr auto PROB_ALTERNATE_MAIN_LOW_DOT_COLORS = 0.1F;
+static constexpr auto PROB_CIRCLES                       = 0.5F;
+
 class Circle::DotDrawer
 {
 public:
@@ -80,11 +84,10 @@ public:
       -> void;
 
 private:
-  IGoomDraw& m_draw;
-  BitmapDrawer m_bitmapDrawer{m_draw};
-  CircleDrawer m_circleDrawer{m_draw};
-  const IGoomRand& m_goomRand;
-  const Helper& m_helper;
+  const IGoomRand* m_goomRand;
+  const Helper* m_helper;
+  BitmapDrawer m_bitmapDrawer;
+  CircleDrawer m_circleDrawer;
   float m_globalBrightnessFactor = 1.0F;
 
   static constexpr float MIN_BGND_MIX_T = 0.2F;
@@ -143,12 +146,12 @@ Circle::Circle(const FxHelper& fxHelper,
                const Helper& helper,
                const Params& circleParams,
                const OscillatingFunction::Params& pathParams) noexcept
-  : m_draw{fxHelper.GetDraw()},
-    m_lineDrawer{m_draw, fxHelper.GetGoomRand(), {5U, 5U}},
-    m_goomInfo{fxHelper.GetGoomInfo()},
-    m_goomRand{fxHelper.GetGoomRand()},
+  : m_draw{&fxHelper.GetDraw()},
+    m_lineDrawer{*m_draw, fxHelper.GetGoomRand(), {5U, 5U}},
+    m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()},
     m_helper{helper},
-    m_dotPaths{m_goomRand,
+    m_dotPaths{*m_goomRand,
                NUM_DOTS,
                {GetDotStartingPositions(circleParams.toTargetParams.circleCentreStart,
                                         circleParams.toTargetParams.circleRadius),
@@ -158,11 +161,11 @@ Circle::Circle(const FxHelper& fxHelper,
                 circleParams.fromTargetParams.circleCentreTarget},
                {pathParams, pathParams},
     },
-    m_dotDrawer{std::make_unique<DotDrawer>(m_draw, m_goomRand, m_helper)},
-    m_mainColorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)},
-    m_lowColorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)},
+    m_dotDrawer{std::make_unique<DotDrawer>(*m_draw, *m_goomRand, m_helper)},
+    m_mainColorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)},
+    m_lowColorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)},
     m_weightedGridColorRanges{
-        m_goomRand,
+        *m_goomRand,
         {
             {GridColorRange::ONE, GRID_COLOR_RANGE_ONE_WEIGHT},
             {GridColorRange::LOW, GRID_COLOR_RANGE_LOW_WEIGHT},
@@ -265,9 +268,9 @@ inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<cons
 auto Circle::UpdateRotatingColorMaps() noexcept -> void
 {
   const auto newNumRotatingColors =
-      m_goomRand.ProbabilityOf(PROB_NO_ROTATING_COLORS)
+      m_goomRand->ProbabilityOf(PROB_NO_ROTATING_COLORS)
           ? 0U
-          : m_goomRand.GetRandInRange(MIN_NUM_ROTATING_COLORS, MAX_NUM_ROTATING_COLORS + 1);
+          : m_goomRand->GetRandInRange(MIN_NUM_ROTATING_COLORS, MAX_NUM_ROTATING_COLORS + 1);
 
   if (m_numRotatingColors == newNumRotatingColors)
   {
@@ -278,7 +281,7 @@ auto Circle::UpdateRotatingColorMaps() noexcept -> void
   m_rotatingDotNums.resize(m_numRotatingColors);
   for (auto& dotNum : m_rotatingDotNums)
   {
-    dotNum = m_goomRand.GetRandInRange(0U, NUM_DOTS);
+    dotNum = m_goomRand->GetRandInRange(0U, NUM_DOTS);
   }
 
   m_rotatingMainColorMaps.resize(m_numRotatingColors);
@@ -328,19 +331,17 @@ auto Circle::SetWeightedColorMaps(
   UpdateRotatingColorMaps();
 
   UpdateNumDifferentGridMaps();
-  m_currentColorGridMixT = m_goomRand.GetRandInRange(MIN_COLOR_GRID_MIX_T, MAX_COLOR_GRID_MIX_T);
+  m_currentColorGridMixT = m_goomRand->GetRandInRange(MIN_COLOR_GRID_MIX_T, MAX_COLOR_GRID_MIX_T);
   m_mainColorMapsGrid.SetColorMaps(GetHorizontalMainColorMaps(), GetVerticalMainColorMaps());
   m_lowColorMapsGrid.SetColorMaps(GetHorizontalLowColorMaps(), GetVerticalLowColorMaps());
 
   m_linesMainColorMap = GetHorizontalMainColorMaps().at(0);
   m_linesLowColorMap  = GetHorizontalLowColorMaps().at(0);
 
-  static constexpr auto PROB_SHOW_LINE = 0.5F;
-  m_showLine                           = m_goomRand.ProbabilityOf(PROB_SHOW_LINE);
+  m_showLine = m_goomRand->ProbabilityOf(PROB_SHOW_LINE);
 
   m_dotDiameters.ChangeDotDiameters();
-  static constexpr auto PROB_ALTERNATE_MAIN_LOW_DOT_COLORS = 0.1F;
-  m_alternateMainLowDotColors = m_goomRand.ProbabilityOf(PROB_ALTERNATE_MAIN_LOW_DOT_COLORS);
+  m_alternateMainLowDotColors = m_goomRand->ProbabilityOf(PROB_ALTERNATE_MAIN_LOW_DOT_COLORS);
   m_dotDrawer->SetWeightedColorMaps(*weightedMainMaps);
 }
 
@@ -583,29 +584,29 @@ auto Circle::DrawConnectingLine(const Point2dInt& position1,
 Circle::DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
                              const IGoomRand& goomRand,
                              const Circle::Helper& helper) noexcept
-  : m_draw{draw},
-    m_goomRand{goomRand},
-    m_helper{helper},
-    m_bgndMainColorMixT{m_goomRand.GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
-    m_bgndLowColorMixT{m_goomRand.GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
+  : m_goomRand{&goomRand},
+    m_helper{&helper},
+    m_bitmapDrawer{draw},
+    m_circleDrawer{draw},
+    m_bgndMainColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
+    m_bgndLowColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
     m_decorationType{GetRandomDecorationType()},
-    m_differentColor{GetRandomDifferentColor(RandomColorMaps{m_goomRand})}
+    m_differentColor{GetRandomDifferentColor(RandomColorMaps{*m_goomRand})}
 {
 }
 
 inline auto Circle::DotDrawer::SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept
     -> void
 {
-  m_bgndMainColorMixT      = m_goomRand.GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T);
-  m_bgndLowColorMixT       = m_goomRand.GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T);
+  m_bgndMainColorMixT      = m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T);
+  m_bgndLowColorMixT       = m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T);
   m_decorationType         = GetRandomDecorationType();
   m_differentColor         = GetRandomDifferentColor(weightedMaps);
   m_outerCircleDotColorMap = &weightedMaps.GetRandomColorMap();
 
-  static constexpr auto PROB_CIRCLES = 0.5F;
-  m_doCircleDotShapes                = m_goomRand.ProbabilityOf(PROB_CIRCLES);
-  m_outerCircleDotColorMix =
-      m_goomRand.GetRandInRange(MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T, MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T);
+  m_doCircleDotShapes      = m_goomRand->ProbabilityOf(PROB_CIRCLES);
+  m_outerCircleDotColorMix = m_goomRand->GetRandInRange(MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T,
+                                                        MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T);
 }
 
 inline auto Circle::DotDrawer::SetGlobalBrightnessFactor(const float val) noexcept -> void
@@ -697,18 +698,18 @@ auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& position,
   { return GetDotMixedColor(x, y, diameter, bgnd, GetLowColor(colors), m_bgndLowColorMixT); };
 
   m_bitmapDrawer.Bitmap(
-      position, m_helper.bitmapGetter.GetBitmap(diameter), {getMainColor, getLowColor});
+      position, m_helper->bitmapGetter->GetBitmap(diameter), {getMainColor, getLowColor});
 }
 
 inline auto Circle::DotDrawer::GetRandomDecorationType() const noexcept -> DecorationType
 {
-  return static_cast<DecorationType>(m_goomRand.GetRandInRange(0U, NUM<DecorationType>));
+  return static_cast<DecorationType>(m_goomRand->GetRandInRange(0U, NUM<DecorationType>));
 }
 
 inline auto Circle::DotDrawer::GetRandomDifferentColor(
     const RandomColorMaps& weightedMaps) const noexcept -> Pixel
 {
-  return weightedMaps.GetRandomColorMap().GetColor(m_goomRand.GetRandInRange(0.0F, 1.0F));
+  return weightedMaps.GetRandomColorMap().GetColor(m_goomRand->GetRandInRange(0.0F, 1.0F));
 }
 
 inline auto Circle::DotDrawer::GetDotMixedColor(const size_t x,

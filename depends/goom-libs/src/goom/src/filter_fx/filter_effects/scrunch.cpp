@@ -2,7 +2,6 @@
 
 #include "filter_fx/common_types.h"
 #include "goom_config.h"
-#include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
@@ -18,14 +17,14 @@ static constexpr auto AMPLITUDE_RANGE     = AmplitudeRange{
 };
 
 Scrunch::Scrunch(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand}, m_params{X_DEFAULT_AMPLITUDE, Y_DEFAULT_AMPLITUDE}
+  : m_goomRand{&goomRand}, m_params{X_DEFAULT_AMPLITUDE, Y_DEFAULT_AMPLITUDE}
 {
 }
 
 auto Scrunch::SetRandomParams() noexcept -> void
 {
-  const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE.xRange);
-  const auto yAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE.yRange);
+  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE.xRange);
+  const auto yAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE.yRange);
 
   SetParams({xAmplitude, yAmplitude});
 

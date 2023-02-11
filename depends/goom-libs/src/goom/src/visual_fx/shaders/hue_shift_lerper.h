@@ -24,8 +24,8 @@ public:
   [[nodiscard]] auto GetDestHueShift() const noexcept -> float;
 
 private:
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   float m_srceHueShift = 0.0F;
   float m_destHueShift = 0.0F;

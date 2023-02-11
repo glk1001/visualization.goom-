@@ -23,7 +23,6 @@
 #include "utils/t_values.h"
 
 #include <array>
-#include <cmath>
 #include <cstdint>
 #include <memory>
 
@@ -68,18 +67,17 @@ public:
   auto ApplyMultiple() -> void;
 
 private:
-  IGoomDraw& m_draw;
-  BitmapDrawer m_bitmapDrawer{m_draw};
-  const PluginInfo& m_goomInfo;
-  const IGoomRand& m_goomRand;
-  const SmallImageBitmaps& m_smallBitmaps;
-  const Point2dInt m_screenMidpoint{U_HALF * m_goomInfo.GetScreenWidth(),
-                                    U_HALF* m_goomInfo.GetScreenHeight()};
+  const PluginInfo* m_goomInfo;
+  const IGoomRand* m_goomRand;
+  const SmallImageBitmaps* m_smallBitmaps;
+  BitmapDrawer m_bitmapDrawer;
+  Point2dInt m_screenMidpoint{U_HALF * m_goomInfo->GetScreenWidth(),
+                              U_HALF * m_goomInfo->GetScreenHeight()};
 
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
   uint32_t m_numFlowersInRow                   = 0;
-  const Weights<SmallImageBitmaps::ImageNames> m_flowerDotTypes;
+  Weights<SmallImageBitmaps::ImageNames> m_flowerDotTypes;
   [[nodiscard]] auto GetImageBitmap(uint32_t size) const -> const ImageBitmap&;
   void SetFlowerBitmap();
   void SetNonFlowerBitmap();
@@ -108,7 +106,7 @@ private:
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
   [[nodiscard]] auto GetMiddleColor() const -> Pixel;
 
-  const std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths{GetDotPaths(m_screenMidpoint)};
+  std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths{GetDotPaths(m_screenMidpoint)};
   [[nodiscard]] static auto GetDotPaths(const Point2dInt& centre)
       -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>;
 
@@ -119,7 +117,7 @@ private:
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
 
   static constexpr auto GAMMA = 2.2F; // Cancel the shader gamma
-  const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -184,12 +182,12 @@ static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 05.0F;
 
 GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
                                            const SmallImageBitmaps& smallBitmaps)
-  : m_draw{fxHelper.GetDraw()},
-    m_goomInfo{fxHelper.GetGoomInfo()},
-    m_goomRand{fxHelper.GetGoomRand()},
-    m_smallBitmaps{smallBitmaps},
+  : m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()},
+    m_smallBitmaps{&smallBitmaps},
+    m_bitmapDrawer{fxHelper.GetDraw()},
     m_flowerDotTypes{
-        m_goomRand,
+        *m_goomRand,
         {
             {SmallImageBitmaps::ImageNames::ORANGE_FLOWER, IMAGE_NAMES_ORANGE_FLOWER_WEIGHT},
             {SmallImageBitmaps::ImageNames::PINK_FLOWER,   IMAGE_NAMES_PINK_FLOWER_WEIGHT},
@@ -207,7 +205,7 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDefaultColorMapIds() noexcept
 
   for (auto& colorMapsId : colorMapsIds)
   {
-    colorMapsId = m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand);
+    colorMapsId = m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand);
   }
 
   return colorMapsIds;
@@ -259,7 +257,7 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
 inline auto GoomDotsFx::GoomDotsFxImpl::ChangeDotColorsEvent() const -> bool
 {
   static constexpr auto PROB_CHANGE_DOT_COLORS = 0.33F;
-  return m_goomRand.ProbabilityOf(PROB_CHANGE_DOT_COLORS);
+  return m_goomRand->ProbabilityOf(PROB_CHANGE_DOT_COLORS);
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::Start()
@@ -270,8 +268,8 @@ inline void GoomDotsFx::GoomDotsFxImpl::Start()
 inline auto GoomDotsFx::GoomDotsFxImpl::GetImageBitmap(const uint32_t size) const
     -> const ImageBitmap&
 {
-  return m_smallBitmaps.GetImageBitmap(m_currentBitmapName,
-                                       std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
+  return m_smallBitmaps->GetImageBitmap(m_currentBitmapName,
+                                        std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
 inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
@@ -281,14 +279,14 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
     static constexpr auto PROB_USE_PRIMARY_COLOR = 0.5F;
-    usePrimaryColor                              = m_goomRand.ProbabilityOf(PROB_USE_PRIMARY_COLOR);
+    usePrimaryColor = m_goomRand->ProbabilityOf(PROB_USE_PRIMARY_COLOR);
   }
 
   static constexpr auto PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
-  m_currentlyUseSingleBufferOnly = m_goomRand.ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
+  m_currentlyUseSingleBufferOnly = m_goomRand->ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
 
   static constexpr auto PROB_USE_MIDDLE_COLOR = 0.05F;
-  m_useMiddleColor                            = m_goomRand.ProbabilityOf(PROB_USE_MIDDLE_COLOR);
+  m_useMiddleColor                            = m_goomRand->ProbabilityOf(PROB_USE_MIDDLE_COLOR);
   if (m_useMiddleColor)
   {
     m_middleColor = GetMiddleColor();
@@ -297,15 +295,16 @@ inline void GoomDotsFx::GoomDotsFxImpl::ChangeColors()
 
 auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
 {
-  if (static constexpr auto PROB_PRIMARY_COLOR = 0.1F; m_goomRand.ProbabilityOf(PROB_PRIMARY_COLOR))
+  if (static constexpr auto PROB_PRIMARY_COLOR = 0.1F;
+      m_goomRand->ProbabilityOf(PROB_PRIMARY_COLOR))
   {
-    return GetDotPrimaryColor(m_goomRand.GetRandInRange(0U, NUM_DOT_TYPES));
+    return GetDotPrimaryColor(m_goomRand->GetRandInRange(0U, NUM_DOT_TYPES));
   }
 
   static constexpr auto MIN_MIX_T = 0.1F;
   static constexpr auto MAX_MIX_T = 1.0F;
   return RandomColorMaps::GetRandomColor(
-      m_goomRand,
+      *m_goomRand,
       *m_dotColorMapsList[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
                                                    RandomColorMaps::ALL_COLOR_MAP_TYPES),
       MIN_MIX_T,
@@ -361,15 +360,15 @@ inline void GoomDotsFx::GoomDotsFxImpl::ApplyMultiple()
 void GoomDotsFx::GoomDotsFxImpl::Update()
 {
   auto radius = MIN_DOT_SIZE / 2U;
-  if ((0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
+  if ((0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
   {
     ChangeColors();
-    radius = m_goomRand.GetRandInRange(radius, (U_HALF * MAX_DOT_SIZE) + 1);
+    radius = m_goomRand->GetRandInRange(radius, (U_HALF * MAX_DOT_SIZE) + 1);
     SetNextCurrentBitmapName();
   }
 
-  const auto speedFactor = 0.35F * m_goomInfo.GetSoundEvents().GetSoundInfo().GetSpeed();
-  //  const auto largeFactor = GetLargeSoundFactor(m_goomInfo.GetSoundInfo());
+  const auto speedFactor = 0.35F * m_goomInfo->GetSoundEvents().GetSoundInfo().GetSpeed();
+  //  const auto largeFactor = GetLargeSoundFactor(m_goomInfo->GetSoundInfo());
   const auto speedVarMult80Plus15 = static_cast<uint32_t>((speedFactor * 80.0F) + 15.0F);
 
   const auto speedVarMult80Plus15Div15 = speedVarMult80Plus15 / 15;
@@ -423,7 +422,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
   {
     SetFlowerBitmap();
   }
-  else if (m_goomRand.ProbabilityOf(PROB_MORE_FLOWERS))
+  else if (m_goomRand->ProbabilityOf(PROB_MORE_FLOWERS))
   {
     m_numFlowersInRow = 1;
     SetNextCurrentBitmapName();
@@ -449,7 +448,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetNonFlowerBitmap()
 {
   static constexpr auto PROB_SPHERE = 0.7F;
 
-  if (m_goomRand.ProbabilityOf(PROB_SPHERE))
+  if (m_goomRand->ProbabilityOf(PROB_SPHERE))
   {
     m_currentBitmapName = SmallImageBitmaps::ImageNames::SPHERE;
   }
@@ -463,10 +462,11 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
                                            const Point2dInt& dotPosition,
                                            const uint32_t radius)
 {
-  const auto diameter                = (2 * radius) + 1; // must be odd
-  const auto screenWidthLessDiameter = static_cast<int32_t>(m_goomInfo.GetScreenWidth() - diameter);
+  const auto diameter = (2 * radius) + 1; // must be odd
+  const auto screenWidthLessDiameter =
+      static_cast<int32_t>(m_goomInfo->GetScreenWidth() - diameter);
   const auto screenHeightLessDiameter =
-      static_cast<int32_t>(m_goomInfo.GetScreenHeight() - diameter);
+      static_cast<int32_t>(m_goomInfo->GetScreenHeight() - diameter);
 
   if ((dotPosition.x < static_cast<int32_t>(diameter)) ||
       (dotPosition.y < static_cast<int32_t>(diameter)) ||

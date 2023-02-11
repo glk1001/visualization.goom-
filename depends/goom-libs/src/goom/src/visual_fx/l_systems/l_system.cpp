@@ -96,8 +96,8 @@ LSystem::LSystem(DRAW::IGoomDraw& draw,
                  const IGoomRand& goomRand,
                  const std::string& lSystemDirectory,
                  const LSystemFile& lSystemFile) noexcept
-  : m_goomInfo{goomInfo},
-    m_goomRand{goomRand},
+  : m_goomInfo{&goomInfo},
+    m_goomRand{&goomRand},
     m_lineDrawerManager{draw, goomRand},
     m_lSysModelSet{GetLSysModelSet(lSystemDirectory, lSystemFile)},
     m_lSysGeometry{goomRand,
@@ -106,8 +106,6 @@ LSystem::LSystem(DRAW::IGoomDraw& draw,
     m_lSysDraw{m_lSysGeometry, m_lSysColors, lSystemFile.overrides.lineWidthFactor}
 {
 }
-
-LSystem::~LSystem() noexcept = default;
 
 auto LSystem::GetLSysDrawFuncs() noexcept -> GraphicsGenerator::DrawFuncs
 {
@@ -194,10 +192,10 @@ auto LSystem::GetLSysModelSet(const std::string& lSysDirectory,
   //        boundingBox2d.max.x,
   //        boundingBox2d.max.y);
 
-  lSysModelSet.lSystemXScale =
-      static_cast<float>(m_goomInfo.GetScreenWidth()) / (boundingBox2d.max.x - boundingBox2d.min.x);
+  lSysModelSet.lSystemXScale = static_cast<float>(m_goomInfo->GetScreenWidth()) /
+                               (boundingBox2d.max.x - boundingBox2d.min.x);
   //TODO(glk) How to handle scale issues
-  lSysModelSet.lSystemYScale = static_cast<float>(m_goomInfo.GetScreenHeight()) /
+  lSysModelSet.lSystemYScale = static_cast<float>(m_goomInfo->GetScreenHeight()) /
                                (boundingBox2d.max.y - boundingBox2d.min.y);
 
   lSysModelSet.lSysModel = GetParsedModel(lSysModelSet.lSysProperties);
@@ -217,7 +215,7 @@ auto LSystem::UpdateLSysModel() noexcept -> void
 
   if (static constexpr auto PROB_NEW_LSYS_INTERPRETER = 0.5F;
       m_timeForThisLSysInterpreter.Finished() and
-      m_goomRand.ProbabilityOf(PROB_NEW_LSYS_INTERPRETER))
+      m_goomRand->ProbabilityOf(PROB_NEW_LSYS_INTERPRETER))
   {
     InitNextLSysInterpreter();
   }
@@ -236,8 +234,8 @@ auto LSystem::InitNextLSysInterpreter() -> void
   m_lSysModuleList = nullptr;
 
   const auto numLSysCopies =
-      m_goomRand.GetRandInRange(m_lSysModelSet.lSysOverrides.minNumLSysCopies,
-                                m_lSysModelSet.lSysOverrides.maxNumLSysCopies + 1U);
+      m_goomRand->GetRandInRange(m_lSysModelSet.lSysOverrides.minNumLSysCopies,
+                                 m_lSysModelSet.lSysOverrides.maxNumLSysCopies + 1U);
 
   m_lSysDraw.SetNumLSysCopies(numLSysCopies);
   SwitchLineDrawers();
@@ -246,22 +244,22 @@ auto LSystem::InitNextLSysInterpreter() -> void
   m_lSysGeometry.SetVerticalMoveMaxMin(m_lSysModelSet.lSysOverrides.verticalMoveMin,
                                        m_lSysModelSet.lSysOverrides.verticalMoveMax);
   m_lSysGeometry.SetVerticalMoveNumSteps(
-      m_goomRand.GetRandInRange(MIN_VERTICAL_MOVE_STEPS, MAX_VERTICAL_MOVE_STEPS + 1U));
+      m_goomRand->GetRandInRange(MIN_VERTICAL_MOVE_STEPS, MAX_VERTICAL_MOVE_STEPS + 1U));
   m_lSysGeometry.SetYScaleNumSteps(
-      m_goomRand.GetRandInRange(MIN_Y_SCALE_ADJUST_STEPS, MAX_Y_SCALE_ADJUST_STEPS + 1U));
+      m_goomRand->GetRandInRange(MIN_Y_SCALE_ADJUST_STEPS, MAX_Y_SCALE_ADJUST_STEPS + 1U));
   m_lSysGeometry.SetRotateDegreesAdjustNumSteps(
-      m_goomRand.GetRandInRange(m_lSysModelSet.lSysOverrides.minNumRotateDegreeSteps,
-                                m_lSysModelSet.lSysOverrides.maxNumRotateDegreeSteps + 1));
+      m_goomRand->GetRandInRange(m_lSysModelSet.lSysOverrides.minNumRotateDegreeSteps,
+                                 m_lSysModelSet.lSysOverrides.maxNumRotateDegreeSteps + 1));
 
   m_lSysPath.SetPathNumSteps(
-      m_goomRand.GetRandInRange(MIN_PATH_NUM_STEPS, MAX_PATH_NUM_STEPS + 1U));
+      m_goomRand->GetRandInRange(MIN_PATH_NUM_STEPS, MAX_PATH_NUM_STEPS + 1U));
 
   m_lSysColors.SetProbabilityOfSimpleColors(m_lSysModelSet.lSysOverrides.probabilityOfSimpleColors);
   m_lSysColors.SetNumColors(numLSysCopies);
   m_lSysColors.ChangeColors();
 
-  m_maxGen = m_goomRand.GetRandInRange(m_lSysModelSet.lSysOverrides.minMaxGen,
-                                       m_lSysModelSet.lSysOverrides.maxMaxGen + 1U);
+  m_maxGen = m_goomRand->GetRandInRange(m_lSysModelSet.lSysOverrides.minMaxGen,
+                                        m_lSysModelSet.lSysOverrides.maxMaxGen + 1U);
 
   SetNewDefaultInterpreterParams();
   ResetModelNamedArgs();
@@ -304,7 +302,7 @@ inline auto LSystem::UpdateInterpreterParams() noexcept -> void
   }
 
   if (static constexpr auto PROB_NEW_DEFAULT_PARAMS = 0.5F;
-      m_goomRand.ProbabilityOf(PROB_NEW_DEFAULT_PARAMS))
+      m_goomRand->ProbabilityOf(PROB_NEW_DEFAULT_PARAMS))
   {
     m_defaultInterpreterParams.SetValues(m_defaultInterpreterParams(),
                                          GetRandomDefaultInterpreterParams());
@@ -333,15 +331,15 @@ inline auto LSystem::GetRandomDefaultInterpreterParams() const noexcept
 {
   return {
       m_lSysModelSet.lSysProperties.turnAngle *
-          m_goomRand.GetRandInRange(
+          m_goomRand->GetRandInRange(
               m_lSysModelSet.lSysOverrides.minDefaultTurnAngleInDegreesFactor,
               m_lSysModelSet.lSysOverrides.maxDefaultTurnAngleInDegreesFactor),
       m_lSysModelSet.lSysProperties.lineWidth *
-          m_goomRand.GetRandInRange(m_lSysModelSet.lSysOverrides.minDefaultLineWidthFactor,
-                                    m_lSysModelSet.lSysOverrides.maxDefaultLineWidthFactor),
+          m_goomRand->GetRandInRange(m_lSysModelSet.lSysOverrides.minDefaultLineWidthFactor,
+                                     m_lSysModelSet.lSysOverrides.maxDefaultLineWidthFactor),
       m_lSysModelSet.lSysProperties.lineDistance *
-          m_goomRand.GetRandInRange(m_lSysModelSet.lSysOverrides.minDefaultDistanceFactor,
-                                    m_lSysModelSet.lSysOverrides.maxDefaultDistanceFactor),
+          m_goomRand->GetRandInRange(m_lSysModelSet.lSysOverrides.minDefaultDistanceFactor,
+                                     m_lSysModelSet.lSysOverrides.maxDefaultDistanceFactor),
   };
 }
 
@@ -350,7 +348,7 @@ inline auto LSystem::ResetLSysParams() noexcept -> void
   //LogInfo("Reset lsys params.");
 
   if (static constexpr auto PROB_CHANGE_ROTATE_DIRECTION = 0.001F;
-      m_goomRand.ProbabilityOf(PROB_CHANGE_ROTATE_DIRECTION))
+      m_goomRand->ProbabilityOf(PROB_CHANGE_ROTATE_DIRECTION))
   {
     m_lSysGeometry.ReverseRotateDirection();
   }
@@ -386,7 +384,7 @@ inline auto LSystem::ResetModelNamedArgs() -> void
   for (const auto& namedArg : m_lSysModelSet.lSysOverrides.namedArgs)
   {
     m_lSysModelSet.lSysModel->ResetArgument(
-        namedArg.name, Value{m_goomRand.GetRandInRange(namedArg.min, namedArg.max)});
+        namedArg.name, Value{m_goomRand->GetRandInRange(namedArg.min, namedArg.max)});
   }
 }
 

@@ -10,6 +10,7 @@ namespace GOOM::UTILS::MATH
 {
 inline constexpr auto HALF = 1.0F / 2.0F;
 
+// NOLINTNEXTLINE: problem with 'readability-identifier-naming.ConstexprVariableIgnoredRegexp'
 inline constexpr auto PI       = STD20::pi_v<float>;
 inline constexpr auto TWO_PI   = 2.0F * PI;
 inline constexpr auto HALF_PI  = 0.5F * PI;

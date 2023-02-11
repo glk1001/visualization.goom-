@@ -36,7 +36,7 @@ public:
     uint32_t lineDotDiameter;
     uint32_t minDotDiameter;
     uint32_t maxDotDiameter;
-    const IBitmapGetter& bitmapGetter;
+    const IBitmapGetter* bitmapGetter;
   };
   struct OneWayParams
   {
@@ -50,7 +50,6 @@ public:
     OneWayParams fromTargetParams;
   };
 
-  Circle() = delete;
   Circle(const FxHelper& fxHelper,
          const Helper& helper,
          const Params& circleParams,
@@ -80,15 +79,15 @@ public:
   [[nodiscard]] auto GetLastDrawnCircleDots() const noexcept -> const std::vector<Point2dInt>&;
 
 private:
-  DRAW::IGoomDraw& m_draw;
+  DRAW::IGoomDraw* m_draw;
   DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels m_lineDrawer;
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const Helper m_helper;
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  Helper m_helper;
 
   DotPaths m_dotPaths;
   DotDiameters m_dotDiameters{
-      m_goomRand, NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter};
+      *m_goomRand, NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter};
   [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, float radius) noexcept
       -> std::vector<Point2dInt>;
 
@@ -100,7 +99,7 @@ private:
   auto UpdateTime() noexcept -> void;
   auto ResetNumSteps() noexcept -> void;
 
-  static constexpr uint32_t NUM_DOTS = 30;
+  static constexpr auto NUM_DOTS = 30U;
   static_assert(UTILS::MATH::IsEven(NUM_DOTS));
   std::vector<Point2dInt> m_lastDrawnDots{NUM_DOTS};
   uint32_t m_newNumSteps = 0;
@@ -108,9 +107,8 @@ private:
   auto DrawNextCircle() noexcept -> void;
   auto DrawNextCircleDots() noexcept -> void;
 
-  static constexpr float GAMMA = 1.0F;
-  const COLOR::ColorAdjustment m_colorAdjustment{GAMMA,
-                                                 COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  static constexpr auto GAMMA = 1.0F;
+  COLOR::ColorAdjustment m_colorAdjustment{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   float m_globalBrightnessFactor = 1.0F;
   [[nodiscard]] auto GetCurrentBrightness() const noexcept -> float;
@@ -159,7 +157,7 @@ private:
     _num // unused, and marks the enum end
   };
   GridColorRange m_currentGridColorRange = GridColorRange::ONE;
-  const GOOM::UTILS::MATH::Weights<GridColorRange> m_weightedGridColorRanges;
+  GOOM::UTILS::MATH::Weights<GridColorRange> m_weightedGridColorRanges;
   uint32_t m_numDifferentGridMaps                 = 1U;
   COLOR::ColorMapsGrid m_mainColorMapsGrid        = GetMainColorMapsGrid();
   COLOR::ColorMapsGrid m_lowColorMapsGrid         = GetLowColorMapsGrid();

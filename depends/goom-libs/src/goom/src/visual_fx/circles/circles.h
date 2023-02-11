@@ -42,11 +42,11 @@ public:
   [[nodiscard]] auto HasPositionTJustHitEndBoundary() const noexcept -> bool;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const PluginInfo& m_goomInfo;
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   BitmapGetter m_bitmapGetter;
 
-  const uint32_t m_numCircles;
+  uint32_t m_numCircles;
   std::vector<Circle> m_circles;
   [[nodiscard]] static auto GetCircles(
       const FxHelper& fxHelper,

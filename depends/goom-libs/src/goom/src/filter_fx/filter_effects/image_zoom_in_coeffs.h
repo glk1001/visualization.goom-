@@ -28,7 +28,7 @@ public:
       -> GOOM::UTILS::NameValuePairs override;
 
 private:
-  const GOOM::UTILS::MATH::IGoomRand& m_goomRand;
+  const GOOM::UTILS::MATH::IGoomRand* m_goomRand;
   FILTER_UTILS::ImageDisplacementList m_imageDisplacementList;
   auto DoSetRandomParams() noexcept -> void;
 };

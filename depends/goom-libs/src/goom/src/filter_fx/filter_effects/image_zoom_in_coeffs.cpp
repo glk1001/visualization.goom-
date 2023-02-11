@@ -1,7 +1,6 @@
 #include "image_zoom_in_coeffs.h"
 
 #include "goom_config.h"
-#include "utils/name_value_pairs.h"
 
 #include <string>
 
@@ -19,7 +18,7 @@ static constexpr auto PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
 ImageZoomInCoefficients::ImageZoomInCoefficients(const std::string& resourcesDirectory,
                                                  const IGoomRand& goomRand)
-  : m_goomRand{goomRand}, m_imageDisplacementList{resourcesDirectory, m_goomRand}
+  : m_goomRand{&goomRand}, m_imageDisplacementList{resourcesDirectory, *m_goomRand}
 {
   if (!resourcesDirectory.empty())
   {
@@ -38,15 +37,15 @@ inline auto ImageZoomInCoefficients::DoSetRandomParams() noexcept -> void
 {
   m_imageDisplacementList.SetRandomImageDisplacement();
 
-  const auto xColorCutoff = m_goomRand.GetRandInRange(COLOR_CUTOFF_RANGE);
+  const auto xColorCutoff = m_goomRand->GetRandInRange(COLOR_CUTOFF_RANGE);
 
   m_imageDisplacementList.SetParams({
-      m_goomRand.GetRandInRange(AMPLITUDE_RANGE),
+      m_goomRand->GetRandInRange(AMPLITUDE_RANGE),
       xColorCutoff,
-      m_goomRand.ProbabilityOf(PROB_XY_COLOR_CUTOFFS_EQUAL)
+      m_goomRand->ProbabilityOf(PROB_XY_COLOR_CUTOFFS_EQUAL)
           ? xColorCutoff
-          : m_goomRand.GetRandInRange(COLOR_CUTOFF_RANGE),
-      m_goomRand.GetRandInRange(ZOOM_FACTOR_RANGE),
+          : m_goomRand->GetRandInRange(COLOR_CUTOFF_RANGE),
+      m_goomRand->GetRandInRange(ZOOM_FACTOR_RANGE),
   });
 }
 

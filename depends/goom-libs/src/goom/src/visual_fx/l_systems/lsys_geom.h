@@ -32,9 +32,9 @@ public:
   [[nodiscard]] auto GetVerticalMove() const noexcept -> const UTILS::IncrementedValue<float>&;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const float m_xScale;
-  const float m_yScale;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  float m_xScale;
+  float m_yScale;
   uint32_t m_numLSysCopies = 1U;
 
   struct TransformAdjust

@@ -10,14 +10,14 @@ namespace GOOM::DRAW
 
 GoomDrawToSingleBuffer::GoomDrawToSingleBuffer(const Dimensions& dimensions,
                                                GoomLogger& goomLogger) noexcept
-  : IGoomDraw{dimensions}, m_goomLogger{goomLogger}
+  : IGoomDraw{dimensions}, m_goomLogger{&goomLogger}
 {
   USED_FOR_DEBUGGING(m_goomLogger);
 }
 
 GoomDrawToTwoBuffers::GoomDrawToTwoBuffers(const Dimensions& dimensions,
                                            GoomLogger& goomLogger) noexcept
-  : IGoomDraw{dimensions}, m_goomLogger{goomLogger}
+  : IGoomDraw{dimensions}, m_goomLogger{&goomLogger}
 {
   USED_FOR_DEBUGGING(m_goomLogger);
 }

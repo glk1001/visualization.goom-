@@ -1,4 +1,5 @@
 // clang-format off
+// NOLINTBEGIN: Not my code
 
 /*
 
@@ -426,4 +427,5 @@ namespace std {
 
 #undef PROPAGATE_CONST_CONSTEXPR
 
+// NOLINTEND: Not my code
 // clang-format on

@@ -28,7 +28,7 @@ public:
   [[nodiscard]] auto GetMaxHitCount() const -> uint32_t;
 
 private:
-  const Dimensions m_dimensions;
+  Dimensions m_dimensions;
   struct HitInfo
   {
     uint32_t count = 0;

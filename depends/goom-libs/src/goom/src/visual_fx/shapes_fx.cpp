@@ -48,13 +48,13 @@ public:
   auto ApplyMultiple() noexcept -> void;
 
 private:
-  IGoomDraw& m_draw;
-  const PluginInfo& m_goomInfo;
-  const IGoomRand& m_goomRand;
+  IGoomDraw* m_draw;
+  const PluginInfo* m_goomInfo;
+  const IGoomRand* m_goomRand;
   RandomColorMapsManager m_colorMapsManager{};
 
-  const Point2dInt m_screenMidPoint{U_HALF * m_goomInfo.GetScreenWidth(),
-                                    U_HALF* m_goomInfo.GetScreenHeight()};
+  Point2dInt m_screenMidPoint{U_HALF * m_goomInfo->GetScreenWidth(),
+                              U_HALF * m_goomInfo->GetScreenHeight()};
 
   static constexpr float MIN_RADIUS_FRACTION = 0.2F;
   static constexpr float MAX_RADIUS_FRACTION = 0.5F;
@@ -83,7 +83,7 @@ private:
   static_assert(0 < MIN_INCREMENTS_PER_UPDATE);
   static_assert(MIN_INCREMENTS_PER_UPDATE <= MAX_INCREMENTS_PER_UPDATE);
   uint32_t m_numIncrementsPerUpdate =
-      m_goomRand.GetRandInRange(MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
+      m_goomRand->GetRandInRange(MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
   auto UpdateShapeEffects() noexcept -> void;
   auto UpdateShapeSpeeds() noexcept -> void;
   auto SetShapeSpeeds() noexcept -> void;
@@ -134,9 +134,9 @@ auto ShapesFx::ApplyMultiple() noexcept -> void
 }
 
 ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
-  : m_draw{fxHelper.GetDraw()},
-    m_goomInfo{fxHelper.GetGoomInfo()},
-    m_goomRand{fxHelper.GetGoomRand()}
+  : m_draw{&fxHelper.GetDraw()},
+    m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()}
 {
   UpdateShapePathMinMaxNumSteps();
 }
@@ -151,9 +151,9 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
 
   return {
       {
-       Shape{m_draw,
-       m_goomRand,
-       m_goomInfo,
+       Shape{*m_draw,
+       *m_goomRand,
+       *m_goomInfo,
        m_colorMapsManager,
        {MIN_RADIUS_FRACTION,
        MAX_RADIUS_FRACTION,
@@ -202,14 +202,14 @@ inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
 inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
 {
   if (static constexpr auto PROB_UPDATE_NUM_INCREMENTS = 0.1F;
-      m_goomRand.ProbabilityOf(PROB_UPDATE_NUM_INCREMENTS))
+      m_goomRand->ProbabilityOf(PROB_UPDATE_NUM_INCREMENTS))
   {
     m_numIncrementsPerUpdate =
-        m_goomRand.GetRandInRange(MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
+        m_goomRand->GetRandInRange(MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
   }
 
   static constexpr auto PROB_VARY_DOT_RADIUS = 0.1F;
-  const auto varyDotRadius                   = m_goomRand.ProbabilityOf(PROB_VARY_DOT_RADIUS);
+  const auto varyDotRadius                   = m_goomRand->ProbabilityOf(PROB_VARY_DOT_RADIUS);
   std::for_each(begin(m_shapes),
                 end(m_shapes),
                 [&varyDotRadius](Shape& shape) { shape.SetVaryDotRadius(varyDotRadius); });
@@ -242,8 +242,8 @@ inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoi
 auto ShapesFx::ShapesFxImpl::GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept
     -> Point2dInt
 {
-  const auto xMax    = static_cast<int32_t>(m_goomInfo.GetScreenWidth() - 1);
-  const auto yMax    = static_cast<int32_t>(m_goomInfo.GetScreenHeight() - 1);
+  const auto xMax    = static_cast<int32_t>(m_goomInfo->GetScreenWidth() - 1);
+  const auto yMax    = static_cast<int32_t>(m_goomInfo->GetScreenHeight() - 1);
   const auto xCutoff = xMax / 5;
   const auto yCutoff = yMax / 5;
 
@@ -297,13 +297,13 @@ auto ShapesFx::ShapesFxImpl::GetRandomZoomMidpoints(const Point2dInt& zoomMidpoi
   shapeZoomMidpoints.at(0) = zoomMidpoint;
 
   static constexpr auto MARGIN = 20;
-  const auto width             = static_cast<int32_t>(m_goomInfo.GetScreenWidth()) - MARGIN;
-  const auto height            = static_cast<int32_t>(m_goomInfo.GetScreenHeight()) - MARGIN;
+  const auto width             = static_cast<int32_t>(m_goomInfo->GetScreenWidth()) - MARGIN;
+  const auto height            = static_cast<int32_t>(m_goomInfo->GetScreenHeight()) - MARGIN;
 
   for (auto i = 1U; i < NUM_SHAPES; ++i)
   {
-    shapeZoomMidpoints.at(i) = {m_goomRand.GetRandInRange(MARGIN, width),
-                                m_goomRand.GetRandInRange(MARGIN, height)};
+    shapeZoomMidpoints.at(i) = {m_goomRand->GetRandInRange(MARGIN, width),
+                                m_goomRand->GetRandInRange(MARGIN, height)};
   }
 
   return shapeZoomMidpoints;

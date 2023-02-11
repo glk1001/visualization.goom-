@@ -25,8 +25,8 @@ auto BitmapDrawer::Bitmap(const Point2dInt& centre,
   auto x1 = x0 + (bitmapWidth - 1);
   auto y1 = y0 + (bitmapHeight - 1);
 
-  if ((x0 >= m_draw.GetDimensions().GetIntWidth()) or
-      (y0 >= m_draw.GetDimensions().GetIntHeight()) or (x1 < 0) or (y1 < 0))
+  if ((x0 >= m_draw->GetDimensions().GetIntWidth()) or
+      (y0 >= m_draw->GetDimensions().GetIntHeight()) or (x1 < 0) or (y1 < 0))
   {
     return;
   }
@@ -39,13 +39,13 @@ auto BitmapDrawer::Bitmap(const Point2dInt& centre,
   {
     y0 = 0;
   }
-  if (x1 >= m_draw.GetDimensions().GetIntWidth())
+  if (x1 >= m_draw->GetDimensions().GetIntWidth())
   {
-    x1 = m_draw.GetDimensions().GetIntWidth() - 1;
+    x1 = m_draw->GetDimensions().GetIntWidth() - 1;
   }
-  if (y1 >= m_draw.GetDimensions().GetIntHeight())
+  if (y1 >= m_draw->GetDimensions().GetIntHeight())
   {
-    y1 = m_draw.GetDimensions().GetIntHeight() - 1;
+    y1 = m_draw->GetDimensions().GetIntHeight() - 1;
   }
 
   const auto actualBitmapWidth  = static_cast<uint32_t>(x1 - x0) + 1;
@@ -71,7 +71,7 @@ auto BitmapDrawer::Bitmap(const Point2dInt& centre,
       }
 
       const auto buffX = x0 + static_cast<int>(bitmapX);
-      m_draw.DrawPixels({buffX, buffY}, finalColors);
+      m_draw->DrawPixels({buffX, buffY}, finalColors);
     }
   };
 

@@ -24,7 +24,6 @@ namespace GOOM::VISUAL_FX
 {
 
 using DRAW::IGoomDraw;
-using DRAW::MultiplePixels;
 using L_SYSTEM::LSystem;
 using UTILS::Timer;
 using UTILS::GRAPHICS::ImageBitmap;
@@ -36,9 +35,7 @@ using ::LSYS::SetRandFunc;
 class LSystemFx::LSystemFxImpl
 {
 public:
-  LSystemFxImpl(const FxHelper& fxHelper,
-                const SmallImageBitmaps& smallBitmaps,
-                const std::string& resourcesDirectory);
+  LSystemFxImpl(const FxHelper& fxHelper, const std::string& resourcesDirectory);
 
   auto Start() -> void;
 
@@ -52,17 +49,13 @@ public:
   auto ApplyMultiple() -> void;
 
 private:
-  IGoomDraw& m_draw;
-  const PluginInfo& m_goomInfo;
-  const IGoomRand& m_goomRand;
-  const SmallImageBitmaps& m_smallBitmaps;
-  const std::string m_resourcesDirectory;
-  const Point2dInt m_screenMidpoint{UTILS::MATH::U_HALF * m_goomInfo.GetScreenWidth(),
-                                    UTILS::MATH::U_HALF* m_goomInfo.GetScreenHeight()};
+  IGoomDraw* m_draw;
+  const PluginInfo* m_goomInfo;
+  const IGoomRand* m_goomRand;
+  std::string m_resourcesDirectory;
+  Point2dInt m_screenMidpoint{UTILS::MATH::U_HALF * m_goomInfo->GetScreenWidth(),
+                              UTILS::MATH::U_HALF * m_goomInfo->GetScreenHeight()};
 
-  SmallImageBitmaps::ImageNames m_currentBitmapName{};
-  [[nodiscard]] auto GetImageBitmap(uint32_t size) const -> const ImageBitmap&;
-  static constexpr auto MIN_DOT_SIZE = 5U;
   static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
@@ -80,7 +73,7 @@ private:
   static constexpr auto MIN_TIME_TO_KEEP_ACTIVE_LSYS = 200U;
   static constexpr auto MAX_TIME_TO_KEEP_ACTIVE_LSYS = 1000U;
   Timer m_timeForTheseActiveLSys{
-      m_goomRand.GetRandInRange(MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U)};
+      m_goomRand->GetRandInRange(MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U)};
 
   static constexpr auto MIN_NUM_ROTATE_DEGREES_STEPS = 50U;
   static constexpr auto MAX_NUM_ROTATE_DEGREES_STEPS = 500U;
@@ -90,10 +83,8 @@ private:
   auto DrawLSystem() noexcept -> void;
 };
 
-LSystemFx::LSystemFx(const FxHelper& fxHelper,
-                     const SmallImageBitmaps& smallBitmaps,
-                     const std::string& resourcesDirectory) noexcept
-  : m_pimpl{spimpl::make_unique_impl<LSystemFxImpl>(fxHelper, smallBitmaps, resourcesDirectory)}
+LSystemFx::LSystemFx(const FxHelper& fxHelper, const std::string& resourcesDirectory) noexcept
+  : m_pimpl{spimpl::make_unique_impl<LSystemFxImpl>(fxHelper, resourcesDirectory)}
 {
 }
 
@@ -143,12 +134,10 @@ auto LSystemFx::ApplyMultiple() noexcept -> void
 }
 
 LSystemFx::LSystemFxImpl::LSystemFxImpl(const FxHelper& fxHelper,
-                                        const SmallImageBitmaps& smallBitmaps,
                                         const std::string& resourcesDirectory)
-  : m_draw{fxHelper.GetDraw()},
-    m_goomInfo{fxHelper.GetGoomInfo()},
-    m_goomRand{fxHelper.GetGoomRand()},
-    m_smallBitmaps{smallBitmaps},
+  : m_draw{&fxHelper.GetDraw()},
+    m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()},
     m_resourcesDirectory{resourcesDirectory}
 {
 }
@@ -275,8 +264,8 @@ auto LSystemFx::LSystemFxImpl::GetLSystems() const noexcept -> std::vector<std::
 
   for (const auto& lSysFile : L_SYS_FILE_LIST)
   {
-    lSystem.emplace_back(
-        std::make_unique<LSystem>(m_draw, m_goomInfo, m_goomRand, GetLSystemDirectory(), lSysFile));
+    lSystem.emplace_back(std::make_unique<LSystem>(
+        *m_draw, *m_goomInfo, *m_goomRand, GetLSystemDirectory(), lSysFile));
   }
 
   return lSystem;
@@ -288,17 +277,17 @@ auto LSystemFx::LSystemFxImpl::InitNextActiveLSystems() noexcept -> void
 
   m_activeLSystems.clear();
   const auto lSystemIndex =
-      m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(L_SYS_FILE_LIST.size()));
+      m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(L_SYS_FILE_LIST.size()));
   //  const auto lSystemIndex = 2U;
   // m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
   m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
   m_timeForTheseActiveLSys.SetTimeLimit(
-      m_goomRand.GetRandInRange(MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U));
+      m_goomRand->GetRandInRange(MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U));
 }
 
 auto LSystemFx::LSystemFxImpl::Start() -> void
 {
-  SetRandFunc([this]() { return m_goomRand.GetRandInRange(0.0, 1.0); });
+  SetRandFunc([this]() { return m_goomRand->GetRandInRange(0.0, 1.0); });
 
   std::for_each(begin(m_lSystems),
                 end(m_lSystems),
@@ -309,13 +298,6 @@ auto LSystemFx::LSystemFxImpl::Start() -> void
                 });
 
   InitNextActiveLSystems();
-}
-
-inline auto LSystemFx::LSystemFxImpl::GetImageBitmap(const uint32_t size) const
-    -> const ImageBitmap&
-{
-  return m_smallBitmaps.GetImageBitmap(m_currentBitmapName,
-                                       std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
 inline auto LSystemFx::LSystemFxImpl::ChangeColors() noexcept -> void
@@ -368,8 +350,8 @@ inline auto LSystemFx::LSystemFxImpl::Update() noexcept -> void
   //LogInfo("Doing update.");
 
   if (static constexpr auto PROB_CHANGE_COLORS = 0.01F;
-      (0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom()) or
-      m_goomRand.ProbabilityOf(PROB_CHANGE_COLORS))
+      (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) or
+      m_goomRand->ProbabilityOf(PROB_CHANGE_COLORS))
   {
     ChangeColors();
   }

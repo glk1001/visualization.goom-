@@ -13,7 +13,7 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 
-LSysPath::LSysPath(const IGoomRand& goomRand) noexcept : m_goomRand{goomRand}
+LSysPath::LSysPath(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {
 }
 
@@ -81,9 +81,9 @@ auto LSysPath::GetPathParams() const noexcept -> OscillatingFunction::Params
   static constexpr auto MAX_PATH_Y_FREQ    = 2.0F;
 
   return {
-      m_goomRand.GetRandInRange(MIN_PATH_AMPLITUDE, MAX_PATH_AMPLITUDE),
-      m_goomRand.GetRandInRange(MIN_PATH_X_FREQ, MAX_PATH_X_FREQ),
-      m_goomRand.GetRandInRange(MIN_PATH_Y_FREQ, MAX_PATH_Y_FREQ),
+      m_goomRand->GetRandInRange(MIN_PATH_AMPLITUDE, MAX_PATH_AMPLITUDE),
+      m_goomRand->GetRandInRange(MIN_PATH_X_FREQ, MAX_PATH_X_FREQ),
+      m_goomRand->GetRandInRange(MIN_PATH_Y_FREQ, MAX_PATH_Y_FREQ),
   };
 }
 

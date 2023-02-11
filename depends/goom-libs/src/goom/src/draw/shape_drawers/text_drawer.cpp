@@ -214,7 +214,7 @@ public:
   auto Draw(const Point2dInt& pen, Point2dInt& nextPen) -> void;
 
 private:
-  IGoomDraw& m_draw;
+  IGoomDraw* m_draw;
   UTILS::Parallel m_parallel{-1}; // max cores - 1
   FT_Library m_library{};
   static constexpr int32_t DEFAULT_FONT_SIZE       = 100;
@@ -403,7 +403,7 @@ auto TextDrawer::Draw(const Point2dInt& pen, Point2dInt& nextPen) -> void
 }
 
 #ifndef NO_FREETYPE_INSTALLED
-TextDrawer::TextDrawerImpl::TextDrawerImpl(IGoomDraw& draw) noexcept : m_draw{draw}
+TextDrawer::TextDrawerImpl::TextDrawerImpl(IGoomDraw& draw) noexcept : m_draw{&draw}
 {
   ::FT_Init_FreeType(&m_library);
 }
@@ -617,7 +617,7 @@ auto TextDrawer::TextDrawerImpl::Draw(const Point2dInt& pen, Point2dInt& nextPen
 
   for (const auto& span : m_textSpans)
   {
-    WriteGlyph(span, nextPen.x, m_draw.GetDimensions().GetIntHeight() - nextPen.y);
+    WriteGlyph(span, nextPen.x, m_draw->GetDimensions().GetIntHeight() - nextPen.y);
     nextPen.x += span.advance;
   }
 }
@@ -690,8 +690,8 @@ auto TextDrawer::TextDrawerImpl::WriteSpansToImage(const SpanArray& spanArray,
   {
     const auto& span = spanArray.at(i);
 
-    const auto yPos = m_draw.GetDimensions().GetIntHeight() - (yPen + span.y);
-    if ((yPos < 0) or (yPos >= m_draw.GetDimensions().GetIntHeight()))
+    const auto yPos = m_draw->GetDimensions().GetIntHeight() - (yPen + span.y);
+    if ((yPos < 0) or (yPos >= m_draw->GetDimensions().GetIntHeight()))
     {
       return;
     }
@@ -726,7 +726,7 @@ auto TextDrawer::TextDrawerImpl::WriteXSpan(const Span& span,
   for (auto width = 0; width < span.width; ++width)
   {
     const auto xPos = xPos0 + width;
-    if ((xPos < 0) or (xPos >= m_draw.GetDimensions().GetIntWidth()))
+    if ((xPos < 0) or (xPos >= m_draw->GetDimensions().GetIntWidth()))
     {
       continue;
     }
@@ -736,10 +736,10 @@ auto TextDrawer::TextDrawerImpl::WriteXSpan(const Span& span,
     const auto srceColor = Pixel{
         {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}
     };
-    const auto destColor = m_draw.GetPixel({xPos, yPos});
+    const auto destColor = m_draw->GetPixel({xPos, yPos});
 
     const auto blendedColor = GetColorBlend(srceColor, destColor);
-    m_draw.DrawPixelsUnblended({xPos, yPos}, {blendedColor, blendedColor});
+    m_draw->DrawPixelsUnblended({xPos, yPos}, {blendedColor, blendedColor});
   }
 }
 

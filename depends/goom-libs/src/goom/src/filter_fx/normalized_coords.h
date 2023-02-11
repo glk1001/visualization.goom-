@@ -69,12 +69,12 @@ public:
   [[nodiscard]] constexpr auto GetYMinNormalizedCoordVal() const noexcept -> float;
 
 private:
-  const float m_xRatioOtherToNormalizedCoord;
-  const float m_yRatioOtherToNormalizedCoord;
-  const float m_xRatioNormalizedToOtherCoord;
-  const float m_yRatioNormalizedToOtherCoord;
-  const float m_xMinNormalizedCoordVal;
-  const float m_yMinNormalizedCoordVal;
+  float m_xRatioOtherToNormalizedCoord;
+  float m_yRatioOtherToNormalizedCoord;
+  float m_xRatioNormalizedToOtherCoord;
+  float m_yRatioNormalizedToOtherCoord;
+  float m_xMinNormalizedCoordVal;
+  float m_yMinNormalizedCoordVal;
   [[nodiscard]] constexpr auto OtherToNormalizedXCoord(int32_t otherCoord) const noexcept -> float;
   [[nodiscard]] constexpr auto OtherToNormalizedYCoord(int32_t otherCoord) const noexcept -> float;
   [[nodiscard]] constexpr auto NormalizedToOtherXCoordFlt(float normalizedCoord) const noexcept

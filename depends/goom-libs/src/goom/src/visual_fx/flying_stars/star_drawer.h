@@ -31,13 +31,12 @@ public:
   auto DrawStar(const Star& star, float speedFactor) noexcept -> void;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer{m_draw};
-  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer{m_draw};
-  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{m_draw};
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
-  const GetMixedColorsFunc m_getMixedColorsFunc;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
+  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer;
+  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
+  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer;
+  GetMixedColorsFunc m_getMixedColorsFunc;
 
   enum class DrawElementTypes
   {
@@ -51,15 +50,17 @@ private:
   static constexpr float DRAW_ELEMENT_TYPES_CIRCLES_WEIGHT           = 20.0F;
   static constexpr float DRAW_ELEMENT_TYPES_LINES_WEIGHT             = 10.0F;
   static constexpr float DRAW_ELEMENT_TYPES_CIRCLES_AND_LINES_WEIGHT = 15.0F;
-  const UTILS::MATH::Weights<DrawElementTypes> m_drawElementWeights{
-      m_goomRand,
+  // clang-format off
+  UTILS::MATH::Weights<DrawElementTypes> m_drawElementWeights{
+      *m_goomRand,
       {
-        {DrawElementTypes::DOTS, DRAW_ELEMENT_TYPES_DOTS_WEIGHT},
-        {DrawElementTypes::CIRCLES, DRAW_ELEMENT_TYPES_CIRCLES_WEIGHT},
-        {DrawElementTypes::LINES, DRAW_ELEMENT_TYPES_LINES_WEIGHT},
-        {DrawElementTypes::CIRCLES_AND_LINES, DRAW_ELEMENT_TYPES_CIRCLES_AND_LINES_WEIGHT},
-        }
+          {DrawElementTypes::DOTS, DRAW_ELEMENT_TYPES_DOTS_WEIGHT},
+          {DrawElementTypes::CIRCLES, DRAW_ELEMENT_TYPES_CIRCLES_WEIGHT},
+          {DrawElementTypes::LINES, DRAW_ELEMENT_TYPES_LINES_WEIGHT},
+          {DrawElementTypes::CIRCLES_AND_LINES, DRAW_ELEMENT_TYPES_CIRCLES_AND_LINES_WEIGHT},
+      }
   };
+  // clang-format on
   DrawElementTypes m_requestedDrawElement = m_drawElementWeights.GetRandomWeighted();
   DrawElementTypes m_currentActualDrawElement{};
   auto UpdateActualDrawElement() noexcept -> void;
@@ -73,13 +74,13 @@ private:
   static constexpr float DRAW_MODES_CLEAN_WEIGHT       = 20.0F;
   static constexpr float DRAW_MODES_SUPER_CLEAN_WEIGHT = 10.0F;
   static constexpr float DRAW_MODES_MESSY              = 30.0F;
-  const UTILS::MATH::Weights<DrawModes> m_drawModeWeights{
-      m_goomRand,
+  UTILS::MATH::Weights<DrawModes> m_drawModeWeights{
+      *m_goomRand,
       {
-        {DrawModes::CLEAN, DRAW_MODES_CLEAN_WEIGHT},
-        {DrawModes::SUPER_CLEAN, DRAW_MODES_SUPER_CLEAN_WEIGHT},
-        {DrawModes::MESSY, DRAW_MODES_MESSY},
-        }
+                  {DrawModes::CLEAN, DRAW_MODES_CLEAN_WEIGHT},
+                  {DrawModes::SUPER_CLEAN, DRAW_MODES_SUPER_CLEAN_WEIGHT},
+                  {DrawModes::MESSY, DRAW_MODES_MESSY},
+                  }
   };
   DrawModes m_drawMode                             = m_drawModeWeights.GetRandomWeighted();
   static constexpr uint32_t MIN_NUM_PARTS          = 2;
@@ -99,7 +100,7 @@ private:
                                       Point2dInt point2,
                                       uint32_t elementSize,
                                       const DRAW::MultiplePixels& colors)>;
-  const UTILS::EnumMap<DrawElementTypes, DrawFunc> m_drawFuncs;
+  UTILS::EnumMap<DrawElementTypes, DrawFunc> m_drawFuncs;
   auto DrawStar(const Star& star, float speedFactor, const DrawFunc& drawFunc) noexcept -> void;
   [[nodiscard]] auto GetNumPartsAndElementSize(float tAge) const noexcept
       -> std::pair<uint32_t, uint32_t>;
@@ -138,8 +139,8 @@ inline auto StarDrawer::UpdateActualDrawElement() noexcept -> void
   else
   {
     static constexpr auto PROB_CIRCLES = 0.5F;
-    m_currentActualDrawElement = m_goomRand.ProbabilityOf(PROB_CIRCLES) ? DrawElementTypes::CIRCLES
-                                                                        : DrawElementTypes::LINES;
+    m_currentActualDrawElement = m_goomRand->ProbabilityOf(PROB_CIRCLES) ? DrawElementTypes::CIRCLES
+                                                                         : DrawElementTypes::LINES;
   }
 }
 

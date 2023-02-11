@@ -5,7 +5,6 @@
 #include "filter_fx/common_types.h"
 #include "goom_config.h"
 #include "goom_logger.h"
-#include "goom_types.h"
 #include "utils/enum_utils.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -66,9 +65,9 @@ static constexpr auto GRID_TYPE_PARTIAL_RANDOM_WEIGHT  = 10.0F;
 
 DistanceField::DistanceField(const Modes mode, const IGoomRand& goomRand) noexcept
   : m_mode{mode},
-    m_goomRand{goomRand},
+    m_goomRand{&goomRand},
     m_weightedEffects{
-        goomRand,
+        *m_goomRand,
         {
             {    GridType::FULL,        GRID_TYPE_FULL_WEIGHT},
             {    GridType::PARTIAL_X,   GRID_TYPE_PARTIAL_X_WEIGHT},
@@ -147,10 +146,10 @@ auto DistanceField::GetGridWidth(const GridType gridType,
   if ((gridType == GridType::PARTIAL_RANDOM) and (gridWidthRange.min == GRID_WIDTH_RANGE_MODE0.min))
   {
     // For random grid type, wider range looks better.
-    return m_goomRand.GetRandInRange(GRID_WIDTH_RANGE_MODE1);
+    return m_goomRand->GetRandInRange(GRID_WIDTH_RANGE_MODE1);
   }
 
-  const auto gridWidth = m_goomRand.GetRandInRange(gridWidthRange);
+  const auto gridWidth = m_goomRand->GetRandInRange(gridWidthRange);
 
   if ((gridType == GridType::PARTIAL_DIAMOND) and IsEven(gridWidth))
   {
@@ -248,7 +247,7 @@ auto DistanceField::TryGetGridPointRandomArray(const uint32_t gridWidth) const n
   {
     for (auto x = 0U; x < gridWidth; ++x)
     {
-      if (m_goomRand.ProbabilityOf(PROB_RANDOM_CENTRE))
+      if (m_goomRand->ProbabilityOf(PROB_RANDOM_CENTRE))
       {
         gridPointArray.emplace_back(x, y);
       }
@@ -313,10 +312,10 @@ inline auto DistanceField::GetAmplitude(const AmplitudeRange& amplitudeRange,
                                         const Params::GridArrays& gridArrays) const noexcept
     -> Amplitude
 {
-  const auto xAmplitude = m_goomRand.GetRandInRange(amplitudeRange.xRange);
-  const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange.xRange);
+  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
                               ? xAmplitude
-                              : m_goomRand.GetRandInRange(amplitudeRange.yRange);
+                              : m_goomRand->GetRandInRange(amplitudeRange.yRange);
 
   const auto amplitudeFactor = GetAmplitudeFactor(gridType, gridWidth, gridArrays);
 

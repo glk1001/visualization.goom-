@@ -12,7 +12,6 @@
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
-using STD20::pi;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::PI;
 using UTILS::MATH::Sq;
@@ -24,8 +23,8 @@ static constexpr auto MIN_Y_DISTANCE_OUT_OF_SCREEN = 10;
 static constexpr auto MAX_Y_DISTANCE_OUT_OF_SCREEN = 50;
 
 IStarType::IStarType(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
-  : m_goomInfo{goomInfo},
-    m_goomRand{goomRand},
+  : m_goomInfo{&goomInfo},
+    m_goomRand{&goomRand},
     m_halfWidth{static_cast<int32_t>(U_HALF * goomInfo.GetScreenWidth())},
     m_halfHeight{static_cast<int32_t>(U_HALF * goomInfo.GetScreenHeight())},
     m_xMax{static_cast<float>(goomInfo.GetScreenWidth() - 1)}
@@ -35,15 +34,15 @@ IStarType::IStarType(const PluginInfo& goomInfo, const IGoomRand& goomRand) noex
 auto IStarType::UpdateWindAndGravity() noexcept -> void
 {
   if (static constexpr auto PROB_NEW_WIND_AND_GRAVITY = 0.10F;
-      not m_goomRand.ProbabilityOf(PROB_NEW_WIND_AND_GRAVITY))
+      not m_goomRand->ProbabilityOf(PROB_NEW_WIND_AND_GRAVITY))
   {
     return;
   }
 
-  m_minSideWind = m_goomRand.GetRandInRange(MIN_MIN_SIDE_WIND, MAX_MIN_SIDE_WIND);
-  m_maxSideWind = m_goomRand.GetRandInRange(MIN_MAX_SIDE_WIND, MAX_MAX_SIDE_WIND);
-  m_minGravity  = m_goomRand.GetRandInRange(MIN_MIN_GRAVITY, MAX_MIN_GRAVITY);
-  m_maxGravity  = m_goomRand.GetRandInRange(MIN_MAX_GRAVITY, MAX_MAX_GRAVITY);
+  m_minSideWind = m_goomRand->GetRandInRange(MIN_MIN_SIDE_WIND, MAX_MIN_SIDE_WIND);
+  m_maxSideWind = m_goomRand->GetRandInRange(MIN_MAX_SIDE_WIND, MAX_MAX_SIDE_WIND);
+  m_minGravity  = m_goomRand->GetRandInRange(MIN_MIN_GRAVITY, MAX_MIN_GRAVITY);
+  m_maxGravity  = m_goomRand->GetRandInRange(MIN_MAX_GRAVITY, MAX_MAX_GRAVITY);
 }
 
 auto IStarType::UpdateFixedColorMapNames() noexcept -> void
@@ -66,7 +65,19 @@ auto IStarType::SetWeightedLowColorMaps(
 
 StarTypesContainer::StarTypesContainer(const PluginInfo& goomInfo,
                                        const IGoomRand& goomRand) noexcept
-  : m_goomInfo{goomInfo}, m_goomRand{goomRand}
+  : m_starTypesList{
+        std::make_unique<FireworksStarType>(goomInfo, goomRand),
+        std::make_unique<RainStarType>(goomInfo, goomRand),
+        std::make_unique<FountainStarType>(goomInfo, goomRand),
+    },
+    m_weightedStarTypes{
+        goomRand,
+        {
+            {AvailableStarTypes::FIREWORKS, STAR_TYPES_FIREWORKS_WEIGHT},
+            {AvailableStarTypes::FOUNTAIN, STAR_TYPES_FOUNTAIN_WEIGHT},
+            {AvailableStarTypes::RAIN, STAR_TYPES_RAIN_WEIGHT},
+        }
+    }
 {
 }
 

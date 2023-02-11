@@ -17,9 +17,9 @@ using COLOR::GetBrighterColor;
 using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::TextDrawer;
 
-GoomMessageDisplayer::GoomMessageDisplayer(IGoomDraw& textOutput,
+GoomMessageDisplayer::GoomMessageDisplayer(IGoomDraw& draw,
                                            const std::string& updateMessagesFontFile)
-  : m_textOutput{textOutput}, m_updateMessagesFontFile{updateMessagesFontFile}
+  : m_draw{&draw}, m_updateMessagesFontFile{updateMessagesFontFile}
 {
 }
 
@@ -80,7 +80,7 @@ void GoomMessageDisplayer::UpdateMessages(const std::vector<std::string>& msgLin
             m_updateMessagesDisplayers.size(),
             numberOfLinesInMessage); // NOLINT
     m_updateMessagesDisplayers =
-        GetUpdateMessagesDisplayers(numberOfLinesInMessage, m_textOutput, m_updateMessagesFontFile);
+        GetUpdateMessagesDisplayers(numberOfLinesInMessage, *m_draw, m_updateMessagesFontFile);
   }
 
   static constexpr auto VERTICAL_SPACING = 10;

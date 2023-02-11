@@ -17,18 +17,18 @@ public:
   auto DrawPixelsClipped(const Point2dInt& point, const MultiplePixels& colors) noexcept -> void;
 
 private:
-  IGoomDraw& m_draw;
-  ClipTester m_clipTester{m_draw.GetDimensions(), 0};
+  IGoomDraw* m_draw;
+  ClipTester m_clipTester{m_draw->GetDimensions(), 0};
 };
 
-inline PixelDrawer::PixelDrawer(IGoomDraw& draw) noexcept : m_draw{draw}
+inline PixelDrawer::PixelDrawer(IGoomDraw& draw) noexcept : m_draw{&draw}
 {
 }
 
 inline auto PixelDrawer::DrawPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept
     -> void
 {
-  m_draw.DrawPixels(point, colors);
+  m_draw->DrawPixels(point, colors);
 }
 
 inline auto PixelDrawer::DrawPixelsClipped(const Point2dInt& point,
@@ -39,7 +39,7 @@ inline auto PixelDrawer::DrawPixelsClipped(const Point2dInt& point,
     return;
   }
 
-  m_draw.DrawPixels(point, colors);
+  m_draw->DrawPixels(point, colors);
 }
 
 } // namespace GOOM::DRAW::SHAPE_DRAWERS

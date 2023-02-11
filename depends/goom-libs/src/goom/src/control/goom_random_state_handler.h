@@ -17,7 +17,7 @@ public:
   [[nodiscard]] auto GetCurrentState() const -> GoomStates override;
 
 private:
-  const UTILS::MATH::Weights<GoomStates> m_weightedStates;
+  UTILS::MATH::Weights<GoomStates> m_weightedStates;
   GoomStates m_currentState{};
 };
 

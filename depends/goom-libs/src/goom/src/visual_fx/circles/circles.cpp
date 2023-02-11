@@ -4,7 +4,6 @@
 
 #include "color/random_color_maps.h"
 #include "goom_logger.h"
-#include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/paths.h"
@@ -28,12 +27,12 @@ Circles::Circles(const FxHelper& fxHelper,
                  const uint32_t numCircles,
                  const std::vector<OscillatingFunction::Params>& pathParams,
                  const std::vector<Circle::Params>& circleParams) noexcept
-  : m_goomRand{fxHelper.GetGoomRand()},
-    m_goomInfo{fxHelper.GetGoomInfo()},
+  : m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()},
     m_bitmapGetter{fxHelper.GetGoomRand(), smallBitmaps},
     m_numCircles{numCircles},
     m_circles{GetCircles(fxHelper,
-                         {LINE_DOT_DIAMETER, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER, m_bitmapGetter},
+                         {LINE_DOT_DIAMETER, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER, &m_bitmapGetter},
                          pathParams,
                          m_numCircles,
                          circleParams)}
@@ -119,7 +118,7 @@ auto Circles::IncrementTs() noexcept -> void
 auto Circles::UpdatePositionSpeed() noexcept -> void
 {
   if (static constexpr auto PROB_NO_SPEED_CHANGE = 0.7F;
-      m_goomRand.ProbabilityOf(PROB_NO_SPEED_CHANGE))
+      m_goomRand->ProbabilityOf(PROB_NO_SPEED_CHANGE))
   {
     return;
   }
@@ -127,7 +126,7 @@ auto Circles::UpdatePositionSpeed() noexcept -> void
   static constexpr auto MIN_POSITION_STEPS = 100U;
   static constexpr auto MAX_POSITION_STEPS = 1000U;
   const auto newNumSteps                   = std::min(
-      MIN_POSITION_STEPS + m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom(), MAX_POSITION_STEPS);
+      MIN_POSITION_STEPS + m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom(), MAX_POSITION_STEPS);
 
   std::for_each(begin(m_circles),
                 end(m_circles),

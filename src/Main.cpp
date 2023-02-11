@@ -49,7 +49,7 @@ using AddonLogEnum   = ADDON_LOG;
 class CVisualizationGoom::PixelBufferGetter
 {
 public:
-  explicit PixelBufferGetter(GoomBufferProducer& bufferProducer) : m_bufferProducer{bufferProducer}
+  explicit PixelBufferGetter(GoomBufferProducer& bufferProducer) : m_bufferProducer{&bufferProducer}
   {
   }
   auto ReserveNextActivePixelBufferData() noexcept;
@@ -59,13 +59,13 @@ public:
   [[nodiscard]] auto GetNextGoomShaderVariables() const noexcept -> const GoomShaderVariables*;
 
 private:
-  GoomBufferProducer& m_bufferProducer;
+  GoomBufferProducer* m_bufferProducer;
   PixelBufferData m_pixelBufferData{};
 };
 
 inline auto CVisualizationGoom::PixelBufferGetter::ReserveNextActivePixelBufferData() noexcept
 {
-  m_pixelBufferData = m_bufferProducer.GetNextActivePixelBufferData();
+  m_pixelBufferData = m_bufferProducer->GetNextActivePixelBufferData();
 }
 
 inline auto CVisualizationGoom::PixelBufferGetter::ReleaseActivePixelBufferData() noexcept -> void
@@ -74,7 +74,7 @@ inline auto CVisualizationGoom::PixelBufferGetter::ReleaseActivePixelBufferData(
   {
     return;
   }
-  m_bufferProducer.PushUsedPixels(m_pixelBufferData);
+  m_bufferProducer->PushUsedPixels(m_pixelBufferData);
 }
 
 inline auto CVisualizationGoom::PixelBufferGetter::GetNextPixelBuffer() const noexcept

@@ -66,10 +66,10 @@ public:
   auto SetFixedShapeNumSteps() noexcept -> void;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const PluginInfo& m_goomInfo;
-  COLOR::RandomColorMapsManager& m_colorMapsManager;
+  DRAW::IGoomDraw* m_draw;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  const PluginInfo* m_goomInfo;
+  COLOR::RandomColorMapsManager* m_colorMapsManager;
 
   static constexpr uint32_t NUM_SHAPE_PARTS = 10;
   std::vector<ShapePart> m_shapeParts;
@@ -78,9 +78,9 @@ private:
 
   bool m_varyDotRadius = false;
   COLOR::RandomColorMapsManager::ColorMapId m_meetingPointMainColorId{
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
+      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand)};
   COLOR::RandomColorMapsManager::ColorMapId m_meetingPointLowColorId{
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
+      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand)};
   static constexpr uint32_t NUM_MEETING_POINT_COLOR_STEPS = 50;
   UTILS::TValue m_meetingPointColorsT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
                                       NUM_MEETING_POINT_COLOR_STEPS};
@@ -166,7 +166,7 @@ inline auto Shape::GetFirstShapePathPositionT() const noexcept -> float
 inline auto Shape::SetShapeNumSteps() noexcept -> void
 {
   if (static constexpr auto PROB_FIXED_NUM_STEPS = 0.95F;
-      m_goomRand.ProbabilityOf(PROB_FIXED_NUM_STEPS))
+      m_goomRand->ProbabilityOf(PROB_FIXED_NUM_STEPS))
   {
     SetFixedShapeNumSteps();
   }

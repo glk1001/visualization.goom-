@@ -67,9 +67,9 @@ protected:
   auto IncCurrentBufferNum() noexcept -> void;
 
 private:
-  const std::string m_filenamePrefix;
-  const int64_t m_startBuffNum;
-  const int64_t m_endBuffNum;
+  std::string m_filenamePrefix;
+  int64_t m_startBuffNum;
+  int64_t m_endBuffNum;
   int64_t m_currentBuffNum;
 };
 

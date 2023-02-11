@@ -21,7 +21,7 @@ ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const IGoomRand& goomRand,
                                      const NormalizedCoordsConverter& normalizedCoordsConverter,
                                      const GetAfterEffectsFunc& getAfterEffects) noexcept
-  : m_normalizedCoordsConverter{normalizedCoordsConverter},
+  : m_normalizedCoordsConverter{&normalizedCoordsConverter},
     m_zoomVectorAfterEffects{screenWidth, getAfterEffects(goomRand, resourcesDirectory)}
 {
 }
@@ -49,8 +49,8 @@ auto ZoomVectorEffects::SetFilterSettings(
 auto ZoomVectorEffects::GetCleanedCoords(const NormalizedCoords& coords) const noexcept
     -> NormalizedCoords
 {
-  return {GetMinCoordVal(coords.GetX(), m_normalizedCoordsConverter.GetXMinNormalizedCoordVal()),
-          GetMinCoordVal(coords.GetY(), m_normalizedCoordsConverter.GetYMinNormalizedCoordVal())};
+  return {GetMinCoordVal(coords.GetX(), m_normalizedCoordsConverter->GetXMinNormalizedCoordVal()),
+          GetMinCoordVal(coords.GetY(), m_normalizedCoordsConverter->GetYMinNormalizedCoordVal())};
 }
 
 inline auto ZoomVectorEffects::GetMinCoordVal(const float coordVal,

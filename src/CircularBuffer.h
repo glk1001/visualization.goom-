@@ -76,7 +76,7 @@ public:
     return done;
   }
 
-  // TODO Make this a unit test
+  // TODO(glk) Make this a unit test
   /** Visual Studio not happy with this
   [[nodiscard]] auto TestSilence() const -> bool
   {
@@ -95,7 +95,7 @@ public:
   **/
 
 private:
-  const size_t m_size;
+  size_t m_size;
   std::vector<T> m_buffer;
   size_t m_readPtr  = 0;
   size_t m_writePtr = 0;

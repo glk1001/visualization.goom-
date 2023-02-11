@@ -7,7 +7,7 @@
 namespace GOOM::CONTROL
 {
 
-GoomSoundEvents::GoomSoundEvents(const SoundInfo& soundInfo) noexcept : m_soundInfo{soundInfo}
+GoomSoundEvents::GoomSoundEvents(const SoundInfo& soundInfo) noexcept : m_soundInfo{&soundInfo}
 {
 }
 
@@ -27,16 +27,16 @@ auto GoomSoundEvents::UpdateLastGoom() -> void
 
   ++m_timeSinceLastGoom;
 
-  if (m_soundInfo.GetAcceleration() > m_goomLimit)
+  if (m_soundInfo->GetAcceleration() > m_goomLimit)
   {
     m_timeSinceLastGoom = 0;
     ++m_totalGoomsInCurrentCycle;
-    m_goomPower = m_soundInfo.GetAcceleration() - m_goomLimit;
+    m_goomPower = m_soundInfo->GetAcceleration() - m_goomLimit;
   }
 
-  if (m_soundInfo.GetAcceleration() > m_maxAccelerationSinceLastReset)
+  if (m_soundInfo->GetAcceleration() > m_maxAccelerationSinceLastReset)
   {
-    m_maxAccelerationSinceLastReset = m_soundInfo.GetAcceleration();
+    m_maxAccelerationSinceLastReset = m_soundInfo->GetAcceleration();
   }
 
   // Toute les 2 secondes: vérifier si le taux de goom est correct et le modifier sinon.
@@ -70,7 +70,7 @@ void GoomSoundEvents::UpdateGoomLimit()
 {
   static constexpr auto VERY_SLOW_SPEED              = 0.9F * SoundInfo::SPEED_MIDPOINT;
   static constexpr auto GOOM_LIMIT_SLOW_SPEED_FACTOR = 0.91F;
-  if (m_soundInfo.GetSpeed() < VERY_SLOW_SPEED)
+  if (m_soundInfo->GetSpeed() < VERY_SLOW_SPEED)
   {
     m_goomLimit *= GOOM_LIMIT_SLOW_SPEED_FACTOR;
   }
@@ -113,8 +113,8 @@ auto GoomSoundEvents::UpdateLastBigGoom() -> void
     return;
   }
 
-  if ((m_soundInfo.GetSpeed() > BIG_GOOM_SPEED_LIMIT) &&
-      (m_soundInfo.GetAcceleration() > m_bigGoomLimit))
+  if ((m_soundInfo->GetSpeed() > BIG_GOOM_SPEED_LIMIT) &&
+      (m_soundInfo->GetAcceleration() > m_bigGoomLimit))
   {
     m_timeSinceLastBigGoom = 0;
   }
@@ -124,7 +124,7 @@ inline void GoomSoundEvents::CheckSettledGoomLimits()
 {
   if (static constexpr auto NUM_UPDATES_TO_SETTLE = 5U; m_updateNum <= NUM_UPDATES_TO_SETTLE)
   {
-    m_goomLimit    = m_soundInfo.GetAcceleration() + GOOM_LIMIT_SHORT_CYCLE_INCREMENT;
+    m_goomLimit    = m_soundInfo->GetAcceleration() + GOOM_LIMIT_SHORT_CYCLE_INCREMENT;
     m_bigGoomLimit = BIG_GOOM_FACTOR * m_goomLimit;
   }
 }

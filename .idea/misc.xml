@@ -14,4 +14,7 @@
       <file path="$PROJECT_DIR$/build-docker-clang-15-RelWithDebInfo-nexus" />
     </excludeRoots>
   </component>
+  <component name="PythonCompatibilityInspectionAdvertiser">
+    <option name="version" value="3" />
+  </component>
 </project>

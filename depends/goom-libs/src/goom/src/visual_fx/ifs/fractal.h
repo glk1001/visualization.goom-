@@ -48,10 +48,10 @@ public:
 
 private:
   Similitudes m_similitudes;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
-  const Flt m_halfWidth;
-  const Flt m_halfHeight;
+  Flt m_halfWidth;
+  Flt m_halfHeight;
 
   static constexpr uint32_t MIN_MAX_COUNT_TIMES_SPEED = 950;
   static constexpr uint32_t MAX_MAX_COUNT_TIMES_SPEED = 1500;

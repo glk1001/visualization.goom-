@@ -95,8 +95,8 @@ protected:
       -> COLOR_DATA::ColorMapName;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const std::string m_colorMapsName;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  std::string m_colorMapsName;
   static constexpr float MIN_ROTATION_POINT = 0.5F;
   static constexpr float MAX_ROTATION_POINT = 0.9F;
   float m_minRotationPoint                  = MIN_ROTATION_POINT;
@@ -129,7 +129,7 @@ private:
 
 inline RandomColorMaps::RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
                                         const std::string& colorMapsName) noexcept
-  : m_goomRand{goomRand}, m_colorMapsName{colorMapsName}
+  : m_goomRand{&goomRand}, m_colorMapsName{colorMapsName}
 {
 }
 

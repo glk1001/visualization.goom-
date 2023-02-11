@@ -25,7 +25,7 @@ public:
       -> UTILS::NameValuePairs;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   FILTER_UTILS::ImageDisplacementList m_imageDisplacementList;
 };
 

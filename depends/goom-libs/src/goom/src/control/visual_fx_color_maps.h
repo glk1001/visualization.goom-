@@ -24,10 +24,10 @@ public:
       -> std::shared_ptr<const COLOR::RandomColorMaps>;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  COLOR::RandomColorMapsGroups m_randomColorMapsGroups{m_goomRand};
-  VisualFxColorMatchedSets m_visualFxColorMatchedSets{m_goomRand};
-  VisualFxWeightedColorMaps m_visualFxWeightedColorMaps{m_goomRand};
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  COLOR::RandomColorMapsGroups m_randomColorMapsGroups{*m_goomRand};
+  VisualFxColorMatchedSets m_visualFxColorMatchedSets{*m_goomRand};
+  VisualFxWeightedColorMaps m_visualFxWeightedColorMaps{*m_goomRand};
   [[nodiscard]] auto GetNextRandomColorMapsGroup(GoomEffect goomEffect) const
       -> COLOR::RandomColorMapsGroups::Groups;
   [[nodiscard]] auto GetNextCompletelyRandomColorMapsGroup() const
@@ -35,7 +35,7 @@ private:
 };
 
 inline VisualFxColorMaps::VisualFxColorMaps(const UTILS::MATH::IGoomRand& goomRand)
-  : m_goomRand{goomRand}
+  : m_goomRand{&goomRand}
 {
 }
 
@@ -58,12 +58,12 @@ inline auto VisualFxColorMaps::GetNextRandomColorMapsGroup(const GoomEffect goom
   //  return randomColorMapsGroups.MakeRandomColorMapsGroup(group);
 
   if (static constexpr auto PROB_COMPLETELY_RANDOM = 0.05F;
-      m_goomRand.ProbabilityOf(PROB_COMPLETELY_RANDOM))
+      m_goomRand->ProbabilityOf(PROB_COMPLETELY_RANDOM))
   {
     return GetNextCompletelyRandomColorMapsGroup();
   }
   if (static constexpr auto PROB_WEIGHTED_COLOR_MAPS = 0.25F;
-      m_goomRand.ProbabilityOf(PROB_WEIGHTED_COLOR_MAPS))
+      m_goomRand->ProbabilityOf(PROB_WEIGHTED_COLOR_MAPS))
   {
     return m_visualFxWeightedColorMaps.GetCurrentRandomColorMapsGroup(goomEffect);
   }
@@ -75,7 +75,7 @@ inline auto VisualFxColorMaps::GetNextCompletelyRandomColorMapsGroup() const
     -> COLOR::RandomColorMapsGroups::Groups
 {
   return static_cast<COLOR::RandomColorMapsGroups::Groups>(
-      m_goomRand.GetRandInRange(0U, UTILS::NUM<COLOR::RandomColorMapsGroups::Groups>));
+      m_goomRand->GetRandInRange(0U, UTILS::NUM<COLOR::RandomColorMapsGroups::Groups>));
 }
 
 } // namespace GOOM::CONTROL

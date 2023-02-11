@@ -28,35 +28,35 @@ GoomBufferProducer::GoomBufferProducer(const TextureBufferDimensions& textureBuf
 #endif
                                        GoomLogger& goomLogger) noexcept
   : m_textureBufferDimensions{textureBufferDimensions},
-    m_goomLogger{goomLogger},
+    m_goomLogger{&goomLogger},
     m_goomControl{std::make_unique<GoomControl>(
         Dimensions{m_textureBufferDimensions.width, m_textureBufferDimensions.height},
         resourcesDirectory,
-        m_goomLogger)}
+        *m_goomLogger)}
 #ifdef SAVE_AUDIO_BUFFERS
     ,
     m_audioBuffersSaveDir{audioBuffersSaveDir}
 #endif
 {
-  LogDebug(m_goomLogger, "Constructed producer.");
+  LogDebug(*m_goomLogger, "Constructed producer.");
   m_goomControl->SetShowTitle(showTitle);
   Ensures(m_goomControl);
 }
 
 auto GoomBufferProducer::Start() -> void
 {
-  LogInfo(m_goomLogger, "Starting goom buffer producer.");
+  LogInfo(*m_goomLogger, "Starting goom buffer producer.");
 
   Expects(m_goomControl);
   Expects(not m_started);
   m_started = true;
 
-  LogInfo(m_goomLogger, "Goom: Version: {}.", GetGoomLibVersionInfo());
-  LogInfo(m_goomLogger, "Goom: Compiler: {}.", GetCompilerVersion());
-  LogInfo(m_goomLogger, "Goom Library: Compiler: {}.", GetGoomLibCompilerVersion());
-  LogInfo(m_goomLogger, "Goom Library: Build Time: {}.", GetGoomLibBuildTime());
+  LogInfo(*m_goomLogger, "Goom: Version: {}.", GetGoomLibVersionInfo());
+  LogInfo(*m_goomLogger, "Goom: Compiler: {}.", GetCompilerVersion());
+  LogInfo(*m_goomLogger, "Goom Library: Compiler: {}.", GetGoomLibCompilerVersion());
+  LogInfo(*m_goomLogger, "Goom Library: Build Time: {}.", GetGoomLibBuildTime());
 
-  LogInfo(m_goomLogger,
+  LogInfo(*m_goomLogger,
           "Texture width, height = {}, {}.",
           m_textureBufferDimensions.width,
           m_textureBufferDimensions.height);
@@ -68,12 +68,12 @@ auto GoomBufferProducer::Start() -> void
 
   m_goomControl->Start();
 
-  LogDebug(m_goomLogger, "Started goom buffer producer.");
+  LogDebug(*m_goomLogger, "Started goom buffer producer.");
 }
 
 auto GoomBufferProducer::Stop() -> void
 {
-  LogDebug(m_goomLogger, "Stopping goom buffer producer.");
+  LogDebug(*m_goomLogger, "Stopping goom buffer producer.");
 
   Expects(m_started);
 
@@ -83,7 +83,7 @@ auto GoomBufferProducer::Stop() -> void
 
   m_audioBufferNum = 0;
 
-  LogInfo(m_goomLogger, "Stopped goom buffer producer.");
+  LogInfo(*m_goomLogger, "Stopped goom buffer producer.");
 }
 
 auto GoomBufferProducer::SetNumChannels(const uint32_t value) -> void
@@ -95,13 +95,13 @@ auto GoomBufferProducer::SetNumChannels(const uint32_t value) -> void
 
 auto GoomBufferProducer::StartProcessGoomBuffersThread() -> void
 {
-  LogInfo(m_goomLogger, "Starting process Goom buffers thread.");
+  LogInfo(*m_goomLogger, "Starting process Goom buffers thread.");
   m_processBuffersThread = std::thread{&GoomBufferProducer::ProcessGoomBuffersThread, this};
 }
 
 auto GoomBufferProducer::StopProcessGoomBuffersThread() -> void
 {
-  LogInfo(m_goomLogger, "Stopping process Goom buffers thread.");
+  LogInfo(*m_goomLogger, "Stopping process Goom buffers thread.");
 
   auto lock                          = std::unique_lock{m_mutex};
   m_processGoomBuffersThreadFinished = true;
@@ -113,7 +113,7 @@ auto GoomBufferProducer::StopProcessGoomBuffersThread() -> void
     m_processBuffersThread.join();
   }
 
-  LogInfo(m_goomLogger, "Process Goom buffers thread stopped.");
+  LogInfo(*m_goomLogger, "Process Goom buffers thread stopped.");
 }
 
 auto GoomBufferProducer::ProcessAudioData(const float* const audioData,
@@ -125,7 +125,7 @@ auto GoomBufferProducer::ProcessAudioData(const float* const audioData,
 
   if (1 == m_audioBufferNum)
   {
-    LogInfo(m_goomLogger, "Starting audio data processing.");
+    LogInfo(*m_goomLogger, "Starting audio data processing.");
     StartProcessGoomBuffersThread();
   }
 
@@ -143,8 +143,8 @@ auto GoomBufferProducer::UpdateTrack(const GoomControl::SongInfo& track) -> void
 {
   Expects(m_started);
 
-  LogInfo(m_goomLogger, "Current Title = '{}'", track.title);
-  LogInfo(m_goomLogger, "Genre = '{}', Duration = {}", track.genre, track.duration);
+  LogInfo(*m_goomLogger, "Current Title = '{}'", track.title);
+  LogInfo(*m_goomLogger, "Genre = '{}', Duration = {}", track.genre, track.duration);
 
   m_goomControl->SetSongInfo(track);
 
@@ -172,7 +172,7 @@ auto GoomBufferProducer::ProcessGoomBuffersThread() -> void
     if (const auto read = m_audioBuffer.Read(floatAudioData.data(), m_audioBufferLen);
         read != m_audioBufferLen)
     {
-      LogWarn(m_goomLogger,
+      LogWarn(*m_goomLogger,
               "Num read audio length {} != {} = expected audio data length - "
               "skipping this.",
               read,

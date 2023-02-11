@@ -35,10 +35,10 @@ ShapePart::ShapePart(IGoomDraw& draw,
                      const PluginInfo& goomInfo,
                      RandomColorMapsManager& colorMapsManager,
                      const Params& params) noexcept
-  : m_draw{draw},
-    m_goomRand{goomRand},
-    m_goomInfo{goomInfo},
-    m_colorMapsManager{colorMapsManager},
+  : m_draw{&draw},
+    m_goomRand{&goomRand},
+    m_goomInfo{&goomInfo},
+    m_colorMapsManager{&colorMapsManager},
     m_currentTMinMaxLerp{params.tMinMaxLerp},
     m_shapePathsStepSpeed{
         params.shapePathsMinNumSteps, params.shapePathsMaxNumSteps, params.tMinMaxLerp},
@@ -66,10 +66,10 @@ ShapePart::ShapePart(IGoomDraw& draw,
 
 auto ShapePart::GetInitialColorInfo() const noexcept -> ColorInfo
 {
-  return {RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand),
-          RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand),
-          RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand),
-          m_goomRand.GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T)};
+  return {RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand),
+          RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand),
+          RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand),
+          m_goomRand->GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T)};
 }
 
 auto ShapePart::SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void
@@ -136,18 +136,19 @@ inline auto ShapePart::GetTransform2d(const Vec2dFlt& targetPoint,
 
 auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
 {
-  const auto numShapePaths = m_goomRand.GetRandInRange(MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths + 1);
+  const auto numShapePaths =
+      m_goomRand->GetRandInRange(MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths + 1);
 
   static constexpr auto MIN_MIN_SCALE         = 0.9F;
   static constexpr auto MAX_MIN_SCALE         = 1.0F;
   static constexpr auto MIN_MAX_SCALE         = 1.0F + UTILS::MATH::SMALL_FLOAT;
   static constexpr auto MAX_MAX_SCALE         = 1.5F;
   static constexpr auto PROB_SCALE_EQUALS_ONE = 0.9F;
-  const auto probScaleEqualsOne               = m_goomRand.ProbabilityOf(PROB_SCALE_EQUALS_ONE);
+  const auto probScaleEqualsOne               = m_goomRand->ProbabilityOf(PROB_SCALE_EQUALS_ONE);
   const auto minScale =
-      probScaleEqualsOne ? 1.0F : m_goomRand.GetRandInRange(MIN_MIN_SCALE, MAX_MIN_SCALE);
+      probScaleEqualsOne ? 1.0F : m_goomRand->GetRandInRange(MIN_MIN_SCALE, MAX_MIN_SCALE);
   const auto maxScale =
-      probScaleEqualsOne ? 1.0F : m_goomRand.GetRandInRange(MIN_MAX_SCALE, MAX_MAX_SCALE);
+      probScaleEqualsOne ? 1.0F : m_goomRand->GetRandInRange(MIN_MAX_SCALE, MAX_MAX_SCALE);
 
   return GetShapePaths(numShapePaths, minScale, maxScale);
 }
@@ -180,7 +181,7 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 
     const auto colorInfo = MakeShapePathColorInfo();
 
-    shapePaths.emplace_back(m_draw, basePath, m_colorMapsManager, colorInfo);
+    shapePaths.emplace_back(*m_draw, basePath, *m_colorMapsManager, colorInfo);
 
     static constexpr auto CLOSE_ENOUGH = 4;
     USED_FOR_DEBUGGING(CLOSE_ENOUGH);
@@ -213,16 +214,16 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 inline auto ShapePart::MakeShapePathColorInfo() noexcept -> ShapePath::ColorInfo
 {
   return ShapePath::ColorInfo{
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand),
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand),
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand),
+      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand),
+      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand),
+      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand),
   };
 }
 
 inline auto ShapePart::GetCircleRadius() const noexcept -> float
 {
   const auto minDimension =
-      static_cast<float>(std::min(m_goomInfo.GetScreenWidth(), m_goomInfo.GetScreenHeight()));
+      static_cast<float>(std::min(m_goomInfo->GetScreenWidth(), m_goomInfo->GetScreenHeight()));
   const auto minRadius = m_minRadiusFraction * minDimension;
   const auto maxRadius = m_maxRadiusFraction * minDimension;
   const auto t = static_cast<float>(m_shapePartNum) / static_cast<float>(m_totalNumShapeParts - 1);
@@ -285,7 +286,7 @@ auto ShapePart::SetWeightedInnerColorMaps(
     const std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void
 {
   m_colorInfo.innerColorMix =
-      m_goomRand.GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);
+      m_goomRand->GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);
 
   m_colorInfo.innerColorMaps = weightedMaps;
 
@@ -353,7 +354,7 @@ auto ShapePart::UseFixedShapePathsNumSteps(const float tMinMaxLerp) noexcept -> 
 
 auto ShapePart::UseRandomShapePathsNumSteps() noexcept -> void
 {
-  m_currentTMinMaxLerp = GetNewRandomMinMaxLerpT(m_goomRand, m_currentTMinMaxLerp);
+  m_currentTMinMaxLerp = GetNewRandomMinMaxLerpT(*m_goomRand, m_currentTMinMaxLerp);
   m_shapePathsStepSpeed.SetSpeed(m_currentTMinMaxLerp);
   m_dotRadiusStepSpeed.SetSpeed(m_currentTMinMaxLerp);
 }
@@ -389,7 +390,7 @@ inline auto ShapePart::DoMegaColorChange() noexcept -> void
     return;
   }
 
-  m_colorMapsManager.ChangeAllColorMapsNow();
+  m_colorMapsManager->ChangeAllColorMapsNow();
 }
 
 inline auto ShapePart::StartMegaColorChangeOnOffTimer() noexcept -> void
@@ -402,7 +403,7 @@ inline auto ShapePart::StartMegaColorChangeOnOffTimer() noexcept -> void
 inline auto ShapePart::SetMegaColorChangeOn() noexcept -> bool
 {
   if (static constexpr auto PROB_MEGA_COLOR_CHANGE_ON = 0.1F;
-      not m_goomRand.ProbabilityOf(PROB_MEGA_COLOR_CHANGE_ON))
+      not m_goomRand->ProbabilityOf(PROB_MEGA_COLOR_CHANGE_ON))
   {
     return false;
   }
@@ -413,7 +414,7 @@ inline auto ShapePart::SetMegaColorChangeOn() noexcept -> bool
 inline auto ShapePart::SetMegaColorChangeOff() noexcept -> bool
 {
   if (static constexpr auto PROB_MEGA_COLOR_CHANGE_OFF = 0.9F;
-      not m_goomRand.ProbabilityOf(PROB_MEGA_COLOR_CHANGE_OFF))
+      not m_goomRand->ProbabilityOf(PROB_MEGA_COLOR_CHANGE_OFF))
   {
     return false;
   }
@@ -423,10 +424,10 @@ inline auto ShapePart::SetMegaColorChangeOff() noexcept -> bool
 
 inline auto ShapePart::ChangeAllColorMapsNow() noexcept -> void
 {
-  m_colorMapsManager.ChangeAllColorMapsNow();
+  m_colorMapsManager->ChangeAllColorMapsNow();
 
   static constexpr auto PROB_USE_EXTREME_MAX_DOT_RADIUS = 0.1F;
-  m_useExtremeMaxShapeDotRadius = m_goomRand.ProbabilityOf(PROB_USE_EXTREME_MAX_DOT_RADIUS);
+  m_useExtremeMaxShapeDotRadius = m_goomRand->ProbabilityOf(PROB_USE_EXTREME_MAX_DOT_RADIUS);
 }
 
 auto ShapePart::SetChromaFactor(const float val) noexcept -> void

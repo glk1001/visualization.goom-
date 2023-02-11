@@ -41,7 +41,7 @@ private:
   std::string m_shaderDir;
   ShaderWithEffects m_shaderWithEffects;
   GLuint m_prog = 0;
-  CVisualizationGoom& m_cVisualizationGoom;
+  CVisualizationGoom* m_cVisualizationGoom;
   const GoomShaderVariables* m_goomShaderVariables{};
 
   static constexpr const auto* VERTEX_SHADER_FILENAME   = "vertex.glsl";

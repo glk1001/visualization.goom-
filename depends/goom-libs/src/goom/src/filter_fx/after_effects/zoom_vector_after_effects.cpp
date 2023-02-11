@@ -25,7 +25,7 @@ auto ZoomVectorAfterEffects::SetAfterEffectsSettings(
     const Point2dInt& zoomMidpoint) noexcept -> void
 {
   m_afterEffectsSettings = afterEffectsSettings;
-  m_rotationAdjustments  = afterEffectsSettings.rotationAdjustments; // TODO Fix this
+  m_rotationAdjustments  = afterEffectsSettings.rotationAdjustments; // TODO(glk) Fix this??
   m_zoomMidpoint         = zoomMidpoint;
 
   SetRandomHypercosOverlayEffects();

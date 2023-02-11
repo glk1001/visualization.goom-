@@ -14,7 +14,7 @@ using UTILS::MATH::ToRadians;
 LSysGeometry::LSysGeometry(const UTILS::MATH::IGoomRand& goomRand,
                            const float xScale,
                            const float yScale) noexcept
-  : m_goomRand{goomRand}, m_xScale{xScale}, m_yScale{yScale}
+  : m_goomRand{&goomRand}, m_xScale{xScale}, m_yScale{yScale}
 {
 }
 
@@ -44,8 +44,8 @@ auto LSysGeometry::GetTransformAdjustArray() const noexcept -> std::vector<Trans
     static constexpr auto MAX_X_SCALE = 1.0F;
     static constexpr auto MIN_Y_SCALE = 0.9F;
     static constexpr auto MAX_Y_SCALE = 1.1F;
-    transformAdjust.xScale            = m_goomRand.GetRandInRange(MIN_X_SCALE, MAX_X_SCALE);
-    transformAdjust.yScale            = m_goomRand.GetRandInRange(MIN_Y_SCALE, MAX_Y_SCALE);
+    transformAdjust.xScale            = m_goomRand->GetRandInRange(MIN_X_SCALE, MAX_X_SCALE);
+    transformAdjust.yScale            = m_goomRand->GetRandInRange(MIN_Y_SCALE, MAX_Y_SCALE);
     transformAdjust.rotateDegrees     = t() * DEGREES_360;
     transformAdjust.translate         = {0.0F, 0.0F};
 

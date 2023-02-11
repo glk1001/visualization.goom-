@@ -56,10 +56,10 @@ protected:
   static constexpr float MIN_MAX_STAR_AGE = 15.0F;
   static constexpr float MAX_MAX_STAR_AGE = 50.0F;
 
-  [[nodiscard]] auto GetGoomInfo() const noexcept -> const PluginInfo& { return m_goomInfo; }
+  [[nodiscard]] auto GetGoomInfo() const noexcept -> const PluginInfo& { return *m_goomInfo; }
   [[nodiscard]] auto GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&
   {
-    return m_goomRand;
+    return *m_goomRand;
   }
   [[nodiscard]] auto GetZoomMidpoint() const noexcept -> Point2dInt { return m_zoomMidpoint; }
   [[nodiscard]] auto GetHalfWidth() const noexcept -> int32_t { return m_halfWidth; }
@@ -71,17 +71,17 @@ protected:
   [[nodiscard]] auto GetMaxGravity() const noexcept -> float { return m_maxGravity; }
 
 private:
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const int32_t m_halfWidth;
-  const int32_t m_halfHeight;
-  const float m_xMax;
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  int32_t m_halfWidth;
+  int32_t m_halfHeight;
+  float m_xMax;
   Point2dInt m_zoomMidpoint;
 
   std::shared_ptr<const COLOR::RandomColorMaps> m_weightedMainColorMaps{
-      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
+      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
   std::shared_ptr<const COLOR::RandomColorMaps> m_weightedLowColorMaps{
-      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
+      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
   COLOR::COLOR_DATA::ColorMapName m_fixedMainColorMapName = COLOR::COLOR_DATA::ColorMapName::_NULL;
   COLOR::COLOR_DATA::ColorMapName m_fixedLowColorMapName  = COLOR::COLOR_DATA::ColorMapName::_NULL;
 
@@ -156,14 +156,8 @@ public:
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
 private:
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
   std::array<std::experimental::propagate_const<std::unique_ptr<IStarType>>, NUM_STAR_TYPES>
-      m_starTypesList{
-          std::make_unique<FireworksStarType>(m_goomInfo, m_goomRand),
-          std::make_unique<RainStarType>(m_goomInfo, m_goomRand),
-          std::make_unique<FountainStarType>(m_goomInfo, m_goomRand),
-      };
+      m_starTypesList;
   enum class AvailableStarTypes
   {
     FIREWORKS,
@@ -171,18 +165,11 @@ private:
     FOUNTAIN,
     _num // unused, and marks the enum end
   };
-  static_assert(UTILS::NUM<AvailableStarTypes> == (NUM_STAR_TYPES));
+  static_assert(UTILS::NUM<AvailableStarTypes> == NUM_STAR_TYPES);
   static constexpr float STAR_TYPES_FIREWORKS_WEIGHT = 10.0F;
   static constexpr float STAR_TYPES_FOUNTAIN_WEIGHT  = 07.0F;
   static constexpr float STAR_TYPES_RAIN_WEIGHT      = 07.0F;
-  const UTILS::MATH::Weights<AvailableStarTypes> m_weightedStarTypes{
-      m_goomRand,
-      {
-        {AvailableStarTypes::FIREWORKS, STAR_TYPES_FIREWORKS_WEIGHT},
-        {AvailableStarTypes::FOUNTAIN, STAR_TYPES_FOUNTAIN_WEIGHT},
-        {AvailableStarTypes::RAIN, STAR_TYPES_RAIN_WEIGHT},
-        }
-  };
+  UTILS::MATH::Weights<AvailableStarTypes> m_weightedStarTypes;
 };
 
 inline auto IStarType::GetWeightedMainColorMaps() const noexcept -> const COLOR::RandomColorMaps&

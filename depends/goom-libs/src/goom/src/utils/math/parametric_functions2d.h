@@ -40,8 +40,8 @@ public:
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const T m_mainFunction;
-  const ModifierFunction m_modifierFunction;
+  T m_mainFunction;
+  ModifierFunction m_modifierFunction;
 };
 
 class LineFunction : public IParametricFunction2d
@@ -52,8 +52,8 @@ public:
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Point2dFlt m_startPos;
-  const Point2dFlt m_endPos;
+  Point2dFlt m_startPos;
+  Point2dFlt m_endPos;
 };
 
 struct AngleParams
@@ -79,10 +79,10 @@ public:
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Vec2dFlt m_centrePos;
-  const float m_radius;
-  const AngleParams m_angleParams;
-  const Direction m_direction;
+  Vec2dFlt m_centrePos;
+  float m_radius;
+  AngleParams m_angleParams;
+  Direction m_direction;
   [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
 };
 
@@ -105,10 +105,10 @@ public:
   [[nodiscard]] auto GetPointData(float t) const noexcept -> PointData override;
 
 private:
-  const Vec2dFlt m_centrePos;
-  const float m_minRadius;
-  const float m_maxRadius;
-  const float m_angleFactor;
+  Vec2dFlt m_centrePos;
+  float m_minRadius;
+  float m_maxRadius;
+  float m_angleFactor;
   [[nodiscard]] static auto GetSpiralPoint(float radius, float angle) noexcept -> Point2dFlt;
 };
 
@@ -130,9 +130,9 @@ public:
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Vec2dFlt m_centrePos;
-  const AngleParams m_angleParams;
-  const Params m_params;
+  Vec2dFlt m_centrePos;
+  AngleParams m_angleParams;
+  Params m_params;
   [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
 };
 
@@ -154,11 +154,11 @@ public:
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Vec2dFlt m_centrePos;
-  const AngleParams m_angleParams;
-  const Params m_params;
-  const float m_rDiff;
-  const float m_numCusps;
+  Vec2dFlt m_centrePos;
+  AngleParams m_angleParams;
+  Params m_params;
+  float m_rDiff;
+  float m_numCusps;
   [[nodiscard]] static auto GetNumCusps(float bigR, float smallR) noexcept -> float;
   [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
 };
@@ -180,10 +180,10 @@ public:
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Vec2dFlt m_centrePos;
-  const AngleParams m_angleParams;
-  const Params m_params;
-  const float m_numCusps;
+  Vec2dFlt m_centrePos;
+  AngleParams m_angleParams;
+  Params m_params;
+  float m_numCusps;
   [[nodiscard]] static auto GetNumCusps(float k) noexcept -> float;
   [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
 };
@@ -202,11 +202,11 @@ public:
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
-  const Point2dFlt m_startPos;
-  const Point2dFlt m_endPos;
-  const Params m_params;
-  const float m_distance;
-  const float m_rotateAngle;
+  Point2dFlt m_startPos;
+  Point2dFlt m_endPos;
+  Params m_params;
+  float m_distance;
+  float m_rotateAngle;
 };
 
 class OscillatingFunction : public IParametricFunction2d

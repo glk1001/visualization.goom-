@@ -22,7 +22,6 @@ namespace GOOM::VISUAL_FX::TENTACLES
 class TentacleDriver
 {
 public:
-  TentacleDriver() noexcept = delete;
   TentacleDriver(DRAW::IGoomDraw& draw,
                  const UTILS::MATH::IGoomRand& goomRand,
                  const CirclesTentacleLayout& tentacleLayout) noexcept;
@@ -42,10 +41,10 @@ public:
   auto Update() -> void;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const Point2dInt m_screenMidpoint =
-      MidpointFromOrigin({m_draw.GetDimensions().GetWidth(), m_draw.GetDimensions().GetHeight()});
+  DRAW::IGoomDraw* m_draw;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  Point2dInt m_screenMidpoint =
+      MidpointFromOrigin({m_draw->GetDimensions().GetWidth(), m_draw->GetDimensions().GetHeight()});
 
   std::shared_ptr<const COLOR::IColorMap> m_dominantMainColorMap{};
   std::shared_ptr<const COLOR::IColorMap> m_dominantLowColorMap{};
@@ -58,7 +57,7 @@ private:
     UTILS::MATH::SineWaveMultiplier iterZeroYValWave;
   };
   IterationParams m_tentacleParams;
-  TentaclePlotter m_tentaclePlotter;
+  TentaclePlotter m_tentaclePlotter{*m_draw, *m_goomRand};
 
   struct TentacleAndAttributes
   {
@@ -84,8 +83,7 @@ private:
                                     const TentacleAndAttributes& tentacleAndAttributes,
                                     float brightness) const -> DRAW::MultiplePixels;
   static constexpr float GAMMA = 0.8F;
-  const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
-                                             COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   static constexpr auto MIN_COLOR_SEGMENT_MIX_T     = 0.7F;
   static constexpr auto MAX_COLOR_SEGMENT_MIX_T     = 1.0F;

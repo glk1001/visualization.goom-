@@ -15,18 +15,18 @@ namespace GOOM::UTILS::GRAPHICS
 class BezierDrawer
 {
 public:
-  explicit BezierDrawer(DRAW::IGoomDraw& draw, const SmallImageBitmaps& smallBitmaps) noexcept
-    : m_draw{draw}, m_smallBitmaps{smallBitmaps}
+  BezierDrawer(DRAW::IGoomDraw& draw, const SmallImageBitmaps& smallBitmaps) noexcept
+    : m_draw{&draw}, m_smallBitmaps{&smallBitmaps}
   {
   }
 
   [[nodiscard]] auto GetScreenWidth() const -> uint32_t
   {
-    return m_draw.GetDimensions().GetWidth();
+    return m_draw->GetDimensions().GetWidth();
   }
   [[nodiscard]] auto GetScreenHeight() const -> uint32_t
   {
-    return m_draw.GetDimensions().GetHeight();
+    return m_draw->GetDimensions().GetHeight();
   }
 
   using GetColorFunc = std::function<Pixel(float t)>;
@@ -51,8 +51,8 @@ public:
   }
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  const SmallImageBitmaps& m_smallBitmaps;
+  DRAW::IGoomDraw* m_draw;
+  const SmallImageBitmaps* m_smallBitmaps;
   GetColorFunc m_lineColorFunc{};
   GetColorFunc m_dotColorFunc{};
 

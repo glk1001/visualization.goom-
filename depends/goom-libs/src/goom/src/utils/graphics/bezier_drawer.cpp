@@ -15,13 +15,13 @@ using DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
 
 inline auto BezierDrawer::GetImageBitmap(const size_t size) const -> const ImageBitmap&
 {
-  return m_smallBitmaps.GetImageBitmap(m_currentBitmapName,
-                                       std::clamp(size, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER));
+  return m_smallBitmaps->GetImageBitmap(m_currentBitmapName,
+                                        std::clamp(size, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER));
 }
 
 void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, const float colorT1)
 {
-  auto lineDrawer = LineDrawerClippedEndPoints{m_draw};
+  auto lineDrawer = LineDrawerClippedEndPoints{*m_draw};
   lineDrawer.SetLineThickness(m_lineThickness);
 
   const auto colorTStep = (colorT1 - colorT0) / static_cast<float>(m_numBezierSteps - 1);
@@ -64,7 +64,7 @@ void BezierDrawer::DrawDot(const Point2dInt& centre, const uint32_t diameter, co
     return color;
   };
 
-  auto bitmapDrawer = BitmapDrawer{m_draw};
+  auto bitmapDrawer = BitmapDrawer{*m_draw};
   bitmapDrawer.Bitmap(centre, GetImageBitmap(diameter), {getColor, getColor});
 }
 

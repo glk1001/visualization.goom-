@@ -39,9 +39,9 @@ public:
                                                  uint32_t t) noexcept -> Point2dInt;
 
 private:
-  const Dimensions m_dimensions;
-  const uint32_t m_bufferSize = m_dimensions.GetSize();
-  const Point2dInt m_maxTranPointMinus1;
+  Dimensions m_dimensions;
+  uint32_t m_bufferSize = m_dimensions.GetSize();
+  Point2dInt m_maxTranPointMinus1;
   std::vector<Point2dInt> m_tranSrce;
   std::vector<Point2dInt> m_tranDest;
   uint32_t m_tranLerpFactor = 0U;

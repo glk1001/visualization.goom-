@@ -37,8 +37,8 @@ public:
   [[nodiscard]] auto IsTurnedOn() const -> bool;
 
 private:
-  const IGoomRand& m_goomRand;
-  const float m_probabilityOfEffectRepeated;
+  const IGoomRand* m_goomRand;
+  float m_probabilityOfEffectRepeated;
   bool m_turnedOn;
   Timer m_offTimer;
   bool m_pendingOffTimerReset = false;
@@ -202,7 +202,7 @@ inline AfterEffectsStates::EffectState::EffectState(const UTILS::MATH::IGoomRand
                                                     const bool turnedOn,
                                                     const float probabilityOfEffectRepeated,
                                                     const uint32_t effectOffTime) noexcept
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_probabilityOfEffectRepeated{probabilityOfEffectRepeated},
     m_turnedOn{turnedOn},
     m_offTimer{effectOffTime, true}
@@ -225,7 +225,7 @@ inline auto AfterEffectsStates::EffectState::UpdateState(const float probability
     return;
   }
 
-  SetState(m_goomRand.ProbabilityOf(probabilityOfEffect));
+  SetState(m_goomRand->ProbabilityOf(probabilityOfEffect));
 }
 
 inline auto AfterEffectsStates::EffectState::SetState(const bool value) -> void
@@ -235,7 +235,7 @@ inline auto AfterEffectsStates::EffectState::SetState(const bool value) -> void
 
   if (previouslyTurnedOn && m_turnedOn)
   {
-    m_turnedOn = m_goomRand.ProbabilityOf(m_probabilityOfEffectRepeated);
+    m_turnedOn = m_goomRand->ProbabilityOf(m_probabilityOfEffectRepeated);
   }
   if (previouslyTurnedOn && (not m_turnedOn))
   {

@@ -11,7 +11,8 @@
 #include "utils/math/misc.h"
 #include "utils/stopwatch.h"
 
-#include <memory>
+#include <algorithm>
+#include <string>
 
 namespace GOOM::VISUAL_FX
 {

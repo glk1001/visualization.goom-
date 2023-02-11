@@ -46,7 +46,7 @@ public:
   void DrawStaticText(const std::string& title);
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   static constexpr int32_t MAX_TEXT_DISPLAY_TIME      = 200;
   static constexpr int32_t TIME_TO_START_MIDDLE_PHASE = 100;
   static constexpr int32_t TIME_TO_START_FINAL_PHASE  = 50;
@@ -54,25 +54,24 @@ private:
   float m_yPos                                        = 0.0F;
   int32_t m_timeLeftOfTitleDisplay                    = MAX_TEXT_DISPLAY_TIME;
   std::experimental::propagate_const<std::unique_ptr<DRAW::SHAPE_DRAWERS::TextDrawer>> m_textDrawer;
-  const int32_t m_screenWidth;
-  const int32_t m_screenHeight;
-  const std::string m_fontDirectory;
+  int32_t m_screenWidth;
+  int32_t m_screenHeight;
+  std::string m_fontDirectory;
   struct FontInfo
   {
     std::string fontFilename;
     float fontSizeNormalizeFactor;
   };
   static const std::vector<FontInfo> FONT_INFO;
-  const size_t m_fontInfoIndex{
-      m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(FONT_INFO.size()))};
+  size_t m_fontInfoIndex{m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(FONT_INFO.size()))};
   [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
   [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;
 
-  const COLOR::IColorMap* m_textColorMap{&COLOR::RandomColorMaps::GetRandomColorMap(m_goomRand)};
+  const COLOR::IColorMap* m_textColorMap{&COLOR::RandomColorMaps::GetRandomColorMap(*m_goomRand)};
   const COLOR::IColorMap* m_textOutlineColorMap{
-      &COLOR::RandomColorMaps::GetRandomColorMap(m_goomRand)};
+      &COLOR::RandomColorMaps::GetRandomColorMap(*m_goomRand)};
   const COLOR::IColorMap* m_charColorMap{&COLOR::RandomColorMaps::GetRandomColorMap(
-      m_goomRand, COLOR::ColorMapGroup::DIVERGING_BLACK)};
+      *m_goomRand, COLOR::ColorMapGroup::DIVERGING_BLACK)};
   void DrawText(const std::string& text);
   [[nodiscard]] auto GetColorT() const -> float;
   [[nodiscard]] auto GetFontCharColorMixT() const -> float;

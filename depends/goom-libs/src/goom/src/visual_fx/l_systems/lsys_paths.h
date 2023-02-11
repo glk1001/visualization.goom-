@@ -26,7 +26,7 @@ public:
   [[nodiscard]] auto GetNextPathPosition() const noexcept -> Point2dInt;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   static constexpr auto DEFAULT_PATH_NUM_STEPS = 100U;
   uint32_t m_pathNumSteps                      = DEFAULT_PATH_NUM_STEPS;

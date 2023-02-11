@@ -122,8 +122,8 @@ public:
   static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
 
 private:
-  const ColorMapName m_mapName;
-  const vivid::ColorMap m_vividColorMap;
+  ColorMapName m_mapName;
+  vivid::ColorMap m_vividColorMap;
 };
 
 class ColorMaps::ColorMapsImpl

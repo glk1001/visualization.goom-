@@ -46,7 +46,6 @@ using UTILS::Parallel;
 class ZoomFilterFx::ZoomFilterImpl
 {
 public:
-  ZoomFilterImpl() noexcept = delete;
   ZoomFilterImpl(Parallel& parallel,
                  const PluginInfo& goomInfo,
                  std::unique_ptr<FilterBuffersService> filterBuffersService,
@@ -77,8 +76,8 @@ public:
   auto CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
 
 private:
-  const Dimensions m_dimensions;
-  Parallel& m_parallel;
+  Dimensions m_dimensions;
+  Parallel* m_parallel;
 
   propagate_const<std::unique_ptr<FilterBuffersService>> m_filterBuffersService;
   propagate_const<std::unique_ptr<FilterColorsService>> m_filterColorsService;
@@ -181,7 +180,7 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     std::unique_ptr<FilterBuffersService> filterBuffersService,
     std::unique_ptr<FilterColorsService> filterColorsService) noexcept
   : m_dimensions{goomInfo.GetScreenDimensions()},
-    m_parallel{parallel},
+    m_parallel{&parallel},
     m_filterBuffersService{std::move(filterBuffersService)},
     m_filterColorsService{std::move(filterColorsService)}
 {
@@ -313,7 +312,7 @@ auto ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
     }
   };
 
-  m_parallel.ForLoop(m_dimensions.GetHeight(), setDestPixelRow);
+  m_parallel->ForLoop(m_dimensions.GetHeight(), setDestPixelRow);
 }
 
 } // namespace GOOM::FILTER_FX

@@ -55,9 +55,9 @@ static constexpr auto WAVE_COT_COS_EFFECT_WEIGHT  = 001.0F;
 
 Wave::Wave(const Modes mode, const IGoomRand& goomRand)
   : m_mode{mode},
-    m_goomRand{goomRand},
+    m_goomRand{&goomRand},
     m_weightedEffects{
-      goomRand,
+      *m_goomRand,
       {
         {    WaveEffect::WAVE_SIN_EFFECT,      WAVE_SIN_EFFECT_WEIGHT},
         {    WaveEffect::WAVE_COS_EFFECT,      WAVE_COS_EFFECT_WEIGHT},
@@ -113,7 +113,7 @@ auto Wave::SetSqDistAngleEffectMode0RandomParams() noexcept -> void
 
 auto Wave::SetSqDistAngleEffectMode1RandomParams() noexcept -> void
 {
-  if (m_goomRand.ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
+  if (m_goomRand->ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
   {
     SetWaveModeSettings(AngleEffect::SQ_DIST,
                         SMALL_FREQ_FACTOR_RANGE,
@@ -142,7 +142,7 @@ auto Wave::SetAtanAngleEffectMode0RandomParams() noexcept -> void
 
 auto Wave::SetAtanAngleEffectMode1RandomParams() noexcept -> void
 {
-  if (m_goomRand.ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
+  if (m_goomRand->ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
   {
     SetWaveModeSettings(AngleEffect::ATAN,
                         SMALL_FREQ_FACTOR_RANGE,
@@ -167,17 +167,17 @@ auto Wave::SetWaveModeSettings(
     const IGoomRand::NumberRange<float>& periodicFactorRange,
     const IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) noexcept -> void
 {
-  const auto waveEffectsEqual = m_goomRand.ProbabilityOf(PROB_WAVE_XY_EFFECTS_EQUAL);
+  const auto waveEffectsEqual = m_goomRand->ProbabilityOf(PROB_WAVE_XY_EFFECTS_EQUAL);
 
   const auto xWaveEffect = m_weightedEffects.GetRandomWeighted();
   const auto yWaveEffect = waveEffectsEqual ? xWaveEffect : m_weightedEffects.GetRandomWeighted();
 
-  const auto sqDistPower = m_goomRand.GetRandInRange(SQ_DIST_POWER_RANGE);
+  const auto sqDistPower = m_goomRand->GetRandInRange(SQ_DIST_POWER_RANGE);
 
   const auto periodicFactor =
       GetPeriodicFactor(xWaveEffect, yWaveEffect, periodicFactorRange, sinCosPeriodicFactorRange);
-  const auto freqFactor   = m_goomRand.GetRandInRange(freqFactorRange);
-  const auto amplitude    = m_goomRand.GetRandInRange(amplitudeRange);
+  const auto freqFactor   = m_goomRand->GetRandInRange(freqFactorRange);
+  const auto amplitude    = m_goomRand->GetRandInRange(amplitudeRange);
   const auto reducerCoeff = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
 
   SetParams({xWaveEffect,
@@ -201,16 +201,16 @@ inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
     case WaveEffect::WAVE_SIN_EFFECT:
     case WaveEffect::WAVE_COS_EFFECT:
     case WaveEffect::WAVE_SIN_COS_EFFECT:
-      return m_goomRand.GetRandInRange(REDUCER_COEFF_RANGE);
+      return m_goomRand->GetRandInRange(REDUCER_COEFF_RANGE);
     case WaveEffect::WAVE_TAN_EFFECT:
     case WaveEffect::WAVE_COT_EFFECT:
-      return m_goomRand.GetRandInRange(TAN_REDUCER_COEFF_RANGE);
+      return m_goomRand->GetRandInRange(TAN_REDUCER_COEFF_RANGE);
     case WaveEffect::WAVE_TAN_SIN_EFFECT:
     case WaveEffect::WAVE_TAN_COS_EFFECT:
     case WaveEffect::WAVE_COT_SIN_EFFECT:
     case WaveEffect::WAVE_COT_COS_EFFECT:
-      return STD20::lerp(m_goomRand.GetRandInRange(TAN_REDUCER_COEFF_RANGE),
-                         m_goomRand.GetRandInRange(REDUCER_COEFF_RANGE),
+      return STD20::lerp(m_goomRand->GetRandInRange(TAN_REDUCER_COEFF_RANGE),
+                         m_goomRand->GetRandInRange(REDUCER_COEFF_RANGE),
                          periodicFactor);
     default:
       FailFast();
@@ -224,21 +224,21 @@ inline auto Wave::GetPeriodicFactor(
     const IGoomRand::NumberRange<float>& periodicFactorRange,
     const IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) const noexcept -> float
 {
-  if (m_goomRand.ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
+  if (m_goomRand->ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
   {
     return xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT ? DEFAULT_SIN_COS_PERIODIC_FACTOR
                                                           : DEFAULT_PERIODIC_FACTOR;
   }
-  if (m_goomRand.ProbabilityOf(PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT))
+  if (m_goomRand->ProbabilityOf(PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT))
   {
-    return m_goomRand.GetRandInRange(xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
-                                         ? sinCosPeriodicFactorRange
-                                         : periodicFactorRange);
+    return m_goomRand->GetRandInRange(xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
+                                          ? sinCosPeriodicFactorRange
+                                          : periodicFactorRange);
   }
 
-  return m_goomRand.GetRandInRange(yWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
-                                       ? sinCosPeriodicFactorRange
-                                       : periodicFactorRange);
+  return m_goomRand->GetRandInRange(yWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
+                                        ? sinCosPeriodicFactorRange
+                                        : periodicFactorRange);
 }
 
 auto Wave::GetPeriodicPart(const WaveEffect waveEffect,

@@ -65,9 +65,9 @@ protected:
   auto SetParams(const Params& params) noexcept -> void;
 
 private:
-  const Modes m_mode;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const UTILS::MATH::Weights<WaveEffect> m_weightedEffects;
+  Modes m_mode;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  UTILS::MATH::Weights<WaveEffect> m_weightedEffects;
   Params m_params;
   auto SetSqDistAngleEffectMode0RandomParams() noexcept -> void;
   auto SetSqDistAngleEffectMode1RandomParams() noexcept -> void;

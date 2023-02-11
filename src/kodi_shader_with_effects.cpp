@@ -14,7 +14,7 @@ KodiShaderWithEffects::KodiShaderWithEffects(CVisualizationGoom& cVisualizationG
                                              glm::mat4 projModelMatrix) noexcept
   : m_shaderDir{shaderDir},
     m_shaderWithEffects{projModelMatrix},
-    m_cVisualizationGoom{cVisualizationGoom}
+    m_cVisualizationGoom{&cVisualizationGoom}
 {
 }
 
@@ -30,13 +30,13 @@ inline auto KodiShaderWithEffects::GetFragmentShaderFilepath() const noexcept ->
 
 auto KodiShaderWithEffects::EnableShader() -> void
 {
-  m_cVisualizationGoom.EnableShader();
+  m_cVisualizationGoom->EnableShader();
   m_shaderWithEffects.InitProjModelMatrix();
 }
 
 auto KodiShaderWithEffects::DisableShader() -> void
 {
-  m_cVisualizationGoom.DisableShader();
+  m_cVisualizationGoom->DisableShader();
 }
 
 auto KodiShaderWithEffects::CreateGlShaders() -> void
@@ -44,16 +44,16 @@ auto KodiShaderWithEffects::CreateGlShaders() -> void
   const std::string vertexShaderFilePath   = GetVertexShaderFilepath();
   const std::string fragmentShaderFilePath = GetFragmentShaderFilepath();
 
-  if (not m_cVisualizationGoom.LoadShaderFiles(vertexShaderFilePath, fragmentShaderFilePath))
+  if (not m_cVisualizationGoom->LoadShaderFiles(vertexShaderFilePath, fragmentShaderFilePath))
   {
     throw std::runtime_error("CVisualizationGoom: Failed to load GL shaders.");
   }
-  if (not m_cVisualizationGoom.CompileAndLink())
+  if (not m_cVisualizationGoom->CompileAndLink())
   {
     throw std::runtime_error("CVisualizationGoom: Failed to compile GL shaders.");
   }
 
-  m_prog = m_cVisualizationGoom.ProgramHandle();
+  m_prog = m_cVisualizationGoom->ProgramHandle();
 
   m_shaderWithEffects.SetProgramHandle(m_prog);
   m_shaderWithEffects.InitShaderVariables();

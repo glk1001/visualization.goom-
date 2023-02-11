@@ -70,7 +70,7 @@ static constexpr auto POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS_WEIGHT = 1.0
 static constexpr auto ZERO_EFFECTS_WEIGHT                                  = 2.0F;
 
 Planes::Planes(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_params{
         {
             false, false,
@@ -89,7 +89,7 @@ Planes::Planes(const IGoomRand& goomRand) noexcept
         }
     },
     m_planeEffectWeights{
-      m_goomRand,
+      *m_goomRand,
       {
           { PlaneEffectEvents::ZERO_EFFECTS,       ZERO_EFFECTS_WEIGHT },
           { PlaneEffectEvents::SMALL_EFFECTS,      SMALL_PLANE_EFFECTS_WEIGHT },
@@ -108,7 +108,7 @@ Planes::Planes(const IGoomRand& goomRand) noexcept
 auto Planes::SetRandomParams(const Point2dInt& zoomMidpoint, const uint32_t screenWidth) -> void
 {
   SetParams(GetRandomParams(
-      m_goomRand, m_planeEffectWeights.GetRandomWeighted(), zoomMidpoint, screenWidth));
+      *m_goomRand, m_planeEffectWeights.GetRandomWeighted(), zoomMidpoint, screenWidth));
 }
 
 auto Planes::GetRandomParams(const IGoomRand& goomRand,

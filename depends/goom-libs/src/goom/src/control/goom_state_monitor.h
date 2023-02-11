@@ -20,9 +20,9 @@ public:
   [[nodiscard]] auto GetCurrentState() const -> std::string;
 
 private:
-  const GoomAllVisualFx& m_visualFx;
-  const GoomMusicSettingsReactor& m_musicSettingsReactor;
-  const FILTER_FX::FilterSettingsService& m_filterSettingsService;
+  const GoomAllVisualFx* m_visualFx;
+  const GoomMusicSettingsReactor* m_musicSettingsReactor;
+  const FILTER_FX::FilterSettingsService* m_filterSettingsService;
 
   [[nodiscard]] auto GetStateAndFilterModeNameValueParams() const -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetShaderVariablesNameValueParams() const -> UTILS::NameValuePairs;

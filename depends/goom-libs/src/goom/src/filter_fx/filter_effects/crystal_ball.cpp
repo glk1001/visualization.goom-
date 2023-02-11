@@ -2,7 +2,6 @@
 
 #include "filter_fx/common_types.h"
 #include "goom_config.h"
-#include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
@@ -46,7 +45,7 @@ static constexpr auto PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 
 CrystalBall::CrystalBall(const Modes mode, const IGoomRand& goomRand) noexcept
   : m_mode{mode},
-    m_goomRand{goomRand},
+    m_goomRand{&goomRand},
     m_params{
         {DEFAULT_AMPLITUDE,      DEFAULT_AMPLITUDE},
         {DEFAULT_SQ_DIST_MULT,   DEFAULT_SQ_DIST_MULT},
@@ -81,20 +80,20 @@ auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
                                   const SqDistMultRange& sqDistMultRange,
                                   const SqDistOffsetRange& sqDistOffsetRange) noexcept -> void
 {
-  const auto xAmplitude = m_goomRand.GetRandInRange(amplitudeRange.xRange);
-  const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange.xRange);
+  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
                               ? xAmplitude
-                              : m_goomRand.GetRandInRange(amplitudeRange.yRange);
+                              : m_goomRand->GetRandInRange(amplitudeRange.yRange);
 
-  const auto xSqDistMult = m_goomRand.GetRandInRange(sqDistMultRange.xRange);
-  const auto ySqDistMult = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_MULT_EQUAL)
+  const auto xSqDistMult = m_goomRand->GetRandInRange(sqDistMultRange.xRange);
+  const auto ySqDistMult = m_goomRand->ProbabilityOf(PROB_XY_SQ_DIST_MULT_EQUAL)
                                ? xSqDistMult
-                               : m_goomRand.GetRandInRange(sqDistMultRange.yRange);
+                               : m_goomRand->GetRandInRange(sqDistMultRange.yRange);
 
-  const auto xSqDistOffset = m_goomRand.GetRandInRange(sqDistOffsetRange.xRange);
-  const auto ySqDistOffset = m_goomRand.ProbabilityOf(PROB_XY_SQ_DIST_OFFSET_EQUAL)
+  const auto xSqDistOffset = m_goomRand->GetRandInRange(sqDistOffsetRange.xRange);
+  const auto ySqDistOffset = m_goomRand->ProbabilityOf(PROB_XY_SQ_DIST_OFFSET_EQUAL)
                                  ? xSqDistOffset
-                                 : m_goomRand.GetRandInRange(sqDistOffsetRange.yRange);
+                                 : m_goomRand->GetRandInRange(sqDistOffsetRange.yRange);
 
   SetParams({
       {   xAmplitude,    yAmplitude},

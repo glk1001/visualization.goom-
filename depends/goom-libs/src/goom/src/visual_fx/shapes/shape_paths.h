@@ -66,10 +66,9 @@ public:
   auto Draw(const DrawParams& drawParams) noexcept -> void;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer{m_draw};
+  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
   std::experimental::propagate_const<std::shared_ptr<UTILS::MATH::IPath>> m_path;
-  COLOR::RandomColorMapsManager& m_colorMapsManager;
+  COLOR::RandomColorMapsManager* m_colorMapsManager;
 
   ColorInfo m_colorInfo;
   static inline const std::set<COLOR::RandomColorMaps::ColorMapTypes> COLOR_MAP_TYPES =
@@ -156,21 +155,22 @@ inline auto ShapePath::GetColorInfo() const noexcept -> const ColorInfo&
 inline auto ShapePath::UpdateMainColorInfo(
     const std::shared_ptr<const COLOR::RandomColorMaps>& mainColorMaps) noexcept -> void
 {
-  m_colorMapsManager.UpdateColorMapInfo(m_colorInfo.mainColorMapId,
-                                        {mainColorMaps, COLOR_MAP_TYPES});
+  m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.mainColorMapId,
+                                         {mainColorMaps, COLOR_MAP_TYPES});
 }
 
 inline auto ShapePath::UpdateLowColorInfo(
     const std::shared_ptr<const COLOR::RandomColorMaps>& lowColorMaps) noexcept -> void
 {
-  m_colorMapsManager.UpdateColorMapInfo(m_colorInfo.lowColorMapId, {lowColorMaps, COLOR_MAP_TYPES});
+  m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.lowColorMapId,
+                                         {lowColorMaps, COLOR_MAP_TYPES});
 }
 
 inline auto ShapePath::UpdateInnerColorInfo(
     const std::shared_ptr<const COLOR::RandomColorMaps>& innerColorMaps) noexcept -> void
 {
-  m_colorMapsManager.UpdateColorMapInfo(m_colorInfo.innerColorMapId,
-                                        {innerColorMaps, COLOR_MAP_TYPES});
+  m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.innerColorMapId,
+                                         {innerColorMaps, COLOR_MAP_TYPES});
 }
 
 inline auto ShapePath::SetChromaFactor(const float val) noexcept -> void

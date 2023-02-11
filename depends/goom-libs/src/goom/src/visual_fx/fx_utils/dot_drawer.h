@@ -60,18 +60,17 @@ public:
                float brightness) noexcept -> void;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer{m_draw};
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
+  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer;
 
-  static constexpr uint32_t MIN_IMAGE_DOT_SIZE = 3;
-  static constexpr uint32_t MAX_IMAGE_DOT_SIZE = 15;
-  uint32_t m_currentDotSize                    = MIN_IMAGE_DOT_SIZE;
-  bool m_beadedLook                            = false;
-  uint32_t m_maxBeadedDotSize                  = MAX_IMAGE_DOT_SIZE;
-  const UTILS::MATH::Weights<DotSizes> m_minDotSizes;
-  const UTILS::MATH::Weights<DotSizes> m_normalDotSizes;
+  static constexpr auto MIN_IMAGE_DOT_SIZE = 3U;
+  static constexpr auto MAX_IMAGE_DOT_SIZE = 15U;
+  uint32_t m_currentDotSize                = MIN_IMAGE_DOT_SIZE;
+  bool m_beadedLook                        = false;
+  uint32_t m_maxBeadedDotSize              = MAX_IMAGE_DOT_SIZE;
+  UTILS::MATH::Weights<DotSizes> m_minDotSizes;
+  UTILS::MATH::Weights<DotSizes> m_normalDotSizes;
   [[nodiscard]] auto GetNextDotSize(uint32_t maxSize) const noexcept -> uint32_t;
   [[nodiscard]] auto GetImageBitmap(uint32_t size) const noexcept
       -> const UTILS::GRAPHICS::ImageBitmap&;

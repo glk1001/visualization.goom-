@@ -14,8 +14,7 @@ public:
   static constexpr float DEFAULT_CONTRAST   = 1.0F;
   static constexpr float DEFAULT_BRIGHTNESS = 1.0F;
 
-  explicit HighContrast(const PluginInfo& goomInfo,
-                        const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  HighContrast(const PluginInfo& goomInfo, const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   void Start();
 
@@ -26,8 +25,8 @@ public:
   [[nodiscard]] auto GetCurrentContrastMinChannelValue() const -> float;
 
 private:
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   float m_currentContrast                = DEFAULT_CONTRAST;
   float m_currentBrightness              = DEFAULT_BRIGHTNESS;

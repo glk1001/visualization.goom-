@@ -28,7 +28,7 @@ public:
   [[nodiscard]] auto GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
-  const uint32_t m_screenWidth;
+  uint32_t m_screenWidth;
   AfterEffects m_afterEffects;
   AfterEffectsStates::AfterEffectsSettings m_afterEffectsSettings{};
   RotationAdjustments m_rotationAdjustments{};

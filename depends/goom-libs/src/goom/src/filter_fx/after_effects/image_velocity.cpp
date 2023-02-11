@@ -18,7 +18,7 @@ static constexpr auto ZOOM_FACTOR_RANGE  = IGoomRand::NumberRange<float>{0.5F, 1
 static constexpr auto PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
 ImageVelocity::ImageVelocity(const IGoomRand& goomRand, const std::string& resourcesDirectory)
-  : m_goomRand{goomRand}, m_imageDisplacementList{resourcesDirectory, m_goomRand}
+  : m_goomRand{&goomRand}, m_imageDisplacementList{resourcesDirectory, *m_goomRand}
 {
   if (!resourcesDirectory.empty())
   {
@@ -30,15 +30,15 @@ auto ImageVelocity::SetRandomParams() -> void
 {
   m_imageDisplacementList.SetRandomImageDisplacement();
 
-  const auto xColorCutoff = m_goomRand.GetRandInRange(COLOR_CUTOFF_RANGE);
+  const auto xColorCutoff = m_goomRand->GetRandInRange(COLOR_CUTOFF_RANGE);
 
   m_imageDisplacementList.SetParams({
-      m_goomRand.GetRandInRange(AMPLITUDE_RANGE),
+      m_goomRand->GetRandInRange(AMPLITUDE_RANGE),
       xColorCutoff,
-      m_goomRand.ProbabilityOf(PROB_XY_COLOR_CUTOFFS_EQUAL)
+      m_goomRand->ProbabilityOf(PROB_XY_COLOR_CUTOFFS_EQUAL)
           ? xColorCutoff
-          : m_goomRand.GetRandInRange(COLOR_CUTOFF_RANGE),
-      m_goomRand.GetRandInRange(ZOOM_FACTOR_RANGE),
+          : m_goomRand->GetRandInRange(COLOR_CUTOFF_RANGE),
+      m_goomRand->GetRandInRange(ZOOM_FACTOR_RANGE),
   });
 }
 

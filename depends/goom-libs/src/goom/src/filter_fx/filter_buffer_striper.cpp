@@ -23,8 +23,8 @@ ZoomFilterBufferStriper::ZoomFilterBufferStriper(
     const NormalizedCoordsConverter& normalizedCoordsConverter,
     const ZoomPointFunc& zoomPointFunc) noexcept
   : m_dimensions{goomInfo.GetScreenDimensions()},
-    m_normalizedCoordsConverter{normalizedCoordsConverter},
-    m_parallel{parallel},
+    m_normalizedCoordsConverter{&normalizedCoordsConverter},
+    m_parallel{&parallel},
     m_getZoomPoint{zoomPointFunc},
     m_tranBuffer(m_dimensions.GetSize())
 {
@@ -63,7 +63,7 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
     auto tranBufferPos      = yScreenCoord * screenWidth;
 
     auto centredSourceCoords =
-        m_normalizedCoordsConverter.OtherToNormalizedCoords(Point2dInt{0U, yScreenCoord}) -
+        m_normalizedCoordsConverter->OtherToNormalizedCoords(Point2dInt{0U, yScreenCoord}) -
         m_normalizedMidpoint;
     auto centredSourceViewportCoords = m_filterViewport.GetViewportCoords(centredSourceCoords);
 
@@ -85,7 +85,7 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
       std::min(m_dimensions.GetHeight(), m_tranBuffYLineStart + tranBuffStripeHeight);
   const auto numStripes = static_cast<size_t>(tranBuffYLineEnd - m_tranBuffYLineStart);
 
-  m_parallel.ForLoop(numStripes, doStripeLine);
+  m_parallel->ForLoop(numStripes, doStripeLine);
 
   m_tranBuffYLineStart += tranBuffStripeHeight;
   if (tranBuffYLineEnd >= m_dimensions.GetHeight())

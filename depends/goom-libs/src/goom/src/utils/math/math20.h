@@ -1,3 +1,5 @@
+// NOLINTBEGIN: Not my code
+
 #pragma once
 
 #include <cmath>
@@ -100,3 +102,5 @@ template<typename _Fp>
 }
 
 } // namespace STD20
+
+// NOLINTEND: Not my code

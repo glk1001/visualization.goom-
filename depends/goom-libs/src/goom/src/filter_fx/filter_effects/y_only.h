@@ -51,7 +51,7 @@ protected:
   auto SetParams(const Params& params) noexcept -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
   [[nodiscard]] auto GetYOnlyZoomInMultiplier(YOnlyEffect effect,
                                               const NormalizedCoords& coords) const noexcept

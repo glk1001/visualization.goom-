@@ -21,7 +21,7 @@ public:
       -> COLOR::RandomColorMapsGroups::Groups;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   using ColorMatchedSet = UTILS::EnumMap<GoomEffect, COLOR::RandomColorMapsGroups::Groups>;
   enum class ColorMatchedSets
@@ -51,9 +51,9 @@ private:
   };
   using ColorMatchedSetsMap = UTILS::EnumMap<ColorMatchedSets, ColorMatchedSet>;
   [[nodiscard]] auto MakeColorMatchedSetsMap() const noexcept -> ColorMatchedSetsMap;
-  const ColorMatchedSetsMap m_colorMatchedSetsMap{MakeColorMatchedSetsMap()};
+  ColorMatchedSetsMap m_colorMatchedSetsMap{MakeColorMatchedSetsMap()};
 
-  const UTILS::MATH::Weights<ColorMatchedSets> m_colorMatchedSetsWeights;
+  UTILS::MATH::Weights<ColorMatchedSets> m_colorMatchedSetsWeights;
   [[nodiscard]] auto GetNextRandomColorMatchedSet() const noexcept -> const ColorMatchedSet&;
   const ColorMatchedSet* m_currentColorMatchedSet{&GetNextRandomColorMatchedSet()};
 

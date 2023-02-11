@@ -42,8 +42,8 @@ protected:
   auto SetParams(const Params& params) noexcept -> void;
 
 private:
-  const Modes m_mode;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  Modes m_mode;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;
@@ -80,7 +80,7 @@ inline auto Speedway::GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
   auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
@@ -97,7 +97,7 @@ inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
     -> Point2dFlt
 {
   auto xAdd = -1.0F;
-  if (static constexpr auto PROB_RANDOM_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_RANDOM_X_ADD))
+  if (static constexpr auto PROB_RANDOM_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_RANDOM_X_ADD))
   {
     static constexpr auto MIN_NEGATIVE_X_ADD  = -1.9F;
     static constexpr auto MAX_NEGATIVE_X_ADD  = -0.5F;
@@ -105,11 +105,11 @@ inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
     static constexpr auto MAX_POSITIVE_X_ADD  = +1.9F;
     static constexpr auto PROB_NEGATIVE_X_ADD = 0.5F;
 
-    xAdd = m_goomRand.ProbabilityOf(PROB_NEGATIVE_X_ADD)
-               ? m_goomRand.GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
-               : m_goomRand.GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
+    xAdd = m_goomRand->ProbabilityOf(PROB_NEGATIVE_X_ADD)
+               ? m_goomRand->GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
+               : m_goomRand->GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
   }
-  else if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  else if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }
@@ -135,7 +135,7 @@ inline auto Speedway::GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
   auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand.ProbabilityOf(PROB_FLIP_X_ADD))
+  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_FLIP_X_ADD))
   {
     xAdd = -xAdd;
   }

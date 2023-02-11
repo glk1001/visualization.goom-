@@ -33,7 +33,6 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::MultiplePixels;
 using std::experimental::propagate_const;
-using STD20::pi;
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -179,7 +178,7 @@ public:
   void UpdateTimers();
 
 private:
-  const TubeData m_data;
+  TubeData m_data;
   propagate_const<std::unique_ptr<ShapeColorizer>> m_colorizer{
       std::make_unique<ShapeColorizer>(m_data, NUM_SHAPES_PER_TUBE, MAX_NUM_CIRCLES_IN_GROUP)};
   bool m_active                                = true;
@@ -197,7 +196,7 @@ private:
       -> std::vector<Shape>;
 
   Timer m_circleGroupTimer{
-      m_data.goomRand.GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP)};
+      m_data.goomRand->GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP)};
   Timer m_interiorShapeTimer{MAX_INTERIOR_SHAPES_TIME};
   Timer m_noBoundaryShapeTimer{MAX_NO_BOUNDARY_SHAPES_TIME};
   Timer m_hexDotShapeTimer{MAX_HEX_DOT_SHAPES_TIME, true};
@@ -208,7 +207,7 @@ private:
 
   Timer m_lowColorTypeTimer{MAX_LOW_COLOR_TYPE_TIME};
   LowColorTypes m_currentLowColorType = LowColorTypes::TRUE_LOW_COLOR;
-  const Weights<LowColorTypes> m_lowColorTypes;
+  Weights<LowColorTypes> m_lowColorTypes;
 
   void DrawShape(const Shape& shape, const Vec2dInt& centreOffset) const;
   void DrawInteriorShape(const Point2dInt& shapeCentrePos, const ShapeColors& allColors) const;
@@ -343,7 +342,7 @@ private:
   TubeData m_data;
 
   static constexpr auto GAMMA = 1.0F;
-  const ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
   std::vector<ShapeColors> m_oldShapeColors;
@@ -362,7 +361,7 @@ private:
   ColorMapMixMode m_colorMapMixMode             = ColorMapMixMode::CIRCLES_ONLY;
   static constexpr uint32_t NUM_MIX_COLOR_STEPS = 1000;
   TValue m_mixT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MIX_COLOR_STEPS};
-  const Weights<ColorMapMixMode> m_colorMapMixModes;
+  Weights<ColorMapMixMode> m_colorMapMixModes;
 
   static constexpr uint32_t NUM_STEPS_FROM_OLD = 50;
   TValue m_oldT{TValue::StepType::SINGLE_CYCLE, NUM_STEPS_FROM_OLD};
@@ -400,7 +399,7 @@ private:
                                                   const ShapeColors& colors2,
                                                   float mixT) -> Pixel;
   static constexpr float CUTOFF_BRIGHTNESS = 0.005F;
-  const BrightnessAttenuation m_brightnessAttenuation;
+  BrightnessAttenuation m_brightnessAttenuation;
   [[nodiscard]] auto GetFinalColor(const Pixel& oldColor, const Pixel& color) const -> Pixel;
   [[nodiscard]] auto GetShapesOnlyColors(const LowColorTypes& lowColorType,
                                          const Shape& shape,
@@ -422,7 +421,7 @@ Tube::TubeImpl::TubeImpl(const TubeData& data, const OscillatingFunction::Params
   : m_data{data},
     m_shapes{GetInitialShapes(m_data, pathParams)},
     m_lowColorTypes{
-        m_data.goomRand,
+        *m_data.goomRand,
         {
             {LowColorTypes::TRUE_LOW_COLOR,      TRUE_LOW_COLOR_WEIGHT},
             {LowColorTypes::MAIN_COLOR,          MAIN_COLOR_WEIGHT},
@@ -493,7 +492,7 @@ void Tube::TubeImpl::ResetColorMaps()
 {
   m_colorizer->ResetColorMaps();
   m_circleGroupTimer.SetTimeLimit(
-      m_data.goomRand.GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP));
+      m_data.goomRand->GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP));
 }
 
 inline void Tube::TubeImpl::RotateShapeColorMaps()
@@ -558,14 +557,14 @@ inline void Tube::TubeImpl::SetCentreSpeed(const float val)
 
 inline void Tube::TubeImpl::IncreaseCentreSpeed()
 {
-  const auto factor   = m_data.goomRand.GetRandInRange(1.01F, 10.0F);
+  const auto factor   = m_data.goomRand->GetRandInRange(1.01F, 10.0F);
   const auto newSpeed = std::min(MAX_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
 
 inline void Tube::TubeImpl::DecreaseCentreSpeed()
 {
-  const auto factor   = m_data.goomRand.GetRandInRange(0.1F, 0.99F);
+  const auto factor   = m_data.goomRand->GetRandInRange(0.1F, 0.99F);
   const auto newSpeed = std::min(MIN_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
@@ -602,7 +601,7 @@ inline void Tube::TubeImpl::IncreaseCircleSpeed()
   static constexpr auto MIN_INCREASE_SPEED_FACTOR = 1.01F;
   static constexpr auto MAX_INCREASE_SPEED_FACTOR = 10.0F;
   const auto factor =
-      m_data.goomRand.GetRandInRange(MIN_INCREASE_SPEED_FACTOR, MAX_INCREASE_SPEED_FACTOR);
+      m_data.goomRand->GetRandInRange(MIN_INCREASE_SPEED_FACTOR, MAX_INCREASE_SPEED_FACTOR);
 
   const auto newSpeed = std::min(MAX_CIRCLE_SPEED, GetCircleSpeed() * factor);
   SetCircleSpeed(newSpeed);
@@ -613,7 +612,7 @@ inline void Tube::TubeImpl::DecreaseCircleSpeed()
   static constexpr auto MIN_DECREASE_SPEED_FACTOR = 0.1F;
   static constexpr auto MAX_DECREASE_SPEED_FACTOR = 0.99F;
   const auto factor =
-      m_data.goomRand.GetRandInRange(MIN_DECREASE_SPEED_FACTOR, MAX_DECREASE_SPEED_FACTOR);
+      m_data.goomRand->GetRandInRange(MIN_DECREASE_SPEED_FACTOR, MAX_DECREASE_SPEED_FACTOR);
 
   const auto newSpeed = std::max(MIN_CIRCLE_SPEED, GetCircleSpeed() * factor);
   SetCircleSpeed(newSpeed);
@@ -656,19 +655,19 @@ inline void Tube::TubeImpl::UpdateTimers()
   }
 
   m_interiorShapeTimer.Increment();
-  if (m_interiorShapeTimer.Finished() && m_data.goomRand.ProbabilityOf(PROB_INTERIOR_SHAPE))
+  if (m_interiorShapeTimer.Finished() && m_data.goomRand->ProbabilityOf(PROB_INTERIOR_SHAPE))
   {
     m_interiorShapeTimer.ResetToZero();
   }
 
   m_noBoundaryShapeTimer.Increment();
-  if (m_noBoundaryShapeTimer.Finished() && m_data.goomRand.ProbabilityOf(PROB_NO_BOUNDARY_SHAPES))
+  if (m_noBoundaryShapeTimer.Finished() && m_data.goomRand->ProbabilityOf(PROB_NO_BOUNDARY_SHAPES))
   {
     m_noBoundaryShapeTimer.ResetToZero();
   }
 
   m_hexDotShapeTimer.Increment();
-  if (m_hexDotShapeTimer.Finished() && m_data.goomRand.ProbabilityOf(PROB_HEX_DOT_SHAPE))
+  if (m_hexDotShapeTimer.Finished() && m_data.goomRand->ProbabilityOf(PROB_HEX_DOT_SHAPE))
   {
     m_hexDotShapeTimer.ResetToZero();
   }
@@ -678,7 +677,7 @@ inline void Tube::TubeImpl::UpdateTimers()
   {
     m_currentLowColorType = m_lowColorTypes.GetRandomWeighted();
     m_lowColorTypeTimer.SetTimeLimit(
-        m_data.goomRand.GetRandInRange(MIN_LOW_COLOR_TYPE_TIME, MAX_LOW_COLOR_TYPE_TIME + 1));
+        m_data.goomRand->GetRandInRange(MIN_LOW_COLOR_TYPE_TIME, MAX_LOW_COLOR_TYPE_TIME + 1));
   }
 }
 
@@ -687,12 +686,12 @@ inline auto Tube::TubeImpl::GetInteriorShapeSize(const float hexLen) const -> ui
   static constexpr auto MIN_SIZE_FACTOR = 0.5F;
   static constexpr auto MAX_SIZE_FACTOR = 1.3F;
   return static_cast<uint32_t>(
-      std::round(m_data.goomRand.GetRandInRange(MIN_SIZE_FACTOR, MAX_SIZE_FACTOR) * hexLen));
+      std::round(m_data.goomRand->GetRandInRange(MIN_SIZE_FACTOR, MAX_SIZE_FACTOR) * hexLen));
 }
 
 void Tube::TubeImpl::DrawShape(const Shape& shape, const Vec2dInt& centreOffset) const
 {
-  const auto jitterXOffset  = m_data.goomRand.GetRandInRange(0, m_maxJitterOffset + 1);
+  const auto jitterXOffset  = m_data.goomRand->GetRandInRange(0, m_maxJitterOffset + 1);
   const auto jitterYOffset  = jitterXOffset;
   const auto jitterOffset   = Vec2dInt{jitterXOffset, jitterYOffset};
   const auto shapeCentrePos = shape.path->GetNextPoint() + jitterOffset + centreOffset;
@@ -791,7 +790,7 @@ ShapeColorizer::ShapeColorizer(const TubeData& data,
     m_outerCircleMainColorMap{&m_data.mainColorMaps->GetRandomColorMap()},
     m_outerCircleLowColorMap{&m_data.lowColorMaps->GetRandomColorMap()},
     m_colorMapMixModes{
-        m_data.goomRand,
+        *m_data.goomRand,
         {
             {ColorMapMixMode::SHAPES_ONLY,                SHAPES_ONLY_WEIGHT},
             {ColorMapMixMode::STRIPED_SHAPES_ONLY,        STRIPED_SHAPES_ONLY_WEIGHT},
@@ -845,7 +844,7 @@ void ShapeColorizer::ResetColorMaps()
   ResetColorMixMode();
   ResetColorMapsLists();
 
-  m_stripeWidth = m_data.goomRand.GetRandInRange(MIN_STRIPE_WIDTH, MAX_STRIPE_WIDTH + 1);
+  m_stripeWidth = m_data.goomRand->GetRandInRange(MIN_STRIPE_WIDTH, MAX_STRIPE_WIDTH + 1);
 }
 
 inline void ShapeColorizer::ResetColorMapsLists()

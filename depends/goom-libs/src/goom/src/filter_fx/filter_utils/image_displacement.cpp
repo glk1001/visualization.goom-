@@ -5,7 +5,6 @@
 #include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 
-#include <cmath>
 #include <memory>
 
 namespace GOOM::FILTER_FX::FILTER_UTILS

@@ -24,7 +24,7 @@ const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
 
 ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirectory,
                                              const IGoomRand& goomRand)
-  : m_resourcesDirectory{resourcesDirectory}, m_goomRand{goomRand}
+  : m_resourcesDirectory{resourcesDirectory}, m_goomRand{&goomRand}
 {
   if (m_resourcesDirectory.empty())
   {
@@ -33,14 +33,14 @@ ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirecto
 
   for (const auto& imageFilename : IMAGE_FILENAMES)
   {
-    m_imageDisplacements.emplace_back(GetImageFilename(imageFilename), m_goomRand);
+    m_imageDisplacements.emplace_back(GetImageFilename(imageFilename), *m_goomRand);
   }
 }
 
 auto ImageDisplacementList::SetRandomImageDisplacement() -> void
 {
   m_currentImageDisplacementIndex =
-      m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(m_imageDisplacements.size()));
+      m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(m_imageDisplacements.size()));
 }
 
 auto ImageDisplacementList::GetImageFilename(const std::string& imageFilename) const -> std::string

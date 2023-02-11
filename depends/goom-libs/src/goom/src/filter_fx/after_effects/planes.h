@@ -70,7 +70,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
   enum class PlaneEffectEvents
   {
@@ -83,7 +83,7 @@ private:
     POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS,
     _num // unused, and marks the enum end
   };
-  const UTILS::MATH::Weights<PlaneEffectEvents> m_planeEffectWeights;
+  UTILS::MATH::Weights<PlaneEffectEvents> m_planeEffectWeights;
 
   [[nodiscard]] static auto GetRandomParams(const UTILS::MATH::IGoomRand& goomRand,
                                             PlaneEffectEvents planeEffectsEvent,

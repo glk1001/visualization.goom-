@@ -35,9 +35,9 @@ public:
   [[nodiscard]] auto BVal() const -> double { return m_b; }
 
 private:
-  const double m_amplitude = 1;
-  double m_k               = 1;
-  double m_b               = 1;
+  double m_amplitude = 1;
+  double m_k         = 1;
+  double m_b         = 1;
 };
 
 class FlatDampingFunction : public IDampingFunction
@@ -48,7 +48,7 @@ public:
   auto operator()(double x) -> double override;
 
 private:
-  const double m_y = 0.0;
+  double m_y = 0.0;
 };
 
 class LinearDampingFunction : public IDampingFunction
@@ -59,9 +59,9 @@ public:
   auto operator()(double x) -> double override;
 
 private:
-  const double m_m  = 1;
-  const double m_x1 = 0;
-  const double m_y1 = 1;
+  double m_m  = 1.0;
+  double m_x1 = 0.0;
+  double m_y1 = 1.0;
 };
 
 class PiecewiseDampingFunction : public IDampingFunction
@@ -73,7 +73,7 @@ public:
   auto operator()(double x) -> double override;
 
 private:
-  const std::vector<std::tuple<double, double, std::unique_ptr<IDampingFunction>>> m_pieces{};
+  std::vector<std::tuple<double, double, std::unique_ptr<IDampingFunction>>> m_pieces{};
 };
 
 class ISequenceFunction

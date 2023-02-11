@@ -28,13 +28,13 @@ public:
   [[nodiscard]] auto GetSoundEvents() const -> const CONTROL::GoomSoundEvents&;
 
 private:
-  const Dimensions m_dimensions;
-  const CONTROL::GoomSoundEvents& m_soundEvents;
+  Dimensions m_dimensions;
+  const CONTROL::GoomSoundEvents* m_soundEvents;
 };
 
 inline PluginInfo::PluginInfo(const Dimensions& dimensions,
                               const CONTROL::GoomSoundEvents& soundEvents) noexcept
-  : m_dimensions{dimensions}, m_soundEvents{soundEvents}
+  : m_dimensions{dimensions}, m_soundEvents{&soundEvents}
 {
   Expects(dimensions.GetWidth() > 0);
   Expects(dimensions.GetHeight() > 0);
@@ -62,7 +62,7 @@ inline auto PluginInfo::GetScreenSize() const noexcept -> uint32_t
 
 inline auto PluginInfo::GetSoundEvents() const -> const CONTROL::GoomSoundEvents&
 {
-  return m_soundEvents;
+  return *m_soundEvents;
 }
 
 } // namespace GOOM

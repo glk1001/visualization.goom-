@@ -26,9 +26,11 @@ StarDrawer::StarDrawer(IGoomDraw& draw,
                        const IGoomRand& goomRand,
                        const SmallImageBitmaps& smallBitmaps,
                        const GetMixedColorsFunc& getMixedColorsFunc) noexcept
-  : m_draw{draw},
-    m_goomRand{goomRand},
-    m_smallBitmaps{smallBitmaps},
+  : m_goomRand{&goomRand},
+    m_smallBitmaps{&smallBitmaps},
+    m_bitmapDrawer{draw},
+    m_circleDrawer{draw},
+    m_lineDrawer{draw},
     m_getMixedColorsFunc{getMixedColorsFunc},
     m_drawFuncs{{{
         {DrawElementTypes::CIRCLES,
@@ -111,10 +113,10 @@ inline auto StarDrawer::GetPartMultiplier() const noexcept -> float
 {
   if (m_currentActualDrawElement == DrawElementTypes::LINES)
   {
-    return m_goomRand.GetRandInRange(1.0F, GetLineMaxPartMultiplier());
+    return m_goomRand->GetRandInRange(1.0F, GetLineMaxPartMultiplier());
   }
 
-  return m_goomRand.GetRandInRange(1.0F, GetMaxPartMultiplier());
+  return m_goomRand->GetRandInRange(1.0F, GetMaxPartMultiplier());
 }
 
 inline auto StarDrawer::GetMaxPartMultiplier() const noexcept -> float
@@ -156,7 +158,7 @@ inline auto StarDrawer::GetNumPartsAndElementSize(const float tAge) const noexce
 {
   if (static constexpr auto T_OLD_AGE = 0.95F; tAge > T_OLD_AGE)
   {
-    return {m_currentMaxNumParts, m_goomRand.GetRandInRange(MIN_DOT_SIZE, MAX_DOT_SIZE + 1)};
+    return {m_currentMaxNumParts, m_goomRand->GetRandInRange(MIN_DOT_SIZE, MAX_DOT_SIZE + 1)};
   }
 
   static constexpr auto MIN_ELEMENT_SIZE = 1U;
@@ -204,8 +206,8 @@ inline auto StarDrawer::DrawParticleDot(const Point2dInt& point1,
 
 inline auto StarDrawer::GetImageBitmap(const uint32_t size) const noexcept -> const ImageBitmap&
 {
-  return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
-                                       std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
+  return m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
+                                        std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
 }
 
 } //namespace GOOM::VISUAL_FX::FLYING_STARS

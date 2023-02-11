@@ -7,8 +7,8 @@
 #include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
 #include "goom_graphic.h"
+#include "goom_logger.h"
 #include "goom_music_settings_reactor.h"
-#include "logging.h"
 #include "utils/date_utils.h"
 
 #include <filesystem>
@@ -108,10 +108,10 @@ GoomStateDump::GoomStateDump(const PluginInfo& goomInfo,
                              const GoomAllVisualFx& visualFx,
                              [[maybe_unused]] const GoomMusicSettingsReactor& musicSettingsReactor,
                              const FilterSettingsService& filterSettingsService) noexcept
-  : m_goomInfo{goomInfo},
-    m_visualFx{visualFx},
+  : m_goomInfo{&goomInfo},
+    m_visualFx{&visualFx},
     //    m_musicSettingsReactor{musicSettingsReactor},
-    m_filterSettingsService{filterSettingsService},
+    m_filterSettingsService{&filterSettingsService},
     m_cumulativeState{std::make_unique<CumulativeState>()}
 {
 }
@@ -133,10 +133,10 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   m_cumulativeState->AddCurrentUpdateTime(timeOfUpdateInMs);
   m_prevTimeHiRes = timeNow;
 
-  m_cumulativeState->AddCurrentGoomState(m_visualFx.GetCurrentState());
-  m_cumulativeState->AddCurrentFilterMode(m_filterSettingsService.GetCurrentFilterMode());
+  m_cumulativeState->AddCurrentGoomState(m_visualFx->GetCurrentState());
+  m_cumulativeState->AddCurrentFilterMode(m_filterSettingsService->GetCurrentFilterMode());
 
-  const auto filterSettings = m_filterSettingsService.GetFilterSettings();
+  const auto filterSettings = m_filterSettingsService->GetFilterSettings();
 
   const auto filterColorSettings = filterSettings.filterColorSettings;
   m_cumulativeState->AddCurrentBlockyWavyEffect(filterColorSettings.blockyWavy);
@@ -150,7 +150,7 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   m_cumulativeState->AddCurrentTanEffect(filterEffectsSettings.tanEffect);
   m_cumulativeState->AddCurrentXYLerpEffect(filterEffectsSettings.xyLerpEffect);
 
-  m_cumulativeState->AddBufferLerp(m_visualFx.GetZoomFilterFx().GetTranLerpFactor());
+  m_cumulativeState->AddBufferLerp(m_visualFx->GetZoomFilterFx().GetTranLerpFactor());
 
   const auto& goomSoundEvents = m_goomInfo.GetSoundEvents();
   m_cumulativeState->AddCurrentTimeSinceLastGoom(goomSoundEvents.GetTimeSinceLastGoom());

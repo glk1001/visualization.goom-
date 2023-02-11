@@ -35,11 +35,11 @@ public:
               const std::vector<GetBitmapColorFunc>& getColors) noexcept -> void;
 
 private:
-  IGoomDraw& m_draw;
+  IGoomDraw* m_draw;
   mutable GOOM::UTILS::Parallel m_parallel{-1}; // max cores - 1
 };
 
-inline BitmapDrawer::BitmapDrawer(IGoomDraw& draw) noexcept : m_draw{draw}
+inline BitmapDrawer::BitmapDrawer(IGoomDraw& draw) noexcept : m_draw{&draw}
 {
 }
 

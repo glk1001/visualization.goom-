@@ -41,8 +41,8 @@ protected:
   auto SetParams(const Params& params) noexcept -> void;
 
 private:
-  const Modes m_mode;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  Modes m_mode;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;

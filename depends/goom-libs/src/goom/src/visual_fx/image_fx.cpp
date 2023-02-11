@@ -76,9 +76,8 @@ public:
 
 private:
   using ImageAsChunks = std::vector<ImageChunk>;
-  const std::shared_ptr<ImageBitmap> m_image;
-  const PluginInfo& m_goomInfo;
-  ImageAsChunks m_imageAsChunks{SplitImageIntoChunks(*m_image, m_goomInfo)};
+  std::shared_ptr<ImageBitmap> m_image;
+  ImageAsChunks m_imageAsChunks;
   std::vector<Point2dInt> m_startPositions;
   [[nodiscard]] static auto SplitImageIntoChunks(const ImageBitmap& imageBitmap,
                                                  const PluginInfo& goomInfo) -> ImageAsChunks;
@@ -103,23 +102,21 @@ public:
   auto ApplyMultiple() -> void;
 
 private:
-  Parallel& m_parallel;
-  IGoomDraw& m_draw;
-  PixelDrawer m_pixelDrawer{m_draw};
-  const PluginInfo& m_goomInfo;
-  const IGoomRand& m_goomRand;
-  const std::string m_resourcesDirectory;
+  Parallel* m_parallel;
+  const PluginInfo* m_goomInfo;
+  const IGoomRand* m_goomRand;
+  PixelDrawer m_pixelDrawer;
+  std::string m_resourcesDirectory;
 
-  const int32_t m_availableWidth{static_cast<int32_t>(m_goomInfo.GetScreenWidth() - CHUNK_WIDTH)};
-  const int32_t m_availableHeight{
-      static_cast<int32_t>(m_goomInfo.GetScreenHeight() - CHUNK_HEIGHT)};
-  const Point2dInt m_screenCentre{I_HALF * m_availableWidth, I_HALF* m_availableHeight};
-  const float m_maxRadius{HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight))};
+  int32_t m_availableWidth  = static_cast<int32_t>(m_goomInfo->GetScreenWidth() - CHUNK_WIDTH);
+  int32_t m_availableHeight = static_cast<int32_t>(m_goomInfo->GetScreenHeight() - CHUNK_HEIGHT);
+  Point2dInt m_screenCentre{I_HALF * m_availableWidth, I_HALF* m_availableHeight};
+  float m_maxRadius = HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight));
   [[nodiscard]] auto GetNewRandBrightnessFactor() const -> float;
   float m_randBrightnessFactor{GetNewRandBrightnessFactor()};
 
   std::shared_ptr<const RandomColorMaps> m_colorMaps{
-      RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
+      RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
   const IColorMap* m_currentColorMap{&GetRandomColorMap()};
   [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
   bool m_pixelColorIsDominant                    = false;
@@ -157,7 +154,7 @@ private:
   [[nodiscard]] auto GetChunkFloatingStartPosition(size_t i) const -> Point2dInt;
 
   static constexpr float GAMMA = 1.0F;
-  const ColorAdjustment m_colorAdjust{GAMMA};
+  ColorAdjustment m_colorAdjust{GAMMA};
 };
 
 ImageFx::ImageFx(Parallel& parallel,
@@ -205,10 +202,10 @@ auto ImageFx::ApplyMultiple() noexcept -> void
 ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
                                   const FxHelper& fxHelper,
                                   const std::string& resourcesDirectory) noexcept
-  : m_parallel{parallel},
-    m_draw{fxHelper.GetDraw()},
-    m_goomInfo{fxHelper.GetGoomInfo()},
-    m_goomRand{fxHelper.GetGoomRand()},
+  : m_parallel{&parallel},
+    m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()},
+    m_pixelDrawer{fxHelper.GetDraw()},
     m_resourcesDirectory{resourcesDirectory}
 {
 }
@@ -231,7 +228,7 @@ inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
   Expects(weightedColorMaps.mainColorMaps != nullptr);
 
   m_colorMaps            = weightedColorMaps.mainColorMaps;
-  m_pixelColorIsDominant = m_goomRand.ProbabilityOf(0.0F);
+  m_pixelColorIsDominant = m_goomRand->ProbabilityOf(0.0F);
   m_randBrightnessFactor = GetNewRandBrightnessFactor();
 }
 
@@ -241,13 +238,13 @@ inline auto ImageFx::ImageFxImpl::GetNewRandBrightnessFactor() const -> float
   static constexpr auto MAX_FACTOR = 2.0F;
   const auto maxRadiusSq           = Sq(m_maxRadius);
 
-  return 1.0F / m_goomRand.GetRandInRange(MIN_FACTOR * maxRadiusSq, MAX_FACTOR * maxRadiusSq);
+  return 1.0F / m_goomRand->GetRandInRange(MIN_FACTOR * maxRadiusSq, MAX_FACTOR * maxRadiusSq);
 }
 
 inline auto ImageFx::ImageFxImpl::Resume() -> void
 {
   static constexpr auto MIN_BRIGHTNESS = 0.1F;
-  m_brightnessBase = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, 1.0F) * DEFAULT_BRIGHTNESS_BASE;
+  m_brightnessBase = m_goomRand->GetRandInRange(MIN_BRIGHTNESS, 1.0F) * DEFAULT_BRIGHTNESS_BASE;
 }
 
 inline auto ImageFx::ImageFxImpl::Start() -> void
@@ -277,7 +274,7 @@ auto ImageFx::ImageFxImpl::InitImage() -> void
   };
   auto randImageIndexes = std::array<size_t, s_IMAGE_FILENAMES.size()>{};
   std::iota(begin(randImageIndexes), end(randImageIndexes), 0);
-  m_goomRand.Shuffle(begin(randImageIndexes), end(randImageIndexes));
+  m_goomRand->Shuffle(begin(randImageIndexes), end(randImageIndexes));
 
   const auto imageDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + "image_fx";
   static constexpr auto MAX_IMAGES = 5U;
@@ -285,20 +282,20 @@ auto ImageFx::ImageFxImpl::InitImage() -> void
   {
     const auto imageFilename = imageDir + PATH_SEP + s_IMAGE_FILENAMES.at(randImageIndexes.at(i));
     m_images.emplace_back(
-        std::make_unique<ChunkedImage>(std::make_shared<ImageBitmap>(imageFilename), m_goomInfo));
+        std::make_unique<ChunkedImage>(std::make_shared<ImageBitmap>(imageFilename), *m_goomInfo));
   }
 }
 
 inline auto ImageFx::ImageFxImpl::ResetCurrentImage() -> void
 {
   m_currentImage =
-      m_images[m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(m_images.size()))].get();
+      m_images[m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(m_images.size()))].get();
 }
 
 auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
 {
   static constexpr auto MIN_RADIUS_FRACTION = 0.7F;
-  const auto randMaxRadius = m_goomRand.GetRandInRange(MIN_RADIUS_FRACTION, 1.0F) * m_maxRadius;
+  const auto randMaxRadius = m_goomRand->GetRandInRange(MIN_RADIUS_FRACTION, 1.0F) * m_maxRadius;
 
   const auto numChunks       = m_currentImage->GetNumChunks();
   auto radiusTheta           = 0.0F;
@@ -309,8 +306,8 @@ auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
     static constexpr auto SMALL_OFFSET = 0.4F;
     const auto maxRadiusAdj =
         (1.0F - (SMALL_OFFSET * (1.0F + std::sin(radiusTheta)))) * randMaxRadius;
-    const auto radius = m_goomRand.GetRandInRange(10.0F, maxRadiusAdj);
-    const auto theta  = m_goomRand.GetRandInRange(0.0F, TWO_PI);
+    const auto radius = m_goomRand->GetRandInRange(10.0F, maxRadiusAdj);
+    const auto theta  = m_goomRand->GetRandInRange(0.0F, TWO_PI);
     const auto startPos =
         m_screenCentre + Vec2dInt{static_cast<int32_t>((std::cos(theta) * radius)),
                                   static_cast<int32_t>((std::sin(theta) * radius))};
@@ -325,10 +322,10 @@ inline auto ImageFx::ImageFxImpl::GetChunkFloatingStartPosition(const size_t i) 
   static constexpr auto MARGIN            = 20.0F;
   static constexpr auto MIN_RADIUS_FACTOR = 0.025F;
   static constexpr auto MAX_RADIUS_FACTOR = 0.5F;
-  const auto aRadius = (m_goomRand.GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
+  const auto aRadius = (m_goomRand->GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
                         static_cast<float>(m_availableWidth)) -
                        MARGIN;
-  const auto bRadius = (m_goomRand.GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
+  const auto bRadius = (m_goomRand->GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
                         static_cast<float>(m_availableHeight)) -
                        MARGIN;
   const auto theta =
@@ -342,8 +339,8 @@ inline auto ImageFx::ImageFxImpl::GetChunkFloatingStartPosition(const size_t i) 
 inline auto ImageFx::ImageFxImpl::SetNewFloatingStartPosition() -> void
 {
   m_floatingStartPosition =
-      m_screenCentre - Vec2dInt{m_goomRand.GetRandInRange(CHUNK_WIDTH, m_availableWidth),
-                                m_goomRand.GetRandInRange(CHUNK_HEIGHT, m_availableHeight)};
+      m_screenCentre - Vec2dInt{m_goomRand->GetRandInRange(CHUNK_WIDTH, m_availableWidth),
+                                m_goomRand->GetRandInRange(CHUNK_HEIGHT, m_availableHeight)};
 }
 
 inline auto ImageFx::ImageFxImpl::ApplyMultiple() -> void
@@ -372,7 +369,7 @@ inline auto ImageFx::ImageFxImpl::DrawChunks() -> void
     DrawChunk(nextChunkPosition, adjustedBrightness, imageChunk.pixels);
   };
 
-  m_parallel.ForLoop(m_currentImage->GetNumChunks(), drawChunk);
+  m_parallel->ForLoop(m_currentImage->GetNumChunks(), drawChunk);
 
   /*** 3 times slower
   for (size_t i = 0; i < m_currentImage->GetNumChunks(); ++i)
@@ -486,7 +483,9 @@ inline auto ImageFx::ImageFxImpl::GetMappedColor(const Pixel& pixelColor) const 
 }
 
 ChunkedImage::ChunkedImage(std::shared_ptr<ImageBitmap> image, const PluginInfo& goomInfo) noexcept
-  : m_image{std::move(image)}, m_goomInfo{goomInfo}, m_startPositions(m_imageAsChunks.size())
+  : m_image{std::move(image)},
+    m_imageAsChunks{SplitImageIntoChunks(*m_image, goomInfo)},
+    m_startPositions(m_imageAsChunks.size())
 {
 }
 

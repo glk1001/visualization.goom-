@@ -1,4 +1,5 @@
 // clang-format off
+// NOLINTBEGIN: Not my code
 
 #pragma once
 
@@ -384,4 +385,5 @@ using xoshiro32starstar8yyy =
 
 using xoshiro32starstar8 = xoshiro32starstar8xxx;
 
+// NOLINTEND: Not my code
 // clang-format on

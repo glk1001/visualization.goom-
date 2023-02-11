@@ -47,7 +47,7 @@ public:
   LowDensityBlurrer(DRAW::IGoomDraw& draw,
                     const UTILS::MATH::IGoomRand& goomRand,
                     uint32_t width,
-                    const Colorizer* colorizer,
+                    const Colorizer& colorizer,
                     const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetWidth() const noexcept -> uint32_t;
@@ -62,15 +62,15 @@ public:
       -> void;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer{m_draw};
-  DRAW::SHAPE_DRAWERS::PixelDrawer m_pixelDrawer{m_draw};
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  DRAW::IGoomDraw* m_draw;
+  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer{*m_draw};
+  DRAW::SHAPE_DRAWERS::PixelDrawer m_pixelDrawer{*m_draw};
+  const UTILS::MATH::IGoomRand* m_goomRand;
   uint32_t m_width;
   size_t m_widthSquared = UTILS::MATH::Sq(static_cast<size_t>(m_width));
-  const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
+  const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
   const UTILS::GRAPHICS::ImageBitmap* m_currentImageBitmap{};
-  const Colorizer* const m_colorizer;
+  const Colorizer* m_colorizer;
   float m_neighbourMixFactor = 1.0;
   BlurrerColorMode m_colorMode{};
   Pixel m_singleColor{};
@@ -94,7 +94,7 @@ private:
                                         float logAlpha) const noexcept -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
-  const COLOR::ColorAdjustment m_colorAdjust{GAMMA};
+  COLOR::ColorAdjustment m_colorAdjust{GAMMA};
 };
 
 inline auto LowDensityBlurrer::GetWidth() const noexcept -> uint32_t

@@ -54,12 +54,12 @@ public:
   [[nodiscard]] auto GetTranBuffer() noexcept -> std::vector<Point2dInt>&;
 
 private:
-  const Dimensions m_dimensions;
-  const NormalizedCoordsConverter& m_normalizedCoordsConverter;
-  const FILTER_UTILS::ZoomCoordTransforms m_coordTransforms{m_dimensions};
+  Dimensions m_dimensions;
+  const NormalizedCoordsConverter* m_normalizedCoordsConverter;
+  FILTER_UTILS::ZoomCoordTransforms m_coordTransforms{m_dimensions};
 
-  UTILS::Parallel& m_parallel;
-  const ZoomPointFunc m_getZoomPoint;
+  UTILS::Parallel* m_parallel;
+  ZoomPointFunc m_getZoomPoint;
   Point2dInt m_buffMidpoint             = {0, 0};
   NormalizedCoords m_normalizedMidpoint = {0.0F, 0.0F};
   Viewport m_filterViewport             = Viewport{};
@@ -70,7 +70,7 @@ private:
   // number of updates; too many, and performance suffers overall.
   static constexpr auto NUM_STRIPE_GROUPS = 16U;
   uint32_t m_tranBuffYLineStart           = 0;
-  const uint32_t m_tranBuffStripeHeight   = m_dimensions.GetHeight() / NUM_STRIPE_GROUPS;
+  uint32_t m_tranBuffStripeHeight         = m_dimensions.GetHeight() / NUM_STRIPE_GROUPS;
   std::vector<Point2dInt> m_tranBuffer;
 
   auto DoNextStripe(uint32_t tranBuffStripeHeight) noexcept -> void;
@@ -95,7 +95,7 @@ inline auto ZoomFilterBufferStriper::GetBuffMidpoint() const noexcept -> Point2d
 inline auto ZoomFilterBufferStriper::SetBuffMidpoint(const Point2dInt& val) noexcept -> void
 {
   m_buffMidpoint       = val;
-  m_normalizedMidpoint = m_normalizedCoordsConverter.OtherToNormalizedCoords(m_buffMidpoint);
+  m_normalizedMidpoint = m_normalizedCoordsConverter->OtherToNormalizedCoords(m_buffMidpoint);
 }
 
 inline auto ZoomFilterBufferStriper::GetFilterViewport() const noexcept -> Viewport

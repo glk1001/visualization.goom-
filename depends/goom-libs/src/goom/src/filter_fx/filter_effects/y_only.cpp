@@ -34,7 +34,7 @@ static constexpr auto PROB_FREQ_EQUAL      = 0.9F;
 static constexpr auto PROB_AMPLITUDE_EQUAL = 0.9F;
 
 YOnly::YOnly(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_params{
         {X_DEFAULT_EFFECT,      Y_DEFAULT_EFFECT},
         {X_DEFAULT_FREQ_FACTOR, Y_DEFAULT_FREQ_FACTOR},
@@ -46,21 +46,21 @@ YOnly::YOnly(const IGoomRand& goomRand) noexcept
 auto YOnly::SetRandomParams() noexcept -> void
 {
   const auto xEffect = static_cast<YOnlyEffect>(
-      m_goomRand.GetRandInRange(static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect>));
-  const auto yEffect = m_goomRand.ProbabilityOf(PROB_Y_ONLY_STRICT)
+      m_goomRand->GetRandInRange(static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect>));
+  const auto yEffect = m_goomRand->ProbabilityOf(PROB_Y_ONLY_STRICT)
                            ? YOnlyEffect::NONE
-                           : static_cast<YOnlyEffect>(m_goomRand.GetRandInRange(
+                           : static_cast<YOnlyEffect>(m_goomRand->GetRandInRange(
                                  static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect>));
 
-  const auto xFreqFactor = m_goomRand.GetRandInRange(FREQ_FACTOR_RANGE.xRange);
-  const auto yFreqFactor = m_goomRand.ProbabilityOf(PROB_FREQ_EQUAL)
+  const auto xFreqFactor = m_goomRand->GetRandInRange(FREQ_FACTOR_RANGE.xRange);
+  const auto yFreqFactor = m_goomRand->ProbabilityOf(PROB_FREQ_EQUAL)
                                ? xFreqFactor
-                               : m_goomRand.GetRandInRange(FREQ_FACTOR_RANGE.yRange);
+                               : m_goomRand->GetRandInRange(FREQ_FACTOR_RANGE.yRange);
 
-  const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE.xRange);
-  const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDE_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE.xRange);
+  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDE_EQUAL)
                               ? xAmplitude
-                              : m_goomRand.GetRandInRange(AMPLITUDE_RANGE.yRange);
+                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE.yRange);
 
   SetParams({
       {    xEffect,     yEffect},

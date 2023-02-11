@@ -26,10 +26,10 @@ Shape::Shape(IGoomDraw& draw,
              const PluginInfo& goomInfo,
              RandomColorMapsManager& colorMapsManager,
              const Params& params) noexcept
-  : m_draw{draw},
-    m_goomRand{goomRand},
-    m_goomInfo{goomInfo},
-    m_colorMapsManager{colorMapsManager},
+  : m_draw{&draw},
+    m_goomRand{&goomRand},
+    m_goomInfo{&goomInfo},
+    m_colorMapsManager{&colorMapsManager},
     m_shapeParts{GetInitialShapeParts(params)}
 {
 }
@@ -54,7 +54,8 @@ auto Shape::GetInitialShapeParts(const Params& params) noexcept -> std::vector<S
         params.minNumShapePathSteps,
         params.maxNumShapePathSteps,
     };
-    shapeParts.emplace_back(m_draw, m_goomRand, m_goomInfo, m_colorMapsManager, shapePartParams);
+    shapeParts.emplace_back(
+        *m_draw, *m_goomRand, *m_goomInfo, *m_colorMapsManager, shapePartParams);
   }
 
   return shapeParts;
@@ -111,7 +112,7 @@ auto Shape::AllColorMapsValid() const noexcept -> bool
 auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
   if (static constexpr auto PROB_ACCEPT_NEW_MIDPOINT = 0.8F;
-      not m_goomRand.ProbabilityOf(PROB_ACCEPT_NEW_MIDPOINT))
+      not m_goomRand->ProbabilityOf(PROB_ACCEPT_NEW_MIDPOINT))
   {
     return;
   }
@@ -164,8 +165,8 @@ auto Shape::Draw() noexcept -> void
 inline auto Shape::GetCurrentMeetingPointColors() const noexcept -> ShapePath::ShapePathColors
 {
   return {
-      m_colorMapsManager.GetColorMap(m_meetingPointMainColorId).GetColor(m_meetingPointColorsT()),
-      m_colorMapsManager.GetColorMap(m_meetingPointLowColorId).GetColor(m_meetingPointColorsT()),
+      m_colorMapsManager->GetColorMap(m_meetingPointMainColorId).GetColor(m_meetingPointColorsT()),
+      m_colorMapsManager->GetColorMap(m_meetingPointLowColorId).GetColor(m_meetingPointColorsT()),
   };
 }
 
@@ -196,10 +197,10 @@ auto Shape::DoRandomChanges() noexcept -> void
 {
   static constexpr auto PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION = 0.5F;
   const auto useEvenPartNumsForDirection =
-      m_goomRand.ProbabilityOf(PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION);
+      m_goomRand->ProbabilityOf(PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION);
 
   if (static constexpr auto PROB_CHANGE_CHROMA_STATE = 0.01F;
-      m_goomRand.ProbabilityOf(PROB_CHANGE_CHROMA_STATE))
+      m_goomRand->ProbabilityOf(PROB_CHANGE_CHROMA_STATE))
   {
     m_chromaChangeOnOffTimer.TryToChangeState();
   }
@@ -215,7 +216,7 @@ auto Shape::DoRandomChanges() noexcept -> void
 
 auto Shape::SetFixedShapeNumSteps() noexcept -> void
 {
-  m_fixedTMinMaxLerp   = ShapePart::GetNewRandomMinMaxLerpT(m_goomRand, m_fixedTMinMaxLerp);
+  m_fixedTMinMaxLerp   = ShapePart::GetNewRandomMinMaxLerpT(*m_goomRand, m_fixedTMinMaxLerp);
   const auto positionT = GetFirstShapePathPositionT();
 
   std::for_each(begin(m_shapeParts),
@@ -261,7 +262,7 @@ inline auto Shape::StartChromaChangeOnOffTimer() noexcept -> void
 inline auto Shape::SetIncreasedChromaFactor() noexcept -> bool
 {
   if (static constexpr auto PROB_INCREASE_CHROMA_FACTOR = 0.9F;
-      not m_goomRand.ProbabilityOf(PROB_INCREASE_CHROMA_FACTOR))
+      not m_goomRand->ProbabilityOf(PROB_INCREASE_CHROMA_FACTOR))
   {
     return false;
   }
@@ -275,7 +276,7 @@ inline auto Shape::SetIncreasedChromaFactor() noexcept -> bool
 inline auto Shape::SetDecreasedChromaFactor() noexcept -> bool
 {
   if (static constexpr auto PROB_DECREASE_CHROMA_FACTOR = 0.2F;
-      not m_goomRand.ProbabilityOf(PROB_DECREASE_CHROMA_FACTOR))
+      not m_goomRand->ProbabilityOf(PROB_DECREASE_CHROMA_FACTOR))
   {
     return false;
   }

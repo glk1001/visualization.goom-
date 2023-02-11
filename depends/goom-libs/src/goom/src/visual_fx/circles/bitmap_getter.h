@@ -25,8 +25,8 @@ public:
   auto ChangeCurrentBitmap() noexcept -> void;
 
 private:
-  const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
-  const UTILS::MATH::Weights<UTILS::GRAPHICS::SmallImageBitmaps::ImageNames> m_bitmapTypes;
+  const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
+  UTILS::MATH::Weights<UTILS::GRAPHICS::SmallImageBitmaps::ImageNames> m_bitmapTypes;
   UTILS::GRAPHICS::SmallImageBitmaps::ImageNames m_currentBitmapName{
       m_bitmapTypes.GetRandomWeighted()};
 };

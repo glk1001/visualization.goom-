@@ -35,43 +35,43 @@ public:
   [[nodiscard]] auto GetGoomLogger() const -> GoomLogger&;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  GoomLogger& m_goomLogger;
+  DRAW::IGoomDraw* m_draw;
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  GoomLogger* m_goomLogger;
 };
 
 inline FxHelper::FxHelper(DRAW::IGoomDraw& draw,
                           const PluginInfo& goomInfo,
                           const UTILS::MATH::IGoomRand& goomRand,
                           GoomLogger& goomLogger)
-  : m_draw{draw}, m_goomInfo{goomInfo}, m_goomRand{goomRand}, m_goomLogger{goomLogger}
+  : m_draw{&draw}, m_goomInfo{&goomInfo}, m_goomRand{&goomRand}, m_goomLogger{&goomLogger}
 {
 }
 
 inline auto FxHelper::GetDraw() const -> DRAW::IGoomDraw&
 {
-  return m_draw;
+  return *m_draw;
 }
 
 inline auto FxHelper::GetDraw() -> DRAW::IGoomDraw&
 {
-  return m_draw;
+  return *m_draw;
 }
 
 inline auto FxHelper::GetGoomInfo() const -> const PluginInfo&
 {
-  return m_goomInfo;
+  return *m_goomInfo;
 }
 
 inline auto FxHelper::GetGoomRand() const -> const UTILS::MATH::IGoomRand&
 {
-  return m_goomRand;
+  return *m_goomRand;
 }
 
 inline auto FxHelper::GetGoomLogger() const -> GoomLogger&
 {
-  return m_goomLogger;
+  return *m_goomLogger;
 }
 
 } // namespace VISUAL_FX

@@ -17,19 +17,19 @@ auto BezierFlower::Draw(const Point2dInt& origin,
   const auto originX = static_cast<float>(origin.x);
   const auto originY = static_cast<float>(origin.y);
 
-  m_petalColoring.SetNumPetals(numPetals);
-  m_bezierDrawer.SetLineColorFunc([this](const float t)
-                                  { return m_petalColoring.GetCurrentLineColorMap().GetColor(t); });
-  m_bezierDrawer.SetDotColorFunc([this](const float t)
-                                 { return m_petalColoring.GetCurrentDotColorMap().GetColor(t); });
+  m_petalColoring->SetNumPetals(numPetals);
+  m_bezierDrawer->SetLineColorFunc(
+      [this](const float t) { return m_petalColoring->GetCurrentLineColorMap().GetColor(t); });
+  m_bezierDrawer->SetDotColorFunc([this](const float t)
+                                  { return m_petalColoring->GetCurrentDotColorMap().GetColor(t); });
 
   const auto angleStep = 1.0F / static_cast<float>(numPetals);
   for (auto i = 0U; i < numPetals; ++i)
   {
-    m_petalColoring.StartColoringPetal(i);
+    m_petalColoring->StartColoringPetal(i);
     const auto petalRotation = m_rotation + (angleStep * TWO_PI);
     petal.rotate(petalRotation, {originX, originY});
-    m_bezierDrawer.Draw(petal, 0.0F, 1.0F);
+    m_bezierDrawer->Draw(petal, 0.0F, 1.0F);
   }
 }
 
@@ -56,7 +56,7 @@ void PetalColoring::SetNumPetals(const uint32_t numPetals)
 {
   m_numPetals = numPetals;
 
-  const auto randomColorMaps = RandomColorMaps{m_goomRand};
+  const auto randomColorMaps = RandomColorMaps{*m_goomRand};
 
   m_lineColorMaps.resize(m_numPetals, &randomColorMaps.GetRandomColorMap());
   m_dotColorMaps.resize(m_numPetals, &randomColorMaps.GetRandomColorMap());

@@ -66,7 +66,7 @@ public:
   auto Reset(float t = 0.0) noexcept -> void;
 
 private:
-  const StepType m_stepType;
+  StepType m_stepType;
   float m_stepSize;
   float m_currentStep{m_stepSize};
   static constexpr auto POSITIVE_SIGN = +1.0F;
@@ -81,7 +81,7 @@ private:
   };
   Boundaries m_currentPosition = Boundaries::INSIDE;
 
-  const std::vector<DelayPoint> m_delayPoints;
+  std::vector<DelayPoint> m_delayPoints;
   std::vector<DelayPoint> m_currentDelayPoints{m_delayPoints};
   bool m_startedDelay              = false;
   bool m_justFinishedDelay         = false;

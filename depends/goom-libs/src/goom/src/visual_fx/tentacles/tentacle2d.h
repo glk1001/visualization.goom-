@@ -52,8 +52,8 @@ public:
   [[nodiscard]] auto GetXMax() const -> double;
 
 private:
-  const uint32_t m_numRequestedNodes;
-  const uint32_t m_numActualNodes;
+  uint32_t m_numRequestedNodes;
+  uint32_t m_numActualNodes;
   Dimensions m_dimensions;
 
   double m_basePreviousYWeight;

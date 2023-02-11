@@ -25,10 +25,10 @@ public:
       -> std::vector<Point2dFlt>;
 
 private:
-  const std::vector<Point2dFlt> m_startPoints;
-  const std::vector<Point2dFlt> m_endPoints;
-  const float m_startRadius;
-  const float m_endRadius;
+  std::vector<Point2dFlt> m_startPoints;
+  std::vector<Point2dFlt> m_endPoints;
+  float m_startRadius;
+  float m_endRadius;
 };
 
 inline auto CirclesTentacleLayout::GetNumTentacles() const noexcept -> uint32_t

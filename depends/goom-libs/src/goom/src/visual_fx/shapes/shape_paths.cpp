@@ -19,7 +19,10 @@ ShapePath::ShapePath(IGoomDraw& draw,
                      const std::shared_ptr<IPath> path,
                      RandomColorMapsManager& colorMapsManager,
                      const ColorInfo colorInfo) noexcept
-  : m_draw{draw}, m_path{path}, m_colorMapsManager{colorMapsManager}, m_colorInfo{colorInfo}
+  : m_circleDrawer{draw},
+    m_path{path},
+    m_colorMapsManager{&colorMapsManager},
+    m_colorInfo{colorInfo}
 {
 }
 
@@ -28,7 +31,7 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
   const auto point = GetNextPoint();
 
   const auto shapeColors    = GetCurrentShapeColors();
-  const auto& innerColorMap = m_colorMapsManager.GetColorMap(m_colorInfo.innerColorMapId);
+  const auto& innerColorMap = m_colorMapsManager->GetColorMap(m_colorInfo.innerColorMapId);
 
   auto innerColorT =
       TValue{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius - 1)};
@@ -66,8 +69,8 @@ inline auto ShapePath::GetInnerColorCutoffRadius(const int32_t maxRadius) noexce
 inline auto ShapePath::GetCurrentShapeColors() const noexcept -> ShapePathColors
 {
   return {
-      m_colorMapsManager.GetColorMap(m_colorInfo.mainColorMapId).GetColor(GetCurrentT()),
-      m_colorMapsManager.GetColorMap(m_colorInfo.lowColorMapId).GetColor(GetCurrentT()),
+      m_colorMapsManager->GetColorMap(m_colorInfo.mainColorMapId).GetColor(GetCurrentT()),
+      m_colorMapsManager->GetColorMap(m_colorInfo.lowColorMapId).GetColor(GetCurrentT()),
   };
 }
 

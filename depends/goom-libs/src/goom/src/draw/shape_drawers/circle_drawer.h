@@ -24,7 +24,7 @@ public:
                         const MultiplePixels& colors) noexcept -> void;
 
 private:
-  IGoomDraw& m_draw;
+  IGoomDraw* m_draw;
   using PlotCirclePointsFunc =
       std::function<void(const Point2dInt& point1, const Point2dInt& point2)>;
   static auto DrawBresenhamCircle(const Point2dInt& centre,
@@ -34,7 +34,7 @@ private:
       -> void;
 };
 
-inline CircleDrawer::CircleDrawer(IGoomDraw& draw) noexcept : m_draw{draw}
+inline CircleDrawer::CircleDrawer(IGoomDraw& draw) noexcept : m_draw{&draw}
 {
 }
 

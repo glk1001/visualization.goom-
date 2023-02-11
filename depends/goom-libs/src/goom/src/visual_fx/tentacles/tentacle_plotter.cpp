@@ -15,12 +15,11 @@ namespace GOOM::VISUAL_FX::TENTACLES
 {
 
 using DRAW::IGoomDraw;
-using DRAW::MultiplePixels;
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 
 TentaclePlotter::TentaclePlotter(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
-  : m_draw{draw}, m_goomRand{goomRand}
+  : m_draw{&draw}, m_goomRand{&goomRand}
 {
 }
 
@@ -36,8 +35,8 @@ inline auto TentaclePlotter::GetLineClipRectangle(const uint8_t lineThickness) c
   const auto clipMargin = lineThickness + 1U;
   return {clipMargin,
           clipMargin,
-          m_draw.GetDimensions().GetWidth() - clipMargin,
-          m_draw.GetDimensions().GetHeight() - clipMargin};
+          m_draw->GetDimensions().GetWidth() - clipMargin,
+          m_draw->GetDimensions().GetHeight() - clipMargin};
 }
 
 auto TentaclePlotter::Plot3D(const Tentacle3D& tentacle) noexcept -> void

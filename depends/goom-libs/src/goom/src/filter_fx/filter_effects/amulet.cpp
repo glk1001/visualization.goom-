@@ -1,7 +1,6 @@
 #include "amulet.h"
 
 #include "goom_config.h"
-#include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
@@ -15,16 +14,16 @@ static constexpr auto AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.1F, 1.
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 0.98F;
 
 Amulet::Amulet(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand}, m_params{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE}
+  : m_goomRand{&goomRand}, m_params{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE}
 {
 }
 
 auto Amulet::SetRandomParams() noexcept -> void
 {
-  const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
                               ? xAmplitude
-                              : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
 
   SetParams({xAmplitude, yAmplitude});
 

@@ -51,8 +51,8 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const UTILS::MATH::Weights<Modes> m_modeWeights;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  UTILS::MATH::Weights<Modes> m_modeWeights;
   Params m_params;
   [[nodiscard]] auto GetT(float sqDistFromZero, const NormalizedCoords& velocity) const -> float;
   [[nodiscard]] static auto GetFlipYProbability(Modes mode) -> float;
@@ -89,7 +89,7 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoord
                       (MODE0_OFFSET + std::sin(MODE0_FREQ * sqDistFromZero)));
     case Modes::MODE1:
       return std::cos((m_params.tFreq * sqDistFromZero) *
-                      m_goomRand.GetRandInRange(MODE1_MIN_FACTOR, MODE1_MAX_FACTOR));
+                      m_goomRand->GetRandInRange(MODE1_MIN_FACTOR, MODE1_MAX_FACTOR));
     case Modes::MODE2:
       return -(1.0F / UTILS::MATH::HALF_PI) *
              std::atan(std::tan(UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));

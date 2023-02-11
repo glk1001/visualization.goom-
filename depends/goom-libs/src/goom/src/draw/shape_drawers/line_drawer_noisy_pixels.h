@@ -56,8 +56,8 @@ private:
         -> void;
 
   private:
-    IGoomDraw& m_draw;
-    const UTILS::MATH::IGoomRand& m_goomRand;
+    IGoomDraw* m_draw;
+    const UTILS::MATH::IGoomRand* m_goomRand;
     float m_brightnessReducer       = 1.0F;
     float m_brightnessFactor        = 1.0F;
     float m_overallBrightnessFactor = 1.0F;
@@ -68,7 +68,7 @@ private:
     int32_t m_noiseRadius;
     int32_t m_numNoisePixelsPerPixel;
     static constexpr auto PROB_PURE_NOISE = 0.5F;
-    bool m_usePureNoise                   = m_goomRand.ProbabilityOf(PROB_PURE_NOISE);
+    bool m_usePureNoise                   = m_goomRand->ProbabilityOf(PROB_PURE_NOISE);
     auto SetBrightnessValues() noexcept -> void;
     auto DrawMainPoint(const Point2dInt& point, float brightness, MultiplePixels& colors) noexcept
         -> void;
@@ -167,7 +167,7 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetNoiseParams(
 
   m_noiseRadius            = noiseParams.noiseRadius;
   m_numNoisePixelsPerPixel = noiseParams.numNoisePixelsPerPixel;
-  m_usePureNoise           = m_goomRand.ProbabilityOf(PROB_PURE_NOISE);
+  m_usePureNoise           = m_goomRand->ProbabilityOf(PROB_PURE_NOISE);
 
   SetBrightnessValues();
   SetNoisePerPixel();

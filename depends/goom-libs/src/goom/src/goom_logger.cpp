@@ -5,7 +5,6 @@
 #include "utils/enum_utils.h"
 
 #include <format>
-#include <memory>
 #include <ostream>
 #include <stdexcept>
 #include <string>

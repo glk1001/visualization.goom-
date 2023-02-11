@@ -71,12 +71,6 @@ public:
           const UTILS::MATH::IGoomRand& goomRand,
           const std::string& lSystemDirectory,
           const LSystemFile& lSystemFile) noexcept;
-  LSystem(const LSystem&) = delete;
-  LSystem(LSystem&&)      = delete;
-  ~LSystem() noexcept;
-
-  auto operator=(const LSystem&) -> LSystem& = delete;
-  auto operator=(LSystem&&) -> LSystem&      = delete;
 
   auto SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto ChangeColors() noexcept -> void;
@@ -91,8 +85,8 @@ public:
   auto DrawLSystem() noexcept -> void;
 
 private:
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   LineDrawerManager m_lineDrawerManager;
   auto SwitchLineDrawers() -> void;
 
@@ -124,11 +118,11 @@ private:
                                              const ::LSYS::BoundingBox3d& boundingBox3d) noexcept
       -> BoundingBox2d;
 
-  LSysColors m_lSysColors{m_goomRand};
+  LSysColors m_lSysColors{*m_goomRand};
   LSysGeometry m_lSysGeometry;
   LSysDraw m_lSysDraw;
 
-  LSysPath m_lSysPath{m_goomRand};
+  LSysPath m_lSysPath{*m_goomRand};
   static constexpr auto MIN_PATH_NUM_STEPS = 50U;
   static constexpr auto MAX_PATH_NUM_STEPS = 200U;
 
@@ -192,7 +186,7 @@ inline auto LSystem::ChangeColors() noexcept -> void
 
 inline auto LSystem::SwitchLineDrawers() -> void
 {
-  if (m_goomRand.ProbabilityOf(m_lSysModelSet.lSysOverrides.probabilityOfNoise))
+  if (m_goomRand->ProbabilityOf(m_lSysModelSet.lSysOverrides.probabilityOfNoise))
   {
     m_lineDrawerManager.SwitchLineDrawers();
   }

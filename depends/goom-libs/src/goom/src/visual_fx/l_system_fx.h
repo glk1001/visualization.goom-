@@ -27,9 +27,7 @@ class LSystemFx : public IVisualFx
 {
 public:
   LSystemFx() noexcept = delete;
-  LSystemFx(const FxHelper& fxHelper,
-            const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
-            const std::string& resourcesDirectory) noexcept;
+  LSystemFx(const FxHelper& fxHelper, const std::string& resourcesDirectory) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 

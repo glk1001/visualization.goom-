@@ -45,7 +45,7 @@ public:
       const UTILS::MATH::IGoomRand& goomRand) noexcept -> std::shared_ptr<RandomColorMaps>;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 };
 
 inline auto RandomColorMapsGroups::MakeSharedAllMapsUnweighted(

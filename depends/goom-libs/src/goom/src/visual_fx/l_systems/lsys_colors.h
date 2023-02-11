@@ -28,18 +28,13 @@ private:
   static constexpr auto DEFAULT_MAX_SHADE = 1.0F;
   static constexpr auto DEFAULT_MIN_TINT  = 0.3F;
   static constexpr auto DEFAULT_MAX_TINT  = 1.0F;
-  const Pixel m_baseColor;
+  Pixel m_baseColor;
 };
 
 class LSysColors
 {
 public:
   explicit LSysColors(const UTILS::MATH::IGoomRand& goomRand) noexcept;
-  LSysColors(const LSysColors&) = delete;
-  LSysColors(LSysColors&&)      = default;
-  ~LSysColors() noexcept;
-  auto operator=(const LSysColors&) -> LSysColors& = delete;
-  auto operator=(LSysColors&&) -> LSysColors&      = delete;
 
   auto SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto SetNumColors(uint32_t numColors) noexcept -> void;
@@ -60,7 +55,7 @@ public:
   [[nodiscard]] auto GetCurrentColorTs() const noexcept -> const std::vector<UTILS::TValue>&;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   float m_globalBrightness = 1.0F;
   uint8_t m_lineWidth      = 1U;
@@ -99,8 +94,7 @@ private:
   std::vector<UTILS::TValue> m_currentThickerColorTs{};
   auto ResetColorTs() noexcept -> void;
   static constexpr auto GAMMA = 1.0F / 2.2F;
-  const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
-                                             COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 
 inline auto LSysColors::SetMaxNumColorSteps(const uint32_t numSteps) noexcept -> void

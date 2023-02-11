@@ -26,11 +26,11 @@ static constexpr auto NUM3_WEIGHT = 01.0F;
 
 Similitudes::Similitudes(const IGoomRand& goomRand,
                          const SmallImageBitmaps& smallBitmaps)
-  : m_goomRand{goomRand},
-    m_smallBitmaps{smallBitmaps},
-    m_colorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)},
+  : m_goomRand{&goomRand},
+    m_smallBitmaps{&smallBitmaps},
+    m_colorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)},
     m_centreWeights{
-        m_goomRand,
+        *m_goomRand,
         {
             {CentreNums::NUM0, NUM0_WEIGHT},
             {CentreNums::NUM1, NUM1_WEIGHT},
@@ -44,8 +44,6 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
   Init();
   ResetCurrentIfsFunc();
 }
-
-Similitudes::~Similitudes() noexcept = default;
 
 auto Similitudes::SetWeightedColorMaps(
     const std::shared_ptr<const RandomColorMaps>& weightedColorMaps) -> void
@@ -208,7 +206,7 @@ auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
 
   const auto colorMapGroup               = m_colorMaps->GetRandomGroup();
   static constexpr auto PROB_USE_BITMAPS = 0.7F;
-  const auto useBitmaps                  = m_goomRand.ProbabilityOf(PROB_USE_BITMAPS);
+  const auto useBitmaps                  = m_goomRand->ProbabilityOf(PROB_USE_BITMAPS);
 
   for (auto i = 0U; i < m_numSimis; ++i)
   {
@@ -231,7 +229,7 @@ auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
 
     simi.m_colorMap = &m_colorMaps->GetRandomColorMap(colorMapGroup);
     simi.m_color    = RandomColorMaps::GetRandomColor(
-        m_goomRand, m_colorMaps->GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
+        *m_goomRand, m_colorMaps->GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
 
     simi.m_currentPointBitmap = GetSimiBitmap(useBitmaps);
   }
@@ -246,14 +244,15 @@ auto Similitudes::GetSimiBitmap(const bool useBitmaps) const -> const ImageBitma
 
   static constexpr auto MIN_RES = 3U;
   static constexpr auto MAX_RES = 7U;
-  const auto res                = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
+  const auto res                = m_goomRand->GetRandInRange(MIN_RES, MAX_RES);
 
-  if (static constexpr auto PROB_SPHERE_BITMAP = 0.6F; m_goomRand.ProbabilityOf(PROB_SPHERE_BITMAP))
+  if (static constexpr auto PROB_SPHERE_BITMAP = 0.6F;
+      m_goomRand->ProbabilityOf(PROB_SPHERE_BITMAP))
   {
-    return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
+    return &m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, res);
   }
 
-  return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE, res);
+  return &m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE, res);
 }
 
 inline auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
@@ -265,17 +264,17 @@ inline auto Similitudes::GaussRand(const Dbl c,
                                    const Dbl S,
                                    const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
 {
-  const auto x                    = m_goomRand.GetRandInRange(0.0F, 1.0F);
+  const auto x                    = m_goomRand->GetRandInRange(0.0F, 1.0F);
   const auto y                    = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
   static constexpr auto PROB_HALF = 0.5F;
-  return m_goomRand.ProbabilityOf(PROB_HALF) ? (c + y) : (c - y);
+  return m_goomRand->ProbabilityOf(PROB_HALF) ? (c + y) : (c - y);
 }
 
 inline auto Similitudes::HalfGaussRand(const Dbl c,
                                        const Dbl S,
                                        const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
 {
-  const auto x = m_goomRand.GetRandInRange(0.0F, 1.0F);
+  const auto x = m_goomRand->GetRandInRange(0.0F, 1.0F);
   const auto y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
   return c + y;
 }
@@ -283,7 +282,7 @@ inline auto Similitudes::HalfGaussRand(const Dbl c,
 auto Similitudes::ResetCurrentIfsFunc() -> void
 {
   if (static constexpr auto PROB_REVERSED_IFS_FUNC = 0.3F;
-      m_goomRand.ProbabilityOf(PROB_REVERSED_IFS_FUNC))
+      m_goomRand->ProbabilityOf(PROB_REVERSED_IFS_FUNC))
   {
     m_currentIfsFunc =
         [](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2, const Flt y2)

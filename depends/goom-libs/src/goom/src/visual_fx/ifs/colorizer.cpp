@@ -23,9 +23,9 @@ static constexpr auto SINE_MIX_COLORS_WEIGHT       = 05.0F;
 static constexpr auto SINE_MAP_COLORS_WEIGHT       = 05.0F;
 
 Colorizer::Colorizer(const IGoomRand& goomRand)
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_colorModeWeights{
-        m_goomRand,
+        *m_goomRand,
         {
             { IfsDancersFx::ColorMode::MAP_COLORS,            MAP_COLORS_WEIGHT },
             { IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE, MEGA_MAP_COLOR_CHANGE_WEIGHT },
@@ -52,7 +52,7 @@ auto Colorizer::SetWeightedColorMaps(
 auto Colorizer::UpdateMixerMaps() -> void
 {
   static constexpr auto PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
-  const auto& colorMapTypes = m_goomRand.ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
+  const auto& colorMapTypes = m_goomRand->ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
                                   ? RandomColorMaps::NO_COLOR_MAP_TYPES
                                   : RandomColorMaps::ALL_COLOR_MAP_TYPES;
 
@@ -87,9 +87,9 @@ auto Colorizer::ChangeColorMaps() -> void
   m_colorMapsManager.ChangeAllColorMapsNow();
 
   m_colorMapChangeCompleted =
-      m_goomRand.GetRandInRange(MIN_COLOR_MAP_CHANGE_COMPLETED, MAX_COLOR_MAP_CHANGE_COMPLETED);
+      m_goomRand->GetRandInRange(MIN_COLOR_MAP_CHANGE_COMPLETED, MAX_COLOR_MAP_CHANGE_COMPLETED);
   m_tAwayFromBaseColor =
-      m_goomRand.GetRandInRange(MIN_T_AWAY_FROM_BASE_COLOR, MAX_T_AWAY_FROM_BASE_COLOR);
+      m_goomRand->GetRandInRange(MIN_T_AWAY_FROM_BASE_COLOR, MAX_T_AWAY_FROM_BASE_COLOR);
   m_countSinceColorMapChange = m_colorMapChangeCompleted;
 }
 
@@ -173,7 +173,7 @@ inline auto Colorizer::GetMapColorsTBaseMix() const -> float
 
   static constexpr auto MIN_T_BASE_MIX = 0.3F;
   static constexpr auto MAX_T_BASE_MIX = 0.5F;
-  return m_goomRand.GetRandInRange(MIN_T_BASE_MIX, MAX_T_BASE_MIX);
+  return m_goomRand->GetRandInRange(MIN_T_BASE_MIX, MAX_T_BASE_MIX);
 }
 
 inline auto Colorizer::GetSineMixColor(const float tX, const float tY) const -> Pixel

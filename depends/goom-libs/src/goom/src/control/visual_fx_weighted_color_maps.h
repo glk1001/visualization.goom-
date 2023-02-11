@@ -20,10 +20,10 @@ public:
       -> COLOR::RandomColorMapsGroups::Groups;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   using WeightedGroups = UTILS::MATH::Weights<COLOR::RandomColorMapsGroups::Groups>;
-  const UTILS::RuntimeEnumMap<GoomEffect, WeightedGroups> m_goomEffectsWeightedColorMaps;
+  UTILS::RuntimeEnumMap<GoomEffect, WeightedGroups> m_goomEffectsWeightedColorMaps;
 
   [[nodiscard]] auto GetCirclesMainGroups() const noexcept -> WeightedGroups;
   [[nodiscard]] auto GetCirclesLowGroups() const noexcept -> WeightedGroups;

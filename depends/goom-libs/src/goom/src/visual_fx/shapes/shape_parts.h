@@ -90,21 +90,20 @@ public:
   [[nodiscard]] auto AreShapePathsCloseToMeeting() const noexcept -> bool;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const PluginInfo& m_goomInfo;
-  COLOR::RandomColorMapsManager& m_colorMapsManager;
+  DRAW::IGoomDraw* m_draw;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  const PluginInfo* m_goomInfo;
+  COLOR::RandomColorMapsManager* m_colorMapsManager;
 
   float m_currentTMinMaxLerp;
   UTILS::StepSpeed m_shapePathsStepSpeed;
   auto SetShapePathsNumSteps() noexcept -> void;
 
-  const int32_t m_minShapeDotRadius;
-  const int32_t m_maxShapeDotRadius;
+  int32_t m_minShapeDotRadius;
+  int32_t m_maxShapeDotRadius;
   static constexpr int32_t EXTREME_MAX_DOT_RADIUS_MULTIPLIER = 5;
-  const int32_t m_extremeMaxShapeDotRadius =
-      EXTREME_MAX_DOT_RADIUS_MULTIPLIER * m_maxShapeDotRadius;
-  bool m_useExtremeMaxShapeDotRadius              = false;
+  int32_t m_extremeMaxShapeDotRadius = EXTREME_MAX_DOT_RADIUS_MULTIPLIER * m_maxShapeDotRadius;
+  bool m_useExtremeMaxShapeDotRadius = false;
   static constexpr uint32_t MIN_DOT_RADIUS_STEPS  = 100;
   static constexpr uint32_t MAX_DOT_RADIUS_STEPS  = 200;
   static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
@@ -144,10 +143,10 @@ private:
   [[nodiscard]] auto SetMegaColorChangeOn() noexcept -> bool;
   [[nodiscard]] auto SetMegaColorChangeOff() noexcept -> bool;
 
-  const uint32_t m_shapePartNum;
+  uint32_t m_shapePartNum;
   static constexpr uint32_t MIN_NUM_SHAPE_PATHS = 4;
-  const uint32_t m_maxNumShapePaths;
-  const uint32_t m_totalNumShapeParts;
+  uint32_t m_maxNumShapePaths;
+  uint32_t m_totalNumShapeParts;
   std::vector<ShapePath> m_shapePaths{};
   bool m_useEvenShapePartNumsForDirection = true;
 
@@ -172,8 +171,8 @@ private:
     UTILS::MATH::AngleParams angleParams;
     UTILS::MATH::CircleFunction::Direction direction;
   };
-  const float m_minRadiusFraction;
-  const float m_maxRadiusFraction;
+  float m_minRadiusFraction;
+  float m_maxRadiusFraction;
   [[nodiscard]] auto GetCircleRadius() const noexcept -> float;
   [[nodiscard]] auto GetCircleDirection() const noexcept -> UTILS::MATH::CircleFunction::Direction;
   [[nodiscard]] auto MakeShapePathColorInfo() noexcept -> ShapePath::ColorInfo;

@@ -2,14 +2,13 @@
 
 #include "gl_renderer.h"
 
-#include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 
 #include <array>
 #include <cstdint>
+#include <cstring>
 #include <format>
 #include <stdexcept>
-#include <string>
 #include <vector>
 
 #ifdef IS_KODI_BUILD
@@ -46,16 +45,15 @@ public:
   auto Render() -> void;
 
 private:
-  const TextureBufferDimensions m_textureBufferDimensions;
-  GoomLogger& m_goomLogger;
+  TextureBufferDimensions m_textureBufferDimensions;
+  GoomLogger* m_goomLogger;
 
-  const int32_t m_windowWidth;
-  const int32_t m_windowHeight;
+  int32_t m_windowWidth;
+  int32_t m_windowHeight;
 
-  const size_t m_textureBufferSize =
-      static_cast<size_t>(4U * (static_cast<uint32_t>(m_textureBufferDimensions.width) *
-                                static_cast<uint32_t>(m_textureBufferDimensions.height))) *
-      sizeof(PixelChannelType);
+  size_t m_textureBufferSize = static_cast<size_t>((4U * m_textureBufferDimensions.width) *
+                                                   m_textureBufferDimensions.height) *
+                               sizeof(PixelChannelType);
 #ifdef HAS_GL
   bool m_usePixelBufferObjects   = true;
   static constexpr auto NUM_PBOS = 2U;
@@ -67,14 +65,14 @@ private:
   auto UpdatePboGlTextureBuffer() -> void;
 #endif
 
-  const GLint m_componentsPerVertex = 2;
+  GLint m_componentsPerVertex = 2;
 #ifdef HAS_GL
-  const GLint m_componentsPerTexel = 2;
+  GLint m_componentsPerTexel = 2;
 #endif
   static constexpr int32_t NUM_VERTICES_IN_TRIANGLE = 3;
   static constexpr int32_t NUM_TRIANGLES            = 2;
-  const int32_t m_numVertices                       = NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE;
-  const std::vector<GLfloat> m_quadData;
+  int32_t m_numVertices                             = NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE;
+  std::vector<GLfloat> m_quadData;
   [[nodiscard]] static auto GetGlQuadData(int32_t width, int32_t height, int32_t xPos, int32_t yPos)
       -> std::vector<GLfloat>;
 
@@ -154,14 +152,14 @@ GlRenderer::GLRendererImpl::GLRendererImpl(const TextureBufferDimensions& textur
                                            IShaderStrategy* const shaderStrategy,
                                            GoomLogger& goomLogger)
   : m_textureBufferDimensions{textureBufferDimensions},
-    m_goomLogger{goomLogger},
+    m_goomLogger{&goomLogger},
     m_windowWidth{windowDimensions.width},
     m_windowHeight{windowDimensions.height},
     //TODO(glk) - Is pos (0,0) OK? Used to pass in pos from Kodi.
     m_quadData{GetGlQuadData(m_windowWidth, m_windowHeight, 0, 0)},
     m_glShader{shaderStrategy}
 {
-  LogDebug(m_goomLogger, "Start constructor.");
+  LogDebug(*m_goomLogger, "Start constructor.");
 }
 
 inline auto GlRenderer::GLRendererImpl::SetPixelBuffer(
@@ -172,37 +170,38 @@ inline auto GlRenderer::GLRendererImpl::SetPixelBuffer(
 
 inline auto GlRenderer::GLRendererImpl::Start() -> void
 {
-  LogInfo(m_goomLogger, "Calling Start...");
+  LogInfo(*m_goomLogger, "Calling Start...");
 
   InitGl();
 }
 
 inline auto GlRenderer::GLRendererImpl::Stop() -> void
 {
-  LogInfo(m_goomLogger, "Calling Stop...");
+  LogInfo(*m_goomLogger, "Calling Stop...");
 
   DeinitGl();
 }
 
 auto GlRenderer::GLRendererImpl::InitGl() -> void
 {
-  LogDebug(m_goomLogger, "Start InitGl.");
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Start InitGl.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
   LogDebug(
-      m_goomLogger, "GL_VERSION  : {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-  LogDebug(m_goomLogger, "GL_VENDOR   : {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+      *m_goomLogger, "GL_VERSION  : {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
   LogDebug(
-      m_goomLogger, "GL_RENDERER : {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-  LogDebug(m_goomLogger,
+      *m_goomLogger, "GL_VENDOR   : {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+  LogDebug(
+      *m_goomLogger, "GL_RENDERER : {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  LogDebug(*m_goomLogger,
            "GLSL VERSION: {}",
            reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
   InitGlShaders();
   InitGlObjects();
 
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
-  LogDebug(m_goomLogger, "Finish InitGl.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish InitGl.");
 }
 
 auto GlRenderer::GLRendererImpl::DeinitGl() -> void
@@ -250,31 +249,31 @@ auto GlRenderer::GLRendererImpl::GetGlQuadData(const int32_t width,
 
 auto GlRenderer::GLRendererImpl::InitGlShaders() -> void
 {
-  LogDebug(m_goomLogger, "Start InitGlShaders.");
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Start InitGlShaders.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
   CompileAndLinkShaders();
 
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
-  LogDebug(m_goomLogger, "Finish InitGlShaders.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish InitGlShaders.");
 }
 
 auto GlRenderer::GLRendererImpl::InitGlObjects() -> void
 {
-  LogDebug(m_goomLogger, "Start InitGlObjects.");
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Start InitGlObjects.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
   InitGlVertexAttributes();
   CreateGlTexture();
 
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
-  LogDebug(m_goomLogger, "Finish InitGlObjects.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish InitGlObjects.");
 }
 
 auto GlRenderer::GLRendererImpl::InitGlVertexAttributes() -> void
 {
-  LogDebug(m_goomLogger, "Start InitGlVertexAttributes.");
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Start InitGlVertexAttributes.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
 #ifdef HAS_GL
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -306,14 +305,14 @@ auto GlRenderer::GLRendererImpl::InitGlVertexAttributes() -> void
   glBindVertexArray(0);
 #endif
 
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
-  LogDebug(m_goomLogger, "Finish InitGlVertexAttributes.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish InitGlVertexAttributes.");
 }
 
 auto GlRenderer::GLRendererImpl::CreateGlTexture() -> void
 {
-  LogDebug(m_goomLogger, "Start CreateGlTexture.");
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Start CreateGlTexture.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
   glGenTextures(1, &m_textureId);
   if (0 == m_textureId)
@@ -356,8 +355,8 @@ auto GlRenderer::GLRendererImpl::CreateGlTexture() -> void
   AllocateGlTextureBuffers();
 #endif
 
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
-  LogDebug(m_goomLogger, "Finish CreateGlTexture.");
+  LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  LogDebug(*m_goomLogger, "Finish CreateGlTexture.");
 }
 
 #ifdef HAS_GL
@@ -365,7 +364,7 @@ auto GlRenderer::GLRendererImpl::AllocateGlTextureBuffers() -> void
 {
   if (not m_usePixelBufferObjects)
   {
-    LogDebug(m_goomLogger, "Not using pixel buffer objects.");
+    LogDebug(*m_goomLogger, "Not using pixel buffer objects.");
     return;
   }
 
@@ -396,15 +395,15 @@ auto GlRenderer::GLRendererImpl::AllocateGlTextureBuffers() -> void
 
 auto GlRenderer::GLRendererImpl::Render() -> void
 {
-  LogDebug(m_goomLogger, "Start Render.");
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
+  //LogDebug(*m_goomLogger, "Start Render.");
+  //LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
   InitVertexAttributes();
   DrawGlTexture();
   DeinitVertexAttributes();
 
-  LogDebug(m_goomLogger, "glGetError() = {}", glGetError());
-  LogDebug(m_goomLogger, "Finish Render.");
+  //LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
+  //LogDebug(*m_goomLogger, "Finish Render.");
 }
 
 inline auto GlRenderer::GLRendererImpl::InitVertexAttributes() const -> void
@@ -480,7 +479,7 @@ inline auto GlRenderer::GLRendererImpl::UpdateGlTextureBuffer() -> void
 #ifdef HAS_GL
 inline auto GlRenderer::GLRendererImpl::UpdatePboGlTextureBuffer() -> void
 {
-  LogDebug(m_goomLogger, "Send to texture.");
+  //LogDebug(*m_goomLogger, "Send to texture.");
   m_currentPboIndex = (m_currentPboIndex + 1) % NUM_PBOS;
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboIds.at(m_currentPboIndex));
 

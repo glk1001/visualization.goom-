@@ -45,16 +45,16 @@ public:
                                    float tY) const -> Pixel;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{
-      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
+      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id{
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
+      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap1{};
   COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id{
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
+      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
   std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap2{};
   auto UpdateMixerMaps() -> void;
   mutable uint32_t m_countSinceColorMapChange              = 0;
@@ -70,7 +70,7 @@ private:
   static constexpr float MAX_T_AWAY_FROM_BASE_COLOR     = 0.4F;
   static constexpr float INITIAL_T_AWAY_FROM_BASE_COLOR = 0.0F;
   float m_tAwayFromBaseColor = INITIAL_T_AWAY_FROM_BASE_COLOR; // in [0, 1]
-  const UTILS::MATH::Weights<VISUAL_FX::IfsDancersFx::ColorMode> m_colorModeWeights;
+  UTILS::MATH::Weights<VISUAL_FX::IfsDancersFx::ColorMode> m_colorModeWeights;
   auto GetNextColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMode;
   [[nodiscard]] auto GetMixedColorInfo(const Pixel& baseColor,
                                        float brightness,
@@ -86,8 +86,7 @@ private:
                                         const Pixel& mixColor) const -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
-  const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
-                                             COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 };
 
 inline auto Colorizer::GetColorMaps() const -> const COLOR::RandomColorMaps&

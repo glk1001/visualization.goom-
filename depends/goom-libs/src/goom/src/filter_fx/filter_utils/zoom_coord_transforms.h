@@ -25,7 +25,7 @@ public:
   [[nodiscard]] static auto ScreenToTranPoint(const Point2dInt& screenPoint) noexcept -> Point2dInt;
 
 private:
-  const NormalizedCoordsConverter m_normalizedCoordsConverter;
+  NormalizedCoordsConverter m_normalizedCoordsConverter;
   [[nodiscard]] static auto ScreenToTranCoord(float screenCoord) noexcept -> uint32_t;
 };
 

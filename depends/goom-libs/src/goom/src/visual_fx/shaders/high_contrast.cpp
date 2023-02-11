@@ -7,7 +7,7 @@ namespace GOOM::VISUAL_FX::SHADERS
 using UTILS::MATH::IGoomRand;
 
 HighContrast::HighContrast(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
-  : m_goomInfo{goomInfo}, m_goomRand{goomRand}
+  : m_goomInfo{&goomInfo}, m_goomRand{&goomRand}
 {
 }
 
@@ -40,15 +40,15 @@ void HighContrast::ChangeHighContrast()
   }
 
   if (static constexpr float PROB_CONTRAST = 0.001F;
-      (0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom()) &&
-      m_goomRand.ProbabilityOf(PROB_CONTRAST))
+      (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) &&
+      m_goomRand->ProbabilityOf(PROB_CONTRAST))
   {
     m_highContrastT.Reset();
     m_highContrastOnTimer.ResetToZero();
     static constexpr auto MIN_CONTRAST_MIN_CHAN = -0.5F;
     static constexpr auto MAX_CONTRAST_MIN_CHAN = -0.2F;
     m_maxContrastMinChannelValue =
-        m_goomRand.GetRandInRange(MIN_CONTRAST_MIN_CHAN, MAX_CONTRAST_MIN_CHAN);
+        m_goomRand->GetRandInRange(MIN_CONTRAST_MIN_CHAN, MAX_CONTRAST_MIN_CHAN);
   }
 }
 

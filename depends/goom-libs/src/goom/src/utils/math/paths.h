@@ -127,7 +127,7 @@ public:
 private:
   std::shared_ptr<IPath> m_path1;
   std::shared_ptr<IPath> m_path2;
-  TValue& m_lerpT;
+  TValue* m_lerpT;
 };
 
 class JoinedPaths : public IPath
@@ -329,17 +329,17 @@ inline auto LerpedPath::SetNumSteps(const uint32_t val) noexcept -> void
 
 inline auto LerpedPath::GetStartPos() const noexcept -> Point2dInt
 {
-  return lerp(m_path1->GetStartPos(), m_path2->GetStartPos(), m_lerpT());
+  return lerp(m_path1->GetStartPos(), m_path2->GetStartPos(), (*m_lerpT)());
 }
 
 inline auto LerpedPath::GetEndPos() const noexcept -> Point2dInt
 {
-  return lerp(m_path1->GetEndPos(), m_path2->GetEndPos(), m_lerpT());
+  return lerp(m_path1->GetEndPos(), m_path2->GetEndPos(), (*m_lerpT)());
 }
 
 inline auto LerpedPath::GetNextPoint() const noexcept -> Point2dInt
 {
-  return lerp(m_path1->GetNextPoint(), m_path2->GetNextPoint(), m_lerpT());
+  return lerp(m_path1->GetNextPoint(), m_path2->GetNextPoint(), (*m_lerpT)());
 }
 
 inline auto LerpedPath::IncrementT() noexcept -> void

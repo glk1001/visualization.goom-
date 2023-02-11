@@ -31,7 +31,7 @@ public:
   [[nodiscard]] auto GetBigGoomLimit() const noexcept -> float;
 
 private:
-  const SoundInfo& m_soundInfo;
+  const SoundInfo* m_soundInfo;
 
   uint32_t m_updateNum = 0;
 
@@ -60,7 +60,7 @@ private:
 
 inline auto GoomSoundEvents::GetSoundInfo() const noexcept -> const SoundInfo&
 {
-  return m_soundInfo;
+  return *m_soundInfo;
 }
 
 inline auto GoomSoundEvents::GetTotalGoomsInCurrentCycle() const noexcept -> uint32_t

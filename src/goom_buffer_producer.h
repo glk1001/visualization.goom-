@@ -58,8 +58,8 @@ public:
   auto PushUsedPixels(const PixelBufferData& pixelBufferData) -> void;
 
 private:
-  const TextureBufferDimensions m_textureBufferDimensions;
-  GoomLogger& m_goomLogger;
+  TextureBufferDimensions m_textureBufferDimensions;
+  GoomLogger* m_goomLogger;
   bool m_started = false;
 
   // Audio buffer storage

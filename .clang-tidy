@@ -27,7 +27,6 @@ Checks: >
   zircon-*,
   -llvm-header-guard,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-  -cppcoreguidelines-avoid-const-or-ref-data-members,
   -hicpp-no-array-decay,
   -cert-err58-cpp, # Can activate this when we can use 'constexpr std::vector'
 

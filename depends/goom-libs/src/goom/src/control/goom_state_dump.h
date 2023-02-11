@@ -2,6 +2,9 @@
 
 #include "goom_config.h"
 
+//TODO(glk) - Fix this - compile broken
+//#define DO_GOOM_STATE_DUMP
+
 #ifdef DO_GOOM_STATE_DUMP
 
 #include "filter_fx/filter_settings_service.h"
@@ -42,9 +45,9 @@ public:
 private:
   static constexpr uint32_t MIN_TIMELINE_ELEMENTS_TO_DUMP = 10;
 
-  const PluginInfo& m_goomInfo;
-  const GoomAllVisualFx& m_visualFx;
-  const FILTER_FX::FilterSettingsService& m_filterSettingsService;
+  const PluginInfo* m_goomInfo;
+  const GoomAllVisualFx* m_visualFx;
+  const FILTER_FX::FilterSettingsService* m_filterSettingsService;
 
   using Ms = std::chrono::milliseconds;
   std::chrono::high_resolution_clock::time_point m_prevTimeHiRes{};

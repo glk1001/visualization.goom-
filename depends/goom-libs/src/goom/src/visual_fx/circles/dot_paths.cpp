@@ -23,15 +23,13 @@ DotPaths::DotPaths(const IGoomRand& goomRand,
                    DotStartsToAndFrom&& dotStartsToAndFrom,
                    const DotTargetsToAndFrom& dotTargetsToAndFrom,
                    const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_numDots{numDots},
     m_dotStartsToAndFrom{std::move(dotStartsToAndFrom)},
     m_dotTargetsToAndFrom{dotTargetsToAndFrom},
     m_dotPathParamsToAndFrom{dotPathParamsToAndFrom}
 {
 }
-
-DotPaths::~DotPaths() noexcept = default;
 
 auto DotPaths::GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noexcept
     -> DotPathsToAndFrom
@@ -100,8 +98,8 @@ inline auto DotPaths::GetSmallRandomOffset() const noexcept -> Vec2dInt
 {
   static constexpr auto MIN_VARIATION = -5;
   static constexpr auto MAX_VARIATION = +5;
-  return {m_goomRand.GetRandInRange(MIN_VARIATION, MAX_VARIATION + 1),
-          m_goomRand.GetRandInRange(MIN_VARIATION, MAX_VARIATION + 1)};
+  return {m_goomRand->GetRandInRange(MIN_VARIATION, MAX_VARIATION + 1),
+          m_goomRand->GetRandInRange(MIN_VARIATION, MAX_VARIATION + 1)};
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

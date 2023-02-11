@@ -18,7 +18,7 @@ static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 10.0F;
 
 BitmapGetter::BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,
                            const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_smallBitmaps{smallBitmaps},
+  : m_smallBitmaps{&smallBitmaps},
     m_bitmapTypes{
       goomRand,
       {
@@ -36,8 +36,8 @@ BitmapGetter::BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,
 auto BitmapGetter::GetBitmap(const size_t size) const noexcept
     -> const UTILS::GRAPHICS::ImageBitmap&
 {
-  return m_smallBitmaps.GetImageBitmap(m_currentBitmapName,
-                                       std::clamp(size, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER));
+  return m_smallBitmaps->GetImageBitmap(m_currentBitmapName,
+                                        std::clamp(size, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER));
 }
 
 auto BitmapGetter::ChangeCurrentBitmap() noexcept -> void

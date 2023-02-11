@@ -25,7 +25,7 @@ protected:
       -> void override;
 
 private:
-  const std::vector<IGoomDraw*> m_manyDraws;
+  std::vector<IGoomDraw*> m_manyDraws;
 };
 
 } // namespace GOOM::DRAW

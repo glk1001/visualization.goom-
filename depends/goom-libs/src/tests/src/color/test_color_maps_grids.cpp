@@ -33,8 +33,8 @@ public:
   static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
 
 private:
-  const std::string m_mapName;
-  const vivid::ColorMap m_vividColorMap;
+  std::string m_mapName;
+  vivid::ColorMap m_vividColorMap;
 };
 
 TestColorMap::TestColorMap(const std::string& mapName, vivid::ColorMap colorMap) noexcept

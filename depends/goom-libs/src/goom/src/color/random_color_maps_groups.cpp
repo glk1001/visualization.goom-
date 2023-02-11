@@ -500,7 +500,7 @@ auto MakeSharedWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
 } // namespace
 
 RandomColorMapsGroups::RandomColorMapsGroups(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand}
+  : m_goomRand{&goomRand}
 {
 }
 
@@ -510,45 +510,45 @@ auto RandomColorMapsGroups::MakeRandomColorMapsGroup(
   switch (randomColorMapsGroup)
   {
     case Groups::ALL_MAPS_UNWEIGHTED:
-      return IMPL::MakeSharedAllMapsUnweighted(m_goomRand);
+      return IMPL::MakeSharedAllMapsUnweighted(*m_goomRand);
     case Groups::ALL_STANDARD_MAPS:
-      return IMPL::MakeSharedAllStandardMaps(m_goomRand);
+      return IMPL::MakeSharedAllStandardMaps(*m_goomRand);
     case Groups::ALL_SLIM_MAPS:
-      return IMPL::MakeSharedAllSlimMaps(m_goomRand);
+      return IMPL::MakeSharedAllSlimMaps(*m_goomRand);
     case Groups::MOSTLY_SEQUENTIAL_STANDARD_MAPS:
-      return IMPL::MakeSharedMostlySequentialStandardMaps(m_goomRand);
+      return IMPL::MakeSharedMostlySequentialStandardMaps(*m_goomRand);
     case Groups::MOSTLY_SEQUENTIAL_SLIM_MAPS:
-      return IMPL::MakeSharedMostlySequentialSlimMaps(m_goomRand);
+      return IMPL::MakeSharedMostlySequentialSlimMaps(*m_goomRand);
     case Groups::SLIGHTLY_DIVERGING_STANDARD_MAPS:
-      return IMPL::MakeSharedSlightlyDivergingStandardMaps(m_goomRand);
+      return IMPL::MakeSharedSlightlyDivergingStandardMaps(*m_goomRand);
     case Groups::SLIGHTLY_DIVERGING_SLIM_MAPS:
-      return IMPL::MakeSharedSlightlyDivergingSlimMaps(m_goomRand);
+      return IMPL::MakeSharedSlightlyDivergingSlimMaps(*m_goomRand);
     case Groups::DIVERGING_BLACK_STANDARD_MAPS:
-      return IMPL::MakeSharedDivergingBlackStandardMaps(m_goomRand);
+      return IMPL::MakeSharedDivergingBlackStandardMaps(*m_goomRand);
     case Groups::RED_STANDARD_MAPS:
-      return IMPL::MakeSharedRedStandardMaps(m_goomRand);
+      return IMPL::MakeSharedRedStandardMaps(*m_goomRand);
     case Groups::GREEN_STANDARD_MAPS:
-      return IMPL::MakeSharedGreenStandardMaps(m_goomRand);
+      return IMPL::MakeSharedGreenStandardMaps(*m_goomRand);
     case Groups::BLUE_STANDARD_MAPS:
-      return IMPL::MakeSharedBlueStandardMaps(m_goomRand);
+      return IMPL::MakeSharedBlueStandardMaps(*m_goomRand);
     case Groups::YELLOW_STANDARD_MAPS:
-      return IMPL::MakeSharedYellowStandardMaps(m_goomRand);
+      return IMPL::MakeSharedYellowStandardMaps(*m_goomRand);
     case Groups::ORANGE_STANDARD_MAPS:
-      return IMPL::MakeSharedOrangeStandardMaps(m_goomRand);
+      return IMPL::MakeSharedOrangeStandardMaps(*m_goomRand);
     case Groups::PURPLE_STANDARD_MAPS:
-      return IMPL::MakeSharedPurpleStandardMaps(m_goomRand);
+      return IMPL::MakeSharedPurpleStandardMaps(*m_goomRand);
     case Groups::CITIES_STANDARD_MAPS:
-      return IMPL::MakeSharedCitiesStandardMaps(m_goomRand);
+      return IMPL::MakeSharedCitiesStandardMaps(*m_goomRand);
     case Groups::SEASONS_STANDARD_MAPS:
-      return IMPL::MakeSharedSeasonsStandardMaps(m_goomRand);
+      return IMPL::MakeSharedSeasonsStandardMaps(*m_goomRand);
     case Groups::HEAT_STANDARD_MAPS:
-      return IMPL::MakeSharedHeatStandardMaps(m_goomRand);
+      return IMPL::MakeSharedHeatStandardMaps(*m_goomRand);
     case Groups::COLD_STANDARD_MAPS:
-      return IMPL::MakeSharedColdStandardMaps(m_goomRand);
+      return IMPL::MakeSharedColdStandardMaps(*m_goomRand);
     case Groups::PASTEL_STANDARD_MAPS:
-      return IMPL::MakeSharedPastelStandardMaps(m_goomRand);
+      return IMPL::MakeSharedPastelStandardMaps(*m_goomRand);
     case Groups::WES_ANDERSON_MAPS:
-      return IMPL::MakeSharedWesAndersonMaps(m_goomRand);
+      return IMPL::MakeSharedWesAndersonMaps(*m_goomRand);
     default:
       FailFast();
       return nullptr;

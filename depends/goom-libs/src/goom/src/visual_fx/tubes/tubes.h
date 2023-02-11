@@ -51,8 +51,8 @@ public:
                                            float minBrightnessPastCutoff) const -> float;
 
 private:
-  const float m_cutoffBrightness;
-  const uint32_t m_maxRSquared;
+  float m_cutoffBrightness;
+  uint32_t m_maxRSquared;
   [[nodiscard]] auto GetDistFromCentreFactor(const Point2dInt& pos) const -> float;
 };
 

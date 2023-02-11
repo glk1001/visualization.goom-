@@ -15,11 +15,9 @@ using UTILS::TValue;
 using UTILS::MATH::HALF;
 using UTILS::MATH::IGoomRand;
 
-LSysColors::LSysColors(const IGoomRand& goomRand) noexcept : m_goomRand{goomRand}
+LSysColors::LSysColors(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {
 }
-
-LSysColors::~LSysColors() noexcept = default;
 
 auto LSysColors::SetWeightedColorMaps(
     const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
@@ -85,7 +83,7 @@ auto LSysColors::ChangeColors() noexcept -> void
 
 auto LSysColors::SetSimpleColors() noexcept -> void
 {
-  if (not m_goomRand.ProbabilityOf(m_probabilityOfSimpleColors))
+  if (not m_goomRand->ProbabilityOf(m_probabilityOfSimpleColors))
   {
     m_useSimpleColors = false;
     return;
@@ -93,7 +91,7 @@ auto LSysColors::SetSimpleColors() noexcept -> void
 
   m_useSimpleColors = true;
 
-  if (static constexpr auto PROB_USE_SHADE = 0.5F; m_goomRand.ProbabilityOf(PROB_USE_SHADE))
+  if (static constexpr auto PROB_USE_SHADE = 0.5F; m_goomRand->ProbabilityOf(PROB_USE_SHADE))
   {
     m_simpleColorGet = [this](const uint32_t colorNum, const float t)
     { return m_simpleColorsList.at(colorNum).GetShade(t); };
@@ -108,7 +106,7 @@ auto LSysColors::SetSimpleColors() noexcept -> void
 auto LSysColors::ResetColorTs() noexcept -> void
 {
   const auto numColorSteps =
-      m_goomRand.GetRandInRange(MIN_NUM_COLOR_STEPS, m_currentMaxNumColorSteps + 1U);
+      m_goomRand->GetRandInRange(MIN_NUM_COLOR_STEPS, m_currentMaxNumColorSteps + 1U);
   std::for_each(begin(m_currentColorTs),
                 end(m_currentColorTs),
                 [&numColorSteps](auto& colorT) { colorT.SetNumSteps(numColorSteps); });
@@ -116,7 +114,7 @@ auto LSysColors::ResetColorTs() noexcept -> void
       begin(m_currentColorTs), end(m_currentColorTs), [](auto& colorT) { colorT.Reset(0.0F); });
 
   const auto numThickerColorSteps =
-      m_goomRand.GetRandInRange(MIN_NUM_THICKER_COLOR_STEPS, MAX_NUM_THICKER_COLOR_STEPS + 1U);
+      m_goomRand->GetRandInRange(MIN_NUM_THICKER_COLOR_STEPS, MAX_NUM_THICKER_COLOR_STEPS + 1U);
   std::for_each(begin(m_currentThickerColorTs),
                 end(m_currentThickerColorTs),
                 [&numThickerColorSteps](auto& colorT)
@@ -191,8 +189,8 @@ inline auto LSysColors::GetColorNumToUse(const uint32_t givenColorNum,
 
 auto LSysColors::SetMainColorMaps() noexcept -> void
 {
-  const auto saturation = m_goomRand.GetRandInRange(MIN_SATURATION, MAX_SATURATION);
-  const auto lightness  = m_goomRand.GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
+  const auto saturation = m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION);
+  const auto lightness  = m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
 
   auto& colorMaps = m_currentMainColorMaps;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
@@ -223,8 +221,8 @@ auto LSysColors::SetMainColorMaps() noexcept -> void
 
 auto LSysColors::SetLowColorMaps() noexcept -> void
 {
-  const auto saturation = m_goomRand.GetRandInRange(MIN_SATURATION, MAX_SATURATION);
-  const auto lightness  = m_goomRand.GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
+  const auto saturation = m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION);
+  const auto lightness  = m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
 
   auto& colorMaps = m_currentLowColorMaps;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
@@ -255,8 +253,8 @@ auto LSysColors::SetLowColorMaps() noexcept -> void
 
 auto LSysColors::SetThickerMainColorMaps() noexcept -> void
 {
-  const auto saturation = m_goomRand.GetRandInRange(MIN_SATURATION, MAX_SATURATION);
-  const auto lightness  = m_goomRand.GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
+  const auto saturation = m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION);
+  const auto lightness  = m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
 
   auto& colorMaps = m_currentThickerMainColorMaps;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
@@ -287,8 +285,8 @@ auto LSysColors::SetThickerMainColorMaps() noexcept -> void
 
 auto LSysColors::SetThickerLowColorMaps() noexcept -> void
 {
-  const auto saturation = m_goomRand.GetRandInRange(MIN_SATURATION, MAX_SATURATION);
-  const auto lightness  = m_goomRand.GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
+  const auto saturation = m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION);
+  const auto lightness  = m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
 
   auto& colorMaps = m_currentThickerLowColorMaps;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);

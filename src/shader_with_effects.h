@@ -25,7 +25,7 @@ public:
 
 private:
   GLuint m_prog = 0;
-  const glm::mat4 m_projModelMatrix;
+  glm::mat4 m_projModelMatrix;
   GLint m_uProjModelMatLoc = -1;
 
   GLint m_uTexExposureLoc                = -1;

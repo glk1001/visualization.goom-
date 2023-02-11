@@ -7,7 +7,6 @@
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 using DRAW::IGoomDraw;
-using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::LineDrawerMovingNoise;
 using UTILS::MATH::IGoomRand;
 
@@ -19,17 +18,17 @@ static constexpr auto SWITCH_LINE_DRAWER_TYPE_NONE_WEIGHT   = 0.1F;
 
 // clang-format off
 LineDrawerManager::LineDrawerManager(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_lineDrawerWithMovingNoiseEffect{
         LineDrawerMovingNoise{draw,
-                              goomRand,
+                              *m_goomRand,
                               MIN_MAX_MOVING_NOISE_RADIUS,
                               NUM_MOVING_NOISE_RADIUS_STEPS,
                               MIN_MAX_NUM_MOVING_NOISE_PIXELS,
                               NUM_NUM_MOVING_NOISE_PIXEL_STEPS}
     },
     m_switchLineDrawerWeights{
-        m_goomRand,
+        *m_goomRand,
         {
             { SwitchLineDrawerType::CONST, SWITCH_LINE_DRAWER_TYPE_CONST_WEIGHT },
             { SwitchLineDrawerType::MOVING, SWITCH_LINE_DRAWER_TYPE_MOVING_WEIGHT },

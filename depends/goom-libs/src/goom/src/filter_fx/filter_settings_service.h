@@ -113,10 +113,10 @@ protected:
   virtual auto UpdateFilterSettingsFromExtraEffects() -> void;
 
 private:
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const Point2dInt m_screenMidpoint;
-  const std::string m_resourcesDirectory;
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  Point2dInt m_screenMidpoint;
+  std::string m_resourcesDirectory;
   std::experimental::propagate_const<std::unique_ptr<AFTER_EFFECTS::AfterEffectsStates>>
       m_randomizedAfterEffects;
 
@@ -148,7 +148,7 @@ private:
   static constexpr float DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
   static constexpr float MAX_MAX_ZOOM_IN_COEFF                        = 4.01F;
   ZoomFilterSettings m_filterSettings;
-  const UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
+  UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetZoomInCoefficientsEffect() -> std::shared_ptr<IZoomInCoefficientsEffect>&;
   auto SetMaxZoomInCoeff() -> void;
@@ -167,7 +167,7 @@ private:
     TOP_RIGHT_QUARTER_MID_POINT,
     _num // unused, and marks the enum end
   };
-  const UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
+  UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
   [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
   auto SetAnyRandomZoomMidpoint(bool allowEdgePoints) -> void;
   [[nodiscard]] auto GetWeightRandomMidPoint(bool allowEdgePoints) const -> ZoomMidpointEvents;
@@ -206,12 +206,12 @@ inline auto FilterSettingsService::GetFilterSettings() -> ZoomFilterSettings&
 
 inline auto FilterSettingsService::GetPluginInfo() const -> const PluginInfo&
 {
-  return m_goomInfo;
+  return *m_goomInfo;
 }
 
 inline auto FilterSettingsService::GetGoomRand() const -> const UTILS::MATH::IGoomRand&
 {
-  return m_goomRand;
+  return *m_goomRand;
 }
 
 inline auto FilterSettingsService::HasFilterModeChangedSinceLastUpdate() const -> bool
@@ -243,7 +243,7 @@ inline auto FilterSettingsService::SetMaxZoomInCoeff() -> void
   static constexpr auto MIN_SPEED_FACTOR = 0.5F;
   static constexpr auto MAX_SPEED_FACTOR = 1.0F;
   m_filterSettings.filterEffectsSettings.maxZoomInCoeff =
-      m_goomRand.GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_ZOOM_IN_COEFF;
+      m_goomRand->GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_ZOOM_IN_COEFF;
 }
 
 inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode) -> void

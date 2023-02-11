@@ -47,7 +47,7 @@ struct TubeData
   TubeDrawFuncs drawFuncs;
   uint32_t screenWidth;
   uint32_t screenHeight;
-  const UTILS::MATH::IGoomRand& goomRand;
+  const UTILS::MATH::IGoomRand* goomRand;
   std::shared_ptr<const COLOR::RandomColorMaps> mainColorMaps;
   std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps;
   float radiusEdgeOffset;

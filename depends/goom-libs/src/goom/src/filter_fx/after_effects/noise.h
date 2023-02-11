@@ -29,7 +29,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
   static constexpr float NOISE_MAX = 120.0F;
@@ -38,9 +38,9 @@ private:
 
 inline auto Noise::GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const auto amp = m_params.noiseFactor / m_goomRand.GetRandInRange(NOISE_MIN, NOISE_MAX);
-  return velocity + NormalizedCoords{m_goomRand.GetRandInRange(-amp, +amp),
-                                     m_goomRand.GetRandInRange(-amp, +amp)};
+  const auto amp = m_params.noiseFactor / m_goomRand->GetRandInRange(NOISE_MIN, NOISE_MAX);
+  return velocity + NormalizedCoords{m_goomRand->GetRandInRange(-amp, +amp),
+                                     m_goomRand->GetRandInRange(-amp, +amp)};
 }
 
 inline auto Noise::GetParams() const -> const Params&

@@ -20,7 +20,7 @@ TransformedPath::TransformedPath(std::unique_ptr<IPath> path, const Transform2d&
 LerpedPath::LerpedPath(const std::shared_ptr<IPath> path1,
                        const std::shared_ptr<IPath> path2,
                        TValue& lerpT) noexcept
-  : m_path1{path1}, m_path2{path2}, m_lerpT{lerpT}
+  : m_path1{path1}, m_path2{path2}, m_lerpT{&lerpT}
 {
 }
 

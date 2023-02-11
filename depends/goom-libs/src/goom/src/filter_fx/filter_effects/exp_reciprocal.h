@@ -43,7 +43,7 @@ protected:
   auto SetParams(const Params& params) noexcept -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
   using FltCalcType         = double;
   static constexpr auto ONE = static_cast<FltCalcType>(1.0F);

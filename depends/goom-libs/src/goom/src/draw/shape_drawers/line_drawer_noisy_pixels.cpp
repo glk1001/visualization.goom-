@@ -16,8 +16,8 @@ using UTILS::MATH::IGoomRand;
 LineDrawerNoisyPixels::NoisyPixelDrawer::NoisyPixelDrawer(IGoomDraw& draw,
                                                           const IGoomRand& goomRand,
                                                           const NoiseParams& noiseParams) noexcept
-  : m_draw{draw},
-    m_goomRand{goomRand},
+  : m_draw{&draw},
+    m_goomRand{&goomRand},
     m_noiseRadius{noiseParams.noiseRadius},
     m_numNoisePixelsPerPixel{noiseParams.numNoisePixelsPerPixel}
 {
@@ -36,7 +36,7 @@ auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetNoisePerPixel() noexcept -> voi
     noiseList.resize(static_cast<size_t>(m_numNoisePixelsPerPixel));
     for (auto& noise : noiseList)
     {
-      noise = m_goomRand.GetRandInRange(-m_noiseRadius, m_noiseRadius + 1);
+      noise = m_goomRand->GetRandInRange(-m_noiseRadius, m_noiseRadius + 1);
     }
   }
 }
@@ -65,7 +65,7 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawMainPoint(const Point2d
     -> void
 {
   BrightenColors(brightness, colors);
-  m_draw.DrawClippedPixels(point, colors);
+  m_draw->DrawClippedPixels(point, colors);
 }
 
 inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawNoisePoints(
@@ -93,9 +93,9 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPureNoisePoints(
   for (auto i = 0; i < m_numNoisePixelsPerPixel; ++i)
   {
     const auto noisePoint =
-        Point2dInt{point.x + m_goomRand.GetRandInRange(-m_noiseRadius, +m_noiseRadius + 1),
-                   point.y + m_goomRand.GetRandInRange(-m_noiseRadius, +m_noiseRadius + 1)};
-    m_draw.DrawClippedPixels(noisePoint, colors);
+        Point2dInt{point.x + m_goomRand->GetRandInRange(-m_noiseRadius, +m_noiseRadius + 1),
+                   point.y + m_goomRand->GetRandInRange(-m_noiseRadius, +m_noiseRadius + 1)};
+    m_draw->DrawClippedPixels(noisePoint, colors);
   }
 }
 
@@ -104,7 +104,7 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPatternedNoisePoints(
 {
   for (const auto& noise : m_noisePerPixelList.at(m_currentNoisePerPixelIndex))
   {
-    m_draw.DrawClippedPixels(point + noise, colors);
+    m_draw->DrawClippedPixels(point + noise, colors);
   }
 
   IncrementCurrentNoisePerPixelIndex();

@@ -19,7 +19,7 @@ public:
     MODE1,
     MODE2
   };
-  explicit DistanceField(Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  DistanceField(Modes mode, const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -61,9 +61,9 @@ protected:
   auto SetParams(const Params& params) noexcept -> void;
 
 private:
-  const Modes m_mode;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const UTILS::MATH::Weights<GridType> m_weightedEffects;
+  Modes m_mode;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  UTILS::MATH::Weights<GridType> m_weightedEffects;
 
   Params m_params;
   auto SetMode0RandomParams() noexcept -> void;

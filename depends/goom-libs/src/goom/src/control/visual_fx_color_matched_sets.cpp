@@ -70,12 +70,11 @@ static constexpr auto COLOR_MATCHED_SET6_WEIGHT            = 90.0F;
 static constexpr auto COLOR_MATCHED_SET7_WEIGHT            = 90.0F;
 static constexpr auto COLOR_MATCHED_SET8_WEIGHT            = 90.0F;
 
-
 VisualFxColorMatchedSets::VisualFxColorMatchedSets(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_colorMatchedSetsWeights
     {
-        m_goomRand,
+        *m_goomRand,
         {
             {ColorMatchedSets::RED_GREEN_STD_MAPS,            RED_GREEN_STD_MAPS_WEIGHT},
             {ColorMatchedSets::RED_BLUE_STD_MAPS,             RED_BLUE_STD_MAPS_WEIGHT},
@@ -148,7 +147,7 @@ auto VisualFxColorMatchedSets::GetTwoGroupsColorMatchedSet(const Groups group1,
   // Change every second map entry to 'func2'.
   auto indexes = std::array<size_t, NUM<GoomEffect>>{};
   std::iota(begin(indexes), end(indexes), 0);
-  m_goomRand.Shuffle(begin(indexes), end(indexes));
+  m_goomRand->Shuffle(begin(indexes), end(indexes));
   static constexpr auto INC_BY_2 = 2U;
   for (auto i = 0U; i < NUM<GoomEffect>; i += INC_BY_2)
   {

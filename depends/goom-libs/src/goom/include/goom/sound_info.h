@@ -39,12 +39,12 @@ public:
   [[nodiscard]] auto GetSampleOverallMinMax() const -> const MinMaxValues&;
 
 private:
-  const size_t m_numDistinctChannels;
-  const std::array<SampleArray, NUM_AUDIO_SAMPLES> m_sampleArrays;
-  const std::array<MinMaxValues, NUM_AUDIO_SAMPLES> m_minMaxSampleValues{
+  size_t m_numDistinctChannels;
+  std::array<SampleArray, NUM_AUDIO_SAMPLES> m_sampleArrays;
+  std::array<MinMaxValues, NUM_AUDIO_SAMPLES> m_minMaxSampleValues{
       GetMinMaxSampleValues(m_sampleArrays)};
   static_assert(2 == NUM_AUDIO_SAMPLES);
-  const MinMaxValues m_overallMinMaxSampleValues{
+  MinMaxValues m_overallMinMaxSampleValues{
       std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
       std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)};
   [[nodiscard]] static auto GetSampleArrays(const std::vector<float>& floatAudioData)

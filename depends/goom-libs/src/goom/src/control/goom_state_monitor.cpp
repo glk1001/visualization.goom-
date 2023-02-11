@@ -16,9 +16,9 @@ using UTILS::GetPair;
 GoomStateMonitor::GoomStateMonitor(const GoomAllVisualFx& visualFx,
                                    const GoomMusicSettingsReactor& musicSettingsReactor,
                                    const FilterSettingsService& filterSettingsService) noexcept
-  : m_visualFx{visualFx},
-    m_musicSettingsReactor{musicSettingsReactor},
-    m_filterSettingsService{filterSettingsService}
+  : m_visualFx{&visualFx},
+    m_musicSettingsReactor{&musicSettingsReactor},
+    m_filterSettingsService{&filterSettingsService}
 {
 }
 
@@ -54,20 +54,21 @@ auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::Na
 {
   static constexpr auto* PARAM_GROUP = "";
   return {
-      GetPair(PARAM_GROUP, "State", m_visualFx.GetCurrentStateName()),
-      GetPair(PARAM_GROUP, "Color Maps", GetString(m_visualFx.GetCurrentColorMapsNames())),
-      GetPair(PARAM_GROUP, "Filter Mode", m_filterSettingsService.GetCurrentFilterModeName()),
-      GetPair(
-          PARAM_GROUP, "Previous Filter Mode", m_filterSettingsService.GetPreviousFilterModeName()),
+      GetPair(PARAM_GROUP, "State", m_visualFx->GetCurrentStateName()),
+      GetPair(PARAM_GROUP, "Color Maps", GetString(m_visualFx->GetCurrentColorMapsNames())),
+      GetPair(PARAM_GROUP, "Filter Mode", m_filterSettingsService->GetCurrentFilterModeName()),
+      GetPair(PARAM_GROUP,
+              "Previous Filter Mode",
+              m_filterSettingsService->GetPreviousFilterModeName()),
   };
 }
 
 auto GoomStateMonitor::GetShaderVariablesNameValueParams() const -> UTILS::NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "Shader";
-  const auto& lastShaderVariables    = m_visualFx.GetLastShaderVariables();
+  const auto& lastShaderVariables    = m_visualFx->GetLastShaderVariables();
   return {
-      GetPair(PARAM_GROUP, "Exposure", m_visualFx.GetCurrentExposure()),
+      GetPair(PARAM_GROUP, "Exposure", m_visualFx->GetCurrentExposure()),
       GetPair(PARAM_GROUP, "Contrast", lastShaderVariables.contrast),
       GetPair(PARAM_GROUP, "MinChan", lastShaderVariables.contrastMinChannelValue),
       GetPair(PARAM_GROUP, "Brightness", lastShaderVariables.brightness),
@@ -81,7 +82,7 @@ inline auto GoomStateMonitor::GetFilterBufferValueParams() const -> UTILS::NameV
 {
   static constexpr auto* PARAM_GROUP = "Filter Buffer";
   const auto& filterBufferSettings =
-      m_filterSettingsService.GetFilterSettings().filterBufferSettings;
+      m_filterSettingsService->GetFilterSettings().filterBufferSettings;
   return {
       GetPair(PARAM_GROUP, "TranLerpIncrement", filterBufferSettings.tranLerpIncrement),
       GetPair(PARAM_GROUP, "TranLerpToMaxSwitchMult", filterBufferSettings.tranLerpToMaxSwitchMult),
@@ -92,7 +93,7 @@ inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> UTILS::
 {
   static constexpr auto* PARAM_GROUP = "Filter Settings";
   const auto& filterEffectsSettings =
-      m_filterSettingsService.GetFilterSettings().filterEffectsSettings;
+      m_filterSettingsService->GetFilterSettings().filterEffectsSettings;
   return {
       GetPair(
           PARAM_GROUP,
@@ -103,12 +104,12 @@ inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> UTILS::
 
 inline auto GoomStateMonitor::GetMusicSettingsNameValueParams() const -> UTILS::NameValuePairs
 {
-  return m_musicSettingsReactor.GetNameValueParams();
+  return m_musicSettingsReactor->GetNameValueParams();
 }
 
 inline auto GoomStateMonitor::GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs
 {
-  return m_visualFx.GetZoomFilterFxNameValueParams();
+  return m_visualFx->GetZoomFilterFxNameValueParams();
 }
 
 } // namespace GOOM::CONTROL

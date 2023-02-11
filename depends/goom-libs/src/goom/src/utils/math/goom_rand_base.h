@@ -70,10 +70,10 @@ private:
   template<class F>
   friend class ConditionalWeights;
   [[nodiscard]] auto GetRandomWeighted(const E& given) const noexcept -> E;
-  const IGoomRand& m_goomRand;
+  const IGoomRand* m_goomRand;
   using WeightArray = std::array<float, NUM<E>>;
-  const WeightArray m_weights;
-  const float m_sumOfWeights;
+  WeightArray m_weights;
+  float m_sumOfWeights;
   [[nodiscard]] static auto GetWeights(const EventWeightPairs& eventWeightPairs) noexcept
       -> WeightArray;
   [[nodiscard]] static auto GetSumOfWeights(const EventWeightPairs& eventWeightPairs) noexcept
@@ -105,9 +105,9 @@ public:
   [[nodiscard]] auto GetRandomWeighted(const E& given) const noexcept -> E;
 
 private:
-  const Weights<E> m_unconditionalWeights;
-  const std::map<E, Weights<E>> m_conditionalWeights;
-  const bool m_disallowEventsSameAsGiven;
+  Weights<E> m_unconditionalWeights;
+  std::map<E, Weights<E>> m_conditionalWeights;
+  bool m_disallowEventsSameAsGiven;
   [[nodiscard]] static auto GetConditionalWeightMap(
       const IGoomRand& goomRand,
       const typename Weights<E>::EventWeightPairs& eventWeightPairs,
@@ -136,7 +136,7 @@ inline void IGoomRand::Shuffle(RandomIt first, RandomIt last) const noexcept
 
 template<class E>
 Weights<E>::Weights(const IGoomRand& goomRand, const EventWeightPairs& weights) noexcept
-  : m_goomRand{goomRand}, m_weights{GetWeights(weights)}, m_sumOfWeights{GetSumOfWeights(weights)}
+  : m_goomRand{&goomRand}, m_weights{GetWeights(weights)}, m_sumOfWeights{GetSumOfWeights(weights)}
 {
   Expects(m_sumOfWeights > SMALL_FLOAT);
 }
@@ -203,7 +203,7 @@ inline auto Weights<E>::GetRandomWeighted(const E& given) const noexcept -> E
                                 ? m_sumOfWeights
                                 : (m_sumOfWeights - m_weights[static_cast<size_t>(given)]);
 
-  auto randVal = m_goomRand.GetRandInRange(0.0F, sumOfWeights);
+  auto randVal = m_goomRand->GetRandInRange(0.0F, sumOfWeights);
 
   for (auto i = 0U; i < m_weights.size(); ++i)
   {

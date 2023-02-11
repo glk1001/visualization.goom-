@@ -25,9 +25,9 @@ DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
                      const SmallImageBitmaps& smallBitmaps,
                      const Weights<DotSizes>& minDotSizes,
                      const Weights<DotSizes>& normalDotSizes) noexcept
-  : m_draw{draw},
-    m_goomRand{goomRand},
-    m_smallBitmaps{smallBitmaps},
+  : m_goomRand{&goomRand},
+    m_smallBitmaps{&smallBitmaps},
+    m_bitmapDrawer{draw},
     m_minDotSizes{minDotSizes},
     m_normalDotSizes{normalDotSizes}
 {
@@ -41,8 +41,8 @@ auto DotDrawer::ChangeDotSizes() noexcept -> void
   m_currentDotSize = GetNextDotSize(MAX_DOT_SIZE);
 
   static constexpr auto PROB_BEADED_LOOK = 0.15F;
-  m_beadedLook                           = m_goomRand.ProbabilityOf(PROB_BEADED_LOOK);
-  m_maxBeadedDotSize = m_goomRand.GetRandInRange(MAX_DOT_SIZE + 1, MAX_IMAGE_DOT_SIZE + 1);
+  m_beadedLook                           = m_goomRand->ProbabilityOf(PROB_BEADED_LOOK);
+  m_maxBeadedDotSize = m_goomRand->GetRandInRange(MAX_DOT_SIZE + 1, MAX_IMAGE_DOT_SIZE + 1);
 }
 
 auto DotDrawer::DrawDot(const DotSizes dotSize,
@@ -99,8 +99,8 @@ auto DotDrawer::GetNextDotSize(const uint32_t maxSize) const noexcept -> uint32_
 
 inline auto DotDrawer::GetImageBitmap(const uint32_t size) const noexcept -> const ImageBitmap&
 {
-  return m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
-                                       std::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
+  return m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
+                                        std::clamp(size, MIN_IMAGE_DOT_SIZE, MAX_IMAGE_DOT_SIZE));
 }
 
 } // namespace GOOM::VISUAL_FX::FX_UTILS

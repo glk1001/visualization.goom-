@@ -30,14 +30,14 @@ public:
   auto Plot3D(const Tentacle3D& tentacle) noexcept -> void;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const Vec2dFlt m_screenMidPoint{
-      MidpointFromOrigin({m_draw.GetDimensions().GetWidth(), m_draw.GetDimensions().GetHeight()})
+  DRAW::IGoomDraw* m_draw;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  Vec2dFlt m_screenMidPoint{
+      MidpointFromOrigin({m_draw->GetDimensions().GetWidth(), m_draw->GetDimensions().GetHeight()})
           .ToFlt()};
 
-  DRAW::SHAPE_DRAWERS::LineDrawerNoClippedEndPoints m_lineDrawer{m_draw};
-  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer{m_draw};
+  DRAW::SHAPE_DRAWERS::LineDrawerNoClippedEndPoints m_lineDrawer{*m_draw};
+  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer{*m_draw};
 
   using LineClipper = UTILS::GRAPHICS::LineClipper;
   LineClipper m_lineClipper{GetLineClipRectangle(1U)};
@@ -98,9 +98,9 @@ inline auto TentaclePlotter::SetNodeTOffset(const float value) noexcept -> void
 
 inline auto TentaclePlotter::UpdateCameraPosition() noexcept -> void
 {
-  m_cameraPosition = {m_goomRand.GetRandInRange(MIN_CAMERA_X_OFFSET, MAX_CAMERA_X_OFFSET),
-                      m_goomRand.GetRandInRange(MIN_CAMERA_Y_OFFSET, MAX_CAMERA_Y_OFFSET),
-                      m_goomRand.GetRandInRange(MIN_CAMERA_Z_OFFSET, MAX_CAMERA_Z_OFFSET)};
+  m_cameraPosition = {m_goomRand->GetRandInRange(MIN_CAMERA_X_OFFSET, MAX_CAMERA_X_OFFSET),
+                      m_goomRand->GetRandInRange(MIN_CAMERA_Y_OFFSET, MAX_CAMERA_Y_OFFSET),
+                      m_goomRand->GetRandInRange(MIN_CAMERA_Z_OFFSET, MAX_CAMERA_Z_OFFSET)};
 }
 
 } // namespace GOOM::VISUAL_FX::TENTACLES

@@ -19,7 +19,7 @@ Fractal::Fractal(const Dimensions& dimensions,
                  const IGoomRand& goomRand,
                  const SmallImageBitmaps& smallBitmaps)
   : m_similitudes{goomRand, smallBitmaps},
-    m_goomRand{goomRand},
+    m_goomRand{&goomRand},
     m_halfWidth{static_cast<Flt>(U_HALF * (dimensions.GetWidth() - 1))},
     m_halfHeight{static_cast<Flt>(U_HALF * (dimensions.GetHeight() - 1))},
     m_hits1{dimensions},
@@ -68,7 +68,7 @@ auto Fractal::SetSpeed(const uint32_t val) -> void
 auto Fractal::Reset() -> void
 {
   m_maxCountTimesSpeed =
-      m_goomRand.GetRandInRange(MIN_MAX_COUNT_TIMES_SPEED, MAX_MAX_COUNT_TIMES_SPEED + 1U);
+      m_goomRand->GetRandInRange(MIN_MAX_COUNT_TIMES_SPEED, MAX_MAX_COUNT_TIMES_SPEED + 1U);
 
   m_similitudes.ResetCurrentIfsFunc();
 }

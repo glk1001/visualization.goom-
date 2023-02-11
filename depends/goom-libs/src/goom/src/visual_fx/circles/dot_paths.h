@@ -36,11 +36,6 @@ public:
            DotStartsToAndFrom&& dotStartsToAndFrom,
            const DotTargetsToAndFrom& dotTargetsToAndFrom,
            const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept;
-  DotPaths(const DotPaths&) = delete;
-  DotPaths(DotPaths&&)      = default;
-  ~DotPaths() noexcept;
-  auto operator=(const DotPaths&) noexcept -> DotPaths& = delete;
-  auto operator=(DotPaths&&) noexcept -> DotPaths&      = delete;
 
   enum class Direction
   {
@@ -70,8 +65,8 @@ public:
   [[nodiscard]] auto GetNextDotPositions() const noexcept -> std::vector<Point2dInt>;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const uint32_t m_numDots;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  uint32_t m_numDots;
   DotStartsToAndFrom m_dotStartsToAndFrom;
   DotTargetsToAndFrom m_dotTargetsToAndFrom;
 

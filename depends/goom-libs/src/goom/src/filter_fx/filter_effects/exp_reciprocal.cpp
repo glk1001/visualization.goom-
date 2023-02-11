@@ -48,7 +48,7 @@ static constexpr auto VIEWPORT_RECTANGLES = std::array{
 };
 
 ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_params{
         DEFAULT_VIEWPORT,
         {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
@@ -64,24 +64,24 @@ ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
 auto ExpReciprocal::SetRandomParams() noexcept -> void
 {
   const auto viewport = Viewport{VIEWPORT_RECTANGLES.at(
-      m_goomRand.GetRandInRange(0U, static_cast<uint32_t>(VIEWPORT_RECTANGLES.size())))};
+      m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(VIEWPORT_RECTANGLES.size())))};
 
-  const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
                               ? xAmplitude
-                              : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
 
-  const auto noInverseSquare = m_goomRand.ProbabilityOf(PROB_NO_INVERSE_SQUARE);
+  const auto noInverseSquare = m_goomRand->ProbabilityOf(PROB_NO_INVERSE_SQUARE);
 
-  const auto rotate  = std::polar(1.0F, m_goomRand.GetRandInRange(ROTATE_RANGE));
-  const auto magnify = m_goomRand.GetRandInRange(MAGNIFY_RANGE);
+  const auto rotate  = std::polar(1.0F, m_goomRand->GetRandInRange(ROTATE_RANGE));
+  const auto magnify = m_goomRand->GetRandInRange(MAGNIFY_RANGE);
 
   const auto reciprocalExponent =
-      static_cast<float>(m_goomRand.GetRandInRange(RECIPROCAL_EXPONENT_RANGE));
+      static_cast<float>(m_goomRand->GetRandInRange(RECIPROCAL_EXPONENT_RANGE));
 
-  const auto useModulatorContours = m_goomRand.ProbabilityOf(PROB_USE_MODULATOR_CONTOURS);
+  const auto useModulatorContours = m_goomRand->ProbabilityOf(PROB_USE_MODULATOR_CONTOURS);
   const auto modulatorPeriod =
-      not useModulatorContours ? 0.0F : m_goomRand.GetRandInRange(MODULATOR_PERIOD_RANGE);
+      not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange(MODULATOR_PERIOD_RANGE);
 
   SetParams({
       viewport,
@@ -171,7 +171,7 @@ auto ExpReciprocal::GetZoomInCoefficientsEffectNameValueParams() const noexcept 
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "exp reciprocal"});
   return {
-      GetPair(fullParamGroup, "recipr exp", m_params.reciprocalExponent),
+      GetPair(fullParamGroup, "exp reciprocal", m_params.reciprocalExponent),
       GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
       GetPair(fullParamGroup,
               "magnify/rotate",

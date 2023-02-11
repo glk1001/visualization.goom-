@@ -47,7 +47,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #ifdef DO_GOOM_STATE_DUMP
 #include "control/goom_state_dump.h"
@@ -133,11 +132,11 @@ private:
   SoundInfo m_soundInfo{};
   GoomSoundEvents m_goomSoundEvents{m_soundInfo};
   PluginInfo m_goomInfo;
-  const std::string m_resourcesDirectory;
-  GoomControlLogger& m_goomLogger;
-  const GoomRand m_goomRand{};
-  GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetScreenDimensions(), m_goomLogger};
-  const FxHelper m_fxHelper;
+  std::string m_resourcesDirectory;
+  GoomControlLogger* m_goomLogger;
+  GoomRand m_goomRand{};
+  GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetScreenDimensions(), *m_goomLogger};
+  FxHelper m_fxHelper;
 
   bool m_noZooms       = false;
   uint32_t m_updateNum = 0;
@@ -146,9 +145,9 @@ private:
   FilterSettingsService m_filterSettingsService{
       m_goomInfo, m_goomRand, m_resourcesDirectory, CreateZoomInCoefficientsEffect};
 
-  const SmallImageBitmaps m_smallBitmaps{m_resourcesDirectory};
+  SmallImageBitmaps m_smallBitmaps{m_resourcesDirectory};
   GoomRandomStateHandler m_stateHandler{m_goomRand};
-  const NormalizedCoordsConverter m_normalizedCoordsConverter{
+  NormalizedCoordsConverter m_normalizedCoordsConverter{
       {m_goomInfo.GetScreenWidth(), m_goomInfo.GetScreenHeight()},
       FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL
   };
@@ -191,7 +190,7 @@ private:
   uint32_t m_numUpdatesBetweenTimeChecks            = DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS;
   static constexpr float UPDATE_TIME_ESTIMATE_IN_MS = 40.0F;
   static constexpr float UPDATE_TIME_SAFETY_FACTOR  = 10.0F;
-  const float m_upperLimitOfTimeIntervalInMsSinceLastMarked =
+  float m_upperLimitOfTimeIntervalInMsSinceLastMarked =
       UPDATE_TIME_SAFETY_FACTOR *
       (static_cast<float>(m_numUpdatesBetweenTimeChecks) * UPDATE_TIME_ESTIMATE_IN_MS);
   auto UpdateTime() -> void;
@@ -203,15 +202,14 @@ private:
   auto UpdateGoomStateDump() -> void;
   auto FinishGoomStateDump() -> void;
 #endif
-  const GoomStateMonitor m_goomStateMonitor{
-      m_visualFx, m_musicSettingsReactor, m_filterSettingsService};
+  GoomStateMonitor m_goomStateMonitor{m_visualFx, m_musicSettingsReactor, m_filterSettingsService};
   bool m_showGoomState = false;
   auto DisplayGoomState() -> void;
   [[nodiscard]] auto GetGoomTimeInfo() -> std::string;
 
   SongInfo m_songInfo{};
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
-  GoomDrawToSingleBuffer m_goomTextOutput{m_goomInfo.GetScreenDimensions(), m_goomLogger};
+  GoomDrawToSingleBuffer m_goomTextOutput{m_goomInfo.GetScreenDimensions(), *m_goomLogger};
   GoomTitleDisplayer m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory()};
   GoomMessageDisplayer m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile()};
   [[nodiscard]] auto GetMessagesFontFile() const -> std::string;
@@ -318,8 +316,8 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
                                               GoomLogger& goomLogger)
   : m_goomInfo{dimensions, m_goomSoundEvents},
     m_resourcesDirectory{resourcesDirectory},
-    m_goomLogger{dynamic_cast<GoomControlLogger&>(goomLogger)},
-    m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand, m_goomLogger}
+    m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
+    m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand, *m_goomLogger}
 {
   RotateBuffers();
 }
@@ -381,9 +379,9 @@ inline auto GoomControl::GoomControlImpl::GetLastShaderVariables() const
 
 inline auto GoomControl::GoomControlImpl::Start() -> void
 {
-  UTILS::SetGoomLogger(m_goomLogger);
+  UTILS::SetGoomLogger(*m_goomLogger);
 
-  m_goomLogger.StartGoomControl(this);
+  m_goomLogger->StartGoomControl(this);
 
   m_filterSettingsService.Start();
 
@@ -415,7 +413,7 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
 
 inline auto GoomControl::GoomControlImpl::Finish() -> void
 {
-  LogInfo(m_goomLogger,
+  LogInfo(*m_goomLogger,
           "Stopping now. Time remaining = {}, {}%%",
           m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs,
           m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
@@ -426,7 +424,7 @@ inline auto GoomControl::GoomControlImpl::Finish() -> void
 
   m_visualFx.Finish();
 
-  m_goomLogger.StopGoomControl();
+  m_goomLogger->StopGoomControl();
 }
 
 #ifdef DO_GOOM_STATE_DUMP

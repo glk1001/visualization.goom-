@@ -12,7 +12,6 @@
 #include "goom_logger.h"
 #include "sound_info.h"
 #include "utils/graphics/pixel_utils.h"
-#include "utils/name_value_pairs.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/fx_helper.h"
 #include "visual_fx/lines_fx.h"
@@ -45,17 +44,17 @@ using VISUAL_FX::FxHelper;
 
 static constexpr auto SMALL_LUMA = 0.1F;
 
-PixelBlender::PixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept : m_goomRand{goomRand}
+PixelBlender::PixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {
 }
 
 auto PixelBlender::ChangePixelBlendFunc() noexcept -> void
 {
-  m_lumaMixT               = m_goomRand.GetRandInRange(MIN_LUMA_MIX_T, MAX_LUMA_MIX_T);
+  m_lumaMixT               = m_goomRand->GetRandInRange(MIN_LUMA_MIX_T, MAX_LUMA_MIX_T);
   m_previousBlendPixelFunc = m_currentBlendPixelFunc;
   m_currentPixelBlendType  = m_pixelBlendTypeWeights.GetRandomWeighted();
   m_currentBlendPixelFunc  = GetPixelBlendFunc();
-  m_blendT.SetNumSteps(m_goomRand.GetRandInRange(MIN_BLEND_STEPS, MAX_BLEND_STEPS + 1U));
+  m_blendT.SetNumSteps(m_goomRand->GetRandInRange(MIN_BLEND_STEPS, MAX_BLEND_STEPS + 1U));
   m_blendT.Reset();
 }
 
@@ -162,16 +161,16 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  IGoomStateHandler& goomStateHandler,
                                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept
-  : m_goomDraw{fxHelper.GetDraw()},
-    m_goomRand{fxHelper.GetGoomRand()},
-    m_goomLogger{fxHelper.GetGoomLogger()},
+  : m_draw{&fxHelper.GetDraw()},
+    m_goomRand{&fxHelper.GetGoomRand()},
+    m_goomLogger{&fxHelper.GetGoomLogger()},
     m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelper, smallBitmaps, resourcesDirectory)},
     m_zoomFilterFx{std::make_unique<ZoomFilterFx>(parallel,
                                                   fxHelper.GetGoomInfo(),
                                                   std::move(filterBuffersService),
                                                   std::move(filterColorsService))},
-    m_goomStateHandler{goomStateHandler}
+    m_goomStateHandler{&goomStateHandler}
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([this](const GoomDrawables fx)
                                                       { ResetCurrentDrawBuffSettings(fx); });
@@ -198,26 +197,26 @@ auto GoomAllVisualFx::ChangeState() noexcept -> void
   m_allStandardVisualFx->SuspendFx();
 
   static constexpr auto MAX_TRIES = 10U;
-  const auto oldState             = m_goomStateHandler.GetCurrentState();
+  const auto oldState             = m_goomStateHandler->GetCurrentState();
 
   for (auto numTry = 0U; numTry < MAX_TRIES; ++numTry)
   {
-    m_goomStateHandler.ChangeToNextState();
+    m_goomStateHandler->ChangeToNextState();
 
     if ((not m_allowMultiThreadedStates) and
-        GoomStateInfo::IsMultiThreaded(m_goomStateHandler.GetCurrentState()))
+        GoomStateInfo::IsMultiThreaded(m_goomStateHandler->GetCurrentState()))
     {
       continue;
     }
 
     // Pick a different state if possible
-    if (oldState != m_goomStateHandler.GetCurrentState())
+    if (oldState != m_goomStateHandler->GetCurrentState())
     {
       break;
     }
   }
 
-  m_currentGoomDrawables = m_goomStateHandler.GetCurrentDrawables();
+  m_currentGoomDrawables = m_goomStateHandler->GetCurrentDrawables();
   m_allStandardVisualFx->SetCurrentGoomDrawables(m_currentGoomDrawables);
   m_allStandardVisualFx->ChangeShaderVariables();
 
@@ -260,8 +259,8 @@ inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx
 inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const noexcept
     -> FXBuffSettings
 {
-  const auto buffIntensity = m_goomRand.GetRandInRange(
-      GoomStateInfo::GetBuffIntensityRange(m_goomStateHandler.GetCurrentState(), fx));
+  const auto buffIntensity = m_goomRand->GetRandInRange(
+      GoomStateInfo::GetBuffIntensityRange(m_goomStateHandler->GetCurrentState(), fx));
   // Careful here. > 1 reduces smearing.
   static constexpr auto INTENSITY_FACTOR = 1.0F;
   return {INTENSITY_FACTOR * buffIntensity};
@@ -275,7 +274,7 @@ auto GoomAllVisualFx::ChangeAllFxColorMaps() noexcept -> void
 auto GoomAllVisualFx::ChangeDrawPixelBlend() noexcept -> void
 {
   m_pixelBlender.ChangePixelBlendFunc();
-  m_goomDraw.SetBlendPixelFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_draw->SetBlendPixelFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
 }
 
 auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings) noexcept

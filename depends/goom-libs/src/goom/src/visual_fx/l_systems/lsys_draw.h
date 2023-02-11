@@ -23,21 +23,21 @@ public:
   auto SetNumLSysCopies(uint32_t numLSysCopies) noexcept -> void;
   auto SetLineDrawer(DRAW::SHAPE_DRAWERS::ILineDrawerWithEffects& lineDrawer) noexcept -> void;
 
-  auto DrawLine(const uint32_t lSysColor,
+  auto DrawLine(uint32_t lSysColor,
                 const ::LSYS::Vector& point1,
                 const ::LSYS::Vector& point2,
-                const float lineWidth) noexcept -> void;
-  auto DrawPolygon(const uint32_t lSysColor,
+                float lineWidth) noexcept -> void;
+  auto DrawPolygon(uint32_t lSysColor,
                    const std::vector<::LSYS::Vector>& polygon,
-                   const float lineWidth) noexcept -> void;
+                   float lineWidth) noexcept -> void;
 
   [[nodiscard]] static auto GetPerspectivePoint(const ::LSYS::Point3dFlt& point3d) noexcept
       -> Point2dFlt;
 
 private:
-  const LSysGeometry& m_lSysGeometry;
-  LSysColors& m_lSysColors;
-  const float m_lineWidthFactor;
+  const LSysGeometry* m_lSysGeometry;
+  LSysColors* m_lSysColors;
+  float m_lineWidthFactor;
   uint32_t m_numLSysCopies = 1U;
   DRAW::SHAPE_DRAWERS::ILineDrawerWithEffects* m_lineDrawer{};
 

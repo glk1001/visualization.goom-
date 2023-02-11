@@ -62,11 +62,6 @@ class Similitudes
 public:
   Similitudes(const UTILS::MATH::IGoomRand& goomRand,
               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
-  Similitudes(const Similitudes&) noexcept = default;
-  Similitudes(Similitudes&&) noexcept      = default;
-  ~Similitudes() noexcept;
-  auto operator=(const Similitudes&) noexcept -> Similitudes& = delete;
-  auto operator=(Similitudes&&) noexcept -> Similitudes&      = delete;
 
   auto Init() -> void;
 
@@ -101,8 +96,8 @@ private:
   auto UpdateMainSimisFltPart() -> void;
   [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) const -> const UTILS::GRAPHICS::ImageBitmap*;
 
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const UTILS::GRAPHICS::SmallImageBitmaps& m_smallBitmaps;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
   std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps;
 
   using IfsFunc = std::function<FltPoint(const Similitude& simi, Flt x1, Flt y1, Flt x2, Flt y2)>;
@@ -132,7 +127,7 @@ private:
     NUM3,
     _num // unused, and marks the enum end
   };
-  const UTILS::MATH::Weights<CentreNums> m_centreWeights;
+  UTILS::MATH::Weights<CentreNums> m_centreWeights;
   CentreType m_centreAttributes{};
   auto InitCentre() -> void;
 

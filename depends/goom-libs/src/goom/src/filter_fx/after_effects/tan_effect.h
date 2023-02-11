@@ -52,9 +52,9 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
-  const UTILS::MATH::Weights<TanType> m_tanEffectWeights;
+  UTILS::MATH::Weights<TanType> m_tanEffectWeights;
   static constexpr auto HALF_PI = UTILS::MATH::HALF_PI;
   [[nodiscard]] auto GetTanSqDist(float tanArg) const -> float;
 };

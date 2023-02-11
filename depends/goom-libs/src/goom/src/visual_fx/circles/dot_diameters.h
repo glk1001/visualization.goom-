@@ -21,12 +21,12 @@ public:
   [[nodiscard]] auto GetDotDiameters() const noexcept -> const std::vector<uint32_t>&;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
-  const uint32_t m_numDots;
+  const UTILS::MATH::IGoomRand* m_goomRand;
+  uint32_t m_numDots;
 
   static constexpr uint32_t MIN_DIAMETER_EXTRA = 2;
-  const uint32_t m_minDotDiameter;
-  const uint32_t m_maxDotDiameter;
+  uint32_t m_minDotDiameter;
+  uint32_t m_maxDotDiameter;
   std::vector<uint32_t> m_dotDiameters{GetInitialDotDiameters(m_numDots, m_maxDotDiameter)};
   [[nodiscard]] static auto GetInitialDotDiameters(uint32_t numDots,
                                                    uint32_t maxDotDiameter) noexcept

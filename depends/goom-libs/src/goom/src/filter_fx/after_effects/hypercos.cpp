@@ -65,10 +65,10 @@ static constexpr auto HYPERCOS_EFFECT_SIN_OF_COS_SWIRL_WEIGHT   = 15.0F;
 static constexpr auto HYPERCOS_EFFECT_COS_OF_SIN_SWIRL_WEIGHT   = 15.0F;
 
 Hypercos::Hypercos(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_params{DEFAULT_PARAMS},
     m_hypercosOverlayWeights{
-        m_goomRand,
+        *m_goomRand,
         {
             { HypercosEffect::NONE,               HYPERCOS_EFFECT_NONE_WEIGHT },
             { HypercosEffect::SIN_CURL_SWIRL,     HYPERCOS_EFFECT_SIN_CURL_SWIRL_WEIGHT },
@@ -112,7 +112,7 @@ auto Hypercos::SetMode1RandomParams() -> void
 auto Hypercos::SetMode2RandomParams() -> void
 {
   const auto amplitudeRange =
-      m_goomRand.ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
+      m_goomRand->ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
   const auto hypercosMin =
       STD20::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.50F);
@@ -130,17 +130,17 @@ auto Hypercos::SetHypercosEffect(const HypercosOverlay overlay,
                                  const IGoomRand::NumberRange<float>& freqRange,
                                  const IGoomRand::NumberRange<float>& amplitudeRange) -> void
 {
-  const auto xFrequencyFactor = m_goomRand.GetRandInRange(freqRange);
-  const auto yFrequencyFactor = m_goomRand.ProbabilityOf(PROB_FREQUENCY_FACTORS_EQUAL)
+  const auto xFrequencyFactor = m_goomRand->GetRandInRange(freqRange);
+  const auto yFrequencyFactor = m_goomRand->ProbabilityOf(PROB_FREQUENCY_FACTORS_EQUAL)
                                     ? xFrequencyFactor
-                                    : m_goomRand.GetRandInRange(freqRange);
+                                    : m_goomRand->GetRandInRange(freqRange);
 
-  const auto reverse = m_goomRand.ProbabilityOf(PROB_REVERSE);
+  const auto reverse = m_goomRand->ProbabilityOf(PROB_REVERSE);
 
-  const auto xAmplitude = m_goomRand.GetRandInRange(amplitudeRange);
-  const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange);
+  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
                               ? xAmplitude
-                              : m_goomRand.GetRandInRange(amplitudeRange);
+                              : m_goomRand->GetRandInRange(amplitudeRange);
 
   SetParams({
       overlay,

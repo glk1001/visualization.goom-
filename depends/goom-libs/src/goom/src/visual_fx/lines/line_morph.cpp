@@ -71,21 +71,21 @@ LineMorph::LineMorph(IGoomDraw& draw,
                      const SmallImageBitmaps& smallBitmaps,
                      const LineParams& srceLineParams,
                      const LineParams& destLineParams) noexcept
-  : m_draw{draw},
-    m_goomInfo{goomInfo},
-    m_goomRand{goomRand},
+  : m_draw{&draw},
+    m_goomInfo{&goomInfo},
+    m_goomRand{&goomRand},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srceLineParams{srceLineParams},
     m_destPoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_destLineParams{destLineParams},
     m_dotDrawer{
-        m_draw,
-        m_goomRand,
+        *m_draw,
+        *m_goomRand,
         smallBitmaps,
         // min dot sizes
         {
-            m_goomRand,
+            *m_goomRand,
             {
                 {DotSizes::DOT_SIZE01, MIN_DOT_SIZE01_WEIGHT},
                 {DotSizes::DOT_SIZE02, MIN_DOT_SIZE02_WEIGHT},
@@ -95,7 +95,7 @@ LineMorph::LineMorph(IGoomDraw& draw,
         },
         // normal dot sizes
         {
-            m_goomRand,
+            *m_goomRand,
             {
                 {DotSizes::DOT_SIZE01, NORMAL_DOT_SIZE01_WEIGHT},
                 {DotSizes::DOT_SIZE02, NORMAL_DOT_SIZE02_WEIGHT},
@@ -145,7 +145,7 @@ inline auto LineMorph::UpdateColorInfo() noexcept -> void
   m_colorMapsManager.ChangeAllColorMapsNow();
 
   static constexpr auto PROB_USE_LINE_COLOR = 0.5F;
-  m_useLineColor                            = m_goomRand.ProbabilityOf(PROB_USE_LINE_COLOR);
+  m_useLineColor                            = m_goomRand->ProbabilityOf(PROB_USE_LINE_COLOR);
 }
 
 inline auto LineMorph::GetFreshLine(const LineType lineType, const float lineParam) const noexcept
@@ -155,14 +155,14 @@ inline auto LineMorph::GetFreshLine(const LineType lineType, const float linePar
   {
     case LineType::H_LINE:
       return GetHorizontalLinePoints(
-          AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo.GetScreenWidth(), lineParam);
+          AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetScreenWidth(), lineParam);
     case LineType::V_LINE:
       return GetVerticalLinePoints(
-          AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo.GetScreenHeight(), lineParam);
+          AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetScreenHeight(), lineParam);
     case LineType::CIRCLE:
       return GetCircularLinePoints(AudioSamples::AUDIO_SAMPLE_LEN,
-                                   m_goomInfo.GetScreenWidth(),
-                                   m_goomInfo.GetScreenHeight(),
+                                   m_goomInfo->GetScreenWidth(),
+                                   m_goomInfo->GetScreenHeight(),
                                    lineParam);
     default:
       FailFast();
@@ -184,7 +184,7 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
     m_srceLineParams.lineType            = m_destLineParams.lineType;
     static constexpr auto MIN_BRIGHTNESS = 2.5F;
     static constexpr auto MAX_BRIGHTNESS = 4.0F;
-    m_currentBrightness = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+    m_currentBrightness = m_goomRand->GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
   }
 
   Ensures((m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
@@ -205,12 +205,12 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   if (m_lineColorPower < MIN_POWER)
   {
     m_lineColorPower          = MIN_POWER;
-    m_lineColorPowerIncrement = m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
+    m_lineColorPowerIncrement = m_goomRand->GetRandInRange(MIN_POW_INC, MAX_POW_INC);
   }
   if (m_lineColorPower > MAX_POWER)
   {
     m_lineColorPower          = MAX_POWER;
-    m_lineColorPowerIncrement = -m_goomRand.GetRandInRange(MIN_POW_INC, MAX_POW_INC);
+    m_lineColorPowerIncrement = -m_goomRand->GetRandInRange(MIN_POW_INC, MAX_POW_INC);
   }
 
   static constexpr auto AMP_MIX_AMOUNT = 0.01F;
@@ -229,22 +229,23 @@ auto LineMorph::ResetDestLine(const LineParams& newParams) noexcept -> void
 
   static constexpr auto MIN_BRIGHTNESS = 1.5F;
   static constexpr auto MAX_BRIGHTNESS = 3.0F;
-  m_currentBrightness                  = m_goomRand.GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+  m_currentBrightness                  = m_goomRand->GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
 
   m_dotDrawer.ChangeDotSizes();
 
-  m_maxNormalizedPeak = m_goomRand.GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
+  m_maxNormalizedPeak =
+      m_goomRand->GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
 
   m_srcePointsCopy = m_srcePoints;
 }
 
 auto LineMorph::GetRandomLineColor() const noexcept -> Pixel
 {
-  if (static constexpr auto PROB_LINE_COLOR = 0.02F; m_goomRand.ProbabilityOf(PROB_LINE_COLOR))
+  if (static constexpr auto PROB_LINE_COLOR = 0.02F; m_goomRand->ProbabilityOf(PROB_LINE_COLOR))
   {
-    return GetSimpleColor(static_cast<SimpleColors>(m_goomRand.GetNRand(NUM<SimpleColors>)));
+    return GetSimpleColor(static_cast<SimpleColors>(m_goomRand->GetNRand(NUM<SimpleColors>)));
   }
-  return RandomColorMaps::GetRandomColor(m_goomRand, GetRandomColorMap(), 0.0F, 1.0F);
+  return RandomColorMaps::GetRandomColor(*m_goomRand, GetRandomColorMap(), 0.0F, 1.0F);
 }
 
 inline auto LineMorph::GetFinalLineColor(const Pixel& color) const noexcept -> Pixel
@@ -350,7 +351,7 @@ auto LineMorph::GetNextPointData(const LinePoint& linePoint,
                                  const Pixel& randColor,
                                  const float dataVal) const noexcept -> PointAndColor
 {
-  Expects(m_goomInfo.GetSoundEvents().GetSoundInfo().GetAllTimesMinVolume() <=
+  Expects(m_goomInfo->GetSoundEvents().GetSoundInfo().GetAllTimesMinVolume() <=
           (dataVal + SMALL_FLOAT));
   Expects(m_minAudioValue <= (dataVal + SMALL_FLOAT));
   Expects(dataVal <= ((m_minAudioValue + m_audioRange) + SMALL_FLOAT));

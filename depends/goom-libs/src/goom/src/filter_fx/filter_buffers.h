@@ -71,10 +71,10 @@ public:
       -> Point2dInt;
 
 private:
-  const Dimensions m_dimensions;
+  Dimensions m_dimensions;
   std::unique_ptr<FilterStriper> m_filterStriper;
 
-  const Point2dInt m_maxTranPoint = ZoomCoordTransforms::ScreenToTranPoint(
+  Point2dInt m_maxTranPoint = ZoomCoordTransforms::ScreenToTranPoint(
       {m_dimensions.GetIntWidth() - 1, m_dimensions.GetIntHeight() - 1});
   ZoomTransformBuffers m_transformBuffers{m_dimensions, m_maxTranPoint};
 

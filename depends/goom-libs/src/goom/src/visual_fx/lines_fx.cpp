@@ -68,8 +68,8 @@ public:
   [[nodiscard]] auto GetRandomLineColors() const noexcept -> std::array<Pixel, NUM_LINES>;
 
 private:
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   static_assert(2 == NUM_LINES);
   static constexpr std::array<uint32_t, NUM_LINES> SOUND_SAMPLE_NUM_TO_USE{0, 1};
@@ -81,16 +81,16 @@ private:
   auto ResetLineColorPowers() noexcept -> void;
   auto DrawLines() noexcept -> void;
 
-  const float m_screenWidth{static_cast<float>(m_goomInfo.GetScreenWidth())};
-  const float m_screenHeight{static_cast<float>(m_goomInfo.GetScreenHeight())};
+  float m_screenWidth{static_cast<float>(m_goomInfo->GetScreenWidth())};
+  float m_screenHeight{static_cast<float>(m_goomInfo->GetScreenHeight())};
   uint32_t m_updateNum        = 0;
   int32_t m_drawLinesDuration = LineMorph::MIN_LINE_DURATION;
   int32_t m_lineMode          = LineMorph::MIN_LINE_DURATION; // l'effet lineaire a dessiner
   uint32_t m_stopLines        = 0;
-  const Weights<LineType> m_lineTypeWeights;
+  Weights<LineType> m_lineTypeWeights;
 
-  bool m_isNearScope = m_goomRand.ProbabilityOf(PROB_NEAR_SCOPE);
-  bool m_isFarScope  = m_goomRand.ProbabilityOf(PROB_FAR_SCOPE);
+  bool m_isNearScope = m_goomRand->ProbabilityOf(PROB_NEAR_SCOPE);
+  bool m_isFarScope  = m_goomRand->ProbabilityOf(PROB_FAR_SCOPE);
   auto UpdateScopes() noexcept -> void;
   [[nodiscard]] auto CanDisplayLines() const noexcept -> bool;
   auto ChangeGoomLines() noexcept -> void;
@@ -162,8 +162,8 @@ auto LinesFx::ApplyMultiple() noexcept -> void
 
 LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
                               const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_goomInfo{fxHelper.GetGoomInfo()},
-    m_goomRand{fxHelper.GetGoomRand()},
+  : m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()},
     m_lineMorphs{
         LineMorph{
             fxHelper.GetDraw(),
@@ -205,7 +205,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
         }
     },
     m_lineTypeWeights{
-        m_goomRand,
+        *m_goomRand,
         {
             { LineType::CIRCLE, CIRCLE_LINE_TYPE_WEIGHT },
             { LineType::H_LINE, H_LINE_LINE_TYPE_WEIGHT },
@@ -312,8 +312,8 @@ inline auto LinesFx::LinesImpl::UpdateScopes() noexcept -> void
   static constexpr auto NUM_UPDATES_BEFORE_SCOPE_CHANGE = 200U;
   if (0 == (m_updateNum % NUM_UPDATES_BEFORE_SCOPE_CHANGE))
   {
-    m_isNearScope = m_goomRand.ProbabilityOf(PROB_NEAR_SCOPE);
-    m_isFarScope  = m_goomRand.ProbabilityOf(PROB_FAR_SCOPE);
+    m_isNearScope = m_goomRand->ProbabilityOf(PROB_NEAR_SCOPE);
+    m_isFarScope  = m_goomRand->ProbabilityOf(PROB_FAR_SCOPE);
   }
 }
 
@@ -345,7 +345,7 @@ auto LinesFx::LinesImpl::ChangeGoomLines() noexcept -> void
   static constexpr auto GOOM_CYCLE_MOD_CHANGE   = 9U;
 
   if ((GOOM_CYCLE_MOD_CHANGE == (m_updateNum % CHANGE_GOOM_LINE_CYCLES)) and
-      m_goomRand.ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
+      m_goomRand->ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
       ((0 == m_lineMode) or (m_lineMode == m_drawLinesDuration)))
   {
     ResetGoomLines();
@@ -357,7 +357,7 @@ inline auto LinesFx::LinesImpl::CanDisplayLines() const noexcept -> bool
   static constexpr auto DISPLAY_LINES_GOOM_NUM = 5U;
 
   return ((m_lineMode != 0) or
-          (m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
+          (m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
 }
 
 inline auto LinesFx::LinesImpl::UpdateLineModes() noexcept -> void
@@ -449,13 +449,13 @@ auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const
     param2    = NEW_FAR_VAL_PARAM2;
     amplitude = NEW_FAR_VAL_AMPLITUDE;
   }
-  else if (m_goomRand.ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_AMPLITUDE))
+  else if (m_goomRand->ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_AMPLITUDE))
   {
     param1    = 0.0F;
     param2    = 0.0F;
     amplitude = NEW_NON_FAR_VAL_AMPLITUDE;
   }
-  else if (m_goomRand.ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_PARAMS))
+  else if (m_goomRand->ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_PARAMS))
   {
     param1    = NEW_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
     param2    = NEW_NON_FAR_VAL_PARAM2_FACTOR * m_screenHeight;
@@ -491,7 +491,7 @@ auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) c
   static constexpr auto NEW_AMPLITUDE     = 1.0F;
   static constexpr auto DEFAULT_AMPLITUDE = 2.0F;
 
-  if (m_goomRand.ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
+  if (m_goomRand->ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
   {
     param1    = NEW_PARAM1_FACTOR * m_screenHeight;
     param2    = NEW_PARAM2_FACTOR * m_screenHeight;
@@ -527,7 +527,7 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
   static constexpr auto NEW_AMPLITUDE     = 1.0F;
   static constexpr auto DEFAULT_AMPLITUDE = 1.5F;
 
-  if (m_goomRand.ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
+  if (m_goomRand->ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
   {
     param1    = NEW_PARAM1_FACTOR * m_screenWidth;
     param2    = NEW_PARAM2_FACTOR * m_screenWidth;
@@ -549,7 +549,7 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
 auto LinesFx::LinesImpl::GetResetLineColors(const uint32_t farVal) const noexcept
     -> std::array<Pixel, NUM_LINES>
 {
-  if ((farVal != 0) and m_goomRand.ProbabilityOf(PROB_CHANGE_LINE_TO_BLACK))
+  if ((farVal != 0) and m_goomRand->ProbabilityOf(PROB_CHANGE_LINE_TO_BLACK))
   {
     return {BLACK_LINE_COLOR, BLACK_LINE_COLOR};
   }
@@ -573,13 +573,13 @@ auto LinesFx::LinesImpl::StopRandomLineChangeMode() noexcept -> void
     }
   }
   else if ((0 == (m_updateNum % DEC_LINE_MODE_CYCLES)) and
-           m_goomRand.ProbabilityOf(PROB_REDUCE_LINE_MODE) and (m_lineMode != 0))
+           m_goomRand->ProbabilityOf(PROB_REDUCE_LINE_MODE) and (m_lineMode != 0))
   {
     --m_lineMode;
   }
 
   if ((0 == (m_updateNum % UPDATE_LINE_MODE_CYCLES)) and
-      m_goomRand.ProbabilityOf(PROB_UPDATE_LINE_MODE) and m_isNearScope)
+      m_goomRand->ProbabilityOf(PROB_UPDATE_LINE_MODE) and m_isNearScope)
   {
     if (0 == m_lineMode)
     {

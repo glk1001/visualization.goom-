@@ -15,34 +15,34 @@ auto BrightenColors(float brightness, MultiplePixels& colors) -> void;
 class PixelDrawerNoClipping
 {
 public:
-  explicit PixelDrawerNoClipping(IGoomDraw& draw) noexcept : m_draw{draw} {}
+  explicit PixelDrawerNoClipping(IGoomDraw& draw) noexcept : m_draw{&draw} {}
 
   auto DrawPixels(const Point2dInt& point, const float brightness, MultiplePixels colors) noexcept
       -> void
   {
     BrightenColors(brightness, colors);
-    m_draw.DrawPixels(point, colors);
+    m_draw->DrawPixels(point, colors);
   }
 
 private:
-  IGoomDraw& m_draw;
+  IGoomDraw* m_draw;
 };
 
 class PixelDrawerWithClipping
 {
 public:
-  explicit PixelDrawerWithClipping(IGoomDraw& draw) noexcept : m_draw{draw} {}
+  explicit PixelDrawerWithClipping(IGoomDraw& draw) noexcept : m_draw{&draw} {}
 
   auto DrawPixels(const Point2dInt& point,
                   [[maybe_unused]] const float brightness,
                   MultiplePixels colors) noexcept -> void
   {
     BrightenColors(brightness, colors);
-    m_draw.DrawClippedPixels(point, colors);
+    m_draw->DrawClippedPixels(point, colors);
   }
 
 private:
-  IGoomDraw& m_draw;
+  IGoomDraw* m_draw;
 };
 
 class ClipTester

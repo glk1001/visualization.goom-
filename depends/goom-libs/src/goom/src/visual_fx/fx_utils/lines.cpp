@@ -3,8 +3,6 @@
 #include "goom_config.h"
 #include "utils/math/misc.h"
 
-#include <format>
-
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 

@@ -59,21 +59,20 @@ public:
   [[nodiscard]] auto GetRandomLineColor() const noexcept -> Pixel;
 
 private:
-  DRAW::IGoomDraw& m_draw;
-  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{m_draw};
-  const PluginInfo& m_goomInfo;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  DRAW::IGoomDraw* m_draw;
+  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{*m_draw};
+  const PluginInfo* m_goomInfo;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{
-      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(m_goomRand)};
+      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_currentColorMapID{
-      m_colorMapsManager.AddDefaultColorMapInfo(m_goomRand)};
+      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  const COLOR::ColorAdjustment m_colorAdjust{GAMMA,
-                                             COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
 
   std::vector<FX_UTILS::LinePoint> m_srcePoints;
   std::vector<FX_UTILS::LinePoint> m_srcePointsCopy;

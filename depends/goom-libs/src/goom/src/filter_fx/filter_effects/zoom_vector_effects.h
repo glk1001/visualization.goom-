@@ -54,7 +54,7 @@ public:
   [[nodiscard]] auto GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
-  const NormalizedCoordsConverter& m_normalizedCoordsConverter;
+  const NormalizedCoordsConverter* m_normalizedCoordsConverter;
   const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
   AFTER_EFFECTS::ZoomVectorAfterEffects m_zoomVectorAfterEffects;
   float m_baseZoomInCoeffFactor = RAW_BASE_ZOOM_IN_COEFF_FACTOR;

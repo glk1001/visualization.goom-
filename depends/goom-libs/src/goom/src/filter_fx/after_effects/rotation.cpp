@@ -24,7 +24,7 @@ static constexpr auto ANGLE_RANGE =
     IGoomRand::NumberRange<float>{(1.0F / 8.0F) * PI, (3.0F / 8.0F) * PI};
 
 Rotation::Rotation(const IGoomRand& goomRand) noexcept
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_params{DEFAULT_ROTATE_SPEED,
              DEFAULT_ROTATE_SPEED,
              std::sin(DEFAULT_ROTATE_ANGLE),
@@ -34,10 +34,10 @@ Rotation::Rotation(const IGoomRand& goomRand) noexcept
 
 auto Rotation::SetRandomParams() -> void
 {
-  const auto xRotateSpeed = m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
-  auto yRotateSpeed       = m_goomRand.ProbabilityOf(PROB_EQUAL_XY_ROTATE_SPEEDS)
+  const auto xRotateSpeed = m_goomRand->GetRandInRange(ROTATE_SPEED_RANGE);
+  auto yRotateSpeed       = m_goomRand->ProbabilityOf(PROB_EQUAL_XY_ROTATE_SPEEDS)
                                 ? xRotateSpeed
-                                : m_goomRand.GetRandInRange(ROTATE_SPEED_RANGE);
+                                : m_goomRand->GetRandInRange(ROTATE_SPEED_RANGE);
 
   if (((xRotateSpeed < 0.0F) && (yRotateSpeed > 0.0F)) ||
       ((xRotateSpeed > 0.0F) && (yRotateSpeed < 0.0F)))
@@ -45,7 +45,7 @@ auto Rotation::SetRandomParams() -> void
     yRotateSpeed = -yRotateSpeed;
   }
 
-  const auto angle    = m_goomRand.GetRandInRange(ANGLE_RANGE);
+  const auto angle    = m_goomRand->GetRandInRange(ANGLE_RANGE);
   const auto sinAngle = std::sin(angle);
   const auto cosAngle = std::cos(angle);
 

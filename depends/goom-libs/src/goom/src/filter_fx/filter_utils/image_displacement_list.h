@@ -37,8 +37,8 @@ private:
   static const std::vector<std::string> IMAGE_FILENAMES;
 
   std::vector<ImageDisplacement> m_imageDisplacements{};
-  const std::string m_resourcesDirectory;
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  std::string m_resourcesDirectory;
+  const UTILS::MATH::IGoomRand* m_goomRand;
   size_t m_currentImageDisplacementIndex = 0;
   [[nodiscard]] auto GetImageFilename(const std::string& imageFilename) const -> std::string;
 };

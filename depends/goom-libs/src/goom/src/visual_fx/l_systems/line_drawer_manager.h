@@ -31,7 +31,7 @@ public:
   auto Update() noexcept -> void;
 
 private:
-  const UTILS::MATH::IGoomRand& m_goomRand;
+  const UTILS::MATH::IGoomRand* m_goomRand;
 
   using LineDrawerWithMovingNoiseEffect = DRAW::SHAPE_DRAWERS::LineDrawerWithMovingNoiseEffect;
 
@@ -41,7 +41,7 @@ private:
   static constexpr auto NUM_NUM_MOVING_NOISE_PIXEL_STEPS = 10000U;
   LineDrawerWithMovingNoiseEffect m_lineDrawerWithMovingNoiseEffect;
 
-  const UTILS::MATH::Weights<SwitchLineDrawerType> m_switchLineDrawerWeights;
+  UTILS::MATH::Weights<SwitchLineDrawerType> m_switchLineDrawerWeights;
 
   ILineDrawerWithEffects* m_lineDrawer = &m_lineDrawerWithMovingNoiseEffect;
 };

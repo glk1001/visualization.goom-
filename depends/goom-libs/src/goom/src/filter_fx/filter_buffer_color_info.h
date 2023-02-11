@@ -31,7 +31,7 @@ public:
     auto NextX() noexcept -> void;
 
   private:
-    const std::array<uint32_t, NUM_X_REGIONS>& m_xRegionBorders;
+    const std::array<uint32_t, NUM_X_REGIONS>* m_xRegionBorders;
     uint32_t m_currentX            = 0;
     uint32_t m_currentXRegionIndex = 0;
 
@@ -58,11 +58,11 @@ public:
       -> float;
 
 private:
-  const Dimensions m_dimensions;
+  Dimensions m_dimensions;
 
-  const std::array<uint32_t, NUM_X_REGIONS> m_xRegionBorders{
+  std::array<uint32_t, NUM_X_REGIONS> m_xRegionBorders{
       GetRegionBorders<NUM_X_REGIONS>(m_dimensions.GetWidth())};
-  const std::array<uint32_t, NUM_Y_REGIONS> m_yRegionBorders{
+  std::array<uint32_t, NUM_Y_REGIONS> m_yRegionBorders{
       GetRegionBorders<NUM_Y_REGIONS>(m_dimensions.GetHeight())};
   template<uint32_t NumRegions>
   [[nodiscard]] static auto GetRegionBorders(uint32_t length) noexcept
@@ -81,7 +81,7 @@ private:
     uint32_t y1;
     uint32_t xRegionIndex;
   };
-  const std::array<RegionInfo, NUM_REGIONS> m_regionInfoArray{GetRegionInfoArray(m_yRegionBorders)};
+  std::array<RegionInfo, NUM_REGIONS> m_regionInfoArray{GetRegionInfoArray(m_yRegionBorders)};
   [[nodiscard]] static auto GetRegionInfoArray(
       const std::array<uint32_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
       -> std::array<RegionInfo, NUM_REGIONS>;
@@ -136,7 +136,7 @@ auto FilterBufferColorInfo::GetRegionBorders(const uint32_t length) noexcept
 
 inline FilterBufferColorInfo::FilterBufferRowColorInfo::FilterBufferRowColorInfo(
     const std::array<uint32_t, NUM_X_REGIONS>& xRegionBorders) noexcept
-  : m_xRegionBorders{xRegionBorders}
+  : m_xRegionBorders{&xRegionBorders}
 {
 }
 
@@ -172,7 +172,7 @@ inline auto FilterBufferColorInfo::FilterBufferRowColorInfo::UpdateColor(
 inline auto FilterBufferColorInfo::FilterBufferRowColorInfo::NextX() noexcept -> void
 {
   ++m_currentX;
-  if (m_currentX > m_xRegionBorders.at(m_currentXRegionIndex))
+  if (m_currentX > m_xRegionBorders->at(m_currentXRegionIndex))
   {
     ++m_currentXRegionIndex;
   }

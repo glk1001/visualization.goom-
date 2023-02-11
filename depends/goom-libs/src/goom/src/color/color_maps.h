@@ -61,7 +61,7 @@ protected:
   [[nodiscard]] auto GetColorMap() const -> const IColorMap& { return *m_colorMap; }
 
 private:
-  const std::shared_ptr<const IColorMap> m_colorMap;
+  std::shared_ptr<const IColorMap> m_colorMap;
 };
 
 enum class ColorMapGroup : int

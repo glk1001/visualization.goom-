@@ -67,7 +67,7 @@ protected:
       -> void = 0;
 
 private:
-  const Dimensions m_dimensions;
+  Dimensions m_dimensions;
 
   BlendPixelFunc m_blendPixelFunc{};
   [[nodiscard]] static auto ColorAddBlendPixel(const Pixel& oldColor,

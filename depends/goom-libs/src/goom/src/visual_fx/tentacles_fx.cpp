@@ -14,7 +14,6 @@
 #include "tentacles/tentacle_driver.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/timer.h"
 
 #include <array>
@@ -27,7 +26,6 @@ namespace GOOM::VISUAL_FX
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
-using DRAW::MultiplePixels;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
 using UTILS::NUM;
@@ -51,9 +49,9 @@ public:
   auto Update() -> void;
 
 private:
-  IGoomDraw& m_draw;
-  const PluginInfo& m_goomInfo;
-  const IGoomRand& m_goomRand;
+  IGoomDraw* m_draw;
+  const PluginInfo* m_goomInfo;
+  const IGoomRand* m_goomRand;
 
   enum class Drivers
   {
@@ -64,8 +62,8 @@ private:
     _num // unused, and marks the enum end
   };
   static constexpr size_t NUM_TENTACLE_DRIVERS = NUM<Drivers>;
-  const Weights<Drivers> m_driverWeights;
-  const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;
+  Weights<Drivers> m_driverWeights;
+  std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;
   std::vector<TentacleDriver> m_tentacleDrivers{GetTentacleDrivers()};
   [[nodiscard]] auto GetTentacleDrivers() const -> std::vector<TentacleDriver>;
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
@@ -157,11 +155,11 @@ static constexpr auto DRIVERS_NUM2_WEIGHT = 10.0F;
 static constexpr auto DRIVERS_NUM3_WEIGHT = 05.0F;
 
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
-  : m_draw{fxHelper.GetDraw()},
-    m_goomInfo{fxHelper.GetGoomInfo()},
-    m_goomRand{fxHelper.GetGoomRand()},
+  : m_draw{&fxHelper.GetDraw()},
+    m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()},
     m_driverWeights{
-      m_goomRand,
+      *m_goomRand,
       {
           {Drivers::NUM0, DRIVERS_NUM0_WEIGHT},
           {Drivers::NUM1, DRIVERS_NUM1_WEIGHT},
@@ -188,7 +186,7 @@ inline auto TentaclesFx::TentaclesImpl::Start() -> void
 
 inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 {
-  if (static constexpr auto PROB_NEW_DRIVER = 0.5F; m_goomRand.ProbabilityOf(PROB_NEW_DRIVER))
+  if (static constexpr auto PROB_NEW_DRIVER = 0.5F; m_goomRand->ProbabilityOf(PROB_NEW_DRIVER))
   {
     m_currentTentacleDriver = GetNextDriver();
   }
@@ -203,7 +201,7 @@ auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const -> std::vector<Tenta
   auto tentacleDrivers = std::vector<TentacleDriver>{};
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    tentacleDrivers.emplace_back(m_draw, m_goomRand, m_tentacleLayouts.at(i));
+    tentacleDrivers.emplace_back(*m_draw, *m_goomRand, m_tentacleLayouts.at(i));
   }
 
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
@@ -299,7 +297,7 @@ inline auto TentaclesFx::TentaclesImpl::UpdateTimers() -> void
 
 inline auto TentaclesFx::TentaclesImpl::DoTentaclesUpdate() -> void
 {
-  if (0 == m_goomInfo.GetSoundEvents().GetTimeSinceLastGoom())
+  if (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom())
   {
     ChangeDominantColor();
   }
@@ -314,10 +312,10 @@ inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
   // Higher sound acceleration increases tentacle wave frequency.
   Expects(m_currentTentacleDriver);
   const auto tentacleWaveFreqMultiplier =
-      m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration() <
+      m_goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration() <
               SoundInfo::ACCELERATION_MIDPOINT
           ? 0.95F
-          : (1.0F / (1.1F - m_goomInfo.GetSoundEvents().GetSoundInfo().GetAcceleration()));
+          : (1.0F / (1.1F - m_goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration()));
   m_currentTentacleDriver->MultiplyIterZeroYValWaveFreq(tentacleWaveFreqMultiplier);
 }
 

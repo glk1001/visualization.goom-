@@ -7,7 +7,6 @@
 #include "random_color_maps_groups.h"
 
 #include <cstdint>
-#include <memory>
 
 namespace GOOM::COLOR
 {

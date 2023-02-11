@@ -30,13 +30,13 @@ using UTILS::MATH::U_HALF;
 LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
                                      const IGoomRand& goomRand,
                                      const uint32_t width,
-                                     const Colorizer* const colorizer,
+                                     const Colorizer& colorizer,
                                      const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{draw},
-    m_goomRand{goomRand},
+  : m_draw{&draw},
+    m_goomRand{&goomRand},
     m_width{width},
-    m_smallBitmaps{smallBitmaps},
-    m_colorizer{colorizer}
+    m_smallBitmaps{&smallBitmaps},
+    m_colorizer{&colorizer}
 {
 }
 
@@ -62,7 +62,7 @@ auto LowDensityBlurrer::SetColorMode(const BlurrerColorMode colorMode) noexcept 
   m_colorMode = colorMode;
 
   static constexpr auto PROB_USE_BITMAPS = 0.1F;
-  m_currentImageBitmap = GetImageBitmap(m_goomRand.ProbabilityOf(PROB_USE_BITMAPS));
+  m_currentImageBitmap = GetImageBitmap(m_goomRand->ProbabilityOf(PROB_USE_BITMAPS));
 }
 
 auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const noexcept -> const ImageBitmap*
@@ -74,9 +74,9 @@ auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const noexcept -> 
 
   static constexpr auto MIN_RES = 3U;
   static constexpr auto MAX_RES = 7U;
-  const auto bitmapRes          = m_goomRand.GetRandInRange(MIN_RES, MAX_RES);
+  const auto bitmapRes          = m_goomRand->GetRandInRange(MIN_RES, MAX_RES);
 
-  return &m_smallBitmaps.GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, bitmapRes);
+  return &m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, bitmapRes);
 }
 
 auto LowDensityBlurrer::DoBlur(std::vector<IfsPoint>& lowDensityPoints,
@@ -98,8 +98,8 @@ inline auto LowDensityBlurrer::SetPointColors(std::vector<IfsPoint>& lowDensityP
   for (auto& point : lowDensityPoints)
   {
     if ((point.GetX() < halfWidth) or (point.GetY() < halfWidth) or
-        (point.GetX() >= (m_draw.GetDimensions().GetWidth() - halfWidth)) or
-        (point.GetY() >= (m_draw.GetDimensions().GetHeight() - halfWidth)))
+        (point.GetX() >= (m_draw->GetDimensions().GetWidth() - halfWidth)) or
+        (point.GetY() >= (m_draw->GetDimensions().GetHeight() - halfWidth)))
     {
       point.SetCount(0); // just signal that no need to set buff
       continue;
@@ -124,7 +124,7 @@ auto LowDensityBlurrer::GetNeighbours(const IfsPoint& point) const noexcept -> s
     auto neighX = neighX0;
     for (auto j = 0U; j < m_width; ++j)
     {
-      neighbours[n] = m_draw.GetPixel({neighX, neighY});
+      neighbours[n] = m_draw->GetPixel({neighX, neighY});
       ++n;
       ++neighX;
     }
@@ -255,9 +255,9 @@ inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
                                                   const float logAlpha) const noexcept -> Pixel
 {
   const auto fx =
-      static_cast<float>(point.GetX()) / static_cast<float>(m_draw.GetDimensions().GetWidth());
+      static_cast<float>(point.GetX()) / static_cast<float>(m_draw->GetDimensions().GetWidth());
   const auto fy =
-      static_cast<float>(point.GetY()) / static_cast<float>(m_draw.GetDimensions().GetHeight());
+      static_cast<float>(point.GetY()) / static_cast<float>(m_draw->GetDimensions().GetHeight());
 
   const auto neighbourhoodAverageColor = GetColorAverage(neighbours.size(), neighbours);
 

@@ -38,10 +38,10 @@ public:
 
 private:
   std::unique_ptr<UTILS::GRAPHICS::ImageBitmap> m_imageBuffer;
-  const std::string m_imageFilename;
-  const int32_t m_xMax{static_cast<int32_t>(m_imageBuffer->GetWidth() - 1)};
-  const int32_t m_yMax{static_cast<int32_t>(m_imageBuffer->GetHeight() - 1)};
-  const NormalizedCoordsConverter m_normalizedCoordsConverter{
+  std::string m_imageFilename;
+  int32_t m_xMax = static_cast<int32_t>(m_imageBuffer->GetWidth() - 1);
+  int32_t m_yMax = static_cast<int32_t>(m_imageBuffer->GetHeight() - 1);
+  NormalizedCoordsConverter m_normalizedCoordsConverter{
       {m_imageBuffer->GetWidth(), m_imageBuffer->GetHeight()},
       FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL,
       false

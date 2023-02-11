@@ -26,9 +26,9 @@ static constexpr auto MODE2_WEIGHT = 10.0F;
 static constexpr auto MODE3_WEIGHT = 10000000000.0F;
 
 XYLerpEffect::XYLerpEffect(const IGoomRand& goomRand)
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_modeWeights{
-        m_goomRand,
+        *m_goomRand,
         {
             {Modes::MODE0, MODE0_WEIGHT},
             {Modes::MODE1, MODE1_WEIGHT},
@@ -43,9 +43,9 @@ XYLerpEffect::XYLerpEffect(const IGoomRand& goomRand)
 auto XYLerpEffect::SetRandomParams() -> void
 {
   const auto mode   = m_modeWeights.GetRandomWeighted();
-  const auto tFreq  = m_goomRand.GetRandInRange(T_FREQ_RANGE);
-  const auto ySign  = m_goomRand.ProbabilityOf(PROB_FLIP_Y_SIGN) ? -1.0F : +1.0F;
-  const auto flipXY = m_goomRand.ProbabilityOf(GetFlipYProbability(mode));
+  const auto tFreq  = m_goomRand->GetRandInRange(T_FREQ_RANGE);
+  const auto ySign  = m_goomRand->ProbabilityOf(PROB_FLIP_Y_SIGN) ? -1.0F : +1.0F;
+  const auto flipXY = m_goomRand->ProbabilityOf(GetFlipYProbability(mode));
 
   SetParams({mode, tFreq, ySign, flipXY});
 }

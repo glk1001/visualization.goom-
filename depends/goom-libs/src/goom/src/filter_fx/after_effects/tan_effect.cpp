@@ -32,11 +32,11 @@ static constexpr auto DEFAULT_LIMITING_FACTOR = 0.75F;
 static constexpr auto LIMITING_FACTOR_RANGE   = IGoomRand::NumberRange<float>{0.10F, 0.85F};
 
 TanEffect::TanEffect(const IGoomRand& goomRand)
-  : m_goomRand{goomRand},
+  : m_goomRand{&goomRand},
     m_params{DEFAULT_TAN_TYPE, DEFAULT_COT_MIX, {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
              DEFAULT_LIMITING_FACTOR},
     m_tanEffectWeights{
-      m_goomRand,
+      *m_goomRand,
       {
         {TanType::TAN_ONLY, TAN_ONLY_WEIGHT},
         {TanType::COT_ONLY, COT_ONLY_WEIGHT},
@@ -49,14 +49,14 @@ TanEffect::TanEffect(const IGoomRand& goomRand)
 auto TanEffect::SetRandomParams() -> void
 {
   const auto tanType = m_tanEffectWeights.GetRandomWeighted();
-  const auto cotMix  = m_goomRand.GetRandInRange(COT_MIX_RANGE);
+  const auto cotMix  = m_goomRand->GetRandInRange(COT_MIX_RANGE);
 
-  const auto xAmplitude = m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand.ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
                               ? xAmplitude
-                              : m_goomRand.GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
 
-  const auto limitingFactor = m_goomRand.GetRandInRange(LIMITING_FACTOR_RANGE);
+  const auto limitingFactor = m_goomRand->GetRandInRange(LIMITING_FACTOR_RANGE);
 
   LogInfo("tanType = {}, cotMix = {}", EnumToString(tanType), cotMix); // NOLINT
   LogInfo("xAmplitude = {}, yAmplitude = {}", xAmplitude, yAmplitude); // NOLINT
