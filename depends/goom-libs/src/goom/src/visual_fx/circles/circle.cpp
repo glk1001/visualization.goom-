@@ -7,14 +7,11 @@
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/bitmap_drawer.h"
-#include "draw/shape_drawers/circle_drawer.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
 #include "point2d.h"
 #include "utils/enum_utils.h"
-#include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
@@ -25,117 +22,39 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
+using COLOR::ColorMapsGrid;
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
-using DRAW::GetLowColor;
-using DRAW::GetMainColor;
-using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using DRAW::ReversePixels;
-using DRAW::SHAPE_DRAWERS::BitmapDrawer;
-using DRAW::SHAPE_DRAWERS::CircleDrawer;
 using UTILS::EnumMap;
-using UTILS::IncrementedValue;
-using UTILS::NUM;
 using UTILS::TValue;
 using UTILS::MATH::AngleParams;
 using UTILS::MATH::CirclePath;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::ModIncrement;
 using UTILS::MATH::OscillatingFunction;
-using UTILS::MATH::U_HALF;
 
-static constexpr auto DOT_MAIN_COLOR_BRIGHTNESS_FACTOR      = 0.1F;
-static constexpr auto DOT_LOW_COLOR_BRIGHTNESS_FACTOR       = 2.0F;
-static constexpr auto DOT_ROTATING_COLOR_BRIGHTNESS_FACTOR  = 5.0F;
-static constexpr auto DOT_INSIDE_MIN_BRIGHTNESS_FACTOR      = 0.5F;
-static constexpr auto DOT_INSIDE_MAX_BRIGHTNESS_FACTOR      = 1.0F;
-static constexpr auto LINE_MAIN_COLOR_BRIGHTNESS_FACTOR     = 0.1F;
-static constexpr auto LINE_LOW_COLOR_BRIGHTNESS_FACTOR      = 1.0F;
-static constexpr auto NEAR_START_BRIGHTNESS_FACTOR          = 0.25F;
-static constexpr auto NEAR_END_BRIGHTNESS_VALUE             = 0.001F;
-static constexpr auto SPECIAL_NUM_BRIGHTNESS_INCREASE       = 1.5F;
-static constexpr auto SPECIAL_NUM_LINE_BRIGHTNESS_INCREASE  = 2.0F;
-static constexpr auto DECORATION_DIFFERENT_COLOR_BRIGHTNESS = 1.0F;
-static constexpr auto DECORATION_SPECIAL_BRIGHTNESS         = 2.0F;
-static constexpr auto MIN_COLOR_GRID_MIX_T                  = 0.1F;
-static constexpr auto MAX_COLOR_GRID_MIX_T                  = 0.9F;
-static constexpr auto PROB_NO_ROTATING_COLORS               = 0.9F;
-static constexpr auto MIN_NUM_ROTATING_COLORS               = 1U;
-static constexpr auto MAX_NUM_ROTATING_COLORS               = 2U;
-static constexpr auto CLOSE_TO_START_T                      = 0.1F;
-static constexpr auto CLOSE_TO_END_T                        = 0.2F;
+static constexpr auto DOT_MAIN_COLOR_BRIGHTNESS_FACTOR     = 0.1F;
+static constexpr auto DOT_LOW_COLOR_BRIGHTNESS_FACTOR      = 2.0F;
+static constexpr auto DOT_ROTATING_COLOR_BRIGHTNESS_FACTOR = 5.0F;
+static constexpr auto LINE_MAIN_COLOR_BRIGHTNESS_FACTOR    = 0.1F;
+static constexpr auto LINE_LOW_COLOR_BRIGHTNESS_FACTOR     = 1.0F;
+static constexpr auto NEAR_START_BRIGHTNESS_FACTOR         = 0.25F;
+static constexpr auto NEAR_END_BRIGHTNESS_VALUE            = 0.001F;
+static constexpr auto SPECIAL_NUM_BRIGHTNESS_INCREASE      = 1.5F;
+static constexpr auto SPECIAL_NUM_LINE_BRIGHTNESS_INCREASE = 2.0F;
+static constexpr auto MIN_COLOR_GRID_MIX_T                 = 0.1F;
+static constexpr auto MAX_COLOR_GRID_MIX_T                 = 0.9F;
+static constexpr auto PROB_NO_ROTATING_COLORS              = 0.9F;
+static constexpr auto MIN_NUM_ROTATING_COLORS              = 1U;
+static constexpr auto MAX_NUM_ROTATING_COLORS              = 2U;
+static constexpr auto CLOSE_TO_START_T                     = 0.1F;
+static constexpr auto CLOSE_TO_END_T                       = 0.2F;
 
 static constexpr auto PROB_SHOW_LINE                     = 0.5F;
 static constexpr auto PROB_ALTERNATE_MAIN_LOW_DOT_COLORS = 0.1F;
-static constexpr auto PROB_CIRCLES                       = 0.5F;
-
-class Circle::DotDrawer
-{
-public:
-  DotDrawer(IGoomDraw& draw, const IGoomRand& goomRand, const Helper& helper) noexcept;
-
-  auto SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept -> void;
-  auto SetGlobalBrightnessFactor(float val) noexcept -> void;
-
-  auto DrawDot(const Point2dInt& pos, uint32_t diameter, const MultiplePixels& colors) noexcept
-      -> void;
-
-private:
-  const IGoomRand* m_goomRand;
-  const Helper* m_helper;
-  BitmapDrawer m_bitmapDrawer;
-  CircleDrawer m_circleDrawer;
-  float m_globalBrightnessFactor = 1.0F;
-
-  static constexpr float MIN_BGND_MIX_T = 0.2F;
-  static constexpr float MAX_BGND_MIX_T = 0.8F;
-  float m_bgndMainColorMixT;
-  float m_bgndLowColorMixT;
-  enum class DecorationType
-  {
-    NO_DECORATION,
-    BLACK_LINES,
-    BRIGHT_LINES,
-    DIFFERENT_COLORS,
-    _num // unused, and marks the enum end
-  };
-  DecorationType m_decorationType;
-  Pixel m_differentColor = BLACK_PIXEL;
-
-  bool m_doCircleDotShapes = true;
-  const IColorMap* m_outerCircleDotColorMap{};
-  static constexpr float MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.1F;
-  static constexpr float MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.9F;
-  float m_outerCircleDotColorMix                          = MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T;
-
-  auto DrawBitmapDot(const Point2dInt& position,
-                     uint32_t diameter,
-                     const MultiplePixels& colors) noexcept -> void;
-  [[nodiscard]] auto GetRandomDifferentColor(const RandomColorMaps& weightedMaps) const noexcept
-      -> Pixel;
-  [[nodiscard]] auto GetRandomDecorationType() const noexcept -> DecorationType;
-  [[nodiscard]] static auto IsSpecialPoint(size_t x, size_t y, uint32_t diameter) noexcept -> bool;
-  [[nodiscard]] auto GetDotMixedColor(size_t x,
-                                      size_t y,
-                                      uint32_t diameter,
-                                      const Pixel& bgnd,
-                                      const Pixel& color,
-                                      float mixT) const noexcept -> Pixel;
-  auto DrawCircleDot(const Point2dInt& centre,
-                     uint32_t diameter,
-                     const MultiplePixels& colors,
-                     const IColorMap& innerColorMap) noexcept -> void;
-  [[nodiscard]] static auto GetCircleColors(float brightness, const MultiplePixels& colors) noexcept
-      -> MultiplePixels;
-  [[nodiscard]] static auto GetCircleColorsWithInner(float brightness,
-                                                     const MultiplePixels& colors,
-                                                     const Pixel& innerColor,
-                                                     float innerColorMix) noexcept
-      -> MultiplePixels;
-};
 
 static constexpr auto GRID_COLOR_RANGE_ONE_WEIGHT    = 20.0F;
 static constexpr auto GRID_COLOR_RANGE_LOW_WEIGHT    = 03.0F;
@@ -146,9 +65,7 @@ Circle::Circle(const FxHelper& fxHelper,
                const Helper& helper,
                const Params& circleParams,
                const OscillatingFunction::Params& pathParams) noexcept
-  : m_draw{&fxHelper.GetDraw()},
-    m_lineDrawer{*m_draw, fxHelper.GetGoomRand(), {5U, 5U}},
-    m_goomInfo{&fxHelper.GetGoomInfo()},
+  : m_lineDrawer{fxHelper.GetDraw(), fxHelper.GetGoomRand(), {5U, 5U}},
     m_goomRand{&fxHelper.GetGoomRand()},
     m_helper{helper},
     m_dotPaths{*m_goomRand,
@@ -161,7 +78,7 @@ Circle::Circle(const FxHelper& fxHelper,
                 circleParams.fromTargetParams.circleCentreTarget},
                {pathParams, pathParams},
     },
-    m_dotDrawer{std::make_unique<DotDrawer>(*m_draw, *m_goomRand, m_helper)},
+    m_dotDrawer{std::make_unique<DotDrawer>(fxHelper.GetDraw(), *m_goomRand, m_helper)},
     m_mainColorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)},
     m_lowColorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)},
     m_weightedGridColorRanges{
@@ -176,10 +93,6 @@ Circle::Circle(const FxHelper& fxHelper,
 {
   UpdateRotatingColorMaps();
 }
-
-Circle::Circle(Circle&&) noexcept = default;
-
-Circle::~Circle() noexcept = default;
 
 auto Circle::GetDotStartingPositions(const Point2dInt& centre, const float radius) noexcept
     -> std::vector<Point2dInt>
@@ -226,7 +139,7 @@ inline auto Circle::UpdateNumDifferentGridMaps() noexcept -> void
   m_numDifferentGridMaps  = NUM_MAPS[m_currentGridColorRange];
 }
 
-inline auto Circle::GetMainColorMapsGrid() const noexcept -> COLOR::ColorMapsGrid
+inline auto Circle::GetMainColorMapsGrid() const noexcept -> ColorMapsGrid
 {
   return {GetHorizontalMainColorMaps(),
           m_dotPaths.GetPositionTRef(),
@@ -234,7 +147,7 @@ inline auto Circle::GetMainColorMapsGrid() const noexcept -> COLOR::ColorMapsGri
           [this](const float tX, const float tY) { return GetColorMixT(tX, tY); }};
 }
 
-inline auto Circle::GetLowColorMapsGrid() const noexcept -> COLOR::ColorMapsGrid
+inline auto Circle::GetLowColorMapsGrid() const noexcept -> ColorMapsGrid
 {
   return {GetHorizontalLowColorMaps(),
           m_dotPaths.GetPositionTRef(),
@@ -242,25 +155,22 @@ inline auto Circle::GetLowColorMapsGrid() const noexcept -> COLOR::ColorMapsGrid
           [this](const float tX, const float tY) { return GetColorMixT(tX, tY); }};
 }
 
-inline auto Circle::GetHorizontalMainColorMaps() const noexcept
-    -> std::vector<const COLOR::IColorMap*>
+inline auto Circle::GetHorizontalMainColorMaps() const noexcept -> std::vector<const IColorMap*>
 {
   return {&m_mainColorMaps->GetRandomColorMap()};
 }
 
-inline auto Circle::GetVerticalMainColorMaps() const noexcept
-    -> std::vector<const COLOR::IColorMap*>
+inline auto Circle::GetVerticalMainColorMaps() const noexcept -> std::vector<const IColorMap*>
 {
   return GetAllDotColorMaps(*m_mainColorMaps);
 }
 
-inline auto Circle::GetHorizontalLowColorMaps() const noexcept
-    -> std::vector<const COLOR::IColorMap*>
+inline auto Circle::GetHorizontalLowColorMaps() const noexcept -> std::vector<const IColorMap*>
 {
   return {&m_lowColorMaps->GetRandomColorMap()};
 }
 
-inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<const COLOR::IColorMap*>
+inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<const IColorMap*>
 {
   return GetAllDotColorMaps(*m_lowColorMaps);
 }
@@ -297,16 +207,16 @@ auto Circle::UpdateRotatingColorMaps() noexcept -> void
   }
 }
 
-auto Circle::GetAllDotColorMaps(const COLOR::RandomColorMaps& baseRandomColorMaps) const noexcept
-    -> std::vector<const COLOR::IColorMap*>
+auto Circle::GetAllDotColorMaps(const RandomColorMaps& baseRandomColorMaps) const noexcept
+    -> std::vector<const IColorMap*>
 {
-  auto differentMaps = std::vector<const COLOR::IColorMap*>(m_numDifferentGridMaps);
+  auto differentMaps = std::vector<const IColorMap*>(m_numDifferentGridMaps);
   for (auto& map : differentMaps)
   {
     map = &baseRandomColorMaps.GetRandomColorMap();
   }
 
-  auto dotColorMaps = std::vector<const COLOR::IColorMap*>(NUM_DOTS);
+  auto dotColorMaps = std::vector<const IColorMap*>(NUM_DOTS);
 
   auto start = 0U;
   for (auto k = 0U; k < m_numDifferentGridMaps; ++k)
@@ -422,8 +332,7 @@ auto Circle::DrawNextCircleDots() noexcept -> void
 
     DrawLine(prevDotPosition, dotPosition, lineBrightness, tLineColor);
 
-    m_lastDrawnDots.at(i) = dotPosition;
-    prevDotPosition       = dotPosition;
+    prevDotPosition = dotPosition;
     tLineColor += T_LINE_COLOR_STEP;
     iRotate = ModIncrement(iRotate, NUM_DOTS);
   }
@@ -579,195 +488,6 @@ auto Circle::DrawConnectingLine(const Point2dInt& position1,
 
 
   m_lineDrawer.DrawLine(position1, position2, {mainColor, lowColor});
-}
-
-Circle::DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
-                             const IGoomRand& goomRand,
-                             const Circle::Helper& helper) noexcept
-  : m_goomRand{&goomRand},
-    m_helper{&helper},
-    m_bitmapDrawer{draw},
-    m_circleDrawer{draw},
-    m_bgndMainColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
-    m_bgndLowColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
-    m_decorationType{GetRandomDecorationType()},
-    m_differentColor{GetRandomDifferentColor(RandomColorMaps{*m_goomRand})}
-{
-}
-
-inline auto Circle::DotDrawer::SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept
-    -> void
-{
-  m_bgndMainColorMixT      = m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T);
-  m_bgndLowColorMixT       = m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T);
-  m_decorationType         = GetRandomDecorationType();
-  m_differentColor         = GetRandomDifferentColor(weightedMaps);
-  m_outerCircleDotColorMap = &weightedMaps.GetRandomColorMap();
-
-  m_doCircleDotShapes      = m_goomRand->ProbabilityOf(PROB_CIRCLES);
-  m_outerCircleDotColorMix = m_goomRand->GetRandInRange(MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T,
-                                                        MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T);
-}
-
-inline auto Circle::DotDrawer::SetGlobalBrightnessFactor(const float val) noexcept -> void
-{
-  m_globalBrightnessFactor = val;
-}
-
-inline auto Circle::DotDrawer::DrawDot(const Point2dInt& pos,
-                                       const uint32_t diameter,
-                                       const MultiplePixels& colors) noexcept -> void
-{
-  if (m_doCircleDotShapes)
-  {
-    DrawCircleDot(pos, diameter, colors, *m_outerCircleDotColorMap);
-  }
-  else
-  {
-    DrawBitmapDot(pos, diameter, colors);
-  }
-}
-
-auto Circle::DotDrawer::DrawCircleDot(const Point2dInt& centre,
-                                      const uint32_t diameter,
-                                      const MultiplePixels& colors,
-                                      const IColorMap& innerColorMap) noexcept -> void
-{
-  const auto maxRadius = static_cast<int32_t>(diameter + 3) / 2;
-  auto innerColorT =
-      TValue{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)};
-  static constexpr auto INNER_COLOR_CUTOFF_RADIUS = 4;
-
-  const auto minBrightness = m_globalBrightnessFactor * DOT_INSIDE_MIN_BRIGHTNESS_FACTOR;
-  const auto maxBrightness = m_globalBrightnessFactor * DOT_INSIDE_MAX_BRIGHTNESS_FACTOR;
-  auto brightness          = IncrementedValue{minBrightness,
-                                     maxBrightness,
-                                     TValue::StepType::SINGLE_CYCLE,
-                                     static_cast<uint32_t>(maxRadius)};
-
-  // '> 1' means leave a little hole in the middle of the circles.
-  for (auto radius = maxRadius; radius > 1; --radius)
-  {
-    const auto innerColor = innerColorMap.GetColor(innerColorT());
-    const auto circleColors =
-        radius <= INNER_COLOR_CUTOFF_RADIUS
-            ? GetCircleColors(brightness(), colors)
-            : GetCircleColorsWithInner(brightness(), colors, innerColor, m_outerCircleDotColorMix);
-
-    m_circleDrawer.DrawCircle(centre, radius, circleColors);
-
-    brightness.Increment();
-    innerColorT.Increment();
-  }
-}
-
-inline auto Circle::DotDrawer::GetCircleColors(const float brightness,
-                                               const MultiplePixels& colors) noexcept
-    -> MultiplePixels
-{
-  return {
-      GetBrighterColor(brightness, GetMainColor(colors)),
-      GetBrighterColor(brightness, GetLowColor(colors)),
-  };
-}
-
-inline auto Circle::DotDrawer::GetCircleColorsWithInner(const float brightness,
-                                                        const MultiplePixels& colors,
-                                                        const Pixel& innerColor,
-                                                        const float innerColorMix) noexcept
-    -> MultiplePixels
-{
-  return {
-      GetBrighterColor(brightness,
-                       IColorMap::GetColorMix(GetMainColor(colors), innerColor, innerColorMix)),
-      GetBrighterColor(brightness,
-                       IColorMap::GetColorMix(GetLowColor(colors), innerColor, innerColorMix)),
-  };
-}
-
-auto Circle::DotDrawer::DrawBitmapDot(const Point2dInt& position,
-                                      const uint32_t diameter,
-                                      const MultiplePixels& colors) noexcept -> void
-{
-  const auto getMainColor =
-      [this, &colors, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
-  { return GetDotMixedColor(x, y, diameter, bgnd, GetMainColor(colors), m_bgndMainColorMixT); };
-
-  const auto getLowColor =
-      [this, &colors, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
-  { return GetDotMixedColor(x, y, diameter, bgnd, GetLowColor(colors), m_bgndLowColorMixT); };
-
-  m_bitmapDrawer.Bitmap(
-      position, m_helper->bitmapGetter->GetBitmap(diameter), {getMainColor, getLowColor});
-}
-
-inline auto Circle::DotDrawer::GetRandomDecorationType() const noexcept -> DecorationType
-{
-  return static_cast<DecorationType>(m_goomRand->GetRandInRange(0U, NUM<DecorationType>));
-}
-
-inline auto Circle::DotDrawer::GetRandomDifferentColor(
-    const RandomColorMaps& weightedMaps) const noexcept -> Pixel
-{
-  return weightedMaps.GetRandomColorMap().GetColor(m_goomRand->GetRandInRange(0.0F, 1.0F));
-}
-
-inline auto Circle::DotDrawer::GetDotMixedColor(const size_t x,
-                                                const size_t y,
-                                                const uint32_t diameter,
-                                                const Pixel& bgnd,
-                                                const Pixel& color,
-                                                const float mixT) const noexcept -> Pixel
-{
-  if (0 == bgnd.A())
-  {
-    return BLACK_PIXEL;
-  }
-
-  const auto mixedColor = IColorMap::GetColorMix(bgnd, color, mixT);
-
-  if (not IsSpecialPoint(x, y, diameter))
-  {
-    return GetBrighterColor(m_globalBrightnessFactor, mixedColor);
-  }
-
-  switch (m_decorationType)
-  {
-    case DecorationType::NO_DECORATION:
-      return GetBrighterColor(m_globalBrightnessFactor, mixedColor);
-    case DecorationType::BLACK_LINES:
-      return BLACK_PIXEL;
-    case DecorationType::DIFFERENT_COLORS:
-      return GetBrighterColor(m_globalBrightnessFactor * DECORATION_DIFFERENT_COLOR_BRIGHTNESS,
-                              m_differentColor);
-    case DecorationType::BRIGHT_LINES:
-      return GetBrighterColor(m_globalBrightnessFactor * DECORATION_SPECIAL_BRIGHTNESS, mixedColor);
-    default:
-      FailFast();
-      return BLACK_PIXEL;
-  }
-}
-
-inline auto Circle::DotDrawer::IsSpecialPoint(const size_t x,
-                                              const size_t y,
-                                              const uint32_t diameter) noexcept -> bool
-{
-  if (static constexpr auto EDGE_CUTOFF = 3U; (x <= EDGE_CUTOFF) ||
-                                              (x >= (diameter - EDGE_CUTOFF)) ||
-                                              (y <= EDGE_CUTOFF) || (y >= (diameter - EDGE_CUTOFF)))
-  {
-    return false;
-  }
-  if (((U_HALF * diameter) == x) || ((U_HALF * diameter) == y))
-  {
-    return true;
-  }
-  if ((x == y) || ((diameter - x) == y))
-  {
-    return true;
-  }
-
-  return false;
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

@@ -4,6 +4,7 @@
 #include "circle.h"
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
+#include "helper.h"
 #include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/paths.h"
@@ -50,7 +51,7 @@ private:
   std::vector<Circle> m_circles;
   [[nodiscard]] static auto GetCircles(
       const FxHelper& fxHelper,
-      const Circle::Helper& helper,
+      const Helper& helper,
       const std::vector<UTILS::MATH::OscillatingFunction::Params>& pathParams,
       uint32_t numCircles,
       const std::vector<Circle::Params>& circleParams) noexcept -> std::vector<Circle>;

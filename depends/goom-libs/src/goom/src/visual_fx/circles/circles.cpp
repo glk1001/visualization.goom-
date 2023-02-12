@@ -40,7 +40,7 @@ Circles::Circles(const FxHelper& fxHelper,
 }
 
 auto Circles::GetCircles(const FxHelper& fxHelper,
-                         const Circle::Helper& helper,
+                         const Helper& helper,
                          const std::vector<OscillatingFunction::Params>& pathParams,
                          const uint32_t numCircles,
                          const std::vector<Circle::Params>& circleParams) noexcept

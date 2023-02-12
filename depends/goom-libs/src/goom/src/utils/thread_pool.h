@@ -22,7 +22,6 @@ namespace GOOM::UTILS
 class ThreadPool
 {
 public:
-  ThreadPool() noexcept = delete;
   explicit ThreadPool(size_t numWorkers) noexcept;
   ThreadPool(const ThreadPool&) = delete;
   ThreadPool(ThreadPool&&) noexcept = delete;

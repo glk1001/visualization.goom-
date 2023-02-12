@@ -6,11 +6,13 @@
 #include "color/color_maps_grids.h"
 #include "color/random_color_maps.h"
 #include "dot_diameters.h"
+#include "dot_drawer.h"
 #include "dot_paths.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/line_drawer_noisy_pixels.h"
 #include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "helper.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -31,13 +33,6 @@ namespace GOOM::VISUAL_FX::CIRCLES
 class Circle
 {
 public:
-  struct Helper
-  {
-    uint32_t lineDotDiameter;
-    uint32_t minDotDiameter;
-    uint32_t maxDotDiameter;
-    const IBitmapGetter* bitmapGetter;
-  };
   struct OneWayParams
   {
     float circleRadius;
@@ -54,11 +49,6 @@ public:
          const Helper& helper,
          const Params& circleParams,
          const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept;
-  Circle(const Circle&) = delete;
-  Circle(Circle&& other) noexcept;
-  ~Circle() noexcept;
-  auto operator=(const Circle&) -> Circle& = delete;
-  auto operator=(Circle&&) -> Circle&      = delete;
 
   auto SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMainMaps,
                             std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps) noexcept
@@ -76,12 +66,9 @@ public:
   [[nodiscard]] auto HasPositionTJustHitABoundary() const noexcept -> bool;
   [[nodiscard]] auto HasPositionTJustHitStartBoundary() const noexcept -> bool;
   [[nodiscard]] auto HasPositionTJustHitEndBoundary() const noexcept -> bool;
-  [[nodiscard]] auto GetLastDrawnCircleDots() const noexcept -> const std::vector<Point2dInt>&;
 
 private:
-  DRAW::IGoomDraw* m_draw;
   DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels m_lineDrawer;
-  const PluginInfo* m_goomInfo;
   const UTILS::MATH::IGoomRand* m_goomRand;
   Helper m_helper;
 
@@ -101,7 +88,6 @@ private:
 
   static constexpr auto NUM_DOTS = 30U;
   static_assert(UTILS::MATH::IsEven(NUM_DOTS));
-  std::vector<Point2dInt> m_lastDrawnDots{NUM_DOTS};
   uint32_t m_newNumSteps = 0;
 
   auto DrawNextCircle() noexcept -> void;
@@ -115,7 +101,6 @@ private:
   [[nodiscard]] auto GetDotBrightness(float brightness) const noexcept -> float;
   [[nodiscard]] auto GetLineBrightness(float brightness) const noexcept -> float;
 
-  class DotDrawer;
   std::experimental::propagate_const<std::unique_ptr<DotDrawer>> m_dotDrawer;
   bool m_alternateMainLowDotColors         = false;
   bool m_showLine                          = false;
@@ -232,11 +217,6 @@ inline auto Circle::HasPositionTJustHitStartBoundary() const noexcept -> bool
 inline auto Circle::HasPositionTJustHitEndBoundary() const noexcept -> bool
 {
   return m_dotPaths.HasPositionTJustHitEndBoundary();
-}
-
-inline auto Circle::GetLastDrawnCircleDots() const noexcept -> const std::vector<Point2dInt>&
-{
-  return m_lastDrawnDots;
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
