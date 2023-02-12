@@ -1,17 +1,24 @@
-#pragma once
-
 #ifdef GOOM_DEBUG
 #undef NDEBUG
 //#define DO_GOOM_STATE_DUMP
 #endif
 
+// *** Put the header guard here to disable CLion's
+// *** 'unused include directive' inspection.
+#ifndef HDR_GOOM_CONFIG
+#define HDR_GOOM_CONFIG
+
+#include <exception>
 // NOLINTBEGIN: Need special macros with these names.
 #define USED_FOR_DEBUGGING(x) ((void)(x))
 
 #include <cassert>
 #define Expects(cond) assert(cond)
 #define Ensures(cond) assert(cond)
-#define FailFast() assert(false)
+[[noreturn]] inline auto FailFast() noexcept -> void
+{
+  std::terminate();
+}
 // NOLINTEND
 
 namespace GOOM
@@ -34,3 +41,5 @@ inline constexpr auto* IMAGE_DISPLACEMENT_DIR = "displacements";
 #endif
 
 } // namespace GOOM
+
+#endif // HDR_GOOM_CONFIG

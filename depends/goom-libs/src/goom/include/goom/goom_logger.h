@@ -1,5 +1,3 @@
-#pragma once
-
 #include <format>
 #include <fstream>
 #include <functional>
@@ -9,6 +7,11 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+// *** Put the header guard here to disable CLion's
+// *** 'unused include directive' inspection.
+#ifndef HDR_GOOM_LOGGER
+#define HDR_GOOM_LOGGER
 
 namespace GOOM
 {
@@ -21,8 +24,7 @@ public:
     DEBUG,
     INFO,
     WARN,
-    // TODO(glk) Make others use 'L_' (MSCV build issue)
-    L_ERROR,
+    ERROR,
     _num // unused, and marks the enum end
   };
   using HandlerFunc = std::function<void(const LogLevel, const std::string&)>;
@@ -171,7 +173,9 @@ auto GoomLogger::Log(const LogLevel lvl,
 #define LogWarn(logger, ...) \
   (logger).Log(GOOM::GoomLogger::LogLevel::WARN, __LINE__, __func__, __VA_ARGS__)
 #define LogError(logger, ...) \
-  (logger).Log(GOOM::GoomLogger::LogLevel::L_ERROR, __LINE__, __func__, __VA_ARGS__)
+  (logger).Log(GOOM::GoomLogger::LogLevel::ERROR, __LINE__, __func__, __VA_ARGS__)
 #endif
 
 // NOLINTEND
+
+#endif // HDR_GOOM_LOGGER

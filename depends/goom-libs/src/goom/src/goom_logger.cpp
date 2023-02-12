@@ -19,7 +19,7 @@ static constexpr auto LOG_LEVEL_STR = EnumMap<GoomLogger::LogLevel, const char*>
     {GoomLogger::LogLevel::DEBUG, "Debug"},
     {GoomLogger::LogLevel::INFO, "Info"},
     {GoomLogger::LogLevel::WARN, "Warn"},
-    {GoomLogger::LogLevel::L_ERROR, "Error"},
+    {GoomLogger::LogLevel::ERROR, "Error"},
 }}};
 
 GoomLogger::GoomLogger() noexcept
