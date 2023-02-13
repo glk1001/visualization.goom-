@@ -39,7 +39,7 @@ class ShapesFx::ShapesFxImpl
 public:
   explicit ShapesFxImpl(const FxHelper& fxHelper) noexcept;
 
-  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
+  [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
@@ -179,8 +179,7 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
   };
 }
 
-inline auto ShapesFx::ShapesFxImpl::GetCurrentColorMapsNames() const noexcept
-    -> std::vector<std::string>
+inline auto ShapesFx::ShapesFxImpl::GetCurrentColorMapsNames() noexcept -> std::vector<std::string>
 {
   // TODO(glk) -- fix this
   return {};

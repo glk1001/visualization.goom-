@@ -219,7 +219,6 @@ inline auto Weights<E>::GetRandomWeighted(const E& given) const noexcept -> E
   }
 
   FailFast();
-  return static_cast<E>(0);
 }
 
 template<class E>

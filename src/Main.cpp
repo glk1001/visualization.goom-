@@ -20,11 +20,9 @@
 #include "kodi_shader_with_effects.h"
 
 #include <array>
-#include <cstddef>
 #include <format>
 #include <kodi/Filesystem.h>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
 using GOOM::GlRenderer;
@@ -216,40 +214,40 @@ auto CVisualizationGoom::Start(const int numChannels,
   }
 
 #ifdef GOOM_DEBUG
-  return StartWithoutCatch(numChannels, samplesPerSec, bitsPerSample, songName);
+  StartWithoutCatch(numChannels, samplesPerSec, bitsPerSample, songName);
 #else
-  return StartWithCatch(numChannels, samplesPerSec, bitsPerSample, songName);
+  StartWithCatch(numChannels, samplesPerSec, bitsPerSample, songName);
 #endif
+  return true;
 }
 
 inline auto CVisualizationGoom::StartWithoutCatch(const int numChannels,
                                                   const int samplesPerSec,
                                                   const int bitsPerSample,
-                                                  const std::string& songName) -> bool
+                                                  const std::string& songName) -> void
 {
-  return StartVis(numChannels, samplesPerSec, bitsPerSample, songName);
+  StartVis(numChannels, samplesPerSec, bitsPerSample, songName);
 }
 
 auto CVisualizationGoom::StartWithCatch(const int numChannels,
                                         const int samplesPerSec,
                                         const int bitsPerSample,
-                                        const std::string& songName) -> bool
+                                        const std::string& songName) -> void
 {
   try
   {
-    return StartVis(numChannels, samplesPerSec, bitsPerSample, songName);
+    StartVis(numChannels, samplesPerSec, bitsPerSample, songName);
   }
   catch (const std::exception& e)
   {
     HandleError(std20::format("CVisualizationGoom start failed: {}", e.what()));
-    return false;
   }
 }
 
 auto CVisualizationGoom::StartVis(const int numChannels,
                                   [[maybe_unused]] const int samplesPerSec,
                                   [[maybe_unused]] const int bitsPerSample,
-                                  [[maybe_unused]] const std::string& songName) -> bool
+                                  [[maybe_unused]] const std::string& songName) -> void
 {
   LogInfo(*m_goomLogger, "CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
 
@@ -263,8 +261,6 @@ auto CVisualizationGoom::StartVis(const int numChannels,
   m_glRenderer->Start();
 
   m_started = true;
-
-  return true;
 }
 
 auto CVisualizationGoom::StartLogging() -> void

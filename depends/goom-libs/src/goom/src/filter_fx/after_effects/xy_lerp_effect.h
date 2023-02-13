@@ -97,7 +97,6 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoord
       return (1.0F / UTILS::MATH::HALF_PI) * std::abs(std::atan2(velocity.GetY(), velocity.GetX()));
     default:
       FailFast();
-      return 0.0F;
   }
 }
 

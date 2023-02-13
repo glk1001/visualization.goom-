@@ -39,8 +39,7 @@ public:
 
   auto Start() -> void;
 
-  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+  [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
 
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
@@ -308,7 +307,7 @@ inline auto LSystemFx::LSystemFxImpl::ChangeColors() noexcept -> void
                 [](auto* lSystem) { lSystem->ChangeColors(); });
 }
 
-inline auto LSystemFx::LSystemFxImpl::GetCurrentColorMapsNames() const noexcept
+inline auto LSystemFx::LSystemFxImpl::GetCurrentColorMapsNames() noexcept
     -> std::vector<std::string>
 {
   return {};

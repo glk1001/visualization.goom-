@@ -82,8 +82,6 @@ inline auto LineDrawerWithEffects<LineDrawerPolicy>::DrawLine(const Point2dInt& 
   m_lineDrawer.DrawLine(point1, point2, colors);
 }
 
-using LineDrawerWithNoEffects           = LineDrawerWithEffects<LineDrawerNoClippedEndPoints>;
-using LineDrawerWithMovingNoiseEffect   = LineDrawerWithEffects<LineDrawerMovingNoise>;
-using LineDrawerWithConstantNoiseEffect = LineDrawerWithEffects<LineDrawerNoisyPixels>;
+using LineDrawerWithMovingNoiseEffect = LineDrawerWithEffects<LineDrawerMovingNoise>;
 
 } // namespace GOOM::DRAW::SHAPE_DRAWERS

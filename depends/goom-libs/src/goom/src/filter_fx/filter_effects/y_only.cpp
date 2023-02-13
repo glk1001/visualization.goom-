@@ -90,7 +90,6 @@ auto YOnly::GetYOnlyZoomInMultiplier(const YOnlyEffect effect,
              std::cos(m_params.frequencyFactor.y * coords.GetY());
     default:
       FailFast();
-      return 0.0F;
   }
 }
 

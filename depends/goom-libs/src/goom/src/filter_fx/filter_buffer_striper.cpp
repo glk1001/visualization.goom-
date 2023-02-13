@@ -10,7 +10,6 @@
 #include "utils/parallel_utils.h"
 
 #include <cmath>
-#include <cstdint>
 
 namespace GOOM::FILTER_FX
 {

@@ -32,7 +32,7 @@ class CirclesFx::CirclesFxImpl
 public:
   CirclesFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
+  [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
@@ -163,7 +163,10 @@ inline auto CirclesFx::CirclesFxImpl::MakeCircles() const noexcept -> std::uniqu
 
 auto CirclesFx::CirclesFxImpl::GetBrightnessFactors() const noexcept -> std::vector<float>
 {
-  static constexpr auto LARGE_ENOUGH_RADIUS_RATIO = 0.15F;
+  static constexpr auto LARGE_ENOUGH_RADIUS_RATIO     = 0.15F;
+  static constexpr auto LARGE_RADIUS_RATIO_BRIGHTNESS = 1.0F;
+  static constexpr auto SMALL_RADIUS_RATIO_BRIGHTNESS = 0.1F;
+
   const auto mainCircleRadius = m_circleParams.at(0).toTargetParams.circleRadius;
 
   LogInfo("mainCircleRadius = {}", mainCircleRadius);
@@ -174,13 +177,15 @@ auto CirclesFx::CirclesFxImpl::GetBrightnessFactors() const noexcept -> std::vec
     LogInfo("circleRadius[{}] = {}", i, m_circleParams.at(i).toTargetParams.circleRadius);
     const auto radiusFactor = m_circleParams.at(i).toTargetParams.circleRadius / mainCircleRadius;
     LogInfo("radiusFactor[{}] = {}", i, radiusFactor);
-    brightnessFactors.at(i) = radiusFactor > LARGE_ENOUGH_RADIUS_RATIO ? 1.0F : 0.1F;
+    brightnessFactors.at(i) = radiusFactor > LARGE_ENOUGH_RADIUS_RATIO
+                                  ? LARGE_RADIUS_RATIO_BRIGHTNESS
+                                  : SMALL_RADIUS_RATIO_BRIGHTNESS;
   }
 
   return brightnessFactors;
 }
 
-inline auto CirclesFx::CirclesFxImpl::GetCurrentColorMapsNames() const noexcept
+inline auto CirclesFx::CirclesFxImpl::GetCurrentColorMapsNames() noexcept
     -> std::vector<std::string>
 {
   return {};

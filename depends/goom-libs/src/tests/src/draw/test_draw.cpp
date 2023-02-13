@@ -4,7 +4,6 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 
-#include <cstdint>
 #include <format>
 #include <vector>
 
@@ -121,8 +120,8 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
 
   draw.SetBuffIntensity(1.0F);
 
-  static constexpr size_t NUM_CHANGED_COORDS = 5;
-  std::vector<PixelInfo> pixelsNewToOld      = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
+  static constexpr auto NUM_CHANGED_COORDS = 5U;
+  std::vector<PixelInfo> pixelsNewToOld    = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
 
   int32_t i = NUM_CHANGED_COORDS;
   for (const auto& pixelInfo : pixelsNewToOld)
@@ -134,7 +133,7 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
 
   CheckContainer(draw, pixelsNewToOld);
 
-  const size_t NEW_SIZE = NUM_CHANGED_COORDS / 2;
+  static constexpr auto NEW_SIZE = NUM_CHANGED_COORDS / 2U;
   draw.ResizeChangedCoordsKeepingNewest(NEW_SIZE);
   pixelsNewToOld.resize(NEW_SIZE);
   i = NUM_CHANGED_COORDS;

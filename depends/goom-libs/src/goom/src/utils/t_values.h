@@ -81,7 +81,7 @@ private:
   };
   Boundaries m_currentPosition = Boundaries::INSIDE;
 
-  std::vector<DelayPoint> m_delayPoints;
+  std::vector<DelayPoint> m_delayPoints{};
   std::vector<DelayPoint> m_currentDelayPoints{m_delayPoints};
   bool m_startedDelay              = false;
   bool m_justFinishedDelay         = false;
@@ -139,6 +139,7 @@ private:
   T m_currentValue = m_value1;
   [[nodiscard]] auto GetValue(float t) const noexcept -> T;
   [[nodiscard]] static auto LerpValues(const T& val1, const T& val2, float t) noexcept -> T;
+  // NOLINTNEXTLINE(readability-identifier-naming)
   [[nodiscard]] static auto clamp(const T& val, const T& val1, const T& val2) noexcept -> T;
   [[nodiscard]] static auto GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
       -> float;

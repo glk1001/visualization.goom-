@@ -56,9 +56,9 @@ public:
     int32_t xMax{};
     int32_t yMin{};
     int32_t yMax{};
-    [[nodiscard]] auto Width() const noexcept -> int32_t { return (xMax - xMin) + 1; }
-    [[nodiscard]] auto Height() const noexcept -> int32_t { return (yMax - yMin) + 1; }
   };
+  [[nodiscard]] static constexpr auto Width(const Rect& rect) noexcept -> int32_t;
+  [[nodiscard]] static constexpr auto Height(const Rect& rect) noexcept -> int32_t;
   [[nodiscard]] auto GetPreparedTextBoundingRect() const noexcept -> Rect;
   [[nodiscard]] auto GetBearingX() const noexcept -> int;
   [[nodiscard]] auto GetBearingY() const noexcept -> int;

@@ -42,8 +42,8 @@ public:
             const LineParams& destLineParams) noexcept;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  auto SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
+  auto SetWeightedColorMaps(
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void;
 
   auto Start() noexcept -> void;
 

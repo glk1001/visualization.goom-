@@ -15,10 +15,10 @@ enum class LineType
 
 struct LineParams
 {
-  LineType lineType;
-  float param;
+  LineType lineType{};
+  float param{};
   Pixel color;
-  float amplitude;
+  float amplitude{};
 };
 
 

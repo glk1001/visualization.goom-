@@ -19,14 +19,15 @@ using GOOM::UTILS::GRAPHICS::CHANNEL_COLOR_SCALAR_DIVISOR;
 
 TEST_CASE("Test max channels")
 {
+  static constexpr auto CHANNEL_MAX = 255;
   REQUIRE(channel_limits<uint8_t>::min() == 0);
-  REQUIRE(channel_limits<uint8_t>::max() == 255);
+  REQUIRE(channel_limits<uint8_t>::max() == CHANNEL_MAX);
   REQUIRE(channel_limits<uint32_t>::min() == 0);
-  REQUIRE(channel_limits<uint32_t>::max() == 255);
+  REQUIRE(channel_limits<uint32_t>::max() == CHANNEL_MAX);
   REQUIRE(channel_limits<int>::min() == 0);
-  REQUIRE(channel_limits<int>::max() == 255);
+  REQUIRE(channel_limits<int>::max() == CHANNEL_MAX);
   REQUIRE(channel_limits<float>::min() == 0);
-  REQUIRE(channel_limits<float>::max() == 255.0F);
+  REQUIRE(channel_limits<float>::max() == static_cast<float>(CHANNEL_MAX));
 }
 
 TEST_CASE("Color channels are added")
@@ -63,21 +64,26 @@ TEST_CASE("Color channels are brightened")
 
 TEST_CASE("Colors are brightened")
 {
+  static constexpr auto RED   = 100;
+  static constexpr auto GREEN = 50;
+  static constexpr auto BLUE  = 20;
   static constexpr auto COLOR = Pixel{
-      {100, 50, 20}
+      {RED, GREEN, BLUE}
   };
 
   auto brighterColor = GetBrighterColor(1.0F, COLOR);
-  REQUIRE(brighterColor.R() == 100);
-  REQUIRE(brighterColor.G() == 50);
-  REQUIRE(brighterColor.B() == 20);
+  REQUIRE(brighterColor.R() == RED);
+  REQUIRE(brighterColor.G() == GREEN);
+  REQUIRE(brighterColor.B() == BLUE);
 
-  brighterColor = GetBrighterColor(0.5F, COLOR);
-  REQUIRE(brighterColor.R() == 50);
-  REQUIRE(brighterColor.G() == 25);
-  REQUIRE(brighterColor.B() == 10);
+  static constexpr auto HALF_BRIGHTNESS = 0.5F;
+  brighterColor                         = GetBrighterColor(HALF_BRIGHTNESS, COLOR);
+  REQUIRE(brighterColor.R() == (RED / 2));
+  REQUIRE(brighterColor.G() == (GREEN / 2));
+  REQUIRE(brighterColor.B() == (BLUE / 2));
 
-  brighterColor = GetBrighterColor(0.01F, COLOR);
+  static constexpr auto SMALL_BRIGHTNESS = 0.01F;
+  brighterColor                          = GetBrighterColor(SMALL_BRIGHTNESS, COLOR);
   REQUIRE(brighterColor.R() == 1);
   REQUIRE(brighterColor.G() == 0);
   REQUIRE(brighterColor.B() == 0);
@@ -102,8 +108,11 @@ TEST_CASE("Color Lerp")
 
 TEST_CASE("Lighten")
 {
+  static constexpr auto RED   = 100;
+  static constexpr auto GREEN = 0;
+  static constexpr auto BLUE  = 0;
   static constexpr auto COLOR = Pixel{
-      {100, 0, 0}
+      {RED, GREEN, BLUE}
   };
 
   const Pixel lightenedColor = GetLightenedColor(COLOR, 10.0);
@@ -114,8 +123,11 @@ TEST_CASE("Lighten")
 
 TEST_CASE("Lightened color")
 {
+  static constexpr auto RED   = 100;
+  static constexpr auto GREEN = 50;
+  static constexpr auto BLUE  = 20;
   static constexpr auto COLOR = Pixel{
-      {100, 50, 20}
+      {RED, GREEN, BLUE}
   };
 
   auto lightenedColor = GetLightenedColor(COLOR, 0.5);
@@ -143,23 +155,23 @@ TEST_CASE("Lightened color")
   REQUIRE(lightenedColor.G() == 25);
   REQUIRE(lightenedColor.B() == 10);
 
-  const Pixel color2 = WHITE_PIXEL;
-  lightenedColor     = GetLightenedColor(color2, 1.0);
+  static constexpr auto COLOR2 = WHITE_PIXEL;
+  lightenedColor               = GetLightenedColor(COLOR2, 1.0);
   REQUIRE(lightenedColor.R() == 0);
   REQUIRE(lightenedColor.G() == 0);
   REQUIRE(lightenedColor.B() == 0);
 
-  lightenedColor = GetLightenedColor(color2, 2.0);
+  lightenedColor = GetLightenedColor(COLOR2, 2.0);
   REQUIRE(lightenedColor.R() == 38);
   REQUIRE(lightenedColor.G() == 38);
   REQUIRE(lightenedColor.B() == 38);
 
-  lightenedColor = GetLightenedColor(color2, 5.0);
+  lightenedColor = GetLightenedColor(COLOR2, 5.0);
   REQUIRE(lightenedColor.R() == 89);
   REQUIRE(lightenedColor.G() == 89);
   REQUIRE(lightenedColor.B() == 89);
 
-  lightenedColor = GetLightenedColor(color2, 10.0);
+  lightenedColor = GetLightenedColor(COLOR2, 10.0);
   REQUIRE(lightenedColor.R() == 127);
   REQUIRE(lightenedColor.G() == 127);
   REQUIRE(lightenedColor.B() == 127);
@@ -167,12 +179,14 @@ TEST_CASE("Lightened color")
 
 TEST_CASE("Evolved color")
 {
+  static constexpr auto RED   = 100;
+  static constexpr auto GREEN = 50;
+  static constexpr auto BLUE  = 20;
   static constexpr auto COLOR = Pixel{
-      {100, 50, 20}
+      {RED, GREEN, BLUE}
   };
-  auto evolvedColor = Pixel{};
 
-  evolvedColor = GetEvolvedColor(COLOR);
+  auto evolvedColor = GetEvolvedColor(COLOR);
   REQUIRE(evolvedColor.R() == 67);
   REQUIRE(evolvedColor.G() == 33);
   REQUIRE(evolvedColor.B() == 13);

@@ -6,8 +6,6 @@
 #include "goom_logger.h"
 #include "random_color_maps_groups.h"
 
-#include <cstdint>
-
 namespace GOOM::COLOR
 {
 

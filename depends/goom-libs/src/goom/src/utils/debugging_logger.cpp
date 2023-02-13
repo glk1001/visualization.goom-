@@ -10,18 +10,18 @@ namespace GOOM::UTILS
 
 namespace
 {
-GoomLogger* s_goomLogger{};
+GoomLogger* globalGoomLogger{};
 }
 
 auto SetGoomLogger(GoomLogger& goomLogger) noexcept -> void
 {
-  s_goomLogger = &goomLogger;
+  globalGoomLogger = &goomLogger;
 }
 
 auto GetGoomLogger() noexcept -> GoomLogger&
 {
-  Expects(s_goomLogger != nullptr);
-  return *s_goomLogger;
+  Expects(globalGoomLogger != nullptr);
+  return *globalGoomLogger;
 }
 
 } // namespace GOOM::UTILS

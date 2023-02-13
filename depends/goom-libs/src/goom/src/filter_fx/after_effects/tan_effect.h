@@ -81,7 +81,6 @@ inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
       return std::tan((m_params.cotMix * HALF_PI) - tanArg);
     default:
       FailFast();
-      return 0.0F;
   }
 }
 

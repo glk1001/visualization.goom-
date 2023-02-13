@@ -24,7 +24,7 @@ public:
   struct PointData
   {
     Point2dFlt point;
-    float normalAngle;
+    float normalAngle{};
   };
   [[nodiscard]] virtual auto GetPointData(float t) const noexcept -> PointData;
 };

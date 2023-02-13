@@ -11,10 +11,8 @@
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
-#include "goom_plugin_info.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <memory>

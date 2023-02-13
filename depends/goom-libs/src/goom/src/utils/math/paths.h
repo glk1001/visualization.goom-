@@ -104,7 +104,9 @@ private:
 class LerpedPath : public IPath
 {
 public:
-  LerpedPath(std::shared_ptr<IPath> path1, std::shared_ptr<IPath> path2, TValue& lerpT) noexcept;
+  LerpedPath(const std::shared_ptr<IPath>& path1,
+             const std::shared_ptr<IPath>& path2,
+             TValue& lerpT) noexcept;
 
   [[nodiscard]] auto GetClone() const noexcept -> std::unique_ptr<IPath> override;
 

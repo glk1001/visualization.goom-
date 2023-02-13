@@ -16,7 +16,7 @@ using UTILS::TValue;
 using UTILS::MATH::IPath;
 
 ShapePath::ShapePath(IGoomDraw& draw,
-                     const std::shared_ptr<IPath> path,
+                     const std::shared_ptr<IPath>& path,
                      RandomColorMapsManager& colorMapsManager,
                      const ColorInfo colorInfo) noexcept
   : m_circleDrawer{draw},

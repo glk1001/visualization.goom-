@@ -69,7 +69,6 @@ inline auto Speedway::GetZoomInCoefficients(const NormalizedCoords& coords,
       return GetMode2ZoomInCoefficients(coords, sqDistFromZero);
     default:
       FailFast();
-      return {};
   }
 }
 

@@ -168,7 +168,6 @@ inline auto DotDrawer::GetDotMixedColor(const size_t x,
       return GetBrighterColor(m_globalBrightnessFactor * DECORATION_SPECIAL_BRIGHTNESS, mixedColor);
     default:
       FailFast();
-      return BLACK_PIXEL;
   }
 }
 

@@ -11,7 +11,6 @@
 #include "goom_logger.h"
 #include "utils/enum_utils.h"
 
-#include <algorithm>
 #include <vector>
 #ifdef _MSC_VER
 #pragma warning(push)

@@ -61,11 +61,15 @@ static constexpr auto GRID_COLOR_RANGE_LOW_WEIGHT    = 03.0F;
 static constexpr auto GRID_COLOR_RANGE_MEDIUM_WEIGHT = 02.0F;
 static constexpr auto GRID_COLOR_RANGE_HIGH_WEIGHT   = 01.0F;
 
+static constexpr auto CIRCLE_NOISE_RADIUS     = 10U;
+static constexpr auto NUM_CIRCLE_NOISE_PIXELS = 5U;
+
 Circle::Circle(const FxHelper& fxHelper,
                const Helper& helper,
                const Params& circleParams,
                const OscillatingFunction::Params& pathParams) noexcept
-  : m_lineDrawer{fxHelper.GetDraw(), fxHelper.GetGoomRand(), {5U, 5U}},
+  : m_lineDrawer{fxHelper.GetDraw(), fxHelper.GetGoomRand(),
+                 {CIRCLE_NOISE_RADIUS, NUM_CIRCLE_NOISE_PIXELS}},
     m_goomRand{&fxHelper.GetGoomRand()},
     m_helper{helper},
     m_dotPaths{*m_goomRand,
@@ -232,8 +236,8 @@ auto Circle::GetAllDotColorMaps(const RandomColorMaps& baseRandomColorMaps) cons
 }
 
 auto Circle::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps> weightedMainMaps,
-    const std::shared_ptr<const RandomColorMaps> weightedLowMaps) noexcept -> void
+    const std::shared_ptr<const RandomColorMaps>& weightedMainMaps,
+    const std::shared_ptr<const RandomColorMaps>& weightedLowMaps) noexcept -> void
 {
   m_mainColorMaps = weightedMainMaps;
   m_lowColorMaps  = weightedLowMaps;

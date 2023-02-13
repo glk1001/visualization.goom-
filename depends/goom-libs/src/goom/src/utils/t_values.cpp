@@ -12,7 +12,7 @@ namespace GOOM::UTILS
 TValue::TValue(const TValue::StepType stepType,
                const float stepSize,
                const float startingT) noexcept
-  : m_stepType{stepType}, m_stepSize{stepSize}, m_t{startingT}, m_delayPoints{}
+  : m_stepType{stepType}, m_stepSize{stepSize}, m_t{startingT}
 {
   Expects(stepSize > 0.0F);
   Expects(startingT >= MIN_T_VALUE);
@@ -34,10 +34,7 @@ TValue::TValue(const TValue::StepType stepType,
 TValue::TValue(const TValue::StepType stepType,
                const uint32_t numSteps,
                const float startingT) noexcept
-  : m_stepType{stepType},
-    m_stepSize{1.0F / static_cast<float>(numSteps)},
-    m_t{startingT},
-    m_delayPoints{}
+  : m_stepType{stepType}, m_stepSize{1.0F / static_cast<float>(numSteps)}, m_t{startingT}
 {
   Expects(numSteps > 0U);
   Expects(startingT >= MIN_T_VALUE);
@@ -63,6 +60,7 @@ TValue::~TValue() noexcept = default;
 
 auto TValue::ValidateDelayPoints() const noexcept -> void
 {
+#ifndef NDEBUG
   auto prevT0 = -1.0F;
   USED_FOR_DEBUGGING(prevT0);
 
@@ -74,6 +72,7 @@ auto TValue::ValidateDelayPoints() const noexcept -> void
 
     prevT0 = delayPoint.t0;
   }
+#endif
 }
 
 auto TValue::Increment() noexcept -> void
@@ -213,6 +212,7 @@ inline auto TValue::IsInDelayZone() noexcept -> bool
 
 inline auto TValue::WeAreStartingDelayPoint() noexcept -> bool
 {
+  // NOLINTBEGIN(readability-use-anyofallof)
   for (const auto& delayZone : m_currentDelayPoints)
   {
     if (IsInThisDelayZone(delayZone))
@@ -223,6 +223,7 @@ inline auto TValue::WeAreStartingDelayPoint() noexcept -> bool
     }
   }
   return false;
+  // NOLINTEND(readability-use-anyofallof)
 }
 
 auto TValue::SetStepSize(const float val) noexcept -> void

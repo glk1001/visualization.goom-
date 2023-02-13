@@ -5,7 +5,6 @@
 #include "filter_fx/normalized_coords.h"
 #include "utils/name_value_pairs.h"
 
-#include <cstdint>
 #include <string>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

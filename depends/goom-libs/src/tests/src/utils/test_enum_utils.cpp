@@ -61,7 +61,7 @@ TEST_CASE("EnumMap")
       {EnumClass::ENUM3, {5, 6}},
       {EnumClass::ENUM2, {3, 4}},
   }}};
-  const auto NON_CONST_ENUM_MAP              = RuntimeEnumMap<EnumClass, Simple>{{{
+  const auto nonConstRuntimeEnumMap          = RuntimeEnumMap<EnumClass, Simple>{{{
       {EnumClass::ENUM1, {1, 2}},
       {EnumClass::ENUM3, {5, 6}},
       {EnumClass::ENUM2, {3, 4}},
@@ -75,13 +75,13 @@ TEST_CASE("EnumMap")
   static_assert(CONST_ENUM_MAP[EnumClass::ENUM3].i1 == 5);
   static_assert(CONST_ENUM_MAP[EnumClass::ENUM3].i2 == 6);
 
-  REQUIRE(NON_CONST_ENUM_MAP.size() == NUM<EnumClass>);
-  REQUIRE(NON_CONST_ENUM_MAP[EnumClass::ENUM1].i1 == 1);
-  REQUIRE(NON_CONST_ENUM_MAP[EnumClass::ENUM1].i2 == 2);
-  REQUIRE(NON_CONST_ENUM_MAP[EnumClass::ENUM2].i1 == 3);
-  REQUIRE(NON_CONST_ENUM_MAP[EnumClass::ENUM2].i2 == 4);
-  REQUIRE(NON_CONST_ENUM_MAP[EnumClass::ENUM3].i1 == 5);
-  REQUIRE(NON_CONST_ENUM_MAP[EnumClass::ENUM3].i2 == 6);
+  REQUIRE(nonConstRuntimeEnumMap.size() == NUM<EnumClass>);
+  REQUIRE(nonConstRuntimeEnumMap[EnumClass::ENUM1].i1 == 1);
+  REQUIRE(nonConstRuntimeEnumMap[EnumClass::ENUM1].i2 == 2);
+  REQUIRE(nonConstRuntimeEnumMap[EnumClass::ENUM2].i1 == 3);
+  REQUIRE(nonConstRuntimeEnumMap[EnumClass::ENUM2].i2 == 4);
+  REQUIRE(nonConstRuntimeEnumMap[EnumClass::ENUM3].i1 == 5);
+  REQUIRE(nonConstRuntimeEnumMap[EnumClass::ENUM3].i2 == 6);
 }
 
 TEST_CASE("ForRange")
@@ -93,25 +93,27 @@ TEST_CASE("ForRange")
     ENUM3,
     _num // unused, and marks the enum end
   };
-  REQUIRE(NUM<EnumClass> == 3);
+  static constexpr auto NUM_ENUMS = 3U;
+  REQUIRE(NUM<EnumClass> == NUM_ENUMS);
 
-  static constexpr const auto CONST_ENUM_MAP = EnumMap<EnumClass, int>{{{
+  static constexpr auto CONST_ENUM_MAP = EnumMap<EnumClass, int>{{{
       {EnumClass::ENUM1, 1},
       {EnumClass::ENUM3, 2},
       {EnumClass::ENUM2, 3},
   }}};
-  auto sum                                   = 0;
+  static constexpr auto EXPECTED_SUM   = 6;
+  auto sum                             = 0;
   for (const auto& value : CONST_ENUM_MAP)
   {
     sum += value;
   }
-  REQUIRE(sum == 6);
+  REQUIRE(sum == EXPECTED_SUM);
 
   sum = 0;
   std::for_each(std::begin(CONST_ENUM_MAP),
                 std::end(CONST_ENUM_MAP),
                 [&sum](const auto& value) { sum += value; });
-  REQUIRE(sum == 6);
+  REQUIRE(sum == EXPECTED_SUM);
 }
 
 //#define TEST_SHOULD_NOT_COMPILE
@@ -152,7 +154,8 @@ TEST_CASE("EnumToString/StringToEnum")
     ENUM3,
     _num // unused, and marks the enum end
   };
-  REQUIRE(NUM<EnumClass> == 3);
+  static constexpr auto NUM_ENUMS = 3U;
+  REQUIRE(NUM<EnumClass> == NUM_ENUMS);
 
   REQUIRE(EnumToString(EnumClass::ENUM1) == "ENUM1");
   REQUIRE(StringToEnum<EnumClass>("ENUM1") == EnumClass::ENUM1);

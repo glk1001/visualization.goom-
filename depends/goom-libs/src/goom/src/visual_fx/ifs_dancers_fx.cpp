@@ -36,7 +36,6 @@
 
 #include "ifs_dancers_fx.h"
 
-#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/pixel_drawer.h"
@@ -55,14 +54,12 @@
 
 #include <array>
 #include <cmath>
-#include <cstdint>
 #include <memory>
 #include <vector>
 
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;

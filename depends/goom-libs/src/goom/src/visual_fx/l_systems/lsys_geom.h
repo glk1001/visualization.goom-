@@ -39,19 +39,19 @@ private:
 
   struct TransformAdjust
   {
-    float xScale;
-    float yScale;
-    float rotateDegrees;
+    float xScale{};
+    float yScale{};
+    float rotateDegrees{};
     Vec2dFlt translate;
   };
   struct TransformLSys
   {
     // This is the order the transform operations should occur in.
-    float xScale;
-    float yScale;
-    float verticalMove;
-    float sinRotateAngle;
-    float cosRotateAngle;
+    float xScale{};
+    float yScale{};
+    float verticalMove{};
+    float sinRotateAngle{};
+    float cosRotateAngle{};
     Vec2dFlt translate;
   };
   std::vector<TransformAdjust> m_transformAdjustArray{};

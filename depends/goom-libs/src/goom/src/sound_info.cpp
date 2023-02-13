@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <vector>
 
 namespace GOOM

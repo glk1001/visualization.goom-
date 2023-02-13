@@ -551,7 +551,6 @@ auto RandomColorMapsGroups::MakeRandomColorMapsGroup(
       return IMPL::MakeSharedWesAndersonMaps(*m_goomRand);
     default:
       FailFast();
-      return nullptr;
   }
 }
 

@@ -5,7 +5,6 @@
 #include "goom/goom_logger.h"
 
 #include <array>
-#include <cstdint>
 #include <cstring>
 #include <format>
 #include <stdexcept>

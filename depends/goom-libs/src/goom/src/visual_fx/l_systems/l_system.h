@@ -32,7 +32,7 @@ class LSystem
 public:
   struct LSystemFile
   {
-    const char* filename;
+    const char* filename{};
     struct Overrides
     {
       uint32_t minNumLSysCopies;
@@ -168,7 +168,7 @@ private:
   auto RestartLSysInterpreter() noexcept -> void;
   auto ResetLSysParams() noexcept -> void;
 
-  [[nodiscard]] auto DrawLSystemBatch() noexcept -> bool;
+  auto DrawLSystemBatch() noexcept -> void;
   auto IncrementTs() noexcept -> void;
 };
 

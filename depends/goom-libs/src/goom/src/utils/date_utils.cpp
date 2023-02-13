@@ -43,10 +43,10 @@ auto GetStandardDateTimeString(const std::string& otherFormatDateTime,
 auto GetStandardDateTimeString(const std::string& otherFormatDateTime,
                                const std::string& otherFormat) noexcept -> std::string
 {
-  struct tm timeTm;
+  auto timeTm = tm{};
   ::strptime(otherFormatDateTime.c_str(), otherFormat.c_str(), &timeTm);
   timeTm.tm_isdst    = -1; // check for daylight savings
-  const time_t timeT = ::mktime(&timeTm);
+  const auto timeT = ::mktime(&timeTm);
   return GetTimeTAsString(timeT);
 }
 #endif

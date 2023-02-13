@@ -18,9 +18,9 @@ public:
     Point2dFlt currentPosition;
     Vec2dFlt velocity;
     Vec2dFlt acceleration;
-    float age;
-    float vage;
-    float maxAge;
+    float age{};
+    float vage{};
+    float maxAge{};
   };
 
   explicit Star(const Params& params) noexcept;

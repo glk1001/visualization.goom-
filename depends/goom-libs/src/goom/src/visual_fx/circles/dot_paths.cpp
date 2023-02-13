@@ -7,7 +7,6 @@
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -27,7 +26,8 @@ DotPaths::DotPaths(const IGoomRand& goomRand,
     m_numDots{numDots},
     m_dotStartsToAndFrom{std::move(dotStartsToAndFrom)},
     m_dotTargetsToAndFrom{dotTargetsToAndFrom},
-    m_dotPathParamsToAndFrom{dotPathParamsToAndFrom}
+    m_dotPathParamsToAndFrom{dotPathParamsToAndFrom},
+    m_dotPathsToAndFrom{GetNewDotPaths(m_dotStartsToAndFrom)}
 {
 }
 

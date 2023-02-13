@@ -2,10 +2,9 @@
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand.h"
 
-#include <cstdint>
+#include <array>
 #include <format>
 #include <map>
-#include <string>
 
 namespace GOOM::UNIT_TESTS
 {
@@ -26,10 +25,12 @@ enum class Events
 };
 using EventCounts = std::array<uint32_t, NUM<Events>>;
 
-static constexpr size_t NUM_LOOPS     = 10000000;
-static constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
+namespace
+{
+constexpr size_t NUM_LOOPS     = 10000000;
+constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
-[[nodiscard]] static auto GetWeightedCounts(const Weights<Events>& weights) -> EventCounts
+[[nodiscard]] auto GetWeightedCounts(const Weights<Events>& weights) -> EventCounts
 {
   EventCounts eventCounts{};
   for (size_t i = 0; i < NUM_LOOPS; ++i)
@@ -41,8 +42,8 @@ static constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
   return eventCounts;
 }
 
-[[nodiscard]] static auto GetConditionalWeightedCounts(const Events givenEvent,
-                                                       const ConditionalWeights<Events>& weights)
+[[nodiscard]] auto GetConditionalWeightedCounts(const Events givenEvent,
+                                                const ConditionalWeights<Events>& weights)
     -> EventCounts
 {
   EventCounts eventCounts{};
@@ -54,6 +55,8 @@ static constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
   return eventCounts;
 }
+
+} // namespace
 
 TEST_CASE("Weighted Events")
 {
@@ -85,7 +88,8 @@ TEST_CASE("Weighted Events")
 
       UNSCOPED_INFO(std20::format(
           "i = {}, countFraction = {}, eventFraction = {}", i, countFraction, eventFraction));
-      REQUIRE(countFraction == Approx(eventFraction).epsilon(0.005));
+      static constexpr auto CLOSE_ENOUGH = 0.005;
+      REQUIRE(countFraction == Approx(eventFraction).epsilon(CLOSE_ENOUGH));
     }
   }
 
@@ -136,7 +140,8 @@ TEST_CASE("Weighted Events")
       UNSCOPED_INFO(
           std20::format("i:{}, conditionalEventFraction = {}", i, conditionalEventFraction));
 
-      REQUIRE(conditionalCountFraction == Approx(conditionalEventFraction).epsilon(0.005));
+      static constexpr auto CLOSE_ENOUGH = 0.005;
+      REQUIRE(conditionalCountFraction == Approx(conditionalEventFraction).epsilon(CLOSE_ENOUGH));
     }
   }
 

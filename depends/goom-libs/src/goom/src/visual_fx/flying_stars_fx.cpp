@@ -22,8 +22,6 @@
 #include "utils/math/misc.h"
 
 #include <cmath>
-#include <cstdint>
-#include <memory>
 #include <vector>
 
 namespace GOOM::VISUAL_FX
@@ -411,7 +409,6 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetMainColorMapName(
       return ColorMapName::_NULL;
     default:
       FailFast();
-      return ColorMapName::_NULL;
   }
 }
 
@@ -428,7 +425,6 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetLowColorMapName(
       return ColorMapName::_NULL;
     default:
       FailFast();
-      return ColorMapName::_NULL;
   }
 }
 

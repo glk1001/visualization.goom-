@@ -214,7 +214,6 @@ inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
                          periodicFactor);
     default:
       FailFast();
-      return 0.0F;
   }
 }
 
@@ -269,7 +268,6 @@ auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
              STD20::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::cos(angle), periodicFactor);
     default:
       FailFast();
-      return 0.0F;
   }
 }
 

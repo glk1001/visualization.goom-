@@ -4,7 +4,8 @@
 #include <cstdint>
 #include <memory>
 
-static_assert(__cplusplus >= 201703L, "c++ std too low");
+static constexpr auto CPLUSPLUS_17 = 201703L;
+static_assert(__cplusplus >= CPLUSPLUS_17, "c++ std too low");
 
 namespace GOOM::UTILS
 {
@@ -39,13 +40,13 @@ template<class T>
 inline BufferView<T>::BufferView() noexcept = default;
 
 template<class T>
-inline BufferView<T>::BufferView(size_t buffLen, const T* buff) noexcept
+inline BufferView<T>::BufferView(const size_t buffLen, const T* buff) noexcept
   : m_buffLen{buffLen}, m_buffer{buff}
 {
 }
 
 template<class T>
-void inline BufferView<T>::SetBuffer(size_t buffLen, const T* buff)
+void inline BufferView<T>::SetBuffer(const size_t buffLen, const T* buff)
 {
   m_buffLen = buffLen;
   m_buffer  = buff;
@@ -58,7 +59,7 @@ inline auto BufferView<T>::Data() const -> const T*
 }
 
 template<class T>
-inline auto BufferView<T>::operator[](size_t i) const -> const T&
+inline auto BufferView<T>::operator[](const size_t i) const -> const T&
 {
   return m_buffer[i];
 }

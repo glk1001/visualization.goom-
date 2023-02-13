@@ -7,7 +7,6 @@
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_manager.h"
-#include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "fx_helper.h"
 #include "goom_graphic.h"
@@ -23,7 +22,6 @@
 #include "utils/t_values.h"
 
 #include <array>
-#include <cstdint>
 #include <memory>
 
 namespace GOOM::VISUAL_FX
@@ -35,7 +33,6 @@ using COLOR::GetSimpleColor;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::SimpleColors;
-using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;

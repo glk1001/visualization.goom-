@@ -19,14 +19,14 @@ class Shape
 public:
   struct Params
   {
-    float minRadiusFraction;
-    float maxRadiusFraction;
-    int32_t minShapeDotRadius;
-    int32_t maxShapeDotRadius;
-    uint32_t maxNumShapePaths;
+    float minRadiusFraction{};
+    float maxRadiusFraction{};
+    int32_t minShapeDotRadius{};
+    int32_t maxShapeDotRadius{};
+    uint32_t maxNumShapePaths{};
     Point2dInt zoomMidpoint;
-    uint32_t minNumShapePathSteps;
-    uint32_t maxNumShapePathSteps;
+    uint32_t minNumShapePathSteps{};
+    uint32_t maxNumShapePathSteps{};
   };
 
   Shape(DRAW::IGoomDraw& draw,

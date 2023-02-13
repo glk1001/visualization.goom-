@@ -52,13 +52,13 @@ auto IStarType::UpdateFixedColorMapNames() noexcept -> void
 }
 
 auto IStarType::SetWeightedMainColorMaps(
-    const std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept -> void
+    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps) noexcept -> void
 {
   m_weightedMainColorMaps = weightedColorMaps;
 }
 
 auto IStarType::SetWeightedLowColorMaps(
-    const std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept -> void
+    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps) noexcept -> void
 {
   m_weightedLowColorMaps = weightedColorMaps;
 }
@@ -88,7 +88,7 @@ auto StarTypesContainer::GetRandomStarType() noexcept -> IStarType*
 
 auto StarTypesContainer::SetWeightedMainColorMaps(
     const uint32_t starTypeId,
-    std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept -> void
+    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps) noexcept -> void
 {
   Expects(starTypeId < StarTypesContainer::NUM_STAR_TYPES);
   m_starTypesList.at(starTypeId)->SetWeightedMainColorMaps(weightedColorMaps);
@@ -96,7 +96,7 @@ auto StarTypesContainer::SetWeightedMainColorMaps(
 
 auto StarTypesContainer::SetWeightedLowColorMaps(
     const uint32_t starTypeId,
-    std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept -> void
+    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps) noexcept -> void
 {
   Expects(starTypeId < StarTypesContainer::NUM_STAR_TYPES);
   m_starTypesList.at(starTypeId)->SetWeightedLowColorMaps(weightedColorMaps);

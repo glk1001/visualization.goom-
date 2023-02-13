@@ -44,7 +44,7 @@ public:
   };
   auto SetSongInfo(const SongInfo& songInfo) -> void;
 
-  auto SetNoZooms(bool value) -> void;
+  [[maybe_unused]] auto SetNoZooms(bool value) -> void;
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 

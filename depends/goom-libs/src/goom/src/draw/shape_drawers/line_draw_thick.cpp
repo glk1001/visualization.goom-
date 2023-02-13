@@ -5,7 +5,6 @@
 #include "goom_config.h"
 
 #include <cmath>
-#include <cstdint>
 
 namespace GOOM::DRAW::SHAPE_DRAWERS::THICK_LINES
 {
@@ -101,8 +100,8 @@ auto DrawVariableThicknessLine(const PlotPointFunc& plot,
   }
 
   auto swapLeftRightWidthFuncs = false;
-  int32_t pxStep               = 0;
-  int32_t pyStep               = 0;
+  int32_t pxStep;
+  int32_t pyStep;
   switch (xStep + (yStep * 4))
   {
     case -1 + (-1 * 4):

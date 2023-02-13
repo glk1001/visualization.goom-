@@ -122,26 +122,21 @@ auto Colorizer::GetMixedColorInfo(const Pixel& baseColor,
     case IfsDancersFx::ColorMode::MAP_COLORS:
     case IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE:
       return {GetNextMixerMapColor(brightness * logAlpha, tX, tY), GetMapColorsTBaseMix()};
-      break;
 
     case IfsDancersFx::ColorMode::MIX_COLORS:
     case IfsDancersFx::ColorMode::REVERSE_MIX_COLORS:
     case IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE:
       return {GetNextMixerMapColor(tMix, tX, tY), 1.0F - m_tAwayFromBaseColor};
-      break;
 
     case IfsDancersFx::ColorMode::SINGLE_COLORS:
       return {baseColor, 1.0F - m_tAwayFromBaseColor};
-      break;
 
     case IfsDancersFx::ColorMode::SINE_MIX_COLORS:
     case IfsDancersFx::ColorMode::SINE_MAP_COLORS:
       return {GetSineMixColor(tX, tY), 1.0F - m_tAwayFromBaseColor};
-      break;
 
     default:
       FailFast();
-      return {};
   }
 }
 

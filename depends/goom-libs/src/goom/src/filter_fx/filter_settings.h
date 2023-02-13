@@ -15,8 +15,8 @@ class IZoomInCoefficientsEffect;
 
 struct ZoomFilterBufferSettings
 {
-  uint32_t tranLerpIncrement;
-  float tranLerpToMaxSwitchMult;
+  uint32_t tranLerpIncrement{};
+  float tranLerpToMaxSwitchMult{};
   Viewport filterEffectViewport;
 };
 

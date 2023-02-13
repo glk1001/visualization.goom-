@@ -8,7 +8,10 @@
 namespace GOOM::UNIT_TESTS
 {
 
-using namespace UTILS;
+using UTILS::EnumToString;
+using UTILS::FindAndReplaceAll;
+using UTILS::StringJoin;
+using UTILS::StringSplit;
 
 TEST_CASE("FindAndReplaceAll")
 {
@@ -24,7 +27,7 @@ TEST_CASE("FindAndReplaceAll")
 
 TEST_CASE("StringJoin", "[StringJoin]")
 {
-  REQUIRE("" == StringJoin({""}, ", "));
+  REQUIRE(StringJoin({""}, ", ").empty());
   REQUIRE("word1" == StringJoin({"word1"}, ", "));
   REQUIRE("word1, word2, word3" == StringJoin({"word1", "word2", "word3"}, ", "));
   REQUIRE("word1, word2, word3," == StringJoin({"word1", "word2", "word3,"}, ", "));
@@ -36,9 +39,9 @@ TEST_CASE("StringSplit", "[StringSplit]")
 
   const std::vector<std::string> test1 = StringSplit(testString1, ",");
   UNSCOPED_INFO("testString1 = \"" << testString1 + "\"");
-  for (const auto& s : test1)
+  for (const auto& str : test1)
   {
-    UNSCOPED_INFO("s = " << s);
+    UNSCOPED_INFO("str = " << str);
   }
   REQUIRE(test1.size() == 3);
   REQUIRE(test1[0] == "line1: word1");
@@ -71,7 +74,7 @@ TEST_CASE("EnumToString", "[EnumToString]")
 {
   enum class EnumTester
   {
-    _NULL = -1,
+    _NULL = -1, // NOLINT: Need special name here
     TEST1,
     TEST2,
     TEST3,

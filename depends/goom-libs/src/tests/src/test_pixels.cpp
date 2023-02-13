@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_NO_POSIX_SIGNALS
-
 #ifndef GOOM_DEBUG
 #define GOOM_DEBUG
 #endif
@@ -11,7 +9,6 @@
 #include "utils/math/misc.h"
 
 #include <chrono>
-#include <cstdint>
 #include <cstring>
 #include <memory>
 #include <vector>

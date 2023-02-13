@@ -24,17 +24,17 @@ class ShapePart
 public:
   struct Params
   {
-    uint32_t shapePartNum;
-    uint32_t totalNumShapeParts;
-    float minRadiusFraction;
-    float maxRadiusFraction;
-    int32_t minShapeDotRadius;
-    int32_t maxShapeDotRadius;
-    uint32_t maxNumShapePaths;
-    float tMinMaxLerp;
+    uint32_t shapePartNum{};
+    uint32_t totalNumShapeParts{};
+    float minRadiusFraction{};
+    float maxRadiusFraction{};
+    int32_t minShapeDotRadius{};
+    int32_t maxShapeDotRadius{};
+    uint32_t maxNumShapePaths{};
+    float tMinMaxLerp{};
     Point2dInt shapePathsTargetPoint;
-    uint32_t shapePathsMinNumSteps;
-    uint32_t shapePathsMaxNumSteps;
+    uint32_t shapePathsMinNumSteps{};
+    uint32_t shapePathsMaxNumSteps{};
   };
 
   ShapePart(DRAW::IGoomDraw& draw,
@@ -48,12 +48,12 @@ public:
   auto operator=(const ShapePart&) -> ShapePart& = delete;
   auto operator=(ShapePart&&) -> ShapePart&      = delete;
 
-  auto SetWeightedMainColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
-  auto SetWeightedLowColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
+  auto SetWeightedMainColorMaps(
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void;
   auto SetWeightedInnerColorMaps(
-      std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void;
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void;
   auto SetChromaFactor(float val) noexcept -> void;
 
   auto SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void;
@@ -65,9 +65,9 @@ public:
 
   struct DrawParams
   {
-    float brightnessAttenuation;
-    bool firstShapePathAtMeetingPoint;
-    bool varyDotRadius;
+    float brightnessAttenuation{};
+    bool firstShapePathAtMeetingPoint{};
+    bool varyDotRadius{};
     ShapePath::ShapePathColors meetingPointColors;
   };
   auto Draw(const DrawParams& drawParams) noexcept -> void;
@@ -167,9 +167,9 @@ private:
                                            float rotate) noexcept -> UTILS::MATH::Transform2d;
   struct ShapeFunctionParams
   {
-    float radius;
+    float radius{};
     UTILS::MATH::AngleParams angleParams;
-    UTILS::MATH::CircleFunction::Direction direction;
+    UTILS::MATH::CircleFunction::Direction direction{};
   };
   float m_minRadiusFraction;
   float m_maxRadiusFraction;

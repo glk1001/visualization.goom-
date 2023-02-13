@@ -30,90 +30,92 @@ using UTILS::MATH::U_QUARTER;
 using UTILS::MATH::U_THREE_QUARTERS;
 using UTILS::MATH::Weights;
 
+namespace
+{
 
 // For debugging:
 
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE1;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE1;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE2;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::EXP_RECIPROCAL_MODE;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE0;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE1;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
-static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE2;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WATER_MODE;
-//static constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE1;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE1;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE2;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::EXP_RECIPROCAL_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE0;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE1;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
+constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE2;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WATER_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
 
-//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::BLOCK_WAVY;
-//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::HYPERCOS;
-//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::IMAGE_VELOCITY;
-//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::NOISE;
-//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::PLANES;
-//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::ROTATION;
-//static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::TAN_EFFECT;
-static constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::XY_LERP_EFFECT;
+//constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::BLOCK_WAVY;
+//constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::HYPERCOS;
+//constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::IMAGE_VELOCITY;
+//constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::NOISE;
+//constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::PLANES;
+//constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::ROTATION;
+//constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::TAN_EFFECT;
+constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::XY_LERP_EFFECT;
 
 // End debugging
 
 
-static constexpr auto PROB_HIGH = 0.9F;
-static constexpr auto PROB_HALF = 0.5F;
-static constexpr auto PROB_LOW  = 0.1F;
-static constexpr auto PROB_ZERO = 0.0F;
+constexpr auto PROB_HIGH = 0.9F;
+constexpr auto PROB_HALF = 0.5F;
+constexpr auto PROB_LOW  = 0.1F;
+constexpr auto PROB_ZERO = 0.0F;
 
-static constexpr auto PROB_CRYSTAL_BALL_IN_MIDDLE = 0.8F;
-static constexpr auto PROB_WAVE_IN_MIDDLE         = 0.5F;
-static constexpr auto PROB_CHANGE_SPEED           = 0.5F;
-static constexpr auto PROB_REVERSE_SPEED          = 0.5F;
+constexpr auto PROB_CRYSTAL_BALL_IN_MIDDLE = 0.8F;
+constexpr auto PROB_WAVE_IN_MIDDLE         = 0.5F;
+constexpr auto PROB_CHANGE_SPEED           = 0.5F;
+constexpr auto PROB_REVERSE_SPEED          = 0.5F;
 
-static constexpr auto AMULET_MODE_WEIGHT             = 10.0F;
-static constexpr auto CRYSTAL_BALL_MODE0_WEIGHT      = 04.0F;
-static constexpr auto CRYSTAL_BALL_MODE1_WEIGHT      = 02.0F;
-static constexpr auto DISTANCE_FIELD_MODE0_WEIGHT    = 03.0F;
-static constexpr auto DISTANCE_FIELD_MODE1_WEIGHT    = 03.0F;
-static constexpr auto DISTANCE_FIELD_MODE2_WEIGHT    = 02.0F;
-static constexpr auto EXP_RECIPROCAL_MODE_WEIGHT     = 10.0F;
-static constexpr auto HYPERCOS_MODE0_WEIGHT          = 08.0F;
-static constexpr auto HYPERCOS_MODE1_WEIGHT          = 04.0F;
-static constexpr auto HYPERCOS_MODE2_WEIGHT          = 02.0F;
-static constexpr auto HYPERCOS_MODE3_WEIGHT          = 01.0F;
-static constexpr auto IMAGE_DISPLACEMENT_MODE_WEIGHT = 05.0F;
-static constexpr auto NORMAL_MODE_WEIGHT             = 10.0F;
-static constexpr auto SCRUNCH_MODE_WEIGHT            = 06.0F;
-static constexpr auto SPEEDWAY_MODE0_WEIGHT          = 02.0F;
-static constexpr auto SPEEDWAY_MODE1_WEIGHT          = 01.0F;
-static constexpr auto SPEEDWAY_MODE2_WEIGHT          = 05.0F;
-static constexpr auto WAVE_SQ_DIST_MODE0_WEIGHT      = 05.0F;
-static constexpr auto WAVE_SQ_DIST_MODE1_WEIGHT      = 04.0F;
-static constexpr auto WAVE_ATAN_MODE0_WEIGHT         = 05.0F;
-static constexpr auto WAVE_ATAN_MODE1_WEIGHT         = 04.0F;
-static constexpr auto WATER_MODE_WEIGHT              = 00.0F;
-static constexpr auto Y_ONLY_MODE_WEIGHT             = 05.0F;
+constexpr auto AMULET_MODE_WEIGHT             = 10.0F;
+constexpr auto CRYSTAL_BALL_MODE0_WEIGHT      = 04.0F;
+constexpr auto CRYSTAL_BALL_MODE1_WEIGHT      = 02.0F;
+constexpr auto DISTANCE_FIELD_MODE0_WEIGHT    = 03.0F;
+constexpr auto DISTANCE_FIELD_MODE1_WEIGHT    = 03.0F;
+constexpr auto DISTANCE_FIELD_MODE2_WEIGHT    = 02.0F;
+constexpr auto EXP_RECIPROCAL_MODE_WEIGHT     = 10.0F;
+constexpr auto HYPERCOS_MODE0_WEIGHT          = 08.0F;
+constexpr auto HYPERCOS_MODE1_WEIGHT          = 04.0F;
+constexpr auto HYPERCOS_MODE2_WEIGHT          = 02.0F;
+constexpr auto HYPERCOS_MODE3_WEIGHT          = 01.0F;
+constexpr auto IMAGE_DISPLACEMENT_MODE_WEIGHT = 05.0F;
+constexpr auto NORMAL_MODE_WEIGHT             = 10.0F;
+constexpr auto SCRUNCH_MODE_WEIGHT            = 06.0F;
+constexpr auto SPEEDWAY_MODE0_WEIGHT          = 02.0F;
+constexpr auto SPEEDWAY_MODE1_WEIGHT          = 01.0F;
+constexpr auto SPEEDWAY_MODE2_WEIGHT          = 05.0F;
+constexpr auto WAVE_SQ_DIST_MODE0_WEIGHT      = 05.0F;
+constexpr auto WAVE_SQ_DIST_MODE1_WEIGHT      = 04.0F;
+constexpr auto WAVE_ATAN_MODE0_WEIGHT         = 05.0F;
+constexpr auto WAVE_ATAN_MODE1_WEIGHT         = 04.0F;
+constexpr auto WATER_MODE_WEIGHT              = 00.0F;
+constexpr auto Y_ONLY_MODE_WEIGHT             = 05.0F;
 
-static constexpr auto BOTTOM_MID_POINT_WEIGHT               = 03.0F;
-static constexpr auto TOP_MID_POINT_WEIGHT                  = 03.0F;
-static constexpr auto LEFT_MID_POINT_WEIGHT                 = 02.0F;
-static constexpr auto RIGHT_MID_POINT_WEIGHT                = 02.0F;
-static constexpr auto CENTRE_MID_POINT_WEIGHT               = 18.0F;
-static constexpr auto TOP_LEFT_QUARTER_MID_POINT_WEIGHT     = 10.0F;
-static constexpr auto TOP_RIGHT_QUARTER_MID_POINT_WEIGHT    = 10.0F;
-static constexpr auto BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT  = 10.0F;
-static constexpr auto BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
+constexpr auto BOTTOM_MID_POINT_WEIGHT               = 03.0F;
+constexpr auto TOP_MID_POINT_WEIGHT                  = 03.0F;
+constexpr auto LEFT_MID_POINT_WEIGHT                 = 02.0F;
+constexpr auto RIGHT_MID_POINT_WEIGHT                = 02.0F;
+constexpr auto CENTRE_MID_POINT_WEIGHT               = 18.0F;
+constexpr auto TOP_LEFT_QUARTER_MID_POINT_WEIGHT     = 10.0F;
+constexpr auto TOP_RIGHT_QUARTER_MID_POINT_WEIGHT    = 10.0F;
+constexpr auto BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT  = 10.0F;
+constexpr auto BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
 
-// TODO(glk) - When we get to use C++20, replace the below 'inline consts' with 'static constexpr'.
+// TODO(glk) - When we get to use C++20, replace the below 'inline consts' with 'constexpr'.
 
 inline const auto CRYSTAL_BALL_MODE0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
     {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
@@ -185,7 +187,7 @@ inline const auto WAVE_ATAN_MODE1_MULTIPLIERS = std::map<ZoomFilterMode, float>{
     {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, 0.0F},
 };
 
-static constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
+constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
     {ZoomFilterMode::AMULET_MODE, "Amulet"},
     {ZoomFilterMode::CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0"},
     {ZoomFilterMode::CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1"},
@@ -211,41 +213,41 @@ static constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_vi
     {ZoomFilterMode::Y_ONLY_MODE, "Y Only"},
 }}};
 
-static constexpr auto AMULET_PROB_ROTATE             = PROB_HIGH;
-static constexpr auto CRYSTAL_BALL0_PROB_ROTATE      = PROB_HIGH;
-static constexpr auto CRYSTAL_BALL1_PROB_ROTATE      = PROB_HIGH;
-static constexpr auto DISTANCE_FIELD0_PROB_ROTATE    = PROB_HIGH;
-static constexpr auto DISTANCE_FIELD1_PROB_ROTATE    = PROB_HIGH;
-static constexpr auto DISTANCE_FIELD2_PROB_ROTATE    = PROB_HIGH;
-static constexpr auto EXP_RECIPROCAL_PROB_ROTATE     = PROB_LOW;
-static constexpr auto HYPERCOS0_PROB_ROTATE          = PROB_LOW;
-static constexpr auto HYPERCOS1_PROB_ROTATE          = PROB_LOW;
-static constexpr auto HYPERCOS2_PROB_ROTATE          = PROB_LOW;
-static constexpr auto HYPERCOS3_PROB_ROTATE          = PROB_LOW;
-static constexpr auto IMAGE_DISPLACEMENT_PROB_ROTATE = PROB_ZERO;
-static constexpr auto NORMAL_PROB_ROTATE             = PROB_ZERO;
-static constexpr auto SCRUNCH_PROB_ROTATE            = PROB_HALF;
-static constexpr auto SPEEDWAY0_PROB_ROTATE          = PROB_HALF;
-static constexpr auto SPEEDWAY1_PROB_ROTATE          = PROB_HIGH;
-static constexpr auto SPEEDWAY2_PROB_ROTATE          = PROB_HIGH;
-static constexpr auto WATER_PROB_ROTATE              = PROB_ZERO;
-static constexpr auto WAVE0_PROB_ROTATE              = PROB_HIGH;
-static constexpr auto WAVE1_PROB_ROTATE              = PROB_HIGH;
-static constexpr auto Y_ONLY_PROB_ROTATE             = PROB_HALF;
+constexpr auto AMULET_PROB_ROTATE             = PROB_HIGH;
+constexpr auto CRYSTAL_BALL0_PROB_ROTATE      = PROB_HIGH;
+constexpr auto CRYSTAL_BALL1_PROB_ROTATE      = PROB_HIGH;
+constexpr auto DISTANCE_FIELD0_PROB_ROTATE    = PROB_HIGH;
+constexpr auto DISTANCE_FIELD1_PROB_ROTATE    = PROB_HIGH;
+constexpr auto DISTANCE_FIELD2_PROB_ROTATE    = PROB_HIGH;
+constexpr auto EXP_RECIPROCAL_PROB_ROTATE     = PROB_LOW;
+constexpr auto HYPERCOS0_PROB_ROTATE          = PROB_LOW;
+constexpr auto HYPERCOS1_PROB_ROTATE          = PROB_LOW;
+constexpr auto HYPERCOS2_PROB_ROTATE          = PROB_LOW;
+constexpr auto HYPERCOS3_PROB_ROTATE          = PROB_LOW;
+constexpr auto IMAGE_DISPLACEMENT_PROB_ROTATE = PROB_ZERO;
+constexpr auto NORMAL_PROB_ROTATE             = PROB_ZERO;
+constexpr auto SCRUNCH_PROB_ROTATE            = PROB_HALF;
+constexpr auto SPEEDWAY0_PROB_ROTATE          = PROB_HALF;
+constexpr auto SPEEDWAY1_PROB_ROTATE          = PROB_HIGH;
+constexpr auto SPEEDWAY2_PROB_ROTATE          = PROB_HIGH;
+constexpr auto WATER_PROB_ROTATE              = PROB_ZERO;
+constexpr auto WAVE0_PROB_ROTATE              = PROB_HIGH;
+constexpr auto WAVE1_PROB_ROTATE              = PROB_HIGH;
+constexpr auto Y_ONLY_PROB_ROTATE             = PROB_HALF;
 
-static constexpr auto DEFAULT_PROB_BLOCKY_WAVY_EFFECT    = 0.3F;
-static constexpr auto DEFAULT_PROB_HYPERCOS_EFFECT       = 0.9F;
-static constexpr auto DEFAULT_PROB_IMAGE_VELOCITY_EFFECT = 0.1F;
-static constexpr auto DEFAULT_PROB_NOISE_EFFECT          = 0.1F;
-static constexpr auto DEFAULT_PROB_PLANE_EFFECT          = 0.7F;
-static constexpr auto DEFAULT_PROB_TAN_EFFECT            = 0.2F;
-static constexpr auto DEFAULT_PROB_XY_LERP_EFFECT        = 0.2F;
+constexpr auto DEFAULT_PROB_BLOCKY_WAVY_EFFECT    = 0.3F;
+constexpr auto DEFAULT_PROB_HYPERCOS_EFFECT       = 0.9F;
+constexpr auto DEFAULT_PROB_IMAGE_VELOCITY_EFFECT = 0.1F;
+constexpr auto DEFAULT_PROB_NOISE_EFFECT          = 0.1F;
+constexpr auto DEFAULT_PROB_PLANE_EFFECT          = 0.7F;
+constexpr auto DEFAULT_PROB_TAN_EFFECT            = 0.2F;
+constexpr auto DEFAULT_PROB_XY_LERP_EFFECT        = 0.2F;
 
-static constexpr auto WAVE0_PROB_PLANE_EFFECT = 0.8F;
-static constexpr auto WAVE1_PROB_PLANE_EFFECT = 0.8F;
+constexpr auto WAVE0_PROB_PLANE_EFFECT = 0.8F;
+constexpr auto WAVE1_PROB_PLANE_EFFECT = 0.8F;
 
 // clang-format off
-static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
+constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
                                                       EnumMap<AfterEffectsTypes, float>>{{{
     { ZoomFilterMode::AMULET_MODE,
       EnumMap<AfterEffectsTypes, float>{{{
@@ -526,7 +528,7 @@ static constexpr auto EFFECTS_PROBABILITIES = EnumMap<ZoomFilterMode,
 }}};
 // clang-format on
 
-static constexpr auto DEFAULT_AFTER_EFFECTS_STATES = EnumMap<AfterEffectsTypes, bool>{{{
+constexpr auto DEFAULT_AFTER_EFFECTS_STATES = EnumMap<AfterEffectsTypes, bool>{{{
     {AfterEffectsTypes::BLOCK_WAVY, false},
     {AfterEffectsTypes::HYPERCOS, false},
     {AfterEffectsTypes::IMAGE_VELOCITY, false},
@@ -537,7 +539,7 @@ static constexpr auto DEFAULT_AFTER_EFFECTS_STATES = EnumMap<AfterEffectsTypes, 
     {AfterEffectsTypes::XY_LERP_EFFECT, false},
 }}};
 
-static constexpr auto DEFAULT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffectsTypes, float>{{{
+constexpr auto DEFAULT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffectsTypes, float>{{{
     {AfterEffectsTypes::BLOCK_WAVY, 0.0F},
     {AfterEffectsTypes::HYPERCOS, 0.0F},
     {AfterEffectsTypes::IMAGE_VELOCITY, 0.0F},
@@ -548,18 +550,18 @@ static constexpr auto DEFAULT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffects
     {AfterEffectsTypes::XY_LERP_EFFECT, 0.0F},
 }}};
 
-static constexpr auto DEFAULT_REPEAT_AFTER_EFFECTS_PROBABILITIES =
-    EnumMap<AfterEffectsTypes, float>{{{
-        {AfterEffectsTypes::BLOCK_WAVY, 0.9F},
-        {AfterEffectsTypes::HYPERCOS, 0.5F},
-        {AfterEffectsTypes::IMAGE_VELOCITY, 0.8F},
-        {AfterEffectsTypes::NOISE, 0.0F},
-        {AfterEffectsTypes::PLANES, 0.0F},
-        {AfterEffectsTypes::ROTATION, 0.0F},
-        {AfterEffectsTypes::TAN_EFFECT, 0.0F},
-        {AfterEffectsTypes::XY_LERP_EFFECT, 0.1F},
-    }}};
-static constexpr auto ZERO_REPEAT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffectsTypes, float>{{{
+constexpr auto DEFAULT_REPEAT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffectsTypes, float>{{{
+    {AfterEffectsTypes::BLOCK_WAVY, 0.9F},
+    {AfterEffectsTypes::HYPERCOS, 0.5F},
+    {AfterEffectsTypes::IMAGE_VELOCITY, 0.8F},
+    {AfterEffectsTypes::NOISE, 0.0F},
+    {AfterEffectsTypes::PLANES, 0.0F},
+    {AfterEffectsTypes::ROTATION, 0.0F},
+    {AfterEffectsTypes::TAN_EFFECT, 0.0F},
+    {AfterEffectsTypes::XY_LERP_EFFECT, 0.1F},
+}}};
+
+constexpr auto ZERO_REPEAT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEffectsTypes, float>{{{
     {AfterEffectsTypes::BLOCK_WAVY, 0.0F},
     {AfterEffectsTypes::HYPERCOS, 0.0F},
     {AfterEffectsTypes::IMAGE_VELOCITY, 0.0F},
@@ -570,7 +572,7 @@ static constexpr auto ZERO_REPEAT_AFTER_EFFECTS_PROBABILITIES = EnumMap<AfterEff
     {AfterEffectsTypes::XY_LERP_EFFECT, 0.0F},
 }}};
 
-static constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES = EnumMap<AfterEffectsTypes, uint32_t>{{{
+constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES = EnumMap<AfterEffectsTypes, uint32_t>{{{
     {AfterEffectsTypes::BLOCK_WAVY, 100U},
     {AfterEffectsTypes::HYPERCOS, 100U},
     {AfterEffectsTypes::IMAGE_VELOCITY, 100U},
@@ -620,7 +622,7 @@ static constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES = EnumMap<AfterEffectsType
 
 // TODO(glk) - Can make this 'constexpr' with C++20.
 
-[[nodiscard]] static auto GetHypercosWeights(const ZoomFilterMode filterMode) noexcept
+[[nodiscard]] auto GetHypercosWeights(const ZoomFilterMode filterMode) noexcept
     -> std::vector<Weights<HypercosOverlay>::KeyValue>
 {
   constexpr auto FORCED_HYPERCOS =
@@ -793,6 +795,8 @@ static constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES = EnumMap<AfterEffectsType
   return std::vector<Weights<HypercosOverlay>::KeyValue>{cbegin(HYPERCOS_WEIGHTS[filterMode]),
                                                          cend(HYPERCOS_WEIGHTS[filterMode])};
 }
+
+} // namespace
 
 auto FilterSettingsService::GetFilterModeData(
     const IGoomRand& goomRand,

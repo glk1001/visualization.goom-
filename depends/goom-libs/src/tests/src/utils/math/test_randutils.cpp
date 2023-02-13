@@ -1,7 +1,6 @@
 #include "catch2/catch.hpp"
 #include "utils/math/randutils.h"
 
-#include <cstdint>
 #include <fstream>
 #include <limits>
 #include <string>
@@ -28,31 +27,31 @@ TEST_CASE("save/restore random state")
   SetRandSeed(seed);
   REQUIRE(seed == GetRandSeed());
 
-  const uint32_t r1 = GetRand();
-  const uint32_t r2 = GetRand();
-  REQUIRE(r1 != r2);
+  const auto rand1 = GetRand();
+  const auto rand2 = GetRand();
+  REQUIRE(rand1 != rand2);
 
   const std::string saveFile = "/tmp/rand.txt";
-  std::ofstream fout{saveFile, std::ofstream::out};
-  SaveRandState(fout);
-  fout.close();
-  const uint32_t r_justAfterSave = GetRand();
+  std::ofstream fileOut{saveFile, std::ofstream::out};
+  SaveRandState(fileOut);
+  fileOut.close();
+  const auto randJustAfterSave = GetRand();
 
   // Scramble things a bit
   SetRandSeed(seed + 10);
-  uint32_t r = 0;
-  for (size_t i = 0; i < 1000; i++)
+  auto rand = 0U;
+  for (auto i = 0; i < 1000; i++)
   {
-    r = GetRand();
+    rand = GetRand();
   }
   REQUIRE(seed != GetRandSeed());
-  REQUIRE(r != r_justAfterSave);
+  REQUIRE(rand != randJustAfterSave);
 
   std::ifstream fin{saveFile, std::ifstream::in};
   RestoreRandState(fin);
-  r = GetRand();
+  rand = GetRand();
   REQUIRE(seed == GetRandSeed());
-  REQUIRE(r == r_justAfterSave);
+  REQUIRE(rand == randJustAfterSave);
 }
 
 TEST_CASE("repeatable random sequence")
@@ -62,56 +61,56 @@ TEST_CASE("repeatable random sequence")
   SetRandSeed(seed);
   REQUIRE(seed == GetRandSeed());
   std::vector<uint32_t> seq1(1000);
-  std::vector<float> fseq1(1000);
+  std::vector<float> fltSeq1(1000);
   for (size_t i = 0; i < 1000; i++)
   {
-    seq1[i]  = GetRand();
-    fseq1[i] = GetRandInRange(0.0F, 1.0F);
+    seq1[i]    = GetRand();
+    fltSeq1[i] = GetRandInRange(0.0F, 1.0F);
   }
 
   SetRandSeed(seed);
   REQUIRE(seed == GetRandSeed());
   std::vector<uint32_t> seq2(1000);
-  std::vector<float> fseq2(1000);
+  std::vector<float> fltSeq2(1000);
   for (size_t i = 0; i < 1000; i++)
   {
-    seq2[i]  = GetRand();
-    fseq2[i] = GetRandInRange(0.0F, 1.0F);
+    seq2[i]    = GetRand();
+    fltSeq2[i] = GetRandInRange(0.0F, 1.0F);
   }
 
   SetRandSeed(seed + 1);
   REQUIRE(seed + 1 == GetRandSeed());
   std::vector<uint32_t> seq3(1000);
-  std::vector<float> fseq3(1000);
+  std::vector<float> fltSeq3(1000);
   for (size_t i = 0; i < 1000; i++)
   {
-    seq3[i]  = GetRand();
-    fseq3[i] = GetRandInRange(0.0F, 1.0F);
+    seq3[i]    = GetRand();
+    fltSeq3[i] = GetRandInRange(0.0F, 1.0F);
   }
 
   REQUIRE(seq1 == seq2);
   REQUIRE(seq1 != seq3);
 
-  REQUIRE(fseq1 == fseq2);
-  REQUIRE(fseq1 != fseq3);
+  REQUIRE(fltSeq1 == fltSeq2);
+  REQUIRE(fltSeq1 != fltSeq3);
 }
 
-template<typename Valtype>
-auto GetMinMax(const size_t numLoop, const Valtype& nMin, const Valtype& nMax)
-    -> std::tuple<Valtype, Valtype>
+template<typename ValType>
+auto GetMinMax(const size_t numLoop, const ValType& nMin, const ValType& nMax)
+    -> std::tuple<ValType, ValType>
 {
-  Valtype min = std::numeric_limits<Valtype>::max();
-  Valtype max = std::numeric_limits<Valtype>::min();
+  ValType min = std::numeric_limits<ValType>::max();
+  ValType max = std::numeric_limits<ValType>::min();
   for (size_t i = 0; i < numLoop; i++)
   {
-    Valtype r = GetRandInRange(nMin, nMax);
-    if (r < min)
+    ValType rand = GetRandInRange(nMin, nMax);
+    if (rand < min)
     {
-      min = r;
+      min = rand;
     }
-    if (r > max)
+    if (rand > max)
     {
-      max = r;
+      max = rand;
     }
   }
 

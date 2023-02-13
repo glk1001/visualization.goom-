@@ -7,7 +7,6 @@
 #include "utils/math/misc.h"
 #include "xoshiro.hpp"
 
-#include <cstdint>
 #include <format>
 #include <limits>
 #include <ostream>
@@ -25,8 +24,11 @@ const uint32_t G_RAND_MAX = (xoshiro256plus64::max() > std::numeric_limits<uint3
 // Xoshiro and multiplication/shift technique. For timings, see tests/test_goomrand.cpp.
 // thread_local xoshiro256starstar64 eng { GetRandSeed() };
 
-static uint64_t randSeed = std::random_device{}();
+namespace
+{
+uint64_t randSeed = std::random_device{}();
 thread_local xoshiro256plus64 xoshiroEng{GetRandSeed()};
+}
 
 auto GetXoshiroEng() -> xoshiro256plus64
 {

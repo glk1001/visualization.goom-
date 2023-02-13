@@ -43,7 +43,6 @@
 #include "utils/strutils.h"
 #include "visual_fx/fx_helper.h"
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>

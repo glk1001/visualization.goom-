@@ -4,8 +4,6 @@
 #include "goom_logger.h"
 #include "utils/math/misc.h"
 
-#include <cstdint>
-
 namespace GOOM::UNIT_TESTS
 {
 

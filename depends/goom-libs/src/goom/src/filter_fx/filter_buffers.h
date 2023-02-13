@@ -23,8 +23,8 @@ inline constexpr float MIN_SCREEN_COORD_ABS_VAL =
 struct SourcePointInfo
 {
   Point2dInt screenPoint;
-  const FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray* coeffs;
-  bool isClipped;
+  const FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray* coeffs{};
+  bool isClipped{};
 };
 } // namespace FILTER_BUFFERS
 

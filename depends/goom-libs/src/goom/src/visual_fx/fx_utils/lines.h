@@ -12,7 +12,7 @@ namespace GOOM::VISUAL_FX::FX_UTILS
 struct LinePoint
 {
   Point2dFlt point;
-  float angle;
+  float angle{};
 };
 
 

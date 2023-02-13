@@ -132,7 +132,6 @@ inline auto StarDrawer::GetMaxPartMultiplier() const noexcept -> float
       return MAX_MULTIPLIER;
     default:
       FailFast();
-      return 0.0F;
   }
 }
 
@@ -149,7 +148,6 @@ inline auto StarDrawer::GetLineMaxPartMultiplier() const noexcept -> float
       return LINE_MAX_MULTIPLIER;
     default:
       FailFast();
-      return 0.0F;
   }
 }
 

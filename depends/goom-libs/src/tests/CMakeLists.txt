@@ -70,6 +70,8 @@ get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} COMPILE_FEATUR
 get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} LINK_OPTIONS)
 
 message(STATUS "Goom Lib Tests: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
-message(STATUS "Goom Lib Tests: C++ compile features = \"${${GOOM_LIB_TESTS_NAME}_compile_features}\".")
-message(STATUS "Goom Lib Tests: C++ compile options = \"${${GOOM_LIB_TESTS_NAME}_compile_options}\".")
+message(STATUS
+        "Goom Lib Tests: C++ compile features = \"${${GOOM_LIB_TESTS_NAME}_compile_features}\".")
+message(STATUS
+        "Goom Lib Tests: C++ compile options = \"${${GOOM_LIB_TESTS_NAME}_compile_options}\".")
 message(STATUS "Goom Lib Tests: C++ link options = \"${${GOOM_LIB_TESTS_NAME}_link_options}\".")

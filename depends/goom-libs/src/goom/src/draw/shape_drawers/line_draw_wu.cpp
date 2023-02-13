@@ -28,8 +28,8 @@ auto WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot) n
   const auto dy       = y1 - y0;
   const auto gradient = (dx < 0.001F) ? 1 : (dy / dx);
 
-  int32_t xpx11{};
-  float interY{};
+  int32_t xpx11; // NOLINT(cppcoreguidelines-init-variables)
+  float interY; // NOLINT(cppcoreguidelines-init-variables)
   {
     const auto xEnd  = fRound(x0);
     const auto yEnd  = y0 + (gradient * (xEnd - x0));
@@ -49,7 +49,7 @@ auto WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot) n
     interY = yEnd + gradient;
   }
 
-  int32_t xpx12{};
+  int32_t xpx12; // NOLINT(cppcoreguidelines-init-variables)
   {
     const auto xEnd  = fRound(x1);
     const auto yEnd  = y1 + (gradient * (xEnd - x1));

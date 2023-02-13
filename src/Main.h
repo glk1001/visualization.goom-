@@ -61,18 +61,16 @@ private:
 
   auto StartLogging() -> void;
 
-  [[nodiscard]] auto StartWithCatch(int numChannels,
-                                    int samplesPerSec,
-                                    int bitsPerSample,
-                                    const std::string& songName) -> bool;
-  [[nodiscard]] auto StartWithoutCatch(int numChannels,
-                                       int samplesPerSec,
-                                       int bitsPerSample,
-                                       const std::string& songName) -> bool;
-  [[nodiscard]] auto StartVis(int numChannels,
-                              int samplesPerSec,
-                              int bitsPerSample,
-                              const std::string& songName) -> bool;
+  auto StartWithCatch(int numChannels,
+                      int samplesPerSec,
+                      int bitsPerSample,
+                      const std::string& songName) -> void;
+  auto StartWithoutCatch(int numChannels,
+                         int samplesPerSec,
+                         int bitsPerSample,
+                         const std::string& songName) -> void;
+  auto StartVis(int numChannels, int samplesPerSec, int bitsPerSample, const std::string& songName)
+      -> void;
 
   auto StopWithCatch() -> void;
   auto StopWithoutCatch() -> void;

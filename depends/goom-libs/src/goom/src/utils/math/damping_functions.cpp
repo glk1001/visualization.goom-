@@ -89,6 +89,8 @@ auto PiecewiseDampingFunction::operator()(const double x) -> double
   return 0.0;
 }
 
+static constexpr auto DEFAULT_PI_STEP_FRAC = 1.0 / 16.0;
+
 SineWaveMultiplier::SineWaveMultiplier(const float frequency,
                                        const float lower,
                                        const float upper,
@@ -97,7 +99,7 @@ SineWaveMultiplier::SineWaveMultiplier(const float frequency,
     m_frequency{frequency},
     m_lower{lower},
     m_upper{upper},
-    m_piStepFrac{1.0 / 16.0},
+    m_piStepFrac{DEFAULT_PI_STEP_FRAC},
     m_x{x0}
 {
 }

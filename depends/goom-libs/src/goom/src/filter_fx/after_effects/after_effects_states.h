@@ -35,9 +35,8 @@ public:
 
   struct AfterEffectsSettings
   {
-    HypercosOverlay hypercosOverlay;
-    AfterEffectsActiveMap active;
-
+    HypercosOverlay hypercosOverlay{};
+    AfterEffectsActiveMap active{};
     RotationAdjustments rotationAdjustments;
   };
   struct AfterEffectsProbabilities

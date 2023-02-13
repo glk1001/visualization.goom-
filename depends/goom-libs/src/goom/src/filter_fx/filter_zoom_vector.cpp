@@ -7,9 +7,7 @@
 #include "goom_logger.h"
 #include "normalized_coords.h"
 #include "utils/math/misc.h"
-#include "utils/name_value_pairs.h"
 
-#include <cstdint>
 #include <string>
 
 namespace GOOM::FILTER_FX

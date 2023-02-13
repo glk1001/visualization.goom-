@@ -345,7 +345,6 @@ auto Planes::GetHorizontalSwirlOffsetFactor(const float coordValue) const -> flo
       return std::cos(PI * std::sin(swirlFreq * coordValue));
     default:
       FailFast();
-      return 0.0F;
   }
 }
 
@@ -373,7 +372,6 @@ auto Planes::GetVerticalSwirlOffsetFactor(const float coordValue) const -> float
       return std::sin(PI * std::sin(swirlFreq * coordValue));
     default:
       FailFast();
-      return 0.0F;
   }
 }
 

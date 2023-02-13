@@ -25,7 +25,6 @@
 #include "utils/math/misc.h"
 
 #include <cmath>
-#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -47,7 +46,6 @@ using FX_UTILS::LinePoint;
 using FX_UTILS::SmoothTheCircleJoinAtEnds;
 using UTILS::NUM;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::FloatsEqual;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
 
@@ -133,7 +131,7 @@ auto LineMorph::GetCurrentColorMapsNames() const noexcept -> std::vector<std::st
 }
 
 auto LineMorph::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
+    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
 {
   m_colorMaps = weightedMaps;
   m_colorMapsManager.UpdateColorMapInfo(m_currentColorMapID,
@@ -166,7 +164,6 @@ inline auto LineMorph::GetFreshLine(const LineType lineType, const float linePar
                                    lineParam);
     default:
       FailFast();
-      return {};
   }
 }
 
@@ -188,10 +185,10 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   }
 
   Ensures((m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
-          (FloatsEqual(m_srcePoints[0].point.x,
-                       m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.x) and
-           FloatsEqual(m_srcePoints[0].point.y,
-                       m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.y)));
+          (UTILS::MATH::FloatsEqual(m_srcePoints[0].point.x,
+                                    m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.x) and
+           UTILS::MATH::FloatsEqual(m_srcePoints[0].point.y,
+                                    m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.y)));
 
   static constexpr auto COLOR_MIX_AMOUNT = 1.0F / 64.0F;
   m_srceLineParams.color =
@@ -259,9 +256,10 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
   static constexpr auto LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
   USED_FOR_DEBUGGING(LAST_POINT_INDEX);
 
-  Expects((m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
-          (FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) and
-           FloatsEqual(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
+  Expects(
+      (m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
+      (UTILS::MATH::FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) and
+       UTILS::MATH::FloatsEqual(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
 
   const auto lineColor = GetFinalLineColor(m_srceLineParams.color);
 

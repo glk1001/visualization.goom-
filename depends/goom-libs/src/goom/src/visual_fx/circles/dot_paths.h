@@ -79,7 +79,7 @@ private:
     std::vector<UTILS::MATH::OscillatingPath> dotPathToTarget;
     std::vector<UTILS::MATH::OscillatingPath> dotPathFromTarget;
   };
-  DotPathsToAndFrom m_dotPathsToAndFrom{GetNewDotPaths(m_dotStartsToAndFrom)};
+  DotPathsToAndFrom m_dotPathsToAndFrom;
   bool m_updatedDotPathsToAndFrom = false;
   [[nodiscard]] auto GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noexcept
       -> DotPathsToAndFrom;

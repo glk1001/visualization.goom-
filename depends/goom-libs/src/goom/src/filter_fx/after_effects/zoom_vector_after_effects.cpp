@@ -5,8 +5,6 @@
 #include "goom_config.h"
 #include "utils/name_value_pairs.h"
 
-#include <cstdint>
-
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 

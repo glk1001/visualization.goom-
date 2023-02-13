@@ -420,18 +420,12 @@ auto LinesFx::LinesImpl::GetGoomLineResetSettings(const uint32_t farVal) const n
       return GetResetVerticalLineSettings(farVal);
     default:
       FailFast();
-      return {};
   }
 }
 
 auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const noexcept
     -> std::array<LineParams, NUM_LINES>
 {
-  float amplitude;
-  float param1;
-  float param2;
-  const auto [line1Color, line2Color] = GetResetLineColors(farVal);
-
   static constexpr auto NEW_FAR_VAL_PARAM1 = 0.47F;
   static constexpr auto NEW_FAR_VAL_PARAM2 = 0.47F;
 
@@ -442,6 +436,10 @@ auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const
   static constexpr auto NEW_FAR_VAL_AMPLITUDE     = 0.8F;
   static constexpr auto NEW_NON_FAR_VAL_AMPLITUDE = 3.0F;
   static constexpr auto DEFAULT_AMPLITUDE         = 1.0F;
+
+  float amplitude; // NOLINT(cppcoreguidelines-init-variables)
+  float param1; // NOLINT(cppcoreguidelines-init-variables)
+  float param2; // NOLINT(cppcoreguidelines-init-variables)
 
   if (farVal)
   {
@@ -468,6 +466,8 @@ auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const
     amplitude = DEFAULT_AMPLITUDE;
   }
 
+  const auto [line1Color, line2Color] = GetResetLineColors(farVal);
+
   return {
       {{LineType::CIRCLE, param1, line1Color, amplitude},
        {LineType::CIRCLE, param2, line2Color, amplitude}}
@@ -477,12 +477,6 @@ auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const
 auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) const noexcept
     -> std::array<LineParams, NUM_LINES>
 {
-  float amplitude;
-  float param1;
-  float param2;
-
-  const auto [line1Color, line2Color] = GetResetLineColors(farVal);
-
   static constexpr auto NEW_PARAM1_FACTOR     = 1.0F / 7.0F;
   static constexpr auto NEW_PARAM2_FACTOR     = 6.0F / 7.0F;
   static constexpr auto DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
@@ -490,6 +484,10 @@ auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) c
 
   static constexpr auto NEW_AMPLITUDE     = 1.0F;
   static constexpr auto DEFAULT_AMPLITUDE = 2.0F;
+
+  float amplitude; // NOLINT(cppcoreguidelines-init-variables)
+  float param1; // NOLINT(cppcoreguidelines-init-variables)
+  float param2; // NOLINT(cppcoreguidelines-init-variables)
 
   if (m_goomRand->ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
   {
@@ -504,6 +502,8 @@ auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) c
     amplitude = DEFAULT_AMPLITUDE;
   }
 
+  const auto [line1Color, line2Color] = GetResetLineColors(farVal);
+
   return {
       {{LineType::H_LINE, param1, line1Color, amplitude},
        {LineType::H_LINE, param2, line2Color, amplitude}}
@@ -513,12 +513,6 @@ auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) c
 auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) const noexcept
     -> std::array<LineParams, NUM_LINES>
 {
-  float amplitude;
-  float param1;
-  float param2;
-
-  const auto [line1Color, line2Color] = GetResetLineColors(farVal);
-
   static constexpr auto NEW_PARAM1_FACTOR     = 1.0F / 7.0F;
   static constexpr auto NEW_PARAM2_FACTOR     = 6.0F / 7.0F;
   static constexpr auto DEFAULT_PARAM1_FACTOR = 1.0F / 2.0F;
@@ -526,6 +520,10 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
 
   static constexpr auto NEW_AMPLITUDE     = 1.0F;
   static constexpr auto DEFAULT_AMPLITUDE = 1.5F;
+
+  float amplitude; // NOLINT(cppcoreguidelines-init-variables)
+  float param1; // NOLINT(cppcoreguidelines-init-variables)
+  float param2; // NOLINT(cppcoreguidelines-init-variables)
 
   if (m_goomRand->ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
   {
@@ -539,6 +537,8 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
     param2    = DEFAULT_PARAM2_FACTOR * m_screenWidth;
     amplitude = DEFAULT_AMPLITUDE;
   }
+
+  const auto [line1Color, line2Color] = GetResetLineColors(farVal);
 
   return {
       {{LineType::V_LINE, param1, line1Color, amplitude},

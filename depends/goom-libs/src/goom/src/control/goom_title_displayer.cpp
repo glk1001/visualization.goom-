@@ -13,7 +13,6 @@
 #include "utils/math/misc.h"
 #include "utils/text/drawable_text.h"
 
-#include <cstdint>
 #include <memory>
 #include <string>
 

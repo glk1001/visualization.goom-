@@ -14,8 +14,6 @@
 #include "zoom_in_coefficients_effect.h"
 #include "zoom_vector.h"
 
-#include <cstdint>
-
 namespace GOOM::FILTER_FX
 {
 

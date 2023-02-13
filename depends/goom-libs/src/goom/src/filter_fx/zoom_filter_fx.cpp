@@ -30,9 +30,7 @@
 #include "utils/propagate_const.h"
 
 #include <array>
-#include <cstdint>
 #include <memory>
-
 
 namespace GOOM::FILTER_FX
 {

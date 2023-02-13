@@ -36,8 +36,9 @@ TEST_CASE("TValue SINGLE_CYCLE")
   REQUIRE(tValue.IsInsideBoundary());
 
   // Reset
-  tValue.Reset(0.2F);
-  REQUIRE(tValue() == Approx(0.2F));
+  static constexpr auto TEST_RESET = 0.2F;
+  tValue.Reset(TEST_RESET);
+  REQUIRE(tValue() == Approx(TEST_RESET));
   REQUIRE(tValue.IsInsideBoundary());
 
   tValue.Reset(TValue::MIN_T_VALUE);
@@ -80,8 +81,9 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE")
   REQUIRE(tValue.HasJustHitStartBoundary());
 
   // Reset
-  tValue.Reset(0.2F);
-  REQUIRE(tValue() == Approx(0.2F));
+  static constexpr auto TEST_RESET = 0.2F;
+  tValue.Reset(TEST_RESET);
+  REQUIRE(tValue() == Approx(TEST_RESET));
   REQUIRE(tValue.IsInsideBoundary());
 
   tValue.Reset(TValue::MIN_T_VALUE);
@@ -137,11 +139,12 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE")
   REQUIRE(tValue.IsInsideBoundary());
 
   // Reset
-  tValue.Reset(0.2F);
-  REQUIRE(tValue() == Approx(0.2F));
+  static constexpr auto TEST_RESET = 0.2F;
+  tValue.Reset(TEST_RESET);
+  REQUIRE(tValue() == Approx(TEST_RESET));
   REQUIRE(tValue.IsInsideBoundary());
   tValue.Increment();
-  REQUIRE(tValue() == Approx(0.2F + STEP_SIZE));
+  REQUIRE(tValue() == Approx(TEST_RESET + STEP_SIZE));
 
   tValue.Reset(TValue::MIN_T_VALUE);
   REQUIRE(tValue() == Approx(TValue::MIN_T_VALUE));

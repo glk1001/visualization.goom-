@@ -49,6 +49,7 @@ auto GoomBufferProducer::Start() -> void
 
   Expects(m_goomControl);
   Expects(not m_started);
+  USED_FOR_DEBUGGING(m_started);
   m_started = true;
 
   LogInfo(*m_goomLogger, "Goom: Version: {}.", GetGoomLibVersionInfo());

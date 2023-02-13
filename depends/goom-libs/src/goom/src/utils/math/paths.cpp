@@ -17,8 +17,8 @@ TransformedPath::TransformedPath(std::unique_ptr<IPath> path, const Transform2d&
 {
 }
 
-LerpedPath::LerpedPath(const std::shared_ptr<IPath> path1,
-                       const std::shared_ptr<IPath> path2,
+LerpedPath::LerpedPath(const std::shared_ptr<IPath>& path1,
+                       const std::shared_ptr<IPath>& path2,
                        TValue& lerpT) noexcept
   : m_path1{path1}, m_path2{path2}, m_lerpT{&lerpT}
 {
@@ -27,7 +27,6 @@ LerpedPath::LerpedPath(const std::shared_ptr<IPath> path1,
 auto LerpedPath::GetClone() const noexcept -> std::unique_ptr<IPath>
 {
   FailFast();
-  return std::unique_ptr<LerpedPath>{};
 }
 
 JoinedPaths::JoinedPaths(std::unique_ptr<TValue> positionT,
@@ -87,7 +86,6 @@ auto JoinedPaths::AdjustSegmentStepSizes() noexcept -> void
 auto JoinedPaths::GetClone() const noexcept -> std::unique_ptr<IPath>
 {
   FailFast();
-  return std::unique_ptr<JoinedPaths>{};
 }
 
 } // namespace GOOM::UTILS::MATH

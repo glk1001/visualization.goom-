@@ -25,7 +25,7 @@ public:
     float chromaFactor = 1.0F;
   };
   ShapePath(DRAW::IGoomDraw& draw,
-            std::shared_ptr<UTILS::MATH::IPath> path,
+            const std::shared_ptr<UTILS::MATH::IPath>& path,
             COLOR::RandomColorMapsManager& colorMapsManager,
             ColorInfo colorInfo) noexcept;
 
@@ -57,10 +57,10 @@ public:
   };
   struct DrawParams
   {
-    float brightnessAttenuation;
-    bool firstShapePathAtMeetingPoint;
-    int32_t maxRadius;
-    float innerColorMix;
+    float brightnessAttenuation{};
+    bool firstShapePathAtMeetingPoint{};
+    int32_t maxRadius{};
+    float innerColorMix{};
     ShapePathColors meetingPointColors;
   };
   auto Draw(const DrawParams& drawParams) noexcept -> void;

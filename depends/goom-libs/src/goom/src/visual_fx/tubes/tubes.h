@@ -11,15 +11,12 @@
 #include <functional>
 #include <memory>
 
-namespace GOOM
-{
-
-namespace COLOR
+namespace GOOM::COLOR
 {
 class RandomColorMaps;
 }
 
-namespace VISUAL_FX::TUBES
+namespace GOOM::VISUAL_FX::TUBES
 {
 
 enum class ColorMapMixMode
@@ -46,54 +43,56 @@ class BrightnessAttenuation
 {
 public:
   static constexpr float DIST_SQ_CUTOFF = 0.10F;
-  BrightnessAttenuation(uint32_t screenWidth, uint32_t screenHeight, float cutoffBrightness);
+  BrightnessAttenuation(uint32_t screenWidth,
+                        uint32_t screenHeight,
+                        float cutoffBrightness) noexcept;
   [[nodiscard]] auto GetPositionBrightness(const Point2dInt& pos,
-                                           float minBrightnessPastCutoff) const -> float;
+                                           float minBrightnessPastCutoff) const noexcept -> float;
 
 private:
   float m_cutoffBrightness;
   uint32_t m_maxRSquared;
-  [[nodiscard]] auto GetDistFromCentreFactor(const Point2dInt& pos) const -> float;
+  [[nodiscard]] auto GetDistFromCentreFactor(const Point2dInt& pos) const noexcept -> float;
 };
 
 class Tube
 {
 public:
-  Tube() noexcept = delete;
   Tube(const TubeData& data, const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept;
 
-  [[nodiscard]] auto IsActive() const -> bool;
+  [[nodiscard]] auto IsActive() const noexcept -> bool;
 
-  void SetWeightedMainColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps);
-  void SetWeightedLowColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps);
+  auto SetWeightedMainColorMaps(
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void;
 
-  void ResetColorMaps();
+  auto ResetColorMaps() noexcept -> void;
 
-  void SetBrightnessFactor(float val);
+  auto SetBrightnessFactor(float val) noexcept -> void;
 
-  void SetMaxJitterOffset(int32_t val);
+  auto SetMaxJitterOffset(int32_t val) noexcept -> void;
 
   using TransformCentreFunc = std::function<Vec2dInt(uint32_t tubeId, const Point2dInt& centre)>;
-  void SetTransformCentreFunc(const TransformCentreFunc& func);
-  void SetCentrePathT(float val);
+  auto SetTransformCentreFunc(const TransformCentreFunc& func) noexcept -> void;
+  auto SetCentrePathT(float val) noexcept -> void;
   static const float NORMAL_CENTRE_SPEED;
-  void SetCentreSpeed(float val);
-  void IncreaseCentreSpeed();
-  void DecreaseCentreSpeed();
+  auto SetCentreSpeed(float val) noexcept -> void;
+  auto IncreaseCentreSpeed() noexcept -> void;
+  auto DecreaseCentreSpeed() noexcept -> void;
 
-  void SetAllowOscillatingCirclePaths(bool val);
-  void SetCirclePathParams(const UTILS::MATH::OscillatingFunction::Params& params);
+  auto SetAllowOscillatingCirclePaths(bool val) noexcept -> void;
+  auto SetCirclePathParams(const UTILS::MATH::OscillatingFunction::Params& params) noexcept -> void;
   static const float NORMAL_CIRCLE_SPEED;
-  void SetCircleSpeed(float val);
-  void IncreaseCircleSpeed();
-  void DecreaseCircleSpeed();
+  auto SetCircleSpeed(float val) noexcept -> void;
+  auto IncreaseCircleSpeed() noexcept -> void;
+  auto DecreaseCircleSpeed() noexcept -> void;
 
-  void DrawCircleOfShapes();
+  auto DrawCircleOfShapes() noexcept -> void;
 
 private:
   class TubeImpl;
   spimpl::unique_impl_ptr<TubeImpl> m_pimpl;
 };
 
-} // namespace VISUAL_FX::TUBES
-} // namespace GOOM
+} // namespace GOOM::VISUAL_FX::TUBES

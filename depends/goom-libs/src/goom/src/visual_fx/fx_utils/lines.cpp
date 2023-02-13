@@ -6,7 +6,6 @@
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 
-using UTILS::MATH::FloatsEqual;
 using UTILS::MATH::HALF_PI;
 using UTILS::MATH::TWO_PI;
 
@@ -82,8 +81,8 @@ auto GetCircularLinePoints(const uint32_t numPoints,
     angle += angleStep;
   }
 
-  Ensures(FloatsEqual(linePoint[0].point.x, linePoint[linePoint.size() - 1].point.x));
-  Ensures(FloatsEqual(linePoint[0].point.y, linePoint[linePoint.size() - 1].point.y));
+  Ensures(UTILS::MATH::FloatsEqual(linePoint[0].point.x, linePoint[linePoint.size() - 1].point.x));
+  Ensures(UTILS::MATH::FloatsEqual(linePoint[0].point.y, linePoint[linePoint.size() - 1].point.y));
 
   return linePoint;
 }

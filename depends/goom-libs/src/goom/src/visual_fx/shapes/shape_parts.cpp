@@ -261,7 +261,7 @@ inline auto ShapePart::GetCircleFunction(const ShapeFunctionParams& params) -> C
 }
 
 auto ShapePart::SetWeightedMainColorMaps(
-    const std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void
+    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void
 {
   m_colorInfo.mainColorMaps = weightedMaps;
 
@@ -272,7 +272,7 @@ auto ShapePart::SetWeightedMainColorMaps(
 }
 
 auto ShapePart::SetWeightedLowColorMaps(
-    const std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void
+    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void
 {
   m_colorInfo.lowColorMaps = weightedMaps;
 
@@ -283,7 +283,7 @@ auto ShapePart::SetWeightedLowColorMaps(
 }
 
 auto ShapePart::SetWeightedInnerColorMaps(
-    const std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void
+    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void
 {
   m_colorInfo.innerColorMix =
       m_goomRand->GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);

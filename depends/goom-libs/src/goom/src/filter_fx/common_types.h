@@ -6,7 +6,7 @@ namespace GOOM::FILTER_FX
 {
 
 template<typename T>
-struct Amplitude_t
+struct Amplitude_t // NOLINT(readability-identifier-naming)
 {
   T x;
   T y;

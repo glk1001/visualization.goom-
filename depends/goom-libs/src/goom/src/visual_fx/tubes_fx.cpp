@@ -26,7 +26,6 @@
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -62,10 +61,10 @@ static constexpr auto NUM_TUBES = 3U;
 
 struct TubeSettings
 {
-  bool noMoveFromCentre;
-  bool noOscillating;
-  float brightnessFactor;
-  float radiusEdgeOffset;
+  bool noMoveFromCentre{};
+  bool noOscillating{};
+  float brightnessFactor{};
+  float radiusEdgeOffset{};
   OscillatingFunction::Params circlePathParams;
 };
 static constexpr auto TUBE_SETTINGS = std::array<TubeSettings, NUM_TUBES>{

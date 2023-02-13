@@ -24,7 +24,6 @@
 
 #include <array>
 #include <cmath>
-#include <cstdint>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -39,7 +38,6 @@ using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
-using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using UTILS::Parallel;

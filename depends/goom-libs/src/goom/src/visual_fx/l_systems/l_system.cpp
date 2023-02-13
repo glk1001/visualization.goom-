@@ -65,6 +65,7 @@ inline auto IncrementedValue<DefaultParams>::GetMatchingT(const DefaultParams& v
 }
 
 template<>
+// NOLINTNEXTLINE(readability-identifier-naming)
 inline auto IncrementedValue<DefaultParams>::clamp(const DefaultParams& val,
                                                    const DefaultParams& val1,
                                                    const DefaultParams& val2) noexcept
@@ -392,15 +393,11 @@ auto LSystem::DrawLSystem() noexcept -> void
 {
   //LogInfo("Start L-System interpreted draw. Num modules = {}.", m_lSysModuleList->size());
 
-  if (DrawLSystemBatch())
-  {
-    return;
-  }
-
+  DrawLSystemBatch();
   UpdateLSysModel();
 }
 
-inline auto LSystem::DrawLSystemBatch() noexcept -> bool
+inline auto LSystem::DrawLSystemBatch() noexcept -> void
 {
   const auto numModules = m_lSysModuleList->size();
   for (auto i = 0U; i < numModules; ++i)
@@ -414,7 +411,6 @@ inline auto LSystem::DrawLSystemBatch() noexcept -> bool
 
   Expects(not m_lSysInterpreter->InterpretNext());
   //LogInfo("Finished interpreting all modules.");
-  return false;
 }
 
 inline auto LSystem::GetBoundingBox2d(const float expandBounds,

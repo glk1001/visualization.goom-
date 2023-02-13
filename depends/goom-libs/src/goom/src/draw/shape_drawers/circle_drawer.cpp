@@ -5,8 +5,6 @@
 #include "goom_config.h"
 #include "point2d.h"
 
-#include <cstdint>
-
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
@@ -81,7 +79,7 @@ auto CircleDrawer::DrawBresenhamCircle(const Point2dInt& centre,
 
   drawCircle8(centre.x, centre.y, x, y);
 
-  int32_t d = 3 - (2 * radius);
+  int32_t d = 3 - (2 * radius); // NOLINT(readability-identifier-length)
   while (y >= x)
   {
     ++x;

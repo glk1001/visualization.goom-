@@ -17,17 +17,17 @@ using GOOM::GoomLogger;
 auto main(int argc, char* argv[]) -> int
 {
   // global setup...
-  auto goomLogger          = GoomControl::MakeGoomLogger();
-  const auto f_console_log = [](GoomLogger::LogLevel, const std::string& s)
-  { std::clog << s << std::endl; };
-  AddLogHandler(*goomLogger, "console-log", f_console_log);
+  auto goomLogger        = GoomControl::MakeGoomLogger();
+  const auto fConsoleLog = [](GoomLogger::LogLevel, const std::string& str)
+  { std::clog << str << std::endl; };
+  AddLogHandler(*goomLogger, "console-log", fConsoleLog);
   SetLogLevel(*goomLogger, GoomLogger::LogLevel::INFO);
   SetLogLevelForFiles(*goomLogger, GoomLogger::LogLevel::INFO);
   LogStart(*goomLogger);
 
   LogInfo(*goomLogger, "Start unit tests...");
 
-  int result = Catch::Session().run(argc, argv);
+  const auto result = Catch::Session().run(argc, argv);
 
   // global clean-up...
 

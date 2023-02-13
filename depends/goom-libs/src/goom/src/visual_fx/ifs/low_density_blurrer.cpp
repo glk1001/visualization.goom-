@@ -11,7 +11,6 @@
 #include "utils/math/misc.h"
 
 #include <cmath>
-#include <cstdint>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::IFS
@@ -221,7 +220,7 @@ inline auto LowDensityBlurrer::GetBrightness() const noexcept -> float
   static constexpr auto NO_NEIGHBOUR_BRIGHTNESS = 1.5F;
   static constexpr auto NEIGHBOUR_BRIGHTNESS    = 3.1F;
 
-  float brightness = 0.0F;
+  float brightness; // NOLINT(cppcoreguidelines-init-variables)
   switch (m_colorMode)
   {
     case BlurrerColorMode::SINGLE_NO_NEIGHBOURS:
@@ -236,7 +235,6 @@ inline auto LowDensityBlurrer::GetBrightness() const noexcept -> float
       break;
     default:
       FailFast();
-      break;
   }
 
   if (nullptr != m_currentImageBitmap)

@@ -27,11 +27,11 @@ public:
   struct SetupParams
   {
     Point2dInt startPos;
-    float gravity;
-    float sideWind;
-    float vage;
-    float nominalPathLength;
-    float maxStarAge;
+    float gravity{};
+    float sideWind{};
+    float vage{};
+    float nominalPathLength{};
+    float maxStarAge{};
   };
   [[nodiscard]] virtual auto GetRandomizedSetupParams(float defaultPathLength) const noexcept
       -> SetupParams = 0;
@@ -41,9 +41,9 @@ public:
   [[nodiscard]] auto GetWeightedMainColorMaps() const noexcept -> const COLOR::RandomColorMaps&;
   [[nodiscard]] auto GetWeightedLowColorMaps() const noexcept -> const COLOR::RandomColorMaps&;
   auto SetWeightedMainColorMaps(
-      std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept -> void;
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps) noexcept -> void;
   auto SetWeightedLowColorMaps(
-      std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept -> void;
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps) noexcept -> void;
 
   [[nodiscard]] auto GetFixedMainColorMapName() const noexcept -> COLOR::COLOR_DATA::ColorMapName;
   [[nodiscard]] auto GetFixedLowColorMapName() const noexcept -> COLOR::COLOR_DATA::ColorMapName;
@@ -145,11 +145,11 @@ public:
   [[nodiscard]] auto GetRandomStarType() noexcept -> IStarType*;
 
   auto SetWeightedMainColorMaps(
-      uint32_t starTypeId, std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept
-      -> void;
+      uint32_t starTypeId,
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps) noexcept -> void;
   auto SetWeightedLowColorMaps(
-      uint32_t starTypeId, std::shared_ptr<const COLOR::RandomColorMaps> weightedColorMaps) noexcept
-      -> void;
+      uint32_t starTypeId,
+      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps) noexcept -> void;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
