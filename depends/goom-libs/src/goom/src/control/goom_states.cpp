@@ -227,15 +227,9 @@ auto GoomStateInfo::IsMultiThreaded(const GoomStates goomState) -> bool
 {
   const auto& goomDrawables = STATE_DRAWABLES[goomState];
 
-  for (const auto& goomDrawable : goomDrawables)
-  {
-    if (STATE_MULTI_THREADED[goomDrawable])
-    {
-      return true;
-    }
-  }
-
-  return false;
+  return std::any_of(cbegin(goomDrawables),
+                     cend(goomDrawables),
+                     [](const auto& goomDrawable) { return STATE_MULTI_THREADED[goomDrawable]; });
 }
 
 auto GoomStateInfo::GetBuffIntensityRange(const GoomStates goomState, const GoomDrawables fx)

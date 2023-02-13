@@ -18,32 +18,48 @@ using UTILS::MATH::IGoomRand;
 
 using Groups = RandomColorMapsGroups::Groups;
 
-auto VisualFxColorMatchedSets::MakeColorMatchedSetsMap() const noexcept -> ColorMatchedSetsMap
+auto VisualFxColorMatchedSets::MakeColorMatchedSetsMap(const IGoomRand& goomRand) noexcept
+    -> ColorMatchedSetsMap
 {
+  using CMS = ColorMatchedSets; // TODO(GLK) - with C++20, can use 'using enum'.
   // clang-format off
   return ColorMatchedSetsMap{{{
-      {ColorMatchedSets::RED_GREEN_STD_MAPS,      GetTwoGroupsColorMatchedSet(Groups::RED_STANDARD_MAPS,    Groups::GREEN_STANDARD_MAPS)},
-      {ColorMatchedSets::RED_BLUE_STD_MAPS,       GetTwoGroupsColorMatchedSet(Groups::RED_STANDARD_MAPS,    Groups::BLUE_STANDARD_MAPS)},
-      {ColorMatchedSets::YELLOW_BLUE_STD_MAPS,    GetTwoGroupsColorMatchedSet(Groups::YELLOW_STANDARD_MAPS, Groups::BLUE_STANDARD_MAPS)},
-      {ColorMatchedSets::YELLOW_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(Groups::YELLOW_STANDARD_MAPS, Groups::PURPLE_STANDARD_MAPS)},
-      {ColorMatchedSets::ORANGE_GREEN_STD_MAPS,   GetTwoGroupsColorMatchedSet(Groups::ORANGE_STANDARD_MAPS, Groups::GREEN_STANDARD_MAPS)},
-      {ColorMatchedSets::ORANGE_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(Groups::ORANGE_STANDARD_MAPS, Groups::PURPLE_STANDARD_MAPS)},
-      {ColorMatchedSets::ALL_ONLY_STD_MAPS,       GetOneGroupColorMatchedSet(Groups::ALL_STANDARD_MAPS)},
-      {ColorMatchedSets::HEAT_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(Groups::HEAT_STANDARD_MAPS)},
-      {ColorMatchedSets::COLD_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(Groups::COLD_STANDARD_MAPS)},
-      {ColorMatchedSets::DIVERGING_ONLY_STD_MAPS, GetOneGroupColorMatchedSet(Groups::SLIGHTLY_DIVERGING_SLIM_MAPS)},
-      {ColorMatchedSets::DIVERGING_BLACK_ONLY_STD_MAPS,
-                                                  GetOneGroupColorMatchedSet(Groups::DIVERGING_BLACK_STANDARD_MAPS)},
-      {ColorMatchedSets::WES_ANDERSON_ONLY_MAPS,  GetOneGroupColorMatchedSet(Groups::WES_ANDERSON_MAPS)},
-      {ColorMatchedSets::PASTEL_ONLY_MAPS,        GetOneGroupColorMatchedSet(Groups::PASTEL_STANDARD_MAPS)},
-      {ColorMatchedSets::COLOR_MATCHED_SET1,      GetColorMatchedSet1()},
-      {ColorMatchedSets::COLOR_MATCHED_SET2,      GetColorMatchedSet2()},
-      {ColorMatchedSets::COLOR_MATCHED_SET3,      GetColorMatchedSet3()},
-      {ColorMatchedSets::COLOR_MATCHED_SET4,      GetColorMatchedSet4()},
-      {ColorMatchedSets::COLOR_MATCHED_SET5,      GetColorMatchedSet5()},
-      {ColorMatchedSets::COLOR_MATCHED_SET6,      GetColorMatchedSet6()},
-      {ColorMatchedSets::COLOR_MATCHED_SET7,      GetColorMatchedSet7()},
-      {ColorMatchedSets::COLOR_MATCHED_SET8,      GetColorMatchedSet8()},
+      {CMS::RED_GREEN_STD_MAPS,      GetTwoGroupsColorMatchedSet(Groups::RED_STANDARD_MAPS,
+                                                                 goomRand,
+                                                                 Groups::GREEN_STANDARD_MAPS)},
+      {CMS::RED_BLUE_STD_MAPS,       GetTwoGroupsColorMatchedSet(Groups::RED_STANDARD_MAPS,
+                                                                 goomRand,
+                                                                 Groups::BLUE_STANDARD_MAPS)},
+      {CMS::YELLOW_BLUE_STD_MAPS,    GetTwoGroupsColorMatchedSet(Groups::YELLOW_STANDARD_MAPS,
+                                                                 goomRand,
+                                                                 Groups::BLUE_STANDARD_MAPS)},
+      {CMS::YELLOW_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(Groups::YELLOW_STANDARD_MAPS,
+                                                                 goomRand,
+                                                                 Groups::PURPLE_STANDARD_MAPS)},
+      {CMS::ORANGE_GREEN_STD_MAPS,   GetTwoGroupsColorMatchedSet(Groups::ORANGE_STANDARD_MAPS,
+                                                                 goomRand,
+                                                                 Groups::GREEN_STANDARD_MAPS)},
+      {CMS::ORANGE_PURPLE_STD_MAPS,  GetTwoGroupsColorMatchedSet(Groups::ORANGE_STANDARD_MAPS,
+                                                                 goomRand,
+                                                                 Groups::PURPLE_STANDARD_MAPS)},
+      {CMS::ALL_ONLY_STD_MAPS,       GetOneGroupColorMatchedSet(Groups::ALL_STANDARD_MAPS)},
+      {CMS::HEAT_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(Groups::HEAT_STANDARD_MAPS)},
+      {CMS::COLD_ONLY_STD_MAPS,      GetOneGroupColorMatchedSet(Groups::COLD_STANDARD_MAPS)},
+      {CMS::DIVERGING_ONLY_STD_MAPS, GetOneGroupColorMatchedSet(
+                                                             Groups::SLIGHTLY_DIVERGING_SLIM_MAPS)},
+      {CMS::DIVERGING_BLACK_ONLY_STD_MAPS,
+                                     GetOneGroupColorMatchedSet(
+                                                            Groups::DIVERGING_BLACK_STANDARD_MAPS)},
+      {CMS::WES_ANDERSON_ONLY_MAPS,  GetOneGroupColorMatchedSet(Groups::WES_ANDERSON_MAPS)},
+      {CMS::PASTEL_ONLY_MAPS,        GetOneGroupColorMatchedSet(Groups::PASTEL_STANDARD_MAPS)},
+      {CMS::COLOR_MATCHED_SET1,      GetColorMatchedSet1()},
+      {CMS::COLOR_MATCHED_SET2,      GetColorMatchedSet2()},
+      {CMS::COLOR_MATCHED_SET3,      GetColorMatchedSet3()},
+      {CMS::COLOR_MATCHED_SET4,      GetColorMatchedSet4()},
+      {CMS::COLOR_MATCHED_SET5,      GetColorMatchedSet5()},
+      {CMS::COLOR_MATCHED_SET6,      GetColorMatchedSet6()},
+      {CMS::COLOR_MATCHED_SET7,      GetColorMatchedSet7()},
+      {CMS::COLOR_MATCHED_SET8,      GetColorMatchedSet8()},
   }}};
   // clang-format on
 }
@@ -71,10 +87,10 @@ static constexpr auto COLOR_MATCHED_SET7_WEIGHT            = 90.0F;
 static constexpr auto COLOR_MATCHED_SET8_WEIGHT            = 90.0F;
 
 VisualFxColorMatchedSets::VisualFxColorMatchedSets(const IGoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand},
+  : m_colorMatchedSetsMap{MakeColorMatchedSetsMap(goomRand)},
     m_colorMatchedSetsWeights
     {
-        *m_goomRand,
+        goomRand,
         {
             {ColorMatchedSets::RED_GREEN_STD_MAPS,            RED_GREEN_STD_MAPS_WEIGHT},
             {ColorMatchedSets::RED_BLUE_STD_MAPS,             RED_BLUE_STD_MAPS_WEIGHT},
@@ -98,7 +114,8 @@ VisualFxColorMatchedSets::VisualFxColorMatchedSets(const IGoomRand& goomRand) no
             {ColorMatchedSets::COLOR_MATCHED_SET7,            COLOR_MATCHED_SET7_WEIGHT},
             {ColorMatchedSets::COLOR_MATCHED_SET8,            COLOR_MATCHED_SET8_WEIGHT},
         }
-    }
+    },
+    m_currentColorMatchedSet{&GetNextRandomColorMatchedSet()}
 {
 }
 
@@ -139,7 +156,8 @@ auto VisualFxColorMatchedSets::GetOneGroupColorMatchedSet(const Groups group) no
 }
 
 auto VisualFxColorMatchedSets::GetTwoGroupsColorMatchedSet(const Groups group1,
-                                                           const Groups group2) const noexcept
+                                                           const IGoomRand& goomRand,
+                                                           const Groups group2) noexcept
     -> ColorMatchedSet
 {
   auto matchedSet = GetOneGroupColorMatchedSet(group1);
@@ -147,7 +165,7 @@ auto VisualFxColorMatchedSets::GetTwoGroupsColorMatchedSet(const Groups group1,
   // Change every second map entry to 'func2'.
   auto indexes = std::array<size_t, NUM<GoomEffect>>{};
   std::iota(begin(indexes), end(indexes), 0);
-  m_goomRand->Shuffle(begin(indexes), end(indexes));
+  goomRand.Shuffle(begin(indexes), end(indexes));
   static constexpr auto INC_BY_2 = 2U;
   for (auto i = 0U; i < NUM<GoomEffect>; i += INC_BY_2)
   {

@@ -21,8 +21,6 @@ public:
       -> COLOR::RandomColorMapsGroups::Groups;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
-
   using ColorMatchedSet = UTILS::EnumMap<GoomEffect, COLOR::RandomColorMapsGroups::Groups>;
   enum class ColorMatchedSets
   {
@@ -50,20 +48,22 @@ private:
     _num // unused, and marks the enum end
   };
   using ColorMatchedSetsMap = UTILS::EnumMap<ColorMatchedSets, ColorMatchedSet>;
-  [[nodiscard]] auto MakeColorMatchedSetsMap() const noexcept -> ColorMatchedSetsMap;
-  ColorMatchedSetsMap m_colorMatchedSetsMap{MakeColorMatchedSetsMap()};
+  [[nodiscard]] static auto MakeColorMatchedSetsMap(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> ColorMatchedSetsMap;
+  ColorMatchedSetsMap m_colorMatchedSetsMap;
 
   UTILS::MATH::Weights<ColorMatchedSets> m_colorMatchedSetsWeights;
   [[nodiscard]] auto GetNextRandomColorMatchedSet() const noexcept -> const ColorMatchedSet&;
-  const ColorMatchedSet* m_currentColorMatchedSet{&GetNextRandomColorMatchedSet()};
+  const ColorMatchedSet* m_currentColorMatchedSet;
 
   [[nodiscard]] static auto GetOneGroupColorMatchedSet(
       COLOR::RandomColorMapsGroups::Groups group) noexcept -> ColorMatchedSet;
   [[nodiscard]] static auto GetOneGroupArray(COLOR::RandomColorMapsGroups::Groups group)
       -> std::array<ColorMatchedSet::KeyValue, UTILS::NUM<GoomEffect>>;
-  [[nodiscard]] auto GetTwoGroupsColorMatchedSet(
+  [[nodiscard]] static auto GetTwoGroupsColorMatchedSet(
       COLOR::RandomColorMapsGroups::Groups group1,
-      COLOR::RandomColorMapsGroups::Groups group2) const noexcept -> ColorMatchedSet;
+      const UTILS::MATH::IGoomRand& goomRand,
+      COLOR::RandomColorMapsGroups::Groups group2) noexcept -> ColorMatchedSet;
 
   static auto GetPrimaryColorDots(ColorMatchedSet& matchedSet) noexcept -> void;
 

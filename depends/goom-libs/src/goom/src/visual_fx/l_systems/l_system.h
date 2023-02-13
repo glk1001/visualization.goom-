@@ -72,7 +72,6 @@ public:
           const std::string& lSystemDirectory,
           const LSystemFile& lSystemFile) noexcept;
 
-  auto SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto ChangeColors() noexcept -> void;
 
   [[nodiscard]] auto GetPathStart() const noexcept -> const Point2dInt&;
@@ -85,7 +84,6 @@ public:
   auto DrawLSystem() noexcept -> void;
 
 private:
-  const PluginInfo* m_goomInfo;
   const UTILS::MATH::IGoomRand* m_goomRand;
   LineDrawerManager m_lineDrawerManager;
   auto SwitchLineDrawers() -> void;
@@ -101,8 +99,9 @@ private:
   };
   std::unique_ptr<::LSYS::List<::LSYS::Module>> m_lSysModuleList{};
   LSysModelSet m_lSysModelSet;
-  [[nodiscard]] auto GetLSysModelSet(const std::string& lSysDirectory,
-                                     const LSystemFile& lSystemFile) const -> LSysModelSet;
+  [[nodiscard]] static auto GetLSysModelSet(const PluginInfo& goomInfo,
+                                            const std::string& lSysDirectory,
+                                            const LSystemFile& lSystemFile) -> LSysModelSet;
   [[nodiscard]] static auto GetLSystemFilename(const std::string& lSystemDirectory,
                                                const LSystemFile& lSystemFile) noexcept
       -> std::string;
@@ -171,12 +170,6 @@ private:
   auto DrawLSystemBatch() noexcept -> void;
   auto IncrementTs() noexcept -> void;
 };
-
-inline auto LSystem::SetWeightedColorMaps(
-    const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
-{
-  m_lSysColors.SetWeightedColorMaps(weightedColorMaps);
-}
 
 inline auto LSystem::ChangeColors() noexcept -> void
 {

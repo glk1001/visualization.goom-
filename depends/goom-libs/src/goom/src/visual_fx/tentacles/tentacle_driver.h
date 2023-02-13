@@ -41,10 +41,8 @@ public:
   auto Update() -> void;
 
 private:
-  DRAW::IGoomDraw* m_draw;
   const UTILS::MATH::IGoomRand* m_goomRand;
-  Point2dInt m_screenMidpoint =
-      MidpointFromOrigin({m_draw->GetDimensions().GetWidth(), m_draw->GetDimensions().GetHeight()});
+  Point2dInt m_screenMidpoint;
 
   std::shared_ptr<const COLOR::IColorMap> m_dominantMainColorMap{};
   std::shared_ptr<const COLOR::IColorMap> m_dominantLowColorMap{};
@@ -57,7 +55,7 @@ private:
     UTILS::MATH::SineWaveMultiplier iterZeroYValWave;
   };
   IterationParams m_tentacleParams;
-  TentaclePlotter m_tentaclePlotter{*m_draw, *m_goomRand};
+  TentaclePlotter m_tentaclePlotter;
 
   struct TentacleAndAttributes
   {
@@ -74,9 +72,13 @@ private:
   UTILS::TValue m_nodeTOffset{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
                               NUM_NODE_T_OFFSET_STEPS};
   std::vector<TentacleAndAttributes> m_tentacles;
-  [[nodiscard]] auto GetTentacles(const CirclesTentacleLayout& tentacleLayout) const noexcept
+  [[nodiscard]] static auto GetTentacles(const UTILS::MATH::IGoomRand& goomRand,
+                                         const CirclesTentacleLayout& tentacleLayout,
+                                         const IterationParams& tentacleParams) noexcept
       -> std::vector<TentacleAndAttributes>;
-  [[nodiscard]] auto CreateNewTentacle2D() const noexcept -> std::unique_ptr<Tentacle2D>;
+  [[nodiscard]] static auto CreateNewTentacle2D(const UTILS::MATH::IGoomRand& goomRand,
+                                                const IterationParams& tentacleParams) noexcept
+      -> std::unique_ptr<Tentacle2D>;
   uint32_t m_tentacleGroupSize = static_cast<uint32_t>(m_tentacles.size());
   [[nodiscard]] auto GetMixedColors(float dominantT,
                                     float nodeT,

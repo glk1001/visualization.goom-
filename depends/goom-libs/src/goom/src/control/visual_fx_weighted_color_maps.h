@@ -20,39 +20,65 @@ public:
       -> COLOR::RandomColorMapsGroups::Groups;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
-
   using WeightedGroups = UTILS::MATH::Weights<COLOR::RandomColorMapsGroups::Groups>;
   UTILS::RuntimeEnumMap<GoomEffect, WeightedGroups> m_goomEffectsWeightedColorMaps;
 
-  [[nodiscard]] auto GetCirclesMainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetCirclesLowGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetDots0Groups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetDots1Groups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetDots2Groups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetDots3Groups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetDots4Groups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetIfsGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetImageGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetLines1Groups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetLines2Groups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetLSystemMainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetLSystemLowGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetShapesMainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetShapesLowGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetShapesInnerGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetStarsMainFireworksGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetStarsLowFireworksGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetStarsMainRainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetStarsLowRainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetStarsMainFountainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetStarsLowFountainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetTentaclesDominantMainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetTentaclesDominantLowGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetTentaclesMainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetTentaclesLowGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetTubesMainGroups() const noexcept -> WeightedGroups;
-  [[nodiscard]] auto GetTubesLowGroups() const noexcept -> WeightedGroups;
+  [[nodiscard]] static auto GetCirclesMainGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetCirclesLowGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetDots0Groups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetDots1Groups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetDots2Groups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetDots3Groups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetDots4Groups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetIfsGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetImageGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetLines1Groups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetLines2Groups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetLSystemMainGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetLSystemLowGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetShapesMainGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetShapesLowGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetShapesInnerGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetStarsMainFireworksGroups(
+      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedGroups;
+  [[nodiscard]] static auto GetStarsLowFireworksGroups(
+      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedGroups;
+  [[nodiscard]] static auto GetStarsMainRainGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetStarsLowRainGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetStarsMainFountainGroups(
+      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedGroups;
+  [[nodiscard]] static auto GetStarsLowFountainGroups(
+      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedGroups;
+  [[nodiscard]] static auto GetTentaclesDominantMainGroups(
+      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedGroups;
+  [[nodiscard]] static auto GetTentaclesDominantLowGroups(
+      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedGroups;
+  [[nodiscard]] static auto GetTentaclesMainGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetTentaclesLowGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetTubesMainGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetTubesLowGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
 };
 
 inline auto VisualFxWeightedColorMaps::GetCurrentRandomColorMapsGroup(

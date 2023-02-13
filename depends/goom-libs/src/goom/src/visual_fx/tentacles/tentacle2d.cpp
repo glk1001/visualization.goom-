@@ -33,7 +33,7 @@ Tentacle2D::Tentacle2D(const uint32_t numNodes,
     m_dimensions{dimensions},
     m_basePreviousYWeight{static_cast<double>(baseYWeights.previous)},
     m_baseCurrentYWeight{static_cast<double>(baseYWeights.current)},
-    m_dampingFunc{CreateDampingFunc()}
+    m_dampingFunc{CreateDampingFunc(m_basePreviousYWeight, m_dimensions.xDimensions)}
 {
 }
 
@@ -45,16 +45,7 @@ inline auto Tentacle2D::ValidateSettings() const -> void
   Expects(m_basePreviousYWeight > SMALL_WEIGHT);
   Expects(m_baseCurrentYWeight > SMALL_WEIGHT);
   USED_FOR_DEBUGGING(SMALL_WEIGHT);
-}
-
-auto Tentacle2D::SetXDimensions(const LinearDimensions& xDimensions) -> void
-{
-  Expects(not m_startedIterating);
-  Expects(xDimensions.min < xDimensions.max);
-
-  m_dimensions.xDimensions = xDimensions;
-
-  m_dampingFunc = CreateDampingFunc();
+  USED_FOR_DEBUGGING(m_dimensions);
 }
 
 inline auto Tentacle2D::GetFirstY() -> float
@@ -81,8 +72,7 @@ auto Tentacle2D::StartIterating() -> void
 
   InitVectors();
 
-  m_startedIterating = true;
-  m_iterNum          = 0;
+  m_iterNum = 0;
 
   DoSomeInitialIterations();
 }
@@ -150,47 +140,48 @@ auto Tentacle2D::UpdateDampedValues() -> void
   }
 }
 
-auto Tentacle2D::CreateDampingFunc() const noexcept -> Tentacle2D::DampingFuncPtr
+auto Tentacle2D::CreateDampingFunc(const double basePreviousYWeight,
+                                   const LinearDimensions& xDimensions) noexcept
+    -> Tentacle2D::DampingFuncPtr
 {
-  if (static constexpr auto LINEAR_CUTOFF_WEIGHT = 0.6;
-      m_basePreviousYWeight < LINEAR_CUTOFF_WEIGHT)
+  if (static constexpr auto LINEAR_CUTOFF_WEIGHT = 0.6; basePreviousYWeight < LINEAR_CUTOFF_WEIGHT)
   {
-    return CreateLinearDampingFunc();
+    return CreateLinearDampingFunc(xDimensions);
   }
-  return CreateExpDampingFunc();
+  return CreateExpDampingFunc(xDimensions);
 }
 
-auto Tentacle2D::CreateExpDampingFunc() const noexcept -> Tentacle2D::DampingFuncPtr
+auto Tentacle2D::CreateExpDampingFunc(const LinearDimensions& xDimensions) noexcept
+    -> Tentacle2D::DampingFuncPtr
 {
-  const auto xToStartRise = m_dimensions.xDimensions.min + (0.25 * m_dimensions.xDimensions.max);
+  const auto xToStartRise = xDimensions.min + (0.25 * xDimensions.max);
 
   return DampingFuncPtr{std::make_unique<ExpDampingFunction>(DAMPING_AMPLITUDE,
                                                              xToStartRise,
                                                              DAMPING_Y_AT_START_TO_RISE,
-                                                             m_dimensions.xDimensions.max,
+                                                             xDimensions.max,
                                                              DAMPING_Y_AT_X_MAX)};
 }
 
-auto Tentacle2D::CreateLinearDampingFunc() const noexcept -> Tentacle2D::DampingFuncPtr
+auto Tentacle2D::CreateLinearDampingFunc(const LinearDimensions& xDimensions) noexcept
+    -> Tentacle2D::DampingFuncPtr
 {
   auto pieces = std::vector<std::tuple<double, double, DampingFuncPtr>>{};
 
-  const auto flatXMin = m_dimensions.xDimensions.min;
-  const auto flatXMax = 0.1 * m_dimensions.xDimensions.max;
+  const auto flatXMin = xDimensions.min;
+  const auto flatXMax = 0.1 * xDimensions.max;
   pieces.emplace_back(
       flatXMin,
       flatXMax,
       DampingFuncPtr{std::make_unique<FlatDampingFunction>(LINEAR_DAMPING_FLAT_VALUE)});
 
   const auto linearXMin = flatXMax;
-  const auto linearXMax = 10.0 * m_dimensions.xDimensions.max;
+  const auto linearXMax = 10.0 * xDimensions.max;
   pieces.emplace_back(
       linearXMin,
       linearXMax,
-      DampingFuncPtr{std::make_unique<LinearDampingFunction>(flatXMax,
-                                                             LINEAR_DAMPING_FLAT_VALUE,
-                                                             m_dimensions.xDimensions.max,
-                                                             LINEAR_DAMPING_Y_SCALE)});
+      DampingFuncPtr{std::make_unique<LinearDampingFunction>(
+          flatXMax, LINEAR_DAMPING_FLAT_VALUE, xDimensions.max, LINEAR_DAMPING_Y_SCALE)});
 
   return DampingFuncPtr{std::make_unique<PiecewiseDampingFunction>(pieces)};
 }

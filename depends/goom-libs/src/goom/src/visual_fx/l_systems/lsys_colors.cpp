@@ -19,16 +19,6 @@ LSysColors::LSysColors(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRan
 {
 }
 
-auto LSysColors::SetWeightedColorMaps(
-    const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
-{
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-  m_mainColorMaps = weightedColorMaps.mainColorMaps;
-
-  Expects(weightedColorMaps.lowColorMaps != nullptr);
-  m_lowColorMaps = weightedColorMaps.lowColorMaps;
-}
-
 auto LSysColors::GetSimpleColorsList(const uint32_t numColors) noexcept
     -> std::vector<ColorShadesAndTints>
 {

@@ -1,5 +1,6 @@
 #include "date_utils.h"
 
+#include <array>
 #include <chrono>
 #include <ctime>
 #include <string>
@@ -10,20 +11,19 @@ namespace GOOM::UTILS
 inline auto GetTimeTAsString(const std::time_t timeT) noexcept -> std::string
 {
   static constexpr auto BUFF_SIZE = 100U;
-  struct tm buff
-  {
-  };
+  auto buff                       = tm{};
 #ifdef _MSC_VER
   ::localtime_s(&buff, &timeT);
-  if (char str[BUFF_SIZE]; std::strftime(str, sizeof(str), "%Y-%m-%d_%H-%M-%S", &buff))
+  if (auto str = std::array<char, BUFF_SIZE>{};
+      std::strftime(str.data(), BUFF_SIZE, "%Y-%m-%d_%H-%M-%S", &buff))
   {
-    return std::string{str};
+    return std::string{str.data()};
   }
 #else
-  if (char str[BUFF_SIZE];
-      std::strftime(str, sizeof(str), "%Y-%m-%d_%H-%M-%S", ::localtime_r(&timeT, &buff)))
+  if (auto str = std::array<char, BUFF_SIZE>{};
+      std::strftime(str.data(), BUFF_SIZE, "%Y-%m-%d_%H-%M-%S", ::localtime_r(&timeT, &buff)))
   {
-    return std::string{str};
+    return std::string{str.data()};
   }
 #endif
 
@@ -45,7 +45,7 @@ auto GetStandardDateTimeString(const std::string& otherFormatDateTime,
 {
   auto timeTm = tm{};
   ::strptime(otherFormatDateTime.c_str(), otherFormat.c_str(), &timeTm);
-  timeTm.tm_isdst    = -1; // check for daylight savings
+  timeTm.tm_isdst = -1; // check for daylight savings
   const auto timeT = ::mktime(&timeTm);
   return GetTimeTAsString(timeT);
 }
@@ -66,7 +66,7 @@ auto GetCurrentDateTimeAsString() noexcept -> std::string
 auto GetSteadyClockAsString(const std::chrono::steady_clock::time_point& timePoint) noexcept
     -> std::string
 {
-  const std::time_t timeT = GetSteadyClockAsTimeT(timePoint);
+  const auto timeT = GetSteadyClockAsTimeT(timePoint);
   return GetTimeTAsString(timeT);
 }
 

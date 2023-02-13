@@ -2,7 +2,6 @@
 
 #include "shapes_fx.h"
 
-#include "color/random_color_maps.h"
 #include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
@@ -17,13 +16,14 @@
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
+#include <algorithm>
 #include <array>
-#include <memory>
+#include <string>
+#include <vector>
 
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
 using SHAPES::Shape;
@@ -48,7 +48,6 @@ public:
   auto ApplyMultiple() noexcept -> void;
 
 private:
-  IGoomDraw* m_draw;
   const PluginInfo* m_goomInfo;
   const IGoomRand* m_goomRand;
   RandomColorMapsManager m_colorMapsManager{};
@@ -65,8 +64,8 @@ private:
   static_assert(0 < MIN_NUM_SHAPE_PATH_STEPS);
   static_assert(MIN_NUM_SHAPE_PATH_STEPS < MAX_NUM_SHAPE_PATH_STEPS);
 
-  [[nodiscard]] auto GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>;
-  std::array<Shape, NUM_SHAPES> m_shapes{GetShapes()};
+  [[nodiscard]] auto GetShapes(IGoomDraw& draw) noexcept -> std::array<Shape, NUM_SHAPES>;
+  std::array<Shape, NUM_SHAPES> m_shapes;
   [[nodiscard]] auto GetShapeZoomMidpoints(const Point2dInt& zoomMidpoint) const noexcept
       -> std::array<Point2dInt, NUM_SHAPES>;
   [[nodiscard]] auto GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept
@@ -134,14 +133,14 @@ auto ShapesFx::ApplyMultiple() noexcept -> void
 }
 
 ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
-  : m_draw{&fxHelper.GetDraw()},
-    m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()}
+  : m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()},
+    m_shapes{GetShapes(fxHelper.GetDraw())}
 {
   UpdateShapePathMinMaxNumSteps();
 }
 
-auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>
+auto ShapesFx::ShapesFxImpl::GetShapes(IGoomDraw& draw) noexcept -> std::array<Shape, NUM_SHAPES>
 {
   const auto initialShapeZoomMidpoints = GetShapeZoomMidpoints(m_screenMidPoint);
 
@@ -151,7 +150,7 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
 
   return {
       {
-       Shape{*m_draw,
+       Shape{draw,
        *m_goomRand,
        *m_goomInfo,
        m_colorMapsManager,

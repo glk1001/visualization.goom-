@@ -66,14 +66,17 @@ public:
   auto SetFixedShapeNumSteps() noexcept -> void;
 
 private:
-  DRAW::IGoomDraw* m_draw;
   const UTILS::MATH::IGoomRand* m_goomRand;
-  const PluginInfo* m_goomInfo;
   COLOR::RandomColorMapsManager* m_colorMapsManager;
 
   static constexpr uint32_t NUM_SHAPE_PARTS = 10;
   std::vector<ShapePart> m_shapeParts;
-  [[nodiscard]] auto GetInitialShapeParts(const Params& params) noexcept -> std::vector<ShapePart>;
+  [[nodiscard]] static auto GetInitialShapeParts(DRAW::IGoomDraw& draw,
+                                                 const UTILS::MATH::IGoomRand& goomRand,
+                                                 const PluginInfo& goomInfo,
+                                                 COLOR::RandomColorMapsManager& colorMapsManager,
+                                                 const Params& params) noexcept
+      -> std::vector<ShapePart>;
   [[nodiscard]] auto GetFirstShapePathPositionT() const noexcept -> float;
 
   bool m_varyDotRadius = false;

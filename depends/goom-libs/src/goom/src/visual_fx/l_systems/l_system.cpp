@@ -97,10 +97,9 @@ LSystem::LSystem(DRAW::IGoomDraw& draw,
                  const IGoomRand& goomRand,
                  const std::string& lSystemDirectory,
                  const LSystemFile& lSystemFile) noexcept
-  : m_goomInfo{&goomInfo},
-    m_goomRand{&goomRand},
+  : m_goomRand{&goomRand},
     m_lineDrawerManager{draw, goomRand},
-    m_lSysModelSet{GetLSysModelSet(lSystemDirectory, lSystemFile)},
+    m_lSysModelSet{GetLSysModelSet(goomInfo, lSystemDirectory, lSystemFile)},
     m_lSysGeometry{goomRand,
                    m_lSysModelSet.lSystemXScale * lSystemFile.overrides.xScale,
                    m_lSysModelSet.lSystemYScale * lSystemFile.overrides.yScale},
@@ -175,8 +174,9 @@ inline auto LSystem::IncrementTs() noexcept -> void
   m_brightnessOnOffTimer.Increment();
 }
 
-auto LSystem::GetLSysModelSet(const std::string& lSysDirectory,
-                              const LSystemFile& lSystemFile) const -> LSysModelSet
+auto LSystem::GetLSysModelSet(const PluginInfo& goomInfo,
+                              const std::string& lSysDirectory,
+                              const LSystemFile& lSystemFile) -> LSysModelSet
 {
   auto lSysModelSet = LSysModelSet{};
 
@@ -193,11 +193,11 @@ auto LSystem::GetLSysModelSet(const std::string& lSysDirectory,
   //        boundingBox2d.max.x,
   //        boundingBox2d.max.y);
 
-  lSysModelSet.lSystemXScale = static_cast<float>(m_goomInfo->GetScreenWidth()) /
-                               (boundingBox2d.max.x - boundingBox2d.min.x);
+  lSysModelSet.lSystemXScale =
+      static_cast<float>(goomInfo.GetScreenWidth()) / (boundingBox2d.max.x - boundingBox2d.min.x);
   //TODO(glk) How to handle scale issues
-  lSysModelSet.lSystemYScale = static_cast<float>(m_goomInfo->GetScreenHeight()) /
-                               (boundingBox2d.max.y - boundingBox2d.min.y);
+  lSysModelSet.lSystemYScale =
+      static_cast<float>(goomInfo.GetScreenHeight()) / (boundingBox2d.max.y - boundingBox2d.min.y);
 
   lSysModelSet.lSysModel = GetParsedModel(lSysModelSet.lSysProperties);
   lSysModelSet.lSysProperties =

@@ -9,12 +9,10 @@
 #include "l_systems/l_system.h"
 #include "point2d.h"
 #include "spimpl.h"
-#include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/timer.h"
 
-#include <cstdint>
 #include <lsys/rand.h>
 #include <memory>
 #include <string>
@@ -26,7 +24,6 @@ namespace GOOM::VISUAL_FX
 using DRAW::IGoomDraw;
 using L_SYSTEM::LSystem;
 using UTILS::Timer;
-using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 
@@ -48,10 +45,8 @@ public:
   auto ApplyMultiple() -> void;
 
 private:
-  IGoomDraw* m_draw;
   const PluginInfo* m_goomInfo;
   const IGoomRand* m_goomRand;
-  std::string m_resourcesDirectory;
   Point2dInt m_screenMidpoint{UTILS::MATH::U_HALF * m_goomInfo->GetScreenWidth(),
                               UTILS::MATH::U_HALF * m_goomInfo->GetScreenHeight()};
 
@@ -63,10 +58,15 @@ private:
 
   [[nodiscard]] static auto GetLSystemFileList() noexcept -> std::vector<LSystem::LSystemFile>;
   static inline const std::vector<LSystem::LSystemFile> L_SYS_FILE_LIST = GetLSystemFileList();
-  std::vector<std::unique_ptr<LSystem>> m_lSystems                      = GetLSystems();
-  [[nodiscard]] auto GetLSystems() const noexcept -> std::vector<std::unique_ptr<LSystem>>;
+  std::vector<std::unique_ptr<LSystem>> m_lSystems;
+  [[nodiscard]] static auto GetLSystems(IGoomDraw& draw,
+                                        const PluginInfo& goomInfo,
+                                        const IGoomRand& goomRand,
+                                        const std::string& resourcesDirectory) noexcept
+      -> std::vector<std::unique_ptr<LSystem>>;
   static constexpr auto DEFAULT_BOUNDS_EXPAND_FACTOR = 2.0F;
-  [[nodiscard]] auto GetLSystemDirectory() const noexcept -> std::string;
+  [[nodiscard]] static auto GetLSystemDirectory(const std::string& resourcesDirectory) noexcept
+      -> std::string;
 
   std::vector<LSystem*> m_activeLSystems{m_lSystems.at(0).get()};
   static constexpr auto MIN_TIME_TO_KEEP_ACTIVE_LSYS = 200U;
@@ -92,9 +92,10 @@ auto LSystemFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::st
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto LSystemFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
+auto LSystemFx::SetWeightedColorMaps(
+    [[maybe_unused]] const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
+  // Nothing to do
 }
 
 auto LSystemFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -134,10 +135,9 @@ auto LSystemFx::ApplyMultiple() noexcept -> void
 
 LSystemFx::LSystemFxImpl::LSystemFxImpl(const FxHelper& fxHelper,
                                         const std::string& resourcesDirectory)
-  : m_draw{&fxHelper.GetDraw()},
-    m_goomInfo{&fxHelper.GetGoomInfo()},
+  : m_goomInfo{&fxHelper.GetGoomInfo()},
     m_goomRand{&fxHelper.GetGoomRand()},
-    m_resourcesDirectory{resourcesDirectory}
+    m_lSystems{GetLSystems(fxHelper.GetDraw(), *m_goomInfo, *m_goomRand, resourcesDirectory)}
 {
 }
 
@@ -257,14 +257,18 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
   return lSysFileList;
 }
 
-auto LSystemFx::LSystemFxImpl::GetLSystems() const noexcept -> std::vector<std::unique_ptr<LSystem>>
+auto LSystemFx::LSystemFxImpl::GetLSystems(IGoomDraw& draw,
+                                           const PluginInfo& goomInfo,
+                                           const IGoomRand& goomRand,
+                                           const std::string& resourcesDirectory) noexcept
+    -> std::vector<std::unique_ptr<LSystem>>
 {
   auto lSystem = std::vector<std::unique_ptr<LSystem>>{};
 
   for (const auto& lSysFile : L_SYS_FILE_LIST)
   {
     lSystem.emplace_back(std::make_unique<LSystem>(
-        *m_draw, *m_goomInfo, *m_goomRand, GetLSystemDirectory(), lSysFile));
+        draw, goomInfo, goomRand, GetLSystemDirectory(resourcesDirectory), lSysFile));
   }
 
   return lSystem;
@@ -311,17 +315,6 @@ inline auto LSystemFx::LSystemFxImpl::GetCurrentColorMapsNames() noexcept
     -> std::vector<std::string>
 {
   return {};
-}
-
-inline auto LSystemFx::LSystemFxImpl::SetWeightedColorMaps(
-    const WeightedColorMaps& weightedColorMaps) noexcept -> void
-{
-  std::for_each(begin(m_activeLSystems),
-                end(m_activeLSystems),
-                [&weightedColorMaps](auto* lSystem)
-                { lSystem->SetWeightedColorMaps(weightedColorMaps); });
-
-  //ChangeColors();
 }
 
 inline auto LSystemFx::LSystemFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept
@@ -375,9 +368,10 @@ inline auto LSystemFx::LSystemFxImpl::DrawLSystem() noexcept -> void
                 [](auto* lSystem) { lSystem->DrawLSystem(); });
 }
 
-inline auto LSystemFx::LSystemFxImpl::GetLSystemDirectory() const noexcept -> std::string
+inline auto LSystemFx::LSystemFxImpl::GetLSystemDirectory(
+    const std::string& resourcesDirectory) noexcept -> std::string
 {
-  return m_resourcesDirectory + "/l-systems";
+  return resourcesDirectory + "/l-systems";
 }
 
 } // namespace GOOM::VISUAL_FX

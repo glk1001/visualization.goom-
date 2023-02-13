@@ -49,7 +49,6 @@ public:
   auto Update() -> void;
 
 private:
-  IGoomDraw* m_draw;
   const PluginInfo* m_goomInfo;
   const IGoomRand* m_goomRand;
 
@@ -63,9 +62,12 @@ private:
   };
   static constexpr size_t NUM_TENTACLE_DRIVERS = NUM<Drivers>;
   Weights<Drivers> m_driverWeights;
-  std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS> m_tentacleLayouts;
-  std::vector<TentacleDriver> m_tentacleDrivers{GetTentacleDrivers()};
-  [[nodiscard]] auto GetTentacleDrivers() const -> std::vector<TentacleDriver>;
+  std::vector<TentacleDriver> m_tentacleDrivers;
+  [[nodiscard]] static auto GetTentacleDrivers(
+      IGoomDraw& draw,
+      const IGoomRand& goomRand,
+      const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts)
+      -> std::vector<TentacleDriver>;
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
@@ -155,8 +157,7 @@ static constexpr auto DRIVERS_NUM2_WEIGHT = 10.0F;
 static constexpr auto DRIVERS_NUM3_WEIGHT = 05.0F;
 
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
-  : m_draw{&fxHelper.GetDraw()},
-    m_goomInfo{&fxHelper.GetGoomInfo()},
+  : m_goomInfo{&fxHelper.GetGoomInfo()},
     m_goomRand{&fxHelper.GetGoomRand()},
     m_driverWeights{
       *m_goomRand,
@@ -166,12 +167,18 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
           {Drivers::NUM2, DRIVERS_NUM2_WEIGHT},
           {Drivers::NUM3, DRIVERS_NUM3_WEIGHT},
       }},
-    m_tentacleLayouts{{
-        {LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_TENTACLES},
-        {LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_TENTACLES},
-        {LAYOUT2_START_RADIUS, LAYOUT2_END_RADIUS, LAYOUT2_NUM_TENTACLES},
-        {LAYOUT3_START_RADIUS, LAYOUT3_END_RADIUS, LAYOUT3_NUM_TENTACLES},
-    }}
+    // clang-format off
+    m_tentacleDrivers{GetTentacleDrivers(
+        fxHelper.GetDraw(),
+        *m_goomRand,
+        {{
+            {LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_TENTACLES},
+            {LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_TENTACLES},
+            {LAYOUT2_START_RADIUS, LAYOUT2_END_RADIUS, LAYOUT2_NUM_TENTACLES},
+            {LAYOUT3_START_RADIUS, LAYOUT3_END_RADIUS, LAYOUT3_NUM_TENTACLES},
+        }}
+    )}
+// clang-format off
 {
   Expects(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());
   Ensures(m_currentTentacleDriver != nullptr);
@@ -196,12 +203,16 @@ inline auto TentaclesFx::TentaclesImpl::Resume() -> void
   RefreshTentacles();
 }
 
-auto TentaclesFx::TentaclesImpl::GetTentacleDrivers() const -> std::vector<TentacleDriver>
+auto TentaclesFx::TentaclesImpl::GetTentacleDrivers(
+    IGoomDraw& draw,
+    const IGoomRand& goomRand,
+    const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts)
+    -> std::vector<TentacleDriver>
 {
   auto tentacleDrivers = std::vector<TentacleDriver>{};
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    tentacleDrivers.emplace_back(*m_draw, *m_goomRand, m_tentacleLayouts.at(i));
+    tentacleDrivers.emplace_back(draw, goomRand, tentacleLayouts.at(i));
   }
 
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)

@@ -36,7 +36,6 @@ class LSysColors
 public:
   explicit LSysColors(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  auto SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto SetNumColors(uint32_t numColors) noexcept -> void;
   auto SetMaxNumColorSteps(uint32_t numSteps) noexcept -> void;
   auto SetProbabilityOfSimpleColors(float probability) noexcept -> void;
@@ -60,9 +59,6 @@ private:
   float m_globalBrightness = 1.0F;
   uint8_t m_lineWidth      = 1U;
 
-  // TODO(glk) Mix these color maps with the LSys ones.
-  std::shared_ptr<const COLOR::RandomColorMaps> m_mainColorMaps{};
-  std::shared_ptr<const COLOR::RandomColorMaps> m_lowColorMaps{};
   static constexpr auto NUM_MAIN_COLORS = 5U;
   static constexpr float MIN_SATURATION = 0.5F;
   static constexpr float MAX_SATURATION = 1.0F;

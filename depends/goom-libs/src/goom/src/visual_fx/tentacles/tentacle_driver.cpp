@@ -92,15 +92,19 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
                                const IGoomRand& goomRand,
                                const CirclesTentacleLayout& tentacleLayout) noexcept
-  : m_draw{&draw},
-    m_goomRand{&goomRand},
+  : m_goomRand{&goomRand},
+    m_screenMidpoint{
+        MidpointFromOrigin({draw.GetDimensions().GetWidth(), draw.GetDimensions().GetHeight()})},
     m_tentacleParams{
         NUM_TENTACLE_NODES, TENTACLE_LENGTH, MIN_SINE_FREQUENCY, ITER_ZERO_Y_VAL_WAVE_ZERO_START},
-    m_tentacles{GetTentacles(tentacleLayout)}
+    m_tentaclePlotter{draw, *m_goomRand},
+    m_tentacles{GetTentacles(*m_goomRand, tentacleLayout, m_tentacleParams)}
 {
 }
 
-auto TentacleDriver::GetTentacles(const CirclesTentacleLayout& tentacleLayout) const noexcept
+auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
+                                  const CirclesTentacleLayout& tentacleLayout,
+                                  const IterationParams& tentacleParams) noexcept
     -> std::vector<TentacleAndAttributes>
 {
   const auto numTentacles = tentacleLayout.GetNumTentacles();
@@ -110,7 +114,7 @@ auto TentacleDriver::GetTentacles(const CirclesTentacleLayout& tentacleLayout) c
 
   for (auto i = 0U; i < numTentacles; ++i)
   {
-    auto tentacle2D = CreateNewTentacle2D();
+    auto tentacle2D = CreateNewTentacle2D(goomRand, tentacleParams);
     tentacle2D->SetIterZeroLerpFactor(ITER_ZERO_LERP_FACTOR);
 
     auto tentacle = Tentacle3D{std::move(tentacle2D)};
@@ -125,9 +129,11 @@ auto TentacleDriver::GetTentacles(const CirclesTentacleLayout& tentacleLayout) c
   return tentacles;
 }
 
-auto TentacleDriver::CreateNewTentacle2D() const noexcept -> std::unique_ptr<Tentacle2D>
+auto TentacleDriver::CreateNewTentacle2D(const IGoomRand& goomRand,
+                                         const IterationParams& tentacleParams) noexcept
+    -> std::unique_ptr<Tentacle2D>
 {
-  const auto tentacleLen = m_tentacleParams.length;
+  const auto tentacleLen = tentacleParams.length;
   Ensures(tentacleLen >= 1.0F);
   const auto tent2dXMax = TENTACLE_2D_X_MIN + static_cast<double>(tentacleLen);
   Ensures(tent2dXMax >= 1.0);
@@ -137,12 +143,12 @@ auto TentacleDriver::CreateNewTentacle2D() const noexcept -> std::unique_ptr<Ten
       {TENTACLE_2D_Y_MIN, TENTACLE_2D_Y_MAX},
   };
 
-  auto baseYWeights = GetMatchingBaseYWeights(m_tentacleParams.iterZeroYValWaveFreq);
+  auto baseYWeights = GetMatchingBaseYWeights(tentacleParams.iterZeroYValWaveFreq);
   baseYWeights.previous *=
-      m_goomRand->GetRandInRange(MIN_BASE_Y_WEIGHT_FACTOR, MAX_BASE_Y_WEIGHT_FACTOR);
+      goomRand.GetRandInRange(MIN_BASE_Y_WEIGHT_FACTOR, MAX_BASE_Y_WEIGHT_FACTOR);
   baseYWeights.current = 1.0F - baseYWeights.previous;
 
-  return std::make_unique<Tentacle2D>(m_tentacleParams.numNodes, dimensions, baseYWeights);
+  return std::make_unique<Tentacle2D>(tentacleParams.numNodes, dimensions, baseYWeights);
 }
 
 auto TentacleDriver::SetWeightedColorMaps(

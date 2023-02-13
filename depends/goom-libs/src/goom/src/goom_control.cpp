@@ -131,7 +131,6 @@ private:
   SoundInfo m_soundInfo{};
   GoomSoundEvents m_goomSoundEvents{m_soundInfo};
   PluginInfo m_goomInfo;
-  std::string m_resourcesDirectory;
   GoomControlLogger* m_goomLogger;
   GoomRand m_goomRand{};
   GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetScreenDimensions(), *m_goomLogger};
@@ -141,29 +140,15 @@ private:
   uint32_t m_updateNum = 0;
   GoomImageBuffers m_imageBuffers{m_goomInfo.GetScreenDimensions()};
 
-  FilterSettingsService m_filterSettingsService{
-      m_goomInfo, m_goomRand, m_resourcesDirectory, CreateZoomInCoefficientsEffect};
+  FilterSettingsService m_filterSettingsService;
 
-  SmallImageBitmaps m_smallBitmaps{m_resourcesDirectory};
+  SmallImageBitmaps m_smallBitmaps;
   GoomRandomStateHandler m_stateHandler{m_goomRand};
   NormalizedCoordsConverter m_normalizedCoordsConverter{
       {m_goomInfo.GetScreenWidth(), m_goomInfo.GetScreenHeight()},
       FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL
   };
-  GoomAllVisualFx m_visualFx{m_parallel,
-                             m_fxHelper,
-                             m_smallBitmaps,
-                             m_resourcesDirectory,
-                             m_stateHandler,
-                             std::make_unique<FilterBuffersService>(
-                                 m_parallel,
-                                 m_goomInfo,
-                                 m_normalizedCoordsConverter,
-                                 std::make_unique<FilterZoomVector>(m_goomInfo.GetScreenWidth(),
-                                                                    m_resourcesDirectory,
-                                                                    m_goomRand,
-                                                                    m_normalizedCoordsConverter)),
-                             std::make_unique<FilterColorsService>(m_goomRand)};
+  GoomAllVisualFx m_visualFx;
 
   GoomMusicSettingsReactor m_musicSettingsReactor{
       m_goomInfo, m_goomRand, m_visualFx, m_filterSettingsService};
@@ -209,10 +194,11 @@ private:
   SongInfo m_songInfo{};
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
   GoomDrawToSingleBuffer m_goomTextOutput{m_goomInfo.GetScreenDimensions(), *m_goomLogger};
-  GoomTitleDisplayer m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory()};
-  GoomMessageDisplayer m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile()};
-  [[nodiscard]] auto GetMessagesFontFile() const -> std::string;
-  [[nodiscard]] auto GetFontDirectory() const -> std::string;
+  GoomTitleDisplayer m_goomTitleDisplayer;
+  GoomMessageDisplayer m_messageDisplayer;
+  [[nodiscard]] static auto GetMessagesFontFile(const std::string& resourcesDirectory)
+      -> std::string;
+  [[nodiscard]] static auto GetFontDirectory(const std::string& resourcesDirectory) -> std::string;
   auto InitTitleDisplay() -> void;
   auto DisplayTitleAndMessages(const std::string& message) -> void;
   auto DisplayCurrentTitle() -> void;
@@ -314,9 +300,27 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
                                               const std::string& resourcesDirectory,
                                               GoomLogger& goomLogger)
   : m_goomInfo{dimensions, m_goomSoundEvents},
-    m_resourcesDirectory{resourcesDirectory},
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
-    m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand, *m_goomLogger}
+    m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand, *m_goomLogger},
+    m_filterSettingsService{
+        m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomInCoefficientsEffect},
+    m_smallBitmaps{resourcesDirectory},
+    m_visualFx{m_parallel,
+               m_fxHelper,
+               m_smallBitmaps,
+               resourcesDirectory,
+               m_stateHandler,
+               std::make_unique<FilterBuffersService>(
+                   m_parallel,
+                   m_goomInfo,
+                   m_normalizedCoordsConverter,
+                   std::make_unique<FilterZoomVector>(m_goomInfo.GetScreenWidth(),
+                                                      resourcesDirectory,
+                                                      m_goomRand,
+                                                      m_normalizedCoordsConverter)),
+               std::make_unique<FilterColorsService>(m_goomRand)},
+    m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory(resourcesDirectory)},
+    m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
   RotateBuffers();
 }
@@ -452,14 +456,16 @@ inline auto GoomControl::GoomControlImpl::FinishGoomStateDump() -> void
 }
 #endif
 
-inline auto GoomControl::GoomControlImpl::GetFontDirectory() const -> std::string
+inline auto GoomControl::GoomControlImpl::GetFontDirectory(const std::string& resourcesDirectory)
+    -> std::string
 {
-  return m_resourcesDirectory + PATH_SEP + FONTS_DIR;
+  return resourcesDirectory + PATH_SEP + FONTS_DIR;
 }
 
-inline auto GoomControl::GoomControlImpl::GetMessagesFontFile() const -> std::string
+inline auto GoomControl::GoomControlImpl::GetMessagesFontFile(const std::string& resourcesDirectory)
+    -> std::string
 {
-  return GetFontDirectory() + PATH_SEP + "verdana.ttf";
+  return GetFontDirectory(resourcesDirectory) + PATH_SEP + "verdana.ttf";
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateGoomBuffer(const AudioSamples& soundData,

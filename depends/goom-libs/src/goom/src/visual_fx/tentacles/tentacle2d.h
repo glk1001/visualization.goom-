@@ -39,7 +39,6 @@ public:
   auto StartIterating() -> void;
   auto Iterate() -> void;
 
-  auto SetXDimensions(const LinearDimensions& xDimensions) -> void;
   auto SetIterZeroYVal(double value) -> void;
   auto SetIterZeroLerpFactor(double value) -> void;
   auto SetBaseYWeights(const BaseYWeights& value) -> void;
@@ -59,8 +58,7 @@ private:
   double m_basePreviousYWeight;
   double m_baseCurrentYWeight;
 
-  uint32_t m_iterNum      = 0U;
-  bool m_startedIterating = false;
+  uint32_t m_iterNum = 0U;
 
   static constexpr double DEFAULT_ITER_ZERO_Y_VAL       = 0.9;
   double m_iterZeroYVal                                 = DEFAULT_ITER_ZERO_Y_VAL;
@@ -88,9 +86,13 @@ private:
   [[nodiscard]] auto GetDampedValue(size_t nodeNum, double value) const -> double;
 
   using DampingFuncPtr = std::unique_ptr<UTILS::MATH::IDampingFunction>;
-  [[nodiscard]] auto CreateDampingFunc() const noexcept -> DampingFuncPtr;
-  [[nodiscard]] auto CreateExpDampingFunc() const noexcept -> DampingFuncPtr;
-  [[nodiscard]] auto CreateLinearDampingFunc() const noexcept -> DampingFuncPtr;
+  [[nodiscard]] static auto CreateDampingFunc(double basePreviousYWeight,
+                                              const LinearDimensions& xDimensions) noexcept
+      -> DampingFuncPtr;
+  [[nodiscard]] static auto CreateExpDampingFunc(const LinearDimensions& xDimensions) noexcept
+      -> DampingFuncPtr;
+  [[nodiscard]] static auto CreateLinearDampingFunc(const LinearDimensions& xDimensions) noexcept
+      -> DampingFuncPtr;
 };
 
 inline auto Tentacle2D::SetIterZeroYVal(const double value) -> void
