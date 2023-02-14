@@ -129,7 +129,7 @@ inline auto TentaclePlotter::GetLines3D(const std::vector<V3dFlt>& points3D)
 inline auto TentaclePlotter::GetLine2D(const Point2dFlt& point1Flt,
                                        const Point2dFlt& point2Flt) noexcept -> Line2DInt
 {
-  auto line2D = Line2DInt{point1Flt.ToInt(), point2Flt.ToInt()};
+  auto line2D = Line2DInt{ToPoint2dInt(point1Flt), ToPoint2dInt(point2Flt)};
 
   if (line2D.point1 == line2D.point2)
   {

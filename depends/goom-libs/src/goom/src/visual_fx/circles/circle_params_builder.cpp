@@ -211,8 +211,8 @@ inline auto CircleParamsBuilder::GetSimilarCircleCentreTargets(
   for (auto& circleCentre : circleCentreTargets)
   {
     circleCentre =
-        target + Vec2dInt{m_fxHelper->GetGoomRand().GetRandInRange(MIN_OFFSET, maxOffset),
-                          m_fxHelper->GetGoomRand().GetRandInRange(MIN_OFFSET, maxOffset)};
+        target + GetVec2dInt(m_fxHelper->GetGoomRand().GetRandInRange(MIN_OFFSET, maxOffset),
+                             m_fxHelper->GetGoomRand().GetRandInRange(MIN_OFFSET, maxOffset));
   }
 
   return circleCentreTargets;

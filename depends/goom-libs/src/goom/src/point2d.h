@@ -14,14 +14,15 @@ struct Vec2dFlt;
 
 struct Point2dInt
 {
-  int32_t x                       = 0;
-  int32_t y                       = 0;
-  constexpr Point2dInt() noexcept = default;
-  constexpr Point2dInt(int32_t xx, int32_t yy) noexcept;
-  constexpr Point2dInt(uint32_t xx, uint32_t yy) noexcept;
-  [[nodiscard]] constexpr auto ToFlt() const noexcept -> Point2dFlt;
-  constexpr auto Translate(const Vec2dInt& vec) noexcept -> void;
+  int32_t x = 0;
+  int32_t y = 0;
 };
+
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
+[[nodiscard]] constexpr auto GetPoint2dInt(int32_t x, int32_t y) noexcept -> Point2dInt = delete;
+[[nodiscard]] constexpr auto GetPoint2dInt(uint32_t x, uint32_t y) noexcept -> Point2dInt;
+// NOLINTEND(bugprone-easily-swappable-parameters)
+[[nodiscard]] constexpr auto ToPoint2dFlt(const Point2dInt& point) noexcept -> Point2dFlt;
 
 [[nodiscard]] constexpr auto operator==(const Point2dInt& point1, const Point2dInt& point2) noexcept
     -> bool;
@@ -35,6 +36,9 @@ struct Point2dInt
     -> Point2dInt;
 [[nodiscard]] constexpr auto operator-(const Point2dInt& point, int32_t scalar) noexcept
     -> Point2dInt;
+
+[[nodiscard]] constexpr auto Translate(const Point2dInt& point, const Vec2dInt& vec) noexcept
+    -> Point2dInt;
 [[nodiscard]] auto lerp(const Point2dInt& point1, const Point2dInt& point2, float t) noexcept
     -> Point2dInt;
 [[nodiscard]] constexpr auto midpoint(const Point2dInt& point1, const Point2dInt& point2) noexcept
@@ -46,15 +50,17 @@ struct Point2dInt
 
 struct Vec2dInt
 {
-  int32_t x                     = 0;
-  int32_t y                     = 0;
-  constexpr Vec2dInt() noexcept = default;
-  constexpr Vec2dInt(int32_t xx, int32_t yy) noexcept;
-  constexpr Vec2dInt(uint32_t xx, uint32_t yy) noexcept;
-  constexpr explicit Vec2dInt(const Point2dInt& point) noexcept;
-  [[nodiscard]] constexpr auto ToFlt() const noexcept -> Vec2dFlt;
-  constexpr auto operator+=(const Vec2dInt& vec) noexcept -> Vec2dInt&;
+  int32_t x = 0;
+  int32_t y = 0;
 };
+
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
+[[nodiscard]] constexpr auto GetVec2dInt(int32_t x, int32_t y) noexcept -> Vec2dInt = delete;
+[[nodiscard]] constexpr auto GetVec2dInt(uint32_t x, uint32_t y) noexcept -> Vec2dInt;
+// NOLINTEND(bugprone-easily-swappable-parameters)
+[[nodiscard]] constexpr auto GetVec2dInt(const Point2dInt& point) noexcept -> Vec2dInt;
+[[nodiscard]] constexpr auto ToVec2dFlt(const Vec2dInt& vec2DInt) noexcept -> Vec2dFlt;
+
 [[nodiscard]] constexpr auto operator==(const Vec2dInt& vec1, const Vec2dInt& vec2) noexcept
     -> bool;
 [[nodiscard]] constexpr auto operator+(const Vec2dInt& vec1, const Vec2dInt& vec2) noexcept
@@ -66,20 +72,11 @@ struct Vec2dInt
 
 struct Point2dFlt
 {
-  float x                         = 0.0F;
-  float y                         = 0.0F;
-  constexpr Point2dFlt() noexcept = default;
-  constexpr Point2dFlt(float xx, float yy) noexcept;
-  [[nodiscard]] auto ToInt() const noexcept -> Point2dInt;
-  constexpr auto Translate(const Vec2dFlt& vec) noexcept -> void;
-  constexpr auto Translate(float scalar) noexcept -> void;
-  constexpr auto TranslateX(float xAmount) noexcept -> void;
-  constexpr auto TranslateY(float yAmount) noexcept -> void;
-  constexpr auto Scale(float scalar) noexcept -> void;
-  constexpr auto Scale(float xScalar, float yScalar) noexcept -> void;
-  auto Rotate(float angle) noexcept -> void;
-  constexpr auto Rotate(float sinAngle, float cosAngle) noexcept -> void;
+  float x = 0.0F;
+  float y = 0.0F;
 };
+
+[[nodiscard]] auto ToPoint2dInt(const Point2dFlt& point) noexcept -> Point2dInt;
 
 [[nodiscard]] constexpr auto operator+(const Point2dFlt& point, const Vec2dFlt& vec) noexcept
     -> Point2dFlt;
@@ -91,6 +88,22 @@ struct Point2dFlt
     -> Point2dFlt;
 [[nodiscard]] constexpr auto operator-(float scalar, const Point2dFlt& point) noexcept
     -> Point2dFlt;
+
+[[nodiscard]] constexpr auto Translate(const Point2dFlt& point, const Vec2dFlt& vec) noexcept
+    -> Point2dFlt;
+[[nodiscard]] constexpr auto Translate(const Point2dFlt& point, float scalar) noexcept
+    -> Point2dFlt;
+[[nodiscard]] constexpr auto TranslateX(const Point2dFlt& point, float xAmount) noexcept
+    -> Point2dFlt;
+[[nodiscard]] constexpr auto TranslateY(const Point2dFlt& point, float yAmount) noexcept
+    -> Point2dFlt;
+[[nodiscard]] constexpr auto Scale(const Point2dFlt& point, float scalar) noexcept -> Point2dFlt;
+[[nodiscard]] constexpr auto Scale(const Point2dFlt& point, float xScalar, float yScalar) noexcept
+    -> Point2dFlt;
+[[nodiscard]] auto Rotate(const Point2dFlt& point, float angle) noexcept -> Point2dFlt;
+[[nodiscard]] constexpr auto Rotate(const Point2dFlt& point,
+                                    float sinAngle,
+                                    float cosAngle) noexcept -> Point2dFlt;
 [[nodiscard]] constexpr auto lerp(const Point2dFlt& point1,
                                   const Point2dFlt& point2,
                                   float t) noexcept -> Point2dFlt;
@@ -99,14 +112,13 @@ struct Point2dFlt
 
 struct Vec2dFlt
 {
-  float x                       = 0.0F;
-  float y                       = 0.0F;
-  constexpr Vec2dFlt() noexcept = default;
-  constexpr Vec2dFlt(float xx, float yy) noexcept;
-  constexpr explicit Vec2dFlt(const Point2dFlt& point) noexcept;
-  [[nodiscard]] auto ToInt() const noexcept -> Vec2dInt;
-  constexpr auto operator+=(const Vec2dFlt& vec) noexcept -> Vec2dFlt&;
+  float x = 0.0F;
+  float y = 0.0F;
 };
+
+[[nodiscard]] constexpr auto GetVec2dFlt(const Point2dFlt& point) noexcept -> Vec2dFlt;
+[[nodiscard]] auto ToVec2dInt(const Vec2dFlt& vec2DFlt) noexcept -> Vec2dInt;
+
 [[nodiscard]] constexpr auto operator+(const Vec2dFlt& vec1, const Vec2dFlt& vec2) noexcept
     -> Vec2dFlt;
 [[nodiscard]] constexpr auto operator-(const Vec2dFlt& vec1, const Vec2dFlt& vec2) noexcept
@@ -115,24 +127,14 @@ struct Vec2dFlt
 [[nodiscard]] constexpr auto operator-(const Vec2dFlt& vec, float scalar) noexcept -> Vec2dFlt;
 [[nodiscard]] constexpr auto operator*(float scale, const Vec2dFlt& vec) noexcept -> Vec2dFlt;
 
-constexpr Point2dInt::Point2dInt(const int32_t xx, const int32_t yy) noexcept : x{xx}, y{yy}
+constexpr auto GetPoint2dInt(const uint32_t x, const uint32_t y) noexcept -> Point2dInt
 {
+  return {static_cast<int32_t>(x), static_cast<int32_t>(y)};
 }
 
-constexpr Point2dInt::Point2dInt(const uint32_t xx, const uint32_t yy) noexcept
-  : x{static_cast<int32_t>(xx)}, y{static_cast<int32_t>(yy)}
+constexpr auto ToPoint2dFlt(const Point2dInt& point) noexcept -> Point2dFlt
 {
-}
-
-constexpr auto Point2dInt::ToFlt() const noexcept -> Point2dFlt
-{
-  return {static_cast<float>(x), static_cast<float>(y)};
-}
-
-constexpr auto Point2dInt::Translate(const Vec2dInt& vec) noexcept -> void
-{
-  x += vec.x;
-  y += vec.y;
+  return {static_cast<float>(point.x), static_cast<float>(point.y)};
 }
 
 constexpr auto operator==(const Point2dInt& point1, const Point2dInt& point2) noexcept -> bool
@@ -165,34 +167,29 @@ constexpr auto operator-(const Point2dInt& point, const int32_t scalar) noexcept
   return {point.x - scalar, point.y - scalar};
 }
 
-constexpr Vec2dInt::Vec2dInt(const int32_t xx, const int32_t yy) noexcept : x{xx}, y{yy}
+constexpr auto Translate(const Point2dInt& point, const Vec2dInt& vec) noexcept -> Point2dInt
 {
+  return {point.x + vec.x, point.y + vec.y};
 }
 
-constexpr Vec2dInt::Vec2dInt(const uint32_t xx, const uint32_t yy) noexcept
-  : x{static_cast<int32_t>(xx)}, y{static_cast<int32_t>(yy)}
+constexpr auto GetVec2dInt(const uint32_t x, const uint32_t y) noexcept -> Vec2dInt
 {
+  return {static_cast<int32_t>(x), static_cast<int32_t>(y)};
 }
 
-constexpr Vec2dInt::Vec2dInt(const Point2dInt& point) noexcept : x{point.x}, y{point.y}
+constexpr auto GetVec2dInt(const Point2dInt& point) noexcept -> Vec2dInt
 {
+  return {point.x, point.y};
 }
 
-constexpr auto Vec2dInt::ToFlt() const noexcept -> Vec2dFlt
+constexpr auto ToVec2dFlt(const Vec2dInt& vec2DInt) noexcept -> Vec2dFlt
 {
-  return {static_cast<float>(x), static_cast<float>(y)};
+  return {static_cast<float>(vec2DInt.x), static_cast<float>(vec2DInt.y)};
 }
 
 constexpr auto operator==(const Vec2dInt& vec1, const Vec2dInt& vec2) noexcept -> bool
 {
   return (vec1.x == vec2.x) && (vec1.y == vec2.y);
-}
-
-constexpr auto Vec2dInt::operator+=(const Vec2dInt& vec) noexcept -> Vec2dInt&
-{
-  x += vec.x;
-  y += vec.y;
-  return *this;
 }
 
 constexpr auto operator+(const Vec2dInt& vec1, const Vec2dInt& vec2) noexcept -> Vec2dInt
@@ -215,61 +212,9 @@ constexpr auto operator-(const Vec2dInt& vec1, const int32_t scalar) noexcept ->
   return {vec1.x - scalar, vec1.y - scalar};
 }
 
-constexpr Point2dFlt::Point2dFlt(const float xx, const float yy) noexcept : x{xx}, y{yy}
+inline auto ToPoint2dInt(const Point2dFlt& point) noexcept -> Point2dInt
 {
-}
-
-inline auto Point2dFlt::ToInt() const noexcept -> Point2dInt
-{
-  return {static_cast<int32_t>(std::round(x)), static_cast<int32_t>(std::round(y))};
-}
-
-constexpr auto Point2dFlt::Translate(const Vec2dFlt& vec) noexcept -> void
-{
-  x += vec.x;
-  y += vec.y;
-}
-
-constexpr auto Point2dFlt::Translate(const float scalar) noexcept -> void
-{
-  x += scalar;
-  y += scalar;
-}
-
-constexpr auto Point2dFlt::TranslateX(const float xAmount) noexcept -> void
-{
-  x += xAmount;
-}
-
-constexpr auto Point2dFlt::TranslateY(const float yAmount) noexcept -> void
-{
-  y += yAmount;
-}
-
-inline auto Point2dFlt::Rotate(const float angle) noexcept -> void
-{
-  const float sinAngle = std::sin(angle);
-  const float cosAngle = std::cos(angle);
-  Rotate(sinAngle, cosAngle);
-}
-
-constexpr auto Point2dFlt::Rotate(const float sinAngle, float const cosAngle) noexcept -> void
-{
-  const float xNext = (x * cosAngle) - (y * sinAngle);
-  y                 = (x * sinAngle) + (y * cosAngle);
-  x                 = xNext;
-}
-
-constexpr auto Point2dFlt::Scale(const float scalar) noexcept -> void
-{
-  x *= scalar;
-  y *= scalar;
-}
-
-constexpr auto Point2dFlt::Scale(const float xScalar, const float yScalar) noexcept -> void
-{
-  x *= xScalar;
-  y *= yScalar;
+  return {static_cast<int32_t>(std::round(point.x)), static_cast<int32_t>(std::round(point.y))};
 }
 
 constexpr auto operator+(const Point2dFlt& point, const Vec2dFlt& vec) noexcept -> Point2dFlt
@@ -292,7 +237,7 @@ constexpr auto operator-(const Point2dFlt& point, const float scalar) noexcept -
   return {point.x - scalar, point.y - scalar};
 }
 
-constexpr auto operator-(float scalar, const Point2dFlt& point) noexcept -> Point2dFlt
+constexpr auto operator-(const float scalar, const Point2dFlt& point) noexcept -> Point2dFlt
 {
   return {scalar - point.x, scalar - point.y};
 }
@@ -302,24 +247,59 @@ constexpr auto operator*(const float scalar, const Point2dFlt& point) noexcept -
   return {scalar * point.x, scalar * point.y};
 }
 
-constexpr Vec2dFlt::Vec2dFlt(const float xx, const float yy) noexcept : x{xx}, y{yy}
+constexpr auto Translate(const Point2dFlt& point, const Vec2dFlt& vec) noexcept -> Point2dFlt
 {
+  return {point.x + vec.x, point.y + vec.y};
 }
 
-constexpr Vec2dFlt::Vec2dFlt(const Point2dFlt& point) noexcept : x{point.x}, y{point.y}
+constexpr auto Translate(const Point2dFlt& point, const float scalar) noexcept -> Point2dFlt
 {
+  return {point.x + scalar, point.y + scalar};
 }
 
-inline auto Vec2dFlt::ToInt() const noexcept -> Vec2dInt
+constexpr auto TranslateX(const Point2dFlt& point, const float xAmount) noexcept -> Point2dFlt
 {
-  return {static_cast<int32_t>(std::round(x)), static_cast<int32_t>(std::round(y))};
+  return {point.x + xAmount, point.y};
 }
 
-constexpr auto Vec2dFlt::operator+=(const Vec2dFlt& vec) noexcept -> Vec2dFlt&
+constexpr auto TranslateY(const Point2dFlt& point, const float yAmount) noexcept -> Point2dFlt
 {
-  x += vec.x;
-  y += vec.y;
-  return *this;
+  return {point.x, point.y + yAmount};
+}
+
+inline auto Rotate(const Point2dFlt& point, const float angle) noexcept -> Point2dFlt
+{
+  const float sinAngle = std::sin(angle);
+  const float cosAngle = std::cos(angle);
+  return Rotate(point, sinAngle, cosAngle);
+}
+
+constexpr auto Rotate(const Point2dFlt& point, const float sinAngle, float const cosAngle) noexcept
+    -> Point2dFlt
+{
+  return {(point.x * cosAngle) - (point.y * sinAngle), (point.x * sinAngle) + (point.y * cosAngle)};
+}
+
+constexpr auto Scale(const Point2dFlt& point, const float scalar) noexcept -> Point2dFlt
+{
+  return {point.x * scalar, point.y * scalar};
+}
+
+constexpr auto Scale(const Point2dFlt& point, const float xScalar, const float yScalar) noexcept
+    -> Point2dFlt
+{
+  return {point.x * xScalar, point.y * yScalar};
+}
+
+constexpr auto GetVec2dFlt(const Point2dFlt& point) noexcept -> Vec2dFlt
+{
+  return {point.x, point.y};
+}
+
+inline auto ToVec2dInt(const Vec2dFlt& vec2DFlt) noexcept -> Vec2dInt
+{
+  return {static_cast<int32_t>(std::round(vec2DFlt.x)),
+          static_cast<int32_t>(std::round(vec2DFlt.y))};
 }
 
 constexpr auto operator+(const Vec2dFlt& vec1, const Vec2dFlt& vec2) noexcept -> Vec2dFlt
@@ -379,7 +359,7 @@ constexpr auto MidpointFromOrigin(const Point2dInt& point) noexcept -> Point2dIn
 
 inline auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t
 {
-  return static_cast<int32_t>(std::lround(Distance(point1.ToFlt(), point2.ToFlt())));
+  return static_cast<int32_t>(std::lround(Distance(ToPoint2dFlt(point1), ToPoint2dFlt(point2))));
 }
 
 inline auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float

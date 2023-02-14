@@ -71,7 +71,7 @@ auto StarDrawer::DrawStar(const Star& star,
   const auto [numParts, elementSize] = GetNumPartsAndElementSize(tAge);
 
   auto tAgeMix      = IncrementedValue{tAge, tAgeMax, TValue::StepType::SINGLE_CYCLE, numParts};
-  const auto point0 = star.GetStartPos().ToInt();
+  const auto point0 = ToPoint2dInt(star.GetStartPos());
 
   auto point1 = point0;
   for (auto j = 1U; j <= numParts; ++j)

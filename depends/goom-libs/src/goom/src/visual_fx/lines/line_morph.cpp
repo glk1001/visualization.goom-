@@ -305,7 +305,7 @@ auto LineMorph::DrawFlatLine(const Pixel& lineColor) noexcept -> void
   const auto& ptN   = m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1];
   const auto colors = MultiplePixels{lineColor, lineColor};
 
-  m_lineDrawer.DrawLine(pt0.point.ToInt(), ptN.point.ToInt(), colors);
+  m_lineDrawer.DrawLine(ToPoint2dInt(pt0.point), ToPoint2dInt(ptN.point), colors);
 }
 
 auto LineMorph::GetAudioPoints(const Pixel& lineColor,

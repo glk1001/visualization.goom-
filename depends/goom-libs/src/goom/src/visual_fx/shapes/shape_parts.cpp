@@ -117,7 +117,7 @@ inline auto ShapePart::UpdateShapePathTransform(ShapePath& shapePath) const noex
   auto& basePath = dynamic_cast<TransformedPath&>(shapePath.GetIPath());
 
   auto newTransform = basePath.GetTransform();
-  newTransform.SetTranslation(Vec2dFlt{m_shapePathsTargetPoint.ToFlt()});
+  newTransform.SetTranslation(GetVec2dFlt(ToPoint2dFlt(m_shapePathsTargetPoint)));
 
   basePath.SetTransform(newTransform);
 }
@@ -158,7 +158,7 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
                               const float maxScale) noexcept -> std::vector<ShapePath>
 {
 
-  const auto targetPointFlt = Vec2dFlt{m_shapePathsTargetPoint.ToFlt()};
+  const auto targetPointFlt = GetVec2dFlt(ToPoint2dFlt(m_shapePathsTargetPoint));
 
   static constexpr auto MIN_ANGLE = 0.0F;
   static constexpr auto MAX_ANGLE = TWO_PI;

@@ -52,8 +52,8 @@ private:
   const IGoomRand* m_goomRand;
   RandomColorMapsManager m_colorMapsManager{};
 
-  Point2dInt m_screenMidPoint{U_HALF * m_goomInfo->GetScreenWidth(),
-                              U_HALF * m_goomInfo->GetScreenHeight()};
+  Point2dInt m_screenMidPoint =
+      GetPoint2dInt(U_HALF * m_goomInfo->GetScreenWidth(), U_HALF * m_goomInfo->GetScreenHeight());
 
   static constexpr float MIN_RADIUS_FRACTION = 0.2F;
   static constexpr float MAX_RADIUS_FRACTION = 0.5F;
@@ -278,7 +278,7 @@ auto ShapesFx::ShapesFxImpl::GetRadialZoomMidpoints() const noexcept
     {
       const Vec2dFlt radialOffset{radius * std::cos(angle()), radius * std::sin(angle())};
 
-      shapeZoomMidpoints.at(i) = m_screenMidPoint + radialOffset.ToInt();
+      shapeZoomMidpoints.at(i) = m_screenMidPoint + ToVec2dInt(radialOffset);
 
       angle.Increment();
     }

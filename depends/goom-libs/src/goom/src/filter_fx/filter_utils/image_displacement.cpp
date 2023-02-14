@@ -45,7 +45,7 @@ inline auto ImageDisplacement::NormalizedCoordsToImagePoint(
     const NormalizedCoords& normalizedCoords) const -> Point2dInt
 {
   const auto normalizedZoom = m_zoomFactor * normalizedCoords;
-  return m_normalizedCoordsConverter.NormalizedToOtherCoordsFlt(normalizedZoom).ToInt();
+  return ToPoint2dInt(m_normalizedCoordsConverter.NormalizedToOtherCoordsFlt(normalizedZoom));
 }
 
 inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color) const -> Point2dFlt

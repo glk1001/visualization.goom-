@@ -437,7 +437,7 @@ inline auto ParametricPath<T>::GetParametricFunction() noexcept -> T&
 template<typename T>
 inline auto ParametricPath<T>::GetNextPoint() const noexcept -> Point2dInt
 {
-  return m_parametricFunction.GetPoint(GetCurrentT()).ToInt();
+  return ToPoint2dInt(m_parametricFunction.GetPoint(GetCurrentT()));
 }
 
 } // namespace GOOM::UTILS::MATH

@@ -413,10 +413,9 @@ inline auto ImageFx::ImageFxImpl::UpdateImageStartPositions() -> void
 
 inline auto ImageFx::ImageFxImpl::GetNextChunkStartPosition(const size_t i) const -> Point2dInt
 {
-  const auto startPos = lerp(m_currentImage->GetStartPosition(i),
-                             m_floatingStartPosition + Vec2dInt{GetChunkFloatingStartPosition(i)},
-                             m_floatingT());
-  return startPos;
+  return lerp(m_currentImage->GetStartPosition(i),
+              m_floatingStartPosition + GetVec2dInt(GetChunkFloatingStartPosition(i)),
+              m_floatingT());
 }
 
 inline auto ImageFx::ImageFxImpl::GetNextChunkPosition(
@@ -512,7 +511,7 @@ auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap, const Pl
 {
   auto imageAsChunks = ImageAsChunks{};
 
-  const auto centre = Point2dInt{goomInfo.GetScreenWidth() / 2, goomInfo.GetScreenHeight() / 2};
+  const auto centre = GetPoint2dInt(goomInfo.GetScreenWidth() / 2, goomInfo.GetScreenHeight() / 2);
   const auto x0     = centre.x - static_cast<int32_t>(imageBitmap.GetWidth() / 2);
   const auto y0     = centre.y - static_cast<int32_t>(imageBitmap.GetHeight() / 2);
 

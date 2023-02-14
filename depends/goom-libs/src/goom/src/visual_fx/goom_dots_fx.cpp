@@ -68,8 +68,8 @@ private:
   const IGoomRand* m_goomRand;
   const SmallImageBitmaps* m_smallBitmaps;
   BitmapDrawer m_bitmapDrawer;
-  Point2dInt m_screenMidpoint{U_HALF * m_goomInfo->GetScreenWidth(),
-                              U_HALF * m_goomInfo->GetScreenHeight()};
+  Point2dInt m_screenMidpoint =
+      GetPoint2dInt(U_HALF * m_goomInfo->GetScreenWidth(), U_HALF * m_goomInfo->GetScreenHeight());
 
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
@@ -231,7 +231,7 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
   auto lissajousPositionT     = std::make_unique<TValue>(STEP_TYPE, LISSAJOUS_STEP_SIZE);
   auto epicycloidPositionT    = std::make_unique<TValue>(STEP_TYPE, EPICYCLOID_STEP_SIZE);
 
-  const auto centrePos                       = Vec2dFlt{centre.ToFlt()};
+  const auto centrePos                       = GetVec2dFlt(ToPoint2dFlt(centre));
   static constexpr auto DEFAULT_ANGLE_PARAMS = AngleParams{};
 
   return {

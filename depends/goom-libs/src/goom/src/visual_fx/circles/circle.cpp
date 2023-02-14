@@ -102,7 +102,7 @@ auto Circle::GetDotStartingPositions(const Point2dInt& centre, const float radiu
     -> std::vector<Point2dInt>
 {
   auto positionT       = std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, NUM_DOTS);
-  const auto centrePos = Vec2dFlt{centre.ToFlt()};
+  const auto centrePos = GetVec2dFlt(ToPoint2dFlt(centre));
   static constexpr auto DEFAULT_ANGLE_PARAMS = AngleParams{};
   const auto path =
       std::make_unique<CirclePath>(std::move(positionT), centrePos, radius, DEFAULT_ANGLE_PARAMS);

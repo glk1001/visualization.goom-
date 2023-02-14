@@ -12,8 +12,8 @@ Star::Star(const Params& params) noexcept : m_params{params}
  */
 auto Star::Update() noexcept -> void
 {
-  m_params.currentPosition.Translate(m_params.velocity);
-  m_params.velocity += m_params.acceleration;
+  m_params.currentPosition = Translate(m_params.currentPosition, m_params.velocity);
+  m_params.velocity        = m_params.velocity + m_params.acceleration;
   m_params.age += m_params.vage;
 }
 

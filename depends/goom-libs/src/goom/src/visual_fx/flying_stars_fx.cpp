@@ -520,7 +520,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetNewStarParams(
       setupParams.nominalPathLength * m_goomRand->GetRandInRange(0.01F, 2.0F);
   static constexpr auto LENGTH_OFFSET = -0.2F;
 
-  const auto initialPosition     = setupParams.startPos.ToFlt();
+  const auto initialPosition     = ToPoint2dFlt(setupParams.startPos);
   const auto initialVelocity     = Vec2dFlt{starPathLength * std::cos(starPathAngle),
                                         LENGTH_OFFSET + (starPathLength * std::sin(starPathAngle))};
   const auto initialAcceleration = Vec2dFlt{setupParams.sideWind, setupParams.gravity};

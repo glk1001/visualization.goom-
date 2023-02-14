@@ -166,7 +166,8 @@ inline auto GoomTitleDisplayer::GetFinalPhaseCentrePenPos(const std::string& str
 {
   const auto screenCentre = Point2dInt{I_HALF * m_screenWidth, I_HALF * m_screenHeight};
   const auto fontSize     = GetFinalPhaseFontSize(0);
-  return GetLeftAlignedPenForCentringStringAt(*m_textDrawer, str, fontSize, screenCentre).ToFlt();
+  return ToPoint2dFlt(
+      GetLeftAlignedPenForCentringStringAt(*m_textDrawer, str, fontSize, screenCentre));
 }
 
 void GoomTitleDisplayer::DrawText(const std::string& text)

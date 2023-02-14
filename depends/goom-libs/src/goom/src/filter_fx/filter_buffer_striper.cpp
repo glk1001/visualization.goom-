@@ -62,7 +62,7 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
     auto tranBufferPos      = yScreenCoord * screenWidth;
 
     auto centredSourceCoords =
-        m_normalizedCoordsConverter->OtherToNormalizedCoords(Point2dInt{0U, yScreenCoord}) -
+        m_normalizedCoordsConverter->OtherToNormalizedCoords(GetPoint2dInt(0U, yScreenCoord)) -
         m_normalizedMidpoint;
     auto centredSourceViewportCoords = m_filterViewport.GetViewportCoords(centredSourceCoords);
 

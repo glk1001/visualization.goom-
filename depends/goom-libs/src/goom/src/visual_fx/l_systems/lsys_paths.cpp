@@ -59,12 +59,12 @@ auto LSysPath::GetPathsToAndFrom() const noexcept -> std::unique_ptr<PathsToAndF
 
   auto pathsToAndFrom = PathsToAndFrom{
       OscillatingPath{std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, m_pathNumSteps),
-                      m_lSysPathStart.ToFlt(),
-                      m_lSysPathTarget.ToFlt(),
+                      ToPoint2dFlt(m_lSysPathStart),
+                      ToPoint2dFlt(m_lSysPathTarget),
                       pathParams},
       OscillatingPath{std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, m_pathNumSteps),
-                      m_lSysPathTarget.ToFlt(),
-                      m_lSysPathStart.ToFlt(),
+                      ToPoint2dFlt(m_lSysPathTarget),
+                      ToPoint2dFlt(m_lSysPathStart),
                       pathParams}
   };
 

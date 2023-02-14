@@ -32,9 +32,8 @@ public:
 private:
   DRAW::IGoomDraw* m_draw;
   const UTILS::MATH::IGoomRand* m_goomRand;
-  Vec2dFlt m_screenMidPoint{
-      MidpointFromOrigin({m_draw->GetDimensions().GetWidth(), m_draw->GetDimensions().GetHeight()})
-          .ToFlt()};
+  Vec2dFlt m_screenMidPoint = GetVec2dFlt(ToPoint2dFlt(MidpointFromOrigin(
+      GetPoint2dInt(m_draw->GetDimensions().GetWidth(), m_draw->GetDimensions().GetHeight()))));
 
   DRAW::SHAPE_DRAWERS::LineDrawerNoClippedEndPoints m_lineDrawer{*m_draw};
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer{*m_draw};

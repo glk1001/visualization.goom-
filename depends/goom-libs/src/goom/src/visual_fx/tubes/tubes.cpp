@@ -478,7 +478,7 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
     auto shapeT = std::make_unique<TValue>(
         TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP, s_DELAY_POINTS);
     shape.path = std::make_unique<OscillatingPath>(
-        std::move(shapeT), fromPos.ToFlt(), toPos.ToFlt(), pathParams);
+        std::move(shapeT), ToPoint2dFlt(fromPos), ToPoint2dFlt(toPos), pathParams);
 
     angle += ANGLE_STEP;
     ++shapeNum;

@@ -199,8 +199,8 @@ auto DistanceField::GetGridPointXArray(const uint32_t gridWidth) noexcept -> Gri
 
   for (auto y = 0U; y < gridWidth; ++y)
   {
-    gridPointArray.emplace_back(y, y);
-    gridPointArray.emplace_back(y, gridWidth - y - 1);
+    gridPointArray.emplace_back(GetPoint2dInt(y, y));
+    gridPointArray.emplace_back(GetPoint2dInt(y, gridWidth - y - 1));
   }
 
   return gridPointArray;
@@ -211,10 +211,10 @@ auto DistanceField::GetGridPointDiamondArray(const uint32_t gridWidth) noexcept
 {
   auto gridPointArray = GridPointsWithCentres{};
 
-  gridPointArray.emplace_back(0U, (U_HALF * gridWidth) - 1);
-  gridPointArray.emplace_back((U_HALF * gridWidth) - 1, gridWidth - 1);
-  gridPointArray.emplace_back(gridWidth - 1, (U_HALF * gridWidth) - 1);
-  gridPointArray.emplace_back((U_HALF * gridWidth) - 1, 0U);
+  gridPointArray.emplace_back(GetPoint2dInt(0U, (U_HALF * gridWidth) - 1));
+  gridPointArray.emplace_back(GetPoint2dInt((U_HALF * gridWidth) - 1, gridWidth - 1));
+  gridPointArray.emplace_back(GetPoint2dInt(gridWidth - 1, (U_HALF * gridWidth) - 1));
+  gridPointArray.emplace_back(GetPoint2dInt((U_HALF * gridWidth) - 1, 0U));
 
   return gridPointArray;
 }
@@ -247,7 +247,7 @@ auto DistanceField::TryGetGridPointRandomArray(const uint32_t gridWidth) const n
     {
       if (m_goomRand->ProbabilityOf(PROB_RANDOM_CENTRE))
       {
-        gridPointArray.emplace_back(x, y);
+        gridPointArray.emplace_back(GetPoint2dInt(x, y));
       }
     }
   }
@@ -269,7 +269,8 @@ auto DistanceField::GetGridPointCentresMap(
     gridPointCentresMap[y].resize(gridWidth);
     for (auto x = 0U; x < gridWidth; ++x)
     {
-      gridPointCentresMap[y][x] = FindNearestGridPointsWithCentres({x, y}, gridPointsWithCentres);
+      gridPointCentresMap[y][x] =
+          FindNearestGridPointsWithCentres(GetPoint2dInt(x, y), gridPointsWithCentres);
     }
   }
 

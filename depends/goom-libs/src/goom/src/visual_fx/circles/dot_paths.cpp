@@ -40,13 +40,13 @@ auto DotPaths::GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noex
   {
     dotPathsToAndFrom.dotPathToTarget.emplace_back(
         std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS),
-        dotStartsToAndFrom.dotStartingPositionsToTarget.at(i).ToFlt(),
-        m_dotTargetsToAndFrom.dotTargetPositionToTarget.ToFlt(),
+        ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsToTarget.at(i)),
+        ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionToTarget),
         m_dotPathParamsToAndFrom.dotPathParamsToTarget);
     dotPathsToAndFrom.dotPathFromTarget.emplace_back(
         std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS),
-        m_dotTargetsToAndFrom.dotTargetPositionFromTarget.ToFlt(),
-        dotStartsToAndFrom.dotStartingPositionsFromTarget.at(i).ToFlt(),
+        ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget),
+        ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsFromTarget.at(i)),
         m_dotPathParamsToAndFrom.dotPathParamsFromTarget);
   }
 
@@ -61,8 +61,8 @@ auto DotPaths::MakeToDotPathsSameAsFromDotPaths() noexcept -> void
     m_dotPathsToAndFrom.dotPathToTarget.emplace_back(
         std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE,
                                  m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNumSteps()),
-        m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNextPoint().ToFlt(),
-        m_dotTargetsToAndFrom.dotTargetPositionFromTarget.ToFlt(),
+        ToPoint2dFlt(m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNextPoint()),
+        ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget),
         m_dotPathParamsToAndFrom.dotPathParamsToTarget);
   }
 
@@ -88,7 +88,7 @@ auto DotPaths::GetNextDotPositions(const std::vector<UTILS::MATH::OscillatingPat
     nextDotPositions.at(i) = dotPath.at(i).GetNextPoint();
     if (m_randomizePoints)
     {
-      nextDotPositions.at(i).Translate(GetSmallRandomOffset());
+      nextDotPositions.at(i) = Translate(nextDotPositions.at(i), GetSmallRandomOffset());
     }
   }
   return nextDotPositions;

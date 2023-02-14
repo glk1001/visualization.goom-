@@ -81,12 +81,14 @@ auto LSysGeometry::GetTransformedPoint(const Point2dFlt& point,
   auto transformedPoint = point;
 
   // TODO(glk) Consolidate operations??
-  transformedPoint.Scale(m_currentTransformArray.at(copyNum).xScale,
-                         m_currentTransformArray.at(copyNum).yScale);
-  transformedPoint.TranslateY(m_currentTransformArray.at(copyNum).verticalMove);
-  transformedPoint.Rotate(m_currentTransformArray.at(copyNum).sinRotateAngle,
-                          m_currentTransformArray.at(copyNum).cosRotateAngle);
-  transformedPoint.Translate(m_currentTransformArray.at(copyNum).translate);
+  transformedPoint = Scale(transformedPoint,
+                           m_currentTransformArray.at(copyNum).xScale,
+                           m_currentTransformArray.at(copyNum).yScale);
+  transformedPoint = TranslateY(transformedPoint, m_currentTransformArray.at(copyNum).verticalMove);
+  transformedPoint = Rotate(transformedPoint,
+                            m_currentTransformArray.at(copyNum).sinRotateAngle,
+                            m_currentTransformArray.at(copyNum).cosRotateAngle);
+  transformedPoint = Translate(transformedPoint, m_currentTransformArray.at(copyNum).translate);
 
   return transformedPoint;
 }

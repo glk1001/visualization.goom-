@@ -40,7 +40,7 @@ TEST_CASE("Normalized Coords Values")
     REQUIRE(FloatsEqual(COORDS.GetY(), NormalizedCoords::MIN_COORD));
 
     const auto screenCoords =
-        NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS).ToInt();
+        ToPoint2dInt(NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS));
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     REQUIRE(screenCoords.x == 0);
     UNSCOPED_INFO("screenCoords.y = " << screenCoords.y);
@@ -61,7 +61,7 @@ TEST_CASE("Normalized Coords Values")
     REQUIRE(FloatsEqual(COORDS.GetY(), MAX_Y, MIN_COORD_VAL));
 
     const auto screenCoords =
-        NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS).ToInt();
+        ToPoint2dInt(NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS));
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     REQUIRE(screenCoords.x == WIDTH - 1);
     UNSCOPED_INFO("screenCoords.y = " << screenCoords.y);
@@ -78,7 +78,7 @@ TEST_CASE("Normalized Coords Values")
     REQUIRE(FloatsEqual(COORDS.GetY(), 0.0F, MIN_COORD_VAL));
 
     const auto screenCoords =
-        NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS).ToInt();
+        ToPoint2dInt(NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS));
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     REQUIRE(screenCoords.x == WIDTH / 2);
     UNSCOPED_INFO("screenCoords.y = " << screenCoords.y);
@@ -94,7 +94,7 @@ TEST_CASE("Normalized Coords Values")
     REQUIRE(FloatsEqual(COORDS.GetY(), 0.3F));
 
     const auto screenCoords =
-        NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS).ToInt();
+        ToPoint2dInt(NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS));
     const int32_t x = ConvertToScreen(0.5F);
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     UNSCOPED_INFO("x = " << x);

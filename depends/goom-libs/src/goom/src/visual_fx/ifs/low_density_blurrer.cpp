@@ -149,7 +149,7 @@ inline auto LowDensityBlurrer::DrawPoints(const std::vector<IfsPoint>& lowDensit
 
 inline auto LowDensityBlurrer::DrawPoint(const IfsPoint& point) noexcept -> void
 {
-  const auto pt = Point2dInt{point.GetX(), point.GetY()};
+  const auto pt = GetPoint2dInt(point.GetX(), point.GetY());
 
   if (nullptr == m_currentImageBitmap)
   {

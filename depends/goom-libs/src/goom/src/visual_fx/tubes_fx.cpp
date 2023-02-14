@@ -159,24 +159,24 @@ private:
   std::shared_ptr<const RandomColorMaps> m_lowColorMaps{};
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath{m_goomRand->ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)};
-  uint32_t m_numCapturedPrevShapesGroups               = 0;
-  static constexpr float PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
+  uint32_t m_numCapturedPrevShapesGroups              = 0;
+  static constexpr auto PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
   BrightnessAttenuation m_prevShapesBrightnessAttenuation{m_draw->GetDimensions().GetWidth(),
                                                           m_draw->GetDimensions().GetHeight(),
                                                           PREV_SHAPES_CUTOFF_BRIGHTNESS};
   [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
-  bool m_prevShapesJitter                                   = false;
-  static constexpr int32_t PREV_SHAPES_JITTER_AMOUNT        = 2;
-  static constexpr uint32_t MIN_CAPTURED_PREV_SHAPES_GROUPS = 4U;
+  bool m_prevShapesJitter                               = false;
+  static constexpr auto PREV_SHAPES_JITTER_AMOUNT       = 2;
+  static constexpr auto MIN_CAPTURED_PREV_SHAPES_GROUPS = 4U;
 
   std::vector<Tube> m_tubes{};
-  static constexpr float ALL_JOIN_CENTRE_STEP = 0.001F;
+  static constexpr auto ALL_JOIN_CENTRE_STEP = 0.001F;
   TValue m_allJoinCentreT{TValue::StepType::CONTINUOUS_REVERSIBLE, ALL_JOIN_CENTRE_STEP};
-  Point2dInt m_screenMidpoint{U_HALF * m_draw->GetDimensions().GetWidth(),
-                              U_HALF * m_draw->GetDimensions().GetHeight()};
+  Point2dInt m_screenMidpoint = GetPoint2dInt(U_HALF * m_draw->GetDimensions().GetWidth(),
+                                              U_HALF * m_draw->GetDimensions().GetHeight());
   Point2dInt m_targetMiddlePos{0, 0};
   Point2dInt m_previousMiddlePos{0, 0};
-  static constexpr uint32_t MIDDLE_POS_NUM_STEPS = 100U;
+  static constexpr auto MIDDLE_POS_NUM_STEPS = 100U;
   TValue m_middlePosT{TValue::StepType::SINGLE_CYCLE, MIDDLE_POS_NUM_STEPS, TValue::MAX_T_VALUE};
   [[nodiscard]] auto GetMiddlePos() const -> Point2dInt;
   Timer m_allStayInCentreTimer{1};
@@ -185,7 +185,7 @@ private:
   [[nodiscard]] auto GetTransformedCentreVector(uint32_t tubeId, const Point2dInt& centre) const
       -> Vec2dInt;
 
-  static constexpr float JITTER_STEP = 0.1F;
+  static constexpr auto JITTER_STEP = 0.1F;
   TValue m_shapeJitterT{TValue::StepType::CONTINUOUS_REVERSIBLE, JITTER_STEP};
 
   Timer m_colorMapTimer{m_goomRand->GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)};
@@ -355,7 +355,7 @@ inline auto TubesFx::TubeFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
 
   if (m_goomRand->ProbabilityOf(PROB_FOLLOW_ZOOM_MID_POINT))
   {
-    m_targetMiddlePos = zoomMidpoint - Vec2dInt{m_screenMidpoint};
+    m_targetMiddlePos = zoomMidpoint - GetVec2dInt(m_screenMidpoint);
   }
   else
   {
@@ -736,9 +736,9 @@ auto TubesFx::TubeFxImpl::GetTransformedCentreVector(const uint32_t tubeId,
 {
   if ((!m_allowMovingAwayFromCentre) || TUBE_SETTINGS.at(tubeId).noMoveFromCentre)
   {
-    return Vec2dInt{GetMiddlePos()};
+    return GetVec2dInt(GetMiddlePos());
   }
-  return Vec2dInt{lerp(centre, GetMiddlePos(), m_allJoinCentreT())};
+  return GetVec2dInt(lerp(centre, GetMiddlePos(), m_allJoinCentreT()));
 }
 
 auto TubesFx::TubeFxImpl::IncrementAllJoinCentreT() -> void

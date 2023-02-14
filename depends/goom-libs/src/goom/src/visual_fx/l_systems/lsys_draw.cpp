@@ -74,8 +74,9 @@ inline auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices
       const auto tPoint1 = m_lSysGeometry->GetTransformedPoint(point1, copyNum);
       const auto tPoint2 = m_lSysGeometry->GetTransformedPoint(point2, copyNum);
 
-      m_lineDrawer->DrawLine(
-          tPoint1.ToInt(), tPoint2.ToInt(), m_lSysColors->GetColors(copyNum, lSysColor));
+      m_lineDrawer->DrawLine(ToPoint2dInt(tPoint1),
+                             ToPoint2dInt(tPoint2),
+                             m_lSysColors->GetColors(copyNum, lSysColor));
     }
 
     m_lSysColors->IncrementColorTs();

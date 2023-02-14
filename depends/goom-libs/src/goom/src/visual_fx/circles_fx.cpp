@@ -43,8 +43,8 @@ public:
 private:
   const FxHelper* m_fxHelper;
   const SmallImageBitmaps* m_smallBitmaps;
-  Point2dInt m_screenMidPoint = MidpointFromOrigin(
-      {m_fxHelper->GetGoomInfo().GetScreenWidth(), m_fxHelper->GetGoomInfo().GetScreenHeight()});
+  Point2dInt m_screenMidPoint = MidpointFromOrigin(GetPoint2dInt(
+      m_fxHelper->GetGoomInfo().GetScreenWidth(), m_fxHelper->GetGoomInfo().GetScreenHeight()));
 
   static constexpr uint32_t NUM_CIRCLES = 5;
   Weights<CircleParamsBuilder::CircleStartModes> m_weightedCircleStartModes;

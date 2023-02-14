@@ -47,8 +47,8 @@ public:
 private:
   const PluginInfo* m_goomInfo;
   const IGoomRand* m_goomRand;
-  Point2dInt m_screenMidpoint{UTILS::MATH::U_HALF * m_goomInfo->GetScreenWidth(),
-                              UTILS::MATH::U_HALF * m_goomInfo->GetScreenHeight()};
+  Point2dInt m_screenMidpoint = GetPoint2dInt(UTILS::MATH::U_HALF * m_goomInfo->GetScreenWidth(),
+                                              UTILS::MATH::U_HALF * m_goomInfo->GetScreenHeight());
 
   static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");

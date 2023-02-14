@@ -63,7 +63,7 @@ inline auto Transform2d::SetTranslation(const Vec2dFlt& translation) -> void
 
 inline auto Transform2d::GetTransformedPoint(const Point2dInt& point) const -> Point2dInt
 {
-  return GetTransformedPoint(point.ToFlt()).ToInt();
+  return ToPoint2dInt(GetTransformedPoint(ToPoint2dFlt(point)));
 }
 
 inline auto Transform2d::GetTransformedPoint(const Point2dFlt& point) const -> Point2dFlt
@@ -82,12 +82,12 @@ inline auto Transform2d::GetTransformedPoint(const Point2dFlt& point) const -> P
 
   if (m_scaleSet)
   {
-    transformedPoint.Scale(m_scale);
+    transformedPoint = Scale(transformedPoint, m_scale);
   }
 
   if (m_translationSet)
   {
-    transformedPoint.Translate(m_translation);
+    transformedPoint = Translate(transformedPoint, m_translation);
   }
 
   return transformedPoint;

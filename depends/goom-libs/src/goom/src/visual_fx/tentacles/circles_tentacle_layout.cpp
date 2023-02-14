@@ -38,7 +38,7 @@ auto CirclesTentacleLayout::GetCirclePoints(const float radius, const uint32_t n
     const auto x = radius * std::cos(angle);
     const auto y = radius * std::sin(angle);
 
-    circlePoints.emplace_back(x, y);
+    circlePoints.emplace_back(Point2dFlt{x, y});
 
     angle += angleStep;
   }
