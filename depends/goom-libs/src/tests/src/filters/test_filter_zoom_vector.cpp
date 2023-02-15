@@ -34,11 +34,11 @@ using FILTER_FX::FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::EnumMap;
 using UTILS::MATH::GoomRand;
 
-static constexpr size_t WIDTH                    = 120;
-static constexpr size_t HEIGHT                   = 70;
-static constexpr const char* RESOURCES_DIRECTORY = "";
-static const GoomRand GOOM_RAND{};
-static const NormalizedCoordsConverter NORMALIZED_COORDS_CONVERTER{
+static constexpr auto WIDTH                       = 120;
+static constexpr auto HEIGHT                      = 70;
+static constexpr auto* RESOURCES_DIRECTORY        = "";
+static const auto GOOM_RAND                       = GoomRand{};
+static constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
     {WIDTH, HEIGHT},
     MIN_SCREEN_COORD_ABS_VAL
 };

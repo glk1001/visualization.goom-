@@ -19,9 +19,9 @@ using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray;
 using UTILS::fmt_rgba;
 using UTILS::MATH::GoomRand;
 
-static constexpr size_t WIDTH  = 120;
-static constexpr size_t HEIGHT = 70;
-static const auto GOOM_RAND    = GoomRand{};
+static constexpr auto WIDTH  = 120;
+static constexpr auto HEIGHT = 70;
+static const auto GOOM_RAND  = GoomRand{};
 
 constexpr auto GetColor(const PixelChannelType red,
                         const PixelChannelType green,

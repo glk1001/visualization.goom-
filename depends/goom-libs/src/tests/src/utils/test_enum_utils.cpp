@@ -56,12 +56,12 @@ TEST_CASE("EnumMap")
     int i1;
     int i2;
   };
-  static constexpr const auto CONST_ENUM_MAP = EnumMap<EnumClass, Simple>{{{
+  static constexpr auto CONST_ENUM_MAP = EnumMap<EnumClass, Simple>{{{
       {EnumClass::ENUM1, {1, 2}},
       {EnumClass::ENUM3, {5, 6}},
       {EnumClass::ENUM2, {3, 4}},
   }}};
-  const auto nonConstRuntimeEnumMap          = RuntimeEnumMap<EnumClass, Simple>{{{
+  const auto nonConstRuntimeEnumMap    = RuntimeEnumMap<EnumClass, Simple>{{{
       {EnumClass::ENUM1, {1, 2}},
       {EnumClass::ENUM3, {5, 6}},
       {EnumClass::ENUM2, {3, 4}},

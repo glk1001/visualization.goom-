@@ -28,7 +28,7 @@ TEST_CASE("TValue SINGLE_CYCLE")
   REQUIRE(tValue() == Approx(STEP_SIZE));
   REQUIRE(tValue.IsInsideBoundary());
 
-  while (!tValue.IsStopped())
+  while (not tValue.IsStopped())
   {
     tValue.Increment();
   }

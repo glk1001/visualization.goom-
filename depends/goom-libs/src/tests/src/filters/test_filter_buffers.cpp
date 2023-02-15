@@ -382,8 +382,8 @@ TEST_CASE("ZoomFilterBuffers Calculations")
     REQUIRE(CONST_ZOOM_VECTOR_COORDS_1 == constantZoomVector.GetConstCoords());
     REQUIRE(MID_PT == filterBuffers.GetBuffMidpoint());
 
-    static constexpr float T_LERP = 0.5F;
-    const auto tranLerpFactor     = static_cast<uint32_t>(
+    static constexpr auto T_LERP = 0.5F;
+    const auto tranLerpFactor    = static_cast<uint32_t>(
         std::round(T_LERP * static_cast<float>(FilterBuffers::GetMaxTranLerpFactor())));
 
     filterBuffers.SetTranLerpFactor(tranLerpFactor);
@@ -421,7 +421,7 @@ TEST_CASE("ZoomFilterBuffers Calculations")
         UNSCOPED_INFO("expectedDestTranPoint.x = " << expectedDestTranPoint.x);
         UNSCOPED_INFO("expectedDestTranPoint.y = " << expectedDestTranPoint.y);
 
-        bool isClipped = false;
+        auto isClipped = false;
         const auto codeClippedTranPoint =
             filterBuffers.GetZoomBufferTranPoint(GetBuffPos(x, y), isClipped);
         UNSCOPED_INFO("codeClippedTranPoint.x = " << codeClippedTranPoint.x);

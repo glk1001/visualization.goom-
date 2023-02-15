@@ -115,7 +115,7 @@ TEST_CASE("Lighten")
       {RED, GREEN, BLUE}
   };
 
-  const Pixel lightenedColor = GetLightenedColor(COLOR, 10.0);
+  const auto lightenedColor = GetLightenedColor(COLOR, 10.0);
   REQUIRE(static_cast<uint32_t>(lightenedColor.R()) == 50);
   REQUIRE(static_cast<uint32_t>(lightenedColor.G()) == 0);
   REQUIRE(static_cast<uint32_t>(lightenedColor.B()) == 0);

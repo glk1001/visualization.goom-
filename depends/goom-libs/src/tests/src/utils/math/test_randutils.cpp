@@ -22,7 +22,7 @@ using UTILS::MATH::RAND::SetRandSeed;
 
 TEST_CASE("save/restore random state")
 {
-  const uint64_t seed = 1000;
+  const auto seed = 1000UL;
 
   SetRandSeed(seed);
   REQUIRE(seed == GetRandSeed());
@@ -31,7 +31,7 @@ TEST_CASE("save/restore random state")
   const auto rand2 = GetRand();
   REQUIRE(rand1 != rand2);
 
-  const std::string saveFile = "/tmp/rand.txt";
+  const auto saveFile = std::string{"/tmp/rand.txt"};
   std::ofstream fileOut{saveFile, std::ofstream::out};
   SaveRandState(fileOut);
   fileOut.close();
@@ -40,7 +40,7 @@ TEST_CASE("save/restore random state")
   // Scramble things a bit
   SetRandSeed(seed + 10);
   auto rand = 0U;
-  for (auto i = 0; i < 1000; i++)
+  for (auto i = 0; i < 1000; ++i)
   {
     rand = GetRand();
   }
@@ -56,13 +56,13 @@ TEST_CASE("save/restore random state")
 
 TEST_CASE("repeatable random sequence")
 {
-  const uint64_t seed = 1000;
+  const auto seed = 1000UL;
 
   SetRandSeed(seed);
   REQUIRE(seed == GetRandSeed());
-  std::vector<uint32_t> seq1(1000);
-  std::vector<float> fltSeq1(1000);
-  for (size_t i = 0; i < 1000; i++)
+  auto seq1    = std::vector<uint32_t>(1000);
+  auto fltSeq1 = std::vector<float>(1000);
+  for (auto i = 0U; i < 1000U; ++i)
   {
     seq1[i]    = GetRand();
     fltSeq1[i] = GetRandInRange(0.0F, 1.0F);
@@ -70,9 +70,9 @@ TEST_CASE("repeatable random sequence")
 
   SetRandSeed(seed);
   REQUIRE(seed == GetRandSeed());
-  std::vector<uint32_t> seq2(1000);
-  std::vector<float> fltSeq2(1000);
-  for (size_t i = 0; i < 1000; i++)
+  auto seq2    = std::vector<uint32_t>(1000);
+  auto fltSeq2 = std::vector<float>(1000);
+  for (auto i = 0U; i < 1000U; ++i)
   {
     seq2[i]    = GetRand();
     fltSeq2[i] = GetRandInRange(0.0F, 1.0F);
@@ -80,9 +80,9 @@ TEST_CASE("repeatable random sequence")
 
   SetRandSeed(seed + 1);
   REQUIRE(seed + 1 == GetRandSeed());
-  std::vector<uint32_t> seq3(1000);
-  std::vector<float> fltSeq3(1000);
-  for (size_t i = 0; i < 1000; i++)
+  auto seq3    = std::vector<uint32_t>(1000);
+  auto fltSeq3 = std::vector<float>(1000);
+  for (auto i = 0U; i < 1000U; ++i)
   {
     seq3[i]    = GetRand();
     fltSeq3[i] = GetRandInRange(0.0F, 1.0F);
@@ -99,11 +99,11 @@ template<typename ValType>
 auto GetMinMax(const size_t numLoop, const ValType& nMin, const ValType& nMax)
     -> std::tuple<ValType, ValType>
 {
-  ValType min = std::numeric_limits<ValType>::max();
-  ValType max = std::numeric_limits<ValType>::min();
-  for (size_t i = 0; i < numLoop; i++)
+  auto min = std::numeric_limits<ValType>::max();
+  auto max = std::numeric_limits<ValType>::min();
+  for (auto i = 0U; i < numLoop; ++i)
   {
-    ValType rand = GetRandInRange(nMin, nMax);
+    const auto rand = GetRandInRange(nMin, nMax);
     if (rand < min)
     {
       min = rand;
@@ -121,17 +121,17 @@ TEST_CASE("uint32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr size_t NUM_LOOP = 100000;
+  static constexpr auto NUM_LOOP = 100000U;
 
-  static constexpr uint32_t N_MIN1 = 999;
-  static constexpr uint32_t N_MAX1 = 10001;
-  const auto [min1, max1]          = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
+  static constexpr auto N_MIN1 = 999U;
+  static constexpr auto N_MAX1 = 10001U;
+  const auto [min1, max1]      = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
   REQUIRE(min1 == N_MIN1);
   REQUIRE(max1 == N_MAX1 - 1);
 
-  static constexpr uint32_t N_MIN2 = 0;
-  static constexpr uint32_t N_MAX2 = 120;
-  const auto [min2, max2]          = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
+  static constexpr auto N_MIN2 = 0U;
+  static constexpr auto N_MAX2 = 120U;
+  const auto [min2, max2]      = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
   REQUIRE(min2 == N_MIN2);
   REQUIRE(max2 == N_MAX2 - 1);
 
@@ -145,29 +145,29 @@ TEST_CASE("int32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr size_t NUM_LOOP = 100000;
+  static constexpr auto NUM_LOOP = 100000U;
 
-  static constexpr int32_t N_MIN1 = -999;
-  static constexpr int32_t N_MAX1 = 10001;
-  const auto [min1, max1]         = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
+  static constexpr auto N_MIN1 = -999;
+  static constexpr auto N_MAX1 = 10001;
+  const auto [min1, max1]      = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
   REQUIRE(min1 == N_MIN1);
   REQUIRE(max1 == N_MAX1 - 1);
 
-  static constexpr int32_t N_MIN2 = -999;
-  static constexpr int32_t N_MAX2 = -50;
-  const auto [min2, max2]         = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
+  static constexpr auto N_MIN2 = -999;
+  static constexpr auto N_MAX2 = -50;
+  const auto [min2, max2]      = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
   REQUIRE(min2 == N_MIN2);
   REQUIRE(max2 == N_MAX2 - 1);
 
-  static constexpr int32_t N_MIN3 = 1;
-  static constexpr int32_t N_MAX3 = 999;
-  const auto [min3, max3]         = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
+  static constexpr auto N_MIN3 = 1;
+  static constexpr auto N_MAX3 = 999;
+  const auto [min3, max3]      = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
   REQUIRE(min3 == N_MIN3);
   REQUIRE(max3 == N_MAX3 - 1);
 
-  static constexpr int32_t N_MIN4 = 0;
-  static constexpr int32_t N_MAX4 = 635;
-  const auto [min4, max4]         = GetMinMax(NUM_LOOP, N_MIN4, N_MAX4);
+  static constexpr auto N_MIN4 = 0;
+  static constexpr auto N_MAX4 = 635;
+  const auto [min4, max4]      = GetMinMax(NUM_LOOP, N_MIN4, N_MAX4);
   REQUIRE(min4 == N_MIN4);
   REQUIRE(max4 == N_MAX4 - 1);
 
@@ -185,23 +185,23 @@ TEST_CASE("float min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr size_t NUM_LOOP = 1000000;
+  static constexpr auto NUM_LOOP = 1000000U;
 
-  static constexpr float N_MIN1 = 0;
-  static constexpr float N_MAX1 = 1;
-  const auto [min1, max1]       = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
+  static constexpr auto N_MIN1 = 0.0F;
+  static constexpr auto N_MAX1 = 1.0F;
+  const auto [min1, max1]      = GetMinMax(NUM_LOOP, N_MIN1, N_MAX1);
   REQUIRE(std::fabs(min1 - N_MIN1) < 0.0001F);
   REQUIRE(std::fabs(max1 - N_MAX1) < 0.0001F);
 
-  static constexpr float N_MIN2 = -1;
-  static constexpr float N_MAX2 = 0;
-  const auto [min2, max2]       = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
+  static constexpr auto N_MIN2 = -1.0F;
+  static constexpr auto N_MAX2 = 0.0F;
+  const auto [min2, max2]      = GetMinMax(NUM_LOOP, N_MIN2, N_MAX2);
   REQUIRE(std::fabs(min2 - N_MIN2) < 0.0001F);
   REQUIRE(std::fabs(max2 - N_MAX2) < 0.0001F);
 
-  static constexpr float N_MIN3 = -10;
-  static constexpr float N_MAX3 = +10;
-  const auto [min3, max3]       = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
+  static constexpr auto N_MIN3 = -10.0F;
+  static constexpr auto N_MAX3 = +10.0F;
+  const auto [min3, max3]      = GetMinMax(NUM_LOOP, N_MIN3, N_MAX3);
   REQUIRE(std::fabs(min3 - N_MIN3) < 0.0001F);
   REQUIRE(std::fabs(max3 - N_MAX3) < 0.0001F);
 

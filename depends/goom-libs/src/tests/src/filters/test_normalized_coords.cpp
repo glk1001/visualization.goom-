@@ -12,11 +12,11 @@ using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using UTILS::MATH::FloatsEqual;
 
-static constexpr uint32_t WIDTH  = 1280U;
-static constexpr uint32_t HEIGHT = 720U;
-static constexpr float MIN_COORD_VAL =
+static constexpr auto WIDTH  = 1280U;
+static constexpr auto HEIGHT = 720U;
+static constexpr auto MIN_COORD_VAL =
     (NormalizedCoords::COORD_WIDTH) / static_cast<float>(WIDTH - 1);
-static constexpr NormalizedCoordsConverter NORMALIZED_COORDS_CONVERTER{
+static constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
     {WIDTH, HEIGHT},
     MIN_COORD_VAL
 };
@@ -95,7 +95,7 @@ TEST_CASE("Normalized Coords Values")
 
     const auto screenCoords =
         ToPoint2dInt(NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS));
-    const int32_t x = ConvertToScreen(0.5F);
+    const auto x = ConvertToScreen(0.5F);
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
     UNSCOPED_INFO("x = " << x);
     REQUIRE(screenCoords.x == x);

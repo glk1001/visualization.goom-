@@ -43,11 +43,11 @@ TEST_CASE("Pixels")
   }
   SECTION("Pixel uint32_t RGB")
   {
-    static constexpr uint32_t RED   = 299;
-    static constexpr uint32_t GREEN = 200;
-    static constexpr uint32_t BLUE  = MAX_CHANNEL_VALUE_HDR + 10;
-    static constexpr uint32_t ALPHA = 256;
-    static constexpr auto PIXEL     = MakePixel(RED, GREEN, BLUE, ALPHA);
+    static constexpr auto RED   = 299U;
+    static constexpr auto GREEN = 200U;
+    static constexpr auto BLUE  = MAX_CHANNEL_VALUE_HDR + 10U;
+    static constexpr auto ALPHA = 256U;
+    static constexpr auto PIXEL = MakePixel(RED, GREEN, BLUE, ALPHA);
     REQUIRE(PIXEL.R() == RED);
     REQUIRE(PIXEL.G() == GREEN);
     REQUIRE(PIXEL.B() == MAX_CHANNEL_VALUE_HDR);
@@ -92,8 +92,8 @@ TEST_CASE("Pixels")
     static constexpr auto PIXEL = Pixel{
         {TEST_R, TEST_G, TEST_B}
     };
-    static constexpr auto R_CHANNEL  = PIXEL.R();
-    static constexpr uint32_t SCALAR = 32;
+    static constexpr auto R_CHANNEL = PIXEL.R();
+    static constexpr auto SCALAR    = 32U;
     REQUIRE(MultiplyChannelColorByScalar(SCALAR, PIXEL.R()) ==
             ((SCALAR * R_CHANNEL) / MAX_COLOR_VAL));
   }
@@ -112,7 +112,7 @@ TEST_CASE("Pixels")
 auto GetPixelCount(const PixelBuffer& buffer, const Pixel& pixel) -> uint32_t
 {
   auto count = 0U;
-  for (size_t y = 0; y < HEIGHT; ++y)
+  for (auto y = 0U; y < HEIGHT; ++y)
   {
     for (size_t x = 0; x < WIDTH; ++x)
     {
@@ -151,9 +151,9 @@ TEST_CASE("PixelBuffers")
 
   SECTION("PixelBuffer copy time")
   {
-    static constexpr size_t NUM_LOOPS = 100;
-    static constexpr auto TEST_PIXEL  = Pixel{
-         {TEST_R, TEST_G, TEST_B}
+    static constexpr auto NUM_LOOPS  = 100U;
+    static constexpr auto TEST_PIXEL = Pixel{
+        {TEST_R, TEST_G, TEST_B}
     };
 
     auto intSrceBuff        = std::make_unique<std::vector<PixelIntType>>(WIDTH * HEIGHT);
@@ -212,8 +212,8 @@ TEST_CASE("PixelBuffers")
     };
     buffer.Fill(WHITE_PIXEL);
 
-    static constexpr size_t X = 20;
-    static constexpr size_t Y = 40;
+    static constexpr size_t X = 20U;
+    static constexpr size_t Y = 40U;
     buffer(X, Y)              = TEST_PIXEL1;
     buffer(X + 1, Y)          = TEST_PIXEL2;
     buffer(X, Y + 1)          = TEST_PIXEL3;
@@ -242,7 +242,7 @@ TEST_CASE("PixelBuffers")
       buffer(x, Y) = TEST_PIXEL;
     }
 
-    uint32_t count          = 0;
+    auto count              = 0U;
     const auto destRowIter  = buffer.GetRowIter(Y);
     const auto destRowBegin = std::get<0>(destRowIter);
     const auto destRowEnd   = std::get<1>(destRowIter);
@@ -250,7 +250,7 @@ TEST_CASE("PixelBuffers")
     {
       if (*destRowBuff == TEST_PIXEL)
       {
-        count++;
+        ++count;
       }
     }
     REQUIRE(count == WIDTH);

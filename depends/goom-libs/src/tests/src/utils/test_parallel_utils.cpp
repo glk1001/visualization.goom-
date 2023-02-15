@@ -12,14 +12,14 @@ using UTILS::Parallel;
 
 TEST_CASE("Test Parallel Utils", "[ParallelFor]")
 {
-  std::set<std::thread::id> threadsUsed{};
-  std::mutex mutex{};
+  auto threadsUsed = std::set<std::thread::id>{};
+  auto mutex       = std::mutex{};
 
-  static constexpr size_t ARRAY_LEN = 100000;
-  std::vector<uint64_t> testArray(ARRAY_LEN);
-  static constexpr uint64_t FIXED_VAL = 33;
-  const auto func                     = [](const uint64_t i) { return i * FIXED_VAL + i * i; };
-  const auto assignFunc               = [&testArray, &func, &threadsUsed, &mutex](const uint64_t i)
+  static constexpr auto ARRAY_LEN = 100000U;
+  auto testArray                  = std::vector<uint64_t>(ARRAY_LEN);
+  static constexpr auto FIXED_VAL = 33UL;
+  const auto func                 = [](const uint64_t i) { return i * FIXED_VAL + i * i; };
+  const auto assignFunc           = [&testArray, &func, &threadsUsed, &mutex](const uint64_t i)
   {
     testArray[i]    = func(i);
     const auto lock = std::lock_guard<std::mutex>{mutex};
@@ -29,7 +29,7 @@ TEST_CASE("Test Parallel Utils", "[ParallelFor]")
   const auto checkResults =
       [&testArray, &threadsUsed, &func](const Parallel& parallel, const uint32_t numThreadsUsed)
   {
-    for (size_t i = 0; i < ARRAY_LEN; ++i)
+    for (auto i = 0U; i < ARRAY_LEN; ++i)
     {
       REQUIRE(testArray[i] == func(i));
     }
@@ -37,8 +37,8 @@ TEST_CASE("Test Parallel Utils", "[ParallelFor]")
     REQUIRE(threadsUsed.size() == numThreadsUsed);
   };
 
-  auto parallel           = std::make_unique<Parallel>(-1);
-  uint32_t numThreadsUsed = std::thread::hardware_concurrency() - 1;
+  auto parallel       = std::make_unique<Parallel>(-1);
+  auto numThreadsUsed = std::thread::hardware_concurrency() - 1;
   threadsUsed.clear();
   parallel->ForLoop(ARRAY_LEN, assignFunc);
   checkResults(*parallel, numThreadsUsed);
