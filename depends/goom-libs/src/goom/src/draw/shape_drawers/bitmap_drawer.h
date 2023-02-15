@@ -4,7 +4,6 @@
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "point2d.h"
-#include "utils/parallel_utils.h"
 
 #include <cstdint>
 #include <functional>
@@ -36,7 +35,6 @@ public:
 
 private:
   IGoomDraw* m_draw;
-  mutable GOOM::UTILS::Parallel m_parallel{-1}; // max cores - 1
 };
 
 inline BitmapDrawer::BitmapDrawer(IGoomDraw& draw) noexcept : m_draw{&draw}

@@ -73,17 +73,9 @@ auto BitmapDrawer::Bitmap(const Point2dInt& centre,
     }
   };
 
-  if (static constexpr auto MIN_PARALLEL_BITMAP_WIDTH = 200;
-      bitmapWidth >= MIN_PARALLEL_BITMAP_WIDTH)
+  for (auto yBitmap = 0U; yBitmap < actualBitmapHeight; ++yBitmap)
   {
-    m_parallel.ForLoop(actualBitmapHeight, setDestPixelRow);
-  }
-  else
-  {
-    for (auto yBitmap = 0U; yBitmap < actualBitmapHeight; ++yBitmap)
-    {
-      setDestPixelRow(yBitmap);
-    }
+    setDestPixelRow(yBitmap);
   }
 }
 
