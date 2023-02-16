@@ -19,8 +19,8 @@ namespace GOOM::CONTROL
 {
 
 using FILTER_FX::FilterSettingsService;
-using FILTER_FX::HypercosOverlay;
 using FILTER_FX::ZoomFilterMode;
+using FILTER_FX::AFTER_EFFECTS::HypercosOverlay;
 using UTILS::GetCurrentDateTimeAsString;
 
 class GoomStateDump::CumulativeState
@@ -46,7 +46,7 @@ public:
   void AddCurrentTanEffect(bool value);
   void AddCurrentXYLerpEffect(bool value);
 
-  void AddBufferLerp(int32_t value);
+  void AddBufferLerp(uint32_t value);
 
   void AddCurrentTimeSinceLastGoom(uint32_t value);
   void AddCurrentTimeSinceLastBigGoom(uint32_t value);
@@ -67,7 +67,7 @@ public:
   [[nodiscard]] auto GetTanEffects() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetXYLerpEffects() const -> const std::vector<uint8_t>&;
 
-  [[nodiscard]] auto GetBufferLerps() const -> const std::vector<int32_t>&;
+  [[nodiscard]] auto GetBufferLerps() const -> const std::vector<uint32_t>&;
 
   [[nodiscard]] auto GetTimesSinceLastGoom() const -> const std::vector<uint32_t>&;
   [[nodiscard]] auto GetTimesSinceLastBigGoom() const -> const std::vector<uint32_t>&;
@@ -93,7 +93,7 @@ private:
   std::vector<uint8_t> m_tanEffects{};
   std::vector<uint8_t> m_xyLerpEffects{};
 
-  std::vector<int32_t> m_bufferLerps{};
+  std::vector<uint32_t> m_bufferLerps{};
 
   std::vector<uint32_t> m_timesSinceLastGoom{};
   std::vector<uint32_t> m_timesSinceLastBigGoom{};
@@ -105,10 +105,12 @@ private:
 };
 
 GoomStateDump::GoomStateDump(const PluginInfo& goomInfo,
+                             GoomLogger& goomLogger,
                              const GoomAllVisualFx& visualFx,
                              [[maybe_unused]] const GoomMusicSettingsReactor& musicSettingsReactor,
                              const FilterSettingsService& filterSettingsService) noexcept
   : m_goomInfo{&goomInfo},
+    m_goomLogger{&goomLogger},
     m_visualFx{&visualFx},
     //    m_musicSettingsReactor{musicSettingsReactor},
     m_filterSettingsService{&filterSettingsService},
@@ -136,23 +138,24 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   m_cumulativeState->AddCurrentGoomState(m_visualFx->GetCurrentState());
   m_cumulativeState->AddCurrentFilterMode(m_filterSettingsService->GetCurrentFilterMode());
 
-  const auto filterSettings = m_filterSettingsService->GetFilterSettings();
-
-  const auto filterColorSettings = filterSettings.filterColorSettings;
-  m_cumulativeState->AddCurrentBlockyWavyEffect(filterColorSettings.blockyWavy);
-
-  const auto filterEffectsSettings = filterSettings.filterEffectsSettings;
-  m_cumulativeState->AddCurrentHypercosOverlay(filterEffectsSettings.hypercosOverlay);
-  m_cumulativeState->AddCurrentImageVelocityEffect(filterEffectsSettings.imageVelocityEffect);
-  m_cumulativeState->AddCurrentNoiseEffect(filterEffectsSettings.noiseEffect);
-  m_cumulativeState->AddCurrentPlaneEffect(filterEffectsSettings.planeEffect);
-  m_cumulativeState->AddCurrentRotationEffect(filterEffectsSettings.rotationEffect);
-  m_cumulativeState->AddCurrentTanEffect(filterEffectsSettings.tanEffect);
-  m_cumulativeState->AddCurrentXYLerpEffect(filterEffectsSettings.xyLerpEffect);
+  const auto filterSettings        = m_filterSettingsService->GetFilterSettings();
+  using AfterEffects               = FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
+  const auto& afterEffectsSettings = filterSettings.filterEffectsSettings.afterEffectsSettings;
+  m_cumulativeState->AddCurrentBlockyWavyEffect(
+      afterEffectsSettings.active[AfterEffects::BLOCK_WAVY]);
+  m_cumulativeState->AddCurrentHypercosOverlay(afterEffectsSettings.hypercosOverlay);
+  m_cumulativeState->AddCurrentImageVelocityEffect(
+      afterEffectsSettings.active[AfterEffects::IMAGE_VELOCITY]);
+  m_cumulativeState->AddCurrentNoiseEffect(afterEffectsSettings.active[AfterEffects::NOISE]);
+  m_cumulativeState->AddCurrentPlaneEffect(afterEffectsSettings.active[AfterEffects::PLANES]);
+  m_cumulativeState->AddCurrentRotationEffect(afterEffectsSettings.active[AfterEffects::ROTATION]);
+  m_cumulativeState->AddCurrentTanEffect(afterEffectsSettings.active[AfterEffects::TAN_EFFECT]);
+  m_cumulativeState->AddCurrentXYLerpEffect(
+      afterEffectsSettings.active[AfterEffects::XY_LERP_EFFECT]);
 
   m_cumulativeState->AddBufferLerp(m_visualFx->GetZoomFilterFx().GetTranLerpFactor());
 
-  const auto& goomSoundEvents = m_goomInfo.GetSoundEvents();
+  const auto& goomSoundEvents = m_goomInfo->GetSoundEvents();
   m_cumulativeState->AddCurrentTimeSinceLastGoom(goomSoundEvents.GetTimeSinceLastGoom());
   m_cumulativeState->AddCurrentTimeSinceLastBigGoom(goomSoundEvents.GetTimeSinceLastBigGoom());
   m_cumulativeState->AddCurrentTotalGoomsInCurrentCycle(
@@ -167,7 +170,8 @@ auto GoomStateDump::DumpData(const std::string& directory) -> void
 {
   if (m_cumulativeState->GetNumUpdates() < MIN_TIMELINE_ELEMENTS_TO_DUMP)
   {
-    LogWarn("Not dumping. Too few goom updates: {} < {}.",
+    LogWarn(*m_goomLogger,
+            "Not dumping. Too few goom updates: {} < {}.",
             m_cumulativeState->GetNumUpdates(),
             MIN_TIMELINE_ELEMENTS_TO_DUMP);
     return;
@@ -203,15 +207,15 @@ auto GoomStateDump::DumpData(const std::string& directory) -> void
 
 auto GoomStateDump::DumpSummary() const noexcept -> void
 {
-  static constexpr auto SUMMARY_FILENAME = "summary.dat";
-  auto out                               = std::ofstream{};
+  static constexpr auto* SUMMARY_FILENAME = "summary.dat";
+  auto out                                = std::ofstream{};
   out.open(m_datedDirectory + "/" + SUMMARY_FILENAME, std::ofstream::out);
 
   out << "Song:       " << m_songTitle << "\n";
   out << "Date:       " << m_dateTime << "\n";
   out << "Seed:       " << m_goomSeed << "\n";
-  out << "Width:      " << m_goomInfo.GetScreenWidth() << "\n";
-  out << "Height:     " << m_goomInfo.GetScreenHeight() << "\n";
+  out << "Width:      " << m_goomInfo->GetScreenWidth() << "\n";
+  out << "Height:     " << m_goomInfo->GetScreenHeight() << "\n";
   out << "Start Time: " << m_stopwatch->GetStartTimeAsStr() << "\n";
   out << "Stop Time:  " << m_stopwatch->GetLastMarkedTimeAsStr() << "\n";
   out << "Act Dur:    " << m_stopwatch->GetActualDurationInMs() << "\n";
@@ -224,7 +228,7 @@ auto GoomStateDump::DumpSummary() const noexcept -> void
 auto GoomStateDump::SetCurrentDatedDirectory(const std::string& parentDirectory) -> void
 {
   m_datedDirectory = parentDirectory + "/" + m_dateTime;
-  LogInfo("Dumping state data to \"{}\"...", m_datedDirectory);
+  LogInfo(*m_goomLogger, "Dumping state data to \"{}\"...", m_datedDirectory);
   std::filesystem::create_directories(m_datedDirectory);
 }
 
@@ -238,10 +242,10 @@ auto GoomStateDump::DumpDataArray(const std::string& filename,
                                   const std::vector<T>& dataArray) const noexcept -> void
 {
   const auto dataLen = m_cumulativeState->GetNumUpdates();
-  LogInfo("Dumping Goom state data ({} values) to \"{}\".", dataLen, filename);
+  LogInfo(*m_goomLogger, "Dumping Goom state data ({} values) to \"{}\".", dataLen, filename);
 
-  static constexpr auto EXT = ".dat";
-  auto out                  = std::ofstream{};
+  static constexpr auto* EXT = ".dat";
+  auto out                   = std::ofstream{};
   out.open(m_datedDirectory + "/" + filename + EXT, std::ofstream::out);
 
   for (auto i = 0U; i < dataLen; ++i)
@@ -334,7 +338,7 @@ inline void GoomStateDump::CumulativeState::AddCurrentRotationEffect(const bool 
   m_rotationEffects.push_back(static_cast<uint8_t>(value));
 }
 
-inline void GoomStateDump::CumulativeState::AddBufferLerp(const int32_t value)
+inline void GoomStateDump::CumulativeState::AddBufferLerp(const uint32_t value)
 {
   m_bufferLerps.push_back(value);
 }
@@ -429,7 +433,7 @@ inline auto GoomStateDump::CumulativeState::GetRotationEffects() const
   return m_rotationEffects;
 }
 
-inline auto GoomStateDump::CumulativeState::GetBufferLerps() const -> const std::vector<int32_t>&
+inline auto GoomStateDump::CumulativeState::GetBufferLerps() const -> const std::vector<uint32_t>&
 {
   return m_bufferLerps;
 }

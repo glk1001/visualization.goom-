@@ -434,7 +434,7 @@ inline auto GoomControl::GoomControlImpl::Finish() -> void
 inline auto GoomControl::GoomControlImpl::StartGoomStateDump() -> void
 {
   m_goomStateDump = std::make_unique<GoomStateDump>(
-      m_goomInfo, m_visualFx, m_musicSettingsReactor, m_filterSettingsService);
+      m_goomInfo, *m_goomLogger, m_visualFx, m_musicSettingsReactor, m_filterSettingsService);
   m_goomStateDump->Start();
 }
 
@@ -450,7 +450,7 @@ inline auto GoomControl::GoomControlImpl::FinishGoomStateDump() -> void
     return;
   }
   m_goomStateDump->SetSongTitle(m_songInfo.title);
-  m_goomStateDump->SetGoomSeed(GetRandSeed());
+  m_goomStateDump->SetGoomSeed(UTILS::MATH::RAND::GetRandSeed());
   m_goomStateDump->SetStopWatch(m_runningTimeStopwatch);
   m_goomStateDump->DumpData(m_dumpDirectory);
 }

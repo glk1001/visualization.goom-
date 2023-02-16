@@ -2,7 +2,6 @@
 
 #include "goom_config.h"
 
-//TODO(glk) - Fix this - compile broken
 //#define DO_GOOM_STATE_DUMP
 
 #ifdef DO_GOOM_STATE_DUMP
@@ -17,6 +16,11 @@
 #include <memory>
 #include <string_view>
 
+namespace GOOM
+{
+class GoomLogger;
+}
+
 namespace GOOM::CONTROL
 {
 
@@ -24,6 +28,7 @@ class GoomStateDump
 {
 public:
   GoomStateDump(const PluginInfo& goomInfo,
+                GoomLogger& goomLogger,
                 const GoomAllVisualFx& visualFx,
                 const GoomMusicSettingsReactor& musicSettingsReactor,
                 const FILTER_FX::FilterSettingsService& filterSettingsService) noexcept;
@@ -46,6 +51,7 @@ private:
   static constexpr uint32_t MIN_TIMELINE_ELEMENTS_TO_DUMP = 10;
 
   const PluginInfo* m_goomInfo;
+  GoomLogger* m_goomLogger;
   const GoomAllVisualFx* m_visualFx;
   const FILTER_FX::FilterSettingsService* m_filterSettingsService;
 
