@@ -80,6 +80,7 @@ x11docker -q                                          \
           --pulseaudio                                \
           --xauth=trusted                             \
           --gpu                                       \
+          --ipc                                       \
           --home=${KODI_CONTAINER_HOME_DIR_TO_USE}    \
           --                                          \
           --init                                      \
